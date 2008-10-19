@@ -123,13 +123,13 @@ NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
 サーバの応答がエラーを示す場合、上記のいずれかの例外が送出されます。
 
 
-\begin{methoddesc}{getwelcome}{}
+\begin{methoddesc}[NNTP]{getwelcome}{}
 サーバに最初に接続した際に送信される応答中のウェルカムメッセージを
 返します。(このメッセージには時に、ユーザにとって重要な免責事項や
 ヘルプ情報が入っています。)
 \end{methoddesc}
 
-\begin{methoddesc}{set_debuglevel}{level}
+\begin{methoddesc}[NNTP]{set_debuglevel}{level}
 インスタンスのデバッグレベルを設定します。このメソッドは印字される
 デバッグ出力の量を制御します。標準では \code{0} に設定されていて、
 これはデバッグ出力を全く印字しません。\code{1} はそこそこの量、
@@ -139,7 +139,7 @@ NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
 最大限のデバッグ出力を生成します。
 \end{methoddesc}
 
-\begin{methoddesc}{newgroups}{date, time, \optional{file}}
+\begin{methoddesc}[NNTP]{newgroups}{date, time, \optional{file}}
 \samp{NEWSGROUPS} 命令を送信します。\var{date} 引数は
 \code{'\var{yy}\var{mm}\var{dd}'} の形式を取り、日付を表します。
 \var{time} 引数は \code{'\var{hh}\var{mm}\var{ss}'} の形式をとり、
@@ -154,7 +154,7 @@ NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
 リストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{newnews}{group, date, time, \optional{file}}
+\begin{methoddesc}[NNTP]{newnews}{group, date, time, \optional{file}}
 \samp{NEWNEWS} 命令を送信します。ここで、\var{group} はグループ名
 または \code{'*'} で、 \var{date} および \var{time} は
 \method{newsgrups()} における引数と同じ意味を持ちます。
@@ -168,7 +168,7 @@ NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
 リストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{list}{\optional{file}}
+\begin{methoddesc}[NNTP]{list}{\optional{file}}
 \samp{LIST} 命令を送信します。\code{(\var{response}, \var{list})} 
 からなるペアを返します。\var{list} はタプルからなるリストです。
 各タプルは \code{(\var{group}, \var{last}, \var{first}, \var{flag})}
@@ -186,7 +186,7 @@ NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
 リストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{descriptions}{grouppattern}
+\begin{methoddesc}[NNTP]{descriptions}{grouppattern}
 \samp{LIST NEWSGROUPS} 命令を送信します。\var{grouppattern} は
 RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 シェルワイルドカード文字列と同じです)。 \code{(\var{response},\var{list})}
@@ -195,7 +195,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 \versionadded{2.4}
 \end{methoddesc}
 
-\begin{methoddesc}{description}{group}
+\begin{methoddesc}[NNTP]{description}{group}
 単一のグループ\var{group} から説明文字列を取り出します。
 ('group' が実際には wildmat 文字列で) 複数のグループがマッチした場合、
 最初にマッチしたものを返します。何もマッチしなければ空文字列を返します。
@@ -207,7 +207,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 \end{methoddesc}
 
 
-\begin{methoddesc}{group}{name}
+\begin{methoddesc}[NNTP]{group}{name}
 \samp{GROUP} 命令を送信します。\var{name} はグループ名です。タプル 
 \code{(\var{response}, \var{count}, \var{first}, \var{last}, \var{name})} 
 を返します。\var{count} はグループ中の記事数 (の推定値) で、
@@ -216,7 +216,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 返されます。
 \end{methoddesc}
 
-\begin{methoddesc}{help}{\optional{file}}
+\begin{methoddesc}[NNTP]{help}{\optional{file}}
 \samp{HELP} 命令を送信します。\code{(\var{response}, \var{list})} 
 からなるペアを返します。\var{list} はヘルプ文字列からなるリストです。
 \var{file}引数が指定されている場合、\samp{HELP}コマンドの出力結果は
@@ -227,7 +227,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 リストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{stat}{id}
+\begin{methoddesc}[NNTP]{stat}{id}
 \samp{STAT} 命令を送信します。\var{id} は
 (\character{<} と \character{>} に囲まれた形式の) メッセージ ID か、
 (文字列の) 記事番号です。
@@ -236,15 +236,15 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 (\character{<} と \character{>} に囲まれた形式の) メッセージ ID です。
 \end{methoddesc}
 
-\begin{methoddesc}{next}{}
+\begin{methoddesc}[NNTP]{next}{}
 \samp{NEXT} 命令を送信します。\method{stat()} のような応答を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{last}{}
+\begin{methoddesc}[NNTP]{last}{}
 \samp{LAST} 命令を送信します。\method{stat()} のような応答を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{head}{id}
+\begin{methoddesc}[NNTP]{head}{id}
 \samp{HEAD} 命令を送信します。\var{id} は \method{stat()} における
 のと同じ意味を持ちます。
 \code{(\var{response}, \var{number}, \var{id}, \var{list})}
@@ -254,7 +254,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 です。
 \end{methoddesc}
 
-\begin{methoddesc}{body}{id,\optional{file}}
+\begin{methoddesc}[NNTP]{body}{id,\optional{file}}
 \samp{BODY} 命令を送信します。\var{id} は \method{stat()} における
 のと同じ意味を持ちます。\var{file} 引数が与えられている場合、
 記事本体 (body) はファイルに保存されます。\var{file} が文字列
@@ -265,16 +265,16 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 いた場合、 返される \var{list} は空のリストになります。
 \end{methoddesc}
 
-\begin{methoddesc}{article}{id}
+\begin{methoddesc}[NNTP]{article}{id}
 \samp{ARTICLE} 命令を送信します。\var{id} は \method{stat()} における
 のと同じ意味を持ちます。\method{head()} のような戻り値を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{slave}{}
+\begin{methoddesc}[NNTP]{slave}{}
 \samp{SLAVE} 命令を送信します。サーバの \var{response} を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{xhdr}{header, string, \optional{file}}
+\begin{methoddesc}[NNTP]{xhdr}{header, string, \optional{file}}
 \samp{XHDR} 命令を送信します、この命令は RFC には定義されていませんが、
 一般に広まっている拡張です。\var{header} 引数は、例えば \code{'subject'}
 といったヘッダキーワードです。\var{string} 引数は 
@@ -292,7 +292,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 リストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{post}{file}
+\begin{methoddesc}[NNTP]{post}{file}
 \samp{POST} 命令を使って記事をポストします。\var{file}
 引数は開かれているファイルオブジェクトで、その内容は
 \method{readline()} メソッドを使って EOF まで読み出されます。
@@ -301,7 +301,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 で始まる行を自動的にエスケープします。
 \end{methoddesc}
 
-\begin{methoddesc}{ihave}{id, file}
+\begin{methoddesc}[NNTP]{ihave}{id, file}
 \samp{IHAVE} 命令を送信します。
 \var{id} は (\character{<} と \character{>} に囲まれた) メッセージ ID
 です。
@@ -309,7 +309,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 扱います。
 \end{methoddesc}
 
-\begin{methoddesc}{date}{}
+\begin{methoddesc}[NNTP]{date}{}
 タプル \code{(\var{response}, \var{date}, \var{time})} を返します。
 このタプルには \method{newnews()} および \method{newgroups()} メソッド
 に合った形式の、現在の日付および時刻が入っています。
@@ -317,7 +317,7 @@ RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
 とは限りません。
 \end{methoddesc}
 
-\begin{methoddesc}{xgtitle}{name, \optional{file}}
+\begin{methoddesc}[NNTP]{xgtitle}{name, \optional{file}}
 \samp{XGTITLE} 命令を処理し、\code{(\var{response}, \var{list})}
 からなるペアを返します。\var{list} は
 \code{(\var{name}, \var{title})} を含むタプルのリストです。
@@ -336,7 +336,7 @@ RFC2980 では、 ``この拡張は撤廃すべきである'' と主張しています。
 してください。
 \end{methoddesc}
 
-\begin{methoddesc}{xover}{start, end, \optional{file}}
+\begin{methoddesc}[NNTP]{xover}{start, end, \optional{file}}
 \code{(\var{resp}, \var{list})} からなるペアを返します。
 \var{list} はタプルからなるリストで、各タプルは記事番号 \var{start} 
 および \var{end} の間に区切られた記事です。各タプルは
@@ -352,14 +352,14 @@ RFC2980 では、 ``この拡張は撤廃すべきである'' と主張しています。
 とは限りません。
 \end{methoddesc}
 
-\begin{methoddesc}{xpath}{id}
+\begin{methoddesc}[NNTP]{xpath}{id}
 \code{(\var{resp}, \var{path})} からなるペアを返します。
 \var{path} は メッセージ ID が \var{id} である記事のディレクトリパスです。
 これはオプションの NNTP 拡張なので、全てのサーバでサポートされている
 とは限りません。
 \end{methoddesc}
 
-\begin{methoddesc}{quit}{}
+\begin{methoddesc}[NNTP]{quit}{}
 \samp{QUIT} 命令を送信し、接続を閉じます。このメソッドを呼び出した
 後は、NTTP オブジェクトの他のいかなるメソッドも呼び出してはいけません。
 \end{methoddesc}

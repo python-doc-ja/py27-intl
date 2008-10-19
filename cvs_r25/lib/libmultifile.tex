@@ -51,7 +51,7 @@
 
 \class{MultiFile} インスタンスには以下のメソッドがあります:
 
-\begin{methoddesc}{readline}{str}
+\begin{methoddesc}[MultiFile]{readline}{str}
 一行データを読みます。その行が (セクション分割子や終了マーカや本物の
 EOF でない) データの場合、行データを返します。その行がもっとも最近
 スタックにプッシュされた境界パターンにマッチした場合、\code{''} を返し、
@@ -62,27 +62,27 @@ EOF でない) データの場合、行データを返します。その行がもっとも最近
 限りこのメソッドは \exception{Error} を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{readlines}{str}
+\begin{methoddesc}[MultiFile]{readlines}{str}
 このパートの残りの全ての行を文字列のリストとして返します。
 \end{methoddesc}
 
-\begin{methoddesc}{read}{}
+\begin{methoddesc}[MultiFile]{read}{}
 次のセクションまでの全ての行を読みます。読んだ内容を単一の
 (複数行にわたる) 文字列として返します。このメソッドには
 size 引数をとらないので注意してください！
 \end{methoddesc}
 
-\begin{methoddesc}{seek}{pos\optional{, whence}}
+\begin{methoddesc}[MultiFile]{seek}{pos\optional{, whence}}
 ファイルを seek します。seek する際のインデクスは現在のセクションの
 開始位置からの相対位置になります。\var{pis} および \var{whence} 引数
 はファイルの seek における引数と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{tell}{}
+\begin{methoddesc}[MultiFile]{tell}{}
 現在のセクションの先頭に対して相対的なファイル位置を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{next}{}
+\begin{methoddesc}[MultiFile]{next}{}
 次のセクションまで行を読み飛ばします (すなわち、セクション分割子
 または終了マーカが消費されるまで行データを読みます)。
 次のセクションがあった場合には真を、終了マーカが発見された場合
@@ -90,7 +90,7 @@ size 引数をとらないので注意してください！
 最有効化します。
 \end{methoddesc}
 
-\begin{methoddesc}{is_data}{str}
+\begin{methoddesc}[MultiFile]{is_data}{str}
 \var{str} がデータの場合に真を返し、セクション分割子の可能性がある
 場合には偽を返します。このメソッドは行の先頭が (全ての MIME 境界が
 持っている) \code{'-}\code{-'} 以外になっているかを調べるように
@@ -101,7 +101,7 @@ size 引数をとらないので注意してください！
 テストが失敗するのではなく、単に処理が遅くなるだけです。
 \end{methoddesc}
 
-\begin{methoddesc}{push}{str}
+\begin{methoddesc}[MultiFile]{push}{str}
 境界文字列をスタックにプッシュします。この境界文字列の修飾された
 バージョンが入力行に見つかった場合、セクション分割子
 または終了マーカであると解釈されます(どちらであるかは修飾に依存します。
@@ -115,12 +115,12 @@ size 引数をとらないので注意してください！
 送出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{pop}{}
+\begin{methoddesc}[MultiFile]{pop}{}
 セクション境界をポップします。この境界はもはや EOF として解釈
 されません。
 \end{methoddesc}
 
-\begin{methoddesc}{section_divider}{str}
+\begin{methoddesc}[MultiFile]{section_divider}{str}
 境界をセクション分割子にします。標準では、このメソッドは
 (全ての MIME 境界が持っている) \code{'-}\code{-'} を境界文字列の
 先頭に追加しますが、これは導出クラスで上書きできるように宣言
@@ -128,7 +128,7 @@ size 引数をとらないので注意してください！
 では LF や CR-LF を追加する必要はありません。
 \end{methoddesc}
 
-\begin{methoddesc}{end_marker}{str}
+\begin{methoddesc}[MultiFile]{end_marker}{str}
 境界文字列を終了マーカ行にします。標準では、このメソッドは
 (MIME マルチパートデータのメッセージ終了マーカのように) 
 \code{'-}\code{-'} を境界文字列の先頭に追加し、かつ
@@ -141,11 +141,11 @@ size 引数をとらないので注意してください！
 最後に、\class{MultiFile} インスタンスは二つの公開されたインスタンス
 変数を持っています:
 
-\begin{memberdesc}{level}
+\begin{memberdesc}[MultiFile]{level}
 現在のパートにおける入れ子の深さです。
 \end{memberdesc}
 
-\begin{memberdesc}{last}
+\begin{memberdesc}[MultiFile]{last}
 最後に見つかったファイル終了イベントがメッセージ終了マーカ
 であった場合に真となります。
 \end{memberdesc}

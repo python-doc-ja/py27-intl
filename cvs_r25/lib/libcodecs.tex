@@ -310,7 +310,7 @@ codecs がエラーハンドラとして受け入れる値は\method{register_error} を
 \class{Codec} クラスは以下のメソッドを定義します。これらのメソッドは、
 内部状態を持たないエンコーダ／デコーダ関数のインタフェースを定義します。
 
-\begin{methoddesc}{encode}{input\optional{, errors}}
+\begin{methoddesc}[Codec]{encode}{input\optional{, errors}}
 オブジェクト \var{input} エンコードし、(出力オブジェクト, 消費した  
 長さ) のタプルを返します。 codecs は Unicode 専用ではありませんが、
 Unicode の文脈では、エンコーディングは Unicode オブジェクトを
@@ -328,7 +328,7 @@ Unicode の文脈では、エンコーディングは Unicode オブジェクトを
 空のオブジェクトを出力オブジェクトとして返さねばなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{decode}{input\optional{, errors}}
+\begin{methoddesc}[Codec]{decode}{input\optional{, errors}}
 オブジェクト \var{input} をデコードし、(出力オブジェクト,  消費した長
 さ) のタプルを返します。Unicode の文脈では、デコードは特定の文字集合
 エンコーディングでエンコードされた文字列を Unicode オブジェクトに変換
@@ -1181,7 +1181,6 @@ Python codec の性質を利用したものもあります。
          {}
          {Unicode string}
          {\rfc{3490} の実装です。
-          \versionadded{2.3}
           \refmodule{encodings.idna} も参照してください。}
 
 \lineiv{mbcs}
@@ -1198,8 +1197,7 @@ Python codec の性質を利用したものもあります。
 \lineiv{punycode}
          {}
          {Unicode string}
-         {\rfc{3492} を実装しています。
-          \versionadded{2.3}}
+         {\rfc{3492} を実装しています。}
 
 \lineiv{quopri_codec}
          {quopri, quoted-printable, quotedprintable}
@@ -1252,6 +1250,8 @@ Python codec の性質を利用したものもあります。
          {被演算子を gzip を用いて圧縮します。}
 
 \end{tableiv}
+
+\versionadded[The \code{idna} and \code{punycode} encodings]{2.3}
 
 \subsection{\module{encodings.idna} ---
             アプリケーションにおける国際化ドメイン名 (IDNA)}

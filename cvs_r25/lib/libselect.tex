@@ -81,7 +81,7 @@
 \cfunction{select()} は O(最大のファイル記述子番号) なのに対し、
 \cfunction{poll()} は O(対象とするファイル記述子の数) で済みます。
 
-\begin{methoddesc}{register}{fd\optional{, eventmask}}
+\begin{methoddesc}[poll]{register}{fd\optional{, eventmask}}
 ファイル記述子をポーリングオブジェクトに登録します。これ以降の
 \method{poll()} メソッド呼び出しでは、そのファイル記述子に処理待ち中の
 I/O イベントがあるかどうかを監視します。\var{fd} は整数か、
@@ -108,7 +108,7 @@ I/O イベントがあるかどうかを監視します。\var{fd} は整数か、
 一度だけ登録した場合と同じ効果になります。
 \end{methoddesc}
 
-\begin{methoddesc}{unregister}{fd}
+\begin{methoddesc}[poll]{unregister}{fd}
 ポーリングオブジェクトによって追跡中のファイル記述子を登録解除します。
 \method{register()} メソッドと同様に、\var{fd} は整数か、
 整数値を返す \method{fileno()} メソッドを持つオブジェクトを取ります。
@@ -117,7 +117,7 @@ I/O イベントがあるかどうかを監視します。\var{fd} は整数か、
 \exception{KeyError} 例外が送出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{poll}{\optional{timeout}}
+\begin{methoddesc}[poll]{poll}{\optional{timeout}}
 登録されたファイル記述子に対してポーリングを行い、
 報告すべき I/O イベントまたはエラーの発生したファイル記述子に
 毎に 2 要素のタプル \code{(\var{fd}, \var{event})} からなるリスト

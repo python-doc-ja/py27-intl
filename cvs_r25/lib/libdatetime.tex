@@ -1203,7 +1203,7 @@ aware な \module{datetime} オブジェクトがこのサブクラスの
 インスタンスをどのように使うかに依存します。不確かならば、
 単に全てを実装してください。
 
-\begin{methoddesc}{utcoffset}{self, dt}
+\begin{methoddesc}[tzinfo]{utcoffset}{self, dt}
 ローカル時間の UTC からのオフセットを、UTC から東向きを正とした分で
 返します。ローカル時間が UTC の西側にある場合、この値は負になります。
 このメソッドは UTC からのオフセットの総計を返すように意図されている
@@ -1229,7 +1229,7 @@ aware な \module{datetime} オブジェクトがこのサブクラスの
  \exception{NotImplementedError} を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{dst}{self, dt}
+\begin{methoddesc}[tzinfo]{dst}{self, dt}
 夏時間 (DST) 修正を、UTC から東向きを正とした分で
 返します。DST 情報が未知の場合、\code{None} が返されます。
 DST が有効でない場合には \code{timedelta(0)} を返します。
@@ -1290,7 +1290,7 @@ DST を個別に取得する必要がない限り \method{dst()} を使って
 を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{tzname}{self, dt}
+\begin{methoddesc}[tzinfo]{tzname}{self, dt}
 \class{datetime} オブジェクト \var{dt} に対応するタイムゾーン名
 を文字列で返します。
 \module{datetime} モジュールでは文字列名について何も定義しておらず、
@@ -1332,7 +1332,7 @@ DST を個別に取得する必要がない限り \method{dst()} を使って
 心配する必要がありません。
 
 
-\begin{methoddesc}{fromutc}{self, dt}
+\begin{methoddesc}[tzinfo]{fromutc}{self, dt}
 デフォルトの \class{datetime.astimezone()} 実装で呼び出されます。
 \class{datetime.astimezone()} から呼ばれた場合、\code{\var{dt}.tzinfo}
 は \var{self} であり、 \var{dt} の日付および時刻データメンバは

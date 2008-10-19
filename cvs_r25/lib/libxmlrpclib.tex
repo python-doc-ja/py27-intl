@@ -126,12 +126,12 @@ XML-RPCリクエストはwell-formedなXMLとはなりません。そのような文字列を渡
 予約メンバ\member{system}から、XMLイントロスペクションAPIの一般的なメソ
 ッドを利用する事ができます。
 
-\begin{methoddesc}{system.listMethods}{}
+\begin{methoddesc}[ServerProxy]{system.listMethods}{}
 XML-RPCサーバがサポートするメソッド名(system以外)を格納する文字列のリス
 トを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{system.methodSignature}{name}
+\begin{methoddesc}[ServerProxy]{system.methodSignature}{name}
 XML-RPCサーバで実装されているメソッドの名前を指定し、利用可能なシグネチ
 ャの配列を取得します。シグネチャは型のリストで、先頭の型は戻り値の型を示
 し、以降はパラメータの型を示します。
@@ -148,7 +148,7 @@ XML-RPCでは複数のシグネチャ(オーバロード)を使用することができるので、単
 Pythonでは、この値はlist以外の値となります。
 \end{methoddesc}
 
-\begin{methoddesc}{system.methodHelp}{name}
+\begin{methoddesc}[ServerProxy]{system.methodHelp}{name}
 XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説
 する文書文字列を取得します。文書文字列を取得できない場合は空文字列を返し
 ます。文書文字列にはHTMLマークアップが含まれます
@@ -170,7 +170,7 @@ XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説
 
 以下のメソッドは、主に内部的にアンマーシャル時に使用されます:
 
-\begin{methoddesc}{encode}{out}
+\begin{methoddesc}[Boolean]{encode}{out}
 出力ストリームオブジェクト \code{out} に、XML-RPCエンコーディングのBoolean値を出力します。
 \end{methoddesc}
 
@@ -187,11 +187,11 @@ XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説
 このクラスには以下のメソッドがあり、
 主にコードをマーシャル/アンマーシャルするための内部処理を行います。
 
-\begin{methoddesc}{decode}{string}
+\begin{methoddesc}[Binary]{decode}{string}
 文字列をインスタンスの新しい時間を示す値として指定します。
 \end{methoddesc}
 
-\begin{methoddesc}{encode}{out}
+\begin{methoddesc}[Binary]{encode}{out}
 出力ストリームオブジェクト \code{out} に、XML-RPCエンコーディングの
 \class{DateTime}値を出力します。
 \end{methoddesc}
@@ -227,11 +227,11 @@ XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説
 \class{Fault}オブジェクトは、XML-RPCのfaultタグの内容をカプセル化してお
 り、以下のメンバを持ちます:
 
-\begin{memberdesc}{faultCode}
+\begin{memberdesc}[Fault]{faultCode}
 失敗のタイプを示す文字列。
 \end{memberdesc}
 
-\begin{memberdesc}{faultString}
+\begin{memberdesc}[Fault]{faultString}
 失敗の診断メッセージを含む文字列。
 \end{memberdesc}
 
@@ -242,19 +242,19 @@ XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説
 で指定したサーバが見つからなかった場合に発生する404 `not found'など)の内
 容を示し、以下のメンバを持ちます:
 
-\begin{memberdesc}{url}
+\begin{memberdesc}[ProtocolError]{url}
 エラーの原因となったURIまたはURL。
 \end{memberdesc}
 
-\begin{memberdesc}{errcode}
+\begin{memberdesc}[ProtocolError]{errcode}
 エラーコード。
 \end{memberdesc}
 
-\begin{memberdesc}{errmsg}
+\begin{memberdesc}[ProtocolError]{errmsg}
 エラーメッセージまたは診断文字列。
 \end{memberdesc}
 
-\begin{memberdesc}{headers}
+\begin{memberdesc}[ProtocolError]{headers}
 エラーの原因となったHTTP/HTTPSリクエストを含む文字列。
 \end{memberdesc}
 

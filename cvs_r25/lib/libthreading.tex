@@ -183,7 +183,7 @@ Java の Thread クラスにおける静的メソッドに対応する機能が実装されている
 
 全てのメソッドは原子的に実行されます。
 
-\begin{methoddesc}{acquire}{\optional{blocking\code{ = 1}}}
+\begin{methoddesc}[Lock]{acquire}{\optional{blocking\code{ = 1}}}
 ブロックあり、またはブロックなしでロックを獲得します。
 
 引数なしで呼び出した場合、ロックの状態がアンロックになるまで
@@ -199,7 +199,7 @@ Java の Thread クラスにおける静的メソッドに対応する機能が実装されている
 
 \end{methoddesc}
 
-\begin{methoddesc}{release}{}
+\begin{methoddesc}[Lock]{release}{}
 ロックを解放します。
 
 ロックの状態がロックのとき、状態をアンロックにリセットして処理を
@@ -230,7 +230,7 @@ Java の Thread クラスにおける静的メソッドに対応する機能が実装されている
 だけが、ロックの状態をアンロックにリセットし、\method{acquire()} で
 ブロック中の別のスレッドの処理を進行させられます。
 
-\begin{methoddesc}{acquire}{\optional{blocking\code{ = 1}}}
+\begin{methoddesc}[RLock]{acquire}{\optional{blocking\code{ = 1}}}
 ブロックあり、またはブロックなしでロックを獲得します。
 
 引数なしで呼び出した場合: スレッドが既にロックを所有している場合、
@@ -252,7 +252,7 @@ Java の Thread クラスにおける静的メソッドに対応する機能が実装されている
 引数なしで呼び出したときと同じ処理を行い真を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{release}{}
+\begin{methoddesc}[RLock]{release}{}
 再帰レベルをデクリメントしてロックを解放します。
 デクリメント後に再帰レベルがゼロになった場合、ロックの状態を
 アンロック (いかなるスレッドにも所有されていない状態) にリセットし、

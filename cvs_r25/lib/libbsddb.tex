@@ -115,25 +115,25 @@ reclen\optional{, bval\optional{, bfname}}}}}}}}}}
 列挙したメソッドもサポートします。
 \versionchanged[辞書型メソッドを追加しました]{2.3.1}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[bsddbobject]{close}{}
 データベースの背後にあるファイルを閉じます。オブジェクトはアクセスできなく
 なります。これらのオブジェクトには \method{oepn} メソッドがないため、
 再度ファイルを開くためには、新たな \module{bsddb} モジュールを開く
 関数を呼び出さなくてはなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{keys}{}
+\begin{methoddesc}[bsddbobject]{keys}{}
 DB ファイルに収められているキーからなるリストを返します。リスト内の
 キーの順番は決まっておらず、あてにはなりません。特に、異なるファイル
 形式の DB 間では返されるリストの順番が異なります。
 \end{methoddesc}
 
-\begin{methoddesc}{has_key}{key}
+\begin{methoddesc}[bsddbobject]{has_key}{key}
 引数 \var{key} が DB ファイルにキーとして含まれている場合 \code{1} 
 を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{set_location}{key}
+\begin{methoddesc}[bsddbobject]{set_location}{key}
 カーソルを \var{key} で示される要素に移動し、キー及び値からなる
 タプルを返します。(\function{bopen} を使って開かれる) B-Tree
 データベースでは、\var{key} が実際にはデータベース内に存在しなかった
@@ -143,19 +143,19 @@ DB ファイルに収められているキーからなるリストを返します。リスト内の
 場合 \exception{KeyError} が送出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{first}{}
+\begin{methoddesc}[bsddbobject]{first}{}
 カーソルを DB ファイルの最初の要素に設定し、その要素を返します。
 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まっていません。
 データベースが空の場合、このメソッドは \exception{bsddb.error} を発生させます。
 \end{methoddesc}
 
-\begin{methoddesc}{next}{}
+\begin{methoddesc}[bsddbobject]{next}{}
 カーソルを DB ファイルの次の要素に設定し、その要素を返します。
 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まって
 いません。
 \end{methoddesc}
 
-\begin{methoddesc}{previous}{}
+\begin{methoddesc}[bsddbobject]{previous}{}
 カーソルを DB ファイルの直前の要素に設定し、その要素を返します。
 B-Tree データベースの場合を除き、ファイル中のキーの順番は決まって
 いません。
@@ -163,7 +163,7 @@ B-Tree データベースの場合を除き、ファイル中のキーの順番は決まって
 ではサポートされていません。
 \end{methoddesc}
 
-\begin{methoddesc}{last}{}
+\begin{methoddesc}[bsddbobject]{last}{}
 カーソルを DB ファイルの最後の要素に設定し、その要素を返します。
 ファイル中のキーの順番は決まっていません。
 (\function{hashopen()} で開かれるような)  ハッシュ表データベース
@@ -171,7 +171,7 @@ B-Tree データベースの場合を除き、ファイル中のキーの順番は決まって
 データベースが空の場合、このメソッドは \exception{bsddb.error} を発生させます。
 \end{methoddesc}
 
-\begin{methoddesc}{sync}{}
+\begin{methoddesc}[bsddbobject]{sync}{}
 ディスク上のファイルをデータベースに同期させます。
 \end{methoddesc}
 

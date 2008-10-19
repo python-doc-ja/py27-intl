@@ -103,20 +103,20 @@ mmapオブジェクトを返します。\var{length}が\code{0}の場合、
 メモリマップフィイルオブジェクトは以下のメソッドをサポートしています:
 
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[mmap]{close}{}
 ファイルを閉じます。
 この呼出しの後にオブジェクトの他のメソッドの呼出すことは、
 例外の送出を引き起こすでしょう。
 \end{methoddesc}
 
-\begin{methoddesc}{find}{string\optional{, start}}
+\begin{methoddesc}[mmap]{find}{string\optional{, start}}
 オブジェクト内で部分文字列\var{string}が見つかった場所の最も小さい
 インデックスを返します。
 失敗したとき\code{-1}を返します。
 \var{start}は探索を始めたい場所のインデックスで、デフォルトは0です。
 \end{methoddesc}
 
-\begin{methoddesc}{flush}{\optional{offset, size}}
+\begin{methoddesc}[mmap]{flush}{\optional{offset, size}}
 ファイルのメモリコピー内での変更をディスクへフラッシュします。
 この呼出しを使わなかった場合、オブジェクトが破壊される前に
 変更が書き込まれる保証はありません。
@@ -125,50 +125,50 @@ mmapオブジェクトを返します。\var{length}が\code{0}の場合、
 指定されない場合、マップ全体がフラッシュされます。
 \end{methoddesc}
 
-\begin{methoddesc}{move}{\var{dest}, \var{src}, \var{count}}
+\begin{methoddesc}[mmap]{move}{\var{dest}, \var{src}, \var{count}}
 オフセット\var{src}からインデックス\var{dest}へ\var{count}バイトだけ
 コピーします。
 もしmmapが\constant{ACCESS_READ}で作成されていた場合、
 \exception{TypeError}例外を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{read}{\var{num}}
+\begin{methoddesc}[mmap]{read}{\var{num}}
 現在のファイル位置から\var{num}バイトの文字列を返します。
 ファイル位置は返したバイトの分だけ後ろの位置へ更新されます。
 \end{methoddesc}
 
-\begin{methoddesc}{read_byte}{}
+\begin{methoddesc}[mmap]{read_byte}{}
 現在のファイル位置から長さ1の文字列を返します。
 ファイル位置は1だけ進みます。
 \end{methoddesc}
 
-\begin{methoddesc}{readline}{}
+\begin{methoddesc}[mmap]{readline}{}
 現在のファイル位置から次の新しい行までの、1行を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{resize}{\var{newsize}}
+\begin{methoddesc}[mmap]{resize}{\var{newsize}}
 マップと元ファイルのサイズを変更します。
 もしmmapが\constant{ACCESS_READ}または\constant{ACCESS_COPY}で
 作成されたならば、マップのリサイズは\exception{TypeError}例外を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{seek}{pos\optional{, whence}}
+\begin{methoddesc}[mmap]{seek}{pos\optional{, whence}}
 ファイルの現在位置をセットします。
 \var{whence}引数はオプションであり、デフォルトは\code{0}(絶対位置)です。
 その他の値として、\code{1}(現在位置からの相対位置)と
 \code{2}(ファイルの終わりからの相対位置)があります。
 \end{methoddesc}
 
-\begin{methoddesc}{size}{}
+\begin{methoddesc}[mmap]{size}{}
 ファイルの長さを返します。
 メモリマップ領域のサイズより大きいかもしれません。
 \end{methoddesc}
 
-\begin{methoddesc}{tell}{}
+\begin{methoddesc}[mmap]{tell}{}
 ファイル・ポインタの現在位置を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{write}{\var{string}}
+\begin{methoddesc}[mmap]{write}{\var{string}}
 メモリ内のファイル・ポインタの現在位置から\var{string}のバイト列を
 書き込みます。
 ファイル位置はバイト列が書き込まれた後の位置へ更新されます。
@@ -176,7 +176,7 @@ mmapオブジェクトを返します。\var{length}が\code{0}の場合、
 書き込み時に\exception{TypeError}例外が送出されるでしょう。
 \end{methoddesc}
 
-\begin{methoddesc}{write_byte}{\var{byte}}
+\begin{methoddesc}[mmap]{write_byte}{\var{byte}}
 メモリ内のファイル・ポインタの現在位置から
 単一文字の文字列\var{byte}を書き込みます。
 ファイル位置は\code{1}だけ進みます。

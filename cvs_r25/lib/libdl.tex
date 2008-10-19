@@ -67,11 +67,11 @@
 \subsection{Dlオブジェクト \label{dl-objects}}
 \function{open()}によって返されたDlオブジェクトは次のメソッドを持っています:
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[dl]{close}{}
 メモリーを除く全てのリソースを解放します。
 \end{methoddesc}
 
-\begin{methoddesc}{sym}{name}
+\begin{methoddesc}[dl]{sym}{name}
 \var{name}という名前の関数が参照された共有オブジェクトに存在する場合、
 そのポインター(整数値)を返します。
 存在しない場合\code{None}を返します。
@@ -88,7 +88,7 @@
 ということに注意してください)
 \end{methoddesc}
 
-\begin{methoddesc}{call}{name\optional{, arg1\optional{, arg2\ldots}}}
+\begin{methoddesc}[dl]{call}{name\optional{, arg1\optional{, arg2\ldots}}}
 参照された共有オブジェクトの\var{name}という名前の関数を呼出します。
 引数は、Python整数(そのまま渡される)、Python文字列(ポインターが渡される)、
 \code{None} (\NULL{}として渡される) のどれかでなければいけません。

@@ -277,12 +277,12 @@ HTTP \var{response} からクッキーを取り出し、ポリシーによって許可されていれば
 
 \class{FileCookieJar} インスタンスは以下のような公開の属性をもっています:
 
-\begin{memberdesc}{filename}
+\begin{memberdesc}[FileCookieJar]{filename}
 クッキーを保存するデフォルトのファイル名を指定します。
 この属性には代入することができます。
 \end{memberdesc}
 
-\begin{memberdesc}{delayload}
+\begin{memberdesc}[FileCookieJar]{delayload}
 真であれば、クッキーを読み込むさいにディスクから遅延読み込み (lazy) します。
 この属性には代入することができません。この情報は単なるヒントであり、
 (ディスク上のクッキーが変わらない限りは) インスタンスのふるまいには影響を与えず、
@@ -383,13 +383,13 @@ false を返します。
 以下の属性を設定する必要があります。これはどのプロトコルがどのように使われるべきかを
 示すもので、これらの属性にはすべて代入することが許されています。
 
-\begin{memberdesc}{netscape}
+\begin{memberdesc}[CookiePolicy]{netscape}
 Netscape プロトコルを実装していることを示します。
 \end{memberdesc}
-\begin{memberdesc}{rfc2965}
+\begin{memberdesc}[CookiePolicy]{rfc2965}
 RFC 2965 プロトコルを実装していることを示します。
 \end{memberdesc}
-\begin{memberdesc}{hide_cookie2}
+\begin{memberdesc}[CookiePolicy]{hide_cookie2}
 \mailheader{Cookie2} ヘッダをリクエストに含めないようにします
 (このヘッダが存在する場合、私たちは RFC 2965 クッキーを理解すると
 いうことをサーバに示すことになります)。
@@ -484,7 +484,7 @@ Netscape プロトコルのかなり緩い規則をややきつくするために、いくつかの
 これらはすべてコンストラクタから同じ名前の引数をつかって初期化することができ、
 代入してもかまいません。
 
-\begin{memberdesc}{rfc2109_as_netscape}
+\begin{memberdesc}[DefaultCookiePolicy]{rfc2109_as_netscape}
 Trueの場合、\class{CookieJar} のインスタンスに RFC 2109 クッキー
 (即ち \mailheader{Set-Cookie}ヘッダのVersion cookie属性の値が1のクッキー)を
 Netscapeクッキーへ、\class{Cookie} インスタンスのversion属性を0に設定する事で
@@ -497,7 +497,7 @@ Netscapeクッキーへ、\class{Cookie} インスタンスのversion属性を0に設定する事で
 
 一般的な厳密性のスイッチ:
 
-\begin{memberdesc}{strict_domain}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_domain}
 サイトに、
 国別コードとトップレベルドメインだけからなるドメイン名 (\code{.co.uk}, \code{.gov.uk},
 \code{.co.nz} など) を設定させないようにします。
@@ -506,7 +506,7 @@ Netscapeクッキーへ、\class{Cookie} インスタンスのversion属性を0に設定する事で
 
 RFC 2965 プロトコルの厳密性に関するスイッチ:
 
-\begin{memberdesc}{strict_rfc2965_unverifiable}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_rfc2965_unverifiable}
 検証不可能なトランザクション (通常これはリダイレクトか、
 別のサイトがホスティングしているイメージの読み込み要求です) に関する
 RFC 2965 の規則に従います。この値が偽の場合、検証可能性を基準にして
@@ -515,18 +515,18 @@ RFC 2965 の規則に従います。この値が偽の場合、検証可能性を基準にして
 
 Netscape プロトコルの厳密性に関するスイッチ:
 
-\begin{memberdesc}{strict_ns_unverifiable}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_ns_unverifiable}
 検証不可能なトランザクションに関する RFC 2965 の規則を Netscape クッキーに
 対しても適用します。
 \end{memberdesc}
-\begin{memberdesc}{strict_ns_domain}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_ns_domain}
 Netscape クッキーに対するドメインマッチングの規則をどの程度厳しくするかを
 指示するフラグです。とりうる値については下の説明を見てください。
 \end{memberdesc}
-\begin{memberdesc}{strict_ns_set_initial_dollar}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_ns_set_initial_dollar}
 Set-Cookie: ヘッダで、\code{'\$'} で始まる名前のクッキーを無視します。
 \end{memberdesc}
-\begin{memberdesc}{strict_ns_set_path}
+\begin{memberdesc}[DefaultCookiePolicy]{strict_ns_set_path}
 要求した URI にパスがマッチしないクッキの設定を禁止します。
 \end{memberdesc}
 
@@ -535,29 +535,29 @@ Set-Cookie: ヘッダで、\code{'\$'} で始まる名前のクッキーを無視します。
 \code{DomainStrictNoDots|DomainStrictNonDomain} は両方のフラグが
 設定されていることになります)。
 
-\begin{memberdesc}{DomainStrictNoDots}
+\begin{memberdesc}[DefaultCookiePolicy]{DomainStrictNoDots}
 クッキーを設定するさい、ホスト名のプレフィクスにドットが含まれるのを
 禁止します (例: \code{www.foo.bar.com} は \code{.bar.com} のクッキーを設定することはできません、
 なぜなら \code{www.foo} はドットを含んでいるからです)。
 \end{memberdesc}
-\begin{memberdesc}{DomainStrictNonDomain}
+\begin{memberdesc}[DefaultCookiePolicy]{DomainStrictNonDomain}
 \code{domain} クッキー属性を明示的に指定していないクッキーは、
 そのクッキーを設定したドメインと同一のドメインだけに返されます
 (例: \code{example.com} からのクッキーに \code{domain} クッキー属性が
 ない場合、そのクッキーが \code{spam.example.com} に返されることはありません)。
 \end{memberdesc}
-\begin{memberdesc}{DomainRFC2965Match}
+\begin{memberdesc}[DefaultCookiePolicy]{DomainRFC2965Match}
 クッキーを設定するさい、RFC 2965 の完全ドメインマッチングを要求します。
 \end{memberdesc}
 
 以下の属性は上記のフラグのうちもっともよく使われる組み合わせで、
 便宜をはかるために提供されています。
 
-\begin{memberdesc}{DomainLiberal}
+\begin{memberdesc}[DefaultCookiePolicy]{DomainLiberal}
 0 と同じです (つまり、上述の Netscape のドメイン厳密性フラグが
 すべてオフにされます)。
 \end{memberdesc}
-\begin{memberdesc}{DomainStrict}
+\begin{memberdesc}[DefaultCookiePolicy]{DomainStrict}
 \code{DomainStrictNoDots|DomainStrictNonDomain} と同じです。
 \end{memberdesc}
 

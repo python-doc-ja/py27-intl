@@ -118,17 +118,17 @@ Binary テーブル中のエントリーを表わします。
 
 \subsection{データベースオブジェクト\label{database-objects}}
 
-\begin{methoddesc}{OpenView}{sql}
+\begin{methoddesc}[Database]{OpenView}{sql}
 \cfunction{MSIDatabaseOpenView} を呼び出してビューオブジェクトを返します。
 \var{sql} は実行される SQL 命令です。
 \end{methoddesc}
 
-\begin{methoddesc}{Commit}{}
+\begin{methoddesc}[Database]{Commit}{}
 \cfunction{MSIDatabaseCommit} を呼び出して
 現在のトランザクションで保留されている変更をコミットします。
 \end{methoddesc}
 
-\begin{methoddesc}{GetSummaryInformation}{count}
+\begin{methoddesc}[Database]{GetSummaryInformation}{count}
 \cfunction{MsiGetSummaryInformation} を呼び出して
 新しいサマリー情報オブジェクトを返します。
 \var{count} は更新された値の最大数です。
@@ -142,23 +142,23 @@ Binary テーブル中のエントリーを表わします。
 
 \subsection{ビューオブジェクト\label{view-objects}}
 
-\begin{methoddesc}{Execute}{\optional{params=None}}
+\begin{methoddesc}[View]{Execute}{\optional{params=None}}
 \cfunction{MSIViewExecute} を通してビューに対する SQL 問い合わせを実行します。
 \var{params} はオプションのレコードでクエリ中のパラメータトークンの実際の値を
 与えるものです。
 \end{methoddesc}
 
-\begin{methoddesc}{GetColumnInfo}{kind}
+\begin{methoddesc}[View]{GetColumnInfo}{kind}
 \cfunction{MsiViewGetColumnInfo} の呼び出しを通してビューのカラムを
 説明するレコードを返します。\var{kind} は \code{MSICOLINFO_NAMES}
 または \code{MSICOLINFO_TYPES} です。
 \end{methoddesc}
 
-\begin{methoddesc}{Fetch}{}
+\begin{methoddesc}[View]{Fetch}{}
 \cfunction{MsiViewFetch} の呼び出しを通してクエリの結果レコードを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{Modify}{kind, data}
+\begin{methoddesc}[View]{Modify}{kind, data}
 \cfunction{MsiViewModify} を呼び出してビューを変更します。
 \var{kind} は
 \code{MSIMODIFY_SEEK}, \code{MSIMODIFY_REFRESH},
@@ -172,7 +172,7 @@ Binary テーブル中のエントリーを表わします。
 \var{data} は新しいデータを表わすレコードでなければなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{Close}{}
+\begin{methoddesc}[View]{Close}{}
 \cfunction{MsiViewClose} を通してビューを閉じます。
 \end{methoddesc}
 
@@ -186,7 +186,7 @@ Binary テーブル中のエントリーを表わします。
 
 \subsection{サマリー情報オブジェクト\label{summary-objects}}
 
-\begin{methoddesc}{GetProperty}{field}
+\begin{methoddesc}[SummaryInformation]{GetProperty}{field}
 \cfunction{MsiSummaryInfoGetProperty} を通してサマリーのプロパティを返します。
 \var{field} はプロパティ名で、定数
 \code{PID_CODEPAGE}, \code{PID_TITLE}, \code{PID_SUBJECT},
@@ -198,18 +198,18 @@ Binary テーブル中のエントリーを表わします。
 のいずれかです。
 \end{methoddesc}
 
-\begin{methoddesc}{GetPropertyCount}{}
+\begin{methoddesc}[SummaryInformation]{GetPropertyCount}{}
 \cfunction{MsiSummaryInfoGetPropertyCount} を通してサマリープロパティの
 個数を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{SetProperty}{field, value}
+\begin{methoddesc}[SummaryInformation]{SetProperty}{field, value}
 \cfunction{MsiSummaryInfoSetProperty} を通してプロパティをセットします。
 \var{field} は \method{GetProperty} におけるものと同じ値をとります。
 \var{value} はプロパティの新しい値です。許される値の型は整数と文字列です。
 \end{methoddesc}
 
-\begin{methoddesc}{Persist}{}
+\begin{methoddesc}[SummaryInformation]{Persist}{}
 \cfunction{MsiSummaryInfoPersist} を使って変更されたプロパティを
 サマリー情報ストリームに書き込みます。
 \end{methoddesc}
@@ -223,29 +223,29 @@ Binary テーブル中のエントリーを表わします。
 
 \subsection{レコードオブジェクト\label{record-objects}}
 
-\begin{methoddesc}{GetFieldCount}{}
+\begin{methoddesc}[Record]{GetFieldCount}{}
 \cfunction{MsiRecordGetFieldCount} を通してレコードのフィールド数を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{SetString}{field, value}
+\begin{methoddesc}[Record]{SetString}{field, value}
 \cfunction{MsiRecordSetString} を通して \var{field} を \var{value}
 にセットします。
 \var{field} は整数、\var{value} は文字列でなければなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{SetStream}{field, value}
+\begin{methoddesc}[Record]{SetStream}{field, value}
 \cfunction{MsiRecordSetStream} を通して \var{field} を \var{value}
 という名のファイルの内容にセットします。
 \var{field} は整数、\var{value} は文字列でなければなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{SetInteger}{field, value}
+\begin{methoddesc}[Record]{SetInteger}{field, value}
 \cfunction{MsiRecordSetInteger} を通して \var{field} を \var{value}
 にセットします。
 \var{field} も \var{value} も整数でなければなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{ClearData}{}
+\begin{methoddesc}[Record]{ClearData}{}
 \cfunction{MsiRecordClearData} を通してレコードの全てのフィールドを 0 に
 セットします。
 \end{methoddesc}
@@ -339,8 +339,8 @@ KeyPath は null のままになります。
 \subsection{フィーチャー\label{features}}
 
 \begin{classdesc}{Feature}{database, id, title, desc, display\optional{,
-    level=1\optional{, parent\optional\{, directory\optional{, 
-    attributes=0}}}}
+    level=1\optional{, parent\optional{, directory\optional{, 
+    attributes=0}}}}}
 
 \var{id}, \var{parent.id}, \var{title}, \var{desc}, \var{display},
 \var{level}, \var{directory}, \var{attributes} の値を使って、

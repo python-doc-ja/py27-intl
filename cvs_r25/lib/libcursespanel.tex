@@ -47,55 +47,55 @@
 
 Panel オブジェクトは以下のメソッドを持っています:
 
-\begin{methoddesc}{above}{}
+\begin{methoddesc}[Panel]{above}{}
 現在のパネルの上にあるパネルを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{below}{}
+\begin{methoddesc}[Panel]{below}{}
 現在のパネルの下にあるパネルを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{bottom}{}
+\begin{methoddesc}[Panel]{bottom}{}
 パネルをスタックの最下層にプッシュします。
 \end{methoddesc}
 
-\begin{methoddesc}{hidden}{}
+\begin{methoddesc}[Panel]{hidden}{}
 パネルが隠れている (不可視である) 場合に真を返し、そうでない場合
 偽を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{hide}{}
+\begin{methoddesc}[Panel]{hide}{}
 パネルを隠します。この操作ではオブジェクトは消去されず、
 スクリーン上のウィンドウを不可視にするだけです。
 \end{methoddesc}
 
-\begin{methoddesc}{move}{y, x}
+\begin{methoddesc}[Panel]{move}{y, x}
 パネルをスクリーン座標 \code{(\var{y}, \var{x})} に移動します。
 \end{methoddesc}
 
-\begin{methoddesc}{replace}{win}
+\begin{methoddesc}[Panel]{replace}{win}
 パネルに関連付けられたウィンドウを \var{win} に変更します。
 \end{methoddesc}
 
-\begin{methoddesc}{set_userptr}{obj}
+\begin{methoddesc}[Panel]{set_userptr}{obj}
 パネルのユーザポインタを \var{obj} に設定します。このメソッドは
 任意のデータをパネルに関連付けるために使われ、任意の Python オブジェクト
 にすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{show}{}
+\begin{methoddesc}[Panel]{show}{}
 (隠れているはずの) パネルを表示します。
 \end{methoddesc}
 
-\begin{methoddesc}{top}{}
+\begin{methoddesc}[Panel]{top}{}
 パネルをスタックの最上層にプッシュします。
 \end{methoddesc}
 
-\begin{methoddesc}{userptr}{}
+\begin{methoddesc}[Panel]{userptr}{}
 パネルのユーザポインタを返します。任意の Python オブジェクトです。
 \end{methoddesc}
 
-\begin{methoddesc}{window}{}
+\begin{methoddesc}[Panel]{window}{}
 パネルに関連付けられているウィンドウオブジェクトを返します。
 \end{methoddesc}
 

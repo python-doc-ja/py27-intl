@@ -48,42 +48,42 @@
 
 プロファイル・オブジェクトは以下のメソッドを持っています。
 
-\begin{methoddesc}{addinfo}{key, value}
+\begin{methoddesc}[Profile]{addinfo}{key, value}
 プロファイル出力の際、任意のラベル名を追加します。
 \end{methoddesc}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[Profile]{close}{}
 ログファイルを閉じ、プロファイラを終了します。
 \end{methoddesc}
 
-\begin{methoddesc}{fileno}{}
+\begin{methoddesc}[Profile]{fileno}{}
 プロファイラのログファイルのファイル・ディスクリプタを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{run}{cmd}
+\begin{methoddesc}[Profile]{run}{cmd}
 スクリプト環境で \keyword{exec} 互換文字列のプロファイルをおこないます。
 \refmodule[main]{__main__} モジュールのグローバル変数は、スクリプトの
 グローバル変数、ローカル変数の両方に使われます。
 \end{methoddesc}
 
-\begin{methoddesc}{runcall}{func, *args, **keywords}
+\begin{methoddesc}[Profile]{runcall}{func, *args, **keywords}
 単一の呼び出し可能オブジェクトのプロファイルをおこないます。位置依存引
 数やキーワード引数を追加して呼び出すオブジェクトに渡すこともできます。
 呼び出しの結果はそのまま返されます。例外が発生したときはプロファイリン
 グが無効になり、例外をそのまま伝えるようになっています。
 \end{methoddesc}
 
-\begin{methoddesc}{runctx}{cmd, globals, locals}
+\begin{methoddesc}[Profile]{runctx}{cmd, globals, locals}
 
 指定した環境で \keyword{exec} 互換文字列の評価をおこないます。文字列の
 コンパイルはプロファイルを開始する前におこなわれます。
 \end{methoddesc}
 
-\begin{methoddesc}{start}{}
+\begin{methoddesc}[Profile]{start}{}
 プロファイラを開始します。
 \end{methoddesc}
 
-\begin{methoddesc}{stop}{}
+\begin{methoddesc}[Profile]{stop}{}
 プロファイラを停止します。
 \end{methoddesc}
 

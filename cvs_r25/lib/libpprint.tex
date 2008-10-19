@@ -166,13 +166,13 @@ l/lib/python1.5/test', '/usr/local/lib/python1.5/sunos5', '/usr/local/lib/python
 
 \class{PrettyPrinter}インスタンスには以下のメソッドがあります：
 
-\begin{methoddesc}{pformat}{object}
+\begin{methoddesc}[PrettyPrinter]{pformat}{object}
 \var{object}のフォーマット化した表現を返します。
 これは\class{PrettyPrinter}のコンストラクタに渡されたオプションを考慮し
 てフォーマット化されます。
 \end{methoddesc}
 
-\begin{methoddesc}{pprint}{object}
+\begin{methoddesc}[PrettyPrinter]{pprint}{object}
 \var{object}のフォーマット化した表現を指定したストリームに出力し、最後に
 改行します。
 \end{methoddesc}
@@ -181,7 +181,7 @@ l/lib/python1.5/test', '/usr/local/lib/python1.5/sunos5', '/usr/local/lib/python
 以下のメソッドをインスタンスに対して使うと、新たに\class{PrettyPrinter}
 オブジェクトを作る必要がないのでちょっぴり効果的です。
 
-\begin{methoddesc}{isreadable}{object}
+\begin{methoddesc}[PrettyPrinter]{isreadable}{object}
 \var{object}をフォーマット化して出力できる（``readable''）か、あるいは
 \function{eval()}\bifuncindex{eval}を使って値を再構成できるかを返しま
 す。
@@ -190,7 +190,7 @@ l/lib/python1.5/test', '/usr/local/lib/python1.5/sunos5', '/usr/local/lib/python
 ジェクトのレベルが設定よりも深かったら、falseを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{isrecursive}{object}
+\begin{methoddesc}[PrettyPrinter]{isrecursive}{object}
 オブジェクトが再帰的な表現かどうかを返します。
 \end{methoddesc}
 
@@ -198,7 +198,7 @@ l/lib/python1.5/test', '/usr/local/lib/python1.5/sunos5', '/usr/local/lib/python
 法を修正するのが可能になっています。
 デフォルトの実装では、内部で\function{saferepr()}を呼び出しています。
 
-\begin{methoddesc}{format}{object, context, maxlevels, level}
+\begin{methoddesc}[PrettyPrinter]{format}{object, context, maxlevels, level}
 3つの値を返します：\var{object}をフォーマット化して文字列にしたもの、そ
 の結果が読み込み可能かどうかを示すフラグ、再帰が含まれているかどうかを示
 すフラグ。

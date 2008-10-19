@@ -48,20 +48,20 @@ CGI環境に XMR-RPC リクエスト・ハンドラの新たなインスタンスを生成します。
 れます。これはサーバが自分自身のドキュメントを Web ベースで提供可能で
 あることを意味します。
 
-\begin{methoddesc}{set_server_title}{server_title}
+\begin{methoddesc}[DocXMLRPCServer]{set_server_title}{server_title}
 
 生成する HTML ドキュメントのタイトルをセットします。このタイトルは
 HTML の title 要素として使われます。
 
 \end{methoddesc}
 
-\begin{methoddesc}{set_server_name}{server_name}
+\begin{methoddesc}[DocXMLRPCServer]{set_server_name}{server_name}
 
 生成する HTML ドキュメントの名前をセットします。この名前は
 HTML 冒頭の h1 要素に使われます。
 \end{methoddesc}
 
-\begin{methoddesc}{set_server_documentation}{server_documentation}
+\begin{methoddesc}[DocXMLRPCServer]{set_server_documentation}{server_documentation}
 
 生成する HTML ドキュメントの本文をセットします。この本文は
 ドキュメント中の名前の下にパラグラフとして出力されます。
@@ -78,14 +78,14 @@ HTTP GET リクエストは pydoc スタイルの HTML ドキュメント生成のリクエス
 トとして扱われます。これはサーバが自分自身のドキュメントを Web ベース
 で提供可能であることを意味します。
 
-\begin{methoddesc}{set_server_title}{server_title}
+\begin{methoddesc}[DocCGIXMLRPCRequestHandler]{set_server_title}{server_title}
 
 生成する HTML ドキュメントのタイトルをセットします。このタイトルは
 HTML の title 要素として使われます。
 
 \end{methoddesc}
 
-\begin{methoddesc}{set_server_name}{server_name}
+\begin{methoddesc}[DocCGIXMLRPCRequestHandler]{set_server_name}{server_name}
 
 生成する HTML ドキュメントの名前をセットします。この名前は
 HTML 冒頭の h1 要素に使われます。
@@ -93,7 +93,7 @@ HTML 冒頭の h1 要素に使われます。
 \end{methoddesc}
 
 
-\begin{methoddesc}{set_server_documentation}{server_documentation}
+\begin{methoddesc}[DocCGIXMLRPCRequestHandler]{set_server_documentation}{server_documentation}
 
 生成する HTML ドキュメントの本文をセットします。この本文は
 ドキュメント中の名前の下にパラグラフとして出力されます。

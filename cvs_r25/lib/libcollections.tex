@@ -15,7 +15,7 @@
 
 \subsection{\class{deque} オブジェクト \label{deque-objects}}
 
-\begin{funcdesc}{deque}{\optional{iterable}}
+\begin{classdesc}{deque}{\optional{iterable}}
   \var{iterable} で与えられるデータから、新しい deque オブジェクトを
   (\method{append()} をつかって) 左→右に初期化し、返します。
   \var{iterable} が指定されない場合、新しい deque オブジェクトは空になります。
@@ -30,7 +30,7 @@
   両方変えるような \samp{pop(0)} and \samp{insert(0, v)} などの操作では
   メモリ移動のために \code{O(n)} のコストを必要とします。
   \versionadded{2.4}
-\end{funcdesc}
+\end{classdesc}
 
 Deque オブジェクトは以下のようなメソッドをサポートしています:
 
@@ -217,7 +217,7 @@ def maketree(iterable):
 
 \subsection{\class{defaultdict} オブジェクト \label{defaultdict-objects}}
 
-\begin{funcdesc}{defaultdict}{\optional{default_factory\optional{, ...}}}
+\begin{classdesc}{defaultdict}{\optional{default_factory\optional{, ...}}}
 新しいディクショナリ状のオブジェクトを返します。\class{defaultdict}は
 組込みの \class{dict}のサブクラスです。メソッドをオーバーライドし、書
 き込み可能なインスタンス変数を1つ追加している以外は
@@ -229,7 +229,7 @@ def maketree(iterable):
 ンストラクタにあたえられた場合と同様に扱われます。
 
  \versionadded{2.5}
-\end{funcdesc}
+\end{classdesc}
 
 
 \class{defaultdict} オブジェクトは標準の\class{dict}に加えて、以下のメ

@@ -36,7 +36,7 @@ FTP クライアントで用いられる netrc ファイル形式を解析し、カプセル化
 
 \class{netrc} インスタンスは以下のメソッドを持っています:
 
-\begin{methoddesc}{authenticators}{host}
+\begin{methoddesc}[netrc]{authenticators}{host}
 \var{host} の認証情報として、三要素のタプル 
 \code{(\var{login}, \var{account}, \var{password})} を返します。
 与えられた host に対するエントリが netrc ファイルにない場合、
@@ -45,7 +45,7 @@ host に対応するエントリがなく、default エントリもない場合、
 \code{None} を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{__repr__}{}
+\begin{methoddesc}[netrc]{__repr__}{}
 クラスの持っているデータを netrc ファイルの書式に従った文字列で
 出力します。(コメントは無視され、エントリが並べ替えられる可能性
 があります。)
@@ -54,13 +54,13 @@ host に対応するエントリがなく、default エントリもない場合、
 \class{netrc} のインスタンスは以下の公開されたインスタンス変数
 を持っています:
 
-\begin{memberdesc}{hosts}
+\begin{memberdesc}[netrc]{hosts}
 ホスト名を \code{(\var{login}, \var{account}, \var{password})} から
 なるタプルに対応づけている辞書です。`default' エントリがある場合、
 その名前の擬似ホスト名として表現されます。
 \end{memberdesc}
 
-\begin{memberdesc}{macros}
+\begin{memberdesc}[netrc]{macros}
 マクロ名を文字列のリストに対応付けている辞書です。
 \end{memberdesc}
 

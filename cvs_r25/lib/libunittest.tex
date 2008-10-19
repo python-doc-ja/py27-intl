@@ -574,13 +574,13 @@ if __name__ == '__main__':
 テスト結果のチェックとレポートには、以下のメソッドを使用してください。
 
 \begin{methoddesc}[TestCase]{assert_}{expr\optional{, msg}}
-\methodline{failUnless}{expr\optional{, msg}}
+\methodline[TestCase]{failUnless}{expr\optional{, msg}}
   \var{expr}が偽の場合、テスト失敗を通知します。\var{msg}にはエラーの説
   明を指定するか、または\constant{None}を指定してください。
 \end{methoddesc}
 
 \begin{methoddesc}[TestCase]{assertEqual}{first, second\optional{, msg}}
-\methodline{failUnlessEqual}{first, second\optional{, msg}}
+\methodline[TestCase]{failUnlessEqual}{first, second\optional{, msg}}
   \var{first}と\var{second}\var{expr}が等しくない場合、テスト失敗を通知
   します。エラー内容は\var{msg}に指定された値か、または\constant{None}となり
   ます。\method{failUnlessEqual()}では\var{msg}のデフォルト値は
@@ -589,7 +589,7 @@ if __name__ == '__main__':
 \end{methoddesc}
 
 \begin{methoddesc}[TestCase]{assertNotEqual}{first, second\optional{, msg}}
-\methodline{failIfEqual}{first, second\optional{, msg}}
+\methodline[TestCase]{failIfEqual}{first, second\optional{, msg}}
   \var{first}と\var{second}\var{expr}が等しい場合、テスト失敗を通知しま
   す。エラー内容は\var{msg}に指定された値か、または\constant{None}となりま
   す。\method{failUnlessEqual()}では\var{msg}のデフォルト値は\var{first}
@@ -599,7 +599,7 @@ if __name__ == '__main__':
 
 \begin{methoddesc}[TestCase]{assertAlmostEqual}{first, second\optional{,
 						places\optional{, msg}}}
-\methodline{failUnlessAlmostEqual}{first, second\optional{,
+\methodline[TestCase]{failUnlessAlmostEqual}{first, second\optional{,
 						places\optional{, msg}}}
 \var{first} と \var{second} を
 \var{places} で与えた小数位で値を丸めて差分を計算し、
@@ -611,7 +611,7 @@ if __name__ == '__main__':
 
 \begin{methoddesc}[TestCase]{assertNotAlmostEqual}{first, second\optional{,
 						places\optional{, msg}}}
-\methodline{failIfAlmostEqual}{first, second\optional{,
+\methodline[TestCase]{failUnlessAlmostEqual}{first, second\optional{,
 						places\optional{, msg}}}
 \var{first} と \var{second} を
 \var{places} で与えた小数位で値を丸めて差分を計算し、
@@ -624,7 +624,7 @@ if __name__ == '__main__':
 
 
 \begin{methoddesc}[TestCase]{assertRaises}{exception, callable, \moreargs}
-\methodline{failUnlessRaises}{exception, callable, \moreargs}
+\methodline[TestCase]{failUnlessRaises}{exception, callable, \moreargs}
   \var{callable}を呼び出し、発生した例外をテストします。
   \method{assertRaises()}には、任意の位置パラメータとキーワードパラメー
   タを指定する事ができます。\var{exception}で指定した例外が発生した場合

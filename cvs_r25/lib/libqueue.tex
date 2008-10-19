@@ -46,22 +46,22 @@
 詳しいことはソースコードを見てください。
 公開メソッドは次のものです:
 
-\begin{methoddesc}{qsize}{}
+\begin{methoddesc}[Queue]{qsize}{}
 キューの大まかなサイズを返します。
 マルチスレッドセマンティクスにおいて、この値は信頼できません。
 \end{methoddesc}
 
-\begin{methoddesc}{empty}{}
+\begin{methoddesc}[Queue]{empty}{}
 キューが空なら\code{True}を返し、そうでないなら\code{False}を返します。
 マルチスレッドセマンティクスにおいて、この値は信頼できません。
 \end{methoddesc}
 
-\begin{methoddesc}{full}{}
+\begin{methoddesc}[Queue]{full}{}
 キューが満杯なら\code{True}を返し、そうでないなら\code{False}を返します。
 マルチスレッドセマンティクスにおいて、この値は信頼できません。
 \end{methoddesc}
 
-\begin{methoddesc}{put}{item\optional{, block\optional{, timeout}}}
+\begin{methoddesc}[Queue]{put}{item\optional{, block\optional{, timeout}}}
 \var{item}をキューに入れます。
 もしオプション引数\var{block}がTrueで\var{timeout}がNone(デフォルト)ならば、
 フリースロットが利用可能になるまでブロックします。
@@ -76,11 +76,11 @@
 
 \end{methoddesc}
 
-\begin{methoddesc}{put_nowait}{item}
+\begin{methoddesc}[Queue]{put_nowait}{item}
 \code{put(\var{item}, False)}と同じ意味です。
 \end{methoddesc}
 
-\begin{methoddesc}{get}{\optional{block\optional{, timeout}}}
+\begin{methoddesc}[Queue]{get}{\optional{block\optional{, timeout}}}
 キューからアイテムを取り除き、それを返します。
 もしオプション引数\var{block}がTrueで\var{timeout}がNone(デフォルト)ならば、
 アイテムが利用可能になるまでブロックします。
@@ -95,14 +95,14 @@
 
 \end{methoddesc}
 
-\begin{methoddesc}{get_nowait}{}
+\begin{methoddesc}[Queue]{get_nowait}{}
 \code{get(False)}と同じ意味です。
 \end{methoddesc}
 
 キューに入れられたタスクが全て消費者スレッドに処理されたかどうかを追跡するために
 2つのメソッドが提供されます。
 
-\begin{methoddesc}{task_done}{}
+\begin{methoddesc}[Queue]{task_done}{}
 過去にキューに入れられたタスクが完了した事を示します。
 キューの消費者スレッドに利用されます。
 タスクの取り出しに使われた、各 \method{get()} に対して、それに続く \method{task_done()} の
@@ -116,7 +116,7 @@
 \versionadded{2.5}
 \end{methoddesc}
 
-\begin{methoddesc}{join}{}
+\begin{methoddesc}[Queue]{join}{}
 キューの中の全アイテムが処理される間でブロックします。
 
 キューにitemが追加される度に、未完了タスクカウントが増やされます。

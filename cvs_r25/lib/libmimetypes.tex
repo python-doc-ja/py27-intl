@@ -175,48 +175,48 @@ mime型 \var{type} からのマッピングを拡張子 \var{ext} に追加します。
 \class{MimeTypes} インスタンスは、\refmodule{mimetypes} モジュールの
 それと非常によく似たインターフェースを提供します。
 
-\begin{datadesc}{suffix_map}
+\begin{memberdesc}[MimeTypes]{suffix_map}
 サフィックスをサフィックスにマップする辞書。これは、符号化方式と
 型が同一拡張子で示されるような符号化ファイルが認識できるように
 使用されます。例えば、\file{.tgz} 拡張子は、符号化方式と型が別個に
 認識できるように \file{.tar.gz}に対応づけられます。
 これは、最初はモジュールで定義されたグローバルな \code{suffix_map} の
 コピーです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{encodings_map}
+\begin{memberdesc}[MimeTypes]{encodings_map}
 ファイル名拡張子を符号化型にマッピングする辞書。
 これは、最初はモジュールで定義されたグローバルな \code{encodings_map} の
 コピーです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{types_map}
+\begin{memberdesc}[MimeTypes]{types_map}
 ファイル名拡張子をMIME型にマッピングするる辞書。
 これは、最初はモジュールで定義されたグローバルな \code{types_map} の
 コピーです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{common_types}
+\begin{memberdesc}[MimeTypes]{common_types}
 ファイル名拡張子を非標準ではあるが、一般に使われているMIME型にマップする辞書。 これは、最初はモジュールで定義されたグローバルな \code{common_types} の
 コピーです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{methoddesc}{guess_extension}{type\optional{, strict}}
+\begin{methoddesc}[MimeTypes]{guess_extension}{type\optional{, strict}}
    \function{guess_extension()} 関数と同様に、オブジェクトの
    一部として保存されたテーブルを使用します。
 \end{methoddesc}
 
-\begin{methoddesc}{guess_type}{url\optional{, strict}}
+\begin{methoddesc}[MimeTypes]{guess_type}{url\optional{, strict}}
    \function{guess_type()} 関数と同様に、オブジェクトの
  一部として保存されたテーブルを使用します。
 \end{methoddesc}
 
-\begin{methoddesc}{read}{path}
+\begin{methoddesc}[MimeTypes]{read}{path}
  MIME情報を、\var{path}という名のファイルからロードします。
  これはファイルを解析するのに \method{readfp()} を使用します。
 \end{methoddesc}
 
-\begin{methoddesc}{readfp}{file}
+\begin{methoddesc}[MimeTypes]{readfp}{file}
  MIME型情報を、オープンしたファイルからロードします。
  ファイルは、標準の \file{mime.types} ファイルの形式でなければなりません。
 \end{methoddesc}

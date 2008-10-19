@@ -38,17 +38,17 @@ mutex がロックされていなければ、キューは空です。
 
 \class{mutex} には以下のメソッドがあります:
 
-\begin{methoddesc}{test}{}
+\begin{methoddesc}[mutex]{test}{}
 mutex がロックされているかどうか調べます。
 \end{methoddesc}
 
-\begin{methoddesc}{testandset}{}
+\begin{methoddesc}[mutex]{testandset}{}
 「原子的 (Atomic)」な Test-and-Set 操作です。
 ロックがセットされていなければ獲得して \code{True} を返します。
 それ以外の場合には\code{False}を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{lock}{function, argument}
+\begin{methoddesc}[mutex]{lock}{function, argument}
 mutex がロックされていなければ
 \code{\var{function}(\var{argument})} を実行します。
 mutex がロックされている場合、関数とその引数をキューに置きます。
@@ -56,7 +56,7 @@ mutex がロックされている場合、関数とその引数をキューに置きます。
 されるかについては\method{unlock}を参照してください。
 \end{methoddesc}
 
-\begin{methoddesc}{unlock}{}
+\begin{methoddesc}[mutex]{unlock}{}
 キューが空ならば mutex をロック解除します。
 そうでなければ、キューの最初の要素を実行します。
 \end{methoddesc}

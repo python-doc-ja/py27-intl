@@ -88,12 +88,12 @@ Python 2.0 から、この機能は \refmodule{os} モジュールにある
 \class{Popen3} および \class{Popen4} クラスのインスタンスは以下の
 メソッドを持ちます:
 
-\begin{methoddesc}{poll}{}
+\begin{methoddesc}[Popen3]{poll}{}
 子プロセスがまだ終了していない際には \code{-1} を、そうでない場合には
 リターンコードを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{wait}{}
+\begin{methoddesc}[Popen3]{wait}{}
 子プロセスの状態コード出力を待機して返します。状態コードでは
 子プロセスのリターンコードと、プロセスが \cfunction{exit()} によって
 終了したか、あるいはシグナルによって死んだかについての情報を
@@ -106,24 +106,24 @@ Python 2.0 から、この機能は \refmodule{os} モジュールにある
 
 以下の属性も利用可能です:
 
-\begin{memberdesc}{fromchild}
+\begin{memberdesc}[Popen3]{fromchild}
 子プロセスからの出力を提供するファイルオブジェクトです。
 \class{Poepn4} インスタンスの場合、この値は標準出力と標準
 エラー出力の両方を提供するオブジェクトになります。
 \end{memberdesc}
 
-\begin{memberdesc}{tochild}
+\begin{memberdesc}[Popen3]{tochild}
 子プロセスへの入力を提供するファイルオブジェクトです。
 \end{memberdesc}
 
-\begin{memberdesc}{childerr}
+\begin{memberdesc}[Popen3]{childerr}
 コンストラクタに \var{capturestderr} を渡した際には子プロセスからの
 標準エラー出力を提供するファイルオブジェクトで、そうでない場合
 \code{None} になります。
 \class{Popen4} インスタンスでは、この値は常に \code{None} になります。
 \end{memberdesc}
 
-\begin{memberdesc}{pid}
+\begin{memberdesc}[Popen3]{pid}
 子プロセスのプロセス番号です。
 \end{memberdesc}
 

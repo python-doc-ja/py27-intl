@@ -39,22 +39,22 @@
 
 テンプレートオブジェクトは以下のメソッドを持っています:
 
-\begin{methoddesc}{reset}{}
+\begin{methoddesc}[Template]{reset}{}
 パイプラインテンプレートを初期状態に戻します。
 \end{methoddesc}
 
-\begin{methoddesc}{clone}{}
+\begin{methoddesc}[Template]{clone}{}
 元のパイプラインテンプレートと等価の新しいオブジェクトを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{debug}{flag}
+\begin{methoddesc}[Template]{debug}{flag}
 \var{flag} が真の場合、デバッグをオンにします。そうでない場合、
 デバッグをオフにします。デバッグがオンの時には、実行されるコマンド
 が印字され、より多くのメッセージを出力するようにするために、シェルに
 \code{set -x} 命令を与えます。
 \end{methoddesc}
 
-\begin{methoddesc}{append}{cmd, kind}
+\begin{methoddesc}[Template]{append}{cmd, kind}
 新たなアクションをパイプラインの末尾に追加します。\var{cmd} 変数は
 有効な bourne shell 命令でなければなりません。\var{kind} 変数は
 二つの文字からなります。
@@ -72,18 +72,18 @@
 のいずれかになります。
 \end{methoddesc}
 
-\begin{methoddesc}{prepend}{cmd, kind}
+\begin{methoddesc}[Template]{prepend}{cmd, kind}
 パイプラインの先頭に新しいアクションを追加します。引数の説明については
 \method{append()} を参照してください。
 \end{methoddesc}
 
-\begin{methoddesc}{open}{file, mode}
+\begin{methoddesc}[Template]{open}{file, mode}
 ファイル類似のオブジェクトを返します。このオブジェクトは \var{file}
 を開いていますが、パイプラインを通して読み書きするようになっています。
 \var{mode} には \code{'r'} または \code{'w'} のいずれか一つしか与える
 ことができないので注意してください。
 \end{methoddesc}
 
-\begin{methoddesc}{copy}{infile, outfile}
+\begin{methoddesc}[Template]{copy}{infile, outfile}
 パイプを通して \var{infile} を \var{outfile} にコピーします。
 \end{methoddesc}

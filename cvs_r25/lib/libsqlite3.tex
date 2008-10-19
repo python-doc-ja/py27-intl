@@ -221,38 +221,38 @@ SQLite がネイティブにサポートするのは TEXT, INTEGER, FLOAT, BLOB およ
 \class{Connection} のインスタンスには以下の属性とメソッドがあります:
 
 \label{sqlite3-Connection-IsolationLevel}
-\begin{memberdesc}{isolation_level}
+\begin{memberdesc}[Connection]{isolation_level}
 現在の分離レベルを取得または設定します。None で自動コミットモードまたは
 "DEFERRED", "IMMEDIATE", "EXLUSIVE" のどれかです。より詳しい説明は
 \ref{sqlite3-Controlling-Transactions}節「トランザクション制御」を
 参照してください。
 \end{memberdesc}
 
-\begin{methoddesc}{cursor}{\optional{cursorClass}}
+\begin{methoddesc}[Connection]{cursor}{\optional{cursorClass}}
 cursor メソッドはオプション引数 \var{CursorClass} を受け付けます。
 これを指定するならば、指定されたクラスは \class{sqlite3.Cursor} を
 継承したカーソルクラスでなければなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{execute}{sql, \optional{parameters}}
+\begin{methoddesc}[Connection]{execute}{sql, \optional{parameters}}
 このメソッドは非標準のショートカットで、cursor メソッドを呼び出して中間的な
 カーソルオブジェクトを作り、そのカーソルの \method{execute} メソッドを与えられた
 パラメータと共に呼び出します。
 \end{methoddesc}
 
-\begin{methoddesc}{executemany}{sql, \optional{parameters}}
+\begin{methoddesc}[Connection]{executemany}{sql, \optional{parameters}}
 このメソッドは非標準のショートカットで、cursor メソッドを呼び出して中間的な
 カーソルオブジェクトを作り、そのカーソルの \method{executemany} メソッドを与えられた
 パラメータと共に呼び出します。
 \end{methoddesc}
 
-\begin{methoddesc}{executescript}{sql_script}
+\begin{methoddesc}[Connection]{executescript}{sql_script}
 このメソッドは非標準のショートカットで、cursor メソッドを呼び出して中間的な
 カーソルオブジェクトを作り、そのカーソルの \method{executescript} メソッドを与えられた
 パラメータと共に呼び出します。
 \end{methoddesc}
 
-\begin{methoddesc}{create_function}{name, num_params, func}
+\begin{methoddesc}[Connection]{create_function}{name, num_params, func}
 後から SQL 文中で \var{name} という名前の関数として使えるユーザ定義関数を作成します。
 \var{num_params} は関数が受け付ける引数の数、 \var{func} は SQL 関数として使われる
 Python の呼び出し可能オブジェクトです。
@@ -265,7 +265,7 @@ unicode, str, int, long, float, buffer および None です。
   \verbatiminput{sqlite3/md5func.py}
 \end{methoddesc}
 
-\begin{methoddesc}{create_aggregate}{name, num_params, aggregate_class}
+\begin{methoddesc}[Connection]{create_aggregate}{name, num_params, aggregate_class}
 
 ユーザ定義の集計関数を作成します。
 
@@ -281,7 +281,7 @@ unicode, str, int, long, float, buffer および None です。
   \verbatiminput{sqlite3/mysumaggr.py}
 \end{methoddesc}
 
-\begin{methoddesc}{create_collation}{name, callable}
+\begin{methoddesc}[Connection]{create_collation}{name, callable}
 \var{name} と \var{callable} で指定される照合順序を作成します。呼び出
 し可能オブジェクトには二つの文字列が渡されます。一つめのものが二つめ
 のものより低く順序付けられるならば -1 を返し、等しければ 0 を返し、一
@@ -305,12 +305,12 @@ unicode, str, int, long, float, buffer および None です。
 \end{verbatim}
 \end{methoddesc}
 
-\begin{methoddesc}{interrupt}{}
+\begin{methoddesc}[Connection]{interrupt}{}
 このメソッドを別スレッドから呼び出して接続上で現在実行中であろうクエリを中断させられます。
 クエリが中断されると呼び出し元は例外を受け取ります。
 \end{methoddesc}
 
-\begin{methoddesc}{set_authorizer}{authorizer_callback}
+\begin{methoddesc}[Connection]{set_authorizer}{authorizer_callback}
 このルーチンはコールバックを登録します。コールバックはデータベースの
 テーブルのカラムにアクセスしようとするたびに呼び出されます。コールバッ
 クはアクセスが許可されるならば \constant{SQLITE_OK} を、SQL 文全体が
@@ -331,7 +331,7 @@ unicode, str, int, long, float, buffer および None です。
 て \module{sqlite3} モジュールに用意されています。
 \end{methoddesc}
 
-\begin{memberdesc}{row_factory}
+\begin{memberdesc}[Connection]{row_factory}
   この属性を、カーソルとタプルの形での元の行のデータを受け取り最終的な
   行を表すオブジェクトを返す呼び出し可能オブジェクトに、変更することが
   できます。これによって、より進んだ結果の返し方を実装することができま
@@ -352,7 +352,7 @@ unicode, str, int, long, float, buffer および None です。
   % XXX what's a db_row-based solution?
 \end{memberdesc}
 
-\begin{memberdesc}{text_factory}
+\begin{memberdesc}[Connection]{text_factory}
 この属性を使って TEXT データ型をどのオブジェクトで返すかを制御できます。
 デフォルトではこの属性は \class{unicode} に設定されており、
 \module{sqlite3} モジュールは TEXT を Unicode オブジェクトで返します。
@@ -370,7 +370,7 @@ unicode, str, int, long, float, buffer および None です。
 \verbatiminput{sqlite3/text_factory.py}
 \end{memberdesc}
 
-\begin{memberdesc}{total_changes}
+\begin{memberdesc}[Connection]{total_changes}
 データベース接続が開始されて以来の行の変更・挿入・削除がなされた行の総数を返します。
 % 返す?
 \end{memberdesc}
@@ -382,7 +382,7 @@ unicode, str, int, long, float, buffer および None です。
 
 \class{Cursor} のインスタンスはには以下の属性とメソッドがあります:
 
-\begin{methoddesc}{execute}{sql, \optional{parameters}}
+\begin{methoddesc}[Cursor]{execute}{sql, \optional{parameters}}
 SQL 文を実行します。SQL 文はパラメータ化できます(すなわち SQL リテラル
 の代わりの場所確保文字 (placeholder) を入れておけます)。
 \module{sqlite3} モジュールは2種類の場所確保記法をサポートします。
@@ -402,7 +402,7 @@ SQL 文を実行します。SQL 文はパラメータ化できます(すなわち SQL リテラル
 \end{methoddesc}
 
 
-\begin{methoddesc}{executemany}{sql, seq_of_parameters}
+\begin{methoddesc}[Cursor]{executemany}{sql, seq_of_parameters}
 SQL 文 \var{sql} を \var{seq_of_parameters} の全てのパラメータシーケン
 スまたはマッピングに対して実行します。%という意味だと思うが。
 \module{sqlite3} モジュールでは、シーケンスの代わりにパラメータの組を
@@ -415,7 +415,7 @@ SQL 文 \var{sql} を \var{seq_of_parameters} の全てのパラメータシーケン
 \verbatiminput{sqlite3/executemany_2.py}
 \end{methoddesc}
 
-\begin{methoddesc}{executescript}{sql_script}
+\begin{methoddesc}[Cursor]{executescript}{sql_script}
 これは非標準の便宜メソッドで、一度に複数の SQL 文を実行することができ
 ます。メソッドは最初に COMMIT 文を発行し、次いで引数として渡された SQL
 スクリプトを実行します。
@@ -427,7 +427,7 @@ SQL 文 \var{sql} を \var{seq_of_parameters} の全てのパラメータシーケン
 \verbatiminput{sqlite3/executescript.py}
 \end{methoddesc}
 
-\begin{memberdesc}{rowcount}
+\begin{memberdesc}[Cursor]{rowcount}
 一応 \module{sqlite3} モジュールの \class{Cursor} クラスはこの属性を実
 装していますが、データベースエンジン自身の「影響を受けた行」/「選択さ
 れた行」の決定方法は少し風変わりです。

@@ -3258,7 +3258,7 @@ shell/Perlスタイルの変数置換を\var{s}について行います。
 
 これは完全な文字列挿入関数ではないことに注意してください。
 \code{\$variable}の名前には大小英字、数字、アンダーバーだけを含むこと
-ができます。 \{ \} や \( \) を使った引用形式は利用できません。
+ができます。 \{ \} や ( ) を使った引用形式は利用できません。
 \end{funcdesc}
 
 \begin{funcdesc}{grok_environment_error}{exc\optional{, prefix=\samp{'error: '}}}
@@ -3534,7 +3534,8 @@ argsのコマンドラインオプションを解析します。\var{object}に属性として保
 
 オプションは全て真偽値で、\method{readline()}で返される値に影響します。
 
-\begin{tableiii}{c|l|l}{オプション名}{オプション名}{説明}{デフォルト値}
+%\begin{tableiii}{c|l|l}{オプション名}{オプション名}{説明}{デフォルト値}
+\begin{tableiii}{c|l|l}{option name}{option name}{説明}{デフォルト値}
 \lineiii{strip_comments}{
 バックスラッシュでエスケープされていない限り、\character{\#}から行末
 までと、\character{\#}の先にある空白文字の並びを削除します。}
@@ -3808,7 +3809,7 @@ N行の連続した行がバックスラッシュで終わる場合、N+1 行の物理行が1行の論
 
 \class{Command}のサブクラスは以下のメソッドを実装する必要があります。
 
-\begin{methoddesc}{initialize_options()}
+\begin{methoddesc}[Command]{initialize_options()}
 このコマンドがサポートする全てのオプションのデフォルト値を設定します。
 これらのデフォルトは他のコマンドやセットアップスクリプト、設定ファイル
 、コマンドラインによって上書きされるかもしれません。
@@ -3817,7 +3818,7 @@ N行の連続した行がバックスラッシュで終わる場合、N+1 行の物理行が1行の論
 うな定義だけを行います。 
 \end{methoddesc}
 
-\begin{methoddesc}{finalize_options}{}
+\begin{methoddesc}[Command]{finalize_options}{}
 このコマンドがサポートする全てのオプションの最終的な値を設定します。
 これは可能な限り遅く呼び出されます。つまりコマンドラインや他のコマンド
 によるオプションの代入のあとに呼び出されます。
@@ -3826,8 +3827,7 @@ N行の連続した行がバックスラッシュで終わる場合、N+1 行の物理行が1行の論
 まだ\var{foo}が \method{initialize_options()}で定義された値のままなら、
 \var{foo} を\var{bar}から代入しても安全です。
 \end{methoddesc}
-
-\begin{methoddesc}{run}{}
+\begin{methoddesc}[Command]{run}{}
 コマンドの本体です。実行するべきアクションを実装しています。
 \method{initialize_options()} で初期化され、他のコマンド
 され、セットアップスクリプト、コマンドライン、設定ファイルでカスタマイ

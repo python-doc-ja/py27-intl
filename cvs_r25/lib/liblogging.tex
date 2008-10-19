@@ -368,13 +368,13 @@ socket 越しに受け取り、受信端で \class{LogRecord} インスタンスに再構築す
 することはできず、常にモジュール関数 \function{logging.getLogger(name)}
 を介してインスタンス化するので注意してください。
 
-\begin{datadesc}{propagate}
+\begin{memberdesc}[Logger]{propagate}
 この値の評価結果が偽になる場合、ログ記録しようとするメッセージは
 このロガーに渡されず、また子ロガーから上位の (親の) ロガーに
 渡されません。コンストラクタはこの属性を 1 に設定します。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{methoddesc}{setLevel}{lvl}
+\begin{methoddesc}[Logger]{setLevel}{lvl}
 このロガーの閾値を \var{lvl} に設定します。ログ記録しようとする
 メッセージで、\var{lvl} よりも深刻でないものは無視されます。
 ロガーが生成された際、レベルは \constant{NOTSET} (これにより
@@ -396,7 +396,7 @@ socket 越しに受け取り、受信端で \class{LogRecord} インスタンスに再構築す
 す。
 \end{methoddesc}
 
-\begin{methoddesc}{isEnabledFor}{lvl}
+\begin{methoddesc}[Logger]{isEnabledFor}{lvl}
 深刻さが \var{lvl} のメッセージが、このロガーで処理されることに
 なっているかどうかを示します。このメソッドはまず、
 \function{logging.disable(lvl)} で設定されるモジュールレベル
@@ -404,7 +404,7 @@ socket 越しに受け取り、受信端で \class{LogRecord} インスタンスに再構築す
 \method{getEffectiveLevel()} で調べます。
 \end{methoddesc}
 
-\begin{methoddesc}{getEffectiveLevel}{}
+\begin{methoddesc}[Logger]{getEffectiveLevel}{}
 このロガーの実効レベルを示します。\constant{NOTSET} 以外の値が
 \method{setLevel()} で設定されていた場合、その値が返されます。
 そうでない場合、\constant{NOTSET} 以外の値が見つかるまでロガーの
@@ -412,7 +412,7 @@ socket 越しに受け取り、受信端で \class{LogRecord} インスタンスに再構築す
 返されます。
 \end{methoddesc}
 
-\begin{methoddesc}{debug}{msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{debug}{msg\optional{, *args\optional{, **kwargs}}}
 レベル \constant{DEBUG} のメッセージをこのロガーで記録します。
 \var{msg} はメッセージの書式化文字列で、\var{args} は \var{msg} に
 文字列書式化演算子を使って取り込むための引数です。(これは、
@@ -465,65 +465,65 @@ LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに
 \versionchanged[\var{extra} が追加されました]{2.5}
 \end{methoddesc}
 
-\begin{methoddesc}{info}{msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{info}{msg\optional{, *args\optional{, **kwargs}}}
 レベル \constant{INFO} のメッセージをこのロガーで記録します。
 引数は \method{debug()} と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{warning}{msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{warning}{msg\optional{, *args\optional{, **kwargs}}}
 レベル \constant{WARNING} のメッセージをこのロガーで記録します。
 引数は \method{debug()} と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{error}{msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{error}{msg\optional{, *args\optional{, **kwargs}}}
 レベル \constant{ERROR} のメッセージをこのロガーで記録します。
 引数は \method{debug()} と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{critical}{msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{critical}{msg\optional{, *args\optional{, **kwargs}}}
 レベル \constant{CRITICAL} のメッセージをこのロガーで記録します。
 引数は \method{debug()} と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{log}{lvl, msg\optional{, *args\optional{, **kwargs}}}
+\begin{methoddesc}[Logger]{log}{lvl, msg\optional{, *args\optional{, **kwargs}}}
 整数で表したレベル \var{lvl} のメッセージをこのロガーで記録します。
 その他の引数は \method{debug()} と同じように解釈されます。
 \end{methoddesc}
 
-\begin{methoddesc}{exception}{msg\optional{, *args}}
+\begin{methoddesc}[Logger]{exception}{msg\optional{, *args}}
 レベル \constant{ERROR} のメッセージをこのロガーで記録します。
 引数は \method{debug()} と同じように解釈されます。 
 例外情報はログメッセージに追加されます。このメソッドは
 例外ハンドラからのみ呼び出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{addFilter}{filt}
+\begin{methoddesc}[Logger]{addFilter}{filt}
 指定されたフィルタ \var{filt} をこのロガーに追加します。
 \end{methoddesc}
 
-\begin{methoddesc}{removeFilter}{filt}
+\begin{methoddesc}[Logger]{removeFilter}{filt}
 指定されたフィルタ \var{filt} をこのロガーから除去します。
 \end{methoddesc}
 
-\begin{methoddesc}{filter}{record}
+\begin{methoddesc}[Logger]{filter}{record}
 このロガーのフィルタをレコード (record) に適用し、レコードが
 フィルタを透過して処理されることになる場合には真を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{addHandler}{hdlr}
+\begin{methoddesc}[Logger]{addHandler}{hdlr}
 指定されたハンドラ \var{hdlr} をこのロガーに追加します。
 \end{methoddesc}
 
-\begin{methoddesc}{removeHandler}{hdlr}
+\begin{methoddesc}[Logger]{removeHandler}{hdlr}
 指定されたハンドラ \var{hdlr} をこのロガーから除去します。
 \end{methoddesc}
 
-\begin{methoddesc}{findCaller}{}
+\begin{methoddesc}[Logger]{findCaller}{}
 呼び出し元のソースファイル名と行番号を調べます。ファイル名と行番号
 を 2 要素のタプルで返します。
 \end{methoddesc}
 
-\begin{methoddesc}{handle}{record}
+\begin{methoddesc}[Logger]{handle}{record}
 レコードをこのロガーおよびその上位ロガーに (\var{propagate} の
 値が偽になるまで) さかのぼった関連付けられている全てのハンドラに渡して
 処理します。このメソッドはソケットから受信した逆 pickle 化された
@@ -531,7 +531,7 @@ LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに
 \method{filter()} によって、ロガーレベルでのフィルタが適用されます。
 \end{methoddesc}
 
-\begin{methoddesc}{makeRecord}{name, lvl, fn, lno, msg, args, exc_info,
+\begin{methoddesc}[Logger]{makeRecord}{name, lvl, fn, lno, msg, args, exc_info,
                                func, extra}
 このメソッドは、特殊な \class{LogRecord} インスタンスを生成する
 ためにサブクラスでオーバライドできるファクトリメソッドです。
@@ -879,66 +879,66 @@ About to start TCP server...
 サブクラスにおける \method{__init__()} メソッドでは、 
 \method{Handler.__init__()} を呼び出す必要があります。
 
-\begin{methoddesc}{__init__}{level=\constant{NOTSET}}
+\begin{methoddesc}[Handler]{__init__}{level=\constant{NOTSET}}
 レベルを設定して、\class{Handler} インスタンスを初期化します。
 空のリストを使ってフィルタを設定し、I/O 機構へのアクセスを
 直列化するために (\method{createLock()} を使って) ロックを生成します。
 \end{methoddesc}
 
-\begin{methoddesc}{createLock}{}
+\begin{methoddesc}[Handler]{createLock}{}
 スレッド安全でない根底の I/O 機能に対するアクセスを直列化
 するために用いられるスレッドロック (thread lock) を初期化します。
 \end{methoddesc}
 
-\begin{methoddesc}{acquire}{}
+\begin{methoddesc}[Handler]{acquire}{}
 \method{createLock()} で生成されたスレッドロックを獲得します。
 \end{methoddesc}
 
-\begin{methoddesc}{release}{}
+\begin{methoddesc}[Handler]{release}{}
 \method{acquire()} で獲得したスレッドロックを解放します。
 \end{methoddesc}
 
-\begin{methoddesc}{setLevel}{lvl}
+\begin{methoddesc}[Handler]{setLevel}{lvl}
 このハンドラに対する閾値を \var{lvl} に設定します。
 ログ記録しようとするメッセージで、\var{lvl} よりも深刻でないものは
 無視されます。ハンドラが生成された際、レベルは \constant{NOTSET} 
 (全てのメッセージが処理される) に設定されます。
 \end{methoddesc}
 
-\begin{methoddesc}{setFormatter}{form}
+\begin{methoddesc}[Handler]{setFormatter}{form}
 このハンドラのフォーマッタを \var{form} に設定します。
 \end{methoddesc}
 
-\begin{methoddesc}{addFilter}{filt}
+\begin{methoddesc}[Handler]{addFilter}{filt}
 指定されたフィルタ \var{filt} をこのハンドラに追加します。
 \end{methoddesc}
 
-\begin{methoddesc}{removeFilter}{filt}
+\begin{methoddesc}[Handler]{removeFilter}{filt}
 指定されたフィルタ \var{filt} をこのハンドラから除去します。
 \end{methoddesc}
 
-\begin{methoddesc}{filter}{record}
+\begin{methoddesc}[Handler]{filter}{record}
 このハンドラのフィルタをレコードに適用し、レコードが
 フィルタを透過して処理されることになる場合には真を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{flush}{}
+\begin{methoddesc}[Handler]{flush}{}
 全てのログ出力がフラッシュされるようにします。このクラスの
 バージョンではなにも行わず、サブクラスで実装するためのものです。
 \end{methoddesc}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[Handler]{close}{}
 ハンドラで使われている全てのリソースを始末します。このクラスの
 バージョンではなにも行わず、サブクラスで実装するためのものです。
 \end{methoddesc}
 
-\begin{methoddesc}{handle}{record}
+\begin{methoddesc}[Handler]{handle}{record}
 ハンドラに追加されたフィルタの条件に応じて、指定されたログレコードを
 発信します。このメソッドは I/O スレッドロックの獲得/開放を伴う実際の
 ログ発信をラップします。
 \end{methoddesc}
 
-\begin{methoddesc}{handleError}{record}
+\begin{methoddesc}[Handler]{handleError}{record}
 このメソッドは \method{emit()} の呼び出し中に例外に遭遇した際に
 ハンドラから呼び出されます。デフォルトではこのメソッドは
 何も行いません。すなわち、例外は暗黙のまま無視されます。
@@ -950,13 +950,13 @@ About to start TCP server...
 されていたレコードが入ります。
 \end{methoddesc}
 
-\begin{methoddesc}{format}{record}
+\begin{methoddesc}[Handler]{format}{record}
 レコードに対する書式化を行います - フォーマッタ
 が設定されていれば、それを使います。そうでない場合、
 モジュールにデフォルト指定されたフォーマッタを使います。
 \end{methoddesc}
 
-\begin{methoddesc}{emit}{record}
+\begin{methoddesc}[Handler]{emit}{record}
 指定されたログ記録レコードを実際にログ記録する際の全ての処理
 を行います。このメソッドのこのクラスのバージョンはサブクラスで
 実装するためのものなので、\exception{NotImplementedError}

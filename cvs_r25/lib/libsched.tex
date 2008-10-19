@@ -48,7 +48,7 @@ From print_time 930343700.273
 
 \class{scheduler}インスタンスは以下のメソッドを持っています:
 
-\begin{methoddesc}{enterabs}{time, priority, action, argument}
+\begin{methoddesc}[scheduler]{enterabs}{time, priority, action, argument}
 新しいイベントをスケジュールします。引数\var{time}は、
 コンストラクタへ渡された\var{timefunc}の戻り値と互換な数値型で
 なければいけません。
@@ -64,23 +64,23 @@ From print_time 930343700.273
 (\method{cancel()}を見よ)。
 \end{methoddesc}
 
-\begin{methoddesc}{enter}{delay, priority, action, argument}
+\begin{methoddesc}[scheduler]{enter}{delay, priority, action, argument}
 時間単位以上の\var{delay}でイベントをスケジュールします。
 そのとき、その他の関連時間、その他の引数、効果、戻り値は、
 \method{enterabs()}に対するものと同じです。
 \end{methoddesc}
 
-\begin{methoddesc}{cancel}{event}
+\begin{methoddesc}[scheduler]{cancel}{event}
 キューからイベントを消去します。
 もし\var{event}がキューにある現在のイベントでないならば、
 このメソッドは\exception{RuntimeError}を送出します。
 \end{methoddesc}
 
-\begin{methoddesc}{empty}{}
+\begin{methoddesc}[scheduler]{empty}{}
 もしイベントキューが空ならば、Trueを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{run}{}
+\begin{methoddesc}[scheduler]{run}{}
 すべてのスケジュールされたイベントを実行します。
 この関数は次のイベントを(コンストラクタへ渡された関数
 \function{delayfunc}を使うことで)待ち、そしてそれを実行し、

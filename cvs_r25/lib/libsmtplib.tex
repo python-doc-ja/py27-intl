@@ -90,12 +90,12 @@ SMTP に対する ESMTP 拡張の定義です。このドキュメントでは、
 
 \class{SMTP}クラスインスタンスは次のメソッドを提供します:
 
-\begin{methoddesc}{set_debuglevel}{level}
+\begin{methoddesc}[SMTP]{set_debuglevel}{level}
   コネクション間でやりとりされるメッセージ出力のレベルをセットします。
   メッセージの冗長さは\var{level}に応じて決まります。
 \end{methoddesc}
 
-\begin{methoddesc}{connect}{\optional{host\optional{, port}}}
+\begin{methoddesc}[SMTP]{connect}{\optional{host\optional{, port}}}
 ホスト名とポート番号をもとに接続します。デフォルトはlocalhostの
 標準的なSMTPポート(25番)に接続します。
 もしホスト名の末尾がコロン(\character{:})で、後に番号がついている場合は、
@@ -104,7 +104,7 @@ SMTP に対する ESMTP 拡張の定義です。このドキュメントでは、
 自動的に呼び出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{docmd}{cmd, \optional{, argstring}}
+\begin{methoddesc}[SMTP]{docmd}{cmd, \optional{, argstring}}
 サーバへコマンド\var{cmd}を送信します。
 オプション引数\var{argstring}はスペース文字でコマンドに連結します。
 戻り値は、整数値のレスポンスコードと、サーバからの応答の値をタプルで返します。
@@ -117,7 +117,7 @@ SMTP に対する ESMTP 拡張の定義です。このドキュメントでは、
 \exception{SMTPServerDisconnected}が上がります。
 \end{methoddesc}
 
-\begin{methoddesc}{helo}{\optional{hostname}}
+\begin{methoddesc}[SMTP]{helo}{\optional{hostname}}
 SMTPサーバに\samp{HELO}コマンドで身元を示します。
 デフォルトではhostname引数はローカルホストを指します。
 
@@ -125,7 +125,7 @@ SMTPサーバに\samp{HELO}コマンドで身元を示します。
 これを明示的に呼び出す必要はありません。
 \end{methoddesc}
 
-\begin{methoddesc}{ehlo}{\optional{hostname}}
+\begin{methoddesc}[SMTP]{ehlo}{\optional{hostname}}
 \samp{EHLO}を利用し、ESMTPサーバに身元を明かします。
 デフォルトではhostname引数はローカルホストを指します。
 
@@ -137,12 +137,12 @@ SMTPサーバに\samp{HELO}コマンドで身元を示します。
 \method{sendmail()}が必要とした場合に呼ばれます。、
 \end{methoddesc}
 
-\begin{methoddesc}{has_extn}{name}
+\begin{methoddesc}[SMTP]{has_extn}{name}
 \var{name}が拡張SMTPサービスセットに含まれている場合には\code{True}を返し、
 そうでなければ\code{False}を返します。大小文字は区別されません。
 \end{methoddesc}
 
-\begin{methoddesc}{verify}{address}
+\begin{methoddesc}[SMTP]{verify}{address}
 \samp{VRFY}を利用してSMTPサーバにアドレスの妥当性をチェックします。
 妥当である場合はコード250と完全な\rfc{822}アドレス(人名)のタプルを返します。
 それ以外の場合は、400以上のエラーコードとエラー文字列を返します。
@@ -151,7 +151,7 @@ SMTPサーバに\samp{HELO}コマンドで身元を示します。
 使用不可になっています。}
 \end{methoddesc}
 
-\begin{methoddesc}{login}{user, password}
+\begin{methoddesc}[SMTP]{login}{user, password}
 認証が必要なSMTPサーバにログインします。
 認証に使用する引数はユーザ名とパスワードです。
 まだセッションが無い場合は、\samp{EHLO}または\samp{HELO}コマンドで
@@ -169,7 +169,7 @@ SMTPサーバに\samp{HELO}コマンドで身元を示します。
 \end{description}
 \end{methoddesc}
 
-\begin{methoddesc}{starttls}{\optional{keyfile\optional{, certfile}}}
+\begin{methoddesc}[SMTP]{starttls}{\optional{keyfile\optional{, certfile}}}
 TLS(Transport Layer Security)モードでSMTPコネクションを出し、
 全てのSMTPコマンドは暗号化されます。
 これは\method{ehlo()}をもう一度呼びだすときにするべきです。
@@ -178,7 +178,7 @@ TLS(Transport Layer Security)モードでSMTPコネクションを出し、
 \refmodule{socket}モジュールの\function{ssl()}関数が通るようになります。
 \end{methoddesc}
 
-\begin{methoddesc}{sendmail}{from_addr, to_addrs, msg\optional{,
+\begin{methoddesc}[SMTP]{sendmail}{from_addr, to_addrs, msg\optional{,
                              mail_options, rcpt_options}}
 メールを送信します。必要な引数は\rfc{822}のfromアドレス文字列、
 \rfc{822}のtoアドレス文字列またはアドレス文字列のリスト、
@@ -233,7 +233,7 @@ ESMTPオプション(\samp{8bitmime}のような)のリストを得るかもしれません。
 
 \end{methoddesc}
 
-\begin{methoddesc}{quit}{}
+\begin{methoddesc}[SMTP]{quit}{}
 SMTPセッションを終了し、コネクションを閉じます。
 \end{methoddesc}
 

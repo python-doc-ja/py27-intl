@@ -43,8 +43,8 @@ dr-xr-srwt 105 ftp-usr  pdmaint     1536 Mar 21 14:32 ..
 \class{FTP}クラスの新しいインスタンスを返します。
 \var{host}が与えられると、\code{connect(\var{host})}メソッドが実行されま
 す。
-\var{user}が与えられると、さらに\code{login(\var{user}, \var{passwd}, \v
-ar{acct})}メソッドが実行されます（この\var{passwd}と\var{acct}は指定され
+\var{user}が与えられると、さらに\code{login(\var{user}, \var{passwd},
+\var{acct})}メソッドが実行されます（この\var{passwd}と\var{acct}は指定され
 なければデフォルトでは空文字列です）。
 \end{classdesc}
 
@@ -91,7 +91,7 @@ rror.py}\index{ftpmirror.py}ファイルは、FTPサイトあるいはその一部をミ
 
 \class{FTP}インスタンスには以下のメソッドがあります：
 
-\begin{methoddesc}{set_debuglevel}{level}
+\begin{methoddesc}[FTP]{set_debuglevel}{level}
 インスタンスのデバッグレベルを設定します。
 この設定によってデバッグ時に出力される量を調節します。
 デフォルトは\code{0}で、何も出力されません。
@@ -101,7 +101,7 @@ rror.py}\index{ftpmirror.py}ファイルは、FTPサイトあるいはその一部をミ
 グ出力をします。
 \end{methoddesc}
 
-\begin{methoddesc}{connect}{host\optional{, port}}
+\begin{methoddesc}[FTP]{connect}{host\optional{, port\optional{, timeout}}}
 指定されたホストとポートに接続します。
 ポート番号のデフォルト値はFTPプロトコルの仕様で定められた\code{21}です。
 他のポート番号を指定する必要はめったにありません。
@@ -111,13 +111,13 @@ rror.py}\index{ftpmirror.py}ファイルは、FTPサイトあるいはその一部をミ
 これ以外の他の全てのメソッドは接続された後で実行可能となります。
 \end{methoddesc}
 
-\begin{methoddesc}{getwelcome}{}
+\begin{methoddesc}[FTP]{getwelcome}{}
 接続して最初にサーバから送られてくるウェルカムメッセージを返します。
 （このメッセージには、ユーザにとって適切な注意書きやヘルプ情報が含まれる
 ことがあります。）
 \end{methoddesc}
 
-\begin{methoddesc}{login}{\optional{user\optional{, passwd\optional{, ac
+\begin{methoddesc}[FTP]{login}{\optional{user\optional{, passwd\optional{, acct}}}}
 ct}}}}
 与えられた\var{user}でログインします。
 \var{passwd}と\var{acct}のパラメータは省略可能で、デフォルトでは空文字列
@@ -134,22 +134,22 @@ ct}}}}
 す。
 \end{methoddesc}
 
-\begin{methoddesc}{abort}{}
+\begin{methoddesc}[FTP]{abort}{}
 実行中のファイル転送を中止します。
 これはいつも機能するわけではありませんが、やってみる価値はあります。
 \end{methoddesc}
 
-\begin{methoddesc}{sendcmd}{command}
+\begin{methoddesc}[FTP]{sendcmd}{command}
 シンプルなコマンド文字列をサーバに送信して、受信した文字列を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{voidcmd}{command}
+\begin{methoddesc}[FTP]{voidcmd}{command}
 シンプルなコマンド文字列をサーバに送信して、その応答を扱います。
 応答コードが200--299の範囲にあれば何も返しません。
 それ以外は例外を発生します。
 \end{methoddesc}
 
-\begin{methoddesc}{retrbinary}{command,
+\begin{methoddesc}[FTP]{retrbinary}{command,
     callback\optional{, maxblocksize\optional{, rest}}}
 バイナリ転送モードでファイルを受信します。
 \var{command}は適切な\samp{RETR}コマンド：
@@ -163,7 +163,7 @@ ct}}}}
 \var{rest}は、\method{transfercmd()}メソッドと同じものです。
 \end{methoddesc}
 
-\begin{methoddesc}{retrlines}{command\optional{, callback}}
+\begin{methoddesc}[FTP]{retrlines}{command\optional{, callback}}
 \ASCII{}転送モードでファイルとディレクトリのリストを受信します。
 \var{command}は、適切な\samp{RETR}コマンド（\method{retrbinary()}を参
 照）あるいは\samp{LIST}コマンド（通常は文字列\code{'LIST'}）でなければな
@@ -172,14 +172,14 @@ ct}}}}
 デフォルトでは\var{callback}は\code{sys.stdout}に各行を印字します。
 \end{methoddesc}
 
-\begin{methoddesc}{set_pasv}{boolean}
+\begin{methoddesc}[FTP]{set_pasv}{boolean}
 \var{boolean}がtrueなら``パッシブモード''をオンにし、そうでないならパッ
 シブモードをオフにします。
 （Python 2.0以前ではデフォルトでパッシブモードはオフにされていましたが、
 Python 2.1以後ではデフォルトでオンになっています。）
 \end{methoddesc}
 
-\begin{methoddesc}{storbinary}{command, file\optional{, blocksize}}
+\begin{methoddesc}[FTP]{storbinary}{command, file\optional{, blocksize}}
 バイナリ転送モードでファイルを転送します。
 \var{command}は適切な\samp{STOR}コマンド：\code{"STOR \var{filename}"}で
 なければなりません。
@@ -190,7 +190,7 @@ Python 2.1以後ではデフォルトでオンになっています。）
 \versionchanged[\var{blocksize}のデフォルト値が追加されました]{2.1}
 \end{methoddesc}
 
-\begin{methoddesc}{storlines}{command, file}
+\begin{methoddesc}[FTP]{storlines}{command, file}
 \ASCII{}転送モードでファイルを転送します。
 \var{command}は適切な\samp{STOR}コマンドでなければなりません（\method{st
 orbinary()}を参照）。
@@ -198,7 +198,7 @@ orbinary()}を参照）。
 で\EOF{}まで読み込まれ、各行がデータが転送されます。
 \end{methoddesc}
 
-\begin{methoddesc}{transfercmd}{cmd\optional{, rest}}
+\begin{methoddesc}[FTP]{transfercmd}{cmd\optional{, rest}}
 データ接続中に転送を初期化します。
 もし転送中なら、\samp{EPRT}あるいは\samp{PORT}コマンドと、\var{cmd}で指
 定したコマンドを送信し、接続を続けます。
@@ -221,21 +221,21 @@ ply}が発生します。
 ます。
 \end{methoddesc}
 
-\begin{methoddesc}{ntransfercmd}{cmd\optional{, rest}}
+\begin{methoddesc}[FTP]{ntransfercmd}{cmd\optional{, rest}}
 \method{transfercmd()}と同様ですが、データと予想されるサイズとのタプルを
 返します。
 もしサイズが計算できないなら、サイズの代わりに\code{None}が返されます。
 \var{cmd}と\var{rest}は\method{transfercmd()}のものと同じです。
 \end{methoddesc}
 
-\begin{methoddesc}{nlst}{argument\optional{, \ldots}}
+\begin{methoddesc}[FTP]{nlst}{argument\optional{, \ldots}}
 \samp{NLST}コマンドで返されるファイルのリストを返します。
 省略可能な\var{argument}は、リストアップするディレクトリです（デフォルト
 ではサーバのカレントディレクトリです）。
 \samp{NLST}コマンドに非標準である複数の引数を渡すことができます。
 \end{methoddesc}
 
-\begin{methoddesc}{dir}{argument\optional{, \ldots}}
+\begin{methoddesc}[FTP]{dir}{argument\optional{, \ldots}}
 \samp{LIST}コマンドで返されるディレクトリ内のリストを作り、標準出力へ出
 力します。
 省略可能な\var{argument}は、リストアップするディレクトリです（デフォルト
@@ -246,34 +246,34 @@ ply}が発生します。
 このメソッドは\code{None}を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{rename}{fromname, toname}
+\begin{methoddesc}[FTP]{rename}{fromname, toname}
 サーバ上のファイルのファイル名\var{fromname}を\var{toname}へ変更します。
 \end{methoddesc}
 
-\begin{methoddesc}{delete}{filename}
+\begin{methoddesc}[FTP]{delete}{filename}
 サーバからファイル\var{filename}を削除します。
 成功したら応答のテキストを返し、そうでないならパーミッションエラーでは
 \exception{error_perm}を、他のエラーでは\exception{error_reply}を返しま
 す。
 \end{methoddesc}
 
-\begin{methoddesc}{cwd}{pathname}
+\begin{methoddesc}[FTP]{cwd}{pathname}
 サーバのカレントディレクトリを設定します。
 \end{methoddesc}
 
-\begin{methoddesc}{mkd}{pathname}
+\begin{methoddesc}[FTP]{mkd}{pathname}
 サーバ上に新たにディレクトリを作ります。
 \end{methoddesc}
 
-\begin{methoddesc}{pwd}{}
+\begin{methoddesc}[FTP]{pwd}{}
 サーバ上のカレントディレクトリのパスを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{rmd}{dirname}
+\begin{methoddesc}[FTP]{rmd}{dirname}
 サーバ上のディレクトリ\var{dirname}を削除します。
 \end{methoddesc}
 
-\begin{methoddesc}{size}{filename}
+\begin{methoddesc}[FTP]{size}{filename}
 サーバ上のファイル\var{filename}のサイズを尋ねます。
 成功したらファイルサイズが整数で返され、そうでないなら\code{None}が返さ
 れます。
@@ -281,7 +281,7 @@ ply}が発生します。
 れていることに注意して下さい。
 \end{methoddesc}
 
-\begin{methoddesc}{quit}{}
+\begin{methoddesc}[FTP]{quit}{}
 サーバに\samp{QUIT}コマンドを送信し、接続を閉じます。
 これは接続を閉じるのに``礼儀正しい''方法ですが、\samp{QUIT}コマンドに反
 応してサーバの例外が発生するかもしれません。
@@ -290,7 +290,7 @@ ply}が発生します。
 照）。
 \end{methoddesc}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[FTP]{close}{}
 接続を一方的に閉じます。
 既に閉じた接続に対して実行すべきではありません（例えば\method{quit()}を
 呼び出して成功した後など）。

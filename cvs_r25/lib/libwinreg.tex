@@ -150,7 +150,7 @@
 アプリケーションは、レジストリへの変更を絶対に確実にディスク上に
 反映させる必要がある場合にのみ、\function{FlushKey()} を呼ぶべきです。
  
-\emph{
+\note{
 \function{FlushKey()} を呼び出す必要があるかどうか分からない場合、
 おそらくその必要はありません。
 }
@@ -394,14 +394,14 @@ Windows ハンドル値が返されます、また、 \method{Detach()} メソッド
 を使って整数のハンドル値を返させると同時に、ハンドルオブジェクト
 から Windows ハンドルを切り離すこともできます。
 
-\begin{methoddesc}{Close}{}
+\begin{methoddesc}[PyHKEY]{Close}{}
 背後の Windows ハンドルを閉じます。
 
 ハンドルがすでに閉じられていてもエラーは送出されません。
 \end{methoddesc}
 
 
-\begin{methoddesc}{Detach}{}
+\begin{methoddesc}[PyHKEY]{Detach}{}
 ハンドルオブジェクトから Windows ハンドルを切り離します。
 
 切り離される以前にそのハンドルを保持していた整数 (または 64 ビット 

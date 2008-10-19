@@ -82,13 +82,13 @@
 
 \end{methoddesc}
 
-\begin{methoddesc}{register_introspection_functions}{}
+\begin{methoddesc}[SimpleXMLRPCServer]{register_introspection_functions}{}
   XML-RPC のイントロスペクション関数、\code{system.listMethods}、\code{system.methodHelp}、\code{system.methodSignature} を登録します。
   \versionadded{2.3}
 %--
 \end{methoddesc}
 
-\begin{methoddesc}{register_multicall_functions}{}
+\begin{methoddesc}[SimpleXMLRPCServer]{register_multicall_functions}{}
   XML-RPC における複数の要求を処理する関数 system.multicall を登録します。
 \end{methoddesc}
 
@@ -149,12 +149,12 @@ print s.system.listMethods()
 
 \class{CGIXMLRPCRequestHandler} クラスは、Python の CGI スクリプトに送られた XML-RPC リクエストを処理するときに使用できます
 
-\begin{methoddesc}{register_function}{function\optional{, name}}
+\begin{methoddesc}[CGIXMLRPCRequestHandler]{register_function}{function\optional{, name}}
 XML-RPC リクエストに応じる関数を登録します。
 引数\var{name}が与えられている場合はその値が、関数\var{function}に関連付けられます。これが与えられない場合は\code{\var{function}.__name__}の値が用いられます。引数\var{name}は通常の文字列でもユニコード文字列でも良く、Pythonで識別子として正しくない文字(" . "ピリオドなど )を含んでもかまいません。
 \end{methoddesc}
 
-\begin{methoddesc}{register_instance}{instance}
+\begin{methoddesc}[CGIXMLRPCRequestHandler]{register_instance}{instance}
   オブジェクトを登録し、そのオブジェクトの\method{register_function()}で登録されていないメソッドを公開します。もし、\var{instance}がメソッド\method{_dispatch()}を定義していれば、\method{_dispatch()}が、リクエストされたメソッド名とパラメータの組を引数として呼び出されます。そして、\method{_dispatch()}の返り値が結果としてクライアントに返されます。もし、\var{instance}がメソッド\method{_dispatch()}を定義していなければ、リクエストされたメソッド名がそのインスタンスに定義されているメソッド名から探されます。リクエストされたメソッド名がピリオドを含む場合は、（訳注：通常のPythonでのピリオドの解釈と同様に）階層的にオブジェクトを探索します。そして、そこで見つかったオブジェクトをリクエストから渡された引数で呼び出し、その返り値をクライアントに返します。
 % 原文で、引数名 instance は \var{} で囲まれていませんが、
 % SimpleXMLRPCServer.register_instance() の記述に合わせて \var{} で囲ん
@@ -162,15 +162,15 @@ XML-RPC リクエストに応じる関数を登録します。
 % 2003-07-25 ふるかわとおる
 \end{methoddesc}
 
-\begin{methoddesc}{register_introspection_functions}{}
+\begin{methoddesc}[CGIXMLRPCRequestHandler]{register_introspection_functions}{}
   XML-RPC のイントロスペクション関数、\code{system.listMethods}、\code{system.methodHelp}、\code{system.methodSignature} を登録します。
 \end{methoddesc}
 
-\begin{methoddesc}{register_multicall_functions}{}
+\begin{methoddesc}[CGIXMLRPCRequestHandler]{register_multicall_functions}{}
   XML-RPC における複数の要求を処理する関数 system.multicall を登録します。
 \end{methoddesc}
 
-\begin{methoddesc}{handle_request}{\optional{request_text = None}}
+\begin{methoddesc}[CGIXMLRPCRequestHandler]{handle_request}{\optional{request_text = None}}
 XML-RPC リクエストを処理します。\var{request_text} で渡されるのは、HTTP サーバーに提供された POST データです。何も渡されなければ標準入力からのデータが使われます。
 \end{methoddesc}
 

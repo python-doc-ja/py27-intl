@@ -70,7 +70,7 @@ POP3コマンドはすべて、それと同じ名前のメソッドとしてlower-caseで
 
 \class{POP3} クラスのインスタンスは以下のメソッドを持ちます。
 
-\begin{methoddesc}{set_debuglevel}{level}
+\begin{methoddesc}[POP3]{set_debuglevel}{level}
 インスタンスのデバッグレベルを指定します。これはデバッギングアウトプット
 の表示量をコントロールします。デフォルト値の \code{0} は、デバッギング
 アウトプットを表示しません。値を \code{1} とすると、デバッギングアウト
@@ -79,66 +79,66 @@ POP3コマンドはすべて、それと同じ名前のメソッドとしてlower-caseで
 コントロール中の接続で送受信される各行をログに出力します。
 \end{methoddesc}
 
-\begin{methoddesc}{getwelcome}{}
+\begin{methoddesc}[POP3]{getwelcome}{}
 POP3サーバーから送られるグリーティングメッセージを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{user}{username}
+\begin{methoddesc}[POP3]{user}{username}
 userコマンドを送出します。応答はパスワード要求を表示します。
 \end{methoddesc}
 
-\begin{methoddesc}{pass_}{password}
+\begin{methoddesc}[POP3]{pass_}{password}
 パスワードを送出します。応答は、メッセージ数とメールボックスのサイズを
 含みます。
 注：サーバー上のメールボックスは \method{quit()} が呼ばれるまでロックされます。
 \end{methoddesc}
 
-\begin{methoddesc}{apop}{user, secret}
+\begin{methoddesc}[POP3]{apop}{user, secret}
 POP3サーバーにログオンするのに、よりセキュアなAPOP認証を使用します。
 \end{methoddesc}
 
-\begin{methoddesc}{rpop}{user}
+\begin{methoddesc}[POP3]{rpop}{user}
 POP3サーバーにログオンするのに、（UNIXのr-コマンドと同様の）RPOP認証を使用します。
 \end{methoddesc}
 
-\begin{methoddesc}{stat}{}
+\begin{methoddesc}[POP3]{stat}{}
 メールボックスの状態を得ます。結果は2つのintegerからなるタプルとなります。
 \code{(\var{message count}, \var{mailbox size})}.
 \end{methoddesc}
 
-\begin{methoddesc}{list}{\optional{which}}
+\begin{methoddesc}[POP3]{list}{\optional{which}}
 メッセージのリストを要求します。結果は以下のような形式で表されます。
 \code{(\var{response}, ['mesg_num octets', ...], \var{octets})}
 \var{which} が与えられると、それによりメッセージを指定します。
 \end{methoddesc}
 
-\begin{methoddesc}{retr}{which}
+\begin{methoddesc}[POP3]{retr}{which}
 \var{which} 番のメッセージ全体を取り出し、そのメッセージに既読フラグを
 立てます。結果は \code{(\var{response}, ['line', ...], \var{octets})}
 という形式で表されます。
 \end{methoddesc}
 
-\begin{methoddesc}{dele}{which}
+\begin{methoddesc}[POP3]{dele}{which}
 \var{which} 番のメッセージに削除のためのフラグを立てます。ほとんどの
 サーバで、QUITコマンドが実行されるまでは実際の削除は行われません
 （もっとも良く知られた例外は Eudora QPOPで、その配送メカニズムはRFCに
 違反しており、どんな切断状況でも削除操作を未解決にしています）。
 \end{methoddesc}
 
-\begin{methoddesc}{rset}{}
+\begin{methoddesc}[POP3]{rset}{}
 メールボックスの削除マークすべてを取り消します。
 \end{methoddesc}
 
-\begin{methoddesc}{noop}{}
+\begin{methoddesc}[POP3]{noop}{}
 何もしません。接続保持のために使われます。
 \end{methoddesc}
 
-\begin{methoddesc}{quit}{}
+\begin{methoddesc}[POP3]{quit}{}
 Signoff:  commit changes, unlock mailbox, drop connection.
 サインオフ：変更をコミットし、メールボックスをアンロックして、接続を破棄します。
 \end{methoddesc}
 
-\begin{methoddesc}{top}{which, howmuch}
+\begin{methoddesc}[POP3]{top}{which, howmuch}
 メッセージヘッダと \var{howmuch} で指定した行数のメッセージを、
  \var{which}で指定したメッセージ分取り出します。結果は以下のような
 形式となります。
@@ -151,7 +151,7 @@ Signoff:  commit changes, unlock mailbox, drop connection.
 テストをしてください。
 \end{methoddesc}
 
-\begin{methoddesc}{uidl}{\optional{which}}
+\begin{methoddesc}[POP3]{uidl}{\optional{which}}
 （ユニークIDによる）メッセージダイジェストのリストを返します。
 \var{which} が設定されている場合、結果はユニークIDを含みます。それは
 \code{'\var{response}\ \var{mesgnum}\ \var{uid}}という形式のメッセージ、

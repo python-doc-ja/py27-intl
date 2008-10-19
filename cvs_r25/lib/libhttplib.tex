@@ -276,7 +276,7 @@ HTTPS プロトコルの標準のポート (通常は \code{443}) です。
 
 \class{HTTPConnection} インスタンスには以下のメソッドがあります:
 
-\begin{methoddesc}{request}{method, url\optional{, body\optional{, headers}}}
+\begin{methoddesc}[HTTPConnection]{request}{method, url\optional{, body\optional{, headers}}}
 このメソッドは、 HTTP 要求メソッド \var{method} およびセレクタ \var{url}
 を使って、要求をサーバに送ります。\var{body} 引数を指定する場合、
 ヘッダが終了した後に送信する文字列データでなければなりません。
@@ -285,7 +285,7 @@ HTTPS プロトコルの標準のポート (通常は \code{443}) です。
 マップ型でなくてはなりません。
 \end{methoddesc}
 
-\begin{methoddesc}{getresponse}{}
+\begin{methoddesc}[HTTPConnection]{getresponse}{}
 サーバに対して HTTP 要求を送り出した後に呼び出されなければりません。
 要求に対する応答を取得します。\class{HTTPResponse} インスタンスを
 返します。
@@ -293,24 +293,24 @@ HTTPS プロトコルの標準のポート (通常は \code{443}) です。
 はできないことに注意しましょう。}
 \end{methoddesc}
 
-\begin{methoddesc}{set_debuglevel}{level}
+\begin{methoddesc}[HTTPConnection]{set_debuglevel}{level}
 デバッグレベル (印字されるデバッグ出力の量) を設定します。
 標準のデバッグレベルは \code{0} で、デバッグ出力を全く印字
 しません。
 \end{methoddesc}
 
-\begin{methoddesc}{connect}{}
+\begin{methoddesc}[HTTPConnection]{connect}{}
 オブジェクトを生成するときに指定したサーバに接続します。
 \end{methoddesc}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[HTTPConnection]{close}{}
 サーバへの接続を閉じます。
 \end{methoddesc}
 
 上で説明した\method{request()}メソッドを使うかわりに、以下の4つの関数を
 使用して要求をステップバイステップで送信することもできます。
 
-\begin{methoddesc}{putrequest}{request, selector\optional{,
+\begin{methoddesc}[HTTPConnection]{putrequest}{request, selector\optional{,
       skip\_host\optional{, skip_accept_encoding}}}
 サーバへの接続が確立したら、最初にこのメソッドを呼び出さなくては
 なりません。このメソッドは \var{request} 文字列、\var{selector} 文字列、
@@ -321,18 +321,18 @@ HTTPS プロトコルの標準のポート (通常は \code{443}) です。
 してください。
 \end{methoddesc}
 
-\begin{methoddesc}{putheader}{header, argument\optional{, ...}}
+\begin{methoddesc}[HTTPConnection]{putheader}{header, argument\optional{, ...}}
 \rfc{822} 形式のヘッダをサーバに送ります。この処理では、\var{header}、
 コロンとスペース、そして最初の引数からなる 1 行をサーバに送ります。
 追加の引数を指定した場合、継続して各行にタブ一つと引数の入った引数行が
 送信されます。
 \end{methoddesc}
 
-\begin{methoddesc}{endheaders}{}
+\begin{methoddesc}[HTTPConnection]{endheaders}{}
 サーバに空行を送り、ヘッダ部が終了したことを通知します。
 \end{methoddesc}
 
-\begin{methoddesc}{send}{data}
+\begin{methoddesc}[HTTPConnection]{send}{data}
 サーバにデータを送ります。このメソッドは \method{endheaders()} 
 が呼び出された直後で、かつ \method{getreply()} が呼び出される
 前に使わなければなりません。
@@ -342,36 +342,36 @@ HTTPS プロトコルの標準のポート (通常は \code{443}) です。
 
 \class{HTTPResponse} インスタンスは以下のメソッドと属性を持ちます:
 
-\begin{methoddesc}{read}{\optional{amt}}
+\begin{methoddesc}[HTTPResponse]{read}{\optional{amt}}
 応答の本体全体か、\var{amt} バイトまで読み出して返します。
 \end{methoddesc}
 
-\begin{methoddesc}{getheader}{name\optional{, default}}
+\begin{methoddesc}[HTTPResponse]{getheader}{name\optional{, default}}
 ヘッダ \var{name} の内容を取得して返すか、該当するヘッダがない場合には
 \var{default} を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{getheaders}{}
+\begin{methoddesc}[HTTPResponse]{getheaders}{}
 (header, value) のタプルからなるリストを返します。
 \versionadded{2.4}
 \end{methoddesc}
 
-\begin{datadesc}{msg}
+\begin{memberdesc}[HTTPResponse]{msg}
 応答ヘッダを含む \class{mimetools.Message} インスタンスです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{version}
+\begin{memberdesc}[HTTPResponse]{version}
 サーバが使用した HTTP プロトコルバージョンです。10 は HTTP/1.0 を、
 11 は HTTP/1.1 を表します。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{status}
+\begin{memberdesc}[HTTPResponse]{status}
 サーバから返される状態コードです。
-\end{datadesc}
+\end{memberdesc}
 
-\begin{datadesc}{reason}
+\begin{memberdesc}[HTTPResponse]{reason}
 サーバから返される応答の理由文です。
-\end{datadesc}
+\end{memberdesc}
 
 
 \subsection{例 \label{httplib-examples}}

@@ -102,11 +102,11 @@ writer オブジェクト上の特定の出力イベントに変換するための
 タグメソッドに加えて、\class{HTMLParser} クラスではタグメソッド
 で利用するためのいくつかのメソッドとインスタンス変数を提供しています。
 
-\begin{memberdesc}{formatter}
+\begin{memberdesc}[HTMLParser]{formatter}
 パーザに関連付けられているフォーマッタインスタンスです。
 \end{memberdesc}
 
-\begin{memberdesc}{nofill}
+\begin{memberdesc}[HTMLParser]{nofill}
 ブール値のフラグで、空白文字を縮約したくないときには真、縮約するときには
 偽にします。一般的には、この値を真にするのは、\code{<PRE>} 要素の
 中のテキストのように、文字列データが ``書式化済みの (preformatted)'' 
@@ -115,7 +115,7 @@ writer オブジェクト上の特定の出力イベントに変換するための
 \end{memberdesc}
 
 
-\begin{methoddesc}{anchor_bgn}{href, name, type}
+\begin{methoddesc}[HTMLParser]{anchor_bgn}{href, name, type}
 このメソッドはアンカー領域の先頭で呼び出されます。引数は 
 \code{<A>} タグの属性で同じ名前を持つものに対応します。
 標準の実装では、ドキュメント内のハイパーリンク 
@@ -124,27 +124,27 @@ writer オブジェクト上の特定の出力イベントに変換するための
 \member{anchorlist} で手に入れることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{anchor_end}{}
+\begin{methoddesc}[HTMLParser]{anchor_end}{}
 このメソッドはアンカー領域の末尾で呼び出されます。標準の
 実装では、テキストの注釈マーカを追加します。マーカは 
 \method{anchor_bgn()} で作られたハイパーリンクリストの
 インデクス値です。
 \end{methoddesc}
 
-\begin{methoddesc}{handle_image}{source, alt\optional{, ismap\optional{,
+\begin{methoddesc}[HTMLParser]{handle_image}{source, alt\optional{, ismap\optional{,
                                  align\optional{, width\optional{, height}}}}}
 このメソッドは画像を扱うために呼び出されます。標準の実装では、
 単に \method{handle_data()} に \var{alt} の値を渡すだけです。
 \end{methoddesc}
 
-\begin{methoddesc}{save_bgn}{}
+\begin{methoddesc}[HTMLParser]{save_bgn}{}
 文字列データをフォーマッタオブジェクトに送らずにバッファに保存
 する操作を開始します。保存されたデータは \method{save_end()}
 で取得してください。 \method{save_bgn()} / \method{save_end()} 
 のペアを入れ子構造にすることはできません。
 \end{methoddesc}
 
-\begin{methoddesc}{save_end}{}
+\begin{methoddesc}[HTMLParser]{save_end}{}
 文字列データのバッファリングを終了し、以前 \method{save_bgn()} 
 を呼び出した時点から保存されている全てのデータを返します。
 \member{nofill} フラグが偽の場合、空白文字は全てスペース文字

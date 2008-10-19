@@ -143,12 +143,12 @@ CR-LF は単一の改行と置き換えられます。
 
 \class{Message} インスタンスは以下のメソッドを持っています:
 
-\begin{methoddesc}{rewindbody}{}
+\begin{methoddesc}[Message]{rewindbody}{}
 メッセージ本体の先頭を seek します。このメソッドはファイルオブジェクト
 が seek 可能である場合にのみ動作します。
 \end{methoddesc}
 
-\begin{methoddesc}{isheader}{line}
+\begin{methoddesc}[Message]{isheader}{line}
 ある行が正しい \rfc{2822} ヘッダである場合、その行の正規化された
 フィールド名 (インデクス指定の際に使われる辞書キー) を返します;
 そうでない場合 \code{None} を返します (解析をここで一度中断し、
@@ -156,33 +156,33 @@ CR-LF は単一の改行と置き換えられます。
 このメソッドをサブクラスで上書きすると便利なことがあります。
 \end{methoddesc}
 
-\begin{methoddesc}{islast}{line}
+\begin{methoddesc}[Message]{islast}{line}
 与えられた line が Message の区切りとなるデリミタであった場合に真を
 返します。このデリミタ行は消費され、ファイルオブジェクトの読み位置は
 その直後になります。標準ではこのメソッドは単にその行が空行かどうか
 をチェックしますが、サブクラスで上書きすることもできます。
 \end{methoddesc}
 
-\begin{methoddesc}{iscomment}{line}
+\begin{methoddesc}[Message]{iscomment}{line}
 与えられた行全体を無視し、単に読み飛ばすときに真を返します。
 標準では、これは控えメソッド (stub) であり、常に \code{False} を返し
 ますが、サブクラスで上書きすることもできます。
 \end{methoddesc}
 
-\begin{methoddesc}{getallmatchingheaders}{name}
+\begin{methoddesc}[Message]{getallmatchingheaders}{name}
 \var{name} に一致するヘッダからなる行のリストがあれば、それらを
 全て返します。各物理行は連続した行内容であるか否かに関わらず
 別々のリスト要素になります。\var{name} に一致するヘッダがない場合、
 空のリストを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{getfirstmatchingheader}{name}
+\begin{methoddesc}[Message]{getfirstmatchingheader}{name}
 \var{name} に一致する最初のヘッダと、その行に連続する (複数)
 行からなる行データのリストを返します。
 \var{name} に一致するヘッダがない場合 \code{None} を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{getrawheader}{name}
+\begin{methoddesc}[Message]{getrawheader}{name}
 \var{name} に一致する最初のヘッダにおけるコロン以降のテキストが入った
 単一の文字列を返します。このテキストには、先頭の空白、末尾の改行、
 また後続の行がある場合には途中の改行と空白が含まれます。
@@ -190,7 +190,7 @@ CR-LF は単一の改行と置き換えられます。
 を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{getheader}{name\optional{, default}}
+\begin{methoddesc}[Message]{getheader}{name\optional{, default}}
 \code{getrawheader(\var{name})} に似ていますが、先頭および末尾の
 空白を剥ぎ取ります。途中にある空白は剥ぎ取られません。
 オプションの \var{default} 引数は、\var{name} に一致する
@@ -198,12 +198,12 @@ CR-LF は単一の改行と置き換えられます。
 ために使われます。
 \end{methoddesc}
 
-\begin{methoddesc}{get}{name\optional{, default}}
+\begin{methoddesc}[Message]{get}{name\optional{, default}}
 正規の辞書との互換性をより高めるための \method{getheader()}
 の別名 (alias) です。
 \end{methoddesc}
 
-\begin{methoddesc}{getaddr}{name}
+\begin{methoddesc}[Message]{getaddr}{name}
 \code{getheader(\var{name})} が返した文字列を解析して、
 \code{(\var{full name}, \var{email address})} からなるペアを返します。
 \var{name} に一致するヘッダが無い場合、\code{(None, None)} が返され
@@ -218,7 +218,7 @@ CR-LF は単一の改行と置き換えられます。
 なります。
 \end{methoddesc}
 
-\begin{methoddesc}{getaddrlist}{name}
+\begin{methoddesc}[Message]{getaddrlist}{name}
 \code{getaddr(\var{list})} に似ていますが、複数のメイルアドレス
 からなるリストが入ったヘッダ (例えば \mailheader{To} ヘッダ) を
 解析し、 \code{(\var{full name}, \var{email address})} のペア
@@ -232,7 +232,7 @@ CR-LF は単一の改行と置き換えられます。
 解析されます。
 \end{methoddesc}
 
-\begin{methoddesc}{getdate}{name}
+\begin{methoddesc}[Message]{getdate}{name}
 \method{getheader()} を使ってヘッダを取得して解析し、
 \function{time.mktime()} と互換な 9 要素のタプルにします; 
 フィールド 6、7、および 8 は有用な値ではないので注意して下さい。
@@ -246,7 +246,7 @@ CR-LF は単一の改行と置き換えられます。
 あります。
 \end{methoddesc}
 
-\begin{methoddesc}{getdate_tz}{name}
+\begin{methoddesc}[Message]{getdate_tz}{name}
 \method{getheader()} を使ってヘッダを取得して解析し、10 要素の
 タプルにします; 最初の 9 要素は \function{time.mktime()} と
 互換性のあるタプルを形成し、10 番目の要素はその日におけるタイムゾーン
@@ -277,18 +277,18 @@ value} および \code{del \var{m}[name]} をサポートしています。
 最後に、\class{Message} インスタンスはいくつかの public なインスタンス
 変数を持っています:
 
-\begin{memberdesc}{headers}
+\begin{memberdesc}[Message]{headers}
 ヘッダ行のセット全体が、(setitem を呼び出して変更されない限り) 
 読み出された順番に入れられたリストです。各行は末尾の改行を
 含んでいます。ヘッダを終端する空行はリストに含まれません。
 \end{memberdesc}
 
-\begin{memberdesc}{fp}
+\begin{memberdesc}[Message]{fp}
 インスタンス化の際に渡されたファイルまたはファイル類似オブジェクトです。
 この値はメッセージ本体を読み出すために使うことができます。
 \end{memberdesc}
 
-\begin{memberdesc}{unixfrom}
+\begin{memberdesc}[Message]{unixfrom}
 メッセージに \UNIX{} \samp{From~} 行がある場合はその行、そうでなければ
 空文字列になります。この値は例えば \code{mbox} 形式のメイルボックス
 ファイルのような、あるコンテキスト中のメッセージを再生成するために
@@ -300,34 +300,34 @@ value} および \code{del \var{m}[name]} をサポートしています。
 
 \class{AddressList} インスタンスは以下のメソッドを持ちます:
 
-\begin{methoddesc}{__len__}{}
+\begin{methoddesc}[AddressList]{__len__}{}
 アドレスリスト中のアドレスの数を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{__str__}{}
+\begin{methoddesc}[AddressList]{__str__}{}
 アドレスリストの正規化 (canonicalize) された文字列表現を返します。
 アドレスはカンマで分割された "name" <host@domain> 形式になります。
 \end{methoddesc}
 
-\begin{methoddesc}{__add__}{alist}
+\begin{methoddesc}[AddressList]{__add__}{alist}
 二つの \class{AddressList} 被演算子中の双方に含まれるアドレスに
 ついて、重複を除いた (集合和の) 全てのアドレスを含む新たな 
 \class{AddressList} インスタンスを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{__iadd__}{alist}
+\begin{methoddesc}[AddressList]{__iadd__}{alist}
 \method{__add__()} のインプレース演算版です; \class{AddressList} 
 インスタンスと右側値 \var{alist} との集合和をとり、その結果を
 インスタンス自体と置き換えます。
 \end{methoddesc}
 
-\begin{methoddesc}{__sub__}{alist}
+\begin{methoddesc}[AddressList]{__sub__}{alist}
 左側値の\class{AddressList} インスタンスのアドレスのうち、
 右側値中に含まれていないもの全てを含む (集合差分の) 新たな 
 \class{AddressList} インスタンスを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{__isub__}{alist}
+\begin{methoddesc}[AddressList]{__isub__}{alist}
 \method{__sub__()} のインプレース演算版で、\var{alist} にも
 含まれているアドレスを削除します。
 \end{methoddesc}
@@ -336,7 +336,7 @@ value} および \code{del \var{m}[name]} をサポートしています。
 最後に、\class{AddressList} インスタンスは public なインスタンス変数
 を一つ持ちます:
 
-\begin{memberdesc}{addresslist}
+\begin{memberdesc}[AddressList]{addresslist}
 アドレスあたり一つの文字列ペアで構成されるタプルからなるリストです。
 各メンバ中では、最初の要素は正規化された名前部分で、二つ目は
 実際の配送アドレス (\character{@} で分割されたユーザ名 と 

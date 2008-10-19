@@ -153,11 +153,11 @@ IMAP4 メッセージ番号は、メイルボックスに対する変更が行われた
 \class{IMAP4} のインスタンスは以下のメソッドを持っています:
 
 
-\begin{methoddesc}{append}{mailbox, flags, date_time, message}
+\begin{methoddesc}[IMAP4]{append}{mailbox, flags, date_time, message}
 指定された名前のメイルボックスに \var{message} を追加します。
 \end{methoddesc}
 
-\begin{methoddesc}{authenticate}{mechanism, authobject}
+\begin{methoddesc}[IMAP4]{authenticate}{mechanism, authobject}
 認証命令です --- 応答の処理が必要です。
 
 \var{mechanism}は利用する認証メカニズムを与えます。
@@ -175,43 +175,43 @@ data = authobject(response)
 もしクライアントが中断応答 \samp{*} を送信した場合にはこれは \code{None} を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{check}{}
+\begin{methoddesc}[IMAP4]{check}{}
 サーバ上のメイルボックスにチェックポイントを設定します。
   Checkpoint mailbox on server. 
 \end{methoddesc}
 
-\begin{methoddesc}{close}{}
+\begin{methoddesc}[IMAP4]{close}{}
 現在選択されているメイルボックスを閉じます。削除されたメッセージは
 書き込み可能メイルボックスから除去されます。\samp{LOGOUT} 前に
 実行することを勧めます。
 \end{methoddesc}
 
-\begin{methoddesc}{copy}{message_set, new_mailbox}
+\begin{methoddesc}[IMAP4]{copy}{message_set, new_mailbox}
 \var{message_set} で指定したメッセージ群を \var{new_mailbox} の
 末尾にコピーします。
 \end{methoddesc}
 
-\begin{methoddesc}{create}{mailbox}
+\begin{methoddesc}[IMAP4]{create}{mailbox}
 \var{mailbox} と名づけられた新たなメイルボックスを生成します。
 \end{methoddesc}
 
-\begin{methoddesc}{delete}{mailbox}
+\begin{methoddesc}[IMAP4]{delete}{mailbox}
 \var{mailbox} と名づけられた古いメイルボックスを削除します。
 \end{methoddesc}
 
-\begin{methoddesc}{deleteacl}{mailbox, who}
+\begin{methoddesc}[IMAP4]{deleteacl}{mailbox, who}
   mailbox における who についてのACLを削除(権限を削除)します。
 \versionadded{2.4}
 \end{methoddesc}
 
-\begin{methoddesc}{expunge}{}
+\begin{methoddesc}[IMAP4]{expunge}{}
 選択されたメイルボックスから削除された要素を永久に除去します。
 各々の削除されたメッセージに対して、\samp{EXPUNGE} 応答を
 生成します。返されるデータには \samp{EXPUNGE} メッセージ番号を
 受信した順番に並べたリストが入っています。
 \end{methoddesc}
 
-\begin{methoddesc}{fetch}{message_set, message_parts}
+\begin{methoddesc}[IMAP4]{fetch}{message_set, message_parts}
 メッセージ (の一部) を取りよせます。\var{message_parts}
 はメッセージパートの名前を表す文字列を丸括弧で囲ったもので、
 例えば: \samp{"(UID BODY[TEXT])"} のようになります。
@@ -219,54 +219,54 @@ data = authobject(response)
 からなるタプルです。
 \end{methoddesc}
 
-\begin{methoddesc}{getacl}{mailbox}
+\begin{methoddesc}[IMAP4]{getacl}{mailbox}
 \var{mailbox} に対する \samp{ACL} を取得します。
 このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
 \end{methoddesc}
 
-\begin{methoddesc}{getannotation}{mailbox, entry, attribute}
+\begin{methoddesc}[IMAP4]{getannotation}{mailbox, entry, attribute}
 \var{mailbox} に対する \samp{ANNOTATION} を取得します。
 このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
 \versionadded{2.5}
 \end{methoddesc}
 
-\begin{methoddesc}{getquota}{root}
+\begin{methoddesc}[IMAP4]{getquota}{root}
 \samp{quota} \var{root} により、リソース使用状況と制限値を取得します。
 このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
 \versionadded{2.3}
 \end{methoddesc}
 
-\begin{methoddesc}{getquotaroot}{mailbox}
+\begin{methoddesc}[IMAP4]{getquotaroot}{mailbox}
 \var{mailbox} に対して \samp{quota} \var{root} を実行した結果のリストを
 取得します。
 このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
 \versionadded{2.3}
 \end{methoddesc}
 
-\begin{methoddesc}{list}{\optional{directory\optional{, pattern}}}
+\begin{methoddesc}[IMAP4]{list}{\optional{directory\optional{, pattern}}}
 \var{pattern} にマッチする \var{directory}メイルボックス名を列挙します。
 \var{directory} の標準の設定値は最上レベルのメイルフォルダで、
 \var{pattern} は標準の設定では全てにマッチします。返されるデータには
 \samp{LIST} 応答のリストが入っています。
 \end{methoddesc}
 
-\begin{methoddesc}{login}{user, password}
+\begin{methoddesc}[IMAP4]{login}{user, password}
 平文パスワードを使ってクライアントを照合します。
 \var{password} はクオートされます。
 \end{methoddesc}
 
-\begin{methoddesc}{login_cram_md5}{user, password}
+\begin{methoddesc}[IMAP4]{login_cram_md5}{user, password}
   パスワードの保護のため、クライアント認証時に\samp{CRAM-MD5}だけを使用します。
   これは、\samp{CAPABILITY}レスポンスに \samp{AUTH=CRAM-MD5} が含まれる場合のみ
   有効です。
 \versionadded{2.3}
 \end{methoddesc}
 
-\begin{methoddesc}{logout}{}
+\begin{methoddesc}[IMAP4]{logout}{}
 サーバへの接続を遮断します。サーバからの \samp{BYE} 応答を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{lsub}{\optional{directory\optional{, pattern}}}
+\begin{methoddesc}[IMAP4]{lsub}{\optional{directory\optional{, pattern}}}
 購読しているメイルボックス名のうち、ディレクトリ内でパターンにマッチ
 するものを列挙します。
 \var{directory} の標準の設定値は最上レベルのメイルフォルダで、
@@ -274,67 +274,67 @@ data = authobject(response)
 返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
 \end{methoddesc}
 
-\begin{methoddesc}{myrights}{mailbox}
+\begin{methoddesc}[IMAP4]{myrights}{mailbox}
   mailboxにおける自分のACLを返します。(すなわち自分がmailboxで持って
   いる権限を返します。)
 \versionadded{2.4}
 \end{methoddesc}
 
-\begin{methoddesc}{namespace}{}
+\begin{methoddesc}[IMAP4]{namespace}{}
   RFC2342で定義されるIMAP名前空間を返します。
 \versionadded{2.3}
 \end{methoddesc}
 
-\begin{methoddesc}{noop}{}
+\begin{methoddesc}[IMAP4]{noop}{}
 サーバに \samp{NOOP} を送信します。
 \end{methoddesc}
 
-\begin{methoddesc}{open}{host, port}
+\begin{methoddesc}[IMAP4]{open}{host, port}
 \var{host} 上の \var{port} に対するソケットを開きます。
 このメソッドで確立された接続オブジェクトは \code{read}、
 \code{readline}、\code{send}、および\code{shutdown} メソッドで
 使われます。このメソッドはオーバライドすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{partial}{message_num, message_part, start, length}
+\begin{methoddesc}[IMAP4]{partial}{message_num, message_part, start, length}
 メッセージの後略された部分を取り寄せます。
 返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
 \end{methoddesc}
 
-\begin{methoddesc}{proxyauth}{user}
+\begin{methoddesc}[IMAP4]{proxyauth}{user}
   \var{user}として認証されたものとします。
   認証された管理者がユーザの代理としてメイルボックスにアクセス
   する際に使用します。
 \versionadded{2.3}
 \end{methoddesc}
  
-\begin{methoddesc}{read}{size}
+\begin{methoddesc}[IMAP4]{read}{size}
 遠隔のサーバから \var{size} バイト読み出します。
 このメソッドはオーバライドすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{readline}{}
+\begin{methoddesc}[IMAP4]{readline}{}
 遠隔のサーバから一行読み出します。
 このメソッドはオーバライドすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{recent}{}
+\begin{methoddesc}[IMAP4]{recent}{}
 サーバに更新を促します。新たなメッセージがない場合応答は \code{None}
 になり、そうでない場合 \samp{RECENT} 応答の値になります。
 \end{methoddesc}
 
-\begin{methoddesc}{rename}{oldmailbox, newmailbox}
+\begin{methoddesc}[IMAP4]{rename}{oldmailbox, newmailbox}
 \var{oldmailbox} という名前のメイルボックスを \var{newmailbox}
 に名称変更します。
 \end{methoddesc}
 
-\begin{methoddesc}{response}{code}
+\begin{methoddesc}[IMAP4]{response}{code}
 応答 \var{code} を受信していれば、そのデータを返し、そうでなければ
 \code{None} を返します。通常の形式 (usual type) ではなく指定したコード
 を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{search}{charset, criterion\optional{, ...}}
+\begin{methoddesc}[IMAP4]{search}{charset, criterion\optional{, ...}}
 条件に合致するメッセージをメイルボックスから検索します。
 \var{charset} は \code{None} でもよく、この場合にはサーバ
 への要求内に \samp{CHARSET} は指定されません。IMAP プロトコルは
@@ -352,45 +352,45 @@ typ, msgnums = M.search(None, '(FROM "LDJ")')
 \end{verbatim}
 \end{methoddesc}
 
-\begin{methoddesc}{select}{\optional{mailbox\optional{, readonly}}}
+\begin{methoddesc}[IMAP4]{select}{\optional{mailbox\optional{, readonly}}}
 メイルボックスを選択します。返されるデータは \var{mailbox} 内の
 メッセージ数 (\samp{EXISTS} 応答) です。標準の設定では
 \var{mailbox} は \code{'INBOX'} です。\var{readonly} が設定された
 場合、メイルボックスに対する変更はできません。
 \end{methoddesc}
 
-\begin{methoddesc}{send}{data}
+\begin{methoddesc}[IMAP4]{send}{data}
 遠隔のサーバに \code{data} を送信します。
 このメソッドはオーバライドすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{setacl}{mailbox, who, what}
+\begin{methoddesc}[IMAP4]{setacl}{mailbox, who, what}
 \samp{ACL} を \var{mailbox} に設定します。
 このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
 \end{methoddesc}
 
-\begin{methoddesc}{setannotation}{mailbox, entry, attribute\optional{, ...}}
+\begin{methoddesc}[IMAP4]{setannotation}{mailbox, entry, attribute\optional{, ...}}
 \samp{ANNOTATION} を \var{mailbox} に設定します。
 このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
 \versionadded{2.5}
 \end{methoddesc}
 
-\begin{methoddesc}{setquota}{root, limits}
+\begin{methoddesc}[IMAP4]{setquota}{root, limits}
 \samp{quota} \var{root} のリソースを \var{limits} に設定します。
 このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
 \versionadded{2.3}
 \end{methoddesc}
 
-\begin{methoddesc}{shutdown}{}
+\begin{methoddesc}[IMAP4]{shutdown}{}
 \code{open} で確立された接続を閉じます。
 このメソッドはオーバライドすることができます。
 \end{methoddesc}
 
-\begin{methoddesc}{socket}{}
+\begin{methoddesc}[IMAP4]{socket}{}
 サーバへの接続に使われているソケットインスタンスを返します。
 \end{methoddesc}
 
-\begin{methoddesc}{sort}{sort_criteria, charset, search_criterion\optional{, ...}}
+\begin{methoddesc}[IMAP4]{sort}{sort_criteria, charset, search_criterion\optional{, ...}}
 \code{sort} 命令は \code{search} に結果の並べ替え (sort) 機能をつけた
 変種です。返されるデータには、条件に合致するメッセージ番号をスペースで
 分割したリストが入っています。
@@ -407,11 +407,11 @@ sort 命令は \var{search_criterium} の前に二つの引数を持ちます;
 \samp{IMAP4rev1} 拡張命令です。
 \end{methoddesc}
 
-\begin{methoddesc}{status}{mailbox, names}
+\begin{methoddesc}[IMAP4]{status}{mailbox, names}
 \var{mailbox} の指定ステータス名の状態情報を要求します。
 \end{methoddesc}
 
-\begin{methoddesc}{store}{message_set, command, flag_list}
+\begin{methoddesc}[IMAP4]{store}{message_set, command, flag_list}
 メイルボックス内のメッセージ群のフラグ設定を変更します。
 \var{command} は \rfc{2060} のセクション 6.4.6 で指定されているもので、
 "FLAGS", "+FLAGS", あるいは "-FLAGS" のいずれかとなります。オプション
@@ -427,11 +427,11 @@ M.expunge()
 \end{verbatim}
 \end{methoddesc}
 
-\begin{methoddesc}{subscribe}{mailbox}
+\begin{methoddesc}[IMAP4]{subscribe}{mailbox}
 新たなメイルボックスを購読 (subscribe) します。
 \end{methoddesc}
 
-\begin{methoddesc}{thread}{threading_algorithm, charset,
+\begin{methoddesc}[IMAP4]{thread}{threading_algorithm, charset,
                            search_criterion\optional{, ...}}
   \code{thread}コマンドは\code{search}にスレッドの概念を加えた変形版で
   ス。返されるデータは空白で区切られたスレッドメンバのリストを含んでい
@@ -455,18 +455,18 @@ M.expunge()
 \end{methoddesc}
 
 
-\begin{methoddesc}{uid}{command, arg\optional{, ...}}
+\begin{methoddesc}[IMAP4]{uid}{command, arg\optional{, ...}}
 command args を、メッセージ番号ではなく UID で指定されたメッセージ群に
 対して実行します。命令内容に応じた応答を返します。少なくとも
 一つの引数を与えなくてはなりません; 何も与えない場合、サーバは
 エラーを返し、例外が送出されます。
 \end{methoddesc}
 
-\begin{methoddesc}{unsubscribe}{mailbox}
+\begin{methoddesc}[IMAP4]{unsubscribe}{mailbox}
 古いメイルボックスの購読を解除 (unsubscribe) します。
 \end{methoddesc}
 
-\begin{methoddesc}{xatom}{name\optional{, arg\optional{, ...}}}
+\begin{methoddesc}[IMAP4]{xatom}{name\optional{, arg\optional{, ...}}}
 サーバから \samp{CAPABILITY} 応答で通知された単純な拡張命令を
 許容 (allow) します。
 \end{methoddesc}
@@ -474,7 +474,7 @@ command args を、メッセージ番号ではなく UID で指定されたメッセージ群に
 
 \class{IMAP4_SSL} のインスタンスは追加のメソッドを一つだけ持ちます:
 
-\begin{methoddesc}{ssl}{}
+\begin{methoddesc}[IMAP4]{ssl}{}
 サーバへの安全な接続に使われる SSLObject インスタンスを返します。
 \end{methoddesc}
 
@@ -482,12 +482,12 @@ command args を、メッセージ番号ではなく UID で指定されたメッセージ群に
 以下の属性が \class{IMAP4} のインスタンス上で定義されています:
 
 
-\begin{memberdesc}{PROTOCOL_VERSION}
+\begin{memberdesc}[IMAP4]{PROTOCOL_VERSION}
 サーバから返された \samp{CAPABILITY} 応答にある、サポートされている
 最新のプロトコルです。
 \end{memberdesc}
 
-\begin{memberdesc}{debug}
+\begin{memberdesc}[IMAP4]{debug}
 デバッグ出力を制御するための整数値です。初期値はモジュール変数
 \code{Debug} から取られます。3 以上の値にすると各命令をトレースします。
 \end{memberdesc}

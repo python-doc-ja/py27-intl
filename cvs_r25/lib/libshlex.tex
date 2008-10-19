@@ -59,24 +59,24 @@ Python アプリケーションのための実行制御ファイルのような、
 \class{shlex} インスタンスは以下のメソッドを持っています:
 
 
-\begin{methoddesc}{get_token}{}
+\begin{methoddesc}[shlex]{get_token}{}
 トークンを一つ返します。トークンが \method{push_token()} で
 使ってスタックに積まれていた場合、トークンをスタックからポップ
 します。そうでない場合、トークンを一つ入力ストリームから読み出します。
 読み出し即時にファイル終了子に遭遇した場合、\member{self.eof} (非 \POSIX{} モードでは空文字列 (\code{''})、\POSIX{} モードでは \code{None}) が返されます。
 \end{methoddesc}
 
-\begin{methoddesc}{push_token}{str}
+\begin{methoddesc}[shlex]{push_token}{str}
 トークンスタックに引数文字列をスタックします。
 \end{methoddesc}
 
-\begin{methoddesc}{read_token}{}
+\begin{methoddesc}[shlex]{read_token}{}
 生 (raw) のトークンを読み出します。プッシュバックスタックを無視し、
 かつソースリクエストを解釈しません (通常これは便利なエントリポイント
 ではありません。完全性のためにここで記述されています)。
 \end{methoddesc}
 
-\begin{methoddesc}{sourcehook}{filename}
+\begin{methoddesc}[shlex]{sourcehook}{filename}
 \class{shlex} がソースリクエスト (下の \member{source} を参照して
 ください) を検出した際、このメソッドはその後に続くトークンを
 引数として渡され、ファイル名と開かれたファイル類似オブジェクトからなる
@@ -106,7 +106,7 @@ Python アプリケーションのための実行制御ファイルのような、
 および \method{pop_source()} メソッドを使ってください。
 \end{methoddesc}
 
-\begin{methoddesc}{push_source}{stream\optional{, filename}}
+\begin{methoddesc}[shlex]{push_source}{stream\optional{, filename}}
 入力ソースストリームを入力スタックにプッシュします。ファイル名
 引数が指定された場合、以後のエラーメッセージ中で利用することが
 できます。\method{sourcehook} メソッドが内部で使用しているのと
@@ -114,14 +114,14 @@ Python アプリケーションのための実行制御ファイルのような、
 \versionadded{2.1}
 \end{methoddesc}
 
-\begin{methoddesc}{pop_source}{}
+\begin{methoddesc}[shlex]{pop_source}{}
 最後にプッシュされた入力ソースを入力スタックからポップします。
 字句解析器がスタック上の入力ストリームの \EOF{} に到達した際に
 利用するメソッドと同じです。
 \versionadded{2.1}
 \end{methoddesc}
 
-\begin{methoddesc}{error_leader}{\optional{file\optional{, line}}}
+\begin{methoddesc}[shlex]{error_leader}{\optional{file\optional{, line}}}
 このメソッドはエラーメッセージの論述部分を \UNIX{} C コンパイラ
 エラーラベルの形式で生成します; この書式は
  \code{'"\%s", line \%d: '} で、\samp{\%s} は現在のソースファイル名
@@ -136,30 +136,30 @@ Python アプリケーションのための実行制御ファイルのような、
 \class{shlex} サブクラスのインスタンスは、字句解析を制御したり、
 デバッグに使えるような public なインスタンス変数を持っています:
 
-\begin{memberdesc}{commenters}
+\begin{memberdesc}[shlex]{commenters}
 コメントの開始として認識される文字列です。コメントの開始から行末
 までのすべてのキャラクタ文字は無視されます。
 標準では単に \character{\#} が入っています。
 \end{memberdesc}
 
-\begin{memberdesc}{wordchars}
+\begin{memberdesc}[shlex]{wordchars}
 複数文字からなるトークンを構成するためにバッファに蓄積していく
 ような文字からなる文字列です。標準では、全ての \ASCII{} 英数字
 およびアンダースコアが入っています。
 \end{memberdesc}
 
-\begin{memberdesc}{whitespace}
+\begin{memberdesc}[shlex]{whitespace}
 空白と見なされ、読み飛ばされる文字群です。空白はトークンの境界を
 作ります。標準では、スペース、タブ、改行 (linefeed) および
 復帰 (carriage-return) が入っています。
 \end{memberdesc}
 
-\begin{memberdesc}{escape}
+\begin{memberdesc}[shlex]{escape}
 エスケープ文字と見なされる文字群です。これは \POSIX{} モードでのみ使われ、デフォルトでは \character{\textbackslash} だけが入っています。
  \versionadded{2.3}
 \end{memberdesc}
 
-\begin{memberdesc}{quotes}
+\begin{memberdesc}[shlex]{quotes}
 文字列引用符と見なされる文字群です。トークンを構成する際、
 同じクオートが再び出現するまで文字をバッファに蓄積します
 (すなわち、異なるクオート形式はシェル中で互いに保護し合う
@@ -167,29 +167,29 @@ Python アプリケーションのための実行制御ファイルのような、
 が入っています。
 \end{memberdesc}
 
-\begin{memberdesc}{escapedquotes}
+\begin{memberdesc}[shlex]{escapedquotes}
 \member{quotes} のうち、\member{escape} で定義されたエスケープ文字を解釈
 する文字群です。これは \POSIX{} モードでのみ使われ、デフォルトでは 
 \character{"} だけが入っています。
 \versionadded{2.3}
 \end{memberdesc}
 
-\begin{memberdesc}{whitespace_split}
+\begin{memberdesc}[shlex]{whitespace_split}
 この値が \code{True} であれば、トークンは空白文字でのみで分割されます。たとえば \class{shlex} がシェル引数と同じ方法で、コマンドラインを解析するのに便利です。
 \versionadded{2.3}
 \end{memberdesc}
 
-\begin{memberdesc}{infile}
+\begin{memberdesc}[shlex]{infile}
 現在の入力ファイル名です。クラスのインスタンス化時に初期設定
 されるか、その後のソースリクエストでスタックされます。
 エラーメッセージを構成する際にこの値を調べると便利なことがあります。
 \end{memberdesc}
 
-\begin{memberdesc}{instream}
+\begin{memberdesc}[shlex]{instream}
 \class{shlex} インスタンスが文字を読み出している入力ストリームです。
 \end{memberdesc}
 
-\begin{memberdesc}{source}
+\begin{memberdesc}[shlex]{source}
 このメンバ変数は標準で \constant{None} を取ります。この値に文字列を
 代入すると、その文字列は多くのシェルにおける \samp{source} キーワード
 に似た、字句解析レベルでのインクルード要求として認識されます。すなわち、
@@ -200,23 +200,23 @@ Python アプリケーションのための実行制御ファイルのような、
 の深さまでスタックしてかまいません。
 \end{memberdesc}
 
-\begin{memberdesc}{debug}
+\begin{memberdesc}[shlex]{debug}
 このメンバ変数が数値で、かつ\code{1} またはそれ以上の値の場合、
 \class{shlex} インスタンスは動作に関する冗長な進捗報告を出力
 します。この出力を使いたいなら、モジュールのソースコードを読めば
 詳細を学ぶことができます。
 \end{memberdesc}
 
-\begin{memberdesc}{lineno}
+\begin{memberdesc}[shlex]{lineno}
 ソース行番号 (遭遇した改行の数に 1 を加えたもの) です。
 \end{memberdesc}
 
-\begin{memberdesc}{token}
+\begin{memberdesc}[shlex]{token}
 トークンバッファです。例外を捕捉した際にこの値を調べると便利なことが
 あります。
 \end{memberdesc}
 
-\begin{memberdesc}{eof}
+\begin{memberdesc}[shlex]{eof}
 ファイルの終端を決定するのに使われるトークンです。非 \POSIX{} モードでは
 空文字列 (\code{''}) 、\POSIX{} モードでは \code{None} が入ります。
 \end{memberdesc}

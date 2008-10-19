@@ -77,7 +77,7 @@
  \class{Message} クラスは、\class{rfc822.Message} メソッドに加えて、
  以下のメソッドを定義しています：
 
-\begin{methoddesc}{getplist}{}
+\begin{methoddesc}[Message]{getplist}{}
  \mailheader{Content-Type} ヘッダのパラメータリストを返します。
  これは文字列のリストです。
 \samp{\var{key}=\var{value}}の形のパラメータに対しては、
@@ -88,33 +88,33 @@
 'spam=2', 'Spam']}を返すでしょう。
 \end{methoddesc}
 
-\begin{methoddesc}{getparam}{name}
+\begin{methoddesc}[Message]{getparam}{name}
 与えられた \var{name}の( \samp{\var{name}=\var{value}} の形に対して
 \method{getplist()} が返す ) 第1パラメータの \var{value} を返します。
 もし \var{value} が、`\code{<}...\code{>}' あるいは `\code{"}...\code{"}'のように引用符で囲まれていれば、
 これらは除去されます。
 \end{methoddesc}
 
-\begin{methoddesc}{getencoding}{}
+\begin{methoddesc}[Message]{getencoding}{}
 \mailheader{Content-Transfer-Encoding} メッセージヘッダで指定された
 符号化方式を返します。もしそのようなヘッダが存在しなければ、
  \code{'7bit'}を返します。符号化方式文字列は小文字に変換されます。
 \end{methoddesc}
 
-\begin{methoddesc}{gettype}{}
+\begin{methoddesc}[Message]{gettype}{}
  \mailheader{Content-Type} ヘッダで指定された
  (\samp{\var{type}/\var{subtype}}の形での)メッセージ型を返します。
  もしそのようなヘッダが存在しなければ、 \code{'text/plain'}を返します。
  型文字列は小文字に変換されます。
 \end{methoddesc}
 
-\begin{methoddesc}{getmaintype}{}
+\begin{methoddesc}[Message]{getmaintype}{}
  \mailheader{Content-Type} ヘッダで指定された主要型を返します。
  もしそのようなヘッダが存在しなければ、 \code{'text'}を返します。
 主要型文字列は小文字に変換されます。
 \end{methoddesc}
 
-\begin{methoddesc}{getsubtype}{}
+\begin{methoddesc}[Message]{getsubtype}{}
 \mailheader{Content-Type}ヘッダで指定された下位型を返します。
  もしそのようなヘッダが存在しなければ、 \code{'plain'}を返します。
 下位型文字列は小文字に変換されます。

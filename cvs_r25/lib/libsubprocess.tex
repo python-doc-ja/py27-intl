@@ -183,17 +183,17 @@ Python プログラムには \code{'\e n'} として認識されます。
 
 \class{Popen} クラスのインスタンスには、以下のようなメソッドがあります:
 
-\begin{methoddesc}{poll}{}
+\begin{methoddesc}[Popen]{poll}{}
 子プロセスが終了しているかどうかを検査します。
 returncode 属性を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{wait}{}
+\begin{methoddesc}[Popen]{wait}{}
 子プロセスが終了するまで待ちます。
 returncode 属性を返します。
 \end{methoddesc}
 
-\begin{methoddesc}{communicate}{input=None}
+\begin{methoddesc}[Popen]{communicate}{input=None}
 プロセスと通信します: end-of-file に到達するまで
 データを stdin に送信し、stdout および stderr からデータを受信します。
 プロセスが終了するまで待ちます。オプション引数 \var{input} には
@@ -208,29 +208,29 @@ communicate() はタプル (stdout, stderr) を返します。
 
 以下の属性も利用できます:
 
-\begin{memberdesc}{stdin}
+\begin{memberdesc}[Popen]{stdin}
 \var{stdin} 引数が \code{PIPE} の場合、この属性には
 子プロセスの入力に使われるファイルオブジェクトになります。
 そうでない場合は \code{None} です。
 \end{memberdesc}
 
-\begin{memberdesc}{stdout}
+\begin{memberdesc}[Popen]{stdout}
 \var{stdout} 引数が \code{PIPE} の場合、この属性には
 子プロセスの出力に使われるファイルオブジェクトになります。
 そうでない場合は \code{None} です。
 \end{memberdesc}
 
-\begin{memberdesc}{stderr}
+\begin{memberdesc}[Popen]{stderr}
 \var{stderr} 引数が \code{PIPE} の場合、この属性には
 子プロセスのエラー出力に使われるファイルオブジェクトになります。
 そうでない場合は \code{None} です。
 \end{memberdesc}
 
-\begin{memberdesc}{pid}
+\begin{memberdesc}[Popen]{pid}
 子プロセスのプロセス ID が入ります。
 \end{memberdesc}
 
-\begin{memberdesc}{returncode}
+\begin{memberdesc}[Popen]{returncode}
 子プロセスの終了ステータスが入ります。
 \code{None} はまだその子プロセスが終了していないことを示し、
 負の値 -N は子プロセスがシグナル N により中止させられたことを示します (\UNIX{} のみ)。

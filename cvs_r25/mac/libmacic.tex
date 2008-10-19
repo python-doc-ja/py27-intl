@@ -62,14 +62,14 @@ Python データ構造に変換します。\module{ic} モジュールを単体で実行すると、
 \class{IC}には辞書型のインターフェースの他にも以下のようなメソッドが
 あります。
 
-\begin{methoddesc}{launchurl}{url\optional{, hint}}
+\begin{methoddesc}[IC]{launchurl}{url\optional{, hint}}
 与えられたURLを解析し、適切なアプリケーションを起動してURLを渡します。省
 略可能な\var{hint}は、\code{'mailto:'}などのスキーム名で、不完全なURLはこ
 のスキームにあわせて補完します。\var{hint} を指定していない場合、
 不完全なURLは無効になります。
 \end{methoddesc}
 
-\begin{methoddesc}{parseurl}{data\optional{, start\optional{, end\optional{, hint}}}}
+\begin{methoddesc}[IC]{parseurl}{data\optional{, start\optional{, end\optional{, hint}}}}
 \var{data} の中からURLを検索し、URLの開始位置、終了位置、URLそのものを
 返します。オプションの引数\var{start}と\var{end} を使うと検索範囲を制限
 できます。例えば、ユーザーが長いテキストフィールドをクリックした場合に、
@@ -79,7 +79,7 @@ Python データ構造に変換します。\module{ic} モジュールを単体で実行すると、
 スキームです。
 \end{methoddesc}
 
-\begin{methoddesc}{mapfile}{file}
+\begin{methoddesc}[IC]{mapfile}{file}
 \var{file} に対するマッピングエントリを返します。\var{file} には
 ファイル名か\function{FSSpec()} の戻り値を渡せます。実在
 しないファイルであってもかまいません。
@@ -100,7 +100,7 @@ Python データ構造に変換します。\module{ic} モジュールを単体で実行すると、
 このエントリの名前です。
 \end{methoddesc}
 
-\begin{methoddesc}{maptypecreator}{type, creator\optional{, filename}}
+\begin{methoddesc}[IC]{maptypecreator}{type, creator\optional{, filename}}
 4文字の\var{type}と\var{creator} コードを持つファイルに対するマッピン
 グエントリを返します。(クリエータが \code{'????'} であるような場合に) 
 正しいエントリが見つかりやすいようにオプションの\var{filename} を指定
@@ -109,7 +109,7 @@ Python データ構造に変換します。\module{ic} モジュールを単体で実行すると、
 マッピングエントリーは\var{mapfile}と同じフォーマットで返されます。
 \end{methoddesc}
 
-\begin{methoddesc}{settypecreator}{file}
+\begin{methoddesc}[IC]{settypecreator}{file}
 実在のファイル\var{file} に対して、拡張子に基づいて適切なクリエータと
 タイプを設定します。\var{file} の指定は、ファイル名でも
 \function{FSSpec()} の戻り値でもかまいません。変更は Finder に

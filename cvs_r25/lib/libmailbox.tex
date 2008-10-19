@@ -1199,7 +1199,7 @@ MMDF メールボックスのメッセージの開始を示す "From~" 行を表わす文字列を返します。
 
 古いメールボックスオブジェクトは繰り返しと一つの公開メソッドだけを提供していました:
 
-\begin{methoddesc}{next}{}
+\begin{methoddesc}[oldmailbox]{next}{}
 メールボックスオブジェクトのコンストラクタに渡された、オプションの
 \var{factory} 引数を使って、メールボックス中の次のメッセージを
 生成して返します。標準の設定では、\var{factory} は \class{rfc822.Message}
