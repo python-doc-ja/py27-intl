@@ -1,0 +1,164 @@
+
+:mod:`shelve` --- Python オブジェクトの永続化
+===================================
+
+.. module:: shelve
+   :synopsis: Python オブジェクトの永続化。
+
+
+.. index:: module: pickle
+
+"シェルフ (shelf, 棚)" は辞書に似た永続性を持つオブジェクトです。 "dbm" データベースとの違いは、シェルフの値 (キーではありません！)
+は実質上どんな Python オブジェクトにも --- :mod:`pickle` モジュール が扱えるなら何でも ---
+できるということです。これにはほとんどの クラスインスタンス、再帰的なデータ型、沢山の共有されたサブオブジェクト
+を含むオブジェクトが含まれます。キーは通常の文字列です。
+
+
+.. function:: open(filename[,flag='c'[,protocol=``None``[,writeback=``False``]]])
+
+   永続的な辞書を開きます。指定された *filename* は、根底にある データベースの基本ファイル名となります。副作用として、*filename*
+   には拡張子がつけられる場合があり、ひとつ以上のファイルが生成される 可能性もあります。デフォルトでは、根底にあるデータベースファイルは
+   読み書き可能なように開かれます。オプションの *flag* パラメタ は :func:`anydbm.open` における *flag* パラメタと同様に
+   解釈されます。
+
+   デフォルトでは、値を整列化する際にはバージョン 0 の pickle 化が 用いられます。pickle 化プロトコルのバージョンは *protocol*
+   パラメタで指定することができます。
+
+   .. versionchanged:: 2.3
+      *protocol* パラメタが追加されました。.
+
+   デフォルトでは、永続的な辞書の可変エントリに対する変更をおこなっても、 自動的にファイルには書き戻されません。オプションの *writeback* パラメタが
+   *True* に設定されていれば、アクセスされたすべての エントリはメモリ上にキャッシュされ、ファイルを閉じる際に書き戻されます;
+   この機能は永続的な辞書上の可変の要素に対する変更を容易にしますが、 多数のエントリがアクセスされた場合、膨大な量のメモリがキャッシュの
+   ために消費され、アクセスされた全てのエントリを書き戻す (アクセスされた エントリが可変であるか、あるいは実際に変更されたかを決定する方法は 存在しないのです)
+   ために、ファイルを閉じる操作を非常に低速にしてしまいます。
+
+shelve オブジェクトは辞書がサポートする全てのメソッドをサポートしています。 これにより、辞書ベースのスクリプトから永続的な記憶媒体を必要とする
+スクリプトに容易に移行できるようになります。
+
+もう一つ追加でサポートされるメソッドがあります。
+
+
+.. method:: Shelf.sync()
+
+   シェルフが *writeback* を *True* にセットして開かれている場合に、 キャッシュ中の全てのエントリを書き戻します。また容易にできるならば、
+   キャッシュを空にしてディスク上の永続的な辞書を同期します。このメソッドは シェルフを :meth:`close` によって閉じるとき自動的に呼び出されます。
+
+
+制限事項
+----
+
+  .. index::
+     module: dbm
+     module: gdbm
+     module: bsddb
+
+* どのデータベースパッケージが使われるか (例えば :mod:`dbm`、 :mod:`gdbm`、:mod:`bsddb`) は、どのインタフェースが
+  利用可能かに依存します。従って、データベースを :mod:`dbm`  を使って直接開く方法は安全ではありません。データベースはまた、 :mod:`dbm`
+  が使われた場合 (不幸なことに) その制約に縛られます --- これはデータベースに 記録されたオブジェクト (の pickle 化された表現) はかなり小さく
+  なければならず、キー衝突が生じた場合に、稀にデータベースを更新 することができなくなるということを意味します。
+
+* 実装に依存して、永続化した辞書を閉じるときには、変更がディスクに 書き込まれるかもしれないし、必ずしも書き込まれないかもしれません。
+  :class:`Shelf` クラスの :meth:`__del__` メソッドは :meth:`close`
+  メソッドを呼び出すので、プログラマは通常この作業を明示的に行う必要は ありません。
+
+* :mod:`shelve` モジュールは、シェルフに置かれたオブジェクトの *並列した* 読み出し/書き込みアクセスをサポートしません
+  (複数の同時読み出しアクセスは安全です)。あるプログラムが書き込み ために開かれたシェルフを持っているとき、他のプログラムは
+  そのシェルフを読み書きのために開いてはいけません。この問題を 解決するために Unix のファイルロック機構を使うことができますが、 この機構は Unix
+  のバージョン間で異なり、使われている データベースの実装について知識が必要となります。
+
+
+.. class:: Shelf(dict[, protocol=None[, writeback=False]])
+
+   :class:`UserDict.DictMixin` のサブクラスで、pickle 化された値を  *dict* オブジェクトに保存します。
+
+   デフォルトでは、値を整列化する際にはバージョン 0 の pickle 化が 用いられます。pickle 化プロトコルのバージョンは *protocol*
+   パラメタで指定することができます。pickle 化プロトコルについては :mod:`pickle` のドキュメントを参照してください。
+
+   .. versionchanged:: 2.3
+      *protocol* パラメタが追加されました。.
+
+   *writeback* パラメタが *True* に設定されていれば、アクセスされたすべての
+   エントリはメモリ上にキャッシュされ、ファイルを閉じる際に書き戻されます; この機能により、可変のエントリに対して自然な操作が可能になりますが、
+   さらに多くのメモリを消費し、辞書をファイルと同期して閉じる際に長い時間が かかるようになります。
+
+
+.. class:: BsdDbShelf(dict[, protocol=None[, writeback=False]])
+
+   :class:`Shelf` のサブクラスで、:meth:`first`、:meth:`next`、 :meth:`previous`、
+   :meth:`last` および :meth:`set_location`  メソッドを公開しています。これらのメソッドは :mod:`bsddb`
+   モジュールでは 利用可能ですが、他のデータベースモジュールでは利用できません。 コンストラクタに渡された *dict* オブジェクトは上記のメソッドを
+   サポートしていなくてはなりません。通常は、:func:`bsddb.hashopen`、 :func:`bsddb.btopen` または
+   :func:`bsddb.rnopen` のいずれか を呼び出して得られるオブジェクトが条件を満たしています。オプションの *protocol*、および
+   *writeback* パラメタは :class:`Shelf` クラスにおけるパラメタと同様に解釈されます。
+
+
+.. class:: DbfilenameShelf(filename[, flag='c'[, protocol=None[, writeback=False]]])
+
+   :class:`Shelf` のサブクラスで、辞書様オブジェクトの代わりに *filename* を受理します。根底にあるファイルは
+   :func:`anydbm.open` を使って開かれます。デフォルトでは、 ファイルは読み書き可能な状態で開かれます。オプションの *flag* パラメタは
+   :func:`open` 関数におけるパラメタと同様に解釈されます。 オプションの *protocol*、および *writeback* パラメタは
+   :class:`Shelf` クラスにおけるパラメタと同様に解釈されます。
+
+
+使用例
+---
+
+インタフェースは以下のコードに集約されています (``key`` は文字列で、 ``data`` は任意のオブジェクトです)::
+
+   import shelve
+
+   d = shelve.open(filename) # open -- file may get suffix added by low-level
+                             # library
+
+   d[key] = data   # store data at key (overwrites old data if
+                   # using an existing key)
+   data = d[key]   # retrieve a COPY of data at key (raise KeyError if no
+                   # such key)
+   del d[key]      # delete data stored at key (raises KeyError
+                   # if no such key)
+   flag = d.has_key(key)   # true if the key exists
+   klist = d.keys() # a list of all existing keys (slow!)
+
+   # as d was opened WITHOUT writeback=True, beware:
+   d['xx'] = range(4)  # this works as expected, but...
+   d['xx'].append(5)   # *this doesn't!* -- d['xx'] is STILL range(4)!!!
+
+   # having opened d without writeback=True, you need to code carefully:
+   temp = d['xx']      # extracts the copy
+   temp.append(5)      # mutates the copy
+   d['xx'] = temp      # stores the copy right back, to persist it
+
+   # or, d=shelve.open(filename,writeback=True) would let you just code
+   # d['xx'].append(5) and have it work as expected, BUT it would also
+   # consume more memory and make the d.close() operation slower.
+
+   d.close()       # close it
+
+
+.. seealso::
+
+   Module :mod:`anydbm`
+      ``dbm`` スタイルのデータベースに対する汎用インタフェース。
+
+   Module :mod:`bsddb`
+      BSD ``db`` データベースインタフェース。
+
+   Module :mod:`dbhash`
+      :mod:`bsddb` をラップする薄いレイヤで、他のデータベースモジュールのように関数 :func:`open` を提供しています。
+
+   Module :mod:`dbm`
+      標準の Unix データベースインタフェース。
+
+   Module :mod:`dumbdbm`
+      ``dbm`` インタフェースの移植性のある実装。
+
+   Module :mod:`gdbm`
+      ``dbm`` インタフェースに基づいた GNU データベースインタフェース。
+
+   Module :mod:`pickle`
+      :mod:`shelve` によって使われるオブジェクト整列化機構。
+
+   Module :mod:`cPickle`
+      :mod:`pickle` の高速版。
+
