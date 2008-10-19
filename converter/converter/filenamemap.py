@@ -437,11 +437,12 @@ _mapping = {
         '__newname__': '',
         'boilerplate': None,
         'patchlevel': None,
-        'copyright': '',
+        'copyright': "",
         'license': '',
         'reportingbugs': 'bugs',
         # japanese translation info.
-        'jptranslation': '',
+        'boilerplatejp': None,
+        'copyrightjp': '',
     },
 }
 
