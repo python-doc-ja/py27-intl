@@ -1,0 +1,1333 @@
+\section{\module{decimal} ---
+         10進浮動小数点数の算術演算}
+
+\declaremodule{standard}{decimal}
+\modulesynopsis{汎用 10 進数算術仕様 (General Decimal Arithmetic Specification)
+の実装。}
+
+\moduleauthor{Eric Price}{eprice at tjhsst.edu}
+\moduleauthor{Facundo Batista}{facundo at taniquetil.com.ar}
+\moduleauthor{Raymond Hettinger}{python at rcn.com}
+\moduleauthor{Aahz}{aahz at pobox.com}
+\moduleauthor{Tim Peters}{tim.one at comcast.net}
+
+\sectionauthor{Raymond D. Hettinger}{python at rcn.com}
+
+\versionadded{2.4}
+
+\module{decimal} モジュールは10 進の浮動小数点算術をサポートします。
+\module{decimal} には、 \class{float()} データ型に比べて、以下のような
+利点があります:
+
+\begin{itemize}
+
+\item 10 進数を正確に表現できます。\constant{1.1} のような数は、2 進数の
+浮動小数点型では正しく表現できません。エンドユーザは普通、
+2 進数における\constant{1.1} の近似値が\constant{1.1000000000000001} 
+だからといって、そのように表示してほしいとは考えないものです。
+
+\item 値の正確さは算術にも及びます。10 進の浮動小数点による計算では、
+\samp{0.1 + 0.1 + 0.1 - 0.3} は厳密にゼロに等しくなります。
+2 進浮動小数点では\constant{5.5511151231257827e-017} になってしまいます。
+ゼロに近い値とはいえ、この誤差は数値間の等価性テストの信頼性を阻害します。
+また、誤差が蓄積されることもあります。こうした理由から、数値間の等価性を
+厳しく保たねばならないようなアプリケーションを考えるなら、10 進数による
+数値表現が望ましいということになります。
+
+\item \module{decimal} モジュールでは、有効桁数の表記が取り入れられており、
+例えば \samp{1.30 + 1.20} は \constant{2.50} になります。すなわち、
+末尾のゼロは有効数字を示すために残されます。こうした仕様は通貨計算を行う
+アプリケーションでは慣例です。乗算の場合、「教科書的な」アプローチでは、
+乗算の被演算子すべての桁数を使います。
+例えば、\samp{1.3 * 1.2} は \constant{1.56} になり、
+\samp{1.30 * 1.20} は \constant{1.5600} になります。
+
+\item ハードウェアによる 2 進浮動小数点表現と違い、\module{decimal} 
+モジュールでは計算精度をユーザが指定できます(デフォルトでは 28 桁です)。
+この桁数はほとんどの問題解決に十分な大きさです:
+
+\begin{verbatim}
+>>> getcontext().prec = 6
+>>> Decimal(1) / Decimal(7)
+Decimal("0.142857")
+>>> getcontext().prec = 28
+>>> Decimal(1) / Decimal(7)
+Decimal("0.1428571428571428571428571429")
+\end{verbatim}
+
+\item 2 進と 10 進の浮動小数点は、いずれも広く公開されている標準仕様の
+もとに実装されています。組み込みの浮動小数点型では、標準仕様で提唱されている
+機能のほんのささやかな部分を利用できるにすぎませんが、 \module{decimal} 
+では標準仕様が要求している全ての機能を利用できます。必要に応じて、
+プログラマは値の丸めやシグナル処理を完全に制御できます。
+
+\end{itemize}
+
+このモジュールは、 10 進数型、算術コンテキスト (context for arithmetic)、
+そしてシグナル (signal) という三つの概念を中心に設計されています、
+
+10 進数型は変更不可能な型です。この型には符号部、仮数部、そして指数部
+があります。有効桁数を残すために、仮数部の末尾にあるゼロの切り詰めは
+行われません。 \module{decimal} では、
+\constant{Infinity}, \constant{-Infinity}, および \constant{NaN} 
+といった特殊な値も定義されています。
+標準仕様では \constant{-0} と \constant{+0} も区別しています。
+
+算術コンテキストとは、精度や値丸めの規則、指数部の制限を決めている
+環境です。この環境では、演算結果を表すためのフラグや、演算上発生した
+特定のシグナルを例外として扱うかどうかを決めるトラップイネーブラも
+定義しています。丸め規則には\constant{ROUND_CEILING},
+\constant{ROUND_DOWN}, \constant{ROUND_FLOOR}, \constant{ROUND_HALF_DOWN},
+\constant{ROUND_HALF_EVEN}, \constant{ROUND_HALF_UP}, および
+\constant{ROUND_UP} があります。
+
+シグナルとは、演算の過程で生じる例外的条件です。個々のシグナルは、
+アプリケーションそれぞれの要求に従って、無視されたり、単なる情報と
+みなされたり、例外として扱われたりします。\module{decimal} モジュール
+には、\constant{Clamped}, \constant{InvalidOperation},
+\constant{DivisionByZero}, \constant{Inexact}, \constant{Rounded},
+\constant{Subnormal}, \constant{Overflow}, および \constant{Underflow}
+といったシグナルがあります。
+
+各シグナルには、フラグとトラップイネーブラがあります。演算上
+何らかのシグナルに遭遇すると、フラグはゼロからインクリメントされて
+ゆきます。このとき、もしトラップイネーブラが 1 にセットされて
+いれば、例外を送出します。フラグの値は膠着型 (sticky) なので、
+演算によるフラグの変化をモニタしたければ、予めフラグをリセット
+しておかねばなりません。
+
+\begin{seealso}
+  \seetext{IBM による汎用 10 進演算仕様、
+           \citetitle[http://www2.hursley.ibm.com/decimal/decarith.html]
+           {The General Decimal Arithmetic Specification}。}
+
+  \seetext{IEEE 標準化仕様 854-1987,
+           \citetitle[http://www.cs.berkeley.edu/\textasciitilde ejr/projects/754/private/drafts/854-1987/dir.html]
+           {IEEE 854 に関する非公式のテキスト}。} 
+\end{seealso}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Quick-start Tutorial \label{decimal-tutorial}}
+
+普通、\module{decimal} を使うときには、モジュールを import し、現在の
+演算コンテキストを \function{getcontext()} で調べ、必要に応じて
+精度や丸めを設定し、演算エラーのトラップを有効にします:
+
+\begin{verbatim}
+>>> from decimal import *
+>>> getcontext()
+Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+        capitals=1, flags=[], traps=[Overflow, InvalidOperation,
+        DivisionByZero])
+
+>>> getcontext().prec = 7       # 新たな精度を設定
+\end{verbatim}
+
+\class{Decimal} のインスタンスは、整数、文字列またはタプルから生成
+できます。\class{Decimal} を \class{float} から生成したければ、まず
+文字列型に変換せねばなりません。そうすることで、変換方法の詳細を
+(representation error も含めて) 明示的に残せます。
+\class{Decimal} は ``数値ではない (Not a Number)''
+を表す \constant{NaN} や正負の \constant{Infinity} (無限大)、
+\constant{-0} といった特殊な値も表現できます。
+
+\begin{verbatim}
+>>> Decimal(10)
+Decimal("10")
+>>> Decimal("3.14")
+Decimal("3.14")
+>>> Decimal((0, (3, 1, 4), -2))
+Decimal("3.14")
+>>> Decimal(str(2.0 ** 0.5))
+Decimal("1.41421356237")
+>>> Decimal("NaN")
+Decimal("NaN")
+>>> Decimal("-Infinity")
+Decimal("-Infinity")
+\end{verbatim}
+
+新たな \class{Decimal} 型数値の有効桁数は入力した数の桁数だけで決まります。
+演算コンテキストにおける精度や値丸めの設定が影響するのは算術操作の
+中だけです。
+
+\begin{verbatim}
+>>> getcontext().prec = 6
+>>> Decimal('3.0')
+Decimal("3.0")
+>>> Decimal('3.1415926535')
+Decimal("3.1415926535")
+>>> Decimal('3.1415926535') + Decimal('2.7182818285')
+Decimal("5.85987")
+>>> getcontext().rounding = ROUND_UP
+>>> Decimal('3.1415926535') + Decimal('2.7182818285')
+Decimal("5.85988")
+\end{verbatim}
+
+\class{Decimal} 型数値はほとんどの場面で Python の他の機能とうまく
+やりとりできます。
+\class{Decimal} 浮動小数点小劇場 (flying circus) を示しましょう:
+    
+\begin{verbatim}    
+>>> data = map(Decimal, '1.34 1.87 3.45 2.35 1.00 0.03 9.25'.split())
+>>> max(data)
+Decimal("9.25")
+>>> min(data)
+Decimal("0.03")
+>>> sorted(data)
+[Decimal("0.03"), Decimal("1.00"), Decimal("1.34"), Decimal("1.87"),
+ Decimal("2.35"), Decimal("3.45"), Decimal("9.25")]
+>>> sum(data)
+Decimal("19.29")
+>>> a,b,c = data[:3]
+>>> str(a)
+'1.34'
+>>> float(a)
+1.3400000000000001
+>>> round(a, 1)     # round() は値をまず二進の浮動小数点数に変換します
+1.3
+>>> int(a)
+1
+>>> a * 5
+Decimal("6.70")
+>>> a * b
+Decimal("2.5058")
+>>> c % a
+Decimal("0.77")
+\end{verbatim}
+
+\method{quantize()} メソッドは位を固定して数値を丸めます。このメソッドは、
+計算結果を固定の桁数で丸めることがよくある、通貨を扱うアプリケーションで
+便利です:
+
+\begin{verbatim} 
+>>> Decimal('7.325').quantize(Decimal('.01'), rounding=ROUND_DOWN)
+Decimal("7.32")
+>>> Decimal('7.325').quantize(Decimal('1.'), rounding=ROUND_UP)
+Decimal("8")
+\end{verbatim}
+
+前述のように、\function{getcontext()} 関数を使うと現在の演算コンテキスト
+にアクセスでき、設定を変更できます。ほとんどのアプリケーションはこの
+アプローチで十分です。
+
+より高度な作業を行う場合、\function{Context()} コンストラクタを使って
+別の演算コンテキストを作っておくと便利なことがあります。
+別の演算コンテキストをアクティブにしたければ、\function{setcontext()}
+を使います。
+
+\module{Decimal} モジュールでは、標準仕様に従って、すぐ利用できる
+二つの標準コンテキスト、\constant{BasicContext} および
+\constant{ExtendedContext} を提供しています。後者はほとんどのトラップが
+有効になっており、とりわけデバッグの際に便利です:
+
+\begin{verbatim}
+>>> myothercontext = Context(prec=60, rounding=ROUND_HALF_DOWN)
+>>> setcontext(myothercontext)
+>>> Decimal(1) / Decimal(7)
+Decimal("0.142857142857142857142857142857142857142857142857142857142857")
+
+>>> ExtendedContext
+Context(prec=9, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+        capitals=1, flags=[], traps=[])
+>>> setcontext(ExtendedContext)
+>>> Decimal(1) / Decimal(7)
+Decimal("0.142857143")
+>>> Decimal(42) / Decimal(0)
+Decimal("Infinity")
+
+>>> setcontext(BasicContext)
+>>> Decimal(42) / Decimal(0)
+Traceback (most recent call last):
+  File "<pyshell#143>", line 1, in -toplevel-
+    Decimal(42) / Decimal(0)
+DivisionByZero: x / 0
+\end{verbatim}
+
+演算コンテキストには、演算中に遭遇した例外的状況をモニタするための
+シグナルフラグがあります。フラグが一度セットされると、明示的に
+クリアするまで残り続けます。そのため、フラグのモニタを行いたいような
+演算の前には\method{clear_flags()} メソッドでフラグをクリアして
+おくのがベストです。
+
+\begin{verbatim}
+>>> setcontext(ExtendedContext)
+>>> getcontext().clear_flags()
+>>> Decimal(355) / Decimal(113)
+Decimal("3.14159292")
+>>> getcontext()
+Context(prec=9, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+        capitals=1, flags=[Inexact, Rounded], traps=[])
+\end{verbatim}
+
+\var{flags} エントリから、\constant{Pi} の有理数による近似値が丸められた
+(コンテキスト内で決められた精度を超えた桁数が捨てられた) ことと、
+計算結果が厳密でない (無視された桁の値に非ゼロのものがあった) ことが
+わかります。
+
+コンテキストの \member{traps} フィールドに入っている辞書を使うと、
+個々のトラップをセットできます:
+
+\begin{verbatim}
+>>> Decimal(1) / Decimal(0)
+Decimal("Infinity")
+>>> getcontext().traps[DivisionByZero] = 1
+>>> Decimal(1) / Decimal(0)
+Traceback (most recent call last):
+  File "<pyshell#112>", line 1, in -toplevel-
+    Decimal(1) / Decimal(0)
+DivisionByZero: x / 0
+\end{verbatim}
+
+ほとんどのプログラムでは、開始時に一度だけ現在の演算コンテキストを
+修正します。また、多くのアプリケーションでは、データから \class{Decimal} 
+への変換はループ内で一度だけキャストして行います。コンテキストを設定し、
+\class{Decimal} オブジェクトを生成できたら、ほとんどのプログラムは
+他の Python 数値型と全く変わらないかのように\class{Decimal} を操作できます。
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Decimal オブジェクト \label{decimal-decimal}}
+
+\begin{classdesc}{Decimal}{\optional{value \optional{, context}}}
+\var{value} に基づいて新たな \class{Decimal} オブジェクトを構築
+します。
+
+\var{value} は整数、文字列、タプル、および他の \class{Decimal} 
+オブジェクトにできます。\var{value} を指定しない場合、
+\code{Decimal("0")} を返します。 \var{value} が文字列の場合、
+以下の 10 進数文字列の文法に従わねばなりません:
+    
+  \begin{verbatim}
+    sign           ::=  '+' | '-'
+    digit          ::=  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+    indicator      ::=  'e' | 'E'
+    digits         ::=  digit [digit]...
+    decimal-part   ::=  digits '.' [digits] | ['.'] digits
+    exponent-part  ::=  indicator [sign] digits
+    infinity       ::=  'Infinity' | 'Inf'
+    nan            ::=  'NaN' [digits] | 'sNaN' [digits]
+    numeric-value  ::=  decimal-part [exponent-part] | infinity
+    numeric-string ::=  [sign] numeric-value | [sign] nan  
+  \end{verbatim}
+
+\var{value} を \class{tuple} にする場合、タプルは三つの要素を持ち、
+それぞれ符号 (正なら\constant{0}、負なら \constant{1})、仮数部を
+表す数字のタプル、そして指数を表す整数でなければなりません。
+例えば、\samp{Decimal((0, (1, 4, 1, 4), -3))} は
+\code{Decimal("1.414")} を返します。
+
+\var{context} に指定した精度 (precision) は、オブジェクトが記憶する
+桁数には影響しません。桁数は \var{value} に指定した桁数だけから
+決定されます。例えば、演算コンテキストに指定された精度が 3 桁しかなくても、
+\samp{Decimal("3.00000")} は 5 つのゼロを全て記憶します。
+
+\var{context} 引数の目的は、\var{value} が正しくない形式の文字列
+であった場合に行う処理を決めることにあります;
+演算コンテキストが\constant{InvalidOperation} をトラップするように
+なっていれば、例外を送出します。それ以外の場合には、コンストラクタは
+値が\constant{NaN} の\class{Decimal} を返します。
+
+一度生成すると、\class{Decimal} オブジェクトは変更不能 (immutable) 
+になります。
+\end{classdesc}
+
+10 進浮動小数点オブジェクトは、\class{float} や\class{int} のような
+他の組み込み型と多くの点で似ています。通常の数学演算や特殊メソッドを
+適用できます。また、\class{Decimal} オブジェクトは
+コピーでき、pickle 化でき、print で出力でき、辞書のキーにでき、
+集合の要素にでき、比較、保存、他の型 (\class{float} や\class{long})
+への型強制を行えます。
+
+こうした標準的な数値型の特性の他に、10進浮動小数点オブジェクトには
+様々な特殊メソッドがあります:
+
+\begin{methoddesc}{adjusted}{}
+仮数部の先頭の一桁だけが残るように桁シフトを行い、そのときの指数部を
+返します: \code{Decimal("321e+5").adjusted()} なら 7 です。
+最上桁の小数点からの相対位置を調べる際に使います。
+\end{methoddesc}
+
+\begin{methoddesc}{as_tuple}{}
+数値を表現するためのタプル:
+  \samp{(sign, digittuple, exponent)}
+を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{compare}{other\optional{, context}}
+\method{__cmp__()} に似ていますが、\class{Decimal} インスタンスを
+返します。
+  \begin{verbatim}
+        a or b is a NaN ==> Decimal("NaN")
+        a < b           ==> Decimal("-1")
+        a == b          ==> Decimal("0")
+        a > b           ==> Decimal("1")
+  \end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}{max}{other\optional{, context}}
+\samp{max(self, other)} と同じですが、値を返す前に現在のコンテキストに
+即した丸め規則を適用します。また、 
+\constant{NaN} に対して、(コンテキストでシグナルまたは黙認のどちらが
+設定されているかに応じて) シグナルを発行するか無視します。
+\end{methoddesc}
+
+\begin{methoddesc}{min}{other\optional{, context}}
+\samp{min(self, other)} と同じですが、値を返す前に現在のコンテキストに
+即した丸め規則を適用します。また、 
+\constant{NaN} に対して、(コンテキストでシグナルまたは黙認のどちらが
+設定されているかに応じて) シグナルを発行するか無視します。
+\end{methoddesc}
+
+\begin{methoddesc}{normalize}{\optional{context}}
+数値を正規化 (normalize) して、右端に連続しているゼロを除去し、
+\constant{Decimal("0")} と同じ結果はすべて \constant{Decimal("0e0")}
+に変換します。
+同じクラスの値から基準表現を生成する際に用います。
+たとえば、 \code{Decimal("32.100")} と \code{Decimal("0.321000e+2")}
+の正規化は、いずれも同じ値 \code{Decimal("32.1")} になります。
+\end{methoddesc}                                              
+
+\begin{methoddesc}{quantize}
+  {exp \optional{, rounding\optional{, context\optional{, watchexp}}}}
+指数部を\var{exp} と同じにします。値丸めの際、まず\var{rounding} が
+あるか調べ、次に\var{context} を調べ、最後に現在のコンテキストの
+設定を用います。
+
+\var{watchexp} が (default) に設定されている場合、処理結果の指数
+が \member{Emax} よりも大きい場合や \member{Etiny} よりも小さい
+場合にエラーを返します。
+\end{methoddesc} 
+
+\begin{methoddesc}{remainder_near}{other\optional{, context}}
+モジュロを計算し、正負のモジュロのうちゼロに近い値を返します。
+たとえば、
+  \samp{Decimal(10).remainder_near(6)} は 
+\code{Decimal("4")} よりもゼロに近い値 \code{Decimal("-2")}
+を返します。
+
+ゼロからの差が同じ場合には、 \var{self} と同じ符号を持った方を
+返します。
+\end{methoddesc}  
+
+\begin{methoddesc}{same_quantum}{other\optional{, context}}
+\var{self} と \var{other} が同じ指数を持っているか、あるいは
+双方とも \constant{NaN} である場合に真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{sqrt}{\optional{context}}
+平方根を精度いっぱいまで求めます。
+\end{methoddesc}                    
+ 
+\begin{methoddesc}{to_eng_string}{\optional{context}}
+数値を工学で用いられる形式 (工学表記; enginnering notation) 
+の文字列に変換します。
+
+工学表記では指数は 3 の倍数になります。従って、
+最大で 3 桁までの数字が基数の小数部に現れます。たとえば、
+  \code{Decimal('123E+1')} は \code{Decimal("1.23E+3")}
+に変換されます。
+\end{methoddesc}  
+
+\begin{methoddesc}{to_integral}{\optional{rounding\optional{, context}}}
+\constant{Inexact} や \constant{Rounded} といったシグナルを出さずに
+最近傍の整数に値を丸めます。\var{rounding} が指定されていれば適用
+されます; それ以外の場合、値丸めの方法は\var{context} の設定か現在の
+コンテキストの設定になります。
+\end{methoddesc} 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
+\subsection{Context オブジェクト \label{decimal-decimal}}
+
+コンテキスト (context) とは、算術演算における環境設定です。
+コンテキストは計算精度を決定し、値丸めの方法を設定し、
+シグナルのどれが例外になるかを決め、指数の範囲を制限しています。
+
+多重スレッドで処理を行う場合には各スレッドごとに現在のコンテキストが
+あり、\function{getcontext()} や \function{setcontext()} といった関数で
+アクセスしたり設定変更できます:
+
+\begin{funcdesc}{getcontext}{}
+アクティブなスレッドの現在のコンテキストを返します。
+\end{funcdesc}            
+
+\begin{funcdesc}{setcontext}{c}
+アクティブなスレッドのコンテキストを \var{c} に設定します。
+\end{funcdesc}  
+
+Python 2.5 から、\keyword{with} 文と \function{localcontext()} 関数を使っ
+て実行するコンテキストを一時的に変更することもできるようになりました。
+
+\begin{funcdesc}{localcontext}{\optional{c}}
+  with 文の入口でアクティブなスレッドのコンテキストを \var{c} のコピー
+  に設定し、with 文を抜ける時に元のコンテキストに復旧する、コンテキスト
+  マネージャを返します。コンテキストが指定されなければ、現在のコンテキ
+  ストのコピーが使われます。
+  \versionadded{2.5}
+
+たとえば、以下のコードでは精度を42桁に設定し、計算を実行し、そして
+元のコンテキストに復帰します。
+\begin{verbatim}
+    from __future__ import with_statement
+    from decimal import localcontext
+
+    with localcontext() as ctx:
+        ctx.prec = 42   # 高精度の計算を実行
+        s = calculate_something()
+    s = +s  # 最終的な結果をデフォルトの精度に丸める
+\end{verbatim}
+\end{funcdesc}
+
+新たなコンテキストは、以下で説明する\class{Context} コンストラクタを
+使って生成できます。その他にも、\module{decimal} モジュールでは
+作成済みのコンテキストを提供しています:
+
+\begin{classdesc*}{BasicContext}
+General Decimal Arithmetic Specification で定義されている標準コンテキスト
+の一つです。精度は 9 桁に設定されています。丸め規則は \constant{ROUND_HALF_UP}
+です。すべての演算結果フラグはクリアされています。\constant{Inexact}、
+\constant{Rounded}、\constant{Subnormal} を除く全ての演算エラートラップが
+有効 (例外として扱う) になっています。
+
+多くのトラップが有効になっているので、デバッグの際に便利なコンテキスト
+です。
+\end{classdesc*}
+
+\begin{classdesc*}{ExtendedContext}
+General Decimal Arithmetic Specification で定義されている標準コンテキスト
+の一つです。精度は 9 桁に設定されています。丸め規則は
+\constant{ROUND_HALF_EVEN} です。すべての演算結果フラグはクリアされています。
+トラップは全て無効 (演算中に一切例外を送出しない) になっています。
+
+トラップが無効になっているので、エラーの伴う演算結果を \constant{NaN} や 
+\constant{Infinity} にし、例外を送出しないようにしたいアプリケーションに
+向いたコンテキストです。このコンテキストを使うと、他の場合にはプログラム
+が停止してしまうような状況があっても実行を完了させられます。
+\end{classdesc*}
+
+\begin{classdesc*}{DefaultContext}
+\class{Context} コンストラクタが新たなコンテキストを作成するさいに
+雛形にするコンテキストです。このコンテキストのフィールド (精度の設定など)
+を変更すると、\class{Context} コンストラクタが生成する新たなコンテキストに
+影響を及ぼします。
+
+このコンテキストは、主に多重スレッド環境で便利です。スレッドを開始する
+前に何らかのフィールドを変更しておくと、システム全体のデフォルト設定
+に効果を及ぼせます。スレッドを開始した後にフィールドを変更すると
+競合条件を抑制するためにスレッドを同期化せねばならないので推奨しません。
+
+単一スレッドの環境では、このコンテキストを使わないよう薦めます。
+下で述べるように明示的にコンテキストを作成してください。
+
+デフォルトの値は精度 28 桁、丸め規則 \constant{ROUND_HALF_EVEN} で、
+トラップ \constant{Overflow}、\constant{InvalidOperation}、および
+\constant{DivisionByZero} が有効になっています。
+\end{classdesc*}
+
+上に挙げた三つのコンテキストに加え、\class{Context} コンストラクタを
+使って新たなコンテキストを生成できます。
+
+\begin{classdesc}{Context}{prec=None, rounding=None, traps=None,
+        flags=None, Emin=None, Emax=None, capitals=1}
+新たなコンテキストを生成します。あるフィールドが定義されていないか
+\constant{None} であれば、 \constant{DefaultContext} からデフォルト値を
+コピーします。 \var{flags} フィールドが設定されていいか \constant{None}
+の場合には、全てのフラグがクリアされます。
+
+\var{prec} フィールドは正の整数で、コンテキストにおける算術演算の
+計算精度を設定します。
+
+\var{rounding} は、
+  \begin{itemize}
+  \item \constant{ROUND_CEILING} (\constant{Infinity} 寄りの値にする),
+  \item \constant{ROUND_DOWN} (ゼロ寄りの値にする),
+  \item \constant{ROUND_FLOOR} (\constant{-Infinity} 寄りの値にする),
+  \item \constant{ROUND_HALF_DOWN} (最近値のうちゼロ寄りの値にする),
+  \item \constant{ROUND_HALF_EVEN} (最近値のうち偶数値を優先する),
+  \item \constant{ROUND_HALF_UP} (最近値のうちゼロから遠い値にする), または
+  \item \constant{ROUND_UP} (ゼロから遠い値にする)
+  \end{itemize}
+のいずれかです。
+
+\var{traps} および \var{flags} フィールドには、セットしたい
+シグナルを列挙します。一般的に、新たなコンテキストを作成するときには
+トラップだけを設定し、フラグはクリアしておきます。
+
+\var{Emin} および \var{Emax} フィールドには、指数範囲の外側値を整数で
+指定します。
+
+\var{capitals} フィールドは \constant{0} または \constant{1} (デフォルト)
+にします。\constant{1} に設定すると、指数記号を大文字 \constant{E} で
+出力します。それ以外の場合には 
+\constant{Decimal('6.02e+23')} のように\constant{e} を使います。
+\end{classdesc}
+
+\class{Context} クラスでは、いくつかの汎用のメソッドの他、現在の
+コンテキストで算術演算を直接行うためのメソッドを数多く定義しています。
+
+\begin{methoddesc}{clear_flags}{}
+フラグを全て \constant{0} にリセットします。
+\end{methoddesc}  
+
+\begin{methoddesc}{copy}{}
+コンテキストの複製を返します。
+\end{methoddesc}  
+
+\begin{methoddesc}{create_decimal}{num}
+\var{self} をコンテキストとする新たな Decimal インスタンスを
+\var{num} から生成します。\class{Decimal} コンストラクタと違い、
+数値を変換する際にコンテキストの精度、値丸め方法、フラグ、トラップ
+を適用します。
+
+定数値はしばしばアプリケーションの要求よりも高い精度を持っているため、
+このメソッドが役に立ちます。また、値丸めを即座に行うため、
+例えば以下のように、入力値に値丸めを行わないために合計値にゼロの加算を
+追加するだけで結果が変わってしまうといった、現在の精度
+よりも細かい値の影響が紛れ込む問題を防げるという恩恵もあります。
+
+  \begin{verbatim}
+    >>> getcontext().prec = 3
+    >>> Decimal("3.4445") + Decimal("1.0023")
+    Decimal("4.45")
+    >>> Decimal("3.4445") + Decimal(0) + Decimal("1.0023")
+    Decimal("4.44")
+  \end{verbatim}
+      
+\end{methoddesc} 
+
+\begin{methoddesc}{Etiny}{}
+\samp{Emmin - prec + 1} に等しい値を返します。
+演算結果の劣化が起こる桁の最小値です。アンダーフローが起きた場合、
+指数は \constant{Etiny} に設定されます。
+
+\end{methoddesc} 
+
+\begin{methoddesc}{Etop}{}
+\samp{Emax - prec + 1} に等しい値を返します。
+\end{methoddesc} 
+
+\class{Decimal} を使った処理を行う場合、通常は \class{Decimal} 
+インスタンスを生成して、算術演算を適用するというアプローチを
+とります。演算はアクティブなスレッドにおける現在のコンテキストの
+下で行われます。もう一つのアプローチは、コンテキストのメソッドを
+使った特定のコンテキスト下での計算です。
+コンテキストのメソッドは \class{Decimal} クラスのメソッドに似ているので、
+ここでは簡単な説明にとどめます。
+
+\begin{methoddesc}{abs}{x}
+\var{x} の絶対値を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{add}{x, y}
+\var{x} と \var{y} の加算を返します。
+\end{methoddesc}
+   
+\begin{methoddesc}{compare}{x, y}
+二つの値を数値として比較します。
+  
+\method{__cmp__()} に似ていますが、 以下のように\class{Decimal} 
+インスタンスを返します:
+  \begin{verbatim}
+        a or b is a NaN ==> Decimal("NaN")
+        a < b           ==> Decimal("-1")
+        a == b          ==> Decimal("0")
+        a > b           ==> Decimal("1")
+  \end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}{divide}{x, y}
+\var{x} を \var{y} で除算した値を返します。
+\end{methoddesc}   
+  
+\begin{methoddesc}{divmod}{x, y}
+二つの数値間の除算を行い、結果の整数部を返します。
+\end{methoddesc} 
+
+\begin{methoddesc}{max}{x, y}
+二つの値を数値として比較し、大きいほうを返します。
+
+数値上二つの値が等しい場合には、左側値を結果として返します。
+\end{methoddesc} 
+ 
+\begin{methoddesc}{min}{x, y}
+二つの値を数値として比較し、小さいほうを返します。
+
+数値上二つの値が等しい場合には、左側値を結果として返します。
+\end{methoddesc}
+
+\begin{methoddesc}{minus}{x}
+Python における単項の符号反転前置演算子 (unary prefix minus operator) 
+に対応する演算です。
+\end{methoddesc}
+
+\begin{methoddesc}{multiply}{x, y}
+\var{x} と\var{y} の積を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{normalize}{x}
+被演算子をもっとも単純な表記にします。
+
+本質的には、\method{plus} 演算の結果から末尾のゼロを全て取り除いた
+ものと同じです。
+\end{methoddesc}
+  
+\begin{methoddesc}{plus}{x}
+Python における単項の符号非反転前置演算子 (unary prefix plus operator) 
+に対応する演算です。コンテキストにおける精度や値丸めを適用する
+ので、等値 (identity) 演算とは \emph{違います}。
+\end{methoddesc}
+
+\begin{methoddesc}{power}{x, y\optional{, modulo}}
+\samp{x ** y} を計算します。\var{modulo} が指定されていれば使います。
+
+右被演算子は整数部が 9 桁以下で、小数部 (のある場合) は値丸め前に
+全てゼロになっていなければなりません。被演算子は正でも負でもゼロでも
+かまいません。右被演算子が負の場合には、左被演算子の逆数
+(1 を左被演算子で割った値) を右被演算子の逆数でべき乗します。
+
+中間演算でより高い計算精度が必要になり、その精度が実装の提供している
+精度を超えた場合、\constant{InvalidOperation} エラーをシグナルします。
+
+負のべき乗を行う際に 1 への除算でアンダーフローが起きても、
+その時点では演算を停止せず継続します。
+\end{methoddesc}
+
+\begin{methoddesc}{quantize}{x, y}
+\var{x} に値丸めを適用し、指数を \var{y} にした値を返します。
+
+他の演算と違い、量子化後の係数の長さが精度よりも大きい場合には
+\constant{InvalidOperation} をシグナルします。
+このため、エラーが生じないかぎり、量子化後の指数は右側の被演算子
+の指数と等しくなることが保証されます。
+
+また、結果が劣化していたり不正確な値であっても、\constant{Underflow}
+をシグナルしないという点も他の演算と異なります。
+\end{methoddesc} 
+
+\begin{methoddesc}{remainder}{x, y}
+整数除算の剰余を返します。
+
+剰余がゼロでない場合、符号は割られる数の符号と同じになります。
+\end{methoddesc}
+ 
+\begin{methoddesc}{remainder_near}{x, y}
+モジュロを計算し、正負のモジュロのうちゼロに近い値を返します。
+たとえば、
+  \samp{Decimal(10).remainder_near(6)} は 
+\code{Decimal("4")} よりもゼロに近い値 \code{Decimal("-2")}
+を返します。
+
+ゼロからの差が同じ場合には、 \var{self} と同じ符号を持った方を
+返します。
+\end{methoddesc}
+
+\begin{methoddesc}{same_quantum}{x, y}
+\var{self} と \var{other} が同じ指数を持っているか、あるいは
+双方とも \constant{NaN} である場合に真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{sqrt}{x}
+\var{x} の平方根を精度いっぱいまで求めます。
+\end{methoddesc}                    
+
+\begin{methoddesc}{subtract}{x, y}
+\var{x} と\var{y} の間の差を返します。
+\end{methoddesc}
+ 
+\begin{methoddesc}{to_eng_string}{}
+工学表記で文字列に変換します。
+
+工学表記では指数は 3 の倍数になります。従って、
+最大で 3 桁までの数字が基数の小数部に現れます。たとえば、
+  \code{Decimal('123E+1')} は \code{Decimal("1.23E+3")}
+に変換されます。
+\end{methoddesc}  
+
+\begin{methoddesc}{to_integral}{x}                  
+\constant{Inexact} や \constant{Rounded} といったシグナルを出さずに
+最近傍の整数に値を丸めます。                                    
+\end{methoddesc} 
+
+\begin{methoddesc}{to_sci_string}{x}
+数値を科学表記で文字列に変換します。
+\end{methoddesc} 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
+\subsection{シグナル \label{decimal-signals}}
+
+シグナルは、計算中に生じた様々なエラー条件を表現します。
+各々のシグナルは一つのコンテキストフラグと一つのトラップイネーブラに
+対応しています。
+
+コンテキストフラグは、該当するエラー条件に遭遇するたびに加算されて
+ゆきます。演算後にフラグを調べれば、演算に関する情報
+(例えば計算が厳密だったかどうか) がわかります。
+フラグを調べたら、次の計算を始める前にフラグを全てクリアするように
+してください。
+
+あるコンテキストのトラップイネーブラがあるシグナルに対してセット
+されている場合、該当するエラー条件が生じると Python の例外を送出
+します。例えば、\class{DivisionByZero} が設定されていると、
+エラー条件が生じた際に \exception{DivisionByZero} 例外を送出します。
+
+
+\begin{classdesc*}{Clamped}
+値の表現上の制限に沿わせるために指数部が変更されたことを通知します。
+
+通常、クランプ (clamp) は、指数部がコンテキストにおける指数桁の制限値
+\member{Emin} および\member{Emax} を越えたなった場合に発生します。
+可能な場合には、係数部にゼロを加えた表現に合わせて指数部を減らします。
+\end{classdesc*}
+
+\begin{classdesc*}{DecimalException}
+他のシグナルの基底クラスで、\exception{ArithmeticError} の
+サブクラスです。
+\end{classdesc*}
+
+\begin{classdesc*}{DivisionByZero}
+有限値をゼロで除算したときのシグナルです。
+
+除算やモジュロ除算、数を負の値で累乗した場合に起きることがあります。
+このシグナルをトラップしない場合、演算結果は \constant{Infinity} または
+\constant{-Infinity} になり、その符号は演算に使った入力に基づいて決まります。
+\end{classdesc*}
+
+\begin{classdesc*}{Inexact}
+値の丸めによって演算結果から厳密さが失われたことを通知します。
+
+このシグナルは値丸め操作中にゼロでない桁を無視した際に生じます。
+演算結果は値丸め後の値です。シグナルのフラグやトラップは、
+演算結果の厳密さが失われたことを検出するために使えるだけです。
+\end{classdesc*}
+
+\begin{classdesc*}{InvalidOperation}
+無効な演算が実行されたことを通知します。
+
+ユーザが有意な演算結果にならないような操作を要求したことを示します。
+このシグナルをトラップしない場合、\constant{NaN} を返します。
+このシグナルの発生原因として考えられるのは、以下のような状況です:
+
+    \begin{verbatim}
+        Infinity - Infinity
+        0 * Infinity
+        Infinity / Infinity
+        x % 0
+        Infinity % x
+        x._rescale( non-integer )
+        sqrt(-x) and x > 0
+        0 ** 0
+        x ** (non-integer)
+        x ** Infinity      
+    \end{verbatim}    
+\end{classdesc*}
+
+\begin{classdesc*}{Overflow}
+数値オーバフローを示すシグナルです。
+
+このシグナルは、値丸めを行った後の指数部が \member{Emax} より大きいことを
+示します。シグナルをトラップしない場合、演算結果は値丸めのモードにより、
+表現可能な最大の数値になるように内側へ引き込んで丸めを行った値か、
+\constant{Infinity} になるように外側に丸めた値のいずれかになります。
+いずれの場合も、\class{Inexact} および \class{Rounded} が同時に
+シグナルされます。
+\end{classdesc*}
+
+\begin{classdesc*}{Rounded}
+情報が全く失われていない場合も含み、値丸めが起きたときのシグナルです。
+
+このシグナルは、値丸めによって桁がなくなると常に発生します。
+なくなった桁がゼロ (例えば\constant{5.00} を丸めて \constant{5.0} 
+になった場合) であってもです。このシグナルをトラップしなければ、
+演算結果をそのまま返します。このシグナルは有効桁数の減少を検出
+する際に使います。
+\end{classdesc*}
+
+\begin{classdesc*}{Subnormal}
+値丸めを行う前に指数部が \member{Emin} より小さかったことを示す
+シグナルです。
+
+演算結果が微小である場合 (指数が小さすぎる場合) に発生します。
+このシグナルをトラップしなければ、演算結果をそのまま返します。
+\end{classdesc*}
+
+\begin{classdesc*}{Underflow}
+演算結果が値丸めによってゼロになった場合に生じる数値アンダフローです。
+
+演算結果が微小なため、値丸めによってゼロになった場合に発生します。
+\class{Inexact} および \class{Subnormal} シグナルも同時に発生します。
+\end{classdesc*}
+
+これらのシグナルの階層構造をまとめると、以下の表のようになります:
+
+\begin{verbatim}    
+    exceptions.ArithmeticError(exceptions.StandardError)
+        DecimalException
+            Clamped
+            DivisionByZero(DecimalException, exceptions.ZeroDivisionError)
+            Inexact
+                Overflow(Inexact, Rounded)
+                Underflow(Inexact, Rounded, Subnormal)
+            InvalidOperation
+            Rounded
+            Subnormal
+\end{verbatim}            
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{浮動小数点数に関する注意 \label{decimal-notes}}
+
+\subsubsection{精度を上げて丸め誤差を抑制する}
+
+10 進浮動小数点数を使うと、 10 進数表現による誤差を抑制できます
+(\constant{0.1} を正確に表現できるようになります); しかし、ゼロでない
+桁が一定の精度を越えている場合には、演算によっては依然として値丸めによる
+誤差を引き起こします。 Knuth は、十分でない計算精度の下で値丸めを伴う
+浮動小数点演算を行った結果、加算の結合則や分配則における恒等性が崩れて
+しまう例を二つ示しています:
+
+\begin{verbatim}
+# Examples from Seminumerical Algorithms, Section 4.2.2.
+>>> from decimal import Decimal, getcontext
+>>> getcontext().prec = 8
+
+>>> u, v, w = Decimal(11111113), Decimal(-11111111), Decimal('7.51111111')
+>>> (u + v) + w
+Decimal("9.5111111")
+>>> u + (v + w)
+Decimal("10")
+
+>>> u, v, w = Decimal(20000), Decimal(-6), Decimal('6.0000003')
+>>> (u*v) + (u*w)
+Decimal("0.01")
+>>> u * (v+w)
+Decimal("0.0060000")
+\end{verbatim}
+
+\module{decimal} モジュールでは、最下桁を失わないように十分に計算精度を
+広げることで、上で問題にしたような恒等性をとりもどせます:
+
+\begin{verbatim}
+>>> getcontext().prec = 20
+>>> u, v, w = Decimal(11111113), Decimal(-11111111), Decimal('7.51111111')
+>>> (u + v) + w
+Decimal("9.51111111")
+>>> u + (v + w)
+Decimal("9.51111111")
+>>> 
+>>> u, v, w = Decimal(20000), Decimal(-6), Decimal('6.0000003')
+>>> (u*v) + (u*w)
+Decimal("0.0060000")
+>>> u * (v+w)
+Decimal("0.0060000")
+\end{verbatim}
+
+\subsubsection{特殊値}
+
+\module{decimal} モジュールの数体系では、\constant{NaN}, \constant{sNaN}, 
+\constant{-Infinity} , \constant{Infinity} , および二つのゼロ、
+\constant{+0} と \constant{-0} といった特殊な値を提供しています。
+
+無限大 (Infinity) は \code{Decimal('Infinity')} で直接構築できます。
+また、\exception{DivisionByZero} をトラップせずにゼロで除算を行った
+場合にも出てきます。同様に、 \exception{Overflow} シグナルをトラップ
+しなければ、表現可能な最大の数値の制限を越えた値を丸めたときに出てきます。
+
+無限大には符号があり (アフィン: affine であり)、算術演算に使用でき、
+非常に巨大で不確定の(indeterminate)値として扱われます。例えば、無限大に
+何らかの定数を加算すると、演算結果は別の無限大になります。
+
+演算によっては結果が不確定になるものがあり、\constant{NaN} を返します。
+ただし、\exception{InvalidOperation} シグナルをトラップするように
+なっていれば例外を送出します。
+
+例えば、\code{0/0} は \constant{NaN} を返します。\constant{NaN} は
+「非数値 (not a number)」を表します。このような \constant{NaN} は
+暗黙のうちに生成され、一度生成されるとそれを他の計算にも流れてゆき、
+関係する個々の演算全てが個別の \constant{NaN} を返すようになります。
+この挙動は、たまに入力値が欠けるような状況で一連の計算を行う際に
+便利です --- 特定の計算に対しては無効な結果を示すフラグを立てつつ
+計算を進められるからです。
+
+一方、\constant{NaN} の変種である\constant{sNaN} は関係する全ての演算
+で演算後にシグナルを送出します。\constant{sNaN} は、無効な演算結果
+に対して特別な処理を行うために計算を停止する必要がある場合に便利です。
+
+アンダフローの起きた計算は、符号付きのゼロ (signed zero) を返す
+ことがあります。符号は、より高い精度で計算を行った結果の
+符号と同じになります。
+符号付きゼロの大きさはやはりゼロなので、正のゼロと負のゼロは
+等しいとみなされ、符号は単なる参考にすぎません。
+
+二つの符号付きゼロが区別されているのに等価であることに加えて、
+異なる精度におけるゼロの表現はまちまちなのに、値は等価と
+みなされるということがあります。これに慣れるには多少時間がかかります。
+正規化浮動小数点表現に目が慣れてしまうと、以下の計算でゼロに
+等しい値が返っているとは即座に分かりません:
+
+\begin{verbatim}
+>>> 1 / Decimal('Infinity')
+Decimal("0E-1000000026")
+\end{verbatim}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{スレッドを使った処理 \label{decimal-threads}}
+
+関数\function{getcontext()} は、スレッド毎に別々の\class{Context} 
+オブジェクトにアクセスします。別のスレッドコンテキストを持つということは、
+複数のスレッドが互いに影響を及ぼさずに (\code{getcontext.prec=10} のような)
+変更を適用できるということです。
+
+同様に、\function{setcontext()} 関数は自動的に引数のコンテキスト
+を現在のスレッドのコンテキストに設定します。
+
+\function{getcontext()} を呼び出す前に\function{setcontext()} が
+呼び出されていなければ、現在のスレッドで使うための新たなコンテキスト
+を生成するために\function{getcontext()} が自動的に呼び出されます。
+
+新たなコンテキストは、\var{DefaultContext} と呼ばれる雛形から
+コピーされます。アプリケーションを通じて全てのスレッドに同じ
+値を使うようにデフォルトを設定したければ、\var{DefaultContext}
+オブジェクトを直接変更します。\function{getcontext()} を呼び出す
+スレッド間で競合条件が生じないようにするため、\var{DefaultContext}
+への変更はいかなるスレッドを開始するよりも\emph{前に} 行わねば
+なりません。以下に例を示します:
+
+\begin{verbatim}
+# スレッドを立ち上げる前にアプリケーションにわたるデフォルトを設定
+DefaultContext.prec = 12
+DefaultContext.rounding = ROUND_DOWN
+DefaultContext.traps = ExtendedContext.traps.copy()
+DefaultContext.traps[InvalidOperation] = 1
+setcontext(DefaultContext)
+
+# その後でスレッドを開始
+t1.start()
+t2.start()
+t3.start()
+ . . .
+\end{verbatim}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{レシピ \label{decimal-recipes}}
+
+\class{Decimal} クラスの利用を実演している例をいくつか示します。
+これらはユーティリティ関数としても利用できます:
+
+\begin{verbatim}
+def moneyfmt(value, places=2, curr='', sep=',', dp='.',
+             pos='', neg='-', trailneg=''):
+    """Decimal を通貨表現の文字列に変換します。
+
+    places:  小数点以下の値を表すのに必要な桁数
+    curr:    符号の前に置く通貨記号 (オプションで、空でもかまいません)
+    sep:     桁のグループ化に使う記号、オプションです (コンマ、ピリオド、
+             スペース、または空)
+    dp:      小数点 (コンマまたはピリオド)
+             小数部がゼロの場合には空にできます。
+    pos:     正数の符号オプション: '+', 空白または空文字列
+    neg:     負数の符号オプション: '-', '(', 空白または空文字列
+    trailneg:後置マイナス符号オプション:  '-', ')', 空白または空文字列
+
+    >>> d = Decimal('-1234567.8901')
+    >>> moneyfmt(d, curr='$')
+    '-$1,234,567.89'
+    >>> moneyfmt(d, places=0, sep='.', dp='', neg='', trailneg='-')
+    '1.234.568-'
+    >>> moneyfmt(d, curr='$', neg='(', trailneg=')')
+    '($1,234,567.89)'
+    >>> moneyfmt(Decimal(123456789), sep=' ')
+    '123 456 789.00'
+    >>> moneyfmt(Decimal('-0.02'), neg='<', trailneg='>')
+    '<.02>'
+
+    """
+    q = Decimal((0, (1,), -places))    # 小数点以下2桁 --> '0.01'
+    sign, digits, exp = value.quantize(q).as_tuple()
+    assert exp == -places    
+    result = []
+    digits = map(str, digits)
+    build, next = result.append, digits.pop
+    if sign:
+        build(trailneg)
+    for i in range(places):
+        if digits:
+            build(next())
+        else:
+            build('0')
+    build(dp)
+    i = 0
+    while digits:
+        build(next())
+        i += 1
+        if i == 3 and digits:
+            i = 0
+            build(sep)
+    build(curr)
+    if sign:
+        build(neg)
+    else:
+        build(pos)
+    result.reverse()
+    return ''.join(result)
+
+def pi():
+    """現在の精度まで円周率を計算します。
+
+    >>> print pi()
+    3.141592653589793238462643383
+    
+    """
+    getcontext().prec += 2  # 中間ステップのための余分の数字
+    three = Decimal(3)      # 普通の float に対する "three=3.0" の代わり
+    lasts, t, s, n, na, d, da = 0, three, 3, 1, 0, 0, 24
+    while s != lasts:
+        lasts = s
+        n, na = n+na, na+8
+        d, da = d+da, da+32
+        t = (t * n) / d
+        s += t
+    getcontext().prec -= 2
+    return +s               # 単項のプラスで新しい精度に変換します
+
+def exp(x):
+    """e の x 乗を返します。結果の型は入力の型と同じです。
+
+    >>> print exp(Decimal(1))
+    2.718281828459045235360287471
+    >>> print exp(Decimal(2))
+    7.389056098930650227230427461
+    >>> print exp(2.0)
+    7.38905609893
+    >>> print exp(2+0j)
+    (7.38905609893+0j)
+    
+    """
+    getcontext().prec += 2
+    i, lasts, s, fact, num = 0, 0, 1, 1, 1
+    while s != lasts:
+        lasts = s    
+        i += 1
+        fact *= i
+        num *= x     
+        s += num / fact   
+    getcontext().prec -= 2        
+    return +s
+
+def cos(x):
+    """x ラジアンの余弦を返します。
+
+    >>> print cos(Decimal('0.5'))
+    0.8775825618903727161162815826
+    >>> print cos(0.5)
+    0.87758256189
+    >>> print cos(0.5+0j)
+    (0.87758256189+0j)
+    
+    """
+    getcontext().prec += 2
+    i, lasts, s, fact, num, sign = 0, 0, 1, 1, 1, 1
+    while s != lasts:
+        lasts = s    
+        i += 2
+        fact *= i * (i-1)
+        num *= x * x
+        sign *= -1
+        s += num / fact * sign 
+    getcontext().prec -= 2        
+    return +s
+
+def sin(x):
+    """x ラジアンの正弦を返します。
+
+    >>> print sin(Decimal('0.5'))
+    0.4794255386042030002732879352
+    >>> print sin(0.5)
+    0.479425538604
+    >>> print sin(0.5+0j)
+    (0.479425538604+0j)
+    
+    """
+    getcontext().prec += 2
+    i, lasts, s, fact, num, sign = 1, 0, x, 1, x, 1
+    while s != lasts:
+        lasts = s    
+        i += 2
+        fact *= i * (i-1)
+        num *= x * x
+        sign *= -1
+        s += num / fact * sign 
+    getcontext().prec -= 2        
+    return +s
+
+\end{verbatim}                                             
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Decimal FAQ \label{decimal-faq}}
+
+Q.  \code{decimal.Decimal('1234.5')} などと打ち込むのは煩わしいのですが、
+対話式インタプリタを使う際にタイプ量を少なくする方法はありませんか?
+
+A.  コンストラクタを1文字に縮める人もいるようです。
+
+\begin{verbatim}
+>>> D = decimal.Decimal
+>>> D('1.23') + D('3.45')
+Decimal("4.68")
+\end{verbatim}
+
+
+Q.  小数点以下2桁の固定小数点数のアプリケーションの中で、いくつかの
+入力が余計な桁を保持しているのでこれを丸めなければなりません。その他の
+ものに余計な桁はなくそのまま使えます。どのメソッドを使うのがいいでしょうか?
+
+A.  \method{quantize()} メソッドで固定した桁に丸められます。
+\constant{Inexact} トラップを設定しておけば、確認にも有用です。
+
+\begin{verbatim}
+>>> TWOPLACES = Decimal(10) ** -2       # Decimal('0.01') と同じ
+
+>>> # 小数点以下2桁に丸める
+>>> Decimal("3.214").quantize(TWOPLACES)
+Decimal("3.21")
+
+>>> # 小数点以下2桁を越える桁を保持していないことの確認
+>>> Decimal("3.21").quantize(TWOPLACES, context=Context(traps=[Inexact]))
+Decimal("3.21")
+
+>>> Decimal("3.214").quantize(TWOPLACES, context=Context(traps=[Inexact]))
+Traceback (most recent call last):
+   ...
+Inexact: Changed in rounding
+\end{verbatim}
+
+
+Q.  正当な2桁の入力が得られたとして、その正当性をアプリケーション実行中も
+変わらず保ち続けるにはどうすればいいでしょうか?
+
+A.  加減算のような演算は自動的に固定小数点を守ります。その他の乗除算などは
+小数点以下の桁を変えてしまいますので実行後は  \method{quantize()} ステップ
+が必要です。
+
+
+Q.  一つの値に対して多くの表現方法があります。
+\constant{200} と\constant{200.000} と \constant{2E2} と
+\constant{.02E+4} は全て同じ値で違った精度の数です。これらをただ一つの
+正規化された値に変換することはできますか?
+
+A.  \method{normalize()} メソッドは全ての等しい値をただ一つの表現に直します。
+
+\begin{verbatim}
+>>> values = map(Decimal, '200 200.000 2E2 .02E+4'.split())
+>>> [v.normalize() for v in values]
+[Decimal("2E+2"), Decimal("2E+2"), Decimal("2E+2"), Decimal("2E+2")]
+\end{verbatim}
+
+
+Q.  ある種の10進数値はいつも指数表記で表示されます。
+指数表記以外の表示にする方法はありますか?
+
+A.  値によっては、指数表記だけが有効桁数を表せる表記法なのです。
+たとえば、 \constant{5.0E+3} を \constant{5000} と表してしまうと、
+値は変わりませんが元々の2桁という有効数字が反映されません。
+
+
+Q.  普通の float を \class{Decimal} に変換できますか?
+
+A.  はい。どんな2進浮動小数点数も Decimal として正確に表現できます。
+正確な変換は直感的に考えたよりも多い桁になることもありますので、
+\constant{Inexact} をトラップしたとすればそれはもっと精度を上げる
+必要性があることを示しています。
+
+\begin{verbatim}
+def floatToDecimal(f):
+    "浮動小数点数を情報の欠落無く Decimal に変換します"
+
+    # float で表された数を仮数 (0.5 <= abs(m) < 1.0) と指数に(正確に)転
+    # 換します。仮数を整数になるまで2倍し続けます。整数化した仮数と指数
+    # を使って等価な Decimal を求めます。この手続きが正確に行なえなかっ
+    # たら、精度を上げて再度同じことをします。
+
+    mantissa, exponent = math.frexp(f)
+    while mantissa != int(mantissa):
+        mantissa *= 2.0
+        exponent -= 1
+    mantissa = int(mantissa)
+
+    oldcontext = getcontext()
+    setcontext(Context(traps=[Inexact]))
+    try:
+        while True:
+            try:
+               return mantissa * Decimal(2) ** exponent
+            except Inexact:
+                getcontext().prec += 1
+    finally:
+        setcontext(oldcontext)
+\end{verbatim}
+
+
+Q.  上の \function{floatToDecimal()} はなぜモジュールに入っていないのですか?
+
+A.  2進と10進の浮動小数点数を混ぜるようにアドバイスするべきかどうか疑問が
+あります。また、これを使うときには2進浮動小数点数の表示の問題を避けるように
+注意しなければなりません。
+
+\begin{verbatim}
+>>> floatToDecimal(1.1)
+Decimal("1.100000000000000088817841970012523233890533447265625")
+\end{verbatim}
+
+
+Q.  複雑な計算の中で、精度不足や丸めの異常で間違った結果になっていない
+ことをどうやって保証すれば良いでしょうか?
+
+A.  decimal モジュールでは検算は容易です。一番良い方法は、大きめの精度や
+様々な丸めモードで再計算してみることです。大きく異なった結果が出てきたら、
+精度不足や丸めの問題や悪条件の入力、または数値計算的に不安定なアルゴリズム
+を示唆しています。
+
+
+Q.  コンテキストの精度は計算結果には適用されていますが入力には適用されて
+いないようです。様々に異なる精度の入力値を混ぜて計算する時に注意すべき
+ことはありますか?
+
+A.  はい。原則として入力値は正確であると見做しておりそれらの値を使った
+計算も同様です。結果だけが丸められます。入力の強みは ``what you type
+is what you get'' (打ち込んだ値が得られる値)という点にあります。
+入力が丸められないということを忘れていると結果が奇妙に見えるというのは
+弱点です。
+
+\begin{verbatim}
+>>> getcontext().prec = 3
+>>> Decimal('3.104') + D('2.104')
+Decimal("5.21")
+>>> Decimal('3.104') + D('0.000') + D('2.104')
+Decimal("5.20")
+\end{verbatim}
+
+解決策は精度を上げるかまたは単項のプラス演算子を使って入力の丸めを強制する
+ことです。
+
+\begin{verbatim}
+>>> getcontext().prec = 3
+>>> +Decimal('1.23456789')      # 単項のプラスで丸めを引き起こします
+Decimal("1.23")
+\end{verbatim}
+
+もしくは、入力を \method{Context.create_decimal()} を使って生成時に丸め
+てしまうこともできます。
+
+\begin{verbatim}
+>>> Context(prec=5, rounding=ROUND_DOWN).create_decimal('1.2345678')
+Decimal("1.2345")
+\end{verbatim}

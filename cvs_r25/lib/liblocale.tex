@@ -1,0 +1,512 @@
+\section{\module{locale} ---
+         国際化サービス}
+
+\declaremodule{standard}{locale}
+\modulesynopsis{国際化サービス。}
+\moduleauthor{Martin von L\"owis}{martin@v.loewis.de}
+\sectionauthor{Martin von L\"owis}{martin@v.loewis.de}
+
+\module{locale} モジュールは \POSIX{} ロケールデータベース
+およびロケール関連機能へのアクセスを提供します。
+\POSIX{} ロケール機構を使うことで、プログラマはソフトウェアが
+実行される各国における詳細を知らなくても、
+アプリケーション上で特定の地域文化に関係する部分を扱うことが
+できます。
+
+\module{locale} モジュールは、\module{_locale} \refbimodindex{_locale}
+を被うように実装されており、ANSI C ロケール実装を使っている
+\module{_locale} が利用可能なら、こちらを先に使うようになっています。
+
+\module{locale} モジュールでは以下の例外と関数を定義しています:
+
+
+\begin{excdesc}{Error}
+\function{setlocale()} が失敗したときに送出される例外です。
+\end{excdesc}
+
+\begin{funcdesc}{setlocale}{category\optional{, locale}}
+
+\var{locale} を指定する場合、文字列、
+\code{(\var{language code}, \var{encoding})}、からなるタプル、または
+\code{None} をとることができます。\var{locale} がタプルのの場合、
+ロケール別名解決エンジンによって文字列に変換されます。
+\var{locale} が与えられていて、かつ \code{None} でない場合、
+\function{setlocale()} は \var{category} の設定を変更します。
+変更することのできるカテゴリは以下に列記されており、値は
+ロケール設定の名前です。空の文字列を指定すると、ユーザの環境における
+標準設定になります。
+ロケールの変更に失敗した場合、\exception{Error} が送出されます。
+成功した場合、新たなロケール設定が返されます。
+
+\var{locale} が省略されたり \code{None} の場合、\var{category} 
+の現在の設定が返されます。
+
+\function{setlocale()} はほとんどのシステムでスレッド安全では
+ありません。アプリケーションを書くとき、大抵は以下のコード
+
+\begin{verbatim}
+import locale
+locale.setlocale(locale.LC_ALL, '')
+\end{verbatim}
+
+から書き始めます。これは全てのカテゴリをユーザの環境における
+標準設定 (大抵は環境変数 \envvar{LANG} で指定されています)
+に設定します。その後複数スレッドを使ってロケールを変更したり
+しない限り、問題は起こらないはずです。
+
+  \versionchanged[引数 \var{locale} の値としてタプルをサポートしました。]{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{localeconv}{}
+地域的な慣行のデータベースを辞書として返します。辞書は以下の文字列を
+キーとして持っています:
+
+  \begin{tableiii}{l|l|p{3in}}{constant}{カテゴリ}{キー名}{意味}
+    \lineiii{LC_NUMERIC}{\code{'decimal_point'}}
+            {小数点を表す文字です。}
+    \lineiii{}{\code{'grouping'}}
+            {\code{'thousands_sep'} が来るかもしれない場所を相対的に
+表した数からなる配列です。配列が \constant{CHAR_MAX} で終端されている
+場合、それ以上の桁では桁数字のグループ化を行いません。配列が \code{0}
+で終端されている場合、最後に指定したグループが反復的に使われます。}
+    \lineiii{}{\code{'thousands_sep'}}
+            {桁グループ間を区切るために使われる文字です。}\hline
+    \lineiii{LC_MONETARY}{\code{'int_curr_symbol'}}
+            {国際通貨を表現する記号です。}
+    \lineiii{}{\code{'currency_symbol'}}
+            {地域的な通貨を表現する記号です。}
+    \lineiii{}{\code{'p_cs_precedes/n_cs_precedes'}}
+            {通貨記号が値の前につくかどうかです (それぞれ正の値、
+             負の値を表します)。}
+    \lineiii{}{\code{'p_sep_by_space/n_sep_by_space'}}
+            {通貨記号と値との間にスペースを入れるかどうかです
+             (それぞれ正の値、負の値を表します)。}
+    \lineiii{}{\code{'mon_decimal_point'}}
+            {金額表示の際に使われる小数点です。}
+    \lineiii{}{\code{'frac_digits'}}
+            {金額を地域的な方法で表現する際の小数点以下の桁数です。}
+    \lineiii{}{\code{'int_frac_digits'}}
+            {金額を国際的な方法で表現する際の小数点以下の桁数です。}
+    \lineiii{}{\code{'mon_thousands_sep'}}
+            {金額表示の際に桁区切り記号です。}
+    \lineiii{}{\code{'mon_grouping'}}
+            {\code{'grouping'} と同じで、金額表示の際に使われます。}
+    \lineiii{}{\code{'positive_sign'}}
+            {正の値の金額表示に使われる記号です。}
+    \lineiii{}{\code{'negative_sign'}}
+            {負の値の金額表示に使われる記号です。}
+    \lineiii{}{\code{'p_sign_posn/n_sign_posn'}}
+            {符号の位置です (それぞれ正の値と負の値を表します)。以下を参照ください。}
+  \end{tableiii}
+  
+  数値形式の値に\constant{CHAR_MAX}を設定すると、そのロケールでは値が
+  指定されていないことを表します。
+
+\code{'p_sign_posn'} および \code{'n_sing_posn'} の取り得る値は
+以下の通りです。
+
+  \begin{tableii}{c|l}{code}{値}{説明}
+    \lineii{0}{通貨記号および値は丸括弧で囲われます。}
+    \lineii{1}{符号は値と通貨記号より前に来ます。}
+    \lineii{2}{符号は値と通貨記号の後に続きます。}
+    \lineii{3}{符号は値の直前に来ます。}
+    \lineii{4}{符号は値の直後に来ます。}
+    \lineii{\constant{CHAR_MAX}}{このロケールでは特に指定しません。}
+  \end{tableii}
+\end{funcdesc}
+
+\begin{funcdesc}{nl_langinfo}{option}
+
+ロケール特有の情報を文字列として返します。この関数は全てのシステムで
+利用可能なわけではなく、指定できる \var{option} もプラットフォーム
+間で大きく異なります。引数として使えるのは、locale モジュールで利用
+可能なシンボル定数を表す数字です。
+
+\end{funcdesc}
+
+\begin{funcdesc}{getdefaultlocale}{\optional{envvars}}
+標準のロケール設定を取得しようと試み、結果をタプル
+\code{(\var{language code}, \var{encoding})} の形式で
+返します。
+\POSIX によると、\code{setlocale(LC_ALL, '')} を呼ばなかった
+プログラムは、移植可能な \code{'C'} ロケール設定を使います。
+\code{setlocale(LC_ALL, '')} を呼ぶことで、\envvar{LANG} 変数で
+定義された標準のロケール設定を使うようになります。
+Python では現在のロケール設定に干渉したくないので、上で述べた
+ような方法でその挙動をエミュレーションしています。
+
+他のプラットフォームとの互換性を維持するために、環境変数 \envvar{LANG}
+だけでなく、引数 \var{envvars} で指定された環境変数のリスト
+も調べられます。\var{envvars} は標準では GNU gettext で使われて
+いるサーチパスになります; パスには必ず変数名 \samp{LANG} が含まれて
+いるからです。GNU gettext サーチパスは \code{'LANGUAGE'}、
+\code{'LC_ALL'}、\code{'LC_CTYPE'}、および \code{'LANG'} が
+列挙した順番に含まれています。
+
+\code{'C'} の場合を除き、言語コードは \rfc{1766} に対応します。
+\var{language code} および \var{encoding} が決定できなかった
+場合、\code{None} になるかもしれません。
+
+  \versionadded{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{getlocale}{\optional{category}}
+与えられたロケールカテゴリに対する現在の設定を、
+ \var{language code}、 \var{encoding} を含むシーケンスで返します。
+\var{category} として \constant{LC_ALL} 以外の \constant{LC_*} の
+値の一つを指定できます。標準の設定は \constant{LC_CTYPE} です。
+
+\code{'C'} の場合を除き、言語コードは \rfc{1766} に対応します。
+\var{language code} および \var{encoding} が決定できなかった
+場合、\code{None} になるかもしれません。
+
+  \versionadded{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{getpreferredencoding}{\optional{do_setlocale}}
+テキストデータをエンコードする方法を、ユーザの設定に基づいて
+返します。ユーザの設定は異なるシステム間では異なった方法で
+表現され、システムによってはプログラミング的に得ることができない
+こともあるので、この関数が返すのはただの推測です。
+
+システムによっては、ユーザの設定を取得するために 
+\function{setlocale} を呼び出す必要があるため、この関数はスレッド安全
+ではありません。\function{setlocale} を呼び出す必要がない、または
+呼び出したくない場合、\var{do_setlocale} を \code{False} に
+設定する必要があります。
+  \versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{normalize}{localename}
+与えたロケール名を規格化したロケールコードを返します。返される
+ロケールコードは \function{setlocale()} で使うために書式化されて
+います。規格化が失敗した場合、もとの名前がそのまま返されます。
+
+与えたエンコードがシステムにとって未知の場合、標準の設定では、
+この関数は \function{setlocale()} と同様に、エンコーディングを
+ロケールコードにおける標準のエンコーディングに設定します。
+  \versionadded{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{resetlocale}{\optional{category}}
+\var{category} のロケールを標準設定にします。
+
+標準設定は \function{getdefaultlocale()} を呼ぶことで決定されます。
+\var{category} は標準で \constant{LC_ALL} になっています。
+  \versionadded{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{strcoll}{string1, string2}
+現在の \constant{LC_COLLATE} 設定に従って二つの文字列を比較します。
+他の比較を行う関数と同じように、\var{string1} が \var{string2} 
+に対して前に来るか、後に来るか、あるいは二つが等しいかによって、
+それぞれ負の値、正の値、あるいは \code{0} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{strxfrm}{string}
+文字列を組み込み関数 \function{cmp()}\bifuncindex{cmp} で
+使える形式に変換し、かつロケールに則した結果を返します。
+この関数は同じ文字列が何度も比較される場合、例えば文字列から
+なるシーケンスを順序付けて並べる際に使うことができます。
+\end{funcdesc}
+
+\begin{funcdesc}{format}{format, val\optional{, grouping\optional{, monetary}}}
+数値 \var{val} を現在の \constant{LC_NUMERIC} の設定に基づいて
+書式化します。書式は \code{\%} 演算子の慣行に従います。浮動小数点
+数については、必要に応じて浮動小数点が変更されます。\var{grouping}
+が真なら、ロケールに配慮した桁数の区切りが行われます。
+
+\var{monetary}が真なら、桁区切り記号やグループ化文字列を用いて変換を行
+います。
+
+この関数や、1文字の指定子でしか動作しないことに注意しましょう。フォー
+マット文字列を使う場合は\function{format_string()}を使用します。
+
+  \versionchanged[\var{monetary}パラメータが追加されました]{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{format_string}{format, val\optional{, grouping}}
+\code{format \% val}形式のフォーマット指定子を、現在のロケール設定を考
+慮したうえで処理します。
+
+  \versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{currency}{val\optional{, symbol\optional{, grouping\optional{, international}}}}
+数値\var{val}を、現在の\constant{LC_MONETARY}の設定にあわせてフォーマッ
+トします。
+  
+\var{symbol}が真の場合は、返される文字列に通貨記号が含まれるようになり
+ます。これはデフォルトの設定です。\var{grouping}が真の場合(これはデフォ
+ルトではありません)は、値をグループ化します。\var{international}が真の
+場合(これはデフォルトではありません)は、国際的な通貨記号を使用します。
+
+この関数は`C'ロケールでは動作しないことに注意しましょう。まず最初に
+\function{setlocale()}でロケールを設定する必要があります。
+
+  \versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{str}{float}
+浮動小数点数を \code{str(\var{float})} と同じように書式化しますが、
+ロケールに配慮した小数点が使われます。
+\end{funcdesc}
+
+\begin{funcdesc}{atof}{string}
+文字列を \constant{LC_NUMERIC} で設定された慣行に従って浮動小数点に変換
+します。
+\end{funcdesc}
+
+\begin{funcdesc}{atoi}{string}
+文字列を \constant{LC_NUMERIC} で設定された慣行に従って整数に変換します。
+\end{funcdesc}
+
+\begin{datadesc}{LC_CTYPE}
+\refstmodindex{string}
+文字タイプ関連の関数のためのロケールカテゴリです。このカテゴリの
+設定に従って、モジュール \refmodule{string} における関数の振る舞い
+が変わります。
+\end{datadesc}
+
+\begin{datadesc}{LC_COLLATE}
+文字列を並べ替えるためのロケールカテゴリです。\module{locale}
+モジュールの関数 \function{strcoll()} および \function{strxfrm()} が
+影響を受けます。
+\end{datadesc}
+
+\begin{datadesc}{LC_TIME}
+時刻を書式化するためのロケールカテゴリです。\function{time.strftime()} 
+はこのカテゴリに設定されている慣行に従います。
+\end{datadesc}
+
+\begin{datadesc}{LC_MONETARY}
+金額に関係する値を書式化するためのロケールカテゴリです。
+設定可能なオプションは関数 \function{localeconv()} で得ることが
+できます。
+\end{datadesc}
+
+\begin{datadesc}{LC_MESSAGES}
+メッセージ表示のためのロケールカテゴリです。現在 Python は
+アプリケーション毎にロケールに対応したメッセージを出力する
+機能はサポートしていません。\function{os.strerror()} が
+返すような、オペレーティングシステムによって表示される
+メッセージはこのカテゴリによって影響を受けます。
+\end{datadesc}
+
+\begin{datadesc}{LC_NUMERIC}
+数字を書式化するためのロケールカテゴリです。関数 \function{format()}、
+\function{atoi()}、 \function{atof()} および \module{locale} モジュール
+の \function{str()} が影響を受けます。他の数値書式化操作は影響を
+受けません。
+\end{datadesc}
+
+\begin{datadesc}{LC_ALL}
+全てのロケール設定を総合したものです。ロケールを変更する際にこの
+フラグが使われた場合、そのロケールにおける全てのカテゴリを設定
+しようと試みます。一つでも失敗したカテゴリがあった場合、全ての
+カテゴリにおいて設定変更を行いません。このフラグを使ってロケールを
+取得した場合、全てのカテゴリにおける設定を示す文字列が返されます。
+この文字列は、後に設定を元に戻すために使うことができます。
+\end{datadesc}
+
+\begin{datadesc}{CHAR_MAX}
+\function{localeconv()} の返す特別な値のためのシンボル定数です。
+\end{datadesc}
+
+関数 \function{nl_langinfo} は以下のキーのうち一つを受理します。
+ほとんどの記述は GNU C ライブラリ中の対応する説明から引用されています。
+
+\begin{datadesc}{CODESET}
+選択されたロケールで用いられている文字エンコーディングの名前を
+文字列で返します。
+\end{datadesc}
+
+\begin{datadesc}{D_T_FMT}
+時刻および日付をロケール特有の方法で表現するために、 strftime(3) の
+書式化文字列として用いることのできる文字列を返します。
+\end{datadesc}
+
+\begin{datadesc}{D_FMT}
+日付をロケール特有の方法で表現するために、 strftime(3) の
+書式化文字列として用いることのできる文字列を返します。
+\end{datadesc}
+
+\begin{datadesc}{T_FMT}
+時刻をロケール特有の方法で表現するために、 strftime(3) の
+書式化文字列として用いることのできる文字列を返します。
+\end{datadesc}
+
+\begin{datadesc}{T_FMT_AMPM}
+時刻を 午前／午後の書式で表現するために、 strftime(3) の
+書式化文字列として用いることのできる文字列を返します。
+返される値は
+\end{datadesc}
+
+\begin{datadesc}{DAY_1 ... DAY_7}
+1 週間中の n 番目の曜日名を返します。\warning{ロケール US における、
+\constant{DAY_1} を日曜日とする慣行に従っています。国際的な (ISO 8601)
+月曜日を週の初めとする慣行ではありません。}
+\end{datadesc}
+
+\begin{datadesc}{ABDAY_1 ... ABDAY_7}
+1 週間中の n 番目の曜日名を略式表記で返します。
+\end{datadesc}
+
+\begin{datadesc}{MON_1 ... MON_12}
+n 番目の月の名前を返します。
+\end{datadesc}
+
+\begin{datadesc}{ABMON_1 ... ABMON_12}
+n 番目の月の名前を略式表記で返します。
+\end{datadesc}
+
+\begin{datadesc}{RADIXCHAR}
+基数点 (小数点ドット、あるいは小数点コンマ、等) を返します。
+\end{datadesc}
+
+\begin{datadesc}{THOUSEP}
+1000 単位桁区切り (3 桁ごとのグループ化) の区切り文字を返します。
+\end{datadesc}
+
+\begin{datadesc}{YESEXPR}
+肯定／否定で答える質問に対する肯定回答を正規表現関数で
+認識するために利用できる正規表現を返します。
+\warning{表現は C ライブラリの \cfunction{regex()} 関数
+に合ったものでなければならず、これは \refmodule{re} で
+使われている構文とは異なるかもしれません。}
+\end{datadesc}
+
+\begin{datadesc}{NOEXPR}
+肯定／否定で答える質問に対する否定回答を正規表現関数で
+認識するために利用できる正規表現を返します。
+\end{datadesc}
+
+\begin{datadesc}{CRNCYSTR}
+通貨シンボルを返します。シンボルを値の前に表示させる場合には
+"-" 、値の後ろに表示させる場合には "+" 、シンボルを基数点と
+置き換える場合には "." を前につけます。
+\end{datadesc}
+
+\begin{datadesc}{ERA}
+現在のロケールで使われている年代を表現する値を返します。
+
+ほとんどのロケールではこの値を定義していません。この値を設定している
+ロケールの例は日本です。日本では、日付の伝統的な表示法に、時の天皇
+に対応する元号名を含めます。
+
+通常この値を直接指定する必要はありません。\code{E} を書式化文字列に
+指定することで、関数 \function{strftime} がこの情報を使うようになります。
+返される文字列の様式は決められていないので、異なるシステム間で様式に
+関する同じ知識が使えると期待してはいけません。
+\end{datadesc}
+
+\begin{datadesc}{ERA_YEAR}
+返される値はロケールでの現年代の年値です。
+\end{datadesc}
+
+\begin{datadesc}{ERA_D_T_FMT}
+返される値は \function{strftime} で日付および時間をロケール固有の
+年代に基づいた方法で表現するための書式化文字列として使うことができます。
+\end{datadesc}
+
+\begin{datadesc}{ERA_D_FMT}
+返される値は \function{strftime} で日付をロケール固有の
+年代に基づいた方法で表現するための書式化文字列として使うことができます。
+\end{datadesc}
+
+\begin{datadesc}{ALT_DIGITS}
+返される値は 0 から 99 までの 100 個の値の表現です。
+\end{datadesc}
+
+例:
+
+\begin{verbatim}
+>>> import locale
+>>> loc = locale.getlocale(locale.LC_ALL) # get current locale
+>>> locale.setlocale(locale.LC_ALL, 'de_DE') # use German locale; name might vary with platform
+>>> locale.strcoll('f\xe4n', 'foo') # compare a string containing an umlaut 
+>>> locale.setlocale(locale.LC_ALL, '') # use user's preferred locale
+>>> locale.setlocale(locale.LC_ALL, 'C') # use default (C) locale
+>>> locale.setlocale(locale.LC_ALL, loc) # restore saved locale
+\end{verbatim}
+
+
+\subsection{ロケールの背景、詳細、ヒント、助言および補足説明}
+
+C 標準では、ロケールはプログラム全体にわたる特性であり、その変更は
+高価な処理であるとしています。加えて、頻繁にロケールを変更する
+ようなひどい実装はコアダンプを引き起こすこともあります。
+このことがロケールを正しく利用する上で苦痛となっています。
+
+そもそも、プログラムが起動した際、ロケールはユーザの希望するロケール
+にかかわらず \samp{C} です。プログラムは
+\code{setlocale(LC_ALL, '')} を呼び出して、明示的にユーザの希望する
+ロケール設定を行わなければなりません。
+
+\function{setlocale()} をライブラリルーチン内で呼ぶことは、
+それがプログラム全体に及ぼす副作用の面から、一般的によくない考えです。
+ロケールを保存したり復帰したりするのもよくありません: 高価な処理
+であり、ロケールの設定が復帰する以前に起動してしまった他のスレッド
+に悪影響を及ぼすからです。
+
+もし、汎用を目的としたモジュールを作っていて、ロケールによって
+影響をうけるような操作 (例えば \function{string.lower()} や
+\function{time.strftime()} の書式の一部) のロケール独立の
+バージョンが必要ということになれば、標準ライブラリルーチンを
+使わずに何とかしなければなりません。よりましな方法は、ロケール設定が
+正しく利用できているか確かめることです。最後の手段は、
+あなたのモジュールが \samp{C} ロケール以外の設定には互換性がない
+とドキュメントに書くことです。
+
+\refmodule{string}\refstmodindex{string} モジュールの大小文字の変換を
+行う関数はロケール設定によって影響を受けます。\function{setlocale()} 
+関数を呼んで \constant{LC_CTYPE} 設定を変更した場合、変数
+\code{string.lowercase}、\code{string.uppercase} および
+\code{string.letters} は計算しなおされます。
+例えば \code{from string import letters} のように、
+`\keyword{from} ... \keyword{import} ...' を使ってこれらの変数を
+使っている場合には、それ以降の \function{setlocale()} の影響を
+受けないので注意してください。
+
+ロケールに従って数値操作を行うための唯一の方法はこのモジュールで
+特別に定義されている関数: 
+\function{atof()}、 \function{atoi()}、 \function{format()}、
+\function{str()} を使うことです。
+
+\subsection{Python 拡張の作者と、Python を埋め込むようなプログラムに関して \label{embedding-locale}}
+
+拡張モジュールは、現在のロケールを調べる以外は、決して
+\function{setlocale()} を呼び出してはなりません。
+しかし、返される値もロケールの復帰のために使えるだけなので、
+さほど便利とはいえません (例外はおそらくロケールが \samp{C} か
+どうか調べることでしょう)。
+
+ロケールを変更するために Python コードで \module{locale} モジュール
+を使った場合、Python を埋め込んでいるアプリケーションにも影響を
+及ぼします。Python を埋め込んでいるアプリケーションに影響が及ぶ
+ことを望まない場合、\file{config.c} ファイル内の組み込みモジュールの
+テーブルから \module{_locale} 拡張モジュール  (ここで全てを行っています) 
+を削除し、共有ライブラリから \module{_locate} モジュールにアクセス
+できないようにしてください。
+
+\subsection{メッセージカタログへのアクセス \label{locale-gettext}}
+
+C ライブラリの gettext インタフェースが提供されているシステムでは、
+locake モジュールでそのインタフェースを公開しています。
+このインタフェースは関数 \function{gettext()}、 \function{dgettext()}、
+\function{dcgettext()}、\function{textdomain()}、
+\function{bindtextdomain()}、および
+\function{bind_textdomain_codeset()} からなります。
+これらは \refmodule{gettext} モジュールの同名の関数に似ていますが、
+メッセージカタログとして C ライブラリのバイナリフォーマットを使い、
+メッセージカタログを探すために C ライブラリのサーチアルゴリズムを
+使います。
+
+Python アプリケーションでは、通常これらの関数を呼び出す必要は
+ないはずで、代わりに \refmodule{gettext} を呼ぶべきです。
+例外として知られているのは、内部で \cfunction{gettext()} または
+\function{dcgettext()} を呼び出すような C ライブラリにリンク
+するアプリケーションです。こうしたアプリケーションでは、
+ライブラリが正しいメッセージカタログを探せるようにテキスト
+ドメイン名を指定する必要があります。
+

@@ -1,0 +1,270 @@
+\section{\module{sgmllib} ---
+         単純な SGML パーザ}
+
+\declaremodule{standard}{sgmllib}
+\modulesynopsis{HTML を解析するのに必要な機能だけを備えた SGML パーザ。}
+
+\index{SGML}
+
+このモジュールでは SGML (Standard Generalized Mark-up Language:
+汎用マークアップ言語標準) で書式化されたテキストファイルを解析
+するための基礎として働く \class{SGMLParser} クラスを定義しています。
+実際には、このクラスは完全な SGML パーザを提供しているわけではありません
+--- このクラスは HTML で用いられているような SGML だけを解析し、
+モジュール自体も \refmodule{htmllib} モジュールの基礎にするため
+だけに存在しています。XHTML をサポートし、少し異なったインタフェースを
+提供しているもう一つの HTML パーザは、\refmodule{HTMLParser} 
+モジュールで使うことができます。
+
+
+\begin{classdesc}{SGMLParser}{}
+\class{SGMLParser} クラスは引数無しでインスタンス化されます。
+このパーザは以下の構成を認識するようにハードコードされています:
+
+\begin{itemize}
+\item
+\samp{<\var{tag} \var{attr}="\var{value}" ...>} と
+\samp{</\var{tag}>} で表されるタグの開始部と終了部。
+
+\item
+\samp{\&\#\var{name};} 形式をとる文字の数値参照。
+
+\item
+\samp{\&\var{name};} 形式をとるエンティティ参照。
+
+\item
+\samp{<!--\var{text}-->} 形式をとる SGML コメント。
+末尾の \samp{>} とその直前にある \samp{--} の間には
+スペース、タブ、改行を入れることができます。
+\end{itemize}
+\end{classdesc}
+
+例外が以下のように定義されます:
+
+\begin{excdesc}{SGMLParseError}
+\class{SGMLParser}クラスで構文解析中にエラーに出逢うとこの例外が発生します。
+\versionadded{2.1}
+\end{excdesc}
+
+
+
+\class{SGMLParser} インスタンスは以下のメソッドを持っています:
+
+
+\begin{methoddesc}{reset}{}
+インスタンスをリセットします。未処理のデータは全て失われます。
+このメソッドはインスタンス生成時に非明示的に呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{setnomoretags}{}
+タグの処理を停止します。以降の入力をリテラル入力 (CDATA) 
+として扱います。(この機能は HTML タグ \code{<PAINTEXT>} を実装
+できるようにするためだけに提供されています)
+\end{methoddesc}
+
+\begin{methoddesc}{setliteral}{}
+リテラルモード (CDATA モード) に移行します。
+\end{methoddesc}
+
+\begin{methoddesc}{feed}{data}
+テキストをパーザに入力します。入力は完全なエレメントから成り立つ
+場合に限り処理されます; 不完全なデータは追加のデータが入力されるか、
+\method{close()} が呼び出されるまでバッファに蓄積されます。
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+バッファに蓄積されている全てのデータについて、直後にファイル終了記号
+が来た時のようにして強制的に処理します。このメソッドは導出クラスで
+再定義して、入力の終了時に追加の処理行うよう定義することができますが、
+このメソッドの再定義されたバージョンでは常に \method{close()} 
+を呼び出さなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{get_starttag_text}{}
+もっとも最近開かれた開始タグのテキストを返します。通常、構造化された
+データの処理をする上でこのメソッドは必要ありませんが、
+``広く知られている (as deployed)'' HTML を扱ったり、入力を
+最小限の変更で再生成 (属性間の空白をそのままにする、など) したり
+する場合に便利なことがあります。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_starttag}{tag, method, attributes}
+このメソッドは \method{start_\var{tag}()} か \method{do_\var{tag}()}
+のどちらかのメソッドが定義されている開始タグを処理するために呼び出され
+ます。\var{tag} 引数はタグの名前で、小文字に変換されています。
+\var{method} 引数は開始タグの意味解釈をサポートするために用いられる
+バインドされたメソッドです。
+\var{attributes} 引数は \code{(\var{name}, \var{value})} のペアからなる
+リストで、タグの \code{<>} 括弧内にある属性が収められています。
+
+\var{name} は小文字に変換されます。
+\var{value} 内の二重引用符とバックスラッシュも変換され、
+と同時に知られている文字参照および知られているエンティティ参照で
+セミコロンで終端されているものも変換されます(通常、エンティティ参照は任意の非英数文字
+で終端されてよいのですが、これを許すと非常に一般的な
+\code{<A HREF="url?spam=1\&eggs=2">}　において \code{eggs} が
+正当なエンティティ参照であるようなケースを破綻させます)。
+
+例えば、タグ 
+\code{<A HREF="http://www.cwi.nl/">} を処理する場合、このメソッドは
+\samp{unknown_starttag('a', [('href', 'http://www.cwi.nl/')])}
+として呼び出されます。基底クラスの実装では、単に \var{method} 
+を単一の引数 \var{attributes} と共に呼び出します。
+\versionadded[属性値中のエンティティおよび文字参照の扱い]{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{handle_endtag}{tag, method}
+このメソッドは \method{end_\var{tag}()} メソッドの定義されている
+終了タグを処理するために呼び出されます。
+\var{tag} 引数はタグの名前で、小文字に変換されており、
+\var{method} 引数は終了タグの意味解釈をサポートするために使われる
+バインドされたメソッドです。\method{end_\var{tag}()} メソッドが
+終了エレメントとして定義されていない場合、ハンドラは一切呼び出され
+ません。基底クラスの実装では単に \var{method} を呼び出します。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_data}{data}
+このメソッドは何らかのデータを処理するために呼び出されます。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_charref}{ref}
+このメソッドは \samp{\&\#\var{ref};} 形式の文字参照
+(character reference) を処理するために呼び出されます。
+基底クラスの実装は、\method{convert_charref()} を使って
+参照を文字列に変換します。
+もしそのメソッドが文字列を返せば \method{handle_data()} を
+呼び出します。そうでなければ、
+エラーを処理するために \code{unknown_charref(\var{ref})} 
+が呼び出されます。
+\versionchanged[ハードコードされた変換に代わり \method{convert_charref()}
+を使います]{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{convert_charref}{ref}
+文字参照を文字列に変換するか、\code{None} を返します。
+\var{ref} は文字列として渡される参照です。基底クラスでは
+\var{ref} は 0-255 の範囲の十進数でなければなりません。
+そしてコードポイントをメソッド \method{convert_codepoint()} 
+を使って変換します。もし \var{ref} が不正もしくは範囲外ならば、
+\code{None} を返します。このメソッドはデフォルト実装の
+\method{handle_charref} から、あるいは属性値パーザから呼び出されます。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{convert_codepoint}{codepoint}
+コードポイントを \class{str} の値に変換します。もしそれが適切ならば
+エンコーディングをここで扱うこともできますが、\module{sgmllib} の
+残りの部分はこの問題に関知しません。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{handle_entityref}{ref}
+このメソッドは \var{ref} を一般エンティティ参照として、
+\samp{\&\var{ref};} 形式のエンティティ参照を処理するために
+呼び出されます。
+このメソッドは、\var{ref} を \method{convert_entityref()} に渡して
+変換します。変換結果が返された場合、変換された文字を
+引数にして \method{handle_data()} を呼び出します; そうでない場合、
+\code{unknown_entityref(\var{ref})} を呼び出します。
+標準では \member{entitydefs} は
+\code{\&amp;}、 \code{\&apos}、 \code{\&gt;}、 \code{\&lt;}、および
+\code{\&quot;} の変換を定義しています。
+\versionchanged[ハードコードされた変換に代わり \method{convert_entityref()}
+を使います]{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{convert_entityref}{ref}
+名前付きエンティティ参照を \class{str} の値に変換するか、または \code{None}
+を返します。変換結果は再パーズしません。 \var{ref} はエンティティの名前部分だけ
+です。デフォルトの実装ではインスタンス(またはクラス)変数の
+\member{entitydefs} というエンティティ名から対応する文字列へのマッピング
+から \var{ref} を探します。もし \var{ref} に対応する文字列が見つからなければ
+メソッドは \code{None} を返します。このメソッドは \method{handle_entityref()} 
+のデフォルト実装からおよび属性値パーザから呼び出されます。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{handle_comment}{comment}
+このメソッドはコメントに遭遇した場合に呼び出されます。\var{comment}
+引数は文字列で、\samp{<!--} and \samp{-->} デリミタ間の、
+デリミタ自体を除いたテキストが収められています。例えば、コメント
+\samp{<!--text-->} があると、このメソッドは引数 
+\code{'text'} で呼び出されます。基底クラスの実装では何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_decl}{data}
+パーザが SGML 宣言を読み出した際に呼び出されるメソッドです。
+実際には、\code{DOCTYPE} は HTML だけに見られる宣言ですが、
+パーザは宣言間の相違 (や誤った宣言) を判別しません。\code{DOCTYPE}
+の内部サブセット宣言はサポートされていません。
+\var{decl} パラメタは \code{<!}...\code{>} 記述内の宣言内容
+全体になります。基底クラスの実装では何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{report_unbalanced}{tag}
+個のメソッドは対応する開始エレメントのない終了タグが発見された
+時に呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{unknown_starttag}{tag, attributes}
+未知の開始タグを処理するために呼び出されるメソッドです。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{unknown_endtag}{tag}
+This method is called to process an unknown end tag.  
+未知の終了タグを処理するために呼び出されるメソッドです。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{unknown_charref}{ref}
+このメソッドは解決不能な文字参照数値を処理するために呼び出され
+ます。標準で何が処理可能かは \method{handle_charref()} を参照
+してください。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{unknown_entityref}{ref}
+未知のエンティティ参照を処理するために呼び出されるメソッドです。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+上に挙げたメソッドを上書きしたり拡張したりするのとは別に、導出
+クラスでは以下の形式のメソッドを定義して、特定のタグを処理する
+こともできます。入力ストリーム中のタグ名は大小文字の区別に依存
+しません; メソッド名中の \var{tag} は小文字でなければなりません:
+
+\begin{methoddescni}{start_\var{tag}}{attributes}
+このメソッドは開始タグ \var{tag} を処理するために呼び出されます。
+\method{do_\var{tag}()} よりも高い優先順位があります。
+\var{attributes} 引数は上の \method{handle_starttag()} で記述されて
+いるのと同じ意味です。
+\end{methoddescni}
+
+\begin{methoddescni}{do_\var{tag}}{attributes}
+このメソッドは \method{start_\var{tag}} メソッドが定義されていない
+開始タグ \var{tag} を処理するために呼び出されます。
+\var{attributes} 引数は上の \method{handle_starttag()} で記述されて
+いるのと同じ意味です。
+\end{methoddescni}
+
+\begin{methoddescni}{end_\var{tag}}{}
+このメソッドは終了タグ \var{tag} を処理するために呼び出されます。
+\end{methoddescni}
+
+パーザは開始されたエレメントのうち、終了タグがまだ見つかっていない
+もののスタックを維持しているので注意してください。
+\method{start_\var{tag}()} で処理されたタグだけがスタックにプッシュ
+されます。are pushed on this stack.  Definition of an
+それらのタグに対する \method{end_\var{tag}()} メソッドの定義は
+オプションです。\method{do_\var{tag}()} や \method{unknown_tag()}
+で処理されるタグについては、\method{end_\var{tag}()} を定義しては
+いけません; 定義されていても使われることはありません。
+あるタグに対して \method{start_\var{tag}} および \method{do_\var{tag}()} 
+メソッドの両方が存在する場合、\method{start_\var{tag}()} が優先されます。

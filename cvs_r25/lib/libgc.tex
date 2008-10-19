@@ -1,0 +1,191 @@
+\section{\module{gc} ---
+         ガベージコレクタ インターフェース}
+
+\declaremodule{extension}{gc}
+\modulesynopsis{循環検出ガベージコレクタのインターフェース。}
+\moduleauthor{Neil Schemenauer}{nas@arctrix.com}
+\sectionauthor{Neil Schemenauer}{nas@arctrix.com}
+
+このモジュールは、循環ガベージコレクタの無効化・検出頻度の調整・デバッグ
+オブションの設定などを行うインターフェースを提供します。また、検出した到
+達不能オブジェクトのうち、解放する事ができないオブジェクトを参照する事も
+できます。循環ガベージコレクタはPyhonの参照カウントを補うためのものです
+ので、もしプログラム中で循環参照が発生しない事が明らかな場合には検出をす
+る必要はありません。自動検出は、\code{gc.disable()}で停止する事ができま
+す。メモリリークをデバッグするときには、
+\code{gc.set_debug(gc.DEBUG_LEAK)}とします。
+これは \code{gc.DEBUG_SAVEALL} を含んでいることに注意しましょう。
+ガベージとして検出されたオブジェクトは、インスペクション用に
+gc.garbage に保存されます。
+
+\module{gc}モジュールは、以下の関数を提供しています。
+
+\begin{funcdesc}{enable}{}
+自動ガベージコレクションを有効にします。
+\end{funcdesc}
+
+\begin{funcdesc}{disable}{}
+自動ガベージコレクションを無効にします。
+\end{funcdesc}
+
+\begin{funcdesc}{isenabled}{}
+自動ガベージコレクションが有効なら真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{collect}{\optional{generation}}
+引数を指定しない場合は、全ての検出を行います。
+オプションの引数 \var{generation} は、どの世代を検出するかを
+(0 から 2 までの) 整数値で指定します。無効な世代番号を指定した場合は
+\exception{ValueError} が発生します。検出した到達不可オブジェクトの
+数を返します。
+
+\versionchanged[オプションの引数 \var{generation} が追加されました]{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{set_debug}{flags}
+ガベージコレクションのデバッグフラグを設定します。デバッグ情報は
+\code{sys.stderr}に出力されます。デバッグフラグは、下の値の組み合わせ
+を指定する事ができます。
+\end{funcdesc}
+
+\begin{funcdesc}{get_debug}{}
+現在のデバッグフラグを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{get_objects}{}
+現在、追跡しているオブジェクトのリストを返します。このリストには、戻り値
+のリスト自身は含まれていません。
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{funcdesc}{set_threshold}{threshold0\optional{,
+                                threshold1\optional{, threshold2}}}
+ガベージコレクションの閾値（検出頻度）を指定します。\var{threshold0}を0
+にすると、検出は行われません。
+
+GCは、オブジェクトを、走査された回数に従って3世代に分類します。新しいオ
+ブジェクトは最も若い（\code{0}世代）に分類されます。もし、そのオブジェク
+トがガベージコレクションで削除されなければ、次に古い世代に分類されます。
+もっとも古い世代は\code{2}世代で、この世代に属するオブジェクトは他の世代
+に移動しません。ガベージコレクタは、最後に検出を行ってから生成・削除した
+オブジェクトの数をカウントしており、この数によって検出を開始します。オブ
+ジェクトの生成数 - 削除数 が\var{threshold0}より大きくなると、検出を開始
+します。最初は\code{0}世代のオブジェクトのみが検査されます。\code{0}世代
+の検査が\code{threshold1}回実行されると、\code{1}世代のオブジェクトの検
+査を行います。同様に、\code{1}世代が\code{threshold2}回検査されると、
+\code{2}世代の検査を行います。
+\end{funcdesc}
+
+\begin{funcdesc}{get_count}{}
+現在の検出数を、
+\code{(\var{count0}, \var{count1}, \var{count2})}
+のタプルで返します。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{get_threshold}{}
+現在の検出閾値を、\code{(\var{threshold0}, \var{threshold1},
+\var{threshold2})}のタプルで返します。
+\end{funcdesc}
+
+\begin{funcdesc}{get_referrers}{*objs}
+objsで指定したオブジェクトのいずれかを参照しているオブジェクトのリストを
+返します。この関数では、ガベージコレクションをサポートしているコンテナの
+みを返します。他のオブジェクトを参照していても、ガベージコレクションをサ
+ポートしていない拡張型は含まれません。
+
+尚、戻り値のリストには、すでに参照されなくなっているが、循環参照の一部で
+まだガベージコレクションで回収されていないオブジェクトも含まれるので注意
+が必要です。有効なオブジェクトのみを取得する場合、
+\function{get_referrers()}の前に\function{collect()}を呼び出してくださ
+い。
+
+\function{get_referrers()}から返されるオブジェクトは作りかけや
+利用できない状態である場合があるので、利用する際には注意が必要です。
+\function{get_referrers()}をデバッグ以外の目的で利用するのは避けてくだ
+さい。
+
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{funcdesc}{get_referents}{*objs}
+引数で指定したオブジェクトのいずれかから参照されている、全てのオブジェクト
+のリストを返します。参照先のオブジェクトは、引数で指定したオブジェクトの
+Cレベルメソッド\member{tp_traverse}で取得し、全てのオブジェクトが直接到達
+可能な全てのオブジェクトを返すわけではありません。\member{tp_traverse}は
+ガベージコレクションをサポートするオブジェクトのみが実装しており、ここで
+取得できるオブジェクトは循環参照の一部となる可能性のあるオブジェクトのみ
+です。従って、例えば整数オブジェクトが直接到達可能であっても、このオブジェクトは
+戻り値には含まれません。
+\versionadded{2.3}
+\end{funcdesc}
+
+
+
+以下の変数は読み込み専用です。(変更することはできますが、再バインドする
+事はできません。）
+
+\begin{datadesc}{garbage}
+到達不能であることが検出されたが、解放する事ができないオブジェクトのリス
+ト（回収不能オブジェクト）。デフォルトでは、\method{__del__()}メソッドを
+持つオブジェクトのみが格納されます。
+\footnote{Python 2.2より前のバージョンでは、\method{__del__()}メソッドを
+持つオブジェクトだけでなく、全ての到達不能オブジェクトが格納されてい
+た。）}
+
+\method{__del__()}メソッドを持つオブジェクトが循環参照に含まれている場
+合、その循環参照全体と、循環参照からのみ到達する事ができるオブジェクトは
+回収不能となります。このような場合には、Pythonは安全に\method{__del__()}
+を呼び出す順番を決定する事ができないため、自動的に解放することはできませ
+ん。もし安全な解放順序がわかるのであれば、\var{garbage}リストを参照して
+循環参照を破壊する事ができます。循環参照を破壊した後でも、そのオブジェク
+トは\var{garbage}リストから参照されているため、解放されません。解放する
+ためには、循環参照を破壊した後、\code{del gc.garbage[:]}のように
+\var{garbage}からオブジェクトを削除する必要があります。一般的には
+\method{__del__()}を持つオブジェクトが循環参照の一部とはならないように配
+慮し、\var{garbage}はそのような循環参照が発生していない事を確認するため
+に利用する方が良いでしょう。
+
+\constant{DEBUG_SAVEALL}が設定されている場合、全ての到達不能オブジェクト
+は解放されずにこのリストに格納されます。
+\end{datadesc}
+
+以下は\function{set_debug()}に指定することのできる定数です。
+
+\begin{datadesc}{DEBUG_STATS}
+検出中に統計情報を出力します。この情報は、検出頻度を最適化する際に有益で
+す。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_COLLECTABLE}
+見つかった回収可能オブジェクトの情報を出力します。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_UNCOLLECTABLE}
+見つかった回収不能オブジェクト（到達不能だが、ガベージコレクションで解放
+する事ができないオブジェクト）の情報を出力します。回収不能オブジェクト
+は、\code{garbade}リストに追加されます。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_INSTANCES}
+\constant{DEBUG_COLLECTABLE}か\constant{DEBUG_UNCOLLECTABLE}が設定されて
+いる場合、見つかったインスタンスオブジェクトの情報を出力します。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_OBJECTS}
+\constant{DEBUG_COLLECTABLE}か\constant{DEBUG_UNCOLLECTABLE}が設定されて
+いる場合、見つかったインスタンスオブジェクト以外のオブジェクトの情報を出
+力します。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_SAVEALL}
+設定されている場合、全ての到達不能オブジェクトは解放されずに
+\var{garbage}に追加されます。これはプログラムのメモリリークをデバッグす
+るときに便利です。
+\end{datadesc}
+
+\begin{datadesc}{DEBUG_LEAK}
+プログラムのメモリリークをデバッグするときに指定します。
+（\code{DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE | DEBUG_INSTANCES | 
+DEBUG_OBJECTS | DEBUG_SAVEALL}と同じ。）
+\end{datadesc}

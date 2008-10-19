@@ -1,0 +1,365 @@
+\section{\module{nntplib} ---
+         NNTP プロトコルクライアント}
+
+\declaremodule{standard}{nntplib}
+\modulesynopsis{NNTP プロトコルクライアント (ソケットを必要とします)。}
+
+\indexii{NNTP}{protocol}
+\index{Network News Transfer Protocol}
+
+このモジュールでは、 クラス \class{NNTP} を定義しています。このクラス
+は NNTP プロトコルのクライアント側を実装しています。このモジュールを
+使えば、ニュースリーダや記事投稿プログラム、または自動的にニュース記事を
+処理するプログラムを実装することができます。NNTP (Network News Transfer
+Protocol、ネットニュース転送プロトコル) の詳細については、
+インターネット \rfc{977} を参照してください。
+
+以下にこのモジュールの使い方の小さな例を二つ示します。
+ニュースグループに関する統計情報を列挙し、最新 10 件の記事を出力
+するには以下のようにします:
+
+\begin{verbatim}
+>>> s = NNTP('news.cwi.nl')
+>>> resp, count, first, last, name = s.group('comp.lang.python')
+>>> print 'Group', name, 'has', count, 'articles, range', first, 'to', last
+Group comp.lang.python has 59 articles, range 3742 to 3803
+>>> resp, subs = s.xhdr('subject', first + '-' + last)
+>>> for id, sub in subs[-10:]: print id, sub
+... 
+3792 Re: Removing elements from a list while iterating...
+3793 Re: Who likes Info files?
+3794 Emacs and doc strings
+3795 a few questions about the Mac implementation
+3796 Re: executable python scripts
+3797 Re: executable python scripts
+3798 Re: a few questions about the Mac implementation 
+3799 Re: PROPOSAL: A Generic Python Object Interface for Python C Modules
+3802 Re: executable python scripts 
+3803 Re: \POSIX{} wait and SIGCHLD
+>>> s.quit()
+'205 news.cwi.nl closing connection.  Goodbye.'
+\end{verbatim}
+
+ファイルから記事を投稿するには、以下のようにします
+(この例では記事番号は有効な番号を指定していると仮定しています):
+
+\begin{verbatim}
+>>> s = NNTP('news.cwi.nl')
+>>> f = open('/tmp/article')
+>>> s.post(f)
+'240 Article posted successfully.'
+>>> s.quit()
+'205 news.cwi.nl closing connection.  Goodbye.'
+\end{verbatim}
+
+このモジュール自体では以下の内容を定義しています:
+
+\begin{classdesc}{NNTP}{host\optional{, port
+                        \optional{, user\optional{, password
+			\optional{, readermode}
+			\optional{, usenetrc}}}}}
+
+ホスト \var{host} 上で動作し、ポート番号 \var{port} で要求待ちを
+している NNTP サーバとの接続を表現する新たな \class{NNTP} クラスの
+インスタンスを返します。標準の\var{port} は 119 です。オプションの
+\var{user} および \var{password} が与えられているか、
+または\file{~/.netrc}に適切な認証情報が指定されていて\var{usenetrc}
+が真 (デフォルト) の場合、
+\samp{AUTHINFO USER} および \samp{AUTHINFO PASS} 命令を使って
+サーバに対して身元証明および認証を行います。オプションのフラグ
+\var{readermode} が真の場合、認証の実行に先立って \samp{mode reader} 
+命令が送信されます。reader モードは、ローカルマシン上の NNTP サーバ
+に接続していて、\samp{group} のような reader 特有の命令を呼び出し
+たい場合に便利なことがあります。予期せず \exception{NNTPPermanentError}
+に遭遇したなら、\var{readermode} を設定する必要があるかもしれません。
+\var{readermode} のデフォルト値は \code{None} です。
+\var{usenetrc} のデフォルト値は \code{True} です。
+
+\versionchanged[\var{usenetrc} 引数を追加しました]{2.4}
+\end{classdesc}
+
+\begin{excdesc}{NNTPError}{}
+標準の例外 \exception{Exception} から導出されており、\module{nntplib}
+モジュールが送出する全ての例外の基底クラスです。
+\end{excdesc}
+
+\begin{excdesc}{NNTPReplyError}{}
+期待はずれの応答がサーバから返された場合に送出される例外です。
+以前のバージョンとの互換性のために、\code{error_reply} 
+はこのクラスと等価になっています。
+\end{excdesc}
+
+\begin{excdesc}{NNTPTemporaryError}{}
+エラーコードの範囲が 400-499 のエラーを受信した場合に送出される例外です。
+以前のバージョンとの互換性のために、\code{error_temp} 
+はこのクラスと等価になっています。
+\end{excdesc}
+
+\begin{excdesc}{NNTPPermanentError}{}
+エラーコードの範囲が 500-599 のエラーを受信した場合に送出される例外です。
+以前のバージョンとの互換性のために、\code{error_perm} 
+はこのクラスと等価になっています。
+\end{excdesc}
+
+\begin{excdesc}{NNTPProtocolError}{}
+サーバから返される応答が 1--5 の範囲の数字で始まっていない場合に
+送出される例外です。
+以前のバージョンとの互換性のために、\code{error_proto} 
+はこのクラスと等価になっています。
+\end{excdesc}
+
+\begin{excdesc}{NNTPDataError}{}
+応答データ中に何らかのエラーが存在する場合に送出される例外です。
+以前のバージョンとの互換性のために、\code{error_data} 
+はこのクラスと等価になっています。
+\end{excdesc}
+
+
+\subsection{NNTP オブジェクト \label{nntp-objects}}
+
+NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける
+戻り値のタプルで最初の要素となる \var{response} は、サーバの応答
+です: この文字列は 3 桁の数字からなるコードで始まります。
+サーバの応答がエラーを示す場合、上記のいずれかの例外が送出されます。
+
+
+\begin{methoddesc}{getwelcome}{}
+サーバに最初に接続した際に送信される応答中のウェルカムメッセージを
+返します。(このメッセージには時に、ユーザにとって重要な免責事項や
+ヘルプ情報が入っています。)
+\end{methoddesc}
+
+\begin{methoddesc}{set_debuglevel}{level}
+インスタンスのデバッグレベルを設定します。このメソッドは印字される
+デバッグ出力の量を制御します。標準では \code{0} に設定されていて、
+これはデバッグ出力を全く印字しません。\code{1} はそこそこの量、
+一般に NNTP 要求や応答あたり 1 行のデバッグ出力を生成します。
+値が \code{2} やそれ以上の場合、(メッセージテキストを含めて) NNTP
+接続上で送受信された全ての内容を一行ごとにログ出力する、
+最大限のデバッグ出力を生成します。
+\end{methoddesc}
+
+\begin{methoddesc}{newgroups}{date, time, \optional{file}}
+\samp{NEWSGROUPS} 命令を送信します。\var{date} 引数は
+\code{'\var{yy}\var{mm}\var{dd}'} の形式を取り、日付を表します。
+\var{time} 引数は \code{'\var{hh}\var{mm}\var{ss}'} の形式をとり、
+時刻を表します。与えられた日付および時刻以後新たに出現した
+ニュースグループ名のリストを \var{groups} として、
+\code{(\var{response}, \var{groups})} を返します。
+\var{file}引数が指定されている場合、\samp{NEWGROUPS}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{newnews}{group, date, time, \optional{file}}
+\samp{NEWNEWS} 命令を送信します。ここで、\var{group} はグループ名
+または \code{'*'} で、 \var{date} および \var{time} は
+\method{newsgrups()} における引数と同じ意味を持ちます。
+\code{(\var{response}, \var{articles})} からなるペアを返し、
+\var{articles} はメッセージ ID のリストです。
+\var{file}引数が指定されている場合、\samp{NEWNEWS}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{list}{\optional{file}}
+\samp{LIST} 命令を送信します。\code{(\var{response}, \var{list})} 
+からなるペアを返します。\var{list} はタプルからなるリストです。
+各タプルは \code{(\var{group}, \var{last}, \var{first}, \var{flag})}
+の形式をとり、\var{group} がグループ名、\var{last} および \var{first} 
+はそれぞれ最新および最初の記事の記事番号 (を表す文字列)、そして
+\var{flag} は投稿が可能な場合には \code{'y'}、そうでない場合には
+\code{'n'}、グループがモデレート (moderated) されている場合には
+\code{'m'} となります。(順番に注意してください: \var{last}、
+\var{first} の順です。)
+\var{file}引数が指定されている場合、\samp{LIST}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{descriptions}{grouppattern}
+\samp{LIST NEWSGROUPS} 命令を送信します。\var{grouppattern} は
+RFC2980 の定義に従う wildmat 文字列です (実際には、 DOS や UNIX の
+シェルワイルドカード文字列と同じです)。 \code{(\var{response},\var{list})}
+からなるペアを返し、\var{list} はタプル\code{(\var{name}, \var{title})}
+リストになります。
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}{description}{group}
+単一のグループ\var{group} から説明文字列を取り出します。
+('group' が実際には wildmat 文字列で) 複数のグループがマッチした場合、
+最初にマッチしたものを返します。何もマッチしなければ空文字列を返します。
+
+このメソッドはサーバからの応答コードを省略します。応答コードが
+必要なら、\method{descriptions()} を使ってください。
+
+\versionadded{2.4}
+\end{methoddesc}
+
+
+\begin{methoddesc}{group}{name}
+\samp{GROUP} 命令を送信します。\var{name} はグループ名です。タプル 
+\code{(\var{response}, \var{count}, \var{first}, \var{last}, \var{name})} 
+を返します。\var{count} はグループ中の記事数 (の推定値) で、
+\var{first} はグループ中の最初の記事番号、\var{last} はグループ中の
+最新の記事番号、\var{name} はグループ名です。記事番号は文字列で
+返されます。
+\end{methoddesc}
+
+\begin{methoddesc}{help}{\optional{file}}
+\samp{HELP} 命令を送信します。\code{(\var{response}, \var{list})} 
+からなるペアを返します。\var{list} はヘルプ文字列からなるリストです。
+\var{file}引数が指定されている場合、\samp{HELP}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{stat}{id}
+\samp{STAT} 命令を送信します。\var{id} は
+(\character{<} と \character{>} に囲まれた形式の) メッセージ ID か、
+(文字列の) 記事番号です。
+三つ組み \code{(\var{response}, \var{number}, \var{id})} を返します。
+\var{number} は (文字列の) 記事番号で、\var{id} は
+(\character{<} と \character{>} に囲まれた形式の) メッセージ ID です。
+\end{methoddesc}
+
+\begin{methoddesc}{next}{}
+\samp{NEXT} 命令を送信します。\method{stat()} のような応答を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{last}{}
+\samp{LAST} 命令を送信します。\method{stat()} のような応答を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{head}{id}
+\samp{HEAD} 命令を送信します。\var{id} は \method{stat()} における
+のと同じ意味を持ちます。
+\code{(\var{response}, \var{number}, \var{id}, \var{list})}
+からなるタプルを返します。最初の 3 要素は \method{stat()} と
+同じもので、\var{list} は記事のヘッダからなるリスト
+ (まだ解析されておらず、末尾の改行が取り去られたヘッダ行のリスト)
+です。
+\end{methoddesc}
+
+\begin{methoddesc}{body}{id,\optional{file}}
+\samp{BODY} 命令を送信します。\var{id} は \method{stat()} における
+のと同じ意味を持ちます。\var{file} 引数が与えられている場合、
+記事本体 (body) はファイルに保存されます。\var{file} が文字列
+の場合、このメソッドはその名前を持つファイルオブジェクトを
+開き、記事を書き込んで閉じます。\var{file} がファイルオブジェクトの
+場合、\method{write()} を呼び出して記事本体を記録します。
+\method{head()} のような戻り値を返します。\var{file} が与えられて
+いた場合、 返される \var{list} は空のリストになります。
+\end{methoddesc}
+
+\begin{methoddesc}{article}{id}
+\samp{ARTICLE} 命令を送信します。\var{id} は \method{stat()} における
+のと同じ意味を持ちます。\method{head()} のような戻り値を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{slave}{}
+\samp{SLAVE} 命令を送信します。サーバの \var{response} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{xhdr}{header, string, \optional{file}}
+\samp{XHDR} 命令を送信します、この命令は RFC には定義されていませんが、
+一般に広まっている拡張です。\var{header} 引数は、例えば \code{'subject'}
+といったヘッダキーワードです。\var{string} 引数は 
+\code{'\var{first}-\var{last}'} の形式でなければならず、ここで
+\var{first} および \var{last} は検索の対象とする記事範囲の最初と最後の
+記事番号です。\code{(\var{response}, \var{list})} のペアを返します。
+\var{list} は \code{(\var{id}, \var{text})} のペアからなるリストで、
+\var{id} が (文字列で表した) 記事番号、\var{text} がその記事の
+ヘッダテキストです。
+\var{file}引数が指定されている場合、\samp{XHDR}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{post}{file}
+\samp{POST} 命令を使って記事をポストします。\var{file}
+引数は開かれているファイルオブジェクトで、その内容は
+\method{readline()} メソッドを使って EOF まで読み出されます。
+内容は必要なヘッダを含め、正しい形式のニュース記事で
+なければなりません。\method{post()} メソッドは \samp{.}
+で始まる行を自動的にエスケープします。
+\end{methoddesc}
+
+\begin{methoddesc}{ihave}{id, file}
+\samp{IHAVE} 命令を送信します。
+\var{id} は (\character{<} と \character{>} に囲まれた) メッセージ ID
+です。
+応答がエラーでない場合、\var{file} を \method{post()} と全く同じように
+扱います。
+\end{methoddesc}
+
+\begin{methoddesc}{date}{}
+タプル \code{(\var{response}, \var{date}, \var{time})} を返します。
+このタプルには \method{newnews()} および \method{newgroups()} メソッド
+に合った形式の、現在の日付および時刻が入っています。
+これはオプションの NNTP 拡張なので、全てのサーバでサポートされている
+とは限りません。
+\end{methoddesc}
+
+\begin{methoddesc}{xgtitle}{name, \optional{file}}
+\samp{XGTITLE} 命令を処理し、\code{(\var{response}, \var{list})}
+からなるペアを返します。\var{list} は
+\code{(\var{name}, \var{title})} を含むタプルのリストです。
+% XXX huh?  Should that be name, description?
+\var{file}引数が指定されている場合、\samp{XHDR}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+これはオプションの NNTP 拡張なので、全てのサーバでサポートされている
+とは限りません。
+
+RFC2980 では、 ``この拡張は撤廃すべきである'' と主張しています。
+\method{descriptions()} または \method{description()} を使うように
+してください。
+\end{methoddesc}
+
+\begin{methoddesc}{xover}{start, end, \optional{file}}
+\code{(\var{resp}, \var{list})} からなるペアを返します。
+\var{list} はタプルからなるリストで、各タプルは記事番号 \var{start} 
+および \var{end} の間に区切られた記事です。各タプルは
+\code{(\var{article number}, \var{subject}, \var{poster}, \var{date},
+\var{id}, \var{references}, \var{size}, \var{lines})} の形式をとります。
+\var{file}引数が指定されている場合、\samp{XHDR}コマンドの出力結果は
+ファイルに格納されます。\var{file}が文字列の場合、この文字列をファイル名
+としてファイルをオープンし、書き込み後にクローズします。\var{file}がファ
+イルオブジェクトの場合、オブジェクトの\method{write()}メソッドを呼び出し
+て出力結果を格納します。\var{file}が指定されている場合は戻り値として空の
+リストを返します。
+これはオプションの NNTP 拡張なので、全てのサーバでサポートされている
+とは限りません。
+\end{methoddesc}
+
+\begin{methoddesc}{xpath}{id}
+\code{(\var{resp}, \var{path})} からなるペアを返します。
+\var{path} は メッセージ ID が \var{id} である記事のディレクトリパスです。
+これはオプションの NNTP 拡張なので、全てのサーバでサポートされている
+とは限りません。
+\end{methoddesc}
+
+\begin{methoddesc}{quit}{}
+\samp{QUIT} 命令を送信し、接続を閉じます。このメソッドを呼び出した
+後は、NTTP オブジェクトの他のいかなるメソッドも呼び出してはいけません。
+\end{methoddesc}

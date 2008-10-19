@@ -1,0 +1,3264 @@
+\documentclass{howtojp}
+\usepackage{ltxmarkupjp}
+
+\title{Python ドキュメントの作成}
+
+\makeindex
+
+% \input{boilerplatejp}
+
+% Now override the stuff that includes author information;
+% Guido did *not* write this one!
+
+\author{Fred L. Drake, Jr.\\
+日本語訳: Python ドキュメント翻訳プロジェクト}
+\authoraddress{
+        PythonLabs \\
+        Email: \email{fdrake@acm.org}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+%% The Python language has a substantial body of
+%% documentation, much of it contributed by various authors.  The markup
+%% used for the Python documentation is based on \LaTeX{} and requires a
+%% significant set of macros written specifically for documenting Python.
+%% This document describes the macros introduced to support Python
+%% documentation and how they should be used to support a wide range of
+%% output formats.
+
+Python には様々な著者により寄稿された非常に多くのドキュメント類があり
+ます。Python のドキュメントを作成する際には、 \LaTeX{} に基づいた
+マークアップを行い、Python ドキュメント作成用に特別に書かれたかなりの
+数のマクロセットが必要です。
+このドキュメントでは、Python のドキュメント作成をサポートするために
+採用されているマクロについて述べ、広範な出力形式をサポートするために
+マクロをどのように使うかを説明します。
+
+%% This document describes the document classes and special markup used
+%% in the Python documentation.  Authors may use this guide, in
+%% conjunction with the template files provided with the
+%% distribution, to create or maintain whole documents or sections.
+
+このドキュメントでは、Python ドキュメント作成で使うドキュメントクラス
+と特殊なマークアップについて述べます。
+ドキュメントの作者は、このガイドと Python 配布物で提供されている
+雛形ファイルを組み合わせて使い、ドキュメント全体やドキュメントの
+各セクションを作成したり維持したりできます。
+
+Python のドキュメントを寄贈したいと思っているなら、そのために\LaTeX{}
+をわざわざ学ぶ必要はありません; 平文での寄贈も大歓迎です。
+\end{abstract}
+
+\tableofcontents
+
+
+\section{初めに \label{intro}} % Introduction
+
+%%   Python's documentation has long been considered to be good for a
+%%   free programming language.  There are a number of reasons for this,
+%%   the most important being the early commitment of Python's creator,
+%%   Guido van Rossum, to providing documentation on the language and its
+%%   libraries, and the continuing involvement of the user community in
+%%   providing assistance for creating and maintaining documentation.
+
+Python のドキュメントは、このフリーなプログラミング言語の長所であると
+考えられてきました。その理由は多々ありますが、最も重要なのは、
+Python の作者である Guido van Rossum が、言語やそのライブラリの
+ドキュメントの提供と、ドキュメントの作成と維持の手助けする上での
+ユーザコミュニティの継続的な参加に早期から関わっていたことです。
+
+%%   The involvement of the community takes many forms, from authoring to
+%%   bug reports to just plain complaining when the documentation could
+%%   be more complete or easier to use.  All of these forms of input from
+%%   the community have proved useful during the time I've been involved
+%%   in maintaining the documentation.
+
+コミュニティの参加には、バグ報告の作成から、単にドキュメントをより
+完全で利用しやすいものにできる場合に素朴な提案をするといったこと
+まで、いくつものやりかたがあります。
+筆者自身、ドキュメントの維持に参加している中で、こうしたコミュニティか
+ら寄せられる入力全てが有用だと確信させられました。
+
+%%   This document is aimed at authors and potential authors of
+%%   documentation for Python.  More specifically, it is for people
+%%   contributing to the standard documentation and developing additional
+%%   documents using the same tools as the standard documents.  This
+%%   guide will be less useful for authors using the Python documentation
+%%   tools for topics other than Python, and less useful still for
+%%   authors not using the tools at all.
+
+このドキュメントは、Python のドキュメントの作者、あるいは潜在的な
+作者向けのものです。もっと具体的にいうと、標準ドキュメントに貢献
+したり、標準ドキュメントと同じツールを使って別のドキュメントを
+開発する人々向けです。
+このガイドは Python 以外のトピックに Python ドキュメント作成
+ツールを使う作者にとってはあまり有用ではなく、ツールを全く使用しない
+作者にもあまり有用ではないでしょう。
+
+%%   The material in this guide is intended to assist authors using the
+%%   Python documentation tools.  It includes information on the source
+%%   distribution of the standard documentation, a discussion of the
+%%   document types, reference material on the markup defined in the
+%%   document classes, a list of the external tools needed for processing
+%%   documents, and reference material on the tools provided with the
+%%   documentation resources.  At the end, there is also a section
+%%   discussing future directions for the Python documentation and where
+%%   to turn for more information.
+
+このガイドに書かれていることは、Python ドキュメント作成ツールを使う
+著者の支援を目的としています。ガイドには、標準ドキュメントのソース
+配布に関する情報、ドキュメントタイプに関する議論、ドキュメントクラス
+中で定義されているマークアップについてのリファレンス、ドキュメントを
+処理する上で必要な外部ツールのリスト、ドキュメントリソースと共に提供
+されているツールに関するリファレンスが入っています。
+ガイドの末尾には、Python ドキュメントの将来の方向性と、詳細な情報を
+どこで取得できるかについて議論した章もあります。
+
+仮に、あなたが Python のドキュメントを寄贈したいと思っている一方で、
+\LaTeX{} を学んだり、このドキュメントに書かれているマークアップ構造を
+学んだりする時間や気力を持てないとしても、あなたを Python プロジェクト
+への協力者として迎え入れる余地はあります。
+既存のドキュメントを改善したり、欠けているドキュメントを提供して
+もらえるなら、現在のドキュメント製作チームがいつでも喜んでマークアップ
+を行い、テキストを組み込みます。手助けしたいという気持ちをお持ちなら、
+このドキュメントに書かれていることを障害のように思わないでくださいね！
+
+\section{ディレクトリ構造 \label{directories}} % Directory Structure
+
+%%   The source distribution for the standard Python documentation
+%%   contains a large number of directories.  While third-party documents
+%%   do not need to be placed into this structure or need to be placed
+%%   within a similar structure, it can be helpful to know where to look
+%%   for examples and tools when developing new documents using the
+%%   Python documentation tools.  This section describes this directory
+%%   structure.
+
+標準 Python ドキュメントのソース配布物には、数多くのディレクトリが
+入っています。サードパーティ製のドキュメントは、このディレクトリ構造下や
+似たディレクトリ構造下におく必要はありませんが、Python ドキュメント作成
+ツールを利用して新たなドキュメントを開発する際に、どこで例題やツールを
+探せばよいか知っておけば便利でしょう。そこでこの節では、ディレクトリ
+構造について述べます。
+
+%%   The documentation sources are usually placed within the Python
+%%   source distribution as the top-level directory \file{Doc/}, but
+%%   are not dependent on the Python source distribution in any way.
+
+ドキュメントソースは通常、Python ソース配布物中の\file{Doc/} を
+トップレベルディレクトリとして配置されていますが、Python ソース配布物
+には全く依存していません。
+
+%%   The \file{Doc/} directory contains a few files and several
+%%   subdirectories.  The files are mostly self-explanatory, including a
+%%   \file{README} and a \file{Makefile}.  The directories fall into
+%%   three categories:
+
+\file{Doc/} ディレクトリには、いくつかのファイルとサブディレクトリ
+が入っています。ファイルは\file{README} や \file{Makefile} を含め、
+ほとんどがその名の通りのファイルです。ディレクトリは以下の三つの
+カテゴリに分かれます:
+
+  \begin{definitions}
+%%     \term{Document Sources}
+%%         The \LaTeX{} sources for each document are placed in a
+%%         separate directory.  These directories are given short
+%%         names which vaguely indicate the document in each:
+    \term{ドキュメントソース}
+各ドキュメントの \LaTeX{} ソースは、それぞれ別々のディレクトリに
+配置されています。
+ディレクトリには、各々のドキュメントを漠然と説明する短い名前がついて
+います:
+
+        \begin{tableii}{p{.75in}|p{3in}}{filenq}{ディレクトリ}{タイトル}
+          \lineii{api/}
+            {\citetitle[../api/api.html]{Python/C API}}
+          \lineii{dist/}
+            {\citetitle[../dist/dist.html]{Python モジュールの配布}}
+          \lineii{doc/}
+            {\citetitle[../doc/doc.html]{Python ドキュメントの作成}}
+          \lineii{ext/}
+            {\citetitle[../ext/ext.html]{Python インタプリタの拡張と埋め込み}}
+          \lineii{inst/}
+            {\citetitle[../inst/inst.html]{Python モジュールのインストール}}
+          \lineii{lib/}
+            {\citetitle[../lib/lib.html]{Python ライブラリリファレンス}}
+          \lineii{mac/}
+            {\citetitle[../mac/mac.html]{Macintosh モジュールリファレンス}}
+          \lineii{ref/}
+            {\citetitle[../ref/ref.html]{Python リファレンスマニュアル}}
+          \lineii{tut/}
+            {\citetitle[../tut/tut.html]{Python チュートリアル}}
+          \lineii{whatsnew/}
+            {\citetitle[../whatsnew/whatsnew24.html]
+	      {Python \shortversion の更新情報}}
+        \end{tableii}
+
+%%     \term{Format-Specific Output}
+%%         Most output formats have a directory which contains a
+%%         \file{Makefile} which controls the generation of that format
+%%         and provides storage for the formatted documents.  The only
+%%         variations within this category are the Portable Document
+%%         Format (PDF) and PostScript versions are placed in the
+%%         directories \file{paper-a4/} and \file{paper-letter/} (this
+%%         causes all the temporary files created by \LaTeX{} to be kept
+%%         in the same place for each paper size, where they can be more
+%%         easily ignored).
+
+%%         \begin{tableii}{p{.75in}|p{3in}}{filenq}{Directory}{Output Formats}
+%%           \lineii{html/}{HTML output}
+%%           \lineii{info/}{GNU info output}
+%%           \lineii{isilo/}{\ulink{iSilo}{http://www.isilo.com/}
+%%                           documents (for Palm OS devices)}
+%%           \lineii{paper-a4/}{PDF and PostScript, A4 paper}
+%%           \lineii{paper-letter/}{PDF and PostScript, US-Letter paper}
+%%         \end{tableii}
+
+      \term{出力形式ごとの出力ディレクトリ}
+ほとんどの出力形式に対して、出力結果のドキュメントを格納する
+ディレクトリがあり、その出力形式でのドキュメント生成を制御する
+\file{Makefile} が入っています。
+このカテゴリの例外となるのは Portable Document Format (PDF) および
+PostScript 版で、これらは \file{paper-a4/} および \file{paper-letter/}
+に出力されます (こうすることで、\LaTeX{} が生成する全ての一時ファイル
+が用紙サイズごとに同じ場所に置かれ、目立たなくなります)。
+
+        \begin{tableii}{p{.75in}|p{3in}}{filenq}{ディレクトリ}{出力形式}
+          \lineii{html/}{HTML 形式}
+          \lineii{info/}{GNU info 形式}
+          \lineii{isilo/}{\ulink{iSilo}{http://www.isilo.com/}
+                          ドキュメント (Palm OS 機器用)}
+          \lineii{paper-a4/}{PDF とPostScript、A4 サイズ}
+          \lineii{paper-letter/}{PDF と PostScript、US-Letter サイズ}
+        \end{tableii}
+
+%%     \term{Supplemental Files}
+%%         Some additional directories are used to store supplemental
+%%         files used for the various processes.  Directories are
+%%         included for the shared \LaTeX{} document classes, the
+%%         \LaTeX2HTML support, template files for various document
+%%         components, and the scripts used to perform various steps in
+%%         the formatting processes.
+
+%%         \begin{tableii}{p{.75in}|p{3in}}{filenq}{Directory}{Contents}
+%%           \lineii{perl/}{Support for \LaTeX2HTML processing}
+%%           \lineii{templates/}{Example files for source documents}
+%%           \lineii{texinputs/}{Style implementation for \LaTeX}
+%%           \lineii{tools/}{Custom processing scripts}
+%%         \end{tableii}
+
+     \term{補助ファイル群}
+
+その他のディレクトリは、様々な処理で用いられる補助ファイルを格納
+するためのものです。補助ファイルは、各ドキュメントで共通の \LaTeX{} 
+ドキュメントクラス、\LaTeX2HTML のサポートファイル、ドキュメントの
+構成要素となる雛形ファイル、フォーマット処理の様々なステップを実行
+するスクリプトなどです。
+
+        \begin{tableii}{p{.75in}|p{3in}}{filenq}{ディレクトリ}{内容}
+          \lineii{commontex/}{ドキュメント間で共通の文章}
+          \lineii{perl/}     {\LaTeX2HTML 処理のサポート}
+          \lineii{templates/}{ソースドキュメントの例}
+          \lineii{texinputs/}{\LaTeX スタイルファイル}
+          \lineii{tools/}    {独自の処理用スクリプト}
+        \end{tableii}
+
+  \end{definitions}
+
+
+\section{スタイルガイド \label{style-guide}} % Style Guide
+
+%%   The Python documentation should follow the \citetitle
+%%   [http://developer.apple.com/documentation/UserExperience/Conceptual/APStyleGuide/AppleStyleGuide2003.pdf]
+%%   {Apple Publications Style Guide} wherever possible.  This particular
+%%   style guide was selected mostly because it seems reasonable and is
+%%   easy to get online.
+  
+Python ドキュメントは、可能な限り
+\citetitle[http://developer.apple.com/documentation/UserExperience/Conceptual/APStyleGuide/AppleStyleGuide2003.pdf]{Apple Publications Style Guide}
+に準拠することになっています。内容の合理性と、オンラインで
+容易に取得できることから、このスタイルガイドが選ばれました。
+
+%%   Topics which are not covered in the Apple's style guide will be
+%%   discussed in this document if necessary.
+
+Apple のスタイルガイドがカバーしていないトピックについては、この
+ドキュメントで必要に応じて議論していきます。
+
+%%   Footnotes are generally discouraged due to the pain of using
+%%   footnotes in the HTML conversion of documents.  Footnotes may be
+%%   used when they are the best way to present specific information.
+%%   When a footnote reference is added at the end of the sentence, it
+%%   should follow the sentence-ending punctuation.  The \LaTeX{} markup
+%%   should appear something like this:
+
+ドキュメントをHTMLに変換する際に問題が発生するため、脚注の使用はあまりお
+勧めしません。脚注を使うのは、何かの情報を表示するのにそれがもっとも適し
+ている場合に限るようにしましょう。脚注への参照を文の最後に追加する場合は、
+句点の後に追加しなければなりません。 \LaTeX{} での記法は次のようになりま
+す。
+
+%% \begin{verbatim}
+%% This sentence has a footnote reference.%
+%%   \footnote{This is the footnote text.}
+%% \end{verbatim}
+
+\begin{verbatim}
+この文には脚注への参照があります。%
+  \footnote{これが脚注です。}
+\end{verbatim}
+
+%%   Footnotes may appear in the middle of sentences where appropriate.
+
+脚注は、文の途中でも適切な場所で使用することができます。
+
+%%   Many special names are used in the Python documentation, including
+%%   the names of operating systems, programming languages, standards
+%%   bodies, and the like.  Many of these were assigned \LaTeX{} macros
+%%   at some point in the distant past, and these macros lived on long
+%%   past their usefulness.  In the current markup, most of these entities
+%%   are not assigned any special markup, but the preferred spellings are
+%%   given here to aid authors in maintaining the consistency of
+%%   presentation in the Python documentation.
+
+Python ドキュメントの中では、オペレーティングシステムやプログラミング
+言語、標準機関、その他の名前を含む沢山の特殊な名前を使っています。
+こうした名前の多くはかなり古い時期に\LaTeX{} マクロに割り当てられ、
+その便利さから長い間利用されつづけてきました。現在のマークアップでは、
+こうしたエンティティのほとんどには特殊なマークアップを割り当てません。
+その代わり、推奨される表記法を提供して、ドキュメント作者が Python 
+ドキュメントにおける表現の一貫性を維持できるよう手助けしています。
+
+%%   Other terms and words deserve special mention as well; these conventions
+%%   should be used to ensure consistency throughout the documentation:
+
+その他の用語や単語についても特に説明しておく必要があるでしょう; 
+ドキュメントの作者はこれらの規約に従い、ドキュメント全体を通して
+一貫性を保証しなければなりません。
+
+  \begin{description}
+    \item[CPU]
+%%     For ``central processing unit.''  Many style guides say this
+%%     should be spelled out on the first use (and if you must use it,
+%%     do so!).  For the Python documentation, this abbreviation should
+%%     be avoided since there's no reasonable way to predict which occurrence
+%%     will be the first seen by the reader.  It is better to use the
+%%     word ``processor'' instead.
+    
+``central processing unit'' (中央処理装置) のことです。多くの
+スタイルガイドが、この語を最初に利用するときには略さずに書かねば
+ならないとしています (ですから、どうしてもこの語を使う必要があるなら、
+必ずそうしてください!)。 Python ドキュメントでは、読者が最初にどこを
+読むのか合理的に予測する方法がないので、略語の使用を避けねばなりません。
+代わりに ``processor (プロセッサ)'' を使う方がよいでしょう。
+
+    \item[\POSIX]
+%%         The name assigned to a particular group of standards.  This is
+%%         always uppercase.  Use the macro \macro{POSIX} to represent this
+%%         name.
+        
+ある一連の標準仕様につけられた名前です。常に大文字だけからなります。
+この名前を表現するにはマクロ \macro{POSIX} を使用してください。
+
+    \item[Python]
+%%         The name of our favorite programming language is always
+%%         capitalized.
+        
+私たちの好きなプログラミング言語の名前は常に大文字で始めます。
+
+    \item[Unicode]
+%%         The name of a character set and matching encoding.  This is
+%%         always written capitalized.
+        
+ある文字セットと、それに対応する符号化方式の名前です。
+常に大文字で始めます。
+
+    \item[\UNIX]
+%%         The name of the operating system developed at AT\&T Bell Labs
+%%         in the early 1970s.  Use the macro \macro{UNIX} to use this
+%%         name.
+        
+1970年代初頭に AT\&T ベル研究所で開発されたオペレーティングシステムの名前
+です。この名前を使うにはマクロの \macro{UNIX} を使用してください。
+  \end{description}
+
+
+\section{\LaTeX{} 入門 \label{latex-primer}} % \LaTeX{} Primer
+
+%%   This section is a brief introduction to \LaTeX{} concepts and
+%%   syntax, to provide authors enough information to author documents
+%%   productively without having to become ``\TeX{}nicians.''  This does
+%%   not teach everything needed to know about writing \LaTeX{} for
+%%   Python documentation; many of the standard ``environments'' are not
+%%   described here (though you will learn how to mark something as an
+%%   environment).
+  
+この節では、\LaTeX{} の概念と構文法について簡単に紹介し、
+ドキュメントの作者が ``\TeX{}nician'' にならなくてもドキュメントを
+十分生産的に書けるような情報を提供します。
+この節を読んだからといって、\LaTeX{} でドキュメントを書く上で必要な
+全ては学べません; \LaTeX{} が提供している標準の ``環境 (environment)''
+については、ここでは説明しません。
+
+%%   Perhaps the most important concept to keep in mind while marking up
+%%   Python documentation is that while \TeX{} is unstructured, \LaTeX{} was
+%%   designed as a layer on top of \TeX{} which specifically supports
+%%   structured markup.  The Python-specific markup is intended to extend
+%%   the structure provided by standard \LaTeX{} document classes to
+%%   support additional information specific to Python.
+
+おそらく、Python ドキュメントのマークアップにおいて心に留めておくべき
+最も重要な概念は、\TeX{} が非体系的なのに対して、\LaTeX{} は \TeX{}
+の上のレイヤとして設計されていて、本質的には構造化マークアップを
+サポートしているということです。 Python 特有のマークアップは、
+標準の \LaTeX{} ドキュメントクラスで提供されている構造を拡張し、
+Python 特有の情報を書けるようサポートするためのものです。
+
+%%   \LaTeX{} documents contain two parts: the preamble and the body.
+%%   The preamble is used to specify certain metadata about the document
+%%   itself, such as the title, the list of authors, the date, and the
+%%   \emph{class} the document belongs to.  Additional information used
+%%   to control index generation and the use of bibliographic databases
+%%   can also be placed in the preamble.  For most authors, the preamble
+%%   can be most easily created by copying it from an existing document
+%%   and modifying a few key pieces of information.
+  
+\LaTeX{} ドキュメントには、二つの構成要素: プリアンブルと本体が
+入っています。プリアンブルは、タイトル、著者のリスト、日付、ドキュメント
+が属する  \emph{クラス} といった、ドキュメント自体に関するメタデータ
+を指定するために使います。その他の情報で、インデクスの生成や
+参考文献データベースの使用を制御するものもプリアンブル内に置けます。
+ほとんどの著者にとっては、既存のドキュメントからプリアンブルをコピーし、
+いくつかの情報を修正するだけで、簡単にプリアンブルを作成できます。
+
+%%   The \dfn{class} of a document is used to place a document within a
+%%   broad category of documents and set some fundamental formatting
+%%   properties.  For Python documentation, two classes are used: the
+%%   \code{manual} class and the \code{howto} class.  These classes also
+%%   define the additional markup used to document Python concepts and
+%%   structures.  Specific information about these classes is provided in
+%%   section \ref{classes}, ``Document Classes,'' below.  The first thing
+%%   in the preamble is the declaration of the document's class.
+  
+ドキュメントの\dfn{クラス} は、ドキュメントをある広範なカテゴリに
+分類し、そのカテゴリで共通の基本的なフォーマットプロパティを設定する
+ために使います。 Python ドキュメントの場合、二つのクラス:
+\code{manual} クラスと \code{howto} クラスを使います。
+これらのクラスではまた、Python における概念やデータ構造を説明
+する際に使うマークアップも定義しています。これらのクラスに
+関する詳しい説明は、後述の \ref{classes}  節、 ``ドキュメントクラス''
+にあります。ドキュメントクラスの宣言はプリアンブルの先頭にあります。
+
+%%   After the class declaration, a number of \emph{macros} are used to
+%%   provide further information about the document and setup any
+%%   additional markup that is needed.  No output is generated from the
+%%   preamble; it is an error to include free text in the preamble
+%%   because it would cause output.
+  
+クラス宣言の後ろには数多くの\emph{マクロ} があり、ドキュメントに
+関する詳細情報を宣言したり、追加のマークアップを設定しています。
+プリアンブルからは何も出力生成されません; 自由文 (free text)
+は出力生成につながるため、プリアンブルに自由文をおくとエラーに
+なります。
+
+%%   The document body follows the preamble.  This contains all the
+%%   printed components of the document marked up structurally.  Generic
+%%   \LaTeX{} structures include hierarchical sections, numbered and
+%%   bulleted lists, and special structures for the document abstract and
+%%   indexes.
+
+ドキュメント本体はプリアンブルの後に続けます。本体には、出力すべき
+ドキュメントの構成要素を構造的にマークアップして入れます。
+一般的な\LaTeX{} の構造には、階層化された章節、番号付けリストや
+箇条書きリスト、そしてドキュメントの概要や索引といった特殊な
+構造があります。
+
+  \subsection{構文法 \label{latex-syntax}} % Syntax
+
+%%     There are some things that an author of Python documentation needs
+%%     to know about \LaTeX{} syntax.
+    
+Python ドキュメントの作者は、\LaTeX{} の構文法についていくつか知って
+おかねばならないことがあります。
+
+%%     A \dfn{comment} is started by the ``percent'' character
+%%     (\character{\%}) and continues through the end of the line
+%%     \emph{and all leading whitespace on the following line}.  This is
+%%     a little different from any programming language I know of, so an
+%%     example is in order:
+
+\dfn{コメント} は、``パーセント'' 文字 (\character{\%})
+から始まり、行末まで、\emph{または次の行の先頭にある空白文字まで}
+続きます。
+これは著者の知っているどのプログラミング言語とも少し違っています。
+そこで、順序立てて例を挙げます:
+
+\begin{verbatim}
+This is text.% comment
+    This is more text.  % another comment
+Still more text.
+\end{verbatim}
+
+%%     The first non-comment character following the first comment is the
+%%     letter \character{T} on the second line; the leading whitespace on
+%%     that line is consumed as part of the first comment.  This means
+%%     that there is no space between the first and second sentences, so
+%%     the period and letter \character{T} will be directly adjacent in
+%%     the typeset document.
+
+最初の行のコメントの以降で、コメントでないとみなされる最初の文字は、
+二行目の\character{T} になります; 二行目の先頭にある空白文字は、
+最初の行のコメントの一部として消費してしまいます。すなわち、最初と
+二つ目の文との間には全くスペースがなく、最初の行のピリオドと二行目の
+文字\character{T} はタイプセット時に直接くっついていると解釈されるのです。
+
+%%     Note also that though the first non-comment character after the
+%%     second comment is the letter \character{S}, there is whitespace
+%%     preceding the comment, so the two sentences are separated as
+%%     expected.
+
+二つ目のコメントの直後にくる非コメント文字は \character{S} ですが、
+二つ目のコメントの直前に空白を入れているため、意図通りに二つの
+単語が分割されることにも注意してください。
+
+%%     A \dfn{group} is an enclosure for a collection of text and
+%%     commands which encloses the formatting context and constrains the
+%%     scope of any changes to that context made by commands within the
+%%     group.  Groups can be nested hierarchically.  The formatting
+%%     context includes the font and the definition of additional macros
+%%     (or overrides of macros defined in outer groups).  Syntactically,
+%%     groups are enclosed in braces:
+
+\dfn{グループ} は一連のテキストやコマンドに対する囲いで、
+フォーマット処理のコンテキストを囲い、コマンドが処理コンテキストに及ぼ
+す変更の範囲をグループ内に制限します。
+グループは入れ子構造にして階層化できます。フォーマット処理のコンテキストは、
+フォントや、追加のマクロ定義 (またはグループ外部で定義されているマクロ
+に対するオーバライド) を含みます。構文法的には、グループは波括弧で
+囲います:
+
+\begin{verbatim}
+{text in a group}
+\end{verbatim}
+
+%%     An alternate syntax for a group using brackets, \code{[...]}, is
+%%     used by macros and environment constructors which take optional
+%%     parameters; brackets do not normally hold syntactic significance.
+%%     A degenerate group, containing only one atomic bit of content,
+%%     does not need to have an explicit group, unless it is required to
+%%     avoid ambiguity.  Since Python tends toward the explicit, groups
+%%     are also made explicit in the documentation markup.
+
+グループを表すには、ブラケット \code{[...]} を使う代用構文もあります。
+この代用構文はオプションのパラメタをとるようなマクロや環境のコンストラ
+クタで使います; ブラケットには通常、構文上の意味はありません。
+原始的要素 (atomic bit) が一つだけしか入っていない縮重グループ
+(degenerate group) の場合は、あいまいさを防ぐために必要でないかぎり
+明示的なグループにする必要はありません。とはいえ、
+Python は明示的であることをよしとするので、ドキュメントのマークアップ
+ではグループを明示しましょう。
+
+%%     Groups are used only sparingly in the Python documentation, except
+%%     for their use in marking parameters to macros and environments.
+
+マクロや環境におけるパラメタをマークする場合を除き、Python ドキュメントでは
+グループ自体は控えめに使います。
+
+%%     A \dfn{macro} is usually a simple construct which is identified by
+%%     name and can take some number of parameters.  In normal \LaTeX{}
+%%     usage, one of these can be optional.  The markup is introduced
+%%     using the backslash character (\character{\e}), and the name is
+%%     given by alphabetic characters (no digits, hyphens, or
+%%     underscores).  Required parameters should be marked as a group,
+%%     and optional parameters should be marked using the alternate
+%%     syntax for a group.
+    
+\dfn{マクロ} は通常は単純な構成要素で、マクロ名で識別
+され、いくつかのパラメタを取ることがあります。通常の \LaTeX{} の
+使用法では、パラメタのうちの一つがオプションになっていることが
+あります。マークアップはバックスラッシュ文字 (\character{\e}) から
+始め、マクロ名はアルファベット文字 (数字、ハイフン、アンダースコア以外)
+で与えます。必須パラメタはグループとしてマークし、
+オプションのパラメタはグループの代用構文でマークせねばなりません。
+
+%%     For example, a macro named ``foo'' which takes a single parameter
+%%     would appear like this:
+    
+例えば、 単一のパラメタをとるマクロは以下のように
+なります:
+
+\begin{verbatim}
+\name{parameter}
+\end{verbatim}
+%
+%%     A macro which takes an optional parameter would be typed like this
+%%     when the optional paramter is given:
+%
+オプションのパラメタをとるマクロで、パラメタを指定するときには以下の
+ように入力します:
+
+\begin{verbatim}
+\name[optional]
+\end{verbatim}
+%
+%%     If both optional and required parameters are to be required, it
+%%     looks like this:
+%
+オプションと必須パラメタの両方が必要な場合には、以下のようになります:
+
+\begin{verbatim}
+\name[optional]{required}
+\end{verbatim}
+
+%%     A macro name may be followed by a space or newline; a space
+%%     between the macro name and any parameters will be consumed, but
+%%     this usage is not practiced in the Python documentation.  Such a
+%%     space is still consumed if there are no parameters to the macro,
+%%     in which case inserting an empty group (\code{\{\}}) or explicit
+%%     word space (\samp{\e\ }) immediately after the macro name helps to
+%%     avoid running the expansion of the macro into the following text.
+%%     Macros which take no parameters but which should not be followed
+%%     by a word space do not need special treatment if the following
+%%     character in the document source if not a name character (such as
+%%     punctuation).
+
+マクロ名の後ろには空白や改行を入れてもかまいません; この場合、マクロ名と
+パラメタ間の空白は取り去られてしまいます。しかし、Python ドキュメント
+ではこうした使い方を実践しません。空白はマクロにパラメタがない場合にも
+取り去られますが、この場合には空のグループ (\code{\{\}}) や、空白の
+明示的表現 (\samp{\e\ }) をマクロ名の直後に続けると、マクロ展開が
+後続の文字に及ぶのを避ける手助けになります。
+パラメタを取らないが、後ろに空白を続けたくないマクロの場合には、
+ドキュメントソース中で名前の後ろに名前に使わない文字 (区切り文字など) が
+入っていれば、特別扱いする必要はありません。
+
+%%     Each line of this example shows an appropriate way to write text
+%%     which includes a macro which takes no parameters:
+
+例題中の各行は、パラメタをとらないマクロが入った文章を書くための
+適切な方法を示しています。
+
+\begin{verbatim}
+This \UNIX{} is followed by a space.
+This \UNIX\ is also followed by a space.
+\UNIX, followed by a comma, needs no additional markup.
+\end{verbatim}
+
+%%     An \dfn{environment} is a larger construct than a macro, and can
+%%     be used for things with more content than would conveniently fit
+%%     in a macro parameter.  They are primarily used when formatting
+%%     parameters need to be changed before and after a large chunk of
+%%     content, but the content itself needs to be highly flexible.  Code
+%%     samples are presented using an environment, and descriptions of
+%%     functions, methods, and classes are also marked using environments.
+
+\dfn{環境} はマクロよりも大きな構文要素です。環境は、
+マクロの引数に入れるには内容がやや大きすぎて便利さを欠く場合に
+使えます。主に、本文の大きな断片の前後でフォーマットパラメタを変更
+する必要があり、かつ本文を十分柔軟に書きたい場合に使います。
+サンプルコードは環境を使って表現します。また、関数、メソッド、
+クラスの定義も環境を使ってマークします。
+
+%%     Since the content of an environment is free-form and can consist
+%%     of several paragraphs, they are actually marked using a pair of
+%%     macros: \macro{begin} and \macro{end}.  These macros both take the
+%%     name of the environment as a parameter.  An example is the
+%%     environment used to mark the abstract of a document:
+
+環境の中に入る文章は自由な形式で、かつ複数の段落になる場合があるので、
+実際には二つのマクロからなるペア: \macro{begin} および \macro{end} を
+使ってマークします。これらのマクロはいずれも環境の名前をパラメタにとります。
+以下の例は、ドキュメントの概要をマークするために使う環境です:
+
+\begin{verbatim}
+\begin{abstract}
+  This is the text of the abstract.  It concisely explains what
+  information is found in the document.
+
+  It can consist of multiple paragraphs.
+\end{abstract}
+\end{verbatim}
+
+%%     An environment can also have required and optional parameters of
+%%     its own.  These follow the parameter of the \macro{begin} macro.
+%%     This example shows an environment which takes a single required
+%%     parameter:
+
+環境は、環境自体の必須パラメタやオプションパラメタを持つこともあります。
+これらのパラメタは \macro{begin} マクロのパラメタの後ろに続けます。
+以下に単一の必須パラメタをとる環境の例を示します:
+
+\begin{verbatim}
+\begin{datadesc}{controlnames}
+  A 33-element string array that contains the \ASCII{} mnemonics for
+  the thirty-two \ASCII{} control characters from 0 (NUL) to 0x1f
+  (US), in order, plus the mnemonic \samp{SP} for the space character.
+\end{datadesc}
+\end{verbatim}
+
+%%     There are a number of less-used marks in \LaTeX{} which are used
+%%     to enter characters which are not found in \ASCII{} or which a
+%%     considered special, or \emph{active} in \TeX{} or \LaTeX.  Given
+%%     that these are often used adjacent to other characters, the markup
+%%     required to produce the proper character may need to be followed
+%%     by a space or an empty group, or the markup can be enclosed in a
+%%     group.  Some which are found in Python documentation are:
+
+\ASCII{} に含まれない文字、特殊文字とされている文字、\TeX{} や
+\LaTeX で \emph{アクティブ (active)} な文字を入力するための、
+あまり使われないマークアップがあります。
+これらのマークアップはよく他の文字に隣接して使われるので、適切な
+文字を生成するためには、マークアップの後ろにスペースや空のグループ
+を置く必要があるかもしれません。あるいは、マークアップをグループ内に
+囲ってもかまいません。Python ドキュメントで使われるようなマークアップを
+以下にいくつか示します:
+
+\begin{tableii}{c|l}{textrm}{キャラクタ文字}{マークアップ}
+  \lineii{\textasciicircum}{\code{\e textasciicircum}}
+  \lineii{\textasciitilde}{\code{\e textasciitilde}}
+  \lineii{\textgreater}{\code{\e textgreater}}
+  \lineii{\textless}{\code{\e textless}}
+  \lineii{\c c}{\code{\e c c}}
+  \lineii{\"o}{\code{\e"o}}
+  \lineii{\o}{\code{\e o}}
+\end{tableii}
+
+
+\subsection{階層構造 \label{latex-structure}} % Hierarchical Structure
+
+%%     \LaTeX{} expects documents to be arranged in a conventional,
+%%     hierarchical way, with chapters, sections, sub-sections,
+%%     appendixes, and the like.  These are marked using macros rather
+%%     than environments, probably because the end of a section can be
+%%     safely inferred when a section of equal or higher level starts.
+
+\LaTeX{} は、章、セクション、サブセクション、付録などといった、
+伝統的な階層化によるドキュメントの整理を想定しています。
+これらの各階層は環境ではなくマクロでマークしますが、おそらくこれは
+ある章構造とレベルが同じかより高い章構造が続くと、その章がそこで
+終わったと考えて差し支えないからでしょう。
+
+%%     There are six ``levels'' of sectioning in the document classes
+%%     used for Python documentation, and the deepest two
+%%     levels\footnote{The deepest levels have the highest numbers in the
+%%       table.} are not used.  The levels are:
+
+Python ドキュメントが使っているクラスには 6 段階の章節分けの ``レベル'' 
+があり、そのうち最も深い 2 レベル\footnote{表中では、深いレベルほど
+番号が大きくなります。} は使いません。
+
+      \begin{tableiii}{c|l|c}{textrm}{レベル}{マクロ名}{注釈}
+        \lineiii{1}{\macro{chapter}}{(1)}
+        \lineiii{2}{\macro{section}}{}
+        \lineiii{3}{\macro{subsection}}{}
+        \lineiii{4}{\macro{subsubsection}}{}
+        \lineiii{5}{\macro{paragraph}}{(2)}
+        \lineiii{6}{\macro{subparagraph}}{}
+      \end{tableiii}
+
+    \noindent
+注釈:
+
+    \begin{description}
+      \item[(1)]
+%%       Only used for the \code{manual} documents, as described in
+%%       section \ref{classes}, ``Document Classes.''
+\ref{classes} 節、``ドキュメントクラス'' で述べたように、
+\code{manual} ドキュメントだけで使います。
+
+      \item[(2)]
+%%       Not the same as a paragraph of text; nobody seems to use this.
+テキストの段落とは違います; このレベルは誰も使っていないようです。
+    \end{description}
+
+\subsection{よく使われる環境 \label{latex-environments}}
+
+\LaTeX{} は、次の節で紹介する Python 固有のドキュメントクラスで提供
+しているマークアップの他にも、様々な環境を提供しています。
+以下に挙げる環境は、 Python の標準ドキュメント内で使っている
+標準の \LaTeX{} の環境の一部です; 詳しい説明は今後追加してゆく予定
+です。
+
+\begin{verbatim}
+abstract
+alltt
+description
+displaymath
+document
+enumerate
+figure
+flushleft
+itemize
+list
+math
+quotation
+quote
+sloppypar
+verbatim
+\end{verbatim}
+
+
+
+\section{ドキュメントクラス \label{classes}} % Document Classes
+
+%%   Two \LaTeX{} document classes are defined specifically for use with
+%%   the Python documentation.  The \code{manual} class is for large
+%%   documents which are sectioned into chapters, and the \code{howto}
+%%   class is for smaller documents.
+
+Python ドキュメントで利用するため、2つの \LaTeX{} ドキュメントクラスが
+定義されています。\code{manual} クラスは、章単位で区分するような大きな
+ドキュメントのためのクラスです。\code{howto} クラスはより小さな
+ドキュメントのためのクラスです。
+
+%%   The \code{manual} documents are larger and are used for most of the
+%%   standard documents.  This document class is based on the standard
+%%   \LaTeX{} \code{report} class and is formatted very much like a long
+%%   technical report.  The \citetitle[../ref/ref.html]{Python Reference
+%%   Manual} is a good example of a \code{manual} document, and the
+%%   \citetitle[../lib/lib.html]{Python Library Reference} is a large
+%%   example.
+
+\code{manual} ドキュメントは大規模で、ほとんどの標準ドキュメント
+が使うクラスです。このドキュメントクラスは標準 \LaTeX{} の \code{report} 
+クラスに基づいていて、まるで長い技術的報告書のようにフォーマットされます。
+ます。\citetitle[../ref/ref.html]{Python リファレンスマニュアル} は 
+\code{manual} ドキュメントのよい例です。また、 
+\citetitle[../lib/lib.html]{Python Library Reference} は大規模な文書の
+例です。
+
+%%   The \code{howto} documents are shorter, and don't have the large
+%%   structure of the \code{manual} documents.  This class is based on
+%%   the standard \LaTeX{} \code{article} class and is formatted somewhat
+%%   like the Linux Documentation Project's ``HOWTO'' series as done
+%%   originally using the LinuxDoc software.  The original intent for the
+%%   document class was that it serve a similar role as the LDP's HOWTO
+%%   series, but the applicability of the class turns out to be somewhat
+%%   broader.  This class is used for ``how-to'' documents (this
+%%   document is an example) and for shorter reference manuals for small,
+%%   fairly cohesive module libraries.  Examples of the later use include
+%% \citetitle[http://starship.python.net/crew/fdrake/manuals/krb5py/krb5py.html]{Using
+%%   Kerberos from Python}, which contains reference material for an
+%%   extension package.  These documents are roughly equivalent to a
+%%   single chapter from a larger work.
+
+\code{howto} ドキュメントはより短く、\code{manual} ドキュメントのような
+大きな構造を持ちません。このクラスは標準 \LaTeX{} の\code{article} 
+クラスに基づいていて、Linux Documentation プロジェクトの ``HOWTO''
+シリーズのようにフォーマットされます。``HOWTO'' シリーズはもともと LinuxDoc
+ソフトウェアを使ってフォーマットを行っています。このドキュメントクラスの本来の
+目的は、 LDP の HOWTO シリーズと同様の役割を果たすことにありましたが、
+その後、このクラスにはより広範囲な適用性があるとわかりました。
+このクラスは ``how-to'' ドキュメント (このドキュメントがその一例です)
+や、小規模で、かなり強い関連性で結ばれたモジュールライブラリの
+リファレンスマニュアルに用います。後者のドキュメントクラスの例には
+\citetitle[http://starship.python.net/crew/fdrake/manuals/krb5py/krb5py.html]{Using Kerberos from Python} があります。これらのドキュメントは、大きな
+ドキュメントにおける章一つ分とだいたい同じ規模です。
+
+\section{特殊マークアップ構文 \label{special-constructs}} % Special Markup Constructs
+
+%%   The Python document classes define a lot of new environments and
+%%   macros.  This section contains the reference material for these
+%%   facilities.
+
+Python ドキュメントのクラスでは、環境やマクロを新たに数多く定義しています。
+この節にはこれらの機能についてのリファレンスマニュアルがあります。
+Python ドキュメントでは ``標準の'' \LaTeX{} 構文も使っていますが、
+ここには含めていません。
+
+\subsection{プリアンブル用のマークアップ \label{preamble-info}} % Markup for the Preamble
+
+    \begin{macrodesc}{release}{\p{ver}}
+%%       Set the version number for the software described in the
+%%       document.
+このマークアップは、ドキュメント中で述べているソフトウェアのバージョン
+番号を設定します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{setshortversion}{\p{sver}}
+%%       Specify the ``short'' version number of the documented software
+%%       to be \var{sver}.
+このマークアップは、ドキュメントが扱っているソフトウェアの ``短い形式の''
+バージョン番号を\var{sver} にします。
+    \end{macrodesc}
+
+  \subsection{メタ情報マークアップ \label{meta-info}} % Meta-information Markup
+
+    \begin{macrodesc}{sectionauthor}{\p{author}\p{email}}
+%%       Identifies the author of the current section.  \var{author}
+%%       should be the author's name such that it can be used for
+%%       presentation (though it isn't), and \var{email} should be the
+%%       author's email address.  The domain name portion of
+%%       the address should be lower case.
+
+現在の節の作者を指定します。\var{author} は作者の名前で、著者紹介
+に使える形式になっていなければなりません (もっとも、実際には使い
+ません)。また、\var{email} は作者の電子メールアドレスです。
+アドレスのドメインネーム部分は小文字にしなければなりません。
+
+%%       No presentation is generated from this markup, but it is used to
+%%       help keep track of contributions.
+
+このマークアップを行っても著者紹介は生成されませんが、だれがドキュメント
+に貢献したかを追跡する上での補助として用います。
+    \end{macrodesc}
+
+  \subsection{情報単位 \label{info-units}} % Information Units
+
+%%     XXX Explain terminology, or come up with something more ``lay.''
+
+%%     There are a number of environments used to describe specific
+%%     features provided by modules.  Each environment requires
+%%     parameters needed to provide basic information about what is being
+%%     described, and the environment content should be the description.
+%%     Most of these environments make entries in the general index (if
+%%     one is being produced for the document); if no index entry is
+%%     desired, non-indexing variants are available for many of these
+%%     environments.  The environments have names of the form
+%%     \code{\var{feature}desc}, and the non-indexing variants are named
+%%     \code{\var{feature}descni}.  The available variants are explicitly
+%%     included in the list below.
+
+モジュールが提供している特定の機能を説明するために使うマクロが
+数多くあります。これらの各環境には、環境を使って何を説明しようと
+しているかを表す基本的な情報をパラメタに指定する必要があります。
+説明内容自体は環境の中に書きます。
+こうした環境のほとんどは (ドキュメントが総合索引を生成する際に)
+総合索引上のエントリになります; 索引エントリが必要ない場合、
+それぞれ索引を生成しない変化形の環境があります。
+環境は\code{\var{feature}desc} という形式の名前になり、索引を生成しない
+変化形は \code{\var{feature}descni} という形式の名前になります。
+利用可能な変化形がある場合は以下のリスト内に明示しています。
+
+%%     For each of these environments, the first parameter, \var{name},
+%%     provides the name by which the feature is accessed.
+
+各々の環境について、最初のパラメタ \var{name} は、アクセスする
+機能を指定する名前です。
+
+%%     Environments which describe features of objects within a module,
+%%     such as object methods or data attributes, allow an optional
+%%     \var{type name} parameter.  When the feature is an attribute of
+%%     class instances, \var{type name} only needs to be given if the
+%%     class was not the most recently described class in the module; the
+%%     \var{name} value from the most recent \env{classdesc} is implied.
+%%     For features of built-in or extension types, the \var{type name}
+%%     value should always be provided.  Another special case includes
+%%     methods and members of general ``protocols,'' such as the
+%%     formatter and writer protocols described for the
+%%     \module{formatter} module: these may be documented without any
+%%     specific implementation classes, and will always require the
+%%     \var{type name} parameter to be provided.
+    
+オブジェクトのメソッドやデータ属性といった、モジュール内の
+オブジェクトのもつ機能を記述するための環境では、オプションの
+\var{type name} パラメタを指定できます。
+該当する機能がクラスインスタンスの属性である場合、\var{type name}
+を与える必要があるのは、クラスがそのモジュールの説明で最後に説明した
+クラスでない場合だけです; それ以外の場合、最後に説明した\env{classdesc}
+の \var{name} を適用します。
+組み込み型や拡張型の機能については、\var{type name} を常に与えねば
+なりません。もう一つ特殊なケースとして、\module{formatter} モジュールに
+おける formatter や writer のような、汎用の ``プロトコル'' の
+メソッドやメンバがあります: これらは特定の実装クラスなしにドキュメント
+を書くことがあり、常に \var{type name} パラメタを指定する必要があります。
+
+    \begin{envdesc}{cfuncdesc}{\p{type}\p{name}\p{args}}
+%%       Environment used to described a C function.  The \var{type}
+%%       should be specified as a \keyword{typedef} name, \code{struct
+%%       \var{tag}}, or the name of a primitive type.  If it is a pointer
+%%       type, the trailing asterisk should not be preceded by a space.
+%%       \var{name} should be the name of the function (or function-like
+%%       pre-processor macro), and \var{args} should give the types and
+%%       names of the parameters.  The names need to be given so they may
+%%       be used in the description.
+C 関数を解説するときに使う環境です。\var{type} は \keyword{typedef} 
+されている型名か、 \code{struct \var{tag}} か、基本型の名前でなければ
+なりません。ポインタ型の場合、後続するアスタリスクの前にスペースを
+入れてはなりません。\var{name} は関数 (または関数に似た形式をとる
+プリプロセッサマクロ) の名前でなくてはならず、\var{args} にはパラメタの
+型と名前を与えねばなりません。名前は説明文内でも使える形式で書かねば
+なりません。
+    \end{envdesc}
+
+    \begin{envdesc}{cmemberdesc}{\p{container}\p{type}\p{name}}
+%%       Description for a structure member.  \var{container} should be
+%%       the \keyword{typedef} name, if there is one, otherwise if should
+%%       be \samp{struct \var{tag}}.  The type of the member should given
+%%       as \var{type}, and the name should be given as \var{name}.  The
+%%       text of the description should include the range of values
+%%       allowed, how the value should be interpreted, and whether the
+%%       value can be changed.  References to structure members in text
+%%       should use the \macro{member} macro.
+構造体メンバを説明するときに使う環境です。\var{container} には、
+\keyword{typedef} されている名前ならそれを使い、そうでなければ
+\samp{struct \var{tag}} と指定せねばなりません。
+メンバの型は \var{type} に指定し、メンバ名は \var{name} に指定します。
+説明文中には変数の許容範囲、値がどのように解釈されるか、そして
+値が変更可能かを記述せねばなりません。本文中で構造体メンバを参照する
+場合には、 \macro{member} マクロを使います。
+    \end{envdesc}
+
+    \begin{envdesc}{csimplemacrodesc}{\p{name}}
+%%       Documentation for a ``simple'' macro.  Simple macros are macros
+%%       which are used for code expansion, but which do not take
+%%       arguments so cannot be described as functions.  This is not to
+%%       be used for simple constant definitions.  Examples of its use
+%%       in the Python documentation include
+%%       \csimplemacro{PyObject_HEAD} and
+%%       \csimplemacro{Py_BEGIN_ALLOW_THREADS}.
+``単純'' マクロを説明するときに使う環境です。単純マクロは、
+引数を取らないため関数で記述できないようなコードを展開する際に使います。
+この環境は単純な定数定義には用いません。
+Python ドキュメント内でのこのマクロの用例としては、
+\csimplemacro{PyObject_HEAD} や\csimplemacro{Py_BEGIN_ALLOW_THREADS} が
+あります。
+    \end{envdesc}
+
+    \begin{envdesc}{ctypedesc}{\op{tag}\p{name}}
+%%       Environment used to described a C type.  The \var{name}
+%%       parameter should be the \keyword{typedef} name.  If the type is
+%%       defined as a \keyword{struct} without a \keyword{typedef},
+%%       \var{name} should have the form \code{struct \var{tag}}.
+%%       \var{name} will be added to the index unless \var{tag} is
+%%       provided, in which case \var{tag} will be used instead.
+%%       \var{tag} should not be used for a \keyword{typedef} name.
+C の型を説明するときに使う環境です。\var{name} パラメタは
+\keyword{typedef} された名前でなければなりません。
+\keyword{typedef} がなく、 \keyword{struct} で定義されている型の場合、 
+\var{name} は \code{struct \var{tag}} の形式を取らねば
+なりません。\var{tag} がない限り\var{name} が索引に追加されます。
+\var{tag} がある場合、 \var{tag} を索引に使います。
+\var{tag} は \keyword{typedef} された名前であってはなりません。
+    \end{envdesc}
+
+    \begin{envdesc}{cvardesc}{\p{type}\p{name}}
+%%       Description of a global C variable.  \var{type} should be the
+%%       \keyword{typedef} name, \code{struct \var{tag}}, or the name of
+%%       a primitive type.  If variable has a pointer type, the trailing
+%%       asterisk should \emph{not} be preceded by a space.
+グローバルな C の変数を説明するときに使う環境です。
+\var{type} は \keyword{typedef} されている型名か、 
+\code{struct \var{tag}} か、基本型の名前でなければ
+なりません。ポインタ型の場合、後続するアスタリスクの前にスペースを
+入れては\emph{なりません}。
+    \end{envdesc}
+
+    \begin{envdesc}{datadesc}{\p{name}}
+%%       This environment is used to document global data in a module,
+%%       including both variables and values used as ``defined
+%%       constants.''  Class and object attributes are not documented
+%%       using this environment.
+この環境は、モジュールにおけるグローバルなデータを説明する際に
+使います。グローバルなデータには、変数と ``定義済み定数 (defined constant)'' 
+として使われる値の両方が入ります。クラスやオブジェクト属性の記述には
+この環境を使いません。
+    \end{envdesc}
+    \begin{envdesc}{datadescni}{\p{name}}
+%%       Like \env{datadesc}, but without creating any index entries.
+      \env{datadesc} に似ていますが、索引エントリを作成しません。
+    \end{envdesc}
+
+    \begin{envdesc}{excclassdesc}{\p{name}\p{constructor parameters}}
+%%       Describe an exception defined by a class.  \var{constructor
+%%       parameters} should not include the \var{self} parameter or
+%%       the parentheses used in the call syntax.  To describe an
+%%       exception class without describing the parameters to its
+%%       constructor, use the \env{excdesc} environment.
+クラスとして定義されている例外を説明するために使います。
+\var{constructor parameters} には、\var{self} やコンストラクタ呼び出し
+構文で使う丸括弧を含めてはなりません。コンストラクタに与える
+パラメタの説明がないような例外クラスを説明する場合には、
+\env{excdesc} 環境を使用してください。
+    \end{envdesc}
+
+    \begin{envdesc}{excdesc}{\p{name}}
+%%       Describe an exception.  In the case of class exceptions, the
+%%       constructor parameters are not described; use \env{excclassdesc}
+%%       to describe an exception class and its constructor.
+例外を説明するための環境です。クラス例外の場合には、コンストラクタの
+パラメタが記述されません: 例外クラスとコンストラクタを説明する場合には、
+\env{excclassdesc} を使ってください。
+    \end{envdesc}
+
+    \begin{envdesc}{funcdesc}{\p{name}\p{parameters}}
+%%       Describe a module-level function.  \var{parameters} should
+%%       not include the parentheses used in the call syntax.  Object
+%%       methods are not documented using this environment.  Bound object
+%%       methods placed in the module namespace as part of the public
+%%       interface of the module are documented using this, as they are
+%%       equivalent to normal functions for most purposes.
+モジュールレベルの関数を説明するための環境です。
+\var{parameters} には、呼び出しの際に使う丸括弧を含めてはなりません。
+オブジェクトメソッドの説明にはこの環境を使いません。
+モジュールの公開インタフェースの一部としてモジュールの名前空間内に
+置かれている束縛されたオブジェクトメソッド (bound object method) は、
+ほとんどの用途でモジュールレベル関数と同じなので、この環境を使います。
+
+%%       The description should include information about the parameters
+%%       required and how they are used (especially whether mutable
+%%       objects passed as parameters are modified), side effects, and
+%%       possible exceptions.  A small example may be provided.
+
+説明には、必要なパラメタと、パラメタがどう処理されるか (とりわけ、
+パラメタとして渡した変更可能なオブジェクトが変更されるか否か) 、副作用、
+送出されうる例外についての情報を含めねばなりません。
+小さな例題を提供してかまいません。
+    \end{envdesc}
+    \begin{envdesc}{funcdescni}{\p{name}\p{parameters}}
+%%       Like \env{funcdesc}, but without creating any index entries.
+      
+      \env{funcdesc} に似ていますが、索引エントリを作成しません。
+    \end{envdesc}
+
+    \begin{envdesc}{classdesc}{\p{name}\p{constructor parameters}}
+%%       Describe a class and its constructor.  \var{constructor
+%%       parameters} should not include the \var{self} parameter or
+%%       the parentheses used in the call syntax.      
+クラスとそのコンストラクタを説明するための環境です。
+\var{constructor parameters} には、\var{self} やコンストラクタ呼び出し
+構文で使う丸括弧を含めてはなりません。
+    \end{envdesc}
+
+    \begin{envdesc}{classdesc*}{\p{name}}
+%%       Describe a class without describing the constructor.  This can
+%%       be used to describe classes that are merely containers for
+%%       attributes or which should never be instantiated or subclassed
+%%       by user code.
+コンストラクタの説明を伴わないクラスを説明するための環境です。
+属性をコンテナ化することがほとんどなかったり、ユーザコードから
+インスタンス化やサブクラス化を行わないようなクラスを記述する際に
+利用できます。
+    \end{envdesc}
+
+    \begin{envdesc}{memberdesc}{\op{type name}\p{name}}
+%%       Describe an object data attribute.  The description should
+%%       include information about the type of the data to be expected
+%%       and whether it may be changed directly.
+オブジェクトのデータ属性を説明するための環境です。
+説明には、想定されているデータ型や、データが直接変更可能かについての
+情報がなければなりません。
+    \end{envdesc}
+    \begin{envdesc}{memberdescni}{\op{type name}\p{name}}
+%%       Like \env{memberdesc}, but without creating any index entries.
+      
+      \env{memberdesc} に似ていますが、索引エントリを作成しません。
+    \end{envdesc}
+
+    \begin{envdesc}{methoddesc}{\op{type name}\p{name}\p{parameters}}
+%%       Describe an object method.  \var{parameters} should not include
+%%       the \var{self} parameter or the parentheses used in the call
+%%       syntax.  The description should include similar information to
+%%       that described for \env{funcdesc}.
+      
+オブジェクトメソッドを説明するための環境です。
+\var{parameters} には、\var{self} パラメタや呼び出し構文で使う
+丸括弧を含めてはなりません。説明には、\env{funcdesc} 内で説明するのと
+同じような情報が入っていなければなりません。
+    \end{envdesc}
+    \begin{envdesc}{methoddescni}{\op{type name}\p{name}\p{parameters}}
+%%       Like \env{methoddesc}, but without creating any index entries.
+      
+      \env{methoddesc} に似ていますが、索引エントリを作成しません。
+    \end{envdesc}
+
+
+  \subsection{コードの例示 \label{showing-examples}} % Showing Code Examples
+
+%%     Examples of Python source code or interactive sessions are
+%%     represented as \env{verbatim} environments.  This environment
+%%     is a standard part of \LaTeX{}.  It is important to only use
+%%     spaces for indentation in code examples since \TeX{} drops tabs
+%%     instead of converting them to spaces.
+
+Python ソースコードや対話セッションの例には \env{verbatim} 環境を
+使います。この環境は \LaTeX{} の標準の環境です。\TeX{} はタブを
+スペースに変換せずに捨てるので、
+コード例中でのインデントにはスペースだけを使ってください。
+
+%%     Representing an interactive session requires including the prompts
+%%     and output along with the Python code.  No special markup is
+%%     required for interactive sessions.  After the last line of input
+%%     or output presented, there should not be an ``unused'' primary
+%%     prompt; this is an example of what \emph{not} to do:
+
+対話セッションの表現には、プロンプトや Python コードからの出力
+を含める必要があります。対話セッションには特殊なマークアップを
+行う必要はありません。最後の入力行または出力行を示した後に、
+``未使用の'' 一次プロンプトを置いてはなりません; 以下に
+\emph{やってはいけない} 例を示します:
+    
+\begin{verbatim}
+>>> 1 + 1
+2
+>>>
+\end{verbatim}
+
+%%     Within the \env{verbatim} environment, characters special to
+%%     \LaTeX{} do not need to be specially marked in any way.  The entire
+%%     example will be presented in a monospaced font; no attempt at
+%%     ``pretty-printing'' is made, as the environment must work for
+%%     non-Python code and non-code displays.  There should be no blank
+%%     lines at the top or bottom of any \env{verbatim} display.
+
+\env{verbatim} 環境の中では、\LaTeX{} の特殊文字を何らかの特殊な
+方法でマークする必要はありません。例題は全体が等幅フォントで
+表示されます; この環境は Python コードの表示でなくても、コードの
+表示でさえなくても使えなければならないため、``整形印刷'' は一切
+行おうとしません。\env{verbatim} で表示する際には、先頭や末尾に
+空行を入れてはなりません。
+
+%%     Longer displays of verbatim text may be included by storing the
+%%     example text in an external file containing only plain text.  The
+%%     file may be included using the standard \macro{verbatiminput}
+%%     macro; this macro takes a single argument naming the file
+%%     containing the text.  For example, to include the Python source
+%%     file \file{example.py}, use:
+
+長い\env{verbatim} テキストを表示する場合には、平文テキストだけの
+入った例題のテキストを外部ファイルに入れて取り込めます。
+ファイルは標準マクロ \macro{verbatiminput} で取り込めます;
+このマクロは単一の引数名として、例題テキストの入ったファイル名を
+とります。例えば、 \file{example.py} の入った Python ソースファイルを
+取り込むには、以下のようにします:
+
+\begin{verbatim}
+\verbatiminput{example.py}
+\end{verbatim}
+
+%%     Use of \macro{verbatiminput} allows easier use of special editing
+%%     modes for the included file.  The file should be placed in the
+%%     same directory as the \LaTeX{} files for the document.
+
+\macro{verbatiminput} を使うと、取り込むファイルに対して特殊な
+編集モードを使いやすくできます。ファイルはドキュメントの \LaTeX{} 
+ファイルと同じディレクトリに置かねばなりません。
+
+%%     The Python Documentation Special Interest Group has discussed a
+%%     number of approaches to creating pretty-printed code displays and
+%%     interactive sessions; see the Doc-SIG area on the Python Web site
+%%     for more information on this topic.
+    
+Python Documentation Special Interest Group では、
+コード表示や対話セッションに対して整形印刷を行うための数々の
+アプローチについて議論してきました; この話題に関する詳細は、
+Python Web サイトの Doc-SIG エリアを参照してください。
+
+\subsection{インラインマークアップ \label{inline-markup}} % Inline Markup
+
+%%     The macros described in this section are used to mark just about
+%%     anything interesting in the document text.  They may be used in
+%%     headings (though anything involving hyperlinks should be avoided
+%%     there) as well as in the body text.
+    
+この節で説明するマクロは、単にドキュメントテキスト中の興味深い内容を
+マークするために使われます。これらのマクロは、本文だけではなく、
+表題に利用してもかまいません (とはいえ、ハイパーリンクを含むものは
+除かねばなりません)。
+
+    \begin{macrodesc}{bfcode}{\p{text}}
+      %% Like \macro{code}, but also makes the font bold-face.
+
+\macro{code} に似ていますが、ボールド書体にします。
+    \end{macrodesc}
+
+    \begin{macrodesc}{cdata}{\p{name}}
+      %% The name of a C-language variable.
+
+C言語における変数の名前です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{cfunction}{\p{name}}
+      %% The name of a C-language function.  \var{name} should include the
+%%       function name and the trailing parentheses.
+
+C言語における関数の名前です。\var{name} には関数名とその後ろの丸括弧
+を含めねばなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{character}{\p{char}}
+%%       A character when discussing the character rather than a one-byte
+%%       string value.  The character will be typeset as with \macro{samp}.
+      
+1 バイトの文字列値ではなく、単一の文字について議論する場合の文字です。
+文字は \macro{samp} と同じようにタイプセットされます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{citetitle}{\op{url}\p{title}}
+%%       A title for a referenced publication.  If \var{url} is specified,
+%%       the title will be made into a hyperlink when formatted as HTML.
+
+参照している出版物のタイトルです。\var{url} を指定すると、
+タイトル部分は HTML 形式にフォーマットした際にハイパーリンクになります。
+      
+    \end{macrodesc}
+
+    \begin{macrodesc}{class}{\p{name}}
+%%       A class name; a dotted name may be used.
+
+クラス名です; ドット名表記を使用できます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{code}{\p{text}}
+%%       A short code fragment or literal constant value.  Typically, it
+%%       should not include any spaces since no quotation marks are
+%%       added.
+
+短いコード断片や定数リテラル。引用符で囲わないので、スペースを
+入れてはなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{constant}{\p{name}}
+%%       The name of a ``defined'' constant.  This may be a C-language
+%%       \code{\#define} or a Python variable that is not intended to be
+%%       changed.
+
+``定義済みの'' 定数名です。C 言語における \code{\#define} や、
+変更されないことになっている Python の変数の場合があります。
+    \end{macrodesc}
+
+    \begin{macrodesc}{csimplemacro}{\p{name}}
+%%       The name of a ``simple'' macro.  Simple macros are macros
+%%       which are used for code expansion, but which do not take
+%%       arguments so cannot be described as functions.  This is not to
+%%       be used for simple constant definitions.  Examples of its use
+%%       in the Python documentation include
+%%       \csimplemacro{PyObject_HEAD} and
+%%       \csimplemacro{Py_BEGIN_ALLOW_THREADS}.
+
+``単純'' マクロの名前です。単純マクロは、引数を取らないため
+関数で記述できないようなコードの展開に使われます。
+この環境は単純な定数定義には用いません。
+Python ドキュメント内でのこのマクロの用例としては、
+\csimplemacro{PyObject_HEAD} や\csimplemacro{Py_BEGIN_ALLOW_THREADS} が
+あります。
+    \end{macrodesc}
+
+    \begin{macrodesc}{ctype}{\p{name}}
+%%       The name of a C \keyword{typedef} or structure.  For structures
+%%       defined without a \keyword{typedef}, use \code{\e ctype\{struct
+%%       struct_tag\}} to make it clear that the \keyword{struct} is
+%%       required.
+C の \keyword{typedef} や構造体の名前です。
+型が\keyword{typedef} を伴わずに定義されている構造体の場合は、
+\code{\e ctype\{struct struct_tag\}} を使って、\keyword{struct}
+が必須であることを明示してください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{deprecated}{\p{version}\p{what to do}}
+%%       Declare whatever is being described as being deprecated starting
+%%       with release \var{version}.  The text given as \var{what to do}
+%%       should recommend something to use instead.  It should be
+%%       complete sentences.  The entire deprecation notice will be
+%%       presented as a separate paragraph; it should either precede or
+%%       succeed the description of the deprecated feature.
+      
+説明している内容がリリース \var{version} 以降で撤廃されていることを
+宣言します。
+\var{what to do} に指定したテキストでは、撤廃されたものの代わりに
+利用すべきものを推奨せねばなりません。テキストは完全な文にせねば
+なりません。文章全体に対して撤廃を注釈する場合、別個の段落にして
+表示せねばなりません; この場合、撤廃される機能の説明の前か後ろの
+どちらかに置きます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{dfn}{\p{term}}
+%       Mark the defining instance of \var{term} in the text.  (No index
+%       entries are generated.)
+テキストにおける\var{term} のインスタンスの定義をマークします。
+(索引エントリを生成しません。)
+      
+    \end{macrodesc}
+
+    \begin{macrodesc}{e}{}
+%       Produces a backslash.  This is convenient in \macro{code} and
+%       similar macros, and is only defined there.  To create a
+%       backslash in ordinary text (such as the contents of the
+%       \macro{file} macro), use the standard \macro{textbackslash} macro.
+バックスラッシュを生成します。\macro{code} 、\macro{file} や類似の
+マクロ、および \env{alltt} 環境の内容を記述する場合に便利で、そうした
+マークアップ内だけ定義されています。
+(\macro{citetitle} マクロの中身のような) 通常の文章でバックスラッシュを
+生成する場合には、標準の \macro{textbackslash} マクロを使ってください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{email}{\p{address}}
+%       An email address.  Note that this is \emph{not} hyperlinked in
+%       any of the possible output formats.  The domain name portion of
+%       the address should be lower case.
+電子メールアドレスです。出力形式が何であれ、ハイパーリンクは
+行われ\emph{ない} ので注意してください。アドレスのドメインネーム部分は
+小文字でなければなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{emph}{\p{text}}
+%       Emphasized text; this will be presented in an italic font.
+強調テキストです。イタリックフォントで表示されます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{envvar}{\p{name}}
+%       An environment variable.  Index entries are generated.
+環境変数です。索引エントリを生成します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{exception}{\p{name}}
+%       The name of an exception.  A dotted name may be used.
+例外の名前です。ドット名表記を使えます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{file}{\p{file or dir}}
+%       The name of a file or directory.  In the PDF and PostScript
+%       outputs, single quotes and a font change are used to indicate
+%       the file name, but no quotes are used in the HTML output.
+%       \warning{The \macro{file} macro cannot be used in the
+%       content of a section title due to processing limitations.}
+ファイルやディレクトリの名前です。PDF と PostScript 形式の出力では
+ファイル名を表現するのに単引用符で囲ってフォントを変更しますが、
+HTML 出力では引用符囲いを行いません。
+\warning{処理上の制約により、\macro{file} マクロはセクションタイトル内の
+内容には使えません。}
+    \end{macrodesc}
+
+    \begin{macrodesc}{filenq}{\p{file or dir}}
+%       Like \macro{file}, but single quotes are never used.  This can
+%       be used in conjunction with tables if a column will only contain
+%       file or directory names.
+%       \warning{The \macro{filenq} macro cannot be used in the
+%       content of a section title due to processing limitations.}
+\macro{file} に似ていますが、単引用符を使いません。テーブルと組み合わせる
+際に、カラムにファイルやディレクトリ名だけが入るような場合に使えます。
+\warning{処理上の制約により、\macro{filenq} マクロはセクションタイトル内の
+内容には使えません。}
+    \end{macrodesc}
+
+    \begin{macrodesc}{function}{\p{name}}
+%       The name of a Python function; dotted names may be used.
+Python 関数の名前です; ドット名表記を使えます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{infinity}{}
+%       The symbol for mathematical infinity: \infinity.  Some Web
+%       browsers are not able to render the HTML representation of this
+%       symbol properly, but support is growing.
+数学的な無限大を表すシンボル: \infinity です。このシンボルの
+HTML 表現を適切に描画できないブラウザもありますが、サポートは
+拡大しています。
+    \end{macrodesc}
+
+    \begin{macrodesc}{kbd}{\p{key sequence}}
+%       Mark a sequence of keystrokes.  What form \var{key sequence}
+%       takes may depend on platform- or application-specific
+%       conventions.  When there are no relevant conventions, the names
+%       of modifier keys should be spelled out, to improve accessibility
+%       for new users and non-native speakers.  For example, an
+%       \program{xemacs} key sequence may be marked like
+%       \code{\e kbd\{C-x C-f\}}, but without reference to a specific
+%       application or platform, the same sequence should be marked as
+%       \code{\e kbd\{Control-x Control-f\}}.
+キーシーケンスをマークします。\var{key sequence} がどんな形式になるかは
+プラットフォームやアプリケーション固有の取り決めに依存します。
+適当な取り決めがない場合には、初心者や別のシステムを利用している
+人たちが分かりやすいように、モディファイアキー名を書き下さねば
+なりません。例えば、\program{xemacs} のキーシーケンスは
+\code{\e kbd\{C-x C-f\}} のようにマークできますが、特定のアプリケーション
+やプラットフォームに対する参照を行わない場合には、
+\code{\e kbd\{Control-x Control-f\}} とマークせねばなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{keyword}{\p{name}}
+%       The name of a keyword in a programming language.
+プログラミング言語における予約語 (keyword) の名前です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{mailheader}{\p{name}}
+%       The name of an \rfc{822}-style mail header.  This markup does
+%       not imply that the header is being used in an email message, but
+%       can be used to refer to any header of the same ``style.''  This
+%       is also used for headers defined by the various MIME
+%       specifications.  The header name should be entered in the same
+%       way it would normally be found in practice, with the
+%       camel-casing conventions being preferred where there is more
+%       than one common usage.  The colon which follows the name of the
+%       header should not be included.
+%       For example: \code{\e mailheader\{Content-Type\}}.
+\rfc{822} 形式のメイルヘッダ名です。このマークアップは、そのヘッダが
+電子メイルメッセージ中で使われていることを示すのではなく、
+同じ ``スタイル'' のヘッダを表すのに使える名前であることを示します。
+様々な MIME 仕様が定義しているヘッダに対しても使います。
+ヘッダ名の表現方法は、実際に通常使われているのと同じ方法で入力しなくては
+なりません。また、複数の用法があり、いずれも広く使われている場合には、
+キャメル形式 (camel-casting) を優先します。ヘッダ名の後ろに続くコロンは
+含めてはなりません。
+例: \code{\e mailheader\{Content-Type\}}。
+    \end{macrodesc}
+
+    \begin{macrodesc}{makevar}{\p{name}}
+%       The name of a \program{make} variable.
+\program{make} における変数名です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{manpage}{\p{name}\p{section}}
+%       A reference to a \UNIX{} manual page.
+\UNIX{} マニュアルページへの参照です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{member}{\p{name}}
+%       The name of a data attribute of an object.
+オブジェクトのデータ属性名です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{method}{\p{name}}
+%       The name of a method of an object.  \var{name} should include the
+%       method name and the trailing parentheses.  A dotted name may be
+%       used.
+オブジェクトのメソッド名です。\var{name} にはメソッド名とその後ろに続く
+丸括弧を入れねばなりません。ドット名表記を使えます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{mimetype}{\p{name}}
+%       The name of a MIME type, or a component of a MIME type (the
+%       major or minor portion, taken alone).
+MIME タイプの名前か、 MIME タイプの要素
+(メジャータイプはマイナータイプのいずれか) の名前です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{module}{\p{name}}
+%        The name of a module; a dotted name may be used.  This should
+%        also be used for package names.
+モジュールの名前です: ドット名表記を使えます。
+パッケージ名にもこれを使います。
+    \end{macrodesc}
+
+    \begin{macrodesc}{newsgroup}{\p{name}}
+%       The name of a Usenet newsgroup.
+Usenet のニュースグループ名です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{note}{\p{text}}
+%       An especially important bit of information about an API that a
+%       user should be aware of when using whatever bit of API the
+%       note pertains to.  This should be the last thing in the
+%       paragraph as the end of the note is not visually marked in
+%       any way.  The content of \var{text} should be written in
+%       complete sentences and include all appropriate punctuation.
+ある API について、ユーザがその API を一部でも利用する場合には知って
+おかねばならないような特に重要な情報です。このマクロは注釈が終了する
+場所を視覚的にマークしないので、段落の末尾の内容にせねばなりません。
+\var{text} の内容は完全な文で書き、適切な区切りを入れねばなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{pep}{\p{number}}
+%       A reference to a Python Enhancement Proposal.  This generates
+%       appropriate index entries.  The text \samp{PEP \var{number}} is
+%       generated; in the HTML output, this text is a hyperlink to an
+%       online copy of the specified PEP.
+Python Enhancement Proposal への参照です。このマクロは索引エントリを
+生成します。 \samp{PEP \var{number}} という出力を生成します;
+HTML 出力の場合、テキストは指定された PEP のオンラインコピーに対する
+ハイパーリンクになります。
+    \end{macrodesc}
+
+    \begin{macrodesc}{plusminus}{}
+%       The symbol for indicating a value that may take a positive or
+%       negative value of a specified magnitude, typically represented
+%       by a plus sign placed over a minus sign.  For example:
+%       \code{\e plusminus 3\%{}}.
+ある値が、指定した量に対して正負の値をとることを示すシンボルで、
+通常はマイナス記号の上にプラス記号を置いて表します。例:
+\code{\e plusminus 3\%{}} 
+    \end{macrodesc}
+
+    \begin{macrodesc}{program}{\p{name}}
+%       The name of an executable program.  This may differ from the
+%       file name for the executable for some platforms.  In particular,
+%       the \file{.exe} (or other) extension should be omitted for
+%       Windows programs.
+実行可能形式のプログラム名です。プラットフォームによっては、
+実行可能形式のファイル名とは異なる場合があります。特に、
+Windows プログラムでは \file{.exe} (やその他の) 拡張子を
+省略します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{programopt}{\p{option}}
+%       A command-line option to an executable program.  Use this only
+%       for ``short'' options, and include the leading hyphen.
+実行可能プログラムのコマンドラインオプションです。
+``短い'' オプションだけに使い、先頭にハイフンを入れてください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{longprogramopt}{\p{option}}
+%       A long command-line option to an executable program.  This
+%       should only be used for long option names which will be prefixed
+%       by two hyphens; the hyphens should not be provided as part of
+%       \var{option}.
+実行可能プログラムの長いコマンドラインオプションです。
+このマクロは二つのハイフンから始まる長いオプション名だけに使います;
+ハイフンを \var{option} に入れてはなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{refmodule}{\op{key}\p{name}}
+%       Like \macro{module}, but create a hyperlink to the documentation
+%       for the named module.  Note that the corresponding
+%       \macro{declaremodule} must be in the same document.  If the
+%       \macro{declaremodule} defines a module key different from the
+%       module name, it must also be provided as \var{key} to the
+%       \macro{refmodule} macro.
+\macro{module} に似ていますが、指定したモジュールに対する
+ハイパーリンクを生成します。このマクロに対応する\macro{declaremodule}
+は同じドキュメント内に入っていなければなりません。
+\macro{declaremodule} がモジュール名とは異なるモジュールキーを
+定義している場合、\macro{refmodule} マクロ内でも \var{key} として
+指定せねばなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{regexp}{\p{string}}
+%       Mark a regular expression.
+正規表現をマークします。
+    \end{macrodesc}
+
+    \begin{macrodesc}{rfc}{\p{number}}
+%       A reference to an Internet Request for Comments.  This generates
+%       appropriate index entries.  The text \samp{RFC \var{number}} is
+%       generated; in the HTML output, this text is a hyperlink to an
+%       online copy of the specified RFC.
+Internet Request for Commments への参照です。適切な索引エントリを
+生成します。テキスト \samp{RFC \var{number}} を生成します; HTML 出力
+では、テキストは指定した RFC のオンラインコピーに対するハイパーリンクに
+なります。
+    \end{macrodesc}
+
+    \begin{macrodesc}{samp}{\p{text}}
+%       A short code sample, but possibly longer than would be given
+%       using \macro{code}.  Since quotation marks are added, spaces are
+%       acceptable.
+短いコード例で、\macro{code} で指定するには長すぎる場合に使います。
+引用符記号を追加するので、テキストにスペースを入れてもかまいません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{shortversion}{}
+%       The ``short'' version number of the documented software, as
+%       specified using the \macro{setshortversion} macro in the
+%       preamble.  For Python, the short version number for a release is
+%       the first three characters of the \code{sys.version} value.  For
+%       example, versions 2.0b1 and 2.0.1 both have a short version of
+%       2.0.  This may not apply for all packages; if
+%       \macro{setshortversion} is not used, this produces an empty
+%       expansion.  See also the \macro{version} macro.
+プリアンブルの\macro{setshortversion} マクロに指定されているような、
+ドキュメントの対象となっているソフトウェアの ``短い'' バージョン番号です。
+Python の場合、あるリリースに対する短いバージョン番号とは。
+\code{sys.version} 値の最初の三文字です。例えば、バージョン 2.0b1
+と 2.0.1 の短いバージョン番号はいずれも 2.0 になります。
+全てのパッケージにこれが当てはまるわけではありません; 
+\macro{setshortversion} を使わなければ、このマクロは
+空文字に展開されます。\macro{version} マクロも参照してください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{strong}{\p{text}}
+%       Strongly emphasized text; this will be presented using a bold
+%       font.
+強く強調されたテキストです; ボールドフォントで表現されます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{ulink}{\p{text}\p{url}}
+%       A hypertext link with a target specified by a URL, but for which
+%       the link text should not be the title of the resource.  For
+%       resources being referenced by name, use the \macro{citetitle}
+%       macro.  Not all formatted versions support arbitrary hypertext
+%       links.  Note that many characters are special to \LaTeX{} and
+%       this macro does not always do the right thing.  In particular,
+%       the tilde character (\character{\~}) is mis-handled; encoding it
+%       as a hex-sequence does work, use \samp{\%7e} in place of the
+%       tilde character.
+URL で指定したターゲットを指すハイパーテキストリンクになりますが、
+リンクテキストをドキュメントリソース中のタイトルにしてはなりません。
+名前を使ってリソースを参照する場合には、\macro{citetitle} マクロを
+使ってください。
+全ての形式の出力が任意のハイパーテキストリンクをサポートしている
+わけではありません。\LaTeX{} 特有の多くの文字や、このマクロ特有の
+文字を使った場合、たいてい正しい出力になりません。特に、
+チルダ文字 (\character{\~}) は誤って処理されます; hex 形式の配列
+にエンコードすればうまくいくので、チルダの代わりには\samp{\%7e} を
+使ってください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{url}{\p{url}}
+%       A URL (or URN).  The URL will be presented as text.  In the HTML
+%       and PDF formatted versions, the URL will also be a hyperlink.
+%       This can be used when referring to external resources without
+%       specific titles; references to resources which have titles
+%       should be marked using the \macro{citetitle} macro.  See the
+%       comments about special characters in the description of the
+%       \macro{ulink} macro for special considerations.
+URL (または URN) です。 URL はテキストで与えます。
+HTML や PDF の出力形式では、URL 文字列自体もハイパーリンクになります。
+このマクロは、特定のタイトルを持たない外部リソースを参照する際に
+利用できます; タイトルのあるリソースへの参照は \macro{citetitle}
+マクロを使ってマークしてください。特殊文字に関する特別な扱いについては、
+\macro{ulink} マクロの記述中のコメントを参照してください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{var}{\p{name}}
+%       The name of a variable or formal parameter in running text.
+テキスト中で変数や仮引数の名前です。
+    \end{macrodesc}
+
+    \begin{macrodesc}{version}{}
+%       The version number of the described software, as specified using
+%       \macro{release} in the preamble.  See also the
+%       \macro{shortversion} macro.
+プリアンブルの\macro{release} マクロに指定されているような、
+ドキュメントの対象となっているソフトウェアのバージョン番号です。
+\macro{shortversion} マクロも参照してください。
+    \end{macrodesc}
+
+    \begin{macrodesc}{warning}{\p{text}}
+%       An important bit of information about an API that a user should
+%       be very aware of when using whatever bit of API the warning
+%       pertains to.  This should be the last thing in the paragraph as
+%       the end of the warning is not visually marked in any way.  The
+%       content of \var{text} should be written in complete sentences
+%       and include all appropriate punctuation.  This differs from
+%       \macro{note} in that it is recommended over \macro{note} for
+%       information regarding security.
+ある API について、ユーザがその API を一部でも利用する場合には警告して
+おかねばならないような重要な情報です。このマクロは注釈が終了する
+場所を視覚的にマークしないので、段落の末尾の内容にせねばなりません。
+\var{text} の内容は完全な文で書き、適切な区切りを入れねばなりません。
+\macro{note} との違いは、セキュリティに関する情報の場合いは、
+\macro{warning} の方が推奨されているという点です。
+    \end{macrodesc}
+
+以下の二つのマクロは、あるリリースから別のリリースへの変更点に
+関する情報を説明するときに使います。段落一つ程度で説明されている
+ような内容に対して注釈を入れる場合には、その段落の末尾に一行空けて
+記述します。複数の段落からなる場合には、説明全体の末尾に一行空けて
+記述します。 \macro{versionadded} と\macro{versionchanged} の両方を
+書かねばならない場合には、 \macro{versionadded} を先にしてください。
+バージョン番号は、リリースされた順番に並んでいなければなりません。
+また、これらのマクロは利用できる環境についての説明よりも前に置かねば
+なりません。実際にマクロを書く場所は、説明としてわかりやすいように
+しなければなりませんから、必要に応じて調整してもかまいません。
+
+    \begin{macrodesc}{versionadded}{\op{explanation}\p{version}}
+%       The version of Python which added the described feature to the
+%       library or C API.  \var{explanation} should be a \emph{brief}
+%       explanation of the change consisting of a capitalized sentence
+%       fragment; a period will be appended by the formatting process.
+%       This is typically added to the end of the first paragraph of the
+%       description before any availability notes.  The location should
+%       be selected so the explanation makes sense and may vary as
+%       needed.
+文章中で説明している機能がライブラリや C/API に追加された時の
+Python のバージョン番号を示すために使います。
+\var{explanation} は変更内容の\emph{短い} 説明で、大文字から始まる
+短い文章にします; 末尾のピリオドはフォーマット処理時に追加されます。
+このマクロの対象がモジュール全体にわたる場合には、モジュールについて
+説明している節の先頭に置き、他の文章より手前に来るようにしなければ
+なりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{versionchanged}{\op{explanation}\p{version}}
+%       The version of Python in which the named feature was changed in
+%       some way (new parameters, changed side effects, etc.).
+%       \var{explanation} should be a \emph{brief} explanation of the
+%       change consisting of a capitalized sentence fragment; a
+%       period will be appended by the formatting process.
+%       This is typically added to the end of the first paragraph of the
+%       description before any availability notes and after
+%       \macro{versionadded}.  The location should be selected so the
+%       explanation makes sense and may vary as needed.
+文章中で説明している機能が変更された (新たなパラメタの追加、
+副作用の変化、など) 時の Python のバージョン番号を示すために使います。
+\var{explanation} は変更内容の\emph{短い} 説明で、大文字から始まる
+短い文章にします; 末尾のピリオドはフォーマット処理時に追加されます。
+通常、このマクロをモジュール全体に適用することはありません。
+    \end{macrodesc}
+
+
+  \subsection{雑多なテキストマークアップ \label{misc-text-markup}} % Miscellaneous Text Markup
+
+
+%   In addition to the inline markup, some additional ``block'' markup
+%   is defined to make it easier to bring attention to various bits of
+%   text.  The markup described here serves this purpose, and is
+%   intended to be used when marking one or more paragraphs or other
+%   block constructs (such as \env{verbatim} environments).
+インラインマークアップに加えて、 ``ブロック'' マークアップがいくつか
+定義されていて、様々なテキスト断片に対して読者の注意を引かせやすく
+しています。
+この節で述べているマークアップは、こうした目的の他に、
+(\env{verbatim} 環境のように) 一つ以上の段落や、他のブロック構造を
+マークする際に使うためのものです。
+
+  \begin{envdesc}{notice}{\op{type}}
+%     Label some paragraphs as being worthy of additional attention from
+%     the reader.  What sort of attention is warranted can be indicated
+%     by specifying the \var{type} of the notice.  The only values
+%     defined for \var{type} are \code{note} and \code{warning}; these
+%     are equivalent in intent to the inline markup of the same name.
+%     If \var{type} is omitted, \code{note} is used.  Additional values
+%     may be defined in the future.
+読者がさらに注意を払うべき段落をラベルします。どの種の注意を求めて
+いるかは、\var{type} に指定します。\var{type} 用に定義されている値は
+\code{note} と\code{warning} です; これらは、同名のインラインマークアップ
+と同じ目的に使います。\var{types} を省略すると、\code{note} を使います。
+\var{type} が撮りうる値は将来新たに追加されるかもしれません。
+
+  \end{envdesc}
+
+
+  \subsection{モジュール特有のマークアップ \label{module-markup}} % Module-specific Markup
+
+
+%   The markup described in this section is used to provide information
+%   about a module being documented.  Each module should be documented
+%   in its own \macro{section}.  A typical use of this markup
+%   appears at the top of that section and might look like this:
+この節で説明しているマークアップは、記述対象のモジュールに関する
+情報を提供するために使います。各モジュールのドキュメントは、それぞれ自身
+の \macro{section} の中に記述する必要があります。
+このマークアップは、節の先頭でよく使います。典型的な例は、
+以下のようになります:
+
+
+\begin{verbatim}
+\section{\module{spam} ---
+         SPAM 機能へのアクセス}
+
+\declaremodule{extension}{spam}
+  \platform{Unix}
+\modulesynopsis{\UNIX の SPAM 機能へのアクセス手段。}
+\moduleauthor{Jane Doe}{jane.doe@frobnitz.org}
+\end{verbatim}
+
+%   Python packages\index{packages} --- collections of modules that can
+%   be described as a unit --- are documented using the same markup as
+%   modules.  The name for a module in a package should be typed in
+%   ``fully qualified'' form (it should include the package name).
+%   For example, a module ``foo'' in package ``bar'' should be marked as
+%   \code{\e module\{bar.foo\}}, and the beginning of the reference
+%   section would appear as:
+Python のパッケージ\index{packages} --- ひとまとまりの単位として
+記述できるようなモジュールの集合 --- は、モジュールと同じ
+マークアップを使って解説します。パッケージ内のモジュール名は
+``完全限定 (fully qualified)'' 形式で入力せねばなりません
+(つまり、パッケージ名を含めねばなりません)。
+例えば、 ``bar'' というパッケージ内の ``foo'' というモジュールは
+\code{\e module\{bar.foo\}} と書き、リファレンスの先頭は以下のように
+なります:
+
+\begin{verbatim}
+\section{\module{bar.foo} ---
+         \module{bar} パッケージ内のモジュール}
+
+\declaremodule{extension}{bar.foo}
+\modulesynopsis{\module{bar} パッケージ内の小さなモジュール}
+\moduleauthor{Jane Doe}{jane.doe@frobnitz.org}
+\end{verbatim}
+
+%   Note that the name of a package is also marked using
+%   \macro{module}.
+パッケージの名前もまた、\macro{module} でマークします。
+
+  \begin{macrodesc}{declaremodule}{\op{key}\p{type}\p{name}}
+%     Requires two parameters: module type (\samp{standard},
+%     \samp{builtin}, \samp{extension}, or \samp{}), and the module
+%     name.  An optional parameter should be given as the basis for the
+%     module's ``key'' used for linking to or referencing the section.
+%     The ``key'' should only be given if the module's name contains any
+%     underscores, and should be the name with the underscores stripped.
+%     Note that the \var{type} parameter must be one of the values
+%     listed above or an error will be printed.  For modules which are
+%     contained in packages, the fully-qualified name should be given as
+%     \var{name} parameter.  This should be the first thing after the
+%     \macro{section} used to introduce the module.
+二つのパラメタ: モジュールの種類 (\samp{standard}、\samp{builtin}、
+\samp{extension}、または\samp{}) と、モジュールの名前を必要とします。
+この節にリンクを張ったり参照を行ったりするための ``キー'' によっては、
+オプションのパラメタを指定せねばなりません。
+``キー'' は、モジュールの名前にアンダースコアが入っている場合にのみ
+用い、モジュール名からアンダースコアを取り除いた名前でなければなりません。
+\var{type} パラメタは上に述べた値のいずれかでなければならず、そうでない
+値を指定するとエラーが出力されるので注意してください。
+パッケージに入っているようなモジュールの場合、\var{name} パラメタには
+完全限定形式の名前を指定せねばなりません。
+このマクロはモジュールを紹介する\macro{section} の先頭に置かねば
+なりません。
+
+  \end{macrodesc}
+
+  \begin{macrodesc}{platform}{\p{specifier}}
+%     Specifies the portability of the module.  \var{specifier} is a
+%     comma-separated list of keys that specify what platforms the
+%     module is available on.  The keys are short identifiers;
+%     examples that are in use include \samp{IRIX}, \samp{Mac},
+%     \samp{Windows}, and \samp{Unix}.  It is important to use a key
+%     which has already been used when applicable.  This is used to
+%     provide annotations in the Module Index and the HTML and GNU info
+%     output.
+モジュールの可搬性について述べるために使います。\var{specifier} は
+モジュールを利用できるようなプラットフォームを指定するキーをコンマで
+区切ったリストです。キーは短い識別子にします; 実際に使われている例には
+\samp{IRIX}、\samp{Mac}、\samp{Windows}、\samp{Unix} があります。
+あるプラットフォームを表す場合、すでに使われているキーがあるなら、
+それを使うようにするのが重要です。この情報は、モジュール索引や、
+HTML形式、GNU info 形式の出力における注釈情報に使われます。
+
+  \end{macrodesc}
+
+  \begin{macrodesc}{modulesynopsis}{\p{text}}
+%     The \var{text} is a short, ``one line'' description of the
+%     module that can be used as part of the chapter introduction.
+%     This is must be placed after \macro{declaremodule}.
+%     The synopsis is used in building the contents of the table
+%     inserted as the \macro{localmoduletable}.  No text is
+%     produced at the point of the markup.
+\var{text} はモジュールの短い ``一行の'' 説明で、各章の紹介の一部
+として使われることがあります。このマクロは \macro{declaremodule}
+の後ろに配置せねばなりません。モジュールの概要は、
+\macro{localmoduletable} マクロによって挿入される一覧表の
+内容を構築する際に使われます。マークアップを行った場所では
+何のテキストも生成されません。
+  \end{macrodesc}
+
+  \begin{macrodesc}{moduleauthor}{\p{name}\p{email}}
+%     This macro is used to encode information about who authored a
+%     module.  This is currently not used to generate output, but can be
+%     used to help determine the origin of the module.
+このマクロはモジュールの作者についての情報を符号化するために使われます。
+現在は出力生成に使われていませんが、モジュールの起源を判断する際に
+役立つはずです。
+  \end{macrodesc}
+
+
+  \subsection{ライブラリレベルのマークアップ \label{library-markup}} % Library-level Markup
+
+%     This markup is used when describing a selection of modules.  For
+%     example, the \citetitle[../mac/mac.html]{Macintosh Library
+%     Modules} document uses this to help provide an overview of the
+%     modules in the collection, and many chapters in the
+%     \citetitle[../lib/lib.html]{Python Library Reference} use it for
+%     the same purpose.
+このマークアップは、一そろいのモジュールについて説明する際に使います。
+例えば、 \citetitle[../mac/mac.html]{Macintosh ライブラリモジュール}
+ドキュメントでは、モジュールの集まりを概観できるようにするために
+このマクロを役立てています。また、
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス} も同様の
+目的にこのマクロを利用しています。
+
+
+  \begin{macrodesc}{localmoduletable}{}
+%     If a \file{.syn} file exists for the current
+%     chapter (or for the entire document in \code{howto} documents), a
+%     \env{synopsistable} is created with the contents loaded from the
+%     \file{.syn} file.
+現在の章 (\code{howto} ドキュメントの場合はドキュメント全体) に対して
+\file{.syn} ファイルが存在する場合には、\file{.syn} ファイルから
+読み出した内容で\env{synopsistable} を作成します。
+  \end{macrodesc}
+
+
+  \subsection{表のマークアップ \label{table-markup}} % Table Markup
+
+%     There are three general-purpose table environments defined which
+%     should be used whenever possible.  These environments are defined
+%     to provide tables of specific widths and some convenience for
+%     formatting.  These environments are not meant to be general
+%     replacements for the standard \LaTeX{} table environments, but can
+%     be used for an advantage when the documents are processed using
+%     the tools for Python documentation processing.  In particular, the
+%     generated HTML looks good!  There is also an advantage for the
+%     eventual conversion of the documentation to XML (see section
+%     \ref{futures}, ``Future Directions'').
+表環境には汎用の三つの形式があり、できる限りこの環境を使うように
+してください。こうした環境は標準の \LaTeX{} 表環境を置き換える
+ためのものではなく、Python ドキュメントを作成するための処理ツール
+で処理する際に便利なように作られています。とりわけ、この表環境で
+生成した HTML は見栄えがよくなります! また、いつかドキュメントを
+XML 形式に変換する時にも (\ref{futures} 節、 ``将来の方向性'' を
+参照してください)、利点があるでしょう。
+
+%     Each environment is named \env{table\var{cols}}, where \var{cols}
+%     is the number of columns in the table specified in lower-case
+%     Roman numerals.  Within each of these environments, an additional
+%     macro, \macro{line\var{cols}}, is defined, where \var{cols}
+%     matches the \var{cols} value of the corresponding table
+%     environment.  These are supported for \var{cols} values of
+%     \code{ii}, \code{iii}, and \code{iv}.  These environments are all
+%     built on top of the \env{tabular} environment.  Variants based on
+%     the \env{longtable} environment are also provided.
+各環境は \env{table\var{cols}} という形式の名前がついています。
+\var{cols} には、表のカラム数を小文字のローマ数字で指定します。
+各々の環境について、追加のマクロ\macro{line\var{cols}} が定義されて
+います。この場合\var{cols} は表環境の\var{cols}に対応します。
+サポートされている\var{cols} には\code{ii}、\code{iii}、\code{iv}、
+\code{v} があります。どの環境も全て\env{tabular} 環境の上に構築されて
+います。\env{longtable} 環境に基づく変化形も提供されています。
+
+%     Note that all tables in the standard Python documentation use
+%     vertical lines between columns, and this must be specified in the
+%     markup for each table.  A general border around the outside of the
+%     table is not used, but would be the responsibility of the
+%     processor; the document markup should not include an exterior
+%     border.
+標準 Python ドキュメント内の全ての表がカラム間に垂直線を
+使っており、各表のマークアップでこの垂直線を指定しなければならないので
+注意してください。表の外側の境界線はマークアップに使いませんが、
+これは処理ツール側の役割です; ドキュメントのマークアップ時には
+外側の境界線を含めてはなりません。
+
+%     The \env{longtable}-based variants of the table environments are
+%     formatted with extra space before and after, so should only be
+%     used on tables which are long enough that splitting over multiple
+%     pages is reasonable; tables with fewer than twenty rows should
+%     never by marked using the long flavors of the table environments.
+%     The header row is repeated across the top of each part of the
+%     table.
+\env{longtable} に基づいた表環境の変化形では、前後に余分にスペースを
+入れてフォーマットを行うため、表が長すぎて、複数のページに分割したほうが
+合理的な場合にのみ使ってください; 20 行よりも行数の少ない表の場合、
+決して長形式の表環境を使ってマークをしないようにしてください。
+ヘッダ行は、表の各ページにおける部分の先頭に繰り返し表示されます。
+
+    \begin{envdesc}{tableii}{\p{colspec}\p{col1font}\p{heading1}\p{heading2}}
+%       Create a two-column table using the \LaTeX{} column specifier
+%       \var{colspec}.  The column specifier should indicate vertical
+%       bars between columns as appropriate for the specific table, but
+%       should not specify vertical bars on the outside of the table
+%       (that is considered a stylesheet issue).  The \var{col1font}
+%       parameter is used as a stylistic treatment of the first column
+%       of the table: the first column is presented as
+%       \code{\e\var{col1font}\{column1\}}.  To avoid treating the first
+%       column specially, \var{col1font} may be \samp{textrm}.  The
+%       column headings are taken from the values \var{heading1} and
+%       \var{heading2}.
+\LaTeX{} のカラム情報指定子 (column specifier) \var{colspec} を使って、
+2 カラムの表を作成します。カラム情報指定子には表によって適切なカラム
+分割垂直線が入るように指定を行わねばなりませんが、表の外側の垂直線は
+指定してはなりません (この部分の指定はスタイルシートの問題と考えられて
+いるからです)。\var{con1font} パラメタは、テーブルの最初のカラムの
+表示スタイルをどうするかを指定します: その結果として、最初のカラムは 
+\code{\e\var{col1font}\{column1\}} のようになります。
+最初のカラムを特別扱いしないために、\var{col1font} を\samp{textrm} に
+してもかまいません。カラムのヘッダは \var{heading1} および \var{heading2}
+からとります。
+    \end{envdesc}
+
+    \begin{envdesc}{longtableii}{\unspecified}
+%       Like \env{tableii}, but produces a table which may be broken
+%       across page boundaries.  The parameters are the same as for
+%       \env{tableii}.
+\env{tableii} に似ていますが、ページ境界を割って配置できるような
+表を生成します。パラメタは\env{tableii} と同じです。
+    \end{envdesc}
+
+    \begin{macrodesc}{lineii}{\p{column1}\p{column2}}
+%       Create a single table row within a \env{tableii} or
+%       \env{longtableii} environment.
+%       The text for the first column will be generated by applying the
+%       macro named by the \var{col1font} value when the \env{tableii}
+%       was opened.
+\env{tableii} や\env{longtableii} 環境内の単一の行を生成します。
+第一カラムのテキストは\env{tableii} 環境を始めたときに指定した
+\var{col1font} を適用して生成します。
+    \end{macrodesc}
+
+    \begin{envdesc}{tableiii}{\p{colspec}\p{col1font}\p{heading1}\p{heading2}\p{heading3}}
+%       Like the \env{tableii} environment, but with a third column.
+%       The heading for the third column is given by \var{heading3}.
+\env{tableii} 環境に似ていますが、第三カラムがあります。
+第三カラムのヘッダは \var{heading3} に指定します。
+    \end{envdesc}
+
+    \begin{envdesc}{longtableiii}{\unspecified}
+%       Like \env{tableiii}, but produces a table which may be broken
+%       across page boundaries.  The parameters are the same as for
+%       \env{tableiii}.
+\env{tableiii} に似ていますが、ページ境界を割って配置できるような
+表を生成します。パラメタは\env{tableiii} と同じです。
+    \end{envdesc}
+
+    \begin{macrodesc}{lineiii}{\p{column1}\p{column2}\p{column3}}
+%       Like the \macro{lineii} macro, but with a third column.  The
+%       text for the third column is given by \var{column3}.
+\macro{lineii} マクロに似ていますが、第三カラムがあります。
+第三カラムのテキストは \var{column3} に指定します。
+    \end{macrodesc}
+
+    \begin{envdesc}{tableiv}{\p{colspec}\p{col1font}\p{heading1}\p{heading2}\p{heading3}\p{heading4}}
+%       Like the \env{tableiii} environment, but with a fourth column.
+%       The heading for the fourth column is given by \var{heading4}.
+\env{tableiii} 環境に似ていますが、第四カラムがあります。
+第四カラムのヘッダは \var{heading4} に指定します。
+    \end{envdesc}
+
+    \begin{envdesc}{longtableiv}{\unspecified}
+%       Like \env{tableiv}, but produces a table which may be broken
+%       across page boundaries.  The parameters are the same as for
+%       \env{tableiv}.
+\env{tableiv} に似ていますが、ページ境界を割って配置できるような
+表を生成します。パラメタは\env{tableiv} と同じです。
+    \end{envdesc}
+
+    \begin{macrodesc}{lineiv}{\p{column1}\p{column2}\p{column3}\p{column4}}
+%       Like the \macro{lineiii} macro, but with a fourth column.  The
+%       text for the fourth column is given by \var{column4}.
+\macro{lineiv} マクロに似ていますが、第四カラムがあります。
+第四カラムのテキストは \var{column4} に指定します。
+    \end{macrodesc}
+
+    \begin{envdesc}{tablev}{\p{colspec}\p{col1font}\p{heading1}\p{heading2}\p{heading3}\p{heading4}\p{heading5}}
+%       Like the \env{tableiv} environment, but with a fifth column.
+%       The heading for the fifth column is given by \var{heading5}.
+\env{tableiii} 環境に似ていますが、第五カラムがあります。
+第五カラムのヘッダは \var{heading5} に指定します。
+    \end{envdesc}
+
+    \begin{envdesc}{longtablev}{\unspecified}
+%       Like \env{tablev}, but produces a table which may be broken
+%       across page boundaries.  The parameters are the same as for
+%       \env{tablev}.
+\env{tablev} に似ていますが、ページ境界を割って配置できるような
+表を生成します。パラメタは\env{tablev} と同じです。
+    \end{envdesc}
+
+    \begin{macrodesc}{linev}{\p{column1}\p{column2}\p{column3}\p{column4}\p{column5}}
+%       Like the \macro{lineiv} macro, but with a fifth column.  The
+%       text for the fifth column is given by \var{column5}.
+\macro{lineiv} マクロに似ていますが、第五カラムがあります。
+第五カラムのテキストは \var{column5} に指定します。
+    \end{macrodesc}
+
+
+%     An additional table-like environment is \env{synopsistable}.  The
+%     table generated by this environment contains two columns, and each
+%     row is defined by an alternate definition of
+%     \macro{modulesynopsis}.  This environment is not normally used by
+%     authors, but is created by the \macro{localmoduletable} macro.
+表に似たもう一つ環境として \env{synopsistable} があります。
+この環境が生成する表は二つのカラムからなり、各行は別のマクロ定義
+\macro{modulesynopsis} 中に定義されています。通常ドキュメントの作者が
+この環境を使うことはありませんが、\macro{localmoduletable} マクロ
+を使うとこの表を作成します。
+
+%     Here is a small example of a table given in the documentation for
+%     the \module{warnings} module; markup inside the table cells is
+%     minimal so the markup for the table itself is readily discernable.
+%     Here is the markup for the table:
+ここで\module{warning} モジュールのドキュメントにある小さな表の例を
+示します; 表のマークアップ自体がかなり識別しやすく作られているので、
+表セル内のマークアップは最小限にしています。
+以下が表のマークアップです。
+
+\begin{verbatim}
+\begin{tableii}{l|l}{exception}{クラス}{説明}
+\lineii{Warning}{全ての警告カテゴリの基底クラスです。
+\exception{Exception} のサブクラスです。}
+\lineii{UserWarning}{\function{warn()} の標準のカテゴリです。}
+\lineii{DeprecationWarning}{機能の撤廃を警告するカテゴリの基底クラスです。}
+\lineii{SyntaxWarning}{文法機能のあいまいさを警告するカテゴリの基底クラスです。}
+\lineii{RuntimeWarning}{実行時システム機能のあいまいさを警告するカテゴリの基底クラスです。}
+\lineii{FutureWarning}{変更予定のセマンティクスを警告するカテゴリの基底クラスです。}
+\end{tableii}
+\end{verbatim}
+
+%     Here is the resulting table:
+これは以下のような表になります。
+
+\begin{tableii}{l|l}{exception}{クラス}{説明}
+\lineii{Warning}{全ての警告カテゴリの基底クラスです。
+\exception{Exception} のサブクラスです。}
+\lineii{UserWarning}{\function{warn()} の標準のカテゴリです。}
+\lineii{DeprecationWarning}{機能の撤廃を警告するカテゴリの基底クラスです。}
+\lineii{SyntaxWarning}{文法機能のあいまいさを警告するカテゴリの基底クラスです。}
+\lineii{RuntimeWarning}{実行時システム機能のあいまいさを警告するカテゴリの基底クラスです。}
+\lineii{FutureWarning}{変更予定のセマンティクスを警告するカテゴリの基底クラスです。}
+\end{tableii}
+
+
+%     Note that the class names are implicitly marked using the
+%     \macro{exception} macro, since that is given as the \var{col1font}
+%     value for the \env{tableii} environment.  To create a table using
+%     different markup for the first column, use \code{textrm} for the
+%     \var{col1font} value and mark each entry individually.
+クラス名は\macro{exception} マクロを使って非明示的にマークされますが、
+これは\macro{exception} が\env{tableii} 環境の\var{col1font} の
+値として指定されているからです。最初のカラムを別のマークアップにした
+表を作成するには、\code{textrm} を \var{col1font} の値に指定して、
+各エントリを個別にマークしてください。
+
+%     To add a horizontal line between vertical sections of a table, use
+%     the standard \macro{hline} macro between the rows which should be
+%     separated:
+表を垂直方向に分割するために水平線を追加するには、標準のマクロ
+\macro{hline} を分割したい行の間に入れます:
+
+\begin{verbatim}
+\begin{tableii}{l|l}{constant}{言語}{対象読者}
+  \lineii{APL}{マゾヒスト}
+  \lineii{BASIC}{PC ハードウェア使いのプログラム初心者}
+  \lineii{C}{\UNIX{} \&\ Linux カーネル開発者}
+    \hline
+  \lineii{Python}{誰でも!}
+\end{tableii}
+\end{verbatim}
+
+%     Note that not all presentation formats are capable of displaying a
+%     horizontal rule in this position.  This is how the table looks in
+%     the format you're reading now:
+全ての出力形式でこの場所に水平線を引けるとは限らないので注意してください。
+今読者が読んでいるドキュメントの出力形式では、上の表は以下のように
+なります:
+
+\begin{tableii}{l|l}{constant}{Language}{Audience}
+  \lineii{APL}{Macintosh 野郎}
+  \lineii{BASIC}{PC ハードウェア使いのプログラム初心者}
+  \lineii{C}{\UNIX{} \&\ Linux カーネル開発者}
+    \hline
+  \lineii{Python}{誰でも!}
+\end{tableii}
+
+
+  \subsection{参考文献リストのマークアップ \label{references}} % Reference List Markup 
+
+%     Many sections include a list of references to module documentation
+%     or external documents.  These lists are created using the
+%     \env{seealso} or \env{seealso*} environments.  These environments
+%     define some additional macros to support creating reference
+%     entries in a reasonable manner.
+ドキュメントの各節の多くには、モジュールドキュメントや外部ドキュメント
+を指す参考文献のリストが入っています。こうしたリストは、\env{seealso}
+や\env{seealso*} 環境を使って作成します。
+これらの環境では、参考文献エントリを合理的なやり方で作成するための
+追加のマクロを定義しています。
+
+%     The \env{seealso} environment is typically placed in a section
+%     just before any sub-sections.  This is done to ensure that
+%     reference links related to the section are not hidden in a
+%     subsection in the hypertext renditions of the documentation.  For
+%     the HTML output, it is shown as a ``side bar,'' boxed off from the
+%     main flow of the text.  The \env{seealso*} environment is
+%     different in that it should be used when a list of references is
+%     being presented as part of the primary content; it is not
+%     specially set off from the text.
+\env{seealso} 環境は通常、節中で何らかの小節に入る直前の場所に配置
+します。これは、ある節に関係した参考文献リンクが、
+ドキュメントのハイパーテキスト解析を行う際に小節内に入り込んで
+しまわないようにするためです。
+HTML 出力の場合、このマクロの内容は本文の外側の  ``サイドバー'' に
+表示されます。\env{seealso*} 環境は、参考文献リストを主コンテンツ
+の一部として表示したい場合に使う点が異なります; \env{seealso*} を
+使うと、リストを特別扱いしてテキスト内から押し出したりしません。
+
+    \begin{envdesc}{seealso}{}
+%       This environment creates a ``See also:'' heading and defines the
+%       markup used to describe individual references.
+この環境はヘッダ ``See also:'' を作成し、個々の参考文献を記述
+するためのマークアップを定義します。
+    \end{envdesc}
+
+    \begin{envdesc}{seealso*}{}
+%       This environment is used to create a list of references which
+%       form part of the main content.  It is not given a special
+%       header and is not set off from the main flow of the text.  It
+%       provides the same additional markup used to describe individual
+%       references.
+この環境は主コンテンツの一部として参考文献リストを生成する際に使います。
+リストに特別にヘッダをつけることはなく、ドキュメントの本文から
+押し出されることもありません。個々の参考文献を記述するために、
+上と同じマークアップを提供しています。
+    \end{envdesc}
+
+%     For each of the following macros, \var{why} should be one or more
+%     complete sentences, starting with a capital letter (unless it
+%     starts with an identifier, which should not be modified), and
+%     ending with the apropriate punctuation.
+以下のマクロの各々において、\var{why} は一つかそれ以上の完全な
+文章で、大文字から始めねばなりません (文が識別子から始まる場合には
+別で、大文字にする必要はありません)。また、適切な区切り文字で
+終えねばなりません。
+
+%     These macros are only defined within the content of the
+%     \env{seealso} and \env{seealso*} environments.
+これらのマクロは \env{seealso} や \env{seealso*} 環境の中でしか
+定義できません。
+
+\begin{macrodesc}{seelink}{\p{url}\p{linktext}\p{why}}
+特定のオンラインリソースへの参照を示す場合、
+ちゃんとした題名をそのリソースにつけられないが、短い説明を
+リンクの後につけたい場合には \macro{seelink} マクロを使います。
+タイトルで特定できるようなオンライン上のドキュメントには
+\macro{seetitle} マクロを使い、オプションに URL を指定するように
+してください。
+\end{macrodesc}
+
+
+    \begin{macrodesc}{seemodule}{\op{key}\p{name}\p{why}}
+%       Refer to another module.  \var{why} should be a brief
+%       explanation of why the reference may be interesting.  The module
+%       name is given in \var{name}, with the link key given in
+%       \var{key} if necessary.  In the HTML and PDF conversions, the
+%       module name will be a hyperlink to the referred-to module.
+%       \note{The module must be documented in the same
+%       document (the corresponding \macro{declaremodule} is required).}
+別のモジュールへの参照です。\var{why} は、なぜその参考文献が
+興味の対象となるのかを示す短い説明にせねばなりません。
+モジュール名は \var{name} で指定し、必要があれば \var{key} 
+でリンクキーを指定します。HTML および PDF 版では、
+モジュール名部分は参照先のモジュールを指すハイパーリンクになります。
+\note{該当のモジュールは同じドキュメント内で記述されていなければ
+なりません (対応する\macro{declaremodule} が必要です)。}
+    \end{macrodesc}
+
+    \begin{macrodesc}{seepep}{\p{number}\p{title}\p{why}}
+%       Refer to an Python Enhancement Proposal (PEP).  \var{number}
+%       should be the official number assigned by the PEP Editor,
+%       \var{title} should be the human-readable title of the PEP as
+%       found in the official copy of the document, and \var{why} should
+%       explain what's interesting about the PEP.  This should be used
+%       to refer the reader to PEPs which specify interfaces or language
+%       features relevant to the material in the annotated section of the
+%       documentation.
+Python Enhancement Proposal (PEP) への参照です。\var{number} は
+PEP 編集者が割り当てた公式 PEP 番号でなければならず、
+\var{tiutle} は PEP ドキュメントの公式版に書かれている人間可読な
+タイトルでなければなりません。
+このマクロは、ドキュメント中の注釈がつけられている節の内容が関係
+しているインタフェースや言語機能 PEP への参照を読者に示すために
+使います。
+    \end{macrodesc}
+
+    \begin{macrodesc}{seerfc}{\p{number}\p{title}\p{why}}
+%       Refer to an IETF Request for Comments (RFC).  Otherwise very
+%       similar to \macro{seepep}.  This should be used
+%       to refer the reader to PEPs which specify protocols or data
+%       formats relevant to the material in the annotated section of the
+%       documentation.
+IETF による Request for Comment (RFC) を参照します。
+それ以外の点では、 \macro{seepep} とほとんど同じです。
+このマクロは、ドキュメント中の注釈がつけられている節の内容が関係
+しているプロトコルやデータ形式を仕様記述している RFC への参照を
+読者に示すために使います。
+    \end{macrodesc}
+
+    \begin{macrodesc}{seetext}{\p{text}}
+%       Add arbitrary text \var{text} to the ``See also:'' list.  This
+%       can be used to refer to off-line materials or on-line materials
+%       using the \macro{url} macro.  This should consist of one or more
+%       complete sentences.
+任意のテキスト\var{text} を ``See also:'' リストに追加します。
+このマクロはオフラインやオンラインの資料を \macro{url} マクロで
+参照するために使えます。テキストは一つかそれ以上の完全な文で
+構成しなければなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{seetitle}{\op{url}\p{title}\p{why}}
+%       Add a reference to an external document named \var{title}.  If
+%       \var{url} is given, the title is made a hyperlink in the HTML
+%       version of the documentation, and displayed below the title in
+%       the typeset versions of the documentation.
+\var{title} という名前の外部ドキュメントに対する参照を追加します。
+\var{url} を指定した場合、HTML 版では外部ドキュメントのタイトル部分が
+ハイパーリンクになり、組版版のドキュメントでは表題の下に URL が
+表示されます。
+    \end{macrodesc}
+
+    \begin{macrodesc}{seeurl}{\p{url}\p{why}}
+%       References to specific on-line resources should be given using
+%       the \macro{seeurl} macro if they don't have a meaningful title.
+%       Online documents which have identifiable titles should be
+%       referenced using the \macro{seetitle} macro, using the optional
+%       parameter to that macro to provide the URL.
+特定のオンラインリソースで、意味のあるタイトルがない場合には
+\macro{seeurl} マクロを使って参照を行います。
+はっきりしたタイトルのあるオンラインドキュメントの場合には、
+\macro{seetitle} マクロを使い、そのオプションパラメタに URL を指定
+して参照を行ってください。
+    \end{macrodesc}
+
+
+  \subsection{索引生成のためのマークアップ \label{indexing}} % Index-generating Markup
+
+%     Effective index generation for technical documents can be very
+%     difficult, especially for someone familiar with the topic but not
+%     the creation of indexes.  Much of the difficulty arises in the
+%     area of terminology: including the terms an expert would use for a
+%     concept is not sufficient.  Coming up with the terms that a novice
+%     would look up is fairly difficult for an author who, typically, is
+%     an expert in the area she is writing on.
+技術文書における索引の効果的な作成は、とりわけ作者がある事柄には詳しくても
+索引の生成には不慣れな場合には非常に困難です。ドキュメントの困難さの
+ほとんどは技術用語の範囲からきています: ある概念を説明する際に、
+熟練者が使うような用語を入れるだけでは不十分です。ドキュメントの
+作者は普通、自分の書いているドキュメントの領域においては熟練者であり、
+初心者が立ち止まってしまうような用語を見つけ出すのはかなり難しいのです。
+
+%     The truly difficult aspects of index generation are not areas with
+%     which the documentation tools can help.  However, ease
+%     of producing the index once content decisions are made is within
+%     the scope of the tools.  Markup is provided which the processing
+%     software is able to use to generate a variety of kinds of index
+%     entry with minimal effort.  Additionally, many of the environments
+%     described in section \ref{info-units}, ``Information Units,'' will
+%     generate appropriate entries into the general and module indexes.
+索引生成の本当に困難な側面は、ドキュメント作成ツールで補助できるような
+領域のことがらではありません。とはいえ、ひとたび用語の内容を決めたら、
+索引の作成を簡単にするのはツールの役割です。
+様々な種類の索引を最小限の努力で生成できるようにするために
+ドキュメント生成ソフトウェアが利用できるようなマークアップが提供
+されています。加えて、\ref{info-units} 節、 ``情報単位'' で説明した
+多くの環境は、総合索引やモジュール索引上に適切なエントリを作成します。
+
+%     The following macro can be used to control the generation of index
+%     data, and should be used in the document preamble:
+以下のマクロは、索引情報を生成するために利用できます。これらはドキュメント
+のプリアンブル内で使わねばなりません。
+
+    \begin{macrodesc}{makemodindex}{}
+%       This should be used in the document preamble if a ``Module
+%       Index'' is desired for a document containing reference material
+%       on many modules.  This causes a data file
+%       \code{lib\var{jobname}.idx} to be created from the
+%       \macro{declaremodule} macros.  This file can be processed by the
+%       \program{makeindex} program to generate a file which can be
+%       \macro{input} into the document at the desired location of the
+%       module index.
+ドキュメントで多くのモジュールに対する参照が入った ``モジュール索引'' 
+が必要な場合、プリアンブル内で使います。
+このマクロは一連の\macro{declaremodule} マクロからデータファイル
+\code{lib\var{jobname}.idx} を生成します。このファイルは
+\program{makeindex} プログラムで使われ、モジュール索引を入れたい場所に
+\macro{input} を使って取り込めるようなファイルを生成します。
+    \end{macrodesc}
+
+%     There are a number of macros that are useful for adding index
+%     entries for particular concepts, many of which are specific to
+%     programming languages or even Python.
+様々な概念について索引エントリを追加する上で便利なマクロがあります。
+これらの多くはプログラミング言語や、Python に特有の概念です。
+
+    \begin{macrodesc}{bifuncindex}{\p{name}}
+%       Add an index entry referring to a built-in function named
+%       \var{name}; parentheses should not be included after
+%       \var{name}.
+\var{name} という名前の組み込み関数に対する索引エントリを追加します;
+\var{name} の後ろに丸括弧を入れてはなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{exindex}{\p{exception}}
+%       Add a reference to an exception named \var{exception}.  The
+%       exception should be class-based.
+\var{exception} という名前の例外に対する索引エントリを追加します。
+例外はクラスベースの例外でなければなりません。
+    \end{macrodesc}
+
+    \begin{macrodesc}{kwindex}{\p{keyword}}
+%       Add a reference to a language keyword (not a keyword parameter
+%       in a function or method call).
+言語における予約語 (keyword、関数やメソッド呼び出しにおけるキーワード
+引数とは違います) に対する索引エントリを追加します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{obindex}{\p{object type}}
+%       Add an index entry for a built-in object type.
+組み込みオブジェクト型に対する索引エントリを追加します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{opindex}{\p{operator}}
+%       Add a reference to an operator, such as \samp{+}.
+\samp{+} のような演算子に対する索引エントリを追加します。
+    \end{macrodesc}
+
+    \begin{macrodesc}{refmodindex}{\op{key}\p{module}}
+%       Add an index entry for module \var{module}; if \var{module}
+%       contains an underscore, the optional parameter \var{key} should
+%       be provided as the same string with underscores removed.  An
+%       index entry ``\var{module} (module)'' will be generated.  This
+%       is intended for use with non-standard modules implemented in
+%       Python.
+モジュール \var{module} に対する索引エントリを追加します; 
+\var{module} にアンダースコアが入っている場合、オプションのパラメタ
+\var{key} には、\var{module} からアンダースコアを除去した名前を
+指定せねばなりません。索引エントリ ``\var{module} (module)'' を生成
+します。Python で書かれた非標準モジュールで使うためのものです。
+    \end{macrodesc}
+
+    \begin{macrodesc}{refexmodindex}{\op{key}\p{module}}
+%       As for \macro{refmodindex}, but the index entry will be
+%       ``\var{module} (extension module).''  This is intended for use
+%       with non-standard modules not implemented in Python.
+\macro{refmodindex} のようなものですが、索引エントリは
+``\var{module} (extension module)'' になります。
+このマクロは Python 以外で書かれた非標準モジュールで使うためのものです。
+    \end{macrodesc}
+
+    \begin{macrodesc}{refbimodindex}{\op{key}\p{module}}
+%       As for \macro{refmodindex}, but the index entry will be
+%       ``\var{module} (built-in module).''  This is intended for use
+%       with standard modules not implemented in Python.
+\macro{refmodindex} のようなものですが、索引エントリは
+``\var{module} (built-in module)'' になります。
+このマクロは Python 以外で書かれた標準モジュールで使うためのものです。
+    \end{macrodesc}
+
+    \begin{macrodesc}{refstmodindex}{\op{key}\p{module}}
+%       As for \macro{refmodindex}, but the index entry will be
+%       ``\var{module} (standard module).''  This is intended for use
+%       with standard modules implemented in Python.
+\macro{refmodindex} のようなものですが、索引エントリは
+``\var{module} (standard module)'' になります。
+このマクロは Python で書かれた標準モジュールで使うためのものです。
+    \end{macrodesc}
+
+    \begin{macrodesc}{stindex}{\p{statement}}
+%       Add an index entry for a statement type, such as \keyword{print}
+%       or \keyword{try}/\keyword{finally}.
+\keyword{print} や\keyword{try}/\keyword{finally} のような、
+構文型に対する索引エントリを追加します。
+
+%       XXX Need better examples of difference from \macro{kwindex}.
+    \end{macrodesc}
+
+%     Additional macros are provided which are useful for conveniently
+%     creating general index entries which should appear at many places
+%     in the index by rotating a list of words.  These are simple macros
+%     that simply use \macro{index} to build some number of index
+%     entries.  Index entries build using these macros contain both
+%     primary and secondary text.
+総合索引を簡単に作成する上で便利なマクロが提供されています。
+索引エントリは、索引の様々な場所で語順を入れ替えて表示しなければ
+なりません。これらのマクロは単に \macro{index} を使って複数の
+索引エントリを作成するような単純なマクロです。こうしたマクロを
+使って構築された索引エントリには、一次および二次の索引テキストが
+入ります。
+
+    \begin{macrodesc}{indexii}{\p{word1}\p{word2}}
+%       Build two index entries.  This is exactly equivalent to using
+%       \code{\e index\{\var{word1}!\var{word2}\}} and
+%       \code{\e index\{\var{word2}!\var{word1}\}}.
+二つの索引語からなる索引エントリを構築します。
+\code{\e index\{\var{word1}!\var{word2}\}} と
+\code{\e index\{\var{word2}!\var{word1}\}} を組み合わせて使うのと
+同じです。
+
+    \end{macrodesc}
+
+    \begin{macrodesc}{indexiii}{\p{word1}\p{word2}\p{word3}}
+%       Build three index entries.  This is exactly equivalent to using
+%       \code{\e index\{\var{word1}!\var{word2} \var{word3}\}},
+%       \code{\e index\{\var{word2}!\var{word3}, \var{word1}\}}, and
+%       \code{\e index\{\var{word3}!\var{word1} \var{word2}\}}.
+三つの索引語からなる索引エントリを構築します。
+\code{\e index\{\var{word1}!\var{word2} \var{word3}\}}、
+\code{\e index\{\var{word2}!\var{word3}, \var{word1}\}}、および
+\code{\e index\{\var{word3}!\var{word1} \var{word2}\}} を
+組み合わせて使うのと同じです。
+    \end{macrodesc}
+
+    \begin{macrodesc}{indexiv}{\p{word1}\p{word2}\p{word3}\p{word4}}
+%       Build four index entries.  This is exactly equivalent to using
+%       \code{\e index\{\var{word1}!\var{word2} \var{word3} \var{word4}\}},
+%       \code{\e index\{\var{word2}!\var{word3} \var{word4}, \var{word1}\}},
+%       \code{\e index\{\var{word3}!\var{word4}, \var{word1} \var{word2}\}},
+%       and
+%       \code{\e index\{\var{word4}!\var{word1} \var{word2} \var{word3}\}}.
+四つの索引語からなる索引エントリを構築します。
+\code{\e index\{\var{word1}!\var{word2} \var{word3} \var{word4}\}}、
+\code{\e index\{\var{word2}!\var{word3} \var{word4}, \var{word1}\}}、
+\code{\e index\{\var{word3}!\var{word4}, \var{word1} \var{word2}\}}、
+および
+\code{\e index\{\var{word4}!\var{word1} \var{word2} \var{word3}\}} を
+組み合わせて使うのと同じです。
+    \end{macrodesc}
+
+  \subsection{文法における導出の表示 \label{grammar-displays}} % Grammar Production Displays 
+
+%     Special markup is available for displaying the productions of a
+%     formal grammar.  The markup is simple and does not attempt to
+%     model all aspects of BNF (or any derived forms), but provides
+%     enough to allow context-free grammars to be displayed in a way
+%     that causes uses of a symbol to be rendered as hyperlinks to the
+%     definition of the symbol.  There is one environment and a pair of
+%     macros:
+形式文法における導出 (producution) を表示するために、特殊なマークアップ
+を使えます。マークアップは単純なもので、 BNF (やその派生形) の
+全ての側面をモデル化しようとはしていませんが、
+シンボルを記述するとそのシンボルの定義へのハイパーリンクになるような
+表示を文脈自由文法に対して実現しています。
+環境が一つと、二つのマクロがあります:
+
+    \begin{envdesc}{productionlist}{\op{language}}
+%       This environment is used to enclose a group of productions.  The
+%       two macros are only defined within this environment.  If a
+%       document describes more than one language, the optional parameter
+%       \var{language} should be used to distinguish productions between
+%       languages.  The value of the parameter should be a short name
+%       that can be used as part of a filename; colons or other
+%       characters that can't be used in filename across platforms
+%       should be included.
+この環境は、ひとまとまりの導出規則を囲むために使います。
+この環境ではマクロを二つだけ定義しています。ドキュメントで
+二つ以上の言語について説明する場合、オプションのパラメタ \var{language}
+を使って、言語間で導出規則を区別せねばなりません。パラメタの値は
+ファイル名の一部に使えるような短い名前にせねばなりません; コロンや、
+複数のプラットフォーム間で同時にファイル名に使えないような文字は
+含めてはなりません。
+    \end{envdesc}
+
+    \begin{macrodesc}{production}{\p{name}\p{definition}}
+%       A production rule in the grammar.  The rule defines the symbol
+%       \var{name} to be \var{definition}.  \var{name} should not
+%       contain any markup, and the use of hyphens in a document which
+%       supports more than one grammar is undefined.  \var{definition}
+%       may contain \macro{token} macros and any additional content
+%       needed to describe the grammatical model of \var{symbol}.  Only
+%       one \macro{production} may be used to define a symbol ---
+%       multiple definitions are not allowed.
+文法における導出規則です。導出規則は、\var{name} を\var{definition}
+であると定義します。\var{name} にはマークアップを入れてはならず、
+ハイフンを使った一つ以上の文法のサポートは定義されていません。
+一つの \macro{production} には単一のシンボルだけを定義できます ---
+複数シンボルの定義を行ってはなりません。
+
+    \end{macrodesc}
+
+    \begin{macrodesc}{token}{\p{name}}
+%       The name of a symbol defined by a \macro{production} macro, used
+%       in the \var{definition} of a symbol.  Where possible, this will
+%       be rendered as a hyperlink to the definition of the symbol
+%       \var{name}.
+\macro{production} マクロが定義しているシンボルの名前で、
+シンボルの\var{definition} の中で使います。シンボル\var{name} は
+可能な場合にはシンボル定義へのハイパーリンクになります。
+    \end{macrodesc}
+
+%     Note that the entire grammar does not need to be defined in a
+%     single \env{productionlist} environment; any number of
+%     groupings may be used to describe the grammar.  Every use of the
+%     \macro{token} must correspond to a \macro{production}.
+必ずしも文法全体を単一の\env{productionlist} 環境に定義する必要は
+ないので注意してください; 任意の数のグループを作って文法を
+記述してかまいません。\macro{token} を使う場合には常に
+\macro{production} と対応付けせねばなりません。
+
+%     The following is an example taken from the
+%     \citetitle[../ref/identifiers.html]{Python Reference Manual}:
+以下は\citetitle[../ref/identifiers.html]{Python リファレンスマニュアル}
+からとった例です:
+
+\begin{verbatim}
+\begin{productionlist}
+  \production{identifier}
+             {(\token{letter}|"_") (\token{letter} | \token{digit} | "_")*}
+  \production{letter}
+             {\token{lowercase} | \token{uppercase}}
+  \production{lowercase}
+             {"a"..."z"}
+  \production{uppercase}
+             {"A"..."Z"}
+  \production{digit}
+             {"0"..."9"}
+\end{productionlist}
+\end{verbatim}
+
+
+\subsection{グラフィカルインタフェースの構成要素 \label{gui-markup}} % Graphical Interface Components 
+
+%   The components of graphical interfaces will be assigned markup, but
+%   most of the specifics have not been determined.
+グラフィカルインタフェースの構成要素についてマークアップを割り当てる
+ことになっていますが、その詳細はまだほとんど決まっていません。
+
+\begin{macrodesc}{guilabel}{\p{label}}
+対話型ユーザインタフェース上のラベルは \macro{guilabel} でマーク
+しなければなりません。\code{curses} などのテキストベースのライブラリ
+を使って作成したテキストベースインタフェース上のラベルも含みます。
+ボタン、ラベル、ウィンドウのタイトル、フィールドの名前、メニューや
+メニューの選択肢、選択肢リスト中の値に至るまで、インタフェース上のラベ
+ルを参照する時には、常にこのマクロを使います。
+\end{macrodesc}
+
+  \begin{macrodesc}{menuselection}{\p{menupath}}
+%     Menu selections should be marked using a combination of
+%     \macro{menuselection} and \macro{sub}.  This macro is used to mark
+%     a complete sequence of menu selections, including selecting
+%     submenus and choosing a specific operation, or any subsequence of
+%     such a sequence.  The names of individual selections should be
+%     separated by occurrences of \macro{sub}.
+メニューの選択肢は \macro{menuselection} と \macro{sub} を組み合わせて
+マークします。このマクロは、サブメニューを選択して特定の操作を選択する
+といった完全な形のメニュー選択手順や、任意の部分的な手順をマークする
+ために使います。個々の選択肢の名前は \macro{sub} を入れて分割せねば
+なりません。
+
+%     For example, to mark the selection ``\menuselection{Start \sub
+%     Programs}'', use this markup:
+例えば、``\menuselection{スタート \sub プログラム}'' をマークするには、以下
+のコードを使います:
+
+\begin{verbatim}
+\menuselection{スタート \sub プログラム}
+\end{verbatim}
+
+%     When including a selection that includes some trailing indicator,
+%     such as the ellipsis some operating systems use to indicate that
+%     the command opens a dialog, the indicator should be omitted from
+%     the selection name.
+選択肢がダイアログを開くようなコマンドであることを示すために
+オペレーティングシステムが使う省略記号のように、選択肢の末尾に
+末尾に識別記号が入っている場合、選択肢名からは識別記号を省いて
+ください。
+
+\macro{menuselection} 中の個々の選択肢名は適切にマークアップされるので、
+\macro{guilabel} でマークする必要はありません。
+
+  \end{macrodesc}
+
+  \begin{macrodesc}{sub}{}
+%     Separator for menu selections that include multiple levels.  This
+%     macro is only defined within the context of the
+%     \macro{menuselection} macro.
+複数の階層からなるメニュー選択肢を分割するための記号です。
+このマクロは \macro{menuselection} マクロのコンテキスト下でしか
+定義されていません。
+  \end{macrodesc}
+
+
+\section{処理ツール \label{tools}} % Processing Tools
+
+  \subsection{外部ツール \label{tools-external}} % External Tools
+
+%     Many tools are needed to be able to process the Python
+%     documentation if all supported formats are required.  This
+%     section lists the tools used and when each is required.  Consult
+%     the \file{Doc/README} file to see if there are specific version
+%     requirements for any of these.
+Python ドキュメントがサポートしている全ての出力形式を処理できるように
+するには、数多くのツールが必要です。この節では、処理に使われている
+各ツールについて列挙し、各々がいつ必要になるのか説明しています。
+これらのツールのいずれかが特定のバージョンを要求しているかどうかは、
+\file{Doc/README} ファイルを調べてみてください。
+
+    \begin{description}
+      \item[\program{dvips}]
+%         This program is a typical part of \TeX{} installations.  It is
+%         used to generate PostScript from the ``device independent''
+%         \file{.dvi} files.  It is needed for the conversion to
+%         PostScript.
+このプログラムはよく \TeX{} インストールの一部になっています。
+\program{dvips} は ``デバイス非依存 (device independent)'' の
+\file{.dvi} ファイルから PostScript を生成するために使われます。
+PostScript への変換を行う際に必要です。
+
+      \item[\program{emacs}]
+%         Emacs is the kitchen sink of programmers' editors, and a damn
+%         fine kitchen sink it is.  It also comes with some of the
+%         processing needed to support the proper menu structures for
+%         Texinfo documents when an info conversion is desired.  This is
+%         needed for the info conversion.  Using \program{xemacs}
+%         instead of FSF \program{emacs} may lead to instability in the
+%         conversion, but that's because nobody seems to maintain the
+%         Emacs Texinfo code in a portable manner.
+Emacs はごちゃまぜ (kitchen sink) の、さらに言うとクソ素晴らしい
+ごちゃまぜのプログラマ向けエディタです。info 形式に変換したい場合に、
+Texinfo ドキュメントの適切なメニュー階層の構築をサポートする上で必要な
+処理に関係しています。FSF の \program{emacs} の代わりに \program{xemacs}
+を使うと、変換がうまくいかないことがありますが、これは誰も Emacs の
+Texinfo コードをメンテナンスして可搬性のあるものにしないからだと
+思われます。
+
+      \item[\program{latex}]
+%         \LaTeX{} is a large and extensible macro package by Leslie
+%         Lamport, based on \TeX, a world-class typesetter by Donald
+%         Knuth.  It is used for the conversion to PostScript, and is
+%         needed for the HTML conversion as well (\LaTeX2HTML requires
+%         one of the intermediate files it creates).
+\LaTeX{} は、Laslie Lamport による拡張可能な大規模マクロパッケージ
+で、Donald Knuth が作成した世界規模で使われているタイプセッタ\TeX 
+に基づいています。PostScript 形式への変換に必要で、 HTML への変換にも
+必要です (\LaTeX2HTML は\LaTeX{} が生成する中間ファイルの一つを
+必要とするためです)。
+
+      \item[\program{latex2html}]
+%         Probably the longest Perl script anyone ever attempted to
+%         maintain.  This converts \LaTeX{} documents to HTML documents,
+%         and does a pretty reasonable job.  It is required for the
+%         conversions to HTML and GNU info.
+これまでにメンテナンスされたことのある Perl スクリプトの中で
+おそらく最長のスクリプトでしょう。このツールは \LaTeX{} ドキュメントを
+HTML ドキュメントに変換し、そこそこ立派な仕事をします。
+HTML や GNU info 形式への変換に必要です。
+
+      \item[\program{lynx}]
+%         This is a text-mode Web browser which includes an
+%         HTML-to-plain text conversion.  This is used to convert
+%         \code{howto} documents to text.
+HTML から平文テキストへの変換機能を持つテキストモードの Web ブラウザです。
+\code{howto} ドキュメントをテキスト形式に変換する際に使います。
+
+      \item[\program{make}]
+%         Just about any version should work for the standard documents,
+%         but GNU \program{make} is required for the experimental
+%         processes in \file{Doc/tools/sgmlconv/}, at least while
+%         they're experimental.  This is not required for running the
+%         \program{mkhowto} script.
+どのバージョンの \program{make} も標準ドキュメントの処理に使えるはず
+ですが、 実験段階にある\file{Doc/tools/sgmlconv/} の処理には、
+少なくとも実験段階にある間は GNU \program{make} が必要です。
+\program{mkhowto} スクリプトを走らせる場合には必要ありません。
+
+      \item[\program{makeindex}]
+%         This is a standard program for converting \LaTeX{} index data
+%         to a formatted index; it should be included with all \LaTeX{}
+%         installations.  It is needed for the PDF and PostScript
+%         conversions.
+\LaTeX{} の索引データをフォーマット済みの索引に変換するための標準プログラムです;
+全ての\LaTeX{} インストール物に入っているはずです。PDF 形式と PostScript
+形式への変換に必要です。
+
+      \item[\program{makeinfo}]
+%         GNU \program{makeinfo} is used to convert Texinfo documents to
+%         GNU info files.  Since Texinfo is used as an intermediate
+%         format in the info conversion, this program is needed in that
+%         conversion.
+Texinfo から GNU info ファイルへの変換には GNU \program{makeinfo} 
+を使います。Texinfo は info への変換における中間形式の処理に使われる
+ので、info への変換にもこのプログラムが必要です。
+
+      \item[\program{pdflatex}]
+%         pdf\TeX{} is a relatively new variant of \TeX, and is used to
+%         generate the PDF version of the manuals.  It is typically
+%         installed as part of most of the large \TeX{} distributions.
+%         \program{pdflatex} is pdf\TeX{} using the \LaTeX{} format.
+pdf\TeX{} は比較的新しく登場した \TeX の変種で、マニュアルの PDF 版を
+生成するために使います。通常、ほとんどの大規模な \TeX{} 配布物の一部
+としてインストールされています。\program{pdflatex} は \LaTeX{} 形式を
+扱う pdf\TeX{} です。
+
+      \item[\program{perl}]
+%         Perl is required for \LaTeX2HTML{} and one of the scripts used
+%         to post-process \LaTeX2HTML output, as well as the
+%         HTML-to-Texinfo conversion.  This is required for
+%         the HTML and GNU info conversions.
+\LaTeX2HTML{} や\LaTeX2HTML 出力に対する仕上げ作業、HTMLからTexinfo 
+への変換には Perl が必要です。 HTML 形式や GNU info 形式への変換に
+必要です。
+
+      \item[\program{python}]
+%         Python is used for many of the scripts in the
+%         \file{Doc/tools/} directory; it is required for all
+%         conversions.  This shouldn't be a problem if you're interested
+%         in writing documentation for Python!
+Python は \file{Doc/tools/} ディレクトリ内の多くのスクリプトで
+使われています; 全ての形式への変換で必要です。
+Python のドキュメントを書こうと思っているのなら、何も問題はないはず
+ですよね!
+    \end{description}
+
+
+  \subsection{内部用ツール \label{tools-internal}} % Internal Tools 
+
+%     This section describes the various scripts that are used to
+%     implement various stages of document processing or to orchestrate
+%     entire build sequences.  Most of these tools are only useful
+%     in the context of building the standard documentation, but some
+%     are more general.
+この節では、ドキュメント処理の様々な段階を実装したり、ビルド手順全体
+を演出する様々なスクリプトについて説明します。これらのツールの
+ほとんどは標準ドキュメントを構築するというコンテキストでのみ有用
+ですが、汎用的なものもあります。
+
+    \begin{description}
+      \item[\program{mkhowto}]
+%         This is the primary script used to format third-party
+%         documents.  It contains all the logic needed to ``get it
+%         right.''  The proper way to use this script is to make a
+%         symbolic link to it or run it in place; the actual script file
+%         must be stored as part of the documentation source tree,
+%         though it may be used to format documents outside the
+%         tree.  Use \program{mkhowto} \longprogramopt{help}
+%         for a list of
+%         command line options.
+サードパーティ製のドキュメントをフォーマットする際に最初に使うスクリプトです。
+このスクリプトには、 ``正しく作業を行う'' 上で必要なロジックが
+全て入っています。このスクリプトを正しく使うには、スクリプトに
+対するシンボリックリンクを張って、その場所で実行します; 実際の
+スクリプトファイルはドキュメントソースツリーの一部として
+収められていなければなりませんが、ツリーの外部にあるドキュメントの
+フォーマットにも利用できます。コマンドラインオプションのリストを見るには、
+\program{mkhowto} \longprogramopt{help} を使ってください。
+
+%         \program{mkhowto} can be used for both \code{howto} and
+%         \code{manual} class documents.  It is usually a good idea to
+%         always use the latest version of this tool rather than a
+%         version from an older source release of Python.
+\program{mkhowto} は \code{howto} と \code{manual} クラスの
+どちらのドキュメントにも使えます。このツールは、古い Python の
+ソースリリースに入っているバージョンではなく、常に最新のバージョンを
+使うようにするのがよいでしょう。これらのツールは、 DVI、HTML、PDF、
+PostScript、およびプレインテキスト形式のドキュメント生成に利用できます。
+将来のバージョンでは、このスクリプトで GNU info および iSilo 形式も
+扱えるようにする予定です。
+
+コマンドラインで\longprogramopt{help} オプションを使ってこれらの
+スクリプトを実行すれば、利用できるオプションをまとめたものを
+表示します。
+
+
+%         XXX  Need more here.
+    \end{description}
+
+
+  \subsection{Cygwin での作業 \label{cygwin}} % Working on Cygwin
+
+%     Installing the required tools under Cygwin under Cygwin can be a
+%     little tedious.  Most of the required packages can be installed
+%     using Cygwin's graphical installer, while netpbm and \LaTeX2HTML
+%     must be installed from source. 
+
+多くのパッケージは Cygwin 環境下でのインストールが難しいために、
+Cygwin 用に必要なツールの Cygwin 環境下でのインストールは少し厄介です。
+必須パッケージのほとんどは Cygwin のグラフィカルインストーラでインストー
+ルできますが、netpbmと \LaTeX2HTML はソースからインストールしなければな
+りません。
+
+%     Start with a reasonably modern version of Cygwin.  If you haven't
+%     upgraded for a few years, now would be a good time.
+
+できるだけ新しいバージョンのCygwinを使うようにしましょう。もしここ数年バ
+ージョンを上げていないというのなら、この機会にバージョンを上げてしまいま
+しょう。
+
+%     Using the Cygwin installer, make sure your Cygwin installation
+%     includes Perl, Python, and the \TeX{} packages.  Perl and Python
+%     are located under the \menuselection{Interpreters} heading.  The
+%     \TeX{} packages are located under the \menuselection{Text}
+%     heading, and are named \code{tetex-*}.  To ensure that all
+%     required packages are available, install every \code{tetex}
+%     package, except \code{tetex-x11}.  (There may be a more minimal
+%     set, but I've not spent time trying to minimize the installation.) 
+Cygwin インストーラを使って、 Cygwin のインストールによって Perl、
+Python、そして \TeX{} パッケージが入っていることを確認してください。
+Perl と Python はインストーラの \menuselection{Interpreters} 
+見出しの下に配置されています。\TeX{} パッケージは \menuselection{Text}
+見出しの下にあり、\code{tetex-*} という名前です。必要なすべてのパッケー
+ジを使えるようにするには、\code{tetex} パッケージのうち \code{tetex-x11}
+以外をすべてインストールしましょう (より小規模な構成もあるのでしょうが、
+筆者はインストール構成の縮小を試みるために時間を費やしたことがありません)。
+
+%     The netpbm package is used by \LaTeX2HTML, and \emph{must} be
+%     installed before \LaTeX2HTML can be successfully installed, even
+%     though its features will not be used for most Python
+%     documentation.  References to download locations are located in
+%     the \ulink{netpbm README}{http://netpbm.sourceforge.net/README}.
+%     Install from the latest stable source distribution according to
+%     the instructions.  (Note that binary packages of netpbm are
+%     sometimes available, but these may not work correctly with
+%     \LaTeX2HTML.)
+\LaTeX2HTML は\program{netpbm} パッケージを使うので、たとえ Python 
+ドキュメントのほとんどが\program{netpbm} を使わないとしても、
+\LaTeX2HTML をインストールする前にインストール
+\emph{しておかねばなりません}。
+ダウンロードできる場所に関する参考文献は、
+\ulink{netpbm README}{http://netpbm.sourceforge.net/README} にあります。
+最新版のソースを取得し、説明に従ってインストールしてください
+(netpbmのバイナリパッケージもあるかもしれませんが、これは
+\LaTeX2HTML ではうまく動作しない可能性があります)。
+
+%     \LaTeX2HTML can be installed from the source archive, but only
+%     after munging one of the files in the distribution.  Download the
+%     source archive from the \LaTeX2HTML website
+%     \url{http://www.latex2html.org/} (or one of the many alternate
+%     sites) and unpack it to a build directory. In the top level of
+%     this build directory there will be a file named \file{L2hos.pm}.
+%     Open \file{L2hos.pm} in an editor, and near the bottom of the file
+%     replace the text \code{\$\textasciicircum{}O} with the text
+%     \code{'unix'}.  Proceed using this command to build and install
+%     the software:
+\LaTeX2HTML はソースアーカイブからのインストールもできますが、
+配布物中のあるファイルをいじってからでないとできません。
+\LaTeX2HTML のウェブサイト \url{http://www.latex2html.org/}
+(あるいはその他の多くのサイト) からソースアーカイブをダウンロードし、
+ビルドディレクトリに展開します。展開したトップディレクトリには
+\file{L2hos.pm}という名前のファイルがあります。\file{L2hos.pm}
+をエディタで開き、ファイルの末尾近くにある
+\code{\$\textasciicircum{}O} というテキストを \code{'unix'}
+に変更してください。以下のコマンドを使ってソフトウェアをビルドしてイン
+ストールします:
+
+
+\begin{verbatim}
+% ./configure && make install
+\end{verbatim}
+
+%     You should now be able to build at least the HTML, PDF, and
+%     PostScript versions of the formatted documentation.
+これで少なくとも DVI、HTML、PDF、および PostScript 形式版のフォーマット済み
+ドキュメントをビルドできます。
+
+\section{画像の取り込み \label{graphics}}
+
+Python の標準ドキュメントは、図や画像を全く使っていません; これは
+意図的にそうしているのです。ドキュメントのフォーマットを行う際に
+利用する外部ツールが、まだ画像をうまく扱えるほどではなかったからです。
+ツールの進歩やメンテナによる改善にともなって、画像に対するサポートも
+改善されてきました。
+
+\program{mkhowto} スクリプトから起動される内部ツールは、画像を
+直接サポートしているわけではありませんが、\program{mkhowto} が
+外部ツールによるグラフィクスのサポートを妨げることはありません。
+
+こうしたツールと \code{howto} や\code{manual} ドキュメントクラス
+を使ったグラフィクスの利用はまだ広く行われてはいませんが、うまく
+動作することは知られています。基本的には、以下のようにアプローチ
+します:
+
+  \begin{enumerate}
+    \item 好きなアプリケーションで、画像や図版を作成します。
+
+    \item 出力したい形式に合わせて、画像の形式を変換します。
+HTML または PostScript を生成したければ、画像や図版は
+encapsulated PostScript (EPS, \file{.eps} ファイル) 形式に変換します;
+\LaTeX2HTML は EPS ファイルを \file{.gif} ファイルに変換できます;
+\file{.gif} ファイルを直接指定してもかまいません。
+PDF を (pdflatex で) 生成したいなら、 ``カプセル化 (encapsulated)''
+PDF ファイルが必要です。Linux や \UNIX 向けに配布されているte\TeX{} 
+についてくる\program{epstopdf} を使えば、EPS ファイルから変換できます。
+
+    \item ドキュメント内で、グラフィクスをサポートするためのパッケージ
+\code{graphicx} を ``import'' するための行を以下のようにして追加します:
+
+\begin{verbatim}
+\usepackage{graphicx}
+\end{verbatim}
+
+    \item 図版や画像を取り込みたい場所で、以下のようなマークアップを
+行います:
+
+\begin{verbatim}
+\begin{figure}
+  \centering
+  \includegraphics[width=5in]{myimage}
+  \caption{myimage の説明}
+\end{figure}
+\end{verbatim}
+
+\macro{includegraphics} マクロにはファイルの拡張子を指定しないので
+注意してください。もし特定の形式のドキュメントしか生成したくないの
+なら、拡張子をつけてもかまいませんが、複数の形式をサポートしたければ
+拡張子を省略しておいたほうが楽です。
+
+    \item \program{mkhowto} を通常通りに走らせます。
+  \end{enumerate}
+
+\program{make} の機能をサポートするようなシステムで作業を行っているな
+ら、画像の変換の際に生じる中間ファイルを最新に保つようにできます。
+下の例では、 \program{dia} で作成した図を取り込んでいるような
+ドキュメントをフォーマットするための \file{Makefile} を示しています:
+
+\begin{verbatim}
+default: pdf
+all:     html pdf ps
+
+html:   mydoc/mydoc.html
+pdf:    mydoc.pdf
+ps:     mydoc.ps
+
+mydoc/mydoc.html:  mydoc.tex mygraphic.eps
+        mkhowto --html $<
+
+mydoc.pdf:  mydoc.tex mygraphic.pdf
+        mkhowto --pdf $<
+
+mydoc.ps:   mydoc.tex mygraphic.eps
+        mkhowto --postscript $<
+
+.SUFFIXES: .dia .eps .pdf
+
+.dia.eps:
+        dia --nosplash --export $@ $<
+
+.eps.pdf:
+        epstopdf $<
+\end{verbatim} % $ <-- bow to font-lock
+
+
+
+\section{将来の方向性 \label{futures}} % Future Directions
+
+%   The history of the Python documentation is full of changes, most of
+%   which have been fairly small and evolutionary.  There has been a
+%   great deal of discussion about making large changes in the markup
+%   languages and tools used to process the documentation.  This section
+%   deals with the nature of the changes and what appears to be the most
+%   likely path of future development.
+Python ドキュメントは変更に次ぐ変更の歴史を重ねてきており、そのほとんどは
+やや小規模の漸進的なものでした。マークアップ言語やドキュメントの処理に
+使われるツールに関して非常に多くの話し合いが行われてきました。
+この節では、変更のさまと、将来の開発において最もありえそうな道筋に
+ついて議論します。
+
+  \subsection{構造化ドキュメント \label{structured}} % Structured Documentation 
+
+%     Most of the small changes to the \LaTeX{} markup have been made
+%     with an eye to divorcing the markup from the presentation, making
+%     both a bit more maintainable.  Over the course of 1998, a large
+%     number of changes were made with exactly this in mind; previously,
+%     changes had been made but in a less systematic manner and with
+%     more concern for not needing to update the existing content.  The
+%     result has been a highly structured and semantically loaded markup
+%     language implemented in \LaTeX.  With almost no basic \TeX{} or
+%     \LaTeX{} markup in use, however, the markup syntax is about the
+%     only evidence of \LaTeX{} in the actual document sources.
+\LaTeX{} マークアップに対する小規模な変更のほとんどは、
+マークアップから表現方法を切り離すためとメンテナンス性の向上の両方を
+狙ってなされてきたものです。 1998 年からこのかた、まさにこの目的の
+もとに数多くの変更が行われました; それ以前は、変更はありましたが
+あまり体系的なやりかたではなく、既存の内容を更新する必要はない
+と考えられていました。その結果、高度に構造化され、意味論的には
+\LaTeX{} の上に読み出されることになるような、\LaTeX{} で実装された
+マークアップ言語になってしまいました。とはいえ、基本的な\TeX{} や
+\LaTeX{} によるマークアップが使われていなければ、実際のドキュメントソース
+で\LaTeX{} が使われている証拠となるのはマークアップの構文法くらいです。
+
+%     One side effect of this is that while we've been able to use
+%     standard ``engines'' for manipulating the documents, such as
+%     \LaTeX{} and \LaTeX2HTML, most of the actual transformations have
+%     been created specifically for Python.  The \LaTeX{} document
+%     classes and \LaTeX2HTML support are both complete implementations
+%     of the specific markup designed for these documents.
+この副作用のせいで、例えば\LaTeX{} や\LaTeX2HTML のような、ドキュメント
+を操作するための標準の ``エンジン'' を使えるにも関わらず、実際の
+変換のほとんどは Python に特化して作られてしまいました。
+\LaTeX{} ドキュメントクラスと\LaTeX2HTML サポートは、いずれもこの
+ドキュメントのために設計された特殊なマークアップを完全に実装
+しています。
+
+%     Combining highly customized markup with the somewhat esoteric
+%     systems used to process the documents leads us to ask some
+%     questions:  Can we do this more easily?  and, Can we do this
+%     better?  After a great deal of discussion with the community, we
+%     have determined that actively pursuing modern structured
+%     documentation systems is worth some investment of time.
+高度にカスタマイズされたマークアップが、ドキュメントを処理するための
+深遠なる機構と組み合さってしまうと、こんな疑問が出てきます:
+もっと簡単にできないの? あるいは、もっとましにならないの?
+コミュニティとのたくさんの議論を重ねた結果、我々は
+近代的な構造化ドキュメント生成システムの追求にも時間を費やす価値が
+あるという結論に達しました。
+
+%     There appear to be two real contenders in this arena: the Standard
+%     General Markup Language (SGML), and the Extensible Markup Language
+%     (XML).  Both of these standards have advantages and disadvantages,
+%     and many advantages are shared.
+この議論の場には、二つの現実的な競合案: 標準化汎用マークアップ言語
+(Standard General Markup Language, SGML) と拡張可能なマークアップ
+言語 (Extensible Markup Language, XML) が挙がっています。
+これらの標準には、いずれも長所と短所があり、多くの長所を共有しています。
+
+%     SGML offers advantages which may appeal most to authors,
+%     especially those using ordinary text editors.  There are also
+%     additional abilities to define content models.  A number of
+%     high-quality tools with demonstrated maturity are available, but
+%     most are not free; for those which are, portability issues remain
+%     a problem.
+SGML はほとんどのドキュメント作者、とりわけ普通のテキストエディタ
+を利用している人たちをそそらせるような長所を持っています。
+また、コンテンツのモデルを定義できるという別の機能もあります。
+完成度が実証されている多くの高品質なツールを利用できますが、
+そのほとんどはフリーではありません; またこれらのツールでは、
+可搬性がいまだに問題になっています。
+
+%     The advantages of XML include the availability of a large number
+%     of evolving tools.  Unfortunately, many of the associated
+%     standards are still evolving, and the tools will have to follow
+%     along.  This means that developing a robust tool set that uses
+%     more than the basic XML 1.0 recommendation is not possible in the
+%     short term.  The promised availability of a wide variety of
+%     high-quality tools which support some of the most important
+%     related standards is not immediate.  Many tools are likely to be
+%     free, and the portability issues of those which are, are not
+%     expected to be significant.
+XML には、多数の発展中のツールを使えるという利点があります。
+残念ながら、XML の標準自体の多くがまだ発展中なので、ツールも
+当分はそれに追従しなければならないでしょう。つまり、基本 XML 1.0 勧告
+を超えた仕様を利用するような安定したツールセットを短い期間で開発
+するのは不可能です。
+最も重要な関連標準仕様をのいくつかをサポートするような広範な種類の
+高品質ツールが利用できると自信を持っていえるのははまだ先の話です。
+多くのツールはフリーのようであり、ツール間の可搬性はまだ明らかでは
+ないようです。
+
+%     It turns out that converting to an XML or SGML system holds
+%     promise for translators as well; how much can be done to ease the
+%     burden on translators remains to be seen, and may have some impact
+%     on the schema and specific technologies used.
+XML から SGML システムへの変換が、トランスレータにとって有望であることも
+判明しました。トランスレータの負荷を軽減するためにどれだけのことを
+行わねばならないかはそのうち判明し、スキーマや使われている特定の技術に
+対してインパクトを与えることになるかもしれません。
+
+%     XXX Eventual migration to XML.
+
+%     The documentation will be moved to XML in the future, and tools
+%     are being written which will convert the documentation from the
+%     current format to something close to a finished version, to the
+%     extent that the desired information is already present in the
+%     documentation.  Some XSLT stylesheets have been started for
+%     presenting a preliminary XML version as HTML, but the results are
+%     fairly rough.
+将来はドキュメントを XML に移行することになっていて、ドキュメントを
+現在の形式から変換して、最終的なバージョンに近いものにするツールを開発
+しているところです。開発は必要な情報が変換後のドキュメントに入るという
+程度まで進んでいます。基礎的な XML 形式を HTML 形式に表現するような
+XSLT スタイルシートの開発も始まりましたが、成果はまだ荒削りの状態です。
+
+
+%     The timeframe for the conversion is not clear since there doesn't
+%     seem to be much time available to work on this, but the apparent
+%     benefits are growing more substantial at a moderately rapid pace.
+作業にかける十分な時間がないため、変換にどれくらいかかるかははっきり
+していませんが、変換によってもたらされうる利益はかなり早いペースで
+現実的なものになりつつあります。
+
+  \subsection{議論の場 \label{discussion}} % Discussion Forums
+
+%     Discussion of the future of the Python documentation and related
+%     topics takes place in the Documentation Special Interest Group, or
+%     ``Doc-SIG.''  Information on the group, including mailing list
+%     archives and subscription information, is available at
+%     \url{http://www.python.org/sigs/doc-sig/}.  The SIG is open to all
+%     interested parties.
+Python ドキュメント作成の将来に関する議論とドキュメントに関する議論は、
+Documentation Special Interest Group 、``Doc-SIG'' で行われています。
+Doc-SIG にはメーリングリストのアーカイブや購読情報があり、
+\url{http://www.python.org/sigs/doc-sig/} で利用できます。
+SIG はドキュメンテーションに関心を持つ全ての人々に解放されています。
+
+%     Comments and bug reports on the standard documents should be sent
+%     to \email{python-docs@python.org}.  This may include comments
+%     about formatting, content, grammatical and spelling errors, or
+%     this document.  You can also send comments on this document
+%     directly to the author at \email{fdrake@acm.org}.
+標準ドキュメントに対するコメントやバグ報告は
+\email{docs@python.org} に送ってください。
+これにはフォーマット、内容、文法的間違いやつづり間違い、
+そしてこのドキュメント自体に対するコメントも含みます。
+このドキュメントに対するコメントは作者である
+\email{fdrake@acm.org} に直接送っていただいてもかまいません。
+
+\note{和訳に対するコメントやバグ報告は、SourceForge.jp の
+プロジェクトページにお寄せください。}
+
+\input{doc.ind} 
+
+\appendix
+\section{日本語訳について}
+\input{jptranslation}
+
+\end{document}

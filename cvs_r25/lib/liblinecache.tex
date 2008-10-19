@@ -1,0 +1,56 @@
+\section{\module{linecache} ---
+         テキストラインにランダムアクセスする}
+
+\declaremodule{standard}{linecache}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+\modulesynopsis{このモジュールによりテキストファイルの各行にランダムアクセスできます。}
+
+
+% 分かりにくい
+\module{linecache} モジュールは、キャッシュ
+(一つのファイルから何行も読んでおくのが一般的です)を使って、
+内部で最適化を図りつつ、任意のファイルの任意の行を取得するのを可能にします。
+
+% 分かりにくい
+このモジュールは \refmodule{traceback} モジュールで、インクルードしたソースを
+フォーマットされたトレースバックで復元するのに使われています。
+
+\module{linecache} モジュールでは次の関数が定義されています:
+
+\begin{funcdesc}{getline}{filename, lineno\optional{, module_globals}}
+\var{filename} という名前のファイルから \var{lineno} 行目を取得します。
+この関数は決して例外を投げません --- エラーの際には \code{''} を返します。
+(行末の改行文字は、見つかった行に含まれます。)
+
+\var{filename} という名前のファイルが見つからなかった場合、
+モジュールの \indexiii{module}{search}{path} 、つまり、 \code{sys.path} で
+そのファイルを探します。 
+
+zipfileやその他のファイルシステムでないimport元に対応するため
+まず \var{modules_globals} の \pep{302} \code{__loader__}
+をチェックし、そのあと \code{sys.path} を探索します。
+
+\versionadded[パラメータ\var{module_globals} の追加]{2.5}
+
+\end{funcdesc}
+
+\begin{funcdesc}{clearcache}{}
+キャッシュをクリアします。
+それまでに \function{getline()} を使って読み込んだファイルの行が必要でなくなったら、
+この関数を使ってください。
+\end{funcdesc}
+
+\begin{funcdesc}{checkcache}{\optional{filename}}
+キャッシュが有効かチェックします。
+キャッシュしたファイルにディスク上で変更があったかもしれなくて、更新
+が必要なときにこの関数を使ってください。もし\var{filename}がなければ、
+全てのキャッシュエントリをチェックします。
+\end{funcdesc}
+
+サンプル:
+
+\begin{verbatim}
+>>> import linecache
+>>> linecache.getline('/etc/passwd', 4)
+'sys:x:3:3:sys:/dev:/bin/sh\n'
+\end{verbatim}

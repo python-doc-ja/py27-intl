@@ -1,0 +1,1749 @@
+\section{\module{logging} ---
+         Python 用ロギング機能}
+
+\declaremodule{standard}{logging}
+
+% これらはすべてのモジュールに適用でき、一回以上指定することができます。
+
+\moduleauthor{Vinay Sajip}{vinay_sajip@red-dove.com}
+\sectionauthor{Vinay Sajip}{vinay_sajip@red-dove.com}
+
+\modulesynopsis{\pep{282} に基づくPython 用のロギングモジュール。}
+
+\indexii{Errors}{logging}
+
+\versionadded{2.3}
+このモジュールでは、アプリケーションのための柔軟なエラーログ記録
+(logging) システムを実装するための関数やクラスを定義しています。
+
+ログ記録は \class{Logger} クラスのインスタンス (以降 \dfn{ロガー} :logger) 
+におけるメソッドを呼び出すことで行われます。各インスタンスは
+名前をもち、ドット (ピリオド) を区切り文字として表記することで、
+概念的には名前空間中の階層構造に配置されることになります。
+例えば、"scan" と名づけられたロガーは "scan.text"、"scan.html"、
+および "scan.pdf" ロガーの親ロガーとなります。ロガー名には何をつけてもよく、
+ログに記録されるメッセージの生成元となるアプリケーション中の特定の
+領域を示すことになります。
+
+ログ記録されたメッセージにはまた、重要度レベル (level of importance)
+が関連付けられています。デフォルトのレベルとして提供されているものは
+ \constant{DEBUG}、\constant{INFO}、\constant{WARNING}、
+\constant{ERROR} および \constant{CRITICAL} です。簡便性のために、
+\class{Logger} の適切なメソッド群を呼ぶことで、ログに記録されたメッセージの
+重要性を指定することができます。それらのメソッドとは、デフォルトの
+レベルを反映する形で、\method{debug()}、 \method{info()}、 \method{warning()}、
+ \method{error()} および \method{critical()} となっています。
+これらのレベルを指定するにあたって制限はありません: \class{Logger} の
+より汎用的なメソッドで、明示的なレベル指定のための引数を持つ
+ \method{log()} を使って自分自身でレベルを定義したり使用したりできます。
+
+ログレベルの数値は以下の表のように与えられています。
+これらは基本的に自分でレベルを定義したい人のためのもので、
+定義するレベルを既存のレベルの間に位置づけるために具体的な値が必要になります。
+もし数値が他のレベルと同じだったら、既存の値は上書きされその名前は失われます。
+
+\begin{tableii}{l|l}{code}{レベル}{数値}
+  \lineii{CRITICAL}{50}
+  \lineii{ERROR}{40}
+  \lineii{WARNING}{30}
+  \lineii{INFO}{20}
+  \lineii{DEBUG}{10}
+  \lineii{NOTSET}{0}
+\end{tableii}
+
+レベルもロガーに関連付けることができ、デベロッパが設定することも、
+保存されたログ記録設定を読み込む際に設定することもできます。
+ロガーに対してログ記録メソッドが呼び出されると、ロガーは自らの
+レベルとメソッド呼び出しに関連付けられたレベルを比較します。
+ロガーのレベルがメソッド呼び出しのレベルよりも高い場合、実際の
+ログメッセージは生成されません。これはログ出力の冗長性を制御
+するための基本的なメカニズムです。
+
+ログ記録されるメッセージは \class{LogRecord} クラスのインスタンスとして
+コード化されます。ロガーがあるイベントを実際にログ出力すると決定した
+場合、ログメッセージから \class{LogRecord} インスタンスが生成されます。
+
+ログ記録されるメッセージは、ハンドラ (\dfn{handlers}) を通して、
+処理機構 (dispatch mechanism) にかけられます。ハンドラは \class{Handler}
+クラスのサブクラスのインスタンスで、ログ記録された (\class{LogRecord}
+形式の) メッセージが、そのメッセージの伝達対象となる相手 
+(エンドユーザ、サポートデスクのスタッフ、システム管理者、開発者) 
+に行き着くようにする役割を持ちます。ハンドラには特定の行き先に方向付け
+られた \class{LogRecord} インスタンスが渡されます。各ロガーは
+ゼロ個、単一またはそれ以上のハンドラを (\class{Logger} の
+\method{addHandler()} メソッド) で関連付けることができます。
+ロガーに直接関連付けられたハンドラに加えて、
+\emph{ロガーの上位にあるロガー全てに関連付けられたハンドラ}
+がメッセージを処理する際に呼び出されます。
+
+ロガーと同様に、ハンドラは関連付けられたレベルを持つことができます。
+ハンドラのレベルはロガーのレベルと同じ方法で、フィルタとして働きます。
+ハンドラがあるイベントを実際に処理すると決定した場合、 \method{emit()}
+メソッドが使われ、メッセージを発送先に送信します。ほとんどの
+ユーザ定義の \class{Handler} のサブクラスで、この \method{emit()}
+をオーバライドする必要があるでしょう。
+
+基底クラスとなる \class{Handler} クラスに加えて、多くの有用なサブクラスが
+提供されています:
+
+\begin{enumerate}
+
+\item \class{StreamHandler} のインスタンスはストリーム (ファイル様
+オブジェクト) にエラーメッセージを送信します。
+
+\item \class{FileHandler} のインスタンスはディスク上のファイルに
+エラーメッセージを送信します。
+
+\item \class{BaseRotatingHandler} はログファイルをある時点で交替させる
+ハンドラの基底クラスです。直接インスタンス化するためのクラスではありません。
+\class{RotatingFileHandler} や\class{TimedRotatingFileHandler} を使う
+ようにしてください。
+
+\item \class{RotatingFileHandler} のインスタンスは最大ログファイルの
+サイズ指定とログファイルの交替機能をサポートしながら、ディスク上のファイルに
+エラーメッセージを送信します。
+
+\item \class{TimedRotatingFileHandler} のインスタンスは、ログファイルを
+一定時間間隔ごとに交替しながら、ディスク上のファイルに
+エラーメッセージを送信します。
+
+\item \class{SocketHandler} のインスタンスは TCP/IP ソケットにエラーメッセージを送信します。
+
+\item \class{DatagramHandler} のインスタンスは UDP ソケットにエラーメッセージを送信します。
+
+\item \class{SMTPHandler} のインスタンスは指定された電子メールアドレスにエラーメッセージを送信します。 
+
+\item \class{SysLogHandler} のインスタンスは遠隔を含むマシン上の syslog デーモンにエラーメッセージを送信します。
+
+\item \class{NTEventLogHandler} のインスタンスは Windows NT/2000/XP イベントログにエラーメッセージを送信します。 
+
+\item \class{MemoryHandler} のインスタンスはメモリ上のバッファにエラーメッセージを送信し、指定された条件でフラッシュされるようにします。
+
+\item \class{HTTPHandler} のインスタンスは \samp{GET} か \samp{POST}
+セマンティクスを使って HTTP サーバにエラーメッセージを送信します。
+
+\end{enumerate}
+
+\class{StreamHandler} および \class{FileHandler} クラスは、中核となる
+ログ化機構パッケージ内で定義されています。他のハンドラはサブモジュール、
+\module{logging.handlers} で定義されています。 (サブモジュールには
+もうひとつ \module{logging.config} があり、これは環境設定機能の
+ためのものです。)
+
+ログ記録されたメッセージは \class{Formatter} クラスのインスタンスを
+介し、表示用に書式化されます。これらのインスタンスは \% 演算子と辞書を
+使うのに適した書式化文字列で初期化されます。
+
+複数のメッセージの初期化をバッチ処理するために、
+\class{BufferingFormatter} のインスタンスを使うことができます。
+書式化文字列 (バッチ処理で各メッセージに適用されます) に加えて、
+ヘッダ (header) およびトレイラ (trailer) 書式化文字列が用意されて
+います。
+
+ロガーレベル、ハンドラレベルの両方または片方に基づいたフィルタリング
+が十分でない場合、\class{Logger} および \class{Handler} インスタンスに
+\class{Filter} のインスタンスを (\method{addFilter()} メソッドを介して)
+追加することができます。メッセージの処理を進める前に、ロガーとハンドラは
+ともに、全てのフィルタでメッセージの処理が許可されているか調べます。
+いずれかのフィルタが偽となる値を返した場合、メッセージの処理は
+行われません。
+
+基本的な \class{Filter} 機能では、指定されたロガー名でフィルタを
+行えるようになっています。この機能が利用された場合、名前付けされた
+ロガーとその下位にあるロガーに送られたメッセージがフィルタを通過
+できるようになり、その他のメッセージは捨てられます。
+
+上で述べたクラスに加えて、いくつかのモジュールレベルの関数が存在します。
+
+\begin{funcdesc}{getLogger}{\optional{name}}
+指定された名前のロガーを返します。名前が指定されていない場合、
+ロガー階層のルート (root) にあるロガーを返します。
+\var{name} を指定する場合には、通常は \var{"a"}, \var{"a.b"}, 
+あるいは \var{"a.b.c.d"} といったようなドット区切りの階層的な
+名前にします。名前の付け方はログ機能を使う開発者次第です。
+
+与えられた名前に対して、この関数はどの呼び出しでも同じロガーインスタンス
+を返します。従って、ロガーインスタンスをアプリケーションの各部
+でやりとりする必要はなくなります。
+\end{funcdesc}
+
+\begin{funcdesc}{getLoggerClass}{}
+標準の\class{Logger} クラスか、最後に\function{setLoggerClass()} に渡した
+クラスを返します。この関数は、新たに定義するクラス内で呼び出し、
+カスタマイズした\class{Logger} クラスのインストールを行うときに
+既に他のコードで適用したカスタマイズを取り消そうとしていないか
+確かめるのに使います。例えば以下のようにします:
+
+\begin{verbatim}
+ class MyLogger(logging.getLoggerClass()):
+     # ... override behaviour here
+\end{verbatim}
+
+\end{funcdesc}
+
+\begin{funcdesc}{debug}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{DEBUG} のメッセージをルートロガーで記録します。
+\var{msg} はメッセージの書式化文字列で、\var{args} は \var{msg} に
+文字列書式化演算子を使って取り込むための引数です。(これは、
+書式化文字列でキーワードを使い引数に辞書を渡すことができる、ということを意味します。)
+
+キーワード引数 \var{kwargs} からは二つのキーワードが調べられます。
+一つめは \var{exc_info} で、この値の評価値が偽でない場合、
+例外情報をログメッセージに追加します。(\function{sys.exc_info} 
+の返す形式の) 例外情報を表すタプルが与えられていれば、それを
+メッセージに使います。それ以外の場合には、\function{sys.exc_info} 
+を呼び出して例外情報を取得します。
+
+もう一つのキーワード引数は \var{extra} で、当該ログイベント用に作られた
+LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに
+用いられます。これらの属性は好きなように使えます。たとえば、ログメッセージの一部に
+することもできます。以下の例を見てください:
+
+\begin{verbatim}
+ FORMAT = "%(asctime)-15s %(clientip)s %(user)-8s %(message)s"
+ logging.basicConfig(format=FORMAT)
+ d = { 'clientip' : '192.168.0.1', 'user' : 'fbloggs' }
+ logging.warning("Protocol problem: %s", "connection reset", extra=d)
+\end{verbatim}
+
+出力はこのようになります。
+\begin{verbatim}
+2006-02-08 22:20:02,165 192.168.0.1 fbloggs  Protocol problem: connection reset
+\end{verbatim}
+
+\var{extra} で渡される辞書のキーはロギングシステムで使われているものとぶつからない
+ようにしなければなりません。(どのキーがロギングシステムで使われているかについての
+詳細は \class{Formatter} のドキュメントを参照してください。)
+
+これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
+上の例では、'clientip' と 'user' が LogRecord の属性辞書に含まれている
+ことを期待した書式化文字列で \class{Formatter} はセットアップされてい
+ます。これらの属性が欠けていると、書式化例外が発生してしまうためメッセー
+ジはログに残りません。したがってこの場合、常にこれらのキーがあ
+る \var{extra} 辞書を渡す必要があります。
+
+このようなことは煩わしいかもしれませんが、この機能は限定された場面で使
+われるように意図しているものなのです。たとえば同じコードがいくつものコ
+ンテキストで実行されるマルチスレッドのサーバで、興味のある条件が現れる
+のがそのコンテキストに依存している(上の例で言えば、リモートのクライアン
+ト IP アドレスや認証されたユーザ名など)、というような場合です。そういっ
+た場面では、それ用の \class{Formatter} が特定の \class{Handler} と共に
+使われるというのはよくあることです。
+
+\versionchanged[\var{extra} が追加されました]{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{info}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{INFO} のメッセージをルートロガーで記録します。
+引数は \function{debug()} と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{warning}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{WARNING} のメッセージをルートロガーで記録します。
+引数は \function{debug()} と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{error}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{ERROR} のメッセージをルートロガーで記録します。
+引数は \function{debug()} と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{critical}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{CRITICAL} のメッセージをルートロガーで記録します。
+引数は \function{debug()} と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{exception}{msg\optional{, *args}}
+レベル \constant{ERROR} のメッセージをルートロガーで記録します。
+引数は \function{debug()} と同じように解釈されます。 
+例外情報はログメッセージに追加されます。このメソッドは
+例外ハンドラからのみ呼び出されます。
+\end{funcdesc}
+
+\begin{funcdesc}{log}{level, msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{level} のメッセージをルートロガーで記録します。
+その他の引数は \function{debug()} と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{disable}{lvl}
+全てのロガーに対して、ロガー自体のレベルに優先するような上書きレベル
+\var{lvl} を与えます。アプリケーション全体にわたって一時的にログ出力の
+頻度を押し下げる必要が生じた場合にはこの関数が有効です。
+\end{funcdesc}
+
+\begin{funcdesc}{addLevelName}{lvl, levelName}
+内部辞書内でレベル \var{lvl} をテキスト \var{levelName} に関連付け
+ます。これは例えば \class{Formatter} でメッセージを書式化する
+際のように、数字のレベルをテキスト表現に対応付ける際に用いられます。
+この関数は自作のレベルを定義するために使うこともできます。
+使われるレベル対する唯一の制限は、レベルは正の整数でなくては
+ならず、メッセージの深刻さが上がるに従ってレベルの数も上がらなくては
+ならないということです。
+\end{funcdesc}
+
+\begin{funcdesc}{getLevelName}{lvl}
+ログ記録レベル \var{lvl} のテキスト表現を返します。レベルが定義
+済みのレベル \constant{CRITICAL}、\constant{ERROR}、
+\constant{WARNING}、 \constant{INFO}、あるいは \constant{DEBUG}
+のいずれかである場合、対応する文字列が返されます。
+\function{addLevelName()} を使ってレベルに名前を関連づけていた
+場合、\var{lvl} に関連付けられていた名前が返されます。
+定義済みのレベルに対応する数値を指定した場合、レベルに対応した
+文字列表現を返します。そうでない場合、文字列 "Level \%s" \% lvl を
+返します。
+\end{funcdesc}
+
+\begin{funcdesc}{makeLogRecord}{attrdict}
+属性が \var{attrdict} で定義された、新たな \class{LogRecord} 
+インスタンスを生成して返します。この関数は pickle 化された
+\class{LogRecord} 属性の辞書を作成し、ソケットを介して送信し、受信端で
+\class{LogRecord} インスタンスとして再構成する際に便利です。
+\end{funcdesc}
+
+\begin{funcdesc}{makeLogRecord}{attrdict}
+\var{attrdict} で属性を定義した、新しい \class{LogRecord} インスタンスを
+返します。この関数は、逆 pickle 化された \class{LogRecord} 属性辞書を 
+socket 越しに受け取り、受信端で \class{LogRecord} インスタンスに再構築す
+る場合に有用です。
+\end{funcdesc}
+
+\begin{funcdesc}{basicConfig}{\optional{**kwargs}}
+デフォルトの \class{Formatter} を持つ \class{StreamHandler} 
+を生成してルートロガーに追加し、ログ記録システムの基本的な環境設定を
+行います。
+関数 \function{debug()}、\function{info()}、\function{warning()}、
+\function{error()}、および \function{critical()} は、ルートロガーに
+ハンドラが定義されていない場合に自動的に \function{basicConfig()} 
+を呼び出します。
+
+\versionchanged[以前は \function{basicConfig} はキーワード引数を
+とりませんでした]{2.4}
+
+以下のキーワード引数がサポートされます。
+
+\begin{tableii}{l|l}{code}{Format}{説明}
+\lineii{filename}{StreamHandler ではなく指定された名前で FileHandler が作られます}
+\lineii{filemode}{filename が指定されているとき、ファイルモードを指定します 
+(filemode が指定されない場合デフォルトは 'a' です)}
+\lineii{format}{指定された書式化文字列をハンドラで使います}
+\lineii{datefmt}{指定された日付/時刻の書式を使います}
+\lineii{level}{ルートロガーのレベルを指定されたものにします}
+\lineii{stream}{指定されたストリームを StreamHandler の初期化に使います。
+この引数は 'filename' と同時には使えないことに注意してください。
+両方が指定されたときには 'stream' は無視されます}
+\end{tableii}
+
+\end{funcdesc}
+
+\begin{funcdesc}{shutdown}{}
+ログ記録システムに対して、バッファのフラッシュを行い、全てのハンドラを
+閉じることで順次シャットダウンを行うように告知します。
+\end{funcdesc}
+
+\begin{funcdesc}{setLoggerClass}{klass}
+ログ記録システムに対して、ロガーをインスタンス化する際にクラス
+\var{klass} を使うように指示します。指定するクラスは引数として
+名前だけをとるようなメソッド \method{__init__()} を定義して
+いなければならず、\method{__init__()} では \method{Logger.__init__()}
+を呼び出さなければなりません。典型的な利用法として、この関数は自作の
+ロガーを必要とするようなアプリケーションにおいて、他のロガーが
+インスタンス化される前にインスタンス化されます。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seepep{282}{A Logging System}
+         {本機能を Python 標準ライブラリに含めるよう記述している提案書。}
+  \seelink{http://www.red-dove.com/python_logging.html}
+          {この \module{logging} パッケージのオリジナル}
+          {オリジナルの\module{logging}パッケージ。このサイトにあるバー
+          ジョンのパッケージは、標準で\module{logging}パッケージを含まな
+          いPython 1.5.2 と 2.1.x、2.2.xでも使用できます}
+\end{seealso}
+
+
+\subsection{Logger オブジェクト}
+
+ロガーは以下の属性とメソッドを持ちます。ロガーを直接インスタンス化
+することはできず、常にモジュール関数 \function{logging.getLogger(name)}
+を介してインスタンス化するので注意してください。
+
+\begin{datadesc}{propagate}
+この値の評価結果が偽になる場合、ログ記録しようとするメッセージは
+このロガーに渡されず、また子ロガーから上位の (親の) ロガーに
+渡されません。コンストラクタはこの属性を 1 に設定します。
+\end{datadesc}
+
+\begin{methoddesc}{setLevel}{lvl}
+このロガーの閾値を \var{lvl} に設定します。ログ記録しようとする
+メッセージで、\var{lvl} よりも深刻でないものは無視されます。
+ロガーが生成された際、レベルは \constant{NOTSET} (これにより
+全てのメッセージについて、ロガーがルートロガーであれば処理される、
+そうでなくてロガーが非ルートロガーの場合には親ロガーに代行させる)
+に設定されます。ルートロガーは \constant{WARNING} レベル
+で生成されることに注意してください。
+
+「親ロガーに代行させる」という用語の意味は、もしロガーのレベルが NOTEST
+ならば、祖先ロガーの系列の中を NOTEST 以外のレベルの祖先を見つけるかルー
+トに到達するまで辿っていく、ということです。
+
+もし NOTEST 以外のレベルの祖先が見つかったなら、その祖先のレベルが祖先
+の探索を開始したロガーの実効レベルとして取り扱われ、ログイベントがどの
+ように処理されるかを決めるのに使われます。
+
+ルートに到達した場合、ルートのレベルが NOTEST ならば全てのメッセージは
+処理されます。そうでなければルートのレベルが実効レベルとして使われま
+す。
+\end{methoddesc}
+
+\begin{methoddesc}{isEnabledFor}{lvl}
+深刻さが \var{lvl} のメッセージが、このロガーで処理されることに
+なっているかどうかを示します。このメソッドはまず、
+\function{logging.disable(lvl)} で設定されるモジュールレベル
+の深刻さレベルを調べ、次にロガーの実効レベルを
+\method{getEffectiveLevel()} で調べます。
+\end{methoddesc}
+
+\begin{methoddesc}{getEffectiveLevel}{}
+このロガーの実効レベルを示します。\constant{NOTSET} 以外の値が
+\method{setLevel()} で設定されていた場合、その値が返されます。
+そうでない場合、\constant{NOTSET} 以外の値が見つかるまでロガーの
+階層をルートロガーの方向に追跡します。見つかった場合、その値が
+返されます。
+\end{methoddesc}
+
+\begin{methoddesc}{debug}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{DEBUG} のメッセージをこのロガーで記録します。
+\var{msg} はメッセージの書式化文字列で、\var{args} は \var{msg} に
+文字列書式化演算子を使って取り込むための引数です。(これは、
+書式化文字列でキーワードを使い引数に辞書を渡すことができる、ということを意味します。)
+
+キーワード引数 \var{kwargs} からは二つのキーワードが調べられます。
+一つめは \var{exc_info} で、この値の評価値が偽でない場合、
+例外情報をログメッセージに追加します。(\function{sys.exc_info} 
+の返す形式の) 例外情報を表すタプルが与えられていれば、それを
+メッセージに使います。それ以外の場合には、\function{sys.exc_info} 
+を呼び出して例外情報を取得します。
+
+もう一つのキーワード引数は \var{extra} で、当該ログイベント用に作られた
+LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに
+用いられます。これらの属性は好きなように使えます。たとえば、ログメッセージの一部に
+することもできます。以下の例を見てください:
+
+\begin{verbatim}
+ FORMAT = "%(asctime)-15s %(clientip)s %(user)-8s %(message)s"
+ logging.basicConfig(format=FORMAT)
+ d = { 'clientip' : '192.168.0.1', 'user' : 'fbloggs' }
+ logger = logging.getLogger("tcpserver")
+ logger.warning("Protocol problem: %s", "connection reset", extra=d)
+\end{verbatim}
+
+出力はこのようになります。
+\begin{verbatim}
+2006-02-08 22:20:02,165 192.168.0.1 fbloggs  Protocol problem: connection reset
+\end{verbatim}
+
+\var{extra} で渡される辞書のキーはロギングシステムで使われているものとぶつからない
+ようにしなければなりません。(どのキーがロギングシステムで使われているかについての
+詳細は \class{Formatter} のドキュメントを参照してください。)
+
+これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
+上の例では、'clientip' と 'user' が LogRecord の属性辞書に含まれている
+ことを期待した書式化文字列で \class{Formatter} はセットアップされてい
+ます。これらの属性が欠けていると、書式化例外が発生してしまうためメッセー
+ジはログに残りません。したがってこの場合、常にこれらのキーがあ
+る \var{extra} 辞書を渡す必要があります。
+
+このようなことは煩わしいかもしれませんが、この機能は限定された場面で使
+われるように意図しているものなのです。たとえば同じコードがいくつものコ
+ンテキストで実行されるマルチスレッドのサーバで、興味のある条件が現れる
+のがそのコンテキストに依存している(上の例で言えば、リモートのクライアン
+ト IP アドレスや認証されたユーザ名など)、というような場合です。そういっ
+た場面では、それ用の \class{Formatter} が特定の \class{Handler} と共に
+使われるというのはよくあることです。
+
+\versionchanged[\var{extra} が追加されました]{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{info}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{INFO} のメッセージをこのロガーで記録します。
+引数は \method{debug()} と同じように解釈されます。
+\end{methoddesc}
+
+\begin{methoddesc}{warning}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{WARNING} のメッセージをこのロガーで記録します。
+引数は \method{debug()} と同じように解釈されます。
+\end{methoddesc}
+
+\begin{methoddesc}{error}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{ERROR} のメッセージをこのロガーで記録します。
+引数は \method{debug()} と同じように解釈されます。
+\end{methoddesc}
+
+\begin{methoddesc}{critical}{msg\optional{, *args\optional{, **kwargs}}}
+レベル \constant{CRITICAL} のメッセージをこのロガーで記録します。
+引数は \method{debug()} と同じように解釈されます。
+\end{methoddesc}
+
+\begin{methoddesc}{log}{lvl, msg\optional{, *args\optional{, **kwargs}}}
+整数で表したレベル \var{lvl} のメッセージをこのロガーで記録します。
+その他の引数は \method{debug()} と同じように解釈されます。
+\end{methoddesc}
+
+\begin{methoddesc}{exception}{msg\optional{, *args}}
+レベル \constant{ERROR} のメッセージをこのロガーで記録します。
+引数は \method{debug()} と同じように解釈されます。 
+例外情報はログメッセージに追加されます。このメソッドは
+例外ハンドラからのみ呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{addFilter}{filt}
+指定されたフィルタ \var{filt} をこのロガーに追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{removeFilter}{filt}
+指定されたフィルタ \var{filt} をこのロガーから除去します。
+\end{methoddesc}
+
+\begin{methoddesc}{filter}{record}
+このロガーのフィルタをレコード (record) に適用し、レコードが
+フィルタを透過して処理されることになる場合には真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{addHandler}{hdlr}
+指定されたハンドラ \var{hdlr} をこのロガーに追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{removeHandler}{hdlr}
+指定されたハンドラ \var{hdlr} をこのロガーから除去します。
+\end{methoddesc}
+
+\begin{methoddesc}{findCaller}{}
+呼び出し元のソースファイル名と行番号を調べます。ファイル名と行番号
+を 2 要素のタプルで返します。
+\end{methoddesc}
+
+\begin{methoddesc}{handle}{record}
+レコードをこのロガーおよびその上位ロガーに (\var{propagate} の
+値が偽になるまで) さかのぼった関連付けられている全てのハンドラに渡して
+処理します。このメソッドはソケットから受信した逆 pickle 化された
+レコードに対してもレコードがローカルで生成された場合と同様に用いられます。
+\method{filter()} によって、ロガーレベルでのフィルタが適用されます。
+\end{methoddesc}
+
+\begin{methoddesc}{makeRecord}{name, lvl, fn, lno, msg, args, exc_info,
+                               func, extra}
+このメソッドは、特殊な \class{LogRecord} インスタンスを生成する
+ためにサブクラスでオーバライドできるファクトリメソッドです。
+\versionchanged[\var{func} と \var{extra} が追加されました]{2.5}
+\end{methoddesc}
+
+\subsection{基本的な使い方 \label{minimal-example}}
+
+\versionchanged[以前は \function{basicConfig} はキーワード引数を
+とりませんでした]{2.4}
+
+\module{logging} パッケージには高い柔軟性があり、その設定にたじろぐ
+こともあるでしょう。そこでこの節では、 \module{logging} パッケージを
+簡単に使う方法もあることを示します。
+
+以下の最も単純な例では、コンソールにログを表示します: 
+
+\begin{verbatim}
+import logging
+
+logging.debug('A debug message')
+logging.info('Some information')
+logging.warning('A shot across the bows')
+\end{verbatim}
+
+上のスクリプトを実行すると、以下のようなメッセージを目にするでしょう:
+\begin{verbatim}
+WARNING:root:A shot across the bows
+\end{verbatim}
+
+ここではロガーを特定しなかったので、システムはルートロガーを使っています。
+デバッグメッセージや情報メッセージは表示されませんが、これはデフォルトの
+ルートロガーが WARNING 以上の重要度を持つメッセージしか処理しないように
+設定されているからです。
+メッセージの書式もデフォルトの設定に従っています。出力先は
+\code{sys.stderr} で、これもデフォルトの設定です。
+重要度レベルやメッセージの形式、ログの出力先は、以下の例のように簡単に
+変更できます:
+
+\begin{verbatim}
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='/tmp/myapp.log',
+                    filemode='w')
+logging.debug('A debug message')
+logging.info('Some information')
+logging.warning('A shot across the bows')
+\end{verbatim}
+
+ここでは、\method{basicConfig()} メソッドを使って、以下のような出力例
+になる (そして\code{/tmp/myapp.log} に書き込まれる) ように、
+デフォルト設定を変更しています:
+
+\begin{verbatim}
+2004-07-02 13:00:08,743 DEBUG A debug message
+2004-07-02 13:00:08,743 INFO Some information
+2004-07-02 13:00:08,743 WARNING A shot across the bows
+\end{verbatim}
+
+今度は、重要度が DEBUG か、それ以上のメッセージが処理されました。
+メッセージの形式も変更され、出力はコンソールではなく特定のファイル
+に書き出されました。
+
+出力の書式化には、通常の Python 文字列に対する初期化を使います - 
+\ref{typesseq-strings} 節を参照してください。書式化文字列は、
+以下の指定子 (specifier) を常にとります。指定子の完全なリストに
+ついては \class{Formatter} のドキュメントを参照してください。
+
+\begin{tableii}{l|l}{code}{書式}{説明}
+\lineii{\%(name)s}     {ロガーの名前 (ログチャネル) の名前です。}
+\lineii{\%(levelname)s}{メッセージのログレベル
+                        (\code{'DEBUG'}, \code{'INFO'},
+                        \code{'WARNING'}, \code{'ERROR'},
+                        \code{'CRITICAL'}) です。}
+\lineii{\%(asctime)s}  {\class{LogRecord} が生成された際の時刻を、
+  人間が読み取れる形式にしたものです。デフォルトでは、
+  ``2003-07-08 16:49:45,896'' のような形式 (コンマの後ろはミリ秒)
+  です。}
+\lineii{\%(message)s}  {ログメッセージです。}
+\end{tableii}
+
+以下のように、追加のキーワードパラメタ \var{datefmt} を渡すと日付や時刻の
+書式を変更できます:
+
+\begin{verbatim}
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='/temp/myapp.log',
+                    filemode='w')
+logging.debug('A debug message')
+logging.info('Some information')
+logging.warning('A shot across the bows')
+\end{verbatim}
+
+出力は以下のようになります:
+
+\begin{verbatim}
+Fri, 02 Jul 2004 13:06:18 DEBUG    A debug message
+Fri, 02 Jul 2004 13:06:18 INFO     Some information
+Fri, 02 Jul 2004 13:06:18 WARNING  A shot across the bows
+\end{verbatim}
+
+日付を書式化する文字列は、\function{strftime()} の要求に従います - 
+\refmodule{time} モジュールを参照してください。
+
+コンソールやファイルではなく、別個に作成しておいたファイル類似オブジェクト
+にログを出力したい場合には、\function{basicConfig()} に
+\var{stream} キーワード引数で渡します。\var{stream} と\var{filename} 
+の両方の引数を指定した場合、\var{stream} は無視されるので注意してください。
+
+状況に応じて変化する情報ももちろんログ出力できます。以下のように、
+単にメッセージを書式化文字列にして、その後ろに可変情報の引数を渡すだけです:
+
+\begin{verbatim}
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)-8s %(message)s',
+                    datefmt='%a, %d %b %Y %H:%M:%S',
+                    filename='/temp/myapp.log',
+                    filemode='w')
+logging.error('Pack my box with %d dozen %s', 5, 'liquor jugs')
+\end{verbatim}
+
+出力は以下のようになります:
+
+\begin{verbatim}
+Wed, 21 Jul 2004 15:35:16 ERROR    Pack my box with 5 dozen liquor jugs
+\end{verbatim}
+
+\subsection{複数の出力先にログを出力する \label{multiple-destinations}}
+
+コンソールとファイルに、別々のメッセージ書式で、別々の状況に応じた
+ログ出力を行わせたいとしましょう。例えば DEBUG よりも高いレベルの
+メッセージはファイルに記録し、INFO 以上のレベルのメッセージは
+コンソールに出力したいという場合です。また、ファイルにはタイムスタンプを
+記録し、コンソールには出力しないとします。以下のようにすれば、こうした
+挙動を実現できます:
+
+\begin{verbatim}
+import logging
+
+# set up logging to file - see previous section for more details
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='/temp/myapp.log',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
+# Now, we can log to the root logger, or any other logger. First the root...
+logging.info('Jackdaws love my big sphinx of quartz.')
+
+# Now, define a couple of other loggers which might represent areas in your
+# application:
+
+logger1 = logging.getLogger('myapp.area1')
+logger2 = logging.getLogger('myapp.area2')
+
+logger1.debug('Quick zephyrs blow, vexing daft Jim.')
+logger1.info('How quickly daft jumping zebras vex.')
+logger2.warning('Jail zesty vixen who grabbed pay from quack.')
+logger2.error('The five boxing wizards jump quickly.')
+\end{verbatim}
+
+このスクリプトを実行すると、コンソールには以下のように表示されるでしょう:
+
+\begin{verbatim}
+root        : INFO     Jackdaws love my big sphinx of quartz.
+myapp.area1 : INFO     How quickly daft jumping zebras vex.
+myapp.area2 : WARNING  Jail zesty vixen who grabbed pay from quack.
+myapp.area2 : ERROR    The five boxing wizards jump quickly.
+\end{verbatim}
+
+そして、ファイルは以下のようになるはずです:
+
+\begin{verbatim}
+10-22 22:19 root         INFO     Jackdaws love my big sphinx of quartz.
+10-22 22:19 myapp.area1  DEBUG    Quick zephyrs blow, vexing daft Jim.
+10-22 22:19 myapp.area1  INFO     How quickly daft jumping zebras vex.
+10-22 22:19 myapp.area2  WARNING  Jail zesty vixen who grabbed pay from quack.
+10-22 22:19 myapp.area2  ERROR    The five boxing wizards jump quickly.
+\end{verbatim}
+
+ご覧のように、 DEBUG メッセージはファイルだけに出力され、その他のメッセージ
+は両方に出力されます。
+
+この例題では、コンソールとファイルのハンドラだけを使っていますが、
+実際には任意の数のハンドラや組み合わせを使えます。
+
+\subsection{ログイベントをネットワーク越しに送受信する\label{network-logging}}
+
+ログイベントをネットワーク越しに送信し、受信端でそれを処理したいとしましょう。
+\class{SocketHandler} インスタンスを送信端のルートロガーに接続すれば、
+簡単に実現できます:
+
+\begin{verbatim}
+import logging, logging.handlers
+
+rootLogger = logging.getLogger('')
+rootLogger.setLevel(logging.DEBUG)
+socketHandler = logging.handlers.SocketHandler('localhost',
+                    logging.handlers.DEFAULT_TCP_LOGGING_PORT)
+# don't bother with a formatter, since a socket handler sends the event as
+# an unformatted pickle
+rootLogger.addHandler(socketHandler)
+
+# Now, we can log to the root logger, or any other logger. First the root...
+logging.info('Jackdaws love my big sphinx of quartz.')
+
+# Now, define a couple of other loggers which might represent areas in your
+# application:
+
+logger1 = logging.getLogger('myapp.area1')
+logger2 = logging.getLogger('myapp.area2')
+
+logger1.debug('Quick zephyrs blow, vexing daft Jim.')
+logger1.info('How quickly daft jumping zebras vex.')
+logger2.warning('Jail zesty vixen who grabbed pay from quack.')
+logger2.error('The five boxing wizards jump quickly.')
+\end{verbatim}
+
+受信端では、\module{SocketServer} モジュールを使って受信プログラムを
+作成しておきます。簡単な実用プログラムを以下に示します: 
+
+
+\begin{verbatim}
+import cPickle
+import logging
+import logging.handlers
+import SocketServer
+import struct
+
+
+class LogRecordStreamHandler(SocketServer.StreamRequestHandler):
+    """Handler for a streaming logging request.
+
+    This basically logs the record using whatever logging policy is
+    configured locally.
+    """
+
+    def handle(self):
+        """
+        Handle multiple requests - each expected to be a 4-byte length,
+        followed by the LogRecord in pickle format. Logs the record
+        according to whatever policy is configured locally.
+        """
+        while 1:
+            chunk = self.connection.recv(4)
+            if len(chunk) < 4:
+                break
+            slen = struct.unpack(">L", chunk)[0]
+            chunk = self.connection.recv(slen)
+            while len(chunk) < slen:
+                chunk = chunk + self.connection.recv(slen - len(chunk))
+            obj = self.unPickle(chunk)
+            record = logging.makeLogRecord(obj)
+            self.handleLogRecord(record)
+
+    def unPickle(self, data):
+        return cPickle.loads(data)
+
+    def handleLogRecord(self, record):
+        # if a name is specified, we use the named logger rather than the one
+        # implied by the record.
+        if self.server.logname is not None:
+            name = self.server.logname
+        else:
+            name = record.name
+        logger = logging.getLogger(name)
+        # N.B. EVERY record gets logged. This is because Logger.handle
+        # is normally called AFTER logger-level filtering. If you want
+        # to do filtering, do it at the client end to save wasting
+        # cycles and network bandwidth!
+        logger.handle(record)
+
+class LogRecordSocketReceiver(SocketServer.ThreadingTCPServer):
+    """simple TCP socket-based logging receiver suitable for testing.
+    """
+
+    allow_reuse_address = 1
+
+    def __init__(self, host='localhost',
+                 port=logging.handlers.DEFAULT_TCP_LOGGING_PORT,
+                 handler=LogRecordStreamHandler):
+        SocketServer.ThreadingTCPServer.__init__(self, (host, port), handler)
+        self.abort = 0
+        self.timeout = 1
+        self.logname = None
+
+    def serve_until_stopped(self):
+        import select
+        abort = 0
+        while not abort:
+            rd, wr, ex = select.select([self.socket.fileno()],
+                                       [], [],
+                                       self.timeout)
+            if rd:
+                self.handle_request()
+            abort = self.abort
+
+def main():
+    logging.basicConfig(
+        format="%(relativeCreated)5d %(name)-15s %(levelname)-8s %(message)s")
+    tcpserver = LogRecordSocketReceiver()
+    print "About to start TCP server..."
+    tcpserver.serve_until_stopped()
+
+if __name__ == "__main__":
+    main()
+\end{verbatim}
+
+先にサーバを起動しておき、次にクライアントを起動します。クライアント
+側では、コンソールには何も出力されません; サーバ側では以下のようなメッセージ
+を目にするはずです:
+
+\begin{verbatim}
+About to start TCP server...
+   59 root            INFO     Jackdaws love my big sphinx of quartz.
+   59 myapp.area1     DEBUG    Quick zephyrs blow, vexing daft Jim.
+   69 myapp.area1     INFO     How quickly daft jumping zebras vex.
+   69 myapp.area2     WARNING  Jail zesty vixen who grabbed pay from quack.
+   69 myapp.area2     ERROR    The five boxing wizards jump quickly.
+\end{verbatim}
+
+
+\subsection{Handler オブジェクト}
+
+ハンドラは以下の属性とメソッドを持ちます。\class{Handler}
+は直接インスタンス化されることはありません; このクラスは
+より便利なサブクラスの基底クラスとして働きます。しかしながら、
+サブクラスにおける \method{__init__()} メソッドでは、 
+\method{Handler.__init__()} を呼び出す必要があります。
+
+\begin{methoddesc}{__init__}{level=\constant{NOTSET}}
+レベルを設定して、\class{Handler} インスタンスを初期化します。
+空のリストを使ってフィルタを設定し、I/O 機構へのアクセスを
+直列化するために (\method{createLock()} を使って) ロックを生成します。
+\end{methoddesc}
+
+\begin{methoddesc}{createLock}{}
+スレッド安全でない根底の I/O 機能に対するアクセスを直列化
+するために用いられるスレッドロック (thread lock) を初期化します。
+\end{methoddesc}
+
+\begin{methoddesc}{acquire}{}
+\method{createLock()} で生成されたスレッドロックを獲得します。
+\end{methoddesc}
+
+\begin{methoddesc}{release}{}
+\method{acquire()} で獲得したスレッドロックを解放します。
+\end{methoddesc}
+
+\begin{methoddesc}{setLevel}{lvl}
+このハンドラに対する閾値を \var{lvl} に設定します。
+ログ記録しようとするメッセージで、\var{lvl} よりも深刻でないものは
+無視されます。ハンドラが生成された際、レベルは \constant{NOTSET} 
+(全てのメッセージが処理される) に設定されます。
+\end{methoddesc}
+
+\begin{methoddesc}{setFormatter}{form}
+このハンドラのフォーマッタを \var{form} に設定します。
+\end{methoddesc}
+
+\begin{methoddesc}{addFilter}{filt}
+指定されたフィルタ \var{filt} をこのハンドラに追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{removeFilter}{filt}
+指定されたフィルタ \var{filt} をこのハンドラから除去します。
+\end{methoddesc}
+
+\begin{methoddesc}{filter}{record}
+このハンドラのフィルタをレコードに適用し、レコードが
+フィルタを透過して処理されることになる場合には真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{flush}{}
+全てのログ出力がフラッシュされるようにします。このクラスの
+バージョンではなにも行わず、サブクラスで実装するためのものです。
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+ハンドラで使われている全てのリソースを始末します。このクラスの
+バージョンではなにも行わず、サブクラスで実装するためのものです。
+\end{methoddesc}
+
+\begin{methoddesc}{handle}{record}
+ハンドラに追加されたフィルタの条件に応じて、指定されたログレコードを
+発信します。このメソッドは I/O スレッドロックの獲得/開放を伴う実際の
+ログ発信をラップします。
+\end{methoddesc}
+
+\begin{methoddesc}{handleError}{record}
+このメソッドは \method{emit()} の呼び出し中に例外に遭遇した際に
+ハンドラから呼び出されます。デフォルトではこのメソッドは
+何も行いません。すなわち、例外は暗黙のまま無視されます。
+ほとんどのログ記録システムでは、これがほぼ望ましい機能です -
+というのは、ほとんどのユーザはログ記録システム自体のエラーは
+気にせず、むしろアプリケーションのエラーに興味があるからです。
+しかしながら、望むならこのメソッドを自作のハンドラと置き換え
+ることはできます。\var{record} には、例外発生時に処理
+されていたレコードが入ります。
+\end{methoddesc}
+
+\begin{methoddesc}{format}{record}
+レコードに対する書式化を行います - フォーマッタ
+が設定されていれば、それを使います。そうでない場合、
+モジュールにデフォルト指定されたフォーマッタを使います。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+指定されたログ記録レコードを実際にログ記録する際の全ての処理
+を行います。このメソッドのこのクラスのバージョンはサブクラスで
+実装するためのものなので、\exception{NotImplementedError}
+を送出します。
+\end{methoddesc}
+
+\subsubsection{StreamHandler}
+
+\class{StreamHandler} クラスは、\module{logging} パッケージのコアにあり
+ますが、ログ出力を \var{sys.stdout}、\var{sys.stderr} あるいは何らかの
+ファイル類似オブジェクト(あるいは、もっと正確にいえ
+ば、\method{write()} および \method{flush()} メソッドをサポートする何ら
+かのオブジェクト) といったストリームに送信します。
+
+\begin{classdesc}{StreamHandler}{\optional{strm}}
+\class{StreamHandler} クラスの新たなインスタンスを返します。
+\var{strm} が指定された場合、インスタンスはログ出力先として
+指定されたストリームを使います; そうでない場合、
+\var{sys.stderr} が使われます。
+\end{classdesc}
+
+\begin{methoddesc}{emit}{record}
+フォーマッタが指定されていれば、フォーマッタを使ってレコードを書式化
+します。次に、レコードがストリームに書き込まれ、末端に
+改行がつけられます。例外情報が存在する場合、
+\function{traceback.print_exception()} を使って書式化され、
+ストリームの末尾につけられます。
+\end{methoddesc}
+
+\begin{methoddesc}{flush}{}
+ストリームの \method{flush()} メソッドを呼び出してバッファを
+フラッシュします。\method{close()} メソッドは \class{Handler} から
+継承しているため何も行わないので、\method{flush()} 呼び出しを
+明示的に行う必要があります。
+\end{methoddesc}
+
+\subsubsection{FileHandler}
+
+\class{FileHandler} クラスは、\module{logging} パッケージのコアにありま
+すが、ログ出力をディスク上のファイルに送信します。このクラスは出力機能
+を \class{StreamHandler} から継承しています。
+
+\begin{classdesc}{FileHandler}{filename\optional{, mode}}
+\class{FileHandler} クラスの新たなインスタンスを返します。
+指定されたファイルが開かれ、ログ記録のためのストリームとして
+使われます。\var{mode} が指定されなかった場合、 \constant{'a'} 
+が使われます。デフォルトでは、ファイルは無制限に大きくなりつづけます。
+\end{classdesc}
+
+\begin{methoddesc}{close}{}
+ファイルを閉じます。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+\var{record} をファイルに出力します。
+\end{methoddesc}
+
+\subsubsection{RotatingFileHandler}
+
+\class{RotatingFileHandler} クラスは、\module{logging.handlers} モジュー
+ルの中にありますが、ディスク上のログファイルに対するローテーション処理
+をサポートします。
+
+\begin{classdesc}{RotatingFileHandler}{filename\optional{, mode\optional{,
+                                       maxBytes\optional{, backupCount}}}}
+\class{RotatingFileHandler} クラスの新たなインスタンスを返します。
+指定されたファイルが開かれ、ログ記録のためのストリームとして
+使われます。\var{mode} が指定されなかった場合、 \constant{"a"} 
+が使われます。デフォルトでは、ファイルは無制限に大きくなりつづけます。
+
+あらかじめ決められたサイズでファイルをロールオーバ (\dfn{rollover}) 
+させられるように、\var{maxBytes} および \var{backupCount} 値を
+指定することができます。指定サイズを超えそうになると、ファイルは
+閉じられ、暗黙のうちに新たなファイルが開かれます。ロールオーバは
+現在のログファイルの長さが \var{maxBytes} に近くなると常に起きます。
+\var{backupCount} が非ゼロの場合、システムは古いログファイルを
+ファイル名に ".1", ".2" といった拡張子を追加して保存します。
+例えば、\var{backupCount} が 5 で、基本のファイル名が \file{app.log}
+なら、 \file{app.log}、 \file{app.log.1}、 \file{app.log.2}、 ... と続き、
+\file{app.log.5} までを得ることになります。ログの書き込み対象になる
+ファイルは常に \file{app.log} です。このファイルが満杯になると、
+ファイルは閉じられ、\file{app.log.1} に名称変更されます。
+\file{app.log.1}、\file{app.log.2} などが存在する場合、それらの
+ファイルはそれぞれ\file{app.log.2}、\file{app.log.3} といった具合に
+名前変更されます。
+\end{classdesc}
+
+\begin{methoddesc}{doRollover}{}
+上述のような方法でロールオーバを行います。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+上述のようなロールオーバを行いながら、
+レコードをファイルに出力します。
+\end{methoddesc}
+
+
+\subsubsection{TimedRotatingFileHandler}
+
+\class{TimedRotatingFileHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、特定の時間間隔でのログ交替をサポートしていま
+す。
+
+\begin{classdesc}{TimedRotatingFileHandler}{filename
+                                            \optional{,when
+                                            \optional{,interval
+                                            \optional{,backupCount}}}}
+
+\class{TimedRotatingFileHandler} クラスの新たなインスタンスを返します。
+\var{filename} に指定したファイルを開き、ログ出力先のストリームとして
+使います。ログファイルの交替時には、ファイル名に拡張子 (suffix) を
+つけます。ログファイルの交替は\var{when} および \var{interval} 
+の積に基づいて行います。
+
+\var{when} は \var{interval} の単位を指定するために使います。
+使える値は下表の通りで、大小文字の区別を行いません:
+
+\begin{tableii}{l|l}{}{値}{\var{interval} の単位}
+  \lineii{S}{秒}
+  \lineii{M}{分}
+  \lineii{H}{時間}
+  \lineii{D}{日}
+  \lineii{W}{曜日 (0=Monday)}
+  \lineii{midnight}{深夜}
+\end{tableii}
+
+\var{backupCount} がゼロでない場合、古いログファイルを保存する際に
+ロギングシステムは拡張子を付けます。拡張子は日付と時間に基づいて、
+strftime の \code{\%Y-\%m-\%d_\%H-\%M-\%S} 形式かその前の方の一部分を、
+ロールオーバ間隔に依存した形で使います。
+保存されるファイル数は高々 \var{backupCount} 個で、それ以上のファイルが
+ロールオーバされる時に作られるならば、一番古いものが削除されます。
+\end{classdesc}
+
+\begin{methoddesc}{doRollover}{}
+上記の方法でロールオーバを行います。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+\method{setRollover()} で解説した方法でロールオーバを行いながら、
+レコードをファイルに出力します。
+\end{methoddesc}
+
+\subsubsection{SocketHandler}
+
+\class{SocketHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、ログ出力をネットワークソケットに
+送信します。基底クラスでは TCP ソケットを用います。
+
+\begin{classdesc}{SocketHandler}{host, port}
+アドレスが \var{host} および \var{port} で与えられた遠隔のマシン
+と通信するようにした \class{SocketHandler} クラスのインスタンスを
+生成して返します。
+\end{classdesc}
+
+\begin{methoddesc}{close}{}
+ソケットを閉じます。
+\end{methoddesc}
+
+\begin{methoddesc}{handleError}{}
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{}
+レコードの属性辞書を pickle 化し、バイナリ形式でソケットに書き込み
+ます。ソケット操作でエラーが生じた場合、暗黙のうちにパケットは
+捨てられます。前もって接続が失われていた場合、接続を再度確立
+します。受信端でレコードを逆 pickle 化して \class{LogRecord}
+にするには、\function{makeLogRecord} 関数を使ってください。
+\end{methoddesc}
+
+\begin{methoddesc}{handleError}{}
+\method{emit()} の処理中に発生したエラーを処理します。
+よくある原因は接続の消失です。次のイベント発生時に再度
+接続確立を試みることができるようにソケットを閉じます。
+\end{methoddesc}
+
+\begin{methoddesc}{makeSocket}{}
+サブクラスで必要なソケット形式を詳細に定義できるようにするための
+ファクトリメソッドです。デフォルトの実装では、TCP ソケット
+(\constant{socket.SOCK_STREAM}) を生成します。
+\end{methoddesc}
+
+\begin{methoddesc}{makePickle}{record}
+レコードの属性辞書を pickle 化して、長さを指定プレフィクス付きの
+バイナリにし、ソケットを介して送信できるようにして返します。
+\end{methoddesc}
+
+\begin{methoddesc}{send}{packet}
+pickle 化された文字列 \var{packet} をソケットに送信します。
+この関数はネットワークが処理待ち状態の時に発生しうる部分的送信を
+行えます。
+\end{methoddesc}
+
+\subsubsection{DatagramHandler}
+
+\class{DatagramHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、 \class{SocketHandler} を
+継承しており、ログ記録メッセージを UDP ソケットを介して
+送れるようサポートしています。
+
+\begin{classdesc}{DatagramHandler}{host, port}
+アドレスが \var{host} および \var{port} で与えられた遠隔のマシン
+と通信するようにした \class{DatagramHandler} クラスのインスタンスを
+生成して返します。
+\end{classdesc}
+
+\begin{methoddesc}{emit}{}
+レコードの属性辞書を pickle 化し、バイナリ形式でソケットに書き込み
+ます。ソケット操作でエラーが生じた場合、暗黙のうちにパケットは
+捨てられます。前もって接続が失われていた場合、接続を再度確立
+します。受信端でレコードを逆 pickle 化して \class{LogRecord} にするには、
+\function{makeLogRecord} 関数を使ってください。
+\end{methoddesc}
+
+\begin{methoddesc}{makeSocket}{}
+ここで \class{SocketHandler} のファクトリメソッドをオーバライド
+して UDP ソケット (\constant{socket.SOCK_DGRAM}) を生成しています。
+\end{methoddesc}
+
+\begin{methoddesc}{send}{s}
+pickle 化された文字列をソケットに送信します。
+\end{methoddesc}
+
+\subsubsection{SysLogHandler}
+
+\class{SysLogHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、ログ記録メッセージを遠隔またはローカル
+の \UNIX{} syslog に送信する機能をサポートしています。
+
+\begin{classdesc}{SysLogHandler}{\optional{address\optional{, facility}}}
+遠隔の\UNIX{} マシンと通信するための、\class{SysLogHandler} クラスの
+新たなインスタンスを返します。マシンのアドレスは
+\code{(\var{host}, \var{port})} のタプル形式をとる \var{address} 
+で与えられます。
+\var{address} が指定されない場合、\code{('localhost', 514)} が
+使われます。アドレスは UDP ソケットを使って開かれます。
+\var{facility} が指定されない場合、\constant{LOG_USER} が使われます。
+\end{classdesc}
+
+\begin{methoddesc}{close}{}
+遠隔ホストのソケットを閉じます。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+レコードは書式化された後、syslog サーバに送信されます。
+例外情報が存在しても、サーバには \emph{送信されません} 。
+\end{methoddesc}
+
+\begin{methoddesc}{encodePriority}{facility, priority}
+便宜レベル (facility) および優先度を整数に符号化します。値は文字列
+でも整数でも渡すことができます。文字列が渡された場合、内部の
+対応付け辞書が使われ、整数に変換されます。
+\end{methoddesc}
+
+\subsubsection{NTEventLogHandler}
+
+\class{NTEventLogHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、ログ記録メッセージをローカルな
+Windows NT、Windows 2000 、または Windows XP のイベントログ (event log)
+に送信する機能をサポートします。この機能を使えるようにするには、
+Mark Hammond による Python 用 Win32 拡張パッケージをインストール
+する必要があります。
+
+\begin{classdesc}{NTEventLogHandler}{appname\optional{,
+                                     dllname\optional{, logtype}}}
+\class{NTEventLogHandler} クラスの新たなインスタンスを返します。
+\var{appname} はイベントログに表示する際のアプリケーション名を定義する
+ために使われます。この名前を使って適切なレジストリエントリが生成されます。
+\var{dllname} はログに保存するメッセージ定義の入った .dll または .exe 
+ファイルへの完全に限定的な (fully qualified) パス名を与えなければ
+なりません (指定されない場合、\constant{'win32service.pyd'} が
+使われます - このライブラリは Win32 拡張とともにインストールされ、
+いくつかのプレースホルダとなるメッセージ定義を含んでいます)。
+これらのプレースホルダを利用すると、メッセージの発信源全体がログに
+記録されるため、イベントログは巨大になるので注意してください。
+\var{logtype} は \constant{'Application'}、 \constant{'System'} 
+または \constant{'Security'} のいずれかであるか、デフォルトの
+\constant{'Application'} でなければなりません。
+\end{classdesc}
+
+\begin{methoddesc}{close}{}
+現時点では、イベントログエントリの発信源としての
+アプリケーション名をレジストリから除去することができます。
+しかしこれを行うと、イベントログビューアで意図したログをみることが
+できなくなるでしょう - これはイベントログが .dll 名を取得するために
+レジストリにアクセスできなければならないからです。現在のバージョン
+ではこの操作を行いません (実際、このメソッドは何も行いません)。
+\end{methoddesc}
+
+\begin{methoddesc}{emit}{record}
+メッセージ ID、イベントカテゴリおよびイベント型を決定し、
+メッセージを NT イベントログに記録します。
+\end{methoddesc}
+
+\begin{methoddesc}{getEventCategory}{record}
+レコードに対するイベントカテゴリを返します。自作のカテゴリを
+指定したい場合、このメソッドをオーバライドしてください。
+このクラスのバージョンのメソッドは 0 を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{getEventType}{record}
+レコードのイベント型を返します。自作の型を指定したい場合、
+このメソッドをオーバライドしてください。
+このクラスのバージョンのメソッドは、ハンドラの \var{typemap} 属性を
+使って対応付けを行います。この属性は \method{__init__()} で初期化
+され、\constant{DEBUG}、\constant{INFO}、 \constant{WARNING}、
+ \constant{ERROR}、および \constant{CRITICAL} が入っています。
+自作のレベルを使っているのなら、このメソッドをオーバライドするか、
+ハンドラの \var{typemap} 属性に適切な辞書を配置する必要があるでしょう。
+\end{methoddesc}
+
+\begin{methoddesc}{getMessageID}{record}
+レコードのメッセージ ID を返します。自作のメッセージを使っているの
+なら、ロガーに渡される\var{msg} を書式化文字列ではなく ID に
+します。その上で、辞書参照を行ってメッセージ ID を得ます。
+このクラスのバージョンでは 1 を返します。この値は
+\file{win32service.pyd} における基本となるメッセージ ID です。
+\end{methoddesc}
+
+\subsubsection{SMTPHandler}
+
+\class{SMTPHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、SMTP を介したログ記録メッセージの
+送信機能をサポートします。
+
+\begin{classdesc}{SMTPHandler}{mailhost, fromaddr, toaddrs, subject}
+新たな \class{SMTPHandler} クラスのインスタンスを返します。
+インスタンスは email の from および to アドレス行、および subject 行と
+ともに初期化されます。
+\var{toaddrs} は文字列からなるリストでなければなりません
+非標準の SMTP ポートを指定するには、\var{mailhost} 引数に (host, port) 
+のタプル形式を指定します。文字列を使った場合、標準の SMTP ポートが
+使われます。
+\end{classdesc}
+
+\begin{methoddesc}{emit}{record}
+レコードを書式化し、指定されたアドレスに送信します。
+\end{methoddesc}
+
+\begin{methoddesc}{getSubject}{record}
+レコードに応じたサブジェクト行を指定したいなら、このメソッドを
+オーバライドしてください。
+\end{methoddesc}
+
+\subsubsection{MemoryHandler}
+
+\class{MemoryHandler} は、\module{logging.handlers} モ
+ジュールの中にありますが、ログ記録するレコードをメモリ上にバッファし、
+定期的にその内容をターゲット (\dfn{target}) となるハンドラに
+フラッシュする機能をサポートしています。
+フラッシュ処理はバッファが一杯になるか、ある深刻さかそれ以上のレベル
+をもったイベントが観測された際に行われます。
+
+\class{MemoryHandler} はより一般的な抽象クラス、
+\class{BufferingHandler} のサブクラスです。この抽象クラスでは、
+ログ記録するレコードをメモリ上にバッファします。各レコードがバッファに
+追加される毎に、\method{shouldFlush()} を呼び出してバッファをフラッシュ
+すべきかどうか調べます。フラッシュする必要がある場合、\method{flush()}
+が必要にして十分な処理を行うものと想定しています。
+
+\begin{classdesc}{BufferingHandler}{capacity}
+指定し許容量のバッファでハンドラを初期化します。
+\end{classdesc}
+
+\begin{methoddesc}{emit}{record}
+レコードをバッファに追加します。 \method{shouldFlush()} が真を
+返す場合、バッファを処理するために \method{flush()} を呼び出します。
+\end{methoddesc}
+
+\begin{methoddesc}{flush}{}
+このメソッドをオーバライドして、自作のフラッシュ動作を実装することが
+できます。このクラスのバージョンのメソッドでは、単にバッファの内容を
+削除して空にします。
+\end{methoddesc}
+
+\begin{methoddesc}{shouldFlush}{record}
+バッファが許容量に達している場合に真を返します。このメソッドは
+自作のフラッシュ処理方針を実装するためにオーバライドすることが
+できます。
+\end{methoddesc}
+
+\begin{classdesc}{MemoryHandler}{capacity\optional{, flushLevel
+\optional{, target}}}
+\class{MemoryHandler} クラスの新たなインスタンスを返します。
+インスタンスはサイズ \var{capacity} のバッファとともに初期化されます。
+\var{flushLevel} が指定されていない場合、\constant{ERROR} が使われます。
+\var{target} が指定されていない場合、ハンドラが何らかの有意義な
+処理を行う前に \method{setTarget()} でターゲットを指定する必要があります。
+\end{classdesc}
+
+\begin{methoddesc}{close}{}
+\method{flush()} を呼び出し、ターゲットを \constant{None} に
+設定してバッファを消去します。
+\end{methoddesc}
+
+\begin{methoddesc}{flush}{}
+\class{MemoryHandler} の場合、フラッシュ処理は単に、バッファされた
+レコードをターゲットがあれば送信することを意味します。
+違った動作を行いたい場合、オーバライドしてください。
+\end{methoddesc}
+
+\begin{methoddesc}{setTarget}{target}
+ターゲットハンドラをこのハンドラに設定します。
+\end{methoddesc}
+
+\begin{methoddesc}{shouldFlush}{record}
+バッファが満杯になっているか、 \var{flushLevel} またはそれ以上の
+レコードでないかを調べます。
+\end{methoddesc}
+
+\subsubsection{HTTPHandler}
+
+\class{HTTPHandler} クラスは、\module{logging.handlers} モ
+ジュールの中にありますが、ログ記録メッセージを 
+\samp{GET} または \samp{POST} セマンティクスを使って
+Web サーバに送信する機能をサポートしています。
+
+\begin{classdesc}{HTTPHandler}{host, url\optional{, method}}
+\class{HTTPHandler} クラスの新たなインスタンスを返します。
+インスタンスはホストアドレス、URL および HTTP メソッドと
+ともに初期化されます。
+\var{host} は特別なポートを使うことが必要な場合には、
+\code{host:port} の形式で使うこともできます。
+\var{method} が指定されなかった場合
+\samp{GET} が使われます。
+\end{classdesc}
+
+\begin{methoddesc}{emit}{record}
+レコードを URL エンコードされた辞書形式で Web サーバに送信します。
+\end{methoddesc}
+
+\subsection{Formatter オブジェクト}
+
+\class{Formatter} は以下の属性とメソッドを持っています。
+\class{Formatter} は \class{LogRecord} を (通常は) 人間か外部のシステム
+で解釈できる文字列に変換する役割を担っています。基底クラスの
+\class{Formatter} では書式化文字列を指定することができます。
+何も指定されなかった場合、\code{'\%(message)s'} の値が使われます。
+
+Formatter は書式化文字列とともに初期化され、\class{LogRecord} 属性に
+入っている知識を利用できるようにします - 上で触れたデフォルトの
+値では、ユーザによるメッセージと引数はあらかじめ書式化されて、
+\class{LogRecord} の \var{message} 属性に入っていることを利用
+しているようにです。
+この書式化文字列は、Python 標準の \% を使った変換文字列で構成されます。文字列整形に関する詳細は \ref{typesseq-strings} ``String Formatting Operations'' の章を参照してください。
+
+現状では、 \class{LogRecord} の有用な属性は以下のようになっています:
+
+\begin{tableii}{l|l}{code}{Format}{Description}
+\lineii{\%(name)s}     {ロガー (ログ記録チャネル) の名前}
+\lineii{\%(levelno)s}  {メッセージのログ記録レベルを表す数字 (DEBUG, INFO,
+                        WARNING, ERROR, CRITICAL)}
+\lineii{\%(levelname)s}{メッセージのログ記録レベルを表す文字列 ("DEBUG", 
+                        "INFO", "WARNING", "ERROR", "CRITICAL")}
+\lineii{\%(pathname)s} {ログ記録の呼び出しが行われたソースファイルの
+                        全パス名 (取得できる場合)}
+\lineii{\%(filename)s} {パス名中のファイル名部分}
+\lineii{\%(module)s}   {モジュール名 (ファイル名の名前部分)}
+\lineii{\%(funcName)s} {ログ記録の呼び出しを含む関数の名前}
+\lineii{\%(lineno)d}   {ログ記録の呼び出しが行われたソース行番号
+                        (取得できる場合)}
+\lineii{\%(created)f}  {\class{LogRecord} が生成された時刻 (time.time() の返した値)}
+\lineii{\%(asctime)s}  {\class{LogRecord} が生成された時刻を人間が読める書式で
+                        表したもの。
+                        デフォルトでは ``2003-07-08 16:49:45,896'' 形式 
+                        (コンマ以降の数字は時刻のミリ秒部分) です}
+\lineii{\%(msecs)d}    {\class{LogRecord} が生成された時刻の、ミリ秒部分}
+\lineii{\%(thread)d}   {スレッド ID (取得できる場合)}
+\lineii{\%(threadName)s}   {スレッド名 (取得できる場合)}
+\lineii{\%(process)d}  {プロセス ID (取得できる場合)}
+\lineii{\%(message)s}  {レコードが発信された際に処理された 
+                        \code{msg \% args} の結果}
+\end{tableii}
+
+\versionchanged[\var{funcName} が追加されました]{2.5}
+
+\begin{classdesc}{Formatter}{\optional{fmt\optional{, datefmt}}}
+\class{Formatter} クラスの新たなインスタンスを返します。インスタンスは
+全体としてのメッセージに対する書式化文字列と、メッセージの
+日付/時刻部分のための書式化文字列を伴って初期化されます。\var{fmt} 
+が指定されない場合、 \code'\%(message)s' が使われます。 \var{datefmt}
+が指定されない場合、ISO8601 日付書式が使われます。
+\end{classdesc}
+
+\begin{methoddesc}{format}{record}
+レコードの属性辞書が、文字列を書式化する演算で被演算子として
+使われます。書式化された結果の文字列を返します。
+辞書を書式化する前に、二つの準備段階を経ます。
+レコードの \var{message} 属性が \var{msg} \% \var{args} を使って
+処理されます。書式化された文字列が \constant{'(asctime)'} を含む
+なら、 \method{formatTime()} が呼び出され、イベントの発生時刻を
+書式化します。例外情報が存在する場合、\method{formatException()} 
+を使って書式化され、メッセージに追加されます。
+\end{methoddesc}
+
+\begin{methoddesc}{formatTime}{record\optional{, datefmt}}
+このメソッドは、フォーマッタが書式化された時間を利用したい際に、
+\method{format()} から呼び出されます。このメソッドは特定の要求を
+提供するためにフォーマッタで上書きすることができますが、基本的な
+振る舞いは以下のようになります: \var{datefmt} (文字列) が指定された
+場合、レコードが生成された時刻を書式化するために
+\function{time.strftime()} で使われます。そうでない場合、
+ISO8601 書式が使われます。結果の文字列が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}{formatException}{exc_info}
+指定された例外情報 (\function{sys.exc_info()} が返すような
+標準例外のタプル) を文字列として書式化します。
+デフォルトの実装は単に \function{traceback.print_exception()}
+を使います。結果の文字列が返されます。
+\end{methoddesc}
+
+\subsection{Filter オブジェクト}
+
+\class{Filter} は \class{Handler} と \class{Logger} によって利用され、
+レベルによる制御よりも洗練されたフィルタ処理を提供します。基底の
+フィルタクラスでは、ロガーの階層構造のある点よりも下層にあるイベント
+だけを通過させます。例えば、"A.B" で初期化されたフィルタは
+ロガー "A.B"、 "A.B.C"、 "A.B.C.D"、 "A.B.D" などでログ記録された
+イベントを通過させます。しかし、 "A.BB"、"B.A.B" などは通過させません。
+空の文字列で初期化された場合、全てのイベントを通過させます。
+
+\begin{classdesc}{Filter}{\optional{name}}
+\class{Filter} クラスのインスタンスを返します。 \var{name} が指定されて
+いれば、\var{name} はロガーの名前を表します。指定されたロガーとその子ロガー
+のイベントがフィルタを通過できるようになります。\var{name} が指定
+されなければ、全てのイベントを通過させます。
+\end{classdesc}
+
+\begin{methoddesc}{filter}{record}
+指定されたレコードがログされているか？ されていなければゼロを、
+されていればゼロでない値を返します。適切と判断されれば、このメソッド
+によってレコードは in place で修正されることがあります。
+\end{methoddesc}
+
+\subsection{LogRecord オブジェクト}
+
+何かをログ記録する際には常に \class{LogRecord} インスタンスが生成されます。
+インスタンスにはログ記録されることになっているイベントに関係する
+全ての情報が入っています。インスタンスに渡される主要な情報は 
+\var{msg} および \var{args} で、これらは msg \% args を使って
+組み合わせられ、レコードのメッセージフィールドを生成します。
+レコードはまた、レコードがいつ生成されたか、ログ記録がソースコード
+行のどこで呼び出されたか、あるいはログ記録すべき何らかの例外情報
+といった情報も含んでいます。
+
+\begin{classdesc}{LogRecord}{name, lvl, pathname, lineno, msg, args,
+                             exc_info}
+関係のある情報とともに初期化された \class{LogRecord} のインスタンスを
+返します。\var{name} はロガーの名前です; \var{lvl} は数字で表された
+レベルです; \var{pathname} はログ記録呼び出しが見つかったソースファイル
+の絶対パス名です。\var{msg} はユーザ定義のメッセージ (書式化文字列)
+です; \var{args} はタプルで、\var{msg} と合わせて、ユーザメッセージ
+を生成します; \var{exc_info} は例外情報のタプルで、
+\function{sys.exc_info() } を呼び出して得られたもの (または、
+例外情報が取得できない場合には \constant{None}) です。
+\end{classdesc}
+
+\begin{methoddesc}{getMessage}{}
+ユーザが供給した引数をメッセージに交ぜた後、この \class{LogRecord} インスタンスへの
+メッセージを返します。
+\end{methoddesc}
+
+\subsection{スレッド安全性}
+
+\var{logging} モジュールは、クライアントで特殊な作業を必要としない
+かぎりスレッド安全 (thread-safe) なようになっています。このスレッド
+安全性はスレッドロックによって達成されています; 
+モジュールの共有データへのアクセスを直列化するためのロックが
+一つ存在し、各ハンドラでも根底にある I/O へのアクセスを直列化するために
+ロックを生成します。
+
+\subsection{環境設定}
+
+\subsubsection{環境設定のための関数%
+  \label{logging-config-api}}
+
+以下の関数で \module{logging} モジュールの環境設定をします。
+これらの関数は、\module{logging.config} にあります。
+これらの関数の使用はオプションです --- 
+\module{logging} モジュールはこれらの関数を使うか、 (\module{logging} 自体で
+定義されている) 主要な API を呼び出し、 \module{logging} か
+ \module{logging.handlers} で宣言されているハンドラを定義することで
+設定することができます。
+
+\begin{funcdesc}{fileConfig}{fname\optional{, defaults}}
+ログ記録の環境設定をファイル名 \var{fname} の ConfigParser 形式ファイル
+から読み出します。この関数はアプリケーションから何度も呼び出すことが
+でき、これによって、(設定の選択と、選択された設定を読み出す機構を
+デベロッパが提供していれば) 複数のお仕着せの設定からエンドユーザが
+選択するようにできます。ConfigParser に渡すためのデフォルト値は
+\var{defaults} 引数で指定できます。
+\end{funcdesc}
+
+\begin{funcdesc}{listen}{\optional{port}}
+指定されたポートでソケットサーバを開始し、新たな設定を待ち受け
+(listen) ます。ポートが指定されなければ、モジュールのデフォルト設定
+である \constant{DEFAULT_LOGGING_CONFIG_PORT} が使われます。
+ログ記録の環境設定は \function{fileConfig()} で処理できるような
+ファイルとして送信されます。
+\class{Thread} インスタンスを返し、サーバを開始するために
+\method{start()} を呼び、適切な状況で \method{join()} を
+呼び出すことができます。サーバを停止するには \function{stopListening()}
+を呼んでください。
+設定を送るには、まず設定ファイルを読み、それを4バイトからなる長さを
+struct.\code{pack('>L', n)} を使ってバイナリにパックしたものを
+前に付けたバイト列としてソケットに送ります。
+\end{funcdesc}
+
+\begin{funcdesc}{stopListening}{}
+\function{listen()} を呼び出して作成された、待ち受け中のサーバを
+停止します。通常 \function{listen()} の戻り値に対して \method{join()}
+が呼ばれる前に呼び出します。
+\end{funcdesc}
+
+\subsubsection{環境設定ファイルの書式%
+               \label{logging-config-fileformat}}
+
+\function{fileConfig()} が解釈できる環境設定ファイルの形式は、
+ConfigParser の機能に基づいています。
+ファイルには、\code{[loggers]}、 \code{[handlers]}、および
+\code{[formatters]} といったセクションが入っていなければならず、
+各セクションではファイル中で定義されている各タイプのエンティティを
+名前で指定しています。こうしたエンティティの各々について、
+そのエンティティをどう設定するかを示した個別のセクションがあります。
+すなわち、\code{log01} という名前の \code{[loggers]} セクションにある
+ロガーに対しては、対応する詳細設定がセクション \code{[logger_log01]}
+に収められています。同様に、 \code{hand01} という名前の
+\code{[handlers]} セクションにあるハンドラは \code{[handler_hand01]}
+と呼ばれるセクションに設定をもつことになり、\code{[formatters]} 
+セクションにある \code{form01} は \code{[formatter_form01]}
+というセクションで設定が指定されています。ルートロガーの
+設定は \code{[logger_root]} と呼ばれるセクションで指定
+されていなければなりません。
+
+ファイルにおけるこれらのセクションの例を以下に示します。
+
+\begin{verbatim}
+[loggers]
+keys=root,log02,log03,log04,log05,log06,log07
+
+[handlers]
+keys=hand01,hand02,hand03,hand04,hand05,hand06,hand07,hand08,hand09
+
+[formatters]
+keys=form01,form02,form03,form04,form05,form06,form07,form08,form09
+\end{verbatim}
+
+ルートロガーでは、レベルとハンドラのリストを指定しなければ
+なりません。ルートロガーのセクションの例を以下に示します。
+
+\begin{verbatim}
+[logger_root]
+level=NOTSET
+handlers=hand01
+\end{verbatim}
+
+\code{level} エントリは \code{DEBUG, INFO, WARNING, ERROR, CRITICAL}
+のうちの一つか、\code{NOTSET} になります。ルートロガーの場合にのみ、
+\code{NOTSET} は全てのメッセージがログ記録されることを意味します。
+レベル値は \code{logging} パッケージの名前空間のコンテキストに
+おいて \function{eval()} されます。
+
+\code{handlers} エントリはコンマで区切られたハンドラ名からなる
+リストで、\code{[handlers]} セクションになくてはなりません。
+また、これらの各ハンドラの名前に対応するセクションが設定ファイルに
+存在しなければなりません。
+
+ルートロガー以外のロガーでは、いくつか追加の情報が必要になります。
+これは以下の例のように表されます。
+
+\begin{verbatim}
+[logger_parser]
+level=DEBUG
+handlers=hand01
+propagate=1
+qualname=compiler.parser
+\end{verbatim}
+
+\code{level} および \code{handlers} エントリはルートロガーのエントリ
+と同様に解釈されますが、非ルートロガーのレベルが \code{NOTSET}
+に指定された場合、ログ記録システムはロガー階層のより上位のロガー
+にロガーの実効レベルを問い合わせるところが違います。
+\code{propagate} エントリは、メッセージをロガー階層におけるこの
+ロガーの上位のハンドラに伝播させることを示す 1 に設定されるか、
+メッセージを階層の上位に伝播\strong{しない} ことを示す 0 に
+設定されます。
+\code{qualname} エントリはロガーのチャネル名を階層的に表した
+もの、すなわちアプリケーションがこのロガーを取得する際に使う
+名前になります。
+
+ハンドラの環境設定を指定しているセクションは以下の例のようになります。
+
+\begin{verbatim}
+[handler_hand01]
+class=StreamHandler
+level=NOTSET
+formatter=form01
+args=(sys.stdout,)
+\end{verbatim}
+
+\code{class} エントリはハンドラのクラス (\code{logging} パッケージの
+名前空間において \function{eval()} で決定されます) を示します。
+\code{level} はロガーの場合と同じように解釈され、\code{NOTSET} 
+は "全てを記録する (log everything)" と解釈されます。
+
+\code{formatter} エントリはこのハンドラのフォーマッタに対するキー名
+を表します。空文字列の場合、デフォルトのフォーマッタ
+(\code{logging._defaultFormatter}) が使われます。名前が指定
+されている場合、その名前は \code{[formatters]} セクションになくては
+ならず、対応するセクションが設定ファイル中になければなりません。
+
+\code{args} エントリは、\code{logging} パッケージの名前空間の
+コンテキストで \function{eval()} される際、ハンドラクラスの
+コンストラクタに対する引数からなるリストになります。
+典型的なエントリがどうやって作成されるかについては、対応するハンドラのコンストラクタか、以下の例を参照してください。
+
+\begin{verbatim}
+[handler_hand02]
+class=FileHandler
+level=DEBUG
+formatter=form02
+args=('python.log', 'w')
+
+[handler_hand03]
+class=handlers.SocketHandler
+level=INFO
+formatter=form03
+args=('localhost', handlers.DEFAULT_TCP_LOGGING_PORT)
+
+[handler_hand04]
+class=handlers.DatagramHandler
+level=WARN
+formatter=form04
+args=('localhost', handlers.DEFAULT_UDP_LOGGING_PORT)
+
+[handler_hand05]
+class=handlers.SysLogHandler
+level=ERROR
+formatter=form05
+args=(('localhost', handlers.SYSLOG_UDP_PORT), handlers.SysLogHandler.LOG_USER)
+
+[handler_hand06]
+class=handlers.NTEventLogHandler
+level=CRITICAL
+formatter=form06
+args=('Python Application', '', 'Application')
+
+[handler_hand07]
+class=handlers.SMTPHandler
+level=WARN
+formatter=form07
+args=('localhost', 'from@abc', ['user1@abc', 'user2@xyz'], 'Logger Subject')
+
+[handler_hand08]
+class=handlers.MemoryHandler
+level=NOTSET
+formatter=form08
+target=
+args=(10, ERROR)
+
+[handler_hand09]
+class=handlers.HTTPHandler
+level=NOTSET
+formatter=form09
+args=('localhost:9022', '/log', 'GET')
+\end{verbatim}
+
+フォーマッタの環境設定を指定しているセクションは以下のような形式です。
+
+\begin{verbatim}
+[formatter_form01]
+format=F1 %(asctime)s %(levelname)s %(message)s
+datefmt=
+class=logging.Formatter
+\end{verbatim}
+
+\code{format} エントリは全体を書式化する文字列で、\code{datefmt} 
+エントリは \function{strftime()} 互換の日付/時刻書式化文字列です。
+空文字列の場合、パッケージによって ISO8601 形式の 日付/時刻に置き換えられ、
+日付書式化文字列 "%Y-%m-%d %H:%M:%S" を指定した場合とほとんど同じになります。
+ISO8601 形式ではミリ秒も指定しており、上の書式化文字列の結果にカンマ
+で区切って追加されます。ISO8601 形式の時刻の例は
+\code{2003-01-23 00:29:50,411} です。
+
+\code{class} エントリはオプションです。\code{class} はフォーマッタのクラス名
+(ドット区切りのモジュールとクラス名として)を示します。このオプションは
+\class{Formatter} のサブクラスをインスタンス化するのに有用です。
+\class{Formatter} のサブクラスは例外トレースバックを展開された形式
+または圧縮された形式で表現することができます。

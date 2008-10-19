@@ -1,0 +1,245 @@
+\section{\module{macfs} ---
+様々なファイルシステム関連のサービス}
+
+\declaremodule{standard}{macfs}
+  \platform{Mac}
+\modulesynopsis{
+FSSpec、エイリアスマネージャ、\program{finder}エイリアス、標準ファイル
+パッケージのサポート。}
+
+\deprecated{2.3}{macfsモジュールは旧式のものです。\class{FSSpec}、
+\class{FSRef}、\class{Alias} の操作には、\module{Carbon.File}
+または\refmodule{Carbon.Folder} モジュールを、
+ファイルダイアログには\refmodule{EasyDialogs}を使ってください。
+また、このモジュールはUFSパーティションでは正確には動作しないことが
+わかっています。}
+
+このモジュールでは、Macintoshの\class{FSSpec} の操作、
+エイリアスマネージャ、\program{finder}エイリアス、および標準ファイル
+パッケージへのアクセスを提供しています。
+\index{Macintosh Alias Manager}
+\index{Alias Manager, Macintosh}
+\index{Standard File}
+
+関数やメソッドが\var{file} 引数をとるようになっている場合、引数は常に
+次の 3 つ、(1) Macintosh のフルパス名あるいは部分パス名、
+(2) \class{FSSpec} オブジェクト、
+(3) \citetitle{Inside Macintosh: Files} で解説されている 3 要素のタプル
+\code{(\var{wdRefNum}, \var{parID}, \var{name})}
+のうちのいずれかになります。
+
+\class{FSSpec} は、実在しないファイルでも、実在するフォルダの下に
+配置されていることになっている限り表現できます。
+MacPython ではパス名も同じように扱えますが、\UNIX ベースの Python では
+パス名とFSRefsの挙動が異なるため扱えません。
+詳しくは Apple のドキュメントを参照してください。
+
+エイリアスと標準ファイルパッケージの詳細も Apple のドキュメントに
+書かれています。
+
+\begin{funcdesc}{FSSpec}{file}
+指定したファイルに対する\class{FSSpec}オブジェクトを作成します。
+\end{funcdesc}
+
+\begin{funcdesc}{RawFSSpec}{data}
+FSSpec の \C{} 構造体の生データが入った文字列から\class{FSSpec}
+オブジェクトを作成します。主に\class{FSSpec}構造体をネットワーク経由で得
+る場合に便利です。
+\end{funcdesc}
+
+\begin{funcdesc}{RawAlias}{data}
+Alias の \C{} 構造体の生データが入った文字列から\class{Alias}
+オブジェクトを作成します。主に\class{Alias}構造体をネットワーク経由で得
+る場合に便利です。
+\end{funcdesc}
+
+\begin{funcdesc}{FInfo}{}
+ゼロで埋めた\class{FInfo}オブジェクトを作成します。
+\end{funcdesc}
+
+\begin{funcdesc}{ResolveAliasFile}{file}
+エイリアスファイルを解決します (オリジナルのファイルとの対応を取りま
+す)。\code{(\var{fsspec}, \var{isfolder}, \var{aliased})}
+からなる 3 要素のタプルを返します。
+\var{fsspec} はエイリアス解決によって得られた\class{FSSpec}オブジェクト
+です。\var{fsspec} がフォルダを指している場合、\var{isfolder} は true
+になります。\var{fsspec} がエイリアスを指している場合、\var{aliased} は
+true になります (それ以外の場合には、\var{fsspec} はファイル自体の
+\class{FSSpec} になります)。
+\end{funcdesc}
+
+\begin{funcdesc}{StandardGetFile}{\optional{type, \moreargs}}
+標準的イアログ 「入力ファイルを開く」をユーザに提示します。
+オプションとして、ユーザが選択できるファイルを制限するために
+4 文字の文字列で表されたファイルタイプ指定子を 4 つまで渡せます。
+この関数は、\class{FSSpec}オブジェクトとユーザがキャンセルしないで
+ダイアログを閉じたかどうかを示すフラグを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{PromptGetFile}{prompt\optional{, type, \moreargs}}
+\function{StandardGetFile()} とほぼ同じですが、ダイアログの一番上に表示さ
+れるプロンプトを指定できます。
+\end{funcdesc}
+
+\begin{funcdesc}{StandardPutFile}{prompt\optional{, default}}
+標準ダイアログ 「出力ファイルを開く」をユーザに提示します。
+\var{prompt} はプロンプト文字列です。\var{default} はオプションの引数で、
+出力ファイル名の初期値を指定します。
+この関数は、\class{FSSpec}オブジェクトとユーザがキャンセルしないで
+ダイアログを閉じたかどうかを示すフラグを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{GetDirectory}{\optional{prompt}}
+非標準的ダイアログ「ディレクトリを選ぶ」をユーザに提示します。
+このダイアログでは、選択したいディレクトリを開いておいてから、
+``select  current directory'' ボタンをクリックします。
+\var{prompt} はプロンプト文字列で、ダイアログの一番上に表示されます。
+この関数は、\class{FSSpec}オブジェクトとユーザがキャンセルしないで
+ダイアログを閉じたかどうかを示すフラグを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{SetFolder}{\optional{fsspec}}
+ファイル選択ダイアログを提示する時に最初に表示されるフォルダを設定します。
+\var{fsspec} には、フォルダそのものではなく、フォルダ内のファイル
+を指定します (実在しないファイルでもかまいません)。
+引数を渡さない場合は、フォルダはカレントディレクトリ、つまり 
+\function{os.getcwd()}で返されるディレクトリに設定されます。
+
+System 7.5 以降では、ユーザは「一般設定」コントロールパネルで標準
+ファイルパッケージの振る舞いを変更でき、設定によってはこの関数の
+呼び出しが無効化されるので注意してください。
+\end{funcdesc}
+
+\begin{funcdesc}{FindFolder}{where, which, create}
+ゴミ箱や初期設定フォルダなど、Mac OS が管理している「特別な」フォルダの
+位置を検索します。\var{where} は検索したいディスク、\var{which} は
+検索したいフォルダを指定する4文字の文字列です。\var{create} を設定す
+ると、該当するフォルダが存在しない場合に新たに生成します。
+\code{(\var{vrefnum}, \var{dirid})} からなるタプルを返します。
+
+\var{where} と\var{which} に指定できる定数は、標準モジュール
+\var{Carbon.Folders}にあります。
+\end{funcdesc}
+
+\begin{funcdesc}{NewAliasMinimalFromFullPath}{pathname}
+与えられたファイルを指す最小限の\class{alias}オブジェクトを返します。 
+ファイルはフルパス名で与えなければなりません。これは存在しないファイ
+ルを指す\class{Alias}を作成する唯一の方法です。
+\end{funcdesc}
+
+\begin{funcdesc}{FindApplication}{creator}
+4 文字のクリエータコード\var{creator} を持ったアプリケーションの位置を
+探し出します。この関数はアプリケーションを指す\class{FSSpec}オブジェ
+クトを返します。
+\end{funcdesc}
+
+\subsection{FSSpec オブジェクト \label{fsspec-objects}}
+
+\begin{memberdesc}[FSSpec]{data}
+FSSpecオブジェクトの生データです。
+他のアプリケーションに渡すといった場合に適した形式です。
+\end{memberdesc}
+
+\begin{methoddesc}[FSSpec]{as_pathname}{}
+\class{FSSpec} オブジェクトの表すファイルのフルパス名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{as_tuple}{}
+\class{FSSpec}オブジェクトで記述されたファイルの情報を、
+\code{(\var{wdRefNum}, \var{parID}, \var{name})} のタプルで返します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{NewAlias}{\optional{file}}
+  このFSSpecで記述されたファイルのエイリアスオブジェクトを作成します。
+  省略可能な\var{file}パラメータを渡すと、エイリアスはそのファイルに対
+  する相対指定で作成され、その他の場合は絶対指定となります。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{NewAliasMinimal}{}
+このファイルを指す最小限のエイリアス情報を作成します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{GetCreatorType}{}
+このファイルの4文字のクリエータとタイプを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{SetCreatorType}{creator, type}
+このファイルに4文字のクリエータとタイプを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{GetFInfo}{}
+ファイルのファインダ情報を示す\class{FInfo} オブジェクトを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{SetFInfo}{finfo}
+ファイルのファインダ情報を\var{finfo}(\class{FInfo} オブジェクト)
+で与えた値に設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{GetDates}{}
+作成日、修正日、バックアップ日を意味する3つの浮動小数点数からなるタプル
+を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[FSSpec]{SetDates}{crdate, moddate, backupdate}
+ファイルの作成日、修正日、バックアップ日を設定します。
+各々の値は Python が時刻の表現に使っている標準の浮動小数点型です。
+\end{methoddesc}
+
+\subsection{エイリアスオブジェクト \label{alias-objects}}
+
+\begin{memberdesc}[Alias]{data}
+エイリアス (Alias) レコードの生データです。
+リソースへの書き込みや他のプログラムへの転送に適した形式です。
+\end{memberdesc}
+
+\begin{methoddesc}[Alias]{Resolve}{\optional{file}}
+エイリアスを解決します。エイリアスが相対エイリアスとして作成され
+ている場合は、どこからの相対かを示すファイルを渡さねばなりません。
+エイリアスが指し示すファイルの FSSpec と、\class{Alias} オブジェクト
+自体が検索処理中に変更されたかどうかを示すフラグを返します。
+ファイルは実在しないが、ファイルまでのパスは実在する場合、
+有効な FSSpec を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Alias]{GetInfo}{num}
+\C{}のルーチン\cfunction{GetAliasInfo()}へのインタフェースです。
+\end{methoddesc}
+
+\begin{methoddesc}[Alias]{Update}{file\optional{, file2}}
+エイリアスを、\var{file} に指定したファイルを指すように更新します。
+\var{file2} を指定していれば、相対エイリアスを作成します。
+\end{methoddesc}
+
+今のところ、リソースは\class{Alias} オブジェクトとして直接操作できません。
+そのため、\method{Update()}を呼んだ後か、\method{Resolve()}でエイリアスに
+変更があったと分かった後は、Pythonプログラム側で\class{Alias} 
+オブジェクトから\member{data}の値を取りだし、リソースを修正しておく
+責任があります。
+
+\subsection{FInfo オブジェクト \label{finfo-objects}}
+
+各フィールドの詳しい説明は\citetitle{Inside Macintosh: Files}
+を参照してください。
+
+\begin{memberdesc}[FInfo]{Creator}
+ファイルの4文字のクリエータコードです。
+\end{memberdesc}
+
+\begin{memberdesc}[FInfo]{Type}
+ファイルの4文字のタイプコードです。
+\end{memberdesc}
+
+\begin{memberdesc}[FInfo]{Flags}
+ファイルのファインダフラグで、 16ビットの整数で表現されています。
+\var{Flags}のビット値は、標準モジュール\module{MACFS}で定義されてい
+ます。
+\end{memberdesc}
+
+\begin{memberdesc}[FInfo]{Location}
+フォルダ内でファイルのアイコンが配置されている場所を示す Point 値です。
+\end{memberdesc}
+
+\begin{memberdesc}[FInfo]{Fldr}
+ファイルが入っているフォルダ (を整数で表したもの) です。
+\end{memberdesc}

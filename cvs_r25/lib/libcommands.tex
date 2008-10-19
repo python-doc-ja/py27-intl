@@ -1,0 +1,52 @@
+\section{\module{commands} ---
+         コマンド実行ユーティリティ}
+
+\declaremodule{standard}{commands}
+  \platform{Unix}
+\modulesynopsis{外部コマンドを実行するためのユーティリティです。}
+\sectionauthor{Sue Williams}{sbw@provis.com}
+
+\module{commands}は、システムへコマンド文字列を渡して実行する
+\function{os.popen()}のラッパー関数を含んでいるモジュールです。
+外部で実行したコマンドの結果や、その終了ステータスを扱います。
+
+\module{commands}モジュールは以下の関数を定義しています。
+
+\begin{funcdesc}{getstatusoutput}{cmd}
+文字列\var{cmd}を\function{os.popen()}を使いシェル上で実行し、
+タプル\code{(\var{status}, \var{output})}を返します。
+実際には\code{\{ \var{cmd} ; \} 2>\&1}と実行されるため、
+標準出力とエラー出力が混合されます。
+また、出力の最後の改行文字は取り除かれます。
+コマンドの終了ステータスはC言語関数の\cfunction{wait()}の規則に従って
+解釈することができます。
+\end{funcdesc}
+
+\begin{funcdesc}{getoutput}{cmd}
+\function{getstatusoutput()}に似ていますが、
+終了ステータスは無視され、コマンドの出力のみを返します。
+\end{funcdesc}
+
+% TeXの記号文字の扱いを調べてないので変換後どうなるかわからんです。
+\begin{funcdesc}{getstatus}{file}
+\samp{ls -ld \var{file}}の出力を文字列で返します。
+この関数は\function{getoutput()}を使い、引数内の
+バックスラッシュ記号「$\backslash$」とドル記号「\$」を適切にエスケープします。
+\end{funcdesc}
+
+例:
+
+\begin{verbatim}
+>>> import commands
+>>> commands.getstatusoutput('ls /bin/ls')
+(0, '/bin/ls')
+>>> commands.getstatusoutput('cat /bin/junk')
+(256, 'cat: /bin/junk: No such file or directory')
+>>> commands.getstatusoutput('/bin/junk')
+(256, 'sh: /bin/junk: not found')
+>>> commands.getoutput('ls /bin/ls')
+'/bin/ls'
+>>> commands.getstatus('/bin/ls')
+'-rwxr-xr-x  1 root        13352 Oct 14  1994 /bin/ls'
+\end{verbatim}
+

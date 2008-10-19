@@ -1,0 +1,233 @@
+\section{\module{urlparse} ---
+         URL を解析して構成要素にする}
+\declaremodule{standard}{urlparse}
+
+\modulesynopsis{URL を解析して構成要素にします。}
+
+\index{WWW}
+\index{World Wide Web}
+\index{URL}
+\indexii{URL}{parsing}
+\indexii{relative}{URL}
+
+
+このモジュールでは URL (Uniform Resource Locator) 文字列をその構成要素
+(アドレススキーム、ネットワーク上の位置、パスその他) に分解したり、
+構成要素を URL に組みなおしたり、``相対 URL (relative URL)'' を指定した
+``基底 URL (base URL)'' に基づいて絶対 URL に変換するための標準的な
+インタフェースを定義しています。
+
+このモジュールは相対 URL のインターネット RFC に対応するように設計
+されました (そして RFC の初期ドラフトのバグを発見しました！)。
+サポートされる URL スキームは以下の通りです:
+\code{file}, \code{ftp}, \code{gopher}, \code{hdl}, \code{http}, 
+\code{https}, \code{imap}, \code{mailto}, \code{mms}, \code{news}, 
+\code{nntp}, \code{prospero}, \code{rsync}, \code{rtsp}, \code{rtspu}, 
+\code{sftp}, \code{shttp}, \code{sip}, \code{sips}, \code{snews}, \code{svn}, 
+\code{svn+ssh}, \code{telnet}, \code{wais}。
+
+\versionadded[\code{sftp} および \code{sips} スキームのサポートが追加されました]{2.5}
+
+\module{urlparse} モジュールには以下の関数が定義されています:
+
+\begin{funcdesc}{urlparse}{urlstring\optional{,
+                           default_scheme\optional{, allow_fragments}}}
+URL を解釈して 6 つの構成要素にし、6 要素のタプルを返します。
+このタプルは URL の一般的な構造:
+\code{\var{scheme}://\var{netloc}/\var{path};\var{parameters}?\var{query}\#\var{fragment}}
+に対応しています。
+各タプル要素は文字列で、空の場合もあります。
+構成要素がさらに小さい要素に分解されることはありません (例えば
+ネットワーク上の位置は単一の文字列になります)。また \% によるエスケープ
+は展開されません。上で示された区切り文字がタプルの各要素の一部分
+として含まれることはありませんが、\var{path} 要素の先頭のスラッシュ
+がある場合には例外です。たとえば以下のようになります。
+
+\begin{verbatim}
+>>> from urlparse import urlparse
+>>> o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
+>>> o
+('http', 'www.cwi.nl:80', '/%7Eguido/Python.html', '', '', '')
+>>> o.scheme
+'http'
+>>> o.port
+80
+>>> o.geturl()
+'http://www.cwi.nl:80/%7Eguido/Python.html'
+\end{verbatim}
+
+\var{default_scheme} 引数が指定されている場合、標準のアドレススキーム
+を表し、アドレススキームを指定していない URL に対してのみ
+使われます。この引数の標準の値は空文字列です。
+
+\var{allow_fragments} 引数が偽の場合、URL のアドレススキームが
+フラグメント指定をサポートしていても指定できなくなります。
+この引数の標準の値は \constant{True} です。
+
+戻り値は実際には \pytype{tuple} のサブクラスのインスタンスです。
+このクラスには以下の読み出し専用の便利な属性が追加されています。
+
+\begin{tableiv}{l|c|l|c}{メンバ}{属性}{インデクス}{値}{指定されなかった場合の値}
+  \lineiv{scheme}  {0} {URL スキーム}             {空文字列}
+  \lineiv{netloc}  {1} {ネットワーク上の位置}            {空文字列}
+  \lineiv{path}    {2} {階層的パス}                {空文字列}
+  \lineiv{params}  {3} {最後のパス要素に対するパラメータ} {空文字列}
+  \lineiv{query}   {4} {クエリ要素}                  {空文字列}
+  \lineiv{fragment}{5} {フラグメント指定子}              {空文字列}
+  \lineiv{username}{ } {ユーザ名}                        {\constant{None}}
+  \lineiv{password}{ } {パスワード}                         {\constant{None}}
+  \lineiv{hostname}{ } {ホスト名 (小文字)}           {\constant{None}}
+  \lineiv{port}    { } {ポート番号を表わす整数 (もしあれば)} {\constant{None}}
+\end{tableiv}
+
+結果オブジェクトのより詳しい情報は\ref{urlparse-result-object}節
+``\function{urlparse()} および \function{urlsplit()} の結果'' を参照してください。
+
+\versionchanged[戻り値に属性が追加されました]{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{urlunparse}{parts}
+\code{urlparse()} が返すような形式のタプルから URL を構築します。
+\var{parts} 引数は任意の 6 要素イテラブルで構いません。
+解析された元の URL が、不要な区切り文字
+を持っていた場合には、多少違いはあるが等価な URL になるかもしれません。
+(例えばクエリ内容が空の ? のようなもので、RFC はこれらを等価だと述べています。)
+\end{funcdesc}
+
+\begin{funcdesc}{urlsplit}{urlstring\optional{,
+                           default_scheme\optional{, allow_fragments}}}
+\function{urlparse()} に似ていますが、URL から params を切り離し
+ません。このメソッドは通常、URL の \var{path} 部分において、各セグメント
+にパラメタ指定をできるようにした最近の URL 構文 (\rfc{2396} 参照) が必要な
+場合に、\function{urlparse()} の代わりに使われます。
+パスセグメントとパラメタを分割するためには分割用の関数が必要
+です。この関数は 5 要素のタプル:
+(アドレススキーム、ネットワーク上の位置、パス、クエリ、フラグメント指定子) 
+を返します。
+
+戻り値は実際には \pytype{tuple} のサブクラスのインスタンスです。
+このクラスには以下の読み出し専用の便利な属性が追加されています。
+
+\begin{tableiv}{l|c|l|c}{メンバ}{属性}{インデクス}{値}{指定されなかった場合の値}
+  \lineiv{scheme}  {0} {URL スキーム}             {空文字列}
+  \lineiv{netloc}  {1} {ネットワーク上の位置}            {空文字列}
+  \lineiv{path}    {2} {階層的パス}                {空文字列}
+  \lineiv{query}   {3} {クエリ要素}                  {空文字列}
+  \lineiv{fragment}{4} {フラグメント指定子}              {空文字列}
+  \lineiv{username}{ } {ユーザ名}                        {\constant{None}}
+  \lineiv{password}{ } {パスワード}                         {\constant{None}}
+  \lineiv{hostname}{ } {ホスト名 (小文字)}           {\constant{None}}
+  \lineiv{port}    { } {ポート番号を表わす整数 (もしあれば)} {\constant{None}}
+\end{tableiv}
+
+結果オブジェクトのより詳しい情報は\ref{urlparse-result-object}節
+``\function{urlparse()} および \function{urlsplit()} の結果'' を参照してください。
+
+\versionadded{2.2}
+\versionchanged[戻り値に属性が追加されました]{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{urlunsplit}{parts}
+\code{urlsplit()} が返すような形式のタプル中のエレメントを組み合わせ
+て、文字列の完全な URL にします。
+\var{parts} 引数は任意の 5 要素イテラブルで構いません。
+解析された元の URL が、不要な区切り文字
+を持っていた場合には、多少違いはあるが等価な URL になるかもしれません。
+(例えばクエリ内容が空の ? のようなもので、RFC はこれらを等価だと述べています。)
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{funcdesc}{urljoin}{base, url\optional{, allow_fragments}}
+``基底 URL'' (\var{base}) と ``相対 URL'' (\var{url}) を組み合わせて、
+完全な URL (``絶対 URL'') を構成します。
+ぶっちゃけ、この関数は 基底 URL の要素、特にアドレススキーム、
+ネットワーク上の位置、およびパス (の一部) を使って、相対 URL に
+ない要素を提供します。以下の例のようになります。
+
+\begin{verbatim}
+>>> from urlparse import urljoin
+>>> urljoin('http://www.cwi.nl/%7Eguido/Python.html', 'FAQ.html')
+'http://www.cwi.nl/%7Eguido/FAQ.html'
+\end{verbatim}
+
+\var{allow_fragments} 引数は \code{urlparse()} における引数と同じ意味
+とデフォルトを持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{urldefrag}{url}
+\var{url} がフラグメント指定子を含む場合、フラグメント指定子
+を持たないバージョンに修正された \var{url} と、別の文字列に分割
+されたフラグメント指定子を返します。\var{url} 中にフラグメント
+指定子がない場合、そのままの \var{url} と空文字列を返します。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seerfc{1738}{Uniform Resource Locators (URL)}{
+この RFC では絶対 URL の形式的な文法と意味付けを仕様化しています。}
+  \seerfc{1808}{Relative Uniform Resource Locators}{
+この RFC には絶対 URL と相対 URL を結合するための規則が
+ボーダケースの取扱い方を決定する ``異常な例'' つきで
+収められています。}
+  \seerfc{2396}{Uniform Resource Identifiers (URI): Generic Syntax}{
+この RFC では Uniform Resource Name (URN) と Uniform Resource Locator
+(URL) の両方に対する一般的な文法的要求事項を記述しています。}
+\end{seealso}
+
+
+\subsection{\function{urlparse()} および \function{urlsplit()} の結果
+            \label{urlparse-result-object}}
+
+\function{urlparse()} および \function{urlsplit()} から得られる結果オブジェクト
+はそれぞれ \pytype{tuple} 型のサブクラスです。これらのクラスは
+それぞれの関数の説明の中で述べたような属性とともに、追加のメソッドを
+一つ提供しています。
+
+\begin{methoddesc}[ParseResult]{geturl}{}
+再結合された形で元の URL の文字列を返します。
+この文字列は元の URL とは次のような点で異なるかもしれません。
+スキームは常に小文字に正規化されます。
+また空の要素は省略されます。
+特に、空のパラメータ、クエリ、フラグメント識別子は取り除かれます。
+
+このメソッドの結果は再び解析に回されたとしても不動点となります。
+
+\begin{verbatim}
+>>> import urlparse
+>>> url = 'HTTP://www.Python.org/doc/#'
+
+>>> r1 = urlparse.urlsplit(url)
+>>> r1.geturl()
+'http://www.Python.org/doc/'
+
+>>> r2 = urlparse.urlsplit(r1.geturl())
+>>> r2.geturl()
+'http://www.Python.org/doc/'
+\end{verbatim}
+
+\versionadded{2.5}
+\end{methoddesc}
+
+以下のクラスが解析結果の実装を提供します。
+
+\begin{classdesc*}{BaseResult}
+  具体的な結果クラスたちの基底クラスです。このクラスがほとんどの属性の
+  定義を与えます。しかし \method{geturl()} メソッドは提供しません。この
+  クラスは \class{tuple} から派生しています
+  が、\method{__init__()} や \method{__new__()} をオーバーライドしませ
+  ん。
+\end{classdesc*}
+
+
+\begin{classdesc}{ParseResult}{scheme, netloc, path, params, query, fragment}
+  \function{urlparse()} の結果のための具体クラスで
+  す。\method{__new__()} メソッドをオーバーライドして正しい個数の引数が
+  引き渡されたことを確認するようにしています。
+\end{classdesc}
+
+
+\begin{classdesc}{SplitResult}{scheme, netloc, path, query, fragment}
+  \function{urlsplit()} の結果のための具体クラスで
+  す。\method{__new__()} メソッドをオーバーライドして正しい個数の引数が
+  引き渡されたことを確認するようにしています。
+\end{classdesc}

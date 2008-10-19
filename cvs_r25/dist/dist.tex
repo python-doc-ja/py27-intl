@@ -1,0 +1,3875 @@
+\documentclass{howtojp}
+\usepackage{distutilsjp}
+
+% $Id: dist.tex,v 1.18 2008/10/04 07:01:21 omoikane Exp $
+
+% TODO
+%   Document extension.read_setup_file
+%   Document build_clib command
+%
+
+\title{Python モジュールの配布}
+
+\input{boilerplate}
+
+\author{Greg Ward \\
+Anthony Baxter \\
+日本語訳: Python ドキュメント翻訳プロジェクト}
+\authoraddress{
+	\strong{Python Software Foundation}\\
+	Email: \email{distutils-sig@python.org}
+}
+
+\makeindex
+\makemodindex
+
+\begin{document}
+
+\maketitle
+
+\input{copyright}
+
+\begin{abstract}
+  \noindent
+このドキュメントでは、 Python モジュール配布ユーティリティ
+(Python Distribution Utilities, ``Distutils'') について、 
+モジュール開発者の視点に立ち、多くの人々がビルド/リリース/インストール
+の負荷をほとんどかけずに Python モジュールや拡張モジュールを
+入手できるようにする方法について述べます。
+\end{abstract}
+
+% The ugly "%begin{latexonly}" pseudo-environment suppresses the table
+% of contents for HTML generation.
+%
+%begin{latexonly}
+\tableofcontents
+%end{latexonly}
+
+
+\chapter{Distutilsの紹介}
+\label{intro}
+
+このドキュメントで扱っている内容は、 Distutils を使った Python 
+モジュールの配布で、とりわけ開発者/配布者の役割に重点を置いています:
+Python モジュールのインストールに関する情報を探しているのなら、
+\citetitle[../inst/inst.html]{Installing Python Modules} マニュアル
+を参照してください。
+
+
+\section{概念と用語}
+\label{concepts}
+
+Distutils の使い方は、モジュール開発者とサードパーティ製のモジュールを
+インストールするユーザ/管理者のどちらにとってもきわめて単純です。
+開発者側のやるべきことは (もちろん、しっかりした実装で、詳しく
+文書化され、よくテストされたコードを書くことは別として！) 以下の
+項目になります:
+\begin{itemize}
+\item setup スクリプト (\file{setup.py} という名前にするのがならわし)
+を書く
+\item (必要があれば) setup 設定ファイルを書く
+\item ソースコード配布物を作成する
+\item (必要があれば) 一つまたはそれ以上のビルド済み (バイナリ) 形式の
+配布物を作成する
+\end{itemize}
+これらの作業については、いずれもこのドキュメントで扱っています。
+
+全てのモジュール開発者が複数の実行プラットフォームを利用できるわけでは
+ないので、全てのプラットフォーム向けにビルド済みの配布物を提供して
+もらえると期待するわけにはいきません。ですから、仲介を行う人々、
+いわゆる \emph{パッケージ作成者 (packager)} がこの問題を解決すべく
+立ち上がってくれることが望ましいでしょう。パッケージ作成者は
+モジュール開発者がリリースしたソースコード配布物を、一つまたはそれ以上
+のプラットフォーム上でビルドして、得られたビルド済み配布物をリリース
+することになります。したがって、ほとんどの一般的なプラットフォームに
+おけるユーザは、setup スクリプト一つ実行せず、コードを一行たりとも
+コンパイルしなくても、使っているプラットフォーム向けのきわめて普通の
+方法でほとんどの一般的な Python モジュール配布物をインストールできる
+でしょう。
+
+
+\section{簡単な例}
+\label{simple-example}
+setup スクリプトは通常単純なものですが、Python で書かれているため、ス
+クリプト中で何かを処理しようと考えたとき特に制限はありません。とはい
+え、 setup スクリプト中に何かコストの大きな処理を行うときは十分
+注意してください。
+autoconf 形式の設定スクリプトとは違い、 setup スクリプトはモジュール
+配布物をビルドしてインストールする中で複数回実行されることがあります。
+
+\file{foo.py} という名前のファイルに収められている \module{foo} という
+名前のモジュールを配布したいだけなら、setup スクリプトは以下のような
+単純なものになります:
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foo',
+      version='1.0',
+      py_modules=['foo'],
+      )
+\end{verbatim}
+
+以下のことに注意してください:
+\begin{itemize}
+\item Distutils に与えなければならない情報のほとんどは、 
+\function{setup()} 関数のキーワード引数として与えます。
+\item キーワード引数は二つのカテゴリ: パッケージのメタデータ 
+(パッケージ名、バージョン番号) 、パッケージに何が収められているか
+の情報 (上の場合は pure Python モジュールのリスト)、に行き着きます。
+\item モジュールはファイル名ではなく、モジュール名で指定します
+(パッケージと拡張モジュールについても同じです) 
+\item 作者名、電子メールアドレス、プロジェクトの URL といった
+追加のメタデータを入れておくよう奨めます (~\ref{setup-script} の
+例を参照してください)
+\end{itemize}
+
+このモジュールのソースコード配布物を作成するには、 上記のコードが入った
+setup スクリプト \file{setup.py} を作成して、以下のコマンド:
+
+\begin{verbatim}
+python setup.py sdist
+\end{verbatim}
+%
+を実行します。
+
+この操作を行うと、アーカイブファイル (例えば \UNIX では
+tarball、Windows では ZIP ファイル) を作成します。アーカイブファイル
+には、setup スクリプト \file{setup.py} と、配布したいモジュール
+\file{foo.py} が入っています。アーカイブファイルの名前は
+\file{foo-1.0.targ.gz} (または \file{.zip}) になり、展開すると
+ディレクトリ \file{foo-1.0} を作成します。
+
+エンドユーザが \module{foo} モジュールをインストールしたければ、
+\file{foo-1.0.tar.gz} (または \file{.zip}) をダウンロードし、
+パッケージを展開して、以下のスクリプトを --- \file{foo-1.0} 
+ディレクトリ中で --- 実行します:
+
+\begin{verbatim}
+python setup.py install
+\end{verbatim}
+
+この操作を行うと、インストールされている Python での適切な
+サードパーティ製モジュール置き場に\file{foo.py} を完璧に
+コピーします．
+
+ここで述べた簡単な例では、 Distutils の基本的な概念のいくつかを
+示しています。まず、開発者とインストール作業者は同じ基本
+インタフェース、すなわち setup スクリプトを使っています。
+二人の作業の違いは、使っている Distutils \emph{コマンド (command)}
+にあります: \command{sdist} コマンドは、ほぼ完全に開発者だけが
+対象となる一方、\command{install} はどちらかというとインストール
+作業者向けです (とはいえ、ほとんどの開発者は自分のコードをインストール
+したくなることがあるでしょう)。
+
+ユーザにとって本当に簡単なものにしたいのなら、一つまたはそれ以上の
+ビルド済み配布物を作ってあげられます。例えば、Windows マシン
+上で作業をしていて、他の Windows ユーザにとって簡単な配布物を提供したいのな
+ら、実行可能な形式の (このプラットフォーム向けのビルド済み配布物としては
+もっとも適切な) インストーラを作成できます。これには
+\command{bdist\_wininst} を使います。例えば:
+
+\begin{verbatim}
+python setup.py bdist_wininst
+\end{verbatim}
+%
+とすると、実行可能なインストーラ形式、\file{foo-1.0.win32.exe} が
+現在のディレクトリに作成されます。
+
+その他の有用な配布形態としては、\command{bdist\_rpm} に実装
+されている RPM 形式、 Solaris \program{pkgtool}
+(\command{bdist\_pkgtool}) 、 HP-UX \program{swinstall}
+(\command{bdist_sdux}) があります。例えば、以下のコマンドを実行すると、
+\file{foo-1.0.noarch.rpm} という名前の RPM ファイルを作成します:
+
+\begin{verbatim}
+python setup.py bdist_rpm
+\end{verbatim}
+
+(\command{bdist\_rpm} コマンドは \command{rpm} コマンドを使うため、
+Red Hat Linux や SuSE Linux、 Mandrake Linux といった RPM ベースの
+システムで実行しなければなりません)
+
+どの配布形式が利用できるかは、
+
+\begin{verbatim}
+python setup.py bdist --help-formats
+\end{verbatim}
+%
+を実行すれば分かります。
+
+
+\section{Python 一般の用語}
+\label{python-terms}
+
+このドキュメントを読んでいるのなら、モジュール (module)、
+拡張モジュール (extension) などが何を表すのかをよく知っているかも
+しれません。とはいえ、読者がみな共通のスタートポイントに
+立って Distutils の操作を始められるように、ここで一般的な Python 用語
+について以下のような用語集を示しておきます:
+\begin{description}
+\item[モジュール (module)] Python においてコードを再利用する際の
+基本単位: すなわち、他のコードから import されるひとかたまりのコード
+です。ここでは、三種類のモジュール: pure Python モジュール、
+拡張モジュール、パッケージが関わってきます。
+\item[pure Python モジュール] Python で書かれ、単一の \file{.py} 
+ファイル内に収められたモジュールです (\file{.pyc} かつ/または 
+\file{.pyo} ファイルと関連があります) 。 ``pure モジュール 
+(pure module)'' と呼ばれることもあります。
+\item[拡張モジュール (extension module)] Python を実装している
+低水準言語: Python の場合は C/\Cpp{} 、 Jython の場合は Java 、
+で書かれたモジュールです。
+通常は、動的にロードできるコンパイル済みの単一のファイルに入っています。
+例えば、\UNIX 向け Python 拡張のための共有オブジェクト (\file{.so}) 、
+Windows 向け Python 拡張のための DLL (\file{.pyd} という拡張子が与えら
+れています)、 Jython 拡張のための Java クラスといった具合です。
+(現状では、 Distutils は Python 向けの C/\Cpp{} 拡張モジュールしか
+扱わないので注意してください。)
+\item[パッケージ (package)] 他のモジュールが入っているモジュールです;
+通常、ファイルシステム内のあるディレクトリに収められ、
+\file{\_\_init\_\_.py} が入っていることで通常のディレクトリと区別
+できます。
+\item[ルートパッケージ (root package)] 階層的なパッケージの根 (root)
+の部分にあたるパッケージです。(この部分には \file{\_\_init\_\_.py}
+ファイルがないので、本当のパッケージではありませんが、便宜上
+そう呼びます。) 標準ライブラリの大部分はルートパッケージに入って
+います、また、多くの小規模な単体のサードパーティモジュールで、他の
+大規模なモジュールコレクションに属していないものもここに入ります。
+正規のパッケージと違い、ルートパッケージ上のモジュールの実体は様々な
+ディレクトリにあります: 実際は、\code{sys.path} に列挙されている
+ディレクトリ全てが、ルートパッケージに配置されるモジュールの内容に
+影響します。
+\end{description}
+
+
+\section{Distutils 固有の用語}
+\label{distutils-term}
+以下は Distutils を使って Python モジュールを配布する際に使われる
+特有の用語です:
+\begin{description}
+\item[モジュール配布物 (module distribution)] 一個のファイルとして
+ダウンロード可能なリソースの形をとり、\emph{一括して} 
+インストールされることになっている形態で配られる Python モジュールの
+コレクションです。よく知られたモジュール配布物には、Numeric Python、
+PyXML、 PIL (the Python Imaging Library)、 mxBase などがあります。
+(\emph{パッケージ (package)} と呼ばれることもありますが、 Python 
+用語としてのパッケージとは意味が違います: 一つのモジュール配布物
+の中には、場合によりゼロ個、一つ、それ以上の Python パッケージが
+入っています。)
+\item[pure モジュール配布物 (pure module distribution)] 
+pure Python モジュールやパッケージだけが入ったモジュール配布物
+です。``pure 配布物 (pure distribution)'' とも呼ばれます。
+
+\item[非 pure モジュール配布物 (non-pure module distribution)] 
+少なくとも一つの拡張モジュールが入ったモジュール配布物です。
+``非 pure 配布物''とも呼びます。
+
+\item[配布物ルートディレクトリ (distribution root)] ソースコードツリー
+(またはソース配布物) ディレクトリの最上階層で、 \file{setup.py} の
+ある場所です。一般的には、 \file{setup.py} はこのディレクトリ上で
+実行します。
+\end{description}
+
+
+\chapter{setup スクリプトを書く}
+\label{setup-script}
+
+setup スクリプトは、Distutils を使ってモジュールをビルドし、配布し、
+インストールする際の全ての動作の中心になります。
+setup スクリプトの主な目的は、モジュール配布物について Distutils に
+伝え、モジュール配布を操作するための様々なコマンドを正しく動作させる
+ことにあります。 上の ~\ref{simple-example} の節で見てきたように、
+setup スクリプトは主に \function{setup()} の呼び出しからなり、
+開発者が distuils に対して与えるほとんどの情報は \function{setup()}
+のキーワード引数として指定されます。
+
+ここではもう少しだけ複雑な例: Distutils 自体の setup スクリプト、を
+示します。これについては、以降の二つの節でフォローします。
+(Distutils が入っているのは Python 1.6 以降であり、 Python 1.5.2 
+ユーザが他のモジュール配布物をインストールできるようにするための
+独立したパッケージがあることを思い出してください。
+ここで示した、Distutils 自身の setup スクリプトは、Python 1.5.2 に
+Distutils パッケージをインストールする際に使います。)
+
+\begin{verbatim}
+#!/usr/bin/env python
+
+from distutils.core import setup
+
+setup(name='Distutils',
+      version='1.0',
+      description='Python Distribution Utilities',
+      author='Greg Ward',
+      author_email='gward@python.net',
+      url='http://www.python.org/sigs/distutils-sig/',
+      packages=['distutils', 'distutils.command'],
+     )
+\end{verbatim}
+
+上の例と、 ~\ref{simple-example} で示したファイル一つからなる小さな
+配布物とは、違うところは二つしかありません: メタデータの追加と、
+モジュールではなくパッケージとして pure Python モジュール群を
+指定しているという点です。この点は重要です。というのも、 Distutils は
+2 ダースものモジュールが (今のところ) 二つのパッケージに分かれて入って
+いるからです; 各モジュールについていちいち明示的に記述したリストは、
+作成するのが面倒だし、維持するのも難しくなるでしょう。
+その他のメタデータについては、 ~\ref{meta-data} を参照してください。
+
+setup スクリプトに与えるパス名 (ファイルまたはディレクトリ)
+は、 \UNIX{} におけるファイル名規約、つまりスラッシュ ('/') 区切りで
+書かねばなりません。Distutils はこのプラットフォーム中立の表記を、
+実際にパス名として使う前に、現在のプラットフォームに適した表記に
+注意深く変換します。この機能のおかげで、setup スクリプトを異なる
+オペレーティングシステム間にわたって可搬性があるものにできます。
+言うまでもなく、これは Distutils の大きな目標の一つです。
+この精神に従って、このドキュメントでは全てのパス名をスラッシュ区切り
+にしています。 (Mac OS 9プログラマは、先頭にスラッシュが \emph{ない}
+場合は、 相対パスを表すということを心に留めておかねば
+なりません。この規約は、コロンを使った Mac OS での規約と逆だからです。)
+
+もちろん、この取り決めは Distutils に渡すパス名だけに適用されます。
+もし、例えば \function{glob.glob()} や \function{os.listdir()} の
+ような、標準の Python 関数を使ってファイル群を指定するのなら、
+パス区切り文字 (path separator) をハードコーディングせず、
+以下のように可搬性のあるコードを書くよう注意すべきです:
+
+\begin{verbatim}
+    glob.glob(os.path.join('mydir', 'subdir', '*.html'))
+    os.listdir(os.path.join('mydir', 'subdir'))
+\end{verbatim}
+
+
+\section{パッケージを全て列挙する}
+\label{listing-packages}
+
+\option{packages} オプションは、 \option{packages} リスト中で
+指定されている各々のパッケージについて、パッケージ内に見つかった
+全ての pure Python モジュールを処理 (ビルド、配布、インストール、等) 
+するよう Distutils に指示します。このオプションを指定するためには、
+当然のことながら各パッケージ名はファイルシステム上のディレクトリ名と
+何らかの対応付けができなければなりません。デフォルトで使われる
+対応関係はきわめてはっきりしたものです。すなわち、パッケージ
+\module{distutils} が配布物ルートディレクトリからの相対パス
+\file{distutils} で表されるディレクトリ中にあるというものです。
+つまり、setup スクリプト中で \code{packages = ['foo']} と指定したら、
+スクリプトの置かれたディレクトリからの相対パスで
+\file{foo/\_\_init\_\_.py} を探し出せると Distutils に確約した
+ことになります。この約束を裏切ると Distutils は警告を出しますが、
+そのまま壊れたパッケージの処理を継続します。
+
+ソースコードディレクトリの配置について違った規約を使っていても、
+まったく問題はありません: 単に \option{package\_dir} オプションを
+指定して、 Distutils に自分の規約を教えればよいのです。
+例えば、全ての Python ソースコードを \file{lib} 下に置いて、
+``ルートパッケージ'' 内のモジュール (つまり、どのパッケージ
+にも入っていないモジュール) を \file{lib} 内に入れ、
+\module{foo} パッケージを \file{lib/foo} に入れる、といった
+具合にしたいのなら、
+
+\begin{verbatim}
+package_dir = {'': 'lib'}
+\end{verbatim}
+%
+を setup スクリプト内に入れます。辞書内のキーはパッケージ名で、
+空のパッケージ名はルートパッケージを表します。キーに対応する値は
+ルートパッケージからの相対ディレクトリ名です、この場合、
+\code{packages = ['foo']} を指定すれば、
+\file{lib/foo/\_\_init\_\_.py} が存在すると Distutils に
+確約したことになります。
+
+もう一つの規約のあり方は \module{foo} パッケージを \file{lib} に
+置き換え、\module{foo.bar} パッケージが \file{lib/bar} にある、
+などとするものです。このような規約は、 setup スクリプトでは
+
+\begin{verbatim}
+package_dir = {'foo': 'lib'}
+\end{verbatim}
+%
+のように書きます。 \option{package\_dir} 辞書に
+\code{\var{package}: \var{dir}} のようなエントリがあると、
+\var{package} の下にある全てのパッケージに対してこの規則が
+暗黙のうちに適用され、その結果 \module{foo.bar} の場合が自動的に
+処理されます。
+この例では、 \code{packages = ['foo', 'foo.bar']} は、
+Distutils に \file{lib/\_\_init\_\_.py} と 
+\file{lib/bar/\_\_init\_\_.py} を探すように指示します。
+(\option{package\_dir} は再帰的に適用されますが、この場合
+\option{packages} の下にある全てのパッケージを明示的に指定
+しなければならないことを心に留めておいてください:
+Distutils は \file{\_\_init\_\_.py} を持つディレクトリを
+ソースツリーから再帰的にさがしたりは \emph{しません} 。)
+
+
+\section{個々のモジュールを列挙する}
+\label{listing-modules}
+
+小さなモジュール配布物の場合、パッケージを列挙するよりも、
+全てのモジュールを列挙するほうがよいと思うかもしれません ---
+特に、単一のモジュールが ``ルートパッケージ'' にインストール
+される (すなわち、パッケージは全くない) ような場合がそうです。
+この最も単純なケースは ~\ref{simple-example} で示しました; 
+ここではもうちょっと入り組んだ例を示します:
+
+\begin{verbatim}
+py_modules = ['mod1', 'pkg.mod2']
+\end{verbatim}
+%
+ここでは二つのモジュールについて述べていて、一方は ``ルート''
+パッケージに入り、他方は \module{pkg} パッケージに入ります。
+ここでも、デフォルトのパッケージ/ディレクトリのレイアウトは、
+二つのモジュールが \file{mod1.py} と \file{pkg/mod2.py} 
+にあり、\file{pkg/\_\_init\_\_.py} が存在することを暗示して
+います。また、パッケージ/ディレクトリの対応関係は
+\option{package\_dir} オプションでも上書きできます。
+
+
+\section{拡張モジュールについて記述する}
+\label{describing-extensions}
+
+% XXX read over this section
+pure Python モジュールを書くより Python 拡張モジュールを書く方が
+ちょっとだけ複雑なように、 Distutils での拡張モジュールに関する
+記述もちょっと複雑です。pure モジュールと違い、単にモジュールや
+パッケージを列挙して、Distutils が正しいファイルを見つけてくれる
+と期待するだけでは十分ではありません; 拡張モジュールの名前、
+ソースコードファイル (群) 、そして何らかのコンパイル/リンクに
+関する必要事項 (include ディレクトリ、リンクすべきライブラリ、等)
+を指定しなければなりません。
+
+こうした指定は全て、 \function{setup()} の別のキーワード
+引数、 \option{ext_modules} オプションを介して行えます。
+\option{ext_modules} は、 \class{Extension} インスタンスから
+なるただのリストで、各インスタンスに一個の拡張モジュールを
+記述するようになっています。仮に、\file{foo.c} で実装された
+拡張モジュール \module{foo} が、配布物に一つだけ入ってるとします。
+コンパイラ/リンカに他の情報を与える必要がない場合、この拡張
+モジュールのための記述はきわめて単純です:
+
+\begin{verbatim}
+Extension('foo', ['foo.c'])
+\end{verbatim}
+
+\class{Extension} クラスは、 \function{setup()} によって、 
+\module{distutils.core} から import されます。
+従って、拡張モジュールが一つだけ入っていて、他には何も入っていない
+モジュール配布物を作成するための setup スクリプトは、以下のように
+なるでしょう:
+
+\begin{verbatim}
+from distutils.core import setup, Extension
+setup(name='foo', 
+      version='1.0',
+      ext_modules=[Extension('foo', ['foo.c'])],
+      )
+\end{verbatim}
+
+\class{Explained} クラス (実質的には、\class{Explained} クラスの
+根底にある \command{build\_ext} コマンドで実装されている、拡張
+モジュールをビルドする機構) は、Python 拡張モジュールをきわめて
+柔軟に記述できるようなサポートを提供しています。
+これについては後の節で説明します。
+
+
+\subsection{拡張モジュールの名前とパッケージ}
+
+\class{Extension} クラスのコンストラクタに与える最初の引数は、
+常に拡張モジュールの名前にします。これにはパッケージ名も含めます。
+例えば、
+
+\begin{verbatim}
+Extension('foo', ['src/foo1.c', 'src/foo2.c']p)
+\end{verbatim}
+
+とすると、拡張モジュールをルートパッケージに置くことになります。一方、
+
+\begin{verbatim}
+Extension('pkg.foo', ['src/foo1.c', 'src/foo2.c'])
+\end{verbatim}
+
+は、同じ拡張モジュールを \module{pkg} パッケージの下に置くよう
+記述しています。ソースコードファイルと、作成されるオブジェクトコードは
+どちらの場合でも同じです; 作成された拡張モジュールがファイルシステム
+上のどこに置かれるか (すなわち Python の名前空間上のどこに置かれるか) 
+が違うにすぎません。
+
+同じパッケージ内に (または、同じ基底パッケージ下に) いくつもの拡張
+モジュールがある場合、\option{ext\_package} キーワード引数を
+\function{setup()} に指定します。例えば、
+
+\begin{verbatim}
+setup(...
+      ext_package='pkg',
+      ext_modules=[Extension('foo', ['foo.c']),
+                   Extension('subpkg.bar', ['bar.c'])],
+     )
+\end{verbatim}
+
+とすると、 \file{foo.c} をコンパイルして \module{pkg.foo} にし、
+\file{bar.c} をコンパイルして \module{pkg.subpkg.bar} にします。
+
+
+\subsection{拡張モジュールのソースファイル}
+
+\class{Extension} コンストラクタの二番目の引数は、ソースファイルの
+リストです。 Distutils は現在のところ、C、\Cpp 、そして Objective-C
+の拡張しかサポートしていないので、引数は通常 C/\Cpp/Objective-C
+ソースコードファイルになります。 (\Cpp ソースコードファイルを区別
+できるよう、正しいファイル拡張子を使ってください:  \file{.cc} や
+\file{.cpp} にすれば、 \UNIX{} と Windows 用の双方のコンパイラで
+認識されるようです。)
+
+ただし、 SWIG インタフェース (\file{.i}) ファイルはリストに含め
+られます; \command{build\_ext} コマンドは、 SWIG で書かれた
+拡張パッケージをどう扱えばよいか心得ています: \command{build\_ext} 
+は、インタフェースファイルを SWIG にかけ、得られた C/\Cpp{} 
+ファイルをコンパイルして拡張モジュールを生成します。
+
+\XXX{SWIG サポートはまだ荒削りで、ほとんどテストされていません;
+\Cpp{} 拡張に対する SWIG サポートは特にそうです! インタフェース仕様が
+固まったときに、もっと詳細な説明をここに。}
+
+プラットフォームによっては、コンパイラで処理され、拡張モジュールに
+取り込まれるような非ソースコードファイルを含められます。
+非ソースコードファイルとは、現状では Visual \Cpp 向けの Windows
+メッセージテキスト (\file{.mc}) ファイルや、リソース定義 (\file{.rc}) 
+ファイルを指します。これらのファイルはバイナリリソース (\file{.res}) 
+ファイルにコンパイルされ、実行ファイルにリンクされます。
+
+\subsection{プリプロセッサオプション}
+
+\class{Extension} には三種類のオプション引数: \code{include\_dirs}, 
+\code{define\_macros}, そして \code{undef\_macros} があり、検索対象に
+するインクルードディレクトリを指定したり、プリプロセッサマクロを
+定義 (define)/定義解除 (undefine) したりする必要があるとき役立ちます。
+
+例えば、拡張モジュールが配布物ルート下の \file{include} 
+ディレクトリにあるヘッダファイルを必要とするときには、
+\code{include\_dirs} オプションを使います:
+
+\begin{verbatim}
+Extension('foo', ['foo.c'], include_dirs=['include'])
+\end{verbatim}
+
+ここには絶対パスも指定できます; 例えば、自分の拡張モジュールが、
+\file{/usr} の下にX11R6 をインストールした \UNIX{} システムだけで
+ビルドされると知っていれば、
+
+\begin{verbatim}
+Extension('foo', ['foo.c'], include_dirs=['/usr/include/X11'])
+\end{verbatim}
+
+のように書けます。
+
+自分のコードを配布する際には、このような可搬性のない使い方は
+避けるべきです: おそらく、 C のコードを
+\begin{verbatim}
+#include <X11/Xlib.h>
+\end{verbatim}
+
+のように書いた方がましでしょう。
+
+他の Python 拡張モジュール由来のヘッダを include する必要があるなら、
+Distutils の \command{install\_header} コマンドが一貫した方法で
+ヘッダファイルをインストールするという事実を活用できます。
+例えば、 Numerical Python のヘッダファイルは、 (標準的な \UNIX{} が
+インストールされた環境では) 
+\file{/usr/local/include/python1.5/Numerical} にインストールされます。
+(実際の場所は、プラットフォームやどの Python をインストールしたかで
+異なります。) Python の include ディレクトリ --- 今の例では
+\file{/usr/local/include/python1.5} --- は、 Python 拡張モジュールを
+ビルドする際に常にヘッダファイル検索パスに取り込まれるので、
+C コードを書く上でもっともよいアプローチは、
+\begin{verbatim}
+#include <Numerical/arrayobject.h>
+\end{verbatim}
+となります。
+
+\file{Numerical} インクルードディレクトリ自体をヘッダ検索パス
+に置きたいのなら、このディレクトリを Distutils の \refmodule{distutils.sysconfig} 
+モジュールを使って見つけさせられます:
+
+\begin{verbatim}
+from distutils.sysconfig import get_python_inc
+incdir = os.path.join(get_python_inc(plat_specific=1), 'Numerical')
+setup(...,
+      Extension(..., include_dirs=[incdir]),
+      )
+\end{verbatim}
+
+この書き方も可搬性はあります --- プラットフォームに関わらず、
+どんな Python がインストールされていても動作します --- が、
+単に実践的な書き方で C コードを書く方が簡単でしょう。
+
+\code{define\_macros} および \code{undef\_macros} オプションを使って、
+プリプロセッサマクロを定義 (define) したり、定義解除 (undefine)
+したりもできます。
+\code{define\_macros} はタプル \code{(name, value)} からなるリストを
+引数にとります。\code{name} は定義したいマクロの名前 (文字列) で、
+\code{value} はその値です: \code{value} は文字列か \code{None} に
+なります。(マクロ \code{FOO} を \code{None} にすると、C ソースコード内
+で \code{\#define FOO} と書いたのと同じになります: こう書くと、
+ほとんどのコンパイラは \code{FOO} を文字列 \code{1} に設定します。)
+\code{undef\_macros} には、定義解除したいマクロ名からなるリストを
+指定します。
+
+例えば、以下の指定:
+
+\begin{verbatim}
+Extension(...,
+          define_macros=[('NDEBUG', '1'),
+                         ('HAVE_STRFTIME', None)],
+          undef_macros=['HAVE_FOO', 'HAVE_BAR'])
+\end{verbatim}
+
+は、全ての C ソースコードファイルの先頭に、以下のマクロ:
+
+\begin{verbatim}
+#define NDEBUG 1
+#define HAVE_STRFTIME
+#undef HAVE_FOO
+#undef HAVE_BAR
+\end{verbatim}
+
+があるのと同じになります。
+
+\subsection{ライブラリオプション}
+
+拡張モジュールをビルドする際にリンクするライブラリや、ライブラリを
+検索するディレクトリも指定できます。
+\code{libraries} はリンクするライブラリのリストで、
+\code{library\_dirs} はリンク時にライブラリを検索するディレクトリの
+リストです。また、\code{runtime\_library\_dirs} は、実行時に
+共有ライブラリ (動的にロードされるライブラリ) を検索するディレクトリの
+リストです。
+
+例えば、ビルド対象システムの標準ライブラリ検索パスにあることが分かって
+いるライブラリをリンクする時には、以下のようにします。
+
+\begin{verbatim}
+Extension(...,
+          libraries=['gdbm', 'readline'])
+\end{verbatim}
+
+非標準のパス上にあるライブラリをリンクしたいなら、その場所を
+\code{library\_dirs} に入れておかなければなりません:
+
+\begin{verbatim}
+Extension(...,
+          library_dirs=['/usr/X11R6/lib'],
+          libraries=['X11', 'Xt'])
+\end{verbatim}
+
+(繰り返しになりますが、この手の可搬性のない書き方は、コードを配布する
+のが目的なら避けるべきです。)
+
+\XXX{ここか、どこか別のところで clib ライブラリについて触れておかねば!}
+
+\subsection{その他の操作}
+
+他にもいくつかオプションがあり、特殊な状況を扱うために使います。
+
+\option{extra\_objects} オプションには、リンカに渡すオブジェクトファイル
+のリストを指定します。ファイル名には拡張子をつけてはならず、コンパイラ
+で使われているデフォルトの拡張子が使われます。
+
+\option{extra\_compile\_args} および \option{extra\_link\_args} には、
+それぞれコンパイラとリンカに渡す追加のコマンドライン引数を指定します。
+
+\option{export\_symbols} は Windows でのみ意味があります。
+このオプションには、公開 (export) する (関数や変数の) シンボルのリスト
+を入れられます。コンパイルして拡張モジュールをビルドする際には、
+このオプションは不要です: Distutils は公開するシンボルを自動的に
+\code{initmodule} に渡すからです。
+
+\section{パッケージと配布物の関係 (Relationships between Distributions and Packages)}
+
+配布物はパッケージと3種類の方法で関係します:
+
+\begin{enumerate}
+  \item パッケージかモジュールを要求する。
+
+  \item パッケージかモジュールを提供する。
+
+  \item パッケージかモジュールを廃止する。
+\end{enumerate}
+
+これらの関係は、\function{distutils.core.setup()}関数のキーワード引数を
+利用して指定することができます。
+
+他のPythonモジュールやパッケージに対する依存は、\function{setup()}の
+\var{requires}キーワード引数で指定できます。
+引数の値は文字列のリストでなければなりません。
+各文字列は、必要とするパッケージと、オプションとしてパッケージのバージョンを
+指定します。
+
+あるモジュールかパッケージの任意のバージョンが必要な場合、
+指定する文字列はモジュール名かパッケージ名になります。例えば、 \code{'mymodule'} や
+\code{'xml.parsers.expat'} を含みます。
+
+特定のバージョンが必要な場合、修飾子(qualifier)の列を加えることができます。
+各修飾子は、比較演算子とバージョン番号からなります。利用できる比較演算子は:
+
+\begin{verbatim}
+<    >    ==
+<=   >=   !=
+\end{verbatim}
+
+これらの修飾子はカンマ(空白文字を入れても良いです)で区切って複数並べることができます。
+その場合、全ての修飾子が適合する必要があります; 評価する時に論理ANDでつなげられます。
+
+いくつかの例を見てみましょう:
+
+\begin{tableii}{l|l}{code}{require式}{説明}
+  \lineii{==1.0}               {version \code{1.0} のみが適合します}
+  \lineii{>1.0, !=1.5.1, <2.0} {\code{1.5.1} を除いて、 \code{1.0} より後ろで
+                                \code{2.0} より前の全てのバージョンに適合します。}
+\end{tableii}
+
+これで、依存を指定することができました。同じように、この配布物が他の配布物に
+必要とされる何を提供するのかを指定する必要があります。
+これは、\function{setup()} の \var{provide} キーワード引数によって指定できます。
+この引数の値は文字列のリストで、各要素はPythonモジュールかパッケージの名前です。
+バージョンを指定することもできます。
+もしバージョンが指定されなかった場合、配布物のバージョン番号が利用されます。
+
+いくつかの例です:
+
+\begin{tableii}{l|l}{code}{provide 式}{説明}
+  \lineii{mypkg}      {\code{mypkg} を提供します。バージョンは配布物のものを使います。}
+  \lineii{mypkg (1.1} {\code{mypkg} version 1.1 を提供します。配布物のバージョン番号は
+                        気にしません}
+\end{tableii}
+
+パッケージは \var{obsoletes} キーワードを利用することで、他のパッケージを廃止することを
+宣言することもできます。
+この値は\var{requires}キーワードと似ています: モジュールやパッケージを指定する文字列の
+リストです。各文字列は、モジュールかパッケージの名前と、オプションとして一つ以上のバージョン
+指定から構成されています。バージョン指定は、モジュールやパッケージの名前のうしろに、
+丸括(parentheses)でかこわれています。
+
+指定されたバージョンは、その配布物によって廃止されるバージョンを示しています。
+バージョン指定が存在しない場合は、指定された名前のモジュールまたはパッケージの
+全てが廃止されたと解釈されます。
+
+
+\section{スクリプトをインストールする}
+
+ここまでは、スクリプトから import され、それ自体では実行されない
+ような pure Python モジュールおよび非 pure Python モジュール
+について扱ってきました。
+
+スクリプトとは、Python ソースコードを含むファイルで、コマンドライン
+から実行できるよう作られているものです。スクリプトは Distutils に
+複雑なことを一切させません。唯一の気の利いた機能は、スクリプトの
+最初の行が \code{\#!} で始まっていて、 ``python'' という単語が
+入っていた場合、Distutils は最初の行を現在使っているインタプリタを
+参照するよう置き換えます。 デフォルトでは現在使っているインタプリタと
+置換しますが、オプション \longprogramopt{executable} (または
+\programopt{-e}) を指定することで、明示的にインタプリタのパスを指定し
+て上書きすることができます。
+
+\option{scripts} オプションには、単に上で述べた方法で取り扱うべき
+ファイルのリストを指定するだけです。PyXML の setup スクリプトを
+例に示します:
+
+\begin{verbatim}
+setup(... 
+      scripts=['scripts/xmlproc_parse', 'scripts/xmlproc_val']
+      )
+\end{verbatim}
+
+
+\section{パッケージデータをインストールする}
+
+しばしばパッケージに追加のファイルをインストールする必要があります。
+このファイルは、パッケージの実装に強く関連したデータや、そのパッケー
+ジを使うプログラマーが必要とするドキュメントなどです。
+これらのファイルを\dfn{パッケージデータ}と呼びます。
+
+パッケージデータは 関数\function{setup()}にキーワード引数
+\code{package_data} を与えることで追加できます。
+この値はパッケージ名から、パッケージへコピーされる相対パス名リストへの
+マップである必要があります。それぞれのパスは対応するパッケージが含まれ
+るディレクトリ(もし適切なら\code{package_dir}のマッピングが利用されま
+す)からの相対パスとして扱われます。つまり、ファイルはソースディレクト
+リ中にパッケージの一部として存在すると仮定されています。
+この値にはグロブパターンを含むことができます。
+
+パス名にはディレクトリ部分を含むことができます。必要なディレクトリは
+インストール時に作成されます。
+
+たとえば、パッケージがいくつかのデータファイルを含むサブディレクトリを
+含んでいる場合、ソースツリーでは以下のように配置できます:
+
+\begin{verbatim}
+setup.py
+src/
+    mypkg/
+        __init__.py
+        module.py
+        data/
+            tables.dat
+            spoons.dat
+            forks.dat
+\end{verbatim}
+
+対応する \function{setup()}呼び出しは以下のようになります:
+
+\begin{verbatim}
+setup(...,
+      packages=['mypkg'],
+      package_dir={'mypkg': 'src/mypkg'},
+      package_data={'mypkg': ['data/*.dat']},
+      )
+\end{verbatim}
+ 
+ 
+\versionadded{2.4}
+
+
+
+
+
+\section{追加のファイルをインストールする}
+
+\option{data\_files} オプションを使うと、モジュール配布物で必要な
+追加のファイル: 設定ファイル、メッセージカタログ、データファイル、
+その他これまで述べてきたカテゴリに収まらない全てのファイルを指定
+できます。
+
+\option{data\_files} には、(\var{directory}, \var{files}) の
+ペアを以下のように指定します:
+
+\begin{verbatim}
+setup(...
+      data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
+                  ('config', ['cfg/data.cfg']),
+                  ('/etc/init.d', ['init-script'])]
+     )
+\end{verbatim}
+
+データファイルのインストール先ディレクトリ名は指定できますが、
+データファイル自体の名前の変更はできないので注意してください。
+
+各々の (\var{directory}, \var{files}) ペアには、インストール先の
+ディレクトリ名と、そのディレクトリにインストールしたいファイルを
+指定します。\var{directory} が相対パスの場合、インストール
+プレフィクス (installation prefix、 pure Python パッケージなら
+\code{sys.prefix} 、拡張モジュールの入ったパッケージなら
+\code{sys.exec_prefix}) からの相対パスと解釈されます。
+\var{files} 内の各ファイル名は、パッケージソースコード配布物
+の最上階層の、 \file{setup.py} のあるディレクトリからの相対パスと
+解釈されます。\var{files} に書かれたディレクトリ情報は、
+ファイルを最終的にどこにインストールするかを決めるときには使われ
+ません; ファイルの名前だけが使われます。
+
+\option{data\_files} オプションは、ターゲットディレクトリを指定せずに、
+単にファイルの列を指定できます。しかし、このやり方は推奨されておらず、
+指定すると \command{install} コマンドが警告を出力します。
+ターゲットディレクトリにデータファイルを直接インストールしたいなら、
+ディレクトリ名として空文字列を指定してください。
+
+\section{追加のメタデータ}
+\label{meta-data}
+
+setup スクリプトには、名前やバージョンにとどまらず、その他の
+メタデータを含められます。以下のような情報を含められます:
+
+\begin{tableiv}{l|p{15zw}|l|c}{code}%
+  {メタデータ}{説明}{値}{注記}
+  \lineiv{name}{パッケージの名前}
+         {短い文字列}{(1)}
+  \lineiv{version}{リリースのバージョン}
+         {短い文字列}{(1)(2)}
+  \lineiv{author}{パッケージ作者の名前}
+         {短い文字列}{(3)}
+  \lineiv{author_email}{パッケージ作者の電子メールアドレス}
+         {電子メールアドレス}{(3)}
+  \lineiv{maintainer}{パッケージメンテナンス担当者の名前}
+         {短い文字列}{(3)}
+  \lineiv{maintainer_email}{パッケージメンテナンス担当者の
+電子メールアドレス}{電子メールアドレス}{(3)}
+  \lineiv{url}{パッケージのホームページ}
+         {URL}{(1)}
+  \lineiv{description}{パッケージについての簡潔な概要説明}
+         {短い文字列}{}
+  \lineiv{long_description}{パッケージについての詳細な説明}
+         {長い文字列}{}
+  \lineiv{download_url}{パッケージをダウンロードできる場所}
+         {URL}{(4)}
+  \lineiv{classifiers}{分類語のリスト}
+         {文字列からなるリスト}{(4)}
+\end{tableiv}
+
+\noindent 注記:
+\begin{description}
+\item[(1)] 必須のフィールドです。
+\item[(2)] バージョン番号は
+\emph{major.minor\optional{.patch\optional{.sub}}}
+の形式をとるよう奨めます。
+\item[(3)] 作者かメンテナのどちらかは必ず区別してください。
+\item[(4)] これらのフィールドは、2.2.3 および 2.3 より以前の
+バージョンの Python でも互換性を持たせたい場合には指定しては
+なりません。
+リストは \ulink{PyPI ウェブサイト}{http://www.python.org/pypi}
+にあります。
+
+\item[「短い文字列」] 200 文字以内の一行のテキスト。
+\item[「長い文字列」] 複数行からなり、ReStructuredText 形式で書かれた
+プレーンテキスト (\url{http://docutils.sf.net/} を参照してください)。
+\item[「文字列のリスト」] 下記を参照してください。
+\end{description}
+
+これらの文字列はいずれも Unicode であってはなりません。
+
+バージョン情報のコード化は、それ自体が一つのアートです。
+Python のパッケージは一般的に、
+\emph{major.minor\optional{.patch}\optional{sub}} という
+バージョン表記に従います。
+メジャー (major) 番号は最初は 0 で、これはソフトウェアが実験的リリース
+にあることを示します。メジャー番号は、パッケージが主要な開発目標を
+達成したとき、それを示すために加算されてゆきます。マイナー (minor)
+番号は、パッケージに重要な新機能が追加されたときに加算されてゆきます。
+パッチ (patch) 番号は、バグフィクス版のリリースが作成されたときに
+加算されます。末尾にバージョン情報が追加され、サブリリースを示す
+こともあります。これは "a1,a2,...,aN" (アルファリリースの場合で、
+機能や API が変更されているとき)、  "b1,b2,...,bN" (ベータリリース
+の場合で、バグフィクスのみのとき) 、そして "pr1,pr2,...,prN" 
+(プレリリースの最終段階で、リリーステストのとき) になります。
+以下に例を示します:
+
+\begin{description}
+\item[0.1.0] パッケージの最初の実験的なリリース
+\item[1.0.1a2] 1.0 の最初のパッチバージョンに対する、2 回目のアルファ
+リリース
+\end{description}
+
+\option{classifiers} は、 Python のリスト型で指定します:
+
+\begin{verbatim}
+setup(...
+      classifiers=[
+          'Development Status :: 4 - Beta',
+          'Environment :: Console',
+          'Environment :: Web Environment',
+          'Intended Audience :: End Users/Desktop',
+          'Intended Audience :: Developers',
+          'Intended Audience :: System Administrators',
+          'License :: OSI Approved :: Python Software Foundation License',
+          'Operating System :: MacOS :: MacOS X',
+          'Operating System :: Microsoft :: Windows',
+          'Operating System :: POSIX',
+          'Programming Language :: Python',
+          'Topic :: Communications :: Email',
+          'Topic :: Office/Business',
+          'Topic :: Software Development :: Bug Tracking',
+          ],
+      )
+\end{verbatim}
+
+\file{setup.py} に \option{classifiers} を入れておき、なおかつ
+2.2.3 よりも以前のバージョンの Python と後方互換性を保ちたいなら、
+\file{setup.py} 中で \function{setup()} を呼び出す前に、以下のコードを
+入れます。
+
+\begin{verbatim}
+# patch distutils if it can't cope with the "classifiers" or
+# "download_url" keywords
+from sys import version
+if version < '2.2.3':
+    from distutils.dist import DistributionMetadata
+    DistributionMetadata.classifiers = None
+    DistributionMetadata.download_url = None
+\end{verbatim}
+
+
+\section{setup スクリプトをデバッグする}
+
+setup スクリプトのどこかがまずいと、開発者の思い通りに動作
+してくれません。
+
+Distutils は setup 実行時の全ての例外を捉えて、簡単なエラーメッセージ
+を出力してからスクリプトを終了します。このような仕様にしているのは、
+Python にあまり詳しくない管理者がパッケージをインストールする際に
+混乱しなくてすむようにするためです。
+もし Distutils のはらわた深くからトレースバックした長大な
+メッセージを見たら、管理者はきっと Python のインストール自体が
+おかしくなっているのだと勘違いして、トレースバックを最後まで読み進んで
+実はファイルパーミッションの問題だったと気づいたりはしないでしょう。
+
+しかし逆に、この仕様は開発者にとってはうまくいかない理由を見つける
+役には立ちません。そこで、 DISTUTILS_DEBUG 環境変数を空文字以外の
+何らかの値に設定しておけば、 Distutils が何を実行しているか詳しい
+情報を出力し、例外が発生した場合には完全なトレースバックを出力
+するようにできます。
+
+\chapter{setup 設定ファイル (setup configuration file) を書く}
+\label{setup-config}
+
+時に、配布物をビルドする際に必要な全ての設定を\emph{あらかじめ} 書き
+きれない状況が起きます: 例えば、ビルドを進めるために、ユーザに関する
+情報や、ユーザのシステムに関する情報を必要とするかもしれません。
+こうした情報が単純 --- C ヘッダファイルやライブラリを検索する
+ディレクトリのリストのように --- であるかぎり、ユーザに
+設定ファイル (configuration file) \file{setup.cfg} を提供して
+編集してもらうのが、安上がりで簡単な特定方法になります。
+設定ファイルはまた、あらゆるコマンドにおけるオプションにデフォルト値
+を与えておき、インストール作業者がコマンドライン上や設定ファイルの
+編集でデフォルト設定を上書きできるようにします。
+
+% (If you have more advanced needs, such as determining which extensions
+% to build based on what capabilities are present on the target system,
+% then you need the Distutils ``auto-configuration'' facility.  This
+% started to appear in Distutils 0.9 but, as of this writing, isn't mature 
+% or stable enough yet for real-world use.)
+
+setup 設定ファイルは setup スクリプト ---理想的にはインストール作業者
+から見えないもの \footnote{Distutils が自動設定機能
+(auto-configuration) をサポートするまで、おそらくこの理想状態を
+達成することはないでしょう} ---と、作者の手を離れて、全てインストール
+作業者次第となる setup スクリプトのコマンドライン引数との間を
+橋渡しする中間層として有効です。
+実際、\file{setup.cfg} (と、ターゲットシステム上にある、その他の
+Distutils 設定ファイル) は、 setup スクリプトの内容より後で、
+かつコマンドラインで上書きする前に処理されます。
+この仕様の結果、いくつかの利点が生まれます:
+\begin{itemize}
+\item インストール作業者は、作者が \file{setup.py} に設定した項目の
+いくつかを \file{setup.cfg} を変更して上書きできます。
+\item \file{setu.py} では簡単に設定できないような、標準でない
+オプションのデフォルト値を設定できます。
+\item インストール作業者は、\file{setup.cfg} に書かれたどんな設定も
+\file{setup.py} のコマンドラインオプションで上書きできます。
+\end{itemize}
+
+設定ファイルの基本的な構文は簡単なものです:
+
+\begin{verbatim}
+[command]
+option=value
+...
+\end{verbatim}
+
+ここで、 \var{command} は Distutils コマンドのうちの一つ
+(例えば \command{build\_py}, \command{install}) で、\var{option} 
+はそのコマンドでサポートされているオプションのうちの一つです。
+各コマンドには任意の数のオプションを設定でき、一つの設定ファイル
+中には任意の数のコマンドセクションを収められます。
+空白行は無視されます、 \character{\#} 文字で開始して行末まで続く
+コメントも同様に無視されます。
+長いオプション設定値は、継続行をインデントするだけで複数行に
+わたって記述できます。
+
+あるコマンドがサポートしているオプションのリストは、
+\longprogramopt{help} オプションで調べられます。例えば以下のように。
+
+\begin{verbatim}
+> python setup.py --help build_ext
+[...]
+Options for 'build_ext' command:
+  --build-lib (-b)     directory for compiled extension modules
+  --build-temp (-t)    directory for temporary files (build by-products)
+  --inplace (-i)       ignore build-lib and put compiled extensions into the
+                       source directory alongside your pure Python modules
+  --include-dirs (-I)  list of directories to search for header files
+  --define (-D)        C preprocessor macros to define
+  --undef (-U)         C preprocessor macros to undefine
+[...]
+\end{verbatim}
+
+コマンドライン上で \longprogramopt{foo-bar} と綴るオプションは、
+設定ファイル上では \option{foo\_bar} と綴るので注意してください。
+
+例えば、拡張モジュールを ``インプレース (in-place)'' でビルドしたい
+とします --- すなわち、\module{pkg.ext} という拡張モジュールを
+持っていて、コンパイル済みの拡張モジュールファイル (例えば \UNIX 
+では \file{ext.so}) を pure Python モジュール \module{pkg.mod1}
+および \module{pkg.mod2} と同じソースディレクトリに置きたいとします。
+こんなときには、\longprogramopt{inplace} を使えば、確実にビルドを
+行えます。
+
+\begin{verbatim}
+python setup.py build_ext --inplace
+\end{verbatim}
+
+しかし、この操作では、常に \command{build\_ext} を明示的に指定
+しなければならず、 \longprogramopt{inplace} オプションを忘れずに
+与えなければなりません。
+こうした設定を ``設定しっ放しにする'' 簡単な方法は、
+\file{setup.cfg} に書いておくやり方で、設定ファイルは以下のように
+なります:
+
+\begin{verbatim}
+[build_ext]
+inplace=1
+\end{verbatim}
+
+この設定は、明示的に \command{build\_ext} を指定するかどうかに
+関わらず、モジュール配布物の全てのビルドに影響します。
+ソース配布物に \file{setup.cfg} を含めると、エンドユーザの手で
+行われるビルドにも影響します --- このオプションの例に関しては
+\file{setup.cfg} を含めるのはおそらくよくないアイデアでしょう。
+というのは、拡張モジュールをインプレースでビルドすると常に
+インストールしたモジュール配布物を壊してしまうからです。
+とはいえ、ある特定の状況では、モジュールをインストールディレクトリ
+の下に正しく構築できるので、機能としては有用だと考えられます。
+(ただ、インストールディレクトリ上でのビルドを想定するような
+拡張モジュールの配布は、ほとんどの場合よくない考え方です。)
+
+もう一つ、例があります: コマンドによっては、実行時にほとんど
+変更されないたくさんのオプションがあります; 例えば、
+\command{bdist\_rpm} には、RPM 配布物を作成する際に、``spec'' 
+ファイルを作成するために必要な情報を全て与えなければなりません。
+この情報には setup スクリプトから与えるものもあり、
+(インストールされるファイルのリストのように) Distutils が自動的に
+生成するものもあります。しかし、こうした情報の中には
+\command{bdist\_rpm} のオプションとして与えるものがあり、
+毎回実行するごとにコマンドライン上で指定するのが面倒です。
+そこで、以下のような内容が Distutils 自体の \file{setup.cfg}
+には入っています:
+
+\begin{verbatim}
+[bdist_rpm]
+release = 1
+packager = Greg Ward <gward@python.net>
+doc_files = CHANGES.txt
+            README.txt
+            USAGE.txt
+            doc/
+            examples/
+\end{verbatim}
+
+\option{doc\_files} オプションは、単に空白で区切られた文字列で、
+ここでは可読性のために複数行をまたぐようにしています。
+
+
+\begin{seealso}
+  \seetitle[../inst/config-syntax.html]{Installing Python
+            Modules}{設定ファイルに関する詳細情報は、システム管理者
+向けのこのマニュアルにあります。}
+\end{seealso}
+
+
+\chapter{ソースコード配布物を作成する}
+\label{source-dist}
+
+~\ref{simple-example} 節で示したように、ソースコード配布物を作成
+するには \command{sdist} コマンドを使います。最も単純な例では、
+
+\begin{verbatim}
+python setup.py sdist
+\end{verbatim}
+
+のようにします (ここでは、\command{sdist} に関するオプションを setup
+スクリプトや設定ファイル中で行っていないものと仮定します)。
+\command{sdist} は、現在のプラットフォームでのデフォルトのアーカイブ形式
+でアーカイブを生成します。デフォルトの形式は \UNIX では gzip で圧縮された
+tar ファイル形式 (\file{.tar.gz}) で、Windows では ZIP 形式です。
+
+\longprogramopt{formats} オプションを使えば、好きなだけ圧縮形式を
+指定できます。例えば:
+
+\begin{verbatim}
+python setup.py sdist --formats=gztar,zip
+\end{verbatim}
+%
+は、gzip された tarball と zip ファイルを作成します。
+利用可能な形式は以下の通りです:
+\begin{tableiii}{l|l|c}{code}%
+  {形式}{説明}{注記}
+  \lineiii{zip}{zip ファイル (\file{.zip})}{(1),(3)}
+  \lineiii{gztar}{gzip 圧縮された tar ファイル (\file{.tar.gz})}{(2),(4)}
+  \lineiii{bztar}{bzip2 圧縮された tar ファイル (\file{.tar.bz2})}{(4)}
+  \lineiii{ztar}{compress 圧縮された tar ファイル (\file{.tar.Z})}{(4)}
+  \lineiii{tar}{tar ファイル (\file{.tar})}{(4)}
+\end{tableiii}
+
+\noindent 注記:
+\begin{description}
+\item[(1)] Windows でのデフォルトです
+\item[(2)] \UNIX でのデフォルトです
+\item[(3)] 外部ユーティリティの \program{zip} か、\module{zipfile} 
+モジュールが必要です (Python~1.6 からは 標準ライブラリになっています)
+\item[(4)] 外部ユーティリティ: \program{tar} 、場合によっては
+\program{gzip}、 \program{bzip2}、または \program{compress} も
+必要です
+\end{description}
+
+
+
+\section{配布するファイルを指定する}
+\label{manifest}
+
+明確なファイルのリスト (またはファイルリストを生成する方法) を明示的に
+与えなかった場合、\command{sdist} コマンドはソース配布物に以下のような
+最小のデフォルトのセットを含めます:
+\begin{itemize}
+\item \option{py\_modules} と \option{packages} オプションに指定された
+Python ソースファイル全て
+\item \option{ext\_modules} や \option{libraries} オプションに記載
+された C ソースファイル \XXX{(C ライブラリソースの取得機構は現状では
+うまく動きません -- \file{build_clib.py} には、 \method{get_source_files()} メソッド
+がありません!)}
+\item \option{scripts}オプションで指定されたスクリプト
+\item テストスクリプトと思しきファイル全て: \file{test/test*.py}
+(現状では、Distutils はテストスクリプトをただソース配布物に含める
+だけですが、将来は Python モジュール配布物に対するテスト標準ができる
+かもしれません)
+\item \file{README.txt} (または \file{README})、 \file{setup.py} 
+(または setup スクリプトにしているもの) 、および \file{setup.cfg}
+\end{itemize}
+
+上記のセットで十分なこともありますが、大抵他のファイルを配布物に
+含めたいと思うでしょう。普通は、 \file{MANIFEST.in} と呼ばれる
+\emph{マニフェストテンプレート (manifest template)} を使って
+これを行います。マニフェストテンプレートは、ソース配布物に
+含めるファイルの正確なリストであるマニフェストファイル
+\file{MANIFEST} をどうやって作成するか指示しているリストです。
+\command{sdist} コマンドはこのテンプレートを処理し、書かれた
+指示とファイルシステム上に見つかったファイルに基づいて
+マニフェストファイルを作成します。
+
+自分用のマニフェストファイルを書きたいなら、その形式は簡単です:
+一行あたり一つの通常ファイル (または通常ファイルに対する
+シンボリックリンク) だけを書きます。自分で \file{MANIFEST}
+を提供する場合、全てを自分で指定しなければなりません:
+ただし、上で説明したデフォルトのファイルセットは、この中には
+含まれません。
+
+マニフェストテンプレートには一行あたり一つのコマンドがあります。
+各コマンドはソース配布物に入れたり配布物から除外したりする
+ファイルのセットを指定します。
+例えば、Distutils 自体のマニフェストテンプレートの話に戻ると:
+
+\begin{verbatim}
+include *.txt
+recursive-include examples *.txt *.py
+prune examples/sample?/build
+\end{verbatim}
+
+各行はかなり明確に意味を取れるはずです: 上の指定では、
+\code{*.txt} にマッチする配布物ルート下の全てのファイル、
+\file{examples} ディレクトリ下にある \code{*.txt} か \code{*.py}
+にマッチする全てのファイルを含め、\code{examples/sample?/build}
+にマッチする全てのファイルを除外します。
+これらの処理はすべて、標準的に含められるファイルセットの評価よりも
+\emph{後に} 行われるので、マニフェストテンプレートに明示的に
+指示をしておけば、標準セット中のファイルも除外できます。
+(\longprogramopt{no-defaults} オプションを設定して、標準セット
+自体を無効にもできます。)
+他にも、このマニフェストテンプレート記述のためのミニ言語には
+いくつかのコマンドがあります: ~\ref{sdist-cmd} 節を参照して
+ください。
+
+マニフェストテンプレート中のコマンドの順番には意味があります; 
+初期状態では、上で述べたようなデフォルトのファイルがあり、
+テンプレート中の各コマンドによって、逐次ファイルを追加したり
+除去したりしていいます。マニフェストテンプレートを完全に
+処理し終えたら、ソース配布物中に含めるべきでない以下のファイル
+をリストから除去します:
+\begin{itemize}
+\item Distutls の ``build'' (デフォルトの名前は \file{build})
+ツリー下にある全てのファイル
+\item \file{RCS}、\file{CVS}、\file{.svn} といった名前のディレクトリ下にある
+全てのファイル
+\end{itemize}
+こうして完全なファイルのリストができ、後で参照するために
+マニフェストに書き込まれます。この内容は、ソース配布物の
+アーカイブを作成する際に使われます。
+
+含めるファイルのデフォルトセットは \longprogramopt{no-defaults}
+で無効化でき、標準で除外するセットは \longprogramopt{no-prune}
+で無効化できます。
+
+Distutils 自体のマニフェストテンプレートから、\command{sdist}
+コマンドがどのようにして Distutils ソース配布物に含めるファイルの
+リストを作成するか見てみましょう:
+\begin{enumerate}
+\item \file{distutils} ディレクトリ、および \file{distutils/command}
+サブディレクトリの下にある全ての Python ソースファイルを含めます
+(これらの二つのディレクトリが、setup スクリプト下の \option{packages}
+オプションに記載されているからです --- ~\ref{setup-script} を
+参照してください)
+\item \file{README.txt}, \file{setup.py}, および \file{setup.cfg}
+(標準のファイルセット) を含めます
+\item \file{test/test*.py} (標準のファイルセット) を含めます
+\item 配布物ルート下の \file{*.txt} を含めます (この処理で、
+\file{README.txt} がもう一度見つかりますが、こうした冗長性は後で
+刈り取られます)
+\item \file{examples} 下にあるサブツリー内で \file{*.txt} または
+\file{*.py} にマッチする全てのファイルを含めます
+\item ディレクトリ名が \file{examples/sample?/build} にマッチする
+ディレクトリ以下のサブツリー内にあるファイル全てを除外します---
+この操作によって、上の二つのステップでリストに含められたファイルが
+除外されることがあるので、マニフェストテンプレート内では
+\code{recursive-include} コマンドの後に \code{prune} コマンドを
+持ってくることが重要です
+\item \file{build} ツリー全体、および \file{RCS}、 \file{CVS}と、
+  \file{.svn} ディレクトリ全てを除外します
+\end{enumerate}
+setup スクリプトと同様、マニフェストテンプレート中のディレクトリ名は
+常にスラッシュ区切りで表記します; Distutils は、こうしたディレクトリ
+名を注意深くプラットフォームでの標準的な表現に変換します。
+このため、マニフェストテンプレートは複数のオペレーティングシステム
+にわたって可搬性を持ちます。
+
+\section{マニフェスト (manifest) 関連のオプション}
+\label{manifest-options}
+
+\command{sdist} コマンドが通常行う処理の流れは、以下のようになって
+います:
+\begin{itemize}
+\item マニフェストファイル \file{MANIFEST} が存在しなければ、
+  \file{MANIFEST.in} を読み込んでマニフェストファイルを作成します
+\item \file{MANIFEST} も \file{MANIFEST.in} もなければ、
+デフォルトのファイルセットだけでできたマニフェストファイルを
+作成します
+\item \file{MANIFEST.in} または (\file{setup.py}) が
+\file{MANIFEST} より新しければ、\file{MANIFEST.in} を読み込んで
+\file{MANIFEST} を生成します
+\item (生成されたか、読み出された) \file{MANIFEST} 内にあるファイル
+のリストを使ってソース配布物アーカイブを作成します
+\end{itemize}
+上の動作は二種類のオプションを使って修正できます。まず、
+標準の ``include'' および ``exclude'' セットを無効化するには
+\longprogramopt{no-defaults} および \longprogramopt{no-prune} 
+を使います
+
+第二に、マニフェストファイルの再生成を強制できます --- 例えば、
+現在マニフェストテンプレート内に指定しているパターンにマッチする
+ファイルやディレクトリを追加したり削除したりすると、マニフェストを
+再生成しなくてはなりません:
+
+\begin{verbatim}
+python setup.py sdist --force-manifest
+\end{verbatim}
+
+また、単にマニフェストを (再) 生成したいだけで、ソース配布物は
+作成したくない場合があるかもしれません:
+
+\begin{verbatim}
+python setup.py sdist --manifest-only
+\end{verbatim}
+
+\longprogramopt{manifest-only} を行うと、 \longprogramopt{force-manifest}
+を呼び出します。
+\programopt{-o} は \longprogramopt{manifest-only} のショートカット、
+\programopt{-f} は \longprogramopt{force-manifest} のショートカットです。
+
+
+\chapter{ビルド済み配布物を作成する}
+\label{built-dist}
+
+``ビルド済み配布物'' とは、おそらく皆さんが通常 ``バイナリパッケージ''
+とか ``インストーラ'' (背景にしている知識によって違います) と考えて
+いるものです。とはいえ、配布物が必然的にバイナリ形式になるわけでは
+ありません。配布物には、 Python ソースコード、かつ/またはバイトコード
+が入るからです; また、我々はパッケージという呼び方もしません。
+すでに Python の用語として使っているからです (また、 ``インストーラ''
+という言葉は主流のデスクトップシステム特有の用語です)
+
+ビルド済み配布物は、モジュール配布物をインストール作業者にとって
+できるだけ簡単な状況にする方法です: ビルド済み配布物は、RPM ベースの
+Linux システムユーザにとってはバイナリ RPM 、Windows ユーザに
+とっては実行可能なインストーラ、 Debian ベースの Linux システム
+では Debian パッケージ、などといった具合です。
+当然のことながら、一人の人間が世の中にある全てのプラットフォーム用
+にビルド済み配布物を作成できるわけではありません。そこで、
+Distutils の設計は。開発者が自分の専門分野 --- コードを書き、ソース配布物
+を作成する --- に集中できる一方で、\emph{パッケージ作成者 (packager)}
+と呼ばれる、開発者とエンドユーザとの中間に位置する人々が
+ソースコード配布物を多くのプラットフォームにおけるビルド済み配布物
+に変換できるようになっています。
+
+もちろん、モジュール開発者自身がパッケージ作成者かもしれません; また、
+パッケージを作成するのはオリジナルの作成者が利用できないプラットフォームに
+アクセスできるような ``外部の'' ボランティアかもしれませんし、
+ソース配布物を定期的に取り込んで、アクセスできるかぎりの
+プラットフォーム向けにビルド済み配布物を生成するソフトウェアかも
+しれません。作業を行うのが誰であれ、パッケージ作成者は setup 
+スクリプトを利用し、 \command{bdist} コマンドファミリを使って
+ビルド済み配布物を作成します。
+
+単純な例として、Distutils ソースツリーから以下のコマンドを
+実行したとします:
+
+\begin{verbatim}
+python setup.py bdist
+\end{verbatim}
+
+すると、Distutils はモジュール配布物 (ここでは Distutils 自体) を
+ビルドし、``偽の (fake)'' インストールを (\file{build} ディレクトリで)
+行います。そして現在のプラットフォームにおける標準の形式でビルド済み
+配布物を生成します。デフォルトのビルド済み形式とは、\UNIX では
+``ダム (dumb)'' の tar ファイルで、 Windows ではシンプルな実行形式の
+インストーラになります。(tar ファイルは、特定の場所に手作業で解凍
+しないと動作しないので、 ``ダム: 賢くない'' 形式とみなします。)
+
+従って、 \UNIX{} システムで上記のコマンドを実行すると、
+\file{Distutils-1.0.\filevar{plat}.tar.gz} を作成します; 
+この tarball を正しい場所で解凍すると、ちょうどソース配布物を
+ダウンロードして \code{python setup.py install} を実行したのと
+同じように、正しい場所に Distutils がインストールされます。
+(``正しい場所 (right place)'' とは、ファイルシステムのルート下か、
+Python の \filevar{prefix} ディレクトリ下で、これは
+\command{bdist\_dumb} に指定するコマンドで変わります;
+デフォルトの設定では、\filevar{prefix} からの相対パスにインストール
+されるダム配布物が得られます。)  
+
+言うまでもなく、 pure Python 配布物の場合なら、
+\code{python setup.py install} するのに比べて大して簡単になったとは
+言えません---しかし、非 pure 配布物で、コンパイルの必要な拡張
+モジュールを含む場合、拡張モジュールを利用できるか否かという大きな
+違いになりえます。
+また、 RPM パッケージや Windows 用の実行形式インストーラのような
+``スマートな'' ビルド済み配布物を作成しておけば、たとえ拡張モジュール
+が一切入っていなくてもユーザにとっては便利になります。
+
+\command{bdist} コマンドには、 \longprogramopt{formats} オプション
+があります。これは \command{sdist} コマンドの場合に似ていて、
+生成したいビルド済み配布物の形式を選択できます: 例えば、
+
+\begin{verbatim}
+python setup.py bdist --format=zip
+\end{verbatim}
+%
+とすると、\UNIX{} システムでは、
+\file{Distutils-1.0.\filevar{plat}.zip} を作成します---
+先にも述べたように、Distutils をインストールするには、
+このアーカイブ形式をルートディレクトリ下で展開します。
+
+ビルド済み配布物として利用できる形式を以下に示します:
+\begin{tableiii}{l|l|c}{code}%
+  {形式}{説明}{注記}
+  \lineiii{gztar}{gzip 圧縮された tar ファイル (\file{.tar.gz})}{(1),(3)}
+  \lineiii{ztar}{compress 圧縮された tar ファイル (\file{.tar.Z})}{(3)}
+  \lineiii{tar}{tar ファイル (\file{.tar})}{(3)}
+  \lineiii{zip}{zip ファイル (\file{.zip})}{(4)}
+  \lineiii{rpm}{RPM 形式}{(5)}
+  \lineiii{pkgtool}{Solaris \program{pkgtool} 形式}{}
+  \lineiii{sdux}{HP-UX \program{swinstall} 形式}{}
+%   \lineiii{rpm}{RPM 形式}{(5)} % 冗長だから削りました
+%  \lineiii{srpm}{source RPM}{(5) \XXX{to do!}}
+  \lineiii{wininst}{Windows 用の自己展開形式 ZIP ファイル}{(2),(4)}
+\end{tableiii}
+
+\noindent 注記:
+\begin{description}
+\item[(1)] \UNIX でのデフォルト形式です
+\item[(2)] Windows でのデフォルト形式です \XXX{to-do!}
+\item[(3)] 外部ユーティリティが必要です: \program{tar} と、
+\program{gzip} または \program{bzip2} または \program{compress}
+のいずれか
+\item[(4)] 外部ユーティリティの \program{zip} か、\module{zipfile} 
+モジュール (Python~1.6 からは標準 Python ライブラリの一部になって
+います) が必要です
+\item[(5)] 外部ユーティリティの \program{rpm}、バージョン 3.0.4 
+以上が必要です (バージョンを調べるには、 \code{rpm --version} 
+とします)
+\end{description}
+
+\command{bdist} コマンドを使うとき、必ず \longprogramopt{formats} 
+オプションを使わなければならないわけではありません;
+自分の使いたい形式をダイレクトに実装しているコマンドも使えます。
+こうした \command{bdist} ``サブコマンド (sub-command)'' は、
+実際には類似のいくつかの形式を生成できます; 例えば、
+\command{bdist\_dumb} コマンドは、全ての ``ダム'' アーカイブ形式
+(\code{tar}, \code{ztar}, \code{gztar}, および \code{zip}) を
+作成できますし、\command{bdist\_rpm} はバイナリ RPM とソース RPM の
+両方を生成できます。\command{bdist} サブコマンドと、それぞれが
+生成する形式を以下に示します:
+\begin{tableii}{l|l}{command}%
+  {コマンド}{形式}
+  \lineii{bdist\_dumb}{tar, ztar, gztar, zip}
+  \lineii{bdist\_rpm}{rpm, srpm}
+  \lineii{bdist\_wininst}{wininst}
+\end{tableii}
+
+\command{bdist\_*} コマンドについては、以下の節で詳しく述べます。
+
+
+\section{ダム形式のビルド済み配布物を作成する}
+\label{creating-dumb}
+
+\XXX{絶対パスと相対パスのパッケージについて述べる必要があるんだけど、
+その前に実装しなくちゃね！}
+
+
+\section{RPM パッケージを作成する}
+\label{creating-rpms}
+
+RPM 形式は、Red Hat, SuSE, Mandrake といった、多くの一般的な Linux 
+ディストリビューションで使われています。普段使っているのがこれらの
+環境のいずれか (またはその他の RPM ベースの Linux 
+ディストリビューション) なら、同じディストリビューションを使っている
+他のユーザ用に RPM パッケージを作成するのはとるに足らないことでしょう。
+一方、モジュール配布物の複雑さや、 Linux ディストリビューション間の
+違いにもよりますが、他の RPM ベースのディストリビューションでも動作
+するような RPM を作成できるかもしれません。
+
+通常、モジュール配布物の RPM を作成するには、\command{bdist\_rpm} 
+コマンドを使います:
+
+\begin{verbatim}
+python setup.py bdist_rpm
+\end{verbatim}
+
+あるいは、\command{bdist} コマンドを \longprogramopt{format} 
+オプション付きで使います:
+
+\begin{verbatim}
+python setup.py bdist --formats=rpm
+\end{verbatim}
+
+前者の場合、 RPM 特有のオプションを指定できます; 後者の場合、
+一度の実行で複数の形式を指定できます。両方同時にやりたければ、
+それぞれの形式について各コマンドごとにオプション付きで
+\command{bdist\_*} コマンドを並べます:
+
+\begin{verbatim}
+python setup.py bdist_rpm --packager="John Doe <jdoe@example.org>" \
+                bdist_wininst --target_version="2.0"
+\end{verbatim}
+
+Distutils が setup スクリプトで制御されているのとほとんど同じく、
+RPM パッケージの作成は、 \file{.spec} で制御されています。
+RPM の作成を簡便に解決するため、\command{bdist\_rpm} コマンドでは
+通常、 setup スクリプトに与えた情報とコマンドライン、そして Distutils
+設定ファイルに基づいて \file{.spec} ファイルを作成します。
+\file{.spec} ファイルの様々なオプションやセクション情報は、
+以下のようにして setup スクリプトから取り出されます:
+\begin{tableii}{p{16zw}|l}{textrm}%
+  {RPM \file{.spec} ファイルのオプションまたはセクション}{Distutils setup スクリプト内のオプション}
+  \lineii{Name}{\option{name}}
+  \lineii{Summary (preamble 内)}{\option{description}}
+  \lineii{Version}{\option{version}}
+  \lineii{Vendor}{\option{author} と \option{author\_email}, または \\&
+                  \option{maintainer} と \option{maintainer\_email}}
+  \lineii{Copyright}{\option{licence}}
+  \lineii{Url}{\option{url}}
+  \lineii{\%description (セクション)}{\option{long\_description}}
+\end{tableii}
+
+また、\file{.spec} ファイル内の多くのオプションは、 setup スクリプト
+中に対応するオプションがありません。これらのほとんどは、以下に示す
+\command{bdist\_rpm} コマンドのオプションで扱えます:
+\begin{tableiii}{p{16zw}|l|l}{textrm}%
+  {RPM \file{.spec} ファイルのオプションまたはセクション}%
+  {\command{bdist\_rpm} オプション}%
+  {デフォルト値}
+  \lineiii{Release}{\option{release}}{``1''}
+  \lineiii{Group}{\option{group}}{``Development/Libraries''}
+  \lineiii{Vendor}{\option{vendor}}{(上記参照)}
+  \lineiii{Packager}{\option{packager}}{(none)}
+  \lineiii{Provides}{\option{provides}}{(none)}
+  \lineiii{Requires}{\option{requires}}{(none)}
+  \lineiii{Conflicts}{\option{conflicts}}{(none)}
+  \lineiii{Obsoletes}{\option{obsoletes}}{(none)}
+  \lineiii{Distribution}{\option{distribution\_name}}{(none)}
+  \lineiii{BuildRequires}{\option{build\_requires}}{(none)}
+  \lineiii{Icon}{\option{icon}}{(none)}
+\end{tableiii}
+
+言うまでもなく、こうしたオプションをコマンドラインで指定するのは
+面倒だし、エラーの元になりますから、普通は \file{setup.cfg} に
+書いておくのがベストです --- ~\ref{setup-config} 節を参照してください。
+沢山の Python モジュール配布物を配布したりパッケージ化したりしている
+のなら、配布物全部に当てはまるオプションを個人用の Distutils 設定
+ファイル (\file{\textasciitilde/.pydistutils.cfg}) に入れられます。
+
+バイナリ形式の RPM パッケージを作成する際には三つの段階があり、
+Distutils はこれら全ての段階を自動的に処理します:
+\begin{enumerate}
+\item RPM パッケージの内容を記述する \file{.spec} ファイルを作成します
+(\file{.spec} ファイルは setup スクリプトに似たファイルです; 実際、
+setup スクリプトのほとんどの情報が \file{.spec} ファイルから
+引き揚げられます)
+\item ソース RPM を作成します
+\item ``バイナリ (binary)'' RPM を生成します (モジュール配布物に
+Python 拡張モジュールが入っているか否かで、バイナリコードが
+含まれることも含まれないこともあります)
+\end{enumerate}
+
+通常、RPM は最後の二つのステップをまとめて行います; Distutils
+を使うと、普通は三つのステップ全てをまとめて行います。
+
+望むなら、これらの三つのステップを分割できます。\command{bdist_rpm} 
+コマンドに \longprogramopt{spec-only} を指定すれば、単に
+ \file{.spec} を作成して終了します; この場合、\file{.spec}
+ファイルは ``配布物ディレクトリ (distribution directory)''---
+通常は \file{dist/} に作成されますが、 \longprogramopt{dist-dir}
+オプションで変更することもできます。(通常、 \file{.spec} ファイルは
+``ビルドツリー (build tree)''、すなわち \command{build\_rpm}
+が作成する一時ディレクトリの中から引き揚げられます。)
+
+% \XXX{この機能はまだ実装されていません---必要なの?!}
+% 自作の \file{.spec} ファイルを \longprogramopt{spec-file} オプションで
+% 指定することもできます; \longprogramopt{spec-only} と併せて利用すれば、
+% \file{.spec} ファイルを手作業でカスタマイズする機会が生まれます:
+%
+% begin{verbatim}
+% > python setup.py bdist_rpm --spec-only
+% # ... dist/FooBar-1.0.spec を編集
+% > python setup.py bdist_rpm --spec-file=dist/FooBar-1.0.spec
+% end{verbatim}
+% 
+% (とはいえ、\file{.spec} の内容をカスタマイズしたいのなら、
+% 標準の \command{bdist\_rpm} を上書きして、自分の思い通りに
+% \file{.spec} ファイルを書かせる方がおそらくましでしょう。)
+
+
+\section{Windows インストーラを作成する}
+\label{creating-wininst}
+
+実行可能なインストーラは、Windows 環境ではごく自然なバイナリ配布形式
+です。インストーラは結構なグラフィカルユーザインタフェースを表示して、
+モジュール配布物に関するいくつかの情報を setup スクリプト内のメタデータ
+から取り出して示し、ユーザがいくつかのオプションを選んだり、インストール
+を決行するか取りやめるか選んだりできるようにします。
+
+メタデータは setup スクリプトから取り出されるので、Windows インストーラ
+の作成は至って簡単で、以下を実行するだけです:
+
+\begin{verbatim}
+python setup.py bdist_wininst
+\end{verbatim}
+
+あるいは、\command{bdist} コマンドを \longprogramopt{formats} 
+オプション付きで実行します:
+
+\begin{verbatim}
+python setup.py bdist --formats=wininst
+\end{verbatim}
+
+(pure Python モジュールとパッケージだけの入った) pure モジュール
+配布物の場合、作成されるインストーラは実行バージョンに依存しない
+形式になり、 \file{foo-1.0.win32.exe} のような名前になります。
+pure モジュールの Windows インストーラは \UNIX{} や Mac OS 
+といったプラットフォームでも作成できます。
+
+非 pure 配布物の場合、拡張モジュールは Windows プラットフォーム上
+だけで作成でき、Python のバージョンに依存したインストーラになります。
+インストーラのファイル名もバージョン依存性を反映して、
+\file{foo-1.0.win32-py2.0.exe} のような形式になります。
+従って、サポートしたい全てのバージョンの Python に対して、
+別々のインストーラを作成しなければなりません。
+
+インストーラは、ターゲットとなるシステムにインストールを実行
+した後、 pure モジュールを通常 (normal) モードと最適化 (optimizing)
+モードでコンパイルしようと試みます。何らかの理由があってコンパイル
+させたくなければ、\command{bdist\_wininst} コマンドを
+\longprogramopt{no-target-compile} かつ/または
+\longprogramopt{no-target-optimize} オプション付きで実行します。
+
+デフォルトでは、インストーラは実行時にクールな ``Python Powered'' 
+ロゴを表示しますが、自作のビットマップ画像も指定できます。
+画像は Windows の \file{.bmp} ファイル形式でなくてはならず、
+\longprogramopt{bitmap} オプションで指定します。
+
+インストーラを起動すると、デスクトップの背景ウィンドウ上にでっかい
+タイトルも表示します。タイトルは配布物の名前とバージョン番号から
+作成します。\longprogramopt{title} オプションを使えば、
+タイトルを別のテキストに変更できます。
+
+インストーラファイルは ``配布物ディレクトリ (distribution directory)''
+--- 通常は \file{dist/} に作成されますが、\longprogramopt{dist-dir} 
+オプションで指定することもできます。
+
+\subsection{インストール後実行スクリプト (postinstallation script)}
+\label{postinstallation-script}
+
+Python 2.3 からは、インストール実行後スクリプトを
+\longprogramopt{install-script} オプションで指定できるように
+なりました。スクリプトはディレクトリを含まないベースネーム
+(basename) で指定しなければならず、スクリプトファイル名は
+setup 関数の scripts 引数中に挙げられていなければなりません。
+
+指定したスクリプトは、インストール時、ターゲットとなるシステム上で
+全てのファイルがコピーされた後に実行されます。このとき \code{argv[1]}
+を \programopt{-install} に設定します。また、アンインストール時には、
+ファイルを削除する前に \code{argv[1]} を \programopt{-remove} に設定して
+実行します。
+
+Windows インストーラでは、インストールスクリプトは埋め込みで実行
+され、全ての出力 (\code{sys.stdout}、 \code{sys.stderr}) はバッファにリダイレクト
+され、スクリプトの終了後に GUI 上に表示されます。
+
+インストールスクリプトでは、インストール/アンインストール
+のコンテキストで特に有用ないくつかの機能を、追加の組み込み関数として利
+用することができます。
+
+\begin{funcdesc}{directory_created}{path}
+\funcline{file_created}{path}
+これらの関数は、インストール後実行スクリプトがディレクトリやファイル
+を作成した際に呼び出さなければなりません。この関数はアンインストーラ
+に作成された\var{path}を登録し、配布物をアンインストールする際にファイルが
+消されるようにします。安全を期すために、ディレクトリは空の時にのみ
+削除されます。
+\end{funcdesc}
+
+\begin{funcdesc}{get_special_folder_path}{csidl_string}
+この関数は、「スタートメニュー」や「デスクトップ」といった、
+Windows における特殊なフォルダ位置を取得する際に使えます。
+この関数はフォルダのフルパスを返します。 \var{csidl_string} は
+以下の文字列のいずれかでなければなりません:
+
+\begin{verbatim}
+"CSIDL_APPDATA"
+
+"CSIDL_COMMON_STARTMENU"
+"CSIDL_STARTMENU"
+
+"CSIDL_COMMON_DESKTOPDIRECTORY"
+"CSIDL_DESKTOPDIRECTORY"
+
+"CSIDL_COMMON_STARTUP"
+"CSIDL_STARTUP"
+
+"CSIDL_COMMON_PROGRAMS"
+"CSIDL_PROGRAMS"
+
+"CSIDL_FONTS"
+\end{verbatim}
+
+該当するフォルダを取得できなかった場合、 \exception{OSError} が送出されます。
+
+どの種類のフォルダを取得できるかは、特定の Windows のバージョン
+ごとに異なります。また、おそらく設定によっても異なるでしょう。
+詳細については、 \cfunction{SHGetSpecialFolderPath()} 関数に関する
+Microsoft の ドキュメントを参照してください。
+\end{funcdesc}
+
+\begin{funcdesc}{create_shortcut}{target, description,
+                                  filename\optional{,
+                                  arguments\optional{,
+                                  workdir\optional{,
+                                  iconpath\optional{, iconindex}}}}}
+
+この関数はショートカットを作成します。
+\var{target} はショートカットによって起動されるプログラムへのパスです。
+\var{description} はショートカットに対する説明です。
+\var{filename} はユーザから見えるショートカットの名前です。
+コマンドライン引数があれば、\var{arguments} に指定します。
+\var{workdir} はプログラムの作業ディレクトリです。
+\var{iconpath} はショートカットのためのアイコンが入ったファイルで、
+\var{iconindex} はファイル \var{iconpath} 中のアイコンへのインデクス
+です。これについても、詳しくは\class{IShellLink} インタフェースに
+関する Microsoft の ドキュメントを参照してください。
+\end{funcdesc}
+
+\chapter{パッケージインデクスに登録する}
+\label{package-index}
+
+Python パッケージインデクス (Python Package Index, PyPI) は、
+distutils でパッケージ化された配布物に関するメタデータを保持
+しています。配布物のメタデータをインデクスに提出するには、 
+Distutils のコマンド \command{register} を使います。
+ \command{register} は以下のように起動します:
+
+\begin{verbatim}
+python setup.py register
+\end{verbatim}
+
+Distutils は以下のようなプロンプトを出します:
+
+\begin{verbatim}
+running register
+We need to know who you are, so please choose either:
+ 1. use your existing login,
+ 2. register as a new user,
+ 3. have the server generate a new password for you (and email it to you), or
+ 4. quit
+Your selection [default 1]:
+\end{verbatim}
+
+\noindent 注意: ユーザ名とパスワードをローカルの計算機に保存しておくと、
+このメニューは表示されません。
+
+まだ PyPI に登録したことがなければ、まず登録する必要があります。
+この場合選択肢 2 番を選び、リクエストされた詳細情報を入力して
+ゆきます。詳細情報を提出し終えると、登録情報の承認を行うための
+メールを受け取るはずです。
+
+すでに登録を行ったことがあれば、選択肢 1 を選べます。この選択肢を
+選ぶと、PyPI ユーザ名とパスワードを入力するよう促され、
+\command{register} がメタデータをインデクスに自動的に提出します。
+
+配布物の様々なバージョンについて、好きなだけインデクスへの提出
+を行ってかまいません。特定のバージョンに関するメタデータを
+入れ替えたければ、再度提出を行えば、インデクス上のデータが
+更新されます。
+
+PyPI は提出された配布物の (名前、バージョン) の各組み合わせについて
+記録を保持しています。ある配布物名について最初に情報を提出したユーザが、
+その配布物名のオーナ (owner) になります。オーナは \command{register}
+コマンドか、web インタフェースを介して変更を提出できます。
+オーナは他のユーザをオーナやメンテナとして指名できます。
+メンテナはパッケージ情報を編集できますが、他の人をオーナやメンテナに
+指名することはできません。
+
+デフォルトでは、 PyPI はあるパッケージについて全てのバージョンを
+表示します。特定のバージョンを非表示にしたければ、パッケージの
+Hidden プロパティを yes に設定します。この値は web インタフェース
+で編集しなければなりません。
+
+\section{.pypircファイル (The .pypirc file)}
+\label{pypirc}
+
+\file{.pypirc}ファイルのフォーマットを示します。
+
+\begin{verbatim}
+[server-login]
+repository: <repository-url>
+username: <username>
+password: <password>
+\end{verbatim}
+
+\var{repository} は省略可能で、デフォルトでは
+\code{http://www.python.org/pypi} になります。
+
+\chapter{Uploading Packages to the Package Index}
+\label{package-upload}
+ 
+\versionadded{2.5}
+
+Python Package Index (PyPI) は、パッケージ情報に加えて、作者が望むのであれば
+パッケージデータを置くこともできます。
+distutils の \command{upload} コマンドは配布物をPyPIにアップロードします。
+
+このコマンドは一つ以上の配布物ファイルをビルドした直後に呼び出されます。
+例えば、次のコマンド
+
+\begin{verbatim}
+python setup.py sdist bdist_wininst upload
+\end{verbatim}
+
+は、ソース配布物とWindowsのインストーラをPyPIにアップロードします。
+以前に \file{setup.py} を実行してビルドした配布物もアップロード対象に
+なるけれども、アップロードされるのは \command{upload} コマンドと同時に
+指定された配布物だけだということに注意してください。
+
+\command{upload} コマンドは、\file{\$HOME/.pypirc} ファイル (詳しくは\ref{pypirc} セクションを
+ご覧下さい) の、ユーザー名、パスワードとリポジトリURLを利用します。
+
+\longprogramopt{sign} オプションで、
+アップロードする各ファイルにGPG (GNU Privacy Guard) を使うことができます。
+\program{gpg} プログラムが 環境変数\envvar{PATH} から実行可能である必要があります。
+署名にどの鍵を使うかを、\longprogramopt{identity=\var{name}} で指定することもできます。
+
+他の \command{upload} のオプションには、
+\longprogramopt{repository=\var{url}} (\file{\$HOME/.pypirc} で設定されたリポジトリを
+上書きします)、
+\longprogramopt{show-response} (アップロードの問題をデバッグするために、PyPI サーバー
+からの全てのレスポンスを表示します)　があります。
+ 
+
+\chapter{例}
+\label{examples}
+  
+\section{pure Python 配布物 (モジュール形式)}
+\label{pure-mod}
+
+単に二つのモジュール、特定のパッケージに属しないモジュールを
+配布するだけなら、setup スクリプト中で \option{py\_modules} 
+オプションを使って個別に指定できます。
+
+もっとも単純なケースでは、二つのファイル: setup スクリプト自体と、
+配布したい単一のモジュール、この例では \file{foo.py} について
+考えなければなりません:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        foo.py
+\end{verbatim}
+
+(この節の全ての図において、 \verb|<root>| は配布物ルートディレクトリ
+を参照します。) この状況を扱うための最小の setup スクリプトは
+以下のようになります:
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foo',
+      version='1.0',
+      py_modules=['foo'],
+      )
+\end{verbatim}
+
+配布物の名前は \option{name} オプションで個々に指定し、配布される
+モジュールの一つと配布物を同じ名前にする必要はないことに注意して
+ください (とはいえ、この命名方法はよいならわしでしょう)。
+ただし、配布物名はファイル名を作成するときに使われるので、
+文字、数字、アンダースコア、ハイフンだけで構成しなければなりません。
+
+\option{py\_modules} はリストなので、もちろん複数のモジュールを
+指定できます。例えば、モジュール \module{foo} と \module{bar} を
+配布しようとしているのなら、 setup スクリプトは以下のようになります:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        foo.py
+        bar.py
+\end{verbatim}
+
+また、セットアップスクリプトは以下のようになります．
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      py_modules=['foo', 'bar'],
+      )
+\end{verbatim}
+
+モジュールのソースファイルは他のディレクトリに置けますが、
+そうしなければならないようなモジュールを沢山持っているのなら、
+モジュールを個別に列挙するよりもパッケージを指定した方が
+簡単でしょう。
+
+\section{pure Python 配布物 (パッケージ形式)}
+\label{pure-pkg}
+
+二つ以上のモジュールを配布する場合、とりわけ二つのパッケージに
+分かれている場合、おそらく個々のモジュールよりもパッケージ全体を
+指定する方が簡単です。たとえモジュールがパッケージ内に入っていなくても
+状況は同じで、その場合はルートパッケージにモジュールが入っていると
+Distutils に教えることができ、他のパッケージと同様にうまく処理されます
+(ただし、\file{\_\_init\_\_.py} があってはなりません)。
+
+最後の例で挙げた setup スクリプトは、
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      packages=[''],
+      )
+\end{verbatim}
+のようにも書けます (空文字はルートパッケージを意味します)
+
+これら二つのファイルをサブディレクトリ下に移動しておいて、
+インストール先はルートパッケージのままにしておきたい、例えば:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        src/      foo.py
+                  bar.py
+\end{verbatim}
+%
+のような場合には、パッケージ名にはルートパッケージをそのまま
+指定しておきますが、ルートパッケージに置くソースファイルが
+どこにあるかを Distutils に教えなければなりません:
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      package_dir={'': 'src'},
+      packages=[''],
+      )
+\end{verbatim}
+
+もっと典型的なケースでは、複数のモジュールを同じパッケージ 
+(またはサブパッケージ) に入れて配布しようと思うでしょう。
+例えば、\module{foo} と \module{bar} モジュールがパッケージ
+\module{foobar} に属する場合、ソースツリーをレイアウトする
+一案として、以下が考えられます。
+
+\begin{verbatim}
+<root>/
+        setup.py
+        foobar/
+                 __init__.py
+                 foo.py
+                 bar.py
+\end{verbatim}
+
+実際、 Distutils ではこれをデフォルトのレイアウトとして想定して
+いて、setup スクリプトを書く際にも最小限の作業しか必要ありません:
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      packages=['foobar'],
+      )
+\end{verbatim}
+
+モジュールを入れるディレクトリをパッケージの名前にしたくない
+場合、ここでも \option{package\_dir} オプションを使う必要があります。
+例えば、パッケージ \module{foobar} のモジュールが \file{src} に
+入っているとします:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        src/
+                 __init__.py
+                 foo.py
+                 bar.py
+\end{verbatim}
+
+適切な setup スクリプトは、
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      package_dir={'foobar': 'src'},
+      packages=['foobar'],
+      )
+\end{verbatim}
+%
+のようになるでしょう。
+
+また、メインパッケージ内のモジュールを配布物ルート下に
+置くことがあるかもしれません:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        __init__.py
+        foo.py
+        bar.py
+\end{verbatim}
+
+この場合、 setup スクリプトは
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      package_dir={'foobar': ''},
+      packages=['foobar'],
+      )
+\end{verbatim}
+%
+のようになるでしょう。
+(空文字列も現在のディレクトリを表します。)
+
+サブパッケージがある場合、\option{packages} で
+明示的に列挙しなければなりませんが、\option{package\_dir}
+はサブパッケージへのパスを自動的に展開します。
+(別の言い方をすれば、 Distutils はソースツリーを\emph{走査せず}、
+どのディレクトリが Python パッケージに相当するのかを
+\file{\_\_init\_\_.py} files. を探して調べようとします。)  
+このようにして、デフォルトのレイアウトはサブパッケージ形式に
+展開されます:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        foobar/
+                 __init__.py
+                 foo.py
+                 bar.py
+                 subfoo/
+                           __init__.py
+                           blah.py
+\end{verbatim}
+
+対応する setup スクリプトは以下のようになります。
+
+\begin{verbatim}
+from distutils.core import setup
+setup(name='foobar',
+      version='1.0',
+      packages=['foobar', 'foobar.subfoo'],
+      )
+\end{verbatim}
+
+(ここでも、\option{package\_dir} を空文字列にすると現在のディレクトリ
+を表します。)
+
+
+\section{単体の拡張モジュール}
+\label{single-ext}
+
+拡張モジュールは、\option{ext\_modules} オプションを使って指定します。
+\option{package\_dir} は、拡張モジュールのソースファイルをどこで
+探すかには影響しません; pure Python モジュールのソースのみに影響します。
+もっとも単純なケースでは、単一の C ソースファイルで書かれた単一の拡張
+モジュールは:
+
+\begin{verbatim}
+<root>/
+        setup.py
+        foo.c
+\end{verbatim}
+%
+になります。
+
+\module{foo} 拡張をルートパッケージ下に所属させたい場合、 setup 
+スクリプトは
+
+\begin{verbatim}
+from distutils.core import setup
+from distutils.extension import Extension
+setup(name='foobar',
+      version='1.0',
+      ext_modules=[Extension('foo', ['foo.c'])],
+      )
+\end{verbatim}
+%
+になります。
+
+同じソースツリーレイアウトで、この拡張モジュールを \module{foopkg}
+の下に置き、拡張モジュールの名前を変えるには:
+
+\begin{verbatim}
+from distutils.core import setup
+from distutils.extension import Extension
+setup(name='foobar',
+      version = '1.0',
+      ext_modules=[Extension('foopkg.foo', ['foo.c'])],
+      )
+\end{verbatim}
+%
+のようにします。
+
+
+%\section{Multiple extension modules}
+%\label{multiple-ext}
+
+
+%\section{Putting it all together}
+
+
+\chapter{Distutilsの拡張 \label{extending}}
+
+
+Distutilsは様々な方法で拡張できます。 ほとんどの拡張は存在するコマンド
+を新しいコマンドで置換する形でおこなわれます。新しいコマンドはたとえば
+存在するコマンドを置換して、そのコマンドでパッケージをどう処理するかの
+細部を変更することでプラットフォーム特有のパッケージ形式をサポートする
+ために書かれているかもしれません
+ 
+ほとんどのdistutilsの拡張は存在するコマンドを変更したい\file{setup.py}
+スクリプト中で行われます。ほとんどはパッケージにコピーされるファイル拡
+張子を\file{.py}の他に、いくつか追加するものです。
+
+ほとんどのdistutilsのコマンド実装は\refmodule{distutils.cmd}の
+\class{Command}クラスのサブクラスとして実装されています。
+新しいコマンドは\class{Command}を直接継承し、置換するコマンドでは
+置換対象のコマンドのサブクラスにすることで\class{Command}を間接的に
+継承します。コマンドは\class{Command}から派生したものである必要があり
+ます。
+
+%\section{Extending existing commands}
+%\label{extend-existing}
+
+
+%\section{Writing new commands}
+%\label{new-commands}
+
+%\XXX{Would an uninstall command be a good example here?}
+
+
+\section{新しいコマンドの統合}
+
+新しいコマンド実装を統合するにはいくつかの方法があります。一番難しいも
+のは新機能をdistutils本体に取り込み、それのサポートを提供するPythonの
+バージョンが出ることを待つ(そして使う)ことです。これは様々な理由で本当
+に難しいことです。
+
+もっとも一般的な、そしておそらくほとんどの場合にもっとも妥当な方法は、
+新しい実装をあなたの \file{setup.py}スクリプトに取り込み、
+\function{distutils.core.setup()} 関数でそれらを使うようにすることです。
+
+\begin{verbatim}
+from distutils.command.build_py import build_py as _build_py
+from distutils.core import setup
+
+class build_py(_build_py):
+    """Specialized Python source builder."""
+
+    # implement whatever needs to be different...
+
+setup(cmdclass={'build_py': build_py},
+      ...)
+\end{verbatim}
+
+このアプローチは新実装をある特定のパッケージで利用したい時、
+そのパッケージに興味をもつ人全員がコマンドの新実装を必要とする時
+にもっとも価値があります。
+
+Python 2.4から、
+インストールされたPythonを変更せずに、既存の \file{setup.py}スクリプト
+をサポートするための3つめの選択肢が利用できるようになりました。
+これは追加のパッケージングシステムのサポートを追加するサードパーティ拡
+張を提供することを想定していますが、
+これらのコマンドはdistutilsが利用されている何にでも利用可能です。
+新しい設定オプション \option{command\_packages} (コマンドラインオプショ
+ン \longprogramopt{command-packages}) は、コマンド実装モジュールを検索す
+る追加のパッケージを指定するために利用できます。 distutilsの全てのオプショ
+ンと同様に、このオプションもコマンドラインまたは設定ファイルで指定できます。
+このオプションは設定ファイル中では\code{[global]}セクションか、コマン
+ドラインのコマンドより前でだけ設定できます。
+設定ファイル中で指定する場合、コマンドラインで上書きすることができます。
+空文字列を指定するとデフォルト値が使われます。これはパッケージと一緒に
+提供する設定ファイルでは指定しないでください。
+
+この新オプションによってコマンド実装を探すためのパッケージをいくつでも
+追加することができます。複数のパッケージ名はコンマで区切って指定します。
+指定がなければ、検索は\module{distutils.command}パッケージのみで行われ
+ます。ただし \file{setup.py}がオプション \longprogramopt{command-packages} 
+\programopt{distcmds,buildcmds}で実行されている場合には、パッケージは
+\module{distutils.command}、 \module{distcmds}、そして
+\module{buildcmds} を、この順番で検索します。
+新コマンドはコマンドと同じ名前のモジュールに、コマンドと同じ名前のクラ
+スで実装されていると想定しています。
+上のコマドラインオプションの例では、コマンド \command{bdist\_openpkg}
+は、\class{distcmds.bdist_openpkg.bdist_openpkg}か、
+\class{buildcmds.bdist_openpkg.bdist_openpkg}で実装されるかもしれません。
+
+%\section{Adding new distribution types}
+\section{配布物の種類を追加する}
+
+配布物 (\file{dist/} ディレクトリの中のファイル) を作成するコマンドは、
+\command{upload} がその配布物をPyPIにアップロードできるように、
+\code{(\var{command}, \var{filename})} のペアを \code{self.distributions.dist_files} に
+追加する必要があります。
+ペア中の \var{filename} はパスに関する情報を持たず、単にファイル名だけを持ちます。
+dry-run モードでも、何が作成されたかを示すために、同じペアが必要になります。
+
+\chapter{リファレンスマニュアル}
+\label{reference}
+
+
+%\section{Building modules: the \protect\command{build} command family}
+%\label{build-cmds}
+
+%\subsection{\protect\command{build}}
+%\label{build-cmd}
+
+%\subsection{\protect\command{build\_py}}
+%\label{build-py-cmd}
+
+%\subsection{\protect\command{build\_ext}}
+%\label{build-ext-cmd}
+
+%\subsection{\protect\command{build\_clib}}
+%\label{build-clib-cmd}
+
+
+\section{モジュールをインストールする: 
+	\protect\command{install} コマンド群}
+\label{install-cmd}
+
+\command{install} コマンドは最初にビルドコマンドを実行済みに
+しておいてから、サブコマンド \command{install\_lib} を実行します。
+\command{install\_data} and
+\command{install\_scripts}.
+
+%\subsection{\protect\command{install\_lib}}
+%\label{install-lib-cmd}
+
+\subsection{\protect\command{install\_data}}
+\label{install-data-cmd}
+このコマンドは配布物中に提供されている全てのデータファイルを
+インストールします。
+
+\subsection{\protect\command{install\_scripts}}
+\label{install-scripts-cmd}
+このコマンドは配布物中の全ての (Python) スクリプトをインストール
+します。
+
+
+%\section{Cleaning up: the \protect\command{clean} command}
+%\label{clean-cmd}
+
+
+\section{ソースコード配布物を作成する: 
+            \protect\command{sdist} command}
+\label{sdist-cmd}
+
+
+\XXX{これは上から断片的に移動した文章です: 脈絡を与える必要あり！}
+
+マニフェストテンプレート関連のコマンドを以下に示します:
+\begin{tableii}{lp{20zw}}{command}{コマンド}{説明}
+  \lineii{include \var{pat1} \var{pat2} ... }
+    {列挙されたパターンのいずれかにマッチする全てのファイルを
+対象に含めます}
+  \lineii{exclude \var{pat1} \var{pat2} ... }
+    {列挙されたパターンのいずれかにマッチする全てのファイルを
+対象から除外します}
+  \lineii{recursive-include \var{dir} \var{pat1} \var{pat2} ... }
+    {\var{dir} 下にある、列挙されたパターンのいずれかにマッチ
+する全てのファイルを対象に含めます}
+  \lineii{recursive-exclude \var{dir} \var{pat1} \var{pat2} ...}
+    {\var{dir} 下にある、列挙されたパターンのいずれかにマッチ
+する全てのファイルを対象から除外します}
+  \lineii{global-include \var{pat1} \var{pat2} ...}
+    {ソースツリー下にある、列挙されたパターンのいずれかにマッチ
+する全てのファイルを対象に含めます}
+  \lineii{global-exclude \var{pat1} \var{pat2} ...}
+    {ソースツリー下にある、列挙されたパターンのいずれかにマッチ
+する全てのファイルを対象から除外します}
+  \lineii{prune \var{dir}}{\var{dir} 下の全てのファイルを除外します}
+  \lineii{graft \var{dir}}{\var{dir} 下の全てのファイルを含めます}
+\end{tableii}
+ここでいうパターンとは、\UNIX 式の ``glob'' パターンです:
+\code{*} は全ての正規なファイル名文字列に一致し、\code{?} は
+正規なファイル名文字一字に一致します。また、 \code{[\var{range}]}
+は、\var{range} の範囲 (例えば、 \code{a=z}、\code{a-zA-Z}、
+\code{a-f0-9\_.}) 内にある、任意の文字にマッチします。
+``正規なファイル名文字'' の定義は、プラットフォームごとに特有の
+ものです: \UNIX{} ではスラッシュ以外の全ての文字です; Windows 
+では、バックラッシュとコロン以外です; Mac OS 9 ではコロン以外です。
+
+\XXX{Windows はまだサポートされていません}
+
+
+%\section{Creating a built distribution: the
+%  \protect\command{bdist} command family}
+%\label{bdist-cmds}
+
+
+%\subsection{\protect\command{bdist}}
+
+%\subsection{\protect\command{bdist\_dumb}}
+
+%\subsection{\protect\command{bdist\_rpm}}
+
+%\subsection{\protect\command{bdist\_wininst}}
+
+\chapter{API リファレンス \label{api-reference}}
+
+\section{\module{distutils.core} --- Distutils のコア機能}
+
+\declaremodule{standard}{distutils.core}
+\modulesynopsis{Distutils のコア機能}
+
+Distutilsを使うためにインストールする必要がある唯一のモジュールが
+\module{distutils.core}モジュールです。\function{setup()}関数
+(セットアップスクリプトから呼び出されます)を提供します。間接的に
+\class{distutils.dist.Distribution}クラスと \class{distutils.cmd.Command}
+クラスを提供します。
+
+\begin{funcdesc}{setup}{arguments}
+全てを実行する基本的な関数で、Distutilsでできるほとんどのことを実行し
+ます。
+XXXXを参照してください。
+
+
+setup関数はたくさんの引数をとります。以下のテーブルにまとめます。
+
+
+\begin{tableiii}{c|l|l}{argument name}{argument name}{value}{type}
+\lineiii{name}{パッケージの名前}{文字列}
+\lineiii{version}{パッケージのバージョン番号}{\refmodule{distutils.version}を参照してください}
+\lineiii{description}{1行で書いたパッケージ解説}{文字列}
+\lineiii{long_description}{パッケージの長い解説}{文字列}
+\lineiii{author}{パッケージ作者の名前}{文字列}
+\lineiii{author_email}{パッケージ作者のemailアドレス}{文字列}
+\lineiii{maintainer}{現在のメンテナの名前(パッケージ作者と異なる場合)}{文字列}
+\lineiii{maintainer_email}{現在のメンテナのemailアドレス(パッケージ作者と異なる場合)}{}
+\lineiii{url}{パッケージのURL(ホームページ)}{URL}
+\lineiii{download_url}{パッケージダウンロード用URL}{URL}
+\lineiii{packages}{distutilsが操作するPythonパッケージのリスト}{文字列のリスト}
+\lineiii{py_modules}{distutilsが操作するPythonモジュールのリスト}{文字列のリスト}
+\lineiii{scripts}{ビルドおよびインストールする単体スクリプトファイルのリスト}{文字列のリスト}
+\lineiii{ext_modules}{ビルドする拡張モジュール}{\class{distutils.core.Extension}インスタンスのリスト}
+\lineiii{classifiers}{パッケージのカテゴリのリスト}{利用可能なカテゴリ一覧は \url{http://cheeseshop.python.org/pypi?:action=list_classifiers} にあります。}
+\lineiii{distclass}{使用する \class{Distribution}クラス}{\class{distutils.core.Distribution}のサブクラス}
+% What on earth is the use case for script_name?
+\lineiii{script_name}{setup.pyスクリプトの名前 - デフォルトでは\code{sys.argv[0]}}{文字列}
+\lineiii{script_args}{セットアップスクリプトの引数}{文字列のリスト}
+\lineiii{options}{セットアップスクリプトのデフォルト引数}{文字列}
+\lineiii{license}{パッケージのライセンス}{}
+\lineiii{keywords}{説明用メタデータ。 \pep{314}を参照してください}{}
+\lineiii{platforms}{}{}
+\lineiii{cmdclass}{コマンド名から \class{Command} サブクラスへのマッピング}{辞書}
+\end{tableiii}
+
+\end{funcdesc}
+
+\begin{funcdesc}{run_setup}{script_name\optional{, script_args=\code{None}, stop_after=\code{'run'}}}
+制御された環境でセットアップスクリプトを実行し、いろいろなものを操作する
+\class{distutils.dist.Distribution}クラスのインスタンスを返します。
+これはディストリビューションのメタデータ(キーワード引数\var{script}と
+して 関数\function{setup()}に渡される)を参照したり、設定ファイルやコマ
+ンドラインの内容を調べる時に便利です。
+
+\var{script_name} は \function{execfile()}で実行されるファイルです。
+\code{sys.argv[0]} は、 呼び出しのために\var{script_name}と置換されます。 
+\var{script_args} は文字列のリストです。もし提供されていた場合、
+\code{sys.argv[1:]} は、呼び出しのために\var{script_args} で置換されます。
+
+\var{stop_after} は いつ動作を停止するか関数\function{setup()} に伝えます。
+とりうる値は:
+
+\begin{tableii}{c|l}{value}{値}{説明}
+\lineii{init}{\class{Distribution}インスタンスを作成し、キーワード引数を
+\function{setup()}に渡したあとに停止する。}
+\lineii{config}{設定ファイルをパーズしたあと停止する(そしてそのデータは
+\class{Distribution}インスタンスに保存される)。}
+\lineii{commandline}{コマンドライン (\code{sys.argv[1:]} または
+\var{script_args}) がパーズされたあとに停止する (そしてそのデータは
+\class{Distribution}インスタンスに保存される)。}
+\lineii{run}{全てのコマンドを実行したあとに停止する(関数 \function{setup()}
+を通常の方法で呼び出した場合と同じ)。 デフォルト値。}
+\end{tableii}
+\end{funcdesc}
+
+これに加えて、\module{distutils.core}モジュールは他のモジュールにある
+いくつかのクラスを公開しています。
+
+\begin{itemize}
+\item \class{Extension} は \refmodule{distutils.extension} から。
+\item \class{Command} は \refmodule{distutils.cmd} から。
+\item \class{Distribution} は \refmodule{distutils.dist} から。
+\end{itemize}
+
+それぞれの簡単な説明を以下に記します。完全な説明についてはそれぞれの
+モジュールをごらんください。
+
+\begin{classdesc*}{Extension}
+
+Extension クラスは、セットアップスクリプト中で C または \Cpp 拡張モジュー
+ルを表します。コンストラクタで以下のキーワード引数をとります。
+
+
+\begin{tableiii}{c|l|l}{argument name}{argument name}{value}{type}
+\lineiii{name}{拡張のフルネーム(パッケージを含む) --- ファイル名やパス
+  名では\emph{なく}、Pythonのピリオド区切りの名前}{string}
+\lineiii{sources}{ソースファイル名のリスト。配布物ルートディレクトリ
+(setupスクリプトのある場所) からの相対パス、プラットフォーム独立のた
+め \UNIX{} 形式(スラッシュで区切る)で記述します。ソースファイルは C, \Cpp,
+SWIG (.i)、特定プラットフォーム用のリソースファイル、その他
+\command{build_ext}コマンドがソースファイルだと認識するどの形式でもありえます。}{string}
+\lineiii{include_dirs}{C/\Cpp ヘッダファイルを検索するディレクトリのリ
+  スト(プラットフォーム独立のため \UNIX{} 形式で記述する)}{string}
+\lineiii{define_macros}{定義するマクロのリスト; それぞれのマクロは
+2要素のタプルで定義されます。'値'には定義しようとしている文字列、
+または内容なしで定義する場合は\code{None}(ソースコード中で
+\code{\#define FOO}と書く、または \UNIX{} Cコンパイラのコマンドラインで
+\programopt{-DFOO} を指定するのと等価です)を指定します。 }{ (string,string) 
+または (name,\code{None}) のタプル}
+\lineiii{undef_macros}{定義を消すマクロのリスト}{string}
+\lineiii{library_dirs}{リンク時にC/\Cpp{}ライブラリを検索するディレクトリのリスト 
+}{string}
+\lineiii{libraries}{リンクするライブラリ名のリスト (ファイル名やパスではない)}{string}
+\lineiii{runtime_library_dirs}{実行時(shared extensionでは、拡張が読み
+込まれる時)に C/\Cpp{}ライブラリを探索するディレクトリのリスト}{string}
+\lineiii{extra_objects}{追加でリンクするファイル('sources'に対応するコー
+ドが含まれていないファイル、バイナリ形式のリソースファイルなど)のリスト
+}{string}
+\lineiii{extra_compile_args}{
+'sources'のソースをコンパイルする時に
+追加するプラットフォーム特有またはコンパイラ特有の情報
+コマンドラインを利用できるプラットホームとコンパイラでは、これは通常
+コマンドライン引数のリストですが、他のプラットホームでも、それは何か
+に使えます。}{string}
+\lineiii{extra_link_args}{
+オブジェクトファイルをリンクして拡張(または新しいPythonインタプ
+リタ)を作る時に
+追加するプラットフォーム特有またはコンパイラ特有の情報
+'extra_compile_args'に似た実装です。}{string}
+\lineiii{export_symbols}{
+shared extensionからエクスポートされるシンボルのリスト。
+全てのプラットフォームでは使われず、
+Python拡張(典型的には \code{init} + extension_name という1つのシンボル
+だけエクスポートする)に一般的に必要なものでもない。}{string}
+\lineiii{depends}{拡張が依存するファイルのリスト}{string}
+\lineiii{language}{拡張の言語 (例: \code{'c'}, \code{'c++'},
+  \code{'objc'})。指定しなければソースの拡張子で検出される。}{string}
+\end{tableiii}
+\end{classdesc*}
+
+\begin{classdesc*}{Distribution}
+\class{Distribution}はPythonソフトウェアパッケージをどのようにビルド、
+インストール、パッケージするかを定義する。
+
+\class{Distribution}のコンストラクタが取りうる
+キーワード引数のリストに関しては、\function{setup()}関数を見てください。
+\function{setup()}は\class{Distribution}のインスタンスを作ります。
+\end{classdesc*}
+
+\begin{classdesc*}{Command}
+\class{Command}クラス(そのサブクラスのインスタンス)はdistutilsのあるコマン
+ドを実装します。
+\end{classdesc*}
+
+\section{\module{distutils.ccompiler} --- CCompiler ベースクラス}
+\declaremodule{standard}{distutils.ccompiler}
+\modulesynopsis{抽象 CCompiler class}
+
+このモジュールは \class{CCompiler}クラスの抽象ベースクラスを提供します。
+\class{CCompiler}のインスタンスはプロジェクトにおける全てのコンパイルお
+よびリンクに使われます。
+コンパイラのオプションを設定するためのメソッドが提供されます --- マク
+ロ定義、includeディレクトリ、リンクパス、ライブラリなど。
+
+このモジュールは以下の関数を提供します。
+
+\begin{funcdesc}{gen_lib_options}{compiler, library_dirs, runtime_library_dirs, libraries}
+ライブラリを探索するディレクトリ、特定のライブラリとのリンクをするための
+リンカオプションを生成します。
+\var{libraries} と \var{library_dirs} はそれぞれライブラリ名(ファイル
+名ではありません!)のリストと、探索ディレクトリのリストです。
+compilerで利用できるコマンドラインオプションのリスト(指定されたフォーマット文字列に依存します)を返します。
+\end{funcdesc}
+    
+\begin{funcdesc}{gen_preprocess_options}{macros, include_dirs}
+Cプリプロセッサオプション(\programopt{-D}, \programopt{-U},
+\programopt{-I})を生成します。これらは少なくとも2つのコンパイラで利用可能です。
+典型的な \UNIX{} のコンパイラと、Visual\Cpp です。
+\var{macros}は1または2要素のタプルで\code{(\var{name},)}は\var{name}マクロの削除
+(-U)を意味し、 \var{(\var{name},\var{value})}は\var{name}マクロを\var{value}として
+定義(\programopt{-D})します。\var{include_dirs}はディレクトリ名のリストで、ヘッダファ
+イルのサーチパスに追加されます(\programopt{-I})。
+\UNIX{} のコンパイラと、Visual \Cpp で利用できるコマンドラインオプショ
+ンのリストを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{get_default_compiler}{osname, platform}
+指定されたプラットフォームのデフォルトコンパイラを返します。
+
+問い合わせの\var{osname}はPython標準のOS名(\code{os.name}で返されるもの)のひとつであるべき
+で、\var{platform}は\code{sys.platform}で返される共通の値です。
+
+パラメータが指定されていない場合のデフォルト値は\code{os.name}と \code{sys.platform}です。
+\end{funcdesc}
+
+\begin{funcdesc}{new_compiler}{plat=\code{None}, compiler=\code{None}, verbose=\code{0}, dry_run=\code{0}, force=\code{0}}
+指定されたプラットフォーム/コンパイラの組み合わせ向けに、
+CCompilerサブクラスのインスタンスを生成するファクトリ関数です。
+\var{plat} のデフォルト値は \code{os.name} (例: \code{'posix'}, \code{'nt'}), \var{compiler})、
+\var{compiler}のデフォルト値はプラトフォームのデフォルトコンパイラです。
+現在は \code{'posix'}と\code{'nt'}だけがサポートされています、デフォルトのコンパイラは
+``traditional \UNIX{} interface''(\class{UnixCCompiler}クラス) と、
+Visual \Cpp (\class{MSVCCompiler} クラス) です。
+Windowsで\UNIX{}コンパイラオブジェクトを要求することも、\UNIX{}でMicrosoft
+コンパイラオブジェクトを要求することも可能です。\var{compiler}引数を与えると \var{plat}は無視されます。
+% Is the posix/nt only thing still true? Mac OS X seems to work, and
+% returns a UnixCCompiler instance. How to document this... hmm.
+\end{funcdesc}
+
+\begin{funcdesc}{show_compilers}{}
+利用可能なコンパイラのリストを表示します(\command{build},
+\command{build_ext}, \command{build_clib}の、\longprogramopt{help-compiler}オプションで使われます。)
+\end{funcdesc}
+
+\begin{classdesc}{CCompiler}{\optional{verbose=\code{0}, dry_run=\code{0}, force=\code{0}}}
+
+抽象ベースクラス \class{CCompiler}は実際のコンパイラクラスで実装される必要のある
+インタフェースを定義しています。このクラスはコンパイラクラスで利用されるユーティリティメソッドも定義しています。
+
+コンパイラ抽象クラスの基本的な前提は、各インスタンスはあるプロジェクトを
+ビルドするときの全コンパイル/リンクで利用できるということです。
+そこで、コンパイルとリンクステップで共通する属性 --- 
+インクルードディレクトリ、マクロ定義、リンクするライブラリ など --- はコンパイラインスタンスの
+属性になります。
+どのように各ファイルが扱われるかを変更できるように、ほとんどの
+属性はコンパイルごと、またはリンクごとに与えることができます。
+
+各サブクラスのコンストラクタは Compiler クラスのインスタンスを作ります。
+フラグは \var{verbose}(冗長な出力を表示します)、
+\var{dry_run}(実際にはそのステップを実行しません)、
+そして\var{force}(依存関係を無視して全て再ビルドします)です。
+これらのフラグは全てデフォルト値が\code{0}(無効)になっています。
+\class{CCompiler}またはサブクラスを直接インスタンス化したくない場合には、
+かわりに\function{distutils.CCompiler.new_compiler()}ファクトリ関数を利用してください。
+
+以下のメソッドで、Compilerクラスのインスタンスが使うコンパイラオプションを手動で変更できます。
+
+\begin{methoddesc}{add_include_dir}{dir}
+\var{dir}をヘッダファイル探索ディレクトリのリストに追加します。
+コンパイラは\method{add_include_dir()}を呼び出した順にディレクトリを
+探索するよう指定されます。
+\end{methoddesc}
+
+\begin{methoddesc}{set_include_dirs}{dirs}
+探索されるディレクトリのリストを \var{dirs} (文字列のリスト)に設定します。
+先に実行された \method{add_include_dir()}は上書きされます。
+後で実行する\method{add_include_dir()}は\method{set_include_dirs()}の
+リストにディレクトリを追加します。これはコンパイラがデフォルトで探索する
+標準インクルードディレクトリには影響しません。
+\end{methoddesc}
+
+\begin{methoddesc}{add_library}{libname}
+\var{libname}をコンパイラオブジェクトによるリンク時に使われる
+ライブラリのリストに追加します。\var{libname}はライブラリを含むファイル名ではなく、
+ライブラリそのものの名前です: 実際のファイル名はリンカ、コンパイラ、または
+コンパイラクラス(プラットフォームに依存します)から推測されます。
+ 
+リンカは\method{add_library()}と\method{set_library()}
+で渡された順にライブラリをリンクしようとします。ライブラリ名が重なることは
+問題ありません。リンカは指定された回数だけライブラリとリンクしようとします。
+\end{methoddesc}
+
+\begin{methoddesc}{set_libraries}{libnames}
+コンパイラオブジェクトによるリンク時に使われるライブラリのリストを 
+\var{libnames}(文字列のリスト)に設定します。
+これはリンカがデフォルトでリンクする標準のシステムライブラリには影響しません。
+\end{methoddesc}
+
+\begin{methoddesc}{add_library_dir}{dir}
+\method{add_library()} と \method{set_libraries()}で指定された
+ライブラリを探索するディレクトリのリストに\var{dir}を追加します。
+リンカは\method{add_library_dir()}と \method{set_library_dirs()}で
+指定された順にディレクトリを探索されます。
+\end{methoddesc}
+
+\begin{methoddesc}{set_library_dirs}{dirs}
+ライブラリを探索するディレクトリを \var{dirs}(文字列のリスト)に設定します。
+これはリンカがデフォルトで探索する標準ライブラリ探索パスには影響しません。
+\end{methoddesc}
+
+\begin{methoddesc}{add_runtime_library_dir}{dir}
+実行時に共有ライブラリを探索するディレクトリのリストに\var{dir}を追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{set_runtime_library_dirs}{dirs}
+実行時に共有ライブラリを探索するディレクトリのリストを\var{dir}に設定します。
+これはランタイムリンカがデフォルトで利用する標準探索パスには影響しません。
+\end{methoddesc}
+
+\begin{methoddesc}{define_macro}{name\optional{, value=\code{None}}}
+このコンパイラオブジェクトで実行される全てのコンパイルで利用される
+プリプロセッサのマクロを定義します。省略可能なパラメータ\var{value}は
+文字列であるべきです。省略された場合は、マクロは特定の値をとらずに定義され、
+具体的な結果は利用されるコンパイラに依存します。
+(XXX 本当に? これについてANSIで言及されている?)
+\end{methoddesc}
+
+\begin{methoddesc}{undefine_macro}{name}
+このコンパイラオブジェクトで実行される全てのコンパイルで利用される
+プリプロセッサのマクロ定義を消します。同じマクロを\method{define_macro()}で
+定義し、\method{undefine_macro()}で定義を削除した場合、後で呼び出されたものが
+優先される(複数の再定義と削除を含みます)。
+もしコンパイルごと(すなわち\method{compile()}の呼び出しごと)にマクロが再定義/削除
+される場合も後で呼び出されたものが優先されます。
+\end{methoddesc}
+
+\begin{methoddesc}{add_link_object}{object}
+このコンパイラオブジェクトによる全てのリンクで利用される
+オブジェクトファイル(または類似のライブラリファイルや
+``リソースコンパイラ''の出力)のリストに\var{object}を追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{set_link_objects}{objects}
+このコンパイラオブジェクトによる全てのリンクで利用される
+オブジェクトファイル(または類似のもの)のリストを\var{objects}に設定します。
+これはリンカがデフォルト利用する標準オブジェクトファイル(システムライブラリ
+など)には影響しません。
+\end{methoddesc}
+
+以下のメソッドはコンパイラオプションの自動検出を実装しており、
+GNU \program{autoconf}に似たいくつかの機能を提供します。
+
+\begin{methoddesc}{detect_language}{sources}
+与えられたファイルまたはファイルのリストの言語を検出します。
+インスタンス属性\member{language_map}(辞書)と、
+\member{language_order} (リスト)を仕事に使います。
+\end{methoddesc}
+
+\begin{methoddesc}{find_library_file}{dirs, lib\optional{, debug=\code{0}}}
+指定されたディレクトリのリストから、スタティックまたは共有ライブラリファイル
+\var{lib}を探し、そのファイルのフルパスを返します。
+もし\var{debug}が真なら、(現在のプラットフォームで意味があれば)デバッグ版を探します。
+指定されたどのディレクトリでも \var{lib} が見つからなければ \code{None}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{has_function}{funcname \optional{, includes=\code{None}, include_dirs=\code{None}, libraries=\code{None}, library_dirs=\code{None}}}
+\var{funcname}が現在のプラットフォームでサポートされているかどうかをブール値で返します。
+省略可能引数は追加のインクルードファイルやパス、
+ライブラリやパスを与えることでコンパイル環境を指定します。
+\end{methoddesc}
+
+\begin{methoddesc}{library_dir_option}{dir}
+\var{dir}をライブラリ探索ディレクトリに追加する
+コンパイラオプションを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{library_option}{lib}
+共有ライブラリまたは実行ファイルにリンクされるライブラリ一覧に\var{lib}を追加する
+コンパイラオプションを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{runtime_library_dir_option}{dir}
+ランタイムライブラリを検索するディレクトリのリストに 
+\var{dir}を追加するコンパイラオプションを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{set_executables}{**args}
+コンパイルのいろいろなステージで実行される実行ファイル(とその引数)を定
+義します。コンパイラクラス(の 'executables' 属性)によって実行ファイル
+のセットは変わる可能性がありますが、ほとんどは以下のものを持っています:
+
+\begin{tableii}{l|l}{attribute}{attribute}{description}
+\lineii{compiler}{C/\Cpp{} コンパイラ}
+\lineii{linker_so}{シェアードオブジェクト、ライブラリを作るために使う
+  リンカ}
+\lineii{linker_exe}{バイナリ実行可能ファイルを作るために使うリンカ}
+\lineii{archiver}{静的ライブラリを作るアーカイバ}
+\end{tableii}
+
+コマンドラインをもつプラットフォーム(\UNIX, DOS/Windows)では、それぞれ
+の文字列は実行ファイル名と(省略可能な)引数リストに分割されます。(文字
+列の分割は \UNIX{} のシェルが行うものに似ています: 単語はスペースで区
+切られますが、クォートとバックスラッシュでオーバーライドできます。 
+\function{distutils.util.split_quoted()}をごらんください。)
+\end{methoddesc}
+
+以下のメソッドはビルドプロセスのステージを呼び出します。
+
+\begin{methoddesc}{compile}{sources\optional{, output_dir=\code{None}, macros=\code{None}, include_dirs=\code{None}, debug=\code{0}, extra_preargs=\code{None}, extra_postargs=\code{None}, depends=\code{None}}}
+1つ以上のソースファイルをコンパイルします。オブジェクトファイルを生成
+(たとえば \file{.c} ファイルを \file{.o}ファイルに変換)します。
+
+\var{sources} はファイル名のリストである必要があります。おそらく C/\Cpp
+ファイルですが、実際にはコンパイラとコンパイラクラスで扱えるもの(例:
+\class{MSVCCompiler}はリソースファイルを \var{sources}にとることができ
+ます)なら何でも指定できます。 \var{sources}のソースファイルひとつずつ
+に対応するオブジェクトファイル名のリストを返します。実装に依存しますが、
+全てのソースファイルがコンパイルされる必要はありません。しかし全ての対
+応するオブジェクトファイル名が返ります。
+
+もし \var{output_dir}が指定されていれば、オブジェクトファイルはその下
+に、オリジナルのパスを維持した状態で置かれます。 つまり、
+\file{foo/bar.c}は通常コンパイルされて\file{foo/bar.o}になります
+(\UNIX{}実装の場合)が、もし\var{output_dir}が \var{build}であれば、
+\file{build/foo/bar.o}になります。
+
+\var{macros}は(もし指定されていれば)マクロ定義のリストである必要があり
+ます。
+マクロ定義は\code{(\var{name}, \var{value})}という形式の2要素のタプル、または
+\code{(\var{name},)}という形式の1要素のタプルのどちらかです。前者はマクロを定
+義します。もしvalueが\code{None}であれば、マクロは特定の値をもたないで
+定義されます。1要素のタプルはマクロ定義を削除します。後で実行された定
+義/再定義/削除が優先されます。
+
+\var{include_dirs}は(もし指定されていれば)文字列のリストである必要があ
+ります。このコンパイルだけで有効な、デフォルトのインクルードファイル
+の検索ディレクトリに追加するディレクトリ群を指定します。
+
+\var{debug}はブーリアン値です。もし真なら、コンパイラはデバッグシンボ
+ルをオブジェクトファイルに(または別ファイルに)出力します。
+
+\var{extra_postargs}と\var{extra_postargs}は実装依存です。
+コマンドラインをもっているプラットフォーム(例 \UNIX, DOS/Windows)では、
+おそらく文字列のリスト: コンパイラのコマンドライン引数の前/後に追加す
+るコマンドライン引数です。他のプラットフォームでは、実装クラスのドキュ
+メントを参照してください。どの場合でも、これらの引数は抽象コンパイラフ
+レームワークが期待に沿わない時の脱出口として意図されています。
+
+\var{depends}は(もし指定されていれば)ターゲットが依存しているファイル
+名のリストです。ソースファイルが依存しているファイルのどれかより古けれ
+ば、ソースファイルは再コンパイルされます。これは依存関係のトラッキング
+をサポートしていますが、荒い粒度でしか行われません。
+
+失敗すると\exception{CompileError}を起こします。
+\end{methoddesc}
+
+\begin{methoddesc}{create_static_lib}{objects, output_libname\optional{, output_dir=\code{None}, debug=\code{0}, target_lang=\code{None}}}
+静的ライブラリファイルを作るために元ファイル群をリンクします。
+「元ファイル群」は\var{objects}で指定されたオブジェクトファイルのリス
+トを基礎にしています。追加のオブジェクトファイルを
+\method{add_link_object()} および/または \method{set_link_objects()}
+で指定し、追加のライブラリを\method{add_library()} および/または
+\method{set_libraries()}で指定します。そして\var{libraries}で指定され
+たライブラリです。
+
+\var{output_libname}はライブラリ名で、ファイル名ではありません; ファイ
+ル名はライブラリ名から作られます。\var{output_dir}はライブラリファイル
+が起かれるディレクトリです。 %XXX デフォルトは何?
+
+\var{debug}はブール値です。真なら、デバッグ情報がライブラリに含まれま
+す(ほとんどのプラットフォームではコンパイルステップで意味をもちます:
+\var{debug}フラグは一貫性のためにここにもあります。)。
+
+\var{target_lang} はオブジェクトがコンパイルされる対象になる言語です。
+これはその言語特有のリンク時の処理を可能にします。
+
+失敗すると \exception{LibError} を起こします。
+\end{methoddesc}
+
+\begin{methoddesc}{link}{target_desc, objects, output_filename\optional{, output_dir=\code{None}, libraries=\code{None}, library_dirs=\code{None}, runtime_library_dirs=\code{None}, export_symbols=\code{None}, debug=\code{0}, extra_preargs=\code{None}, extra_postargs=\code{None}, build_temp=\code{None}, target_lang=\code{None}}}
+実行ファイルまたは共有ライブラリファイルを作るために元ファイル群をリンクします。
+
+「元ファイル群」は\var{objects}で指定されたオブジェクトファイルのリス
+トを基礎にしています。\var{output_filename} はファイル名です。もし
+\var{output_dir}が指定されていれば、それに対する相対パスとして
+\var{output_filename}は扱われます(必要ならば\var{output_filename} はディ
+レクトリ名を含むことができます。)。
+
+\var{libraries}はリンクするライブラリのリストです。
+これはファイル名ではなくライブラリ名で指定します。プラットフォーム依存
+の方式でファイル名に変換されます(例: \var{foo} は\UNIX{} では \file{libfoo.a}
+に、DOS/Windowsでは \file{foo.lib} になります。 )。ただしこれらはディレクト
+リ名を含むことができ、その場合はリンカは通常の場所全体を探すのではなく
+特定のディレクトリを参照します。
+
+\var{library_dirs}はもし指定されるならば、修飾されていない(ディレクト
+リ名を含んでいない)ライブラリ名で指定されたライブラリを探索する
+ディレクトリのリストです。これはシステムのデフォルトより優先され、
+\method{add_library_dir()} と/または \method{set_library_dirs()}に渡さ
+れます。\var{runtime_library_dirs}は共有ライブラリに埋め込まれるディレ
+クトリのリストで、実行時にそれが依存する共有ライブラリのパスを指定しま
+す(これは\UNIX でだけ意味があるかもしれません。)。
+
+\var{export_symbols}は共有ライブラリがエクスポートするシンボルのリストです。
+(これはWindowsだけで意味があるようです。)
+
+\var{debug}は \method{compile()} や \method{create_static_lib()}と同じですが、 
+少しだけ違いがあり、(\method{create_static_lib()}では\var{debug}フラグ
+は形式をあわせるために存在していたのに対して)ほとんどのプラットフォー
+ムで意識されます。
+
+\var{extra_preargs} と \var{extra_postargs} は \method{compile()} 
+と同じですが、コンパイラではなくリンカへの引数として扱われます。
+
+\var{target_lang}は指定されたオブジェクトがコンパイルされた対象言語で
+す。リンク時に言語特有の処理を行えるようにします。
+
+失敗すると \exception{LinkError} が起きます。
+\end{methoddesc}
+
+\begin{methoddesc}{link_executable}{objects, output_progname\optional{, output_dir=\code{None}, libraries=\code{None}, library_dirs=\code{None}, runtime_library_dirs=\code{None}, debug=\code{0}, extra_preargs=\code{None}, extra_postargs=\code{None}, target_lang=\code{None}}}
+実行ファイルをリンクします。
+\var{output_progname}は実行ファイルの名前です。\var{objects}はリンクさ
+れるオブジェクトのファイル名のリストです。他の引数は\method{link}メソッドと同
+じです。
+\end{methoddesc}
+
+\begin{methoddesc}{link_shared_lib}{objects, output_libname\optional{, output_dir=\code{None}, libraries=\code{None}, library_dirs=\code{None}, runtime_library_dirs=\code{None}, export_symbols=\code{None}, debug=\code{0}, extra_preargs=\code{None}, extra_postargs=\code{None}, build_temp=\code{None}, target_lang=\code{None}}}
+共有ライブラリをリンクします。\var{output_libname}は出力先のライブラリ
+名です。\var{objects}はリンクされるオブジェクトのファイル名のリストで
+す。他の引数は\method{link}メソッドと同じです。
+\end{methoddesc}
+
+\begin{methoddesc}{link_shared_object}{objects, output_filename\optional{, output_dir=\code{None}, libraries=\code{None}, library_dirs=\code{None}, runtime_library_dirs=\code{None}, export_symbols=\code{None}, debug=\code{0}, extra_preargs=\code{None}, extra_postargs=\code{None}, build_temp=\code{None}, target_lang=\code{None}}}
+共有オブジェクトをリンクします。\var{output_filename}は出力先の共有オ
+ブジェクト名です。\var{objects}はリンクされるオブジェクトのファイル名のリストで
+す。他の引数は\method{link}メソッドと同じです。
+\end{methoddesc}
+
+\begin{methoddesc}{preprocess}{source\optional{, output_file=\code{None}, macros=\code{None}, include_dirs=\code{None}, extra_preargs=\code{None}, extra_postargs=\code{None}}}
+\var{source}で指定されたひとつの C/\Cpp ソースファイルをプリプロセスします。
+出力先のファイルは \var{output_file}か、もし \var{output_file}が指定さ
+れていなければ \var{stdout} になります。
+\var{macro}は\method{compile()}と同様にマクロ定義のリストで、
+\method{define_macro()} や \method{undefine_macro()}によって引数になります。
+\var{include_dirs}はデフォルトのリストに追加されるディレクトリ名のリス
+トで、\method{add_include_dir()}と同じ方法で扱われます。
+
+失敗すると \exception{PreprocessError} が起きます。
+\end{methoddesc}
+
+以下のユーティリティメソッドは具体的なサブクラスで使うために、
+\class{CCompiler}クラスで定義されています。
+
+\begin{methoddesc}{executable_filename}{basename\optional{, strip_dir=\code{0}, output_dir=\code{''}}}
+\var{basename}で指定された実行ファイルのファイル名を返します。
+Windows以外の典型的なプラットフォームではbasenameそのままが、Windowsで
+は \file{.exe}が追加されたものが返ります。
+\end{methoddesc}
+
+\begin{methoddesc}{library_filename}{libname\optional{, lib_type=\code{'static'}, strip_dir=\code{0}, output_dir=\code{''}}}
+現在のプラットフォームでのライブラリファイル名を返します。
+\UNIX{}で\var{lib_type}が\code{'static'}の場合、\file{liblibname.a}の
+形式を返し、\var{lib_type} が \code{'dynamic'} の場合は
+\file{liblibname.so}の形式を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{object_filenames}{source_filenames\optional{, strip_dir=\code{0}, output_dir=\code{''}}}
+指定されたソースファイルに対応するオブジェクトファイル名を返します。
+\var{source_filenames} はファイル名のリストです。
+\end{methoddesc}
+
+\begin{methoddesc}{shared_object_filename}{basename\optional{, strip_dir=\code{0}, output_dir=\code{''}}}
+\var{basename}に対応する共有オブジェクトファイルのファイル名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{execute}{func, args\optional{, msg=\code{None}, level=\code{1}}}
+\function{distutils.util.execute()}を呼びだします。このメソッドは
+ログを取り、\var{dry_run}フラグを考慮にいれて、
+Python関数\var{func}に引数\var{args}を与えて呼びだします。
+% XXX see also
+\end{methoddesc}
+
+\begin{methoddesc}{spawn}{cmd}
+\function{distutils.util.spawn()}を呼び出します。これは指定したコマン
+ドを実行する外部プロセスを呼び出します。
+% XXX see also
+\end{methoddesc}
+
+\begin{methoddesc}{mkpath}{name\optional{, mode=\code{511}}}
+\function{distutils.dir_util.mkpath()}を呼び出します。これは
+親ディレクトリ込みでディレクトリを作成します。
+% XXX see also
+\end{methoddesc}
+
+\begin{methoddesc}{move_file}{src, dst}
+\method{distutils.file_util.move_file()}を呼び出します。
+\var{src} を\var{dst}にリネームします。
+% XXX see also
+\end{methoddesc}
+
+\begin{methoddesc}{announce}{msg\optional{, level=\code{1}}}
+\function{distutils.log.debug()}関数を使ってメッセージを書き出します。
+% XXX see also
+\end{methoddesc}
+
+\begin{methoddesc}{warn}{msg}
+警告メッセージ\var{msg}を標準エラー出力に書き出します。
+\end{methoddesc}
+
+\begin{methoddesc}{debug_print}{msg}
+もしこの \class{CCompiler}インスタンスで \var{debug}フラグが指定されて
+いれば\var{msg}を標準出力に出力し、そうでなければ何も出力しません。
+\end{methoddesc}
+
+\end{classdesc}
+
+%\subsection{Compiler-specific modules}
+%
+%The following modules implement concrete subclasses of the abstract 
+%\class{CCompiler} class. They should not be instantiated directly, but should
+%be created using \function{distutils.ccompiler.new_compiler()} factory 
+%function.
+
+\section{\module{distutils.unixccompiler} --- Unix C コンパイラ}
+\declaremodule{standard}{distutils.unixccompiler}
+\modulesynopsis{UNIX C Compiler}
+
+このモジュールは\class{UnixCCompiler}クラスを提供します。
+\class{CCompiler}クラスのサブクラスで、典型的な\UNIX スタイルのコマン
+ドラインCコンパイラを扱います:
+
+\begin{itemize}
+\item マクロは \programopt{-D\var{name}\optional{=value}} で定義されます。
+\item マクロは \programopt{-U\var{name}} で削除されます。
+\item インクルードファイルの探索ディレクトリは
+      \programopt{-I\var{dir}}で指定されます。
+\item ライブラリは \programopt{-l\var{lib}} で指定されます。
+\item ライブラリの探索ディレクトリは \programopt{-L\var{dir}} で指定されます。
+\item コンパイルは \program{cc} (またはそれに似た) 実行ファイルに、
+      \programopt{-c} オプションをつけて実行します:  \file{.c} を
+      \file{.o}にコンパイルします。
+\item 静的ライブラリは \program{ar}コマンドで処理されます
+  (\program{ranlib}を使うかもしれません)
+\item 共有ライブラリのリンクは \program{cc} \programopt{-shared} で処
+  理されます。
+\end{itemize}
+
+\section{\module{distutils.msvccompiler} --- Microsoft コンパイラ}
+\declaremodule{standard}{distutils.msvccompiler}
+\modulesynopsis{Microsoft Compiler}
+このモジュールは \class{MSVCCompiler}クラスを提供します。
+抽象クラス\class{CCompiler}の具象クラスでMicrosoft Visual Studio向けの
+ものです。
+一般的に、拡張モジュールはPythonをコンパイルしたのと同じコンパイラでコンパイルする
+必要があります。Python 2.3 やそれ以前では、コンパイラはVisual Studio 6でした。
+Python 2.4 と Python 2.5 では、コンパイラは Visual Studio .NET 2003 です。
+AMD64 と Itanium バイナリは Platform SDK を利用して作成されました。
+
+\class{MSVCCompiler} は大体正しいコンパイラ、リンカその他を選びます。
+この選択を上書きするためには、環境変数 \var{DISTUTILS\_USE\_SDK} と \var{MSSdk} の
+両方を設定する必要があります。
+\var{MSSdk} は現在の環境をセットアップした \code{SetEnv.Cmd} スクリプト、もしくは
+環境変数がSDKをインストールした時に登録されたものであることを示します。
+\var{DISTUTILS\_USE\_SDK} はdistutilsのユーザーが明示的に \class{MSVCCompiler} が選んだ
+コンパイラを上書きすることを示します。
+
+\section{\module{distutils.bcppcompiler} --- Borland コンパイラ}
+\declaremodule{standard}{distutils.bcppcompiler}
+このモジュールは\class{BorlandCCompiler}クラスを提供します。
+抽象クラス\class{CCompiler}の具象クラスでBorland \Cpp{} コンパイラ向けです。
+
+\section{\module{distutils.cygwincompiler} --- Cygwin コンパイラ}
+\declaremodule{standard}{distutils.cygwinccompiler}
+このモジュールは\class{CygwinCCompiler}クラスを提供します。
+\class{UnixCCompiler}のサブクラスで Cygwinに移植されたWindows用の GNU
+C コンパイラ向けです。
+さらに \class{Mingw32CCompiler} クラスを含んでおり、これは mingw32 向けに移植された
+GCC (cygwinの no-cygwin モードと同じ)向けです。
+%% 訳者コメント: (same as cygwin in no-cygwin mode) cygwin知らないので訳が変かもしれません
+ 
+\section{\module{distutils.emxccompiler} --- OS/2 EMX コンパイラ}
+\declaremodule{standard}{distutils.emxccompiler}
+\modulesynopsis{OS/2 EMX Compiler support}
+このモジュールは\class{EMXCCompiler}クラスを提供します。
+\class{UnixCCompiler}のサブクラスで GNU C コンパイラの  OS/2 向け EMX
+ポートを扱います。
+
+\section{\module{distutils.mwerkscompiler} --- Metrowerks CodeWarrior
+  サポート}
+\declaremodule{standard}{distutils.mwerkscompiler}
+\modulesynopsis{Metrowerks CodeWarrior support}
+\class{MWerksCompiler}クラスを提供します。抽象クラス\class{CCompiler}
+の具象クラスで Mac OS X 以前の Macintosh の MetroWerks CodeWarrior向けです。
+WindowsやMac OS XのCWをサポートするには作業が必要です。
+
+%\subsection{Utility modules}
+%
+%The following modules all provide general utility functions. They haven't 
+%all been documented yet.
+
+\section{\module{distutils.archive_util} --- 
+			アーカイブユーティリティ}
+\declaremodule[distutils.archiveutil]{standard}{distutils.archive_util}
+\modulesynopsis{Utility functions for creating archive files (tarballs, zip files, ...)}
+
+このモジュールはアーカイブファイル(tarやzip)を作成する関数を提供します。
+
+\begin{funcdesc}{make_archive}{base_name, format\optional{, root_dir=\code{None}, base_dir=\code{None}, verbose=\code{0}, dry_run=\code{0}}}
+アーカイブファイル(例: \code{zip}や\code{tar})を作成します。
+\var{base_name}は作成するファイル名からフォーマットの拡張子を除いたものです。
+\var{format}はアーカイブのフォーマットで\code{zip}、\code{tar}、\code{ztar}、\code{gztar}の
+いずれかです。
+\var{root_dir}はアーカイブのルートディレクトリになるディレクトリです: つまり
+アーカイブを作成する前に\var{root_dir}に\var{chdir}します。
+\var{base_dir}はアーカイブの起点となるディレクトリです: つまり\var{base_dir}は
+アーカイブ中の全ファイルおよびディレクトリの前につくディレクトリ名です。
+\var{root_dir} と \var{base_dir}はともにカレントディレクトリがデフォルト値です。
+アーカイブファイル名を返します。
+
+\warning{この関数はbz2ファイルを扱えるように変更されるべきです}
+\end{funcdesc}
+
+\begin{funcdesc}{make_tarball}{base_name, base_dir\optional{, compress=\code{'gzip'}, verbose=\code{0}, dry_run=\code{0}}}
+\var{base_dir}以下の全ファイルから、tarファイルを作成(オプションで圧縮)します。
+\var{compress}は\code{'gzip'}、\code{'compress'}、\code{'bzip2'}、
+または \code{None}である必要があります。\program{tar}と\var{compress}で指定された
+圧縮ユーティリティにはパスが通っている必要があるので、これはおそらく\UNIX 
+だけで有効です。
+出力tarファイルは \file{\var{base_dir}.tar}という名前になり、
+圧縮によって拡張子がつきます(\file{.gz}、 \file{.bz2} または
+\file{.Z})。出力ファイル名が返ります。
+
+\warning{これは\module{tarfile}モジュールの呼び出しに置換されるべきです。}
+\end{funcdesc}
+
+\begin{funcdesc}{make_zipfile}{base_name, base_dir\optional{, verbose=\code{0}, dry_run=\code{0}}}
+\var{base_dir}以下の全ファイルから、zipファイルを作成します。
+出力されるzipファイルは\var{base_dir} + \file{.zip}という名前になります。
+\module{zipfile}Pythonモジュール(利用可能なら)またはInfoZIP \file{zip}
+ ユーティリティ(インストールされていてパスが通っているなら)を使います。
+もしどちらも利用できなければ、\exception{DistutilsExecError}が起きます。
+出力zipファイル名が返ります。
+\end{funcdesc}
+
+\section{\module{distutils.dep_util} --- 依存関係のチェック}
+\declaremodule[distutils.deputil]{standard}{distutils.dep_util}
+\modulesynopsis{Utility functions for simple dependency checking}
+このモジュールはシンプルなタイムスタンプを元にしたファイルやファイル群の依存関係を処理する関数を提供します。さらに、それらの依存関係解析を元にした関数を提供します。
+
+\begin{funcdesc}{newer}{source, target}
+\var{source}が存在して、\var{target}より最近変更されている、または
+\var{source}が存在して、\var{target}が存在していない場合は真を返します。
+両方が存在していて、\var{target}のほうが\var{source}より新しいか同じ場合には
+偽を返します。
+\var{source}が存在しない場合には  \exception{DistutilsFileError}を起こします。
+\end{funcdesc}
+
+\begin{funcdesc}{newer_pairwise}{sources, targets}
+ふたつのファイル名リストを並列に探索して、それぞれのソースが対応するターゲットより
+新しいかをテストします。\function{newer()}の意味でターゲットよりソースが新しい
+ペアのリスト(\var{sources},\var{targets})を返します。
+%% equivalent to a listcomp...
+\end{funcdesc}
+
+\begin{funcdesc}{newer_group}{sources, target\optional{, missing=\code{'error'}}}
+\var{target}が\var{source}にリストアップされたどれかのファイル
+より古ければ真を返します。言い換えれば、\var{target}が存在して
+\var{sources}の全てより新しいなら偽を返し、そうでなければ真を返します。
+\var{missing}はソースファイルが存在しなかった時の振る舞いを決定します。
+デフォルト(\code{'error'})は \function{os.stat()} で \exception{OSError}
+例外を起こします。もし\code{'ignore'}なら、単に存在しないソースファイルを無視します。
+もし\code{'newer'}なら、存在しないソースファイルについては\var{target}が古いと
+みなします(これは''dry-tun''モードで便利です: 入力がないのでコマンドは実行できませんが
+実際に実行しようとしていないので問題になりません)。
+\end{funcdesc}
+
+\section{\module{distutils.dir_util} --- ディレクトリツリーの操作}
+\declaremodule[distutils.dirutil]{standard}{distutils.dir_util}
+\modulesynopsis{Utility functions for operating on directories and directory trees}
+
+このモジュールはディレクトリとディレクトリツリーを操作する関数を提供します。
+
+\begin{funcdesc}{mkpath}{name\optional{, mode=\code{0777}, verbose=\code{0}, dry_run=\code{0}}}
+ディレクトリと、必要な親ディレクトリを作成します。もしディレクトリが既
+に存在している(\var{name}が空文字列の場合、カレントディレクトリ
+を示すのでもちろん存在しています)場合、何もしません。
+ディレクトリを作成できなかった場合(例: ディレクトリと同じ名前のファイルが
+既に存在していた)、\exception{DistutilsFileError}を起こします。
+もし \var{verbose}が真なら、それぞれのmkdirについて1行、標準出力に出力
+します。
+実際に作成されたディレクトリのリストを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{create_tree}{base_dir, files\optional{, mode=\code{0777}, verbose=\code{0}, dry_run=\code{0}}}
+\var{files}を置くために必要な空ディレクトリを\var{base_dir}以下に作成
+します。
+\var{base_dir}ディレクトリは存在している必要はありません。
+\var{files}はファイル名のリストで\var{base_dir}からの相対パスとして扱
+われます。\var{base_dir} + \var{files}のディレクトリ部分 が(既に存在し
+ていなければ)作成されます。\var{mode}, \var{verbose}と\var{dry_run}フ
+ラグは\function{mkpath()}と同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{copy_tree}{src, dst\optional{preserve_mode=\code{1}, preserve_times=\code{1}, preserve_symlinks=\code{0}, update=\code{0}, verbose=\code{0}, dry_run=\code{0}}}
+\var{src}ディレクトリツリー全体を\var{dst}にコピーします。
+\var{src}と \var{dst}はどちらもディレクトリ名である必要があります。
+もし\var{src}がディレクトリでなければ、\exception{DistutilsFileError}
+を起こします。もし\var{dst}が存在しなければ、\function{mkpath()}で作成され
+ます。実行結果は、\var{src}以下の全てのファイルが\var{dst}にコピーされ、
+\var{src}以下の全てのディレクトリが\var{dst}に再帰的にコピーされます。
+コピーされた(またはされるはず)のファイルのリストを返します。返り値は
+\var{update}または\var{dry_run}に影響されません: \var{src}
+以下の全ファイルを単に\var{dst}以下に改名したリストが返されます。
+
+\var{preserve_mode} と \var{preserve_times} は
+\refmodule[distutils.fileutil]{distutils.file_util}の\function{copy_file}
+と同じです: 通常のファイルには適用されますが、ディレクトリには適用されません。 
+もし\var{preserve_symlinks} が真なら、シンボリックリンクは(サポートさ
+れているシステムでは)シンボリックリンクとしてコピーされます。そうでな
+ければ(デフォルト)シンボリックリンクは参照されている実体ファイルがコピーされます。
+\var{update} と\var{verbose} は\function{copy_file()}と同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{remove_tree}{directory\optional{verbose=\code{0}, dry_run=\code{0}}}
+再帰的に \var{directory}とその下の全ファイルを削除します。エラーは無視
+されます(\var{verbose}が真の時は\code{sys.stdout}に出力されます)
+\end{funcdesc}
+
+\XXX{Some of this could be replaced with the shutil module?}
+
+\section{\module{distutils.file_util} --- 1ファイルの操作}
+\declaremodule[distutils.fileutil]{standard}{distutils.file_util}
+\modulesynopsis{1ファイルを操作するユーティリティ関数}
+
+このモジュールはそれぞれのファイルを操作するユーティリティ関数を提供します。
+
+\begin{funcdesc}{copy_file}{src, dst\optional{preserve_mode=\code{1}, preserve_times=\code{1}, update=\code{0}, link=\code{None}, verbose=\code{0}, dry_run=\code{0}}}
+ファイル\var{src}を\var{dst}にコピーします。もし\var{dst}がディレクト
+リなら、\var{src}はそこへ同じ名前でコピーされます; そうでなければ、
+ファイル名として扱われます。 (もしファイルが存在するなら、上書きされま
+す。) mosil\var{preserve_mode}が真(デフォルト)なら、ファイルのモード
+(タイプやパーミッション、その他プラットフォームがサポートするもの)もコ
+ピーされます。もし \var{preserve_times}が真(デフォルト)なら、最終更新、
+最終アクセス時刻もコピーされます。もし\var{update}が真なら、\var{src}
+は\var{dst}が存在しない場合か、\var{dst}が\var{src}より古い時にだけコ
+ピーします。
+
+\var{link}は値を\code{'hard'}または\code{'sym'}に設定することでコピーのかわりに
+ハードリンク(\function{os.link}を使います)ま
+たはシンボリックリンク(\function{os.symlink}を使います)を許可します。
+\code{None}(デフォルト)の時には、ファイルはコピーされます。\var{link}
+をサポートしていないシステムで有効にしないでください。
+\function{copy_file()}はハードリンク、シンボリックリンクが可能かチェッ
+クしていません。ファイルの内容をコピーするために
+\function{_copy_file_contents()}を利用しています。
+
+\samp{(dest_name, copied)}のタプルを返します: \var{dest_name}は出力ファ
+イルの実際の名前、\var{copied}はファイルがコピーされた(\var{dry_run}が
+真の時にはコピーされることになった)場合には真です。
+% XXX if the destination file already exists, we clobber it if
+% copying, but blow up if linking.  Hmmm.  And I don't know what
+% macostools.copyfile() does.  Should definitely be consistent, and
+% should probably blow up if destination exists and we would be
+% changing it (ie. it's not already a hard/soft link to src OR
+% (not update) and (src newer than dst)).
+\end{funcdesc}
+
+\begin{funcdesc}{move_file}{src, dst\optional{verbose, dry_run}}
+ファイル\var{src}を\var{dst}に移動します。もし\var{dst}がディレクトリ
+なら、ファイルはそのディレクトリに同じ名前で移動されます。そうでなけれ
+ば、\var{src}は\var{dst}に単にリネームされます。新しいファイルの名前を
+返します。
+\warning{\UNIX{} では デバイスをまたがる移動は\function{copy_file()}を利用して扱っています。
+他のシステムではどうなっている ??? }
+\end{funcdesc}
+
+\begin{funcdesc}{write_file}{filename, contents}
+\var{filename} を作成し、\var{contents}(行末文字がない文
+字列のシーケンス)を書き込みます。
+\end{funcdesc}
+
+\section{\module{distutils.util} --- その他のユーティリティ関数}
+\declaremodule{standard}{distutils.util}
+\modulesynopsis{その他のユーティリティ関数}
+
+このモジュールは他のユーティリティモジュールにあわないものを提供しています。
+
+\begin{funcdesc}{get_platform}{}
+現在のプラットフォームを示す文字列を返します。
+これはプラットフォーム依存のビルドディレクトリやプラットフォーム依存の
+配布物を区別するために使われます。
+典型的には、('os.uname()'のように)OSの名前とバージョン、アーキテクチャ
+を含みますが、厳密にはOSに依存します。たとえば IRIXではアーキテクチャ
+はそれほど重要ではありません(IRIXはSGIのハードウェアだけで動作する)が、
+Linuxではカーネルのバージョンはそれほど重要ではありません。
+
+返り値の例:
+\begin{itemize}
+\item \code{linux-i586}
+\item \code{linux-alpha}
+\item \code{solaris-2.6-sun4u}
+\item \code{irix-5.3}
+\item \code{irix64-6.2}
+\end{itemize}
+
+\POSIX{} でないプラットフォームでは、今のところ単に\code{sys.platform}
+が返されます。
+% XXX isn't this also provided by some other non-distutils module?
+\end{funcdesc}
+
+\begin{funcdesc}{convert_path}{pathname}
+'pathname' をファイルシステムで利用できる名前にして返します。
+すなわち、'/'で分割し、現在のディレクトリセパレータで接続しなおします。
+セットアップスクリプト中のファイル名は\UNIX{}スタイルで提供され、実
+際に利用する前に変換する必要があるため、この関数が必要になります。
+もし \var{pathname} の最初または最後が スラッシュの場合、\UNIX 的でな
+いシステムでは\exception{ValueError}が起きます。
+\end{funcdesc}
+
+\begin{funcdesc}{change_root}{new_root, pathname}
+\var{pathname}の前に\var{new_root}を追加したものを返します。
+もし\var{pathname}が相対パスなら、
+\samp{os.path.join(new_root,pathname)}と等価です。そうでなければ、
+\var{pathname}を相対パスに変換したあと接続します。これはDOS/Windows
+ではトリッキーな作業になります。
+\end{funcdesc}
+
+\begin{funcdesc}{check_environ}{}
+'os.environ'に、ユーザがconfigファイル、コマンドラインオプションなどで
+利用できることを保証している環境変数があることを確認します。
+現在は以下のものが含まれています:
+\begin{itemize}
+\item \envvar{HOME} - ユーザのホームディレクトリ (\UNIX{} のみ)
+\item \envvar{PLAT} - ハードウェアとOSを含む現在のプラットフォームの説
+  明。 ( \function{get_platform()}を参照)
+\end{itemize}
+\end{funcdesc}
+
+\begin{funcdesc}{subst_vars}{s, local_vars}
+shell/Perlスタイルの変数置換を\var{s}について行います。
+全ての\code{\$}に名前が続いたものは変数とみなされ、辞書\var{local_vars}で
+みつかった値に置換されます。\var{local_vars}で見つからなかった場合には
+\code{os.environ}で置換されます。
+\var{os.environ}は最初にある値を含んでいることをチェックされます:
+\function{check_environ()}を参照。 
+\var{local_vars} or \code{os.environ}のどちらにも値が見つからなかった
+場合、\exception{ValueError}を起こします。
+
+これは完全な文字列挿入関数ではないことに注意してください。
+\code{\$variable}の名前には大小英字、数字、アンダーバーだけを含むこと
+ができます。 \{ \} や \( \) を使った引用形式は利用できません。
+\end{funcdesc}
+
+\begin{funcdesc}{grok_environment_error}{exc\optional{, prefix=\samp{'error: '}}}
+例外オブジェクト \exception{EnvironmentError} (\exception{IOError} ま
+たは \exception{OSError}) から、エラーメッセージを生成します。
+Python 1.5.1 またはそれ以降の形式を扱い、ファイル名を含んでいない例外
+オブジェクトも扱います。このような状況はエラーが2つのファイルに関係す
+る操作、たとえば\function{rename()}や\function{link()}で発生します。
+\var{prefix}をプレフィクスに持つエラーメッセージを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{split_quoted}{s}
+文字列を\UNIX{}のシェルのようなルール(引用符やバックスラッシュの扱い)で分
+割します。つまり、バックスラッシュでエスケープされるか、引用符で囲まれ
+ていなければ各語はスペースで区切られます。一重引用符と二重引用符は同じ
+意味です。引用符もバックスラッシュでエスケープできます。
+2文字でのエスケープシーケンスに使われているバックスラッシュは削除され、
+エスケープされていた文字だけが残ります。引用符は文字列から削除されます。
+語のリストが返ります。
+% Should probably be moved into the standard library.
+\end{funcdesc}
+
+\begin{funcdesc}{execute}{func, args\optional{, msg=\code{None}, verbose=\code{0}, dry_run=\code{0}}}
+外部に影響するいくつかのアクション(たとえば、ファイルシステムへの書き
+込み)を実行します。そのようなアクションは\var{dry_run}フラグで無効にす
+る必要があるので特別です。この関数はその繁雑な処理を行います。
+関数と引数のタプル、(実行する「アクション」をはっきりさせるための)表示
+に使われる任意のメッセージを渡してください。
+\end{funcdesc}
+
+\begin{funcdesc}{strtobool}{val}
+真偽値をあらわす文字列を真(1)または偽(0)に変換します。
+
+真の値は \code{y}, \code{yes}, \code{t}, \code{true}, \code{on} 
+そして \code{1}です。偽の値は \code{n}, \code{no}, \code{f}, \code{false}, 
+\code{off} そして \code{0}です。
+\var{val}が上のどれでもない時は \exception{ValueError}を起こします。
+\end{funcdesc}
+
+\begin{funcdesc}{byte_compile}{py_files\optional{,
+              optimize=\code{0}, force=\code{0},
+              prefix=\code{None}, base_dir=\code{None},
+              verbose=\code{1}, dry_run=\code{0},
+              direct=\code{None}}}
+Pythonソースファイル群をバイトコンパイルして\file{.pyc}または
+\file{.pyo}ファイルを同じディレクトリに作成します。\var{py_files}はコ
+ンパイルされるファイルのリストです。\file{.py}でおわっていないファイル
+はスキップされます。\var{optimize}は以下のどれかです:
+\begin{itemize}
+\item \code{0} - 最適化しない (\file{.pyc}ファイルを作成します)
+\item \code{1} - 通常の最適化 (\samp{python -O}のように)
+\item \code{2} - さらに最適化 (\samp{python -OO}のように)
+\end{itemize}
+
+もし\var{force}が真なら、全てのファイルがタイムスタンプに関係なく再コ
+ンパイルされます。
+
+バイトコードファイルにエンコードされるソースファイル名は、デフォルトでは
+\var{py_files}が使われます。これを\var{prefix}と\var{base_dir}で変更す
+ることができます。
+\var{prefix}はそれぞれのソースファイル名から削除される文字列で、
+\var{base_dir}は(\var{prefix}を削除したあと)先頭に追加されるディレクト
+リ名です。
+任意に\var{prefix}と\var{base_dir}のどちらか、両方を与える(与えない)こ
+とができます。
+
+もし\var{dry_run}が真なら、ファイルシステムに影響することは何もされません。
+
+バイトコンパイルは現在のインタプリタプロセスによって標準の
+\module{py_compile}モジュールを使って直接行われるか、テンポラリスクリ
+プトを書いて間接的に行われます。
+通常は\function{byte_compile()}に直接かそうでないかをまかせます
+(詳細についてはソースをごらんください)。
+\var{direct}フラグは関節モードで作成されたスクリプトで使用されます。
+何をやっているか理解していない時は\code{None}のままにしておいてください。
+\end{funcdesc}
+
+\begin{funcdesc}{rfc822_escape}{header}
+\rfc{822}ヘッダに含められるよう加工した\var{header}を返します。
+改行のあとには8つのスペースが追加されます。この関数は文字列に他の変更
+はしません。
+% this _can_ be replaced
+\end{funcdesc}
+
+%\subsection{Distutils objects}
+
+\section{\module{distutils.dist} --- Distribution クラス}
+\declaremodule{standard}{distutils.dist}
+\modulesynopsis{構築/インストール/配布 される配布物を表す Distribution
+  クラスを提供します。}
+
+このモジュールは\class{Distribution}クラスを提供します。これは
+構築/インストール/配布される配布物をあらわします。
+
+\section{\module{distutils.extension} --- Extension クラス}
+\declaremodule{standard}{distutils.extension}
+\modulesynopsis{セットアップスクリプトでC/\Cpp{} 拡張モジュール をあら
+  わす Extension クラスを提供します。}
+
+このモジュールは\class{Extension}クラスを提供します。
+C/\Cpp{}拡張モジュールをセットアップスクリプトで表すために使われます。
+
+%\subsection{Ungrouped modules}
+%The following haven't been moved into a more appropriate section yet.
+
+\section{\module{distutils.debug} --- Distutils デバッグモード}
+\declaremodule{standard}{distutils.debug}
+\modulesynopsis{distutilsのデバッグフラグを提供します。}
+
+このモジュールはDEBUGフラグを提供します。
+
+\section{\module{distutils.errors} --- Distutils 例外}
+\declaremodule{standard}{distutils.errors}
+\modulesynopsis{ distutils の標準的な例外を提供します。}
+
+distutilsのモジュールで使用される例外を提供します。
+distutilsのモジュールは標準的な例外を起こします。特に、 SystemExit は
+エンドユーザによる失敗(コマンドライン引数の間違いなど)で起きます。
+
+このモジュールは\samp{from ... import *}で安全に使用することができます。
+このモジュールは\code{Distutils}ではじまり、\code{Error}で終わるシンボ
+ルしかexportしません。
+
+\section{\module{distutils.fancy_getopt}
+         --- 標準 getopt モジュールのラッパ}
+\declaremodule[distutils.fancygetopt]{standard}{distutils.fancy_getopt}
+\modulesynopsis{ \module{getopt} 追加機能}
+
+このモジュールは以下の機能を標準の\module{getopt}モジュールに追加する
+ラッパを提供します:
+
+\begin{itemize}
+\item 短いオプションと長いオプションを関連づけます
+\item オプションはヘルプ文字列を持ちます。可能性としては
+  \function{fancy_getopt}に完全な利用方法サマリを作らせることができま
+  す。
+\item オプションは渡されたオブジェクトの属性を設定します。
+\item 真偽値をとるオプションは ``負のエイリアス'' を持ちます。--- たと
+  えば \longprogramopt{quiet} の ``負のエイリアス'' が
+  \longprogramopt{verbose}の場合、コマンドラインで \longprogramopt{quiet}を
+  指定すると\var{verbose}は偽になります。
+\end{itemize}
+
+\XXX{Should be replaced with \module{optik} (which is also now
+  known as \module{optparse} in Python 2.3 and later).}
+
+\begin{funcdesc}{fancy_getopt}{options, negative_opt, object, args}
+ラッパ関数。\var{options}は\class{FancyGetopt}のコンストラ
+クタで説明されている\samp{(long_option, short_option, help_string)}
+の3要素タプルのリストです。
+\var{negative_opt} はオプション名からオプション名のマッピングになって
+いる辞書で、キー、値のどちらも\var{options}リストに含まれている必要が
+あります。
+\var{object}は値を保存するオブジェクト(\class{FancyGetopt}クラスの
+\method{getopt()}メソッドを参照してください)です。
+\var{args}は引数のリストです。\var{args}として\code{None}を渡すと、
+\code{sys.argv[1:]}が使われます。
+\end{funcdesc}
+
+\begin{funcdesc}{wrap_text}{text, width}
+\var{text}を\var{width}以下の幅で折り返します。
+
+\warning{ \module{textwrap} で置き換えられるべき ( Python 2.3 以降で利
+  用可能)。}
+\end{funcdesc}
+
+\begin{classdesc}{FancyGetopt}{\optional{option_table=\code{None}}}
+option_table は 3つ組タプルのリストです。\samp{(long_option, short_option, help_string)}
+
+もしオプションが引数を持つなら、\var{long_option}に\code{'='}を追加する
+必要があります。\var{short_option}は一文字のみで、\code{':'}はどの場合
+にも不要です。\var{long_option} に対応する\var{short_option}がない場合、
+\var{short_option}は\code{None}にしてください。
+全てのオプションタプルは長い形式のオプションを持つ必要があります。
+\end{classdesc}
+
+\class{FancyGetopt}クラスは以下のメソッドを提供します:
+
+\begin{methoddesc}{getopt}{\optional{args=\code{None}, object=\code{None}}}
+argsのコマンドラインオプションを解析します。\var{object}に属性として保
+存します。
+
+もし\var{args}が\code{None}もしくは与えられない場合には、
+\code{sys.argv[1:]}を使います。
+もし\var{object}が\code{None}もしくは与えられない場合には、
+新しく \class{OptionDummy}インスタンスを作成し、オプションの値を保存したのち
+\samp{(args, object)}のタプルを返します。
+もし\var{object}が提供されていれば、その場で変更され、
+\function{getopt()}は\var{args}のみを返します。どちらのケースでも、
+返された\var{args}は渡された\var{args}リスト(これは変更されません)の変
+更されたコピーです。
+% and args returned are?
+\end{methoddesc}
+
+\begin{methoddesc}{get_option_order}{}
+直前に実行された\method{getopt()}が処理した\samp{(option, value)}タプ
+ルのリストを返します。\method{getopt()}がまだ呼ばれていない場合には
+\exception{RuntimeError}を起こします。
+\end{methoddesc}
+
+\begin{methoddesc}{generate_help}{\optional{header=\code{None}}}
+この \class{FancyGetopt}オブジェクトのオプションテーブルから
+ヘルプテキスト(出力の一行に対応する文字列のリスト)を生成します。
+
+もし与えられていれば、\var{header}をヘルプの先頭に出力します。
+\end{methoddesc}
+
+\section{\module{distutils.filelist} ---  FileList クラス}
+\declaremodule{standard}{distutils.filelist}
+\modulesynopsis{ファイルシステムを見て、ファイルのリストを構築するために使われる
+\class{FileList} クラス}
+
+このモジュールはファイルシステムを見て、ファイルのリストを構築するために使われる
+\class{FileList} クラスを提供します。
+
+\section{\module{distutils.log} --- シンプルな PEP 282 スタイルのロギ
+  ング}
+\declaremodule{standard}{distutils.log}
+\modulesynopsis{シンプルな\pep{282}スタイルのロギングメカニズム }
+
+\warning{標準の\module{logging} モジュールに置き換えられるべき}
+
+%\subsubsection{\module{} --- }
+%\declaremodule{standard}{distutils.magic}
+%\modulesynopsis{ }
+
+
+\section{\module{distutils.spawn} --- サブプロセスの生成}
+\declaremodule{standard}{distutils.spawn}
+\modulesynopsis{spawn() 関数を提供}
+
+このモジュールは\function{spawn()}関数を提供します。これは様々なプラッ
+トフォーム依存の他プログラムをサブプロセスとして実行する関数に対するフ
+ロントエンドになっています。
+与えられた実行ファイルの名前からパスを探索する
+\function{find_executable()}関数も提供しています。
+
+
+\input{sysconfig}
+
+
+
+\section{\module{distutils.text_file} --- TextFile クラス}
+\declaremodule[distutils.textfile]{standard}{distutils.text_file}
+\modulesynopsis{テキストファイルへのシンプルなインタフェース TextFile クラスを提供します。}
+
+このモジュールは \class{TextFile}クラスを提供します。これはテキストファイル
+へのインタフェースを提供し、コメントの削除、空行の無視、バックスラッシュ
+での行の連結を任意に行えます。
+
+\begin{classdesc}{TextFile}{\optional{filename=\code{None}, file=\code{None}, **options}}
+このクラスはファイルのようなオブジェクトを提供します。
+これは行指向のテキストファイルを処理する時に共通して必要となる処理を行
+います: (\code{\#}がコメント文字なら)コメントの削除、空行のスキップ、
+(行末のバックスラッシュでの)改行のエスケープによる行の連結、
+先頭/末尾の空白文字の削除。 これらは全て独立して任意に設定できます。
+
+クラスは\method{warn()}メソッドを提供しており、物理行つきの警告メッセー
+ジを生成することができます。この物理行は論理行が複数の物理行にまたがっ
+ていても大丈夫です。
+また\method{unreadline()}メソッドが一行先読みを実装するために提供されています。
+
+\class{TextFile}のインスタンスは\var{filename}、\var{file}、またはその
+両方をとって作成されます。
+両方が \code{None} の場合 \exception{RuntimeError} が起きます。
+\var{filename}は文字列、\var{file}はファイルオブジェク
+ト(または\method{readline()}と\method{close()}のメソッドを提供する何か)
+である必要があります。
+\class{TextFile}が生成する警告メッセージに含めることができるので、
+\var{filename}を与えることが推奨されます、
+もし\var{file}が提供されなければ、 \class{TextFile} は組み込みの \function{open()}
+を利用して自分で作成します。
+
+オプションは全て真偽値で、\method{readline()}で返される値に影響します。
+
+\begin{tableiii}{c|l|l}{オプション名}{オプション名}{説明}{デフォルト値}
+\lineiii{strip_comments}{
+バックスラッシュでエスケープされていない限り、\character{\#}から行末
+までと、\character{\#}の先にある空白文字の並びを削除します。}
+{true}
+\lineiii{lstrip_ws}{
+行を返す前に先頭の空白文字の並びを削除します。}
+{false}
+\lineiii{rstrip_ws}{
+行を返す前に行末の空白文字(改行文字を含みます!)の並びを削除します。}
+{true}
+\lineiii{skip_blanks}{
+コメントと空白を除いた*あとで*内容がない行をスキップします。
+(もし lstrip_ws と rstrip_ws がともに偽なら、空白文字だけの行があるか
+もしれません。これは\var{skip_blanks}が真でない限りスキップされません。)}
+{true}
+\lineiii{join_lines}{
+もしコメントと空白文字を削除したあとで、バックスラッシュが最後の改行文
+字でない文字なら、次の行を接続して一つの論理行とします: 
+N行の連続した行がバックスラッシュで終わる場合、N+1 行の物理行が1行の論
+理行として扱われます。}
+{false}
+\lineiii{collapse_join}{
+前の行と接続するとき、行頭の空白文字を削除します。\samp{(join_lines
+  and not lstrip_ws)} の時だけ意味をもちます。}
+{false}
+\end{tableiii}
+
+\var{rstrip_ws}は行末の改行を削除するので、\method{readline()}のセマン
+ティクスが組み込みファイルオブジェクトの\method{readline()}メソッドと
+は変わってしまいます!
+特に、 \var{rstrip_ws} が真で \var{skip_blanks} が偽のとき、
+\method{readline()} はファイルの終端で\code{None}を返し、空文字
+列を返したときは空行(または全て空白文字の行)です。
+
+\begin{methoddesc}{open}{filename}
+新しいファイル\var{filename}を開きます。これはコンストラクタ引数の
+\var{file}と\var{filename}を上書きします。
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+現在のファイルを閉じ、(ファイル名や現在の行番号を含め)現在のファイルに
+ついての情報を全て消します。
+\end{methoddesc}
+
+\begin{methoddesc}{warn}{msg\optional{,line=\code{None}}}
+標準エラー出力に現在のファイルの論理行に結びついた警告メッセージを出力
+します。
+もし現在の論理行が複数の物理行に対応するなら、警告メッセージは以下のように全体
+を参照します: \samp{"lines 3-5"}。 もし \var{line} が与えられていれば、
+現在の行番号を上書きします; 物理行のレンジをあらわすリストまたはタプル、
+もしくはある物理行をあらわす整数のどれでも与えられます。
+\end{methoddesc}
+
+\begin{methoddesc}{readline}{}
+現在のファイル(または\method{unreadline()}で''unread''を直前に行ってい
+ればバッファ)から論理行を1行読み込んで返します。もし\var{join_lines}オ
+プションが真なら、このメソッドは複数の物理行を読み込んで接続した文字列
+を返します。
+現在の行番号を更新します。そのため\method{readline()}のあとに
+\method{warn()}を呼ぶと丁度読んだ行についての警告を出します。
+\var{rstrip_ws}が真で、\var{strip_blanks}が偽のとき空文字列が返るので、
+ファイルの終端では\code{None}を返します。 
+\end{methoddesc}
+
+\begin{methoddesc}{readlines}{}
+現在のファイルで残っている全ての論理行のリストを読み込んで返します。
+行番号を、ファイルの最後の行に更新します。
+\end{methoddesc}
+
+\begin{methoddesc}{unreadline}{line}
+\var{line}(文字列)を次の\method{readline()}用に、内部バッファにpushし
+ます。行の先読みを必要とするパーサを実装する時に便利です。
+\method{unreadline}で``unread''された行は\method{readline}で読み込む際
+に再度処理(空白の除去など)されません。
+もし\method{unreadlinee}を、\method{readline}を呼ぶ前に複数回実行する
+と、最後にunreadした行から返されます。
+\end{methoddesc}
+
+\end{classdesc}
+
+
+\section{\module{distutils.version} --- バージョン番号クラス}
+\declaremodule{standard}{distutils.version}
+\modulesynopsis{モジュールのバージョン番号を表すクラスの実装}
+
+% todo
+
+%\section{Distutils Commands}
+%
+%This part of Distutils implements the various Distutils commands, such
+%as \code{build}, \code{install} \&c. Each command is implemented as a
+%separate module, with the command name as the name of the module.
+
+\section{\module{distutils.cmd} --- Distutils コマンドの抽象クラス}
+\declaremodule{standard}{distutils.cmd}
+\modulesynopsis{
+このモジュールは Command 抽象ベースクラスを提供します。このクラスは
+\refmodule{distutils.command}サブパッケージ中のモジュールでサブクラス
+を作るために利用されます。}
+
+このモジュールは抽象ベースクラス \class{Command} を提供します。
+
+\begin{classdesc}{Command}{dist}
+コマンドクラスを定義するための抽象ベースクラス --- distutilsの「働きバチ」
+--- です。
+コマンドクラスは \var{options} とよばれるローカル変数を持ったサブルー
+チンと考えることができます。オプションは\method{initialize_options()}で宣
+言され、\method{finalize_options()} で定義さ(最終的な値を与えら)れます。
+どちらも全てのコマンドクラスで実装する必要があります。この2つの区別は
+必要です。なぜならオプションの値は外部(コマンドライン、設定ファイルな
+ど)から来るかもしれず、他のオプションに依存しているオプションは
+外部の影響を処理した後で計算される必要があるからです。そのため
+\method{finalize_options()}が存在します。
+サブルーチンの本体は全ての処理をオプションの値にもとづいて行う
+\method{run()}メソッドで、これも全てのコマンドクラスで実装される必要があります。
+
+クラスのコンストラクタは\class{Distribution}のインスタンスである単一の
+引数\var{dist}をとります。
+\end{classdesc}
+
+
+\section{\module{distutils.command} ---  Distutils 各コマンド}
+\declaremodule{standard}{distutils.command}
+\modulesynopsis{このサブパッケージは標準のdistutilsコマンドを提供します。}
+
+%\subsubsection{Individual Distutils commands}
+
+% todo
+
+\section{\module{distutils.command.bdist} --- バイナリインストーラの構築}
+\declaremodule{standard}{distutils.command.bdist}
+\modulesynopsis{パッケージのバイナリインストラーを構築します}
+
+% todo
+
+\section{\module{distutils.command.bdist_packager} --- パッケージの抽象ベースクラス}
+\declaremodule[distutils.command.bdistpackager]{standard}{distutils.command.bdist_packager}
+\modulesynopsis{パッケージの抽象ベースクラス}
+
+% todo
+
+\section{\module{distutils.command.bdist_dumb} --- ``ダム''インストー
+  ラを構築}
+\declaremodule[distutils.command.bdistdumb]{standard}{distutils.command.bdist_dumb}
+\modulesynopsis{``ダム''インストーラ(単純なファイルのアーカイブ)を構築します }
+
+% todo
+
+
+\section{\module{distutils.command.bdist_rpm} --- Redhat RPMとSRPM形式
+  のバイナリディストリビューションを構築}
+\declaremodule[distutils.command.bdistrpm]{standard}{distutils.command.bdist_rpm}
+\modulesynopsis{Redhat RPMとSRPM形式のバイナリディストリビューションを構築}
+
+% todo
+
+\section{\module{distutils.command.bdist_wininst} --- Windowsインストー
+  ラの構築}
+\declaremodule[distutils.command.bdistwininst]{standard}{distutils.command.bdist_wininst}
+\modulesynopsis{Windows インストーラの構築}
+
+% todo
+
+\section{\module{distutils.command.sdist} --- ソース配布物の構築}
+\declaremodule{standard}{distutils.command.sdist}
+\modulesynopsis{ソース配布物の構築}
+
+% todo
+
+\section{\module{distutils.command.build} --- パッケージ中の全ファイルを
+  構築}
+\declaremodule{standard}{distutils.command.build}
+\modulesynopsis{パッケージ中の全ファイルのビルド}
+
+% todo
+
+\section{\module{distutils.command.build_clib} --- パッケージ中のCライブラリを構築}
+\declaremodule[distutils.command.buildclib]{standard}{distutils.command.build_clib}
+\modulesynopsis{パッケージ中のCライブラリを構築}
+
+% todo
+
+\section{\module{distutils.command.build_ext} --- パッケージ中の拡張を構築}
+\declaremodule[distutils.command.buildext]{standard}{distutils.command.build_ext}
+\modulesynopsis{パッケージ中の拡張を構築}
+
+% todo
+
+\section{\module{distutils.command.build_py} --- パッケージ中の.py/.pyc ファイルを構築}
+\declaremodule[distutils.command.buildpy]{standard}{distutils.command.build_py}
+\modulesynopsis{パッケージ中の.py/.pyc ファイルを構築}
+
+% todo
+
+\section{\module{distutils.command.build_scripts} --- パッケージ中のスクリプトを構築}
+\declaremodule[distutils.command.buildscripts]{standard}{distutils.command.build_scripts}
+\modulesynopsis{パッケージ中のスクリプトを構築}
+
+% todo
+
+\section{\module{distutils.command.clean} --- パッケージのビルドエリアを消去}
+\declaremodule{standard}{distutils.command.clean}
+\modulesynopsis{パッケージのビルドエリアを消去}
+
+% todo
+
+\section{\module{distutils.command.config} --- パッケージの設定}
+\declaremodule{standard}{distutils.command.config}
+\modulesynopsis{パッケージの設定}
+
+% todo
+
+\section{\module{distutils.command.install} --- パッケージのインストー
+  ル}
+\declaremodule{standard}{distutils.command.install}
+\modulesynopsis{パッケージのインストール}
+
+% todo
+
+\section{\module{distutils.command.install_data}
+               --- パッケージ中のデータファイルをインストール}
+\declaremodule[distutils.command.installdata]{standard}{distutils.command.install_data}
+\modulesynopsis{パッケージ中のデータファイルをインストール}
+
+% todo
+
+\section{\module{distutils.command.install_headers}
+               --- パッケージから C/\Cpp{} ヘッダファイルをインストール}
+\declaremodule[distutils.command.installheaders]{standard}{distutils.command.install_headers}
+\modulesynopsis{パッケージから C/\Cpp{} ヘッダファイルをインストール}
+
+% todo
+
+\section{\module{distutils.command.install_lib}
+               --- パッケージから ライブラリファイルをインストール}
+\declaremodule[distutils.command.installlib]{standard}{distutils.command.install_lib}
+\modulesynopsis{パッケージから ライブラリファイルをインストール}
+
+% todo
+
+\section{\module{distutils.command.install_scripts}
+               --- パッケージから スクリプトファイルをインストール}
+\declaremodule[distutils.command.installscripts]{standard}{distutils.command.install_scripts}
+\modulesynopsis{パッケージから スクリプトファイルをインストール}
+
+% todo
+
+\section{\module{distutils.command.register}
+               --- モジュールをPython Package Indexに登録する}
+\declaremodule{standard}{distutils.command.register}
+\modulesynopsis{モジュールをPython Package Indexに登録する}
+
+\code{register}コマンドはパッケージをPython Package Index に登録します。
+この詳細は \pep{301} に記述されています。
+% todo
+
+\section{新しいDistutilsコマンドの作成}
+
+このセクションではDistutilsの新しいコマンドを作成する手順の概要をしめします。
+
+新しいコマンドは \module{distutils.command}パッケージ中のモジュールに
+作られます。\file{command_template}というディレクトリにサンプルのテン
+プレートがあります。このファイルを実装しようとしているコマンドと同名の
+新しいモジュールにコピーしてください。
+このモジュールはモジュール(とコマンド)と同じ名前のクラスを実装する必要があります。
+そのため、\code{peel_banana}コマンド(ユーザは 
+\samp{setup.py peel_banana}と実行できます)を実装する際には、
+\file{command_template}を \file{distutils/command/peel_banana.py}にコ
+ピーし、\class{distutils.cmd.Command}のサブクラス \class{peel_banana}
+クラスを実装するように編集してください。
+
+\class{Command}のサブクラスは以下のメソッドを実装する必要があります。
+
+\begin{methoddesc}{initialize_options()}
+このコマンドがサポートする全てのオプションのデフォルト値を設定します。
+これらのデフォルトは他のコマンドやセットアップスクリプト、設定ファイル
+、コマンドラインによって上書きされるかもしれません。
+そのためオプション間の依存関係を記述するには適切な場所ではありません。
+一般的に\method{initialize_options()}は単に\samp{self.foo = None} のよ
+うな定義だけを行います。 
+\end{methoddesc}
+
+\begin{methoddesc}{finalize_options}{}
+このコマンドがサポートする全てのオプションの最終的な値を設定します。
+これは可能な限り遅く呼び出されます。つまりコマンドラインや他のコマンド
+によるオプションの代入のあとに呼び出されます。
+そのため、オプション間の依存関係を記述するのに適した場所です。
+もし \var{foo} が \var{bar} に依存しており、かつ
+まだ\var{foo}が \method{initialize_options()}で定義された値のままなら、
+\var{foo} を\var{bar}から代入しても安全です。
+\end{methoddesc}
+
+\begin{methoddesc}{run}{}
+コマンドの本体です。実行するべきアクションを実装しています。
+\method{initialize_options()} で初期化され、他のコマンド
+され、セットアップスクリプト、コマンドライン、設定ファイルでカスタマイ
+ズされ、\method{finalize_options()}で設定されたオプションがアクションを制御します。
+端末への出力とファイルシステムとのやりとりは全て\method{run()}が行います。
+\end{methoddesc}
+
+\var{sub_commands}は コマンドの``ファミリー''を定式化したものです。
+たとえば \code{install} は サブコマンド
+\code{install_lib}、\code{install_headers}などの親です。
+コマンドファミリーの親は \var{sub_commands}をクラス属性として持ちます。
+2要素のタプル\samp{(command_name, predicate)}のリストで、
+\var{command_name}には文字列、\var{predicate}には親コマンドのメソッドで、
+現在の状況がコマンド実行にふさわしいかどうか判断するものを指定します。
+(例えば \code{install_headers} はインストールするべき Cヘッダファイル
+がある時だけ有効です。) もし \var{predicate} が None なら、そのコマン
+ドは常に有効になります。
+
+\var{sub_commands} は 通常クラスの最後で定義されます。 
+これはpredicate は boundされていないメソッドになるので、全て先に定義されてい
+る必要があるためです。
+
+標準的な例は\command{install} コマンドです。
+
+%
+%  The ugly "%begin{latexonly}" pseudo-environments are really just to
+%  keep LaTeX2HTML quiet during the \renewcommand{} macros; they're
+%  not really valuable.
+%
+
+%begin{latexonly}
+\renewcommand{\indexname}{Module Index}
+%end{latexonly}
+\input{moddist.ind}             % Module Index
+
+%begin{latexonly}
+\renewcommand{\indexname}{Index}
+%end{latexonly}
+\input{dist.ind}                % Index
+
+
+\chapter{日本語訳について}
+\input{jptranslation}
+
+\end{document}

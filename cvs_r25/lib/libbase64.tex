@@ -1,0 +1,210 @@
+\section{\module{base64} ---
+	 RFC 3548: Base16, Base32, Base64 テータの符号化}
+
+\declaremodule{standard}{base64}
+\modulesynopsis{RFC 3548: Base16, Base32, Base64 テータの符号化}
+
+\indexii{base64}{encoding}
+\index{MIME!base64 encoding}
+
+%This module performs base64 encoding and decoding of arbitrary binary
+%strings into text strings that can be safely sent by email or included
+%as part of an HTTP POST request.  The
+%encoding scheme is defined in \rfc{1521} (\emph{MIME
+%(Multipurpose Internet Mail Extensions) Part One: Mechanisms for
+%Specifying and Describing the Format of Internet Message Bodies},
+%section 5.2, ``Base64 Content-Transfer-Encoding'') and is used for
+%MIME email and various other Internet-related applications; it is not
+%the same as the output produced by the \program{uuencode} program.
+%For example, the string \code{'www.python.org'} is encoded as the
+%string \code{'d3d3LnB5dGhvbi5vcmc=\e n'}.  
+
+このモジュールは任意のバイナリ文字列を(eメールやHTTPのPOSTリクエストの一
+部としてで安全に送ることのできるテキスト文字列に変換する)base64形式へエンコー
+ドおよびデコードする機能を提供します。
+エンコードの概要は\rfc{1521}(\emph{MIME(Multipurpose
+Internet Mail Extensions)Part One: Mechanisms for
+Specifying and Describing the Format of Internet Message Bodies},
+section 5.2, ``Base64 Content-Transfer-Encoding'')で定義されていて、
+MIME形式のeメールやインターネットのさまざまな場面で利用されています。
+この形式は\program{uuencode}プログラムによる出力とは違うものです。
+たとえば、\code{'www.python.org'}は、
+\code{'d3d3LnB5dGhvbi5vcmc=\e n'}とエンコードされます。
+
+このモジュールは、 \rfc{3548} で定められた仕様による
+データの符号化 (エンコード、encoding) および復元 (デコード、decoding) を
+提供します。この RFC 標準では Base16, Base32 および Base64 が
+定義されており、これはバイナリ文字列とテキスト文字列とをエンコードあるいは
+デコードするためのアルゴリズムです。変換されたテキスト文字列は email で確実に
+送信したり、URL の一部として使用したり、HTTP POST リクエストの一部に
+含めることができます。これらの符号化アルゴリズムは  \program{uuencode} で
+使われているものとは別物です。
+
+このモジュールでは 2つのインターフェイスが提供されています。
+現代的なインターフェイスは、これら 3種類のアルファベット集合を使った
+文字列オブジェクトのエンコードおよびデコードをすべてサポートします。
+一方、レガシーなインターフェイスは、文字列とともにファイル風のオブジェクトに対する
+エンコード / デコードを提供しますが、Base64 標準のアルファベット集合しか
+使いません。
+
+現代的なインターフェイスは以下のものを提供します:
+
+\begin{funcdesc}{b64encode}{s\optional{, altchars}}
+Base64 をつかって、文字列を エンコード (符号化) します。
+
+\var{s} はエンコードする文字列です。オプション引数 \var{altchars} は
+最低でも 2 の長さをもつ文字列で (これ以降の文字は無視されます)、
+これは \code{+} と \code{/} の代わりに使われる代替アルファベットを指定します。
+これにより、アプリケーションはたとえば URL やファイルシステムの影響をうけない
+Base64 文字列を生成することができます。デフォルトの値は \code{None} で、
+これは標準の Base64 アルファベット集合が使われることを意味します。
+
+エンコードされた文字列が返されます。
+\end{funcdesc}
+
+\begin{funcdesc}{b64decode}{s\optional{, altchars}}
+Base64 文字列をデコード (復元) します。
+
+\var{s} にはデコードする文字列を渡します。オプション引数の \var{altchars} は
+最低でも 2 の長さをもつ文字列で (これ以降の文字は無視されます)、
+これは \code{+} と \code{/} の代わりに使われる代替アルファベットを指定します。
+
+デコードされた文字列が返されます。\var{s} が正しくパディングされていなかったり、
+規定のアルファベット以外の文字が含まれていた場合には \exception{TypeError} が発生します。
+\end{funcdesc}
+
+\begin{funcdesc}{standard_b64encode}{s}
+標準の Base64 アルファベット集合をもちいて文字列 \var{s} をエンコード (符号化) します。
+\end{funcdesc}
+
+\begin{funcdesc}{standard_b64decode}{s}
+標準の Base64 アルファベット集合をもちいて文字列 \var{s} をデコード (復元) します。
+\end{funcdesc}
+
+\begin{funcdesc}{urlsafe_b64encode}{s}
+URL 用に安全なアルファベット集合をもちいて文字列 \var{s} をエンコード (符号化) します。
+これは、標準の Base64 アルファベット集合にある \code{+} のかわりに \code{-} を使い、
+\code{/} のかわりに \code{_} を使用します。
+\end{funcdesc}
+
+\begin{funcdesc}{urlsafe_b64decode}{s}
+URL 用に安全なアルファベット集合をもちいて文字列 \var{s} をデコード (復元) します。
+これは、標準の Base64 アルファベット集合にある \code{+} のかわりに \code{-} を使い、
+\code{/} のかわりに \code{_} を使用します。
+\end{funcdesc}
+
+\begin{funcdesc}{b32encode}{s}
+Base32 をつかって、文字列をエンコード (符号化) します。
+\var{s} にはエンコードする文字列を渡し、エンコードされた文字列が返されます。
+\end{funcdesc}
+
+\begin{funcdesc}{b32decode}{s\optional{, casefold\optional{, map01}}}
+Base32 をつかって、文字列をデコード (復元) します。
+
+\var{s} にはエンコードする文字列を渡します。オプション引数 \var{casefold} は
+小文字のアルファベットを受けつけるかどうかを指定します。
+セキュリティ上の理由により、デフォルトではこれは \code{False} になっています。
+
+\rfc{3548} は付加的なマッピングとして、数字の 0 (零) を
+アルファベットの O (オー) に、数字の 1 (壱) をアルファベットの I (アイ) または L (エル) に
+対応させることを許しています。オプション引数は \var{map01} は、
+\code{None} でないときは、数字の 1 をどの文字に対応づけるかを指定します
+(map01 が \code{None} でないとき、数字の 0 はつねにアルファベットの O (オー) に対応づけられます)。
+セキュリティ上の理由により、これはデフォルトでは \code{None} になっているため、
+0 および 1 は入力として許可されていません。
+
+デコードされた文字列が返されます。\var{s} が正しくパディングされていなかったり、
+規定のアルファベット以外の文字が含まれていた場合には \exception{TypeError} が発生します。
+\end{funcdesc}
+
+\begin{funcdesc}{b16encode}{s}
+Base16 をつかって、文字列をエンコード (符号化) します。
+
+\var{s} にはエンコードする文字列を渡し、エンコードされた文字列が返されます。
+\end{funcdesc}
+
+\begin{funcdesc}{b16decode}{s\optional{, casefold}}
+Base16 をつかって、文字列をデコード (復元) します。
+
+\var{s} にはエンコードする文字列を渡します。オプション引数 \var{casefold} は
+小文字のアルファベットを受けつけるかどうかを指定します。
+セキュリティ上の理由により、デフォルトではこれは \code{False} になっています。
+
+デコードされた文字列が返されます。\var{s} が正しくパディングされていなかったり、
+規定のアルファベット以外の文字が含まれていた場合には \exception{TypeError} が発生します。
+\end{funcdesc}
+
+レガシーなインターフェイスは以下のものを提供します:
+
+\begin{funcdesc}{decode}{input, output}
+%Decode the contents of the \var{input} file and write the resulting
+%binary data to the \var{output} file.
+%\var{input} and \var{output} must either be file objects or objects that
+%mimic the file object interface. \var{input} will be read until
+%\code{\var{input}.read()} returns an empty string.
+\var{input}の中身をデコードした結果を\var{output}に出力します。
+\var{input}、\var{output}ともにファイルオブジェクトか、ファイルオブジェ
+クトと同じインターフェースを持ったオブジェクトである必要があります。
+\var{input}は\code{\var{input}.read()}が空文字列を返すまで読まれます。
+\end{funcdesc}
+
+\begin{funcdesc}{decodestring}{s}
+%Decode the string \var{s}, which must contain one or more lines of
+%base64 encoded data, and return a string containing the resulting
+%binary data.
+文字列\var{s}をデコードして結果のバイナリデータを返します。
+\var{s}には一行以上のbase64形式でエンコードされたデータが含まれている必
+ 要があります。
+\end{funcdesc}
+
+\begin{funcdesc}{encode}{input, output}
+%Encode the contents of the \var{input} file and write the resulting
+%base64 encoded data to the \var{output} file.
+%\var{input} and \var{output} must either be file objects or objects that
+%mimic the file object interface. \var{input} will be read until
+%\code{\var{input}.read()} returns an empty string.  \function{encode()}
+%returns the encoded data plus a trailing newline character
+%(\code{'\e n'}).
+\var{input}の中身をbase64形式でエンコードした結果を\var{output}に出力します。
+\var{input}、\var{output}ともにファイルオブジェクトか、ファイルオブジェ
+クトと同じインターフェースを持ったオブジェクトである必要があります。
+\var{input}は\code{\var{input}.read()}が空文字列を返すまで読まれます。
+\function{encode()}はエンコードされたデータと改行文字(\code{'\e n'})を出
+ 力します。
+\end{funcdesc}
+
+\begin{funcdesc}{encodestring}{s}
+%Encode the string \var{s}, which can contain arbitrary binary data,
+%and return a string containing one or more lines of
+%base64-encoded data.  \function{encodestring()} returns a
+%string containing one or more lines of base64-encoded data
+%always including an extra trailing newline (\code{'\e n'}).
+文字列\var{s}(任意のバイナリデータを含むことができます)を
+base64形式でエンコードした結果の(1行以上の文字列)データを返します。
+\function{encodestring()}はエンコードされた一行以上のデータと改行文字
+ (\code{'\e n'})を出力します。
+\end{funcdesc}
+
+モジュールの使用例:
+
+\begin{verbatim}
+>>> import base64
+>>> encoded = base64.b64encode('data to be encoded')
+>>> encoded
+'ZGF0YSB0byBiZSBlbmNvZGVk'
+>>> data = base64.b64decode(encoded)
+>>> data
+'data to be encoded'
+\end{verbatim}
+
+
+
+\begin{seealso}
+  \seemodule{binascii}{\ASCII{} からバイナリへ、バイナリから\ASCII{}への
+ 変換をサポートするモジュール。}
+  \seerfc{1521}{MIME (Multipurpose Internet Mail Extensions) Part One:
+          Mechanisms for Specifying and Describing the Format of
+          Internet Message Bodies}{Section 5.2, ``Base64
+          Content-Transfer-Encoding,'' provides the definition of the
+          base64 encoding.}
+\end{seealso}

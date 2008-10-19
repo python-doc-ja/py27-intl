@@ -1,0 +1,73 @@
+\section{\module{pty} ---
+         擬似端末ユーティリティ}
+\declaremodule{standard}{pty}
+  \platform{IRIX, Linux}
+%\modulesynopsis{Pseudo-Terminal Handling for SGI and Linux.}
+\modulesynopsis{SGIとLinux用の擬似端末を制御する}
+\moduleauthor{Steen Lumholt}{}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+
+
+%The \module{pty} module defines operations for handling the
+%pseudo-terminal concept: starting another process and being able to
+%write to and read from its controlling terminal programmatically.
+
+\module{pty}モジュールは擬似端末(他のプロセスを実行してその制御をしてい
+る端末をプログラムで読み書きする)を制御する操作を定義しています。
+
+%Because pseudo-terminal handling is highly platform dependant, there
+%is code to do it only for SGI and Linux. (The Linux code is supposed
+%to work on other platforms, but hasn't been tested yet.)
+
+擬似端末の制御はプラットフォームに強く依存するので、SGIとLinux用のコード
+しか存在していません。(Linux用のコードは他のプラットフォームでも動作するよ
+うに作られていますがテストされていません。)
+
+%The \module{pty} module defines the following functions:
+ \module{pty}モジュールでは以下の関数を定義しています:
+
+\begin{funcdesc}{fork}{}
+%Fork. Connect the child's controlling terminal to a pseudo-terminal.
+%Return value is \code{(\var{pid}, \var{fd})}. Note that the child 
+%gets \var{pid} 0, and the \var{fd} is \emph{invalid}. The parent's
+%return value is the \var{pid} of the child, and \var{fd} is a file
+%descriptor connected to the child's controlling terminal (and also
+%to the child's standard input and output).
+
+forkします。子プロセスの制御端末を擬似端末に接続します。
+返り値は\code{(\var{pid}, \var{fd})}です。子プロセスは\var{pid}として0、
+、\var{fd}として\emph{invalid} をそれぞれ受けとります。親プロセスは
+\var{pid}として子プロセスのPID、\var{fd}として子プロセスの制御端末(子プ
+ ロセスの標準入出力に接続されている)のファイルディスクリプタを受けとります。
+\end{funcdesc}
+
+\begin{funcdesc}{openpty}{}
+%Open a new pseudo-terminal pair, using \function{os.openpty()} if
+%possible, or emulation code for SGI and generic \UNIX{} systems.
+%Return a pair of file descriptors \code{(\var{master}, \var{slave})},
+%for the master and the slave end, respectively.
+
+新しい擬似端末のペアを開きます。
+利用できるなら\function{os.openpty()}を使い、
+利用できなければSGIと一般的な\UNIX{}システム用の
+エミュレーションコードを使います。
+マスター、スレーブそれぞれのためのファイルディスクリプタ、
+\code{(\var{master}, \var{slave})}のタプルを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{spawn}{argv\optional{, master_read\optional{, stdin_read}}}
+%Spawn a process, and connect its controlling terminal with the current 
+%process's standard io. This is often used to baffle programs which
+%insist on reading from the controlling terminal.
+
+プロセスを生成して制御端末を現在のプロセスの標準入出力に接続します。
+これは制御端末を読もうとするプログラムをごまかすために利用されます。
+
+%The functions \var{master_read} and \var{stdin_read} should be
+%functions which read from a file-descriptor. The defaults try to read
+%1024 bytes each time they are called.
+
+\var{master_read}と\var{stdin_read}にはファイルディスクリプタから読み込む
+ 関数を指定してください。デフォルトでは呼ばれるたびに1024バイトずつ読み
+ 込もうとします。
+\end{funcdesc}

@@ -1,0 +1,212 @@
+\section{\module{math} ---
+         数学関数}
+
+\declaremodule{builtin}{math}
+\modulesynopsis{数学関数(\function{sin()} など)。}
+
+このモジュールはいつでも利用できます。標準 C で定義されている数学関数に
+アクセスすることができます。
+
+これらの関数で複素数を使うことはできません。複素数に対応する必要がある
+ならば、 \refmodule{cmath} モジュールにある同じ名前の関数を使ってくだ
+さい。ほとんどのユーザーは複素数を理解するのに必要なだけの数学を勉強し
+たくないので、複素数に対応した関数と対応していない関数の区別がされてい
+ます。これらの関数では複素数が利用できないため、引数に複素数を渡される
+と、複素数の結果が返えるのではなく例外が発生します。その結果、プログラ
+マは、そもそもどういった理由で例外がスローされたのかに早い段階で気づく
+事ができます。\footnote{訳注：例外が発生しないで、計算結果が返えってし
+  まうと、計算結果がおかしい事から、原因が複素数を渡したせいである事に
+  プログラマが気づくのがおくれる可能性があります。}
+
+このモジュールでは次の関数を提供しています。
+明示的な注記のない限り、戻り値は全て浮動小数点数になります。
+
+以下は整数論および数表現にまつわる関数です:
+
+\begin{funcdesc}{ceil}{x}
+\var{x} の天井値 (ceil)、すなわち\var{x} 以上の最も小さい整数を
+float型で返します。
+\end{funcdesc}
+
+\begin{funcdesc}{fabs}{x}
+\var{x} の絶対値を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{floor}{x}
+\var{x} の床値 (floor)、すなわち\var{x} 以下の最も大きい整数を
+float型で返します。
+\end{funcdesc}
+
+\begin{funcdesc}{fmod}{x, y}
+プラットフォームの C ライブラリで定義されている
+\code{fmod(\var{x}, \var{y})} を返します。
+Python の \code{\var{x} \%\ \var{y}} という式は必ずしも同じ結果を
+返さないということに注意してください。
+C 標準の要求では、\cfunction{fmod} は除算の結果が \var{x} と同じ符号に
+なり、大きさが\code{abs(\var{y})} より小さくなるような整数 \var{n} に
+ついては\code{fmod(\var{x}, \var{y})} が厳密に
+(数学的に、つまり限りなく高い精度で) \code{\var{x} - \var{n}*\var{y}} 
+と等価であるよう求めています。
+Python の \code{\var{x} \%\ \var{y}} は、\var{y} と同じ符号の結果を
+返し、浮動小数点の引数に対して厳密な解を出せないことがあります。
+例えば、 \code{fmod(-1e-100, 1e100)} は \code{-1e-100} ですが、
+Python の\code{-1e-100 \%\ 1e100} は \code{1e100-1e-100} になり、
+浮動小数点型で厳密に表現できず、ややこしいことに\code{1e100} に
+丸められます。このため、一般には浮動小数点の場合には関数 \function{fmod()}、
+整数の場合には\code{\var{x} \%\ \var{y}} を使う方がよいでしょう。
+\end{funcdesc}
+
+\begin{funcdesc}{frexp}{x}
+% Blessed by Tim.
+\var{x} の仮数と指数を \code{(\var{m}, \var{e})}のペアとして返します。
+\var{m}はfloat型で、\var{e}は厳密に\code{\var{x} == \var{m} * 2**\var{e}} 
+であるような整数型です。
+\var{x} がゼロの場合は、 \code{(0.0, 0)}を返し、それ以外の場合は、
+\code{0.5 <= abs(\var{m}) < 1} を返します。これは浮動小数点型の内部表現
+を可搬性を保ったまま "分解する (pick apart)" するためです。
+\end{funcdesc}
+
+\begin{funcdesc}{ldexp}{x, i}
+\code{\var{x} * (2**\var{i})} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{modf}{x}
+\var{x}の小数部分と整数部分を返します。
+両方の結果は \var{x}の符号を受け継ぎます。
+整数部はfloat型で返されます。
+\end{funcdesc}
+
+\function{frexp()}と \function{modf()} は C のものとは異なった呼び出し/返し
+パターンを持っていることに注意してください。引数を1つだけ受け取り、1組のペアに
+なった値を返すので、2つ目の戻り値を `出力用の引数' 経由で返したりはしません
+(Python には出力用の引数はありません)。
+
+\function{ceil()}、\function{floor()}、および\function{modf()} 関数に
+ついては、非常に大きな浮動小数点数が\emph{全て} 整数そのものになるという
+ことに注意してください。通常、Python の浮動小数点型は 53 ビット以上の
+精度をもたない (プラットフォームにおける C double 型と同じ) ので、
+結果的に\code{abs(\var{x}) >= 2**52} であるような浮動小数点型\var{x} は
+小数部分を持たなくなるのです。
+
+
+以下は指数および対数関数です:
+
+\begin{funcdesc}{exp}{x}
+\code{e**\var{x}} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{log}{x\optional{, base}}
+\var{x} の自然対数を返します。
+\var{base} を底とした \var{x} の対数を返します。\var{base} を省略した場合
+\var{x} の自然対数を返します。
+\versionchanged[\var{base} argument added]{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{log10}{x}
+\var{x} の10を底とした対数を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{pow}{x, y}
+\code{\var{x}**\var{y}}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sqrt}{x}
+\var{x} の平方根を返します。
+\end{funcdesc}
+
+
+以下は三角関数です:
+
+\begin{funcdesc}{acos}{x}
+\var{x} の逆余弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{asin}{x}
+\var{x} の逆正弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{atan}{x}
+\var{x} 逆正接を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{atan2}{y, x}
+\code{atan(\var{y} / \var{x})} の逆正接をラジアンで返します。
+戻り値は \code{-pi} から \code{pi} の間になります。この角度は、
+極座標平面において原点から \code{(\var{x}, \var{y})} へのベクトル
+が X 軸の正の方向となす角です。\function{atan2()} のポイントは、
+入力 \var{x}, \var{y} の両方の符号が既知であるために、位相角の
+正しい象限を計算できることにあります。例えば、\code{atan(1)} と
+\code{atan2(1,1)} はいずれも \code{pi/4} ですが、\code{atan2(-1, -1)}
+は \code{-3*pi/4} になります。
+\end{funcdesc}
+
+\begin{funcdesc}{cos}{x}
+\var{x} の余弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{hypot}{x, y}
+ユークリッド距離(\code{sqrt(\var{x}*\var{x} + \var{y}*\var{y})})を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sin}{x}
+\var{x}の正弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{tan}{x}
+\var{x} の正接を返します。
+\end{funcdesc}
+
+
+以下は角度に関する関数です:
+
+\begin{funcdesc}{degrees}{x}
+角 \var{x} をラジアンから度数に変換します。
+\end{funcdesc}
+
+\begin{funcdesc}{radians}{x}
+角 \var{x} を度数からラジアンに変換します。
+\end{funcdesc}
+
+以下は双曲線関数です:
+
+\begin{funcdesc}{cosh}{x}
+\var{x} の双曲線余弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sinh}{x}
+\var{x}の双曲線正弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{tanh}{x}
+\var{x} の双曲線正接を返します。
+\end{funcdesc}
+
+このモジュールでは以下の 2つの数学定数も定義しています:
+
+\begin{datadesc}{pi}
+数学定数 \emph{pi}。
+\end{datadesc}
+
+\begin{datadesc}{e}
+数学定数 \emph{e}。
+\end{datadesc}
+
+\begin{notice}
+\module{math} モジュールは、ほとんどが実行プラットフォームにおける
+C 言語の数学ライブラリ関数に対する薄いラッパでできています。
+例外的な場合での挙動は、 C 言語標準ではおおさっぱにしか定義されておらず、
+さらに Python は数学関数におけるエラー報告機能の挙動をプラットフォームの
+C 実装から受け継いでいます。その結果として、エラーの際 (およびなんらか
+の引数がとにかく例外的であると考えられる場合) に送出される特定の例外に
+ついては、プラットフォーム間やリリースバージョン間を通じて有意なものと
+なっていません。例えば、
+  \code{math.log(0)} が \code{-Inf} を返すか \exception{ValueError} 
+または  \exception{OverflowError} を送出するかは不定であり、
+\code{math.log(0)} が \exception{OverflowError} を送出する場合において
+\code{math.log(0L)} が \exception{ValueError} を送出するときもあります。
+\end{notice}
+
+
+\begin{seealso}
+  \seemodule{cmath}{これらの多くの関数の複素数版。}
+\end{seealso}

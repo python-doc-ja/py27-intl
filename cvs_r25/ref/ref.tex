@@ -1,0 +1,74 @@
+\documentclass{manualjp}
+
+\title{Python リファレンスマニュアル}
+
+\input{boilerplatejp}
+\release{2.4}
+
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\ifhtml
+\chapter*{序\label{front}}
+\fi
+
+\input{copyrightjp}
+
+\begin{abstract}
+
+\noindent
+Python はインタプリタ形式の、オブジェクト指向な高レベルプログラミング
+言語で、動的なセマンティクスを持っています。Python の高レベルな組み込み
+データ構造は、動的な型付け機能や動的な結合機能と組み合わせることで、
+迅速なアプリケーション開発や既存のソフトウェアコンポーネント間をつなぐ
+スクリプト言語、または糊 (glue) 言語として Python を魅力的な存在に
+しています。Python は単純で学びやすい文法なので、可読性が高まり、
+プログラムのメンテナンスにかかるコストを低減します。
+Python は、プログラムのモジュール化や再利用を助けるモジュールとパッケージ
+をサポートします。Python インタプリタと多数の標準ライブラリは、
+ほとんどのプラットフォームでソースコード形式でもバイナリ形式でも無料で
+入手することができ、無料で配布することができます。
+
+このリファレンスマニュアルでは、Python 言語の文法と、``コアとなる
+セマンティクス'' について記述します。このマニュアルはそっけない書き方
+かもしれませんが、的確かつ完璧な記述を目指しています。
+必須でない組み込みオブジェクト型や組み込み関数、組み込みモジュール
+に関するセマンティクスは、
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス} で述べられています。
+形式ばらない Python 言語入門には、
+\citetitle[../tut/tut.html]{Python チュートリアル} を参照してください。
+C 言語あるいは \Cpp{} プログラマ向けには、このマニュアルとは別に二つの
+マニュアルがあります:
+\citetitle[../ext/ext.html]{Python インタプリタの拡張と埋め込み} 
+では、Python 拡張モジュールを書くための高レベルな様式について述べています。
+また、\citetitle[../api/api.html]{Python/C API リファレンスマニュアル}
+では、C/\Cpp{} プログラマが利用できるインタフェースについて詳細に
+記述しています。
+
+\end{abstract}
+
+\tableofcontents
+
+\input{ref1}		% Introduction
+\input{ref2}		% Lexical analysis
+\input{ref3}		% Data model
+\input{ref4}		% Execution model
+\input{ref5}		% Expressions and conditions
+\input{ref6}		% Simple statements
+\input{ref7}		% Compound statements
+\input{ref8}		% Top-level components
+
+\appendix
+
+\chapter{歴史とライセンス} % History and License
+\input{license}
+
+\chapter{日本語訳について}
+\input{jptranslation}
+
+\input{ref.ind}
+
+\end{document}

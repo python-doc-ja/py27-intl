@@ -1,0 +1,457 @@
+\section{\module{ConfigParser} ---
+設定ファイルの構文解析器}
+
+\declaremodule{standard}{ConfigParser}
+\modulesynopsis{Configuration file parser.}
+\moduleauthor{Ken Manheimer}{klm@zope.com}
+\moduleauthor{Barry Warsaw}{bwarsaw@python.org}
+\moduleauthor{Eric S. Raymond}{esr@thyrsus.com}
+\sectionauthor{Christopher G. Petrilli}{petrilli@amber.org}
+
+このモジュールでは， \class{ConfigParser}クラスを定義しています。
+\indexii{.ini}{file}\indexii{configuration}{file}\index{ini file}
+\index{Windows ini file}
+%The \class{ConfigParser} class implements a basic configuration file
+%parser language which provides a structure similar to what you would
+%find on Microsoft Windows INI files.  You can use this to write Python
+%programs which can be customized by end users easily.
+\class{ConfigParser} クラスは，Microsoft Windows の INI ファイルに
+見られるような構造をもつ，基礎的な設定ファイルを実装しています．
+このモジュールを使って，エンドユーザーが簡単にカスタマイズできるような
+Python プログラムを書くことができます。
+
+%\begin{notice}[warning]
+%  This library does \emph{not} interpret or write the value-type
+%  prefixes used in the Windows Registry extended version of INI syntax.
+%\end{notice}
+
+\begin{notice}[warning]
+  このライブラリでは、Windowsのレジストリ用に拡張された INI 文法はサポート
+  \emph{していません}。
+\end{notice}
+
+%The configuration file consists of sections, lead by a
+%\samp{[section]} header and followed by \samp{name: value} entries,
+%with continuations in the style of \rfc{822}; \samp{name=value} is
+%also accepted.  Note that leading whitespace is removed from values.
+%The optional values can contain format strings which refer to other
+%values in the same section, or values in a special
+%\code{DEFAULT} section.  Additional defaults can be provided on
+%initialization and retrieval.  Lines beginning with \character{\#} or
+%\character{;} are ignored and may be used to provide comments.
+
+設定ファイルは 1 つ以上のセクションからなり、セクションは
+\samp{[section]} ヘッダとそれに続く\rfc{822} 形式の
+\samp{name: value} エントリからなっています。
+\samp{name=value} という形式も使えます。
+値の先頭にある空白文字は削除されるので注意してください．
+オプションの値には，同じセクションか \code{DEFAULT} セクションに
+ある値を参照するような書式化文字列を含めることができます．
+初期化時や検索時に別のデフォルト値を与えることもできます．
+\character{\#}か\character{;} ではじまる行は無視され，コメントを書く
+ために利用できます。
+
+例:
+
+\begin{verbatim}
+[My Section]
+foodir: %(dir)s/whatever
+dir=frob
+\end{verbatim}
+
+%would resolve the \samp{\%(dir)s} to the value of
+%\samp{dir} (\samp{frob} in this case).  All reference expansions are
+%done on demand.
+
+この場合\samp{\%(dir)s}は変数\samp{dir} (この場合は\samp{frob})に展開さ
+れます。 参照の展開は必要に応じて実行されます。
+
+%Default values can be specified by passing them into the
+%\class{ConfigParser} constructor as a dictionary.  Additional defaults 
+%may be passed into the \method{get()} method which will override all
+%others.
+デフォルト値は
+\class{ConfigParser}のコンストラクタに辞書として渡すことで設定できます。
+追加の(他の値をオーバーライドする)デフォルト値は\method{get()}メソッドに
+渡すことができます。
+
+\begin{classdesc}{RawConfigParser}{\optional{defaults}}
+基本的な設定オブジェクトです。 \var{defaults}が与えられた場合、オブジェクト
+ に固有のデフォルト値がその値で初期化されます。  
+このクラスは値の置換をサポートしません。
+\versionadded{2.3}
+\end{classdesc}
+
+\begin{classdesc}{ConfigParser}{\optional{defaults}}
+%Derived class of \class{RawConfigParser} that implements the magical
+%interpolation feature and adds optional arguments the \method{get()}
+%and \method{items()} methods.  The values in \var{defaults} must be
+%appropriate for the \samp{\%()s} string interpolation.  Note that
+%\var{__name__} is an intrinsic default; its value is the section name,
+%and will override any value provided in \var{defaults}.
+%
+% All option names used in interpolation will be passed through the
+% \method{optionxform()} method just like any other option name
+% reference.  For example, using the default implementation of
+% \method{optionxform()} (which converts option names to lower case),
+% the values \samp{foo \%(bar)s} and \samp{foo \%(BAR)s} are
+% equivalent.
+
+ \class{RawConfigParser}の派生クラスで値の置換を実装しており、
+\method{get()}メソッドと\method{items()}メソッドに省略可能な引数を追加し
+ ています。 \var{defaults}に含まれる値は\samp{\%()s}による値の置換に
+適当なものである必要があります。
+\var{__name__}は組み込みのデフォルト値で、セクション名が含まれるので
+\var{defaults}で設定してもオーバーライドされます。
+
+置換で使われるすべてのオプション名は、ほかのオプション名への参照と同様に
+\method{optionxform()} メソッドを介して渡されます。たとえば、
+\method{optionxform()} のデフォルト実装 (これはオプション名を小文字に変換します) を
+使うと、値 \samp{foo \%(bar)s} および \samp{foo \%(BAR)s} は同一になります。
+\end{classdesc}
+
+\begin{classdesc}{SafeConfigParser}{\optional{defaults}}
+
+%Derived class of \class{ConfigParser} that implements a more-sane
+%variant of the magical interpolation feature.  This implementation is
+%more predictable as well.
+%% XXX Need to explain what's safer/more predictable about it.
+%New applications should prefer this version if they don't need to be
+%compatible with older versions of Python.
+
+
+\class{ConfigParser}の派生クラスでより安全な値の置換を実装しています。
+この実装のはより予測可能性が高くなっています。
+% XXX 何がどう安全で予測可能性なのか書くこと。
+新規に書くアプリケーションでは、古いバージョンのPythonと互換性を持たせる
+ 必要がない限り、このバージョンを利用することが望ましいです。
+\versionadded{2.3}
+\end{classdesc}
+
+\begin{excdesc}{NoSectionError}
+指定したセクションが見つからなかった時に起きる例外です。
+\end{excdesc}
+
+\begin{excdesc}{DuplicateSectionError}
+
+% Exception raised if \method{add_section()} is called with the name of
+% a section that is already present.
+すでに存在するセクション名に対して \method{add_section()} が
+呼び出された際に起きる例外です。
+
+
+\end{excdesc}
+
+\begin{excdesc}{NoOptionError}
+%Exception raised when a specified option is not found in the specified 
+%section.
+指定したオプションが指定したセクションに存在しなかった時に起きる例外です。
+\end{excdesc}
+
+\begin{excdesc}{InterpolationError}
+%Exception raised when problems occur performing string interpolation.
+文字列の置換中に問題が起きた時に発生する例外の基底クラスです。
+\end{excdesc}
+
+\begin{excdesc}{InterpolationDepthError}
+%Exception raised when string interpolation cannot be completed because
+%the number of iterations exceeds \constant{MAX_INTERPOLATION_DEPTH}.
+\exception{InterpolationError}の派生クラスで、文字列の置換回数が
+\constant{MAX_INTERPOLATION_DEPTH}を越えたために完了しなかった場合に
+発生する例外です。
+\end{excdesc}
+
+\begin{excdesc}{InterpolationMissingOptionError}
+%Exception raised when an option referenced from a value does not exist.
+%Subclass of \exception{InterpolationError}.
+%\versionadded{2.3}
+\exception{InterpolationError}の派生クラスで、値が参照しているオプションが
+見つからない場合に発生する例外です。
+\end{excdesc}
+
+\begin{excdesc}{InterpolationSyntaxError}
+%Exception raised when the source text into which substitutions are
+%made does not conform to the required syntax.
+%Subclass of \exception{InterpolationError}.
+\exception{InterpolationError}の派生クラスで、指定された構文で値を置換
+することができなかった場合に発生する例外です。
+\versionadded{2.3}
+
+\end{excdesc}
+
+\begin{excdesc}{MissingSectionHeaderError}
+%Exception raised when attempting to parse a file which has no section
+%headers.
+セクションヘッダを持たないファイルを構文解析しようとした時に起きる例外です。
+\end{excdesc}
+
+\begin{excdesc}{ParsingError}
+%Exception raised when errors occur attempting to parse a file.
+ファイルの構文解析中にエラーが起きた場合に発生する例外です。
+\end{excdesc}
+
+\begin{datadesc}{MAX_INTERPOLATION_DEPTH}
+%The maximum depth for recursive interpolation for \method{get()} when
+%the \var{raw} parameter is false.  This is relevant only for the
+%\class{ConfigParser} class.
+\var{raw}が偽だった場合の\method{get()}による再帰的な文字列置換の繰り返
+しの最大値です。\class{ConfigParser}クラスだけに関係します。
+\end{datadesc}
+
+
+\begin{seealso}
+  \seemodule{shlex}{
+% Support for a creating \UNIX{} shell-like
+% minilanguages which can be used as an alternate format
+% for application configuration files.
+\UNIX{} のシェルに似た，アプリケーションの設定ファイル
+用フォーマットとして使えるもう一つの小型言語です．
+ }
+\end{seealso}
+
+
+\subsection{RawConfigParser オブジェクト \label{RawConfigParser-objects}}
+%\class{RawConfigParser} instances have the following methods:
+\class{RawConfigParser}クラスのインスタンスは以下のメソッドを持ちます:
+
+\begin{methoddesc}{defaults}{}
+%Return a dictionary containing the instance-wide defaults.
+インスタンス全体で使われるデフォルト値の辞書を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{sections}{}
+%Return a list of the sections available; \code{DEFAULT} is not
+%included in the list.
+利用可能なセクションのリストを返します。\code{DEFAULT}はこのリストに含まれ
+ません。
+\end{methoddesc}
+
+\begin{methoddesc}{add_section}{section}
+%Add a section named \var{section} to the instance.  If a section by
+%the given name already exists, \exception{DuplicateSectionError} is
+%raised.
+\var{section}という名前のセクションをインスタンスに追加します。
+同名のセク ションが存在した場合、\exception{DuplicateSectionError}が発生
+します。
+\end{methoddesc}
+
+\begin{methoddesc}{has_section}{section}
+%Indicates whether the named section is present in the
+%configuration. The \code{DEFAULT} section is not acknowledged.
+指定したセクションがコンフィグレーションファイルに存在するかを返します。
+\code{DEFAULT}セクションは存在するとみなされません。
+\end{methoddesc}
+
+\begin{methoddesc}{options}{section}
+%Returns a list of options available in the specified \var{section}.
+\var{section}で指定したセクションで利用できるオプションのリストを返し
+ます。
+\end{methoddesc}
+
+\begin{methoddesc}{has_option}{section, option}
+% If the given section exists, and contains the given option,
+% return \constant{True}; otherwise return \constant{False}.
+与えられたセクションが存在してかつオプションが与えられていれば \constant{True} を返し、
+そうでなければ \constant{False} を返します。
+\versionadded{1.6}
+\end{methoddesc}
+
+\begin{methoddesc}{read}{filenames}
+% Attempt to read and parse a list of filenames, returning a list of filenames
+% which were successfully parsed.  If \var{filenames} is a string or
+%Unicode string, it is treated as a single filename.
+%If a file named in \var{filenames} cannot be opened, that file will be
+%ignored.  This is designed so that you can specify a list of potential
+%configuration file locations (for example, the current directory, the
+%user's home directory, and some system-wide directory), and all
+%existing configuration files in the list will be read.  If none of the
+%named files exist, the \class{ConfigParser} instance will contain an
+%empty dataset.  An application which requires initial values to be
+%loaded from a file should load the required file or files using
+%\method{readfp()} before calling \method{read()} for any optional
+%files:
+ファイル名のリストを読んで解析をこころみ、
+うまく解析できたファイル名のリストを返します。
+もし\var{filenames}が文字列かユニコード文字列なら、1つのファイル名として
+扱われます。\var{filenames}で指定されたファイルが開けない場合、そのファイ
+ルは無視されます。この挙動は設定ファイルが置かれる可能性のある場所(例えば、
+カレントディレクトリ、ホームディレクトリ、システム全体の設定を行うディ
+レクトリ)を設定して、そこに存在する設定ファイルを読むことを想定して設計
+されています。
+設定ファイルが存在しなかった場合、\class{ConfigParser} のインスタンスは
+空のデータセットを持ちます。初期値の設定ファイルを先に読み込んでおく
+必要があるアプリケーションでは、\method{readfp())}を
+\method{read()}の前に呼び出すことでそのような動作を実現できます:
+
+\begin{verbatim}
+import ConfigParser, os
+
+config = ConfigParser.ConfigParser()
+config.readfp(open('defaults.cfg'))
+config.read(['site.cfg', os.path.expanduser('~/.myapp.cfg')])
+\end{verbatim}
+\versionchanged[うまく解析できたファイル名のリストを返す]{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}{readfp}{fp\optional{, filename}}
+%Read and parse configuration data from the file or file-like object in
+%\var{fp} (only the \method{readline()} method is used).  If
+%\var{filename} is omitted and \var{fp} has a \member{name} attribute,
+%that is used for \var{filename}; the default is \samp{<???>}.
+\var{fp}で与えられるファイルかファイルのようなオブジェクトを読み込んで構
+ 文解析します(\method{readline()}メソッドだけを使います)。もし
+ \var{filename}が省略されて\var{fp}が\member{name}属性を持っていれば
+\var{filename}の代わりに使われます。ファイル名の初期値は\samp{<???>}です。
+\end{methoddesc}
+
+\begin{methoddesc}{get}{section, option}
+%Get an \var{option} value for the named \var{section}.
+\var{section}の\var{option}変数を取得します。
+\end{methoddesc}
+
+\begin{methoddesc}{getint}{section, option}
+%A convenience method which coerces the \var{option} in the specified
+%\var{section} to an integer.
+\var{section}の\var{option}を整数として評価する関数です。
+\end{methoddesc}
+
+\begin{methoddesc}{getfloat}{section, option}
+%A convenience method which coerces the \var{option} in the specified
+%\var{section} to a floating point number.
+\var{section}の\var{option}を浮動小数点数として評価する関数です。
+\end{methoddesc}
+
+\begin{methoddesc}{getboolean}{section, option}
+%A convenience method which coerces the \var{option} in the specified
+%\var{section} to a Boolean value.  Note that the accepted values
+%for the option are \code{"1"}, \code{"yes"}, \code{"true"}, and \code{"on"},
+%which cause this method to return \code{True}, and \code{"0"}, \code{"no"},
+%\code{"false"}, and \code{"off"}, which cause it to return \code{False}.  These
+%string values are checked in a case-insensitive manner.  Any other value will
+%cause it to raise \exception{ValueError}.
+指定した \var{section} の \var{option} 値をブール値に型強制する
+便宜メソッドです。\var{option} として受理できる値は、真 (True) としては
+ \code{"1"}、 \code{"yes"}、 \code{"true"}、 \code{"on"} 、偽 (False) としては
+\code{"0"}、 \code{"no"}、 \code{"false"}、 \code{"off"} です。
+これらの文字列値に対しては大文字小文字の区別をしません。
+その他の値の場合には \exception{ValueError} を送出します。
+\end{methoddesc}
+
+\begin{methoddesc}{items}{section}
+%Return a list of \code{(\var{name}, \var{value})} pairs for each
+%option in the given \var{section}.
+与えられた\var{section}のそれぞれのオプションについて
+\code{(\var{name}, \var{value})}ペアのリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{set}{section, option, value}
+% If the given section exists, set the given option to the specified
+% value; otherwise raise \exception{NoSectionError}.  While it is
+% possible to use \class{RawConfigParser} (or \class{ConfigParser} with
+% \var{raw} parameters set to true) for \emph{internal} storage of
+% non-string values, full functionality (including interpolation and
+% output to files) can only be achieved using string values.
+与えられたセクションが存在していれば、オプションを指定された値に設定します。
+セクションが存在しなければ \exception{NoSectionError} を発生させます。
+\class{RawConfigParser} (あるいは\var{raw} パラメータをセットした
+\class{ConfigParser}) を文字列型でない値の \emph{内部的な} 格納場所として
+使うことは可能ですが、すべての機能 (置換やファイルへの出力を含む) が
+サポートされるのは文字列を値として使った場合だけです。
+\versionadded{1.6}
+\end{methoddesc}
+
+\begin{methoddesc}{write}{fileobject}
+%Write a representation of the configuration to the specified file
+%object.  This representation can be parsed by a future \method{read()}
+%call.
+設定を文字列表現に変換してファイルオブジェクトに書き出します。この
+文字列表現は\method{read()}で読み込むことができます。
+\versionadded{1.6}
+\end{methoddesc}
+
+\begin{methoddesc}{remove_option}{section, option}
+%Remove the specified \var{option} from the specified \var{section}.
+%If the section does not exist, raise \exception{NoSectionError}. 
+%If the option existed to be removed, return \constant{True};
+%otherwise return \constant{False}.
+指定された\var{section}から指定された\var{option}を削除します。
+セクションが存在しなければ、\exception{NoSectionError} を起こします。
+存在するオプションを削除した時は \constant{True} を、
+そうでない時は \constant{False} を返します。
+\versionadded{1.6}
+\end{methoddesc}
+
+\begin{methoddesc}{remove_section}{section}
+%Remove the specified \var{section} from the configuration.
+%If the section in fact existed, return \code{True}.
+%Otherwise return \code{False}.
+指定された\var{section}を設定から削除します。
+もし指定されたセクションが存在すれば\code{True}、そうでなければ
+ \code{False}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{optionxform}{option}
+%Transforms the option name \var{option} as found in an input file or
+%as passed in by  client code to the form that should be used in the
+%internal structures.  The default implementation returns a lower-case
+%version of \var{option}; subclasses may override this or client code
+%can set an attribute of this name on instances to affect this
+%behavior.  Setting this to \function{str()}, for example, would make
+%option names case sensitive.
+
+入力ファイル中に見つかったオプション名か，
+クライアントコードから渡されたオプション名 \var{option} を，
+内部で利用する形式に変換します。デフォルトでは\var{option}を
+全て小文字に変換した名前が返されます。サブルクラスではこの関数をオーバー
+ライドすることでこの振舞いを替えることができます。たとえば、このメソッ
+ドを\function{str()}に設定することで大小文字の差を区別するように
+変更することができます。
+\end{methoddesc}
+
+
+\subsection{ConfigParser オブジェクト \label{ConfigParser-objects}}
+
+ \class{ConfigParser}クラスは\class{RawConfigParser}のインターフェースを
+いくつかのメソッドについて拡張し、省略可能な引数を追加しています。
+
+\begin{methoddesc}{get}{section, option\optional{, raw\optional{, vars}}}
+%Get an \var{option} value for the named \var{section}.  All the
+%\character{\%} interpolations are expanded in the return values, based
+%on the defaults passed into the constructor, as well as the options
+%\var{vars} provided, unless the \var{raw} argument is true.
+\var{section}の\var{option}変数を取得します。
+\var{raw}が真でない時には、全ての\character{\%}置換は
+コンストラクタに渡されたデフォルト値か、\var{vars} が与えられていれば
+それを元にして展開されてから返されます。
+\end{methoddesc}
+
+\begin{methoddesc}{items}{section\optional{, raw\optional{, vars}}}
+%Return a list of \code{(\var{name}, \var{value})} pairs for each
+%option in the given \var{section}. Optional arguments have the
+%same meaning as for the \method{get()} method.
+指定した\var{section} 内の各オプションに対して、
+\code{(\var{name}, \var{value})} のペアからなるリストを返します。
+省略可能な引数は\code{get()}メソッドと同じ意味を持ちます。
+\versionadded{2.3}
+\end{methoddesc}
+
+
+\subsection{SafeConfigParser オブジェクト \label{SafeConfigParser-objects}}
+
+% The \class{SafeConfigParser} class implements the same extended
+% interface as \class{ConfigParser}, with the following addition:
+\class{SafeConfigParser} は \class{ConfigParser} と同様の拡張インターフェイスを
+もっていますが、以下のような機能が追加されています:
+
+\begin{methoddesc}{set}{section, option, value}
+% If the given section exists, set the given option to the specified
+% value; otherwise raise \exception{NoSectionError}.  \var{value} must
+% be a string (\class{str} or \class{unicode}); if not,
+% \exception{TypeError} is raised.
+もし与えられたセクションが存在している場合は、指定された値を
+与えられたオプションに設定します。そうでない場合は \exception{NoSectionError} を
+発生させます。  \var{value} は文字列  (\class{str} または \class{unicode}) でなければならず、
+そうでない場合には \exception{TypeError} が発生します。
+
+\versionadded{2.4}
+\end{methoddesc}

@@ -1,0 +1,286 @@
+\section{\module{test} ---
+         Python用回帰テストパッケージ}
+
+\declaremodule{standard}{test}
+
+\sectionauthor{Brett Cannon}{brett@python.org}
+
+
+\modulesynopsis{Python用テストスイートを含む回帰テストパッケージ。}
+
+
+\module{test} パッケージには、Python 用の全ての回帰テストと、
+\module{test.test_support}および\module{test.regrtest} モジュール
+が入っています。\module{test.test_support} はテストを充実させる
+ために使い、\module{test.regtest} はテストスイートを駆動するのに
+使います。
+
+\module{test}パッケージ内の各モジュールのうち、名前が\samp{test_}
+で始まるものは、特定のモジュールや機能に対するテストスイートです。
+新しいテストはすべて\module{unittest}モジュールを使って書くように
+してください; 必ずしも\module{unittest} を使う必要はないのですが、
+\module{unittest} はテストをより柔軟にし、メンテナンスをより簡単に
+します。古いテストのいくつかは\module{doctest} を利用しており、
+``伝統的な'' テスト形式になっています。これらのテスト形式をカバー
+する予定はありません。
+
+\begin{seealso}
+\seemodule{unittest}{PyUnit 回帰テストを書く。}
+\seemodule{doctest}{ドキュメンテーション文字列に埋め込まれたテスト。}
+\end{seealso}
+
+
+\subsection{\module{test}パッケージのためのユニットテストを書く%
+            \label{writing-tests}}
+
+\module{test} パッケージ用のテストを書く場合、\refmodule{unittest}
+モジュールを使い、以下のいくつかのガイドラインに従うよう推奨します。
+一つは、テストモジュールの名前を、\samp{test_}で始め、テスト
+対象となるモジュール名で終えることです。
+テストモジュール中のテストメソッドは
+名前を\samp{test_}で始めて、そのメソッドが何をテストしているかという説明で終えます。
+これはテスト駆動プログラムに
+そのメソッドをテストメソッドとして認識させるため必要です。
+また、テストメソッドにはドキュメンテーション文字列を入れるべきでは
+ありません。
+テストメソッドのドキュメント記述には、
+(\samp{\# True あるいは False だけを返すテスト関数} のような) 
+コメントを使ってください。
+これは、ドキュメンテーション文字列が存在する場合にはその内容が出力
+されるため、どのテストを実行しているのかをいちいち表示しなくするためです。
+
+以下のような基本的な決まり文句を使います:
+
+\begin{verbatim}
+import unittest
+from test import test_support
+
+class MyTestCase1(unittest.TestCase):
+
+    # Only use setUp() and tearDown() if necessary
+
+    def setUp(self):
+        ... code to execute in preparation for tests ...
+
+    def tearDown(self):
+        ... code to execute to clean up after tests ...
+
+    def test_feature_one(self):
+        # Test feature one.
+        ... testing code ...
+
+    def test_feature_two(self):
+        # Test feature two.
+        ... testing code ...
+
+    ... more test methods ...
+
+class MyTestCase2(unittest.TestCase):
+    ... same structure as MyTestCase1 ...
+
+... more test classes ...
+
+def test_main():
+    test_support.run_unittest(MyTestCase1,
+                              MyTestCase2,
+                              ... list other tests ...
+                             )
+
+if __name__ == '__main__':
+    test_main()
+\end{verbatim}
+
+この定型的なコードによって、テストスイートを\module{regrtest.py}
+から起動できると同時に、スクリプト自体からも実行できるようになります。
+
+回帰テストの目的はコードの分解です。
+そのためには以下のいくつかのガイドラインに従ってください:
+
+\begin{itemize}
+\item テストスイートはすべてのクラス、関数および定数を用いるべきです。
+これは外部に公開される外部APIだけでなく"非公開"コードも含んでいます。
+\item ホワイトボックス・テスト (テストを書くときに対象のコードをすぐ
+テストする) を推奨します。ブラックボックス・テスト (最終的に公開された
+ユーザーインターフェイスだけをテストする) は、すべての境界条件と
+極端条件を確実にテストするには完全ではありません。
+\item 無効な値を含み、すべての取りうる値を確実にテストするように
+してください。そうすることで、全ての有効な値を受理するだけでなく、
+不適切な値を正しく処理することも確認できます。
+\item できる限り多くのコード経路を網羅してください。分岐が生じる
+テストし、入力を調整して、コードの全体に渡って取りえる限りの個々の
+処理経路を確実にたどらせるようにしてください。
+\item テスト対象のコードにどんなバグが発見された場合でも、明示的な
+テスト追加するようにしてください。そうすることで、将来コードを変更した
+際にエラーが再発しないようにできます。
+\item (一時ファイルをすべて閉じたり削除したりするといった) テストの
+後始末を必ず行ってください。
+\item テストがオペレーティングシステムの特定の状況に依存する場合、
+テストを開始する前に状況を確認してください。
+\item import するモジュールをできるかぎり少なくし、可能な限り
+早期に import を行ってください。そうすることで、てテストの外部依存性を
+最小限にし、モジュールの import による副作用から生じる変則的な動作を
+最小限にできます。
+\item コードの再利用を最大限に行うようにしてください。時として、
+テストの多様性はどんな型の入力を受け取るかの違いまで小さくなります。
+例えば以下のように、入力が指定されたサブクラスで基底テストクラスを
+サブクラス化して、コードの複製を最小化します:
+\begin{verbatim}
+class TestFuncAcceptsSequences(unittest.TestCase):
+
+    func = mySuperWhammyFunction
+
+    def test_func(self):
+        self.func(self.arg)
+
+class AcceptLists(TestFuncAcceptsSequences):
+    arg = [1,2,3]
+
+class AcceptStrings(TestFuncAcceptsSequences):
+    arg = 'abc'
+
+class AcceptTuples(TestFuncAcceptsSequences):
+    arg = (1,2,3)
+\end{verbatim}
+\end{itemize}
+
+\begin{seealso}
+\seetitle{Test Driven Development}{コードより前にテストを書く
+方法論に関する Kent Beck の著書}
+\end{seealso}
+
+
+\subsection{\module{test.regrtest}を使ってテストを実行する \label{regrtest}}
+
+\module{test.regrtest} を使うと Python の回帰テストスイートを駆動
+できます。スクリプトを単独で実行すると、自動的に\module{test}
+パッケージ内のすべての回帰テストを実行し始めます。パッケージ内の
+名前が\samp{test_}で始まる全モジュールを見つけ、それをインポートし、
+もしあるなら関数 \function{test_main} を実行してテストを行います。
+実行するテストの名前もスクリプトに渡される可能性もあります。
+単一の回帰テストを指定 
+(\program{python regrtest.py} \programopt{test_spam.py}) すると、
+出力を最小限にします。テストが成功したかあるいは失敗したかだけを出力
+するので、出力は最小限になります。
+
+直接 \module{test.regrtest} を実行すると、テストに利用するリソースを
+設定できます。これを行うには、\programopt{-u} 
+コマンドラインオプションを使います。すべてのリソースを使うには、
+\program{python regrtest.py} \programopt{-uall} を実行します。
+\programopt{-u} のオプションに \programopt{all} を指定すると、
+すべてのリソースを有効にします。(よくある場合ですが) 何か一つを除く
+全てが必要な場合、カンマで区切った不要なリソースのリストを
+\programopt{all} の後に並べます。
+コマンド\program{python regrtest.py} \programopt{-uall,-audio,-largefile}
+とすると、\programopt{audio} と \programopt{largefile} リソースを除く
+全てのリソースを使って\module{test.regrtest} を実行します。
+すべてのリソースのリストと追加のコマンドラインオプションを出力
+するには、\program{python regrtest.py} \programopt{-h} を実行
+してください。
+
+テストを実行しようとするプラットフォームによっては、回帰テストを
+実行する別の方法があります。
+\UNIX{} では、Python をビルドしたトップレベルディレクトリで
+\program{make} \programopt{test} を実行できます。
+Windows上では、\file{PCBuild} ディレクトリから \program{rt.bat} を
+実行すると、すべての回帰テストを実行します。
+
+
+\subsection{\module{test.test_support} ---
+            テストのためのユーティリティ関数}
+\declaremodule[test.testsupport]{standard}{test.test_support}
+\modulesynopsis{Python 回帰テストのサポート}
+
+\module{test.test_support} モジュールでは、 Python の回帰テストに対する
+サポートを提供しています。
+
+このモジュールは次の例外を定義しています:
+
+\begin{excdesc}{TestFailed}
+テストが失敗したとき送出される例外です。
+\end{excdesc}
+
+\begin{excdesc}{TestSkipped}
+\exception{TestFailed}のサブクラスです。
+テストがスキップされたとき送出されます。
+テスト時に (ネットワーク接続のような) 必要なリソースが利用
+できないときに送出されます。
+\end{excdesc}
+
+\begin{excdesc}{ResourceDenied}
+\exception{TestSkipped}のサブクラスです。
+(ネットワーク接続のような)リソースが利用できないとき送出されます。
+\function{requires}関数によって送出されます。
+\end{excdesc}
+
+
+\module{test.test_support} モジュールでは、以下の定数を定義しています:
+
+\begin{datadesc}{verbose}
+冗長な出力が有効な場合は\constant{True} です。
+実行中のテストについてのより詳細な情報が欲しいときにチェックします。
+\var{verbose} は \module{test.regrtest} によって設定されます。
+\end{datadesc}
+
+\begin{datadesc}{have_unicode}
+ユニコードサポートが利用可能ならば\constant{True} になります。
+\end{datadesc}
+
+\begin{datadesc}{is_jython}
+実行中のインタプリタが Jython ならば\constant{True} になります。
+\end{datadesc}
+
+\begin{datadesc}{TESTFN}
+一時ファイルを作成するパスに設定されます。
+作成した一時ファイルは全て閉じ、unlink (削除) せねばなりません。
+\end{datadesc}
+
+
+\module{test.test_support} モジュールでは、以下の関数を定義しています:
+
+\begin{funcdesc}{forget}{module_name}
+モジュール名\var{module_name}を\module{sys.modules}から取り除き、
+モジュールのバイトコンパイル済みファイルを全て削除します。
+\end{funcdesc}
+
+\begin{funcdesc}{is_resource_enabled}{resource}
+\var{resource} が有効で利用可能ならば\constant{True}を返します。
+利用可能なリソースのリストは、\module{test.regrtest}がテストを
+実行している間のみ設定されます。
+\end{funcdesc}
+
+\begin{funcdesc}{requires}{resource\optional{, msg}}
+\var{resource} が利用できなければ、\exception{ResourceDenied}を
+送出します。その場合、\var{msg}は \exception{ResourceDenied} の引数に
+なります。\var{__name__} が \code{"__main__"} である関数にから
+呼び出された場合には常に真を返します。
+テストを\module{test.regrtest} から実行するときに使われます。
+\end{funcdesc}
+
+\begin{funcdesc}{findfile}{filename}
+\var{filename}という名前のファイルへのパスを返します。
+一致するものが見つからなければ、\var{filename} 自体を返します。
+\var{filename} 自体もファイルへのパスでありえるので、
+\var{filename} が返っても失敗ではありません。
+\end{funcdesc}
+
+\begin{funcdesc}{run_unittest}{*classes}
+渡された \class{unittest.TestCase} サブクラスを実行します。
+この関数は名前が \samp{test_} で始まるメソッドを探して、
+テストを個別に実行します。
+この方法をテストの実行方法として推奨しています。
+\end{funcdesc}
+
+\begin{funcdesc}{run_suite}{suite\optional{, testclass=None}}
+\class{unittest.TestSuite} のインスタンス \var{suite}を実行します。
+オプション引数\var{testclass} はテストスイート内のテストクラスの
+一つを受け取り、指定するとテストスイートが存在する場所についてさらに
+詳細な情報を出力します。
+\end{funcdesc}
+
+
+
+
+
+
+
+

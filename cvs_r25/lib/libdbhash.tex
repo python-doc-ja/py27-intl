@@ -1,0 +1,90 @@
+\section{\module{dbhash} ---
+         BSD データベースライブラリへの DBM 形式のインタフェース}
+
+\declaremodule{standard}{dbhash}
+  \platform{Unix, Windows}
+\modulesynopsis{BSD データベースライブラリへの DBM 形式のインタフェース。}
+\sectionauthor{Fred L. Drake, Jr.}{fdrake@acm.org}
+
+
+\module{dbhash} モジュールでは BSD \code{db} ライブラリを使って
+データベースを開くための関数を提供します。このモジュールは、 DBM 形式
+のデータベースへのアクセスを提供する他の Python データベースモジュールの
+インタフェースをそのまま反映しています。
+\module{dbhash} を使うには \refmodule{bsddb}\refbimodindex{bsddb}
+モジュールが必要です。
+
+このモジュールでは一つの例外と一つの関数を提供しています:
+
+
+\begin{excdesc}{error}
+\exception{KeyError} 以外のデータベースのエラーで送出されます。
+\exception{bsddb.error} と同じ意味です。
+\end{excdesc}
+
+\begin{funcdesc}{open}{path\optional{, flag\optional{, mode}}}
+データベース \code{db} を開き、データベースオブジェクトを返します。
+引数 \var{path} はデータベースファイルの名前です。
+
+引数 \var{flag} は \code{'r'} (標準の値)、 \code{'w'}、\code{'c'} 
+(データベースが存在しない場合には作成する)、あるいは \code{'n'} 
+(常に新たな空のデータベースを作成する) をとることができます。
+BSD \code{db} ライブラリがファイルロックをサポートするような
+プラットフォームでは、ロックを使うよう示すために \character{l} 
+を追加することができます。
+
+オプションの \var{mode} 引数は、新たにデータベースを作成しなければ
+ならないときにデータベースファイルに設定すべき \UNIX{} ファイル権限
+ビットを表すために使われます; この値はプロセスの現在の umask 値で
+マスクされます。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seemodule{anydbm}{\code{dbm} 形式のデータベースへの汎用インタフェース。}
+  \seemodule{bsddb}{BSD \code{db} ライブラリへの低レベルインタフェース。}
+  \seemodule{whichdb}{既存のデータベースがどの形式のデータベースか判定する
+ユーティリティモジュール。}
+\end{seealso}
+
+
+\subsection{データベースオブジェクト \label{dbhash-objects}}
+
+\function{open()} によって返されるデータベースオブジェクトは、
+全ての DBM 形式データベースやマップ型オブジェクトで共通のメソッドを
+提供します。それら標準のメソッドに加え、dbhash では以下のメソッドが
+利用可能です。
+
+\begin{methoddesc}[dbhash]{first}{}
+このメソッドと \method{next()} メソッドを使って、データベースの全ての
+キー/値のペアにわたってループ処理を行えます。探索はデータベースの
+内部ハッシュ値の順番に行われ、キーの値に順に並んでいるとは限りません。
+このメソッドは最初のキーを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[dbhash]{last}{}
+データベース探索における最後のキー/値を返します。逆順探索を開始する
+際に使うことができます; \method{previous()} を参照してください。
+\end{methoddesc}
+
+\begin{methoddesc}[dbhash]{next}{}
+データベースの順方向探索において、次のよりも後に来るキー/値のペアを
+返します。以下のコードはデータベース \code{db} に
+ついて、キー全てを含むリストをメモリ上に生成することなく
+全てのキーを出力します。
+
+\begin{verbatim}
+print db.first()
+for i in xrange(1, len(db)):
+    print db.next()
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}[dbhash]{previous}{}
+データベースの逆方向探索において、手前に来るキー/値のペアを
+返します。\method{last()} と併せて、逆方向の探索に用いられます。
+\end{methoddesc}
+
+\begin{methoddesc}[dbhash]{sync}{}
+このメソッドはディスクにまだ書き込まれていないデータを全て書き込ませます。
+\end{methoddesc}

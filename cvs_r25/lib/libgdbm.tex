@@ -1,0 +1,100 @@
+\section{\module{gdbm} --- GNU による dbm の再実装}
+
+\declaremodule{builtin}{gdbm}
+  \platform{Unix}
+\modulesynopsis{GNU による dbm の再実装。}
+
+
+このモジュールは \refmodule{dbm}\refbimodindex{dbm} モジュールに
+よく似ていますが、\code{gdbm} を使っていくつかの追加機能を提供しています。
+\code{gdbm} と \code{dbm} では生成されるファイル形式に互換性がないので
+注意してください。
+
+\module{gdbm} モジュールでは GNU DBM ライブラリへのインタフェースを
+提供します。\code{gdbm} オブジェクトはキーと値が常に文字列である
+ことを除き、マップ型 (辞書型) と同じように動作します。
+\code{gdbm} オブジェクトに対して \keyword{print} を適用しても
+キーや値を印字することはなく、\method{items()} 及び \method{values()}
+メソッドはサポートされていません。
+
+このモジュールでは以下の定数および関数を定義しています:
+
+\begin{excdesc}{error}
+I/O エラーのような \code{gdbm} 特有のエラーで送出されます。
+誤ったキーの指定のように、一般的なマップ型のエラーに対しては
+\exception{KeyError} が送出されます。
+\end{excdesc}
+
+\begin{funcdesc}{open}{filename, \optional{flag, \optional{mode}}}
+\code{gdbm} データベースを開いて \code{gdbm} オブジェクトを返します。
+\var{filename} 引数はデータベースファイルの名前です。
+
+オプションの \var{flag} としては、
+\code{'r'} (既存のデータベースを読み込み専用で開く --- 標準の値です)、 
+\code{'w'} (既存のデータベースを読み書き用に開く)、 
+\code{'c'} (既存のデータベースが存在しない場合には新たに作成する)、または
+\code{'n'} (常に新たにデータベースを作成する)、をとることができます。
+
+データベースをどのように開くかを制御するために、フラグに以下の文字を
+追加することができます:
+
+\begin{itemize}
+\item \code{'f'} --- データベースを高速モードで開きます。このモードではデータベースへの書き込みはファイルシステムと同期されません。
+\item \code{'s'} --- 同期モードで開きます。データベースへの変更はファイルに即座いに書き込まれます。
+\item \code{'u'} --- データベースをロックしません。
+\end{itemize}
+
+全てのバージョンの \code{gdbm} で全てのフラグが有効とは限りません。
+モジュール定数 \code{open_flags} はサポートされているフラグ文字
+からなる文字列です。無効なフラグが指定された場合、例外 \exception{error}
+が送出されます。
+
+オプションの \var{mode} 引数は、新たにデータベースを作成しなければならない
+場合に使われる \UNIX{} のファイルモードです。標準の値は 8 進数の
+\code{0666} です。
+\end{funcdesc}
+
+辞書型形式のメソッドに加えて、\code{gdbm} オブジェクトには以下のメソッド
+があります:
+
+\begin{funcdesc}{firstkey}{}
+このメソッドと \method{next()} メソッドを使って、データベースの全ての
+キーにわたってループ処理を行うことができます。探索は \code{gdbm} の
+内部ハッシュ値の順番に行われ、キーの値に順に並んでいるとは限りません。
+このメソッドは最初のキーを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{nextkey}{key}
+データベースの順方向探索において、\var{key} よりも後に来るキーを
+返します。以下のコードはデータベース \code{db} に
+ついて、キー全てを含むリストをメモリ上に生成することなく
+全てのキーを出力します:
+
+\begin{verbatim}
+k = db.firstkey()
+while k != None:
+    print k
+    k = db.nextkey(k)
+\end{verbatim}
+\end{funcdesc}
+
+\begin{funcdesc}{reorganize}{}
+大量の削除を実行した後、\code{gdbm} ファイルの占めるスペースを
+削減したい場合、このルーチンはデータベースを再組織化します。
+この再組織化を使う以外に \code{gdbm} はデータベースファイルの
+大きさを短くすることはありません; そうでない場合、削除された
+部分のファイルスペースは保持され、新たな (キー、値の) ペアが追加
+される際に再利用されます。
+\end{funcdesc}
+
+\begin{funcdesc}{sync}{}
+データベースが高速モードで開かれていた場合、このメソッドは
+ディスクにまだ書き込まれていないデータを全て書き込ませます。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seemodule{anydbm}{\code{dbm} 形式のデータベースへの汎用インタフェース。}
+  \seemodule{whichdb}{既存のデータベースがどの形式のデータベースか判定する
+ユーティリティモジュール。}
+\end{seealso}

@@ -1,0 +1,300 @@
+\section{\module{random} ---
+         擬似乱数を生成する}
+
+\declaremodule{standard}{random}
+\modulesynopsis{よく知られている様々な分布をもつ擬似乱数を生成する。}
+
+このモジュールでは様々な分布をもつ擬似乱数生成器を実装しています。
+整数用では、ある値域内の数の選択を一様にします。
+シーケンス用には、シーケンスからのランダムな要素の一様な選択、
+リストの要素の順列をランダムに置き換える関数、
+順列を入れ替えずにランダムに取り出す関数があります。
+
+実数用としては、一様分布、正規分布 (ガウス分布)、
+対数正規分布、負の指数分布、ガンマおよびベータ分布を計算する
+関数があります。
+角度分布の生成用には、von Mises 分布が利用可能です。
+
+ほとんど全てのモジュール関数は基礎となる関数 \function{random()} に依存
+します。この関数は半開区間 [0.0, 1.0) の値域を持つ一様な浮動小数点数を生
+成します。Python は中心となる乱数生成器として Mersenne Twister を使いま
+す。これは 53 ビットの浮動小数点を生成し、周期が  2**19937-1、本体は C 
+で実装されていて、高速でスレッドセーフです。Mersenne Twister は、現存す
+る中で、最も大規模にテストされた乱数生成器のひとつです。しかし、完全に決
+定論的であるため、この乱数生成器は全ての目的に合致しているわけではなく、
+暗号化の目的には全く向いていません。
+
+このモジュールで提供されている関数は、実際には \class{random.Random} 
+クラスの隠蔽されたインスタンスのメソッドにバインドされています。
+内部状態を共有しない生成器を取得するため、自分で \class{Random} 
+のインスタンスを生成することができます。異なる \class{Random} 
+のインスタンスを各スレッド毎に生成し、\method{jumpahead()} 
+メソッドを使うことで各々のスレッドにおいて生成された乱数列が
+できるだけ重複しないようにすれば、マルチスレッドプログラムを作成する上で
+特に便利になります。
+
+自分で考案した基本乱数生成器を使いたいなら、クラス \class{Random} を
+サブクラス化することもできます: この場合、メソッド \method{random()}、
+\method{send()}、\method{getstate()}、\method{setstate()}、および
+\method{jumpahead()} をオーバライドしてください。
+オプションとして、新しいジェネレータは \method{getrandombits()} 
+メソッドを提供できます --- これにより \method{randrange()} メソッドが
+任意の、大きな範囲を超える集合を作成できるようになります。
+\versionadded[\method{getrandombits()} メソッド]{2.4}
+
+サブクラス化の例として、\module{random} モジュールは \class{WichmannHill} 
+クラスを提供します。このクラスは Python だけで書かれた代替生成器を実装し
+ています。このクラスは、乱数生成器に Wichmann-Hill 法を使っていた古いバ
+ージョンの Python から得られた結果を再現するための、後方互換の手段になり
+ます。ただし、この Wichmann-Hill 生成器はもはや推奨することができない
+ということに注意してください。現在の水準では生成される周期が短すぎ、また
+厳密な乱数性試験に合格しないことが知られています。こうした欠点を修正した
+最近の改良についてはページの最後に挙げた参考文献を参照してください。
+\versionchanged[MersenneTwister を Wichmann-Hill の代わりに使う]{2.3}
+
+
+保守関数:
+
+\begin{funcdesc}{seed}{\optional{x}}
+基本乱数生成器を初期化します。
+オプション引数 \var{x} はハッシュ可能な任意のオブジェクトを
+とり得ます。\var{x} が省略されるか \code{None} の場合、現在のシステム
+時間が使われます; 現在のシステム時間はモジュールが最初にインポート
+された時に乱数生成器を初期化するためにも使われます。
+
+乱数の発生源をオペレーティングシステムが提供している場合、システム時刻の
+代わりにその発生源が使われます（詳細については \function{os.urandom()}
+関数を参照）。\versionchanged[通常、オペレーティングシステムのリソースは
+使われません]{2.4}
+
+\var{x} が \code{None} でも、整数でも長整数でもない場合、
+\code{hash(\var{x})} が代わりに使われます。
+\var{x} が整数または長整数の場合、\var{x} が直接使われます。
+\end{funcdesc}
+
+\begin{funcdesc}{getstate}{}
+乱数生成器の現在の内部状態を記憶したオブジェクトを返します。
+このオブジェクトを \function{setstate()} に渡して内部状態を
+復帰することができます。
+\versionadded{2.1}
+\end{funcdesc}
+
+\begin{funcdesc}{setstate}{state}
+\var{state} は予め \function{getstate()} を呼び出して得ておかなくては
+なりません。\function{setstate()} は \function{setstate()} が呼び出
+された時の乱数生成器の内部状態を復帰します。
+  \versionadded{2.1}
+\end{funcdesc}
+
+\begin{funcdesc}{jumpahead}{n}
+内部状態を、現在の状態から、非常に離れているであろう状態に変更します。
+\var{n} は非負の整数です。
+これはマルチスレッドのプログラムが複数の \class{Random} クラス
+のインスタンスと結合されている場合に非常に便利です: 
+\method{setstate()}
+や \method{seed()} は全てのインスタンスを同じ内部状態にするのに
+使うことができ、その後 \method{jumpahead()} を使って各インスタンスの
+内部状態を引き離すことができます。
+\versionadded{2.1}
+\versionchanged[\var{n} ステップ先の特定の状態になるのではなく、 
+\method{jumpahead(\var{n})} は何ステップも離れているであろう別の状態にする]
+{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{getrandbits}{k}
+乱数ビット\var{k} とともにPyhonの\class{long} intを返します。
+このメソッドはMersenneTwister生成器で提供されており、その他の
+乱数生成器でもオプションのAPIとして提供されているかもしれません。
+このメソッドが使えるとき、\method{randrange()}メソッドは大きな
+範囲を扱えるようになります。
+\versionadded{2.4}   
+\end{funcdesc} 
+
+整数用の関数:
+
+\begin{funcdesc}{randrange}{\optional{start,} stop\optional{, step}}
+\code{range(\var{start}、\var{stop}、\var{step})} の要素から
+ランダムに選ばれた要素を返します。この関数は 
+\code{choice(range(\var{start}, \var{stop}, \var{step}))}
+と等価ですが、実際には range オブジェクトを生成しません。
+  \versionadded{1.5.2}
+\end{funcdesc}
+
+\begin{funcdesc}{randint}{a, b}
+\code{\var{a} <= \var{N} <= \var{b}} であるような
+ランダムな整数 \var{N} を返します。
+\end{funcdesc}
+
+
+シーケンス用の関数:
+
+\begin{funcdesc}{choice}{seq}
+空でないシーケンス \var{seq} からランダムに要素を返します。
+\var{seq} が空のときは、 \exception{IndexError} が送出されます。
+\end{funcdesc}
+
+\begin{funcdesc}{shuffle}{x\optional{, random}}
+シーケンス \var{x} を直接変更によって混ぜます。
+オプションの引数 \var{random} は、値域が [0.0, 1.0) のランダムな
+浮動小数点数を返すような引数を持たない関数です; 標準では、
+この関数は \function{random()} です。
+
+かなり小さい \code{len(\var{x})} であっても、\var{x} の順列は
+ほとんどの乱数生成器の周期よりも大きくなるので注意してください;
+このことは長いシーケンスに対してはほとんどの順列は生成されないことを
+意味します。
+\end{funcdesc}
+
+\begin{funcdesc}{sample}{population, k}
+母集団のシーケンスから選ばれた長さ \var{k} の一意な要素からなるリスト
+を返します。値の置換を行わないランダムサンプリングに用いられます。
+\versionadded{2.3}
+
+母集団自体を変更せずに、母集団内の要素を含む新たなリストを返します。返さ
+れたリストは選択された順に並んでいるので、このリストの部分スライスもラン
+ダムなサンプルになります。これにより、くじの当選者を1等賞と2等賞（の部分
+スライス）に分けるといったことも可能です。母集団の要素はハッシュ可能でな
+くても、ユニークでなくても、かまいません。母集団が繰り返しを含む場合、返
+されたリストの各要素はサンプルから選択可能な要素になります。整数の並びか
+らサンプルを選ぶには、引数に \function{xrange()} オブジェクトを使いましょう。
+特に、巨大な母集団からサンプルを取るとき、速度と空間効率が上がります。
+\code{sample(xrange(10000000), 60)}
+\end{funcdesc}
+
+
+以下の関数は特殊な実数値分布を生成します。関数パラメタは
+対応する分布の公式において、数学的な慣行に従って使われている
+変数から取られた名前がつけられています; これらの公式のほとんどは
+多くの統計学のテキストに載っています。
+
+\begin{funcdesc}{random}{}
+値域 [0.0, 1.0) の次のランダムな浮動小数点数を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{uniform}{a, b}
+\code{\var{a} <= \var{N} <= \var{b}} であるような
+ランダムな実数 \var{N} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{betavariate}{alpha, beta}
+ベータ分布です。引数の満たすべき条件は
+\code{\var{alpha} > -1} および \code{\var{beta} > -1} です。
+0 から 1 の値を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{expovariate}{lambd}
+指数分布です。\var{lambd} は平均にしたい値で 1.0 を割ったものです。
+(このパラメタは ``lambda'' と呼ぶべきなのですが、Python の予約語
+なので使えません。) 返される値の範囲は 0 から正の無限大です。
+\end{funcdesc}
+
+\begin{funcdesc}{gammavariate}{alpha, beta}
+ガンマ分布です。 (ガンマ関数 \emph{ではありません} ！) 
+引数の満たすべき条件は  \code{\var{alpha} > 0} および \code{\var{beta} > 0}
+です。
+\end{funcdesc}
+
+\begin{funcdesc}{gauss}{mu, sigma}
+ガウス分布です。\var{mu} は平均であり、 \var{sigma} は
+標準偏差です。この関数は後で定義する関数 \function{normalvariate()} 
+より少しだけ高速です。
+\end{funcdesc}
+
+\begin{funcdesc}{lognormvariate}{mu, sigma}
+対数正規分布です。この分布を自然対数を用いた分布にした場合、
+平均 \var{mu} で標準偏差 \var{sigma} の正規分布になるでしょう。
+\var{mu} は任意の値を取ることができ、 \var{sigma} はゼロより
+大きくなければなりません。
+\end{funcdesc}
+
+\begin{funcdesc}{normalvariate}{mu, sigma}
+正規分布です、\var{mu} は平均で、\var{sigma} は標準偏差です。
+\end{funcdesc}
+
+\begin{funcdesc}{vonmisesvariate}{mu, kappa}
+\var{mu} は平均の角度で、0 から 2*\emph{pi} までのラジアンで
+表されます。\var{kappa} は濃度パラメタで、ゼロまたはそれ以上
+でなければなりません。\var{kappa} がゼロに等しい場合、
+この分布は範囲 0 から 2*\emph{pi} の一様でランダムな角度の
+分布に退化します。
+\end{funcdesc}
+
+\begin{funcdesc}{paretovariate}{alpha}
+パレート分布です。\var{alpha} は形状パラメタです。
+\end{funcdesc}
+
+\begin{funcdesc}{weibullvariate}{alpha, beta}
+ワイブル分布です。\var{alpha} はスケールパラメタで、
+\var{beta} は形状パラメタです。
+\end{funcdesc}
+
+代替の乱数生成器:
+
+\begin{classdesc}{WichmannHill}{\optional{seed}}
+乱数生成器として Wichmann-Hill アルゴリズムを実装するクラスです。
+\class{Random} クラスと同じメソッド全てと、下で説明する \method{whseed()}
+メソッドを持ちます。このクラスは、Python だけで実装されているので、スレ
+ッドセーフではなく、呼び出しと呼び出しの間にロックが必要です。また、周期
+が 6,953,607,871,644 と短く、独立した2つの乱数列が重複しないように注意が
+必要です。
+\end{classdesc}
+
+\begin{funcdesc}{whseed}{\optional{x}}
+これは obsolete で、バージョン 2.1 以前の Python と、ビット・レベルの互
+換性のために提供されてます。詳細は \function{seed()} を参照してください。
+\function{whseed()} は、引数に与えた整数が異なっても、内部状態が異なること
+を保障しません。取り得る内部状態の個数が 2**24 以下になる場合もあります。
+\end{funcdesc}
+
+\begin{classdesc}{SystemRandom}{\optional{seed}}
+オペレーティングシステムの提供する発生源によって乱数を生成する
+\function{os.urandom()}関数を使うクラスです。
+すべてのシステムで使えるメソッドではありません。
+ソフトウェアの状態に依存してはいけませんし、一連の操作は再現
+不能です。それに応じて、\method{seed()} と \method{jumpahead()}
+メソッドは何の影響も及ぼさず、無視されます。 \method{getstate()} と
+\method{setstate()} メソッドが呼び出されると、例外
+\exception{NotImplementedError}が送出されます。
+\versionadded{2.4}
+\end{classdesc}
+
+基本使用例:
+
+\begin{verbatim}
+>>> random.random()        # Random float x, 0.0 <= x < 1.0
+0.37444887175646646
+>>> random.uniform(1, 10)  # Random float x, 1.0 <= x < 10.0
+1.1800146073117523
+>>> random.randint(1, 10)  # Integer from 1 to 10, endpoints included
+7
+>>> random.randrange(0, 101, 2)  # Even integer from 0 to 100
+26
+>>> random.choice('abcdefghij')  # Choose a random element
+'c'
+
+>>> items = [1, 2, 3, 4, 5, 6, 7]
+>>> random.shuffle(items)
+>>> items
+[7, 3, 2, 5, 6, 4, 1]
+
+>>> random.sample([1, 2, 3, 4, 5],  3)  # Choose 3 elements
+[4, 1, 5]
+
+\end{verbatim}
+
+\begin{seealso}
+   \seetext{M. Matsumoto and T. Nishimura, ``Mersenne Twister: A
+           623-dimensionally equidistributed uniform pseudorandom
+           number generator'',
+           \citetitle{ACM Transactions on Modeling and Computer Simulation}
+           Vol. 8, No. 1, January pp.3-30 1998.}
+
+  \seetext{Wichmann, B. A. \& Hill, I. D., ``Algorithm AS 183:
+           An efficient and portable pseudo-random number generator'',
+           \citetitle{Applied Statistics} 31 (1982) 188-190.}
+
+  \seeurl{http://www.npl.co.uk/ssfm/download/abstracts.html\#196}{A modern
+          variation of the Wichmann-Hill generator that greatly increases
+          the period, and passes now-standard statistical tests that the
+          original generator failed.}
+\end{seealso}

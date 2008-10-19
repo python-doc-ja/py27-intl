@@ -1,0 +1,101 @@
+\section{\module{curses.panel} ---
+         curses のためのパネルスタック拡張}
+
+\declaremodule{standard}{curses.panel}
+\sectionauthor{A.M. Kuchling}{amk@amk.ca}
+\modulesynopsis{curses ウィンドウに深さの概念を追加するパネルスタック拡張。}
+
+パネルは深さ (depth) の機能が追加されたウィンドウです。これにより、
+ウィンドウをお互いに重ね合わせることができ、各ウィンドウの可視部分だけ
+が表示されます。パネルはスタック中に追加したり、スタック内で上下移動
+させたり、スタックから除去することができます。
+
+\subsection{関数 \label{cursespanel-functions}}
+
+\module{curses.panel} では以下の関数を定義しています:
+
+
+\begin{funcdesc}{bottom_panel}{}
+パネルスタックの最下層のパネルを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{new_panel}{win}
+与えられたウィンドウ \var{win} に関連付けられたパネルオブジェクトを
+返します。
+返されたパネルオブジェクトを参照しておく必要があることに注意
+してください。もし参照しなければ、パネルオブジェクトは
+ガベージコレクションされてパネルスタックから削除されます。
+\end{funcdesc}
+
+\begin{funcdesc}{top_panel}{}
+パネルスタックの最上層のパネルを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{update_panels}{}
+仮想スクリーンをパネルスタック変更後の状態に更新します。この関数では
+\function{curses.doupdate()} を呼ばないので、ユーザは自分で呼び出す
+必要があります。
+\end{funcdesc}
+
+\subsection{Panel オブジェクト \label{curses-panel-objects}}
+
+上記の \function{new_panel()} が返す Panel オブジェクトは
+スタック順の概念を持つウィンドウです。
+ウィンドウはパネルに関連付けられており、表示する内容を決定
+している一方、パネルのメソッドはパネルスタック中のウィンドウの深さ
+管理を担います。
+
+Panel オブジェクトは以下のメソッドを持っています:
+
+\begin{methoddesc}{above}{}
+現在のパネルの上にあるパネルを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{below}{}
+現在のパネルの下にあるパネルを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{bottom}{}
+パネルをスタックの最下層にプッシュします。
+\end{methoddesc}
+
+\begin{methoddesc}{hidden}{}
+パネルが隠れている (不可視である) 場合に真を返し、そうでない場合
+偽を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{hide}{}
+パネルを隠します。この操作ではオブジェクトは消去されず、
+スクリーン上のウィンドウを不可視にするだけです。
+\end{methoddesc}
+
+\begin{methoddesc}{move}{y, x}
+パネルをスクリーン座標 \code{(\var{y}, \var{x})} に移動します。
+\end{methoddesc}
+
+\begin{methoddesc}{replace}{win}
+パネルに関連付けられたウィンドウを \var{win} に変更します。
+\end{methoddesc}
+
+\begin{methoddesc}{set_userptr}{obj}
+パネルのユーザポインタを \var{obj} に設定します。このメソッドは
+任意のデータをパネルに関連付けるために使われ、任意の Python オブジェクト
+にすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{show}{}
+(隠れているはずの) パネルを表示します。
+\end{methoddesc}
+
+\begin{methoddesc}{top}{}
+パネルをスタックの最上層にプッシュします。
+\end{methoddesc}
+
+\begin{methoddesc}{userptr}{}
+パネルのユーザポインタを返します。任意の Python オブジェクトです。
+\end{methoddesc}
+
+\begin{methoddesc}{window}{}
+パネルに関連付けられているウィンドウオブジェクトを返します。
+\end{methoddesc}
+

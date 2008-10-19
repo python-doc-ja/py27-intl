@@ -1,0 +1,58 @@
+\section{\module{dbm} ---
+         UNIX dbmのシンプルなインタフェース}
+
+\declaremodule{builtin}{dbm}
+  \platform{Unix}
+\modulesynopsis{ndbmを基にした基本的なデータベースインタフェースです。}
+
+dbmモジュールは\UNIX{}(\code{n})\code{dbm}インタフェースの
+ライブラリを提供します。dbmオブジェクトは、キーと値が必ず文字列である以外は
+辞書オブジェクトのようなふるまいをします。
+print文などでdbmインスタンスを出力してもキーと値は出力されません。
+また、\method{items()}と\method{values()}メソッドはサポートされません。
+
+このモジュールは、BSD DB、GNU GDBM互換インタフェースを持った
+クラシックなndbmインタフェースを使うことができます。
+\UNIX{}上のビルド時に\program{configure}スクリプトで適切なヘッダファイルが
+割り当られます。
+
+以下はこのモジュールの定義:
+
+\begin{excdesc}{error}
+I/Oエラーのようなdbm特有のエラーが起ったときに上げられる値です。
+また、正しくないキーが与えられた場合に通常のマッピングエラーのような
+\exception{KeyError}が上げられます。
+\end{excdesc}
+
+\begin{datadesc}{library}
+\code{ndbm}が使用している実装ライブラリ名です。
+\end{datadesc}
+
+\begin{funcdesc}{open}{filename\optional{, flag\optional{, mode}}}
+dbmデータベースを開いてdbmオブジェクトを返します。
+引数\var{filename}はデータベースのファイル名を指定します。
+(拡張子\file{.dir}や\file{.pag}は付けません。
+また、BSD DBは拡張子\file{.db}がついたファイルが一つ作成されます。)
+
+オプション引数\var{flag}は次のような値を指定します:
+
+\begin{tableii}{c|l}{code}{Value}{Meaning}
+  \lineii{'r'}{存在するデータベースを読取り専用で開きます。(デフォルト)}
+  \lineii{'w'}{存在するデータベースを読み書き可能な状態で開きます。}
+  \lineii{'c'}{データベースを読み書き可能な状態で開きます。
+    また、データベースが存在しない場合は新たに作成します。}
+  \lineii{'n'}{Always create a new, empty database, open for reading
+               and writing}
+  \lineii{'n'}{常に空のデータベースが作成され、読み書き可能な状態で開きます。}
+\end{tableii}
+
+オプション引数\var{mode}はデータベース作成時に使用される
+\UNIX{}のファイルモードを指定します。デフォルトでは8進数の\code{0666}です
+\end{funcdesc}
+
+\begin{seealso}
+  \seemodule{anydbm}{\code{dbm}スタイルの一般的なインタフェース}
+  \seemodule{gdbm}{GNU GDBMライブラリの類似したインタフェース}
+  \seemodule{whichdb}{存在しているデータベースの形式を決めるための
+    ユーティリティモジュール}
+\end{seealso}

@@ -1,0 +1,261 @@
+\section{\module{shlex} ---
+         単純な字句解析}
+
+\declaremodule{standard}{shlex}
+\modulesynopsis{\UNIX\ シェル類似の言語に対する単純な字句解析。}
+\moduleauthor{Eric S. Raymond}{esr@snark.thyrsus.com}
+\moduleauthor{Gustavo Niemeyer}{niemeyer@conectiva.com}
+\sectionauthor{Eric S. Raymond}{esr@snark.thyrsus.com}
+\sectionauthor{Gustavo Niemeyer}{niemeyer@conectiva.com}
+
+\versionadded{1.5.2}
+
+\class{shlex} クラスは \UNIX{} シェルを思わせる単純な構文に
+対する字句解析器を簡単に書けるようにします。このクラスはしばしば、
+Python アプリケーションのための実行制御ファイルのような、
+小規模言語を書く上で便利です。
+
+\note{モジュール \module{shlex} は今のところユニコード入力をサポートし
+  ていません。}
+
+\subsection{モジュールの内容}
+
+\module{shlex} モジュールは以下の関数を定義します。
+
+\begin{funcdesc}{split}{s\optional{, comments}}
+シェル類似の文法を使って、文字列 \var{s} を分割します。\var{comments} が 
+\constant{False}(デフォルト値) の場合、受理した文字列内のコメントを解析しません 
+(\class{shlex} インスタンスの \member{commenters} メンバの値を空文字列に
+します)。 この関数は \POSIX{} モードで動作します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\module{shlex} モジュールは以下のクラスを定義します。
+
+\begin{classdesc}{shlex}{\optional{instream\optional{,
+			 infile\optional{, posix}}}}
+\class{shlex} クラスとサブクラスのインスタンスは、字句解析器オブジェクトです。
+初期化引数を与えると、どこから文字を読み込むかを指定できます。指定先は 
+\method{read()} メソッドと \method{readline()} メソッドを持つファイル/ス
+トリーム類似オブジェクトか、文字列でなくてはいけません（文字列が受理され
+るようになったのは Python 2.3 以降）。引数が与えられなければ、
+\code{sys.stdin} から入力を受け付けます。第 2 引数は、ファイル名を表す文
+字列で、 \member{infile} メンバの値の初期値を決定します。\var{instream} 
+引数が省略された場合や、この値が \code{sys.stdin} である場合、第2引数の
+デフォルト値は ``stdin'' になります。\var{posix} 引数は Python 2.3 で導
+入されました。これは動作モードを定義します。\var{posix} が真でない場合
+（デフォルト）、\class{shlex} インスタンスは互換モードで動作します。
+\POSIX{} モードで動作中、\class{shlex} は、できる限り \POSIX{} シェルの
+解析規則に似せようとします。\ref{shlex-objects}節を参照のこと。
+\end{classdesc}
+
+\begin{seealso}
+  \seemodule{ConfigParser}{Windows \file{.ini} ファイルに似た設定ファイルのパーザ。}
+\end{seealso}
+
+
+\subsection{shlex オブジェクト \label{shlex-objects}}
+
+\class{shlex} インスタンスは以下のメソッドを持っています:
+
+
+\begin{methoddesc}{get_token}{}
+トークンを一つ返します。トークンが \method{push_token()} で
+使ってスタックに積まれていた場合、トークンをスタックからポップ
+します。そうでない場合、トークンを一つ入力ストリームから読み出します。
+読み出し即時にファイル終了子に遭遇した場合、\member{self.eof} (非 \POSIX{} モードでは空文字列 (\code{''})、\POSIX{} モードでは \code{None}) が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}{push_token}{str}
+トークンスタックに引数文字列をスタックします。
+\end{methoddesc}
+
+\begin{methoddesc}{read_token}{}
+生 (raw) のトークンを読み出します。プッシュバックスタックを無視し、
+かつソースリクエストを解釈しません (通常これは便利なエントリポイント
+ではありません。完全性のためにここで記述されています)。
+\end{methoddesc}
+
+\begin{methoddesc}{sourcehook}{filename}
+\class{shlex} がソースリクエスト (下の \member{source} を参照して
+ください) を検出した際、このメソッドはその後に続くトークンを
+引数として渡され、ファイル名と開かれたファイル類似オブジェクトからなる
+タプルを返すとされています。
+
+通常、このメソッドはまず引数から何らかのクオートを剥ぎ取ります。
+処理後の引数が絶対パス名であった場合か、以前に有効になったソースリクエスト
+が存在しない場合か、以前のソースが (\code{sys.stdin} のような)
+ストリームであった場合、この結果はそのままにされます。そうでない
+場合で、処理後の引数が相対パス名の場合、ソースインクルードスタックに
+ある直前のファイル名からディレクトリ部分が取り出され、相対パスの
+前の部分に追加されます (この動作は C 言語プリプロセッサにおける
+\code{\#include "file.h"} の扱いと同様です) 。
+
+これらの操作の結果はファイル名として扱われ、タプルの最初の要素
+として返されます。同時にこのファイル名で \function{open()} を呼び出した
+結果が二つ目の要素になります (注意: インスタンス初期化のときとは
+引数の並びが逆になっています！)
+
+このフックはディレクトリサーチパスや、ファイル拡張子の追加、その他の
+名前空間に関するハックを実装できるようにするために公開されています。
+`close' フックに対応するものはありませんが、shlex インスタンスは
+ソースリクエストされている入力ストリームが \EOF{} を返した時には
+\method{close()} を呼び出します。
+
+ソーススタックをより明示的に操作するには、\method{push_source()} 
+および \method{pop_source()} メソッドを使ってください。
+\end{methoddesc}
+
+\begin{methoddesc}{push_source}{stream\optional{, filename}}
+入力ソースストリームを入力スタックにプッシュします。ファイル名
+引数が指定された場合、以後のエラーメッセージ中で利用することが
+できます。\method{sourcehook} メソッドが内部で使用しているのと
+同じメソッドです。
+\versionadded{2.1}
+\end{methoddesc}
+
+\begin{methoddesc}{pop_source}{}
+最後にプッシュされた入力ソースを入力スタックからポップします。
+字句解析器がスタック上の入力ストリームの \EOF{} に到達した際に
+利用するメソッドと同じです。
+\versionadded{2.1}
+\end{methoddesc}
+
+\begin{methoddesc}{error_leader}{\optional{file\optional{, line}}}
+このメソッドはエラーメッセージの論述部分を \UNIX{} C コンパイラ
+エラーラベルの形式で生成します; この書式は
+ \code{'"\%s", line \%d: '} で、\samp{\%s} は現在のソースファイル名
+で置き換えられ、\samp{\%d} は現在の入力行番号で置き換えられます
+(オプションの引数を使ってこれらを上書きすることもできます)。
+
+このやり方は、\module{shlex} のユーザに対して、Emacs やその他の
+\UNIX{} ツール群が解釈できる一般的な書式でのメッセージを生成する
+ことを推奨するために提供されています。
+\end{methoddesc}
+
+\class{shlex} サブクラスのインスタンスは、字句解析を制御したり、
+デバッグに使えるような public なインスタンス変数を持っています:
+
+\begin{memberdesc}{commenters}
+コメントの開始として認識される文字列です。コメントの開始から行末
+までのすべてのキャラクタ文字は無視されます。
+標準では単に \character{\#} が入っています。
+\end{memberdesc}
+
+\begin{memberdesc}{wordchars}
+複数文字からなるトークンを構成するためにバッファに蓄積していく
+ような文字からなる文字列です。標準では、全ての \ASCII{} 英数字
+およびアンダースコアが入っています。
+\end{memberdesc}
+
+\begin{memberdesc}{whitespace}
+空白と見なされ、読み飛ばされる文字群です。空白はトークンの境界を
+作ります。標準では、スペース、タブ、改行 (linefeed) および
+復帰 (carriage-return) が入っています。
+\end{memberdesc}
+
+\begin{memberdesc}{escape}
+エスケープ文字と見なされる文字群です。これは \POSIX{} モードでのみ使われ、デフォルトでは \character{\textbackslash} だけが入っています。
+ \versionadded{2.3}
+\end{memberdesc}
+
+\begin{memberdesc}{quotes}
+文字列引用符と見なされる文字群です。トークンを構成する際、
+同じクオートが再び出現するまで文字をバッファに蓄積します
+(すなわち、異なるクオート形式はシェル中で互いに保護し合う
+関係にあります)。標準では、\ASCII{} 単引用符および二重引用符
+が入っています。
+\end{memberdesc}
+
+\begin{memberdesc}{escapedquotes}
+\member{quotes} のうち、\member{escape} で定義されたエスケープ文字を解釈
+する文字群です。これは \POSIX{} モードでのみ使われ、デフォルトでは 
+\character{"} だけが入っています。
+\versionadded{2.3}
+\end{memberdesc}
+
+\begin{memberdesc}{whitespace_split}
+この値が \code{True} であれば、トークンは空白文字でのみで分割されます。たとえば \class{shlex} がシェル引数と同じ方法で、コマンドラインを解析するのに便利です。
+\versionadded{2.3}
+\end{memberdesc}
+
+\begin{memberdesc}{infile}
+現在の入力ファイル名です。クラスのインスタンス化時に初期設定
+されるか、その後のソースリクエストでスタックされます。
+エラーメッセージを構成する際にこの値を調べると便利なことがあります。
+\end{memberdesc}
+
+\begin{memberdesc}{instream}
+\class{shlex} インスタンスが文字を読み出している入力ストリームです。
+\end{memberdesc}
+
+\begin{memberdesc}{source}
+このメンバ変数は標準で \constant{None} を取ります。この値に文字列を
+代入すると、その文字列は多くのシェルにおける \samp{source} キーワード
+に似た、字句解析レベルでのインクルード要求として認識されます。すなわち、
+その直後に現れるトークンをファイル名として新たなストリームを開き、
+そのストリームを入力として、\EOF{} に到達するまで読み込まれます。
+新たなストリームの \EOF{} に到達した時点で \method{close()} が呼び出され、
+入力は元の入力ストリームに戻されます。ソースリクエストは任意のレベル
+の深さまでスタックしてかまいません。
+\end{memberdesc}
+
+\begin{memberdesc}{debug}
+このメンバ変数が数値で、かつ\code{1} またはそれ以上の値の場合、
+\class{shlex} インスタンスは動作に関する冗長な進捗報告を出力
+します。この出力を使いたいなら、モジュールのソースコードを読めば
+詳細を学ぶことができます。
+\end{memberdesc}
+
+\begin{memberdesc}{lineno}
+ソース行番号 (遭遇した改行の数に 1 を加えたもの) です。
+\end{memberdesc}
+
+\begin{memberdesc}{token}
+トークンバッファです。例外を捕捉した際にこの値を調べると便利なことが
+あります。
+\end{memberdesc}
+
+\begin{memberdesc}{eof}
+ファイルの終端を決定するのに使われるトークンです。非 \POSIX{} モードでは
+空文字列 (\code{''}) 、\POSIX{} モードでは \code{None} が入ります。
+\end{memberdesc}
+
+\subsection{解析規則\label{shlex-parsing-rules}}
+
+非 \POSIX{} モードで動作中の \class{shlex} は以下の規則に従おうとします。
+
+\begin{itemize}
+\item ワード内の引用符を認識しない (\code{Do"Not"Separate} は単一ワード 
+      \code{Do"Not"Separate} として解析されます)
+\item エスケープ文字を認識しない
+\item 引用符で囲まれた文字列は、引用符内の全ての文字リテラルを保持する
+\item 閉じ引用符でワードを区切る (\code{"Do"Separate} は、\code{"Do"} と
+      \code{Separate} であると解析されます)
+\item \member{whitespace_split} が \code{False} の場合、wordchar、
+      whitespace または quote として宣言されていない全ての文字を、単一の
+      文字トークンとして返す。\code{True} の場合、\class{shlex} は空白文
+      字でのみ単語を区切る。
+\item 空文字列 (\code{''}) で \EOF{} を送出する
+\item 引用符に囲んであっても、空文字列を解析しない
+\end{itemize}
+
+\POSIX{} モードで動作中の \class{shlex} は以下の解析規則に従おうとします。
+
+\begin{itemize}
+\item 引用符を取り除き、引用符で単語を分解しない 
+      (\code{"Do"Not"Separate"} は単一ワード  \code{DoNotSeparate} 
+      として解析されます)
+\item 引用符で囲まれないエスケープ文字群 (\character{\textbackslash} 
+      など)  は直後に続く文字のリテラル値を保持する
+\item \member{escapedquotes} でない引用符文字 (\character{'} など) で囲
+      まれている全ての文字のリテラル値を保持する
+\item 引用符に囲まれた \member{escapedquotes} に含まれる文字 
+      (\character{"} など) は、\member{escape} に含まれる文字を除き、
+      全ての文字のリテラル値を保持する。エスケープ文字群は使用中の引用符、
+      または、そのエスケープ文字自身が直後にある場合のみ、特殊な機能を保
+      持する。他の場合にはエスケープ文字は普通の文字とみなされる。
+\item \code{None} で \EOF{} を送出する
+\item 引用符に囲まれた空文字列 (\code{''}) を許す
+\end{itemize}
+

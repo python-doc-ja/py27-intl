@@ -1,0 +1,319 @@
+\chapter{Pythonデバッガ \label{debugger}}
+
+\declaremodule{standard}{pdb}
+\modulesynopsis{対話的インタプリタのためのPythonデバッガ。}
+
+
+モジュール\module{pdb}はPythonプログラム用の対話的ソースコードデバッガ\index{debugging}を定義します。(条件付き)ブレークポイントの設定やソース行レベルでのシングルステップ実行、スタックフレームのインスペクション、ソースコードリスティングおよびいかなるスタックフレームのコンテキストにおける任意のPythonコードの評価をサポートしています。事後解析デバッギングもサポートし、プログラムの制御下で呼び出すことができます。
+
+デバッガは拡張可能です --- 実際にはクラス\class{Pdb}\withsubitem{(class in pdb)}{\ttindex{Pdb}}として定義されています。現在これについてのドキュメントはありませんが、ソースを読めば簡単に理解できます。拡張インターフェースはモジュール\module{bdb}\refstmodindex{bdb}(ドキュメントなし)と\refmodule{cmd}\refstmodindex{cmd}を使っています。
+
+デバッガのプロンプトは\samp{(Pdb) }です。デバッガに制御された状態でプログラムを実行するための典型的な使い方は:
+
+\begin{verbatim}
+>>> import pdb
+>>> import mymodule
+>>> pdb.run('mymodule.test()')
+> <string>(0)?()
+(Pdb) continue
+> <string>(1)?()
+(Pdb) continue
+NameError: 'spam'
+> <string>(1)?()
+(Pdb) 
+\end{verbatim}
+
+他のスクリプトをデバッグするために、\file{pdb.py}をスクリプトとして呼び出すこともできますせます。例えば:
+
+\begin{verbatim}
+python -m pdb myscript.py
+\end{verbatim}
+
+スクリプトとして pdb を起動すると、デバッグ中のプログラムが異常終了した
+時に pdb が自動的に検死デバッグモードに入ります。検死デバッグ後
+(またはプログラムの正常終了後) には、pdb はプログラムを再起動します。
+自動再起動を行った場合、 pdb の状態 (ブレークポイントなど) は
+そのまま維持されるので、たいていの場合、プログラム終了時に
+デバッガも終了させるよりも便利なはずです。
+\versionadded[検死デバッグ後の再起動機能が追加されました]{2.4}
+
+クラッシュしたプログラムを調べるための典型的な使い方は:
+
+\begin{verbatim}
+>>> import pdb
+>>> import mymodule
+>>> mymodule.test()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in ?
+  File "./mymodule.py", line 4, in test
+    test2()
+  File "./mymodule.py", line 3, in test2
+    print spam
+NameError: spam
+>>> pdb.pm()
+> ./mymodule.py(3)test2()
+-> print spam
+(Pdb) 
+\end{verbatim}
+
+モジュールは以下の関数を定義しています。それぞれが少しづつ違った方法でデバッガに入ります:
+
+\begin{funcdesc}{run}{statement\optional{, globals\optional{, locals}}}
+デバッガに制御された状態で(文字列として与えられた)\var{statement}を実行します。デバッガプロンプトはあらゆるコードが実行される前に現れます。ブレークポイントを設定し、\samp{continue}とタイプできます。あるいは、文を\samp{step}や\samp{next}を使って一つづつ実行することができます(これらのコマンドはすべて下で説明します)。オプションの\var{globals}と\var{locals}引数はコードを実行する環境を指定します。デフォルトでは、モジュール\refmodule[main]{__main__}の辞書が使われます。(\keyword{exec}文または\function{eval()}組み込み関数の説明を参照してください。)
+\end{funcdesc}
+
+\begin{funcdesc}{runeval}{expression\optional{, globals\optional{, locals}}}
+デバッガの制御もとで(文字列として与えられる)\var{expression}を評価します。\function{runeval()}がリターンしたとき、式の値を返します。その他の点では、この関数は\function{run()}を同様です。
+\end{funcdesc}
+
+\begin{funcdesc}{runcall}{function\optional{, argument, ...}}
+\var{function}(関数またはメソッドオブジェクト、文字列ではありません)を与えられた引数とともに呼び出します。\function{runcall()}がリターンしたとき、関数呼び出しが返したものは何でも返します。デバッガプロンプトは関数に入るとすぐに現れます。
+\end{funcdesc}
+
+\begin{funcdesc}{set_trace}{}
+スタックフレームを呼び出したところでデバッガに入ります。たとえコードが別の方法でデバッグされている最中でなくても(例えば、アサーションが失敗するとき)、これはプログラムの所定の場所でブレークポイントをハードコードするために役に立ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{post_mortem}{traceback}
+与えられた\var{traceback}オブジェクトの事後解析デバッギングに入ります。
+\end{funcdesc}
+
+\begin{funcdesc}{pm}{}
+\code{sys.last_traceback}のトレースバックの事後解析デバッギングに入ります。
+\end{funcdesc}
+
+
+\section{デバッガコマンド \label{debugger-commands}}
+
+デバッガは以下のコマンドを認識します。ほとんどのコマンドは一文字または二文字に省略することができます。例えば、\samp{h(elp)}が意味するのは、ヘルプコマンドを入力するために\samp{h}か\samp{help}のどちらか一方を使うことができるということです(が、\samp{he}や\samp{hel}は使えず、また\samp{H}や\samp{Help}、\samp{HELP}も使えません)。コマンドの引数は空白(スペースまたはタブ)で区切られなければなりません。オプションの引数はコマンド構文の角括弧(\samp{[]})の中に入れなければなりません。角括弧をタイプしてはいけません。コマンド構文における選択肢は垂直バー(\samp{|})で区切られます。
+
+空行を入力すると入力された直前のコマンドを繰り返します。例外: 直前のコマンドが\samp{list}コマンドならば、次の11行がリストされます。
+
+デバッガが認識しないコマンドはPython文とみなして、デバッグしているプログラムのコンテキストおいて実行されます。Python文は感嘆符(\samp{!})を前に付けることもできます。これはデバッグ中のプログラムを調査する強力な方法です。変数を変更したり関数を呼び出したりすることさえ可能です。このような文で例外が発生した場合には例外名がプリントされますが、デバッガの状態は変化しません。
+
+複数のコマンドを\samp{;;}で区切って一行で入力することができます。(一つだけの\samp{;}は使われません。なぜなら、Pythonパーサへ渡される行内の複数のコマンドのための分離記号だからです。)コマンドを分割するために何も知的なことはしていません。たとえ引用文字列の途中であっても、入力は最初の\samp{;;}対で分割されます。
+
+デバッガはエイリアスをサポートします。エイリアスはパラメータを持つことができ、調査中のコンテキストに対して人がある程度柔軟に対応できます。
+
+ファイル\file{.pdbrc}\indexii{.pdbrc}{file}\indexiii{debugger}{configuration}{file}はユーザのホームディレクトリか、またはカレントディレクトリにあります。それはまるでデバッガのプロンプトでタイプしたかのように読み込まれて実行されます。これは特にエイリアスのために便利です。両方のファイルが存在する場合、ホームディレクトリのものが最初に読まれ、そこに定義されているエイリアスはローカルファイルにより上書きされることがあります。
+
+\begin{description}
+
+\item[h(elp) \optional{\var{command}}]
+
+引数なしでは、利用できるコマンドの一覧をプリントします。引数として\var{command}がある場合は、そのコマンドについてのヘルプをプリントします。\samp{help pdb}は完全ドキュメンテーションファイルを表示します。環境変数\envvar{PAGER}が定義されているならば、代わりにファイルはそのコマンドへパイプされます。\var{command}引数が識別子でなければならないので、\samp{!}コマンドについてのヘルプを得るためには\samp{help exec}と入力しなければならない。
+
+\item[w(here)]
+
+スタックの底にある最も新しいフレームと一緒にスタックトレースをプリントします。矢印はカレントフレームを指し、それがほとんどのコマンドのコンテキストを決定します。
+
+\item[d(own)]
+
+(より新しいフレームに向かって)スタックトレース内でカレントフレームを一レベル下げます。
+
+\item[u(p)]
+
+(より古いフレームに向かって)スタックトレース内でカレントフレームを一レベル上げます。
+
+\item[b(reak) \optional{\optional{\var{filename}:}\var{lineno}\code{\Large{|}}\var{function}\optional{, \var{condition}}}]
+
+\var{lineno}引数がある場合は、現在のファイルのその場所にブレークポイントを設定します。\var{function}引数がある場合は、その関数の中の最初の実行可能文にブレークポイントを設定します。別のファイル(まだロードされていないかもしれないもの)のブレークポイントを指定するために、行番号はファイル名とコロンをともに先頭に付けられます。
+ファイルは\code{sys.path}にそって検索されます。各ブレークポイントは番号を割り当てられ、その番号を他のすべてのブレークポイントコマンドが参照することに注意してください。
+
+第二引数を指定する場合、その値は式で、その評価値が真でなければ
+ブレークポイントは有効になりません。
+
+引数なしの場合は、それぞれのブレークポイントに対して、そのブレークポイントに行き当たった回数、現在の通過カウント(ignore count)と、もしあれば関連条件を含めてすべてのブレークポイントをリストします。
+
+\item[tbreak \optional{\optional{\var{filename}:}\var{lineno}\code{\Large{|}}\var{function}\optional{, \var{condition}}}]
+
+一時的なブレークポイントで、最初にそこに達したときに自動的に取り除かれます。引数はbreakと同じです。
+
+\item[cl(ear) \optional{\var{bpnumber} \optional{\var{bpnumber ...}}}]
+
+スペースで区切られたブレークポイントナンバーのリストを与えると、それらのブレークポイントを解除します。引数なしの場合は、すべてのブレークポイントを解除します(が、はじめに確認します)。
+
+\item[disable \optional{\var{bpnumber} \optional{\var{bpnumber ...}}}]
+
+スペースで区切られたブレークポイントナンバーのリストとして与えられるブレークポイントを無効にします。ブレークポイントを無効にすると、プログラムの実行を止めることができなくなりますが、ブレークポイントの解除と違いブレークポイントのリストに残ったままになり、(再び)有効にすることができます。
+
+\item[enable \optional{\var{bpnumber} \optional{\var{bpnumber ...}}}]
+
+指定したブレークポイントを有効にします。
+
+\item[ignore \var{bpnumber} \optional{\var{count}}]
+
+与えられたブレークポイントナンバーに通過カウントを設定します。countが省略されると、通過カウントは0に設定されます。通過カウントがゼロになったとき、ブレークポイントが機能する状態になります。ゼロでないときは、そのブレークポイントが無効にされず、どんな関連条件も真に評価されていて、ブレークポイントに来るたびにcountが減らされます。
+
+\item[condition \var{bpnumber} \optional{\var{condition}}]
+
+  conditionはブレークポイントが取り上げられる前に真と評価されなければ
+  ならない式です。conditionがない場合は、どんな既存の条件も取り除かれま
+  す。すなわち、ブレークポイントは無条件になります。
+
+\item[commands \optional{\var{bpnumber}}]
+
+ブレークポイントナンバー \var{bpnumber} にコマンドのリストを指定します。
+コマンドそのものはその後の行に続けます。'end' だけからなる行を入力することで
+コマンド群の終わりを示します。例を挙げます:
+
+\begin{verbatim}
+(Pdb) commands 1
+(com) print some_variable
+(com) end
+(Pdb)
+\end{verbatim}
+
+ブレークポイントからコマンドを取り除くには、commands のあとに end
+だけを続けます。つまり、コマンドを一つも指定しないようにします。
+
+\var{bpnumber} 引数が指定されない場合、最後にセットされたブレークポイント
+を参照することになります。
+
+ブレークポイントコマンドはプログラムを走らせ直すのに使えます。
+ただ continue コマンドや step、その他実行を再開するコマンドを使えば良いのです。
+
+実行を再開するコマンド(現在のところ continue, step, next, return, jump, quit
+とそれらの省略形)によって、コマンドリストは終了するものと見なされます(コマンドに
+すぐ end が続いているかのように)。というのも実行を再開すれば(それが単純な
+next や step であっても)別のブレークポイントに到達するかもしれないからです。
+そのブレークポイントにさらにコマンドリストがあれば、どちらのリストを実行すべきか
+状況が曖昧になります。
+
+コマンドリストの中で 'silent' コマンドを使うと、ブレークポイントで停止
+したという通常のメッセージはプリントされません。この振る舞いは特定のメッ
+セージを出して実行を続けるようなブレークポイントでは望ましいものでしょ
+う。他のコマンドが何も画面出力をしなければ、そのブレークポイントに到達
+したというサインを見ないことになります。
+
+\versionadded{2.5}
+
+\item[s(tep)]
+
+現在の行を実行し、最初に実行可能なものがあらわれたときに(呼び出された関数の」中か、現在の関数の次の行で)停止します.
+
+\item[n(ext)]
+
+現在の関数の次の行に達するか、あるいは関数が返るまで実行を継続します。(\samp{next}と\samp{step}の差は\samp{step}が呼び出された関数の内部で停止するのに対し、\samp{next}は呼び出された関数を(ほぼ)全速力で実行し、現在の関数内の次の行で停止するだけです。
+
+\item[r(eturn)]
+
+現在の関数が返るまで実行を継続します。
+
+\item[c(ont(inue))]
+
+ブレークポイントに出会うまで、実行を継続します。
+
+\item[j(ump) \var{lineno}]
+
+次に実行する行を指定します。最も底のフレーム中でのみ実行可能です。
+前に戻って実行したり、不要な部分をスキップして先の処理を実行する
+場合に使用します。
+
+ジャンプには制限があり、例えば \keyword{for}ループの中には飛び込めませんし、
+\keyword{finally}節の外にも飛ぶ事ができません。
+
+\item[l(ist) \optional{\var{first}\optional{, \var{last}}}]
+
+現在のファイルのソースコードをリスト表示します。引数なしの場合は、現在の行の周囲を11行リストするか、または前のリストの続きを表示します。引数が一つある場合は、その行の周囲を11行表示します。引数が二つの場合は、与えられた範囲をリスト表示します。第二引数が第一引数より小さいときは、カウントと解釈されます。
+
+\item[a(rgs)]
+
+現在の関数の引数リストをプリントします。
+
+\item[p \var{expression}]
+
+現在のコンテキストにおいて\var{expression}を評価し、その値をプリントします。(注意: \samp{print}も使うことができますが、デバッガコマンドではありません --- これはPythonの\keyword{print}文を実行します。)
+
+\item[pp \var{expression}]
+
+\module{pprint}モジュールを使って例外の値が整形されることを除いて\samp{p}コマンドと同様です。
+
+\item[alias \optional{\var{name} \optional{command}}]
+
+\var{name}という名前の\var{command}を実行するエイリアスを作成します。コマンドは引用符で囲まれていては\emph{いけません}。入れ替え可能なパラメータは\samp{\%1}、\samp{\%2}などで指し示され、さらに\samp{\%*}は全パラメータに置き換えられます。コマンドが与えられなければ、\var{name}に対する現在のエイリアスを表示します。引数が与えられなければ、すべてのエイリアスがリストされます。
+
+エイリアスは入れ子になってもよく、pdbプロンプトで合法的にタイプできるどんなものでも含めることができます。内部pdbコマンドをエイリアスによって上書きすることが\emph{できます}。そのとき、このようなコマンドはエイリアスが取り除かれるまで隠されます。エイリアス化はコマンド行の最初の語へ再帰的に適用されます。行の他のすべての語はそのままです。
+
+例として、二つの便利なエイリアスがあります(特に\file{.pdbrc}ファイルに置かれたときに):
+
+\begin{verbatim}
+#Print instance variables (usage "pi classInst")
+alias pi for k in %1.__dict__.keys(): print "%1.",k,"=",%1.__dict__[k]
+#Print instance variables in self
+alias ps pi self
+\end{verbatim}
+		
+\item[unalias \var{name}]
+
+指定したエイリアスを削除します。
+
+\item[\optional{!}\var{statement}]
+
+現在のスタックフレームのコンテキストにおいて(一行の)\var{statement}を実行します。文の最初の語がデバッガコマンドと共通でない場合は、感嘆符を省略することができます。グローバル変数を設定するために、同じ行に\samp{global}コマンドとともに代入コマンドの前に付けることができます。
+
+\begin{verbatim}
+(Pdb) global list_options; list_options = ['-l']
+(Pdb)
+\end{verbatim}
+
+\item[q(uit)]
+
+デバッガを終了します。実行しているプログラムは中断されます。
+
+\end{description}
+
+\section{どのように動作しているか \label{debugger-hooks}}
+
+いくつかの変更がインタプリタへ加えられました:
+
+\begin{itemize}
+\item \code{sys.settrace(\var{func})}がグローバルトレース関数を設定します
+\item そこで、ローカルトレース関数を使うこともできます(後ろを参照)
+\end{itemize}
+
+トレース関数は三つの引数、 \var{frame}、\var{event}および\var{arg}
+を持ちます。
+\var{frame}は現在のスタックフレームです。
+\var{event}は文字列で、\code{'call'}、\code{'line'}、\code{'return'}、
+\code{'exception'}、\code{'c_call'}、\code{'c_return'}
+または\code{'c_exception'}です。
+\var{arg}はイベント型に依存します。
+
+新しいローカルスコープに入ったときはいつでも、グローバルトレース関数が(\code{'call'}に設定された\var{event}とともに)呼び出されます。そのスコープで用いられるローカルトレース関数への参照を返すか、またはスコープがトレースされるべきでないならば\code{None}を返します。
+
+ローカルトレース関数はそれ自身への(あるいは、さらにそのスコープ内でさらにトレースを行うための他の関数への)参照を返します。または、そのスコープにおけるトレースを停止させるために\code{None}を返します。
+
+トレース関数としてインスタンスメソッドが受け入れられます(また、とても便利です)。
+
+イベントは以下のような意味を持ちます:
+
+\begin{description}
+
+\item[\code{'call'}]
+関数が呼び出されます(または、他のコードブロックに入ります)。グローバルトレース関数が呼び出されます。\var{arg}は\code{None}です。戻り値はローカルトレース関数を指定します。
+
+\item[\code{'line'}]
+インタプリタがコードの新しい行を実行しようとしているところです(ときどき、一行に複数行イベントが存在します)。ローカルトレース関数が呼び出されます。\var{arg}は\code{None}です。戻り値は新しいローカルトレース関数を指定します。
+
+\item[\code{'return'}]
+関数(または、コードブロック)が返ろうとしているところです。ローカルトレース関数が呼び出されます。\var{arg}は返るであろう値です。トレース関数の戻り値は無視されます。
+
+\item[\code{'exception'}]
+例外が生じています。ローカルトレース関数が呼び出されます。\var{arg}は三要素の\code{(\var{exception}, \var{value}, \var{traceback})}です。戻り値は新しいローカルトレース関数を指定します。
+
+\item[\code{'c_call'}]
+拡張モジュールまたは組み込みの C 関数が呼び出されようとしています。
+\var{arg} は C 関数オブジェクトです。
+
+\item[\code{'c_return'}]
+C 関数が処理を戻しました。\var{arg} は\code{None} です。
+
+\item[\code{'c_exception'}]
+C 関数が例外を送出しました。\var{arg} は\code{None} です。
+
+\end{description}
+
+例外が一連の呼び出し元を伝えられて行くときに、\code{'exception'}イベントは各レベルで生成されることことに注意してください。
+
+コードとフレームオブジェクトについてさらに情報を得るには、\citetitle[../ref/ref.html]{Python Reference Manual}を参照してください。

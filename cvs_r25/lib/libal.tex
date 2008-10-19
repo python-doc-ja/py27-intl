@@ -1,0 +1,281 @@
+\section{\module{al} ---
+%         Audio functions on the SGI}
+SGIのオーディオ機能}
+\declaremodule{builtin}{al}
+  \platform{IRIX}
+\modulesynopsis{SGIのオーディオ機能。}
+%Audio functions on the SGI.}
+
+
+%This module provides access to the audio facilities of the SGI Indy
+%and Indigo workstations.  
+このモジュールを使うと、SGI IndyとIndigoワークステーションのオーディオ装
+置にアクセスできます。
+%See section 3A of the IRIX man pages for
+%details.  
+詳しくはIRIXのmanページのセクション3Aを参照してください。
+%You'll need to read those man pages to understand what these
+%functions do!  
+ここに書かれた関数が何をするかを理解するには、manページを読む必要が
+あります！
+%Some of the functions are not available in IRIX
+%releases before 4.0.5.  
+IRIXのリリース4.0.5より前のものでは使えない関数もあります。
+%Again, see the manual to check whether a
+%specific function is available on your platform.
+お使いのプラットフォームで特定の関数が使えるかどうか、マニュアルで確認し
+てください。
+
+%All functions and methods defined in this module are equivalent to
+%the C functions with \samp{AL} prefixed to their name.
+このモジュールで定義された関数とメソッドは全て、名前に\samp{AL}の接頭辞
+を付けたCの関数と同義です。
+
+%Symbolic constants from the C header file \code{<audio.h>} are
+%defined in the standard module
+%\refmodule[al-constants]{AL}\refstmodindex{AL}, see below.
+Cのヘッダーファイル\code{<audio.h>}のシンボル定数は標準モジュール
+\refmodule[al-constants]{AL}\refstmodindex{AL}に定義されています。
+下記を参照してください。
+
+\warning{
+%The current version of the audio library may dump core
+%when bad argument values are passed rather than returning an error
+%status.  
+オーディオライブラリの現在のバージョンは、不正な引数が渡されるとエラース
+テイタスが返るのではなく、coreを吐き出すことがあります。
+%Unfortunately, since the precise circumstances under which
+%this may happen are undocumented and hard to check, the Python
+%interface can provide no protection against this kind of problems.
+残念ながら、この現象が確実に起こる環境は述べられていないし、確認する
+ことは難しいので、Pythonインターフェースでこの種の問題に対して防御する
+ことはできません。
+%(One example is specifying an excessive queue size --- there is no
+%documented upper limit.)}
+（一つの例は過大なキューサイズを特定することです --- 上限については記載
+されていません。）}
+
+%The module defines the following functions:
+このモジュールには、以下の関数が定義されています：
+
+
+\begin{funcdesc}{openport}{name, direction\optional{, config}}
+%The name and direction arguments are strings.  
+引数\var{name}と\var{direction}は文字列です。
+%The optional
+%\var{config} argument is a configuration object as returned by
+%\function{newconfig()}.  
+省略可能な引数\var{config}は、\function{newconfig()}で返されるコンフィ
+ギュレーションオブジェクトです。
+%The return value is an \dfn{audio port
+%object}; methods of audio port objects are described below.
+返り値は\dfn{audio port object}です；オーディオポートオブジェクトの
+メソッドは下に書かれています。
+\end{funcdesc}
+
+\begin{funcdesc}{newconfig}{}
+%The return value is a new \dfn{audio configuration object}; methods of
+%audio configuration objects are described below.
+返り値は新しい\dfn{audio configuration object}です；オーディオコンフィ
+ギュレーションオブジェクトのメソッドは下に書かれています。
+\end{funcdesc}
+
+\begin{funcdesc}{queryparams}{device}
+%The device argument is an integer.  
+引数\var{device}は整数です。
+%The return value is a list of
+%integers containing the data returned by \cfunction{ALqueryparams()}.
+返り値は\cfunction{ALqueryparams()}で返されるデータを含む整数のリストで
+す。
+\end{funcdesc}
+
+\begin{funcdesc}{getparams}{device, list}
+%The \var{device} argument is an integer.  
+引数\var{device}は整数です。
+%The list argument is a list
+%such as returned by \function{queryparams()}; it is modified in place
+%(!).
+引数\var{list}は\function{queryparams()}で返されるようなリストです；
+\function{queryparams()}を適切に（！）修正して使うことができます。
+\end{funcdesc}
+
+\begin{funcdesc}{setparams}{device, list}
+%The \var{device} argument is an integer.  
+引数\var{device}は整数です。
+%The \var{list} argument is a
+%list such as returned by \function{queryparams()}.
+引数\var{list}は\function{queryparams()}で返されるようなリストです。
+\end{funcdesc}
+
+
+\subsection{
+%Configuration Objects 
+コンフィギュレーションオブジェクト
+\label{al-config-objects}}
+
+%Configuration objects (returned by \function{newconfig()} have the
+%following methods:
+\function{newconfig()}で返されるコンフィギュレーションオブジェクト
+には以下のメソッドがあります：
+
+\begin{methoddesc}[audio configuration]{getqueuesize}{}
+%Return the queue size.
+キューサイズを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{setqueuesize}{size}
+%Set the queue size.
+キューサイズを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{getwidth}{}
+%Get the sample width.
+サンプルサイズを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{setwidth}{width}
+%Set the sample width.
+サンプルサイズを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{getchannels}{}
+%Get the channel count.
+チャンネル数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{setchannels}{nchannels}
+%Set the channel count.
+チャンネル数を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{getsampfmt}{}
+%Get the sample format.
+サンプルのフォーマットを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{setsampfmt}{sampfmt}
+%Set the sample format.
+サンプルのフォーマットを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{getfloatmax}{}
+%Get the maximum value for floating sample formats.
+浮動小数点数でサンプルデータの最大値を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio configuration]{setfloatmax}{floatmax}
+%Set the maximum value for floating sample formats.
+浮動小数点数でサンプルデータの最大値を設定します。
+\end{methoddesc}
+
+
+\subsection{
+%Port Objects 
+ポートオブジェクト
+\label{al-port-objects}}
+
+%Port objects, as returned by \function{openport()}, have the following
+%methods:
+\function{openport()}で返されるポートオブジェクトには以下のメソッドがあ
+ります：
+
+\begin{methoddesc}[audio port]{closeport}{}
+%Close the port.
+ポートを閉じます。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getfd}{}
+%Return the file descriptor as an int.
+ファイルディスクリプタを整数で返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getfilled}{}
+%Return the number of filled samples.
+バッファに存在するサンプルの数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getfillable}{}
+%Return the number of fillable samples.
+バッファの空きに入れることのできるサンプルの数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{readsamps}{nsamples}
+%Read a number of samples from the queue, blocking if necessary.
+必要ならブロックして、キューから指定のサンプル数を読み込みます。
+%Return the data as a string containing the raw data, (e.g., 2 bytes per
+%sample in big-endian byte order (high byte, low byte) if you have set
+%the sample width to 2 bytes).
+生データを文字列として
+（例えば、サンプルサイズが2バイトならサンプル当たり2バイトがbig-endian
+（high byte、low byte）で）返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{writesamps}{samples}
+%Write samples into the queue, blocking if necessary.  
+必要ならブロックして、キューにサンプルを書き込みます。
+%The samples are
+%encoded as described for the \method{readsamps()} return value.
+サンプルは\method{readsamps()}で返される値のようにエンコードされていなけ
+ればなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getfillpoint}{}
+%Return the `fill point'.
+`fill point'を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{setfillpoint}{fillpoint}
+%Set the `fill point'.
+`fill point'を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getconfig}{}
+%Return a configuration object containing the current configuration of
+%the port.
+現在のポートのコンフィギュレーションを含んだコンフィギュレーションオブ
+ジェクトを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{setconfig}{config}
+%Set the configuration from the argument, a configuration object.
+コンフィギュレーションを引数に取り、そのコンフィギュレーションに設定しま
+す。
+\end{methoddesc}
+
+\begin{methoddesc}[audio port]{getstatus}{list}
+%Get status information on last error.
+最後のエラーについてのステイタスの情報を返します。
+\end{methoddesc}
+
+
+\section{\module{AL} ---
+%         Constants used with the \module{al} module}
+\module{al}モジュールで使われる定数}
+
+\declaremodule[al-constants]{standard}{AL}
+  \platform{IRIX}
+\modulesynopsis{\module{al}モジュールで使われる定数。}
+%Constants used with the \module{al} module.}
+
+
+%This module defines symbolic constants needed to use the built-in
+%module \refmodule{al} (see above); 
+このモジュールには、組み込みモジュール\refmodule{al}（上記参照）を使用す
+るのに必要とされるシンボリック定数が定義されています。
+%they are equivalent to those defined
+%in the C header file \code{<audio.h>} except that the name prefix
+%\samp{AL_} is omitted.  
+定数の名前はCのincludeファイル\code{<audioio.h>}で
+接頭辞\samp{AL_}を除いたものと同じです。
+
+%Read the module source for a complete list of
+%the defined names.  
+定義されている名前の完全なリストについてはモジュールのソースを参照してく
+ださい。
+%Suggested use:
+お勧めの使い方は以下の通りです：
+
+\begin{verbatim}
+import al
+from AL import *
+\end{verbatim}

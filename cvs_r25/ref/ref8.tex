@@ -1,0 +1,114 @@
+\chapter{トップレベル要素\label{top-level}}
+
+Python インタプリタは、標準入力や、プログラムの引数として与えられた
+スクリプト、対話的にタイプ入力された命令、モジュールのソースファイルな
+ど、様々な入力源から入力を得ることができます。この章では、それぞれの場
+合に用いられる構文法について説明しています。
+
+\index{interpreter}
+
+
+\section{完全な Python プログラム\label{programs}}
+\index{program}
+
+言語仕様の中では、その言語を処理するインタプリタがどのように起動される
+かまで規定する必要はないのですが、完全な Python プログラムについての概
+念を持っておくと役に立ちます。完全な Python プログラムは、最小限に初期
+化された環境: 全ての組み込み変数と標準モジュールが利用可能で、かつ
+\module{sys} (様々なシステムサービス)、\module{__builtin__} (組み込み
+関数、例外、および \code{None})、\module{__main__} の 3 つを除く全ての
+モジュールが初期化されていない状態で動作します。\module{__main__} は、
+完全なプログラムを実行する際に、ローカルおよびグローバルな名前空間を提
+供するために用いられます。
+\refbimodindex{sys}
+\refbimodindex{__main__}
+\refbimodindex{__builtin__}
+
+完全な Python プログラムの構文は、下の節で述べるファイル入力の
+ためのものです。
+
+インタプリタは、対話的モード (interactive mode) で起動されることもあり
+ます; この場合、インタプリタは完全なプログラムを読んで実行するのではな
+く、一度に単一の実行文 (複合文のときもあります) を読み込んで実行します。
+初期状態の環境は、完全なプログラムを実行するときの環境と同じです; 各実
+行文は、\module{__main__} の名前空間内で実行されます。
+\index{interactive mode}
+\refbimodindex{__main__}
+
+\UNIX の環境下では、完全なプログラムをインタプリタに渡すには三通りの
+方法があります: 第一は、 \programopt{-c} \var{string} コマンドラインオ
+プションを使う方法、第二はファイルを第一コマンドライン引数として指定す
+る方法、そして最後は標準入力から入力する方法です。ファイルや標準入力が
+tty (端末) デバイスの場合、インタプリタは対話モードに入ります; そうで
+ない場合、ファイルを完全なプログラムとして実行します。
+\index{UNIX}
+\index{command line}
+\index{standard input}
+
+
+\section{ファイル入力\label{file-input}}
+
+非対話的なファイルから読み出された入力は、全て同じ形式:
+
+\begin{productionlist}
+  \production{file_input}
+             {(NEWLINE | \token{statement})*}
+\end{productionlist}
+
+をとります。この構文法は、以下の状況で用いられます:
+
+\begin{itemize}
+
+\item (ファイルや文字列内の) 完全な Python プログラムを構文解析するとき;
+
+\item モジュールを構文解析するとき;
+
+\item \keyword{exec} で渡された文字列を構文解析するとき;
+
+\end{itemize}
+
+
+\section{対話的入力\label{interactive}}
+
+対話モードでの入力は、以下の文法の下に構文解析されます:
+
+\begin{productionlist}
+  \production{interactive_input}
+             {[\token{stmt_list}] NEWLINE | \token{compound_stmt} NEWLINE}
+\end{productionlist}
+
+対話モードでは、(トップレベルの) 複合文の最後に空白行を入れなくてはな
+らないことに注意してください; これは、複合文の終端をパーザが検出するた
+めの手がかりとして必要です。
+
+\section{式入力 \label{expression-input}}
+\index{input}
+
+
+式入力には二つの形式があります。双方とも、先頭の空白を無視します。
+\function{eval()} に対する文字列引数は、以下の形式をとらなければ
+なりません:
+\bifuncindex{eval}
+
+\begin{productionlist}
+  \production{eval_input}
+             {\token{expression_list} NEWLINE*}
+\end{productionlist}
+
+\function{input()} で読み込まれる入力行は、以下の形式をとらなければ
+なりません:
+\bifuncindex{input}
+
+\begin{productionlist}
+  \production{input_input}
+             {\token{expression_list} NEWLINE}
+\end{productionlist}
+
+注意: 文としての解釈を行わない `生の (raw)' 入力行を読み出すためには、
+組み込み関数 \function{raw_input()} や、ファイルオブジェクトの
+\method{readline()} メソッドを使うことができます。
+\obindex{file}
+\index{input!raw}
+\index{raw input}
+\bifuncindex{raw_input}
+\withsubitem{(file method)}{\ttindex{readline()}}

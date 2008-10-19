@@ -1,0 +1,29 @@
+\chapter{構造化マークアップツール
+         \label{markup}}
+
+Python は様々な構造化データマークアップ形式を扱うための、様々な
+モジュールをサポートしています。これらは
+標準化一般マークアップ言語 (SGML) およびハイパーテキストマークアップ
+言語 (HTML)、そして可拡張性マークアップ言語 (XML) を扱うための
+いくつかのインタフェースからなります。
+
+注意すべき重要な点として、\module{xml} パッケージは少なくとも一つの
+SAX に対応した XML パーザが利用可能でなければなりません。
+Python 2.3 からは Expat パーザが Python に取り込まれているので、
+\refmodule{xml.parsers.expat} モジュールは常に利用できます。
+また、\ulink{PyXML 追加パッケージ}{http://pyxml.sourceforge.net/}
+についても知りたいと思うかもしれません; このパッケージは
+Python 用の拡張された XML ライブラリセットを提供します。
+
+\module{xml.dom} および \module{xml.sax} パッケージのドキュメントは
+Python による DOM および SAX インタフェースへのバインディングに
+関する定義です。
+
+\localmoduletable
+
+\begin{seealso}
+  \seetitle[http://pyxml.sourceforge.net/]
+           {Python/XML ライブラリ}
+           {Python にバンドルされてくる \module{xml} パッケージへの
+拡張である PyXML パッケージのホームページです。}
+\end{seealso}

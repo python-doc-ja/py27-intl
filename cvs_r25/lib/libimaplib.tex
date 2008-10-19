@@ -1,0 +1,513 @@
+\section{\module{imaplib} ---
+         IMAP4 プロトコルクライアント}
+
+\declaremodule{standard}{imaplib}
+\modulesynopsis{IMAP4 protocol client (requires sockets).}
+\moduleauthor{Piers Lauder}{piers@communitysolutions.com.au}
+\sectionauthor{Piers Lauder}{piers@communitysolutions.com.au}
+
+% % Based on HTML documentation by Piers Lauder <piers@communitysolutions.com.au>;
+% converted by Fred L. Drake, Jr. <fdrake@acm.org>.
+% Revised by ESR, January 2000.
+% Changes for IMAP4_SSL by Tino Lange <Tino.Lange@isg.de>, March 2002 
+% Changes for IMAP4_stream by Piers Lauder <piers@communitysolutions.com.au>, November 2002
+
+\indexii{IMAP4}{protocol}
+\indexii{IMAP4_SSL}{protocol}
+\indexii{IMAP4_stream}{protocol}
+
+このモジュールでは三つのクラス、\class{IMAP4}, \class{IMAP4_SSL} と \class{IMAP4_stream}
+を定義します。これらのクラスは IMAP4 サーバへの接続をカプセル化し、
+\rfc{2060} に定義されている IMAP4rev1 クライアントプロトコルの大規模な
+サブセットを実装しています。このクラスは IMAP4 (\rfc{1730}) 準拠の
+サーバと後方互換性がありますが、\samp{STATUS} コマンドは IMAP4 では
+サポートされていないので注意してください。
+
+\module{imaplib} モジュール内では三つのクラスを提供しており、
+\class{IMAP4} は基底クラスとなります:
+
+\begin{classdesc}{IMAP4}{\optional{host\optional{, port}}}
+このクラスは実際の IMAP4 プロトコルを実装しています。
+インスタンスが初期化された際に接続が生成され、プロトコルバージョン
+(IMAP4 または IMAP4rev1) が決定されます。\var{host} が指定されて
+いない場合、 \code{''} (ローカルホスト) が用いられます。
+\var{port} が省略された場合、標準の IMAP4 ポート番号 (143) 
+が用いられます。
+\end{classdesc}
+
+例外は \class{IMAP4} クラスの属性として定義されています:
+
+\begin{excdesc}{IMAP4.error}
+何らかのエラー発生の際に送出される例外です。例外の理由は
+文字列としてコンストラクタに渡されます。
+\end{excdesc}
+
+\begin{excdesc}{IMAP4.abort}
+IMAP4 サーバのエラーが生じると、この例外が送出されます。
+この例外は \exception{IMAP4.error} のサブクラスです。
+通常、インスタンスを閉じ、新たなインスタンスを再び生成することで、
+この例外から復旧できます。
+\end{excdesc}
+
+\begin{excdesc}{IMAP4.readonly}
+この例外は書き込み可能なメイルボックスの状態がサーバによって変更された
+際に送出されます。
+この例外は \exception{IMAP4.error} のサブクラスです。
+他の何らかのクライアントが現在書き込み権限を獲得しており、
+メイルボックスを開きなおして書き込み権限を再獲得する必要があります。
+\end{excdesc}
+
+このモジュールではもう一つ、安全 (secure) な接続を使ったサブクラスが
+あります:
+
+\begin{classdesc}{IMAP4_SSL}{\optional{host\optional{, port\optional{, keyfile\optional{, certfile}}}}}
+\class{IMAP4} から導出されたサブクラスで、SSL 暗号化ソケットを
+介して接続を行います (このクラスを利用するためには SSL サポート付きで
+コンパイルされた socket モジュールが必要です) 。
+\var{host} が指定されて
+いない場合、 \code{''} (ローカルホスト) が用いられます。
+\var{port} が省略された場合、標準の IMAP4-over-SSL ポート番号 (993) 
+が用いられます。
+\var{keyfile} および \var{certfile} もオプションです - これらは
+SSL 接続のための PEM 形式の秘密鍵 (private key) と認証チェイン 
+(certificate chain) ファイルです。
+\end{classdesc}
+
+さらにもう一つのサブクラスは、子プロセスで確立した接続を使用する
+場合に使用します。
+\begin{classdesc}{IMAP4_stream}{command}
+\class{IMAP4} から導出されたサブクラスで、\var{command}を
+\code{os.popen2()}に渡して作成される \code{stdin/stdout}
+ディスクリプタと接続します。
+\versionadded{2.3}
+\end{classdesc}
+
+
+以下のユーティリティ関数が定義されています:
+
+\begin{funcdesc}{Internaldate2tuple}{datestr}
+IMAP4 INTERNALDATE 文字列を標準世界時 (Coordinated Universal Time)
+に変換します。\refmodule{time} モジュール形式のタプルを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{Int2AP}{num}
+整数を [\code{A} .. \code{P}] からなる文字集合を用いて表現した
+文字列に変換します。
+\end{funcdesc}
+
+\begin{funcdesc}{ParseFlags}{flagstr}
+IMAP4 \samp{FLAGS} 応答を個々のフラグからなるタプルに変換します。
+\end{funcdesc}
+
+\begin{funcdesc}{Time2Internaldate}{date_time}
+\refmodule{time} モジュールタプルを IMAP4 \samp{INTERNALDATE}
+表現形式に変換します。文字列形式: 
+\code{"DD-Mmm-YYYY HH:MM:SS +HHMM"} (二重引用符含む) を返します。
+\end{funcdesc}
+
+
+IMAP4 メッセージ番号は、メイルボックスに対する変更が行われた
+後には変化します; 特に、 \samp{EXPUNGE} 命令はメッセージの削除を
+行いますが、残ったメッセージには再度番号を振りなおします。従って、
+メッセージ番号ではなく、 UID 命令を使い、その UID を利用するよう
+強く勧めます。
+
+モジュールの末尾に、より拡張的な使用例が収められたテストセクションが
+あります。
+
+\begin{seealso}
+  \seetext{プロトコルに関する記述、およびプロトコルを実装したサーバの
+ソースとバイナリは、全て ワシントン大学の \emph{IMAP Information Center}
+(\url{http://www.cac.washington.edu/imap/}) にあります。}
+\end{seealso}
+
+
+\subsection{IMAP4 オブジェクト \label{imap4-objects}}
+
+全ての IMAP4rev1 命令は、同じ名前のメソッドで表されており、大文字の
+ものも小文字のものもあります。
+
+命令に対する引数は全て文字列に変換されます。例外は \samp{AUTHENTICATE}
+の引数と \samp{APPEND} の最後の引数で、これは IMAP4 リテラルとして
+渡されます。必要に応じて (IMAP4 プロトコルが感知対象としている
+文字が文字列に入っており、かつ丸括弧か二重引用符で囲われていなかった
+場合) 文字列はクオートされます。しかし、\samp{LOGIN} 命令の 
+\var{password} 引数は常にクオートされます。文字列がクオートされない
+ようにしたい (例えば \samp{STORE} 命令の \var{flags} 引数) 場合、
+文字列を丸括弧で囲んでください (例: \code{r'(\e Deleted)'})。
+
+各命令はタプル: \code{(\var{type}, [\var{data}, ...])} を返し、
+\var{type} は通常 \code{'OK'} または \code{'NO'} です。
+\var{data} は命令に対する応答をテキストにしたものか、命令に対する
+実行結果です。各 \var{data} は文字列かタプルとなります。タプルの場合、
+最初の要素はレスポンスのヘッダで、次の要素にはデータが格納されます。
+(ie: 'literal' value)
+
+以下のコマンドにおける \var{message_set} オプションは、操作の対象とな
+るひとつあるいは複数のメッセージを指す文字列です。単一のメッセージ番号
+(\code{'1'}) かメッセージ番号の範囲 (\code{'2:4'})、あるいは連続してい
+ないメッセージをカンマでつなげたもの (\code{'1:3,6:9'}) となります。範
+囲指定でアスタリスクを使用すると、上限を無限とすることができます
+(\code{'3:*'})。
+
+\class{IMAP4} のインスタンスは以下のメソッドを持っています:
+
+
+\begin{methoddesc}{append}{mailbox, flags, date_time, message}
+指定された名前のメイルボックスに \var{message} を追加します。
+\end{methoddesc}
+
+\begin{methoddesc}{authenticate}{mechanism, authobject}
+認証命令です --- 応答の処理が必要です。
+
+\var{mechanism}は利用する認証メカニズムを与えます。
+認証メカニズムはインスタンス変数\code{capabilities} の中に
+\code{AUTH=mechanism}という形式で現れる必要があります。
+
+\var{authobject}は呼び出し可能なオブジェクトである必要があります。
+
+\begin{verbatim}
+data = authobject(response)
+\end{verbatim}
+
+これはサーバで継続応答を処理するためによばれます。
+これは(おそらく)暗号化されて、サーバへ送られた \code{data} を返します。
+もしクライアントが中断応答 \samp{*} を送信した場合にはこれは \code{None} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{check}{}
+サーバ上のメイルボックスにチェックポイントを設定します。
+  Checkpoint mailbox on server. 
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+現在選択されているメイルボックスを閉じます。削除されたメッセージは
+書き込み可能メイルボックスから除去されます。\samp{LOGOUT} 前に
+実行することを勧めます。
+\end{methoddesc}
+
+\begin{methoddesc}{copy}{message_set, new_mailbox}
+\var{message_set} で指定したメッセージ群を \var{new_mailbox} の
+末尾にコピーします。
+\end{methoddesc}
+
+\begin{methoddesc}{create}{mailbox}
+\var{mailbox} と名づけられた新たなメイルボックスを生成します。
+\end{methoddesc}
+
+\begin{methoddesc}{delete}{mailbox}
+\var{mailbox} と名づけられた古いメイルボックスを削除します。
+\end{methoddesc}
+
+\begin{methoddesc}{deleteacl}{mailbox, who}
+  mailbox における who についてのACLを削除(権限を削除)します。
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}{expunge}{}
+選択されたメイルボックスから削除された要素を永久に除去します。
+各々の削除されたメッセージに対して、\samp{EXPUNGE} 応答を
+生成します。返されるデータには \samp{EXPUNGE} メッセージ番号を
+受信した順番に並べたリストが入っています。
+\end{methoddesc}
+
+\begin{methoddesc}{fetch}{message_set, message_parts}
+メッセージ (の一部) を取りよせます。\var{message_parts}
+はメッセージパートの名前を表す文字列を丸括弧で囲ったもので、
+例えば: \samp{"(UID BODY[TEXT])"} のようになります。
+返されるデータはメッセージパートのエンベロープ情報とデータ
+からなるタプルです。
+\end{methoddesc}
+
+\begin{methoddesc}{getacl}{mailbox}
+\var{mailbox} に対する \samp{ACL} を取得します。
+このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
+\end{methoddesc}
+
+\begin{methoddesc}{getannotation}{mailbox, entry, attribute}
+\var{mailbox} に対する \samp{ANNOTATION} を取得します。
+このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{getquota}{root}
+\samp{quota} \var{root} により、リソース使用状況と制限値を取得します。
+このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}{getquotaroot}{mailbox}
+\var{mailbox} に対して \samp{quota} \var{root} を実行した結果のリストを
+取得します。
+このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}{list}{\optional{directory\optional{, pattern}}}
+\var{pattern} にマッチする \var{directory}メイルボックス名を列挙します。
+\var{directory} の標準の設定値は最上レベルのメイルフォルダで、
+\var{pattern} は標準の設定では全てにマッチします。返されるデータには
+\samp{LIST} 応答のリストが入っています。
+\end{methoddesc}
+
+\begin{methoddesc}{login}{user, password}
+平文パスワードを使ってクライアントを照合します。
+\var{password} はクオートされます。
+\end{methoddesc}
+
+\begin{methoddesc}{login_cram_md5}{user, password}
+  パスワードの保護のため、クライアント認証時に\samp{CRAM-MD5}だけを使用します。
+  これは、\samp{CAPABILITY}レスポンスに \samp{AUTH=CRAM-MD5} が含まれる場合のみ
+  有効です。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}{logout}{}
+サーバへの接続を遮断します。サーバからの \samp{BYE} 応答を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{lsub}{\optional{directory\optional{, pattern}}}
+購読しているメイルボックス名のうち、ディレクトリ内でパターンにマッチ
+するものを列挙します。
+\var{directory} の標準の設定値は最上レベルのメイルフォルダで、
+\var{pattern} は標準の設定では全てにマッチします。返されるデータには
+返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
+\end{methoddesc}
+
+\begin{methoddesc}{myrights}{mailbox}
+  mailboxにおける自分のACLを返します。(すなわち自分がmailboxで持って
+  いる権限を返します。)
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}{namespace}{}
+  RFC2342で定義されるIMAP名前空間を返します。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}{noop}{}
+サーバに \samp{NOOP} を送信します。
+\end{methoddesc}
+
+\begin{methoddesc}{open}{host, port}
+\var{host} 上の \var{port} に対するソケットを開きます。
+このメソッドで確立された接続オブジェクトは \code{read}、
+\code{readline}、\code{send}、および\code{shutdown} メソッドで
+使われます。このメソッドはオーバライドすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{partial}{message_num, message_part, start, length}
+メッセージの後略された部分を取り寄せます。
+返されるデータはメッセージパートエンベロープ情報とデータからなるタプルです。
+\end{methoddesc}
+
+\begin{methoddesc}{proxyauth}{user}
+  \var{user}として認証されたものとします。
+  認証された管理者がユーザの代理としてメイルボックスにアクセス
+  する際に使用します。
+\versionadded{2.3}
+\end{methoddesc}
+ 
+\begin{methoddesc}{read}{size}
+遠隔のサーバから \var{size} バイト読み出します。
+このメソッドはオーバライドすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{readline}{}
+遠隔のサーバから一行読み出します。
+このメソッドはオーバライドすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{recent}{}
+サーバに更新を促します。新たなメッセージがない場合応答は \code{None}
+になり、そうでない場合 \samp{RECENT} 応答の値になります。
+\end{methoddesc}
+
+\begin{methoddesc}{rename}{oldmailbox, newmailbox}
+\var{oldmailbox} という名前のメイルボックスを \var{newmailbox}
+に名称変更します。
+\end{methoddesc}
+
+\begin{methoddesc}{response}{code}
+応答 \var{code} を受信していれば、そのデータを返し、そうでなければ
+\code{None} を返します。通常の形式 (usual type) ではなく指定したコード
+を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{search}{charset, criterion\optional{, ...}}
+条件に合致するメッセージをメイルボックスから検索します。
+\var{charset} は \code{None} でもよく、この場合にはサーバ
+への要求内に \samp{CHARSET} は指定されません。IMAP プロトコルは
+少なくとも一つの条件 (criterion) が指定されるよう要求しています;
+サーバがエラーを返した場合、例外が送出されます。
+
+例:
+
+\begin{verbatim}
+# M is a connected IMAP4 instance...
+typ, msgnums = M.search(None, 'FROM', '"LDJ"')
+
+# or:
+typ, msgnums = M.search(None, '(FROM "LDJ")')
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}{select}{\optional{mailbox\optional{, readonly}}}
+メイルボックスを選択します。返されるデータは \var{mailbox} 内の
+メッセージ数 (\samp{EXISTS} 応答) です。標準の設定では
+\var{mailbox} は \code{'INBOX'} です。\var{readonly} が設定された
+場合、メイルボックスに対する変更はできません。
+\end{methoddesc}
+
+\begin{methoddesc}{send}{data}
+遠隔のサーバに \code{data} を送信します。
+このメソッドはオーバライドすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{setacl}{mailbox, who, what}
+\samp{ACL} を \var{mailbox} に設定します。
+このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
+\end{methoddesc}
+
+\begin{methoddesc}{setannotation}{mailbox, entry, attribute\optional{, ...}}
+\samp{ANNOTATION} を \var{mailbox} に設定します。
+このメソッドは非標準ですが、 \samp{Cyrus} サーバでサポートされています。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{setquota}{root, limits}
+\samp{quota} \var{root} のリソースを \var{limits} に設定します。
+このメソッドは \rfc{2087} で定義されている IMAP4 QUOTA 拡張の一部です。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}{shutdown}{}
+\code{open} で確立された接続を閉じます。
+このメソッドはオーバライドすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}{socket}{}
+サーバへの接続に使われているソケットインスタンスを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{sort}{sort_criteria, charset, search_criterion\optional{, ...}}
+\code{sort} 命令は \code{search} に結果の並べ替え (sort) 機能をつけた
+変種です。返されるデータには、条件に合致するメッセージ番号をスペースで
+分割したリストが入っています。
+sort 命令は \var{search_criterium} の前に二つの引数を持ちます; 
+\var{sort_criteria} のリストを丸括弧で囲ったものと、検索時の
+\var{charset} です。
+\code{search} と違って、検索時の \var{charset} は必須です。
+\code{uid sort} 命令もあり、\code{search} に対する \code{uid search}
+と同じように \code{sort} 命令に対応します。
+\code{sort} 命令はまず、charset 引数の指定に従って searching criteria 
+の文字列を解釈し、メイルボックスから与えられた検索条件に合致する
+メッセージを探します。次に、合致したメッセージの数を返します。
+
+\samp{IMAP4rev1} 拡張命令です。
+\end{methoddesc}
+
+\begin{methoddesc}{status}{mailbox, names}
+\var{mailbox} の指定ステータス名の状態情報を要求します。
+\end{methoddesc}
+
+\begin{methoddesc}{store}{message_set, command, flag_list}
+メイルボックス内のメッセージ群のフラグ設定を変更します。
+\var{command} は \rfc{2060} のセクション 6.4.6 で指定されているもので、
+"FLAGS", "+FLAGS", あるいは "-FLAGS" のいずれかとなります。オプション
+で末尾に ".SILENT" がつくこともあります。
+
+たとえば、すべてのメッセージに削除フラグを設定するには次のようにします。
+
+\begin{verbatim}
+typ, data = M.search(None, 'ALL')
+for num in data[0].split():
+   M.store(num, '+FLAGS', '\\Deleted')
+M.expunge()
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}{subscribe}{mailbox}
+新たなメイルボックスを購読 (subscribe) します。
+\end{methoddesc}
+
+\begin{methoddesc}{thread}{threading_algorithm, charset,
+                           search_criterion\optional{, ...}}
+  \code{thread}コマンドは\code{search}にスレッドの概念を加えた変形版で
+  ス。返されるデータは空白で区切られたスレッドメンバのリストを含んでい
+  ます。
+
+  各スレッドメンバは0以上のメッセージ番号からなり、空白で区切られ
+  て  おり、親子関係を示しています。
+
+  \code{thread}コマンドは\var{search_criterion}引数の前に2つの引数を持っています。
+  \var{threading_algorithm}と\var{charset}です。
+  \code{search}コマンドとは違い、\var{charset}は必須です。
+  \code{search}に対する \code{uid search}と同様に、 \code{thread}にも
+  \code{uid thread}があります。
+
+  \code{thread}コマンドはまずメールボックス中のメッセージを、charsetを
+  用いた検索条件で検索します。その後マッチしたメッセージを指定された
+  スレッドアルゴリズムでスレッド化して返します.
+
+  これは \samp{IMAP4rev1} の拡張コマンドです。
+  \versionadded{2.4}
+\end{methoddesc}
+
+
+\begin{methoddesc}{uid}{command, arg\optional{, ...}}
+command args を、メッセージ番号ではなく UID で指定されたメッセージ群に
+対して実行します。命令内容に応じた応答を返します。少なくとも
+一つの引数を与えなくてはなりません; 何も与えない場合、サーバは
+エラーを返し、例外が送出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{unsubscribe}{mailbox}
+古いメイルボックスの購読を解除 (unsubscribe) します。
+\end{methoddesc}
+
+\begin{methoddesc}{xatom}{name\optional{, arg\optional{, ...}}}
+サーバから \samp{CAPABILITY} 応答で通知された単純な拡張命令を
+許容 (allow) します。
+\end{methoddesc}
+
+
+\class{IMAP4_SSL} のインスタンスは追加のメソッドを一つだけ持ちます:
+
+\begin{methoddesc}{ssl}{}
+サーバへの安全な接続に使われる SSLObject インスタンスを返します。
+\end{methoddesc}
+
+
+以下の属性が \class{IMAP4} のインスタンス上で定義されています:
+
+
+\begin{memberdesc}{PROTOCOL_VERSION}
+サーバから返された \samp{CAPABILITY} 応答にある、サポートされている
+最新のプロトコルです。
+\end{memberdesc}
+
+\begin{memberdesc}{debug}
+デバッグ出力を制御するための整数値です。初期値はモジュール変数
+\code{Debug} から取られます。3 以上の値にすると各命令をトレースします。
+\end{memberdesc}
+
+
+\subsection{IMAP4 の使用例 \label{imap4-example}}
+
+以下にメイルボックスを開き、全てのメッセージを取得して印刷する
+最小の (エラーチェックをしない) 使用例を示します:
+
+\begin{verbatim}
+import getpass, imaplib
+
+M = imaplib.IMAP4()
+M.login(getpass.getuser(), getpass.getpass())
+M.select()
+typ, data = M.search(None, 'ALL')
+for num in data[0].split():
+    typ, data = M.fetch(num, '(RFC822)')
+    print 'Message %s\n%s\n' % (num, data[0][1])
+M.close()
+M.logout()
+\end{verbatim}

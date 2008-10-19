@@ -1,0 +1,563 @@
+\declaremodule{standard}{email.message}
+\modulesynopsis{電子メールのメッセージを表現する基底クラス}
+
+\class{Message} クラスは、 \module{email} パッケージの中心となるクラスです。
+これは \module{email} オブジェクトモデルの基底クラスになっています。
+\class{Message} はヘッダフィールドを検索したりメッセージ本体にアクセスするための
+核となる機能を提供します。
+
+概念的には、(\module{email.message}モジュールからインポートされる)
+\class{Message} オブジェクトには \emph{ヘッダ} と \emph{ペイロード} が
+格納されています。ヘッダは、\rfc{2822} 形式のフィールド名およびフィールド値が
+コロンで区切られたものです。コロンはフィールド名またはフィールド値の
+どちらにも含まれません。
+
+ヘッダは大文字小文字を区別した形式で保存されますが、ヘッダ名が一致するかどうかの検査は
+大文字小文字を区別せずにおこなうことができます。\emph{Unix-From} ヘッダまたは
+\code{From_} ヘッダとして知られるエンベロープヘッダがひとつ存在することもあります。
+ペイロードは、単純なメッセージオブジェクトの場合は単なる文字列ですが、
+MIME コンテナ文書 (\mimetype{multipart/*} または
+\mimetype{message/rfc822} など) の場合は \class{Message} オブジェクトの
+リストになっています。
+
+\class{Message} オブジェクトは、メッセージヘッダにアクセスするための
+マップ (辞書) 形式のインタフェイスと、ヘッダおよびペイロードの両方に
+アクセスするための明示的なインタフェイスを提供します。
+これにはメッセージオブジェクトツリーからフラットなテキスト文書を
+生成したり、一般的に使われるヘッダのパラメータにアクセスしたり、また
+オブジェクトツリーを再帰的にたどったりするための便利なメソッドを含みます。
+
+\class{Message} クラスのメソッドは以下のとおりです:
+
+\begin{classdesc}{Message}{}
+コンストラクタは引数をとりません。
+\end{classdesc}
+
+\begin{methoddesc}[Message]{as_string}{\optional{unixfrom}}
+メッセージ全体をフラットな文字列として返します。
+オプション \var{unixfrom} が \code{True} の場合、返される文字列には
+エンベロープヘッダも含まれます。\var{unixfrom} のデフォルトは \code{False} です。
+
+このメソッドは手軽に利用する事ができますが、必ずしも期待通りにメッセージを
+フォーマットするとは限りません。たとえば、これはデフォルトでは \code{From } で
+始まる行を変更してしまいます。以下の例のように  \class{Generator} 
+のインスタンスを生成して \method{flatten()} メソッドを直接呼び出せば
+より柔軟な処理を行う事ができます。
+
+\begin{verbatim}
+from cStringIO import StringIO
+from email.generator import Generator
+fp = StringIO()
+g = Generator(fp, mangle_from_=False, maxheaderlen=60)
+g.flatten(msg)
+text = fp.getvalue()
+\end{verbatim}
+
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{__str__}{}
+\method{as_string(unixfrom=True)} と同じです。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{is_multipart}{}
+メッセージのペイロードが子 \class{Message} オブジェクトからなる
+リストであれば \code{True} を返し、そうでなければ \code{False} を返します。
+\method{is_multipart()} が False を返した場合は、ペイロードは
+文字列オブジェクトである必要があります。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_unixfrom}{unixfrom}
+メッセージのエンベロープヘッダを \var{unixfrom} に設定します。これは文字列である必要があります。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_unixfrom}{}
+メッセージのエンベロープヘッダを返します。
+エンベロープヘッダが設定されていない場合は None が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{attach}{payload}
+与えられた \var{payload} を現在のペイロードに追加します。
+この時点でのペイロードは \code{None} か、あるいは \class{Message} オブジェクトの
+リストである必要があります。このメソッドの実行後、ペイロードは必ず
+\class{Message} オブジェクトのリストになります。ペイロードに
+スカラーオブジェクト (文字列など) を格納したい場合は、かわりに
+\method{set_payload()} を使ってください。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_payload}{\optional{i\optional{, decode}}}
+現在のペイロードへの参照を返します。これは \method{is_multipart()} が \code{True}
+の場合 \class{Message} オブジェクトのリストになり、\method{is_multipart()} が
+\code{False} の場合は文字列になります。ペイロードがリストの場合、
+リストを変更することはそのメッセージのペイロードを変更することになります。
+
+オプション引数の \var{i} がある場合、
+\method{is_multipart()} が \code{True} ならば \method{get_payload()} は
+ペイロード中で 0 から数えて \var{i} 番目の要素を返します。\var{i} が
+0 より小さい場合、あるいはペイロードの個数以上の場合は
+\exception{IndexError} が発生します。ペイロードが文字列
+(つまり \method{is_multipart()} が \code{False}) にもかかわらず
+\var{i} が与えられたときは \exception{TypeError} が発生します。
+
+オプションの \var{decode} はそのペイロードが
+\mailheader{Content-Transfer-Encoding} ヘッダに従って
+デコードされるべきかどうかを指示するフラグです。
+この値が \code{True} でメッセージが multipart ではない場合、
+ペイロードはこのヘッダの値が \samp{quoted-printable} または
+\samp{base64} のときにかぎりデコードされます。これ以外のエンコーディングが
+使われている場合、\mailheader{Content-Transfer-Encoding} ヘッダが
+ない場合、あるいは曖昧なbase64データが含まれる場合は、ペイロードはそのまま 
+(デコードされずに) 返されます。
+もしメッセージが multipart で \var{decode} フラグが \code{True} の場合は
+\code{None} が返されます。\var{decode} のデフォルト値は \code{False} です。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_payload}{payload\optional{, charset}}
+メッセージ全体のオブジェクトのペイロードを \var{payload} に設定します。
+ペイロードの形式をととのえるのは呼び出し側の責任です。
+オプションの \var{charset} はメッセージのデフォルト文字セットを設定します。
+詳しくは \method{set_charset()} を参照してください。
+
+\versionchanged[\var{charset} 引数の追加]{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_charset}{charset}
+ペイロードの文字セットを \var{charset} に変更します。
+ここには \class{Charset}インスタンス (\refmodule{email.charset} 参照)、
+文字セット名をあらわす文字列、あるいは \code{None} のいずれかが指定できます。
+文字列を指定した場合、これは \class{Charset} インスタンスに変換されます。
+\var{charset} が \code{None} の場合、\code{charset} パラメータは
+\mailheader{Content-Type} ヘッダから除去されます。
+これ以外のものを文字セットとして指定した場合、
+\exception{TypeError} が発生します。
+
+ここでいうメッセージとは、\var{charset.input_charset} でエンコードされた
+\mimetype{text/*} 形式のものを仮定しています。これは、もし必要とあらば
+プレーンテキスト形式を変換するさいに \var{charset.output_charset} の
+エンコードに変換されます。MIME ヘッダ (\mailheader{MIME-Version}, 
+\mailheader{Content-Type}, \mailheader{Content-Transfer-Encoding})
+は必要に応じて追加されます。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_charset}{}
+そのメッセージ中のペイロードの \class{Charset} インスタンスを
+返します。
+\versionadded{2.2.2}
+\end{methoddesc}
+
+以下のメソッドは、メッセージの \rfc{2822} ヘッダにアクセスするための
+マップ (辞書) 形式のインタフェイスを実装したものです。
+これらのメソッドと、通常のマップ (辞書) 型はまったく同じ意味をもつわけでは
+ないことに注意してください。たとえば辞書型では、同じキーが複数あることは
+許されていませんが、ここでは同じメッセージヘッダが複数ある場合があります。
+また、辞書型では \method{keys()} で返されるキーの順序は保証されていませんが、
+\class{Message} オブジェクト内のヘッダはつねに元のメッセージ中に
+現れた順序、あるいはそのあとに追加された順序で返されます。削除され、その後
+ふたたび追加されたヘッダはリストの一番最後に現れます。
+
+こういった意味のちがいは意図的なもので、最大の利便性をもつようにつくられています。
+
+注意: どんな場合も、メッセージ中のエンベロープヘッダは
+このマップ形式のインタフェイスには含まれません。
+
+\begin{methoddesc}[Message]{__len__}{}
+複製されたものもふくめてヘッダ数の合計を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{__contains__}{name}
+メッセージオブジェクトが \var{name} という名前のフィールドを持っていれば true を返します。
+この検査では名前の大文字小文字は区別されません。\var{name} は最後にコロンをふくんでいてはいけません。
+このメソッドは以下のように \code{in} 演算子で使われます:
+
+\begin{verbatim}
+if 'message-id' in myMessage:
+    print 'Message-ID:', myMessage['message-id']
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{__getitem__}{name}
+指定された名前のヘッダフィールドの値を返します。
+\var{name} は最後にコロンをふくんでいてはいけません。
+そのヘッダがない場合は \code{None} が返され、\exception{KeyError} 例外は発生しません。
+
+注意: 指定された名前のフィールドがメッセージのヘッダに 2回以上現れている場合、
+どちらの値が返されるかは未定義です。ヘッダに存在するフィールドの値をすべて
+取り出したい場合は \method{get_all()} メソッドを使ってください。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{__setitem__}{name, val}
+
+メッセージヘッダに \var{name} という名前の \var{val} という値をもつ
+フィールドをあらたに追加します。このフィールドは現在メッセージに
+存在するフィールドのいちばん後に追加されます。
+
+注意: このメソッドでは、すでに同一の名前で存在するフィールドは
+上書き\emph{されません}。もしメッセージが名前 \var{name} をもつ
+フィールドをひとつしか持たないようにしたければ、最初にそれを除去してください。
+たとえば:
+
+\begin{verbatim}
+del msg['subject']
+msg['subject'] = 'PythonPythonPython!'
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{__delitem__}{name}
+メッセージのヘッダから、 \var{name} という名前をもつ
+フィールドをすべて除去します。たとえこの名前をもつヘッダが
+存在していなくても例外は発生しません。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{has_key}{name}
+メッセージが \var{name} という名前をもつ
+ヘッダフィールドを持っていれば真を、そうでなければ偽を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{keys}{}
+メッセージ中にあるすべてのヘッダのフィールド名のリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{values}{}
+メッセージ中にあるすべてのフィールドの値のリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{items}{}
+メッセージ中にあるすべてのヘッダのフィールド名とその値を
+2-タプルのリストとして返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get}{name\optional{, failobj}}
+指定された名前をもつフィールドの値を返します。
+これは指定された名前がないときにオプション引数の \var{failobj} 
+(デフォルトでは \code{None}) を返すことをのぞけば、\method{__getitem__()} と同じです。
+\end{methoddesc}
+
+役に立つメソッドをいくつか紹介します:
+
+\begin{methoddesc}[Message]{get_all}{name\optional{, failobj}}
+\var{name} の名前をもつフィールドのすべての値からなるリストを返します。
+該当する名前のヘッダがメッセージ中に含まれていない場合は \var{failobj} 
+(デフォルトでは \code{None}) が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{add_header}{_name, _value, **_params}
+拡張ヘッダ設定。このメソッドは \method{__setitem__()} と似ていますが、
+追加のヘッダ・パラメータをキーワード引数で指定できるところが違っています。
+\var{_name} に追加するヘッダフィールドを、\var{_value} にそのヘッダの
+\emph{最初の}値を渡します。
+
+キーワード引数辞書 \var{_params} の各項目ごとに、
+そのキーがパラメータ名として扱われ、キー名にふくまれる
+アンダースコアはハイフンに置換されます (なぜならハイフンは
+通常の Python 識別子としては使えないからです)。ふつう、
+パラメータの値が \code{None} 以外のときは、\code{key="value"} の
+形で追加されます。パラメータの値が \code{None} のときはキーのみが追加されます。
+
+例を示しましょう:
+
+\begin{verbatim}
+msg.add_header('Content-Disposition', 'attachment', filename='bud.gif')
+\end{verbatim}
+
+こうするとヘッダには以下のように追加されます。
+
+\begin{verbatim}
+Content-Disposition: attachment; filename="bud.gif"
+\end{verbatim}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{replace_header}{_name, _value}
+ヘッダの置換。\var{_name} と一致するヘッダで最初に見つかったものを置き換えます。
+このときヘッダの順序とフィールド名の大文字小文字は保存されます。
+一致するヘッダがない場合、 \exception{KeyError} が発生します。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_content_type}{}
+そのメッセージの content-type を返します。
+返された文字列は強制的に小文字で \mimetype{maintype/subtype} の形式に変換されます。
+メッセージ中に \mailheader{Content-Type} ヘッダがない場合、デフォルトの
+content-type は \method{get_default_type()} が返す値によって与えられます。
+\rfc{2045} によればメッセージはつねにデフォルトの content-type を
+もっているので、\method{get_content_type()} はつねになんらかの値を返すはずです。
+
+\rfc{2045} はメッセージのデフォルト content-type を、
+それが \mimetype{multipart/digest} コンテナに現れているとき以外は
+\mimetype{text/plain} に規定しています。あるメッセージが
+\mimetype{multipart/digest} コンテナ中にある場合、その
+content-type は \mimetype{message/rfc822} になります。
+もし \mailheader{Content-Type} ヘッダが適切でない content-type 書式だった場合、
+\rfc{2045} はそれのデフォルトを \mimetype{text/plain} として扱うよう
+定めています。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_content_maintype}{}
+そのメッセージの主 content-type を返します。
+これは \method{get_content_type()} によって
+返される文字列の \mimetype{maintype} 部分です。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_content_subtype}{}
+そのメッセージの副 content-type (sub content-type、subtype) を返します。
+これは \method{get_content_type()} によって
+返される文字列の \mimetype{subtype} 部分です。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_default_type}{}
+デフォルトの content-type を返します。
+ほどんどのメッセージではデフォルトの content-type は
+\mimetype{text/plain} ですが、メッセージが \mimetype{multipart/digest} コンテナに
+含まれているときだけ例外的に \mimetype{message/rfc822} になります。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_default_type}{ctype}
+デフォルトの content-type を設定します。
+\var{ctype} は \mimetype{text/plain} あるいは \mimetype{message/rfc822}
+である必要がありますが、強制ではありません。
+デフォルトの content-type はヘッダの \mailheader{Content-Type} には
+格納されません。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_params}{\optional{failobj\optional{,
+    header\optional{, unquote}}}}
+メッセージの \mailheader{Content-Type} パラメータをリストとして返します。
+返されるリストは キー/値の組からなる 2要素タプルが連なったものであり、
+これらは \character{=} 記号で分離されています。\character{=} の左側は
+キーになり、右側は値になります。パラメータ中に \character{=} がなかった場合、
+値の部分は空文字列になり、そうでなければその値は \method{get_param()} で
+説明されている形式になります。また、オプション引数 \var{unquote} が
+\code{True} (デフォルト) である場合、この値は unquote されます。
+
+オプション引数 \var{failobj} は、\mailheader{Content-Type} ヘッダが
+存在しなかった場合に返すオブジェクトです。オプション引数 \var{header} には
+\mailheader{Content-Type} のかわりに検索すべきヘッダを指定します。
+
+\versionchanged[\var{unquote} が追加されました]{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_param}{param\optional{,
+    failobj\optional{, header\optional{, unquote}}}}
+メッセージの \mailheader{Content-Type} ヘッダ中のパラメータ \var{param} を
+文字列として返します。そのメッセージ中に \mailheader{Content-Type} ヘッダが
+存在しなかった場合、 \var{failobj}  (デフォルトは \code{None}) が返されます。
+
+オプション引数 \var{header} が与えられた場合、
+\mailheader{Content-Type} のかわりにそのヘッダが使用されます。
+
+パラメータのキー比較は常に大文字小文字を区別しません。
+返り値は文字列か 3 要素のタプルで、タプルになるのはパラメータが \rfc{2231} 
+エンコードされている場合です。3 要素タプルの場合、各要素の値は
+\code{(CHARSET, LANGUAGE, VALUE)} の形式になっています。
+\code{CHARSET} と \code{LAGUAGE} は \code{None} になることがあり、その場合
+\code{VALUE} は \code{us-ascii} 文字セットでエンコードされているとみなさねば
+ならないので注意してください。普段は \code{LANGUAGE} を無視できます。
+
+この関数を使うアプリケーションが、パラメータが \rfc{2231} 形式で
+エンコードされているかどうかを気にしないのであれば、\function{email.Utils.collapse_rfc2231_value()} に
+\method{get_param()} の返り値を渡して呼び出すことで、このパラメータをひとつにまとめることができます。
+この値がタプルならばこの関数は適切にデコードされた Unicode 文字列を返し、
+そうでない場合は unquote された元の文字列を返します。たとえば:
+
+\begin{verbatim}
+rawparam = msg.get_param('foo')
+param = email.Utils.collapse_rfc2231_value(rawparam)
+\end{verbatim}
+
+いずれの場合もパラメータの値は (文字列であれ 3要素タプルの
+\code{VALUE} 項目であれ) つねに unquote されます。
+ただし、\var{unquote} が \code{False} に指定されている場合は
+unquote されません。
+
+\versionchanged[\var{unquote} 引数の追加、3要素タプルが返り値になる可能性あり]{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_param}{param, value\optional{,
+    header\optional{, requote\optional{, charset\optional{, language}}}}}
+
+\mailheader{Content-Type} ヘッダ中のパラメータを設定します。
+指定されたパラメータがヘッダ中にすでに存在する場合、その値は
+\var{value} に置き換えられます。\mailheader{Content-Type} ヘッダがまだ
+このメッセージ中に存在していない場合、\rfc{2045} にしたがいこの値には
+\mimetype{text/plain} が設定され、新しいパラメータ値が末尾に追加されます。
+
+オプション引数 \var{header} が与えられた場合、
+\mailheader{Content-Type} のかわりにそのヘッダが使用されます。
+オプション引数 \var{unquote} が \code{False} でない限り、
+この値は unquote されます (デフォルトは \code{True})。
+
+オプション引数 \var{charset} が与えられると、
+そのパラメータは \rfc{2231} に従ってエンコードされます。
+オプション引数 \var{language} は RFC 2231 の言語を指定しますが、
+デフォルトではこれは空文字列となります。 \var{charset} と
+\var{language} はどちらも文字列である必要があります。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{del_param}{param\optional{, header\optional{,
+    requote}}}
+指定されたパラメータを \mailheader{Content-Type} ヘッダ中から完全に
+とりのぞきます。ヘッダはそのパラメータと値がない状態に書き換えられます。
+\var{requote} が \code{False} でない限り (デフォルトでは \code{True} です)、
+すべての値は必要に応じて quote されます。オプション変数 \var{header} が与えられた場合、
+\mailheader{Content-Type} のかわりにそのヘッダが使用されます。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_type}{type\optional{, header}\optional{,
+    requote}}
+\mailheader{Content-Type} ヘッダの maintype と subtype を設定します。
+\var{type} は \mimetype{maintype/subtype} という形の文字列でなければなりません。
+それ以外の場合は \exception{ValueError} が発生します。
+
+このメソッドは \mailheader{Content-Type} ヘッダを置き換えますが、
+すべてのパラメータはそのままにします。\var{requote} が \code{False} の場合、
+これはすでに存在するヘッダを quote せず放置しますが、そうでない場合は
+自動的に quote します (デフォルト動作)。
+
+オプション変数 \var{header} が与えられた場合、
+\mailheader{Content-Type} のかわりにそのヘッダが使用されます。
+\mailheader{Content-Type} ヘッダが設定される場合には、
+\mailheader{MIME-Version} ヘッダも同時に付加されます。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_filename}{\optional{failobj}}
+そのメッセージ中の \mailheader{Content-Disposition} ヘッダにある、
+\code{filename} パラメータの値を返します。目的のヘッダに
+\code{filename} パラメータがない場合には \code{name}パラメータを探しま
+す。それも無い場合またはヘッダが無い場合には \var{failobj} が返されます。
+返される文字列はつねに \method{Utils.unquote()} によって unquote されます。
+
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_boundary}{\optional{failobj}}
+そのメッセージ中の \mailheader{Content-Type} ヘッダにある、
+\code{boundary} パラメータの値を返します。目的のヘッダが欠けていたり、
+\code{boundary} パラメータがない場合には \var{failobj} が返されます。
+返される文字列はつねに \method{Utils.unquote()} によって unquote されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{set_boundary}{boundary}
+メッセージ中の \mailheader{Content-Type} ヘッダにある、
+\code{boundary} パラメータに値を設定します。\method{set_boundary()} は
+必要に応じて \var{boundary} を quote します。そのメッセージが
+\mailheader{Content-Type} ヘッダを含んでいない場合、
+\exception{HeaderParseError} が発生します。
+
+注意: このメソッドを使うのは、古い \mailheader{Content-Type} ヘッダを
+削除して新しい boundary をもったヘッダを \method{add_header()} で
+足すのとは少し違います。\method{set_boundary()} は
+一連のヘッダ中での \mailheader{Content-Type} ヘッダの位置を保つからです。
+しかし、これは元の \mailheader{Content-Type} ヘッダ中に存在していた
+連続する行の順番までは \emph{保ちません}。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_content_charset}{\optional{failobj}}
+そのメッセージ中の \mailheader{Content-Type} ヘッダにある、
+\code{charset} パラメータの値を返します。値はすべて小文字に変換されます。
+メッセージ中に \mailheader{Content-Type} がなかったり、このヘッダ中に
+\code{boundary} パラメータがない場合には \var{failobj} が返されます。
+
+注意: これは \method{get_charset()} メソッドとは異なります。
+こちらのほうは文字列のかわりに、そのメッセージボディのデフォルト
+エンコーディングの \class{Charset} インスタンスを返します。
+
+\versionadded{2.2.2}
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{get_charsets}{\optional{failobj}}
+メッセージ中に含まれる文字セットの名前をすべてリストにして返します。
+そのメッセージが \mimetype{multipart} である場合、返されるリストの
+各要素がそれぞれの subpart のペイロードに対応します。それ以外の場合、
+これは長さ 1 のリストを返します。
+
+リスト中の各要素は文字列であり、これは対応する subpart 中の
+それぞれの \mailheader{Content-Type} ヘッダにある \code{charset} の値です。
+しかし、その subpart が \mailheader{Content-Type} をもってないか、
+\code{charset} がないか、あるいは MIME maintype が \mimetype{text} でない
+いずれかの場合には、リストの要素として \var{failobj} が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Message]{walk}{}
+\method{walk()} メソッドは多目的のジェネレータで、
+これはあるメッセージオブジェクトツリー中のすべての part および subpart を
+わたり歩くのに使えます。順序は深さ優先です。おそらく典型的な用法は、
+\method{walk()} を \code{for} ループ中でのイテレータとして
+使うことでしょう。ループを一回まわるごとに、次の subpart が返されるのです。
+
+以下の例は、 multipart メッセージのすべての part において、
+その MIME タイプを表示していくものです。
+
+\begin{verbatim}
+>>> for part in msg.walk():
+...     print part.get_content_type()
+multipart/report
+text/plain
+message/delivery-status
+text/plain
+text/plain
+message/rfc822
+\end{verbatim}
+\end{methoddesc}
+
+\versionchanged[以前の非推奨メソッド \method{get_type()}、
+\method{get_main_type()}、\method{get_subtype()} は削除されました。]{2.5}
+
+\class{Message} オブジェクトはオプションとして 2つのインスタンス属性を
+とることができます。これはある MIME メッセージからプレーンテキストを
+生成するのに使うことができます。
+
+\begin{datadesc}{preamble}
+MIME ドキュメントの形式では、
+ヘッダ直後にくる空行と最初の multipart 境界をあらわす文字列のあいだに
+いくらかのテキスト (訳注: preamble, 序文) を埋めこむことを許しています。
+このテキストは標準的な MIME の範疇からはみ出しているので、
+MIME 形式を認識するメールソフトからこれらは通常まったく見えません。
+しかしメッセージのテキストを生で見る場合、あるいはメッセージを
+MIME 対応していないメールソフトで見る場合、このテキストは
+目に見えることになります。
+
+\var{preamble} 属性は MIME ドキュメントに加える
+この最初の MIME 範囲外テキストを含んでいます。
+\class{Parser} があるテキストをヘッダ以降に発見したが、
+それはまだ最初の MIME 境界文字列が現れる前だった場合、
+パーザはそのテキストをメッセージの \var{preamble} 属性に格納します。
+\class{Generator} がある MIME メッセージからプレーンテキスト形式を
+生成するとき、これはそのテキストをヘッダと最初の MIME 境界の間に挿入します。
+詳細は \refmodule{email.parser} および \refmodule{email.Generator} を
+参照してください。
+
+注意: そのメッセージに preamble がない場合、
+\var{preamble} 属性には \code{None} が格納されます。
+\end{datadesc}
+
+\begin{datadesc}{epilogue}
+\var{epilogue} 属性はメッセージの最後の MIME 境界文字列から
+メッセージ末尾までのテキストを含むもので、それ以外は \var{preamble} 属性と同じです。
+
+\versionchanged[\class{Generator}でファイル終端に改行を出力するため、
+epilogue に空文字列を設定する必要はなくなりました。]{2.5}
+\end{datadesc}
+
+\begin{datadesc}{defects}
+\var{defects} 属性はメッセージを解析する途中で検出されたすべての問題点 (defect、障害) の
+リストを保持しています。解析中に発見されうる障害についてのより詳細な説明は
+\refmodule{email.errors} を参照してください。
+ 
+\versionadded{2.4}
+\end{datadesc}

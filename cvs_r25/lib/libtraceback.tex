@@ -1,0 +1,95 @@
+\section{\module{traceback} ---
+         スタックトレースの表示や取り出し}
+
+\declaremodule{standard}{traceback}
+\modulesynopsis{スタックトレースの表示や取り出し。}
+
+
+このモジュールはPythonプログラムのスタックトレースを抽出し、書式を整え、表示するための標準インターフェースを提供します。モジュールがスタックトレースを表示するとき、Pythonインタープリタの動作を正確に模倣します。インタープリタの``ラッパー''の場合のように、プログラムの制御の元でスタックトレースを表示したいと思ったときに役に立ちます。
+
+モジュールはtracebackオブジェクトを使います --- これは変数\code{sys.exc_traceback}(非推奨)と\code{sys.last_traceback}に保存され、\function{sys.exc_info()}から三番目の項目として返されるオブジェクト型です。
+\obindex{traceback}
+
+モジュールは次の関数を定義します:
+
+\begin{funcdesc}{print_tb}{traceback\optional{, limit\optional{, file}}}
+\var{traceback}から\var{limit}までスタックトレース項目を出力します。\var{limit}が省略されるか\code{None}の場合は、すべての項目が表示されます。\var{file}が省略されるか\code{None}の場合は、\code{sys.stderr}へ出力されます。それ以外の場合は、出力を受けるためのオープンしたファイルまたはファイルに類似したオブジェクトであるべきです。
+\end{funcdesc}
+
+\begin{funcdesc}{print_exception}{type, value, traceback\optional{,
+                                  limit\optional{, file}}}
+例外情報と\var{traceback}から\var{limit}までスタックトレース項目を\var{file}へ出力します。これは次のようにすることで\function{print_tb()}とは異なります: (1) \var{traceback}が\code{None}でない場合は、ヘッダ\samp{Traceback (most recent call last):}を出力します。 (2) スタックトレースの後に例外\var{type}と\var{value}を出力します。 (3) \var{type}が\exception{SyntaxError}であり、\var{value}が適切な形式の場合は、エラーのおおよその位置を示すカレットを付けて構文エラーが起きた行を出力します。
+\end{funcdesc}
+
+\begin{funcdesc}{print_exc}{\optional{limit\optional{, file}}}
+これは\code{print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, \var{limit}, \var{file})}のための省略表現です。(非推奨の変数を使う代わりにスレッドセーフな方法で同じ情報を引き出すために、実際には\function{sys.exc_info()}を使います。)
+\end{funcdesc}
+
+\begin{funcdesc}{format_exc}{\optional{limit}}
+これは、\code{print_exc(\var{limit})}に似ていますが、ファイルに出力す
+ るかわりに文字列を返します。
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{print_last}{\optional{limit\optional{, file}}}
+これは\code{print_exception(sys.last_type, sys.last_value, sys.last_traceback, \var{limit}, \var{file})}の省略表現です。
+\end{funcdesc}
+
+\begin{funcdesc}{print_stack}{\optional{f\optional{, limit\optional{, file}}}}
+この関数は呼び出された時点からのスタックトレースを出力します。オプションの\var{f}引数は代わりの最初のスタックフレームを指定するために使えます。\function{print_exception()}に付いて言えば、オプションの\var{limit}と\var{file}引数は同じ意味を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{extract_tb}{traceback\optional{, limit}}
+トレースバックオブジェクト\var{traceback}から\var{limit}まで取り出された``前処理済み''スタックトレース項目のリストを返します。スタックトレースの代わりの書式設定を行うために役に立ちます。\var{limit}が省略されるか\code{None}の場合は、すべての項目が取り出されます。``前処理済み''スタックトレース項目とは四つの部分からなる(\var{filename}, \var{line number}, \var{function name}, \var{text})で、スタックトレースに対して通常出力される情報を表しています。\var{text}は前と後ろに付いている空白を取り除いた文字列です。ソースが使えない場合は\code{None}です。
+\end{funcdesc}
+
+\begin{funcdesc}{extract_stack}{\optional{f\optional{, limit}}}
+現在のスタックフレームから生のトレースバックを取り出します。戻り値は\function{extract_tb()}と同じ形式です。\function{print_stack()}について言えば、オプションの\var{f}と\var{limit}引数は同じ意味を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{format_list}{list}
+\function{extract_tb()}または\function{extract_stack()}が返すタプルのリストが与えられると、出力の準備を整えた文字列のリストを返します。結果として生じるリストの中の各文字列は、引数リストの中の同じインデックスの要素に対応します。各文字列は末尾に改行が付いています。その上、ソーステキスト行が\code{None}でないそれらの要素に対しては、文字列は内部に改行を含んでいるかもしれません。
+\end{funcdesc}
+
+\begin{funcdesc}{format_exception_only}{type, value}
+トレースバックの例外部分の書式を設定します。引数は\code{sys.last_type}と\code{sys.last_value}のような例外の型と値です。戻り値はそれぞれが改行で終わっている文字列のリストです。通常、リストは一つの文字列を含んでいます。しかし、\exception{SyntaxError}例外に対しては、(出力されるときに)構文エラーが起きた場所についての詳細な情報を示す行をいくつか含んでいます。どの例外が起きたのかを示すメッセージは、常にリストの最後の文字列です。
+\end{funcdesc}
+
+\begin{funcdesc}{format_exception}{type, value, tb\optional{, limit}}
+スタックトレースと例外情報の書式を設定します。引数は\function{print_exception()}の対応する引数と同じ意味を持ちます。戻り値は文字列のリストで、それぞれの文字列は改行で終わり、そのいくつかは内部に改行を含みます。これらの行が連結されて出力される場合は、厳密に\function{print_exception()}と同じテキストが出力されます。
+\end{funcdesc}
+
+\begin{funcdesc}{format_tb}{tb\optional{, limit}}
+\code{format_list(extract_tb(\var{tb}, \var{limit}))}の省略表現。
+\end{funcdesc}
+
+\begin{funcdesc}{format_stack}{\optional{f\optional{, limit}}}
+\code{format_list(extract_stack(\var{f}, \var{limit}))}の省略表現。
+\end{funcdesc}
+
+\begin{funcdesc}{tb_lineno}{tb}
+この関数はトレースバックオブジェクトに設定された現在の行番号をかえします。この関数は必要でした。なぜなら、\programopt{-O}フラグがPythonへ渡されたとき、Pythonの2.3より前のバージョンでは\code{\var{tb}.tb_lineno}が正しく更新されなかったからです。この関数は2.3以降のバージョンでは役に立ちません。
+\end{funcdesc}
+
+
+\subsection{トレースバックの例 \label{traceback-example}}
+
+この簡単な例では基本的なread-eval-printループを実装います。それは標準的なPythonの対話インタープリタループに似ていますが、Pythonのものより便利ではありません。インタープリタループのより完全な実装については、\refmodule{code}モジュールを参照してください。
+
+\begin{verbatim}
+import sys, traceback
+
+def run_user_code(envdir):
+    source = raw_input(">>> ")
+    try:
+        exec source in envdir
+    except:
+        print "Exception in user code:"
+        print '-'*60
+        traceback.print_exc(file=sys.stdout)
+        print '-'*60
+
+envdir = {}
+while 1:
+    run_user_code(envdir)
+\end{verbatim}

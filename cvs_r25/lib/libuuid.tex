@@ -1,0 +1,224 @@
+\section{\module{uuid} ---
+         RFC 4122 に準拠した UUID オブジェクト}
+\declaremodule{builtin}{uuid}
+\modulesynopsis{RFC 4122 に準拠した UUID オブジェクト（汎用一意識別子）}
+\moduleauthor{Ka-Ping Yee}{ping@zesty.ca}
+\sectionauthor{George Yoshida}{quiver@users.sourceforge.net}
+
+\versionadded{2.5}
+このモジュールでは immutable（変更不能）な \class{UUID} オブジェクト（\class{UUID} クラス）と
+\rfc{4122} の定めるバージョン 1、3、4、5 の UUID を生成するための\function{uuid1()} 、
+\function{uuid2()} 、\function{uuid3()} 、\function{uuid4()} 、\function{uuid()} が提供されています。
+
+もしユニークな ID が必要なだけであれば、おそらく \function{uuid1()} か \function{uuid4()}をコールすれば良いでしょう。
+\function{uuid1()} はコンピュータのネットワークアドレスを含む UUID を生成するために
+プライバシーを侵害するかもしれない点に注意してください。\function{uuid4()} はランダムな UUID を生成します。
+
+\begin{classdesc}{UUID}{\optional{hex\optional{, bytes\optional{,
+bytes_le\optional{, fields\optional{, int\optional{, version}}}}}}}
+
+32 桁の 16 進数文字列、\var{bytes} に 16 バイトの文字列、\var{bytes_le} 引数に
+16 バイトのリトルエンディアンの文字列、\var{field} 引数に 6 つの整数のタプル（32ビット\var{time_low}、
+16 ビット \var{time_mid}、16ビット \var{time_hi_version}, 8ビット \var{clock_seq_hi_variant},
+8ビット \var{clock_seq_low}, 48ビット \var{node}）、または \var{int} に一つの 128 ビット整数の
+いずれかから UUID を生成します。16 進数が与えられた時、波括弧、ハイフン、それと URN 接頭辞は無視されます。
+例えば、これらの表現は全て同じ UUID を払い出します。
+
+\begin{verbatim}
+UUID('{12345678-1234-5678-1234-567812345678}')
+UUID('12345678123456781234567812345678')
+UUID('urn:uuid:12345678-1234-5678-1234-567812345678')
+UUID(bytes='\x12\x34\x56\x78'*4)
+UUID(bytes_le='\x78\x56\x34\x12\x34\x12\x78\x56' +
+              '\x12\x34\x56\x78\x12\x34\x56\x78')
+UUID(fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
+UUID(int=0x12345678123456781234567812345678)
+\end{verbatim}
+
+\var{hex}、\var{bytes}、\var{bytes_le}、\var{fields}、または \var{int}
+のうち、どれかただ一つだけが与えられなければいけません。 \var{version} 引数は
+オプションです；与えられた場合、結果の UUID は与えられた \var{hex}、\var{bytes}、
+\var{bytes_le}、\var{fields}、または \var{int} をオーバーライドして、
+RFC 4122 に準拠した variant と version ナンバーのセットを持つことになります。
+\var{bytes_le}, \var{fields}, or \var{int}.
+
+\end{classdesc}
+
+\class{UUID} インスタンスは以下の読み取り専用属性を持ちます：
+
+\begin{memberdesc}{bytes}
+16 バイト文字列（バイトオーダーがビッグエンディアンの 6 つの整数フィールドを持つ）のUUID。
+\end{memberdesc}
+
+\begin{memberdesc}{bytes_le}
+16 バイト文字列（\var{time_low}、\var{time_mid}、\var{time_hi_version} を
+リトルエンディアンで持つ）の UUID。
+\end{memberdesc}
+
+\begin{memberdesc}{fields}
+UUID の 6 つの整数フィールドを持つタプルで、これは 6 つの個別の属性と
+2 つの派生した属性としても取得可能です。
+
+\begin{tableii}{l|l}{member}{フィールド}{意味}
+  \lineii{time_low}{UUID の最初の 32 ビット}
+  \lineii{time_mid}{UUID の次の 16 ビット}
+  \lineii{time_hi_version}{UUID の次の 16 ビット}
+  \lineii{clock_seq_hi_variant}{UUID の次の 8 ビット}
+  \lineii{clock_seq_low}{UUID の次の 8 ビット}
+  \lineii{node}{UUID の最後の 48 ビット}
+  \lineii{time}{60 ビットのタイムスタンプ}
+  \lineii{clock_seq}{14 ビットのシーケンス番号}
+\end{tableii}
+
+\end{memberdesc}
+
+\begin{memberdesc}{hex}
+32 文字の 16 進数文字列での UUID。
+\end{memberdesc}
+
+\begin{memberdesc}{int}
+128 ビット整数での UUID。
+\end{memberdesc}
+
+\begin{memberdesc}{urn}
+RFC 4122 で規定される URN での UUID。
+\end{memberdesc}
+
+\begin{memberdesc}{variant}
+UUID の内部レイアウトを決定する UUID の variant。
+これは整数の定数
+The UUID variant, which determines the internal layout of the UUID.
+This will be one of the integer constants
+\constant{RESERVED_NCS}、
+\constant{RFC_4122}、 \constant{RESERVED_MICROSOFT}、又は
+\constant{RESERVED_FUTURE} のいずれかになります。
+\end{memberdesc}
+
+\begin{memberdesc}{version}
+UUID の version 番号（1 から 5、variant が \constant{RFC_4122} である
+場合だけ意味があります）。
+\end{memberdesc}
+
+The \module{uuid} モジュールには以下の関数があります：
+
+\begin{funcdesc}{getnode}{}
+48 ビットの正の整数としてハードウェアアドレスを取得します。
+最初にこれを起動すると、別個のプログラムが立ち上がって非常に遅くなることがあります。
+もしハードウェアを取得する試みが全て失敗すると、ランダムな 48 ビットに
+RFC 4122 で推奨されているように 8 番目のビットを 1 に設定した数を使います。
+"ハードウェアアドレス" とはネットワークインターフェースの MAC アドレスを指し、
+複数のネットワークインターフェースを持つマシンの場合、それらのどれか一つの
+MAC アドレスが返るでしょう。
+\end{funcdesc}
+\index{getnode}
+
+\begin{funcdesc}{uuid1}{\optional{node\optional{, clock_seq}}}
+UUID をホスト ID、シーケンス番号、現在時刻から生成します。
+\var{node} が与えられなければ、\function{getnode()} がハードウェアアドレス
+取得のために使われます。
+\var{clock_seq} が与えられると、これはシーケンス番号として使われます；
+さもなくば 14 ビットのランダムなシーケンス番号が選ばれます。
+\end{funcdesc}
+\index{uuid1}
+
+\begin{funcdesc}{uuid3}{namespace, name}
+UUID を名前空間識別子（これは UUID です）と名前（文字列です）の MD5 ハッシュから生成します。
+\end{funcdesc}
+\index{uuid3}
+
+\begin{funcdesc}{uuid4}{}
+ランダムな UUID を生成します。
+\end{funcdesc}
+\index{uuid4}
+
+\begin{funcdesc}{uuid5}{namespace, name}
+名前空間識別子（これは UUID です）と名前（文字列です）の SHA-1 ハッシュから生成します。
+\end{funcdesc}
+\index{uuid5}
+
+\module{uuid} モジュールは \function{uuid3()} または \function{uuid5()} で利用するために
+次の名前空間識別子を定義しています。
+
+\begin{datadesc}{NAMESPACE_DNS}
+この名前空間が指定された場合、
+\var{name} 文字列は完全修飾ドメイン名です。
+\end{datadesc}
+
+\begin{datadesc}{NAMESPACE_URL}
+この名前空間が指定された場合、
+\var{name} 文字列は URL です。
+\end{datadesc}
+
+\begin{datadesc}{NAMESPACE_OID}
+この名前空間が指定された場合、
+\var{name} 文字列は ISO OID です。
+\end{datadesc}
+
+\begin{datadesc}{NAMESPACE_X500}
+この名前空間が指定された場合、
+\var{name} 文字列は X.500 DN の DER またはテキスト出力形式です。
+\end{datadesc}
+
+The \module{uuid} モジュールは以下の定数を
+\member{variant} 属性が取りうる値として定義しています：
+
+\begin{datadesc}{RESERVED_NCS}
+NCS 互換性のために予約されています。
+\end{datadesc}
+
+\begin{datadesc}{RFC_4122}
+\rfc{4122} で与えられた UUID レイアウトを指定します。
+\end{datadesc}
+
+\begin{datadesc}{RESERVED_MICROSOFT}
+Microsoft の互換性のために予約されています。
+\end{datadesc}
+
+\begin{datadesc}{RESERVED_FUTURE}
+将来のために予約されています。
+\end{datadesc}
+
+
+\begin{seealso}
+  \seerfc{4122}{A Universally Unique IDentifier (UUID) URN Namespace}{
+この仕様は UUID のための Uniform Resource Name 名前空間、
+UUID の内部フォーマットと UUID の生成方法を定義しています。
+}
+\end{seealso}
+
+\subsection{例 \label{uuid-example}}
+典型的な \module{uuid} モジュールの利用方法を示します：
+\begin{verbatim}
+>>> import uuid
+
+# UUID をホスト ID と現在時刻に基づいて生成します
+>>> uuid.uuid1()
+UUID('a8098c1a-f86e-11da-bd1a-00112444be1e')
+
+# 名前空間 UUID と名前の MD5 ハッシュを使って UUID を生成します
+>>> uuid.uuid3(uuid.NAMESPACE_DNS, 'python.org')
+UUID('6fa459ea-ee8a-3ca4-894e-db77e160355e')
+
+# ランダムな UUID を作成します
+>>> uuid.uuid4()
+UUID('16fd2706-8baf-433b-82eb-8c7fada847da')
+
+# 名前空間 UUID と名前の SHA-1 ハッシュを使って UUID を生成します
+>>> uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')
+UUID('886313e1-3b8a-5372-9b90-0c9aee199e5d')
+
+# 16 進数文字列から UUID を生成します（波括弧とハイフンは無視されます）
+>>> x = uuid.UUID('{00010203-0405-0607-0809-0a0b0c0d0e0f}')
+
+# UUID を標準的な 16 進数の文字列に変換します
+>>> str(x)
+'00010203-0405-0607-0809-0a0b0c0d0e0f'
+
+# 生の 16 バイトの UUID を取得します
+>>> x.bytes
+'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'
+
+# 16 バイトの文字列から UUID を生成します
+>>> uuid.UUID(bytes=x.bytes)
+UUID('00010203-0405-0607-0809-0a0b0c0d0e0f')
+\end{verbatim}

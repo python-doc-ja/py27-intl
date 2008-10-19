@@ -1,0 +1,1281 @@
+\documentclass{howto}
+
+% TODO:
+% Document lookbehind assertions
+% Better way of displaying a RE, a string, and what it matches
+% Mention optional argument to match.groups()
+% Unicode (at least a reference)
+
+\title{正規表現 HOWTO}
+
+\release{0.05}
+
+\author{A.M. Kuchling}
+\authoraddress{\email{amk@amk.ca}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+この文書は、Python の \module{re} モジュールを用いた、正規表現の入門者向けチュートリアルです。
+ライブラリリファレンスよりも、柔らかめの紹介になっています。
+
+原文は、Python HOWTO のページ
+\url{http://www.amk.ca/python/howto}
+から入手可能です。 
+
+\end{abstract}
+
+\tableofcontents
+
+\section{はじめに}
+\module{re} モジュールは Python 1.5 で導入されたもので、Perl スタイルの正規表現を提供します。 
+それ以前の Python では、Emacs スタイルの正規表現を扱う \module{regex} モジュールが提供されていました。 
+\module{regex} モジュールは Python 2.5 で削除されました。
+
+正規表現とは、つまるところ Python 内部に埋め込まれた、
+小さな非常に特化したプログラミング言語で、\module{re} モジュールを通して利用できます。 
+この小規模言語を使うには、マッチ(照合)させたい文字列の規則を指定します。
+これらの規則は、英文でも、電子メールアドレスでも、TeX のコマンドでも、何でもかまいません。
+「この文字列は、あのパターンとマッチするのか？」
+「この文字列の中のどこかに、パターンと一致する部分は含まれているんだろうか？」
+というような問いかけができるのです。
+さらに、正規表現を使って文字列を加工したり、様々な方法で文字列を切り分けたりできます。
+
+
+正規表現のパターンはバイトコード列にコンパイルされ、C で書かれた
+マッチング・エンジンで実行されます。
+高度な使い方をするならば、マッチング・エンジンが与えられた正規表現に対して
+どのように動作するのかに注意を払い、バイトコード列が高速に動作するように
+正規表現を最適化する必要があるかも知れません。
+しかし、この文書では、そのような最適化にはほとんど触れません。
+マッチング・エンジン内部をきちんと理解していることが要求されるからです。
+
+正規表現は、比較的小規模で制限のある言語ですので、あらゆる文字列処理を
+正規表現で行えるわけではありません。
+また、正規表現で処理することが \emph{できる} けれども、非常に複雑な表現に
+なってしまう処理もあります。そういう処理は、 Python で書くべきです。
+Python のコードは、凝った正規表現よりも動作が遅くなりますが、分かりやすくなるでしょう。
+
+
+\section{簡単なパターン}
+
+できるだけ単純な正規表現から始めましょう。
+正規表現は文字列に対して使われるのですから、最も平凡な作業から始めます。
+すなわち、文字とのマッチです。
+
+コンピュータサイエンスにおける正規表現の基礎
+(決定性 / 非決定性有限オートマトン)の詳しい説明は、
+どれでもいいのでコンパイラの教科書が参考になるでしょう。
+
+\subsection{文字とのマッチ}
+
+ほとんどの文字は、単にその文字自身とマッチします。
+たとえば、正規表現 \regexp{test} は、文字列 \samp{test} とマッチします。
+(この正規表現が 、大文字小文字の区別なく、\samp{Test} や \samp{TEST}
+ともマッチするようにもできます。詳しくは後述)
+
+ただしこのルールには例外があります。
+いくつかの特殊文字は、その文字自身とはマッチしません。
+代わりに、通常とは違うものとマッチしたり、繰り返し使うことによって
+別の正規表現に影響を与えたりするのです。
+この文書では、そのようなメタ文字がどういう役割を果たすのかを、
+主に説明することになります。
+
+ここに、すべてのメタ文字を挙げておきます。
+以降は、これらメタ文字が何を意味するのかという話です。
+
+\begin{verbatim}
+. ^ $ * + ? { [ ] \ | ( )
+\end{verbatim}
+% $
+
+最初のメタ文字は \samp{[} と \samp{]} です。
+これはマッチさせたい文字の集合、すなわち文字クラスを指定するのに使われます。
+個々の文字を並べることもできますし、\character{-} 記号で2文字を結んぶことで
+文字の範囲を指定することもできます。
+たとえば、\regexp{[abc]} は \samp{a}、\samp{b}、\samp{c} の、いずれにもマッチします。
+\regexp{[a-c]} でも、同じことができます。
+これは、文字範囲を使って、最初の例と同じ文字集合を表現しているのです。
+\regexp{[a-z]} と書くと、小文字のみにマッチする正規表現になります。
+
+
+文字クラス内のメタ文字には、その効力がありません。
+たとえば \regexp{[akm\$]} は、\character{a}、\character{k}、\character{m}、\character{\$}
+のいずれにもマッチします。
+通常、\character{\$} はメタ文字ですが、文字クラス内では特殊な性質を失うわけです。
+
+
+ある範囲以外の文字にマッチさせるには\dfn{補集合}を使います。
+これは文字クラス内の 1 文字目を \character{\^} にすると指定できます。
+その他の場所で \character{\^} を指定しても文字 \character{\^} とマッチするだけです。
+たとえば \verb|[^5]| は、\character{5} 以外のあらゆる文字とマッチします。
+
+おそらく、最も重要なメタ文字は、バックスラッシュ \samp{\e}でしょう
+(訳注: 日本語フォントではバックスラッシュ「＼」ではなく、円記号「￥」が割り当てられます)。
+Python の文字列リテラルでは、バックスラッシュの後ろに様々な文字が続くと特殊シーケンスになります。
+また、バックスラッシュはすべてのメタ文字をエスケープ(無効化)して、
+パターン中のメタ文字そのものにマッチさせるのにも使われます。
+たとえば、\samp{[} や \samp{\e} にマッチさせるには、\regexp{\e[} or \regexp{\e\e}
+のようにバックスラッシュを前置して、メタ文字の特別な意味をエスケープするのです。
+
+
+\character{\e} で始まる特殊シーケンスの中には、数字の集合、英字の集合、
+空白文字以外の集合など、便利な文字集合として使えるものがあります。
+以下に、あらかじめ定義されている特殊シーケンスを挙げておきます。
+
+\begin{itemize}
+\item[\code{\e d}]数字とマッチ。
+クラス \regexp{[0-9]} と同義
+
+\item[\code{\e D}]数字以外とマッチ。
+クラス \verb|[^0-9]| と同義
+
+\item[\code{\e s}]あらゆる空白文字とマッチ。
+クラス \regexp{[ \e t\e n\e r\e f\e v]} と同義。
+
+\item[\code{\e S}]空白文字以外のあらゆる文字とマッチ。
+クラス \verb|[^ \t\n\r\f\v]| と同義。
+
+\item[\code{\e w}]英数字とマッチ。
+クラス \regexp{[a-zA-Z0-9_]} と同義。
+
+\item[\code{\e W}]英数字以外のあらゆる文字とマッチ。
+クラス \verb|[^a-zA-Z0-9_]| と同義。
+\end{itemize}
+
+これらのシーケンスを文字クラスの中に挿入することができます。
+たとえば、文字クラス \regexp{[\e s,.]} は、あらゆる空白文字、
+\character{,}、\character{.} のいずれかとマッチします。
+
+この章で最後に紹介するメタ文字は \regexp{.} です。
+改行文字以外のあらゆる文字とマッチします。
+また、改行文字にもマッチするモード (\code{re.DOTALL}) も用意されています。
+\character{.} は「任意の 1 文字」とマッチさせるのに、よく使われます。
+
+\subsection{繰り返し}
+
+固定された文字列以外の文字集合にマッチするというのが、正規表現にできて、
+Python の文字列のメソッドにできないことであることを述べました。
+しかし、それだけでは正規表現が文字列のメソッドより特に優れて
+いることにはなりません。
+正規表現の一部が、何度も繰り返されるようなルールを指定できることが、
+正規表現の優れているところなのです。
+
+最初の繰り返しを扱うメタ文字は \regexp{*} です。
+\regexp{*} は、リテラル文字 \samp{*} とはマッチしません。
+代わりに直前の文字が 0 回以上マッチすることを指定します。
+
+たとえば、\regexp{ca*t} がマッチするのは、\samp{ct} (\samp{a} が 0 個)、
+\samp{cat} (\samp{a} が 1 個)、 \samp{caaat} (\samp{a} が 2 個)、などなど、です。
+正規表現エンジンの内部には、いろいろと制限があります。
+C における \code{int} 型の大きさの関係で、\samp{a} は 20 億個以上の
+繰り返しにはマッチしません。
+おそらく、そんなに大きな文字列を構築するだけのメモリをお持ちでないでしょうから、
+この制限にぶつかることはないはずです。
+
+\regexp{*} のような繰り返しを\dfn{貪欲}(\dfn{greedy})であると言います。
+正規表現を繰り返すとき、マッチングエンジンはできるだけたくさん繰り返そうとします。
+もし、パターンの後半でマッチしなければ、少ない繰り返しパターンで、最初からマッチングを試みます。
+
+分かりやすいように、この動作を順を追って見ていきましょう。
+正規表現 \regexp{a[bcd]*b} を考えます。
+これは、文字 \character{a}、クラス \code{[bcd]} から 0 個以上、
+最後に文字 \character{b}、というパターンとマッチします。
+この正規表現を、文字列 \samp{abcbd} にマッチさせてみます。
+
+
+\begin{tableiii}{c|l|l}{}{ステップ}{マッチした文字}{備考}
+\lineiii{1}{\code{a}}{正規表現中の \regexp{a} がマッチする。}
+\lineiii{2}{\code{abcbd}}{\regexp{[bcd]*} とマッチする。
+できるだけ多く、すなわち文字列の最後まで。}
+\lineiii{3}{\emph{失敗}}{\regexp{b} にマッチさせようとするが、既に文末なので失敗する。}
+\lineiii{4}{\code{abcb}}{最初に戻って、前回より 1 文字少ないパターンで
+\regexp{[bcd]*} にマッチする。}
+\lineiii{5}{\emph{失敗}}{\regexp{b} にマッチさせようとするが、現在位置は最後の文字
+\character{d} なので失敗}
+\lineiii{6}{\code{abc}}{最初に戻って、\regexp{[bcd]*} は、前回よりさらに1文字少ない \samp{bc} にのみマッチする。}
+\lineiii{7}{\code{abcb}}{\regexp{b} をもう一度試す。 現在位置の文字は
+\character{b} なので今度はマッチに成功する。}
+\end{tableiii}
+
+正規表現の最後まで到達したところで、\samp{abcb} にマッチします。
+上の例を見ると、マッチング・エンジンが最初にできるだけ先へ進もうとし、
+マッチしなくなると最初に戻ってきて、まだ試していない正規表現でマッチ
+させようとする様子が分かります。
+\regexp{[bcd]*} と全くマッチしなくなるまでこれを繰り返し、それでも
+マッチングに失敗した場合には、与えられた文字列は正規表現と全く一致しないという結論に至ります。
+
+
+別の繰り返し用のメタ文字に、\regexp{+} があります。
+これは 1 回以上の繰り返しにマッチします。
+\regexp{*} と \regexp{+} の違いに注意してください。
+\regexp{*} がマッチするのは \emph{0 回} 以上ですから、繰り返しの対象が全然入っていない場合もあります。
+一方、\regexp{+} は、少なくとも \emph{1 回} は繰り返しの対象が含まれなければいけません。
+似たような例で説明すると、\regexp{ca+t} は \samp{cat} (\samp{a} が 1 回)、\samp{caaat}
+(\samp{a} が 3 回)などとはマッチしますが、\samp{ct} とはマッチしません。
+
+あと 2 つ、繰り返しを扱う限定子があります。
+疑問符 \regexp{?} は、1 回 または 0 回の繰り返しとマッチするので、
+これを使えば、任意に含まれるものを指定することができます。
+たとえば、\regexp{home-?brew} は、\samp{homebrew} と \samp{home-brew}
+のいずれにもマッチします。
+
+もっとも複雑な繰り返し記号は、\regexp{\{\var{m},\var{n}\}} でしょう。
+\var{m} と \var{n} は 10 進数です。
+これは、少なくとも \var{m} 回、多くとも \var{n} 回の繰り返しを表します。
+たとえば、\regexp{a/{1,3}b} は、\samp{a/b}、\samp{a//b}、\samp{a///b} にマッチします。
+スラッシュの含まれない \samp{ab} や、スラッシュが 4 つ含まれる \samp{a////b} にはマッチしません。
+
+\var{m} か \var{n} のどちらか一方を、指定せずに使うこともできます。
+指定されなかった値は適切に推測されます。
+\var{m} を指定しなければ下限値は 0 として扱われ、\var{n} を指定しなければ上限値は無限大になります。
+-- 先に述べたように、実際には 20 億が上限ですが、無限だと言って差し支えないでしょう。
+
+還元主義の読者ならお気づきでしょうが、最初に紹介した 3 つの繰り返しは、
+\regexp{\{\var{m},\var{n}\}}で表すことができます。
+\regexp{\{0,\}} と \regexp{*}、\regexp{\{1,\}} と \regexp{+}、
+\regexp{\{0,1\}} と \regexp{?} は、それぞれ同じことを表します。
+しかし \regexp{*}、\regexp{+}、\regexp{?} のほうが、短く読みやすいので、
+こちらをを使ったほうがよいでしょう。
+
+
+\section{正規表現を使う}
+
+ここまでで、単純な正規表現をざっと見てきましたが、次は、どうやって
+Python の中で使うのかに話を進めましょう。
+\module{re} モジュールは正規表現エンジンのインタフェースを提供し、正規表現を
+オブジェクト型にコンパイルして、マッチさせることを可能にします。
+
+\subsection{正規表現のコンパイル}
+
+正規表現は \class{RegexObject} インスタンスにコンパイルされます。
+このインスタンスは、パターン・マッチや文字列交換のような、
+様々な働きをするメソッドを持ちます。
+
+\begin{verbatim}
+>>> import re
+>>> p = re.compile('ab*')
+>>> print p
+<re.RegexObject instance at 80b4150>
+\end{verbatim}
+
+\function{re.compile()} に引数 \var{flags} を指定することで、特別な設定や
+文法の変更を実現するのに使われます。
+使用可能な設定は後で見ていくことにして、ここでは例だけ挙げておきます。
+
+\begin{verbatim}
+>>> p = re.compile('ab*', re.IGNORECASE)
+\end{verbatim}
+
+正規表現は \function{re.compile()} に文字列として渡されます。
+これは、正規表現は Python 本体には含まれていないので、正規表現を表すのに
+特化した文法が用意されていないからです。
+(正規表現を全く必要としないアプリケーションも存在するので、
+正規表現を内包することによる言語仕様をふくらませる必要はありません)
+その代わり \module{re} モジュールは、\module{socket} モジュールや
+\module{zlib} モジュールと同様、単なる C 拡張モジュールになっています。
+
+正規表現を文字列に入れるのはPython言語をシンプルにし、しかも
+次のセクションで触れるように欠点もありません。
+
+\subsection{バックスラッシュだらけ}
+
+既に述べたように、正規表現はバックスラッシュ文字(\character{\e})で、
+特殊な形式を表したり、特殊文字に特殊な意味を持たせないのに使います
+(訳注: 日本語フォントセットでは、バックスラッシュは円記号で表示されます)。
+この規則は、文字列リテラル中で Python がバックスラッシュを同じ目的で使用するのと衝突します。
+
+\LaTeX\ 文書で見られるような文字列 \samp{{\e}section} とマッチする正規表現を書きたいとしましょう。
+プログラムのソースコードの中で、何と書くか導くために、マッチさせたい文字列から考えます。
+次にバックスラッシュを前置して、バックスラッシュやメタ文字をエスケープしなければいけません。
+その結果、文字列 \samp{\e\e section} を得ます。
+\function{re.compile()} に渡されるべき文字列は、\verb|\\section| でなければいけません。
+しかし、Python の文字列リテラルでこれを表現するには、両方のバックスラッシュを\emph{再度}
+エスケープしなければならないのです。
+
+\begin{tableii}{c|l}{code}{文字列}{段階}
+  \lineii{\e section}{マッチさせるテキスト文字列}
+  \lineii{\e\e section}{\function{re.compile} 用にバックスラッシュをエスケープ}
+  \lineii{"\e\e\e\e section"}{文字列リテラル用にバックスラッシュをエスケープ}
+\end{tableii}
+
+つまり、リテラルのバックスラッシュにマッチさせるには、正規表現文字列として
+\code{'\e\e\e\e'} と書かなければいけません。
+なぜなら正規表現は \samp{\e\e} でなくてはいけませんし、Python の文字列リテラル中で、
+各バックスラッシュは \samp{\e\e} と書かれなければいけないからです。
+バックスラッシュが繰り返し現れる正規表現中では、これが多くのバックスラッシュの
+繰り返しを誘発することになり、その文字列を理解することが困難になります。
+
+解決策は Python の生の文字列(raw string)表記を正規表現に使うことです。
+\character{r} を前置した文字列リテラル内では、バックスラッシュは特別な扱いを受けません。
+ですから \code{r"\e n"} は、\character{\e} と \character{n}の 2 文字からなる文字列ですが、
+\code{"\e n"} は 1 つの改行文字です。
+Python のコードで正規表現を書くとき、この生の文字列表記がよく用いられます。
+
+\begin{tableii}{c|c}{code}{一般の文字列}{生の文字列}
+  \lineii{"ab*"}{\code{r"ab*"}}
+  \lineii{"\e\e\e\e section"}{\code{r"\e\e section"}}
+  \lineii{"\e\e w+\e\e s+\e\e 1"}{\code{r"\e w+\e s+\e 1"}}
+\end{tableii}
+
+\subsection{マッチングを行う}
+
+ここまでで、コンパイルされた正規表現を表現するオブジェクトを持っているのですが、
+これで何をすればいいのでしょう。
+\class{RegexObject} インスタンスは、いくつかのメソッドと属性を持っています。
+最も重要なものだけをここで扱います。
+完全なリストを手に入れるには、
+\ulink{ライブラリ・リファレンス}{http://www.python.jp/doc/release/lib/module-re.html}
+をあたってください。
+%%% リンク先URLはこれでOK?
+
+\begin{tableii}{c|l}{code}{メソッド／属性}{目的}
+  \lineii{match()}{正規表現が、文字列の先頭でマッチするかどうか調べる}
+  \lineii{search()}{文字列を走査し、正規表現がマッチする位置を探す}
+  \lineii{findall()}{正規表現がマッチする部分文字列を全て探しだし、リストとして返す}
+  \lineii{finditer()}{正規表現がマッチする部分文字列を全て探しだし、イテレータとして返す}
+\end{tableii}
+
+\method{match()} と \method{search()} は、全くマッチしなければ \code{None} を返します。
+見つかれば \code{MatchObject} インスタンスを返します。
+このインスタンスは、マッチした部分文字列や、それがどこで始まり、どこで終わるか、などの情報をもっています。
+
+\module{re} モジュールを使って、対話的に実験することで勉強していきましょう。
+(Tkinter が使えるなら \file{Tools/scripts/redemo.py} を見るのもよいでしょう。
+これは Python ディストリビューションに含まれているデモです。
+正規表現を入力すると、マッチしたか失敗したかを表示してくれるのです。
+コンパイルされた正規表現をデバッグしようとするときには、\file{redemo.py}
+が非常に有用であると思われます)
+Phil Schwartz の \ulink{Kodos}{http://kodos.sourceforge.net} も正規表現の
+開発とテストをするためのインタラクティブなツールです。
+このHOWTOでは、Python標準のインタプリタだけを例に使います。
+
+最初に、Python インタプリタを起動して、\module{re} をインポートしてから、
+正規表現をコンパイルします。
+
+\begin{verbatim}
+Python 2.2.2 (#1, Feb 10 2003, 12:57:01)
+>>> import re
+>>> p = re.compile('[a-z]+')
+>>> p
+<_sre.SRE_Pattern object at 80c3c28>
+\end{verbatim}
+
+これで正規表現 \regexp{[a-z]+} に対して、様々な文字列のマッチングを試みることができます。
+\regexp{+} は「1 回または、それ以上の繰り返し」を意味するので、空の文字列はまったくマッチしないはずです。
+この場合 \method{match()} の戻り値 \code{None} はインタプリタに何の出力も表示させません。
+結果をはっきりさせたければ、明示的に \method{match()} の結果をを表示すこともできます。
+
+\begin{verbatim}
+>>> p.match("")
+>>> print p.match("")
+None
+\end{verbatim}
+
+今度は、\samp{tempo} のような、マッチする文字列を試してみましょう。
+この場合、\method{match()} は \class{MatchObject} を返すので、後で使えるように、
+この結果を変数に保存しておきます。
+
+\begin{verbatim}
+>>> m = p.match( 'tempo')
+>>> print m
+<_sre.SRE_Match object at 80c4f68>
+\end{verbatim}
+
+この \class{MatchObject} から、マッチした文字列に関する情報を得ることができます。
+\class{MatchObject} インスタンスには、いくつかのメソッドと属性があります。
+そのうち特に重要なものは以下のとおりです。
+
+\begin{tableii}{c|l}{code}{メソッド / 属性}{目的}
+  \lineii{group()}{正規表現にマッチした文字列を返す}
+  \lineii{start()}{マッチした文字列が始まる位置を返す}
+  \lineii{end()}{マッチした文字列が終わる位置を返す}
+  \lineii{span()}{マッチした文字列の位置を (start, end) のタプルで返す}
+\end{tableii}
+
+これらのメソッドを使ってみれば、どういうことか明確になるでしょう。
+
+\begin{verbatim}
+>>> m.group()
+'tempo'
+>>> m.start(), m.end()
+(0, 5)
+>>> m.span()
+(0, 5)
+\end{verbatim}
+
+\method{group()} は正規表現にマッチした部分文字列を返します。
+\method{start()} と \method{end()} は、マッチした部分の開始位置と終了位置を返します。
+\method{span()} は開始位置と終了位置の両方を、タプルにして返します。
+\method{match} メソッドは、正規表現が文字列の先頭でマッチするかどうかを
+チェックするだけなので、\method{start()} の戻り値は常に 0 です。
+しかし \class{RegexObject} インスタンスの \method{search} メソッドは、
+文字列全部に渡って調べるので、マッチの開始位置が 0 でない場合もあります。
+
+\begin{verbatim}
+>>> print p.match('::: message')
+None
+>>> m = p.search('::: message') ; print m
+<re.MatchObject instance at 80c9650>
+>>> m.group()
+'message'
+>>> m.span()
+(4, 11)
+\end{verbatim}
+
+実際のプログラムでは、\class{MatchObject} を変数に保存し、その値が
+\code{None} かどうかチェックするのが最も一般的なスタイルで、次のようなになります。
+
+\begin{verbatim}
+p = re.compile( ... )
+m = p.match( 'string goes here' )
+if m:
+    print 'Match found: ', m.group()
+else:
+    print 'No match'
+\end{verbatim}
+
+二つの \class{RegexObject} のメソッドは、全てのマッチを返します。
+\method{findall()} はマッチした文字列のリストを返します。
+
+\begin{verbatim}
+>>> p = re.compile('\d+')
+>>> p.findall('12 drummers drumming, 11 pipers piping, 10 lords a-leaping')
+['12', '11', '10']
+\end{verbatim}
+
+\method{findall()} は結果を返す前に完全なリストを作成しなければなりません。
+Python 2.2 からは、\class{MatchObject} のシーケンスをイテレータとして返す
+\method{finditer()} メソッドも利用可能です。
+
+\begin{verbatim}
+>>> iterator = p.finditer('12 drummers drumming, 11 ... 10 ...')
+>>> iterator
+<callable-iterator object at 0x401833ac>
+>>> for match in iterator:
+...     print match.span()
+...
+(0, 2)
+(22, 24)
+(29, 31)
+\end{verbatim}
+
+
+\subsection{モジュールレベルの関数}
+
+必ずしも \class{RegexObject}を作ったり、そのメソッドを呼び出す必要はありません。
+\module{re} モジュールは、\function{match()}, \function{search()},
+\function{sub()}, などのトップレベル関数も提供します。
+これらの関数は、\class{RegexObject} メソッドと対応していて、第 1 引数が
+正規表現文字列であるような引数を取り、なおかつ \code{None} または
+\class{MatchObject} インスタンスを返します。
+
+\begin{verbatim}
+>>> print re.match(r'From\s+', 'Fromage amk')
+None
+>>> re.match(r'From\s+', 'From amk Thu May 14 19:12:10 1998')
+<re.MatchObject instance at 80c5978>
+\end{verbatim}
+
+この隠れ蓑の下で、これらの関数はあなたに代わって \class{RegexObject}
+を作り、それに対して適切なメソッドを呼び出すだけです。
+また、コンパイルされたオブジェクトをキャッシュに保存し、後で、
+同じ正規表現をを使うときの呼び出しが速くなります。
+
+モジュールレベルの関数を使うべきでしょうか、\class{RegexObject}
+を作ってからメソッドを呼び出すべきでしょうか。
+どれだけ頻繁にその正規表現を使わうのか、あなたのコーディングスタイル次第です。
+もし正規表現がコードの中で、たった 1 箇所だけで使うのなら、モジュール関数がおそらく便利でしょう。
+一方、プログラムがたくさんの正規表現を包含していたり、同じ正規表現を
+別々の箇所で何度も使ったりするなら、全ての定義を始めの 1 箇所に集めて、
+正規表現をコンパイルする価値があるでしょう。
+標準ライブラリの \file{xmllib.py} を例にとってみましょう。
+
+\begin{verbatim}
+ref = re.compile( ... )
+entityref = re.compile( ... )
+charref = re.compile( ... )
+starttagopen = re.compile( ... )
+\end{verbatim}
+
+私はふつう、1 回使うだけであっても、コンパイル済みオブジェクトを好みます。
+私と同じくらい、徹底するようになる人もいるようです
+
+\subsection{コンパイル時のフラグ}
+
+コンパイル時にフラグを指定することで、正規表現が動作するときの振るまいを変更できます。
+\module{re} モジュールのフラグには、\constant{IGNORECASE} のようなロングネームと、\constant{I}のように1文字で表すショートネームが使えます。
+(もし Perl のパターン修飾子に慣れているなら、ショートネームは Perl と同じ文字を使うと言えば分かりやすいかも知れません。
+\constant{re.VERBOSE} のショートネームは \constant{re.X} です)
+複数のフラグは、OR ビット演算で指定できます。
+たとえば、\code{re.I | re.M} は、\constant{I} と \constant{M} の両方を指定することになります。
+
+以下に使用できるフラグの表を示します。
+詳しい説明は後述します。
+
+\begin{tableii}{c|l}{}{フラグ}{意味}
+  \lineii{\constant{DOTALL}, \constant{S}}{\regexp{.} が改行も含めて、全ての文字とマッチするように指定する}
+  \lineii{\constant{IGNORECASE}, \constant{I}}{大文字小文字を区別しない}
+  \lineii{\constant{LOCALE}, \constant{L}}{ロケールを考慮してマッチングを行う}
+  \lineii{\constant{MULTILINE}, \constant{M}}{複数行にマッチングする。これは、 \regexp{\^} と \regexp{\$} に影響する}
+  \lineii{\constant{VERBOSE}, \constant{X}}{冗長な正規表現（もっと、きれいで分かりやすくまとめられる表現）を有効にする。}
+\end{tableii}
+
+\begin{datadesc}{I}
+\dataline{IGNORECASE}
+大文字小文字を区別せずにマッチングを行う。文字クラスとリテラル文字列は大文字小文字を無視して、
+マッチングが行われる。例えば、\regexp{[A-Z]} は小文字にもマッチし、\regexp{Spam} は、
+\samp{Spam}、\samp{spam}、\samp{spAM} にマッチします。このフラグ指定では、カレント・ロケールを考慮しません。
+\end{datadesc}
+
+\begin{datadesc}{L}
+\dataline{LOCALE}
+\regexp{\e w}, \regexp{\e W}, \regexp{\e b}, \regexp{\e B} をカレント・ロケールに依存して扱います。
+
+ロケールは、扱う自然言語の違いを考慮に入れるのを手助けする目的で、C 言語ライブラリに含まれる機能です。
+たとえば、フランス語を処理するときには、単語にマッチさせるのに \regexp{\e w+} と書けることを望むでしょう。
+しかし、\regexp{\e w} は文字クラス \regexp{[A-Za-z]} のみとマッチし、\character{é} や \character{ç} とはマッチしません。
+システムが適切に設定されていて、フランス語が選択されていれば、特定の C 言語の関数が、プログラムに対して
+\character{é} も文字扱いするように教えるのです。正規表現をコンパイルするときに \constant{LOCALE}
+フラグを設定すると、コンパイル済みオブジェクトが \regexp{\e w} を扱うときに、こういう C 言語の関数を使うことになります。
+この場合処理は遅くなりますが、期待どおり \regexp{\e w+} がフランス語の単語にマッチします。
+\end{datadesc}
+
+\begin{datadesc}{M}
+\dataline{MULTILINE}
+(\regexp{\^} と \regexp{\$} についてはまだ説明していません。\ref{more-metacharacters} で
+紹介します。)
+
+通常、\regexp{\^} は行頭にのみ、\regexp{\$} は(もし存在すれば)newline 直前の行末にのみマッチします。
+このフラグを指定すると、\regexp{\^} は文字列の先頭と、文字列中で newline の直後に続く行頭にマッチします。
+同様に、メタ文字 \regexp{\$} は、文字列の最後と(newline 直前の)行末にマッチします。
+
+\end{datadesc}
+
+\begin{datadesc}{S}
+\dataline{DOTALL}
+特殊文字 \character{.} が改行文字も含めて、あらゆる文字にマッチするようにします。
+このフラグを指定しないと、\character{.} は改行文字\emph{以外}のあらゆる文字にマッチします。
+\end{datadesc}
+
+\begin{datadesc}{X}
+\dataline{VERBOSE}
+
+このフラグを指定すると、柔軟な書式で、正規表現を読みやすく書くことができます。
+文字クラスやエスケープされていないバックスラッシュで生成された空白文字を除いて、
+正規表現中の空白文字は無視されます。
+これにより、正規表現を分かりやすくまとめたり、インデントしたりできるのです。
+また、正規表現中にコメントを入れることもできます。文字クラスや、
+エスケープされていないバックスラッシュによって生成されている場合を除き、
+\character{\#} 以降がコメントになります。コメントは単に無視されます。
+
+\constant{re.VERBOSE} を使った正規表現の例を以下に示します。とても読みやすいと思いませんか?
+
+\begin{verbatim}
+charref = re.compile(r"""
+ &[#]		     # Start of a numeric entity reference
+ (
+   [0-9]+[^0-9]      # Decimal form
+   | 0[0-7]+[^0-7]   # Octal form
+   | x[0-9a-fA-F]+[^0-9a-fA-F] # Hexadecimal form
+ )
+""", re.VERBOSE)
+\end{verbatim}
+
+冗長表現を指定しないと、この正規表現は次のようになります。
+\begin{verbatim}
+charref = re.compile("&#([0-9]+[^0-9]"
+                     "|0[0-7]+[^0-7]"
+                     "|x[0-9a-fA-F]+[^0-9a-fA-F])")
+\end{verbatim}
+
+上の例では、Python が文字列リテラルを自動的に連結するのを利用して、
+正規表現を小さな部分に分割していますが、それでも \constant{re.VERBOSE}
+を使った場合に比べて、分かりにくくなります。
+
+\end{datadesc}
+
+\section{パターンにもっと力を}
+
+ここまでは、正規表現ができることの一部を説明しただけです。
+この章では、新しいメタ文字と、テキスト中でマッチした部分を取り出す方法を見ていきます。
+
+\subsection{他のメタ文字 \label{more-metacharacters}}
+
+まだ紹介していないメタ文字がいくつかあります。
+そのほとんどを、この章で紹介していきます。
+
+これから紹介する残りのメタ文字のいくつかは、\dfn{ゼロ幅表明} と呼ばれます。
+これらは正規表現エンジンに文字列を渡さず、文字ではなく、単に成功か失敗かを使うのです。
+たとえば \regexp{\e b} は現在注目している位置に単語の境界があるという表明です。
+このとき注目している位置は \regexp{\e b} があっても変わりません。
+したがって、ある位置でマッチするなら、当然、無限回でもマッチできるわけですから、
+ゼロ幅表明を繰り返し使うものではないことが分かります。
+
+\begin{list}{}{}
+
+\item[\regexp{|}] 
+Alternation または "or" 演算子。A と B が任意の正規表現の場合、
+\regexp{A|B} は \samp{A} または \samp{B} にマッチする文字列にマッチします。
+\regexp{|} は複数文字からなる文字列を alternate する場合にも、真っ当に動作するよう、
+処理順序がかなり後に回されます。\regexp{Crow|Servo} は \samp{Crow} あるいは
+\samp{Servo} にはマッチしますが、\samp{Cro}、続いて \character{w} または
+\character{S}、最後に \samp{ervo} という文字列にはマッチしません。
+
+リテラル \character{|} にマッチさせるには、\regexp{\e|} とするか、
+\regexp{[|]} のように文字クラスの中に入れるかします。
+
+
+\item[\regexp{\^}]
+
+
+行頭にマッチします。\constant{MULTILINE} フラグが指定されていなければ、
+文字列の先頭にのみマッチします。\constant{MULTILINE} モードでは、
+文字列内の改行直後にもマッチします。
+
+たとえば、\samp{From} という単語が行頭にある場合のみにマッチさせる場合、
+正規表現は \verb|^From| です。
+
+\begin{verbatim}
+>>> print re.search('^From', 'From Here to Eternity')
+<re.MatchObject instance at 80c1520>
+>>> print re.search('^From', 'Reciting From Memory')
+None
+\end{verbatim}
+
+%To match a literal \character{\^}, use \regexp{\e\^} or enclose it
+%inside a character class, as in \regexp{[{\e}\^]}.
+
+\item[\regexp{\$}]
+行末にマッチします。行末とは文字列の最後、または、改行文字の直前です。
+
+\begin{verbatim}
+>>> print re.search('}$', '{block}')
+<re.MatchObject instance at 80adfa8>
+>>> print re.search('}$', '{block} ')
+None
+>>> print re.search('}$', '{block}\n')
+<re.MatchObject instance at 80adfa8>
+\end{verbatim}
+% $
+
+リテラル \character{\$} にマッチさせるには、\regexp{\e\$} を使うか、\regexp{[\$]}
+のように文字クラスの中に入れるかします。
+
+\item[\regexp{\e A}]
+
+文字列の先頭にのみマッチします。\constant{MULTILINE} モードでなければ、\regexp{\e A} と \regexp{\^} は事実上同じです。
+しかし \constant{MULTILINE} モードでは異なり、\regexp{\e A} は文字列の先頭にのみマッチするのに対して、
+\regexp{\^} は文字列内の数箇所にマッチすることがあります(改行文字の直前ならどこでもマッチします)。
+
+\item[\regexp{\e Z}]文字列の最後にのみマッチします。
+
+\item[\regexp{\e b}]
+単語の境界にマッチ。単語の始まり、または終わりにのみマッチする、ゼロ幅表明です。
+単語は連続した英数字として定義されるので、単語の終わりは空白文字か非英数字ということになります。
+
+以下の例は、\samp{class} が完全な単語の場合にのみマッチします。他の単語に内包されている場合にはマッチしません。
+
+\begin{verbatim}
+>>> p = re.compile(r'\bclass\b')
+>>> print p.search('no class at all')
+<re.MatchObject instance at 80c8f28>
+>>> print p.search('the declassified algorithm')
+None
+>>> print p.search('one subclass is')
+None
+\end{verbatim}
+
+この特殊シーケンスを使うときに、覚えておくべき機微が 2 つあります。
+ひとつめは、Python の文字列リテラルと正規表現との最悪の衝突であることです。
+Python 文字列では \samp{\e b} は ASCII コード 8 番、
+つまりバックスペース文字であるということです。生の文字列を使わなければ、
+Python は \samp{\e b} をバックスペースに変換するので、
+正規表現が意図どおりにマッチしません。次の例は、上の正規表現と同じように見えますが、
+正規表現直前の \character{r} がありません。
+
+\begin{verbatim}
+>>> p = re.compile('\bclass\b')
+>>> print p.search('no class at all')
+None
+>>> print p.search('\b' + 'class' + '\b')  
+<re.MatchObject instance at 80c3ee0>
+\end{verbatim}
+
+もうひとつは、この表明が使えない文字クラスの中で、\regexp{\e b} は、
+Python の文字列リテラルとの互換性のために、バックスペース文字扱いになるということです。
+
+\item[\regexp{\e B}]
+\regexp{\e b} とは反対に、現在の位置が単語の境界でない場合にマッチするゼロ幅表明です。
+
+\end{list}
+
+\subsection{グルーピング}
+
+正規表現がマッチしたかどうかだけでなく、より多くの情報を得なければならない場合が多々あります。
+正規表現をサブグループに分けて、注目したい部分ごとにマッチするように書けば、文字列を分割することもできます。
+たとえば RFC-822 のヘッダ行は、\character{:} でヘッダ名と値に分割されます。
+これを扱うには、ヘッダ行全体にマッチする正規表現の中に、ヘッダ名にマッチするグループと、
+値にマッチする別のグループを含むように書けばよいのです。
+
+グループはメタ文字 \character{(} と \character{)} で表されます。
+\character{(} と \character{)} は、数学での表記とほぼ同じ意味を持ち、内包する部分をグループにするのです。
+グループした内容に \regexp{*}、\regexp{+}、\regexp{?}、\regexp{\{\var{m},\var{n}\}} のような繰り返し記号を付けることで、繰り返しになるのです。
+たとえば、\regexp{(ab)*} は、\samp{ab} の 0 回以上の繰り返しにマッチします。
+
+\begin{verbatim}
+>>> p = re.compile('(ab)*')
+>>> print p.match('ababababab').span()
+(0, 10)
+\end{verbatim}
+
+\character{(} と \character{)} で示されたグループは、
+マッチしたテキストの始めと終わりのインデックスを取得し、 \method{group()}、
+\method{start()}、\method{end()}、\method{span()} に引数を渡すことで結果を受け取ることができます。
+(マッチしたテキストの範囲を受け取らないグループを表す方法は後述)グループは 0 から始まる数字で番号付けされます。
+グループ 0 は常に受け取れて、これは正規表現全体です。
+ここで紹介したメソッドの、デフォルト引数はグループ 0 になります。
+あとで、マッチした部分を取得しないグループを表現する方法も紹介します。
+
+\begin{verbatim}
+>>> p = re.compile('(a)b')
+>>> m = p.match('ab')
+>>> m.group()
+'ab'
+>>> m.group(0)
+'ab'
+\end{verbatim}
+
+グループ番号は左から右に 1 ずつ増えていきます。
+グループをネストしてもかまいません。
+この場合は、左から右へ開き括弧を数えあげていきます。
+
+\begin{verbatim}
+>>> p = re.compile('(a(b)c)d')
+>>> m = p.match('abcd')
+>>> m.group(0)
+'abcd'
+>>> m.group(1)
+'abc'
+>>> m.group(2)
+'b'
+\end{verbatim}
+
+\method{group()} には、複数のグループ番号を渡すことができ、この場合、
+各グループの値がタプルで返されます。
+
+\begin{verbatim}  
+>>> m.group(2,1,2)
+('b', 'abc', 'b')
+\end{verbatim}  
+
+\method{groups()} メソッドでは、グループ 1 からあるだけ、つまり全グループの文字列がタプルで返されます。
+
+\begin{verbatim}  
+>>> m.groups()
+('abc', 'b')
+\end{verbatim}  
+
+後方参照によって、先に取得されたグループの内容が、文字列中の現在位置で見付からなければならないことを指定できます。
+たとえば、\regexp{\e 1} は、グループ 1 の内容が現在位置で見付かれば成功し、そうでなければ失敗します。
+Python の文字列リテラルも、バックスラッシュとそれに続く数字を、任意の文字を含めるために使うので、
+正規表現にバックスラッシュを使うときには、生の文字列を使うことを忘れずに。
+
+次の例では、正規表現は文字列中で、2 回続けて現れる単語を検出します。
+
+\begin{verbatim}
+>>> p = re.compile(r'(\b\w+)\s+\1')
+>>> p.search('Paris in the the spring').group()
+'the the'
+\end{verbatim}
+
+このような後方参照は、文字列を単純に検索するのには、ほとんど役に立ちません --
+データの繰り返しがあるようなテキストフォーマットも存在はします --
+しかし、文字列の置き換えをするときに\emph{非常に}役に立つことに気づくはずです。
+
+\subsection{取り出さないグループと名前付きグループ}
+
+凝った正規表現を書こうとすると、文字列を取り出すためのグループと、正規表現自体を構造化するためのグループを使う場合があります。
+しかし、複雑な正規表現では、グループ番号を追いかけ続けるのが困難になります。
+この問題を解決するのに 2 つの方法があります。
+両方とも正規表現で拡張された、一般的な文法を使うので、まずそれを見ていきましょう。
+
+Perl 5 では、標準の正規表現の他にいくつかの機能が加えられ、Python の \module{re} モジュールはそのほとんどをサポートしています。
+Perl の正規表現と標準の正規表現が、混乱するような方法で違ったものにならないように、1 文字で入力できる新しいメタ文字や、
+新しい機能を表すために \samp{\e} で始まる特殊なシーケンスを選ぶことは難しかったものです。
+たとえば、\samp{\&} を新しいメタ文字にするとしましょう。
+ところが古い表記では \samp{\&} が通常の文字なので、\regexp{\e \&} や \regexp{[\&]} のようにエスケープされていないわけです。
+
+選ばれた解決策は、\regexp{(?...)} を拡張文法として使うことでした。
+括弧直後の \samp{?} は繰り返す対象がないので、シンタックスエラーです。
+ですから、これは互換性の問題を発生しません。
+\samp{?} 直後の文字で、どの拡張が使うかを示すので、\regexp{(?=foo)} と \regexp{(?:foo)}
+は別のものです(それぞれ a positive lookahead assertion と non-capturing group containing the subexpression \regexp{foo})。
+
+Python では、 Perl の拡張文法に、さらに拡張文法を追加されています。
+Python で拡張されたものは、疑問符直後の最初の文字が \samp{P} になっています。
+現在のところ、そのような拡張は 2 つあります。
+\regexp{(?P<\var{name}>...)} は名前つきグループを定義し、\regexp{(?P=\var{name})} は名前つきグループを後方参照します。
+将来 Perl 5 が似たような機能を別の文法で追加すれば、Python 独自の文法は互換性のために残しつつ、
+\module{re} は、Perl の文法をサポートする変更されるでしょう。
+
+ここまで見てきた一般的な拡張文法を踏まえて、複雑な正規表現中のグループを扱うことを単純にする機能に話を戻しましょう。
+グループは左から右へと番号づけされ、複雑な正規表現では多くのグループを使います。
+したがって、正しい番号を追いかけるのが難しくなり、そのような複雑な正規表現を修正するのはやっかいです。
+先頭付近に新しいグループを挿入すれば、それ以降の全ての番号を変更することになるからです。
+
+グループの内容を取得しないけれども、正規表現の一部を集めるために、グループを使いたい場合があります。
+これを明示するには、非取得グループを示す \regexp{(?:...)} を使います。
+括弧内にどんな正規表現でも配置できます。
+
+\begin{verbatim}
+>>> m = re.match("([abc])+", "abc")
+>>> m.groups()
+('c',)
+>>> m = re.match("(?:[abc])+", "abc")
+>>> m.groups()
+()
+\end{verbatim}
+
+マッチしたグループの内容を取得できないという事実を除けば、
+非取得グループは内容を取得できるグループとまったく同じように振舞います。
+この中に何か別の表現を入れたり、\samp{*} 等の繰り返しメタ文字で繰り返したり、
+他のグループ (取得でも非取得でも) の入れ子にしたりすることもできます。
+また、他のグループの番号づけを変更することなく、新しいグループを追加できるので、
+既に存在するグループを修正するときに \regexp{(?:...)} は特に役に立ちます。
+グループの内容を取得してもしなくても、探索の性能に違いはありません。
+どちらも同じ速さで動作します。
+
+より重要な機能は名前付きグループです。
+グループを番号で参照するのではなく、名前で参照できるのです。
+
+名前付きグループの文法は Python の独自拡張のひとつで、\regexp{(?P<\var{name}>...)} と表記します。
+\var{name} は、もちろん、グループの名前です。
+グループを名前で関連づけることを除けば、名前付きグループは取得グループと同じように振る舞います。
+取得グループを扱う、全ての \class{MatchObject} のメソッドは、グループに付けられた番号を参照するために整数か、グループ名を受け付けます。
+名前付きグループは番号付けもされているので、2 通りの方法で、グループの情報を取得することができるのです。
+
+\begin{verbatim}
+>>> p = re.compile(r'(?P<word>\b\w+\b)')
+>>> m = p.search( '(((( Lots of punctuation )))' )
+>>> m.group('word')
+'Lots'
+>>> m.group(1)
+'Lots'
+\end{verbatim}
+
+名前付きグループを使えば、番号を覚える代わりに、覚えやすい名前で参照できるので便利です。
+\module{imaplib} モジュールから、正規表現の例を示します。
+
+\begin{verbatim}
+InternalDate = re.compile(r'INTERNALDATE "'
+        r'(?P<day>[ 123][0-9])-(?P<mon>[A-Z][a-z][a-z])-'
+	r'(?P<year>[0-9][0-9][0-9][0-9])'
+        r' (?P<hour>[0-9][0-9]):(?P<min>[0-9][0-9]):(?P<sec>[0-9][0-9])'
+        r' (?P<zonen>[-+])(?P<zoneh>[0-9][0-9])(?P<zonem>[0-9][0-9])'
+        r'"')
+\end{verbatim}
+
+\code{m.group('zonem')} を取得するほうが、グループ番号 9 を覚えるより、とても簡単です。
+
+\regexp{(...)\e 1} のような表記では、後方参照のための文法がグループ番号を参照するので、名前を使う方法ではと自然と不一致が生じます。
+そこで、Python 独自拡張には \regexp{(?P=\var{name})} があります。これは、\var{name} と名付けられたグループの内容が、現在位置に存在することを示します。
+繰り返される単語を見付ける正規表現、\regexp{(\e b\e w+)\e s+\e 1} は、\regexp{(?P<word>\e b\e w+)\e s+(?P=word)} と書くこともできるのです。
+
+\begin{verbatim}
+>>> p = re.compile(r'(?P<word>\b\w+)\s+(?P=word)')
+>>> p.search('Paris in the the spring').group()
+'the the'
+\end{verbatim}
+
+\subsection{先読み表明}
+
+その他のゼロ幅表明として、先読み表明があります。
+先読み表明は、正にも、負にも使うことができ、次のように書きます。
+
+\begin{itemize}
+\item[\regexp{(?=...)}]
+正の先読み表明。\code{...} で示される正規表現が、現在位置でマッチすれば成功、そうでなければ失敗です。
+しかし、表現が試されても、マッチングエンジンは、現在位置を進めません。残りのパターンは表明が始まったところから試行されます。
+
+\item[\regexp{(?!...)}]
+負の先読み表明。これは正の表明の逆で、括弧内の正規表現が、現在位置でマッチ\emph{しなければ}成功します。
+\end{itemize}
+
+例を見てみれば、これが具体的になり、いつ先読みが役に立つのか説明になるでしょう。
+ファイル名にマッチし、\samp{.} で主ファイル名と拡張子を分離する、簡単なパターンを考えましょう。
+たとえば、\samp{news.rc} の場合、\samp{news} が主ファイル名で \samp{rc} が拡張子です。
+
+この場合のパターンは非常に単純で、\regexp{.*[.].*\$} となります。
+
+\samp{.} はメタ文字なので、特別に扱わなければならないことに注意してください。
+ここでは文字クラス中に入れました。
+また、\regexp{\$} が続くことにも注意が必要です。
+残りの文字列全部が拡張子に含まれることを明確にするために付け加えています)
+この正規表現は、\samp{foo.bar}、\samp{autoexec.bat}、\samp{sendmail.cf}、\samp{printers.conf} にマッチします。
+
+では、もう少し込み入った問題を考えましょう。
+拡張子が \samp{bat} でないファイル名にマッチさせるには、どうすればようでしょうか。
+まず、間違った試みをいくつか紹介します。
+
+\verb|.*[.][^b].*$|
+% $
+
+この方法では、拡張子の最初の文字が \samp{b} でないことを指定することで、\samp{bat} を除外しようとしています。
+これは間違いです。
+なぜなら、これでは \samp{foo.bar} もマッチしないからです。
+
+% Messes up the HTML without the curly braces around \^
+\regexp{.*[.]([{\^}b]..|.[{\^}a].|..[{\^}t])\$}
+
+最初の例に「拡張子の、1文字目が \samp{b} ではなく、2文字目が \samp{a} ではなく、\samp{t} ではない」という指定で、
+継ぎ当てようとして、表現がややこしくなりました。
+この場合、\samp{foo.bar} は受け付けられ、\samp{autoexec.bat} ははじかれます。
+しかし、拡張子が 3 文字であることが必要で、\samp{sendmail.cf} もはじかれてしまいます。
+別のバグがある、というわけで、これを修復するために再びややこしいパターンを作ることにしましょう。
+
+\regexp{.*[.]([{\^}b].?.?|.[{\^}a]?.?|..?[{\^}t]?)\$}
+
+3 度目の試みでは、\samp{sendmail.cf} のように拡張子が 3 文字未満の場合でも良いように、2文字目と3文字目が任意になりました。
+
+パターンがずいぶんと複雑になって、読むのも理解するのも難しくなってしまいました。
+正規表現を書く時には「プログラム中でこの正規表現を見たとき、これが何をしようとしているのか理解するのは、
+どれくらい難しいだろうか」と自分自身に問いかけてください。
+更に悪いことに、上に挙げた方法では、うまく改良ができません。
+もし問題が変わって \samp{bat} と \samp{exe} の両方を除外することになれば、このパターンはより複雑に分かりにくくなります。
+
+負の先読みだとこういった問題を全てクリアしてこう書けます:
+
+\regexp{.*[.](?!bat\$).*\$}
+% $
+
+この先読みは、その地点から \regexp{bat} にマッチしない場合は続きのパターンを試し、
+\regexp{bat\$} にマッチする場合はこの正規表現全体がマッチしないという意味です。
+最後の \regexp{\$} は、 \samp{sample.batch} のように、拡張子が \samp{bat}
+で始まるだけの文字列を許可するために必要になります。
+
+他の拡張子を除くのも簡単です。
+単にその拡張子を括弧内に加えるだけです。
+次のパターンは \samp{bat} か \samp{exe} で終わるファイル名を除外します。
+
+\regexp{.*[.](?!bat\$|exe\$).*\$}
+% $
+
+
+\section{文字列の変更}
+
+ここまでは、静的な文字列に対して探索を行ってきました。
+しかし、正規表現は、様々な方法で文字列を変更するのにも、よく使われます。
+以下の \class{RegexObject} のメソッドを利用します:
+
+\begin{tableii}{c|l}{code}{メソッド/属性}{目的}
+  \lineii{split()}{正規表現にマッチした場所で文字列を分割し、リストにします}
+  \lineii{sub()}{正規表現にマッチする部分文字列を探し出し、別の文字列で置換します}
+  \lineii{subn()}{\method{sub()} と同じ事をするのですが、新しい文字列と置換した数を返します}
+\end{tableii}
+
+
+\subsection{文字列の分割}
+
+\class{RegexObject} の \method{split()} メソッドは、正規表現がマッチした全ての部分で文字列を分割し、各部分をリストで返します。
+似たようなものとして文字列の \method{split()} メソッドがあり、これは一般的な区切り記号で分割するのに使われます。
+\method{split()} は空白文字か固定の文字列での分割のみをサポートしています。
+ご想像のとおり、モジュールレベルの \function{re.split()} 関数もあります。
+
+\begin{methoddesc}{split}{string \optional{, maxsplit\code{ = 0}}}
+正規表現にマッチした部分で、\var{string} を分割する。正規表現の中で、グループ取得に括弧が使われたら、
+グループの内容も戻り値リストに含めて返される。もし \var{maxsplit} が 0 以外なら、
+多くとも \var{maxsplit} 箇所で分割する。
+\end{methoddesc}
+
+\var{maxsplit} の値を渡すことで、分割する部分の個数を制限することができます。
+\var{maxsplit} が 0 以外のとき、多くとも \var{maxsplit} 箇所で分割され、それより後ろに残った文字列は、リストの最後の要素として返されます。
+以下の例では、非英数字で分割しています。
+
+\begin{verbatim}
+>>> p = re.compile(r'\W+')
+>>> p.split('This is a test, short and sweet, of split().')
+['This', 'is', 'a', 'test', 'short', 'and', 'sweet', 'of', 'split', '']
+>>> p.split('This is a test, short and sweet, of split().', 3)
+['This', 'is', 'a', 'test, short and sweet, of split().']
+\end{verbatim}
+
+区切り記号に挟まれたテキストだけでなく、区切り記号が何であるかを知りたい場合もあります。
+正規表現でグループを取得する括弧が使われたら、その内容もリストの中に含まれて返されます。
+次の呼出しを比べてみましょう。
+
+\begin{verbatim}
+>>> p = re.compile(r'\W+')
+>>> p2 = re.compile(r'(\W+)')
+>>> p.split('This... is a test.')
+['This', 'is', 'a', 'test', '']
+>>> p2.split('This... is a test.')
+['This', '... ', 'is', ' ', 'a', ' ', 'test', '.', '']
+\end{verbatim}
+
+モジュールレベルの関数 \function{re.split()} では、第 1 引数に正規表現を加えますが、他の部分は同じです。
+
+\begin{verbatim}
+>>> re.split('[\W]+', 'Words, words, words.')
+['Words', 'words', 'words', '']
+>>> re.split('([\W]+)', 'Words, words, words.')
+['Words', ', ', 'words', ', ', 'words', '.', '']
+>>> re.split('[\W]+', 'Words, words, words.', 1)
+['Words', 'words, words.']
+\end{verbatim}
+
+\subsection{検索と置換}
+
+別の一般的な作業は、パターンにマッチする部分を見付け出し、別の文字列と置き換えることです。
+\method{sub()} メソッドは、文字列か関数を置換する値として、文字列を処理対象として受取り、
+結果の文字列を返します。
+%Python の文字列は不変なので、この関数は新しい文字列を返します。
+
+\begin{methoddesc}{sub}{replacement, string\optional{, count\code{ = 0}}}
+\var{string} の中で、一番短いパターンで正規表現とマッチし、かつ他のマッチ部分と重ならない部分を、
+\var{replacement}で置換した文字列を返す。パターンが見付からなければ、\var{string} を返す。
+
+任意の引数 \var{count} は置換するパターンの最大値です。
+\var{count} は非負の整数でなければいけません。
+デフォルト値の 0 は、全ての出現部分を置換することを意味します。
+\end{methoddesc}
+
+\method{sub()} メソッドを使った簡単な例を示します。
+これは、色の名前を \samp{colour} という単語に置き換えます。
+
+\begin{verbatim}
+>>> p = re.compile( '(blue|white|red)')
+>>> p.sub( 'colour', 'blue socks and red shoes')
+'colour socks and colour shoes'
+>>> p.sub( 'colour', 'blue socks and red shoes', count=1)
+'colour socks and red shoes'
+\end{verbatim}
+
+\method{subn()} メソッドは同じ事をしますが、戻り値が置換後の文字列と置換した回数を
+タプルにして返します。
+
+\begin{verbatim}
+>>> p = re.compile( '(blue|white|red)')
+>>> p.subn( 'colour', 'blue socks and red shoes')
+('colour socks and colour shoes', 2)
+>>> p.subn( 'colour', 'no colours at all')
+('no colours at all', 0)
+\end{verbatim}
+
+空のマッチは直前でマッチした部分と隣接していない場合にのみ置換されます。
+
+\begin{verbatim}
+>>> p = re.compile('x*')
+>>> p.sub('-', 'abxd')
+'-a-b-d-'
+\end{verbatim}
+
+\var{replacement} が文字列であれば、バックスラッシュによるエスケープが処理されます。
+つまり \samp{\e n} は改行文字に、\samp{\e r} は復帰文字に、というふうに変換されるということです。
+\samp{\e j} のような未知のエスケープは、そのまま置換されます。
+\samp{\e 6} のような後方参照は、その正規表現に対応するグループの部分文字列に置換されます。
+これを使うことで、元のテキストの一部を、置換後の文字列に組み込むことができます。
+
+次の例では、\samp{\{} と \samp{\}} で囲まれた文字列がうしろに続く
+\samp{section} という単語にマッチして、\samp{section} を \samp{subsection} へと
+置換します。
+
+\begin{verbatim}
+>>> p = re.compile('section{ ( [^}]* ) }', re.VERBOSE)
+>>> p.sub(r'subsection{\1}','section{First} section{second}')
+'subsection{First} subsection{second}'
+\end{verbatim}
+
+\regexp{(?P<name>...)} の文法で定義される名前付きグループを参照するための文法もあります。
+\samp{\e g<name>} は \samp{name} という名前のグループにマッチした部分文字列を使います。
+\samp{\e g<\var{number}>} は対応するグループ番号を使います。
+\samp{\e g<2>} と \samp{\e 2} は同等ですが、\samp{\e g<2>0} のような置換文字列において、この違いは明確です。
+(\samp{\e 20} はグループ 20 の参照と解釈されるのであって、グループ 2 の参照とリテラル文字 \character{0} ではありません)
+次に示す置換はすべて同等の働きをしますが、異なる 3 とおりの置換文字列を使っています。
+
+\begin{verbatim}
+>>> p = re.compile('section{ (?P<name> [^}]* ) }', re.VERBOSE)
+>>> p.sub(r'subsection{\1}','section{First}')
+'subsection{First}'
+>>> p.sub(r'subsection{\g<1>}','section{First}')
+'subsection{First}'
+>>> p.sub(r'subsection{\g<name>}','section{First}')
+'subsection{First}'
+\end{verbatim}
+
+\var{replacement} には関数を指定することもでき、そうすることでよりパワフルな使い方ができるでしょう。
+\var{replacement} が関数の場合、その関数は \var{pattern} が重なり合わずに出現する度に呼び出され、
+\class{MatchObject} が渡されます。この関数は、その情報を使って置換文字列を計算してから返すこともできます。
+
+次の例では、\var{replacement} 関数で10進数を16進数に変換します。
+
+\begin{verbatim}
+>>> def hexrepl( match ):
+...     "Return the hex string for a decimal number"
+...     value = int( match.group() )
+...     return hex(value)
+...
+>>> p = re.compile(r'\d+')
+>>> p.sub(hexrepl, 'Call 65490 for printing, 49152 for user code.')
+'Call 0xffd2 for printing, 0xc000 for user code.'
+\end{verbatim}
+
+モジュールレベルの \function{re.sub()} 関数では、パターンは第 1 引数で渡されます。
+パターンは文字列か \class{RegexObject} を取ります。
+もし、正規表現のフラグを指定することが必要であれば、第 1 引数に \class{RegexObject} を使うか、
+修飾子を埋め込んだパターンを使うかしなければいけません。
+たとえば、\code{sub("(?i)b+", "x", "bbbb BBBB")} は \code{'x x'} を返します。
+
+\section{ありがちな問題}
+
+正規表現はパワフルな道具になるのですが、そのふるまいが直観的でないとも言えます。
+予想通りに振る舞わないことが多々あります。
+この章ではありがちな落し穴をいくつか指摘します。
+
+\subsection{文字列のメソッドを使う}
+
+\module{re} を使う事がそもそも間違いであることもあります。
+もし固定字列や単一文字クラスにマッチングさせるだけで、かつ \constant{IGNORECASE} のような
+\module{re} の機能を使わないのなら、フルパワーの正規表現は必要ないでしょう。
+文字列は固定文字列を操作するいくつかのメソッドを持っていて、たいてい速く動きます。
+大きな汎用の正規表現エンジンとは異なり、小さな C 言語によるループで実装されており、こういう目的に最適化されているからです。
+
+固定文字列を別の固定文字列で置換する場合が、そうかも知れません。
+たとえば\samp{word} を \samp{deed} で置換する場合です。
+これを行うには \code{re.sub()} 関数を使うような気がしますが、\method{replace()} を考慮してみましょう。
+\function{replace()} は単語内の \samp{word} も置換するので、\samp{swordfish} を \samp{sdeedfish}
+に置換してしまうことに注意してください。
+しかし、\regexp{word} というような、単純すぎる正規表現でも同じことになります。
+(単語の一部を置換しないようにするには、\samp{word} の両端に単語区切りがあることを要求するために、
+パターンは \regexp{\e bword\e b} としなければなりません。これは \method{replace} メソッドではできない作業です)
+
+別の一般的な作業は、文字列の中に出現するある文字を全て削除することと、ひとつの文字で置換することです。
+\code{re.sub('\e n', ' ', S)} のようにして実現できますが、\method{translate()}
+で削除も置換もできますし、正規表現よりもかなり速く処理できます。
+
+つまり、\module{re} モジュールに走る前に、あなたの問題がより速く、
+よりシンプルな文字列のメソッドで解決できるかどうか、考えようということです。
+
+\subsection{match() vs search()}
+
+\function{match()} 関数は、正規表現が先頭でマッチするかを調べるだけで、
+\function{search()} は文字列の先へ進みながら、マッチする部分を探します。
+この違いを覚えておくことは重要です。
+\function{match()} は位置 0 でマッチした場合のみ報告してくれます。
+もしマッチが位置 0 以外なら\function{match()} は報告 \emph{しません}。
+
+\begin{verbatim}
+>>> print re.match('super', 'superstition').span()  
+(0, 5)
+>>> print re.match('super', 'insuperable')    
+None
+\end{verbatim}
+
+反対に、\module{search()} は文字列を先へと探していき、最初に見付けたマッチを返します。
+
+\begin{verbatim}
+>>> print re.search('super', 'superstition').span()
+(0, 5)
+>>> print re.search('super', 'insuperable').span()
+(2, 7)
+\end{verbatim}
+
+ときどき、あなたは \function{re.match()} のみを使って、正規表現の前に \regexp{.*} を付けておくという誘惑にかられるかも知れません。
+この誘惑に打ち勝って、\function{re.search()} を使いましょう。
+正規表現のコンパイラは、マッチ部分の探索を高速に行うために、正規表現をそれなりに解析します。
+そのような解析のひとつが、最初のマッチ文字が何であるか見付けることです。
+たとえば \regexp{Crow} で始まるパターンは \character{C} で始まる文字列とマッチしなければいけません。
+この解析により、マッチングエンジンは、文字列の中から最初の文字を素早く探索し、見付かった場合だけ全体のマッチを試みるのです。
+
+\regexp{.*} を付け加えると、この最適化ができないため、文字列の最後まで探索してから、
+残りの正規表現のマッチ部分を探しに逆戻りすることが必要になるのです。
+代わりに\function{re.search()} を使ってください。
+
+\subsection{Greedy vs Non-Greedy}
+
+\regexp{a*} のように正規表現を繰り返すとき、その動作はできるだけパターンを消費しようとします。
+HTML タグを囲む角括弧のような対になっている区切り文字にマッチさせようとするとき、これが問題になります。
+ひとつのHTML タグにマッチさせるようと、単純すぎるパターンを使うと、\regexp{.*} の greedy(貪欲)性のためきちんと動きません。
+
+\begin{verbatim}
+>>> s = '<html><head><title>Title</title>'
+>>> len(s)
+32
+>>> print re.match('<.*>', s).span()
+(0, 32)
+>>> print re.match('<.*>', s).group()
+<html><head><title>Title</title>
+\end{verbatim}
+
+上の正規表現は \samp{<html>} の \character{<} にマッチし、\regexp{.*} が残りの文字列にマッチします。
+この正規表現は残っているのですが、\regexp{>} は文字列の最後ではマッチしません。
+そこで、正規表現エンジンは \regexp{>} がマッチするところまで、1 文字ずつ戻らなければならないのです。
+最終的に \samp{<html>} の \character{<} から、\samp{</title>} の \character{>} までにマッチするため、あなたの望む結果ではないわけです。
+
+この場合、解決策は non-greedy 指定子である \regexp{*?}、\regexp{+?}、\regexp{??}、\regexp{\{\var{m},\var{n}\}?} を使うことです。
+これらは、できるだけ<em>小さな</em>テキストにマッチします。
+上の例では、\character{>} は、\character{<} にマッチした直後に試され、そこで失敗すればマッチングエンジンは 1 文字ずつ進んで \character{>} を試します。
+これで正しい結果が得られます。
+
+\begin{verbatim}
+>>> print re.match('<.*?>', s).group()
+<html>
+\end{verbatim}
+
+(HTMLやXMLを正規表現でパースするのはとても骨の折れる作業だということを覚えておいてください。
+即席のパターンは一般的な形の部分を扱えますが、HTMLやXMLには簡単な正規表現では扱えない、特殊な
+ケースがあります。
+全てのケースに対応できる正規表現を書いたとしたら、それは\emph{非常に}複雑になります。
+HTMLやXML専用のパーサーモジュールを使ってください。)
+
+\subsection{re.VERBOSE を使わないと...}
+
+ここまで読んで、あなたはおそらく、正規表現はとてもコンパクトだけれど、必ずしも著しく読みやすいものではないと、気づいたでしょう。
+正規表現は少し複雑になると、バックスラッシュ、括弧、メタ文字の長い集まりになり、読んで理解するのが難しくなることもあります。
+
+そのような正規表現をコンパイルするときには \code{re.VERBOSE} フラグを指定することが助けになるかも知れません。
+これでより分かりやすく正規表現を書くことができます。
+
+\code{re.VERBOSE} フラグには、いくつかの効果があります。
+正規表現で、文字クラス内に書かれて\emph{ない}ホワイトスペースは無視されます。
+これは \regexp{dog | cat} のような正規表現が、より読みにくい \regexp{dog|cat} と同値だということです。
+しかし、\regexp{[a b]} は文字 \character{a}、\character{b} またはスペースにマッチします。
+それに加えて、正規表現の中にコメントを挿入することができます。
+コメントは \samp{\#} から改行文字まです。
+3 連引用符を使えば、正規表現をもっときれいに、まとめることができます。
+
+\begin{verbatim}
+pat = re.compile(r"""
+ \s*                 # Skip leading whitespace
+ (?P<header>[^:]+)   # Header name
+ \s* :               # Whitespace, and a colon
+ (?P<value>.*?)      # The header's value -- *? used to
+                     # lose the following trailing whitespace
+ \s*$                # Trailing whitespace to end-of-line
+""", re.VERBOSE)
+\end{verbatim}
+% $
+
+上の例は、下の例よりもはるかに読みやすくなっています。
+
+\begin{verbatim}
+pat = re.compile(r"\s*(?P<header>[^:]+)\s*:(?P<value>.*?)\s*$")
+\end{verbatim}
+% $
+
+\section{フィードバック}
+正規表現は複雑な題目です。
+この文書が、正規表現を理解する手助けになったでしょうか。
+分かりにくい箇所があったり、あなたが直面している問題について説明していなかったりしませんか。
+もしそうなら、この文書をよりよくするため、あなたの意見を作者までお寄せください。
+
+正規表現に関する最も完全な本は、ほぼ間違いなく O'Reilly から出版されている Jeffrey Friedl による
+\citetitle{Mastering Regular Expressions} (訳注: 邦訳は「詳説 正規表現」オライリー・ジャパン)でしょう。
+残念ながら、この本はもっぱら Perl や Java 流の正規表現に注目していて、Python の正規表現には
+全く触れられていないので、Pythonでプログラムする時のリファレンスには適しません。
+(初版ではPythonの、既に削除された \module{regex} モジュールが解説されていました)
+
+\end{document}
+

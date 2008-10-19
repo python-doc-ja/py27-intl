@@ -1,0 +1,53 @@
+\section{\module{fnmatch} ---
+         \UNIX{} ファイル名のパターンマッチ}
+
+\declaremodule{standard}{fnmatch}
+\modulesynopsis{\UNIX\ シェル形式のファイル名のパターンマッチ。}
+
+
+\index{filenames!wildcard expansion}
+
+このモジュールは \UNIX{} のシェル形式のワイルドカードへの対応を提供します
+が、(\refmodule{re}\refstmodindex{re} モジュールでドキュメント化されている)
+正規表現と同じでは\emph{ありません}。シェル形式のワイルドカードで使われる特
+別な文字は、
+
+\begin{tableii}{c|l}{code}{Pattern}{Meaning}
+  \lineii{*}{すべてにマッチします}
+  \lineii{?}{任意の一文字にマッチします}
+  \lineii{[\var{seq}]}{\var{seq}にある任意の文字にマッチします}
+  \lineii{[!\var{seq}]}{\var{seq}にない任意の文字にマッチします}
+\end{tableii}
+
+ファイル名のセパレーター(\UNIX では\code{'/'})はこのモジュールに固有なもので
+は \emph{ない} ことに注意してください。パス名展開については、
+\refmodule{glob}\refstmodindex{glob}モジュールを参照してください
+(\refmodule{glob}はパス名の部分にマッチさせるのに\function{fnmatch()}を使っ
+ています)。同様に、ピリオドで始まるファイル名はこのモジュールに固有ではなく
+て、\code{*} と\code{?} のパターンでマッチします。
+
+\begin{funcdesc}{fnmatch}{filename, pattern}
+filenameの文字列がpatternの文字列にマッチするかテストして、真、偽のいずれか
+を返します。 オペレーティングシステムが大文字、小文字を区別しない場合、
+比較を行う前に、両方のパラメタを全て大文字、または全て小文字に揃えます。
+ オペレーティングシステムが標準でどうなっているかに関係なく、大小文字を
+区別して比較したい場合には、\function{fnmatchcase()} を代わりに使って
+ください。
+
+\end{funcdesc}
+
+\begin{funcdesc}{fnmatchcase}{filename, pattern}
+\var{filename} が \var{pattern} にマッチするかテストして、真、偽を返します。
+比較は大文字、小文字を区別します。
+\end{funcdesc}
+
+\begin{funcdesc}{filter}{names, pattern}
+\var{pattern} にマッチする \var{names} のリストの部分集合を返します。
+\code{[n for n in names if fnmatch(n, pattern)]}と同じですが、もっと効率よく
+実装しています。
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{seealso}
+  \seemodule{glob}{\UNIX{} シェル形式のパス展開。}
+\end{seealso}

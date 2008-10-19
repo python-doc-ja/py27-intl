@@ -1,0 +1,89 @@
+\section{\module{anydbm} --- 
+	DBM 形式のデータベースへの汎用アクセスインタフェース}
+
+\declaremodule{standard}{anydbm}
+\modulesynopsis{DBM 形式のデータベースモジュールに対する汎用インタフェース。}
+
+
+\module{anydbm} は種々の DBM データベース --- 
+(\refmodule{bsddb}\refbimodindex{bsddb} を使う) 
+\refmodule{dbhash}\refstmodindex{dbhash} 、
+\refmodule{gdbm}\refbimodindex{gdbm}、および
+\refmodule{dbm}\refbimodindex{dbm}
+--- への汎用インタフェースです。
+これらのモジュールがどれもインストールされていない場合、
+\refmodule{dumbdbm}\refstmodindex{dumbdbm} モジュールの
+低速で単純な DBM 実装が使われます。
+
+\begin{funcdesc}{open}{filename\optional{, flag\optional{, mode}}}
+データベースファイル \var{filename} を開き、対応するオブジェクトを
+返します。
+
+データベースファイルがすでに存在する場合、\refmodule{whichdb} モジュール
+を使ってファイルタイプが判定され、適切なモジュールが使われます; 
+既存のデータベースファイルが存在しなかった場合、上に挙げたモジュール中で
+最初にインポートすることができたものが使われます。
+
+オプションの \var{flag} は
+既存のデータベースを読み込み専用で開く \code{'r'}、 
+既存のデータベースを読み書き用に開く \code{'w'}、 
+既存のデータベースが存在しない場合には新たに作成する \code{'c'}、および
+常に新たにデータベースを作成する \code{'n'} をとることができます。
+この引数が指定されない場合、標準の値は \code{'r'} になります。
+
+オプションの \var{mode} 引数は、新たにデータベースを作成しなければならない
+場合に使われる \UNIX{} のファイルモードです。標準の値は 8 進数の
+\code{0666} です (この値は現在有効な umask で修飾されます)。
+\end{funcdesc}
+
+\begin{excdesc}{error}
+サポートされているモジュールのどれかによって送出されうる例外が
+収められるタプルで、先頭の要素は \exception{anydbm.error} になって
+います --- \exception{anydbm.error} が送出された場合、後者が使われます。
+\end{excdesc}
+
+\function{open()} によって返されたオブジェクトは辞書とほとんど同じ
+同じ機能をサポートします; キーとそれに対応付けられた値を
+記憶し、引き出し、削除することができ、\method{has_key()} および
+\method{keys()} メソッドを使うことができます。キーおよび値は
+常に文字列です。
+
+以下の例ではホスト名と対応するタイトルがいくつか登録し、データベースの
+内容を表示します:
+
+\begin{verbatim}
+import anydbm
+
+# データベースを開く、必要なら作成する
+db = anydbm.open('cache', 'c')
+
+# いくつかの値を設定する
+db['www.python.org'] = 'Python Website'
+db['www.cnn.com'] = 'Cable News Network'
+
+# 内容についてループ。
+# .keys(), .values() のような他の辞書メソッドもつかえます。
+for k, v in db.iteritems():
+    print k, '\t', v
+
+# 文字列でないキーまたは値は例外を
+# おこします（ほとんどのばあい TypeErrorです)。
+db['www.yahoo.com'] = 4
+
+# 終了したらcloseします。
+db.close()
+\end{verbatim}
+
+
+\begin{seealso}
+  \seemodule{dbhash}{BSD \code{db} データベースインタフェース。}
+  \seemodule{dbm}{標準の \UNIX{} データベースインタフェース。}
+  \seemodule{dumbdbm}{\code{dbm} インタフェースの移植性のある実装。}
+  \seemodule{gdbm}{\code{dbm} インタフェースに基づいた GNU データベースインタフェース。}
+	\seemodule{shelve}{Python \code{dbm} インタフェース上に構築された
+汎用オブジェクト永続化機構。}
+  \seemodule{whichdb}{既存のデータベースがどの形式のデータベースか判定する
+ユーティリティモジュール。}
+\end{seealso}
+
+

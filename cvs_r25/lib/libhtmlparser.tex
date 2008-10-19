@@ -1,0 +1,179 @@
+\section{\module{HTMLParser} ---
+         HTML および XHTML のシンプルなパーザ}
+
+\declaremodule{standard}{HTMLParser}
+\modulesynopsis{HTML と XHTML を扱えるシンプルなパーザ。}
+
+\versionadded{2.2}
+
+このモジュールでは \class{HTMLParser} クラスを定義します。
+このクラスは HTML \index{HTML} (ハイパーテキスト記述言語、
+HyperText Mark-up Language) および XHTML \index{XHTML}
+で書式化されているテキストファイルを解釈するための基礎と
+なります。\refmodule{htmllib} にあるパーザと違って、このパーザ
+は \refmodule{sgmllib} の SGML パーザに基づいてはいません。
+
+
+\begin{classdesc}{HTMLParser}{}
+\class{HTMLParser} クラスは引数なしでインスタンス化します。
+
+HTMLParser インスタンスに HTML データが入力されると、
+タグが開始したとき、及び終了したときに関数を呼び出します。
+\class{HTMLParser} クラスは、ユーザが行いたい動作を提供する
+ために上書きできるようになっています。
+
+\refmodule{htmllib} のパーザと違い、このパーザは終了タグが開始タグと
+一致しているか調べたり、外側のタグ要素が閉じるときに内側で明示的
+に閉じられていないタグ要素のタグ終了ハンドラを呼び出したりはしません。
+\end{classdesc}
+
+例外も定義されています:
+
+\begin{excdesc}{HTMLParseError}
+パーズ中にエラーに遭遇した場合に\class{HTMLParser} クラスが送出する例外です。
+この例外は三つの属性を提供しています: \member{msg} はエラーの内容を
+説明する簡単なメッセージ、\member{lineno} は壊れたマークアップ構造
+を検出した場所の行番号、\member{offset} は問題のマークアップ構造の
+行内での開始位置を示す文字数です。
+\end{excdesc}
+
+\class{HTMLParser} インスタンスは以下のメソッドを提供します:
+
+\begin{methoddesc}{reset}{}
+インスタンスをリセットします。未処理のデータは全て失われます。
+インスタンス化の際に非明示的に呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{feed}{data}
+パーザにテキストを入力します。入力が完全なタグ要素で構成されている
+場合に限り処理が行われます; 不完全なデータであった場合、新たに
+データが入力されるか、\method{close()} が呼び出されるまでバッファ
+されます。 
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+全てのバッファされているデータについて、その後にファイル終了マーク
+が続いているとみなして強制的に処理を行います。このメソッドは
+入力データの終端で行うべき追加処理を定義するために導出クラスで
+上書きすることができますが、再定義を行ったクラスでは常に、
+\class{HTMLParser} 基底クラスのメソッド \method{close()} を
+呼び出さなくてはなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{getpos}{}
+現在の行番号およびオフセット値を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{get_starttag_text}{}
+最も最近開かれた開始タグのテキスト部分を返します。このテキストは
+必ずしも元データを構造化する上で必須ではありませんが、
+``広く知られている (as deployed)'' HTML を扱ったり、入力を
+最小限の変更で再生成 (属性間の空白をそのままにする、など) したり
+する場合に便利なことがあります。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_starttag}{tag, attrs} 
+このメソッドはタグの開始部分を処理するために呼び出されます。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+
+\var{tag} 引数はタグの名前で、小文字に変換されています。
+\var{attrs} 引数は \code{(\var{name}, \var{value})} のペアからなる
+リストで、タグの \code{<>} 括弧内にある属性が収められています。
+\var{name} は小文字に変換され、\var{value} 内のエンティティ参照
+は変換されます。二重引用符やバックスラッシュは変換しません。例えば、
+タグ \code{<A HREF="http://www.cwi.nl/">} を処理する場合、このメソッドは
+\samp{handle_starttag('a', [('href', 'http://www.cwi.nl/')])}
+として呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_startendtag}{tag, attrs}
+\method{handle_starttag()} と似ていますが、パーザが XHTML 形式の
+空タグ (\code{<a .../>}) に遭遇した場合に呼び出されます。
+この特定の語彙情報 (lexical information) が必要な場合、
+このメソッドをサブクラスで上書きすることができます; 標準の実装
+では、単に \method{handle_starttag()} および \method{handle_endtag()}
+を呼ぶだけです。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_endtag}{tag}
+このメソッドはあるタグ要素の終了タグを処理するために呼び出されます。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。\var{tag} 引数はタグの名前で、小文字に変換されています。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_data}{data}
+このメソッドは、他のメソッドに当てはまらない任意のデータを処理するために
+呼び出されます。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_charref}{ref} 
+このメソッドはタグ外の \samp{\&\#\var{ref};} 形式の文字参照
+(character reference) を処理するために呼び出されます。
+\var{ref} には、先頭の\samp{\&\#} および末尾の\samp{;} は
+含まれません。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_entityref}{name} 
+このメソッドはタグ外の \samp{\&\var{name};} 形式の一般のエンティティ参照 
+(entity reference) \var{name} を処理するために呼び出されます。
+\var{name} には、先頭の\samp{\&} および末尾の\samp{;} は
+含まれません。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_comment}{data}
+このメソッドはコメントに遭遇した場合に呼び出されます。\var{comment}
+引数は文字列で、\samp{--} および \samp{--} デリミタ間の、
+デリミタ自体を除いたテキストが収められています。例えば、コメント
+\samp{<!--text-->} があると、このメソッドは引数\code{'text'} で
+呼び出されます。導出クラスで上書きするためのメソッドです; 
+基底クラスの実装では何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_decl}{decl}
+パーザが SGML 宣言を読み出した際に呼び出されるメソッドです。
+\var{decl} パラメタは \code{<!}...\code{>} 記述内の宣言内容
+全体になります。
+導出クラスで上書きするためのメソッドです; 基底クラスの実装では
+何も行いません。
+\end{methoddesc}
+
+\begin{methoddesc}{handle_pi}{data}
+処理指令に遭遇した場合に呼び出されます。\var{data}には、処理指令
+全体が含まれ、例えば\code{<?proc color='red'>}という処理指令の場合、
+\code{handle_pi("proc color='red'")}のように呼び出されます。
+このメソッドは導出クラスで上書きするためのメソッドです; 基底クラスの
+実装では何も行いません。
+
+\note{The \class{HTMLParser}クラスでは、処理指令にSGMLの構文を使用します。
+末尾に\character{?}がXHTMLの処理指令では、\character{?}が\var{data}に
+含まれます。}
+\end{methoddesc}
+
+\begin{excdesc}{HTMLParseError}
+HTML の構文に沿わないパターンを発見したときに送出される例外です。
+HTML 構文法上の全てのエラーを発見できるわけではないので注意してください。
+\end{excdesc}
+
+\subsection{HTML パーザアプリケーションの例 \label{htmlparser-example}}
+
+基礎的な例として、\class{HTMLParser} クラスを使い、発見したタグを出力
+する、非常に基礎的な HTML パーザを以下に示します。
+
+\begin{verbatim}
+from HTMLParser import HTMLParser
+
+class MyHTMLParser(HTMLParser):
+
+    def handle_starttag(self, tag, attrs):
+        print "Encountered the beginning of a %s tag" % tag
+
+    def handle_endtag(self, tag):
+        print "Encountered the end of a %s tag" % tag
+\end{verbatim}

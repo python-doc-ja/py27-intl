@@ -1,0 +1,127 @@
+\chapter{ドキュメント化されていないモジュール \label{undoc}}
+
+現在ドキュメント化されていないが、ドキュメント化すべきモジュールを
+以下にざっと列挙します。どうぞこれらのドキュメントを寄稿してください！
+(電子メールで \email{docs@python.org} に送ってください)。
+
+この章のアイデアと元の文章内容は Fredrik Lundh のポストによる
+ものです; この章の特定の内容は実際には改訂されてきています。
+
+
+\section{フレームワーク}
+
+フレームワークは記述するのが難しくなりがちですが、そうする価値は
+あります。
+
+\begin{description}
+ \item ドキュメント化されていないフレームワークはありません。
+\end{description}
+
+
+\section{雑多な有用ユーティリティ}
+
+以下のいくつかは非常に古く、かつ／またはあまり頑健ではありません。
+``hmm.'' マーク付きです。
+
+\begin{description}
+\item[\module{bdb}]
+--- 汎用の Python デバッガ基底クラスです (pdb で使われています)。
+
+\item[\module{ihooks}]
+--- import フックのサポートです (\refmodule{rexec} のためのものです; 
+撤廃されるかもしれません)。
+
+\end{description}
+
+
+\section{プラットフォーム特有のモジュール}
+
+これらのモジュールは \refmodule{os.path} モジュールを実装するために
+用いられていますが、ここで触れる内容を超えてドキュメントされていません。
+これらはもう少しドキュメント化する必要があります。
+
+\begin{description}
+\item[\module{ntpath}]
+--- Win32、 Win64、 WinCE、 および OS/2 プラットフォームにおける
+\module{os.path} 実装です。
+
+\item[\module{posixpath}]
+--- \POSIX における \module{os.path} 実装です。
+
+\item[\module{bsddb185}]
+--- まだBerkeleyDB 1.85を使用しているシステムで後方互換性を保つためのモ
+ジュール。通常、特定のBSD Unixベースのシステムでのみ利用可能。直接使用し
+ないで下さい。
+\end{description}
+
+
+\section{マルチメディア関連}
+
+\begin{description}
+\item[\module{audiodev}]
+--- 音声データを再生するためのプラットフォーム非依存の API です。
+
+\item[\module{linuxaudiodev}]
+--- Linux 音声デバイスで音声データを再生します。Python 2.3 では
+\module{ossaudiodev} モジュールと置き換えられました。
+
+\item[\module{sunaudio}]
+--- Sun 音声データヘッダを解釈します (撤廃されるか、ツール/デモに
+なるかもしれません)。
+
+\item[\module{toaiff}]
+--- "任意の" 音声ファイルを AIFF ファイルに変換します; おそらく
+ツールかデモになるはずです。外部プログラム \program{sox} が必要です。
+
+\item[\module{ossaudiodev}]
+--- Open Sound System API を介して音声データを再生します。
+このモジュールは Linux、いくつかの BSD 系、およびいくつかの
+商用 \UNIX{} プラットフォームで利用できます。
+
+
+\end{description}
+
+
+\section{撤廃されたもの \label{obsolete-modules}}
+
+これらのモジュールは通常 import して利用できません; 利用できるように
+するには作業を行わなければなりません。
+
+%%% lib-old is empty as of Python 2.5
+% Python で書かれたものは、標準ライブラリの一部としてインストール
+% されている \file{lib-old/} ディレクトリの中にインストールされます。
+% 利用するには、\envvar{PYTHONPATH} を使うなどして、\file{lib-old/} 
+% ディレクトリを \code{sys.path} に追加しなければなりません。
+
+これらの拡張モジュールのうち C で書かれたものは、標準の設定では
+ビルドされません。\UNIX でこれらのモジュールを有効にするには、
+ビルドツリー内の \file{Modules/Setup} の適切な行のコメントアウトを
+外して、モジュールを静的リンクするなら Python をビルドしなおし、
+動的にロードされる拡張を使うなら共有オブジェクトをビルドして
+インストールする必要があります。
+
+% XXX need Windows instructions!
+
+\begin{description}
+
+\item[\module{timing}]
+--- 高い精度で経過時間を計測します (\function{time.clock()} を使って
+ください)。 (拡張モジュールです。)
+\end{description}
+
+
+\section{SGI 特有の拡張モジュール}
+
+以下は SGI 特有のモジュールで、現在のバージョンの SGI の実情が
+反映されていないかもしれません。
+
+\begin{description}
+\item[\module{cl}]
+--- SGI 圧縮ライブラリへのインタフェースです。
+
+\item[\module{sv}]
+--- SGI Indigo 上の ``simple video'' ボード(旧式のハードウェアです) 
+へのインタフェースです。
+\end{description}
+
+

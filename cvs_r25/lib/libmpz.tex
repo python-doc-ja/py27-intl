@@ -1,0 +1,115 @@
+\section{\module{mpz} ---
+         GNU 多倍長整数}
+
+\declaremodule{builtin}{mpz}
+\modulesynopsis{多倍精度における算術演算を実現する GNU MP ライブラリへのインタフェース。}
+
+
+\deprecated{2.2}{この節の末尾にある参考文献を読んで下さい。同様の機能を提供するパッケージについての情報があります。このモジュールは Python 2.3 で除去されます。}
+
+
+このモジュールはオプションです。モジュールを含むように設定して Python を
+構築した際にのみ利用可能であり、GNU MP ソフトウェアがインストールされて
+いることが必要です。
+\index{MP, GNU library}
+\index{arbitrary precision integers}
+\index{integer!arbitrary precision}
+
+このモジュールは GNU MP ライブラリの一部の機能へのインタフェースを
+実装しています。GNU MP ライブラリは多倍精度の整数および有理数
+に対する算術演算ルーチンを定義しています。\emph{整数だけの} 
+インタフェース (\function{mpz_*()}) が提供されています。
+特に注釈のない限り、GNU MP ドキュメントに記述されている内容が
+適用されます。
+
+有理数のサポート \index{rational numbers} は Python で実装されて
+います。例えば、Python ソースコード配布中の 
+\file{Demos/classes/Rat.py} で提供されている
+\module{Rat}\withsubitem{(demo module)}{\ttindex{Rat}} モジュール
+を参照してください。
+
+一般的に、\dfn{mpz} 型の数値は他の標準の Python 数値と同様に使う
+ことができます。例えば、\code{+}、\code{*}、などといった組み込み演算子
+や、\function{abs()}, \function{int()} \ldots, \function{divmod()},
+\function{pow()} といった、標準の組み込み関数を使うことができます。
+\strong{注意してください:} ライブラリには \cfunction{mpz_xor()} が
+なく、私にとっても必要ないので、\emph{ビット単位のxor} 
+演算は \emph{and}、\emph{invert}、\emph{or} を組み合わせて実装
+されています。
+
+mpz 型の数値は \function{mpz()} を呼び出して生成します (厳密な解説に
+ついては下を参照してください)。mpz 型の数値は以下のように印字されます:
+\code{mpz(\var{value})}
+
+
+\begin{funcdesc}{mpz}{value}
+新しい mpz 型数値を生成します。\var{value} は通常の整数、長整数、
+その他の mpz 型数値、そして文字列にすることもできます。文字列の
+場合、引数は 256 進数の桁からなるアレイとして解釈され、最下桁
+が前で、値は正の数になります。下で記述されている \method{binary()}
+を参照してください。
+\end{funcdesc}
+
+\begin{datadesc}{MPZType}
+\function{mpz()} およびこのモジュール中の他のほとんどの関数が返す
+オブジェクトの型です。
+\end{datadesc}
+
+
+個のモジュールでは多くの \emph{外部} 関数が定義されています。
+mpz 型でない引数はまず mpz 型の値に変換され、関数は mpz 型の数値
+を返します。
+
+\begin{funcdesc}{powm}{base, exponent, modulus}
+\code{pow(\var{base}, \var{exponent}) \%{} \var{modulus}} を返します。
+\code{\var{exponent} == 0} の場合、\code{mpz(1)} を返します。
+\C{} ライブラリ関数とは対照的に、この関数は負の指数を扱うことが
+できます。
+\end{funcdesc}
+
+\begin{funcdesc}{gcd}{op1, op2}
+\var{op1} および \var{op2} の最大公約数を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{gcdext}{a, b}
+\code{\var{a}*\var{s} + \var{b}*\var{t} == \var{g} == gcd(\var{a}, \var{b})}
+であるようなタプル \code{(\var{g}, \var{s}, \var{t})} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sqrt}{op}
+\var{op} の平方根を返します。結果はゼロの向きに丸められます。
+\end{funcdesc}
+
+\begin{funcdesc}{sqrtrem}{op}
+\code{\var{root}*\var{root} + \var{remainder} == \var{op}}
+となるようなタプル \code{(\var{root}, \var{remainder})} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{divm}{numerator, denominator, modulus}
+\code{\var{q} * \var{denominator} \%{} \var{modulus} == \var{numerator}} 
+となる値 \var{q} を返します。この関数は \function{gcdext()} を使って
+Python で実装することもできます。
+\end{funcdesc}
+
+mpz 数値型は一つのメソッドを持ちます:
+
+\begin{methoddesc}[mpz]{binary}{}
+mpz 型の数値をバイナリ文字列に変換します。数値は 256 進数の桁からなる
+アレイに記憶されます。最小の桁が先頭になります。
+
+mpz 型の数値はゼロまたはそれ以上の値をもたなければなりません。
+そうでない場合 \exception{ValueError} が送出されます。
+\end{methoddesc}
+
+
+\begin{seealso}
+  \seetitle[http://gmpy.sourceforge.net/]{General Multiprecision Python}{
+このプロジェクトでは多倍精度の算術演算を Python で行えるようにする
+新たな数値型を構築中です。彼らの最初の試みも GNU MP ライブラリに
+基づいています。}
+
+  \seetitle[http://www.egenix.com/files/python/mxNumber.html]{mxNumber
+            --- Extended Numeric Types for Python}{
+もう一つの GNU MP ライブラリに対するラッパです。Windows に移植された
+GNU MP ライブラリを含みます。}
+\end{seealso}

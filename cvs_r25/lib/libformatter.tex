@@ -1,0 +1,326 @@
+\section{\module{formatter} ---
+         汎用の出力書式化機構}
+
+\declaremodule{standard}{formatter}
+\modulesynopsis{汎用の出力書式化機構およびデバイスインタフェース。}
+
+
+このモジュールでは、二つのインタフェース定義を提供しており、
+それらの各インタフェースについて複数の実装を提供しています。
+\emph{formatter} インタフェースは \refmodule{htmllib} モジュールの
+\class{HTMLParser} クラスで使われており、\emph{writer} 
+インタフェースは formatter インタフェースを使う上で必要です。
+\withsubitem{(class in htmllib)}{\ttindex{HTMLParser}}
+
+formatter オブジェクトはある抽象化された書式イベントの流れを
+writer オブジェクト上の特定の出力イベントに変換します。
+formatter はいくつかのスタック構造を管理することで、writer 
+オブジェクトの様々な属性を変更したり復元したりできるように
+しています; このため、writer は相対的な変更や ``元に戻す'' 操作
+を処理できなくてもかまいません。writer の特定のプロパティのうち、
+formatter オブジェクトを介して制御できるのは、水平方向の字揃え、
+フォント、そして左マージンの字下げです。
+任意の、非排他的なスタイル設定を writer に提供するための
+メカニズムも提供されています。さらに、段落分割のように、
+可逆でない書式化イベントの機能を提供するインタフェース
+もあります。
+
+writer オブジェクトはデバイスインタフェースをカプセル化します。
+ファイル形式のような抽象デバイスも物理デバイス同様にサポートされて
+います。ここで提供されている実装内容はすべて抽象デバイス上で
+動作します。デバイスインタフェースは formatter オブジェクトが
+管理しているプロパティを設定し、データを出力端に書き込める
+ようにします。
+
+
+\subsection{formatter インタフェース \label{formatter-interface}}
+
+formatter を作成するためのインタフェースは、インスタンス化しようと
+する個々の formatter クラスに依存します。以下で解説するのは、
+インスタンス化された全ての formatter がサポートしなければならない
+インタフェースです。
+
+モジュールレベルではデータ要素を一つ定義しています:
+
+
+\begin{datadesc}{AS_IS}
+後に述べる \code{push_font()} メソッドでフォント指定をする時に
+使える値です。また、その他の \code{push_\var{property}()} 
+メソッドの新しい値として使うことができます。
+
+\code{AS_IS} の値をスタックに置くと、どのプロパティが変更されたかの
+追跡を行わずに、対応する \code{pop_\var{property}()} メソッドが呼び
+出されるようになります。
+\end{datadesc}
+
+formatter インスタンスオブジェクトには以下の属性が定義されています:
+
+
+\begin{memberdesc}[formatter]{writer}
+formatter とやり取りを行う writer インスタンスです。
+\end{memberdesc}
+
+
+\begin{methoddesc}[formatter]{end_paragraph}{blanklines}
+開かれている段落があれば閉じ、次の段落との間に少なくとも
+\var{blanklines} が挿入されるようにします。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{add_line_break}{}
+強制改行挿入します。既に強制改行がある場合は挿入しません。
+論理的な段落は中断しません。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{add_hor_rule}{*args, **kw}
+出力に水平罫線を挿入します。現在の段落に何らかのデータがある
+場合、強制改行が挿入されますが、論理的な段落は中断しません。
+引数とキーワードは writer の \method{send_line_break()} メソッドに
+渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{add_flowing_data}{data}
+空白を折りたたんで書式化しなければならないデータを提供します。
+空白の折りたたみでは、直前や直後の \method{add_flowing_data} 呼び出しに
+入っている空白も考慮されます。このメソッドに渡されたデータは
+出力デバイスで行末の折り返し (word-wrap) されるものと想定されて
+います。出力デバイスでの要求やフォント情報に応じて、writer オブジェクト
+でも何らかの行末折り返しが行われなければならないので注意してください。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{add_literal_data}{data}
+変更を加えずに writer に渡さなければならないデータを提供します。
+改行およびタブを含む空白を \var{data} の値にしても問題ありません。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{add_label_data}{format, counter}
+現在の左マージン位置の左側に配置されるラベルを挿入します。この
+ラベルは箇条書き、数字つき箇条書きの書式を構築する際に使われます。
+\var{format} の値が文字列の場合、整数の値 \var{counter} の
+書式指定として解釈されます。
+
+\var{format} の値が文字列の場合、整数の値をとる \var{counter} の
+書式化指定として解釈されます。書式化された文字列はラベルの値に
+なります; \var{format} が文字列でない場合、ラベルの値として
+直接使われます。ラベルの値は writer の \method{send_label_data()}
+メソッドの唯一の引数として渡されます。非文字列のラベル値をどう
+解釈するかは関連付けられた writer に依存します。
+
+
+書式化指定は文字列からなり、 counter の値と合わせてラベルの値を算出
+するために使われます。書式文字列の各文字はラベル値にコピーされます。
+このときいくつかの文字は counter 値を変換を指すものとして認識されます。
+特に、文字 \character{1} はアラビア数字の counter 値を表し、
+\character{A} と \character{a} はそれぞれ大文字および小文字の
+アルファベットによる counter 値を表し、\character{I} と \character{i} 
+はそれぞれ大文字および小文字のローマ数字による counter 値を表し
+ます。アルファベットおよびローマ字数字への変換の際には、counter の
+値はゼロ以上である必要があるので注意してください。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{flush_softspace}{}
+以前の \method{add_flowing_data()} 呼び出しでバッファされている
+出力待ちの空白を、関連付けられている writer オブジェクトに送信
+します。このメソッドは writer オブジェクトに対するあらゆる直接操作
+の前に呼び出さなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{push_alignment}{align}
+新たな字揃え (alignment) 設定を字揃えスタックの上にプッシュします。
+変更を行いたくない場合には \constant{AS_IS} にすることができます。
+字揃え設定値が以前の設定から変更された場合、writer の 
+\method{new_alignment()} メソッドが \var{align} の値と共に呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{pop_alignment}{}
+以前の字揃え設定を復元します。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{push_font}{\code{(}size, italic, bold, teletype\code{)}}
+writer オブジェクトのフォントプロパティのうち、一部または全てを変更します。
+\constant{AS_IS} に設定されていないプロパティは引数で渡された値に
+設定され、その他の値は現在の設定を維持します。writer の
+\method{new_font()} メソッドは完全に設定解決されたフォント指定で
+呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{pop_font}{}
+以前のフォント設定を復元します。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{push_margin}{margin}
+左マージンのインデント数を一つ増やし、論理タグ \var{margin} を
+新たなインデントに関連付けます。マージンレベルの初期値は \code{0}
+です。変更された論理タグの値は真値とならなければなりません; 
+\constant{AS_IS} 以外の偽の値はマージンの変更としては不適切です。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{pop_margin}{}
+以前のマージン設定を復元します。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{push_style}{*styles}
+任意のスタイル指定をスタックにプッシュします。全てのスタイルは
+スタイルスタックに順番にプッシュされます。\constant{AS_IS} 値を含み、
+スタック全体を表すタプルは writer の \method{new_styles()} メソッド
+に渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{pop_style}{\optional{n\code{ = 1}}}
+\method{push_style()} に渡された最新 \var{n} 個のスタイル指定を
+ポップします。\constant{AS_IS} 値を含み、変更されたスタックを表す
+タプルは writer の \method{new_styles()} メソッドに渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{set_spacing}{spacing}
+writer の割り付けスタイル (spacing style) を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[formatter]{assert_line_data}{\optional{flag\code{ = 1}}}
+現在の段落にデータが予期せず追加されたことを formatter に知らせます。
+このメソッドは writer を直接操作した際に使わなければなりません。
+writer 操作の結果、出力の末尾が強制改行となった場合、オプションの
+\var{flag} 引数を偽に設定することができます。
+\end{methoddesc}
+
+
+\subsection{formatter 実装 \label{formatter-impls}}
+
+このモジュールでは、formatter オブジェクトに関して二つの実装を
+提供しています。ほとんどのアプリケーションではこれらのクラスを
+変更したりサブクラス化することなく使うことができます。
+
+\begin{classdesc}{NullFormatter}{\optional{writer}}
+何も行わない formatter です。\var{writer} を省略すると、
+\class{NullWriter} インスタンスが生成されます。
+\class{NullFormatter} インスタンスは、writer のメソッドを
+全く呼び出しません。writer へのインタフェースを実装する場合には
+このクラスのインタフェースを継承する必要がありますが、実装を
+継承する必要は全くありません。
+\end{classdesc}
+
+\begin{classdesc}{AbstractFormatter}{writer}
+標準の formatter です。この formatter 実装は広範な writer
+で適用できることが実証されており、ほとんどの状況で直接使うことが
+できます。高機能の WWW ブラウザを実装するために使われたこともあります。
+\end{classdesc}
+
+
+
+\subsection{writer インタフェース \label{writer-interface}}
+writer を作成するためのインタフェースは、インスタンス化しようと
+する個々の writer クラスに依存します。以下で解説するのは、
+インスタンス化された全ての writer がサポートしなければならない
+インタフェースです。
+ほとんどのアプリケーションでは \class{AbstractFormatter} クラスを
+formatter として使うことができますが、通常 writer はアプリケーション
+側で与えなければならないので注意してください。
+
+\begin{methoddesc}[writer]{flush}{}
+バッファに蓄積されている出力データやデバイス制御イベントを
+フラッシュします。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{new_alignment}{align}
+字揃えのスタイルを設定します。\var{align} の値は任意のオブジェクト
+を取りえますが、慣習的な値は文字列または \code{None} で、
+\code{None} は writer の ``好む'' 字揃えを使うことを表します。
+慣習的な \var{align} の値は \code{'left'}、 \code{'center'}、
+\code{'right'}、および \code{'justify'} です。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{new_font}{font}
+フォントスタイルを設定します。\var{font} は、デバイスの標準のフォント
+が使われることを示す \code{None} か、
+\code{(}\var{size}, \var{italic}, \var{bold},\var{teletype}\code{)}
+の形式をとるタプルになります。size はフォントサイズを示す文字列
+になります; 特定の文字列やその解釈はアプリケーション側で定義します。
+\var{italic}、\var{bold}、および \var{teletype} といった値は
+ブール値で、それらの属性を使うかどうかを指定します。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{new_margin}{margin, level}
+マージンレベルを整数値 \var{level} に設定し、論理タグ (logical tag)
+を \var{margin} に設定します。論理タグの解釈は writer の判断に
+任されます; 論理タグの値に対する唯一の制限は \var{level} が
+非ゼロの値の際に偽であってはならないということです。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{new_spacing}{spacing}
+割り付けスタイル (spacing style) を \var{spacing} に設定します。
+Set the spacing style to \var{spacing}.
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{new_styles}{styles}
+追加のスタイルを設定します。\var{styles} の値は任意の値からなる
+タプルです; \constant{AS_IS} 値は無視されます。
+\var{styles} タプルはアプリケーションや writer の実装上の都合に
+より、集合としても、スタックとしても解釈され得ます。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_line_break}{}
+現在の行を改行します。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_paragraph}{blankline}
+少なくとも \var{blankline} 空行分の間隔か、空行そのもので段落を
+分割します。\var{blankline} の値は整数になります。
+writer の実装では、改行を行う必要がある場合、このメソッドの呼び出しに
+先立って \method{send_line_break()} の呼び出しを受ける必要あります;
+このメソッドには段落の最後の行を閉じる機能は含まれておらず、
+段落間に垂直スペースを空ける役割しかありません。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_hor_rule}{*args, **kw}
+水平罫線を出力デバイスに表示します。このメソッドへの引数は
+全てアプリケーションおよび writer 特有のものなので、注意して
+解釈する必要があります。このメソッドの実装では、すでに改行が
+\method{send_line_break()} によってなされているものと仮定しています。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_flowing_data}{data}
+行端が折り返され、必要に応じて再割り付け解析を行った (re-flowed) 
+文字データを出力します。このメソッドを連続して呼び出す上では、
+writer は複数の空白文字は単一のスペース文字に縮約されていると
+仮定することがあります。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_literal_data}{data}
+すでに表示用に書式化された文字データを出力します。
+これは通常、改行文字で表された改行を保存し、新たに改行を持ち込
+まないことを意味します。
+\method{send_formatted_data()} インタフェースと違って、
+データには改行やタブ文字が埋め込まれていてもかまいません。
+\end{methoddesc}
+
+\begin{methoddesc}[writer]{send_label_data}{data}
+可能ならば、\var{data} を現在の左マージンの左側に設定します。
+\var{data} の値には制限がありません; 文字列でない値の扱い方は
+アプリケーションや writer に完全に依存します。このメソッドは
+行の先頭でのみ呼び出されます。
+\end{methoddesc}
+
+
+\subsection{writer 実装 \label{writer-impls}}
+
+このモジュールでは、3 種類の writer オブジェクトインタフェース実装を
+提供しています。ほとんどのアプリケーションでは、
+\class{NullWriter} から新しい writer クラスを導出する必要があるでしょう。
+
+\begin{classdesc}{NullWriter}{}
+インタフェース定義だけを提供する writer クラスです; どのメソッドも
+何ら処理を行いません。このクラスは、メソッド実装をまったく継承する
+必要のない writer 全ての基底クラスになります。
+\end{classdesc}
+
+\begin{classdesc}{AbstractWriter}{}
+この writer は formatter をデバッグするのに利用できますが、それ以外
+に利用できるほどのものではありません。各メソッドを呼び出すと、
+メソッド名と引数を標準出力に印字して呼び出されたことを示します。
+\end{classdesc}
+
+\begin{classdesc}{DumbWriter}{\optional{file\optional{, maxcol\code{ = 72}}}}
+単純な writer クラスで \var{file} に渡されたファイルオブジェクトか
+\var{file} が省略された場合には標準出力に出力を書き込みます。
+出力は \var{maxcol} で指定されたカラム数で単純な行端折り返しが行われます。
+このクラスは連続した段落を再割り付けするのに適しています。
+\end{classdesc}

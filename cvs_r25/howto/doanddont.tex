@@ -1,0 +1,329 @@
+\documentclass{howto}
+
+\title{Python のべき・べからず集}
+
+\release{0.00}
+
+\author{Moshe Zadka}
+\authoraddress{howto@zadka.site.co.il}
+
+\begin{document}
+\maketitle
+
+このドキュメントはパブリックドメインです。
+
+\begin{abstract}
+\noindent
+このドキュメントはチュートリアルの手引きとしてご利用いただけます。
+これは、Python をどのように使うか、そしてより重要なことに、どのように
+使わ{\em ない}かを示します。
+\end{abstract}
+
+\tableofcontents
+
+\section{使うべきでない構造}
+
+Python は他の言語に比べて不可解な挙動は少ないですが、それでもやはり
+特殊なケースでだけにおいて便利だったり、あるいは単純に危険であるような
+構造は存在します。
+
+\subsection{from module import *}
+
+\subsubsection{関数定義の内側}
+
+\code{from module import *} は関数定義の内側では{\em 不正}です。
+Python のバージョンの多くはこのチェックをしていませんが、これを適切だとするものではなく、
+せいぜい有能な弁護士が人を潔白にできるというようなものでしかありません。
+金輪際このような使い方をしてはいけません。これが許されるバージョンにおいても
+これは関数の実行を遅くし、これはどの名前が local でどれが global かをコンパイラが確定できないためです。
+Python 2.1 においてこの構造は警告を出し、場合によってはエラーを起こします。
+
+\subsubsection{モジュールレベル}
+
+\code{from module import *} をモジュールレベルで使うことは正しいですが、
+通常は悪いアイデアです。一つに、これはそうでなければ Python が持っている重要な
+プロパティを失ってしまいます --- お好みのエディタのシンプルな「検索」機能で
+どのようなトップレベル名が定義されているかを知ることが出来ます。将来、あるモジュールが
+追加の関数やクラスなどで大きくなった場合にトラブルとなる可能性も起こります。
+
+ニュースグループにおいて最もおぞましい質問の一つは、どうして以下のコード：
+
+\begin{verbatim}
+f = open("www")
+f.read()
+\end{verbatim}
+
+これが動かないのか、というものです。もちろん（``www''というファイルがあるとして）これは動作しますが、
+もしモジュール中のどこかに \code{from os import *} 宣言があったとすれば動きません。
+\module{os} モジュールは \function{open()} という関数を持っていて、これは
+integer を返すのです。これは非常に有用ですが、組み込み関数の隠蔽はこれの最も不便な性質です。
+
+あるモジュールが、どんな名前をエクスポートするかは分からないということを覚えておいてください、
+ですので必要なものだけ使う --- \code{from module import name1, name2}、もしくは
+モジュールの中にとどめて必要に応じてアクセスする --- \code{import module;print module.name} 
+ようにしてください。
+
+\subsubsection{有効なケース}
+
+\code{from module import *} が有効なケースも存在します:
+
+\begin{itemize}
+
+\item 対話的プロンプトにおいて。例えば、\code{from math import *} は Python を素晴らしい科学計算機にしてくれます。
+
+\item C のモジュールを Python のモジュールで拡張する時。
+
+\item そのモジュールが自身を \code{from import *} に対して安全であると宣言している時。
+
+\end{itemize}
+
+\subsection{簡素な \keyword{exec}, \function{execfile} やその類}
+
+“簡素な”という言葉は明示的な辞書を持たない使用を意味し、このような場合、
+この構造は{\em 現在の}文脈でコードを評価してしまいます。
+これは \code{from import *} が危ないのと同じ理由で危険です --- これはカウント中の
+変数を飛び越え、コードの他の部分をめちゃくちゃにしてしまうかも知れません。
+単純に、これはやってはいけません。
+
+悪い例:
+
+\begin{verbatim}
+>>> for name in sys.argv[1:]:
+>>>     exec "%s=1" % name
+>>> def func(s, **kw):
+>>>     for var, val in kw.items():
+>>>         exec "s.%s=val" % var  # 不正!
+>>> execfile("handler.py")
+>>> handle()
+\end{verbatim}
+
+良い例:
+
+\begin{verbatim}
+>>> d = {}
+>>> for name in sys.argv[1:]:
+>>>     d[name] = 1
+>>> def func(s, **kw):
+>>>     for var, val in kw.items():
+>>>         setattr(s, var, val)
+>>> d={}
+>>> execfile("handle.py", d, d)
+>>> handle = d['handle']
+>>> handle()
+\end{verbatim}
+
+\subsection{from module import name1, name2}
+
+これは、これまでに述べた「べからず」よりはずっと弱いですが、しかるべき理由が無いのであれば
+行なうべきではありません。通常これが悪いアイデアである理由は、唐突に２つの名前空間に分かれた
+オブジェクトを持つことになるからです。片方の名前空間でバインディングが変更されたとしても
+もう一方では変更されませんので、相互に矛盾が生じる可能性があるでしょう。これは、例えば、
+片方のモジュールがリロードされたり、関数定義が実行時に変更されたりした場合に起こります。
+
+悪い例:
+
+\begin{verbatim}
+# foo.py
+a = 1
+
+# bar.py
+from foo import a
+if something():
+    a = 2 # danger: foo.a != a 
+\end{verbatim}
+
+良い例:
+
+\begin{verbatim}
+# foo.py
+a = 1
+
+# bar.py
+import foo
+if something():
+    foo.a = 2
+\end{verbatim}
+
+\subsection{except:}
+
+Python は \code{except:} 節を持っていて、これは全ての例外を catch します。
+Python の{\em 全ての}エラーは exception を発生しますので、これは多くの
+プログラミングエラーを実行時エラーのように見せ、デバッグの妨げになります。
+
+以下のコードが良い例です:
+
+\begin{verbatim}
+try:
+    foo = opne("file") # "open" のスペルミス
+except:
+    sys.exit("could not open file!")
+\end{verbatim}
+
++except clause. The program will exit, and you will have no idea that
++this has nothing to do with the readability of \code{"file"}.
+2行目が \exception{NameError} を発生し、これは except 節でキャッチされます。
+プログラムは終了し、あなたはこれは \code{"file"} が読めるかどうかとは何の関係も
+ないことを知ることができないでしょう。
+
+この例は次のように改良できます
+
+\begin{verbatim}
+try:
+    foo = opne("file") # will be changed to "open" as soon as we run it
+except IOError:
+    sys.exit("could not open file")
+\end{verbatim}
+
+\code{except:} 節が便利なケースがあります:
+例えば、コールバックを実行するようなフレームワークにおいては、いかなるコールバックも
+フレームワークを妨害させないようにすることは良いでしょう。
+
+\section{Exceptions}
+
+Exception は Python の便利な機能です。あなたは何か予期しない事が起きたときには
+例外を投げるようにし、それに関してなにか対処ができるような場所でそれを
+受け取るべきです。
+以下は有名な、やってはいけない例です
+
+\begin{verbatim}
+def get_status(file):
+    if not os.path.exists(file):
+        print "file not found"
+        sys.exit(1)
+    return open(file).readline()
+\end{verbatim}
+
+\function{os.path.exists} の呼び出しと \function{open} の呼び出しの間にファイルが
+削除されるという例を考えてみてください。これは、\exception{IOError} を発生させるでしょう。
+同じことが、\var{file} は存在するけれど読み取り属性が無いという場合にも言えるでしょう。
+通常のマシンで、存在するファイルと存在しないファイルに対してテストをしていたのであれば
+ここにバグは存在しないように見えます。つまりテスト結果は良好であり、このコードはリリース
+されるでしょう。そうすると、処理されないされない \exception{IOError} がユーザに渡り、
+彼らは醜いトレースバックを見ることになってしまいます。
+
+より良いやり方を示します。
+
+\begin{verbatim}
+def get_status(file):
+    try:
+        return open(file).readline()
+    except (IOError, OSError):
+        print "file not found"
+        sys.exit(1)
+\end{verbatim}
+
+このバージョンでは、ファイルがオープンされて読み取られるか
+（つまりこれは NFS や SMB のような弱いコネクション上でも動作します）、
+もしくはメッセージが出力されてアプリケーションが終了する「必ずどちらか」になります。
+
+さらに言えば、\function{get_status} にはたくさんの前提があります --- これは
+期間動作するスクリプト中でだけ使われそうで、例えば長いこと動作するサーバの中では
+使われないでしょう。もちろん、呼び出し側は例えば次のようにもできます
+
+\begin{verbatim}
+try:
+    status = get_status(log)
+except SystemExit:
+    status = None
+\end{verbatim}
+
+ですのでコード中、\code{except} 節はできるだけ少なくなるようにしてください --- これらは通常、
+\function{main} で全て処理するか、常に成功するであろう関数コールの内側にすることが
+できるでしょう。
+
+なので、最善なバージョンはおそらく
+
+\begin{verbatim}
+def get_status(file):
+    return open(file).readline()
+\end{verbatim}
+
+呼び出し元は必要とあらば例外を処理することができ（例えばループ中で複数のファイルに
+あたるような）、もしくは例外を{\em それ自身}の呼び出し元まで上げることも可能でしょう。
+
+それでも、最後のバージョンはそれほど良くはありません --- 実装の細かい所ですが、
+例外が発生した場合にはハンドラが終了するまで、そして多分Cでの実装以外（例,Jython）においては
+全くファイルはクローズされないだろうからです。
+
+\begin{verbatim}
+def get_status(file):
+    fp = open(file)
+    try:
+        return fp.readline()
+    finally:
+        fp.close()
+\end{verbatim}
+
+\section{乾電池を使う}
+あまりにも多く、人々は Python ライブラリに含まれるものを、たいていは拙く
+書いているように見えます。一時的なモジュールのインターフェースは粗末ですので、
+通常は Python に付属するリッチな標準ライブラリやデータ型を利用し、
+それからあなた自身のものを発明するほうがずっと良いでしょう。
+
+ごく少数だけが知っている便利なモジュールは \module{os.path} です。
+これはあなたの OS に関する正しいパス計算能力を常に持っていて、
+たいていあなた自身のものよりもずっと良いものでしょう。
+
+比較：
+
+\begin{verbatim}
+# ウーッ!
+return dir+"/"+file
+# 良い
+return os.path.join(dir, file)
+\end{verbatim}
+
+\module{os.path}にあるもっと便利な関数： \function{basename},
+\function{dirname} と \function{splitext}。
+
+なんらかの理由で、人々が意に介していないように見えるたくさんの組み込み関数があります：
+例えば、\function{min()} と \function{max()} は比較可能なセマンティクスを持つシーケンスから
+最小/最大のものを見つけますが、たくさんの人々がそれぞれの \function{max()}/\function{min()} を
+書いています。古典的な \function{reduce()} の使用法は以下のようなものです。
+
+\begin{verbatim}
+import sys, operator
+nums = map(float, sys.argv[1:])
+print reduce(operator.add, nums)/len(nums)
+\end{verbatim}
+
+この可愛らしい小さなスクリプトはコマンドラインに渡された全ての数字の平均を
+出力します。\function{reduce()} は全ての数字を足し上げて、残りは単なるなんらかの
+前処理や後処理です。
+
+同様に、\function{float()}, \function{int()} や \function{long()} は全て
+文字列型の引数を取り、パースに向いていることに注目してください --- これらが投げる
+\exception{ValueError} を処理する用意がある前提ですが。
+
+\section{宣言の継続のためのバックスラッシュの使用}
+
+Python は改行を宣言の終了を見なすことと、
+しばしば宣言は一行に収まると心地よいものですので、多くの人はこうします：
+
+\begin{verbatim}
+if foo.bar()['first'][0] == baz.quux(1, 2)[5:9] and \
+   calculate_number(10, 20) != forbulate(500, 360):
+      pass
+\end{verbatim}
+
+これは危険だと認識すべきです：\code{\\} の後に余分なスペースがあれば
+この行は間違いであり、余分なスペースはエディタで識別することが困難なことで
+悪名高いのです。この例では精々がシンタックスエラーでしょうが、
+仮にコードが以下：
+
+\begin{verbatim}
+value = foo.bar()['first'][0]*baz.quux(1, 2)[5:9] \
+        + calculate_number(10, 20)*forbulate(500, 360)
+\end{verbatim}
+
+とすれば、僅かな間違いにしかならないでしょう。
+
+通常、括弧を使った暗黙の行継続を利用するほうがずっと良いです：
+
+このバージョンは安全です：
+\begin{verbatim}
+value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9] 
+        + calculate_number(10, 20)*forbulate(500, 360))
+\end{verbatim}
+
+\end{document}

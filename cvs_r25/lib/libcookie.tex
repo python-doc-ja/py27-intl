@@ -1,0 +1,422 @@
+\section{\module{Cookie} ---
+%         HTTP state management}
+         HTTPの状態管理}
+
+\declaremodule{standard}{Cookie}
+% \modulesynopsis{Support for HTTP state management (cookies).}
+\modulesynopsis{HTTP状態管理(cookies)のサポート。}
+\moduleauthor{Timothy O'Malley}{timo@alum.mit.edu}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+
+
+% The \module{Cookie} module defines classes for abstracting the concept of 
+% cookies, an HTTP state management mechanism. It supports both simple
+% string-only cookies, and provides an abstraction for having any serializable
+% data-type as cookie value.
+
+\module{Cookie}モジュールはHTTPの状態管理機能であるcookieの概念を抽象
+化、定義しているクラスです。単純な文字列のみで構成されるcookieのほか、
+シリアル化可能なあらゆるデータ型でクッキーの値を保持するための機能も備
+えています。
+
+% The module formerly strictly applied the parsing rules described in in
+% the \rfc{2109} and \rfc{2068} specifications.  It has since been discovered
+% that MSIE 3.0x doesn't follow the character rules outlined in those
+% specs.  As a result, the parsing rules used are a bit less strict.
+
+このモジュールは元々\rfc{2109}と\rfc{2068}に定義されている構文解析の規
+則を厳密に守っていました。しかし、MSIE 3.0xがこれらのRFCで定義された文
+字の規則に従っていないことが判明したため、結局、やや厳密さを欠く構文
+解析規則にせざるを得ませんでした。
+
+% \begin{excdesc}{CookieError}
+% Exception failing because of \rfc{2109} invalidity: incorrect
+% attributes, incorrect \code{Set-Cookie} header, etc.
+% \end{excdesc}
+
+\begin{excdesc}{CookieError}
+属性や\mailheader{Set-Cookie}ヘッダが正しくないなど、\rfc{2109}に合致してい
+ないときに発生する例外です。
+\end{excdesc}
+
+% \begin{classdesc}{BaseCookie}{\optional{input}}
+% This class is a dictionary-like object whose keys are strings and
+% whose values are \class{Morsel}s. Note that upon setting a key to
+% a value, the value is first converted to a \class{Morsel} containing
+% the key and the value.
+
+\begin{classdesc}{BaseCookie}{\optional{input}}
+このクラスはキーが文字列、値が\class{Morsel}インスタンスで構成される辞書風オブジェ
+クトです。値に対するキーを設定するときは、値がキーと値を含む
+\class{Morsel}に変換されることに注意してください。
+
+% If \var{input} is given, it is passed to the \method{load()} method.
+% \end{classdesc}
+
+\var{input}が与えられたときは、そのまま\method{load()}メソッドへ渡され
+ます。
+\end{classdesc}
+
+% \begin{classdesc}{SimpleCookie}{\optional{input}}
+% This class derives from \class{BaseCookie} and overrides
+% \method{value_decode()} and \method{value_encode()} to be the identity
+% and \function{str()} respectively.
+% \end{classdesc}
+
+\begin{classdesc}{SimpleCookie}{\optional{input}}
+このクラスは\class{BaseCookie}の派生クラスで、\method{value_decode()} 
+は与えられた値の正当性を確認するように、\method{value_encode()}は
+\function{str()}で文字列化するようにそれぞれオーバライドします。
+\end{classdesc}
+
+% \begin{classdesc}{SerialCookie}{\optional{input}}
+% This class derives from \class{BaseCookie} and overrides
+% \method{value_decode()} and \method{value_encode()} to be the
+% \function{pickle.loads()} and  \function{pickle.dumps()}.  
+
+\begin{classdesc}{SerialCookie}{\optional{input}}
+このクラスは\class{BaseCookie}の派生クラスで、\method{value_decode()}
+と\method{value_encode()}をそれぞれ\function{pickle.loads()}と
+\function{pickle.dumps()}を実行するようにオーバーライドします。
+
+% \strong{Do not use this class!}  Reading pickled values from untrusted
+% cookie data is a huge security hole, as pickle strings can be crafted
+% to cause arbitrary code to execute on your server.  It is supported
+% for backwards compatibility only, and may eventually go away.
+% \end{classdesc}
+
+\deprecated{2.3}{このクラスを使ってはいけません! 信頼できないcookieのデータか
+ら pickle 化された値を読み込むことは、あなたのサーバ上で任意のコードを
+実行するために pickle 化した文字列の作成が可能であることを意味し、重大
+なセキュリティホールとなります。}
+\end{classdesc}
+
+% \begin{classdesc}{SmartCookie}{\optional{input}}
+% This class derives from \class{BaseCookie}. It overrides
+% \method{value_decode()} to be \function{pickle.loads()} if it is a
+% valid pickle, and otherwise the value itself. It overrides
+% \method{value_encode()} to be \function{pickle.dumps()} unless it is a
+% string, in which case it returns the value itself.
+
+\begin{classdesc}{SmartCookie}{\optional{input}}
+このクラスは\class{BaseCookie}の派生クラスで、\method{value_decode()} 
+を、値が pickle 化されたデータとして正当なときは
+\function{pickle.loads()}を実行、そうでないときはその値自体を返すよう
+にオーバーライドします。また\method{value_encode()}を、値が文字列以外
+のときは\function{pickle.dumps()}を実行、文字列のときはその値自体を返
+すようにオーバーライドします。
+
+% \strong{Note:} The same security warning from \class{SerialCookie}
+% applies here.
+% \end{classdesc}
+
+\deprecated{2.3}{ \class{SerialCookie}と同じセキュリティ上の注意が当ては
+まります。}
+\end{classdesc}
+
+% A further security note is warranted.  For backwards compatibility,
+% the \module{Cookie} module exports a class named \class{Cookie} which
+% is just an alias for \class{SmartCookie}.  This is probably a mistake
+% and will likely be removed in a future version.  You should not use
+% the \class{Cookie} class in your applications, for the same reason why
+% you should not use the \class{SerialCookie} class.
+
+関連して、さらなるセキュリティ上の注意があります。後方互換性のため、
+\module{Cookie}モジュールは\class{Cookie}というクラス名を
+\class{SmartCookie}のエイリアスとしてエクスポートしています。これはほ
+ぼ確実に誤った措置であり、将来のバージョンでは削除することが適当と思わ
+れます。アプリケーションにおいて\class{SerialCookie}クラスを使うべきで
+ないのと同じ理由で\class{Cookie}クラスを使うべきではありません。
+
+% \begin{seealso}
+%  \seemodule{cookielib}{HTTP cookie handling for web
+%    \emph{clients}.  The \module{cookielib} and \module{Cookie}
+%    modules do not depend on each other.}
+%
+%   \seerfc{2109}{HTTP State Management Mechanism}{This is the state
+%                 management specification implemented by this module.}
+% \end{seealso}
+
+\begin{seealso}
+  \seemodule{cookielib}{Web\emph{クライアント}向けの HTTP クッキー処理です。
+  \module{cookielib}と\module{Cookie}は互いに独立しています。}
+
+  \seerfc{2109}{HTTP State Management Mechanism}{このモジュールが実装
+  しているHTTPの状態管理に関する規格です。}
+\end{seealso}
+
+% \subsection{Cookie Objects \label{cookie-objects}}
+
+\subsection{Cookieオブジェクト \label{cookie-objects}}
+
+% \begin{methoddesc}[BaseCookie]{value_decode}{val}
+% Return a decoded value from a string representation. Return value can
+% be any type. This method does nothing in \class{BaseCookie} --- it exists
+% so it can be overridden.
+% \end{methoddesc}
+
+\begin{methoddesc}[BaseCookie]{value_decode}{val}
+文字列表現を値にデコードして返します。戻り値の型はどのようなものでも許
+されます。このメソッドは\class{BaseCookie}において何も実行せず、オーバー
+ライドされるためにだけ存在します。
+\end{methoddesc}
+
+% \begin{methoddesc}[BaseCookie]{value_encode}{val}
+% Return an encoded value. \var{val} can be any type, but return value
+% must be a string. This method does nothing in \class{BaseCookie} --- it exists
+% so it can be overridden
+
+\begin{methoddesc}[BaseCookie]{value_encode}{val}
+エンコードした値を返します。元の値はどのような型でもかまいませんが、戻
+り値は必ず文字列となります。このメソッドは\class{BaseCookie}において何
+も実行せず、オーバーライドされるためにだけ存在します。
+
+% In general, it should be the case that \method{value_encode()} and 
+% \method{value_decode()} are inverses on the range of \var{value_decode}.
+% \end{methoddesc}
+
+通常\method{value_encode()}と\method{value_decode()}はともに
+\var{value_decode}の処理内容から逆算した範囲に収まっていなければなりま
+せん。
+\end{methoddesc}
+
+% \begin{methoddesc}[BaseCookie]{output}{\optional{attrs\optional{, header\optional{, sep}}}}
+% Return a string representation suitable to be sent as HTTP headers.
+% \var{attrs} and \var{header} are sent to each \class{Morsel}'s
+% \method{output()} method. \var{sep} is used to join the headers
+% together, and is by default the combination \code{'\e r\e n'} (CRLF).
+% \versionchanged[The default separator has been changed from \code{'\e n'}
+% to match the cookie specification]{2.5}
+% \end{methoddesc}
+
+\begin{methoddesc}[BaseCookie]{output}{\optional{attrs\optional{, header\optional{, sep}}}}
+HTTPヘッダ形式の文字列表現を返します。\var{attrs}と\var{header}はそれ
+ぞれ\class{Morsel}の\method{output()}メソッドに送られます。\var{sep}
+はヘッダの連結に用いられる文字で、デフォルトは\code{'\e r\e n'} (CRLF)となっています。
+\versionchanged[デフォルトのセパレータを \code{'\e n'}　から、クッキー
+  の使用にあわせた]{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}[BaseCookie]{output}{\optional{attrs\optional{, header\optional{, sep}}}}
+HTTPヘッダ形式の文字列表現を返します。
+\end{methoddesc}
+
+% \begin{methoddesc}[BaseCookie]{js_output}{\optional{attrs}}
+% Return an embeddable JavaScript snippet, which, if run on a browser which
+% supports JavaScript, will act the same as if the HTTP headers was sent.
+
+\begin{methoddesc}[BaseCookie]{js_output}{\optional{attrs}}
+ブラウザがJavaScriptをサポートしている場合、HTTPヘッダを送信した場合と
+同様に動作する埋め込み可能なJavaScript snippetを返します。
+
+% The meaning for \var{attrs} is the same as in \method{output()}.
+% \end{methoddesc}
+
+\var{attrs}の意味は\method{output()}と同じです。
+\end{methoddesc}
+
+% \begin{methoddesc}[BaseCookie]{load}{rawdata}
+% If \var{rawdata} is a string, parse it as an \code{HTTP_COOKIE} and add
+% the values found there as \class{Morsel}s. If it is a dictionary, it
+% is equivalent to:
+
+\begin{methoddesc}[BaseCookie]{load}{rawdata}
+\var{rawdata}が文字列であれば、\code{HTTP_COOKIE}として処理し、その値
+を\class{Morsel}として追加します。辞書の場合は次と同様の処理をおこない
+ます。
+
+\begin{verbatim}
+for k, v in rawdata.items():
+    cookie[k] = v
+\end{verbatim}
+\end{methoddesc}
+
+
+% \subsection{Morsel Objects \label{morsel-objects}}
+
+\subsection{Morselオブジェクト \label{morsel-objects}}
+
+% \begin{classdesc}{Morsel}{}
+% Abstract a key/value pair, which has some \rfc{2109} attributes.
+
+\begin{classdesc}{Morsel}{}
+\rfc{2109}の属性をキーと値で保持するabstractクラスです。
+
+% Morsels are dictionary-like objects, whose set of keys is constant ---
+% the valid \rfc{2109} attributes, which are
+
+Morselは辞書風のオブジェクトで、キーは次のような\rfc{2109}準拠の定数と
+なっています。
+
+\begin{itemize}
+\item \code{expires}
+\item \code{path}
+\item \code{comment}
+\item \code{domain}
+\item \code{max-age}
+\item \code{secure}
+\item \code{version}
+\end{itemize}
+
+% The keys are case-insensitive.
+% \end{classdesc}
+
+キーの大小文字は区別されます。
+\end{classdesc}
+
+% \begin{memberdesc}[Morsel]{value}
+% The value of the cookie.
+% \end{memberdesc}
+
+\begin{memberdesc}[Morsel]{value}
+クッキーの値。
+\end{memberdesc}
+
+% \begin{memberdesc}[Morsel]{coded_value}
+% The encoded value of the cookie --- this is what should be sent.
+% \end{memberdesc}
+
+\begin{memberdesc}[Morsel]{coded_value}
+実際に送信する形式にエンコードされたcookieの値。
+\end{memberdesc}
+
+% \begin{memberdesc}[Morsel]{key}
+% The name of the cookie.
+% \end{memberdesc}
+
+\begin{memberdesc}[Morsel]{key}
+cookieの名前。
+\end{memberdesc}
+
+% \begin{methoddesc}[Morsel]{set}{key, value, coded_value}
+% Set the \var{key}, \var{value} and \var{coded_value} members.
+% \end{methoddesc}
+
+\begin{methoddesc}[Morsel]{set}{key, value, coded_value}
+メンバ\var{key}、\var{value}、\var{coded_value}に値をセットします。
+\end{methoddesc}
+
+% \begin{methoddesc}[Morsel]{isReservedKey}{K}
+% Whether \var{K} is a member of the set of keys of a \class{Morsel}.
+% \end{methoddesc}
+
+\begin{methoddesc}[Morsel]{isReservedKey}{K}
+\var{K}が\class{Morsel}のキーであるかどうかを判定します。
+\end{methoddesc}
+
+% \begin{methoddesc}[Morsel]{output}{\optional{attrs\optional{, header}}}
+% Return a string representation of the Morsel, suitable
+% to be sent as an HTTP header. By default, all the attributes are included,
+% unless \var{attrs} is given, in which case it should be a list of attributes
+% to use. \var{header} is by default \code{"Set-Cookie:"}.
+% \end{methoddesc}
+
+\begin{methoddesc}[Morsel]{output}{\optional{attrs\optional{, header}}}
+MoselをHTTPヘッダ形式の文字列表現にして返します。\var{attrs} を指定しない
+場合、デフォルトですべての属性を含めます。\var{attrs}を指定する場合，
+属性をリストで渡さなければなりません。\var{header}のデフォルトは
+\code{"Set-Cookie:"}です。
+\end{methoddesc}
+
+% \begin{methoddesc}[Morsel]{js_output}{\optional{attrs}}
+% Return an embeddable JavaScript snippet, which, if run on a browser which
+% supports JavaScript, will act the same as if the HTTP header was sent.
+
+\begin{methoddesc}[Morsel]{js_output}{\optional{attrs}}
+ブラウザがJavaScriptをサポートしている場合、HTTPヘッダを送信した場合と
+同様に動作する埋め込み可能なJavaScript snippetを返します。
+
+% The meaning for \var{attrs} is the same as in \method{output()}.
+% \end{methoddesc}
+
+\var{attrs}の意味は\method{output()}と同じです。
+\end{methoddesc}
+
+% \begin{methoddesc}[Morsel]{OutputString}{\optional{attrs}}
+% Return a string representing the Morsel, without any surrounding HTTP
+% or JavaScript.
+
+\begin{methoddesc}[Morsel]{OutputString}{\optional{attrs}}
+Moselの文字列表現をHTTPやJavaScriptで囲まずに出力します。
+
+% The meaning for \var{attrs} is the same as in \method{output()}.
+% \end{methoddesc}
+                
+\var{attrs}の意味は\method{output()}と同じです。
+\end{methoddesc}
+
+\subsection{例 \label{cookie-example}}
+
+% The following example demonstrates how to use the \module{Cookie} module.
+
+次の例は\module{Cookie}の使い方を示したものです。
+
+\begin{verbatim}
+>>> import Cookie
+>>> C = Cookie.SimpleCookie()
+>>> C = Cookie.SerialCookie()
+>>> C = Cookie.SmartCookie()
+>>> C["fig"] = "newton"
+>>> C["sugar"] = "wafer"
+>>> print C # generate HTTP headers
+Set-Cookie: sugar=wafer
+Set-Cookie: fig=newton
+>>> print C.output() # same thing
+Set-Cookie: sugar=wafer
+Set-Cookie: fig=newton
+>>> C = Cookie.SmartCookie()
+>>> C["rocky"] = "road"
+>>> C["rocky"]["path"] = "/cookie"
+>>> print C.output(header="Cookie:")
+Cookie: rocky=road; Path=/cookie
+>>> print C.output(attrs=[], header="Cookie:")
+Cookie: rocky=road
+>>> C = Cookie.SmartCookie()
+>>> C.load("chips=ahoy; vienna=finger") # load from a string (HTTP header)
+>>> print C
+Set-Cookie: vienna=finger
+Set-Cookie: chips=ahoy
+>>> C = Cookie.SmartCookie()
+>>> C.load('keebler="E=everybody; L=\\"Loves\\"; fudge=\\012;";')
+>>> print C
+Set-Cookie: keebler="E=everybody; L=\"Loves\"; fudge=\012;"
+>>> C = Cookie.SmartCookie()
+>>> C["oreo"] = "doublestuff"
+>>> C["oreo"]["path"] = "/"
+>>> print C
+Set-Cookie: oreo=doublestuff; Path=/
+>>> C = Cookie.SmartCookie()
+>>> C["twix"] = "none for you"
+>>> C["twix"].value
+'none for you'
+>>> C = Cookie.SimpleCookie()
+>>> C["number"] = 7 # equivalent to C["number"] = str(7)
+>>> C["string"] = "seven"
+>>> C["number"].value
+'7'
+>>> C["string"].value
+'seven'
+>>> print C
+Set-Cookie: number=7
+Set-Cookie: string=seven
+>>> C = Cookie.SerialCookie()
+>>> C["number"] = 7
+>>> C["string"] = "seven"
+>>> C["number"].value
+7
+>>> C["string"].value
+'seven'
+>>> print C
+Set-Cookie: number="I7\012."
+Set-Cookie: string="S'seven'\012p1\012."
+>>> C = Cookie.SmartCookie()
+>>> C["number"] = 7
+>>> C["string"] = "seven"
+>>> C["number"].value
+7
+>>> C["string"].value
+'seven'
+>>> print C
+Set-Cookie: number="I7\012."
+Set-Cookie: string=seven
+\end{verbatim}

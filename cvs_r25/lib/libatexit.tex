@@ -1,0 +1,91 @@
+\section{\module{atexit} ---
+         終了ハンドラ}
+
+\declaremodule{standard}{atexit}
+\moduleauthor{Skip Montanaro}{skip@mojam.com}
+\sectionauthor{Skip Montanaro}{skip@mojam.com}
+\modulesynopsis{後始末関数の登録と実行。}
+
+\versionadded{2.0}
+
+\module{atexit} モジュールでは、後始末関数を登録するための関数を一つだ
+け定義しています。この関数を使って登録した後始末関数は、インタプリタが
+終了するときに自動的に実行されます。
+
+\note{プログラムがシグナルで停止させられたとき、Python の致命的な内部
+エラーが検出されたとき、あるいは\function{os._exit()}が呼び出された
+ときには、このモジュールを通して登録した関数は呼び出されません。}
+
+このモジュールは、\code{sys.exitfunc} 変数の提供している機能の代用とな
+るインタフェースです。\withsubitem{(in sys)}{\ttindex{exitfunc}}
+
+\note{\code{sys.exitfunc}を設定する他のコードとともに使用した場合には、
+このモジュールは正しく動作しないでしょう。特に、他のコア Python 
+モジュールでは、プログラマの意図を知らなくても\module{atexit}を自由に
+使えます。\code{sys.exitfunc} を使っている人は、代わりに
+\module{atexit}を使うコードに変換してください。
+\code{sys.exitfunc} を設定するコードを変換するには、\module{atexit} を
+import し、\code{sys.exitfunc} へ束縛されていた関数を登録するのが
+最も簡単です。}
+
+\begin{funcdesc}{register}{func\optional{, *args\optional{, **kargs}}}
+終了時に実行される関数として\var{func}を登録します。すべての\var{func}
+へ渡すオプションの引数を、\function{register()}へ引数としてわたさなけ
+ればなりません。
+
+通常のプログラムの終了時、例えば\function{sys.exit()} が呼び出されると
+き、あるいは、メインモジュールの実行が完了したときに、登録された全ての
+関数を、最後に登録されたものから順に呼び出します。通常、より低レベルの
+モジュールはより高レベルのモジュールより前に import されるので、
+後で後始末が行われるという仮定に基づいています。
+
+終了ハンドラの実行中に例外が発生すると、(\exception{SystemExit}以外の
+場合は)トレースバックを表示して、例外の情報を保存します。
+全ての終了ハンドラに動作するチャンスを与えた後に、最後に送出された
+例外を再送出します。
+
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seemodule{readline}{\refmodule{readline}ヒストリファイルを読み書き
+  するための\module{atexit}の有用な例です。}
+\end{seealso}
+
+
+\subsection{\module{atexit} 例 \label{atexit-example}}
+
+次の簡単な例では、あるモジュールを import した時にカウンタを初期化し
+ておき、プログラムが終了するときにアプリケーションがこのモジュールを明
+示的に呼び出さなくてもカウンタが更新されるようにする方法を示しています。
+
+\begin{verbatim}
+try:
+    _count = int(open("/tmp/counter").read())
+except IOError:
+    _count = 0
+
+def incrcounter(n):
+    global _count
+    _count = _count + n
+
+def savecounter():
+    open("/tmp/counter", "w").write("%d" % _count)
+
+import atexit
+atexit.register(savecounter)
+\end{verbatim}
+
+\function{register()} に指定した固定引数とキーワードパラメタは
+登録した関数を呼び出す際に渡されます。
+
+\begin{verbatim}
+def goodbye(name, adjective):
+    print 'Goodbye, %s, it was %s to meet you.' % (name, adjective)
+
+import atexit
+atexit.register(goodbye, 'Donny', 'nice')
+
+# or:
+atexit.register(goodbye, adjective='nice', name='Donny')
+\end{verbatim}

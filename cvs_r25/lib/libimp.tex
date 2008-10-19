@@ -1,0 +1,166 @@
+\section{\module{imp} ---
+         \keyword{import}内部へアクセスする}
+
+\declaremodule{builtin}{imp}
+\modulesynopsis{\keyword{import}文の実装へアクセスする。}
+
+
+この\stindex{import}モジュールは\keyword{import}文を実装するために使われているメカニズムへのインターフェイスを提供します。次の定数と関数が定義されています:
+
+
+\begin{funcdesc}{get_magic}{}
+\indexii{file}{byte-code}
+バイトコンパイルされたコードファイル(\file{.pyc}ファイル)を認識するために使われるマジック文字列値を返します。(この値はPythonの各バージョンで異なります。)
+\end{funcdesc}
+
+\begin{funcdesc}{get_suffixes}{}
+三つ組みのリストを返します。それぞれはモジュールの特定の型を説明しています。各三つ組みは形式\code{(\var{suffix}, \var{mode}, \var{type})}を持ちます。ここで、\var{suffix}は探すファイル名を作るためにモジュール名に追加する文字列です。そのファイルをオープンするために、\var{mode}は組み込み\function{open()}関数へ渡されるモード文字列です(これはテキストファイル対しては\code{'r'}、バイナリファイルに対しては\code{'rb'}となります)。\var{type}はファイル型で、以下で説明する値\constant{PY_SOURCE}、\constant{PY_COMPILED}、あるいは、\constant{C_EXTENSION}の一つを取ります。
+\end{funcdesc}
+
+\begin{funcdesc}{find_module}{name\optional{, path}}
+検索パス\var{path}上でモジュール\var{name}を見つけようとします。\var{path}がディレクトリ名のリストならば、上の\function{get_suffixes()}が返す拡張子のいずれかを伴ったファイルを各ディレクトリの中で検索します。リスト内の有効でない名前は黙って無視されます(しかし、すべてのリスト項目は文字列でなければならない)。\var{path}が省略されるか\code{None}ならば、\code{sys.path}のディレクトリ名のリストが検索されます。しかし、最初にいくつか特別な場所を検索します。所定の名前(\constant{C_BUILTIN})をもつ組み込みモジュールを見つけようとします。それから、フリーズされたモジュール(\constant{PY_FROZEN})、同様にいくつかのシステムと他の場所がみられます(Macでは、リソース(\constant{PY_RESOURCE})を探します。Windowsでは、特定のファイルを指すレジストリの中を見ます)。
+
+検索が成功すれば、戻り値は三つ組み\code{(\var{file}, \var{pathname}, \var{description})}です。ここで、\var{file}は先頭に位置を合わされたオープンファイルオブジェクトで、\var{pathname}は見つかったファイルのパス名です。そして、\var{description}は\function{get_suffixes()}が返すリストに含まれているような三つ組みで、見つかったモジュールの種類を説明しています。モジュールがファイルの中にあるならば、返された\var{file}は\code{None}で、\var{filename}は空文字列、\var{description}タプルはその拡張子とモードに対して空文字列を含みます。モジュール型は上の括弧の中に示されます。検索が失敗すれば、\exception{ImportError}が発生します。他の例外は引数または環境に問題があることを示唆します。
+
+この関数は階層的なモジュール名(ドットを含んだ名前)を扱いません。\var{P}.\var{M}、すなわち、パッケージ\var{P}のサブモジュール\var{M}を見つけるためには、パッケージ\var{P}を見つけてロードするために\function{find_module()}と\function{load_module()}を使い、それから\code{\var{P}.__path__}に設定された\var{path}引数とともに\function{find_module()}を使ってください。\var{P}自身がドット名のときは、このレシピを再帰的に適用してください。
+\end{funcdesc}
+
+\begin{funcdesc}{load_module}{name, file, filename, description}
+\function{find_module()}を使って(あるいは、互換性のある結果を作り出す検索を行って)以前見つけたモジュールをロードします。この関数はモジュールをインポートするという以上のことを行います: モジュールが既にインポートされているならば、\function{reload()}\bifuncindex{reload}と同じです!。\var{name}引数は(これがパッケージのサブモジュールならばパッケージ名を含む)完全なモジュール名を示します。\var{file}引数はオープンしたファイルで、\var{filename}は対応するファイル名です。モジュールがファイルからロードされようとしていないとき、これらはそれぞれ\code{None}と\code{''}であっても構いません。\function{get_suffixes()}が返すように\var{description}引数はタプルで、どの種類のモジュールがロードされなければならないかを説明するものです。
+
+ロードが成功したならば、戻り値はモジュールオブジェクトです。そうでなければ、例外(たいていは\exception{ImportError})が発生します。
+
+\strong{重要:} \var{file}引数が\code{None}でなければ、例外が発生した時でさえ呼び出し側にはそれを閉じる責任があります。これを行うには、\keyword{try} ... \keyword{finally}文をつかうことが最も良いです。
+\end{funcdesc}
+
+\begin{funcdesc}{new_module}{name}
+\var{name}という名前の新しい空モジュールオブジェクトを返します。このオブジェクトは\code{sys.modules}に挿入され\emph{ません}。
+\end{funcdesc}
+
+\begin{funcdesc}{lock_held}{}
+現在インポートロックが維持されているならば、\code{True}を返します。そうでなければ、\code{False}を返します。スレッドのないプラットホームでは、常に\code{False}を返します。
+
+スレッドのあるプラットホームでは、インポートが完了するまでインポートを実行するスレッドは内部ロックを維持します。このロックは元のインポートが完了するまで他のスレッドがインポートすることを阻止します。言い換えると、元のスレッドがそのインポート(および、もしあるならば、それによって引き起こされるインポート)の途中で構築した不完全なモジュールオブジェクトを、他のスレッドが見られないようにします。
+\end{funcdesc}
+
+\begin{funcdesc}{acquire_lock}{}
+実行中のスレッドでインタープリタのインポートロックを取得します。スレッドセーフ
+なインポートフックでは、インポート時にこのロックを取得します。
+スレッドのないプラットホームではこの関数は何もしません。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{release_lock}{}
+インタープリタのインポートロックを解放します。
+スレッドのないプラットホームではこの関数は何もしません。
+\versionadded{2.3}
+\end{funcdesc}
+
+
+整数値をもつ次の定数はこのモジュールの中で定義されており、\function{find_module()}の検索結果を表すために使われます。
+
+\begin{datadesc}{PY_SOURCE}
+ソースファイルとしてモジュールが発見された。
+\end{datadesc}
+
+\begin{datadesc}{PY_COMPILED}
+コンパイルされたコードオブジェクトファイルとしてモジュールが発見された。
+\end{datadesc}
+
+\begin{datadesc}{C_EXTENSION}
+動的にロード可能な共有ライブラリとしてモジュールが発見された。
+\end{datadesc}
+
+\begin{datadesc}{PY_RESOURCE}
+モジュールがMac OS 9リソースとして発見された。この値はMac OS 9以前のMacintoshでのみ返される。
+\end{datadesc}
+
+\begin{datadesc}{PKG_DIRECTORY}
+パッケージディレクトリとしてモジュールが発見された。
+\end{datadesc}
+
+\begin{datadesc}{C_BUILTIN}
+モジュールが組み込みモジュールとして発見された。
+\end{datadesc}
+
+\begin{datadesc}{PY_FROZEN}
+モジュールがフリーズされたモジュールとして発見された(\function{init_frozen()}を参照)。
+\end{datadesc}
+
+次の定数と関数は旧式のものです。それらの機能は\function{find_module()}や\function{load_module()}を使って利用できます。後方互換性のために残されています:
+
+\begin{datadesc}{SEARCH_ERROR}
+使われていません。
+\end{datadesc}
+
+\begin{funcdesc}{init_builtin}{name}
+\var{name}という名前の組み込みモジュールを初期化し、そのモジュールオブジェクトを返します。モジュールが既に初期化されている場合は、\emph{再度}初期化されます。いくつかのモジュールは二度初期化することができません。 --- これを再び初期化しようとすると、\exception{ImportError}例外が発生します。\var{name}という名前の組み込みモジュールがない場合は、\code{None}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{init_frozen}{name}
+\var{name}という名前のフリーズされたモジュールを初期化し、モジュールオブジェクトを返します。モジュールが既に初期化されている場合は、\emph{再度}初期化されます。\var{name}という名前のフリーズされたモジュールがない場合は、\code{None}を返します。(フリーズされたモジュールはPythonで書かれたモジュールで、そのコンパイルされたバイトコードオブジェクトがPythonの\program{freeze}ユーティリティを使ってカスタムビルトPythonインタープリタへ組み込まれています。差し当たり、\file{Tools/freeze/}を参照してください。)
+\end{funcdesc}
+
+\begin{funcdesc}{is_builtin}{name}
+\var{name}という名前の再度初期化できる組み込みモジュールがある場合は、\code{1}を返します。\var{name}という名前の再度初期化できない組み込みモジュールがある場合は、\code{-1}を返します(\function{init_builtin()}を参照してください)。\var{name}という名前の組み込みモジュールがない場合は、\code{0}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{is_frozen}{name}
+\var{name}という名前のフリーズされたモジュール(\function{init_frozen()}を参照)がある場合は、\code{True}を返します。または、そのようなモジュールがない場合は、\code{False}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{load_compiled}{name, pathname\optional{, file}}
+\indexii{file}{byte-code}
+バイトコンパイルされたコードファイルとして実装されているモジュールをロードして初期化し、そのモジュールオブジェクトを返します。モジュールが既に初期化されている場合は、\emph{再度}初期化されます。\var{name}引数はモジュールオブジェクトを作ったり、アクセスするために使います。\var{pathname}引数はバイトコンパイルされたコードファイルを指します。\var{file}引数はバイトコンパイルされたコードファイルで、バイナリモードでオープンされ、先頭からアクセスされます。現在は、ユーザ定義のファイルをエミュレートするクラスではなく、実際のファイルオブジェクトでなければなりません。
+\end{funcdesc}
+
+\begin{funcdesc}{load_dynamic}{name, pathname\optional{, file}}
+動的ロード可能な共有ライブラリとして実装されているモジュールをロードして初期化します。モジュールが既に初期化されている場合は、\emph{再度}初期化します。いくつかのモジュールではそれができずに、例外を発生するかもしれません。\var{pathname}引数は共有ライブラリを指していなければなりません。\var{name}引数は初期化関数の名前を作るために使われます。共有ライブラリの\samp{init\var{name}()}という名前の外部C関数が呼び出されます。オプションの\var{file}引数は無視されます。(注意: 共有ライブラリはシステムに大きく依存します。また、すべてのシステムがそれをサポートしているわけではありません。)
+\end{funcdesc}
+
+\begin{funcdesc}{load_source}{name, pathname\optional{, file}}
+Pythonソースファイルとして実装されているモジュールをロードして初期化し、モジュールオブジェクトを返します。モジュールが既に初期化されている場合は、\emph{再度}初期化します。\var{name}引数はモジュールオブジェクトを作成したり、アクセスしたりするために使われます。\var{pathname}引数はソースファイルを指します。\var{file}引数はソースファイルで、テキストとして読み込むためにオープンされ、先頭からアクセスされます。現在は、ユーザ定義のファイルをエミュレートするクラスではなく、実際のファイルオブジェクトでなければなりません。(拡張子\file{.pyc}または\file{.pyo}をもつ)正しく対応するバイトコンパイルされたファイルが存在する場合は、与えられたソースファイルを構文解析する代わりにそれが使われることに注意してください。
+\end{funcdesc}
+
+\begin{classdesc}{NullImporter}{path_string}
+\class{NullImporter}型は\pep{302}インポートフックで、何もモジュールが見つからなかったときの非ディレクトリパス文字列を処理します。この型を既存のディレクトリや空文字列に対してコールすると\exception{ImportError}が発生します。それ以外の場合は\class{NullImporter}のインスタンスが返されます。
+
+Pythonは、ディレクトリでなく\code{sys.path_hooks}のどのパスフックでも処理されていないすべてのパスエントリに対して、この型のインスタンスを\code{sys.path_importer_cache}に追加します。このインスタンスが持つメソッドは次のひとつです。
+
+\begin{methoddesc}{find_module}{fullname \optional{, path}}
+このメソッドは常に\code{None}を返し、要求されたモジュールが見つからなかったことを表します。
+\end{methoddesc}
+
+\versionadded{2.5}
+\end{classdesc}
+
+\subsection{例}
+\label{examples-imp}
+
+次の関数はPython 1.4までの標準import文(階層的なモジュール名がない)をエミュレートします。(この\emph{実装}はそのバージョンでは動作しないでしょう。なぜなら、\function{find_module()}は拡張されており、また\function{load_module()}が1.4で追加されているからです。)
+
+\begin{verbatim}
+import imp
+import sys
+
+def __import__(name, globals=None, locals=None, fromlist=None):
+    # Fast path: see if the module has already been imported.
+    try:
+        return sys.modules[name]
+    except KeyError:
+        pass
+
+    # If any of the following calls raises an exception,
+    # there's a problem we can't handle -- let the caller handle it.
+
+    fp, pathname, description = imp.find_module(name)
+
+    try:
+        return imp.load_module(name, fp, pathname, description)
+    finally:
+        # Since we may exit via an exception, close fp explicitly.
+        if fp:
+            fp.close()
+\end{verbatim}
+
+階層的なモジュール名を実装し、\function{reload()}\bifuncindex{reload}関数を含むより完全な例はモジュール\module{knee}\refmodindex{knee}にあります。\module{knee}モジュールはPythonのソースディストリビューションの中の\file{Demo/imputil/}にあります。

@@ -1,0 +1,233 @@
+]\section{\module{turtle} ---
+         Tkのためのタートルグラフィックス}
+
+\declaremodule{standard}{turtle}
+   \platform{Tk}
+\moduleauthor{Guido van Rossum}{guido@python.org}
+\modulesynopsis{タートルグラフィックスのための環境。}
+
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+
+
+\module{turtle}モジュールはオブジェクト指向と手続き指向の両方の方法でタートルグラフィックス・プリミティブを提供します。グラフィックスの基礎として\module{Tkinter}を使っているために、TkをサポートしたPythonのバージョンが必要です。
+
+手続き型インターフェイスでは、関数のどれかが呼び出されたときに自動的に作られるペンとキャンバスを使います。
+
+\module{turtle}モジュールは次の関数を定義しています:
+
+\begin{funcdesc}{degrees}{}
+角度を計る単位を度にします。
+\end{funcdesc}
+
+\begin{funcdesc}{radians}{}
+角度を計る単位をラジアンにします。
+\end{funcdesc}
+
+\begin{funcdesc}{setup}{**kwargs}
+メインウインドウの大きさと位置を設定します。キーワードは：
+\begin{itemize}
+  \item \code{width}: ピクセル数かスクリーンに対する割合での大きさ。
+   デフォルトはスクリーンの 50\% です。
+  \item \code{height}: ピクセル数かスクリーンに対する割合での大きさ。
+   デフォルトはスクリーンの 50\% です。
+  \item \code{startx}: スクリーン左端からのピクセル数での開始位置。
+      \code{None} はデフォルト値で、スクリーンの水平方向にセンタリングします。
+  \item \code{starty}: スクリーン左端からのピクセル数での開始位置。
+      \code{None} はデフォルト値で、スクリーンの垂直方向にセンタリングします。
+\end{itemize}
+
+   例：
+
+\begin{verbatim}
+# デフォルトのジオメトリを利用： スクリーンの 50% x 50%、センタリング。
+setup()  
+
+# ウインドウを 200x200 ピクセル、スクリーンの左上。
+setup (width=200, height=200, startx=0, starty=0)
+
+# ウインドウをスクリーンの 75% x 50% にして、センタリング。
+setup(width=.75, height=0.5, startx=None, starty=None)
+\end{verbatim}
+
+\end{funcdesc}
+
+\begin{funcdesc}{title}{title_str}
+ウインドウのタイトルを \var{title} に設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{done}{}
+Tk のメインループに入ります。ウインドウは、クローズされるか、
+プロセスが kill されるまで表示され続けます。
+\end{funcdesc}
+
+\begin{funcdesc}{reset}{}
+スクリーンを消去し、ペンを中心に持って行き、変数をデフォルト値に設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{clear}{}
+スクリーンを消去します。
+\end{funcdesc}
+
+\begin{funcdesc}{tracer}{flag}
+トレースをon/offにします(フラグが真かどうかに応じて)。トレースとは、線に沿って矢印のアニメーションが付き、線がよりゆっくりと引かれることを意味します。
+\end{funcdesc}
+
+\begin{funcdesc}{speed}{speed}
+タートルのスピードを設定します。\var{speed} パラメータに適切な値は
+\code{'fastest'} （ウェイト無し）、\code{'fast'} （5ms のウェイト）、
+\code{'normal'} （10ms のウェイト）、\code{'slow'} （15ms のウェイト）、
+それと \code{'slowest'} （20ms のウェイト）です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{delay}{delay}
+タートルのスピードを \var{delay} に設定します。これは ms で与えます。\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{forward}{distance}
+\var{distance}ステップだけ前に進みます。
+\end{funcdesc}
+
+\begin{funcdesc}{backward}{distance}
+\var{distance}ステップだけ後ろに進みます。
+\end{funcdesc}
+
+\begin{funcdesc}{left}{angle}
+\var{angle}単位だけ左に回ります。単位のデフォルトは度ですが、\function{degrees()}と\function{radians()}関数を使って設定できます。
+\end{funcdesc}
+
+\begin{funcdesc}{right}{angle}
+\var{angle}単位だけ右に回ります。単位のデフォルトは度ですが、\function{degrees()}と\function{radians()}関数を使って設定できます。
+\end{funcdesc}
+
+\begin{funcdesc}{up}{}
+ペンを上げます --- 線を引くことを止めます。
+\end{funcdesc}
+
+\begin{funcdesc}{down}{}
+ペンを下げます --- 移動したときに線を引きます。
+\end{funcdesc}
+
+\begin{funcdesc}{width}{width}
+線幅を\var{width}に設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{color}{s}
+\funclineni{color}{(r, g, b)}
+\funclineni{color}{r, g, b}
+ペンの色を設定します。最初の形式では、色は文字列としてTkの色の仕様の通りに指定されます。二番目の形式は色をRGB値(それぞれは範囲[0..1])のタプルとして指定します。三番目の形式では、色は三つに別れたパラメータとしてRGB値(それぞれは範囲[0..1])を与えて指定しています。
+\end{funcdesc}
+
+\begin{funcdesc}{write}{text\optional{, move}}
+現在のペンの位置に\var{text}を書き込みます。\var{move}が真ならば、ペンはテキストの右下の角へ移動します。デフォルトでは、\var{move}は偽です。
+\end{funcdesc}
+
+\begin{funcdesc}{fill}{flag}
+完全な仕様はかなり複雑ですが、推奨する使い方は: 塗りつぶしたい経路を描く前に\code{fill(1)}を呼び出し、経路を描き終えたときに\code{fill(0)}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{begin\_fill}{}
+タートルを塗りつぶしモードにします。
+後には、対応する end_fill() 呼び出しが続かなければいけません。
+さもないと、これは無視されてしまいます。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{end\_fill}{}
+塗りつぶしモードを終了し、図形を塗りつぶします； \code{fill(0)} と等価です。
+End filling mode, and fill the shape; equivalent to \code{fill(0)}.
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{circle}{radius\optional{, extent}}
+半径\var{radius}、中心がタートルの左 \var{radius}ユニットの円を描きます。\var{extent}は円のどの部分を描くかを決定します: 与えられなければ、デフォルトで完全な円になります。
+
+\var{extent}が完全な円である場合は、弧の一つの端点は、現在のペンの位置です。\var{radius}が正の場合、弧は反時計回りに描かれます。そうでなければ、時計回りです。
+\end{funcdesc}
+
+\begin{funcdesc}{goto}{x, y}
+\funclineni{goto}{(x, y)}
+座標\var{x}, \var{y}へ移動します。座標は二つの別個の引数か、2-タプルのどちらかで指定することができます。
+\end{funcdesc}
+
+\begin{funcdesc}{towards}{x, y}
+タートルの位置から点 \var{x}、\var{y} までの線の角度を返します。
+この座標は二つの別々の引数、2タプルまたは別のペンオブジェクトとして
+指定できます。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{heading}{}
+タートルの現在の向きを返します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{setheading}{angle}
+タートルの向きを \var{angle} に設定します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{position}{}
+タートルの現在の位置を \code{(x,y)} のペアで返します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{setx}{x}
+タートルの x 座標を \var{x} に設定します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{sety}{y}
+タートルの y 座標を \var{y} に設定します。
+Set the y coordinate of the turtle to \var{y}.
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{window\_width}{}
+キャンバスウインドウの幅を返します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{window\_height}{}
+キャンバスウインドウの高さを返します。
+\versionadded{2.3}
+\end{funcdesc}
+
+このモジュールは\code{from math import *}も実行します。従って、タートルグラフィックスのために役に立つ追加の定数と関数については、\refmodule{math}モジュールのドキュメントを参照してください。
+
+\begin{funcdesc}{demo}{}
+モジュールをちょっとばかり試しています。
+\end{funcdesc}
+
+\begin{excdesc}{Error}
+このモジュールによって捕捉されたあらゆるエラー対して発生した例外。
+\end{excdesc}
+
+例として、\function{demo()}関数のコードを参照してください。
+
+このモジュールは次のクラスを定義します:
+
+\begin{classdesc}{Pen}{}
+ペンを定義します。上記のすべての関数は与えられたペンのメソッドとして呼び出されます。このコンストラクタは線を描くキャンバスを自動的に作成します。
+\end{classdesc}
+
+\begin{classdesc}{Turtle}{}
+ペンを定義します。これは基本的に \code{Pen()} と同義です; 
+\class{Turtle} は、\class{Pen} の空の派生クラスです。
+\end{classdesc}
+
+\begin{classdesc}{RawPen}{canvas}
+キャンバス\var{canvas}に描くペンを定義します。これは``実際の''プログラムでグラフィックスを作成するためにモジュールを使いたい場合に役に立ちます。
+\end{classdesc}
+
+\subsection{Turtle、Pen と RawPen オブジェクト \label{pen-rawpen-objects}}
+モジュールで利用可能なグローバル関数の大部分は \class{Turtle}、
+\class{Pen} や \class{RawPen} のメソッドとしても利用可能で、
+これは特定のペンの状態にだけ影響します。
+
+メソッドとして強力になっているメソッドは\function{degrees()}だけで、
+これは1回転相当の単位数を指定できるオプション引数を取ります。
+
+\begin{methoddesc}{degrees}{\optional{fullcircle}}
+\var{fullcircle}はデフォルトで360です。たとえ\var{fullcircle}にラジアンで2*$\pi$、あるいは度で400を与えようとも、これはペンがどんな角度単位でも取ることができるようにしています。
+\end{methoddesc}

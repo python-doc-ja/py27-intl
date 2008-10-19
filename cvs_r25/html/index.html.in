@@ -1,0 +1,142 @@
+<html>
+  <head>
+    <title>Python @RELEASE@ ドキュメント - @DATE@</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP" />
+    <meta name="aesop" content="links">
+    <meta name="description"
+          content="Python @RELEASE@ 標準ドキュメントの
+                   トップレベルインデクス.">
+    <link rel="SHORTCUT ICON" href="icons/pyfav.png" type="image/png">
+    <link rel="STYLESHEET" href="lib/lib.css" type="text/css">
+    <link rel="author" href="acks.html" title="Acknowledgements">
+    <link rel="help" href="about.html" title="About the Python Documentation">
+    <link rel="index" href="modindex.html" title="Global Module Index">
+    <style type="text/css">
+      a.title { font-weight: bold; font-size: 110%; }
+      ul { margin-left: 1em; padding: 0pt; border: 0pt; }
+      ul li { margin-top: 0.2em; }
+      td.left-column { padding-right: 1em; }
+      td.right-column { padding-left: 1em; }
+    </style>
+  </head>
+  <body>
+	<div class="navigation">
+	<table align="center" width="100%" cellpadding="0" cellspacing="2">
+	<tr>
+	  <td><img width="32" height="32" align="bottom" border="0" alt=""
+	      src="icons/blank.png"></td>
+	  <td><img width="32" height="32" align="bottom" border="0" alt=""
+	      src="icons/blank.png"></td>
+	  <td><img width="32" height="32" align="bottom" border="0" alt=""
+	      src="icons/blank.png"></td>
+	  <td align="center" width="100%">
+	    <b class="title">Python ドキュメント</b></td>
+	  <td><img width="32" height="32" align="bottom" border="0" alt=""
+	      src="icons/blank.png"></td>
+	  <td><a href="modindex.html"><img width="32" height="32"
+		align="bottom" border="0" alt="モジュールインデクス"
+		src="icons/modules.png"></a></td>
+	  <td><img width="32" height="32" align="bottom" border="0" alt=""
+	      src="icons/blank.png"></A></td>
+	</tr>
+	</table>
+        <hr>
+	</div>
+    <div align="center" class="titlepage">
+      <h1>Python ドキュメント</h1>
+
+      <p>
+	<strong>リリース @RELEASE@</strong>
+	<br>
+	<strong>@DATE@</strong>
+      </p>
+    </div>
+
+    <table align="center">
+      <tbody>
+        <tr>
+          <td class="left-column">
+	  <ul>
+	    <li> <a href="tut/tut.html" class="title">チュートリアル</a>
+	      <br>(ここから読み始めてください)
+	  </ul>
+	  </td>
+	  <td class="right-column">
+	  <ul>
+            <li> <a href="whatsnew/@WHATSNEW@.html" class="title"
+                >Python 更新情報 (英語)</a>
+              <br>(一つ前のメジャーリリースからの変更)
+	  </ul>
+	  </td>
+        </tr>
+        <tr>
+          <td valign="baseline" class="left-column">
+          &nbsp;
+	  <ul>
+	    <li> <a href="modindex.html" class="title">
+              グローバルモジュールインデクス</a>
+	      <br>(全ドキュメントにすばやくアクセスできます)
+
+	    <li> <a href="lib/lib.html" class="title">
+              ライブラリリファレンス</a>
+	      <br>(枕の下にいつも置いておきましょう)
+
+	    <li> <a href="mac/mac.html" class="title">
+                Macintosh モジュールリファレンス</a>
+	      <br>(Macintosh を使っているならこれも)
+
+	    <li> <a href="inst/inst.html" class="title">
+                Python モジュールのインストール</a>
+	      <br>(管理者向け)
+
+	    <li> <a href="dist/dist.html" class="title">
+                Python モジュールの配布</a>
+	      <br>(開発者，パッケージ作成者向け)
+	  </ul>
+	  </td>
+	  <td valign="baseline" class="right-column">
+          &nbsp;
+	  <ul>
+	    <li> <a href="ref/ref.html" class="title">
+              リファレンスマニュアル</a>
+	      <br>(<b>弁語士</b>向け)
+
+	    <li> <a href="ext/ext.html" class="title">拡張と埋め込み</a>
+	      <br>(C/C++ プログラマ向けチュートリアル)
+
+	    <li> <a href="api/api.html" class="title">Python/C API</a>
+	      <br>(C/C++ プログラマ向けリファレンス)
+
+	    <li> <a href="doc/doc.html" class="title">Python ドキュメントの作成</a>
+	      <br>(ドキュメント作者用の情報)
+	  </ul>
+	  </td>
+        </tr>
+        <tr>
+          <td valign="baseline" class="left-column">
+          &nbsp;
+          <ul>
+            <li> <a href="http://www.python.org/doc/" class="title"
+                >ドキュメント作成本部 (英語)</a>
+              <br>(すべての人に)
+          </ul>
+          </td>
+          <td valign="baseline" class="right-column">
+          &nbsp;
+          <ul>
+            <li> <a href="http://www.python.org/doc/howto/" class="title"
+                >Python How-To ガイド (英語)</a>
+              <br>(専門的な話題)
+          </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+
+    <address>
+      <hr>
+ご意見やご指摘をお寄せになりたい方は、 <i><a href="about.html">このドキュメントについて...</a></i> をご覧ください。
+    </address>
+  </body>
+</html>

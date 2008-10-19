@@ -1,0 +1,84 @@
+\section{\module{SimpleHTTPServer} ---
+         簡潔な HTTP リクエストハンドラ}
+
+\declaremodule{standard}{SimpleHTTPServer}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+\modulesynopsis{このモジュールは HTTP サーバに基本的なリクエストハンドラを提供します。}
+
+
+\module{SimpleHTTPServer} モジュールはリクエストハンドラ (request-handler)
+クラスを定義しています。インタフェースは
+\class{BaseHTTPServer.BaseHTTPRequestHandler} と互換で、
+基底ディレクトリにあるファイルだけを提供します。
+
+\module{SimpleHTTPServer} モジュールでは以下のクラスを定義しています:
+
+\begin{classdesc}{SimpleHTTPRequestHandler}{request, client_address, server}
+このクラスは、現在のディレクトリ以下にあるファイルを、HTTP 
+リクエストにおけるディレクトリ構造に直接対応付けて提供するために
+利用されます。
+
+リクエストの解釈のような、多くの作業は基底クラス
+\class{BaseHTTPServer.BaseHTTPRequestHandler} で行われます。
+このクラスは関数 \function{do_GET()} および \function{do_HEAD()} 
+を実装しています。
+\end{classdesc}
+
+\class{SimpleHTTPRequestHandler} では以下のメンバ変数を定義しています:
+
+\begin{memberdesc}{server_version}
+この値は \code{"SimpleHTTP/" + __version__} になります。
+\code{__version__} はこのモジュールで定義されている値です。
+\end{memberdesc}
+
+\begin{memberdesc}{extensions_map}
+拡張子を MIME 型指定子に対応付ける辞書です。標準の型指定は空文字列で
+表され、この値は \code{application/octet-stream} と見なされます。
+対応付けは大小文字の区別をするので、小文字のキーのみを入れるべきです。
+\end{memberdesc}
+
+\class{SimpleHTTPRequestHandler} では以下のメソッドを定義しています:
+
+\begin{methoddesc}{do_HEAD}{}
+このメソッドは \code{'HEAD'} 型のリクエスト処理を実行します: すなわち、
+\code{GET} リクエストの時に送信されるものと同じヘッダを送信します。
+送信される可能性のあるヘッダについての完全な説明は \method{do_GET()} 
+メソッドを参照してください。
+\end{methoddesc}
+
+\begin{methoddesc}{do_GET}{}
+リクエストを現在の作業ディレクトリからの相対的なパスとして解釈することで、
+リクエストをローカルシステム上のファイルと対応付けます。
+
+リクエストがディレクトリに対応付けられた場合、\code{index.html}
+または\code{index.htm}をこの順序でチェックします。
+もしファイルを発見できればその内容を、そうでなければディレクトリ一覧
+を\method{list_directory()}メソッドで生成して、返します。
+このメソッドは\function{os.listdir()}をディレクトリのスキャンに用いてお
+ り、\function{listdir()}が失敗した場合には \code{404} 応答
+が返されます。
+
+
+リクエストがファイルに対応付けられた場合、そのファイルを開いて内容を
+返します。要求されたファイルを開く際に何らかの \exception{IOError} 例外
+が送出された場合、リクエストは \code{404}、\code{'File not found'} 
+エラーに対応づけられます。そうでない場合、コンテントタイプが
+\var{extensions_map} 変数を用いて推測されます。
+
+出力は \code{'Content-type:'} と推測されたコンテントタイプで、その
+後にファイルサイズを示す \code{'Content-Lenght;'} ヘッダと、
+ファイルの更新日時を示す \code{'Last-Modified:'} ヘッダが続きます。
+
+そしてヘッダの終了を示す空白行が続き、さらにその後にファイルの内容が
+続きます。このファイルはコンテントタイプが\code{text/}で始まっている場合
+はテキストモードで、そうでなければバイナリモードで開かれます。
+
+使用例については関数 \function{test()} の実装を参照してください。
+
+\versionadded[\code{'Last-Modified'} ヘッダ]{2.5}
+\end{methoddesc}
+
+
+\begin{seealso}
+  \seemodule{BaseHTTPServer}{Web サーバおよび要求ハンドラの基底クラス実装。}
+\end{seealso}

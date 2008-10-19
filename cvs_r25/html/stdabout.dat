@@ -1,0 +1,107 @@
+<p> このドキュメントは、 
+<a href="http://saftsack.fs.uni-bayreuth.de/;SPMtilde;latex2ht/">
+<strong>LaTeX</strong>2<tt>HTML</tt></a> 変換ツールを
+使って生成されています。
+</p>
+
+<p> 
+<a href="http://saftsack.fs.uni-bayreuth.de/;SPMtilde;latex2ht/">
+    <strong>LaTeX</strong>2<tt>HTML</tt></a> の著作権は、
+Copyright &copy;
+  1993, 1994, 1995, 1996, 1997, <a
+    href="http://cbl.leeds.ac.uk/nikos/personal.html">Nikos
+    Drakos</a>, Computer Based Learning Unit, University of
+  Leeds, and Copyright &copy; 1997, 1998, <a
+    href="http://www.maths.mq.edu.au/;SPMtilde;ross/">Ross
+    Moore</a>, Mathematics Department, Macquarie University,
+  Sydney.<br>
+となっています。
+</p>
+
+<p> 
+Python ドキュメントの
+<a href="http://saftsack.fs.uni-bayreuth.de/;SPMtilde;latex2ht/">
+<strong>LaTeX</strong>2<tt>HTML</tt></a> への対応は、
+Fred L. Drake, Jr. の多大な努力で実現しました。
+オリジナルのナビゲーションアイコンは、
+Christopher Petrilli によるものです。
+
+</p>
+
+<hr>
+
+<h2>Comments and Questions</h2>
+
+<p> General comments and questions regarding this document should
+  be sent by email to <a href="mailto:docs@python.org"
+    >docs@python.org</a>.  If you find specific errors in
+  this document, either in the content or the presentation, please
+  report the bug at the <a
+    href="http://sourceforge.net/bugs/?group_id=5470">Python Bug
+    Tracker</a> at <a href="http://sourceforge.net/">SourceForge</a>.
+   If you are able to provide suggested text, either to replace
+   existing incorrect or unclear material, or additional text to
+   supplement what's already available, we'd appreciate the
+   contribution.  There's no need to worry about text markup; our
+   documentation team will gladly take care of that.
+</p>
+
+<p> Questions regarding how to use the information in this
+  document should be sent to the Python news group, <a
+    href="news:comp.lang.python">comp.lang.python</a>, or the <a
+    href="http://www.python.org/mailman/listinfo/python-list"
+    >Python mailing list</a> (which is gated to the newsgroup and
+  carries the same content).
+</p>
+
+<p> For any of these channels, please be sure not to send HTML email.
+  Thanks.
+</p>
+
+<hr>
+
+<h2>和訳に関するコメントや質問について</h2>
+
+<p>
+本和訳プロジェクトは、少なくとも 2004 年 4 月の時点では、
+Python 本体の開発プロジェクトや Python 国際化 SIG による
+取り組みの一部では <strong> ありません </strong>。
+和訳の内容、和訳プロジェクトに関するご意見やご質問は、
+これらのプロジェクトあてにお送りにならないようお願いします。
+</p>
+
+<p>
+和訳ドキュメントに関する誤りのご指摘やご質問、コメントは、
+<a href="http://sourceforge.jp/">
+SourceForge.jp</a> の
+<a href="https://sourceforge.jp/projects/pythonjp/tracker/">
+Python ドキュメント和訳プロジェクト バグトラッカ</a> から
+お送りください。
+内容の誤りや説明不足な部分に対する改案、すでに利用できる機能の
+説明を補完するような追加の文章をお持ちなら、ぜひご提供ください。
+マークアップのことを気にする必要はありません; ドキュメンテーション
+チームが喜んで手配します。
+</p>
+
+<p>
+Python でのプログラミングに関する疑問など、このドキュメントに
+書かれている情報の使い方についての質問は、
+<a href="http://www.python.jp/mailman/listinfo/python-ml-jp">
+日本 Python ユーザ会メーリングリスト</a>
+で行うとよいでしょう。
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

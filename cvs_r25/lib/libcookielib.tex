@@ -1,0 +1,699 @@
+\section{\module{cookielib} ---
+         HTTP クライアント用の Cookie 処理}
+
+\declaremodule{standard}{cookielib}
+\moduleauthor{John J. Lee}{jjl@pobox.com}
+\sectionauthor{John J. Lee}{jjl@pobox.com}
+
+\versionadded{2.4}
+
+\modulesynopsis{HTTP クライアント用の Cookie 処理}
+
+\module{cookielib} モジュールは HTTP クッキーの自動処理をおこなう
+クラスを定義します。これは小さなデータの断片 -- \dfn{クッキー} -- 
+を要求する web サイトにアクセスする際に有用です。クッキーとは
+web サーバの HTTP レスポンスによってクライアントのマシンに設定され、
+のちの HTTP リクエストをおこなうさいにサーバに返されるものです。
+
+標準的な Netscape クッキープロトコルおよび \rfc{2965} で定義されている
+プロトコルの両方を処理できます。RFC 2965 の処理はデフォルトではオフになっています。
+\rfc{2109} のクッキーは Netscape クッキーとして解析され、のちに
+有効な 'ポリシー' に従って Netscapeまたは RFC 2965 クッキーとして処理されます。
+但し、インターネット上の大多数のクッキーは Netscapeクッキーです。
+\module{cookielib} はデファクトスタンダードの Netscape クッキープロトコル 
+(これは元々 Netscape が策定した仕様とはかなり異なっています) に
+従うようになっており、RFC 2109 で導入された \code{max-age} や \code{port} などの
+クッキー属性にも注意を払います。 \note{\mailheader{Set-Cookie} や
+\mailheader{Set-Cookie2} ヘッダに現れる多種多様なパラメータの名前
+(\code{domain} や \code{expires} など) は便宜上 \dfn{属性} と呼ばれますが、
+ここでは Python の属性と区別するため、かわりに \dfn{クッキー属性} と呼ぶことにします。}
+
+このモジュールは以下の例外を定義しています:
+
+\begin{excdesc}{LoadError}
+この例外は \class{FileCookieJar} インスタンスがファイルからクッキーを
+読み込むのに失敗した場合に発生します。
+\end{excdesc}
+
+以下のクラスが提供されています:
+
+\begin{classdesc}{CookieJar}{policy=\constant{None}}
+\var{policy} は \class{CookiePolicy} インターフェイスを実装するオブジェクトです。
+
+\class{CookieJar} クラスには HTTP クッキーを保管します。
+これは HTTP リクエストに応じてクッキーを取り出し、それを
+HTTP レスポンスの中で返します。必要に応じて、
+\class{CookieJar} インスタンスは保管されているクッキーを
+自動的に破棄します。このサブクラスは、クッキーをファイルや
+データベースに格納したり取り出したりする操作をおこなう役割を負っています。
+\end{classdesc}
+
+\begin{classdesc}{FileCookieJar}{filename, delayload=\constant{None},
+ policy=\constant{None}}
+\var{policy} は \class{CookiePolicy} インターフェイスを実装するオブジェクトです。
+これ以外の引数については、該当する属性の説明を参照してください。
+
+\class{FileCookieJar} はディスク上のファイルからのクッキーの読み込み、
+もしくは書き込みをサポートします。実際には、\method{load()} または 
+\method{revert()} のどちらかのメソッドが呼ばれるまでクッキーは
+指定されたファイルからはロード\strong{されません}。
+このクラスのサブクラスは \ref{file-cookie-jar-classes} 節で説明します。
+\end{classdesc}
+
+\begin{classdesc}{CookiePolicy}{}
+このクラスは、あるクッキーをサーバから受け入れるべきか、
+そしてサーバに返すべきかを決定する役割を負っています。
+\end{classdesc}
+
+\begin{classdesc}{DefaultCookiePolicy}{
+    blocked_domains=\constant{None},
+    allowed_domains=\constant{None},
+    netscape=\constant{True}, rfc2965=\constant{False},
+    rfc2109_as_netscape=\constant{None},
+    hide_cookie2=\constant{False},
+    strict_domain=\constant{False},
+    strict_rfc2965_unverifiable=\constant{True},
+    strict_ns_unverifiable=\constant{False},
+    strict_ns_domain=\constant{DefaultCookiePolicy.DomainLiberal},
+    strict_ns_set_initial_dollar=\constant{False},
+    strict_ns_set_path=\constant{False}
+  }
+
+コンストラクタはキーワード引数しか取りません。
+\var{blocked_domains} はドメイン名からなるシーケンスで、ここからは
+決してクッキーを受けとらないし、このドメインにクッキーを返すこともありません。
+\var{allowed_domains} が \constant{None} でない場合、これはこのドメインのみから
+クッキーを受けとり、返すという指定になります。これ以外の引数については
+\class{CookiePolicy} および \class{DefaultCookiePolicy} オブジェクトの
+説明をごらんください。
+
+\class{DefaultCookiePolicy} は Netscape および RFC 2965 クッキーの
+標準的な許可 / 拒絶のルールを実装しています。デフォルトでは、RFC 2109 のクッキー
+(\mailheader{Set-Cookie} の version クッキー属性が 1 で受けとられるもの) は
+RFC 2965 のルールで扱われます。
+しかし、RFC 2965処理が無効に設定されているか \member{rfc2109_as_netscape}が
+Trueの場合、RFC 2109クッキーは \class{CookieJar}インスタンスによって
+\class{Cookie}のインスタンスの \member{version}属性を 0に設定する事で
+Netscapeクッキーに「ダウングレード」されます。
+また \class{DefaultCookiePolicy} には
+いくつかの細かいポリシー設定をおこなうパラメータが用意されています。
+\end{classdesc}
+
+\begin{classdesc}{Cookie}{}
+このクラスは Netscape クッキー、RFC 2109 のクッキー、および RFC 2965 のクッキーを
+表現します。\module{cookielib} のユーザが自分で \class{Cookie} インスタンスを
+作成することは想定されていません。かわりに、必要に応じて \class{CookieJar} インスタンスの
+\method{make_cookies()} を呼ぶことになっています。
+\end{classdesc}
+
+\begin{seealso}
+
+\seemodule{urllib2}{クッキーの自動処理をおこない URL を開くモジュールです。}
+
+\seemodule{Cookie}{HTTP のクッキークラスで、基本的にはサーバサイドの
+コードで有用です。\module{cookielib} および \module{Cookie} モジュールは
+互いに依存してはいません。}
+
+\seeurl{http://wwwsearch.sf.net/ClientCookie/}{このモジュールの拡張で、
+Windows 上の Microsoft Internet Explorer クッキーを読みこむクラスが含まれています。}
+
+\seeurl{http://www.netscape.com/newsref/std/cookie_spec.html}{元祖 Netscape の
+クッキープロトコルの仕様です。今でもこれが主流のプロトコルですが、
+現在のメジャーなブラウザ (と \module{cookielib}) が実装している
+「Netscape クッキープロトコル」は \code{cookie_spec.html} で述べられているものと
+おおまかにしか似ていません。}
+
+\seerfc{2109}{HTTP State Management Mechanism}{RFC 2965 によって過去の遺物になりました。
+\mailheader{Set-Cookie} の version=1 で使います。}
+
+\seerfc{2965}{HTTP State Management Mechanism}{Netscape プロトコルの
+バグを修正したものです。 \mailheader{Set-Cookie} のかわりに
+\mailheader{Set-Cookie2} を使いますが、普及してはいません。}
+
+\seeurl{http://kristol.org/cookie/errata.html}{RFC 2965 に対する未完の正誤表です。}
+
+\seerfc{2964}{Use of HTTP State Management}{}
+
+\end{seealso}
+
+
+\subsection{CookieJar および FileCookieJar オブジェクト \label{cookie-jar-objects}}
+
+\class{CookieJar} オブジェクトは保管されている \class{Cookie} オブジェクトを
+ひとつずつ取り出すための、イテレータ・プロトコルをサポートしています。
+
+\class{CookieJar} は以下のようなメソッドを持っています:
+
+\begin{methoddesc}[CookieJar]{add_cookie_header}{request}
+\var{request} に正しい \mailheader{Cookie} ヘッダを追加します。
+
+ポリシーが許すようであれば (\class{CookieJar} の \class{CookiePolicy} インスタンスにある
+属性のうち、\member{rfc2965} および \member{hide_cookie2} がそれぞれ
+真と偽であるような場合)、必要に応じて \mailheader{Cookie2} ヘッダも追加されます。
+
+\var{request} オブジェクト (通常は \class{urllib2.Request} インスタンス) は、
+\module{urllib2} のドキュメントに記されているように、
+\method{get_full_url()}, \method{get_host()},
+\method{get_type()}, \method{unverifiable()},
+\method{get_origin_req_host()}, \method{has_header()},
+\method{get_header()}, \method{header_items()} および
+\method{add_unredirected_header()} の各メソッドをサポートしている必要があります。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{extract_cookies}{response, request}
+HTTP \var{response} からクッキーを取り出し、ポリシーによって許可されていれば
+これを \class{CookieJar} 内に保管します。
+
+\class{CookieJar} は \var{response} 引数の中から
+許可されている \mailheader{Set-Cookie} および \mailheader{Set-Cookie2} ヘッダを
+探しだし、適切に (\method{CookiePolicy.set_ok()} メソッドの承認におうじて) 
+クッキーを保管します。
+
+\var{response} オブジェクト (通常は \method{urllib2.urlopen()} あるいは
+それに類似する呼び出しによって得られます) は \method{info()} メソッドを
+サポートしている必要があります。これは \method{getallmatchingheaders()} メソッドのある
+オブジェクト (通常は \class{mimetools.Message} インスタンス) を返すものです。
+
+\var{request} オブジェクト (通常は \class{urllib2.Request} インスタンス) は
+\module{urllib2} のドキュメントに記されているように、
+\method{get_full_url()}, \method{get_host()}, \method{unverifiable()}
+および \method{get_origin_req_host()} の各メソッドをサポートしている必要があります。
+この request はそのクッキーの保存が許可されているかを検査するとともに、
+クッキー属性のデフォルト値を設定するのに使われます。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{set_policy}{policy}
+使用する \class{CookiePolicy} インスタンスを指定します。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{make_cookies}{response, request}
+\var{response} オブジェクトから得られた \class{Cookie} オブジェクトからなる
+シーケンスを返します。
+
+\var{response} および \var{request} 引数で要求されるインスタンスについては、
+\method{extract_cookies} の説明を参照してください。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{set_cookie_if_ok}{cookie, request}
+ポリシーが許すのであれば、与えられた \class{Cookie} を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{set_cookie}{cookie}
+与えられた \class{Cookie} を、それが設定されるべきかどうかの
+ポリシーのチェックを行わずに設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{clear}{\optional{domain\optional{,
+      path\optional{, name}}}}
+いくつかのクッキーを消去します。
+
+引数なしで呼ばれた場合は、すべてのクッキーを消去します。
+引数がひとつ与えられた場合、その \var{domain} に属するクッキーのみを消去します。
+ふたつの引数が与えられた場合、指定された \var{domain} と URL \var{path} に
+属するクッキーのみを消去します。引数が 3つ与えられた場合、
+\var{domain}, \var{path} および \var{name} で指定されるクッキーが消去されます。
+
+与えられた条件に一致するクッキーがない場合は \exception{KeyError} を発生させます。
+\end{methoddesc}
+
+\begin{methoddesc}[CookieJar]{clear_session_cookies}{}
+すべてのセッションクッキーを消去します。
+
+保存されているクッキーのうち、\member{discard} 属性が真になっているもの
+すべてを消去します (通常これは \code{max-age} または \code{expires} の
+どちらのクッキー属性もないか、あるいは明示的に \code{discard} クッキー属性が
+指定されているものです)。対話的なブラウザの場合、セッションの終了は
+ふつうブラウザのウィンドウを閉じることに相当します。
+
+注意: \var{ignore_discard} 引数に真を指定しないかぎり、
+\method{save()} メソッドはセッションクッキーは保存しません。
+\end{methoddesc}
+
+さらに \class{FileCookieJar} は以下のようなメソッドを実装しています:
+
+\begin{methoddesc}[FileCookieJar]{save}{filename=\constant{None},
+    ignore_discard=\constant{False}, ignore_expires=\constant{False}}
+クッキーをファイルに保存します。
+
+この基底クラスは  \exception{NotImplementedError} を発生させます。
+サブクラスはこのメソッドを実装しないままにしておいてもかまいません。
+
+\var{filename} はクッキーを保存するファイルの名前です。
+\var{filename} が指定されない場合、 \member{self.filename} が使用されます
+(このデフォルト値は、それが存在する場合は、コンストラクタに渡されています)。
+\member{self.filename} も \constant{None} の場合は \exception{ValueError} が発生します。
+
+\var{ignore_discard}: 破棄されるよう指示されていたクッキーでも保存します。
+\var{ignore_expires}: 期限の切れたクッキーでも保存します。
+
+ここで指定されたファイルがもしすでに存在する場合は上書きされるため、
+以前にあったクッキーはすべて消去されます。保存したクッキーはあとで
+\method{load()} または \method{revert()} メソッドを使って復元することができます。
+\end{methoddesc}
+
+\begin{methoddesc}[FileCookieJar]{load}{filename=\constant{None},
+    ignore_discard=\constant{False}, ignore_expires=\constant{False}}
+ファイルからクッキーを読み込みます。
+
+それまでのクッキーは新しいものに上書きされない限り残ります。
+
+ここでの引数の値は \method{save()} と同じです。
+
+名前のついたファイルはこのクラスがわかるやり方で指定する必要があります。
+さもないと \exception{LoadError} が発生します。
+さらに、例えばファイルが存在しないような時に \exception{IOError} が
+発生する場合があります。 \note{(\exception{IOError}を発行する)Python 2.4との
+後方互換性のために、\exception{LoadError}は \exception{IOError}のサブクラス
+です。}
+\end{methoddesc}
+
+\begin{methoddesc}[FileCookieJar]{revert}{filename=\constant{None},
+    ignore_discard=\constant{False}, ignore_expires=\constant{False}}
+すべてのクッキーを破棄し、保存されているファイルから読み込み直します。
+
+\method{revert()} は \method{load()} と同じ例外を発生させる事ができます。
+失敗した場合、オブジェクトの状態は変更されません。
+\end{methoddesc}
+
+\class{FileCookieJar} インスタンスは以下のような公開の属性をもっています:
+
+\begin{memberdesc}{filename}
+クッキーを保存するデフォルトのファイル名を指定します。
+この属性には代入することができます。
+\end{memberdesc}
+
+\begin{memberdesc}{delayload}
+真であれば、クッキーを読み込むさいにディスクから遅延読み込み (lazy) します。
+この属性には代入することができません。この情報は単なるヒントであり、
+(ディスク上のクッキーが変わらない限りは) インスタンスのふるまいには影響を与えず、
+パフォーマンスのみに影響します。\class{CookieJar} オブジェクトはこの値を無視することもあります。
+標準ライブラリに含まれている \class{FileCookieJar} クラスで遅延読み込みを
+おこなうものはありません。
+\end{memberdesc}
+
+
+\subsection{FileCookieJar のサブクラスと web ブラウザとの連携
+  \label{file-cookie-jar-classes}}
+
+クッキーの読み書きのために、
+以下の \class{CookieJar} サブクラスが提供されています。
+これ以外の \class{CookieJar} サブクラスは、Microsoft Internet Explorer
+ブラウザのクッキーを読みこむものも含め、
+\url{http://wwwsearch.sf.net/ClientCookie/} から使用可能です。
+
+\begin{classdesc}{MozillaCookieJar}{filename, delayload=\constant{None},
+ policy=\constant{None}}
+Mozilla の \code{cookies.txt} ファイル形式 (この形式はまた Lynx と
+Netscape ブラウザによっても使われています) でディスクにクッキーを読み書きするための
+\class{FileCookieJar} です。 \note{このクラスは RFC 2965 クッキーに関する
+情報を失います。また、より新しいか、標準でない \code{port} などの
+クッキー属性についての情報も失います。}
+
+\warning{もしクッキーの損失や欠損が望ましくない場合は、クッキーを保存する前に
+バックアップを取っておくようにしてください (ファイルへの読み込み / 保存を
+くり返すと微妙な変化が生じる場合があります)。}
+
+また、 Mozilla の起動中にクッキーを保存すると、
+Mozilla によって内容が破壊されてしまうことにも注意してください。
+\end{classdesc}
+
+\begin{classdesc}{LWPCookieJar}{filename, delayload=\constant{None},
+ policy=\constant{None}}
+libwww-perl のライブラリである \code{Set-Cookie3} ファイル形式で
+ディスクにクッキーを読み書きするための \class{FileCookieJar} です。
+これはクッキーを人間に可読な形式で保存するのに向いています。
+\end{classdesc}
+
+
+\subsection{CookiePolicy オブジェクト \label{cookie-policy-objects}}
+
+\class{CookiePolicy} インターフェイスを実装するオブジェクトは
+以下のようなメソッドを持っています:
+
+\begin{methoddesc}[CookiePolicy]{set_ok}{cookie, request}
+クッキーがサーバから受け入れられるべきかどうかを表わす boolean 値を返します。
+
+\var{cookie} は \class{cookielib.Cookie} インスタンスです。 \var{request} は
+\method{CookieJar.extract_cookies()} の説明で定義されているインターフェイスを
+実装するオブジェクトです。
+\end{methoddesc}
+
+\begin{methoddesc}[CookiePolicy]{return_ok}{cookie, request}
+クッキーがサーバに返されるべきかどうかを表わす boolean 値を返します。
+
+\var{cookie} は \class{cookielib.Cookie} インスタンスです。 \var{request} は
+\method{CookieJar.add_cookie_header()} の説明で定義されているインターフェイスを
+実装するオブジェクトです。
+\end{methoddesc}
+
+\begin{methoddesc}[CookiePolicy]{domain_return_ok}{domain, request}
+与えられたクッキーのドメインに対して、そこにクッキーを返すべきでない場合には
+false を返します。
+
+このメソッドは高速化のためのものです。これにより、すべてのクッキーをある特定の
+ドメインに対してチェックする (これには多数のファイル読みこみを伴なう場合があります)
+必要がなくなります。 \method{domain_return_ok()} および \method{path_return_ok()} の
+両方から true が返された場合、すべての決定は \method{return_ok()} に委ねられます。
+
+もし、このクッキードメインに対して \method{domain_return_ok()} が true を返すと、
+つぎにそのクッキーのパス名に対して \method{path_return_ok()} が呼ばれます。
+そうでない場合、そのクッキードメインに対する \method{path_return_ok()} および
+\method{return_ok()} は決して呼ばれることはありません。\method{path_return_ok()} が true を返すと、
+\method{return_ok()} がその \class{Cookie} オブジェクト自身の全チェックのために
+呼ばれます。そうでない場合、そのクッキーパス名に対する \method{return_ok()} は
+決して呼ばれることはありません。
+
+注意: \method{domain_return_ok()} は \emph{request} ドメインだけではなく、
+すべての \emph{cookie} ドメインに対して呼ばれます。たとえば request ドメインが
+\code{"www.example.com"} だった場合、この関数は \code{".example.com"} および
+\code{"www.example.com"} の両方に対して呼ばれることがあります。
+同じことは \method{path_return_ok()} にもいえます。
+
+\var{request} 引数は \method{return_ok()} で説明されているとおりです。
+\end{methoddesc}
+
+\begin{methoddesc}[CookiePolicy]{path_return_ok}{path, request}
+与えられたクッキーのパス名に対して、そこにクッキーを返すべきでない場合には
+false を返します。
+
+\method{domain_return_ok()} の説明を参照してください。
+\end{methoddesc}
+
+上のメソッドの実装にくわえて、\class{CookiePolicy} インターフェイスの実装では
+以下の属性を設定する必要があります。これはどのプロトコルがどのように使われるべきかを
+示すもので、これらの属性にはすべて代入することが許されています。
+
+\begin{memberdesc}{netscape}
+Netscape プロトコルを実装していることを示します。
+\end{memberdesc}
+\begin{memberdesc}{rfc2965}
+RFC 2965 プロトコルを実装していることを示します。
+\end{memberdesc}
+\begin{memberdesc}{hide_cookie2}
+\mailheader{Cookie2} ヘッダをリクエストに含めないようにします
+(このヘッダが存在する場合、私たちは RFC 2965 クッキーを理解すると
+いうことをサーバに示すことになります)。
+\end{memberdesc}
+
+もっとも有用な方法は、\class{DefaultCookiePolicy} をサブクラス化した
+\class{CookiePolicy} クラスを定義して、いくつか (あるいはすべて) の
+メソッドをオーバーライドすることでしょう。\class{CookiePolicy} 自体は
+どのようなクッキーも受け入れて設定を許可する「ポリシー無し」ポリシーとして
+使うこともできます (これが役に立つことはあまりありませんが)。
+
+
+\subsection{DefaultCookiePolicy オブジェクト \label{default-cookie-policy-objects}}
+
+クッキーを受けつけ、またそれを返す際の標準的なルールを実装します。
+
+RFC 2965 クッキーと Netscape クッキーの両方に対応しています。
+デフォルトでは、RFC 2965 の処理はオフになっています。
+
+自分のポリシーを提供するいちばん簡単な方法は、このクラスを継承して、
+自分用の追加チェックの前にオーバーライドした元のメソッドを呼び出すことです:
+
+\begin{verbatim}
+import cookielib
+class MyCookiePolicy(cookielib.DefaultCookiePolicy):
+    def set_ok(self, cookie, request):
+        if not cookielib.DefaultCookiePolicy.set_ok(self, cookie, request):
+            return False
+        if i_dont_want_to_store_this_cookie(cookie):
+            return False
+        return True
+\end{verbatim}
+
+\class{CookiePolicy} インターフェイスを実装するのに必要な機能に加えて、
+このクラスではクッキーを受けとったり設定したりするドメインを
+許可したり拒絶したりできるようになっています。ほかにも、
+Netscape プロトコルのかなり緩い規則をややきつくするために、いくつかの
+厳密性のスイッチがついています (いくつかの良性クッキーをブロックする危険性もありますが)。
+
+ドメインのブラックリスト機能やホワイトリスト機能も提供されています (デフォルトではオフになっています)。
+ブラックリストになく、(ホワイトリスト機能を使用している場合は) ホワイトリストにある
+ドメインのみがクッキーを設定したり返したりすることを許可されます。
+コンストラクタの引数 \var{blocked_domains}、および
+\method{blocked_domains()} と \method{set_blocked_domains()} メソッドを
+使ってください (\var{allowed_domains} に関しても同様の対応する引数とメソッドがあります)。
+ホワイトリストを設定した場合は、それを \constant{None} にすることで
+ホワイトリスト機能をオフにすることができます。
+
+ブラックリストあるいはホワイトリスト中にあるドメインのうち、
+ドット (.) で始まっていないものは、正確にそれと一致する
+ドメインのクッキーにしか適用されません。たとえば
+ブラックリスト中のエントリ \code{"example.com"} は、
+\code{"example.com"} にはマッチしますが、\code{"www.example.com"} にはマッチしません。
+一方ドット (.) で始まっているドメインは、より特化されたドメインともマッチします。
+たとえば、\code{".example.com"} は、\code{"www.example.com"} と
+\code{"www.coyote.example.com"} の両方にマッチします
+(が、\code{"example.com"} 自身にはマッチしません)。IP アドレスは例外で、
+つねに正確に一致する必要があります。たとえば、かりに
+\var{blocked_domains} が \code{"192.168.1.2"} と \code{".168.1.2"} を
+含んでいたとして、192.168.1.2 はブロックされますが、
+193.168.1.2 はブロックされません。
+
+\class{DefaultCookiePolicy} は以下のような追加メソッドを実装しています:
+
+\begin{methoddesc}[DefaultCookiePolicy]{blocked_domains}{}
+ブロックしているドメインのシーケンスを (タプルとして) 返します。
+\end{methoddesc}
+
+\begin{methoddesc}[DefaultCookiePolicy]{set_blocked_domains}
+  {blocked_domains}
+ブロックするドメインを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[DefaultCookiePolicy]{is_blocked}{domain}
+\var{domain} がクッキーを授受しないブラックリストに載っているかどうかを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[DefaultCookiePolicy]{allowed_domains}{}
+\constant{None} あるいは明示的に許可されているドメインを (タプルとして) 返します。
+\end{methoddesc}
+
+\begin{methoddesc}[DefaultCookiePolicy]{set_allowed_domains}
+  {allowed_domains}
+許可するドメイン、あるいは \constant{None} を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[DefaultCookiePolicy]{is_not_allowed}{domain}
+\var{domain} がクッキーを授受するホワイトリストに載っているかどうかを返します。
+\end{methoddesc}
+
+\class{DefaultCookiePolicy} インスタンスは以下の属性をもっています。
+これらはすべてコンストラクタから同じ名前の引数をつかって初期化することができ、
+代入してもかまいません。
+
+\begin{memberdesc}{rfc2109_as_netscape}
+Trueの場合、\class{CookieJar} のインスタンスに RFC 2109 クッキー
+(即ち \mailheader{Set-Cookie}ヘッダのVersion cookie属性の値が1のクッキー)を
+Netscapeクッキーへ、\class{Cookie} インスタンスのversion属性を0に設定する事で
+ダウングレードするように要求します。デフォルトの値は \constant{None}で
+あり、この場合 RFC 2109 クッキーは RFC 2965 処理が無効に設定されている
+場合に限りダウングレードされます。それ故に RFC 2109 クッキーはデフォルトでは
+ダウングレードされます。
+\versionadded{2.5}
+\end{memberdesc}
+
+一般的な厳密性のスイッチ:
+
+\begin{memberdesc}{strict_domain}
+サイトに、
+国別コードとトップレベルドメインだけからなるドメイン名 (\code{.co.uk}, \code{.gov.uk},
+\code{.co.nz} など) を設定させないようにします。
+これは完璧からはほど遠い実装であり、いつもうまくいくとは限りません!
+\end{memberdesc}
+
+RFC 2965 プロトコルの厳密性に関するスイッチ:
+
+\begin{memberdesc}{strict_rfc2965_unverifiable}
+検証不可能なトランザクション (通常これはリダイレクトか、
+別のサイトがホスティングしているイメージの読み込み要求です) に関する
+RFC 2965 の規則に従います。この値が偽の場合、検証可能性を基準にして
+クッキーがブロックされることは\emph{決して}ありません。
+\end{memberdesc}
+
+Netscape プロトコルの厳密性に関するスイッチ:
+
+\begin{memberdesc}{strict_ns_unverifiable}
+検証不可能なトランザクションに関する RFC 2965 の規則を Netscape クッキーに
+対しても適用します。
+\end{memberdesc}
+\begin{memberdesc}{strict_ns_domain}
+Netscape クッキーに対するドメインマッチングの規則をどの程度厳しくするかを
+指示するフラグです。とりうる値については下の説明を見てください。
+\end{memberdesc}
+\begin{memberdesc}{strict_ns_set_initial_dollar}
+Set-Cookie: ヘッダで、\code{'\$'} で始まる名前のクッキーを無視します。
+\end{memberdesc}
+\begin{memberdesc}{strict_ns_set_path}
+要求した URI にパスがマッチしないクッキの設定を禁止します。
+\end{memberdesc}
+
+\member{strict_ns_domain} はいくつかのフラグの集合です。
+これはいくつかの値を or することで構成します (たとえば
+\code{DomainStrictNoDots|DomainStrictNonDomain} は両方のフラグが
+設定されていることになります)。
+
+\begin{memberdesc}{DomainStrictNoDots}
+クッキーを設定するさい、ホスト名のプレフィクスにドットが含まれるのを
+禁止します (例: \code{www.foo.bar.com} は \code{.bar.com} のクッキーを設定することはできません、
+なぜなら \code{www.foo} はドットを含んでいるからです)。
+\end{memberdesc}
+\begin{memberdesc}{DomainStrictNonDomain}
+\code{domain} クッキー属性を明示的に指定していないクッキーは、
+そのクッキーを設定したドメインと同一のドメインだけに返されます
+(例: \code{example.com} からのクッキーに \code{domain} クッキー属性が
+ない場合、そのクッキーが \code{spam.example.com} に返されることはありません)。
+\end{memberdesc}
+\begin{memberdesc}{DomainRFC2965Match}
+クッキーを設定するさい、RFC 2965 の完全ドメインマッチングを要求します。
+\end{memberdesc}
+
+以下の属性は上記のフラグのうちもっともよく使われる組み合わせで、
+便宜をはかるために提供されています。
+
+\begin{memberdesc}{DomainLiberal}
+0 と同じです (つまり、上述の Netscape のドメイン厳密性フラグが
+すべてオフにされます)。
+\end{memberdesc}
+\begin{memberdesc}{DomainStrict}
+\code{DomainStrictNoDots|DomainStrictNonDomain} と同じです。
+\end{memberdesc}
+
+
+\subsection{Cookie オブジェクト \label{cookie-objects}}
+
+\class{Cookie} インスタンスは、さまざまなクッキーの標準で規定されている
+標準的なクッキー属性とおおまかに対応する Python 属性をもっています。
+しかしデフォルト値を決める複雑なやり方が存在しており、
+また \code{max-age} および \code{expires} クッキー属性は
+同じ値をもつことになっているので、また RFC 2109クッキーは
+\module{cookielib}によって version 1から version 0 (Netscape)クッキーへ
+'ダウングレード' される場合があるため、
+この対応は 1対 1 ではありません。
+
+\class{CookiePolicy} メソッド内でのごくわずかな例外を除けば、
+これらの属性に代入する必要はないはずです。このクラスは
+内部の一貫性を保つようにはしていないため、代入するのは
+自分のやっていることを理解している場合のみにしてください。
+
+\begin{memberdesc}[Cookie]{version}
+整数または \constant{None}。 Netscape クッキーは バージョン 0 であり、
+RFC 2965 および RFC 2109 クッキーは バージョン 1 です。
+しかし、\module{cookielib} は RFC 2109クッキーを Netscapeクッキー
+(\member{version}が 0)に'ダウングレード'する場合がある事に注意して下さい。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{name}
+クッキーの名前 (文字列)。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{value}
+クッキーの値 (文字列)、あるいは \constant{None}。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{port}
+ポートあるいはポートの集合をあらわす文字列 (例: '80' または '80,8080')、
+あるいは \constant{None}。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{path}
+クッキーのパス名 (文字列、例:\code{'/acme/rocket_launchers'})。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{secure}
+そのクッキーを返せるのが安全な接続のみならば真を返します。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{expires}
+クッキーの期限が切れる日時をあわらす整数 (エポックから経過した秒数)、
+あるいは \constant{None}。\method{is_expired()} も参照してください。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{discard}
+これがセッションクッキーであれば真を返します。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{comment}
+このクッキーの働きを説明する、サーバからのコメント文字列、
+あるいは \constant{None}。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{comment_url}
+このクッキーの働きを説明する、サーバからのコメントのリンク URL、
+あるいは \constant{None}。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{rfc2109}
+RFC 2109クッキー(即ち \mailheader{Set-Cookie}ヘッダにあり、
+かつVersion cookie属性の値が1のクッキー)の場合、Trueを返します。
+\module{cookielib}が RFC 2109クッキーを Netscapeクッキー
+(\member{version} が 0)に'ダウングレード'する場合があるので、
+この属性が提供されています。
+\versionadded{2.5}
+\end{memberdesc}
+
+\begin{memberdesc}[Cookie]{port_specified}
+サーバがポート、あるいはポートの集合を
+(\mailheader{Set-Cookie} / \mailheader{Set-Cookie2} ヘッダ内で) 
+明示的に指定していれば真を返します。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{domain_specified}
+サーバがドメインを明示的に指定していれば真を返します。
+\end{memberdesc}
+\begin{memberdesc}[Cookie]{domain_initial_dot}
+サーバが明示的に指定したドメインが、ドット (\code{'.'}) で始まっていれば真を返します。
+\end{memberdesc}
+
+クッキーは、オプションとして標準的でないクッキー属性を持つこともできます。
+これらは以下のメソッドでアクセスできます:
+
+\begin{methoddesc}[Cookie]{has_nonstandard_attr}{name}
+そのクッキーが指定された名前のクッキー属性をもっている場合には真を返します。
+\end{methoddesc}
+\begin{methoddesc}[Cookie]{get_nonstandard_attr}{name, default=\constant{None}}
+クッキーが指定された名前のクッキー属性をもっていれば、その値を返します。
+そうでない場合は \var{default} を返します。
+\end{methoddesc}
+\begin{methoddesc}[Cookie]{set_nonstandard_attr}{name, value}
+指定された名前のクッキー属性を設定します。
+\end{methoddesc}
+
+\class{Cookie} クラスは以下のメソッドも定義しています:
+
+\begin{methoddesc}[Cookie]{is_expired}{\optional{now=\constant{None}}}
+サーバが指定した、クッキーの期限が切れるべき時が過ぎていれば真を返します。
+\var{now} が指定されているときは (エポックから経過した秒数です)、
+そのクッキーが指定された時間において期限切れになっているかどうかを判定します。
+\end{methoddesc}
+
+
+\subsection{使用例 \label{cookielib-examples}}
+
+はじめに、もっとも一般的な \module{cookielib} の使用例をあげます:
+
+\begin{verbatim}
+import cookielib, urllib2
+cj = cookielib.CookieJar()
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+r = opener.open("http://example.com/")
+\end{verbatim}
+
+以下の例では、 URL を開く際に Netscape や Mozilla または Lynx のクッキーを
+使う方法を示しています (クッキーファイルの位置は \UNIX{}/Netscape の慣例に
+したがうものと仮定しています):
+
+\begin{verbatim}
+import os, cookielib, urllib2
+cj = cookielib.MozillaCookieJar()
+cj.load(os.path.join(os.environ["HOME"], ".netscape/cookies.txt"))
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+r = opener.open("http://example.com/")
+\end{verbatim}
+
+つぎの例は \class{DefaultCookiePolicy} の使用例です。
+RFC 2965 クッキーをオンにし、Netscape クッキーを設定したり返したりするドメインに
+対してより厳密な規則を適用します。そしていくつかのドメインから
+クッキーを設定あるいは返還するのをブロックしています:
+
+\begin{verbatim}
+import urllib2
+from cookielib import CookieJar, DefaultCookiePolicy
+policy = DefaultCookiePolicy(
+    rfc2965=True, strict_ns_domain=Policy.DomainStrict,
+    blocked_domains=["ads.net", ".ads.net"])
+cj = CookieJar(policy)
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+r = opener.open("http://example.com/")
+\end{verbatim}

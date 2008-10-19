@@ -1,0 +1,271 @@
+\section{\module{EasyDialogs} ---
+         基本的な Macintosh ダイアログ}
+
+\declaremodule{standard}{EasyDialogs}
+  \platform{Mac}
+\modulesynopsis{基本的な Macintosh ダイアログ。}
+
+\module{EasyDialogs}モジュールには、 Macintosh で単純なダイアログ操作
+を行うためのルーチンが入っています。
+全てのルーチンは、オプションとしてリソース ID パラメタ\var{id}をとり
+ます。デフォルトの\constant{DLOG} のリソース (タイプとアイテムナンバの
+両方) が一致するようなダイアログがあれば、\var{id} を使ってダイアログ
+操作に使われるダイアログオブジェクト情報を上書きできます。詳細は
+ソースコードを参照してください。
+
+\module{EasyDialogs} モジュールでは以下の関数を定義しています。
+
+\begin{funcdesc}{Message}{str\optional{, id\optional{, ok}}}
+メッセージテキスト\var{str}付きのモーダルダイアログを表示します。テキス
+トの長さは最大255文字です。
+ボタンのテキストはデフォルトでは``OK''ですが、文字列の引数\var{ok} を
+指定して変更できます。
+ユーザが``OK''ボタンをクリックすると処理を戻します。
+\end{funcdesc}
+
+\begin{funcdesc}{AskString}{prompt\optional{, default\optional{,
+    id\optional{, ok\optional{, cancel}}}}}
+ユーザに文字列値の入力を促すモーダルダイアログを表示します。
+\var{prompt}はプロンプトメッセージで、オプションの\var{default} 引数は
+入力文字列の初期値です（指定しなければ\code{""} を使います)。
+``OK''と``Cancel''ボタンの文字列は\var{ok}と\var{cancel}の引数で
+変更できます。文字列の長さは全て最大255文字です。
+入力された文字列か、ユーザがキャンセルした場合には\constant{None}
+を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{AskPassword}{prompt\optional{, default\optional{,
+    id\optional{, ok\optional{, cancel}}}}}
+ユーザに文字列値の入力を促すモーダルダイアログを表示します。
+\function{AskString()}に似ていますが、ユーザの入力したテキストは点で
+表示されます。引数は\function{AskString()}のものと同じ意味です。
+\end{funcdesc}
+
+\begin{funcdesc}{AskYesNoCancel}{question\optional{, default\optional{,
+    yes\optional{, no\optional{, cancel\optional{, id}}}}}}
+プロンプト\var{question}と``Yes''、``No''、``Cancel''というラベルの3つ
+ボタンが付いたダイアログを表示します。
+ユーザが ``Yes''を押した場合には\code{1} を、``No'' ならば\code{0} を、
+``Cancel'' ならば\code{-1} を返します。
+\kbd{RETURN}キーを押した場合は\var{default}の値（\var{default} を指定
+しない場合は\code{0})を返します。
+ボタンのテキストはそれぞれ引数 \var{yes}、\var{no}、\var{cancel}
+で変更できます。ボタンを表示したくなければ引数に\code{""}を指定します。
+\end{funcdesc}
+
+\begin{funcdesc}{ProgressBar}{\optional{title\optional{, maxval\optional{,
+    label\optional{, id}}}}}
+プログレスバー付きのモードレスダイアログを表示します。
+これは後で述べる\class{ProgressBar} クラスのコンストラクタです。
+\var{title}はダイアログに表示するテキスト文字列
+(デフォルトの値は ``Working...'') で、 \var{maxval} は処理が完了する
+ときの値です (デフォルトは\code{0}で、残りの作業量が不確定であることを
+示します) 。\var{label}はプログレスバー自体の上に表示するテキストです。
+\end{funcdesc}
+
+\begin{funcdesc}{GetArgv}{\optional{optionlist\optional{
+    commandlist\optional{, addoldfile\optional{, addnewfile\optional{,
+    addfolder\optional{, id}}}}}}}
+コマンドライン引数リストの作成を補助するためのダイアログを表示します。
+得られた引数リストを \code{sys.argv} の形式にします。これは
+\function{getopt.getopt()} の引数として渡すのに適した形式です。
+\var{addoldfile}、\var{addnewfile}、\var{addfolder} はブール型の引数
+です。
+これらの引数が真の場合、それぞれ実在のファイル、まだ (おそらく) 存在
+しないファイル、フォルダへのパスをコマンドラインのパスとして設定できます。
+(注意: \function{getopt.getopt()} がファイルやフォルダ引数を認識できる
+ようにするためには、オブションの引数がそれらより前に現れるように
+しなければなりません。)
+空白を含む引数は、空白をシングルクォートあるいはダブルクォートで囲んで
+指定できます。
+
+ユーザが``Cancel''ボタンを押した場合、\exception{SystemExit}例外を
+送出します。
+
+\var{optionlist} には、ポップアップメニューで選べる選択肢を定義した
+リストを指定します。ポップアップメニューの要素には、次の2つの形式、
+\var{optstr} または\code{(\var{optstr}, \var{descr})} があります。
+\var{descr} に短い説明文字列を指定すると、該当の選択肢をポップアップ
+メニューで選択しいる間その文字列をダイアログに表示します。
+\var{optstr}とコマンドライン引数の対応を以下に示します:
+
+\begin{tableii}{l|l}{textrm}{\var{optstr} format}{Command-line format}
+\lineii{\code{x}}
+       {\programopt{-x}
+(短いオプション)}
+\lineii{\code{x:}あるいは\code{x=}}
+       {\programopt{-x} (値を持つ短いオプション)}
+\lineii{\code{xyz}}
+       {\longprogramopt{xyz} 
+(長いオプション)}
+\lineii{\code{xyz:}あるいは\code{xyz=}}
+       {\longprogramopt{xyz}
+(値を持つ長いオプション)}
+\end{tableii}
+
+\var{commandlist}は\var{cmdstr}あるいは\code{(\var{cmdstr},
+  \var{descr})}の形のアイテムからなるリストです。
+\var{descr}は上と同じです。
+\var{cmdstr}はポップアップメニューに表示されます。メニューを選択すると
+\var{cmdstr} はコマンドラインに追加されますが、それに続く\character{:}
+や\character{=} は (存在していれば) 取り除かれます。
+
+\versionadded{2.0}
+\end{funcdesc}
+
+\begin{funcdesc}{AskFileForOpen}{
+    \optional{message}
+    \optional{, typeList}
+    \optional{, defaultLocation}
+    \optional{, defaultOptionFlags}
+    \optional{, location}
+    \optional{, clientName}
+    \optional{, windowTitle}
+    \optional{, actionButtonLabel}
+    \optional{, cancelButtonLabel}
+    \optional{, preferenceKey}
+    \optional{, popupExtension}
+    \optional{, eventProc}
+    \optional{, previewProc}
+    \optional{, filterProc}
+    \optional{, wanted}
+    }
+どのファイルを開くかをユーザに尋ねるダイアログを表示し、ユーザが選択した
+ファイルを返します。ユーザがダイアログをキャンセルした場合には\constant{None}を
+返します。
+\var{message} はダイアログに表示するテキストメッセージです。
+\var{typeList} は選択できるファイルタイプを表す 4 文字の文字列からなる
+リスト、\var{defaultLocation}は最初に表示すルフォルダで、パス名、
+\class{FSSpec} あるいは\class{FSRef} で指定します。
+\var{location} はダイアログを表示するスクリーン上の位置\code{(x, y)}です。
+\var{actionButtonLabel}はOKボタンの位置に``Open''の代わり
+に表示する文字列、\var{cancelButtonLabel}は``Cancel''ボタンの位置
+に``Cancel''の代わりに表示する文字列です。
+\var{wanted}は返したい値のタイプで、\class{str}、\class{unicode}、
+A\class{FSSpec}、\class{FSRef} およびそれらのサブタイプを指定できます。
+
+\index{Navigation Services}
+その他の引数の説明についてはApple Navigation Servicesのドキュメントと
+\module{EasyDialogs}のソースコードを参照してください。
+\end{funcdesc}
+
+\begin{funcdesc}{AskFileForSave}{
+    \optional{message}
+    \optional{, savedFileName}
+    \optional{, defaultLocation}
+    \optional{, defaultOptionFlags}
+    \optional{, location}
+    \optional{, clientName}
+    \optional{, windowTitle}
+    \optional{, actionButtonLabel}
+    \optional{, cancelButtonLabel}
+    \optional{, preferenceKey}
+    \optional{, popupExtension}
+    \optional{, fileType}
+    \optional{, fileCreator}
+    \optional{, eventProc}
+    \optional{, wanted}
+    }
+保存先のファイルをユーザに尋ねるダイアログを表示して、ユーザが選択した
+ファイルを返します。ユーザがダイアログをキャンセルした場合には\constant{None}を
+返します。
+\var{savedFileName} は保存先のファイル名 (戻り値) のデフォルト値です。
+その他の引数の説明については\function{AskFileForOpen()}を参照してくださ
+い。
+\end{funcdesc}
+
+\begin{funcdesc}{AskFolder}{
+    \optional{message}
+    \optional{, defaultLocation}
+    \optional{, defaultOptionFlags}
+    \optional{, location}
+    \optional{, clientName}
+    \optional{, windowTitle}
+    \optional{, actionButtonLabel}
+    \optional{, cancelButtonLabel}
+    \optional{, preferenceKey}
+    \optional{, popupExtension}
+    \optional{, eventProc}
+    \optional{, filterProc}
+    \optional{, wanted}
+    }
+フォルダの選択をユーザに促すダイアログを表示して、ユーザが選択したフォルダ
+を返します。ユーザがダイアログをキャンセルした場合には\constant{None}を
+返します。
+引数についての説明は\function{AskFileForOpen()}を参照してください。
+\end{funcdesc}
+
+\begin{seealso}
+  \seetitle
+  [http://developer.apple.com/documentation/Carbon/Reference/Navigation_Services_Ref/]
+  {Navigation Services Reference}{Programmer's reference documentation
+  の Carbon framework の Navigation Services の項。}
+\end{seealso}
+
+
+\subsection{プログレスバーオブジェクト \label{progressbar-objects}}
+
+\class{ProgressBar}オブジェクトでは、モードレスなプログレスバーダイアログ
+のサポートを提供しています。
+定量プログレスバー (温度計スタイル) と不定量プログレスバー
+(床屋の螺旋看板スタイル) がサポートされています。プログレスバーの
+最大値がゼロ以上の場合には定量インジケータに、そうでない場合は不定量
+インジケータになります。
+\versionchanged[不定量プログレスバーのサポートを追加しました。]{2.2}
+
+ダイアログは作られるとすぐに表示されます。
+ダイアログの``Cancel''ボタンを押すか、\kbd{Cmd-.} (コマンドキーを押し
+ながらピリオド(\character{.})を押す) か、あるいは\kbd{ESC} をタイプ
+すると、ダイアログウィンドウを非表示にして\exception{KeyboardInterrupt}
+を送出します (ただし、この応答は次にプログレスバーを更新するときまで、
+すなわち次に\method{inc()} または\method{set()} を呼び出してダイアログを
+更新するまで発生しません) 。
+それ以外の場合、プログレスバーは\class{ProgressBar} オブジェクトを廃棄する
+まで表示されたままになります。
+
+\class{ProgressBar}オブジェクトには以下の属性とメソッドがあります。
+
+\begin{memberdesc}[ProgressBar]{curval}
+プログレスバーの現在の値 (整数型あるいは長整数型) です。
+プログレスバーの通常のアクセスのメソッドによって\member{curval}を
+\code{0}と\member{maxval}の間にします。
+この属性を直接変更してはなりません。
+\end{memberdesc}
+
+\begin{memberdesc}[ProgressBar]{maxval}
+プログレスバーの最大値　(整数型あるいは長整数型) です;
+プログレスバー (温度計, thermometer) では、\member{curval} が
+\member{maxval} に等しい時に全量に到達します。\member{maxval}が
+\code{0} の場合、不定量プログレスバー (床屋の螺旋看板, barbar pole)
+になります。この属性を直接変更してはなりません。
+\end{memberdesc}
+
+\begin{methoddesc}[ProgressBar]{title}{\optional{newstr}}
+プログレスダイアログのタイトルバーのテキストを\var{newstr}に設定
+します。
+\end{methoddesc}
+
+\begin{methoddesc}[ProgressBar]{label}{\optional{newstr}}
+プログレスダイアログ中のプログレスボックスのテキストを\var{newstr}
+に設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[ProgressBar]{set}{value\optional{, max}}
+プログレスバーの現在値\member{curval}を\var{value}に設定します。
+\var{max} も指定した場合、\member{maxval}を\var{max}にします。
+\var{value} は前もって 0 と\member{maxval} の間になるよう強制的に設定
+されます。温度計バーの場合、変更内容を反映するよう表示を更新します。
+変更によって定量プログレスバーから不定量プログレスバーへ、あるいは
+その逆への推移が起こります。
+\end{methoddesc}
+
+\begin{methoddesc}[ProgressBar]{inc}{\optional{n}}
+プログレスバーの\member{curval}を\var{n}だけ増やします。\var{n} を指定
+しなければ\code{1}だけ増やします。
+(\var{n} は負にもでき、その場合は\member{curval} を減少させます。)
+変更内容を反映するようプログレスバーの表示を更新します。プログレスバーが
+不定量プログレスバーの場合、床屋の螺旋看板 (barbar pole)
+模様を 1 度「回転」させます。増減によって \member{curval} が 0 から
+\member{maxval} までの範囲を越えた場合、 0 と\member{maxval} の範囲に
+収まるよう強制的に値を設定します。
+\end{methoddesc}

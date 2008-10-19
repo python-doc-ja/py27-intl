@@ -1,0 +1,63 @@
+\section{\module{fpformat} ---
+         浮動小数点の変換}
+
+\declaremodule{standard}{fpformat}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+\modulesynopsis{浮動小数点をフォーマットする汎用関数。}
+
+\note{This module is unneeded: everything here could
+be done via the \code{\%} string interpolation operator.}
+
+% interpolation operator:補間演算?
+\module{fpformat} モジュールは浮動小数点数の表示を 100\% 純粋に Python だけで
+行うための関数を定義しています。
+\note{このモジュールは必要ありません: このモジュールのすべてのことは、
+\code{\%} を使って、文字列の補間演算により可能です。}
+
+\module{fpformat} モジュールは次にあげる関数と例外を定義しています。
+
+\begin{funcdesc}{fix}{x, digs}
+
+\var{x} を \code{[-]ddd.ddd} の形にフォーマットします。
+小数点の後ろに \var{digs} 桁と、小数点の前に少なくとも1桁です。
+\code{var{digs} <= 0} の場合、小数点以下は切り捨てられます。
+% fix(4.5, 0) --> '4'
+
+\var{x} は数字か数字を表した文字列です。
+
+\var{digs} は整数です。
+
+返り値は文字列です。
+\end{funcdesc}
+
+\begin{funcdesc}{sci}{x, digs}
+
+\var{x} を \code{[-]d.dddE[+-]ddd} の形にフォーマットします。
+小数点の後ろに \var{digs} 桁と、小数点の前に1桁だけです。
+
+\code{var{digs} <= 0} の場合、1桁だけ残され、小数点以下は切り捨てられます。
+% fix(4.5, 0) --> '5e+000'
+
+\var{x} は実数か実数を表した文字列です。
+
+\var{digs} は整数です。
+
+返り値は文字列です。
+\end{funcdesc}
+
+\begin{excdesc}{NotANumber}
+
+\function{fix()} や \function{sci()} にパラメータとして渡された文字列 \var{x} が
+数字として認識できなかった場合、例外が発生します。
+標準の例外が文字列の場合、この例外は \exception{ValueError} のサブクラスです。
+例外値は、例外を発生させた不適切にフォーマットされた文字列です。
+
+\end{excdesc}
+
+例:
+
+\begin{verbatim}
+>>> import fpformat
+>>> fpformat.fix(1.23, 1)
+'1.2'
+\end{verbatim}

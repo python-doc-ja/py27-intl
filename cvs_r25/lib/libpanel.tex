@@ -1,0 +1,76 @@
+\section{\module{panel} ---
+         None}
+\declaremodule{standard}{panel}
+
+\modulesynopsis{None}
+
+
+\strong{
+注意：}
+FORMSライブラリは、上で説明されている\code{fl}\refbimodindex{fl}モジュー
+ルでアクセスでき、GLを使っていて、\code{panel}よりももっと簡単で利用しや
+すいユーザーインターフェースライブラリです（そのうえ作者はオランダ人で
+す）。
+
+このモジュールは、\emph{Panel Library}へのインターフェースであるビルトイ
+ンモジュール\code{pnl}\refbimodindex{pnl}の代わりに使うべきです。
+
+このモジュールはとても大きいので、ここに全てを記述することはできません。
+ひとつ、面白い関数があります：
+
+\begin{funcdesc}{defpanellist}{filename}
+\emph{Panel Editor}で記述されたS-式を含んだパネル記述ファイルをパーズ
+し、Panel Libraryを伴い、記述されたパネルを作ります。
+パネルオブジェクトのリストを返します。
+\end{funcdesc}
+
+\warning{
+以下の呼び出し
+
+\code{panel.mkpanel()}
+
+または
+
+\code{panel.defpanellist()}
+
+の前にGLウィンドウを作らなかったら、Pythonインタープリタはコアを吐きま
+す。}
+
+\section{\module{panelparser} ---
+         None}
+\declaremodule{standard}{panelparser}
+
+\modulesynopsis{None}
+
+
+このモジュールには、Panel Editor（これはSchemeで書かれているのでS-式を書
+かないわけにはいきません）が出力したS-式をパーズする、自己完結したパーザ
+が定義されています。
+関連した関数として\code{parse_file(\var{file})}があって、これは引数に
+ファイルオブジェクト（ファイル名ではありません！）をとり、S-式をパーズし
+たリストを返します。
+各S-式はPythonのリストへ変換され、アトムはPythonの文字列へ、内部のS-式は
+（再帰的に）Pythonのリストへ変換されます。
+
+\section{\module{pnl} ---
+         None}
+\declaremodule{builtin}{pnl}
+
+\modulesynopsis{None}
+
+
+このモジュールはNASA Ames\index{NASA}で作られた\emph{Panel Library}
+（入手するには\code{panel-request@nas.nasa.gov}宛にe-mailを送ってくださ
+い）の利用を可能にします。
+\emph{Panel Library}へのアクセスは全て標準モジュール
+\code{panel}\refstmodindex{panel}を通して実行すべきです。
+\code{panel}\refstmodindex{panel}は\code{pnl}のほとんどの関数をそのまま
+提供していますが、\code{pnl.dopanel()}を再定義しています。
+
+\warning{
+\code{pnl.mkpanel()}を呼び出す前にGLウィンドウを作らなかったら、Pythonイ
+ンタープリタがコアを吐きます。
+}
+
+このモジュールはとても大きいので、ここに全てを記述することはできません。
+

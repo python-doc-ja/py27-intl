@@ -1,0 +1,172 @@
+\section{\module{mhlib} ---
+         MH のメイルボックスへのアクセス機構}
+
+% LaTeX'ized from the comments in the module by Skip Montanaro
+% <skip@mojam.com>.
+
+\declaremodule{standard}{mhlib}
+\modulesynopsis{Python から MH のメイルボックスを操作します。}
+
+
+\module{mhlib} モジュールは MH フォルダおよびその内容に対する Python 
+インタフェースを提供します。
+
+このモジュールには、あるフォルダの集まりを表現する \class{MH}、
+単一のフォルダを表現する \class{Folder}、単一のメッセージを表現
+する \class{Message}、の 3 つのクラスが入っています。
+
+
+\begin{classdesc}{MH}{\optional{path\optional{, profile}}}
+\class{MH} は MH フォルダの集まりを表現します。
+\end{classdesc}
+
+\begin{classdesc}{Folder}{mh, name}
+\class{Folder} クラスは単一のフォルダとフォルダ内のメッセージ群を
+表現します。
+\end{classdesc}
+
+\begin{classdesc}{Message}{folder, number\optional{, name}}
+\class{Message} オブジェクトはフォルダ内の個々のメッセージを表現
+します。メッセージクラスは \class{mimetools.Message} から
+導出されています。
+\end{classdesc}
+
+
+\subsection{MH オブジェクト \label{mh-objects}}
+
+\class{MH} インスタンスは以下のメソッドを持っています:
+
+
+\begin{methoddesc}[MH]{error}{format\optional{, ...}}
+エラーメッセージを出力します -- 上書きすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{getprofile}{key}
+プロファイルエントリ (設定されていなければ \code{None}) を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{getpath}{}
+メイルボックスのパス名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{getcontext}{}
+現在のフォルダ名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{setcontext}{name}
+現在のフォルダ名を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{listfolders}{}
+トップレベルフォルダのリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{listallfolders}{}
+全てのフォルダを列挙します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{listsubfolders}{name}
+指定したフォルダの直下にあるサブフォルダのリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{listallsubfolders}{name}
+指定したフォルダの下にある全てのサブフォルダのリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{makefolder}{name}
+新しいフォルダを生成します。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{deletefolder}{name}
+フォルダを削除します -- サブフォルダが入っていてはいけません。
+\end{methoddesc}
+
+\begin{methoddesc}[MH]{openfolder}{name}
+新たな開かれたフォルダオブジェクトを返します。
+\end{methoddesc}
+
+
+
+\subsection{Folder オブジェクト \label{mh-folder-objects}}
+
+\class{Folder} インスタンスは開かれたフォルダを表現し、以下のメソッドを
+持っています:
+
+
+\begin{methoddesc}[Folder]{error}{format\optional{, ...}}
+エラーメッセージを出力します -- 上書きすることができます。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getfullname}{}
+フォルダの完全なパス名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getsequencesfilename}{}
+フォルダ内のシーケンスファイルの完全なパス名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getmessagefilename}{n}
+フォルダ内のメッセージ \var{n} の完全なパス名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{listmessages}{}
+フォルダ内のメッセージの (番号の) リストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getcurrent}{}
+現在のメッセージ番号を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{setcurrent}{n}
+現在のメッセージ番号を \var{n} に設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{parsesequence}{seq}
+msgs 文を解釈して、メッセージのリストにします。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getlast}{}
+最新のメッセージを取得します。メッセージがフォルダにない場合には
+\code{0} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{setlast}{n}
+最新のメッセージを設定します (内部使用のみ)。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{getsequences}{}
+フォルダ内のシーケンスからなる辞書を返します。シーケンス名がキーとして
+使われ、値はシーケンスに含まれるメッセージ番号のリストになります。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{putsequences}{dict}
+フォルダ内のシーケンスからなる辞書 {name: list} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{removemessages}{list}
+リスト中のメッセージをフォルダから削除します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{refilemessages}{list, tofolder}
+リスト中のメッセージを他のフォルダに移動します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{movemessage}{n, tofolder, ton}
+一つのメッセージを他のフォルダの指定先に移動します。
+\end{methoddesc}
+
+\begin{methoddesc}[Folder]{copymessage}{n, tofolder, ton}
+一つのメッセージを他のフォルダの指定先にコピーします。
+\end{methoddesc}
+
+
+\subsection{Message オブジェクト \label{mh-message-objects}}
+
+\class{Message} クラスは \class{mimetools.Message} の
+メソッドに加え、一つメソッドを持っています:
+
+\begin{methoddesc}[Message]{openmessage}{n}
+新たな開かれたメッセージオブジェクトを返します (ファイル記述子を
+一つ消費します)。
+\end{methoddesc}
+

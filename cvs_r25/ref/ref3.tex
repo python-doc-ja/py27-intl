@@ -1,0 +1,2270 @@
+\chapter{データモデル\label{datamodel}}
+
+
+\section{オブジェクト、値、および型\label{objects}}
+
+Python における \dfn{オブジェクト (object)} とは、データを抽象的に
+表したものです。Python プログラムにおけるデータは全て、オブジェクトま
+たはオブジェクト間の関係として表されます。(ある意味では、プログラムコー
+ドもまたオブジェクトとして表されます。これはフォン・ノイマン: Von
+Neumann の ``プログラム記憶方式コンピュータ: stored program computer''
+のモデルに適合します。) 
+\index{object}
+\index{data}
+
+オブジェクトはアイデンティティ値 (identity) 、型 (type) 、そして値
+(value) を持ちます。オブジェクトが一度生成されると、そのオブジェクトの
+\emph{アイデンティティ値} は決して変化することがありません; アイデンティ
+ティ値をオブジェクトのメモリ上のアドレスと考えてもかまいません。
+演算子 `\keyword{is}' は、二つのオブジェクト間のアイデンティティ値を比
+較します; 関数 \function{id()}\bifuncindex{id} は、オブジェクトのアイデ
+ンティティ値を表す整数 (現在の実装ではオブジェクトのメモリ上のアドレス)
+を返します。
+オブジェクトの \dfn{型} もまた変わることがありません。
+\footnote{Python 2.2 以降、型とクラスの段階的な統合が始まっている
+ため、このドキュメントで主張されている内容が 100\% 正確で完全と
+いうわけではなくなりました: 例えば、場合によっては、ある管理された
+条件下でなら、オブジェクトの型を\emph{変更することができます}。
+このマニュアルに大幅な改訂が施されるまでは、このドキュメントでの
+記述は、``旧クラス型 (classic class)'' に関してのみ
+信頼できる内容と考えねばなりません。Python 2.2 および 2.3 では、
+互換性のためにクラシックなクラスがまだデフォルトとなっています。
+更なる情報は\url{http://www.python.org/doc/newstyle.html}を
+参照してください。}
+オブジェクトの型は、そのオブジェクトのサポートする操作
+(``長さを持っているか？'' など) を決定し、その型のオブジェクトが
+取りうる値について定義しています。
+\function{type()}\bifuncindex{type} 関数は、オブジェクトの型
+(型自体も一つのオブジェクトです) を返します。オブジェクトによっては、
+\emph{値 (value)} を変えることができます。値を変えることができる
+オブジェクトは \emph{変更可能 (mutable)} であるといいます; 値を
+一度設定すると、その後は変えることができないオブジェクトは
+\emph{変更不能 (immutable)} であると呼びます。
+(変更不能なコンテナオブジェクトが変更可能なオブジェクトへの参照を
+含んでいる場合、その値は後者のオブジェクトの変更によって変わる
+場合があります; その場合でも、コンテナの含んでいるオブジェクトの
+集まりは変わらないため、コンテナは変更不能と考えます。したがって、
+変更不能性 (immutability) は、厳密には変更できない値を持っている
+こととは違い、もっと微妙な概念です。)
+オブジェクトの変更可能性は型で決定されます; 例えば、数値、文字列、
+およびタプルは変更不能であり、辞書やリストは変更可能です。
+\index{identity of an object}
+\index{value of an object}
+\index{type of an object}
+\index{mutable object}
+\index{immutable object}
+
+オブジェクトを明示的に破壊することはできません; しかし、オブジェクト
+に到達不能 (unreachable) になると、ガベージコレクション (garbage-collection)
+によって処理されます。実装では、ごみ収集を遅らせたり、全く行わない
+ようにすることができます --- 到達可能なオブジェクトをごみ収集処理して
+しまわないかぎり、どう実装するかは実装品質の問題です。
+(実装上の注意: 現在の実装では参照カウント (reference-counting) 手順を
+使っており、(オプションとして) 循環参照を行っているごみオブジェクトを
+遅延検出します。この実装ではほとんどのオブジェクトを到達不能になると
+同時に処理することができますが、循環参照を含むごみオブジェクトの収集が
+確実に行われるよう保証しているわけではありません。循環参照を持つごみ
+オブジェクト収集の制御については、
+\citetitle[../lib/module-gc.html]{Python ライブラリリファレンス} を
+参照してください。)
+\index{garbage collection}
+\index{reference counting}
+\index{unreachable object}
+
+実装のトレース機能やデバッグ機能を使えば、通常は収集されてしまう
+ようなオブジェクトを生かしておくことがあるので注意してください。
+また、 `\keyword{try}...\keyword{except}' 文を使って例外を捕捉できる
+ようにすると、オブジェクトを生かしておくことがあります。
+
+オブジェクトによっては、開かれたファイルやウィンドウといった、
+``外部 (external) の'' リソースに対する参照を行っています。
+これらのリソースは、オブジェクトがごみ収集された際に解放される
+ものと理解されていますが、ごみ収集が行われる保証はないので、
+こうしたオブジェクトでは外部リソースを明示的に解放する
+方法、大抵は \method{close()} メソッドを提供しています。
+こうしたオブジェクトは明示的に close するよう強く奨めます。
+操作をする際には、`\keyword{try}...\keyword{finally}' 文を使うと
+便利です。
+
+他のオブジェクトに対する参照をもつオブジェクトもあります; これらは
+\emph{コンテナ (container)} と呼ばれます。コンテナオブジェクトの例
+として、タプル、リスト、および辞書が挙げられます。オブジェクトへの
+参照自体がコンテナの値の一部です。ほとんどの場合、コンテナの値と
+いうと、コンテナに入っているオブジェクトの値のことを指し、それら
+オブジェクトのアイデンティティではありません; しかしながら、
+コンテナの変更可能性について述べる場合、今まさにコンテナに入っている
+オブジェクトのアイデンティティのことを指します。したがって、
+(タプルのように) 変更不能なオブジェクトが変更可能なオブジェクト
+への参照を含む場合、その値が変化するのは変更可能なオブジェクトが
+変更された時、ということになります。
+\index{container}
+
+型はオブジェクトの動作のほとんど全てに影響します。オブジェクトの
+アイデンティティが重要かどうかでさえ、ある意味では型に左右されます:
+変更不能な型では、新たな値を計算するような操作を行うと、実際には同じ
+型と値を持った既存のオブジェクトへの参照を返すことがありますが、
+変更可能なオブジェクトではそのような動作は起こりえません。例えば、
+\samp{a = 1; b = 1} とすると、 \code{a} と \code{b} は値 1 を持つ
+同じオブジェクトを参照するときもあるし、そうでないときもあります。
+これは実装に依存します。しかし、
+\samp{c = []; d = []} とすると、 \code{c} と \code{d} はそれぞれ
+二つの異なった、互いに一意な、新たに作成された空のリストを参照する
+ことが保証されています。
+(\samp{c = d = []} とすると、 \code{c} と \code{d} の両方に同じ
+オブジェクトを代入します)
+
+
+\section{標準型の階層\label{types}}
+
+以下は Python に組み込まれている型のリストです。(C、Java、または
+実装に使われているその他の言語で書かれた) 拡張モジュールでは、
+その他に新たな型を定義することができます。将来のバージョンの
+Python では、型の階層に新たな型 (整数を使って効率的に記憶される
+有理数型、など) を追加することができるかもしれません。
+\index{type}
+\indexii{data}{type}
+\indexii{type}{hierarchy}
+\indexii{extension}{module}
+\indexii{C}{language}
+
+以下に説明する型のいくつかには、`特殊属性 (special attribute)' 
+と題された段落が連ねられています。これらの属性は実装へのアクセス
+手段を提供するもので、一般的な用途に利用するためのものではありません。
+特殊属性の定義は将来変更される可能性があります。
+\index{attribute}
+\indexii{special}{attribute}
+\indexiii{generic}{special}{attribute}
+
+\begin{description}
+
+\item[None]
+この型には単一の値しかありません。この値を持つオブジェクトはただ
+一つしか存在しません。このオブジェクトは組み込み名 \code{None}
+でアクセスされます。このオブジェクトは、様々な状況で値が
+存在しないことをしめします。例えば、明示的に値を返さない関数
+は \code{None} を返します。\code{None} の真値 (truth value) は 
+偽 (false) です。
+\ttindex{None}
+\obindex{None}
+
+\item[NotImplemented]
+この型には単一の値しかありません。この値を持つオブジェクトはただ
+一つしか存在しません。このオブジェクトは組み込み名 \code{NotImplemented}
+でアクセスされます。数値演算に関するメソッドや拡張比較 (rich comparison)
+メソッドは、被演算子が該当する演算を行うための実装をもたない場合、
+この値を返すことがあります。(演算子によっては、インタプリタが
+関連のある演算を試したり、他の代替操作を行います。) 真値は真 (true)
+です。
+\obindex{NotImplemented}
+
+\item[Ellipsis]
+この型には単一の値しかありません。この値を持つオブジェクトはただ
+一つしか存在しません。このオブジェクトは組み込み名 \code{Ellipsis}
+でアクセスされます。スライス内に \samp{...} 構文がある場合に
+使われます。真値は真 (true)です。
+\obindex{Ellipsis}
+
+\item[Numbers]
+数値リテラルによって作成されたり、算術演算や組み込みの算術関数に
+よって返されるオブジェクトです。数値オブジェクトは変更不能です;
+一度値が生成されると、二度と変更されることはありません。Python
+の数値オブジェクトはいうまでもなく数学で言うところの数値と
+強く関係していますが、コンピュータ内で数値を表現する際に伴う
+制限を受けています。
+\obindex{numeric}
+
+Python は整数、浮動小数点数、複素数の間で区別を行っています:
+
+\begin{description}
+\item[整数型 (integer)]
+
+整数型は、整数(正の数および負の数)を表す数学的集合内における要素を
+表現する型です。
+\obindex{integer}
+
+以下に三つの整数型を示します:
+
+\begin{description}
+
+\item[(通常の) 整数型 (plain integer)]
+-2147483648 から 2147483647 までの整数を表現します (基本ワードサイズ:
+natural word size がより大きなマシンではより大きな定義域になることも
+あります。より小さくなることはありません。)
+演算の結果が定義域を超えた値になった場合、結果は通常長整数で
+返されます (場合によっては、 \exception{OverflowError} が送出され
+ます) 。
+シフト演算やマスク演算のために、整数は 32 ビット以上の 2 の補数で
+表されたバイナリ表現を持つ (すなわち、4294967296 の異なったビット
+パターン全てが異なる値を持つ) と仮定されています。
+\obindex{plain integer}
+\withsubitem{(built-in exception)}{\ttindex{OverflowError}}
+
+\item[長整数型 (long integer)]
+長整数は無限の定義域を持ち、利用可能な (仮想) メモリサイズの制限
+のみをうけます。長整数はシフト演算やマスク演算のためにバイナリ表現を
+もつものと仮定されます。負の数は符号ビットが左に無限に延びているような
+錯覚を与える 2 の補数表現の変型で表されます。
+\obindex{long integer}
+
+\item[ブール型 (boolean)]
+ブール型は、真値 False または True を表現します。ブール型の
+オブジェクトは False と True を表現する二つのオブジェクト
+だけです。ブール型は整数のサブタイプで、ほとんどの演算コンテキストに
+おいてブール型値はそれぞれ 0 または 1 のように振舞います。
+ただし、文字列に変換されたときのみ、それぞれ文字列 \code{"False"}
+および \code{"True"} が返されます。
+\obindex{Boolean}
+\ttindex{False}
+\ttindex{True}
+
+\end{description} % Integers
+整数表現に関する規則は、シフト演算やマスク演算において、負の整数
+も含めて最も有意義な解釈ができるように、かつ通常の整数と長整数
+との間で定義域を切り替える際にできるだけ混乱しないように決められて
+います。左シフト以外の演算では、演算結果がオーバフローを起こさずに
+整数の定義域の値になる場合は、長整数を使った場合でも、被演算子に
+整数と長整数を混合した場合でも同じ結果になります。
+\indexii{integer}{representation}
+
+\item[浮動小数点数型 (floating point number)]
+この型は計算機レベルで倍精度とされている浮動小数点数を
+表現します。表現可能な値の範囲やオーバフローの扱いは、
+根底にある計算機アーキテクチャ (と C または Java 実装) 次第です。
+Python は単精度の浮動小数点数をサポートしません; 単精度の
+数を使う理由は、通常プロセッサやメモリ使用量の節約ですが、
+こうした節約は Python でオブジェクトを扱う際のオーバヘッドに比べれば
+微々たるものにすぎません。従って、わざわざ浮動小数点型を 2 つも
+定義してPython 言語を難解にする理由はどこにもないのです。
+\obindex{floating point}
+\indexii{floating point}{number}
+\indexii{C}{language}
+\indexii{Java}{language}
+
+\item[複素数型 (complex number)]
+この型は、計算機レベルで倍精度とされている浮動小数点を 2 つ一組
+にして複素数を表現します。浮動小数点について述べたのと同じ性質
+が当てはまります。複素数 \code{z} の実数部および虚数部は、
+それぞれ読み出し専用属性 \code{z.real} および \code{z.imag}
+で取り出すことができます。
+\obindex{complex}
+\indexii{complex}{number}
+
+\end{description} % Numbers
+
+
+\item[シーケンス型 (sequence)]
+この型は、有限の順序集合 (ordered set) を表現します。要素は非負の
+整数でインデクス化されています。組み込み関数 
+\function{len()}\bifuncindex{len} を使うと、シーケンスの要素数を返します。
+シーケンスの長さが \var{n} の場合、インデクスは 0, 1, \ldots, \var{n}-1
+からなる集合です。シーケンス \var{a} の要素 \var{i} は
+\code{\var{a}[\var{i}]} で選択します。
+\obindex{sequence}
+\index{index operation}
+\index{item selection}
+\index{subscription}
+
+シーケンスはスライス操作 (slice) もサポートしています:
+\code{\var{a}[\var{i}:\var{j}]} とすると、
+\var{i} \code{<=} \var{k} \code{<} \var{j} であるインデクス \var{k}
+をもつ全ての要素を選択します。
+式表現としてスライスを用いた場合、スライスは同じ型をもつ新たなシーケンスを
+表します。新たなシーケンス内では、インデクス集合が 0 から始まるように
+インデクスの値を振りなおします。
+\index{slicing}
+
+シーケンスによっては、 第三の ``ステップ (step)'' パラメタを持つ
+``拡張スライス (extended slice)'' もサポートしています:
+\code{\var{a}[\var{i}:\var{j}:\var{k}]} は、
+\code{\var{x} = \var{i} + \var{n}*\var{k}}, \var{n} \code{>=} \code{0} 
+かつ \var{i} \code{<=} \var{x} \code{<} \var{j} であるような
+インデクス \var{x} を持つような \var{a} 全ての要素を選択します。
+\index{extended slicing}
+
+シーケンスは、変更可能なものか、そうでないかで区別されています:
+
+\begin{description}
+
+\item[変更不能なシーケンス (immutable sequence)]
+変更不能なシーケンス型のオブジェクトは、一度生成されるとその値を
+変更することができません。 (オブジェクトに他のオブジェクトへの
+参照が入っている場合、参照されているオブジェクトは変更可能な
+オブジェクトでもよく、その値は変更される可能性があります;
+しかし、変更不能なオブジェクトが直接参照しているオブジェクトの
+集合自体は、変更することができません。)
+\obindex{immutable sequence}
+\obindex{immutable}
+
+以下の型は変更不能なシーケンス型です:
+
+\begin{description}
+
+\item[文字列型 (string)]
+文字列の各要素は文字 (character) です。文字型 (character type)
+は存在しません; 単一の文字は、要素が一つだけの文字列として
+表現されます。各文字は (少なくとも) 8-bit のバイト列を表現します。
+組み込み関数 \function{chr()}\bifuncindex{chr} および
+\function{ord()}\bifuncindex{ord} を使うと、文字と非負の整数で表された
+バイト値の間で変換を行えます。0-127 の値を持つバイト値は、通常 
+同じ \ASCII{} 値をもつ文字を表現していますが、値をどう解釈するかは
+プログラムにゆだねられています。文字列データ型はまた、例えば
+ファイルから読み出されたデータを記憶するといった用途で、バイト値の
+アレイを表現するために用いられます。
+\obindex{string}
+\index{character}
+\index{byte}
+\index{ASCII@\ASCII}
+
+(ネイティブの文字セットが \ASCII でないシステムでは、\function{chr()} 
+や \function{ord()} が \ASCII{} と EBCDIC との間で対応付けを行っており、
+文字列間の比較で \ASCII{} 順が守られる限り、文字列の内部表現として 
+EBCDIC を使ってもかまいません。誰か他にもっとましなルールをお持ちですか?)
+\index{ASCII@\ASCII}
+\index{EBCDIC}
+\index{character set}
+\indexii{string}{comparison}
+\bifuncindex{chr}
+\bifuncindex{ord}
+
+\item[Unicode 文字列型]
+Unicode オブジェクトの各要素は Unicode コード単位です。
+Unicode コード単位とは、単一の Unicode オブジェクトで、Unicode 序数を
+表現する 16-bit または 32-bit の値を保持できるものです 
+(この序数の最大値は \code{sys.maxunicode} で与えられており、コンパイル時に
+Python がどう設定されているかに依存します)。 Unicode オブジェクト内
+にサロゲートペア (surrogate pair) があってもよく、Python は
+サロゲートペアを二つの別々の Unicode 要素として報告します。
+組み込み関数 \function{unichr()}\bifuncindex{unichr} および
+\function{ord()}\bifuncindex{ord} は、コード単位と非負の整数で表された
+Unicode 標準 3.0 で定義された Unicode 序数との間で変換を行います。
+他の文字エンコード形式との相互変換は、 Unicode メソッド \method{encode()} 
+および組み込み関数 \function{unicode()}\bifuncindex{unicode}
+で行うことができます。
+\obindex{unicode}
+\index{character}
+\index{integer}
+\index{Unicode}
+
+\item[タプル型 (tuple)]
+タプルの要素は任意の Python オブジェクトにできます。
+二つまたはそれ以上の要素からなるタプルは、個々の要素を表現する
+式をカンマで区切って構成します。単一の要素からなるタプル
+(単集合 `singleton') を作るには、要素を表現する式の直後に
+カンマをつけます (単一の式だけではタプルを形成しません。
+これは、式をグループ化するのに丸括弧を使えるようにしなければ
+ならないからです) 。要素の全くない丸括弧の対を作ると空のタプルに
+なります。
+\obindex{tuple}
+\indexii{singleton}{tuple}
+\indexii{empty}{tuple}
+
+\end{description} % Immutable sequences
+
+\item[変更可能なシーケンス型 (mutable sequence)]
+変更可能なシーケンスは、作成した後で変更することができます。
+変更可能なシーケンスでは、添字表記やスライス表記を使って指定された要素に
+代入を行うことができ、\keyword{del} (delete) 文を使って要素を
+削除することができます。
+\obindex{mutable sequence}
+\obindex{mutable}
+\indexii{assignment}{statement}
+\index{delete}
+\stindex{del}
+\index{subscription}
+\index{slicing}
+
+Python に最初から組み込まれている変更可能なシーケンス型は、今のところ
+一つだけです:
+
+\begin{description}
+
+\item[リスト型 (list)]
+リストの要素は任意の Python オブジェクトにできます。リストは、
+角括弧の中にカンマで区切られた式を並べて作ります。
+(長さが 0 や 1 のシーケンスを作るために特殊な場合分けは必要ないことに
+注意してください。)
+\obindex{list}
+
+\end{description} % Mutable sequences
+
+拡張モジュール \module{array}\refstmodindex{array} では、別の
+変更可能なシーケンス型を提供しています。
+
+
+\end{description} % Sequences
+
+\item[マップ型 (mapping)]
+任意のインデクス集合でインデクス化された、有限のオブジェクトからなる
+集合を表現します。添字表記 \code{a[k]} は、\code{k} でインデクス指定
+された要素を \code{a} から選択します; 選択された要素は式の中で
+使うことができ、代入や \keyword{del} 文の対象にすることができます。
+組み込み関数 \function{len()} は、マップ内の要素数を返します。
+\bifuncindex{len}
+\index{subscription}
+\obindex{mapping}
+
+
+Python に最初から組み込まれているマップ型は、今のところ
+一つだけです:
+
+\begin{description}
+
+\item[辞書型 (dictionary)]
+\obindex{dictionary} ほとんどどんな値でもインデクスとして使えるような、
+有限個のオブジェクトからなる集合を表します。キー値 (key) として使えない
+値は、リストや辞書を含む値や、アイデンティティではなく値でオブジェクトが
+比較される、その他の変更可能な型です。これは、辞書型を効率的に
+実装する上で、キーのハッシュ値が一定であることが必要だからです。
+数値型をキーに使う場合、キー値は通常の数値比較における規則に
+従います: 二つの値が等しくなる場合 (例えば \code{1} と \code{1.0})、
+互いに同じ辞書のエントリを表すインデクスとして使うことができます。
+
+辞書は変更可能な型です; 辞書は \code{\{...\}} 表記で生成します
+(~\ref{dict} 節, ``辞書表現'' を参照してください)。
+
+拡張モジュール \module{dbm}\refstmodindex{dbm} 、
+\module{gdbm}\refstmodindex{gdbm} 、および
+\module{bsddb}\refstmodindex{bsddb} では、別のマップ型を提供
+しています。
+
+\end{description} % Mapping types
+
+\item[呼び出し可能型 (callable type)]
+\obindex{callable} 関数呼び出し操作 (~\ref{calls} 節、``呼び出し (call)''
+参照) を行うことができる型です:
+\indexii{function}{call}
+\index{invocation}
+\indexii{function}{argument}
+
+\begin{description}
+
+\item[ユーザ定義関数 (user-defined function)]
+ユーザ定義関数オブジェクトは、関数定義を行うことで生成されます
+(~\ref{function} 節、``関数定義'' 参照)。関数は、仮引数
+(formal parameter) リストと同じ数の要素が入った引数リストと
+ともに呼び出されます。
+\indexii{user-defined}{function}
+\obindex{function}
+\obindex{user-defined function}
+
+特殊属性: 
+
+\begin{tableiii}{lll}{member}{Attribute}{Meaning}{}
+  \lineiii{func_doc}{関数のドキュメンテーション文字列です。
+ドキュメンテーションがない場合は \code{None} になります。}{書き込み可能}
+
+  \lineiii{__doc__}{\member{func_doc} の別名です。}{書き込み可能}
+
+  \lineiii{func_name}{関数の名前です。}{書き込み可能}
+
+  \lineiii{__name__}{\member{func_name} の別名です。}{書き込み可能}
+
+  \lineiii{__module__}{関数が定義されているモジュールの名前です。
+モジュール名がない場合は \code{None} になります。}{書き込み可能}
+
+  \lineiii{func_defaults}{デフォルト値を持つ引数に対するデフォルト値が
+収められたタプルで、デフォルト値を持つ引数がない場合には \code{None}
+になります。}{書き込み可能}
+
+  \lineiii{func_code}{コンパイルされた関数本体を表現するコード
+オブジェクトです。}{書き込み可能}
+
+  \lineiii{func_globals}{関数のグローバル変数の入った辞書 (への参照) です --- この辞書は、関数が定義されているモジュールのグローバルな名前空間を決定します。}{読み出し専用}
+
+  \lineiii{func_dict}{任意の関数属性をサポートするための名前空間が
+収められています。}{書き込み可能}
+
+  \lineiii{func_closure}{\code{None} または関数の個々の自由変数
+(引数以外の変数) に対して値を結び付けている
+セル (cell) 群からなるタプルになります。}{読み出し専用}
+\end{tableiii}
+
+「書き込み可能」 とラベルされている属性のほとんどは、代入された値の
+型をチェックします。
+
+\versionchanged[\code{func_name} は書き込み可能になりました]{2.4}
+
+関数オブジェクトはまた、任意の属性を設定したり取得したりできます。
+この機能は、例えば関数にメタデータを付与したい場合などに使えます。
+関数の get や set には、通常のドット表記を使います。
+\emph{現在の実装では、ユーザ定義の関数でのみ属性をサポートしているので
+注意して下さい。組み込み関数の属性は将来サポートする予定です。}
+
+関数定義に関するその他の情報は、関数のコードオブジェクトから得られます; 
+後述の内部型 (internal type) に関する説明を参照してください。
+
+\withsubitem{(function attribute)}{
+  \ttindex{func_doc}
+  \ttindex{__doc__}
+  \ttindex{__name__}
+  \ttindex{__module__}
+  \ttindex{__dict__}
+  \ttindex{func_defaults}
+  \ttindex{func_closure}
+  \ttindex{func_code}
+  \ttindex{func_globals}
+  \ttindex{func_dict}}
+\indexii{global}{namespace}
+
+\item[ユーザ定義メソッド (user-defined method)]
+ユーザ定義のメソッドオブジェクトは、クラスやクラスインスタンス
+(あるいは \code{None}) を任意の呼び出し可能オブジェクト (通常は
+ユーザ定義関数) と結合し (combine) ます。
+\obindex{method}
+\obindex{user-defined method}
+\indexii{user-defined}{method}
+
+読み出し専用の特殊属性: \member{im_self} は
+クラスインスタンスオブジェクトで、\member{im_func} は関数オブジェクト
+です; \member{im_class} は結合メソッド (bound method) において
+\member{im_self} が属しているクラスか、あるいは非結合メソッド
+(unbound method) において、要求されたメソッドを定義している
+クラスです; \member{__doc__} はメソッドのドキュメンテーション文字列
+(\code{im_func.__doc__} と同じ) です; \member{__name__} はメソッドの
+名前 (\code{im_func.__name__} と同じ) です; \member{__module__} は
+メソッドが定義されているモジュールの名前になるか、モジュール名が
+ない場合は \code{None} になります。
+\versionchanged[メソッドを定義しているクラスを参照するために
+\member{im_self} が使われていました]{2.2}
+\withsubitem{(method attribute)}{
+  \ttindex{__doc__}
+  \ttindex{__name__}
+  \ttindex{__module__}
+  \ttindex{im_func}
+  \ttindex{im_self}}
+
+メソッドもまた、根底にある関数オブジェクトの任意の関数属性
+に (値の設定はできませんが) アクセスできます。
+
+クラスの属性を (おそらくクラスのインスタンスを介して) 取得する際には、
+その属性がユーザ定義の関数オブジェクト、非結合 (unbound) のユーザ定義
+メソッドオブジェクト、あるいはクラスメソッドオブジェクトであれば、
+ユーザ定義メソッドオブジェクトが生成されることがあります。
+属性がユーザ定義メソッドオブジェクトの場合、属性を取得する対象の
+オブジェクトが属するクラスがもとのメソッドオブジェクトが定義されている
+クラスと同じクラスであるか、またはそのサブクラスであれば、新たな
+メソッドオブジェクトだけが生成されます。
+それ以外の場合には、もとのメソッドオブジェクトがそのまま使われます。
+
+クラスからユーザ定義関数オブジェクトを取得する方法でユーザ定義
+メソッドオブジェクトを生成すると、 \member{im_self} 属性は
+\code{None} になり、メソッドオブジェクトは非結合 (unbound) 
+であるといいます。クラスのインスタンスからユーザ定義関数
+オブジェクトを取得する方法でユーザ定義メソッドオブジェクトを
+生成すると、\member{im_self} 属性はインスタンスになり、
+メソッドオブジェクトは結合 (bound) であるといいます。
+どちらの場合も、新たなメソッドの \member{im_class} 属性は、
+メソッドの取得が行われたクラスになり、\member{im_func} 属性は
+もとの関数オブジェクトになります。
+\withsubitem{(method attribute)}{
+  \ttindex{im_class}\ttindex{im_func}\ttindex{im_self}}
+
+クラスやインスタンスから他のユーザ定義メソッドオブジェクトを
+取得する方法でユーザ定義メソッドオブジェクトを生成した場合、
+その動作は関数オブジェクトの場合と同様ですが、新たなインスタンスの
+\member{im_func} 属性はもとのメソッドオブジェクトの属性ではなく、
+新たなインスタンスの属性になります。
+\withsubitem{(method attribute)}{
+  \ttindex{im_func}}
+
+クラスやインスタンスからクラスメソッドオブジェクトを取得する
+方法でユーザ定義メソッドオブジェクトを生成した場合、
+\member{im_self} 属性はクラス自体 (\member{im_class} 属性と
+同じ) となり、\member{im_func} 属性はクラスメソッドの根底に
+ある関数オブジェクトになります。
+\withsubitem{(method attribute)}{
+  \ttindex{im_class}\ttindex{im_func}\ttindex{im_self}}
+
+非結合ユーザ定義メソッドオブジェクトの呼び出しの際には、
+根底にある関数 (\member{im_func}) が呼び出されます。このとき、
+最初の引数は適切なクラス (\member{im_class}) またはサブクラスの
+インスタンスでなければならないという制限が課されています。
+
+結合ユーザ定義メソッドオブジェクトの呼び出しの際には、
+根底にある関数 (\member{im_func}) が呼び出されます。このとき、
+クラスインスタンス (\member{im_self}) が引数の先頭に挿入され
+ます。例えば、関数 \method{f()} の定義が入ったクラスを \class{C} 
+とし、\code{x} を \class{C} のインスタンスとすると、
+\code{x.f(1)} の呼び出しは \code{C.f(x, 1)} と同じになります。
+
+ユーザ定義メソッドオブジェクトがクラスオブジェクトから導出される際、
+\member{im_self} に記憶されている ``クラスインスタンス'' はクラス
+自体になります。これは、\code{x.f(1)} や \code{C.f(1)} の呼び出しが
+根底にある関数を \code{f} としたときの呼び出し \code{f(C,1)} と
+等価になるようにするためです。
+
+関数オブジェクトから (結合または非結合の) メソッドオブジェクトへの
+変換は、クラスやインスタンスから属性を取り出すたびに行われるので
+注意してください。場合によっては、属性をローカルな変数に代入して
+おき、その変数を使って関数呼び出しを行うと効果的な最適化になります。
+また、上記の変換はユーザ定義関数に対してのみ起こるので注意してください;
+その他の呼び出し可能オブジェクト (および呼び出し可能でない全ての
+オブジェクト) は、変換を受けずに取り出されます。それから、
+クラスインスタンスの属性になっているユーザ定義関数は、結合メソッドに
+変換できないと知っておくことも重要です; 結合メソッドへの変換が
+行われるのは、関数がクラスの一属性である場合 \emph{だけ} です。
+
+\item[ジェネレータ関数 (generator function)\index{generator!function}\index{generator!iterator}]
+\keyword{yield} 文 (~\ref{yield} 節、``\keyword{yield} 文'' 参照)
+を使う関数またはメソッドは、\dfn{ジェネレータ関数} 
+(\dfn{generator function}) と呼ばれます。このような関数は、呼び出された
+際に、常にイテレータオブジェクトを返します。このイテレータオブジェクトは
+関数の本体を実行するために用いられます: イテレータの \method{next()}
+メソッドを呼び出すと、\keyword{yield} 文で値を出力する処理まで関数の
+実行が行われます。関数が \keyword{return} 文を実行するか、関数を最後まで
+実行し終えると、\exception{StopIteration} 例外が送出され、イテレータが
+返す値の集合はそこで終わります。
+
+\item[組み込み関数 (built-in function)]
+組み込み関数オブジェクトはC関数へのラッパです。組み込み関数の例は
+\function{len()} や \function{math.sin()} (\module{math} は標準の組み込み
+モジュール) です。引数の数や型は C 関数で決定されています。
+読み出し専用の特殊属性: \member{__doc__} は関数のドキュメンテーション
+文字列です。ドキュメンテーションがない場合は \code{None} になります;
+\member{__name__} は関数の名前です; \member{__self__} は \code{None}
+に設定されています (組み込みメソッドの節も参照してください);
+\member{__module__} は、関数が定義されているモジュールの名前です。
+モジュール名がない場合は \code{None} になります。
+\obindex{built-in function}
+\obindex{function}
+\indexii{C}{language}
+
+\item[組み込みメソッド (built-in method)]
+実際には組み込み関数を別の形で隠蔽したもので、こちらの場合には
+C 関数に渡される何らかのオブジェクトを非明示的な外部引数として
+持っています。組み込みメソッドの例は、\var{alist} をリストオブジェクト
+としたときの \code{\var{alist}.append()} です。
+この場合には、読み出し専用の属性 \member{__self__} は
+\var{alist} で表されるオブジェクトになります。
+\obindex{built-in method}
+\obindex{method}
+\indexii{built-in}{method}
+
+\item[クラス型 (class type)]
+クラス型、あるいは ``新しいクラス型 (new-style class)'' や呼び出し可能
+オブジェクトです。クラス型オブジェクトは通常、そのクラスの新たな
+インスタンスを生成する際のファクトリクラスとして振舞いますが、
+\method{__new__()} をオーバライドして、バリエーションを持たせることも
+できます。呼び出しの際に使われた引数は \method{__new__()} に渡され、
+さらに典型的な場合では新たなインスタンスを初期化するために 
+\method{__init__()} に渡されます。
+
+\item[旧クラス型 (classic class)]
+(旧) クラスオブジェクトは後で詳しく説明します。クラスオブジェクトが
+呼び出されると、新たにクラスインスタンス (後述) が生成され、返されます。
+この操作には、クラスの \method{__init__()} メソッドの呼び出し 
+(定義されている場合) が含まれています。呼び出しの際に使われた引数は、
+すべて \method{__init__()} メソッドに渡されます。
+\method{__init__()} メソッドがない場合、クラスは引数なしで呼び出さなければ
+なりません。
+\withsubitem{(object method)}{\ttindex{__init__()}}
+\obindex{class}
+\obindex{class instance}
+\obindex{instance}
+\indexii{class object}{call}
+
+\item[クラスインスタンス (class instance)]
+クラスインスタンスは後で詳しく説明します。クラスインスタンスは
+クラスが \method{__call__()} メソッドを持っている場合にのみ呼び出す
+ことができます; \code{x(arguments)} とすると、
+\code{x.__call__(arguments)} 呼び出しを短く書けます。
+
+
+\end{description}
+
+\item[モジュール (module)]
+モジュールは \keyword{import} 文で import します (~\ref{import} 節、
+``\keyword{import} 文'' 参照)。%
+\stindex{import}\obindex{module}
+モジュールオブジェクトは、辞書オブジェクト (モジュール内で定義されて
+いる関数が func_globals 属性で参照している辞書です) で実装された
+名前空間を持っています。属性への参照は、この辞書に対する検索 (lookup)
+に翻訳されます。例えば、\code{m.x} は \code{m.__dict__["x"]}
+と同じです。
+モジュールオブジェクトには、モジュールを初期化するために使われる
+コードオブジェクトは入っていません (一度初期化が終わればもう必要
+ないからです)。
+
+属性の代入を行うと、モジュールの名前空間辞書の内容を更新します。
+例えば、 \samp{m.x = 1} は \samp{m.__dict__["x"] = 1} と同じです。
+
+読み出し専用の特殊属性: \member{__dict__} はモジュールの名前空間で、
+辞書オブジェクトです。
+\withsubitem{(module attribute)}{\ttindex{__dict__}}
+
+定義済みの (書き込み可能な) 属性: \member{__name__}
+はモジュールの名前です; 
+\member{__doc__} は関数のドキュメンテーション
+文字列です。ドキュメンテーションがない場合は \code{None} になります;
+モジュールがファイルからロードされた場合、 \member{__file__} はロード
+されたモジュールファイルのパス名です。インタプリタに静的にリンクされて
+いる C{} モジュールの場合、\member{__file__} 属性はありません;
+共有ライブラリから動的にロードされた拡張モジュールの場合、この属性は
+共有ライブラリファイルのパス名になります。
+\withsubitem{(module attribute)}{
+  \ttindex{__name__}
+  \ttindex{__doc__}
+  \ttindex{__file__}}
+\indexii{module}{namespace}
+
+\item[クラス]
+クラスオブジェクトはクラス定義 (~\ref{class} 節、 ``クラス定義''
+参照) で生成されます。クラスは辞書で実装された名前空間を持っています。
+クラス属性への参照は、この辞書に対する検索 (lookup)
+に翻訳されます。例えば、\code{C.x} は \code{C.__dict__["x"]}
+と同じです。
+属性がこの検索で見つからない場合、現在のクラスの基底クラスへと
+検索を続けます。検索は深さ優先 (depth-first)、かつ基底クラスの
+挙げられているリスト中の左から右 (left-to-right) の順番で行われ
+ます。
+
+クラス (\class{C} とします) への属性参照で、要求している属性が
+ユーザ定義関数オブジェクトや、\class{C} やその基底クラスに関連付け
+られている非結合のユーザ定義メソッドオブジェクトである場合、
+\member{im_class} 属性が \class{C} であるような非結合ユーザ定義
+メソッドオブジェクトに変換されます。
+要求している属性がクラスメソッドオブジェクトの場合、
+\member{im_class} とその \member{im_self} 属性がどちらも \class{C}
+であるようなユーザ定義メソッドオブジェクトに変換されます。
+要求している属性が静的メソッドオブジェクトの場合、静的メソッド
+オブジェクトでラップされたオブジェクトに変換されます。
+クラスから取り出した属性と実際に \member{__dict__} に入っている
+ものが異なるような他の場合については、 ~\ref{descriptors} 節を
+参照してください。
+\obindex{class}
+\obindex{class instance}
+\obindex{instance}
+\indexii{class object}{call}
+\index{container}
+\obindex{dictionary}
+\indexii{class}{attribute}
+
+クラス属性を代入すると、そのクラスの辞書だけが更新され、基底クラスの
+辞書は更新しません。
+\indexiii{class}{attribute}{assignment}
+
+クラスオブジェクトを呼び出す (上記を参照) と、クラスインスタンスを
+生成します (下記を参照)。
+\indexii{class object}{call}
+
+特殊属性: \member{__name__} はクラス名です;
+\member{__module__} はクラスが定義されているモジュールの名前です;
+\member{__dict__} はクラスの名前空間が入った辞書です;
+\member{__bases__} は基底クラスの入った (空、あるいは単要素を取りえる) 
+タプルで、基底クラスリストの順番になっています; \member{__doc__} は
+クラスのドキュメンテーション文字列です。ドキュメンテーション文字列が
+ない場合には \code{None} になります。
+\withsubitem{(class attribute)}{
+  \ttindex{__name__}
+  \ttindex{__module__}
+  \ttindex{__dict__}
+  \ttindex{__bases__}
+  \ttindex{__doc__}}
+
+\item[クラスインスタンス]
+クラスインスタンスはクラスオブジェクト (上記参照) を呼び出して
+生成します。クラスインスタンスは辞書で実装された名前空間を持って
+おり、属性参照の時にはこの辞書が最初に検索されます。
+辞書内に属性が見つからず、かつインスタンスのクラスに該当する
+属性名がある場合、検索はクラス属性にまで広げられます。
+見つかったクラス属性がユーザ定義関数オブジェクトや、
+インスタンスのクラス (\class{C} とします) やその基底クラスに関連
+付けられている非結合のユーザ定義メソッドオブジェクトの場合、
+\member{im_class} 属性が \class{C} で \member{im_self} 属性が
+インスタンスになっている結合ユーザ定義メソッドオブジェクトに変換
+されます。静的メソッドやクラスメソッドオブジェクトもまた、
+\class{C} から取り出した場合と同様に変換されます;
+上記の ``クラス'' を参照してください。
+クラスから取り出した属性と実際に \member{__dict__} に入っている
+ものが異なるような他の場合については、 ~\ref{descriptors} 節を
+参照してください。
+クラス属性が見つからず、かつオブジェクトのクラスが
+\method{__getattr__()} メソッドを持っている場合、このメソッドを
+呼び出して属性名の検索を充足させます。
+\obindex{class instance}
+\obindex{instance}
+\indexii{class}{instance}
+\indexii{class instance}{attribute}
+
+属性の代入や削除を行うと、インスタンスの辞書を更新しますが、クラスの
+辞書を更新することはありません。クラスで \method{__setattr__()} や
+\method{__delattr__()} メソッドが定義されている場合、直接インスタンスの
+辞書を更新する代わりにこれらのメソッドが呼び出されます。
+\indexiii{class instance}{attribute}{assignment}
+
+クラスインスタンスは、ある特定の名前のメソッドを持っている
+場合、数値型やシーケンス型、あるいはマップ型のように振舞うことが
+できます。~\ref{specialnames} 節、 ``特殊メソッド名'' を参照
+してください。
+\obindex{numeric}
+\obindex{sequence}
+\obindex{mapping}
+
+特殊属性: \member{__dict__} は属性の辞書です;
+\member{__class__} はインスタンスのクラスです。
+\withsubitem{(instance attribute)}{
+  \ttindex{__dict__}
+  \ttindex{__class__}}
+
+\item[ファイル (file)]
+ファイル\obindex{file} オブジェクトは開かれたファイルを表します。
+ファイルオブジェクトは組み込み関数 \function{open()}\bifuncindex{open} 
+や、\withsubitem{(in module os)}{\ttindex{popen()}}\function{os.popen()},
+\function{os.fdopen()}, および socke オブジェクトの
+\method{makefile()}\withsubitem{(socket method)}{\ttindex{makefile()}}
+メソッド (その他の拡張モジュールで提供されている関数やメソッド) で生成
+されます。\ttindex{sys.stdin}\code{sys.stdin},
+\ttindex{sys.stdout}\code{sys.stdout} および
+\ttindex{sys.stderr}\code{sys.stderr} といったオブジェクトは、
+インタプリタの標準入力\index{stdio}、標準出力、および標準エラー出力
+ストリームに対応するよう初期化されます。ファイルオブジェクトに
+関する完全な記述については、\citetitle[../lib/lib.html]{Python ライブラリ
+リファレンス} を参照してください。
+\withsubitem{(in module sys)}{
+  \ttindex{stdin}
+  \ttindex{stdout}
+  \ttindex{stderr}}
+
+
+\item[内部型 (internal type)]
+インタプリタが内部的に使っているいくつかの型は、ユーザに公開されています。
+これらの定義は将来のインタプリタのバージョンでは変更される可能性が
+ありますが、ここでは記述の完全性のために触れておきます。
+\index{internal type}
+\index{types, internal}
+
+\begin{description}
+
+\item[コードオブジェクト]
+コードオブジェクトは \emph{バイトコンパイルされた (byte-compiled)}
+実行可能な Python コード、別名 \emph{バイトコード (bytecode)} を
+表現します。コードオブジェクトと関数オブジェクトの違いは、
+関数オブジェクトが関数のグローバル変数 (関数を定義しているモジュールの
+グローバル) に対して明示的な参照を持っているのに対し、コードオブジェクト
+にはコンテキストがないということです; また、関数オブジェクトでは
+デフォルト引数値を記憶できますが、コードオブジェクトではできません
+(実行時に計算される値を表現するため)。関数オブジェクトと違い、
+コードオブジェクトは変更不可能で、変更可能なオブジェクトへの参照を
+(直接、間接に関わらず) 含みません。
+\index{bytecode}
+\obindex{code}
+
+読み出し専用の特殊属性: \member{co_name} は関数名を表します;
+\member{co_argcount} は固定引数 (positional argument) の数です;
+\member{co_nlocals} は関数が使う (引数を含めた) ローカル変数の数です;
+\member{co_varnames} はローカル変数名の入ったタプルです (引数名
+から始まっています); \member{co_cellvars} はネストされた関数で
+参照されているローカル変数の名前が入ったタプルです; 
+\member{co_freevars} は自由変数の名前が入ったタプルです。
+\member{co_code} はバイトコード列を表現している文字列です;
+\member{co_consts} はバイトコードで使われているリテラルの入った
+タプルです; \member{co_names} はバイトコードで使われている名前
+の入ったタプルです; \member{co_filename} はバイトコードのコンパイル
+が行われたファイル名です; \member{co_firstlineno} は関数の最初の
+行番号です; \member{co_lnotab} はバイトコードオフセットから行番号
+への対応付けをコード化した文字列です (詳細についてはインタプリタの
+ソースコードを参照してください); \member{co_stacksize} は関数で
+(ローカル変数の分も含めて) 必要なスタックサイズです; 
+\member{co_flags} はインタプリタ用の様々なフラグをコード化した
+整数です。
+
+\withsubitem{(code object attribute)}{
+  \ttindex{co_argcount}
+  \ttindex{co_code}
+  \ttindex{co_consts}
+  \ttindex{co_filename}
+  \ttindex{co_firstlineno}
+  \ttindex{co_flags}
+  \ttindex{co_lnotab}
+  \ttindex{co_name}
+  \ttindex{co_names}
+  \ttindex{co_nlocals}
+  \ttindex{co_stacksize}
+  \ttindex{co_varnames}
+  \ttindex{co_cellvars}
+  \ttindex{co_freevars}}
+
+以下のフラグビットが \member{co_flags} で定義されています: 
+\code{0x04} ビットは、関数が \samp{*arguments} 構文を使って
+任意の数の固定引数を受理できる場合に立てられます;
+\code{0x08} ビットは、関数が \samp{**keywords} 構文を使って
+キーワード引数を受理できる場合に立てられます;
+\code{0x20} ビットは、関数がジェネレータである場合に立てられます。
+\obindex{generator}
+
+将来機能 (future feature) 宣言 (\samp{from __future__ import division})
+もまた、\member{co_flags} のビットを立てることで、コードオブジェクトが
+特定の機能を有効にしてコンパイルされていることを示します: 
+\code{0x2000} ビットは、関数が将来機能を有効にしてコンパイルされて
+いる場合に立てられます; 以前のバージョンの Python では、\code{0x10} 
+および \code{0x1000} ビットが使われていました。
+
+\member{co_flags} のその他のビットは将来に内部的に利用するために
+予約されています。
+
+コードオブジェクトが関数を表現している場合、\member{co_consts} の最初の
+要素は関数のドキュメンテーション文字列 \index{documentation string} 
+になります。ドキュメンテーション文字列が定義されていない場合には 
+\code{None} になります。
+
+
+\item[フレーム (frame) オブジェクト]
+フレームオブジェクトは実行フレーム (execution frame) を表します。
+実行フレームはトレースバックオブジェクト内に出現します (下記参照)。
+\obindex{frame}
+
+読み出し専用の特殊属性: \member{f_back} は (呼び出し側にとっての) 
+以前のスタックフレームです。呼び出し側がスタックフレームの最下段で
+ある場合には \code{None} です; \member{f_code} は現在のフレームで
+実行しようとしているコードオブジェクトです; \member{f_locals} 
+はローカル変数を検索するために使われる辞書です;
+\member{f_globals} はグローバル変数用です; 
+\member{f_builtins} は組み込みの (Python 固有の) 名前です;
+\member{f_restricted} は、関数が制限つき実行 (restricted execution) 
+モードで実行されているかどうかを示すフラグです; \member{f_lasti} 
+は厳密な命令コード (コードオブジェクト中のバイトコード文字列への
+インデクス) です。
+\withsubitem{(frame attribute)}{
+  \ttindex{f_back}
+  \ttindex{f_code}
+  \ttindex{f_globals}
+  \ttindex{f_locals}
+  \ttindex{f_lasti}
+  \ttindex{f_builtins}
+  \ttindex{f_restricted}}
+
+書き込み可能な特殊属性: \member{f_trace} が \code{None} でない場合、
+各ソースコード行の先頭で呼び出される関数になります; 
+\member{f_exc_type}, \member{f_exc_value}, \member{f_exc_traceback} 
+は、現在のフレームが以前に引き起こした例外が提供する親フレーム内で
+もっとも最近捕捉された例外を表します
+(それ以外の場合は、これらはNoneになります。);
+\member{f_lineno} はフレーム中における現在の行番号です --- トレース関数
+(trace function) 側でこの値に書き込みを行うと、指定した行にジャンプ
+します (最下段の実行フレームにいるときのみ) 。デバッガでは、
+f_fileno を書き込むことで、ジャンプ命令 (Set Next Statement 命令とも
+呼ばれます) を実装できます。
+\withsubitem{(frame attribute)}{
+  \ttindex{f_trace}
+  \ttindex{f_exc_type}
+  \ttindex{f_exc_value}
+  \ttindex{f_exc_traceback}
+  \ttindex{f_lineno}}
+
+\item[トレースバック (traceback) オブジェクト] \label{traceback}
+トレースバックオブジェクトは例外のスタックトレースを表現します。
+トレースバックオブジェクトは例外が発生した際に生成されます。
+例外ハンドラを検索して実行スタックを戻っていく際、戻ったレベル
+毎に、トレースバックオブジェクトが現在のトレースバックの前に
+挿入されます。例外ハンドラに入ると、スタックトレースを
+プログラム側で利用できるようになります
+(~\ref{try} 節 ``\code{try} 文'' を参照)。
+トレースバックは \code{sys.exc_traceback} として得ることができ、
+\code{sys.exc_info()} が返すタプルの三番目の要素としても得られます.
+インタフェースとしては後者の方が推奨されていますが、これは
+プログラムがマルチスレッドを使っている場合に正しく動作するからです。
+プログラムに適切なハンドラがない場合、スタックトレースは (うまく
+書式化されて) 標準エラーストリームに書き出されます; インタプリタが
+対話的に実行されている場合、\code{sys.last_traceback} として
+得ることもできます。
+\obindex{traceback}
+\indexii{stack}{trace}
+\indexii{exception}{handler}
+\indexii{execution}{stack}
+\withsubitem{(in module sys)}{
+  \ttindex{exc_info}
+  \ttindex{exc_traceback}
+  \ttindex{last_traceback}}
+\ttindex{sys.exc_info}
+\ttindex{sys.exc_traceback}
+\ttindex{sys.last_traceback}
+
+読み出し専用の特殊属性: \member{tb_next} はスタックトレース内の
+(例外の発生しているフレームに向かって) 次のレベルです。
+次のレベルが存在しない場合には \code{None} になります;
+\member{tb_frame} は現在のレベルにおける実行フレームを指します;
+\member{tb_lineno} は例外の発生した行番号です; \member{tb_lasti} 
+は厳密な命令コードです。トレースバック内の行番号や最後に実行された
+命令は、\keyword{try} 文内で例外が発生し、かつ対応する 
+\keyword{except} 節や \keyword{finally} 節がない場合には、
+フレームオブジェクト内の行番号とは異なるかもしれません。
+\withsubitem{(traceback attribute)}{
+  \ttindex{tb_next}
+  \ttindex{tb_frame}
+  \ttindex{tb_lineno}
+  \ttindex{tb_lasti}}
+\stindex{try}
+
+\item[スライス (slice) オブジェクト]
+スライスオブジェクトは \emph{拡張スライス構文 (extended slice syntax)}
+が使われた際にスライスを表現するために使われます。拡張スライス構文とは、
+二つのコロンや、コンマで区切られた複数のスライスや省略符号 (ellipse)
+を使ったスライスで、例えば \code{a[i:j:step]} 、 \code{a[i:j, k:l]} 、
+あるいは \code{a[..., i:j]} です。スライスオブジェクトは組み込み関数
+\function{slice()}\bifuncindex{slice} で生成されます。
+
+読み出し専用の特殊属性: \member{start} は下境界 (lower bound) です;
+\member{stop} は上境界 (upper bound) です; \member{step} はステップ値
+(step value) です; それぞれ省略されている場合には \code{None} になります。
+これらの属性は任意の型の値をとることができます。
+\withsubitem{(slice object attribute)}{
+  \ttindex{start}
+  \ttindex{stop}
+  \ttindex{step}}
+
+スライスオブジェクトはメソッドを一つサポートします:
+
+\begin{methoddesc}[slice]{indices}{self, length}
+このメソッドは単一の整数引数 \var{length} を取り、\var{length} 
+個の要素からなるシーケンスに適用した際にスライスオブジェクトから提供
+することになる、拡張スライスに関する情報を計算します。
+このメソッドは三つの整数からなるタプルを返します; それぞれ
+\var{start} および \var{stop} のインデクスと、\var{step} または
+スライス間の幅に対応します。インデクス値がないか、範囲外の値
+である場合、通常のスライスに対して一貫性のあるやりかたで扱われます。
+\versionadded{2.3}
+\end{methoddesc}
+
+\item[静的メソッド (static method) オブジェクト]
+静的メソッドは、上で説明したような関数オブジェクトからメソッド
+オブジェクトへの変換を阻止するための方法を提供します。静的メソッド
+オブジェクトは他の何らかのオブジェクト、通常はユーザ定義メソッド
+オブジェクトを包むラッパです。静的メソッドをクラスやクラスインスタンス
+から取得すると、実際に返されるオブジェクトはラップされたオブジェクト
+になり、それ以上は変換の対象にはなりません。静的メソッドオブジェクト
+は通常呼び出し可能なオブジェクトをラップしますが、静的オブジェクト自体は
+呼び出すことができません。静的オブジェクトは組み込みコンストラクタ
+\function{staticmethod()} で生成されます。
+
+\item[クラスメソッドオブジェクト]
+クラスメソッドオブジェクトは、静的メソッドオブジェクトに似て、
+別のオブジェクトを包むラッパであり、そのオブジェクトをクラスや
+クラスインスタンスから取り出す方法を代替します。
+このようにして取得したクラスメソッドオブジェクトの動作については、
+上の ``ユーザ定義メソッド (user-defined method)'' で説明されています。
+クラスメソッドオブジェクトは組み込みのコンストラクタ 
+\function{classmethod()} で生成されます。
+
+\end{description} % Internal types
+
+\end{description} % Types
+
+%=========================================================================
+\section{新スタイルと旧スタイル}
+ 
+クラスとインスタンスは好みに合わせて2種類の方法で記述することができます:
+旧スタイルもしくはクラシックスタイルと新スタイルです。  
+
+Python 2.1以降では、ユーザが好んで指定した場合のみ旧スタイルが使用されます。
+(旧スタイルの)クラスの概念と型の概念には関連性があります:
+もし\var{x}が旧スタイルのクラスのインスタンスだった場合、
+\code{x.__class__}というコードはクラス\var{x}を指定しますが、
+\code{type(x)}は常に\code{<type'instance'>}となります。
+これは、すべての旧スタイルのインスタンスが、それらのクラスがどのクラスであるか
+にかかわらず、\code{instance}と呼ばれる一つの内蔵型として
+実行されるということを反映しています。
+
+新スタイルのクラスは、クラスと型を統一するためにPython 2.2で導入されました。
+新スタイルのクラスはユーザ定義型と少しも変わりません。
+もし、\var{x}が新スタイルクラスのインスタンスであった場合、
+\code{type(x)}は\code{x.__class__}と同じになります。
+
+新スタイルクラスを導入する一番の理由は、メタモデルを用いた
+統一的なオブジェクトモデルを提供することにあります。
+これには、
+また、ほとんどの組み込み型のサブクラスが作成できる、
+属性を計算するための"デスクリプタ"の導入できる等の利点があります。
+
+互換性のために、デフォルトではクラスは旧スタイルになります。
+新スタイルのクラスは、他の新スタイルクラス (すなわち型)を親クラスとして定義する、
+もしくは、他の親クラスが必要ない場合に "最上位型" \class{object} を継承することで
+作成することができます。
+新スタイルクラスの動作は旧スタイルクラスの動作とは、
+\function{type}が何を返すかといったことをはじめ、何点か重要な部分が異なります。
+特殊メソッドの呼び出しなど、これらの変更は新オブジェクトモデルの基盤となっています。
+それ以外の部分は、多重継承時のメソッドの解決順などのように、
+互換性の問題で以前は実装が不可能であった"修正"が新クラスに含まれています。
+
+このマニュアルは新スタイルのクラスに対しては最新情報を含んでいません。
+より詳細な情報を得たい場合は、
+\url{http://www.python.org/doc/newstyle.html}を参照してください。
+
+旧クラスを廃止にして、新クラスのセマンティクスのみを残すことが計画されています。
+この変更は、Python 3.0で採用されることになるでしょう。
+\index{class}{new-style}
+\index{class}{classic}
+\index{class}{old-style}
+
+%=========================================================================
+
+\section{特殊メソッド名\label{specialnames}}
+
+特殊な名前をもったメソッドを定義することで、特殊な構文 (算術演算や
+添え字表記、スライス表記のような) 特定の演算をクラスで実装することが
+できます。\indexii{operator}{overloading}
+これは、個々のクラスが Python 言語で提供されている演算子に対応した
+独自の振る舞いをできるようにするための、\dfn{演算子のオーバロード} 
+(\dfn{operator overloading}) に対する Python のアプローチです。
+例えば、あるクラスが \method{__getitem__()} という名前のメソッドを定義
+しており、\code{x} がこのクラスのインスタンスであるとすると、
+\code{x[i]} は \code{x.__getitem__(i)} と等価
+\footnote{この部分およびそれ以外の説明は、新スタイルクラスのインスタンス
+についても概ね当てはまります。}
+になります。特に注釈の
+ない限り、適切なメソッドが定義されていない場合にこのような演算を行おうと
+すると例外が送出されます。
+\withsubitem{(mapping object method)}{\ttindex{__getitem__()}}
+
+組み込み型をエミュレーションするようなクラスを実装する際には、
+エミューレーションの実装をモデル化しようとしているオブジェクトで
+意味のある範囲だけにとどめることが重要です。
+例えば、シーケンスによっては個々の要素の取り出し操作が意味のある操作で
+ある一方、スライスの抽出が意味をなさないことがあります。
+(W3C ドキュメントオブジェクトモデルにおける \class{NodeList} 
+インタフェースがその一例です。)
+
+
+\subsection{基本的なカスタマイズ\label{customization}}
+
+\begin{methoddesc}[object]{__new__}{cls\optional{, args...}}
+
+クラス \var{cls} の新しいインスタンスを作るために呼び出されます。
+\method{__new__()} は静的メソッドで (このメソッドは特別扱いされている
+ので、明示的に静的メソッドと宣言する必要はありません)、インスタンスを
+生成するよう要求されているクラスを第一引数にとります。残りの引数はオブ
+ジェクトのコンストラクタの式 (クラスの呼び出し文) に渡されます。
+\method{__new__()} の戻り値は新しいオブジェクトのインスタンス
+(通常は \var{cls} のインスタンス) でなければなりません。
+
+典型的な実装では、クラスの新たなインスタンスを生成するときには
+\samp{super(\var{currentclass}, \var{cls}).__new__(\var{cls}[, ...])}
+に適切な引数を指定してスーパクラスの \method{__new__()}  メソッドを呼
+び出し、新たに生成されたインスタンスに必要な変更を加えてから返します。
+
+\method{__new__()} が \var{cls} のインスタンスを返した場合、
+\samp{__init__(\var{self}[, ...])} のようにしてインスタンスの
+\method{__init__()} が呼び出されます。このとき、\var{self} は新たに生成
+されたインスタンスで、残りの引数は \method{__new__()} に渡された引数と
+同じになります。
+
+\method{__new__()} が \var{cls} のインスタンスを返さない場合、インスタ
+ンスの \method{__init__()} メソッドは呼び出されません。
+
+\method{__new__()} の主な目的は、変更不能な型 (int, str, tuple など)
+のサブクラスでインスタンス生成をカスタマイズすることにあります。
+\end{methoddesc}
+
+
+\begin{methoddesc}[object]{__init__}{self\optional{, \moreargs}}
+インスタンスが生成された際に呼び出されるコンストラクタ (constructor)
+です。\indexii{class}{constructor}
+引数はそのクラスのコンストラクタ式に渡した引数になります。
+基底クラスが\method{__init__()} メソッドを持っている場合、
+導出クラスの \method{__init__()} メソッドでは、
+例えば \samp{BaseClass.__init__(\var{self}, [\var{args}...])} の
+ように、必要ならば明示的に基底クラスの\method{__init__()} メソッドを
+呼び出して、インスタンスの基底クラスに関わる部分が正しく初期化される
+ようにしなければなりません。コンストラクタには、値を返してはならない
+という特殊な制限があります; 値を返すようにすると、実行時に
+\exception{TypeError} の送出を引き起こします。
+\end{methoddesc}
+
+
+\begin{methoddesc}[object]{__del__}{self}
+インスタンスが消滅させられる際に呼び出されます。このメソッドは
+デストラクタ (destructor) \index{destructor} とも呼ばれます。
+基底クラスが\method{__del__()} メソッドを持っている場合、
+導出クラスの \method{__del__()} メソッドでは、必要ならば明示的に
+基底クラスの\method{__del__()} メソッドを
+呼び出して、インスタンスの基底クラスに関わる部分が正しく消滅処理
+されるようにしなければなりません。
+\method{__del__()} メソッドでインスタンスに対する新たな参照を
+作ることで、インスタンスの消滅を遅らせることができます 
+(とはいえ、推奨しません！)。このようにすると、新たに作成された
+参照がその後削除された際にもう一度 \method{__del__()} メソッド
+が呼び出されます。
+インタプリタが終了する際に残っているオブジェクトに対して、
+\method{__del__()} メソッドが呼び出される保証はありません。
+\stindex{del}
+
+\begin{notice}
+\samp{del x} は直接 \code{x.__del__()} を呼び出しません --- 
+前者は \code{x} への参照カウント (reference count) を 1 つ減らし、
+後者は \code{x} への参照カウントがゼロになった際にのみ呼び出されます。
+オブジェクトへの参照カウントがゼロになるのを妨げる可能性のある
+よくある状況には、以下のようなものがあります: 複数のオブジェクト間
+における循環参照 (二重リンクリストや、親と子へのポインタを持つツリー
+データ構造); 例外を捕捉した関数におけるスタックフレーム上にある
+オブジェクトへの参照 (\code{sys.exc_traceback} に記憶されている
+トレースバックが、スタックフレームを生き延びさせます);
+または、対話モードでハンドルされなかった例外を送出した
+スタックフレーム上にあるオブジェクトへの参照
+(\code{sys.last_traceback} に記憶されているトレースバックが、
+スタックフレームを生き延びさせます);
+最初の状況については、明示的に循環参照を壊すしか解決策は
+ありません; 後者の二つの状況は、\code{None} を
+\code{sys.exc_traceback} や \code{sys.last_traceback} に
+入れることで解決できます。ごみオブジェクトと化した循環参照は、
+オプションの循環参照検出機構 (cycle detector) が有効にされて
+いる場合 (これはデフォルトの設定です) には検出されますが、
+検出された循環参照を消去するのは Python レベルで
+ \method{__del__()} メソッドが定義されていない場合だけです。
+\method{__del__()} メソッドが循環参照検出機構でどのように
+扱われるか、とりわけ \code{garbage} 値の記述に関しては、
+\ulink{\module{gc} モジュール}{../lib/module-gc.html} の
+ドキュメントを参照してください。
+\end{notice}
+
+\begin{notice}[warning]
+\method{__del__()} メソッドの呼び出しが起きるのは不安定な状況
+なので、\method{__del__()} の実行中に発生した例外は無視され、
+代わりに \code{sys.stderr} に警告が出力されます。また、
+(例えばプログラムの実行終了による) モジュールの削除に伴って
+\method{__del__()} が呼び出される際には、\method{__del__()} 
+メソッドが参照している他のグローバル変数はすでに削除されている
+かもしれません。この理由から、 \method{__del__()} メソッドでは
+外部の不変関係を維持する上で絶対最低限必要なことだけをすべき
+です。バージョン 1.5 からは、単一のアンダースコアで始まるような
+グローバル変数は、他のグローバル変数が削除される前にモジュール
+から削除されるように Python 側で保証しています; これらの
+アンダースコア付きグローバル変数は、\method{__del__()} が呼び
+出された際に、import されたモジュールがまだ残っているか確認
+する上で役に立ちます。
+\end{notice}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__repr__}{self}
+組み込み関数\function{repr()}\bifuncindex{repr} や、文字列への
+変換 (逆クオート表記: reverse quote) の際に呼び出され、
+オブジェクトを表す ``公式の (official)'' 文字列を計算します。
+可能な場合には、この値は同じ値を持ったオブジェクトを
+(適切な環境で) 再生成するために使えるような有効な Python 式に
+似せるべきです。それが不可能なら、\samp{<\var{...some useful
+description...}>} 形式の文字列を返してください。
+戻り値は文字列オブジェクトでなければなりません。
+クラスが \method{__repr__()} を定義しているが \method{__str__()}
+を定義していない場合、そのクラスのインスタンスに対する
+``非公式の (informal)'' 文字列表現が必要なときにも
+\method{__repr__()} が使われます。
+
+この関数はデバッグの際によく用いられるので、たくさんの情報を
+含み、あいまいでないような表記にすることが重要です。
+\indexii{string}{conversion}
+\indexii{reverse}{quotes}
+\indexii{backward}{quotes}
+\index{back-quotes}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__str__}{self}
+組み込み関数 \function{str()}\bifuncindex{str} および
+\keyword{print}\stindex{print} 文によって呼び出され、
+オブジェクトを表す ``非公式の'' 文字列を計算します。
+このメソッドは、有効な Python 式を返さなくても良いという点で、
+\method{__repr__()} と異なります: その代わり、より便利で分かりやすい
+表現を返すようにしてください。戻り値は文字列オブジェクトで
+なければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__lt__}{self, other}
+\methodline[object]{__le__}{self, other}
+\methodline[object]{__eq__}{self, other}
+\methodline[object]{__ne__}{self, other}
+\methodline[object]{__gt__}{self, other}
+\methodline[object]{__ge__}{self, other}
+\versionadded{2.1}
+これらのメソッドは ``拡張比較 (rich comparison)'' メソッドと呼ばれ、
+下記の \method{__cmp__()} に優先して呼び出されます。
+演算子シンボルとメソッド名の対応は以下の通りです:
+\code{\var{x}<\var{y}} は \code{\var{x}.__lt__(\var{y})} を呼び出します;
+\code{\var{x}<=\var{y}} は \code{\var{x}.__le__(\var{y})} を呼び出します;
+\code{\var{x}==\var{y}} は \code{\var{x}.__eq__(\var{y})} を呼び出します;
+\code{\var{x}!=\var{y}} および \code{\var{x}<>\var{y}} は
+\code{\var{x}.__ne__(\var{y})} を呼び出します;
+\code{\var{x}>\var{y}} は \code{\var{x}.__gt__(\var{y})} を呼び出します;
+\code{\var{x}>=\var{y}} は \code{\var{x}.__ge__(\var{y})} を呼び出します。
+これらのメソッドは任意の値を返すことができますが、比較演算子が
+ブール値のコンテキストで使われた場合、戻り値はブール値として
+解釈可能でなければなりません。そうでない場合には \exception{TypeError}
+が送出されます。
+慣習的には、 \code{False} は偽値、 \code{True} は真値として用いられ
+ます。
+
+比較演算子間には、暗黙的な論理関係はありません。すなわち、
+\code{\var{x}==\var{y}} が真である場合、暗黙のうちに 
+\code{\var{x}!=\var{y}} が偽になるわけではありません。
+従って、\method{__eq__()} を実装する際、演算子が期待通りに
+動作するようにするために \method{__ne__()} も定義する必要があります。
+
+これらのメソッドには、(左引数が演算をサポートしないが、右引数は
+サポートする場合に用いられるような) 鏡像となる (引数を入れ替えた) 
+バージョンは存在しません; むしろ、\method{__lt__()} と
+\method{__gt__()} は互いに鏡像であり、\method{__le__()} と
+\method{__ge__()} 、および \method{__eq__()} と
+\method{__ne__()} はそれぞれ互いに鏡像です。
+
+拡張比較メソッドの引数には型強制 (coerce) が起こりません。
+与えられた引数ペアの間で演算が実装されていない場合、拡張比較
+メソッドは \code{NotImplemented} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__cmp__}{self, other}
+拡張比較 (上参照) が定義されていない場合、比較演算によって
+呼び出されます。\code{self < other} である場合には負の値、
+\code{self == other} ならばゼロ、\code{self > other} であれば
+正の値を返さなければなりません。演算 \method{__cmp__()} 、\method{__eq__()} 
+および \method{__ne__()} がいずれも定義されていない場合、
+クラスインスタンスはオブジェクトのアイデンティティ (``アドレス'')
+で比較されます。自作の比較演算をサポートするオブジェクトや、
+辞書のキーとして使えるオブジェクトを生成するには、
+\method{__hash__()} に関する記述を参照してください。
+(注意: \method{__cmp__()} が例外を伝播しないという制限は
+Python 1.5 から除去されました。)
+\bifuncindex{cmp}
+\index{comparisons}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__rcmp__}{self, other}
+  \versionchanged[もはやサポートされていません]{2.1}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__hash__}{self}
+辞書演算\obindex{dictionary} の際にキーとなるオブジェクトに対して
+呼び出されたり、組み込み関数 \function{hash()} から呼び出されたり
+します。 辞書演算におけるハッシュ値として利用できる、32 ビットの
+整数を返さなければなりません。
+このメソッドに必要な性質は、比較結果が等価であるオブジェクトは
+同じハッシュ値をもつということです; オブジェクト間で比較を
+行う際には、オブジェクトの各要素に対するハッシュ値を 
+(排他的論理和をとるなどして) 何らかの方法で混合するよう勧めます。
+クラスが \method{__cmp__()} メソッドを定義していない場合、
+\method{__hash__()} メソッドも定義してはなりません; クラスが
+\method{__cmp__()} または \method{__eq__()} を定義しているが、
+\method{__hash__()} を定義していない場合、インスタンスを
+辞書のキーとして使うことはできません。
+クラスが変更可能なオブジェクトを定義しており、\method{__cmp__()} 
+または \method{__eq__()} メソッドを実装している場合、\method{__hash__()}
+を定義してはなりません。これは、辞書の実装においてハッシュ値が変更不能
+であることが要求されているからです (オブジェクトのハッシュ値が変化
+すると、キーが誤ったハッシュバケツ: hash bucket に入っていることに
+なってしまいます)。
+
+\versionchanged[\method{__hash__()} は現在では長整数オブジェクトも
+返すでしょう。32ビット整数はこのオブジェクトのハッシュから導出されます。]{2.5}
+
+\withsubitem{(object method)}{\ttindex{__cmp__()}}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__nonzero__}{self}
+真値テストや組み込み演算 \code{bool()} を実現するために呼び出され
+ます; \code{False} または \code{True} か、等価な整数値
+\code{0} または \code{1} を返さなければなりません。
+このメソッドが定義されていない場合、\method{__len__()} (下記参照)
+が定義されていれば呼び出されます。\method{__len__()} と
+ \method{__nonzero__()} のどちらもクラスで定義されていない場合、
+そのクラスのインスタンスはすべて真の値を持つものとみなされます。
+\withsubitem{(mapping object method)}{\ttindex{__len__()}}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__unicode__}{self}
+組み込み関数 \function{unicode()}\bifuncindex{unicode} を実現
+するために呼び出されます。Unicode オブジェクトを返さなければ
+なりません。このメソッドが定義されていなければ、文字列への
+変換が試みられ、その結果がデフォルトの文字エンコードを用いて
+Unicode に変換されます。
+\end{methoddesc}
+
+
+\subsection{属性値アクセスをカスタマイズする\label{attribute-access}}
+
+以下のメソッドを定義して、クラスインスタンスへの属性値アクセス (
+属性値の使用、属性値への代入、\code{x.name} の削除) の意味を
+カスタマイズすることができます。
+
+\begin{methoddesc}[object]{__getattr__}{self, name}
+属性値の検索を行った結果、通常の場所に属性値が見つからなかった
+場合 (すなわち、\code{self} のインスタンス属性でなく、かつクラスツリー
+にも見つからなかった場合) に呼び出されます。
+このメソッドは (計算された) 属性値を返すか、\exception{AttributeError}
+例外を送出しなければなりません。
+
+通常のメカニズムを介して属性値が見つかった場合、\method{__getattr__()} 
+は呼び出されないので注意してください。(\method{__getattr__()} 
+と \method{__setattr__()} の間は意図的に非対称性にされています。
+これは\method{__getattr__()} および \method{__setattr__()} 双方に
+とっての効率性という理由と、こうしなければ \method{__setattr__()}
+がインスタンスの他の属性値にアクセスする方法がなくなるためです。
+少なくともインスタンス変数に対しては、値をインスタンスの属性値
+辞書に挿入しないようにして (代わりに他のオブジェクトに挿入することで)
+属性値が完全に制御されているように見せかけられることに注意してください。
+新スタイルクラスで実際に完全な制御を行う方法は、以下の
+\method{__getattribute__()} メソッドを参照してください。
+\withsubitem{(object method)}{\ttindex{__setattr__()}}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__setattr__}{self, name, value}
+属性値への代入が試みられた際に呼び出されます。このメソッドは
+通常の代入メカニズム (すなわち、インスタンス辞書への値の代入)
+の代わりに呼び出されます。
+\var{name} は属性名で、\var{value} はその属性に代入する値です。
+
+\method{__setattr__()} の中でインスタンス属性値への代入が必要
+な場合、単に \samp{self.\var{name} = value} としてはなりません --- 
+このようにすると、自分自身に対する再帰呼び出しがおきてしまいます。
+その代わりに、インスタンス属性の辞書に値を挿入してください。
+例えば、\samp{self.__dict__[\var{name}] = value} とします。
+新しい形式のクラスでは、インスタンス辞書にアクセスするのではなく、
+基底クラスのメソッドを同じ属性名で呼び出します。例えば、
+\samp{object.__setattr__(self, name, value)} とします。
+\withsubitem{(instance attribute)}{\ttindex{__dict__}}
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__delattr__}{self, name}
+\method{__setattr__()} に似ていますが、代入ではなく値の削除を
+行います。このメソッドを実装するのは、オブジェクトにとって
+\samp{del obj.\var{name}} が意味がある場合だけにしなければなりません。
+\end{methoddesc}
+
+\subsubsection{新しい形式のクラスのための別の属性アクセス \label{new-style-attribute-access}}
+
+以下のメソッドは新しい形式のクラス (new-style class) のみに
+適用されます。
+
+\begin{methoddesc}[object]{__getattribute__}{self, name}
+クラスのインスタンスに対する属性アクセスを実装するために、無条件に
+呼び出されます。クラスが \method{__getattr__()} も定義している
+場合、\method{__getattr__()} は 、
+\method{__getattribute__()}で明示的に呼び出すか、
+\exception{AttributeError} 例外を送出しない限り呼ばれないでしょう。
+呼び出されることはありません。このメソッドは (計算された) 属性値を
+返すか、\exception{AttributeError} 例外を送出します。
+このメソッドが再帰的に際限なく呼び出されてしまうのを防ぐため、
+実装の際には常に、例えば \samp{object.__getattribute__(self, name)} 
+のように基底クラスのメソッドを同じ属性名を使って呼び出し、
+必要な属性値全てにアクセスしなければなりません。
+\end{methoddesc}
+
+\subsubsection{デスクリプタ (descriptor) の実装 \label{descriptors}}
+以下のメソッドは、デスクリプタメソッドを持っているクラス (いわゆる 
+\emph{デスクリプタ (descriptor)} クラス) のインスタンスが
+別の新たな形式のクラス、いわゆる \emph{オーナ (owner)} クラスの
+クラス辞書に存在する場合にのみ適用されます。
+以下の例での ``属性'' とは、属性の名前が
+オーナクラスの \code{__dict__} に入っているプロパティ (porperty)
+を検索するためのキーになっているような属性を指します。
+
+\begin{methoddesc}[object]{__get__}{self, instance, owner}
+オーナクラスやの属性を取得する (クラス属性へのアクセス) 際や、
+オーナクラスのインスタンスの属性を取得する (インスタンス属性への
+アクセス) 場合に呼び出されます。\var{owner} は常にオーナクラスです。
+一方、\var{instance} は属性へのアクセスを仲介するインスタンスか
+属性が \var{owner} を介してアクセスされる場合は \code{None} に
+なります。このメソッドは (計算された) 属性値を返すか、
+\exception{AttributeError} 例外を送出しなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__set__}{self, instance, value}
+オーナクラスのインスタンス \var{instance} 上の属性を新たな値 \var{value}
+に設定する際に呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[object]{__delete__}{self, instance}
+オーナクラスのインスタンス \var{instance} 上の属性を削除する際に
+呼び出されます。
+\end{methoddesc}
+
+
+\subsubsection{デスクリプタを呼び出す \label{descriptor-invocation}}
+
+一般にデスクリプタとは、 特殊な ``束縛に関する動作 (binding behaviour)'' 
+をもつオブジェクト属性のことです。デスクリプタは、デスクリプタ
+プロトコル (descriptor protocol) のメソッド: 
+\method{__get__()}, \method{__set__()}, および \method{__delete__()}
+を使って、属性アクセスをオーバライドしているものです。
+これらのメソッドのいずれかがオブジェクトに対して定義されている場合、
+オブジェクトはデスクリプタであるといいます。
+
+属性アクセスのデフォルトの動作は、オブジェクトの辞書から値を取り出したり、
+値を設定したり、削除したりするというものです。例えば、\code{a.x} による
+属性の検索では、まず \code{a.__dict__['x']} 、次に 
+\code{type(a).__dict__['x']} 、そして\code{type(a)} の基底クラスで
+メタクラスでないものに続く、といった具合に連鎖が起こります。
+
+しかしながら、検索対象となる値が、デスクリプタメソッドのいずれかを
+定義しているオブジェクトの属性値である場合、Python はデフォルトの動作を
+オーバライドして、デスクリプタメソッドの方を呼び出します。
+
+前後する呼び出し連鎖の中のどこでデスクリプタメソッドが呼び出されるかは、
+どのデスクリプタメソッドが定義されているかと、どうやってデスクリプタ
+メソッドが呼ばれるかに依存します。デスクリプタは新しい形式のオブジェクトや
+クラス (\class{object()} や \class{type()} をサブクラス化したもの) だけに
+対して呼び出されるので注意してください。
+
+デスクリプタ呼び出しの基点となるのは、属性名への束縛 (binding) 、すなわち
+\code{a.x} です。引数がどのようにデスクリプタに結合されるかは \code{a} に
+依存します:
+
+\begin{itemize}
+                      
+  \item[直接呼出し (Direct Call)] 最も単純で、かつめったに使われない
+呼び出し操作は、コード中で直接デスクリプタメソッドの呼び出し: 
+\code{x.__get__(a)} を行うというものです。
+
+  \item[インスタンス束縛 (Instance Binding)]  新しい形式のクラスの
+インスタンスに対する束縛では、\code{a.x} は呼び出し: 
+\code{type(a).__dict__['x'].__get__(a, type(a))} に変換されます。
+                     
+  \item[クラス束縛 (Class Binding)]  新しい形式のクラスに対する束縛では、
+\code{A.x} は呼び出し: \code{A.__dict__['x'].__get__(None, A)}
+に変換されます。
+
+  \item[スーパクラス束縛 (Super Binding)] \code{a} が \class{super}
+のインスタンスである場合、束縛 \code{super(B, obj).m()} を行うと
+まず \code{A} 、続いて \code{B}に対して \code{obj.__class_.__mro__} を
+検索し、次に呼び出し: \code{A.__dict__['m'].__get__(obj, A)} で
+デスクリプタを呼び出します。
+                     
+\end{itemize}
+
+インスタンス束縛では、デスクリプタ呼び出しの優先順位はどのデスクリプタが
+定義されているかに依存します。データデスクリプタでは、
+\method{__get__()} と \method{__set__()} を定義します。非データ
+デスクリプタには \method{__get__()} メソッドしかありません。
+インスタンス辞書内で属性値が再定義されても、データデスクリプタは常に
+この値をオーバライドします。対照的に、非データデスクリプタの
+場合には、属性値はインスタンス側でオーバライドされます。
+
+(\function{staticmethod()} や \function{classmethod()} を含む) Python 
+メソッドは、非データデスクリプタとして実装されています。その結果、
+インスタンスではメソッドを再定義したりオーバライドできます。
+このことにより、個々のインスタンスが同じクラスの他のインスタンスと
+互いに異なる動作を獲得することができます。
+
+\function{property()} 関数はデータデスクリプタとして実装されています。
+従って、インスタンスはあるプロパティの動作をオーバライドすることが
+できません。
+
+
+\subsubsection{__slots__\label{slots}}
+
+デフォルトでは、新旧どちらのクラスも、属性の記憶領域として使うための
+辞書を持っています。この仕様は、ほとんどインスタンス変数を持たない
+ようなオブジェクトの場合には記憶領域の無駄遣いになります。
+記憶領域の消費量は、大量のインスタンスを生成する際には深刻です。
+
+このデフォルトの設定は、新たな形式のクラス定義において \var{__slots__} を
+定義することでオーバライドできます。\var{__slots_} 宣言はインスタンス
+変数のシーケンスを受け取ります。各々のインスタンス上には、各変数の値を
+記憶するのにちょうど必要な量だけの記憶領域を確保します。
+各々のインスタンスに対して \var{__dict__} が生成されることがないので、
+記憶領域が節約されます。
+    
+\begin{datadesc}{__slots__}
+このクラス変数には、文字列、反復可能オブジェクト、あるいはインスタンスが
+用いる変数名を表す文字列からなるシーケンスを代入することができます。
+この変数が新しい形式のクラスで定義されている場合、\var{__slots__}
+は、各インスタンスに対して宣言された変数に必要な記憶領域を確保し、
+\var{__dict__} と\var{__weakref__} が自動的に生成されないようにします。
+\versionadded{2.2}                     
+\end{datadesc}
+
+\noindent
+\var{__slots__} を利用する際の注意
+
+\begin{itemize}
+
+\item \var{__dict__} 変数がない場合、\var{__slots__} に列挙されていない
+新たな変数をインスタンスに代入することはできません。
+列挙されていない変数名を使って代入しようとした場合、
+\exception{AttributeError} が送出されます。
+新たな変数を動的に代入したいのなら、\var{__slots__} を宣言する際に
+\code{'__dict__'} を変数名のシーケンスに追加してください。
+
+\versionchanged[これまでは、\code{'__dict__'} を \var{__slots__}
+宣言に追加しても、インスタンス変数名として他にリストされていない
+新たな属性の代入はできませんでした。]{2.3}
+
+\item \var{__slots__} を定義しているクラスの各インスタンスに
+\var{__weakref__} 変数がない場合、インスタンスに対する弱参照
+(weak reference) はサポートされません。
+弱参照のサポートが必要なら、 \var{__slots__} を宣言する際に
+\code{'__weakref__'} を変数名のシーケンスに追加してください。
+\versionchanged[これまでは、\code{'__weakref__'} を \var{__slots__}
+宣言に追加しても、弱参照のサポートを有効にできませんでした。]{2.3}                                            
+\item \var{__slots__} は、クラスのレベルで各変数に対するデスクリプタ 
+(\ref{descriptors} を参照) を使って実装されます。その結果、
+\var{__slots__} に定義されているインスタンス変数のデフォルト値は
+クラス属性を使って設定できなくなっています; そうしないと、
+デスクリプタによる代入をクラス属性が上書きしてしまうからです。
+
+\item あるクラスで、基底クラスですでに定義されているスロットを
+定義した場合、基底クラスのスロットで定義されているインスタンス変数は
+(デスクリプタを基底クラスから直接取得しない限り) アクセスできなく
+なります。これにより、プログラムの趣意が不定になってしまいます。
+将来は、この問題を避けるために何らかのチェックが追加されるかもしれません。
+
+\item \var{__slots__} 宣言が動作するのは、定義が行われたクラスだけに
+限られています。その結果、サブクラスでは、\var{__slots__} を定義
+しない限り \var{__dict__} を持つことになります。
+
+\item \var{__slots__} は、\class{long}、 \class{str}、および
+ \class{tuple} といった、``可変長 (variable-length)'' の組み込み型
+から導出されたクラスでは動作しません。
+
+\item \var{__slots__} には、文字列でない反復可能オブジェクトを
+代入することができます。辞書型も使うことができます; しかし将来、
+辞書の各キーに相当する値に何らかの特殊な意味が割り当てられる
+かもしれません。
+
+\end{itemize}
+
+
+\subsection{クラス生成をカスタマイズする\label{metaclasses}}
+
+デフォルトでは、新スタイルクラスは \function{type()} を使って構築
+されます。クラス定義が別の名前空間に読み込まれ、
+クラス名は \code{type(name, bases, dict)} の結果に結合されます。
+
+クラス定義が読み込まれる際、\var{__metaclass__} が定義されていれば、
+\function{type()} の代わりに \var{__metaclass__} が指している
+呼び出し可能オブジェクトが呼び出されます。
+これによって、
+
+\begin{itemize}
+\item クラスが生成される前にクラス辞書を変更する
+\item 他のクラスのインスタンスを返す -- 本質的にはファクトリ関数の役割を
+果たす
+\end{itemize}
+
+といった、クラス生成のプロセスを監視したり置き換えたりする
+クラスや関数を書くことができます。
+
+\begin{datadesc}{__metaclass__}
+この変数は \code{name}、\code{bases}、および \code{dict} を引数として
+取るような任意の呼び出し可能オブジェクトにできます。
+クラス生成の際、組み込みの \function{type()} の代わりに、指定された
+呼び出しオブジェクトが呼び出されます。
+\versionadded{2.2}                     
+\end{datadesc}
+
+以下に優先順で並んだ規則によって、適切なメタクラスが決定されます:
+
+\begin{itemize}
+
+\item \code{dict['__metaclass__']} があればそれを使います。
+
+\item それ以外の場合で、最低でも一つ基底クラスを持っているなら、
+基底クラスのメタクラス (\var{__class__} 属性を探し、なければ
+基底クラスの型) を使います。
+
+\item それ以外の場合で、__metaclass__ という名前のグローバル変数
+があれば、それをつかいます。
+
+\item それ以外の場合には、旧スタイルのメタクラス (types.ClassType) 
+を使います。
+
+\end{itemize}      
+
+メタクラスは限りない潜在的利用価値を持っています。これまで試されて
+きたアイデアには、ログ記録、インタフェースのチェック、
+自動デリゲーション、自動プロパティ生成、プロキシ、フレームワーク、
+そして自動リソースロック／同期といったものがあります。
+
+
+\subsection{呼び出し可能オブジェクトをエミュレートする\label{callable-types}}
+
+\begin{methoddesc}[object]{__call__}{self\optional{, args...}}
+インスタンスが関数として ``呼ばれた'' 際に呼び出されます;
+このメソッドが定義されている場合、\code{\var{x}(arg1, arg2, ...)}
+は \code{\var{x}.__call__(arg1, arg2, ...)} を短く書いたものに
+なります。
+\indexii{call}{instance}
+\end{methoddesc}
+
+
+\subsection{コンテナをエミュレートする\label{sequence-types}}
+
+以下のメソッドを定義して、コンテナオブジェクトを実装することができます。
+コンテナは通常、(リストやタプルのような) シーケンスや、(辞書のような)
+マップ型を指しますが、他のコンテナも同じように表現することができます。
+最初の一連のメソッドは、シーケンスをエミュレートしたり、マップ型を
+エミュレートするために使われます; その違いとして、シーケンスの場合には、
+キーとして許されているのが、シーケンスの長さが \var{N} であるときの
+\code{0 <= \var{k} < \var{N}} なる整数 \var{k} か、あるいは
+要素の範囲を表すスライスオブジェクトでなければならないということです。
+(後方互換性のため、\method{__getslice__()} (以下参照) を
+定義して、拡張されていない単純なスライスを扱うようにもできます。)
+変更可能なシーケンスでは、Python の標準リストオブジェクトのように、
+メソッド \method{append()}、 \method{count()}、
+\method{index()}、\method{extend()}、\method{insert()}、 \method{pop()}、
+\method{remove()}、\method{reverse()}、および\method{sort()} を
+提供しなければなりません。
+マップ型でも、Python の標準辞書オブジェクトのように、
+\method{keys()}、 \method{values()}、
+\method{items()}、 \method{has_key()}、 \method{get()}、 \method{clear()}、
+\method{setdefault()}、\method{iterkeys()}、 \method{itervalues()}、
+\method{iteritems()}、 \method{pop()}、 \method{popitem()}、
+\method{copy()}、 および \method{update()} といったメソッドをマップ型
+で提供するよう推奨しています。\module{UserDict} モジュールでは、
+これらのメソッドを\method{__getitem__()}、 \method{__setitem__()}、
+\method{__delitem__()}、および \method{keys()} といった基本セットから
+作成する上で役に立つ \class{DictMixin} クラスを提供しています。
+最後に、シーケンス型では以下に述べるメソッド群 \method{__add__()}、
+\method{__radd__()}、 \method{__iadd__()}、\method{__mul__()}、
+\method{__rmul__()}、および \method{__imul__()}  を定義して、
+(シーケンス間の結合を意味する) 加算操作と (要素の繰り返しを
+意味する) 乗算操作を実装しなければなりません; 
+\method{__coerce__()} や、その他の数値演算子を定義してはなりません。
+マップでもシーケンスでも、\code{in} 演算子が有効利用できるように
+\method{__contains__()} メソッドの定義を推奨します; マップ型では、
+\code{in} は\method{has_key()} と等価でなければなりません; シーケンスでは、
+シーケンス内の値にわたって検索を行わなければなりません。さらに、
+マップでもシーケンスでも、コンテナ内にわたる反復操作ができるようにするため、
+\method{__iter__()} を実装するよう勧めます; マップ型の場合、
+\method{__iter__()} は \method{iterkeys()} と等価でなければなりません;
+シーケンスの場合、シーケンス内の値にわたって反復操作を行わなければなりません。
+\withsubitem{(mapping object method)}{
+  \ttindex{keys()}
+  \ttindex{values()}
+  \ttindex{items()}
+  \ttindex{iterkeys()}
+  \ttindex{itervalues()}
+  \ttindex{iteritems()}    
+  \ttindex{has_key()}
+  \ttindex{get()}
+  \ttindex{setdefault()}
+  \ttindex{pop()}      
+  \ttindex{popitem()}    
+  \ttindex{clear()}
+  \ttindex{copy()}
+  \ttindex{update()}
+  \ttindex{__contains__()}}
+\withsubitem{(sequence object method)}{
+  \ttindex{append()}
+  \ttindex{count()}
+  \ttindex{extend()}    
+  \ttindex{index()}
+  \ttindex{insert()}
+  \ttindex{pop()}
+  \ttindex{remove()}
+  \ttindex{reverse()}
+  \ttindex{sort()}
+  \ttindex{__add__()}
+  \ttindex{__radd__()}
+  \ttindex{__iadd__()}
+  \ttindex{__mul__()}
+  \ttindex{__rmul__()}
+  \ttindex{__imul__()}
+  \ttindex{__contains__()}
+  \ttindex{__iter__()}}		     
+\withsubitem{(numeric object method)}{\ttindex{__coerce__()}}
+
+\begin{methoddesc}[container object]{__len__}{self}
+組み込み関数 \function{len()}\bifuncindex{len} を実現するために
+呼び出されます。オブジェクトの長さを \code{>=} 0 である整数で
+返さなければなりません。また、オブジェクトが \method{__nonzero__()} 
+メソッドを定義しておらず、\method{__len__()} メソッドがゼロを
+返す場合には、ブール演算コンテキストでは偽であるとみなされます。
+\withsubitem{(object method)}{\ttindex{__nonzero__()}}
+\end{methoddesc}
+
+\begin{methoddesc}[container object]{__getitem__}{self, key}
+\code{\var{self}[\var{key}]} の値評価 (evaluation) を実現するために
+呼び出されます。
+シーケンスの場合、キーとして整数とスライスオブジェクトを受理できなければ
+なりません。\obindex{slice}  (シーケンス型をエミュレートする場合) 
+負のインデクスの解釈は \method{__getitem__()} メソッド次第と
+なります。\var{key} が不適切な型であった場合、\exception{TypeError}
+を送出してもかまいません; (負のインデクス値に対して何らかの解釈
+を行った上で) \var{key} がシーケンスのインデクス集合外の値である場合、
+\exception{IndexError} を送出しなければなりません。
+マップ型の場合は、\var{key} に誤りがある場合
+（コンテナに含まれていない場合）、
+\exception{IndexError} を送出しなければなりません。
+\note{\keyword{for} ループでは、シーケンスの終端を正しく検出できるように
+するために、不正なインデクスに対して \exception{IndexError} 
+が送出されるものと期待しています。}
+\end{methoddesc}
+
+\begin{methoddesc}[container object]{__setitem__}{self, key, value}
+\code{\var{self}[\var{key}]} に対する代入を実現するために呼び出されます。
+\method{__getitem__()} と同じ注意事項があてはまります。
+このメソッドを実装できるのは、あるキーに対する値の変更をサポートしているか、
+新たなキーを追加できるようなマップの場合と、ある要素を置き換えることができる
+シーケンスの場合だけです。不正な \var{key} に対しては、\method{__getitem__()}
+メソッドと同様の例外の送出を行わなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[container object]{__delitem__}{self, key}
+\code{\var{self}[\var{key}]} の削除を実現するために呼び出されます。
+\method{__getitem__()} と同じ注意事項があてはまります。
+このメソッドを実装できるのは、キーの削除をサポートしているマップの場合と、
+要素を削除できるシーケンスの場合だけです。
+不正な \var{key} に対しては、\method{__getitem__()}
+メソッドと同様の例外の送出を行わなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[container object]{__iter__}{self}
+このメソッドは、コンテナに対してイテレータが要求された際に呼び出されます。
+このメソッドは、コンテナ内の全てのオブジェクトにわたる反復処理ができる
+ような、新たなイテレータオブジェクトを返さなければなりません。
+マップの場合、コンテナ内のキーに渡る反復処理でなければならず、
+かつ\method{iterkeys()} によって利用できなければなりません。
+
+イテレータオブジェクトでもこのメソッドを実装する必要があります;
+イテレータの場合、自分自身を返さなければなりません。イテレータオブジェクト
+に関するより詳細な情報は、
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス}
+の ``\ulink{イテレータ型}{../lib/typeiter.html}'' を参照してください。
+\end{methoddesc}
+
+メンバシップテスト演算子 (\keyword{in} および \keyword{not in}) は通常、
+シーケンスに渡る反復処理を使って実装されます。しかし、コンテナオブジェクト
+で以下の特殊メソッドを定義して、より効率的な実装を行ったり、オブジェクト
+がシーケンスでなくてもよいようにできます。
+
+\begin{methoddesc}[container object]{__contains__}{self, item}
+メンバシップテスト演算を実現するために呼び出されます。
+\var{item} が \var{self} 内に存在する場合には真を、そうでない場合には
+偽を返さなければなりません。マップオブジェクトの場合、値やキーと値の
+組ではなく、キーに対するメンバシップテストを考えなければなりません。
+\end{methoddesc}
+
+
+\subsection{シーケンス型エミュレーションで使われるその他のメソッド\label{sequence-methods}}
+
+以下のオプションとなるメソッドを定義して、シーケンスオブジェクトをより高度に
+エミュレーションできます。変更不能なシーケンスのメソッドでは、
+\method{__getslice__()} が定義できるだけです; 変更可能なシーケンスでは
+三つのメソッド全てを定義できます。
+
+\begin{methoddesc}[sequence object]{__getslice__}{self, i, j}
+\deprecated{2.0}{スライスオブジェクトは \method{__getitem__()} メソッドの
+パラメタとしてサポートするようになりました。}
+\code{\var{self}[\var{i}:\var{j}]} の値評価を実現するために呼び出され
+ます。返されるオブジェクトは \var{self} と同じ型でなければなりません。
+スライス表記で \var{i} や \var{j} がない場合には、それぞれゼロや
+\code{sys.maxint} に置き換えられるので注意してください。
+スライスに負のインデクスが用いられた場合、シーケンスの長さがインデクス値に
+加算されます。インスタンスが \method{__len__()} メソッドを実装して
+いない場合には、\exception{AttributeError} が送出されます。
+この計算の結果、インデクス値が負でなくなるという保証はありません。
+シーケンスの長さよりも大きなインデクス値は修正されません。
+\method{__getslice__()} が定義されていない場合、代わりに
+スライスオブジェクトが生成されて \method{__getitem__()} に渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}[sequence object]{__setslice__}{self, i, j, sequence}
+\code{\var{self}[\var{i}:\var{j}]} への代入を実現するために呼び出され
+ます。\var{i} および \var{j} に関しては、\method{__getslice__()} 
+と同じ注釈があてはまります。
+
+このメソッドは撤廃されています。 \method{__setslice__()} がないか、
+\code{\var{self}[\var{i}:\var{j}:\var{k}]} 形式の拡張スライス
+の場合には、\method{__setslice__()} が呼ばれる代わりにスライス
+オブジェクトが生成され、\method{__setitem__()} に渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}[sequence object]{__delslice__}{self, i, j}
+\code{\var{self}[\var{i}:\var{j}]} の削除を実現するために
+呼び出されます。\var{i} および \var{j} に関しては、\method{__getslice__()} 
+と同じ注釈があてはまります。
+
+このメソッドは撤廃されています。 \method{__delslice__()} がないか、
+\code{\var{self}[\var{i}:\var{j}:\var{k}]} 形式の拡張スライス
+の場合には、\method{__delslice__()} が呼ばれる代わりにスライス
+オブジェクトが生成され、\method{__delitem__()} に渡されます。
+\end{methoddesc}
+
+これらのメソッドは、単一のコロンを使った単一のスライスで、かつ
+スライスメソッドが利用できるときにだけ呼び出されることに注意
+してください。拡張スライス表記を含んでいるスライス表記や、
+スライスメソッドがない場合、\method{__getitem__()}、
+\method{__setitem__()} 、あるいは \method{__delitem__()} が
+スライスオブジェクトを引数として呼び出されます。
+
+以下の例は、プログラムやモジュールを以前のバージョンの Python
+に対して互換性を持たせる方法を示したものです
+(\method{__getitem__()}、 \method{__setitem__()} 、および
+\method{__delitem__()} は引数としてスライスオブジェクトを
+サポートするものと仮定します):
+
+\begin{verbatim}
+class MyClass:
+    ...
+    def __getitem__(self, index):
+        ...
+    def __setitem__(self, index, value):
+        ...
+    def __delitem__(self, index):
+        ...
+
+    if sys.version_info < (2, 0):
+        # They won't be defined if version is at least 2.0 final
+
+        def __getslice__(self, i, j):
+            return self[max(0, i):max(0, j):]
+        def __setslice__(self, i, j, seq):
+            self[max(0, i):max(0, j):] = seq
+        def __delslice__(self, i, j):
+            del self[max(0, i):max(0, j):]
+    ...
+\end{verbatim}
+
+\function{max()} を呼び出していることに注意してください; この呼び出し
+\method{__*slice__()} メソッド呼び出される前に、負のインデクス値を処理
+しておくために必要です。
+負のインデクス値が使われた場合、 \method{__*item__()} メソッドは与えら
+れた値をそのまま使いますが、\method{__*slice__()} メソッドは
+``調理済みの (cooked)'' 形式になったインデクス値を受け取ります。
+負のインデクス値が使われると、メソッドを呼び出す前に、常にシーケンスの長さを
+インデクス値に加算します (加算してもまだ負の値となっていてもかまいませ
+ん); これは、組み込みシーケンス型における慣習的な負のインデクス処理方法で、
+\method{__*item__()} メソッドでも同様の処理を行うよう期待しています。
+しかし、ここではすでに負のインデクス値の処理を行っているので、負のイン
+デクスを渡すべきではありません; インデクス値は、\method{__*item__()}
+メソッドに渡される前に、シーケンスのインデクス集合の境界に制限されていなけれ
+ばなりません。\code{max(0, i)} を呼び出せば、適切な値を返すので便利です。
+
+
+\subsection{数値型をエミュレーションする\label{numeric-types}}
+
+以下のメソッドを定義して、数値型オブジェクトをエミュレートすることがで
+きます。特定の種類の数値型ではサポートされていないような演算に対応する
+メソッド (非整数の数値に対するビット単位演算など) は、未定義のままにし
+ておかなければなりません。
+
+\begin{methoddesc}[numeric object]{__add__}{self, other}
+\methodline[numeric object]{__sub__}{self, other}
+\methodline[numeric object]{__mul__}{self, other}
+\methodline[numeric object]{__floordiv__}{self, other}
+\methodline[numeric object]{__mod__}{self, other}
+\methodline[numeric object]{__divmod__}{self, other}
+\methodline[numeric object]{__pow__}{self, other\optional{, modulo}}
+\methodline[numeric object]{__lshift__}{self, other}
+\methodline[numeric object]{__rshift__}{self, other}
+\methodline[numeric object]{__and__}{self, other}
+\methodline[numeric object]{__xor__}{self, other}
+\methodline[numeric object]{__or__}{self, other}
+これらのメソッドは、二項算術演算 (
+\code{+}, \code{-}, \code{*}, \code{//}, \code{\%},
+\function{divmod()}\bifuncindex{divmod},
+\function{pow()}\bifuncindex{pow}, \code{**}, \code{<<},
+\code{>>}, \code{\&}, \code{\^}, \code{|})
+を実現するために呼び出されます。例えば、式 \var{x}\code{+}\var{y}
+の場合、\var{x} が \method{__add__()} メソッドをもつクラスのインスタン
+スであれば、\code{\var{x}.__add__(\var{y})} が呼び出されます。
+\method{__divmod__()} メソッドは、\method{__floordiv__()} と
+\method{__mod__()} を使った場合と等価にならなければなりません; 
+\method{__truediv__()} (下記参照) と関連づける必要はありません。
+組み込みの三項演算子バージョンの関数
+\function{pow()}\bifuncindex{pow} をサポートする場合には、
+\method{__pow__()} は、オプションとなる第三の引数を受け取れなくては
+なりません。
+
+こらのメソッドが渡された引き数に対する操作を提供していない場合には、
+\code{NotImplemented} を送出しなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__div__}{self, other}
+\methodline[numeric object]{__truediv__}{self, other}
+除算演算 (\code{/}) は、これらのメソッドで実現されています。
+\method{__truediv__()} は、 \code{__future__.division} が有効であると
+きに使われます。それ以外の場合には \method{__div__()} が使われますs。
+二つのメソッドのうち一方しか定義されていなければ、オブジェクトは
+他方の演算コンテキストをサポートしなくなります; このとき、
+\exception{TypeError} が送出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__radd__}{self, other}
+\methodline[numeric object]{__rsub__}{self, other}
+\methodline[numeric object]{__rmul__}{self, other}
+\methodline[numeric object]{__rdiv__}{self, other}
+\methodline[numeric object]{__rtruediv__}{self, other}
+\methodline[numeric object]{__rfloordiv__}{self, other}	     
+\methodline[numeric object]{__rmod__}{self, other}
+\methodline[numeric object]{__rdivmod__}{self, other}
+\methodline[numeric object]{__rpow__}{self, other}
+\methodline[numeric object]{__rlshift__}{self, other}
+\methodline[numeric object]{__rrshift__}{self, other}
+\methodline[numeric object]{__rand__}{self, other}
+\methodline[numeric object]{__rxor__}{self, other}
+\methodline[numeric object]{__ror__}{self, other}
+これらのメソッドは二項算術演算
+(\code{+},
+\code{-}, \code{*}, \code{/}, \code{\%},
+\function{divmod()}\bifuncindex{divmod},
+\function{pow()}\bifuncindex{pow}, \code{**}, \code{<<},
+\code{>>}, \code{\&}, \code{\^}, \code{|}) 
+を実現しますが、メソッド呼び出しが行われ
+る被演算子が逆転して (reflected, swapped: 入れ替えられて) います。
+これらの関数は、左側の被演算子が対応する演算をサポートしておらず
+かつ両者の演算子が異なる場合にのみ呼び出されます。\footnote{
+同じ型の操作に対しては、
+（\method{__add__()}のような）逆転できないメソッドが失敗した時と
+同じような想定のもと処理されます。
+これは、逆転したメソッドを呼び出すことができないからです。}
+
+例えば、\var{x}\code{-}\var{y} の式を評価する場合、
+\var{y} が \method{__rsub__()} メソッドを持つクラスのインスタンスであ
+って、しかも \code{\var{x}.__sub__(\var{y})} が \var{NotImplemented}
+を返す場合には、
+\code{\var{y}.__rsub__(\var{x})} が呼び出されます。
+
+ただし、三項演算子
+\function{pow()}\bifuncindex{pow} が \method{__rpow__()} を呼ぶことは
+ないので注意してください (型強制の規則が非常に難解になるからです)。
+
+\note{右側の被演算子の型が左側の被演算子の型のサブクラスであり、
+このサブクラスであるメソッドに対する逆転メソッドが定義されている場合には、
+左側の被演算子の非逆転メソッドが呼ばれる前に、このメソッドが呼ばれます。
+この振る舞いにより、サブクラスが親の操作をオーバーライドすることが
+可能になります。}
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__iadd__}{self, other}
+\methodline[numeric object]{__isub__}{self, other}
+\methodline[numeric object]{__imul__}{self, other}
+\methodline[numeric object]{__idiv__}{self, other}
+\methodline[numeric object]{__itruediv__}{self, other}
+\methodline[numeric object]{__ifloordiv__}{self, other}
+\methodline[numeric object]{__imod__}{self, other}		     
+\methodline[numeric object]{__ipow__}{self, other\optional{, modulo}}
+\methodline[numeric object]{__ilshift__}{self, other}
+\methodline[numeric object]{__irshift__}{self, other}
+\methodline[numeric object]{__iand__}{self, other}
+\methodline[numeric object]{__ixor__}{self, other}
+\methodline[numeric object]{__ior__}{self, other}
+これらのメソッドは、累算算術演算 (augmented arithmetic operations,
+\code{+=}, \code{-=}, \code{*=}, \code{/=}, \code{\%=},
+\code{**=}, \code{<}\code{<=}, \code{>}\code{>=}, \code{\&=},
+\code{**=}, \code{<}\code{<=}, \code{>}\code{>=}, \code{\&=},
+\code{\textasciicircum=}, \code{|=}) を実現するために呼び出されます。
+これらのメソッドは、演算をその場で(\var{self} を変更する形で)
+行うよう試み、その結果(変更された \var{self} またはその代わり
+のもの)を返さなければなりません。
+特定のメソッドが定義されていない場合、その累算算術演算は通常のメソッド
+で代用されます。例えば、\var{x}\code{+=}\var{y} を評価する際、
+\var{x} が \method{__iadd__()} メソッドを持つクラスのインスタンスで
+あれば、\code{\var{x}.__iadd__(\var{y})} が呼び出されます。反対に、
+\var{x} が \method{__iadd()} メソッドを持たないクラスのインスタンスで
+あれば、\var{x}\code{+}\var{y} に基づいて
+\code{\var{x}.__add__(\var{y})} および
+\code{\var{y}.__radd__(\var{x})} 
+を考慮します。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__neg__}{self}
+\methodline[numeric object]{__pos__}{self}
+\methodline[numeric object]{__abs__}{self}
+\methodline[numeric object]{__invert__}{self}
+単項算術演算 (\code{-},
+\code{+}, \function{abs()}\bifuncindex{abs} および \code{\~{}})
+を実現するために呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__complex__}{self}
+\methodline[numeric object]{__int__}{self}
+\methodline[numeric object]{__long__}{self}
+\methodline[numeric object]{__float__}{self}
+組み込み関数
+\function{complex()}\bifuncindex{complex},
+\function{int()}\bifuncindex{int}, \function{long()}\bifuncindex{long},
+および \function{float()}\bifuncindex{float} を実現するために呼び出さ
+れます。適切な型の値を返さなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__oct__}{self}
+\methodline[numeric object]{__hex__}{self}
+組み込み関数
+\function{oct()}\bifuncindex{oct} および
+\function{hex()}\bifuncindex{hex}
+を実現するために呼び出されます。文字列型を返さなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__index__}{self}
+\function{operator.index()} を実装するために呼び出されます。
+また、（スライシング）のように Python が整数オブジェクトを必要とする
+場合には何処でも呼び出されます。
+整数（int もしくは long） を返す必要があります。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}[numeric object]{__coerce__}{self, other}
+``型混合モード (mixed-mode)'' での数値間の算術演算を実現するために
+呼び出されます。 \var{self} と \var{other} を共通の数値型に変換して、
+2 要素のタプルにして返すか、不可能な場合には \code{None} を返さなけれ
+ばなりません。共通の型が \code{other} の型になる場合、 \code{None} を
+返すだけで十分です。この場合、インタプリタはもう一方のオブジェクトを調
+べて型強制を行おうとするからです (とはいえ、もう一方の値の型が実装上変
+更できない場合には、ここで \var{self} を \var{other} の型に変換してお
+いた方が便利です)。戻り値に \code{NotImplemented} を使うのは、 
+\code{None} を返すのと同じです。
+\end{methoddesc}
+
+\subsection{型強制規則 (coercion rule)\label{coercion-rules}}
+
+本節では、型強制 (coercion) に関する規則について記述します。
+プログラム言語が進化するにつれ、型強制規則について正確に
+記述するのは難しくなってゆきます; 従って、あるバージョンのある
+実装について記述するのは望ましくありません。その代わりに、
+型強制に関する非公式的なガイドラインを示しておきます。 Python 3.0
+からは、型強制がサポートされなくなる予定です。
+
+\begin{itemize}
+
+\item
+
+\% 演算子の左被演算子が文字列か Unicode オブジェクトの場合、
+型強制は起きず、文字列としての書式化操作が呼び出されます。
+
+\item
+
+型強制演算の定義はもはや推奨されていません。
+型強制を定義していない混合型 (mixed-mode) 演算は、
+もとの引数をそのまま演算操作に渡すようになっています。
+
+\item
+
+新しい形式のクラス (\class{object} から導出されたもの) が、
+二項演算子に対して \method{__coerce__()} メソッドを呼び出すことは
+ありません。; \method{__coerce__()} が呼び出されるのは、組み込み
+関数 \function{coerce()} が呼び出されたときだけです。
+
+\item
+
+事実上、 \code{NotImplemented} を返す演算子は、全く実装されていないも
+のとして扱われます。
+
+\item
+
+以下の説明では、\method{__op__()} および \method{__rop__()} は、演算子
+に相当する一般的なメソッド名を表すために使われます; \method{__iop__} 
+はインプレース演算子を表します。例えば、演算子 `\code{+}' の場合、
+\method{__add__()} および \method{__radd__()} がそれぞれ左右の被演算子
+用の二項演算子として使われ、\method{__iadd__()} がインプレース演算用の演
+算子として使われる、といった具合です。
+
+\item
+
+オブジェクト \var{x} および \var{y} に対して、
+まず \code{\var{x}.__op__(\var{y})} が試されます。この演算が実装されて
+いないか、\code{NotImplemented} を返す場合、次に
+\code{\var{y}.__rop__(\var{x})} が試されます。この演算も実装されていな
+いか、\code{NotImplemented} を返すなら、 \exception{TypeError}
+例外が送出されます。ただし、以下の例外があるので参照してください:
+
+\item
+
+前項に対する例外: 左被演算子が組み込み型や新スタイルクラスのインスタンスで
+あり、かつ右被演算子が左被演算子と同じクラスか適切なサブクラスのインス
+タンスであり、さらに親クラスの\method{__rop__()}メソッドをオーバライドしている場合、
+左被演算子の \method{__op__()} メソッドを試す 
+\emph{前に} 右被演算子の \method{__rop__()} が試されます。
+これは、サブクラス側で二項演算子を完全にオーバライドできるようにするた
+めです。そうしなければ、常に左被演算子の \method{__op__()} メソッドが右被演算子を
+受理してしまいます: あるクラスのインスタンスが被演算子になるとされてい
+る場合、そのサブクラスのインスタンスもまた受理可能だからです。
+
+\item
+
+双方の被演算子が型強制を定義している場合、型強制は被演算子の型の
+\method{__op__()} や \method{__rop__()} メソッドが呼び出される前に呼
+び出され、それより早くなることはありません。型強制の結果、型強制を行う
+ことになったいずれの被演算子とも異なる型が返された場合、返されたオブジェ
+クトの新たな型を使って、この過程が部分的に再度行われます。
+
+\item
+
+(`\code{+=}' のような) インプレース型の演算子を用いる際、左被演算子が
+\method{__iop__()} を実装していれば、\method{__iop__()} が呼び出され、
+型強制は一切行われません。演算が \method{__op__()} かつ/または
+\method{__rop__()} に帰着した場合、通常の型強制規則が適用されます。
+
+
+\item
+
+\var{x}\code{+}\var{y} において、 \var{x} が結合 (concatenation) 演算
+を実装しているシーケンスであれば、シーケンスの結合が実行されます。
+
+\item
+
+\var{x}\code{*}\var{y} において、一方の演算子が繰り返し (repeat) 演算
+を実装しているシーケンスであり、かつ他方が整数 (\class{int} または 
+\class{long}) である場合、シーケンスの繰り返しが実行されます。
+
+\item
+
+(\method{__eq__()} などのメソッドで実装されている) 拡張比較は、決して
+型強制を行いません。(\method{__cmp__()} で実装されている) 三値比較
+(three-way comparison) は、他の二項演算子で行われているのと同じ条件で
+型強制を受けます。
+
+\item
+
+現在の実装では、組み込み数値型 \class{int}, \class{long} および
+\class{float} は型強制を行いません; 一方、\class{complex} は型強制
+を使います。こうした違いは、これらの型をサブクラス化する際に顕在化して
+きます。そのうち、 \class{complex} 型についても型強制を避けるよう修正
+されるかもしれません。これらの型は全て、関数 \function{coerce()} から
+利用するための \method{__coerce__()} メソッドを実装しています。
+
+\end{itemize}
+
+\subsection{with文とコンテキストマネージャ \label{context-managers}}
+
+\versionadded{2.5}
+
+\dfn{コンテキストマネージャ}とは、
+\keyword{with}文の実行時にランタイムコンテキストを定義する
+オブジェクトです。
+コンテキストマネージャは、
+コードブロックを実行するために必要な入り口および出口の処理を扱います。
+コンテキストマネージャは通常、
+\keyword{with}文（\ref{with}の章を参照）により起動されますが、
+これらのメソッドを直接呼び出すことで起動することもできます。
+
+\stindex{with}
+\index{context manager}
+
+コンテキストマネージャの代表的な使い方としては、
+様々なグローバル情報の保存および更新、リソースのロックとアンロック、
+ファイルのオープンとクローズなどが挙げられます。
+
+For more information on context managers, see
+コンテキストマネージャ
+\citetitle[../lib/lib.html]{Python Library Reference}.
+にある
+``\ulink{Context Types}{../lib/typecontextmanager.html}''
+を参照してください。
+
+
+\begin{methoddesc}[context manager]{__enter__}{self}
+コンテキストマネージャのの入り口で実行される処理です。
+\keyword{with}文は、文の\keyword{as}節で規定された値を返す
+このメソッドを呼び出します。
+\end{methoddesc}
+
+\begin{methoddesc}[context manager]{__exit__}
+{self, exc_type, exc_value, traceback}
+コンテキストマネージャの出口で実行される処理です。
+パラメータは、コンテキストが終了した原因となった例外について
+説明しています。
+コンテキストが例外を送出せず終了した場合は、
+全ての引き数に \constant{None} が設定されます。
+
+もし、例外が送出され、かつメソッドが例外を抑制したい場合
+（すなわち、例外が伝播されるのを防ぎたい場合）、
+このメソッドは True を返す必要があります。
+そうでなければ、このメソッドの終了後、
+例外は通常通り伝播することになります。
+
+\method{__exit__()}メソッドは受け取った例外を再度
+送出すべきではありません。
+これは、呼び出し側の責任でおこなってください。
+\end{methoddesc}
+
+\begin{seealso}
+  \seepep{0343}{The "with" statement}
+         {Python の \keyword{with} 文の
+          仕様、背景、および例が記載されています。}
+\end{seealso}

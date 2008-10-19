@@ -1,0 +1,60 @@
+\section{\module{xml.dom.pulldom} ---
+         部分的な DOM ツリー構築のサポート}
+
+\declaremodule{standard}{xml.dom.pulldom}
+\modulesynopsis{SAX イベントからの部分的な DOM ツリー構築のサポート。}
+\moduleauthor{Paul Prescod}{paul@prescod.net}
+
+\versionadded{2.0}
+
+\module{xml.dom.pulldom} では、SAX イベントから、文書の文書オブジェクト
+モデル表現の選択された一部分だけを構築できるようにします。
+
+
+\begin{classdesc}{PullDOM}{\optional{documentFactory}}
+  \class{xml.sax.handler.ContentHandler} 実装です ...
+\end{classdesc}
+
+
+\begin{classdesc}{DOMEventStream}{stream, parser, bufsize}
+  ...
+\end{classdesc}
+
+
+\begin{classdesc}{SAX2DOM}{\optional{documentFactory}}
+  \class{xml.sax.handler.ContentHandler} 実装です ...
+\end{classdesc}
+
+
+\begin{funcdesc}{parse}{stream_or_string\optional{,
+                        parser\optional{, bufsize}}}
+  ...
+\end{funcdesc}
+
+
+\begin{funcdesc}{parseString}{string\optional{, parser}}
+  ...
+\end{funcdesc}
+
+
+\begin{datadesc}{default_bufsize}
+\function{parse()} の \var{bufsize} パラメタのデフォルト値です。
+  \versionchanged[この変数の値は \function{parse()} を呼び出す前に
+変更することができ、その場合新たな値が効果を持つようになります]{2.1}
+\end{datadesc}
+
+
+\subsection{DOMEventStream オブジェクト \label{domeventstream-objects}}
+
+
+\begin{methoddesc}[DOMEventStream]{getEvent}{}
+  ...
+\end{methoddesc}
+
+\begin{methoddesc}[DOMEventStream]{expandNode}{node}
+  ...
+\end{methoddesc}
+
+\begin{methoddesc}[DOMEventStream]{reset}{}
+  ...
+\end{methoddesc}

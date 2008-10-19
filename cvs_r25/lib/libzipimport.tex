@@ -1,0 +1,143 @@
+\section{\module{zipimport} ---
+         Zip アーカイブからモジュールを import する}
+
+\declaremodule{standard}{zipimport}
+\modulesynopsis{Python モジュール を ZIP アーカイブから import する機能のサポート}
+\moduleauthor{Just van Rossum}{just@letterror.com}
+
+\versionadded{2.3}
+
+このモジュールは， Python モジュール (\file{*.py}，\file{*.py[co]}
+やパッケージを ZIP 形式のアーカイブから import できるように
+します。通常，\module{zipimport} を明示的に使う必要はありません;
+組み込みの \keyword{import} は，\code{sys.path} の要素が ZIP 
+アーカイブへのパスを指している場合にこのモジュールを自動的に
+使います。
+
+普通，\code{sys.path} はディレクトリ名の文字列からなるリストです。
+このモジュールを使うと，\code{sys.path} の要素に ZIP ファイル
+アーカイブを示す文字列を使えるようになります。ZIP アーカイブには
+サブディレクトリ構造を含めることができ，パッケージの import を
+サポートさせしたり，アーカイブ内のパスを指定してサブディレクトリ
+下から import を行わせたりできます。例えば，
+\file{/tmp/example.zip/lib/} のように指定すると，アーカイブ中の
+\file{lib/} サブディレクトリ下だけから import を行います。
+
+ZIP アーカイブ内にはどんなファイルを置いてもかまいませんが，
+import できるのは\file{.py} および \file{.py[co]} だけです。
+動的モジュール (\file{.pyd}，\file{.so}) の ZIP import は行えません。
+アーカイブ内に \file{.py} ファイルしか入っていない場合，
+Python がアーカイブを変更して， \file{.py} ファイルに対応する
+\file{.pyc} や\file{.pyo} ファイルを追加したりはしません。
+つまり，ZIP アーカイブ中に \file{.pyc} が入っていない
+場合， import はやや低速になるかもしれないので注意してください。
+
+ZIP アーカイブからロードしたモジュールに対して組み込み関数
+\function{reload()} を呼び出すと失敗します; \function{reload()} が
+必要になるということは，実行時に ZIPファイルが置き換えられてしまう
+ことになり，あまり起こりそうにない状況だからです。
+
+このモジュールで使える属性を以下に示します:
+
+\begin{excdesc}{ZipImporterError}
+zipimporter オブジェクトが送出する例外です。
+\exception{ImportError} のサブクラスなので，\exception{ImportError}
+としても捕捉できます。
+\end{excdesc}
+
+\begin{classdesc*}{zipimporter}
+ZIP ファイルを import するためのクラスです。
+コンストラクタの詳細は
+  ``\citetitle{zipimporter オブジェクト}'' (\ref{zipimporter-objects}
+節) を参照してください。
+\end{classdesc*}
+
+
+\begin{seealso}
+  \seetitle[http://www.pkware.com/appnote.html]{PKZIP Application
+            Note}{ZIP ファイル形式の作者であり，ZIP で使われて
+いるアルゴリズムの作者でもある Phil Katz による，ZIP ファイル形式
+についてのドキュメントです。}
+
+  \seepep{0273}{Import Modules from Zip Archives}{
+    このモジュールの実装も行った、James C. Ahlstrom による PEP です。
+    Python 2.3 は PEP 273 の仕様に従っていますが、 Just van Rossum
+    の書いた import フックによる実装を使っています。 import フックは
+    PEP 302 で解説されています。}
+
+  \seepep{0302}{New Import Hooks}{このモジュールを動作させる助けに
+    なっている import フックの追加を提案している PEP です。}
+\end{seealso}
+
+
+\subsection{zipimporter オブジェクト \label{zipimporter-objects}}
+
+\begin{classdesc}{zipimporter}{archivepath} 
+新たな zipimporter インスタンスを生成します。\var{archivepath}
+は ZIP ファイルへのパスでなければなりません。 \var{archivepath} が
+有効な ZIP アーカイブを指していない場合、\exception{ZipImportError}
+を送出します。
+\end{classdesc}
+
+\begin{methoddesc}{find_module}{fullname\optional{, path}}
+\var{fullname} に指定したモジュールを検索します。\var{fullname} は
+完全指定の (ドット表記の) モジュール名でなければなりません。
+モジュールが見つかった場合には zipimporter インスタンス自体を返し、
+そうでない場合には \constant{None} を返します。
+\var{path} 引数は無視されます --- この引数は importer プロトコルとの
+互換性を保つためのものです。
+\end{methoddesc}
+
+\begin{methoddesc}{get_code}{fullname}
+\var{fullname} に指定したモジュールのコードオブジェクトを返します。
+モジュールがない場合には\class{ZipImportError} を送出します。
+\end{methoddesc}
+
+\begin{methoddesc}{get_data}{pathname}
+\var{pathname} に関連付けられたデータを返します。該当するファイルが
+見つからなかった場合には \exception{IOError} を送出します。
+\end{methoddesc}
+
+\begin{methoddesc}{get_source}{fullname}
+\var{fullname} に指定したモジュールのソースコードを返します。
+モジュールが見つからなかった場合には \exception{ZipImportError}
+を送出します。モジュールは存在するが、ソースコードがない場合には
+\constant{None} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{is_package}{fullname}
+\var{fullname} で指定されたモジュールがパッケージの場合に \constant{True}
+を返します。モジュールが見つからなかった場合には \exception{ZipImportError}
+を送出します。
+\end{methoddesc}
+
+\begin{methoddesc}{load_module}{fullname}
+\var{fullname} に指定したモジュールをロードします。\var{fullname}
+は完全指定の (ドット表記の) モジュール名でなくてはなりません。
+import 済みのモジュールを返します。モジュールがない場合には
+\exception{ZipImportError} を送出します。
+\end{methoddesc}
+
+\subsection{使用例}
+\nodename{zipimport Examples}
+
+モジュールを ZIP アーカイブから import する例を以下に示します - 
+\module{zipimport} モジュールが明示的に使われていないことに注意
+してください。
+
+\begin{verbatim}
+$ unzip -l /tmp/example.zip
+Archive:  /tmp/example.zip
+  Length     Date   Time    Name
+ --------    ----   ----    ----
+     8467  11-26-02 22:30   jwzthreading.py
+ --------                   -------
+     8467                   1 file
+$ ./python
+Python 2.3 (#1, Aug 1 2003, 19:54:32) 
+>>> import sys
+>>> sys.path.insert(0, '/tmp/example.zip')  # パス先頭に .zip ファイル追加
+>>> import jwzthreading
+>>> jwzthreading.__file__
+'/tmp/example.zip/jwzthreading.py'
+\end{verbatim}

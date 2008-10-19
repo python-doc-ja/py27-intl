@@ -1,0 +1,75 @@
+\documentclass{manualjp}
+
+% XXX PM explain how to add new types to Python
+
+\title{Python インタプリタの拡張と埋め込み}
+
+\input{boilerplatejp}
+
+% Tell \index to actually write the .idx file
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\ifhtml
+\chapter*{序\label{front}}
+\fi
+
+\input{copyrightjp}
+
+
+\begin{abstract}
+
+\noindent
+Python はインタプリタ形式の、オブジェクト指向のプログラミング言語です。
+このドキュメントでは、Python インタプリタを拡張するために C や\Cpp{} 
+でモジュールを書く方法について述べます。
+拡張モジュールでは、新たな関数を定義できるだけでなく、新たな
+オブジェクト型とそのメソッドも定義できます。
+このドキュメントではまた、Python インタプリタを別のアプリケーションに
+埋め込み (embedding)、拡張言語として使う方法についても述べます。
+このドキュメントの最後には、オペレーティングシステム上で (実行時に)
+動的に拡張モジュールをロードする機能がサポートされている場合に、
+動的ロード可能な拡張モジュールをコンパイルしてリンクする方法を
+示します。
+
+このドキュメントでは、読者は Python について基礎的な知識を持ち合わせて
+いるものと仮定しています。形式ばらない Python 言語の入門には、
+\citetitle[../tut/tut.html]{Python チュートリアル} を読んでください。
+\citetitle[../ref/ref.html]{Python リファレンスマニュアル} を読めば、
+Python 言語についてより形式的な定義を得られます。
+また、 \citetitle[../lib/lib.html]{Python ライブラリリファレンス}
+では、Python に広い適用範囲をもたらしている既存のオブジェクト型、関数、
+および (組み込み、および Python で書かれたものの両方の) モジュール
+について解説しています。
+
+Python/C API 全体の詳しい説明は、別のドキュメントである、
+\citetitle[../api/api.html]{Python/C API リファレンスマニュアル}
+を参照してください。
+
+\end{abstract}
+
+\tableofcontents
+
+
+\input{extending}
+\input{newtypes}
+\input{building}
+\input{windows}
+\input{embedding}
+
+
+\appendix
+\chapter{バグ報告}
+\input{reportingbugs}
+
+\chapter{歴史とライセンス}
+\input{license}
+
+\chapter{日本語訳について}
+\input{jptranslation}
+
+\end{document}
+

@@ -1,0 +1,78 @@
+\section{\module{MimeWriter} ---
+         汎用 MIME ファイルライター}
+
+\declaremodule{standard}{MimeWriter}
+
+\modulesynopsis{汎用 MIME ファイルライター。}
+\sectionauthor{Christopher G. Petrilli}{petrilli@amber.org}
+
+\deprecated{2.3}{ \refmodule{email} パッケージを、\module{MimeWriter}
+                 モジュールよりも優先して使用すべきです。このモジュールは、
+                 下位互換性維持のためだけに存在します。}
+
+このモジュールは、クラス \class{MimeWriter}を定義します。この
+\class{MimeWriter} クラスは、MIME マルチパートファイルを作成するための
+基本的なフォーマッタを実装します。これは出力ファイル内をあちこち移動することも、
+大量のバッファスペースを使うこともありません。あなたは、最終のファイルに
+現れるであろう順番に、パートを書かなければなりません。
+ \class{MimeWriter} は、あなたが追加するヘッダをバッファして、それらの
+ 順番を並び替えることができるようにします。
+
+\begin{classdesc}{MimeWriter}{fp}
+ \class{MimeWriter} クラスの新しいインスタンスを返します。渡される
+ 唯一の引数 \var{fp} は、書くために使用するファイルオブジェクトです。
+ \class{StringIO} オブジェクトを使うこともできることに注意して下さい。
+\end{classdesc}
+
+
+\subsection{MimeWriter オブジェクト \label{MimeWriter-objects}}
+
+
+\class{MimeWriter} インスタンスには以下のメソッドがあります：
+
+\begin{methoddesc}{addheader}{key, value\optional{, prefix}}
+MIMEメッセージに新しいヘッダ行を追加します。\var{key} は、
+そのヘッダの名前であり、そして \var{value}で、そのヘッダの値を明示的に
+与えます。省略可能な引数 \var{prefix}は、ヘッダが挿入される場所を決定します;
+\samp{0} は最後に追加することを意味し、\samp{1} は先頭への挿入です。
+デフォールトは最後に追加することです。
+\end{methoddesc}
+
+\begin{methoddesc}{flushheaders}{}
+今まで集められたヘッダすべてが書かれ(そして忘れられ)るようにします。
+これは、もし全く本体が必要でない場合に役に立ちます。例えば、
+ヘッダのような情報を保管するために(誤って)使用された、
+型  \mimetype{message/rfc822} のサブパート用。
+\end{methoddesc}
+
+\begin{methoddesc}{startbody}{ctype\optional{, plist\optional{, prefix}}}
+メッセージの本体に書くのに使用できるファイルのようなオブジェクトを
+返します。コンテント-型は、与えられた \var{ctype} に設定され、
+省略可能なパラメータ \var{plist}は、コンテント-型定義のための
+追加のパラメータを与えます。 \var{prefix} は、そのデフォールトが
+先頭への挿入以外は \method{addheader()} でのように働きます。
+\end{methoddesc}
+
+\begin{methoddesc}{startmultipartbody}{subtype\optional{,
+                   boundary\optional{, plist\optional{, prefix}}}}
+メッセージ本体を書くのに使うことができるファイルのようなオブジェクトを
+返します。更に、このメソッドはマルチパートのコードを初期化します。ここで、
+ \var{subtype} が、そのマルチパートのサブタイプを、
+\var{boundary} がユーザ定義の境界仕様を、そして
+\var{plist} が、そのサブタイプ用の省略可能なパラメータを定義します。
+\var{prefix} は、\method{startbody()} でのように働きます。サブパートは、
+ \method{nextpart()}を使って作成するべきです。
+\end{methoddesc}
+
+\begin{methoddesc}{nextpart}{}
+マルチパートメッセージの個々のパートを表す、 \class{MimeWriter}の
+新しいインスタンスを返します。これは、そのパートを書くのにも、
+また複雑なマルチパートを再帰的に作成するのにも使うことができます。
+メッセージは、\method{nextpart()} を使う前に,
+最初 \method{startmultipartbody()} で初期化しなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{lastpart}{}
+これは、マルチパートメッセージの最後のパートを指定するのに使うことが
+でき、マルチパートメッセージを書くときは  \emph{いつでも}使うべきです。
+\end{methoddesc}

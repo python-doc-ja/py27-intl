@@ -1,0 +1,92 @@
+\section{\module{md5} ---
+         MD5 メッセージダイジェストアルゴリズム}
+
+\declaremodule{builtin}{md5}
+\modulesynopsis{RSA's MD5 message digest algorithm.}
+
+\deprecated{2.5}{代わりにモジュール \refmodule{hashlib} を使ってくださ
+  い。}
+
+このモジュールは RSA 社の MD5 メッセージダイジェスト
+\index{message digest, MD5}
+アルゴリズムへのインタフェースを実装しています。
+(Internet \rfc{1321} も参照してください)。利用方法は極めて単純
+です。まず md5 オブジェクトを \function{new()} を使って生成します。
+後は \method{update()} メソッドを使って、生成されたオブジェクトに
+任意の文字列データを入力します。オブジェクトに入力された文字列
+データ全体の \dfn{digest} (``fingerprint'' として知られる強力な 
+128-bit チェックサム) は \method{digest()} を使っていつでも調べる
+ことができます。
+\index{checksum!MD5}
+
+例えば、文字列 \code{'Nobody inspects the spammish repetition'} 
+のダイジェストを得るためには以下のようにします:
+
+\begin{verbatim}
+>>> import md5
+>>> m = md5.new()
+>>> m.update("Nobody inspects")
+>>> m.update(" the spammish repetition")
+>>> m.digest()
+'\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9'
+\end{verbatim}
+
+もっと詰めて書くと以下のようになります:
+
+\begin{verbatim}
+>>> md5.new("Nobody inspects the spammish repetition").digest()
+'\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9'
+\end{verbatim}
+
+以下の値はモジュールの中で定数として与えられており、\function{new()}
+で返される md5 オブジェクトの属性としても与えられます:
+
+\begin{datadesc}{digest_size}
+	返されるダイジェスト値のバイト数で表した長さ。常に \code{16} です。
+\end{datadesc}
+
+md5 クラスオブジェクトは以下のメソッドをサポートします:
+
+\begin{funcdesc}{new}{\optional{arg}}
+新たな md5 オブジェクトを返します。もし \var{arg} が存在するなら、
+\code{update(\var{arg})} を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{md5}{\optional{arg}}
+下位互換性のために、\function{new()} の別名として提供されています。
+\end{funcdesc}
+
+md5 オブジェクトは以下のメソッドをサポートします:
+
+\begin{methoddesc}[md5]{update}{arg}
+文字列 \var{arg} を入力として md5 オブジェクトを更新します。
+このメソッドを繰り返して呼び出す操作は、それぞれの呼び出し時の引数
+\var{arg} を結合したデータを引数として一回の呼び出す操作と同等
+になります: つまり、\code{m.update(a); m.update(b)} は
+\code{m.update(a+b)} と同等です。
+\end{methoddesc}
+
+\begin{methoddesc}[md5]{digest}{}
+これまで \method{update()} で与えてきた文字列入力のダイジェストを
+返します。返り値は 16 バイトの文字列で、null バイトを含む非 \ASCII{} 
+文字が入っているかもしれません。
+\end{methoddesc}
+
+\begin{methoddesc}[md5]{hexdigest}{}
+\method{digest()} に似ていますが、ダイジェストは長さ 32 の文字列
+になり、16 進表記文字しか含みません。この文字列は電子メールやその
+他のバイナリを受け付けない環境でダイジェストを安全にやりとりする
+ために使うことができます。
+\end{methoddesc}
+
+\begin{methoddesc}[md5]{copy}{}
+md5 オブジェクトのコピー (``クローン'') を返します。冒頭の部分文字列が
+共通な複数の文字列のダイジェストを効率よく計算する際に使うことができます。
+\end{methoddesc}
+
+
+\begin{seealso}
+  \seemodule{sha}{Secure Hash Algorithm (SHA) を実装した類似のモジュール。
+	SHA アルゴリズムはより安全なハッシュアルゴリズムだと考えられています。}
+\end{seealso}
+

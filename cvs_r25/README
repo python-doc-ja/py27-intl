@@ -1,0 +1,336 @@
+Python 標準ドキュメント -- LaTeX 形式
+-------------------------------------
+
+このディレクトリには、 Python ドキュメントの LaTeX ソースファイルと、
+フォーマットを行う際に必要なツールが入っています。ドキュメントをフォー
+マットするには LaTeX2e が必要になりました; LaTeX 2.09 との互換性は失わ
+れてしまっています。
+
+
+LaTeX を持っていなかったり、自分でドキュメントをフォーマットしたくない
+場合には、全てのドキュメントの HTML、PDF、および PostScirpt 版のファイ
+ルが入っている tar ファイルを ftp で取得できます。その他の形式もできま
+す。ファイルは主要な Python 配布物を取得したのと同じ場所にあるはずです
+( <http://www.python.org/> や <ftp://ftp.python.org/pub/python/> を探
+してみてください) 。
+
+
+
+以下のファイルは LaTeX で書かれたソースファイルです:
+
+        api/*.tex      Python/C API リファレンスマニュアル
+        doc/*.tex      Python ドキュメントの作成
+        ext/*.tex      Python インタプリタの拡張と埋め込み
+        lib/*.tex      Python ライブラリリファレンス
+        mac/*.tex      Macintosh モジュールリファレンス
+        ref/*.tex      Python リファレンスマニュアル
+        tut/*.tex      Python チュートリアル
+        inst/*.tex     Python モジュールのインストール
+        dist/*.tex     Python モジュールの配布
+
+これらのほとんどは、旧来の "myformat.sty" スタイルファイルを元に作成し
+た "manual" ドキュメントクラスと "python" パッケージを用いています。
+Macintosh ライブラリモジュールドキュメントは "howto" ドキュメントクラ
+スを使っています。これらのドキュメントクラスには、 Python のドキュメン
+トを作成する上で便利な数多くのマクロ定義と、いくつかのスタイルパラメタ
+が収められています。
+
+(注: 日本語ドキュメントでは、これらのクラスファイルやスタイルファイル
+をもとに、 manualjp および howtojp ドキュメントクラス、および pythonjp
+スタイルファイルを作成して利用しています。)
+
+LaTeX とその他のユーティリティを正しい順番で正しい回数だけ呼び出す
+Makefile もあります。デフォルトでは、Makefile は HTML 版のドキュメント
+を構築しますが、DVI、PDF、および PostScript 形式も作成できます。作成さ
+れた HTML を見るには、"make" を動作させたあと、お気に入りのブラウザで
+トップレベルのインデクスページ (html/index.html) を選択してください。
+
+Makefile は各ドキュメントの DVI ファイルも生成できます; DVI ファイルを
+プレビューするには、xdvi を使ってください。 PostScript 版の生成は、DVI
+ファイルの生成と同じ Makefile ターゲットを使って行われます。この処理に
+は dvips ツールが使われます。印刷方法はローカルの環境によって異なりま
+す; 我々の環境では、以下のように lpr を使っています:
+
+        make paper-letter/lib.ps        # lib.dvi および lib.ps の生成
+        xdvi paper-letter/lib.dvi       # lib.dvi のプレビュー
+        lpr paper-letter/lib.ps         # デフォルトのプリンタで出力
+
+
+バグを見つけたらどうすればいいですか？
+--------------------------------------
+
+First, check that the bug is present in the development version of the
+documentation at <http://www.python.org/dev/doc/devel/>; we may
+have already fixed it.
+
+If we haven't, tell us about it.  We'd like the documentation to be
+complete and accurate, but have limited time.  If you discover any
+inconsistencies between the documentation and implementation, or just
+have suggestions as to how to improve the documentation, let is know!
+Specific bugs and patches should be reported using our bug & patch
+databases at:
+
+        http://sourceforge.net/projects/python
+
+Other suggestions or questions should be sent to the Python
+Documentation Team:
+
+        docs@python.org
+
+Thanks!
+
+
+(注: 和訳ドキュメントに対するバグの報告や提案を Python Doc-SIG や国際
+化SIG で行わないでください。 2004 年 4 月の時点では、和訳プロジェクトの
+成果はこれらのプロジェクトの管理下にはありません。和訳内容の誤りの指摘
+や和訳プロジェクトに対する要望は、
+
+        http://sourceforge.jp/projects/pythonjp
+
+からお願いします。)
+
+
+Python ライブラリリファレンスの Macintosh の章はどうなったのですか？
+--------------------------------------------------------------------
+
+mac/ ディレクトリに "Macintosh モジュールリファレンス" マニュアルのソー
+スが入っています; このマニュアルは標準のドキュメント構築ターゲットを使っ
+て構築されます。ですから、適切な出力ディレクトリを見て、指定した書式と
+用紙サイズのドキュメントが生成されていないか調べてください。
+
+
+どんなツールが必要ですか？
+--------------------------
+
+Python をインストールする必要があります; ドキュメントを生成するために
+使われるスクリプトのいくつかが Python で書かれているからです。 このド
+キュメントがなくても Python はインストールできます; Python のインストー
+ルに関する説明は Python 配布物中の README ファイルに書かれています。
+
+私たちが使っている設定では、ドキュメントの生成に必要な他のツールを入手
+する一番簡単な方法は、 teTeX TeX 配布物のバージョン 0.9 またはそれ以降
+をインストールすることです。
+
+teTeX に関する詳しい情報は <http://www.tug.org/tetex/> で入手できます。
+現時点では、この配布物は Unix のみを対象にしています。このドキュメント
+のリリース版は teTeX 1.0.7 リリースでテストされています。ドキュメント
+の以前バージョンの多くは 0.9 系列で問題なく生成できましたが、 1.0.7 は
+この 0.9 系列から実質的に変更されていません。
+
+teTeX を入手せずに済ませたいなら、以下のツールが必要です:
+
+DVI、 PDF、および PostScript ファイルを生成するには:
+
+        - LaTeX2e, 1995/12/01 またはそれ以降。古いバージョンは動かない
+          かもしれません。
+
+        (訳注: 和訳ドキュメントのコンパイルには pLaTeX2e が必要です。)
+
+        - makeindex。ライブラリリファレンスと Python/C API リファレン
+          スの索引を生成するために使います。
+
+PDF ファイルを作成するには:
+
+        - pdflatex。 teTeX 配布物の中にあります (このドキュメントを書
+          いている時点では、 pdfTeX version 3.14159-13d (Web2C 7.3.1) )。
+          パッチレベルが 2 つ以上古いものは、 pdftex プリミティブの一部
+          に関する文法が変更されたため、コンパイルに失敗するかもしれませ
+          ん。 
+
+        (訳注: 現状の pdflatex は日本語をうまく処理できないため、
+        dvipdfm を使っています。従って、PDF のコンパイルには platex と
+        dvipdfm (または dvipdfmx) が必要です。)
+
+PostScript ファイルを生成するには:
+
+        - dvips。ほとんどの TeX 配布物に入っています。持っていないなら、
+          CTAN ( <ftp://ctan.tug.org/tex-archive/> ) を調べてください。
+
+info ファイルを生成するには:
+
+        info のサポートは現在校正中であり、 Michael Ernst
+        <mernst@cs.washington.edu> による新たな変換ツールが使われてい
+        るので注意してください。
+
+        - makeinfo。GNU ミラーのいずれかで入手できます。
+
+        - emacs または xemacs。Emacs は makeinfo と同じ場所で入手でき
+          ます。また、 xemacs は ftp.xemacs.org から入手できます。
+
+        - Perl。 <http://language.perl.com/info/software.html>
+          で入手してください。
+
+        - HTML::Element 。インストールされていないなら、CPAN から入手で
+          きます。以下のコマンド:
+
+            perl -e 'use CPAN; CPAN::install("HTML::Element");'
+
+          を使ってください。この作業は root になる必要があるかもしれま
+          せん。
+
+HTML ファイルを生成するには:
+
+        - Perl 5.004_04 以降。
+          <http://language.perl.com/info/software.html> で入手してくださ
+          い。
+
+        - LaTeX2HTML 99.2b8 またはそれ以降。以前のバージョンはサポート
+          されていません; 各バージョンでの変更が激しく、複数のバージョン
+          をサポートするのはうまくいかないかもしれません。多くのバージョ
+          ンのほとんどが Perl 5.6 でうまく動きません。このことも各コード
+          断片をややこしくしています。 ;-( LaTeX2HTML のリリースは
+          <http://www.latex2html.org/> で入手できます。 
+
+        (訳注: 和訳ドキュメントのコンパイルは、日本語パッチの当たった
+        LaTeX2HTML-2002-1 でのみ動作確認しています。 Windows 環境では
+        うまく動作しないかもしれません。)
+
+CHM ファイルを生成するには:
+
+	- Microsoft HTML Workshop。
+
+Make で "make: don't know how to make commontex/patchlevel.tex." のよ
+うなエラーがでてしまいます。
+---------------------------------------------------------------------
+
+あなたの使っているバージョンの make が 「シェル」機能をサポートしてい
+ないからです。GNU make のようにシェル機能をサポートしている make を使
+う必要があるでしょう。
+
+
+LaTeX (や pdfLaTeX) がメモリ不足になります。どうやったら直せますか？
+---------------------------------------------------------------------
+
+これは少なくとも Mac OSX で確認されている問題で、過去に他のシステムで
+も遭遇したことがあります。
+
+システムによっては、 TeX システムがアロケーションするメモリプールのデ
+フォルトサイズを変更する必要があります; web2c ベースの TeX システム
+(ほとんどの TeX は web2c ベースですが、全てというわけではありません)
+では、メモリプールのサイズは設定ファイルで調整できます。通常、このファ
+イルは、(TeX のインストール先の texmf/ ディレクトリにある)
+texmf/web2c/texmf.cnf です。 LaTeX が "buffer overflow" という警告を出
+すなら、この設定ファイルを開いて、"main_memory.pdflatex" という設定を
+調べてください。該当する行がなければ追加してもかまいません。値を
+1500000 くらいにしておけば、 Python のドキュメントをコンパイルするには
+十分のはずです。
+
+
+Times フォントが使えないときにはどうすればいいですか？
+------------------------------------------------------
+
+配布物では、 LaTeX ドキュメントは PostScript の Times フォントを使用し
+ます。これは見栄えがとてもよく、かつ小さな PostScript ファイルを生成す
+るためです。しかしながら、インストールした TeX が Times フォントをサポー
+トしないなら、無効にするのは簡単です。texinputs/pypaper.sty を編集して、
+"\RequirePackage{times}" で始まる行の行頭に "%" 文字を挿入します。
+US-Letter 用紙ではなく A4 用紙に書式化したいなら、
+paper-a4/pypaper.sty の方を変更してください。もう一つの方法は、正しい
+フォントと LaTeX スタイルファイルをインストールすることです。 
+
+(訳注: 和訳ドキュメントは pypaper.sty ではなく pypaperjp.sty を使いま
+す。pypaperjp.sty はデフォルトで A4 用紙に設定されています。)
+
+
+A4 用紙を使いたいときにはどうすればいいですか？
+-----------------------------------------------
+
+コマンド "make ps" を与えて PostScript を生成する代わりに、コマンド
+"make PAPER=a4 ps" とします; 出力は paper-a4/ サブディレクトリ下に生成
+されます。 (PDF 出力がよいなら、 "make PAPER=a4 pdf" のようにもできま
+す。) 
+
+
+
+HTML ファイルの作成は？
+-----------------------
+
+LaTeX ドキュメントは Nikos Drako の LaTeX2HTML 変換プログラムで変換で
+きます。Makefile; を読んでみてください。いくつかの調節を行った後、
+"make" が巧みに処理を行います。
+
+
+CHM ファイルの作成は？
+-----------------------
+
+まず make tarhtml (または make ziphtml) で HTML ドキュメントを作成
+して下さい。 doc_jp ディレクトリ下に html-<version>.tar(zip) が作成
+されるはずです。次にこのアーカイブを展開します。特に指定しない限り
+Python-Doc-<version> というディレクトリが作成されますが、名前は
+何でも構いません。このディレクトリに移り、tools ディレクトリの
+下にある prechm_jp.py を実行して、HTML Workshop 用のファイルを
+作成します::
+
+  $ cd Python-Doc-2.4
+  $ python ../tools/prechm_jp.py -v2.4jp Python24jp
+
+Python-Doc-2.4 ディレクトリ下に、 Python24jp.hhk(hhp, hhc) という
+ファイルが作成されます。
+
+デフォルトの設定では、作成される HTML の日本語コードは EUC-JP です。
+CHM では Shift_JIS を使うので、tools ディレクトリの下にある 
+euctosjis.py で文字コードを変換します (prechm_jp.py との順番を
+間違えないようにしてください!)::
+
+  $ cd Python-Doc-2.4
+  $ python ../tools/euctosjis.py ./
+
+これで準備が出来ました。あとは HTML Workshop のインストールされた
+Windows 環境で Python24jp.hhp を開き、コンパイルを実行するだけです。
+
+
+他に何が入っていますか？
+------------------------
+
+"howto" と呼ばれる、LaTeX の新しいドキュメントクラスがあります。このド
+キュメントクラスは新たな Python HOWTO ドキュメント系列に使われるもので、
+Andrew Kuchling <akuchlin@mems-exchange.org> が調整中です。ファイル
+templates/howto.tex はコメント付きの例で、ドキュメントの雛型として使え
+ます。"必要な処理を遂行 (do the right thing)" して HOWTO ドキュメント
+を 生成する Python スクリプトは tools/mkhowto に入っています。これらの
+ドキュメントは HTML, PDF, PostScript, または ASCII ファイルに書式化で
+きます。 書式化ツールの利用法についての情報は、"mkhowto --help" してみ
+てください。
+
+モジュールドキュメントの作者のために、モジュールセクションの雛型として
+使えるファイル templates/module.tex があります。このファイルは HOWTO
+または manual といったドキュメントクラスと併せて使えます。この雛型を
+lib<mymodule> という名前にコピーしてコメント内の説明に従って編集を行い、
+新たなモジュールのドキュメントを作成してください。
+
+Python ドキュメンテーションを執筆するにあたっての、スタイルとマークアッ
+プ法が書かれたドキュメントは "Documenting Python" マニュアルで入手でき
+ます。
+
+
+Copyright notice
+================
+
+The Python source is copyrighted, but you can freely use and copy it
+as long as you don't change or remove the copyright notice:
+
+----------------------------------------------------------------------
+Copyright (c) 2000-2006 Python Software Foundation.
+All rights reserved.
+
+Copyright (c) 2000 BeOpen.com.
+All rights reserved.
+
+Copyright (c) 1995-2000 Corporation for National Research Initiatives.
+All rights reserved.
+
+Copyright (c) 1991-1995 Stichting Mathematisch Centrum.
+All rights reserved.
+
+See the file "texinputs/license.tex" for information on usage and
+redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
+----------------------------------------------------------------------
+
+
+翻訳文に対する著作権表示
+========================
+
+翻訳文に対する著作権は、Python ドキュメント和訳プロジェクトが有します。
+
+Translation Copyright (c) 2003-2004 Python Python Document Japanese
+Translation Project. All rights reserved.

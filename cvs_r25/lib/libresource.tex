@@ -1,0 +1,208 @@
+\section{\module{resource} ---
+         リソース使用状態の情報}
+
+\declaremodule{builtin}{resource}
+  \platform{Unix}
+\modulesynopsis{現プロセスのリソース使用状態を提供するためのインタフェース。}
+\moduleauthor{Jeremy Hylton}{jeremy@alum.mit.edu}
+\sectionauthor{Jeremy Hylton}{jeremy@alum.mit.edu}
+
+
+このモジュールでは、プログラムによって使用されているシステムリソースを
+計測したり制御するための基本的なメカニズムを提供します。
+
+特定のシステムリソースを指定したり、現在のプロセスやその子プロセスの
+リソース使用情報を要求するためにはシンボル定数が使われます。
+
+エラーを表すための例外が一つ定義されています:
+
+
+\begin{excdesc}{error}
+下に述べる関数は、背後にあるシステムコールが予期せず失敗した場合、
+このエラーを送出するかもしれません。
+\end{excdesc}
+
+\subsection{リソースの制限}
+
+リソースの使用は下に述べる \function{setrlimit()} 関数を使って制限
+することができます。各リソースは二つ組の制限値: ソフトリミット 
+(soft limit) 、およびハードリミット (hard limit) 、で制御されます。
+ソフトリミットは現在の制限値で、時間とともにプロセスによって下げたり
+上げたりできます。ソフトリミットはハードリミットを超えることは
+できません。ハードリミットはソフトリミットよりも高い任意の値まで
+下げることができますが、上げることはできません。(スーパユーザの
+有効な UID を持つプロセスのみがハードリミットを上げることができます。)
+
+制限をかけるべく指定できるリソースはシステムに依存します。指定できる
+リソースは \manpage{getrlimit}{2} マニュアルページで解説されています。
+以下に列挙するリソースは背後のオペレーティングシステムがサポートする
+場合にサポートされています; オペレーティングシステム側で値を調べたり
+制御したりできないリソースは、そのプラットフォーム向けのこのモジュール
+内では定義されていません。
+
+\begin{funcdesc}{getrlimit}{resource}
+\var{resource} の現在のソフトおよびハードリミットを表すタプル 
+\code{(\var{soft}, \var{hard})} を返します。無効なリソースが
+指定された場合には \exception{ValueError} が、背後のシステム
+コールが予期せず失敗した場合には \exception{error} が送出されます。
+\end{funcdesc}
+
+\begin{funcdesc}{setrlimit}{resource, limits}
+\var{resouce} の新たな消費制限を設定します。\var{limits} 引数
+には、タプル \code{(\var{soft}, \var{hard})} による二つの整数で、
+新たな制限を記述しなければなりません。現在指定可能な最大の制限
+を指定するために \code{-1} を使うことができます。
+
+無効なリソースが指定された場合、ソフトリミットの値がハードリミット
+の値を超えている場合、プロセスが (スーパユーザの有効な UID を持って
+いない状態で) ハードリミットを引き上げようとした場合には 
+\exception{ValueError} が送出されます。背後のシステムコールが予期せず
+失敗した場合には \exception{error} が送出される可能性もあります。
+\end{funcdesc}
+
+以下のシンボルは、後に述べる関数 \function{setrlimit()} および
+\function{getrlimit()} を使って消費量を制御することができるリソース
+を定義しています。これらのシンボルの値は、\C{} プログラムで使われて
+いるシンボルと全く同じです。
+
+\manpage{getrlimit}{2} の \UNIX{} マニュアルページには、指定可能な
+リソースが列挙されています。全てのシステムで同じシンボルが使われて
+いるわけではなく、また同じリソースを表すために同じ値が使われて
+いるとも限らないので注意してください。このモジュールはプラットフォーム
+間の相違を隠蔽しようとはしていません --- あるプラットフォームで
+定義されていないシンボルは、そのプラットフォーム向けの本モジュール
+では利用することができません。
+
+\begin{datadesc}{RLIMIT_CORE}
+現在のプロセスが生成できるコアファイルの最大 (バイト) サイズです。
+プロセスの全体イメージを入れるためにこの値より大きなサイズのコア
+ファイルが要求された結果、部分的なコアファイルが生成される可能性が
+あります。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_CPU}
+プロセッサが利用することができる最大プロセッサ時間 (秒) です。
+この制限を超えた場合、\constant{SIGXCPU} シグナルがプロセスに送られ
+ます。(どのようにしてシグナルを捕捉したり、例えば開かれているファイルを
+ディスクにフラッシュするといった有用な処理を行うかについての情報は、
+\refmodule{signal} モジュールのドキュメントを参照してください)
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_FSIZE}
+プロセスが生成できるファイルの最大サイズです。マルチスレッドプロセス
+の場合、この値は主スレッドのスタックにのみ影響します。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_DATA}
+プロセスのヒープの最大 (バイト) サイズです。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_STACK}
+現在のプロセスのコールスタックの最大 (バイト) サイズです。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_RSS}
+プロセスが取りうる最大 RAM 常駐ページサイズ (resident set size) です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_NPROC}
+現在のプロセスが生成できるプロセスの上限です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_NOFILE}
+現在のプロセスが開けるファイル記述子の上限です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_OFILE}
+\constant{RLIMIT_NOFILE} の BSD での名称です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_MEMLOCK}
+メモリ中でロックできる最大アドレス空間です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_VMEM}
+プロセスが占有できるマップメモリの最大領域です。
+\end{datadesc}
+
+\begin{datadesc}{RLIMIT_AS}
+アドレス空間でプロセスが占有できる最大領域 (バイト) です。
+\end{datadesc}
+
+\subsection{リソースの使用状態}
+
+以下の関数はリソース使用情報を取得するために使われます:
+
+\begin{funcdesc}{getrusage}{who}
+この関数は、\var{who} 引数で指定される、現プロセスおよびその子プロセスに
+よって消費されているリソースを記述するオブジェクトを返します。
+\var{who} 引数は以下に記述される \constant{RUSAGE_*} 定数のいずれかを
+使って指定します。
+
+返される値の各フィールドはそれぞれ、個々のシステムリソースがどれくらい
+使用されているか、例えばユーザモードでの実行に費やされた時間やプロセス
+が主記憶からスワップアウトされた回数、を示しています。幾つかの値、
+例えばプロセスが使用しているメモリ量は、内部時計の最小単位に依存します。
+
+以前のバージョンとの互換性のため、返される値は 16 要素からなるタプル
+としてアクセスすることもできます。
+
+戻り値のフィールド \member{ru_utime} および \member{ru_stime} は
+浮動小数点数で、それぞれユーザモードでの実行に費やされた時間、および
+システムモードでの実行に費やされた時間を表します。それ以外の値は
+整数です。これらの値に関する詳しい情報は \manpage{getrusage}{2} 
+を調べてください。以下に簡単な概要を示します:
+
+\begin{tableiii}{r|l|l}{code}{インデクス}{フィールド名}{リソース}
+  \lineiii{0}{\member{ru_utime}}{ユーザモード実行時間 (float)}
+  \lineiii{1}{\member{ru_stime}}{システムモード実行時間 (float)}
+  \lineiii{2}{\member{ru_maxrss}}{最大常駐ページサイズ}
+  \lineiii{3}{\member{ru_ixrss}}{共有メモリサイズ}
+  \lineiii{4}{\member{ru_idrss}}{非共有メモリサイズ}
+  \lineiii{5}{\member{ru_isrss}}{非共有スタックサイズ}
+  \lineiii{6}{\member{ru_minflt}}{I/O を必要とするページフォールト数}
+  \lineiii{7}{\member{ru_majflt}}{I/O を必要としないページフォールト数}
+  \lineiii{8}{\member{ru_nswap}}{スワップアウト回数}
+  \lineiii{9}{\member{ru_inblock}}{ブロック入力操作数}
+  \lineiii{10}{\member{ru_oublock}}{ブロック出力操作数}
+  \lineiii{11}{\member{ru_msgsnd}}{送信メッセージ数}
+  \lineiii{12}{\member{ru_msgrcv}}{受信メッセージ数}
+  \lineiii{13}{\member{ru_nsignals}}{受信シグナル数}
+  \lineiii{14}{\member{ru_nvcsw}}{自発的な実行コンテキスト切り替え数}
+  \lineiii{15}{\member{ru_nivcsw}}{非自発的な実行コンテキスト切り替え数}
+\end{tableiii}
+
+この関数は無効な \var{who} 引数を指定した場合には 
+\exception{ValueError} を送出します。また、異常が発生
+した場合には \exception{error} 例外が送出される可能性があります。
+
+  \versionchanged[各値を返されたオブジェクトの属性としてアクセス
+できるようにしました]{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{getpagesize}{}
+システムページ内のバイト数を返します。(ハードウェアページサイズと
+同じとは限りません。) この関数はプロセスが使用しているメモリの
+バイト数を決定する上で有効です。\function{getrusage()} が
+返すタプルの 3 つ目の要素はページ数で数えたメモリ使用量です;
+ページサイズを掛けるとバイト数になります。
+\end{funcdesc}
+
+以下の \constant{RUSAGE_*} シンボルはどのプロセスの情報を提供させるか
+を指定するために関数 \function{getrusage()} に渡されます。
+
+\begin{datadesc}{RUSAGE_SELF}
+  \constant{RUSAGE_SELF} はプロセス自体に属する情報を要求するために
+使われます。
+\end{datadesc}
+
+\begin{datadesc}{RUSAGE_CHILDREN}
+\function{getrusage()} に渡すと呼び出し側プロセスの子プロセスのリソース
+情報を要求します。
+\end{datadesc}
+
+\begin{datadesc}{RUSAGE_BOTH}
+\function{getrusage()} に渡すと現在のプロセスおよび子プロセスの両方が
+消費しているリソースを要求します。全てのシステムで利用可能なわけでは
+ありません。
+\end{datadesc}

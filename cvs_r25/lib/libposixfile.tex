@@ -1,0 +1,172 @@
+% Manual text and implementation by Jaap Vermeulen
+\section{\module{posixfile} ---
+         ロック機構をサポートするファイル類似オブジェクト}
+
+\declaremodule{builtin}{posixfile}
+  \platform{Unix}
+\modulesynopsis{ロック機構をサポートするファイル類似オブジェクト。}
+\moduleauthor{Jaap Vermeulen}{}
+\sectionauthor{Jaap Vermeulen}{}
+
+
+\indexii{\POSIX}{file object}
+
+\deprecated{1.5}{このモジュールが提供しているよりも
+うまく処理ができ、可搬性も高いロック操作が
+\function{\refmodule{fcntl}.lockf()} で提供されています。
+\withsubitem{(in module fcntl)}{\ttindex{lockf()}}}
+
+このモジュールでは、組み込みのファイルオブジェクトの上にいくつかの
+追加機能を実装しています。特に、このオブジェクトはファイルのロック機構、
+ファイルフラグへの操作、およびファイルオブジェクトを複製するための
+簡単なインタフェースを実装しています。オブジェクトは全ての標準
+ファイルオブジェクトのメソッドに加え、以下に述べるメソッドを持って
+います。このモジュールはファイルのロック機構に \function{fcntl.fcntl()} 
+を用いるため、ある種の \UNIX でしか動作しません。
+\withsubitem{(in module fcntl)}{\ttindex{fcntl()}}
+
+posixfile オブジェクトをインスタンス化するには、 \module{posixfile}
+モジュールの \function{open()} 関数を使います。生成されるオブジェクト
+は標準ファイルオブジェクトとだいたい同じルック\& フィールです。
+
+\module{posixfile} モジュールでは、以下の定数を定義しています:
+
+
+\begin{datadesc}{SEEK_SET}
+オフセットをファイルの先頭から計算します。
+\end{datadesc}
+
+\begin{datadesc}{SEEK_CUR}
+オフセットを現在のファイル位置から計算します。
+\end{datadesc}
+
+\begin{datadesc}{SEEK_END}
+オフセットをファイルの末尾から計算します。
+\end{datadesc}
+
+\module{posixfile} モジュールでは以下の関数を定義しています:
+
+
+\begin{funcdesc}{open}{filename\optional{, mode\optional{, bufsize}}}
+指定したファイル名とモードで新しい posixfile オブジェクトを作成
+します。\var{filename}、\var{mode} および \var{bufsize} 引数は
+組み込みの \function{open()} 関数と同じように解釈されます。
+\end{funcdesc}
+
+\begin{funcdesc}{fileopen}{fileobject}
+指定した標準ファイルオブジェクトで新しい posixfile オブジェクトを
+作成します。作成されるオブジェクトは元のファイルオブジェクトと
+同じファイル名およびモードを持っています。
+\end{funcdesc}
+
+posixfile オブジェクトでは以下の追加メソッドを定義しています:
+
+\setindexsubitem{(posixfile method)}
+\begin{funcdesc}{lock}{fmt, \optional{len\optional{, start\optional{, whence}}}}
+ファイルオブジェクトが参照しているファイルの指定部分にロックをかけます。
+指定の書式は下のテーブルで説明されています。
+\var{len} 引数にはロックする部分の長さを指定します。標準の値は \code{0}
+です。 \var{start} にはロックする部分の先頭オフセットを指定し、その
+標準値は \code{0} です。\var{whence} 引数はオフセットをどこからの
+相対位置にするかを指定します。この値は定数 \constant{SEEK_SET}、
+ \constant{SEEK_CUR}、または \constant{SEEK_END} のいずれかになります。
+標準の値は \constant{SEEK_SET} です。引数についてのより詳しい情報は
+システムの \manpage{fcntl}{2} マニュアルページを参照してください。
+\end{funcdesc}
+
+\begin{funcdesc}{flags}{\optional{flags}}
+ファイルオブジェクトが参照しているファイルに指定したフラグを設定
+します。新しいフラグは特に指定しない限り以前のフラグと OR されます。
+指定書式は下のテーブルで説明されています。\var{flags} 引数なしの
+場合、現在のフラグを示す文字列が返されます (\samp{?} 修飾子と同じ
+です) 。
+フラグについてのより詳しい情報はシステムの \manpage{fcntl}{2} 
+マニュアルページを参照してください。
+\end{funcdesc}
+
+\begin{funcdesc}{dup}{}
+ファイルオブジェクトと、背後のファイルポインタおよびファイル記述子
+を複製します。返されるオブジェクトは新たに開かれたファイルのように
+振舞います。
+\end{funcdesc}
+
+\begin{funcdesc}{dup2}{fd}
+ファイルオブジェクトと、背後のファイルポインタおよびファイル記述子
+を複製します。新たなオブジェクトは指定したファイル記述子を持ちます。
+それ以外の点では、返されるオブジェクトは新たに開かれたファイルのように
+振舞います。
+\end{funcdesc}
+
+\begin{funcdesc}{file}{}
+posixfile オブジェクトが参照している標準ファイルオブジェクトを返します。
+この関数は標準ファイルオブジェクトを使うよう強制している関数を使う
+場合に便利です。
+\end{funcdesc}
+
+全てのメソッドで、要求された操作が失敗した場合には \exception{IOError}
+が送出されます。
+
+\method{lock()} の書式指定文字には以下のような意味があります:
+
+\begin{tableii}{c|l}{samp}{書式指定}{意味}
+  \lineii{u}{指定領域のロックを解除します}
+  \lineii{r}{指定領域の読み出しロックを要求します}
+  \lineii{w}{指定領域の書き込みロックを要求します}
+\end{tableii}
+
+これに加え、以下の修飾子を書式に追加できます:
+
+\begin{tableiii}{c|l|c}{samp}{修飾子}{意味}{注釈}
+  \lineiii{|}{ロック操作が処理されるまで待ちます}{}
+  \lineiii{?}{要求されたロックと衝突している第一のロックを返すか、衝突がない場合には \code{None} を返します。}{(1)} 
+\end{tableiii}
+
+\noindent
+注釈:
+
+\begin{description}
+\item[(1)] 返されるロックは \code{(\var{mode}, \var{len},
+\var{start}, \var{whence}, \var{pid})} の形式で、\var{mode} 
+はロックの形式を表す文字 ('r' または 'w') です。この修飾子は
+ロック要求の許可を行わせません; すなわち、問い合わせの目的にしか
+使えません。
+\end{description}
+
+\method{flags()} の書式指定文字には以下のような意味があります:
+
+\begin{tableii}{c|l}{samp}{書式}{意味}
+  \lineii{a}{追記のみ (append only) フラグ}
+  \lineii{c}{実行時クローズ (close on exec) フラグ}
+  \lineii{n}{無遅延 (no delay) フラグ (非ブロック (non-blocking) フラグとも呼ばれます)}
+  \lineii{s}{同期 (synchronization) フラグ}
+\end{tableii}
+
+これに加え、以下の修飾子を書式に追加できます:
+
+\begin{tableiii}{c|l|c}{samp}{修飾子}{意味}{注釈}
+  \lineiii{!}{指定したフラグを通常の 'オン' にせず 'オフ' にします}{(1)}
+  \lineiii{=}{フラグを標準の 'OR' 操作ではなく置換します。}{(1)}
+  \lineiii{?}{設定されているフラグを表現する文字からなる文字列を返します。}{(2)}
+\end{tableiii}
+
+\noindent
+注釈:
+
+\begin{description}
+\item[(1)] \samp{!} および \samp{=} 修飾子は互いに排他の関係にあります。
+
+\item[(2)] この文字列が表すフラグは同じ呼び出しによってフラグが置き換えられた後のものです。
+
+\end{description}
+
+以下に例を示します:
+
+\begin{verbatim}
+import posixfile
+
+file = posixfile.open('/tmp/test', 'w')
+file.lock('w|')
+...
+file.lock('u')
+file.close()
+\end{verbatim}

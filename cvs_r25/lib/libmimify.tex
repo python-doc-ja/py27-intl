@@ -1,0 +1,95 @@
+\section{\module{mimify} ---
+         電子メイルメッセージの MIME 処理}
+
+\declaremodule{standard}{mimify}
+\modulesynopsis{電子メイルメッセージの MIME 化および非 MIME 化。}
+
+\deprecated{2.3}{\module{mimify} モジュールを使うよりも 
+\refmodule{email} パッケージを使うべきです。このモジュールは
+以前のバージョンとの互換性のために保守されているにすぎません。}
+
+\module{mimify} モジュールでは電子メイルメッセージから MIME へ、
+および MIME から電子メイルメッセージへの変換を行うための二つの関数を
+定義しています。電子メイルメッセージは単なるメッセージでも、
+MIME 形式でもかまいません。各パートは個別に扱われます。
+メッセージ (の一部) の MIME 化 (mimify) の際、7 ビット \ASCII{}
+文字を使って表現できない何らかの文字が含まれていた場合、メッセージの
+quoted-printable への符号化が伴います。メッセージが送信される前に
+編集しなければならない場合、MIME 化および非 MIME 化は特に便利です。
+典型的な使用法は以下のようになります:
+
+\begin{verbatim}
+unmimify message
+edit message
+mimify message
+send message
+\end{verbatim}
+
+モジュールでは以下のユーザから呼び出し可能な関数と、ユーザが設定可能な
+変数を定義しています:
+
+\begin{funcdesc}{mimify}{infile, outfile}
+\var{infile} を \var{outfile} にコピーします。その際、パートを
+quoted-printable に変換し、必要なら MIME メイルヘッダを追加します。
+\var{infile} および \var{outfile} はファイルオブジェクト
+(実際には、\method{readline()} メソッドを持つ (\var{infile}) か、
+\method{write} (\var{outfile}) メソッドを持つあらゆるオブジェクト) 
+か、ファイル名を指す文字列を指定することができます。
+\var{infile} および \var{outfile} が両方とも文字列の場合、
+同じ値にすることができます。
+\end{funcdesc}
+
+\begin{funcdesc}{unmimify}{infile, outfile\optional{, decode_base64}}
+\var{infile} を \var{outfile} にコピーします。その際、全ての
+quoted-printable 化されたパートを復号化します。\var{infile} および
+\var{outfile} はファイルオブジェクト
+(実際には、\method{readline()} メソッドを持つ (\var{infile}) か、
+\method{write} (\var{outfile}) メソッドを持つあらゆるオブジェクト) 
+か、ファイル名を指す文字列を指定することができます。
+\var{decode_base64} 引数が与えられており、その値が真である場合、
+base64 符号で符号化されているパートも同様に復号化されます。
+\end{funcdesc}
+
+\begin{funcdesc}{mime_decode_header}{line}
+\var{line} 内の符号化されたヘッダ行が復号化されたものを
+返します。ISO 8859-1 文字セット (Latin-1) だけをサポートします。
+\end{funcdesc}
+
+\begin{funcdesc}{mime_encode_header}{line}
+\var{line} 内のヘッダ行が MIME 符号化されたものを返します。
+\end{funcdesc}
+
+\begin{datadesc}{MAXLEN}
+標準では、非 \ASCII{} 文字 (8 ビット目がセットされている文字) を含む
+か、\constant{MAXLEN} 文字 (標準の値は 200 です) よりも長い
+部分は quoted-printable 形式で符号化されます。
+\end{datadesc}
+
+\begin{datadesc}{CHARSET}
+文字セットがメイルヘッダで指定されていない場合指定しなければ
+なりません。使われている文字セットを表す文字列は \constant{CHARSET}
+に記憶されます。標準の値は ISO-8859-1 (Latin1 (latin-one) としても
+知られています)。
+\end{datadesc}
+
+このモジュールはコマンドラインから利用することもできます。
+以下のような使用法:
+\begin{verbatim}
+mimify.py -e [-l length] [infile [outfile]]
+mimify.py -d [-b] [infile [outfile]]
+\end{verbatim}
+で、それぞれ符号化 (mimify) および復号化 (unmimify) を行います。
+標準の設定では \var{infile} は標準入力で、\var{putfile} は標準出力
+です。入出力に同じファイルを指定することもできます。
+
+符号化の際に \strong{-l} オプションを与えた場合、\var{length} で
+指定した長さより長い行があれば、その長さに含まれる部分が符号化
+されます。
+
+復号化の際に \strong{-b} オプションが与えられていれば、base64 パート
+も同様に復号化されます。
+
+\begin{seealso}
+  \seemodule{quopri}{MIME quoted-printable 形式ファイルのエンコード
+およびデコード。}
+\end{seealso}

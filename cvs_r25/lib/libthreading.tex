@@ -1,0 +1,726 @@
+\section{\module{threading} ---
+         高水準のスレッドインタフェース}
+
+\declaremodule{standard}{threading}
+\modulesynopsis{高水準のスレッドインタフェース}
+
+
+このモジュールでは、高水準のスレッドインタフェースを
+より低水準な\refmodule{thread} モジュールの上に構築しています。
+
+また、\refmodule{thread} がないために\module{threading} を使えないような
+状況向けに\refmodule[dummythreading]{dummy_threading} を提供しています。
+
+このモジュールでは以下のような関数とオブジェクトを定義しています:
+
+\begin{funcdesc}{activeCount}{}
+現在のアクティブな\class{Thread}オブジェクトの数を返します。
+この数は \function{enumerate()} の返すリストの長さと同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{Condition}{}
+新しい条件変数 (condition variable) オブジェクトを返すファクトリ関数です。
+条件変数を使うと、ある複数のスレッドを別のスレッドの通知があるまで
+待機させられます。
+\end{funcdesc}
+
+\begin{funcdesc}{currentThread}{}
+関数を呼び出している処理のスレッドに対応する \class{Thread} オブジェクトを
+返します。関数を呼び出している処理のスレッドが \module{threading} モジュール
+で生成したものでない場合、限定的な機能しかもたないダミースレッドオブジェクト
+を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{enumerate}{}
+現在アクティブな \class{Thread} オブジェクト全てのリストを返します。
+リストには、デーモンスレッド (daemonic thread)、
+\function{currentThread()} の生成するダミースレッドオブジェクト、
+そして主スレッドが入ります。終了したスレッドとまだ開始していないスレッド
+は入りません。
+\end{funcdesc}
+
+\begin{funcdesc}{Event}{}
+新たなイベントオブジェクトを返すファクトリ関数です。
+イベントは \method{set()} メソッドを使うと \constant{True} に、
+\method{clear()} メソッドを使うと \constant{False} にセットされるような
+フラグを管理します。\method{wait()} メソッドは、全てのフラグが
+真になるまでブロックするようになっています。
+\end{funcdesc}
+
+\begin{classdesc*}{local}{}
+スレッドローカルデータ (thread-local data) を表現するためのクラスです。
+スレッドローカルデータとは、値が各スレッド固有になるようなデータです。
+スレッドローカルデータを管理するには、\class{local} (または\class{local}
+のサブクラス) のインスタンスを作成して、その属性に値を代入します:
+
+\begin{verbatim}
+mydata = threading.local()
+mydata.x = 1
+\end{verbatim}
+
+インスタンスの値はスレッドごとに違った値になります。
+
+詳細と例題については、
+\module{_threading_local} モジュールのドキュメンテーション文字列を
+参照してください。
+
+\versionadded{2.4}
+\end{classdesc*}
+
+\begin{funcdesc}{Lock}{}
+新しいプリミティブロック (primitive lock) オブジェクトを返すファクトリ
+関数です。
+スレッドが一度プリミティブロックを獲得すると、それ以後のロック獲得の試みは
+ロックが解放されるまでブロックします。どのスレッドでもロックを解放できます。
+\end{funcdesc}
+
+\begin{funcdesc}{RLock}{}
+新しい再入可能ロックオブジェクトを返すファクトリ関数です。
+再入可能ロックはそれを獲得したスレッドによって解放されなければなりません。
+いったんスレッドが再入可能ロックを獲得すると、
+同じスレッドはブロックされずにもう一度それを獲得できます;
+そのスレッドは獲得した回数だけ解放しなければいけません。
+\end{funcdesc}
+
+\begin{funcdesc}{Semaphore}{\optional{value}}
+新しいセマフォ (semaphore) オブジェクトを返すファクトリ関数です。
+セマフォは、\method{release()}を呼び出した数から\method{acquire()}
+を呼び出した数を引き、初期値を足した値を表すカウンタを管理します。
+\method{acquire()}メソッドは、カウンタの値を負にせずに処理を戻せるまで
+必要ならば処理をブロックします。
+\var{value} を指定しない場合、デフォルトの値は 1 になります。
+\end{funcdesc}
+
+\begin{funcdesc}{BoundedSemaphore}{\optional{value}}
+新しい有限セマフォ (bounded semaphore) オブジェクトを返す
+ファクトリ関数です。有限セマフォは、現在の値が初期値を超過しないよう
+チェックを行います。超過を起こした場合、\exception{ValueError} を
+送出します。たいていの場合、セマフォは限られた容量のリソースを
+保護するために使われるものです。従って、あまりにも頻繁なセマフォの解放は
+バグが生じているしるしです。
+\var{value} を指定しない場合、デフォルトの値は 1 になります。
+\end{funcdesc}
+
+\begin{classdesc*}{Thread}{}
+処理中のスレッドを表すクラスです。
+このクラスは制限のある範囲内で安全にサブクラス化できます。
+\end{classdesc*}
+
+\begin{classdesc*}{Timer}{}
+指定時間経過後に関数を実行するスレッドです。
+\end{classdesc*}
+
+\begin{funcdesc}{settrace}{func}
+\module{threading} モジュールを使って開始した全てのスレッドに
+トレース関数 \index{trace function} を設定します。
+\var{func} は各スレッドの\method{run()} を呼び出す前に
+スレッドの\function{sys.settrace()} に渡されます。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{setprofile}{func}
+\module{threading} モジュールを使って開始した全てのスレッドに
+プロファイル関数 \index{profile function} を設定します。
+\var{func} は各スレッドの\method{run()} を呼び出す前に
+スレッドの\function{sys.settrace()} に渡されます。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{stack_size}{\optional{size}}
+新しいスレッドが作られる際に使われるスレッドのスタックサイズを返します。
+オプションの \var{size} 引数は次に作られるスレッドに対する
+スタックサイズを指定するものですが、0 (プラットフォームまたは設定されたデフォルト)
+または少なくとも 32,768 (32kB) であるような正の整数でなければなりません。
+もしスタックサイズの変更がサポートされていなければ \exception{ThreadError}
+が送出されます。また指定されたスタックサイズが条件を満たしていなければ
+\exception{ValueError} が送出されスタックサイズは変更されないままになります。
+32kB は今のところインタプリタ自体に十分なスタックスペースを保証するための値として
+サポートされる最小のスタックサイズです。プラットフォームによってはスタックサイズの
+値に固有の制限が課されることもあります。たとえば 32kB より大きな最小スタックサイズを
+要求されたり、システムメモリサイズの倍数の割り当てを要求されるなどです - より
+詳しい情報はプラットフォームごとの文書で確認してください(4kB ページは一般的ですので、
+情報が見当たらないときには 4096 の倍数を指定しておくといいかもしれません)。
+利用可能: Windows, \POSIX{} スレッドのあるシステム。
+\versionadded{2.5}
+\end{funcdesc}
+
+オブジェクトの詳細なインターフェースを以下に説明します。
+
+このモジュールのおおまかな設計は Java のスレッドモデルに基づいています。
+とはいえ、Java がロックと条件変数を全てのオブジェクトの基本的な挙動に
+しているのに対し、 Python ではこれらを別個のオブジェクトに分けています。
+Python の \class{Thread} クラスがサポートしているのは Java の Thread 
+クラスの挙動のサブセットにすぎません; 現状では、優先度 (priority)や
+スレッドグループがなく、スレッドの破壊 (destroy)、中断 (stop)、
+一時停止 (suspend)、復帰 (resume)、割り込み (interrupt) は行えません。
+Java の Thread クラスにおける静的メソッドに対応する機能が実装されている
+場合には、、モジュールレベルの関数になっています。
+
+以下に説明するメソッドは全て原子的 (atomic) に実行されます。
+
+
+\subsection{Lock オブジェクト \label{lock-objects}}
+プリミティブロックとは、ロックが生じた際に特定のスレッドによって
+所有されない同期プリミティブです。 Python では現在のところ
+拡張モジュール\refmodule{thread} で直接実装されている
+最も低水準の同期プリミティブを使えます。
+
+プリミティブロックは2つの状態、 ``ロック''または``アンロック'' 
+があります。このロックはアンロック状態で作成されます。
+ロックには基本となる二つのメソッド、\method{acquire()}と
+\method{release()} があります。ロックの状態がアンロックである
+場合、\method{acquire()} は状態をロックに変更して即座に処理を
+戻します。状態がロックの場合、\method{acquire()}は他のスレッドが
+\method{release()} を呼出してロックの状態をアンロックに変更するまで
+ブロックします。その後、状態をロックに再度設定してから処理を戻します。
+\method{release()} メソッドを呼び出すのはロック状態のときでなければ
+なりません; このメソッドはロックの状態をアンロックに変更し、即座に
+処理を戻します。複数のスレッドにおいて \method{acquire()} が
+アンロック状態への遷移を待っているためにブロックが起きている時に
+\method{release()} を呼び出してロックの状態をアンロックにすると、
+一つのスレッドだけが処理を進行できます。どのスレッドが処理を
+進行できるのかは定義されておらず、実装によって異なるかもしれません。
+
+全てのメソッドは原子的に実行されます。
+
+\begin{methoddesc}{acquire}{\optional{blocking\code{ = 1}}}
+ブロックあり、またはブロックなしでロックを獲得します。
+
+引数なしで呼び出した場合、ロックの状態がアンロックになるまで
+ブロックし、その後状態をロックにセットして真値を返します。
+
+引数\var{blocking} の値を真にして呼び出した場合、
+引数なしで呼び出したときと同じことを行ない、Trueを返します。
+
+引数\var{blocking} の値を偽にして呼び出すとブロックしません。
+引数なしで呼び出した場合にブロックするような状況であった場合には
+直ちに偽を返します。それ以外の場合には、
+引数なしで呼び出したときと同じ処理を行い真を返します。
+
+\end{methoddesc}
+
+\begin{methoddesc}{release}{}
+ロックを解放します。
+
+ロックの状態がロックのとき、状態をアンロックにリセットして処理を
+戻します。他のスレッドがロックがアンロック状態になるのを待って
+ブロックしている場合、ただ一つのスレッドだけが処理を継続できるように
+します。
+
+ロックがアンロック状態のとき、このメソッドを呼び出してはなりません。
+
+戻り値はありません。
+\end{methoddesc}
+
+\subsection{RLock オブジェクト \label{rlock-objects}}
+
+再入可能ロック (reentrant lock) とは、同じスレッドが複数回獲得できるような
+同期プリミティブです。再入可能ロックの内部では、プリミティブロックの使う
+ロック／アンロック状態に加え、 ``所有スレッド (owning thread)''
+と ``再帰レベル (recursion level)'' という概念を用いています。
+ロック状態では何らかのスレッドがロックを所有しており、アンロック状態では
+いかなるスレッドもロックを所有していません。
+
+スレッドがこのロックの状態をロックにするには、ロックの\method{acquire()}
+メソッドを呼び出します。このメソッドは、スレッドがロックを所有すると
+処理を戻します。ロックの状態をアンロックにするには\method{release()} 
+メソッドを呼び出します。
+\method{acquire()}/\method{release()} からなるペアの呼び出しはネスト
+できます; 最後に呼び出した \method{release()} (最も外側の呼び出しペア)
+だけが、ロックの状態をアンロックにリセットし、\method{acquire()} で
+ブロック中の別のスレッドの処理を進行させられます。
+
+\begin{methoddesc}{acquire}{\optional{blocking\code{ = 1}}}
+ブロックあり、またはブロックなしでロックを獲得します。
+
+引数なしで呼び出した場合: スレッドが既にロックを所有している場合、
+再帰レベルをインクリメントして即座に処理を戻します。
+それ以外の場合、他のスレッドがロックを所有していれば、
+そのロックの状態がアンロックになるまでブロックします。その後、
+ロックの状態がアンロックになる (いかなるスレッドもロックを所有しない状態
+になる) と、ロックの所有権を獲得し、再帰レベルを 1 にセットして処理を
+戻します。ロックの状態がアンロックになるのを待っているスレッドが複数
+ある場合、その中の一つだけがロックの所有権を獲得できます。この場合、
+戻り値はありません。
+
+\var{blocking} 引数の値を真にした場合、引数なしで呼び出した場合と
+同じ処理を行って真を返します。
+
+\var{blocking} 引数の値を偽にした場合、ブロックしません。
+引数なしで呼び出した場合にブロックするような状況であった場合には
+直ちに偽を返します。それ以外の場合には、
+引数なしで呼び出したときと同じ処理を行い真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{release}{}
+再帰レベルをデクリメントしてロックを解放します。
+デクリメント後に再帰レベルがゼロになった場合、ロックの状態を
+アンロック (いかなるスレッドにも所有されていない状態) にリセットし、
+ロックの状態がアンロックになるのを待ってブロックしているスレッドが
+ある場合にはその中のただ一つだけが処理を進行できるようにします。
+デクリメント後も再帰レベルがゼロでない場合、ロックの状態はロックの
+ままで、呼び出し手のスレッドに所有されたままになります。
+
+呼び出し手のスレッドがロックを所有しているときにのみこのメソッドを
+呼び出してください。ロックの状態がアンロックの時にこのメソッドを
+呼び出してはなりません。
+
+戻り値はありません。
+\end{methoddesc}
+
+
+% --- here --- %
+\subsection{Condition オブジェクト \label{condition-objects}}
+
+条件変数(condition variable) は常にある種のロックに関連付けられています;
+条件変数に関連付けるロックは明示的に引き渡したり、デフォルトで生成させたり
+できます。 (複数の条件変数で同じロックを共有するような場合には、引渡し
+による関連付けが便利です。)
+
+条件変数には、\method{acquire()} メソッドおよび\method{release()}
+があり、関連付けされているロックの対応するメソッドを呼び出すように
+なっています。また、 \method{wait()}, \method{notify()}, 
+\method{notifyAll()} といったメソッドがあります。これら三つの
+メソッドを呼び出せるのは、呼び出し手のスレッドがロックを獲得している
+時だけです。
+
+\method{wait()}メソッドは現在のスレッドのロックを解放し、他のスレッドが
+同じ条件変数に対して\method{notify()}または\method{notifyAll()} を呼び
+出して現在のスレッドを起こすまでブロックします。一度起こされると、
+再度ロックを獲得して処理を戻します。\method{wait()} にはタイムアウトも
+設定できます。
+
+\method{notify()}メソッドは条件変数待ちのスレッドを1つ起こします。
+\method{notifyAll()}メソッドは条件変数待ちの全てのスレッドを起こします。
+
+注意: \method{notify()}と\method{notifyAll()}はロックを解放しません;
+従って、スレッドが起こされたとき、\method{wait()} の呼び出しは即座に
+処理を戻すわけではなく、\method{notify()} または\method{notifyAll()}
+を呼び出したスレッドが最終的にロックの所有権を放棄したときに初めて
+処理を返すのです。
+
+豆知識: 条件変数を使う典型的なプログラミングスタイルでは、
+何らかの共有された状態変数へのアクセスを同期させるためにロックを使います;
+状態変数が特定の状態に変化したことを知りたいスレッドは、自分の望む
+状態になるまで繰り返し \method{wait()} を呼び出します。その一方で、
+状態変更を行うスレッドは、前者のスレッドが待ち望んでいる状態で
+あるかもしれないような状態へ変更を行ったときに \method{notify()} や
+\method{notifyAll()} を呼び出します。例えば、以下のコードは無制限の
+バッファ容量のときの一般的な生産者-消費者問題です:
+
+\begin{verbatim}
+# Consume one item
+cv.acquire()
+while not an_item_is_available():
+    cv.wait()
+get_an_available_item()
+cv.release()
+
+# Produce one item
+cv.acquire()
+make_an_item_available()
+cv.notify()
+cv.release()
+\end{verbatim}
+
+\method{notify()} と\method{notifyAll()} のどちらを使うかは、
+その状態の変化に興味を持っている待ちスレッドが一つだけなのか、あるいは
+複数なのかで考えます。例えば、典型的な生産者-消費者問題では、
+バッファに 1 つの要素を加えた場合には消費者スレッドを 1 つしか
+起こさなくてかまいません。
+
+\begin{classdesc}{Condition}{\optional{lock}}
+\var{lock} を指定して、\code{None} の値にする場合、
+\class{Lock} または\class{RLock} オブジェクトでなければなりません。
+この場合、\var{lock} は根底にあるロックオブジェクトとして使われます。
+それ以外の場合には新しい \class{RLock} オブジェクトを生成して
+使います。
+\end{classdesc}
+
+\begin{methoddesc}{acquire}{*args}
+根底にあるロックを獲得します。
+このメソッドは根底にあるロックの対応するメソッドを呼び出します。
+そのメソッドの戻り値を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{release}{}
+根底にあるロックを解放します。
+このメソッドは根底にあるロックの対応するメソッドを呼び出します。
+戻り値はありません。
+\end{methoddesc}
+
+\begin{methoddesc}{wait}{\optional{timeout}}
+通知 (notify) を受けるか、タイムアウトするまで待機します。
+このメソッドを呼び出してよいのは、呼び出し手のスレッドがロックを獲得
+しているときだけです。
+
+このメソッドは根底にあるロックを解放し、他のスレッドが同じ条件変数に
+対して\method{notify()}または\method{notifyAll()} を呼び出して現在の
+スレッドを起こすか、オプションのタイムアウトが発生するまでブロック
+します。一度スレッドが起こされると、再度ロックを獲得して処理を戻します。
+
+\var{timeout}引数を指定して、\code{None}以外の値にする場合、
+タイムアウトを秒 (または端数秒) を表す浮動小数点数でなければなりません。
+
+根底にあるロックが\class{RLock} である場合、\method{release()} メソッド
+ではロックは解放されません。というのも、ロックが再帰的に複数回獲得
+されている場合には、\method{release()} によって実際にアンロックが
+行われないかもしれないからです。その代わり、 ロックが再帰的に複数回
+獲得されていても確実にアンロックを行える\class{RLock} クラスの
+内部インタフェースを使います。その後ロックを再獲得する時に、
+もう一つの内部インタフェースを使ってロックの再帰レベルを復帰します。
+\end{methoddesc}
+
+\begin{methoddesc}{notify}{}
+この条件変数を待っているスレッドがあれば、そのスレッドを起こします。
+このメソッドを呼び出してよいのは、呼び出し手のスレッドがロックを獲得
+しているときだけです。
+
+何らかの待機中スレッドがある場合、そのスレッドの一つを起こします。
+待機中のスレッドがなければ何もしません。
+
+現在の実装では、待機中のメソッドをただ一つだけ起こします。
+とはいえ、この挙動に依存するのは安全ではありません。
+将来、実装の最適化によって、複数のスレッドを起こすようになるかも
+しれないからです。
+
+注意: 起こされたスレッドは実際にロックを再獲得できるまで\method{wait()}
+呼出しから戻りません。\method{notify()}はロックを解放しないので、
+\method{notify()} 呼び出し手は明示的にロックを解放せねばなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{notifyAll}{}
+この条件を待っているすべてのスレッドを起こします。
+このメソッドは\method{notify()} のように動作しますが、
+1 つではなくすべての待ちスレッドを起こします。
+\end{methoddesc}
+
+%here%
+\subsection{Semaphore オブジェクト \label{semaphore-objects}}
+
+セマフォ (semaphore) は、計算機科学史上最も古い同期プリミティブの一つで、
+草創期のオランダ計算機科学者 Edsger W. Dijkstra によって発明されました
+(彼は\method{acquire()}と\method{release()}の代わりに
+\method{P()}と\method{V()}を使いました)。
+
+セマフォは\method{acquire()} でデクリメントされ\method{release()}で
+インクリメントされるような内部カウンタを管理します。
+カウンタは決してゼロより小さくはなりません; \method{acquire()} は、
+カウンタがゼロになっている場合、他のスレッドが\method{release()}
+を呼び出すまでブロックします。
+
+\begin{classdesc}{Semaphore}{\optional{value}}
+オプションの引数には、内部カウンタの初期値を指定します。
+デフォルトは\code{1}です。
+\end{classdesc}
+
+\begin{methoddesc}{acquire}{\optional{blocking}}
+セマフォを獲得します。
+
+引数なしで呼び出した場合: \method{acqure()} 処理に入ったときに
+内部カウンタがゼロより大きければ、カウンタを 1 デクリメントして
+即座に処理を戻します。\method{acqure()} 処理に入ったときに
+内部カウンタがゼロの場合、他のスレッドが \method{release()}
+を呼び出してカウンタをゼロより大きくするまでブロックします。
+この処理は、適切なインターロック (interlock) を介して行い、
+複数の \method{acquire()} 呼び出しがブロックされた場合、
+\method{release()} が正確に一つだけを起こせるようにします。
+この実装はランダムに一つ選択するだけでもよいので、ブロックされた
+スレッドがどの起こされる順番に依存してはなりません。
+この場合、戻り値はありません。
+
+\var{blocking} 引数の値を真にした場合、引数なしで呼び出した場合と
+同じ処理を行って真を返します。
+
+\var{blocking} 引数の値を偽にした場合、ブロックしません。
+引数なしで呼び出した場合にブロックするような状況であった場合には
+直ちに偽を返します。それ以外の場合には、
+引数なしで呼び出したときと同じ処理を行い真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{release}{}
+内部カウンタを 1 インクリメントして、セマフォを解放します。
+\method{release()} 処理に入ったときにカウンタがゼロであり、
+カウンタの値がゼロより大きくなるのを待っている別のスレッドが
+あった場合、そのスレッドを起こします。
+\end{methoddesc}
+
+
+\subsubsection{\class{Semaphore} の例 \label{semaphore-examples}}
+
+セマフォはしばしば、容量に限りのある資源、例えばデータベースサーバなど
+を保護するために使われます。リソースのサイズが固定の状況では、常に
+有限セマフォを使わねばなりません。主スレッドは、作業スレッドを
+立ち上げる前にセマフォを初期化します:
+
+\begin{verbatim}
+maxconnections = 5
+...
+pool_sema = BoundedSemaphore(value=maxconnections)
+\end{verbatim}
+
+作業スレッドは、ひとたび立ち上がると、サーバへ接続する必要が
+生じたときにセマフォの\method{acquire} および\method{release}
+メソッドを呼び出します:
+
+\begin{verbatim}
+pool_sema.acquire()
+conn = connectdb()
+... use connection ...
+conn.close()
+pool_sema.release()
+\end{verbatim}
+
+有限セマフォを使うと、セマフォを獲得回数以上に解放してしまうという
+プログラム上の間違いを見逃しにくくします。
+
+
+\subsection{Event オブジェクト \label{event-objects}}
+
+イベントは、あるスレッドがイベントを発信し、他のスレッドはそれを
+待つという、スレッド間で通信を行うための最も単純なメカニズムの一つです。
+
+イベントオブジェクトは内部フラグを管理します。このフラグは\method{set()}
+メソッドで値を真に、\method{clear()}メソッドで値を偽にリセットします。
+\method{wait()}メソッドはフラグがTrueになるまでブロックします。
+
+
+\begin{classdesc}{Event}{}
+内部フラグの初期値は偽です。
+\end{classdesc}
+
+\begin{methoddesc}{isSet}{}
+内部フラグの値が真である場合かつその場合にのみ真を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{set}{}
+内部フラグの値を真にセットします。
+フラグの値が真になるのを待っている全てのスレッドを起こします。
+一旦フラグが真になると、スレッドが\method{wait()} を呼び出しても
+全くブロックしなくなります。
+\end{methoddesc}
+
+\begin{methoddesc}{clear}{}
+内部フラグの値を偽にリセットします。
+以降は、\method{set()} を呼び出して再び内部フラグの値を真にセットするまで、
+\method{wait()} を呼出したスレッドはブロックするようになります。
+\end{methoddesc}
+
+\begin{methoddesc}{wait}{\optional{timeout}}
+内部フラグの値が真になるまでブロックします。
+\method{wait()} 処理に入った時点で内部フラグの値が真であれば、
+直ちに処理を戻します。そうでない場合、他のスレッドが\method{set()}を
+呼び出してフラグの値を真にセットするか、オプションのタイムアウトが
+発生するまでブロックします。
+
+\var{timeout}引数を指定して、\code{None}以外の値にする場合、
+タイムアウトを秒 (または端数秒) を表す浮動小数点数でなければなりません。
+\end{methoddesc}
+
+
+\subsection{Thread オブジェクト \label{thread-objects}}
+
+このクラスは個別のスレッド中で実行される活動 (activity) を表現します。
+活動を決める方法はは 2 つあり、一つは呼出し可能オブジェクトを
+コンストラクタへ渡す方法、もう一つはサブクラスで\method{run()} メソッドを
+オーバライドする方法です。(コンストラクタを除く) その他のメソッドは
+一切サブクラスでオーバライドしてはなりません。言い換えるならば、
+このクラスの\method{__init__()}と\method{run()}メソッド\emph{だけ}を
+オーバライドしてくださいということです。
+
+ひとたびスレッドオブジェクトを生成すると、スレッドの\method{start()}
+メソッドを呼び出して活動を開始せねばなりません。\method{start()}
+メソッドはそれぞれのスレッドの \method{run()} メソッドを起動します。
+
+スレッドの活動が始まると、スレッドは '生存中 (alive)' で、
+'活動中 (active)' とみなされます (これら二つの概念はほとんど
+同じですが、全く同じというわけではありません; これら二つは意図的に
+曖昧に定義されているのです)。
+スレッドの活動は、通常終了、あるいは処理されない例外が送出されたことで
+\method{run()} メソッドが終了すると生存中でなくなり、かつ活動中で
+なくなります。\method{isAlive()} メソッドはスレッドが生存中であるか
+どうか調べます。
+
+他のスレッドはスレッドの \method{join()} メソッドを呼び出せます。
+このメソッドは、\method{join()} を呼び出されたスレッドが終了するまで、
+メソッドの呼び出し手となるスレッドをブロックします。
+
+スレッドには名前があります。名前はコンストラクタで渡したり、
+\method{setName()} メソッドで設定したり、\method{getName()}
+メソッドで取得したりできます。
+
+スレッドには ``デーモンスレッド (daemon thread)'' であるというフラグを
+立てられます。
+このフラグには、残っているスレッドがデーモンスレッドだけになった時に
+Python プログラム全体を終了させるという意味があります。フラグの初期値は
+スレッドを生成する側のスレッドから継承します。フラグの値は
+\method{setDaemon()}メソッドで設定でき、\method{isDaemon()}メソッドで
+取得できます。
+
+スレッドには ``主スレッド (main thread)'' オブジェクトがあります。
+主スレッドは Python プログラムを最初に制御していたスレッドです。
+主スレッドはデーモンスレッドではありません。
+
+``ダミースレッド (dumm thread)'' オブジェクトを作成できる場合があります。
+ダミースレッドは、 ``外来スレッド (alien thread)'' に相当する
+スレッドオブジェクトです。ダミースレッドは、C コードから直接生成された
+スレッドのような、 \refmodule{threading} モジュールの外で開始された
+処理スレッドです。ダミースレッドオブジェクトには限られた機能しかなく、
+常に生存中、活動中かつデーモンスレッドであるとみなされ、\method{join()}
+できません。また、外来スレッドの終了を検出するのは不可能なので、
+ダミースレッドは削除できません。
+
+
+\begin{classdesc}{Thread}{group=None, target=None, name=None,
+                          args=(), kwargs=\{\}}
+コンストラクタは常にキーワード引数を使って呼び出さねばなりません。
+各引数は以下の通りです:
+
+\var{group} は\code{None} にせねばなりません。
+将来\class{ThreadGroup} クラスが実装されたときの拡張用に予約されている
+引数です。
+
+\var{target} は\method{run()} メソッドによって起動される
+呼出し可能オブジェクトです。 デフォルトでは何も呼び出さないことを示す
+\code{None} になっています。
+
+\var{name}はスレッドの名前です。デフォルトでは、 \var{N} を小さな
+10 進数として、``Thread-\var{N}'' という形式の一意な名前を生成します。
+
+\var{args} は\var{target} を呼び出すときの引数タプルです。
+デフォルトは\code{()}です。
+
+\var{kwargs} は\var{target} を呼び出すときのキーワード引数の辞書です。
+デフォルトは\code{\{\}}です。
+
+サブクラスでコンストラクタをオーバライドした場合、
+必ずスレッドが何かを始める前に基底クラスのコンストラクタ
+(\code{Thread.__init__()}) を呼び出しておかなくてはなりません。
+\end{classdesc}
+
+\begin{methoddesc}{start}{}
+スレッドの活動を開始します。
+
+このメソッドは、スレッドオブジェクトあたり一度しか呼び出しては
+なりません。\method{start()} は、オブジェクトの \method{run()}
+メソッドが個別の処理スレッド中で呼び出されるように調整します。
+\end{methoddesc}
+
+\begin{methoddesc}{run}{}
+スレッドの活動をもたらすメソッドです。
+
+このメソッドはサブクラスでオーバライドできます。
+標準の\method{run()} メソッドでは、オブジェクトのコンストラクタの
+\var{target} 引数に呼び出し可能オブジェクトを指定した場合、
+\var{args} および\var{kwargs}の引数列およびキーワード引数とともに
+呼び出します。
+\end{methoddesc}
+
+\begin{methoddesc}{join}{\optional{timeout}}
+スレッドが終了するまで待機します。
+このメソッドは、\method{join()} を呼び出されたスレッドが、
+正常終了あるいは処理されない例外によって終了するか、オプションの
+タイムアウトが発生するまで、メソッドの呼び出し手となるスレッドを
+ブロックします。
+
+\var{timeout}引数を指定して、\code{None}以外の値にする場合、
+タイムアウトを秒 (または端数秒) を表す浮動小数点数でなければなりません。
+\method{join()} はいつでも \code{None} を返すので、
+\method{isAlive()} を呼び出してタイムアウトしたかどうかを確認しなければなりません。
+
+\var{timeout} が指定されないかまたは \code{None} であるときは、
+この操作はスレッドが終了するまでブロックします。
+
+一つのスレッドに対して何度でも \method{join()} できます。
+
+スレッドは自分自身を\method{join()} できません。デッドロックを引き起こす
+からです。
+
+スレッドを開始するまえに\method{join()} を試みるのは誤りです。
+\end{methoddesc}
+
+\begin{methoddesc}{getName}{}
+スレッドの名前を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{setName}{name}
+スレッドの名前を設定します。
+
+名前は識別のためだけに使われます。名前には機能上の意味づけ (semantics)
+はありません。複数のスレッドに同じ名前をつけてもかまいません。
+名前の初期値はコンストラクタで設定されます。
+\end{methoddesc}
+
+\begin{methoddesc}{isAlive}{}
+スレッドが生存中かどうかを返します。
+
+大雑把な言い方をすると、スレッドは \method{start()} メソッドを呼び出した
+瞬間から \method{run()} メソッドが終了するまでの間生存しています。
+\end{methoddesc}
+
+\begin{methoddesc}{isDaemon}{}
+スレッドのデーモンフラグを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{setDaemon}{daemonic}
+スレッドのデーモンフラグをブール値\var{daemonic} に設定します。
+このメソッドは \method{start()} を呼び出す前に呼び出さねばなりません。
+
+初期値は生成側のスレッドから継承されます。
+
+デーモンでない活動中のスレッドが全てなくなると、Python プログラム全体
+が終了します。
+\end{methoddesc}
+
+\subsection{Timer オブジェクト \label{timer-objects}}
+
+このクラスは、一定時間経過後に実行される活動、すなわちタイマ活動
+を表現します。\class{Timer} は\class{Thread} のサブクラスであり、
+自作のスレッドを構築した一例でもあります。
+
+タイマは \method{start()} メソッドを呼び出すとスレッドとして作動し始め
+します。(活動を開始する前に) \method{cancel()} メソッドを呼び出すと、
+タイマを停止できます。タイマが活動を実行するまでの待ち時間は、ユーザ
+が指定した待ち時間と必ずしも厳密には一致しません。
+
+例:
+\begin{verbatim}
+def hello():
+    print "hello, world"
+
+t = Timer(30.0, hello)
+t.start() # after 30 seconds, "hello, world" will be printed
+\end{verbatim}
+
+\begin{classdesc}{Timer}{interval, function, args=[], kwargs=\{\}}
+\var{interval} 秒後に\var{function} を引数 \var{args}、キーワード引数 
+\var{kwargs} つきで実行するようなタイマを生成します。
+\end{classdesc}
+
+\begin{methoddesc}{cancel}{}
+タイマをストップして、その動作の実行をキャンセルします。
+このメソッドはタイマがまだ活動待ち状態にある場合にのみ動作します。
+\end{methoddesc}
+
+\subsection{\keyword{with} 文でのロック・条件変数・セマフォの使い方
+ \label{with-locks}}
+
+このモジュールのオブジェクトで \method{acquire()} と \method{release()} 両メソッドを
+具えているものは全て \keyword{with} 文のコンテキストマネージャとして使うことができます。
+\method{acquire()} メソッドが \keyword{with} 文のブロックに入るときに呼び出され、
+ブロック脱出時には \method{release()} メソッドが呼ばれます。
+
+現在のところ、\class{Lock}、\class{RLock}、\class{Condition}、\class{Semaphore}、
+\class{BoundedSemaphore} を \keyword{with} 文のコンテキストマネージャと
+して使うことができます。以下の例を見てください。
+
+\begin{verbatim}
+from __future__ import with_statement
+import threading
+
+some_rlock = threading.RLock()
+
+with some_rlock:
+    print "some_rlock is locked while this executes"
+\end{verbatim}
+

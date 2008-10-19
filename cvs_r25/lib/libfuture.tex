@@ -1,0 +1,73 @@
+\section{\module{__future__} ---
+         Future ステートメントの定義}
+
+\declaremodule[future]{standard}{__future__}
+\modulesynopsis{Future ステートメントの定義}
+
+% real?
+\module{__future__} は実際にモジュールであり、3つの役割があります。
+
+\begin{itemize}
+
+\item import ステートメントを解析する既存のツールを混乱させるのを避け、
+      そのステートメントがインポートしようとしているモジュールを見つけ
+      られるようにするため。
+
+\item 2.1 以前のリリースで future ステートメントが実行されれば、最低でも
+      ランタイム例外を投げるようにするため。
+      (\module{__future__} はインポートできません。というのも、2.1 以前
+      にはそういう名前のモジュールはなかったからです。)
+
+% executable documentation
+\item いつ互換でない変化が導入され、いつ強制的になる -- あるいは、
+      なった -- のか文書化するため。
+      これは実行できる形式で書かれたドキュメントでなので、\module{__future__} 
+	  をインポートし、その中身を調べるようプログラムすれば確かめられます。
+
+\end{itemize}
+
+\file{__future__.py} の各ステートメントは次のような形をしています:
+
+\begin{alltt}
+FeatureName = "_Feature(" \var{OptionalRelease} "," \var{MandatoryRelease} ","
+                        \var{CompilerFlag} ")"
+\end{alltt}
+
+ここで、普通は、\var{OptionalRelease} は \var{MandatoryRelease} より小さく、2つとも
+\code{sys.version_info} と同じフォーマットの5つのタプルからなります。
+
+\begin{verbatim}
+    (PY_MAJOR_VERSION, # the 2 in 2.1.0a3; an int
+     PY_MINOR_VERSION, # the 1; an int
+     PY_MICRO_VERSION, # the 0; an int
+     PY_RELEASE_LEVEL, # "alpha", "beta", "candidate" or "final"; string
+     PY_RELEASE_SERIAL # the 3; an int
+    )
+\end{verbatim}
+
+\var{OptionalRelease} はその機能が導入された最初のリリースを記録します。
+
+まだ時期が来ていない \var{MandatoryRelease} の場合、\var{MandatoryRelease} は
+その機能が言語の一部となるリリースを記します。
+
+その他の場合、\var{MandatoryRelease} はその機能がいつ言語の一部になったのかを
+記録します。
+そのリリースから、あるいはそれ以降のリリースでは、この機能を使う際に
+future ステートメントは必要ではありませんが、future ステートメントを
+使い続けても構いません。
+
+\var{MandatoryRelease} は \code{None} になるかもしれません。つまり、予定された機能が
+破棄されたということです。
+
+\class{_Feature} クラスのインスタンスには対応する2つのメソッド、
+\method{getOptionalRelease()} と \method{getMandatoryRelease()} があります。
+
+\var{CompilerFlag} は動的にコンパイルされるコードでその機能を有効にするために、
+組み込み関数 \function{compile()} の第4引数に渡されなければならない
+(ビットフィールド)フラグです。
+このフラグは \class{_Feature} インスタンスの \member{compilier_flag} 属性に
+保存されています。
+
+\module{__future__} で解説されている機能のうち、削除されたものはまだ
+ありません。
+

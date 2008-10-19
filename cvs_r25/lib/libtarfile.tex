@@ -1,0 +1,507 @@
+\section{\module{tarfile} --- tar アーカイブファイルを読み書きする}
+
+\declaremodule{standard}{tarfile}
+\modulesynopsis{tar-形式のアーカイブファイルを読み書きします。}
+\versionadded{2.3}
+
+\moduleauthor{Lars Gust\"abel}{lars@gustaebel.de}
+\sectionauthor{Lars Gust\"abel}{lars@gustaebel.de}
+
+ \module{tarfile} モジュールは、tar アーカイブを読んで作成することができるようにします。
+ いくつかの事実と外観：
+
+\begin{itemize}
+\item  \module{gzip} と \module{bzip2} で圧縮されたアーカイブを読み書きします。
+\item \POSIX{} 1003.1-1990 準拠あるいは GNU tar 互換のアーカイブを作成します。
+\item GNU tar 拡張機能 \emph{長い名前}、 \emph{longlink} および
+      \emph{sparse} を読みます。
+\item GNU tar 拡張機能を使って、無制限長さのパス名を保存します。
+\item ディレクトリ、普通のファイル、ハードリンク、シンボリックリンク、fifo、
+       キャラクタデバイスおよびブロックデバイスを処理します。また、タイムスタンプ、
+       アクセス許可およびオーナーのようなファイル情報の取得および保存が可能です。
+\item テープデバイスを取り扱うことができます。
+\end{itemize}
+
+\begin{funcdesc}{open}{\optional{name\optional{, mode
+                       \optional{, fileobj\optional{, bufsize}}}}}
+     パス名 \var{name}に \class{TarFile} オブジェクトを返します。
+    \class{TarFile} オブジェクトに関する詳細な情報については、
+    \citetitle{TarFile オブジェクト} (セクション \ref{tarfile-objects})を見て下さい。
+
+    \var{mode} は \code{'filemode[:compression]'} の形式をとる文字列で
+    なければなりません．デフォルトの値は \code{'r'} です．以下に
+    \var{mode}のとりうる組み合わせ全てを示します．
+
+    \begin{tableii}{c|l}{code}{mode}{動作}
+    \lineii{'r' または 'r:*'}{透過な圧縮つきで読み込むためにオープンします(推奨)。}
+    \lineii{'r:'}{圧縮なしで排他的に読み込むためにオープンします。}
+    \lineii{'r:gz'}{gzip 圧縮で読み込むためにオープンします。}
+    \lineii{'r:bz2'}{bzip2 圧縮で読み込むためにオープンします。}
+    \lineii{'a' または 'a:'}{圧縮なしで追加するためにオープンします。}
+    \lineii{'w' または 'w:'}{非圧縮で書き込むためにオープンします。}
+    \lineii{'w:gz'}{gzip 圧縮で書き込むためにオープンします。}
+    \lineii{'w:bz2'}{bzip2 圧縮で書き込むためにオープンします。}
+    \end{tableii}
+
+    \code{'a:gz'} あるいは \code{'a:bz2'}は可能ではないことに注意して下さい。
+    もし \var{mode}が、ある(圧縮した)ファイルを読み込み用にオープンするのに、
+    適していないなら、\exception{ReadError}が発生します。これを防ぐには
+     \var{mode} \code{'r'} を使って下さい。もし圧縮メソッドが
+     サポートされていなければ、
+    \exception{CompressionError} が発生します。
+
+    もし \var{fileobj}が指定されていれば、それは \var{name}でオープンされた
+    ファイルオブジェクトの代替として使うことができます。
+
+    特別な目的のために、\var{mode}の2番目の形式:
+    \code{'ファイルモード|[圧縮]'} があります。この形式を使うと，
+    \code{open}が返すのはデータをブロックからなるストリームとして扱う
+    \class{TarFile} オブジェクトになります．この場合，ファイルに対して
+    ランダムな seek を行えなくなります．\var{fileobj} を指定する場合，
+    \code{read()}および\code{write()} メソッドを持つ任意のオブジェクトに
+    できます．
+    \var{bufsize} にはブロックサイズを指定します．デフォルトは
+    \code{20 * 512} バイトです。\code{sys.stdin} ，ソケットファイル
+    オブジェクト，テーブデバイスと組み合わせる場合にはこの形式を
+    使ってください．ただし，このような\class{TarFile} オブジェクトには
+    ランダムアクセスを行えないという制限があります．
+    \citetitle{例} (セクション \ref{tar-examples})を参照してください。
+    現在可能なモードは：
+
+    \begin{tableii}{c|l}{code}{モード}{動作}
+    \lineii{'r|*'}{tar ブロックの \emph{ストリーム} を透過な読み込みにオープンします。}
+    \lineii{'r|'}{非圧縮 tar ブロックの \emph{ストリーム} を読み込みにオープンします。}
+    \lineii{'r|gz'}{ gzip 圧縮 \emph{ストリーム}を読み込みにオープンします。}
+    \lineii{'r|bz2'}{bzip2 圧縮 \emph{ストリーム} を読み込みにオープンします。}
+    \lineii{'w|'}{非圧縮 \emph{ストリーム}を書き込みにオープンします。}
+    \lineii{'w|gz'}{ gzip 圧縮 \emph{ストリーム} を書き込みにオープンします。}
+    \lineii{'w|bz2'}{bzip2 圧縮 \emph{ストリーム}を書き込みにオープンします。}
+    \end{tableii}
+\end{funcdesc}
+
+\begin{classdesc*}{TarFile}
+    tar アーカイブを読んだり、書いたりするためのクラスです。このクラスを
+    直接使わず，代わりに \function{open()} を使ってください．
+    \class{TarFile} オブジェクト (\ref{tarfile-objects} 節) を参照
+    してください．
+\end{classdesc*}
+
+\begin{funcdesc}{is_tarfile}{name}
+    もし \var{name}が tar アーカイブファイルであり，\module{tarfile}
+    モジュールで読み出せる場合に\constant{True}を返します．
+\end{funcdesc}
+
+\begin{classdesc}{TarFileCompat}{filename\optional{, mode\optional{,
+    compression}}}
+
+    \code{zipfile}-風なインターフェースを持つ tar アーカイブへの
+    制限されたアクセスのためのクラスです。詳細は
+    \code{zipfile}のドキュメントを参照してください．
+    \var{compression} は、以下の定数のどれかでなければなりません：
+    \begin{datadesc}{TAR_PLAIN}
+        非圧縮 tar アーカイブのための定数。
+    \end{datadesc}
+    \begin{datadesc}{TAR_GZIPPED}
+        \refmodule{gzip}圧縮 tar アーカイブのための定数。
+    \end{datadesc}
+\end{classdesc}
+
+\begin{excdesc}{TarError}
+    すべての \module{tarfile} 例外のための基本クラスです。
+\end{excdesc}
+
+\begin{excdesc}{ReadError}
+    tar アーカイブがオープンされた時、\module{tarfile} モジュールで操作
+    できないか、あるいは何か無効であるとき発生します。
+\end{excdesc}
+
+\begin{excdesc}{CompressionError}
+    圧縮方法がサポートされていないか、あるいはデータを正しくデコードできない
+    時に発生します。
+\end{excdesc}
+
+\begin{excdesc}{StreamError}
+    ストリーム風の \class{TarFile} オブジェクトで典型的な制限の
+    ために発生します。
+\end{excdesc}
+
+\begin{excdesc}{ExtractError}
+    \method{extract()}を使った時、もし\member{TarFile.errorlevel}\code{ == 2}
+    の \emph{フェータルでない} エラーに対してだけ発生します。
+\end{excdesc}
+
+\begin{seealso}
+    \seemodule{zipfile}{\refmodule{zipfile} 標準モジュールのドキュメント。}
+
+    \seetitle[http://www.gnu.org/software/tar/manual/html_node/tar_134.html\#SEC134]
+    {GNU tar マニュアル, 基本 Tar 形式}{GNU tar 拡張機能を含む、
+    tar アーカイブファイルのためのドキュメント。}
+\end{seealso}
+
+%-----------------
+% TarFile オブジェクト
+%-----------------
+
+\subsection{TarFile オブジェクト \label{tarfile-objects}}
+
+\class{TarFile} オブジェクトは、tar アーカイブへのインターフェースを提供します。
+tar アーカイブは一連のブロックです。アーカイブメンバー(保存されたファイル)は、
+ヘッダーブロックとそれに続くデータブロックから構成されています。ある tar アーカイブに
+ファイルを何回も保存することができます。各アーカイブメンバーは、
+\class{TarInfo} オブジェクトによって表わされます、詳細については
+ \citetitle{TarInfo オブジェクト} (セクション \ref{tarinfo-objects})を見て下さい。
+
+\begin{classdesc}{TarFile}{\optional{name
+                           \optional{, mode\optional{, fileobj}}}}
+    \emph{(非圧縮の)} tar アーカイブ \var{name}をオープンします。
+    \var{mode} は、既存のアーカイブから読み込むには \code{'r'} 、
+    既存のファイルにデータを追加するには \code{'a'}、あるいは既存のファイルを
+    上書きして新しいファイルを作成するには \code{'w'} のどれかです。\var{mode} のデフォールトは \code{'r'}です。
+
+    もし \var{fileobj}が与えられていれば、それを使ってデータを読み書きします。
+    もしそれが決定できれば、\var{mode}は \var{fileobj} のモードで上書きされます。.
+    \begin{notice}
+        \var{fileobj} は、\class{TarFile}をクローズする時は、クローズされません。
+    \end{notice}
+\end{classdesc}
+
+\begin{methoddesc}{open}{...}
+    代替コンストラクタです。モジュールレベルでの \function{open()} 関数は、
+    実際はこのクラスメソッドへのショートカットです。詳細については
+    セクション \ref{module-tarfile} を見て下さい。
+\end{methoddesc}
+
+\begin{methoddesc}{getmember}{name}
+    メンバー \var{name} に対する \class{TarInfo} オブジェクトを返します。
+    もし \var{name}がアーカイブに見つからなければ、\exception{KeyError}が発生します。
+    \begin{notice}
+        もしメンバーがアーカイブに1つ以上あれば、その最後に出現する
+        ものが、最新のバージョンであるとみなされます。
+    \end{notice}
+\end{methoddesc}
+
+\begin{methoddesc}{getmembers}{}
+     \class{TarInfo} オブジェクトのリストとしてアーカイブのメンバーを返します。
+     このリストはアーカイブ内のメンバーと同じ順番です。
+\end{methoddesc}
+
+\begin{methoddesc}{getnames}{}
+    メンバーをその名前のリストとして返します。これは
+    \method{getmembers()}で返されるリストと同じ順番です。
+\end{methoddesc}
+
+\begin{methoddesc}{list}{verbose=True}
+    コンテンツの表を \code{sys.stdout} に印刷します。もし \var{verbose} が
+    \constant{False} であれば、メンバー名のみ印刷します。もしそれが
+    \constant{True} であれば、\code{"ls -l"} に似た出力を生成します．
+\end{methoddesc}
+
+\begin{methoddesc}{next}{}
+    \class{TarFile}が読み込み用にオープンされている時、 アーカイブの次のメンバーを
+    \class{TarInfo}オブジェクトとして返します。もしそれ以上利用可能なものがなければ、
+    \code{None} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{extractall}{\optional{path\optional{, members}}}
+    全てのメンバーをアーカイブから現在の作業ディレクトリーまたは \var{path} に
+    抽出します。オプションの \var{members} が与えられるときには、
+    \method{getmembers()} で返されるリストの一部でなければなりません。
+    所有者、変更時刻、許可のようなディレクトリー情報は全てのメンバーが抽出された後に
+    セットされます。これは二つの問題を回避するためです。一つはディレクトリー
+    の変更時刻はその中にファイルが作成されるたびにリセットされるということ。
+    もう一つは、ディレクトリーに書き込み許可がなければその中のファイル抽出は
+    失敗してしまうということです。
+    \versionadded{2.5}
+\end{methoddesc}
+
+\begin{methoddesc}{extract}{member\optional{, path}}
+    メンバーをアーカイブから現在の作業ディレクトリに、そのフル名を使って、
+    抽出します。そのファイル情報はできるだけ正確に
+    抽出されます。
+    \var{member}は、ファイル名でも\class{TarInfo} オブジェクトでも構いません。
+    \var{path}を使って、異なるディレクトリを指定することができます。
+    \begin{notice}
+      \method{extract()} メソッドでは tar アーカイブにランダムアクセス
+      することが許されるので、これを使う場合には使用者自身が気をつけな
+      ければならない問題があります。上の \method{extractall()} の説明を
+      参照してください。
+    \end{notice}
+\end{methoddesc}
+
+\begin{methoddesc}{extractfile}{member}
+    アーカイブからメンバーをオブジェクトとして抽出します。
+    \var{member}は、ファイル名あるいは \class{TarInfo} オブジェクトです。
+    もし \var{member}が普通のファイルであれば、ファイル風のオブジェクトを返します。
+    もし \var{member}がリンクであれば、ファイル風のオブジェクトをリンクのターゲットから
+    構成します。
+    もし \var{member}が上のどれでもなければ、\code{None} が返されます。
+    \begin{notice}
+        ファイル風のオブジェクトは読み出し専用で以下のメソッドを提供します：
+        \method{read()}, \method{readline()}, \method{readlines()},
+        \method{seek()}, \method{tell()}.
+    \end{notice}
+\end{methoddesc}
+
+\begin{methoddesc}{add}{name\optional{, arcname\optional{, recursive}}}
+    ファイル \var{name}をアーカイブに追加します。\var{name} は、任意のファイルタイプ
+    (ディレクトリ、fifo、シンボリックリンク等)です。
+    もし\var{arcname} が与えられていれば、それはアーカイブ内のファイルの代替名を
+    指定します。デフォールトではディレクトリは再帰的に追加されます。
+    これは、\var{recursive} を \constant{False} に設定することで
+    避けることができます。デフォルトは \constant{True} です．
+\end{methoddesc}
+
+\begin{methoddesc}{addfile}{tarinfo\optional{, fileobj}}
+     \class{TarInfo}オブジェクト\var{tarinfo}をアーカイブに追加します。
+    もし \var{fileobj} が与えられていれば、\code{\var{tarinfo}.size} 
+    バイトがそれから読まれ、
+    アーカイブに追加されます。\method{gettarinfo()}を使って
+    \class{TarInfo} オブジェクトを作成することができます。
+    \begin{notice}
+    Windows プラットフォームでは、\var{fileobj}は、ファイルサイズに関する問題を避けるために、
+    常に、モード \code{'rb'} でオープンされるべきです。
+    \end{notice}
+\end{methoddesc}
+
+\begin{methoddesc}{gettarinfo}{\optional{name\optional{, arcname
+                               \optional{, fileobj}}}}
+    \class{TarInfo}オブジェクトをファイル \var{name} あるいは
+     (そのファイル記述子に \code{os.fstat()}を使って) ファイルオブジェクト\var{fileobj}の
+     どちらか用に作成します。 \class{TarInfo}の属性のいくつかは、
+    \method{addfile()}を使って追加する前に修正することができます。
+    \var{arcname}がもし与えられていれば、アーカイブ内のファイルの
+    代替名を指定します。
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+    \class{TarFile}をクローズします。書き出しモードでは、完了ゼロブロックが
+    2つ、アーカイブに追加されます。
+\end{methoddesc}
+
+\begin{memberdesc}{posix}
+    この値が真なら、\POSIX{} 1003.1-1990 準拠のアーカイブを作成します。GNU
+    拡張機能はは \POSIX{} 標準の一部ではないため使いません．
+    \POSIX{} 準拠のアーカイブでは，ファイル名の長さは最大 256 ，
+    リンク名の最大長は100文字に制限されており，ファイルの最大長は
+    8 ギガバイト以下です．ファイルがこれらの制限を超えた場合，
+    \exception{ValueError}を送出します．
+    この値が偽の場合，GNU tar 互換のアーカイブを作成します．
+    \POSIX{} 仕様には準拠しませんが，上記の制約を受けずにファイルを
+    保存できます．
+    \versionchanged[\var{posix} のデフォルト値が \constant{False}
+    になりました]{2.4}
+\end{memberdesc}
+
+\begin{memberdesc}{dereference}
+    この値が偽の場合，シンボリックリンクとハードリンクをアーカイブに
+    追加します。真の場合，ターゲットファイルの内容をアーカイブに追加します。
+    この値はリンクをサポートしないシステムには影響しません。
+\end{memberdesc}
+
+\begin{memberdesc}{ignore_zeros}
+  この値が偽の場合，空のブロックをアーカイブの終わりとして処理します。
+  真の場合，空(で無効な)ブロックを飛ばして、できるだけ多くのメンバを
+  取得しようとします。これはアーカイブを連結している場合やアーカイブが
+  損傷している場合に役に立ちます。
+\end{memberdesc}
+
+\begin{memberdesc}{debug=0}
+    \code{0}(デバッグメッセージなし、デフォルト)から \code{3}(すべてのデバッグ
+    メッセージあり)までの値に設定します．メッセージは
+    \code{sys.stderr} に出力されます．
+\end{memberdesc}
+
+\begin{memberdesc}{errorlevel=0}
+    この値が\code{0} (デフォルトの値です) の場合，
+    \method{extract()} 実行時の全てのエラーを無視します．ただし，
+    デバッグが有効になっている場合には，デバッグ出力にエラーメッセージ
+    として出力します．
+    値を\code{1} にした場合，すべての\emph{致命的な} エラーに対して
+    \exception{OSError}または\exception{IOError} 例外を送出します．
+    値を\code{2} にした場合、\emph{致命的でない}エラーもまた，全て
+    \exception{TarError} 例外として送出します．
+\end{memberdesc}
+
+%-----------------
+% TarInfo オブジェクト
+%-----------------
+
+\subsection{TarInfo オブジェクト \label{tarinfo-objects}}
+
+ \class{TarInfo} オブジェクトは \class{TarFile} の一つのメンバーを表します。ファイルに
+ 必要な(ファイルタイプ、ファイルサイズ、時刻、許可、所有者等のような)すべての属性を保存する他に、
+ そのタイプを決定するのに役に立ついくつかのメソッドを提供します。
+これにはファイルのデータそのものは含まれま\emph{せん}。
+
+\class{TarInfo}オブジェクトは \code{TarFile}のメソッド \code{getmember()}、
+\code{getmembers()} および \code{gettarinfo()}によって返されます。
+
+\begin{classdesc}{TarInfo}{\optional{name}}
+    \class{TarInfo} オブジェクトを作成します。
+\end{classdesc}
+
+\begin{methoddesc}{frombuf}{}
+    \class{TarInfo} オブジェクトを文字列バッファから作成して返します。
+\end{methoddesc}
+
+\begin{methoddesc}{tobuf}{\optional{posix}}
+%posixはオプションのようなので\optionalを加えた。2008-06-22 mft.
+    \class{TarInfo} オブジェクトから文字列バッファを作成します。
+    \var{posix} 引数については \class{TarFile} の \member{posix} 属性の
+    項を参照してください。この引数はデフォルトでは \constant{False} です。
+
+    \versionadded[\var{posix} 引数]{2.5}
+\end{methoddesc}
+
+\code{TarInfo}オブジェクトには以下の public なデータ属性があります：
+\begin{memberdesc}{name}
+    アーカイブメンバーの名前。
+\end{memberdesc}
+
+\begin{memberdesc}{size}
+    バイト単位でのサイズ。
+\end{memberdesc}
+
+\begin{memberdesc}{mtime}
+    最終更新時刻。
+\end{memberdesc}
+
+\begin{memberdesc}{mode}
+    許可ビット。
+\end{memberdesc}
+
+\begin{memberdesc}{type}
+  ファイルタイプです．
+  \var{type} は普通、以下の定数:
+    \constant{REGTYPE}, \constant{AREGTYPE}, \constant{LNKTYPE},
+    \constant{SYMTYPE}, \constant{DIRTYPE}, \constant{FIFOTYPE},
+    \constant{CONTTYPE}, \constant{CHRTYPE}, \constant{BLKTYPE},
+    \constant{GNUTYPE_SPARSE} のいずれかです．
+    \class{TarInfo} オブジェクトのタイプをもっと便利に決定するには、
+    下記の \code{is_*()} メソッドを使って下さい。
+\end{memberdesc}
+
+\begin{memberdesc}{linkname}
+    ターゲットファイル名の名前で、これは タイプ\constant{LNKTYPE} と 
+    \constant{SYMTYPE} の\class{TarInfo}オブジェクトにだけ存在します。
+\end{memberdesc}
+
+\begin{memberdesc}{uid}
+ファイルメンバを保存した元のユーザのユーザ ID です．
+\end{memberdesc}
+
+\begin{memberdesc}{gid}
+ファイルメンバを保存した元のユーザのグループ ID です．
+\end{memberdesc}
+
+\begin{memberdesc}{uname}
+ファイルメンバを保存した元のユーザのユーザ名です．
+\end{memberdesc}
+
+\begin{memberdesc}{gname}
+ファイルメンバを保存した元のユーザのグループ名です．
+\end{memberdesc}
+
+\class{TarInfo}オブジェクトは便利な照会用のメソッドもいくつか提供しています:
+
+\begin{methoddesc}{isfile}{}
+    \class{Tarinfo} オブジェクトが普通のファイルの場合に、
+    \constant{True} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{isreg}{}
+    \method{isfile()}と同じです。
+\end{methoddesc}
+
+\begin{methoddesc}{isdir}{}
+    ディレクトリの場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{issym}{}
+    シンボリックリンクの場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{islnk}{}
+    ハードリンクの場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{ischr}{}
+    キャラクタデバイスの場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{isblk}{}
+    ブロックデバイスの場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{isfifo}{}
+     FIFO の場合に\constant{True}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{isdev}{}
+    キャラクタデバイス、ブロックデバイスあるいは FIFOの
+    いずれかの場合に \constant{True}を返します。
+\end{methoddesc}
+
+%------------------------
+% 例
+%------------------------
+
+\subsection{例 \label{tar-examples}}
+
+tar アーカイブから現在のディレクトリーに全て抽出する方法：
+\begin{verbatim}
+import tarfile
+tar = tarfile.open("sample.tar.gz")
+tar.extractall()
+tar.close()
+\end{verbatim}
+
+非圧縮 tar アーカイブをファイル名のリストから作成する方法：
+\begin{verbatim}
+import tarfile
+tar = tarfile.open("sample.tar", "w")
+for name in ["foo", "bar", "quux"]:
+    tar.add(name)
+tar.close()
+\end{verbatim}
+
+gzip 圧縮 tar アーカイブを作成してメンバー情報のいくつかを表示する方法：
+\begin{verbatim}
+import tarfile
+tar = tarfile.open("sample.tar.gz", "r:gz")
+for tarinfo in tar:
+    print tarinfo.name, " は 大きさが ", tarinfo.size, "バイトで ",
+    if tarinfo.isreg():
+        print "普通のファイルです。"
+    elif tarinfo.isdir():
+        print "ディレクトリです。"
+    else:
+        print "ファイル・ディレクトリ以外のものです。"
+tar.close()
+\end{verbatim}
+
+見せかけの情報を持つ tar アーカイブを作成する方法：
+\begin{verbatim}
+import tarfile
+tar = tarfile.open("sample.tar.gz", "w:gz")
+for name in namelist:
+    tarinfo = tar.gettarinfo(name, "fakeproj-1.0/" + name)
+    tarinfo.uid = 123
+    tarinfo.gid = 456
+    tarinfo.uname = "johndoe"
+    tarinfo.gname = "fake"
+    tar.addfile(tarinfo, file(name))
+tar.close()
+\end{verbatim}
+
+非圧縮 tar ストリームを\code{sys.stdin}から抽出する
+\emph{唯一の}方法：
+\begin{verbatim}
+import sys
+import tarfile
+tar = tarfile.open(mode="r|", fileobj=sys.stdin)
+for tarinfo in tar:
+    tar.extract(tarinfo)
+tar.close()
+\end{verbatim}
+

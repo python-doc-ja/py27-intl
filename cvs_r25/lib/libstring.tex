@@ -1,0 +1,440 @@
+\section{\module{string} ---
+         一般的な文字列操作}
+
+\declaremodule{standard}{string}
+\modulesynopsis{一般的な文字列操作}
+
+\module{string} モジュールには便利な定数やクラスが数多く入っています。
+また、現在は文字列のメソッドとして利用できる、すでに撤廃された古い関数
+も入っています。正規表現に関する文字列操作の関数は
+\refmodule{re}\refstmodindex{re} を参照してください。
+\subsection{文字列定数}
+
+このモジュールでは以下の定数を定義しています。
+
+\begin{datadesc}{ascii_letters}
+後述の \constant{ascii_lowercase} と\constant{ascii_uppercase} を合わ
+せたもの。この値はロケールに依存しません。
+\end{datadesc}
+
+\begin{datadesc}{ascii_lowercase}
+小文字 \code{'abcdefghijklmnopqrstuvwxyz'}。この値はロケールに依存せ
+ず、固定です。
+\end{datadesc}
+
+\begin{datadesc}{ascii_uppercase}
+大文字 \code{'ABCDEFGHIJKLMNOPQRSTUVWXYZ'}。この値はロケールに依存せ
+ず、固定です。
+\end{datadesc}
+
+\begin{datadesc}{digits}
+文字列 \code{'0123456789'} です。
+\end{datadesc}
+
+\begin{datadesc}{hexdigits}
+文字列 \code{'0123456789abcdefABCDEF'} です。
+\end{datadesc}
+
+\begin{datadesc}{letters}
+後述の \constant{lowercase} と \constant{uppercase} を合わせた文字列です。
+具体的な値はロケールに依存しており、\function{locale.setlocale()} 
+が呼ばれたときに更新されます。
+\end{datadesc}
+
+\begin{datadesc}{lowercase}
+小文字として扱われる文字全てを含む文字列です。ほとんどのシステムでは
+文字列 \code{'abcdefghijklmnopqrstuvwxyz'} です。この定義を変更しては
+なりません --- 変更した場合の\function{upper()} と \function{swapcase()}
+に対する影響は定義されていません。具体的な値はロケールに依存しており、
+\function{locale.setlocale()} が呼ばれたときに更新されます。
+\end{datadesc}
+
+\begin{datadesc}{octdigits}
+文字列 \code{'01234567'} です。
+\end{datadesc}
+
+\begin{datadesc}{punctuation}
+\samp{C} ロケールにおいて、句読点として扱われる \ASCII{} 文字の文字列です。
+\end{datadesc}
+
+\begin{datadesc}{printable}
+印刷可能な文字で構成される文字列です。
+\constant{digits}、\constant{letters}、\constant{punctuation}
+および \constant{whitespace} を組み合わせたものです。
+\end{datadesc}
+
+\begin{datadesc}{uppercase}
+大文字として扱われる文字全てを含む文字列です。ほとんどのシステムでは 
+\code{'ABCDEFGHIJKLMNOPQRSTUVWXYZ'} です。この定義を変更してはなりません
+---- 変更した場合の\function{lower()} と \function{swapcase()} に対する
+影響は定義されていません。具体的な値はロケールに依存しており、  
+\function{locale.setlocale()} が呼ばれたときに更新されます。
+\end{datadesc}
+
+\begin{datadesc}{whitespace}
+空白 (whitespace) として扱われる文字全てを含む文字列です。
+ほとんどのシステムでは、これはスペース (space)、タブ (tab)、改行 (linefeed)、
+復帰 (return)、改頁 (formfeed)、垂直タブ (vertical tab) です。
+この定義を変更してはなりません --- 変更した場合の\function{strip()} と
+\function{split()} に対する影響は定義されていません。
+\end{datadesc}
+
+\subsection{テンプレート文字列}
+
+テンプレート (template) を使うと、\pep{292}で解説されているように
+より簡潔に文字列置換 (string substitution) を行えるようになります。
+通常の\samp{\%} ベースの置換に代わって、テンプレートでは以下のような
+規則に従った\samp{\$}ベースの置換をサポートしています:
+
+\begin{itemize}
+\item \samp{\$\$} はエスケープ文字です; \samp{\$} 一つに置換されます。
+
+\item \samp{\$identifier} は置換プレースホルダの指定で、 "identifier"
+というキーへの対応付けに相当します。デフォルトは、"identifier" の部分には
+Python の識別子が書かれていなければなりません。
+\samp{\$} の後に識別子に使えない文字が出現すると、そこでプレースホルダ名の
+指定が終わります。
+
+\item \samp{\$\{identifier\}} は\samp{\$identifier} と同じです。
+プレースホルダ名の後ろに識別子として使える文字列が続いていて、それを
+プレースホルダ名の一部として扱いたくない場合、例えば
+"\$\{noun\}ification" のような場合に必要な書き方です。
+\end{itemize}
+
+上記以外の書き方で文字列中に\samp{\$} を使うと\exception{ValueError} 
+を送出します。
+
+\versionadded{2.4}
+
+\module{string} モジュールでは、上記のような規則を実装した
+\class{Template} クラスを提供しています。
+\class{Template} のメソッドを以下に示します:
+
+\begin{classdesc}{Template}{template}
+コンストラクタはテンプレート文字列になる引数を一つだけ取ります。
+\end{classdesc}
+
+\begin{methoddesc}[Template]{substitute}{mapping\optional{, **kws}}
+テンプレート置換を行い、新たな文字列を生成して返します。\var{mapping} は
+テンプレート中のプレースホルダに対応するキーを持つような任意の辞書類似
+オブジェクトです。辞書を指定する代わりに、キーワード引数も指定でき、その
+場合にはキーワードをプレースホルダ名に対応させます。
+\var{mapping} と \var{kws} の両方が指定され、内容が重複した場合には、
+\var{kws} に指定したプレースホルダを優先します。
+\end{methoddesc}
+
+\begin{methoddesc}[Template]{safe_substitute}{mapping\optional{, **kws}}
+\method{substitute()} と同じですが、プレースホルダに対応するものを
+\var{mapping} や \var{kws} から見つけられなかった場合に、
+\exception{KeyError} 例外を送出する代わりにもとのプレースホルダが
+そのまま入ります。また、\method{substitute()}とは違い、規則外の
+書き方で \samp{\$} を使った場合でも、\exception{ValueError} を送出
+せず単に \samp{\$} を返します。
+
+その他の例外も発生しうる一方で、このメソッドが「安全 (safe)」
+と呼ばれているのは、置換操作が常に例外を送出する代わりに利用可能な
+文字列を返そうとしているからです。別の見方をすれば、
+\method{safe_substitute()} は区切り間違いによるぶら下がり
+(dangling delimiter) や波括弧の非対応、Python の識別子として無効な
+プレースホルダ名を含むような不正なテンプレートを何も警告せずに
+無視するため、安全とはいえないのです。
+\end{methoddesc}
+
+\class{Template} のインスタンスは、次のような public な属性を
+提供しています:
+
+\begin{memberdesc}[string]{template}
+コンストラクタの引数 \var{template} に渡されたオブジェクトです。通常、
+この値を変更すべきではありませんが、読み込み専用アクセスを強制している
+わけではありません。
+\end{memberdesc}
+
+Templateの使い方の例を以下に示します:
+
+\begin{verbatim}
+>>> from string import Template
+>>> s = Template('$who likes $what')
+>>> s.substitute(who='tim', what='kung pao')
+'tim likes kung pao'
+>>> d = dict(who='tim')
+>>> Template('Give $who $100').substitute(d)
+Traceback (most recent call last):
+[...]
+ValueError: Invalid placeholder in string: line 1, col 10
+>>> Template('$who likes $what').substitute(d)
+Traceback (most recent call last):
+[...]
+KeyError: 'what'
+>>> Template('$who likes $what').safe_substitute(d)
+'tim likes $what'
+\end{verbatim} 
+% $ 
+
+さらに進んだ使い方: \class{Template} のサブクラスを導出して、
+プレースホルダの書式、区切り文字、テンプレート文字列の解釈に
+使われている正規表現全体をカスタマイズできます。
+こうした作業には、以下のクラス属性をオーバライドします:
+
+\begin{itemize}
+\item \var{delimiter} -- プレースホルダの開始を示すリテラル文字列
+です。デフォルトの値は \samp{\$} です。実装系はこの文字列に対して
+必要に応じて \method{re.escape()} を呼び出すので、正規表現を表す
+ような文字列にしては \emph{なりません}。
+\item \var{idpattern} -- 波括弧でくくらない形式のプレースホルダ
+の表記パターンを示す正規表現です (波括弧は自動的に適切な場所に追加
+されます)。で尾フォルトの値は\samp{[_a-z][_a-z0-9]*} という
+正規表現です。
+\end{itemize}
+
+他にも、クラス属性\var{pattern} をオーバライドして、正規表現パターン
+全体を指定できます。オーバライドを行う場合、\var{pattern} の値は
+4 つの名前つきキャプチャグループ (capturing group) を持った
+正規表現オブジェクトでなければなりません。これらのキャプチャグループは、
+上で説明した規則と、無効なプレースホルダに対する規則に対応しています:
+
+\begin{itemize}
+\item \var{escaped} -- このグループはエスケープシーケンス、すなわち
+デフォルトパターンにおける \samp{\$\$} に対応します。
+\item \var{named} -- このグループは波括弧でくくらないプレースホルダ名に
+対応します; キャプチャグループに区切り文字を含めてはなりません。
+\item \var{braced} -- このグループは波括弧でくくったプレースホルダ名に
+対応します; キャプチャグループに区切り文字を含めてはなりません。
+\item \var{invalid} -- このグループはそのほかの区切り文字のパターン
+(通常は区切り文字一つ) に対応し、正規表現の末尾に出現せねばなりません。
+\end{itemize}
+
+\subsection{文字列操作関数}
+
+以下の関数は文字列またはUnicodeオブジェクトを操作できます。これらの関数は
+文字列型のメソッドにはありません。
+
+\begin{funcdesc}{capwords}{s}
+\function{split()} を使って引数を単語に分割し、\function{capitalize()} を
+使ってそれぞれの単語の先頭の文字を大文字に変換し、 \function{join()} 
+を使ってつなぎ合わせます。
+この置換処理は文字列中の連続する空白文字をスペース一つに置き換え、
+先頭と末尾の空白を削除するので注意してください。
+\end{funcdesc}
+
+\begin{funcdesc}{maketrans}{from, to}
+\function{translate()} や \function{regex.compile()} に渡すのに適した
+変換テーブルを返します。このテーブルは、 \var{from} 内の各文字を
+\var{to} の同じ位置にある文字に対応付けます; \var{from} と \var{to}
+は同じ長さでなければなりません。
+
+\warning{\constant{lowercase} と \constant{uppercase} から取り出した
+文字列を引数に使ってはなりません; ロケールによっては、これらは同じ
+長さになりません。大文字小文字の変換には、常に\function{lower()} 
+または \function{upper()}を使ってください。}
+\end{funcdesc}
+
+\subsection{撤廃された文字列関数}
+
+以下の一連の関数は、文字列型や Unicode 型のオブジェクトのメソッドとしても
+定義されています; 詳しくは ``文字列型のメソッド'' (\ref{string-methods})を
+参照してください。
+ここに挙げた関数は Python 3.0 で削除されることはないはずですが、
+撤廃された関数とみなして下さい。このモジュールで定義されている関数は以下の
+通りです:
+
+\begin{funcdesc}{atof}{s}
+\deprecated{2.0}{組み込み関数 \function{float()} を使ってください。} 
+
+文字列を浮動小数点型の数値に変換します。文字列は Python における
+標準的なの浮動小数点リテラルの文法に従っていなければなりません。
+先頭に符号（\samp{+} または \samp{-}）が付くのは構いません。
+この関数に文字列を渡した場合は、組み込み関数
+\function{float()}\bifuncindex{float} と同じように振舞います。
+
+\note{文字列を渡した場合、根底にある C ライブラリによって
+NaN\index{NaN} や Infinity\index{Infinity} を返す場合があります。
+こうした値を返させるのがどんな文字列の集合であるかは、全て C 
+ライブラリに依存しており、ライブラリによって異なると知られています。}
+\end{funcdesc}
+
+\begin{funcdesc}{atoi}{s\optional{, base}}
+\deprecated{2.0}{組み込み関数 \function{int()} を使ってください。}  
+文字列 \var{s} を、\var{base} を基数とする整数に変換します。 
+文字列は 1 桁またはそれ以上の数字からなっていなければなりません。
+先頭に符号 (\samp{+} または \samp{-}) が付くのは構いません。
+\var{base} のデフォルト値は 10 です。 \var{base} が 0 の場合、
+(符号を剥ぎ取った後の) 文字列の先頭にある文字列に従ってデフォルトの
+基数を決定します。\samp{0x} か \samp{0X} なら 16、\samp{0} なら 8、
+その他の場合は 10 が基数になります。\var{base} が 16 の場合、先頭の
+\samp{0x} や \samp{0X} が付いていても受け付けますが、必須ではありません。
+文字列を渡す場合、この関数は組み込み関数 \function{int()} と同じように
+振舞います。 (数値リテラルをより柔軟に解釈したい場合には、組み込み関数
+\function{eval()}\bifuncindex{eval} を使ってください。)
+\end{funcdesc}
+
+\begin{funcdesc}{atol}{s\optional{, base}}
+\deprecated{2.0}{組み込み関数 \function{long()} を使ってください。}  
+文字列 \var{s} を、\var{base} を基数とする長整数に変換します。 
+文字列は 1 桁またはそれ以上の数字からなっていなければなりません。
+先頭に符号 (\samp{+} または \samp{-}) が付くのは構いません。
+\var{base} は \function{atoi()} と同じ意味です。基数が 0 の場合を
+除き、文字列末尾に \samp{l} や\samp{L} を付けてはなりません。
+\var{base} を指定しないか、10 を指定して文字列を渡した場合には、
+この関数は組み込み関数   \function{long()}\bifuncindex{long} 
+と同じように振舞います。
+\end{funcdesc}
+
+\begin{funcdesc}{capitalize}{word}
+先頭文字だけ大文字にした \var{word} のコピーを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{expandtabs}{s\optional{, tabsize}}
+現在のカラムと指定タブ幅に従って文字列中のタブを展開し、
+一つまたはそれ以上のスペースに置き換えます。文字列中に改行が出現する
+たびにカラム番号は 0 にリセットされます。
+この関数は、他の非表示文字やエスケープシーケンスを解釈しません。
+タブ幅のデフォルトは 8 です。
+\end{funcdesc}
+
+\begin{funcdesc}{find}{s, sub\optional{, start\optional{,end}}}
+\code{\var{s}[\var{start}:\var{end}]} の中で、部分文字列 \var{sub} が
+完全な形で入っている場所のうち、最初のものを \var{s} のインデクスで
+返します。見つからなかった場合は \code{-1} を返します。
+\var{start} と \var{end} のデフォルト値、および、負の値を指定した
+場合の解釈は文字列のスライスと同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{rfind}{s, sub\optional{, start\optional{, end}}}
+\function{find()} と同じですが、最後に見つかったもののインデックスを返
+します。
+\end{funcdesc}
+
+\begin{funcdesc}{index}{s, sub\optional{, start\optional{, end}}}
+\function{find()} と同じですが、部分文字列が見つからなかったときに  
+\exception{ValueError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{rindex}{s, sub\optional{, start\optional{, end}}}
+\function{rfind()} と同じですが、部分文字列が見つからなかったときに
+\exception{ValueError} 送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{count}{s, sub\optional{, start\optional{, end}}}
+\code{\var{s}[\var{start}:\var{end}]} における、部分文字列 \var{sub} の
+(重複しない) 出現回数を返します。\var{start} と \var{end} のデフォルト値、
+および、負の値を指定した場合の解釈は文字列のスライスと同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{lower}{s}
+\var{s} のコピーを大文字を小文字に変換して返します。
+\end{funcdesc}
+
+\begin{funcdesc}{split}{s\optional{, sep\optional{, maxsplit}}}
+文字列\var{s} 内の単語からなるリストを返します。オプションの第二引数
+\var{sep} を指定しないか、または\code{None} にした場合、
+空白文字 (スペース、タブ、改行、リターン、改頁) からなる任意の文字列
+で単語に区切ります。\var{sep} を\code{None} 以外の値に指定した場合、
+単語の分割に使う文字列の指定になります。戻り値のリストには、
+文字列中に分割文字列が重複せずに出現する回数より一つ多い要素が
+入るはずです。オプションの第三引数 \var{maxsplit} はデフォルトで 0 です。
+この値がゼロでない場合、最大でも \var{maxsplit} 回の分割しか行わず、
+リストの最後の要素は未分割の残りの文字列になります (従って、リスト中の
+要素数は最大でも\code{\var{maxsplit}+1} です)。
+
+空文字列に対する分割を行った場合の挙動は \var{sep} の値に依存します。
+\var{sep} を指定しないか\code{None} にした場合、結果は空のリストに
+なります。 \var{sep} に文字列を指定した場合、空文字列一つの入った
+リストになります。
+\end{funcdesc}
+
+\begin{funcdesc}{rsplit}{s\optional{, sep\optional{, maxsplit}}}
+\var{s} 中の単語からなるリストを \var{s} の末尾から検索して生成し
+返します。関数の返す語のリストは全ての点で \function{split()} の
+返すものと同じになります。ただし、オプションの第三引数 \var{maxsplit}
+をゼロでない値に指定した場合には必ずしも同じにはなりません。
+\var{maxsplit} がゼロでない場合には、最大で\var{maxsplit} 個の
+分割を \emph{右端から} 行います - 未分割の残りの文字列はリストの
+最初の要素として返されます (従って、リスト中の要素数は最大でも
+\code{\var{maxsplit}+1} です)。
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{splitfields}{s\optional{, sep\optional{, maxsplit}}}
+この関数は \function{split()} と同じように振舞います。 (以前は
+\function{split()} は単一引数の場合にのみ使い、\function{splitfields()} 
+は引数2つの場合でのみ使っていました)。
+\end{funcdesc}
+
+\begin{funcdesc}{join}{words\optional{, sep}}
+単語のリストやタプルを間に\var{sep} を入れて連結します。  
+\var{sep} のデフォルト値はスペース文字 1 つです。    
+\samp{string.join(string.split(\var{s}, \var{sep}), \var{sep})} は
+常に \var{s} になります。
+\end{funcdesc}
+
+\begin{funcdesc}{joinfields}{words\optional{, sep}}
+この関数は \function{join()} と同じふるまいをします (以前は、
+\function{join()} を使えるのは引数が 1 つの場合だけで、
+\function{joinfields()} は引数2つの場合だけでした)。
+文字列オブジェクトには \method{joinfields()} メソッドがないので
+注意してください。代わりに \method{join()} メソッドを使ってください。
+\end{funcdesc}
+
+\begin{funcdesc}{lstrip}{s\optional{, chars}}
+文字列の先頭から文字を取り除いたコピーを生成して返します。
+\var{chars} を指定しない場合や \code{None} にした場合、
+先頭の空白を取り除きます。\var{chars} を\code{None} 以外の値にする場合、
+\var{chars} は文字列でなければなりません。
+\versionchanged[\var{chars} パラメタを追加しました。 
+初期の 2.2 バージョンでは、\var{chars} パラメータを渡せませんでした]{2.2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{rstrip}{s\optional{, chars}}
+文字列の末尾から文字を取り除いたコピーを生成して返します。
+\var{chars} を指定しない場合や \code{None} にした場合、
+末尾の空白を取り除きます。\var{chars} を\code{None} 以外の値にする場合、
+\var{chars} は文字列でなければなりません。
+\versionchanged[\var{chars} パラメタを追加しました。 
+初期の 2.2 バージョンでは、\var{chars} パラメータを渡せませんでした]{2.2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{strip}{s\optional{, chars}}
+文字列の先頭と末尾から文字を取り除いたコピーを生成して返します。
+\var{chars} を指定しない場合や \code{None} にした場合、
+先頭と末尾の空白を取り除きます。\var{chars} を \code{None} 以外に指定する
+場合、\var{chars} は文字列でなければなりません。
+\versionchanged[\var{chars} パラメタを追加しました。 
+初期の 2.2 バージョンでは、\var{chars} パラメータを渡せませんでした]{2.2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{swapcase}{s}
+\var{s} の大文字と小文字を入れ替えたものを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{translate}{s, table\optional{, deletechars}}
+\var{s} の中から、 (もし指定されていれば) \var{deletechars} に入っている
+文字を削除し、\var{table} を使って文字変換を行って返します。
+\var{table} は 256 文字からなる文字列で、各文字はそのインデクスを序数と
+する文字に対する変換先の文字の指定になります。
+\end{funcdesc}
+
+\begin{funcdesc}{upper}{s}
+\var{s} に含まれる小文字を大文字に置換して返します。
+\end{funcdesc}
+
+\begin{funcdesc}{ljust}{s, width}
+\funcline{rjust}{s, width}
+\funcline{center}{s, width}
+文字列を指定した文字幅のフィールド中でそれぞれ左寄せ、右寄せ、中央寄せ
+します。これらの関数は指定幅になるまで文字列 \var{s} の左側、右側、および
+両側のいずれかにスペースを追加して、少なくとも \var{width} 文字からなる
+文字列にして返します。文字列を切り詰めることはありません。
+\end{funcdesc}
+
+\begin{funcdesc}{zfill}{s, width}
+数値を表現する文字列の左側に、指定の幅になるまでゼロを付加します。符号付きの
+数字も正しく処理します。
+\end{funcdesc}
+
+\begin{funcdesc}{replace}{str, old, new\optional{, maxreplace}}
+\var{s} 内の部分文字列 \var{old} を全て \var{new} に置換したものを返し 
+ます。 \var{maxreplace} を指定した場合、最初に見つかった \var{maxreplace} 
+個分だけ置換します。
+\end{funcdesc}
+
+

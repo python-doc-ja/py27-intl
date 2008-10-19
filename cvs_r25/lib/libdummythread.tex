@@ -1,0 +1,22 @@
+\section{\module{dummy_thread} ---
+         \module{thread} の代替モジュール}
+
+\declaremodule[dummythread]{standard}{dummy_thread}
+\modulesynopsis{\refmodule{thread} の代替モジュール。}
+
+このモジュールは \refmodule{thread} モジュールのインターフェースをそっ
+くりまねるものです。\refmodule{thread} モジュールがサポートされていな
+いプラットフォームで import することを意図して作られたものです。
+
+使用例:
+
+\begin{verbatim}
+try:
+    import thread as _thread
+except ImportError:
+    import dummy_thread as _thread
+\end{verbatim}
+
+生成するスレッドが、他のブロックしたスレッドを待ち、デッドロック発生の
+可能性がある場合には、このモジュールを使わないようにしてください。ブロッ
+キング I/O を使っている場合によく起きます。

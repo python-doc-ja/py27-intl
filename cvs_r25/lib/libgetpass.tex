@@ -1,0 +1,36 @@
+\section{\module{getpass}
+         --- 可搬性のあるパスワード入力機構}
+
+\declaremodule{standard}{getpass}
+\modulesynopsis{ポータブルなパスワードとユーザーIDの検索}
+
+\moduleauthor{Piers Lauder}{piers@cs.su.oz.au}
+% Windows (& Mac?) support by Guido van Rossum.
+\sectionauthor{Fred L. Drake, Jr.}{fdrake@acm.org}
+
+The \module{getpass} module provides two functions:
+getpassモジュールは二つの機能を提供します:
+
+\begin{funcdesc}{getpass}{\optional{prompt\optional{, stream}}}
+エコーなしでユーザーにパスワードを入力させるプロンプト。
+ユーザーは\var{prompt}の文字列をプロンプトに使えます、
+デフォルトは\code{'Password:'}です。
+\UNIX ではプロンプトはファイルに似たオブジェクト\var{stream}へ
+出力されます。デフォルトは\code{sys.stdout}です(この引数は
+Windowsでは無視されます。)。
+
+利用できるシステム: Macintosh, Unix, Windows
+\versionchanged[パラメータ \var{stream} の追加]{2.5}
+
+\end{funcdesc}
+
+
+
+\begin{funcdesc}{getuser}{}
+  ユーザーの ``ログイン名''を返します。
+　有効性:\UNIX、Windows
+
+この関数は環境変数\envvar{LOGNAME} \envvar{USER} \envvar{LNAME} \envvar{USERNAME}の順序でチェックして、最初の空ではない文字列が設定された値を返します。
+もし、なにも設定されていない場合はpwdモジュールが提供するシステム上のパスワードデータベースから返します。それ以外は、例外が上がります。
+
+\end{funcdesc}

@@ -1,0 +1,347 @@
+\section{\module{rfc822} ---
+         RFC 2822 準拠のメイルヘッダ読み出し}
+
+\declaremodule{standard}{rfc822}
+\modulesynopsis{RFC 2822 形式のメイルメッセージを解釈します。}
+
+\deprecated{2.3}{\module{rfc822} モジュールを使うよりも 
+\refmodule{email} パッケージを使うべきです。このモジュールは
+以前のバージョンとの互換性のために保守されているにすぎません。}
+
+このモジュールでは、インターネット標準 \rfc{2822} 
+\footnote{
+このモジュールはもともと \rfc{822} に適合していたので、そういう名前に
+なっています。その後、\rfc{2822} が \rfc{822} に対する更新として
+リリースされました。このモジュールは \rfc{2822} 適合であり、特に
+\rfc{822} からの構文や意味付けに対する変更がなされています。}
+で定義されている ``電子メイルメッセージ'' を表現するクラス、
+\class{Message} を定義しています。
+このメッセージはメッセージヘッダ群とメッセージボディの集まり
+からなります。このモジュールではまた、ヘルパークラス 
+\rfc{2822} アドレス群を解釈するための \class{AddressList} クラス
+を定義しています。\rfc{2822} メッセージ固有の構文に関する情報
+は RFC を参照してください。
+
+\refmodule{mailbox}\refstmodindex{mailbox} モジュールでは、
+多くのエンドユーザメイルプログラムによって生成されるメイルボックス
+を読み出すためのクラスを提供しています。
+
+\begin{classdesc}{Message}{file\optional{, seekable}}
+\class{Message} インスタンスは入力オブジェクトをパラメタに与えて
+インスタンス化します。入力オブジェクトのメソッドのうち、Message が
+依存するのは \method{readline()} だけです; 通常のファイル
+オブジェクトは適格です。インスタンス化を行うと、入力オブジェクト
+からデリミタ行 (通常は空行 1 行) に到達するまでヘッダを読み出し、
+それらをインスタンス中に保持します。ヘッダの後のメッセージ本体は
+読み出しません。
+
+このクラスは \method{readline()} メソッドをサポートする任意の入力
+オブジェクトを扱うことができます。入力オブジェクトが seek および
+tell できる場合、 \method{rewindbody()} メソッドが動作します。
+また、不正な行データを入力ストリームにプッシュバックできます。
+入力オブジェクトが seek できない一方で、入力行をプッシュバックする
+\method{unread()} メソッドを持っている場合、\class{Message}
+は不正な行データにこのプッシュバックを使います。こうして、
+このクラスはバッファされているストリームから来るメッセージを
+解釈するのに使うことができます。
+
+オプションの \var{seekable} 引数は、\cfunction{lseek()} システムコール
+が動作しないと分かるまでは \cfunction{tell()} がバッファされたデータを
+無視するような、ある種の stdio ライブラリで回避手段として提供されています。
+可搬性を最大にするために、socket オブジェクトによって生成されたファイル
+のような、seek できないオブジェクトを渡す際には、最初に \method{tell()}
+が呼び出されないようにするために seekable 引数をゼロに設定すべきです。
+
+ファイルとして読み出された入力行データは CR-LF と単一の改行 (line feed)
+のどちらで終端されていてもかまいません; 行データを記憶する前に、終端の
+CR-LF は単一の改行と置き換えられます。
+
+ヘッダに対するマッチは全て大小文字に依存しません。例えば、
+ \code{\var{m}['From']}、 \code{\var{m}['from']}、および
+\code{\var{m}['FROM']} は全て同じ結果になります。
+\end{classdesc}
+
+\begin{classdesc}{AddressList}{field}
+\rfc{2833} アドレスをカンマで区切ったものとして解釈される
+単一の文字列パラメタを使って、\class{AddressList} ヘルパークラスを
+インスタンス化することができます。
+(パラメタ \code{None} は空のリストを表します。)
+\end{classdesc}
+
+\begin{funcdesc}{quote}{str}
+\var{str} 中のバックスラッシュが 2 つのバックスラッシュに置き換えられ、
+二重引用符がバックスラッシュ付きの二重引用符に置き換えられた、
+新たな文字列を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{unquote}{str}
+\var{str} の \emph{逆クオートされた} 新たな文字列を返します。
+\var{str} が二重引用符で囲われていた場合、二重引用符を剥ぎ取ります。
+同様に、 \var{str} が三角括弧で囲われていた場合にも剥ぎ取ります。
+\end{funcdesc}
+
+\begin{funcdesc}{parseaddr}{address}
+\mailheader{To} や \mailheader{Cc} といった、アドレスが入っている
+フィールドの値 \var{address} を解析し、含まれている ``実名 (realname)''
+部分および ``電子メールアドレス'' 部分に分けます。それらの情報からなる
+タプルを返します。解析が失敗した場合には 2 要素のタプル 
+\code{(None, None)} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{dump_address_pair}{pair}
+\method{parseaddr()} の逆で、\code{(\var{realname}, \var{email_address})} 
+形式の 2 要素のタプルをとり、\mailheader{To} や \mailheader{Cc} ヘッダに
+適した文字列値を返します。\var{pair} の最初の要素が真値をとらない
+場合、二つ目の要素をそのまま返します。
+\end{funcdesc}
+
+\begin{funcdesc}{parsedate}{date}
+\rfc{2822} の規則に従っている日付を解析しようと試みます。
+しかしながら、メイラによっては \rfc{2822} で指定されている
+ような書式に従わないため、そのような場合には \function{parsedata()} 
+は正しい日付を推測しようと試みます。
+\var{date} は \code{'Mon, 20 Nov 1995 19:12:08 -0500'} のような
+\rfc{2822} 様式の日付を収めた文字列です。日付の解析に成功した場合、
+\function{parsedate()} は \function{time.mktime()} にそのまま渡す
+ことができるような 9 要素のタプルを返します; そうでない場合には
+\code{None} を返します。結果のフィールド 6、7、および 8 は
+有用な情報ではありません。
+\end{funcdesc}
+
+\begin{funcdesc}{parsedate_tz}{date}
+\function{parsedate()} と同じ機能を実現しますが、\code{None} または
+10 要素のタプルを返します; 最初の 9 要素は \function{time.mktime()}
+に直接渡すことができるようなタプルで、 10 番目の要素はその日の
+タイムゾーンにおける UTC (グリニッチ標準時の公式名称) からの
+オフセットです。(タイムゾーンオフセットの符号は、
+同じタイムゾーンにおける \code{time.timezone} 変数の符号と反転
+しています; 後者の変数が \POSIX{} 標準に従っている一方、
+このモジュールは \rfc{2822} に従っているからです。) 入力文字列
+がタイムゾーン情報を持たない場合、タプルの最後の要素は \code{None}
+になります。結果のフィールド 6、7、および 8 は
+有用な情報ではありません。
+\end{funcdesc}
+
+\begin{funcdesc}{mktime_tz}{tuple}
+\function{parsedata_tz()} が返す 10 要素のタプルを UTC タイムスタンプ
+に変換します。タプル内のタイムゾーン要素が \code{None} の場合、地域の
+時刻を表しているものと家庭します。些細な欠陥: この関数はまず最初の
+8 要素を地域における時刻として変換し、次にタイムゾーンの違いに対する
+補償を行います; これにより、夏時間の切り替え日前後でちょっとした
+エラーが生じるかもしれません。通常の利用に関しては心配ありません。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seemodule{email}{網羅的な電子メイル処理パッケージです; \module{rfc822} モジュールを代替します。}
+  \seemodule{mailbox}{エンドユーザのメイルプログラムによって生成される、様々な mailbox 形式を読み出すためのクラス群。}
+  \seemodule{mimetools}{MIME エンコードされたメッセージを処理する \class{rfc822.Message} のサブクラス。} 
+\end{seealso}
+
+
+\subsection{Message オブジェクト \label{message-objects}}
+
+\class{Message} インスタンスは以下のメソッドを持っています:
+
+\begin{methoddesc}{rewindbody}{}
+メッセージ本体の先頭を seek します。このメソッドはファイルオブジェクト
+が seek 可能である場合にのみ動作します。
+\end{methoddesc}
+
+\begin{methoddesc}{isheader}{line}
+ある行が正しい \rfc{2822} ヘッダである場合、その行の正規化された
+フィールド名 (インデクス指定の際に使われる辞書キー) を返します;
+そうでない場合 \code{None} を返します (解析をここで一度中断し、
+行データを入力ストリームに押し戻すことを意味します)。
+このメソッドをサブクラスで上書きすると便利なことがあります。
+\end{methoddesc}
+
+\begin{methoddesc}{islast}{line}
+与えられた line が Message の区切りとなるデリミタであった場合に真を
+返します。このデリミタ行は消費され、ファイルオブジェクトの読み位置は
+その直後になります。標準ではこのメソッドは単にその行が空行かどうか
+をチェックしますが、サブクラスで上書きすることもできます。
+\end{methoddesc}
+
+\begin{methoddesc}{iscomment}{line}
+与えられた行全体を無視し、単に読み飛ばすときに真を返します。
+標準では、これは控えメソッド (stub) であり、常に \code{False} を返し
+ますが、サブクラスで上書きすることもできます。
+\end{methoddesc}
+
+\begin{methoddesc}{getallmatchingheaders}{name}
+\var{name} に一致するヘッダからなる行のリストがあれば、それらを
+全て返します。各物理行は連続した行内容であるか否かに関わらず
+別々のリスト要素になります。\var{name} に一致するヘッダがない場合、
+空のリストを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{getfirstmatchingheader}{name}
+\var{name} に一致する最初のヘッダと、その行に連続する (複数)
+行からなる行データのリストを返します。
+\var{name} に一致するヘッダがない場合 \code{None} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{getrawheader}{name}
+\var{name} に一致する最初のヘッダにおけるコロン以降のテキストが入った
+単一の文字列を返します。このテキストには、先頭の空白、末尾の改行、
+また後続の行がある場合には途中の改行と空白が含まれます。
+\var{name} に一致するヘッダが存在しない場合には \code{None} 
+を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{getheader}{name\optional{, default}}
+\code{getrawheader(\var{name})} に似ていますが、先頭および末尾の
+空白を剥ぎ取ります。途中にある空白は剥ぎ取られません。
+オプションの \var{default} 引数は、\var{name} に一致する
+ヘッダが存在しない場合に、別のデフォルト値を返すように指定する
+ために使われます。
+\end{methoddesc}
+
+\begin{methoddesc}{get}{name\optional{, default}}
+正規の辞書との互換性をより高めるための \method{getheader()}
+の別名 (alias) です。
+\end{methoddesc}
+
+\begin{methoddesc}{getaddr}{name}
+\code{getheader(\var{name})} が返した文字列を解析して、
+\code{(\var{full name}, \var{email address})} からなるペアを返します。
+\var{name} に一致するヘッダが無い場合、\code{(None, None)} が返され
+ます; そうでない場合、\var{full name} および \var{address} は
+(空文字列をとりうる) 文字列になります。
+
+例: \var{m} に最初の \mailheader{From} ヘッダに文字列
+\code{'jack@cwi.nl (Jack Jansen)'} が入っている場合、
+\code{m.getaddr('From')} はペア
+\code{('Jack Jansen', 'jack@cwi.nl')} になります。
+また、\code{'Jack Jansen <jack@cwi.nl>'} であっても、全く同じ結果に
+なります。
+\end{methoddesc}
+
+\begin{methoddesc}{getaddrlist}{name}
+\code{getaddr(\var{list})} に似ていますが、複数のメイルアドレス
+からなるリストが入ったヘッダ (例えば \mailheader{To} ヘッダ) を
+解析し、 \code{(\var{full name}, \var{email address})} のペア
+からなるリストを (たとえヘッダには一つしかアドレスが入っていなかった
+としても) 返します。\var{name} に一致するヘッダが無かった場合、
+空のリストを返します。
+
+指定された名前に一致する複数のヘッダが存在する場合 (例えば、
+複数の \mailheader{Cc} ヘッダが存在する場合)、全てのアドレスを
+解析します。指定されたヘッダが連続する行に収められている場合も
+解析されます。
+\end{methoddesc}
+
+\begin{methoddesc}{getdate}{name}
+\method{getheader()} を使ってヘッダを取得して解析し、
+\function{time.mktime()} と互換な 9 要素のタプルにします; 
+フィールド 6、7、および 8 は有用な値ではないので注意して下さい。
+\var{name} に一致するヘッダが存在しなかったり、ヘッダが解析不能
+であった場合、\code{None} を返します。
+
+日付の解析は妖術のようなものであり、全てのヘッダが標準に従って
+いるとは限りません。このメソッドは多くの発信源から集められた
+膨大な数の電子メールでテストされており、正しく動作することが
+分かっていますが、間違った結果を出力してしまう可能性はまだ
+あります。
+\end{methoddesc}
+
+\begin{methoddesc}{getdate_tz}{name}
+\method{getheader()} を使ってヘッダを取得して解析し、10 要素の
+タプルにします; 最初の 9 要素は \function{time.mktime()} と
+互換性のあるタプルを形成し、10 番目の要素はその日におけるタイムゾーン
+の UTC からのオフセットを与える数字になります。\method{getdate()}
+と同様に、\var{name} に一致するヘッダがなかったり、解析不能であった
+場合、\code{None} を返します。
+\end{methoddesc}
+
+\class{Message} インスタンスはまた、限定的なマップ型のインタフェースを
+持っています。
+すなわち: \code{\var{m}[name]} は \code{\var{m}.getheader(name)} に似て
+いますが、一致するヘッダがない場合 \exception{KeyError} を送出します;
+\code{len(\var{m})}、
+\code{\var{m}.get(\var{name}\optional{, \var{default}})}、
+\code{\var{m}.has_key(\var{name})}, \code{\var{m}.keys()}、
+\code{\var{m}.values()} \code{\var{m}.items()}、および
+\code{\var{m}.setdefault(\var{name}\optional{, \var{default}})} 
+は期待通りに動作します。ただし \method{setdefault()} は標準の設定値
+として空文字列をとります。 \class{Message} インスタンスはまた、
+マップ型への書き込みを行えるインタフェース \code{\var{m}[name] =
+value} および \code{del \var{m}[name]} をサポートしています。
+\class{Message} オブジェクトでは、 \method{clear()}、 \method{copy()}、
+\method{popitem()}、あるいは \method{update()} といったマップ型
+インタフェースのメソッドはサポートしていません。
+(\method{get()} および \method{setdefault()} のサポートは Python
+2.2 でしか追加されていません。)
+ 
+最後に、\class{Message} インスタンスはいくつかの public なインスタンス
+変数を持っています:
+
+\begin{memberdesc}{headers}
+ヘッダ行のセット全体が、(setitem を呼び出して変更されない限り) 
+読み出された順番に入れられたリストです。各行は末尾の改行を
+含んでいます。ヘッダを終端する空行はリストに含まれません。
+\end{memberdesc}
+
+\begin{memberdesc}{fp}
+インスタンス化の際に渡されたファイルまたはファイル類似オブジェクトです。
+この値はメッセージ本体を読み出すために使うことができます。
+\end{memberdesc}
+
+\begin{memberdesc}{unixfrom}
+メッセージに \UNIX{} \samp{From~} 行がある場合はその行、そうでなければ
+空文字列になります。この値は例えば \code{mbox} 形式のメイルボックス
+ファイルのような、あるコンテキスト中のメッセージを再生成するために
+必要です。
+\end{memberdesc}
+
+
+\subsection{AddressList オブジェクト \label{addresslist-objects}}
+
+\class{AddressList} インスタンスは以下のメソッドを持ちます:
+
+\begin{methoddesc}{__len__}{}
+アドレスリスト中のアドレスの数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{__str__}{}
+アドレスリストの正規化 (canonicalize) された文字列表現を返します。
+アドレスはカンマで分割された "name" <host@domain> 形式になります。
+\end{methoddesc}
+
+\begin{methoddesc}{__add__}{alist}
+二つの \class{AddressList} 被演算子中の双方に含まれるアドレスに
+ついて、重複を除いた (集合和の) 全てのアドレスを含む新たな 
+\class{AddressList} インスタンスを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{__iadd__}{alist}
+\method{__add__()} のインプレース演算版です; \class{AddressList} 
+インスタンスと右側値 \var{alist} との集合和をとり、その結果を
+インスタンス自体と置き換えます。
+\end{methoddesc}
+
+\begin{methoddesc}{__sub__}{alist}
+左側値の\class{AddressList} インスタンスのアドレスのうち、
+右側値中に含まれていないもの全てを含む (集合差分の) 新たな 
+\class{AddressList} インスタンスを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{__isub__}{alist}
+\method{__sub__()} のインプレース演算版で、\var{alist} にも
+含まれているアドレスを削除します。
+\end{methoddesc}
+
+
+最後に、\class{AddressList} インスタンスは public なインスタンス変数
+を一つ持ちます:
+
+\begin{memberdesc}{addresslist}
+アドレスあたり一つの文字列ペアで構成されるタプルからなるリストです。
+各メンバ中では、最初の要素は正規化された名前部分で、二つ目は
+実際の配送アドレス (\character{@} で分割されたユーザ名 と 
+ホスト.ドメインからなるペア) です。
+\end{memberdesc}
+
+
+

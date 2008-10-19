@@ -1,0 +1,143 @@
+\section{\module{cmath} ---
+         複素数のための数学関数}
+
+\declaremodule{builtin}{cmath}
+\modulesynopsis{複素数のための数学関数です。}
+
+このモジュールは常に利用できます。このモジュールでは、
+複素数を扱う数学関数へのアクセス手段を提供しています。
+
+提供している関数を以下に示します:
+
+\begin{funcdesc}{acos}{x}
+\var{x} の逆余弦 (arc cosine) を返します。
+この関数には二つの branch cut があります:
+一つは 1 から右側に実数軸に沿って \infinity へと延びていて、
+下から連続しています。
+もう一つは -1 から左側に実数軸に沿って -\infinity へと延びていて、
+上から連続しています。
+\end{funcdesc}
+
+\begin{funcdesc}{acosh}{x}
+\var{x} の逆双曲線余弦を返します。
+branch cut が一つあり、1 の左側に実数軸に沿って -\infinity へと
+延びていて、上から連続しています。
+\end{funcdesc}
+
+\begin{funcdesc}{asin}{x}
+\var{x} の逆正弦を返します。
+\function{acos()} と同じ branch cut を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{asinh}{x}
+\var{x} の双曲線正弦を返します。
+2 つの brnch cut があり、\plusminus\code{1j} の左から 
+\plusminus-\infinity\code{j} に延びており、両方とも上で連続しています。
+これらの branch cut は将来のリリースで修正されるべきバグとみなされて
+います。
+正しい branch cut は虚数軸に沿って延びており、一つは \code{1j}
+から \infinity\code{j} までで右から連続、もう一方は -\code{1j}
+から下って -\infinity\code{j} までで、左から連続です。
+\end{funcdesc}
+
+\begin{funcdesc}{atan}{x}
+\var{x} の逆正接を返します。
+2 つの branch cut があります:
+一つは \code{1j} から虚数軸に沿って \infinity\code{j} へと延びており、
+左で連続です。もう一方は -\code{1j} から虚数軸に沿って
+-\infinity\code{j} までで、左で連続です。
+(この仕様は上の branch cut が反対側から連続になるように変更されるかも
+しれません)。
+\end{funcdesc}
+
+\begin{funcdesc}{atanh}{x}
+\var{x} の逆双曲線正接を返します。
+2 つの branch cut があります:
+一つは 1 から実数軸に沿って \infinity までで、上で連続です。
+もう一方は -1 から実数軸に沿って -\infinity までで、
+上で連続です。
+(この仕様は左側の branch cut が反対側から連続になるように変更されるかも
+しれません)。
+\end{funcdesc}
+
+\begin{funcdesc}{cos}{x}
+\var{x} の余弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{cosh}{x}
+\var{x} の双曲線余弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{exp}{x}
+指数値 \code{e**\var{x}} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{log\optional{, base}}{x}
+\var{base}を底とする\var{x} の対数を返します。
+もし\var{base}が指定されていない場合には、\var{x}の自然対数を返しま
+す。
+branch cut を一つもち、0 から負の実数軸に沿って -\infinity に
+延びており、上で連続しています。
+\versionchanged[引数\var{base} が追加されました。]{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{log10}{x}
+\var{x} の底 10 対数を返します。
+\function{log()} と同じbranch cut を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{sin}{x}
+\var{x} の正弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sinh}{x}
+\var{x} の双曲線正弦を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sqrt}{x}
+\var{x} の平方根を返します。
+\function{log()} と同じ branch cut を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{tan}{x}
+\var{x} の正接を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{tanh}{x}
+\var{x} の双曲線正接を返します。
+\end{funcdesc}
+
+このモジュールではまた、以下の数学定数も定義しています:
+
+\begin{datadesc}{pi}
+数学上の定数 \emph{pi} で、実数です。
+\end{datadesc}
+
+\begin{datadesc}{e}
+数学上の定数 \emph{e} で、実数です。
+\end{datadesc}
+
+\refmodule{math}\refbimodindex{math} と同じような関数が選ばれて
+いますが、全く同じではないので注意してください。機能を二つの
+モジュールに分けているのは、複素数に興味がなかったり、もしかすると
+複素数とは何かすら知らないようなユーザがいるからです。
+そういった人たちはむしろ、\code{math.sqrt(-1)} が複素数を返すよりも
+例外を送出してほしいと考えます。また、\module{cmath} で定義されている
+関数は、たとえ結果が実数で表現可能な場合 (虚数部分がゼロの複素数) でも、
+常に複素数を返すので注意してください。
+
+branch cut に関する注釈: branch cut をもつ曲線上では、与えられた関数は
+連続でありえなくなります。これらは多くの複素関数における必然的な
+特性です。複素関数を計算する必要がある場合、これらの branch cut に
+関して理解しているものと仮定しています。悟りに至るために何らかの
+(到底基礎的とはいえない) 複素数に関する書をひもといてください。
+数値計算を目的とした branch cut の正しい選択方法についての情報としては、
+以下がよい参考文献となります:
+
+\begin{seealso}
+  \seetext{Kahan, W:  Branch cuts for complex elementary functions;
+           or, Much ado about nothings's sign bit.  In Iserles, A.,
+           and Powell, M. (eds.), \citetitle{The state of the art in
+           numerical analysis}. Clarendon Press (1987) pp165-211.}
+\end{seealso}
+

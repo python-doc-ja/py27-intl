@@ -1,0 +1,382 @@
+\section{\module{inspect} ---
+         使用中オブジェクトの情報を取得する}
+
+\declaremodule{standard}{inspect}
+\modulesynopsis{使用中のオブジェクトから、情報とソースコードを取得する。}
+\moduleauthor{Ka-Ping Yee}{ping@lfw.org}
+\sectionauthor{Ka-Ping Yee}{ping@lfw.org}
+
+\versionadded{2.1}
+
+\module{inspect}は、モジュール・クラス・メソッド・関数・トレースバック・
+フレームオブジェクト・コードオブジェクトなどのオブジェクトから情報を取得
+する関数を定義しており、クラスの内容を調べる、メソッドのソースコードを取
+得する、関数の引数リストを取得して整形する、トレースバックから必要な情報
+だけを取得して表示する、などの処理を行う場合に利用します。
+
+このモジュールの機能は、型チェック・ソースコードの取得・クラス／関数から
+情報を取得・インタープリタのスタック情報の調査、の4種類に分類する事がで
+きます。
+
+\subsection{型とメンバ
+            \label{型チェック}}
+
+\function{getmembers()}は、クラスやモジュールなどのオブジェクトからメンバを取得します。 名前が``is''で始まる 11 個の関数は、\function{getmembers()}の2番目の引数として利用する事ができますし、以下のような特殊属性を参照できるかどうか調べる時にも使えます。
+
+\begin{tableiv}{c|l|l|c}{}{Type}{Attribute}{Description}{Notes}
+  \lineiv{module}{__doc__}{ドキュメント文字列}{}
+  \lineiv{}{__file__}{ファイル名(組み込みモジュールには存在しない}{}
+  \hline
+  \lineiv{class}{__doc__}{ドキュメント文字列}{}
+  \lineiv{}{__module__}{クラスを定義しているモジュールの名前}{}
+  \hline
+  \lineiv{method}{__doc__}{ドキュメント文字列}{}
+  \lineiv{}{__name__}{メソッドが定義された時の名前}{}
+  \lineiv{}{im_class}{メソッドを呼び出すために必要なクラスオブジェクト}{(1)}
+  \lineiv{}{im_func}{メソッドを実装している関数オブジェクト}{}
+  \lineiv{}{im_self}{メソッドに結合しているインスタンス、または\code{None}}{}
+  \hline
+  \lineiv{function}{__doc__}{ドキュメント文字列}{}
+  \lineiv{}{__name__}{関数が定義された時の名前}{}
+  \lineiv{}{func_code}{関数をコンパイルしたバイトコードを格納するコード
+  オブジェクト}{}
+  \lineiv{}{func_defaults}{引数のデフォルト値のタプル}{}
+  \lineiv{}{func_doc}{(__doc__と同じ)}{}
+  \lineiv{}{func_globals}{関数を定義した時のグローバル名前空間}{}
+  \lineiv{}{func_name}{(__name__と同じ)}{}
+  \hline
+  \lineiv{traceback}{tb_frame}{このレベルのフレームオブジェクト}{}
+  \lineiv{}{tb_lasti}{最後に実行しようとしたバイトコード中のインストラク
+    ションを示すインデックス。}{}
+  \lineiv{}{tb_lineno}{現在のPythonソースコードの行番号}{}
+  \lineiv{}{tb_next}{このオブジェクトの内側(このレベルから呼び出された)
+    のトレースバックオブジェクト}{}
+  \hline
+  \lineiv{frame}{f_back}{外側 (このフレームを呼び出した)のフレームオブジ
+    ェクト}{}
+  \lineiv{}{f_builtins}{このフレームで参照している組み込み名前空間}{}
+  \lineiv{}{f_code}{このフレームで実行しているコードオブジェクト}{}
+  \lineiv{}{f_exc_traceback}{このフレームで例外が発生した場合にはトレー
+    スバックオブジェクト。それ以外なら\code{None}}{}
+  \lineiv{}{f_exc_type}{このフレームで例外が発生した場合には例外型。それ
+    以外なら\code{None}}{}
+  \lineiv{}{f_exc_value}{このフレームで例外が発生した場合には例外の値。
+    それ以外なら\code{None}}{}
+  \lineiv{}{f_globals}{このフレームで参照しているグローバル名前空間}{}
+  \lineiv{}{f_lasti}{最後に実行しようとしたバイトコードのインデックス。}{}
+  \lineiv{}{f_lineno}{現在のPythonソースコードの行番号}{}
+  \lineiv{}{f_locals}{このフレームで参照しているローカル名前空間}{}
+  \lineiv{}{f_restricted}{制限実行モードなら1、それ以外なら0}{}
+  \lineiv{}{f_trace}{このフレームのトレース関数、または\code{None}}{}
+  \hline
+  \lineiv{code}{co_argcount}{引数の数(*、**引数は含まない)}{}
+  \lineiv{}{co_code}{コンパイルされたバイトコードそのままの文字列}{}
+  \lineiv{}{co_consts}{バイトコード中で使用している定数のタプル}{}
+  \lineiv{}{co_filename}{コードオブジェクトを生成したファイルのファイル名}{}
+  \lineiv{}{co_firstlineno}{Pythonソースコードの先頭行}{}
+  \lineiv{}{co_flags}{以下の値の組み合わせ: 1=optimized \code{|} 2=newlocals 
+    \code{|} 4=*arg \code{|} 8=**arg}{}
+  \lineiv{}{co_lnotab}{文字列にエンコードした、行番号->バイトコード
+    インデックスへの変換表}{}
+  \lineiv{}{co_name}{コードオブジェクトが定義されたときの名前}{}
+  \lineiv{}{co_names}{ローカル変数名のタプル}{}
+  \lineiv{}{co_nlocals}{ローカル変数の数}{}
+  \lineiv{}{co_stacksize}{必要な仮想機械のスタックスペース}{}
+  \lineiv{}{co_varnames}{引数名とローカル変数名のタプル}{}
+  \hline
+  \lineiv{builtin}{__doc__}{ドキュメント文字列}{}
+  \lineiv{}{__name__}{関数、メソッドの元々の名前}{}
+  \lineiv{}{__self__}{メソッドが結合しているインスタンス、または\code{None}}{}
+\end{tableiv}
+
+\noindent
+Note:
+\begin{description}
+\item[(1)]
+\versionchanged[\member{im_class} 従来、メソッドを定義しているクラスを参
+照するために使用していた]{2.2}
+\end{description}
+
+
+\begin{funcdesc}{getmembers}{object\optional{, predicate}}
+ オブジェクトの全メンバを、(名前, 値)の組み合わせのリストで返します。リ
+ ストはメンバ名でソートされています。\var{predicate}が指定されている場
+ 合、predicateの戻り値が真となる値のみを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{getmoduleinfo}{path}
+  \var{path}で指定したファイルがモジュールであればそのモジュールがPython
+  でどのように解釈されるかを示す\code{(\var{name}, \var{suffix},
+  \var{mode}, \var{mtype})}のタプルを返し、モジュールでなければ
+  \code{None}を返します。\var{name}はパッケージ名を含まないモジュール
+  名、\var{suffix}はファイル名からモジュール名を除いた残りの部分(ドット
+  による拡張子とは限らない)、\var{mode}は\function{open()}で指定されるフ
+  ァイルモード(\code{'r'}または\code{'rb'})、\var{mtype}は
+  \refmodule{imp}で定義している整定数のいずれかが指定されます。モジュール
+  タイプに付いては\refmodule{imp}を参照してください。
+\end{funcdesc}
+
+\begin{funcdesc}{getmodulename}{path}
+  \var{path}で指定したファイルの、パッケージ名を含まないモジュール名を返
+  します。この処理は、インタープリタがモジュールを検索する時と同じアルゴ
+  リズムで行われます。ファイルがこのアルゴリズムで見つからない場合には
+  \code{None}が返ります。
+\end{funcdesc}
+
+\begin{funcdesc}{ismodule}{object}
+  オブジェクトがモジュールの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isclass}{object}
+  オブジェクトがクラスの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{ismethod}{object}
+  オブジェクトがメソッドの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isfunction}{object}
+  オブジェクトがPythonの関数、または無名(lambda)関数の場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{istraceback}{object}
+  オブジェクトがトレースバックの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isframe}{object}
+  オブジェクトがフレームの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{iscode}{object}
+  オブジェクトがコードの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isbuiltin}{object}
+  オブジェクトが組み込み関数の場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isroutine}{object}
+  オブジェクトがユーザ定義か組み込みの関数・メソッドの場合は真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{ismethoddescriptor}{object}
+オブジェクトがメソッドデスクリプタの場合に真を返しますが、
+ismethod()、isclass() または isfunction() が真の場合には真を返しません。
+
+この機能は Python 2.2 から新たに追加されたもので、例えば int.__add__ は真
+になります。
+このテストをパスするオブジェクトは __get__ 属性を持ちますが __set__
+属性を持ちません。しかしそれ以上に属性のセットには様々なものがあります。
+__name__ は通常見分けることが可能ですし、__doc__ も時には可能です。
+
+デスクリプタを使って実装されたメソッドで、上記のいずれかのテストもパスして
+いるものは、 ismethoddescriptor() では偽を返します。これは単に
+他のテストの方がもっと確実だからです -- 例えば、ismethod() をパス
+したオブジェクトは im_func 属性 (など) を持っていると期待できます。
+\end{funcdesc}
+
+\begin{funcdesc}{isdatadescriptor}{object}
+オブジェクトがデータデスクリプタの場合に真を返します。
+
+データデスクリプタは __get__ および __set__ 属性の両方を持ちます。
+データデスクリプタの例は (Python 上で定義された) プロパティや
+getset やメンバです。後者のふたつは C で定義されており、
+個々の型に特有のテストも行います。そのため、Python の実装よりもより確
+実確実です。通常、データデスクリプタは __name__ や __doc__ 
+属性を持ちます (プロパティ、 getset 、メンバは両方の属性を持っています)
+が、保証されているわけではありません。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{isgetsetdescriptor}{object}
+オブジェクトがgetsetデスクリプタの場合に真を返します。
+
+getsetとは\code{PyGetSetDef}構造体を用いて拡張モジュールで定義されてい
+る属性のことです。Pythonの実装の場合はそのような型はないので、このメソッ
+ドは常に\code{False}を返します。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ismemberdescriptor}{object}
+オブジェクトがメンバデスクリプタの場合に真を返します。
+
+メンバデスクリプタとは\code{PyMemberDef}構造体を用いて拡張モジュールで
+定義されている属性のことです。Pythonの実装の場合はそのような型はないの
+で、このメソッドは常に\code{False}を返します。
+\versionadded{2.5}
+\end{funcdesc}
+
+\subsection{ソース参照
+            \label{inspect-source}}
+
+\begin{funcdesc}{getdoc}{object}
+  オブジェクトのドキュメンテーション文字列を取得します。タブはスペースに
+  展開されます。コードブロックに合わせてインデントされているdocstringを
+  整形するため、２行目以降では行頭の空白は削除されます。
+\end{funcdesc}
+
+\begin{funcdesc}{getcomments}{object}
+  オブジェクトがクラス・関数・メソッドの何れかの場合は、オブジェクトの
+  ソースコードの直後にあるコメント行（複数行）を、単一の文字列として返し
+  ます。オブジェクトがモジュールの場合、ソースファイルの先頭にあるコメン
+  トを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{getfile}{object}
+  オブジェクトを定義している（テキストまたはバイナリの）ファイルの名前を
+  返します。オブジェクトが組み込みモジュール・クラス・関数の場合は
+  \exception{TypeError}例外が発生します。
+\end{funcdesc}
+
+\begin{funcdesc}{getmodule}{object}
+  オブジェクトを定義しているモジュールを推測します。
+\end{funcdesc}
+
+\begin{funcdesc}{getsourcefile}{object}
+  オブジェクトを定義しているPythonソースファイルの名前を返します。オブジ
+  ェクトが組み込みのモジュール、クラス、関数の場合には、
+  \exception{TypeError}例外が発生します。
+\end{funcdesc}
+
+\begin{funcdesc}{getsourcelines}{object}
+  オブジェクトのソース行のリストと開始行番号を返します。引数にはモジュー
+  ル・クラス・メソッド・関数・トレースバック・フレーム・コードオブジェク
+  トを指定する事ができます。戻り値は指定したオブジェクトに対応するソース
+  コードのソース行リストと元のソースファイル上での開始行となります。ソー
+  スコードを取得できない場合は\exception{IOError}が発生します。
+\end{funcdesc}
+
+\begin{funcdesc}{getsource}{object}
+  オブジェクトのソースコードを返します。引数にはモジュール・クラス・メソ
+  ッド・関数・トレースバック・フレーム・コードオブジェクトを指定する事が
+  できます。ソースコードは単一の文字列で返します。ソースコードを取得でき
+  ない場合は\exception{IOError}が発生します。
+\end{funcdesc}
+
+\subsection{クラスと関数
+            \label{inspect-classes-functions}}
+
+\begin{funcdesc}{getclasstree}{classes\optional{, unique}}
+  リストで指定したクラスの継承関係から、ネストしたリストを作成します。ネ
+  ストしたリストには、直前の要素から派生したクラスが格納されます。各要素
+  は長さ2のタプルで、クラスと基底クラスのタプルを格納しています。
+  \var{unique} が真の場合、各クラスは戻り値のリスト内に一つだけしか格納
+  されません。真でなければ、多重継承を利用したクラスとその派生クラスは複
+  数回格納される場合があります。
+\end{funcdesc}
+
+\begin{funcdesc}{getargspec}{func}
+  関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の
+  値を返します:\code{(\var{args}, \var{varargs}, \var{varkw},
+  \var{defaults})}。\var{args}は引数名のリストです（ネストしたリストが格
+  納される場合があります）。\var{varargs}と\var{varkw}は\code{*}引数と
+  \code{**}引数の名前で、引数がなければ\code{None}となります。
+  \var{defaults}は引数のデフォルト値のタプルか、デフォルト値がない場合
+  は\code{None}です。このタプルに\var{n}個
+  の要素があれば、各要素は\var{args}の後ろから\var{n}個分の引数のデフォ
+  ルト値となります。
+\end{funcdesc}
+
+\begin{funcdesc}{getargvalues}{frame}
+  指定したフレームに渡された引数の情報を取得します。戻り値は長さ4のタプ
+  ルで、次の値を返します:\code{(\var{args}, \var{varargs}, \var{varkw},
+  \var{locals})}。\var{args}は引数名のリストです（ネストしたリストが格納
+  される場合があります）。\var{varargs}と\var{varkw}は\code{*}引数と
+  \code{**}引数の名前で、引数がなければ\code{None}となります。
+  \var{locals}は指定したフレームのローカル変数の辞書です。
+\end{funcdesc}
+
+\begin{funcdesc}{formatargspec}{args\optional{, varargs, varkw, defaults,
+      formatarg, formatvarargs, formatvarkw, formatvalue, join}}
+  \function{getargspec()}で取得した4つの値を読みやすく整形します。
+  format* 引数はオプションで、名前と値を文字列に変換する整形関数を指定する
+  事ができます。
+\end{funcdesc}
+
+\begin{funcdesc}{formatargvalues}{args\optional{, varargs, varkw, locals,
+      formatarg, formatvarargs, formatvarkw, formatvalue, join}}
+  \function{getargvalues()}で取得した4つの値を読みやすく整形します。
+  format* 引数はオプションで、名前と値を文字列に変換する整形関数を指定する
+  事ができます。
+\end{funcdesc}
+
+\begin{funcdesc}{getmro}{cls}
+  \var{cls}クラスの基底クラス（\var{cls}自身も含む）を、メソッドの優先順
+  位順に並べたタプルを返します。結果のリスト内で各クラスは一度だけ格納さ
+  れます。メソッドの優先順位はクラスの型によって異なります。非常に特殊な
+  ユーザ定義のメタクラスを使用していない限り、\var{cls}が戻り値の先頭要
+  素となります。
+\end{funcdesc}
+
+\subsection{インタープリタ スタック
+            \label{inspect-stack}}
+
+以下の関数には、戻り値として``フレームレコード''を返す関数があります。``
+フレームレコード''は長さ6のタプルで、以下の値を格納しています:フレームオ
+ブジェクト・ファイル名・実行中の行番号・関数名・コンテキストのソース行の
+リスト・ソース行リストの実行中行のインデックス。
+
+\begin{notice}[warning]
+
+フレームレコードの最初の要素などのフレームオブジェクトへの参照を保存する
+と、循環参照になってしまう場合があります。循環参照ができると、Pythonの循
+環参照検出機能を有効にしていたとしても関連するオブジェクトが参照している
+すべてのオブジェクトが解放されにくくなり、明示的に参照を削除しないとメモ
+リ消費量が増大する恐れがあります。
+
+参照の削除をPythonの循環参照検出機能にまかせる事もできますが、
+\keyword{finally}節で循環参照を解除すれば確実にフレーム（とそのローカル
+変数）は削除されます。また、循環参照検出機能はPythonのコンパイルオプショ
+ンや\function{\refmodule{gc}. disable()}で無効とされている場合があります
+ので注意が必要です。例：
+
+\begin{verbatim}
+def handle_stackframe_without_leak():
+    frame = inspect.currentframe()
+    try:
+        # do something with the frame
+    finally:
+        del frame
+\end{verbatim}
+\end{notice}
+
+以下の関数でオプション引数\var{context}には、戻り値のソース行リストに何
+行分のソースを含めるかを指定します。ソース行リストには、実行中の行を中心
+として指定された行数分のリストを返します。
+
+\begin{funcdesc}{getframeinfo}{frame\optional{, context}}
+  フレーム又はトレースバックオブジェクトの情報を取得します。フレームレ
+  コードの先頭要素を除いた、長さ5のタプルを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{getouterframes}{frame\optional{, context}}
+  指定したフレームと、その外側の全フレームのフレームレコードを返します。
+  外側のフレームとは\var{frame}が生成されるまでのすべての関数呼び出しを
+  示します。戻り値のリストの先頭は\var{frame}のフレームレコードで、末尾
+  の要素は\var{frame}のスタックにあるもっとも外側のフレームのフレームレ
+  コードとなります。
+\end{funcdesc}
+
+\begin{funcdesc}{getinnerframes}{traceback\optional{, context}}
+  指定したフレームと、その内側の全フレームのフレームレコードを返します。
+  内のフレームとは\var{frame}から続く一連の関数呼び出しを示します。戻り
+  値のリストの先頭は\var{traceback}のフレームレコードで、末尾の要素は例
+  外が発生した位置を示します。
+\end{funcdesc}
+
+\begin{funcdesc}{currentframe}{}
+  呼び出し元のフレームオブジェクトを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{stack}{\optional{context}}
+  呼び出し元スタックのフレームレコードのリストを返します。最初の要素は呼
+  び出し元のフレームレコードで、末尾の要素はスタックにあるもっとも外側の
+  フレームのフレームレコードとなります。
+\end{funcdesc}
+
+\begin{funcdesc}{trace}{\optional{context}}
+  実行中のフレームと処理中の例外が発生したフレームの間のフレームレコード
+  のリストを返します。最初の要素は呼び出し元のフレームレコードで、末尾の
+  要素は例外が発生した位置を示します。
+\end{funcdesc}
+

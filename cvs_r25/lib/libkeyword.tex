@@ -1,0 +1,19 @@
+\section{\module{keyword} ---
+         Pythonキーワードチェック}
+
+\declaremodule{standard}{keyword}
+\modulesynopsis{文字列がPythonのキーワードか否かを調べます。}
+
+
+このモジュールでは、Pythonプログラムで文字列がキーワードか否かをチェック
+する機能を提供します。
+
+\begin{funcdesc}{iskeyword}{s}
+\var{s}がPythonのキーワードであれば真を返します。
+\end{funcdesc}
+
+\begin{datadesc}{kwlist}
+インタープリタで定義している全てのキーワードのシーケンス。特定の
+\module{__future__}宣言がなければ有効ではないキーワードでもこのリストに
+は含まれます。
+\end{datadesc}

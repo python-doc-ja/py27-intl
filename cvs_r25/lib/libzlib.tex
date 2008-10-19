@@ -1,0 +1,196 @@
+\section{\module{zlib} ---
+         \program{gzip} 互換の圧縮}
+
+\declaremodule{builtin}{zlib}
+\modulesynopsis{\program{gzip} 互換の圧縮／解凍ルーチンへの低レベル
+インタフェース}
+
+このモジュールでは、データ圧縮を必要とするアプリケーションが zlib ライブラリ
+を使って圧縮および解凍を行えるようにします。
+zlib ライブラリ自体の Web ホームページは \url{http://www.zlib.net}
+です。
+Pythonモジュールと zlib ライブラリの1.1.3より前のバージョンには互換性
+のない部分があることが知られています。1.1.3にはセキュリティホールが存
+在しますので、1.1.4以降のバージョンを利用することをお勧めします。
+
+zlib の関数にはたくさんのオプションがあり、しばしば特定の順番で使う必要があります。
+このドキュメントでは順番のことについて全てを説明し尽くそうとはしていません。
+信頼できる情報が必要ならば \url{http://www.zlib.net/manual.html} にある zlib の
+マニュアルを参照するようにしてください。
+
+このモジュールで利用可能な例外と関数を以下に示します:
+
+\begin{excdesc}{error}
+	圧縮および解凍時のエラーによって送出される例外。
+\end{excdesc}
+
+\begin{funcdesc}{adler32}{string\optional{, value}}
+	\var{string} のAdler-32 チェックサムを計算します。
+	（Adler-32 チェックサムは、おおむね CRC32 と同等の信頼性を持ちながら
+	はるかに高速に計算することができます。）
+	\var{value} が与えられていれば、\var{value} はチェックサム計算の
+	初期値として使われます。それ以外の場合には固定のデフォルト値が
+	使われます。この機能によって、複数の入力文字列を結合したデータ全体
+	にわたり、通しのチェックサムを計算することができます。
+	このアルゴリズムは暗号法論的には強力とはいえないので、認証やデジタル
+	署名などに用いるべきではありません。このアルゴリズムはチェックサム
+	アルゴリズムとして用いるために設計されたものなので、汎用的な
+	ハッシュアルゴリズムには向きません。
+\end{funcdesc}
+
+\begin{funcdesc}{compress}{string\optional{, level}}
+	\var{string} で与えられた文字列を圧縮し、圧縮されたデータを含む
+	文字列を返します。 \var{level} は \code{1} から \code{9} までの
+	整数をとる値で、圧縮のレベルを制御します。 \code{1} は最も高速
+	で最小限の圧縮を行います。\code{9} はもっとも低速になりますが
+	最大限の圧縮を行います。デフォルトの値は \code{6} です。
+	圧縮時に何らかのエラーが発生した場合、 \exception{error} 例外を
+	送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{compressobj}{\optional{level}}
+	一度にメモリ上に置くことができないようなデータストリームを圧縮
+	するための圧縮オブジェクトを返します。\var{level} は \code{1}
+	から \code{9} までの整数で、圧縮レベルを制御します。\code{1} は
+	もっとも高速で最小限の圧縮を、\code{9} はもっとも低速になりますが
+	最大限の圧縮を行います。デフォルトの値は \code{6} です。
+\end{funcdesc}
+
+\begin{funcdesc}{crc32}{string\optional{, value}}
+	\var{string} の CRC (Cyclic Redundancy Check, 巡回符号方式) %
+  \index{Cyclic Redundancy Check}
+  \index{checksum!Cyclic Redundancy Check}
+  チェックサムを計算します。\var{value} が与えられていれば、チェックサム
+	計算の初期値として使われます。与えられていなければデフォルトの初期値
+	が使われます。\var{value} を与えることで、複数の入力文字列を結合した
+	データ全体にわたり、通しのチェックサムを計算することができます。
+	このアルゴリズムは暗号法論的には強力ではなく、認証やデジタル署名
+	に用いるべきではありません。アルゴリズムはチェックサムアルゴリズムと
+	して設計されてえいるので、汎用のハッシュアルゴリズムには向きません。
+\end{funcdesc}
+
+\begin{funcdesc}{decompress}{string\optional{, wbits\optional{, bufsize}}}
+	\var{string} 内のデータを解凍して、解凍されたデータを含む文字列を
+	返します。\var{wbits} パラメタはウィンドウバッファの大きさを制御
+	します。 \var{bufsize} が与えられていれば、出力バッファの書記サイズ
+	として使われます。解凍処理に何らかのエラーが生じた場合、
+	\exception{error} 例外を送出します。
+
+	\var{wbits} の絶対値は、データを圧縮する際に用いられるヒストリ
+	バッファのサイズ (ウィンドウサイズ) に対し、 2 を底とする対数を
+	とったものです。最近のほとんどのバージョンの zlib ライブラリを
+	使っているなら、\var{wbits} の絶対値は 8 から 15 とするべきです。
+	より大きな値はより良好な圧縮につながりますが、より多くのメモリ
+	を必要とします。デフォルトの値は 15 です。\var{wbits} の値が
+	負の場合、標準的な \program{gzip} ヘッダを出力しません。
+	これは zlib ライブラリの非公開仕様であり、\program{unzip} の
+	圧縮ファイル形式に対する互換性のためのものです。
+
+	\var{bufsize} は解凍されたデータを保持するためのバッファサイズの
+	初期値です。バッファの空きは必要に応じて必要なだけ増加するので、
+	なれば、必ずしも正確な値を指定する必要はありません。この値の
+	チューニングでできることは、 \cfunction{malloc()} が呼ばれる回数を
+	数回減らすことぐらいです。デフォルトのサイズは 16384 です。
+   
+\end{funcdesc}
+
+\begin{funcdesc}{decompressobj}{\optional{wbits}}
+	メモリ上に一度に展開できないようなデータストリームを解凍するために
+	用いられる解凍オブジェクトを返します。\var{wbits} パラメタは
+	ウィンドウバッファのサイズを制御します。
+\end{funcdesc}
+
+圧縮オブジェクトは以下のメソッドをサポートします:
+
+\begin{methoddesc}[Compress]{compress}{string}
+\var{string} を圧縮し、圧縮されたデータを含む文字列を返します。この
+文字列は少なくとも \var{string} に相当します。このデータは以前に呼んだ
+\method{compress()} が返した出力と結合することができます。入力の一部は
+以後の処理のために内部バッファに保存されることもあります。
+\end{methoddesc}
+
+\begin{methoddesc}[Compress]{flush}{\optional{mode}}
+未処理の入力データが処理され、この未処理部分を圧縮したデータを含む
+文字列が返されます。\var{mode} は定数 \constant{Z_SYNC_FLUSH} 、
+\constant{Z_FULL_FLUSH} 、または \constant{Z_FINISH} のいずれかをとり、
+デフォルト値は \constant{Z_FINISH} です。\constant{Z_SYNC_FLUSH} および
+\constant{Z_FULL_FLUSH} ではこれ以後にもデータ文字列を圧縮できる
+モードです。一方、
+\constant{Z_FINISH} は圧縮ストリームを閉じ、これ以後のデータの圧縮
+を禁止します。 \var{mode} に \constant{Z_FINISH} を設定して
+\method{flush()} メソッドを呼び出した後は、\method{compress()} 
+メソッドを再び呼ぶべきではありません。唯一の現実的な操作はこの
+オブジェクトを削除することだけです。
+\end{methoddesc}
+
+\begin{methoddesc}[Compress]{copy}{}
+圧縮オブジェクトのコピーを返します。これを使うと先頭部分が共通している複数のデータを
+効率的に圧縮することができます。
+\versionadded{2.5}
+\end{methoddesc}
+
+解凍オブジェクトは以下のメソッドと 2 つの属性をサポートします:
+
+\begin{memberdesc}{unused_data}
+圧縮データの末尾までのバイト列が入った文字列です。
+すなわち、この値は圧縮データの入っているバイト列の最後の文字
+までが読み出せるかぎり \code{""} となります。入力文字列全てが圧縮
+データを含んでいた場合、この属性は \code{""} 、すなわち空文字列に
+なります。
+
+圧縮データ文字列がどこで終了しているかを決定する唯一の
+方法は、実際にそれを解凍することです。つまり、大きなファイル
+の一部分に圧縮データが含まれているときに、その末端を調べるために
+は、データをファイルから読み出し、空でない文字列を後ろに続けて、
+\member{unused_data} が空文字列でなくなるまで、解凍オブジェクトの 
+\method{decompress} メソッドに入力しつづけるしかありません。
+\end{memberdesc}
+
+\begin{memberdesc}{unconsumed_tail}
+解凍されたデータを収めるバッファの長さ制限を超えたために、最も最近の
+\method{decompress} 呼び出しで処理しきれなかったデータを含む文字列です。
+このデータはまだ zlib 側からは見えていないので、正しい解凍出力を得るには
+以降の \method{decompress} メソッド呼び出しに (場合によっては後続の
+データが追加された) データを差し戻さなければなりません。
+ 
+\end{memberdesc}
+
+\begin{methoddesc}[Decompress]{decompress}{string\optional{, max_length}}
+\var{string} を解凍し、少なくとも \var{string} の一部分に対応する
+解凍されたデータを含む文字列を返します。このデータは以前に
+\method{decompress()} メソッドを呼んだ時に返された出力と結合する
+ことができます。入力データの一部分が以後の処理のために内部バッファに
+保存されることもあります。
+
+オプションパラメタ \var{max_length} が与えられると、返される解凍データ
+の長さが \var{max_length} 以下に制限されます。このことは入力した圧縮
+データの全てが処理されるとは限らないことを意味し、処理されなかった
+データは \member{unconsumed_tail} 属性に保存されます。
+解凍処理を継続したいならば、この保存されたデータを以降の
+\method{decompress()} 呼び出しに渡さなくてはなりません。
+\var{max_length} が与えられなかった場合、全ての入力が解凍され、
+\member{unconsumed_tail} 属性は空文字列になります。
+\end{methoddesc}
+
+\begin{methoddesc}[Decompress]{flush}{\optional{length}}
+未処理の入力データを全て処理し、最終的に圧縮されなかった残りの
+出力文字列を返します。 \method{flush()} を呼んだ後、 \method{decompress()} 
+を再度呼ぶべきではありません。このときできる唯一現実的な操作は
+オブジェクトの削除だけです。
+
+オプション引数 \var{length} は出力バッファの初期サイズを決めます。
+\end{methoddesc}
+
+\begin{methoddesc}[Decompress]{copy}{}
+解凍オブジェクトのコピーを返します。これを使うとデータストリームの途中にある
+解凍オブジェクトの状態を保存でき、未来のある時点で行なわれるストリームの
+ランダムなシークをスピードアップするのに利用できます。
+\versionadded{2.5}
+\end{methoddesc}
+
+\begin{seealso}
+  \seemodule{gzip}{Reading and writing \program{gzip}-format files.}
+  \seeurl{http://www.zlib.net}{zlib ライブラリホームページ}
+  \seeurl{http://www.zlib.net/manual.html}{zlib ライブラリの
+    多くの関数の意味と使い方を解説したマニュアル}
+\end{seealso}

@@ -1,0 +1,70 @@
+% This document is largely a stub used to allow the email package docs
+% to be formatted separately from the rest of the Python
+% documentation.  This allows the documentation to be released
+% independently of the rest of Python since the email package is being
+% maintained for multiple Python versions, and on an accelerated
+% schedule.
+
+\documentclass{howto}
+
+\title{email パッケージリファレンス}
+\author{Barry Warsaw}
+\authoraddress{\email{barry@python.org}}
+
+\date{\today}
+\release{4.0}			% software release, not documentation
+\setreleaseinfo{}		% empty for final release
+\setshortversion{4.0}		% major.minor only for software
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+パッケージ \module{email} は、現在の電子メールおよび MIME に関する全ての
+RFC に適合するような電子メールメッセージについて、作成、解析、自動生成、
+および変更を行うためのクラスやユーティリティを提供します。
+\end{abstract}
+
+% The ugly "%begin{latexonly}" pseudo-environment suppresses the table
+% of contents for HTML generation.
+%
+%begin{latexonly}
+\tableofcontents
+%end{latexonly}
+
+\section{Introduction}
+パッケージ \module{email} は、現在の電子メールおよび MIME に関する全ての
+RFC に適合するような電子メールメッセージについて、作成、解析、自動生成、
+および変更を行うためのクラスやユーティリティを提供します。
+
+このドキュメントは \module{email} パッケージのバージョン4.0に
+ついて記述します。このモジュールはPython 2.5 に付属しており、以前のPython
+で利用するためにスタンドアロンの distutils パッケージ
+としても配布されています。\module{email} 4.0 はPython 2.3より前の処理
+系では利用できません。
+
+\module{email} パッケージについて詳しくは、 
+\ulink{Python's email SIG}{http://www.python.org/sigs/email-sig}を参照
+してください。ここにはダウンロード用リンクとメーリングリストもあります。
+
+
+以下のドキュメントは Python プロジェクトのためにかかれました。従って、
+もしこのドキュメントをスタンドアロンの \module{email} パッケージの
+ドキュメントの一部として呼んでいるなら、いくつか注意すべき点があります:
+
+\begin{itemize}
+\item 推奨しない機能、および ``バージョン何々で追加されました'' といった
+記載は、その機能が追加されたり推奨されない機能になった Python のバージョン
+を指します。パッケージの履歴についてはパッケージの履歴セクション~
+\ref{email-pkg-history} をごらんください。
+
+\item このドキュメントをスタンドアロンの \module{email} パッケージの
+として読んでいるなら、Python 標準ライブラリ内の他のセクションを指している
+内部リンクに飛ぶことはできません。
+
+\end{itemize}
+
+\input{email}
+
+\end{document}

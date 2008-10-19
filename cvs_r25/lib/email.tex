@@ -1,0 +1,396 @@
+% Copyright (C) 2001-2006 Python Software Foundation
+% Author: barry@python.org (Barry Warsaw)
+
+\section{\module{email} ---
+	 電子メールと MIME 処理のためのパッケージ}
+
+\declaremodule{standard}{email}
+\modulesynopsis{
+  電子メールのメッセージを解析、操作および生成を
+  支援するパッケージ。これには MIME 文書もふくまれる。
+}
+\moduleauthor{Barry A. Warsaw}{barry@python.org}
+\sectionauthor{Barry A. Warsaw}{barry@python.org}
+
+\versionadded{2.2}
+
+\module{email} パッケージは電子メールのメッセージを管理するライブラリです。
+これには MIME やそれ以外の \rfc{2822}ベースのメッセージ文書もふくまれます。
+このパッケージはいくつかの古い標準パッケージ、\refmodule{rfc822}、
+\refmodule{mimetools}、\refmodule{multifile} などにふくまれていた
+機能のほとんどを持ち、くわえて標準ではなかった \module{mimecntl} などの
+機能もふくんでいます。このパッケージは、とくに電子メールのメッセージを
+SMTP (\rfc{2821})、 NNTP、 その他のサーバに送信するために作られているというわけでは
+\emph{ありません}。それは \refmodule{smtplib}、\refmodule{nntplib} モ
+ジュールなどの機能です。
+\module{email} パッケージは \rfc{2822} に加えて、\rfc{2045}, \rfc{2046}, \rfc{2047}
+および \rfc{2231} など MIME 関連の RFC をサポートしており、できるかぎり 
+RFC に準拠することをめざしています。
+
+\module{email} パッケージの一番の特徴は、電子メールの内部表現である
+\emph{オブジェクトモデル} と、電子メールメッセージの解析および生成とを
+分離していることです。\module{email} パッケージを使うアプリケーションは
+基本的にはオブジェクトを処理することができます。メッセージに子オブジェクトを
+追加したり、メッセージから子オブジェクトを削除したり、内容を完全に
+並べかえたり、といったことができます。フラットなテキスト文書から
+オブジェクトモデルへの変換、またそこからフラットな文書へと戻す変換は
+それぞれ別々の解析器 (パーサ) と生成器 (ジェネレータ) が担当しています。
+また、一般的な MIME オブジェクトタイプのいくつかについては手軽な
+サブクラスが存在しており、メッセージフィールド値を抽出したり解析したり、
+RFC 準拠の日付を生成したりなどのよくおこわれるタスクについては
+いくつかの雑用ユーティリティもついています。
+
+以下の節では \module{email} パッケージの機能を説明します。
+説明の順序は多くのアプリケーションで一般的な使用順序にもとづいています。
+まず、電子メールメッセージをファイルあるいはその他のソースから
+フラットなテキスト文書として読み込み、つぎにそのテキストを解析して
+電子メールのオブジェクト構造を作成し、その構造を操作して、
+最後にオブジェクトツリーをフラットなテキストに戻す、という順序になっています。
+
+このオブジェクト構造は、まったくのゼロから作りだしたものであっても
+いっこうにかまいません。この場合も上と似たような作業順序になるでしょう。
+
+またここには \module{email} パッケージが提供するすべての
+クラスおよびモジュールに関する説明と、\module{email} パッケージを
+使っていくうえで遭遇するかもしれない例外クラス、いくつかの補助ユーティリティ、
+そして少々のサンプルも含まれています。古い \module{mimelib} や前バージョンの
+\module{email} パッケージののユーザのために、現行バージョンとの違いと
+移植についての節も設けてあります。
+
+
+\begin{seealso}
+  \seemodule{smtplib}{SMTP プロトコル クライアント}
+  \seemodule{nntplib}{NNTP プロトコル クライアント}
+\end{seealso}
+
+\subsection{電子メールメッセージの表現}
+
+\input{emailmessage}
+
+\subsection{電子メールメッセージを解析(パース)する}
+\input{emailparser}
+
+\subsection{MIME 文書を生成する}
+\input{emailgenerator}
+
+\subsection{電子メールおよび MIME オブジェクトをゼロから作成する}
+\input{emailmimebase}
+
+\subsection{国際化されたヘッダ}
+\input{emailheaders}
+
+\subsection{文字セットの表現}
+\input{emailcharsets}
+
+\subsection{エンコーダ}
+\input{emailencoders}
+
+\subsection{例外および障害クラス}
+\input{emailexc}
+
+\subsection{雑用ユーティリティ}
+\input{emailutil}
+
+\subsection{イテレータ}
+\input{emailiter}
+
+\subsection{パッケージの履歴\label{email-pkg-history}}
+
+このテーブルはemailパッケージのリリース履歴を表しています。
+それぞれのバージョンと、それが同梱されたPythonのバージョンとの関連が示
+されています。
+このドキュメントでの、追加/変更されたバージョンの表記はemail パッケー
+ジのバージョン\emph{ではなく}、Pythonのバージョンです。
+このテーブルはPythonの各バージョン間のemailパッケージの互換性も示して
+います。
+
+
+\begin{tableiii}{l|l|l}{constant}{email バージョン}{配布}{互換}
+\lineiii{1.x}{Python 2.2.0 to Python 2.2.1}{\emph{もうサポートされません}}
+\lineiii{2.5}{Python 2.2.2+ and Python 2.3}{Python 2.1 から 2.5}
+\lineiii{3.0}{Python 2.4}{Python 2.3 から 2.5}
+\lineiii{4.0}{Python 2.5}{Python 2.3 から 2.5}
+\end{tableiii}
+
+以下は \module{email} バージョン4と3の間のおもな差分です。
+ 
+\begin{itemize}
+\item 全モジュールが \pep{8}標準にあわせてリネームされました。
+  たとえば、version 3 でのモジュール \module{email.Message} は version
+  4 では \module{email.message} になりました。
+
+\item 新しいサブパッケージ　\module{email.mime} が追加され、 version 3 の　
+  \module{email.MIME*} は、\module{email.mime} のサブパッケージにまと
+  められました。 たとえば、version 3 での \module{email.MIMEText} は、
+  　\module{email.mime.text} になりました。
+  
+  \emph{Python 2.6までは version 3 の名前も有効です。}
+
+\item \module{email.mime.application} モジュールが追加されました。これ
+  は\class{MIMEApplication}クラスを含んでいます。
+
+\item version 3 で推奨されないとされた機能は削除されました。これらは
+  \method{Generator.__call__()}、 \method{Message.get_type()}、
+  \method{Message.get_main_type()}、 \method{Message.get_subtype()}を含
+  みます。
+
+
+\item \rfc{2331} サポートの修正が追加されました。これは
+  \function{Message.get_param()}などの関数の返り値を変更します。
+  いくつかの環境では、3つ組のタプルで返されていた値が1つの文字列で返さ
+  れます(とくに、全ての拡張パラメータセグメントがエンコードされていな
+  かった場合、予測されていたlanguage やcharsetの指定がないと、返り値は
+  単純な文字列になります)。過去の版では \% デコードが エンコードされている
+  セグメントおよびエンコードされていないセグメントに対して行われました
+  が、エンコードされたセグメントのみで行われるようになりました。
+\end{itemize}
+
+\module{email} バージョン 3 と バージョン 2 との違いは以下のようなものです:
+
+\begin{itemize}
+\item \class{FeedParser} クラスが新しく導入され、\class{Parser} クラスは
+      \class{FeedParser} を使って実装されるようになりました。このパーザは
+      non-strict なものであり、解析はベストエフォート方式でおこなわれ
+      解析中に例外を発生させることはありません。解析中に発見された問題は
+      そのメッセージの \var{defect} (障害) 属性に保存されます。
+
+\item バージョン 2 で \exception{DeprecationWarning} を発生していた API は
+      すべて撤去されました。以下のものが含まれています: \class{MIMEText} 
+      コンストラクタに渡す引数 \var{_encoder}、\method{Message.add_payload()} メソッド、
+      \function{Utils.dump_address_pair()} 関数、そして \function{Utils.decode()} と
+      \function{Utils.encode()} です。
+
+\item 新しく以下の関数が \exception{DeprecationWarning} を発生するようになりました:
+      \method{Generator.__call__()}, \method{Message.get_type()},
+      \method{Message.get_main_type()}, \method{Message.get_subtype()}, そして
+      \class{Parser} クラスに対する \var{strict} 引数です。これらは
+      email の将来のバージョンで
+      撤去される予定です。
+
+\item Python 2.3 以前はサポートされなくなりました。
+\end{itemize}
+
+\module{email} バージョン 2 と バージョン 1 との違いは以下のようなものです:
+
+\begin{itemize}
+\item \module{email.Header} モジュールおよび \module{email.Charset} モジュールが
+  追加されています。
+
+\item \class{Message} インスタンスの Pickle 形式が変わりました。
+  が、これは正式に定義されたことは一度もないので (そしてこれからも)、
+  この変更は互換性の欠如とはみなされていません。ですがもし
+  お使いのアプリケーションが \class{Message} インスタンスを
+  pickle あるいは unpickle しているなら、現在 \module{email} バージョン 2 では
+  プライベート変数 \var{_charset} および \var{_default_type} を
+  含むようになったということに注意してください。
+
+\item \class{Message} クラス中のいくつかのメソッドは推奨されなくなったか、
+  あるいは呼び出し形式が変更になっています。また、多くの新しいメソッドが
+  追加されています。詳しくは \class{Message} クラスの文書を参照してください。
+  これらの変更は完全に下位互換になっているはずです。
+
+\item \mimetype{message/rfc822} 形式のコンテナは、
+  見た目上のオブジェクト構造が変わりました。\module{email} バージョン 1 では
+  この content type はスカラー形式のペイロードとして表現されていました。
+  つまり、コンテナメッセージの \method{is_multipart()} は
+  false を返し、\method{get_payload()} はリストオブジェクトではなく
+  単一の \class{Message} インスタンスを直接返すようになっていたのです。
+  
+  この構造はパッケージ中のほかの部分と整合がとれていなかったため、
+  \mimetype{message/rfc822} 形式のオブジェクト表現形式が
+  変更されました。\module{email} バージョン 2 では、コンテナは
+  \method{is_multipart()} に \emph{\code{True} を返し}ます。
+  また \method{get_payload()} はひとつの \class{Message} インスタンスを
+  要素とするリストを返すようになりました。
+
+  注意: ここは下位互換が完全には成りたたなくなっている部分のひとつです。
+  けれどもあらかじめ \method{get_payload()} が返すタイプをチェックするように
+  なっていれば問題にはなりません。ただ \mimetype{message/rfc822} 形式の
+  コンテナを \class{Message} インスタンスにじかに \method{set_payload()} 
+  しないようにさえすればよいのです。
+
+\item \class{Parser} コンストラクタに \var{strict} 引数が
+  追加され、\method{parse()} および \method{parsestr()} メソッドには
+  \var{headersonly} 引数がつきました。\var{strict} フラグは
+  また \function{email.message_from_file()} と 
+  \function{email.message_from_string()} にも追加されています。
+
+\item \method{Generator.__call__()} はもはや推奨されなくなりました。
+  かわりに \method{Generator.flatten()} を使ってください。また、
+  \class{Generator} クラスには \method{clone()} メソッドが追加されています。
+
+\item \module{email.generator} モジュールに \class{DecodedGenerator} クラスが
+  加わりました。
+
+\item 中間的な基底クラスである \class{MIMENonMultipart} および
+      \class{MIMEMultipart} がクラス階層の中に追加され、
+      ほとんどの MIME 関係の派生クラスがこれを介するようになっています。
+
+\item \class{MIMEText} コンストラクタの \var{_encoder} 引数は
+  推奨されなくなりました。いまやエンコーダは \var{_charset} 引数に
+  もとづいて暗黙のうちに決定されます。
+
+\item \module{email.utils} モジュールにおける以下の関数は
+  推奨されなくなりました: \function{dump_address_pairs()}、
+  \function{decode()}、 および \function{encode()}。
+  また、このモジュールには以下の関数が追加されています:
+  \function{make_msgid()}、 \function{decode_rfc2231()}、
+  \function{encode_rfc2231()} そして \function{decode_params()}。
+
+\item Public ではない関数 \function{email.iterators._structure()} が
+  追加されました。
+\end{itemize}
+
+\subsection{\module{mimelib} との違い}
+
+\module{email} パッケージはもともと \ulink{\module{mimelib}}{http://mimelib.sf.net/} と
+呼ばれる個別のライブラリからつくられたものです。その後変更が加えられ、
+メソッド名がより一貫したものになり、いくつかのメソッドやモジュールが
+加えられたりはずされたりしました。いくつかのメソッドでは、
+その意味も変更されています。しかしほとんどの部分において、
+\module{mimelib} パッケージで使うことのできた機能は、ときどきその方法が変わってはいるものの
+\refmodule{email} パッケージでも使用可能です。
+\module{mimelib} パッケージと \module{email} パッケージの間の
+下位互換性はあまり優先はされませんでした。
+
+以下では \module{mimelib} パッケージと \module{email} パッケージにおける
+違いを簡単に説明し、それに沿ってアプリケーションを移植するさいの
+指針を述べています。
+
+おそらく 2つのパッケージのもっとも明らかな違いは、
+パッケージ名が \refmodule{email} に変更されたことでしょう。
+さらにトップレベルのパッケージが以下のように変更されました:
+
+\begin{itemize}
+\item \function{messageFromString()} は
+      \function{message_from_string()} に名前が変更されました。
+
+\item \function{messageFromFile()} は
+      \function{message_from_file()} に名前が変更されました。
+
+\end{itemize}
+
+\class{Message} クラスでは、以下のような違いがあります:
+
+\begin{itemize}
+\item \method{asString()} メソッドは \method{as_string()} に名前が変更されました。
+
+\item \method{ismultipart()} メソッドは \method{is_multipart()} に名前が変更されました。
+
+\item \method{get_payload()} メソッドはオプション引数として \var{decode} をとるようになりました。
+
+\item \method{getall()} メソッドは \method{get_all()} に名前が変更されました。
+
+\item \method{addheader()} メソッドは \method{add_header()} に名前が変更されました。
+
+\item \method{gettype()} メソッドは \method{get_type()} に名前が変更されました。
+
+\item \method{getmaintype()} メソッドは \method{get_main_type()} に名前が変更されました。
+
+\item \method{getsubtype()} メソッドは \method{get_subtype()} に名前が変更されました。
+
+\item \method{getparams()} メソッドは \method{get_params()} に名前が変更されました。
+  また、従来の \method{getparams()} は文字列のリストを返していましたが、
+  \method{get_params()} は 2-タプルのリストを返すようになっています。
+  これはそのパラメータのキーと値の組が、\character{=} 記号によって分離されたものです。
+
+\item \method{getparam()} メソッドは \method{get_param()}.
+
+\item \method{getcharsets()} メソッドは \method{get_charsets()} に名前が変更されました。
+
+\item \method{getfilename()} メソッドは \method{get_filename()} に名前が変更されました。
+
+\item \method{getboundary()} メソッドは \method{get_boundary()} に名前が変更されました。
+
+\item \method{setboundary()} メソッドは \method{set_boundary()} に名前が変更されました。
+
+\item \method{getdecodedpayload()} メソッドは廃止されました。
+  これと同様の機能は \method{get_payload()} メソッドの \var{decode} フラグに
+  1 を渡すことで実現できます。
+
+\item \method{getpayloadastext()} メソッドは廃止されました。
+  これと同様の機能は \refmodule{email.Generator} モジュールの
+  \class{DecodedGenerator} クラスによって提供されます。
+
+\item \method{getbodyastext()} メソッドは廃止されました。
+  これと同様の機能は \refmodule{email.iterators} モジュールにある
+  \function{typed_subpart_iterator()} を使ってイテレータを作ることにより
+  実現できます。
+\end{itemize}
+
+\class{Parser} クラスは、その public なインターフェイスは変わっていませんが、
+これはより一層かしこくなって \mimetype{message/delivery-status} 形式のメッセージを
+認識するようになりました。これは配送状態通知
+\footnote{配送状態通知 (Delivery Status Notifications, DSN) は \rfc{1894} によって定義されています。}
+において、各ヘッダブロックを表す独立した \class{Message} パートを含む
+ひとつの \class{Message} インスタンスとして表現されます。
+
+\class{Generator} クラスは、その public なインターフェイスは変わっていませんが、
+\refmodule{email.generator} モジュールに新しいクラスが加わりました。
+\class{DecodedGenerator} と呼ばれるこのクラスは
+以前 \method{Message.getpayloadastext()} メソッドで使われていた
+機能のほとんどを提供します。
+
+また、以下のモジュールおよびクラスが変更されています:
+
+\begin{itemize}
+\item \class{MIMEBase} クラスのコンストラクタ引数 \var{_major} と
+  \var{_minor} は、それぞれ \var{_maintype} と \var{_subtype} に変更されています。
+
+\item \code{Image} クラスおよびモジュールは \code{MIMEImage} に
+  名前が変更されました。\var{_minor} 引数も \var{_subtype} に
+  名前が変更されています。
+
+\item \code{Text} クラスおよびモジュールは \code{MIMEText} に
+  名前が変更されました。\var{_minor} 引数も \var{_subtype} に
+  名前が変更されています。
+
+\item \code{MessageRFC822} クラスおよびモジュールは \code{MIMEMessage} に
+  名前が変更されました。注意: 従来バージョンの \module{mimelib} では、
+  このクラスおよびモジュールは \code{RFC822} という名前でしたが、
+  これは大文字小文字を区別しないファイルシステムでは
+  Python の標準ライブラリモジュール \refmodule{rfc822} と
+  名前がかち合ってしまっていました。
+  
+  また、\class{MIMEMessage} クラスはいまや \mimetype{message} 
+  main type をもつあらゆる種類の MIME メッセージを
+  表現できるようになりました。これはオプション引数として、
+  MIME subtype を指定する \var{_subtype} 引数をとることができる
+  ようになっています。デフォルトでは、\var{_subtype} は \mimetype{rfc822} に
+  なります。
+\end{itemize}
+
+\module{mimelib} では、\module{address} および \module{date} モジュールで
+いくつかのユーティリティ関数が提供されていました。
+これらの関数はすべて \refmodule{email.utils} モジュールの中に
+移されています。
+
+\code{MsgReader} クラスおよびモジュールは廃止されました。
+これにもっとも近い機能は \refmodule{email.iterators} モジュール中の
+\function{body_line_iterator()} 関数によって提供されています。
+
+\subsection{使用例}
+
+ここでは \module{email} パッケージを使って電子メールメッセージを
+読む・書く・送信するいくつかの例を紹介します。より複雑な
+MIME メッセージについても扱います。
+
+最初に、テキスト形式の単純なメッセージを作成・送信する方法です:
+
+\verbatiminput{email-simple.py}
+
+つぎに、あるディレクトリ内にある何枚かの家族写真をひとつの MIME メッセージに
+収めて送信する例です:
+
+\verbatiminput{email-mime.py}
+
+つぎはあるディレクトリに含まれている内容全体を
+ひとつの電子メールメッセージとして送信するやり方です
+\footnote{最初の思いつきと用例は Matthew Dixon Cowles のおかげです。}:
+
+\verbatiminput{email-dir.py}
+
+そして最後に、上のような MIME メッセージをどうやって
+展開してひとつのディレクトリ上の複数ファイルにするかを示します:
+
+\verbatiminput{email-unpack.py}

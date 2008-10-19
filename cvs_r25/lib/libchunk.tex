@@ -1,0 +1,125 @@
+\section{\module{chunk} ---
+IFFチャンクデータの読み込み}
+
+\declaremodule{standard}{chunk}
+\modulesynopsis{
+IFFチャンクデータの読み込み。}
+\moduleauthor{Sjoerd Mullender}{sjoerd@acm.org}
+\sectionauthor{Sjoerd Mullender}{sjoerd@acm.org}
+
+
+
+このモジュールはEA IFF 85チャンクを使用しているファイルの読み込みのため
+のインターフェースを提供します。
+\footnote{``EA IFF 85'' Standard for Interchange Format Files,
+Jerry Morrison, Electronic Arts, January 1985.}  
+このフォーマットは少なくとも、Audio\index{Audio Interchange File
+Format}\index{AIFF}\index{AIFF-C} Interchange File Format
+(AIFF/AIFF-C) とReal\index{Real Media File Format} Media File
+Format\index{RMFF} (RMFF)で使われています。
+WAVEオーディオファイルフォーマットも厳密に対応しているので、このモジュー
+ルで読み込みできます。
+チャンクは以下の構造を持っています：
+
+\begin{tableiii}{c|c|l}{textrm}{Offset値}{長さ}{内容}
+  \lineiii{0}{4}{チャンクID}
+  \lineiii{4}{4}{big-endianで示したチャンクのサイズで、ヘッダは含みませ
+  ん}
+  \lineiii{8}{\var{n}}{
+バイトデータで、\var{n}はこれより先のフィールドのサイズ}
+  \lineiii{8 + \var{n}}{0 or 1}{
+\var{n}が奇数ならチャンクの整頓のために埋められるバイト}
+\end{tableiii}
+
+IDはチャンクの種類を識別する4バイトの文字列です。
+
+サイズフィールド（big-endianでエンコードされた32ビット値）は、8バイトの
+ヘッダを含まないチャンクデータのサイズを示します。
+
+普通、IFFタイプのファイルは1個かそれ以上のチャンクからなります。
+このモジュールで定義される\class{Chunk}クラスの使い方として提案している
+のは、それぞれのチャンクの始めにインスタンスを作り、終わりに達するまでそ
+のインスタンスから読み取り、その後で新しいインスタンスを作るということで
+す。
+ファイルの終わりで新しいインスタンスを作ろうとすると、
+\exception{EOFError}の例外が発生して失敗します。
+
+\begin{classdesc}{Chunk}{file\optional{, align, bigendian, inclheader}}
+チャンクを表現するクラス。
+引数\var{file}はファイルのようなオブジェクトであることが想定されていま
+す。
+このクラスのインスタンスは特別にそのように認められています。
+必要とされるメソッドは\method{read()}だけです。
+もし\method{seek()}と\method{tell()}メソッドが呼び出されて例外を発生させ
+なかったら、これらのメソッドも動作します。
+これらのメソッドが呼び出されて例外を発生させても、オブジェクトを変化させ
+ないようになっています。
+
+省略可能な引数\var{align}がtrueなら、チャンクデータが偶数個で2バイトごと
+に整頓されていると想定します。
+もし\var{align}がfalseなら、チャンクデータが奇数個になっていると想定しま
+す。
+デフォルト値はtrueです。
+
+もし省略可能な引数\var{bigendian}がfalseなら、チャンクサイズは
+little-endianであると想定します。
+この引数の設定はWAVEオーディオファイルで必要です。デフォルト値はtrueで
+す。
+
+もし省略可能な引数\var{inclheader}がtrueなら、チャンクのヘッダから得られ
+るサイズはヘッダのサイズを含んでいると想定します。
+デフォルト値はfalseです。
+\end{classdesc}
+
+\class{Chunk}オブジェクトには以下のメソッドが定義されています：
+
+\begin{methoddesc}{getname}{}
+チャンクの名前（ID）を返します。
+これはチャンクの始めの4バイトです。
+\end{methoddesc}
+
+\begin{methoddesc}{getsize}{}
+チャンクのサイズを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{close}{}
+オブジェクトを閉じて、チャンクの終わりまで飛びます。
+これは元のファイル自体は閉じません。
+\end{methoddesc}
+
+残りの以下のメソッドは、\method{close()}メソッドを呼び出した後に呼び出す
+と例外\exception{IOError}を発生します。
+
+\begin{methoddesc}{isatty}{}
+\code{False}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{seek}{pos\optional{, whence}}
+チャンクの現在位置を設定します。
+引数\var{whence}は省略可能で、デフォルト値は\code{0}（ファイルの絶対位
+置）です；他に\code{1}（現在位置から相対的にシークします）と\code{2}
+（ファイルの末尾から相対的にシークします）の値を取ります。
+何も値は返しません。
+もし元のファイルがシークに対応していなければ、前方へのシークのみが可能で
+す。
+\end{methoddesc}
+
+\begin{methoddesc}{tell}{}
+チャンク内の現在位置を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{read}{\optional{size}}
+チャンクから最大で\var{size}バイト（\var{size}バイトを読み込むまで、少な
+くともチャンクの最後に行き着くまで）読み込みます。
+もし引数\var{size}が負か省略されたら、チャンクの最後まで全てのデータを読
+み込みます。
+バイト値は文字列のオブジェクトとして返されます。
+チャンクの最後に行き着いたら、空文字列を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{skip}{}
+チャンクの最後まで飛びます。
+さらにチャンクの\method{read()}を呼び出すと、\code{''}が返されます。
+もしチャンクの内容に興味がないなら、このメソッドを呼び出してファイルポイ
+ンタを次のチャンクの始めに設定します。
+\end{methoddesc}

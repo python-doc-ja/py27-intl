@@ -1,0 +1,487 @@
+\documentclass{manualjp}
+
+% NOTE: this file controls which chapters/sections of the library
+% manual are actually printed.  It is easy to customize your manual
+% by commenting out sections that you're not interested in.
+
+\title{Python ライブラリリファレンス}
+
+\input{boilerplatejp}
+
+
+\makeindex                      % tell \index to actually write the
+                                % .idx file
+\makemodindex                   % ... and the module index as well.
+
+ 
+\begin{document}
+
+\maketitle
+
+\ifhtml
+\chapter*{序\label{front}}
+\fi
+
+\input{copyrightjp}
+
+\begin{abstract}
+
+\noindent
+Pythonは拡張性のあるインタプリタ形式のオブジェクト指向言語です。簡単な
+テキスト処理スクリプトから対話型のWWWブラウザまで、幅広い用途に対応し
+ています。
+
+\citetitle[../ref/ref.html]{Pythonリファレンスマニュアル} では、
+プログラミング言語 Python の厳密な構文とセマンティクスについて説明して
+いますが、Python とともに配付され，Python をすぐに活用する上で大いに
+役立つ標準ライブラリについては説明していません。このライブラリには、
+例えばファイルI/O のように， Python プログラマが直接アクセスできない
+システム機能へのアクセス機能を提供する (Cで書かれた) 組み込みモジュールや、
+日々のプログラミングで生じる多くの問題に標準的な解決策を提供する
+pure Python で書かれたモジュールが入っています。これら数多くの
+モジュールには、Pythonプログラムに移植性を持たせ、それを高めるという
+明確な意図があります。 
+
+このライブラリリファレンスマニュアルでは、Pythonの標準ライブラリだけで
+なく、多くのオプションのライブラリモジュールについて説明しています
+ (ライブラリモジュールの中には，プラットフォームでのサポートや
+コンパイル時の設定によって、使えたり使えなかったりするものがあります)．
+また、言語の標準の型、組み込みの関数と例外、Python リファレンス
+マニュアルで説明していなかったり，説明不足であるような多くの点に
+ついても説明しています。 
+
+このマニュアルでは、読者が Python 言語について基礎的な知識を持って
+いると仮定しています。形式ばらずに Python を学んでみたければ、
+\citetitle[../tut/tut.html]{Pythonチュートリアル} を参照してください。
+\citetitle[../ref/ref.html]{Pythonリファレンスマニュアル} は、
+高度な文法とセマンティクスについて疑問があるときに参照してください。
+最後に、\citetitle[../ext/ext.html]{Pythonインタプリタの拡張と組み込み}
+と題されたマニュアルには、Pythonに新しい機能を追加する方法と、
+他のアプリケーションに Python を組み込む方法が書かれています。
+
+\end{abstract}
+
+\tableofcontents
+
+                                % Chapter title:
+
+\input{libintro}                % Introduction
+
+% =============
+% BUILT-INs
+% =============
+
+\input{libobjs}                 % Built-in Types, Exceptions and Functions
+\input{libfuncs}
+\input{libexcs}
+\input{libconsts}
+
+\input{libstdtypes}
+
+
+% =============
+% BASIC/GENERAL-PURPOSE OBJECTS
+% =============
+
+% Strings
+\input{libstrings}              % String Services
+\input{libstring}
+\input{libre}
+\input{libstruct}   % XXX also/better in File Formats?
+\input{libdifflib}
+\input{libstringio}
+\input{libtextwrap}
+\input{libcodecs}
+\input{libunicodedata}
+\input{libstringprep}
+\input{libfpformat}
+
+
+\input{datatypes}               % Data types and structures
+\input{libdatetime}
+\input{libcalendar}
+\input{libcollections}
+\input{libheapq}
+\input{libbisect}
+\input{libarray}
+\input{libsets}
+\input{libsched}
+\input{libmutex}
+\input{libqueue}
+\input{libweakref}
+\input{libuserdict}
+
+% i% General object services
+% XXX intro
+\input{libtypes}
+\input{libnew}
+\input{libcopy}
+\input{libpprint}
+\input{librepr}
+
+
+\input{numeric}                 % Numeric/Mathematical modules
+\input{libmath}
+\input{libcmath}
+\input{libdecimal}
+\input{librandom}
+
+
+% Functions, Functional, Generators and Iterators
+% XXX intro functional
+\input{libitertools}
+\input{libfunctools}
+\input{liboperator}       % from runtime - better with itertools and functools
+
+% =============
+% DATA FORMATS
+% =============
+
+% Big move - include all the markup and internet formats here
+
+% MIME & email stuff
+\input{netdata}                 % Internet Data Handling
+\input{email}
+\input{libmailcap}
+\input{libmailbox}
+\input{libmhlib}
+\input{libmimetools}
+\input{libmimetypes}
+\input{libmimewriter}
+\input{libmimify}
+\input{libmultifile}
+\input{librfc822}
+
+% encoding stuff
+\input{libbase64}
+\input{libbinhex}
+\input{libbinascii}
+\input{libquopri}
+\input{libuu}
+
+\input{markup}                  % Structured Markup Processing Tools
+\input{libhtmlparser}
+\input{libsgmllib}
+\input{libhtmllib}
+\input{libpyexpat}
+\input{xmldom}
+\input{xmldomminidom}
+\input{xmldompulldom}
+\input{xmlsax}
+\input{xmlsaxhandler}
+\input{xmlsaxutils}
+\input{xmlsaxreader}
+\input{libetree}
+% \input{libxmllib}
+\input{fileformats}             % Miscellaneous file formats
+\input{libcsv}
+\input{libcfgparser}
+\input{librobotparser}
+\input{libnetrc}
+\input{libxdrlib}
+
+\input{libcrypto}               % Cryptographic Services
+\input{libhashlib}
+\input{libhmac}
+\input{libmd5}
+\input{libsha}
+
+% =============
+% FILE & DATABASE STORAGE
+% =============
+
+\input{filesys}                 % File/directory support
+\input{libposixpath}            % os.path
+\input{libfileinput}
+\input{libstat}
+\input{libstatvfs}
+\input{libfilecmp}
+\input{libtempfile}
+\input{libglob}
+\input{libfnmatch}
+\input{liblinecache}
+\input{libshutil}
+\input{libdircache}
+
+
+\input{archiving}               % Data compression and archiving
+\input{libzlib}
+\input{libgzip}
+\input{libbz2}
+\input{libzipfile}
+\input{libtarfile}
+
+
+\input{persistence}             % Persistent storage
+\input{libpickle}
+\input{libcopyreg}              % really copy_reg % from runtime...
+\input{libshelve}
+\input{libmarshal}
+\input{libanydbm}
+\input{libwhichdb}
+\input{libdbm}
+\input{libgdbm}
+\input{libdbhash}
+\input{libbsddb}
+\input{libdumbdbm}
+\input{libsqlite3}
+
+% =============
+% OS
+% =============
+
+
+\input{liballos}                % Generic Operating System Services
+\input{libos}
+\input{libtime}
+\input{liboptparse}
+\input{libgetopt}
+\input{liblogging}
+\input{libgetpass}
+\input{libcurses}
+\input{libascii}                % curses.ascii
+\input{libcursespanel}
+\input{libplatform}
+\input{liberrno}
+\input{libctypes}
+
+\input{libsomeos}               % Optional Operating System Services
+\input{libselect}
+\input{libthread}
+\input{libthreading}
+\input{libdummythread}
+\input{libdummythreading}
+\input{libmmap}
+\input{libreadline}
+\input{librlcompleter}
+
+\input{libunix}                 % UNIX Specific Services
+\input{libposix}
+\input{libpwd}
+\input{libspwd}
+\input{libgrp}
+\input{libcrypt}
+\input{libdl}
+\input{libtermios}
+\input{libtty}
+\input{libpty}
+\input{libfcntl}
+\input{libpipes}
+\input{libposixfile}
+\input{libresource}
+\input{libnis}
+\input{libsyslog}
+\input{libcommands}
+
+
+% =============
+% NETWORK & COMMUNICATIONS
+% =============
+
+\input{ipc}                     % Interprocess communication/networking
+\input{libsubprocess}
+\input{libsocket}
+\input{libsignal}
+\input{libpopen2}
+\input{libasyncore}
+\input{libasynchat}
+
+\input{internet}                % Internet Protocols
+\input{libwebbrowser}
+\input{libcgi}
+\input{libcgitb}
+\input{libwsgiref}
+\input{liburllib}
+\input{liburllib2}
+\input{libhttplib}
+\input{libftplib}
+\input{libgopherlib}
+\input{libpoplib}
+\input{libimaplib}
+\input{libnntplib}
+\input{libsmtplib}
+\input{libsmtpd}
+\input{libtelnetlib}
+\input{libuuid}
+\input{liburlparse}
+\input{libsocksvr}
+\input{libbasehttp}
+\input{libsimplehttp}
+\input{libcgihttp}
+\input{libcookielib}
+\input{libcookie}
+\input{libxmlrpclib}
+\input{libsimplexmlrpc}
+\input{libdocxmlrpc}
+
+% =============
+% MULTIMEDIA
+% =============
+
+\input{libmm}                   % Multimedia Services
+\input{libaudioop}
+\input{libimageop}
+\input{libaifc}
+\input{libsunau}
+\input{libwave}
+\input{libchunk}
+\input{libcolorsys}
+\input{librgbimg}
+\input{libimghdr}
+\input{libsndhdr}
+\input{libossaudiodev}
+
+% Tkinter is a chapter in its own right.
+\input{tkinter}
+
+%                                % Internationalization
+\input{i18n}
+\input{libgettext}
+\input{liblocale}
+
+% =============
+% PROGRAM FRAMEWORKS
+% =============
+\input{frameworks}
+\input{libcmd}
+\input{libshlex}
+
+% =============
+% DEVELOPMENT TOOLS
+% =============
+%                                % Software development support
+\input{development}
+\input{libpydoc}
+\input{libdoctest}
+\input{libunittest}
+\input{libtest}
+
+\input{libpdb}                  % The Python Debugger
+
+\input{libprofile}              % The Python Profiler
+\input{libhotshot}              % unmaintained C profiler
+\input{libtimeit}
+\input{libtrace}
+
+% =============
+% PYTHON ENGINE
+% =============
+
+% Runtime services
+\input{libpython}               % Python Runtime Services
+\input{libsys}
+\input{libbltin}                % really __builtin__
+\input{libmain}                 % really __main__
+\input{libwarnings}
+\input{libcontextlib}
+\input{libatexit}
+\input{libtraceback}
+\input{libfuture}               % really __future__
+\input{libgc}
+\input{libinspect}
+\input{libsite}
+\input{libuser}
+\input{libfpectl}
+
+
+\input{custominterp}            % Custom interpreter
+\input{libcode}
+\input{libcodeop}
+\input{librestricted}           % Restricted Execution
+\input{librexec}
+\input{libbastion}
+
+
+\input{modules}                 % Importing Modules
+\input{libimp}
+\input{libzipimport}
+\input{libpkgutil}
+\input{libmodulefinder}
+\input{librunpy}
+
+
+% =============
+% PYTHON LANGUAGE & COMPILER
+% =============
+
+\input{language}                % Python Language Services
+\input{libparser}
+\input{libsymbol}
+\input{libtoken}
+\input{libkeyword}
+\input{libtokenize}
+\input{libtabnanny}
+\input{libpyclbr}
+\input{libpycompile}            % really py_compile
+\input{libcompileall}
+\input{libdis}
+\input{libpickletools}
+\input{distutils}
+
+\input{compiler}                % compiler package
+\input{libast}
+
+\input{libmisc}                 % Miscellaneous Services
+\input{libformatter}
+
+% =============
+% OTHER PLATFORM-SPECIFIC STUFF
+% =============
+
+%\input{libamoeba}              % AMOEBA ONLY
+
+%\input{libstdwin}              % STDWIN ONLY
+
+\input{libsgi}                  % SGI IRIX ONLY
+\input{libal}
+\input{libcd}
+\input{libfl}
+\input{libfm}
+\input{libgl}
+\input{libimgfile}
+\input{libjpeg}
+%\input{libpanel}
+
+\input{libsun}                  % SUNOS ONLY
+\input{libsunaudio}
+
+\input{windows}                 % MS Windows ONLY
+\input{libmsilib}
+\input{libmsvcrt}
+\input{libwinreg}
+\input{libwinsound}
+
+\appendix
+\input{libundoc}
+
+%\chapter{Obsolete Modules}
+%\input{libcmpcache}
+%\input{libcmp}
+%\input{libni}
+
+\chapter{バグ報告}
+\input{reportingbugs}
+
+\chapter{歴史とライセンス}
+\input{license}
+
+\chapter{日本語訳について}
+\input{jptranslation}
+
+%
+%  The ugly "%begin{latexonly}" pseudo-environments are really just to
+%  keep LaTeX2HTML quiet during the \renewcommand{} macros; they're
+%  not really valuable.
+%
+
+%begin{latexonly}
+\renewcommand{\indexname}{モジュール索引}
+%end{latexonly}
+\input{modlib.ind}              % Module Index
+
+%begin{latexonly}
+\renewcommand{\indexname}{索引}
+%end{latexonly}
+\input{lib.ind}                 % Index
+
+\end{document}

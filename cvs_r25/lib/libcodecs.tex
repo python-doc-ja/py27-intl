@@ -1,0 +1,1335 @@
+\section{\module{codecs} ---
+         codec レジストリと基底クラス}
+
+\declaremodule{standard}{codecs}
+\modulesynopsis{データやストリームのエンコード・デコード。}
+\moduleauthor{Marc-Andre Lemburg}{mal@lemburg.com}
+\sectionauthor{Marc-Andre Lemburg}{mal@lemburg.com}
+\sectionauthor{Martin v. L\"owis}{martin@v.loewis.de}
+
+
+\index{Unicode}
+\index{Codecs}
+\indexii{Codecs}{encode}
+\indexii{Codecs}{decode}
+\index{streams}
+\indexii{stackable}{streams}
+
+
+このモジュールでは、内部的な Python codec レジストリに対するアクセス手
+段を提供しています。codec レジストリは、標準の Python codec(エンコー
+ダとデコーダ)の基底クラスを定義し、codec およびエラー処理の検索手順を
+管理しています。
+
+
+\module{codecs} では以下の関数を定義しています:
+
+\begin{funcdesc}{register}{search_function}
+codec 検索関数を登録します。検索関数は第 1 引数にアルファベットの小文字
+から成るエンコーディング名を取り、
+以下の属性を持つ \class{CodecInfo} オブジェクトを返します。
+
+\begin{itemize}
+  \item \code{name} エンコーディング名
+  \item \code{encoder} 内部状態を持たないエンコード関数
+  \item \code{decoder} 内部状態を持たないデコード関数
+  \item \code{incrementalencoder} 漸増的エンコーダクラスまたはファクトリ関数
+  \item \code{incrementaldecoder} 漸増的デコーダクラスまたはファクトリ関数
+  \item \code{streamwriter} ストリームライタクラスまたはファクトリ関数
+  \item \code{streamreader} ストリームリーダクラスまたはファクトリ関数
+\end{itemize}
+
+種々の関数やクラスが以下の引数をとります。
+
+\var{encoder} と \var{decoder}: これらの引数は、Codec インスタンスの
+\method{encode()}と\method{decode()} (Codec Interface 参照) と同じ
+インタフェースを持つ関数、またはメソッドでなければなりません。これらの関
+数・メソッドは内部状態を持たずに動作する (stateless mode) と想定されて
+います。
+
+\var{incrementalencoder} と \var{incrementaldecoder}: これらは
+以下のインタフェースを持つファクトリ関数でなければなりません。
+
+        \code{factory(\var{errors}='strict')}
+
+ファクトリ関数は、それぞれ基底クラスの \class{IncrementalEncoder} や
+\class{IncrementalDecoder} が定義しているインタフェースを提供する
+オブジェクトを返さねばなりません。漸増的 codecs は内部状態を維持できます。
+
+\var{streamreader} と \var{streamwriter}: これらの引数は、次のような
+インタフェースを持つファクトリ関数でなければなりません:
+
+        \code{factory(\var{stream}, \var{errors}='strict')}
+
+ファクトリ関数は、基底クラスの \class{StreamWriter} や
+\class{StreamReader} が定義しているインタフェースを提供する
+オブジェクトを返さねばなりません。ストリーム codecs は内部状態を維持で
+きます。
+
+\var{errors} が取り得る値は、
+\code{'strict'} (エンコーディングエラーの際に例外を発生)、
+\code{'replace'} (奇形データを \character{?}等の適切な文字で置換)、
+\code{'ignore'} (奇形データを無視し何も通知せずに処理を継続)、
+\code{'xmlcharrefreplace''} (適切な XML 文字参照で置換
+(エンコーディングのみ))、
+および \code{'backslashreplace'} (バックスラッシュによるエスケープシーケンス 
+(エンコーディングのみ)) と、\function{register_error()} で定義されたその他の
+エラー処理名になります。
+
+検索関数は、与えられたエンコーディングを見つけられなかった場合、
+\code{None} を返さねばなりません。
+\end{funcdesc}
+
+\begin{funcdesc}{lookup}{encoding}
+Python codec レジストリから codec 情報を探し、上で定義したような
+\class{CodecInfo} オブジェクトを返します。
+
+エンコーディングの検索は、まずレジストリのキャッシュから行います。
+見つからなければ、登録されている検索関数のリストから探します。
+\class{CodecInfo} オブジェクトが一つも見つからなければ
+\exception{LookupError} を送出します。
+見つかったら、その \class{CodecInfo} オブジェクトはキャッシュに保存され、
+呼び出し側に返されます。
+\end{funcdesc}
+
+さまざまな codec へのアクセスを簡便化するために、このモジュールは以下
+のような関数を提供しています。これらの関数は、 codec の検索に
+\function{lookup()} を使います。
+
+\begin{funcdesc}{getencoder}{encoding}
+\var{encoding} に指定した codec を検索し、エンコーダ関数を返します。
+
+\var{encoding} が見つからなければ \exception{LookupError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getdecoder}{encoding}
+\var{encoding} に指定した codec を検索し、デコーダ関数を返します。
+
+\var{encoding} が見つからなければ \exception{LookupError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getincrementalencoder}{encoding}
+\var{encoding} に指定した codec を検索し、漸増的エンコーダクラス、またはファク
+トリ関数を返します。
+
+\var{encoding} が見つからない、もしくは codec が漸増的エンコーダをサポートしないとき
+\exception{LookupError} を送出します。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{getincrementaldecoder}{encoding}
+\var{encoding} に指定した codec を検索し、漸増的デコーダクラス、またはファク
+トリ関数を返します。
+
+\var{encoding} が見つからない、もしくは codec が漸増的デコーダをサポートしないとき
+\exception{LookupError} を送出します。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{getreader}{encoding}
+\var{encoding} に指定した codec を検索し、StreamReader クラス、またはファク
+トリ関数を返します。
+
+\var{encoding} が見つからなければ \exception{LookupError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getwriter}{encoding}
+\var{encoding} に指定した codec を検索し、StreamWriter クラス、またはファク
+トリ関数を返します。
+
+\var{encoding} が見つからなければ \exception{LookupError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{register_error}{name, error_handler}
+エラー処理関数 \var{error_handler} を名前 \var{name} で登録します。 
+エンコード中およびデコード中にエラーが送出された場合、
+\var{errors} パラメタに\var{name} を指定していれば
+\var{error_handler} を呼び出すようになります。
+
+\var{error_handler} はエラーの場所に関する情報の入った
+\exception{UnicodeEncodeError} インスタンスとともに呼び出されます。
+エラー処理関数はこの例外を送出するか、別の例外を送出するか、または
+入力のエンコードができなかった部分の代替文字列とエンコードを再開する
+場所の指定が入ったタプルを返すかしなければなりません。最後の場合、
+エンコーダは代替文字列をエンコードし、元の入力中の指定位置から
+エンコードを再開します。位置を負の値にすると、入力文字列の末端からの
+相対位置として扱われます。境界の外側にある位置を返した場合には
+\exception{IndexError} が送出されます。
+
+デコードと翻訳は同様に働きますが、エラー処理関数に渡されるのが
+\exception{UnicodeDecodeError} か\exception{UnicodeTranslateError} 
+である点と、エラー処理関数の置換した内容が直接出力になる点が異なります。
+\end{funcdesc}
+
+\begin{funcdesc}{lookup_error}{name}
+名前\var{name} で登録済みのエラー処理関数を返します。
+
+エラー処理関数が見つからなければ \exception{LookupError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{strict_errors}{exception}
+\code{strict} エラー処理の実装です。
+\end{funcdesc}
+
+\begin{funcdesc}{replace_errors}{exception}
+\code{replace} エラー処理の実装です。
+\end{funcdesc}
+
+\begin{funcdesc}{ignore_errors}{exception}
+\code{ignore} エラー処理の実装です。
+\end{funcdesc}
+
+\begin{funcdesc}{xmlcharrefreplace_errors_errors}{exception}
+\code{xmlcharrefreplace} エラー処理の実装です。
+\end{funcdesc}
+
+\begin{funcdesc}{backslashreplace_errors_errors}{exception}
+\code{backslashreplace} エラー処理の実装です。
+\end{funcdesc}
+
+エンコードされたファイルやストリームの処理を簡便化するため、, このモジュ
+ールは次のようなユーティリティ関数を定義しています。
+
+\begin{funcdesc}{open}{filename, mode\optional{, encoding\optional{,
+                       errors\optional{, buffering}}}}
+\var{mode} でエンコードされたファイルを開き、 
+透過的にエンコード・デコードを行うようにラップしたファイルオブジェクト
+を返します。
+
+\note{ラップ版のファイルオブジェクトを操作する関数は、該当する codec 
+が定義している形式のオブジェクトだけを受け付けます。
+多くの組み込み codec では  Unicode オブジェクトです。
+関数の戻り値も codec に依存し、通常は Unicode オブジェクトです。}
+
+\var{encoding} にはファイルのエンコーディングを指定します。
+
+\var{errors} を指定して、エラー処理を定義することもできます。デフォルト
+では \code{'strict'} で、エンコード時にエラーがあれば 
+\exception{ValueError} を送出します。
+
+\var{buffering} は、組み込み関数 \function{open()} と同じです。デフォル
+トでは行バッファリングです。
+\end{funcdesc}
+
+\begin{funcdesc}{EncodedFile}{file, input\optional{,
+                              output\optional{, errors}}}
+ラップしたファイルオブジェクトを返します。このオブジェクトは透過な
+エンコード変換を提供します。
+
+ラップされたファイルに書かれた文字列は、\var{input} に指定したエンコー
+ディングに従って変換され、\var{output} に指定したエンコーディングを使っ
+て string 型に変換され、ファイルに書き込まれます。中間エンコーディング
+は指定された codecs に依存しますが、普通は Unicode です。
+
+\var{output} が与えられなければ、\var{input} がデフォルトになります。
+
+\var{errors} を与えて、エラー処理を定義することもできます。デフォルト
+では \code{'strict'} で、エンコード時にエラーがあれば 
+\exception{ValueError} を送出します。
+\end{funcdesc}
+
+\begin{funcdesc}{iterencode}{iterable, encoding\optional{, errors}}
+漸増的エンコーダを使って、\var{iterable} から供給される入力を反復的に
+エンコードします。この関数はジェネレータです。\var{errors} は
+(そして他のキーワード引数も同様に)漸増的エンコーダにそのまま引き渡されます。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{iterdecode}{iterable, encoding\optional{, errors}}
+漸増的デコーダを使って、\var{iterable} から供給される入力を反復的に
+デコードします。この関数はジェネレータです。\var{errors} は
+(そして他のキーワード引数も同様に)漸増的デコーダにそのまま引き渡されます。
+\versionadded{2.5}
+\end{funcdesc}
+
+このモジュールは以下のような定数も定義しています。プラットフォーム依存なファ
+イルを読み書きするのに役立ちます。
+
+\begin{datadesc}{BOM}
+\dataline{BOM_BE}
+\dataline{BOM_LE}
+\dataline{BOM_UTF8}
+\dataline{BOM_UTF16}
+\dataline{BOM_UTF16_BE}
+\dataline{BOM_UTF16_LE}
+\dataline{BOM_UTF32}
+\dataline{BOM_UTF32_BE}
+\dataline{BOM_UTF32_LE}
+ここで定義された定数は、様々なエンコーディングの Unicode の
+バイトオーダマーカ (BOM) で、UTF-16 と UTF-32 における
+データストリームやファイルストリームのバイトオーダを指定したり、
+UTF-8 における Unicode signature として使われます。
+\constant{BOM_UTF16} は \constant{BOM_UTF16_BE} と 
+\constant{BOM_UTF16_LE} のいずれかで、プラットフォームの
+ネイティブバイトオーダに依存します。\constant{BOM} は
+\constant{BOM_UTF16} の別名です。同様に \constant{BOM_LE}は 
+\constant{BOM_UTF16_LE}の、\constant{BOM_BE} は \constant{BOM_UTF16_BE} 
+の別名です。他は UTF-8 と UTF-32 エンコーディングの BOM を表します。
+\end{datadesc}
+
+
+\subsection{Codec 基底クラス \label{codec-base-classes}}
+
+\module{codecs} モジュールでは、codec のインタフェースを定義する一連の
+基底クラスを用意して、Python 用 codec を簡単に自作できるように
+しています。
+
+Python で何らかの codec を使えるようにするには、
+状態なしエンコーダ、状態なしデコーダ、ストリームリーダ、
+ストリームライタの 4 つのインタフェースを定義せねばなりません。
+通常は、状態なしエンコーダとデコーダを再利用して
+ストリームリーダとライタのファイル・プロトコルを実装します。
+
+\class{Codec} クラスは、状態なしエンコーダ・デコーダのインタフェースを
+定義しています。
+
+エラー処理の簡便化と標準化のため、\method{encode()} メソッドと
+\method{decode()} メソッドでは、\var{errors} 文字列引数を指定した
+場合に別のエラー処理を行うような仕組みを実装してもかまいません。
+全ての標準 Python codec では以下の文字列が定義され、実装されています。
+
+\begin{tableii}{l|l}{code}{Value}{Meaning}
+  \lineii{'strict'}{\exception{UnicodeError} (または、そのサブクラス)
+を送出します -- デフォルトの動作です。}
+  \lineii{'ignore'}{その文字を無視し、次の文字から変換を再開します。}
+  \lineii{'replace'}{適当な文字で置換します -- Python の組み込み 
+Unicode codec のデコード時には公式の U+FFFD REPLACEMENT CHARACTER を、
+エンコード時には '?' を使います。}
+  \lineii{'xmlcharrefreplace'}{適切な XML 文字参照で置換します
+(エンコードのみ)}
+  \lineii{'backslashreplace'}{バックスラッシュつきのエスケープシーケンス
+で置換します (エンコードのみ)}
+\end{tableii}
+
+codecs がエラーハンドラとして受け入れる値は\method{register_error} を
+使って追加できます。
+
+
+\subsubsection{Codec オブジェクト\label{codec-objects}}
+
+\class{Codec} クラスは以下のメソッドを定義します。これらのメソッドは、
+内部状態を持たないエンコーダ／デコーダ関数のインタフェースを定義します。
+
+\begin{methoddesc}{encode}{input\optional{, errors}}
+オブジェクト \var{input} エンコードし、(出力オブジェクト, 消費した  
+長さ) のタプルを返します。 codecs は Unicode 専用ではありませんが、
+Unicode の文脈では、エンコーディングは Unicode オブジェクトを
+特定の文字集合エンコーディング(たとえば \code{cp1252} や
+\code{iso-8859-1})を使って文字列オブジェクトに変換します。
+
+\var{errors} は適用するエラー処理を定義します。\code{'strict'} 処理が
+デフォルトです。
+
+このメソッドは \class{Codec} に内部状態を保存してはなりません。効率
+よくエンコード／デコードするために状態を保持しなければならない
+ような codecs には \class{StreamCodec} を使ってください。
+
+エンコーダは長さが 0 の入力を処理できねばなりません。この場合、
+空のオブジェクトを出力オブジェクトとして返さねばなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{decode}{input\optional{, errors}}
+オブジェクト \var{input} をデコードし、(出力オブジェクト,  消費した長
+さ) のタプルを返します。Unicode の文脈では、デコードは特定の文字集合
+エンコーディングでエンコードされた文字列を Unicode オブジェクトに変換
+します。
+
+\var{input} は \code{bf_getreadbuf} バッファスロットを提供するオブジェ
+クトでなければなりません。バッファスロットを提供しているオブジェクトには
+Python 文字列オブジェクト、バッファオブジェクト、メモリマップファイル
+があります。
+
+\var{errors} は適用するエラー処理を定義します。\code{'strict'} がデフ
+ォルト値です。
+
+このメソッドは、\class{Codec} インスタンスに内部状態を保存しては
+なりません。効率よくエンコード／デコードするために状態を保持しなけれ
+ばならないような codecs には \class{StreamCodec} を使ってください。
+
+デコーダは長さが 0 の入力を処理できねばなりません。この場合、
+空のオブジェクトを出力オブジェクトとして返さねばなりません。
+\end{methoddesc}
+
+\class{IncrementalEncoder} クラスおよび \class{IncrementalDecoder} クラスは
+それぞれ漸増的エンコーディングおよびデコーディングのための基本的なインタフェースを提供
+します。エンコーディング／デコーディングは内部状態を持たないエンコーダ／デコーダを
+一度呼び出すことで行なわれるのではなく、漸増的エンコーダ／デコーダの
+\method{encode}/\method{decode} メソッドを複数回呼び出すことで行なわれます。
+漸増的エンコーダ／デコーダはメソッド呼び出しの間エンコーディング／デコーディング処理の
+進行を管理します。%keep track
+
+\method{encode}/\method{decode} メソッド呼び出しの出力結果をまとめたものは、
+入力をひとまとめにして内部状態を持たないエンコーダ／デコーダでエンコード／デコード
+したものと同じになります。
+
+
+\subsubsection{IncrementalEncoder オブジェクト\label{incremental-encoder-objects}}
+
+\versionadded{2.5}
+
+\class{IncrementalEncoder} クラスは入力を複数ステップでエンコードするのに
+使われます。全ての漸増的エンコーダが Python codec レジストリと互換性を持つために
+定義すべきメソッドとして、このクラスには以下のメソッドが定義されています。
+
+\begin{classdesc}{IncrementalEncoder}{\optional{errors}}
+\class{IncrementalEncoder} インスタンスのコンストラクタ。
+
+全ての漸増的エンコーダはこのコンストラクタインタフェースを提供しなければなりません。
+さらにキーワード引数を付け加えるのは構いませんが、Python codec レジストリで
+利用されるのはここで定義されているものだけです。
+
+\class{IncrementalEncoder} は \var{errors} キーワード引数を提供して
+異なったエラー取扱方法を実装することもできます。あらかじめ定義されている
+パラメータは以下の通りです。
+
+  \begin{itemize}
+    \item \code{'strict'} \exception{ValueError} (またはそのサブクラス)
+      を送出します。これがデフォルトです。
+    \item \code{'ignore'} 一文字無視して次に進みます。
+    \item \code{'replace'} 適当な代替文字で置き換えます。
+    \item \code{'xmlcharrefreplace'} 適切な XML 文字参照に置き換えます。
+    \item \code{'backslashreplace'} バックスラッシュ付きのエスケープシーケンスで
+      置き換えます。
+  \end{itemize}
+
+引数 \var{errors} は同名の属性に割り当てられます。属性に割り当てることで
+\class{IncrementalEncoder} オブジェクトが生きている間にエラー取扱戦略を
+違うものに切り替えることができるようになります。
+
+\var{errors} 引数に許される値の集合は \function{register_error()} で
+拡張できます。
+\end{classdesc}
+
+\begin{methoddesc}{encode}{object\optional{, final}}
+\var{object} を(エンコーダの現在の状態を考慮に入れて)エンコードし、
+得られたエンコードされたオブジェクトを返します。\method{encode} 呼び出し
+がこれで最後という時には \var{final} は真でなければなりません(デフォルトは偽です)。
+\end{methoddesc}
+
+\begin{methoddesc}{reset}{}
+エンコーダを初期状態にリセットします。
+\end{methoddesc}
+
+
+\subsubsection{IncrementalDecoder オブジェクト \label{incremental-decoder-objects}}
+
+\class{IncrementalDecoder} クラスは入力を複数ステップでデコードするのに
+使われます。全ての漸増的デコーダが Python codec レジストリと互換性を持つために
+定義すべきメソッドとして、このクラスには以下のメソッドが定義されています。
+
+\begin{classdesc}{IncrementalDecoder}{\optional{errors}}
+\class{IncrementalDecoder} インスタンスのコンストラクタ。
+
+全ての漸増的デコーダはこのコンストラクタインタフェースを提供しなければなりません。
+さらにキーワード引数を付け加えるのは構いませんが、Python codec レジストリで
+利用されるのはここで定義されているものだけです。
+
+\class{IncrementalDecoder} は \var{errors} キーワード引数を提供して
+異なったエラー取扱方法を実装することもできます。あらかじめ定義されている
+パラメータは以下の通りです。
+
+  \begin{itemize}
+    \item \code{'strict'} \exception{ValueError} (またはそのサブクラス)
+      を送出します。これがデフォルトです。
+    \item \code{'ignore'} 一文字無視して次に進みます。
+    \item \code{'replace'} 適当な代替文字で置き換えます。
+  \end{itemize}
+
+引数 \var{errors} は同名の属性に割り当てられます。属性に割り当てることで
+\class{IncrementalDecoder} オブジェクトが生きている間にエラー取扱戦略を
+違うものに切り替えることができるようになります。
+
+\var{errors} 引数に許される値の集合は \function{register_error()} で
+拡張できます。
+\end{classdesc}
+
+\begin{methoddesc}{decode}{object\optional{, final}}
+\var{object} を(デコーダの現在の状態を考慮に入れて)デコードし、
+得られたデコードされたオブジェクトを返します。\method{decode} 呼び出し
+がこれで最後という時には \var{final} は真でなければなりません(デフォルトは偽です)。
+もし \var{final} が真ならばデコーダは入力をデコードし切り全てのバッファを
+フラッシュしなければなりません。そうできない場合(たとえば入力の最後に
+不完全なバイト列があるから)、デコーダは内部状態を持たない場合と同じように
+エラーの取り扱いを開始しなければなりません(例外を送出するかもしれません)。
+\end{methoddesc}
+
+\begin{methoddesc}{reset}{}
+デコーダを初期状態にリセットします。
+\end{methoddesc}
+
+
+\class{StreamWriter} と \class{StreamReader} クラスは、新しいエンコーデ
+ィングモジュールを、非常に簡単に実装するのに使用できる、一般的なインターフ
+ェイス提供します。実装例は \module{encodings.utf_8} をご覧ください。
+
+\subsubsection{StreamWriter オブジェクト \label{stream-writer-objects}}
+
+\class{StreamWriter} クラスは \class{Codec} のサブクラスで、以下のメソッ
+ドを定義しています。全てのストリームライタは、Python の codec レジス
+トリとの互換性を保つために、これらのメソッドを定義する必要があります。
+
+\begin{classdesc}{StreamWriter}{stream\optional{, errors}}
+\class{StreamWriter} インスタンスのコンストラクタです。
+
+全てのストリームライタはコンストラクタとしてこのインタフェースを提供
+せねばなりません。キーワード引数を追加しても構いませんが、
+Python の codec レジストリはここで定義されている引数だけを使います。
+
+\var{stream} は、(バイナリで) 書き込み可能なファイル類似のオブジェクト
+でなくてはなりません。
+
+\class{StreamWriter} は、\var{errors} キーワード引数を受けて、異なった
+エラー処理の仕組みを実装しても構いません。定義済みのパラメタを以下に
+示します。
+
+\begin{itemize}
+\item \code{'strict'} \exception{ValueError} (または、そのサブクラス)
+送出します。デフォルトの動作です。
+\item \code{'ignore'} 文字を無視して、次の文字から続けます。
+\item \code{'replace'} 適切な置換文字で置換します。
+\item \code{'xmlcharrefreplace'} 適切な XML 文字参照で置換します。
+\item \code{'backslashreplace'} バックスラッシュ付きのエスケープ
+シーケンスで置換します。
+\end{itemize}
+
+\var{errors} 引数は、同名の属性に代入されます。この属性を変更すると、
+\class{StreamWriter} オブジェクトが生きている間に、異なるエラー処理に
+変更できます。
+
+\var{errors} 引数が取りえる値の種類は\function{register_error()} で
+拡張できます。
+\end{classdesc}
+
+\begin{methoddesc}{write}{object}
+\var{object} の内容をエンコードしてストリームに書き出します。
+\end{methoddesc}
+
+\begin{methoddesc}{writelines}{list}
+文字列からなるリストを連結して、(必要に応じて \method{write()} を
+何度も使って) ストリームに書き出します。
+\end{methoddesc}
+
+\begin{methoddesc}{reset}{}
+状態保持に使われていた codec のバッファを強制的に出力してリセット
+します。
+
+このメソッドが呼び出された場合、出力先データをきれいな状態にし、
+わざわざストリーム全体を再スキャンして状態を元に戻さなくても
+新しくデータを追加できるようにせねばなりません。
+\end{methoddesc}
+
+ここまでで挙げたメソッドの他にも、\class{StreamWriter} では背後にある
+ストリームの他の全てのメソッドや属性を継承せねばなりません。
+
+
+\subsubsection{StreamReader オブジェクト\label{stream-reader-objects}}
+
+\class{StreamReader} クラスは \class{Codec} のサブクラスで、以下のメソッ
+ドを定義しています。全てのストリームリーダは、Python の codec レジス
+トリとの互換性を保つために、これらのメソッドを定義する必要があります。
+
+\begin{classdesc}{StreamReader}{stream\optional{, errors}}
+  \class{StreamReader} インスタンスのコンストラクタです。
+
+全てのストリームリーダはコンストラクタとしてこのインタフェースを提供
+せねばなりません。キーワード引数を追加しても構いませんが、
+Python の codec レジストリはここで定義されている引数だけを使います。
+
+\var{stream} は、(バイナリで) 読み出し可能なファイル類似のオブジェクト
+でなくてはなりません。
+
+\class{StreamReader} は、\var{errors} キーワード引数を受けて、異なった
+エラー処理の仕組みを実装しても構いません。定義済みのパラメタを以下に
+示します。
+
+
+\begin{itemize}
+\item \code{'strict'} \exception{ValueError} (または、そのサブクラス)
+を送出します。デフォルトの処理です。
+\item \code{'ignore'} 文字を無視して、次の文字から続けます。
+\item \code{'replace'} 適切な置換文字で置換します。
+\end{itemize}
+
+\var{errors} 引数は、同名の属性に代入されます。この属性を変更すると、
+\class{StreamReader} オブジェクトが生きている間に、異なるエラー処理に
+変更できます。
+
+\var{errors} 引数が取りえる値の種類は\function{register_error()} で
+拡張できます。
+
+\end{classdesc}
+
+\begin{methoddesc}{read}{\optional{size\optional{, chars, \optional{firstline}}}}
+ストリームからのデータをデコードし、デコード済のオブジェクトを返しま
+す。
+
+\var{chars} はストリームから読み込む文字数です。
+\function{read()} は\var{chars}以上の文字を返しませんが、それより少
+ない文字しか取得できない場合には\var{chars}以下の文字を返します。
+
+\var{size} は、デコードするためにストリームから読み込む、およその最大バ
+イト数を意味します。デコーダはこの値を適切な値に変更できます。
+デフォルト値 -1 にすると可能な限りたくさんのデータを読み込みます。
+\var{size} の目的は、巨大なファイルの一括デコードを防ぐことにあります。
+
+\var{firstline} は、1行目さえ返せばその後の行でデコードエラーがあっても
+無視して十分だ、ということを示します。
+
+このメソッドは貪欲な読み込み戦略を取るべきです。すなわち、エンコーディ
+ング定義と size の値が許す範囲で、できるだけ多くのデータを読むべきだと
+いうことです。たとえば、ストリーム上にエンコーディングの終端や状態の目
+印があれば、それも読み込みます。
+\versionchanged[引数\var{chars} が追加されました。]{2.4}
+\versionchanged[引数\var{firstline} が追加されました。]{2.4.2}
+\end{methoddesc}
+
+\begin{methoddesc}{readline}{\optional{size\optional{, keepends}}}
+入力ストリームから1行読み込み、デコード済みのデータを返します。
+
+\var{size} が与えられた場合、ストリームにおける \method{readline()} の size 引数に渡されます。
+
+\var{keepends} が偽の場合には行末の改行が削除された行が返ります。
+
+\versionchanged[引数\var{keepends}が追加されました。]{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}{readlines}{\optional{sizehint\optional{, keepends}}}
+入力ストリームから全ての行を読み込み、行のリストとして返します。
+
+\var{keepends}が真なら、改行は、codec のデコーダメソッドを使って実装され、
+リスト要素の中に含まれます。
+
+\var{sizehint} が与えられた場合、 ストリームの \method{read()} メソッ
+ドに \var{size} 引数として渡されます。
+\end{methoddesc}
+
+\begin{methoddesc}{reset}{}
+状態保持に使われた codec のバッファをリセットします。
+
+ストリームの読み位置を再設定してはならないので注意してください。
+このメソッドはデコードの際にエラーから復帰できるようにするためのものです。
+\end{methoddesc}
+
+ここまでで挙げたメソッドの他にも、\class{StreamReader} では背後にある
+ストリームの他の全てのメソッドや属性を継承せねばなりません。
+
+次に挙げる2つの基底クラスは、利便性のために含まれています。codec レジスト
+リは、これらを必要としませんが、実際のところ、あると有用なものでしょう。
+
+\subsubsection{StreamReaderWriter オブジェクト\label{stream-reader-writer}}
+
+\class{StreamReaderWriter} を使って、読み書き両方に使えるストリームをラ
+ップできます。
+
+\function{lookup()} 関数が返すファクトリ関数を使って、インスタンスを生成
+するという設計です。
+
+\begin{classdesc}{StreamReaderWriter}{stream, Reader, Writer, errors}
+\class{StreamReaderWriter} インスタンスを生成します。  \var{stream} は
+ファイル類似のオブジェクトです。  \var{Reader} と \var{Writer} は、
+それぞれ \class{StreamReader} と \class{StreamWriter} インタフェースを
+提供するファクトリ関数かファクトリクラスでなければなりません。
+エラー処理は、ストリームリーダとライタで定義したものと同じように
+行われます。
+\end{classdesc}
+
+\class{StreamReaderWriter} インスタンスは、\class{StreamReader} クラスと 
+\class{StreamWriter}クラスを合わせたインタフェースを継承します。元にな
+るストリームからは、他のメソッドや属性を継承します。
+
+\subsubsection{StreamRecoder オブジェクト\label{stream-recoder-objects}}
+
+\class{StreamRecoder} はエンコーディングデータの、フロントエンド-バック
+エンドを観察する機能を提供します。異なるエンコーディング環境を扱うとき、
+便利な場合があります。
+
+\function{lookup()} 関数が返すファクトリ関数を使って、インスタンスを生成
+するという設計になっています。
+
+\begin{classdesc}{StreamRecoder}{stream, encode, decode,
+                                 Reader, Writer, errors}
+双方向変換を実装する \class{StreamRecoder} インスタンスを生成します。 
+\var{encode} と \var{decode} はフロントエンド (\method{read()} への入
+力と\method{write()}からの出力) を処理し、\var{Reader} と \var{Writer} は
+バックエンド (ストリームに対する読み書き) を処理します。
+
+これらのオブジェクトを使って、たとえば、Latin-1 から UTF-8、あるいは逆
+向きの変換を、透過に記録できます。
+
+\var{stream} はファイル的オブジェクトでなくてはなりません。
+
+\var{encode} と \var{decode} は \class{Codec} のインタフェースに忠
+実でなくてはならず、\var{Reader} と \var{Writer} は、それぞれ 
+\class{StreamReader} と \class{StreamWriter} のインタフェースを提供
+するオブジェクトのファクトリ関数かクラスでなくてはなりません。
+
+\var{encode} と \var{decode} はフロントエンドの変換に必要で、
+\var{Reader} と \var{Writer} はバックエンドの変換に必要です。中間のフ
+ォーマットはコデックの組み合わせによって決定されます。たとえば、
+Unicode コデックは中間エンコーディングに Unicode を使います。
+
+エラー処理はストリーム・リーダやライタで定義されている方法と同じように
+行われます。
+\end{classdesc}
+
+\class{StreamRecoder} インスタンスは、\class{StreamReader} と 
+\class{StreamWriter} クラスを合わせたインタフェースを定義します。また、
+元のストリームのメソッドと属性も継承します。
+
+\subsection{エンコーディングと Unicode\label{encodings-overview}}
+
+Unicode 文字列は内部的にはコードポイントのシーケンスとして格納されます
+(正確に言えば \ctype{Py_UNICODE} 配列です)。
+Python がどのようにコンパイルされたか (デフォルトである
+\longprogramopt{enable-unicode=ucs2} かまたは
+\longprogramopt{enable-unicode=ucs4} のどちらか) によって、
+\ctype{Py_UNICODE} は16ビットまたは32ビットのデータ型です。
+Unicode オブジェクトが CPU とメモリの外で使われることになると、
+CPU のエンディアンやこれらの配列がバイト列としてどのように格納されるかが
+問題になってきます。Unicode オブジェクトをバイト列に変換することを
+エンコーディングと呼び、バイト列から Unicode オブジェクトを再生することを
+デコーディングと呼びます。どのようにこの変換を行うかには多くの異なった方法が
+あります(これらの方法のこともエンコーディングと言います)。最も単純な方法は
+コードポイント 0-255 をバイト \code{0x0}-\code{0xff} に写すことです。
+これは \code{U+00FF} より上のコードポイントを持つ Unicode オブジェクトは
+この方法ではエンコードできないということを意味します (この方法を \code{'latin-1'}
+とか \code{'iso-8859-1'} と呼びます)。
+\function{unicode.encode()} は次のような \exception{UnicodeEncodeError} 
+を送出することになります:  \samp{UnicodeEncodeError: 'latin-1' codec can't
+encode character u'\e u1234' in position 3: ordinal not in range(256)}。
+
+他のエンコーディングの一群(charmap エンコーディングと呼ばれます)がありますが、
+Unicode コードポイントの別の部分集合とこれらがどのように \code{0x0}-\code{0xff}
+のバイトに写されるかを選んだものです。これがどのように行なわれるかを知るには、
+単にたとえば \file{encodings/cp1252.py} (主に Windows で使われる
+エンコーディングです) を開いてみてください。256 文字のひとつの文字列定数
+がありどの文字がどのバイト値に写されるかを示しています。
+
+上に挙げた全てのエンコーディングは Unicode に定義された65536(あるいは1114111)
+あるコードポイント中256文字しかエンコードできません。全ての Unicode コードポイント
+を収める単純明快な方法は、それぞれのコードポイントを二つの引き続くバイトに収める
+ものです。二つの可能性があります。すなわちビッグエンディアンかリトルエンディアンか。
+これら二つのエンコーディングはそれぞれ UTF-16-BE あるいは UTF-16-LE と呼ばれます。
+欠点は、たとえば UTF-16-BE をリトルエンディアンの機械で使うときに、エンコーディング
+でもデコーディングでも常に二つのバイトを交換しなければならないことです。
+UTF-16 はこの問題を解消します。バイトはいつでも自然なエンディアンに従います。
+これらのバイトが異なるエンディアンの CPU で読まれる時は、結局交換しない訳にはいきません。
+UTF-16 のバイト列のエンディアンを検知できるようにするために、いわゆる
+BOM ("Byte Order Mark") があります。Unicode 文字で言うと \code{U+FEFF} です。
+この文字は全ての UTF-16 バイト列の先頭に付加されます。この文字のバイト位置を
+交換したもの (\code{0xFFFE}) は Unicode テキストに出現しないはずの違法な
+文字です。そこで、UTF-16 バイト列の一文字目が \code{U+FFFE} に見えたなら、
+デコーディングの際にバイトを交換しなければなりません。不幸なことに、Unicode
+4.0 までは文字 \code{U+FEFF} には第二の目的 \samp{ZERO WIDTH
+NO-BREAK SPACE} (幅を持たず単語が分割されるのを許さない文字) がありました。
+たとえばリガチャ(合字)アルゴリズムに対するヒントを与えるために使われることが
+あり得ます。Unicode 4.0 になって \code{U+FEFF} の \samp{ZERO WIDTH NO-BREAK
+SPACE} としての使用法は撤廃されました (\code{U+2060} (\samp{WORD JOINER}) に
+この役割を譲りました)。しかしながら、Unicode ソフトウェアは依然として \code{U+FEFF}
+の二つの役割を扱えなければなりません。一つは BOM として、エンコードされたバイトの
+記憶装置上のレイアウトを決め、バイト列が Unicode 文字列にデコードされた暁には
+消え去るものという役割。もう一つは \samp{ZERO WIDTH NO-BREAK SPACE} として、
+通常の文字と同じようにデコードされる文字という役割です。
+
+さらにもう一つ Unicode 文字全てをエンコードできるエンコーディングがあり、UTF-8
+と呼ばれています。UTF-8 は8ビットエンコーディングで、したがって UTF-8 には
+バイト順の問題はありません。UTF-8 バイト列の各バイトは二つのパートから成ります。
+二つはマーカ(上位数ビット)とペイロードです。マーカは0ビットから6ビットの1の列に
+0のビットが一つ続いたものです。Unicode 文字は次のようにエンコードされます
+(x はペイロードを表わし、連結されると一つの Unicode 文字を表わします):
+
+\begin{tableii}{l|l}{textrm}{範囲}{エンコーディング}
+\lineii{\code{U-00000000} ... \code{U-0000007F}}{0xxxxxxx}
+\lineii{\code{U-00000080} ... \code{U-000007FF}}{110xxxxx 10xxxxxx}
+\lineii{\code{U-00000800} ... \code{U-0000FFFF}}{1110xxxx 10xxxxxx 10xxxxxx}
+\lineii{\code{U-00010000} ... \code{U-001FFFFF}}{11110xxx 10xxxxxx 10xxxxxx 10xxxxxx}
+\lineii{\code{U-00200000} ... \code{U-03FFFFFF}}{111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx}
+\lineii{\code{U-04000000} ... \code{U-7FFFFFFF}}{1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx}
+\end{tableii}
+
+Unicode 文字の最下位ビットとは最も右にある x のビットです。
+
+UTF-8 は8ビットエンコーディングなので BOM は必要とせず、デコードされた Unicode
+文字列中の \code{U+FEFF} は(たとえ最初の文字であったとしても)
+\samp{ZERO WIDTH NO-BREAK SPACE} として扱われます。
+
+外部からの情報無しには、Unicode 文字列のエンコーディングにどのエンコーディングが
+使われたのか信頼できる形で決定することは不可能です。どの charmap エンコーディングも
+どんなランダムなバイト列でもデコードできます。しかし UTF-8 では、
+任意のバイト列が許される訳ではないような構造を持っているので、
+そのようなことは可能ではありません。UTF-8 エンコーディングであることを検知する
+信頼性を向上させるために、Microsoft は Notepad プログラム用に UTF-8 の変種
+(Python 2.5 はで \code{"utf-8-sig"} と呼んでいます) を考案しました。
+まだ Unicode 文字がファイルに書き込まれない前に UTF-8 でエンコードした BOM
+(バイト列では \code{0xef}, \code{0xbb}, \code{0xbf} のように見えます)
+を書き込んでしまいます。このようなバイト値で charmap エンコードされたファイルが
+始まることはほとんどあり得ない(たとえば iso-8859-1 では
+
+   LATIN SMALL LETTER I WITH DIAERESIS \\
+   RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK \\
+   INVERTED QUESTION MARK
+
+のようになる)ので、utf-8-sig エンコーディングがバイト列から正しく推測される
+確率を高めます。つまりここでは BOM はバイト列を生成する際のバイト順を決定
+できるように使われているのではなく、エンコーディングを推測する助けになる印
+として使われているのです。utf-8-sig codec はエンコーディングの際ファイルに
+最初の3文字として \code{0xef}, \code{0xbb}, \code{0xbf} を書き込みます。
+デコーディングの際はファイルの先頭に現れたこれら3バイトはスキップします。
+
+ 
+\subsection{標準エンコーディング\label{standard-encodings}}
+
+Python には数多くの codec が組み込みで付属します。これらは C 言語の
+関数、対応付けを行うテーブルの両方で提供されています。以下のテーブル
+では codec と、いくつかの良く知られている別名と、エンコーディング
+が使われる言語を列挙します。別名のリスト、言語のリストともしらみつぶしに
+網羅されているわけではありません。大文字と小文字、またはアンダースコア
+の代りにハイフンにしただけの綴りも有効な別名です。
+
+多くの文字セットは同じ言語をサポートしています。これらの文字セットは
+個々の文字 (例えば、EURO SIGN がサポートされているかどうか) や、
+文字のコード部分への割り付けが異なります。特に欧州言語では、
+典型的に以下の変種が存在します:
+
+\begin{itemize}
+\item ISO 8859 コードセット
+\item Microsoft Windows コードページで、8859 コード形式から導出されて
+いるが、制御文字を追加のグラフィック文字と置き換えたもの
+\item IBM EBCDIC コードページ
+\item \ASCII{} 互換の IBM PC コードページ
+\end{itemize}
+
+\begin{longtableiii}{l|l|l}{textrm}{Codec}{別名}{言語}
+
+\lineiii{ascii}
+        {646, us-ascii}
+        {英語}
+
+\lineiii{big5}
+        {big5-tw, csbig5}
+        {繁体字中国語}
+
+\lineiii{big5hkscs}
+        {big5-hkscs, hkscs}
+        {繁体字中国語}
+
+\lineiii{cp037}
+        {IBM037, IBM039}
+        {英語}
+
+\lineiii{cp424}
+        {EBCDIC-CP-HE, IBM424}
+        {ヘブライ語}
+
+\lineiii{cp437}
+        {437, IBM437}
+        {英語}
+
+\lineiii{cp500}
+        {EBCDIC-CP-BE, EBCDIC-CP-CH, IBM500}
+        {西ヨーロッパ言語}
+
+\lineiii{cp737}
+        {}
+        {ギリシャ語}
+
+\lineiii{cp775}
+        {IBM775}
+        {バルト沿岸国}
+
+\lineiii{cp850}
+        {850, IBM850}
+        {西ヨーロッパ}
+
+\lineiii{cp852}
+        {852, IBM852}
+        {中央および東ヨーロッパ}
+
+\lineiii{cp855}
+        {855, IBM855}
+        {ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア}
+
+\lineiii{cp856}
+        {}
+        {ヘブライ語}
+
+\lineiii{cp857}
+        {857, IBM857}
+        {トルコ語}
+
+\lineiii{cp860}
+        {860, IBM860}
+        {ポルトガル語}
+
+\lineiii{cp861}
+        {861, CP-IS, IBM861}
+        {アイスランド語}
+
+\lineiii{cp862}
+        {862, IBM862}
+        {ヘブライ語}
+
+\lineiii{cp863}
+        {863, IBM863}
+        {カナダ}
+
+\lineiii{cp864}
+        {IBM864}
+        {アラビア語}
+
+\lineiii{cp865}
+        {865, IBM865}
+        {デンマーク、ノルウェー}
+
+\lineiii{cp866}
+        {866, IBM866}
+        {ロシア語}
+
+\lineiii{cp869}
+        {869, CP-GR, IBM869}
+        {ギリシャ語}
+
+\lineiii{cp874}
+        {}
+        {タイ語}
+
+\lineiii{cp875}
+        {}
+        {ギリシャ語}
+
+\lineiii{cp932}
+        {932, ms932, mskanji, ms-kanji}
+        {日本語}
+
+\lineiii{cp949}
+        {949, ms949, uhc}
+        {韓国語}
+
+\lineiii{cp950}
+        {950, ms950}
+        {繁体字中国語}
+
+\lineiii{cp1006}
+        {}
+        {Urdu}
+
+\lineiii{cp1026}
+        {ibm1026}
+        {トルコ語}
+
+\lineiii{cp1140}
+        {ibm1140}
+        {西ヨーロッパ}
+
+\lineiii{cp1250}
+        {windows-1250}
+        {中央および東ヨーロッパ}
+
+\lineiii{cp1251}
+        {windows-1251}
+        {ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア}
+
+\lineiii{cp1252}
+        {windows-1252}
+        {西ヨーロッパ}
+
+\lineiii{cp1253}
+        {windows-1253}
+        {ギリシャ}
+
+\lineiii{cp1254}
+        {windows-1254}
+        {トルコ}
+
+\lineiii{cp1255}
+        {windows-1255}
+        {ヘブライ}
+
+\lineiii{cp1256}
+        {windows1256}
+        {アラビア}
+
+\lineiii{cp1257}
+        {windows-1257}
+        {バルト沿岸国}
+
+\lineiii{cp1258}
+        {windows-1258}
+        {ベトナム}
+
+\lineiii{euc_jp}
+        {eucjp, ujis, u-jis}
+        {日本語}
+
+\lineiii{euc_jis_2004}
+        {jisx0213, eucjis2004}
+        {日本語}
+%        {Japanese}
+
+\lineiii{euc_jisx0213}
+        {eucjisx0213}
+        {日本語}
+%        {Japanese}
+
+\lineiii{euc_kr}
+        {euckr, korean, ksc5601, ks_c-5601, ks_c-5601-1987, ksx1001, ks_x-1001}
+        {韓国語}
+
+\lineiii{gb2312}
+        {chinese, csiso58gb231280, euc-cn, euccn, eucgb2312-cn, gb2312-1980,
+         gb2312-80, iso-ir-58}
+        {簡体字中国語}
+
+\lineiii{gbk}
+        {936, cp936, ms936}
+        {簡体字中国語}
+
+\lineiii{gb18030}
+        {gb18030-2000}
+        {簡体字中国語}
+
+\lineiii{hz}
+        {hzgb, hz-gb, hz-gb-2312}
+        {簡体字中国語}
+
+\lineiii{iso2022_jp}
+        {csiso2022jp, iso2022jp, iso-2022-jp}
+        {日本語}
+
+\lineiii{iso2022_jp_1}
+        {iso2022jp-1, iso-2022-jp-1}
+        {日本語}
+
+\lineiii{iso2022_jp_2}
+        {iso2022jp-2, iso-2022-jp-2}
+        {日本語, 韓国語, 簡体字中国語, 西欧, ギリシャ語}
+
+\lineiii{iso2022_jp_2004}
+        {iso2022jp-2004, iso-2022-jp-2004}
+        {日本語}
+
+\lineiii{iso2022_jp_3}
+        {iso2022jp-3, iso-2022-jp-3}
+        {日本語}
+
+\lineiii{iso2022_jp_ext}
+        {iso2022jp-ext, iso-2022-jp-ext}
+        {日本語}
+
+\lineiii{iso2022_kr}
+        {csiso2022kr, iso2022kr, iso-2022-kr}
+        {韓国語}
+
+\lineiii{latin_1}
+        {iso-8859-1, iso8859-1, 8859, cp819, latin, latin1, L1}
+        {西ヨーロッパ}
+
+\lineiii{iso8859_2}
+        {iso-8859-2, latin2, L2}
+        {中央および東ヨーロッパ}
+
+\lineiii{iso8859_3}
+        {iso-8859-3, latin3, L3}
+        {エスペラント、マルタ}
+
+\lineiii{iso8859_4}
+        {iso-8859-4, latin4, L4}
+        {バルト沿岸国}
+
+\lineiii{iso8859_5}
+        {iso-8859-5, cyrillic}
+        {ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア}
+
+\lineiii{iso8859_6}
+        {iso-8859-6, arabic}
+        {アラビア語}
+
+\lineiii{iso8859_7}
+        {iso-8859-7, greek, greek8}
+        {ギリシャ語}
+
+\lineiii{iso8859_8}
+        {iso-8859-8, hebrew}
+        {ヘブライ語}
+
+\lineiii{iso8859_9}
+        {iso-8859-9, latin5, L5}
+        {トルコ語}
+
+\lineiii{iso8859_10}
+        {iso-8859-10, latin6, L6}
+        {北欧}
+
+\lineiii{iso8859_13}
+        {iso-8859-13}
+        {バルト沿岸国}
+
+\lineiii{iso8859_14}
+        {iso-8859-14, latin8, L8}
+        {ケルト}
+
+\lineiii{iso8859_15}
+        {iso-8859-15}
+        {西ヨーロッパ}
+
+\lineiii{johab}
+        {cp1361, ms1361}
+        {韓国語}
+
+\lineiii{koi8_r}
+        {}
+        {ロシア語}
+
+\lineiii{koi8_u}
+        {}
+        {ウクライナ}
+
+\lineiii{mac_cyrillic}
+        {maccyrillic}
+        {ブルガリア、ベラルーシ、マケドニア、ロシア、セルビア}
+
+\lineiii{mac_greek}
+        {macgreek}
+        {ギリシャ}
+
+\lineiii{mac_iceland}
+        {maciceland}
+        {アイスランド}
+
+\lineiii{mac_latin2}
+        {maclatin2, maccentraleurope}
+        {中央および東ヨーロッパ}
+
+\lineiii{mac_roman}
+        {macroman}
+        {西ヨーロッパ}
+
+\lineiii{mac_turkish}
+        {macturkish}
+        {トルコ語}
+
+\lineiii{ptcp154}
+        {csptcp154, pt154, cp154, cyrillic-asian}
+        {カザフ}
+
+\lineiii{shift_jis}
+        {csshiftjis, shiftjis, sjis, s_jis}
+        {日本語}
+
+\lineiii{shift_jis_2004}
+        {shiftjis2004, sjis_2004, sjis2004}
+        {日本語}
+
+\lineiii{shift_jisx0213}
+        {shiftjisx0213, sjisx0213, s_jisx0213}
+        {日本語}
+
+\lineiii{utf_16}
+        {U16, utf16}
+        {全ての言語}
+
+\lineiii{utf_16_be}
+        {UTF-16BE}
+        {全ての言語 (BMP only)}
+
+\lineiii{utf_16_le}
+        {UTF-16LE}
+        {全ての言語 (BMP only)}
+
+\lineiii{utf_7}
+        {U7, unicode-1-1-utf-7}
+        {全ての言語}
+
+\lineiii{utf_8}
+        {U8, UTF, utf8}
+        {全ての言語}
+
+\lineiii{utf_8_sig}
+        {}
+        {全ての言語}
+
+\end{longtableiii}
+
+codec のいくつかは Python 特有のものなので、それらの codec 名は Python
+の外では無意味なものとなります。これらの codec の中には
+Unicode 文字列からバイト文字列への変換を行わず、むしろ単一の
+引数をもつ全写像関数はエンコーディングとみなせるという
+Python codec の性質を利用したものもあります。
+
+以下に列挙した codec では、``エンコード'' 方向の結果は常にバイト文字列
+方向です。``デコード'' 方向の結果はテーブル内の被演算子型として列挙
+されています。
+
+\begin{tableiv}{l|l|l|l}{textrm}{Codec}{別名}{被演算子の型}{目的}
+
+\lineiv{base64_codec}
+         {base64, base-64}
+         {byte string}
+         {被演算子を MIME base64 に変換します。}
+
+\lineiv{bz2_codec}
+         {bz2}
+         {byte string}
+         {被演算子をbz2を使って圧縮します。}
+
+\lineiv{hex_codec}
+         {hex}
+         {byte string}
+         {被演算子をバイトあたり 2 桁の 16 進数の表現に変換します。}
+
+\lineiv{idna}
+         {}
+         {Unicode string}
+         {\rfc{3490} の実装です。
+          \versionadded{2.3}
+          \refmodule{encodings.idna} も参照してください。}
+
+\lineiv{mbcs}
+         {dbcs}
+         {Unicode string}
+         {Windows のみ: 被演算子を ANSI コードページ (CP_ACP) に従って
+         エンコードします。}
+
+\lineiv{palmos}
+         {}
+         {Unicode string}
+         {PalmOS 3.5 のエンコーディングです。}
+
+\lineiv{punycode}
+         {}
+         {Unicode string}
+         {\rfc{3492} を実装しています。
+          \versionadded{2.3}}
+
+\lineiv{quopri_codec}
+         {quopri, quoted-printable, quotedprintable}
+         {byte string}
+         {被演算子を MIME quoted printable 形式に変換します。}
+
+\lineiv{raw_unicode_escape}
+         {}
+         {Unicode string}
+         {Python ソースコードにおける raw Unicode リテラルとして
+適切な文字列を生成します。}
+
+\lineiv{rot_13}
+         {rot13}
+         {Unicode string}
+         {被演算子のシーザー暗号 (Caesar-cypher) を返します。}
+
+\lineiv{string_escape}
+         {}
+         {byte string}
+         {Python ソースコードにおける文字列リテラルとして適切な
+文字列を生成します。}
+
+\lineiv{undefined}
+         {}
+         {any}
+         {全ての変換に対して例外を送出します。
+バイト列と Unicode 文字列との間で自動的な型強制をおこないたくない
+時にシステムエンコーディングとして使うことができます。} 
+
+\lineiv{unicode_escape}
+         {}
+         {Unicode string}
+         {Python ソースコードにおける Unicode リテラルとして適切な
+文字列を生成します。}
+
+\lineiv{unicode_internal}
+         {}
+         {Unicode string}
+         {被演算子の内部表現を返します。}
+
+\lineiv{uu_codec}
+         {uu}
+         {byte string}
+         {被演算子を uuencode を用いて変換します。}
+
+\lineiv{zlib_codec}
+         {zip, zlib}
+         {byte string}
+         {被演算子を gzip を用いて圧縮します。}
+
+\end{tableiv}
+
+\subsection{\module{encodings.idna} ---
+            アプリケーションにおける国際化ドメイン名 (IDNA)}
+
+\declaremodule{standard}{encodings.idna}
+\modulesynopsis{国際化ドメイン名実装}
+% XXX The next line triggers a formatting bug, so it's commented out
+% until that can be fixed.
+%\moduleauthor{Martin v. L\"owis}
+
+\versionadded{2.3}
+
+このモジュールでは \rfc{3490} (アプリケーションにおける国際化
+ドメイン名, IDNA: Internationalized Domain Names in
+Applications) および \rfc{3492} (Nameprep: 国際化ドメイン名 (IDN) の
+ための stringprep プロファイル) を実装しています。
+このモジュールは \code{punycode} エンコーディングおよび
+\module{stringprep} の上に構築されています。
+
+これらの RFC はともに、非 \ASCII{} 文字の入ったドメイン名をサポートする
+ためのプロトコルを定義しています。
+(``www.Alliancefran\c caise.nu'' のような) 非 \ASCII{} 文字を含む
+ドメイン名は、 \ASCII と互換性のあるエンコーディング (ACE、
+``www.xn--alliancefranaise-npb.nu'' のような形式) に変換されます。
+ドメイン名の ACE 形式は、DNS クエリ、HTTP \mailheader{Host} フィールド
+などといった、プロトコル中で任意の文字を使えないような全ての局面で
+用いられます。
+この変換はアプリケーション内で行われます; 可能ならユーザからは
+不可視となります: アプリケーションは Unicode ドメインラベルを
+ワイヤ上に載せる際に IDNA に、 ACE ドメインラベルを
+ユーザに提供する前に Unicode に、それぞれ透過的に変換しなければ
+なりません。
+
+Python ではこの変換をいくつかの方法でサポートします: \code{idna}
+codec は Unicode と ACE 間の変換を行います。さらに、
+\module{socket} モジュールは Unicode ホスト名を ACE に透過的に
+変換するため、アプリケーションはホスト名を \module{socket} 
+モジュールに渡す際にホスト名の変換に煩わされることがありません。
+その上で、ホスト名を関数パラメタとして持つ、\module{httplib}
+や \module{ftplib} のようなモジュールでは Unicode ホスト名を
+受理します (\module{httplib} でもまた、\code{Host:} フィールドにある
+ IDNA ホスト名を、フィールド全体を送信する場合に透過的に送信
+します)。
+
+(逆引きなどによって) ワイヤ越しにホスト名を受信する際、Unicode
+への自動変換は行われません: こうしたホスト名をユーザに提供
+したいアプリケーションでは、Unicode にデコードしてやる必要が
+あります。
+
+\module{encodings.idna} ではまた、nameprep 手続きを実装しています。
+nameprep はホスト名に対してある正規化を行って、国際化ドメイン名で
+大小文字を区別しないようにするとともに、類似の文字を一元化します。
+nameprep 関数は必要なら直接使うこともできます。
+
+\begin{funcdesc}{nameprep}{label}
+\var{label} を nameprep したバージョンを返します。現在の実装では
+クエリ文字列を仮定しているので、 \code{AllowUnassigned} は真です。
+\end{funcdesc}
+
+\begin{funcdesc}{ToASCII}{label}
+\rfc{3490} 仕様に従ってラベルを \ASCII に変換します。
+\code{UseSTD3ASCIIRules} は偽であると仮定します。
+\end{funcdesc}
+
+\begin{funcdesc}{ToUnicode}{label}
+\rfc{3490} 仕様に従ってラベルを Unicode に変換します。
+\end{funcdesc}
+
+ \subsection{\module{encodings.utf_8_sig} ---
+             BOM 印付き UTF-8}
+\declaremodule{standard}{encodings.utf-8-sig}   % XXX utf_8_sig gives TeX errors
+\modulesynopsis{UTF-8 codec with BOM signature}
+\moduleauthor{Walter D\"orwald}{}
+
+\versionadded{2.5}
+
+このモジュールは UTF-8 codec の変種を実装します。この変種はエンコーディング時に
+UTF-8 でエンコードされた BOM を UTF-8 でエンコードされたバイト列の前に追加します。
+内部状態を持つエンコーダにとって、これは一度だけ(バイトストリームの最初の書き込み時)
+行なわれます。デコーディングに際してはデータ開始の UTF-8 でエンコードされた BOM
+がもしあったらスキップします。

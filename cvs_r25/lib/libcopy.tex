@@ -1,0 +1,99 @@
+\section{\module{copy} --- 浅いコピーおよび深いコピー操作}
+
+\declaremodule{standard}{copy}
+\modulesynopsis{浅いコピーおよび深いコピー操作。}
+
+
+このモジュールでは汎用の (浅い／深い) コピー操作を提供しています。
+\withsubitem{(in copy)}{\ttindex{copy()}\ttindex{deepcopy()}}
+
+以下にインタフェースをまとめます:
+
+\begin{verbatim}
+import copy
+
+x = copy.copy(y)        # make a shallow copy of y
+x = copy.deepcopy(y)    # make a deep copy of y
+\end{verbatim}
+%
+このモジュール固有のエラーに対しては、\exception{copy.error} 
+が送出されます。
+
+浅い (shallow) コピーと深い (deep) コピーの違いが関係するのは、
+複合オブジェクト (リストやクラスインスタンスのような他のオブジェクトを
+含むオブジェクト) だけです:
+
+\begin{itemize}
+
+\item
+\emph{浅いコピー (shallow copy)} は新たな複合オブジェクトを作成し、
+その後 (可能な限り) 元のオブジェクト中に見つかったオブジェクトに対する
+\emph{参照} を挿入します。
+
+\item
+\emph{深いコピー (deep copy)} は新たな複合オブジェクトを作成し、
+その後元のオブジェクト中に見つかったオブジェクトの \emph{コピー}
+を挿入します。
+
+\end{itemize}
+
+深いコピー操作には、しばしば浅いコピー操作の時には存在しない 2 つの
+問題がついてまわります:
+
+\begin{itemize}
+
+\item
+再帰的なオブジェクト (直接、間接に関わらず、自分自身に対する参照
+を持つ複合オブジェクト) は再帰ループを引き起こします。
+
+\item
+深いコピーでは、\emph{何もかも} をコピーするため、例えば複数の
+コピー間で共有されるべき管理データ構造までも、余分にコピー
+してしまいます。
+
+\end{itemize}
+
+\function{deepcopy()} 関数では、これらの問題を以下のようにして
+回避しています:
+
+\begin{itemize}
+
+\item
+現在のコピー過程ですでにコピーされたオブジェクトからなる、 ``メモ'' 辞書を
+保持します; かつ
+
+\item
+ユーザ定義のクラスでコピー操作やコピーされる内容の集合を上書きできる
+ようにします。
+
+\end{itemize}
+
+このモジュールでは、モジュール、メソッド、スタックトレース、
+スタックフレーム、ファイル、ソケット、ウィンドウ、アレイ、その他これらに
+類似の型をコピーしません。
+このモジュールでは元のオブジェクトを変更せずに返すことで関数とクラスを
+(浅く または 深く)「コピー」します。これは \module{pickle}モジュールでの
+扱われかたと同じです。
+\versionchanged[関数コピーの追加]{2.5}
+
+
+クラスでは、pickle 化を制御するためのインタフェースと同じインタフェースを
+コピーの制御に使うことができます。これらのメソッドに関する情報は
+\refmodule{pickle}\refstmodindex{pickle} モジュールの記述を
+参照してください。\module{copy} モジュールは
+pickle 用関数登録モジュール \refmodule[copyreg]{copy_reg} を使いません。
+
+クラス独自のコピー実装を定義するために、特殊メソッド \method{__copy__()}
+および \method{__deepcopy__()} を定義することができます。前者は
+浅いコピー操作を実装するために使われます; 追加の引数はありません。
+後者は深いコピー操作を実現するために呼び出されます; この関数には
+単一の引数としてメモ辞書が渡されます。\method{__deepcopy__()}
+の実装で、内容のオブジェクトに対して深いコピーを生成する必要がある場合、
+\function{deepcopy()} を呼び出し、最初の引数にそのオブジェクトを、
+メモ辞書を二つ目の引数に与えなければなりません。
+\withsubitem{(copy protocol)}{\ttindex{__copy__()}\ttindex{__deepcopy__()}}
+
+\begin{seealso}
+\seemodule{pickle}{オブジェクト状態の取得と復元をサポートするために
+使われる特殊メソッドについて議論されています。}
+\end{seealso}

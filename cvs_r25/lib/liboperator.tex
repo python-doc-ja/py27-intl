@@ -1,0 +1,536 @@
+\section{\module{operator} ---
+         関数形式の標準演算子}
+\declaremodule{builtin}{operator}
+\sectionauthor{Skip Montanaro}{skip@automatrix.com}
+
+\modulesynopsis{組み込み関数形式になっている全ての Python の標準演算子。}
+
+\module{operator} モジュールは、Python 固有の各演算子に対応している
+ C 言語で実装された関数セットを提供します。例えば、
+\code{operator.add(x, y)} は式 \code{x+y} と等価です。関数名は
+特殊なクラスメソッドとして扱われます; 便宜上、先頭と末尾の \samp{__} 
+を取り除いたものも提供されています。
+
+これらの関数はそれぞれ、オブジェクトの比較、論理演算、数学演算、
+シーケンス操作、および抽象型テストに分類されます。
+
+オブジェクト比較関数は全てのオブジェクトで有効で、関数の名前は
+サポートする大小比較演算子からとられています:
+
+
+\begin{funcdesc}{lt}{a, b}
+\funcline{le}{a, b}
+\funcline{eq}{a, b}
+\funcline{ne}{a, b}
+\funcline{ge}{a, b}
+\funcline{gt}{a, b}
+\funcline{__lt__}{a, b}
+\funcline{__le__}{a, b}
+\funcline{__eq__}{a, b}
+\funcline{__ne__}{a, b}
+\funcline{__ge__}{a, b}
+\funcline{__gt__}{a, b}
+
+これらは  \var{a} および \var{b} の大小比較を行います。
+特に、
+\code{lt(\var{a}, \var{b})} は \code{\var{a} < \var{b}}、
+\code{le(\var{a}, \var{b})} は \code{\var{a} <= \var{b}}、
+\code{eq(\var{a}, \var{b})} は \code{\var{a} == \var{b}}、
+\code{ne(\var{a}, \var{b})} は \code{\var{a} != \var{b}}、
+\code{gt(\var{a}, \var{b})} は \code{\var{a} > \var{b}}、
+そして
+\code{ge(\var{a}, \var{b})} は \code{\var{a} >= \var{b}}
+と等価です。
+
+組み込み関数 \function{cmp()} と違って、これらの関数はどのような
+値を返してもよく、ブール代数値として解釈できてもできなくても
+かまいません。大小比較の詳細については
+\citetitle[../ref/ref.html]{Python リファレンスマニュアル}
+を参照してください。
+\versionadded{2.2}
+\end{funcdesc}
+
+
+論理演算もまた全てのオブジェクトに対して適用することができ、
+真値テスト、同一性テストおよびブール演算をサポートします:
+
+\begin{funcdesc}{not_}{o}
+\funcline{__not__}{o}
+
+\keyword{not} \var{o} の結果を返します。(オブジェクトのインスタンス
+には \method{__not__()} メソッドは適用されないので注意してください;
+この操作を定義しているのはインタプリタコアだけです。結果は
+\method{__nonzero__()} および \method{__len__()} メソッドによって
+影響されます。)
+\end{funcdesc}
+
+\begin{funcdesc}{truth}{o}
+\var{o} が真の場合 \code{True} を返し、そうでない場合 \code{False} 
+を返します。この関数は\class{bool}のコンストラクタ呼び出しと同等です。
+\end{funcdesc}
+
+\begin{funcdesc}{is_}{a, b}
+\code{\var{a} is \var{b}} を返します。オブジェクトの同一性をテストします。
+\end{funcdesc}
+
+\begin{funcdesc}{is_not}{a, b}
+\code{\var{a} is not \var{b}} を返します。オブジェクトの同一性をテストします。
+\end{funcdesc}
+
+演算子で最も多いのは数学演算およびビット単位の演算です:
+
+\begin{funcdesc}{abs}{o}
+\funcline{__abs__}{o}
+\var{o} の絶対値を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{add}{a, b}
+\funcline{__add__}{a, b}
+数値 \var{a} および \var{b} について \var{a} \code{+} \var{b} を
+返します。
+\end{funcdesc}
+
+\begin{funcdesc}{and_}{a, b}
+\funcline{__and__}{a, b}
+\var{a} と \var{b} の論理積を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{div}{a, b}
+\funcline{__div__}{a, b}
+\code{__future__.division} が有効でない場合には \var{a} \code{/} \var{b}
+を返します。``古い(classic)'' 除算としても知られています。
+\end{funcdesc}
+
+\begin{funcdesc}{floordiv}{a, b}
+\funcline{__floordiv__}{a, b}
+\var{a} \code{//} \var{b} を返します。
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{funcdesc}{inv}{o}
+\funcline{invert}{o}
+\funcline{__inv__}{o}
+\funcline{__invert__}{o}
+\var{o} のビット単位反転を返します。\code{\textasciitilde}\var{o} と
+同じです。Python 2.0 では名前 \function{invert()} および
+\function{__invert__()} が追加されました。
+\end{funcdesc}
+
+\begin{funcdesc}{lshift}{a, b}
+\funcline{__lshift__}{a, b}
+\var{a} の \var{b} ビット左シフトを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{mod}{a, b}
+\funcline{__mod__}{a, b}
+\var{a} \code{\%} \var{b} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{mul}{a, b}
+\funcline{__mul__}{a, b}
+数値 \var{a} および \var{b} について \var{a} \code{*} \var{b}
+を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{neg}{o}
+\funcline{__neg__}{o}
+\var{o} の符号反転を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{or_}{a, b}
+\funcline{__or__}{a, b}
+\var{a} と \var{b} の論理和を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{pos}{o}
+\funcline{__pos__}{o}
+\var{o} の符号非反転を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{pow}{a, b}
+\funcline{__pow__}{a, b}
+数値 \var{a} および \var{b} について \var{a} \code{**} \var{b}
+を返します。
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{rshift}{a, b}
+\funcline{__rshift__}{a, b}
+\var{a} の \var{b} ビット右シフトを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sub}{a, b}
+\funcline{__sub__}{a, b}
+\var{a} \code{-} \var{b} を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{truediv}{a, b}
+\funcline{__truediv__}{a, b}
+\code{__future__.division} が有効な場合 \var{a} \code{/} \var{b} 
+を返します。``真の''除算としても知られています。
+\versionadded{2.2}
+\end{funcdesc}
+
+\begin{funcdesc}{xor}{a, b}
+\funcline{__xor__}{a, b}
+\var{a} および \var{b} の排他的論理和を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{index}{a}
+\funcline{__index__}{a}
+整数に変換された \var{a} を返します。 \var{a}\code{.__index__()} と同等です。
+\versionadded{2.5}
+\end{funcdesc}
+
+シーケンスを扱う演算子には以下のようなものがあります:
+
+\begin{funcdesc}{concat}{a, b}
+\funcline{__concat__}{a, b}
+シーケンス \var{a} および \var{b} について \var{a} \code{+} \var{b} 
+を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{contains}{a, b}
+\funcline{__contains__}{a, b}
+\var{b} \code{in} \var{a} を調べた結果を返します。
+演算対象が左右反転しているので注意してください。関数名
+ \function{__contains__()} は Python 2.0 で追加されました。
+\end{funcdesc}
+
+\begin{funcdesc}{countOf}{a, b}
+\var{a} の中に \var{b} が出現する回数を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{delitem}{a, b}
+\funcline{__delitem__}{a, b}
+\var{a} でインデクスが \var{b} の要素を削除します。
+\end{funcdesc}
+
+\begin{funcdesc}{delslice}{a, b, c}
+\funcline{__delslice__}{a, b, c}
+\var{a} でインデクスが \var{b} から \var{c}\code{-1} のスライス要素を
+削除します。
+\end{funcdesc}
+
+\begin{funcdesc}{getitem}{a, b}
+\funcline{__getitem__}{a, b}
+\var{a} でインデクスが \var{b} の要素を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{getslice}{a, b, c}
+\funcline{__getslice__}{a, b, c}
+\var{a} でインデクスが \var{b} から \var{c}\code{-1} のスライス要素を
+返します。
+\end{funcdesc}
+
+\begin{funcdesc}{indexOf}{a, b}
+\var{a} で最初に \var{b} が出現する場所のインデクスを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{repeat}{a, b}
+\funcline{__repeat__}{a, b}
+シーケンス \var{a} と整数 \var{b} について \var{a} \code{*} \var{b}
+を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{sequenceIncludes}{\unspecified}
+\deprecated{2.0}{\function{contains()} を使ってください。}
+\function{contains()} の別名です。
+\end{funcdesc}
+
+\begin{funcdesc}{setitem}{a, b, c}
+\funcline{__setitem__}{a, b, c}
+\var{a} でインデクスが \var{b} の要素の値を \var{c} に設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{setslice}{a, b, c, v}
+\funcline{__setslice__}{a, b, c, v}
+\var{a} でインデクスが \var{b} から \var{c}\code{-1} のスライス要素の
+値をシーケンス \var{v} に設定します。
+\end{funcdesc}
+
+
+多くの演算に「その場」バージョンがあります。
+以下の関数はそうした演算子の通常の文法に比べてより素朴な呼び出し方を提供します。
+たとえば、文 \code{x += y} は \code{x = operator.iadd(x, y)} と等価です。
+別の言い方をすると、\code{z = operator.iadd(x, y)} は複合文 \code{z = x; z += y}
+と等価です。
+
+\begin{funcdesc}{iadd}{a, b}
+\funcline{__iadd__}{a, b}
+\code{a = iadd(a, b)} は \code{a += b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{iand}{a, b}
+\funcline{__iand__}{a, b}
+\code{a = iand(a, b)} は \code{a \&= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{iconcat}{a, b}
+\funcline{__iconcat__}{a, b}
+\code{a = iconcat(a, b)} は二つのシーケンス \var{a} と \var{b} に対し
+\code{a += b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{idiv}{a, b}
+\funcline{__idiv__}{a, b}
+\code{a = idiv(a, b)} は
+\code{__future__.division} が有効でないときに
+\code{a /= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ifloordiv}{a, b}
+\funcline{__ifloordiv__}{a, b}
+\code{a = ifloordiv(a, b)} は \code{a //= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ilshift}{a, b}
+\funcline{__ilshift__}{a, b}
+\code{a = ilshift(a, b)} は \code{a <}\code{<= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{imod}{a, b}
+\funcline{__imod__}{a, b}
+\code{a = imod(a, b)} は \code{a \%= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{imul}{a, b}
+\funcline{__imul__}{a, b}
+\code{a = imul(a, b)} は \code{a *= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ior}{a, b}
+\funcline{__ior__}{a, b}
+\code{a = ior(a, b)} は \code{a |= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ipow}{a, b}
+\funcline{__ipow__}{a, b}
+\code{a = ipow(a, b)} は \code{a **= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{irepeat}{a, b}
+\funcline{__irepeat__}{a, b}
+\code{a = irepeat(a, b)} は
+\var{a} がシーケンスで \var{b} が整数であるとき \code{a *= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{irshift}{a, b}
+\funcline{__irshift__}{a, b}
+\code{a = irshift(a, b)} は \code{a >>= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{isub}{a, b}
+\funcline{__isub__}{a, b}
+\code{a = isub(a, b)} は \code{a -= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{itruediv}{a, b}
+\funcline{__itruediv__}{a, b}
+\code{a = itruediv(a, b)} は
+\code{__future__.division} が有効なときに
+\code{a /= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+\begin{funcdesc}{ixor}{a, b}
+\funcline{__ixor__}{a, b}
+\code{a = ixor(a, b)} は \code{a \textasciicircum= b} と等価です。
+\versionadded{2.5}
+\end{funcdesc}
+
+
+\module{operator} モジュールでは、オブジェクトの型を調べるための
+述語演算子も定義しています。\note{これらの関数が返す結果について
+誤って理解しないよう注意してください; インスタンスオブジェクトに
+対して常に信頼できる値を返すのは \function{isCallable()}}
+だけです。例えば以下のようになります:
+
+\begin{verbatim}
+>>> class C:
+...     pass
+... 
+>>> import operator
+>>> o = C()
+>>> operator.isMappingType(o)
+True
+\end{verbatim}
+
+\begin{funcdesc}{isCallable}{o}
+\deprecated{2.0}{\function{callable()} を使ってください。}
+オブジェクト \var{o} を関数のように呼び出すことができる場合真を
+返し、それ以外の場合 false を返します。関数、バインドおよび非バインド
+メソッド、クラスオブジェクト、および \method{__call__()} メソッド
+をサポートするインスタンスオブジェクトは真を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{isMappingType}{o}
+オブジェクト \var{o} がマップ型インタフェースをサポートする場合に真を返します。
+辞書および \method{__getitem__} 
+メソッドが定義された全てのインスタンスオブジェクトに対しては、この値は真になります。
+\warning{インタフェース自体が誤った定義になっているため、
+あるインスタンスが完全なマップ型プロトコルを備えているかを調べる信頼性のある方法は
+存在しません。このため、この関数によるテストはさほど便利ではありません。}
+\end{funcdesc}
+
+\begin{funcdesc}{isNumberType}{o}
+オブジェクト \var{o} が数値を表現している場合に真を返します。
+C で実装された全ての数値型対して、この値は真になります。
+\warning{インタフェース自体が誤った定義になっているため、
+あるインスタンスが完全な数値型の%
+インタフェースをサポートしているかを調べる信頼性のある方法は存在
+しません。このため、この関数によるテストはさほど便利ではありません。}
+\end{funcdesc}
+
+\begin{funcdesc}{isSequenceType}{o}
+\var{o} がシーケンス型プロトコルをサポートする場合に真を返します。
+シーケンス型メソッドを C で定義している全てのオブジェクトおよび
+\method{__getitem__} メソッドが定義された全てのインスタンスオブジェクト
+に対して、この値は真になります。
+\warning{インタフェース自体が誤った定義になっているため、
+あるインスタンスが完全なシーケンス型の%
+インタフェースをサポートしているかを調べる信頼性のある方法は存在
+しません。このため、この関数によるテストはさほど便利ではありません。}
+\end{funcdesc}
+
+
+例: \code{0} から \code{255} までの序数を文字に対応付ける
+辞書を構築します。
+
+\begin{verbatim}
+>>> import operator
+>>> d = {}
+>>> keys = range(256)
+>>> vals = map(chr, keys)
+>>> map(operator.setitem, [d]*len(keys), keys, vals)
+\end{verbatim}
+
+\module{operator} モジュールはアトリビュートとアイテムの汎用的な検索
+のための道具も定義しています。
+\function{map()}, \function{sorted()}, \method{itertools.groupby()}, 
+や関数を引数に取るその他の関数に対して高速にフィールドを抽出する際に
+引数として使うと便利です。
+
+\begin{funcdesc}{attrgetter}{attr\optional{, args...}}
+演算対象から \var{attr} を取得する呼び出し可能なオブジェクトを返します。
+二つ以上のアトリビュートを要求された場合には、アトリビュートのタプルを返します。
+\samp{f=attrgetter('name')} とした後で、\samp{f(b)} を呼び出すと
+\samp{b.name} を返します。
+\samp{f=attrgetter('name', 'date')} とした後で、
+\samp{f(b)} を呼び出すと \samp{(b.name, b.date)} を返します。
+\versionadded{2.4}
+\versionchanged[複数のアトリビュートがサポートされました]{2.5}
+\end{funcdesc}
+    
+\begin{funcdesc}{itemgetter}{item\optional{, args...}}
+演算対象から \var{item} を取得する呼び出し可能なオブジェクトを返します。
+二つ以上のアイテムを要求された場合には、アイテムのタプルを返します。
+\samp{f=itemgetter(2)} とした後で、 \samp{f(b)} を呼び出すと
+\samp{b[2]} を返します。
+\samp{f=itemgetter(2,5,3)} とした後で、 \samp{f(b)} を呼び出すと
+\samp{(b[2], b[5], b[3])} を返します。
+\versionadded{2.4}
+\versionchanged[複数のアトリビュートがサポートされました]{2.5}
+\end{funcdesc}
+例:
+                
+\begin{verbatim}
+>>> from operator import itemgetter
+>>> inventory = [('apple', 3), ('banana', 2), ('pear', 5), ('orange', 1)]
+>>> getcount = itemgetter(1)
+>>> map(getcount, inventory)
+[3, 2, 5, 1]
+>>> sorted(inventory, key=getcount)
+[('orange', 1), ('banana', 2), ('apple', 3), ('pear', 5)]
+\end{verbatim}
+
+
+
+
+\subsection{演算子から関数への対応表 \label{operator-map}}
+
+下のテーブルでは、個々の抽象的な操作が、どのように Python 構文上の
+各演算子や \refmodule{operator} モジュールの関数に対応しているか
+を示しています。
+
+\begin{tableiii}{l|c|l}{textrm}{操作}{構文}{関数}
+  \lineiii{加算}{\code{\var{a} + \var{b}}}
+          {\code{add(\var{a}, \var{b})}}
+  \lineiii{結合}{\code{\var{seq1} + \var{seq2}}}
+          {\code{concat(\var{seq1}, \var{seq2})}}
+  \lineiii{包含テスト}{\code{\var{o} in \var{seq}}}
+          {\code{contains(\var{seq}, \var{o})}}
+  \lineiii{除算}{\code{\var{a} / \var{b}}}
+          {\code{__future__.division} が無効な場合の \code{div(\var{a}, \var{b}) \#} }
+  \lineiii{除算}{\code{\var{a} / \var{b}}}
+          {\code{__future__.division} が有効な場合の \code{truediv(\var{a}, \var{b}) \#}}
+  \lineiii{除算}{\code{\var{a} // \var{b}}}
+          {\code{floordiv(\var{a}, \var{b})}}
+  \lineiii{論理積}{\code{\var{a} \&\ \var{b}}}
+          {\code{and_(\var{a}, \var{b})}}
+  \lineiii{排他的論理和}{\code{\var{a} \^\ \var{b}}}
+          {\code{xor(\var{a}, \var{b})}}
+  \lineiii{ビット反転}{\code{\~{} \var{a}}}
+          {\code{invert(\var{a})}}
+  \lineiii{論理和}{\code{\var{a} | \var{b}}}
+          {\code{or_(\var{a}, \var{b})}}
+  \lineiii{べき乗}{\code{\var{a} ** \var{b}}}
+          {\code{pow(\var{a}, \var{b})}}
+  \lineiii{インデクス指定の代入}{\code{\var{o}[\var{k}] = \var{v}}}
+          {\code{setitem(\var{o}, \var{k}, \var{v})}}
+  \lineiii{インデクス指定の削除}{\code{del \var{o}[\var{k}]}}
+          {\code{delitem(\var{o}, \var{k})}}
+  \lineiii{インデクス指定}{\code{\var{o}[\var{k}]}}
+          {\code{getitem(\var{o}, \var{k})}}
+  \lineiii{左シフト}{\code{\var{a} <\code{<} \var{b}}}
+          {\code{lshift(\var{a}, \var{b})}}
+  \lineiii{剰余}{\code{\var{a} \%\ \var{b}}}
+          {\code{mod(\var{a}, \var{b})}}
+  \lineiii{乗算}{\code{\var{a} * \var{b}}}
+          {\code{mul(\var{a}, \var{b})}}
+  \lineiii{(算術)否}{\code{- \var{a}}}
+          {\code{neg(\var{a})}}
+  \lineiii{(論理)否}{\code{not \var{a}}}
+          {\code{not_(\var{a})}}
+  \lineiii{右シフト}{\code{\var{a} >> \var{b}}}
+          {\code{rshift(\var{a}, \var{b})}}
+  \lineiii{シーケンスの反復}{\code{\var{seq} * \var{i}}}
+          {\code{repeat(\var{seq}, \var{i})}}
+  \lineiii{スライス指定の代入}{\code{\var{seq}[\var{i}:\var{j}]} = \var{values}}
+          {\code{setslice(\var{seq}, \var{i}, \var{j}, \var{values})}}
+  \lineiii{スライス指定の削除}{\code{del \var{seq}[\var{i}:\var{j}]}}
+          {\code{delslice(\var{seq}, \var{i}, \var{j})}}
+  \lineiii{スライス指定}{\code{\var{seq}[\var{i}:\var{j}]}}
+          {\code{getslice(\var{seq}, \var{i}, \var{j})}}
+  \lineiii{文字列書式化}{\code{\var{s} \%\ \var{o}}}
+          {\code{mod(\var{s}, \var{o})}}
+  \lineiii{減算}{\code{\var{a} - \var{b}}}
+          {\code{sub(\var{a}, \var{b})}}
+  \lineiii{真値テスト}{\code{\var{o}}}
+          {\code{truth(\var{o})}}
+  \lineiii{順序付け}{\code{\var{a} < \var{b}}}
+          {\code{lt(\var{a}, \var{b})}}
+  \lineiii{順序付け}{\code{\var{a} <= \var{b}}}
+          {\code{le(\var{a}, \var{b})}}
+  \lineiii{等価性}{\code{\var{a} == \var{b}}}
+          {\code{eq(\var{a}, \var{b})}}
+  \lineiii{不等性}{\code{\var{a} != \var{b}}}
+          {\code{ne(\var{a}, \var{b})}}
+  \lineiii{順序付け}{\code{\var{a} >= \var{b}}}
+          {\code{ge(\var{a}, \var{b})}}
+  \lineiii{順序付け}{\code{\var{a} > \var{b}}}
+          {\code{gt(\var{a}, \var{b})}}
+\end{tableiii}

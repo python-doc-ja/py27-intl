@@ -1,0 +1,54 @@
+\section{\module{rgbimg} --- ``SGI RGB''ファイルを読み書きする}
+
+\declaremodule{builtin}{rgbimg} \modulesynopsis{``SGI RGB'' 形式の
+画像ファイルを読み書きします (とはいえ、このモジュールは SGI 特有のもので
+は\emph{ありません} !)。}
+
+\deprecated{2.5}{このモジュールはメンテナンスされておらず、使われても
+                 いないようです。}
+
+\module{rgbimg}モジュールを使うと、Pythonプログラムから 
+SGI imglib 画像ファイル (\file{.rgb} としても知られています) に
+アクセスできます。このモジュールは完全とはいえませんが、ちょっとした
+用途には十分な機能を持っているため提供されています。
+現在のところカラーマップファイルはサポートされていません。
+
+\note{このモジュールはデフォルトでは32ビットプラットフォーム上でしか
+構築されません。他のシステムでは適切に動作しそうにないからです。}
+
+このモジュールでは以下の変数と関数を定義しています:
+
+\begin{excdesc}{error}
+ファイル形式がサポートされていない場合など、全てのエラーに対して送出
+される例外です。
+\end{excdesc}
+
+\begin{funcdesc}{sizeofimage}{file}
+タプル\code{(\var{x}, \var{y})}を返します。\var{x}と\var{y} は画像の
+大きさをピクセル単位で表した値です。現状では、 4バイトRGBAピクセル、
+3バイトRGBピクセル、および 1バイトグレイスケールピクセル だけをサポート
+しています。
+\end{funcdesc}
+
+\begin{funcdesc}{longimagedata}{file}
+指定したファイル上の画像を読み込んでデコードし、Python文字列にして
+返します。文字列は4バイトRGBピクセル形式です。左下のピクセルが文字列の
+先頭になります。この形式は、例えば\function{gl.lrectwrite()} に渡す
+といった用途に適しています。
+\end{funcdesc}
+
+\begin{funcdesc}{longstoimage}{data, x, y, z, file}
+\var{data} の RGBAデータを画像ファイル\var{file} に書き込みます。
+\var{x}と\var{y}は画像の大きさを表します。画像を 1 バイトの
+\var{z} はグレイスケールで保存する場合には 1 、3バイトのRGBデータの場合
+は 3 です、4バイトのRGBA データの場合には 4 になります。入力データは
+常にピクセル当たり 4 バイトにせねばなりません。
+\function{gl.lrectread()} の返す形式と同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{ttob}{flag}
+画像のスキャンラインを下端から上端に向かって読み書きする (\var{flag} は
+ゼロ、SGI GL 互換の方法) か、上端から下端に向かって読み書きする 
+(\var{flag} は 1、 X 互換の方法) かを決めるグローバルなフラグです。
+デフォルト値はゼロです。
+\end{funcdesc}

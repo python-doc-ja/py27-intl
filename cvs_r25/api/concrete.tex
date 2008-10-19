@@ -1,0 +1,3265 @@
+\chapter{具象オブジェクト (concrete object) レイヤ \label{concrete}}
+
+
+この章ではは、特定の Python オブジェクト型固有の関数について述べて
+います。これらの関数に間違った方のオブジェクトを渡すのは良い考え
+であありません; Python プログラムから何らかのオブジェクトを受け取った
+とき、そのオブジェクトが正しい型になっているか確信をもてないの
+なら、まず型チェックを行わなければなりません; 例えば、あるオブジェクト
+が辞書型か調べるには、\cfunction{PyDict_Check()} を使います。
+この章は Python のオブジェクト型における ``家計図'' に従って構成
+されています。
+
+\warning{この章で述べている関数は、渡されたオブジェクトの型を注意深く
+チェックしはするものの、多くの関数は渡されたオブジェクトが有効な
+\NULL{} なのか有効なオブジェクトなのかをチェックしません。
+これらの関数に \NULL{} を渡させてしまうと、関数はメモリアクセス
+違反を起こして、インタプリタを即座に終了させてしまうはずです。}
+
+
+\section{基本オブジェクト (fundamental object) \label{fundamental}}
+
+この節では、Python の型オブジェクトと単量子 (singleton) 
+オブジェクト \code{None} について述べます。
+
+
+\subsection{型オブジェクト (type object) \label{typeObjects}}
+
+\obindex{type}
+\begin{ctypedesc}{PyTypeObject}
+組み込み型を記述する際に用いられる、オブジェクトを表す C 構造体です。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyObject*}{PyType_Type}
+型オブジェクト自身の型オブジェクトです; Python レイヤにおける
+\code{type}や\code{types.TypeType} と同じオブジェクトです。
+  \withsubitem{(in module types)}{\ttindex{TypeType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyType_Check}{PyObject *o}
+オブジェクト \var{o} が型オブジェクトの場合に真を返します。
+標準型オブジェクトから導出されたサブタイプ (subtype) のインスタンスも
+含みます。その他の場合には偽を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyType_CheckExact}{PyObject *o}
+オブジェクト \var{o} が型オブジェクトの場合に真を返します。
+標準型のサブタイプの場合は含みません。その他の場合には偽を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyType_HasFeature}{PyObject *o, int feature}
+型オブジェクト \var{o} に、型機能 \var{feature} が設定されている
+場合に真を返します。型機能は各々単一ビットのフラグで表されます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyType_IS_GC}{PyObject *o}
+型オブジェクトが \var{o} が循環参照検出をサポートしている場合に
+真を返します; この関数は型機能フラグ \constant{Py_TPFLAGS_HAVE_GC}
+の設定状態をチェックします。
+  \versionadded{2.0}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyType_IsSubtype}{PyTypeObject *a, PyTypeObject *b}
+\var{a} が \var{b} のサブタイプの場合に真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyType_GenericAlloc}{PyTypeObject *type,
+                                                  Py_ssize_t nitems}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyType_GenericNew}{PyTypeObject *type,
+                                            PyObject *args, PyObject *kwds}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyType_Ready}{PyTypeObject *type}
+型オブジェクトの後始末処理 (finalize) を行います。この関数は
+全てのオブジェクトで初期化を完了するために呼び出されなくては
+なりません。
+この関数は、基底クラス型から継承したスロットを型オブジェクトに追加する
+役割があります。
+成功した場合には \code{0} を返し、エラーの場合には \code{-1} を
+返して例外情報を設定します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+
+\subsection{None オブジェクト \label{noneObject}}
+
+\obindex{None}
+\code{None} に対する \ctype{PyTypeObject} は、 Python/C API では
+直接公開されていないので注意してください。 \code{None} は単量子
+(singleton) なので、オブジェクトのアイデンティティテスト
+(C では \samp{==}) を使うだけで十分だからです。
+同じ理由から、\cfunction{PyNone_Check()} 関数はありません。
+
+\begin{cvardesc}{PyObject*}{Py_None}
+Python における \code{None} オブジェクトで、値がないことを表します。
+このオブジェクトにはメソッドがありません。リファレンスカウントに
+ついては、このオブジェクトも他のオブジェクトと同様に扱う必要が
+あります。
+\end{cvardesc}
+
+\begin{csimplemacrodesc}{Py_RETURN_NONE}
+C 関数から \cdata{Py_None} を戻す操作を適切に行うためのマクロです。
+\end{csimplemacrodesc}
+
+
+\section{数値型オブジェクト (numeric object) \label{numericObjects}}
+
+\obindex{numeric}
+
+
+\subsection{(通常)整数型オブジェクト (plain integer object) \label{intObjects}}
+
+\obindex{integer}
+\begin{ctypedesc}{PyIntObject}
+この \ctype{PyObject} のサブタイプは Python の整数型オブジェクトを表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyInt_Type}
+この \ctype{PyTypeObject} のインスタンスは Python の (長整数でない)整数型を表現します。
+これは \code{int}や\code{types.IntType} と同じオブジェクトです。
+ \withsubitem{(in modules types)}{\ttindex{IntType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyInt_Check}{PyObject *o}
+\var{o} が \cdata{PyInt_Type} 型か \cdata{PyInt_Type} 型のサブタイプであるときに真を返します。
+  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyInt_CheckExact}{PyObject *o}
+\var{o} が \cdata{PyInt_Type} 型で、かつ \cdata{PyInt_Type} 型のサブタイプでないときに真を返します。 
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyInt_FromString}{char *str, char **pend,
+                                               int base}
+\var{str} の文字列値に基づいて、新たな \ctype{PyIntObject} または \ctype{PyLongObject} を返します。このとき \var{base} を基数として文字列を解釈します。
+\var{pend} が \NULL{} でなければ、 \code{*\var{pend}} は \var{str} 中で
+数が表現されている部分以後の先頭の文字のアドレスを指しています。
+\var{base} が \code{0} ならば、\var{str} の先頭の文字列に基づいて
+基数を決定します: もし \var{str} が \code{'0x'} または \code{'0X'}
+で始まっていれば、基数に 16 を使います; \var{str} が \code{'0'}
+で始まっていれば、基数に 8 を使います; その他の場合には基数に 10 を
+使います。\var{base} が \code{0} でなければ、\var{base} は \code{2}
+以上 \code{36} 以下の数でなければなりません。先頭に空白がある場合は
+無視されます。数字が全くない場合、\exception{ValueError} が送出
+されます。使用しているマシンの \ctype{long int} 型で表現し切れないくらい
+大きな数が文字列に入っており、オーバフロー警告が抑制されていれば、
+\ctype{PyLongObject} を返します。オーバフロー警告が抑制されていなければ、
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyInt_FromLong}{long ival}
+\var{ival} の値を使って新たな整数オブジェクトを生成します。
+
+現在の実装では、\code{-5} から \code{256} までの全ての整数
+に対する整数オブジェクトの配列を保持するようにしており、
+この範囲の数を生成すると、実際には既存のオブジェクトに
+対する参照が返るようになっています。従って、 \code{1} の
+値を変えることすら可能です。変えてしまった場合の Python の
+挙動は未定義です :-)
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyInt_FromSsize_t}{Py_ssize_t ival}
+ \var{ival}の値を使って新たな整数オブジェクトを生成します。
+ 値が\code{LONG_MAX}を超えている場合、長整数オブジェクトを返します。
+
+ \versionadded{2.5}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{long}{PyInt_AsLong}{PyObject *io}
+オブジェクトがまだ \ctype{PyIntObject} でなければまず型キャストを試み、
+次にその値を返します。
+エラーが発生した場合、\code{-1}が返されます。
+その時呼び出し側は、\code{PyErr_Occurred()}を使って、エラーが発生したのか、
+単に値が-1だったのかを判断するべきです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{long}{PyInt_AS_LONG}{PyObject *io}
+オブジェクト \var{io} の値を返します。エラーチェックを行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned long}{PyInt_AsUnsignedLongMask}{PyObject *io}
+オブジェクトがまだ \ctype{PyIntObject} または \ctype{PyLongObject} で
+なければまず型キャストを試み、次にその値を\ctype{unsigned long} 型で
+返します。この関数はオーバフローをチェックしません。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned PY_LONG_LONG}{PyInt_AsUnsignedLongLongMask}{PyObject *io}
+オブジェクトがまだ \ctype{PyIntObject} または \ctype{PyLongObject} で
+なければまず型キャストを試み、次にその値を\ctype{unsigned long long} 型で
+返します。オーバフローをチェックしません。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyInt_AsSsize_t}{PyObject *io}
+オブジェクトがまだ\ctype{PyIntObject}でなければまず型キャストを試み、
+次にその値を\ctype{Py_ssize_t}型で返します。
+  \versionadded{2.5}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{long}{PyInt_GetMax}{}
+システムの知識に基づく、扱える最大の整数値 (システムのヘッダファイル
+に定義されている \constant{LONG_MAX}\ttindex{LONG_MAX}) を返します。
+\end{cfuncdesc}
+
+\subsection{Bool 型オブジェクト\label{boolObjects}} % Boolean Objects 
+Python の Bool 型は整数のサブクラスとして実装されています。ブール型の
+値は、\constant{Py_False} と \constant{Py_True} の 2 つしかありません。
+従って、通常の生成／削除関数はブール型にはあてはまりません。
+とはいえ、以下のマクロが利用できます。
+
+\begin{cfuncdesc}{int}{PyBool_Check}{PyObject *o}
+\var{o} が \cdata{PyBool_Type} の場合に真を返します。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cvardesc}{PyObject*}{Py_False}
+Python における \code{False} オブジェクトです。このオブジェクトはメソッド
+を持ちません。参照カウントの点では、他のオブジェクトと同様に扱う必要が
+あります。
+\end{cvardesc}
+
+\begin{cvardesc}{PyObject*}{Py_True}
+Python における \code{True} オブジェクトです。このオブジェクトはメソッド
+を持ちません。参照カウントの点では、他のオブジェクトと同様に扱う必要が
+あります。
+\end{cvardesc}
+
+\begin{csimplemacrodesc}{Py_RETURN_FALSE}
+\constant{Py_False} に適切な参照カウントのインクリメントを行って、
+関数から返すためのマクロです。
+\versionadded{2.4}
+\end{csimplemacrodesc}
+
+\begin{csimplemacrodesc}{Py_RETURN_TRUE}
+\constant{Py_True} に適切な参照カウントのインクリメントを行って、
+関数から返すためのマクロです。
+\versionadded{2.4}
+\end{csimplemacrodesc}
+
+\begin{cfuncdesc}{int}{PyBool_FromLong}{long v}
+\var{v} の値に応じて\constant{Py_True} または\constant{Py_False} への
+新しい参照を返します。
+\versionadded{2.3}
+\end{cfuncdesc}
+
+\subsection{長整数型オブジェクト (long integer object) \label{longObjects}}
+
+\obindex{long integer}
+\begin{ctypedesc}{PyLongObject}
+この \ctype{PyObject} のサブタイプは長整数型を表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyLong_Type}
+この \ctype{PyTypeObject} のインスタンスは Python 長整数型を表現します。
+これは \code{long}や\code{types.LongType} と同じオブジェクトです。
+  \withsubitem{(in modules types)}{\ttindex{LongType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyLong_Check}{PyObject *p}
+引数が \ctype{PyLongObject} か \ctype{PyLongObject} のサブタイプのときに真を返します。  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyLong_CheckExact}{PyObject *p}
+引数が \ctype{PyLongObject} 型で、かつ \ctype{PyLongObject} 型のサブタイプでないときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromLong}{long v}
+\var{v} から新たな \ctype{PyLongObject} オブジェクトを生成して返します。
+失敗のときには \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromUnsignedLong}{unsigned long v}
+C の \ctype{unsigned long} 型から新たな \ctype{PyLongObject} オブジェクト
+を生成して返します。
+失敗のときには \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromLongLong}{PY_LONG_LONG v}
+C の \ctype{long long} 型から新たな \ctype{PyLongObject} オブジェクトを
+生成して返します。失敗のときには \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromUnsignedLongLong}{unsigned PY_LONG_LONG v}
+C の \ctype{unsigned long long} 型から新たな \ctype{PyLongObject}
+オブジェクトを生成して返します。失敗のときには \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromDouble}{double v}
+\var{v} の整数部から新たな \ctype{PyLongObject} オブジェクトを生成して
+返します。失敗のときには \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromString}{char *str, char **pend,
+                                                int base}
+\var{str} の文字列値に基づいて、新たな \ctype{PyLongObject} を返します。
+このとき \var{base} を基数として文字列を解釈します。
+\var{pend} が \NULL{} でなければ、 \code{*\var{pend}} は \var{str} 中で
+数が表現されている部分以後の先頭の文字のアドレスを指しています。
+\var{base} が \code{0} ならば、\var{str} の先頭の文字列に基づいて
+基数を決定します: もし \var{str} が \code{'0x'} または \code{'0X'}
+で始まっていれば、基数に 16 を使います; \var{str} が \code{'0'}
+で始まっていれば、基数に 8 を使います; その他の場合には基数に 10 を
+使います。\var{base} が \code{0} でなければ、\var{base} は \code{2}
+以上 \code{36} 以下の数でなければなりません。先頭に空白がある場合は
+無視されます。数字が全くない場合、\exception{ValueError} が送出
+されます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromUnicode}{Py_UNICODE *u,
+                                                 Py_ssize_t length, int base}
+Unicode の数字配列を Python の長整数型に変換します。最初のパラメタ
+\var{u} は、 Unicode 文字列の最初の文字を指し、\var{length} には
+文字数を指定し、\var{base} には変換時の基数を指定します。
+基数は範囲 [2, 36] になければなりません; 範囲外の基数を指定すると、
+\exception{ValueError} を送出します。
+  \versionadded{1.6}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyLong_FromVoidPtr}{void *p}
+Python 整数型または長整数型をポインタ \var{p} から生成します。
+ポインタに入れる値は \cfunction{PyLong_AsVoidPtr()} を使って
+得られるような値です。
+  \versionadded{1.5.2}
+  \versionchanged[整数値がLONG_MAXより大きい場合は、正の長整数を返します]{2.5}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{long}{PyLong_AsLong}{PyObject *pylong}
+\var{pylong} の指す長整数値を、 C の \ctype{long} 型表現で返します。
+\var{pylong} が \constant{LONG_MAX}\ttindex{LONG_MAX} よりも
+大きい場合、 \exception{OverflowError} を送出します。
+  \withsubitem{(built-in exception)}{\ttindex{OverflowError}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned long}{PyLong_AsUnsignedLong}{PyObject *pylong}
+\var{pylong} の指す長整数値を、 C の \ctype{unsigned long} 型表現で返します。
+\var{pylong} が \constant{ULONG_MAX}\ttindex{ULONG_MAX} よりも
+大きい場合、 \exception{OverflowError} を送出します。
+  \withsubitem{(built-in exception)}{\ttindex{OverflowError}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PY_LONG_LONG}{PyLong_AsLongLong}{PyObject *pylong}
+\var{pylong} の指す長整数値を、 C の \ctype{long long} 型表現で返します。
+\var{pylong} が \ctype{long long} で表せない場合、
+\exception{OverflowError} を送出します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned PY_LONG_LONG}{PyLong_AsUnsignedLongLong}{PyObject
+                                                                 *pylong}
+\var{pylong} の指す値を、 C の \ctype{unsigned long long} 型表現で
+返します。
+\var{pylong} が \ctype{unsigned long long} で表せない場合、
+正の値なら \exception{OverflowError} を、負の値なら
+\exception{TypeError} を送出します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned long}{PyLong_AsUnsignedLongMask}{PyObject *io}
+Python 長整数値を、 オーバフローチェックを行わずに
+C の \ctype{unsigned long} 型表現で返します。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{unsigned PY_LONG_LONG}{PyLong_AsUnsignedLongLongMask}{PyObject *io}
+Python 長整数値を、 オーバフローチェックを行わずに
+C の \ctype{unsigned long long} 型表現で返します。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{PyLong_AsDouble}{PyObject *pylong}
+\var{pylong} の指す値を、 C の \ctype{double} 型表現で返します。
+\var{pylong} が \ctype{double} を使って近似表現できない場合、
+\exception{OverflowError} 例外を送出して \code{-1.0} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void*}{PyLong_AsVoidPtr}{PyObject *pylong}
+Python の整数型か長整数型を指す \var{pylong} を、 C の
+\ctype{void} ポインタに変換します。\var{pylong} を変換できなければ、
+\exception{OverflowError} を送出します。この関数は
+\cfunction{PyLong_FromVoidPtr()} で値を生成するときに使うような
+\ctype{void} ポインタ型を生成できるだけです。
+  \versionadded{1.5.2}
+  \versionchanged[値が0..LONG_MAXの範囲の外だった場合、
+符号付き整数と符号無し整数の両方とも利用可能です]{2.5}
+\end{cfuncdesc}
+
+
+\subsection{浮動小数点型オブジェクト (floating point object) \label{floatObjects}}
+
+\obindex{floating point}
+\begin{ctypedesc}{PyFloatObject}
+この \ctype{PyObject} のサブタイプは Python 浮動小数点型オブジェクト
+を表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyFloat_Type}
+この \ctype{PyTypeObject} のインスタンスは Python 浮動小数点型を
+表現します。これは \code{float}や\code{types.FloatType} と同じオブジェクトです。
+  \withsubitem{(in modules types)}{\ttindex{FloatType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyFloat_Check}{PyObject *p}
+引数が \ctype{PyFloatObject} か \ctype{PyFloatObject} のサブタイプのときに真を返します。  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFloat_CheckExact}{PyObject *p}
+引数が \ctype{PyFloatObject} 型で、かつ \ctype{PyFloatObject} 型のサブタイプでないときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFloat_FromString}{PyObject *str, char **pend}
+\var{str} の文字列値をもとに \ctype{PyFloatObject} オブジェクトを生成
+します。失敗すると \NULL{} を返します。引数 \var{pend} は無視されます。
+この引数は後方互換性のためだけに残されています。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFloat_FromDouble}{double v}
+\var{v} から \ctype{PyFloatObject} オブジェクトを生成して返します。
+失敗すると \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{PyFloat_AsDouble}{PyObject *pyfloat}
+\var{pyfloat} の指す値を、 C の \ctype{double} 型表現で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{PyFloat_AS_DOUBLE}{PyObject *pyfloat}
+\var{pyfloat} の指す値を、 C の \ctype{double} 型表現で返しますが、
+エラーチェックを行いません。
+\end{cfuncdesc}
+
+
+\subsection{浮動小数点オブジェクト (complex number object) \label{complexObjects}}
+
+\obindex{complex number}
+Python の複素数オブジェクトは、 C API 側から見ると二つの別個の
+型として実装されています: 一方は Python プログラムに対して公開
+されている Python のオブジェクトで、他方は実際の複素数値を
+表現する C の構造体です。 API では、これら双方を扱う関数を提供して
+います。
+
+\subsubsection{C 構造体としての複素数}
+
+複素数の C 構造体を引数として受理したり、戻り値として返したりする
+関数は、ポインタ渡しを行うのではなく \emph{値渡し} を行うので
+注意してください。これは API 全体を通して一貫しています。
+
+\begin{ctypedesc}{Py_complex}
+Python 複素数オブジェクトの値の部分に対応する C の構造体です。
+複素数オブジェクトを扱うほとんどの関数は、この型の構造体を
+場合に応じて入力や出力として使います。構造体は以下のように
+定義されています:
+
+\begin{verbatim}
+typedef struct {
+   double real;
+   double imag;
+} Py_complex;
+\end{verbatim}
+\end{ctypedesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_sum}{Py_complex left, Py_complex right}
+二つの複素数の和を C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_diff}{Py_complex left, Py_complex right}
+二つの複素数の差を C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_neg}{Py_complex complex}
+複素数 \var{complex} の符号反転 C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_prod}{Py_complex left, Py_complex right}
+二つの複素数の積を C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_quot}{Py_complex dividend,
+                                          Py_complex divisor}
+二つの複素数の商を C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{_Py_c_pow}{Py_complex num, Py_complex exp}
+指数 \var{exp} の \var{num} 乗を C の \ctype{Py_complex} 型で返します。
+\end{cfuncdesc}
+
+
+\subsubsection{Python オブジェクトとしての複素数型}
+
+\begin{ctypedesc}{PyComplexObject}
+この \ctype{PyObject} のサブタイプは Python の複素数オブジェクトを
+表現します。
+\end{ctypedesc}
+\begin{cvardesc}{PyTypeObject}{PyComplex_Type}
+この \ctype{PyTypeObject} のインスタンスは Python の複素数型を表現します。
+Pythonの\code{complex}や\code{types.ComplexType}と同じオブジェクトです。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyComplex_Check}{PyObject *p}
+引数が \ctype{PyComplexObject} 型か \ctype{PyComplexObject} 型のサブタイプのときに真を返します。 
+ \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyComplex_CheckExact}{PyObject *p}
+引数が \ctype{PyComplexObject} 型で、かつ \ctype{PyComplexObject} 型のサブタイプでないときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyComplex_FromCComplex}{Py_complex v}
+C の \ctype{Py_complex} 型から Python の複素数値を生成します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyComplex_FromDoubles}{double real, double imag}
+新たな \ctype{PyComplexObject} オブジェクトを \var{real} と \var{imag}
+から生成します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{PyComplex_RealAsDouble}{PyObject *op}
+\var{op} の実数部分を C の \ctype{double} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{PyComplex_ImagAsDouble}{PyObject *op}
+\var{op} の虚数部分を C の \ctype{double} 型で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_complex}{PyComplex_AsCComplex}{PyObject *op}
+複素数値 \var{op} から \ctype{Py_complex} 型を生成します。
+\end{cfuncdesc}
+
+
+
+\section{シーケンスオブジェクト (sequence object) \label{sequenceObjects}}
+
+\obindex{sequence}
+シーケンスオブジェクトに対する一般的な操作については前の章ですでに
+述べました; この節では、Python 言語にもともと備わっている
+特定のシーケンスオブジェクトについて扱います。
+
+
+\subsection{文字列オブジェクト (string object) \label{stringObjects}}
+
+以下の関数では、文字列が渡されるはずのパラメタに非文字列が渡された
+場合に \exception{TypeError} を送出します。
+
+\obindex{string}
+\begin{ctypedesc}{PyStringObject}
+この \ctype{PyObject} のサブタイプは Python の文字列オブジェクトを
+表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyString_Type}
+この \ctype{PyTypeObject} のインスタンスは Python の文字列型を
+表現します; このオブジェクトは Python レイヤにおける
+\code{str}や\code{types.TypeType} と同じです。
+  \withsubitem{(in module types)}{\ttindex{StringType}}.
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyString_Check}{PyObject *o}
+\var{o} が文字列型か文字列型のサブタイプであるときに真を返します。
+  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyString_CheckExact}{PyObject *o}
+\var{o} が文字列型で、かつ文字列型のサブタイプでないときに真を返します。 
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_FromString}{const char *v}
+\var{v} を値に持つ文字列オブジェクトを返します。失敗すると \NULL{}
+を返します。パラメタ \var{v} は \NULL{} であってはなりません;
+\NULL かどうかはチェックしません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_FromStringAndSize}{const char *v,
+                                                         Py_ssize_t len}
+値が \var{v} で長さが \var{len} の新たな文字列オブジェクト
+を返します。失敗すると \NULL{} を返します。\var{v} が
+\NULL{} の場合、文字列の中身は未初期化の状態になります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_FromFormat}{const char *format, ...}
+C 関数 \cfunction{printf()} 形式の \var{format} 文字列と可変個の
+引数をとり、書式化済みの文字列長を計算した上で、書式化を行った結果を
+値とする Python 文字列にして返します。可変個の引数部は C の
+データ型でなくてはならず、かつ \var{format} 文字列内の書式指定文字
+(format character) に一致する型でなくてはなりません。利用できる
+書式化文字は以下の通りです:
+
+  % This should be exactly the same as the table in PyErr_Format.
+  % One should just refer to the other.
+
+  % The descriptions for %zd and %zu are wrong, but the truth is complicated
+  % because not all compilers support the %z width modifier -- we fake it
+  % when necessary via interpolating PY_FORMAT_SIZE_T.
+
+  % %u, %lu, %zu should have "new in Python 2.5" blurbs.
+
+  \begin{tableiii}{l|l|l}{member}{書式指定文字}{型}{コメント}
+    \lineiii{\%\%}{\emph{n/a}}{文字 \% のリテラル。}
+    \lineiii{\%c}{int}{C の整数型で表現される単一の文字。}
+    \lineiii{\%d}{int}{C の\code{printf("\%d")} と全く同じ。}
+    \lineiii{\%u}{unsigned int}{C の\code{printf("\%u")} と全く同じ。}
+    \lineiii{\%ld}{long}{C の\code{printf("\%ld")} と全く同じ。}
+    \lineiii{\%lu}{unsigned long}{C の\code{printf("\%lu")} と全く同じ。}
+    \lineiii{\%zd}{Py_ssize_t}{C の\code{printf("\%zd")} と全く同じ。}
+    \lineiii{\%zu}{size_t}{C の\code{printf("\%zu")} と全く同じ。}
+    \lineiii{\%i}{int}{C の\code{printf("\%i")} と全く同じ。}
+    \lineiii{\%x}{int}{C の\code{printf("\%x")} と全く同じ。}
+    \lineiii{\%s}{char*}{null で終端された C の文字列。}
+    \lineiii{\%p}{void*}{C ポインタの 16 進表記。\code{printf("\%p")}
+とほとんど同じだが、プラットフォームにおける \code{printf} の定義に
+関わりなく先頭にリテラル \code{0x} が付きます。}
+  \end{tableiii}
+
+  識別できない書式指定文字があった場合、残りの書式文字列はそのまま出力文字列に
+  コピーされ、残りの引数は無視されます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_FromFormatV}{const char *format,
+                                                   va_list vargs}
+\function{PyString_FromFormat()} と同じです。ただし、こちらの関数は
+二つしか引数をとりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyString_Size}{PyObject *string}
+文字列オブジェクト \var{string} 内の文字列値の長さを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyString_GET_SIZE}{PyObject *string}
+\cfunction{PyString_Size()} をマクロで実装したもので、
+エラーチェックを行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{char*}{PyString_AsString}{PyObject *string}
+\var{string} の中身を NUL 文字終端された表現で返します。
+ポインタは\var{string} オブジェクトの内部バッファを指し、
+バッファのコピーを指すわけではありません。
+\code{PyString_FromStringAndSize(NULL, \var{size})} を使って
+生成した文字列でない限り、バッファ内のデータはいかなる変更も
+してはなりません。この文字列をデアロケートしてはなりません。
+\var{string} が Unicode オブジェクトの場合、この関数は
+\var{string} のデフォルトエンコーディング版を計算し、
+デフォルトエンコーディング版に対して操作を行います。
+\var{string} が文字列オブジェクトですらない場合、
+\cfunction{PyString_AsString()} は \NULL{} を返して
+\exception{TypeError} を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{char*}{PyString_AS_STRING}{PyObject *string}
+\cfunction{PyString_AsString()} をマクロで実装したもので、
+エラーチェックを行いません。文字列オブジェクトだけをサポート
+します; Unicode オブジェクトを渡してはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyString_AsStringAndSize}{PyObject *obj,
+                                                 char **buffer,
+                                                 Py_ssize_t *length}
+\var{obj} の中身を NUL 文字終端された表現にして、出力用の変数
+\var{buffer} と \var{length} を使って返します。
+
+この関数は文字列オブジェクトと Unicode オブジェクトのどちらも
+入力として受理します。 Unicode オブジェクトの場合、オブジェクトを
+デフォルトエンコーディングでエンコードしたバージョン
+(default encoded version) を返します。\var{length} が \NULL{} の
+場合、値を返させるバッファには NUL 文字を入れてはなりません;
+NUL 文字が入っている場合、関数は \code{-1} を返し、
+\exception{TypeError} を送出します。
+
+\var{buffer} は \var{obj} の内部文字列バッファを参照し、
+バッファのコピーを参照するわけではありません。
+\code{PyString_FromStringAndSize(NULL, \var{size})} を使って
+生成した文字列でない限り、バッファ内のデータはいかなる変更も
+してはなりません。この文字列をデアロケートしてはなりません。
+
+\var{string} が Unicode オブジェクトの場合、この関数は
+\var{string} のデフォルトエンコーディング版を計算し、
+デフォルトエンコーディング版に対して操作を行います。
+\var{string} が文字列オブジェクトですらない場合、
+\cfunction{PyString_AsStringAndSize()} は \code{-1} を返して
+\exception{TypeError} を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyString_Concat}{PyObject **string,
+                                         PyObject *newpart}
+新しい文字列オブジェクトを \var{*string} に作成し、 \var{newpart}
+の内容を \var{string} に追加します; 呼び出し側は新たな参照を所有
+することになります。\var{string} の以前の値に対する参照は盗み取られ
+ます。新たな文字列を生成できなければ、\var{string} に対する古い参照は
+無視され、 \var{*string} の値は \NULL{} に設定されます; その際、
+適切な例外情報が設定されます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyString_ConcatAndDel}{PyObject **string,
+                                               PyObject *newpart}
+新しい文字列オブジェクトを \var{*string} に作成し、 \var{newpart}
+の内容を \var{string} に追加します。こちらのバージョンの関数は
+\var{newpart} への参照をデクリメントします。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{_PyString_Resize}{PyObject **string, Py_ssize_t newsize}
+``変更不能'' である文字列オブジェクトをサイズ変更する手段です。
+新たな文字列オブジェクトを作成するときにのみ使用してください;
+文字列がすでにコードの他の部分で使われているかもしれない場合には、
+この関数を使ってはなりません。入力する文字列オブジェクトの参照カウント
+が 1 でない場合、この関数を呼び出すとエラーになります。
+左側値には、既存の文字列オブジェクトのアドレスを渡し (このアドレスには
+書き込み操作が起きるかもしれません)、新たなサイズを指定します。
+成功した場合、 \var{*string} はサイズ変更された文字列オブジェクトを
+保持し、\code{0} が返されます; \var{*string} の値は、入力したときの
+値と異なっているかもしれません。文字列の再アロケーションに失敗した場合、
+\var{*string} に入っていた元の文字列オブジェクトを解放し、
+\var{*string} を \NULL{} にセットし、メモリ例外をセットし、
+\code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_Format}{PyObject *format,
+                                              PyObject *args}
+新たな文字列オブジェクトを  \var{format} と \var{args} から生成します。
+\code{\var{format} \%\ \var{args}} と似た働きです。引数 \var{args}
+はタプルでなければなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyString_InternInPlace}{PyObject **string}
+引数 \var{*string} をインプレースで隔離 (intern) します。
+引数は Python 文字列オブジェクトを指すポインタへのアドレスで
+なくてはなりません。\var{*string} と等しい、すでに隔離済みの
+文字列が存在する場合、そのオブジェクトを \var{*string} に
+設定します (かつ、元の文字列オブジェクトの参照カウントをデクリメントし、
+すでに隔離済みの文字列オブジェクトの参照カウントをインクリメントします)。
+(補足: 参照カウントについては沢山説明して来ましtが、この関数は
+参照カウント中立 (reference-count-neutral) と考えてください;
+この関数では、関数の呼び出し後にオブジェクトに対して参照の所有権を
+持てるのは、関数を呼び出す前にすでに所有権を持っていた場合に限ります。)
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_InternFromString}{const char *v}
+\cfunction{PyString_FromString()} と 
+\cfunction{PyString_InternInPlace()} を組み合わせたもので、
+隔離済みの新たな文字列オブジェクトを返すか、同じ値を持つすでに
+隔離済みの文字列オブジェクトに対する新たな (``所有権を得た'') 参照
+を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_Decode}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *encoding,
+                                               const char *errors}
+\var{size} からなるエンコード済みのバッファ \var{s} を
+\var{encoding} の名前で登録されている codec に
+渡してデコードし、オブジェクトを生成します。
+\var{encoding} および \var{errors} は
+組み込み関数 \function{unicode()} に与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_AsDecodedObject}{PyObject *str,
+                                               const char *encoding,
+                                               const char *errors}
+文字列オブジェクトを\var{encoding} の名前で登録されている codec に
+渡してデコードし、Python オブジェクトを返します。
+\var{encoding} および \var{errors} は
+文字列型の \method{encode()} メソッドに与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_Encode}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *encoding,
+                                               const char *errors}
+\var{size} で指定されたサイズの \ctype{char} バッファを
+\var{encoding} の名前で登録されている codec に渡してエンコードし、
+Python オブジェクトを返します。\var{encoding} および \var{errors} は
+文字列型の \method{encode()} メソッドに与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyString_AsEncodedObject}{PyObject *str,
+                                               const char *encoding,
+                                               const char *errors}
+エンコード名 \var{encoding} で登録された codec を使って
+文字列オブジェクトをエンコードし、その結果を Python オブジェクト
+として返します。\var{encoding} および \var{errors} は
+文字列型の \method{encode()} メソッドに与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+
+\subsection{Unicode オブジェクト (Unicode object) \label{unicodeObjects}}
+\sectionauthor{Marc-Andre Lemburg}{mal@lemburg.com}
+
+%--- Unicode Type -------------------------------------------------------
+
+以下は Python の Unicode 実装に用いられている基本 Unicode 
+オブジェクト型です:
+
+\begin{ctypedesc}{Py_UNICODE}
+この型はUnicode序数(Unicode ordinal)を保持するための基礎単位として、
+Pythonが内部的に使います。
+Pythonのデフォルトのビルドでは、\ctype{Py_UNICODE}として16-bit型を利用し、
+Unicodeの値を内部ではUCS-2で保持します。
+UCS4版のPythonをビルドすることもできます。(最近の多くのLinuxディストリビューションでは
+UCS4版のPythonがついてきます) 
+UCS4版ビルドでは\ctype{Py_UNICODE}に32-bit型を利用し、内部ではUnicode
+データをUCS4で保持します。
+\ctype{wchar_t}が利用できて、PythonのUnicodeに関するビルドオプションと
+一致するときは、\ctype{Py_UNICODE}は\ctype{wchar_t}をtypedefでエイリアス
+され、ネイティブプラットフォームに対する互換性を高めます。
+それ以外のすべてのプラットフォームでは、\ctype{Py_UNICODE}は
+\ctype{unsigned short} (UCS2) か \ctype{unsigned long} (UCS4) の
+typedefによるエイリアスになります。
+\end{ctypedesc}
+
+UCS2とUCS4のPythonビルドの間にはバイナリ互換性がないことに注意してください。
+拡張やインタフェースを書くときには、このことを覚えておいてください。
+
+\begin{ctypedesc}{PyUnicodeObject}
+この \ctype{PyObject} のサブタイプは Unicode オブジェクトを表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyUnicode_Type}
+この \ctype{PyTypeObject} のインスタンスは Python の Unicode 型を
+表現します。
+Pythonレイヤにおける\code{unicode}や\code{types.UnicodeType}と同じ
+オブジェクトです。
+\end{cvardesc}
+
+以下の API は実際には C マクロで、Unicode オブジェクト内部の
+読み出し専用データに対するチェックやアクセスを高速に行います:
+
+\begin{cfuncdesc}{int}{PyUnicode_Check}{PyObject *o}
+\var{o} が Unicode 文字列型か Unicode 文字列型のサブタイプで
+あるときに真を返します。
+  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyUnicode_CheckExact}{PyObject *o}
+\var{o} が Unicode 文字列型で、かつ Unicode 文字列型のサブタイプで
+ないときに真を返します。 
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_GET_SIZE}{PyObject *o}
+オブジェクトのサイズを返します。 \var{o} は
+\ctype{PyUnicodeObject} でなければなりません (チェックはしません)。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_GET_DATA_SIZE}{PyObject *o}
+オブジェクトの内部バッファのサイズをバイト数で返します。 \var{o} は
+\ctype{PyUnicodeObject} でなければなりません (チェックはしません)。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_UNICODE*}{PyUnicode_AS_UNICODE}{PyObject *o}
+オブジェクト内部の\ctype{Py_UNICODE} バッファへのポインタを返します。 
+\var{o} は \ctype{PyUnicodeObject} でなければなりません (チェックは
+しません)。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{const char*}{PyUnicode_AS_DATA}{PyObject *o}
+オブジェクト内部バッファへのポインタを返します。 
+\var{o} は \ctype{PyUnicodeObject} でなければなりません 
+(チェックはしません)。
+\end{cfuncdesc}
+
+% --- Unicode character properties ---------------------------------------
+
+Unicode は数多くの異なる文字プロパティ (character property)
+を提供しています。よく使われる文字プロパティは、以下のマクロ
+で利用できます。これらのマクロは Python の設定に応じて、
+各々 C の関数に対応付けられています。
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISSPACE}{Py_UNICODE ch}
+\var{ch} が空白文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISLOWER}{Py_UNICODE ch}
+\var{ch} が小文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISUPPER}{Py_UNICODE ch}
+\var{ch} が大文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISTITLE}{Py_UNICODE ch}
+\var{ch} がタイトルケース文字 (titlecase character) かどうかに
+応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISLINEBREAK}{Py_UNICODE ch}
+\var{ch} が改行文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISDECIMAL}{Py_UNICODE ch}
+\var{ch} が 10 進の数字文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISDIGIT}{Py_UNICODE ch}
+\var{ch} が 2 進の数字文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISNUMERIC}{Py_UNICODE ch}
+\var{ch} が数字文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISALPHA}{Py_UNICODE ch}
+\var{ch} がアルファベット文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_ISALNUM}{Py_UNICODE ch}
+\var{ch} が英数文字かどうかに応じて 1 または 0 を返します。
+\end{cfuncdesc}
+
+以下の API は、高速に直接文字変換を行うために使われます:
+
+\begin{cfuncdesc}{Py_UNICODE}{Py_UNICODE_TOLOWER}{Py_UNICODE ch}
+  \var{ch} を小文字に変換したものを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_UNICODE}{Py_UNICODE_TOUPPER}{Py_UNICODE ch}
+  \var{ch} を大文字に変換したものを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_UNICODE}{Py_UNICODE_TOTITLE}{Py_UNICODE ch}
+  \var{ch} をタイトルケース文字に変換したものを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_TODECIMAL}{Py_UNICODE ch}
+  \var{ch} を 10 進の正の整数に変換したものを返します。
+不可能ならば \code{-1} を返します。このマクロは例外を送出しません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{Py_UNICODE_TODIGIT}{Py_UNICODE ch}
+  \var{ch} を一桁の 2 進整数に変換したものを返します。
+不可能ならば \code{-1} を返します。このマクロは例外を送出しません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{double}{Py_UNICODE_TONUMERIC}{Py_UNICODE ch}
+  \var{ch} を \ctype{double} に変換したものを返します。
+不可能ならば \code{-1.0} を返します。このマクロは例外を送出しません。
+\end{cfuncdesc}
+
+% --- Plain Py_UNICODE ---------------------------------------------------
+
+Unicode オブジェクトを生成したり、Unicode のシーケンスとしての基本的な
+プロパティにアクセスしたりするには、以下の API を使ってください:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_FromUnicode}{const Py_UNICODE *u,
+                                                    Py_ssize_t size}
+\var{size} で指定された長さを持つ Py_UNICODE 型バッファ \var{u} 
+から Unicode オブジェクトを生成します。\var{u} を \NULL{} にしても
+よく、その場合オブジェクトの内容は未定義です。バッファに必要な情報を
+埋めるのはユーザの責任です。バッファの内容は新たなオブジェクトに
+コピーされます。バッファが \NULL{} でない場合、戻り値は共有された
+オブジェクトになることがあります。従って、この関数が返す Unicode
+オブジェクトを変更してよいのは \var{u} が \NULL{} のときだけです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_UNICODE*}{PyUnicode_AsUnicode}{PyObject *unicode}
+Unicode オブジェクトの内部バッファ \ctype{Py_UNICODE} に対する読み出し
+専用のポインタを返します。\var{unicode} が Unicode オブジェクトで
+なければ \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_GetSize}{PyObject *unicode}
+Unicode オブジェクトの長さを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_FromEncodedObject}{PyObject *obj,
+                                                      const char *encoding,
+                                                      const char *errors}
+あるエンコード方式でエンコードされたオブジェクト \var{obj} を
+Unicode オブジェクトに型強制して、参照カウントをインクリメントして
+返します。
+
+型強制は以下のようにして行われます:
+
+文字列やその他の char バッファ互換オブジェクトの場合、オブジェクト
+は \var{encoding} に従ってデコードされます。このとき \var{error} で
+定義されたエラー処理を用います。これら二つの引数は \NULL{} にでき、
+その場合デフォルト値が使われます (詳細は次の節を参照してください)
+
+その他のUnicodeオブジェクトを含むオブジェクトは \exception{TypeError} 例外を引き起こします。
+
+この API は、エラーが生じたときには \NULL{} を返します。
+呼び出し側は返されたオブジェクトを decref する責任があります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_FromObject}{PyObject *obj}
+\code{PyUnicode_FromEncodedObject(obj, NULL, "strict")}
+を行うショートカットで、インタプリタは Unicode への型強制が必要な
+際に常にこの関数を使います。
+\end{cfuncdesc}
+
+% --- wchar_t support for platforms which support it ---------------------
+
+プラットフォームで \ctype{wchar_t} がサポートされていて、かつ
+wchar.h が提供されている場合、Python は以下の関数を使って 
+\ctype{wchar_t} に対するインタフェースを確立することがあります。
+このサポートは、Python 自体の \ctype{Py_UNICODE} 型がシステムの
+\ctype{wchar_t} と同一の場合に最適化をもたらします。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_FromWideChar}{const wchar_t *w,
+                                                     Py_ssize_t size}
+\var{size} の \ctype{wchar_t} バッファ \var{w} から Unicode オブジェクト
+を生成します。失敗すると \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_AsWideChar}{PyUnicodeObject *unicode,
+                                             wchar_t *w,
+                                             Py_ssize_t size}
+Unicode オブジェクトの内容を \ctype{wchar_t} バッファ \var{w}
+にコピーします。最大で \var{size} 個の \ctype{wchar_t} 文字を
+(末尾の 0-終端文字を除いて) コピーします。コピーした
+\ctype{wchar_t} 文字の個数を返します。エラーの時には -1 を返します。
+\ctype{wchar_t} 文字列は 0-終端されている場合も、されていない場合も
+あります。関数の呼び出し手の責任で、アプリケーションの必要に応じて
+\ctype{wchar_t} 文字列を 0-終端してください。
+\end{cfuncdesc}
+
+
+\subsubsection{組み込み codec (built-in codec) \label{builtinCodecs}}
+
+Python では、処理速度を高めるために C で書かれた一そろいの
+codec を提供しています。これらの codec は全て以下の関数を介して
+直接利用できます。
+
+以下の API の多くが、 \var{encoding} と \var{errors} という二つの
+引数をとります。これらのパラメタは、組み込みの Unicode オブジェクト
+コンストラクタである \function{unicode()} における同名のパラメタと同じ
+セマンティクスになっています。
+
+\var{encoding} を \NULL{} にすると、デフォルトエンコーディング
+である \ASCII を使います。ファイルシステムに関する関数の呼び出し
+では、ファイル名に対するエンコーディングとして
+\cdata{Py_FileSystemDefaultEncoding} を使わねばなりません。
+この変数は読み出し専用の変数として扱わねばなりません:
+この変数は、あるシステムによっては静的な文字列に対するポインタで
+あったり、また別のシステムでは、(アプリケーションが setlocale
+を読んだときなどに) 変わったりもします。
+
+\var{errors} で指定するエラー処理もまた、 \NULL{} を指定できます。
+\NULL{} を指定すると、codec で定義されているデフォルト処理の使用を
+意味します。全ての組み込み codec で、デフォルトのエラー処理は
+``strict'' (\exception{ValueError} を送出する) になっています。
+
+個々の codec は全て同様のインタフェースを使っています。個別の
+codec の説明では、説明を簡単にするために以下の汎用のインタフェースとの
+違いだけを説明しています。
+
+% --- Generic Codecs -----------------------------------------------------
+
+以下は汎用 codec の API です:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Decode}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *encoding,
+                                               const char *errors}
+何らかのエンコード方式でエンコードされた、 \var{size} バイトの
+文字列 \var{s} をデコードして Unicode オブジェクトを生成します。
+\var{encoding} と \var{errors} は、組み込み関数 unicode() の同名の
+パラメタと同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Encode}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               const char *encoding,
+                                               const char *errors}
+\var{size} で指定されたサイズの \ctype{Py_UNICODE} バッファを
+エンコードした Python 文字列オブジェクトを返します。
+\var{encoding} および \var{errors} は
+Unicode 型の \method{encode()} メソッドに与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsEncodedString}{PyObject *unicode,
+                                               const char *encoding,
+                                               const char *errors}
+Unicode オブジェクトをエンコードし、その結果を Python 文字列
+オブジェクトとして返します。\var{encoding} および \var{errors} は
+Unicode 型の \method{encode()} メソッドに与える同名のパラメタと
+同じ意味を持ちます。使用する codec の検索は、 Python の codec
+レジストリを使って行います。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- UTF-8 Codecs -------------------------------------------------------
+
+以下は UTF-8 codec の APIです:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeUTF8}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+UTF-8 でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeUTF8Stateful}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors,
+                                               Py_ssize_t *consumed}
+
+\var{consumed} が \NULL{} の場合、\cfunction{PyUnicode_DecodeUTF8()}
+と同じように動作します。 \var{consumed} が \NULL{} でない場合、
+\cfunction{PyUnicode_DecodeUTF8Stateful()} は末尾の不完全な UTF-8 バイト列
+をエラーとみなしません。これらのバイト列はデコードされず、デコードされた
+バイト数を \var{consumed} に返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeUTF8}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+UTF-8 でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsUTF8String}{PyObject *unicode}
+UTF-8 で Unicode オブジェクトをエンコードし、結果を Python 文字列
+オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- UTF-16 Codecs ------------------------------------------------------ */
+
+以下は UTF-16 codec の APIです:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeUTF16}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors,
+                                               int *byteorder}
+UTF-16 でエンコードされたバッファ \var{s} から \var{size} バイト
+デコードして、結果を Unicode オブジェクトで返します。
+\var{errors} は (\NULL{} でない場合) エラー処理方法を定義します。
+デフォルト値は ``strict'' です。
+
+\var{byteorder} が \NULL{} でない場合、デコード機構は以下の
+ように指定されたバイト整列 (byte order) に従ってデコードを開始
+します:
+
+\begin{verbatim}
+   *byteorder == -1: リトルエンディアン
+   *byteorder == 0:  ネイティブ
+   *byteorder == 1:  ビッグエンディアン
+\end{verbatim}
+
+その後、入力データ中に見つかった全てのバイト整列マーカ 
+(byte order mark, BOM) に従って、バイト整列を切り替えます。
+BOM はデコード結果の Unicode 文字列中にはコピーされません。
+デコードを完結した後、\var{*byteorder} は入力データの終点現在に
+おけるバイト整列に設定されます。
+
+\var{byteorder} が \NULL{} の場合、 codec はネイティブバイト整列の
+モードで開始します。
+
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeUTF16Stateful}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors,
+                                               int *byteorder,
+                                               Py_ssize_t *consumed}
+\var{consumed} が \NULL{} の場合、\cfunction{PyUnicode_DecodeUTF16()}
+と同じように動作します。 \var{consumed} が \NULL{} でない場合、
+\cfunction{PyUnicode_DecodeUTF16Stateful()} は末尾の不完全な UTF-16 バイト列
+(奇数長のバイト列や分割されたサロゲートペア) をエラーとみなしません。
+これらのバイト列はデコードされず、デコードされたバイト数を \var{consumed}
+に返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeUTF16}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               const char *errors,
+                                               int byteorder}
+
+\var{s} 中の Unicode データを UTF-16 でエンコードした結果が入っている
+Python 文字列オブジェクトを返します。
+\var{byteorder} が \code{0} でない場合、出力は以下のバイト整列
+指定に従って書き出されます:
+
+\begin{verbatim}
+   byteorder == -1: リトルエンディアン
+   byteorder == 0:  ネイティブ (BOM マーカを書き出します)
+   byteorder == 1:  ビッグエンディアン
+\end{verbatim}
+
+バイトオーダが \code{0} の場合、出力結果となる文字列は常に
+Unicode BOM マーカ (U+FEFF) で始まります。それ以外のモードでは、
+BOM マーカを頭につけません。
+
+\var{Py_UNICODE_WIDE} が定義されている場合、単一の\ctype{Py_UNICODE}
+値はサロゲートペアとして表現されることがあります。
+\var{Py_UNICODE_WIDE} が定義されていなければ、各\ctype{Py_UNICODE} 値
+は UCS-2 文字として表現されます。
+
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsUTF16String}{PyObject *unicode}
+ネイティブバイトオーダの UTF-16 でエンコードされた Python 文字列を返します。
+文字列は常に BOM マーカから始まります。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- Unicode-Escape Codecs ----------------------------------------------
+
+以下は ``Unicode Escape'' codec の APIです:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeUnicodeEscape}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+Unicode-Escape でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeUnicodeEscape}{const Py_UNICODE *s,
+                                               Py_ssize_t size}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+Unicode-Escape でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsUnicodeEscapeString}{PyObject *unicode}
+Unicode-Escape で Unicode オブジェクトをエンコードし、結果を 
+Python 文字列オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- Raw-Unicode-Escape Codecs ------------------------------------------
+
+以下は ``Raw Unicode Escape'' codec の APIです:
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeRawUnicodeEscape}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+Raw-Unicode-Escape でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeRawUnicodeEscape}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+Raw-Unicode-Escape でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsRawUnicodeEscapeString}{PyObject *unicode}
+Raw-Unicode-Escape で Unicode オブジェクトをエンコードし、結果を 
+Python 文字列オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- Latin-1 Codecs -----------------------------------------------------
+
+以下は Latin-1 codec の APIです:
+Latin-1 は、 Unicode 序数の最初の 256 個に対応し、
+エンコード時にはこの 256 個だけを受理します。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeLatin1}{const char *s,
+                                                     Py_ssize_t size,
+                                                     const char *errors}
+Latin-1 でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeLatin1}{const Py_UNICODE *s,
+                                                     Py_ssize_t size,
+                                                     const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+Latin-1 でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsLatin1String}{PyObject *unicode}
+Latin-1 で Unicode オブジェクトをエンコードし、結果を Python 文字列
+オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- ASCII Codecs -------------------------------------------------------
+
+以下は \ASCII{} codec の APIです:
+7 ビットの \ASCII{} データだけを受理します。その他のコードは
+エラーになります。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeASCII}{const char *s,
+                                                    Py_ssize_t size,
+                                                    const char *errors}
+\ASCII{} でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeASCII}{const Py_UNICODE *s,
+                                                    Py_ssize_t size,
+                                                    const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+\ASCII{} でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsASCIIString}{PyObject *unicode}
+\ASCII{} で Unicode オブジェクトをエンコードし、結果を Python 文字列
+オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- Character Map Codecs -----------------------------------------------
+
+以下は mapping codec の APIです:
+
+この codec は、多くの様々な codec を実装する際に使われるという点で
+特殊な codec です (実際、\module{encodings} パッケージに入っている
+標準 codecs のほとんどは、この codec を使っています)。
+この codec は、文字のエンコードやデコードにマップ型 (mapping)
+を使います。
+
+デコード用のマップ型は、文字列型の字列一組みを、 Unicode 型の字列一組、
+整数 (Unicode 序数として解釈されます) または \code{None} ("定義されていない
+対応付け(undefined mapping)" を意味し、エラーを引き起こします) の
+いずれかに対応付けなければなりません。
+
+デコード用のマップ型は、Unicode 型の字列一組みを、 string 型の字列一組、
+整数 (Latin-1 序数として解釈されます) または \code{None} ("定義されていない
+対応付け(undefined mapping)" を意味し、エラーを引き起こします) の
+いずれかに対応付けなければなりません。
+
+マップ型オブジェクトは、 \method{__getitem__} マップ型インタフェース
+をサポートしなければなりません。
+
+ある文字の検索が LookupError によって失敗すると、その文字は
+そのままコピーされます。すなわち、その文字の序数値がそれぞれ 
+Unicode または Latin-1 として解釈されます。このため、codec を
+実現するマップ型に入れる必要がある対応付け関係は、ある文字を別の
+コード点に対応付けるものだけです。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeCharmap}{const char *s,
+                                               Py_ssize_t size,
+                                               PyObject *mapping,
+                                               const char *errors}
+
+エンコードされた \var{size} バイトの文字列 \var{s} から 
+\var{mapping} に指定されたオブジェクトを使って Unicode オブジェクトを
+生成します。codec が例外を送出した場合には\NULL{} を返します。
+もし、\var{mapping}が\NULL{}だった場合、latin-1でデコーディングされます。
+それ以外の場合では、\var{mapping}はbyteに対する辞書マップ
+(訳注: sに含まれる文字のunsignedな値をint型でキーとして、値として変換対象の
+Unicode文字を表すUnicode文字列になっているような辞書) か、ルックアップテーブルと
+して扱われるunicode文字列です。
+
+文字列(訳注: mappingがunicode文字列として渡された場合)の長さより大きい
+byte値や、(訳注: mappingにしたがって変換した結果が) U+FFFE "characters" になる
+Byte値は、"undefined mapping" として扱われます。
+  \versionchanged[mapping引数としてunicodeが使えるようになりました]{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeCharmap}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               PyObject *mapping,
+                                               const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+\var{mapping} に指定されたオブジェクトを使ってエンコードし、 
+Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsCharmapString}{PyObject *unicode,
+                                                        PyObject *mapping}
+Unicode オブジェクトを \var{mapping} に指定されたオブジェクトを使って
+エンコードし、結果を Python 文字列オブジェクトとして返します。
+エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+以下の codec API は Unicode から Unicode への対応付けを行う
+特殊なものです。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_TranslateCharmap}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               PyObject *table,
+                                               const char *errors}
+\var{で} 指定された長さを持つ \ctype{Py_UNICODE} バッファを、
+文字変換マップ \var{table} を適用して変換し、変換結果を Unicode
+オブジェクトで返します。codec が例外を発行した場合には \NULL{}
+を返します。
+
+対応付けを行う \var{table} は、 Unicode 序数を表す整数を
+Unicode 序数を表す整数または \code{None} に対応付けます。
+(\code{None} の場合にはその文字を削除します)
+
+対応付けテーブルが提供する必要があるメソッドは
+\method{__getitem__()} インタフェースだけです; 従って、辞書や
+シーケンス型を使ってもうまく動作します。対応付けを行っていない
+(\exception{LookupError} を起こすような) 文字序数に対しては、
+変換は行わず、そのままコピーします。
+\end{cfuncdesc}
+
+% --- MBCS codecs for Windows --------------------------------------------
+
+以下は MBCS codec の API です。この codec は現在のところ、
+Windows 上だけで利用でき、変換の実装には Win32 MBCS 変換機構
+(Win32 MBCS converter) を使っています。 MBCS (または DBCS)
+はエンコード方式の種類 (class) を表す言葉で、単一の
+エンコード方式を表すわけでなないので注意してください。
+利用されるエンコード方式 (target encoding) は、 codec を動作
+させているマシン上のユーザ設定で定義されています。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeMBCS}{const char *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+MBCS でエンコードされた \var{size} バイトの文字列 \var{s} から
+Unicode オブジェクトを生成します。codec が例外を送出した場合には
+\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_DecodeMBCSStateful}{const char *s,
+                                               int size,
+                                               const char *errors,
+                                               int *consumed}
+\var{consumed}が\NULL{}のとき、\cfunction{PyUnicode_DecodeMBCS()}と同じ動作をします。
+\var{consumed}が\NULL{}でないとき、\cfunction{PyUnicode_DecodeMBCSStateful()}は
+文字列の最後にあるマルチバイト文字の前半バイトをデコードせず、
+\var{consumed}にデコードしたバイト数を格納します。
+  \versionadded{2.5}
+\end{cfuncdesc}
+
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_EncodeMBCS}{const Py_UNICODE *s,
+                                               Py_ssize_t size,
+                                               const char *errors}
+\var{size} で指定された長さを持つ \ctype{Py_UNICODE} 型バッファを
+MBCS でエンコードし、 Python 文字列オブジェクトにして返します。
+codec が例外を送出した場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_AsMBCSString}{PyObject *unicode}
+MBCS で Unicode オブジェクトをエンコードし、結果を Python 文字列
+オブジェクトとして返します。エラー処理は ``strict'' です。
+codec が例外を送出した場合には\NULL{} を返します。
+\end{cfuncdesc}
+
+% --- Methods & Slots ----------------------------------------------------
+
+\subsubsection{メソッドおよびスロット関数 (slot function) \label{unicodeMethodsAndSlots}}
+
+以下の API は Unicode オブジェクトおよび文字列を入力に取り
+(説明では、どちらも文字列と表記しています)、場合に応じて Unicode 
+オブジェクトか整数を返す機能を持っています。
+
+これらの関数は全て、例外が発生した場合には \NULL{} または \code{-1}
+を返します。
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Concat}{PyObject *left,
+                                               PyObject *right}
+二つの文字列を結合して、新たな Unicode 文字列を生成します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Split}{PyObject *s,
+                                              PyObject *sep,
+                                              Py_ssize_t maxsplit}
+Unicode 文字列のリストを分割して、 Unicode 文字列からなるリスト
+を返します。 \var{sep} が \NULL{} の場合、全ての空白文字を使って
+分割を行います。それ以外の場合、指定された文字を使って分割を
+行います。最大で \var{maxsplit} 個までの分割を行います。
+\var{maxsplit} が負ならば分割数に制限を設けません。
+分割結果のリスト内には分割文字は含みません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Splitlines}{PyObject *s,
+                                                   int keepend}
+Unicode 文字列を改行文字で区切り、Unicode 文字列からなるリスト
+を返します。CRLF は一個の改行文字とみなします。\var{keepend}
+が 0 の場合、分割結果のリスト内に改行文字を含めません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Translate}{PyObject *str,
+                                                  PyObject *table,
+                                                  const char *errors}
+
+文字列に文字変換マップ \var{table} を適用して変換し、変換結果を 
+Unicode オブジェクトで返します。
+
+対応付けを行う \var{table} は、 Unicode 序数を表す整数を
+Unicode 序数を表す整数または \code{None} に対応付けます。
+(\code{None} の場合にはその文字を削除します)
+
+対応付けテーブルが提供する必要があるメソッドは
+\method{__getitem__()} インタフェースだけです; 従って、辞書や
+シーケンス型を使ってもうまく動作します。対応付けを行っていない
+(\exception{LookupError} を起こすような) 文字序数に対しては、
+変換は行わず、そのままコピーします。
+
+\var{errors} は codecs で通常使われるのと同じ意味を持ちます。
+\var{errors} は \NULL{} にしてもよく、デフォルトエラー処理の
+使用を意味します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Join}{PyObject *separator,
+                                             PyObject *seq}
+指定した \var{separator} で文字列からなるシーケンスを連結 (join) し、
+連結結果を Unicode 文字列で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyUnicode_Tailmatch}{PyObject *str,
+                                                  PyObject *substr,
+                                                  Py_ssize_t start,
+                                                  Py_ssize_t end,
+                                                  int direction}
+\var{substr} が指定された末尾条件 (\var{direction} == -1 は
+前方一致、 \var{direction} ==1 は後方一致) で 
+\var{str}[\var{start}:\var{end}] とマッチする場合に 1 を返し、
+それ以外の場合には 0 を返します。
+エラーが発生した時は \code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_Find}{PyObject *str,
+                                       PyObject *substr,
+                                       Py_ssize_t start,
+                                       Py_ssize_t end,
+                                       int direction}
+
+\var{str}[\var{start}:\var{end}] 中に\var{substr} が最初に
+出現する場所を返します。このとき指定された検索方向 \var{direction} 
+(\var{direction} == 1 は順方向検索、 \var{direction} == -1 は
+逆方向検索) で検索します。戻り値は最初にマッチが見つかった場所の
+インデクスです; 戻り値 \code{-1} はマッチが見つからなかったことを
+表し、\code{-2} はエラーが発生して例外情報が設定されていることを
+表します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyUnicode_Count}{PyObject *str,
+                                        PyObject *substr,
+                                        Py_ssize_t start,
+                                        Py_ssize_t end}
+\code{\var{str}[\var{start}:\var{end}]} に
+\var{substr} が重複することなく出現する回数を返します。
+エラーが発生した場合には \code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Replace}{PyObject *str,
+                                                PyObject *substr,
+                                                PyObject *replstr,
+                                                Py_ssize_t maxcount}
+\var{str} 中に出現する \var{substr} を最大で \var{maxcount} 個
+\var{replstr} に置換し、置換結果を Unicode オブジェクトにして
+返します。
+\var{maxcount} == -1 にすると、全ての \var{substr} を置換します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyUnicode_Compare}{PyObject *left, PyObject *right}
+二つの文字列を比較して、左引数が右引数より小さい場合、
+左右引数が等価の場合、左引数が右引数より大きい場合、について、
+それぞれ -1, 0, 1 を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyUnicode_RichCompare}{PyObject *left, 
+                                             PyObject *right, 
+                                              int op}
+二つのunicode文字列を比較して、下のうちの一つを返します:
+\begin{itemize}
+  \item \code{NULL} を、例外が発生したときに返します。
+  \item \constant{Py_True} もしくは \constant{Py_False} を、正しく比較できた時に返します。
+  \item \constant{Py_NotImplemented} を、leftとrightがのどちらかに対する
+    \cfunction{PyUnicode_FromObject()} が失敗したときに返します。(原文: in case the type combination is unknown)
+    %訳注: 原文が分かりにくいので翻訳者が解説しました。
+\end{itemize}
+
+\constant{Py_EQ} と \constant{Py_NE} の比較は、引数からUnicodeへの変換が
+\exception{UnicodeDecodeError} で失敗した時に、
+\exception{UnicodeWarning} を発生する可能性があることに注意してください。
+
+\var{op} に入れられる値は、
+   \constant{Py_GT}, \constant{Py_GE}, \constant{Py_EQ},
+   \constant{Py_NE}, \constant{Py_LT}, and \constant{Py_LE}
+のどれかです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyUnicode_Format}{PyObject *format,
+                                              PyObject *args}
+新たな文字列オブジェクトを \var{format} および \var{args} から
+生成して返します; このメソッドは \code{\var{format} \%\ \var{args}}
+のようなものです。引数 \var{args} はタプルでなくてはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyUnicode_Contains}{PyObject *container,
+                                           PyObject *element}
+\var{element} が \var{container} 内にあるか調べ、その結果に応じて
+真または偽を返します。
+
+\var{element} は単要素の Unicode 文字に型強制できなければ
+なりません。エラーが生じた場合には \code{-1} を返します。
+\end{cfuncdesc}
+
+
+\subsection{Buffer Objects \label{bufferObjects}}
+\sectionauthor{Greg Stein}{gstein@lyra.org}
+
+\obindex{buffer}
+C で実装された Python オブジェクトは、``バッファインタフェース
+(buffer\index{buffer interface} interface)'' と呼ばれる一連の
+関数を公開していることがあります。これらの関数は、あるオブジェクトの
+データを生 (raw) のバイト列形式で公開するために使います。
+このオブジェクトの使い手は、バッファインタフェースを使うことで、
+オブジェクトをあらかじめコピーしておく必要なしに、オブジェクトの
+データに直接アクセスできます。
+
+バッファインタフェースをサポートするオブジェクトの例として、
+文字列型とアレイ (array) 型の二つがあります。文字列オブジェクトは、
+その内容をバッファインタフェースのバイト単位形式で公開して
+います。アレイもその内容を公開していますが、注意する必要が
+あるのはアレイの要素は複数バイトの値になりうる、ということです。
+
+バッファインタフェースの使い手の一例として、ファイルオブジェクトの
+\method{write()} メソッドがあります。バッファインタフェースを
+介してバイト列を公開しているオブジェクトは全て、ファイルへの書き出し
+ができます。オブジェクトのバッファインタフェースを操作し、
+対象となるオブジェクトからデータを返させる 
+\cfunction{PyArg_ParseTuple()} には数多くのデータ書式化コードが
+あります。
+
+バッファインタフェースに関するより詳しい情報は、
+``バッファオブジェクト構造体'' 節 (~\ref{buffer-structs} 節) の、
+\ctype{PyBufferProcs}\ttindex{PyBufferProcs} の説明のところに
+あります。
+
+``バッファオブジェクト'' はヘッダファイル \file{bufferobject.h} 
+の中で定義されています (このファイルは \file{Python.h} がインクルード
+しています)。 バッファオブジェクトは、 Python プログラミングの
+レベルからは文字列オブジェクトと非常によく似ているように見えます:
+スライス、インデクス指定、結合、その他標準の文字列操作をサポート
+しています。しかし、バッファオブジェクトのデータは二つのデータソース:
+何らかのメモリブロックか、バッファインタフェースを公開している
+別のオブジェクト、のいずれかに由来しています。
+
+バッファオブジェクトは、他のオブジェクトのバッファインタフェースから
+Python プログラマにデータを公開する方法として便利です。
+バッファオブジェクトはゼロコピーなスライス機構 (zero-copy slicing 
+mechanism) としても使われます。ブロックメモリを参照するという
+バッファオブジェクトの機能を使うことで、任意のデータをきわめて簡単に
+Python プログラマに公開できます。メモリブロックは巨大でも
+かまいませんし、C 拡張モジュール内の定数配列でもかまいません。
+また、オペレーティングシステムライブラリ側に渡す前の、
+操作用の生のブロックメモリでもかまいませんし、
+構造化されたデータをネイティブのメモリ配置形式でやりとりするため
+にも使えます。
+
+\begin{ctypedesc}{PyBufferObject}
+この \ctype{PyObject} のサブタイプはバッファオブジェクトを表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyBuffer_Type}
+Python バッファ型 (buffer type) を表現する\ctype{PyTypeObject} です;
+Python レイヤにおける \code{buffer} や \code{types.BufferType} と同じオブジェクトです。
+\withsubitem{(in module types)}{\ttindex{BufferType}}
+\end{cvardesc}
+
+\begin{cvardesc}{int}{Py_END_OF_BUFFER}
+この定数は、\cfunction{PyBuffer_FromObject()} または
+の \cfunction{PyBuffer_FromReadWriteObject()} \var{size} パラメタに
+渡します。
+このパラメタを渡すと、\ctype{PyBufferObject} は指定された \var{offset} 
+からバッファの終わりまでを \var{base} オブジェクトとして参照します。
+このパラメタを使うことで、関数の呼び出し側が \var{base} オブジェクト
+のサイズを調べる必要がなくなります。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyBuffer_Check}{PyObject *p}
+引数が\cdata{PyBuffer_Type} 型のときに真を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyBuffer_FromObject}{PyObject *base,
+                                                  Py_ssize_t offset, Py_ssize_t size}
+新たな読み出し専用バッファオブジェクトを返します。\var{base} が
+読み出し専用バッファに必要なバッファプロトコルをサポートしていない
+場合や、厳密に一つのバッファセグメントを提供していない場合には
+\exception{TypeError} を送出し、\var{offset} がゼロ以下の場合には
+\exception{ValueError} を送出します。
+バッファオブジェクトはは \var{base} オブジェクトに対する参照を保持し、
+バッファオブジェクトのの内容は \var{base} オブジェクトの \var{offset}
+から \var{size} バイトのバッファインタフェースへの参照になります。
+\var{size} が \constant{Py_END_OF_BUFFER} の場合、新たに作成する
+バッファオブジェクトの内容は \var{base} から公開されているバッファの
+末尾までにわたります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyBuffer_FromReadWriteObject}{PyObject *base,
+                                                           Py_ssize_t offset,
+                                                           Py_ssize_t size}
+新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外
+は \cfunction{PyBuffer_FromObject} と同じです。\var{base} オブジェクト
+が書き込み可能バッファに必要なバッファプロトコルを公開していない
+場合、\exception{TypeError} を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyBuffer_FromMemory}{void *ptr, Py_ssize_t size}
+メモリ上の指定された場所から指定されたサイズのデータを読み出せる、
+新たな読み出し専用バッファオブジェクトを返します。
+この関数が返すバッファオブジェクトが存続する間、\var{ptr} で与え
+られたメモリバッファがデアロケートされないようにするのは呼び出し側の
+責任です。\var{size} がゼロ以下の場合には\exception{ValueError} を
+送出します。\var{size} には \constant{Py_END_OF_BUFFER} を指定しては
+\emph{なりません}; 指定すると、\exception{ValueError} を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyBuffer_FromReadWriteMemory}{void *ptr, Py_ssize_t size}
+\cfunction{PyBuffer_FromMemory()} に似ていますが、書き込み可能な
+バッファを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyBuffer_New}{Py_ssize_t size}
+\var{size} バイトのメモリバッファを独自に維持する新たな書き込み可能
+バッファオブジェクトを返します。
+\var{size} がゼロまたは正の値でない場合、\exception{ValueError} を
+送出します。(\cfunction{PyObject_AsWriteBuffer()} が返すような)
+メモリバッファは特に整列されていないので注意して下さい。
+\end{cfuncdesc}
+
+
+\subsection{タプルオブジェクト (tuple object) \label{tupleObjects}}
+
+\obindex{tuple}
+\begin{ctypedesc}{PyTupleObject}
+この \ctype{PyObject} のサブタイプは Python のタプルオブジェクトを
+表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyTuple_Type}
+この \ctype{PyTypeObject} のインスタンスは Python のタプル型を
+表現します; Python レイヤにおける \code{tuple} や \code{types.TupleType} 
+と同じオブジェクトです。
+\withsubitem{(in module types)}{\ttindex{TupleType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyTuple_Check}{PyObject *p}
+\var{p} がタプルオブジェクトか、タプル型のサブタイプのインスタンス
+である場合に真を返します。
+  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTuple_CheckExact}{PyObject *p}
+\var{p} がタプルオブジェクトで、かつタプル型のサブタイプのインスタンス
+でない場合に真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTuple_New}{Py_ssize_t len}
+サイズが \var{len} 新たなタプルオブジェクトを返します。
+失敗すると \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTuple_Pack}{Py_ssize_t n, \moreargs}
+サイズ \var{n} 新たなタプルオブジェクトを返します。失敗すると\NULL{}
+を返します。タプルの値は後続の \var{n} 個の Python オブジェクトを指す
+C 引数になります。\samp{PyTuple_Pack(2, \var{a}, \var{b})}
+は \samp{Py_BuildValue("(OO)", \var{a}, \var{b})} と同じです。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTuple_Size}{PyObject *p}
+タプルオブジェクトへのポインタを引数にとり、そのタプルのサイズを
+返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTuple_GET_SIZE}{PyObject *p}
+タプル \var{p} のサイズを返しますが、\var{p} は非 \NULL{} でなくては
+ならず、タプルオブジェクトを指していなければなりません;
+エラーチェックを行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTuple_GetItem}{PyObject *p, Py_ssize_t pos}
+\var{p} の指すタプルオブジェクト内の、位置 \var{pos} にあるオブジェクト
+を返します。 \var{pos} が範囲を超えている場合、 \NULL{} を返して
+\exception{IndexError} 例外をセットします。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTuple_GET_ITEM}{PyObject *p, Py_ssize_t pos}
+\cfunction{PyTuple_GetItem()} に似ていますが、引数に対する
+エラーチェックを行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTuple_GetSlice}{PyObject *p,
+                                               Py_ssize_t low, Py_ssize_t high}
+\var{p} の指すタプルオブジェクト内の、位置 \var{low} から
+\var{high} までのスライスを取り出して、タプルオブジェクトとして
+返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTuple_SetItem}{PyObject *p,
+                                        Py_ssize_t pos, PyObject *o}
+\var{p} の指すタプルオブジェクト内の位置 \var{pos} に、
+オブジェクト \var{o} への参照を挿入します。成功した場合には
+\code{0} を返します。
+  \note{この関数は \var{o} への参照を ``盗み取り'' ます。}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyTuple_SET_ITEM}{PyObject *p,
+                                          Py_ssize_t pos, PyObject *o}
+\cfunction{PyTuple_SetItem()} に似ていますが、エラーチェックを
+行わず、新たなタプルに値を入れるとき \emph{以外には使ってはなりません}。
+  \note{この関数は \var{o} への参照を ``盗み取り'' ます。}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{_PyTuple_Resize}{PyObject **p, Py_ssize_t newsize}
+タプルをリサイズする際に使えます。\var{newsize} はタプルの新たな
+長さです。タプルは変更不能なオブジェクト \emph{ということになっている}
+ので、この関数は対象のオブジェクトに対してただ一つしか参照がない時
+以外には使ってはなりません。タプルがコード中の他の部分ですでに参照
+されている場合には、この関数を \emph{使ってはなりません}。
+タプルは常に指定サイズの末尾まで伸縮します。
+成功した場合には \code{0} を返します。
+クライアントコードは、\code{*\var{p}} の値が呼び出し前と同じに
+なると気体してはなりません。
+\code{*\var{p}} が置き換えられた場合、オリジナルの \code{*\var{p}}
+は破壊されます。失敗すると \code{-1} を返し、 \code{*\var{p}} を
+\NULL{} に設定して、  \exception{MemoryError} または
+  \exception{SystemError} を送出します。
+  \versionchanged[使われていなかった三つ目のパラメタ、
+\var{last_is_sticky} を削除しました]{2.2}
+\end{cfuncdesc}
+
+
+\subsection{List Objects \label{listObjects}}
+
+\obindex{list}
+\begin{ctypedesc}{PyListObject}
+この \ctype{PyObject} のサブタイプは Python のリストオブジェクトを
+表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyList_Type}
+この \ctype{PyTypeObject} のインスタンスは Python のタプル型を表現します。
+これは Python レイヤにおける \code{list} や \code{types.ListType} と同じオブジェクトです。
+  \withsubitem{(in module types)}{\ttindex{ListType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyList_Check}{PyObject *p}
+引数が \ctype{PyListObject} である場合に真を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyList_New}{Py_ssize_t len}
+サイズが \var{len} 新たなリストオブジェクトを返します。
+失敗すると \NULL{} を返します。
+\note{\var{len} が0より大きいとき、返されるリストオブジェクトの要素には
+    \code{NULL} がセットされています。
+    なので、\cfunction{PyList_SetItem()} で本当にオブジェクトをセットする
+    までは、Pythonコードにこのオブジェクトを渡したり、\cfunction{PySequence_SetItem()}
+    のような抽象APIを利用してはいけません。}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyList_Size}{PyObject *list}
+リストオブジェクト\var{list} の長さを返します; 
+リストオブジェクトにおける \samp{len(\var{list})} と同じです。
+  \bifuncindex{len}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyList_GET_SIZE}{PyObject *list}
+マクロ形式でできた \cfunction{PyList_Size()} で、エラーチェックを
+しません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyList_GetItem}{PyObject *list, Py_ssize_t index}
+\var{p} の指すリストオブジェクト内の、位置 \var{pos} にあるオブジェクト
+を返します。 位置は正である必要があり、リスとの終端からのインデックスは
+サポートされていません。\var{pos} が範囲を超えている場合、 \NULL{} を返して
+\exception{IndexError} 例外をセットします。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyList_GET_ITEM}{PyObject *list, Py_ssize_t i}
+マクロ形式でできた \cfunction{PyList_GetItem()} で、エラーチェックを
+しません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_SetItem}{PyObject *list, Py_ssize_t index,
+                                       PyObject *item}
+リストオブジェクト内の位置 \var{index} に、オブジェクト \var{item} 
+を挿入します。成功した場合には\code{0} を返し、失敗すると \code{-1}
+を返します。
+\note{この関数は \var{item} への参照を ``盗み取り'' ます。また、
+変更先のインデクスにすでに別の要素が入っている場合、その
+要素に対する参照を放棄します。}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyList_SET_ITEM}{PyObject *list, Py_ssize_t i,
+                                              PyObject *o}
+\cfunction{PyList_SetItem()} をマクロによる実装で、エラーチェック
+を行いません。この関数は、新たなリストのまだ要素を入れたことのない
+位置に要素を入れるときにのみ使います。
+\note{この関数は \var{item} への参照を ``盗み取り'' ます。また、
+\cfunction{PyList_SetItem()} と違って、要素の置き換えが生じても
+置き換えられるオブジェクトへの参照を放棄 \emph{しません};
+その結果、 \var{list} 中の位置 \var{i} で参照されていたオブジェクト
+がメモリリークを引き起こします。}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_Insert}{PyObject *list, Py_ssize_t index,
+                                      PyObject *item}
+要素 \var{item} をインデクス \var{index} の前に挿入します。
+成功すると \code{0} を返します。失敗すると \code{-1} を返し、
+例外をセットします。
+\code{\var{list}.insert(\var{index}, \var{item})} に類似した
+機能です。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_Append}{PyObject *list, PyObject *item}
+オブジェクト \var{item} を \var{list} の末尾に追加します。
+成功すると \code{0} を返します; 失敗すると \code{-1} を返し、
+例外をセットします。\code{\var{list}.append(\var{item})} 
+に類似した機能です。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyList_GetSlice}{PyObject *list,
+                                              Py_ssize_t low, Py_ssize_t high}
+\var{list} 内の、\var{low} から \var{high} の \emph{間の} オブジェクト
+からなるリストを返します。失敗すると \NULL{} を返し、
+例外をセットします。
+\code{\var{list}[\var{low}:\var{high}]} に類似した機能です。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_SetSlice}{PyObject *list,
+                                        Py_ssize_t low, Py_ssize_t high,
+                                        PyObject *itemlist}
+\var{list} 内の、\var{low} から \var{high} の間のオブジェクトを、
+\var{itemlist} の内容にします。
+  \code{\var{list}[\var{low}:\var{high}] = \var{itemlist}}
+と類似の機能です。\var{itemlist} は \NULL{} でもよく、空リストの
+代入 (指定スライスの削除) になります。
+成功した場合には \code{0} を、失敗した場合には \code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_Sort}{PyObject *list}
+\var{list} の内容をインプレースでソートします。成功した場合には
+\code{0} を、失敗した場合には \code{-1} を返します。
+  success, \code{-1} on failure.  
+  \samp{\var{list}.sort()} と同じです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyList_Reverse}{PyObject *list}
+\var{list} の要素をインプレースで反転します。成功した場合には
+\code{0} を、失敗した場合には \code{-1} を返します。
+  \samp{\var{list}.reverse()} と同じです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyList_AsTuple}{PyObject *list}
+\var{list} の内容が入った新たなタプルオブジェクトを返します;
+\samp{tuple(\var{list})}.\bifuncindex{tuple} と同じです。
+\end{cfuncdesc}
+
+
+\section{マップ型オブジェクト (mapping object) \label{mapObjects}}
+
+\obindex{mapping}
+
+
+\subsection{辞書オブジェクト (dictionary object) \label{dictObjects}}
+
+\obindex{dictionary}
+\begin{ctypedesc}{PyDictObject}
+この \ctype{PyObject} のサブタイプは Python の辞書オブジェクト
+を表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyDict_Type}
+この \ctype{PyTypeObject} のインスタンスは Python の辞書を表現します。
+このオブジェクトは、Python プログラムには
+\code{dict} および \code{types.DictType}
+として公開されています。
+\withsubitem{(in module types)}{\ttindex{DictType}\ttindex{DictionaryType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyDict_Check}{PyObject *p}
+引数が \ctype{PyDictObject} のときに真を返します。
+\end{cfuncdesc}
+
+
+\begin{cfuncdesc}{int}{PyDict_CheckExact}{PyObject *p}
+\var{p} が辞書型オブジェクトであり、かつ辞書型のサブクラスのインスタンス
+でない場合に真を返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_New}{}
+\var{p} が辞書型オブジェクトで、かつ辞書型のサブタイプのインスタンス
+でない場合に真を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDictProxy_New}{PyObject *dict}
+あるマップ型オブジェクトに対して、読み出し専用に制限されたプロキシ
+オブジェクト (proxy object) を返します。通常、この関数は
+動的でないクラス型 (non-dynamic class type) のクラス辞書を
+変更させないためにプロキシを作成するために使われます。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyDict_Clear}{PyObject *p}
+現在辞書に入っている全てのキーと値のペアを除去して空にします。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_Contains}{PyObject *p, PyObject *key}
+辞書 \var{p} に \var{key} が入っているか判定します。
+\var{p} の要素が \var{key} に一致した場合は \code{1} を返し、
+それ以外の場合には \code{0} を返します。エラーの場合 \code{-1}
+を返します。この関数は Python の式\samp{\var{key} in \var{p}}
+と等価です。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_Copy}{PyObject *p}
+\var{p} と同じキーと値のペアが入った新たな辞書を返します。
+  \versionadded{1.6}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_SetItem}{PyObject *p, PyObject *key,
+                                       PyObject *val}
+辞書 \var{p} に、 \var{key} をキーとして値 \var{value} を
+挿入します。 \var{key} はハッシュ可能でなければなりません;
+ハッシュ可能でない場合、  \exception{TypeError} を送出します。
+成功した場合には \code{0} を、失敗した場合には \code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_SetItemString}{PyObject *p,
+            const char *key,
+            PyObject *val}
+辞書 \var{p} に、 \var{key} をキーとして値 \var{value} を
+挿入します。 \var{key} は \ctype{char*} 型でなければなりません。
+キーオブジェクトは\code{PyString_FromString(\var{key})} で生成
+されます。
+成功した場合には \code{0} を、失敗した場合には \code{-1} を返します。
+  \ttindex{PyString_FromString()}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_DelItem}{PyObject *p, PyObject *key}
+辞書 \var{p} から \var{key} をキーとするエントリを除去します。
+\var{key} はハッシュ可能でなければなりません; 
+ハッシュ可能でない場合、  \exception{TypeError} を送出します。
+成功した場合には \code{0} を、失敗した場合には \code{-1} を返します。
+
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_DelItemString}{PyObject *p, char *key}
+辞書 \var{p} から文字列 \var{key} をキーとするエントリを除去します。
+成功した場合には \code{0} を、失敗した場合には \code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_GetItem}{PyObject *p, PyObject *key}
+辞書\var{p} 内で \var{key} をキーとするオブジェクトを返します。
+キー \var{key} が存在しない場合には \NULL{} を返しますが、例外を
+セット \emph{しません}。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_GetItemString}{PyObject *p, const char *key}
+\cfunction{PyDict_GetItem()} と同じですが、\var{key} は \ctype{PyObject*}
+ではなく \ctype{char*} で指定します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_Items}{PyObject *p}
+辞書オブジェクトのメソッド \method{item()} のように、
+辞書内の全ての要素対が入った \ctype{PyListObject} を返します。
+(\method{items()} については
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス} を
+参照してください。) 
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_Keys}{PyObject *p}
+辞書オブジェクトのメソッド \method{keys()} のように、
+辞書内の全てのキーが入った \ctype{PyListObject} を返します。
+(\method{keys()} については
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス} を
+参照してください。) 
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDict_Values}{PyObject *p}
+辞書オブジェクトのメソッド \method{values()} のように、
+辞書内の全ての値が入った \ctype{PyListObject} を返します。
+(\method{values()} については
+\citetitle[../lib/lib.html]{Python ライブラリリファレンス} を
+参照してください。) 
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{Py_ssize_t}{PyDict_Size}{PyObject *p}
+辞書内の要素の数を返します。辞書に対して \samp{len(\var{p})} を
+実行するのと同じです。\bifuncindex{len}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_Next}{PyObject *p, Py_ssize_t *ppos,
+                                    PyObject **pkey, PyObject **pvalue}
+辞書 \var{p} 内の全てのキー/値のペアにわたる反復処理を行います。
+\var{ppos} が参照している \ctype{int} 型は、この関数で反復処理
+を開始する際に、最初に関数を呼び出すよりも前に \code{0} に
+初期化しておかなければなりません; この関数は辞書内の各ペアを
+取り上げるごとに真を返し、全てのペアを取り上げたことが分かると
+偽を返します。パラメタ \var{pkey} および \var{pvalue} には、
+それぞれ辞書の各々のキーと値を指すポインタか、または \NULL{}
+が入ります。この関数から返される参照はすべて借りた参照になります。
+反復処理中に \var{ppos} を変更してはなりません。この値は
+内部的な辞書構造体のオフセットを表現しており、構造体はスパース
+なので、オフセットの値に一貫性がないためです。
+
+以下に例を示します:
+
+\begin{verbatim}
+PyObject *key, *value;
+int pos = 0;
+
+while (PyDict_Next(self->dict, &pos, &key, &value)) {
+    /* 取り出した値で何らかの処理を行う... */
+    ...
+}
+\end{verbatim}
+
+反復処理中に辞書 \var{p} を変更してはなりません。
+(Python 2.1 からは) 辞書を反復処理する際に、キーに対応する値を
+変更しても大丈夫になりましたが、キーの集合を変更しないことが
+前提です。以下に例を示します:
+
+\begin{verbatim}
+PyObject *key, *value;
+int pos = 0;
+
+while (PyDict_Next(self->dict, &pos, &key, &value)) {
+    int i = PyInt_AS_LONG(value) + 1;
+    PyObject *o = PyInt_FromLong(i);
+    if (o == NULL)
+        return -1;
+    if (PyDict_SetItem(self->dict, key, o) < 0) {
+        Py_DECREF(o);
+        return -1;
+    }
+    Py_DECREF(o);
+}
+\end{verbatim}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_Merge}{PyObject *a, PyObject *b, int override}
+マップ型オブジェクト \var{b} の全ての要素にわたって、反復的に
+キー/値のペアを辞書 \var{a} に追加します。
+\var{b} は辞書か、\function{PyMapping_Keys()} または
+\function{PyObject_GetItem()} をサポートする何らかのオブジェクト
+にできます。
+\var{override} が真ならば、\var{a} のキーと一致するキーが \var{b}
+にある際に、既存のペアを置き換えます。それ以外の場合は、\var{b}
+のキーに一致するキーが \var{a} にないときのみ追加を行います。
+成功した場合には \code{0} を返し、例外が送出された場合には
+\code{-1} を返します。
+\versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_Update}{PyObject *a, PyObject *b}
+C で表せば \code{PyDict_Merge(\var{a}, \var{b}, 1)} と同じ、
+Python で表せば\code{\var{a}.update(\var{b})} と同じです。
+成功した場合には \code{0} を返し、例外が送出された場合には
+\code{-1} を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDict_MergeFromSeq2}{PyObject *a, PyObject *seq2,
+                                             int override}
+\var{seq2} 内のキー/値ペアを使って、辞書\var{a} の内容を更新したり
+統合したりします。\var{seq2} は、キー/値のペアとみなせる長さ 2 の
+反復可能オブジェクト(iterable object) を生成する反復可能オブジェクトで
+なければなりません。重複するキーが存在する場合、\var{override} が
+真ならば先に出現したキーを使い、そうでない場合は後に出現したキーを
+使います。
+成功した場合には \code{0} を返し、例外が送出された場合には
+\code{-1} を返します。
+
+(戻り値以外は) 等価な Python コードを書くと、以下のようになります:
+
+\begin{verbatim}
+def PyDict_MergeFromSeq2(a, seq2, override):
+    for key, value in seq2:
+        if override or key not in a:
+            a[key] = value
+\end{verbatim}
+
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+
+\section{その他のオブジェクト \label{otherObjects}}
+
+\subsection{ファイルオブジェクト (file object) \label{fileObjects}}
+
+\obindex{file}
+Python の組み込みファイルオブジェクトは、全て標準 C ライブラリの
+\ctype{FILE*} サポートの上に実装されています。以下の詳細説明は
+一実装に関するもので、将来の Python のリリースで変更されるかも
+しれません。
+
+\begin{ctypedesc}{PyFileObject}
+この \ctype{PyObject} のサブタイプは Python のファイル型オブジェクトを
+表現します。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyFile_Type}
+この \ctype{PyTypeObject} のインスタンスは Python のファイル型を
+表現します。このオブジェクトは \code{file} および \code{types.FileType} として
+Python プログラムで公開されています。
+\withsubitem{(in module types)}{\ttindex{FileType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyFile_Check}{PyObject *p}
+引数が \ctype{PyFileObject} か \ctype{PyFileObject} のサブタイプのときに真を返します。 
+ \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFile_CheckExact}{PyObject *p}
+引数が \ctype{PyFileObject} 型で、かつ \ctype{PyFileObject} 型のサブタイプでないときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFile_FromString}{char *filename, char *mode}
+成功すると、\var{filename} に指定した名前のファイルを \var{mode} に
+指定したファイルモードで開いて得た新たなファイルオブジェクトを返します。
+\var{mode} のセマンティクスは標準 C ルーチン
+\cfunction{fopen()}\ttindex{fopen()} と同じです。失敗すると\NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFile_FromFile}{FILE *fp,
+                                              char *name, char *mode,
+                                              int (*close)(FILE*)}
+すでに開かれている標準 C ファイルポインタ \var{fp} から
+新たな \ctype{PyFileObject} を生成します。この関数で生成した
+ファイルオブジェクトは、閉じる際に\var{close} に指定した関数を
+呼び出します。失敗すると\NULL を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{FILE*}{PyFile_AsFile}{PyObject *p}
+\var{p} に関連付けられたファイルオブジェクトを \ctype{FILE*}
+で返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFile_GetLine}{PyObject *p, int n}
+\code{\var{p}.readline(\optional{\var{n}})} と同じで、この関数は
+オブジェクト \var{p} の各行を読み出します。 \var{p} は
+ファイルオブジェクトか、\method{readline()} メソッドを持つ
+何らかのオブジェクトでかまいません。\var{n} が \code{0} の場合、
+行の長さに関係なく正確に 1 行だけ読み出します。\var{n}
+が \code{0} より大きければ、\var{n} バイト以上のデータは
+読み出しません; 従って、行の一部だけが返される場合があります。
+どちらの場合でも、読み出し後すぐにファイルの終端に到達した場合には
+空文字列を返します。\var{n} が \code{0} より小さければ、長さに
+関わらず 1 行だけを読み出しますが、すぐにファイルの終端に到達した
+場合には \exception{EOFError} を送出します。
+  \withsubitem{(built-in exception)}{\ttindex{EOFError}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFile_Name}{PyObject *p}
+\var{p} に指定したファイルの名前を文字列オブジェクトで
+返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyFile_SetBufSize}{PyFileObject *p, int n}
+\cfunction{setvbuf()}\ttindex{setvbuf()} があるシステムでのみ
+利用できます。この関数を呼び出してよいのはファイルオブジェクトの
+生成直後のみです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFile_Encoding}{PyFileObject *p, char *enc}
+Unicode オブジェクトをファイルに出力するときにのエンコード方式を
+\var{enc} にします。成功すると \code{1} を、失敗すると \code{0}
+を返します。
+  \versionadded{2.3}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFile_SoftSpace}{PyObject *p, int newflag}
+この関数はインタプリタの内部的な利用のために存在します。
+この関数は\var{p} の \member{softspace} 
+\withsubitem{(file attribute)}{\ttindex{softspace}} 属性を \var{newflag} に
+設定し、以前の設定値を返します。この関数を正しく動作させるために、
+\var{p} がファイルオブジェクトである必然性はありません; 任意の
+オブジェクトをサポートします (\member{softspace} 属性が設定
+されているかどうかのみが問題だと思ってください)。
+この関数は全てのエラーを解消し、属性値が存在しない場合や属性値を
+取得する際にエラーが生じると、\code{0} を以前の値として返します。
+この関数からはエラーを検出できませんが、そもそもそういう必要は
+ありません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFile_WriteObject}{PyObject *obj, PyObject *p,
+                                           int flags}
+オブジェクト \var{obj} をファイルオブジェクト \var{p} に書き込みます。
+\var{flag} がサポートするフラグは
+\constant{Py_PRINT_RAW}\ttindex{Py_PRINT_RAW} だけです; このフラグ
+を指定すると、 オブジェクトに\function{repr()} ではなく
+\function{str()} を適用した結果をファイルに書き出します。
+成功した場合には \code{0} を返し、失敗すると \code{-1} を返して
+適切な例外をセットします。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFile_WriteString}{const char *s, PyObject *p}
+文字列 \var{s} をファイルオブジェクト \var{p} に書き出します。
+成功した場合には \code{0} を返し、失敗すると \code{-1} を返して
+適切な例外をセットします。
+\end{cfuncdesc}
+
+
+\subsection{インスタンスオブジェクト (instance object) \label{instanceObjects}}
+
+\obindex{instance}
+インスタンスオブジェクト固有の関数はきわめてわずかです。
+
+\begin{cvardesc}{PyTypeObject}{PyInstance_Type}
+クラスインスタンスの型オブジェクトです。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyInstance_Check}{PyObject *obj}
+\var{obj} がインスタンスの場合に真を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyInstance_New}{PyObject *class,
+                                             PyObject *arg,
+                                             PyObject *kw}
+特定クラスの新たなインスタンスを生成します。パラメタ \var{arg} 
+および \var{kw} はそれぞれオブジェクトのコンストラクタに渡す
+実引数およびキーワードパラメタとして使われます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyInstance_NewRaw}{PyObject *class,
+                                                PyObject *dict}
+特定クラスの新たなインスタンスを、コンストラクタを呼ばずに生成します。
+\var{class} は新たに作成するオブジェクトのクラスです。\var{dict} パラメタは
+オブジェクトの \member{__dict__} に使われます; \var{dict} が
+\NULL{} なら、インスタンス用に新たな辞書が作成されます。
+\end{cfuncdesc}
+
+
+\subsection{関数オブジェクト (Function Objects) \label{function-objects}}
+
+\obindex{function}
+ Pythonの関数にはいくつかの種類があります。
+
+\begin{ctypedesc}{PyFunctionObject}
+関数に使われるCの構造体
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyFunction_Type}
+\ctype{PyTypeObject} 型のインスタンスで、 Python の関数型を表します。
+これは Python プログラムに \code{types.FunctionType} として公開されます。
+  \withsubitem{(in module types)}{\ttindex{MethodType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyFunction_Check}{PyObject *o}
+\var{o} が関数オブジェクト (\cdata{PyFunction_Type}を持っている) なら true を返します。
+引数は\NULL{} であってはいけません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_New}{PyObject *code,
+                                             PyObject *globals}
+コードオブジェクト \var{code} に関連付けられた新しい関数オブジェクトを返します。
+\var{globals} はこの関数からアクセスできるグローバル変数の辞書でなければなりません。
+
+関数のドキュメント文字列、名前および \var{__module__} はコードオブジェクトから
+取得されます。引数のデフォルト値やクロージャは \NULL{} にセットされます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_GetCode}{PyObject *op}
+  関数オブジェクト \var{op} に関連付けられたコードオブジェクトを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_GetGlobals}{PyObject *op}
+  関数オブジェクト \var{op} に関連付けられたglobals辞書を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_GetModule}{PyObject *op}
+  関数オブジェクト \var{op} の \var{__module__} 属性を返します。　
+  これは普通はモジュール名の文字列が入っていますが、Python コードから
+  他のオブジェクトをセットされることもあります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_GetDefaults}{PyObject *op}
+  関数オブジェクト \var{op} の引数のデフォルト値を返します。
+  引数のタプルか \NULL{} になります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFunction_SetDefaults}{PyObject *op,
+                                               PyObject *defaults}
+ 関数オブジェクト \var{op} の引数のデフォルト値を設定します。
+ \var{defaults} は \var{Py_None} か タプル でなければいけません。
+
+ 失敗した時は、\exception{SystemError} を発生し、\code{-1} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFunction_GetClosure}{PyObject *op}
+ 関数オブジェクト \var{op} に設定されたクロージャを返します。
+ \NULL{} か cell オブジェクトのタプルです。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFunction_SetClosure}{PyObject *op,
+                                              PyObject *closure}
+ 関数オブジェクト \var{op} にクロージャを設定します。
+ \var{closure} は、 \var{Py_None} もしくは cell オブジェクトのタプルでなければなりません。
+
+ 失敗した時は、\exception{SystemError}を送出し、 \code{-1} を返します。
+\end{cfuncdesc}
+
+
+\subsection{メソッドオブジェクト (method object) \label{method-objects}}
+
+\obindex{method}
+メソッドオブジェクトを操作する上で便利な関数がいくつかあります。
+
+\begin{cvardesc}{PyTypeObject}{PyMethod_Type}
+この \ctype{PyTypeObject} のインスタンスは Python のメソッドオブジェクト
+型を表現します。このオブジェクトは、\code{types.MethodType}
+  \withsubitem{(in module types)}{\ttindex{MethodType}}
+として Python プログラムに公開されています。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyMethod_Check}{PyObject *o}
+\var{o} がメソッドオブジェクト (\cdata{PyMethod_Type} 型である)
+場合に真を返します。パラメタは \NULL{} にできません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_New}{PyObject *func,
+                                           PyObject *self, PyObject *class}
+任意の呼び出し可能オブジェクト\var{func} を使った新たなメソッド
+オブジェクトを返します; 関数 \var{func} は、メソッドが呼び出された
+時に呼び出されるオブジェクトです。このメソッドをインスタンスに
+束縛 (bind) したい場合、 \var{self} をインスタンス自体にして、
+\var{class} を\var{self} のクラスにしなければなりません。
+それ以外の場合は \var{self} を \NULL{} に、 \var{class} を
+非束縛メソッドを提供しているクラスにしなければなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_Class}{PyObject *meth}
+メソッドオブジェクト \var{meth} を生成したクラスオブジェクトを返します;
+インスタンスがメソッドオブジェクトを生成した場合、戻り値は
+インスタンスのクラスになります。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_GET_CLASS}{PyObject *meth}
+\cfunction{PyMethod_Class()} をマクロで実装したバージョンで、
+エラーチェックを行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_Function}{PyObject *meth}
+\var{meth} に関連付けられている関数オブジェクトを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_GET_FUNCTION}{PyObject *meth}
+\cfunction{PyMethod_Function()} のマクロ版で、エラーチェックを
+行いません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_Self}{PyObject *meth}
+\var{meth} が束縛メソッドの場合には、メソッドに関連付けられている
+インスタンスを返します。それ以外の場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyMethod_GET_SELF}{PyObject *meth}
+\cfunction{PyMethod_Self()} のマクロ版で、エラーチェックを
+行いません。
+\end{cfuncdesc}
+
+
+\subsection{モジュールオブジェクト (module object) \label{moduleObjects}}
+
+\obindex{module}
+モジュールオブジェクト固有の関数は数個しかありません。
+
+\begin{cvardesc}{PyTypeObject}{PyModule_Type}
+この \ctype{PyTypeObject} のインスタンスは Python のモジュールオブジェクト
+型を表現します。
+このオブジェクトは、Python プログラムには \code{types.ModuleType}
+  \withsubitem{(in module types)}{\ttindex{ModuleType}}
+として公開されています。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyModule_Check}{PyObject *p}
+\var{o} がモジュールオブジェクトかモジュールオブジェクトのサブタイプで
+あるときに真を返します。
+  \versionchanged[サブタイプを引数にとれるようになりました]{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyModule_CheckExact}{PyObject *p}
+\var{o} がモジュールオブジェクトで、かつモジュールオブジェクトの
+サブタイプでないときに真を返します。 
+  \cdata{PyModule_Type}.
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyModule_New}{const char *name}
+\member{__name__} 属性が \var{name} に設定された新たなモジュール
+オブジェクトを返します。モジュールの \member{__doc__} および
+\member{__name__} 属性だけに値が入っています; \member{__file__}
+属性に値を入れるのは呼び出し側の責任です。
+  \withsubitem{(module attribute)}{
+    \ttindex{__name__}\ttindex{__doc__}\ttindex{__file__}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyModule_GetDict}{PyObject *module}
+\var{module} の名前空間を実現する辞書オブジェクトを返します;
+このオブジェクトはモジュールオブジェクトの \member{__dict__}
+と同じです。この関数が失敗することはありません。
+  \withsubitem{(module attribute)}{\ttindex{__dict__}}
+拡張モジュールでは、この関数で得たモジュールの\member{__dict__} 
+を直接いじるより、他の\cfunction{PyModule_*()} および
+\cfunction{PyObject_*()} 関数を使うよう勧めます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{char*}{PyModule_GetName}{PyObject *module}
+\var{module} の \member{__name__} の値を返します。
+モジュールがこの属性を提供していない場合や文字列型でない場合、
+\exception{SystemError} を送出して \NULL{} を返します。
+  \withsubitem{(module attribute)}{\ttindex{__name__}}
+  \withsubitem{(built-in exception)}{\ttindex{SystemError}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{char*}{PyModule_GetFilename}{PyObject *module}
+\var{module} をロードするために使ったファイルの名前を、\var{module}
+の \member{__file__} 属性から調べて返します。\member{__file__}
+が定義されていない場合や文字列型でない場合、
+\exception{SystemError} を送出して \NULL{} を返します。
+  \withsubitem{(module attribute)}{\ttindex{__file__}}
+  \withsubitem{(built-in exception)}{\ttindex{SystemError}}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyModule_AddObject}{PyObject *module,
+                                           const char *name, PyObject *value}
+\var{module} にオブジェクトを\var{name} として追加します。
+この関数はモジュールの初期化関数から利用される便宜関数です。
+エラーのときには \code{-1} を、成功したときには \code{0} を
+返します。
+  \versionadded{2.0}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyModule_AddIntConstant}{PyObject *module,
+                                                const char *name, long value}
+\var{module} に整数定数を\var{name} として追加します。
+この便宜関数はモジュールの初期化関数から利用されています。
+エラーのときには \code{-1} を、成功したときには \code{0} を
+返します。
+  \versionadded{2.0}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyModule_AddStringConstant}{PyObject *module,
+                                                   const char *name, char *value}
+\var{module} に文字列定数を\var{name} として追加します。
+この便宜関数はモジュールの初期化関数から利用されています。
+文字列 \var{value} は null 終端されていなければなりません。
+エラーのときには \code{-1} を、成功したときには \code{0} を
+返します。
+  \versionadded{2.0}
+\end{cfuncdesc}
+
+
+\subsection{イテレータオブジェクト (iterator object) \label{iterator-objects}}
+
+Python では二種類のイテレータオブジェクトを提供しています。
+一つ目はシーケンスイテレータで、\method{__getitem__()} メソッドを
+サポートする任意のシーケンスを取り扱います。二つ目は呼び出し可能
+オブジェクトとセンチネル値 (sentinel value) を扱い、
+シーケンス内の要素ごとに呼び出し可能オブジェクトを呼び出して、
+センチネル値が返されたときに反復処理を終了します。
+
+\begin{cvardesc}{PyTypeObject}{PySeqIter_Type}
+\cfunction{PySeqIter_New()} や、組み込みシーケンス型に対して
+1 引数形式の組み込み関数\function{iter()} を呼び出したときに
+返される、イテレータオブジェクトの型オブジェクトです。
+  \versionadded{2.2}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PySeqIter_Check}{op}
+\cdata{PySeqIter_Type} の型が \var{op} のときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PySeqIter_New}{PyObject *seq}
+一般的なシーケンスオブジェクト \var{seq} を扱うイテレータを返します。
+反復処理は、シーケンスが添字指定操作の際に \exception{IndexError} を
+返したときに終了します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cvardesc}{PyTypeObject}{PyCallIter_Type}
+\cfunction{PyCallIter_New()} や、組み込み関数 \function{iter()}
+の 2 引数形式が返すイテレータオブジェクトの型オブジェクトです。
+  \function{iter()} built-in function.
+  \versionadded{2.2}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyCallIter_Check}{op}
+\cdata{PyCallIter_Type} の型が \var{op} のときに真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCallIter_New}{PyObject *callable,
+                                             PyObject *sentinel}
+新たなイテレータを返します。最初のパラメタ \var{callable} は
+引数なしで呼び出せる Python の呼び出し可能オブジェクトなら
+なんでもかまいません; \var{callable}は、呼び出されるたびに
+次の反復処理対象オブジェクトを返さなければなりません。
+生成されたイテレータは、 \var{callable}が \var{sentinel} に等しい
+値を返すと反復処理を終了します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+
+\subsection{デスクリプタオブジェクト (descriptor object) \label{descriptor-objects}}
+
+``デスクリプタ (descriptor)'' は、あるオブジェクトのいくつかの属性
+について記述したオブジェクトです。デスクリプタオブジェクトは
+型オブジェクトの辞書内にあります。
+
+\begin{cvardesc}{PyTypeObject}{PyProperty_Type}
+組み込みデスクリプタ型の型オブジェクトです。
+  \versionadded{2.2}
+\end{cvardesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDescr_NewGetSet}{PyTypeObject *type,
+					        struct PyGetSetDef *getset}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDescr_NewMember}{PyTypeObject *type,
+					        struct PyMemberDef *meth}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDescr_NewMethod}{PyTypeObject *type,
+                                                struct PyMethodDef *meth}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDescr_NewWrapper}{PyTypeObject *type,
+						 struct wrapperbase *wrapper,
+                                                 void *wrapped}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDescr_IsData}{PyObject *descr}
+デスクリプタオブジェクト \var{descr} がデータ属性のデスクリプタの
+場合には真を、メソッドデスクリプタの場合には偽を返します。
+\var{descr} はデスクリプタオブジェクトでなければなりません;
+エラーチェックは行いません。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyWrapper_New}{PyObject *, PyObject *}
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+
+\subsection{スライスオブジェクト (slice object) \label{slice-objects}}
+
+\begin{cvardesc}{PyTypeObject}{PySlice_Type}
+スライスオブジェクトの型オブジェクトです。
+  \code{slice} や \code{types.SliceType} と同じです。
+  \withsubitem{(in module types)}{\ttindex{SliceType}}
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PySlice_Check}{PyObject *ob}
+\var{ob} がスライスオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PySlice_New}{PyObject *start, PyObject *stop,
+                                          PyObject *step}
+指定した値から新たなスライスオブジェクトを返します。パラメタ
+\var{start}, \var{stop}, および \var{step} はスライスオブジェクトに
+おける同名の属性として用いられます。これらの値はいずれも
+\NULL{} にでき、対応する値には \code{None} が使われます。新たな
+オブジェクトをアロケーションできない場合には \NULL{} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySlice_GetIndices}{PySliceObject *slice, Py_ssize_t length,
+                                           Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step}
+スライスオブジェクト \var{slice} における \var{start}, \var{stop}, 
+および \var{step} のインデクス値を取得します。このときシーケンスの
+長さを \var{length} と仮定します。\var{length} よりも大きな
+インデクスになるとエラーとして扱います。
+
+成功のときには \code{0} を、エラーのときには例外をセットせずに
+\code{-1} を返します (ただし、指定インデクスのいずれか一つが 
+\constant{None} ではなく、かつ整数に変換できなかった場合を
+除きます。この場合、 \code{-1} を返して例外をセットします)。
+
+おそらくこの関数を使う気にはならないでしょう。バージョン 2.3 以前の
+Python でスライスオブジェクトを使いたいのなら、
+\cfunction{PySlice_GetIndicesEx} のソースを適切に名前変更して
+自分の拡張モジュールのソースコード内に組み込むとよいでしょう。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySlice_GetIndicesEx}{PySliceObject *slice, Py_ssize_t length,
+                                             Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step,
+                                             Py_ssize_t *slicelength}
+\cfunction{PySlice_GetIndices} の置き換えとして使える関数です。
+
+スライスオブジェクト \var{slice} における \var{start}, \var{stop}, 
+および \var{step} のインデクス値を取得します。このときシーケンスの
+長さを \var{length} と仮定します。スライスの長さを \var{slicelength}
+に記憶します。境界をはみだしたインデクスは、通常のスライスを扱うのと
+同じ一貫したやり方でクリップされます。
+
+成功のときには \code{0} を、エラーのときには例外をセットして
+\code{-1} を返します。
+
+\versionadded{2.3}
+\end{cfuncdesc}
+
+
+\subsection{弱参照オブジェクト (weak reference object) \label{weakref-objects}}
+
+Python は \emph{弱参照} を第一級オブジェクト (first-class object)
+としてサポートします。弱参照を直接実装する二種類の固有のオブジェクト
+型があります。第一は単純な参照オブジェクトで、第二はオリジナルの
+オブジェクトに対して可能な限りプロキシとして振舞うオブジェクトです。
+
+\begin{cfuncdesc}{int}{PyWeakref_Check}{ob}
+\var{ob} が参照オブジェクトかプロキシオブジェクトの場合に真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyWeakref_CheckRef}{ob}
+\var{ob} が参照オブジェクトの場合に真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyWeakref_CheckProxy}{ob}
+\var{ob} がプロキシオブジェクトの場合に真を返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyWeakref_NewRef}{PyObject *ob,
+                                               PyObject *callback}
+\var{ob} に対する弱参照オブジェクトを返します。この関数は常に
+新たな参照を返しますが、必ずしも新たなオブジェクトを作る保証は
+ありません; 既存の参照オブジェクトが返されることもあります。
+第二のパラメタ \var{callback} は呼び出し可能オブジェクトで、
+\var{ob} がガーベジコレクションされた際に通知を受け取ります;
+\var{callback} は弱参照オブジェクト自体を単一のパラメタとして
+受け取ります。\var{callback} は \code{None} や \NULL{} にしても
+かまいません。 \var{ob} が弱参照できないオブジェクトの場合や、
+\var{callback} が呼び出し可能オブジェクト、\code{None}、\NULL{}
+のいずれでもない場合は、\NULL{} を返して\exception{TypeError}
+を送出します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyWeakref_NewProxy}{PyObject *ob,
+                                                 PyObject *callback}
+\var{ob} に対する弱参照プロキシオブジェクトを返します。この関数は常に
+新たな参照を返しますが、必ずしも新たなオブジェクトを作る保証は
+ありません; 既存の参照オブジェクトが返されることもあります。
+第二のパラメタ \var{callback} は呼び出し可能オブジェクトで、
+\var{ob} がガーベジコレクションされた際に通知を受け取ります;
+\var{callback} は弱参照オブジェクト自体を単一のパラメタとして
+受け取ります。\var{callback} は \code{None} や \NULL{} にしても
+かまいません。 \var{ob} が弱参照できないオブジェクトの場合や、
+\var{callback} が呼び出し可能オブジェクト、\code{None}、\NULL{}
+のいずれでもない場合は、\NULL{} を返して\exception{TypeError}
+を送出します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyWeakref_GetObject}{PyObject *ref}
+弱参照 \var{ref} が参照しているオブジェクトを返します。
+被参照オブジェクトがすでに存続していない場合、 \code{None} を
+返します。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyWeakref_GET_OBJECT}{PyObject *ref}
+\cfunction{PyWeakref_GetObject()} に似ていますが、マクロで実装
+されていて、エラーチェックを行いません。
+  \versionadded{2.2}
+\end{cfuncdesc}
+
+
+\subsection{Cオブジェクト (CObject) \label{cObjects}}
+
+\obindex{CObject}
+このオブジェクトの使用法に関する情報は、
+\emph{Python インタプリタの拡張と埋め込み} 1.12 節、
+``Providing a C API for an Extension Module,'' を参照してください。
+
+
+\begin{ctypedesc}{PyCObject}
+この \ctype{PyObject} のサブタイプは不透明型値 (opaque value) を
+表現します。C 拡張モジュールが Python コードから不透明型値を 
+(\ctype{void*} ポインタで) 他の C コードに渡す必要があるときに
+便利です。
+正規の import 機構を使って動的にロードされるモジュール内で定義
+されている C API にアクセスするために、あるモジュール内で定義
+されている C 関数ポインタを別のモジュールでも利用できるように
+するためによく使われます。
+\end{ctypedesc}
+
+\begin{cfuncdesc}{int}{PyCObject_Check}{PyObject *p}
+引数が \ctype{PyCObject} の場合に真を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCObject_FromVoidPtr}{void* cobj,
+                                                    void (*destr)(void
+                                                    *)}
+\code{void *}\var{cobj} から \ctype{PyCObject} を生成します。
+関数 \var{destr} が \NULL{} でない場合、オブジェクトを再利用する際に
+呼び出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCObject_FromVoidPtrAndDesc}{void* cobj,
+	                          void* desc, void (*destr)(void *,
+	                          void *)}
+\code{void *}\var{cobj} から \ctype{PyCObject} を生成します。
+関数 \var{destr} が \NULL{} でない場合、オブジェクトを再利用する際に
+呼び出します。
+引数 \var{desc} を使って、デストラクタ関数に追加のコールバックデータ
+を渡せます。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void*}{PyCObject_AsVoidPtr}{PyObject* self}
+\ctype{PyCObject} オブジェクト \var{self} を生成するのに用いた
+オブジェクト \ctype{void *} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void*}{PyCObject_GetDesc}{PyObject* self}
+\ctype{PyCObject} オブジェクト \var{self} を生成するのに用いた
+コールバックデータ \ctype{void *} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyCObject_SetVoidPtr}{PyObject* self, void* cobj}
+\var{self} 内の void ポインタ \var{cobj} に設定します。
+\ctype{PyCObject} にデストラクタが関連づけられていてはなりません。
+成功すると真値を返し、失敗すると偽値を返します。
+\end{cfuncdesc}
+
+\subsection{セルオブジェクト (cell object) \label{cell-objects}}
+
+``セル (cell)'' オブジェクトは、複数のスコープから参照される
+変数群を実装するために使われます。セルは各変数について作成され、
+各々の値を記憶します; この値を参照する各スタックフレームにおける
+ローカル変数には、そのスタックフレームの外側で同じ値を参照している
+セルに対する参照が入ります。セルで表現された値にアクセスすると、
+セルオブジェクト自体の代わりにセル内の値が使われます。この
+セルオブジェクトを使った間接参照 (dereference) は、インタプリタに
+よって生成されたバイトコード内でサポートされている必要があります; 
+セルオブジェクトにアクセスした際に、自動的に間接参照は起こり
+ません。上記以外の状況では、セルオブジェクトは役に立たないはずです。
+
+\begin{ctypedesc}{PyCellObject}
+セルオブジェクトに使われる C 構造体です。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyCell_Type}
+セルオブジェクトに対応する型オブジェクトです。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyCell_Check}{ob}
+\var{ob} がセルオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCell_New}{PyObject *ob}
+値 \var{ob} の入った新たなセルオブジェクトを生成して返します。
+引数を \NULL{} にしてもかまいません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCell_Get}{PyObject *cell}
+\var{cell} の内容を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyCell_GET}{PyObject *cell}
+\var{cell} の内容を返しますが、\var{cell} が非 \NULL{} でかつ
+セルオブジェクトであるかどうかチェックしません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyCell_Set}{PyObject *cell, PyObject *value}
+セルオブジェクト \var{cell} の内容を \var{value} に設定します。
+この関数は現在のセルの全ての内容に対する参照を解放します。
+\var{value} は \NULL{} でもかまいません。\var{cell} は 非\NULL{}
+でなければなりません; もし\var{cell} がセルオブジェクトでない
+場合、 \code{-1} を返します。成功すると \code{0} を返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{void}{PyCell_SET}{PyObject *cell, PyObject *value}
+セルオブジェクト \var{cell} の値を \var{value} に設定します。
+参照カウントに対する変更はなく、安全のためのチェックは何も
+行いません; \var{cell} は非\NULL{} でなければならず、かつ
+セルオブジェクトでなければなりません。
+\end{cfuncdesc}
+
+\subsection{ジェネレータオブジェクト\label{gen-objects}} % Generator Objects 
+
+ジェネレータ (generator) オブジェクトは、 Python がジェネレータ型
+イテレータを実装するために使っているオブジェクトです。
+ジェネレータオブジェクトは、通常、\cfunction{PyGen_New} で明示的に生成
+されることはなく、値を逐次生成するような関数に対してイテレーションを
+行うときに生成されます。
+
+\begin{ctypedesc}{PyGenObject}
+ジェネレータオブジェクトに使われている C 構造体です。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PyGen_Type}
+ジェネレータオブジェクトに対応する型オブジェクトです。
+\end{cvardesc}
+
+\begin{cfuncdesc}{int}{PyGen_Check}{ob}
+\var{ob} がジェネレータオブジェクトの場合に真を返します。\var{ob}
+が \NULL{} であってはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyGen_CheckExact}{ob}
+\var{ob} の型が\var{PyGen_Type}の場合に真を返します。\var{ob}
+が \NULL{} であってはなりません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyGen_New}{PyFrameObject *frame}
+\var{frame} オブジェクトに基づいて新たなジェネレータオブジェクトを
+生成して返します。
+この関数は\var{frame}への参照を盗みます。
+パラメタが \NULL{} であってはなりません。
+\end{cfuncdesc}
+
+
+\subsection{DateTime オブジェクト\label{datetime-objects}} % DateTime Objects
+
+\module{datetime} モジュールでは、様々な日付オブジェクトや時刻オブジェクト
+を提供しています。以下に示す関数を使う場合には、あらかじめヘッダファイル
+\file{datetime.h} をソースに include し (\file{Python.h} はこのファイルを 
+include しません)、\cfunction{PyDateTime_IMPORT()} マクロを起動しておく
+必要があります。このマクロは以下のマクロで使われる静的変数
+\code{PyDateTimeAPI} に C 構造体へのポインタを入れます。
+
+以下は型チェックマクロです:
+
+\begin{cfuncdesc}{int}{PyDate_Check}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DateType} 型か\cdata{PyDateTime_DateType}
+型のサブタイプのオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDate_CheckExact}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DateType} 型のオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_Check}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DateTimeType} 型か
+\cdata{PyDateTime_DateTimeType} 型のサブタイプのオブジェクトの
+場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_CheckExact}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DateTimeType} 型のオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTime_Check}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_TimeType} 型か\cdata{PyDateTime_TimeType}
+型のサブタイプのオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTime_CheckExact}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_TimeType} 型のオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDelta_Check}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DeltaType} 型か\cdata{PyDateTime_DeltaType}
+型のサブタイプのオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDelta_CheckExact}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_DeltaType} 型のオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTZInfo_Check}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_TZInfoType} 型か\cdata{PyDateTime_TZInfoType}
+型のサブタイプのオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyTZInfo_CheckExact}{PyObject *ob}
+\var{ob} が\cdata{PyDateTime_TZInfoType} 型のオブジェクトの場合に真を返します;
+\var{ob} は \NULL{} であってはなりません。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+以下はオブジェクトを作成するためのマクロです:
+
+\begin{cfuncdesc}{PyObject*}{PyDate_FromDate}{int year, int month, int day}
+指定された年、月、日の\code{datetime.date} オブジェクトを返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDateTime_FromDateAndTime}{int year, int month,
+        int day, int hour, int minute, int second, int usecond}
+指定された年、月、日、時、分、秒、マイクロ秒の\code{datetime.datetime} 
+オブジェクトを返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyTime_FromTime}{int hour, int minute,
+        int second, int usecond}
+指定された時、分、秒、マイクロ秒の\code{datetime.time} 
+オブジェクトを返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDelta_FromDSU}{int days, int seconds,
+        int useconds}
+指定された日、秒、マイクロ秒の\code{datetime.timedelta} オブジェクトを
+返します。マイクロ秒と秒が \code{datetime.timedelta} オブジェクトで
+定義されている範囲に入るように正規化を行います。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+以下のマクロは date オブジェクトからフィールド値を取り出すための
+ものです。引数は\cdata{PyDateTime_Date} またはそのサブクラス
+(例えば \cdata{PyDateTime_DateTime})の 
+インスタンスでなければなりません。引数を \NULL{} にしてはならず、
+型チェックは行いません:
+
+\begin{cfuncdesc}{int}{PyDateTime_GET_YEAR}{PyDateTime_Date *o}
+年を正の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_GET_MONTH}{PyDateTime_Date *o}
+月を 1 から 12 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_GET_DAY}{PyDateTime_Date *o}
+日を 1 から 31 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+以下のマクロは datetime オブジェクトからフィールド値を取り出すための
+ものです。引数は\cdata{PyDateTime_DateTime} またはそのサブクラスの
+インスタンスでなければなりません。引数を \NULL{} にしてはならず、
+型チェックは行いません:
+
+\begin{cfuncdesc}{int}{PyDateTime_DATE_GET_HOUR}{PyDateTime_DateTime *o}
+時を 0 から 23 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_DATE_GET_MINUTE}{PyDateTime_DateTime *o}
+分を 0 から 59 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_DATE_GET_SECOND}{PyDateTime_DateTime *o}
+秒を 0 から 59 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_DATE_GET_MICROSECOND}{PyDateTime_DateTime *o}
+マイクロ秒を 0 から 999999 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+以下のマクロは time オブジェクトからフィールド値を取り出すための
+ものです。引数は\cdata{PyDateTime_Time} またはそのサブクラスの
+インスタンスでなければなりません。引数を \NULL{} にしてはならず、
+型チェックは行いません:
+
+\begin{cfuncdesc}{int}{PyDateTime_TIME_GET_HOUR}{PyDateTime_Time *o}
+時を 0 から 23 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_TIME_GET_MINUTE}{PyDateTime_Time *o}
+分を 0 から 59 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_TIME_GET_SECOND}{PyDateTime_Time *o}
+秒を 0 から 59 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyDateTime_TIME_GET_MICROSECOND}{PyDateTime_Time *o}
+マイクロ秒を 0 から 999999 の間の整数で返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+以下のマクロは DB API を実装する上での便宜用です:
+
+\begin{cfuncdesc}{PyObject*}{PyDateTime_FromTimestamp}{PyObject *args}
+\code{dateitme.datetime.fromtimestamp()} に渡すのに適した引数タプルから
+新たな \code{datetime.datetime} オブジェクトを生成して返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyDate_FromTimestamp}{PyObject *args}
+\code{dateitme.date.fromtimestamp()} に渡すのに適した引数タプルから
+新たな \code{datetime.date} オブジェクトを生成して返します。
+  \versionadded{2.4}
+\end{cfuncdesc}
+
+
+\subsection{集合オブジェクト (Set Objects) \label{setObjects}}
+\sectionauthor{Raymond D. Hettinger}{python@rcn.com}
+
+\obindex{set}
+\obindex{frozenset}
+\versionadded{2.5}
+
+このセクションでは \class{set} と \class{frozenset} の公開APIについて詳しく述べます。
+以降で説明していない機能は、抽象オブジェクトプロトコル (
+\cfunction{PyObject_CallMethod()}, \cfunction{PyObject_RichCompareBool()},
+\cfunction{PyObject_Hash()}, \cfunction{PyObject_Repr()},
+\cfunction{PyObject_IsTrue()}, \cfunction{PyObject_Print()},
+\cfunction{PyObject_GetIter()}
+を含む) か抽象数値プロトコル (
+\cfunction{PyNumber_Add()}, \cfunction{PyNumber_Subtract()},
+\cfunction{PyNumber_Or()}, \cfunction{PyNumber_Xor()},
+\cfunction{PyNumber_InPlaceAdd()}, \cfunction{PyNumber_InPlaceSubtract()},
+\cfunction{PyNumber_InPlaceOr()}, \cfunction{PyNumber_InPlaceXor()}
+を含む) を使って利用できます。 
+
+\begin{ctypedesc}{PySetObject}
+この \ctype{PyObject} を継承した型は、 \class{set} と \class{frozenset} 両方の
+内部データを保存するのに用いられます。
+\ctype{PyDictObject} と同じように、小さい集合(set)に対しては(タプルのように)固定サイズであり、
+そうでない集合に対しては(リストと同じように)可変長のメモリブロックを用います。
+この構造体のどのフィールドも、非公開で変更される可能性があると考えて下さい。
+すべてのアクセスは、構造体の中の値を直接操作するのではなく、ドキュメントされた
+APIを用いて行うべきです。
+\end{ctypedesc}
+
+\begin{cvardesc}{PyTypeObject}{PySet_Type}
+ この \ctype{PyTypeObject} のインスタンスは、Pythonの \class{set} 型を表します。
+\end{cvardesc}
+
+\begin{cvardesc}{PyTypeObject}{PyFrozenSet_Type}
+ この \ctype{PyTypeObject} のインスタンスは、Pythonの \class{frozenset} 型を表します。
+\end{cvardesc}
+
+
+以降の型チェックマクロはすべてのPythonオブジェクトに対するポインタに対して動作します。
+同様に、コンストラクタはすべてのイテレート可能なPythonオブジェクトに対して動作します。
+
+\begin{cfuncdesc}{int}{PyAnySet_Check}{PyObject *p}
+ \var{p} が \class{set} か \class{frozenset} 、あるいはそのサブタイプのオブジェクトで
+ あれば、trueを返します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyAnySet_CheckExact}{PyObject *p}
+\var{p} が \class{set} か \class{frozenset} のどちらかのオブジェクトであるときに true を返します。
+サブタイプのオブジェクトは含みません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PyFrozenSet_CheckExact}{PyObject *p}
+\var{p} が \class{frozenset} のオブジェクトであるときに true を返します。
+サブタイプのオブジェクトは含みません。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PySet_New}{PyObject *iterable}
+\var{iterable} が返すオブジェクトを含む新しい \class{set} を返します。
+\var{iterable} が \NULL{} のときは、空のsetを返します。
+成功したら新しいsetを、失敗したら \NULL{} を返します。
+\var{iterable} がイテレート可能で無い場合は、 \exception{TypeError} を送出します。
+このコンストラクタは set をコピーするときにも使えます。 (\code{c=set(s)})
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PyFrozenSet_New}{PyObject *iterable}
+\var{iterable} が返すオブジェクトを含む新しい \class{frozenset} を返します。
+\var{iterable} が \NULL{} のときは、空のfrozensetを返します。
+\var{iterable} がイテレート可能で無い場合は、 \exception{TypeError} を送出します。
+\end{cfuncdesc}
+
+
+以降の関数やマクロは、\class{set} と \class{frozenset} とそのサブタイプの
+インスタンスに対して利用できます。
+
+\begin{cfuncdesc}{int}{PySet_Size}{PyObject *anyset}
+ \class{set} や \class{frozenset} のオブジェクトの長さを返します。
+ \samp{len(\var{anyset})} と同じです。
+ \var{anyset} が \class{set}、\class{frozenset}及びそのサブタイプのオブジェクトで
+ 無い場合は、\exception{PyExc_SystemError} を送出します。
+  \bifuncindex{len}
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySet_GET_SIZE}{PyObject *anyset}
+ エラーチェックを行わない、\cfunction{PySet_Size()} のマクロ形式。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySet_Contains}{PyObject *anyset, PyObject *key}
+見つかったら１を、見つからなかったら0を、エラーが発生したときは-1を返します。
+Pythonの \method{__contains__()} メソッドと違って、この関数は非ハッシュsetを
+一時frozensetに自動で変換しません。
+\var{key}がハッシュ可能で無い場合、\exception{TypeError}を送出します。
+\var{anyset}が\class{set}, \class{frozenset} 及びそのサブタイプのオブジェクトで無い
+場合は \exception{PyExc_SystemError} を送出します。
+\end{cfuncdesc}
+
+以降の関数は、\class{set}とそのサブタイプに対して利用可能です。 \class{frozenset} と
+そのサブタイプには利用できません。
+
+\begin{cfuncdesc}{int}{PySet_Add}{PyObject *set, PyObject *key}
+\class{set} のインスタンスに \var{key} を追加します。
+\class{frozenset}のインスタンスに使わないで下さい。
+成功したら0を、失敗したら-1を返します。
+\var{key}がハッシュ可能でないなら、\exception{TypeError}を送出します。
+setを大きくする余裕が無い場合は、 \exception{MemoryError}を送出します。
+\var{set}が\class{set}とそのサブタイプのインスタンスで無い場合は、\exception{SystemError}を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySet_Discard}{PyObject *set, PyObject *key}
+見つかって削除したら1を返します。
+見つからなかったら何もせずに0を返します。
+エラーが発生したら-1を返します。
+keyが無くても\exception{KeyError}を送出しません。
+\var{key}がハッシュ不可能であれば\exception{TypeError}を送出します。
+Pythonの\method{discard()}メソッドと違って、この関数は非ハッシュsetsを
+一時frozensetに変換しません。
+\var{set}が\class{set}とそのサブタイプのインスタンスで無いときは、
+\exception{PyExc_SystemError}を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{PyObject*}{PySet_Pop}{PyObject *set}
+\var{set}の中の要素のどれかに対する新しい参照を返し、
+そのオブジェクトを\var{set}から削除します。
+失敗したら\NULL{}を返します。
+setが空の場合には\exception{KeyError}を送出します。
+\var{set}が\class{set}とそのサブタイプのインスタンスで無い場合は、
+\exception{SystemError}を送出します。
+\end{cfuncdesc}
+
+\begin{cfuncdesc}{int}{PySet_Clear}{PyObject *set}
+ setを空にします。
+\end{cfuncdesc}

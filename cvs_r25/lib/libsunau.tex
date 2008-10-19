@@ -1,0 +1,223 @@
+\section{\module{sunau} ---
+          Sun AUファイルの読み書き}
+
+\declaremodule{standard}{sunau}
+\sectionauthor{Moshe Zadka}{moshez@zadka.site.co.il}
+\modulesynopsis{
+Sun AUサウンドフォーマットへのインターフェース}
+
+\module{sunau}モジュールは、Sun AUサウンドフォーマットへの便利なインター
+フェースを提供します。このモジュールは、\refmodule{aifc}モジュールや
+\refmodule{wave}モジュールと互換性のあるインターフェースを備えています。
+
+オーディオファイルはヘッダとそれに続くデータから構成されます。
+ヘッダのフィールドは以下の通りです：
+
+\begin{tableii}{l|l}{textrm}{フィールド}{内容}
+  \lineii{magic word}{4バイト文字列 \samp{.snd}。}
+  \lineii{header size}{infoを含むヘッダのサイズをバイト数で示したもの。}
+  \lineii{data size}{データの物理サイズをバイト数で示したもの。}
+  \lineii{encoding}{オーディオサンプルのエンコード形式。}
+  \lineii{sample rate}{サンプリングレート。}
+  \lineii{\# of channels}{サンプルのチャンネル数。}
+  \lineii{info}{オーディオファイルについての説明を\ASCII{}文字列で示した
+もの（null バイトで埋められます）。}
+\end{tableii}
+
+infoフィールド以外の全てのヘッダフィールドは4バイトの大きさです。
+ヘッダフィールドはbig-endianでエンコードされた、計32ビットの符合なし整数
+です。
+
+\module{sunau}モジュールは以下の関数を定義しています：
+
+\begin{funcdesc}{open}{file, mode}
+\var{file}が文字列ならその名前のファイルを開き、そうでないならファイル
+のようにシーク可能なオブジェクトとして扱います。\var{mode}は以下のうち
+のいずれかです。
+
+\begin{description}
+        \item[\code{'r'}]読み込みのみのモード。
+        \item[\code{'w'}]書き込みのみのモード。
+\end{description}
+読み込み／書き込み両方のモードで開くことはできない
+ことに注意して下さい。
+
+\code{'r'}の\var{mode}は\class{AU_read}オブジェクトを
+返し、\code{'w'}と\code{'wb'}の\var{mode}は\class{AU_write}オブジェク
+トを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{openfp}{file, mode}
+\function{open()}と同義。後方互換性のために残されています。
+\end{funcdesc}
+
+\module{sunau}モジュールは以下の例外を定義しています：
+
+\begin{excdesc}{Error}
+Sun AUの仕様や実装に対する不適切な操作により何か実行不可能となった時に発
+生するエラー。
+\end{excdesc}
+
+\module{sunau}モジュールは以下のデータアイテムを定義しています：
+
+\begin{datadesc}{AUDIO_FILE_MAGIC}
+big-endianで保存された正規のSun AUファイルは全てこの整数で始まります。
+これは文字列\samp{.snd}を整数に変換したものです。
+\end{datadesc}
+
+\begin{datadesc}{AUDIO_FILE_ENCODING_MULAW_8}
+\dataline{AUDIO_FILE_ENCODING_LINEAR_8}
+\dataline{AUDIO_FILE_ENCODING_LINEAR_16}
+\dataline{AUDIO_FILE_ENCODING_LINEAR_24}
+\dataline{AUDIO_FILE_ENCODING_LINEAR_32}
+\dataline{AUDIO_FILE_ENCODING_ALAW_8}
+AUヘッダのencodingフィールドの値で、このモジュールでサポートしているもの
+です。
+\end{datadesc}
+
+\begin{datadesc}{AUDIO_FILE_ENCODING_FLOAT}
+\dataline{AUDIO_FILE_ENCODING_DOUBLE}
+\dataline{AUDIO_FILE_ENCODING_ADPCM_G721}
+\dataline{AUDIO_FILE_ENCODING_ADPCM_G722}
+\dataline{AUDIO_FILE_ENCODING_ADPCM_G723_3}
+\dataline{AUDIO_FILE_ENCODING_ADPCM_G723_5}
+AUヘッダのencodingフィールドの値のうち既知のものとして追加されているもの
+ですが、このモジュールではサポートされていません。
+\end{datadesc}
+
+\subsection{AU_read オブジェクト \label{au-read-objects}}
+
+上述の\function{open()}によって返されるAU_readオブジェクトには、以下の
+メソッドがあります：
+
+\begin{methoddesc}[AU_read]{close}{}
+ストリームを閉じ、このオブジェクトのインスタンスを使用できなくします。
+（これはオブジェクトのガベージコレクション時に自動的に呼び出されます。）
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getnchannels}{}
+オーディオチャンネル数（モノラルなら\code{1}、ステレオなら\code{2}）を返
+します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getsampwidth}{}
+サンプルサイズをバイト数で返します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getframerate}{}
+サンプリングレートを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getnframes}{}
+オーディオフレーム数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getcomptype}{}
+圧縮形式を返します。\code{'ULAW'}、\code{'ALAW'}、\code{'NONE'}が
+サポートされている形式です。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getcompname}{}
+\method{getcomptype()}を人に判読可能な形にしたものです。
+上述の形式に対して、それぞれ\code{'CCITT G.711 u-law'}、
+\code{'CCITT G.711 A-law'}、\code{'not compressed'}がサポートされて
+います。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getparams}{}
+\method{get*()}メソッドが返すのと同じ\code{(\var{nchannels}, 
+\var{sampwidth}, \var{framerate},
+\var{nframes}, \var{comptype}, \var{compname})}のタプルを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{readframes}{n}
+\var{n}個のオーディオフレームの値を読み込んで、バイト
+ごとに文字に変換した文字列を返します。
+データはlinear形式で返されます。もし元のデータがu-LAW形式なら、変換され
+ます。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{rewind}{}
+ファイルのポインタをオーディオストリームの先頭に戻します。
+\end{methoddesc}
+
+以下の2つのメソッドは共通の``位置''を定義しています。``位置''は他の関数
+とは独立して実装されています。
+
+\begin{methoddesc}[AU_read]{setpos}{pos}
+ファイルのポインタを指定した位置に設定します。
+\method{tell()}で返される値を\var{pos}として使用しなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{tell}{}
+ファイルの現在のポインタ位置を返します。
+返される値はファイルの実際の位置に対して何も操作はしません。
+\end{methoddesc}
+
+以下の2つのメソッドは\refmodule{aifc}モジュールとの互換性のために定義さ
+れていますが、何も面白いことはしません。
+
+\begin{methoddesc}[AU_read]{getmarkers}{}
+\code{None}を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_read]{getmark}{id}
+エラーを発生します。
+\end{methoddesc}
+
+\subsection{AU_write オブジェクト \label{au-write-objects}}
+
+上述の\function{open()}によって返されるWave_writeオブジェクトには、
+以下のメソッドがあります：
+
+\begin{methoddesc}[AU_write]{setnchannels}{n}
+チャンネル数を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{setsampwidth}{n}
+サンプルサイズを（バイト数で）設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{setframerate}{n}
+フレームレートを設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{setnframes}{n}
+フレーム数を設定します。あとからフレームが書き込まれるとフレー
+ム数は変更されます。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{setcomptype}{type, name}
+圧縮形式とその記述を設定します。
+\code{'NONE'}と\code{'ULAW'}だけが、出力時にサポートされている形式です。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{setparams}{tuple}
+\var{tuple}は\code{(\var{nchannels}, \var{sampwidth},
+\var{framerate}, \var{nframes}, \var{comptype}, \var{compname})}
+で、それぞれ\method{set*()}のメソッドの値にふさわしいものでなければなり
+ません。全ての変数を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{tell}{}
+ファイルの中の現在位置を返します。\method{AU_read.tell()}と
+\method{AU_read.setpos()}メソッドでお断りしたことがこのメソッドにも当
+てはまります。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{writeframesraw}{data}
+\var{nframes}の修正なしにオーディオフレームを書き込みます。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{writeframes}{data}
+オーディオフレームを書き込んで\var{nframes}を修正します。
+\end{methoddesc}
+
+\begin{methoddesc}[AU_write]{close}{}
+\var{nframes}が正しいか確認して、ファイルを閉じます。
+このメソッドはオブジェクトの削除時に呼び出されます。
+\end{methoddesc}
+
+\method{writeframes()}や\method{writeframesraw()}メソッドを呼び出したあ
+とで、どんなパラメータを設定しようとしても不正となることに注意して下さ
+い。

@@ -1,0 +1,475 @@
+\section{\module{msilib} ---
+  Microsoft インストーラーファイルの読み書き}
+
+\declaremodule{standard}{msilib}
+  \platform{Windows}
+\modulesynopsis{Creation of Microsoft Installer files, and CAB files.}
+\moduleauthor{Martin v. L\"owis}{martin@v.loewis.de}
+\sectionauthor{Martin v. L\"owis}{martin@v.loewis.de}
+
+\index{msi}
+
+\versionadded{2.5}
+
+\module{msilib} モジュールは Microdoft インストーラー(\code{.msi})の
+作成を支援します。このファイルはしばしば埋め込まれた「キャビネット」ファイル
+(\code{.cab}) を含むので、CAB ファイル作成用の API も暴露します。現在の
+ところ \code{.cab} ファイルの読み出しはサポートしていませんが、\code{.msi}
+データベースの読み出しサポートは可能です。
+
+このパッケージの目的は \code{.msi} ファイルにある全てのテーブルへの完全な
+アクセスの提供なので、提供されているものは正直に言って低レベルな API です。
+このパッケージの二つの主要な応用は \module{distutils} の \code{bdist_msi}
+コマンドと、Python インストーラーパッケージそれ自体(と言いつつ現在は別バージョン
+の \code{msilib} を使っているのですが)です。
+
+パッケージの内容は大きく四つのパートに分けられます。
+低レベル CAB ルーチン、低レベル MSI ルーチン、少し高レベルの MSI ルーチン、
+標準的なテーブル構造、の四つです。
+
+\begin{funcdesc}{FCICreate}{cabname, files}
+新しい CAB ファイルを \var{cabname} という名前で作ります。
+\var{files} はタプルのリストで、それぞれのタプルがディスク上のファイル名と
+CAB ファイルで付けられるファイル名とからなるものでなければなりません。
+
+ファイルはリストに現れた順番で CAB ファイルに追加されます。全てのファイルは
+MSZIP 圧縮アルゴリズムを使って一つの CAB ファイルに追加されます。
+
+MSI 作成の様々なステップに対する Python コールバックは現在暴露されていません。
+\end{funcdesc}
+
+\begin{funcdesc}{UUIDCreate}{}
+新しい一意識別子の文字列表現を返します。この関数は Windows API の関数
+\cfunction{UuidCreate} と \cfunction{UuidToString} をラップしたものです。
+\end{funcdesc}
+
+\begin{funcdesc}{OpenDatabase}{path, persist}
+MsiOpenDatabase を呼び出して新しいデータベースオブジェクトを返します。
+\var{path} は MSI ファイルのファイル名です。
+\var{persist} は五つの定数
+\code{MSIDBOPEN_CREATEDIRECT}, \code{MSIDBOPEN_CREATE},
+\code{MSIDBOPEN_DIRECT}, \code{MSIDBOPEN_READONLY},
+\code{MSIDBOPEN_TRANSACT} のどれか一つで、
+フラグ \code{MSIDBOPEN_PATCHFILE} を含めても構いません。
+これらのフラグの意味は Microsoft のドキュメントを参照してください。
+フラグに依って既存のデータベースを開いたり新しいのを作ったりします。
+\end{funcdesc}
+
+\begin{funcdesc}{CreateRecord}{count}
+\cfunction{MSICreateRecord} を呼び出して新しいレコードオブジェクトを返します。
+\var{count} はレコードのフィールドの数です。
+\end{funcdesc}
+
+\begin{funcdesc}{init_database}{name, schema, ProductName, ProductCode, ProductVersion, Manufacturer}
+\var{name} という名前の新しいデータベースを作り、
+\var{schema} で初期化し、
+プロパティ \var{ProductName},
+\var{ProductCode}, \var{ProductVersion}, \var{Manufacturer}
+をセットして、
+返します
+
+\var{schema} は \code{tables} と \code{_Validation_records} という属性を
+もったモジュールオブジェクトでなければなりません。典型的には、\module{msilib.schema}
+を使うべきです。
+
+データベースはこの関数から返された時点でスキーマとバリデーションレコードだけが
+収められています。
+\end{funcdesc}
+
+\begin{funcdesc}{add_data}{database, records}
+全ての \var{records} を \var{database} に追加します。
+\var{records} はタプルのリストで、それぞれのタプルにはテーブルのスキーマに従った
+レコードの全てのフィールドを含んでいるものでなければなりません。オプションの
+フィールドには \code{None} を渡すことができます。
+
+フィールドの値には、整数・長整数・文字列・Binary クラスのインスタンスが使えます。
+\end{funcdesc}
+
+\begin{classdesc}{Binary}{filename}
+Binary テーブル中のエントリーを表わします。
+\function{add_data} を使ってこのクラスのオブジェクトを挿入する
+ときには \var{filename} という名前のファイルをテーブルに読み込みます。
+\end{classdesc}
+
+\begin{funcdesc}{add_tables}{database, module}
+\var{module} の全てのテーブルの内容を \var{database} に追加します。
+\var{module} は \var{tables} という内容が追加されるべき全てのテーブルの
+リストと、テーブルごとに一つある実際の内容を持っている属性とを含んで
+いなければなりません。
+
+この関数は典型的にシーケンステーブルをインストールするのに使われます。
+\end{funcdesc}
+
+\begin{funcdesc}{add_stream}{database, name, path}
+\var{database} の \code{_Stream} テーブルに、ファイル \var{path} を
+\var{name} というストリーム名で追加します。
+\end{funcdesc}
+
+\begin{funcdesc}{gen_uuid}{}
+新しい UUID を、 MSI が通常要求する形式(すなわち、中括弧に入れ、16進数は
+大文字)で返します。
+\end{funcdesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/devnotes/winprog/fcicreate.asp]{FCICreateFile}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rpc/rpc/uuidcreate.asp]{UuidCreate}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rpc/rpc/uuidtostring.asp]{UuidToString}{}
+\end{seealso}
+
+\subsection{データベースオブジェクト\label{database-objects}}
+
+\begin{methoddesc}{OpenView}{sql}
+\cfunction{MSIDatabaseOpenView} を呼び出してビューオブジェクトを返します。
+\var{sql} は実行される SQL 命令です。
+\end{methoddesc}
+
+\begin{methoddesc}{Commit}{}
+\cfunction{MSIDatabaseCommit} を呼び出して
+現在のトランザクションで保留されている変更をコミットします。
+\end{methoddesc}
+
+\begin{methoddesc}{GetSummaryInformation}{count}
+\cfunction{MsiGetSummaryInformation} を呼び出して
+新しいサマリー情報オブジェクトを返します。
+\var{count} は更新された値の最大数です。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiopenview.asp]{MSIOpenView}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msidatabasecommit.asp]{MSIDatabaseCommit}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msigetsummaryinformation.asp]{MSIGetSummaryInformation}{}
+\end{seealso}
+
+\subsection{ビューオブジェクト\label{view-objects}}
+
+\begin{methoddesc}{Execute}{\optional{params=None}}
+\cfunction{MSIViewExecute} を通してビューに対する SQL 問い合わせを実行します。
+\var{params} はオプションのレコードでクエリ中のパラメータトークンの実際の値を
+与えるものです。
+\end{methoddesc}
+
+\begin{methoddesc}{GetColumnInfo}{kind}
+\cfunction{MsiViewGetColumnInfo} の呼び出しを通してビューのカラムを
+説明するレコードを返します。\var{kind} は \code{MSICOLINFO_NAMES}
+または \code{MSICOLINFO_TYPES} です。
+\end{methoddesc}
+
+\begin{methoddesc}{Fetch}{}
+\cfunction{MsiViewFetch} の呼び出しを通してクエリの結果レコードを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{Modify}{kind, data}
+\cfunction{MsiViewModify} を呼び出してビューを変更します。
+\var{kind} は
+\code{MSIMODIFY_SEEK}, \code{MSIMODIFY_REFRESH},
+\code{MSIMODIFY_INSERT}, \code{MSIMODIFY_UPDATE}, \code{MSIMODIFY_ASSIGN},
+\code{MSIMODIFY_REPLACE}, \code{MSIMODIFY_MERGE}, \code{MSIMODIFY_DELETE},
+\code{MSIMODIFY_INSERT_TEMPORARY}, \code{MSIMODIFY_VALIDATE},
+\code{MSIMODIFY_VALIDATE_NEW}, \code{MSIMODIFY_VALIDATE_FIELD},
+\code{MSIMODIFY_VALIDATE_DELETE}
+のいずれかです。
+
+\var{data} は新しいデータを表わすレコードでなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{Close}{}
+\cfunction{MsiViewClose} を通してビューを閉じます。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewexecute.asp]{MsiViewExecute}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewgetcolumninfo.asp]{MSIViewGetColumnInfo}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewfetch.asp]{MsiViewFetch}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewmodify.asp]{MsiViewModify}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewclose.asp]{MsiViewClose}{}
+\end{seealso}
+
+\subsection{サマリー情報オブジェクト\label{summary-objects}}
+
+\begin{methoddesc}{GetProperty}{field}
+\cfunction{MsiSummaryInfoGetProperty} を通してサマリーのプロパティを返します。
+\var{field} はプロパティ名で、定数
+\code{PID_CODEPAGE}, \code{PID_TITLE}, \code{PID_SUBJECT},
+\code{PID_AUTHOR}, \code{PID_KEYWORDS}, \code{PID_COMMENTS},
+\code{PID_TEMPLATE}, \code{PID_LASTAUTHOR}, \code{PID_REVNUMBER},
+\code{PID_LASTPRINTED}, \code{PID_CREATE_DTM}, \code{PID_LASTSAVE_DTM},
+\code{PID_PAGECOUNT}, \code{PID_WORDCOUNT}, \code{PID_CHARCOUNT},
+\code{PID_APPNAME}, \code{PID_SECURITY}
+のいずれかです。
+\end{methoddesc}
+
+\begin{methoddesc}{GetPropertyCount}{}
+\cfunction{MsiSummaryInfoGetPropertyCount} を通してサマリープロパティの
+個数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{SetProperty}{field, value}
+\cfunction{MsiSummaryInfoSetProperty} を通してプロパティをセットします。
+\var{field} は \method{GetProperty} におけるものと同じ値をとります。
+\var{value} はプロパティの新しい値です。許される値の型は整数と文字列です。
+\end{methoddesc}
+
+\begin{methoddesc}{Persist}{}
+\cfunction{MsiSummaryInfoPersist} を使って変更されたプロパティを
+サマリー情報ストリームに書き込みます。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfogetproperty.asp]{MsiSummaryInfoGetProperty}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfogetpropertycount.asp]{MsiSummaryInfoGetPropertyCount}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfosetproperty.asp]{MsiSummaryInfoSetProperty}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfopersist.asp]{MsiSummaryInfoPersist}{}
+\end{seealso}
+
+\subsection{レコードオブジェクト\label{record-objects}}
+
+\begin{methoddesc}{GetFieldCount}{}
+\cfunction{MsiRecordGetFieldCount} を通してレコードのフィールド数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}{SetString}{field, value}
+\cfunction{MsiRecordSetString} を通して \var{field} を \var{value}
+にセットします。
+\var{field} は整数、\var{value} は文字列でなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{SetStream}{field, value}
+\cfunction{MsiRecordSetStream} を通して \var{field} を \var{value}
+という名のファイルの内容にセットします。
+\var{field} は整数、\var{value} は文字列でなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{SetInteger}{field, value}
+\cfunction{MsiRecordSetInteger} を通して \var{field} を \var{value}
+にセットします。
+\var{field} も \var{value} も整数でなければなりません。
+\end{methoddesc}
+
+\begin{methoddesc}{ClearData}{}
+\cfunction{MsiRecordClearData} を通してレコードの全てのフィールドを 0 に
+セットします。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordgetfieldcount.asp]{MsiRecordGetFieldCount}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetstring.asp]{MsiRecordSetString}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetstream.asp]{MsiRecordSetStream}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetinteger.asp]{MsiRecordSetInteger}{}
+  \seetitle[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordclear.asp]{MsiRecordClear}{}
+\end{seealso}
+
+\subsection{エラー\label{msi-errors}}
+
+全ての MSI 関数のラッパーは \exception{MsiError} を送出します。
+例外の内部の文字列がより詳細な情報を含んでいます。
+
+\subsection{CAB オブジェクト\label{cab}}
+
+\begin{classdesc}{CAB}{name}
+\class{CAB} クラスは CAB ファイルを表わすものです。MSI 構築中、ファイルは
+\code{Files} テーブルと CAB ファイルとに同時に追加されます。そして、全ての
+ファイルを追加し終えたら、CAB ファイルは書き込まれることが可能になり、MSI
+ファイルに追加されます。
+
+\var{name} は MSI ファイル中の CAB ファイルの名前です。
+\end{classdesc}
+
+\begin{methoddesc}[CAB]{append}{full, logical}
+パス名 \var{full} のファイルを CAB ファイルに \var{logical} という名で
+追加します。\var{logical} という名が既に存在したならば、新しいファイル名が
+作られます。
+
+ファイルの CAB ファイル中のインデクスと新しいファイル名を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[CAB]{append}{database}
+CAB ファイルを作り、MSI ファイルにストリームとして追加し、\code{Media}
+テーブルに送り込み、作ったファイルはディスクから削除します。
+\end{methoddesc}
+
+\subsection{ディレクトリオブジェクト\label{msi-directory}}
+
+\begin{classdesc}{Directory}{database, cab, basedir, physical, 
+                  logical, default, component, \optional{componentflags}}
+新しいディレクトリを Directory テーブルに作成します。ディレクトリには各時点で
+現在のコンポーネントがあり、それは \method{start_component} を使って明ら様に
+作成されたかまたは最初にファイルが追加された際に暗黙裡に作成されたものです。
+ファイルは現在のコンポーネントと cab ファイルに追加されます。ディレクトリを
+作成するには親ディレクトリオブジェクト(\code{None} でも可)、
+物理的ディレクトリへのパス、論理的ディレクトリ名を指定する必要があります。
+\var{default} はディレクトリテーブルの DefaultDir スロットを指定します。
+\var{componentflags} は新しいコンポーネントが得るデフォルトのフラグを指定します。
+\end{classdesc}
+
+\begin{methoddesc}[Directory]{start_component}{\optional{component\optional{,
+      feature\optional{, flags\optional{, keyfile\optional{, uuid}}}}}}
+エントリを Component テーブルに追加し、このコンポーネントをこのディレクトリの
+現在のコンポーネントにします。もしコンポーネント名が与えられなければディレクトリ名が
+使われます。\var{feature} が与えられなければ、ディレクトリのデフォルトフラグが
+使われます。\var{keyfile} が与えられなければ、Component テーブルの
+KeyPath は null のままになります。
+\end{methoddesc}
+
+\begin{methoddesc}[Directory]{add_file}{file\optional{, src\optional{,
+      version\optional{, language}}}}
+ファイルをディレクトリの現在のコンポーネントに追加します。このとき現在のコンポーネントが
+なければ新しいものを開始します。デフォルトではソースとファイルテーブルのファイル名は
+同じになります。\var{src} ファイルが与えられたならば、それば現在のディレクトリから
+相対的に解釈されます。オプションで \var{version} と \var{language} を File
+テーブルのエントリ用に指定することができます。
+\end{methoddesc}
+
+\begin{methoddesc}[Directory]{glob}{pattern\optional{, exclude}}
+現在のコンポーネントに glob パターンで指定されたファイルのリストを追加します。
+個々のファイルを \var{exclude} リストで除外することができます。
+\end{methoddesc}
+
+\begin{methoddesc}[Directory]{remove_pyc}{}
+アンインストールの際に \code{.pyc}/\code{.pyo} を削除します。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/directory_table.asp]{Directory Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/file_table.asp]{File Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/component_table.asp]{Component Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/featurecomponents_table.asp]{FeatureComponents Table}{}
+\end{seealso}
+
+
+\subsection{フィーチャー\label{features}}
+
+\begin{classdesc}{Feature}{database, id, title, desc, display\optional{,
+    level=1\optional{, parent\optional\{, directory\optional{, 
+    attributes=0}}}}
+
+\var{id}, \var{parent.id}, \var{title}, \var{desc}, \var{display},
+\var{level}, \var{directory}, \var{attributes} の値を使って、
+新しいレコードを \code{Feature} テーブルに追加します。出来上がった
+フィーチャーオブジェクトは \class{Directory} の \method{start_component}
+メソッドに渡すことができます。
+\end{classdesc}
+
+\begin{methoddesc}[Feature]{set_current}{}
+このフィーチャーを \module{msilib} の現在のフィーチャーにします。
+フィーチャーが明ら様に指定されない限り、
+新しいコンポーネントが自動的にデフォルトのフィーチャーに追加されます。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/feature_table.asp]{Feature Table}{}
+\end{seealso}
+
+\subsection{GUI クラス\label{msi-gui}}
+
+\module{msilib} モジュールは MSI データベースの中の GUI テーブルをラップする
+幾つかのクラスを提供しています。しかしながら、標準で提供されるユーザーインタフェースは
+ありません。インストールする Python パッケージに対するユーザーインタフェース付きの
+MSI ファイルを作成するには \module{bdist_msi} を使ってください。
+
+\begin{classdesc}{Control}{dlg, name}
+ダイアログコントロールの基底クラス。\var{dlg} はコントロールの属する
+ダイアログオブジェクト、\var{name} はコントロールの名前です。
+\end{classdesc}
+
+\begin{methoddesc}[Control]{event}{event, argument\optional{, 
+   condition = ``1''\optional{, ordering}}}
+このコントロールの \code{ControlEvent} テーブルにエントリを作ります。
+\end{methoddesc}
+
+\begin{methoddesc}[Control]{mapping}{event, attribute}
+このコントロールの \code{EventMapping} テーブルにエントリを作ります。
+\end{methoddesc}
+
+\begin{methoddesc}[Control]{condition}{action, condition}
+このコントロールの \code{ControlCondition} テーブルにエントリを作ります。
+\end{methoddesc}
+
+
+\begin{classdesc}{RadioButtonGroup}{dlg, name, property}
+\var{name} という名前のラジオボタンコントロールを作成します。
+\var{property} はラジオボタンが選ばれたときにセットされる
+インストーラープロパティです。
+\end{classdesc}
+
+\begin{methoddesc}[RadioButtonGroup]{add}{name, x, y, width, height, text
+                                          \optional{, value}}
+グループに \var{name} という名前で、座標 \var{x}, \var{y} に
+大きさが \var{width}, \var{height} で \var{text} というラベルの付いた
+ラジオボタンを追加します。\var{value} が省略された場合、デフォルトは
+\var{name} になります。
+\end{methoddesc}
+
+\begin{classdesc}{Dialog}{db, name, x, y, w, h, attr, title, first, 
+    default, cancel}
+新しい \class{Dialog} オブジェクトを返します。\code{Dialog} テーブルの中に
+指定された座標、ダイアログ属性、タイトル、最初とデフォルトとキャンセルコントロールの
+名前を持ったエントリが作られます。
+\end{classdesc}
+
+\begin{methoddesc}[Dialog]{control}{name, type, x, y, width, height, 
+                  attributes, property, text, control_next, help}
+新しい \class{Control} オブジェクトを返します。\code{Control} テーブルに
+指定されたパラメータのエントリが作られます。
+
+これは汎用のメソッドで、特定の型に対しては特化したメソッドが提供されています。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{text}{name, x, y, width, height, attributes, text}
+\code{Text} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{bitmap}{name, x, y, width, height, text}
+\code{Bitmap} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{line}{name, x, y, width, height}
+\code{Line} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{pushbutton}{name, x, y, width, height, attributes, 
+                                 text, next_control}
+\code{PushButton} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{radiogroup}{name, x, y, width, height, 
+                                 attributes, property, text, next_control}
+\code{RadioButtonGroup} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{methoddesc}[Dialog]{checkbox}{name, x, y, width, height, 
+                                 attributes, property, text, next_control}
+\code{CheckBox} コントロールを追加して返します。
+\end{methoddesc}
+
+\begin{seealso}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/dialog_table.asp]{Dialog Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/control_table.asp]{Control Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/controls.asp]{Control Types}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/controlcondition_table.asp]{ControlCondition Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/controlevent_table.asp]{ControlEvent Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/eventmapping_table.asp]{EventMapping Table}{}
+  \seetitle[http://msdn.microsoft.com/library/en-us/msi/setup/radiobutton_table.asp]{RadioButton Table}{}
+\end{seealso}
+
+\subsection{事前に計算されたテーブル\label{msi-tables}}
+
+\module{msilib} はスキーマとテーブル定義だけから成るサブパッケージをいくつか
+提供しています。現在のところ、これらの定義は MSI バージョン 2.0 に基づいています。
+
+\begin{datadesc}{schema}
+これは MSI 2.0 用の標準 MSI スキーマで、テーブル定義のリストを提供する
+\var{tables} 変数と、MSI バリデーション用のデータを提供する
+\var{_Validation_records} 変数があります。
+\end{datadesc}
+
+\begin{datadesc}{sequence}
+このモジュールは標準シーケンステーブルのテーブル内容を含んでいます。
+\var{AdminExecuteSequence}, \var{AdminUISequence},
+\var{AdvtExecuteSequence}, \var{InstallExecuteSequence},
+\var{InstallUISequence} が含まれています。
+\end{datadesc}
+
+\begin{datadesc}{text}
+このモジュールは標準的なインストーラーのアクションのための
+UIText および ActionText テーブルの定義を含んでいます。
+\end{datadesc}

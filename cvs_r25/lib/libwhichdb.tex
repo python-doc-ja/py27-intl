@@ -1,0 +1,12 @@
+\section{\module{whichdb} ---
+         どのDBMモジュールがデータベースを作ったかを推測する}
+
+\declaremodule{standard}{whichdb}
+\modulesynopsis{どのDBM形式のモジュールが与えられたデータベースを作ったかを推測する}
+
+
+このモジュールに含まれる唯一の関数はあることを推測します。つまり、与えられたファイルを開くためには、利用可能なデータベースモジュール（\refmodule{dbm}、\refmodule{gdbm}、\refmodule{dbhash}）のどれを用いるべきかということです。
+
+\begin{funcdesc}{whichdb}{filename}
+ファイルが読めないか存在しないために開くことが出来ない場合は\code{None}、ファイルの形式を推測できない場合は空の文字列(\code{''})、推測できる場合は必要なモジュール名（\code{'dbm'}、\code{'gdbm'}など）を含む文字列を返します。
+\end{funcdesc}

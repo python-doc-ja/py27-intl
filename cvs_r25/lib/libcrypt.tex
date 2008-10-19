@@ -1,0 +1,56 @@
+\section{\module{crypt} ---
+         \UNIX{} パスワードをチェックするための関数}
+
+\declaremodule{builtin}{crypt}
+  \platform{Unix}
+\modulesynopsis{\UNIX\ パスワードをチェックするための関数
+\cfunction{crypt()}。}
+\moduleauthor{Steven D. Majewski}{sdm7g@virginia.edu}
+\sectionauthor{Steven D. Majewski}{sdm7g@virginia.edu}
+\sectionauthor{Peter Funk}{pf@artcom-gmbh.de}
+
+
+このモジュールは DES\indexii{cipher}{DES} アルゴリズムに基づいた
+一方向ハッシュ関数である \manpage{crypt}{3}\index{crypt(3)} 
+ルーチンを実装しています。詳細については \UNIX{} マニュアルページ
+を参照してください。このモジュールは、Python スクリプトが
+ユーザから入力されたパスワードを受理できるようにしたり、\UNIX{}
+パスワードに (脆弱性検査のための) 辞書攻撃を試みるのに使えます。
+
+
+このモジュールは実行環境の\manpage{crypt}{3}\index{crypt(3)}の実装に依
+存しています。そのため、現在の実装で利用可能な拡張を、このモジュールで
+もそのまま利用できます。
+\begin{funcdesc}{crypt}{word, salt} 
+\var{word} は通常はユーザのパスワードで、プロンプトやグラフィカル
+インタフェースからタイプ入力されます。\var{salt} は通常ランダムな
+2 文字からなる文字列で、DES アルゴリズムに 4096 通りのうち 1 つの
+方法で外乱を与えるために使われます。\var{salt} に使う文字は集合
+\regexp{[./a-zA-Z0-9]} の要素でなければなりません。
+ハッシュされたパスワードを文字列として返します。パスワード文字列
+は \var{salt} と同じ文字集合に含まれる文字からなります (最初の
+2 文字は \var{salt} 自体です).  
+
+いくつかの拡張された\manpage{crypt}{3}\index{crypt(3)}は異なる値と
+\var{salt} の長さを許しているので、パスワードをチェックする際にはcrypt 
+されたパスワード文字列全体を\var{salt}として渡すよう勧めます。
+
+\end{funcdesc}
+
+
+典型的な使用例のサンプルコード:
+
+\begin{verbatim}
+import crypt, getpass, pwd
+
+def login():
+    username = raw_input('Python login:')
+    cryptedpasswd = pwd.getpwnam(username)[1]
+    if cryptedpasswd:
+        if cryptedpasswd == 'x' or cryptedpasswd == '*': 
+            raise "Sorry, currently no support for shadow passwords"
+        cleartext = getpass.getpass()
+        return crypt.crypt(cleartext, cryptedpasswd) == cryptedpasswd
+    else:
+        return 1
+\end{verbatim}

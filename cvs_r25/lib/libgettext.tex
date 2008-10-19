@@ -1,0 +1,790 @@
+\section{\module{gettext} ---
+         多言語対応に関する国際化サービス}
+
+\declaremodule{standard}{gettext}
+\modulesynopsis{多言語対応に関する国際化サービス。}
+\moduleauthor{Barry A. Warsaw}{barry@zope.com}
+\sectionauthor{Barry A. Warsaw}{barry@zope.com}
+
+
+\module{gettext} モジュールは、 Python によるモジュールや
+アプリケーションの国際化 (I18N, I-nternationalizatio-N) および地域化 
+(L10N, L-ocalizatio-N) サービスを提供します。
+このモジュールは GNU \code{gettext} メッセージカタログへの API と、
+より高レベルで Python ファイルに適しているクラスに基づいた API の
+両方をサポートしてます。以下で述べるインタフェースを使うことで、
+モジュールやアプリケーションのメッセージをある自然言語で記述しておき、
+翻訳されたメッセージのカタログを与えて他の異なる自然言語の環境下で動作
+させることができます。
+
+ここでは Python のモジュールやアプリケーションを地域化する
+ためのいくつかのヒントも提供しています。
+
+\subsection{GNU \program{gettext} API}
+
+\module{gettext} モジュールでは、以下の GNU \program{gettext} API に
+非常に良く似た API を提供しています。この API を使う場合、
+メッセージ翻訳の影響はアプリケーション全体に及ぼすことになります。
+アプリケーションが単一の言語しか扱わず、各言語に依存する部分を
+ユーザのロケール情報によって選ぶのなら、ほとんどの場合この方法で
+やりたいことを実現できます。Python モジュールを地域化していたり、
+アプリケーションの実行中に言語を切り替えたい場合、おそらくクラス
+に基づいた API を使いたくなるでしょう。
+
+\begin{funcdesc}{bindtextdomain}{domain\optional{, localedir}}
+\var{domain} をロケール辞書 \var{localedir} に結び付け (bind) ます。
+具体的には、 \module{gettext} は与えられたドメインに対する
+バイナリ形式の \file{.mo} ファイルを、(\UNIX では)
+\file{\var{localedir}/\var{language}/LC_MESSAGES/\var{domain}.mo}
+から探します。ここで \var{languages} はそれぞれ環境変数
+\envvar{LANGUAGE}、\envvar{LC_ALL} 、\envvar{LC_MESSAGES}、
+および \envvar{LANG} の中から検索されます。
+
+\var{localedir} が省略されるか \code{None} の場合、現在 \var{domain}
+に結び付けられている内容が返されます。\footnote{
+標準でロケールが収められているディレクトリはシステム依存です;
+例えば、RedHat Linux では \file{/usr/share/locale} ですが、
+Solaris では \file{/usr/lib/locale} です。 \module{gettext} 
+モジュールはこうしたシステム依存の標準設定をサポートしません;
+その代わりに \file{\code{sys.prefix}/share/locale} を標準の
+設定とします。この理由から、常にアプリケーションの開始時に
+絶対パスで明示的に指定して \function{bindtextdomain()} を呼び出す
+のが最良のやり方ということになります。}
+\end{funcdesc}
+
+\begin{funcdesc}{bind_textdomain_codeset}{domain\optional{, codeset}}
+\var{domain} を\var{codeset} に結び付けて、\function{gettext()} 
+ファミリの関数が返す文字列のエンコード方式を変更します。
+\var{codeset} を省略すると、現在結び付けられているコードセットを
+返します。
+
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{textdomain}{\optional{domain}}
+現在のグローバルドメインを調べたり変更したりします。
+\var{domain} が \code{None} の場合、現在のグローバルドメインが返され
+ます。それ以外の場合にはグローバルドメインは \var{domain} に設定され、
+設定されたグローバルドメインを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{gettext}{message}
+現在のグローバルドメイン、言語、およびロケール辞書に基づいて、
+\var{message} の特定地域向けの翻訳を返します。通常、
+ローカルな名前空間ではこの関数に \function{_} という別名をつけます
+(下の例を参照してください)。
+\end{funcdesc}
+
+\begin{funcdesc}{lgettext}{message}
+\function{gettext()} と同じですが、\function{bind_textdomain_codeset()}
+で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング
+(preferred system encoding) で返します。
+
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{dgettext}{domain, message}
+\function{gettext()} と同様ですが、指定された \var{domain} から
+メッセージを探します。
+\end{funcdesc}
+
+\begin{funcdesc}{ldgettext}{message}
+\function{dgettext()} と同じですが、\function{bind_textdomain_codeset()}
+で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング
+(preferred system encoding) で返します。
+
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{ngettext}{singular, plural, n}
+
+\function{gettext()} と同様ですが、複数形の場合を考慮しています。
+翻訳文字列が見つかった場合、\var{n} の様式を適用し、
+その結果得られたメッセージを返します (言語によっては二つ以上の
+複数形があります)。
+翻訳文字列が見つからなかった場合、 \var{n} が 1 なら \var{singular}
+を返します; そうでない場合 \var{plural} を返します。
+
+複数形の様式はカタログのヘッダから取り出されます。様式は C または
+Python の式で、自由な変数 n を持ちます; 式の評価値はカタログ中の
+複数形のインデクスとなります。.po ファイルで用いられる
+詳細な文法と、様々な言語における様式については、GNU gettext 
+ドキュメントを参照してください。
+
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{lngettext}{message}
+\function{ngettext()} と同じですが、\function{bind_textdomain_codeset()}
+で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング
+(preferred system encoding) で返します。
+
+\versionadded{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{dngettext}{domain, singular, plural, n}
+\function{ngettext()} と同様ですが、指定された \var{domain} から
+メッセージを探します。
+
+\versionadded{2.3}
+\end{funcdesc}
+
+\begin{funcdesc}{ldngettext}{message}
+\function{dngettext()} と同じですが、\function{bind_textdomain_codeset()}
+で特にエンコードを指定しない限り、翻訳結果を優先システムエンコーディング
+(preferred system encoding) で返します。
+
+\versionadded{2.4}
+\end{funcdesc}
+
+
+GNU \program{gettext} では \function{dcgettext()} も定義していますが、
+このメソッドはあまり有用ではないと思われるので、現在のところ
+実装されていません。
+
+以下にこの API の典型的な使用法を示します:
+
+\begin{verbatim}
+import gettext
+gettext.bindtextdomain('myapplication', '/path/to/my/language/directory')
+gettext.textdomain('myapplication')
+_ = gettext.gettext
+# ...
+print _('This is a translatable string.')
+\end{verbatim}
+
+\subsection{クラスに基づいた API}
+
+クラス形式の \module{gettext} モジュールのAPI は
+GNU \program{gettext} API よりも高い柔軟性と利便性を持っています。
+Python のアプリケーションやモジュールを地域化するにはこちらを使う
+方を勧めます。\module{gettext} では、GNU \file{.mo} 形式のファイルを
+解釈し、標準の 8 ビット文字列または Unicode 文字列形式でメッセージ
+を返す ``翻訳'' クラスを定義しています。
+この ``翻訳'' クラスのインスタンスも、組み込み名前空間に関数 
+\function{_()} として組みこみ (install) できます。
+
+\begin{funcdesc}{find}{domain\optional{, localedir\optional{, 
+                        languages\optional{, all}}}}
+この関数は標準的な \file{.mo} ファイル検索アルゴリズムを実装
+しています。\function{textdomain()} と同じく、\var{domain} を引数に
+とります。オプションの \var{localedir} は \function{bindtextdomain()}
+と同じです。またオプションの \var{languages} は文字列を列挙したリスト
+で、各文字列は言語コードを表します。
+
+\var{localedir} が与えられていない場合、標準のシステムロケール
+ディレクトリが使われます。\footnote{
+上の \function{bindtextdomain()} に関する脚注を参照してください。}
+
+\var{languages} が与えられなかった場合、以下の環境変数:
+\envvar{LANGUAGE}、\envvar{LC_ALL}、 \envvar{LC_MESSAGES}、および
+\envvar{LANG} が検索されます。空でない値を返した最初の候補が
+\var{languages} 変数として使われます。
+この環境変数は言語名をコロンで分かち書きしたリストを含んで
+いなければなりません。\function{find()} はこの文字列をコロンで
+分割し、言語コードの候補リストを生成します。
+
+\function{find()} は次に言語コードを展開および正規化し、リストの
+各要素について、以下のパス構成:
+
+\file{\var{localedir}/\var{language}/LC_MESSAGES/\var{domain}.mo}
+
+からなる実在するファイルの探索を反復的に行います。\function{find()} 
+は上記のような実在するファイルで最初に見つかったものを返します。
+該当するファイルが見つからなかった場合、\code{None} が返されます。
+\var{all} が与えられていれば、全ファイル名のリストが言語リストまたは
+環境変数で指定されている順番に並べられたものを返します。
+\end{funcdesc}
+
+\begin{funcdesc}{translation}{domain\optional{, localedir\optional{,
+                              languages\optional{, class_\optional{,
+			      fallback\optional{, codeset}}}}}}
+
+\class{Translations} インスタンスを
+\var{domain}、\var{localedir}、および \var{languages} に基づいて
+生成して返します。
+\var{domain}、\var{localedir}、および \var{languages} はまず
+関連付けられている \file{.mo} ファイルパスのリストを取得する
+ために\function{find()} に渡されます。同じ \file{.mo} ファイル名を
+持つインスタンスはキャッシュされます。実際にインスタンス化される
+クラスは \var{class_} が与えられていればそのクラスが、そうでない
+時には \class{GNUTranslations} です。クラスのコンストラクタは
+単一の引数としてファイルオブジェクトを取らなくてはなりません。
+\var{codeset} を指定した場合、翻訳文字列のエンコードに使う
+文字セットを変更します。
+
+複数のファイルが発見された場合、後で見つかったファイルは前に見つかった
+ファイルの代替でと見なされ、後で見つかった方が利用されます。
+代替の設定を可能にするには、\function{copy.copy} を使ってキャッシュから
+翻訳オブジェクトを複製します; こうすることで、実際のインスタンスデータは
+キャッシュのものと共有されます。
+
+\file{.mo} ファイルが見つからなかった場合、\var{fallback} が偽
+(標準の設定です) ならこの関数は \exception{IOError} を送出し、
+\var{fallback} が真なら \class{NullTranslations} インスタンスが
+返されます。
+
+\versionchanged[\var{codeset} パラメタを追加しました]{2.4}
+\end{funcdesc}
+
+\begin{funcdesc}{install}{domain\optional{, localedir\optional{, unicode
+			  \optional{, codeset\optional{, names}}}}}
+\function{translation()} に\var{domain}、 \var{localedir}、
+および\var{codeset} を渡してできる関数 \function{_} を
+Python の組み込み名前空間に組み込みます。
+\var{unicode} フラグは \function{translation()} の返す翻訳オブジェクト
+の \method{install} メソッドに渡されます。
+
+\var{names} パラメタについては、翻訳オブジェクトの
+\method{install} メソッドの説明を参照ください。
+
+以下に示すように、通常はアプリケーション中の文字列を関数 \function{_()} 
+の呼び出しで包み込んで翻訳対象候補であることを示します:
+
+\begin{verbatim}
+print _('This string will be translated.')
+\end{verbatim}
+
+利便性を高めるためには、\function{_()} 関数を Python の組み込み
+名前空間に組み入れる必要があります。こうすることで、アプリケーション内の
+全てのモジュールからアクセスできるようになります。
+
+\versionchanged[\var{codeset} パラメタを追加しました]{2.4}
+\versionchanged[\var{names} パラメタを追加しました]{2.5}
+\end{funcdesc}
+
+\subsubsection{\class{NullTranslations} クラス}
+
+翻訳クラスは、元のソースファイル中のメッセージ文字列から
+翻訳されたメッセージ文字列への変換を実際に実装しているクラスです。
+全ての翻訳クラスが基底クラスとして用いるクラスが
+\class{NullTranslations} です; このクラスでは独自の特殊な翻訳
+クラスを実装するために使うことができる基本的なインタフェースを
+以下に \class{NullTranslations} のメソッドを示します:
+
+\begin{methoddesc}[NullTranslations]{__init__}{\optional{fp}}
+オプションのファイルオブジェクト \var{fp} を取ります。この引数
+は基底クラスでは無視されます。このメソッドは 
+``保護された (protected)'' インスタンス変数 \var{_info} および 
+\var{_charset} を初期化します。これらの変数の値は導出クラスで設定
+することができます。同様に \var{_fallback} も初期化しますが、
+この値は \method{add_fallback} で設定されます。その後、
+\var{fp} が \code{None} でない場合 \code{self._parse(fp)} を
+呼び出します。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{_parse}{fp}
+基底クラスでは何もしない (no-op) ようになっています。このメソッド
+の役割はファイルオブジェクト \var{fp} を引数に取り、ファイルからデータを
+読み出し、メッセージカタログを初期化することです。サポートされていない
+メッセージカタログ形式を使っている場合、その形式を解釈するためには
+このメソッドを上書きしなくてはなりません。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{add_fallback}{fallback}
+\var{fallback} を現在の翻訳オブジェクトの代替オブジェクトとして追加
+します。翻訳オブジェクトが与えられたメッセージに対して翻訳メッセージ
+を提供できない場合、この代替オブジェクトに問い合わせることになります。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{gettext}{message}
+代替オブジェクトが設定されている場合、\method{gettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを返します。
+導出クラスで上書きするメソッドです。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{lgettext}{message}
+代替オブジェクトが設定されている場合、\method{lgettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを返します。
+導出クラスで上書きするメソッドです。
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{ugettext}{message}
+代替オブジェクトが設定されている場合、\method{gettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを Unicode 文字列
+で返します。導出クラスで上書きするメソッドです。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{ngettext}{singular, plural, n}
+代替オブジェクトが設定されている場合、\method{ngettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを返します。
+導出クラスで上書きするメソッドです。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{lngettext}{singular, plural, n}
+代替オブジェクトが設定されている場合、\method{lngettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを返します。
+導出クラスで上書きするメソッドです。
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{ungettext}{singular, plural, n}
+代替オブジェクトが設定されている場合、\method{ungettext()} を代替オブジェクト
+に転送します。そうでない場合、翻訳されたメッセージを Unicode 文字列
+で返します。導出クラスで上書きするメソッドです。
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{info}{}
+``protected'' の\member{_info} 変数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{charset}{}
+``protected'' の\member{_charset} 変数を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{output_charset}{}
+翻訳メッセージとして返す文字列のエンコードを決める、
+``protected'' の\member{_output_charset} 変数を返します。
+
+
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{set_output_charset}{charset}
+翻訳メッセージとして返す文字列のエンコードを決める、
+``protected'' の変数 \member{_output_charset} を変更します。
+
+\versionadded{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}[NullTranslations]{install}{\optional{unicode
+                                              \optional{, names}}}
+\var{unicode} フラグが偽の場合、このメソッドは \method{self.gettext()}
+を組み込み名前空間に組み入れ、\samp{_} と結び付けます。
+\var{unicode} が真の場合、\method{self.gettext()} の代わりに
+\method{self.ugettext()} を結び付けます。
+標準では \var{unicode} は偽です。
+
+\var{names} パラメタには、\function{_()} 以外に組み込みの名前空間に
+インストールしたい関数名のシーケンスを指定します。サポートしている名前は
+\code{'gettext'} (\var{unicode} フラグの設定に応じて
+\method{self.gettext()} あるいは \method{self.ugettext()} のいずれかに対応します)、
+\code{'ngettext'} (\var{unicode} フラグの設定に応じて \method{self.ngettext()}
+あるいは \method{self.ungettext()} のいずれかに対応します)、
+\code{'lgettext'} および \code{'lngettext'} です。
+
+この方法はアプリケーションで \function{_} 関数を利用できるようにする
+ための最も便利な方法ですが、唯一の手段でもあるので注意してください。
+この関数はアプリケーション全体、とりわけ組み込み名前空間に影響する
+ので、地域化されたモジュールで \function{_} を組み入れることが
+できないのです。その代わりに、以下のコード:
+
+\begin{verbatim}
+import gettext
+t = gettext.translation('mymodule', ...)
+_ = t.gettext
+\end{verbatim}
+
+を使って \function{_} を使えるようにしなければなりません。
+
+この操作は \function{_} をモジュール内だけのグローバル名前空間に
+組み入れるので、モジュール内の \function{_} の呼び出しだけに影響
+します。
+
+\versionchanged[\var{names} パラメタを追加しました]{2.5}
+\end{methoddesc}
+
+\subsubsection{\class{GNUTranslations} クラス}
+\module{gettext} モジュールでは \class{NullTranslations} から
+導出されたもう一つのクラス: \class{GNUTranslations} を提供しています。
+このクラスはビッグエンディアン、およびリトルエンディアン両方の
+バイナリ形式の GNU \program{gettext} \file{.mo} ファイル
+を読み出せるように \method{_parse()} を上書きしています。
+また、このクラスはメッセージ id とメッセージ文字列の両方を
+Unicode に型強制します。
+
+このクラスではまた、翻訳カタログ以外に、オプションのメタデータ
+を読み込んで解釈します。GNU \program{gettext} では、空の文字列に
+対する変換先としてメタデータを取り込むことが慣習になっています。
+このメタデータは \rfc{822} 形式の \code{key: value} のペアに
+なっており、 \code{Project-Id-Version} キーを含んでいなければ
+なりません。キー \code{Content-Type} があった場合、 \code{charset}
+の特性値 (property) は ``保護された'' \member{_charset} インスタンス
+変数を初期化するために用いられます。値がない場合には、デフォルトと
+して \code{None} が使われます。
+エンコードに用いられる文字セットが指定されている場合、カタログから
+読み出された全てのメッセージ id とメッセージ文字列は、指定された
+エンコードを用いて Unicode に変換されます。\method{ugettext()}
+は常に Unicode を返し、\method{gettext()} はエンコードされた
+ 8 ビット文字列を返します。どちらのメソッドにおける引数 id の
+場合も、Unicode 文字列か US-ASCII 文字のみを含む 8 ビット文字列
+だけが受理可能です。国際化されたPython プログラムでは、メソッドの
+ Unicode 版 (すなわち \method{ugettext()} や \method{ungettext()})
+の利用が推奨されています。
+
+key/value ペアの集合全体は辞書型データ中に配置され、``保護された'' 
+\member{_info} インスタンス変数に設定されます。
+
+\file{.mo} ファイルのマジックナンバーが不正な場合、あるいは
+その他の問題がファイルの読み出し中に発生した場合、
+\class{GNUTranslations} クラスのインスタンス化で
+\exception{IOError} が送出されることがあります。
+
+以下のメソッドは基底クラスの実装からオーバライドされています:
+
+\begin{methoddesc}[GNUTranslations]{gettext}{message}
+カタログから \var{message} id を検索して、対応するメッセージ文字列を、
+カタログの文字セットが既知のエンコードの場合、エンコードされた 8 ビット
+文字列として返します。\var{message} id に対するエントリがカタログに
+存在せず、フォールバックが設定されている場合、フォールバック
+検索はオブジェクトの \method{gettext()} メソッドに転送されます。
+そうでない場合、\var{message} id 自体が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}[GNUTranslations]{ugettext}{message}
+カタログから \var{message} id を検索して、対応するメッセージ文字列を、
+Unicode でエンコードして返します。\var{message} id に対するエントリが
+カタログに存在せず、フォールバックが設定されている場合、フォールバック
+検索はオブジェクトの \method{ugettext()} メソッドに転送されます。
+そうでない場合、\var{message} id 自体が返されます。
+\end{methoddesc}
+
+\begin{methoddesc}[GNUTranslations]{ngettext}{singular, plural, n}
+メッセージ id に対する複数形を検索します。カタログに対する検索では
+\var{singular} がメッセージ id として用いられ、 \var{n} には
+どの複数形を用いるかを指定します。返されるメッセージ文字列は
+8 ビットの文字列で、カタログの文字セットが既知の場合にはその
+文字列セットでエンコードされています。
+
+メッセージ id がカタログ中に見つからず、フォールバックオブジェクト
+が指定されている場合、メッセージ検索要求はフォールバックオブジェクトの
+\method{ngettext()} メソッドに転送されます。そうでない場合、
+\var{n} が 1 ならば \var{singular} が返され、それ以外に対しては
+\var{plural} が返されます。
+
+\versionadded{2.3}
+\end{methoddesc}
+
+\begin{methoddesc}[GNUTranslations]{ungettext}{singular, plural, n}
+メッセージ id に対する複数形を検索します。カタログに対する検索では
+\var{singular} がメッセージ id として用いられ、 \var{n} には
+どの複数形を用いるかを指定します。返されるメッセージ文字列は
+Unicode 文字列です。
+
+メッセージ id がカタログ中に見つからず、フォールバックオブジェクト
+が指定されている場合、メッセージ検索要求はフォールバックオブジェクトの
+\method{ungettext()} メソッドに転送されます。そうでない場合、
+\var{n} が 1 ならば \var{singular} が返され、それ以外に対しては
+\var{plural} が返されます。
+
+以下に例を示します。:
+
+\begin{verbatim}
+n = len(os.listdir('.'))
+cat = GNUTranslations(somefile)
+message = cat.ungettext(
+    'There is %(num)d file in this directory',
+    'There are %(num)d files in this directory',
+    n) % {'num': n}
+\end{verbatim}
+
+\versionadded{2.3}
+\end{methoddesc}
+
+\subsubsection{Solaris メッセージカタログ機構のサポート}
+
+Solaris オペレーティングシステムでは、独自の \file{.mo} 
+バイナリファイル形式を定義していますが、この形式に関する
+ドキュメントが手に入らないため、現時点ではサポートされていません。
+
+\subsubsection{Catalog コンストラクタ}
+
+GNOME\index{GNOME} では、James Henstridge によるあるバージョンの
+\module{gettext} モジュールを使っていますが、このバージョンは
+少し異なった API を持っています。ドキュメントに書かれている
+利用法は:
+
+\begin{verbatim}
+import gettext
+cat = gettext.Catalog(domain, localedir)
+_ = cat.gettext
+print _('hello world')
+\end{verbatim}
+
+となっています。過去のモジュールとの互換性のために、
+\function{Catalog()} は前述の \function{translation()}
+関数の別名になっています。
+
+このモジュールと Henstridge のバージョンとの間には一つ相違点が
+あります: 彼のカタログオブジェクトはマップ型の API を介した
+アクセスがサポートされていましたが、この API は使われていない
+らしく、現在はサポートされていません。
+
+\subsection{プログラムやモジュールを国際化する}
+国際化 (I18N, I-nternationalizatio-N) とは、プログラムを複数の言語に
+対応させる操作を指します。地域化 (L10N, L-ocalizatio-N) とは、すでに
+国際化されているプログラムを特定地域の言語や文化的な事情に対応させる
+ことを指します。Python プログラムに多言語メッセージ機能を追加するには、
+以下の手順を踏む必要があります:
+
+\begin{enumerate}
+    \item プログラムやモジュールで翻訳対象とする文字列に特殊なマークを
+つけて準備します
+    \item マークづけをしたファイルに一連のツールを走らせ、生のメッセージ
+カタログを生成します
+    \item 特定の言語へのメッセージカタログの翻訳を作成します
+    \item メッセージ文字列を適切に変換するために \module{gettext}
+モジュールを使います
+\end{enumerate}
+
+ソースコードを I18N 化する準備として、ファイル内の全ての文字列
+を探す必要があります。翻訳を行う必要のある文字列はどれも
+\code{_('...')} --- すなわち関数 \function{_()} の呼び出しで
+包むことでマーク付けしなくてはなりません。例えば以下のようにします:
+
+\begin{verbatim}
+filename = 'mylog.txt'
+message = _('writing a log message')
+fp = open(filename, 'w')
+fp.write(message)
+fp.close()
+\end{verbatim}
+
+この例では、文字列 \code{'writing a log message'} が翻訳対象候補として
+マーク付けされており、文字列 \code{'mylog.txt'} および \code{'w'} は
+されていません。
+
+Python の配布物には、ソースコードに準備作業を行った後で
+メッセージカタログの生成を助ける 2 つのツールが付属します。
+これらはバイナリ配布の場合には付属していたりしなかったりしますが、
+ソースコード配布には入っており、\file{Tools/i18n} ディレクトリ
+にあります。
+
+\program{pygettext} プログラム \footnote{
+同様の作業を行う \program{xpot} と呼ばれるプログラムを 
+Fran\c cois Pinard が書いています。このプログラムは
+彼の \program{po-utils} パッケージの一部で、
+\url{http://po-utils.progiciels-bpi.ca/}
+で入手できます。} 
+は全ての Python ソースコードを走査し、予め翻訳対象としてマーク
+した文字列を探し出します。このツールは GNU \program{gettext}
+プログラムと同様ですが、Python ソースコードの機微について
+熟知している反面、C 言語や \Cpp 言語のソースコードについては
+全く知りません。(C 言語による拡張モジュールのように) C 言語の
+コードも翻訳対象にしたいのでない限り、 GNU \code{gettext} 
+は必要ありません。
+
+\program{pygettext} は、テキスト形式 Uniforum スタイルによる人間が
+判読可能なメッセージカタログ \file{.pot} ファイル群を生成します。
+このファイル群はソースコード中でマークされた全ての文字列と、
+それに対応する翻訳文字列のためのプレースホルダを含むファイル
+で構成されています。
+\program{pygettext} はコマンドライン形式のスクリプトで、
+\program{xgettext} と同様のコマンドラインインタフェースをサポート
+します; 使用法についての詳細を見るには:
+
+\begin{verbatim}
+pygettext.py --help
+\end{verbatim}
+
+を起動してください。
+
+これら \file{.pot} ファイルのコピーは次に、サポート対象の
+各自然言語について、言語ごとのバージョンを作成する個々の人間の
+翻訳者に頒布されます。翻訳者たちはプレースホルダ部分を埋めて
+言語ごとのバージョンをつくり、\file{.po} ファイルとして
+返します。(\file{Tools/i18n} ディレクトリ内の) 
+\program{msgfmt.py}\footnote{
+\program{msgfmt.py} は GNU \program{msgfmt} とバイナリ互換ですが、
+より単純で、Python だけを使った実装がされています。
+このプログラムと \program{pygettext.py} があれば、通常 Python
+プログラムを国際化するために GNU \program{gettext} パッケージを
+インストールする必要はありません。} 
+プログラムを使い、翻訳者から返された \file{.po} ファイルから
+機械可読な \file{.mo} バイナリカタログファイルを生成します。
+\file{.mo} ファイルは、 \module{gettext} モジュールが実行時に
+実際の翻訳処理を行うために使われます。
+
+\module{gettext} モジュールをソースコード中でどのように使うかは
+単一のモジュールを国際化するのか、それともアプリケーション全体を
+国際化するのかによります。
+次のふたつのセクションで、それぞれについて説明します。
+
+\subsubsection{モジュールを地域化する}
+
+モジュールを地域化する場合、グローバルな変更、例えば組み込み名前空間
+への変更を行わないように注意しなければなりません。GNU \code{gettext} 
+API ではなく、クラスベースの API を使うべきです。
+
+仮に対象のモジュール名を ``spam'' とし、モジュールの各言語における
+翻訳が収められた \file{.mo} ファイルが \file{/usr/share/locale} 
+に GNU \program{gettext} 形式で置かれているとします。
+この場合、モジュールの最初で以下のようにします:
+
+\begin{verbatim}
+import gettext
+t = gettext.translation('spam', '/usr/share/locale')
+_ = t.lgettext
+\end{verbatim}
+
+翻訳オブジェクトが \file{.po} ファイル中の Unicode 文字列を返す
+ようになっているのなら、上の代わりに以下のようにします:
+
+\begin{verbatim}
+import gettext
+t = gettext.translation('spam', '/usr/share/locale')
+_ = t.ugettext
+\end{verbatim}
+
+\subsubsection{アプリケーションを地域化する}
+
+アプリケーションを地域化するのなら、関数 \function{_()} を
+グローバルな組み込み名前空間に組み入れなければならず、これは
+通常アプリケーションの主ドライバ (main driver) ファイル で
+行います。この操作によって、アプリケーション独自のファイルは
+明示的に各ファイルで \function{_()} の組み入れを行わなくても
+単に \code{_('...')} を使うだけで済むようになります。
+
+単純な場合では、単に以下の短いコードをアプリケーションの
+主ドライバファイルに追加するだけです:
+
+\begin{verbatim}
+import gettext
+gettext.install('myapplication')
+\end{verbatim}
+
+ロケールディレクトリや \var{unicode} フラグを設定する必要が
+ある場合、それらの値を \function{install()} 関数に渡すことが
+できます:
+
+\begin{verbatim}
+import gettext
+gettext.install('myapplication', '/usr/share/locale', unicode=1)
+\end{verbatim}
+
+\subsubsection{動作中 (on the fly) に言語を切り替える}
+
+多くの言語を同時にサポートする必要がある場合、複数の翻訳インスタンスを
+生成して、例えば以下のコード: 
+\begin{verbatim}
+import gettext
+
+lang1 = gettext.translation('myapplication', languages=['en'])
+lang2 = gettext.translation('myapplication', languages=['fr'])
+lang3 = gettext.translation('myapplication', languages=['de'])
+
+# start by using language1
+lang1.install()
+
+# ... time goes by, user selects language 2
+lang2.install()
+
+# ... more time goes by, user selects language 3
+lang3.install()
+\end{verbatim}
+
+のように、インスタンスを明示的に切り替えてもかまいません。
+
+
+\subsubsection{翻訳処理の遅延解決}
+
+コードを書く上では、ほとんどの状況で文字列はコードされた場所で
+翻訳されます。しかし場合によっては、翻訳対象として文字列をマーク
+はするが、その後実際に翻訳が行われるように遅延させる必要が
+生じます。古典的な例は以下のようなコートです:
+
+\begin{verbatim}
+animals = ['mollusk',
+           'albatross',
+	   'rat',
+	   'penguin',
+	   'python',
+	   ]
+# ...
+for a in animals:
+    print a
+\end{verbatim}
+
+ここで、リスト \code{animals} 内の文字列は翻訳対象としてマーク
+はしたいが、文字列が出力されるまで実際に翻訳を行うのは避けたい
+とします。
+
+こうした状況を処理する一つの方法を以下に示します:
+
+\begin{verbatim}
+def _(message): return message
+
+animals = [_('mollusk'),
+           _('albatross'),
+	   _('rat'),
+	   _('penguin'),
+	   _('python'),
+	   ]
+
+del _
+
+# ...
+for a in animals:
+    print _(a)
+\end{verbatim}
+
+ダミーの \function{_()} 定義が単に文字列をそのまま返すように
+なっているので、上のコードはうまく動作します。かつ、このダミーの
+定義は、組み込み名前空間に置かれた \function{_()} の定義で
+(\keyword{del} 命令を実行するまで) 一時的に上書きすることが
+できます。もしそれまでに \function{_} をローカルな名前空間に
+持っていたら注意してください。
+
+二つ目の例における \function{_()} の使い方では、``a'' は文字列
+リテラルではないので、\program{pygettext} プログラムが翻訳可能な
+対象として識別しません。
+
+もう一つの処理法は、以下の例のようなやり方です:
+
+\begin{verbatim}
+def N_(message): return message
+
+animals = [N_('mollusk'),
+           N_('albatross'),
+	   N_('rat'),
+	   N_('penguin'),
+	   N_('python'),
+	   ]
+
+# ...
+for a in animals:
+    print _(a)
+\end{verbatim}
+
+この例の場合では、翻訳可能な文字列を関数 \function{N_()} で
+マーク付けしており \footnote{
+この \function{N_()} をどうするかは全くの自由です; 
+\function{MarkThisStringForTranslation()}  などとしてもかまいません。} 
+、\function{_()} の定義とは全く衝突しません。しかしメッセージ
+展開プログラムには翻訳対象の文字列が \function{N_()} でマーク
+されていることを教える必要が出てくるでしょう。
+\program{pygettext} および \program{xpot} は両方とも、コマンドライン
+上のスイッチでこの機能をサポートしています。
+
+\subsubsection{\function{gettext()} vs. \function{lgettext()}}
+Python 2.4 からは、 \function{lgettext()} ファミリが導入されました。
+この関数の目的は、現行の GNU gettext 実装によりよく準拠した
+別の関数を提供することにあります。翻訳メッセージファイル中で
+使われているのと同じコードセットを使って文字列をエンコードして
+返す\function{gettext()} と違い、これらの関数は
+\function{locale.getpreferredencoding()} の返す
+優先システムエンコーディングを使って翻訳メッセージ文字列をエンコード
+して返します。また、Python 2.4 では、翻訳メッセージ文字列
+で使われているコードセットを明示的に選べるようにする関数が新たに
+導入されていることにも注意してください。コードセットを明示的に
+設定すると、\function{lgettext()} でさえ、指定したコードセットで
+翻訳メッセージ文字列を返します。これは GNU gettext 実装が期待している
+仕様と同じです。
+
+\subsection{謝辞}
+
+以下の人々が、このモジュールのコード、フィードバック、設計に関する
+助言、過去の実装、そして有益な経験談による貢献をしてくれました:
+
+\begin{itemize}
+    \item Peter Funk
+    \item James Henstridge
+    \item Juan David Ib\'a\~nez Palomar
+    \item Marc-Andr\'e Lemburg
+    \item Martin von L\"owis
+    \item Fran\c cois Pinard
+    \item Barry Warsaw
+\end{itemize}

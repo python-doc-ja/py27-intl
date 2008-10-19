@@ -1,0 +1,170 @@
+--- Python-Docs-2.4/./ref/ref6.tex	2004-11-11 15:14:05.000000000 +0900
++++ Python-Docs-2.5/./ref/ref6.tex	2006-05-21 00:36:19.000000000 +0900
+@@ -84,11 +84,12 @@
+ These equivalences assume that \code{__debug__}\ttindex{__debug__} and
+ \exception{AssertionError}\exindex{AssertionError} refer to the built-in
+ variables with those names.  In the current implementation, the
+-built-in variable \code{__debug__} is 1 under normal circumstances, 0
+-when optimization is requested (command line option -O).  The current
+-code generator emits no code for an assert statement when optimization
+-is requested at compile time.  Note that it is unnecessary to include
+-the source code for the expression that failed in the error message;
++built-in variable \code{__debug__} is \code{True} under normal
++circumstances, \code{False} when optimization is requested (command line
++option -O).  The current code generator emits no code for an assert
++statement when optimization is requested at compile time.  Note that it
++is unnecessary to include the source code for the expression that failed
++in the error message;
+ it will be displayed as part of the stack trace.
+ 
+ Assignments to \code{__debug__} are illegal.  The value for the
+@@ -203,12 +204,12 @@
+ \item
+ If the target is a subscription: The primary expression in the
+ reference is evaluated.  It should yield either a mutable sequence
+-object (e.g., a list) or a mapping object (e.g., a dictionary).  Next,
++object (such as a list) or a mapping object (such as a dictionary). Next,
+ the subscript expression is evaluated.
+ \indexii{subscription}{assignment}
+ \obindex{mutable}
+ 
+-If the primary is a mutable sequence object (e.g., a list), the subscript
++If the primary is a mutable sequence object (such as a list), the subscript
+ must yield a plain integer.  If it is negative, the sequence's length
+ is added to it.  The resulting value must be a nonnegative integer
+ less than the sequence's length, and the sequence is asked to assign
+@@ -218,7 +219,7 @@
+ \obindex{sequence}
+ \obindex{list}
+ 
+-If the primary is a mapping object (e.g., a dictionary), the subscript must
++If the primary is a mapping object (such as a dictionary), the subscript must
+ have a type compatible with the mapping's key type, and the mapping is
+ then asked to create a key/datum pair which maps the subscript to
+ the assigned object.  This can either replace an existing key/value
+@@ -229,7 +230,7 @@
+ 
+ \item
+ If the target is a slicing: The primary expression in the reference is
+-evaluated.  It should yield a mutable sequence object (e.g., a list).  The
++evaluated.  It should yield a mutable sequence object (such as a list).  The
+ assigned object should be a sequence object of the same type.  Next,
+ the lower and upper bound expressions are evaluated, insofar they are
+ present; defaults are zero and the sequence's length.  The bounds
+@@ -250,7 +251,7 @@
+ messages.)
+ 
+ WARNING: Although the definition of assignment implies that overlaps
+-between the left-hand side and the right-hand side are `safe' (e.g.,
++between the left-hand side and the right-hand side are `safe' (for example
+ \samp{a, b = b, a} swaps two variables), overlaps \emph{within} the
+ collection of assigned-to variables are not safe!  For instance, the
+ following program prints \samp{[0, 2]}:
+@@ -376,7 +377,7 @@
+ \begin{productionlist}
+   \production{print_stmt}
+              {"print" ( \optional{\token{expression} ("," \token{expression})* \optional{","}}}
+-  \productioncont{| ">\code{>}" \token{expression}
++  \productioncont{| ">>" \token{expression}
+                   \optional{("," \token{expression})+ \optional{","}} )}
+ \end{productionlist}
+ 
+@@ -416,7 +417,7 @@
+ \keyword{print} also has an extended\index{extended print statement}
+ form, defined by the second portion of the syntax described above.
+ This form is sometimes referred to as ``\keyword{print} chevron.''
+-In this form, the first expression after the \code{>}\code{>} must
++In this form, the first expression after the \code{>>} must
+ evaluate to a ``file-like'' object, specifically an object that has a
+ \method{write()} method as described above.  With this extended form,
+ the subsequent expressions are printed to this file object.  If the
+@@ -487,16 +488,17 @@
+ invoked, the function can proceed exactly as if the \keyword{yield}
+ statement were just another external call.
+ 
+-The \keyword{yield} statement is not allowed in the \keyword{try}
+-clause of a \keyword{try} ...\ \keyword{finally} construct.  The
+-difficulty is that there's no guarantee the generator will ever be
+-resumed, hence no guarantee that the \keyword{finally} block will ever
+-get executed.
++As of Python version 2.5, the \keyword{yield} statement is now
++allowed in the \keyword{try} clause of a \keyword{try} ...\ 
++\keyword{finally} construct.  If the generator is not resumed before
++it is finalized (by reaching a zero reference count or by being garbage
++collected), the generator-iterator's \method{close()} method will be
++called, allowing any pending \keyword{finally} clauses to execute.
+ 
+ \begin{notice}
+ In Python 2.2, the \keyword{yield} statement is only allowed
+ when the \code{generators} feature has been enabled.  It will always
+-be enabled in Python 2.3.  This \code{__future__} import statment can
++be enabled in Python 2.3.  This \code{__future__} import statement can
+ be used to enable the feature:
+ 
+ \begin{verbatim}
+@@ -509,6 +511,11 @@
+   \seepep{0255}{Simple Generators}
+          {The proposal for adding generators and the \keyword{yield}
+           statement to Python.}
++
++  \seepep{0342}{Coroutines via Enhanced Generators}
++         {The proposal that, among other generator enhancements,
++          proposed allowing \keyword{yield} to appear inside a
++          \keyword{try} ... \keyword{finally} block.}
+ \end{seealso}
+ 
+ 
+@@ -522,8 +529,10 @@
+ \end{productionlist}
+ 
+ If no expressions are present, \keyword{raise} re-raises the last
+-expression that was active in the current scope.  If no exception is
+-active in the current scope, an exception is raised indicating this error.
++exception that was active in the current scope.  If no exception is
++active in the current scope, a \exception{TypeError} exception is
++raised indicating that this is an error (if running under IDLE, a
++\exception{Queue.Empty} exception is raised instead).
+ \index{exception}
+ \indexii{raising}{exception}
+ 
+@@ -600,7 +609,7 @@
+ 
+ \keyword{continue} may only occur syntactically nested in a \keyword{for} or
+ \keyword{while} loop, but not nested in a function or class definition or
+-\keyword{try} statement within that loop.\footnote{It may
++\keyword{finally} statement within that loop.\footnote{It may
+ occur within an \keyword{except} or \keyword{else} clause.  The
+ restriction on occurring in the \keyword{try} clause is implementor's
+ laziness and will eventually be lifted.}
+@@ -800,13 +809,14 @@
+ That is not a future statement; it's an ordinary import statement with
+ no special semantics or syntax restrictions.
+ 
+-Code compiled by an exec statement or calls to the builtin functions
++Code compiled by an \keyword{exec} statement or calls to the builtin functions
+ \function{compile()} and \function{execfile()} that occur in a module
+ \module{M} containing a future statement will, by default, use the new 
+ syntax or semantics associated with the future statement.  This can,
+ starting with Python 2.2 be controlled by optional arguments to
+-\function{compile()} --- see the documentation of that function in the 
+-library reference for details.
++\function{compile()} --- see the documentation of that function in the
++\citetitle[../lib/built-in-funcs.html]{Python Library Reference} for
++details.
+ 
+ A future statement typed at an interactive interpreter prompt will
+ take effect for the rest of the interpreter session.  If an
+@@ -871,7 +881,12 @@
+ a code object.  If it is a string, the string is parsed as a suite of
+ Python statements which is then executed (unless a syntax error
+ occurs).  If it is an open file, the file is parsed until \EOF{} and
+-executed.  If it is a code object, it is simply executed.
++executed.  If it is a code object, it is simply executed.  In all
++cases, the code that's executed is expected to be valid as file
++input (see section~\ref{file-input}, ``File input'').  Be aware that
++the \keyword{return} and \keyword{yield} statements may not be used
++outside of function definitions even within the context of code passed
++to the \keyword{exec} statement.
+ 
+ In all cases, if the optional parts are omitted, the code is executed
+ in the current scope.  If only the first expression after \keyword{in}

@@ -1,0 +1,62 @@
+\section{\module{MiniAEFrame} ---
+オープンスクリプティングアーキテクチャサーバのサポート}
+
+\declaremodule{standard}{MiniAEFrame}
+  \platform{Mac}
+\modulesynopsis{
+オープンスクリプティングアーキテクチャ(OSA)サーバ(``Apple Events'')のサポート。}
+
+
+\module{MiniAEFrame}モジュールは、アプリケーションにオープンスクリプ
+ティングアーキテクチャ\index{Open Scripting Architecture}(OSA)サーバ機
+能を持たせるためのフレームワークを提供します。つまり、
+AppleEvents\index{AppleEvents}の受信と処理を行わせます。
+\refmodule{FrameWork}\refstmodindex{FrameWork}と連携させても良いし、単独
+でも使えます。
+実例として、このモジュールは\program{PythonCGISlave}の中で使われていま
+す。
+
+\module{MiniAEFrame}には以下のクラスが定義されています。
+
+\begin{classdesc}{AEServer}{}
+AppleEventの分岐を処理するクラス。作成するアプリケーションはこのクラス
+と、\class{MiniApplication}あるいは\class{FrameWork.Application}のサブク
+ラスでなければなりません。サブクラス化したクラスでは\method{__init__()}
+メソッドで、継承した両方のクラスの\method{__init__()}メソッドを呼びださ
+なければなりません。
+\end{classdesc}
+
+\begin{classdesc}{MiniApplication}{}
+\class{FrameWork.Application}とある程度互換なクラスですが、機能は少ない
+です。このクラスのイベントループはアップルメニュー、Cmd-.(コマンドキーを押しながらピリオド.を押す)、
+AppleEventをサポートします。他のイベントはPythonインタープリタかSioux（CodeWarriorの
+コンソールシステム）に渡されます。作成するアプリケーションで
+\class{AEServer}を使いたいが、独自のウィンドウなどを持たない場合に便利で
+す。
+\end{classdesc}
+
+
+\subsection{AEServer オブジェクト \label{aeserver-objects}}
+
+\begin{methoddesc}[AEServer]{installaehandler}{classe, type, callback}
+AppleEventハンドラをインストールします。\var{classe}と\var{type}は4文字
+のOSAクラスとタイプの指定子で、ワイルドカード\code{'****'}も使えます。対
+応するAppleEventを受けるとパラメータがデコードされ、与えたコールバックが
+呼び出されます。
+\end{methoddesc}
+
+\begin{methoddesc}[AEServer]{callback}{_object, **kwargs}
+与えたコールバックは、OSAダイレクトオブジェクトを1番目のパラメータとして
+呼び出されます。他のパラメータは4文字の指定子を名前にしたキーワード引数
+として渡されます。他に3つのキーワード・パラメータが渡されます。つまり、
+\code{_class}と\code{_type}はクラスとタイプ指定子で、\code{_attributes}
+はAppleEvent属性を持つ辞書です。
+
+与えたメソッドの返り値は\function{aetools.packevent()}でパックされ、リプ
+ライとして送られます。
+\end{methoddesc}
+
+現在のクラス設計にはいくつか重大な問題があることに注意してください。引数
+に名前ではない4文字の指定子を持つAppleEventはまだ実装されていないし、イ
+ベントの送信側にエラーを返すこともできません。この問題は将来のリリースま
+で先送りにされています。

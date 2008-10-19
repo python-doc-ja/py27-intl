@@ -1,0 +1,93 @@
+\section{\module{repr} ---
+         もう一つの\function{repr()}の実装}
+
+\sectionauthor{Fred L. Drake, Jr.}{fdrake@acm.org}
+\declaremodule{standard}{repr}
+\modulesynopsis{大きさに制限のある別の\function{repr()}の実装。}
+
+
+\module{repr}モジュールは結果の文字列の大きさを制限したオブジェクト表現を作り出すための方法を提供します。これはPythonデバッガで使われていますが、他の状況でも同じように役に立つかもしれません。
+
+このモジュールはクラスとインスタンス、それに関数を提供します:
+
+
+\begin{classdesc}{Repr}{}
+  組み込みクラス\function{repr()}によく似た関数を実装するために役に立つ書式化サービスを提供します。過度に長い表現を作り出さないように、異なるオブジェクト型に対する大きさの制限が追加されます。
+\end{classdesc}
+
+
+\begin{datadesc}{aRepr}
+  これは下で説明される\function{repr()}関数を提供するために使われる\class{Repr}のインスタンスです。このオブジェクトの属性を変更すると、\function{repr()}とPythonデバッガが使うサイズ制限に影響します。
+\end{datadesc}
+
+
+\begin{funcdesc}{repr}{obj}
+  これは\code{aRepr}の\method{repr()}メソッドです。同じ名前の組み込み関数が返す文字列と似ていますが、最大サイズに制限のある文字列を返します。
+\end{funcdesc}
+
+
+\subsection{Reprオブジェクト \label{Repr-objects}}
+
+\class{Repr}インスタンスは様々なオブジェクト型の表現にサイズ制限を与えるために使えるいくつかのメンバーと、特定のオブジェクト型を書式化するメソッドを提供します。
+
+
+\begin{memberdesc}{maxlevel}
+  再帰的な表現を作る場合の深さ制限。デフォルトは\code{6}です。
+\end{memberdesc}
+
+\begin{memberdesc}{maxdict}
+\memberline{maxlist}
+\memberline{maxtuple}
+\memberline{maxset}
+\memberline{maxfrozenset}
+\memberline{maxdeque}
+\memberline{maxarray}
+  指定されたオブジェクト型に対するエントリ表現の数についての制限。
+  \member{maxdict}に対するデフォルトは\code{4}で、\member{maxarray}
+  は\code{5}、その他に対しては\code{6}です。
+\versionadded[\member{maxset}, \member{maxfrozenset}, \member{set}]{2.4}.
+\end{memberdesc}
+
+\begin{memberdesc}{maxlong}
+  長整数の表現のおける文字数の最大値。中央の数字が抜け落ちます。デフォルトは\code{40}です。
+\end{memberdesc}
+
+\begin{memberdesc}{maxstring}
+  文字列の表現における文字数の制限。文字列の``通常の''表現は文字の材料だということに注意してください: 表現にエスケープシーケンスが必要とされる場合は、表現が短縮されたときにこれらはマングルされます。デフォルトは\code{30}です。
+\end{memberdesc}
+
+\begin{memberdesc}{maxother}
+  この制限は\class{Repr}オブジェクトに利用できる特定の書式化メソッドがないオブジェクト型のサイズをコントロールするために使われます。\member{maxstring}と同じようなやり方で適用されます。デフォルトは\code{20}です。
+\end{memberdesc}
+
+\begin{methoddesc}{repr}{obj}
+  インスタンスが強制する書式化を使う組み込み\function{repr()}と等価なもの。
+\end{methoddesc}
+
+\begin{methoddesc}{repr1}{obj, level}
+  \method{repr()}が使う再帰的な実装。これはどの書式化メソッドを呼び出すかを決定するために\var{obj}の型を使い、それを\var{obj}と\var{level}に渡します。再帰呼び出しにおいて\var{level}の値に対して\code{\var{level} - 1}を与える再帰的な書式化を実行するために、型に固有のメソッドは\method{repr1()}を呼び出します。
+\end{methoddesc}
+
+\begin{methoddescni}{repr_\var{type}}{obj, level}
+  型名に基づく名前をもつメソッドとして、特定の型に対する書式化メソッドは実装されます。メソッド名では、\var{type}は\code{string.join(string.split(type(\var{obj}).__name__, '_'))}に置き換えられます。これらのメソッドへのディスパッチは\method{repr1()}によって処理されます。再帰的に値の書式を整える必要がある型固有のメソッドは、\samp{self.repr1(\var{subobj}, \var{level} - 1)}を呼び出します。
+\end{methoddescni}
+
+
+\subsection{Reprオブジェクトをサブクラス化する \label{subclassing-reprs}}
+
+更なる組み込みオブジェクト型へのサポートを追加するためや、すでにサポートされている型の扱いを変更するために、\method{Repr.repr1()}による動的なディスパッチを使って\class{Repr}をサブクラス化することができます。この例はファイルオブジェクトのための特別なサポートを追加する方法を示しています:
+
+\begin{verbatim}
+import repr
+import sys
+
+class MyRepr(repr.Repr):
+    def repr_file(self, obj, level):
+        if obj.name in ['<stdin>', '<stdout>', '<stderr>']:
+            return obj.name
+        else:
+            return `obj`
+
+aRepr = MyRepr()
+print aRepr.repr(sys.stdin)          # prints '<stdin>'
+\end{verbatim}

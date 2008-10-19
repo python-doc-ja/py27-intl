@@ -1,0 +1,182 @@
+\section{\module{poplib} ---
+         POP3 プロトコルクライアント}
+
+\declaremodule{standard}{poplib}
+\modulesynopsis{POP3 プロトコルクライアント (socketsを必要とする)}
+
+%By Andrew T. Csillag
+%Even though I put it into LaTeX, I cannot really claim that I wrote
+%it since I just stole most of it from the poplib.py source code and
+%the imaplib ``chapter''.
+%Revised by ESR, January 2000
+
+\indexii{POP3}{protocol}
+
+このモジュールは、 \class{POP3} クラスを定義します。これはPOP3サーバへの
+接続と、 \rfc{1725} に定められたプロトコルを実装します。 \class{POP3} クラスは
+minimalとoptinalという2つのコマンドセットをサポートします。
+モジュールは\class{POP3_SSL}クラスも提供します。このクラスは下位の
+プロトコルレイヤーにSSLを使ったPOP3サーバへの接続を提供します。
+
+
+POP3についての注意事項は、それが広くサポートされているにもかかわらず、
+既に時代遅れだということです。幾つも実装されているPOP3サーバーの品質は、
+貧弱なものが多数を占めています。もし、お使いのメールサーバーがIMAPを
+サポートしているなら、 \code{\refmodule{imaplib} や \class{IMAP4}} が
+使えます。
+IMAPサーバーは、より良く実装されている傾向があります。
+
+\module{poplib}  モジュールでは、ひとつのクラスが提供されています。
+
+\begin{classdesc}{POP3}{host\optional{, port}}
+このクラスが、実際にPOP3プロトコルを実装します。インスタンスが初期化
+されるときに、コネクションが作成されます。
+\var{port} が省略されると、POP3標準のポート(110)が使われます。
+\end{classdesc}
+
+\begin{classdesc}{POP3_SSL}{host\optional{, port\optional{, keyfile\optional{, certfile}}}}
+\class{POP3} クラスのサブクラスで、SSLでカプセル化されたソケットによる
+POPサーバへの接続を提供します。 \var{port} が指定されていない場合、
+POP3-over-SSL標準の995番ポートが使われます。
+\var{keyfile} と \var{certfile} もオプションで - SSL接続に使われる
+PEMフォーマットの秘密鍵と信頼された＃＃を含みます。
+
+\versionadded{2.4}
+\end{classdesc}
+
+
+1つの例外が、 \module{poplib} モジュールのアトリビュートとして定義されています。
+
+\begin{excdesc}{error_proto}
+例外は、すべてのエラーで発生します。例外の理由は文字列としてコンストラクタに
+渡されます。
+\end{excdesc}
+
+\begin{seealso}
+  \seemodule{imaplib}{The standard Python IMAP module.}
+  \seetitle[http://www.catb.org/\~{}esr/fetchmail/fetchmail-FAQ.html]
+        {Frequently Asked Questions About Fetchmail}
+        {POP/IMAPクライアント \program{fetchmail} のFAQ。POPプロトコルを
+         ベースにしたアプリケーションを書くときに有用な、POP3サーバの種類や
+         RFCへの適合度といった情報を収集しています。}
+\end{seealso}
+
+
+\subsection{POP3 オブジェクト \label{pop3-objects}}
+
+POP3コマンドはすべて、それと同じ名前のメソッドとしてlower-caseで
+表現されます。そしてそのほとんどは、サーバからのレスポンスとなる
+テキストを返します。
+
+\class{POP3} クラスのインスタンスは以下のメソッドを持ちます。
+
+\begin{methoddesc}{set_debuglevel}{level}
+インスタンスのデバッグレベルを指定します。これはデバッギングアウトプット
+の表示量をコントロールします。デフォルト値の \code{0} は、デバッギング
+アウトプットを表示しません。値を \code{1} とすると、デバッギングアウト
+プットの表示量を適当な量にします。これは大体、リクエストごと1行になります。
+値を \code{2} 以上にすると、デバッギングアウトプットの表示量を最大にします。
+コントロール中の接続で送受信される各行をログに出力します。
+\end{methoddesc}
+
+\begin{methoddesc}{getwelcome}{}
+POP3サーバーから送られるグリーティングメッセージを返します。
+\end{methoddesc}
+
+\begin{methoddesc}{user}{username}
+userコマンドを送出します。応答はパスワード要求を表示します。
+\end{methoddesc}
+
+\begin{methoddesc}{pass_}{password}
+パスワードを送出します。応答は、メッセージ数とメールボックスのサイズを
+含みます。
+注：サーバー上のメールボックスは \method{quit()} が呼ばれるまでロックされます。
+\end{methoddesc}
+
+\begin{methoddesc}{apop}{user, secret}
+POP3サーバーにログオンするのに、よりセキュアなAPOP認証を使用します。
+\end{methoddesc}
+
+\begin{methoddesc}{rpop}{user}
+POP3サーバーにログオンするのに、（UNIXのr-コマンドと同様の）RPOP認証を使用します。
+\end{methoddesc}
+
+\begin{methoddesc}{stat}{}
+メールボックスの状態を得ます。結果は2つのintegerからなるタプルとなります。
+\code{(\var{message count}, \var{mailbox size})}.
+\end{methoddesc}
+
+\begin{methoddesc}{list}{\optional{which}}
+メッセージのリストを要求します。結果は以下のような形式で表されます。
+\code{(\var{response}, ['mesg_num octets', ...], \var{octets})}
+\var{which} が与えられると、それによりメッセージを指定します。
+\end{methoddesc}
+
+\begin{methoddesc}{retr}{which}
+\var{which} 番のメッセージ全体を取り出し、そのメッセージに既読フラグを
+立てます。結果は \code{(\var{response}, ['line', ...], \var{octets})}
+という形式で表されます。
+\end{methoddesc}
+
+\begin{methoddesc}{dele}{which}
+\var{which} 番のメッセージに削除のためのフラグを立てます。ほとんどの
+サーバで、QUITコマンドが実行されるまでは実際の削除は行われません
+（もっとも良く知られた例外は Eudora QPOPで、その配送メカニズムはRFCに
+違反しており、どんな切断状況でも削除操作を未解決にしています）。
+\end{methoddesc}
+
+\begin{methoddesc}{rset}{}
+メールボックスの削除マークすべてを取り消します。
+\end{methoddesc}
+
+\begin{methoddesc}{noop}{}
+何もしません。接続保持のために使われます。
+\end{methoddesc}
+
+\begin{methoddesc}{quit}{}
+Signoff:  commit changes, unlock mailbox, drop connection.
+サインオフ：変更をコミットし、メールボックスをアンロックして、接続を破棄します。
+\end{methoddesc}
+
+\begin{methoddesc}{top}{which, howmuch}
+メッセージヘッダと \var{howmuch} で指定した行数のメッセージを、
+ \var{which}で指定したメッセージ分取り出します。結果は以下のような
+形式となります。
+\code{(\var{response}, ['line', ...], \var{octets})}.
+
+このメソッドはPOP3のTOPコマンドを利用し、RETRコマンドのように、メッセージに
+既読フラグをセットしません。残念ながら、TOPコマンドはRFCでは貧弱な仕様しか
+定義されておらず、しばしばノーブランドのサーバーでは（その仕様が）守られて
+いません。このメソッドを信用してしまう前に、実際に使用するPOPサーバーで
+テストをしてください。
+\end{methoddesc}
+
+\begin{methoddesc}{uidl}{\optional{which}}
+（ユニークIDによる）メッセージダイジェストのリストを返します。
+\var{which} が設定されている場合、結果はユニークIDを含みます。それは
+\code{'\var{response}\ \var{mesgnum}\ \var{uid}}という形式のメッセージ、
+または\code{(\var{response}, ['mesgnum uid', ...],\var{octets})}という
+形式のリストとなります。
+\end{methoddesc}
+
+\class{POP3_SSL} クラスのインスタンスは追加のメソッドを持ちません。
+このサブクラスのインターフェイスは親クラスと同じです。
+
+\subsection{POP3 の例 \label{pop3-example}}
+
+これは（エラーチェックもない）最も小さなサンプルで、メールボックスを
+開いて、すべてのメッセージを取り出し、プリントします。
+
+\begin{verbatim}
+import getpass, poplib
+
+M = poplib.POP3('localhost')
+M.user(getpass.getuser())
+M.pass_(getpass.getpass())
+numMessages = len(M.list()[1])
+for i in range(numMessages):
+    for j in M.retr(i+1)[1]:
+        print j
+\end{verbatim}
+
+モジュールの末尾に、より広い範囲の使用例となるtestセクションがあります。

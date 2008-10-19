@@ -1,0 +1,121 @@
+\section{\module{mimetools} ---
+         MIME メッセージを解析するためのツール}
+
+\declaremodule{standard}{mimetools}
+\modulesynopsis{MIME-スタイルのメッセージ本体を解析するためのツール。}
+\deprecated{2.3}{ \refmodule{email} パッケージを \module{mimetools}モジュールより
+                 優先して使うべきです。この
+                 モジュールは、下位互換性維持のためにのみ
+                 存在しています。}
+
+このモジュールは、
+\refmodule{rfc822}\refstmodindex{rfc822} モジュールの
+\class{Message} クラスのサブクラスと、マルチパートMIME や符合化メッセージの操作に
+役に立つ多くのユーティリティ関数を定義しています。
+
+これには以下の項目が定義されています：
+
+\begin{classdesc}{Message}{fp\optional{, seekable}}
+\class{Message} クラスの新しいインスタンスを返します。これは、
+ \class{rfc822.Message} クラスのサブクラスで、いくつかの追加のメソッドが
+あります(以下を参照のこと)。 \var{seekable} 引数は、 \class{rfc822.Message}の
+ものと同じ意味を持ちます。
+\end{classdesc}
+
+\begin{funcdesc}{choose_boundary}{}
+パートの境界として使うことができる見込みが高いユニークな文字列を返します。
+その文字列は、 \code{'\var{hostipaddr}.\var{uid}.\var{pid}.\var{timestamp}.\var{random}'}
+の形をしています。
+\end{funcdesc}
+
+\begin{funcdesc}{decode}{input, output, encoding}
+オープンしたファイルオブジェクト \var{input} から、許される MIME \var{encoding}
+を使って符号化されたデータを読んで、オープンされたファイルオブジェクト
+\var{output} に復号化されたデータを書きます。
+ \var{encoding} に許される値は、
+\code{'base64'}, \code{'quoted-printable'}, \code{'uuencode'},
+\code{'x-uuencode'}, \code{'uue'}, \code{'x-uue'}, \code{'7bit'}, および
+\code{'8bit'}です。\code{'7bit'} あるいは \code{'8bit'} で符号化された
+メッセージを復号化しても何も効果がありません。入力が出力に単純にコピーされるだけです。
+\end{funcdesc}
+
+\begin{funcdesc}{encode}{input, output, encoding}
+オープンしたファイルオブジェクト  \var{input} からデータを読んで、
+それを許される MIME \var{encoding} を使って符号化して、オープンした
+ファイルオブジェクト \var{output} に書きます。
+\var{encoding} に許される値は、[method{decode()}のものと同じです。
+\end{funcdesc}
+
+\begin{funcdesc}{copyliteral}{input, output}
+オープンしたファイル \var{input}から行を \EOF{} まで読んで、
+それらをオープンしたファイル \var{output} に書きます。
+\end{funcdesc}
+
+\begin{funcdesc}{copybinary}{input, output}
+オープンしたファイル \var{input}からブロックを \EOF{} まで読んで、
+それらをオープンしたファイル \var{output} に書きます。
+ブロックの大きさは現在 8192 に固定されています。
+\end{funcdesc}
+
+
+\begin{seealso}
+  \seemodule{email}{圧縮電子メール操作パッケージ；
+                    \module{mimetools} モジュールに委譲。}
+  \seemodule{rfc822}{
+                     \class{mimetools.Message}のベースクラスを提供する。}
+  \seemodule{multifile}{MIME データのような、別個のパーツを含む
+                         ファイルの読み込みをサポート。}
+  \seeurl{http://www.cs.uu.nl/wais/html/na-dir/mail/mime-faq/.html}{
+          MIME でよく訊ねられる質問。MIMEの概要に関しては、
+          この文書の Part 1 の質問 1.1 への答えを見ること。}
+\end{seealso}
+
+
+\subsection{ Message オブジェクトの追加メソッド
+            \label{mimetools-message-objects}}
+
+ \class{Message} クラスは、\class{rfc822.Message} メソッドに加えて、
+ 以下のメソッドを定義しています：
+
+\begin{methoddesc}{getplist}{}
+ \mailheader{Content-Type} ヘッダのパラメータリストを返します。
+ これは文字列のリストです。
+\samp{\var{key}=\var{value}}の形のパラメータに対しては、
+ \var{key} は小文字に変換されますが、 \var{value} は変換されません。
+たとえば、もしメッセージに、ヘッダ
+\samp{Content-type: text/html; spam=1; Spam=2; Spam} が含まれていれば、
+\method{getplist()} は、Python リスト  \code{['spam=1',
+'spam=2', 'Spam']}を返すでしょう。
+\end{methoddesc}
+
+\begin{methoddesc}{getparam}{name}
+与えられた \var{name}の( \samp{\var{name}=\var{value}} の形に対して
+\method{getplist()} が返す ) 第1パラメータの \var{value} を返します。
+もし \var{value} が、`\code{<}...\code{>}' あるいは `\code{"}...\code{"}'のように引用符で囲まれていれば、
+これらは除去されます。
+\end{methoddesc}
+
+\begin{methoddesc}{getencoding}{}
+\mailheader{Content-Transfer-Encoding} メッセージヘッダで指定された
+符号化方式を返します。もしそのようなヘッダが存在しなければ、
+ \code{'7bit'}を返します。符号化方式文字列は小文字に変換されます。
+\end{methoddesc}
+
+\begin{methoddesc}{gettype}{}
+ \mailheader{Content-Type} ヘッダで指定された
+ (\samp{\var{type}/\var{subtype}}の形での)メッセージ型を返します。
+ もしそのようなヘッダが存在しなければ、 \code{'text/plain'}を返します。
+ 型文字列は小文字に変換されます。
+\end{methoddesc}
+
+\begin{methoddesc}{getmaintype}{}
+ \mailheader{Content-Type} ヘッダで指定された主要型を返します。
+ もしそのようなヘッダが存在しなければ、 \code{'text'}を返します。
+主要型文字列は小文字に変換されます。
+\end{methoddesc}
+
+\begin{methoddesc}{getsubtype}{}
+\mailheader{Content-Type}ヘッダで指定された下位型を返します。
+ もしそのようなヘッダが存在しなければ、 \code{'plain'}を返します。
+下位型文字列は小文字に変換されます。
+\end{methoddesc}

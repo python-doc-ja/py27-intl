@@ -1,0 +1,187 @@
+\section{\module{thread} ---
+         マルチスレッドのコントロール}
+
+\declaremodule{builtin}{thread}
+\modulesynopsis{1つのインタープリタの中でのマルチスレッド制御}
+
+
+このモジュールはマルチスレッド(別名\ \dfn{軽量プロセス}
+(\dfn{light-weight processes})または\dfn{タスク}(\dfn{tasks}))
+に用いられる低レベルプリミティブを提供します
+--- グローバルデータ空間を共有するマルチスレッドを制御します。
+同期のための単純なロック(別名\ \dfn{mutexes}または
+バイナリセマフォ(\dfn{binary semaphores}))が提供されています。
+\index{light-weight processes}
+\index{processes, light-weight}
+\index{binary semaphores}
+\index{semaphores, binary}
+
+このモジュールはオプションです。
+Windows, Linux, SGI IRIX, Solaris 2.x、そして同じような\POSIX{}スレッド
+(別名``pthread'')実装のシステム上でサポートされます。
+\module{thread}を使用することのできないシステムでは、
+\refmodule[dummythread]{dummy_thread}が用意されています。
+\refmodule[dummythread]{dummy_thread}はこのモジュールと同じインターフェース
+を持ち、置き換えて使用することができます。
+
+\index{pthreads}
+\indexii{threads}{\POSIX}
+
+定数と関数は以下のように定義されています:
+
+\begin{excdesc}{error}
+スレッド特有のエラーで送出されます。
+\end{excdesc}
+
+\begin{datadesc}{LockType}
+これはロックオブジェクトのタイプです。
+\end{datadesc}
+
+\begin{funcdesc}{start_new_thread}{function, args\optional{, kwargs}}
+新しいスレッドを開始して、そのIDを返します。
+スレッドは引数リスト\var{args}(タプルでなければなりません)の
+関数\var{function}を実行します。
+オプション引数\var{kwargs}はキーワード引数の辞書を指定します。
+関数が戻るとき、スレッドは黙って終了します。
+関数が未定義の例外でターミネートしたとき、スタックトレースが表示され、
+そしてスレッドが終了します(しかし他のスレッドは走り続けます)。
+\end{funcdesc}
+
+\begin{funcdesc}{interrupt_main}{}
+メインスレッドで \exception{KeyboardInterrupt} を送出します。サブスレッドは
+この関数を使ってメインスレッドに割り込みをかけることができます。
+\versionadded{2.3}
+\end{funcdesc}
+
+
+
+\begin{funcdesc}{exit}{}
+\exception{SystemExit}例外を送出します。
+それが捕えられないときは、黙ってスレッドを終了させます。
+\end{funcdesc}
+
+%\begin{funcdesc}{exit_prog}{status}
+%Exit all threads and report the value of the integer argument
+%\var{status} as the exit status of the entire program.
+%\strong{Caveat:} code in pending \keyword{finally} clauses, in this thread
+%or in other threads, is not executed.
+%\end{funcdesc}
+
+%\begin{funcdesc}{exit_prog}{status}
+%全てのスレッドを終了し、全体のプログラムの終了ステータスとして
+%全ての整数の引数\var{status}の値を報告します。
+%未解決の\keyword{finally}項内の\strong{Caveat:}コードは、
+%このスレッドや他のスレッドも含め、実行されません。
+%\end{funcdesc}
+
+\begin{funcdesc}{allocate_lock}{}
+新しいロックオブジェクトを返します。
+ロックのメソッドはこの後に記述されます。
+ロックは初期状態としてアンロック状態です。
+\end{funcdesc}
+
+\begin{funcdesc}{get_ident}{}
+現在のスレッドの`スレッドID'を返します。
+これは0でない整数です。
+この値は直接の意味を持っていません;
+例えばスレッド特有のデータの辞書に索引をつけるためのような、
+マジッククッキーとして意図されています。
+スレッドが終了し、他のスレッドが作られたとき、
+スレッドIDは再利用されるかもしれません。
+\end{funcdesc}
+
+\begin{funcdesc}{stack_size}{\optional{size}}
+新しいスレッドが作られる際に使われるスレッドのスタックサイズを返します。
+オプションの \var{size} 引数は次に作られるスレッドに対する
+スタックサイズを指定するものですが、0 (プラットフォームまたは設定されたデフォルト)
+または少なくとも 32,768 (32kB) であるような正の整数でなければなりません。
+もしスタックサイズの変更がサポートされていなければ \exception{ThreadError}
+が送出されます。また指定されたスタックサイズが条件を満たしていなければ
+\exception{ValueError} が送出されスタックサイズは変更されないままになります。
+32kB は今のところインタプリタ自体に十分なスタックスペースを保証するための値として
+サポートされる最小のスタックサイズです。プラットフォームによってはスタックサイズの
+値に固有の制限が課されることもあります。たとえば 32kB より大きな最小スタックサイズを
+要求されたり、システムメモリサイズの倍数の割り当てを要求されるなどです - より
+詳しい情報はプラットフォームごとの文書で確認してください(4kB ページは一般的ですので、
+情報が見当たらないときには 4096 の倍数を指定しておくといいかもしれません)。
+利用可能: Windows, \POSIX{} スレッドのあるシステム。
+\versionadded{2.5}
+\end{funcdesc}
+
+
+ロックオブジェクトは次のようなメソッドを持っています:
+
+\begin{methoddesc}[lock]{acquire}{\optional{waitflag}}
+オプションの引数なしで使用すると、このメソッドは他のスレッドがロックし
+ているかどうかにかかわらずロックを獲得します。
+ただし他のスレッドがすでにロックしている場合には解除されるまで
+待ってからロックを獲得します (同時にロックを獲得できるスレッドは
+ひとつだけであり、これこそがロックの存在理由です)。
+整数の引数 \var{waitflag} を指定すると、その値によって動作が変わります。
+引数が \code{0} のときは、待たずにすぐ獲得できる場合にだけロックを獲得
+します。\code{0} 以外の値を与えると、先の例と同様、ロックの状態に
+かかわらず獲得をおこないます。なお、ロックを獲得すると
+\code{True}、できなかったときには \code{False} を返します。
+\end{methoddesc}
+
+\begin{methoddesc}[lock]{release}{}
+ロックを解放します。そのロックは既に獲得されたものでなければなりませんが、
+しかし同じスレッドによって獲得されたものである必要はありません。
+\end{methoddesc}
+
+\begin{methoddesc}[lock]{locked}{}
+ロックの状態を返します:\ 同じスレッドによって獲得されたものなら\code{True}、
+違うのなら\code{False}を返します。
+\end{methoddesc}
+
+これらのメソッドに加えて、ロックオブジェクトは \keyword{with} 文を通じて
+以下の例のように使うこともできます。
+
+\begin{verbatim}
+from __future__ import with_statement
+import thread
+
+a_lock = thread.allocate_lock()
+
+with a_lock:
+    print "a_lock is locked while this executes"
+\end{verbatim}
+
+\strong{Caveats:}
+
+\begin{itemize}
+\item
+スレッドは割り込みと奇妙な相互作用をします:
+\exception{KeyboardInterrupt}例外は任意のスレッドによって受け取られます。
+(\refmodule{signal}\refbimodindex{signal}モジュールが利用可能なとき、
+割り込みは常にメインスレッドへ行きます。)
+
+\item
+\function{sys.exit()}を呼び出す、
+あるいは\exception{SystemExit}例外を送出することは、
+\function{exit()}を呼び出すことと同じです。
+
+\item
+I/O待ちをブロックするかもしれない全ての組込み関数が、
+他のスレッドの走行を許すわけではありません。
+(ほとんどの一般的なもの (\function{time.sleep()}, \method{\var{file}.read()},
+\function{select.select()})は期待通りに働きます。)
+
+\item
+ロックの\method{acquire()}メソッドに割り込むことはできません
+--- \exception{KeyboardInterrupt}例外は、ロックが獲得された後に発生します。
+
+\item
+メインスレッドが終了したとき、他のスレッドが生き残るかどうかは、
+システムが定義します。
+ネイティブスレッド実装を使うSGI IRIXでは生き残ります。
+その他の多くのシステムでは、\keyword{try} ... \keyword{finally}節
+を実行せずに殺されたり、デストラクタを実行せずに殺されたりします。
+\indexii{threads}{IRIX}
+
+\item
+メインスレッドが終了したとき、それの通常のクリーンアップは行なわれず
+(\keyword{try} ... \keyword{finally}節が尊重されることは除きます)、
+標準I/Oファイルはフラッシュされません。
+
+\end{itemize}

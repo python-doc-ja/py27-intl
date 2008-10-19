@@ -1,0 +1,568 @@
+\section{\module{fl} ---
+グラフィカルユーザーインターフェースのためのFORMSライブラリ}
+
+\declaremodule{builtin}{fl}
+  \platform{IRIX}
+\modulesynopsis{
+グラフィカルユーザーインターフェースのためのFORMSライブラリ。}
+
+このモジュールは、Mark Overmars\index{Overmars, Mark}によるFORMS Library
+\index{FORMS Library}へのインターフェースを提供します。
+FORMSライブラリのソースはanonymous ftp \samp{ftp.cs.ruu.nl}の
+\file{SGI/FORMS}ディレクトリから入手できます。
+最新のテストはバージョン2.0bで行いました。
+
+ほとんどの関数は接頭辞の\samp{fl_}を取ると、対応するCの関数名になりま
+す。
+ライブラリで使われる定数は後述の\refmodule[fl-constants]{FL}モジュールで
+定義されています。
+
+Pythonでこのオブジェクトを作る方法はCとは少し違っています：
+ライブラリに保持された`現在のフォーム'に新しいFORMSオブジェクトを加える
+のではなく、フォームにFORMSオブジェクトを加えるには、フォームを示す
+Pythonオブジェクトのメソッドで全て行います。
+したがって、Cの関数の\cfunction{fl_addto_form()}と
+\cfunction{fl_end_form()}に相当するものはPythonにはありませんし、
+\cfunction{fl_bgn_form()}に相当するものとしては\function{fl.make_form()}
+を呼び出します。
+
+用語のちょっとした混乱に注意してください：
+FORMSではフォームの中に置くことができるボタン、スライダーなどに
+\dfn{object}の用語を使います。
+Pythonでは全ての値が`オブジェクト'です。
+FORMSへのPythonのインターフェースによって、2つの新しいタイプのPythonオブ
+ジェクト：フォームオブジェクト（フォーム全体を示します）とFORMSオブジェ
+クト（ボタン、スライダーなどの一つひとつを示します）を作ります。
+おそらく、混乱するほどのことではありません。
+
+FORMSへのPythonインターフェースに`フリーオブジェクト'はありませんし、
+Pythonでオブジェクトクラスを書いて加える簡単な方法もありません。
+しかし、GLイベントハンドルへのFORMSインターフェースが利用可能で、純粋な
+GLウィンドウにFORMSを組み合わせることができます。
+
+\strong{
+注意：} 
+\module{fl}をインポートすると、GLの関数\cfunction{foreground()}と
+FORMSのルーチン\cfunction{fl_init()}を呼び出します。
+
+\subsection{
+\module{fl}モジュールに定義されている関数}
+\nodename{FL Functions}
+
+\module{fl}モジュールには以下の関数が定義されています。
+これらの関数の働きに関する詳しい情報については、FORMSドキュメントで対応
+するCの関数の説明を参照してください。
+
+\begin{funcdesc}{make_form}{type, width, height}
+与えられたタイプ、幅、高さでフォームを作ります。
+これは\dfn{form}オブジェクトを返します。このオブジェクトは後述のメソッド
+を持ちます。
+\end{funcdesc}
+
+\begin{funcdesc}{do_forms}{}
+標準のFORMSのメインループです。
+ユーザからの応答が必要なFORMSオブジェクトを示すPythonオブジェクト、ある
+いは特別な値\constant{FL.EVENT}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{check_forms}{}
+FORMSイベントを確認します。
+\function{do_forms()}が返すもの、あるいはユーザからの応答をすぐに必要と
+するイベントがないなら\code{None}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{set_event_call_back}{function}
+イベントのコールバック関数を設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{set_graphics_mode}{rgbmode, doublebuffering}
+グラフィックモードを設定します。
+\end{funcdesc}
+
+\begin{funcdesc}{get_rgbmode}{}
+現在のRGBモードを返します。
+これはCのグローバル変数\cdata{fl_rgbmode}の値です。
+\end{funcdesc}
+
+\begin{funcdesc}{show_message}{str1, str2, str3}
+3行のメッセージとOKボタンのあるダイアログボックスを表示します。
+\end{funcdesc}
+
+\begin{funcdesc}{show_question}{str1, str2, str3}
+3行のメッセージとYES、NOのボタンのあるダイアログボックスを表示します。
+ユーザによってYESが押されたら\code{1}、NOが押されたら\code{0}を返しま
+す。
+\end{funcdesc}
+
+\begin{funcdesc}{show_choice}{str1, str2, str3, but1\optional{,
+                              but2\optional{, but3}}}
+3行のメッセージと最大3つまでのボタンのあるダイアログボックスを表示しま
+す。
+ユーザによって押されたボタンの数値を返します（それぞれ\code{1}、\code{2}
+、\code{3}）。
+\end{funcdesc}
+
+\begin{funcdesc}{show_input}{prompt, default}
+1行のプロンプトメッセージと、ユーザが入力できるテキストフィールドを持つ
+ダイアログボックスを表示します。
+2番目の引数はデフォルトで表示される入力文字列です。
+ユーザが入力した文字列が返されます。
+\end{funcdesc}
+
+\begin{funcdesc}{show_file_selector}{message, directory, pattern, 
+default}
+ファイル選択ダイアログを表示します。
+ユーザによって選択されたファイルの絶対パス、あるいはユーザがCancelボタン
+を押した場合は\code{None}を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{get_directory}{}
+\funcline{get_pattern}{}
+\funcline{get_filename}{}
+これらの関数は最後にユーザが\function{show_file_selector()}で選択した
+ディレクトリ、パターン、ファイル名（パスの末尾のみ）を返します。
+\end{funcdesc}
+
+\begin{funcdesc}{qdevice}{dev}
+\funcline{unqdevice}{dev}
+\funcline{isqueued}{dev}
+\funcline{qtest}{}
+\funcline{qread}{}
+%\funcline{blkqread}{?}
+\funcline{qreset}{}
+\funcline{qenter}{dev, val}
+\funcline{get_mouse}{}
+\funcline{tie}{button, valuator1, valuator2}
+これらの関数は対応するGL関数へのFORMSのインターフェースです。
+\function{fl.do_events()}を使っていて、自分で何かGLイベントを操作したい
+ときにこれらを使います。
+FORMSが扱うことのできないGLイベントが検出されたら
+\function{fl.do_forms()}が特別の値\constant{FL.EVENT}を返すので、
+\function{fl.qread()}を呼び出して、キューからイベントを読み込むべきで
+す。
+対応するGLの関数は使わないでください！
+\end{funcdesc}
+
+\begin{funcdesc}{color}{}
+\funcline{mapcolor}{}
+\funcline{getmcolor}{}
+FORMSドキュメントにある\cfunction{fl_color()}、
+\cfunction{fl_mapcolor()}、\cfunction{fl_getmcolor()}
+の記述を参照してください。
+\end{funcdesc}
+
+\subsection{
+フォームオブジェクト}
+\label{form-objects}
+
+フォームオブジェクト（上で述べた\function{make_form()}で返されます）には
+下記のメソッドがあります。
+各メソッドは名前の接頭辞に\samp{fl_}を付けたCの関数に対応します；また、
+最初の引数はフォームのポインタです；
+説明はFORMSの公式文書を参照してください。
+
+全ての\method{add_*()}メソッドは、FORMSオブジェクトを示すPythonオブジェ
+クトを返します。
+FORMSオブジェクトのメソッドを以下に記載します。
+ほとんどのFORMSオブジェクトは、そのオブジェクトの種類ごとに特有のメソッ
+ドもいくつか持っています。
+
+\begin{flushleft}
+
+\begin{methoddesc}[form]{show_form}{placement, bordertype, name}
+  フォームを表示します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{hide_form}{}
+  フォームを隠します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{redraw_form}{}
+  フォームを再描画します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{set_form_position}{x, y}
+フォームの位置を設定します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{freeze_form}{}
+フォームを固定します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{unfreeze_form}{}
+  固定したフォームの固定を解除します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{activate_form}{}
+  フォームをアクティベートします。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{deactivate_form}{}
+  フォームをディアクティベートします。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{bgn_group}{}
+新しいオブジェクトのグループを作ります；グループオブジェクトを返します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{end_group}{}
+  現在のオブジェクトのグループを終了します。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{find_first}{}
+  フォームの中の最初のオブジェクトを見つけます。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{find_last}{}
+  フォームの中の最後のオブジェクトを見つけます。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_box}{type, x, y, w, h, name}
+フォームにボックスオブジェクトを加えます。
+特別な追加のメソッドはありません。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_text}{type, x, y, w, h, name}
+フォームにテキストオブジェクトを加えます。
+特別な追加のメソッドはありません。
+\end{methoddesc}
+
+%\begin{methoddesc}[form]{add_bitmap}{type, x, y, w, h, name}
+%Add a bitmap object to the form.
+%\end{methoddesc}
+
+\begin{methoddesc}[form]{add_clock}{type, x, y, w, h, name}
+フォームにクロックオブジェクトを加えます。\\
+メソッド：
+\method{get_clock()}。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_button}{type, x, y, w, h,  name}
+フォームにボタンオブジェクトを加えます。\\
+メソッド：
+\method{get_button()}、
+\method{set_button()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_lightbutton}{type, x, y, w, h, name}
+フォームにライトボタンオブジェクトを加えます。\\
+メソッド：
+\method{get_button()}、
+\method{set_button()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_roundbutton}{type, x, y, w, h, name}
+フォームにラウンドボタンオブジェクトを加えます。\\
+メソッド：
+\method{get_button()}、
+\method{set_button()}。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_slider}{type, x, y, w, h, name}
+フォームにスライダーオブジェクトを加えます。\\
+メソッド：
+\method{set_slider_value()}、
+\method{get_slider_value()}、
+\method{set_slider_bounds()}、
+\method{get_slider_bounds()}、
+\method{set_slider_return()}、
+\method{set_slider_size()}、
+\method{set_slider_precision()}、
+\method{set_slider_step()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_valslider}{type, x, y, w, h, name}
+フォームにバリュースライダーオブジェクトを加えます。\\
+メソッド：
+\method{set_slider_value()}、
+\method{get_slider_value()}、
+\method{set_slider_bounds()}、
+\method{get_slider_bounds()}、
+\method{set_slider_return()}、
+\method{set_slider_size()}、
+\method{set_slider_precision()}、
+\method{set_slider_step()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_dial}{type, x, y, w, h, name}
+フォームにダイアルオブジェクトを加えます。\\
+メソッド：
+\method{set_dial_value()}、
+\method{get_dial_value()}、
+\method{set_dial_bounds()}、
+\method{get_dial_bounds()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_positioner}{type, x, y, w, h, name}
+フォームに2次元ポジショナーオブジェクトを加えます。\\
+メソッド：
+\method{set_positioner_xvalue()}、
+\method{set_positioner_yvalue()}、
+\method{set_positioner_xbounds()}、
+\method{set_positioner_ybounds()}、
+\method{get_positioner_xvalue()}、
+\method{get_positioner_yvalue()}、
+\method{get_positioner_xbounds()}、
+\method{get_positioner_ybounds()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_counter}{type, x, y, w, h, name}
+フォームにカウンタオブジェクトを加えます。\\
+メソッド：
+\method{set_counter_value()}、
+\method{get_counter_value()}、
+\method{set_counter_bounds()}、
+\method{set_counter_step()},
+\method{set_counter_precision()}、
+\method{set_counter_return()}。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_input}{type, x, y, w, h, name}
+フォームにインプットオブジェクトを加えます。\\
+メソッド：
+\method{set_input()}、
+\method{get_input()}、
+\method{set_input_color()}、
+\method{set_input_return()}。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_menu}{type, x, y, w, h, name}
+フォームにメニューオブジェクトを加えます。\\
+メソッド：
+\method{set_menu()}、
+\method{get_menu()}、
+\method{addto_menu()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_choice}{type, x, y, w, h, name}
+フォームにチョイスオブジェクトを加えます。\\
+メソッド：
+\method{set_choice()}、
+\method{get_choice()}、
+\method{clear_choice()}、
+\method{addto_choice()}、
+\method{replace_choice()}、
+\method{delete_choice()}、
+\method{get_choice_text()}、
+\method{set_choice_fontsize()}、
+\method{set_choice_fontstyle()}。
+\end{methoddesc}
+
+\begin{methoddesc}[form]{add_browser}{type, x, y, w, h, name}
+フォームにブラウザオブジェクトを加えます。\\
+メソッド：
+\method{set_browser_topline()}、
+\method{clear_browser()}、
+\method{add_browser_line()}、
+\method{addto_browser()}、
+\method{insert_browser_line()}、
+\method{delete_browser_line()}、
+\method{replace_browser_line()}、
+\method{get_browser_line()}、
+\method{load_browser()}、
+\method{get_browser_maxline()}、
+\method{select_browser_line()}、
+\method{deselect_browser_line()}、
+\method{deselect_browser()}、
+\method{isselected_browser_line()}、
+\method{get_browser()}、
+\method{set_browser_fontsize()}、
+\method{set_browser_fontstyle()}、
+\method{set_browser_specialkey()}。
+\end{methoddesc}
+
+%---
+
+\begin{methoddesc}[form]{add_timer}{type, x, y, w, h, name}
+フォームにタイマーオブジェクトを加えます。\\
+メソッド：
+\method{set_timer()}、
+\method{get_timer()}。
+\end{methoddesc}
+\end{flushleft}
+
+フォームオブジェクトには以下のデータ属性があります；FORMSドキュメントを
+参照してください：
+
+\begin{tableiii}{l|l|l}{member}{
+名称}
+{
+Cの型}
+{
+意味}
+  \lineiii{window}{int (read-only)}{
+GLウィンドウのid}
+  \lineiii{w}{float}{
+フォームの幅}
+  \lineiii{h}{float}{
+フォームの高さ}
+  \lineiii{x}{float}{
+フォーム左肩のx座標}
+  \lineiii{y}{float}{
+フォーム左肩のy座標}
+  \lineiii{deactivated}{int}{
+フォームがディアクティベートされているなら非ゼロ}
+  \lineiii{visible}{int}{
+フォームが可視なら非ゼロ}
+  \lineiii{frozen}{int}{
+フォームが固定されているなら非ゼロ}
+  \lineiii{doublebuf}{int}{
+ダブルバッファリングがオンなら非ゼロ}
+\end{tableiii}
+
+\subsection{
+FORMSオブジェクト}
+\label{forms-objects}
+
+FORMSオブジェクトの種類ごとに特有のメソッドの他に、全てのFORMSオブジェク
+トは以下のメソッドも持っています：
+
+\begin{methoddesc}[FORMS object]{set_call_back}{function, argument}
+オブジェクトのコールバック関数と引数を設定します。
+オブジェクトがユーザからの応答を必要とするときには、コールバック関数は2
+つの引数、オブジェクトとコールバックの引数とともに呼び出されます。
+（コールバック関数のないFORMSオブジェクトは、ユーザからの応答を必要とす
+るときには\function{fl.do_forms()}あるいは\function{fl.check_forms()}に
+よって返されます。）
+引数なしにこのメソッドを呼び出すと、コールバック関数を削除します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{delete_object}{}
+オブジェクトを削除します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{show_object}{}
+オブジェクトを表示します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{hide_object}{}
+オブジェクトを隠します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{redraw_object}{}
+オブジェクトを再描画します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{freeze_object}{}
+オブジェクトを固定します。
+\end{methoddesc}
+
+\begin{methoddesc}[FORMS object]{unfreeze_object}{}
+  固定したオブジェクトの固定を解除します。
+\end{methoddesc}
+
+%\begin{methoddesc}[FORMS object]{handle_object}{} XXX
+%\end{methoddesc}
+
+%\begin{methoddesc}[FORMS object]{handle_object_direct}{} XXX
+%\end{methoddesc}
+
+FORMSオブジェクトには以下のデータ属性があります；FORMSドキュメントを参照
+してください。
+
+\begin{tableiii}{l|l|l}{member}{
+名称}
+{
+Cの型}
+{
+意味}
+  \lineiii{objclass}{int (read-only)}{
+  オブジェクトクラス}
+  \lineiii{type}{int (read-only)}{
+  オブジェクトタイプ}
+  \lineiii{boxtype}{int}{
+  ボックスタイプ}
+  \lineiii{x}{float}{
+  左肩のx座標}
+  \lineiii{y}{float}{
+  左肩のy座標}
+  \lineiii{w}{float}{
+  幅}
+  \lineiii{h}{float}{
+  高さ}
+  \lineiii{col1}{int}{
+  第1の色}
+  \lineiii{col2}{int}{
+  第2の色}
+  \lineiii{align}{int}{
+  配置}
+  \lineiii{lcol}{int}{
+  ラベルの色}
+  \lineiii{lsize}{float}{
+  ラベルのフォントサイズ}
+  \lineiii{label}{string}{
+  ラベルの文字列}
+  \lineiii{lstyle}{int}{
+  ラベルのスタイル}
+  \lineiii{pushed}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{focus}{int (read-only)}{
+  （FORMSドキュメント参照）}  
+  \lineiii{belowmouse}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{frozen}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{active}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{input}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{visible}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{radio}{int (read-only)}{
+  （FORMSドキュメント参照）}
+  \lineiii{automatic}{int (read-only)}{
+  （FORMSドキュメント参照）}
+\end{tableiii}
+
+
+\section{\module{FL} ---
+\module{fl}モジュールで使用される定数}
+
+\declaremodule[fl-constants]{standard}{FL}
+  \platform{IRIX}
+\modulesynopsis{
+\module{fl}モジュールで使用される定数。}
+
+
+このモジュールには、組み込みモジュール\refmodule{fl}を使うのに必要なシン
+ボル定数が定義されています（上記参照）；これらは名前の接頭辞\samp{FL_}が
+省かれていることを除いて、Cのヘッダファイル\code{<forms.h>}に定義されて
+いるものと同じです。
+定義されている名称の完全なリストについては、モジュールのソースをご覧くだ
+さい。
+お勧めする使い方は以下の通りです：
+
+\begin{verbatim}
+import fl
+from FL import *
+\end{verbatim}
+
+
+\section{\module{flp} ---
+保存されたFORMSデザインをロードする関数}
+
+\declaremodule{standard}{flp}
+  \platform{IRIX}
+\modulesynopsis{
+保存されたFORMSデザインをロードする関数。}
+
+
+このモジュールには、FORMSライブラリ（上記の\refmodule{fl}モジュールを参
+照してください）とともに配布される`フォームデザイナー'
+（\program{fdesign}）プログラムで作られたフォームの定義を読み込む関数が
+定義されています。
+
+詳しくはPythonライブラリソースのディレクトリの中の\file{flp.doc}を参照し
+てください。
+
+XXX　完全な説明をここに書いて！

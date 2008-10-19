@@ -1,0 +1,98 @@
+\section{\module{fm} ---
+         \emph{Font Manager} インターフェース}
+
+\declaremodule{builtin}{fm}
+  \platform{IRIX}
+\modulesynopsis{SGIワークステーションの \emph{Font Manager} インターフェース。}
+
+
+このモジュールはIRIS \emph{Font Manager}ライブラリへのアクセスを提供しま
+す。
+\index{Font Manager, IRIS}
+\index{IRIS Font Manager}
+Silicon Graphics マシン上だけで利用可能です。
+次も参照してください：\emph{4Sight User's Guide}, section 1, chapter 5: 
+``Using the IRIS Font Manager''。
+このモジュールは、まだ IRIS Font Managerへの完全なインターフェースではあ
+りません。
+サポートされていない機能は次のものです：
+matrix operations; cache
+operations; character operations（代わりに string operations を使ってく
+ださい）; font info のうちのいくつか; individual glyph metrics; printer 
+matching。
+
+以下の操作をサポートしています：
+
+\begin{funcdesc}{init}{}
+関数を初期化します。
+\cfunction{fminit()}を呼び出します。
+この関数は \module{fm}モジュールを最初にインポートすると自動的に呼び出さ
+れるので、普通、呼び出す必要はありません。
+\end{funcdesc}
+
+\begin{funcdesc}{findfont}{fontname}
+フォントハンドルオブジェクトを返します。
+\code{fmfindfont(\var{fontname})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{enumerate}{}
+利用可能なフォント名のリストを返します。
+この関数は\cfunction{fmenumerate()}へのインターフェースです。
+\end{funcdesc}
+
+\begin{funcdesc}{prstr}{string}
+現在のフォントを使って文字列をレンダリングします（下のフォントハンドルメ
+ソッド\function{setfont()}を参照）。
+\code{fmprstr(\var{string})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{setpath}{string}
+フォントの検索パスを設定します。
+\code{fmsetpath(\var{string})}を呼び出します。
+（XXX 機能しない！？！）
+\end{funcdesc}
+
+\begin{funcdesc}{fontpath}{}
+現在のフォント検索パスを返します。
+\end{funcdesc}
+
+フォントハンドルオブジェクトは以下の操作をサポートします：
+
+\setindexsubitem{(
+フォントハンドルメソッド)}
+\begin{funcdesc}{scalefont}{factor}
+このフォントを拡大／縮小したハンドルを返します。
+\code{fmscalefont(\var{fh}, \var{factor})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{setfont}{}
+このフォントを現在のフォントに設定します。
+注意：フォントハンドルオブジェクトが削除されると、設定は告知なしに元に戻
+ります。
+\code{fmsetfont(\var{fh})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getfontname}{}
+このフォントの名前を返します。
+\code{fmgetfontname(\var{fh})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getcomment}{}
+このフォントに関連付けられたコメント文字列を返します。
+コメント文字列が何もなければ例外を返します。
+\code{fmgetcomment(\var{fh})}を呼び出します。
+\end{funcdesc}
+
+\begin{funcdesc}{getfontinfo}{}
+このフォントに関連したデータを含むタプルを返します。
+これは\code{fmgetfontinfo()}へのインターフェースです。
+以下の数値を含むタプルを返します：
+\code{(}\var{printermatched}、\var{fixed_width}、\var{xorig}、
+\var{yorig}、\var{xsize}、\var{ysize}、\var{height}、
+\var{nglyphs}\code{)}。
+\end{funcdesc}
+
+\begin{funcdesc}{getstrwidth}{string}
+このフォントで\var{string}を描いたときの幅をピクセル数で返します。
+\code{fmgetstrwidth(\var{fh}, \var{string})}を呼び出します。
+\end{funcdesc}

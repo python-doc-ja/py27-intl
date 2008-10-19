@@ -1,0 +1,692 @@
+\chapter{Python プロファイラ \label{profile}}
+
+\sectionauthor{James Roskind}{}
+
+Copyright \copyright{} 1994, by InfoSeek Corporation, all rights reserved.
+\index{InfoSeek Corporation}
+
+執筆者 James Roskind \footnote{ アップデートと \LaTeX\ への変換は 
+Guido van Rossum によるもの。
+さらに Python 2.5 の新しい \module{cProfile} モジュールの文書を統合する
+アップデートは Armin Rigo による。}
+
+Permission to use, copy, modify, and distribute this Python software
+and its associated documentation for any purpose (subject to the
+restriction in the following sentence) without fee is hereby granted,
+provided that the above copyright notice appears in all copies, and
+that both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of InfoSeek not be used in
+advertising or publicity pertaining to distribution of the software
+without specific, written prior permission.  This permission is
+explicitly restricted to the copying and modification of the software
+to remain in Python, compiled Python, or other languages (such as C)
+wherein the modified or derived code is exclusively imported into a
+Python module.
+
+INFOSEEK CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS. IN NO EVENT SHALL INFOSEEK CORPORATION BE LIABLE FOR ANY
+SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
+RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
+CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+このプロファイラは私が Python プログラミングを始めてからわずか3週間後
+に書いたものです。その結果、稚拙なコードが出来上がってしまったのかもし
+れませんが、なにせ私はまだ初心者なのでそれもよくわかりません :-) コー
+ドはプロファイリングにふさわしいスピードを実現することに心血を注ぎまし
+た。しかし部分的な繰り返しを避けたため、かなり不格好になってしまったと
+ころがあります。改善のための意見があれば、ぜひ 
+\email{jar@netscape.com} までメールをください。サポートの \emph{約束} 
+はできませんが...フィードバックへの感謝だけは確実にいたします。
+
+\section{プロファイラとは}
+\nodename{Profiler Introduction}
+
+\dfn{プロファイラ}とは、プログラム実行時の様々な状態を得ることにより、
+その実行効率を調べるためのプログラムです。ここで解説するのは、
+\module{profile} と \module{pstats} モジュールが提供するプロファイラ機
+能についてです。このプロファイラはどの Python プログラムに対しても
+\dfn{決定論的プロファイリング}をおこないます。また、プロファイルの結果
+検証をす早くおこなえるよう、レポート生成用のツールも提供されています。
+\index{deterministic profiling}
+\index{profiling, deterministic}
+
+Python 標準ライブラリは3つの異なるプロファイラを提供します。
+ 
+\begin{enumerate}
+\item \module{profile} はピュア Python モジュールで、このあとすぐ説明します。
+  Copyright \copyright{} 1994, by InfoSeek Corporation.
+  \versionchanged[組み込み関数やメソッド呼出しに費やされる時間も報告するようになりました]{2.4}
+
+\item \module{cProfile} は C で書かれたモジュールで、少ないオーバーヘッドにより
+長く実行されるプログラムのプロファイルに向きます。
+Brett Rosen と Ted Czotter が提供した \module{lsprof} に基づいています。
+  \versionadded{2.5}
+
+\item \module{hotshot} は C モジュールでプロファイル中のオーバーヘッドを
+極力小さくすることに焦点を絞っており、その代わりに後処理時間の長さという
+つけを払います。
+  \versionchanged[以前より意味のある結果が得られているはずです。
+かつては時間計測の中核部分に致命的なバグがありました]{2.5}
+\end{enumerate}
+
+\module{profile} と \module{cProfile} の両モジュールは同じインタフェースを
+提供しているので、ほぼ取り替え可能です。 \module{cProfile} はずっと
+小さなオーバーヘッドで動きますが、まだ同じぐらいテストされたとは言えず、
+全てのシステムで使えるとは限らないでしょう。
+\module{cProfile} は実際には \module{_lsprof} 内部モジュールに被せられた
+互換性レイヤです。
+\module{hotshot} モジュールは特別な使い道のために取っておいてあります。
+
+% \section{旧バージョンのプロファイラとの違い}
+% \nodename{Profiler Changes}
+%
+% (この節は歴史的資料としてのみ意味を持っています。ここで述べている旧バー
+% ジョンのプロファイラとは Python 1.1. 以前のものを指しています)
+%
+% 旧バージョンのプロファイリングモジュールとの大きな違いは、より少ない
+% CPU 時間で、より多くの情報が得られるようになったことです。CPU 時間と情
+% 報量のトレードオフではなく、トレードアップを実現したのです。
+%
+% 主な内容は次の通りです。
+%
+% \begin{description}
+%
+% \item[バグ修正:] ローカル・スタック・フレームの扱いに関する不具合を修
+% 正し、関数の実行時間を正しく計上するようにしました。
+%
+% \item[正確さの向上:] プロファイラ自体の実行時間をユーザコード側に計上
+% してしまうことがなくなりました。プラットフォーム毎のキャリブレーション
+% (補正)をサポートし、プロファイラ\emph{が}プロファイル\emph{中に}ファイ
+% ルの読み込みをおこなわないようにしました(当然その時間をユーザコードの
+% ものとして計上することもなくなりました)。
+%
+% \item[スピードアップ:] 2つ以上の(たぶん5つ)の点を改善した結果、CPU の
+% 負荷が減りました。プロファイリング中はレポート生成用モジュール 
+% (\module{pstats}) を使う必要がないため、軽いプロファイラモジュールだけ
+% を常時ロードするようにしました。
+%
+% \item[再帰的な関数のサポート:] 再帰エントリのカウントにより、再帰関数
+% 内で処理に費やされる時間が正確に計算されるようになりました。
+%
+% \item[レポート生成ユーザインターフェースの大幅な改善:]
+%
+% 統計データを読み込む関数は任意の数のファイル名のリストを受け取り、独立
+% した複数のプロファイル結果を合わせて総合的なレポートが作成できるように
+% なりました。ソートの基準はキーワードで指定できるようになりました(4つの
+% 整数オプションを除く)。レポートはどのプロファイル・ファイルが参照され
+% たかと同様に、どの関数がプロファイルされたかを示すようになりました。
+% そのほか出力形式は改善もおこなわれています。
+%
+% \end{description}
+
+\section{インスタント・ユーザ・マニュアル \label{profile-instant}}
+
+この節は ``マニュアルなんか読みたくない人''のために書かれています。こ
+こではきわめて簡単な概要説明とアプリケーションのプロファイリングを手っ
+とり早くおこなう方法だけを解説します。
+
+main エントリにある関数 \function{foo()} をプロファイルしたいとき、モ
+ジュールに次の内容を追加します。
+
+\begin{verbatim}
+import cProfile
+cProfile.run('foo()')
+\end{verbatim}
+
+(お使いのシステムで \module{cProfile} が使えないときは代わりに
+\module{profile} を使って下さい)
+
+このように書くことで \function{foo()} を実行すると同時に一連の情報(プロ
+ファイル)が表示されます。この方法はインタプリタ上で作業をしている場合、
+最も便利なやり方です。プロファイルの結果をファイルに残し、後で検証した
+いときは、\function{run()} の2番目の引数にファイル名を指定します。
+
+\begin{verbatim}
+import cProfile
+cProfile.run('foo()', 'fooprof')
+\end{verbatim}
+
+ファイル \file{cProfile.py} を使って、別のスクリプトをプロファ
+イルすることも可能です。次のように実行します。
+
+\begin{verbatim}
+python -m cProfile myscript.py
+\end{verbatim}
+
+\file{cProfile.py} はオプションとしてコマンドライン引数を2つ受け取りま
+す。
+
+\begin{verbatim}
+cProfile.py [-o output_file] [-s sort_order]
+\end{verbatim}
+
+\programopt{-s} は標準出力(つまり、 \programopt{-o} が与えられなかった
+場合)にのみ有効です。
+利用可能なソートの値は、 \class{Stats} のドキュメントをご覧ください。
+
+プロファイル内容を確認するときは、\module{pstats} モジュールのメソッド
+を使用します。統計データの読み込みは次のようにします。
+
+\begin{verbatim}
+import pstats
+p = pstats.Stats('fooprof')
+\end{verbatim}
+
+\class{Stats} クラス(上記コードはこのクラスのインスタンスを生成するだ
+けの内容です)は \code{p} に読み込まれたデータを操作したり、表示するた
+めの各種メソッドを備えています。先に \function{cProfile.run()} を実行し
+たとき表示された内容と同じものは、3つのメソッド・コールにより実現でき
+ます。
+
+\begin{verbatim}
+p.strip_dirs().sort_stats(-1).print_stats()
+\end{verbatim}
+
+最初のメソッドはモジュール名からファイル名の前に付いているパス部分を取
+り除きます。2番目のメソッドはエントリをモジュール名/行番号/名前にもと
+づいてソートします
+%(旧プロファイラとの構文上の互換性機能)
+。3番目のメソッドで全ての統計情報を出力します。
+次のようなソート・メソッドも使えます。
+
+\begin{verbatim}
+p.sort_stats('name')
+p.print_stats()
+\end{verbatim}
+
+最初の行ではリストを関数名でソートしています。2号目で情報を出力してい
+ます。さらに次の内容も試してください。
+
+\begin{verbatim}
+p.sort_stats('cumulative').print_stats(10)
+\end{verbatim}
+
+このようにすると、関数が消費した累計時間でソートされ、さらにその上位10 
+件だけを表示します。どのアルゴリズムが時間を多く消費しているのか知りた
+いときは、この方法が役に立つはずです。
+
+ループで多くの時間を消費している関数はどれか調べたいときは、次のように
+します。
+
+\begin{verbatim}
+p.sort_stats('time').print_stats(10)
+\end{verbatim}
+
+上記は関数の実行で消費した時間でソートされ、上位10個の関数の情報が表示
+されます。
+
+次の内容も試してください。
+
+\begin{verbatim}
+p.sort_stats('file').print_stats('__init__')
+\end{verbatim}
+
+このようにするとファイル名でソートされ、そのうちクラスの初期化メソッド
+(メソッド名 \code{__init__})に関する統計情報だけが表示されます。
+
+\begin{verbatim}
+p.sort_stats('time', 'cum').print_stats(.5, 'init')
+\end{verbatim}
+
+上記は情報を時間 (time) をプライマリ・キー、累計時間 (cumulative time) 
+をセカンダリ・キーにしてソートした後でさらに条件を絞って統計情報を出力
+します。 \samp{.5} は上位 50\% だけの選択を意味し、さらにその中から
+文字列 \code{init} を含むものだけが表示されます。
+
+どの関数がどの関数を呼び出しているのかを知りたければ、次のようにします
+(\code{p} は最後に実行したときの状態でソートされています)。
+
+\begin{verbatim}
+p.print_callers(.5, 'init')
+\end{verbatim}
+
+このようにすると、各関数ごとの呼出し側関数の一覧が得られます。
+
+さらに詳しい機能を知りたければマニュアルを読むか、次の関数の実行結果
+から内容を推察してください。
+
+\begin{verbatim}
+p.print_callees()
+p.add('fooprof')
+\end{verbatim}
+
+スクリプトとして起動した場合、\module{pstats} モジュールはプロファイル
+のダンプを読み込み、分析するための統計ブラウザとして動きます。シンプル
+な行指向のインタフェース(\refmodule{cmd} を使って実装)とヘルプ機能を
+備えています。
+
+\section{決定論的プロファイリングとは何か?}
+\nodename{Deterministic Profiling}
+
+\dfn{決定論的プロファイリング}とは、すべての \emph{関数呼出し}、\emph
+{関数からのリターン}、\emph{例外発生}をモニターし、正確なタイミングを
+記録することで、イベント間の時間、つまりどの時間にユーザ・コードが実行
+されているのかを計測するやり方です。もう一方の\dfn{統計学的プロファイ
+リング}(このモジュールでこの方法は採用していません)とは、有効なインス
+トラクション・ポインタからランダムにサンプリングをおこない、プログラム
+のどこで時間が使われているかを推定する方法です。後者の方法は、オーバヘッ
+ドが少いものの、プログラムのどこで多くの時間が使われているか、その相対
+的な示唆に留まります。
+
+Python の場合、実行中必ずインタプリタが動作するため、決定論的プロファ
+イリングをおこなうにあたり、計測用のコードは必須ではありません。Python 
+は自動的に各イベントに\dfn{フック}(オプションとしてコールバック)を提供
+します。Python インタプリタの特性として、大きなオーバーヘッドを伴う傾
+向がありますが、一般的なアプリケーションに決定論的プロファイリングを用
+いると、プロセスのオーバーヘッドは少くて済む傾向があります。結果的に決
+定論的プロファイリングは少ないコストで、Python プログラムの実行時間に
+関する統計を得られる方法となっているのです。
+
+呼出し回数はコード中のバグ発見にも使用できます(とんでもない数の呼出し
+がおこなわれている部分)。インライン拡張の対象とすべき部分を見つけるた
+めにも使えます(呼出し頻度の高い部分)。内部時間の統計は、注意深く最適化
+すべき``ホット・ループ''の発見にも役立ちます。累積時間の統計は、アルゴ
+リズム選択に関連した高レベルのエラー検知に役立ちます。なお、このプロファ
+イラは再帰的なアルゴリズム実装の累計時間を計ることが可能で、通常のルー
+プを使った実装と直接比較することもできるようになっています。
+
+\section{リファレンス・マニュアル -- \module{profile} と \module{cProfile}}
+
+\declaremodule{standard}{profile}
+\declaremodule{standard}{cProfile}
+\modulesynopsis{Python profiler}
+
+プロファイラのプライマリ・エントリ・ポイントはグローバル関数 
+\function{profile.run()} (または \function{cProfile.run()})
+です。通常、プロファイル情報の作成に使われま
+す。情報は \class{pstats.Stats} クラスのメソッドを使って整形や出力をお
+こないます。以下はすべての標準エントリポイントと関数の解説です。さらに
+いくつかのコードの詳細を知りたければ、「プロファイラの拡張」を読んでく
+ださい。派生クラスを使ってプロファイラを``改善''する方法やモジュールの
+ソースコードの読み方が述べられています。
+
+\begin{funcdesc}{run}{command\optional{, filename}}
+
+この関数はオプション引数として \keyword{exec} 文に渡すファイル名を指定
+できます。このルーチンは必ず最初の引数の \keyword{exec} を試み、実行結
+果からプロファイル情報を収集しようとします。ファイル名が指定されていな
+いときは、各行の標準名(standard name)文字列(ファイル名/行数/関数名)で
+ソートされた、簡単なレポートが表示されます。以下はその出力例です。
+
+\begin{verbatim}
+      2706 function calls (2004 primitive calls) in 4.504 CPU seconds
+
+Ordered by: standard name
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     2    0.006    0.003    0.953    0.477 pobject.py:75(save_objects)
+  43/3    0.533    0.012    0.749    0.250 pobject.py:99(evaluate)
+ ...
+\end{verbatim}
+
+最初の行は2706回の関数呼出しがあったことを示しています。
+このうち2004回は\dfn{プリミティブ}なものです。\dfn{プリミティブ} な呼
+び出しとは、再帰によるものではない関数呼出しを指します。次の行 
+\code{Ordered by:\ standard name} は、一番右側の欄の文字列を使ってソー
+トされたことを意味します。各カラムの見出しの意味は次の通りです。
+
+\begin{description}
+
+\item[ncalls ]
+
+呼出し回数
+
+\item[tottime ]
+
+この関数が消費した時間の合計(サブ関数呼出しの時間は除く)
+
+\item[percall ]
+
+\code{tottime} を \code{ncalls} で割った値
+
+\item[cumtime ]
+
+サブ関数を含む関数の(実行開始から終了までの)消費時間の合計。この項目は
+再帰的な関数においても正確に計測されます。
+
+\item[percall ]
+
+\code{cumtime} をプリミティブな呼び出し回数で割った値
+
+\item[filename:lineno(function) ]
+
+その関数のファイル名、行番号、関数名
+
+\end{description}
+
+(\samp{43/3} など)最初の欄に2つの数字が表示されている場合、最初の値は
+呼出し回数、2番目はプリミティブな呼び出しの回数を表しています。関数が再
+帰していない場合はどちらの回数も同じになるため、1つの数値しか表示され
+ません。
+\end{funcdesc}
+
+\begin{funcdesc}{runctx}{command, globals, locals\optional{, filename}}
+この関数は \function{run()} に似ていますが、\var{command} 文字
+列用にグローバル辞書とローカル辞書の引数を追加しています。
+\end{funcdesc}
+
+プロファイラ・データの分析は \class{Stats} クラスを使っておこないます。
+
+\note{\class{Stats} クラスは \module{pstats} モジュールで定義されています。}
+
+\stmodindex{pstats}
+
+\begin{classdesc}{Stats}{filename\optional{, stream=sys.stdout\optional{, \moreargs}}}
+このコンストラクタは \var{filename} で指定した(単一または複数の)ファイ
+ルから``統計情報オブジェクト''のインスタンスを生成します。
+\class{Stats} オブジェクトはレポートを出力するメソッドを通じて操作しま
+す。また別の出力ストリームをキーワード引数 \code{stream} で指定できます。
+
+上記コンストラクタで指定するファイルは、使用する \class{Stats} に対応
+したバージョンの \module{profile} または \module{cProfile} で作成され
+たものでなければなりません。
+将来のバージョンのプロファイラとの互換性は\emph{保証されておらず}、
+%(旧バージョンのものなど)
+他のプロファイラとの互換性もないことに注意してください。
+
+複数のファイルを指定した場合、同一の関数の統計情報はすべて合算され、複
+数のプロセスで構成される全体をひとつのレポートで検証することが可能にな
+ります。既存の \class{Stats} オブジェクトに別のファイルの情報を追加す
+るときは、\method{add()} メソッドを使用します。
+
+\versionchanged[\var{stream} 引数が追加されました]{2.5}
+\end{classdesc}
+
+
+\subsection{\class{Stats} クラス \label{profile-stats}}
+
+\class{Stats} には次のメソッドがあります。
+
+\begin{methoddesc}[Stats]{strip_dirs}{}
+
+このメソッドは \class{Stats} にファイル名の前に付いているすべてのパス
+情報を取り除かせるためのものです。出力の幅を80文字以内に収めたいときに
+重宝します。このメソッドはオブジェクトを変更するため、取り除いたパス情
+報は失われます。パス情報除去の操作後、オブジェクトが保持するデータエント
+リは、オブジェクトの初期化、ロード直後と同じように``ランダムに''並んで
+います。\method{strip_dirs()} を実行した結果、2つの関数名が区別できな
+い(両者が同じファイルの同じ行番号で同じ関数名となった)場合、一つのエン
+トリに合算されされます。
+\end{methoddesc}
+
+\begin{methoddesc}[Stats]{add}{filename\optional{, \moreargs}}
+
+\class{Stats} クラスのこのメソッドは、既存のプロファイリング・オブジェ
+クトに情報を追加します。引数は対応するバージョンの 
+\function{profile.run()} または \function{cProfile.run()} によって生成
+されたファイルの名前でなくてはな
+りません。関数の名前が区別できない(ファイル名、行番号、関数名が同じ)場
+合、一つの関数の統計情報として合算されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Stats]{dump_stats}{filename}
+\class{Stats} オブジェクトに読み込まれたデータを、ファイル名
+ \var{filename} のファイルに保存します。ファイルが存在しない場合
+新たに作成され、すでに存在する場合には上書きされます。
+このメソッドは \class{profile.Profile} クラスおよび \class{cProfile.Profile}
+クラスの同名のメソッドと等価です。
+\versionadded{2.3}
+\end{methoddesc}
+
+
+\begin{methoddesc}[Stats]{sort_stats}{key\optional{, \moreargs}}
+
+このメソッドは \class{Stats} オブジェクトを指定した基準に従ってソート
+します。引数には通常ソートのキーにしたい項目を示す文字列を指定します
+(例: \code{'time'} や\code{'name'} など)。
+
+2つ以上のキーが指定された場合、2つ目以降のキーは、それ以前のキーで同等
+となったデータエントリの再ソートに使われます。たとえば 
+\code{sort_stats('name', 'file')} とした場合、まずすべてのエントリが関
+数名でソートされた後、同じ関数名で複数のエントリがあればファイル名でソー
+トされるのです。
+
+キー名には他のキーと判別可能である限り綴りを省略して名前を指定できます。
+現バージョンで定義されているキー名は以下の通りです。
+
+\begin{tableii}{l|l}{code}{正式名}{内容}
+  \lineii{'calls'}{呼び出し回数}
+  \lineii{'cumulative'}{累積時間}
+  \lineii{'file'}{ファイル名}
+  \lineii{'module'}{モジュール名}
+  \lineii{'pcalls'}{プリミティブな呼び出しの回数}
+  \lineii{'line'}{行番号}
+  \lineii{'name'}{関数名}
+  \lineii{'nfl'}{関数名/ファイル名/行番号}
+  \lineii{'stdname'}{標準名}
+  \lineii{'time'}{内部時間}
+\end{tableii}
+
+すべての統計情報のソート結果は降順(最も多く時間を消費したものが一番上
+に来る)となることに注意してください。ただし、関数名、ファイル名、行数
+に関しては昇順(アルファベット順)になります。\code{'nfl'} と 
+\code{'stdname'} はやや異なる点があります。標準名(standard name)とは表
+示欄の名前なのですが、埋め込まれた行番号の文字コード順でソートされます。
+たとえば、(ファイル名が同じで)3、20、40という行番号のエントリがあった
+場合、20、30、40 の順に表示されます。一方 \code{'nfl'} は行番号を数値
+として比較します。結果的に、\code{sort_stats('nfl')} は 
+\code{sort_stats('name', 'file', 'line')} と指定した場合と同じになりま
+す。
+
+%旧バージョンのプロファイラとの互換性のため、
+後方互換性のため、数値を引数に使った 
+\code{-1}、 \code{0}、 \code{1}、 \code{2} の形式もサポートしています。
+それぞれ \code{'stdname'}、\code{'calls'}、\code{'time'}、
+\code{'cumulative'} として処理されます。引数をこの旧スタイルで指定した場合、
+最初のキー(数値キー)だけが使われ、複数のキーを指定しても2番目以降は無
+視されます。
+\end{methoddesc}
+
+\begin{methoddesc}[Stats]{reverse_order}{}
+
+\class{Stats} クラスのこのメソッドは、オブジェクト内の情報のリストを逆
+順にソートします。
+%これは旧プロファイラとの互換性のために用意されています。
+デフォルトでは選択したキーに応じて昇順、降順が適切に選ばれることに注意
+してください。
+\end{methoddesc}
+
+\begin{methoddesc}[Stats]{print_stats}{\optional{restriction, \moreargs}}
+
+\class{Stats} クラスのこのメソッドは、\function{profile.run()} の項で
+述べた プロファイルのレポートを出力します。
+
+出力するデータの順序はオブジェクトに対し最後におこなった 
+\method{sort_stats()} による操作にもとづいたものになります
+(\method{add()} と \method{strip_dirs()} による制限にも支配されます)。
+
+引数は一覧に大きな制限を加えることになります。初期段階でリストはプロファ
+イルした関数の完全な情報を持っています。制限の指定は(行数を指定する)整
+数、(行のパーセンテージを指定する) 0.0 から 1.0 までの割合を指定する小
+数、(出力する standard name にマッチする)正規表現のいずれかを使ってお
+こないます。正規表現は Python 1.5b1 で導入された \refmodule{re} モジュー
+ルで使える Perl スタイルのものです。複数の制限は指定された場合、それは
+指定の順に適用されます。たとえば次のようになります。
+
+\begin{verbatim}
+print_stats(.1, 'foo:')
+\end{verbatim}
+
+上記の場合まず出力するリストは全体の10\%に制限され、さらにファイル名の
+一部に文字列 \file{.*foo:} を持つ関数だけが出力されます。
+
+\begin{verbatim}
+print_stats('foo:', .1)
+\end{verbatim}
+
+こちらの例の場合、リストはまずファイル名に \file{.*foo:} を持つ関数だ
+けに制限され、その中の最初の 10\% だけが出力されます。
+\end{methoddesc}
+
+
+\begin{methoddesc}[Stats]{print_callers}{\optional{restriction, \moreargs}}
+
+\class{Stats} クラスのこのメソッドは、プロファイルのデータベースの中か
+ら何らかの関数呼び出しをおこなった関数すべてを出力します。出力の順序は 
+\method{print_stats()} によって与えられるものと同じです。出力を制限す
+る引数も同じです。
+各呼出し側関数についてそれぞれ一行ずつ表示されます。
+フォーマットは統計を作り出したプロファイラごとに微妙に異なります。
+
+\begin{itemize}
+\item \module{profile} を使った場合、
+呼出し側関数の後にパーレンで囲まれて表示される数値は
+呼出しが何回おこなわれたかを示すものです。続いてパーレンなしで表示され
+る数値は、便宜上右側の関数が消費した累積時間を繰り返したものです。
+
+\item \module{cProfile} を使った場合、
+各呼出し側関数は3つの数字の後に来ます。その3つとは、
+呼出しが何回おこなわれたか、
+呼出しの結果現在の関数内で費やされた合計時間および累積時間です。
+\end{itemize}
+
+\end{methoddesc}
+
+\begin{methoddesc}[Stats]{print_callees}{\optional{restriction, \moreargs}}
+
+\class{Stats} クラスのこのメソッドは指定した関数から呼出された関数のリ
+ストを出力します。呼出し側、呼出される側の方向は逆ですが、引数と出力の
+順序に関しては \method{print_callers()} と同じです。
+\end{methoddesc}
+
+
+\section{制限事項 \label{profile-limits}}
+
+制限はタイミング情報の正確さに関するものです。決定論的プロファ
+イラの正確さに関する根本的問題です。最も明白な制限は、(一般に)``クロッ
+ク''は .001 秒の精度しかないということです。これ以上の精度で計測するこ
+とはできません。仮に充分な精度が得られたとしても、``エラー''が計測の平
+均値に影響を及ぼすことがあります。最初のエラーを取り除いたとしても、そ
+れがまた別のエラーを引き起こす原因となります。
+
+もうひとつの問題として、イベントを検知してからプロファイラがその時刻を
+実際に\emph{取得}するまでに ``いくらかの時間がかかる'' ことです。プロ
+ファイラが時刻を取得する(そしてその値を保存する)までの間に、ユーザコー
+ドがもう一度処理を実行したときにも、同様の遅延が発生します。結果的に多
+く呼び出される関数または多数の関数から呼び出される関数の情報にはこの種
+のエラーが蓄積する傾向にあります。
+
+この種のエラーによる遅延の蓄積は一般にクロックの精度を越える(1クロック
+以下のタイミング)ところで起きていますが、一方でこの時間を累計\emph{可
+能}ということが大きな意味を持っています。
+
+この問題はオーバーヘッドの小さい \module{cProfile} よりも \module{profile}
+においてより重要です。そのため、\module{profile} はプラットフォー
+ムごとに(平均値から)予想されるエラーによる遅延を補正する機能を備えてい
+ます。プロファイラに補正を施すと(少くとも形式的には)正確さが増しますが、
+ときには数値が負の値になってしまうこともあります(呼出し回数が少く、確
+率の神があなたに意地悪をしたとき :-) )。プロファイルの結果に負の値が出
+力されても\emph{驚かないでください}。これは補正をおこなった場合にのみ
+現れることで、実際の計測結果は補正をおこなわない場合より、より正確なは
+ずだからです。
+
+\section{キャリブレーション(補正) \label{profile-calibration}}
+
+\module{profile} のプロファイラは time 関数呼出しおよびその値を保存する
+ためのオーバーヘッドを補正するために、各イベントハンドリング時間から定
+数を引きます。デフォルトでこの定数の値は 0 です。以下の手順で、プラット
+フォームに合った、より適切な定数が得られます(前節「制限事項」の説明を参
+照)。
+
+\begin{verbatim}
+import profile
+pr = profile.Profile()
+for i in range(5):
+    print pr.calibrate(10000)
+\end{verbatim}
+
+
+メソッドは引数として与えられた数だけ Python の呼出しをおこないます。呼
+出しは直接、プロファイラを使って呼出しの両方が実施され、それぞれの時間
+が計測されます。その結果、プロファイラのイベントに隠されたオーバーヘッ
+ドが計算され、その値は浮動小数として返されます。たとえば、800 MHz の 
+Pentium で Windows 2000 を使用、Python の time.clock() をタイマとして
+使った場合、値はおよそ 12.5e-6 となります。
+
+この手順で使用しているオブジェクトはほぼ一定の結果を返します。\emph{非
+常に}早いコンピュータを使う場合、もしくはタイマの性能が貧弱な場合は一
+定の結果を得るために引数に 100000 や 1000000 といった大きな値を指定す
+る必要があるかもしれません。
+
+一定の結果が得られたら、それを使う方法には3通りあります。\footnote{
+Python 2.2 より前のバージョンではプロファイラのソースコードに補正値と
+して埋め込まれた定数を直接編集する必要がありました。今でも同じことは可
+能ですが、その方法は説明しません。なぜなら、もうソースを編集する必要が
+ないからです。}
+
+\begin{verbatim}
+import profile
+
+# 1. 算出した補正値 (your_computed_bias) をこれ以降生成する
+#    Profile インスタンスに適用する。
+profile.Profile.bias = your_computed_bias
+
+# 2. 特定の Profile インスタンスに補正値を適用する。
+pr = profile.Profile()
+pr.bias = your_computed_bias
+
+# 3. インスタンスのコンストラクタに補正値を指定する。
+pr = profile.Profile(bias=your_computed_bias)
+\end{verbatim}
+
+方法を選択したら、補正値は小さめに設定した方が良いでしょう。プロファイ
+ルの結果に負の値が表われる``確率が少なく''なるはずです。
+
+\section{拡張 --- プロファイラの改善}
+\nodename{Profiler Extensions}
+
+\module{profile} モジュールおよび \module{cProfile} モジュールの
+\class{Profile} クラスはプロファイラの機
+能を拡張するため、派生クラスの作成を前提に書かれています。しかしその方
+法を説明するには、\class{Profile} の内部動作について詳細な解説が必要と
+なるため、ここでは述べません。もし拡張をおこないたいのであれば、
+使用するモジュールのソースを注意深く読む必要があります。
+
+プロファイラが時刻を取得する方法を変更したいだけなら(たとえば、通常の
+時間(wall-clock)を使いたいとか、プロセスの経過時間を使いたい場合)、時
+刻取得用の関数を \class{Profile} クラスのコンストラクタに指定すること
+ができます。
+
+\begin{verbatim}
+pr = profile.Profile(your_time_func)
+\end{verbatim}
+
+この結果生成されるプロファイラは時刻取得に \function{your_time_func()} を
+呼び出すようになります。
+
+\begin{description}
+\item[\class{profile.Profile}]
+\function{your_time_func()} は単一の数値、あるいは
+その合計が(\function{os.times()} と同じように)累計時間を示すリストを返
+すようになっていなければなりません。関数が1つの数値、あるいは長さ2の数
+値のリストを返すようになっていれば、非常に高速に処理が可能になります。
+
+選択する時刻取得関数によって、プロファイラクラスを補正する必要があるこ
+とに注意してください。多くのマシンにおいて、プロファイル時のオーバヘッ
+ドを少なくする方法として、タイマはロング整数を返すのが最善です。
+\function{os.times()} は浮動小数のタプルを返すので \emph{おすすめできま
+せん})。タイマをより正確なものに置き換えたいならば、派生クラスでそのディ
+スパッチ・メソッドを適切なタイマ呼出しと適切な補正をおこなうように書き
+直す必要があります。
+
+\item[\class{cProfile.Profile}]
+\function{your_time_func()} は単一の数値を返さなければなりません。
+もしこれが整数を返す関数ならば、2番目の引数に時間単位当たりの実際の持続
+時間を指定してクラスのコンスタラクタを呼び出すことができます。
+たとえば、\function{your_integer_time_func()} が1000分の1秒単位で計測し
+た時間を返すとすると、\class{Profile} インスタンスを次のように生成するこ
+とができます。
+
+\begin{verbatim}
+pr = profile.Profile(your_integer_time_func, 0.001)
+\end{verbatim}
+
+\module{cProfile.Profile} クラスはキャリブレーションができないので、
+自前のタイマ関数は注意を払って使う必要があり、またそれは可能な限り
+速くなければなりません。自前のタイマ関数で最高の結果を得るには、
+\module{_lsprof} 内部モジュールの C ソースファイルにハードコードする
+必要があるかもしれません。
+
+\end{description}

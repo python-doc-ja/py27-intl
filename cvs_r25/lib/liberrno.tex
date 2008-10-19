@@ -1,0 +1,149 @@
+\section{\module{errno} ---
+         標準の errno システムシンボル}
+
+\declaremodule{standard}{errno}
+\modulesynopsis{標準の errno システムシンボル。}
+
+
+このモジュールから標準の \code{errno} システムシンボルを取得することが
+できます。個々のシンボルの値は \code{errno} に対応する整数値です。
+これらのシンボルの名前は、\file{linux/include/errno.h} から借用され
+ており、かなり網羅的なはずです。
+
+\begin{datadesc}{errorcode}
+errno 値を背後のシステムにおける文字列表現に対応付ける辞書です。
+例えば、\code{errno.errorcode[errno.EPERM]} は \code{'EPERM'}
+に対応付けられます。
+\end{datadesc}
+
+数値のエラーコードをエラーメッセージに変換するには、
+\function{os.strerror()} を使ってください。
+
+以下のリストの内、現在のプラットフォームで使われていないシンボルは
+モジュール上で定義されていません。定義されているシンボルだけを挙げた
+リストは \code{errno.errorcode.keys()} として取得することができます。
+取得できるシンボルには以下のようなものがあります:
+
+\begin{datadesc}{EPERM} 許可されていない操作です (Operation not permitted) \end{datadesc}
+\begin{datadesc}{ENOENT} ファイルまたはディレクトリがありません (No such file or directory) \end{datadesc}
+\begin{datadesc}{ESRCH} 指定したプロセスが存在しません (No such process) \end{datadesc}
+\begin{datadesc}{EINTR} 割り込みシステムコールです (Interrupted system call) \end{datadesc}
+\begin{datadesc}{EIO} I/O エラーです (I/O error) \end{datadesc}
+\begin{datadesc}{ENXIO} そのようなデバイスまたはアドレスはありません (No such device or address) \end{datadesc}
+\begin{datadesc}{E2BIG} 引数リストが長すぎます (Arg list too long) \end{datadesc}
+\begin{datadesc}{ENOEXEC} 実行形式にエラーがあります (Exec format error) \end{datadesc}
+\begin{datadesc}{EBADF} ファイル番号が間違っています (Bad file number) \end{datadesc}
+\begin{datadesc}{ECHILD} 子プロセスがありません (No child processes) \end{datadesc}
+\begin{datadesc}{EAGAIN} 再試行してください (Try again) \end{datadesc}
+\begin{datadesc}{ENOMEM} 空きメモリがありません (Out of memory) \end{datadesc}
+\begin{datadesc}{EACCES} 許可がありません (Permission denied) \end{datadesc}
+\begin{datadesc}{EFAULT} 不正なアドレスです (Bad address) \end{datadesc}
+\begin{datadesc}{ENOTBLK} ブロックデバイスが必要です (Block device required) \end{datadesc}
+\begin{datadesc}{EBUSY} そのデバイスまたは資源は使用中です (Device or resource busy) \end{datadesc}
+\begin{datadesc}{EEXIST} ファイルがすでに存在します	(File exists) \end{datadesc}
+\begin{datadesc}{EXDEV} デバイス間のリンクです (Cross-device link) \end{datadesc}
+\begin{datadesc}{ENODEV} そのようなデバイスはありません (No such device) \end{datadesc}
+\begin{datadesc}{ENOTDIR} ディレクトリではありません (Not a directory) \end{datadesc}
+\begin{datadesc}{EISDIR} ディレクトリです (Is a directory) \end{datadesc}
+\begin{datadesc}{EINVAL} 無効な引数です (Invalid argument) \end{datadesc}
+\begin{datadesc}{ENFILE} ファイルテーブルがオーバフローしています (File table overflow) \end{datadesc}
+\begin{datadesc}{EMFILE} 開かれたファイルが多すぎます (Too many open files) \end{datadesc}
+\begin{datadesc}{ENOTTY} タイプライタではありません (Not a typewriter) \end{datadesc}
+\begin{datadesc}{ETXTBSY} テキストファイルが使用中です (Text file busy) \end{datadesc}
+\begin{datadesc}{EFBIG} ファイルが大きすぎます (File too large) \end{datadesc}
+\begin{datadesc}{ENOSPC} デバイス上に空きがありません (No space left on device) \end{datadesc}
+\begin{datadesc}{ESPIPE} 不正なシークです (Illegal seek) \end{datadesc}
+\begin{datadesc}{EROFS} 読み出し専用ファイルシステムです (Read-only file system) \end{datadesc}
+\begin{datadesc}{EMLINK} リンクが多すぎます (Too many links) \end{datadesc}
+\begin{datadesc}{EPIPE} パイプが壊れました (Broken pipe) \end{datadesc}
+\begin{datadesc}{EDOM} 数学引数が関数の定義域を越えています (Math argument out of domain of func) \end{datadesc}
+\begin{datadesc}{ERANGE} 表現できない数学演算結果になりました (Math result not representable) \end{datadesc}
+\begin{datadesc}{EDEADLK} リソースのデッドロックが起きます (Resource deadlock would occur) \end{datadesc}
+\begin{datadesc}{ENAMETOOLONG} ファイル名が長すぎます (File name too long) \end{datadesc}
+\begin{datadesc}{ENOLCK} レコードロッキングが利用できません (No record locks available) \end{datadesc}
+\begin{datadesc}{ENOSYS} 実装されていない機能です (Function not implemented) \end{datadesc}
+\begin{datadesc}{ENOTEMPTY} ディレクトリが空ではありません (Directory not empty) \end{datadesc}
+\begin{datadesc}{ELOOP} これ以上シンボリックリンクを追跡できません (Too many symbolic links encountered) \end{datadesc}
+\begin{datadesc}{EWOULDBLOCK} 操作がブロックします (Operation would block) \end{datadesc}
+\begin{datadesc}{ENOMSG} 指定された型のメッセージはありません (No message of desired type) \end{datadesc}
+\begin{datadesc}{EIDRM} 識別子が除去されました (Identifier removed) \end{datadesc}
+\begin{datadesc}{ECHRNG} チャネル番号が範囲を超えました (Channel number out of range) \end{datadesc}
+\begin{datadesc}{EL2NSYNC} レベル 2 で同期がとれていません (Level 2 not synchronized) \end{datadesc}
+\begin{datadesc}{EL3HLT} レベル 3 で終了しました (Level 3 halted) \end{datadesc}
+\begin{datadesc}{EL3RST} レベル 3 でリセットしました (Level 3 reset) \end{datadesc}
+\begin{datadesc}{ELNRNG} リンク番号が範囲を超えています (Link number out of range) \end{datadesc}
+\begin{datadesc}{EUNATCH} プロトコルドライバが接続されていません (Protocol driver not attached) \end{datadesc}
+\begin{datadesc}{ENOCSI} CSI 構造体がありません (No CSI structure available) \end{datadesc}
+\begin{datadesc}{EL2HLT} レベル 2 で終了しました (Level 2 halted) \end{datadesc}
+\begin{datadesc}{EBADE} 無効な変換です (Invalid exchange) \end{datadesc}
+\begin{datadesc}{EBADR} 無効な要求記述子です (Invalid request descriptor) \end{datadesc}
+\begin{datadesc}{EXFULL} 変換テーブルが一杯です (Exchange full) \end{datadesc}
+\begin{datadesc}{ENOANO} 陰極がありません (No anode) \end{datadesc}
+\begin{datadesc}{EBADRQC} 無効なリクエストコードです (Invalid request code) \end{datadesc}
+\begin{datadesc}{EBADSLT} 無効なスロットです (Invalid slot) \end{datadesc}
+\begin{datadesc}{EDEADLOCK} ファイルロックにおけるデッドロックエラーです (File locking deadlock error) \end{datadesc}
+\begin{datadesc}{EBFONT} フォントファイル形式が間違っています (Bad font file format) \end{datadesc}
+\begin{datadesc}{ENOSTR} ストリーム型でないデバイスです (Device not a stream) \end{datadesc}
+\begin{datadesc}{ENODATA} 利用可能なデータがありません (No data available) \end{datadesc}
+\begin{datadesc}{ETIME} 時間切れです (Timer expired) \end{datadesc}
+\begin{datadesc}{ENOSR} streams リソースを使い切りました (Out of streams resources) \end{datadesc}
+\begin{datadesc}{ENONET} 計算機はネットワーク上にありません (Machine is not on the network) \end{datadesc}
+\begin{datadesc}{ENOPKG} パッケージがインストールされていません (Package not installed) \end{datadesc}
+\begin{datadesc}{EREMOTE} 対象物は遠隔にあります (Object is remote) \end{datadesc}
+\begin{datadesc}{ENOLINK} リンクが切られました (Link has been severed) \end{datadesc}
+\begin{datadesc}{EADV} Advertise エラーです (Advertise error) \end{datadesc}
+\begin{datadesc}{ESRMNT} Srmount エラーです (Srmount error) \end{datadesc}
+\begin{datadesc}{ECOMM} 送信時の通信エラーです (Communication error on send) \end{datadesc}
+\begin{datadesc}{EPROTO} プロトコルエラーです (Protocol error) \end{datadesc}
+\begin{datadesc}{EMULTIHOP} 多重ホップを試みました (Multihop attempted) \end{datadesc}
+\begin{datadesc}{EDOTDOT} RFS 特有のエラーです (RFS specific error) \end{datadesc}
+\begin{datadesc}{EBADMSG} データメッセージではありません (Not a data message) \end{datadesc}
+\begin{datadesc}{EOVERFLOW} 定義されたデータ型にとって大きすぎる値です (Value too large for defined data type) \end{datadesc}
+\begin{datadesc}{ENOTUNIQ} 名前がネットワーク上で一意でありません (Name not unique on network) \end{datadesc}
+\begin{datadesc}{EBADFD} ファイル記述子の状態が不正です (File descriptor in bad state) \end{datadesc}
+\begin{datadesc}{EREMCHG} 遠隔のアドレスが変更されました (Remote address changed) \end{datadesc}
+\begin{datadesc}{ELIBACC} 必要な共有ライブラリにアクセスできません (Can not access a needed shared library) \end{datadesc}
+\begin{datadesc}{ELIBBAD} 壊れた共有ライブラリにアクセスしています (Accessing a corrupted shared library) \end{datadesc}
+\begin{datadesc}{ELIBSCN} a.out の .lib セクションが壊れています (.lib section in a.out corrupted) \end{datadesc}
+\begin{datadesc}{ELIBMAX} リンクを試みる共有ライブラリが多すぎます (Attempting to link in too many shared libraries) \end{datadesc}
+\begin{datadesc}{ELIBEXEC} 共有ライブラリを直接実行することができません (Cannot exec a shared library directly) \end{datadesc}
+\begin{datadesc}{EILSEQ} 不正なバイト列です (Illegal byte sequence) \end{datadesc}
+\begin{datadesc}{ERESTART} 割り込みシステムコールを復帰しなければなりません (Interrupted system call should be restarted) \end{datadesc}
+\begin{datadesc}{ESTRPIPE} ストリームパイプのエラーです (Streams pipe error) \end{datadesc}
+\begin{datadesc}{EUSERS} ユーザが多すぎます (Too many users) \end{datadesc}
+\begin{datadesc}{ENOTSOCK} 非ソケットに対するソケット操作です (Socket operation on non-socket) \end{datadesc}
+\begin{datadesc}{EDESTADDRREQ} 目的アドレスが必要です (Destination address required) \end{datadesc}
+\begin{datadesc}{EMSGSIZE} メッセージが長すぎます (Message too long) \end{datadesc}
+\begin{datadesc}{EPROTOTYPE} ソケットに対して不正なプロトコル型です (Protocol wrong type for socket) \end{datadesc}
+\begin{datadesc}{ENOPROTOOPT} 利用できないプロトコルです (Protocol not available) \end{datadesc}
+\begin{datadesc}{EPROTONOSUPPORT} サポートされていないプロトコルです (Protocol not supported) \end{datadesc}
+\begin{datadesc}{ESOCKTNOSUPPORT} サポートされていないソケット型です (Socket type not supported) \end{datadesc}
+\begin{datadesc}{EOPNOTSUPP} 通信端点に対してサポートされていない操作です (Operation not supported on transport endpoint) \end{datadesc}
+\begin{datadesc}{EPFNOSUPPORT} サポートされていないプロトコルファミリです (Protocol family not supported) \end{datadesc}
+\begin{datadesc}{EAFNOSUPPORT} プロトコルでサポートされていないアドレスファミリです (Address family not supported by protocol) \end{datadesc}
+\begin{datadesc}{EADDRINUSE} アドレスは使用中です (Address already in use) \end{datadesc}
+\begin{datadesc}{EADDRNOTAVAIL} 要求されたアドレスを割り当てできません (Cannot assign requested address) \end{datadesc}
+\begin{datadesc}{ENETDOWN} ネットワークがダウンしています (Network is down) \end{datadesc}
+\begin{datadesc}{ENETUNREACH} ネットワークに到達できません (Network is unreachable) \end{datadesc}
+\begin{datadesc}{ENETRESET} リセットによってネットワーク接続が切られました (Network dropped connection because of reset) \end{datadesc}
+\begin{datadesc}{ECONNABORTED} ソフトウェアによって接続が終了されました (Software caused connection abort) \end{datadesc}
+\begin{datadesc}{ECONNRESET} 接続がピアによってリセットされました (Connection reset by peer) \end{datadesc}
+\begin{datadesc}{ENOBUFS} バッファに空きがありません (No buffer space available) \end{datadesc}
+\begin{datadesc}{EISCONN} 通信端点がすでに接続されています (Transport endpoint is already connected) \end{datadesc}
+\begin{datadesc}{ENOTCONN} 通信端点が接続されていません (Transport endpoint is not connected) \end{datadesc}
+\begin{datadesc}{ESHUTDOWN} 通信端点のシャットダウン後は送信できません (Cannot send after transport endpoint shutdown) \end{datadesc}
+\begin{datadesc}{ETOOMANYREFS} 参照が多すぎます: 接続できません (Too many references: cannot splice) \end{datadesc}
+\begin{datadesc}{ETIMEDOUT} 接続がタイムアウトしました (Connection timed out) \end{datadesc}
+\begin{datadesc}{ECONNREFUSED} 接続を拒否されました (Connection refused) \end{datadesc}
+\begin{datadesc}{EHOSTDOWN} ホストはシステムダウンしています (Host is down) \end{datadesc}
+\begin{datadesc}{EHOSTUNREACH} ホストへの経路がありません (No route to host) \end{datadesc}
+\begin{datadesc}{EALREADY} すでに処理中です (Operation already in progress) \end{datadesc}
+\begin{datadesc}{EINPROGRESS} 現在処理中です (Operation now in progress) \end{datadesc}
+\begin{datadesc}{ESTALE} 無効な NFS ファイルハンドルです (Stale NFS file handle) \end{datadesc}
+\begin{datadesc}{EUCLEAN} (Structure needs cleaning) \end{datadesc}
+\begin{datadesc}{ENOTNAM} XENIX 名前付きファイルではありません (Not a XENIX named type file) \end{datadesc}
+\begin{datadesc}{ENAVAIL} XENIX セマフォは利用できません (No XENIX semaphores available) \end{datadesc}
+\begin{datadesc}{EISNAM} 名前付きファイルです (Is a named type file) \end{datadesc}
+\begin{datadesc}{EREMOTEIO} 遠隔側の I/O エラーです (Remote I/O error) \end{datadesc}
+\begin{datadesc}{EDQUOT} ディスククオータを超えました (Quota exceeded) \end{datadesc}
+
