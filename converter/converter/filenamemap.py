@@ -315,6 +315,9 @@ _mapping = {
         'librestricted': '',
         'libstrings': '',
         'libunix': '',
+
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'ref': {
@@ -328,6 +331,8 @@ _mapping = {
         'ref6': 'simple_stmts',
         'ref7': 'compound_stmts',
         'ref8': 'toplevel_components',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'tut': {
@@ -335,6 +340,8 @@ _mapping = {
         '__labelprefix__': 'tut-',
         'tut': 'tutorial:split',
         'glossary': 'glossary',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'api': {
@@ -352,6 +359,8 @@ _mapping = {
         'refcounting': '',
         'utilities': '',
         'veryhigh': '',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'ext': {
@@ -364,12 +373,16 @@ _mapping = {
         'extending': 'extending',
         'newtypes': '',
         'windows': '',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'dist': {
         '__newname__': 'distutils',
         'dist': 'distutils:split',
         'sysconfig': '',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'mac': {
@@ -394,13 +407,16 @@ _mapping = {
         'toolbox': '',
         'undoc': '',
         'using': '',
-
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'inst': {
         '__newname__': 'install',
         '__defaulthighlightlang__': 'none',
         'inst': 'index',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'whatsnew': {
@@ -413,6 +429,8 @@ _mapping = {
         'whatsnew25': '2.5',
         'whatsnew26': '2.6',
         'whatsnew30': '3.0',
+        # japanese translation info.
+        'jptranslation': '',
     },
 
     'commontex': {
@@ -422,6 +440,8 @@ _mapping = {
         'copyright': '',
         'license': '',
         'reportingbugs': 'bugs',
+        # japanese translation info.
+        'jptranslation': '',
     },
 }
 

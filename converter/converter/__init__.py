@@ -24,7 +24,8 @@ from .console import red, green
 
 def convert_file(infile, outfile, doraise=True, splitchap=False,
                  toctree=None, deflang=None, labelprefix=''):
-    inf = codecs.open(infile, 'r', 'latin1')
+    #inf = codecs.open(infile, 'r', 'latin1')
+    inf = codecs.open(infile, 'r', 'euc-jp')
     p = DocParser(Tokenizer(inf.read()).tokenize(), infile)
     if not splitchap:
         outf = codecs.open(outfile, 'w', 'utf-8')
