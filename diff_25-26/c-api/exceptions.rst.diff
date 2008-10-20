@@ -1,0 +1,106 @@
+--- rest25/c-api/exceptions.rst	2008-10-21 04:56:46.252832535 +0900
++++ rest26/c-api/exceptions.rst	2008-10-21 05:03:04.457411940 +0900
+@@ -28,26 +28,26 @@
+ and may fail in mysterious ways.
+ 
+ .. index::
+    single: exc_type (in module sys)
+    single: exc_value (in module sys)
+    single: exc_traceback (in module sys)
+ 
+ The error indicator consists of three Python objects corresponding to   the
+ Python variables ``sys.exc_type``, ``sys.exc_value`` and ``sys.exc_traceback``.
+ API functions exist to interact with the error indicator in various ways.  There
+ is a separate error indicator for each thread.
+ 
+-.. % XXX Order of these should be more thoughtful.
+-.. % Either alphabetical or some kind of structure.
++.. XXX Order of these should be more thoughtful.
++   Either alphabetical or some kind of structure.
+ 
+ 
+ .. cfunction:: void PyErr_Print()
+ 
+    Print a standard traceback to ``sys.stderr`` and clear the error indicator.
+    Call this function only when the error indicator is set.  (Otherwise it will
+    cause a fatal error!)
+ 
+ 
+ .. cfunction:: PyObject* PyErr_Occurred()
+ 
+    Test whether the error indicator is set.  If set, return the exception *type*
+@@ -335,55 +335,73 @@
+    Deprecated; use :cfunc:`PyErr_WarnEx` instead.
+ 
+ 
+ .. cfunction:: int PyErr_WarnExplicit(PyObject *category, const char *message, const char *filename, int lineno, const char *module, PyObject *registry)
+ 
+    Issue a warning message with explicit control over all warning attributes.  This
+    is a straightforward wrapper around the Python function
+    :func:`warnings.warn_explicit`, see there for more information.  The *module*
+    and *registry* arguments may be set to *NULL* to get the default effect
+    described there.
+ 
+ 
++.. cfunction:: int PyErr_WarnPy3k(char *message, int stacklevel)
++
++   Issue a :exc:`DeprecationWarning` with the given *message* and *stacklevel*
++   if the :cdata:`Py_Py3kWarningFlag` flag is enabled.
++
++   .. versionadded:: 2.6
++
++
+ .. cfunction:: int PyErr_CheckSignals()
+ 
+    .. index::
+       module: signal
+       single: SIGINT
+       single: KeyboardInterrupt (built-in exception)
+ 
+    This function interacts with Python's signal handling.  It checks whether a
+    signal has been sent to the processes and if so, invokes the corresponding
+    signal handler.  If the :mod:`signal` module is supported, this can invoke a
+    signal handler written in Python.  In all cases, the default effect for
+    :const:`SIGINT` is to raise the  :exc:`KeyboardInterrupt` exception.  If an
+-   exception is raised the error indicator is set and the function returns ``1``;
++   exception is raised the error indicator is set and the function returns ``-1``;
+    otherwise the function returns ``0``.  The error indicator may or may not be
+    cleared if it was previously set.
+ 
+ 
+ .. cfunction:: void PyErr_SetInterrupt()
+ 
+    .. index::
+       single: SIGINT
+       single: KeyboardInterrupt (built-in exception)
+ 
+    This function simulates the effect of a :const:`SIGINT` signal arriving --- the
+    next time :cfunc:`PyErr_CheckSignals` is called,  :exc:`KeyboardInterrupt` will
+    be raised.  It may be called without holding the interpreter lock.
+ 
+    .. % XXX This was described as obsolete, but is used in
+    .. % thread.interrupt_main() (used from IDLE), so it's still needed.
+ 
+ 
++.. cfunction:: int PySignal_SetWakeupFd(int fd)
++
++   This utility function specifies a file descriptor to which a ``'\0'`` byte will
++   be written whenever a signal is received.  It returns the previous such file
++   descriptor.  The value ``-1`` disables the feature; this is the initial state.
++   This is equivalent to :func:`signal.set_wakeup_fd` in Python, but without any
++   error checking.  *fd* should be a valid file descriptor.  The function should
++   only be called from the main thread.
++
++
+ .. cfunction:: PyObject* PyErr_NewException(char *name, PyObject *base, PyObject *dict)
+ 
+    This utility function creates and returns a new exception object. The *name*
+    argument must be the name of the new exception, a C string of the form
+    ``module.class``.  The *base* and *dict* arguments are normally *NULL*.  This
+    creates a class object derived from :exc:`Exception` (accessible in C as
+    :cdata:`PyExc_Exception`).
+ 
+    The :attr:`__module__` attribute of the new class is set to the first part (up
+    to the last dot) of the *name* argument, and the class name is set to the last
+    part (after the last dot).  The *base* argument can be used to specify alternate
+    base classes; it can either be only one class or a tuple of classes. The *dict*

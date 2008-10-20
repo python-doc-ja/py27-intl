@@ -1,0 +1,20 @@
+--- rest25/library/modules.rst	2008-10-21 04:57:10.380611155 +0900
++++ rest26/library/modules.rst	2008-10-21 05:03:05.141199875 +0900
+@@ -5,16 +5,17 @@
+ Importing Modules
+ *****************
+ 
+ The modules described in this chapter provide new ways to import other Python
+ modules and hooks for customizing the import process.
+ 
+ The full list of modules described in this chapter is:
+ 
+ 
+ .. toctree::
+ 
+    imp.rst
++   imputil.rst
+    zipimport.rst
+    pkgutil.rst
+    modulefinder.rst
+    runpy.rst

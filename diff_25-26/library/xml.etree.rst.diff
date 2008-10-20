@@ -1,0 +1,32 @@
+--- rest25/library/xml.etree.rst	2008-10-21 04:57:11.248606632 +0900
++++ rest26/library/xml.etree.rst	2008-10-21 05:03:05.089289073 +0900
+@@ -1,26 +1,24 @@
+-
+-:mod:`xml.etree` --- The ElementTree API for XML
+-=================================================
++:mod:`xml.etree` --- The ElementTree API for XML
++================================================
+ 
+ .. module:: xml.etree
+    :synopsis: Package containing common ElementTree modules.
+ .. moduleauthor:: Fredrik Lundh <fredrik@pythonware.com>
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ The ElementTree package is a simple, efficient, and quite popular  library for
+ XML manipulation in Python.    The :mod:`xml.etree` package contains the most
+ common components  from the ElementTree API library.  In the current release,
+ this package contains the :mod:`ElementTree`,  :mod:`ElementPath`, and
+ :mod:`ElementInclude` modules from the full  ElementTree distribution.
+ 
+-.. % XXX To be continued!
++.. XXX To be continued!
+ 
+ 
+ .. seealso::
+ 
+    `ElementTree Overview <http://effbot.org/tag/elementtree>`_
+       The home page for :mod:`ElementTree`.  This includes links  to additional
+       documentation, alternative implementations, and  other add-ons.
+-

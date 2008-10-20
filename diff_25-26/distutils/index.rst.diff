@@ -1,0 +1,23 @@
+--- rest25/distutils/index.rst	2008-10-21 04:57:17.172608125 +0900
++++ rest26/distutils/index.rst	2008-10-21 05:03:04.389199620 +0900
+@@ -1,18 +1,20 @@
+ .. _distutils-index:
+ 
+ ###############################
+   Distributing Python Modules
+ ###############################
+ 
++:Authors: Greg Ward, Anthony Baxter
++:Email: distutils-sig@python.org
+ :Release: |version|
+ :Date: |today|
+ 
+ This document describes the Python Distribution Utilities ("Distutils") from
+ the module developer's point of view, describing how to use the Distutils to
+ make Python modules and extensions easily available to a wider audience with
+ very little overhead for build/release/install mechanics.
+ 
+ .. toctree::
+    :maxdepth: 2
+ 
+    introduction.rst

@@ -1,0 +1,26 @@
+--- rest25/library/copy_reg.rst	2008-10-21 04:56:53.115357282 +0900
++++ rest26/library/copy_reg.rst	2008-10-21 05:03:04.750127995 +0900
+@@ -1,19 +1,22 @@
+-
+ :mod:`copy_reg` --- Register :mod:`pickle` support functions
+ ============================================================
+ 
+ .. module:: copy_reg
+    :synopsis: Register pickle support functions.
+ 
++.. note::
++   The :mod:`copy_reg` module has been renamed to :mod:`copyreg` in Python 3.0.
++   The :term:`2to3` tool will automatically adapt imports when converting your
++   sources to 3.0.
+ 
+ .. index::
+    module: pickle
+    module: cPickle
+    module: copy
+ 
+ The :mod:`copy_reg` module provides support for the :mod:`pickle` and
+ :mod:`cPickle` modules.  The :mod:`copy` module is likely to use this in the
+ future as well.  It provides configuration information about object constructors
+ which are not classes.  Such constructors may be factory functions or class
+ instances.
+ 

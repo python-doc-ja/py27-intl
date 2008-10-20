@@ -1,0 +1,31 @@
+--- rest25/library/mhlib.rst	2008-10-21 04:57:00.135047597 +0900
++++ rest26/library/mhlib.rst	2008-10-21 05:03:05.053269680 +0900
+@@ -1,22 +1,24 @@
+-
+ :mod:`mhlib` --- Access to MH mailboxes
+ =======================================
+ 
+ .. module:: mhlib
+    :synopsis: Manipulate MH mailboxes from Python.
++   :deprecated:
++   
++.. deprecated:: 2.6
++    The :mod:`mhlib` module has been removed in Python 3.0. Use the
++    :mod:`mailbox` instead.
+ 
+-
+-.. % LaTeX'ized from the comments in the module by Skip Montanaro
+-.. % <skip@mojam.com>.
++.. sectionauthor:: Skip Montanaro <skip@pobox.com>
+ 
+ The :mod:`mhlib` module provides a Python interface to MH folders and their
+ contents.
+ 
+ The module contains three basic classes, :class:`MH`, which represents a
+ particular collection of folders, :class:`Folder`, which represents a single
+ folder, and :class:`Message`, which represents a single message.
+ 
+ 
+ .. class:: MH([path[, profile]])
+ 
+    :class:`MH` represents a collection of MH folders.

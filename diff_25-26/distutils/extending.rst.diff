@@ -1,0 +1,17 @@
+--- rest25/distutils/extending.rst	2008-10-21 04:56:48.083362982 +0900
++++ rest26/distutils/extending.rst	2008-10-21 05:03:04.381271236 +0900
+@@ -1,13 +1,13 @@
+-.. _extending:
++.. _extending-distutils:
+ 
+ *******************
+ Extending Distutils
+ *******************
+ 
+ Distutils can be extended in various ways.  Most extensions take the form of new
+ commands or replacements for existing commands.  New commands may be written to
+ support new types of platform-specific packaging, for example, while
+ replacements for existing commands may be made to modify details of how the
+ command operates on a package.
+ 
+ Most extensions of the distutils are made within :file:`setup.py` scripts that

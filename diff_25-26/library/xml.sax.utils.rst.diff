@@ -1,0 +1,62 @@
+--- rest25/library/xml.sax.utils.rst	2008-10-21 04:57:11.540593265 +0900
++++ rest26/library/xml.sax.utils.rst	2008-10-21 05:03:04.941187247 +0900
+@@ -12,47 +12,50 @@
+ 
+ The module :mod:`xml.sax.saxutils` contains a number of classes and functions
+ that are commonly useful when creating SAX applications, either in direct use,
+ or as base classes.
+ 
+ 
+ .. function:: escape(data[, entities])
+ 
+    Escape ``'&'``, ``'<'``, and ``'>'`` in a string of data.
+ 
+    You can escape other strings of data by passing a dictionary as the optional
+    *entities* parameter.  The keys and values must all be strings; each key will be
+-   replaced with its corresponding value.
++   replaced with its corresponding value.  The characters ``'&'``, ``'<'`` and
++   ``'>'`` are always escaped, even if *entities* is provided.
+ 
+ 
+ .. function:: unescape(data[, entities])
+ 
+    Unescape ``'&amp;'``, ``'&lt;'``, and ``'&gt;'`` in a string of data.
+ 
+    You can unescape other strings of data by passing a dictionary as the optional
+    *entities* parameter.  The keys and values must all be strings; each key will be
+-   replaced with its corresponding value.
++   replaced with its corresponding value.  ``'&amp'``, ``'&lt;'``, and ``'&gt;'``
++   are always unescaped, even if *entities* is provided.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. function:: quoteattr(data[, entities])
+ 
+-   Similar to :func:`escape`, but also prepares *data* to be used as an attribute
+-   value.  The return value is a quoted version of *data* with any additional
+-   required replacements. :func:`quoteattr` will select a quote character based on
+-   the content of *data*, attempting to avoid encoding any quote characters in the
+-   string.  If both single- and double-quote characters are already in *data*, the
+-   double-quote characters will be encoded and *data* will be wrapped in double-
+-   quotes.  The resulting string can be used directly as an attribute value::
++   Similar to :func:`escape`, but also prepares *data* to be used as an
++   attribute value.  The return value is a quoted version of *data* with any
++   additional required replacements. :func:`quoteattr` will select a quote
++   character based on the content of *data*, attempting to avoid encoding any
++   quote characters in the string.  If both single- and double-quote characters
++   are already in *data*, the double-quote characters will be encoded and *data*
++   will be wrapped in double-quotes.  The resulting string can be used directly
++   as an attribute value::
+ 
+       >>> print "<element attr=%s>" % quoteattr("ab ' cd \" ef")
+       <element attr="ab ' cd &quot; ef">
+ 
+    This function is useful when generating attribute values for HTML or any SGML
+    using the reference concrete syntax.
+ 
+    .. versionadded:: 2.2
+ 
+ 
+ .. class:: XMLGenerator([out[, encoding]])
+ 

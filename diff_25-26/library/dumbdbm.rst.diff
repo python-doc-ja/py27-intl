@@ -1,0 +1,45 @@
+--- rest25/library/dumbdbm.rst	2008-10-21 04:56:55.943363307 +0900
++++ rest26/library/dumbdbm.rst	2008-10-21 05:03:04.897186950 +0900
+@@ -1,19 +1,22 @@
+-
+ :mod:`dumbdbm` --- Portable DBM implementation
+ ==============================================
+ 
+ .. module:: dumbdbm
+    :synopsis: Portable implementation of the simple DBM interface.
+ 
++.. note::
++   The :mod:`dumbdbm` module has been renamed to :mod:`dbm.dumb` in Python 3.0.
++   The :term:`2to3` tool will automatically adapt imports when converting your
++   sources to 3.0.
+ 
+ .. index:: single: databases
+ 
+ .. note::
+ 
+    The :mod:`dumbdbm` module is intended as a last resort fallback for the
+    :mod:`anydbm` module when no more robust module is available. The :mod:`dumbdbm`
+    module is not written for speed and is not nearly as heavily used as the other
+    database modules.
+ 
+ The :mod:`dumbdbm` module provides a persistent dictionary-like interface which
+ is written entirely in Python.  Unlike other modules such as :mod:`gdbm` and
+@@ -65,17 +68,17 @@
+       Utility module used to determine the type of an existing database.
+ 
+ 
+ .. _dumbdbm-objects:
+ 
+ Dumbdbm Objects
+ ---------------
+ 
+ In addition to the methods provided by the :class:`UserDict.DictMixin` class,
+ :class:`dumbdbm` objects provide the following methods.
+ 
+ 
+-.. method:: XXX Class.sync()
++.. method:: dumbdbm.sync()
+ 
+    Synchronize the on-disk directory and data files.  This method is called by the
+    :meth:`sync` method of :class:`Shelve` objects.
+ 

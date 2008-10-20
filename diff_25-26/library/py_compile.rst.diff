@@ -1,0 +1,55 @@
+--- rest25/library/py_compile.rst	2008-10-21 04:57:03.399050777 +0900
++++ rest26/library/py_compile.rst	2008-10-21 05:03:04.817171172 +0900
+@@ -1,23 +1,19 @@
+-
+ :mod:`py_compile` --- Compile Python source files
+ =================================================
+ 
+ .. module:: py_compile
+-
+-
+-.. % Documentation based on module docstrings, by Fred L. Drake, Jr.
+-.. % <fdrake@acm.org>
+-
+-
++   :synopsis: Generate byte-code files from Python source files.
++.. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
++.. documentation based on module docstrings
+ 
+ .. index:: pair: file; byte-code
+ 
+ The :mod:`py_compile` module provides a function to generate a byte-code file
+ from a source file, and another function used when the module source file is
+ invoked as a script.
+ 
+ Though not often needed, this function can be useful when installing modules for
+ shared use, especially if some of the users may not have permission to write the
+ byte-code cache files in the directory containing the source code.
+ 
+ 
+@@ -37,20 +33,24 @@
+    compiling *file*. If *doraise* is false (the default), an error string is
+    written to ``sys.stderr``, but no exception is raised.
+ 
+ 
+ .. function:: main([args])
+ 
+    Compile several source files.  The files named in *args* (or on the command
+    line, if *args* is not specified) are compiled and the resulting bytecode is
+    cached in the normal manner.  This function does not search a directory
+    structure to locate source files; it only compiles files named explicitly.
+ 
+ When this module is run as a script, the :func:`main` is used to compile all the
+-files named on the command line.
++files named on the command line.  The exit status is nonzero if one of the files
++could not be compiled.
++
++.. versionchanged:: 2.6
++   Added the nonzero exit status when module is run as a script.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`compileall`
+       Utilities to compile all Python source files in a directory tree.
+ 

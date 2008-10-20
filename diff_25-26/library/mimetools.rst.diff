@@ -1,0 +1,105 @@
+--- rest25/library/mimetools.rst	2008-10-21 04:57:00.203089504 +0900
++++ rest26/library/mimetools.rst	2008-10-21 05:03:04.893285895 +0900
+@@ -1,23 +1,25 @@
+ 
+ :mod:`mimetools` --- Tools for parsing MIME messages
+ ====================================================
+ 
+ .. module:: mimetools
+    :synopsis: Tools for parsing MIME-style message bodies.
++   :deprecated:
+ 
+ 
+ .. deprecated:: 2.3
+    The :mod:`email` package should be used in preference to the :mod:`mimetools`
+-   module.  This module is present only to maintain backward compatibility.
++   module.  This module is present only to maintain backward compatibility, and
++   it has been removed in 3.x.
+ 
+ .. index:: module: rfc822
+ 
+ This module defines a subclass of the :mod:`rfc822` module's :class:`Message`
+ class and a number of utility functions that are useful for the manipulation for
+ MIME multipart or encoded message.
+ 
+ It defines the following items:
+ 
+ 
+ .. class:: Message(fp[, seekable])
+ 
+@@ -63,68 +65,68 @@
+ 
+ .. seealso::
+ 
+    Module :mod:`email`
+       Comprehensive email handling package; supersedes the :mod:`mimetools` module.
+ 
+    Module :mod:`rfc822`
+       Provides the base class for :class:`mimetools.Message`.
+ 
+    Module :mod:`multifile`
+       Support for reading files which contain distinct parts, such as MIME data.
+ 
+-   http://www.cs.uu.nl/wais/html/na-dir/mail/mime-faq/.html
++   http://faqs.cs.uu.nl/na-dir/mail/mime-faq/.html
+       The MIME Frequently Asked Questions document.  For an overview of MIME, see the
+       answer to question 1.1 in Part 1 of this document.
+ 
+ 
+ .. _mimetools-message-objects:
+ 
+ Additional Methods of Message Objects
+ -------------------------------------
+ 
+ The :class:`Message` class defines the following methods in addition to the
+ :class:`rfc822.Message` methods:
+ 
+ 
+-.. method:: XXX Class.getplist()
++.. method:: Message.getplist()
+ 
+    Return the parameter list of the :mailheader:`Content-Type` header. This is a
+    list of strings.  For parameters of the form ``key=value``, *key* is converted
+    to lower case but *value* is not.  For example, if the message contains the
+    header ``Content-type: text/html; spam=1; Spam=2; Spam`` then :meth:`getplist`
+    will return the Python list ``['spam=1', 'spam=2', 'Spam']``.
+ 
+ 
+-.. method:: XXX Class.getparam(name)
++.. method:: Message.getparam(name)
+ 
+    Return the *value* of the first parameter (as returned by :meth:`getplist`) of
+    the form ``name=value`` for the given *name*.  If *value* is surrounded by
+    quotes of the form '``<``...\ ``>``' or '``"``...\ ``"``', these are removed.
+ 
+ 
+-.. method:: XXX Class.getencoding()
++.. method:: Message.getencoding()
+ 
+    Return the encoding specified in the :mailheader:`Content-Transfer-Encoding`
+    message header.  If no such header exists, return ``'7bit'``.  The encoding is
+    converted to lower case.
+ 
+ 
+-.. method:: XXX Class.gettype()
++.. method:: Message.gettype()
+ 
+    Return the message type (of the form ``type/subtype``) as specified in the
+    :mailheader:`Content-Type` header.  If no such header exists, return
+    ``'text/plain'``.  The type is converted to lower case.
+ 
+ 
+-.. method:: XXX Class.getmaintype()
++.. method:: Message.getmaintype()
+ 
+    Return the main type as specified in the :mailheader:`Content-Type` header.  If
+    no such header exists, return ``'text'``.  The main type is converted to lower
+    case.
+ 
+ 
+-.. method:: XXX Class.getsubtype()
++.. method:: Message.getsubtype()
+ 
+    Return the subtype as specified in the :mailheader:`Content-Type` header.  If no
+    such header exists, return ``'plain'``.  The subtype is converted to lower case.
+ 

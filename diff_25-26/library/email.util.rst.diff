@@ -1,0 +1,57 @@
+--- rest25/library/email.util.rst	2008-10-21 04:56:50.679402311 +0900
++++ rest26/library/email.util.rst	2008-10-21 05:03:04.817171172 +0900
+@@ -1,12 +1,15 @@
++:mod:`email`: Miscellaneous utilities
++-------------------------------------
++
+ .. module:: email.utils
+    :synopsis: Miscellaneous email package utilities.
+ 
+ 
+ There are several useful utilities provided in the :mod:`email.utils` module:
+ 
+ 
+ .. function:: quote(str)
+ 
+    Return a new string with backslashes in *str* replaced by two backslashes, and
+    double quotes replaced by backslash-double quote.
+ 
+@@ -48,36 +51,36 @@
+       resent_tos = msg.get_all('resent-to', [])
+       resent_ccs = msg.get_all('resent-cc', [])
+       all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
+ 
+ 
+ .. function:: parsedate(date)
+ 
+    Attempts to parse a date according to the rules in :rfc:`2822`. however, some
+    mailers don't follow that format as specified, so :func:`parsedate` tries to
+    guess correctly in such cases.  *date* is a string containing an :rfc:`2822`
+    date, such as  ``"Mon, 20 Nov 1995 19:12:08 -0500"``.  If it succeeds in parsing
+    the date, :func:`parsedate` returns a 9-tuple that can be passed directly to
+-   :func:`time.mktime`; otherwise ``None`` will be returned.  Note that fields 6,
++   :func:`time.mktime`; otherwise ``None`` will be returned.  Note that indexes 6,
+    7, and 8 of the result tuple are not usable.
+ 
+ 
+ .. function:: parsedate_tz(date)
+ 
+    Performs the same function as :func:`parsedate`, but returns either ``None`` or
+    a 10-tuple; the first 9 elements make up a tuple that can be passed directly to
+    :func:`time.mktime`, and the tenth is the offset of the date's timezone from UTC
+    (which is the official term for Greenwich Mean Time) [#]_.  If the input string
+    has no timezone, the last element of the tuple returned is ``None``.  Note that
+-   fields 6, 7, and 8 of the result tuple are not usable.
++   indexes 6, 7, and 8 of the result tuple are not usable.
+ 
+ 
+ .. function:: mktime_tz(tuple)
+ 
+    Turn a 10-tuple as returned by :func:`parsedate_tz` into a UTC timestamp.  It
+    the timezone item in the tuple is ``None``, assume local time.  Minor
+    deficiency: :func:`mktime_tz` interprets the first 8 elements of *tuple* as a
+    local time and then compensates for the timezone difference.  This may yield a
+    slight error around changes in daylight savings time, though not worth worrying
+    about for common use.
+ 
+ 

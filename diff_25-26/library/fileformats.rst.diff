@@ -1,0 +1,16 @@
+--- rest25/library/fileformats.rst	2008-10-21 04:56:50.683369017 +0900
++++ rest26/library/fileformats.rst	2008-10-21 05:03:04.921980052 +0900
+@@ -7,12 +7,13 @@
+ 
+ The modules described in this chapter parse various miscellaneous file formats
+ that aren't markup languages or are related to e-mail.
+ 
+ 
+ .. toctree::
+ 
+    csv.rst
+    configparser.rst
+    robotparser.rst
+    netrc.rst
+    xdrlib.rst
++   plistlib.rst

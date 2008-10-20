@@ -1,0 +1,83 @@
+--- rest25/data/refcounts.dat	2008-10-21 04:56:44.820833096 +0900
++++ rest26/data/refcounts.dat	2008-10-21 05:03:05.305642329 +0900
+@@ -304,24 +304,29 @@
+ PyErr_Warn:char*:message::
+ 
+ PyErr_WarnEx:int:::
+ PyErr_WarnEx:PyObject*:category:0:
+ PyErr_WarnEx:const char*:message::
+ PyErr_WarnEx:Py_ssize_t:stack_level::
+ 
+ PyEval_AcquireLock:void:::
+ 
+ PyEval_AcquireThread:void:::
+ PyEval_AcquireThread:PyThreadState*:tstate::
+ 
++PyEval_GetBuiltins:PyObject*::0:
++PyEval_GetLocals:PyObject*::0:
++PyEval_GetGlobals:PyObject*::0:
++PyEval_GetFrame:PyObject*::0:
++
+ PyEval_InitThreads:void:::
+ 
+ PyEval_ReleaseLock:void:::
+ 
+ PyEval_ReleaseThread:void:::
+ PyEval_ReleaseThread:PyThreadState*:tstate::
+ 
+ PyEval_RestoreThread:void:::
+ PyEval_RestoreThread:PyThreadState*:tstate::
+ 
+ PyEval_SaveThread:PyThreadState*:::
+ 
+@@ -1237,28 +1242,50 @@
+ 
+ PyString_Encode:PyObject*::+1:
+ PyString_Encode:const char*:s::
+ PyString_Encode:int:size::
+ PyString_Encode:const char*:encoding::
+ PyString_Encode:const char*:errors::
+ 
+ PyString_AsEncodedString:PyObject*::+1:
+ PyString_AsEncodedString:PyObject*:str::
+ PyString_AsEncodedString:const char*:encoding::
+ PyString_AsEncodedString:const char*:errors::
+ 
++PySys_AddWarnOption:void:::
++PySys_AddWarnOption:char*:s::
++
++PySys_GetFile:FILE*:::
++PySys_GetFile:char*:name::
++PySys_GetFile:FILE*:def::
++
++PySys_GetObject:PyObject*::0:
++PySys_GetObject:char*:name::
++
+ PySys_SetArgv:int:::
+ PySys_SetArgv:int:argc::
+ PySys_SetArgv:char**:argv::
+ 
++PySys_SetObject:int:::
++PySys_SetObject:char*:name::
++PySys_SetObject:PyObject*:v:+1:
++
++PySys_ResetWarnOptions:void:::
++
++PySys_WriteStdout:void:::
++PySys_WriteStdout:char*:format::
++
++PySys_WriteStderr:void:::
++PySys_WriteStderr:char*:format::
++
+ PyThreadState_Clear:void:::
+ PyThreadState_Clear:PyThreadState*:tstate::
+ 
+ PyThreadState_Delete:void:::
+ PyThreadState_Delete:PyThreadState*:tstate::
+ 
+ PyThreadState_Get:PyThreadState*:::
+ 
+ PyThreadState_GetDict:PyObject*::0:
+ 
+ PyThreadState_New:PyThreadState*:::
+ PyThreadState_New:PyInterpreterState*:interp::

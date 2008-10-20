@@ -1,0 +1,28 @@
+--- rest25/library/python.rst	2008-10-21 04:57:03.587077800 +0900
++++ rest26/library/python.rst	2008-10-21 05:03:04.997417315 +0900
+@@ -5,23 +5,25 @@
+ Python Runtime Services
+ ***********************
+ 
+ The modules described in this chapter provide a wide range of services related
+ to the Python interpreter and its interaction with its environment.  Here's an
+ overview:
+ 
+ 
+ .. toctree::
+ 
+    sys.rst
+    __builtin__.rst
++   future_builtins.rst
+    __main__.rst
+    warnings.rst
+    contextlib.rst
++   abc.rst
+    atexit.rst
+    traceback.rst
+    __future__.rst
+    gc.rst
+    inspect.rst
+    site.rst
+    user.rst
+    fpectl.rst

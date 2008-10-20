@@ -1,0 +1,157 @@
+--- rest25/library/gl.rst	2008-10-21 04:56:57.731363678 +0900
++++ rest26/library/gl.rst	2008-10-21 05:03:04.949190222 +0900
+@@ -1,43 +1,48 @@
+ 
+ :mod:`gl` --- *Graphics Library* interface
+ ==========================================
+ 
+ .. module:: gl
+    :platform: IRIX
+    :synopsis: Functions from the Silicon Graphics Graphics Library.
++   :deprecated:
++   
++   
++.. deprecated:: 2.6
++    The :mod:`gl` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This module provides access to the Silicon Graphics *Graphics Library*. It is
+ available only on Silicon Graphics machines.
+ 
+ .. warning::
+ 
+    Some illegal calls to the GL library cause the Python interpreter to dump core.
+    In particular, the use of most GL calls is unsafe before the first window is
+    opened.
+ 
+ The module is too large to document here in its entirety, but the following
+ should help you to get started. The parameter conventions for the C functions
+ are translated to Python as follows:
+ 
+ * All (short, long, unsigned) int values are represented by Python integers.
+ 
+ * All float and double values are represented by Python floating point numbers.
+   In most cases, Python integers are also allowed.
+ 
+ * All arrays are represented by one-dimensional Python lists. In most cases,
+   tuples are also allowed.
+ 
+-*  All string and character arguments are represented by Python strings, for
++* All string and character arguments are represented by Python strings, for
+   instance, ``winopen('Hi There!')`` and ``rotate(900, 'z')``.
+ 
+ * All (short, long, unsigned) integer arguments or return values that are only
+   used to specify the length of an array argument are omitted. For example, the C
+   call ::
+ 
+      lmdef(deftype, index, np, props)
+ 
+   is translated to Python as ::
+ 
+      lmdef(deftype, index, props)
+ 
+@@ -56,49 +61,49 @@
+ The following functions are non-standard or have special argument conventions:
+ 
+ 
+ .. function:: varray(argument)
+ 
+    Equivalent to but faster than a number of ``v3d()`` calls. The *argument* is a
+    list (or tuple) of points. Each point must be a tuple of coordinates ``(x, y,
+    z)`` or ``(x, y)``. The points may be 2- or 3-dimensional but must all have the
+    same dimension. Float and int values may be mixed however. The points are always
+    converted to 3D double precision points by assuming ``z = 0.0`` if necessary (as
+    indicated in the man page), and for each point ``v3d()`` is called.
+ 
+-   .. % JHXXX the argument-argument added
++   .. XXX the argument-argument added
+ 
+ 
+ .. function:: nvarray()
+ 
+    Equivalent to but faster than a number of ``n3f`` and ``v3f`` calls. The
+    argument is an array (list or tuple) of pairs of normals and points. Each pair
+    is a tuple of a point and a normal for that point. Each point or normal must be
+    a tuple of coordinates ``(x, y, z)``. Three coordinates must be given. Float and
+    int values may be mixed. For each pair, ``n3f()`` is called for the normal, and
+    then ``v3f()`` is called for the point.
+ 
+ 
+ .. function:: vnarray()
+ 
+    Similar to  ``nvarray()`` but the pairs have the point first and the normal
+    second.
+ 
+ 
+ .. function:: nurbssurface(s_k, t_k, ctl, s_ord, t_ord, type)
+ 
+    Defines a nurbs surface. The dimensions of ``ctl[][]`` are computed as follows:
+    ``[len(s_k) - s_ord]``, ``[len(t_k) - t_ord]``.
+ 
+-   .. % XXX s_k[], t_k[], ctl[][]
++   .. XXX s_k[], t_k[], ctl[][]
+ 
+ 
+ .. function:: nurbscurve(knots, ctlpoints, order, type)
+ 
+    Defines a nurbs curve. The length of ctlpoints is ``len(knots) - order``.
+ 
+ 
+ .. function:: pwlcurve(points, type)
+ 
+    Defines a piecewise-linear curve. *points* is a list of points. *type* must be
+    ``N_ST``.
+ 
+@@ -141,40 +146,49 @@
+ 
+    main()
+ 
+ 
+ .. seealso::
+ 
+    `PyOpenGL: The Python OpenGL Binding <http://pyopengl.sourceforge.net/>`_
+       .. index::
+          single: OpenGL
+          single: PyOpenGL
+ 
+       An interface to OpenGL is also available; see information about the **PyOpenGL**
+-      project online at `<http://pyopengl.sourceforge.net/>`_.  This may be a better
+-      option if support for SGI hardware from before about 1996 is not required.
++      project online at http://pyopengl.sourceforge.net/.  This may be a better option
++      if support for SGI hardware from before about 1996 is not required.
+ 
+ 
+ :mod:`DEVICE` --- Constants used with the :mod:`gl` module
+ ==========================================================
+ 
+ .. module:: DEVICE
+    :platform: IRIX
+    :synopsis: Constants used with the gl module.
++   :deprecated:
++   
++   
++.. deprecated:: 2.6
++    The :mod:`DEVICE` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This modules defines the constants used by the Silicon Graphics *Graphics
+ Library* that C programmers find in the header file ``<gl/device.h>``. Read the
+ module source file for details.
+ 
+ 
+ :mod:`GL` --- Constants used with the :mod:`gl` module
+ ======================================================
+ 
+ .. module:: GL
+    :platform: IRIX
+    :synopsis: Constants used with the gl module.
+-
++   :deprecated:
++   
++   
++.. deprecated:: 2.6
++    The :mod:`GL` module has been deprecated for removal in Python 3.0.
+ 
+ This module contains constants used by the Silicon Graphics *Graphics Library*
+ from the C header file ``<gl/gl.h>``. Read the module source file for details.
+ 

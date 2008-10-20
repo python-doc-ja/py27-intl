@@ -1,0 +1,59 @@
+--- rest25/library/runpy.rst	2008-10-21 04:57:04.447055495 +0900
++++ rest26/library/runpy.rst	2008-10-21 05:03:05.025227002 +0900
+@@ -1,24 +1,20 @@
+-
+-:mod:`runpy` --- Locating and executing Python modules.
+-=======================================================
++:mod:`runpy` --- Locating and executing Python modules
++======================================================
+ 
+ .. module:: runpy
++   :synopsis: Locate and run Python modules without importing them first.
+ .. moduleauthor:: Nick Coghlan <ncoghlan@gmail.com>
+ 
+ 
+-.. % standard library, in Python
+-
+-
+-
+ .. versionadded:: 2.5
+ 
+ The :mod:`runpy` module is used to locate and run Python modules without
+ importing them first. Its main use is to implement the :option:`-m` command line
+ switch that allows scripts to be located using the Python module namespace
+ rather than the filesystem.
+ 
+ When executed as a script, the module effectively operates as follows::
+ 
+    del sys.argv[0]  # Remove the runpy module from the arguments
+    run_module(sys.argv[0], run_name="__main__", alter_sys=True)
+ 
+@@ -48,26 +44,26 @@
+    ``__loader__`` is set to the PEP 302 module loader used to retrieve the code for
+    the module (This loader may be a wrapper around the standard import mechanism).
+ 
+    ``__file__`` is set to the name provided by the module loader. If the loader
+    does not make filename information available, this variable is set to ``None``.
+ 
+    ``__builtins__`` is automatically initialised with a reference to the top level
+    namespace of the :mod:`__builtin__` module.
+ 
+    If the argument *alter_sys* is supplied and evaluates to ``True``, then
+    ``sys.argv[0]`` is updated with the value of ``__file__`` and
+    ``sys.modules[__name__]`` is updated with a temporary module object for the
+-   module being executed. Both ``sys.argv[0]`` and ``sys.modules[__name__]`` are
+-   restored to their original values before the function returns.
++   module being executed. Both ``sys.argv[0]`` and ``sys.modules[__name__]``
++   are restored to their original values before the function returns.
+ 
+    Note that this manipulation of :mod:`sys` is not thread-safe. Other threads may
+    see the partially initialised module, as well as the altered list of arguments.
+    It is recommended that the :mod:`sys` module be left alone when invoking this
+    function from threaded code.
+ 
+ 
+ .. seealso::
+ 
+    :pep:`338` - Executing modules as scripts
+       PEP written and  implemented by Nick Coghlan.
+ 

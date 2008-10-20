@@ -1,0 +1,81 @@
+--- rest25/distutils/sourcedist.rst	2008-10-21 04:56:48.067381058 +0900
++++ rest26/distutils/sourcedist.rst	2008-10-21 05:03:04.381271236 +0900
+@@ -1,19 +1,19 @@
+ .. _source-dist:
+ 
+ ******************************
+ Creating a Source Distribution
+ ******************************
+ 
+-As shown in section :ref:`simple-example`, you use the :command:`sdist` command
++As shown in section :ref:`distutils-simple-example`, you use the :command:`sdist` command
+ to create a source distribution.  In the simplest case, ::
+ 
+    python setup.py sdist
+ 
+ (assuming you haven't specified any :command:`sdist` options in the setup script
+ or config file), :command:`sdist` creates the archive of the default format for
+ the current platform.  The default format is a gzip'ed tar file
+ (:file:`.tar.gz`) on Unix, and ZIP file on Windows.
+ 
+ You can specify as many formats as you like using the :option:`--formats`
+ option, for example::
+ 
+@@ -113,25 +113,26 @@
+ :option:`--no-defaults` option to disable the standard set entirely.)  There are
+ several other commands available in the manifest template mini-language; see
+ section :ref:`sdist-cmd`.
+ 
+ The order of commands in the manifest template matters: initially, we have the
+ list of default files as described above, and each command in the template adds
+ to or removes from that list of files.  Once we have fully processed the
+ manifest template, we remove files that should not be included in the source
+ distribution:
+ 
+ * all files in the Distutils "build" tree (default :file:`build/`)
+ 
+-* all files in directories named :file:`RCS`, :file:`CVS` or :file:`.svn`
++* all files in directories named :file:`RCS`, :file:`CVS`, :file:`.svn`,
++  :file:`.hg`, :file:`.git`, :file:`.bzr` or :file:`_darcs`
+ 
+ Now we have our complete list of files, which is written to the manifest for
+ future reference, and then used to build the source distribution archive(s).
+ 
+ You can disable the default set of included files with the
+ :option:`--no-defaults` option, and you can disable the standard exclude set
+ with :option:`--no-prune`.
+ 
+ Following the Distutils' own manifest template, let's trace how the
+ :command:`sdist` command builds the list of files to include in the Distutils
+ source distribution:
+ 
+@@ -147,26 +148,27 @@
+ 
+ #. include :file:`\*.txt` in the distribution root (this will find
+    :file:`README.txt` a second time, but such redundancies are weeded out later)
+ 
+ #. include anything matching :file:`\*.txt` or :file:`\*.py` in the sub-tree
+    under :file:`examples`,
+ 
+ #. exclude all files in the sub-trees starting at directories matching
+    :file:`examples/sample?/build`\ ---this may exclude files included by the
+    previous two steps, so it's important that the ``prune`` command in the manifest
+    template comes after the ``recursive-include`` command
+ 
+-#. exclude the entire :file:`build` tree, and any :file:`RCS`, :file:`CVS` and
+-   :file:`.svn` directories
++#. exclude the entire :file:`build` tree, and any :file:`RCS`, :file:`CVS`,
++   :file:`.svn`, :file:`.hg`, :file:`.git`, :file:`.bzr` and :file:`_darcs`
++   directories
+ 
+ Just like in the setup script, file and directory names in the manifest template
+ should always be slash-separated; the Distutils will take care of converting
+ them to the standard representation on your platform. That way, the manifest
+ template is portable across operating systems.
+ 
+ 
+ .. _manifest-options:
+ 
+ Manifest-related options
+ ========================
+ 

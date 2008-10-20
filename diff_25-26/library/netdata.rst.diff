@@ -1,0 +1,28 @@
+--- rest25/library/netdata.rst	2008-10-21 04:57:10.384619208 +0900
++++ rest26/library/netdata.rst	2008-10-21 05:03:04.957370594 +0900
+@@ -3,24 +3,25 @@
+ 
+ **********************
+ Internet Data Handling
+ **********************
+ 
+ This chapter describes modules which support handling data formats commonly used
+ on the Internet.
+ 
+ 
+ .. toctree::
+ 
+    email.rst
++   json.rst
+    mailcap.rst
+    mailbox.rst
+    mhlib.rst
+    mimetools.rst
+    mimetypes.rst
+    mimewriter.rst
+    mimify.rst
+    multifile.rst
+    rfc822.rst
+    base64.rst
+    binhex.rst
+    binascii.rst

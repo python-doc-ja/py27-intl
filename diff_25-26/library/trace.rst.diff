@@ -1,0 +1,59 @@
+--- rest25/library/trace.rst	2008-10-21 04:57:08.248595178 +0900
++++ rest26/library/trace.rst	2008-10-21 05:03:04.881670449 +0900
+@@ -55,48 +55,51 @@
+ :option:`--coverdir`, :option:`-C`
+    Name a directory in which to save annotated listing files.
+ 
+ :option:`--missing`, :option:`-m`
+    When generating annotated listings, mark lines which were not executed with
+    '``>>>>>>``'.
+ 
+ :option:`--summary`, :option:`-s`
+    When using :option:`--count` or :option:`--report`, write a brief summary to
+    stdout for each file processed.
+ 
+ :option:`--ignore-module`
+-   Ignore the named module and its submodules (if it is a package).  May be given
++   Accepts comma separated list of module names. Ignore each of the named
++   module and its submodules (if it is a package).  May be given 
+    multiple times.
+ 
+ :option:`--ignore-dir`
+-   Ignore all modules and packages in the named directory and subdirectories.  May
+-   be given multiple times.
++   Ignore all modules and packages in the named directory and subdirectories
++   (multiple directories can be joined by os.pathsep).  May be given multiple
++   times. 
+ 
+ 
+ .. _trace-api:
+ 
+ Programming Interface
+ ---------------------
+ 
+ 
+-.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None]]]]]]]])
++.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])
+ 
+    Create an object to trace execution of a single statement or expression. All
+    parameters are optional.  *count* enables counting of line numbers. *trace*
+    enables line execution tracing.  *countfuncs* enables listing of the functions
+    called during the run.  *countcallers* enables call relationship tracking.
+    *ignoremods* is a list of modules or packages to ignore.  *ignoredirs* is a list
+    of directories whose modules or packages should be ignored.  *infile* is the
+    file from which to read stored count information.  *outfile* is a file in which
+-   to write updated count information.
++   to write updated count information. *timing* enables a timestamp relative
++   to when tracing was started to be displayed.
+ 
+ 
+ .. method:: Trace.run(cmd)
+ 
+    Run *cmd* under control of the Trace object with the current tracing parameters.
+ 
+ 
+ .. method:: Trace.runctx(cmd[, globals=None[, locals=None]])
+ 
+    Run *cmd* under control of the Trace object with the current tracing parameters
+    in the defined global and local environments.  If not defined, *globals* and
+    *locals* default to empty dictionaries.
