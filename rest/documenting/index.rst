@@ -1,9 +1,8 @@
 .. _documenting-index:
 
-######################
-  Documenting Python
-######################
-
+###############################
+  Python のドキュメントの作成
+###############################
 
 .. The Python language has a substantial body of documentation, much of it
 .. contributed by various authors. The markup used for the Python documentation is
