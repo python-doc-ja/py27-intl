@@ -63,6 +63,7 @@ from __future__ import with_statement
 import re
 import StringIO
 import textwrap
+from docutils.utils import east_asian_column_width as ea_width
 
 WIDTH = 80
 INDENT = 3
@@ -468,7 +469,9 @@ class RestWriter(object):
         heading = self.get_node_text(node.args[0]).strip()
         if self.sectionlabel:
             self.write('.. _%s:\n' % self.sectionlabel)
-        hl = len(heading)
+        #todo: 文字幅を考慮する.
+        #hl = len(heading)
+        hl = ea_width(heading)
         if node.cmdname in self.sectdoubleline:
             self.write(self.sectchars[node.cmdname] * hl)
         self.write(heading)
@@ -730,7 +733,7 @@ class RestWriter(object):
                     if len(par) == 1 and self.note_re.match(par[0].strip()):
                         # special case: escape "(1)" to avoid enumeration
                         par[0] = '\\' + par[0]
-                    maxwidth = max(map(len, par)) if par else 0
+                    maxwidth = max(map(ea_width, par)) if par else 0
                     realwidths[i] = max(realwidths[i], maxwidth)
                     cells.append(par)
                 fmted_rows.append(cells)
@@ -748,7 +751,10 @@ class RestWriter(object):
                 out = ['|']
                 for i, cell in enumerate(line):
                     if cell:
-                        out.append(' ' + cell.ljust(realwidths[i]+1))
+                        #out.append(' ' + cell.ljust(realwidths[i]+1))
+                        # support east asian width.
+                        c = ' ' + cell + ' ' * (realwidths[i] - ea_width(cell) + 1)
+                        out.append(c)
                     else:
                         out.append(' ' * (realwidths[i] + 2))
                     out.append('|')
