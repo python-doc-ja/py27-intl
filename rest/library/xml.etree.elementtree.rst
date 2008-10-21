@@ -34,7 +34,7 @@
 .. _elementtree-functions:
 
 関数
---
+----
 
 
 .. function:: Comment([text])
@@ -187,7 +187,7 @@
 .. _elementtree-elementtree-objects:
 
 ElementTree オブジェクト
-------------------
+------------------------
 
 
 .. class:: ElementTree([element,] [file])
@@ -284,7 +284,7 @@ ElementTree オブジェクト
 .. _elementtree-qname-objects:
 
 QName オブジェクト
-------------
+------------------
 
 
 .. class:: QName(text_or_uri[, tag])
@@ -303,7 +303,7 @@ QName オブジェクト
 .. _elementtree-treebuilder-objects:
 
 TreeBuilder オブジェクト
-------------------
+------------------------
 
 
 .. class:: TreeBuilder([element_factory])
@@ -354,7 +354,7 @@ TreeBuilder オブジェクト
 .. _elementtree-xmltreebuilder-objects:
 
 XMLTreeBuilder オブジェクト
----------------------
+---------------------------
 
 
 .. class:: XMLTreeBuilder([html,] [target])

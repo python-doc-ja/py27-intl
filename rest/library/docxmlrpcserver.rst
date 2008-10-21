@@ -1,6 +1,6 @@
 
 :mod:`DocXMLRPCServer` --- セルフ-ドキュメンティング XML-RPC サーバ
-====================================================
+===================================================================
 
 .. module:: DocXMLRPCServer
    :synopsis: セルフ-ドキュメンティング XML-RPC サーバの実装。
@@ -36,7 +36,7 @@
 .. _doc-xmlrpc-servers:
 
 DocXMLRPCServer オブジェクト
-----------------------
+----------------------------
 
 :class:`DocXMLRPCServer` は :class:`SimpleXMLRPCServer.SimpleXMLRPCServer`
 の派生クラスで、セルフ-  ドキュメンティングの手段と XML-RPC サーバ機能を提供します。HTTP POST  リクエストは XML-RPC

@@ -3,9 +3,9 @@
 
 .. _abstract:
 
-************************************
+***********************************************
 抽象オブジェクトレイヤ (abstract objects layer)
-************************************
+***********************************************
 
 この章で説明する関数は、Python オブジェクトとのやりとりを型や (数値型全て、シーケンス型全てといった) 大まかなオブジェクト型の種類に
 関係なく行います。関数を適用対象でないオブジェクトに対して 使った場合、 Python の例外が送出されることになります。
@@ -17,7 +17,7 @@
 .. _object:
 
 オブジェクトプロトコル (object protocol)
-=============================
+========================================
 
 
 .. cfunction:: int PyObject_Print(PyObject *o, FILE *fp, int flags)
@@ -330,7 +330,7 @@
 .. _number:
 
 数値型プロトコル (number protocol)
-==========================
+==================================
 
 
 .. cfunction:: int PyNumber_Check(PyObject *o)
@@ -600,7 +600,7 @@
 .. _sequence:
 
 シーケンス型プロトコル (sequence protocol)
-===============================
+==========================================
 
 
 .. cfunction:: int PySequence_Check(PyObject *o)
@@ -750,7 +750,7 @@
 .. _mapping:
 
 マップ型プロトコル (mapping protocol)
-============================
+=====================================
 
 
 .. cfunction:: int PyMapping_Check(PyObject *o)
@@ -822,7 +822,7 @@
 .. _iterator:
 
 イテレータプロトコル (iterator protocol)
-==============================
+========================================
 
 .. versionadded:: 2.2
 
@@ -869,7 +869,7 @@
 .. _abstract-buffer:
 
 バッファプロトコル (buffer protocol)
-===========================
+====================================
 
 
 .. cfunction:: int PyObject_AsCharBuffer(PyObject *obj, const char **buffer, Py_ssize_t *buffer_len)

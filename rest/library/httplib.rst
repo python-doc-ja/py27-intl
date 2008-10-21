@@ -1,6 +1,6 @@
 
 :mod:`httplib` --- HTTP プロトコルクライアント
-===================================
+==============================================
 
 .. module:: httplib
    :synopsis: HTTP および HTTPS プロトコルのクライアント  (ソケットを必要とします) 。
@@ -329,7 +329,7 @@
 .. _httpconnection-objects:
 
 HTTPConnection オブジェクト
----------------------
+---------------------------
 
 :class:`HTTPConnection` インスタンスには以下のメソッドがあります:
 
@@ -396,7 +396,7 @@ HTTPConnection オブジェクト
 .. _httpresponse-objects:
 
 HTTPResponse オブジェクト
--------------------
+-------------------------
 
 :class:`HTTPResponse` インスタンスは以下のメソッドと属性を持ちます:
 
@@ -441,7 +441,7 @@ HTTPResponse オブジェクト
 .. _httplib-examples:
 
 例
--
+--
 
 以下は``GET`` リクエストの送信方法を示した例です::
 

@@ -1,6 +1,6 @@
 
 :mod:`urllib` --- URL による任意のリソースへのアクセス
-======================================
+======================================================
 
 .. module:: urllib
    :synopsis: URL による任意のネットワークリソースへのアクセス (socket が必要です)。
@@ -321,7 +321,7 @@
 .. _urlopener-objs:
 
 URLopener オブジェクト
-----------------
+----------------------
 
 .. sectionauthor:: Skip Montanaro <skip@mojam.com>
 
@@ -376,7 +376,7 @@ URLopener オブジェクト
 
 
 使用例
----
+------
 
 .. _urllib examples:
 

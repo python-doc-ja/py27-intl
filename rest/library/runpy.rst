@@ -1,6 +1,6 @@
 
 :mod:`runpy` --- Python モジュールの位置特定と実行
-=====================================
+==================================================
 
 .. module:: runpy
 .. moduleauthor:: Nick Coghlan <ncoghlan@gmail.com>

@@ -1,6 +1,6 @@
 
 :mod:`platform` ---  実行中プラットフォームの固有情報を参照する
-==========================================
+===============================================================
 
 .. module:: platform
    :synopsis: 実行中プラットフォームからできるだけ多くの固有情報を取得する
@@ -16,7 +16,7 @@
 
 
 クロス プラットフォーム
-------------
+-----------------------
 
 
 .. function:: architecture(executable=sys.executable, bits='', linkage='')
@@ -120,7 +120,7 @@
 
 
 Java プラットフォーム
--------------
+---------------------
 
 
 .. function:: java_ver(release='', vendor='', vminfo=('','',''), osinfo=('','',''))
@@ -131,7 +131,7 @@ Java プラットフォーム
 
 
 Windows プラットフォーム
-----------------
+------------------------
 
 
 .. function:: win32_ver(release='', version='', csd='', ptype='')
@@ -149,7 +149,7 @@ Windows プラットフォーム
 
 
 Win95/98 固有
-^^^^^^^^^^^
+^^^^^^^^^^^^^
 
 
 .. function:: popen(cmd, mode='r', bufsize=None)
@@ -163,7 +163,7 @@ Win95/98 固有
 
 
 Mac OS プラットフォーム
----------------
+-----------------------
 
 
 .. function:: mac_ver(release='', versioninfo=('','',''), machine='')
@@ -178,7 +178,7 @@ Mac OS プラットフォーム
 
 
 Unix プラットフォーム
--------------
+---------------------
 
 
 .. function:: dist(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake'))

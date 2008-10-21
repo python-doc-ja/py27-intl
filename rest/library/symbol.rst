@@ -1,6 +1,6 @@
 
 :mod:`symbol` --- Python解析木と共に使われる定数
-====================================
+================================================
 
 .. module:: symbol
    :synopsis: Constants representing internal nodes of the parse tree.

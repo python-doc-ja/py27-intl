@@ -1,6 +1,6 @@
 
 :mod:`MiniAEFrame` --- オープンスクリプティングアーキテクチャサーバのサポート
-==================================================
+=============================================================================
 
 .. module:: MiniAEFrame
    :platform: Mac
@@ -39,7 +39,7 @@
 .. _aeserver-objects:
 
 AEServer オブジェクト
----------------
+---------------------
 
 
 .. method:: AEServer.installaehandler(classe, type, callback)

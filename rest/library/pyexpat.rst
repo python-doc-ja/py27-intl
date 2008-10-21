@@ -1,6 +1,6 @@
 
 :mod:`xml.parsers.expat` --- Expat を使った高速な XML 解析
-=================================================
+==========================================================
 
 .. module:: xml.parsers.expat
    :synopsis: Expat による、検証を行わない XML パーザへのインタフェース
@@ -423,7 +423,7 @@ XMLParser Objects
 .. _expaterror-objects:
 
 ExpatError 例外
--------------
+---------------
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
@@ -456,7 +456,7 @@ ExpatError 例外
 .. _expat-example:
 
 例
--
+--
 
 以下のプログラムでは、与えられた引数を出力するだけの三つのハンドラを 定義しています。 ::
 
@@ -498,7 +498,7 @@ ExpatError 例外
 .. _expat-content-models:
 
 内容モデルの記述
---------
+----------------
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
@@ -574,7 +574,7 @@ ExpatError 例外
 .. _expat-errors:
 
 Expat エラー定数
------------
+----------------
 
 以下の定数は :mod:`xml.parsers.expat` モジュールにおける ``errors`` オブジェクトで提供されています。これらの定数は、
 エラーが発生した際に送出される :exc:`ExpatError` 例外オブジェクトのいくつかの属性を解釈する上で便利です。

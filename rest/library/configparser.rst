@@ -1,6 +1,6 @@
 
 :mod:`ConfigParser` --- 設定ファイルの構文解析器
-====================================
+================================================
 
 .. module:: ConfigParser
    :synopsis: Configuration file parser.
@@ -216,7 +216,7 @@ value`` エントリからなっています。 ``name=value`` という形式�
 .. _rawconfigparser-objects:
 
 RawConfigParser オブジェクト
-----------------------
+----------------------------
 
 :class:`RawConfigParser`クラスのインスタンスは以下のメソッドを持ちます:
 
@@ -437,7 +437,7 @@ RawConfigParser オブジェクト
 .. _configparser-objects:
 
 ConfigParser オブジェクト
--------------------
+-------------------------
 
 :class:`ConfigParser`クラスは:class:`RawConfigParser`のインターフェースを
 いくつかのメソッドについて拡張し、省略可能な引数を追加しています。
@@ -469,7 +469,7 @@ ConfigParser オブジェクト
 .. _safeconfigparser-objects:
 
 SafeConfigParser オブジェクト
------------------------
+-----------------------------
 
 :class:`SafeConfigParser` は :class:`ConfigParser` と同様の拡張インターフェイスを
 もっていますが、以下のような機能が追加されています:

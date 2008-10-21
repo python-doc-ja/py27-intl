@@ -1,6 +1,6 @@
 
 :mod:`Cookie` --- HTTPの状態管理
-===========================
+================================
 
 .. % HTTP state management}
 
@@ -149,7 +149,7 @@
 .. _cookie-objects:
 
 Cookieオブジェクト
-------------
+------------------
 
 .. % \begin{methoddesc}[BaseCookie]{value_decode}{val}
 .. % Return a decoded value from a string representation. Return value can
@@ -240,7 +240,7 @@ Cookieオブジェクト
 .. _morsel-objects:
 
 Morselオブジェクト
-------------
+------------------
 
 .. % \begin{classdesc}{Morsel}{}
 .. % Abstract a key/value pair, which has some \rfc{2109} attributes.
@@ -365,7 +365,7 @@ Morselオブジェクト
 .. _cookie-example:
 
 例
--
+--
 
 次の例は:mod:`Cookie`の使い方を示したものです。
 

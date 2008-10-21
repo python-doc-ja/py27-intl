@@ -3,9 +3,9 @@
 
 .. _building-on-windows:
 
-*********************************
+**************************************************
 Windows 上での C および C++ 拡張モジュールのビルド
-*********************************
+**************************************************
 
 .. % 
 
@@ -27,7 +27,7 @@ Unix プログラマの双方にとって有用です。
 .. _win-cookbook:
 
 型どおりのアプローチ
-==========
+====================
 
 Windows での拡張モジュールのビルドには、Unix と同じように、 :mod:`distutils` (XXX reference: ../lib
 /module-distutils.html) パッケージを使 ったビルド作業の制御と手動の二通りのアプローチがあります。 distutils
@@ -169,7 +169,7 @@ VC++を使わなけ ればならないことに注意しましょう。 ここ�
 .. _dynamic-linking:
 
 Unix と Windows の相違点
-===================
+========================
 
 .. sectionauthor:: Chris Phoenix <cphoenix@best.com>
 
@@ -212,7 +212,7 @@ Windows ではインポートライブラリの使用は ``import spam`` とす�
 .. _win-dlls:
 
 DLL 使用の実際
-=========
+==============
 
 .. sectionauthor:: Chris Phoenix <cphoenix@best.com>
 

@@ -1,9 +1,9 @@
 
 .. _tut-glossary:
 
-***
+******
 用語集
-***
+******
 
 .. % %% keep the entries sorted and include at least one \index{} item for each
 .. % %% cross-references are marked with \emph{entry}

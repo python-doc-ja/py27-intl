@@ -1,9 +1,9 @@
 
 .. _simple:
 
-**********************
+*************************
 単純文 (simple statement)
-**********************
+*************************
 
 .. index:: pair: simple; statement
 
@@ -30,7 +30,7 @@
 .. _exprstmts:
 
 式文 (expression statement)
-=========================
+===========================
 
 .. index:: pair: expression; statement
 
@@ -62,7 +62,7 @@
 .. _assert:
 
 Assert 文 (assert statement)
-===========================
+============================
 
 .. index:: statement: assert
 
@@ -99,7 +99,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _assignment:
 
 代入文 (assignment statement)
-==========================
+=============================
 
 .. index::
    pair: assignment; statement
@@ -223,7 +223,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _augassign:
 
 累算代入文 (augmented assignment statement)
---------------------------------------
+-------------------------------------------
 
 .. index::
    pair: augmented; assignment
@@ -264,7 +264,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _pass:
 
 :keyword:`pass` 文
-=================
+==================
 
 .. index:: statement: pass
 
@@ -286,7 +286,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _del:
 
 :keyword:`del` 文
-================
+=================
 
 .. index:: statement: del
 
@@ -323,7 +323,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _print:
 
 :keyword:`print` 文
-==================
+===================
 
 .. index:: statement: print
 
@@ -375,7 +375,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _return:
 
 :keyword:`return` 文
-===================
+====================
 
 .. index:: statement: return
 
@@ -405,7 +405,7 @@ Assert 文 は、プログラム内にデバッグ用アサーション (debuggi
 .. _yield:
 
 :keyword:`yield` 文
-==================
+===================
 
 .. index:: statement: yield
 
@@ -457,7 +457,7 @@ Python バージョン 2.5 では、:keyword:`yield` 文が  :keyword:`try` ... 
 .. _raise:
 
 :keyword:`raise` 文
-==================
+===================
 
 .. index:: statement: raise
 
@@ -498,7 +498,7 @@ exceptionQueue.Empty 例外を送出します)。
 .. _break:
 
 :keyword:`break` 文
-==================
+===================
 
 .. index:: statement: break
 
@@ -531,7 +531,7 @@ exceptionQueue.Empty 例外を送出します)。
 .. _continue:
 
 :keyword:`continue` 文
-=====================
+======================
 
 .. index:: statement: continue
 
@@ -553,7 +553,7 @@ exceptionQueue.Empty 例外を送出します)。
 .. _import:
 
 :keyword:`import` 文
-===================
+====================
 
 .. index::
    statement: import
@@ -665,7 +665,7 @@ name) 全てを :keyword:`import` 文のある場所のローカルな 名前空
 .. _future:
 
 future 文 (future statement)
----------------------------
+----------------------------
 
 .. index:: pair: future; statement
 
@@ -731,7 +731,7 @@ funcs.html) で この関数に関するドキュメントを参照してくだ�
 .. _global:
 
 :keyword:`global` 文
-===================
+====================
 
 .. index:: statement: global
 
@@ -770,7 +770,7 @@ funcs.html) で この関数に関するドキュメントを参照してくだ�
 .. _exec:
 
 :keyword:`exec` 文
-=================
+==================
 
 .. index:: statement: exec
 

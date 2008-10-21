@@ -1,6 +1,6 @@
 
 :mod:`telnetlib` --- Telnet クライアント
-==================================
+========================================
 
 .. module:: telnetlib
    :synopsis: Telnet クライアントクラス
@@ -42,7 +42,7 @@ telnet コマンドのシンボル定数は、IAC、DONT、DO、WONT、WILL、SE
 .. _telnet-objects:
 
 Telnet オブジェクト
--------------
+-------------------
 
 :class:`Telnet` インスタンスは以下のメソッドを持っています:
 

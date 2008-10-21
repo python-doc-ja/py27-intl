@@ -1,6 +1,6 @@
 
 :mod:`code` --- インタプリタ基底クラス
-===========================
+======================================
 
 .. module:: code
 
@@ -42,7 +42,7 @@ print(読み込み-評価-表示)ループをPythonで実装するための機�
 .. _interpreter-objects:
 
 対話的なインタプリタオブジェクト
-----------------
+--------------------------------
 
 
 .. method:: InteractiveInterpreter.runsource(source[, filename[, symbol]])
@@ -86,7 +86,7 @@ print(読み込み-評価-表示)ループをPythonで実装するための機�
 .. _console-objects:
 
 対話的なコンソールオブジェクト
----------------
+------------------------------
 
 :class:`InteractiveConsole`クラスは:class:`InteractiveInterpreter`のサブクラスです。以下の追加メソッドだけでなく、インタプリタオブジェクトのすべてのメソッドも提供します。
 

@@ -1,6 +1,6 @@
 
 :mod:`token` --- Python解析木と共に使われる定数
-===================================
+===============================================
 
 .. module:: token
    :synopsis: Constants representing terminal nodes of the parse tree.

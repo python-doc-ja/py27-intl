@@ -3,9 +3,9 @@
 
 .. _memory:
 
-*****
+**********
 メモリ管理
-*****
+**********
 
 .. sectionauthor:: Vladimir Marangozov <Vladimir.Marangozov@inrialpes.fr>
 
@@ -14,7 +14,7 @@
 .. _memoryoverview:
 
 概要
-==
+====
 
 Python におけるメモリ管理には、全ての Python オブジェクトとデータ構造が 入ったプライベートヒープ (private heap)
 が必須です。プライベートヒープ の管理は、内部的には *Python メモリマネージャ (Python memory manager)*
@@ -71,7 +71,7 @@ Python メモリマネージャ に委譲すれば、インタプリタはより
 .. _memoryinterface:
 
 メモリインタフェース
-==========
+====================
 
 Python ヒープに対してメモリを確保したり解放したりするために、 以下の関数セットが利用できます。これらの関数は ANSI C 標準に
 従ってモデル化されていますが、0 バイトの領域を要求した際の 動作についても定義しています:
@@ -129,7 +129,7 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 .. _memoryexamples:
 
 例
-=
+==
 
 最初に述べた関数セットを使って、:ref:`memoryoverview` 節の例を  Python ヒープに I/O
 バッファをメモリ確保するように書き換えたものを 以下に示します::

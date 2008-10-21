@@ -1,6 +1,6 @@
 
 :mod:`cookielib` --- HTTP クライアント用の Cookie 処理
-============================================
+======================================================
 
 .. module:: cookielib
 .. moduleauthor:: John J. Lee <jjl@pobox.com>
@@ -116,7 +116,7 @@
 .. _cookie-jar-objects:
 
 CookieJar および FileCookieJar オブジェクト
-----------------------------------
+-------------------------------------------
 
 :class:`CookieJar` オブジェクトは保管されている :class:`Cookie` オブジェクトを
 ひとつずつ取り出すための、イテレータ・プロトコルをサポートしています。
@@ -263,7 +263,7 @@ CookieJar および FileCookieJar オブジェクト
 .. _file-cookie-jar-classes:
 
 FileCookieJar のサブクラスと web ブラウザとの連携
-----------------------------------
+-------------------------------------------------
 
 クッキーの読み書きのために、 以下の :class:`CookieJar` サブクラスが提供されています。 これ以外の :class:`CookieJar`
 サブクラスは、Microsoft Internet Explorer ブラウザのクッキーを読みこむものも含め、
@@ -297,7 +297,7 @@ FileCookieJar のサブクラスと web ブラウザとの連携
 .. _cookie-policy-objects:
 
 CookiePolicy オブジェクト
--------------------
+-------------------------
 
 :class:`CookiePolicy` インターフェイスを実装するオブジェクトは 以下のようなメソッドを持っています:
 
@@ -373,7 +373,7 @@ CookiePolicy オブジェクト
 .. _default-cookie-policy-objects:
 
 DefaultCookiePolicy オブジェクト
---------------------------
+--------------------------------
 
 クッキーを受けつけ、またそれを返す際の標準的なルールを実装します。
 
@@ -531,7 +531,7 @@ Netscape プロトコルの厳密性に関するスイッチ:
 .. _cookie-objects:
 
 Cookie オブジェクト
--------------
+-------------------
 
 :class:`Cookie` インスタンスは、さまざまなクッキーの標準で規定されている 標準的なクッキー属性とおおまかに対応する Python
 属性をもっています。 しかしデフォルト値を決める複雑なやり方が存在しており、 また ``max-age`` および ``expires`` クッキー属性は
@@ -648,7 +648,7 @@ Cookie オブジェクト
 .. _cookielib-examples:
 
 使用例
----
+------
 
 はじめに、もっとも一般的な :mod:`cookielib` の使用例をあげます::
 

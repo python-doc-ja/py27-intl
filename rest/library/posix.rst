@@ -1,6 +1,6 @@
 
 :mod:`posix` --- 最も一般的な POSIX システムコール群
-======================================
+====================================================
 
 .. module:: posix
    :platform: Unix
@@ -29,7 +29,7 @@
 .. _posix-large-files:
 
 ラージファイルのサポート
-------------
+------------------------
 
 .. index::
    single: large files
@@ -67,7 +67,7 @@ On large-file-capable Linux systems, this might work:
 .. _posix-contents:
 
 モジュールの内容
---------
+----------------
 
 :mod:`posix` では以下のデータ項目を定義しています:
 

@@ -1,6 +1,6 @@
 
 :mod:`multifile` --- 個別の部分を含んだファイル群のサポート
-========================================
+===========================================================
 
 .. module:: multifile
    :synopsis: MIME データのような、個別の部分を含んだファイル群に対する 読み出しのサポート。
@@ -39,7 +39,7 @@
 .. _multifile-objects:
 
 MultiFile オブジェクト
-----------------
+----------------------
 
 :class:`MultiFile` インスタンスには以下のメソッドがあります:
 
@@ -133,7 +133,7 @@ MultiFile オブジェクト
 .. _multifile-example:
 
 :class:`MultiFile` の例
----------------------
+-----------------------
 
 .. sectionauthor:: Skip Montanaro <skip@mojam.com>
 

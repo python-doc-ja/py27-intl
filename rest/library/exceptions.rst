@@ -1,6 +1,6 @@
 
 組み込み例外
-======
+============
 
 .. module:: exceptions
    :synopsis: 標準の例外クラス群

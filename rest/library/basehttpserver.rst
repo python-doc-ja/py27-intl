@@ -1,6 +1,6 @@
 
 :mod:`BaseHTTPServer` --- 基本的な機能を持つ HTTP サーバ
-============================================
+========================================================
 
 .. module:: BaseHTTPServer
    :synopsis: 基本的な機能を持つ HTTP サーバ  (SimpleHTTPServer および CGIHTTPServer の基底クラス)。

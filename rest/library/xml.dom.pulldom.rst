@@ -1,6 +1,6 @@
 
 :mod:`xml.dom.pulldom` --- 部分的な DOM ツリー構築のサポート
-==============================================
+============================================================
 
 .. module:: xml.dom.pulldom
    :synopsis: SAX イベントからの部分的な DOM ツリー構築のサポート。
@@ -48,7 +48,7 @@
 .. _domeventstream-objects:
 
 DOMEventStream オブジェクト
----------------------
+---------------------------
 
 
 .. method:: DOMEventStream.getEvent()

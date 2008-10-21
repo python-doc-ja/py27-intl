@@ -1,6 +1,6 @@
 
 :mod:`xml.sax.xmlreader` --- XML パーサのインターフェース
-=============================================
+=========================================================
 
 .. module:: xml.sax.xmlreader
    :synopsis: SAX 準拠の XML パーサが実装すべきインターフェースです。
@@ -77,7 +77,7 @@
 .. _xmlreader-objects:
 
 XMLReader オブジェクト
-----------------
+----------------------
 
 :class:`XMLReader` は次のメソッドをサポートします。:
 
@@ -172,7 +172,7 @@ XMLReader オブジェクト
 .. _incremental-parser-objects:
 
 IncrementalParser オブジェクト
-------------------------
+------------------------------
 
 :class:`IncrementalParser` のインスタンスは次の追加メソッドを提供します。:
 
@@ -196,7 +196,7 @@ IncrementalParser オブジェクト
 .. _locator-objects:
 
 Locator オブジェクト
---------------
+--------------------
 
 :class:`Locator` のインスタンスは次のメソッドを提供します。:
 
@@ -224,7 +224,7 @@ Locator オブジェクト
 .. _input-source-objects:
 
 InputSource オブジェクト
-------------------
+------------------------
 
 
 .. method:: InputSource.setPublicId(id)
@@ -294,7 +294,7 @@ InputSource オブジェクト
 .. _attributes-objects:
 
 The :class:`Attributes` インターフェース
---------------------------------
+----------------------------------------
 
 :class:`Attributes` オブジェクトは :meth:`copy`、:meth:`get`、
 :meth:`has_key`、:meth:`items`、 :meth:`keys`、 :meth:`values`
@@ -327,7 +327,7 @@ The :class:`Attributes` インターフェース
 .. _attributes-ns-objects:
 
 :class:`AttributesNS` インターフェース
-------------------------------
+--------------------------------------
 
 このインターフェースは :class:`Attributes` interface (XXX reference: attributes-
 objects.html)  (セクション :ref:`attributes-objects`参照) のサブタイプです。 Attributes インターフェー

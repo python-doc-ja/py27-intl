@@ -1,6 +1,6 @@
 
 :mod:`xml.sax.handler` --- SAX ハンドラの基底クラス
-=========================================
+===================================================
 
 .. module:: xml.sax.handler
    :synopsis: SAX イベント・ハンドラの基底クラス
@@ -126,7 +126,7 @@ SAX API はコンテント・ハンドラ、DTD ハンドラ、エラー・ハ�
 .. _content-handler-objects:
 
 ContentHandler オブジェクト
----------------------
+---------------------------
 
 :class:`ContentHandler` はアプリケーション側でサブクラス化して利用する
 ことが前提になっています。パーサは入力ドキュメントのイベントにより、そ れぞれに対応する以下のメソッドを呼び出します。
@@ -279,7 +279,7 @@ ContentHandler オブジェクト
 .. _dtd-handler-objects:
 
 DTDHandler オブジェクト
------------------
+-----------------------
 
 :class:`DTDHandler` インスタンスは以下のメソッドを提供します。
 
@@ -297,7 +297,7 @@ DTDHandler オブジェクト
 .. _entity-resolver-objects:
 
 EntityResolver オブジェクト
----------------------
+---------------------------
 
 
 .. method:: EntityResolver.resolveEntity(publicId, systemId)
@@ -309,7 +309,7 @@ EntityResolver オブジェクト
 .. _sax-error-handler:
 
 ErrorHandler オブジェクト
--------------------
+-------------------------
 
 このインターフェースのオブジェクトは :class:`XMLReader` からのエラーや
 警告の情報を受け取るために使われます。このインターフェースを実装したオ ブジェクトを作成し :class:`XMLReader`

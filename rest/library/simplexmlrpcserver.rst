@@ -1,6 +1,6 @@
 
 :mod:`SimpleXMLRPCServer` --- 基本的なXML-RPCサーバー
-=============================================
+=====================================================
 
 .. module:: SimpleXMLRPCServer
    :synopsis: 基本的なXML-RPCサーバーの実装。
@@ -44,7 +44,7 @@
 .. _simple-xmlrpc-servers:
 
 SimpleXMLRPCServer オブジェクト
--------------------------
+-------------------------------
 
 :class:`SimpleXMLRPCServer` クラスは :class:`SocketServer.TCPServer`
 のサブクラスで、基本的なスタンドアロンの XML-RPC サーバーを作成する手段を提供します。

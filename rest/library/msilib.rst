@@ -1,6 +1,6 @@
 
 :mod:`msilib` --- Microsoft インストーラーファイルの読み書き
-============================================
+============================================================
 
 .. module:: msilib
    :platform: Windows
@@ -107,7 +107,7 @@
 .. _database-objects:
 
 データベースオブジェクト
-------------
+------------------------
 
 
 .. method:: Database.OpenView(sql)
@@ -135,7 +135,7 @@
 .. _view-objects:
 
 ビューオブジェクト
----------
+------------------
 
 
 .. method:: View.Execute([params=None])
@@ -183,7 +183,7 @@
 .. _summary-objects:
 
 サマリー情報オブジェクト
-------------
+------------------------
 
 
 .. method:: SummaryInformation.GetProperty(field)
@@ -222,7 +222,7 @@
 .. _record-objects:
 
 レコードオブジェクト
-----------
+--------------------
 
 
 .. method:: Record.GetFieldCount()
@@ -264,7 +264,7 @@
 .. _msi-errors:
 
 エラー
----
+------
 
 全ての MSI 関数のラッパーは :exc:`MsiError` を送出します。 例外の内部の文字列がより詳細な情報を含んでいます。
 
@@ -272,7 +272,7 @@
 .. _cab:
 
 CAB オブジェクト
-----------
+----------------
 
 
 .. class:: CAB(name)
@@ -299,7 +299,7 @@ CAB オブジェクト
 .. _msi-directory:
 
 ディレクトリオブジェクト
-------------
+------------------------
 
 
 .. class:: Directory(database, cab, basedir, physical,  logical, default, component, [componentflags])
@@ -347,7 +347,7 @@ CAB オブジェクト
 .. _features:
 
 フィーチャー
-------
+------------
 
 
 .. class:: Feature(database, id, title, desc, display[, level=1[, parent[, directory[,  attributes=0]]]])
@@ -370,7 +370,7 @@ CAB オブジェクト
 .. _msi-gui:
 
 GUI クラス
--------
+----------
 
 :mod:`msilib` モジュールは MSI データベースの中の GUI テーブルをラップする
 幾つかのクラスを提供しています。しかしながら、標準で提供されるユーザーインタフェースは ありません。インストールする Python
@@ -465,7 +465,7 @@ GUI クラス
 .. _msi-tables:
 
 事前に計算されたテーブル
-------------
+------------------------
 
 :mod:`msilib` はスキーマとテーブル定義だけから成るサブパッケージをいくつか 提供しています。現在のところ、これらの定義は MSI バージョン
 2.0 に基づいています。

@@ -1,9 +1,9 @@
 
 .. _compound:
 
-************************
+***************************
 複合文 (compound statement)
-************************
+***************************
 
 .. index:: pair: compound; statement
 
@@ -63,7 +63,7 @@
 .. _if:
 
 :keyword:`if` 文
-===============
+================
 
 .. index:: statement: if
 
@@ -86,7 +86,7 @@
 .. _while:
 
 :keyword:`while` 文
-==================
+===================
 
 .. index::
    statement: while
@@ -114,7 +114,7 @@
 .. _for:
 
 :keyword:`for` 文
-================
+=================
 
 .. index::
    statement: for
@@ -178,7 +178,7 @@
 .. _try:
 
 :keyword:`try` 文
-================
+=================
 
 .. index:: statement: try
 
@@ -278,7 +278,7 @@
 .. _with:
 
 :keyword:`with` 文
-=================
+==================
 
 .. index:: statement: with
 
@@ -333,7 +333,7 @@
 .. _function:
 
 関数定義
-====
+========
 
 .. index::
    pair: function; definition
@@ -423,7 +423,7 @@
 .. _class:
 
 クラス定義
-=====
+==========
 
 .. index::
    pair: class; definition

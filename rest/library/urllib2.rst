@@ -1,6 +1,6 @@
 
 :mod:`urllib2` --- URL を開くための拡張可能なライブラリ
-=======================================
+=======================================================
 
 .. module:: urllib2
 .. moduleauthor:: Jeremy Hylton <jhylton@users.sourceforge.net>
@@ -233,7 +233,7 @@
 .. _request-objects:
 
 Request オブジェクト
---------------
+--------------------
 
 以下のメソッドは :class:`Request` の全ての公開インタフェースを記述します。
 従ってサブクラスではこれら全てのメソッドをオーバライドしなければなりません。
@@ -324,7 +324,7 @@ Request オブジェクト
 .. _opener-director-objects:
 
 OpenerDirector オブジェクト
----------------------
+---------------------------
 
 :class:`OpenerDirector` インスタンスは以下のメソッドを持っています:
 
@@ -389,7 +389,7 @@ OpenerDirector オブジェクトは、以下の 3 つのステージに分け�
 .. _base-handler-objects:
 
 BaseHandler オブジェクト
-------------------
+------------------------
 
 :class:`BaseHandler` オブジェクトは直接的に役に立つ 2 つのメソッド と、その他として導出クラスで使われることを想定したメソッドを
 提供します。以下は直接的に使うためのメソッドです:
@@ -496,7 +496,7 @@ BaseHandler オブジェクト
 .. _http-redirect-handler:
 
 HTTPRedirectHandler オブジェクト
---------------------------
+--------------------------------
 
 .. note::
 
@@ -543,7 +543,7 @@ HTTPRedirectHandler オブジェクト
 .. _http-cookie-processor:
 
 HTTPCookieProcessor オブジェクト
---------------------------
+--------------------------------
 
 .. versionadded:: 2.4
 
@@ -558,7 +558,7 @@ HTTPCookieProcessor オブジェクト
 .. _proxy-handler:
 
 ProxyHandler オブジェクト
--------------------
+-------------------------
 
 
 .. method:: ProxyHandler.protocol_open(request)
@@ -572,7 +572,7 @@ ProxyHandler オブジェクト
 .. _http-password-mgr:
 
 HTTPPasswordMgr オブジェクト
-----------------------
+----------------------------
 
 以下のメソッドは :class:`HTTPPasswordMgr` および :class:`HTTPPasswordMgrWithDefaultRealm`
 オブジェクトで利用できます。
@@ -597,7 +597,7 @@ HTTPPasswordMgr オブジェクト
 .. _abstract-basic-auth-handler:
 
 AbstractBasicAuthHandler オブジェクト
--------------------------------
+-------------------------------------
 
 
 .. method:: AbstractBasicAuthHandler.http_error_auth_reqed(authreq, host, req, headers)
@@ -615,7 +615,7 @@ AbstractBasicAuthHandler オブジェクト
 .. _http-basic-auth-handler:
 
 HTTPBasicAuthHandler オブジェクト
----------------------------
+---------------------------------
 
 
 .. method:: HTTPBasicAuthHandler.http_error_401(req, fp, code,  msg, hdrs)
@@ -626,7 +626,7 @@ HTTPBasicAuthHandler オブジェクト
 .. _proxy-basic-auth-handler:
 
 ProxyBasicAuthHandler オブジェクト
-----------------------------
+----------------------------------
 
 
 .. method:: ProxyBasicAuthHandler.http_error_407(req, fp, code,  msg, hdrs)
@@ -637,7 +637,7 @@ ProxyBasicAuthHandler オブジェクト
 .. _abstract-digest-auth-handler:
 
 AbstractDigestAuthHandler オブジェクト
---------------------------------
+--------------------------------------
 
 
 .. method:: AbstractDigestAuthHandler.http_error_auth_reqed(authreq, host, req, headers)
@@ -649,7 +649,7 @@ AbstractDigestAuthHandler オブジェクト
 .. _http-digest-auth-handler:
 
 HTTPDigestAuthHandler オブジェクト
-----------------------------
+----------------------------------
 
 
 .. method:: HTTPDigestAuthHandler.http_error_401(req, fp, code,  msg, hdrs)
@@ -660,7 +660,7 @@ HTTPDigestAuthHandler オブジェクト
 .. _proxy-digest-auth-handler:
 
 ProxyDigestAuthHandler オブジェクト
------------------------------
+-----------------------------------
 
 
 .. method:: ProxyDigestAuthHandler.http_error_407(req, fp, code,  msg, hdrs)
@@ -671,7 +671,7 @@ ProxyDigestAuthHandler オブジェクト
 .. _http-handler-objects:
 
 HTTPHandler オブジェクト
-------------------
+------------------------
 
 
 .. method:: HTTPHandler.http_open(req)
@@ -682,7 +682,7 @@ HTTPHandler オブジェクト
 .. _https-handler-objects:
 
 HTTPSHandler オブジェクト
--------------------
+-------------------------
 
 
 .. method:: HTTPSHandler.https_open(req)
@@ -693,7 +693,7 @@ HTTPSHandler オブジェクト
 .. _file-handler-objects:
 
 FileHandler オブジェクト
-------------------
+------------------------
 
 
 .. method:: FileHandler.file_open(req)
@@ -705,7 +705,7 @@ FileHandler オブジェクト
 .. _ftp-handler-objects:
 
 FTPHandler オブジェクト
------------------
+-----------------------
 
 
 .. method:: FTPHandler.ftp_open(req)
@@ -716,7 +716,7 @@ FTPHandler オブジェクト
 .. _cacheftp-handler-objects:
 
 CacheFTPHandler オブジェクト
-----------------------
+----------------------------
 
 :class:`CacheFTPHandler` オブジェクトは :class:`FTPHandler` オブジェクトに 以下のメソッドを追加したものです:
 
@@ -734,7 +734,7 @@ CacheFTPHandler オブジェクト
 .. _gopher-handler:
 
 GopherHandler オブジェクト
---------------------
+--------------------------
 
 
 .. method:: GopherHandler.gopher_open(req)
@@ -745,7 +745,7 @@ GopherHandler オブジェクト
 .. _unknown-handler-objects:
 
 UnknownHandler オブジェクト
----------------------
+---------------------------
 
 
 .. method:: UnknownHandler.unknown_open()
@@ -756,7 +756,7 @@ UnknownHandler オブジェクト
 .. _http-error-processor-objects:
 
 HTTPErrorProcessor オブジェクト
--------------------------
+-------------------------------
 
 .. versionadded:: 2.4
 
@@ -775,7 +775,7 @@ HTTPErrorProcessor オブジェクト
 .. _urllib2-examples:
 
 例
--
+--
 
 以下の例では、 python.org のメインページを取得して、その最初の 100 バイト分を表示します::
 

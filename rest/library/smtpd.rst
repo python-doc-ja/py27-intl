@@ -1,6 +1,6 @@
 
 :mod:`smtpd` --- SMTP サーバ
-=========================
+============================
 
 .. module:: smtpd
 
@@ -16,7 +16,7 @@
 
 
 SMTPServer オブジェクト
------------------
+-----------------------
 
 
 .. class:: SMTPServer(localaddr, remoteaddr)
@@ -36,7 +36,7 @@ SMTPServer オブジェクト
 
 
 DebuggingServer オブジェクト
-----------------------
+----------------------------
 
 
 .. class:: DebuggingServer(localaddr, remoteaddr)
@@ -45,7 +45,7 @@ DebuggingServer オブジェクト
 
 
 PureProxy オブジェクト
-----------------
+----------------------
 
 
 .. class:: PureProxy(localaddr, remoteaddr)
