@@ -268,261 +268,261 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       :mod:`wsgiref.handlers` クラスを使って ハンドラインスタンスを作成します。
 
 
-   :mod:`wsgiref.validate` -- WSGI 準拠チェッカ
-   --------------------------------------------
+:mod:`wsgiref.validate` -- WSGI 準拠チェッカ
+--------------------------------------------
 
-   .. module:: wsgiref.validate
+.. module:: wsgiref.validate
 
 
-   WSGI アプリケーションのオブジェクト、フレームワーク、サーバ又はミドルウェアの 作成時には、その新規のコードを
-   :mod:`wsgiref.validate` を使って準拠の検証をする と便利です。このモジュールは WSGI サーバやゲートウェイと WSGI
-   アプリケーション オブジェクト間の通信を検証する WSGI アプリケーションオブジェクトを作成する 関数を提供し、双方のプロトコル準拠をチェックします。
+WSGI アプリケーションのオブジェクト、フレームワーク、サーバ又はミドルウェアの 作成時には、その新規のコードを
+:mod:`wsgiref.validate` を使って準拠の検証をする と便利です。このモジュールは WSGI サーバやゲートウェイと WSGI
+アプリケーション オブジェクト間の通信を検証する WSGI アプリケーションオブジェクトを作成する 関数を提供し、双方のプロトコル準拠をチェックします。
 
-   このユーティリティは完全な :pep:`333` 準拠を保証するものでないことは注意してください；
-   このモジュールでエラーが出ないことは必ずしもエラーが存在しないことを意味しません。 しかしこのモジュールがエラーを出したならば、サーバかアプリケーションの
-   どちらかが 100 このモジュールは lan Bicking の "Python Paste" ライブラリの  :mod:`paste.lint`
-   モジュールをベースにしています。
+このユーティリティは完全な :pep:`333` 準拠を保証するものでないことは注意してください；
+このモジュールでエラーが出ないことは必ずしもエラーが存在しないことを意味しません。 しかしこのモジュールがエラーを出したならば、サーバかアプリケーションの
+どちらかが 100 このモジュールは lan Bicking の "Python Paste" ライブラリの  :mod:`paste.lint`
+モジュールをベースにしています。
 
-   .. % 準拠ではないことはほとんど確実です。
+.. % 準拠ではないことはほとんど確実です。
 
 
-   .. function:: validator(application)
+.. function:: validator(application)
 
-      *application* をラップし、新しい WSGI アプリケーションオブジェクトを返します。 返されたアプリケーションは全てのリクエストを元々の
-      *application* に フォワードし、*application* とそれを呼び出すサーバの両方が WSGI 仕様と RFC 2616
-      の両方に準拠しているかをチェックします。
+   *application* をラップし、新しい WSGI アプリケーションオブジェクトを返します。 返されたアプリケーションは全てのリクエストを元々の
+   *application* に フォワードし、*application* とそれを呼び出すサーバの両方が WSGI 仕様と RFC 2616
+   の両方に準拠しているかをチェックします。
 
-      検出された非準拠は、投げられる :exc:`AssertionError` の中に入ります；
-      しかし、このエラーがどう扱われるかはサーバ依存であることに注意してください。 例えば、:mod:`wsgiref.simple_server` とその他
-      :mod:`wsgiref.handlers` ベースの サーバ（エラー処理メソッドが他のことをするようにオーバライドしていないもの）は
-      単純にエラーが発生したというメッセージとトラックバックのダンプを ``sys.stderr`` や その他のエラーストリームに出力します。
+   検出された非準拠は、投げられる :exc:`AssertionError` の中に入ります；
+   しかし、このエラーがどう扱われるかはサーバ依存であることに注意してください。 例えば、:mod:`wsgiref.simple_server` とその他
+   :mod:`wsgiref.handlers` ベースの サーバ（エラー処理メソッドが他のことをするようにオーバライドしていないもの）は
+   単純にエラーが発生したというメッセージとトラックバックのダンプを ``sys.stderr`` や その他のエラーストリームに出力します。
 
-      このラッパは:mod:`warnings` モジュールを使って出力を生成し、 疑問の余地はあるが実際には :pep:`333`
-      で禁止はされていないかもしれない挙動を 指摘します。これらは Python のコマンドラインオプションや :mod:`warnings` API で
-      抑制されなければ、``sys.stderr``（たまたま同一のオブジェクトで無い限り  ``wsgi.errors`` では*ない*）に書き出されます。
+   このラッパは:mod:`warnings` モジュールを使って出力を生成し、 疑問の余地はあるが実際には :pep:`333`
+   で禁止はされていないかもしれない挙動を 指摘します。これらは Python のコマンドラインオプションや :mod:`warnings` API で
+   抑制されなければ、``sys.stderr``（たまたま同一のオブジェクトで無い限り  ``wsgi.errors`` では*ない*）に書き出されます。
 
 
-   :mod:`wsgiref.handlers` -- サーバ／ゲートウェイのベースクラス
-   -------------------------------------------------------------
+:mod:`wsgiref.handlers` -- サーバ／ゲートウェイのベースクラス
+-------------------------------------------------------------
 
-   .. module:: wsgiref.handlers
+.. module:: wsgiref.handlers
 
 
-   このモジュールは WSGI サーバとゲートウェイ実装のベースハンドラクラスを 提供します。これらのベースクラスは CGI ライクの環境を与えられれば
-   入力、出力そしてエラーストリームと共に WSGI アプリケーションとの 通信の大部分を処理します。
+このモジュールは WSGI サーバとゲートウェイ実装のベースハンドラクラスを 提供します。これらのベースクラスは CGI ライクの環境を与えられれば
+入力、出力そしてエラーストリームと共に WSGI アプリケーションとの 通信の大部分を処理します。
 
 
-   .. class:: CGIHandler()
+.. class:: CGIHandler()
 
-      ``sys.stdin``、``sys.stdout``、``stderr`` そして ``os.environ`` 経由での CGI
-      ベースの呼び出しです。これは、もしあなたが WSGI アプリケーションを持っていて、 これを CGI スクリプトとして実行したい場合に有用です。単に
-      ``CGIHandler().run(app)`` を 起動してください。``app`` はあなたが起動したい WSGI アプリケーションオブジェクトです。
+   ``sys.stdin``、``sys.stdout``、``stderr`` そして ``os.environ`` 経由での CGI
+   ベースの呼び出しです。これは、もしあなたが WSGI アプリケーションを持っていて、 これを CGI スクリプトとして実行したい場合に有用です。単に
+   ``CGIHandler().run(app)`` を 起動してください。``app`` はあなたが起動したい WSGI アプリケーションオブジェクトです。
 
-      このクラスは :class:`BaseCGIHandler` のサブクラスで、これは ``wsgi.run_once`` を true、
-      ``wsgi.multithread`` を false、そして ``wsgi.multiprocess`` を true にセットし、 常に
-      :mod:`sys` と :mod:`os` を、必要な CGI ストリームと環境を取得するために使用します。
+   このクラスは :class:`BaseCGIHandler` のサブクラスで、これは ``wsgi.run_once`` を true、
+   ``wsgi.multithread`` を false、そして ``wsgi.multiprocess`` を true にセットし、 常に
+   :mod:`sys` と :mod:`os` を、必要な CGI ストリームと環境を取得するために使用します。
 
 
-   .. class:: BaseCGIHandler(stdin, stdout, stderr, environ [, multithread=True [, multiprocess=False]])
+.. class:: BaseCGIHandler(stdin, stdout, stderr, environ [, multithread=True [, multiprocess=False]])
 
-      :class:`CGIHandler` に似ていますが、:mod:`sys` と :mod:`os` モジュールを 使う代わりに CGI 環境と I/O
-      ストリームを明示的に指定します。*multithread* と *multiprocess* の値は、ハンドラインスタンスにより実行されるアプリケーションの
-      ``wsgi.multithread`` と ``wsgi.multiprocess`` フラグの設定に使われます。
+   :class:`CGIHandler` に似ていますが、:mod:`sys` と :mod:`os` モジュールを 使う代わりに CGI 環境と I/O
+   ストリームを明示的に指定します。*multithread* と *multiprocess* の値は、ハンドラインスタンスにより実行されるアプリケーションの
+   ``wsgi.multithread`` と ``wsgi.multiprocess`` フラグの設定に使われます。
 
-      このクラスは :class:`SimpleHandler` のサブクラスで、HTTP の "本サーバ" でない
-      ソフトウェアと使うことを意図しています。もしあなたが ``Status:`` ヘッダを HTTP ステータスを送信するのに使うような
-      ゲートウェイプロトコルの実装（CGI、FastCGI、SCGIなど）を 書いているとして、おそらく :class:`SimpleHandler`
-      でなくこれをサブクラス化したいことでしょう。
+   このクラスは :class:`SimpleHandler` のサブクラスで、HTTP の "本サーバ" でない
+   ソフトウェアと使うことを意図しています。もしあなたが ``Status:`` ヘッダを HTTP ステータスを送信するのに使うような
+   ゲートウェイプロトコルの実装（CGI、FastCGI、SCGIなど）を 書いているとして、おそらく :class:`SimpleHandler`
+   でなくこれをサブクラス化したいことでしょう。
 
 
-   .. class:: SimpleHandler(stdin, stdout, stderr, environ [,multithread=True [, multiprocess=False]])
+.. class:: SimpleHandler(stdin, stdout, stderr, environ [,multithread=True [, multiprocess=False]])
 
-      :class:`BaseCGIHandler` と似ていますが、HTTP の本サーバと使うためにデザインされています。 もしあなたが HTTP
-      サーバ実装を書いている場合、おそらく :class:`BaseCGIHandler` でなく これをサブクラス化したいことでしょう。
+   :class:`BaseCGIHandler` と似ていますが、HTTP の本サーバと使うためにデザインされています。 もしあなたが HTTP
+   サーバ実装を書いている場合、おそらく :class:`BaseCGIHandler` でなく これをサブクラス化したいことでしょう。
 
-      このクラスは :class:`BaseHandler` のサブクラスです。これは :meth:`__init__`、
-      :meth:`get_stdin`、:meth:`get_stderr`、:meth:`add_cgi_vars`、:meth:`_write`、
-      :meth:`_flush` をオーバーライドして、コンストラクタから明示的に環境とストリームを 設定するようにしています。与えられた環境とストリームは
-      :attr:`stdin`、:attr:`stdout`、 :attr:`stderr` それに :attr:`environ` 属性に保存されています。
+   このクラスは :class:`BaseHandler` のサブクラスです。これは :meth:`__init__`、
+   :meth:`get_stdin`、:meth:`get_stderr`、:meth:`add_cgi_vars`、:meth:`_write`、
+   :meth:`_flush` をオーバーライドして、コンストラクタから明示的に環境とストリームを 設定するようにしています。与えられた環境とストリームは
+   :attr:`stdin`、:attr:`stdout`、 :attr:`stderr` それに :attr:`environ` 属性に保存されています。
 
 
-   .. class:: BaseHandler()
+.. class:: BaseHandler()
 
-      これは WSGI アプリケーションを実行するための抽象ベースクラスです。 原理上は複数のリクエスト用に再利用可能なサブクラスを作成することが
-      できますが、それぞれのインスタンスは一つの HTTP リクエストを処理します。
+   これは WSGI アプリケーションを実行するための抽象ベースクラスです。 原理上は複数のリクエスト用に再利用可能なサブクラスを作成することが
+   できますが、それぞれのインスタンスは一つの HTTP リクエストを処理します。
 
-      :class:`BaseHandler` インスタンスは外部からの利用にたった一つのメソッドを持ちます：
+   :class:`BaseHandler` インスタンスは外部からの利用にたった一つのメソッドを持ちます：
 
 
-      .. method:: BaseHandler.run(app)
+   .. method:: BaseHandler.run(app)
 
-         指定された WSGI アプリケーション、*app* を実行します。
+      指定された WSGI アプリケーション、*app* を実行します。
 
-      その他の全ての :class:`BaseHandler` のメソッドはアプリケーション実行プロセスで
-      このメソッドから呼ばれます。ですので、主にそのプロセスのカスタマイズのために 存在しています。
+   その他の全ての :class:`BaseHandler` のメソッドはアプリケーション実行プロセスで
+   このメソッドから呼ばれます。ですので、主にそのプロセスのカスタマイズのために 存在しています。
 
-      以下のメソッドはサブクラスでオーバーライドされなければいけません：
+   以下のメソッドはサブクラスでオーバーライドされなければいけません：
 
 
-      .. method:: BaseHandler._write(data)
+   .. method:: BaseHandler._write(data)
 
-         文字列の *data* をクライアントへの転送用にバッファします。 このメソッドが実際にデータを転送しても OK です：
-         下部システムが実際にそのような区別をしている場合に効率をより良くするために、 :class:`BaseHandler`
-         は書き出しとフラッシュ操作を分けているからです。
+      文字列の *data* をクライアントへの転送用にバッファします。 このメソッドが実際にデータを転送しても OK です：
+      下部システムが実際にそのような区別をしている場合に効率をより良くするために、 :class:`BaseHandler`
+      は書き出しとフラッシュ操作を分けているからです。
 
 
-      .. method:: BaseHandler._flush()
+   .. method:: BaseHandler._flush()
 
-         バッファされたデータをクライアントに強制的に転送します。このメソッドは 何もしなくても OK です（すなわち、:meth:`_write`
-         が実際にデータを送る場合）。
+      バッファされたデータをクライアントに強制的に転送します。このメソッドは 何もしなくても OK です（すなわち、:meth:`_write`
+      が実際にデータを送る場合）。
 
 
-      .. method:: BaseHandler.get_stdin()
+   .. method:: BaseHandler.get_stdin()
 
-         現在処理中のリクエストの ``wsgi.input`` としての利用に適当な 入力ストリームオブジェクトを返します。
+      現在処理中のリクエストの ``wsgi.input`` としての利用に適当な 入力ストリームオブジェクトを返します。
 
 
-      .. method:: BaseHandler.get_stderr()
+   .. method:: BaseHandler.get_stderr()
 
-         現在処理中のリクエストの ``wsgi.errors`` としての利用に適当な 出力ストリームオブジェクトを返します。
+      現在処理中のリクエストの ``wsgi.errors`` としての利用に適当な 出力ストリームオブジェクトを返します。
 
 
-      .. method:: BaseHandler.add_cgi_vars()
+   .. method:: BaseHandler.add_cgi_vars()
 
-         現在のリクエストの CGI 変数を :attr:`environ` 属性に追加します。
+      現在のリクエストの CGI 変数を :attr:`environ` 属性に追加します。
 
-      これらがオーバーライドするであろうメソッド及び属性です。 しかしながら、このリストは単にサマリであり、オーバーライド可能な全てのメソッドは
-      含んでいません。カスタマイズした :class:`BaseHandler` サブクラスを作成しようとする前に ドキュメント文字列 (docstrings)
-      やソースコードでさらなる情報を調べてください。
+   これらがオーバーライドするであろうメソッド及び属性です。 しかしながら、このリストは単にサマリであり、オーバーライド可能な全てのメソッドは
+   含んでいません。カスタマイズした :class:`BaseHandler` サブクラスを作成しようとする前に ドキュメント文字列 (docstrings)
+   やソースコードでさらなる情報を調べてください。
 
-      WSGI 環境のカスタマイズのための属性とメソッド：
+   WSGI 環境のカスタマイズのための属性とメソッド：
 
 
-      .. attribute:: BaseHandler.wsgi_multithread
+   .. attribute:: BaseHandler.wsgi_multithread
 
-         ``wsgi.multithread`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
-         ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて） 異なる値を持つことがあります。
+      ``wsgi.multithread`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
+      ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて） 異なる値を持つことがあります。
 
 
-      .. attribute:: BaseHandler.wsgi_multiprocess
+   .. attribute:: BaseHandler.wsgi_multiprocess
 
-         ``wsgi.multiprocess`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
-         ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて） 異なる値を持つことがあります。
+      ``wsgi.multiprocess`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
+      ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて） 異なる値を持つことがあります。
 
 
-      .. attribute:: BaseHandler.wsgi_run_once
+   .. attribute:: BaseHandler.wsgi_run_once
 
-         ``wsgi.run_once`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では false
-         ですが、:class:`CGIHandler` はデフォルトでこれを true に設定します。
+      ``wsgi.run_once`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では false
+      ですが、:class:`CGIHandler` はデフォルトでこれを true に設定します。
 
 
-      .. attribute:: BaseHandler.os_environ
+   .. attribute:: BaseHandler.os_environ
 
-         全てのリクエストの WSGI 環境に含まれるデフォルトの環境変数。 デフォルトでは、:mod:`wsgiref.handlers` がインポートされた時点では
-         これは ``os.environ`` のコピーですが、サブクラスはクラスまたは インスタンスレベルでそれら自身のものを作ることができます。
-         デフォルト値は複数のクラスとインスタンスで共有されるため、 この辞書は読み取り専用と考えるべきだという点に注意してください。
+      全てのリクエストの WSGI 環境に含まれるデフォルトの環境変数。 デフォルトでは、:mod:`wsgiref.handlers` がインポートされた時点では
+      これは ``os.environ`` のコピーですが、サブクラスはクラスまたは インスタンスレベルでそれら自身のものを作ることができます。
+      デフォルト値は複数のクラスとインスタンスで共有されるため、 この辞書は読み取り専用と考えるべきだという点に注意してください。
 
 
-      .. attribute:: BaseHandler.server_software
+   .. attribute:: BaseHandler.server_software
 
-         :attr:`origin_server` 属性が設定されている場合、この属性の値がデフォルトの ``SERVER_SOFTWARE`` WSGI
-         環境変数の設定や HTTP レスポンス中の デフォルトの ``Server:``
-         ヘッダの設定に使われます。これは（:class:`BaseCGIHandler` や :class:`CGIHandler` のような）HTTP
-         オリジンサーバでないハンドラでは無視されます。
+      :attr:`origin_server` 属性が設定されている場合、この属性の値がデフォルトの ``SERVER_SOFTWARE`` WSGI
+      環境変数の設定や HTTP レスポンス中の デフォルトの ``Server:``
+      ヘッダの設定に使われます。これは（:class:`BaseCGIHandler` や :class:`CGIHandler` のような）HTTP
+      オリジンサーバでないハンドラでは無視されます。
 
 
-      .. method:: BaseHandler.get_scheme()
+   .. method:: BaseHandler.get_scheme()
 
-         現在のリクエストで使われている URL スキームを返します。デフォルト実装は :mod:`wsgiref.util` の
-         :func:`guess_scheme` を使い、 現在のリクエストの :attr:`envion` 変数に基づいて スキームが"http" か "https"
-         かを推測します。
+      現在のリクエストで使われている URL スキームを返します。デフォルト実装は :mod:`wsgiref.util` の
+      :func:`guess_scheme` を使い、 現在のリクエストの :attr:`envion` 変数に基づいて スキームが"http" か "https"
+      かを推測します。
 
 
-      .. method:: BaseHandler.setup_environ()
+   .. method:: BaseHandler.setup_environ()
 
-         :attr:`environ` 属性を、全てを導入済みの WSGI 環境に設定します。 デフォルトの実装は、上記全てのメソッドと属性、加えて
-         :meth:`get_stdin`、 :meth:`get_stderr`、:meth:`add_cgi_vars` メソッドと
-         :attr:`wsgi_file_wrapper` 属性を 利用します。これは、キーが存在せず、:attr:`origin_server` 属性が true
-         値で :attr:`server_software` 属性も設定されている場合に ``SERVER_SOFTWARE`` を挿入します。
+      :attr:`environ` 属性を、全てを導入済みの WSGI 環境に設定します。 デフォルトの実装は、上記全てのメソッドと属性、加えて
+      :meth:`get_stdin`、 :meth:`get_stderr`、:meth:`add_cgi_vars` メソッドと
+      :attr:`wsgi_file_wrapper` 属性を 利用します。これは、キーが存在せず、:attr:`origin_server` 属性が true
+      値で :attr:`server_software` 属性も設定されている場合に ``SERVER_SOFTWARE`` を挿入します。
 
-   例外処理のカスタマイズのためのメソッドと属性：
+例外処理のカスタマイズのためのメソッドと属性：
 
 
-   .. method:: BaseHandler.log_exception(exc_info)
+.. method:: BaseHandler.log_exception(exc_info)
 
-      *exec_info* タプルをサーバログに記録します。*exc_info* は ``(type, value, traceback)`` のタプルです。
-      デフォルトの実装は単純にトレースバックをリクエストの ``wsgi.errors`` ストリームに
-      書き出してフラッシュします。サブクラスはこのメソッドをオーバーライドして フォーマットを変更したり出力先の変更、トレースバックを管理者にメールしたり
-      その他適切と思われるいかなるアクションも取ることができます。
+   *exec_info* タプルをサーバログに記録します。*exc_info* は ``(type, value, traceback)`` のタプルです。
+   デフォルトの実装は単純にトレースバックをリクエストの ``wsgi.errors`` ストリームに
+   書き出してフラッシュします。サブクラスはこのメソッドをオーバーライドして フォーマットを変更したり出力先の変更、トレースバックを管理者にメールしたり
+   その他適切と思われるいかなるアクションも取ることができます。
 
 
-   .. attribute:: BaseHandler.traceback_limit
+.. attribute:: BaseHandler.traceback_limit
 
-      デフォルトの :meth:`log_exception` メソッドで出力される トレースバック出力に含まれる最大のフレーム数です。``None`` ならば、
-      全てのフレームが含まれます。
+   デフォルトの :meth:`log_exception` メソッドで出力される トレースバック出力に含まれる最大のフレーム数です。``None`` ならば、
+   全てのフレームが含まれます。
 
 
-   .. method:: BaseHandler.error_output(environ, start_response)
+.. method:: BaseHandler.error_output(environ, start_response)
 
-      このメソッドは、ユーザに対してエラーページを出力する WSGI アプリケーションです。 これはクライアントにヘッダが送出される前にエラーが発生した場合にのみ
-      呼び出されます。
+   このメソッドは、ユーザに対してエラーページを出力する WSGI アプリケーションです。 これはクライアントにヘッダが送出される前にエラーが発生した場合にのみ
+   呼び出されます。
 
-      このメソッドは ``sys.exc_info()`` を使って現在のエラー情報に アクセスでき、その情報はこれを呼ぶときに *start_response* に
-      渡すべきです（:pep:`333` の "Error Handling" セクションに記述があります）。
+   このメソッドは ``sys.exc_info()`` を使って現在のエラー情報に アクセスでき、その情報はこれを呼ぶときに *start_response* に
+   渡すべきです（:pep:`333` の "Error Handling" セクションに記述があります）。
 
-      デフォルト実装は単に :attr:`error_status`、:attr:`error_headers`、そして :attr:`error_body`
-      属性を出力ページの生成に使います。サブクラスでは これをオーバーライドしてもっと動的なエラー出力をすることが出来ます。
+   デフォルト実装は単に :attr:`error_status`、:attr:`error_headers`、そして :attr:`error_body`
+   属性を出力ページの生成に使います。サブクラスでは これをオーバーライドしてもっと動的なエラー出力をすることが出来ます。
 
-      しかし、セキュリティの観点からは診断をあらゆる老練ユーザに吐き出すことは 推奨されないことに気をつけてください；理想的には、診断的な出力を有効に
-      するには何らかの特別なことをする必要があるようにすべきで、これが デフォルト実装では何も含まれていない理由です。
+   しかし、セキュリティの観点からは診断をあらゆる老練ユーザに吐き出すことは 推奨されないことに気をつけてください；理想的には、診断的な出力を有効に
+   するには何らかの特別なことをする必要があるようにすべきで、これが デフォルト実装では何も含まれていない理由です。
 
 
-   .. attribute:: BaseHandler.error_status
+.. attribute:: BaseHandler.error_status
 
-      エラーレスポンスで使われる HTTP ステータスです。これは :pep:`333` で 定義されているステータス文字列です；デフォルトは 500
-      コードとメッセージです。
+   エラーレスポンスで使われる HTTP ステータスです。これは :pep:`333` で 定義されているステータス文字列です；デフォルトは 500
+   コードとメッセージです。
 
 
-   .. attribute:: BaseHandler.error_headers
+.. attribute:: BaseHandler.error_headers
 
-      エラーレスポンスで使われる HTTP ヘッダです。これは :pep:`333` で述べられているような、 WSGI レスポンスヘッダ（``(name,
-      value)`` タプル）のリストであるべきです。 デフォルトのリストはコンテントタイプを ``text/plain`` にセットしているだけです。
+   エラーレスポンスで使われる HTTP ヘッダです。これは :pep:`333` で述べられているような、 WSGI レスポンスヘッダ（``(name,
+   value)`` タプル）のリストであるべきです。 デフォルトのリストはコンテントタイプを ``text/plain`` にセットしているだけです。
 
 
-   .. attribute:: BaseHandler.error_body
+.. attribute:: BaseHandler.error_body
 
-      エラーレスポンスボディ。これは HTTP レスポンスのボディ文字列であるべきです。 これはデフォルトではプレーンテキストで "A server error
-      occurred.  Please contact the administrator." です。
+   エラーレスポンスボディ。これは HTTP レスポンスのボディ文字列であるべきです。 これはデフォルトではプレーンテキストで "A server error
+   occurred.  Please contact the administrator." です。
 
-   :pep:`333` の "オプションのプラットフォーム固有のファイルハンドリング" 機能のための メソッドと属性：
+:pep:`333` の "オプションのプラットフォーム固有のファイルハンドリング" 機能のための メソッドと属性：
 
 
-   .. attribute:: BaseHandler.wsgi_file_wrapper
+.. attribute:: BaseHandler.wsgi_file_wrapper
 
-      ``wsgi.file_wrapper`` ファクトリ、または ``None`` です。 この属性のデフォルト値は :mod:`wsgiref.util` の
-      :class:`FileWrapper` クラスです。
+   ``wsgi.file_wrapper`` ファクトリ、または ``None`` です。 この属性のデフォルト値は :mod:`wsgiref.util` の
+   :class:`FileWrapper` クラスです。
 
 
-   .. method:: BaseHandler.sendfile()
+.. method:: BaseHandler.sendfile()
 
-      オーバーライドしてプラットフォーム固有のファイル転送を実装します。 このメソッドはアプリケーションの戻り値が :attr:`wsgi_file_wrapper`
-      属性で 指定されたクラスのインスタンスの場合にのみ呼ばれます。これは ファイルの転送が成功できた場合には true を返して、デフォルトの転送コードが
-      実行されないようにするべきです。このデフォルトの実装は単に false 値を返します。
+   オーバーライドしてプラットフォーム固有のファイル転送を実装します。 このメソッドはアプリケーションの戻り値が :attr:`wsgi_file_wrapper`
+   属性で 指定されたクラスのインスタンスの場合にのみ呼ばれます。これは ファイルの転送が成功できた場合には true を返して、デフォルトの転送コードが
+   実行されないようにするべきです。このデフォルトの実装は単に false 値を返します。
 
-   その他のメソッドと属性：
+その他のメソッドと属性：
 
 
-   .. attribute:: BaseHandler.origin_server
+.. attribute:: BaseHandler.origin_server
 
-      この属性はハンドラの :meth:`_write` と :meth:`_flush` が、 特別に ``Status:`` ヘッダに HTTP
-      ステータスを求めるような CGI 状のゲートウェイプロトコル経由でなく、クライアントと 直接通信をするような場合には true 値に設定されているべきです。
+   この属性はハンドラの :meth:`_write` と :meth:`_flush` が、 特別に ``Status:`` ヘッダに HTTP
+   ステータスを求めるような CGI 状のゲートウェイプロトコル経由でなく、クライアントと 直接通信をするような場合には true 値に設定されているべきです。
 
-      この属性のデフォルト値は :class:`BaseHandler` では true ですが、 :class:`BaseCGIHandler` と
-      :class:`CGIHandler` では false です。
+   この属性のデフォルト値は :class:`BaseHandler` では true ですが、 :class:`BaseCGIHandler` と
+   :class:`CGIHandler` では false です。
 
 
-   .. attribute:: BaseHandler.http_version
+.. attribute:: BaseHandler.http_version
 
-      :attr:`origin_server` が true の場合、この文字列属性はクライアントへの レスポンスセットの HTTP
-      バージョンの設定に使われます。デフォルトは ``"1.0"`` です。
+   :attr:`origin_server` が true の場合、この文字列属性はクライアントへの レスポンスセットの HTTP
+   バージョンの設定に使われます。デフォルトは ``"1.0"`` です。
 

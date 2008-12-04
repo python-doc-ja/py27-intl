@@ -431,6 +431,5 @@
 組み込み例外のクラス階層は以下のようになっています:
 
 
-.. include:: ../includes/exception_hierarchy.txt
-   :literal:
+.. literalinclude:: ../../Lib/test/exception_hierarchy.txt
 
