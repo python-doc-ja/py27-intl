@@ -1,60 +1,55 @@
 .. highlightlang:: rest
 
-The Sphinx build system
-=======================
+
+Sphinx のビルドシステム (The Sphinx build system)
+==================================================
 
 XXX: intro...
 
 .. _doc-build-config:
 
-The build configuration file
-----------------------------
 
-The documentation root, that is the ``Doc`` subdirectory of the source
-distribution, contains a file named ``conf.py``.  This file is called the "build
-configuration file", and it contains several variables that are read and used
-during a build run.
+ビルド設定ファイル (The build configuration file)
+--------------------------------------------------
 
-These variables are:
+ドキュメントのルートはソース配布の中の ``Doc`` サブディレクトリで、 ``conf.py``
+という名前のファイルがそこにあります。 このファイルは "ビルド設定ファイル"
+と呼ばれていて、ビルド中に利用される幾つかの変数が入っています。
+
+その変数は:
 
 version : string
-   A string that is used as a replacement for the ``|version|`` reST
-   substitution.  It should be the Python version the documentation refers to.
-   This consists only of the major and minor version parts, e.g. ``2.5``, even
-   for version 2.5.1.
+   ``|version||`` という reST 置換で利用される文字列。ドキュメントが言及している
+   Python のバージョンであるべきです。これはメジャー部 (major part) とマイナー部
+   (minor part) のみで構成されていて、例えばバージョン 2.5.1 でも ``2.5`` になります。
 
 release : string
-   A string that is used as a replacement for the ``|release|`` reST
-   substitution.  It should be the full version string including
-   alpha/beta/release candidate tags, e.g. ``2.5.2b3``.
+   ``|release|`` という reST 置換で利用される文字列。これは ``2.5.2b3`` のように、
+   alpha/beta/release canadiate タグを含めたバージョン全体であるべきです。
 
-Both ``release`` and ``version`` can be ``'auto'``, which means that they are
-determined at runtime from the ``Include/patchlevel.h`` file, if a complete
-Python source distribution can be found, or else from the interpreter running
-Sphinx.
+``release`` と ``version`` のどちらも ``'auto'`` にすることができて、その場合
+Python ソース配布物全体があれば ``Include/patchlevel.h`` ファイルから、無ければ
+Sphinx を実行しているインタプリタから実行時に決定されます。
 
 today_fmt : string
-   A ``strftime`` format that is used to format a replacement for the
-   ``|today|`` reST substitution.
+   ``|today|`` reST 置換で利用される、 ``strftime`` のフォーマット。
 
 today : string
-   A string that can contain a date that should be written to the documentation
-   output literally.  If this is nonzero, it is used instead of
-   ``strftime(today_fmt)``.
+   ドキュメントにそのまま出力される、日付の文字列。非ゼロ (nonzero) の場合、
+   ``strftime(today_fmt)`` の代わりにこちらが利用される。
 
 unused_files : list of strings
-   A list of reST filenames that are to be disregarded during building.  This
-   could be docs for temporarily disabled modules or documentation that's not
-   yet ready for public consumption.
+   ビルド時に無視される reST ファイル名のリスト。一時的に無効にされたモジュールの
+   ドキュメントや、まだ一般利用の準備が整っていないドキュメントに使います。
 
 last_updated_format : string
-   If this is not an empty string, it will be given to ``time.strftime()`` and
-   written to each generated output file after "last updated on:".
+   空白でない場合、 ``time.strftime()`` に渡されて、各出力ファイルの "last update 
+   on:" の後ろに書かれます。
 
 use_smartypants : bool
-   If true, use SmartyPants to convert quotes and dashes to the typographically
-   correct entities.
+   true の場合、 SmartyPants を使ってクォートやダッシュを印刷用文字への実態参照
+   (typographically correct entities) へ変換します。
 
 add_function_parentheses : bool
-   If true, ``()`` will be appended to the content of ``:func:``, ``:meth:`` and
-   ``:cfunc:`` cross-references.
+   true の場合、 ``:func:``, ``:meth:``, ``:cfunc:`` のクロスリファレンスに
+   ``()`` を付け加えます。
