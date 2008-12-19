@@ -90,15 +90,15 @@
  
  All Python objects (even Python integers) have a :dfn:`type` and a
 -:dfn:`reference count`.  An object's type determines what kind of object  it is
++:dfn:`reference count`.  An object's type determines what kind of object it is
 -(e.g., an integer, a list, or a user-defined function; there are  many more as
++(e.g., an integer, a list, or a user-defined function; there are many more as
 -explained in the Python Reference Manual (XXX reference: ../ref/ref.html)).  For
++explained in :ref:`types`).  For each of the well-known types there is a macro
 -each of the well-known types there is a macro to check whether an object is of
++to check whether an object is of that type; for instance, ``PyList_Check(a)`` is
 -that type; for instance, ``PyList_Check(a)`` is true if (and only if) the object
 -pointed to by *a* is a Python list.
-+:dfn:`reference count`.  An object's type determines what kind of object it is
-+(e.g., an integer, a list, or a user-defined function; there are many more as
-+explained in :ref:`types`).  For each of the well-known types there is a macro
-+to check whether an object is of that type; for instance, ``PyList_Check(a)`` is
 +true if (and only if) the object pointed to by *a* is a Python list.
  
  
@@ -212,51 +212,6 @@
  
  .. index:: single: PyErr_Occurred()
  
-@@ -394,34 +393,34 @@
- The full exception state consists of three objects (all of which can  be
- *NULL*): the exception type, the corresponding exception  value, and the
- traceback.  These have the same meanings as the Python   objects
- ``sys.exc_type``, ``sys.exc_value``, and ``sys.exc_traceback``; however, they
- are not the same: the Python objects represent the last exception being handled
- by a Python  :keyword:`try` ... :keyword:`except` statement, while the C level
- exception state only exists while an exception is being passed on between C
- functions until it reaches the Python bytecode interpreter's  main loop, which
- takes care of transferring it to ``sys.exc_type`` and friends.
- 
- .. index:: single: exc_info() (in module sys)
- 
--Note that starting with Python 1.5, the preferred, thread-safe way to  access
--the exception state from Python code is to call the function
--:func:`sys.exc_info`, which returns the per-thread exception state  for Python
--code.  Also, the semantics of both ways to access the  exception state have
--changed so that a function which catches an  exception will save and restore its
--thread's exception state so as to  preserve the exception state of its caller.
--This prevents common bugs  in exception handling code caused by an innocent-
--looking function  overwriting the exception being handled; it also reduces the
--often  unwanted lifetime extension for objects that are referenced by the  stack
--frames in the traceback.
-+Note that starting with Python 1.5, the preferred, thread-safe way to access the
-+exception state from Python code is to call the function :func:`sys.exc_info`,
-+which returns the per-thread exception state for Python code.  Also, the
-+semantics of both ways to access the exception state have changed so that a
-+function which catches an exception will save and restore its thread's exception
-+state so as to preserve the exception state of its caller.  This prevents common
-+bugs in exception handling code caused by an innocent-looking function
-+overwriting the exception being handled; it also reduces the often unwanted
-+lifetime extension for objects that are referenced by the stack frames in the
-+traceback.
- 
- As a general principle, a function that calls another function to  perform some
- task should check whether the called function raised an  exception, and if so,
- pass the exception state on to its caller.  It  should discard any object
- references that it owns, and return an  error indicator, but it should *not* set
- another exception --- that would overwrite the exception that was just raised,
- and lose important information about the exact cause of the error.
- 
- .. index:: single: sum_sequence()
- 
- A simple example of detecting exceptions and passing them on is shown in the
- :cfunc:`sum_sequence` example above.  It so happens that that example doesn't
 @@ -481,80 +480,78 @@
         Py_XDECREF(incremented_item);
  
