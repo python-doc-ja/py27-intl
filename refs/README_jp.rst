@@ -89,28 +89,29 @@ jptool/converter/converter/filenamemap.py を読むことで、新規に追加�
 
 ディレクトリの解説
 ===================
-cvs_r25
+/
+   翻訳していくターゲットとなるディレクトリ.
+   cvs_r25 を reST に変換したもの。
+   ``$ python jptool/converter/convert.py refs/cvs_r25 .``
+   で作成。
+
+/refs/cvs_r25
    cvsリポジトリの r25 タグからcheckoutした日本語texファイルについて、converterで
    エラーになる部分に対する修正を行ったもの。
 
-rest
-   cvs_r25 を reST に変換したもの。
-   ``$ python jptool/converter/convert.py cvs_r25 rest``
-   で作成。
-
-en_25
+/refs/en_25
    Python 2.5 リリースパッケージの中のDocディレクトリを取り出し、converterでエラーに
    なる部分を修正したもの。ただし、一番多かった memberdesc/methoddesc で class が
    定義されていないというエラーについては、converter側に手を入れて対応したので、
    このディレクトリ内のファイルは cvs_r25 に比べると原文に近い。
 
-rest25
+/refs/rest25
    en_25 を reST に変換したもの。
    ``$ python jptool/looseconv/convert.py en_25 rest25``
    で作成した。
 
-rest26
+/refs/rest26
    Python 2.6 リリースパッケージの中のDocディレクトリを取り出したもの。お手本。
 
-diff_25-26
+/refs/diff_25-26
    rest25 と rest26 の diff を取ったもの。
