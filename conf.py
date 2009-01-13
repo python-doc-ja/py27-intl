@@ -62,6 +62,11 @@ add_function_parentheses = True
 # unit titles (such as .. function::).
 add_module_names = True
 
+# directory path to ignore
+exclude_trees = [
+	'refs',
+]
+
 
 # Options for HTML output
 # -----------------------
