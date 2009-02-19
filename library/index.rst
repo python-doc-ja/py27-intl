@@ -38,28 +38,23 @@ documented in the Reference Manual.
    strings.rst
    datatypes.rst
    numeric.rst
-   netdata.rst
-   markup.rst
+   filesys.rst
+   persistence.rst
+   archiving.rst
    fileformats.rst
    crypto.rst
-   filesys.rst
-   archiving.rst
-   persistence.rst
    allos.rst
    someos.rst
-   unix.rst
    ipc.rst
+   netdata.rst
+   markup.rst
    internet.rst
    mm.rst
-   tkinter.rst
    i18n.rst
    frameworks.rst
+   tk.rst
    development.rst
-   pdb.rst
-   profile.rst
-   hotshot.rst
-   timeit.rst
-   trace.rst
+   debug.rst
    python.rst
    custominterp.rst
    restricted.rst
@@ -67,7 +62,10 @@ documented in the Reference Manual.
    language.rst
    compiler.rst
    misc.rst
+   windows.rst
+   unix.rst
+   mac.rst
+   macosa.rst
    sgi.rst
    sun.rst
-   windows.rst
    undoc.rst
