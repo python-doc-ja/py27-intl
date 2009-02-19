@@ -1,18 +1,18 @@
 .. _mac-specific-services:
 
-**************************
-Mac OS X specific services
-**************************
+***********************
+Mac OS X 固有のサービス
+***********************
 
-This chapter describes modules that are only available on the Mac OS X platform.
+この章では Mac OS X プラットフォームでのみ利用可能なモジュールについて説明します。
 
-See the chapters :ref:`mac-scripting` and :ref:`undoc-mac-modules` for more
-modules, and the HOWTO :ref:`using-on-mac` for a general introduction to
-Mac-specific Python programming.
+さらに多くのモジュールについて :ref:`mac-scripting` や :ref:`undoc-mac-modules`
+も参照してください。また HOWTO の :ref:`using-on-mac` は Mac 固有の Python
+プログラミングについての一般的な入門編になっています。
 
 .. warning::
 
-   These modules are deprecated and are removed in 3.0.
+   これらのモジュールは撤廃され 3.0 では無くなります。
 
 
 .. toctree::
