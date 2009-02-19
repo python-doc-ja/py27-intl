@@ -7,3 +7,7 @@ SunOS 特有のサービス
 
 この章では、SunOSオペレーティングシステム バージョン5(Solarisバージョン2)に固有の機能を解説します。
 
+
+.. toctree::
+
+   sunaudio.rst
