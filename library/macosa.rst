@@ -1,82 +1,83 @@
 
 .. _mac-scripting:
 
-*********************
-MacPython OSA Modules
-*********************
+************************
+MacPython OSA モジュール
+************************
 
-This chapter describes the current implementation of the Open Scripting
-Architecture (OSA, also commonly referred to as AppleScript) for Python,
-allowing you to control scriptable applications from your Python program,
-and with a fairly pythonic interface. Development on this set of modules has
-stopped, and a replacement is expected for Python 2.5.
+この章では Python 用の Open Scripting Architecture (OSA, 一般には
+AppleScript として知られている) の現在の実装について説明しています。
+これを使うとスクリプト制御可能なアプリケーションを Python プログラムから
+実に pythonic なインタフェースとともに制御することができます。
+このモジュール群の開発は停止しましたが、Python 2.5 用には代わりのものが期待できるでしょう。
 
-For a description of the various components of AppleScript and OSA, and to get
-an understanding of the architecture and terminology, you should read Apple's
-documentation. The "Applescript Language Guide" explains the conceptual model
-and the terminology, and documents the standard suite. The "Open Scripting
-Architecture" document explains how to use OSA from an application programmers
-point of view. In the Apple Help Viewer these books are located in the Developer
-Documentation, Core Technologies section.
+AppleScript や OSA の様々なコンポーネントの説明、
+およびそのアーキテクチャや用語法の理解のために、
+Apple のドキュメントを読んでおく方がよいでしょう。
+"Applescript Language Guide" は概念モデルと用語法を説明し、
+標準スイートについて文書にまとめてあります。
+"Open Scripting Architecture" はアプリケーションプログラマの視点から、
+どのように OSA を使用するかについて説明しています。
+Apple Help Viewer においてこれらは Developer Documentation, Core Technologies
+節で見つかります。
 
-As an example of scripting an application, the following piece of AppleScript
-will get the name of the frontmost :program:`Finder` window and print it::
+アプリケーションでスクリプト制御する例として、以下の AppleScript コードの断片は、
+もっとも手前にある :program:`Finder` のウィンドウの名前を取得して表示させます::
 
    tell application "Finder"
        get name of window 1
    end tell
 
-In Python, the following code fragment will do the same::
+Python では、以下のコード片が同じことをします::
 
    import Finder
 
    f = Finder.Finder()
    print f.get(f.window(1).name)
 
-As distributed the Python library includes packages that implement the standard
-suites, plus packages that interface to a small number of common applications.
+配布されている Python ライブラリには、標準スイートを実装したパッケージに、
+いくつかのよくあるアプリケーションへのインタフェースをプラスしたものが含まれています。
 
-To send AppleEvents to an application you must first create the Python package
-interfacing to the terminology of the application (what :program:`Script Editor`
-calls the "Dictionary"). This can be done from within the :program:`PythonIDE`
-or by running the :file:`gensuitemodule.py` module as a standalone program from
-the command line.
+AppleEvent をアプリケーションに送るためには、最初にアプリケーションの用語
+(:program:`Script Editor` が "Dictionary" と呼んでいるもの)
+とインタフェースを取る Python パッケージを作らなければなりません。
+この作業は :program:`PythonIDE` の中から行うこともできますし、
+コマンドラインから :file:`gensuitemodule.py` モジュールを独立のプログラムとして実行することでもできます。
 
-The generated output is a package with a number of modules, one for every suite
-used in the program plus an :mod:`__init__` module to glue it all together. The
-Python inheritance graph follows the AppleScript inheritance graph, so if a
-program's dictionary specifies that it includes support for the Standard Suite,
-but extends one or two verbs with extra arguments then the output suite will
-contain a module :mod:`Standard_Suite` that imports and re-exports everything
-from :mod:`StdSuites.Standard_Suite` but overrides the methods that have extra
-functionality. The output of :mod:`gensuitemodule` is pretty readable, and
-contains the documentation that was in the original AppleScript dictionary in
-Python docstrings, so reading it is a good source of documentation.
+作成されるのはいくつものモジュールからなるパッケージで、
+それぞれのモジュールはプログラムで使われるスイートであり 
+:mod:`__init__` モジュールがそれらを取りまとめています。
+Python の継承グラフは AppleScript の継承グラフに従っていますので、
+プログラムの辞書が標準スイートのサポートを含みつつ、
+一つ二つ動詞を追加の引数で拡張するように指定しているならば、
+出力されるスイートは :mod:`Standard_Suite` という
+ :mod:`StdSuites.Standard_Suite` からすべてをインポートしてエクスポートし直しつつ
+追加された機能を持つようにメソッドをオーバーライドしたモジュールを含みます。
+:mod:`gensuitemodule` の出力は非常に読み易く、
+また元々の AppleScript 辞書にあったドキュメントを Python 文書化文字列 (docstring)
+中に含みますので、それを読むことはドキュメントの良い手本となります。
 
-The output package implements a main class with the same name as the package
-which contains all the AppleScript verbs as methods, with the direct object as
-the first argument and all optional parameters as keyword arguments. AppleScript
-classes are also implemented as Python classes, as are comparisons and all the
-other thingies.
+出力されたパッケージにはパッケージと同じ名前のメインクラスを実装しており、
+これは全ての AppleScript 動詞を直接のオブジェクトは第1引数でオプションのパラメータはキーワード引数で受けるメソッドとして含みます。
+AppleScript クラスも Python クラスとして実装されたり、その他諸々も同様です。
 
-The main Python class implementing the verbs also allows access to the
-properties and elements declared in the AppleScript class "application". In the
-current release that is as far as the object orientation goes, so in the example
-above we need to use ``f.get(f.window(1).name)`` instead of the more Pythonic
-``f.window(1).name.get()``.
+動詞を実装しているメインの Python クラスはまた AppleScript の "application"
+クラスで宣言されたプロパティおよび要素へのアクセスも許します。
+現在のリリースではこれはオブジェクト指向的というには程遠く、
+上の例で見たように ``f.get(f.window(1).name)`` と書かねばならず、
+より Pythonic な ``f.window(1).name.get()`` という書き方はできません。
 
-If an AppleScript identifier is not a Python identifier the name is mangled
-according to a small number of rules:
+AppleScript の識別子が Python の識別子として扱えない場合以下の少数のルールで変換します:
 
-* spaces are replaced with underscores
+* 空白はアンダースコアに置き換えられます
 
-* other non-alphanumeric characters are replaced with ``_xx_`` where ``xx`` is
-  the hexadecimal character value
+* その他の英数字以外の文字は ``_xx_`` に置き換えられます。ここで ``xx``
+  はその文字の16進値です。
 
-* any Python reserved word gets an underscore appended
+* Python の予約語にはアンダースコアが後ろに付けられます
 
-Python also has support for creating scriptable applications in Python, but The
-following modules are relevant to MacPython AppleScript support:
+Python はスクリプト可能なアプリケーションを Python で作成することもサポートしていますが、
+以下のモジュールは MacPython の AppleScript サポートに関係するモジュールのみです:
 
 .. toctree::
 
@@ -87,6 +88,6 @@ following modules are relevant to MacPython AppleScript support:
    miniaeframe.rst
 
 
-In addition, support modules have been pre-generated for :mod:`Finder`,
-:mod:`Terminal`, :mod:`Explorer`, :mod:`Netscape`, :mod:`CodeWarrior`,
-:mod:`SystemEvents` and :mod:`StdSuites`.
+他に、以下のサポートモジュールが事前に生成されています:
+:mod:`Finder`, :mod:`Terminal`, :mod:`Explorer`, :mod:`Netscape`,
+:mod:`CodeWarrior`, :mod:`SystemEvents`, :mod:`StdSuites` 。

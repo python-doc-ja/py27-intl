@@ -1,15 +1,11 @@
 
+.. _mswin-specific-services:
+
 *************************
-MS Windows 特有のサービス
+MS Windows 固有のサービス
 *************************
 
-この章では、MS Windows プラットフォーム上でのみ利用可能な モジュール群について記述します。
-
-.. % \chapter{MS Windows Specific Services}
-.. % available 利用可能な
-.. % platform プラットフォーム
-.. % service サービス
-.. % specific 特有の
+この章では、MS Windows プラットフォーム上でのみ利用可能なモジュール群について記述します。
 
 
 .. toctree::
