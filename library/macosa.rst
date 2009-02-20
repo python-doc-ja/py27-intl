@@ -51,7 +51,7 @@ Python の継承グラフは AppleScript の継承グラフに従っています
 プログラムの辞書が標準スイートのサポートを含みつつ、
 一つ二つ動詞を追加の引数で拡張するように指定しているならば、
 出力されるスイートは :mod:`Standard_Suite` という
- :mod:`StdSuites.Standard_Suite` からすべてをインポートしてエクスポートし直しつつ
+:mod:`StdSuites.Standard_Suite` からすべてをインポートしてエクスポートし直しつつ
 追加された機能を持つようにメソッドをオーバーライドしたモジュールを含みます。
 :mod:`gensuitemodule` の出力は非常に読み易く、
 また元々の AppleScript 辞書にあったドキュメントを Python 文書化文字列 (docstring)
