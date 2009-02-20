@@ -1,14 +1,12 @@
 
 .. _fileformats:
 
-************
-File Formats
-************
+********************
+ファイルフォーマット
+********************
 
-The modules described in this chapter parse various miscellaneous file formats
-that aren't markup languages or are related to e-mail.
-
-この章で説明されるモジュールは様々な(マークアップやでないものやEメール の)ファイルフォーマットを構文解析します。
+この章で説明されるモジュールは様々な(マークアップやでないものやEメールの)
+ファイルフォーマットを構文解析します。
 
 
 .. toctree::
@@ -18,3 +16,4 @@ that aren't markup languages or are related to e-mail.
    robotparser.rst
    netrc.rst
    xdrlib.rst
+   plistlib.rst
