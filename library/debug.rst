@@ -1,11 +1,10 @@
-***********************
-Debugging and Profiling
-***********************
+**********************
+デバッグとプロファイル
+**********************
 
-These libraries help you with Python development: the debugger enables you to
-step through code, analyze stack frames and set breakpoints etc., and the
-profilers run code and give you a detailed breakdown of execution times,
-allowing you to identify bottlenecks in your programs.
+ここに含まれるライブラリは Python での開発を手助けするものです。
+デバッガはコードのステップ実行や、スタックフレームの解析、ブレークポイントの設定などを可能にします。
+プロファイラはコードを実行して実行時間の詳細を晒すことでプログラムのボトルネックを見つけることを可能にします。
 
 .. toctree::
 
