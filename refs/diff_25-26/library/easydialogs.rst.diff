@@ -1,0 +1,37 @@
+--- ../rest25/maclib/macui.rst	2009-01-07 02:01:51 +0900
++++ ../rest26/library/easydialogs.rst	2009-01-07 02:01:54 +0900
+@@ -5,13 +5,21 @@
+ .. module:: EasyDialogs
+    :platform: Mac
+    :synopsis: Basic Macintosh dialogs.
++   :deprecated:
+ 
+ 
+ The :mod:`EasyDialogs` module contains some simple dialogs for the Macintosh.
+-All routines take an optional resource ID parameter *id* with which one can
+-override the :const:`DLOG` resource used for the dialog, provided that the
+-dialog items correspond (both type and item number) to those in the default
+-:const:`DLOG` resource. See source code for details.
++The dialogs get launched in a separate application which appears in the dock and
++must be clicked on for the dialogs be displayed.  All routines take an optional
++resource ID parameter *id* with which one can override the :const:`DLOG`
++resource used for the dialog, provided that the dialog items correspond (both
++type and item number) to those in the default :const:`DLOG` resource. See source
++code for details.
++
++.. warning::
++
++   This module is removed in 3.0.
++
+ 
+ The :mod:`EasyDialogs` module defines the following functions:
+ 
+@@ -77,7 +85,7 @@
+    options are selected.  Its items can take one of two forms: *optstr* or
+    ``(optstr, descr)``.  When present, *descr* is a short descriptive string that
+    is displayed in the dialog while this option is selected in the popup menu.  The
+-   correspondence between *optstr*s and command-line arguments is:
++   correspondence between *optstr*\s and command-line arguments is:
+ 
+    +----------------------+------------------------------------------+
+    | *optstr* format      | Command-line format                      |

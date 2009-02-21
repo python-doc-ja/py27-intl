@@ -1,30 +1,56 @@
 
 .. _toolbox:
 
-**********************
-Mac OS Toolbox Modules
-**********************
+******************************
+MacOS ツールボックスモジュール
+******************************
 
-There are a set of modules that provide interfaces to various Mac OS toolboxes.
-If applicable the module will define a number of Python objects for the various
-structures declared by the toolbox, and operations will be implemented as
-methods of the object.  Other operations will be implemented as functions in the
-module.  Not all operations possible in C will also be possible in Python
-(callbacks are often a problem), and parameters will occasionally be different
-in Python (input and output buffers, especially).  All methods and functions
-have a :attr:`__doc__` string describing their arguments and return values, and
-for additional description you are referred to `Inside Macintosh
-<http://developer.apple.com/documentation/macos8/mac8.html>`_ or similar works.
+各種のMacOSツールボックスへのインターフェースを与えるモジュール群があ ります。対応するモジュールがあるなら、そのモジュールではツールボックス
+で宣言された各種の構造体のPythonオブジェクトが定義され、操作は定義され たオブジェクトのメソッドとして実装されています。その他の操作はモジュー
+ルの関数として実装されています。 Cで可能な操作がすべてPythonで可能なわ けではありませんし(コールバックはよく問題になります)、パラメータが
+Pythonだと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。 全てのメソッドと関数は :attr:`__doc__`
+文字列があるので、引数と返り値 の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
+<http://developer.apple.com/documentation/macos8/mac8.html>`_などを参照してください。
 
-These modules all live in a package called :mod:`Carbon`. Despite that name they
-are not all part of the Carbon framework: CF is really in the CoreFoundation
-framework and Qt is in the QuickTime framework. The normal use pattern is ::
+.. % MacOS Toolbox Modules
+.. % % There are a set of modules that provide interfaces to various MacOS
+.. % % toolboxes.  If applicable the module will define a number of Python
+.. % % objects for the various structures declared by the toolbox, and
+.. % % operations will be implemented as methods of the object.  Other
+.. % % operations will be implemented as functions in the module.  Not all
+.. % % operations possible in C will also be possible in Python (callbacks
+.. % % are often a problem), and parameters will occasionally be different in
+.. % % Python (input and output buffers, especially).  All methods and
+.. % % functions have a \member{__doc__} string describing their arguments
+.. % % and return values, and for additional description you are referred to
+.. % % \citetitle[http://developer.apple.com/documentation/macos8/mac8.html]{Inside
+.. % % Macintosh} or similar works.
+
+これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。 この名前にもかかわらずそれら全てが Carbon
+フレームワークの一部なわけで はありません。CF は、CoreFoundationフレームワークの中に実際はあります
+し、QtはQuickTimeフレームワークにあります。ツールボックスモジュールは普通以下 のようにして利用します。
+
+.. % % These modules all live in a package called \module{Carbon}. Despite that name
+.. % % they are not all part of the Carbon framework: CF is really in the CoreFoundation
+.. % % framework and Qt is in the QuickTime framework.
+.. % % The normal use pattern is
+
+::
 
    from Carbon import AE
 
-.. warning::
+**注意！**これらのモジュールはまだ文書化されていません。これらの モジュールのどれでもよいですが文書化に協力したいという方は、
+docs@python.org まで連絡をください。
 
-   The Carbon modules are removed in 3.0.
+.. % % \strong{Warning!}  These modules are not yet documented.  If you
+.. % % wish to contribute documentation of any of these modules, please get
+.. % % in touch with \email{python-docs@python.org}.
+
+
+.. toctree::
+
+   colorpicker.rst
+.. % \section{Argument Handling for Toolbox Modules}
 
 
 :mod:`Carbon.AE` --- Apple Events
@@ -32,29 +58,34 @@ framework and Qt is in the QuickTime framework. The normal use pattern is ::
 
 .. module:: Carbon.AE
    :platform: Mac
-   :synopsis: Interface to the Apple Events toolbox.
-   :deprecated:
+   :synopsis: Apple Eventツールボックスへのインタフェース
 
 
+.. % Interface to the Apple Events toolbox.
 
-:mod:`Carbon.AH` --- Apple Help
-===============================
+
+:mod:`Carbon.AH` --- Apple ヘルプ
+=================================
 
 .. module:: Carbon.AH
    :platform: Mac
-   :synopsis: Interface to the Apple Help manager.
-   :deprecated:
+   :synopsis: Apple ヘルプマネージャへのインタフェース
 
 
+.. % Apple Help
+.. % Interface to the Apple Help manager.
 
-:mod:`Carbon.App` --- Appearance Manager
-========================================
+
+:mod:`Carbon.App` --- アピアランスマネージャ
+============================================
 
 .. module:: Carbon.App
    :platform: Mac
-   :synopsis: Interface to the Appearance Manager.
-   :deprecated:
+   :synopsis: アピアランスマネージャへのインタフェース
 
+
+.. % Appearance Manager
+.. % Interface to the Appearance Manager.
 
 
 :mod:`Carbon.CF` --- Core Foundation
@@ -62,12 +93,17 @@ framework and Qt is in the QuickTime framework. The normal use pattern is ::
 
 .. module:: Carbon.CF
    :platform: Mac
-   :synopsis: Interface to the Core Foundation.
-   :deprecated:
+   :synopsis: Core Foundationへのインタフェース
 
 
-The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
-``CFURL`` objects are supported, some only partially.
+``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` と ``CFURL``
+オブジェクトがいくらか部分的にサポート されています。
+
+.. % Interface to the Core Foundation.
+.. % % The
+.. % % \code{CFBase}, \code{CFArray}, \code{CFData}, \code{CFDictionary},
+.. % % \code{CFString} and \code{CFURL} objects are supported, some
+.. % % only partially.
 
 
 :mod:`Carbon.CG` --- Core Graphics
@@ -75,19 +111,21 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.CG
    :platform: Mac
-   :synopsis: Interface to Core Graphics.
-   :deprecated:
+   :synopsis: Component Managerへのインタフェース
 
+
+.. % Interface to the Component Manager.
 
 
 :mod:`Carbon.CarbonEvt` --- Carbon Event Manager
 ================================================
 
-.. module:: Carbon.CarbonEvt
+.. module:: Carbon.CaronEvt
    :platform: Mac
-   :synopsis: Interface to the Carbon Event Manager.
-   :deprecated:
+   :synopsis: Carbon Event Managerへのインタフェース
 
+
+.. % Interface to the Carbon Event Manager.
 
 
 :mod:`Carbon.Cm` --- Component Manager
@@ -95,9 +133,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Cm
    :platform: Mac
-   :synopsis: Interface to the Component Manager.
-   :deprecated:
+   :synopsis: Component Managerへのインタフェース
 
+
+.. % Interface to the Component Manager.
 
 
 :mod:`Carbon.Ctl` --- Control Manager
@@ -105,9 +144,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Ctl
    :platform: Mac
-   :synopsis: Interface to the Control Manager.
-   :deprecated:
+   :synopsis: Control Managerへのインタフェース
 
+
+.. % Interface to the Control Manager.
 
 
 :mod:`Carbon.Dlg` --- Dialog Manager
@@ -115,9 +155,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Dlg
    :platform: Mac
-   :synopsis: Interface to the Dialog Manager.
-   :deprecated:
+   :synopsis: Dialog Managerへのインタフェース
 
+
+.. % Interface to the Dialog Manager.
 
 
 :mod:`Carbon.Evt` --- Event Manager
@@ -125,9 +166,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Evt
    :platform: Mac
-   :synopsis: Interface to the classic Event Manager.
-   :deprecated:
+   :synopsis: Event Managerへのインタフェース
 
+
+.. % Interface to the classic Event Manager.
 
 
 :mod:`Carbon.Fm` --- Font Manager
@@ -135,9 +177,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Fm
    :platform: Mac
-   :synopsis: Interface to the Font Manager.
-   :deprecated:
+   :synopsis: Font Managerへのインタフェース
 
+
+.. % Interface to the Font Manager.
 
 
 :mod:`Carbon.Folder` --- Folder Manager
@@ -145,9 +188,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Folder
    :platform: Mac
-   :synopsis: Interface to the Folder Manager.
-   :deprecated:
+   :synopsis: Folder Managerへのインタフェース
 
+
+.. % Interface to the Folder Manager.
 
 
 :mod:`Carbon.Help` --- Help Manager
@@ -155,9 +199,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Help
    :platform: Mac
-   :synopsis: Interface to the Carbon Help Manager.
-   :deprecated:
+   :synopsis: Carbon Help Managerへのインタフェース
 
+
+.. % Interface to the Carbon Help Manager.
 
 
 :mod:`Carbon.List` --- List Manager
@@ -165,9 +210,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.List
    :platform: Mac
-   :synopsis: Interface to the List Manager.
-   :deprecated:
+   :synopsis: List Managerへのインタフェース
 
+
+.. % Interface to the List Manager.
 
 
 :mod:`Carbon.Menu` --- Menu Manager
@@ -175,9 +221,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Menu
    :platform: Mac
-   :synopsis: Interface to the Menu Manager.
-   :deprecated:
+   :synopsis: Menu Managerへのインタフェース
 
+
+.. % Interface to the Menu Manager.
 
 
 :mod:`Carbon.Mlte` --- MultiLingual Text Editor
@@ -185,9 +232,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Mlte
    :platform: Mac
-   :synopsis: Interface to the MultiLingual Text Editor.
-   :deprecated:
+   :synopsis: MultiLingual Text Editorへのインタフェース
 
+
+.. % Interface to the MultiLingual Text Editor.
 
 
 :mod:`Carbon.Qd` --- QuickDraw
@@ -195,9 +243,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Qd
    :platform: Mac
-   :synopsis: Interface to the QuickDraw toolbox.
-   :deprecated:
+   :synopsis: QuickDrawツールボックスへのインタフェース
 
+
+.. % Interface to the QuickDraw toolbox.
 
 
 :mod:`Carbon.Qdoffs` --- QuickDraw Offscreen
@@ -205,9 +254,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Qdoffs
    :platform: Mac
-   :synopsis: Interface to the QuickDraw Offscreen APIs.
-   :deprecated:
+   :synopsis: QuickDrawオフスクリーン APIへのインタフェース
 
+
+.. % Interface to the QuickDraw Offscreen APIs.
 
 
 :mod:`Carbon.Qt` --- QuickTime
@@ -215,9 +265,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Qt
    :platform: Mac
-   :synopsis: Interface to the QuickTime toolbox.
-   :deprecated:
+   :synopsis: QuickTime ツールボックスへのインタフェース
 
+
+.. % Interface to the QuickTime toolbox.
 
 
 :mod:`Carbon.Res` --- Resource Manager and Handles
@@ -225,9 +276,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Res
    :platform: Mac
-   :synopsis: Interface to the Resource Manager and Handles.
-   :deprecated:
+   :synopsis: Resource Managerとハンドルへのインタフェース
 
+
+.. % Interface to the Resource Manager and Handles.
 
 
 :mod:`Carbon.Scrap` --- Scrap Manager
@@ -235,51 +287,10 @@ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
 
 .. module:: Carbon.Scrap
    :platform: Mac
-   :synopsis: The Scrap Manager provides basic services for implementing cut & paste and
-              clipboard operations.
-   :deprecated:
+   :synopsis: Carbon Scrap Managerへのインタフェース
 
 
-This module is only fully available on Mac OS 9 and earlier under classic PPC
-MacPython.  Very limited functionality is available under Carbon MacPython.
-
-.. index:: single: Scrap Manager
-
-The Scrap Manager supports the simplest form of cut & paste operations on the
-Macintosh.  It can be use for both inter- and intra-application clipboard
-operations.
-
-The :mod:`Scrap` module provides low-level access to the functions of the Scrap
-Manager.  It contains the following functions:
-
-
-.. function:: InfoScrap()
-
-   Return current information about the scrap.  The information is encoded as a
-   tuple containing the fields ``(size, handle, count, state, path)``.
-
-   +----------+---------------------------------------------+
-   | Field    | Meaning                                     |
-   +==========+=============================================+
-   | *size*   | Size of the scrap in bytes.                 |
-   +----------+---------------------------------------------+
-   | *handle* | Resource object representing the scrap.     |
-   +----------+---------------------------------------------+
-   | *count*  | Serial number of the scrap contents.        |
-   +----------+---------------------------------------------+
-   | *state*  | Integer; positive if in memory, ``0`` if on |
-   |          | disk, negative if uninitialized.            |
-   +----------+---------------------------------------------+
-   | *path*   | Filename of the scrap when stored on disk.  |
-   +----------+---------------------------------------------+
-
-
-.. seealso::
-
-   `Scrap Manager <http://developer.apple.com/documentation/mac/MoreToolbox/MoreToolbox-109.html>`_
-      Apple's documentation for the Scrap Manager gives a lot of useful information
-      about using the Scrap Manager in applications.
-
+.. % Interface to the Carbon Scrap Manager.
 
 
 :mod:`Carbon.Snd` --- Sound Manager
@@ -287,9 +298,10 @@ Manager.  It contains the following functions:
 
 .. module:: Carbon.Snd
    :platform: Mac
-   :synopsis: Interface to the Sound Manager.
-   :deprecated:
+   :synopsis: Sound Managerへのインタフェース
 
+
+.. % Interface to the Sound Manager.
 
 
 :mod:`Carbon.TE` --- TextEdit
@@ -297,9 +309,10 @@ Manager.  It contains the following functions:
 
 .. module:: Carbon.TE
    :platform: Mac
-   :synopsis: Interface to TextEdit.
-   :deprecated:
+   :synopsis: TextEditへのインタフェース
 
+
+.. % Interface to TextEdit.
 
 
 :mod:`Carbon.Win` --- Window Manager
@@ -307,5 +320,8 @@ Manager.  It contains the following functions:
 
 .. module:: Carbon.Win
    :platform: Mac
-   :synopsis: Interface to the Window Manager.
-   :deprecated:
+   :synopsis: Window Managerへのインタフェース
+
+
+.. % Interface to the Window Manager.
+

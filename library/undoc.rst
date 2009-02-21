@@ -11,31 +11,20 @@ docs@python.org に送ってください)。
 この章のアイデアと元の文章内容は Fredrik Lundh のポストによる ものです; この章の特定の内容は実際には改訂されてきています。
 
 
-フレームワーク
-==============
-
-フレームワークは記述するのが難しくなりがちですが、そうする価値は あります。
-
-
-   ドキュメント化されていないフレームワークはありません。
-
-
 雑多な有用ユーティリティ
 ========================
 
 以下のいくつかは非常に古く、かつ／またはあまり頑健ではありません。 "hmm." マーク付きです。
 
-:mod:`bdb`
-   --- 汎用の Python デバッガ基底クラスです (pdb で使われています)。
-
 :mod:`ihooks`
    --- import フックのサポートです (:mod:`rexec` のためのものです;  撤廃されるかもしれません)。
 
 
-プラットフォーム特有のモジュール
+プラットフォーム固有のモジュール
 ================================
 
-これらのモジュールは :mod:`os.path` モジュールを実装するために 用いられていますが、ここで触れる内容を超えてドキュメントされていません。
+これらのモジュールは :mod:`os.path` モジュールを実装するために用いられていますが、
+ここで触れる内容を超えてドキュメントされていません。
 これらはもう少しドキュメント化する必要があります。
 
 :mod:`ntpath`
@@ -46,7 +35,7 @@ docs@python.org に送ってください)。
 
 :mod:`bsddb185`
    --- まだBerkeleyDB 1.85を使用しているシステムで後方互換性を保つためのモ ジュール。通常、特定のBSD
-   Unixベースのシステムでのみ利用可能。直接使用し ないで下さい。
+   Unixベースのシステムでのみ利用可能。直接使用しないで下さい。
 
 
 マルチメディア関連
@@ -65,9 +54,156 @@ docs@python.org に送ってください)。
    --- "任意の" 音声ファイルを AIFF ファイルに変換します; おそらく ツールかデモになるはずです。外部プログラム :program:`sox`
    が必要です。
 
-:mod:`ossaudiodev`
-   --- Open Sound System API を介して音声データを再生します。 このモジュールは Linux、いくつかの BSD 系、およびいくつかの
-   商用 Unix プラットフォームで利用できます。
+
+
+.. _undoc-mac-modules:
+
+文書化されていない Mac OS モジュール
+====================================
+
+
+:mod:`applesingle` --- AppleSingle デコーダー
+---------------------------------------------
+
+.. module:: applesingle
+   :platform: Mac
+   :synopsis: AppleSingle フォーマットファイル用の基本的なデコーダ
+   :deprecated:
+
+.. deprecated:: 2.6
+
+
+:mod:`buildtools` --- BuildAppletとその仲間のヘルパーモジュール
+---------------------------------------------------------------
+
+.. module:: buildtools
+   :platform: Mac
+   :synopsis: BuildAppletとその仲間のヘルパーモジュール
+   :deprecated:
+
+
+.. deprecated:: 2.4
+
+:mod:`cfmfile` --- コードフラグメントリソースを扱うモジュール
+-------------------------------------------------------------
+
+.. module:: cfmfile
+   :platform: Mac
+   :synopsis: コードフラグメントリソースを扱うモジュール
+   :deprecated:
+
+
+:mod:`cfmfile` は、コードフラグメントと関連する"cfrg"リソースを処\
+理するモジュールです。このモジュールでコードフラグメントを分解やマージ\
+できて、全てのプラグインモジュールをまとめて、一つの実行可能ファイルに\
+するため、BuildApplicationによって利用されます。
+
+.. deprecated:: 2.4
+
+:mod:`icopen` --- :meth:`open`と Internet Config の置き換え
+-----------------------------------------------------------
+
+.. module:: icopen
+   :platform: Mac
+   :synopsis: open()と Internet Config の置き換え
+   :deprecated:
+
+
+:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファ\
+イル用にファイルタイプおよびクリエーターを設定するために
+Internet Configを使用するバージョンに置き換えます。
+
+.. deprecated:: 2.6
+
+
+:mod:`macerrors` --- MacOSのエラー
+----------------------------------
+
+.. module:: macerrors
+   :platform: Mac
+   :synopsis: 多くの MacOS エラーコード定数定義
+   :deprecated:
+
+
+:mod:`macerrors` は、MacOS エラーコードを意味する定数定義を含みます。
+
+.. deprecated:: 2.6
+
+
+:mod:`macresource` --- スクリプトのリソースを見つける
+-----------------------------------------------------
+
+.. module:: macresource
+   :platform: Mac
+   :synopsis: スクリプトのリソースを見つける
+   :deprecated:
+
+
+:mod:`macresource` はスクリプトが MacPython 上や MacPython アプレッ\
+トおよび OSX Python 上で起動されている時、特別な処理をせずにダイアログ\
+やメニューなどのようなリソースを見つけるためのヘルパースクリプトです。
+
+.. deprecated:: 2.6
+
+
+:mod:`Nav` --- NavServices の呼出し
+-----------------------------------
+
+.. module:: Nav
+   :platform: Mac
+   :synopsis: Navigation Services へのインターフェース
+   :deprecated:
+
+
+Navigation Servicesの低レベルインターフェース。
+
+.. deprecated:: 2.6
+
+
+:mod:`PixMapWrapper` --- PixMapオブジェクトのラッパー
+-----------------------------------------------------
+
+.. module:: PixMapWrapper
+   :platform: Mac
+   :synopsis: PixMapオブジェクトのラッパー
+   :deprecated:
+
+
+:mod:`PixMapWrapper` はPixMap オブジェクトを Python オブジェクトでラッ\
+プしたもので、各フィールドに対し名前でアクセスできるようになります。
+:mod:`PIL` 画像との相互の変換をするメソッドも用意されています。
+
+.. deprecated:: 2.6
+
+
+:mod:`videoreader` --- QuickTime ムービーの読み込み
+---------------------------------------------------
+
+.. module:: videoreader
+   :platform: Mac
+   :synopsis: フレームの継続処理のためのQuickTime ムービーのフレーム読み込み
+   :deprecated:
+
+
+:mod:`videoreader` は QuickTime ムービーを読み込み、デコードし、プロ\
+グラムへ渡せます。このモジュールはさらにオーディオトラックをサ\
+ポートしています。
+
+.. deprecated:: 2.6
+
+
+:mod:`W` --- :mod:`FrameWork` 上に作られたウイジェット
+------------------------------------------------------
+
+.. module:: W
+   :platform: Mac
+   :synopsis: FrameWork 上に作られた Mac 用ウイジェット
+   :deprecated:
+
+
+:mod:`W` ウィジェットは、:program:`IDE` で頻繁に使われています。
+
+.. deprecated:: 2.6
 
 
 .. _obsolete-modules:
@@ -93,10 +229,10 @@ docs@python.org に送ってください)。
    --- 高い精度で経過時間を計測します (:func:`time.clock` を使って ください)。 (拡張モジュールです。)
 
 
-SGI 特有の拡張モジュール
+SGI 固有の拡張モジュール
 ========================
 
-以下は SGI 特有のモジュールで、現在のバージョンの SGI の実情が 反映されていないかもしれません。
+以下は SGI 固有のモジュールで、現在のバージョンの SGI の実情が反映されていないかもしれません。
 
 :mod:`cl`
    --- SGI 圧縮ライブラリへのインタフェースです。

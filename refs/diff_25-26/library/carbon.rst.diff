@@ -1,0 +1,275 @@
+--- ../rest25/maclib/toolbox.rst	2009-01-07 02:01:51 +0900
++++ ../rest26/library/carbon.rst	2009-01-07 02:01:54 +0900
+@@ -1,11 +1,11 @@
+ 
+ .. _toolbox:
+ 
+-*********************
+-MacOS Toolbox Modules
+-*********************
++**********************
++Mac OS Toolbox Modules
++**********************
+ 
+-There are a set of modules that provide interfaces to various MacOS toolboxes.
++There are a set of modules that provide interfaces to various Mac OS toolboxes.
+ If applicable the module will define a number of Python objects for the various
+ structures declared by the toolbox, and operations will be implemented as
+ methods of the object.  Other operations will be implemented as functions in the
+@@ -22,14 +22,9 @@
+ 
+    from Carbon import AE
+ 
+-**Warning!**  These modules are not yet documented.  If you wish to contribute
+-documentation of any of these modules, please get in touch with docs@python.org.
++.. warning::
+ 
+-
+-.. toctree::
+-
+-   colorpicker.rst
+-.. % \section{Argument Handling for Toolbox Modules}
++   The Carbon modules are removed in 3.0.
+ 
+ 
+ :mod:`Carbon.AE` --- Apple Events
+@@ -38,6 +33,7 @@
+ .. module:: Carbon.AE
+    :platform: Mac
+    :synopsis: Interface to the Apple Events toolbox.
++   :deprecated:
+ 
+ 
+ 
+@@ -47,6 +43,7 @@
+ .. module:: Carbon.AH
+    :platform: Mac
+    :synopsis: Interface to the Apple Help manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -56,6 +53,7 @@
+ .. module:: Carbon.App
+    :platform: Mac
+    :synopsis: Interface to the Appearance Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -65,6 +63,7 @@
+ .. module:: Carbon.CF
+    :platform: Mac
+    :synopsis: Interface to the Core Foundation.
++   :deprecated:
+ 
+ 
+ The ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` and
+@@ -76,16 +75,18 @@
+ 
+ .. module:: Carbon.CG
+    :platform: Mac
+-   :synopsis: Interface to the Component Manager.
++   :synopsis: Interface to Core Graphics.
++   :deprecated:
+ 
+ 
+ 
+ :mod:`Carbon.CarbonEvt` --- Carbon Event Manager
+ ================================================
+ 
+-.. module:: Carbon.CaronEvt
++.. module:: Carbon.CarbonEvt
+    :platform: Mac
+    :synopsis: Interface to the Carbon Event Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -95,6 +96,7 @@
+ .. module:: Carbon.Cm
+    :platform: Mac
+    :synopsis: Interface to the Component Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -104,6 +106,7 @@
+ .. module:: Carbon.Ctl
+    :platform: Mac
+    :synopsis: Interface to the Control Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -113,6 +116,7 @@
+ .. module:: Carbon.Dlg
+    :platform: Mac
+    :synopsis: Interface to the Dialog Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -122,6 +126,7 @@
+ .. module:: Carbon.Evt
+    :platform: Mac
+    :synopsis: Interface to the classic Event Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -131,6 +136,7 @@
+ .. module:: Carbon.Fm
+    :platform: Mac
+    :synopsis: Interface to the Font Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -140,6 +146,7 @@
+ .. module:: Carbon.Folder
+    :platform: Mac
+    :synopsis: Interface to the Folder Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -149,6 +156,7 @@
+ .. module:: Carbon.Help
+    :platform: Mac
+    :synopsis: Interface to the Carbon Help Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -158,6 +166,7 @@
+ .. module:: Carbon.List
+    :platform: Mac
+    :synopsis: Interface to the List Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -167,6 +176,7 @@
+ .. module:: Carbon.Menu
+    :platform: Mac
+    :synopsis: Interface to the Menu Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -176,6 +186,7 @@
+ .. module:: Carbon.Mlte
+    :platform: Mac
+    :synopsis: Interface to the MultiLingual Text Editor.
++   :deprecated:
+ 
+ 
+ 
+@@ -185,6 +196,7 @@
+ .. module:: Carbon.Qd
+    :platform: Mac
+    :synopsis: Interface to the QuickDraw toolbox.
++   :deprecated:
+ 
+ 
+ 
+@@ -194,6 +206,7 @@
+ .. module:: Carbon.Qdoffs
+    :platform: Mac
+    :synopsis: Interface to the QuickDraw Offscreen APIs.
++   :deprecated:
+ 
+ 
+ 
+@@ -203,6 +216,7 @@
+ .. module:: Carbon.Qt
+    :platform: Mac
+    :synopsis: Interface to the QuickTime toolbox.
++   :deprecated:
+ 
+ 
+ 
+@@ -212,6 +226,7 @@
+ .. module:: Carbon.Res
+    :platform: Mac
+    :synopsis: Interface to the Resource Manager and Handles.
++   :deprecated:
+ 
+ 
+ 
+@@ -220,7 +235,50 @@
+ 
+ .. module:: Carbon.Scrap
+    :platform: Mac
+-   :synopsis: Interface to the Carbon Scrap Manager.
++   :synopsis: The Scrap Manager provides basic services for implementing cut & paste and
++              clipboard operations.
++   :deprecated:
++
++
++This module is only fully available on Mac OS 9 and earlier under classic PPC
++MacPython.  Very limited functionality is available under Carbon MacPython.
++
++.. index:: single: Scrap Manager
++
++The Scrap Manager supports the simplest form of cut & paste operations on the
++Macintosh.  It can be use for both inter- and intra-application clipboard
++operations.
++
++The :mod:`Scrap` module provides low-level access to the functions of the Scrap
++Manager.  It contains the following functions:
++
++
++.. function:: InfoScrap()
++
++   Return current information about the scrap.  The information is encoded as a
++   tuple containing the fields ``(size, handle, count, state, path)``.
++
++   +----------+---------------------------------------------+
++   | Field    | Meaning                                     |
++   +==========+=============================================+
++   | *size*   | Size of the scrap in bytes.                 |
++   +----------+---------------------------------------------+
++   | *handle* | Resource object representing the scrap.     |
++   +----------+---------------------------------------------+
++   | *count*  | Serial number of the scrap contents.        |
++   +----------+---------------------------------------------+
++   | *state*  | Integer; positive if in memory, ``0`` if on |
++   |          | disk, negative if uninitialized.            |
++   +----------+---------------------------------------------+
++   | *path*   | Filename of the scrap when stored on disk.  |
++   +----------+---------------------------------------------+
++
++
++.. seealso::
++
++   `Scrap Manager <http://developer.apple.com/documentation/mac/MoreToolbox/MoreToolbox-109.html>`_
++      Apple's documentation for the Scrap Manager gives a lot of useful information
++      about using the Scrap Manager in applications.
+ 
+ 
+ 
+@@ -230,6 +288,7 @@
+ .. module:: Carbon.Snd
+    :platform: Mac
+    :synopsis: Interface to the Sound Manager.
++   :deprecated:
+ 
+ 
+ 
+@@ -239,6 +298,7 @@
+ .. module:: Carbon.TE
+    :platform: Mac
+    :synopsis: Interface to TextEdit.
++   :deprecated:
+ 
+ 
+ 
+@@ -248,5 +308,4 @@
+ .. module:: Carbon.Win
+    :platform: Mac
+    :synopsis: Interface to the Window Manager.
+-
+-
++   :deprecated:

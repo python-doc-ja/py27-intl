@@ -1,120 +1,103 @@
 
-:mod:`macostools` --- Convenience routines for file manipulation
-================================================================
+:mod:`macostools` --- ファイル操作を便利にするルーチン集
+========================================================
 
 .. module:: macostools
    :platform: Mac
-   :synopsis: Convenience routines for file manipulation.
-   :deprecated:
+   :synopsis: ファイル操作を便利にするルーチン集。
 
 
-This module contains some convenience routines for file-manipulation on the
-Macintosh. All file parameters can be specified as pathnames, :class:`FSRef` or
-:class:`FSSpec` objects.  This module expects a filesystem which supports forked
-files, so it should not be used on UFS partitions.
+このモジュールには、Macintosh 上でのファイル操作を便利にするための ルーチンがいくつか入っています。全てファイルパラメタは，パス名か
+:class:`FSRef` または:class:`FSSpec` オブジェクトで指定できます。 このモジュールは、リソースフォークつきファイル (forked
+file) をサポート するファイルシステムを想定しているので、UFSパーティションに使っては なりません．
 
-.. warning::
-
-   This module is removed in 3.0.
-
-The :mod:`macostools` module defines the following functions:
+:mod:`macostools` モジュールでは以下の関数を定義しています。
 
 
 .. function:: copy(src, dst[, createpath[, copytimes]])
 
-   Copy file *src* to *dst*.  If *createpath* is non-zero the folders leading to
-   *dst* are created if necessary. The method copies data and resource fork and
-   some finder information (creator, type, flags) and optionally the creation,
-   modification and backup times (default is to copy them). Custom icons, comments
-   and icon position are not copied.
+   ファイル*src*を*dst*へコピーします。 *createpath* が真なら、必要に応じて*dst*に至るまでのフォルダ を作成します。
+   このメソッドはデータとリソースフォーク，そしていくつかのファインダ情報 (クリエータ、タイプ、フラグ) をコピーします。オプションの *copytypes*
+   を指定すると，作成日、修正日、バックアップ日の情報のコピー (デフォルトでは コピーします) を制御できます。カスタムアイコン、コメント、アイコン位置は
+   コピーされません。
 
 
 .. function:: copytree(src, dst)
 
-   Recursively copy a file tree from *src* to *dst*, creating folders as needed.
-   *src* and *dst* should be specified as pathnames.
+   *src*から*dst*へ再帰的にファイルのツリーをコピーします。 必要に応じてフォルダを作成してゆきます．*src*と*dst*はパス名で
+   指定しなければなりません。
 
 
 .. function:: mkalias(src, dst)
 
-   Create a finder alias *dst* pointing to *src*.
+   *src*を示すファインダエイリアス*dst*を作成します。
 
 
 .. function:: touched(dst)
 
-   Tell the finder that some bits of finder-information such as creator or type for
-   file *dst* has changed. The file can be specified by pathname or fsspec. This
-   call should tell the finder to redraw the files icon.
-
-   .. deprecated:: 2.6
-      The function is a no-op on OS X.
+   ファイル*dst*のクリエータやタイプなどのファインダ情報が変わったこと をファインダに知らせます。
+   ファイルはパス名か:class:`FSSpec`で指定できます。この呼び出しは， ファインダにアイコンを再描画させるよう命令します。
 
 
 .. data:: BUFSIZ
 
-   The buffer size for ``copy``, default 1 megabyte.
+   ``copy``に用いるバッファサイズで、デフォルトは 1 メガバイトです。
 
-Note that the process of creating finder aliases is not specified in the Apple
-documentation. Hence, aliases created with :func:`mkalias` could conceivably
-have incompatible behaviour in some cases.
+Apple のドキュメントでは，ファインダエイリアスの作成プロセスを規定して いません．そのため，:func:`mkalias` で作成したエイリアスが互換性の
+ない振る舞いをする可能性があるので注意してください。
 
 
-:mod:`findertools` --- The :program:`finder`'s Apple Events interface
-=====================================================================
+:mod:`findertools` --- :program:`finder` のApple Eventsインターフェース
+=======================================================================
 
 .. module:: findertools
    :platform: Mac
-   :synopsis: Wrappers around the finder's Apple Events interface.
+   :synopsis: finderのApple Eventsインターフェースのラッパ。
 
 
 .. index:: single: AppleEvents
 
-This module contains routines that give Python programs access to some
-functionality provided by the finder. They are implemented as wrappers around
-the AppleEvent interface to the finder.
+このモジュールのルーチンを使うと、Pythonプログラムからファインダが持つい くつかの機能へアクセスできます。
+これらの機能はファインダへのAppleEventインターフェー スのラッパとして実装されています。 全てのファイルとフォルダのパラメータは、フルパス名、あるいは
+:class:`FSRef`か:class:`FSSpec`オブジェクトで指定できます。
 
-All file and folder parameters can be specified either as full pathnames, or as
-:class:`FSRef` or :class:`FSSpec` objects.
-
-The :mod:`findertools` module defines the following functions:
+:mod:`findertools`モジュールは以下の関数を定義しています。
 
 
 .. function:: launch(file)
 
-   Tell the finder to launch *file*. What launching means depends on the file:
-   applications are started, folders are opened and documents are opened in the
-   correct application.
+   ファインダに*file*を起動するように命令します。 起動が意味するものは*file*に依存します。アプリケーションなら起動しま
+   すし、フォルダなら開かれ、文書なら適切なアプリケーションで開かれます。
 
 
 .. function:: Print(file)
 
-   Tell the finder to print a file. The behaviour is identical to selecting the
-   file and using the print command in the finder's file menu.
+   ファインダにファイルを印刷するよう命令します。 実際の動作はファイルを選択し、ファインダのファイルメニューから印刷コマン ドを使うのと同じです。
 
 
 .. function:: copy(file, destdir)
 
-   Tell the finder to copy a file or folder *file* to folder *destdir*. The
-   function returns an :class:`Alias` object pointing to the new file.
+   ファインダにファイルかフォルダである*file*をフォルダ*destdir*に コピーするよう命令します。
+   この関数は新しいファイルを示す:class:`Alias`オブジェクトを返します。
 
 
 .. function:: move(file, destdir)
 
-   Tell the finder to move a file or folder *file* to folder *destdir*. The
-   function returns an :class:`Alias` object pointing to the new file.
+   ファインダにファイルかフォルダである*file*をフォルダ*destdir*に 移動するように命令します。
+   この関数は新しいファイルを示す:class:`Alias`オブジェクトを返します。
 
 
 .. function:: sleep()
 
-   Tell the finder to put the Macintosh to sleep, if your machine supports it.
+   マシンがサポートしていれば、ファインダにMacintoshをスリープさせるよう命 令します。
 
 
 .. function:: restart()
 
-   Tell the finder to perform an orderly restart of the machine.
+   ファインダに、マシンを適切に再起動するよう命令します。
 
 
 .. function:: shutdown()
 
-   Tell the finder to perform an orderly shutdown of the machine.
+   ファインダに、マシンを適切にシャットダウンするよう命令します。
 

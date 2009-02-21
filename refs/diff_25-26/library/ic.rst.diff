@@ -1,0 +1,74 @@
+--- refs/rest25/maclib/macic.rst	2009-01-07 02:01:51 +0900
++++ refs/rest26/library/ic.rst	2009-01-07 02:01:55 +0900
+@@ -1,15 +1,21 @@
+ 
+-:mod:`ic` --- Access to Internet Config
+-=======================================
++:mod:`ic` --- Access to the Mac OS X Internet Config
++====================================================
+ 
+ .. module:: ic
+    :platform: Mac
+-   :synopsis: Access to Internet Config.
++   :synopsis: Access to the Mac OS X Internet Config.
++   :deprecated:
+ 
+ 
+ This module provides access to various internet-related preferences set through
+ :program:`System Preferences` or the :program:`Finder`.
+ 
++.. warning::
++
++   This module is removed in 3.0.
++
++
+ .. index:: module: icglue
+ 
+ There is a low-level companion module :mod:`icglue` which provides the basic
+@@ -68,7 +74,7 @@
+ methods:
+ 
+ 
+-.. method:: XXX Class.launchurl(url[, hint])
++.. method:: IC.launchurl(url[, hint])
+ 
+    Parse the given URL, launch the correct application and pass it the URL. The
+    optional *hint* can be a scheme name such as ``'mailto:'``, in which case
+@@ -76,7 +82,7 @@
+    incomplete URLs are invalid.
+ 
+ 
+-.. method:: XXX Class.parseurl(data[, start[, end[, hint]]])
++.. method:: IC.parseurl(data[, start[, end[, hint]]])
+ 
+    Find an URL somewhere in *data* and return start position, end position and the
+    URL. The optional *start* and *end* can be used to limit the search, so for
+@@ -86,7 +92,7 @@
+    incomplete URLs.
+ 
+ 
+-.. method:: XXX Class.mapfile(file)
++.. method:: IC.mapfile(file)
+ 
+    Return the mapping entry for the given *file*, which can be passed as either a
+    filename or an :func:`FSSpec` result, and which need not exist.
+@@ -103,7 +109,7 @@
+    file and *entryname* is the name of this entry.
+ 
+ 
+-.. method:: XXX Class.maptypecreator(type, creator[, filename])
++.. method:: IC.maptypecreator(type, creator[, filename])
+ 
+    Return the mapping entry for files with given 4-character *type* and *creator*
+    codes. The optional *filename* may be specified to further help finding the
+@@ -112,9 +118,8 @@
+    The mapping entry is returned in the same format as for *mapfile*.
+ 
+ 
+-.. method:: XXX Class.settypecreator(file)
++.. method:: IC.settypecreator(file)
+ 
+    Given an existing *file*, specified either as a filename or as an :func:`FSSpec`
+    result, set its creator and type correctly based on its extension.  The finder
+    is told about the change, so the finder icon will be updated quickly.
+-

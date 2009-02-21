@@ -1,10 +1,10 @@
 
-:mod:`MiniAEFrame` --- Open Scripting Architecture server support
-=================================================================
+:mod:`MiniAEFrame` --- オープンスクリプティングアーキテクチャサーバのサポート
+=============================================================================
 
 .. module:: MiniAEFrame
    :platform: Mac
-   :synopsis: Support to act as an Open Scripting Architecture (OSA) server ("Apple Events").
+   :synopsis: オープンスクリプティングアーキテクチャ(OSA)サーバ("Apple Events")のサポート。
 
 
 .. index::
@@ -12,57 +12,51 @@
    single: AppleEvents
    module: FrameWork
 
-The module :mod:`MiniAEFrame` provides a framework for an application that can
-function as an Open Scripting Architecture  (OSA) server, i.e. receive and
-process AppleEvents. It can be used in conjunction with :mod:`FrameWork` or
-standalone. As an example, it is used in :program:`PythonCGISlave`.
+:mod:`MiniAEFrame`モジュールは、アプリケーションにオープンスクリプ ティングアーキテクチャ(OSA)サーバ機
+能を持たせるためのフレームワークを提供します。つまり、 AppleEventsの受信と処理を行わせます。
+:mod:`FrameWork`と連携させても良いし、単独 でも使えます。
+実例として、このモジュールは:program:`PythonCGISlave`の中で使われていま す。
 
-The :mod:`MiniAEFrame` module defines the following classes:
+:mod:`MiniAEFrame`には以下のクラスが定義されています。
 
 
 .. class:: AEServer()
 
-   A class that handles AppleEvent dispatch. Your application should subclass this
-   class together with either :class:`MiniApplication` or
-   :class:`FrameWork.Application`. Your :meth:`__init__` method should call the
-   :meth:`__init__` method for both classes.
+   AppleEventの分岐を処理するクラス。作成するアプリケーションはこのクラス
+   と、:class:`MiniApplication`あるいは:class:`FrameWork.Application`のサブク
+   ラスでなければなりません。サブクラス化したクラスでは:meth:`__init__`
+   メソッドで、継承した両方のクラスの:meth:`__init__`メソッドを呼びださ なければなりません。
 
 
 .. class:: MiniApplication()
 
-   A class that is more or less compatible with :class:`FrameWork.Application` but
-   with less functionality. Its event loop supports the apple menu, command-dot and
-   AppleEvents; other events are passed on to the Python interpreter and/or Sioux.
-   Useful if your application wants to use :class:`AEServer` but does not provide
-   its own windows, etc.
+   :class:`FrameWork.Application`とある程度互換なクラスですが、機能は少ない
+   です。このクラスのイベントループはアップルメニュー、Cmd-.(コマンドキーを押しながらピリオド.を押す)、
+   AppleEventをサポートします。他のイベントはPythonインタープリタかSioux（CodeWarriorの
+   コンソールシステム）に渡されます。作成するアプリケーションで :class:`AEServer`を使いたいが、独自のウィンドウなどを持たない場合に便利で す。
 
 
 .. _aeserver-objects:
 
-AEServer Objects
-----------------
+AEServer オブジェクト
+---------------------
 
 
 .. method:: AEServer.installaehandler(classe, type, callback)
 
-   Installs an AppleEvent handler. *classe* and *type* are the four-character OSA
-   Class and Type designators, ``'****'`` wildcards are allowed. When a matching
-   AppleEvent is received the parameters are decoded and your callback is invoked.
+   AppleEventハンドラをインストールします。*classe*と*type*は4文字
+   のOSAクラスとタイプの指定子で、ワイルドカード``'****'``も使えます。対
+   応するAppleEventを受けるとパラメータがデコードされ、与えたコールバックが 呼び出されます。
 
 
 .. method:: AEServer.callback(_object, **kwargs)
 
-   Your callback is called with the OSA Direct Object as first positional
-   parameter. The other parameters are passed as keyword arguments, with the
-   4-character designator as name. Three extra keyword parameters are passed:
-   ``_class`` and ``_type`` are the Class and Type designators and ``_attributes``
-   is a dictionary with the AppleEvent attributes.
+   与えたコールバックは、OSAダイレクトオブジェクトを1番目のパラメータとして 呼び出されます。他のパラメータは4文字の指定子を名前にしたキーワード引数
+   として渡されます。他に3つのキーワード・パラメータが渡されます。つまり、
+   ``_class``と``_type``はクラスとタイプ指定子で、``_attributes`` はAppleEvent属性を持つ辞書です。
 
-   The return value of your method is packed with :func:`aetools.packevent` and
-   sent as reply.
+   与えたメソッドの返り値は:func:`aetools.packevent`でパックされ、リプ ライとして送られます。
 
-Note that there are some serious problems with the current design. AppleEvents
-which have non-identifier 4-character designators for arguments are not
-implementable, and it is not possible to return an error to the originator. This
-will be addressed in a future release.
+現在のクラス設計にはいくつか重大な問題があることに注意してください。引数 に名前ではない4文字の指定子を持つAppleEventはまだ実装されていないし、イ
+ベントの送信側にエラーを返すこともできません。この問題は将来のリリースま で先送りにされています。
 
