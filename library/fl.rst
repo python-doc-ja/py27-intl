@@ -1,64 +1,84 @@
 
-:mod:`fl` --- グラフィカルユーザーインターフェースのためのFORMSライブラリ
-=========================================================================
+:mod:`fl` --- グラフィカルユーザーインターフェースのための FORMS ライブラリ
+===========================================================================
 
 .. module:: fl
    :platform: IRIX
-   :synopsis: グラフィカルユーザーインターフェースのためのFORMSライブラリ。
+   :synopsis: グラフィカルユーザーインターフェースのための FORMS ライブラリ。
+   :deprecated:
+   
+   
+.. deprecated:: 2.6
+    :mod:`fl` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
 
 .. index::
    single: Overmars, Mark
    single: FORMS Library
 
-このモジュールは、Mark OvermarsによるFORMS Library へのインターフェースを提供します。
-FORMSライブラリのソースはanonymous ftp ``ftp.cs.ruu.nl``の :file:`SGI/FORMS`ディレクトリから入手できます。
+このモジュールは、Mark Overmars による FORMS ライブラリへのインターフェースを提供します。
+FORMS ライブラリのソースは anonymous ftp ``ftp.cs.ruu.nl`` の
+:file:`SGI/FORMS` ディレクトリから入手できます。
 最新のテストはバージョン2.0bで行いました。
 
-ほとんどの関数は接頭辞の``fl_``を取ると、対応するCの関数名になりま す。 ライブラリで使われる定数は後述の:mod:`FL`モジュールで
+ほとんどの関数は接頭辞の ``fl_`` を取ると、対応する C の関数名になります。
+ライブラリで使われる定数は後述の :mod:`FL` モジュールで
 定義されています。
 
-Pythonでこのオブジェクトを作る方法はCとは少し違っています： ライブラリに保持された'現在のフォーム'に新しいFORMSオブジェクトを加える
-のではなく、フォームにFORMSオブジェクトを加えるには、フォームを示す Pythonオブジェクトのメソッドで全て行います。
-したがって、Cの関数の:cfunc:`fl_addto_form`と :cfunc:`fl_end_form`に相当するものはPythonにはありませんし、
-:cfunc:`fl_bgn_form`に相当するものとしては:func:`fl.make_form` を呼び出します。
+Python でこのオブジェクトを作る方法は C とは少し違っています：
+ライブラリに保持された'現在のフォーム'に新しい FORMS オブジェクトを加える
+のではなく、フォームに FORMS オブジェクトを加えるには、
+フォームを示す Python オブジェクトのメソッドで全て行います。
+したがって、C の関数の :cfunc:`fl_addto_form` と :cfunc:`fl_end_form`
+に相当するものは Python にはありませんし、
+:cfunc:`fl_bgn_form` に相当するものとしては :func:`fl.make_form` を呼び出します。
 
-用語のちょっとした混乱に注意してください： FORMSではフォームの中に置くことができるボタン、スライダーなどに :dfn:`object`の用語を使います。
-Pythonでは全ての値が'オブジェクト'です。 FORMSへのPythonのインターフェースによって、2つの新しいタイプのPythonオブ
-ジェクト：フォームオブジェクト（フォーム全体を示します）とFORMSオブジェ クト（ボタン、スライダーなどの一つひとつを示します）を作ります。
+用語のちょっとした混乱に注意してください：
+FORMS ではフォームの中に置くことができるボタン、スライダーなどに
+:dfn:`object` の用語を使います。
+Python では全ての値が'オブジェクト'です。
+FORMS への Python のインターフェースによって、2つの新しいタイプの Python
+オブジェクト：フォームオブジェクト（フォーム全体を示します）と
+FORMS オブジェクト（ボタン、スライダーなどの一つひとつを示します）を作ります。
 おそらく、混乱するほどのことではありません。
 
-FORMSへのPythonインターフェースに'フリーオブジェクト'はありませんし、 Pythonでオブジェクトクラスを書いて加える簡単な方法もありません。
-しかし、GLイベントハンドルへのFORMSインターフェースが利用可能で、純粋な GLウィンドウにFORMSを組み合わせることができます。
+FORMS への Python インターフェースに'フリーオブジェクト'はありませんし、
+Python でオブジェクトクラスを書いて加える簡単な方法もありません。
+しかし、GL イベントハンドルへの FORMS インターフェースが利用可能で、
+純粋な GL ウィンドウに FORMS を組み合わせることができます。
 
-** 注意：**  :mod:`fl`をインポートすると、GLの関数:cfunc:`foreground`と
-FORMSのルーチン:cfunc:`fl_init`を呼び出します。
+** 注意：**  :mod:`fl` をインポートすると、GL の関数 :cfunc:`foreground` と
+FORMS のルーチン :cfunc:`fl_init` を呼び出します。
 
 
-:mod:`fl`モジュールに定義されている関数
----------------------------------------
+.. _fl-functions:
 
-.. _fl functions:
+:mod:`fl` モジュールに定義されている関数
+----------------------------------------
 
-:mod:`fl`モジュールには以下の関数が定義されています。 これらの関数の働きに関する詳しい情報については、FORMSドキュメントで対応
-するCの関数の説明を参照してください。
+:mod:`fl` モジュールには以下の関数が定義されています。
+これらの関数の働きに関する詳しい情報については、FORMS ドキュメントで対応\
+する C の関数の説明を参照してください。
 
 
 .. function:: make_form(type, width, height)
 
-   与えられたタイプ、幅、高さでフォームを作ります。 これは:dfn:`form`オブジェクトを返します。このオブジェクトは後述のメソッド を持ちます。
+   与えられたタイプ、幅、高さでフォームを作ります。
+   これは :dfn:`form` オブジェクトを返します。
+   このオブジェクトは後述のメソッドを持ちます。
 
 
 .. function:: do_forms()
 
-   標準のFORMSのメインループです。 ユーザからの応答が必要なFORMSオブジェクトを示すPythonオブジェクト、ある
-   いは特別な値:const:`FL.EVENT`を返します。
+   標準の FORMS のメインループです。
+   ユーザからの応答が必要な FORMS オブジェクトを示す Python オブジェクト、
+   あるいは特別な値 :const:`FL.EVENT` を返します。
 
 
 .. function:: check_forms()
 
-   FORMSイベントを確認します。 :func:`do_forms`が返すもの、あるいはユーザからの応答をすぐに必要と
-   するイベントがないなら``None``を返します。
+   FORMS イベントを確認します。 :func:`do_forms` が返すもの、
+   あるいはユーザからの応答をすぐに必要とするイベントがないなら ``None`` を返します。
 
 
 .. function:: set_event_call_back(function)
@@ -73,42 +93,49 @@ FORMSのルーチン:cfunc:`fl_init`を呼び出します。
 
 .. function:: get_rgbmode()
 
-   現在のRGBモードを返します。 これはCのグローバル変数:cdata:`fl_rgbmode`の値です。
+   現在の RGB モードを返します。
+   これは C のグローバル変数 :cdata:`fl_rgbmode` の値です。
 
 
 .. function:: show_message(str1, str2, str3)
 
-   3行のメッセージとOKボタンのあるダイアログボックスを表示します。
+   3行のメッセージと OK ボタンのあるダイアログボックスを表示します。
 
 
 .. function:: show_question(str1, str2, str3)
 
-   3行のメッセージとYES、NOのボタンのあるダイアログボックスを表示します。 ユーザによってYESが押されたら``1``、NOが押されたら``0``を返しま
+   3行のメッセージと YES、NO のボタンのあるダイアログボックスを表示します。
+   ユーザによって YES が押されたら ``1`` 、NO が押されたら ``0`` を返しま\
    す。
 
 
 .. function:: show_choice(str1, str2, str3, but1[, but2[, but3]])
 
-   3行のメッセージと最大3つまでのボタンのあるダイアログボックスを表示しま す。 ユーザによって押されたボタンの数値を返します（それぞれ``1``、``2``
-   、``3``）。
+   3行のメッセージと最大3つまでのボタンのあるダイアログボックスを表示しま\
+   す。 ユーザによって押されたボタンの数値を返します (それぞれ ``1`` 、 ``2``
+   、 ``3``)。
 
 
 .. function:: show_input(prompt, default)
 
-   1行のプロンプトメッセージと、ユーザが入力できるテキストフィールドを持つ ダイアログボックスを表示します。 2番目の引数はデフォルトで表示される入力文字列です。
+   1行のプロンプトメッセージと、ユーザが入力できるテキストフィールドを持つ\
+   ダイアログボックスを表示します。 2番目の引数はデフォルトで表示される入力文字列です。
    ユーザが入力した文字列が返されます。
 
 
 .. function:: show_file_selector(message, directory, pattern,  default)
 
-   ファイル選択ダイアログを表示します。 ユーザによって選択されたファイルの絶対パス、あるいはユーザがCancelボタン を押した場合は``None``を返します。
+   ファイル選択ダイアログを表示します。
+   ユーザによって選択されたファイルの絶対パス、あるいはユーザが Cancel
+   ボタンを押した場合は ``None`` を返します。
 
 
 .. function:: get_directory()
               get_pattern()
               get_filename()
 
-   これらの関数は最後にユーザが:func:`show_file_selector`で選択した ディレクトリ、パターン、ファイル名（パスの末尾のみ）を返します。
+   これらの関数は最後にユーザが :func:`show_file_selector`
+   で選択したディレクトリ、パターン、ファイル名（パスの末尾のみ）を返します。
 
 
 .. function:: qdevice(dev)
@@ -121,20 +148,21 @@ FORMSのルーチン:cfunc:`fl_init`を呼び出します。
               get_mouse()
               tie(button, valuator1, valuator2)
 
-   これらの関数は対応するGL関数へのFORMSのインターフェースです。 :func:`fl.do_events`を使っていて、自分で何かGLイベントを操作したい
-   ときにこれらを使います。 FORMSが扱うことのできないGLイベントが検出されたら
-   :func:`fl.do_forms`が特別の値:const:`FL.EVENT`を返すので、
-   :func:`fl.qread`を呼び出して、キューからイベントを読み込むべきで す。 対応するGLの関数は使わないでください！
+   これらの関数は対応する GL 関数への FORMS のインターフェースです。
+   :func:`fl.do_events` を使っていて、自分で何か GL イベントを操作したい\
+   ときにこれらを使います。FORMS が扱うことのできない GL イベントが検出されたら
+   :func:`fl.do_forms` が特別の値 :const:`FL.EVENT` を返すので、
+   :func:`fl.qread` を呼び出して、キューからイベントを読み込むべきです。
+   対応する GL の関数は使わないでください！
 
-   .. % \funcline{blkqread}{?}
 
 
 .. function:: color()
               mapcolor()
               getmcolor()
 
-   FORMSドキュメントにある:cfunc:`fl_color`、 :cfunc:`fl_mapcolor`、:cfunc:`fl_getmcolor`
-   の記述を参照してください。
+   FORMS ドキュメントにある :cfunc:`fl_color` 、 :cfunc:`fl_mapcolor` 、
+   :cfunc:`fl_getmcolor` の記述を参照してください。
 
 
 .. _form-objects:
@@ -142,12 +170,17 @@ FORMSのルーチン:cfunc:`fl_init`を呼び出します。
 フォームオブジェクト
 --------------------
 
-フォームオブジェクト（上で述べた:func:`make_form`で返されます）には 下記のメソッドがあります。
-各メソッドは名前の接頭辞に``fl_``を付けたCの関数に対応します；また、 最初の引数はフォームのポインタです；
+フォームオブジェクト（上で述べた :func:`make_form` で返されます）には\
+下記のメソッドがあります。
+各メソッドは名前の接頭辞に ``fl_`` を付けた C の関数に対応します；
+また、最初の引数はフォームのポインタです；
 説明はFORMSの公式文書を参照してください。
 
-全ての:meth:`add_\*`メソッドは、FORMSオブジェクトを示すPythonオブジェ クトを返します。
-FORMSオブジェクトのメソッドを以下に記載します。 ほとんどのFORMSオブジェクトは、そのオブジェクトの種類ごとに特有のメソッ ドもいくつか持っています。
+全ての :meth:`add_\*` メソッドは、 FORMS オブジェクトを示す Python
+オブジェクトを返します。
+FORMS オブジェクトのメソッドを以下に記載します。
+ほとんどの FORMS オブジェクトは、そのオブジェクトの種類ごとに特有の\
+メソッドもいくつか持っています。
 
 
 .. method:: form.show_form(placement, bordertype, name)
@@ -209,8 +242,6 @@ FORMSオブジェクトのメソッドを以下に記載します。 ほとん�
 
    フォームの中の最後のオブジェクトを見つけます。
 
-.. % ---
-
 
 .. method:: form.add_box(type, x, y, w, h, name)
 
@@ -221,117 +252,103 @@ FORMSオブジェクトのメソッドを以下に記載します。 ほとん�
 
    フォームにテキストオブジェクトを加えます。 特別な追加のメソッドはありません。
 
-.. % \begin{methoddesc}[form]{add_bitmap}{type, x, y, w, h, name}
-.. % Add a bitmap object to the form.
-.. % \end{methoddesc}
-
 
 .. method:: form.add_clock(type, x, y, w, h, name)
 
-   フォームにクロックオブジェクトを加えます。 ---  メソッド： :meth:`get_clock`。
-
-.. % ---
+   フォームにクロックオブジェクトを加えます。 ---  メソッド： :meth:`get_clock` 。
 
 
 .. method:: form.add_button(type, x, y, w, h,  name)
 
-   フォームにボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button`、 :meth:`set_button`。
+   フォームにボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
 
 
 .. method:: form.add_lightbutton(type, x, y, w, h, name)
 
-   フォームにライトボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button`、 :meth:`set_button`。
+   フォームにライトボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
 
 
 .. method:: form.add_roundbutton(type, x, y, w, h, name)
 
-   フォームにラウンドボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button`、 :meth:`set_button`。
-
-.. % ---
+   フォームにラウンドボタンオブジェクトを加えます。 ---  メソッド： :meth:`get_button` 、 :meth:`set_button` 。
 
 
 .. method:: form.add_slider(type, x, y, w, h, name)
 
-   フォームにスライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value`、
-   :meth:`get_slider_value`、 :meth:`set_slider_bounds`、 :meth:`get_slider_bounds`、
-   :meth:`set_slider_return`、 :meth:`set_slider_size`、
-   :meth:`set_slider_precision`、 :meth:`set_slider_step`。
+   フォームにスライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value` 、
+   :meth:`get_slider_value` 、 :meth:`set_slider_bounds` 、 :meth:`get_slider_bounds` 、
+   :meth:`set_slider_return` 、 :meth:`set_slider_size` 、
+   :meth:`set_slider_precision` 、 :meth:`set_slider_step` 。
 
 
 .. method:: form.add_valslider(type, x, y, w, h, name)
 
-   フォームにバリュースライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value`、
-   :meth:`get_slider_value`、 :meth:`set_slider_bounds`、 :meth:`get_slider_bounds`、
-   :meth:`set_slider_return`、 :meth:`set_slider_size`、
-   :meth:`set_slider_precision`、 :meth:`set_slider_step`。
+   フォームにバリュースライダーオブジェクトを加えます。 ---  メソッド： :meth:`set_slider_value` 、
+   :meth:`get_slider_value` 、 :meth:`set_slider_bounds` 、 :meth:`get_slider_bounds` 、
+   :meth:`set_slider_return` 、 :meth:`set_slider_size` 、
+   :meth:`set_slider_precision` 、 :meth:`set_slider_step` 。
 
 
 .. method:: form.add_dial(type, x, y, w, h, name)
 
-   フォームにダイアルオブジェクトを加えます。 ---  メソッド： :meth:`set_dial_value`、 :meth:`get_dial_value`、
-   :meth:`set_dial_bounds`、 :meth:`get_dial_bounds`。
+   フォームにダイアルオブジェクトを加えます。 ---  メソッド： :meth:`set_dial_value` 、 :meth:`get_dial_value` 、
+   :meth:`set_dial_bounds` 、 :meth:`get_dial_bounds` 。
 
 
 .. method:: form.add_positioner(type, x, y, w, h, name)
 
-   フォームに2次元ポジショナーオブジェクトを加えます。 ---  メソッド： :meth:`set_positioner_xvalue`、
-   :meth:`set_positioner_yvalue`、 :meth:`set_positioner_xbounds`、
-   :meth:`set_positioner_ybounds`、 :meth:`get_positioner_xvalue`、
-   :meth:`get_positioner_yvalue`、 :meth:`get_positioner_xbounds`、
-   :meth:`get_positioner_ybounds`。
+   フォームに2次元ポジショナーオブジェクトを加えます。 ---  メソッド： :meth:`set_positioner_xvalue` 、
+   :meth:`set_positioner_yvalue` 、 :meth:`set_positioner_xbounds` 、
+   :meth:`set_positioner_ybounds` 、 :meth:`get_positioner_xvalue` 、
+   :meth:`get_positioner_yvalue` 、 :meth:`get_positioner_xbounds` 、
+   :meth:`get_positioner_ybounds` 。
 
 
 .. method:: form.add_counter(type, x, y, w, h, name)
 
-   フォームにカウンタオブジェクトを加えます。 ---  メソッド： :meth:`set_counter_value`、
-   :meth:`get_counter_value`、 :meth:`set_counter_bounds`、 :meth:`set_counter_step`,
-   :meth:`set_counter_precision`、 :meth:`set_counter_return`。
-
-.. % ---
+   フォームにカウンタオブジェクトを加えます。 ---  メソッド： :meth:`set_counter_value` 、
+   :meth:`get_counter_value` 、 :meth:`set_counter_bounds` 、 :meth:`set_counter_step` 、
+   :meth:`set_counter_precision` 、 :meth:`set_counter_return` 。
 
 
 .. method:: form.add_input(type, x, y, w, h, name)
 
-   フォームにインプットオブジェクトを加えます。 ---  メソッド： :meth:`set_input`、 :meth:`get_input`、
-   :meth:`set_input_color`、 :meth:`set_input_return`。
-
-.. % ---
+   フォームにインプットオブジェクトを加えます。 ---  メソッド： :meth:`set_input` 、 :meth:`get_input` 、
+   :meth:`set_input_color` 、 :meth:`set_input_return` 。
 
 
 .. method:: form.add_menu(type, x, y, w, h, name)
 
-   フォームにメニューオブジェクトを加えます。 ---  メソッド： :meth:`set_menu`、 :meth:`get_menu`、
-   :meth:`addto_menu`。
+   フォームにメニューオブジェクトを加えます。 ---  メソッド： :meth:`set_menu` 、 :meth:`get_menu` 、
+   :meth:`addto_menu` 。
 
 
 .. method:: form.add_choice(type, x, y, w, h, name)
 
-   フォームにチョイスオブジェクトを加えます。 ---  メソッド： :meth:`set_choice`、 :meth:`get_choice`、
-   :meth:`clear_choice`、 :meth:`addto_choice`、 :meth:`replace_choice`、
-   :meth:`delete_choice`、 :meth:`get_choice_text`、 :meth:`set_choice_fontsize`、
-   :meth:`set_choice_fontstyle`。
+   フォームにチョイスオブジェクトを加えます。 ---  メソッド： :meth:`set_choice` 、 :meth:`get_choice` 、
+   :meth:`clear_choice` 、 :meth:`addto_choice` 、 :meth:`replace_choice` 、
+   :meth:`delete_choice` 、 :meth:`get_choice_text` 、 :meth:`set_choice_fontsize` 、
+   :meth:`set_choice_fontstyle` 。
 
 
 .. method:: form.add_browser(type, x, y, w, h, name)
 
-   フォームにブラウザオブジェクトを加えます。 ---  メソッド： :meth:`set_browser_topline`、
-   :meth:`clear_browser`、 :meth:`add_browser_line`、 :meth:`addto_browser`、
-   :meth:`insert_browser_line`、 :meth:`delete_browser_line`、
-   :meth:`replace_browser_line`、 :meth:`get_browser_line`、 :meth:`load_browser`、
-   :meth:`get_browser_maxline`、 :meth:`select_browser_line`、
-   :meth:`deselect_browser_line`、 :meth:`deselect_browser`、
-   :meth:`isselected_browser_line`、 :meth:`get_browser`、
-   :meth:`set_browser_fontsize`、 :meth:`set_browser_fontstyle`、
-   :meth:`set_browser_specialkey`。
-
-.. % ---
+   フォームにブラウザオブジェクトを加えます。 ---  メソッド： :meth:`set_browser_topline` 、
+   :meth:`clear_browser` 、 :meth:`add_browser_line` 、 :meth:`addto_browser` 、
+   :meth:`insert_browser_line` 、 :meth:`delete_browser_line` 、
+   :meth:`replace_browser_line` 、 :meth:`get_browser_line` 、 :meth:`load_browser` 、
+   :meth:`get_browser_maxline` 、 :meth:`select_browser_line` 、
+   :meth:`deselect_browser_line` 、 :meth:`deselect_browser` 、
+   :meth:`isselected_browser_line` 、 :meth:`get_browser` 、
+   :meth:`set_browser_fontsize` 、 :meth:`set_browser_fontstyle` 、
+   :meth:`set_browser_specialkey` 。
 
 
 .. method:: form.add_timer(type, x, y, w, h, name)
 
-   フォームにタイマーオブジェクトを加えます。 ---  メソッド： :meth:`set_timer`、 :meth:`get_timer`。
+   フォームにタイマーオブジェクトを加えます。 ---  メソッド： :meth:`set_timer` 、 :meth:`get_timer` 。
 
-フォームオブジェクトには以下のデータ属性があります；FORMSドキュメントを 参照してください：
+フォームオブジェクトには以下のデータ属性があります；FORMS ドキュメントを参照してください：
 
 +---------------------+-----------------+--------------------------------------------------+
 | 名称                | Cの型           | 意味                                             |
@@ -361,14 +378,18 @@ FORMSオブジェクトのメソッドを以下に記載します。 ほとん�
 FORMSオブジェクト
 -----------------
 
-FORMSオブジェクトの種類ごとに特有のメソッドの他に、全てのFORMSオブジェク トは以下のメソッドも持っています：
+FORMS オブジェクトの種類ごとに特有のメソッドの他に、
+全てのFORMSオブジェクトは以下のメソッドも持っています：
 
 
 .. method:: FORMS object.set_call_back(function, argument)
 
-   オブジェクトのコールバック関数と引数を設定します。 オブジェクトがユーザからの応答を必要とするときには、コールバック関数は2
-   つの引数、オブジェクトとコールバックの引数とともに呼び出されます。 （コールバック関数のないFORMSオブジェクトは、ユーザからの応答を必要とす
-   るときには:func:`fl.do_forms`あるいは:func:`fl.check_forms`に よって返されます。）
+   オブジェクトのコールバック関数と引数を設定します。
+   オブジェクトがユーザからの応答を必要とするときには、コールバック関数は2
+   つの引数、オブジェクトとコールバックの引数とともに呼び出されます。
+   （コールバック関数のない FORMS オブジェクトは、ユーザからの応答を必要とす\
+   るときには :func:`fl.do_forms` あるいは :func:`fl.check_forms`
+   によって返されます。）
    引数なしにこのメソッドを呼び出すと、コールバック関数を削除します。
 
 
@@ -401,12 +422,9 @@ FORMSオブジェクトの種類ごとに特有のメソッドの他に、全て
 
    固定したオブジェクトの固定を解除します。
 
-FORMSオブジェクトには以下のデータ属性があります；FORMSドキュメントを参照 してください。
+FORMS オブジェクトには以下のデータ属性があります；
+FORMS ドキュメントを参照してください。
 
-.. % \begin{methoddesc}[FORMS object]{handle_object}{} XXX
-.. % \end{methoddesc}
-.. % \begin{methoddesc}[FORMS object]{handle_object_direct}{} XXX
-.. % \end{methoddesc}
 
 +--------------------+-----------------+---------------------------+
 | 名称               | Cの型           | 意味                      |
@@ -459,17 +477,26 @@ FORMSオブジェクトには以下のデータ属性があります；FORMSド�
 +--------------------+-----------------+---------------------------+
 
 
-:mod:`FL` --- :mod:`fl`モジュールで使用される定数
-=================================================
+:mod:`FL` --- :mod:`fl` モジュールで使用される定数
+==================================================
 
 .. module:: FL
    :platform: IRIX
    :synopsis: flモジュールで使用される定数。
+   :deprecated:
+   
+   
+.. deprecated:: 2.6
+    :mod:`FL` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
 
-このモジュールには、組み込みモジュール:mod:`fl`を使うのに必要なシン ボル定数が定義されています（上記参照）；これらは名前の接頭辞``FL_``が
-省かれていることを除いて、Cのヘッダファイル``<forms.h>``に定義されて いるものと同じです。
-定義されている名称の完全なリストについては、モジュールのソースをご覧くだ さい。 お勧めする使い方は以下の通りです： ::
+このモジュールには、組み込みモジュール :mod:`fl` を使うのに必要なシン\
+ボル定数が定義されています (上記参照) ；これらは名前の接頭辞 ``FL_`` が
+省かれていることを除いて、C のヘッダファイル ``<forms.h>`` に定義されて\
+いるものと同じです。
+定義されている名称の完全なリストについては、モジュールのソースをご覧くだ\
+さい。\
+お勧めする使い方は以下の通りです： ::
 
    import fl
    from FL import *
@@ -481,12 +508,20 @@ FORMSオブジェクトには以下のデータ属性があります；FORMSド�
 .. module:: flp
    :platform: IRIX
    :synopsis: 保存されたFORMSデザインをロードする関数。
+   :deprecated:
+   
+   
+.. deprecated:: 2.6
+    :mod:`flp` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
 
-このモジュールには、FORMSライブラリ（上記の:mod:`fl`モジュールを参 照してください）とともに配布される'フォームデザイナー'
-（:program:`fdesign`）プログラムで作られたフォームの定義を読み込む関数が 定義されています。
+このモジュールには、FORMSライブラリ (上記の :mod:`fl` モジュールを参\
+照してください) とともに配布される 'フォームデザイナー'
+(:program:`fdesign`) プログラムで作られたフォームの定義を読み込む関数が\
+定義されています。
 
-詳しくはPythonライブラリソースのディレクトリの中の:file:`flp.doc`を参照し てください。
+詳しくはPythonライブラリソースのディレクトリの中の :file:`flp.doc` を参照し\
+てください。
 
 XXX　完全な説明をここに書いて！
 
