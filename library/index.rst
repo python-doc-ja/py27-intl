@@ -1,28 +1,37 @@
 .. _library-index:
 
 ###############################
-  The Python standard library
+  The Python 標準ライブラリ
 ###############################
 
 :Release: |version|
 :Date: |today|
 
-While :ref:`reference-index` describes the exact syntax and semantics of the
-language, it does not describe the standard library that is distributed with the
-language, and which greatly enhances its immediate usability. This library
-contains built-in modules (written in C) that provide access to system
-functionality such as file I/O that would otherwise be inaccessible to Python
-programmers, as well as modules written in Python that provide standardized
-solutions for many problems that occur in everyday programming. Some of these
-modules are explicitly designed to encourage and enhance the portability of
-Python programs.
+:ref:`reference-index` ではプログラミング言語 Python の厳密な構文と\
+セマンティクスについて説明されていますが、このライブラリリファレンスマニュアル\
+では Python とともに配付されている標準ライブラリについて説明します。
+また Python 配布物に収められていることの多いオプションのコンポーネント\
+についても説明します。
 
-This library reference manual documents Python's standard library, as well as
-many optional library modules (which may or may not be available, depending on
-whether the underlying platform supports them and on the configuration choices
-made at compile time). It also documents the standard types of the language and
-its built-in functions and exceptions, many of which are not or incompletely
-documented in the Reference Manual.
+Python の標準ライブラリはとても拡張性があり、下の長い目次のリストで判るように\
+幅広いものを用意しています。このライブラリには、\
+例えばファイル I/O のように、Python プログラマが直接アクセスできない\
+システム機能へのアクセス機能を提供する (Cで書かれた) 組み込みモジュールや、\
+日々のプログラミングで生じる多くの問題に標準的な解決策を提供する\
+Python で書かれたモジュールが入っています。これら数多くの\
+モジュールには、プラットフォーム固有の事情をプラットフォーム独立な API
+へと昇華させることにより、Pythonプログラムに移植性を持たせ、それを高めるという\
+明確な意図があります。 
+
+Windows 向けの Python イストーラはたいてい標準ライブラリのすべてを含み、
+しばしばそれ以外の追加のコンポーネントも含んでいます。Unix 系の\
+オペレーティングシステムの場合は Python は一揃いのパッケージとして提供されるのが\
+普通で、オプションのコンポーネントを手に入れるにはオペレーティングシステムの\
+パッケージツールを使うことになるでしょう。
+
+標準ライブラリに加えて、数千のコンポーネントが (独立したプログラムやモジュールから\
+パッケージ、アプリケーション開発フレームワークまで) 成長し続けるコレクションとして\
+`Python Package Index <http://pypi.python.org/pypi>`_ から入手可能です。
 
 
 .. toctree::
