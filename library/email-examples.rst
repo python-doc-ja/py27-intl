@@ -1,38 +1,38 @@
-:mod:`email`: Examples
+:mod:`email`: 使用例
 ----------------------
 
-Here are a few examples of how to use the :mod:`email` package to read, write,
-and send simple email messages, as well as more complex MIME messages.
+ここでは :mod:`email` パッケージを使って電子メールメッセージを\
+読む・書く・送信するいくつかの例を紹介します。より複雑な MIME
+メッセージについても扱います。
 
-First, let's see how to create and send a simple text message:
+最初に、テキスト形式の単純なメッセージを作成・送信する方法です:
 
 .. literalinclude:: ../includes/email-simple.py
 
 
-Here's an example of how to send a MIME message containing a bunch of family
-pictures that may be residing in a directory:
+つぎに、あるディレクトリ内にある何枚かの家族写真をひとつの MIME
+メッセージに収めて送信する例です:
 
 .. literalinclude:: ../includes/email-mime.py
 
 
-Here's an example of how to send the entire contents of a directory as an email
-message: [1]_
+つぎはあるディレクトリに含まれている内容全体をひとつの電子メールメッセージとして\
+送信するやり方です:  [1]_
 
 .. literalinclude:: ../includes/email-dir.py
 
 
-Here's an example of how to unpack a MIME message like the one
-above, into a directory of files:
+つぎに、上のような MIME メッセージをどうやって展開してひとつのディレクトリ上の\
+複数ファイルにするかを示します:
 
 .. literalinclude:: ../includes/email-unpack.py
 
-Here's an example of how to create an HTML message with an alternative plain
-text version: [2]_
+つぎの例は、HTML メッセージを代替プレーンテキスト版付きで作るやりかたです: [2]_
 
 .. literalinclude:: ../includes/email-alternative.py
 
 
 .. rubric:: Footnotes
 
-.. [1] Thanks to Matthew Dixon Cowles for the original inspiration and examples.
-.. [2] Contributed by Martin Matejek.
+.. [1] 最初の思いつきと用例は Matthew Dixon Cowles のおかげです。
+.. [2] Martin Matejek が教えてくれました。
