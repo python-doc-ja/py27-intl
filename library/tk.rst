@@ -1,8 +1,9 @@
+
 .. _tkinter:
 
-*********************************
-Graphical User Interfaces with Tk
-*********************************
+********************************************
+Tkを用いたグラフィカルユーザインターフェイス
+********************************************
 
 .. index::
    single: GUI
@@ -10,24 +11,28 @@ Graphical User Interfaces with Tk
    single: Tkinter
    single: Tk
 
-Tk/Tcl has long been an integral part of Python.  It provides a robust and
-platform independent windowing toolkit, that is available to Python programmers
-using the :mod:`Tkinter` module, and its extension, the :mod:`Tix` module.
+Tk/Tcl は長きにわたり Python の不可欠な一部でありつづけています。
+Tk/Tcl は頑健でプラットホームに依存しないウィンドウ構築\
+ツールキットであり、 Python プログラマは :mod:`Tkinter` モジュールや\
+その拡張の :mod:`Tix` モジュールを使って利用できます。
 
-The :mod:`Tkinter` module is a thin object-oriented layer on top of Tcl/Tk. To
-use :mod:`Tkinter`, you don't need to write Tcl code, but you will need to
-consult the Tk documentation, and occasionally the Tcl documentation.
-:mod:`Tkinter` is a set of wrappers that implement the Tk widgets as Python
-classes.  In addition, the internal module :mod:`_tkinter` provides a threadsafe
-mechanism which allows Python and Tcl to interact.
+:mod:`Tkinter` モジュールは、 Tcl/Tk 上に作られた軽量な\
+オブジェクト指向のレイヤです。 :mod:`Tkinter` を使うために
+Tcl コードを書く必要はありませんが、Tk のドキュメントや、場合によって\
+は Tcl のドキュメントを調べる必要があるでしょう。
+:mod:`Tkinter` は Tk のウィジェットを Python のクラスとして\
+実装しているラッパをまとめたものです。加えて、内部モジュール
+:mod:`_tkinter` では、 Python と Tcl がやり取りできるような\
+スレッド安全なメカニズムを提供しています。
 
-:mod:`Tkinter`'s chief virtues are that it is fast, and that it usually comes
-bundled with Python. Although its standard documentation is weak, good 
-material is available, which includes: references, tutorials, a book and 
-others. :mod:`Tkinter` is also famous for having an outdated look and feel, 
-which has been vastly improved in Tk 8.5. Nevertheless, there are many other 
-GUI libraries that you could be interested in. For more information about 
-alternatives, see the :ref:`other-gui-packages` section.
+:mod:`Tkinter` の一番素晴らしい点は速く、そして普通に Python\
+に付属してくることです。標準ドキュメントが頼りないものだとしても、
+代わりになるものが入手可能です: リファレンス、チュートリアル、
+書籍その他です。 :mod:`Tkinter` は古臭いルックアンドフィール
+でも有名ですが、その点は Tk 8.5 で幅広く改善されました。
+とはいえ、興味を引きそうな GUI ライブラリは他にも多数あります。
+そういったものについてはもっと知りたい人は :ref:`other-gui-packages`
+節を参照してください。
 
 .. toctree::
    
@@ -41,5 +46,7 @@ alternatives, see the :ref:`other-gui-packages` section.
 .. Other sections I have in mind are
    Tkinter internals
    Freezing Tkinter applications
-
+   念頭にある他のセクションは
+   Tkinter の内側
+   Tkinter アプリケーションのパッケージ方法(freezing)
 

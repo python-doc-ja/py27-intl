@@ -3,281 +3,276 @@
 IDLE
 ====
 
-.. moduleauthor:: Guido van Rossum <guido@Python.org>
+.. moduleauthor:: Guido van Rossum <guido@ Python .org>
 
 .. index::
    single: IDLE
    single: Python Editor
    single: Integrated Development Environment
 
-IDLE is the Python IDE built with the :mod:`tkinter` GUI toolkit.
+IDLE は :mod:`tkinter` GUI ツールキットをつかって作られた Python IDE です。
 
-IDLE has the following features:
+IDLE は次のような特徴があります:
 
-* coded in 100% pure Python, using the :mod:`tkinter` GUI toolkit
+* :mod:`tkinter` GUIツールキットを使って、100% ピュア Python でコーディングされています
 
-* cross-platform: works on Windows and Unix
+* クロスプラットホーム: Windows と Unix で動作します
 
-* multi-window text editor with multiple undo, Python colorizing and many other
-  features, e.g. smart indent and call tips
+* 多段 Undo、 Python 対応の色づけや他にもたくさんの機能
+  (例えば、自動的な字下げや呼び出し情報の表示)をもつマルチウィンドウ・テキストエディタ
 
-* Python shell window (a.k.a. interactive interpreter)
+* Python シェルウィンドウ(別名、対話インタープリタ)
 
-* debugger (not complete, but you can set breakpoints, view  and step)
-
-
-Menus
------
+* デバッガ(完全ではありませんが、ブレークポイントの設定や値の表示、ステップ実行ができます)
 
 
-File menu
-^^^^^^^^^
+メニュー
+--------
+
+
+Fileメニュー
+^^^^^^^^^^^^
 
 New window
-   create a new editing window
+   新しい編集ウィンドウを作成します
 
 Open...
-   open an existing file
+   既存のファイルをオープンします
 
 Open module...
-   open an existing module (searches sys.path)
+   既存のモジュールをオープンします(sys.pathを検索します)
 
 Class browser
-   show classes and methods in current file
+   現在のファイルの中のクラスとモジュールを示します
 
 Path browser
-   show sys.path directories, modules, classes and methods
+   sys.pathディレクトリ、モジュール、クラスおよびメソッドを示します
 
 .. index::
    single: Class browser
    single: Path browser
 
 Save
-   save current window to the associated file (unsaved windows have a \* before and
-   after the window title)
+   現在のウィンドウを対応するファイルにセーブします(未セーブのウィンドウには、ウィンドウタイトルの前後に\*があります)
 
 Save As...
-   save current window to new file, which becomes the associated file
+   現在のウィンドウを新しいファイルへセーブします。そのファイルが対応するファイルになります
 
 Save Copy As...
-   save current window to different file without changing the associated file
+   現在のウィンドウを対応するファイルを変えずに異なるファイルにセーブします。
 
 Close
-   close current window (asks to save if unsaved)
+   現在のウィンドウを閉じます(未セーブの場合はセーブするか質問します)
 
 Exit
-   close all windows and quit IDLE (asks to save if unsaved)
+   すべてのウィンドウを閉じてIDLEを終了します(未セーブの場合はセーブするか質問します)
 
 
-Edit menu
-^^^^^^^^^
+Editメニュー
+^^^^^^^^^^^^
 
 Undo
-   Undo last change to current window (max 1000 changes)
+   現在のウィンドウに対する最後の変更をUndo(取り消し)します(最大で1000個の変更)
 
 Redo
-   Redo last undone change to current window
+   現在のウィンドウに対する最後にundoされた変更をRedo(再実行)します
 
 Cut
-   Copy selection into system-wide clipboard; then delete selection
+   システムのクリップボードへ選択された部分をコピーします。それから選択された部分を削除します
 
 Copy
-   Copy selection into system-wide clipboard
+   選択された部分をシステムのクリップボードへコピーします
 
 Paste
-   Insert system-wide clipboard into window
+   システムのクリップボードをウィンドウへ挿入します
 
 Select All
-   Select the entire contents of the edit buffer
+   編集バッファの内容全体を選択します
 
 Find...
-   Open a search dialog box with many options
+   たくさんのオプションをもつ検索ダイアログボックスを開きます
 
 Find again
-   Repeat last search
+   最後の検索を繰り返します
 
 Find selection
-   Search for the string in the selection
+   選択された文字列を検索します
 
 Find in Files...
-   Open a search dialog box for searching files
+   検索するファイルに対する検索ダイアログボックスを開きます
 
 Replace...
-   Open a search-and-replace dialog box
+   検索と置換ダイアログボックスを開きます
 
 Go to line
-   Ask for a line number and show that line
+   行番号を尋ね、その行を表示します
 
 Indent region
-   Shift selected lines right 4 spaces
+   選択された行を右へ空白4個分シフトします
 
 Dedent region
-   Shift selected lines left 4 spaces
+   選択された行を左へ空白4個分シフトします
 
 Comment out region
-   Insert ## in front of selected lines
+   選択された行の先頭に##を挿入します
 
 Uncomment region
-   Remove leading # or ## from selected lines
+   選択された行から先頭の#あるいは##を取り除きます
 
 Tabify region
-   Turns *leading* stretches of spaces into tabs
+   *先頭* の一続きの空白をタブに置き換えます
 
 Untabify region
-   Turn *all* tabs into the right number of spaces
+   *すべての* タブを適切な数の空白に置き換えます
 
 Expand word
-   Expand the word you have typed to match another word in the same buffer; repeat
-   to get a different expansion
+   あなたがタイプした語を同じバッファの別の語に一致するように展開します。
+   異なる展開を得るためには繰り返します
 
 Format Paragraph
-   Reformat the current blank-line-separated paragraph
+   現在の空行で区切られた段落を再フォーマットします
 
 Import module
-   Import or reload the current module
+   現在のモジュールをインポートまたはリロードします
 
 Run script
-   Execute the current file in the __main__ namespace
+   現在のファイルを__main__名前空間内で実行します
 
 .. index::
    single: Import module
    single: Run script
 
 
-Windows menu
-^^^^^^^^^^^^
+Windowsメニュー
+^^^^^^^^^^^^^^^
 
 Zoom Height
-   toggles the window between normal size (24x80) and maximum height.
+   ウィンドウを標準サイズ(24x80)と最大の高さの間で切り替えます
 
-The rest of this menu lists the names of all open windows; select one to bring
-it to the foreground (deiconifying it if necessary).
+このメニューの残りはすべての開いたウィンドウの名前の一覧になっています。
+一つを選ぶとそれを最前面に持ってくることができます(必要ならばアイコン化\
+をやめさせます)
 
 
-Debug menu (in the Python Shell window only)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Debugメニュー( Python シェルウィンドウ内のみ)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Go to file/line
-   look around the insert point for a filename and linenumber, open the file, and
-   show the line.
+   挿入ポイントの周りからファイル名と行番号を探し、ファイルをオープンし、その行を表示します
 
 Open stack viewer
-   show the stack traceback of the last exception
+   最後の例外のスタックトレースバックを表示します
 
 Debugger toggle
-   Run commands in the shell under the debugger
+   デバッガの下、シェル内でコマンドを実行します
 
 JIT Stack viewer toggle
-   Open stack viewer on traceback
+   トレースバック上のスタックビューアをオープンします
 
 .. index::
    single: stack viewer
    single: debugger
 
 
-Basic editing and navigation
+基本的な編集とナビゲーション
 ----------------------------
 
-* :kbd:`Backspace` deletes to the left; :kbd:`Del` deletes to the right
+* :kbd:`Backspace` は左側を削除し、 :kbd:`Del` は右側を削除します
 
-* Arrow keys and :kbd:`Page Up`/:kbd:`Page Down` to move around
+* 矢印キーと :kbd:`Page Up`/:kbd:`Page Down` はそれぞれ移動します
 
-* :kbd:`Home`/:kbd:`End` go to begin/end of line
+* :kbd:`Home`/:kbd:`End` は行の始め/終わりへ移動します
 
-* :kbd:`C-Home`/:kbd:`C-End` go to begin/end of file
+* :kbd:`C-Home`/:kbd:`C-End` はファイルの始め/終わりへ移動します
 
-* Some :program:`Emacs` bindings may also work, including :kbd:`C-B`,
-  :kbd:`C-P`, :kbd:`C-A`, :kbd:`C-E`, :kbd:`C-D`, :kbd:`C-L`
-
-
-Automatic indentation
-^^^^^^^^^^^^^^^^^^^^^
-
-After a block-opening statement, the next line is indented by 4 spaces (in the
-Python Shell window by one tab).  After certain keywords (break, return etc.)
-the next line is dedented.  In leading indentation, :kbd:`Backspace` deletes up
-to 4 spaces if they are there. :kbd:`Tab` inserts 1-4 spaces (in the Python
-Shell window one tab). See also the indent/dedent region commands in the edit
-menu.
+* :kbd:`C-B` 、 :kbd:`C-P` 、 :kbd:`C-A` 、 :kbd:`C-E` 、 :kbd:`C-D` 、 :kbd:`C-L` を含む、いくつかの :program:`Emacs` バインディングも動作します
 
 
-Python Shell window
-^^^^^^^^^^^^^^^^^^^
+自動的な字下げ
+^^^^^^^^^^^^^^
 
-* :kbd:`C-C` interrupts executing command
+ブロックの始まりの文の後、次の行は4つの空白(Python Shell ウィンドウでは、
+一つのタブ)で字下げされます。あるキーワード(break、return など)の後では、
+次の行は字下げが解除(dedent)されます。先頭の字下げでは、
+:kbd:`Backspace` は4つの空白があれば削除します。 :kbd:`Tab` は1-4つの空\
+白(Python Shell ウィンドウでは一つのタブ)を挿入します。edit メニューの
+indent/dedent region コマンドも参照してください。
 
-* :kbd:`C-D` sends end-of-file; closes window if typed at a ``>>>`` prompt
 
-* :kbd:`Alt-p` retrieves previous command matching what you have typed
+Python  Shellウィンドウ
+^^^^^^^^^^^^^^^^^^^^^^^
 
-* :kbd:`Alt-n` retrieves next
+* :kbd:`C-C` 実行中のコマンドを中断します
 
-* :kbd:`Return` while on any previous command retrieves that command
+* :kbd:`C-D` ファイル終端(end-of-file)を送り、``>>>`` プロンプトでタイプしていた場合はウィンドウを閉じます
 
-* :kbd:`Alt-/` (Expand word) is also useful here
+* :kbd:`Alt-p` あなたがタイプしたことに一致する以前のコマンドを取り出します
+
+* :kbd:`Alt-n` 次を取り出します
+
+* :kbd:`Return` 以前のコマンドを取り出しているときは、そのコマンド
+
+* :kbd:`Alt-/` (語を展開します)ここでも便利です
 
 .. index:: single: indentation
 
 
-Syntax colors
--------------
+構文の色づけ
+------------
 
-The coloring is applied in a background "thread," so you may occasionally see
-uncolorized text.  To change the color scheme, edit the ``[Colors]`` section in
-:file:`config.txt`.
+色づけはバックグランド"スレッド"で適用され、そのため時折色付けされないテキストが見えます。カラースキームを変えるには、 :file:`config.txt` の ``[Colors]`` 節を編集してください。
 
-Python syntax colors:
-   Keywords
-      orange
+Python の構文の色:
+   キーワード
+      オレンジ
 
-   Strings 
-      green
+   文字列
+      緑
 
-   Comments
-      red
+   コメント
+      赤
 
-   Definitions
-      blue
+   定義
+      青
 
-Shell colors:
-   Console output
-      brown
+シェルの色:
+   コンソールの出力
+      茶色
 
    stdout
-      blue
+      青
 
    stderr
-      dark green
+      暗い緑
 
    stdin
-      black
+      黒
 
 
-Command line usage
-^^^^^^^^^^^^^^^^^^
+コマンドラインの使い方
+^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
    idle.py [-c command] [-d] [-e] [-s] [-t title] [arg] ...
 
-   -c command  run this command
-   -d          enable debugger
-   -e          edit mode; arguments are files to be edited
-   -s          run $IDLESTARTUP or $PYTHONSTARTUP first
-   -t title    set title of shell window
+   -c コマンド このコマンドを実行します
+   -d          デバッガを有効にします
+   -e          編集モード、引数は編集するファイルです
+   -s          $IDLESTARTUPまたは$PYTHONSTARTUPを最初に実行します
+   -t タイトル シェルウィンドウのタイトルを設定します
 
-If there are arguments:
+引数がある場合:
 
-#. If :option:`-e` is used, arguments are files opened for editing and
-   ``sys.argv`` reflects the arguments passed to IDLE itself.
+#. :option:`-e` が使われる場合は、引数は編集のためにオープンされるファイルで、
+   ``sys.argv`` はIDLE自体へ渡される引数を反映します。
 
-#. Otherwise, if :option:`-c` is used, all arguments are placed in
-   ``sys.argv[1:...]``, with ``sys.argv[0]`` set to ``'-c'``.
+#. そうではなく、 :option:`-c` が使われる場合には、すべての引数が
+   ``sys.argv[1:...]`` の中に置かれ、 ``sys.argv[0]`` が ``'-c'`` に設定されます。
 
-#. Otherwise, if neither :option:`-e` nor :option:`-c` is used, the first
-   argument is a script which is executed with the remaining arguments in
-   ``sys.argv[1:...]``  and ``sys.argv[0]`` set to the script name.  If the script
-   name is '-', no script is executed but an interactive Python session is started;
-   the arguments are still available in ``sys.argv``.
-
+#. そうではなく、 :option:`-e` でも :option:`-c` でも使われない場合は、
+   最初の引数は ``sys.argv[1:...]`` にある残りの引数とスクリプト名に設定される
+   ``sys.argv[0]`` と一緒に実行されるスクリプトです。スクリプト名が '-' のときは、
+   実行されるスクリプトはありませんが、対話的な
+   Python セッションが始まります。引数はまだ ``sys.argv`` にあり利用できます。
 
