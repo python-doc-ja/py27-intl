@@ -1,0 +1,34 @@
+--- refs/rest25/library/tkinter.rst	2009-01-07 02:01:51 +0900
++++ refs/rest26/library/idle.rst	2009-01-07 02:01:54 +0900
+ .. _idle:
+ 
+-Idle
++IDLE
+ ====
+ 
+ .. moduleauthor:: Guido van Rossum <guido@Python.org>
+ 
+-
+-.. % \declaremodule{standard}{idle}
+-.. % \modulesynopsis{A Python Integrated Development Environment}
+-
+ .. index::
+-   single: Idle
++   single: IDLE
+    single: Python Editor
+    single: Integrated Development Environment
+ 
+-Idle is the Python IDE built with the :mod:`Tkinter` GUI toolkit.
++IDLE is the Python IDE built with the :mod:`tkinter` GUI toolkit.
+ 
+ IDLE has the following features:
+ 
+-* coded in 100% pure Python, using the :mod:`Tkinter` GUI toolkit
++* coded in 100% pure Python, using the :mod:`tkinter` GUI toolkit
+ 
+-* cross-platform: works on Windows and Unix (on Mac OS, there are currently
+-  problems with Tcl/Tk)
++* cross-platform: works on Windows and Unix
+ 
+ * multi-window text editor with multiple undo, Python colorizing and many other
+   features, e.g. smart indent and call tips
