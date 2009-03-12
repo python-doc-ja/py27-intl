@@ -1,56 +1,35 @@
 
 .. _toolbox:
 
-******************************
-MacOS ツールボックスモジュール
-******************************
+*******************************
+Mac OS ツールボックスモジュール
+*******************************
 
-各種のMacOSツールボックスへのインターフェースを与えるモジュール群があ ります。対応するモジュールがあるなら、そのモジュールではツールボックス
-で宣言された各種の構造体のPythonオブジェクトが定義され、操作は定義され たオブジェクトのメソッドとして実装されています。その他の操作はモジュー
-ルの関数として実装されています。 Cで可能な操作がすべてPythonで可能なわ けではありませんし(コールバックはよく問題になります)、パラメータが
-Pythonだと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。 全てのメソッドと関数は :attr:`__doc__`
-文字列があるので、引数と返り値 の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
-<http://developer.apple.com/documentation/macos8/mac8.html>`_などを参照してください。
+各種の Mac OS ツールボックスへのインターフェースを与えるモジュール群が\
+あります。対応するモジュールがあるなら、そのモジュールではツールボックス\
+で宣言された各種の構造体の Python オブジェクトが定義され、操作は定義され\
+たオブジェクトのメソッドとして実装されています。その他の操作はモジュー\
+ルの関数として実装されています。 C で可能な操作がすべて Python で可能な\
+わけではありませんし(コールバックはよく問題になります)、パラメータが\
+Python だと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。
+全てのメソッドと関数は :attr:`__doc__` 文字列があるので、引数と返り値\
+の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
+<http://developer.apple.com/documentation/macos8/mac8.html>`_
+などを参照してください。
 
-.. % MacOS Toolbox Modules
-.. % % There are a set of modules that provide interfaces to various MacOS
-.. % % toolboxes.  If applicable the module will define a number of Python
-.. % % objects for the various structures declared by the toolbox, and
-.. % % operations will be implemented as methods of the object.  Other
-.. % % operations will be implemented as functions in the module.  Not all
-.. % % operations possible in C will also be possible in Python (callbacks
-.. % % are often a problem), and parameters will occasionally be different in
-.. % % Python (input and output buffers, especially).  All methods and
-.. % % functions have a \member{__doc__} string describing their arguments
-.. % % and return values, and for additional description you are referred to
-.. % % \citetitle[http://developer.apple.com/documentation/macos8/mac8.html]{Inside
-.. % % Macintosh} or similar works.
-
-これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。 この名前にもかかわらずそれら全てが Carbon
-フレームワークの一部なわけで はありません。CF は、CoreFoundationフレームワークの中に実際はあります
-し、QtはQuickTimeフレームワークにあります。ツールボックスモジュールは普通以下 のようにして利用します。
-
-.. % % These modules all live in a package called \module{Carbon}. Despite that name
-.. % % they are not all part of the Carbon framework: CF is really in the CoreFoundation
-.. % % framework and Qt is in the QuickTime framework.
-.. % % The normal use pattern is
+これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。
+この名前にもかかわらずそれら全てが Carbon フレームワークの一部なわけで\
+はありません。CF は、CoreFoundation フレームワークの中に実際はあります\
+し、Qt は QuickTime フレームワークにあります。ツールボックスモジュール\
+は普通以下のようにして利用します。
 
 ::
 
    from Carbon import AE
 
-**注意！**これらのモジュールはまだ文書化されていません。これらの モジュールのどれでもよいですが文書化に協力したいという方は、
-docs@python.org まで連絡をください。
+.. warning::
 
-.. % % \strong{Warning!}  These modules are not yet documented.  If you
-.. % % wish to contribute documentation of any of these modules, please get
-.. % % in touch with \email{python-docs@python.org}.
-
-
-.. toctree::
-
-   colorpicker.rst
-.. % \section{Argument Handling for Toolbox Modules}
+   Carbon モジュール群は 3.0 で削除されます。
 
 
 :mod:`Carbon.AE` --- Apple Events
@@ -59,9 +38,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.AE
    :platform: Mac
    :synopsis: Apple Eventツールボックスへのインタフェース
-
-
-.. % Interface to the Apple Events toolbox.
+   :deprecated:
 
 
 :mod:`Carbon.AH` --- Apple ヘルプ
@@ -70,10 +47,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.AH
    :platform: Mac
    :synopsis: Apple ヘルプマネージャへのインタフェース
-
-
-.. % Apple Help
-.. % Interface to the Apple Help manager.
+   :deprecated:
 
 
 :mod:`Carbon.App` --- アピアランスマネージャ
@@ -82,10 +56,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.App
    :platform: Mac
    :synopsis: アピアランスマネージャへのインタフェース
-
-
-.. % Appearance Manager
-.. % Interface to the Appearance Manager.
+   :deprecated:
 
 
 :mod:`Carbon.CF` --- Core Foundation
@@ -94,16 +65,10 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.CF
    :platform: Mac
    :synopsis: Core Foundationへのインタフェース
+   :deprecated:
 
-
-``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` と ``CFURL``
-オブジェクトがいくらか部分的にサポート されています。
-
-.. % Interface to the Core Foundation.
-.. % % The
-.. % % \code{CFBase}, \code{CFArray}, \code{CFData}, \code{CFDictionary},
-.. % % \code{CFString} and \code{CFURL} objects are supported, some
-.. % % only partially.
+``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` と
+``CFURL`` オブジェクトがいくらか部分的にサポートされています。
 
 
 :mod:`Carbon.CG` --- Core Graphics
@@ -111,10 +76,8 @@ docs@python.org まで連絡をください。
 
 .. module:: Carbon.CG
    :platform: Mac
-   :synopsis: Component Managerへのインタフェース
-
-
-.. % Interface to the Component Manager.
+   :synopsis: コア・グラフィックスへのインタフェース
+   :deprecated:
 
 
 :mod:`Carbon.CarbonEvt` --- Carbon Event Manager
@@ -123,9 +86,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.CaronEvt
    :platform: Mac
    :synopsis: Carbon Event Managerへのインタフェース
-
-
-.. % Interface to the Carbon Event Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Cm` --- Component Manager
@@ -134,9 +95,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Cm
    :platform: Mac
    :synopsis: Component Managerへのインタフェース
-
-
-.. % Interface to the Component Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Ctl` --- Control Manager
@@ -145,9 +104,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Ctl
    :platform: Mac
    :synopsis: Control Managerへのインタフェース
-
-
-.. % Interface to the Control Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Dlg` --- Dialog Manager
@@ -156,9 +113,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Dlg
    :platform: Mac
    :synopsis: Dialog Managerへのインタフェース
-
-
-.. % Interface to the Dialog Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Evt` --- Event Manager
@@ -167,9 +122,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Evt
    :platform: Mac
    :synopsis: Event Managerへのインタフェース
-
-
-.. % Interface to the classic Event Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Fm` --- Font Manager
@@ -178,9 +131,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Fm
    :platform: Mac
    :synopsis: Font Managerへのインタフェース
-
-
-.. % Interface to the Font Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Folder` --- Folder Manager
@@ -189,9 +140,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Folder
    :platform: Mac
    :synopsis: Folder Managerへのインタフェース
-
-
-.. % Interface to the Folder Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Help` --- Help Manager
@@ -200,9 +149,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Help
    :platform: Mac
    :synopsis: Carbon Help Managerへのインタフェース
-
-
-.. % Interface to the Carbon Help Manager.
+   :deprecated:
 
 
 :mod:`Carbon.List` --- List Manager
@@ -211,9 +158,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.List
    :platform: Mac
    :synopsis: List Managerへのインタフェース
-
-
-.. % Interface to the List Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Menu` --- Menu Manager
@@ -222,9 +167,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Menu
    :platform: Mac
    :synopsis: Menu Managerへのインタフェース
-
-
-.. % Interface to the Menu Manager.
+   :deprecated:
 
 
 :mod:`Carbon.Mlte` --- MultiLingual Text Editor
@@ -233,9 +176,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Mlte
    :platform: Mac
    :synopsis: MultiLingual Text Editorへのインタフェース
-
-
-.. % Interface to the MultiLingual Text Editor.
+   :deprecated:
 
 
 :mod:`Carbon.Qd` --- QuickDraw
@@ -244,9 +185,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Qd
    :platform: Mac
    :synopsis: QuickDrawツールボックスへのインタフェース
-
-
-.. % Interface to the QuickDraw toolbox.
+   :deprecated:
 
 
 :mod:`Carbon.Qdoffs` --- QuickDraw Offscreen
@@ -255,9 +194,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Qdoffs
    :platform: Mac
    :synopsis: QuickDrawオフスクリーン APIへのインタフェース
-
-
-.. % Interface to the QuickDraw Offscreen APIs.
+   :deprecated:
 
 
 :mod:`Carbon.Qt` --- QuickTime
@@ -266,9 +203,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Qt
    :platform: Mac
    :synopsis: QuickTime ツールボックスへのインタフェース
-
-
-.. % Interface to the QuickTime toolbox.
+   :deprecated:
 
 
 :mod:`Carbon.Res` --- Resource Manager and Handles
@@ -277,9 +212,7 @@ docs@python.org まで連絡をください。
 .. module:: Carbon.Res
    :platform: Mac
    :synopsis: Resource Managerとハンドルへのインタフェース
-
-
-.. % Interface to the Resource Manager and Handles.
+   :deprecated:
 
 
 :mod:`Carbon.Scrap` --- スクラップマネージャ
@@ -292,15 +225,20 @@ docs@python.org まで連絡をください。
    :deprecated:
 
 
-このモジュールはMacOS9とそれ以前のOS上のClassic PPC MacPythonで完全に利 用可能です。
-Carbon版のMacPythonではほんの限られた機能だけが利用可能です。
+このモジュールは Mac OS 9 とそれ以前の OS 上の Classic PPC MacPython
+で完全に利用可能です。
+Carbon 版の MacPython ではほんの限られた機能だけが利用可能です。
 
 .. index:: single: Scrap Manager
 
-スクラップマネージャはMacintosh上でのカット & ペースト操作の最もシンプルな形式をサポートします。
-アプリケーション間とアプリケーション内での両方のクリップボード操作が可能 です。
+スクラップマネージャは Macintosh 上でのカット & ペースト操作の最も\
+シンプルな形式をサポートします。
+アプリケーション間とアプリケーション内での両方のクリップボード操作が可能\
+です。
 
-:mod:`Scrap`モジュールはスクラップマネージャの関数へのローレベルでのア クセスを提供します。 以下の関数が定義されています：
+:mod:`Scrap` モジュールはスクラップマネージャの関数へのローレベルでのア\
+クセスを提供します。
+以下の関数が定義されています：
 
 
 .. function:: InfoScrap()
@@ -328,7 +266,8 @@ Carbon版のMacPythonではほんの限られた機能だけが利用可能で�
 .. seealso::
 
    `Scrap Manager <http://developer.apple.com/documentation/mac/MoreToolbox/MoreToolbox-109.html>`_
-      Appleのスクラップマネージャに関する文書には、アプリケーションでスクラッ プマネージャを使用する上での便利な情報がたくさんあります。
+      Appleのスクラップマネージャに関する文書には、アプリケーションでスクラッ\
+      プマネージャを使用する上での便利な情報がたくさんあります。
 
 
 
@@ -338,9 +277,7 @@ Carbon版のMacPythonではほんの限られた機能だけが利用可能で�
 .. module:: Carbon.Snd
    :platform: Mac
    :synopsis: Sound Managerへのインタフェース
-
-
-.. % Interface to the Sound Manager.
+   :deprecated:
 
 
 :mod:`Carbon.TE` --- TextEdit
@@ -349,9 +286,7 @@ Carbon版のMacPythonではほんの限られた機能だけが利用可能で�
 .. module:: Carbon.TE
    :platform: Mac
    :synopsis: TextEditへのインタフェース
-
-
-.. % Interface to TextEdit.
+   :deprecated:
 
 
 :mod:`Carbon.Win` --- Window Manager
@@ -360,7 +295,4 @@ Carbon版のMacPythonではほんの限られた機能だけが利用可能で�
 .. module:: Carbon.Win
    :platform: Mac
    :synopsis: Window Managerへのインタフェース
-
-
-.. % Interface to the Window Manager.
-
+   :deprecated:
