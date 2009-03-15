@@ -8,30 +8,49 @@
 .. sectionauthor:: Sue Williams <sbw@provis.com>
 
 
-:mod:`commands`は、システムへコマンド文字列を渡して実行する :func:`os.popen`のラッパー関数を含んでいるモジュールです。
+:mod:`commands` は、システムへコマンド文字列を渡して実行する
+:func:`os.popen` のラッパー関数を含んでいるモジュールです。
 外部で実行したコマンドの結果や、その終了ステータスを扱います。
 
-:mod:`commands`モジュールは以下の関数を定義しています。
+:mod:`subprocess` がプロセスを生成してその結果を取得するためのより強力な\
+手段を提供しています。 :mod:`subprocess` モジュールを使う方が :mod:`commands`
+モジュールを使うより好ましいです。
+
+.. warning::
+
+   3.x において、 :func:`getstatus` および二つの隠し関数(:func:`mk2arg` と
+   :func:`mkarg`) は削除されました。また、 :func:`getstatusoutput` と
+   :func:`getoutput` は :mod:`subprocess` モジュールに移動されました。
+
+:mod:`commands` モジュールは以下の関数を定義しています。
 
 
 .. function:: getstatusoutput(cmd)
 
-   文字列*cmd*を:func:`os.popen`を使いシェル上で実行し、 タプル``(status, output)``を返します。 実際には``{ cmd
-   ; } 2>&1``と実行されるため、 標準出力とエラー出力が混合されます。 また、出力の最後の改行文字は取り除かれます。
-   コマンドの終了ステータスはC言語関数の:cfunc:`wait`の規則に従って 解釈することができます。
+   文字列 *cmd* を :func:`os.popen` を使いシェル上で実行し、
+   タプル ``(status, output)`` を返します。
+   実際には ``{ cmd; } 2>&1`` と実行されるため、標準出力とエラー出力が混合されます。
+   また、出力の最後の改行文字は取り除かれます。
+   コマンドの終了ステータスはC言語関数の :cfunc:`wait` の規則に従って\
+   解釈することができます。
 
 
 .. function:: getoutput(cmd)
 
-   :func:`getstatusoutput`に似ていますが、 終了ステータスは無視され、コマンドの出力のみを返します。
-
-.. % TeXの記号文字の扱いを調べてないので変換後どうなるかわからんです。
+   :func:`getstatusoutput` に似ていますが、終了ステータスは無視され、\
+   コマンドの出力のみを返します。
 
 
 .. function:: getstatus(file)
 
-   ``ls -ld file``の出力を文字列で返します。 この関数は:func:`getoutput`を使い、引数内の
-   バックスラッシュ記号「$\\」とドル記号「$」を適切にエスケープします。
+   ``ls -ld file`` の出力を文字列で返します。
+   この関数は :func:`getoutput` を使い、引数内の
+   バックスラッシュ記号「\\」とドル記号「$」を適切にエスケープします。
+
+   .. deprecated:: 2.6
+      この関数は明らかでないですし役立たずです。名前も :func:`getstatusoutput`
+      の前では誤解を招くものです。
+
 
 例::
 
@@ -47,3 +66,8 @@
    >>> commands.getstatus('/bin/ls')
    '-rwxr-xr-x  1 root        13352 Oct 14  1994 /bin/ls'
 
+
+.. seealso::
+
+   :mod:`subprocess` モジュール
+      サブプロセスの生成と管理のためのモジュール。
