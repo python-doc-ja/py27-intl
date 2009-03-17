@@ -1,91 +1,88 @@
-:mod:`numbers` --- Numeric abstract base classes
+:mod:`numbers` --- 数の抽象基底クラス
 ================================================
 
 .. module:: numbers
-   :synopsis: Numeric abstract base classes (Complex, Real, Integral, etc.).
+   :synopsis: 数の抽象基底クラス (Complex, Real, Integral など)
 
 .. versionadded:: 2.6
 
-
-The :mod:`numbers` module (:pep:`3141`) defines a hierarchy of numeric abstract
-base classes which progressively define more operations.  None of the types
-defined in this module can be instantiated.
+:mod:`numbers` モジュール (:pep:`3141`) は数の抽象基底クラスの、\
+順により多くの演算を定義していく階層を定義します。このモジュールで\
+定義される型はどれもインスタンス化できません。
 
 
 .. class:: Number
 
-   The root of the numeric hierarchy. If you just want to check if an argument
-   *x* is a number, without caring what kind, use ``isinstance(x, Number)``.
+   数の階層の根。引数 *x* が、種類は何であれ、数であるということだけ\
+   チェックしたい場合、 ``isinstance(x, Number)`` が使えます。
 
 
-The numeric tower
------------------
+数値塔
+------
 
 .. class:: Complex
 
-   Subclasses of this type describe complex numbers and include the operations
-   that work on the builtin :class:`complex` type. These are: conversions to
-   :class:`complex` and :class:`bool`, :attr:`.real`, :attr:`.imag`, ``+``,
-   ``-``, ``*``, ``/``, :func:`abs`, :meth:`conjugate`, ``==``, and ``!=``. All
-   except ``-`` and ``!=`` are abstract.
+   この型のサブクラスは複素数を表し、組み込みの :class:`complex` 型を受け付ける\
+   演算を含みます。それらは: :class:`complex` および :class:`bool` への変換、
+   :attr:`.real`, :attr:`.imag`, ``+``, ``-``, ``*``, ``/``, :func:`abs`,
+   :meth:`conjugate`, ``==`` そして ``!=`` です。 ``-`` と ``!=`` 以外の\
+   全てのものは抽象的です。
 
    .. attribute:: real
 
-      Abstract. Retrieves the :class:`Real` component of this number.
+      抽象的。この複素数の(実数)部分を :class:`Real` で取り出します。
 
    .. attribute:: imag
 
-      Abstract. Retrieves the :class:`Real` component of this number.
+      抽象的。この複素数の(虚数)部分を :class:`Real` で取り出します。
 
    .. method:: conjugate()
 
-      Abstract. Returns the complex conjugate. For example, ``(1+3j).conjugate()
-      == (1-3j)``.
+      抽象的。複素共役を返します。たとえば、 ``(1+3j).conjugate()
+      == (1-3j)`` です。
 
 .. class:: Real
 
-   To :class:`Complex`, :class:`Real` adds the operations that work on real
-   numbers.
+   :class:`Complex` の上に、 :class:`Real` は実数で意味を成す演算を加えます。
 
-   In short, those are: a conversion to :class:`float`, :func:`trunc`,
+   簡潔に言うとそれらは: :class:`float` への変換, :func:`trunc`,
    :func:`round`, :func:`math.floor`, :func:`math.ceil`, :func:`divmod`, ``//``,
-   ``%``, ``<``, ``<=``, ``>``, and ``>=``.
+   ``%``, ``<``, ``<=``, ``>`` および ``>=`` です。
 
-   Real also provides defaults for :func:`complex`, :attr:`Complex.real`,
-   :attr:`Complex.imag`, and :meth:`Complex.conjugate`.
+   Real はまた :func:`complex`, :attr:`Complex.real`,
+   :attr:`Complex.imag` および :meth:`Complex.conjugate` のデフォルトを提供します。
 
 
 .. class:: Rational
 
-   Subtypes :class:`Real` and adds
-   :attr:`Rational.numerator` and :attr:`Rational.denominator` properties, which
-   should be in lowest terms. With these, it provides a default for
-   :func:`float`.
+   :class:`Real` をサブタイプ化し :attr:`Rational.numerator` と
+   :attr:`Rational.denominator` のプロパティを加えたものです。
+   これら分子分母は最小の値でなければなりません。この他に :func:`float`
+   のデフォルトも提供します。
 
    .. attribute:: numerator
 
-      Abstract.
+      抽象的。
 
    .. attribute:: denominator
 
-      Abstract.
+      抽象的。
 
 
 .. class:: Integral
 
-   Subtypes :class:`Rational` and adds a conversion to :class:`int`.
-   Provides defaults for :func:`float`, :attr:`Rational.numerator`, and
-   :attr:`Rational.denominator`, and bit-string operations: ``<<``,
-   ``>>``, ``&``, ``^``, ``|``, ``~``.
+   :class:`Rational` をサブタイプ化し :class:`int` への変換が加わります。
+   :func:`float`, :attr:`Rational.numerator` および
+   :attr:`Rational.denominator` のデフォルトと、ビット列演算: ``<<``,
+   ``>>``, ``&``, ``^``, ``|``, ``~`` を提供します。
 
 
-Notes for type implementors
+型実装者のための注意事項
 ---------------------------
 
-Implementors should be careful to make equal numbers equal and hash
-them to the same values. This may be subtle if there are two different
-extensions of the real numbers. For example, :class:`fractions.Fraction`
-implements :func:`hash` as follows::
+実装する人は等しい数が等しく扱われるように同じハッシュを与えるように気を付けねばなりません。
+これは二つの異なった実数の拡張があるような場合にはややこしいことになるかもしれません。
+たとえば、 :class:`fractions.Fraction` は :func:`hash` を以下のように実装しています::
 
     def __hash__(self):
         if self.denominator == 1:
@@ -100,26 +97,25 @@ implements :func:`hash` as follows::
             return hash((self.numerator, self.denominator))
 
 
-Adding More Numeric ABCs
+さらに数のABCを追加する
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are, of course, more possible ABCs for numbers, and this would
-be a poor hierarchy if it precluded the possibility of adding
-those. You can add ``MyFoo`` between :class:`Complex` and
-:class:`Real` with::
+もちろん、他にも数に対する ABC が有り得ますし、そういったものを付け加える可能性を\
+閉ざしてしまうとすれば貧相な階層でしかありません。たとえば ``MyFoo`` を
+:class:`Complex` と :class:`Real` の間に付け加えるには::
 
     class MyFoo(Complex): ...
     MyFoo.register(Real)
 
 
-Implementing the arithmetic operations
+算術演算の実装
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We want to implement the arithmetic operations so that mixed-mode
-operations either call an implementation whose author knew about the
-types of both arguments, or convert both to the nearest built in type
-and do the operation there. For subtypes of :class:`Integral`, this
-means that :meth:`__add__` and :meth:`__radd__` should be defined as::
+私たちは、混在型(mixed-mode)演算について作者が両方の引数の型について知っている\
+ような実装を呼び出すか、両方を最も近い組み込み型に変換してそこで演算するか、どち\
+らかを行うように算術演算を実装したいのです。 :class:`Integral` のサブタイプに\
+対して、このことは :meth:`__add__` と :meth:`__radd__` が次のように定義される\
+べきであることを意味します::
 
     class MyIntegral(Integral):
 
@@ -146,40 +142,37 @@ means that :meth:`__add__` and :meth:`__radd__` should be defined as::
                 return NotImplemented
 
 
-There are 5 different cases for a mixed-type operation on subclasses
-of :class:`Complex`. I'll refer to all of the above code that doesn't
-refer to ``MyIntegral`` and ``OtherTypeIKnowAbout`` as
-"boilerplate". ``a`` will be an instance of ``A``, which is a subtype
-of :class:`Complex` (``a : A <: Complex``), and ``b : B <:
-Complex``. I'll consider ``a + b``:
+ここには5つの異なる :class:`Complex` のサブクラス間の混在型の演算があります。
+上のコードの中で ``MyIntegral`` と ``OtherTypeIKnowAbout`` に触れない部分を
+"ボイラープレート" と呼ぶことにしましょう。 ``a`` を :class:`Complex` の\
+サブタイプである ``A`` のインスタンス (``a : A <: Complex``)、同様に
+``b : B <: Complex`` として、 ``a + b`` を考えます:
 
-    1. If ``A`` defines an :meth:`__add__` which accepts ``b``, all is
-       well.
-    2. If ``A`` falls back to the boilerplate code, and it were to
-       return a value from :meth:`__add__`, we'd miss the possibility
-       that ``B`` defines a more intelligent :meth:`__radd__`, so the
-       boilerplate should return :const:`NotImplemented` from
-       :meth:`__add__`. (Or ``A`` may not implement :meth:`__add__` at
-       all.)
-    3. Then ``B``'s :meth:`__radd__` gets a chance. If it accepts
-       ``a``, all is well.
-    4. If it falls back to the boilerplate, there are no more possible
-       methods to try, so this is where the default implementation
-       should live.
-    5. If ``B <: A``, Python tries ``B.__radd__`` before
-       ``A.__add__``. This is ok, because it was implemented with
-       knowledge of ``A``, so it can handle those instances before
-       delegating to :class:`Complex`.
+    1. ``A`` が ``b`` を受け付ける :meth:`__add__` を定義している場合、\
+       何も問題はありません。
+    2. ``A`` でボイラープレート部分に落ち込み、その結果 :meth:`__add__`
+       が値を返すならば、 ``B`` に良く考えられた :meth:`__radd__` が定義\
+       されている可能性を見逃してしまいますので、ボイラープレートは :meth:`__add__`
+       から :const:`NotImplemented` を返すのが良いでしょう。(若しくは、 ``A``
+       はまったく :meth:`__add__` を実装すべきではなかったかもしれません。)
+    3. そうすると、 ``B`` の :meth:`__radd__` にチャンスが巡ってきます。
+       ここで ``a`` が受け付けられるならば、結果は上々です。
+    4. ここでボイラープレートに落ち込むならば、もう他に試すべきメソッドはあり\
+       ませんので、デフォルト実装の出番です。
+    5. もし ``B <: A`` ならば、Python は ``A.__add__`` の前に ``B.__radd__``
+       を試します。これで良い理由は、 ``A`` についての知識を持って実装してお\
+       り、 :class:`Complex` に委ねる前にこれらのインスタンスを扱えるはずだか\
+       らです。
 
-If ``A<:Complex`` and ``B<:Real`` without sharing any other knowledge,
-then the appropriate shared operation is the one involving the built
-in :class:`complex`, and both :meth:`__radd__` s land there, so ``a+b
-== b+a``.
+もし ``A<:Complex`` かつ ``B<:Real`` で他に共有された知識が無いならば、
+適切な共通の演算は組み込みの :class:`complex` を使ったものになり、
+どちらの :meth:`__radd__` ともそこに着地するでしょうから、
+``a+b == b+a`` です。
 
-Because most of the operations on any given type will be very similar,
-it can be useful to define a helper function which generates the
-forward and reverse instances of any given operator. For example,
-:class:`fractions.Fraction` uses::
+ほとんどの演算はどのような型についても非常に良く似ていますので、\
+与えられた演算子について順結合(forward)および逆結合(reverse)のメソッドを生成\
+する支援関数を定義することは役に立ちます。たとえば、 :class:`fractions.Fraction`
+では次のようなものを利用しています::
 
     def _operator_fallbacks(monomorphic_operator, fallback_operator):
         def forward(a, b):

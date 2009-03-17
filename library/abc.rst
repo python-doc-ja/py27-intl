@@ -1,47 +1,45 @@
-:mod:`abc` --- Abstract Base Classes
+:mod:`abc` --- 抽象基底クラス
 ====================================
 
 .. module:: abc
-   :synopsis: Abstract base classes according to PEP 3119.
+   :synopsis: PEP 3119 に基づいた抽象基底クラス
 .. moduleauthor:: Guido van Rossum
 .. sectionauthor:: Georg Brandl
 .. much of the content adapted from docstrings
 
 .. versionadded:: 2.6
 
-This module provides the infrastructure for defining an :term:`abstract base
-class` (ABCs) in Python, as outlined in :pep:`3119`; see the PEP for why this
-was added to Python. (See also :pep:`3141` and the :mod:`numbers` module
-regarding a type hierarchy for numbers based on ABCs.)
+このモジュールは Python に :pep:`3119` で概要が示された抽象基底クラス
+(:term:`abstract base class`, ABC) を定義する基盤を提供します。
+なぜこれが Python に付け加えられたかについてはその PEP を参照してください。
+(ABC に基づいた数の型階層を扱った :pep:`3141` と :mod:`numbers` モジュールも\
+参照してください。)
 
-The :mod:`collections` module has some concrete classes that derive from
-ABCs; these can, of course, be further derived. In addition the
-:mod:`collections` module has some ABCs that can be used to test whether
-a class or instance provides a particular interface, for example, is it
-hashable or a mapping.
+:mod:`collections` モジュールには ABC から派生した具象クラスがいくつかあります。
+これらから、もちろんですが、さらに派生させることもできます。また :mod:`collections`
+モジュールにはいくつかの ABC もあって、あるクラスやインスタンスが特定のインタフェース\
+を提供しているかどうか、たとえばハッシュ可能かあるいはマッピングか、をテストできます。
 
 
-This module provides the following class:
+このモジュールは以下のクラスを提供します:
 
 .. class:: ABCMeta
 
-   Metaclass for defining Abstract Base Classes (ABCs).
+   抽象基底クラス(ABC)を定義するためのメタクラス。
 
-   Use this metaclass to create an ABC.  An ABC can be subclassed directly, and
-   then acts as a mix-in class.  You can also register unrelated concrete
-   classes (even built-in classes) and unrelated ABCs as "virtual subclasses" --
-   these and their descendants will be considered subclasses of the registering
-   ABC by the built-in :func:`issubclass` function, but the registering ABC
-   won't show up in their MRO (Method Resolution Order) nor will method
-   implementations defined by the registering ABC be callable (not even via
-   :func:`super`). [#]_
+   ABC を作るときにこのメタクラスを使います。ABC は直接的にサブクラス化することができ、\
+   ミックスイン(mix-in)クラスのように振る舞います。また、無関係な具象クラス(組み込み型\
+   でも構いません)と無関係な ABC を "仮想的サブクラス" として登録できます --
+   これらとその子孫は組み込み関数 :func:`issubclass` によって登録した ABC の\
+   サブクラスと判定されますが、登録した ABC は MRO (Method Resolution Order,
+   メソッド解決順)には現れませんし、この ABC のメソッド実装が(:func:`super`
+   を通してだけでなく)呼び出し可能になるわけでもありません。 [#]_
 
-   Classes created with a metaclass of :class:`ABCMeta` have the following method:
+   メタクラス :class:`ABCMeta` を使って作られたクラスには以下のメソッドがあります:
 
    .. method:: register(subclass)
 
-      Register *subclass* as a "virtual subclass" of this ABC. For
-      example::
+      *subclass* を "仮想的サブクラス" としてこの ABC に登録します。たとえば::
 
 	from abc import ABCMeta
 
@@ -53,29 +51,29 @@ This module provides the following class:
 	assert issubclass(tuple, MyABC)
 	assert isinstance((), MyABC)
 
-   You can also override this method in an abstract base class:
+   また、次のメソッドを抽象基底クラスの中でオーバーライドできます:
 
    .. method:: __subclasshook__(subclass)
 
-      (Must be defined as a class method.)
+      (クラスメソッドとして定義しなければなりません。)
 
-      Check whether *subclass* is considered a subclass of this ABC.  This means
-      that you can customize the behavior of ``issubclass`` further without the
-      need to call :meth:`register` on every class you want to consider a
-      subclass of the ABC.  (This class method is called from the
-      :meth:`__subclasscheck__` method of the ABC.)
+      *subclass* がこの ABC のサブクラスと見なせるかどうかチェックします。
+      これによって ABC のサブクラスと見なしたい全てのクラスについて :meth:`register`
+      を呼び出すことなく ``issubclass`` の振る舞いをさらにカスタマイズできます。
+      (このクラスメソッドは ABC の :meth:`__subclasscheck__` メソッドから\
+      呼び出されます。)
 
-      This method should return ``True``, ``False`` or ``NotImplemented``.  If
-      it returns ``True``, the *subclass* is considered a subclass of this ABC.
-      If it returns ``False``, the *subclass* is not considered a subclass of
-      this ABC, even if it would normally be one.  If it returns
-      ``NotImplemented``, the subclass check is continued with the usual
-      mechanism.
+      このメソッドは ``True``, ``False`` または ``NotImplemented``
+      を返さなければなりません。 ``True`` を返す場合は、 *subclass* はこの ABC
+      のサブクラスと見なされます。 ``False`` を返す場合は、たとえ通常の意味で\
+      サブクラスであっても ABC のサブクラスではないと見なされます。
+      ``NotImplemented`` の場合、サブクラスチェックは通常のメカニズムに\
+      戻ります。
 
       .. XXX explain the "usual mechanism"
 
 
-   For a demonstration of these concepts, look at this example ABC definition::
+   この概念のデモとして、次の ABC 定義の例を見てください::
 
       class Foo(object):
           def __getitem__(self, index):
@@ -105,45 +103,43 @@ This module provides the following class:
 
       MyIterable.register(Foo)
 
-   The ABC ``MyIterable`` defines the standard iterable method,
-   :meth:`__iter__`, as an abstract method.  The implementation given here can
-   still be called from subclasses.  The :meth:`get_iterator` method is also
-   part of the ``MyIterable`` abstract base class, but it does not have to be
-   overridden in non-abstract derived classes.
+   ABC ``MyIterable`` は標準的なイテラブルのメソッド :meth:`__iter__` を\
+   抽象メソッドとして定義します。ここで与えられている実装はサブクラスから呼び\
+   出されることがそれでもあり得ます。 :meth:`get_iterator` メソッドも
+   ``MyIterable`` 抽象基底クラスの一部ですが、抽象的でない派生クラスでオーバ\
+   ーライドされなくても構いません。
 
-   The :meth:`__subclasshook__` class method defined here says that any class
-   that has an :meth:`__iter__` method in its :attr:`__dict__` (or in that of
-   one of its base classes, accessed via the :attr:`__mro__` list) is
-   considered a ``MyIterable`` too.
+   ここで定義されるクラスメソッド :meth:`__subclasshook__` の意味は、\
+   :meth:`__iter__` メソッドがクラスの(または :attr:`__mro__`
+   でアクセスされる基底クラスの一つの) :attr:`__dict__` にある場合にも\
+   そのクラスが ``MyIterable`` だと見なされるということです。
 
-   Finally, the last line makes ``Foo`` a virtual subclass of ``MyIterable``,
-   even though it does not define an :meth:`__iter__` method (it uses the
-   old-style iterable protocol, defined in terms of :meth:`__len__` and
-   :meth:`__getitem__`).  Note that this will not make ``get_iterator``
-   available as a method of ``Foo``, so it is provided separately.
+   最後に、一番下の行は ``Foo`` を :meth:`__iter__` メソッドを定義しないにも\
+   かかわらず ``MyIterable`` の仮想的サブクラスにします (``Foo`` は古い様式の
+   :meth:`__len__` と :meth:`__getitem__` を用いた繰り返しのプロトコルを使っ\
+   ています)。これによって ``Foo`` のメソッドとして ``get_iterator`` が手に入\
+   るわけではないことに注意してください。それは別に提供されています。
 
 
-It also provides the following decorators:
+以下のデコレータも提供しています:
 
 .. function:: abstractmethod(function)
 
-   A decorator indicating abstract methods.
+   抽象メソッドを示すデコレータです。
 
-   Using this decorator requires that the class's metaclass is :class:`ABCMeta` or
-   is derived from it. 
-   A class that has a metaclass derived from :class:`ABCMeta`
-   cannot be instantiated unless all of its abstract methods and
-   properties are overridden.
-   The abstract methods can be called using any of the the normal 'super' call
-   mechanisms.
+   このデコレータを使うにはクラスのメタクラスが :class:`ABCMeta` であるかまたは\
+   派生したものであることが求められます。
+   :class:`ABCMeta` から派生したメタクラスを持つクラスは全ての抽象メソッドお\
+   よびプロパティをオーバーライドしない限りインスタンス化できません。
+   抽象メソッドは普通の 'super' 呼び出し機構を使って呼び出すことができます。
 
-   Dynamically adding abstract methods to a class, or attempting to modify the
-   abstraction status of a method or class once it is created, are not
-   supported.  The :func:`abstractmethod` only affects subclasses derived using
-   regular inheritance; "virtual subclasses" registered with the ABC's
-   :meth:`register` method are not affected.
+   クラスに動的に抽象メソッドを追加する、あるいはメソッドやクラスが作られた後\
+   から抽象的かどうかの状態を変更しようと試みることは、サポートされません。
+   :func:`abstractmethod` が影響を与えるのは正規の継承により派生したサブクラ\
+   スのみで、ABC の :meth:`register` メソッドで登録された "仮想的サブクラス"
+   は影響されません。
 
-   Usage::
+   使用例::
 
       class C:
           __metaclass__ = ABCMeta
@@ -153,26 +149,23 @@ It also provides the following decorators:
 
    .. note::
 
-      Unlike C++'s pure virtual functions, or Java abstract methods, these abstract
-      methods may have an implementation. This implementation can be
-      called via the :func:`super` mechanism from the class that
-      overrides it.  This could be useful as an end-point for a
-      super-call in a framework that uses cooperative
-      multiple-inheritance.
+      C++ の純粋仮想関数あるいは Java の抽象メソッドと違い、これらの抽象メソ\
+      ッドは実装を持ち得ます。この実装は :func:`super` メカニズムを通してそれ\
+      をオーバーライドしたクラスから呼び出すことができます。これは協調的多重\
+      継承を使ったフレームワークにおいて super 呼び出しの終点として有効です。
 
 
 .. function:: abstractproperty(fget[, fset[, fdel[, doc]]])
 
-   A subclass of the built-in :func:`property`, indicating an abstract property.
+   組み込みの :func:`property` のサブクラスで、抽象プロパティであることを示します。
 
-   Using this function requires that the class's metaclass is :class:`ABCMeta` or
-   is derived from it. 
-   A class that has a metaclass derived from :class:`ABCMeta` cannot be
-   instantiated unless all of its abstract methods and properties are overridden.
-   The abstract properties can be called using any of the normal
-   'super' call mechanisms.
+   この関数を使うにはクラスのメタクラスが :class:`ABCMeta` であるかまたは\
+   派生したものであることが求められます。
+   :class:`ABCMeta` から派生したメタクラスを持つクラスは全ての抽象メソッドお\
+   よびプロパティをオーバーライドしない限りインスタンス化できません。
+   抽象プロパティは普通の 'super' 呼び出し機構を使って呼び出すことができます。
 
-   Usage::
+   使用例::
 
       class C:
           __metaclass__ = ABCMeta
@@ -180,8 +173,8 @@ It also provides the following decorators:
           def my_abstract_property(self):
               ...
 
-   This defines a read-only property; you can also define a read-write abstract
-   property using the 'long' form of property declaration::
+   この例は読み取り専用のプロパティを定義しています。読み書きできる抽象\
+   プロパティを「長い」形式のプロパティ宣言を使って定義することもできます::
 
       class C:
           __metaclass__ = ABCMeta
@@ -191,5 +184,5 @@ It also provides the following decorators:
 
 .. rubric:: Footnotes
 
-.. [#] C++ programmers should note that Python's virtual base class
-   concept is not the same as C++'s.
+.. [#] C++ プログラマは Python の仮想的基底クラスの概念は C++ のものと同じで\
+   はないということを銘記すべきです。

@@ -1,46 +1,46 @@
 
-:mod:`fractions` --- Rational numbers
+:mod:`fractions` --- 有理数
 =====================================
 
 .. module:: fractions
-   :synopsis: Rational numbers.
+   :synopsis: 有理数
 .. moduleauthor:: Jeffrey Yasskin <jyasskin at gmail.com>
 .. sectionauthor:: Jeffrey Yasskin <jyasskin at gmail.com>
 .. versionadded:: 2.6
 
 
-The :mod:`fractions` module provides support for rational number arithmetic.
+:mod:`fractions` モジュールは有理数計算のサポートを提供します。
 
 
-A Fraction instance can be constructed from a pair of integers, from
-another rational number, or from a string.
+Fraction インスタンスは一対の整数、他の有理数または文字列から組み立てられます。
 
 .. class:: Fraction(numerator=0, denominator=1)
            Fraction(other_fraction)
            Fraction(string)
 
-   The first version requires that *numerator* and *denominator* are
-   instances of :class:`numbers.Integral` and returns a new
-   :class:`Fraction` instance with value ``numerator/denominator``. If
-   *denominator* is :const:`0`, it raises a
-   :exc:`ZeroDivisionError`. The second version requires that
-   *other_fraction* is an instance of :class:`numbers.Rational` and
-   returns an :class:`Fraction` instance with the same value.  The
-   last version of the constructor expects a string or unicode
-   instance in one of two possible forms.  The first form is::
+   最初のバージョンは *numerator* と *denominator* が :class:`numbers.Integral`
+   のインスタンスであることを要求し、 ``numerator/denominator`` の値を持った\
+   新しい :class:`Fraction` インスタンスを返します。
+   *denominator* が :const:`0` ならば、 :exc:`ZeroDivisionError`
+   を送出します。
+   二番目のバージョンは *other_fraction* が :class:`numbers.Rational`
+   のインスタンスであることを要求し、同じ値を持った新しい :class:`Fraction`
+   インスタンスを返します。
+   最後のバージョンは二つの可能な形式のうちどちらかであるような\
+   文字列またはユニコードのインスタンスを渡されると思っています。
+   一つめの形式は::
 
       [sign] numerator ['/' denominator]
 
-   where the optional ``sign`` may be either '+' or '-' and
-   ``numerator`` and ``denominator`` (if present) are strings of
-   decimal digits.  The second permitted form is that of a number
-   containing a decimal point::
+   で、ここにオプションの ``sign`` は '+' か '-' のどちらかであり、\
+   ``numerator`` および ``denominator`` (もしあるならば) は十進数の\
+   数字の並びです。二つめの許容される形式は小数点を含んだ::
 
       [sign] integer '.' [fraction] | [sign] '.' fraction
 
-   where ``integer`` and ``fraction`` are strings of digits.  In
-   either form the input string may also have leading and/or trailing
-   whitespace.  Here are some examples::
+   の形をとり、ここで ``integer`` と ``fraction`` は数字の並びです。
+   どちらの形式でも入力される文字列は前後に空白があって構いません。
+   例を見ましょう::
 
       >>> from fractions import Fraction
       >>> Fraction(16, -10)
@@ -60,37 +60,37 @@ another rational number, or from a string.
       Fraction(-1, 8)
 
 
-   The :class:`Fraction` class inherits from the abstract base class
-   :class:`numbers.Rational`, and implements all of the methods and
-   operations from that class.  :class:`Fraction` instances are hashable,
-   and should be treated as immutable.  In addition,
-   :class:`Fraction` has the following methods:
+   :class:`Fraction` クラスは抽象基底クラス :class:`numbers.Rational`
+   を継承し、その全てのメソッドと演算を実装します。 :class:`Fraction`
+   インスタンスはハッシュ可能で、したがって不変(immutable)であるものとして\
+   扱います。加えて、 :class:`Fraction` には以下のメソッドがあります:
 
 
    .. method:: from_float(flt)
 
-      This class method constructs a :class:`Fraction` representing the exact
-      value of *flt*, which must be a :class:`float`. Beware that
-      ``Fraction.from_float(0.3)`` is not the same value as ``Fraction(3, 10)``
+      このクラスメソッドは :class:`float` である *flt* の正確な値を表す
+      :class:`Fraction` を構築します。
+      気を付けてください ``Fraction.from_float(0.3)`` と ``Fraction(3, 10)``
+      の値は同じではありません。
 
 
    .. method:: from_decimal(dec)
 
-      This class method constructs a :class:`Fraction` representing the exact
-      value of *dec*, which must be a :class:`decimal.Decimal`.
+      このクラスメソッドは :class:`decimal.Decimal` である *dec* の正確な値を表す
+      :class:`Fraction` を構築します。
 
 
    .. method:: limit_denominator(max_denominator=1000000)
 
-      Finds and returns the closest :class:`Fraction` to ``self`` that has
-      denominator at most max_denominator.  This method is useful for finding
-      rational approximations to a given floating-point number:
+      高々 max_denominator を分母に持つ ``self`` に最も近い :class:`Fraction` 
+      を見付けて返します。
+      このメソッドは与えられた浮動小数点数の有理数近似を見つけるのに役立ちます:
 
          >>> from fractions import Fraction
          >>> Fraction('3.1415926535897932').limit_denominator(1000)
          Fraction(355, 113)
 
-      or for recovering a rational number that's represented as a float:
+      あるいは float で表された有理数を元に戻すのにも使えます:
 
          >>> from math import pi, cos
          >>> Fraction.from_float(cos(pi/3))
@@ -101,14 +101,14 @@ another rational number, or from a string.
 
 .. function:: gcd(a, b)
 
-   Return the greatest common divisor of the integers `a` and `b`.  If
-   either `a` or `b` is nonzero, then the absolute value of `gcd(a,
-   b)` is the largest integer that divides both `a` and `b`.  `gcd(a,b)`
-   has the same sign as `b` if `b` is nonzero; otherwise it takes the sign
-   of `a`.  `gcd(0, 0)` returns `0`.
+   整数 `a` と `b` の最大公約数を返します。 `a` も `b` もゼロでないとすると、\
+   `gcd(a, b)` の絶対値は `a` と `b` の両方を割り切る最も大きな整数です。
+   `gcd(a, b)` は `b` がゼロでなければ `b` と同じ符号になります。
+   そうでなければ `a` の符号を取ります。
+   `gcd(0, 0)` は `0` を返します。
 
 
 .. seealso::
 
-   Module :mod:`numbers`
-      The abstract base classes making up the numeric tower.
+   :mod:`numbers` モジュール
+      数値の塔を作り上げる抽象基底クラス。
