@@ -1,29 +1,31 @@
 .. _2to3-reference:
 
-2to3 - Automated Python 2 to 3 code translation
+2to3 - Python 2 から 3 への自動コード変換
 ===============================================
 
 .. sectionauthor:: Benjamin Peterson
 
-2to3 is a Python program that reads Python 2.x source code and applies a series
-of *fixers* to transform it into valid Python 3.x code.  The standard library
-contains a rich set of fixers that will handle almost all code.  2to3 supporting
-library :mod:`lib2to3` is, however, a flexible and generic library, so it is
-possible to write your own fixers for 2to3.  :mod:`lib2to3` could also be
-adapted to custom applications in which Python code needs to be edited
-automatically.
+2to3 は Python 2.x のソースコードを読み込み、 *変換プログラム* の系列
+を適用し、 Python 3.x のコードに変換するプログラムです。標準ライブラリ
+はほとんど全てのコードを取り扱うのに十分な変換プログラムを含んでいます。
+2to3 を支援しているライブラリは、柔軟かつ一般的な :mod:`lib2to3` です
+が、 2to3 のために、あなた自身が変換プログラムを書くこともできます。
+:mod:`lib2to3` は Python コードを自動編集する必要がある場合にも、適用
+することができます。
 
 
-Using 2to3
+2to3 の使用
 ----------
 
-2to3 will usually be installed with the Python interpreter as a script.  It is
-also located in the :file:`Tools/scripts` directory of the Python root.
+2to3 は大抵の場合、 Python インタープリターと共に、スクリプトとしてイ
+ンストールされます。場所は、 Python のルートディレクトリにある、
+:file:`Tools/scripts` ディレクトリです。
 
-2to3's basic arguments are a list of files or directories to transform.  The
-directories are to recursively traversed for Python sources.
+2to3 に与える基本の引数は、変換対象のファイル、もしくは、ディレクトリ
+のリストです。ディレクトリの場合は、 Python ソースコードを再帰的に探索
+します。
 
-Here is a sample Python 2.x source file, :file:`example.py`::
+Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 
    def greet(name):
        print "Hello, {0}!".format(name)
@@ -31,18 +33,19 @@ Here is a sample Python 2.x source file, :file:`example.py`::
    name = raw_input()
    greet(name)
 
-It can be converted to Python 3.x code via 2to3 on the command line::
+これは、コマンドラインから 2to3 を呼び出すことで、 Python 3.x コードに
+変換されます。::
 
    $ 2to3 example.py
 
-A diff against the original source file is printed.  2to3 can also write the
-needed modifications right back to the source file.  (Of course, a backup of the
-original is also be made.)  Writing the changes back is enabled with the
-:option:`-w` flag::
+オリジナルのソースファイルに対する差分が表示されます。 2to3 は必要となる
+変更をソースファイルに書き込むこともできます ( もちろんオリジナルの
+バックアップも作成されます ) 。変更の書き戻しは、 :option:`-w` フラグ
+によって有効化されます。::
 
    $ 2to3 -w example.py
 
-After transformation, :file:`example.py` looks like this::
+変換後、 :file:`example.py` は以下のようになります。::
 
    def greet(name):
        print("Hello, {0}!".format(name))
@@ -50,43 +53,47 @@ After transformation, :file:`example.py` looks like this::
    name = input()
    greet(name)
 
-Comments and and exact indentation are preserved throughout the translation
-process.
+変換処理を通じて、コメントと、インデントは保存されます。
 
-By default, 2to3 runs a set of predefined fixers.  The :option:`-l` flag
-lists all avaible fixers.  An explicit set of fixers to run can be given by use
-of the :option:`-f` flag.  The following example runs only the ``imports`` and
-``has_key`` fixers::
+デフォルトでは、 2to3 はあらかじめ定義された一連の変換プログラムを実行
+します。オプション :option:`-l` フラグは、利用可能な変換プログラムの一
+覧を表示します。オプション :option:`-f` フラグにより、実行する変換プロ
+グラムを明示的に与えることもできます。下記の例では、 ``imports`` と、
+``has_key`` 変換プログラムだけを実行します。::
 
    $ 2to3 -f imports -f has_key example.py
 
-Some fixers are *explicit*, meaning they aren't run be default and must be
-listed on the command line to be run.  Here, in addition to the default fixers,
-the ``idioms`` fixer is run::
+いくつかの変換プログラムは * 明示的 * 、つまり、デフォルトでは実行され
+ず、コマンドラインで実行するものとして列記する必要があります。
+デフォルトの変換プログラムに ``idioms`` 変換プログラムを追加して実行す
+るには、下記のようにします。::
 
    $ 2to3 -f all -f idioms example.py
 
-Notice how passing ``all`` enables all default fixers.
+ここで、 ``all`` を指定することで、全てのデフォルトの変換プログラムを
+有効化できることに注意して下さい。
 
-Sometimes 2to3 will find will find a place in your source code that needs to be
-changed, but 2to3 cannot fix automatically.  In this case, 2to3 will print a
-warning beneath the diff for a file.  You should address the warning in order to
-have compliant 3.x code.
+時に、 2to3 はあなたのソースコードに修正すべき点を見つけるでしょう。し
+かし、 2to3 は自動的には修正できません。この場合、 2to3 はファイルの変
+更点の下に警告を表示します。あなたは、 3.x に準拠したコードにするよう、
+警告に対処しなくてはなりません。
 
-2to3 can also refactor doctests.  To enable this mode, use the :option:`-d`
-flag.  Note that *only* doctests will be refactored.  This also doesn't require
-the module to be valid Python.  For example, doctest like examples in a reST
-document could also be refactored with this option.
+2to3 は、 doctests の修正もできます。このモードを有効化するには、オプ
+ション、 :option:`-d` フラグを指定して下さい。
+doctests * だけ * が修正されることに注意して下さい。これは、モジュール
+が有効な Python であることを要求しないことでもあります。例えば、
+doctest に似た、例えば reST ドキュメントなども、このオプションで修正す
+ることができるということです。
 
-The :option:`-v` option enables the output of more information on the
-translation process.
+オプション、 :option:`-v` は、変換処理のより詳しい情報の出力を有効化し
+ます。
 
-When the :option:`-p` is passed, 2to3 treats ``print`` as a function instead of
-a statement.  This is useful when ``from __future__ import print_function`` is
-being used.  If this option is not given, the print fixer will surround print
-calls in an extra set of parentheses because it cannot differentiate between the
-and print statement with parentheses (such as ``print ("a" + "b" + "c")``) and a
-true function call.
+オプション、 :option:`-p` が指定されると、 2to3 は、 ``print`` を文で
+はなく、関数として扱います。これは、 ``from __future__ import
+print_function`` が使われている場合に便利です。もし、このオプションが
+与えられなければ、 print 変換プログラムは丸括弧付きの print 文
+(``print ("a" + "b" + "c")`` のような)と、本当の関数呼び出しの区別が付
+かないため、 print 呼び出しを、丸括弧で囲みます。
 
 
 :mod:`lib2to3` - 2to3's library
@@ -100,7 +107,7 @@ true function call.
 
 .. warning::
 
-   The :mod:`lib2to3` API should be considered unstable and may change
-   drastically in the future.
+   :mod:`lib2to3` API は不安定で、将来、劇的に変更されるかも知れないと
+   考えるべきです。
 
 .. XXX What is the public interface anyway?
