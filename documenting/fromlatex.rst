@@ -1,27 +1,28 @@
 .. highlightlang:: rest
 
-Differences to the LaTeX markup
+LaTeX マークアップとの違い
 ===============================
 
-Though the markup language is different, most of the concepts and markup types
-of the old LaTeX docs have been kept -- environments as reST directives, inline
-commands as reST roles and so forth.
+マークアップ言語は変わりましたが、もとの LaTeX ドキュメントにあったコンセプトや
+ドキュメント型(markup types) はほとんど残っています -- 環境(environments) は reST
+ディレクティブ、インラインコマンドは reST roles などなど。
 
-However, there are some differences in the way these work, partly due to the
-differences in the markup languages, partly due to improvements in Sphinx.  This
-section lists these differences, in order to give those familiar with the old
-format a quick overview of what they might run into.
+しかし、それらがどう動作するのか(the way these work)については、マークアップ言語の
+違いのため、もしくは Sphinx の改善のために、いくらか異なっています。
+このセクションでは、古いフォーマットに慣れた人に新しいフォーマットでどう変わったのか
+概要を示すために、違いをリストアップしていきます。
 
-Inline markup
--------------
+インラインマークアップ
+-----------------------
 
-These changes have been made to inline markup:
+インラインマークアップには以下の変更点があります:
 
-* **Cross-reference roles**
+* **クロスリファレンス roles**
 
-  Most of the following semantic roles existed previously as inline commands,
-  but didn't do anything except formatting the content as code.  Now, they
-  cross-reference to known targets (some names have also been shortened):
+  以下の semantic roles は以前はインラインコマンドで、 code としてフォーマット
+  する以外には何もしませんでした。
+  今は、既知のターゲットに対してクロスリファレンスになります。
+  (あと、いくつかの名前は短くなっています):
 
   | *mod* (previously *refmodule* or *module*)
   | *func* (previously *function*)
@@ -36,48 +37,47 @@ These changes have been made to inline markup:
   | *cmacro* (previously *csimplemacro*)
   | *ctype*
 
-  Also different is the handling of *func* and *meth*: while previously
-  parentheses were added to the callable name (like ``\func{str()}``), they are
-  now appended by the build system -- appending them in the source will result
-  in double parentheses.  This also means that ``:func:`str(object)``` will not
-  work as expected -- use ````str(object)```` instead!
+  *func* と *meth* の扱いにも違いがあります: 以前は丸括弧を呼び出し可能オブジェクト名の
+  後ろに (``\func{str()}`` のように) 書きましたが、ビルドシステムが丸括弧をつけるように
+  なりました。　-- ソースファイルに丸括弧を書くと、出力では二重に括弧がついてしまいます。
+  ``:func:`str(object)``` も期待通りになりません。
+  代わりに ````str(object)```` を使ってください!
 
-* **Inline commands implemented as directives**
+* **インラインコマンドはディレクティブとして実装されました**
 
-  These were inline commands in LaTeX, but are now directives in reST:
+  LaTeX には インラインコマンドがありましたが、 reST では ディレクティブ になりました:
 
   | *deprecated*
   | *versionadded*
   | *versionchanged*
 
-  These are used like so::
+  次のようにして使います::
 
      .. deprecated:: 2.5
         Reason of deprecation.
 
-  Also, no period is appended to the text for *versionadded* and
+  同じく、 *versionadded* と *versionchanged* のテキストにはピリオドがつきません。
   *versionchanged*.
 
   | *note*
   | *warning*
 
-  These are used like so::
+  これらは次のように使います::
 
      .. note::
 
         Content of note.
 
-* **Otherwise changed commands**
+* **その他の変更されたコマンド**
 
-  The *samp* command previously formatted code and added quotation marks around
-  it.  The *samp* role, however, features a new highlighting system just like
-  *file* does:
+  以前の *samp* コマンドは、 code フォーマットでクォーテーションマークで囲まれていました。
+  *samp* role では、 *file* と同じくコードハイライトの機能が新しく追加されました:
 
      ``:samp:`open({filename}, {mode})``` results in :samp:`open({filename}, {mode})`
 
-* **Dropped commands**
+* **無くなったコマンド**
 
-  These were commands in LaTeX, but are not available as roles:
+  次の LaTeX にあったコマンドは、現在 role では対応していません: 
 
   | *bfcode*
   | *character* (use :samp:`\`\`'c'\`\``)
@@ -94,76 +94,70 @@ These changes have been made to inline markup:
   | *shortversion*, *version* (use the ``|version|`` and ``|release|`` substitutions)
   | *emph*, *strong* (use the reST markup)
 
-* **Backslash escaping**
+* **バックスラッシュによるエスケープ**
 
-  In reST, a backslash must be escaped in normal text, and in the content of
-  roles.  However, in code literals and literal blocks, it must not be escaped.
-  Example: ``:file:`C:\\Temp\\my.tmp``` vs. ````open("C:\Temp\my.tmp")````.
+  reSTでは、バックスラッシュは通常のテキストや role の中ではエスケープしないといけません。
+  しかし、 code リテラルやリテラルブロックではエスケープしてはいけません。
+  例えば:  ``:file:`C:\\Temp\\my.tmp``` vs. ````open("C:\Temp\my.tmp")````.
 
+情報単位 (information units)
+----------------------------
 
-Information units
------------------
+情報単位(information units) (latexでは *...desc* という環境) は reST ディレクティブで作ります。
+説明しておかないといけない情報単位に関する変更点は:
 
-Information units (*...desc* environments) have been made reST directives.
-These changes to information units should be noted:
+* **新しい名前**
+  すべての名前から "desc" が無くなりました。新しい名前は:
 
-* **New names**
+  | *cfunction* (以前は *cfuncdesc*)
+  | *cmacro* (以前は *csimplemacrodesc*)
+  | *exception* (以前は *excdesc*)
+  | *function* (以前は *funcdesc*)
+  | *attribute* (以前は *memberdesc*)
 
-  "desc" has been removed from every name.  Additionally, these directives have
-  new names:
+  *classdesc* と *excclassdesc* 環境は無くなりました。代わりに、 *class* と *exception* 
+  ディレクティブがコンストラクタの引数あり・なしでクラスのドキュメントをサポートします。
 
-  | *cfunction* (previously *cfuncdesc*)
-  | *cmacro* (previously *csimplemacrodesc*)
-  | *exception* (previously *excdesc*)
-  | *function* (previously *funcdesc*)
-  | *attribute* (previously *memberdesc*)
-
-  The *classdesc\** and *excclassdesc* environments have been dropped, the
-  *class* and *exception* directives support classes documented with and without
-  constructor arguments.
-
-* **Multiple objects**
-
-  The equivalent of the *...line* commands is::
+* **複数のオブジェクト**
+  *...line* というコマンドと等価なのは::
 
      .. function:: do_foo(bar)
                    do_bar(baz)
 
         Description of the functions.
 
-  IOW, just give one signatures per line, at the same indentation level.
+  言い換えると、同じインデントレベルに複数のシグネチャを一行ずつ書くだけです。
 
-* **Arguments**
+* **引数**
 
-  There is no *optional* command.  Just give function signatures like they
-  should appear in the output::
+  *optional* コマンドはありません。単純に関数のシグネチャを出力で表示されるのと同じ形で書いてください。 ::
 
      .. function:: open(filename[, mode[, buffering]])
 
         Description.
 
-  Note: markup in the signature is not supported.
+  注意: シグネチャの中ではマークアップはサポートされません。
 
 * **Indexing**
 
-  The *...descni* environments have been dropped.  To mark an information unit
-  as unsuitable for index entry generation, use the *noindex* option like so::
+  *...descni* 環境は無くなりました。 情報単位をインデックスエントリに含めないようにするには、
+  *noindex* オプションを次のように利用してください::
 
      .. function:: foo_*
         :noindex:
 
         Description.
 
-* **New information units**
+* **新しい情報単位**
 
-  There are new generic information units: One is called "describe" and can be
-  used to document things that are not covered by the other units::
+  新しい汎用情報単位があります。 一つは "describe" と呼ばれ、他の情報単位の
+  対象にならない単位に使うことができます::
 
      .. describe:: a == b
 
         The equals operator.
 
-  The others are::
+  他には次のような単位があります::
 
      .. cmdoption:: -O
 
@@ -173,19 +167,17 @@ These changes to information units should be noted:
 
         Describes an environment variable.
 
+構造 (Structure)
+-----------------
 
-Structure
----------
+LaTeX ドキュメントはいくつかのトップレベルマニュアルに分割されていました。
+今は、すべてのファイルは *toctree* ディレクティブで指定される一つのドキュメントツリーの一部です。
+(各出力フォーマットでまたファイルを分割することもできます)
+すべての *toctree* ディレクティブは他のファイルを現在のファイルのサブドキュメントとして埋め込みます。
+(この構造をファイルシステムレイアウトに反映させる必要はありません)
+トップレベルのファイルは :file:`contents.rst` です。
 
-The LaTeX docs were split in several toplevel manuals.  Now, all files are part
-of the same documentation tree, as indicated by the *toctree* directives in the
-sources (though individual output formats may choose to split them up into parts
-again).  Every *toctree* directive embeds other files as subdocuments of the
-current file (this structure is not necessarily mirrored in the filesystem
-layout).  The toplevel file is :file:`contents.rst`.
-
-However, most of the old directory structure has been kept, with the
-directories renamed as follows:
+しかし、今までのディレクトリ構造の大部分は、次のように名前を変更されながら残っています:
 
 * :file:`api` -> :file:`c-api`
 * :file:`dist` -> :file:`distutils`, with the single TeX file split up
