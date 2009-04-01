@@ -66,6 +66,15 @@ add_module_names = True
 exclude_trees = [
 	'refs',
 	'maclib',
+        # todo: translate later
+        'c-api', 
+        'distutils',
+        'extending',
+        'howto',
+        'install',
+        'reference',
+        'using',
+        'whatsnew',
 ]
 
 
@@ -113,36 +122,39 @@ latex_paper_size = 'a4'
 # The font size ('10pt', '11pt' or '12pt').
 latex_font_size = '10pt'
 
+# todo: translate commented topics.
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 _stdauthor = r'Guido van Rossum\\Fred L. Drake, Jr., editor'
 latex_documents = [
-    ('c-api/index', 'c-api.tex',
-     'The Python/C API', _stdauthor, 'manual'),
-    ('distutils/index', 'distutils.tex',
-     'Distributing Python Modules', _stdauthor, 'manual'),
+        #    ('c-api/index', 'c-api.tex',
+        #     'The Python/C API', _stdauthor, 'manual'),
+        #    ('distutils/index', 'distutils.tex',
+        #     'Distributing Python Modules', _stdauthor, 'manual'),
     ('documenting/index', 'documenting.tex',
      'Documenting Python', 'Georg Brandl', 'manual'),
-    ('extending/index', 'extending.tex',
-     'Extending and Embedding Python', _stdauthor, 'manual'),
-    ('install/index', 'install.tex',
-     'Installing Python Modules', _stdauthor, 'manual'),
+    #    ('extending/index', 'extending.tex',
+    #     'Extending and Embedding Python', _stdauthor, 'manual'),
+    #    ('install/index', 'install.tex',
+    #     'Installing Python Modules', _stdauthor, 'manual'),
     ('library/index', 'library.tex',
      'The Python Library Reference', _stdauthor, 'manual'),
-    ('reference/index', 'reference.tex',
-     'The Python Language Reference', _stdauthor, 'manual'),
+    #    ('reference/index', 'reference.tex',
+    #     'The Python Language Reference', _stdauthor, 'manual'),
     ('tutorial/index', 'tutorial.tex',
      'Python Tutorial', _stdauthor, 'manual'),
-    ('using/index', 'using.tex',
-     'Using Python', _stdauthor, 'manual'),
-    ('whatsnew/' + version, 'whatsnew.tex',
-     'What\'s New in Python', 'A. M. Kuchling', 'howto'),
+    #    ('using/index', 'using.tex',
+    #     'Using Python', _stdauthor, 'manual'),
+    #    ('whatsnew/' + version, 'whatsnew.tex',
+    #     'What\'s New in Python', 'A. M. Kuchling', 'howto'),
 ]
+
+# todo: translate howtos
 # Collect all HOWTOs individually
-latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
-                        'HOWTO', _stdauthor, 'howto')
-                       for fn in os.listdir('howto')
-                       if fn.endswith('.rst') and fn != 'index.rst')
+#latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
+#                        'HOWTO', _stdauthor, 'howto')
+#                       for fn in os.listdir('howto')
+#                       if fn.endswith('.rst') and fn != 'index.rst')
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = r'''
