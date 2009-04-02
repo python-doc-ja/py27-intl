@@ -10,7 +10,7 @@
 この章で説明する関数は、Python オブジェクトとのやりとりを型や (数値型全て、シーケンス型全てといった) 大まかなオブジェクト型の種類に
 関係なく行います。関数を適用対象でないオブジェクトに対して 使った場合、 Python の例外が送出されることになります。
 
-これらの関数は、:cfunc:`PyList_New`で作成された後に``NULL``以外の値を
+これらの関数は、:cfunc:`PyList_New` で作成された後に ``NULL`` 以外の値を
 設定されていないリストのような、適切に初期化されていないオブジェクトに対して 使うことはできません。
 
 
@@ -228,8 +228,8 @@
 .. cfunction:: PyObject* PyObject_CallFunctionObjArgs(PyObject *callable, ..., NULL)
 
    呼び出し可能な Python オブジェクト *callable_object* を 可変数個の :ctype:`PyObject\*`
-   引数とともに呼び出します。 引数列は末尾に *NULL*がついた可変数個のパラメタとして与えます。 成功すると呼び出し結果として得られたオブジェクトを返し
-   失敗すると *NULL* を返します。
+   引数とともに呼び出します。 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
+   成功すると呼び出し結果として得られたオブジェクトを返し失敗すると *NULL* を返します。
 
    .. versionadded:: 2.2
 
@@ -237,7 +237,7 @@
 .. cfunction:: PyObject* PyObject_CallMethodObjArgs(PyObject *o, PyObject *name, ..., NULL)
 
    オブジェクト *o* のメソッドを呼び出します、メソッド名は Python 文字列オブジェクト*name* で与えます。可変数個の
-   :ctype:`PyObject\*` 引数と共に呼び出されます. 引数列は末尾に *NULL*がついた可変数個のパラメタとして与えます。
+   :ctype:`PyObject\*` 引数と共に呼び出されます. 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
    成功すると呼び出し結果として得られたオブジェクトを返し 失敗すると *NULL* を返します。
 
    .. versionadded:: 2.2
@@ -266,15 +266,15 @@
 
    .. index:: builtin: type
 
-   *o* が *NULL*でない場合、オブジェクト*o* のオブジェクト型に 相当する型オブジェクトを返します。失敗すると :exc:`SystemError`
-   を送出して *NULL*を返します。 Python の式 ``type(o)``と同じです。  この関数は戻り値の参照カウントをインクリメントします。
+   *o* が *NULL* でない場合、オブジェクト*o* のオブジェクト型に 相当する型オブジェクトを返します。失敗すると :exc:`SystemError`
+   を送出して *NULL* を返します。 Python の式 ``type(o)`` と同じです。  この関数は戻り値の参照カウントをインクリメントします。
    参照カウントのインクリメントが必要でない限り、広く使われていて :ctype:`PyTypeObject\*` 型のポインタを返す表記法
    ``o->ob_type`` の代わりに使う理由は全くありません。
 
 
 .. cfunction:: int PyObject_TypeCheck(PyObject *o, PyTypeObject *type)
 
-   オブジェクト *o* が、 *type* か *type* のサブタイプで あるときに真を返します。どちらのパラメタも *NULL*であってはなりません。
+   オブジェクト *o* が、 *type* か *type* のサブタイプで あるときに真を返します。どちらのパラメタも *NULL* であってはなりません。
 
    .. versionadded:: 2.2
 
@@ -315,7 +315,7 @@
 .. cfunction:: PyObject* PyObject_Dir(PyObject *o)
 
    この関数は Python の式 ``dir(o)`` と同じで、 オブジェクトの変数名に割り当てている文字列からなるリスト (空の場合もあります)
-   を返します。エラーの場合には *NULL* を返します。引数を *NULL*にすると、Python における``dir()``
+   を返します。エラーの場合には *NULL* を返します。引数を *NULL* にすると、Python における``dir()``
    と同様に、現在のローカルな名前を返します; この場合、 アクティブな実行フレームがなければ *NULL* を返しますが、
    :cfunc:`PyErr_Occurred` は偽を返します。
 

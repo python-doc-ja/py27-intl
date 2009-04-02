@@ -36,8 +36,9 @@
 
 .. cfunction:: void Py_InitializeEx(int initsigs)
 
-   *initsigs*に1を指定すれば:cfunc:`Py_Initialize`と同じ処理を実
-   行しますが、Python埋め込みアプリケーションでは*initsigs*を0として 初期化時にシグナルハンドラの登録をスキップすることができます。
+   *initsigs* に1を指定すれば:cfunc:`Py_Initialize` と同じ処理を実
+   行しますが、Python埋め込みアプリケーションでは *initsigs* を0として
+   初期化時にシグナルハンドラの登録をスキップすることができます。
 
    .. versionadded:: 2.4
 
