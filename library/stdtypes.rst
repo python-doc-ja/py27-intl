@@ -760,7 +760,7 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. method:: string.rindex(sub[, start[, end]])
 
-   :meth:`find` と同様ですが、*sub* が見つからなかった場合 :exc:`ValueError` を送出します。
+   :meth:`rfind` と同様ですが、*sub* が見つからなかった場合 :exc:`ValueError` を送出します。
 
 
 .. method:: string.rjust(width[, fillchar])
