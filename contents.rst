@@ -11,5 +11,5 @@
 
    about.rst
    bugs.rst
-   copyright.rst
+   copyrightjp.rst
    license.rst

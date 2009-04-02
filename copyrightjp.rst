@@ -1,4 +1,10 @@
-Copyright © 2001-2006 Python Software Foundation. All rights reserved.
+*********
+Copyright
+*********
+
+Python and this documentation is:
+
+Copyright © 2001-2008 Python Software Foundation. All rights reserved.
 
 Copyright © 2000 BeOpen.com. All rights reserved.
 
@@ -7,8 +13,9 @@ reserved.
 
 Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
 
-Translation Copyright © 2003, 2004 Python Document Japanese Translation Project.
-All rights reserved.
 
-ライセンスおよび許諾に関する完全な情報は、このドキュメントの末尾を 参照してください。
+Japanese translation is:
+Copyright © 2003-2009 Python Document Japanese Translation Project. All rights reserved.
 
+-------
+ライセンスおよび許諾に関する完全な情報は、 :ref:`history-and-license` を参照してください。
