@@ -39,6 +39,7 @@ Python のドキュメントを寄贈したいと思っているなら、その�
    style.rst
    rest.rst
    markup.rst
+   fromlatex.rst
    sphinx.rst
 
 .. XXX add credits, thanks etc.
