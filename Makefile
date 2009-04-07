@@ -4,7 +4,7 @@
 #
 
 # You can set these variables from the command line.
-PYTHON       = /opt/py2/bin/python2.6
+PYTHON       = python
 SVNROOT      = http://svn.python.org/projects
 SPHINXOPTS   =
 PAPER        =
