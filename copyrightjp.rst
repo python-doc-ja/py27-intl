@@ -18,4 +18,5 @@ Japanese translation is:
 Copyright © 2003-2009 Python Document Japanese Translation Project. All rights reserved.
 
 -------
+
 ライセンスおよび許諾に関する完全な情報は、 :ref:`history-and-license` を参照してください。
