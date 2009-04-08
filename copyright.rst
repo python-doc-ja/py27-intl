@@ -13,7 +13,10 @@ reserved.
 
 Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
 
+
+Japanese translation is:
+Copyright © 2003-2009 Python Document Japanese Translation Project. All rights reserved.
+
 -------
 
-See :ref:`history-and-license` for complete license and permissions information.
-
+ライセンスおよび許諾に関する完全な情報は、 :ref:`history-and-license` を参照してください。
