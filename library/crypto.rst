@@ -25,6 +25,6 @@
 あなたがハードコアなサイファーパンクなら、
 A.M. Kuchling  の書いた暗号化モジュールに興味を持つかもしれません。
 このパッケージは AES をはじめとする様々な暗号化アルゴリズムのモジュールを含みます。
-これらのモジュールは Python と一緒には配布されず、別に入手できます。 詳細は URL
-http://www.amk.ca/python/code/crypto.html  を見てください。
+これらのモジュールは Python と一緒には配布されず、別に入手できます。
+詳細は URL http://www.amk.ca/python/code/crypto.html を見てください。
 
