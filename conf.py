@@ -31,7 +31,8 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # We look for the Include/patchlevel.h file in the current Python source tree
 # and replace the values accordingly.
 import patchlevel
-version, release = patchlevel.get_version_info()
+#version, release = patchlevel.get_version_info()
+version, release = '2.6', '2.6.0'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
