@@ -7,7 +7,7 @@ import unicodedata
 
 R0 = re.compile(r"""``[^`]+``""")
 R1 = re.compile(r""":\w+:`[^`]+`""")
-R2 = re.compile(r"""\*[^\*]*[^ \*]+[^\w]*\*""")
+R2 = re.compile(r"""\*[^\*]*[^ \*]+[^\*]*\*""")
 
 SPLITTER = """,. ()[]'\"\r\n"""
 
