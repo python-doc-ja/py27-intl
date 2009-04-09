@@ -23,7 +23,7 @@
 
    正しくない cookie に遭遇した場合、 :exc:`CookieError` 例外を送出します。
    なので、ブラウザから持ってきた cookie データを parse するときには常に
-   :exec:`CookieError` 例外を catch して不正な cookie に備えるべきです。
+   :exc:`CookieError` 例外を catch して不正な cookie に備えるべきです。
 
 .. exception:: CookieError
 
