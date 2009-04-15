@@ -1,0 +1,61 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to166__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/mimify.rst =&gt; rest262/library/mimify.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to166__0"><a href="#difflib_chg_to166__0">f</a></td><td class="diff_header" id="from166_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_2">2</td><td nowrap="nowrap">:mod:`mimify`&nbsp;---&nbsp;MIME&nbsp;processing&nbsp;of&nbsp;mail&nbsp;messages</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_3">3</td><td nowrap="nowrap">==================================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;mimify</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Mimification&nbsp;and&nbsp;unmimification&nbsp;of&nbsp;mail&nbsp;messages.</td></tr><tr><td class="diff_next" id="difflib_chg_to166__1"><a href="#difflib_chg_to166__1">n</a></td><td class="diff_header" id="to166_7">7+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:deprecated:</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from166_7">7</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_9">9</td><td nowrap="nowrap">..&nbsp;deprecated::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_10">10</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`email`&nbsp;package&nbsp;should&nbsp;be&nbsp;used&nbsp;in&nbsp;preference&nbsp;to&nbsp;the&nbsp;:mod:`mimify`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_11">11</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;module.&nbsp;&nbsp;This&nbsp;module&nbsp;is&nbsp;present&nbsp;only&nbsp;to&nbsp;maintain&nbsp;backward&nbsp;compatibility.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_13">13</td><td nowrap="nowrap">The&nbsp;:mod:`mimify`&nbsp;module&nbsp;defines&nbsp;two&nbsp;functions&nbsp;to&nbsp;convert&nbsp;mail&nbsp;messages&nbsp;to&nbsp;and</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to166__2">n</a></td><td class="diff_header" id="from166_14">14-</td><td nowrap="nowrap">from&nbsp;MIME&nbsp;format.&nbsp;&nbsp;The&nbsp;mail&nbsp;message&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;simple&nbsp;message&nbsp;or&nbsp;a<span class="diff_sub">&nbsp;so-</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to166__2">n</a></td><td class="diff_header" id="to166_15">15+</td><td nowrap="nowrap">from&nbsp;MIME&nbsp;format.&nbsp;&nbsp;The&nbsp;mail&nbsp;message&nbsp;can&nbsp;be&nbsp;either&nbsp;a&nbsp;simple&nbsp;message&nbsp;or&nbsp;a</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from166_15">15-</td><td nowrap="nowrap">called&nbsp;multipart&nbsp;message.&nbsp;&nbsp;Each&nbsp;part&nbsp;is&nbsp;treated&nbsp;separately.&nbsp;Mimifying&nbsp;(a&nbsp;part</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to166_16">16+</td><td nowrap="nowrap"><span class="diff_add">so-</span>called&nbsp;multipart&nbsp;message.&nbsp;&nbsp;Each&nbsp;part&nbsp;is&nbsp;treated&nbsp;separately.&nbsp;Mimifying&nbsp;(a&nbsp;part</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from166_16">16</td><td nowrap="nowrap">of)&nbsp;a&nbsp;message&nbsp;entails&nbsp;encoding&nbsp;the&nbsp;message&nbsp;as&nbsp;quoted-printable&nbsp;if&nbsp;it&nbsp;contains</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_17">17</td><td nowrap="nowrap">any&nbsp;characters&nbsp;that&nbsp;cannot&nbsp;be&nbsp;represented&nbsp;using&nbsp;7-bit&nbsp;ASCII.&nbsp;&nbsp;Unmimifying&nbsp;(a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_18">18</td><td nowrap="nowrap">part&nbsp;of)&nbsp;a&nbsp;message&nbsp;entails&nbsp;undoing&nbsp;the&nbsp;quoted-printable&nbsp;encoding.&nbsp;&nbsp;Mimify&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_19">19</td><td nowrap="nowrap">unmimify&nbsp;are&nbsp;especially&nbsp;useful&nbsp;when&nbsp;a&nbsp;message&nbsp;has&nbsp;to&nbsp;be&nbsp;edited&nbsp;before&nbsp;being</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_20">20</td><td nowrap="nowrap">sent.&nbsp;&nbsp;Typical&nbsp;use&nbsp;would&nbsp;be::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_21">21</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_22">22</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;unmimify&nbsp;message</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_23">23</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;edit&nbsp;message</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to166__2"></td><td class="diff_header" id="from166_56">56</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_57">57</td><td nowrap="nowrap">..&nbsp;function::&nbsp;mime_encode_header(line)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_58">58</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;a&nbsp;MIME-encoded&nbsp;version&nbsp;of&nbsp;the&nbsp;header&nbsp;line&nbsp;in&nbsp;*line*.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_60">60</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_61">61</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_62">62</td><td nowrap="nowrap">..&nbsp;data::&nbsp;MAXLEN</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_63">63</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to166__top">t</a></td><td class="diff_header" id="from166_64">64-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;By&nbsp;default,&nbsp;a&nbsp;part&nbsp;will&nbsp;be&nbsp;encoded&nbsp;as&nbsp;quoted-printable&nbsp;when&nbsp;it&nbsp;contains&nbsp;any<span class="diff_sub">&nbsp;non-</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to166__top">t</a></td><td class="diff_header" id="to166_65">65+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;By&nbsp;default,&nbsp;a&nbsp;part&nbsp;will&nbsp;be&nbsp;encoded&nbsp;as&nbsp;quoted-printable&nbsp;when&nbsp;it&nbsp;contains&nbsp;any</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from166_65">65-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;ASCII&nbsp;characters&nbsp;(characters&nbsp;with&nbsp;the&nbsp;8th&nbsp;bit&nbsp;set),&nbsp;or&nbsp;if&nbsp;there&nbsp;are&nbsp;any<span class="diff_sub">&nbsp;lines</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to166_66">66+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;<span class="diff_add">non-</span>ASCII&nbsp;characters&nbsp;(characters&nbsp;with&nbsp;the&nbsp;8th&nbsp;bit&nbsp;set),&nbsp;or&nbsp;if&nbsp;there&nbsp;are&nbsp;any</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from166_66">66-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;longer&nbsp;than&nbsp;:const:`MAXLEN`&nbsp;characters&nbsp;(default&nbsp;value&nbsp;200).</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to166_67">67+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;lines</span>&nbsp;longer&nbsp;than&nbsp;:const:`MAXLEN`&nbsp;characters&nbsp;(default&nbsp;value&nbsp;200).</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from166_67">67</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_69">69</td><td nowrap="nowrap">..&nbsp;data::&nbsp;CHARSET</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_70">70</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_71">71</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;When&nbsp;not&nbsp;specified&nbsp;in&nbsp;the&nbsp;mail&nbsp;headers,&nbsp;a&nbsp;character&nbsp;set&nbsp;must&nbsp;be&nbsp;filled&nbsp;in.&nbsp;&nbsp;The</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_72">72</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;string&nbsp;used&nbsp;is&nbsp;stored&nbsp;in&nbsp;:const:`CHARSET`,&nbsp;and&nbsp;the&nbsp;default&nbsp;value&nbsp;is&nbsp;ISO-8859-1</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_73">73</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(also&nbsp;known&nbsp;as&nbsp;Latin1&nbsp;(latin-one)).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from166_74">74</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

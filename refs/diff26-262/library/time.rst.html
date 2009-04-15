@@ -1,0 +1,66 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to167__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/time.rst =&gt; rest262/library/time.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to167__0"></td><td class="diff_header" id="from167_113">113</td><td nowrap="nowrap">&nbsp;&nbsp;When&nbsp;a&nbsp;tuple&nbsp;with&nbsp;an&nbsp;incorrect&nbsp;length&nbsp;is&nbsp;passed&nbsp;to&nbsp;a&nbsp;function&nbsp;expecting&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_114">114</td><td nowrap="nowrap">&nbsp;&nbsp;:class:`struct_time`,&nbsp;or&nbsp;having&nbsp;elements&nbsp;of&nbsp;the&nbsp;wrong&nbsp;type,&nbsp;a&nbsp;:exc:`TypeError`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_115">115</td><td nowrap="nowrap">&nbsp;&nbsp;is&nbsp;raised.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_116">116</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_117">117</td><td nowrap="nowrap">&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.2</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_118">118</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;time&nbsp;value&nbsp;sequence&nbsp;was&nbsp;changed&nbsp;from&nbsp;a&nbsp;tuple&nbsp;to&nbsp;a&nbsp;:class:`struct_time`,&nbsp;with</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_119">119</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;addition&nbsp;of&nbsp;attribute&nbsp;names&nbsp;for&nbsp;the&nbsp;fields.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_120">120</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to167__top">t</a></td><td class="diff_header" id="to167_121">121+</td><td nowrap="nowrap"><span class="diff_add">*&nbsp;Use&nbsp;the&nbsp;following&nbsp;functions&nbsp;to&nbsp;convert&nbsp;between&nbsp;time&nbsp;representations:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_122">122+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_123">123+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+-------------------------+-------------------------+-------------------------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_124">124+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;From&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;To&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;Use&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_125">125+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+=========================+=========================+=========================+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_126">126+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;seconds&nbsp;since&nbsp;the&nbsp;epoch&nbsp;|&nbsp;:class:`struct_time`&nbsp;in&nbsp;|&nbsp;:func:`gmtime`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_127">127+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;UTC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_128">128+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+-------------------------+-------------------------+-------------------------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_129">129+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;seconds&nbsp;since&nbsp;the&nbsp;epoch&nbsp;|&nbsp;:class:`struct_time`&nbsp;in&nbsp;|&nbsp;:func:`localtime`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_130">130+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;local&nbsp;time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_131">131+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+-------------------------+-------------------------+-------------------------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_132">132+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;:class:`struct_time`&nbsp;in&nbsp;|&nbsp;seconds&nbsp;since&nbsp;the&nbsp;epoch&nbsp;|&nbsp;:func:`calendar.timegm`&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_133">133+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;UTC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_134">134+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+-------------------------+-------------------------+-------------------------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_135">135+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;:class:`struct_time`&nbsp;in&nbsp;|&nbsp;seconds&nbsp;since&nbsp;the&nbsp;epoch&nbsp;|&nbsp;:func:`mktime`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_136">136+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;|&nbsp;local&nbsp;time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_137">137+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;+-------------------------+-------------------------+-------------------------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to167_138">138+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from167_121">121</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_122">122</td><td nowrap="nowrap">The&nbsp;module&nbsp;defines&nbsp;the&nbsp;following&nbsp;functions&nbsp;and&nbsp;data&nbsp;items:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_123">123</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_124">124</td><td nowrap="nowrap">..&nbsp;data::&nbsp;accept2dyear</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_125">125</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_126">126</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Boolean&nbsp;value&nbsp;indicating&nbsp;whether&nbsp;two-digit&nbsp;year&nbsp;values&nbsp;will&nbsp;be&nbsp;accepted.&nbsp;&nbsp;This</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_127">127</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;true&nbsp;by&nbsp;default,&nbsp;but&nbsp;will&nbsp;be&nbsp;set&nbsp;to&nbsp;false&nbsp;if&nbsp;the&nbsp;environment&nbsp;variable</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from167_128">128</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:envvar:`PYTHONY2K`&nbsp;has&nbsp;been&nbsp;set&nbsp;to&nbsp;a&nbsp;non-empty&nbsp;string.&nbsp;&nbsp;It&nbsp;may&nbsp;also&nbsp;be&nbsp;modified</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

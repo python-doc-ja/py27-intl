@@ -1,0 +1,70 @@
+--- rest26/library/gl.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/gl.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,22 +1,22 @@
+ 
+ :mod:`gl` --- *Graphics Library* interface
+ ==========================================
+ 
+ .. module:: gl
+    :platform: IRIX
+    :synopsis: Functions from the Silicon Graphics Graphics Library.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`gl` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This module provides access to the Silicon Graphics *Graphics Library*. It is
+ available only on Silicon Graphics machines.
+ 
+ .. warning::
+ 
+    Some illegal calls to the GL library cause the Python interpreter to dump core.
+    In particular, the use of most GL calls is unsafe before the first window is
+    opened.
+@@ -157,38 +157,38 @@
+       An interface to OpenGL is also available; see information about the **PyOpenGL**
+       project online at http://pyopengl.sourceforge.net/.  This may be a better option
+       if support for SGI hardware from before about 1996 is not required.
+ 
+ 
+ :mod:`DEVICE` --- Constants used with the :mod:`gl` module
+ ==========================================================
+ 
+ .. module:: DEVICE
+    :platform: IRIX
+    :synopsis: Constants used with the gl module.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`DEVICE` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This modules defines the constants used by the Silicon Graphics *Graphics
+ Library* that C programmers find in the header file ``<gl/device.h>``. Read the
+ module source file for details.
+ 
+ 
+ :mod:`GL` --- Constants used with the :mod:`gl` module
+ ======================================================
+ 
+ .. module:: GL
+    :platform: IRIX
+    :synopsis: Constants used with the gl module.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`GL` module has been deprecated for removal in Python 3.0.
+ 
+ This module contains constants used by the Silicon Graphics *Graphics Library*
+ from the C header file ``<gl/gl.h>``. Read the module source file for details.
+ 

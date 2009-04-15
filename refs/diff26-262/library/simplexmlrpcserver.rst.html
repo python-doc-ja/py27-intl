@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to151__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/simplexmlrpcserver.rst =&gt; rest262/library/simplexmlrpcserver.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to151__0"></td><td class="diff_header" id="from151_146">146</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;class&nbsp;RequestHandler(SimpleXMLRPCRequestHandler):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_147">147</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rpc_paths&nbsp;=&nbsp;('/RPC2',)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_148">148</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_149">149</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Create&nbsp;server</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_150">150</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server&nbsp;=&nbsp;SimpleXMLRPCServer(("localhost",&nbsp;8000),</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_151">151</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;requestHandler=RequestHandler)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_152">152</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.register_introspection_functions()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_153">153</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to151__1">n</a></td><td class="diff_header" id="from151_154">154-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Register&nbsp;pow()&nbsp;function;&nbsp;this&nbsp;will&nbsp;use&nbsp;the&nbsp;value&nbsp;of<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to151__1">n</a></td><td class="diff_header" id="to151_154">154+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Register&nbsp;pow()&nbsp;function;&nbsp;this&nbsp;will&nbsp;use&nbsp;the&nbsp;value&nbsp;of</td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to151__1"></td><td class="diff_header" id="from151_155">155</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;pow.__name__&nbsp;as&nbsp;the&nbsp;name,&nbsp;which&nbsp;is&nbsp;just&nbsp;'pow'.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_156">156</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.register_function(pow)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_157">157</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to151__2"></td><td class="diff_header" id="from151_158">158</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Register&nbsp;a&nbsp;function&nbsp;under&nbsp;a&nbsp;different&nbsp;name</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_159">159</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;def&nbsp;adder_function(x,y):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_160">160</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;x&nbsp;+&nbsp;y</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_161">161</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.register_function(adder_function,&nbsp;'add')</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_162">162</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to151__2">n</a></td><td class="diff_header" id="from151_163">163-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Register&nbsp;an&nbsp;instance;&nbsp;all&nbsp;the&nbsp;methods&nbsp;of&nbsp;the&nbsp;instance&nbsp;are<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to151__2">n</a></td><td class="diff_header" id="to151_163">163+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Register&nbsp;an&nbsp;instance;&nbsp;all&nbsp;the&nbsp;methods&nbsp;of&nbsp;the&nbsp;instance&nbsp;are</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from151_164">164</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;published&nbsp;as&nbsp;XML-RPC&nbsp;methods&nbsp;(in&nbsp;this&nbsp;case,&nbsp;just&nbsp;'div').</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_165">165</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;class&nbsp;MyFuncs:</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to151__top">t</a></td><td class="diff_header" id="from151_166">166-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;div(self,&nbsp;x,&nbsp;y):<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to151__top">t</a></td><td class="diff_header" id="to151_166">166+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;div(self,&nbsp;x,&nbsp;y):</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from151_167">167</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;x&nbsp;//&nbsp;y</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_168">168</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_169">169</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.register_instance(MyFuncs())</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_170">170</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_171">171</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Run&nbsp;the&nbsp;server's&nbsp;main&nbsp;loop</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_172">172</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.serve_forever()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_173">173</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from151_174">174</td><td nowrap="nowrap">The&nbsp;following&nbsp;client&nbsp;code&nbsp;will&nbsp;call&nbsp;the&nbsp;methods&nbsp;made&nbsp;available&nbsp;by&nbsp;the&nbsp;preceding</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

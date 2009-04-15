@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to55__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/bisect.rst =&gt; rest262/library/bisect.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to55__0"><a href="#difflib_chg_to55__0">f</a></td><td class="diff_header" id="from55_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_2">2</td><td nowrap="nowrap">:mod:`bisect`&nbsp;---&nbsp;Array&nbsp;bisection&nbsp;algorithm</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_3">3</td><td nowrap="nowrap">===========================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;bisect</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Array&nbsp;bisection&nbsp;algorithms&nbsp;for&nbsp;binary&nbsp;searching.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_7">7</td><td nowrap="nowrap">..&nbsp;sectionauthor::&nbsp;Fred&nbsp;L.&nbsp;Drake,&nbsp;Jr.&nbsp;&lt;fdrake@acm.org&gt;</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to55__1">n</a></td><td class="diff_header" id="from55_8">8-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from55_9">9-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from55_10">10-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;LaTeX&nbsp;produced&nbsp;by&nbsp;Fred&nbsp;L.&nbsp;Drake,&nbsp;Jr.&nbsp;&lt;fdrake@acm.org&gt;,&nbsp;with&nbsp;an</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from55_11">11-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;example&nbsp;based&nbsp;on&nbsp;the&nbsp;PyModules&nbsp;FAQ&nbsp;entry&nbsp;by&nbsp;Aaron&nbsp;Watters</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to55_8">8+</td><td nowrap="nowrap">..&nbsp;example&nbsp;based&nbsp;on&nbsp;the&nbsp;PyModules&nbsp;FAQ&nbsp;entry&nbsp;by&nbsp;Aaron&nbsp;Watters<span class="diff_add">&nbsp;&lt;arw@pythonpros.com&gt;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from55_12">12-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;&lt;arw@pythonpros.com&gt;.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from55_13">13</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_14">14</td><td nowrap="nowrap">This&nbsp;module&nbsp;provides&nbsp;support&nbsp;for&nbsp;maintaining&nbsp;a&nbsp;list&nbsp;in&nbsp;sorted&nbsp;order&nbsp;without</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_15">15</td><td nowrap="nowrap">having&nbsp;to&nbsp;sort&nbsp;the&nbsp;list&nbsp;after&nbsp;each&nbsp;insertion.&nbsp;&nbsp;For&nbsp;long&nbsp;lists&nbsp;of&nbsp;items&nbsp;with</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_16">16</td><td nowrap="nowrap">expensive&nbsp;comparison&nbsp;operations,&nbsp;this&nbsp;can&nbsp;be&nbsp;an&nbsp;improvement&nbsp;over&nbsp;the&nbsp;more&nbsp;common</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_17">17</td><td nowrap="nowrap">approach.&nbsp;&nbsp;The&nbsp;module&nbsp;is&nbsp;called&nbsp;:mod:`bisect`&nbsp;because&nbsp;it&nbsp;uses&nbsp;a&nbsp;basic&nbsp;bisection</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_18">18</td><td nowrap="nowrap">algorithm&nbsp;to&nbsp;do&nbsp;its&nbsp;work.&nbsp;&nbsp;The&nbsp;source&nbsp;code&nbsp;may&nbsp;be&nbsp;most&nbsp;useful&nbsp;as&nbsp;a&nbsp;working</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_19">19</td><td nowrap="nowrap">example&nbsp;of&nbsp;the&nbsp;algorithm&nbsp;(the&nbsp;boundary&nbsp;conditions&nbsp;are&nbsp;already&nbsp;right!).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_20">20</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to55__1"></td><td class="diff_header" id="from55_71">71</td><td nowrap="nowrap">Examples</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_72">72</td><td nowrap="nowrap">--------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_73">73</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_74">74</td><td nowrap="nowrap">..&nbsp;_bisect-example:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_75">75</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_76">76</td><td nowrap="nowrap">The&nbsp;:func:`bisect`&nbsp;function&nbsp;is&nbsp;generally&nbsp;useful&nbsp;for&nbsp;categorizing&nbsp;numeric&nbsp;data.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_77">77</td><td nowrap="nowrap">This&nbsp;example&nbsp;uses&nbsp;:func:`bisect`&nbsp;to&nbsp;look&nbsp;up&nbsp;a&nbsp;letter&nbsp;grade&nbsp;for&nbsp;an&nbsp;exam&nbsp;total</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_78">78</td><td nowrap="nowrap">(say)&nbsp;based&nbsp;on&nbsp;a&nbsp;set&nbsp;of&nbsp;ordered&nbsp;numeric&nbsp;breakpoints:&nbsp;85&nbsp;and&nbsp;up&nbsp;is&nbsp;an&nbsp;'A',&nbsp;75..84</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to55__top">t</a></td><td class="diff_header" id="from55_79">79-</td><td nowrap="nowrap">is&nbsp;a&nbsp;'B',&nbsp;etc.<span class="diff_sub">&nbsp;::</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to55__top">t</a></td><td class="diff_header" id="to55_75">75+</td><td nowrap="nowrap">is&nbsp;a&nbsp;'B',&nbsp;etc.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from55_80">80</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;grades&nbsp;=&nbsp;"FEDCBA"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;breakpoints&nbsp;=&nbsp;[30,&nbsp;44,&nbsp;66,&nbsp;75,&nbsp;85]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_83">83</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;from&nbsp;bisect&nbsp;import&nbsp;bisect</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_84">84</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;grade(total):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_85">85</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;grades[bisect(breakpoints,&nbsp;total)]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_86">86</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from55_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;grade(66)</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

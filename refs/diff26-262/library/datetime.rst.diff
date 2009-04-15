@@ -1,0 +1,346 @@
+--- rest26/library/datetime.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/datetime.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -257,28 +257,28 @@
+ :class:`timedelta` object representing the smaller duration considered to be the
+ smaller timedelta. In order to stop mixed-type comparisons from falling back to
+ the default comparison by object address, when a :class:`timedelta` object is
+ compared to an object of a different type, :exc:`TypeError` is raised unless the
+ comparison is ``==`` or ``!=``.  The latter cases return :const:`False` or
+ :const:`True`, respectively.
+ 
+ :class:`timedelta` objects are :term:`hashable` (usable as dictionary keys), support
+ efficient pickling, and in Boolean contexts, a :class:`timedelta` object is
+ considered to be true if and only if it isn't equal to ``timedelta(0)``.
+ 
+ Example usage:
+-    
++
+     >>> from datetime import timedelta
+     >>> year = timedelta(days=365)
+-    >>> another_year = timedelta(weeks=40, days=84, hours=23, 
++    >>> another_year = timedelta(weeks=40, days=84, hours=23,
+     ...                          minutes=50, seconds=600)  # adds up to 365 days
+     >>> year == another_year
+     True
+     >>> ten_years = 10 * year
+     >>> ten_years, ten_years.days // 365
+     (datetime.timedelta(3650), 10)
+     >>> nine_years = ten_years - year
+     >>> nine_years, nine_years.days // 365
+     (datetime.timedelta(3285), 9)
+     >>> three_years = nine_years // 3;
+     >>> three_years, three_years.days // 365
+     (datetime.timedelta(1095), 3)
+@@ -508,28 +508,28 @@
+ 
+ Example of counting days to an event::
+ 
+     >>> import time
+     >>> from datetime import date
+     >>> today = date.today()
+     >>> today
+     datetime.date(2007, 12, 5)
+     >>> today == date.fromtimestamp(time.time())
+     True
+     >>> my_birthday = date(today.year, 6, 24)
+     >>> if my_birthday < today:
+-    ...     my_birthday = my_birthday.replace(year=today.year + 1) 
++    ...     my_birthday = my_birthday.replace(year=today.year + 1)
+     >>> my_birthday
+     datetime.date(2008, 6, 24)
+-    >>> time_to_birthday = abs(my_birthday - today) 
++    >>> time_to_birthday = abs(my_birthday - today)
+     >>> time_to_birthday.days
+     202
+ 
+ Example of working with :class:`date`:
+ 
+ .. doctest::
+ 
+     >>> from datetime import date
+     >>> d = date.fromordinal(730920) # 730920th day after 1. 1. 0001
+     >>> d
+     datetime.date(2002, 3, 11)
+     >>> t = d.timetuple()
+@@ -1006,25 +1006,25 @@
+     >>> datetime.now()   # doctest: +SKIP
+     datetime.datetime(2007, 12, 6, 16, 29, 43, 79043)   # GMT +1
+     >>> datetime.utcnow()   # doctest: +SKIP
+     datetime.datetime(2007, 12, 6, 15, 29, 43, 79060)
+     >>> # Using datetime.strptime()
+     >>> dt = datetime.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
+     >>> dt
+     datetime.datetime(2006, 11, 21, 16, 30)
+     >>> # Using datetime.timetuple() to get tuple of all attributes
+     >>> tt = dt.timetuple()
+     >>> for it in tt:   # doctest: +SKIP
+     ...     print it
+-    ... 
++    ...
+     2006    # year
+     11      # month
+     21      # day
+     16      # hour
+     30      # minute
+     0       # second
+     1       # weekday (0 = Monday)
+     325     # number of days since 1st January
+     -1      # dst - method tzinfo.dst() returned None
+     >>> # Date in ISO format
+     >>> ic = dt.isocalendar()
+     >>> for it in ic:   # doctest: +SKIP
+@@ -1035,73 +1035,73 @@
+     2       # ISO weekday
+     >>> # Formatting datetime
+     >>> dt.strftime("%A, %d. %B %Y %I:%M%p")
+     'Tuesday, 21. November 2006 04:30PM'
+ 
+ Using datetime with tzinfo:
+ 
+     >>> from datetime import timedelta, datetime, tzinfo
+     >>> class GMT1(tzinfo):
+     ...     def __init__(self):         # DST starts last Sunday in March
+     ...         d = datetime(dt.year, 4, 1)   # ends last Sunday in October
+     ...         self.dston = d - timedelta(days=d.weekday() + 1)
+-    ...         d = datetime(dt.year, 11, 1)    
++    ...         d = datetime(dt.year, 11, 1)
+     ...         self.dstoff = d - timedelta(days=d.weekday() + 1)
+     ...     def utcoffset(self, dt):
+     ...         return timedelta(hours=1) + self.dst(dt)
+-    ...     def dst(self, dt):              
++    ...     def dst(self, dt):
+     ...         if self.dston <=  dt.replace(tzinfo=None) < self.dstoff:
+     ...             return timedelta(hours=1)
+     ...         else:
+     ...             return timedelta(0)
+     ...     def tzname(self,dt):
+     ...          return "GMT +1"
+-    ... 
++    ...
+     >>> class GMT2(tzinfo):
+     ...     def __init__(self):
+-    ...         d = datetime(dt.year, 4, 1)  
++    ...         d = datetime(dt.year, 4, 1)
+     ...         self.dston = d - timedelta(days=d.weekday() + 1)
+-    ...         d = datetime(dt.year, 11, 1)    
++    ...         d = datetime(dt.year, 11, 1)
+     ...         self.dstoff = d - timedelta(days=d.weekday() + 1)
+     ...     def utcoffset(self, dt):
+     ...         return timedelta(hours=1) + self.dst(dt)
+     ...     def dst(self, dt):
+     ...         if self.dston <=  dt.replace(tzinfo=None) < self.dstoff:
+     ...             return timedelta(hours=2)
+     ...         else:
+     ...             return timedelta(0)
+     ...     def tzname(self,dt):
+     ...         return "GMT +2"
+-    ... 
++    ...
+     >>> gmt1 = GMT1()
+     >>> # Daylight Saving Time
+     >>> dt1 = datetime(2006, 11, 21, 16, 30, tzinfo=gmt1)
+     >>> dt1.dst()
+     datetime.timedelta(0)
+     >>> dt1.utcoffset()
+     datetime.timedelta(0, 3600)
+     >>> dt2 = datetime(2006, 6, 14, 13, 0, tzinfo=gmt1)
+     >>> dt2.dst()
+     datetime.timedelta(0, 3600)
+     >>> dt2.utcoffset()
+     datetime.timedelta(0, 7200)
+     >>> # Convert datetime to another time zone
+     >>> dt3 = dt2.astimezone(GMT2())
+     >>> dt3     # doctest: +ELLIPSIS
+     datetime.datetime(2006, 6, 14, 14, 0, tzinfo=<GMT2 object at 0x...>)
+     >>> dt2     # doctest: +ELLIPSIS
+     datetime.datetime(2006, 6, 14, 13, 0, tzinfo=<GMT1 object at 0x...>)
+     >>> dt2.utctimetuple() == dt3.utctimetuple()
+     True
+- 
++
+ 
+ 
+ .. _datetime-time:
+ 
+ :class:`time` Objects
+ ---------------------
+ 
+ A time object represents a (local) time of day, independent of any particular
+ day, and subject to adjustment via a :class:`tzinfo` object.
+ 
+ 
+ .. class:: time(hour[, minute[, second[, microsecond[, tzinfo]]]])
+@@ -1231,54 +1231,54 @@
+    ``self.tzinfo.dst(None)``, and raises an exception if the latter doesn't return
+    ``None``, or a :class:`timedelta` object representing a whole number of minutes
+    with magnitude less than one day.
+ 
+ 
+ .. method:: time.tzname()
+ 
+    If :attr:`tzinfo` is ``None``, returns ``None``, else returns
+    ``self.tzinfo.tzname(None)``, or raises an exception if the latter doesn't
+    return ``None`` or a string object.
+ 
+ Example:
+-    
++
+     >>> from datetime import time, tzinfo
+     >>> class GMT1(tzinfo):
+     ...     def utcoffset(self, dt):
+-    ...         return timedelta(hours=1) 
+-    ...     def dst(self, dt):              
++    ...         return timedelta(hours=1)
++    ...     def dst(self, dt):
+     ...         return timedelta(0)
+     ...     def tzname(self,dt):
+     ...         return "Europe/Prague"
+     ...
+     >>> t = time(12, 10, 30, tzinfo=GMT1())
+     >>> t                               # doctest: +ELLIPSIS
+     datetime.time(12, 10, 30, tzinfo=<GMT1 object at 0x...>)
+     >>> gmt = GMT1()
+     >>> t.isoformat()
+     '12:10:30+01:00'
+     >>> t.dst()
+     datetime.timedelta(0)
+     >>> t.tzname()
+     'Europe/Prague'
+     >>> t.strftime("%H:%M:%S %Z")
+     '12:10:30 Europe/Prague'
+ 
+ 
+ .. _datetime-tzinfo:
+ 
+ :class:`tzinfo` Objects
+ -----------------------
+ 
+-:class:`tzinfo` is an abstract base clase, meaning that this class should not be
++:class:`tzinfo` is an abstract base class, meaning that this class should not be
+ instantiated directly.  You need to derive a concrete subclass, and (at least)
+ supply implementations of the standard :class:`tzinfo` methods needed by the
+ :class:`datetime` methods you use.  The :mod:`datetime` module does not supply
+ any concrete subclasses of :class:`tzinfo`.
+ 
+ An instance of (a concrete subclass of) :class:`tzinfo` can be passed to the
+ constructors for :class:`datetime` and :class:`time` objects. The latter objects
+ view their members as being in local time, and the :class:`tzinfo` object
+ supports methods revealing offset of local time from UTC, the name of the time
+ zone, and DST offset, all relative to a date or time object passed to them.
+ 
+ Special requirement for pickling:  A :class:`tzinfo` subclass must have an
+@@ -1467,70 +1467,69 @@
+ :meth:`astimezone` mimics the local clock's behavior by mapping two adjacent UTC
+ hours into the same local hour then.  In the Eastern example, UTC times of the
+ form 5:MM and 6:MM both map to 1:MM when converted to Eastern.  In order for
+ :meth:`astimezone` to make this guarantee, the :meth:`tzinfo.dst` method must
+ consider times in the "repeated hour" to be in standard time.  This is easily
+ arranged, as in the example, by expressing DST switch times in the time zone's
+ standard local time.
+ 
+ Applications that can't bear such ambiguities should avoid using hybrid
+ :class:`tzinfo` subclasses; there are no ambiguities when using UTC, or any
+ other fixed-offset :class:`tzinfo` subclass (such as a class representing only
+ EST (fixed offset -5 hours), or only EDT (fixed offset -4 hours)).
+-    
++
+ 
+ .. _strftime-behavior:
+ 
+ :meth:`strftime` Behavior
+ -------------------------
+ 
+ :class:`date`, :class:`datetime`, and :class:`time` objects all support a
+ ``strftime(format)`` method, to create a string representing the time under the
+ control of an explicit format string.  Broadly speaking, ``d.strftime(fmt)``
+ acts like the :mod:`time` module's ``time.strftime(fmt, d.timetuple())``
+ although not all objects support a :meth:`timetuple` method.
+ 
+ For :class:`time` objects, the format codes for year, month, and day should not
+ be used, as time objects have no such values.  If they're used anyway, ``1900``
+ is substituted for the year, and ``0`` for the month and day.
+ 
+ For :class:`date` objects, the format codes for hours, minutes, seconds, and
+ microseconds should not be used, as :class:`date` objects have no such
+ values.  If they're used anyway, ``0`` is substituted for them.
+ 
+-:class:`time` and :class:`datetime` objects support a ``%f`` format code
+-which expands to the number of microseconds in the object, zero-padded on
+-the left to six places.
+-
+ .. versionadded:: 2.6
++   :class:`time` and :class:`datetime` objects support a ``%f`` format code
++   which expands to the number of microseconds in the object, zero-padded on
++   the left to six places.
+ 
+ For a naive object, the ``%z`` and ``%Z`` format codes are replaced by empty
+ strings.
+ 
+ For an aware object:
+ 
+ ``%z``
+    :meth:`utcoffset` is transformed into a 5-character string of the form +HHMM or
+    -HHMM, where HH is a 2-digit string giving the number of UTC offset hours, and
+    MM is a 2-digit string giving the number of UTC offset minutes.  For example, if
+    :meth:`utcoffset` returns ``timedelta(hours=-3, minutes=-30)``, ``%z`` is
+    replaced with the string ``'-0330'``.
+ 
+ ``%Z``
+    If :meth:`tzname` returns ``None``, ``%Z`` is replaced by an empty string.
+    Otherwise ``%Z`` is replaced by the returned value, which must be a string.
+ 
+ The full set of format codes supported varies across platforms, because Python
+ calls the platform C library's :func:`strftime` function, and platform
+-variations are common.  
++variations are common.
+ 
+ The following is a list of all the format codes that the C standard (1989
+ version) requires, and these work on all platforms with a standard C
+ implementation.  Note that the 1999 version of the C standard added additional
+ format codes.
+ 
+ The exact range of years for which :meth:`strftime` works also varies across
+ platforms.  Regardless of platform, years before 1900 cannot be used.
+ 
+ +-----------+--------------------------------+-------+
+ | Directive | Meaning                        | Notes |
+ +===========+================================+=======+
+@@ -1612,29 +1611,35 @@
+ +-----------+--------------------------------+-------+
+ | ``%Z``    | Time zone name (empty string   |       |
+ |           | if the object is naive).       |       |
+ +-----------+--------------------------------+-------+
+ | ``%%``    | A literal ``'%'`` character.   |       |
+ +-----------+--------------------------------+-------+
+ 
+ Notes:
+ 
+ (1)
+    When used with the :func:`strptime` function, the ``%f`` directive
+    accepts from one to six digits and zero pads on the right.  ``%f`` is
+-   an extension to the set of format characters in the C standard.
++   an extension to the set of format characters in the C standard (but
++   implemented separately in datetime objects, and therefore always
++   available).
+ 
+ (2)
+    When used with the :func:`strptime` function, the ``%p`` directive only affects
+    the output hour field if the ``%I`` directive is used to parse the hour.
+ 
+ (3)
+-   The range really is ``0`` to ``61``; this accounts for leap seconds and the
+-   (very rare) double leap seconds.
++   The range really is ``0`` to ``61``; according to the Posix standard this
++   accounts for leap seconds and the (very rare) double leap seconds.
++   The :mod:`time` module may produce and does accept leap seconds since
++   it is based on the Posix standard, but the :mod:`datetime` module
++   does not accept leap seconds in :func:`strptime` input nor will it
++   produce them in :func:`strftime` output.
+ 
+ (4)
+    When used with the :func:`strptime` function, ``%U`` and ``%W`` are only used in
+    calculations when the day of the week and the year are specified.
+ 
+ (5)
+    For example, if :meth:`utcoffset` returns ``timedelta(hours=-3, minutes=-30)``,
+    ``%z`` is replaced with the string ``'-0330'``.

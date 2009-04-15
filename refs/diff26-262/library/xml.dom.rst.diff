@@ -1,0 +1,29 @@
+--- rest26/library/xml.dom.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/xml.dom.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -602,25 +602,25 @@
+ 
+ .. attribute:: Element.tagName
+ 
+    The element type name.  In a namespace-using document it may have colons in it.
+    The value is a string.
+ 
+ 
+ .. method:: Element.getElementsByTagName(tagName)
+ 
+    Same as equivalent method in the :class:`Document` class.
+ 
+ 
+-.. method:: Element.getElementsByTagNameNS(tagName)
++.. method:: Element.getElementsByTagNameNS(namespaceURI, localName)
+ 
+    Same as equivalent method in the :class:`Document` class.
+ 
+ 
+ .. method:: Element.hasAttribute(name)
+ 
+    Returns true if the element has an attribute named by *name*.
+ 
+ 
+ .. method:: Element.hasAttributeNS(namespaceURI, localName)
+ 
+    Returns true if the element has an attribute named by *namespaceURI* and

@@ -1,0 +1,39 @@
+--- rest25/library/sha.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/sha.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,18 +1,19 @@
+ 
+ :mod:`sha` --- SHA-1 message digest algorithm
+ =============================================
+ 
+ .. module:: sha
+    :synopsis: NIST's secure hash algorithm, SHA.
++   :deprecated:
+ .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+ 
+ 
+ .. deprecated:: 2.5
+    Use the :mod:`hashlib` module instead.
+ 
+ .. index::
+    single: NIST
+    single: Secure Hash Algorithm
+    single: checksum; SHA
+ 
+ This module implements the interface to NIST's secure hash  algorithm, known as
+@@ -72,15 +73,15 @@
+    Return a copy ("clone") of the sha object.  This can be used to efficiently
+    compute the digests of strings that share a common initial substring.
+ 
+ 
+ .. seealso::
+ 
+    `Secure Hash Standard <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_
+       The Secure Hash Algorithm is defined by NIST document FIPS PUB 180-2: `Secure
+       Hash Standard
+       <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_,
+       published in August 2002.
+ 
+-   `Cryptographic Toolkit (Secure Hashing) <http://csrc.nist.gov/encryption/tkhash.html>`_
++   `Cryptographic Toolkit (Secure Hashing) <http://csrc.nist.gov/CryptoToolkit/tkhash.html>`_
+       Links from NIST to various information on secure hashing.
+ 

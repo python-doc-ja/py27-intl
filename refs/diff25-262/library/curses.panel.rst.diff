@@ -1,0 +1,88 @@
+--- rest25/library/curses.panel.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/curses.panel.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -47,73 +47,73 @@
+ 
+ Panel Objects
+ -------------
+ 
+ Panel objects, as returned by :func:`new_panel` above, are windows with a
+ stacking order. There's always a window associated with a panel which determines
+ the content, while the panel methods are responsible for the window's depth in
+ the panel stack.
+ 
+ Panel objects have the following methods:
+ 
+ 
+-.. method:: XXX Class.above()
++.. method:: Panel.above()
+ 
+    Returns the panel above the current panel.
+ 
+ 
+-.. method:: XXX Class.below()
++.. method:: Panel.below()
+ 
+    Returns the panel below the current panel.
+ 
+ 
+-.. method:: XXX Class.bottom()
++.. method:: Panel.bottom()
+ 
+    Push the panel to the bottom of the stack.
+ 
+ 
+-.. method:: XXX Class.hidden()
++.. method:: Panel.hidden()
+ 
+    Returns true if the panel is hidden (not visible), false otherwise.
+ 
+ 
+-.. method:: XXX Class.hide()
++.. method:: Panel.hide()
+ 
+    Hide the panel. This does not delete the object, it just makes the window on
+    screen invisible.
+ 
+ 
+-.. method:: XXX Class.move(y, x)
++.. method:: Panel.move(y, x)
+ 
+    Move the panel to the screen coordinates ``(y, x)``.
+ 
+ 
+-.. method:: XXX Class.replace(win)
++.. method:: Panel.replace(win)
+ 
+    Change the window associated with the panel to the window *win*.
+ 
+ 
+-.. method:: XXX Class.set_userptr(obj)
++.. method:: Panel.set_userptr(obj)
+ 
+    Set the panel's user pointer to *obj*. This is used to associate an arbitrary
+    piece of data with the panel, and can be any Python object.
+ 
+ 
+-.. method:: XXX Class.show()
++.. method:: Panel.show()
+ 
+    Display the panel (which might have been hidden).
+ 
+ 
+-.. method:: XXX Class.top()
++.. method:: Panel.top()
+ 
+    Push panel to the top of the stack.
+ 
+ 
+-.. method:: XXX Class.userptr()
++.. method:: Panel.userptr()
+ 
+    Returns the user pointer for the panel.  This might be any Python object.
+ 
+ 
+-.. method:: XXX Class.window()
++.. method:: Panel.window()
+ 
+    Returns the window object associated with the panel.
+ 

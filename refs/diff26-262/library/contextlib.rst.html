@@ -1,0 +1,57 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to70__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/contextlib.rst =&gt; rest262/library/contextlib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to70__0"></td><td class="diff_header" id="from70_58">58</td><td nowrap="nowrap">..&nbsp;function::&nbsp;nested(mgr1[,&nbsp;mgr2[,&nbsp;...]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_59">59</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Combine&nbsp;multiple&nbsp;context&nbsp;managers&nbsp;into&nbsp;a&nbsp;single&nbsp;nested&nbsp;context&nbsp;manager.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_61">61</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_62">62</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Code&nbsp;like&nbsp;this::</td></tr>            <tr><td class="diff_next" id="difflib_chg_to70__1"></td><td class="diff_header" id="from70_63">63</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_64">64</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from&nbsp;contextlib&nbsp;import&nbsp;nested</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_65">65</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to70__1">n</a></td><td class="diff_header" id="from70_66">66-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;nested(A,&nbsp;B,&nbsp;C)&nbsp;as&nbsp;(X,&nbsp;Y,&nbsp;Z):</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to70__1">n</a></td><td class="diff_header" id="to70_66">66+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;nested(A<span class="diff_add">()</span>,&nbsp;B<span class="diff_add">()</span>,&nbsp;C<span class="diff_add">(</span>)<span class="diff_add">)</span>&nbsp;as&nbsp;(X,&nbsp;Y,&nbsp;Z):</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from70_67">67</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do_something()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_69">69</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;this::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_70">70</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to70__top">t</a></td><td class="diff_header" id="to70_71">71+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m1,&nbsp;m2,&nbsp;m3&nbsp;=&nbsp;A(),&nbsp;B(),&nbsp;C()</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from70_71">71-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">A</span>&nbsp;as&nbsp;X:</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to70_72">72+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">m1</span>&nbsp;as&nbsp;X:</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from70_72">72-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">B</span>&nbsp;as&nbsp;Y:</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to70_73">73+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">m2</span>&nbsp;as&nbsp;Y:</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from70_73">73-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">C</span>&nbsp;as&nbsp;Z:</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to70_74">74+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;<span class="diff_chg">m3</span>&nbsp;as&nbsp;Z:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from70_74">74</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do_something()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_75">75</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_76">76</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Note&nbsp;that&nbsp;if&nbsp;the&nbsp;:meth:`__exit__`&nbsp;method&nbsp;of&nbsp;one&nbsp;of&nbsp;the&nbsp;nested&nbsp;context&nbsp;managers</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_77">77</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;indicates&nbsp;an&nbsp;exception&nbsp;should&nbsp;be&nbsp;suppressed,&nbsp;no&nbsp;exception&nbsp;information&nbsp;will&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_78">78</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;passed&nbsp;to&nbsp;any&nbsp;remaining&nbsp;outer&nbsp;context&nbsp;managers.&nbsp;Similarly,&nbsp;if&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_79">79</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`__exit__`&nbsp;method&nbsp;of&nbsp;one&nbsp;of&nbsp;the&nbsp;nested&nbsp;managers&nbsp;raises&nbsp;an&nbsp;exception,&nbsp;any</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;previous&nbsp;exception&nbsp;state&nbsp;will&nbsp;be&nbsp;lost;&nbsp;the&nbsp;new&nbsp;exception&nbsp;will&nbsp;be&nbsp;passed&nbsp;to&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from70_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`__exit__`&nbsp;methods&nbsp;of&nbsp;any&nbsp;remaining&nbsp;outer&nbsp;context&nbsp;managers.&nbsp;In&nbsp;general,</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

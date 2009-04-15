@@ -1,0 +1,254 @@
+--- rest26/library/socket.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/socket.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -175,28 +175,28 @@
+           NI_*
+           TCP_*
+ 
+    Many constants of these forms, documented in the Unix documentation on sockets
+    and/or the IP protocol, are also defined in the socket module. They are
+    generally used in arguments to the :meth:`setsockopt` and :meth:`getsockopt`
+    methods of socket objects.  In most cases, only those symbols that are defined
+    in the Unix header files are defined; for a few symbols, default values are
+    provided.
+ 
+ .. data:: SIO_*
+           RCVALL_*
+-          
++
+    Constants for Windows' WSAIoctl(). The constants are used as arguments to the
+    :meth:`ioctl` method of socket objects.
+-   
++
+    .. versionadded:: 2.6
+ 
+ .. data:: TIPC_*
+ 
+    TIPC related constants, matching the ones exported by the C socket API. See
+    the TIPC documentation for more information.
+ 
+    .. versionadded:: 2.6
+ 
+ .. data:: has_ipv6
+ 
+    This constant contains a boolean value which indicates if IPv6 is supported on
+@@ -213,25 +213,25 @@
+    *timeout* is supplied, the global default timeout setting returned by
+    :func:`getdefaulttimeout` is used.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. function:: getaddrinfo(host, port[, family[, socktype[, proto[, flags]]]])
+ 
+    Resolves the *host*/*port* argument, into a sequence of 5-tuples that contain
+    all the necessary arguments for creating the corresponding socket. *host* is a domain
+    name, a string representation of an IPv4/v6 address or ``None``. *port* is a string
+    service name such as ``'http'``, a numeric port number or ``None``.
+-   The rest of the arguments are optional and must be numeric if specified.  
++   The rest of the arguments are optional and must be numeric if specified.
+    By passing ``None`` as the value of *host* and *port*, , you can pass ``NULL`` to the C API.
+ 
+    The :func:`getaddrinfo` function returns a list of 5-tuples with the following
+    structure:
+ 
+    ``(family, socktype, proto, canonname, sockaddr)``
+ 
+    *family*, *socktype*, *proto* are all integers and are meant to be passed to the
+    :func:`socket` function. *canonname* is a string representing the canonical name
+    of the *host*. It can be a numeric IPv4/v6 address when :const:`AI_CANONNAME` is
+    specified for a numeric *host*. *sockaddr* is a tuple describing a socket
+    address, as described above. See the source for :mod:`socket` and other
+@@ -267,29 +267,33 @@
+    triple ``(hostname, aliaslist, ipaddrlist)`` where *hostname* is the primary
+    host name responding to the given *ip_address*, *aliaslist* is a (possibly
+    empty) list of alternative host names for the same address, and *ipaddrlist* is
+    a list of IPv4 addresses for the same interface on the same host (often but not
+    always a single address). :func:`gethostbyname_ex` does not support IPv6 name
+    resolution, and :func:`getaddrinfo` should be used instead for IPv4/v6 dual
+    stack support.
+ 
+ 
+ .. function:: gethostname()
+ 
+    Return a string containing the hostname of the machine where  the Python
+-   interpreter is currently executing. If you want to know the current machine's IP
+-   address, you may want to use ``gethostbyname(gethostname())``. This operation
+-   assumes that there is a valid address-to-host mapping for the host, and the
+-   assumption does not always hold. Note: :func:`gethostname` doesn't always return
+-   the fully qualified domain name; use ``getfqdn()`` (see above).
++   interpreter is currently executing.
++
++   If you want to know the current machine's IP address, you may want to use
++   ``gethostbyname(gethostname())``. This operation assumes that there is a
++   valid address-to-host mapping for the host, and the assumption does not
++   always hold.
++
++   Note: :func:`gethostname` doesn't always return the fully qualified domain
++   name; use ``getfqdn()`` (see above).
+ 
+ 
+ .. function:: gethostbyaddr(ip_address)
+ 
+    Return a triple ``(hostname, aliaslist, ipaddrlist)`` where *hostname* is the
+    primary host name responding to the given *ip_address*, *aliaslist* is a
+    (possibly empty) list of alternative host names for the same address, and
+    *ipaddrlist* is a list of IPv4/v6 addresses for the same interface on the same
+    host (most likely containing only a single address). To find the fully qualified
+    domain name, use the function :func:`getfqdn`. :func:`gethostbyaddr` supports
+    both IPv4 and IPv6.
+ 
+@@ -575,32 +579,32 @@
+ 
+ .. method:: socket.getsockopt(level, optname[, buflen])
+ 
+    Return the value of the given socket option (see the Unix man page
+    :manpage:`getsockopt(2)`).  The needed symbolic constants (:const:`SO_\*` etc.)
+    are defined in this module.  If *buflen* is absent, an integer option is assumed
+    and its integer value is returned by the function.  If *buflen* is present, it
+    specifies the maximum length of the buffer used to receive the option in, and
+    this buffer is returned as a string.  It is up to the caller to decode the
+    contents of the buffer (see the optional built-in module :mod:`struct` for a way
+    to decode C structures encoded as strings).
+ 
+-   
++
+ .. method:: socket.ioctl(control, option)
+ 
+-   :platform: Windows 
+-   
++   :platform: Windows
++
+    The :meth:`ioctl` method is a limited interface to the WSAIoctl system
+    interface. Please refer to the MSDN documentation for more information.
+-   
++
+    .. versionadded:: 2.6
+ 
+ 
+ .. method:: socket.listen(backlog)
+ 
+    Listen for connections made to the socket.  The *backlog* argument specifies the
+    maximum number of queued connections and should be at least 1; the maximum value
+    is system-dependent (usually 5).
+ 
+ 
+ .. method:: socket.makefile([mode[, bufsize]])
+ 
+@@ -839,94 +843,95 @@
+ should listen to both instead). On most of IPv6-ready systems, IPv6 will take
+ precedence and the server may not accept IPv4 traffic. The client side will try
+ to connect to the all addresses returned as a result of the name resolution, and
+ sends traffic to the first one connected successfully. ::
+ 
+    # Echo server program
+    import socket
+    import sys
+ 
+    HOST = None               # Symbolic name meaning all available interfaces
+    PORT = 50007              # Arbitrary non-privileged port
+    s = None
+-   for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
++   for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC,
++                                 socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
+        af, socktype, proto, canonname, sa = res
+        try:
+-   	s = socket.socket(af, socktype, proto)
++           s = socket.socket(af, socktype, proto)
+        except socket.error, msg:
+-   	s = None
+-   	continue
++           s = None
++           continue
+        try:
+-   	s.bind(sa)
+-   	s.listen(1)
++           s.bind(sa)
++           s.listen(1)
+        except socket.error, msg:
+-   	s.close()
+-   	s = None
+-   	continue
++           s.close()
++           s = None
++           continue
+        break
+    if s is None:
+        print 'could not open socket'
+        sys.exit(1)
+    conn, addr = s.accept()
+    print 'Connected by', addr
+    while 1:
+        data = conn.recv(1024)
+        if not data: break
+        conn.send(data)
+    conn.close()
+ 
+ ::
+ 
+    # Echo client program
+    import socket
+    import sys
+ 
+    HOST = 'daring.cwi.nl'    # The remote host
+    PORT = 50007              # The same port as used by the server
+    s = None
+    for res in socket.getaddrinfo(HOST, PORT, socket.AF_UNSPEC, socket.SOCK_STREAM):
+        af, socktype, proto, canonname, sa = res
+        try:
+-   	s = socket.socket(af, socktype, proto)
++           s = socket.socket(af, socktype, proto)
+        except socket.error, msg:
+-   	s = None
+-   	continue
++           s = None
++           continue
+        try:
+-   	s.connect(sa)
++           s.connect(sa)
+        except socket.error, msg:
+-   	s.close()
+-   	s = None
+-   	continue
++           s.close()
++           s = None
++           continue
+        break
+    if s is None:
+        print 'could not open socket'
+        sys.exit(1)
+    s.send('Hello, world')
+    data = s.recv(1024)
+    s.close()
+    print 'Received', repr(data)
+ 
+-   
++
+ The last example shows how to write a very simple network sniffer with raw
+ sockets on Windows. The example requires administrator privileges to modify
+ the interface::
+ 
+    import socket
+ 
+    # the public network interface
+    HOST = socket.gethostbyname(socket.gethostname())
+-   
++
+    # create a raw socket and bind it to the public interface
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
+    s.bind((HOST, 0))
+-   
++
+    # Include IP headers
+    s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+-   
++
+    # receive all packages
+    s.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+-   
++
+    # receive a package
+    print s.recvfrom(65565)
+-   
++
+    # disabled promiscuous mode
+    s.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)

@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to2__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/c-api/conversion.rst =&gt; rest262/c-api/conversion.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to2__0"></td><td class="diff_header" id="from2_72">72</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;number&nbsp;format.&nbsp;Allowed&nbsp;conversion&nbsp;characters&nbsp;are&nbsp;``'e'``,&nbsp;``'E'``,&nbsp;``'f'``,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_73">73</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;``'F'``,&nbsp;``'g'``&nbsp;and&nbsp;``'G'``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_74">74</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_75">75</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;pointer&nbsp;to&nbsp;*buffer*&nbsp;with&nbsp;the&nbsp;converted&nbsp;string&nbsp;or&nbsp;NULL&nbsp;if</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_76">76</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;conversion&nbsp;failed.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_77">77</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_78">78</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.4</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_79">79</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to2__1">n</a></td><td class="diff_header" id="from2_80">80-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to2__1">n</a></td><td class="diff_header" id="to2_80">80+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to2__1"></td><td class="diff_header" id="from2_81">81</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;double&nbsp;PyOS_ascii_atof(const&nbsp;char&nbsp;*nptr)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_82">82</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_83">83</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Convert&nbsp;a&nbsp;string&nbsp;to&nbsp;a&nbsp;:ctype:`double`&nbsp;in&nbsp;a&nbsp;locale-independent&nbsp;way.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_84">84</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_85">85</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.4</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_86">86</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;See&nbsp;the&nbsp;Unix&nbsp;man&nbsp;page&nbsp;:manpage:`atof(2)`&nbsp;for&nbsp;details.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_88">88</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to2__top">t</a></td><td class="diff_header" id="from2_89">89-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to2__top">t</a></td><td class="diff_header" id="to2_89">89+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from2_90">90</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;char&nbsp;*&nbsp;PyOS_stricmp(char&nbsp;*s1,&nbsp;char&nbsp;*s2)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_91">91</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_92">92</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Case&nbsp;insensitive&nbsp;comparison&nbsp;of&nbsp;strings.&nbsp;The&nbsp;function&nbsp;works&nbsp;almost</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_93">93</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;identically&nbsp;to&nbsp;:cfunc:`strcmp`&nbsp;except&nbsp;that&nbsp;it&nbsp;ignores&nbsp;the&nbsp;case.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_94">94</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_95">95</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_96">96</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from2_97">97</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

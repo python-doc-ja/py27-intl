@@ -1,0 +1,391 @@
+--- rest25/tutorial/introduction.rst	2008-12-19 16:58:06.000000000 +0900
++++ rest262/tutorial/introduction.rst	2009-04-07 00:06:52.000000000 +0900
+@@ -2,36 +2,31 @@
+ 
+ **********************************
+ An Informal Introduction to Python
+ **********************************
+ 
+ In the following examples, input and output are distinguished by the presence or
+ absence of prompts (``>>>`` and ``...``): to repeat the example, you must type
+ everything after the prompt, when the prompt appears; lines that do not begin
+ with a prompt are output from the interpreter. Note that a secondary prompt on a
+ line by itself in an example means you must type a blank line; this is used to
+ end a multi-line command.
+ 
+-.. % 
+-.. % \footnote{
+-.. % I'd prefer to use different fonts to distinguish input
+-.. % from output, but the amount of LaTeX hacking that would require
+-.. % is currently beyond my ability.
+-.. % }
+-
+ Many of the examples in this manual, even those entered at the interactive
+ prompt, include comments.  Comments in Python start with the hash character,
+-``'#'``, and extend to the end of the physical line.  A comment may appear at
+-the start of a line or following whitespace or code, but not within a string
+-literal.  A hash  character within a string literal is just a hash character.
++``#``, and extend to the end of the physical line.  A comment may appear at the
++start of a line or following whitespace or code, but not within a string
++literal.  A hash character within a string literal is just a hash character.
++Since comments are to clarify code and are not interpreted by Python, they may
++be omitted when typing in examples.
+ 
+ Some examples::
+ 
+    # this is the first comment
+    SPAM = 1                 # and this is the second comment
+                             # ... and now a third!
+    STRING = "# This is not a comment."
+ 
+ 
+ .. _tut-calculator:
+ 
+ Using Python as a Calculator
+@@ -75,24 +70,33 @@
+    900
+ 
+ A value can be assigned to several variables simultaneously::
+ 
+    >>> x = y = z = 0  # Zero x, y and z
+    >>> x
+    0
+    >>> y
+    0
+    >>> z
+    0
+ 
++Variables must be "defined" (assigned a value) before they can be used, or an
++error will occur::
++
++   >>> # try to access an undefined variable
++   ... n
++   Traceback (most recent call last):
++     File "<stdin>", line 1, in <module>
++   NameError: name 'n' is not defined
++
+ There is full support for floating point; operators with mixed type operands
+ convert the integer operand to floating point::
+ 
+    >>> 3 * 3.75 / 1.5
+    7.5
+    >>> 7.0 / 2
+    3.5
+ 
+ Complex numbers are also supported; imaginary numbers are written with a suffix
+ of ``j`` or ``J``.  Complex numbers with a nonzero real component are written as
+ ``(real+imagj)``, or can be created with the ``complex(real, imag)`` function.
+ ::
+@@ -186,55 +190,54 @@
+     significant."
+ 
+    print hello
+ 
+ Note that newlines still need to be embedded in the string using ``\n``; the
+ newline following the trailing backslash is discarded.  This example would print
+ the following::
+ 
+    This is a rather long string containing
+    several lines of text just as you would do in C.
+        Note that whitespace at the beginning of the line is significant.
+ 
+-If we make the string literal a "raw" string, however, the ``\n`` sequences are
+-not converted to newlines, but the backslash at the end of the line, and the
+-newline character in the source, are both included in the string as data.  Thus,
+-the example::
+-
+-   hello = r"This is a rather long string containing\n\
+-   several lines of text much as you would do in C."
+-
+-   print hello
+-
+-would print::
+-
+-   This is a rather long string containing\n\
+-   several lines of text much as you would do in C.
+-
+ Or, strings can be surrounded in a pair of matching triple-quotes: ``"""`` or
+ ``'''``.  End of lines do not need to be escaped when using triple-quotes, but
+ they will be included in the string. ::
+ 
+    print """
+-   Usage: thingy [OPTIONS] 
++   Usage: thingy [OPTIONS]
+         -h                        Display this usage message
+         -H hostname               Hostname to connect to
+    """
+ 
+ produces the following output::
+ 
+-   Usage: thingy [OPTIONS] 
++   Usage: thingy [OPTIONS]
+         -h                        Display this usage message
+         -H hostname               Hostname to connect to
+ 
++If we make the string literal a "raw" string, ``\n`` sequences are not converted
++to newlines, but the backslash at the end of the line, and the newline character
++in the source, are both included in the string as data.  Thus, the example::
++
++   hello = r"This is a rather long string containing\n\
++   several lines of text much as you would do in C."
++
++   print hello
++
++would print::
++
++   This is a rather long string containing\n\
++   several lines of text much as you would do in C.
++
+ The interpreter prints the result of string operations in the same way as they
+ are typed for input: inside quotes, and with quotes and other funny characters
+ escaped by backslashes, to show the precise value.  The string is enclosed in
+ double quotes if the string contains a single quote and no double quotes, else
+ it's enclosed in single quotes.  (The :keyword:`print` statement, described
+ later, can be used to write strings without quotes or escapes.)
+ 
+ Strings can be concatenated (glued together) with the ``+`` operator, and
+ repeated with ``*``::
+ 
+    >>> word = 'Help' + 'A'
+    >>> word
+@@ -267,25 +270,25 @@
+    'He'
+    >>> word[2:4]
+    'lp'
+ 
+ Slice indices have useful defaults; an omitted first index defaults to zero, an
+ omitted second index defaults to the size of the string being sliced. ::
+ 
+    >>> word[:2]    # The first two characters
+    'He'
+    >>> word[2:]    # Everything except the first two characters
+    'lpA'
+ 
+-Unlike a C string, Python strings cannot be changed.  Assigning to an  indexed
++Unlike a C string, Python strings cannot be changed.  Assigning to an indexed
+ position in the string results in an error::
+ 
+    >>> word[0] = 'x'
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    TypeError: object doesn't support item assignment
+    >>> word[:1] = 'Splat'
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    TypeError: object doesn't support slice assignment
+ 
+ However, creating a new string with the combined content is easy and efficient::
+@@ -332,78 +335,83 @@
+    'H'
+ 
+ Out-of-range negative slice indices are truncated, but don't try this for
+ single-element (non-slice) indices::
+ 
+    >>> word[-100:]
+    'HelpA'
+    >>> word[-10]    # error
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    IndexError: string index out of range
+ 
+-The best way to remember how slices work is to think of the indices as pointing
++One way to remember how slices work is to think of the indices as pointing
+ *between* characters, with the left edge of the first character numbered 0.
+ Then the right edge of the last character of a string of *n* characters has
+ index *n*, for example::
+ 
+-    +---+---+---+---+---+ 
++    +---+---+---+---+---+
+     | H | e | l | p | A |
+-    +---+---+---+---+---+ 
+-    0   1   2   3   4   5 
++    +---+---+---+---+---+
++    0   1   2   3   4   5
+    -5  -4  -3  -2  -1
+ 
+ The first row of numbers gives the position of the indices 0...5 in the string;
+ the second row gives the corresponding negative indices. The slice from *i* to
+ *j* consists of all characters between the edges labeled *i* and *j*,
+ respectively.
+ 
+ For non-negative indices, the length of a slice is the difference of the
+ indices, if both are within bounds.  For example, the length of ``word[1:3]`` is
+ 2.
+ 
+ The built-in function :func:`len` returns the length of a string::
+ 
+    >>> s = 'supercalifragilisticexpialidocious'
+    >>> len(s)
+    34
+ 
+ 
+ .. seealso::
+ 
+-   `Sequence Types <../lib/typesseq.html>`_
+-      Strings, and the Unicode strings described in the next section, are examples of
+-      *sequence types*, and support the common operations supported by such types.
+-
+-   `String Methods <../lib/string-methods.html>`_
+-      Both strings and Unicode strings support a large number of methods for basic
+-      transformations and searching.
+-
+-   `String Formatting Operations <../lib/typesseq-strings.html>`_
+-      The formatting operations invoked when strings and Unicode strings are the left
+-      operand of the ``%`` operator are described in more detail here.
++   :ref:`typesseq`
++      Strings, and the Unicode strings described in the next section, are
++      examples of *sequence types*, and support the common operations supported
++      by such types.
++
++   :ref:`string-methods`
++      Both strings and Unicode strings support a large number of methods for
++      basic transformations and searching.
++
++   :ref:`new-string-formatting`
++      Information about string formatting with :meth:`str.format` is described
++      here.
++
++   :ref:`string-formatting`
++      The old formatting operations invoked when strings and Unicode strings are
++      the left operand of the ``%`` operator are described in more detail here.
+ 
+ 
+ .. _tut-unicodestrings:
+ 
+ Unicode Strings
+ ---------------
+ 
+ .. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
+ 
+ 
+ Starting with Python 2.0 a new data type for storing text data is available to
+ the programmer: the Unicode object. It can be used to store and manipulate
+-Unicode data (see `<http://www.unicode.org/>`_) and integrates well with the
+-existing string objects, providing auto-conversions where necessary.
++Unicode data (see http://www.unicode.org/) and integrates well with the existing
++string objects, providing auto-conversions where necessary.
+ 
+ Unicode has the advantage of providing one ordinal for every character in every
+ script used in modern and ancient texts. Previously, there were only 256
+ possible ordinals for script characters. Texts were typically bound to a code
+ page which mapped the ordinals to script characters. This lead to very much
+ confusion especially with respect to internationalization (usually written as
+ ``i18n`` --- ``'i'`` + 18 characters + ``'n'``) of software.  Unicode solves
+ these problems by defining one code page for all scripts.
+ 
+ Creating Unicode strings in Python is just as simple as creating normal
+ strings::
+ 
+@@ -419,27 +427,28 @@
+    u'Hello World !'
+ 
+ The escape sequence ``\u0020`` indicates to insert the Unicode character with
+ the ordinal value 0x0020 (the space character) at the given position.
+ 
+ Other characters are interpreted by using their respective ordinal values
+ directly as Unicode ordinals.  If you have literal strings in the standard
+ Latin-1 encoding that is used in many Western countries, you will find it
+ convenient that the lower 256 characters of Unicode are the same as the 256
+ characters of Latin-1.
+ 
+ For experts, there is also a raw mode just like the one for normal strings. You
+-have to prefix the opening quote with 'ur' to have Python use the *Raw-Unicode-
+-Escape* encoding. It will only apply the above ``\uXXXX`` conversion if there is
+-an uneven number of backslashes in front of the small 'u'. ::
++have to prefix the opening quote with 'ur' to have Python use the
++*Raw-Unicode-Escape* encoding. It will only apply the above ``\uXXXX``
++conversion if there is an uneven number of backslashes in front of the small
++'u'. ::
+ 
+    >>> ur'Hello\u0020World !'
+    u'Hello World !'
+    >>> ur'Hello\\u0020World !'
+    u'Hello\\\\u0020World !'
+ 
+ The raw mode is most useful when you have to enter lots of backslashes, as can
+ be necessary in regular expressions.
+ 
+ Apart from these standard encodings, Python provides a whole set of other ways
+ of creating Unicode strings on the basis of a known encoding.
+ 
+@@ -536,26 +545,27 @@
+    [123, 'bletch', 'xyzzy', 1234]
+    >>> # Insert (a copy of) itself at the beginning
+    >>> a[:0] = a
+    >>> a
+    [123, 'bletch', 'xyzzy', 1234, 123, 'bletch', 'xyzzy', 1234]
+    >>> # Clear the list: replace all items with an empty list
+    >>> a[:] = []
+    >>> a
+    []
+ 
+ The built-in function :func:`len` also applies to lists::
+ 
++   >>> a = ['a', 'b', 'c', 'd']
+    >>> len(a)
+-   8
++   4
+ 
+ It is possible to nest lists (create lists containing other lists), for
+ example::
+ 
+    >>> q = [2, 3]
+    >>> p = [1, q, 4]
+    >>> len(p)
+    3
+    >>> p[1]
+    [2, 3]
+    >>> p[1][0]
+    2
+@@ -573,27 +583,27 @@
+ 
+ First Steps Towards Programming
+ ===============================
+ 
+ Of course, we can use Python for more complicated tasks than adding two and two
+ together.  For instance, we can write an initial sub-sequence of the *Fibonacci*
+ series as follows::
+ 
+    >>> # Fibonacci series:
+    ... # the sum of two elements defines the next
+    ... a, b = 0, 1
+    >>> while b < 10:
+-   ...       print b
+-   ...       a, b = b, a+b
+-   ... 
++   ...     print b
++   ...     a, b = b, a+b
++   ...
+    1
+    1
+    2
+    3
+    5
+    8
+ 
+ This example introduces several new features.
+ 
+ * The first line contains a *multiple assignment*: the variables ``a`` and ``b``
+   simultaneously get the new values 0 and 1.  On the last line this is used again,
+   demonstrating that the expressions on the right-hand side are all evaluated
+@@ -625,19 +635,17 @@
+   between items, so you can format things nicely, like this::
+ 
+      >>> i = 256*256
+      >>> print 'The value of i is', i
+      The value of i is 65536
+ 
+   A trailing comma avoids the newline after the output::
+ 
+      >>> a, b = 0, 1
+      >>> while b < 1000:
+      ...     print b,
+      ...     a, b = b, a+b
+-     ... 
++     ...
+      1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+ 
+   Note that the interpreter inserts a newline before it prints the next prompt if
+   the last line was not completed.
+-
+-

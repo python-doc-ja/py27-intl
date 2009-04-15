@@ -1,0 +1,18 @@
+--- rest26/documenting/style.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/documenting/style.rst	2009-04-05 05:02:10.000000000 +0900
+@@ -57,14 +57,14 @@
+ Python
+     The name of our favorite programming language is always capitalized.
+ 
+ Unicode
+     The name of a character set and matching encoding. This is always written
+     capitalized.
+ 
+ Unix
+     The name of the operating system developed at AT&T Bell Labs in the early
+     1970s.
+ 
+ 
+-.. _Apple Publications Style Guide: http://developer.apple.com/documentation/UserExperience/Conceptual/APStyleGuide/AppleStyleGuide2006.pdf
++.. _Apple Publications Style Guide: http://developer.apple.com/documentation/UserExperience/Conceptual/APStyleGuide/APSG_2008.pdf
+ 

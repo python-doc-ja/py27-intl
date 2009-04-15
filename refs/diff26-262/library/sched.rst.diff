@@ -1,0 +1,48 @@
+--- rest26/library/sched.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/sched.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -33,42 +33,42 @@
+    ...     s.enter(5, 1, print_time, ())
+    ...     s.enter(10, 1, print_time, ())
+    ...     s.run()
+    ...     print time.time()
+    ...
+    >>> print_some_times()
+    930343690.257
+    From print_time 930343695.274
+    From print_time 930343700.273
+    930343700.276
+ 
+ In multi-threaded environments, the :class:`scheduler` class has limitations
+-with respect to thread-safety, inability to insert a new task before 
++with respect to thread-safety, inability to insert a new task before
+ the one currently pending in a running scheduler, and holding up the main
+ thread until the event queue is empty.  Instead, the preferred approach
+ is to use the :class:`threading.Timer` class instead.
+ 
+ Example::
+ 
+     >>> import time
+     >>> from threading import Timer
+     >>> def print_time():
+     ...     print "From print_time", time.time()
+     ...
+     >>> def print_some_times():
+     ...     print time.time()
+     ...     Timer(5, print_time, ()).start()
+     ...     Timer(10, print_time, ()).start()
+-    ...     time.sleep(11)	# sleep while time-delay events execute
+-    ...     print time.time()     
++    ...     time.sleep(11)  # sleep while time-delay events execute
++    ...     print time.time()
+     ...
+     >>> print_some_times()
+     930343690.257
+     From print_time 930343695.274
+     From print_time 930343700.273
+     930343701.301
+ 
+ 
+ .. _scheduler-objects:
+ 
+ Scheduler Objects
+ -----------------

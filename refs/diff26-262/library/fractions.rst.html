@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to91__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/fractions.rst =&gt; rest262/library/fractions.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to91__0"></td><td class="diff_header" id="from91_96">96</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;Fraction.from_float(cos(pi/3))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_97">97</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fraction(4503599627370497,&nbsp;9007199254740992)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_98">98</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;Fraction.from_float(cos(pi/3)).limit_denominator()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_99">99</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fraction(1,&nbsp;2)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_100">100</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_101">101</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_102">102</td><td nowrap="nowrap">..&nbsp;function::&nbsp;gcd(a,&nbsp;b)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_103">103</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to91__top">t</a></td><td class="diff_header" id="from91_104">104-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;greatest&nbsp;common&nbsp;divisor&nbsp;of&nbsp;the&nbsp;integers&nbsp;<span class="diff_chg">`</span>a<span class="diff_chg">`</span>&nbsp;and&nbsp;<span class="diff_chg">`</span>b<span class="diff_chg">`</span>.&nbsp;&nbsp;If</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to91__top">t</a></td><td class="diff_header" id="to91_104">104+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;greatest&nbsp;common&nbsp;divisor&nbsp;of&nbsp;the&nbsp;integers&nbsp;<span class="diff_chg">*</span>a<span class="diff_chg">*</span>&nbsp;and&nbsp;<span class="diff_chg">*</span>b<span class="diff_chg">*</span>.&nbsp;&nbsp;If<span class="diff_add">&nbsp;either</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from91_105">105-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;<span class="diff_chg">either&nbsp;`</span>a<span class="diff_chg">`</span>&nbsp;or&nbsp;<span class="diff_chg">`</span>b<span class="diff_chg">`</span>&nbsp;is&nbsp;nonzero,&nbsp;then&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;`gcd(a,</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to91_105">105+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;<span class="diff_chg">*</span>a<span class="diff_chg">*</span>&nbsp;or&nbsp;<span class="diff_chg">*</span>b<span class="diff_chg">*</span>&nbsp;is&nbsp;nonzero,&nbsp;then&nbsp;the&nbsp;absolute&nbsp;value&nbsp;of&nbsp;<span class="diff_add">`</span>`gcd(a,<span class="diff_add">&nbsp;b)``&nbsp;is&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from91_106">106-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;b)`&nbsp;is&nbsp;the&nbsp;largest&nbsp;integer&nbsp;that&nbsp;divides&nbsp;both&nbsp;`a`&nbsp;and&nbsp;`b`.&nbsp;&nbsp;`gcd(a,b)`</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to91_106">106+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;largest&nbsp;integer&nbsp;that&nbsp;divides&nbsp;both&nbsp;*a*&nbsp;and&nbsp;*b*.&nbsp;&nbsp;``gcd(a,b)``&nbsp;has&nbsp;the&nbsp;same</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from91_107">107-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;has&nbsp;the&nbsp;same&nbsp;sign&nbsp;as&nbsp;`b`&nbsp;if&nbsp;`b`&nbsp;is&nbsp;nonzero;&nbsp;otherwise&nbsp;it&nbsp;takes&nbsp;the&nbsp;sign</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to91_107">107+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;sign&nbsp;as&nbsp;*b*&nbsp;if&nbsp;*b*&nbsp;is&nbsp;nonzero;&nbsp;otherwise&nbsp;it&nbsp;takes&nbsp;the&nbsp;sign&nbsp;of&nbsp;*a*.&nbsp;&nbsp;``gcd(0,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from91_108">108-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;of&nbsp;`a`.&nbsp;&nbsp;`gcd(0,&nbsp;0)`&nbsp;returns&nbsp;`0`.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to91_108">108+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;0)``&nbsp;returns&nbsp;``0``.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from91_109">109</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_110">110</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_111">111</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_112">112</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_113">113</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`numbers`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from91_114">114</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;abstract&nbsp;base&nbsp;classes&nbsp;making&nbsp;up&nbsp;the&nbsp;numeric&nbsp;tower.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

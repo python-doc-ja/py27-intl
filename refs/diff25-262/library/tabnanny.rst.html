@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to245__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/tabnanny.rst =&gt; rest262/library/tabnanny.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to245__0"></td><td class="diff_header" id="from245_3">3</td><td nowrap="nowrap">======================================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;tabnanny</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Tool&nbsp;for&nbsp;detecting&nbsp;white&nbsp;space&nbsp;related&nbsp;problems&nbsp;in&nbsp;Python&nbsp;source&nbsp;files&nbsp;in&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_7">7</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directory&nbsp;tree.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_8">8</td><td nowrap="nowrap">..&nbsp;moduleauthor::&nbsp;Tim&nbsp;Peters&nbsp;&lt;tim_one@users.sourceforge.net&gt;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_9">9</td><td nowrap="nowrap">..&nbsp;sectionauthor::&nbsp;Peter&nbsp;Funk&nbsp;&lt;pf@artcom-gmbh.de&gt;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_10">10</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to245__1">n</a></td><td class="diff_header" id="from245_11">11-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_12">12-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;rudimentary&nbsp;documentation&nbsp;based&nbsp;on&nbsp;module&nbsp;comments<span class="diff_sub">,&nbsp;by&nbsp;Peter&nbsp;Funk</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to245_11">11+</td><td nowrap="nowrap">..&nbsp;rudimentary&nbsp;documentation&nbsp;based&nbsp;on&nbsp;module&nbsp;comments</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_13">13-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;&lt;pf@artcom-gmbh.de&gt;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from245_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_15">15</td><td nowrap="nowrap">For&nbsp;the&nbsp;time&nbsp;being&nbsp;this&nbsp;module&nbsp;is&nbsp;intended&nbsp;to&nbsp;be&nbsp;called&nbsp;as&nbsp;a&nbsp;script.&nbsp;However&nbsp;it</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_16">16</td><td nowrap="nowrap">is&nbsp;possible&nbsp;to&nbsp;import&nbsp;it&nbsp;into&nbsp;an&nbsp;IDE&nbsp;and&nbsp;use&nbsp;the&nbsp;function&nbsp;:func:`check`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_17">17</td><td nowrap="nowrap">described&nbsp;below.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_18">18</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_19">19</td><td nowrap="nowrap">..&nbsp;warning::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_20">20</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_21">21</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;API&nbsp;provided&nbsp;by&nbsp;this&nbsp;module&nbsp;is&nbsp;likely&nbsp;to&nbsp;change&nbsp;&nbsp;in&nbsp;future&nbsp;releases;&nbsp;such</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to245__1"></td><td class="diff_header" id="from245_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;handled&nbsp;in&nbsp;:func:`check`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_51">51</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_52">52</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_53">53</td><td nowrap="nowrap">..&nbsp;function::&nbsp;tokeneater(type,&nbsp;token,&nbsp;start,&nbsp;end,&nbsp;line)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_54">54</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;is&nbsp;used&nbsp;by&nbsp;:func:`check`&nbsp;as&nbsp;a&nbsp;callback&nbsp;parameter&nbsp;to&nbsp;the&nbsp;function</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:func:`tokenize.tokenize`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_57">57</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to245__2">n</a></td><td class="diff_header" id="from245_58">58-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;XXX&nbsp;FIXME:&nbsp;Document&nbsp;\function{errprint},</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to245__2">n</a></td><td class="diff_header" id="to245_56">56+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;XXX&nbsp;document&nbsp;errprint,&nbsp;format_witnesses,&nbsp;Whitespace,&nbsp;check_equal,&nbsp;indents,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_59">59-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;\function{format_witnesses}&nbsp;\class{Whitespace}</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to245_57">57+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;reset_globals</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to245__2"></td><td class="diff_header" id="from245_60">60-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;check_equal,&nbsp;indents</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_61">61-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;\function{reset_globals}</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from245_62">62</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_63">63</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_64">64</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_65">65</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_66">66</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`tokenize`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from245_67">67</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lexical&nbsp;scanner&nbsp;for&nbsp;Python&nbsp;source&nbsp;code.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to245__top">t</a></td><td class="diff_header" id="from245_68">68-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_69">69-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;..&nbsp;%&nbsp;XXX&nbsp;may&nbsp;be&nbsp;add&nbsp;a&nbsp;reference&nbsp;to&nbsp;IDLE?</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from245_70">70-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

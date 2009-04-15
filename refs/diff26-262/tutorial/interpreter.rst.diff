@@ -1,0 +1,56 @@
+--- rest26/tutorial/interpreter.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/tutorial/interpreter.rst	2009-04-05 05:01:50.000000000 +0900
+@@ -103,25 +103,25 @@
+ 
+    python
+    Python 2.6 (#1, Feb 28 2007, 00:02:06)
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>>
+ 
+ Continuation lines are needed when entering a multi-line construct. As an
+ example, take a look at this :keyword:`if` statement::
+ 
+    >>> the_world_is_flat = 1
+    >>> if the_world_is_flat:
+    ...     print "Be careful not to fall off!"
+-   ... 
++   ...
+    Be careful not to fall off!
+ 
+ 
+ .. _tut-interp:
+ 
+ The Interpreter and Its Environment
+ ===================================
+ 
+ 
+ .. _tut-error:
+ 
+ Error Handling
+@@ -171,25 +171,25 @@
+ a double-click on a Python file will run it as a script.  The extension can
+ also be ``.pyw``, in that case, the console window that normally appears is
+ suppressed.
+ 
+ 
+ Source Code Encoding
+ --------------------
+ 
+ It is possible to use encodings different than ASCII in Python source files. The
+ best way to do it is to put one more special comment line right after the ``#!``
+ line to define the source file encoding::
+ 
+-   # -*- coding: encoding -*- 
++   # -*- coding: encoding -*-
+ 
+ 
+ With that declaration, all characters in the source file will be treated as
+ having the encoding *encoding*, and it will be possible to directly write
+ Unicode string literals in the selected encoding.  The list of possible
+ encodings can be found in the Python Library Reference, in the section on
+ :mod:`codecs`.
+ 
+ For example, to write Unicode literals including the Euro currency symbol, the
+ ISO-8859-15 encoding can be used, with the Euro symbol having the ordinal value
+ 164.  This script will print the value 8364 (the Unicode codepoint corresponding
+ to the Euro symbol) and then exit::

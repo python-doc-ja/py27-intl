@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to129__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/ossaudiodev.rst =&gt; rest262/library/ossaudiodev.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to129__0"></td><td class="diff_header" id="from129_13">13</td><td nowrap="nowrap">OSS&nbsp;is&nbsp;available&nbsp;for&nbsp;a&nbsp;wide&nbsp;range&nbsp;of&nbsp;open-source&nbsp;and&nbsp;commercial&nbsp;Unices,&nbsp;and&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_14">14</td><td nowrap="nowrap">the&nbsp;standard&nbsp;audio&nbsp;interface&nbsp;for&nbsp;Linux&nbsp;and&nbsp;recent&nbsp;versions&nbsp;of&nbsp;FreeBSD.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_15">15</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to129__1"></td><td class="diff_header" id="from129_16">16</td><td nowrap="nowrap">..&nbsp;Things&nbsp;will&nbsp;get&nbsp;more&nbsp;complicated&nbsp;for&nbsp;future&nbsp;Linux&nbsp;versions,&nbsp;since</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_17">17</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;ALSA&nbsp;is&nbsp;in&nbsp;the&nbsp;standard&nbsp;kernel&nbsp;as&nbsp;of&nbsp;2.5.x.&nbsp;&nbsp;Presumably&nbsp;if&nbsp;you</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_18">18</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;use&nbsp;ALSA,&nbsp;you'll&nbsp;have&nbsp;to&nbsp;make&nbsp;sure&nbsp;its&nbsp;OSS&nbsp;compatibility&nbsp;layer</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_19">19</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;active&nbsp;to&nbsp;use&nbsp;ossaudiodev,&nbsp;but&nbsp;you're&nbsp;gonna&nbsp;need&nbsp;it&nbsp;for&nbsp;the&nbsp;vast</td></tr>            <tr><td class="diff_next" id="difflib_chg_to129__2"></td><td class="diff_header" id="from129_20">20</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;majority&nbsp;of&nbsp;Linux&nbsp;audio&nbsp;apps&nbsp;anyways.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to129__1">n</a></td><td class="diff_header" id="from129_21">21-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to129__1">n</a></td><td class="diff_header" id="to129_21">21+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from129_22">22</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Sounds&nbsp;like&nbsp;things&nbsp;are&nbsp;also&nbsp;complicated&nbsp;for&nbsp;other&nbsp;BSDs.&nbsp;&nbsp;In&nbsp;response</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_23">23</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;to&nbsp;my&nbsp;python-dev&nbsp;query,&nbsp;Thomas&nbsp;Wouters&nbsp;said:</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to129__2">n</a></td><td class="diff_header" id="from129_24">24-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to129__2">n</a></td><td class="diff_header" id="to129_24">24+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from129_25">25</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;Likewise,&nbsp;googling&nbsp;shows&nbsp;OpenBSD&nbsp;also&nbsp;uses&nbsp;OSS/Free&nbsp;--&nbsp;the&nbsp;commercial</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;OSS&nbsp;installation&nbsp;manual&nbsp;tells&nbsp;you&nbsp;to&nbsp;remove&nbsp;references&nbsp;to&nbsp;OSS/Free&nbsp;from&nbsp;the</td></tr>            <tr><td class="diff_next" id="difflib_chg_to129__3"></td><td class="diff_header" id="from129_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;kernel&nbsp;:)</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to129__3">n</a></td><td class="diff_header" id="from129_28">28-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to129__3">n</a></td><td class="diff_header" id="to129_28">28+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from129_29">29</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;but&nbsp;Aleksander&nbsp;Piotrowsk&nbsp;actually&nbsp;has&nbsp;an&nbsp;OpenBSD&nbsp;box,&nbsp;and&nbsp;he&nbsp;quotes</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_30">30</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;its&nbsp;&lt;soundcard.h&gt;:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_31">31</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;&nbsp;*&nbsp;WARNING!&nbsp;&nbsp;WARNING!</td></tr>            <tr><td class="diff_next" id="difflib_chg_to129__4"></td><td class="diff_header" id="from129_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;&nbsp;*&nbsp;This&nbsp;is&nbsp;an&nbsp;OSS&nbsp;(Linux)&nbsp;audio&nbsp;emulator.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_33">33</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;&nbsp;*&nbsp;Use&nbsp;the&nbsp;Native&nbsp;NetBSD&nbsp;API&nbsp;for&nbsp;developing&nbsp;new&nbsp;code,&nbsp;and&nbsp;this</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;&nbsp;*&nbsp;only&nbsp;for&nbsp;compiling&nbsp;Linux&nbsp;programs.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to129__4">n</a></td><td class="diff_header" id="from129_35">35-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to129__4">n</a></td><td class="diff_header" id="to129_35">35+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from129_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;There's&nbsp;also&nbsp;an&nbsp;ossaudio&nbsp;manpage&nbsp;on&nbsp;OpenBSD&nbsp;that&nbsp;explains&nbsp;things</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;further.&nbsp;&nbsp;Presumably&nbsp;NetBSD&nbsp;and&nbsp;OpenBSD&nbsp;have&nbsp;a&nbsp;different&nbsp;standard</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;audio&nbsp;interface.&nbsp;&nbsp;That's&nbsp;the&nbsp;great&nbsp;thing&nbsp;about&nbsp;standards,&nbsp;there&nbsp;are&nbsp;so</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_39">39</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;many&nbsp;to&nbsp;choose&nbsp;from&nbsp;...&nbsp;;-)</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to129__top">t</a></td><td class="diff_header" id="from129_40">40-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to129__top">t</a></td><td class="diff_header" id="to129_40">40+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from129_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;probably&nbsp;all&nbsp;warrants&nbsp;a&nbsp;footnote&nbsp;or&nbsp;two,&nbsp;but&nbsp;I&nbsp;don't&nbsp;understand</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;things&nbsp;well&nbsp;enough&nbsp;right&nbsp;now&nbsp;to&nbsp;write&nbsp;it!&nbsp;&nbsp;&nbsp;--GPW</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_43">43</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_44">44</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_45">45</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;`Open&nbsp;Sound&nbsp;System&nbsp;Programmer's&nbsp;Guide&nbsp;&lt;http://www.opensound.com/pguide/oss.pdf&gt;`_</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from129_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;official&nbsp;documentation&nbsp;for&nbsp;the&nbsp;OSS&nbsp;C&nbsp;API</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

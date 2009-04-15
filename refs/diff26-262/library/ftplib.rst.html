@@ -1,0 +1,53 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to92__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/ftplib.rst =&gt; rest262/library/ftplib.rst</th></tr></thead>
+            <tbody>
+    <tr><td class="diff_next" id="difflib_chg_to92__0"><a href="#difflib_chg_to92__1">n</a></td><td class="diff_header" id="from92_1">1-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from92_2">2</td><td nowrap="nowrap">:mod:`ftplib`&nbsp;---&nbsp;FTP&nbsp;protocol&nbsp;client</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_3">3</td><td nowrap="nowrap">=====================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;ftplib</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;FTP&nbsp;protocol&nbsp;client&nbsp;(requires&nbsp;sockets).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_7">7</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_9">9</td><td nowrap="nowrap">..&nbsp;index::</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to92__1"></td><td class="diff_header" id="from92_310">310</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;size&nbsp;of&nbsp;the&nbsp;file&nbsp;is&nbsp;returned&nbsp;as&nbsp;an&nbsp;integer,&nbsp;otherwise&nbsp;``None``&nbsp;is&nbsp;returned.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_311">311</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Note&nbsp;that&nbsp;the&nbsp;``SIZE``&nbsp;command&nbsp;is&nbsp;not&nbsp;&nbsp;standardized,&nbsp;but&nbsp;is&nbsp;supported&nbsp;by&nbsp;many</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_312">312</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;common&nbsp;server&nbsp;implementations.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_313">313</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_314">314</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_315">315</td><td nowrap="nowrap">..&nbsp;method::&nbsp;FTP.quit()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_316">316</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_317">317</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Send&nbsp;a&nbsp;``QUIT``&nbsp;command&nbsp;to&nbsp;the&nbsp;server&nbsp;and&nbsp;close&nbsp;the&nbsp;connection.&nbsp;This&nbsp;is&nbsp;the</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to92__top">t</a></td><td class="diff_header" id="from92_318">318-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;"polite"&nbsp;way&nbsp;to&nbsp;close&nbsp;a&nbsp;connection,&nbsp;but&nbsp;it&nbsp;may&nbsp;raise&nbsp;an&nbsp;exception&nbsp;<span class="diff_chg">o</span>f&nbsp;the&nbsp;server</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to92__top">t</a></td><td class="diff_header" id="to92_317">317+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;"polite"&nbsp;way&nbsp;to&nbsp;close&nbsp;a&nbsp;connection,&nbsp;but&nbsp;it&nbsp;may&nbsp;raise&nbsp;an&nbsp;exception&nbsp;<span class="diff_chg">i</span>f&nbsp;the&nbsp;server</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from92_319">319</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;responds&nbsp;with&nbsp;an&nbsp;error&nbsp;to&nbsp;the&nbsp;``QUIT``&nbsp;command.&nbsp;&nbsp;This&nbsp;implies&nbsp;a&nbsp;call&nbsp;to&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_320">320</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`close`&nbsp;method&nbsp;which&nbsp;renders&nbsp;the&nbsp;:class:`FTP`&nbsp;instance&nbsp;useless&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_321">321</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;subsequent&nbsp;calls&nbsp;(see&nbsp;below).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_322">322</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_323">323</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_324">324</td><td nowrap="nowrap">..&nbsp;method::&nbsp;FTP.close()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_325">325</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from92_326">326</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Close&nbsp;the&nbsp;connection&nbsp;unilaterally.&nbsp;&nbsp;This&nbsp;should&nbsp;not&nbsp;be&nbsp;applied&nbsp;to&nbsp;an&nbsp;already</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

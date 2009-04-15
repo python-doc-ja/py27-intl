@@ -1,0 +1,274 @@
+--- rest26/library/re.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/re.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -1,28 +1,25 @@
+ 
+ :mod:`re` --- Regular expression operations
+ ===========================================
+ 
+ .. module:: re
+    :synopsis: Regular expression operations.
+ .. moduleauthor:: Fredrik Lundh <fredrik@pythonware.com>
+ .. sectionauthor:: Andrew M. Kuchling <amk@amk.ca>
+ 
+ 
+-
+-
+ This module provides regular expression matching operations similar to
+ those found in Perl. Both patterns and strings to be searched can be
+-Unicode strings as well as 8-bit strings.  The :mod:`re` module is
+-always available.
++Unicode strings as well as 8-bit strings.
+ 
+ Regular expressions use the backslash character (``'\'``) to indicate
+ special forms or to allow special characters to be used without invoking
+ their special meaning.  This collides with Python's usage of the same
+ character for the same purpose in string literals; for example, to match
+ a literal backslash, one might have to write ``'\\\\'`` as the pattern
+ string, because the regular expression must be ``\\``, and each
+ backslash must be expressed as ``\\`` inside a regular Python string
+ literal.
+ 
+ The solution is to use Python's raw string notation for regular expression
+ patterns; backslashes are not handled in any special way in a string literal
+@@ -34,27 +31,24 @@
+ It is important to note that most regular expression operations are available as
+ module-level functions and :class:`RegexObject` methods.  The functions are
+ shortcuts that don't require you to compile a regex object first, but miss some
+ fine-tuning parameters.
+ 
+ .. seealso::
+ 
+    Mastering Regular Expressions
+       Book on regular expressions by Jeffrey Friedl, published by O'Reilly.  The
+       second edition of the book no longer covers Python at all, but the first
+       edition covered writing good regular expression patterns in great detail.
+ 
+-   `Kodos <http://kodos.sf.net/>`_
+-      is a graphical regular expression debugger written in Python.
+-
+ 
+ .. _re-syntax:
+ 
+ Regular Expression Syntax
+ -------------------------
+ 
+ A regular expression (or RE) specifies a set of strings that matches it; the
+ functions in this module let you check if a particular string matches a given
+ regular expression (or if a given regular expression matches a particular
+ string, which comes down to the same thing).
+ 
+ Regular expressions can be concatenated to form new regular expressions; if *A*
+@@ -228,34 +222,36 @@
+    used first in the expression string, or after one or more whitespace characters.
+    If there are non-whitespace characters before the flag, the results are
+    undefined.
+ 
+ ``(?:...)``
+    A non-grouping version of regular parentheses. Matches whatever regular
+    expression is inside the parentheses, but the substring matched by the group
+    *cannot* be retrieved after performing a match or referenced later in the
+    pattern.
+ 
+ ``(?P<name>...)``
+    Similar to regular parentheses, but the substring matched by the group is
+-   accessible via the symbolic group name *name*.  Group names must be valid Python
+-   identifiers, and each group name must be defined only once within a regular
+-   expression.  A symbolic group is also a numbered group, just as if the group
+-   were not named.  So the group named 'id' in the example below can also be
+-   referenced as the numbered group 1.
++   accessible within the rest of the regular expression via the symbolic group
++   name *name*.  Group names must be valid Python identifiers, and each group
++   name must be defined only once within a regular expression.  A symbolic group
++   is also a numbered group, just as if the group were not named.  So the group
++   named ``id`` in the example below can also be referenced as the numbered group
++   ``1``.
+ 
+    For example, if the pattern is ``(?P<id>[a-zA-Z_]\w*)``, the group can be
+    referenced by its name in arguments to methods of match objects, such as
+-   ``m.group('id')`` or ``m.end('id')``, and also by name in pattern text (for
+-   example, ``(?P=id)``) and replacement text (such as ``\g<id>``).
++   ``m.group('id')`` or ``m.end('id')``, and also by name in the regular
++   expression itself (using ``(?P=id)``) and replacement text given to
++   ``.sub()`` (using ``\g<id>``).
+ 
+ ``(?P=name)``
+    Matches whatever text was matched by the earlier group named *name*.
+ 
+ ``(?#...)``
+    A comment; the contents of the parentheses are simply ignored.
+ 
+ ``(?=...)``
+    Matches if ``...`` matches next, but doesn't consume any of the string.  This is
+    called a lookahead assertion.  For example, ``Isaac (?=Asimov)`` will match
+    ``'Isaac '`` only if it's followed by ``'Asimov'``.
+ 
+@@ -431,37 +427,41 @@
+ .. function:: compile(pattern[, flags])
+ 
+    Compile a regular expression pattern into a regular expression object, which
+    can be used for matching using its :func:`match` and :func:`search` methods,
+    described below.
+ 
+    The expression's behaviour can be modified by specifying a *flags* value.
+    Values can be any of the following variables, combined using bitwise OR (the
+    ``|`` operator).
+ 
+    The sequence ::
+ 
+-      prog = re.compile(pat)
+-      result = prog.match(str)
++      prog = re.compile(pattern)
++      result = prog.match(string)
+ 
+    is equivalent to ::
+ 
+-      result = re.match(pat, str)
++      result = re.match(pattern, string)
+ 
+-   but the version using :func:`compile` is more efficient when the expression
+-   will be used several times in a single program.
++   but using :func:`compile` and saving the resulting regular expression object
++   for reuse is more efficient when the expression will be used several times
++   in a single program.
+ 
+-   .. (The compiled version of the last pattern passed to :func:`re.match` or
+-      :func:`re.search` is cached, so programs that use only a single regular
+-      expression at a time needn't worry about compiling regular expressions.)
++   .. note::
++
++      The compiled versions of the most recent patterns passed to
++      :func:`re.match`, :func:`re.search` or :func:`re.compile` are cached, so
++      programs that use only a few regular expressions at a time needn't worry
++      about compiling regular expressions.
+ 
+ 
+ .. data:: I
+           IGNORECASE
+ 
+    Perform case-insensitive matching; expressions like ``[A-Z]`` will match
+    lowercase letters, too.  This is not affected by the current locale.
+ 
+ 
+ .. data:: L
+           LOCALE
+ 
+@@ -741,24 +741,29 @@
+ 
+ .. method:: RegexObject.subn(repl, string[, count=0])
+ 
+    Identical to the :func:`subn` function, using the compiled pattern.
+ 
+ 
+ .. attribute:: RegexObject.flags
+ 
+    The flags argument used when the RE object was compiled, or ``0`` if no flags
+    were provided.
+ 
+ 
++.. attribute:: RegexObject.groups
++
++   The number of capturing groups in the pattern.
++
++
+ .. attribute:: RegexObject.groupindex
+ 
+    A dictionary mapping any symbolic group names defined by ``(?P<id>)`` to group
+    numbers.  The dictionary is empty if no symbolic groups were used in the
+    pattern.
+ 
+ 
+ .. attribute:: RegexObject.pattern
+ 
+    The pattern string from which the RE object was compiled.
+ 
+ 
+@@ -980,32 +985,32 @@
+    "<Match: '717', groups=('7',)>"
+    >>> displaymatch(pair.match("718ak"))     # No pairs.
+    >>> displaymatch(pair.match("354aa"))     # Pair of aces.
+    "<Match: '354aa', groups=('a',)>"
+ 
+ To find out what card the pair consists of, one could use the :func:`group`
+ method of :class:`MatchObject` in the following manner:
+ 
+ .. doctest::
+ 
+    >>> pair.match("717ak").group(1)
+    '7'
+-   
++
+    # Error because re.match() returns None, which doesn't have a group() method:
+    >>> pair.match("718ak").group(1)
+    Traceback (most recent call last):
+      File "<pyshell#23>", line 1, in <module>
+        re.match(r".*(.).*\1", "718ak").group(1)
+    AttributeError: 'NoneType' object has no attribute 'group'
+-   
++
+    >>> pair.match("354aa").group(1)
+    'a'
+ 
+ 
+ Simulating scanf()
+ ^^^^^^^^^^^^^^^^^^
+ 
+ .. index:: single: scanf()
+ 
+ Python does not currently have an equivalent to :cfunc:`scanf`.  Regular
+ expressions are generally more powerful, though also more verbose, than
+ :cfunc:`scanf` format strings.  The table below offers some more-or-less
+@@ -1079,51 +1084,51 @@
+ 
+    >>> re.match("o", "dog")  # No match as "o" is not the first letter of "dog".
+    >>> re.search("o", "dog") # Match as search() looks everywhere in the string.
+    <_sre.SRE_Match object at ...>
+ 
+ .. note::
+ 
+    The following applies only to regular expression objects like those created
+    with ``re.compile("pattern")``, not the primitives ``re.match(pattern,
+    string)`` or ``re.search(pattern, string)``.
+ 
+ :func:`match` has an optional second parameter that gives an index in the string
+-where the search is to start:
++where the search is to start::
+ 
+    >>> pattern = re.compile("o")
+    >>> pattern.match("dog")      # No match as "o" is not at the start of "dog."
+ 
+    # Equivalent to the above expression as 0 is the default starting index:
+    >>> pattern.match("dog", 0)
+ 
+    # Match as "o" is the 2nd character of "dog" (index 0 is the first):
+    >>> pattern.match("dog", 1)
+    <_sre.SRE_Match object at ...>
+    >>> pattern.match("dog", 2)   # No match as "o" is not the 3rd character of "dog."
+ 
+ 
+ Making a Phonebook
+ ^^^^^^^^^^^^^^^^^^
+ 
+-:func:`split` splits a string into a list delimited by the passed pattern.  The 
++:func:`split` splits a string into a list delimited by the passed pattern.  The
+ method is invaluable for converting textual data into data structures that can be
+ easily read and modified by Python as demonstrated in the following example that
+ creates a phonebook.
+ 
+ First, here is the input.  Normally it may come from a file, here we are using
+ triple-quoted string syntax:
+ 
+    >>> input = """Ross McFluff: 834.345.1254 155 Elm Street
+-   ... 
++   ...
+    ... Ronald Heathmore: 892.345.3428 436 Finley Avenue
+    ... Frank Burger: 925.541.7625 662 South Dogwood Way
+    ...
+    ...
+    ... Heather Albrecht: 548.326.4584 919 Park Place"""
+ 
+ The entries are separated by one or more newlines. Now we convert the string
+ into a list with each nonempty line having its own entry:
+ 
+ .. doctest::
+    :options: +NORMALIZE_WHITESPACE
+ 

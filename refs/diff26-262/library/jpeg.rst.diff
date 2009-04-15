@@ -1,0 +1,25 @@
+--- rest26/library/jpeg.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/jpeg.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,21 +1,21 @@
+ 
+ :mod:`jpeg` --- Read and write JPEG files
+ =========================================
+ 
+ .. module:: jpeg
+    :platform: IRIX
+    :synopsis: Read and write image files in compressed JPEG format.
+    :deprecated:
+-   
++
+ .. deprecated:: 2.6
+    The :mod:`jpeg` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ 
+ .. index:: single: Independent JPEG Group
+ 
+ The module :mod:`jpeg` provides access to the jpeg compressor and decompressor
+ written by the Independent JPEG Group (IJG). JPEG is a standard for compressing
+ pictures; it is defined in ISO 10918.  For details on JPEG or the Independent
+ JPEG Group software refer to the JPEG standard or the documentation provided
+ with the software.

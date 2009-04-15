@@ -1,0 +1,16 @@
+--- rest25/library/windows.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/windows.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,12 +1,13 @@
++.. _mswin-specific-services:
+ 
+ ****************************
+ MS Windows Specific Services
+ ****************************
+ 
+ This chapter describes modules that are only available on MS Windows platforms.
+ 
+ 
+ .. toctree::
+ 
+    msilib.rst
+    msvcrt.rst

@@ -1,0 +1,31 @@
+--- rest26/library/fractions.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/fractions.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -92,23 +92,23 @@
+ 
+       or for recovering a rational number that's represented as a float:
+ 
+          >>> from math import pi, cos
+          >>> Fraction.from_float(cos(pi/3))
+          Fraction(4503599627370497, 9007199254740992)
+          >>> Fraction.from_float(cos(pi/3)).limit_denominator()
+          Fraction(1, 2)
+ 
+ 
+ .. function:: gcd(a, b)
+ 
+-   Return the greatest common divisor of the integers `a` and `b`.  If
+-   either `a` or `b` is nonzero, then the absolute value of `gcd(a,
+-   b)` is the largest integer that divides both `a` and `b`.  `gcd(a,b)`
+-   has the same sign as `b` if `b` is nonzero; otherwise it takes the sign
+-   of `a`.  `gcd(0, 0)` returns `0`.
++   Return the greatest common divisor of the integers *a* and *b*.  If either
++   *a* or *b* is nonzero, then the absolute value of ``gcd(a, b)`` is the
++   largest integer that divides both *a* and *b*.  ``gcd(a,b)`` has the same
++   sign as *b* if *b* is nonzero; otherwise it takes the sign of *a*.  ``gcd(0,
++   0)`` returns ``0``.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`numbers`
+       The abstract base classes making up the numeric tower.

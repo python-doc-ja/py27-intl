@@ -1,0 +1,123 @@
+--- rest26/library/pickle.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/pickle.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -404,75 +404,84 @@
+ your objects are serialized and de-serialized.  The description in this section
+ doesn't cover specific customizations that you can employ to make the unpickling
+ environment slightly safer from untrusted pickle data streams; see section
+ :ref:`pickle-sub` for more details.
+ 
+ 
+ .. _pickle-inst:
+ 
+ Pickling and unpickling normal class instances
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ .. method:: object.__getinitargs__()
+-   
++
+    When a pickled class instance is unpickled, its :meth:`__init__` method is
+    normally *not* invoked.  If it is desirable that the :meth:`__init__` method
+    be called on unpickling, an old-style class can define a method
+    :meth:`__getinitargs__`, which should return a *tuple* containing the
+    arguments to be passed to the class constructor (:meth:`__init__` for
+    example).  The :meth:`__getinitargs__` method is called at pickle time; the
+    tuple it returns is incorporated in the pickle for the instance.
+ 
+ .. method:: object.__getnewargs__()
+ 
+    New-style types can provide a :meth:`__getnewargs__` method that is used for
+    protocol 2.  Implementing this method is needed if the type establishes some
+    internal invariants when the instance is created, or if the memory allocation
+    is affected by the values passed to the :meth:`__new__` method for the type
+    (as it is for tuples and strings).  Instances of a :term:`new-style class`
+    ``C`` are created using ::
+-    
++
+       obj = C.__new__(C, *args)
+-    
++
+    where *args* is the result of calling :meth:`__getnewargs__` on the original
+    object; if there is no :meth:`__getnewargs__`, an empty tuple is assumed.
+ 
+ .. method:: object.__getstate__()
+-   
++
+    Classes can further influence how their instances are pickled; if the class
+    defines the method :meth:`__getstate__`, it is called and the return state is
+    pickled as the contents for the instance, instead of the contents of the
+    instance's dictionary.  If there is no :meth:`__getstate__` method, the
+    instance's :attr:`__dict__` is pickled.
+ 
+-.. method:: object.__setstate__() 
+-   
++.. method:: object.__setstate__()
++
+    Upon unpickling, if the class also defines the method :meth:`__setstate__`,
+    it is called with the unpickled state. [#]_ If there is no
+    :meth:`__setstate__` method, the pickled state must be a dictionary and its
+    items are assigned to the new instance's dictionary.  If a class defines both
+    :meth:`__getstate__` and :meth:`__setstate__`, the state object needn't be a
+    dictionary and these methods can do what they want. [#]_
+-    
++
+    .. warning::
+-    
++
+       For :term:`new-style class`\es, if :meth:`__getstate__` returns a false
+       value, the :meth:`__setstate__` method will not be called.
+ 
++.. note::
++
++   At unpickling time, some methods like :meth:`__getattr__`,
++   :meth:`__getattribute__`, or :meth:`__setattr__` may be called upon the
++   instance.  In case those methods rely on some internal invariant being
++   true, the type should implement either :meth:`__getinitargs__` or
++   :meth:`__getnewargs__` to establish such an invariant; otherwise, neither
++   :meth:`__new__` nor :meth:`__init__` will be called.
++
+ 
+ Pickling and unpickling extension types
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ .. method:: object.__reduce__()
+-   
++
+    When the :class:`Pickler` encounters an object of a type it knows nothing
+    about --- such as an extension type --- it looks in two places for a hint of
+    how to pickle it.  One alternative is for the object to implement a
+    :meth:`__reduce__` method.  If provided, at pickling time :meth:`__reduce__`
+    will be called with no arguments, and it must return either a string or a
+    tuple.
+ 
+    If a string is returned, it names a global variable whose contents are
+    pickled as normal.  The string returned by :meth:`__reduce__` should be the
+    object's local name relative to its module; the pickle module searches the
+    module namespace to determine the object's module.
+ 
+@@ -509,25 +518,25 @@
+      primarily used for list subclasses, but may be used by other classes as
+      long as they have :meth:`append` and :meth:`extend` methods with the
+      appropriate signature.  (Whether :meth:`append` or :meth:`extend` is used
+      depends on which pickle protocol version is used as well as the number of
+      items to append, so both must be supported.)
+ 
+    * Optionally, an iterator (not a sequence) yielding successive dictionary
+      items, which should be tuples of the form ``(key, value)``.  These items
+      will be pickled and stored to the object using ``obj[key] = value``. This
+      is primarily used for dictionary subclasses, but may be used by other
+      classes as long as they implement :meth:`__setitem__`.
+ 
+-.. method:: object.__reduce_ex__(protocol) 
++.. method:: object.__reduce_ex__(protocol)
+ 
+    It is sometimes useful to know the protocol version when implementing
+    :meth:`__reduce__`.  This can be done by implementing a method named
+    :meth:`__reduce_ex__` instead of :meth:`__reduce__`. :meth:`__reduce_ex__`,
+    when it exists, is called in preference over :meth:`__reduce__` (you may
+    still provide :meth:`__reduce__` for backwards compatibility).  The
+    :meth:`__reduce_ex__` method will be called with a single integer argument,
+    the protocol version.
+ 
+    The :class:`object` class implements both :meth:`__reduce__` and
+    :meth:`__reduce_ex__`; however, if a subclass overrides :meth:`__reduce__`
+    but not :meth:`__reduce_ex__`, the :meth:`__reduce_ex__` implementation

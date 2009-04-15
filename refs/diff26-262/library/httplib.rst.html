@@ -1,0 +1,51 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to102__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/httplib.rst =&gt; rest262/library/httplib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to102__0"></td><td class="diff_header" id="from102_35">35</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_36">36</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_37">37</td><td nowrap="nowrap">..&nbsp;class::&nbsp;HTTPConnection(host[,&nbsp;port[,&nbsp;strict[,&nbsp;timeout]]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_38">38</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_39">39</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;An&nbsp;:class:`HTTPConnection`&nbsp;instance&nbsp;represents&nbsp;one&nbsp;transaction&nbsp;with&nbsp;an&nbsp;HTTP</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;server.&nbsp;&nbsp;It&nbsp;should&nbsp;be&nbsp;instantiated&nbsp;passing&nbsp;it&nbsp;a&nbsp;host&nbsp;and&nbsp;optional&nbsp;port</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;number.&nbsp;&nbsp;If&nbsp;no&nbsp;port&nbsp;number&nbsp;is&nbsp;passed,&nbsp;the&nbsp;port&nbsp;is&nbsp;extracted&nbsp;from&nbsp;the&nbsp;host</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;string&nbsp;if&nbsp;it&nbsp;has&nbsp;the&nbsp;form&nbsp;``host:port``,&nbsp;else&nbsp;the&nbsp;default&nbsp;HTTP&nbsp;port&nbsp;(80)&nbsp;is</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to102__top">t</a></td><td class="diff_header" id="from102_43">43-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;used.&nbsp;&nbsp;When&nbsp;True,&nbsp;the&nbsp;optional&nbsp;parameter&nbsp;*strict*&nbsp;causes&nbsp;``BadStatusLine``&nbsp;to</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to102__top">t</a></td><td class="diff_header" id="to102_43">43+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;used.&nbsp;&nbsp;When&nbsp;True,&nbsp;the&nbsp;optional&nbsp;parameter&nbsp;*strict*&nbsp;(which&nbsp;defaults&nbsp;to&nbsp;a&nbsp;false</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_44">44+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;value)&nbsp;causes&nbsp;``BadStatusLine``&nbsp;to</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from102_44">44</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;be&nbsp;raised&nbsp;if&nbsp;the&nbsp;status&nbsp;line&nbsp;can't&nbsp;be&nbsp;parsed&nbsp;as&nbsp;a&nbsp;valid&nbsp;HTTP/1.0&nbsp;or&nbsp;1.1</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_45">45</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;status&nbsp;line.&nbsp;&nbsp;If&nbsp;the&nbsp;optional&nbsp;*timeout*&nbsp;parameter&nbsp;is&nbsp;given,&nbsp;blocking</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_46">46</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;operations&nbsp;(like&nbsp;connection&nbsp;attempts)&nbsp;will&nbsp;timeout&nbsp;after&nbsp;that&nbsp;many&nbsp;seconds</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(if&nbsp;it&nbsp;is&nbsp;not&nbsp;given,&nbsp;the&nbsp;global&nbsp;default&nbsp;timeout&nbsp;setting&nbsp;is&nbsp;used).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_48">48</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;For&nbsp;example,&nbsp;the&nbsp;following&nbsp;calls&nbsp;all&nbsp;create&nbsp;instances&nbsp;that&nbsp;connect&nbsp;to&nbsp;the&nbsp;server</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;at&nbsp;the&nbsp;same&nbsp;host&nbsp;and&nbsp;port::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_51">51</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

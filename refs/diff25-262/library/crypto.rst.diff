@@ -1,0 +1,18 @@
+--- rest25/library/crypto.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/crypto.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -18,14 +18,14 @@
+    hmac.rst
+    md5.rst
+    sha.rst
+ .. index::
+    pair: AES; algorithm
+    single: cryptography
+    single: Kuchling, Andrew
+ 
+ Hardcore cypherpunks will probably find the cryptographic modules written by
+ A.M. Kuchling of further interest; the package contains modules for various
+ encryption algorithms, most notably AES.  These modules are not distributed with
+ Python but available separately.  See the URL
+-`<http://www.amk.ca/python/code/crypto.html>`_  for more information.
++http://www.amk.ca/python/code/crypto.html  for more information.
+ 

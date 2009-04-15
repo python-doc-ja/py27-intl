@@ -1,0 +1,24 @@
+--- rest26/library/mutex.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/mutex.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,20 +1,20 @@
+ 
+ :mod:`mutex` --- Mutual exclusion support
+ =========================================
+ 
+ .. module:: mutex
+    :synopsis: Lock and queue for mutual exclusion.
+    :deprecated:
+-   
++
+ .. deprecated::
+    The :mod:`mutex` module has been removed in Python 3.0.
+ 
+ .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
+ 
+ 
+ The :mod:`mutex` module defines a class that allows mutual-exclusion via
+ acquiring and releasing locks. It does not require (or imply)
+ :mod:`threading` or multi-tasking, though it could be useful for those
+ purposes.
+ 
+ The :mod:`mutex` module defines the following class:

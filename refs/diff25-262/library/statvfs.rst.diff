@@ -1,0 +1,31 @@
+--- rest25/library/statvfs.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/statvfs.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,22 +1,25 @@
+-
+ :mod:`statvfs` --- Constants used with :func:`os.statvfs`
+ =========================================================
+ 
+ .. module:: statvfs
+    :synopsis: Constants for interpreting the result of os.statvfs().
+-.. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
++   :deprecated:
++
++.. deprecated:: 2.6
++   The :mod:`statvfs` module has been deprecated for removal in Python 3.0.
+ 
+ 
+-.. % LaTeX'ed from comments in module
++.. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
++
+ 
+ The :mod:`statvfs` module defines constants so interpreting the result if
+ :func:`os.statvfs`, which returns a tuple, can be made without remembering
+ "magic numbers."  Each of the constants defined in this module is the *index* of
+ the entry in the tuple returned by :func:`os.statvfs` that contains the
+ specified information.
+ 
+ 
+ .. data:: F_BSIZE
+ 
+    Preferred file system block size.
+ 

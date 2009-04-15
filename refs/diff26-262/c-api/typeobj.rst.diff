@@ -1,0 +1,55 @@
+--- rest26/c-api/typeobj.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/c-api/typeobj.rst	2009-04-07 00:06:52.000000000 +0900
+@@ -734,25 +734,25 @@
+    referenceable by adding a weak reference list head slot to the instance layout
+    and setting the :attr:`tp_weaklistoffset` of that slot's offset.
+ 
+    When a type's :attr:`__slots__` declaration contains a slot named
+    :attr:`__weakref__`, that slot becomes the weak reference list head for
+    instances of the type, and the slot's offset is stored in the type's
+    :attr:`tp_weaklistoffset`.
+ 
+    When a type's :attr:`__slots__` declaration does not contain a slot named
+    :attr:`__weakref__`, the type inherits its :attr:`tp_weaklistoffset` from its
+    base type.
+ 
+-The next two fields only exist if the :const:`Py_TPFLAGS_HAVE_CLASS` flag bit is
++The next two fields only exist if the :const:`Py_TPFLAGS_HAVE_ITER` flag bit is
+ set.
+ 
+ 
+ .. cmember:: getiterfunc PyTypeObject.tp_iter
+ 
+    An optional pointer to a function that returns an iterator for the object.  Its
+    presence normally signals that the instances of this type are iterable (although
+    sequences may be iterable without this function, and classic instances always
+    have this function, even if they don't define an :meth:`__iter__` method).
+ 
+    This function has the same signature as :cfunc:`PyObject_GetIter`.
+ 
+@@ -1171,24 +1171,25 @@
+             binaryfunc nb_or;
+             coercion nb_coerce;       /* Used by the coerce() function */
+             unaryfunc nb_int;
+             unaryfunc nb_long;
+             unaryfunc nb_float;
+             unaryfunc nb_oct;
+             unaryfunc nb_hex;
+ 
+             /* Added in release 2.0 */
+             binaryfunc nb_inplace_add;
+             binaryfunc nb_inplace_subtract;
+             binaryfunc nb_inplace_multiply;
++            binaryfunc nb_inplace_divide;
+             binaryfunc nb_inplace_remainder;
+             ternaryfunc nb_inplace_power;
+             binaryfunc nb_inplace_lshift;
+             binaryfunc nb_inplace_rshift;
+             binaryfunc nb_inplace_and;
+             binaryfunc nb_inplace_xor;
+             binaryfunc nb_inplace_or;
+ 
+             /* Added in release 2.2 */
+             binaryfunc nb_floor_divide;
+             binaryfunc nb_true_divide;
+             binaryfunc nb_inplace_floor_divide;

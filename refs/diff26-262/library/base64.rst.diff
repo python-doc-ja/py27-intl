@@ -1,0 +1,30 @@
+--- rest26/library/base64.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/base64.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -54,25 +54,26 @@
+ 
+    Encode string *s* using the standard Base64 alphabet.
+ 
+ 
+ .. function:: standard_b64decode(s)
+ 
+    Decode string *s* using the standard Base64 alphabet.
+ 
+ 
+ .. function:: urlsafe_b64encode(s)
+ 
+    Encode string *s* using a URL-safe alphabet, which substitutes ``-`` instead of
+-   ``+`` and ``_`` instead of ``/`` in the standard Base64 alphabet.
++   ``+`` and ``_`` instead of ``/`` in the standard Base64 alphabet.  The result
++   can still contain ``=``.
+ 
+ 
+ .. function:: urlsafe_b64decode(s)
+ 
+    Decode string *s* using a URL-safe alphabet, which substitutes ``-`` instead of
+    ``+`` and ``_`` instead of ``/`` in the standard Base64 alphabet.
+ 
+ 
+ .. function:: b32encode(s)
+ 
+    Encode a string using Base32.  *s* is the string to encode.  The encoded string
+    is returned.

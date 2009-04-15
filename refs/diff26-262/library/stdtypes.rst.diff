@@ -1,0 +1,547 @@
+--- rest26/library/stdtypes.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/stdtypes.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -237,32 +237,33 @@
+ ``z.real`` and ``z.imag``.
+ 
+ .. index::
+    pair: numeric; literals
+    pair: integer; literals
+    triple: long; integer; literals
+    pair: floating point; literals
+    pair: complex number; literals
+    pair: hexadecimal; literals
+    pair: octal; literals
+ 
+ Numbers are created by numeric literals or as the result of built-in functions
+-and operators.  Unadorned integer literals (including hex and octal numbers)
+-yield plain integers unless the value they denote is too large to be represented
+-as a plain integer, in which case they yield a long integer.  Integer literals
+-with an ``'L'`` or ``'l'`` suffix yield long integers (``'L'`` is preferred
+-because ``1l`` looks too much like eleven!).  Numeric literals containing a
+-decimal point or an exponent sign yield floating point numbers.  Appending
+-``'j'`` or ``'J'`` to a numeric literal yields a complex number with a zero real
+-part. A complex numeric literal is the sum of a real and an imaginary part.
++and operators.  Unadorned integer literals (including binary, hex, and octal
++numbers) yield plain integers unless the value they denote is too large to be
++represented as a plain integer, in which case they yield a long integer.
++Integer literals with an ``'L'`` or ``'l'`` suffix yield long integers (``'L'``
++is preferred because ``1l`` looks too much like eleven!).  Numeric literals
++containing a decimal point or an exponent sign yield floating point numbers.
++Appending ``'j'`` or ``'J'`` to a numeric literal yields a complex number with a
++zero real part. A complex numeric literal is the sum of a real and an imaginary
++part.
+ 
+ .. index::
+    single: arithmetic
+    builtin: int
+    builtin: long
+    builtin: float
+    builtin: complex
+ 
+ Python fully supports mixed arithmetic: when a binary arithmetic operator has
+ operands of different numeric types, the operand with the "narrower" type is
+ widened to that of the other, where plain integer is narrower than long integer
+ is narrower than floating point is narrower than complex. Comparisons between
+@@ -328,64 +329,62 @@
+       triple: long; integer; division
+ 
+    For (plain or long) integer division, the result is an integer. The result is
+    always rounded towards minus infinity: 1/2 is 0, (-1)/2 is -1, 1/(-2) is -1, and
+    (-1)/(-2) is 0.  Note that the result is a long integer if either operand is a
+    long integer, regardless of the numeric value.
+ 
+ (2)
+    .. index::
+       module: math
+       single: floor() (in module math)
+       single: ceil() (in module math)
++      single: trunc() (in module math)
+       pair: numeric; conversions
+-      pair: C; language
+ 
+-   Conversion from floating point to (long or plain) integer may round or
+-   truncate as in C; see functions :func:`math.floor` and :func:`math.ceil` for
+-   well-defined conversions.
+-
+-   .. deprecated:: 2.6
+-      Instead, convert floats to long explicitly with :func:`trunc`.
++   Conversion from floats using :func:`int` or :func:`long` truncates toward
++   zero like the related function, :func:`math.trunc`.  Use the function
++   :func:`math.floor` to round downward and :func:`math.ceil` to round
++   upward.
+ 
+ (3)
+    See :ref:`built-in-funcs` for a full description.
+ 
+ (4)
+    Complex floor division operator, modulo operator, and :func:`divmod`.
+ 
+    .. deprecated:: 2.3
+       Instead convert to float using :func:`abs` if appropriate.
+ 
+ (5)
+    Also referred to as integer division.  The resultant value is a whole integer,
+    though the result's type is not necessarily int.
+ 
+ (6)
+-   float also accepts the strings "nan" and "inf" with an optional prefix "+" 
++   float also accepts the strings "nan" and "inf" with an optional prefix "+"
+    or "-" for Not a Number (NaN) and positive or negative infinity.
+-   
++
+    .. versionadded:: 2.6
+ 
+ (7)
+    Python defines ``pow(0, 0)`` and ``0 ** 0`` to be ``1``, as is common for
+    programming languages.
+ 
+ All :class:`numbers.Real` types (:class:`int`, :class:`long`, and
+ :class:`float`) also include the following operations:
+ 
+ +--------------------+------------------------------------+--------+
+ | Operation          | Result                             | Notes  |
+ +====================+====================================+========+
+-| ``trunc(x)``       | *x* truncated to Integral          |        |
++| ``math.trunc(x)``  | *x* truncated to Integral          |        |
+ +--------------------+------------------------------------+--------+
+ | ``round(x[, n])``  | *x* rounded to n digits,           |        |
+ |                    | rounding half to even. If n is     |        |
+ |                    | omitted, it defaults to 0.         |        |
+ +--------------------+------------------------------------+--------+
+ | ``math.floor(x)``  | the greatest integral float <= *x* |        |
+ +--------------------+------------------------------------+--------+
+ | ``math.ceil(x)``   | the least integral float >= *x*    |        |
+ +--------------------+------------------------------------+--------+
+ 
+ .. XXXJH exceptions: overflow (when? what operations?) zerodivision
+ 
+@@ -448,25 +447,25 @@
+ 
+ Additional Methods on Float
+ ---------------------------
+ 
+ The float type has some additional methods.
+ 
+ .. method:: float.as_integer_ratio()
+ 
+     Return a pair of integers whose ratio is exactly equal to the
+     original float and with a positive denominator.  Raises
+     :exc:`OverflowError` on infinities and a :exc:`ValueError` on
+     NaNs.
+-    
++
+     .. versionadded:: 2.6
+ 
+ Two methods support conversion to
+ and from hexadecimal strings.  Since Python's floats are stored
+ internally as binary numbers, converting a float to or from a
+ *decimal* string usually involves a small rounding error.  In
+ contrast, hexadecimal strings allow exact representation and
+ specification of floating-point numbers.  This can be useful when
+ debugging, and in numerical work.
+ 
+ 
+ .. method:: float.hex()
+@@ -593,27 +592,27 @@
+ protocol.  If a container object's :meth:`__iter__` method is implemented as a
+ generator, it will automatically return an iterator object (technically, a
+ generator object) supplying the :meth:`__iter__` and :meth:`next` methods.
+ 
+ 
+ .. _typesseq:
+ 
+ Sequence Types --- :class:`str`, :class:`unicode`, :class:`list`, :class:`tuple`, :class:`buffer`, :class:`xrange`
+ ==================================================================================================================
+ 
+ There are six sequence types: strings, Unicode strings, lists, tuples, buffers,
+ and xrange objects.
+-(For other containers see the built in :class:`dict`, :class:`list`,
+-:class:`set`, and :class:`tuple` classes, and the :mod:`collections`
+-module.)
++
++For other containers see the built in :class:`dict` and :class:`set` classes,
++and the :mod:`collections` module.
+ 
+ 
+ .. index::
+    object: sequence
+    object: string
+    object: Unicode
+    object: tuple
+    object: list
+    object: buffer
+    object: xrange
+ 
+ String literals are written in single or double quotes: ``'xyzzy'``,
+@@ -787,27 +786,27 @@
+ 
+ .. method:: str.center(width[, fillchar])
+ 
+    Return centered in a string of length *width*. Padding is done using the
+    specified *fillchar* (default is a space).
+ 
+    .. versionchanged:: 2.4
+       Support for the *fillchar* argument.
+ 
+ 
+ .. method:: str.count(sub[, start[, end]])
+ 
+-   Return the number of occurrences of substring *sub* in the range [*start*,
+-   *end*].  Optional arguments *start* and *end* are interpreted as in slice
+-   notation.
++   Return the number of non-overlapping occurrences of substring *sub* in the
++   range [*start*, *end*].  Optional arguments *start* and *end* are
++   interpreted as in slice notation.
+ 
+ 
+ .. method:: str.decode([encoding[, errors]])
+ 
+    Decodes the string using the codec registered for *encoding*. *encoding*
+    defaults to the default string encoding.  *errors* may be given to set a
+    different error handling scheme.  The default is ``'strict'``, meaning that
+    encoding errors raise :exc:`UnicodeError`.  Other possible values are
+    ``'ignore'``, ``'replace'`` and any other name registered via
+    :func:`codecs.register_error`, see section :ref:`codec-base-classes`.
+ 
+    .. versionadded:: 2.2
+@@ -1168,37 +1167,37 @@
+ .. method:: str.upper()
+ 
+    Return a copy of the string converted to uppercase.
+ 
+    For 8-bit strings, this method is locale-dependent.
+ 
+ 
+ .. method:: str.zfill(width)
+ 
+    Return the numeric string left filled with zeros in a string of length
+    *width*.  A sign prefix is handled correctly.  The original string is
+    returned if *width* is less than ``len(s)``.
+-   
++
+ 
+    .. versionadded:: 2.2.2
+ 
+ The following methods are present only on unicode objects:
+ 
+ .. method:: unicode.isnumeric()
+ 
+    Return ``True`` if there are only numeric characters in S, ``False``
+    otherwise. Numeric characters include digit characters, and all characters
+    that have the Unicode numeric value property, e.g. U+2155,
+    VULGAR FRACTION ONE FIFTH.
+-   
++
+ .. method:: unicode.isdecimal()
+ 
+    Return ``True`` if there are only decimal characters in S, ``False``
+    otherwise. Decimal characters include digit characters, and all characters
+    that that can be used to form decimal-radix numbers, e.g. U+0660,
+    ARABIC-INDIC DIGIT ZERO.
+ 
+ 
+ .. _string-formatting:
+ 
+ String Formatting Operations
+ ----------------------------
+@@ -1288,25 +1287,25 @@
+ 
+ The conversion types are:
+ 
+ +------------+-----------------------------------------------------+-------+
+ | Conversion | Meaning                                             | Notes |
+ +============+=====================================================+=======+
+ | ``'d'``    | Signed integer decimal.                             |       |
+ +------------+-----------------------------------------------------+-------+
+ | ``'i'``    | Signed integer decimal.                             |       |
+ +------------+-----------------------------------------------------+-------+
+ | ``'o'``    | Signed octal value.                                 | \(1)  |
+ +------------+-----------------------------------------------------+-------+
+-| ``'u'``    | Obselete type -- it is identical to ``'d'``.        | \(7)  |
++| ``'u'``    | Obsolete type -- it is identical to ``'d'``.        | \(7)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'x'``    | Signed hexadecimal (lowercase).                     | \(2)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'X'``    | Signed hexadecimal (uppercase).                     | \(2)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'e'``    | Floating point exponential format (lowercase).      | \(3)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'E'``    | Floating point exponential format (uppercase).      | \(3)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'f'``    | Floating point decimal format.                      | \(3)  |
+ +------------+-----------------------------------------------------+-------+
+ | ``'F'``    | Floating point decimal format.                      | \(3)  |
+@@ -1370,25 +1369,25 @@
+ 
+    The precision determines the maximal number of characters used.
+ 
+ (7)
+    See :pep:`237`.
+ 
+ Since Python strings have an explicit length, ``%s`` conversions do not assume
+ that ``'\0'`` is the end of the string.
+ 
+ .. XXX Examples?
+ 
+ For safety reasons, floating point precisions are clipped to 50; ``%f``
+-conversions for numbers whose absolute value is over 1e25 are replaced by ``%g``
++conversions for numbers whose absolute value is over 1e50 are replaced by ``%g``
+ conversions. [#]_  All other errors raise exceptions.
+ 
+ .. index::
+    module: string
+    module: re
+ 
+ Additional string operations are defined in standard modules :mod:`string` and
+ :mod:`re`.
+ 
+ 
+ .. _typesseq-xrange:
+ 
+@@ -1640,33 +1639,33 @@
+                set >= other
+ 
+       Test whether every element in *other* is in the set.
+ 
+    .. method:: set > other
+ 
+       Test whether the set is a true superset of *other*, that is, ``set >=
+       other and set != other``.
+ 
+    .. method:: union(other, ...)
+                set | other | ...
+ 
+-      Return a new set with elements from both sets.
++      Return a new set with elements from the set and all others.
+ 
+       .. versionchanged:: 2.6
+          Accepts multiple input iterables.
+ 
+    .. method:: intersection(other, ...)
+                set & other & ...
+ 
+-      Return a new set with elements common to both sets.
++      Return a new set with elements common to the set and all others.
+ 
+       .. versionchanged:: 2.6
+          Accepts multiple input iterables.
+ 
+    .. method:: difference(other, ...)
+                set - other - ...
+ 
+       Return a new set with elements in the set that are not in the others.
+ 
+       .. versionchanged:: 2.6
+          Accepts multiple input iterables.
+ 
+@@ -1857,25 +1856,25 @@
+    These are the operations that dictionaries support (and therefore, custom
+    mapping types should support too):
+ 
+    .. describe:: len(d)
+ 
+       Return the number of items in the dictionary *d*.
+ 
+    .. describe:: d[key]
+ 
+       Return the item of *d* with key *key*.  Raises a :exc:`KeyError` if *key*
+       is not in the map.
+ 
+-      .. versionadded:: 2.5 
++      .. versionadded:: 2.5
+          If a subclass of dict defines a method :meth:`__missing__`, if the key
+          *key* is not present, the ``d[key]`` operation calls that method with
+          the key *key* as argument.  The ``d[key]`` operation then returns or
+          raises whatever is returned or raised by the ``__missing__(key)`` call
+          if the key is not present. No other operations or methods invoke
+          :meth:`__missing__`. If :meth:`__missing__` is not defined,
+          :exc:`KeyError` is raised.  :meth:`__missing__` must be a method; it
+          cannot be an instance variable. For an example, see
+          :class:`collections.defaultdict`.
+ 
+    .. describe:: d[key] = value
+ 
+@@ -1889,24 +1888,29 @@
+    .. describe:: key in d
+ 
+       Return ``True`` if *d* has a key *key*, else ``False``.
+ 
+       .. versionadded:: 2.2
+ 
+    .. describe:: key not in d
+ 
+       Equivalent to ``not key in d``.
+ 
+       .. versionadded:: 2.2
+ 
++   .. describe:: iter(d)
++
++      Return an iterator over the keys of the dictionary.  This is a shortcut
++      for :meth:`iterkeys`.
++
+    .. method:: clear()
+ 
+       Remove all items from the dictionary.
+ 
+    .. method:: copy()
+ 
+       Return a shallow copy of the dictionary.
+ 
+    .. method:: fromkeys(seq[, value])
+ 
+       Create a new dictionary with keys from *seq* and values set to *value*.
+ 
+@@ -1914,25 +1918,26 @@
+       defaults to ``None``.
+ 
+       .. versionadded:: 2.3
+ 
+    .. method:: get(key[, default])
+ 
+       Return the value for *key* if *key* is in the dictionary, else *default*.
+       If *default* is not given, it defaults to ``None``, so that this method
+       never raises a :exc:`KeyError`.
+ 
+    .. method:: has_key(key)
+ 
+-      ``dict.has_key(key)`` is equivalent to ``key in d``, but deprecated.
++      Test for the presence of *key* in the dictionary.  :meth:`has_key` is
++      deprecated in favor of ``key in d``.
+ 
+    .. method:: items()
+ 
+       Return a copy of the dictionary's list of ``(key, value)`` pairs.
+ 
+       .. note::
+ 
+          Keys and values are listed in an arbitrary order which is non-random,
+          varies across Python implementations, and depends on the dictionary's
+          history of insertions and deletions. If :meth:`items`, :meth:`keys`,
+          :meth:`values`, :meth:`iteritems`, :meth:`iterkeys`, and
+          :meth:`itervalues` are called with no intervening modifications to the
+@@ -1940,38 +1945,47 @@
+          creation of ``(value, key)`` pairs using :func:`zip`: ``pairs =
+          zip(d.values(), d.keys())``.  The same relationship holds for the
+          :meth:`iterkeys` and :meth:`itervalues` methods: ``pairs =
+          zip(d.itervalues(), d.iterkeys())`` provides the same value for
+          ``pairs``. Another way to create the same list is ``pairs = [(v, k) for
+          (k, v) in d.iteritems()]``.
+ 
+    .. method:: iteritems()
+ 
+       Return an iterator over the dictionary's ``(key, value)`` pairs.  See the
+       note for :meth:`dict.items`.
+ 
++      Using :meth:`iteritems` while adding or deleting entries in the dictionary
++      will raise a :exc:`RuntimeError`.
++
+       .. versionadded:: 2.2
+ 
+    .. method:: iterkeys()
+ 
+       Return an iterator over the dictionary's keys.  See the note for
+       :meth:`dict.items`.
+ 
++      Using :meth:`iterkeys` while adding or deleting entries in the dictionary
++      will raise a :exc:`RuntimeError`.
++
+       .. versionadded:: 2.2
+ 
+    .. method:: itervalues()
+ 
+       Return an iterator over the dictionary's values.  See the note for
+       :meth:`dict.items`.
+ 
++      Using :meth:`itervalues` while adding or deleting entries in the
++      dictionary will raise a :exc:`RuntimeError`.
++
+       .. versionadded:: 2.2
+ 
+    .. method:: keys()
+ 
+       Return a copy of the dictionary's list of keys.  See the note for
+       :meth:`dict.items`.
+ 
+    .. method:: pop(key[, default])
+ 
+       If *key* is in the dictionary, remove it and return its value, else return
+       *default*.  If *default* is not given and *key* is not in the dictionary,
+       a :exc:`KeyError` is raised.
+@@ -2175,25 +2189,25 @@
+ 
+    .. deprecated:: 2.3
+       Use ``for line in file`` instead.
+ 
+ 
+ .. method:: file.seek(offset[, whence])
+ 
+    Set the file's current position, like ``stdio``'s :cfunc:`fseek`. The *whence*
+    argument is optional and defaults to  ``os.SEEK_SET`` or ``0`` (absolute file
+    positioning); other values are ``os.SEEK_CUR`` or ``1`` (seek relative to the
+    current position) and ``os.SEEK_END`` or ``2``  (seek relative to the file's
+    end).  There is no return value.
+-   
++
+    For example, ``f.seek(2, os.SEEK_CUR)`` advances the position by two and
+    ``f.seek(-3, os.SEEK_END)`` sets the position to the third to last.
+ 
+    Note that if the file is opened for appending
+    (mode ``'a'`` or ``'a+'``), any :meth:`seek` operations will be undone at the
+    next write.  If the file is only opened for writing in append mode (mode
+    ``'a'``), this method is essentially a no-op, but it remains useful for files
+    opened in append mode with reading enabled (mode ``'a+'``).  If the file is
+    opened in text mode (without ``'b'``), only offsets returned by :meth:`tell` are
+    legal.  Use of other offsets causes undefined behavior.
+ 
+    Note that not all file objects are seekable.
+@@ -2629,24 +2643,50 @@
+ 
+ 
+ .. attribute:: class.__bases__
+ 
+    The tuple of base classes of a class object.  If there are no base classes, this
+    will be an empty tuple.
+ 
+ 
+ .. attribute:: class.__name__
+ 
+    The name of the class or type.
+ 
++
++The following attributes are only supported by :term:`new-style class`\ es.
++
++.. attribute:: class.__mro__
++
++   This attribute is a tuple of classes that are considered when looking for
++   base classes during method resolution.
++
++
++.. method:: class.mro()
++
++   This method can be overridden by a metaclass to customize the method
++   resolution order for its instances.  It is called at class instantiation, and
++   its result is stored in :attr:`__mro__`.
++
++
++.. method:: class.__subclasses__
++
++   Each new-style class keeps a list of weak references to its immediate
++   subclasses.  This method returns a list of all those references still alive.
++   Example::
++
++      >>> int.__subclasses__()
++      [<type 'bool'>]
++
++
+ .. rubric:: Footnotes
+ 
+ .. [#] Additional information on these special methods may be found in the Python
+    Reference Manual (:ref:`customization`).
+ 
+ .. [#] As a consequence, the list ``[1, 2]`` is considered equal to ``[1.0, 2.0]``, and
+    similarly for tuples.
+ 
+ .. [#] They must have since the parser can't tell the type of the operands.
+ 
+ .. [#] To format only a tuple you should therefore provide a singleton tuple whose only
+    element is the tuple to be formatted.

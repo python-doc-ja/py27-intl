@@ -1,0 +1,56 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to79__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/copy.rst =&gt; rest262/library/copy.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to79__0"></td><td class="diff_header" id="from79_15">15</td><td nowrap="nowrap">Interface&nbsp;summary::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_17">17</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;copy</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_18">18</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_19">19</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;copy.copy(y)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;make&nbsp;a&nbsp;shallow&nbsp;copy&nbsp;of&nbsp;y</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_20">20</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;copy.deepcopy(y)&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;make&nbsp;a&nbsp;deep&nbsp;copy&nbsp;of&nbsp;y</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_21">21</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_22">22</td><td nowrap="nowrap">For&nbsp;module&nbsp;specific&nbsp;errors,&nbsp;:exc:`copy.error`&nbsp;is&nbsp;raised.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to79__1">n</a></td><td class="diff_header" id="from79_23">23-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from79_24">24-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;%&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from79_25">25</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_26">26</td><td nowrap="nowrap">The&nbsp;difference&nbsp;between&nbsp;shallow&nbsp;and&nbsp;deep&nbsp;copying&nbsp;is&nbsp;only&nbsp;relevant&nbsp;for&nbsp;compound</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_27">27</td><td nowrap="nowrap">objects&nbsp;(objects&nbsp;that&nbsp;contain&nbsp;other&nbsp;objects,&nbsp;like&nbsp;lists&nbsp;or&nbsp;class&nbsp;instances):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_28">28</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_29">29</td><td nowrap="nowrap">*&nbsp;A&nbsp;*shallow&nbsp;copy*&nbsp;constructs&nbsp;a&nbsp;new&nbsp;compound&nbsp;object&nbsp;and&nbsp;then&nbsp;(to&nbsp;the&nbsp;extent</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_30">30</td><td nowrap="nowrap">&nbsp;&nbsp;possible)&nbsp;inserts&nbsp;*references*&nbsp;into&nbsp;it&nbsp;to&nbsp;the&nbsp;objects&nbsp;found&nbsp;in&nbsp;the&nbsp;original.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_31">31</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_32">32</td><td nowrap="nowrap">*&nbsp;A&nbsp;*deep&nbsp;copy*&nbsp;constructs&nbsp;a&nbsp;new&nbsp;compound&nbsp;object&nbsp;and&nbsp;then,&nbsp;recursively,&nbsp;inserts</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to79__1"></td><td class="diff_header" id="from79_49">49</td><td nowrap="nowrap">*&nbsp;letting&nbsp;user-defined&nbsp;classes&nbsp;override&nbsp;the&nbsp;copying&nbsp;operation&nbsp;or&nbsp;the&nbsp;set&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;components&nbsp;copied.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_51">51</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_52">52</td><td nowrap="nowrap">This&nbsp;module&nbsp;does&nbsp;not&nbsp;copy&nbsp;types&nbsp;like&nbsp;module,&nbsp;method,&nbsp;stack&nbsp;trace,&nbsp;stack&nbsp;frame,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_53">53</td><td nowrap="nowrap">file,&nbsp;socket,&nbsp;window,&nbsp;array,&nbsp;or&nbsp;any&nbsp;similar&nbsp;types.&nbsp;&nbsp;It&nbsp;does&nbsp;"copy"&nbsp;functions&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_54">54</td><td nowrap="nowrap">classes&nbsp;(shallow&nbsp;and&nbsp;deeply),&nbsp;by&nbsp;returning&nbsp;the&nbsp;original&nbsp;object&nbsp;unchanged;&nbsp;this</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_55">55</td><td nowrap="nowrap">is&nbsp;compatible&nbsp;with&nbsp;the&nbsp;way&nbsp;these&nbsp;are&nbsp;treated&nbsp;by&nbsp;the&nbsp;:mod:`pickle`&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_56">56</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to79__top">t</a></td><td class="diff_header" id="to79_55">55+</td><td nowrap="nowrap"><span class="diff_add">Shallow&nbsp;copies&nbsp;of&nbsp;dictionaries&nbsp;can&nbsp;be&nbsp;made&nbsp;using&nbsp;:meth:`dict.copy`,&nbsp;and</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to79_56">56+</td><td nowrap="nowrap"><span class="diff_add">of&nbsp;lists&nbsp;by&nbsp;assigning&nbsp;a&nbsp;slice&nbsp;of&nbsp;the&nbsp;entire&nbsp;list,&nbsp;for&nbsp;example,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to79_57">57+</td><td nowrap="nowrap"><span class="diff_add">``copied_list&nbsp;=&nbsp;original_list[:]``.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to79_58">58+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from79_57">57</td><td nowrap="nowrap">..&nbsp;versionchanged::&nbsp;2.5</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_58">58</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Added&nbsp;copying&nbsp;functions.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_59">59</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_60">60</td><td nowrap="nowrap">..&nbsp;index::&nbsp;module:&nbsp;pickle</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_61">61</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_62">62</td><td nowrap="nowrap">Classes&nbsp;can&nbsp;use&nbsp;the&nbsp;same&nbsp;interfaces&nbsp;to&nbsp;control&nbsp;copying&nbsp;that&nbsp;they&nbsp;use&nbsp;to&nbsp;control</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_63">63</td><td nowrap="nowrap">pickling.&nbsp;&nbsp;See&nbsp;the&nbsp;description&nbsp;of&nbsp;module&nbsp;:mod:`pickle`&nbsp;for&nbsp;information&nbsp;on&nbsp;these</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_64">64</td><td nowrap="nowrap">methods.&nbsp;&nbsp;The&nbsp;:mod:`copy`&nbsp;module&nbsp;does&nbsp;not&nbsp;use&nbsp;the&nbsp;:mod:`copy_reg`&nbsp;registration</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

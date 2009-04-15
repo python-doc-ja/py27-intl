@@ -1,0 +1,277 @@
+--- rest26/documenting/markup.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/documenting/markup.rst	2009-04-05 05:02:10.000000000 +0900
+@@ -1,40 +1,27 @@
+ .. highlightlang:: rest
+ 
+ Additional Markup Constructs
+ ============================
+ 
+ Sphinx adds a lot of new directives and interpreted text roles to standard reST
+ markup.  This section contains the reference material for these facilities.
+ Documentation for "standard" reST constructs is not included here, though
+ they are used in the Python documentation.
+ 
+-File-wide metadata
+-------------------
+-
+-reST has the concept of "field lists"; these are a sequence of fields marked up
+-like this::
+-
+-   :Field name: Field content
+-
+-A field list at the very top of a file is parsed as the "docinfo", which in
+-normal documents can be used to record the author, date of publication and
+-other metadata.  In Sphinx, the docinfo is used as metadata, too, but not
+-displayed in the output.
+-
+-At the moment, only one metadata field is recognized:
++.. note::
+ 
+-``nocomments``
+-   If set, the web application won't display a comment form for a page generated
+-   from this source file.
++   This is just an overview of Sphinx' extended markup capabilities; full
++   coverage can be found in `its own documentation
++   <http://sphinx.pocoo.org/contents.html>`_.
+ 
+ 
+ Meta-information markup
+ -----------------------
+ 
+ .. describe:: sectionauthor
+ 
+    Identifies the author of the current section.  The argument should include
+    the author's name such that it can be used for presentation (though it isn't)
+    and email address.  The domain name portion of the address should be lower
+    case.  Example::
+ 
+@@ -79,25 +66,24 @@
+    The ``synopsis`` option should consist of one sentence describing the
+    module's purpose -- it is currently only used in the Global Module Index.
+ 
+    The ``deprecated`` option can be given (with no value) to mark a module as
+    deprecated; it will be designated as such in various locations then.
+ 
+ .. describe:: moduleauthor
+ 
+    The ``moduleauthor`` directive, which can appear multiple times, names the
+    authors of the module code, just like ``sectionauthor`` names the author(s)
+    of a piece of documentation.  It too does not result in any output currently.
+ 
+-
+ .. note::
+ 
+    It is important to make the section title of a module-describing file
+    meaningful since that value will be inserted in the table-of-contents trees
+    in overview files.
+ 
+ 
+ Information units
+ -----------------
+ 
+ There are a number of directives used to describe specific features provided by
+ modules.  Each directive requires one or more signatures to provide basic
+@@ -263,25 +249,25 @@
+ 
+ * Within Python highlighting mode, interactive sessions are recognized
+   automatically and highlighted appropriately.
+ 
+ * The highlighting language can be changed using the ``highlightlang``
+   directive, used as follows::
+ 
+      .. highlightlang:: c
+ 
+   This language is used until the next ``highlightlang`` directive is
+   encountered.
+ 
+-* The valid values for the highlighting language are:
++* The values normally used for the highlighting language are:
+ 
+   * ``python`` (the default)
+   * ``c``
+   * ``rest``
+   * ``none`` (no highlighting)
+ 
+ * If highlighting with the current language fails, the block is not highlighted
+   in any way.
+ 
+ Longer displays of verbatim text may be included by storing the example text in
+ an external file containing only plain text.  The file may be included using the
+ ``literalinclude`` directive. [1]_ For example, to include the Python source file
+@@ -290,50 +276,63 @@
+    .. literalinclude:: example.py
+ 
+ The file name is relative to the current file's path.  Documentation-specific
+ include files should be placed in the ``Doc/includes`` subdirectory.
+ 
+ 
+ Inline markup
+ -------------
+ 
+ As said before, Sphinx uses interpreted text roles to insert semantic markup in
+ documents.
+ 
+-Variable names are an exception, they should be marked simply with ``*var*``.
++Names of local variables, such as function/method arguments, are an exception,
++they should be marked simply with ``*var*``.
+ 
+ For all other roles, you have to write ``:rolename:`content```.
+ 
+-.. note::
++There are some additional facilities that make cross-referencing roles more
++versatile:
++
++* You may supply an explicit title and reference target, like in reST direct
++  hyperlinks: ``:role:`title <target>``` will refer to *target*, but the link
++  text will be *title*.
++
++* If you prefix the content with ``!``, no reference/hyperlink will be created.
++
++* For the Python object roles, if you prefix the content with ``~``, the link
++  text will only be the last component of the target.  For example,
++  ``:meth:`~Queue.Queue.get``` will refer to ``Queue.Queue.get`` but only
++  display ``get`` as the link text.
+ 
+-   For all cross-referencing roles, if you prefix the content with ``!``, no
+-   reference/hyperlink will be created.
++  In HTML output, the link's ``title`` attribute (that is e.g. shown as a
++  tool-tip on mouse-hover) will always be the full target name.
+ 
+ The following roles refer to objects in modules and are possibly hyperlinked if
+ a matching identifier is found:
+ 
+ .. describe:: mod
+ 
+    The name of a module; a dotted name may be used.  This should also be used for
+    package names.
+ 
+ .. describe:: func
+ 
+    The name of a Python function; dotted names may be used.  The role text
+    should not include trailing parentheses to enhance readability.  The
+    parentheses are stripped when searching for identifiers.
+ 
+ .. describe:: data
+ 
+-   The name of a module-level variable.
++   The name of a module-level variable or constant.
+ 
+ .. describe:: const
+ 
+    The name of a "defined" constant.  This may be a C-language ``#define``
+    or a Python variable that is not intended to be changed.
+ 
+ .. describe:: class
+ 
+    A class name; a dotted name may be used.
+ 
+ .. describe:: meth
+ 
+@@ -513,25 +512,25 @@
+    extension should be omitted for Windows programs.
+ 
+ .. describe:: regexp
+ 
+    A regular expression. Quotes should not be included.
+ 
+ .. describe:: samp
+ 
+    A piece of literal text, such as code.  Within the contents, you can use
+    curly braces to indicate a "variable" part, as in ``:file:``.
+ 
+    If you don't need the "variable part" indication, use the standard
+-   ````code```` instead.   
++   ````code```` instead.
+ 
+ .. describe:: var
+ 
+    A Python or C variable or parameter name.
+ 
+ 
+ The following roles generate external links:
+ 
+ .. describe:: pep
+ 
+    A reference to a Python Enhancement Proposal.  This generates appropriate
+    index entries. The text "PEP *number*\ " is generated; in the HTML output,
+@@ -604,25 +603,25 @@
+ .. describe:: versionadded
+ 
+    This directive documents the version of Python which added the described
+    feature to the library or C API. When this applies to an entire module, it
+    should be placed at the top of the module section before any prose.
+ 
+    The first argument must be given and is the version in question; you can add
+    a second argument consisting of a *brief* explanation of the change.
+ 
+    Example::
+ 
+       .. versionadded:: 2.5
+-         The `spam` parameter.
++         The *spam* parameter.
+ 
+    Note that there must be no blank line between the directive head and the
+    explanation; this is to make these blocks visually continuous in the markup.
+ 
+ .. describe:: versionchanged
+ 
+    Similar to ``versionadded``, but describes when and what changed in the named
+    feature in some way (new parameters, changed side effects, etc.).
+ 
+ --------------
+ 
+ .. describe:: seealso
+@@ -765,50 +764,50 @@
+ 
+ .. describe:: productionlist
+ 
+    This directive is used to enclose a group of productions.  Each production is
+    given on a single line and consists of a name, separated by a colon from the
+    following definition.  If the definition spans multiple lines, each
+    continuation line must begin with a colon placed at the same column as in the
+    first line.
+ 
+    Blank lines are not allowed within ``productionlist`` directive arguments.
+ 
+    The definition can contain token names which are marked as interpreted text
+-   (e.g. ``sum ::= `integer` "+" `integer```) -- this generates cross-references
++   (e.g. ``unaryneg ::= "-" `integer```) -- this generates cross-references
+    to the productions of these tokens.
+ 
+    Note that no further reST parsing is done in the production, so that you
+    don't have to escape ``*`` or ``|`` characters.
+ 
+ 
+-.. XXX describe optional first parameter 
++.. XXX describe optional first parameter
+ 
+ The following is an example taken from the Python Reference Manual::
+ 
+    .. productionlist::
+       try_stmt: try1_stmt | try2_stmt
+       try1_stmt: "try" ":" `suite`
+                : ("except" [`expression` ["," `target`]] ":" `suite`)+
+                : ["else" ":" `suite`]
+                : ["finally" ":" `suite`]
+       try2_stmt: "try" ":" `suite`
+                : "finally" ":" `suite`
+ 
+ 
+ Substitutions
+ -------------
+ 
+ The documentation system provides three substitutions that are defined by default.
+-They are set in the build configuration file, see :ref:`doc-build-config`.
++They are set in the build configuration file :file:`conf.py`.
+ 
+ .. describe:: |release|
+ 
+    Replaced by the Python release the documentation refers to.  This is the full
+    version string including alpha/beta/release candidate tags, e.g. ``2.5.2b3``.
+ 
+ .. describe:: |version|
+ 
+    Replaced by the Python version the documentation refers to. This consists
+    only of the major and minor version parts, e.g. ``2.5``, even for version
+    2.5.1.
+ 

@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to142__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/rexec.rst =&gt; rest262/library/rexec.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to142__0"><a href="#difflib_chg_to142__0">f</a></td><td class="diff_header" id="from142_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_2">2</td><td nowrap="nowrap">:mod:`rexec`&nbsp;---&nbsp;Restricted&nbsp;execution&nbsp;framework</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_3">3</td><td nowrap="nowrap">===============================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;rexec</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Basic&nbsp;restricted&nbsp;execution&nbsp;framework.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_7">7</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:deprecated:</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to142__1">n</a></td><td class="diff_header" id="from142_8">8-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to142__1">n</a></td><td class="diff_header" id="to142_8">8+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from142_9">9</td><td nowrap="nowrap">..&nbsp;deprecated::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_10">10</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`rexec`&nbsp;module&nbsp;has&nbsp;been&nbsp;removed&nbsp;in&nbsp;Python&nbsp;3.0.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_11">11</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_12">12</td><td nowrap="nowrap">..&nbsp;versionchanged::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_13">13</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Disabled&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_15">15</td><td nowrap="nowrap">..&nbsp;warning::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_16">16</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to142__1"></td><td class="diff_header" id="from142_267">267</td><td nowrap="nowrap">:file:`/tmp`&nbsp;to&nbsp;be&nbsp;written,&nbsp;we&nbsp;can&nbsp;subclass&nbsp;the&nbsp;:class:`RExec`&nbsp;class::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_268">268</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_269">269</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;class&nbsp;TmpWriterRExec(rexec.RExec):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_270">270</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;r_open(self,&nbsp;file,&nbsp;mode='r',&nbsp;buf=-1):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_271">271</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;mode&nbsp;in&nbsp;('r',&nbsp;'rb'):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_272">272</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_273">273</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elif&nbsp;mode&nbsp;in&nbsp;('w',&nbsp;'wb',&nbsp;'a',&nbsp;'ab'):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_274">274</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;check&nbsp;filename&nbsp;:&nbsp;must&nbsp;begin&nbsp;with&nbsp;/tmp/</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to142__top">t</a></td><td class="diff_header" id="from142_275">275-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;file[:5]!='/tmp/':<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to142__top">t</a></td><td class="diff_header" id="to142_275">275+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;file[:5]!='/tmp/':</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from142_276">276</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;IOError,&nbsp;"can't&nbsp;write&nbsp;outside&nbsp;/tmp"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_277">277</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elif&nbsp;(string.find(file,&nbsp;'/../')&nbsp;&gt;=&nbsp;0&nbsp;or</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_278">278</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;file[:3]&nbsp;==&nbsp;'../'&nbsp;or&nbsp;file[-3:]&nbsp;==&nbsp;'/..'):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_279">279</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;IOError,&nbsp;"'..'&nbsp;in&nbsp;filename&nbsp;forbidden"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_280">280</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:&nbsp;raise&nbsp;IOError,&nbsp;"Illegal&nbsp;open()&nbsp;mode"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_281">281</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;open(file,&nbsp;mode,&nbsp;buf)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_282">282</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from142_283">283</td><td nowrap="nowrap">Notice&nbsp;that&nbsp;the&nbsp;above&nbsp;code&nbsp;will&nbsp;occasionally&nbsp;forbid&nbsp;a&nbsp;perfectly&nbsp;valid&nbsp;filename;</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

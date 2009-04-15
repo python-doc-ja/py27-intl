@@ -1,0 +1,62 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to68__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/compiler.rst =&gt; rest262/library/compiler.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to68__0"></td><td class="diff_header" id="from68_554">554</td><td nowrap="nowrap">In&nbsp;the&nbsp;interactive&nbsp;interpreter&nbsp;session&nbsp;below,&nbsp;I&nbsp;have&nbsp;reformatted&nbsp;the&nbsp;long&nbsp;AST</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_555">555</td><td nowrap="nowrap">reprs&nbsp;for&nbsp;readability.&nbsp;&nbsp;The&nbsp;AST&nbsp;reprs&nbsp;use&nbsp;unqualified&nbsp;class&nbsp;names.&nbsp;&nbsp;If&nbsp;you&nbsp;want</td></tr>            <tr><td class="diff_next" id="difflib_chg_to68__1"></td><td class="diff_header" id="from68_556">556</td><td nowrap="nowrap">to&nbsp;create&nbsp;an&nbsp;instance&nbsp;from&nbsp;a&nbsp;repr,&nbsp;you&nbsp;must&nbsp;import&nbsp;the&nbsp;class&nbsp;names&nbsp;from&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_557">557</td><td nowrap="nowrap">:mod:`compiler.ast`&nbsp;module.&nbsp;::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_558">558</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to68__2"></td><td class="diff_header" id="from68_559">559</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;compiler</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_560">560</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;mod&nbsp;=&nbsp;compiler.parseFile("/tmp/doublelib.py")</td></tr>            <tr><td class="diff_next" id="difflib_chg_to68__3"></td><td class="diff_header" id="from68_561">561</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;mod</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__1">n</a></td><td class="diff_header" id="from68_562">562-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__1">n</a></td><td class="diff_header" id="to68_562">562+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',</td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to68__4"></td><td class="diff_header" id="from68_563">563</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Function(None,&nbsp;'double',&nbsp;['x'],&nbsp;[],&nbsp;0,</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__2">n</a></td><td class="diff_header" id="from68_564">564-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__2">n</a></td><td class="diff_header" id="to68_564">564+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',</td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to68__5"></td><td class="diff_header" id="from68_565">565</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Return(Mul((Name('x'),&nbsp;Const(2))))]))]))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_566">566</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;from&nbsp;compiler.ast&nbsp;import&nbsp;*</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__3">n</a></td><td class="diff_header" id="from68_567">567-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__3">n</a></td><td class="diff_header" id="to68_567">567+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from68_568">568</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Function(None,&nbsp;'double',&nbsp;['x'],&nbsp;[],&nbsp;0,</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__4">n</a></td><td class="diff_header" id="from68_569">569-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__4">n</a></td><td class="diff_header" id="to68_569">569+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from68_570">570</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Return(Mul((Name('x'),&nbsp;Const(2))))]))]))</td></tr><tr><td class="diff_next" id="difflib_chg_to68__6"><a href="#difflib_chg_to68__5">n</a></td><td class="diff_header" id="from68_571">571-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to68__6"><a href="#difflib_chg_to68__5">n</a></td><td class="diff_header" id="to68_571">571+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module('This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n',</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from68_572">572</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Function(None,&nbsp;'double',&nbsp;['x'],&nbsp;[],&nbsp;0,</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__6">n</a></td><td class="diff_header" id="from68_573">573-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__6">n</a></td><td class="diff_header" id="to68_573">573+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from68_574">574</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Return(Mul((Name('x'),&nbsp;Const(2))))]))]))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_575">575</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;mod.doc</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_576">576</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;'This&nbsp;is&nbsp;an&nbsp;example&nbsp;module.\n\nThis&nbsp;is&nbsp;the&nbsp;docstring.\n'</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_577">577</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;node&nbsp;in&nbsp;mod.node.nodes:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_578">578</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;node</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to68__top">t</a></td><td class="diff_header" id="from68_579">579-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to68__top">t</a></td><td class="diff_header" id="to68_579">579+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from68_580">580</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Function(None,&nbsp;'double',&nbsp;['x'],&nbsp;[],&nbsp;0,&nbsp;'Return&nbsp;twice&nbsp;the&nbsp;argument',</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_581">581</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stmt([Return(Mul((Name('x'),&nbsp;Const(2))))]))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_582">582</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;func&nbsp;=&nbsp;mod.node.nodes[0]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_583">583</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;func.code</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_584">584</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Stmt([Return(Mul((Name('x'),&nbsp;Const(2))))])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_585">585</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_586">586</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from68_587">587</td><td nowrap="nowrap">Using&nbsp;Visitors&nbsp;to&nbsp;Walk&nbsp;ASTs</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

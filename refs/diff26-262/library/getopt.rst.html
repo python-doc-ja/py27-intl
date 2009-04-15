@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to95__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/getopt.rst =&gt; rest262/library/getopt.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to95__0"></td><td class="diff_header" id="from95_58">58</td><td nowrap="nowrap">..&nbsp;function::&nbsp;gnu_getopt(args,&nbsp;options[,&nbsp;long_options])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_59">59</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;works&nbsp;like&nbsp;:func:`getopt`,&nbsp;except&nbsp;that&nbsp;GNU&nbsp;style&nbsp;scanning&nbsp;mode&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_61">61</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;used&nbsp;by&nbsp;default.&nbsp;This&nbsp;means&nbsp;that&nbsp;option&nbsp;and&nbsp;non-option&nbsp;arguments&nbsp;may&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_62">62</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;intermixed.&nbsp;The&nbsp;:func:`getopt`&nbsp;function&nbsp;stops&nbsp;processing&nbsp;options&nbsp;as&nbsp;soon&nbsp;as&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_63">63</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;non-option&nbsp;argument&nbsp;is&nbsp;encountered.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_64">64</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_65">65</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;If&nbsp;the&nbsp;first&nbsp;character&nbsp;of&nbsp;the&nbsp;option&nbsp;string&nbsp;is&nbsp;'+',&nbsp;or&nbsp;if&nbsp;the&nbsp;environment</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to95__top">t</a></td><td class="diff_header" id="from95_66">66-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;variable&nbsp;POSIXLY_CORRECT&nbsp;is&nbsp;set,&nbsp;then&nbsp;option&nbsp;processing&nbsp;stops&nbsp;as<span class="diff_sub">&nbsp;soon&nbsp;as&nbsp;a</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to95__top">t</a></td><td class="diff_header" id="to95_66">66+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;variable&nbsp;<span class="diff_add">:envvar:`</span>POSIXLY_CORRECT<span class="diff_add">`</span>&nbsp;is&nbsp;set,&nbsp;then&nbsp;option&nbsp;processing&nbsp;stops&nbsp;as</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from95_67">67-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;non-option&nbsp;argument&nbsp;is&nbsp;encountered.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to95_67">67+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;soon&nbsp;as&nbsp;a</span>&nbsp;non-option&nbsp;argument&nbsp;is&nbsp;encountered.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from95_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_69">69</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_70">70</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_71">71</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_72">72</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;GetoptError</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_73">73</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_74">74</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;raised&nbsp;when&nbsp;an&nbsp;unrecognized&nbsp;option&nbsp;is&nbsp;found&nbsp;in&nbsp;the&nbsp;argument&nbsp;list&nbsp;or&nbsp;when</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from95_75">75</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;an&nbsp;option&nbsp;requiring&nbsp;an&nbsp;argument&nbsp;is&nbsp;given&nbsp;none.&nbsp;The&nbsp;argument&nbsp;to&nbsp;the&nbsp;exception&nbsp;is</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

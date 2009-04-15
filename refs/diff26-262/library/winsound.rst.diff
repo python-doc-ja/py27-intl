@@ -1,0 +1,61 @@
+--- rest26/library/winsound.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/winsound.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -21,26 +21,27 @@
+    of the sound, and must be in the range 37 through 32,767. The *duration*
+    parameter specifies the number of milliseconds the sound should last.  If the
+    system is not able to beep the speaker, :exc:`RuntimeError` is raised.
+ 
+    .. versionadded:: 1.6
+ 
+ 
+ .. function:: PlaySound(sound, flags)
+ 
+    Call the underlying :cfunc:`PlaySound` function from the Platform API.  The
+    *sound* parameter may be a filename, audio data as a string, or ``None``.  Its
+    interpretation depends on the value of *flags*, which can be a bitwise ORed
+-   combination of the constants described below.  If the system indicates an error,
+-   :exc:`RuntimeError` is raised.
++   combination of the constants described below. If the *sound* parameter is
++   ``None``, any currently playing waveform sound is stopped. If the system
++   indicates an error, :exc:`RuntimeError` is raised.
+ 
+ 
+ .. function:: MessageBeep([type=MB_OK])
+ 
+    Call the underlying :cfunc:`MessageBeep` function from the Platform API.  This
+    plays a sound as specified in the registry.  The *type* argument specifies which
+    sound to play; possible values are ``-1``, ``MB_ICONASTERISK``,
+    ``MB_ICONEXCLAMATION``, ``MB_ICONHAND``, ``MB_ICONQUESTION``, and ``MB_OK``, all
+    described below.  The value ``-1`` produces a "simple beep"; this is the final
+    fallback if a sound cannot be played otherwise.
+ 
+    .. versionadded:: 2.3
+@@ -99,24 +100,28 @@
+    string.
+ 
+    .. note::
+ 
+       This module does not support playing from a memory image asynchronously, so a
+       combination of this flag and :const:`SND_ASYNC` will raise :exc:`RuntimeError`.
+ 
+ 
+ .. data:: SND_PURGE
+ 
+    Stop playing all instances of the specified sound.
+ 
++   .. note::
++
++      This flag is not supported on modern Windows platforms.
++
+ 
+ .. data:: SND_ASYNC
+ 
+    Return immediately, allowing sounds to play asynchronously.
+ 
+ 
+ .. data:: SND_NODEFAULT
+ 
+    If the specified sound cannot be found, do not play the system default sound.
+ 
+ 
+ .. data:: SND_NOSTOP

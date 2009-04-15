@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to24__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/distutils/setupscript.rst =&gt; rest262/distutils/setupscript.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to24__0"></td><td class="diff_header" id="from24_208">208</td><td nowrap="nowrap">extension.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_209">209</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_210">210</td><td nowrap="nowrap">**\*\***&nbsp;SWIG&nbsp;support&nbsp;is&nbsp;rough&nbsp;around&nbsp;the&nbsp;edges&nbsp;and&nbsp;largely&nbsp;untested!&nbsp;**\*\***</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_211">211</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_212">212</td><td nowrap="nowrap">This&nbsp;warning&nbsp;notwithstanding,&nbsp;options&nbsp;to&nbsp;SWIG&nbsp;can&nbsp;be&nbsp;currently&nbsp;passed&nbsp;like</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_213">213</td><td nowrap="nowrap">this::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_214">214</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_215">215</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;setup(...,</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to24__1">n</a></td><td class="diff_header" id="from24_216">216-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ext_modules=[Extension('_foo',&nbsp;['foo.i'],<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to24__1">n</a></td><td class="diff_header" id="to24_216">216+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ext_modules=[Extension('_foo',&nbsp;['foo.i'],</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_217">217</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swig_opts=['-modern',&nbsp;'-I../include'])],</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_218">218</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;py_modules=['foo'],</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_219">219</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_220">220</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_221">221</td><td nowrap="nowrap">Or&nbsp;on&nbsp;the&nbsp;commandline&nbsp;like&nbsp;this::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_222">222</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_223">223</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&nbsp;python&nbsp;setup.py&nbsp;build_ext&nbsp;--swig-opts="-modern&nbsp;-I../include"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_224">224</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to24__1"></td><td class="diff_header" id="from24_557">557</td><td nowrap="nowrap">+----------------------+---------------------------+-----------------+--------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_558">558</td><td nowrap="nowrap">|&nbsp;``long_description``&nbsp;|&nbsp;longer&nbsp;description&nbsp;of&nbsp;the&nbsp;|&nbsp;long&nbsp;string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_559">559</td><td nowrap="nowrap">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;package&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_560">560</td><td nowrap="nowrap">+----------------------+---------------------------+-----------------+--------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_561">561</td><td nowrap="nowrap">|&nbsp;``download_url``&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;location&nbsp;where&nbsp;the&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;URL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;\(4)&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_562">562</td><td nowrap="nowrap">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;package&nbsp;may&nbsp;be&nbsp;downloaded&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_563">563</td><td nowrap="nowrap">+----------------------+---------------------------+-----------------+--------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_564">564</td><td nowrap="nowrap">|&nbsp;``classifiers``&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;a&nbsp;list&nbsp;of&nbsp;classifiers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;list&nbsp;of&nbsp;strings&nbsp;|&nbsp;\(4)&nbsp;&nbsp;&nbsp;|</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to24__top">t</a></td><td class="diff_header" id="to24_565">565+</td><td nowrap="nowrap"><span class="diff_add">+----------------------+---------------------------+-----------------+--------+</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to24_566">566+</td><td nowrap="nowrap"><span class="diff_add">|&nbsp;``platforms``&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;a&nbsp;list&nbsp;of&nbsp;platforms&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;list&nbsp;of&nbsp;strings&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from24_565">565</td><td nowrap="nowrap">+----------------------+---------------------------+-----------------+--------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_566">566</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_567">567</td><td nowrap="nowrap">Notes:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_568">568</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_569">569</td><td nowrap="nowrap">(1)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_570">570</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;These&nbsp;fields&nbsp;are&nbsp;required.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_571">571</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from24_572">572</td><td nowrap="nowrap">(2)</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

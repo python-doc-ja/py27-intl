@@ -1,0 +1,28 @@
+--- rest26/library/popen2.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/popen2.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,24 +1,24 @@
+ 
+ :mod:`popen2` --- Subprocesses with accessible I/O streams
+ ==========================================================
+ 
+ .. module:: popen2
+    :synopsis: Subprocesses with accessible standard I/O streams.
+    :deprecated:
+ .. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
+ 
+ 
+ .. deprecated:: 2.6
+-   This module is obsolete.  Use the :mod:`subprocess` module.  Check 
++   This module is obsolete.  Use the :mod:`subprocess` module.  Check
+    especially the :ref:`subprocess-replacements` section.
+ 
+ This module allows you to spawn processes and connect to their
+ input/output/error pipes and obtain their return codes under Unix and Windows.
+ 
+ The :mod:`subprocess` module provides more powerful facilities for spawning new
+ processes and retrieving their results.  Using the :mod:`subprocess` module is
+ preferable to using the :mod:`popen2` module.
+ 
+ The primary interface offered by this module is a trio of factory functions.
+ For each of these, if *bufsize* is specified,  it specifies the buffer size for
+ the I/O pipes.  *mode*, if provided, should be the string ``'b'`` or ``'t'``; on

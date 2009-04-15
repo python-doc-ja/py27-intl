@@ -1,0 +1,210 @@
+--- rest25/library/unittest.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/unittest.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -71,26 +71,32 @@
+ graphical environments) without any need to derive from a specific class.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`doctest`
+       Another test-support module with a very different flavor.
+ 
+    `Simple Smalltalk Testing: With Patterns <http://www.XProgramming.com/testfram.htm>`_
+       Kent Beck's original paper on testing frameworks using the pattern shared by
+       :mod:`unittest`.
+ 
++   `Nose <http://code.google.com/p/python-nose/>`_ and `py.test <http://pytest.org>`_
++      Third-party unittest frameworks with a lighter-weight syntax
++      for writing tests.  For example, ``assert func(10) == 42``.
+ 
+-.. _minimal-example:
++   `python-mock <http://python-mock.sourceforge.net/>`_ and `minimock <http://blog.ianbicking.org/minimock.html>`_
++      Tools for creating mock test objects (objects simulating external resources).
++
++.. _unittest-minimal-example:
+ 
+ Basic example
+ -------------
+ 
+ The :mod:`unittest` module provides a rich set of tools for constructing and
+ running tests.  This section demonstrates that a small subset of the tools
+ suffice to meet the needs of most users.
+ 
+ Here is a short script to test three functions from the :mod:`random` module::
+ 
+    import random
+    import unittest
+@@ -478,33 +484,36 @@
+    Instance of the :class:`TestLoader` class intended to be shared.  If no
+    customization of the :class:`TestLoader` is needed, this instance can be used
+    instead of repeatedly creating new instances.
+ 
+ 
+ .. class:: TextTestRunner([stream[, descriptions[, verbosity]]])
+ 
+    A basic test runner implementation which prints results on standard error.  It
+    has a few configurable parameters, but is essentially very simple.  Graphical
+    applications which run test suites should provide alternate implementations.
+ 
+ 
+-.. function:: main([module[, defaultTest[, argv[, testRunner[, testRunner]]]]])
++.. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader]]]]])
+ 
+    A command-line program that runs a set of tests; this is primarily for making
+    test modules conveniently executable.  The simplest use for this function is to
+    include the following line at the end of a test script::
+ 
+       if __name__ == '__main__':
+           unittest.main()
+ 
++   The *testRunner* argument can either be a test runner class or an already
++   created instance of it.
++
+ In some cases, the existing tests may have been written using the :mod:`doctest`
+ module.  If so, that module provides a  :class:`DocTestSuite` class that can
+ automatically build :class:`unittest.TestSuite` instances from the existing
+ :mod:`doctest`\ -based tests.
+ 
+ .. versionadded:: 2.3
+ 
+ 
+ .. _testcase-objects:
+ 
+ TestCase Objects
+ ----------------
+@@ -552,81 +561,85 @@
+ 
+ .. method:: TestCase.debug()
+ 
+    Run the test without collecting the result.  This allows exceptions raised by
+    the test to be propagated to the caller, and can be used to support running
+    tests under a debugger.
+ 
+ The test code can use any of the following methods to check for and report
+ failures.
+ 
+ 
+ .. method:: TestCase.assert_(expr[, msg])
+-            XXX Class.failUnless(expr[, msg])
++            TestCase.failUnless(expr[, msg])
++            TestCase.assertTrue(expr[, msg])
+ 
+    Signal a test failure if *expr* is false; the explanation for the error will be
+    *msg* if given, otherwise it will be :const:`None`.
+ 
+ 
+ .. method:: TestCase.assertEqual(first, second[, msg])
+-            XXX Class.failUnlessEqual(first, second[, msg])
++            TestCase.failUnlessEqual(first, second[, msg])
+ 
+    Test that *first* and *second* are equal.  If the values do not compare equal,
+    the test will fail with the explanation given by *msg*, or :const:`None`.  Note
+    that using :meth:`failUnlessEqual` improves upon doing the comparison as the
+    first parameter to :meth:`failUnless`:  the default value for *msg* can be
+    computed to include representations of both *first* and *second*.
+ 
+ 
+ .. method:: TestCase.assertNotEqual(first, second[, msg])
+-            XXX Class.failIfEqual(first, second[, msg])
++            TestCase.failIfEqual(first, second[, msg])
+ 
+    Test that *first* and *second* are not equal.  If the values do compare equal,
+    the test will fail with the explanation given by *msg*, or :const:`None`.  Note
+    that using :meth:`failIfEqual` improves upon doing the comparison as the first
+    parameter to :meth:`failUnless` is that the default value for *msg* can be
+    computed to include representations of both *first* and *second*.
+ 
+ 
+ .. method:: TestCase.assertAlmostEqual(first, second[, places[, msg]])
+-            XXX Class.failUnlessAlmostEqual(first, second[, places[, msg]])
++            TestCase.failUnlessAlmostEqual(first, second[, places[, msg]])
+ 
+    Test that *first* and *second* are approximately equal by computing the
+-   difference, rounding to the given number of *places*, and comparing to zero.
++   difference, rounding to the given number of decimal *places* (default 7),
++   and comparing to zero.
+    Note that comparing a given number of decimal places is not the same as
+    comparing a given number of significant digits. If the values do not compare
+    equal, the test will fail with the explanation given by *msg*, or :const:`None`.
+ 
+ 
+ .. method:: TestCase.assertNotAlmostEqual(first, second[, places[, msg]])
+-            XXX Class.failIfAlmostEqual(first, second[, places[, msg]])
++            TestCase.failIfAlmostEqual(first, second[, places[, msg]])
+ 
+    Test that *first* and *second* are not approximately equal by computing the
+-   difference, rounding to the given number of *places*, and comparing to zero.
++   difference, rounding to the given number of decimal *places* (default 7),
++   and comparing to zero.
+    Note that comparing a given number of decimal places is not the same as
+    comparing a given number of significant digits. If the values do not compare
+    equal, the test will fail with the explanation given by *msg*, or :const:`None`.
+ 
+ 
+ .. method:: TestCase.assertRaises(exception, callable, ...)
+-            XXX Class.failUnlessRaises(exception, callable, ...)
++            TestCase.failUnlessRaises(exception, callable, ...)
+ 
+    Test that an exception is raised when *callable* is called with any positional
+    or keyword arguments that are also passed to :meth:`assertRaises`.  The test
+    passes if *exception* is raised, is an error if another exception is raised, or
+    fails if no exception is raised.  To catch any of a group of exceptions, a tuple
+    containing the exception classes may be passed as *exception*.
+ 
+ 
+ .. method:: TestCase.failIf(expr[, msg])
++            TestCase.assertFalse(expr[, msg])
+ 
+    The inverse of the :meth:`failUnless` method is the :meth:`failIf` method.  This
+    signals a test failure if *expr* is true, with *msg* or :const:`None` for the
+    error message.
+ 
+ 
+ .. method:: TestCase.fail([msg])
+ 
+    Signals a test failure unconditionally, with *msg* or :const:`None` for the
+    error message.
+ 
+ 
+@@ -801,35 +814,37 @@
+ .. method:: TestResult.stopTest(test)
+ 
+    Called after the test case *test* has been executed, regardless of the outcome.
+ 
+    The default implementation does nothing.
+ 
+ 
+ .. method:: TestResult.addError(test, err)
+ 
+    Called when the test case *test* raises an unexpected exception *err* is a tuple
+    of the form returned by :func:`sys.exc_info`: ``(type, value, traceback)``.
+ 
+-   The default implementation appends ``(test, err)`` to the instance's ``errors``
+-   attribute.
++   The default implementation appends a tuple ``(test, formatted_err)`` to the
++   instance's ``errors`` attribute, where *formatted_err* is a formatted
++   traceback derived from *err*.
+ 
+ 
+ .. method:: TestResult.addFailure(test, err)
+ 
+    Called when the test case *test* signals a failure. *err* is a tuple of the form
+    returned by :func:`sys.exc_info`:  ``(type, value, traceback)``.
+ 
+-   The default implementation appends ``(test, err)`` to the instance's
+-   ``failures`` attribute.
++   The default implementation appends a tuple ``(test, formatted_err)`` to the
++   instance's ``failures`` attribute, where *formatted_err* is a formatted
++   traceback derived from *err*.
+ 
+ 
+ .. method:: TestResult.addSuccess(test)
+ 
+    Called when the test case *test* succeeds.
+ 
+    The default implementation does nothing.
+ 
+ 
+ .. _testloader-objects:
+ 
+ TestLoader Objects

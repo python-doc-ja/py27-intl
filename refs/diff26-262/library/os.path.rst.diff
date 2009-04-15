@@ -1,0 +1,82 @@
+--- rest26/library/os.path.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/os.path.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -1,32 +1,46 @@
+-
+ :mod:`os.path` --- Common pathname manipulations
+ ================================================
+ 
+ .. module:: os.path
+    :synopsis: Operations on pathnames.
+ 
+-
+ .. index:: single: path; operations
+ 
+ This module implements some useful functions on pathnames. To read or
+ write files see :func:`open`, and for accessing the filesystem see the
+ :mod:`os` module.
+ 
+ .. warning::
+ 
+    On Windows, many of these functions do not properly support UNC pathnames.
+    :func:`splitunc` and :func:`ismount` do handle them correctly.
+ 
+ 
++.. note::
++
++   Since different operating systems have different path name conventions, there
++   are several versions of this module in the standard library.  The
++   :mod:`os.path` module is always the path module suitable for the operating
++   system Python is running on, and therefore usable for local paths.  However,
++   you can also import and use the individual modules if you want to manipulate
++   a path that is *always* in one of the different formats.  They all have the
++   same interface:
++
++   * :mod:`posixpath` for UNIX-style paths
++   * :mod:`ntpath` for Windows paths
++   * :mod:`macpath` for old-style MacOS paths
++   * :mod:`os2emxpath` for OS/2 EMX paths
++
++
+ .. function:: abspath(path)
+ 
+    Return a normalized absolutized version of the pathname *path*. On most
+    platforms, this is equivalent to ``normpath(join(os.getcwd(), path))``.
+ 
+    .. versionadded:: 1.5.2
+ 
+ 
+ .. function:: basename(path)
+ 
+    Return the base name of pathname *path*.  This is the second half of the pair
+    returned by ``split(path)``.  Note that the result of this function is different
+@@ -181,27 +195,27 @@
+    Join one or more path components intelligently.  If any component is an absolute
+    path, all previous components (on Windows, including the previous drive letter,
+    if there was one) are thrown away, and joining continues.  The return value is
+    the concatenation of *path1*, and optionally *path2*, etc., with exactly one
+    directory separator (``os.sep``) inserted between components, unless *path2* is
+    empty.  Note that on Windows, since there is a current directory for each drive,
+    ``os.path.join("c:", "foo")`` represents a path relative to the current
+    directory on drive :file:`C:` (:file:`c:foo`), not :file:`c:\\foo`.
+ 
+ 
+ .. function:: normcase(path)
+ 
+-   Normalize the case of a pathname.  On Unix, this returns the path unchanged; on
+-   case-insensitive filesystems, it converts the path to lowercase.  On Windows, it
+-   also converts forward slashes to backward slashes.
++   Normalize the case of a pathname.  On Unix and Mac OS X, this returns the
++   path unchanged; on case-insensitive filesystems, it converts the path to
++   lowercase.  On Windows, it also converts forward slashes to backward slashes.
+ 
+ 
+ .. function:: normpath(path)
+ 
+    Normalize a pathname.  This collapses redundant separators and up-level
+    references so that ``A//B``, ``A/./B`` and ``A/foo/../B`` all become ``A/B``.
+    It does not normalize the case (use :func:`normcase` for that).  On Windows, it
+    converts forward slashes to backward slashes. It should be understood that this
+    may change the meaning of the path if it contains symbolic links!
+ 
+ 
+ .. function:: realpath(path)

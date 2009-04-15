@@ -1,0 +1,53 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to15__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/c-api/typeobj.rst =&gt; rest262/c-api/typeobj.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to15__0"></td><td class="diff_header" id="from15_738">738</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:attr:`__weakref__`,&nbsp;that&nbsp;slot&nbsp;becomes&nbsp;the&nbsp;weak&nbsp;reference&nbsp;list&nbsp;head&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_739">739</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;instances&nbsp;of&nbsp;the&nbsp;type,&nbsp;and&nbsp;the&nbsp;slot's&nbsp;offset&nbsp;is&nbsp;stored&nbsp;in&nbsp;the&nbsp;type's</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_740">740</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:attr:`tp_weaklistoffset`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_741">741</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_742">742</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;When&nbsp;a&nbsp;type's&nbsp;:attr:`__slots__`&nbsp;declaration&nbsp;does&nbsp;not&nbsp;contain&nbsp;a&nbsp;slot&nbsp;named</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_743">743</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:attr:`__weakref__`,&nbsp;the&nbsp;type&nbsp;inherits&nbsp;its&nbsp;:attr:`tp_weaklistoffset`&nbsp;from&nbsp;its</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_744">744</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;base&nbsp;type.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_745">745</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to15__1">n</a></td><td class="diff_header" id="from15_746">746-</td><td nowrap="nowrap">The&nbsp;next&nbsp;two&nbsp;fields&nbsp;only&nbsp;exist&nbsp;if&nbsp;the&nbsp;:const:`Py_TPFLAGS_HAVE_<span class="diff_chg">CLASS</span>`&nbsp;flag&nbsp;bit&nbsp;is</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to15__1">n</a></td><td class="diff_header" id="to15_746">746+</td><td nowrap="nowrap">The&nbsp;next&nbsp;two&nbsp;fields&nbsp;only&nbsp;exist&nbsp;if&nbsp;the&nbsp;:const:`Py_TPFLAGS_HAVE_<span class="diff_chg">ITER</span>`&nbsp;flag&nbsp;bit&nbsp;is</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from15_747">747</td><td nowrap="nowrap">set.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_748">748</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_749">749</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_750">750</td><td nowrap="nowrap">..&nbsp;cmember::&nbsp;getiterfunc&nbsp;PyTypeObject.tp_iter</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_751">751</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_752">752</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;An&nbsp;optional&nbsp;pointer&nbsp;to&nbsp;a&nbsp;function&nbsp;that&nbsp;returns&nbsp;an&nbsp;iterator&nbsp;for&nbsp;the&nbsp;object.&nbsp;&nbsp;Its</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_753">753</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;presence&nbsp;normally&nbsp;signals&nbsp;that&nbsp;the&nbsp;instances&nbsp;of&nbsp;this&nbsp;type&nbsp;are&nbsp;iterable&nbsp;(although</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_754">754</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;sequences&nbsp;may&nbsp;be&nbsp;iterable&nbsp;without&nbsp;this&nbsp;function,&nbsp;and&nbsp;classic&nbsp;instances&nbsp;always</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to15__1"></td><td class="diff_header" id="from15_1175">1175</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unaryfunc&nbsp;nb_float;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1176">1176</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unaryfunc&nbsp;nb_oct;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1177">1177</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;unaryfunc&nbsp;nb_hex;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1178">1178</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1179">1179</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;Added&nbsp;in&nbsp;release&nbsp;2.0&nbsp;*/</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1180">1180</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_add;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1181">1181</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_subtract;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1182">1182</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_multiply;</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to15__top">t</a></td><td class="diff_header" id="to15_1183">1183+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_divide;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1183">1183</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_remainder;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1184">1184</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ternaryfunc&nbsp;nb_inplace_power;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1185">1185</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_lshift;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1186">1186</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_rshift;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1187">1187</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_and;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1188">1188</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_xor;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1189">1189</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;binaryfunc&nbsp;nb_inplace_or;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from15_1190">1190</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+--- rest25/library/email.encoders.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/email.encoders.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,12 +1,15 @@
++:mod:`email`: Encoders
++----------------------
++
+ .. module:: email.encoders
+    :synopsis: Encoders for email message payloads.
+ 
+ 
+ When creating :class:`Message` objects from scratch, you often need to encode
+ the payloads for transport through compliant mail servers. This is especially
+ true for :mimetype:`image/\*` and :mimetype:`text/\*` type messages containing
+ binary data.
+ 
+ The :mod:`email` package provides some convenient encodings in its
+ :mod:`encoders` module.  These encoders are actually used by the
+ :class:`MIMEAudio` and :class:`MIMEImage` class constructors to provide default

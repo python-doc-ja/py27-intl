@@ -1,0 +1,23 @@
+--- rest26/library/htmllib.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/htmllib.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,19 +1,19 @@
+ :mod:`htmllib` --- A parser for HTML documents
+ ==============================================
+ 
+ .. module:: htmllib
+    :synopsis: A parser for HTML documents.
+    :deprecated:
+-   
++
+ .. deprecated:: 2.6
+     The :mod:`htmllib` module has been removed in Python 3.0.
+ 
+ 
+ .. index::
+    single: HTML
+    single: hypertext
+ 
+ .. index::
+    module: sgmllib
+    module: formatter
+    single: SGMLParser (in module sgmllib)

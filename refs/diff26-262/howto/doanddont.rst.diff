@@ -1,0 +1,62 @@
+--- rest26/howto/doanddont.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/howto/doanddont.rst	2009-04-05 05:01:49.000000000 +0900
+@@ -1,14 +1,14 @@
+ ************************************
+-  Idioms and Anti-Idioms in Python  
++  Idioms and Anti-Idioms in Python
+ ************************************
+ 
+ :Author: Moshe Zadka
+ 
+ This document is placed in the public domain.
+ 
+ 
+ .. topic:: Abstract
+ 
+    This document can be considered a companion to the tutorial. It shows how to use
+    Python, and even more importantly, how *not* to use Python.
+ 
+@@ -118,25 +118,25 @@
+ binding in the other will not, so there will be a discrepancy between them. This
+ happens when, for example, one module is reloaded, or changes the definition of
+ a function at runtime.
+ 
+ Bad example::
+ 
+    # foo.py
+    a = 1
+ 
+    # bar.py
+    from foo import a
+    if something():
+-       a = 2 # danger: foo.a != a 
++       a = 2 # danger: foo.a != a
+ 
+ Good example::
+ 
+    # foo.py
+    a = 1
+ 
+    # bar.py
+    import foo
+    if something():
+        foo.a = 2
+ 
+ 
+@@ -294,15 +294,15 @@
+ make this line wrong, and stray spaces are notoriously hard to see in editors.
+ In this case, at least it would be a syntax error, but if the code was::
+ 
+    value = foo.bar()['first'][0]*baz.quux(1, 2)[5:9] \
+            + calculate_number(10, 20)*forbulate(500, 360)
+ 
+ then it would just be subtly wrong.
+ 
+ It is usually much better to use the implicit continuation inside parenthesis:
+ 
+ This version is bulletproof::
+ 
+-   value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9] 
++   value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9]
+            + calculate_number(10, 20)*forbulate(500, 360))
+ 

@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to189__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/pickletools.rst =&gt; rest262/library/pickletools.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to189__0"></td><td class="diff_header" id="from189_24">24</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*memo*&nbsp;can&nbsp;be&nbsp;a&nbsp;Python&nbsp;dictionary&nbsp;that&nbsp;will&nbsp;be&nbsp;used&nbsp;as&nbsp;the&nbsp;pickle's&nbsp;memo;&nbsp;it&nbsp;can</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_25">25</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;to&nbsp;perform&nbsp;disassemblies&nbsp;across&nbsp;multiple&nbsp;pickles&nbsp;created&nbsp;by&nbsp;the&nbsp;same</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;pickler.&nbsp;Successive&nbsp;levels,&nbsp;indicated&nbsp;by&nbsp;``MARK``&nbsp;opcodes&nbsp;in&nbsp;the&nbsp;stream,&nbsp;are</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;indented&nbsp;by&nbsp;*indentlevel*&nbsp;spaces.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_28">28</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_29">29</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to189__1"></td><td class="diff_header" id="from189_30">30</td><td nowrap="nowrap">..&nbsp;function::&nbsp;genops(pickle)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_31">31</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to189__1">n</a></td><td class="diff_header" id="from189_32">32-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Provides&nbsp;an&nbsp;iterator&nbsp;over&nbsp;all&nbsp;of&nbsp;the&nbsp;opcodes&nbsp;in&nbsp;a&nbsp;pickle,&nbsp;returning&nbsp;a<span class="diff_sub">&nbsp;sequence</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to189__1">n</a></td><td class="diff_header" id="to189_32">32+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Provides&nbsp;an&nbsp;<span class="diff_add">:term:`</span>iterator<span class="diff_add">`</span>&nbsp;over&nbsp;all&nbsp;of&nbsp;the&nbsp;opcodes&nbsp;in&nbsp;a&nbsp;pickle,&nbsp;returning&nbsp;a</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from189_33">33-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;of&nbsp;``(opcode,&nbsp;arg,&nbsp;pos)``&nbsp;triples.&nbsp;*opcode*&nbsp;is&nbsp;an&nbsp;instance&nbsp;of&nbsp;an</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_33">33+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;sequence</span>&nbsp;of&nbsp;``(opcode,&nbsp;arg,&nbsp;pos)``&nbsp;triples.&nbsp;<span class="diff_add">&nbsp;</span>*opcode*&nbsp;is&nbsp;an&nbsp;instance&nbsp;of&nbsp;an</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from189_34">34-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:class:`OpcodeInfo`&nbsp;class;&nbsp;*arg*&nbsp;<span class="diff_sub">&nbsp;</span>is&nbsp;the&nbsp;decoded&nbsp;value,&nbsp;as&nbsp;a&nbsp;Python&nbsp;object,&nbsp;of</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_34">34+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:class:`OpcodeInfo`&nbsp;class;&nbsp;*arg*&nbsp;is&nbsp;the&nbsp;decoded&nbsp;value,&nbsp;as&nbsp;a&nbsp;Python&nbsp;object,&nbsp;of</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from189_35">35-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;opcode's&nbsp;argument;&nbsp;<span class="diff_sub">&nbsp;</span>*pos*&nbsp;is&nbsp;the&nbsp;position&nbsp;at&nbsp;which&nbsp;this&nbsp;opcode&nbsp;is&nbsp;located.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_35">35+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;opcode's&nbsp;argument;&nbsp;*pos*&nbsp;is&nbsp;the&nbsp;position&nbsp;at&nbsp;which&nbsp;this&nbsp;opcode&nbsp;is&nbsp;located.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from189_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*pickle*&nbsp;can&nbsp;be&nbsp;a&nbsp;string&nbsp;or&nbsp;a&nbsp;file-like&nbsp;object.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from189_37">37</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to189__top">t</a></td><td class="diff_header" id="to189_38">38+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;function::&nbsp;optimize(picklestring)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_39">39+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_40">40+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Returns&nbsp;a&nbsp;new&nbsp;equivalent&nbsp;pickle&nbsp;string&nbsp;after&nbsp;eliminating&nbsp;unused&nbsp;``PUT``</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_41">41+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;opcodes.&nbsp;The&nbsp;optimized&nbsp;pickle&nbsp;is&nbsp;shorter,&nbsp;takes&nbsp;less&nbsp;transmission&nbsp;time,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_42">42+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;requires&nbsp;less&nbsp;storage&nbsp;space,&nbsp;and&nbsp;unpickles&nbsp;more&nbsp;efficiently.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_43">43+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to189_44">44+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.6</span></td></tr>
+        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

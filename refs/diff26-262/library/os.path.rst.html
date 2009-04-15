@@ -1,0 +1,74 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to127__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/os.path.rst =&gt; rest262/library/os.path.rst</th></tr></thead>
+            <tbody>
+    <tr><td class="diff_next" id="difflib_chg_to127__1"><a href="#difflib_chg_to127__1">n</a></td><td class="diff_header" id="from127_1">1-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from127_2">2</td><td nowrap="nowrap">:mod:`os.path`&nbsp;---&nbsp;Common&nbsp;pathname&nbsp;manipulations</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_3">3</td><td nowrap="nowrap">================================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;os.path</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Operations&nbsp;on&nbsp;pathnames.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to127__2">n</a></td><td class="diff_header" id="from127_7">7-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from127_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_9">9</td><td nowrap="nowrap">..&nbsp;index::&nbsp;single:&nbsp;path;&nbsp;operations</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_10">10</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to127__2"></td><td class="diff_header" id="from127_11">11</td><td nowrap="nowrap">This&nbsp;module&nbsp;implements&nbsp;some&nbsp;useful&nbsp;functions&nbsp;on&nbsp;pathnames.&nbsp;To&nbsp;read&nbsp;or</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_12">12</td><td nowrap="nowrap">write&nbsp;files&nbsp;see&nbsp;:func:`open`,&nbsp;and&nbsp;for&nbsp;accessing&nbsp;the&nbsp;filesystem&nbsp;see&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_13">13</td><td nowrap="nowrap">:mod:`os`&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_15">15</td><td nowrap="nowrap">..&nbsp;warning::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_17">17</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;On&nbsp;Windows,&nbsp;many&nbsp;of&nbsp;these&nbsp;functions&nbsp;do&nbsp;not&nbsp;properly&nbsp;support&nbsp;UNC&nbsp;pathnames.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_18">18</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:func:`splitunc`&nbsp;and&nbsp;:func:`ismount`&nbsp;do&nbsp;handle&nbsp;them&nbsp;correctly.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to127__3">n</a></td><td class="diff_header" id="to127_17">17+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_18">18+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_19">19+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;note::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_20">20+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_21">21+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Since&nbsp;different&nbsp;operating&nbsp;systems&nbsp;have&nbsp;different&nbsp;path&nbsp;name&nbsp;conventions,&nbsp;there</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_22">22+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;are&nbsp;several&nbsp;versions&nbsp;of&nbsp;this&nbsp;module&nbsp;in&nbsp;the&nbsp;standard&nbsp;library.&nbsp;&nbsp;The</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_23">23+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:mod:`os.path`&nbsp;module&nbsp;is&nbsp;always&nbsp;the&nbsp;path&nbsp;module&nbsp;suitable&nbsp;for&nbsp;the&nbsp;operating</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_24">24+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;system&nbsp;Python&nbsp;is&nbsp;running&nbsp;on,&nbsp;and&nbsp;therefore&nbsp;usable&nbsp;for&nbsp;local&nbsp;paths.&nbsp;&nbsp;However,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_25">25+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;you&nbsp;can&nbsp;also&nbsp;import&nbsp;and&nbsp;use&nbsp;the&nbsp;individual&nbsp;modules&nbsp;if&nbsp;you&nbsp;want&nbsp;to&nbsp;manipulate</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_26">26+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;a&nbsp;path&nbsp;that&nbsp;is&nbsp;*always*&nbsp;in&nbsp;one&nbsp;of&nbsp;the&nbsp;different&nbsp;formats.&nbsp;&nbsp;They&nbsp;all&nbsp;have&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_27">27+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;same&nbsp;interface:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_28">28+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_29">29+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*&nbsp;:mod:`posixpath`&nbsp;for&nbsp;UNIX-style&nbsp;paths</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_30">30+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*&nbsp;:mod:`ntpath`&nbsp;for&nbsp;Windows&nbsp;paths</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_31">31+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*&nbsp;:mod:`macpath`&nbsp;for&nbsp;old-style&nbsp;MacOS&nbsp;paths</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_32">32+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*&nbsp;:mod:`os2emxpath`&nbsp;for&nbsp;OS/2&nbsp;EMX&nbsp;paths</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from127_19">19</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_20">20</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_21">21</td><td nowrap="nowrap">..&nbsp;function::&nbsp;abspath(path)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_22">22</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_23">23</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;a&nbsp;normalized&nbsp;absolutized&nbsp;version&nbsp;of&nbsp;the&nbsp;pathname&nbsp;*path*.&nbsp;On&nbsp;most</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_24">24</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;platforms,&nbsp;this&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;``normpath(join(os.getcwd(),&nbsp;path))``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_25">25</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;1.5.2</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to127__3"></td><td class="diff_header" id="from127_185">185</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;directory&nbsp;separator&nbsp;(``os.sep``)&nbsp;inserted&nbsp;between&nbsp;components,&nbsp;unless&nbsp;*path2*&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_186">186</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;empty.&nbsp;&nbsp;Note&nbsp;that&nbsp;on&nbsp;Windows,&nbsp;since&nbsp;there&nbsp;is&nbsp;a&nbsp;current&nbsp;directory&nbsp;for&nbsp;each&nbsp;drive,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_187">187</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;``os.path.join("c:",&nbsp;"foo")``&nbsp;represents&nbsp;a&nbsp;path&nbsp;relative&nbsp;to&nbsp;the&nbsp;current</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_188">188</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;directory&nbsp;on&nbsp;drive&nbsp;:file:`C:`&nbsp;(:file:`c:foo`),&nbsp;not&nbsp;:file:`c:\\foo`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_189">189</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_190">190</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_191">191</td><td nowrap="nowrap">..&nbsp;function::&nbsp;normcase(path)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_192">192</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to127__top">t</a></td><td class="diff_header" id="from127_193">193-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Normalize&nbsp;the&nbsp;case&nbsp;of&nbsp;a&nbsp;pathname.&nbsp;&nbsp;On&nbsp;Unix,&nbsp;this&nbsp;returns&nbsp;the<span class="diff_sub">&nbsp;path&nbsp;unchanged;&nbsp;on</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to127__top">t</a></td><td class="diff_header" id="to127_207">207+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Normalize&nbsp;the&nbsp;case&nbsp;of&nbsp;a&nbsp;pathname.&nbsp;&nbsp;On&nbsp;Unix<span class="diff_add">&nbsp;and&nbsp;Mac&nbsp;OS&nbsp;X</span>,&nbsp;this&nbsp;returns&nbsp;the</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from127_194">194-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;case-insensitive&nbsp;filesystems,&nbsp;it&nbsp;converts&nbsp;the&nbsp;path&nbsp;to&nbsp;lowercase.&nbsp;&nbsp;On&nbsp;Windows,&nbsp;it</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_208">208+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;path&nbsp;unchanged;&nbsp;on&nbsp;case-insensitive&nbsp;filesystems,&nbsp;it&nbsp;converts&nbsp;the&nbsp;path&nbsp;to</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from127_195">195-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;also&nbsp;converts&nbsp;forward&nbsp;slashes&nbsp;to&nbsp;backward&nbsp;slashes.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to127_209">209+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;lowercase.&nbsp;&nbsp;On&nbsp;Windows,&nbsp;it</span>&nbsp;also&nbsp;converts&nbsp;forward&nbsp;slashes&nbsp;to&nbsp;backward&nbsp;slashes.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from127_196">196</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_197">197</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_198">198</td><td nowrap="nowrap">..&nbsp;function::&nbsp;normpath(path)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_199">199</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_200">200</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Normalize&nbsp;a&nbsp;pathname.&nbsp;&nbsp;This&nbsp;collapses&nbsp;redundant&nbsp;separators&nbsp;and&nbsp;up-level</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_201">201</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;references&nbsp;so&nbsp;that&nbsp;``A//B``,&nbsp;``A/./B``&nbsp;and&nbsp;``A/foo/../B``&nbsp;all&nbsp;become&nbsp;``A/B``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_202">202</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;It&nbsp;does&nbsp;not&nbsp;normalize&nbsp;the&nbsp;case&nbsp;(use&nbsp;:func:`normcase`&nbsp;for&nbsp;that).&nbsp;&nbsp;On&nbsp;Windows,&nbsp;it</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from127_203">203</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;converts&nbsp;forward&nbsp;slashes&nbsp;to&nbsp;backward&nbsp;slashes.&nbsp;It&nbsp;should&nbsp;be&nbsp;understood&nbsp;that&nbsp;this</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

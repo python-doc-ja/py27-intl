@@ -1,0 +1,40 @@
+--- rest26/library/contextlib.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/contextlib.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -54,32 +54,33 @@
+    the exception has been handled, and execution will resume with the statement
+    immediately following the :keyword:`with` statement.
+ 
+ 
+ .. function:: nested(mgr1[, mgr2[, ...]])
+ 
+    Combine multiple context managers into a single nested context manager.
+ 
+    Code like this::
+ 
+       from contextlib import nested
+ 
+-      with nested(A, B, C) as (X, Y, Z):
++      with nested(A(), B(), C()) as (X, Y, Z):
+           do_something()
+ 
+    is equivalent to this::
+ 
+-      with A as X:
+-          with B as Y:
+-              with C as Z:
++      m1, m2, m3 = A(), B(), C()
++      with m1 as X:
++          with m2 as Y:
++              with m3 as Z:
+                   do_something()
+ 
+    Note that if the :meth:`__exit__` method of one of the nested context managers
+    indicates an exception should be suppressed, no exception information will be
+    passed to any remaining outer context managers. Similarly, if the
+    :meth:`__exit__` method of one of the nested managers raises an exception, any
+    previous exception state will be lost; the new exception will be passed to the
+    :meth:`__exit__` methods of any remaining outer context managers. In general,
+    :meth:`__exit__` methods should avoid raising exceptions, and in particular they
+    should not re-raise a passed-in exception.
+ 
+ 

@@ -1,0 +1,218 @@
+--- rest26/library/logging.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/logging.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -112,25 +112,25 @@
+ The most current file is always :file:`/tmp/logging_rotatingfile_example.out`,
+ and each time it reaches the size limit it is renamed with the suffix
+ ``.1``. Each of the existing backup files is renamed to increment the suffix
+ (``.1`` becomes ``.2``, etc.)  and the ``.5`` file is erased.
+ 
+ Obviously this example sets the log length much much too small as an extreme
+ example.  You would want to set *maxBytes* to an appropriate value.
+ 
+ Another useful feature of the logging API is the ability to produce different
+ messages at different log levels.  This allows you to instrument your code with
+ debug messages, for example, but turning the log level down so that those debug
+ messages are not written for your production system.  The default levels are
+-``CRITICAL``, ``ERROR``, ``WARNING``, ``INFO``, ``DEBUG`` and ``UNSET``.
++``CRITICAL``, ``ERROR``, ``WARNING``, ``INFO``, ``DEBUG`` and ``NOTSET``.
+ 
+ The logger, handler, and log message call each specify a level.  The log message
+ is only emitted if the handler and logger are configured to emit messages of
+ that level or lower.  For example, if a message is ``CRITICAL``, and the logger
+ is set to ``ERROR``, the message is emitted.  If a message is a ``WARNING``, and
+ the logger is set to produce only ``ERROR``\s, the message is not emitted::
+ 
+    import logging
+    import sys
+ 
+    LEVELS = {'debug': logging.DEBUG,
+              'info': logging.INFO,
+@@ -413,24 +413,26 @@
+ 
+     $ python simple_logging_config.py
+     2005-03-19 15:38:55,977 - simpleExample - DEBUG - debug message
+     2005-03-19 15:38:55,979 - simpleExample - INFO - info message
+     2005-03-19 15:38:56,054 - simpleExample - WARNING - warn message
+     2005-03-19 15:38:56,055 - simpleExample - ERROR - error message
+     2005-03-19 15:38:56,130 - simpleExample - CRITICAL - critical message
+ 
+ You can see that the config file approach has a few advantages over the Python
+ code approach, mainly separation of configuration and code and the ability of
+ noncoders to easily modify the logging properties.
+ 
++.. _library-config:
++
+ Configuring Logging for a Library
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ When developing a library which uses logging, some consideration needs to be
+ given to its configuration. If the using application does not use logging, and
+ library code makes logging calls, then a one-off message "No handlers could be
+ found for logger X.Y.Z" is printed to the console. This message is intended
+ to catch mistakes in logging configuration, but will confuse an application
+ developer who is not aware of logging by the library.
+ 
+ In addition to documenting how a library uses logging, a good way to configure
+ library logging so that it does not cause a spurious message is to add a
+@@ -515,57 +517,63 @@
+ decides to actually dispatch an event, the :meth:`emit` method is used to send
+ the message to its destination. Most user-defined subclasses of :class:`Handler`
+ will need to override this :meth:`emit`.
+ 
+ In addition to the base :class:`Handler` class, many useful subclasses are
+ provided:
+ 
+ #. :class:`StreamHandler` instances send error messages to streams (file-like
+    objects).
+ 
+ #. :class:`FileHandler` instances send error messages to disk files.
+ 
+-#. :class:`BaseRotatingHandler` is the base class for handlers that rotate log
+-   files at a certain point. It is not meant to be  instantiated directly. Instead,
+-   use :class:`RotatingFileHandler` or :class:`TimedRotatingFileHandler`.
++#. :class:`handlers.BaseRotatingHandler` is the base class for handlers that
++   rotate log files at a certain point. It is not meant to be  instantiated
++   directly. Instead, use :class:`RotatingFileHandler` or
++   :class:`TimedRotatingFileHandler`.
+ 
+-#. :class:`RotatingFileHandler` instances send error messages to disk files,
++#. :class:`handlers.RotatingFileHandler` instances send error messages to disk files,
+    with support for maximum log file sizes and log file rotation.
+ 
+-#. :class:`TimedRotatingFileHandler` instances send error messages to disk files
++#. :class:`handlers.TimedRotatingFileHandler` instances send error messages to disk files
+    rotating the log file at certain timed intervals.
+ 
+-#. :class:`SocketHandler` instances send error messages to TCP/IP sockets.
++#. :class:`handlers.SocketHandler` instances send error messages to TCP/IP sockets.
+ 
+-#. :class:`DatagramHandler` instances send error messages to UDP sockets.
++#. :class:`handlers.DatagramHandler` instances send error messages to UDP sockets.
+ 
+-#. :class:`SMTPHandler` instances send error messages to a designated email
++#. :class:`handlers.SMTPHandler` instances send error messages to a designated email
+    address.
+ 
+-#. :class:`SysLogHandler` instances send error messages to a Unix syslog daemon,
++#. :class:`handlers.SysLogHandler` instances send error messages to a Unix syslog daemon,
+    possibly on a remote machine.
+ 
+-#. :class:`NTEventLogHandler` instances send error messages to a Windows
++#. :class:`handlers.NTEventLogHandler` instances send error messages to a Windows
+    NT/2000/XP event log.
+ 
+-#. :class:`MemoryHandler` instances send error messages to a buffer in memory,
++#. :class:`handlers.MemoryHandler` instances send error messages to a buffer in memory,
+    which is flushed whenever specific criteria are met.
+ 
+-#. :class:`HTTPHandler` instances send error messages to an HTTP server using
++#. :class:`handlers.HTTPHandler` instances send error messages to an HTTP server using
+    either ``GET`` or ``POST`` semantics.
+ 
+-The :class:`StreamHandler` and :class:`FileHandler` classes are defined in the
+-core logging package. The other handlers are defined in a sub- module,
+-:mod:`logging.handlers`. (There is also another sub-module,
+-:mod:`logging.config`, for configuration functionality.)
++#. :class:`handlers.WatchedFileHandler` instances watch the file they are logging to. If
++the file changes, it is closed and reopened using the file name. This handler
++is only useful on Unix-like systems; Windows does not support the underlying
++mechanism used.
++
++The :class:`StreamHandler` and :class:`FileHandler`
++classes are defined in the core logging package. The other handlers are
++defined in a sub- module, :mod:`logging.handlers`. (There is also another
++sub-module, :mod:`logging.config`, for configuration functionality.)
+ 
+ Logged messages are formatted for presentation through instances of the
+ :class:`Formatter` class. They are initialized with a format string suitable for
+ use with the % operator and a dictionary.
+ 
+ For formatting multiple messages in a batch, instances of
+ :class:`BufferingFormatter` can be used. In addition to the format string (which
+ is applied to each message in the batch), there is provision for header and
+ trailer format strings.
+ 
+ When filtering based on logger level and/or handler level is not enough,
+ instances of :class:`Filter` can be added to both :class:`Logger` and
+@@ -1535,24 +1543,26 @@
+ 
+ 
+ .. method:: Handler.emit(record)
+ 
+    Do whatever it takes to actually log the specified logging record. This version
+    is intended to be implemented by subclasses and so raises a
+    :exc:`NotImplementedError`.
+ 
+ 
+ StreamHandler
+ ^^^^^^^^^^^^^
+ 
++.. module:: logging.handlers
++
+ The :class:`StreamHandler` class, located in the core :mod:`logging` package,
+ sends logging output to streams such as *sys.stdout*, *sys.stderr* or any
+ file-like object (or, more precisely, any object which supports :meth:`write`
+ and :meth:`flush` methods).
+ 
+ 
+ .. class:: StreamHandler([strm])
+ 
+    Returns a new instance of the :class:`StreamHandler` class. If *strm* is
+    specified, the instance will use it for logging output; otherwise, *sys.stderr*
+    will be used.
+ 
+@@ -1590,24 +1600,27 @@
+ 
+ 
+    .. method:: close()
+ 
+       Closes the file.
+ 
+ 
+    .. method:: emit(record)
+ 
+       Outputs the record to the file.
+ 
+ 
++See :ref:`library-config` for more information on how to use
++:class:`NullHandler`.
++
+ WatchedFileHandler
+ ^^^^^^^^^^^^^^^^^^
+ 
+ .. versionadded:: 2.6
+ 
+ The :class:`WatchedFileHandler` class, located in the :mod:`logging.handlers`
+ module, is a :class:`FileHandler` which watches the file it is logging to. If
+ the file changes, it is closed and reopened using the file name.
+ 
+ A file change can happen because of usage of programs such as *newsyslog* and
+ *logrotate* which perform log file rotation. This handler, intended for use
+ under Unix/Linux, watches the file to see if it has changed since the last emit.
+@@ -2041,24 +2054,26 @@
+ 
+ 
+    .. method:: emit(record)
+ 
+       Sends the record to the Web server as an URL-encoded dictionary.
+ 
+ 
+ .. _formatter-objects:
+ 
+ Formatter Objects
+ -----------------
+ 
++.. currentmodule:: logging
++
+ :class:`Formatter`\ s have the following attributes and methods. They are
+ responsible for converting a :class:`LogRecord` to (usually) a string which can
+ be interpreted by either a human or an external system. The base
+ :class:`Formatter` allows a formatting string to be specified. If none is
+ supplied, the default value of ``'%(message)s'`` is used.
+ 
+ A Formatter can be initialized with a format string which makes use of knowledge
+ of the :class:`LogRecord` attributes - such as the default value mentioned above
+ making use of the fact that the user's message and arguments are pre-formatted
+ into a :class:`LogRecord`'s *message* attribute.  This format string contains
+ standard python %-style mapping keys. See section :ref:`string-formatting`
+ for more information on string formatting.

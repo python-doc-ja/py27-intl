@@ -1,0 +1,83 @@
+--- rest26/library/io.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/io.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,21 +1,21 @@
+ :mod:`io` --- Core tools for working with streams
+ =================================================
+ 
+ .. module:: io
+    :synopsis: Core tools for working with streams.
+ .. moduleauthor:: Guido van Rossum <guido@python.org>
+ .. moduleauthor:: Mike Verdone <mike.verdone@gmail.com>
+ .. moduleauthor:: Mark Russell <mark.russell@zen.co.uk>
+-.. sectionauthor:: Benjamin Peterson
++.. sectionauthor:: Benjamin Peterson <benjamin@python.org>
+ .. versionadded:: 2.6
+ 
+ The :mod:`io` module provides the Python interfaces to stream handling.  The
+ builtin :func:`open` function is defined in this module.
+ 
+ At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
+ defines the basic interface to a stream.  Note, however, that there is no
+ seperation between reading and writing to streams; implementations are allowed
+ to throw an :exc:`IOError` if they do not support a given operation.
+ 
+ Extending :class:`IOBase` is :class:`RawIOBase` which deals simply with the
+ reading and writing of raw bytes to a stream.  :class:`FileIO` subclasses
+@@ -205,26 +205,28 @@
+ 
+    IOBase is also a context manager and therefore supports the
+    :keyword:`with` statement.  In this example, *file* is closed after the
+    :keyword:`with` statement's suite is finished---even if an exception occurs::
+ 
+       with open('spam.txt', 'w') as file:
+           file.write('Spam and eggs!')
+ 
+    :class:`IOBase` provides these data attributes and methods:
+ 
+    .. method:: close()
+ 
+-      Flush and close this stream.  This method has no effect if the file is
+-      already closed.
++      Flush and close this stream. This method has no effect if the file is
++      already closed. Once the file is closed, any operation on the file
++      (e.g. reading or writing) will raise an :exc:`IOError`. The internal
++      file descriptor isn't closed if *closefd* was False.
+ 
+    .. attribute:: closed
+ 
+       True if the stream is closed.
+ 
+    .. method:: fileno()
+ 
+       Return the underlying file descriptor (an integer) of the stream if it
+       exists.  An :exc:`IOError` is raised if the IO object does not use a file
+       descriptor.
+ 
+    .. method:: flush()
+@@ -618,25 +620,25 @@
+    write contains a newline character.
+ 
+    :class:`TextIOWrapper` provides these data attributes in addition to those of
+    :class:`TextIOBase` and its parents:
+ 
+    .. attribute:: errors
+ 
+       The encoding and decoding error setting.
+ 
+    .. attribute:: line_buffering
+ 
+       Whether line buffering is enabled.
+-   
++
+ 
+ .. class:: StringIO([initial_value[, encoding[, errors[, newline]]]])
+ 
+    An in-memory stream for text.  It in inherits :class:`TextIOWrapper`.
+ 
+    Create a new StringIO stream with an inital value, encoding, error handling,
+    and newline setting.  See :class:`TextIOWrapper`\'s constructor for more
+    information.
+ 
+    :class:`StringIO` provides this method in addition to those from
+    :class:`TextIOWrapper` and its parents:
+ 

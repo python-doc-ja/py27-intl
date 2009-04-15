@@ -1,0 +1,29 @@
+--- rest26/c-api/set.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/c-api/set.rst	2009-04-05 05:01:43.000000000 +0900
+@@ -92,25 +92,25 @@
+    (``c=set(s)``).
+ 
+ 
+ .. cfunction:: PyObject* PyFrozenSet_New(PyObject *iterable)
+ 
+    Return a new :class:`frozenset` containing objects returned by the *iterable*.
+    The *iterable* may be *NULL* to create a new empty frozenset.  Return the new
+    set on success or *NULL* on failure.  Raise :exc:`TypeError` if *iterable* is
+    not actually iterable.
+ 
+    .. versionchanged:: 2.6
+       Now guaranteed to return a brand-new :class:`frozenset`.  Formerly,
+-      frozensets of zero-length were a singleton.  This got in the way of 
++      frozensets of zero-length were a singleton.  This got in the way of
+       building-up new frozensets with :meth:`PySet_Add`.
+ 
+ The following functions and macros are available for instances of :class:`set`
+ or :class:`frozenset` or instances of their subtypes.
+ 
+ 
+ .. cfunction:: Py_ssize_t PySet_Size(PyObject *anyset)
+ 
+    .. index:: builtin: len
+ 
+    Return the length of a :class:`set` or :class:`frozenset` object. Equivalent to
+    ``len(anyset)``.  Raises a :exc:`PyExc_SystemError` if *anyset* is not a

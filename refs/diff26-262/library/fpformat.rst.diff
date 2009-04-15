@@ -1,0 +1,28 @@
+--- rest26/library/fpformat.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/fpformat.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,23 +1,23 @@
+ 
+ :mod:`fpformat` --- Floating point conversions
+ ==============================================
+ 
+ .. module:: fpformat
+    :synopsis: General floating point formatting functions.
+    :deprecated:
+-   
++
+ .. deprecated:: 2.6
+     The :mod:`fpformat` module has been removed in Python 3.0.
+-   
++
+ .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
+ 
+ 
+ The :mod:`fpformat` module defines functions for dealing with floating point
+ numbers representations in 100% pure Python.
+ 
+ .. note::
+ 
+    This module is unnecessary: everything here can be done using the ``%`` string
+    interpolation operator described in the :ref:`string-formatting` section.
+ 
+ The :mod:`fpformat` module defines the following functions and an exception:

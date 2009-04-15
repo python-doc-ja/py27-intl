@@ -1,0 +1,155 @@
+--- rest26/whatsnew/2.2.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/whatsnew/2.2.rst	2009-04-05 05:01:47.000000000 +0900
+@@ -1,14 +1,14 @@
+ ****************************
+-  What's New in Python 2.2  
++  What's New in Python 2.2
+ ****************************
+ 
+ :Author: A.M. Kuchling
+ 
+ .. |release| replace:: 1.02
+ 
+ .. $Id: whatsnew22.tex 37315 2004-09-10 19:33:00Z akuchling $
+ 
+ 
+ Introduction
+ ============
+ 
+@@ -286,25 +286,25 @@
+ 
+ Following this rule, referring to :meth:`D.save` will return :meth:`C.save`,
+ which is the behaviour we're after.  This lookup rule is the same as the one
+ followed by Common Lisp.  A new built-in function, :func:`super`, provides a way
+ to get at a class's superclasses without having to reimplement Python's
+ algorithm. The most commonly used form will be  :func:`super(class, obj)`, which
+ returns  a bound superclass object (not the actual class object).  This form
+ will be used in methods to call a method in the superclass; for example,
+ :class:`D`'s :meth:`save` method would look like this::
+ 
+    class D (B,C):
+        def save (self):
+-   	# Call superclass .save()
++           # Call superclass .save()
+            super(D, self).save()
+            # Save D's private information here
+            ...
+ 
+ :func:`super` can also return unbound superclass objects when called as
+ :func:`super(class)` or :func:`super(class1, class2)`, but this probably won't
+ often be useful.
+ 
+ 
+ Attribute Access
+ ----------------
+ 
+@@ -464,25 +464,25 @@
+    >>> print i
+    <iterator object at 0x8116870>
+    >>> i.next()
+    1
+    >>> i.next()
+    2
+    >>> i.next()
+    3
+    >>> i.next()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    StopIteration
+-   >>>      
++   >>>
+ 
+ In 2.2, Python's :keyword:`for` statement no longer expects a sequence; it
+ expects something for which :func:`iter` will return an iterator. For backward
+ compatibility and convenience, an iterator is automatically constructed for
+ sequences that don't implement :meth:`__iter__` or a :attr:`tp_iter` slot, so
+ ``for i in [1,2,3]`` will still work.  Wherever the Python interpreter loops
+ over a sequence, it's been changed to use the iterator protocol.  This means you
+ can do things like this::
+ 
+    >>> L = [1,2,3]
+    >>> i = iter(L)
+    >>> a,b,c = i
+@@ -705,25 +705,25 @@
+ .. ======================================================================
+ 
+ 
+ PEP 238: Changing the Division Operator
+ =======================================
+ 
+ The most controversial change in Python 2.2 heralds the start of an effort to
+ fix an old design flaw that's been in Python from the beginning. Currently
+ Python's division operator, ``/``, behaves like C's division operator when
+ presented with two integer arguments: it returns an integer result that's
+ truncated down when there would be a fractional part.  For example, ``3/2`` is
+ 1, not 1.5, and ``(-1)/2`` is -1, not -0.5.  This means that the results of
+-divison can vary unexpectedly depending on the type of the two operands and
++division can vary unexpectedly depending on the type of the two operands and
+ because Python is dynamically typed, it can be difficult to determine the
+ possible types of the operands.
+ 
+ (The controversy is over whether this is *really* a design flaw, and whether
+ it's worth breaking existing code to fix this.  It's caused endless discussions
+ on python-dev, and in July 2001 erupted into an storm of acidly sarcastic
+ postings on :newsgroup:`comp.lang.python`. I won't argue for either side here
+ and will stick to describing what's  implemented in 2.2.  Read :pep:`238` for a
+ summary of arguments and counter-arguments.)
+ 
+ Because this change might break code, it's being introduced very gradually.
+ Python 2.2 begins the transition, but the switch won't be complete until Python
+@@ -900,25 +900,25 @@
+ generate different code to access variables in a containing scope.  ``from
+ module import *`` and :keyword:`exec` make it impossible for the compiler to
+ figure this out, because they add names to the local namespace that are
+ unknowable at compile time. Therefore, if a function contains function
+ definitions or :keyword:`lambda` expressions with free variables, the compiler
+ will flag this by raising a :exc:`SyntaxError` exception.
+ 
+ To make the preceding explanation a bit clearer, here's an example::
+ 
+    x = 1
+    def f():
+        # The next line is a syntax error
+-       exec 'x=2'  
++       exec 'x=2'
+        def g():
+            return x
+ 
+ Line 4 containing the :keyword:`exec` statement is a syntax error, since
+ :keyword:`exec` would define a new local variable named ``x`` whose value should
+ be accessed by :func:`g`.
+ 
+ This shouldn't be much of a limitation, since :keyword:`exec` is rarely used in
+ most Python code (and when it is used, it's often a sign of a poor design
+ anyway).
+ 
+ 
+@@ -943,26 +943,26 @@
+      s = xmlrpclib.Server(
+            'http://www.oreillynet.com/meerkat/xml-rpc/server.php')
+      channels = s.meerkat.getChannels()
+      # channels is a list of dictionaries, like this:
+      # [{'id': 4, 'title': 'Freshmeat Daily News'}
+      #  {'id': 190, 'title': '32Bits Online'},
+      #  {'id': 4549, 'title': '3DGamers'}, ... ]
+ 
+      # Get the items for one channel
+      items = s.meerkat.getItems( {'channel': 4} )
+ 
+      # 'items' is another list of dictionaries, like this:
+-     # [{'link': 'http://freshmeat.net/releases/52719/', 
+-     #   'description': 'A utility which converts HTML to XSL FO.', 
++     # [{'link': 'http://freshmeat.net/releases/52719/',
++     #   'description': 'A utility which converts HTML to XSL FO.',
+      #   'title': 'html2fo 0.3 (Default)'}, ... ]
+ 
+   The :mod:`SimpleXMLRPCServer` module makes it easy to create straightforward
+   XML-RPC servers.  See http://www.xmlrpc.com/ for more information about XML-RPC.
+ 
+ * The new :mod:`hmac` module implements the HMAC algorithm described by
+   :rfc:`2104`. (Contributed by Gerhard Häring.)
+ 
+ * Several functions that originally returned lengthy tuples now return pseudo-
+   sequences that still behave like tuples but also have mnemonic attributes such
+   as memberst_mtime or :attr:`tm_year`. The enhanced functions include
+   :func:`stat`, :func:`fstat`, :func:`statvfs`, and :func:`fstatvfs` in the

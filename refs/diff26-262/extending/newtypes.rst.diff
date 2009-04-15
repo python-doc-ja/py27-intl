@@ -1,0 +1,145 @@
+--- rest26/extending/newtypes.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/extending/newtypes.rst	2009-04-05 05:01:41.000000000 +0900
+@@ -831,72 +831,72 @@
+    >>> print s.increment()
+    1
+    >>> print s.increment()
+    2
+ 
+ .. literalinclude:: ../includes/shoddy.c
+ 
+ 
+ As you can see, the source code closely resembles the :class:`Noddy` examples in
+ previous sections. We will break down the main differences between them. ::
+ 
+    typedef struct {
+-   	PyListObject list;
+-   	int state;
++       PyListObject list;
++       int state;
+    } Shoddy;
+ 
+ The primary difference for derived type objects is that the base type's object
+ structure must be the first value. The base type will already include the
+ :cfunc:`PyObject_HEAD` at the beginning of its structure.
+ 
+ When a Python object is a :class:`Shoddy` instance, its *PyObject\** pointer can
+ be safely cast to both *PyListObject\** and *Shoddy\**. ::
+ 
+    static int
+    Shoddy_init(Shoddy *self, PyObject *args, PyObject *kwds)
+    {
+-   	if (PyList_Type.tp_init((PyObject *)self, args, kwds) < 0)
+-   		return -1;
+-   	self->state = 0;
+-   	return 0;
++       if (PyList_Type.tp_init((PyObject *)self, args, kwds) < 0)
++          return -1;
++       self->state = 0;
++       return 0;
+    }
+ 
+ In the :attr:`__init__` method for our type, we can see how to call through to
+ the :attr:`__init__` method of the base type.
+ 
+ This pattern is important when writing a type with custom :attr:`new` and
+ :attr:`dealloc` methods. The :attr:`new` method should not actually create the
+ memory for the object with :attr:`tp_alloc`, that will be handled by the base
+ class when calling its :attr:`tp_new`.
+ 
+ When filling out the :cfunc:`PyTypeObject` for the :class:`Shoddy` type, you see
+ a slot for :cfunc:`tp_base`. Due to cross platform compiler issues, you can't
+ fill that field directly with the :cfunc:`PyList_Type`; it can be done later in
+ the module's :cfunc:`init` function. ::
+ 
+    PyMODINIT_FUNC
+    initshoddy(void)
+    {
+-   	PyObject *m;
++       PyObject *m;
+ 
+-   	ShoddyType.tp_base = &PyList_Type;
+-   	if (PyType_Ready(&ShoddyType) < 0)
+-   		return;
+-
+-   	m = Py_InitModule3("shoddy", NULL, "Shoddy module");
+-   	if (m == NULL)
+-   		return;
++       ShoddyType.tp_base = &PyList_Type;
++       if (PyType_Ready(&ShoddyType) < 0)
++           return;
++
++       m = Py_InitModule3("shoddy", NULL, "Shoddy module");
++       if (m == NULL)
++           return;
+ 
+-   	Py_INCREF(&ShoddyType);
+-   	PyModule_AddObject(m, "Shoddy", (PyObject *) &ShoddyType);
++       Py_INCREF(&ShoddyType);
++       PyModule_AddObject(m, "Shoddy", (PyObject *) &ShoddyType);
+    }
+ 
+ Before calling :cfunc:`PyType_Ready`, the type structure must have the
+ :attr:`tp_base` slot filled in. When we are deriving a new type, it is not
+ necessary to fill out the :attr:`tp_alloc` slot with :cfunc:`PyType_GenericNew`
+ -- the allocate function from the base type will be inherited.
+ 
+ After that, calling :cfunc:`PyType_Ready` and adding the type object to the
+ module is the same as with the basic :class:`Noddy` examples.
+ 
+ 
+ .. _dnt-type-methods:
+@@ -1158,25 +1158,25 @@
+ 
+    struct PyMethodDef *tp_methods;
+    struct PyMemberDef *tp_members;
+    struct PyGetSetDef *tp_getset;
+ 
+ If :attr:`tp_methods` is not *NULL*, it must refer to an array of
+ :ctype:`PyMethodDef` structures.  Each entry in the table is an instance of this
+ structure::
+ 
+    typedef struct PyMethodDef {
+        char        *ml_name;       /* method name */
+        PyCFunction  ml_meth;       /* implementation function */
+-       int	         ml_flags;      /* flags */
++       int          ml_flags;      /* flags */
+        char        *ml_doc;        /* docstring */
+    } PyMethodDef;
+ 
+ One entry should be defined for each method provided by the type; no entries are
+ needed for methods inherited from a base type.  One additional entry is needed
+ at the end; it is a sentinel that marks the end of the array.  The
+ :attr:`ml_name` field of the sentinel must be *NULL*.
+ 
+ XXX Need to refer to some unified discussion of the structure fields, shared
+ with the next section.
+ 
+ The second table is used to define attributes which map directly to data stored
+@@ -1225,25 +1225,25 @@
+    single: RESTRICTED
+ 
+ An interesting advantage of using the :attr:`tp_members` table to build
+ descriptors that are used at runtime is that any attribute defined this way can
+ have an associated doc string simply by providing the text in the table.  An
+ application can use the introspection API to retrieve the descriptor from the
+ class object, and get the doc string using its :attr:`__doc__` attribute.
+ 
+ As with the :attr:`tp_methods` table, a sentinel entry with a :attr:`name` value
+ of *NULL* is required.
+ 
+ .. XXX Descriptors need to be explained in more detail somewhere, but not here.
+-   
++
+    Descriptor objects have two handler functions which correspond to the
+    \member{tp_getattro} and \member{tp_setattro} handlers.  The
+    \method{__get__()} handler is a function which is passed the descriptor,
+    instance, and type objects, and returns the value of the attribute, or it
+    returns \NULL{} and sets an exception.  The \method{__set__()} handler is
+    passed the descriptor, instance, type, and new value;
+ 
+ 
+ Type-specific Attribute Management
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ For simplicity, only the :ctype:`char\*` version will be demonstrated here; the

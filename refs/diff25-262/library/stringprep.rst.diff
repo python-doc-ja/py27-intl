@@ -1,0 +1,59 @@
+--- rest25/library/stringprep.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/stringprep.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,18 +1,19 @@
+ 
+ :mod:`stringprep` --- Internet String Preparation
+ =================================================
+ 
+ .. module:: stringprep
+    :synopsis: String preparation, as per RFC 3453
++   :deprecated:
+ .. moduleauthor:: Martin v. Löwis <martin@v.loewis.de>
+ .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
+ 
+ 
+ .. versionadded:: 2.3
+ 
+ When identifying things (such as host names) in the internet, it is often
+ necessary to compare such identifications for "equality". Exactly how this
+ comparison is executed may depend on the application domain, e.g. whether it
+ should be case-insensitive or not. It may be also necessary to restrict the
+ possible identifications, to allow only identifications consisting of
+ "printable" characters.
+@@ -41,32 +42,32 @@
+ .. function:: in_table_a1(code)
+ 
+    Determine whether *code* is in tableA.1 (Unassigned code points in Unicode 3.2).
+ 
+ 
+ .. function:: in_table_b1(code)
+ 
+    Determine whether *code* is in tableB.1 (Commonly mapped to nothing).
+ 
+ 
+ .. function:: map_table_b2(code)
+ 
+-   Return the mapped value for *code* according to tableB.2  (Mapping for case-
+-   folding used with NFKC).
++   Return the mapped value for *code* according to tableB.2 (Mapping for
++   case-folding used with NFKC).
+ 
+ 
+ .. function:: map_table_b3(code)
+ 
+-   Return the mapped value for *code* according to tableB.3  (Mapping for case-
+-   folding used with no normalization).
++   Return the mapped value for *code* according to tableB.3 (Mapping for
++   case-folding used with no normalization).
+ 
+ 
+ .. function:: in_table_c11(code)
+ 
+    Determine whether *code* is in tableC.1.1  (ASCII space characters).
+ 
+ 
+ .. function:: in_table_c12(code)
+ 
+    Determine whether *code* is in tableC.1.2  (Non-ASCII space characters).
+ 
+ 

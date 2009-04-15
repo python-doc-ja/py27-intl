@@ -1,0 +1,71 @@
+--- rest26/library/webbrowser.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/webbrowser.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -46,24 +46,28 @@
+ The following functions are defined:
+ 
+ 
+ .. function:: open(url[, new=0[, autoraise=1]])
+ 
+    Display *url* using the default browser. If *new* is 0, the *url* is opened in
+    the same browser window if possible.  If *new* is 1, a new browser window is
+    opened if possible.  If *new* is 2, a new browser page ("tab") is opened if
+    possible.  If *autoraise* is true, the window is raised if possible (note that
+    under many window managers this will occur regardless of the setting of this
+    variable).
+ 
++   Note that on some platforms, trying to open a filename using this function,
++   may work and start the operating system's associated program.  However, this
++   is neither supported nor portable.
++
+    .. versionchanged:: 2.5
+       *new* can now be 2.
+ 
+ 
+ .. function:: open_new(url)
+ 
+    Open *url* in a new window of the default browser, if possible, otherwise, open
+    *url* in the only browser window.
+ 
+ 
+ .. function:: open_new_tab(url)
+ 
+@@ -151,37 +155,37 @@
+    Only on Windows platforms.
+ 
+ (3)
+    Only on Mac OS platforms; requires the standard MacPython :mod:`ic` module.
+ 
+ (4)
+    Only on Mac OS X platform.
+ 
+ Here are some simple examples::
+ 
+    url = 'http://www.python.org'
+ 
+-   # Open URL in a new tab, if a browser window is already open. 
++   # Open URL in a new tab, if a browser window is already open.
+    webbrowser.open_new_tab(url + '/doc')
+ 
+    # Open URL in new window, raising the window if possible.
+    webbrowser.open_new(url)
+ 
+ 
+ .. _browser-controllers:
+ 
+ Browser Controller Objects
+ --------------------------
+ 
+-Browser controllers provide two methods which parallel two of the module-level
++Browser controllers provide these methods which parallel two of the module-level
+ convenience functions:
+ 
+ 
+ .. method:: controller.open(url[, new[, autoraise=1]])
+ 
+    Display *url* using the browser handled by this controller. If *new* is 1, a new
+    browser window is opened if possible. If *new* is 2, a new browser page ("tab")
+    is opened if possible.
+ 
+ 
+ .. method:: controller.open_new(url)
+ 

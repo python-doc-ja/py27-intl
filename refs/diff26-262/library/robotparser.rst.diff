@@ -1,0 +1,29 @@
+--- rest26/library/robotparser.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/robotparser.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -4,25 +4,25 @@
+ 
+ .. module:: robotparser
+    :synopsis: Loads a robots.txt file and answers questions about
+               fetchability of other URLs.
+ .. sectionauthor:: Skip Montanaro <skip@pobox.com>
+ 
+ 
+ .. index::
+    single: WWW
+    single: World Wide Web
+    single: URL
+    single: robots.txt
+-   
++
+ .. note::
+    The :mod:`robotparser` module has been renamed :mod:`urllib.robotparser` in
+    Python 3.0.
+    The :term:`2to3` tool will automatically adapt imports when converting
+    your sources to 3.0.
+ 
+ This module provides a single class, :class:`RobotFileParser`, which answers
+ questions about whether or not a particular user agent can fetch a URL on the
+ Web site that published the :file:`robots.txt` file.  For more details on the
+ structure of :file:`robots.txt` files, see http://www.robotstxt.org/orig.html.
+ 
+ 

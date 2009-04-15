@@ -1,0 +1,29 @@
+--- rest26/extending/building.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/extending/building.rst	2009-04-05 05:01:41.000000000 +0900
+@@ -30,25 +30,25 @@
+ 
+    module1 = Extension('demo',
+                        sources = ['demo.c'])
+ 
+    setup (name = 'PackageName',
+           version = '1.0',
+           description = 'This is a demo package',
+           ext_modules = [module1])
+ 
+ 
+ With this :file:`setup.py`, and a file :file:`demo.c`, running ::
+ 
+-   python setup.py build 
++   python setup.py build
+ 
+ will compile :file:`demo.c`, and produce an extension module named ``demo`` in
+ the :file:`build` directory. Depending on the system, the module file will end
+ up in a subdirectory :file:`build/lib.system`, and may have a name like
+ :file:`demo.so` or :file:`demo.pyd`.
+ 
+ In the :file:`setup.py`, all execution is performed by calling the ``setup``
+ function. This takes a variable number of keyword arguments, of which the
+ example above uses only a subset. Specifically, the example specifies
+ meta-information to build packages, and it specifies the contents of the
+ package.  Normally, a package will contain of addition modules, like Python
+ source modules, documentation, subpackages, etc. Please refer to the distutils

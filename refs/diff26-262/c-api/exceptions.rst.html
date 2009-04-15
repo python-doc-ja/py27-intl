@@ -1,0 +1,70 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to3__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/c-api/exceptions.rst =&gt; rest262/c-api/exceptions.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to3__0"></td><td class="diff_header" id="from3_36">36</td><td nowrap="nowrap">Python&nbsp;variables&nbsp;``sys.exc_type``,&nbsp;``sys.exc_value``&nbsp;and&nbsp;``sys.exc_traceback``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_37">37</td><td nowrap="nowrap">API&nbsp;functions&nbsp;exist&nbsp;to&nbsp;interact&nbsp;with&nbsp;the&nbsp;error&nbsp;indicator&nbsp;in&nbsp;various&nbsp;ways.&nbsp;&nbsp;There</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_38">38</td><td nowrap="nowrap">is&nbsp;a&nbsp;separate&nbsp;error&nbsp;indicator&nbsp;for&nbsp;each&nbsp;thread.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_39">39</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_40">40</td><td nowrap="nowrap">..&nbsp;XXX&nbsp;Order&nbsp;of&nbsp;these&nbsp;should&nbsp;be&nbsp;more&nbsp;thoughtful.</td></tr>            <tr><td class="diff_next" id="difflib_chg_to3__1"></td><td class="diff_header" id="from3_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Either&nbsp;alphabetical&nbsp;or&nbsp;some&nbsp;kind&nbsp;of&nbsp;structure.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_42">42</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_43">43</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to3__1">n</a></td><td class="diff_header" id="from3_44">44-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;cfunction::&nbsp;void&nbsp;PyErr_Print()</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to3__1">n</a></td><td class="diff_header" id="to3_44">44+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;cfunction::&nbsp;void&nbsp;PyErr_PrintEx(int&nbsp;set_sys_last_vars)</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from3_45">45</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_46">46</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Print&nbsp;a&nbsp;standard&nbsp;traceback&nbsp;to&nbsp;``sys.stderr``&nbsp;and&nbsp;clear&nbsp;the&nbsp;error&nbsp;indicator.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Call&nbsp;this&nbsp;function&nbsp;only&nbsp;when&nbsp;the&nbsp;error&nbsp;indicator&nbsp;is&nbsp;set.&nbsp;&nbsp;(Otherwise&nbsp;it&nbsp;will</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;cause&nbsp;a&nbsp;fatal&nbsp;error!)</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to3__2">n</a></td><td class="diff_header" id="to3_49">49+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_50">50+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;If&nbsp;*set_sys_last_vars*&nbsp;is&nbsp;nonzero,&nbsp;the&nbsp;variables&nbsp;:data:`sys.last_type`,</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_51">51+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:data:`sys.last_value`&nbsp;and&nbsp;:data:`sys.last_traceback`&nbsp;will&nbsp;be&nbsp;set&nbsp;to&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_52">52+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;type,&nbsp;value&nbsp;and&nbsp;traceback&nbsp;of&nbsp;the&nbsp;printed&nbsp;exception,&nbsp;respectively.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_53">53+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_54">54+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_55">55+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;cfunction::&nbsp;void&nbsp;PyErr_Print()</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_56">56+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_57">57+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Alias&nbsp;for&nbsp;``PyErr_PrintEx(1)``.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from3_49">49</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_50">50</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_51">51</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;PyObject*&nbsp;PyErr_Occurred()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_52">52</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Test&nbsp;whether&nbsp;the&nbsp;error&nbsp;indicator&nbsp;is&nbsp;set.&nbsp;&nbsp;If&nbsp;set,&nbsp;return&nbsp;the&nbsp;exception&nbsp;*type*</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_54">54</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(the&nbsp;first&nbsp;argument&nbsp;to&nbsp;the&nbsp;last&nbsp;call&nbsp;to&nbsp;one&nbsp;of&nbsp;the&nbsp;:cfunc:`PyErr_Set\*`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;functions&nbsp;or&nbsp;to&nbsp;:cfunc:`PyErr_Restore`).&nbsp;&nbsp;If&nbsp;not&nbsp;set,&nbsp;return&nbsp;*NULL*.&nbsp;&nbsp;You&nbsp;do&nbsp;not</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;own&nbsp;a&nbsp;reference&nbsp;to&nbsp;the&nbsp;return&nbsp;value,&nbsp;so&nbsp;you&nbsp;do&nbsp;not&nbsp;need&nbsp;to&nbsp;:cfunc:`Py_DECREF`</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to3__2"></td><td class="diff_header" id="from3_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_69">69</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Equivalent&nbsp;to&nbsp;``PyErr_GivenExceptionMatches(PyErr_Occurred(),&nbsp;exc)``.&nbsp;&nbsp;This</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_70">70</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;should&nbsp;only&nbsp;be&nbsp;called&nbsp;when&nbsp;an&nbsp;exception&nbsp;is&nbsp;actually&nbsp;set;&nbsp;a&nbsp;memory&nbsp;access</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_71">71</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;violation&nbsp;will&nbsp;occur&nbsp;if&nbsp;no&nbsp;exception&nbsp;has&nbsp;been&nbsp;raised.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_72">72</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_73">73</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_74">74</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyErr_GivenExceptionMatches(PyObject&nbsp;*given,&nbsp;PyObject&nbsp;*exc)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_75">75</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to3__top">t</a></td><td class="diff_header" id="from3_76">76-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;true&nbsp;if&nbsp;the&nbsp;*given*&nbsp;exception&nbsp;matches&nbsp;the&nbsp;exception&nbsp;in&nbsp;*exc*.&nbsp;&nbsp;If<span class="diff_sub">&nbsp;*exc*</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to3__top">t</a></td><td class="diff_header" id="to3_85">85+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;true&nbsp;if&nbsp;the&nbsp;*given*&nbsp;exception&nbsp;matches&nbsp;the&nbsp;exception&nbsp;in&nbsp;*exc*.&nbsp;&nbsp;If</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from3_77">77-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;a&nbsp;class&nbsp;object,&nbsp;this&nbsp;also&nbsp;returns&nbsp;true&nbsp;when&nbsp;*given*&nbsp;is&nbsp;an&nbsp;instance<span class="diff_sub">&nbsp;of&nbsp;a</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_86">86+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;*exc*</span>&nbsp;is&nbsp;a&nbsp;class&nbsp;object,&nbsp;this&nbsp;also&nbsp;returns&nbsp;true&nbsp;when&nbsp;*given*&nbsp;is&nbsp;an&nbsp;instance</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from3_78">78-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;subclass.&nbsp;&nbsp;If&nbsp;*exc*&nbsp;is&nbsp;a&nbsp;tuple,&nbsp;all&nbsp;exceptions&nbsp;in&nbsp;the&nbsp;tuple&nbsp;(and<span class="diff_sub">&nbsp;recursively&nbsp;in</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_87">87+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;of&nbsp;a</span>&nbsp;subclass.&nbsp;&nbsp;If&nbsp;*exc*&nbsp;is&nbsp;a&nbsp;tuple,&nbsp;all&nbsp;exceptions&nbsp;in&nbsp;the&nbsp;tuple&nbsp;(and</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from3_79">79-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;subtuples)&nbsp;are&nbsp;searched&nbsp;for&nbsp;a&nbsp;match.&nbsp;&nbsp;If&nbsp;*given*&nbsp;is&nbsp;*NULL*,&nbsp;a&nbsp;memory&nbsp;access</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to3_88">88+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;recursively&nbsp;in&nbsp;subtuples)&nbsp;are&nbsp;searched&nbsp;for&nbsp;a&nbsp;match.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from3_80">80-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;violation&nbsp;will&nbsp;occur.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from3_81">81</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_82">82</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_83">83</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;void&nbsp;PyErr_NormalizeException(PyObject**exc,&nbsp;PyObject**val,&nbsp;PyObject**tb)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_84">84</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_85">85</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Under&nbsp;certain&nbsp;circumstances,&nbsp;the&nbsp;values&nbsp;returned&nbsp;by&nbsp;:cfunc:`PyErr_Fetch`&nbsp;below</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_86">86</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;"unnormalized",&nbsp;meaning&nbsp;that&nbsp;``*exc``&nbsp;is&nbsp;a&nbsp;class&nbsp;object&nbsp;but&nbsp;``*val``&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;not&nbsp;an&nbsp;instance&nbsp;of&nbsp;the&nbsp;&nbsp;same&nbsp;class.&nbsp;&nbsp;This&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;instantiate</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from3_88">88</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;class&nbsp;in&nbsp;that&nbsp;case.&nbsp;&nbsp;If&nbsp;the&nbsp;values&nbsp;are&nbsp;already&nbsp;normalized,&nbsp;nothing&nbsp;happens.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

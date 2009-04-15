@@ -1,0 +1,89 @@
+--- rest26/library/undoc.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/undoc.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -12,25 +12,25 @@
+ The idea and original contents for this chapter were taken from a posting by
+ Fredrik Lundh; the specific contents of this chapter have been substantially
+ revised.
+ 
+ 
+ Miscellaneous useful utilities
+ ==============================
+ 
+ Some of these are very old and/or not very robust; marked with "hmm."
+ 
+ :mod:`ihooks`
+    --- Import hook support (for :mod:`rexec`; may become obsolete).
+-   
++
+    .. warning:: The :mod:`ihooks` module has been removed in Python 3.0.
+ 
+ 
+ Platform specific modules
+ =========================
+ 
+ These modules are used to implement the :mod:`os.path` module, and are not
+ documented beyond this mention.  There's little need to document these.
+ 
+ :mod:`ntpath`
+    --- Implementation of :mod:`os.path` on Win32, Win64, WinCE, and OS/2 platforms.
+ 
+@@ -45,25 +45,25 @@
+ 
+ Multimedia
+ ==========
+ 
+ :mod:`audiodev`
+    --- Platform-independent API for playing audio data.
+ 
+    .. warning:: The :mod:`audiodev` module has been removed in 3.0.
+ 
+ :mod:`linuxaudiodev`
+    --- Play audio data on the Linux audio device.  Replaced in Python 2.3 by the
+    :mod:`ossaudiodev` module.
+-   
++
+    .. warning:: The :mod:`linuxaudiodev` module has been removed in Python 3.0.
+ 
+ :mod:`sunaudio`
+    --- Interpret Sun audio headers (may become obsolete or a tool/demo).
+ 
+    .. warning:: The :mod:`sunaudio` module has been removed in Python 3.0.
+ 
+ :mod:`toaiff`
+    --- Convert "arbitrary" sound files to AIFF files; should probably become a tool
+    or demo.  Requires the external program :program:`sox`.
+ 
+ 
+@@ -231,30 +231,30 @@
+ linked, or building and installing the shared object if using dynamically-loaded
+ extensions.
+ 
+ .. (lib-old is empty as of Python 2.5)
+ 
+    Those which are written in Python will be installed into the directory
+    \file{lib-old/} installed as part of the standard library.  To use
+    these, the directory must be added to \code{sys.path}, possibly using
+    \envvar{PYTHONPATH}.
+ 
+ :mod:`timing`
+    --- Measure time intervals to high resolution (use :func:`time.clock` instead).
+-   
++
+    .. warning:: The :mod:`timing` module has been removed in Python 3.0.
+ 
+ 
+ SGI-specific Extension modules
+ ==============================
+ 
+ The following are SGI specific, and may be out of touch with the current version
+ of reality.
+ 
+ :mod:`cl`
+    --- Interface to the SGI compression library.
+ 
+ :mod:`sv`
+    --- Interface to the "simple video" board on SGI Indigo (obsolete hardware).
+-   
++
+    .. warning:: The :mod:`sv` module has been removed in Python 3.0.
+ 

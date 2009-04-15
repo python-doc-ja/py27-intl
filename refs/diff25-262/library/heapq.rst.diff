@@ -1,0 +1,164 @@
+--- rest25/library/heapq.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/heapq.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,25 +1,21 @@
+-
+ :mod:`heapq` --- Heap queue algorithm
+ =====================================
+ 
+ .. module:: heapq
+    :synopsis: Heap queue algorithm (a.k.a. priority queue).
+ .. moduleauthor:: Kevin O'Connor
+ .. sectionauthor:: Guido van Rossum <guido@python.org>
+ .. sectionauthor:: François Pinard
+ 
+-
+-.. % Theoretical explanation:
+-
+ .. versionadded:: 2.3
+ 
+ This module provides an implementation of the heap queue algorithm, also known
+ as the priority queue algorithm.
+ 
+ Heaps are arrays for which ``heap[k] <= heap[2*k+1]`` and ``heap[k] <=
+ heap[2*k+2]`` for all *k*, counting elements from zero.  For the sake of
+ comparison, non-existing elements are considered to be infinite.  The
+ interesting property of a heap is that ``heap[0]`` is always its smallest
+ element.
+ 
+ The API below differs from textbook heap algorithms in two aspects: (a) We use
+@@ -40,62 +36,96 @@
+ 
+ 
+ .. function:: heappush(heap, item)
+ 
+    Push the value *item* onto the *heap*, maintaining the heap invariant.
+ 
+ 
+ .. function:: heappop(heap)
+ 
+    Pop and return the smallest item from the *heap*, maintaining the heap
+    invariant.  If the heap is empty, :exc:`IndexError` is raised.
+ 
++.. function:: heappushpop(heap, item)
++
++   Push *item* on the heap, then pop and return the smallest item from the
++   *heap*.  The combined action runs more efficiently than :func:`heappush`
++   followed by a separate call to :func:`heappop`.
++
++   .. versionadded:: 2.6
+ 
+ .. function:: heapify(x)
+ 
+    Transform list *x* into a heap, in-place, in linear time.
+ 
+ 
+ .. function:: heapreplace(heap, item)
+ 
+    Pop and return the smallest item from the *heap*, and also push the new *item*.
+    The heap size doesn't change. If the heap is empty, :exc:`IndexError` is raised.
+    This is more efficient than :func:`heappop` followed by  :func:`heappush`, and
+    can be more appropriate when using a fixed-size heap.  Note that the value
+    returned may be larger than *item*!  That constrains reasonable uses of this
+    routine unless written as part of a conditional replacement::
+ 
+       if item > heap[0]:
+           item = heapreplace(heap, item)
+ 
+-Example of use::
++Example of use:
+ 
+    >>> from heapq import heappush, heappop
+    >>> heap = []
+    >>> data = [1, 3, 5, 7, 9, 2, 4, 6, 8, 0]
+    >>> for item in data:
+    ...     heappush(heap, item)
+    ...
+-   >>> sorted = []
++   >>> ordered = []
+    >>> while heap:
+-   ...     sorted.append(heappop(heap))
++   ...     ordered.append(heappop(heap))
+    ...
+-   >>> print sorted
++   >>> print ordered
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    >>> data.sort()
+-   >>> print data == sorted
++   >>> print data == ordered
+    True
+-   >>>
+ 
+-The module also offers two general purpose functions based on heaps.
++Using a heap to insert items at the correct place in a priority queue:
++
++   >>> heap = []
++   >>> data = [(1, 'J'), (4, 'N'), (3, 'H'), (2, 'O')]
++   >>> for item in data:
++   ...     heappush(heap, item)
++   ...
++   >>> while heap:
++   ...     print heappop(heap)[1]
++   J
++   O
++   H
++   N
++
++
++The module also offers three general purpose functions based on heaps.
++
++
++.. function:: merge(*iterables)
++
++   Merge multiple sorted inputs into a single sorted output (for example, merge
++   timestamped entries from multiple log files).  Returns an :term:`iterator`
++   over the sorted values.
++
++   Similar to ``sorted(itertools.chain(*iterables))`` but returns an iterable, does
++   not pull the data into memory all at once, and assumes that each of the input
++   streams is already sorted (smallest to largest).
++
++   .. versionadded:: 2.6
+ 
+ 
+ .. function:: nlargest(n, iterable[, key])
+ 
+    Return a list with the *n* largest elements from the dataset defined by
+    *iterable*.  *key*, if provided, specifies a function of one argument that is
+    used to extract a comparison key from each element in the iterable:
+    ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key,
+    reverse=True)[:n]``
+ 
+    .. versionadded:: 2.4
+ 
+@@ -106,27 +136,28 @@
+ .. function:: nsmallest(n, iterable[, key])
+ 
+    Return a list with the *n* smallest elements from the dataset defined by
+    *iterable*.  *key*, if provided, specifies a function of one argument that is
+    used to extract a comparison key from each element in the iterable:
+    ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key)[:n]``
+ 
+    .. versionadded:: 2.4
+ 
+    .. versionchanged:: 2.5
+       Added the optional *key* argument.
+ 
+-Both functions perform best for smaller values of *n*.  For larger values, it is
+-more efficient to use the :func:`sorted` function.  Also, when ``n==1``, it is
+-more efficient to use the builtin :func:`min` and :func:`max` functions.
++The latter two functions perform best for smaller values of *n*.  For larger
++values, it is more efficient to use the :func:`sorted` function.  Also, when
++``n==1``, it is more efficient to use the builtin :func:`min` and :func:`max`
++functions.
+ 
+ 
+ Theory
+ ------
+ 
+ (This explanation is due to François Pinard.  The Python code for this module
+ was contributed by Kevin O'Connor.)
+ 
+ Heaps are arrays for which ``a[k] <= a[2*k+1]`` and ``a[k] <= a[2*k+2]`` for all
+ *k*, counting elements from 0.  For the sake of comparison, non-existing
+ elements are considered to be infinite.  The interesting property of a heap is
+ that ``a[0]`` is always its smallest element.

@@ -1,0 +1,334 @@
+--- rest25/library/wsgiref.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/wsgiref.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,49 +1,51 @@
+-
+ :mod:`wsgiref` --- WSGI Utilities and Reference Implementation
+ ==============================================================
+ 
+ .. module:: wsgiref
+-   :synopsis: WSGI Utilities and Reference Implementation
++   :synopsis: WSGI Utilities and Reference Implementation.
+ .. moduleauthor:: Phillip J. Eby <pje@telecommunity.com>
+ .. sectionauthor:: Phillip J. Eby <pje@telecommunity.com>
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ The Web Server Gateway Interface (WSGI) is a standard interface between web
+ server software and web applications written in Python. Having a standard
+ interface makes it easy to use an application that supports WSGI with a number
+ of different web servers.
+ 
+ Only authors of web servers and programming frameworks need to know every detail
+ and corner case of the WSGI design.  You don't need to understand every detail
+ of WSGI just to install a WSGI application or to write a web application using
+ an existing framework.
+ 
+ :mod:`wsgiref` is a reference implementation of the WSGI specification that can
+ be used to add WSGI support to a web server or framework.  It provides utilities
+ for manipulating WSGI environment variables and response headers, base classes
+ for implementing WSGI servers, a demo HTTP server that serves WSGI applications,
+ and a validation tool that checks WSGI servers and applications for conformance
+ to the WSGI specification (:pep:`333`).
+ 
+-.. % XXX If you're just trying to write a web application...
+-.. % XXX should create a URL on python.org to point people to.
++See http://www.wsgi.org for more information about WSGI, and links to tutorials
++and other resources.
++
++.. XXX If you're just trying to write a web application...
+ 
+ 
+ :mod:`wsgiref.util` -- WSGI environment utilities
+ -------------------------------------------------
+ 
+ .. module:: wsgiref.util
++   :synopsis: WSGI environment utilities.
+ 
+ 
+ This module provides a variety of utility functions for working with WSGI
+ environments.  A WSGI environment is a dictionary containing HTTP request
+ variables as described in :pep:`333`.  All of the functions taking an *environ*
+ parameter expect a WSGI-compliant dictionary to be supplied; please see
+ :pep:`333` for a detailed specification.
+ 
+ 
+ .. function:: guess_scheme(environ)
+ 
+    Return a guess for whether ``wsgi.url_scheme`` should be "http" or "https", by
+@@ -103,52 +105,90 @@
+    Update *environ* with trivial defaults for testing purposes.
+ 
+    This routine adds various parameters required for WSGI, including ``HTTP_HOST``,
+    ``SERVER_NAME``, ``SERVER_PORT``, ``REQUEST_METHOD``, ``SCRIPT_NAME``,
+    ``PATH_INFO``, and all of the :pep:`333`\ -defined ``wsgi.*`` variables.  It
+    only supplies default values, and does not replace any existing settings for
+    these variables.
+ 
+    This routine is intended to make it easier for unit tests of WSGI servers and
+    applications to set up dummy environments.  It should NOT be used by actual WSGI
+    servers or applications, since the data is fake!
+ 
++   Example usage::
++
++      from wsgiref.util import setup_testing_defaults
++      from wsgiref.simple_server import make_server
++
++      # A relatively simple WSGI application. It's going to print out the
++      # environment dictionary after being updated by setup_testing_defaults
++      def simple_app(environ, start_response):
++          setup_testing_defaults(environ)
++
++          status = '200 OK'
++          headers = [('Content-type', 'text/plain')]
++
++          start_response(status, headers)
++
++          ret = ["%s: %s\n" % (key, value)
++                 for key, value in environ.iteritems()]
++          return ret
++
++      httpd = make_server('', 8000, simple_app)
++      print "Serving on port 8000..."
++      httpd.serve_forever()
++
++
+ In addition to the environment functions above, the :mod:`wsgiref.util` module
+ also provides these miscellaneous utilities:
+ 
+ 
+ .. function:: is_hop_by_hop(header_name)
+ 
+    Return true if 'header_name' is an HTTP/1.1 "Hop-by-Hop" header, as defined by
+    :rfc:`2616`.
+ 
+ 
+ .. class:: FileWrapper(filelike [, blksize=8192])
+ 
+-   A wrapper to convert a file-like object to an iterator.  The resulting objects
++   A wrapper to convert a file-like object to an :term:`iterator`.  The resulting objects
+    support both :meth:`__getitem__` and :meth:`__iter__` iteration styles, for
+    compatibility with Python 2.1 and Jython. As the object is iterated over, the
+    optional *blksize* parameter will be repeatedly passed to the *filelike*
+    object's :meth:`read` method to obtain strings to yield.  When :meth:`read`
+    returns an empty string, iteration is ended and is not resumable.
+ 
+    If *filelike* has a :meth:`close` method, the returned object will also have a
+    :meth:`close` method, and it will invoke the *filelike* object's :meth:`close`
+    method when called.
+ 
++   Example usage::
++
++      from StringIO import StringIO
++      from wsgiref.util import FileWrapper
++
++      # We're using a StringIO-buffer for as the file-like object
++      filelike = StringIO("This is an example file-like object"*10)
++      wrapper = FileWrapper(filelike, blksize=5)
++
++      for chunk in wrapper:
++          print chunk
++
++
+ 
+ :mod:`wsgiref.headers` -- WSGI response header tools
+ ----------------------------------------------------
+ 
+ .. module:: wsgiref.headers
++   :synopsis: WSGI response header tools.
+ 
+ 
+ This module provides a single class, :class:`Headers`, for convenient
+ manipulation of WSGI response headers using a mapping-like interface.
+ 
+ 
+ .. class:: Headers(headers)
+ 
+    Create a mapping-like object wrapping *headers*, which must be a list of header
+    name/value tuples as described in :pep:`333`.  Any changes made to the new
+    :class:`Headers` object will directly update the *headers* list it was created
+    with.
+@@ -210,54 +250,55 @@
+ 
+          h.add_header('content-disposition', 'attachment', filename='bud.gif')
+ 
+       The above will add a header that looks like this::
+ 
+          Content-Disposition: attachment; filename="bud.gif"
+ 
+ 
+ :mod:`wsgiref.simple_server` -- a simple WSGI HTTP server
+ ---------------------------------------------------------
+ 
+ .. module:: wsgiref.simple_server
++   :synopsis: A simple WSGI HTTP server.
+ 
+ 
+ This module implements a simple HTTP server (based on :mod:`BaseHTTPServer`)
+ that serves WSGI applications.  Each server instance serves a single WSGI
+ application on a given host and port.  If you want to serve multiple
+ applications on a single host and port, you should create a WSGI application
+ that parses ``PATH_INFO`` to select which application to invoke for each
+ request.  (E.g., using the :func:`shift_path_info` function from
+ :mod:`wsgiref.util`.)
+ 
+ 
+-.. function:: make_server(host, port, app [, server_class=:class:`WSGIServer` [, handler_class=:class:`WSGIRequestHandler`]])
++.. function:: make_server(host, port, app [, server_class=WSGIServer [, handler_class=WSGIRequestHandler]])
+ 
+    Create a new WSGI server listening on *host* and *port*, accepting connections
+    for *app*.  The return value is an instance of the supplied *server_class*, and
+    will process requests using the specified *handler_class*.  *app* must be a WSGI
+    application object, as defined by :pep:`333`.
+ 
+    Example usage::
+ 
+       from wsgiref.simple_server import make_server, demo_app
+ 
+       httpd = make_server('', 8000, demo_app)
+       print "Serving HTTP on port 8000..."
+ 
+       # Respond to requests until process is killed
+       httpd.serve_forever()
+ 
+       # Alternative: serve one request, then exit
+-      ##httpd.handle_request()
++      httpd.handle_request()
+ 
+ 
+ .. function:: demo_app(environ, start_response)
+ 
+    This function is a small but complete WSGI application that returns a text page
+    containing the message "Hello world!" and a list of the key/value pairs provided
+    in the *environ* parameter.  It's useful for verifying that a WSGI server (such
+    as :mod:`wsgiref.simple_server`) is able to run a simple WSGI application
+    correctly.
+ 
+ 
+ .. class:: WSGIServer(server_address, RequestHandlerClass)
+@@ -316,28 +357,29 @@
+ 
+       Return the object that should be used as the ``wsgi.errors`` stream. The default
+       implementation just returns ``sys.stderr``.
+ 
+ 
+    .. method:: WSGIRequestHandler.handle()
+ 
+       Process the HTTP request.  The default implementation creates a handler instance
+       using a :mod:`wsgiref.handlers` class to implement the actual WSGI application
+       interface.
+ 
+ 
+-:mod:`wsgiref.validate` -- WSGI conformance checker
+----------------------------------------------------
++:mod:`wsgiref.validate` --- WSGI conformance checker
++----------------------------------------------------
+ 
+ .. module:: wsgiref.validate
++   :synopsis: WSGI conformance checker.
+ 
+ 
+ When creating new WSGI application objects, frameworks, servers, or middleware,
+ it can be useful to validate the new code's conformance using
+ :mod:`wsgiref.validate`.  This module provides a function that creates WSGI
+ application objects that validate communications between a WSGI server or
+ gateway and a WSGI application object, to check both sides for protocol
+ conformance.
+ 
+ Note that this utility does not guarantee complete :pep:`333` compliance; an
+ absence of errors from this module does not necessarily mean that errors do not
+ exist.  However, if this module does produce an error, then it is virtually
+@@ -359,29 +401,53 @@
+    example, :mod:`wsgiref.simple_server` and other servers based on
+    :mod:`wsgiref.handlers` (that don't override the error handling methods to do
+    something else) will simply output a message that an error has occurred, and
+    dump the traceback to ``sys.stderr`` or some other error stream.
+ 
+    This wrapper may also generate output using the :mod:`warnings` module to
+    indicate behaviors that are questionable but which may not actually be
+    prohibited by :pep:`333`.  Unless they are suppressed using Python command-line
+    options or the :mod:`warnings` API, any such warnings will be written to
+    ``sys.stderr`` (*not* ``wsgi.errors``, unless they happen to be the same
+    object).
+ 
++   Example usage::
++
++      from wsgiref.validate import validator
++      from wsgiref.simple_server import make_server
++
++      # Our callable object which is intentionally not compliant to the
++      # standard, so the validator is going to break
++      def simple_app(environ, start_response):
++          status = '200 OK' # HTTP Status
++          headers = [('Content-type', 'text/plain')] # HTTP Headers
++          start_response(status, headers)
++
++          # This is going to break because we need to return a list, and
++          # the validator is going to inform us
++          return "Hello World"
++
++      # This is the application wrapped in a validator
++      validator_app = validator(simple_app)
++
++      httpd = make_server('', 8000, validator_app)
++      print "Listening on port 8000...."
++      httpd.serve_forever()
++
+ 
+ :mod:`wsgiref.handlers` -- server/gateway base classes
+ ------------------------------------------------------
+ 
+ .. module:: wsgiref.handlers
++   :synopsis: WSGI server/gateway base classes.
+ 
+ 
+ This module provides base handler classes for implementing WSGI servers and
+ gateways.  These base classes handle most of the work of communicating with a
+ WSGI application, as long as they are given a CGI-like environment, along with
+ input, output, and error streams.
+ 
+ 
+ .. class:: CGIHandler()
+ 
+    CGI-based invocation via ``sys.stdin``, ``sys.stdout``, ``sys.stderr`` and
+    ``os.environ``.  This is useful when you have a WSGI application and want to run
+@@ -624,12 +690,39 @@
+       via a CGI-like gateway protocol that wants the HTTP status in a special
+       ``Status:`` header.
+ 
+       This attribute's default value is true in :class:`BaseHandler`, but false in
+       :class:`BaseCGIHandler` and :class:`CGIHandler`.
+ 
+ 
+    .. attribute:: BaseHandler.http_version
+ 
+       If :attr:`origin_server` is true, this string attribute is used to set the HTTP
+       version of the response set to the client.  It defaults to ``"1.0"``.
+ 
++
++Examples
++--------
++
++This is a working "Hello World" WSGI application::
++
++   from wsgiref.simple_server import make_server
++
++   # Every WSGI application must have an application object - a callable
++   # object that accepts two arguments. For that purpose, we're going to
++   # use a function (note that you're not limited to a function, you can
++   # use a class for example). The first argument passed to the function
++   # is a dictionary containing CGI-style envrironment variables and the
++   # second variable is the callable object (see PEP333)
++   def hello_world_app(environ, start_response):
++       status = '200 OK' # HTTP Status
++       headers = [('Content-type', 'text/plain')] # HTTP Headers
++       start_response(status, headers)
++
++       # The returned object is going to be printed
++       return ["Hello World"]
++
++   httpd = make_server('', 8000, hello_world_app)
++   print "Serving on port 8000..."
++
++   # Serve until process is killed
++   httpd.serve_forever()

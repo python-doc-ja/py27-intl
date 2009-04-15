@@ -1,0 +1,74 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to122__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/fnmatch.rst =&gt; rest262/library/fnmatch.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to122__0"></td><td class="diff_header" id="from122_38">38</td><td nowrap="nowrap">..&nbsp;function::&nbsp;fnmatch(filename,&nbsp;pattern)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_39">39</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Test&nbsp;whether&nbsp;the&nbsp;*filename*&nbsp;string&nbsp;matches&nbsp;the&nbsp;*pattern*&nbsp;string,&nbsp;returning&nbsp;true</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;or&nbsp;false.&nbsp;&nbsp;If&nbsp;the&nbsp;operating&nbsp;system&nbsp;is&nbsp;case-insensitive,&nbsp;then&nbsp;both&nbsp;parameters</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;will&nbsp;be&nbsp;normalized&nbsp;to&nbsp;all&nbsp;lower-&nbsp;or&nbsp;upper-case&nbsp;before&nbsp;the&nbsp;comparison&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_43">43</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;performed.&nbsp;&nbsp;If&nbsp;you&nbsp;require&nbsp;a&nbsp;case-sensitive&nbsp;comparison&nbsp;regardless&nbsp;of&nbsp;whether</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_44">44</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;that's&nbsp;standard&nbsp;for&nbsp;your&nbsp;operating&nbsp;system,&nbsp;use&nbsp;:func:`fnmatchcase`&nbsp;instead.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_45">45</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to122__1">n</a></td><td class="diff_header" id="to122_46">46+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;This&nbsp;example&nbsp;will&nbsp;print&nbsp;all&nbsp;file&nbsp;names&nbsp;in&nbsp;the&nbsp;current&nbsp;directory&nbsp;with&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_47">47+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;extension&nbsp;``.txt``::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_48">48+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_49">49+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;fnmatch</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_50">50+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;os</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_51">51+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_52">52+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;file&nbsp;in&nbsp;os.listdir('.'):</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_53">53+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;fnmatch.fnmatch(file,&nbsp;'*.txt'):</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_54">54+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;file</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_55">55+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from122_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_47">47</td><td nowrap="nowrap">..&nbsp;function::&nbsp;fnmatchcase(filename,&nbsp;pattern)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_48">48</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Test&nbsp;whether&nbsp;*filename*&nbsp;matches&nbsp;*pattern*,&nbsp;returning&nbsp;true&nbsp;or&nbsp;false;&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;comparison&nbsp;is&nbsp;case-sensitive.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_51">51</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_52">52</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to122__1"></td><td class="diff_header" id="from122_53">53</td><td nowrap="nowrap">..&nbsp;function::&nbsp;filter(names,&nbsp;pattern)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_54">54</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;subset&nbsp;of&nbsp;the&nbsp;list&nbsp;of&nbsp;*names*&nbsp;that&nbsp;match&nbsp;*pattern*.&nbsp;It&nbsp;is&nbsp;the&nbsp;same&nbsp;as</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;``[n&nbsp;for&nbsp;n&nbsp;in&nbsp;names&nbsp;if&nbsp;fnmatch(n,&nbsp;pattern)]``,&nbsp;but&nbsp;implemented&nbsp;more&nbsp;efficiently.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_57">57</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_58">58</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.2</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_59">59</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_60">60</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to122__top">t</a></td><td class="diff_header" id="to122_71">71+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;function::&nbsp;translate(pattern)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_72">72+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_73">73+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;shell-style&nbsp;*pattern*&nbsp;converted&nbsp;to&nbsp;a&nbsp;regular&nbsp;expression.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_74">74+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_75">75+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Example:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_76">76+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_77">77+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;fnmatch,&nbsp;re</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_78">78+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_79">79+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;regex&nbsp;=&nbsp;fnmatch.translate('*.txt')</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_80">80+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;regex</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_81">81+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.*\\.txt$'</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_82">82+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;reobj&nbsp;=&nbsp;re.compile(regex)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_83">83+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print&nbsp;reobj.match('foobar.txt')</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_84">84+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;_sre.SRE_Match&nbsp;object&nbsp;at&nbsp;0x...&gt;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_85">85+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to122_86">86+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from122_61">61</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_62">62</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_63">63</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`glob`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_64">64</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unix&nbsp;shell-style&nbsp;path&nbsp;expansion.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from122_65">65</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

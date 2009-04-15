@@ -1,0 +1,17 @@
+--- rest25/library/sun.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/sun.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,10 +1,14 @@
+ 
+ .. _sunos:
+ 
+ ***********************
+ SunOS Specific Services
+ ***********************
+ 
+ The modules described in this chapter provide interfaces to features that are
+ unique to SunOS 5 (also known as Solaris version 2).
+ 
++
++.. toctree::
++
++   sunaudio.rst

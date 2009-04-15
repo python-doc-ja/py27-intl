@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to6__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/c-api/intro.rst =&gt; rest262/c-api/intro.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to6__0"></td><td class="diff_header" id="from6_182">182</td><td nowrap="nowrap">the&nbsp;code&nbsp;that&nbsp;receives&nbsp;ownership&nbsp;of&nbsp;the&nbsp;reference&nbsp;then&nbsp;becomes&nbsp;responsible&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_183">183</td><td nowrap="nowrap">eventually&nbsp;decref'ing&nbsp;it&nbsp;by&nbsp;calling&nbsp;:cfunc:`Py_DECREF`&nbsp;or&nbsp;:cfunc:`Py_XDECREF`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_184">184</td><td nowrap="nowrap">when&nbsp;it's&nbsp;no&nbsp;longer&nbsp;needed---or&nbsp;passing&nbsp;on&nbsp;this&nbsp;responsibility&nbsp;(usually&nbsp;to&nbsp;its</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_185">185</td><td nowrap="nowrap">caller).&nbsp;When&nbsp;a&nbsp;function&nbsp;passes&nbsp;ownership&nbsp;of&nbsp;a&nbsp;reference&nbsp;on&nbsp;to&nbsp;its&nbsp;caller,&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_186">186</td><td nowrap="nowrap">caller&nbsp;is&nbsp;said&nbsp;to&nbsp;receive&nbsp;a&nbsp;*new*&nbsp;reference.&nbsp;&nbsp;When&nbsp;no&nbsp;ownership&nbsp;is&nbsp;transferred,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_187">187</td><td nowrap="nowrap">the&nbsp;caller&nbsp;is&nbsp;said&nbsp;to&nbsp;*borrow*&nbsp;the&nbsp;reference.&nbsp;Nothing&nbsp;needs&nbsp;to&nbsp;be&nbsp;done&nbsp;for&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_188">188</td><td nowrap="nowrap">borrowed&nbsp;reference.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_189">189</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to6__top">t</a></td><td class="diff_header" id="from6_190">190-</td><td nowrap="nowrap">Conversely,&nbsp;when&nbsp;a&nbsp;calling&nbsp;function&nbsp;passes&nbsp;i<span class="diff_chg">t</span>&nbsp;a&nbsp;reference&nbsp;to&nbsp;an&nbsp;&nbsp;object,&nbsp;there</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to6__top">t</a></td><td class="diff_header" id="to6_190">190+</td><td nowrap="nowrap">Conversely,&nbsp;when&nbsp;a&nbsp;calling&nbsp;function&nbsp;passes&nbsp;i<span class="diff_chg">n</span>&nbsp;a&nbsp;reference&nbsp;to&nbsp;an&nbsp;&nbsp;object,&nbsp;there</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from6_191">191</td><td nowrap="nowrap">are&nbsp;two&nbsp;possibilities:&nbsp;the&nbsp;function&nbsp;*steals*&nbsp;a&nbsp;&nbsp;reference&nbsp;to&nbsp;the&nbsp;object,&nbsp;or&nbsp;it</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_192">192</td><td nowrap="nowrap">does&nbsp;not.&nbsp;&nbsp;*Stealing&nbsp;a&nbsp;reference*&nbsp;means&nbsp;that&nbsp;when&nbsp;you&nbsp;pass&nbsp;a&nbsp;reference&nbsp;to&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_193">193</td><td nowrap="nowrap">function,&nbsp;that&nbsp;function&nbsp;assumes&nbsp;that&nbsp;it&nbsp;now&nbsp;owns&nbsp;that&nbsp;reference,&nbsp;and&nbsp;you&nbsp;are&nbsp;not</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_194">194</td><td nowrap="nowrap">responsible&nbsp;for&nbsp;it&nbsp;any&nbsp;longer.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_195">195</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_196">196</td><td nowrap="nowrap">..&nbsp;index::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_197">197</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;single:&nbsp;PyList_SetItem()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_198">198</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;single:&nbsp;PyTuple_SetItem()</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

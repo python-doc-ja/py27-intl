@@ -1,0 +1,29 @@
+--- rest26/distutils/configfile.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/distutils/configfile.rst	2009-04-05 05:01:40.000000000 +0900
+@@ -54,25 +54,25 @@
+ universal :option:`--help` option, e.g. ::
+ 
+    > python setup.py --help build_ext
+    [...]
+    Options for 'build_ext' command:
+      --build-lib (-b)     directory for compiled extension modules
+      --build-temp (-t)    directory for temporary files (build by-products)
+      --inplace (-i)       ignore build-lib and put compiled extensions into the
+                           source directory alongside your pure Python modules
+      --include-dirs (-I)  list of directories to search for header files
+      --define (-D)        C preprocessor macros to define
+      --undef (-U)         C preprocessor macros to undefine
+-     --swig-opts          list of SWIG command line options        
++     --swig-opts          list of SWIG command line options
+    [...]
+ 
+ Note that an option spelled :option:`--foo-bar` on the command-line  is spelled
+ :option:`foo_bar` in configuration files.
+ 
+ For example, say you want your extensions to be built "in-place"---that is, you
+ have an extension :mod:`pkg.ext`, and you want the compiled extension file
+ (:file:`ext.so` on Unix, say) to be put in the same source directory as your
+ pure Python modules :mod:`pkg.mod1` and :mod:`pkg.mod2`.  You can always use the
+ :option:`--inplace` option on the command-line to ensure this::
+ 
+    python setup.py build_ext --inplace

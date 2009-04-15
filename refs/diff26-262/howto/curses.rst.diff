@@ -1,0 +1,58 @@
+--- rest26/howto/curses.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/howto/curses.rst	2009-04-05 05:01:49.000000000 +0900
+@@ -288,25 +288,25 @@
+ +----------------------+--------------------------------------+
+ | :const:`A_REVERSE`   | Reverse-video text                   |
+ +----------------------+--------------------------------------+
+ | :const:`A_STANDOUT`  | The best highlighting mode available |
+ +----------------------+--------------------------------------+
+ | :const:`A_UNDERLINE` | Underlined text                      |
+ +----------------------+--------------------------------------+
+ 
+ So, to display a reverse-video status line on the top line of the screen, you
+ could code::
+ 
+    stdscr.addstr(0, 0, "Current mode: Typing mode",
+-   	      curses.A_REVERSE)
++                 curses.A_REVERSE)
+    stdscr.refresh()
+ 
+ The curses library also supports color on those terminals that provide it, The
+ most common such terminal is probably the Linux console, followed by color
+ xterms.
+ 
+ To use color, you must call the :func:`start_color` function soon after calling
+ :func:`initscr`, to initialize the default color set (the
+ :func:`curses.wrapper.wrapper` function does this automatically).  Once that's
+ done, the :func:`has_colors` function returns TRUE if the terminal in use can
+ actually display color.  (Note: curses uses the American spelling 'color',
+ instead of the Canadian/British spelling 'colour'.  If you're used to the
+@@ -390,26 +390,26 @@
+ writing more readable tests for your command interpreters.  It also supplies
+ conversion functions  that take either integer or 1-character-string arguments
+ and return the same type.  For example, :func:`curses.ascii.ctrl` returns the
+ control character corresponding to its argument.
+ 
+ There's also a method to retrieve an entire string, :const:`getstr()`.  It isn't
+ used very often, because its functionality is quite limited; the only editing
+ keys available are the backspace key and the Enter key, which terminates the
+ string.  It can optionally be limited to a fixed number of characters. ::
+ 
+    curses.echo()            # Enable echoing of characters
+ 
+-   # Get a 15-character string, with the cursor on the top line 
+-   s = stdscr.getstr(0,0, 15)  
++   # Get a 15-character string, with the cursor on the top line
++   s = stdscr.getstr(0,0, 15)
+ 
+ The Python :mod:`curses.textpad` module supplies something better. With it, you
+ can turn a window into a text box that supports an Emacs-like set of
+ keybindings.  Various methods of :class:`Textbox` class support editing with
+ input validation and gathering the edit results either with or without trailing
+ spaces.   See the library documentation on :mod:`curses.textpad` for the
+ details.
+ 
+ 
+ For More Information
+ ====================
+ 

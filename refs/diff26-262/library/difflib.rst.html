@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to77__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/difflib.rst =&gt; rest262/library/difflib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to77__0"></td><td class="diff_header" id="from77_423">423</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;last&nbsp;triple&nbsp;is&nbsp;a&nbsp;dummy,&nbsp;and&nbsp;has&nbsp;the&nbsp;value&nbsp;``(len(a),&nbsp;len(b),&nbsp;0)``.&nbsp;&nbsp;It</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_424">424</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;the&nbsp;only&nbsp;triple&nbsp;with&nbsp;``n&nbsp;==&nbsp;0``.&nbsp;&nbsp;If&nbsp;``(i,&nbsp;j,&nbsp;n)``&nbsp;and&nbsp;``(i',&nbsp;j',&nbsp;n')``</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_425">425</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;are&nbsp;adjacent&nbsp;triples&nbsp;in&nbsp;the&nbsp;list,&nbsp;and&nbsp;the&nbsp;second&nbsp;is&nbsp;not&nbsp;the&nbsp;last&nbsp;triple&nbsp;in</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_426">426</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;the&nbsp;list,&nbsp;then&nbsp;``i+n&nbsp;!=&nbsp;i'``&nbsp;or&nbsp;``j+n&nbsp;!=&nbsp;j'``;&nbsp;in&nbsp;other&nbsp;words,&nbsp;adjacent</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_427">427</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;triples&nbsp;always&nbsp;describe&nbsp;non-adjacent&nbsp;equal&nbsp;blocks.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_428">428</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_429">429</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;XXX&nbsp;Explain&nbsp;why&nbsp;a&nbsp;dummy&nbsp;is&nbsp;used!</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_430">430</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to77__top">t</a></td><td class="diff_header" id="from77_431">431-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to77__top">t</a></td><td class="diff_header" id="to77_431">431+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from77_432">432</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;guarantee&nbsp;that&nbsp;adjacent&nbsp;triples&nbsp;always&nbsp;describe&nbsp;non-adjacent&nbsp;blocks</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_433">433</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;was&nbsp;implemented.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_434">434</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_435">435</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;doctest::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_436">436</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_437">437</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;s&nbsp;=&nbsp;SequenceMatcher(None,&nbsp;"abxcd",&nbsp;"abcd")</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_438">438</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;s.get_matching_blocks()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from77_439">439</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Match(a=0,&nbsp;b=0,&nbsp;size=2),&nbsp;Match(a=3,&nbsp;b=2,&nbsp;size=2),&nbsp;Match(a=5,&nbsp;b=4,&nbsp;size=0)]</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

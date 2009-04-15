@@ -1,0 +1,45 @@
+--- rest26/library/time.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/time.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -109,24 +109,42 @@
+   A year value will be handled as described under "Year 2000 (Y2K) issues" above.
+   A ``-1`` argument as the daylight savings flag, passed to :func:`mktime` will
+   usually result in the correct daylight savings state to be filled in.
+ 
+   When a tuple with an incorrect length is passed to a function expecting a
+   :class:`struct_time`, or having elements of the wrong type, a :exc:`TypeError`
+   is raised.
+ 
+   .. versionchanged:: 2.2
+      The time value sequence was changed from a tuple to a :class:`struct_time`, with
+      the addition of attribute names for the fields.
+ 
++* Use the following functions to convert between time representations:
++
++  +-------------------------+-------------------------+-------------------------+
++  | From                    | To                      | Use                     |
++  +=========================+=========================+=========================+
++  | seconds since the epoch | :class:`struct_time` in | :func:`gmtime`          |
++  |                         | UTC                     |                         |
++  +-------------------------+-------------------------+-------------------------+
++  | seconds since the epoch | :class:`struct_time` in | :func:`localtime`       |
++  |                         | local time              |                         |
++  +-------------------------+-------------------------+-------------------------+
++  | :class:`struct_time` in | seconds since the epoch | :func:`calendar.timegm` |
++  | UTC                     |                         |                         |
++  +-------------------------+-------------------------+-------------------------+
++  | :class:`struct_time` in | seconds since the epoch | :func:`mktime`          |
++  | local time              |                         |                         |
++  +-------------------------+-------------------------+-------------------------+
++
+ 
+ The module defines the following functions and data items:
+ 
+ .. data:: accept2dyear
+ 
+    Boolean value indicating whether two-digit year values will be accepted.  This
+    is true by default, but will be set to false if the environment variable
+    :envvar:`PYTHONY2K` has been set to a non-empty string.  It may also be modified
+    at run time.
+ 
+ 
+ .. data:: altzone

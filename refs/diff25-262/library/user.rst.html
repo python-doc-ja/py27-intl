@@ -1,0 +1,57 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to268__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/user.rst =&gt; rest262/library/user.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to268__1"><a href="#difflib_chg_to268__0">f</a></td><td class="diff_header" id="from268_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_2">2</td><td nowrap="nowrap">:mod:`user`&nbsp;---&nbsp;User-specific&nbsp;configuration&nbsp;hook</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_3">3</td><td nowrap="nowrap">================================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;user</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;A&nbsp;standard&nbsp;way&nbsp;to&nbsp;reference&nbsp;user-specific&nbsp;modules.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to268__1">n</a></td><td class="diff_header" id="to268_7">7+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:deprecated:</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from268_7">7</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to268__2">n</a></td><td class="diff_header" id="to268_9">9+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;deprecated::&nbsp;2.6</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to268_10">10+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`user`&nbsp;module&nbsp;has&nbsp;been&nbsp;removed&nbsp;in&nbsp;Python&nbsp;3.0.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from268_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_9">9</td><td nowrap="nowrap">..&nbsp;index::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_10">10</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;pair:&nbsp;.pythonrc.py;&nbsp;file</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_11">11</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;triple:&nbsp;user;&nbsp;configuration;&nbsp;file</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_13">13</td><td nowrap="nowrap">As&nbsp;a&nbsp;policy,&nbsp;Python&nbsp;doesn't&nbsp;run&nbsp;user-specified&nbsp;code&nbsp;on&nbsp;startup&nbsp;of&nbsp;Python</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_14">14</td><td nowrap="nowrap">programs.&nbsp;&nbsp;(Only&nbsp;interactive&nbsp;sessions&nbsp;execute&nbsp;the&nbsp;script&nbsp;specified&nbsp;in&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_15">15</td><td nowrap="nowrap">:envvar:`PYTHONSTARTUP`&nbsp;environment&nbsp;variable&nbsp;if&nbsp;it&nbsp;exists).</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to268__2"></td><td class="diff_header" id="from268_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;user</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_48">48</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;verbose&nbsp;=&nbsp;bool(getattr(user,&nbsp;"spam_verbose",&nbsp;0))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_50">50</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_51">51</td><td nowrap="nowrap">(The&nbsp;three-argument&nbsp;form&nbsp;of&nbsp;:func:`getattr`&nbsp;is&nbsp;used&nbsp;in&nbsp;case&nbsp;the&nbsp;user&nbsp;has&nbsp;not</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_52">52</td><td nowrap="nowrap">defined&nbsp;``spam_verbose``&nbsp;in&nbsp;their&nbsp;:file:`.pythonrc.py`&nbsp;file.)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_53">53</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to268__top">t</a></td><td class="diff_header" id="from268_54">54-</td><td nowrap="nowrap">Programs&nbsp;with&nbsp;extensive&nbsp;customization&nbsp;needs&nbsp;are&nbsp;better&nbsp;off&nbsp;reading&nbsp;a<span class="diff_sub">&nbsp;program-</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to268__top">t</a></td><td class="diff_header" id="to268_57">57+</td><td nowrap="nowrap">Programs&nbsp;with&nbsp;extensive&nbsp;customization&nbsp;needs&nbsp;are&nbsp;better&nbsp;off&nbsp;reading&nbsp;a</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from268_55">55-</td><td nowrap="nowrap">specific&nbsp;customization&nbsp;file.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to268_58">58+</td><td nowrap="nowrap"><span class="diff_add">program-</span>specific&nbsp;customization&nbsp;file.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from268_56">56</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_57">57</td><td nowrap="nowrap">Programs&nbsp;with&nbsp;security&nbsp;or&nbsp;privacy&nbsp;concerns&nbsp;should&nbsp;*not*&nbsp;import&nbsp;this&nbsp;module;&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_58">58</td><td nowrap="nowrap">user&nbsp;can&nbsp;easily&nbsp;break&nbsp;into&nbsp;a&nbsp;program&nbsp;by&nbsp;placing&nbsp;arbitrary&nbsp;code&nbsp;in&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_59">59</td><td nowrap="nowrap">:file:`.pythonrc.py`&nbsp;file.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_60">60</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_61">61</td><td nowrap="nowrap">Modules&nbsp;for&nbsp;general&nbsp;use&nbsp;should&nbsp;*not*&nbsp;import&nbsp;this&nbsp;module;&nbsp;it&nbsp;may&nbsp;interfere&nbsp;with</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_62">62</td><td nowrap="nowrap">the&nbsp;operation&nbsp;of&nbsp;the&nbsp;importing&nbsp;program.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from268_63">63</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

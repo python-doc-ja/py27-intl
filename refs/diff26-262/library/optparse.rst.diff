@@ -1,0 +1,184 @@
+--- rest26/library/optparse.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/optparse.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -539,45 +539,45 @@
+    string---\ :mod:`optparse` will replace it with :func:`str` of the option's
+    default value.  If an option has no default value (or the default value is
+    ``None``), ``%default`` expands to ``none``.
+ 
+ When dealing with many options, it is convenient to group these
+ options for better help output.  An :class:`OptionParser` can contain
+ several option groups, each of which can contain several options.
+ 
+ Continuing with the parser defined above, adding an
+ :class:`OptionGroup` to a parser is easy::
+ 
+     group = OptionGroup(parser, "Dangerous Options",
+-			"Caution: use these options at your own risk.  "
+-			"It is believed that some of them bite.")
++                        "Caution: use these options at your own risk.  "
++                        "It is believed that some of them bite.")
+     group.add_option("-g", action="store_true", help="Group option.")
+     parser.add_option_group(group)
+ 
+ This would result in the following help output::
+ 
+     usage:  [options] arg1 arg2
+ 
+     options:
+       -h, --help           show this help message and exit
+       -v, --verbose        make lots of noise [default]
+       -q, --quiet          be vewwy quiet (I'm hunting wabbits)
+       -fFILE, --file=FILE  write output to FILE
+       -mMODE, --mode=MODE  interaction mode: one of 'novice', 'intermediate'
+-			   [default], 'expert'
++                           [default], 'expert'
+ 
+       Dangerous Options:
+-	Caution: use of these options is at your own risk.  It is believed that
+-	some of them bite.
+-	-g                 Group option.
++      Caution: use of these options is at your own risk.  It is believed that
++      some of them bite.
++      -g                 Group option.
+ 
+ .. _optparse-printing-version-string:
+ 
+ Printing a version string
+ ^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ Similar to the brief usage string, :mod:`optparse` can also print a version
+ string for your program.  You have to supply the string as the ``version``
+ argument to OptionParser::
+ 
+    parser = OptionParser(usage="%prog [-f] [-q]", version="%prog 1.0")
+ 
+@@ -790,25 +790,25 @@
+ 
+ To define an option with only a short option string::
+ 
+    parser.add_option("-f", attr=value, ...)
+ 
+ And to define an option with only a long option string::
+ 
+    parser.add_option("--foo", attr=value, ...)
+ 
+ The keyword arguments define attributes of the new Option object.  The most
+ important option attribute is :attr:`action`, and it largely determines which
+ other attributes are relevant or required.  If you pass irrelevant option
+-attributes, or fail to pass required ones, :mod:`optparse` raises an 
++attributes, or fail to pass required ones, :mod:`optparse` raises an
+ :exc:`OptionError` exception explaining your mistake.
+ 
+ An option's *action* determines what :mod:`optparse` does when it encounters
+ this option on the command-line.  The standard option actions hard-coded into
+ :mod:`optparse` are:
+ 
+ ``store``
+    store this option's argument (default)
+ 
+ ``store_const``
+    store a constant value
+ 
+@@ -1502,25 +1502,25 @@
+ the user will have a hard time figuring out what he did wrong.
+ 
+ 
+ .. _optparse-callback-example-1:
+ 
+ Callback example 1: trivial callback
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ Here's an example of a callback option that takes no arguments, and simply
+ records that the option was seen::
+ 
+    def record_foo_seen(option, opt_str, value, parser):
+-       parser.saw_foo = True
++       parser.values.saw_foo = True
+ 
+    parser.add_option("--foo", action="callback", callback=record_foo_seen)
+ 
+ Of course, you could do that with the ``store_true`` action.
+ 
+ 
+ .. _optparse-callback-example-2:
+ 
+ Callback example 2: check option order
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ Here's a slightly more interesting example: record the fact that ``"-a"`` is
+@@ -1621,54 +1621,51 @@
+ * bare ``"-"`` (if not the argument to some option): halt command-line
+   processing but keep the ``"-"`` (append it to ``parser.largs``)
+ 
+ If you want an option that takes a variable number of arguments, there are
+ several subtle, tricky issues to worry about.  The exact implementation you
+ choose will be based on which trade-offs you're willing to make for your
+ application (which is why :mod:`optparse` doesn't support this sort of thing
+ directly).
+ 
+ Nevertheless, here's a stab at a callback for an option with variable
+ arguments::
+ 
+-   def vararg_callback(option, opt_str, value, parser):
+-       assert value is None
+-       done = 0
+-       value = []
+-       rargs = parser.rargs
+-       while rargs:
+-           arg = rargs[0]
+-
+-           # Stop if we hit an arg like "--foo", "-a", "-fx", "--file=f",
+-           # etc.  Note that this also stops on "-3" or "-3.0", so if
+-           # your option takes numeric values, you will need to handle
+-           # this.
+-           if ((arg[:2] == "--" and len(arg) > 2) or
+-               (arg[:1] == "-" and len(arg) > 1 and arg[1] != "-")):
+-               break
+-           else:
+-               value.append(arg)
+-               del rargs[0]
++    def vararg_callback(option, opt_str, value, parser):
++        assert value is None
++        value = []
++
++        def floatable(str):
++            try:
++                float(str)
++                return True
++            except ValueError:
++                return False
++
++        for arg in parser.rargs:
++            # stop on --foo like options
++            if arg[:2] == "--" and len(arg) > 2:
++                break
++            # stop on -a, but not on -3 or -3.0
++            if arg[:1] == "-" and len(arg) > 1 and not floatable(arg):
++                break
++            value.append(arg)
+ 
+-       setattr(parser.values, option.dest, value)
++        del parser.rargs[:len(value)]
++        setattr(parser.values, option.dest, value)
+ 
+    [...]
+    parser.add_option("-c", "--callback", dest="vararg_attr",
+                      action="callback", callback=vararg_callback)
+ 
+-The main weakness with this particular implementation is that negative numbers
+-in the arguments following ``"-c"`` will be interpreted as further options
+-(probably causing an error), rather than as arguments to ``"-c"``.  Fixing this
+-is left as an exercise for the reader.
+-
+ 
+ .. _optparse-extending-optparse:
+ 
+ Extending :mod:`optparse`
+ -------------------------
+ 
+ Since the two major controlling factors in how :mod:`optparse` interprets
+ command-line options are the action and type of each option, the most likely
+ direction of extension is to add new actions and new types.
+ 
+ 
+ .. _optparse-adding-new-types:

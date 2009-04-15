@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to145__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/sched.rst =&gt; rest262/library/sched.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to145__0"></td><td class="diff_header" id="from145_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print_some_times()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_39">39</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;930343690.257</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;From&nbsp;print_time&nbsp;930343695.274</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;From&nbsp;print_time&nbsp;930343700.273</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;930343700.276</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_43">43</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_44">44</td><td nowrap="nowrap">In&nbsp;multi-threaded&nbsp;environments,&nbsp;the&nbsp;:class:`scheduler`&nbsp;class&nbsp;has&nbsp;limitations</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to145__1">n</a></td><td class="diff_header" id="from145_45">45-</td><td nowrap="nowrap">with&nbsp;respect&nbsp;to&nbsp;thread-safety,&nbsp;inability&nbsp;to&nbsp;insert&nbsp;a&nbsp;new&nbsp;task&nbsp;before<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to145__1">n</a></td><td class="diff_header" id="to145_45">45+</td><td nowrap="nowrap">with&nbsp;respect&nbsp;to&nbsp;thread-safety,&nbsp;inability&nbsp;to&nbsp;insert&nbsp;a&nbsp;new&nbsp;task&nbsp;before</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from145_46">46</td><td nowrap="nowrap">the&nbsp;one&nbsp;currently&nbsp;pending&nbsp;in&nbsp;a&nbsp;running&nbsp;scheduler,&nbsp;and&nbsp;holding&nbsp;up&nbsp;the&nbsp;main</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_47">47</td><td nowrap="nowrap">thread&nbsp;until&nbsp;the&nbsp;event&nbsp;queue&nbsp;is&nbsp;empty.&nbsp;&nbsp;Instead,&nbsp;the&nbsp;preferred&nbsp;approach</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_48">48</td><td nowrap="nowrap">is&nbsp;to&nbsp;use&nbsp;the&nbsp;:class:`threading.Timer`&nbsp;class&nbsp;instead.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_49">49</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_50">50</td><td nowrap="nowrap">Example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_51">51</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_52">52</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;time</td></tr>            <tr><td class="diff_next" id="difflib_chg_to145__1"></td><td class="diff_header" id="from145_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;from&nbsp;threading&nbsp;import&nbsp;Timer</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_54">54</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;print_time():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"From&nbsp;print_time",&nbsp;time.time()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_57">57</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;print_some_times():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_58">58</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;time.time()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timer(5,&nbsp;print_time,&nbsp;()).start()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timer(10,&nbsp;print_time,&nbsp;()).start()</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to145__top">t</a></td><td class="diff_header" id="from145_61">61-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.sleep(11)<span class="diff_chg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>#&nbsp;sleep&nbsp;while&nbsp;time-delay&nbsp;events&nbsp;execute</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to145__top">t</a></td><td class="diff_header" id="to145_61">61+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.sleep(11)<span class="diff_chg">&nbsp;&nbsp;</span>#&nbsp;sleep&nbsp;while&nbsp;time-delay&nbsp;events&nbsp;execute</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from145_62">62-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;time.time()<span class="diff_sub">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to145_62">62+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;time.time()</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from145_63">63</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;...</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_64">64</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;print_some_times()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_65">65</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;930343690.257</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_66">66</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;From&nbsp;print_time&nbsp;930343695.274</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_67">67</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;From&nbsp;print_time&nbsp;930343700.273</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_68">68</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;930343701.301</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_69">69</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from145_70">70</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

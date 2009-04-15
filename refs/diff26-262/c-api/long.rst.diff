@@ -1,0 +1,79 @@
+--- rest26/c-api/long.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/c-api/long.rst	2009-04-07 00:06:52.000000000 +0900
+@@ -45,33 +45,33 @@
+ 
+ .. cfunction:: PyObject* PyLong_FromUnsignedLong(unsigned long v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`unsigned long`, or
+    *NULL* on failure.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`Py_ssize_t`, or
+    *NULL* on failure.
+ 
+-   .. versionadded:: 2.5
++   .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromSize_t(size_t v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`size_t`, or
+    *NULL* on failure.
+ 
+-   .. versionadded:: 2.5
++   .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`long long`, or *NULL*
+    on failure.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromUnsignedLongLong(unsigned PY_LONG_LONG v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`unsigned long long`,
+    or *NULL* on failure.
+@@ -117,38 +117,38 @@
+    .. versionchanged:: 2.5
+       If the integer is larger than LONG_MAX, a positive long integer is returned.
+ 
+ 
+ .. cfunction:: long PyLong_AsLong(PyObject *pylong)
+ 
+    .. index::
+       single: LONG_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`long` representation of the contents of *pylong*.  If
+    *pylong* is greater than :const:`LONG_MAX`, an :exc:`OverflowError` is raised
+-   and ``-1`` will be returned. 
++   and ``-1`` will be returned.
+ 
+ 
+ .. cfunction:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
+ 
+    .. index::
+       single: PY_SSIZE_T_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`Py_ssize_t` representation of the contents of *pylong*.  If
+    *pylong* is greater than :const:`PY_SSIZE_T_MAX`, an :exc:`OverflowError` is raised
+    and ``-1`` will be returned.
+ 
+-   .. versionadded:: 2.5
++   .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
+ 
+    .. index::
+       single: ULONG_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`unsigned long` representation of the contents of *pylong*.
+    If *pylong* is greater than :const:`ULONG_MAX`, an :exc:`OverflowError` is
+    raised.
+ 

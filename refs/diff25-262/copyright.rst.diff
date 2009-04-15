@@ -1,0 +1,24 @@
+--- rest25/copyright.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/copyright.rst	2009-04-05 05:02:10.000000000 +0900
+@@ -1,15 +1,19 @@
+ *********
+ Copyright
+ *********
+ 
+-Copyright © 2001-2006 Python Software Foundation. All rights reserved.
++Python and this documentation is:
++
++Copyright © 2001-2008 Python Software Foundation. All rights reserved.
+ 
+ Copyright © 2000 BeOpen.com. All rights reserved.
+ 
+ Copyright © 1995-2000 Corporation for National Research Initiatives. All rights
+ reserved.
+ 
+ Copyright © 1991-1995 Stichting Mathematisch Centrum. All rights reserved.
+ 
+-See the end of this document for complete license and permissions information.
++-------
++
++See :ref:`history-and-license` for complete license and permissions information.
+ 

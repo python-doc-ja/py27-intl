@@ -1,0 +1,56 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to152__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/smtplib.rst =&gt; rest262/library/smtplib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to152__0"></td><td class="diff_header" id="from152_184">184</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;In&nbsp;normal&nbsp;operation&nbsp;it&nbsp;should&nbsp;not&nbsp;be&nbsp;necessary&nbsp;to&nbsp;call&nbsp;this&nbsp;method&nbsp;explicitly.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_185">185</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;It&nbsp;will&nbsp;be&nbsp;implicitly&nbsp;called&nbsp;by&nbsp;the&nbsp;:meth:`sendmail`&nbsp;when&nbsp;necessary.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_186">186</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_187">187</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_188">188</td><td nowrap="nowrap">..&nbsp;method::&nbsp;SMTP.ehlo([hostname])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_189">189</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_190">190</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Identify&nbsp;yourself&nbsp;to&nbsp;an&nbsp;ESMTP&nbsp;server&nbsp;using&nbsp;``EHLO``.&nbsp;&nbsp;The&nbsp;hostname&nbsp;argument</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_191">191</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;the&nbsp;fully&nbsp;qualified&nbsp;domain&nbsp;name&nbsp;of&nbsp;the&nbsp;local&nbsp;host.&nbsp;&nbsp;Examine&nbsp;the</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to152__1">n</a></td><td class="diff_header" id="from152_192">192-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;response&nbsp;for&nbsp;ESMTP&nbsp;option&nbsp;and&nbsp;store&nbsp;them&nbsp;for&nbsp;use&nbsp;by&nbsp;:meth:`has_extn`.<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to152__1">n</a></td><td class="diff_header" id="to152_192">192+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;response&nbsp;for&nbsp;ESMTP&nbsp;option&nbsp;and&nbsp;store&nbsp;them&nbsp;for&nbsp;use&nbsp;by&nbsp;:meth:`has_extn`.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from152_193">193-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Also&nbsp;sets&nbsp;several&nbsp;informational&nbsp;attributes:&nbsp;the&nbsp;message&nbsp;returned&nbsp;by<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to152_193">193+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Also&nbsp;sets&nbsp;several&nbsp;informational&nbsp;attributes:&nbsp;the&nbsp;message&nbsp;returned&nbsp;by</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from152_194">194-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;server&nbsp;is&nbsp;stored&nbsp;as&nbsp;the&nbsp;:attr:`ehlo_resp`&nbsp;attribute,&nbsp;:attr:`does_esmtp`<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to152_194">194+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;server&nbsp;is&nbsp;stored&nbsp;as&nbsp;the&nbsp;:attr:`ehlo_resp`&nbsp;attribute,&nbsp;:attr:`does_esmtp`</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from152_195">195</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;set&nbsp;to&nbsp;true&nbsp;or&nbsp;false&nbsp;depending&nbsp;on&nbsp;whether&nbsp;the&nbsp;server&nbsp;supports&nbsp;ESMTP,&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_196">196</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:attr:`esmtp_features`&nbsp;will&nbsp;be&nbsp;a&nbsp;dictionary&nbsp;containing&nbsp;the&nbsp;names&nbsp;of&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_197">197</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;SMTP&nbsp;service&nbsp;extensions&nbsp;this&nbsp;server&nbsp;supports,&nbsp;and&nbsp;their</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_198">198</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;parameters&nbsp;(if&nbsp;any).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_199">199</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_200">200</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Unless&nbsp;you&nbsp;wish&nbsp;to&nbsp;use&nbsp;:meth:`has_extn`&nbsp;before&nbsp;sending&nbsp;mail,&nbsp;it&nbsp;should&nbsp;not&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_201">201</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;necessary&nbsp;to&nbsp;call&nbsp;this&nbsp;method&nbsp;explicitly.&nbsp;&nbsp;It&nbsp;will&nbsp;be&nbsp;implicitly&nbsp;called&nbsp;by</td></tr>            <tr><td class="diff_next" id="difflib_chg_to152__1"></td><td class="diff_header" id="from152_202">202</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`sendmail`&nbsp;when&nbsp;necessary.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_203">203</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_204">204</td><td nowrap="nowrap">..&nbsp;method::&nbsp;SMTP.ehlo_or_helo_if_needed()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_205">205</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_206">206</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;method&nbsp;call&nbsp;:meth:`ehlo`&nbsp;and&nbsp;or&nbsp;:meth:`helo`&nbsp;if&nbsp;there&nbsp;has&nbsp;been&nbsp;no</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_207">207</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;previous&nbsp;``EHLO``&nbsp;or&nbsp;``HELO``&nbsp;command&nbsp;this&nbsp;session.&nbsp;&nbsp;It&nbsp;tries&nbsp;ESMTP&nbsp;``EHLO``</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_208">208</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;first.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_209">209</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to152__top">t</a></td><td class="diff_header" id="from152_210">210-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:SMTPHeloError</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to152__top">t</a></td><td class="diff_header" id="to152_210">210+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:<span class="diff_add">`</span>SMTPHeloError<span class="diff_add">`</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from152_211">211</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;server&nbsp;didn't&nbsp;reply&nbsp;properly&nbsp;to&nbsp;the&nbsp;``HELO``&nbsp;greeting.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_212">212</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_213">213</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_214">214</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_215">215</td><td nowrap="nowrap">..&nbsp;method::&nbsp;SMTP.has_extn(name)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_216">216</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_217">217</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;:const:`True`&nbsp;if&nbsp;*name*&nbsp;is&nbsp;in&nbsp;the&nbsp;set&nbsp;of&nbsp;SMTP&nbsp;service&nbsp;extensions&nbsp;returned</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from152_218">218</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;by&nbsp;the&nbsp;server,&nbsp;:const:`False`&nbsp;otherwise.&nbsp;Case&nbsp;is&nbsp;ignored.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

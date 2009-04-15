@@ -1,0 +1,26 @@
+--- rest25/library/sndhdr.rst	2008-12-19 16:58:07.000000000 +0900
++++ rest262/library/sndhdr.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,22 +1,20 @@
+ 
+ :mod:`sndhdr` --- Determine type of sound file
+ ==============================================
+ 
+ .. module:: sndhdr
+    :synopsis: Determine type of a sound file.
+ .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+-
+-
+-.. % Based on comments in the module source file.
++.. Based on comments in the module source file.
+ 
+ .. index::
+    single: A-LAW
+    single: u-LAW
+ 
+ The :mod:`sndhdr` provides utility functions which attempt to determine the type
+ of sound data which is in a file.  When these functions are able to determine
+ what type of sound data is stored in a file, they return a tuple ``(type,
+ sampling_rate, channels, frames, bits_per_sample)``.  The value for *type*
+ indicates the data type and will be one of the strings ``'aifc'``, ``'aiff'``,
+ ``'au'``, ``'hcom'``, ``'sndr'``, ``'sndt'``, ``'voc'``, ``'wav'``, ``'8svx'``,
+ ``'sb'``, ``'ub'``, or ``'ul'``.  The *sampling_rate* will be either the actual

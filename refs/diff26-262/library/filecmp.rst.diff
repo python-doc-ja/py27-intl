@@ -1,0 +1,53 @@
+--- rest26/library/filecmp.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/filecmp.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -22,35 +22,42 @@
+    Unless *shallow* is given and is false, files with identical :func:`os.stat`
+    signatures are taken to be equal.
+ 
+    Files that were compared using this function will not be compared again unless
+    their :func:`os.stat` signature changes.
+ 
+    Note that no external programs are called from this function, giving it
+    portability and efficiency.
+ 
+ 
+ .. function:: cmpfiles(dir1, dir2, common[, shallow])
+ 
+-   Returns three lists of file names: *match*, *mismatch*, *errors*.  *match*
+-   contains the list of files match in both directories, *mismatch* includes the
+-   names of those that don't, and *errros* lists the names of files which could not
+-   be compared.  Files may be listed in *errors* because the user may lack
+-   permission to read them or many other reasons, but always that the comparison
+-   could not be done for some reason.
++   Compare the files in the two directories *dir1* and *dir2* whose names are
++   given by *common*.
+ 
+-   The *common* parameter is a list of file names found in both directories. The
+-   *shallow* parameter has the same meaning and default value as for
++   Returns three lists of file names: *match*, *mismatch*,
++   *errors*.  *match* contains the list of files that match, *mismatch* contains
++   the names of those that don't, and *errors* lists the names of files which
++   could not be compared.  Files are listed in *errors* if they don't exist in
++   one of the directories, the user lacks permission to read them or if the
++   comparison could not be done for some other reason.
++
++   The *shallow* parameter has the same meaning and default value as for
+    :func:`filecmp.cmp`.
+ 
++   For example, ``cmpfiles('a', 'b', ['c', 'd/e'])`` will compare ``a/c`` with
++   ``b/c`` and ``a/d/e`` with ``b/d/e``.  ``'c'`` and ``'d/e'`` will each be in
++   one of the three returned lists.
++
++
+ Example::
+ 
+    >>> import filecmp
+    >>> filecmp.cmp('undoc.rst', 'undoc.rst')
+    True
+    >>> filecmp.cmp('undoc.rst', 'index.rst')
+    False
+ 
+ 
+ .. _dircmp-objects:
+ 
+ The :class:`dircmp` class

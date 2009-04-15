@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to135__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/glob.rst =&gt; rest262/library/glob.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to135__0"></td><td class="diff_header" id="from135_23">23</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;a&nbsp;string&nbsp;containing&nbsp;a&nbsp;path&nbsp;specification.&nbsp;*pathname*&nbsp;can&nbsp;be&nbsp;either&nbsp;absolute</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_24">24</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(like&nbsp;:file:`/usr/src/Python-1.5/Makefile`)&nbsp;or&nbsp;relative&nbsp;(like</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_25">25</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:file:`../../Tools/\*/\*.gif`),&nbsp;and&nbsp;can&nbsp;contain&nbsp;shell-style&nbsp;wildcards.&nbsp;Broken</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;symlinks&nbsp;are&nbsp;included&nbsp;in&nbsp;the&nbsp;results&nbsp;(as&nbsp;in&nbsp;the&nbsp;shell).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_27">27</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_28">28</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_29">29</td><td nowrap="nowrap">..&nbsp;function::&nbsp;iglob(pathname)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_30">30</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to135__top">t</a></td><td class="diff_header" id="from135_31">31-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;an&nbsp;iterator&nbsp;which&nbsp;yields&nbsp;the&nbsp;same&nbsp;values&nbsp;as&nbsp;:func:`glob`<span class="diff_sub">&nbsp;without&nbsp;actually</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to135__top">t</a></td><td class="diff_header" id="to135_31">31+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;an&nbsp;<span class="diff_add">:term:`</span>iterator<span class="diff_add">`</span>&nbsp;which&nbsp;yields&nbsp;the&nbsp;same&nbsp;values&nbsp;as&nbsp;:func:`glob`</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from135_32">32-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;storing&nbsp;them&nbsp;all&nbsp;simultaneously.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to135_32">32+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;without&nbsp;actually</span>&nbsp;storing&nbsp;them&nbsp;all&nbsp;simultaneously.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from135_33">33</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.5</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_35">35</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_36">36</td><td nowrap="nowrap">For&nbsp;example,&nbsp;consider&nbsp;a&nbsp;directory&nbsp;containing&nbsp;only&nbsp;the&nbsp;following&nbsp;files:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_37">37</td><td nowrap="nowrap">:file:`1.gif`,&nbsp;:file:`2.txt`,&nbsp;and&nbsp;:file:`card.gif`.&nbsp;&nbsp;:func:`glob`&nbsp;will&nbsp;produce</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_38">38</td><td nowrap="nowrap">the&nbsp;following&nbsp;results.&nbsp;&nbsp;Notice&nbsp;how&nbsp;any&nbsp;leading&nbsp;components&nbsp;of&nbsp;the&nbsp;path&nbsp;are</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_39">39</td><td nowrap="nowrap">preserved.&nbsp;::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from135_40">40</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

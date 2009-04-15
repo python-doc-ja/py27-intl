@@ -1,0 +1,83 @@
+--- rest26/tutorial/classes.rst	2008-12-19 16:58:09.000000000 +0900
++++ rest262/tutorial/classes.rst	2009-04-05 05:01:50.000000000 +0900
+@@ -241,25 +241,25 @@
+ in this example, a new, initialized instance can be obtained by::
+ 
+    x = MyClass()
+ 
+ Of course, the :meth:`__init__` method may have arguments for greater
+ flexibility.  In that case, arguments given to the class instantiation operator
+ are passed on to :meth:`__init__`.  For example, ::
+ 
+    >>> class Complex:
+    ...     def __init__(self, realpart, imagpart):
+    ...         self.r = realpart
+    ...         self.i = imagpart
+-   ... 
++   ...
+    >>> x = Complex(3.0, -4.5)
+    >>> x.r, x.i
+    (3.0, -4.5)
+ 
+ 
+ .. _tut-instanceobjects:
+ 
+ Instance Objects
+ ----------------
+ 
+ Now what can we do with instance objects?  The only operations understood by
+ instance objects are attribute references.  There are two kinds of valid
+@@ -472,25 +472,25 @@
+ 
+ Python has two builtin functions that work with inheritance:
+ 
+ * Use :func:`isinstance` to check an object's type: ``isinstance(obj, int)``
+   will be ``True`` only if ``obj.__class__`` is :class:`int` or some class
+   derived from :class:`int`.
+ 
+ * Use :func:`issubclass` to check class inheritance: ``issubclass(bool, int)``
+   is ``True`` since :class:`bool` is a subclass of :class:`int`.  However,
+   ``issubclass(unicode, str)`` is ``False`` since :class:`unicode` is not a
+   subclass of :class:`str` (they only share a common ancestor,
+   :class:`basestring`).
+-  
++
+ 
+ 
+ .. _tut-multiple:
+ 
+ Multiple Inheritance
+ --------------------
+ 
+ Python supports a limited form of multiple inheritance as well.  A class
+ definition with multiple base classes looks like this::
+ 
+    class DerivedClassName(Base1, Base2, Base3):
+        <statement-1>
+@@ -734,25 +734,25 @@
+ easy to create::
+ 
+    def reverse(data):
+        for index in range(len(data)-1, -1, -1):
+            yield data[index]
+ 
+    >>> for char in reverse('golf'):
+    ...     print char
+    ...
+    f
+    l
+    o
+-   g	
++   g
+ 
+ Anything that can be done with generators can also be done with class based
+ iterators as described in the previous section.  What makes generators so
+ compact is that the :meth:`__iter__` and :meth:`next` methods are created
+ automatically.
+ 
+ Another key feature is that the local variables and execution state are
+ automatically saved between calls.  This made the function easier to write and
+ much more clear than an approach using instance variables like ``self.index``
+ and ``self.data``.
+ 
+ In addition to automatic method creation and saving program state, when

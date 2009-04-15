@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to171__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/traceback.rst =&gt; rest262/library/traceback.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to171__0"></td><td class="diff_header" id="from171_164">164</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_165">165</td><td nowrap="nowrap">The&nbsp;following&nbsp;example&nbsp;demonstrates&nbsp;the&nbsp;different&nbsp;ways&nbsp;to&nbsp;print&nbsp;and&nbsp;format&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_166">166</td><td nowrap="nowrap">exception&nbsp;and&nbsp;traceback::</td></tr>            <tr><td class="diff_next" id="difflib_chg_to171__1"></td><td class="diff_header" id="from171_167">167</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_168">168</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;sys,&nbsp;traceback</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_169">169</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_170">170</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;def&nbsp;lumberjack():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_171">171</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bright_side_of_death()</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to171__1">n</a></td><td class="diff_header" id="from171_172">172-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to171__1">n</a></td><td class="diff_header" id="to171_172">172+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from171_173">173</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;def&nbsp;bright_side_of_death():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_174">174</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;tuple()[0]</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to171__2">n</a></td><td class="diff_header" id="from171_175">175-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to171__2">n</a></td><td class="diff_header" id="to171_175">175+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from171_176">176</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;try:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_177">177</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lumberjack()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_178">178</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;except:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_179">179</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exceptionType,&nbsp;exceptionValue,&nbsp;exceptionTraceback&nbsp;=&nbsp;sys.exc_info()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_180">180</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"***&nbsp;print_tb:"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_181">181</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceback.print_tb(exceptionTraceback,&nbsp;limit=1,&nbsp;file=sys.stdout)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_182">182</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"***&nbsp;print_exception:"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_183">183</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceback.print_exception(exceptionType,&nbsp;exceptionValue,&nbsp;exceptionTraceback,</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to171__2"></td><td class="diff_header" id="from171_246">246</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;IndexError:&nbsp;tuple&nbsp;index&nbsp;out&nbsp;of&nbsp;range</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_247">247</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_248">248</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_249">249</td><td nowrap="nowrap">The&nbsp;following&nbsp;example&nbsp;shows&nbsp;the&nbsp;different&nbsp;ways&nbsp;to&nbsp;print&nbsp;and&nbsp;format&nbsp;the&nbsp;stack::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_250">250</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to171__3"></td><td class="diff_header" id="from171_251">251</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;traceback</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_252">252</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;another_function():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_253">253</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lumberstack()</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to171__3">n</a></td><td class="diff_header" id="from171_254">254-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to171__3">n</a></td><td class="diff_header" id="to171_254">254+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from171_255">255</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;def&nbsp;lumberstack():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_256">256</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceback.print_stack()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_257">257</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;repr(traceback.extract_stack())</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_258">258</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;repr(traceback.format_stack())</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to171__top">t</a></td><td class="diff_header" id="from171_259">259-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to171__top">t</a></td><td class="diff_header" id="to171_259">259+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from171_260">260</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;another_function()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_261">261</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;File&nbsp;"&lt;doctest&gt;",&nbsp;line&nbsp;10,&nbsp;in&nbsp;&lt;module&gt;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_262">262</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;another_function()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_263">263</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;File&nbsp;"&lt;doctest&gt;",&nbsp;line&nbsp;3,&nbsp;in&nbsp;another_function</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_264">264</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lumberstack()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_265">265</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;File&nbsp;"&lt;doctest&gt;",&nbsp;line&nbsp;6,&nbsp;in&nbsp;lumberstack</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_266">266</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;traceback.print_stack()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from171_267">267</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;[('&lt;doctest&gt;',&nbsp;10,&nbsp;'&lt;module&gt;',&nbsp;'another_function()'),</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

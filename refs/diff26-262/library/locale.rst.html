@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to111__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/locale.rst =&gt; rest262/library/locale.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to111__0"></td><td class="diff_header" id="from111_487">487</td><td nowrap="nowrap">..&nbsp;data::&nbsp;ALT_DIGITS</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_488">488</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to111__1"></td><td class="diff_header" id="from111_489">489</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;return&nbsp;value&nbsp;is&nbsp;a&nbsp;representation&nbsp;of&nbsp;up&nbsp;to&nbsp;100&nbsp;values&nbsp;used&nbsp;to&nbsp;represent&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_490">490</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;values&nbsp;0&nbsp;to&nbsp;99.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_491">491</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_492">492</td><td nowrap="nowrap">Example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_493">493</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_494">494</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;import&nbsp;locale</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to111__1">n</a></td><td class="diff_header" id="from111_495">495-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;loc&nbsp;=&nbsp;locale.getlocale(<span class="diff_sub">locale.LC_ALL</span>)&nbsp;#&nbsp;get&nbsp;current&nbsp;locale</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to111__1">n</a></td><td class="diff_header" id="to111_495">495+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;loc&nbsp;=&nbsp;locale.getlocale()&nbsp;#&nbsp;get&nbsp;current&nbsp;locale</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from111_496">496</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.setlocale(locale.LC_ALL,&nbsp;'de_DE')&nbsp;#&nbsp;use&nbsp;German&nbsp;locale;&nbsp;name&nbsp;might&nbsp;vary&nbsp;with&nbsp;platform</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to111__top">t</a></td><td class="diff_header" id="from111_497">497-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.strcoll('f\xe4n',&nbsp;'foo')&nbsp;#&nbsp;compare&nbsp;a&nbsp;string&nbsp;containing&nbsp;an&nbsp;umlaut<span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to111__top">t</a></td><td class="diff_header" id="to111_497">497+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.strcoll('f\xe4n',&nbsp;'foo')&nbsp;#&nbsp;compare&nbsp;a&nbsp;string&nbsp;containing&nbsp;an&nbsp;umlaut</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from111_498">498</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.setlocale(locale.LC_ALL,&nbsp;'')&nbsp;#&nbsp;use&nbsp;user's&nbsp;preferred&nbsp;locale</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_499">499</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.setlocale(locale.LC_ALL,&nbsp;'C')&nbsp;#&nbsp;use&nbsp;default&nbsp;(C)&nbsp;locale</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_500">500</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;locale.setlocale(locale.LC_ALL,&nbsp;loc)&nbsp;#&nbsp;restore&nbsp;saved&nbsp;locale</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_501">501</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_502">502</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_503">503</td><td nowrap="nowrap">Background,&nbsp;details,&nbsp;hints,&nbsp;tips&nbsp;and&nbsp;caveats</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_504">504</td><td nowrap="nowrap">--------------------------------------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from111_505">505</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

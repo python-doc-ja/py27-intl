@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to90__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/dbm.rst =&gt; rest262/library/dbm.rst</th></tr></thead>
+            <tbody>
+    <tr><td class="diff_next" id="difflib_chg_to90__1"><a href="#difflib_chg_to90__1">n</a></td><td class="diff_header" id="from90_1">1-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from90_2">2</td><td nowrap="nowrap">:mod:`dbm`&nbsp;---&nbsp;Simple&nbsp;"database"&nbsp;interface</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_3">3</td><td nowrap="nowrap">==========================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;dbm</td></tr>            <tr><td class="diff_next" id="difflib_chg_to90__2"></td><td class="diff_header" id="from90_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:platform:&nbsp;Unix</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_7">7</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;The&nbsp;standard&nbsp;"database"&nbsp;interface,&nbsp;based&nbsp;on&nbsp;ndbm.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_8">8</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to90__2">n</a></td><td class="diff_header" id="to90_8">8+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;note::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_9">9+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`dbm`&nbsp;module&nbsp;has&nbsp;been&nbsp;renamed&nbsp;to&nbsp;:mod:`dbm.ndbm`&nbsp;in&nbsp;Python&nbsp;3.0.&nbsp;&nbsp;The</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_10">10+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:term:`2to3`&nbsp;tool&nbsp;will&nbsp;automatically&nbsp;adapt&nbsp;imports&nbsp;when&nbsp;converting&nbsp;your</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_11">11+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;sources&nbsp;to&nbsp;3.0.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from90_9">9</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to90__3">n</a></td><td class="diff_header" id="to90_13">13+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from90_10">10-</td><td nowrap="nowrap">The&nbsp;:mod:`dbm`&nbsp;module&nbsp;provides&nbsp;an&nbsp;interface&nbsp;to&nbsp;the&nbsp;Unix&nbsp;(<span class="diff_sub">``</span>n<span class="diff_sub">``</span>)<span class="diff_sub">``</span>dbm<span class="diff_chg">``</span>&nbsp;library.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_14">14+</td><td nowrap="nowrap">The&nbsp;:mod:`dbm`&nbsp;module&nbsp;provides&nbsp;an&nbsp;interface&nbsp;to&nbsp;the&nbsp;Unix&nbsp;<span class="diff_add">"</span>(n)dbm<span class="diff_chg">"</span>&nbsp;library.<span class="diff_add">&nbsp;&nbsp;Dbm</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from90_11">11-</td><td nowrap="nowrap"><span class="diff_sub">Dbm&nbsp;</span>objects&nbsp;behave&nbsp;like&nbsp;mappings&nbsp;(dictionaries),&nbsp;except&nbsp;that&nbsp;keys&nbsp;and&nbsp;values&nbsp;are</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_15">15+</td><td nowrap="nowrap">objects&nbsp;behave&nbsp;like&nbsp;mappings&nbsp;(dictionaries),&nbsp;except&nbsp;that&nbsp;keys&nbsp;and&nbsp;values&nbsp;are</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from90_12">12</td><td nowrap="nowrap">always&nbsp;strings.&nbsp;Printing&nbsp;a&nbsp;dbm&nbsp;object&nbsp;doesn't&nbsp;print&nbsp;the&nbsp;keys&nbsp;and&nbsp;values,&nbsp;and&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_13">13</td><td nowrap="nowrap">:meth:`items`&nbsp;and&nbsp;:meth:`values`&nbsp;methods&nbsp;are&nbsp;not&nbsp;supported.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_15">15</td><td nowrap="nowrap">This&nbsp;module&nbsp;can&nbsp;be&nbsp;used&nbsp;with&nbsp;the&nbsp;"classic"&nbsp;ndbm&nbsp;interface,&nbsp;the&nbsp;BSD&nbsp;DB</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_16">16</td><td nowrap="nowrap">compatibility&nbsp;interface,&nbsp;or&nbsp;the&nbsp;GNU&nbsp;GDBM&nbsp;compatibility&nbsp;interface.&nbsp;On&nbsp;Unix,&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_17">17</td><td nowrap="nowrap">:program:`configure`&nbsp;script&nbsp;will&nbsp;attempt&nbsp;to&nbsp;locate&nbsp;the&nbsp;appropriate&nbsp;header&nbsp;file</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_18">18</td><td nowrap="nowrap">to&nbsp;simplify&nbsp;building&nbsp;this&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_19">19</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to90__3"></td><td class="diff_header" id="from90_52">52</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;|&nbsp;``'c'``&nbsp;|&nbsp;Open&nbsp;database&nbsp;for&nbsp;reading&nbsp;and&nbsp;writing,&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;creating&nbsp;it&nbsp;if&nbsp;it&nbsp;doesn't&nbsp;exist&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_54">54</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;+---------+-------------------------------------------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;|&nbsp;``'n'``&nbsp;|&nbsp;Always&nbsp;create&nbsp;a&nbsp;new,&nbsp;empty&nbsp;database,&nbsp;open&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;for&nbsp;reading&nbsp;and&nbsp;writing&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_57">57</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;+---------+-------------------------------------------+</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_58">58</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;optional&nbsp;*mode*&nbsp;argument&nbsp;is&nbsp;the&nbsp;Unix&nbsp;mode&nbsp;of&nbsp;the&nbsp;file,&nbsp;used&nbsp;only&nbsp;when&nbsp;the</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to90__top">t</a></td><td class="diff_header" id="from90_60">60-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;database&nbsp;has&nbsp;to&nbsp;be&nbsp;created.&nbsp;&nbsp;It&nbsp;defaults&nbsp;to&nbsp;octal&nbsp;``0666``<span class="diff_chg">.</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to90__top">t</a></td><td class="diff_header" id="to90_64">64+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;database&nbsp;has&nbsp;to&nbsp;be&nbsp;created.&nbsp;&nbsp;It&nbsp;defaults&nbsp;to&nbsp;octal&nbsp;``0666``<span class="diff_chg">&nbsp;(and&nbsp;will&nbsp;be</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to90_65">65+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;modified&nbsp;by&nbsp;the&nbsp;prevailing&nbsp;umask).</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from90_61">61</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_62">62</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_63">63</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_64">64</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_65">65</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`anydbm`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_66">66</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Generic&nbsp;interface&nbsp;to&nbsp;``dbm``\&nbsp;-style&nbsp;databases.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_67">67</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from90_68">68</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`gdbm`</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

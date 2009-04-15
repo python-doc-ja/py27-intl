@@ -1,0 +1,322 @@
+--- rest25/library/cgi.rst	2008-12-19 16:58:08.000000000 +0900
++++ rest262/library/cgi.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,34 +1,30 @@
+ 
+ :mod:`cgi` --- Common Gateway Interface support.
+ ================================================
+ 
+ .. module:: cgi
+-
+-
++   :synopsis: Helpers for running Python scripts via the Common Gateway Interface.
+ 
+ 
+ .. index::
+    pair: WWW; server
+    pair: CGI; protocol
+    pair: HTTP; protocol
+    pair: MIME; headers
+    single: URL
+-
+-.. index:: single: Common Gateway Interface
++   single: Common Gateway Interface
+ 
+ Support module for Common Gateway Interface (CGI) scripts.
+ 
+-.. % 
+-
+ This module defines a number of utilities for use by CGI scripts written in
+ Python.
+ 
+ 
+ Introduction
+ ------------
+ 
+ .. _cgi-intro:
+ 
+ A CGI script is invoked by an HTTP server, usually to process user input
+ submitted through an HTML ``<FORM>`` or ``<ISINDEX>`` element.
+ 
+@@ -53,43 +49,45 @@
+    print "Content-Type: text/html"     # HTML is following
+    print                               # blank line, end of headers
+ 
+ The second section is usually HTML, which allows the client software to display
+ nicely formatted text with header, in-line images, etc. Here's Python code that
+ prints a simple piece of HTML::
+ 
+    print "<TITLE>CGI script output</TITLE>"
+    print "<H1>This is my first CGI script</H1>"
+    print "Hello, world!"
+ 
+ 
++.. _using-the-cgi-module:
++
+ Using the cgi module
+ --------------------
+ 
+-.. _using the cgi module:
+-
+ Begin by writing ``import cgi``.  Do not use ``from cgi import *`` --- the
+ module defines all sorts of names for its own use or for backward compatibility
+ that you don't want in your namespace.
+ 
+-When you write a new script, consider adding the line::
++When you write a new script, consider adding these lines::
+ 
+-   import cgitb; cgitb.enable()
++   import cgitb
++   cgitb.enable()
+ 
+ This activates a special exception handler that will display detailed reports in
+ the Web browser if any errors occur.  If you'd rather not show the guts of your
+ program to users of your script, you can have the reports saved to files
+-instead, with a line like this::
++instead, with code like this::
+ 
+-   import cgitb; cgitb.enable(display=0, logdir="/tmp")
++   import cgitb
++   cgitb.enable(display=0, logdir="/tmp")
+ 
+ It's very helpful to use this feature during script development. The reports
+ produced by :mod:`cgitb` provide information that can save you a lot of time in
+ tracking down bugs.  You can always remove the ``cgitb`` line later when you
+ have tested your script and are confident that it works correctly.
+ 
+ To get at submitted form data, it's best to use the :class:`FieldStorage` class.
+ The other classes defined in this module are provided mostly for backward
+ compatibility. Instantiate it exactly once, without arguments.  This reads the
+ form contents from standard input or the environment (depending on the value of
+ various environment variables set according to the CGI standard).  Since it may
+ consume standard input, it should be instantiated only once.
+@@ -142,51 +140,58 @@
+ attribute.  You can then read the data at leisure from the :attr:`file`
+ attribute::
+ 
+    fileitem = form["userfile"]
+    if fileitem.file:
+        # It's an uploaded file; count lines
+        linecount = 0
+        while 1:
+            line = fileitem.file.readline()
+            if not line: break
+            linecount = linecount + 1
+ 
++If an error is encountered when obtaining the contents of an uploaded file
++(for example, when the user interrupts the form submission by clicking on
++a Back or Cancel button) the :attr:`done` attribute of the object for the
++field will be set to the value -1.
++
+ The file upload draft standard entertains the possibility of uploading multiple
+ files from one field (using a recursive :mimetype:`multipart/\*` encoding).
+ When this occurs, the item will be a dictionary-like :class:`FieldStorage` item.
+ This can be determined by testing its :attr:`type` attribute, which should be
+ :mimetype:`multipart/form-data` (or perhaps another MIME type matching
+ :mimetype:`multipart/\*`).  In this case, it can be iterated over recursively
+ just like the top-level form object.
+ 
+ When a form is submitted in the "old" format (as the query string or as a single
+ data part of type :mimetype:`application/x-www-form-urlencoded`), the items will
+ actually be instances of the class :class:`MiniFieldStorage`.  In this case, the
+ :attr:`list`, :attr:`file`, and :attr:`filename` attributes are always ``None``.
+ 
++A form submitted via POST that also has a query string will contain both
++:class:`FieldStorage` and :class:`MiniFieldStorage` items.
+ 
+ Higher Level Interface
+ ----------------------
+ 
+ .. versionadded:: 2.2
+ 
+ The previous section explains how to read CGI form data using the
+ :class:`FieldStorage` class.  This section describes a higher level interface
+ which was added to this class to allow one to do it in a more readable and
+ intuitive way.  The interface doesn't make the techniques described in previous
+ sections obsolete --- they are still useful to process file uploads efficiently,
+ for example.
+ 
+-.. % XXX: Is this true ?
++.. XXX: Is this true ?
+ 
+ The interface consists of two simple methods. Using the methods you can process
+ form data in a generic way, without the need to worry whether only one or more
+ values were posted under one name.
+ 
+ In the previous section, you learned to write following code anytime you
+ expected a user to post more than one value under one name::
+ 
+    item = form.getvalue("item")
+    if isinstance(item, list):
+        # The user is requesting more than one item.
+    else:
+@@ -240,105 +245,74 @@
+ Using these methods you can write nice compact code::
+ 
+    import cgi
+    form = cgi.FieldStorage()
+    user = form.getfirst("user", "").upper()    # This way it's safe.
+    for item in form.getlist("item"):
+        do_something(item)
+ 
+ 
+ Old classes
+ -----------
+ 
+-These classes, present in earlier versions of the :mod:`cgi` module, are still
+-supported for backward compatibility.  New applications should use the
+-:class:`FieldStorage` class.
++.. deprecated:: 2.6
++
++   These classes, present in earlier versions of the :mod:`cgi` module, are
++   still supported for backward compatibility.  New applications should use the
++   :class:`FieldStorage` class.
+ 
+ :class:`SvFormContentDict` stores single value form content as dictionary; it
+ assumes each field name occurs in the form only once.
+ 
+ :class:`FormContentDict` stores multiple value form content as a dictionary (the
+ form items are lists of values).  Useful if your form contains multiple fields
+ with the same name.
+ 
+ Other classes (:class:`FormContent`, :class:`InterpFormContentDict`) are present
+-for backwards compatibility with really old applications only. If you still use
+-these and would be inconvenienced when they disappeared from a next version of
+-this module, drop me a note.
++for backwards compatibility with really old applications only.
++
+ 
++.. _functions-in-cgi-module:
+ 
+ Functions
+ ---------
+ 
+-.. _functions in cgi module:
+-
+ These are useful if you want more control, or if you want to employ some of the
+ algorithms implemented in this module in other circumstances.
+ 
+ 
+ .. function:: parse(fp[, keep_blank_values[, strict_parsing]])
+ 
+    Parse a query in the environment or from a file (the file defaults to
+    ``sys.stdin``).  The *keep_blank_values* and *strict_parsing* parameters are
+-   passed to :func:`parse_qs` unchanged.
++   passed to :func:`urlparse.parse_qs` unchanged.
+ 
+ 
+ .. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
+ 
+-   Parse a query string given as a string argument (data of type
+-   :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a
+-   dictionary.  The dictionary keys are the unique query variable names and the
+-   values are lists of values for each name.
+-
+-   The optional argument *keep_blank_values* is a flag indicating whether blank
+-   values in URL encoded queries should be treated as blank strings.   A true value
+-   indicates that blanks should be retained as  blank strings.  The default false
+-   value indicates that blank values are to be ignored and treated as if they were
+-   not included.
+-
+-   The optional argument *strict_parsing* is a flag indicating what to do with
+-   parsing errors.  If false (the default), errors are silently ignored.  If true,
+-   errors raise a :exc:`ValueError` exception.
+-
+-   Use the :func:`urllib.urlencode` function to convert such dictionaries into
+-   query strings.
+-
++   This function is deprecated in this module. Use :func:`urlparse.parse_qs`
++   instead. It is maintained here only for backward compatiblity.
+ 
+ .. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
+ 
+-   Parse a query string given as a string argument (data of type
+-   :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a list of
+-   name, value pairs.
+-
+-   The optional argument *keep_blank_values* is a flag indicating whether blank
+-   values in URL encoded queries should be treated as blank strings.   A true value
+-   indicates that blanks should be retained as  blank strings.  The default false
+-   value indicates that blank values are to be ignored and treated as if they were
+-   not included.
+-
+-   The optional argument *strict_parsing* is a flag indicating what to do with
+-   parsing errors.  If false (the default), errors are silently ignored.  If true,
+-   errors raise a :exc:`ValueError` exception.
+-
+-   Use the :func:`urllib.urlencode` function to convert such lists of pairs into
+-   query strings.
+-
++   This function is deprecated in this module. Use :func:`urlparse.parse_qsl`
++   instead. It is maintained here only for backward compatiblity.
+ 
+ .. function:: parse_multipart(fp, pdict)
+ 
+    Parse input of type :mimetype:`multipart/form-data` (for  file uploads).
+    Arguments are *fp* for the input file and *pdict* for a dictionary containing
+    other parameters in the :mailheader:`Content-Type` header.
+ 
+-   Returns a dictionary just like :func:`parse_qs` keys are the field names, each
++   Returns a dictionary just like :func:`urlparse.parse_qs` keys are the field names, each
+    value is a list of values for that field.  This is easy to use but not much good
+    if you are expecting megabytes to be uploaded --- in that case, use the
+    :class:`FieldStorage` class instead which is much more flexible.
+ 
+    Note that this does not parse nested multipart parts --- use
+    :class:`FieldStorage` for that.
+ 
+ 
+ .. function:: parse_header(string)
+ 
+    Parse a MIME header (such as :mailheader:`Content-Type`) into a main value and a
+    dictionary of parameters.
+@@ -489,27 +463,28 @@
+ This should produce the same results as those gotten from installing the
+ :file:`cgi.py` file itself.
+ 
+ When an ordinary Python script raises an unhandled exception (for whatever
+ reason: of a typo in a module name, a file that can't be opened, etc.), the
+ Python interpreter prints a nice traceback and exits.  While the Python
+ interpreter will still do this when your CGI script raises an exception, most
+ likely the traceback will end up in one of the HTTP server's log files, or be
+ discarded altogether.
+ 
+ Fortunately, once you have managed to get your script to execute *some* code,
+ you can easily send tracebacks to the Web browser using the :mod:`cgitb` module.
+-If you haven't done so already, just add the line::
++If you haven't done so already, just add the lines::
+ 
+-   import cgitb; cgitb.enable()
++   import cgitb
++   cgitb.enable()
+ 
+ to the top of your script.  Then try running it again; when a problem occurs,
+ you should see a detailed report that will likely make apparent the cause of the
+ crash.
+ 
+ If you suspect that there may be a problem in importing the :mod:`cgitb` module,
+ you can use an even more robust approach (which only uses built-in modules)::
+ 
+    import sys
+    sys.stderr = sys.stdout
+    print "Content-Type: text/plain"
+    print
+@@ -547,16 +522,16 @@
+ 
+ * When reading or writing external files, make sure they can be read or written
+   by the userid under which your CGI script will be running: this is typically the
+   userid under which the web server is running, or some explicitly specified
+   userid for a web server's ``suexec`` feature.
+ 
+ * Don't try to give a CGI script a set-uid mode.  This doesn't work on most
+   systems, and is a security liability as well.
+ 
+ .. rubric:: Footnotes
+ 
+ .. [#] Note that some recent versions of the HTML specification do state what order the
+-   field values should be supplied in, but knowing whether a request was received
+-   from a conforming browser, or even from a browser at all, is tedious and error-
+-   prone.
++   field values should be supplied in, but knowing whether a request was
++   received from a conforming browser, or even from a browser at all, is tedious
++   and error-prone.
+ 

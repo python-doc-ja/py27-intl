@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to165__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/thread.rst =&gt; rest262/library/thread.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to165__0"></td><td class="diff_header" id="from165_94">94</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_95">95</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_96">96</td><td nowrap="nowrap">..&nbsp;function::&nbsp;stack_size([size])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_97">97</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_98">98</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;thread&nbsp;stack&nbsp;size&nbsp;used&nbsp;when&nbsp;creating&nbsp;new&nbsp;threads.&nbsp;&nbsp;The&nbsp;optional</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_99">99</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*size*&nbsp;argument&nbsp;specifies&nbsp;the&nbsp;stack&nbsp;size&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;subsequently&nbsp;created</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_100">100</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;threads,&nbsp;and&nbsp;must&nbsp;be&nbsp;0&nbsp;(use&nbsp;platform&nbsp;or&nbsp;configured&nbsp;default)&nbsp;or&nbsp;a&nbsp;positive</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_101">101</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;integer&nbsp;value&nbsp;of&nbsp;at&nbsp;least&nbsp;32,768&nbsp;(32kB).&nbsp;If&nbsp;changing&nbsp;the&nbsp;thread&nbsp;stack&nbsp;size&nbsp;is</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to165__top">t</a></td><td class="diff_header" id="from165_102">102-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;unsupported,&nbsp;<span class="diff_chg">a</span>&nbsp;:exc:`<span class="diff_sub">Thr</span>e<span class="diff_sub">adE</span>rror`&nbsp;is&nbsp;raised.&nbsp;&nbsp;If&nbsp;the&nbsp;specified&nbsp;stack&nbsp;size&nbsp;is</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to165__top">t</a></td><td class="diff_header" id="to165_102">102+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;unsupported,&nbsp;<span class="diff_chg">the</span>&nbsp;:exc:`error`&nbsp;<span class="diff_add">exception&nbsp;</span>is&nbsp;raised.&nbsp;&nbsp;If&nbsp;the&nbsp;specified&nbsp;stack&nbsp;size&nbsp;is</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from165_103">103</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;invalid,&nbsp;a&nbsp;:exc:`ValueError`&nbsp;is&nbsp;raised&nbsp;and&nbsp;the&nbsp;stack&nbsp;size&nbsp;is&nbsp;unmodified.&nbsp;&nbsp;32kB</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_104">104</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;currently&nbsp;the&nbsp;minimum&nbsp;supported&nbsp;stack&nbsp;size&nbsp;value&nbsp;to&nbsp;guarantee&nbsp;sufficient</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_105">105</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;stack&nbsp;space&nbsp;for&nbsp;the&nbsp;interpreter&nbsp;itself.&nbsp;&nbsp;Note&nbsp;that&nbsp;some&nbsp;platforms&nbsp;may&nbsp;have</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_106">106</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;particular&nbsp;restrictions&nbsp;on&nbsp;values&nbsp;for&nbsp;the&nbsp;stack&nbsp;size,&nbsp;such&nbsp;as&nbsp;requiring&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_107">107</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;minimum&nbsp;stack&nbsp;size&nbsp;&gt;&nbsp;32kB&nbsp;or&nbsp;requiring&nbsp;allocation&nbsp;in&nbsp;multiples&nbsp;of&nbsp;the&nbsp;system</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_108">108</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;memory&nbsp;page&nbsp;size&nbsp;-&nbsp;platform&nbsp;documentation&nbsp;should&nbsp;be&nbsp;referred&nbsp;to&nbsp;for&nbsp;more</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_109">109</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;information&nbsp;(4kB&nbsp;pages&nbsp;are&nbsp;common;&nbsp;using&nbsp;multiples&nbsp;of&nbsp;4096&nbsp;for&nbsp;the&nbsp;stack&nbsp;size&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from165_110">110</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;suggested&nbsp;approach&nbsp;in&nbsp;the&nbsp;absence&nbsp;of&nbsp;more&nbsp;specific&nbsp;information).</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

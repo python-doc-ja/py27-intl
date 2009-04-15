@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to52__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/bastion.rst =&gt; rest262/library/bastion.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to52__0"><a href="#difflib_chg_to52__0">f</a></td><td class="diff_header" id="from52_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_2">2</td><td nowrap="nowrap">:mod:`Bastion`&nbsp;---&nbsp;Restricting&nbsp;access&nbsp;to&nbsp;objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_3">3</td><td nowrap="nowrap">================================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;Bastion</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Providing&nbsp;restricted&nbsp;access&nbsp;to&nbsp;objects.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to52__1">n</a></td><td class="diff_header" id="to52_7">7+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:deprecated:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_8">8+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_9">9+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;deprecated::&nbsp;2.6</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_10">10+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`Bastion`&nbsp;module&nbsp;has&nbsp;been&nbsp;removed&nbsp;in&nbsp;Python&nbsp;3.0.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_11">11+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from52_7">7</td><td nowrap="nowrap">..&nbsp;moduleauthor::&nbsp;Barry&nbsp;Warsaw&nbsp;&lt;bwarsaw@python.org&gt;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_9">9</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_10">10</td><td nowrap="nowrap">..&nbsp;versionchanged::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_11">11</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Disabled&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_13">13</td><td nowrap="nowrap">..&nbsp;warning::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_14">14</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to52__1"></td><td class="diff_header" id="from52_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_18">18</td><td nowrap="nowrap">According&nbsp;to&nbsp;the&nbsp;dictionary,&nbsp;a&nbsp;bastion&nbsp;is&nbsp;"a&nbsp;fortified&nbsp;area&nbsp;or&nbsp;position",&nbsp;or</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_19">19</td><td nowrap="nowrap">"something&nbsp;that&nbsp;is&nbsp;considered&nbsp;a&nbsp;stronghold."&nbsp;&nbsp;It's&nbsp;a&nbsp;suitable&nbsp;name&nbsp;for&nbsp;this</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_20">20</td><td nowrap="nowrap">module,&nbsp;which&nbsp;provides&nbsp;a&nbsp;way&nbsp;to&nbsp;forbid&nbsp;access&nbsp;to&nbsp;certain&nbsp;attributes&nbsp;of&nbsp;an</td></tr>            <tr><td class="diff_next" id="difflib_chg_to52__2"></td><td class="diff_header" id="from52_21">21</td><td nowrap="nowrap">object.&nbsp;&nbsp;It&nbsp;must&nbsp;always&nbsp;be&nbsp;used&nbsp;with&nbsp;the&nbsp;:mod:`rexec`&nbsp;module,&nbsp;in&nbsp;order&nbsp;to&nbsp;allow</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_22">22</td><td nowrap="nowrap">restricted-mode&nbsp;programs&nbsp;access&nbsp;to&nbsp;certain&nbsp;safe&nbsp;attributes&nbsp;of&nbsp;an&nbsp;object,&nbsp;while</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_23">23</td><td nowrap="nowrap">denying&nbsp;access&nbsp;to&nbsp;other,&nbsp;unsafe&nbsp;attributes.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_24">24</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to52__2">n</a></td><td class="diff_header" id="from52_25">25-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;I'm&nbsp;concerned&nbsp;that&nbsp;the&nbsp;word&nbsp;'bastion'&nbsp;won't&nbsp;be&nbsp;understood&nbsp;by&nbsp;people</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to52__2">n</a></td><td class="diff_header" id="to52_30">30+</td><td nowrap="nowrap">..&nbsp;I'm&nbsp;concerned&nbsp;that&nbsp;the&nbsp;word&nbsp;'bastion'&nbsp;won't&nbsp;be&nbsp;understood&nbsp;by&nbsp;people</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from52_26">26-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;for&nbsp;whom&nbsp;English&nbsp;is&nbsp;a&nbsp;second&nbsp;language,&nbsp;making&nbsp;the&nbsp;module&nbsp;name</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_31">31+</td><td nowrap="nowrap">..&nbsp;for&nbsp;whom&nbsp;English&nbsp;is&nbsp;a&nbsp;second&nbsp;language,&nbsp;making&nbsp;the&nbsp;module&nbsp;name</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from52_27">27-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;somewhat&nbsp;mysterious.&nbsp;&nbsp;Thus,&nbsp;the&nbsp;brief&nbsp;definition...&nbsp;--amk</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to52_32">32+</td><td nowrap="nowrap">..&nbsp;somewhat&nbsp;mysterious.&nbsp;&nbsp;Thus,&nbsp;the&nbsp;brief&nbsp;definition...&nbsp;--amk</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from52_28">28</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to52__top">t</a></td><td class="diff_header" id="from52_29">29-</td><td nowrap="nowrap">..<span class="diff_sub">&nbsp;%</span>&nbsp;I've&nbsp;punted&nbsp;on&nbsp;the&nbsp;issue&nbsp;of&nbsp;documenting&nbsp;keyword&nbsp;arguments&nbsp;for&nbsp;now.</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to52__top">t</a></td><td class="diff_header" id="to52_34">34+</td><td nowrap="nowrap">..&nbsp;I've&nbsp;punted&nbsp;on&nbsp;the&nbsp;issue&nbsp;of&nbsp;documenting&nbsp;keyword&nbsp;arguments&nbsp;for&nbsp;now.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from52_30">30</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_31">31</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_32">32</td><td nowrap="nowrap">..&nbsp;function::&nbsp;Bastion(object[,&nbsp;filter[,&nbsp;name[,&nbsp;class]]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_33">33</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Protect&nbsp;the&nbsp;object&nbsp;*object*,&nbsp;returning&nbsp;a&nbsp;bastion&nbsp;for&nbsp;the&nbsp;object.&nbsp;&nbsp;Any&nbsp;attempt&nbsp;to</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_35">35</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;access&nbsp;one&nbsp;of&nbsp;the&nbsp;object's&nbsp;attributes&nbsp;will&nbsp;have&nbsp;to&nbsp;be&nbsp;approved&nbsp;by&nbsp;the&nbsp;*filter*</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;function;&nbsp;if&nbsp;the&nbsp;access&nbsp;is&nbsp;denied&nbsp;an&nbsp;:exc:`AttributeError`&nbsp;exception&nbsp;will&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from52_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;raised.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

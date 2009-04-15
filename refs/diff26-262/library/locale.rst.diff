@@ -1,0 +1,32 @@
+--- rest26/library/locale.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/locale.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -483,27 +483,27 @@
+    This return value can be used as a format string for :func:`strftime` to
+    represent time in a locale-specific era-based way.
+ 
+ 
+ .. data:: ALT_DIGITS
+ 
+    The return value is a representation of up to 100 values used to represent the
+    values 0 to 99.
+ 
+ Example::
+ 
+    >>> import locale
+-   >>> loc = locale.getlocale(locale.LC_ALL) # get current locale
++   >>> loc = locale.getlocale() # get current locale
+    >>> locale.setlocale(locale.LC_ALL, 'de_DE') # use German locale; name might vary with platform
+-   >>> locale.strcoll('f\xe4n', 'foo') # compare a string containing an umlaut 
++   >>> locale.strcoll('f\xe4n', 'foo') # compare a string containing an umlaut
+    >>> locale.setlocale(locale.LC_ALL, '') # use user's preferred locale
+    >>> locale.setlocale(locale.LC_ALL, 'C') # use default (C) locale
+    >>> locale.setlocale(locale.LC_ALL, loc) # restore saved locale
+ 
+ 
+ Background, details, hints, tips and caveats
+ --------------------------------------------
+ 
+ The C standard defines the locale as a program-wide property that may be
+ relatively expensive to change.  On top of that, some implementation are broken
+ in such a way that frequent locale changes may cause core dumps.  This makes the
+ locale somewhat painful to use correctly.

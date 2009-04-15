@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to215__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/whatsnew/2.1.rst =&gt; rest262/whatsnew/2.1.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to215__0"><a href="#difflib_chg_to215__0">f</a></td><td class="diff_header" id="from215_1">1</td><td nowrap="nowrap">****************************</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to215__1">n</a></td><td class="diff_header" id="from215_2">2-</td><td nowrap="nowrap">&nbsp;&nbsp;What's&nbsp;New&nbsp;in&nbsp;Python&nbsp;2.1<span class="diff_sub">&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to215__1">n</a></td><td class="diff_header" id="to215_2">2+</td><td nowrap="nowrap">&nbsp;&nbsp;What's&nbsp;New&nbsp;in&nbsp;Python&nbsp;2.1</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from215_3">3</td><td nowrap="nowrap">****************************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_5">5</td><td nowrap="nowrap">:Author:&nbsp;A.M.&nbsp;Kuchling</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_6">6</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_7">7</td><td nowrap="nowrap">..&nbsp;|release|&nbsp;replace::&nbsp;1.01</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_9">9</td><td nowrap="nowrap">..&nbsp;$Id:&nbsp;whatsnew21.tex&nbsp;50964&nbsp;2006-07-30&nbsp;03:03:43Z&nbsp;fred.drake&nbsp;$</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_10">10</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to215__1"></td><td class="diff_header" id="from215_93">93</td><td nowrap="nowrap">definitions&nbsp;or&nbsp;:keyword:`lambda`&nbsp;expressions&nbsp;with&nbsp;free&nbsp;variables,&nbsp;the&nbsp;compiler</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_94">94</td><td nowrap="nowrap">will&nbsp;flag&nbsp;this&nbsp;by&nbsp;raising&nbsp;a&nbsp;:exc:`SyntaxError`&nbsp;exception.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_95">95</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_96">96</td><td nowrap="nowrap">To&nbsp;make&nbsp;the&nbsp;preceding&nbsp;explanation&nbsp;a&nbsp;bit&nbsp;clearer,&nbsp;here's&nbsp;an&nbsp;example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_97">97</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_98">98</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;x&nbsp;=&nbsp;1</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_99">99</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;def&nbsp;f():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_100">100</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;The&nbsp;next&nbsp;line&nbsp;is&nbsp;a&nbsp;syntax&nbsp;error</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to215__top">t</a></td><td class="diff_header" id="from215_101">101-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exec&nbsp;'x=2'<span class="diff_sub">&nbsp;&nbsp;</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to215__top">t</a></td><td class="diff_header" id="to215_101">101+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exec&nbsp;'x=2'</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from215_102">102</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;g():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_103">103</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;x</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_104">104</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_105">105</td><td nowrap="nowrap">Line&nbsp;4&nbsp;containing&nbsp;the&nbsp;:keyword:`exec`&nbsp;statement&nbsp;is&nbsp;a&nbsp;syntax&nbsp;error,&nbsp;since</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_106">106</td><td nowrap="nowrap">:keyword:`exec`&nbsp;would&nbsp;define&nbsp;a&nbsp;new&nbsp;local&nbsp;variable&nbsp;named&nbsp;``x``&nbsp;whose&nbsp;value&nbsp;should</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_107">107</td><td nowrap="nowrap">be&nbsp;accessed&nbsp;by&nbsp;:func:`g`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_108">108</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_109">109</td><td nowrap="nowrap">This&nbsp;shouldn't&nbsp;be&nbsp;much&nbsp;of&nbsp;a&nbsp;limitation,&nbsp;since&nbsp;:keyword:`exec`&nbsp;is&nbsp;rarely&nbsp;used&nbsp;in</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

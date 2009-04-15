@@ -1,0 +1,69 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to57__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest26/library/binascii.rst =&gt; rest262/library/binascii.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to57__0"></td><td class="diff_header" id="from57_108">108</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Compute&nbsp;CRC-32,&nbsp;the&nbsp;32-bit&nbsp;checksum&nbsp;of&nbsp;data,&nbsp;starting&nbsp;with&nbsp;an&nbsp;initial&nbsp;crc.&nbsp;&nbsp;This</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_109">109</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;consistent&nbsp;with&nbsp;the&nbsp;ZIP&nbsp;file&nbsp;checksum.&nbsp;&nbsp;Since&nbsp;the&nbsp;algorithm&nbsp;is&nbsp;designed&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_110">110</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;use&nbsp;as&nbsp;a&nbsp;checksum&nbsp;algorithm,&nbsp;it&nbsp;is&nbsp;not&nbsp;suitable&nbsp;for&nbsp;use&nbsp;as&nbsp;a&nbsp;general&nbsp;hash</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_111">111</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;algorithm.&nbsp;&nbsp;Use&nbsp;as&nbsp;follows::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_112">112</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_113">113</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;binascii.crc32("hello&nbsp;world")</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_114">114</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Or,&nbsp;in&nbsp;two&nbsp;pieces:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_115">115</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;crc&nbsp;=&nbsp;binascii.crc32("hello")</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to57__top">t</a></td><td class="diff_header" id="from57_116">116-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;crc&nbsp;=&nbsp;binascii.crc32("&nbsp;world",&nbsp;crc)</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to57__top">t</a></td><td class="diff_header" id="to57_116">116+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;crc&nbsp;=&nbsp;binascii.crc32("&nbsp;world",&nbsp;crc)<span class="diff_add">&nbsp;&amp;&nbsp;0xffffffff</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from57_117">117-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;crc</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_117">117+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;'crc32&nbsp;=&nbsp;0x%08x'&nbsp;%&nbsp;crc</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_118">118+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_119">119+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;note::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_120">120+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;To&nbsp;generate&nbsp;the&nbsp;same&nbsp;numeric&nbsp;value&nbsp;across&nbsp;all&nbsp;Python&nbsp;versions&nbsp;and</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_121">121+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;platforms&nbsp;use&nbsp;crc32(data)&nbsp;&amp;&nbsp;0xffffffff.&nbsp;&nbsp;If&nbsp;you&nbsp;are&nbsp;only&nbsp;using</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_122">122+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;the&nbsp;checksum&nbsp;in&nbsp;packed&nbsp;binary&nbsp;format&nbsp;this&nbsp;is&nbsp;not&nbsp;necessary&nbsp;as&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_123">123+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;return&nbsp;value&nbsp;is&nbsp;the&nbsp;correct&nbsp;32bit&nbsp;binary&nbsp;representation</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_124">124+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;regardless&nbsp;of&nbsp;sign.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_125">125+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_126">126+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;versionchanged::&nbsp;2.6</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_127">127+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;return&nbsp;value&nbsp;is&nbsp;in&nbsp;the&nbsp;range&nbsp;[-2**31,&nbsp;2**31-1]</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_128">128+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;regardless&nbsp;of&nbsp;platform.&nbsp;&nbsp;In&nbsp;the&nbsp;past&nbsp;the&nbsp;value&nbsp;would&nbsp;be&nbsp;signed&nbsp;on</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_129">129+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;some&nbsp;platforms&nbsp;and&nbsp;unsigned&nbsp;on&nbsp;others.&nbsp;&nbsp;Use&nbsp;&amp;&nbsp;0xffffffff&nbsp;on&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_130">130+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;value&nbsp;if&nbsp;you&nbsp;want&nbsp;it&nbsp;to&nbsp;match&nbsp;3.0&nbsp;behavior.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_131">131+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_132">132+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;versionchanged::&nbsp;3.0</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_133">133+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;return&nbsp;value&nbsp;is&nbsp;unsigned&nbsp;and&nbsp;in&nbsp;the&nbsp;range&nbsp;[0,&nbsp;2**32-1]</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to57_134">134+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;regardless&nbsp;of&nbsp;platform.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from57_118">118</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_119">119</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_120">120</td><td nowrap="nowrap">..&nbsp;function::&nbsp;b2a_hex(data)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_121">121</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hexlify(data)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_122">122</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_123">123</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;hexadecimal&nbsp;representation&nbsp;of&nbsp;the&nbsp;binary&nbsp;*data*.&nbsp;&nbsp;Every&nbsp;byte&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_124">124</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*data*&nbsp;is&nbsp;converted&nbsp;into&nbsp;the&nbsp;corresponding&nbsp;2-digit&nbsp;hex&nbsp;representation.&nbsp;&nbsp;The</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from57_125">125</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;resulting&nbsp;string&nbsp;is&nbsp;therefore&nbsp;twice&nbsp;as&nbsp;long&nbsp;as&nbsp;the&nbsp;length&nbsp;of&nbsp;*data*.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

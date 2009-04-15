@@ -1,0 +1,80 @@
+--- rest26/library/fl.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/fl.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,22 +1,22 @@
+ 
+ :mod:`fl` --- FORMS library for graphical user interfaces
+ =========================================================
+ 
+ .. module:: fl
+    :platform: IRIX
+    :synopsis: FORMS library for applications with graphical user interfaces.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`fl` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ .. index::
+    single: FORMS Library
+    single: Overmars, Mark
+ 
+ This module provides an interface to the FORMS Library by Mark Overmars.  The
+ source for the library can be retrieved by anonymous ftp from host
+ ``ftp.cs.ruu.nl``, directory :file:`SGI/FORMS`.  It was last tested with version
+ 2.0b.
+@@ -475,48 +475,48 @@
+ +--------------------+-----------------+------------------+
+ | :attr:`automatic`  | int (read-only) | (see FORMS docs) |
+ +--------------------+-----------------+------------------+
+ 
+ 
+ :mod:`FL` --- Constants used with the :mod:`fl` module
+ ======================================================
+ 
+ .. module:: FL
+    :platform: IRIX
+    :synopsis: Constants used with the fl module.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`FL` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This module defines symbolic constants needed to use the built-in module
+ :mod:`fl` (see above); they are equivalent to those defined in the C header file
+ ``<forms.h>`` except that the name prefix ``FL_`` is omitted.  Read the module
+ source for a complete list of the defined names.  Suggested use::
+ 
+    import fl
+    from FL import *
+ 
+ 
+ :mod:`flp` --- Functions for loading stored FORMS designs
+ =========================================================
+ 
+ .. module:: flp
+    :platform: IRIX
+    :synopsis: Functions for loading stored FORMS designs.
+    :deprecated:
+-   
+-   
++
++
+ .. deprecated:: 2.6
+     The :mod:`flp` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This module defines functions that can read form definitions created by the
+ 'form designer' (:program:`fdesign`) program that comes with the FORMS library
+ (see module :mod:`fl` above).
+ 
+ For now, see the file :file:`flp.doc` in the Python library source directory for
+ a description.
+ 
+ XXX A complete description should be inserted here!

@@ -1,0 +1,24 @@
+--- rest26/library/imageop.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/imageop.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,20 +1,20 @@
+ 
+ :mod:`imageop` --- Manipulate raw image data
+ ============================================
+ 
+ .. module:: imageop
+    :synopsis: Manipulate raw image data.
+    :deprecated:
+-   
++
+ .. deprecated:: 2.6
+     The :mod:`imageop` module has been removed in Python 3.0.
+ 
+ The :mod:`imageop` module contains some useful operations on images. It operates
+ on images consisting of 8 or 32 bit pixels stored in Python strings.  This is
+ the same format as used by :func:`gl.lrectwrite` and the :mod:`imgfile` module.
+ 
+ The module defines the following variables and functions:
+ 
+ 
+ .. exception:: error
+ 

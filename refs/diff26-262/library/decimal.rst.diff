@@ -1,0 +1,389 @@
+--- rest26/library/decimal.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/decimal.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -319,25 +319,25 @@
+    string, it should conform to the decimal numeric string syntax after leading
+    and trailing whitespace characters are removed::
+ 
+       sign           ::=  '+' | '-'
+       digit          ::=  '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+       indicator      ::=  'e' | 'E'
+       digits         ::=  digit [digit]...
+       decimal-part   ::=  digits '.' [digits] | ['.'] digits
+       exponent-part  ::=  indicator [sign] digits
+       infinity       ::=  'Infinity' | 'Inf'
+       nan            ::=  'NaN' [digits] | 'sNaN' [digits]
+       numeric-value  ::=  decimal-part [exponent-part] | infinity
+-      numeric-string ::=  [sign] numeric-value | [sign] nan  
++      numeric-string ::=  [sign] numeric-value | [sign] nan
+ 
+    If *value* is a :class:`tuple`, it should have three components, a sign
+    (:const:`0` for positive or :const:`1` for negative), a :class:`tuple` of
+    digits, and an integer exponent. For example, ``Decimal((0, (1, 4, 1, 4), -3))``
+    returns ``Decimal('1.414')``.
+ 
+    The *context* precision does not affect how many digits are stored. That is
+    determined exclusively by the number of digits in *value*. For example,
+    ``Decimal('3.00000')`` records all five zeros even if the context precision is
+    only three.
+ 
+    The purpose of the *context* argument is determining what to do if *value* is a
+@@ -938,25 +938,25 @@
+    The *prec* field is a positive integer that sets the precision for arithmetic
+    operations in the context.
+ 
+    The *rounding* option is one of:
+ 
+    * :const:`ROUND_CEILING` (towards :const:`Infinity`),
+    * :const:`ROUND_DOWN` (towards zero),
+    * :const:`ROUND_FLOOR` (towards :const:`-Infinity`),
+    * :const:`ROUND_HALF_DOWN` (to nearest with ties going towards zero),
+    * :const:`ROUND_HALF_EVEN` (to nearest with ties going to nearest even integer),
+    * :const:`ROUND_HALF_UP` (to nearest with ties going away from zero), or
+    * :const:`ROUND_UP` (away from zero).
+-   * :const:`ROUND_05UP` (away from zero if last digit after rounding towards zero 
++   * :const:`ROUND_05UP` (away from zero if last digit after rounding towards zero
+      would have been 0 or 5; otherwise towards zero)
+ 
+    The *traps* and *flags* fields list any signals to be set. Generally, new
+    contexts should only set traps and leave the flags clear.
+ 
+    The *Emin* and *Emax* fields are integers specifying the outer limits allowable
+    for exponents.
+ 
+    The *capitals* field is either :const:`0` or :const:`1` (the default). If set to
+    :const:`1`, exponents are printed with a capital :const:`E`; otherwise, a
+    lowercase :const:`e` is used: :const:`Decimal('6.02e+23')`.
+ 
+@@ -1159,40 +1159,40 @@
+    .. method:: log10(x)
+ 
+       Returns the base 10 logarithm of *x*.
+ 
+ 
+    .. method:: logb(x)
+ 
+        Returns the exponent of the magnitude of the operand's MSD.
+ 
+ 
+    .. method:: logical_and(x, y)
+ 
+-      Applies the logical operation `and` between each operand's digits.
++      Applies the logical operation *and* between each operand's digits.
+ 
+ 
+    .. method:: logical_invert(x)
+ 
+       Invert all the digits in *x*.
+ 
+ 
+    .. method:: logical_or(x, y)
+ 
+-      Applies the logical operation `or` between each operand's digits.
++      Applies the logical operation *or* between each operand's digits.
+ 
+ 
+    .. method:: logical_xor(x, y)
+ 
+-      Applies the logical operation `xor` between each operand's digits.
++      Applies the logical operation *xor* between each operand's digits.
+ 
+ 
+    .. method:: max(x, y)
+ 
+       Compares two values numerically and returns the maximum.
+ 
+ 
+    .. method:: max_mag(x, y)
+ 
+       Compares the values numerically with their sign ignored.
+ 
+ 
+@@ -1261,50 +1261,50 @@
+       With three arguments, compute ``(x**y) % modulo``.  For the three argument
+       form, the following restrictions on the arguments hold:
+ 
+          - all three arguments must be integral
+          - ``y`` must be nonnegative
+          - at least one of ``x`` or ``y`` must be nonzero
+          - ``modulo`` must be nonzero and have at most 'precision' digits
+ 
+       The result of ``Context.power(x, y, modulo)`` is identical to the result
+       that would be obtained by computing ``(x**y) % modulo`` with unbounded
+       precision, but is computed more efficiently.  It is always exact.
+ 
+-      .. versionchanged:: 2.6 
++      .. versionchanged:: 2.6
+          ``y`` may now be nonintegral in ``x**y``.
+          Stricter requirements for the three-argument version.
+ 
+ 
+    .. method:: quantize(x, y)
+ 
+       Returns a value equal to *x* (rounded), having the exponent of *y*.
+ 
+ 
+    .. method:: radix()
+ 
+       Just returns 10, as this is Decimal, :)
+ 
+ 
+    .. method:: remainder(x, y)
+ 
+       Returns the remainder from integer division.
+ 
+       The sign of the result, if non-zero, is the same as that of the original
+       dividend.
+ 
+    .. method:: remainder_near(x, y)
+ 
+-      Returns `x - y * n`, where *n* is the integer nearest the exact value
+-      of `x / y` (if the result is `0` then its sign will be the sign of *x*).
++      Returns ``x - y * n``, where *n* is the integer nearest the exact value
++      of ``x / y`` (if the result is 0 then its sign will be the sign of *x*).
+ 
+ 
+    .. method:: rotate(x, y)
+ 
+       Returns a rotated copy of *x*, *y* times.
+ 
+ 
+    .. method:: same_quantum(x, y)
+ 
+       Returns True if the two operands have the same exponent.
+ 
+ 
+@@ -1403,25 +1403,25 @@
+    Indicates that an operation was requested that does not make sense. If not
+    trapped, returns :const:`NaN`.  Possible causes include::
+ 
+       Infinity - Infinity
+       0 * Infinity
+       Infinity / Infinity
+       x % 0
+       Infinity % x
+       x._rescale( non-integer )
+       sqrt(-x) and x > 0
+       0 ** 0
+       x ** (non-integer)
+-      x ** Infinity      
++      x ** Infinity
+ 
+ 
+ .. class:: Overflow
+ 
+    Numerical overflow.
+ 
+    Indicates the exponent is larger than :attr:`Emax` after rounding has
+    occurred.  If not trapped, the result depends on the rounding mode, either
+    pulling inward to the largest representable finite number or rounding outward
+    to :const:`Infinity`.  In either case, :class:`Inexact` and :class:`Rounded`
+    are also signaled.
+ 
+@@ -1506,25 +1506,25 @@
+ 
+ The :mod:`decimal` module makes it possible to restore the identities by
+ expanding the precision sufficiently to avoid loss of significance:
+ 
+ .. doctest:: newcontext
+ 
+    >>> getcontext().prec = 20
+    >>> u, v, w = Decimal(11111113), Decimal(-11111111), Decimal('7.51111111')
+    >>> (u + v) + w
+    Decimal('9.51111111')
+    >>> u + (v + w)
+    Decimal('9.51111111')
+-   >>> 
++   >>>
+    >>> u, v, w = Decimal(20000), Decimal(-6), Decimal('6.0000003')
+    >>> (u*v) + (u*w)
+    Decimal('0.0060000')
+    >>> u * (v+w)
+    Decimal('0.0060000')
+ 
+ 
+ Special values
+ ^^^^^^^^^^^^^^
+ 
+ The number system for the :mod:`decimal` module provides special values
+ including :const:`NaN`, :const:`sNaN`, :const:`-Infinity`, :const:`Infinity`,
+@@ -1645,25 +1645,25 @@
+        '-$1,234,567.89'
+        >>> moneyfmt(d, places=0, sep='.', dp='', neg='', trailneg='-')
+        '1.234.568-'
+        >>> moneyfmt(d, curr='$', neg='(', trailneg=')')
+        '($1,234,567.89)'
+        >>> moneyfmt(Decimal(123456789), sep=' ')
+        '123 456 789.00'
+        >>> moneyfmt(Decimal('-0.02'), neg='<', trailneg='>')
+        '<0.02>'
+ 
+        """
+        q = Decimal(10) ** -places      # 2 places --> '0.01'
+-       sign, digits, exp = value.quantize(q).as_tuple()  
++       sign, digits, exp = value.quantize(q).as_tuple()
+        result = []
+        digits = map(str, digits)
+        build, next = result.append, digits.pop
+        if sign:
+            build(trailneg)
+        for i in range(places):
+            build(next() if digits else '0')
+        build(dp)
+        if not digits:
+            build('0')
+        i = 0
+        while digits:
+@@ -1702,76 +1702,76 @@
+        2.718281828459045235360287471
+        >>> print exp(Decimal(2))
+        7.389056098930650227230427461
+        >>> print exp(2.0)
+        7.38905609893
+        >>> print exp(2+0j)
+        (7.38905609893+0j)
+ 
+        """
+        getcontext().prec += 2
+        i, lasts, s, fact, num = 0, 0, 1, 1, 1
+        while s != lasts:
+-           lasts = s    
++           lasts = s
+            i += 1
+            fact *= i
+-           num *= x     
+-           s += num / fact   
+-       getcontext().prec -= 2        
++           num *= x
++           s += num / fact
++       getcontext().prec -= 2
+        return +s
+ 
+    def cos(x):
+        """Return the cosine of x as measured in radians.
+ 
+        >>> print cos(Decimal('0.5'))
+        0.8775825618903727161162815826
+        >>> print cos(0.5)
+        0.87758256189
+        >>> print cos(0.5+0j)
+        (0.87758256189+0j)
+ 
+        """
+        getcontext().prec += 2
+        i, lasts, s, fact, num, sign = 0, 0, 1, 1, 1, 1
+        while s != lasts:
+-           lasts = s    
++           lasts = s
+            i += 2
+            fact *= i * (i-1)
+            num *= x * x
+            sign *= -1
+-           s += num / fact * sign 
+-       getcontext().prec -= 2        
++           s += num / fact * sign
++       getcontext().prec -= 2
+        return +s
+ 
+    def sin(x):
+        """Return the sine of x as measured in radians.
+ 
+        >>> print sin(Decimal('0.5'))
+        0.4794255386042030002732879352
+        >>> print sin(0.5)
+        0.479425538604
+        >>> print sin(0.5+0j)
+        (0.479425538604+0j)
+ 
+        """
+        getcontext().prec += 2
+        i, lasts, s, fact, num, sign = 1, 0, x, 1, x, 1
+        while s != lasts:
+-           lasts = s    
++           lasts = s
+            i += 2
+            fact *= i * (i-1)
+            num *= x * x
+            sign *= -1
+-           s += num / fact * sign 
+-       getcontext().prec -= 2        
++           s += num / fact * sign
++       getcontext().prec -= 2
+        return +s
+ 
+ 
+ .. %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+ 
+ .. _decimal-faq:
+ 
+ Decimal FAQ
+ -----------
+ 
+ Q. It is cumbersome to type ``decimal.Decimal('1234.5')``.  Is there a way to
+@@ -1787,25 +1787,25 @@
+ places and need to be rounded.  Others are not supposed to have excess digits
+ and need to be validated.  What methods should be used?
+ 
+ A. The :meth:`quantize` method rounds to a fixed number of decimal places. If
+ the :const:`Inexact` trap is set, it is also useful for validation:
+ 
+    >>> TWOPLACES = Decimal(10) ** -2       # same as Decimal('0.01')
+ 
+    >>> # Round to two places
+    >>> Decimal('3.214').quantize(TWOPLACES)
+    Decimal('3.21')
+ 
+-   >>> # Validate that a number does not exceed two places 
++   >>> # Validate that a number does not exceed two places
+    >>> Decimal('3.21').quantize(TWOPLACES, context=Context(traps=[Inexact]))
+    Decimal('3.21')
+ 
+    >>> Decimal('3.214').quantize(TWOPLACES, context=Context(traps=[Inexact]))
+    Traceback (most recent call last):
+       ...
+    Inexact
+ 
+ Q. Once I have valid two place inputs, how do I maintain that invariant
+ throughout an application?
+ 
+ A. Some operations like addition, subtraction, and multiplication by an integer
+@@ -1871,31 +1871,32 @@
+ 
+ Q. Is there a way to convert a regular float to a :class:`Decimal`?
+ 
+ A. Yes, all binary floating point numbers can be exactly expressed as a
+ Decimal.  An exact conversion may take more precision than intuition would
+ suggest, so we trap :const:`Inexact` to signal a need for more precision:
+ 
+ .. testcode::
+ 
+     def float_to_decimal(f):
+         "Convert a floating point number to a Decimal with no loss of information"
+         n, d = f.as_integer_ratio()
+-        with localcontext() as ctx:
+-            ctx.traps[Inexact] = True
+-            while True:
+-                try:
+-                   return Decimal(n) / Decimal(d)
+-                except Inexact:
+-                    ctx.prec += 1
++        numerator, denominator = Decimal(n), Decimal(d)
++        ctx = Context(prec=60)
++        result = ctx.divide(numerator, denominator)
++        while ctx.flags[Inexact]:
++            ctx.flags[Inexact] = False
++            ctx.prec *= 2
++            result = ctx.divide(numerator, denominator)
++        return result
+ 
+ .. doctest::
+ 
+     >>> float_to_decimal(math.pi)
+     Decimal('3.141592653589793115997963468544185161590576171875')
+ 
+ Q. Why isn't the :func:`float_to_decimal` routine included in the module?
+ 
+ A. There is some question about whether it is advisable to mix binary and
+ decimal floating point.  Also, its use requires some care to avoid the
+ representation issues associated with binary floating point:
+ 

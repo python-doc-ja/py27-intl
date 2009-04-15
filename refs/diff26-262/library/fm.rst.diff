@@ -1,0 +1,25 @@
+--- rest26/library/fm.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/fm.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,21 +1,21 @@
+ 
+ :mod:`fm` --- *Font Manager* interface
+ ======================================
+ 
+ .. module:: fm
+    :platform: IRIX
+    :synopsis: Font Manager interface for SGI workstations.
+    :deprecated:
+-   
++
+ .. deprecated:: 2.6
+    The :mod:`fm` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ 
+ .. index::
+    single: Font Manager, IRIS
+    single: IRIS Font Manager
+ 
+ This module provides access to the IRIS *Font Manager* library.   It is
+ available only on Silicon Graphics machines. See also: *4Sight User's Guide*,
+ section 1, chapter 5: "Using the IRIS Font Manager."

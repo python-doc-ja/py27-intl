@@ -1,0 +1,68 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to173__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/library/mutex.rst =&gt; rest262/library/mutex.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to173__0"><a href="#difflib_chg_to173__0">f</a></td><td class="diff_header" id="from173_1">1</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_2">2</td><td nowrap="nowrap">:mod:`mutex`&nbsp;---&nbsp;Mutual&nbsp;exclusion&nbsp;support</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_3">3</td><td nowrap="nowrap">=========================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_5">5</td><td nowrap="nowrap">..&nbsp;module::&nbsp;mutex</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_6">6</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Lock&nbsp;and&nbsp;queue&nbsp;for&nbsp;mutual&nbsp;exclusion.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__1">n</a></td><td class="diff_header" id="to173_7">7+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:deprecated:</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to173__1"></td><td class="diff_header" id="to173_8">8+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to173_9">9+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;deprecated::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to173_10">10+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`mutex`&nbsp;module&nbsp;has&nbsp;been&nbsp;removed&nbsp;in&nbsp;Python&nbsp;3.0.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to173_11">11+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_7">7</td><td nowrap="nowrap">..&nbsp;sectionauthor::&nbsp;Moshe&nbsp;Zadka&nbsp;&lt;moshez@zadka.site.co.il&gt;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_9">9</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_10">10</td><td nowrap="nowrap">The&nbsp;:mod:`mutex`&nbsp;module&nbsp;defines&nbsp;a&nbsp;class&nbsp;that&nbsp;allows&nbsp;mutual-exclusion&nbsp;via</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__2">n</a></td><td class="diff_header" id="from173_11">11-</td><td nowrap="nowrap">acquiring&nbsp;and&nbsp;releasing&nbsp;locks.&nbsp;It&nbsp;does&nbsp;not&nbsp;require&nbsp;(or&nbsp;imply)<span class="diff_sub">&nbsp;threading&nbsp;or</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to173__2">n</a></td><td class="diff_header" id="to173_16">16+</td><td nowrap="nowrap">acquiring&nbsp;and&nbsp;releasing&nbsp;locks.&nbsp;It&nbsp;does&nbsp;not&nbsp;require&nbsp;(or&nbsp;imply)</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from173_12">12-</td><td nowrap="nowrap">multi-tasking,&nbsp;though&nbsp;it&nbsp;could&nbsp;be&nbsp;useful&nbsp;for&nbsp;those<span class="diff_sub">&nbsp;purposes.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to173_17">17+</td><td nowrap="nowrap"><span class="diff_add">:mod:`threading`&nbsp;or&nbsp;</span>multi-tasking,&nbsp;though&nbsp;it&nbsp;could&nbsp;be&nbsp;useful&nbsp;for&nbsp;those</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to173_18">18+</td><td nowrap="nowrap"><span class="diff_add">purposes.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_13">13</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_14">14</td><td nowrap="nowrap">The&nbsp;:mod:`mutex`&nbsp;module&nbsp;defines&nbsp;the&nbsp;following&nbsp;class:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_15">15</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_17">17</td><td nowrap="nowrap">..&nbsp;class::&nbsp;mutex()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_18">18</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_19">19</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Create&nbsp;a&nbsp;new&nbsp;(unlocked)&nbsp;mutex.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_20">20</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to173__2"></td><td class="diff_header" id="from173_32">32</td><td nowrap="nowrap">..&nbsp;_mutex-objects:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_33">33</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_34">34</td><td nowrap="nowrap">Mutex&nbsp;Objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_35">35</td><td nowrap="nowrap">-------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_36">36</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to173__3"></td><td class="diff_header" id="from173_37">37</td><td nowrap="nowrap">:class:`mutex`&nbsp;objects&nbsp;have&nbsp;following&nbsp;methods:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_38">38</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_39">39</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__3">n</a></td><td class="diff_header" id="from173_40">40-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;method::&nbsp;XXX&nbsp;Class.test()</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to173__3">n</a></td><td class="diff_header" id="to173_46">46+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;method::&nbsp;mutex.test()</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_41">41</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_42">42</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Check&nbsp;whether&nbsp;the&nbsp;mutex&nbsp;is&nbsp;locked.</td></tr>            <tr><td class="diff_next" id="difflib_chg_to173__4"></td><td class="diff_header" id="from173_43">43</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_44">44</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__4">n</a></td><td class="diff_header" id="from173_45">45-</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">XXX&nbsp;Class</span>.testandset()</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to173__4">n</a></td><td class="diff_header" id="to173_51">51+</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">mutex</span>.testandset()</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;"Atomic"&nbsp;test-and-set,&nbsp;grab&nbsp;the&nbsp;lock&nbsp;if&nbsp;it&nbsp;is&nbsp;not&nbsp;set,&nbsp;and&nbsp;return&nbsp;``True``,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;otherwise,&nbsp;return&nbsp;``False``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_49">49</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to173__5"></td><td class="diff_header" id="from173_50">50</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__5">n</a></td><td class="diff_header" id="from173_51">51-</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">XXX&nbsp;Class</span>.lock(function,&nbsp;argument)</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to173__5">n</a></td><td class="diff_header" id="to173_57">57+</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">mutex</span>.lock(function,&nbsp;argument)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_52">52</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Execute&nbsp;``function(argument)``,&nbsp;unless&nbsp;the&nbsp;mutex&nbsp;is&nbsp;locked.&nbsp;In&nbsp;the&nbsp;case&nbsp;it&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_54">54</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;locked,&nbsp;place&nbsp;the&nbsp;function&nbsp;and&nbsp;argument&nbsp;on&nbsp;the&nbsp;queue.&nbsp;See&nbsp;:meth:`unlock`&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;explanation&nbsp;of&nbsp;when&nbsp;``function(argument)``&nbsp;is&nbsp;executed&nbsp;in&nbsp;that&nbsp;case.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_56">56</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_57">57</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to173__top">t</a></td><td class="diff_header" id="from173_58">58-</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">XXX&nbsp;Class</span>.unlock()</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to173__top">t</a></td><td class="diff_header" id="to173_64">64+</td><td nowrap="nowrap">..&nbsp;method::&nbsp;<span class="diff_chg">mutex</span>.unlock()</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from173_59">59</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Unlock&nbsp;the&nbsp;mutex&nbsp;if&nbsp;queue&nbsp;is&nbsp;empty,&nbsp;otherwise&nbsp;execute&nbsp;the&nbsp;first&nbsp;element&nbsp;in&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_61">61</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;queue.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from173_62">62</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

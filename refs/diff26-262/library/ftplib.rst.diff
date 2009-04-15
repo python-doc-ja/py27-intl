@@ -1,0 +1,43 @@
+--- rest26/library/ftplib.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/ftplib.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -1,13 +1,12 @@
+-
+ :mod:`ftplib` --- FTP protocol client
+ =====================================
+ 
+ .. module:: ftplib
+    :synopsis: FTP protocol client (requires sockets).
+ 
+ 
+ .. index::
+    pair: FTP; protocol
+    single: FTP; ftplib (standard module)
+ 
+ This module defines the class :class:`FTP` and a few related items. The
+@@ -306,25 +305,25 @@
+ 
+ .. method:: FTP.size(filename)
+ 
+    Request the size of the file named *filename* on the server.  On success, the
+    size of the file is returned as an integer, otherwise ``None`` is returned.
+    Note that the ``SIZE`` command is not  standardized, but is supported by many
+    common server implementations.
+ 
+ 
+ .. method:: FTP.quit()
+ 
+    Send a ``QUIT`` command to the server and close the connection. This is the
+-   "polite" way to close a connection, but it may raise an exception of the server
++   "polite" way to close a connection, but it may raise an exception if the server
+    responds with an error to the ``QUIT`` command.  This implies a call to the
+    :meth:`close` method which renders the :class:`FTP` instance useless for
+    subsequent calls (see below).
+ 
+ 
+ .. method:: FTP.close()
+ 
+    Close the connection unilaterally.  This should not be applied to an already
+    closed connection such as after a successful call to :meth:`quit`.  After this
+    call the :class:`FTP` instance should not be used any more (after a call to
+    :meth:`close` or :meth:`quit` you cannot reopen the connection by issuing
+    another :meth:`login` method).

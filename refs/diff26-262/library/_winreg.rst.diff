@@ -1,0 +1,179 @@
+--- rest26/library/_winreg.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/_winreg.rst	2009-04-07 00:06:53.000000000 +0900
+@@ -1,13 +1,12 @@
+-
+ :mod:`_winreg` -- Windows registry access
+ =========================================
+ 
+ .. module:: _winreg
+    :platform: Windows
+    :synopsis: Routines and objects for manipulating the Windows registry.
+ .. sectionauthor:: Mark Hammond <MarkH@ActiveState.com>
+ 
+ .. note::
+    The :mod:`_winreg` module has been renamed to :mod:`winreg` in Python 3.0.
+    The :term:`2to3` tool will automatically adapt imports when converting your
+    sources to 3.0.
+@@ -38,97 +37,97 @@
+ 
+ 
+ .. function:: ConnectRegistry(computer_name, key)
+ 
+    Establishes a connection to a predefined registry handle on  another computer,
+    and returns a :dfn:`handle object`
+ 
+    *computer_name* is the name of the remote computer, of the  form
+    ``r"\\computername"``.  If ``None``, the local computer is used.
+ 
+    *key* is the predefined handle to connect to.
+ 
+-   The return value is the handle of the opened key. If the function fails, an
+-   :exc:`EnvironmentError` exception is  raised.
++   The return value is the handle of the opened key. If the function fails, a
++   :exc:`WindowsError` exception is  raised.
+ 
+ 
+ .. function:: CreateKey(key, sub_key)
+ 
+    Creates or opens the specified key, returning a :dfn:`handle object`
+ 
+    *key* is an already open key, or one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *sub_key* is a string that names the key this method opens  or creates.
+ 
+    If *key* is one of the predefined keys, *sub_key* may  be ``None``. In that
+    case, the handle returned is the same key handle  passed in to the function.
+ 
+    If the key already exists, this function opens the existing key.
+ 
+-   The return value is the handle of the opened key. If the function fails, an
+-   :exc:`EnvironmentError` exception is  raised.
++   The return value is the handle of the opened key. If the function fails, a
++   :exc:`WindowsError` exception is  raised.
+ 
+ 
+ .. function:: DeleteKey(key, sub_key)
+ 
+    Deletes the specified key.
+ 
+    *key* is an already open key, or any one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *sub_key* is a string that must be a subkey of the key  identified by the *key*
+    parameter.  This value must not be  ``None``, and the key may not have subkeys.
+ 
+    *This method can not delete keys with subkeys.*
+ 
+    If the method succeeds, the entire key, including all of its values, is removed.
+-   If the method fails, an :exc:`EnvironmentError`  exception is raised.
++   If the method fails, a :exc:`WindowsError`  exception is raised.
+ 
+ 
+ .. function:: DeleteValue(key, value)
+ 
+    Removes a named value from a registry key.
+ 
+    *key* is an already open key, or one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *value* is a string that identifies the value to remove.
+ 
+ 
+ .. function:: EnumKey(key, index)
+ 
+    Enumerates subkeys of an open registry key, returning a string.
+ 
+    *key* is an already open key, or any one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *index* is an integer that identifies the index of the key to  retrieve.
+ 
+    The function retrieves the name of one subkey each time it  is called.  It is
+-   typically called repeatedly until an  :exc:`EnvironmentError` exception  is
++   typically called repeatedly until a  :exc:`WindowsError` exception  is
+    raised, indicating, no more values are available.
+ 
+ 
+ .. function:: EnumValue(key, index)
+ 
+    Enumerates values of an open registry key, returning a tuple.
+ 
+    *key* is an already open key, or any one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *index* is an integer that identifies the index of the value  to retrieve.
+ 
+    The function retrieves the name of one subkey each time it is  called. It is
+-   typically called repeatedly, until an  :exc:`EnvironmentError` exception is
++   typically called repeatedly, until a  :exc:`WindowsError` exception is
+    raised, indicating  no more values.
+ 
+    The result is a tuple of 3 items:
+ 
+    +-------+--------------------------------------------+
+    | Index | Meaning                                    |
+    +=======+============================================+
+    | ``0`` | A string that identifies the value name    |
+    +-------+--------------------------------------------+
+    | ``1`` | An object that holds the value data, and   |
+    |       | whose type depends on the underlying       |
+    |       | registry type                              |
+@@ -200,25 +199,25 @@
+    *key* is an already open key, or any one of the predefined :const:`HKEY_\*`
+    constants.
+ 
+    *sub_key* is a string that identifies the sub_key to open.
+ 
+    *res* is a reserved integer, and must be zero.  The default is zero.
+ 
+    *sam* is an integer that specifies an access mask that describes  the desired
+    security access for the key.  Default is :const:`KEY_READ`
+ 
+    The result is a new handle to the specified key.
+ 
+-   If the function fails, :exc:`EnvironmentError` is raised.
++   If the function fails, :exc:`WindowsError` is raised.
+ 
+ 
+ .. function:: OpenKeyEx()
+ 
+    The functionality of :func:`OpenKeyEx` is provided via :func:`OpenKey`, by the
+    use of default arguments.
+ 
+ 
+ .. function:: QueryInfoKey(key)
+ 
+    Returns information about a key, as a tuple.
+ 
+@@ -244,27 +243,28 @@
+ 
+ .. function:: QueryValue(key, sub_key)
+ 
+    Retrieves the unnamed value for a key, as a string
+ 
+    *key* is an already open key, or one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *sub_key* is a string that holds the name of the subkey with which  the value is
+    associated.  If this parameter is ``None`` or empty, the  function retrieves the
+    value set by the :func:`SetValue` method  for the key identified by *key*.
+ 
+-   Values in the registry have name, type, and data components. This  method
++   Values in the registry have name, type, and data components. This method
+    retrieves the data for a key's first value that has a NULL name. But the
+-   underlying API call doesn't return the type, Lame Lame Lame, DO NOT USE THIS!!!
++   underlying API call doesn't return the type, so always use
++   :func:`QueryValueEx` if possible.
+ 
+ 
+ .. function:: QueryValueEx(key, value_name)
+ 
+    Retrieves the type and data for a specified value name associated with  an open
+    registry key.
+ 
+    *key* is an already open key, or one of the predefined  :const:`HKEY_\*`
+    constants.
+ 
+    *value_name* is a string indicating the value to query.
+ 

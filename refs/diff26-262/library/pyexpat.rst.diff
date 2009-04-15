@@ -1,0 +1,33 @@
+--- rest26/library/pyexpat.rst	2008-12-19 16:58:10.000000000 +0900
++++ rest262/library/pyexpat.rst	2009-04-05 05:02:09.000000000 +0900
+@@ -173,27 +173,27 @@
+    This method can only be called before the :meth:`Parse` or :meth:`ParseFile`
+    methods are called; calling it after either of those have been called causes
+    :exc:`ExpatError` to be raised with the :attr:`code` attribute set to
+    :const:`errors.XML_ERROR_CANT_CHANGE_FEATURE_ONCE_PARSING`.
+ 
+    .. versionadded:: 2.3
+ 
+ :class:`xmlparser` objects have the following attributes:
+ 
+ 
+ .. attribute:: xmlparser.buffer_size
+ 
+-   The size of the buffer used when :attr:`buffer_text` is true.  
+-   A new buffer size can be set by assigning a new integer value 
+-   to this attribute.  
++   The size of the buffer used when :attr:`buffer_text` is true.
++   A new buffer size can be set by assigning a new integer value
++   to this attribute.
+    When the size is changed, the buffer will be flushed.
+ 
+    .. versionadded:: 2.3
+ 
+    .. versionchanged:: 2.6
+       The buffer size can now be changed.
+ 
+ .. attribute:: xmlparser.buffer_text
+ 
+    Setting this to true causes the :class:`xmlparser` object to buffer textual
+    content returned by Expat to avoid multiple calls to the
+    :meth:`CharacterDataHandler` callback whenever possible.  This can improve

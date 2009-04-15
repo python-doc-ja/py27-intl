@@ -1,0 +1,53 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to17__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/distutils/configfile.rst =&gt; rest262/distutils/configfile.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to17__0"></td><td class="diff_header" id="from17_58">58</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Options&nbsp;for&nbsp;'build_ext'&nbsp;command:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--build-lib&nbsp;(-b)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;directory&nbsp;for&nbsp;compiled&nbsp;extension&nbsp;modules</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--build-temp&nbsp;(-t)&nbsp;&nbsp;&nbsp;&nbsp;directory&nbsp;for&nbsp;temporary&nbsp;files&nbsp;(build&nbsp;by-products)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_61">61</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--inplace&nbsp;(-i)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ignore&nbsp;build-lib&nbsp;and&nbsp;put&nbsp;compiled&nbsp;extensions&nbsp;into&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_62">62</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;source&nbsp;directory&nbsp;alongside&nbsp;your&nbsp;pure&nbsp;Python&nbsp;modules</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_63">63</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--include-dirs&nbsp;(-I)&nbsp;&nbsp;list&nbsp;of&nbsp;directories&nbsp;to&nbsp;search&nbsp;for&nbsp;header&nbsp;files</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_64">64</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--define&nbsp;(-D)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;preprocessor&nbsp;macros&nbsp;to&nbsp;define</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_65">65</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--undef&nbsp;(-U)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;preprocessor&nbsp;macros&nbsp;to&nbsp;undefine</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to17__1">n</a></td><td class="diff_header" id="to17_66">66+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--swig-opts&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list&nbsp;of&nbsp;SWIG&nbsp;command&nbsp;line&nbsp;options</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from17_66">66</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;[...]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_67">67</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_68">68</td><td nowrap="nowrap">Note&nbsp;that&nbsp;an&nbsp;option&nbsp;spelled&nbsp;:option:`--foo-bar`&nbsp;on&nbsp;the&nbsp;command-line&nbsp;&nbsp;is&nbsp;spelled</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_69">69</td><td nowrap="nowrap">:option:`foo_bar`&nbsp;in&nbsp;configuration&nbsp;files.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_70">70</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_71">71</td><td nowrap="nowrap">For&nbsp;example,&nbsp;say&nbsp;you&nbsp;want&nbsp;your&nbsp;extensions&nbsp;to&nbsp;be&nbsp;built&nbsp;"in-place"---that&nbsp;is,&nbsp;you</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_72">72</td><td nowrap="nowrap">have&nbsp;an&nbsp;extension&nbsp;:mod:`pkg.ext`,&nbsp;and&nbsp;you&nbsp;want&nbsp;the&nbsp;compiled&nbsp;extension&nbsp;file</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_73">73</td><td nowrap="nowrap">(:file:`ext.so`&nbsp;on&nbsp;Unix,&nbsp;say)&nbsp;to&nbsp;be&nbsp;put&nbsp;in&nbsp;the&nbsp;same&nbsp;source&nbsp;directory&nbsp;as&nbsp;your</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to17__1"></td><td class="diff_header" id="from17_112">112</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;examples/</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_113">113</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_114">114</td><td nowrap="nowrap">Note&nbsp;that&nbsp;the&nbsp;:option:`doc_files`&nbsp;option&nbsp;is&nbsp;simply&nbsp;a&nbsp;whitespace-separated&nbsp;string</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_115">115</td><td nowrap="nowrap">split&nbsp;across&nbsp;multiple&nbsp;lines&nbsp;for&nbsp;readability.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_116">116</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_117">117</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_118">118</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_119">119</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to17__top">t</a></td><td class="diff_header" id="from17_120">120-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;`Installing&nbsp;Python&nbsp;Modules&nbsp;&lt;../inst/config-syntax.html&gt;`_</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to17__top">t</a></td><td class="diff_header" id="to17_121">121+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:ref:`inst-config-syntax`&nbsp;in&nbsp;"Installing&nbsp;Python&nbsp;Modules"</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from17_121">121</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;More&nbsp;information&nbsp;on&nbsp;the&nbsp;configuration&nbsp;files&nbsp;is&nbsp;available&nbsp;in&nbsp;the&nbsp;manual&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_122">122</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;system&nbsp;administrators.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_123">123</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_124">124</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_125">125</td><td nowrap="nowrap">..&nbsp;rubric::&nbsp;Footnotes</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_126">126</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_127">127</td><td nowrap="nowrap">..&nbsp;[#]&nbsp;This&nbsp;ideal&nbsp;probably&nbsp;won't&nbsp;be&nbsp;achieved&nbsp;until&nbsp;auto-configuration&nbsp;is&nbsp;fully</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from17_128">128</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;supported&nbsp;by&nbsp;the&nbsp;Distutils.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>
