@@ -510,13 +510,13 @@ exceptionQueue.Empty 例外を送出します)。
    statement: while
    pair: loop; statement
 
-:keyword:`break` 文は :keyword:`for` ループや :keyword:`while` ループ内の
-ネストで構文法的にのみ現れますが、ループ内の関数定義やクラス定義 には現れません。
+:keyword:`break` 文は、構文としては :keyword:`for` ループや :keyword:`while` ループの
+内側でのみ出現することができますが、ループ内の関数定義やクラス定義の内側には出現できません。
 
 .. index:: keyword: else
 
-:keyword:`break` 文は、文を囲う最も内側のループを終了させ、 ループにオプションの :keyword:`else` 節がある場合には
-:keyword:`else` 節に飛びます。
+:keyword:`break` 文は、文を囲う最も内側のループを終了させ、 ループにオプションの :keyword:`else`
+節がある場合にはそれをスキップします。
 
 .. index:: pair: loop control; target
 
