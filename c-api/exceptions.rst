@@ -8,7 +8,7 @@
 ********
 
 この章で説明する関数を使うと、Pythonの例外の処理や送出ができるように なります。Pythonの例外処理の基本をいくらか理解することが大切です。
-例外はUnix :cdata:`errno`変数にやや似た機能を果たします: 発生した
+例外はUnix :cdata:`errno` 変数にやや似た機能を果たします: 発生した
 中で最も新しいエラーの(スレッド毎の)グローバルなインジケータがあります。 実行に成功した場合にはほとんどの関数がこれをクリアしませんが、失敗したときには
 エラーの原因を示すために設定します。ほとんどの関数はエラーインジケータも 返し、通常は関数がポインタを返すことになっている場合は*NULL*であり、
 関数が整数を返す場合は``-1``です。(例外: :cfunc:`PyArg_\*`関数は
@@ -33,10 +33,19 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 .. % Either alphabetical or some kind of structure.
 
 
-.. cfunction:: void PyErr_Print()
+.. cfunction:: void PyErr_PrintEx(int set_sys_last_vars)
 
    ``sys.stderr``へ標準トレースバックをプリントし、エラーインジケータを クリアします。エラーインジケータが設定されているときにだけ、この関数を
    呼び出してください。(それ以外の場合、致命的なエラーを引き起こすでしょう!)
+
+   If *set_sys_last_vars* is nonzero, the variables :data:`sys.last_type`,
+   :data:`sys.last_value` and :data:`sys.last_traceback` will be set to the
+   type, value and traceback of the printed exception, respectively.
+
+
+.. cfunction:: void PyErr_Print()
+
+   Alias for ``PyErr_PrintEx(1)``.
 
 
 .. cfunction:: PyObject* PyErr_Occurred()
@@ -60,9 +69,10 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 
 .. cfunction:: int PyErr_GivenExceptionMatches(PyObject *given, PyObject *exc)
 
-   *given*例外が*exc*の例外と一致するなら真を返します。これは*exc*が
-   クラスオブジェクトである場合も真を返します。これは*given*がサブクラスの インスタンスであるときも真を返します。*exc*がタプルならば、タプル内
-   (と再帰的にサブタプル内)のすべての例外が一致するか調べられます。 *given*が*NULL*ならば、メモリアクセス違反が起きるでしょう。
+   *given* 例外が *exc* の例外と一致するなら真を返します。これは *exc* が\
+   クラスオブジェクトである場合も真を返します。これは *given* がサブクラスの\
+   インスタンスであるときも真を返します。 *exc* がタプルならば、タプル内\
+   (と再帰的にサブタプル内)のすべての例外が一致するか調べられます。
 
 
 .. cfunction:: void PyErr_NormalizeException(PyObject**exc, PyObject**val, PyObject**tb)
