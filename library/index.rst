@@ -36,6 +36,7 @@ Windows 向けの Python インストーラはたいてい標準ライブラリ�
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    intro.rst
    functions.rst
