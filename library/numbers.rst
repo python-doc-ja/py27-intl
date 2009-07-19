@@ -49,14 +49,14 @@
    :func:`round`, :func:`math.floor`, :func:`math.ceil`, :func:`divmod`, ``//``,
    ``%``, ``<``, ``<=``, ``>`` および ``>=`` です。
 
-   Real はまた :func:`complex`, :attr:`Complex.real`,
-   :attr:`Complex.imag` および :meth:`Complex.conjugate` のデフォルトを提供します。
+   Real はまた :func:`complex`, :attr:`~Complex.real`,
+   :attr:`~Complex.imag` および :meth:`~Complex.conjugate` のデフォルトを提供します。
 
 
 .. class:: Rational
 
-   :class:`Real` をサブタイプ化し :attr:`Rational.numerator` と
-   :attr:`Rational.denominator` のプロパティを加えたものです。
+   :class:`Real` をサブタイプ化し :attr:`~Rational.numerator` と
+   :attr:`~Rational.denominator` のプロパティを加えたものです。
    これら分子分母は最小の値でなければなりません。この他に :func:`float`
    のデフォルトも提供します。
 
@@ -72,8 +72,8 @@
 .. class:: Integral
 
    :class:`Rational` をサブタイプ化し :class:`int` への変換が加わります。
-   :func:`float`, :attr:`Rational.numerator` および
-   :attr:`Rational.denominator` のデフォルトと、ビット列演算: ``<<``,
+   :func:`float`, :attr:`~Rational.numerator` および
+   :attr:`~Rational.denominator` のデフォルトと、ビット列演算: ``<<``,
    ``>>``, ``&``, ``^``, ``|``, ``~`` を提供します。
 
 
@@ -164,7 +164,7 @@
        り、 :class:`Complex` に委ねる前にこれらのインスタンスを扱えるはずだか\
        らです。
 
-もし ``A<:Complex`` かつ ``B<:Real`` で他に共有された知識が無いならば、
+もし ``A <: Complex`` かつ ``B <: Real`` で他に共有された知識が無いならば、
 適切な共通の演算は組み込みの :class:`complex` を使ったものになり、
 どちらの :meth:`__radd__` ともそこに着地するでしょうから、
 ``a+b == b+a`` です。
