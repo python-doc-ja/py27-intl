@@ -34,9 +34,9 @@ codec(エンコー ダとデコーダ)の基底クラスを定義し、 codec �
 
    * ``name`` エンコーディング名
 
-   * ``encoder`` 内部状態を持たないエンコード関数
+   * ``encode`` 内部状態を持たないエンコード関数
 
-   * ``decoder`` 内部状態を持たないデコード関数
+   * ``decode`` 内部状態を持たないデコード関数
 
    * ``incrementalencoder`` 漸増的エンコーダクラスまたはファクトリ関数
 
@@ -48,13 +48,11 @@ codec(エンコー ダとデコーダ)の基底クラスを定義し、 codec �
 
    種々の関数やクラスが以下の引数をとります。
 
-   *encoder* と *decoder*: これらの引数は、 Codec インスタンスの
+   *encode* と *decode*: これらの引数は、 Codec インスタンスの
     :meth:`encode` と :meth:`decode`
-
    (Codec Interface 参照) と同じ インタフェースを持つ関数、またはメソッ
    ドでなければなりません。これらの関数・メソッドは内部状態を持たずに
    動作する (stateless mode) と想定されています。
-
 
    *incrementalencoder* と *incrementaldecoder*: これらは
    以下のインタフェースを持つファクトリ関数でなければなりません。
