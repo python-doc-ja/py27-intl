@@ -421,6 +421,11 @@
    されます。
 
 
+.. exception:: VMSError
+
+   VMS においてのみ利用可能。 VMS独自のエラーが起こったときに発生する。
+
+
 .. exception:: WindowsError
 
    Windows 特有のエラーか、エラー番号が :cdata:`errno` 値に対応しない
