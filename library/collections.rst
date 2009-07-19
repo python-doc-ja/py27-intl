@@ -53,36 +53,33 @@ ABC                        継承しているクラス     Abstract Methods     
 :class:`Hashable`                                 ``__hash__``
 :class:`Iterable`                                 ``__iter__``
 :class:`Iterator`          :class:`Iterable`      ``__next__``            ``__iter__``
-:class:`Sized`          			  ``__len__``
+:class:`Sized`          			              ``__len__``
 :class:`Callable`                                 ``__call__``
-                                                  
+
 :class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.
-                           :class:`Iterable`,     ``__len__``             ``index``, ``count``
+                           :class:`Iterable`,                             ``index``, ``count``
                            :class:`Container`     
                                                   
-:class:`MutableSequnce`    :class:`Sequence`      ``__getitem__``         Sequence から継承したメソッドと、
+:class:`MutableSequnce`    :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
                                                   ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,
                                                   ``insert``,             ``remove``, ``__iadd__``
-                                                  ``__len__``
                                                   
-:class:`Set`               :class:`Sized`,        ``__len__``,            ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,
-                           :class:`Iterable`,     ``__iter__``,           ``__gt__``, ``__ge__``, ``__and__``, ``__or__``
-                           :class:`Container`     ``__contains__``        ``__sub__``, ``__xor__``, and ``isdisjoint``
-                                                  
+:class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,
+                           :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``
+                           :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``
+
 :class:`MutableSet`        :class:`Set`           ``add``,                Set から継承したメソッドと、
                                                   ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,
                                                                           ``__iand__``, ``__ixor__``, ``__isub__``
                                                   
-:class:`Mapping`           :class:`Sized`,        ``__getitem__``,        ``__contains__``, ``keys``, ``items``, ``values``,
-                           :class:`Iterable`,     ``__len__``,            ``get``, ``__eq__``, ``__ne__``
-                           :class:`Container`     ``__iter__``
+:class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,
+                           :class:`Iterable`,                             ``get``, ``__eq__``, ``__ne__``
+                           :class:`Container`
                                                   
-:class:`MutableMapping`    :class:`Mapping`       ``__getitem__``         Mapping から継承したメソッドと、
-                                                  ``__setitem__``,        ``pop``, ``popitem``, ``clear``, ``update``,
-                                                  ``__delitem__``,        ``setdefault``
-						  ``__iter__``,
-                                                  ``__len__``
-                                                  
+:class:`MutableMapping`    :class:`Mapping`       ``__setitem__``         Mapping から継承したメソッドと、
+                                                  ``__detitem__``,        ``pop``, ``popitem``, ``clear``, ``update``,
+                                                                          ``setdefault``
+
 :class:`MappingView`       :class:`Sized`                                 ``__len__``
 :class:`KeysView`          :class:`MappingView`,                          ``__contains__``,
                            :class:`Set`                                   ``__iter__``
@@ -96,7 +93,7 @@ ABC                        継承しているクラス     Abstract Methods     
 
     size = None
     if isinstance(myvar, collections.Sized):
-	size = len(myvar)
+       size = len(myvar)
 
 幾つかの ABC はコンテナ型APIを提供するクラスを開発するのを助ける mixin型 としても
 使えます。例えば、 :class:`Set` API を提供するクラスを作る場合、3つの基本になる
@@ -146,8 +143,12 @@ ABC                        継承しているクラス     Abstract Methods     
    :class:`Set` と :class:`Hashable` の両方を継承して、 ``__hash__ = Set._hash``
    と定義してください。
 
-(ABCs についてのより詳細な情報は、 :mod:`abc` モジュールと :pep:`3119` を参照してください。)
+.. seealso::
 
+   * :class:`MutableSet` を使った例として
+     `OrderedSet recipe <http://code.activestate.com/recipes/576694/>`_
+
+   * ABCs についての詳細は、 :mod:`abc` モジュールと :pep:`3119` を参照してください。
 
 
 .. _deque-objects:
@@ -235,9 +236,11 @@ ABC                        継承しているクラス     Abstract Methods     
       *n* が負の値の場合は、左にローテートします。Deque を
       ひとつ右にローテートすることは ``d.appendleft(d.pop())`` と同じです。
 
-上記の操作のほかにも、deque は次のような操作をサポートしています: イテレータ化、pickle、 ``len(d)`` 、 ``reversed(d)`` 、
-``copy.copy(d)`` 、 ``copy.deepcopy(d)`` 、 :keyword:`in` 演算子による包含検査、そして ``d[-1]``
+上記の操作のほかにも、deque は次のような操作をサポートしています: イテレータ化、pickle、 ``len(d)``, ``reversed(d)``,
+``copy.copy(d)``, ``copy.deepcopy(d)``, :keyword:`in` 演算子による包含検査、そして ``d[-1]``
 などの添え字による参照。
+両端についてインデックスアクセスは O(1) ですが、中央部分については O(n) の遅さです。
+高速なランダムアクセスが必要ならリストを使ってください。
 
 例:
 
@@ -452,14 +455,11 @@ multisetのように)要素の数え上げに便利に使うことができま�
 :func:`namedtuple` 名前付きフィールドを持ったタプルのファクトリ関数
 --------------------------------------------------------------------
 
-+Named tuples assign meaning to each position in a tuple and allow for more readable,
-+self-documenting code.  They can be used wherever regular tuples are used, and
-+they add the ability to access fields by name instead of position index.
 名前付きタプルはタプルの中の場所に意味を割り当てて、より読みやすく自己解説的な
 コードを書けるようにします。通常のタプルが利用されていた場所で利用でき、
 場所に対するインデックスの代わりに名前を使ってフィールドにアクセスできます。
 
-.. function:: namedtuple(typename, fieldnames, [verbose])
+.. function:: namedtuple(typename, field_names, [verbose])
 
    *typename* という名前の tuple の新しいサブクラスを返します。新しいサブクラスは、
    tuple に似ているけれどもインデックスやイテレータだけでなく属性名によるアクセスも
@@ -467,8 +467,8 @@ multisetのように)要素の数え上げに便利に使うことができま�
    docstring (型名と属性名が入っています) や、 tuple の内容を ``name=value`` という
    形のリストで返す使いやすい :meth:`__repr__` も持っています。
 
-   *fieldnames* は各属性名を空白文字 (whitespace) と/あるいは カンマ (,) で区切った
-   文字列です。例えば、 ``'x y'`` か ``'x, y'`` です。代わりに *fieldnames* に
+   *field_names* は各属性名を空白文字 (whitespace) と/あるいは カンマ (,) で区切った
+   文字列です。例えば、 ``'x y'`` か ``'x, y'`` です。代わりに *field_names* に
    ``['x', 'y']`` のような文字列のシーケンスを渡すこともできます。
 
    アンダースコア (_) で始まる名前を除いて、 Python の正しい識別子 (identifier)
@@ -522,7 +522,7 @@ Example:
                    raise ValueError('Got unexpected field names: %r' % kwds.keys())
                return result
    <BLANKLINE>            
-           def __getnewargs__(self): 
+           def __getnewargs__(self):
                return tuple(self)
    <BLANKLINE>
            x = property(itemgetter(0))
@@ -610,8 +610,8 @@ Example:
    >>> getattr(p, 'x')
    11
 
-辞書を名前付きタプルに変換するには、 ``**`` 演算子 (double-star-operator)
-を使います。 [#]_:
+辞書を名前付きタプルに変換するには、 ``**`` 演算子 (double-star-operator,
+:ref:`tut-unpacking-arguments` で説明しています) を使います。:
 
    >>> d = {'x': 11, 'y': 22}
    >>> Point(**d)
@@ -657,7 +657,7 @@ Example:
     >>> class Status:
     ...     open, pending, closed = range(3)
 
-.. rubric:: Footnotes
+.. seealso::
 
-.. [#] ``**`` 演算子 (double-star-operator) については
-   :ref:`tut-unpacking-arguments` と :ref:`calls` を参照してください。
+   `Named tuple recipe <http://code.activestate.com/recipes/500261/>`_
+   は Python 2.4 で使えます。
