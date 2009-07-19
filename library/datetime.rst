@@ -1,6 +1,3 @@
-.. % XXX what order should the types be discussed in?
-
-
 :mod:`datetime` --- 基本的な日付型および時間型
 ==============================================
 
@@ -203,13 +200,13 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 以下に (読み出し専用の) インスタンス属性を示します:
 
 +------------------+---------------------------------------------+
-| 属性              | 値                                          |
+| 属性             | 値                                          |
 +==================+=============================================+
-| ``days``         | 両端値を含む -999999999 から 999999999 の間     |
+| ``days``         | 両端値を含む -999999999 から 999999999 の間 |
 +------------------+---------------------------------------------+
-| ``seconds``      | 両端値を含む 0 から 86399 の間                  |
+| ``seconds``      | 両端値を含む 0 から 86399 の間              |
 +------------------+---------------------------------------------+
-| ``microseconds`` | 両端値を含む 0 から 999999 の間                 |
+| ``microseconds`` | 両端値を含む 0 から 999999 の間             |
 +------------------+---------------------------------------------+
 
 サポートされている操作を以下に示します:
@@ -269,16 +266,16 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 かぎり :exc:`TypeError` が送出されます。後者の場合、それぞれ
 :const:`False` または :const:`True` を返します。
 
-:class:`timedelta` オブジェクトは :term:`hashable` (ハッシュ可能、つま
-り、辞書のキーとして利用可能) であり、効率的な pickle 化をサポートしま
-す、また、ブール演算コンテキストでは、 :class:`timedelta` オブジェクト
-は ``timedelta(0)`` に等しくない場合かつそのときに限り真となります。
+:class:`timedelta` オブジェクトはハッシュ可能(:term:`hashable`) つまり、\
+辞書のキーとして利用可能) であり、効率的な pickle 化をサポートします。
+また、ブール演算コンテキストでは、 :class:`timedelta` オブジェクトは
+``timedelta(0)`` に等しくない場合かつそのときに限り真となります。
 
 使用例:
-    
+ 
     >>> from datetime import timedelta
     >>> year = timedelta(days=365)
-    >>> another_year = timedelta(weeks=40, days=84, hours=23, 
+    >>> another_year = timedelta(weeks=40, days=84, hours=23,
     ...                          minutes=50, seconds=600)  # 365日になるように足し算
     >>> year == another_year
     True
@@ -541,10 +538,10 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
     True
     >>> my_birthday = date(today.year, 6, 24)
     >>> if my_birthday < today:
-    ...     my_birthday = my_birthday.replace(year=today.year + 1) 
+    ...     my_birthday = my_birthday.replace(year=today.year + 1)
     >>> my_birthday
     datetime.date(2008, 6, 24)
-    >>> time_to_birthday = abs(my_birthday - today) 
+    >>> time_to_birthday = abs(my_birthday - today)
     >>> time_to_birthday.days
     202
 
@@ -1036,7 +1033,109 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.strftime(format)
 
    明示的な書式化文字列で制御された、日付を表現する文字列を返します。 :meth:`strftime` のふるまいについてのセクション
-   :ref:`strftime-behavior`を参照して ください。
+   :ref:`strftime-behavior` を参照してください。
+
+datetime オブジェクトを使う例:
+
+.. doctest::
+
+    >>> from datetime import datetime, date, time
+    >>> # Using datetime.combine()
+    >>> d = date(2005, 7, 14)
+    >>> t = time(12, 30)
+    >>> datetime.combine(d, t)
+    datetime.datetime(2005, 7, 14, 12, 30)
+    >>> # Using datetime.now() or datetime.utcnow()
+    >>> datetime.now()   # doctest: +SKIP
+    datetime.datetime(2007, 12, 6, 16, 29, 43, 79043)   # GMT +1
+    >>> datetime.utcnow()   # doctest: +SKIP
+    datetime.datetime(2007, 12, 6, 15, 29, 43, 79060)
+    >>> # Using datetime.strptime()
+    >>> dt = datetime.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
+    >>> dt
+    datetime.datetime(2006, 11, 21, 16, 30)
+    >>> # Using datetime.timetuple() to get tuple of all attributes
+    >>> tt = dt.timetuple()
+    >>> for it in tt:   # doctest: +SKIP
+    ...     print it
+    ...
+    2006    # year
+    11      # month
+    21      # day
+    16      # hour
+    30      # minute
+    0       # second
+    1       # weekday (0 = Monday)
+    325     # number of days since 1st January
+    -1      # dst - method tzinfo.dst() returned None
+    >>> # Date in ISO format
+    >>> ic = dt.isocalendar()
+    >>> for it in ic:   # doctest: +SKIP
+    ...     print it
+    ...
+    2006    # ISO year
+    47      # ISO week
+    2       # ISO weekday
+    >>> # Formatting datetime
+    >>> dt.strftime("%A, %d. %B %Y %I:%M%p")
+    'Tuesday, 21. November 2006 04:30PM'
+
+datetime を tzinfo と組み合わせて使う:
+
+    >>> from datetime import timedelta, datetime, tzinfo
+    >>> class GMT1(tzinfo):
+    ...     def __init__(self):         # DST starts last Sunday in March
+    ...         d = datetime(dt.year, 4, 1)   # ends last Sunday in October
+    ...         self.dston = d - timedelta(days=d.weekday() + 1)
+    ...         d = datetime(dt.year, 11, 1)
+    ...         self.dstoff = d - timedelta(days=d.weekday() + 1)
+    ...     def utcoffset(self, dt):
+    ...         return timedelta(hours=1) + self.dst(dt)
+    ...     def dst(self, dt):
+    ...         if self.dston <=  dt.replace(tzinfo=None) < self.dstoff:
+    ...             return timedelta(hours=1)
+    ...         else:
+    ...             return timedelta(0)
+    ...     def tzname(self,dt):
+    ...          return "GMT +1"
+    ...
+    >>> class GMT2(tzinfo):
+    ...     def __init__(self):
+    ...         d = datetime(dt.year, 4, 1)
+    ...         self.dston = d - timedelta(days=d.weekday() + 1)
+    ...         d = datetime(dt.year, 11, 1)
+    ...         self.dstoff = d - timedelta(days=d.weekday() + 1)
+    ...     def utcoffset(self, dt):
+    ...         return timedelta(hours=1) + self.dst(dt)
+    ...     def dst(self, dt):
+    ...         if self.dston <=  dt.replace(tzinfo=None) < self.dstoff:
+    ...             return timedelta(hours=2)
+    ...         else:
+    ...             return timedelta(0)
+    ...     def tzname(self,dt):
+    ...         return "GMT +2"
+    ...
+    >>> gmt1 = GMT1()
+    >>> # Daylight Saving Time
+    >>> dt1 = datetime(2006, 11, 21, 16, 30, tzinfo=gmt1)
+    >>> dt1.dst()
+    datetime.timedelta(0)
+    >>> dt1.utcoffset()
+    datetime.timedelta(0, 3600)
+    >>> dt2 = datetime(2006, 6, 14, 13, 0, tzinfo=gmt1)
+    >>> dt2.dst()
+    datetime.timedelta(0, 3600)
+    >>> dt2.utcoffset()
+    datetime.timedelta(0, 7200)
+    >>> # Convert datetime to another time zone
+    >>> dt3 = dt2.astimezone(GMT2())
+    >>> dt3     # doctest: +ELLIPSIS
+    datetime.datetime(2006, 6, 14, 14, 0, tzinfo=<GMT2 object at 0x...>)
+    >>> dt2     # doctest: +ELLIPSIS
+    datetime.datetime(2006, 6, 14, 13, 0, tzinfo=<GMT1 object at 0x...>)
+    >>> dt2.utctimetuple() == dt3.utctimetuple()
+    True
+
 
 
 .. _datetime-time:
@@ -1053,16 +1152,13 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    全ての引数はオプションです。*tzinfo* は ``None`` または :class:`tzinfo` クラスのサブクラスのインスタンス
    にすることができます。残りの引数は整数または長整数で、 以下のような範囲に入ります:
 
-* ``0 <= hour < 24``
+   * ``0 <= hour < 24``
+   * ``0 <= minute < 60``
+   * ``0 <= second < 60``
+   * ``0 <= microsecond < 1000000``.
 
-* ``0 <= minute < 60``
-
-* ``0 <= second < 60``
-
-* ``0 <= microsecond < 1000000``.
-
-   引数がこれらの範囲外にある場合、 :exc:`ValueError` が送出されます。 *tzinfo*のデフォルト値が
-   :const:`None`である以外のデフォルト値は*0*です。
+   引数がこれらの範囲外にある場合、 :exc:`ValueError` が送出されます。 *tzinfo* のデフォルト値が
+   :const:`None` である以外のデフォルト値は *0* です。
 
 以下にクラス属性を示します:
 
@@ -1155,7 +1251,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: time.strftime(format)
 
    明示的な書式化文字列で制御された、日付を表現する文字列を返します。 :meth:`strftime` のふるまいについてのセクション
-   :ref:`strftime-behavior`を参照して ください。
+   :ref:`strftime-behavior` を参照してください。
 
 
 .. method:: time.utcoffset()
@@ -1182,12 +1278,12 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    か文字列オブジェクトのいずれかを返さない場合には例外を送出します。
 
 使用例:
-    
+
     >>> from datetime import time, tzinfo
     >>> class GMT1(tzinfo):
     ...     def utcoffset(self, dt):
-    ...         return timedelta(hours=1) 
-    ...     def dst(self, dt):              
+    ...         return timedelta(hours=1)
+    ...     def dst(self, dt):
     ...         return timedelta(0)
     ...     def tzname(self,dt):
     ...         return "Europe/Prague"
@@ -1205,17 +1301,17 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
     >>> t.strftime("%H:%M:%S %Z")
     '12:10:30 Europe/Prague'
 
-
+    
 .. _datetime-tzinfo:
 
 :class:`tzinfo` オブジェクト
 ----------------------------
 
-:class:`tzinfo` は抽象基底クラスです。つまり、このクラスは直接インスタ
-ンス化して利用しません。具体的なサブクラスを導出し、 (少なくとも) 利用
-したい :class:`datetime` のメソッドが必要とする :class:`tzinfo` の標準
+:class:`tzinfo` は抽象基底クラスです。つまり、このクラスは直接インスタ\
+ンス化して利用しません。具体的なサブクラスを導出し、 (少なくとも) 利用\
+したい :class:`datetime` のメソッドが必要とする :class:`tzinfo` の標準\
 メソッドを実装してやる必要があります。
-:mod:`datetime` モジュールでは、 :class:`tzinfo` の具体的なサブクラス
+:mod:`datetime` モジュールでは、 :class:`tzinfo` の具体的なサブクラス\
 は何ら提供していません。
 
 :class:`tzinfo` (の具体的なサブクラス) のインスタンスは
@@ -1465,10 +1561,9 @@ UTC や、他のオフセットが固定された :class:`tzinfo` のサブク�
 それらの書式化コードを使うことができません。無理矢理使った場合、これら
 の値は ``0`` に置き換えられます。
 
-:class:`time` および、 :class:`datetime` オブジェクトは、6桁まで0埋め
-されるマイクロ秒まで拡大された ``%f`` 書式をサポートします。
-
 .. versionadded:: 2.6
+   :class:`time` および、 :class:`datetime` オブジェクトは、6桁まで0埋め
+   されるマイクロ秒まで拡大された ``%f`` 書式をサポートします。
 
 naive オブジェクトでは、書式化コード ``%z`` および ``%Z``  は空文字列
 に置き換えられます。
@@ -1492,10 +1587,9 @@ Python はプラットフォームの C ライブラリから :func:`strftime`
 サポートされている書式化コードの全セットはプラットフォーム間で異なりま
 す。
 
-Python の :mod:`time` モジュールのドキュメントでは、C 標準 (1989 年版)
-が要求する書式化コードをリストしており、これらのコードは標準 C 準拠の
-実装がなされたプラットフォームでは全て動作します。 1999 年版の C 標準で
-は書式化コードが追加されているので注意してください。
+以下のリストはC標準(1989年版)が要求する全ての書式化コードで、標準C実装\
+があれば全ての環境で動作します。
+1999 年版の C 標準では書式化コードが追加されているので注意してください。
 
 :meth:`strftime` が正しく動作する年の厳密な範囲はプラットフォーム間で
 異なります。プラットフォームに関わらず、1900 年以前の年は使うことがで
