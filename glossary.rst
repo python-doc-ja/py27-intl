@@ -35,6 +35,7 @@ Glossary
       ABC with the :mod:`abc` module.
 
    argument
+      (引数)
       A value passed to a function or method, assigned to a named local
       variable in the function body.  A function or method may have both
       positional arguments and keyword arguments in its definition.
@@ -47,6 +48,7 @@ Glossary
       value is passed to the local variable.
 
    attribute
+      (属性)
       A value associated with an object which is referenced by name using
       dotted expressions.  For example, if an object *o* has an attribute
       *a* it would be referenced as *o.a*.
@@ -56,6 +58,7 @@ Glossary
       <http://www.python.org/~guido/>`_, Python's creator.
 
    bytecode
+      (バイトコード)
       Python source code is compiled into bytecode, the internal representation
       of a Python program in the interpreter.  The bytecode is also cached in
       ``.pyc`` and ``.pyo`` files so that executing the same file is faster the
@@ -64,6 +67,7 @@ Glossary
       that executes the machine code corresponding to each bytecode.
 
    class
+      (クラス)
       A template for creating user-defined objects. Class definitions
       normally contain method definitions which operate on instances of the
       class.
@@ -108,6 +112,7 @@ Glossary
       implementation from others such as Jython or IronPython.
 
    decorator
+      (デコレータ)
       A function returning another function, usually applied as a function
       transformation using the ``@wrapper`` syntax.  Common examples for
       decorators are :func:`classmethod` and :func:`staticmethod`.
@@ -140,6 +145,7 @@ Glossary
       For more information about descriptors' methods, see :ref:`descriptors`.
 
    dictionary
+      (辞書)
       An associative array, where arbitrary keys are mapped to values.  The use
       of :class:`dict` closely resembles that for :class:`list`, but the keys can
       be any object with a :meth:`__hash__` function, not just integers.
@@ -173,6 +179,7 @@ Glossary
       common to many other languages such as C.
 
    expression
+      (式)
       A piece of syntax which can be evaluated to some value.  In other words,
       an expression is an accumulation of expression elements like literals, names,
       attribute access, operators or function calls which all return a value.
@@ -182,6 +189,7 @@ Glossary
       not expressions.
 
    extension module
+      (拡張モジュール)
       A module written in C or C++, using Python's C API to interact with the core and
       with user code.
 
@@ -191,6 +199,7 @@ Glossary
       details.
 
    function
+      (関数)
       A series of statements which returns some value to a caller. It can also
       be passed zero or more arguments which may be used in the execution of
       the body. See also :term:`argument` and :term:`method`.
@@ -254,6 +263,7 @@ Glossary
       performance suffered in the common single-processor case.
 
    hashable
+      (ハッシュ可能)
       An object is *hashable* if it has a hash value which never changes during
       its lifetime (it needs a :meth:`__hash__` method), and can be compared to
       other objects (it needs an :meth:`__eq__` or :meth:`__cmp__` method).
@@ -275,6 +285,7 @@ Glossary
       application.
 
    immutable
+      (不変)
       An object with a fixed value.  Immutable objects include numbers, strings and
       tuples.  Such an object cannot be altered.  A new object has to
       be created if a different value has to be stored.  They play an important
