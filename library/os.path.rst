@@ -1,10 +1,8 @@
-
 :mod:`os.path` --- 共通のパス名操作
 ===================================
 
 .. module:: os.path
    :synopsis: Operations on pathnames.
-
 
 .. index:: single: path; operations
 
@@ -18,6 +16,20 @@
    これらの関数の多くは Windows の一律命名規則 (UNCパス名) を正しくサ
    ポートしていません。 :func:`splitunc` と :func:`ismount` は正しく
    UNC パス名を操作できます。
+
+.. note::
+
+   OSによって異なるパスの決まりがあるので、標準ライブラリにはこのモジュールの
+   幾つかのバージョンが含まれています。 :mod:`os.path` モジュールは常に現在
+   Pythonが動作しているOSに適したパスモジュールで、ローカルのパスを扱うのに
+   適しています。
+   各々のモジュールをインポートして *常に* 一つのフォーマットを利用することも
+   可能です。これらは全て同じインタフェースを持っています。:
+
+   * :mod:`posixpath` for UNIX-style paths
+   * :mod:`ntpath` for Windows paths
+   * :mod:`macpath` for old-style MacOS paths
+   * :mod:`os2emxpath` for OS/2 EMX paths
 
 
 .. function:: abspath(path)
@@ -205,9 +217,9 @@
 
 .. function:: normcase(path)
 
-   パス名の大文字、小文字をシステムの標準にします。 Unix ではそのまま
-   返します。大文字、小文字を区別しないファイルシステム ではパス名を小
-   文字に変換します。
+   パス名の大文字、小文字をシステムの標準にします。 Unix と Mac OS X
+   ではそのまま返します。
+   大文字、小文字を区別しないファイルシステムではパス名を小文字に変換します。
    Windows では、スラッシュをバックスラッシュに変換します。
 
 
