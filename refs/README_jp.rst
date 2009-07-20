@@ -110,8 +110,8 @@ jptool/converter/converter/filenamemap.py を読むことで、新規に追加�
    ``$ python jptool/looseconv/convert.py en_25 rest25``
    で作成した。
 
-/refs/rest26
-   Python 2.6 リリースパッケージの中のDocディレクトリを取り出したもの。お手本。
+/refs/rest262
+   Python 2.6.2 リリースパッケージの中のDocディレクトリを取り出したもの。お手本。
 
-/refs/diff_25-26
-   rest25 と rest26 の diff を取ったもの。
+/refs/diff25-262
+   rest25 と rest262 の diff を取ったもの。
