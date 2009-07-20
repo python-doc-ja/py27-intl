@@ -14,8 +14,6 @@
    pair: HTTP; protocol
    single: URL
    single: httpd
-
-.. index::
    module: SimpleHTTPServer
    module: CGIHTTPServer
 
@@ -24,7 +22,8 @@
 :mod:`SimpleHTTPServer` および :mod:`CGIHTTPServer` モジュール を参照してください。
 
 最初のクラス、:class:`HTTPServer` は :class:`SocketServer.TCPServer`
-のサブクラスです。:class:`HTTPServer` は HTTP ソケットを生成して リクエスト待ち (listen)
+のサブクラスで、従って :class:`SocketServer.BaseServer` インタフェースを実装しています。
+:class:`HTTPServer` は HTTP ソケットを生成して リクエスト待ち (listen)
 を行い、リクエストをハンドラに渡します。 サーバを作成して動作させるためのコードは以下のようになります::
 
    def run(server_class=BaseHTTPServer.HTTPServer,
@@ -245,6 +244,24 @@
    .. method:: address_string()
 
       ログ記録向けに書式化された、クライアントのアドレスを返します。 このときクライアントの IP アドレスに対する名前解決を行います。
+
+
+他の例
+-------
+
+永遠ではなく、何かの条件が満たされるまでの間実行するサーバーを作るには::
+
+   def run_while_true(server_class=BaseHTTPServer.HTTPServer,
+                      handler_class=BaseHTTPServer.BaseHTTPRequestHandler):
+       """
+       This assumes that keep_running() is a function of no arguments which
+       is tested initially and after each request.  If its return value
+       is true, the server continues.
+       """
+       server_address = ('', 8000)
+       httpd = server_class(server_address, handler_class)
+       while keep_running():
+           httpd.handle_request()
 
 
 .. seealso::
