@@ -403,14 +403,14 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       この関数を使うアプリケーションが、パラメータが :rfc:`2231` 形式で\
       エンコードされているかどうかを気にしないのであれば、
-      :func:`email.Utils.collapse_rfc2231_value` に
+      :func:`email.utils.collapse_rfc2231_value` に
       :meth:`get_param` の返り値を渡して呼び出すことで、
       このパラメータをひとつにまとめることができます。
       この値がタプルならばこの関数は適切にデコードされた Unicode 文字列を返し、
       そうでない場合は unquote された元の文字列を返します。たとえば::
 
          rawparam = msg.get_param('foo')
-         param = email.Utils.collapse_rfc2231_value(rawparam)
+         param = email.utils.collapse_rfc2231_value(rawparam)
 
       いずれの場合もパラメータの値は (文字列であれ3要素タプルの ``VALUE`` 項目であれ)
       つねに unquote されます。 ただし、
@@ -482,7 +482,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       目的のヘッダに ``filename`` パラメータがない場合には ``name`` 
       パラメータを探します。
       それも無い場合またはヘッダが無い場合には *failobj* が返されます。
-      返される文字列はつねに :meth:`Utils.unquote` によって unquote されます。
+      返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
 
 
    .. method:: get_boundary([failobj])
@@ -491,7 +491,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       ``boundary`` パラメータの値を返します。
       目的のヘッダが欠けていたり、 ``boundary`` パラメータがない場合には
       *failobj* が返されます。
-      返される文字列はつねに :meth:`Utils.unquote` によって unquote されます。
+      返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
 
 
    .. method:: set_boundary(boundary)
