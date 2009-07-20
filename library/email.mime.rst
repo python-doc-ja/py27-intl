@@ -23,6 +23,7 @@
 
 以下がそのサブクラスです:
 
+.. currentmodule:: email.mime.base
 
 .. class:: MIMEBase(_maintype, _subtype, **_params)
 
@@ -47,6 +48,8 @@
    (必ず ``1.0`` に設定される) を追加します。
 
 
+.. currentmodule:: email.mime.nonmultipart
+
 .. class:: MIMENonMultipart()
 
    Module: :mod:`email.mime.nonmultipart`
@@ -60,7 +63,9 @@
    .. versionadded:: 2.2.2
 
 
-.. class:: MIMEMultipart([subtype[, boundary[, _subparts[, _params]]]])
+.. currentmodule:: email.mime.multipart
+
+.. class:: MIMEMultipart([_subtype[, boundary[, _subparts[, _params]]]])
 
    Module: :mod:`email.mime.multipart`
 
@@ -68,7 +73,7 @@
    メッセージのための中間的な基底クラスです。オプション引数 *_subtype* は\
    デフォルトでは :mimetype:`mixed` になっていますが、そのメッセージの副形式
    (subtype) を 指定するのに使うことができます。メッセージオブジェクトには
-   :mimetype:`multipart/`*_subtype* という値をもつ :mailheader:`Content-Type` ヘッダとともに、
+   :mimetype:`multipart/_subtype` という値をもつ :mailheader:`Content-Type` ヘッダとともに、
    :mailheader:`MIME-Version` ヘッダが追加されるでしょう。
 
    オプション引数 *boundary* は multipart の境界文字列です。
@@ -85,6 +90,8 @@
 
    .. versionadded:: 2.2.2
 
+
+.. currentmodule:: email.mime.application
 
 .. class:: MIMEApplication(_data[, _subtype[, _encoder[, **_params]]])
 
@@ -113,6 +120,8 @@
    .. versionadded:: 2.5
 
 
+.. currentmodule:: email.mime.audio
+
 .. class:: MIMEAudio(_audiodata[, _subtype[, _encoder[, **_params]]])
 
    Module: :mod:`email.mime.audio`
@@ -139,6 +148,8 @@
 
    *_params* は :class:`MIMEBase` コンストラクタに直接渡されます。
 
+
+.. currentmodule:: email.mime.image
 
 .. class:: MIMEImage(_imagedata[, _subtype[, _encoder[, **_params]]])
 
@@ -168,6 +179,8 @@
    *_params* は :class:`MIMEBase` コンストラクタに直接渡されます。
 
 
+.. currentmodule:: email.mime.message
+
 .. class:: MIMEMessage(_msg[, _subtype])
 
    Module: :mod:`email.mime.message`
@@ -182,6 +195,8 @@
    オプション引数 *_subtype* はそのメッセージの副形式 (subtype) を設定します。
    デフォルトではこれは :mimetype:`rfc822` になっています。
 
+
+.. currentmodule:: email.mime.text
 
 .. class:: MIMEText(_text[, _subtype[, _charset]])
 
