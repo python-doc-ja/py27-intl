@@ -311,7 +311,7 @@ Tk でウィジェットを作るには、常に次のような形式のコマ�
 なります。C では someAction(fred, someOptions) と表し、
 C++ では fred.someAction(someOptions) と表すでしょう。Tkでは::
 
-   .fred someAction someOptions 
+   .fred someAction someOptions
 
 のようにします。 オブジェクト名 ``.fred`` はドットから始まっているので注意してください。
 
@@ -537,7 +537,7 @@ Packer のオプション
 packer と packer の取りえるオプションについての詳細は、man マニュアル や
 John Ousterhout の本の183ページを参照してください。
 
-anchor 
+anchor
    アンカーの型です。 packer が区画内に各スレイブを配置する位置を示します。
 
 expand
