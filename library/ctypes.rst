@@ -1317,6 +1317,7 @@ ctypes ライブラリローダーはプログラムが動作しているとき�
 
 
 .. data:: find_library(name)
+   :module: ctypes.util
    :noindex:
 
    ライブラリを見つけてパス名を返そうと試みます。 *name* は *lib* のよ
@@ -1425,21 +1426,21 @@ Windows では、 ``find_library`` はシステムの探索パスに沿って探
 に使うことができます。詳細は、 ``dlopen(3)`` マニュアルページを参考に
 してください。 Windows では *mode* は無視されます。
 
-*use_errno* 変数が True に設定されたとき、システムの `errno` エラーナ
+*use_errno* 変数が True に設定されたとき、システムの :data:`errno` エラーナ
 ンバーに安全にアクセスする ctypes の仕組みが有効化されます。
-`ctypes` はシステムの `errno` 変数のスレッド限定のコピーを管理します。;
-もし、 `use_errno=True` の状態で作られた外部関数を呼び出したなら、
-関数呼び出し前の `errno` 変数は ctypes のプライベートコピーと置き換え
+:mod:`ctypes` はシステムの :data:`errno` 変数のスレッド限定のコピーを管理します。;
+もし、 ``use_errno=True`` の状態で作られた外部関数を呼び出したなら、
+関数呼び出し前の :data:`errno` 変数は ctypes のプライベートコピーと置き換え
 られ、同じことが関数呼び出しの直後にも発生します。
 
-`ctypes.get_errno()` 関数は ctypes のプライベートコピーの値を返します。
-そして、 `ctypes.set_errno(value)` 関数は ctypes のプライベートコピー
-を `value` に書き換え、以前の値を返します。
+:func:`ctypes.get_errno` 関数は ctypes のプライベートコピーの値を返します。
+そして、 :func:`ctypes.set_errno` 関数は ctypes のプライベートコピー
+を置き換え、以前の値を返します。
 
 *use_last_error* パラメータは、 True に設定されたとき、
 :func:`GetLastError` と :func:`SetLastError`  Windows API によって管理
 される Windows エラーコードに対するのと同じ仕組みが有効化されます。 ;
-`ctypes.get_last_error()` と `ctypes.set_last_error(value)` は Windows
+:func:`ctypes.get_last_error` と :func:`ctypes.set_last_error` は Windows
 エラーコードの ctypes プライベートコピーを変更したり要求したりするのに
 使われます。
 
@@ -1656,23 +1657,21 @@ C Python api に直接アクセするために、すぐに使用できる Python
 
    返された関数プロトタイプは標準 C 呼び出し規約をつかう関数を作成しま
    す。関数は呼び出されている間 GIL を解放します。
-   `use_errno` が True に設定されれば、呼び出しの前後で System 変数
-   `errno` の ctypesプライベートコピーは本当の `errno` の値と交換され
+   *use_errno* が True に設定されれば、呼び出しの前後で System 変数
+   :data:`errno` の ctypesプライベートコピーは本当の :data:`errno` の値と交換され
    ます。;
-   `use_last_error` も Windows エラーコードに対するのと同様です。
+   *use_last_error* も Windows エラーコードに対するのと同様です。
 
    .. versionchanged:: 2.6
-      オプションの `use_errno` と `use_last_error` 変数が追加されまし
-      た。
+      オプションの *use_errno* と *use_last_error* 変数が追加されました。
 
 
 .. function:: WINFUNCTYPE(restype, *argtypes, use_errno=False, use_last_error=False)
 
-   Windows 用: 返された関数プロトタイプは ``stdcall`` 呼び出し規約をつ
-   かう関数を作成します。ただし、 :func:`WINFUNCTYPE` が
-   :func:`CFUNCTYPE` と同じである Windows CE を除きます。関数は呼び出
-   されている間 GIL を解放します。 `use_errno` と `use_last_error` 前
-   述と同じ意味を持ちます。
+   Windows 用: 返された関数プロトタイプは ``stdcall`` 呼び出し規約をつかう関数を作成します。
+   ただし、 :func:`WINFUNCTYPE` が :func:`CFUNCTYPE` と同じである Windows CE を除きます。
+   関数は呼び出されている間 GIL を解放します。
+   *use_errno* と *use_last_error* は前述と同じ意味を持ちます。
 
 
 .. function:: PYFUNCTYPE(restype, *argtypes)
@@ -1930,8 +1929,9 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
 .. function:: find_library(name)
    :module: ctypes.util
 
-   ライブラリを検索し、パス名を返します。 `name` は `lib` のような接頭
-   辞、 ``.so`` や ``.dylib`` のような接尾辞、そして、バージョンナンバー
+   ライブラリを検索し、パス名を返します。
+   *name* は ``lib`` のような接頭辞、
+   ``.so`` や ``.dylib`` のような接尾辞、そして、バージョンナンバー
    を除くライブラリ名です (これは posix のリンカーオプション
    :option:`-l` で使われる書式です) 。もしライブラリが見つからなければ、
    ``None`` を返します。
@@ -1966,8 +1966,22 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
 
    Windows用: 呼び出し側のスレッド内で Windows によって設定された最新
    のエラーコードを返します。
+   この関数はWindowsの `GetLastError()` 関数を直接実行します。
+   ctypesのプライベートなエラーコードのコピーを返したりはしません。
 
 
+.. function:: get_errno()
+
+   システムの :data:`errno` 変数の、スレッドローカルなプライベートコピーを返します。
+
+   .. versionadded:: 2.6
+ 
+.. function:: get_last_error()
+
+   Windowsのみ: システムの :data:`LastError` 変数の、スレッドローカルなプライベートコピーを返します。
+
+   .. versionadded:: 2.6
+ 
 .. function:: memmove(dst, src, count)
 
    標準 C の memmove ライブラリ関数と同じものです。: *count* バイトを
@@ -2549,6 +2563,6 @@ api 呼び出しが失敗した場合に例外を送出させることができ�
 配列とポインタ
 ^^^^^^^^^^^^^^
 
-未作成 - チュートリアルの節 :ref:`ctypes-pointers` ポインタと節
-:ref:`ctypes-arrays` 配列を参照してください。
+未作成 - チュートリアルの節 :ref:`ctypes-pointers` と
+:ref:`ctypes-arrays` を参照してください。
 
