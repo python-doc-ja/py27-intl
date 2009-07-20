@@ -6,8 +6,8 @@
    :platform: IRIX
    :synopsis: SGIワークステーションの Font Manager インターフェース。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`fm` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
