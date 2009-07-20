@@ -6,11 +6,11 @@
    :platform: Unix
    :synopsis: 共有オブジェクトのC関数の呼び出し
    :deprecated:
-   
+
 .. deprecated:: 2.6
     :mod:`dl` モジュールは Python 3.0 で削除されました。代わりに :mod:`ctypes`
     モジュールを使ってください。
-   
+
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 :mod:`dl` モジュールは :cfunc:`dlopen` 関数へのインタフェースを定義します。
@@ -92,9 +92,9 @@ Dlオブジェクト
    そのポインター(整数値)を返します。存在しない場合 ``None`` を返します。
    これは次のように使えます::
 
-      >>> if a.sym('time'): 
+      >>> if a.sym('time'):
       ...     a.call('time')
-      ... else: 
+      ... else:
       ...     time.time()
 
    (0は *NULL* ポインターであるので、この関数は0でない数を返すだろうということに注意してください)
