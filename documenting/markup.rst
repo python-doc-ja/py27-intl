@@ -928,24 +928,6 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
          `GNU tar manual, Basic Tar Format <http://link>`_
             GNU tar 拡張を含む、 tar アーカイブファイルのドキュメント。
 
-..    Many sections include a list of references to module documentation or
-..    external documents.  These lists are created using the ``seealso`` directive.
-.. 
-..    The ``seealso`` directive is typically placed in a section just before any
-..    sub-sections.  For the HTML output, it is shown boxed off from the main flow
-..    of the text.
-.. 
-..    The content of the ``seealso`` directive should be a reST definition list.
-..    Example::
-.. 
-..       .. seealso::
-.. 
-..          Module :mod:`zipfile`
-..             Documentation of the :mod:`zipfile` standard module.
-.. 
-..          `GNU tar manual, Basic Tar Format <http://link>`_
-..             Documentation for tar archive files, including GNU tar extensions.
-
 .. describe:: rubric
 
    このディレクティブは、目次 (table of contents) の項目にならない段落見出しを

@@ -17,11 +17,6 @@ reST はシンプルで、出しゃばらないマークアップ言語として
 段落 (Paragraphs)
 -----------------
 
-.. The paragraph is the most basic block in a reST document.
-.. Paragraphs are simply chunks of text
-.. separated by one or more blank lines.  As in Python, indentation is significant
-.. in reST, so all lines of the same paragraph must be left-aligned
-.. to the same level of indentation.
 段落は reST においてもっとも基本的なブロックです。
 一行以上の空行で区切られただけのテキストの固まりが段落になります。
 Python と同じく、 reST ではインデントは重要な意味を持つので、同じ段落に属す
@@ -31,53 +26,33 @@ Python と同じく、 reST ではインデントは重要な意味を持つの�
 インラインマークアップ (Inline markup)
 --------------------------------------
 
-.. The standard reST inline markup is quite simple: use
 reST 標準のインラインマークアップは非常にシンプルです。
 
-.. * one asterisk: ``*text*`` for emphasis (italics),
-.. * two asterisks: ``**text**`` for strong emphasis (boldface), and
-.. * backquotes: ````text```` for code samples.
 * アスタリスク一つ: ``*text*`` を強調 (斜体) に、
 * アスタリスク二つ: ``**text**`` を強い強調 (太字) に、
 * バッククォート: ````text```` をサンプルコードに、
 
 使ってください。
 
-.. If asterisks or backquotes appear in running text and could be confused with
-.. inline markup delimiters, they have to be escaped with a backslash.
 もしアスタリスクやバッククォートが通常のテキストの中で出てきて、インラインマーク
 アップ用の区切り文字と混合する場合は、バックスラッシュ(訳注: 日本語フォントでは、
 一般的に円記号になります)でエスケープする必要があります。
 
-.. Be aware of some restrictions of this markup:
 インラインマークアップの幾つかの制限に気をつけてください: 
 
-.. * it may not be nested,
-.. * content may not start or end with whitespace: ``* text*`` is wrong,
-.. * it must be separated from surrounding text by non-word characters.  Use a
-..   backslash escaped space to work around that: ``thisis\ *one*\ word``.
 * ネストできません。
 * マークアップされる内容の先頭や終端に空白文字があってはなりません:
   ``* text*`` は間違いです。
 * マークアップの外側は、non-word 文字で囲まれていなければなりません。
   必要な場合はバックスラッシュでエスケープしたスペースを使ってください: ``thisis\ *one*\ word``
 
-.. These restrictions may be lifted in future versions of the docutils.
-
 これらの制限は将来のバージョンの docutils で解除されるかもしれません。
-
-.. reST also allows for custom "interpreted text roles"', which signify that the
-.. enclosed text should be interpreted in a specific way.  Sphinx uses this to
-.. provide semantic markup and cross-referencing of identifiers, as described in
-.. the appropriate section.  The general syntax is ``:rolename:`content```.
 
 reST は独自の "interpreted text roles" に対応していて、囲まれたテキストを専用の
 方法で解釈することができます。別の節で解説しますが、Sphinx はこれを、
 意味に基づくマークアップと識別子のクロスリファレンスのために利用しています。
 "interpreted text roles" の一般的な文法は ``:rolename:`内容``` になります。
 
-.. Lists and Quotes
-.. ----------------
 
 リストとクォート (Lists and Quotes)
 -----------------------------------
@@ -183,6 +158,7 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 ..    This is a normal text paragraph again.
 
 .. The handling of the ``::`` marker is smart:
+
 ``::`` マーカーの処理はスマートです:
 
 .. * If it occurs as a paragraph of its own, that paragraph is completely left
@@ -197,6 +173,7 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 
 .. That way, the second sentence in the above example's first paragraph would be
 .. rendered as "The next paragraph is a code sample:".
+
 なので、上の例での最初の段落の二つ目の文は、 "次の段落はコードサンプルです:" と
 出力されます。
 
@@ -279,6 +256,7 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 
 .. Explicit Markup
 .. ---------------
+
 明示的なマークアップ (Explicit Markup)
 --------------------------------------
 
