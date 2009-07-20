@@ -6,7 +6,7 @@
    :platform: SunOS
    :synopsis: Sun オーディオハードウェアへのアクセス
    :deprecated:
-   
+
 .. deprecated:: 2.6
    :mod:`sunaudiodev` モジュールは Python 3.0 での削除に向け非推奨になりました。
 
@@ -101,7 +101,7 @@ u-LAW フォーマットでオーディオデータを録音、再生できま�
    その中の構造体である :cdata:`play` のメンバーには名前の初めに ``o_`` がつ\
    いていて、 :cdata:`record` には ``i_`` がついています。
    そのため、C のメンバーである :cdata:`play.sample_rate` は
-   :attr:`o_sample_rate` として、 :cdata:`record.gain` は :attr:`i_gain` 
+   :attr:`o_sample_rate` として、 :cdata:`record.gain` は :attr:`i_gain`
    として参照され、
    :cdata:`monitor_gain` はそのまま :attr:`monitor_gain` で参照されます。
 
@@ -159,7 +159,7 @@ u-LAW フォーマットでオーディオデータを録音、再生できま�
    :platform: SunOS
    :synopsis: sunaudiodevで使われる定数。
    :deprecated:
-   
+
 .. deprecated:: 2.6
    :mod:`SUNAUDIODEV` モジュールは Python 3.0 での削除に向け非推奨になりました。
 
