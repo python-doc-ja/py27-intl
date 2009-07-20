@@ -447,7 +447,7 @@ pickle 化プロトコル
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: object.__getinitargs__()
-   
+
    pickle 化されたクラスインスタンスが unpickle 化されたとき、
    :meth:`__init__` メソッドは通常呼び出され*ません*。 unpickle 化の
    際に :meth:`__init__` が呼び出される方が望ましい場合、 旧スタイルク
@@ -496,12 +496,20 @@ pickle 化プロトコル
       新しいスタイルのクラスにおいて :meth:`__getstate__` が負値を返す
       場合、 :meth:`__setstate__` メソッドは呼ばれません。
 
+.. note::
+
+   unpickleするとき、 :meth:`__getattr__`, :meth:`__getattribute__`,
+   :meth:`__setattr__` といったメソッドがインスタンスに対して呼ばれます。
+   これらのメソッドが何か内部の不変条件に依存しているのであれば、
+   その型は :meth:`__getinitargs__` か :meth:`__getnewargs__` のどちらかを
+   実装してその不変条件を満たせるようにするべきです。
+   それ以外の場合、 :meth:`__new__` も :meth:`__init__` も呼ばれません。
 
 拡張型の pickle 化および unpickle 化
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: object.__reduce__()
-   
+
    :class:`Pickler` が全く未知の型の --- 拡張型のような --- オブジェク
    トに 遭遇した場合、pickle 化方法のヒントとして 2 個所を探します。
    第一は :meth:`__reduce__` メソッドを実装しているかどうかです。 もし
