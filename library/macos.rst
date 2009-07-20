@@ -87,7 +87,7 @@
 
    .. note::
 
-      ``FSSpec`` は64ビットモードでは使うことができません。      
+      ``FSSpec`` は64ビットモードでは使うことができません。
 
 
 .. function:: SetCreatorAndType(file, creator, type)
@@ -98,7 +98,7 @@
 
    .. note::
 
-      ``FSSpec`` は64ビットモードでは使うことができません。      
+      ``FSSpec`` は64ビットモードでは使うことができません。
 
 .. function:: openrf(name [, mode])
 
