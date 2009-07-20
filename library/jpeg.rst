@@ -6,8 +6,8 @@
    :platform: IRIX
    :synopsis: JPEGファイルの読み書きを行います。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`jpeg` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -41,7 +41,7 @@ Python Imaging Library (PIL)があります。
 
    .. index:: single: JFIF
 
-   イメージファイルの幅 *w* 、高さ *h* 、1ピクセルあたりのバイト数 *b* 
+   イメージファイルの幅 *w* 、高さ *h* 、1ピクセルあたりのバイト数 *b*
    を引数として扱います。データは SGI GL 順になっていて、
    最初のピクセルは左下端になります。また、これは :func:`gl.lrectread`
    が返す値をすぐに :func:`compress` にかけるためです。
