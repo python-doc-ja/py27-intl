@@ -12,7 +12,7 @@
 Python には様々な著者により寄稿された非常に多くのドキュメント類があります。
 Python のドキュメントのマークアップには、 `docutils`_ プロジェクトによって
 開発された `reStructuredText`_ を、独自のディレクティブ (directive) で拡張して
-利用しています。そして、 *Sphinx* というツールセットを利用して、HTML 出力へと
+利用しています。そして、 `Sphinx`_ というツールセットを利用して、HTML 出力へと
 変換しています。
 
 .. This document describes the style guide for our documentation, the custom
@@ -25,6 +25,7 @@ Python のドキュメントのために作られた独自の reStructuredText �
 
 .. _reStructuredText: http://docutils.sf.net/rst.html
 .. _docutils: http://docutils.sf.net/
+.. _Sphinx: http://sphinx.pocoo.org/
 
 .. If you're interested in contributing to Python's documentation, there's no need
 .. to write reStructuredText if you're not so inclined; plain text contributions
@@ -34,13 +35,10 @@ Python のドキュメントを寄贈したいと思っているなら、その�
 をわざわざ学ぶ必要はありません; 平文での寄贈も大歓迎です。
 
 .. toctree::
+   :numbered:
 
    intro.rst
    style.rst
    rest.rst
    markup.rst
    fromlatex.rst
-   sphinx.rst
-
-.. XXX add credits, thanks etc.
-
