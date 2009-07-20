@@ -6,8 +6,8 @@
    :platform: IRIX
    :synopsis: Silicon GraphicsシステムのCD-ROMへのインターフェース
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`cd` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -143,7 +143,7 @@ CD 上の位置は2通りの方法で得ることができます。
 
 .. method:: CD player.allowremoval()
 
-   CD-ROM ドライブのイジェクトボタンのロックを解除して、ユーザが CD 
+   CD-ROM ドライブのイジェクトボタンのロックを解除して、ユーザが CD
    キャディを排出するのを許可します。
 
 
@@ -192,7 +192,7 @@ CD 上の位置は2通りの方法で得ることができます。
 
    分、秒、フレームの3つからなる絶対的なタイムコードを、与えられた CD-ROM
    ドライブの相当する論理ブロック番号に変換します。
-   時刻を比較するには :meth:`msftoblock` よりも :func:`msftoframe` 
+   時刻を比較するには :meth:`msftoblock` よりも :func:`msftoframe`
    を使うべきです。 論理ブロック番号は、CD-ROM ドライブによって必要とされる\
    オフセット値が違うため、フレームナンバーと異なります。
 
