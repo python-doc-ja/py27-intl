@@ -5,11 +5,11 @@
 .. module:: dircache
    :synopsis: キャッシュメカニズムを備えたディレクトリ一覧生成。
    :deprecated:
-   
+
 .. deprecated:: 2.6
    :mod:`dircache` モジュールは Python 3.0 で削除されました。
 
-   
+
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
