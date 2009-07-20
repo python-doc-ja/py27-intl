@@ -6,7 +6,7 @@
    :platform: IRIX
    :synopsis: SGIのオーディオ機能。
    :deprecated:
-   
+
 .. deprecated:: 2.6
     :mod:`al` モジュールは Python 3.0 での削除に向け非推奨になりました。
 
