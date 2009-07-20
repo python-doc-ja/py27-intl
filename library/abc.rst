@@ -41,15 +41,15 @@
 
       *subclass* を "仮想的サブクラス" としてこの ABC に登録します。たとえば::
 
-	from abc import ABCMeta
+        from abc import ABCMeta
 
-	class MyABC:
-	    __metaclass__ = ABCMeta
+        class MyABC:
+            __metaclass__ = ABCMeta
 
-	MyABC.register(tuple)
+        MyABC.register(tuple)
 
-	assert issubclass(tuple, MyABC)
-	assert isinstance((), MyABC)
+        assert issubclass(tuple, MyABC)
+        assert isinstance((), MyABC)
 
    また、次のメソッドを抽象基底クラスの中でオーバーライドできます:
 
@@ -149,13 +149,13 @@
 
    .. note::
 
-      C++ の純粋仮想関数あるいは Java の抽象メソッドと違い、これらの抽象メソ\
-      ッドは実装を持ち得ます。この実装は :func:`super` メカニズムを通してそれ\
+      Java の抽象メソッドと違い、これらの抽象メソッドは実装を持ち得ます。
+      この実装は :func:`super` メカニズムを通してそれ\
       をオーバーライドしたクラスから呼び出すことができます。これは協調的多重\
       継承を使ったフレームワークにおいて super 呼び出しの終点として有効です。
 
 
-.. function:: abstractproperty(fget[, fset[, fdel[, doc]]])
+.. function:: abstractproperty([fget[, fset[, fdel[, doc]]]])
 
    組み込みの :func:`property` のサブクラスで、抽象プロパティであることを示します。
 
@@ -181,6 +181,7 @@
           def getx(self): ...
           def setx(self, value): ...
           x = abstractproperty(getx, setx)
+
 
 .. rubric:: Footnotes
 
