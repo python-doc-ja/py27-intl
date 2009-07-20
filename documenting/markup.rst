@@ -17,7 +17,11 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 .. Documentation for "standard" reST constructs is not included here, though
 .. they are used in the Python documentation.
 
-XXX: file-wide metadata
+.. note::
+
+   これは Sphinx の拡張マークアップの機能の概要です。
+   網羅された情報は `Sphinxのドキュメント
+   <http://sphinx.pocoo.org/contents.html>` にあります。
 
 .. Meta-information markup
 .. -----------------------
@@ -413,7 +417,7 @@ Python ソースコードやインタラクティブセッションの例は、 
   このディレクティブで設定されたハイライト言語は、次の ``highlightlang`` ディレクティブ
   まで有効になります。　
 
-* ハイライト言語の有効な値は以下の通りです:
+* ハイライト言語のよく使われる値は以下の通りです:
 
   * ``python`` (デフォルト)
   * ``c``
@@ -468,23 +472,29 @@ Python ソースファイルを取り込む場合は::
 インラインマークアップ (Inline markup)
 --------------------------------------
 
-.. As said before, Sphinx uses interpreted text roles to insert semantic markup in
-.. documents.
-
 前に述べたように、 Sphinx はドキュメント内に意味に基づくマークアップを挿入する
 ために、 "interpreted text roles" を使います。
 
-.. The default role is ``var``, as that was one of the most common macros used in
-.. the old LaTeX docs.  That means that you can use ```var``` to refer to a
-.. variable named "var".
-
-デフォルトの role は ``var`` で、古い LaTeX ドキュメントで一番よく使われていた
-マクロです。これは、 ```var``` を、"var" という名前の変数を参照するために
-利用できることを意味します。
-
-.. For all other roles, you have to write ``:rolename:`content```.
+関数/メソッドの引数のようなローカル変数名は例外で、シンプルに ``*var*``
+とマークされます。
 
 その他の全ての role について、 ``:rolename:`content``` のように書く必要があります。
+
+そのほかにもクロスリファレンス role をより他用途にする便利な機能があります。
+
+* 明示的なタイトルと参照ターゲットを、 reST の直接ハイパーリンクのように書くことができます:
+  ``:role:`title <target>``` は *target* を参照しますが、リンクテキストは *title*
+  になります。
+
+* コンテントにprefix ``!`` を付けると、 参照もハイパーリンクも作られません。
+
+* Python オブジェクトのロールにおいて、コンテントに ``~`` というprefixをつけると、
+  リンクターゲットはターゲットの最後の部分になります。例えば、 ``:meth:`~Queue.Queue.get```
+  は ``Queue.Queue.get`` を参照しますが、リンクテキストとしては ``get``
+  だけを表示します。
+
+  HTML出力において、そのリンクの ``title`` 属性 (例えばマウスオーバー時のツールチップに
+  表示される) は完全なターゲット名になります。
 
 .. The following roles refer to objects in modules and are possibly hyperlinked if
 .. a matching identifier is found:
@@ -510,7 +520,7 @@ Python ソースファイルを取り込む場合は::
 
 .. describe:: data
 
-   モジュールレベル変数の名前。
+   モジュールレベル変数や定数の名前。
 
 ..    The name of a module-level variable.
 
@@ -641,7 +651,7 @@ Python ソースファイルを取り込む場合は::
 .. describe:: file
 
    ファイルやディレクトリの名前。この中では、 "可変" な部分を示すために
-   中括弧 "{}" を利用できる。例::
+   波括弧 "{}" を利用できる。例::
 
       ... は :file:`/usr/lib/python2.{x}/site-packages` にインストールされます ...
 
@@ -792,6 +802,14 @@ Python ソースファイルを取り込む場合は::
 
 ..    A regular expression. Quotes should not be included.
 
+.. describe:: samp
+
+   コードのようなリテラルテキスト。
+   ``:file:`` と同じく、この中では "可変" な部分を示すために波括弧を
+   利用できます。
+
+   "可変" 部分が要らないのであれば、通常の ````code```` を使ってください。
+ 
 .. describe:: var
 
    Python か C の、変数か引数の名前。
@@ -939,7 +957,7 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
    例::
 
       .. versionadded:: 2.5
-         `spam` 引数.
+         *spam* 引数.
 
    ディレクティブの先頭行と説明との間に空行を入れてはならないことに注意してください。
    これはマークアップされたときにブロックが視覚的に連続するためです。
@@ -1216,10 +1234,13 @@ module, keyword, operator, object, exception, statement, builtin
    空行は ``productionlist`` ディレクティブの引数として許可されていません。
 
    定義には interpreted text としてマークアップされたトークン名を使うことができます。
-   (例: ``sum ::= `integer` "+" `integer```) -- これは、各トークンの導出に対する
+   (例: ``unaryneg ::= "-" `integer```) -- これは、各トークンの導出に対する
    クロスリファレンスを作成します。代替を示すために利用される縦棒はバックスラッシュで
    エスケープしなければならないことに気をつけてください。そうしないと、 reST パーサーは
    縦棒を置換参照 (substitution reference) として認識するからです。
+
+   production においては、これ以上の reST パース処理が行われない事に注意してください。
+   なので、 ``*`` や ``|`` といった文字をエスケープする必要がありません。
 
 ..    This directive is used to enclose a group of productions.  Each production is
 ..    given on a single line and consists of a name, separated by a colon from the
@@ -1259,7 +1280,7 @@ The following is an example taken from the Python Reference Manual::
 .. They are set in the build configuration file, see :ref:`doc-build-config`.
 
 ドキュメントシステムはデフォルトで定義されている３種類の置換を用意しています。
-それらはビルド設定ファイルで設定されます。 :ref:`doc-build-config` をご覧ください。
+それらはビルド設定ファイル :file:`conf.py` で設定されます。
 
 .. describe:: |release|
 
