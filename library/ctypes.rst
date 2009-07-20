@@ -1517,7 +1517,7 @@ Windows では、 ``find_library`` はシステムの探索パスに沿って探
 .. data:: cdll
    :noindex:
 
-   :class:`CDLL`インスタンスを作ります。
+   :class:`CDLL` インスタンスを作ります。
 
 
 .. data:: windll

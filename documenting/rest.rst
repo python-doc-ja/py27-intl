@@ -1,15 +1,8 @@
 .. highlightlang:: rest
 
-.. reStructuredText Primer
-.. =======================
 reStructuredText の基礎
 =======================
 
-.. This section is a brief introduction to reStructuredText (reST) concepts and
-.. syntax, intended to provide authors with enough information to author
-.. documents productively.
-.. Since reST was designed to be a simple, unobtrusive markup language, this will
-.. not take too long.
 この節は reStructuredText (reST) のコンセプトと文法の要約です。
 ドキュメント作者の生産性のために十分な情報を提供することに注目しています。
 reST はシンプルで、出しゃばらないマークアップ言語として設計されたので、
@@ -21,8 +14,6 @@ reST はシンプルで、出しゃばらないマークアップ言語として
     Documentation <http://docutils.sourceforge.net/rst.html>`_.
 
 
-.. Paragraphs
-.. ----------
 段落 (Paragraphs)
 -----------------
 
@@ -37,8 +28,6 @@ Python と同じく、 reST ではインデントは重要な意味を持つの�
 行は全て同じインデントレベルで左揃えする必要があります。
 
 
-.. Inline markup
-.. -------------
 インラインマークアップ (Inline markup)
 --------------------------------------
 

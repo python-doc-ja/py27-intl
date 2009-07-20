@@ -40,27 +40,9 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    現在のところ、このマークアップは出力には全く利用されていませんが、だれが貢献した
    のかを把握するのに役に立っています。
 
-..    Identifies the author of the current section.  The argument should include
-..    the author's name such that it can be used for presentation (though it isn't)
-..    and email address.  The domain name portion of the address should be lower
-..    case.  Example::
-.. 
-..       .. sectionauthor:: Guido van Rossum <guido@python.org>
-.. 
-..    Currently, this markup isn't reflected in the output in any way, but it helps
-..    keep track of contributions.
-
-
-.. Module-specific markup
-.. ----------------------
 
 モジュール用のマークアップ (Module-specific markup)
---------------------------
-
-.. The markup described in this section is used to provide information about a
-.. module being documented.  Each module should be documented in its own file.
-.. Normally this markup appears after the title heading of that file; a typical
-.. file might start like this::
+----------------------------------------------------
 
 この節では、ドキュメント中のモジュールに関する情報を提供するために使われるマークアップに
 ついて説明します。各モジュールは各々のファイルでドキュメントされるべきです。
@@ -222,30 +204,12 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    ついて記述するべきです。 テキストの中で構造体のメンバを参照するときには ``member`` role を
    利用するべきです。
 
-.. .. describe:: cmember
-.. 
-..    Describes a C struct member. Example signature::
-.. 
-..       .. cmember:: PyObject* PyTypeObject.tp_bases
-.. 
-..    The text of the description should include the range of values allowed, how
-..    the value should be interpreted, and whether the value can be changed.
-..    References to structure members in text should use the ``member`` role.
-
 .. describe:: cmacro
 
    "シンプル"な C言語のマクロについて説明します。 シンプルなマクロとは、引数を取らず、
    関数として解説されないものです。 このディレクティブは単純な定数の定義には利用しません。
-   Python ドキュメントの中でこのディレクティブが使われている例には、 :cmacro:`PyObject_HEAD' と
-   :cmacro:`Py_BEGIN_ALLOW_THREADS' があります。
-
-.. .. describe:: cmacro
-.. 
-..    Describes a "simple" C macro.  Simple macros are macros which are used
-..    for code expansion, but which do not take arguments so cannot be described as
-..    functions.  This is not to be used for simple constant definitions.  Examples
-..    of its use in the Python documentation include :cmacro:`PyObject_HEAD` and
-..    :cmacro:`Py_BEGIN_ALLOW_THREADS`.
+   Python ドキュメントの中でこのディレクティブが使われている例には、 :cmacro:`PyObject_HEAD` と
+   :cmacro:`Py_BEGIN_ALLOW_THREADS` があります。
 
 .. describe:: ctype
 
@@ -259,11 +223,6 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    です::
 
       .. cvar:: PyObject* PyClass_Type
-
-..    Describes a global C variable.  The signature should include the type, such
-..    as::
-.. 
-..       .. cvar:: PyObject* PyClass_Type
 
 .. describe:: data
 
@@ -299,29 +258,10 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    変更されるかどうか）、副作用、発生しうる例外についての情報を含むべきです。
    小さな例を提供するのも良いでしょう。
 
-..    Describes a module-level function.  The signature should include the
-..    parameters, enclosing optional parameters in brackets.  Default values can be
-..    given if it enhances clarity.  For example::
-.. 
-..       .. function:: Timer.repeat([repeat=3[, number=1000000]])
-.. 
-..    Object methods are not documented using this directive. Bound object methods
-..    placed in the module namespace as part of the public interface of the module
-..    are documented using this, as they are equivalent to normal functions for
-..    most purposes.
-.. 
-..    The description should include information about the parameters required and
-..    how they are used (especially whether mutable objects passed as parameters
-..    are modified), side effects, and possible exceptions.  A small example may be
-..    provided.
-
 .. describe:: class
 
    クラスを説明します。シグネチャには丸括弧とコンストラクタ引数を含めることが
    できます。
-
-..    Describes a class.  The signature can include parentheses with parameters
-..    which will be shown as the constructor arguments.
 
 .. describe:: attribute
 
@@ -873,8 +813,6 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
 できます。
 
 
-.. Example::
-
 例::
 
    .. _my-reference-label:
@@ -961,21 +899,6 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
 
    ディレクティブの先頭行と説明との間に空行を入れてはならないことに注意してください。
    これはマークアップされたときにブロックが視覚的に連続するためです。
-
-..    This directive documents the version of Python which added the described
-..    feature to the library or C API. When this applies to an entire module, it
-..    should be placed at the top of the module section before any prose.
-.. 
-..    The first argument must be given and is the version in question; you can add
-..    a second argument consisting of a *brief* explanation of the change.
-.. 
-..    Example::
-.. 
-..       .. versionadded:: 2.5
-..          The `spam` parameter.
-.. 
-..    Note that there must be no blank line between the directive head and the
-..    explanation; this is to make these blocks visually continuous in the markup.
 
 .. describe:: versionchanged
 
@@ -1118,9 +1041,6 @@ reST が複数のドキュメントを繋いだり、ドキュメントを複数
    出現しなければなりません。どこにも含まれていないファイルがあると、そのファイルは
    標準のナビゲーションで到達不可能になるので、 Sphinx は警告を出します。
 
-   The special file ``contents.rst`` at the root of the source directory is the
-   "root" of the TOC tree hierarchy; from it the "Contents" page is generated.
-
    特別な ``contents.rst`` というソースディレクトリのルートにあるファイルは、
    TOC tree 階層の "root" になります。このファイルから "コンテンツ" ページが
    作成されます。
@@ -1153,8 +1073,6 @@ Sphinx は自動的にインデックスのエントリを、先に述べた全�
 
 そのディレクティブは ``index`` で、一つかそれ以上のインデックスエントリを含みます。
 各エントリは、種類と値をコロンで区切ったもので構成されます。
-
-.. For example::
 
 例::
 
@@ -1259,8 +1177,6 @@ module, keyword, operator, object, exception, statement, builtin
 
 .. XXX describe optional first parameter 
 
-The following is an example taken from the Python Reference Manual::
-
 以下は Python リファレンスマニュアルの中の例です::
 
    .. productionlist::
@@ -1276,20 +1192,14 @@ The following is an example taken from the Python Reference Manual::
 置換 (Substitutions)
 --------------------
 
-.. The documentation system provides three substitutions that are defined by default.
-.. They are set in the build configuration file, see :ref:`doc-build-config`.
-
 ドキュメントシステムはデフォルトで定義されている３種類の置換を用意しています。
 それらはビルド設定ファイル :file:`conf.py` で設定されます。
 
 .. describe:: |release|
 
    ドキュメントが言及している Python のリリースへ置換されます。これは、例えば
-   ``2.5.2b3`` のような、 alpha/beta/release candidate
-   (訳注: release canadiate の typo?) を含む完全バージョン文字列です。
-
-..    Replaced by the Python release the documentation refers to.  This is the full
-..    version string including alpha/beta/release candidate tags, e.g. ``2.5.2b3``.
+   ``2.5.2b3`` のような、 alpha/beta/release candiate
+   を含む完全バージョン文字列です。
 
 .. describe:: |version|
 
@@ -1297,14 +1207,8 @@ The following is an example taken from the Python Reference Manual::
    バージョン 2.5.1 において ``2.5`` の様に、バージョン文字列のうち メジャー・
    マイナー部のみで構成されます。
 
-..    Replaced by the Python version the documentation refers to. This consists
-..    only of the major and minor version parts, e.g. ``2.5``, even for version
-..    2.5.1.
-
 .. describe:: |today|
 
    今日の日付か、ビルド設定ファイルで指定された日付のどちらかに置換されます。
    通常は ``April 14, 2007`` のようなフォーマットになります。
 
-..    Replaced by either today's date, or the date set in the build configuration
-..    file.  Normally has the format ``April 14, 2007``.
