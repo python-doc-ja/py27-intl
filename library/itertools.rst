@@ -14,39 +14,66 @@
 .. versionadded:: 2.3
 
 このモジュールではイテレータ(:term:`iterator`)を構築する部品を実装しています。
-プログラム言語 Haskell と SML からアイデアを得ていますが、
+プログラム言語 APL, Haskell, SML からアイデアを得ていますが、
 Python に適した形に修正されています。
 
 このモジュールは、高速でメモリ効率に優れ、
 単独でも組み合わせても使用することのできるツールを標準化したものです。
-標準化により、多数の個人が、それぞれの好みと命名規約で、
-それぞれ少しだけ異なる実装を行う為に発生する可読性と信頼性の問題を軽減する事ができます。
-
-ここで定義したツールは簡単に組み合わせて使用することができるようになっており、
-アプリケーション固有のツールを簡潔かつ効率的に作成する事ができます。
+同時に、このツール群は "イテレータの代数" を構成していて、 pure Python
+で簡潔かつ効率的なツールを作れるようにしています。
 
 例えば、SML の作表ツール ``tabulate(f)`` は ``f(0), f(1), ...``
 のシーケンスを作成します。
 このツールボックスでは :func:`imap` と :func:`count` を用意しており、
 この二つを組み合わせて ``imap(f, count())`` とすれば同じ結果を得る事ができます。
 
-同様に、
-:mod:`operator`
-モジュールの高速な関数とも一緒に使用することができるようになっています。
+これらのツールと、対をなすビルトインの組み合わせは、 :mod:`operator` モジュール\
+にある高速な関数を使うことでうまく実現できます。
+例えば、乗算演算子を二つのベクタにmapすることで効率的なドット積ができます:
+``sum(imap(operator.mul, vector1, vector2))``
 
-Python で書いてもコンパイル言語で書いても、イテレータを使用すると、
-リストを使用した同じ処理よりメモリ効率がよく(たいてい高速に)なります。
-これはデータをメモリ上に "在庫"しておくのではなく、
-必要に応じて作成する注文生産方式を採用しているためです。
+**無限イテレータ:**
 
+==================  =================       =================================================               =========================================
+イテレータ          引数                    結果                                                            例
+==================  =================       =================================================               =========================================
+:func:`count`       start                   start, start+1, start+2, ...                                    ``count(10) --> 10 11 12 13 14 ...``
+:func:`cycle`       p                       p0, p1, ... plast, p0, p1, ...                                  ``cycle('ABCD') --> A B C D A B C D ...``
+:func:`repeat`      elem [,n]               elem, elem, elem, ... 無限もしくは n 回                         ``repeat(10, 3) --> 10 10 10``
+==================  =================       =================================================               =========================================
 
-.. seealso::
+**一番短い入力シーケンスで止まるイテレータ:**
 
-   The Standard ML Basis Library, `The Standard ML Basis Library
-   <http://www.standardml.org/Basis/>`_.
+====================    ============================    ===================================================   =============================================================
+イテレータ              引数                            結果                                                  例
+====================    ============================    ===================================================   =============================================================
+:func:`chain`           p, q, ...                       p0, p1, ... plast, q0, q1, ...                        ``chain('ABC', 'DEF') --> A B C D E F``
+:func:`dropwhile`       pred, seq                       seq[n], seq[n+1], pred が偽の場所から始まる           ``dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1``
+:func:`groupby`         iterable[, keyfunc]             keyfunc(v) の値でグループ化したサブイテレータ
+:func:`ifilter`         pred, seq                       pred(elem) が真になるseqの要素                        ``ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9``
+:func:`ifilterfalse`    pred, seq                       pred(elem) が偽になるseqの要素                        ``ifilterfalse(lambda x: x%2, range(10)) --> 0 2 4 6 8``
+:func:`islice`          seq, [start,] stop [, step]     seq[start:stop:step]                                  ``islice('ABCDEFG', 2, None) --> C D E F G``
+:func:`imap`            func, p, q, ...                 func(p0, q0), func(p1, q1), ...                       ``imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000``
+:func:`starmap`         func, seq                       func(\*seq[0]), func(\*seq[1]), ...                   ``starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000``
+:func:`tee`             it, n                           it1, it2 , ... itn  一つのイテレータを n 個に分ける  
+:func:`takewhile`       pred, seq                       seq[0], seq[1], pred が偽になるまで                   ``takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4``
+:func:`izip`            p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip('ABCD', 'xy') --> Ax By``
+:func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-``
+====================    ============================    ===================================================   =============================================================
 
-   Haskell, A Purely Functional Language, `Definition of Haskell and the Standard
-   Libraries <http://www.haskell.org/definition/>`_.
+**組み合わせジェネレータ:**
+
+==============================================   ====================       =============================================================
+イテレータ                                       引数                       結果
+==============================================   ====================       =============================================================
+:func:`product`                                  p, q, ... [repeat=1]       デカルト積、ネストしたforループと等価
+:func:`permutations`                             p[, r]                     長さrのタプル列, 全ての順列.
+:func:`combinations`                             p[, r]                     長さrのタプル列, 全ての組み合わせ.
+|
+``product('ABCD', repeat=2)``                                               ``AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD``
+``permutations('ABCD', 2)``                                                 ``AB AC AD BA BC BD CA CB CD DA DB DC``
+``combinations('ABCD', 2)``                                                 ``AB AC AD BC BD CD``
+==============================================   ====================       =============================================================
 
 
 .. _itertools-functions:
@@ -106,9 +133,11 @@ Itertool関数
             # combinations(range(4), 3) --> 012 013 023 123
             pool = tuple(iterable)
             n = len(pool)
+            if r > n:
+                return
             indices = range(r)
             yield tuple(pool[i] for i in indices)
-            while 1:
+            while True:
                 for i in reversed(range(r)):
                     if indices[i] != i + n - r:
                         break
@@ -129,6 +158,9 @@ Itertool関数
             for indices in permutations(range(n), r):
                 if sorted(indices) == list(indices):
                     yield tuple(pool[i] for i in indices)
+
+   返される要素の数は、 ``0 <= r <= n`` の場合は、 ``n! / r! / (n-r)!``
+   で、 ``r > n`` の場合は 0 です。
 
    .. versionadded:: 2.6
 
@@ -218,7 +250,7 @@ Itertool関数
 
       class groupby(object):
           # [k for k, g in groupby('AAAABBBCCDAABBB')] --> A B C D A B
-          # [(list(g)) for k, g in groupby('AAAABBBCCD')] --> AAAA BBB CC D
+          # [list(g) for k, g in groupby('AAAABBBCCD')] --> AAAA BBB CC D
           def __init__(self, iterable, key=None):
               if key is None:
                   key = lambda x: x
@@ -229,14 +261,14 @@ Itertool関数
               return self
           def next(self):
               while self.currkey == self.tgtkey:
-                  self.currvalue = self.it.next() # Exit on StopIteration
+                  self.currvalue = next(self.it)    # Exit on StopIteration
                   self.currkey = self.keyfunc(self.currvalue)
               self.tgtkey = self.currkey
               return (self.currkey, self._grouper(self.tgtkey))
           def _grouper(self, tgtkey):
               while self.currkey == tgtkey:
                   yield self.currvalue
-                  self.currvalue = self.it.next() # Exit on StopIteration
+                  self.currvalue = next(self.it)    # Exit on StopIteration
                   self.currkey = self.keyfunc(self.currvalue)
 
    .. versionadded:: 2.4
@@ -288,7 +320,7 @@ Itertool関数
           # imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000
           iterables = map(iter, iterables)
           while True:
-              args = [it.next() for it in iterables]
+              args = [next(it) for it in iterables]
               if function is None:
                   yield tuple(args)
               else:
@@ -318,11 +350,11 @@ Itertool関数
           # islice('ABCDEFG', 0, None, 2) --> A C E G
           s = slice(*args)
           it = iter(xrange(s.start or 0, s.stop or sys.maxint, s.step or 1))
-          nexti = it.next()
+          nexti = next(it)
           for i, element in enumerate(iterable):
               if i == nexti:
                   yield element
-                  nexti = it.next()          
+                  nexti = next(it)
 
    *start* が ``None`` ならば、繰返しは0から始まります。
    *step* が ``None`` ならば、ステップは1となります。
@@ -343,8 +375,7 @@ Itertool関数
           # izip('ABCD', 'xy') --> Ax By
           iterables = map(iter, iterables)
           while iterables:
-              result = [it.next() for it in iterables]
-              yield tuple(result)
+              yield tuple(map(next, iterables))
 
    .. versionchanged:: 2.4
       イテレート可能オブジェクトを指定しない場合、
@@ -410,6 +441,8 @@ Itertool関数
             pool = tuple(iterable)
             n = len(pool)
             r = n if r is None else r
+            if r > n:
+                return
             indices = range(n)
             cycles = range(n, n-r, -1)
             yield tuple(pool[i] for i in indices[:r])
@@ -438,6 +471,9 @@ Itertool関数
             for indices in product(range(n), repeat=r):
                 if len(set(indices)) == r:
                     yield tuple(pool[i] for i in indices)
+
+   返される要素の数は、 ``0 <= r <= n`` の場合 ``n! / (n-r)!``
+   で、 ``r > n`` の場合は 0 です。
 
    .. versionadded:: 2.6
 
@@ -532,25 +568,26 @@ Itertool関数
 .. function:: tee(iterable[, n=2])
 
    一つの *iterable* から *n* 個の独立したイテレータを生成して返します。
-   ``n==2`` の場合は、以下のコードと等価になります： ::
+   以下のコードと等価になります： ::
 
-      def tee(iterable):
-          def gen(next, data={}):
-              for i in count():
-                  if i in data:
-                      yield data.pop(i)
-                  else:
-                      data[i] = next()
-                      yield data[i]
-          it = iter(iterable)
-          return gen(it.next), gen(it.next)
+        def tee(iterable, n=2):
+            it = iter(iterable)
+            deques = [collections.deque() for i in range(n)]
+            def gen(mydeque):
+                while True:
+                    if not mydeque:             # when the local deque is empty
+                        newval = next(it)       # fetch a new value and
+                        for d in deques:        # load it to all the deques
+                            d.append(newval)
+                    yield mydeque.popleft()
+            return tuple(gen(d) for d in deques)
 
    一度 :func:`tee` でイテレータを分割すると、
-   もとの *iterable* を他で使ってはならなくなるので注意してください;
+   もとの *iterable* を他で使ってはいけません。
    さもなければ、 :func:`tee` オブジェクトの知らない間に
    *iterable* が先の要素に進んでしまうことになります。
 
-   :func:`tee` はかなり大きなメモリ領域を使用します
+   :func:`tee` はかなり大きなメモリ領域を使用するかもしれません
    (使用するメモリ量はiterableの大きさに依存します)。
    一般には、一つのイテレータが他のイテレータよりも先にほとんどまたは全ての要素を消費するような場合には、
    :func:`tee` よりも :func:`list`
@@ -568,7 +605,7 @@ Itertool関数
 
 .. doctest::
 
-   # Show a dictionary sorted and grouped by value
+   >>> # Show a dictionary sorted and grouped by value
    >>> from operator import itemgetter
    >>> d = dict(a=1, b=2, c=1, d=2, e=1, f=2, g=3)
    >>> di = sorted(d.iteritems(), key=itemgetter(1))
@@ -579,13 +616,13 @@ Itertool関数
    2 ['b', 'd', 'f']
    3 ['g']
 
-   # Find runs of consecutive numbers using groupby.  The key to the solution
-   # is differencing with a range so that consecutive numbers all appear in
-   # same group.
+   >>> # Find runs of consecutive numbers using groupby.  The key to the solution
+   >>> # is differencing with a range so that consecutive numbers all appear in
+   >>> # same group.
    >>> data = [ 1,  4,5,6, 10, 15,16,17,18, 22, 25,26,27,28]
    >>> for k, g in groupby(enumerate(data), lambda (i,x):i-x):
    ...     print map(itemgetter(1), g)
-   ... 
+   ...
    [1]
    [4, 5, 6]
    [10]
@@ -622,9 +659,13 @@ iterable 全体を一度にメモリ上に置くよりも、
        "Return function(0), function(1), ..."
        return imap(function, count(start))
 
-   def nth(iterable, n):
-       "Returns the nth item or empty list"
-       return list(islice(iterable, n, n+1))
+   def consume(iterator, n):
+       "Advance the iterator n-steps ahead. If n is none, consume entirely."
+       collections.deque(islice(iterator, n), maxlen=0)
+
+   def nth(iterable, n, default=None):
+       "Returns the nth item or a default value"
+       return next(islice(iterable, n, None), default)
 
    def quantify(iterable, pred=bool):
        "Count how many times the predicate is true"
@@ -659,8 +700,7 @@ iterable 全体を一度にメモリ上に置くよりも、
    def pairwise(iterable):
        "s -> (s0,s1), (s1,s2), (s2, s3), ..."
        a, b = tee(iterable)
-       for elem in b:
-           break
+       next(b, None)
        return izip(a, b)
 
    def grouper(n, iterable, fillvalue=None):
@@ -682,23 +722,24 @@ iterable 全体を一度にメモリ上に置くよりも、
                nexts = cycle(islice(nexts, pending))
 
    def powerset(iterable):
-       "powerset('ab') --> set([]), set(['a']), set(['b']), set(['a', 'b'])"
-       # Recipe credited to Eric Raymond
-       pairs = [(2**i, x) for i, x in enumerate(iterable)]
-       for n in xrange(2**len(pairs)):
-           yield set(x for m, x in pairs if m&n)
+       "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+       s = list(iterable)
+       return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
    def compress(data, selectors):
        "compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F"
        return (d for d, s in izip(data, selectors) if s)
 
    def combinations_with_replacement(iterable, r):
-       "combinations_with_replacement('ABC', 3) --> AA AB AC BB BC CC"
+       "combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"
+       # number items returned:  (n+r-1)! / r! / (n-1)!
        pool = tuple(iterable)
        n = len(pool)
+       if not n and r:
+           return
        indices = [0] * r
        yield tuple(pool[i] for i in indices)
-       while 1:
+       while True:
            for i in reversed(range(r)):
                if indices[i] != n - 1:
                    break
@@ -706,3 +747,32 @@ iterable 全体を一度にメモリ上に置くよりも、
                return
            indices[i:] = [indices[i] + 1] * (r - i)
            yield tuple(pool[i] for i in indices)
+
+   def powerset(iterable):
+       "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+       s = list(iterable)
+       return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+   def unique_everseen(iterable, key=None):
+       "List unique elements, preserving order. Remember all elements ever seen."
+       # unique_everseen('AAAABBBCCDAABBB') --> A B C D
+       # unique_everseen('ABBCcAD', str.lower) --> A B C D
+       seen = set()
+       seen_add = seen.add
+       if key is None:
+           for element in iterable:
+               if element not in seen:
+                   seen_add(element)
+                   yield element
+       else:
+           for element in iterable:
+               k = key(element)
+               if k not in seen:
+                   seen_add(k)
+                   yield element
+
+   def unique_justseen(iterable, key=None):
+       "List unique elements, preserving order. Remember only the element just seen."
+       # unique_justseen('AAAABBBCCDAABBB') --> A B C D A B
+       # unique_justseen('ABBCcAD', str.lower) --> A B C A D
+       return imap(next, imap(itemgetter(1), groupby(iterable, key)))
