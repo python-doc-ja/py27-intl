@@ -174,6 +174,7 @@ Parser クラス API
 提供されています。これらは :mod:`email` パッケージのトップレベルの\
 名前空間で使用できます。
 
+.. currentmodule:: email
 
 .. function:: message_from_string(s[, _class[, strict]])
 
