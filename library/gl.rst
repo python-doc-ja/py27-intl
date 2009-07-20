@@ -6,8 +6,8 @@
    :platform: IRIX
    :synopsis: Silicon Graphics のGraphics Library の関数。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`gl` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -171,8 +171,8 @@ C の関数のパラメータは、以下のような決まりに従って Pytho
    :platform: IRIX
    :synopsis: glモジュールで使われる定数。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`DEVICE` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -190,8 +190,8 @@ C の関数のパラメータは、以下のような決まりに従って Pytho
    :platform: IRIX
    :synopsis: glモジュールで使われる定数。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`GL` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
