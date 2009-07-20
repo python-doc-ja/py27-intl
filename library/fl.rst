@@ -6,8 +6,8 @@
    :platform: IRIX
    :synopsis: グラフィカルユーザーインターフェースのための FORMS ライブラリ。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`fl` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -484,8 +484,8 @@ FORMS ドキュメントを参照してください。
    :platform: IRIX
    :synopsis: flモジュールで使用される定数。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`FL` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
@@ -509,8 +509,8 @@ FORMS ドキュメントを参照してください。
    :platform: IRIX
    :synopsis: 保存されたFORMSデザインをロードする関数。
    :deprecated:
-   
-   
+
+
 .. deprecated:: 2.6
     :mod:`flp` モジュールは Python 3.0 での削除に向けて非推奨になりました。
 
