@@ -1,5 +1,5 @@
 
-:mod:`gensuitemodule` --- OSA スタプ作成パッケージ
+:mod:`gensuitemodule` --- OSA スタブ作成パッケージ
 ==================================================
 
 .. module:: gensuitemodule
