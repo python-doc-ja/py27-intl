@@ -1,3 +1,4 @@
+.. -*- coding: utf-8; -*-
 :mod:`io` --- Core tools for working with streams
 =================================================
 
@@ -9,35 +10,50 @@
 .. sectionauthor:: Benjamin Peterson
 .. versionadded:: 2.6
 
-The :mod:`io` module provides the Python interfaces to stream handling.  The
-builtin :func:`open` function is defined in this module.
+.. The :mod:`io` module provides the Python interfaces to stream handling.  The
+.. builtin :func:`open` function is defined in this module.
+:mod:`io` モジュールはストリーム処理をするPythonインターフェイスを提供します。組み込み関数 :func:`open` はこのモジュールで定義されています。
 
-At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
-defines the basic interface to a stream.  Note, however, that there is no
-seperation between reading and writing to streams; implementations are allowed
-to throw an :exc:`IOError` if they do not support a given operation.
+.. At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
+.. defines the basic interface to a stream.  Note, however, that there is no
+.. seperation between reading and writing to streams; implementations are allowed
+.. to throw an :exc:`IOError` if they do not support a given operation.
+I/O階層の最上位には抽象基底クラスの :class:`IOBase` があります。
+:class:`IOBase` ではストリームに対して基本的なインターフェイスを定義しています。
+しかしながら、ストリームの読みと書きの間に違いがないことに留意してください。
+実装においては与えられた操作をサポートしない場合は :exc:`IOError` を投げることが許されています。
 
-Extending :class:`IOBase` is :class:`RawIOBase` which deals simply with the
-reading and writing of raw bytes to a stream.  :class:`FileIO` subclasses
-:class:`RawIOBase` to provide an interface to files in the machine's
-file system.
+.. Extending :class:`IOBase` is :class:`RawIOBase` which deals simply with the
+.. reading and writing of raw bytes to a stream.  :class:`FileIO` subclasses
+.. :class:`RawIOBase` to provide an interface to files in the machine's
+.. file system.
+:class:`IOBase` の拡張は生のバイト列の読み書きをしてストリームに落とす処理を単純に扱う :class:`RawIOBase` です。
+:class:`FileIO` は :class:`RawIOBase` を継承してマシンのファイルシステム中のファイルへのインターフェイスを提供します。
 
-:class:`BufferedIOBase` deals with buffering on a raw byte stream
-(:class:`RawIOBase`).  Its subclasses, :class:`BufferedWriter`,
-:class:`BufferedReader`, and :class:`BufferedRWPair` buffer streams that are
-readable, writable, and both readable and writable.
-:class:`BufferedRandom` provides a buffered interface to random access
-streams.  :class:`BytesIO` is a simple stream of in-memory bytes.
+.. :class:`BufferedIOBase` deals with buffering on a raw byte stream
+.. (:class:`RawIOBase`).  Its subclasses, :class:`BufferedWriter`,
+.. :class:`BufferedReader`, and :class:`BufferedRWPair` buffer streams that are
+.. readable, writable, and both readable and writable.
+.. :class:`BufferedRandom` provides a buffered interface to random access
+.. streams.  :class:`BytesIO` is a simple stream of in-memory bytes.
+:class:`BufferedIOBase` では生のバイトストリーム処理を扱います。（ :class:`RawIOBase` ）
+そのサブクラスの :class:`BufferdWriter` :class:`BufferedReader` :class:`BufferedRWPair` ではそれぞれ読み込み専用、書き込み専用、読み書き可能なストリームをバッファします。
+:class:`BufferedRandom` ではランダムアクセスストリームに対してバッファされたインターフェイスを提供します。
+:class:`BytesIO` はインメモリバイトへのシンプルなストリームです。
 
-Another :class:`IOBase` subclass, :class:`TextIOBase`, deals with
-streams whose bytes represent text, and handles encoding and decoding
-from and to strings. :class:`TextIOWrapper`, which extends it, is a
-buffered text interface to a buffered raw stream
-(:class:`BufferedIOBase`). Finally, :class:`StringIO` is an in-memory
-stream for text.
+.. Another :class:`IOBase` subclass, :class:`TextIOBase`, deals with
+.. streams whose bytes represent text, and handles encoding and decoding
+.. from and to strings. :class:`TextIOWrapper`, which extends it, is a
+.. buffered text interface to a buffered raw stream
+.. (:class:`BufferedIOBase`). Finally, :class:`StringIO` is an in-memory
+.. stream for text.
+もう一つの :class:`IOBase` のサブクラスである、 :class:`TextIOBase` は文字列を表すバイトストリームやその文字列に対するエンコーディングやデコーディングといった処理を行います。
+:class:`TextIOWrapper` はその拡張で、バッファされた生ストリーム（ :class:`BufferedIOBase` ）へのバッファされた文字列インターフェイスです。
+最後に :class:`StringIO` は文字列に対するインメモリストリームです。
 
-Argument names are not part of the specification, and only the arguments of
-:func:`open` are intended to be used as keyword arguments.
+.. Argument names are not part of the specification, and only the arguments of
+.. :func:`open` are intended to be used as keyword arguments.
+引数名は規約に含まれていません。また :func:`open` の引数はキーワード引数として用いられることが意図されています。
 
 
 Module Interface
@@ -45,42 +61,66 @@ Module Interface
 
 .. data:: DEFAULT_BUFFER_SIZE
 
-   An int containing the default buffer size used by the module's buffered I/O
-   classes.  :func:`open` uses the file's blksize (as obtained by
-   :func:`os.stat`) if possible.
+   .. An int containing the default buffer size used by the module's buffered I/O
+   .. classes.  :func:`open` uses the file's blksize (as obtained by
+   .. :func:`os.stat`) if possible.
+   モジュールのバッファI/Oクラスに使用されるデフォルトのバッファサイズを指定する整数値です。
+   :func:`open` は可能であればファイル全体のサイズを使用します。（ファイル全体のサイズは :func:`os.stat` で取得されます）
 
 .. function:: open(file[, mode[, buffering[, encoding[, errors[, newline[, closefd=True]]]]]])
 
-   Open *file* and return a stream.  If the file cannot be opened, an
-   :exc:`IOError` is raised.
+   .. Open *file* and return a stream.  If the file cannot be opened, an
+   .. :exc:`IOError` is raised.
+   *file* を開きストリームを返します。もしファイルを開くことが出来なかった場合、 :exc:`IOError` が発生します。
 
-   *file* is either a string giving the name (and the path if the file isn't in
-   the current working directory) of the file to be opened or a file
-   descriptor of the file to be opened.  (If a file descriptor is given,
-   for example, from :func:`os.fdopen`, it is closed when the returned
-   I/O object is closed, unless *closefd* is set to ``False``.)
+   .. *file* is either a string giving the name (and the path if the file isn't in
+   .. the current working directory) of the file to be opened or a file
+   .. descriptor of the file to be opened.  (If a file descriptor is given,
+   .. for example, from :func:`os.fdopen`, it is closed when the returned
+   .. I/O object is closed, unless *closefd* is set to ``False``.)
+   *file* は開きたいファイルの名前（とカレントディレクトリにない場合はそのパス）を示す文字列であるか、開きたいファイルのファイルディスクリプタです。
+   （たとえば :func:`os.fdopen` から得られるようなファイルディスクリプタが与えられた場合、 *closefd* が ``False`` に設定されていなければ、返されたI/Oオブジェクトが閉じられたときにそのファイルディスクリプタは閉じられます）
 
-   *mode* is an optional string that specifies the mode in which the file is
-   opened.  It defaults to ``'r'`` which means open for reading in text mode.
-   Other common values are ``'w'`` for writing (truncating the file if it
-   already exists), and ``'a'`` for appending (which on *some* Unix systems,
-   means that *all* writes append to the end of the file regardless of the
-   current seek position).  In text mode, if *encoding* is not specified the
-   encoding used is platform dependent. (For reading and writing raw bytes use
-   binary mode and leave *encoding* unspecified.)  The available modes are:
+   .. *mode* is an optional string that specifies the mode in which the file is
+   .. opened.  It defaults to ``'r'`` which means open for reading in text mode.
+   .. Other common values are ``'w'`` for writing (truncating the file if it
+   .. already exists), and ``'a'`` for appending (which on *some* Unix systems,
+   .. means that *all* writes append to the end of the file regardless of the
+   .. current seek position).  In text mode, if *encoding* is not specified the
+   .. encoding used is platform dependent. (For reading and writing raw bytes use
+   .. binary mode and leave *encoding* unspecified.)  The available modes are:
+   *mode* はオプションの文字列です。これによってファイルをどのようなモードで開くか明示することができます。
+   デフォルトは ``'r'`` でテキストモードで読み取り専用で開くことを指します。
+   他にも ``'w'`` は書き込み専用（もしファイルが存在していた場合は上書きになります）となり、 ``'a'`` では追記モードとなります。（ ``'a'`` は *いくつかの* Unixシステムでは *すべての* 書き込みがシーク位置がどこにあろうともファイルの末尾に追記されることを意味します）
+   テキストモードではもし *encoding* が指定されていなかった場合、エンコーディングはプラットフォーム依存となります。（生のバイトデータの読み込みと書き込みはバイナリモードを用いて、 *encoding* は未指定のままとします）
+   指定可能なモードは次の表の通りです。
+
+   .. ========= ===============================================================
+   .. Character Meaning
+   .. --------- ---------------------------------------------------------------
+   .. ``'r'``   open for reading (default)
+   .. ``'w'``   open for writing, truncating the file first
+   .. ``'a'``   open for writing, appending to the end of the file if it exists
+   .. ``'b'``   binary mode
+   .. ``'t'``   text mode (default)
+   .. ``'+'``   open a disk file for updating (reading and writing)
+   .. ``'U'``   universal newline mode (for backwards compatibility; should
+   ..           not be used in new code)
+   .. ========= ===============================================================
 
    ========= ===============================================================
-   Character Meaning
+   文字       意味
    --------- ---------------------------------------------------------------
-   ``'r'``   open for reading (default)
-   ``'w'``   open for writing, truncating the file first
-   ``'a'``   open for writing, appending to the end of the file if it exists
-   ``'b'``   binary mode
-   ``'t'``   text mode (default)
-   ``'+'``   open a disk file for updating (reading and writing)
-   ``'U'``   universal newline mode (for backwards compatibility; should
-             not be used in new code)
+   ``'r'``   読み込み専用で開く（デフォルト）
+   ``'w'``   書き込み専用で開く。ファイルの内容をまず初期化する。
+   ``'a'``   書き込み専用で開く。ファイルが存在する場合は末尾に追記する。
+   ``'b'``   バイナリモード
+   ``'t'``   テキストモード（デフォルト）
+   ``'+'``	 ファイルを更新用に開く（読み込み／書き込み）
+   ``'U'``   ユニバーサルニューラインモード
+             （後方互換性のためのモードであり、新規コードでは使用すべきではありません）
    ========= ===============================================================
+
 
    The default mode is ``'rt'`` (open for reading text).  For binary random
    access, the mode ``'w+b'`` opens and truncates the file to 0 bytes, while
