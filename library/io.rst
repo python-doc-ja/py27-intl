@@ -1,5 +1,5 @@
 .. -*- coding: utf-8; -*-
-:mod:`io` --- Core tools for working with streams
+:mod:`io` --- ストリームを扱うコアツール
 =================================================
 
 .. module:: io
@@ -12,14 +12,14 @@
 
 .. The :mod:`io` module provides the Python interfaces to stream handling.  The
 .. builtin :func:`open` function is defined in this module.
-:mod:`io` モジュールはストリーム処理をするPythonインターフェイスを提供します。組み込み関数 :func:`open` はこのモジュールで定義されています。
+:mod:`io` モジュールはストリーム処理をするPythonインタフェースを提供します。組み込み関数 :func:`open` はこのモジュールで定義されています。
 
 .. At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
 .. defines the basic interface to a stream.  Note, however, that there is no
 .. seperation between reading and writing to streams; implementations are allowed
 .. to throw an :exc:`IOError` if they do not support a given operation.
 I/O階層の最上位には抽象基底クラスの :class:`IOBase` があります。
-:class:`IOBase` ではストリームに対して基本的なインターフェイスを定義しています。
+:class:`IOBase` ではストリームに対して基本的なインタフェースを定義しています。
 しかしながら、ストリームの読みと書きの間に違いがないことに留意してください。
 実装においては与えられた操作をサポートしない場合は :exc:`IOError` を投げることが許されています。
 
@@ -28,7 +28,7 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 .. :class:`RawIOBase` to provide an interface to files in the machine's
 .. file system.
 :class:`IOBase` の拡張は生のバイト列の読み書きをしてストリームに落とす処理を単純に扱う :class:`RawIOBase` です。
-:class:`FileIO` は :class:`RawIOBase` を継承してマシンのファイルシステム中のファイルへのインターフェイスを提供します。
+:class:`FileIO` は :class:`RawIOBase` を継承してマシンのファイルシステム中のファイルへのインタフェースを提供します。
 
 .. :class:`BufferedIOBase` deals with buffering on a raw byte stream
 .. (:class:`RawIOBase`).  Its subclasses, :class:`BufferedWriter`,
@@ -38,7 +38,7 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 .. streams.  :class:`BytesIO` is a simple stream of in-memory bytes.
 :class:`BufferedIOBase` では生のバイトストリーム処理を扱います。（ :class:`RawIOBase` ）
 そのサブクラスの :class:`BufferdWriter` :class:`BufferedReader` :class:`BufferedRWPair` ではそれぞれ読み込み専用、書き込み専用、読み書き可能なストリームをバッファします。
-:class:`BufferedRandom` ではランダムアクセスストリームに対してバッファされたインターフェイスを提供します。
+:class:`BufferedRandom` ではランダムアクセスストリームに対してバッファされたインタフェースを提供します。
 :class:`BytesIO` はインメモリバイトへのシンプルなストリームです。
 
 .. Another :class:`IOBase` subclass, :class:`TextIOBase`, deals with
@@ -48,7 +48,7 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 .. (:class:`BufferedIOBase`). Finally, :class:`StringIO` is an in-memory
 .. stream for text.
 もう一つの :class:`IOBase` のサブクラスである、 :class:`TextIOBase` は文字列を表すバイトストリームやその文字列に対するエンコーディングやデコーディングといった処理を行います。
-:class:`TextIOWrapper` はその拡張で、バッファされた生ストリーム（ :class:`BufferedIOBase` ）へのバッファされた文字列インターフェイスです。
+:class:`TextIOWrapper` はその拡張で、バッファされた生ストリーム（ :class:`BufferedIOBase` ）へのバッファされた文字列インタフェースです。
 最後に :class:`StringIO` は文字列に対するインメモリストリームです。
 
 .. Argument names are not part of the specification, and only the arguments of
@@ -56,8 +56,8 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 引数名は規約に含まれていません。また :func:`open` の引数はキーワード引数として用いられることが意図されています。
 
 
-Module Interface
-----------------
+モジュールインタフェース
+--------------------
 
 .. data:: DEFAULT_BUFFER_SIZE
 
@@ -122,27 +122,42 @@ Module Interface
    ========= ===============================================================
 
 
-   The default mode is ``'rt'`` (open for reading text).  For binary random
-   access, the mode ``'w+b'`` opens and truncates the file to 0 bytes, while
-   ``'r+b'`` opens the file without truncation.
+   .. The default mode is ``'rt'`` (open for reading text).  For binary random
+   .. access, the mode ``'w+b'`` opens and truncates the file to 0 bytes, while
+   .. ``'r+b'`` opens the file without truncation.
+   デフォルトモードは ``'rt'`` です。（テキストを読み込み専用で開ます）
+   バイナリのランダムアクセスでは ``'w+b'`` でファイルを開き、0バイトに初期化します。
+   一方で ``'r+b'`` でファイルを開くと初期化は行われません。
 
-   Python distinguishes between files opened in binary and text modes, even when
-   the underlying operating system doesn't.  Files opened in binary mode
-   (including ``'b'`` in the *mode* argument) return contents as ``bytes``
-   objects without any decoding.  In text mode (the default, or when ``'t'`` is
-   included in the *mode* argument), the contents of the file are returned as
-   strings, the bytes having been first decoded using a platform-dependent
-   encoding or using the specified *encoding* if given.
+   .. Python distinguishes between files opened in binary and text modes, even when
+   .. the underlying operating system doesn't.  Files opened in binary mode
+   .. (including ``'b'`` in the *mode* argument) return contents as ``bytes``
+   .. objects without any decoding.  In text mode (the default, or when ``'t'`` is
+   .. included in the *mode* argument), the contents of the file are returned as
+   .. strings, the bytes having been first decoded using a platform-dependent
+   .. encoding or using the specified *encoding* if given.
+   Pythonではバイナリモードで開かれたファイルとテキストモードで開かれたファイルを区別します。
+   オペレーティングシステムが区別しない場合でもそれは適用されます。
+   バイナリモードで開かれたファイル（つまり *mode* 引数に ``'b'`` が含まれるとき）では中身を ``bytes`` オブジェクトとして返し、一切のデコードを行いません。
+   テキストモード（デフォルトか *mode* 引数に ``'t'`` が含まれている場合）ではファイルの中身は文字列として返され、バイト列はプラットフォーム依存のエンコーディングをされるか、 *encoding* が指定された場合は指定されたエンコーディングを行います。
 
-   *buffering* is an optional integer used to set the buffering policy.  By
-   default full buffering is on.  Pass 0 to switch buffering off (only allowed
-   in binary mode), 1 to set line buffering, and an integer > 1 for full
-   buffering.
+   .. *buffering* is an optional integer used to set the buffering policy.  By
+   .. default full buffering is on.  Pass 0 to switch buffering off (only allowed
+   .. in binary mode), 1 to set line buffering, and an integer > 1 for full
+   .. buffering.
+   オプションである *buffering* はバッファ用の設定を行う整数値です。
+   デフォルトではフルバッファがオンに設定されています。
+   0を設定することでバッファがオフになります。（バイナリモードでのみ有効です）
+   1の場合は１行ごとのバッファリングを行い、1より大きい場合はフルバッファが行われます。
 
-   *encoding* is the name of the encoding used to decode or encode the file.
-   This should only be used in text mode.  The default encoding is platform
-   dependent, but any encoding supported by Python can be used.  See the
-   :mod:`codecs` module for the list of supported encodings.
+   .. *encoding* is the name of the encoding used to decode or encode the file.
+   .. This should only be used in text mode.  The default encoding is platform
+   .. dependent, but any encoding supported by Python can be used.  See the
+   .. :mod:`codecs` module for the list of supported encodings.
+   *encoding* はファイルをエンコードあるいはデコードするために使われるエンコーディング名です。
+   このオプションはテキストモードでのみ使用されるべきです。
+   デフォルトエンコーディングはプラットフォーム依存ですが、Pythonでサポートされているエンコーディングはどれでも使えます。
+   詳しくは :mod:`codecs` モジュール内のサポートしているエンコーディングのリストを参照してください。
 
    *errors* is an optional string that specifies how encoding and decoding
    errors are to be handled.  Pass ``'strict'`` to raise a :exc:`ValueError`
