@@ -192,8 +192,8 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
    ..  returned to the caller untranslated.
    * 入力時、 *newline* が ``None`` の場合はユニバーサルニューラインモードが有効になります。
      入力行は ``'\n'``, ``'\r'``, ``'\r\n'`` のどれかで終わると思いますが、それらは呼び出し元に戻される前に ``'\n'`` に変換されます。
-	 もし ``''`` だった場合はユニバーサルニューラインモードは有効になりますが、行末は変換されずに呼び出し元に戻されます。
-	 もし他の適切な値が指定された場合は、入力行は与えられた文字列で中断され、行末は変換されずに呼び出し元に戻されます。
+     もし ``''`` だった場合はユニバーサルニューラインモードは有効になりますが、行末は変換されずに呼び出し元に戻されます。
+     もし他の適切な値が指定された場合は、入力行は与えられた文字列で中断され、行末は変換されずに呼び出し元に戻されます。
 
    .. * On output, if *newline* is ``None``, any ``'\n'`` characters written are
    ..  translated to the system default line separator, :data:`os.linesep`.  If
@@ -202,7 +202,7 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
    ..  the given string.
    * 出力時、 *newline* が ``None`` の場合は、すべての ``'\n'`` 文字はシステムのデフォルト行区切り文字 :data:`os.linesep` に変換されます。
      もし *newline* が ``''`` の場合、変換は起きません。
-	 もし *newline* に他の適切な値が指定された場合は、 ``'\n'`` 文字は与えられた文字に変換されます。
+     もし *newline* に他の適切な値が指定された場合は、 ``'\n'`` 文字は与えられた文字に変換されます。
 
    .. If *closefd* is ``False`` and a file descriptor rather than a
    .. filename was given, the underlying file descriptor will be kept open
@@ -219,7 +219,7 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
    .. :class:`BufferedReader`; in write binary and append binary modes, it
    .. returns a :class:`BufferedWriter`, and in read/write mode, it returns
    .. a :class:`BufferedRandom`.
-   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合（``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など）、 :class:`TextIOWrapper` が返されます。
+   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合（ ``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など）、 :class:`TextIOWrapper` が返されます。
    バイナリモードでファイルを開くときに使われた場合、返される値は変わってきます。もし読み取り専用のバイナリモードだった場合は :class:`BufferedReader` が返されます。
    書き込み専用のバイナリモードだった場合は :class:`BufferdWriter` が返されます。
    読み書き可能なバイナリモードの場合は :class:`BufferedRandom` が返されます。
@@ -235,22 +235,26 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 
 .. exception:: BlockingIOError
 
-   Error raised when blocking would occur on a non-blocking stream.  It inherits
-   :exc:`IOError`.
+   .. Error raised when blocking would occur on a non-blocking stream.  It inherits
+   .. :exc:`IOError`.
+   非ブロッキングストリームでブロック処理が起きた場合に発生するエラーです。 :exc:`IOError` を継承しています。
 
-   In addition to those of :exc:`IOError`, :exc:`BlockingIOError` has one
-   attribute:
+   .. In addition to those of :exc:`IOError`, :exc:`BlockingIOError` has one
+   .. attribute:
+   :exc:`IOError` で持っている属性以外に :exc:`BlockingIOError` では次の属性を持っています。
 
    .. attribute:: characters_written
 
-      An integer containing the number of characters written to the stream
-      before it blocked.
+      .. An integer containing the number of characters written to the stream
+      .. before it blocked.
+	  ブロック前にストリームに書き込まれる文字数を保持する整数値です。
 
 
 .. exception:: UnsupportedOperation
 
-   An exception inheriting :exc:`IOError` and :exc:`ValueError` that is raised
-   when an unsupported operation is called on a stream.
+   .. An exception inheriting :exc:`IOError` and :exc:`ValueError` that is raised
+   .. when an unsupported operation is called on a stream.
+   :exc:`IOError` と :exc:`ValueError` を継承した例外でストリームに予想外の操作が行われた場合に発生します。
 
 
 I/O Base Classes
