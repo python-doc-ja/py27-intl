@@ -159,16 +159,22 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
    デフォルトエンコーディングはプラットフォーム依存ですが、Pythonでサポートされているエンコーディングはどれでも使えます。
    詳しくは :mod:`codecs` モジュール内のサポートしているエンコーディングのリストを参照してください。
 
-   *errors* is an optional string that specifies how encoding and decoding
-   errors are to be handled.  Pass ``'strict'`` to raise a :exc:`ValueError`
-   exception if there is an encoding error (the default of ``None`` has the same
-   effect), or pass ``'ignore'`` to ignore errors.  (Note that ignoring encoding
-   errors can lead to data loss.)  ``'replace'`` causes a replacement marker
-   (such as ``'?'``) to be inserted where there is malformed data.  When
-   writing, ``'xmlcharrefreplace'`` (replace with the appropriate XML character
-   reference) or ``'backslashreplace'`` (replace with backslashed escape
-   sequences) can be used.  Any other error handling name that has been
-   registered with :func:`codecs.register_error` is also valid.
+   .. *errors* is an optional string that specifies how encoding and decoding
+   .. errors are to be handled.  Pass ``'strict'`` to raise a :exc:`ValueError`
+   .. exception if there is an encoding error (the default of ``None`` has the same
+   .. effect), or pass ``'ignore'`` to ignore errors.  (Note that ignoring encoding
+   .. errors can lead to data loss.)  ``'replace'`` causes a replacement marker
+   .. (such as ``'?'``) to be inserted where there is malformed data.  When
+   .. writing, ``'xmlcharrefreplace'`` (replace with the appropriate XML character
+   .. reference) or ``'backslashreplace'`` (replace with backslashed escape
+   .. sequences) can be used.  Any other error handling name that has been
+   .. registered with :func:`codecs.register_error` is also valid.
+   *errors* はエンコードやデコードの際のエラーをどのように扱うかを指定する文字列です。
+   ``'strict'`` を指定するとエンコードエラーがあった場合 :exc:`ValueError` 例外を発生させます。
+   （ デフォルトである ``None`` は同様の処理を行います）
+   ``'ignore'`` を指定した場合はエラーを無視します。 ``'replace'`` を指定した場合は正常に変換されなかった文字の代わりにマーカ（例えば ``'?'`` のような文字）を挿入します。
+   書き込みの際に ``'xmlcharrefreplace'`` （適切なXML文字リファレンスに置き換える）か ``'backslashreplace'`` （バックスラッシュによるエスケープシーケンスに置き換える）のどちらかが使用出来ます。
+   :func:`codecs.register_error` に登録されている他のエラー処理名も指定出来ます。
 
    *newline* controls how universal newlines works (it only applies to text
    mode).  It can be ``None``, ``''``, ``'\n'``, ``'\r'``, and ``'\r\n'``.  It
