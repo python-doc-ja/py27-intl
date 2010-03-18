@@ -176,42 +176,61 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
    書き込みの際に ``'xmlcharrefreplace'`` （適切なXML文字リファレンスに置き換える）か ``'backslashreplace'`` （バックスラッシュによるエスケープシーケンスに置き換える）のどちらかが使用出来ます。
    :func:`codecs.register_error` に登録されている他のエラー処理名も指定出来ます。
 
-   *newline* controls how universal newlines works (it only applies to text
-   mode).  It can be ``None``, ``''``, ``'\n'``, ``'\r'``, and ``'\r\n'``.  It
-   works as follows:
+   .. *newline* controls how universal newlines works (it only applies to text
+   .. mode).  It can be ``None``, ``''``, ``'\n'``, ``'\r'``, and ``'\r\n'``.  It
+   .. works as follows:
+   *newline* ではユニバーサルニューラインの挙動を制御しています。（テキストモードのみ有効です）
+   ``None``, ``''``, ``'\n'``, ``'\r'``, ``'\r\n'`` が指定出来ます。
+   以下のように動作します：
 
-   * On input, if *newline* is ``None``, universal newlines mode is enabled.
-     Lines in the input can end in ``'\n'``, ``'\r'``, or ``'\r\n'``, and these
-     are translated into ``'\n'`` before being returned to the caller.  If it is
-     ``''``, universal newline mode is enabled, but line endings are returned to
-     the caller untranslated.  If it has any of the other legal values, input
-     lines are only terminated by the given string, and the line ending is
-     returned to the caller untranslated.
+   .. * On input, if *newline* is ``None``, universal newlines mode is enabled.
+   ..  Lines in the input can end in ``'\n'``, ``'\r'``, or ``'\r\n'``, and these
+   ..  are translated into ``'\n'`` before being returned to the caller.  If it is
+   ..  ``''``, universal newline mode is enabled, but line endings are returned to
+   ..  the caller untranslated.  If it has any of the other legal values, input
+   ..  lines are only terminated by the given string, and the line ending is
+   ..  returned to the caller untranslated.
+   * 入力時、 *newline* が ``None`` の場合はユニバーサルニューラインモードが有効になります。
+     入力行は ``'\n'``, ``'\r'``, ``'\r\n'`` のどれかで終わると思いますが、それらは呼び出し元に戻される前に ``'\n'`` に変換されます。
+	 もし ``''`` だった場合はユニバーサルニューラインモードは有効になりますが、行末は変換されずに呼び出し元に戻されます。
+	 もし他の適切な値が指定された場合は、入力行は与えられた文字列で中断され、行末は変換されずに呼び出し元に戻されます。
 
-   * On output, if *newline* is ``None``, any ``'\n'`` characters written are
-     translated to the system default line separator, :data:`os.linesep`.  If
-     *newline* is ``''``, no translation takes place.  If *newline* is any of
-     the other legal values, any ``'\n'`` characters written are translated to
-     the given string.
+   .. * On output, if *newline* is ``None``, any ``'\n'`` characters written are
+   ..  translated to the system default line separator, :data:`os.linesep`.  If
+   ..  *newline* is ``''``, no translation takes place.  If *newline* is any of
+   ..  the other legal values, any ``'\n'`` characters written are translated to
+   ..  the given string.
+   * 出力時、 *newline* が ``None`` の場合は、すべての ``'\n'`` 文字はシステムのデフォルト行区切り文字 :data:`os.linesep` に変換されます。
+     もし *newline* が ``''`` の場合、変換は起きません。
+	 もし *newline* に他の適切な値が指定された場合は、 ``'\n'`` 文字は与えられた文字に変換されます。
 
-   If *closefd* is ``False`` and a file descriptor rather than a
-   filename was given, the underlying file descriptor will be kept open
-   when the file is closed.  If a filename is given *closefd* has no
-   effect but must be ``True`` (the default).
+   .. If *closefd* is ``False`` and a file descriptor rather than a
+   .. filename was given, the underlying file descriptor will be kept open
+   .. when the file is closed.  If a filename is given *closefd* has no
+   .. effect but must be ``True`` (the default).
+   もし *closefd* が ``False`` で、ファイル名ではなくてファイルディスクリプタが与えられていた場合、処理中のファイルディスクリプタはファイルが閉じられた後も開いたままとなります。
+   もしファイル名が与えられていた場合は、 *closefd* は関係ありません。しかし ``True`` でなければいけません。（デフォルト値）
 
-   The type of file object returned by the :func:`open` function depends
-   on the mode.  When :func:`open` is used to open a file in a text mode
-   (``'w'``, ``'r'``, ``'wt'``, ``'rt'``, etc.), it returns a
-   :class:`TextIOWrapper`. When used to open a file in a binary mode,
-   the returned class varies: in read binary mode, it returns a
-   :class:`BufferedReader`; in write binary and append binary modes, it
-   returns a :class:`BufferedWriter`, and in read/write mode, it returns
-   a :class:`BufferedRandom`.
+   .. The type of file object returned by the :func:`open` function 
+   .. on the mode.  When :func:`open` is used to open a file in a text mode
+   .. (``'w'``, ``'r'``, ``'wt'``, ``'rt'``, etc.), it returns a
+   .. :class:`TextIOWrapper`. When used to open a file in a binary mode,
+   .. the returned class varies: in read binary mode, it returns a
+   .. :class:`BufferedReader`; in write binary and append binary modes, it
+   .. returns a :class:`BufferedWriter`, and in read/write mode, it returns
+   .. a :class:`BufferedRandom`.
+   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合（``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など）、 :class:`TextIOWrapper` が返されます。
+   バイナリモードでファイルを開くときに使われた場合、返される値は変わってきます。もし読み取り専用のバイナリモードだった場合は :class:`BufferedReader` が返されます。
+   書き込み専用のバイナリモードだった場合は :class:`BufferdWriter` が返されます。
+   読み書き可能なバイナリモードの場合は :class:`BufferedRandom` が返されます。
 
-   It is also possible to use a string or bytearray as a file for both reading
-   and writing.  For strings :class:`StringIO` can be used like a file opened in
-   a text mode, and for bytearrays a :class:`BytesIO` can be used like a
-   file opened in a binary mode.
+   .. It is also possible to use a string or bytearray as a file for both reading
+   .. and writing.  For strings :class:`StringIO` can be used like a file opened in
+   .. a text mode, and for bytearrays a :class:`BytesIO` can be used like a
+   .. file opened in a binary mode.
+   もし文字列やバイト列をファイルとして読み書きすることも可能です。
+   文字列では :class:`StringIO` を使えばテキストモードで開いたファイルのように扱えます。
+   バイト列では :class:`BytesIO` を使えばバイナリモードで開いたファイルのように扱えます。
 
 
 .. exception:: BlockingIOError
