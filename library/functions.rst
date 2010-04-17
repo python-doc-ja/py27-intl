@@ -298,7 +298,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    b) < abs(b)`` になります。
 
    .. versionchanged:: 2.3
-      複素数に対する :func:`divmod`  の使用は廃用されました。.
+      複素数に対する :func:`divmod` の使用は廃用されました。
 
 
 .. function:: enumerate(sequence[, start=0])
@@ -396,7 +396,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: file(filename[, mode[, bufsize]])
 
    :class:`file` 型のコンストラクタです。詳しくは
-   :ref:`bltin-file-objects`節を参照してください。コンストラクタの引数
+   :ref:`bltin-file-objects` 節を参照してください。コンストラクタの引数
    は後述の :func:`open` 組み込み関数と同じです。
 
    ファイルを開くときは、このコンストラクタを直接呼ばずに :func:`open`
@@ -589,7 +589,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    :exc:`TypeError` が送出されます。
 
    .. versionchanged:: 2.2
-      型情報をタプルにした形式のサポートが追加されました。.
+      型情報をタプルにした形式のサポートが追加されました。
 
 
 .. function:: issubclass(class, classinfo)
@@ -851,8 +851,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: print([object, ...][, sep=' '][, end='\n'][, file=sys.stdout])
 
    *object* (複数でも可) を *sep* で区切りながらストリーム、 *file* に
-   *表示し、最後に *end* を表示します。 *sep*, *end* そして *file* が
-   *与えられる場合、キーワードと共に与えられる必要があります。
+   表示し、最後に *end* を表示します。 *sep*, *end* そして *file* が
+   与えられる場合、キーワードと共に与えられる必要があります。
 
    キーワードなしの引数は、 :func:`str` がするように、すべて、文字列に
    変換され、 *sep* で区切られながらストリームに書き出され、最後に
@@ -1095,7 +1095,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: reversed(seq)
 
-   要素を逆順に取り出すイテレータ (reverse :ter:`iterator`) を返します。
+   要素を逆順に取り出すイテレータ (reverse :term:`iterator`) を返します。
    *seq* は :meth:`__reversed__` メソッドを持つオブジェクトであるか、
    シーケンス型プロトコル (:meth:`__len__` メソッド、および、 ``0`` か
    ら始まる整数を引数にとる :meth:`__getitem__` メソッド) をサポートし
@@ -1332,6 +1332,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: type(name, bases, dict)
    :noindex:
+
    新しい型オブジェクトを返します。本質的には :keyword:`class` 文の動
    的な形です。 *name* 文字列はクラス名で、 :attr:`__name__` 属性にな
    ります。 *bases* タプルは基底クラスの羅列で、 :attr:`__bases__` 属
