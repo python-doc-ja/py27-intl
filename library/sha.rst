@@ -4,6 +4,7 @@
 
 .. module:: sha
    :synopsis: NISTのセキュアハッシュアルゴリズム、SHA。
+   :deprecated:
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
@@ -15,22 +16,28 @@
    single: NIST
    single: checksum; SHA
 
-このモジュールは、SHA-1 として知られている、 NISTの セキュアハッシュアルゴリズムへのインターフェースを 実装しています。SHA-1 はオリジナルの
-SHA ハッシュアルゴリズムを改善した バージョンです。:mod:`md5` モジュールと同じように使用します。:\ sha オブジェクトを生成するために
-:func:`new` を使い、 :meth:`update` メソッドを使って、このオブジェクトに任意の文字列を入力し、 それまでに入力した文字列全体の
-:dfn:`digest` をいつでも調べることができます。  SHA-1 のダイジェストは MD5 の 128 bit とは異なり、 160 bit です。
+このモジュールは、SHA-1 として知られている、 NIST のセキュアハッシュアルゴリズムへのインターフェースを実装しています。
+SHA-1 はオリジナルの SHA ハッシュアルゴリズムを改善したバージョンです。
+:mod:`md5` モジュールと同じように使用します。
+sha オブジェクトを生成するために :func:`new` を使い、
+:meth:`update` メソッドを使って、このオブジェクトに任意の文字列を入力し、
+それまでに入力した文字列全体の :dfn:`digest` をいつでも調べることができます。
+SHA-1 のダイジェストは MD5 の 128 bit とは異なり、160 bit です。
 
 
 .. function:: new([string])
 
-   新たな sha オブジェクトを返します。もし *string* が存在するなら、``update(string)`` を呼び出します。
+   新たな sha オブジェクトを返します。もし *string* が存在するなら、
+   ``update(string)`` を呼び出します。
 
-以下の値はモジュールの中で定数として与えられており、:func:`new` で返される sha オブジェクトの属性としても与えられます:
+以下の値はモジュールの中で定数として与えられており、
+:func:`new` で返される sha オブジェクトの属性としても与えられます:
 
 
 .. data:: blocksize
 
-   ハッシュ関数に入力されるブロックのサイズ。 このサイズは常に ``1`` です。 このサイズは、任意の文字列をハッシュできるようにするために使われます。
+   ハッシュ関数に入力されるブロックのサイズ。 このサイズは常に ``1`` です。
+   このサイズは、任意の文字列をハッシュできるようにするために使われます。
 
 
 .. data:: digest_size
@@ -71,6 +78,6 @@ sha オブジェクトには md5 オブジェクトと同じメソッドがあ�
       <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_,
       2002年8月出版。
 
-   `暗号ツールキット (セキュアハッシュ) <http://csrc.nist.gov/encryption/tkhash.html>`_
+   `暗号ツールキット (セキュアハッシュ) <http://csrc.nist.gov/CryptoToolkit/tkhash.html>`_
       NISTからはられているセキュアハッシュに関するさまざまな情報へのリンク
 
