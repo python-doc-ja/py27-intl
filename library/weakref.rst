@@ -64,8 +64,8 @@
 
    obj = Dict(red=1, green=2, blue=3)   # このオブジェクトは弱参照可能
 
-拡張型は、簡単に弱参照をサポートできます。詳細については、 :ref:`weakref-extension` 節
-"拡張型における弱参照"を読んでください。
+拡張型は、簡単に弱参照をサポートできます。詳細については、 :ref:`weakref-support`
+を参照してください。
 
 
 .. class:: ref(object[, callback])
@@ -314,69 +314,4 @@
 
    def id2obj(oid):
        return _id2obj_dict[oid]
-
-
-.. todo::
-
-    訳注: 以下の部分は原文には存在しない。他の場所に移動した可能性がある。
-
-.. _weakref-extension:
-
-拡張型における弱参照
---------------------
-
-実装の目的の一つは、弱参照によって恩恵を受けない数のような型のオブジェクトにオーバーヘッドを負わせることなく、どんな型でも弱参照メカニズムに加わることができるようにすることです。
-
-弱く参照可能なオブジェクトに対して、弱参照メカニズムを使うために、拡張は :ctype:`PyObject\ *` フィールドをインスタンス構造に含んでいなければなりません。オブジェクトのコンストラクタによって、それは* NULL*
-に初期化しなければなりません。対応する型オブジェクトの :attr:`tp_weaklistoffset` フィールドをフィールドのオフセットに設定することもしなければなりません。また、 :const:`Py_TPFLAGS_HAVE_WEAKREFS` をtp_flagsスロットへ追加する必要もあります。例えば、インスタンス型は次のような構造に定義されます::
-
-   typedef struct {
-       PyObject_HEAD
-       PyClassObject *in_class;       /* クラスオブジェクト */
-       PyObject      *in_dict;        /* 辞書 */
-       PyObject      *in_weakreflist; /* 弱参照のリスト */
-   } PyInstanceObject;
-
-インスタンスに対して静的に宣言される型オブジェクトはこのように定義されます::
-
-   PyTypeObject PyInstance_Type = {
-       PyObject_HEAD_INIT(&PyType_Type)
-       0,
-       "module.instance",
-
-       / * 簡単のためにたくさんのものを省略... * /
-
-       Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_WEAKREFS   / * tp_flags * /
-       0,                                          / * tp_doc * /
-       0,                                          / * tp_traverse * /
-       0,                                          / * tp_clear * /
-       0,                                          / * tp_richcompare * /
-       offsetof(PyInstanceObject, in_weakreflist), / * tp_weaklistoffset * /
-   };
-
-型コンストラクタは弱参照リストを *NULL* に初期化する責任があります::
-
-   static PyObject *
-   instance_new() {
-       / * 簡単のために他の初期化を省略 * /
-
-       self->in_weakreflist = NULL;
-
-       return (PyObject *) self;
-   } 
-
-さらに一つだけ追加すると、どんな弱参照でも取り除くためには、デストラクタは弱参照マネージャを呼び出す必要があります。オブジェクトの破壊のどんな他の部分が起きる前にこれを行うべきですが、弱参照リストが非 *NULL* である場合はこれが要求されるだけです::
-
-   static void
-   instance_dealloc(PyInstanceObject *inst)
-   {
-       /* 必要なら一時オブジェクトを割り当ててください。
-          しかし、まだ破壊しないでください。
-        */
-
-       if (inst->in_weakreflist != NULL)
-           PyObject_ClearWeakRefs((PyObject *) inst);
-
-       / * 普通にオブジェクトの破壊を進めてください。 * /
-   }
 
