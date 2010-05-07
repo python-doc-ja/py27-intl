@@ -1,19 +1,19 @@
-:mod:`json` --- JSON encoder and decoder
-========================================
+:mod:`json` --- JSON エンコーダおよびデコーダ
+=============================================
 
 .. module:: json
-   :synopsis: Encode and decode the JSON format.
+   :synopsis: JSON 形式のエンコードおよびデコード
 .. moduleauthor:: Bob Ippolito <bob@redivi.com>
 .. sectionauthor:: Bob Ippolito <bob@redivi.com>
 .. versionadded:: 2.6
 
-JSON (JavaScript Object Notation) <http://json.org> is a subset of JavaScript
-syntax (ECMA-262 3rd edition) used as a lightweight data interchange format.
+JSON (JavaScript Object Notation) <http://json.org> は JavaScript 文法
+(ECMA-262 3rd edition) のサブセットで軽量のデータ交換形式として使われています。
 
-:mod:`json` exposes an API familiar to users of the standard library
-:mod:`marshal` and :mod:`pickle` modules.
+:mod:`json` の API は標準ライブラリの :mod:`marshal` や :mod:`pickle` 
+のユーザに馴染み深いものです。
 
-Encoding basic Python object hierarchies::
+基本的な Python オブジェクト階層のエンコーディング::
     
     >>> import json
     >>> json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
@@ -32,13 +32,13 @@ Encoding basic Python object hierarchies::
     >>> io.getvalue()
     '["streaming API"]'
 
-Compact encoding::
+コンパクトなエンコーディング::
 
     >>> import json
     >>> json.dumps([1,2,3,{'4': 5, '6': 7}], separators=(',',':'))
     '[1,2,3,{"4":5,"6":7}]'
 
-Pretty printing::
+見やすい表示::
 
     >>> import json
     >>> print json.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4)
@@ -47,8 +47,8 @@ Pretty printing::
         "6": 7
     }
 
-Decoding JSON::
-    
+JSON のデコーディング::
+
     >>> import json
     >>> json.loads('["foo", {"bar":["baz", null, 1.0, 2]}]')
     [u'foo', {u'bar': [u'baz', None, 1.0, 2]}]
@@ -59,7 +59,7 @@ Decoding JSON::
     >>> json.load(io)
     [u'streaming API']
 
-Specializing JSON object decoding::
+JSON オブジェクトのデコーディング方法を誂える::
 
     >>> import json
     >>> def as_complex(dct):
@@ -74,7 +74,7 @@ Specializing JSON object decoding::
     >>> json.loads('1.1', parse_float=decimal.Decimal)
     Decimal('1.1')
 
-Extending :class:`JSONEncoder`::
+:class:`JSONEncoder` の拡張::
     
     >>> import json
     >>> class ComplexEncoder(json.JSONEncoder):
@@ -93,8 +93,8 @@ Extending :class:`JSONEncoder`::
 
 .. highlight:: none
 
-Using json.tool from the shell to validate and pretty-print::
-    
+シェルから json.tool を使って妥当性チェックをして見やすく表示::
+
     $ echo '{"json":"obj"}' | python -mjson.tool
     {
         "json": "obj"
@@ -106,123 +106,124 @@ Using json.tool from the shell to validate and pretty-print::
 
 .. note:: 
 
-   The JSON produced by this module's default settings is a subset of
-   YAML, so it may be used as a serializer for that as well.
+   このモジュールのデフォルト設定で生成される JSON は YAML のサブセットですので、
+   その直列化にも使うことができるでしょう。
 
 
-Basic Usage
------------
+基本的な使い方
+---------------
 
 .. function:: dump(obj, fp[, skipkeys[, ensure_ascii[, check_circular[, allow_nan[, cls[, indent[, separators[, encoding[, default[, **kw]]]]]]]]]])
 
-   Serialize *obj* as a JSON formatted stream to *fp* (a ``.write()``-supporting
-   file-like object).
+   *obj* を JSON 形式の *fp* (``.write()`` をサポートするファイル的オブジェクト)
+   へのストリームとして直列化します。
 
-   If *skipkeys* is ``True`` (default: ``False``), then dict keys that are not
-   of a basic type (:class:`str`, :class:`unicode`, :class:`int`, :class:`long`,
-   :class:`float`, :class:`bool`, ``None``) will be skipped instead of raising a
-   :exc:`TypeError`.
+   *skipkeys* が ``True`` (デフォルトは ``False``) ならば、基本型
+   (:class:`str`, :class:`unicode`, :class:`int`, :class:`long`,
+   :class:`float`, :class:`bool`, ``None``) 以外の辞書のキーは
+   :exc:`TypeError` を送出せずに読み飛ばされます。
 
-   If *ensure_ascii* is ``False`` (default: ``True``), then some chunks written
-   to *fp* may be :class:`unicode` instances, subject to normal Python
-   :class:`str` to :class:`unicode` coercion rules.  Unless ``fp.write()``
-   explicitly understands :class:`unicode` (as in :func:`codecs.getwriter`) this
-   is likely to cause an error.
+   *ensure_ascii* が ``False`` (デフォルトは ``True``) ならば、
+   *fp* へ書き込まれるチャンクは 通常の Python における :class:`str` から
+   :class:`unicode` への型強制ルールに従って :class:`unicode`
+   インスタンスになることがあります。 ``fp.write()`` が
+   (:func:`codecs.getwriter` のように) 前もって :class:`unicode`
+   に対応していると判っているもの以外では恐らくこれによってエラーが起こるでしょう。
 
-   If *check_circular* is ``False`` (default: ``True``), then the circular
-   reference check for container types will be skipped and a circular reference
-   will result in an :exc:`OverflowError` (or worse).
+   *check_circular* が ``False`` (デフォルトは ``True``) ならば、
+   コンテナ型の循環参照チェックが省かれ、循環参照があれば :exc:`OverflowError`
+   (またはもっと悪い結果) に終わります。
 
-   If *allow_nan* is ``False`` (default: ``True``), then it will be a
-   :exc:`ValueError` to serialize out of range :class:`float` values (``nan``,
-   ``inf``, ``-inf``) in strict compliance of the JSON specification, instead of
-   using the JavaScript equivalents (``NaN``, ``Infinity``, ``-Infinity``).
+   *allow_nan* が ``False`` (デフォルトは ``True``) ならば、許容範囲外の
+   :class:`float` 値 (``nan``, ``inf``, ``-inf``) を直列化しようとした場合、
+   JSON 仕様を厳格に守って JavaScript の等価なもの (``NaN``, ``Infinity``,
+   ``-Infinity``) を使うことなく :exc:`ValueError` になります。
 
-   If *indent* is a non-negative integer, then JSON array elements and object
-   members will be pretty-printed with that indent level.  An indent level of 0
-   will only insert newlines.  ``None`` (the default) selects the most compact
-   representation.
+   *indent* が非負の整数であれば、JSON の配列要素とオブジェクトメンバはその\
+   インデントレベルで見やすく表示されます。インデントレベルが 0
+   ならば改行だけが挿入されます。 ``None`` (デフォルト)
+   では最もコンパクトな表現が選択されます。
 
-   If *separators* is an ``(item_separator, dict_separator)`` tuple, then it
-   will be used instead of the default ``(', ', ': ')`` separators.  ``(',',
-   ':')`` is the most compact JSON representation.
+   *separators* がタプル ``(item_separator, dict_separator)`` ならば、
+   デフォルト区切り文字 ``(', ', ': ')`` の代わりに使われます。
+   ``(',', ':')`` が最もコンパクトな JSON の表現です。
 
-   *encoding* is the character encoding for str instances, default is UTF-8.
+   *encoding* は文字列のエンコーディングで、デフォルトは UTF-8 です。
 
-   *default(obj)* is a function that should return a serializable version of
-   *obj* or raise :exc:`TypeError`.  The default simply raises :exc:`TypeError`.
+   *default(obj)* は関数で、 *obj* の直列化可能なバージョンを返すか、さもなくば
+   :exc:`TypeError` を送出します。デフォルトでは単に :exc:`TypeError`
+   を送出します。
 
-   To use a custom :class:`JSONEncoder`` subclass (e.g. one that overrides the
-   :meth:`default` method to serialize additional types), specify it with the
-   *cls* kwarg.
+   カスタマイズされた :class:`JSONEncoder` のサブクラス
+   (たとえば追加の型を直列化するように :meth:`default` メソッドをオーバーライドしたもの)
+   を使うには、 *cls* キーワード引数に指定します。
 
 
 .. function:: dumps(obj[, skipkeys[, ensure_ascii[, check_circular[, allow_nan[, cls[, indent[, separators[, encoding[, default[, **kw]]]]]]]]]])
 
-   Serialize *obj* to a JSON formatted :class:`str`.
+   *obj* を JSON 形式の :class:`str` に直列化します。
 
-   If *ensure_ascii* is ``False``, then the return value will be a
-   :class:`unicode` instance.  The other arguments have the same meaning as in
-   :func:`dump`.
-
-
-.. function load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
-
-   Deserialize *fp* (a ``.read()``-supporting file-like object containing a JSON
-   document) to a Python object.
-
-   If the contents of *fp* are encoded with an ASCII based encoding other than
-   UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be specified.
-   Encodings that are not ASCII based (such as UCS-2) are not allowed, and
-   should be wrapped with ``codecs.getreader(fp)(encoding)``, or simply decoded
-   to a :class:`unicode` object and passed to :func:`loads`.
-
-   *object_hook* is an optional function that will be called with the result of
-   any object literal decode (a :class:`dict`).  The return value of
-   *object_hook* will be used instead of the :class:`dict`.  This feature can be used
-   to implement custom decoders (e.g. JSON-RPC class hinting).
-
-   *parse_float*, if specified, will be called with the string of every JSON
-   float to be decoded.  By default, this is equivalent to ``float(num_str)``.
-   This can be used to use another datatype or parser for JSON floats
-   (e.g. :class:`decimal.Decimal`).
-
-   *parse_int*, if specified, will be called with the string of every JSON int
-   to be decoded.  By default, this is equivalent to ``int(num_str)``.  This can
-   be used to use another datatype or parser for JSON integers
-   (e.g. :class:`float`).
-
-   *parse_constant*, if specified, will be called with one of the following
-   strings: ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
-   ``'false'``.  This can be used to raise an exception if invalid JSON numbers
-   are encountered.
-
-   To use a custom :class:`JSONDecoder` subclass, specify it with the ``cls``
-   kwarg.  Additional keyword arguments will be passed to the constructor of the
-   class.
+   *ensure_ascii* が ``False`` ならば、返値は :class:`unicode`
+   インスタンスになります。その他の引数は :func:`dump` におけるものと同じ意味です。
 
 
-.. function loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
+.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
 
-   Deserialize *s* (a :class:`str` or :class:`unicode` instance containing a JSON
-   document) to a Python object.
+   直列化された *fp* (``.read()`` をサポートするファイル的オブジェクトで
+   JSON 文書を収めたもの) の内容を Python オブジェクトに戻します。
 
-   If *s* is a :class:`str` instance and is encoded with an ASCII based encoding
-   other than UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be
-   specified.  Encodings that are not ASCII based (such as UCS-2) are not
-   allowed and should be decoded to :class:`unicode` first.
+   *fp* の内容が ASCII に基づいたしかし UTF-8 ではないエンコーディング (たとえば
+   latin-1) を使っているならば、適切な *encoding* 名が指定されなければなりません。
+   エンコーディングが ASCII に基づかないもの (UCS-2 など) であることは許されないので、
+   ``codecs.getreader(fp)(encoding)`` というように包むか、または単に
+   :class:`unicode` オブジェクトにデコードしたものを :func:`loads` に渡して下さい。
 
-   The other arguments have the same meaning as in :func:`dump`.
+   *object_hook* はオプションで渡す関数で全てのオブジェクトリテラルのデコード結果
+   (:class:`dict`) に対して呼ばれます。 *object_hook* の返値は :class:`dict`
+   の代わりに使われます。この機能は独自のデコーダ (たとえば JSON-RPC クラスヒンティング)
+   を実装するのに使えます。
+
+   *parse_float* は、もし指定されれば、全てのデコードされる JSON
+   の浮動小数点数文字列に対して呼ばれます。デフォルトでは、 ``float(num_str)``
+   と等価です。これは JSON 浮動小数点数に対して他のデータ型やパーサ
+   (たとえば :class:`decimal.Decimal`) を使うのに使えます。
+
+   *parse_int* は、もし指定されれば、全てのデコードされる JSON
+   の整数文字列に対して呼ばれます。デフォルトでは、 ``int(num_str)``
+   と等価です。これは JSON 整数に対して他のデータ型やパーサ
+   (たとえば :class:`float`) を使うのに使えます。
+
+   *parse_constant* は、もし指定されれば、次の文字列に対して呼ばれます:
+   ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
+   ``'false'`` 。これは不正な JSON 数値に遭遇したときに例外を送出するのに使えます。
+
+   カスタマイズされた :class:`JSONDecoder` のサブクラスを使うには、
+   *cls* キーワード引数に指定します。追加のキーワード引数は
+   このクラスのコンストラクタに引き渡されます。
 
 
-Encoders and decoders
----------------------
+.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
+
+   直列化された *s* (:class:`str` または :class:`unicode` インスタンスで
+   JSON 文書を含むもの) を Python オブジェクトに戻します。
+
+   *s* が ASCII に基づいたしかし UTF-8 ではないエンコーディング (たとえば
+   latin-1) でエンコードされた :class:`str` ならば、適切な *encoding*
+   名が指定されなければなりません。エンコーディングが ASCII に基づかないもの
+   (UCS-2 など) であることは許されないので、まず :class:`unicode`
+   にデコードして下さい。
+
+   その他の引数は :func:`load` におけるものと同じ意味です。
+
+
+エンコーダおよびデコーダ
+-------------------------
 
 .. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict]]]]]])
 
-   Simple JSON decoder.
+   単純な JSON デコーダ。
 
-   Performs the following translations in decoding by default:
+   デフォルトではデコーディングの際、以下の変換を行います。
 
    +---------------+-------------------+
    | JSON          | Python            |
@@ -244,57 +245,57 @@ Encoders and decoders
    | null          | None              |
    +---------------+-------------------+
 
-   It also understands ``NaN``, ``Infinity``, and ``-Infinity`` as their
-   corresponding ``float`` values, which is outside the JSON spec.
+   また、このデコーダは ``NaN``, ``Infinity``, ``-Infinity`` を対応する
+   ``float`` の値として、JSON の仕様からは外れますが、理解します。
 
-   *encoding* determines the encoding used to interpret any :class:`str` objects
-   decoded by this instance (UTF-8 by default).  It has no effect when decoding
-   :class:`unicode` objects.
+   *encoding* はこのインスタンスでデコードされる :class:`str`
+   オブジェクトを解釈するために使われるエンコーディング (デフォルトは UTF-8)
+   を定めます。 :class:`unicode` オブジェクトのデコーディングには影響を与えません。
 
-   Note that currently only encodings that are a superset of ASCII work, strings
-   of other encodings should be passed in as :class:`unicode`.
+   注意して欲しいのは現状では ASCII のスーパーセットであるようなエンコーディングだけ
+   うまく動くということです。他のエンコーディングの文字列は :class:`unicode`
+   にして渡して下さい。
 
-   *object_hook*, if specified, will be called with the result of every JSON
-   object decoded and its return value will be used in place of the given
-   :class:`dict`.  This can be used to provide custom deserializations (e.g. to
-   support JSON-RPC class hinting).
+   *object_hook* は、もし指定されれば、全てのデコードされた JSON
+   オブジェクトに対して呼ばれその返値は与えられた :class:`dict`
+   の代わりに使われます。この機能は独自の脱直列化 (たとえば JSON-RPC
+   クラスヒンティングをサポートするような) を提供するのに使えます。
 
-   *parse_float*, if specified, will be called with the string of every JSON
-   float to be decoded.  By default, this is equivalent to ``float(num_str)``.
-   This can be used to use another datatype or parser for JSON floats
-   (e.g. :class:`decimal.Decimal`).
+   *parse_float* は、もし指定されれば、全てのデコードされる JSON
+   の浮動小数点数文字列に対して呼ばれます。デフォルトでは、 ``float(num_str)``
+   と等価です。これは JSON 浮動小数点数に対して他のデータ型やパーサ
+   (たとえば :class:`decimal.Decimal`) を使うのに使えます。
 
-   *parse_int*, if specified, will be called with the string of every JSON int
-   to be decoded.  By default, this is equivalent to ``int(num_str)``.  This can
-   be used to use another datatype or parser for JSON integers
-   (e.g. :class:`float`).
+   *parse_int* は、もし指定されれば、全てのデコードされる JSON
+   の整数文字列に対して呼ばれます。デフォルトでは、 ``int(num_str)``
+   と等価です。これは JSON 整数に対して他のデータ型やパーサ
+   (たとえば :class:`float`) を使うのに使えます。
 
-   *parse_constant*, if specified, will be called with one of the following
-   strings: ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
-   ``'false'``.  This can be used to raise an exception if invalid JSON numbers
-   are encountered.
+   *parse_constant* は、もし指定されれば、次の文字列に対して呼ばれます:
+   ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
+   ``'false'`` 。これは不正な JSON 数値に遭遇したときに例外を送出するのに使えます。
 
 
    .. method:: decode(s)
 
-      Return the Python representation of *s* (a :class:`str` or
-      :class:`unicode` instance containing a JSON document)
+      *s* (:class:`str` または :class:`unicode` インスタンスで
+      JSON 文書を含むもの) の Python 表現を返します。
 
    .. method:: raw_decode(s)
 
-      Decode a JSON document from *s* (a :class:`str` or :class:`unicode`
-      beginning with a JSON document) and return a 2-tuple of the Python
-      representation and the index in *s* where the document ended.
+      *s* (:class:`str` または :class:`unicode` インスタンスで
+      JSON 文書で始まるもの) から JSON 文書をデコードし、Python 表現と
+      *s* の文書の終わるところのインデックスからなる 2 要素のタプルを返します。
 
-      This can be used to decode a JSON document from a string that may have
-      extraneous data at the end.
+      このメソッドは後ろに余分なデータを従えた文字列から JSON
+      文書をデコードするのに使えます。
 
 
 .. class:: JSONEncoder([skipkeys[, ensure_ascii[, check_circular[, allow_nan[, sort_keys[, indent[, separators[, encoding[, default]]]]]]]]])
 
-   Extensible JSON encoder for Python data structures.
+   Python データ構造に対する拡張可能な JSON エンコーダ。
 
-   Supports the following objects and types by default:
+   デフォルトでは以下のオブジェクトと型をサポートします:
 
    +-------------------+---------------+
    | Python            | JSON          |
@@ -314,60 +315,61 @@ Encoders and decoders
    | None              | null          |
    +-------------------+---------------+
 
-   To extend this to recognize other objects, subclass and implement a
-   :meth:`default` method with another method that returns a serializable object
-   for ``o`` if possible, otherwise it should call the superclass implementation
-   (to raise :exc:`TypeError`).
+   このクラスを拡張して他のオブジェクトも認識するようにするには、
+   サブクラスを作って :meth:`default` メソッドを次のように実装します。
+   もう一つ別のメソッドでオブジェクト ``o`` に対する直列化可能なオブジェクトを\
+   返すものを呼び出すようにします。
+   変換できない時はスーパークラスの実装を (:exc:`TypeError` を送出させるために)
+   呼ばなければなりません。
 
-   If *skipkeys* is ``False`` (the default), then it is a :exc:`TypeError` to
-   attempt encoding of keys that are not str, int, long, float or None.  If
-   *skipkeys* is ``True``, such items are simply skipped.
+   *skipkeys* が ``False`` (デフォルト) ならば、str, int, long, float, None
+   以外のキーをエンコードする試みは :exc:`TypeError` に終わります。
+   *skipkeys* が ``True`` の場合は、それらのアイテムは単に読み飛ばされます。
 
-   If *ensure_ascii* is ``True`` (the default), the output is guaranteed to be
-   :class:`str` objects with all incoming unicode characters escaped.  If
-   *ensure_ascii* is ``False``, the output will be a unicode object.
+   *ensure_ascii* が ``True`` (デフォルト) ならば、入ってくるユニコード文字が\
+   全てエスケープされた :class:`str` オブジェクトが出力になることが保証されます。
+   *ensure_ascii* が ``False`` の場合は、出力はユニコードオブジェクトです。
 
-   If *check_circular* is ``True`` (the default), then lists, dicts, and custom
-   encoded objects will be checked for circular references during encoding to
-   prevent an infinite recursion (which would cause an :exc:`OverflowError`).
-   Otherwise, no such check takes place.
+   *check_circular* が ``True`` (デフォルト) ならば、リスト、辞書および\
+   自作でエンコードしたオブジェクトは循環参照がないかエンコード中にチェックされ、
+   無限再帰 (これは :exc:`OverflowError` を引き起こします) を防止します。
+   ``True`` でない場合は、そういったチェックは施されません。
 
-   If *allow_nan* is ``True`` (the default), then ``NaN``, ``Infinity``, and
-   ``-Infinity`` will be encoded as such.  This behavior is not JSON
-   specification compliant, but is consistent with most JavaScript based
-   encoders and decoders.  Otherwise, it will be a :exc:`ValueError` to encode
-   such floats.
+   *allow_nan* が ``True`` (デフォルト) ならば、 ``NaN``, ``Infinity``,
+   ``-Infinity`` はそのままエンコードされます。この振る舞いは JSON
+   仕様に従っていませんが、大半の JavaScript ベースのエンコーダ、デコーダと
+   矛盾しません。 ``True`` でない場合は、そのような浮動小数点数をエンコードすると
+   :exc:`ValueError` が送出されます。
 
-   If *sort_keys* is ``True`` (the default), then the output of dictionaries
-   will be sorted by key; this is useful for regression tests to ensure that
-   JSON serializations can be compared on a day-to-day basis.
+   *sort_keys* が ``True`` (デフォルト) ならば、辞書の出力がキーでソートされます。
+   これは JSON の直列化がいつでも比較できるようになるので回帰試験の際に便利です。
 
-   If *indent* is a non-negative integer (it is ``None`` by default), then JSON
-   array elements and object members will be pretty-printed with that indent
-   level.  An indent level of 0 will only insert newlines.  ``None`` is the most
-   compact representation.
+   *indent* が非負の整数であれば (デフォルトでは ``None`` です)、JSON
+   の配列要素とオブジェクトメンバはそのインデントレベルで見やすく表示されます。
+   インデントレベルが 0 ならば改行だけが挿入されます。 ``None``
+   では最もコンパクトな表現が選択されます。
 
-   If specified, *separators* should be an ``(item_separator, key_separator)``
-   tuple.  The default is ``(', ', ': ')``.  To get the most compact JSON
-   representation, you should specify ``(',', ':')`` to eliminate whitespace.
+   *separators* はもし指定するなら ``(item_separator, key_separator)``
+   というタプルでなければなりません。デフォルトは ``(', ', ': ')`` です。
+   最もコンパクトな JSON の表現を得たければ空白を削った ``(',', ':')``
+   を指定すればいいでしょう。
 
-   If specified, *default* is a function that gets called for objects that can't
-   otherwise be serialized.  It should return a JSON encodable version of the
-   object or raise a :exc:`TypeError`.
+   *default* はもし指定するなら関数で、それがなければ直列化できないオブジェクトに\
+   対して呼び出されます。その関数はオブジェクトを JSON でエンコードできるバージョンに\
+   して返すか、さもなければ :exc:`TypeError` を送出しなければなりません。
 
-   If *encoding* is not ``None``, then all input strings will be transformed
-   into unicode using that encoding prior to JSON-encoding.  The default is
-   UTF-8.
+   *encoding* が ``None`` でなければ、入力文字列は全て JSON
+   エンコーディングに先立ってこのエンコーディングでユニコードに変換されます。
+   デフォルトは UTF-8 です。
 
 
    .. method:: default(o)
 
-      Implement this method in a subclass such that it returns a serializable
-      object for *o*, or calls the base implementation (to raise a
-      :exc:`TypeError`).
+      このメソッドをサブクラスで実装する際には *o*
+      に対して直列化可能なオブジェクトを返すか、基底クラスの実装を
+      (:exc:`TypeError` を送出するために) 呼び出すかします。
 
-      For example, to support arbitrary iterators, you could implement default
-      like this::
+      たとえば、任意のイテレータをサポートするために、次のように実装します::
             
          def default(self, o):
             try:
@@ -381,8 +383,7 @@ Encoders and decoders
 
    .. method:: encode(o)
 
-      Return a JSON string representation of a Python data structure, *o*.  For
-      example::
+      Python データ構造 *o* の JSON 文字列表現を返します。たとえば::
 
         >>> JSONEncoder().encode({"foo": ["bar", "baz"]})
         '{"foo": ["bar", "baz"]}'
@@ -390,8 +391,8 @@ Encoders and decoders
 
    .. method:: iterencode(o)
 
-      Encode the given object, *o*, and yield each string representation as
-      available.  For example::
+      与えられたオブジェクト *o* をエンコードし、得られた文字列表現ごとに
+      yield します。たとえば::
             
             for chunk in JSONEncoder().iterencode(bigobject):
                 mysocket.write(chunk)
