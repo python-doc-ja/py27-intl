@@ -39,16 +39,16 @@
 -   after the file is created.  Other platforms do not support this; your code
 -   should not rely on a temporary file created using this function having or not
 -   having a visible name in the file system.
--
--   The *mode* parameter defaults to ``'w+b'`` so that the file created can be read
--   and written without being closed.  Binary mode is used so that it behaves
--   consistently on all platforms without regard for the data that is stored.
--   *bufsize* defaults to ``-1``, meaning that the operating system default is used.
 +   collected).  Under Unix, the directory entry for the file is removed
 +   immediately after the file is created.  Other platforms do not support
 +   this; your code should not rely on a temporary file created using this
 +   function having or not having a visible name in the file system.
+-
 +
+-   The *mode* parameter defaults to ``'w+b'`` so that the file created can be read
+-   and written without being closed.  Binary mode is used so that it behaves
+-   consistently on all platforms without regard for the data that is stored.
+-   *bufsize* defaults to ``-1``, meaning that the operating system default is used.
 +   The *mode* parameter defaults to ``'w+b'`` so that the file created can
 +   be read and written without being closed.  Binary mode is used so that it
 +   behaves consistently on all platforms without regard for the data that is
@@ -65,14 +65,6 @@
 +
 +.. function:: NamedTemporaryFile([mode='w+b'[, bufsize=-1[, suffix=''[, prefix='tmp'[, dir=None[, delete=True]]]]]])
 +
-+   This function operates exactly as :func:`TemporaryFile` does, except that
-+   the file is guaranteed to have a visible name in the file system (on
-+   Unix, the directory entry is not unlinked).  That name can be retrieved
-+   from the :attr:`name` member of the file object.  Whether the name can be
-+   used to open the file a second time, while the named temporary file is
-+   still open, varies across platforms (it can be so used on Unix; it cannot
-+   on Windows NT or later).  If *delete* is true (the default), the file is
-+   deleted as soon as it is closed.
 +
 +   The returned object is always a file-like object whose :attr:`file`
 +   attribute is the underlying true file object. This file-like object can
@@ -87,6 +79,14 @@
 -   :attr:`name` member of the file object.  Whether the name can be used to open
 -   the file a second time, while the named temporary file is still open, varies
 -   across platforms (it can be so used on Unix; it cannot on Windows NT or later).
++   This function operates exactly as :func:`TemporaryFile` does, except that
++   the file is guaranteed to have a visible name in the file system (on
++   Unix, the directory entry is not unlinked).  That name can be retrieved
++   from the :attr:`name` member of the file object.  Whether the name can be
++   used to open the file a second time, while the named temporary file is
++   still open, varies across platforms (it can be so used on Unix; it cannot
++   on Windows NT or later).  If *delete* is true (the default), the file is
++   deleted as soon as it is closed.
 +   .. versionadded:: 2.6
 +      The *delete* parameter.
  
@@ -111,8 +111,15 @@
 +   .. versionadded:: 2.6
 +
 +
+-.. function:: mkstemp([suffix[, prefix[, dir[, text]]]])
 +.. function:: mkstemp([suffix=''[, prefix='tmp'[, dir=None[, text=False]]]])
 +
+-   Creates a temporary file in the most secure manner possible.  There are no race
+-   conditions in the file's creation, assuming that the platform properly
+-   implements the :const:`O_EXCL` flag for :func:`os.open`.  The file is readable
+-   and writable only by the creating user ID.  If the platform uses permission bits
+-   to indicate whether a file is executable, the file is executable by no one.  The
+-   file descriptor is not inherited by child processes.
 +   Creates a temporary file in the most secure manner possible.  There are
 +   no race conditions in the file's creation, assuming that the platform
 +   properly implements the :const:`os.O_EXCL` flag for :func:`os.open`.  The
@@ -121,44 +128,28 @@
 +   the file is executable by no one.  The file descriptor is not inherited
 +   by child processes.
  
--.. function:: mkstemp([suffix[, prefix[, dir[, text]]]])
+-   Unlike :func:`TemporaryFile`, the user of :func:`mkstemp` is responsible for
+-   deleting the temporary file when done with it.
 +   Unlike :func:`TemporaryFile`, the user of :func:`mkstemp` is responsible
 +   for deleting the temporary file when done with it.
  
--   Creates a temporary file in the most secure manner possible.  There are no race
--   conditions in the file's creation, assuming that the platform properly
--   implements the :const:`O_EXCL` flag for :func:`os.open`.  The file is readable
--   and writable only by the creating user ID.  If the platform uses permission bits
--   to indicate whether a file is executable, the file is executable by no one.  The
--   file descriptor is not inherited by child processes.
 -
--   Unlike :func:`TemporaryFile`, the user of :func:`mkstemp` is responsible for
--   deleting the temporary file when done with it.
 -
 -   If *suffix* is specified, the file name will end with that suffix, otherwise
 -   there will be no suffix.  :func:`mkstemp` does not put a dot between the file
 -   name and the suffix; if you need one, put it at the beginning of *suffix*.
--
--   If *prefix* is specified, the file name will begin with that prefix; otherwise,
--   a default prefix is used.
--
--   If *dir* is specified, the file will be created in that directory; otherwise, a
--   default directory is used.
--
--   If *text* is specified, it indicates whether to open the file in binary mode
--   (the default) or text mode.  On some platforms, this makes no difference.
--
--   :func:`mkstemp` returns a tuple containing an OS-level handle to an open file
--   (as would be returned by :func:`os.open`) and the absolute pathname of that
--   file, in that order.
 +   If *suffix* is specified, the file name will end with that suffix,
 +   otherwise there will be no suffix.  :func:`mkstemp` does not put a dot
 +   between the file name and the suffix; if you need one, put it at the
 +   beginning of *suffix*.
-+
+-
+-   If *prefix* is specified, the file name will begin with that prefix; otherwise,
+-   a default prefix is used.
 +   If *prefix* is specified, the file name will begin with that prefix;
 +   otherwise, a default prefix is used.
-+
+-
+-   If *dir* is specified, the file will be created in that directory; otherwise, a
+-   default directory is used.
 +   If *dir* is specified, the file will be created in that directory;
 +   otherwise, a default directory is used.  The default directory is chosen
 +   from a platform-dependent list, but the user of the application can
@@ -166,11 +157,16 @@
 +   environment variables.  There is thus no guarantee that the generated
 +   filename will have any nice properties, such as not requiring quoting
 +   when passed to external commands via ``os.popen()``.
-+
+-
+-   If *text* is specified, it indicates whether to open the file in binary mode
+-   (the default) or text mode.  On some platforms, this makes no difference.
 +   If *text* is specified, it indicates whether to open the file in binary
 +   mode (the default) or text mode.  On some platforms, this makes no
 +   difference.
-+
+-
+-   :func:`mkstemp` returns a tuple containing an OS-level handle to an open file
+-   (as would be returned by :func:`os.open`) and the absolute pathname of that
+-   file, in that order.
 +   :func:`mkstemp` returns a tuple containing an OS-level handle to an open
 +   file (as would be returned by :func:`os.open`) and the absolute pathname
 +   of that file, in that order.
@@ -221,10 +217,6 @@
 -      you get around to doing anything with the file name it returns, someone else may
 -      have beaten you to the punch.
 -
--The module uses two global variables that tell it how to construct a temporary
--name.  They are initialized at the first call to any of the functions above.
--The caller may change them, but this is discouraged; use the appropriate
--function arguments, instead.
 +      Use of this function may introduce a security hole in your program.  By
 +      the time you get around to doing anything with the file name it returns,
 +      someone else may have beaten you to the punch.  :func:`mktemp` usage can
@@ -242,6 +234,10 @@
 +         >>> os.path.exists(f.name)
 +         False
 +
+-The module uses two global variables that tell it how to construct a temporary
+-name.  They are initialized at the first call to any of the functions above.
+-The caller may change them, but this is discouraged; use the appropriate
+-function arguments, instead.
 +The module uses two global variables that tell it how to construct a
 +temporary name.  They are initialized at the first call to any of the
 +functions above.  The caller may change them, but this is discouraged; use
