@@ -108,12 +108,12 @@
  
     Setting it makes the :mod:`sqlite3` module parse the declared type for each
 -   column it returns.  It will parse out the first word of the declared type, i. e.
--   for "integer primary key", it will parse out "integer". Then for that column, it
--   will look into the converters dictionary and use the converter function
--   registered for that type there.  Converter names are case-sensitive!
 +   column it returns.  It will parse out the first word of the declared type,
+-   for "integer primary key", it will parse out "integer". Then for that column, it
 +   i. e.  for "integer primary key", it will parse out "integer", or for
+-   will look into the converters dictionary and use the converter function
 +   "number(10)" it will parse out "number". Then for that column, it will look
+-   registered for that type there.  Converter names are case-sensitive!
 +   into the converters dictionary and use the converter function registered for
 +   that type there.
  
@@ -181,11 +181,11 @@
  .. function:: complete_statement(sql)
  
 -   Returns :const:`True` if the string *sql* one or more complete SQL statements
++   Returns :const:`True` if the string *sql* contains one or more complete SQL
 -   terminated by semicolons. It does not verify if the SQL is syntactically
++   statements terminated by semicolons. It does not verify that the SQL is
 -   correct, only if there are no unclosed string literals and if the statement is
 -   terminated by a semicolon.
-+   Returns :const:`True` if the string *sql* contains one or more complete SQL
-+   statements terminated by semicolons. It does not verify that the SQL is
 +   syntactically correct, only that there are no unclosed string literals and the
 +   statement is terminated by a semicolon.
  
@@ -514,11 +514,11 @@
  
  
 -.. method:: XXX Class.executemany(sql, seq_of_parameters)
++.. method:: Cursor.executemany(sql, seq_of_parameters)
 -
 -   Executes a SQL command against all parameter sequences or mappings found in the
 -   sequence *sql*. The :mod:`sqlite3` module also allows using an iterator yielding
 -   parameters instead of a sequence.
-+.. method:: Cursor.executemany(sql, seq_of_parameters)
  
 +   Executes an SQL command against all parameter sequences or mappings found in
 +   the sequence *sql*.  The :mod:`sqlite3` module also allows using an

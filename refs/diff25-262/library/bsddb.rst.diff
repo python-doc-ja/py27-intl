@@ -31,12 +31,12 @@
  .. seealso::
  
 -   http://pybsddb.sourceforge.net/
--      The website with documentation for the :mod:`bsddb.db` python Berkeley DB
--      interface that closely mirrors the Sleepycat object oriented interface provided
--      in Berkeley DB 3 and 4.
 +   http://www.jcea.es/programacion/pybsddb.htm
+-      The website with documentation for the :mod:`bsddb.db` python Berkeley DB
 +      The website with documentation for the :mod:`bsddb.db` Python Berkeley DB
+-      interface that closely mirrors the Sleepycat object oriented interface provided
 +      interface that closely mirrors the object oriented interface provided in
+-      in Berkeley DB 3 and 4.
 +      Berkeley DB 4.x itself.
  
 -   http://www.sleepycat.com/
@@ -46,11 +46,11 @@
  
  A more modern DB, DBEnv and DBSequence object interface is available in the
 -:mod:`bsddb.db` module which closely matches the Sleepycat Berkeley DB C API
++:mod:`bsddb.db` module which closely matches the Berkeley DB C API documented at
 -documented at the above URLs.  Additional features provided by the
++the above URLs.  Additional features provided by the :mod:`bsddb.db` API include
 -:mod:`bsddb.db` API include fine tuning, transactions, logging, and multiprocess
 -concurrent database access.
-+:mod:`bsddb.db` module which closely matches the Berkeley DB C API documented at
-+the above URLs.  Additional features provided by the :mod:`bsddb.db` API include
 +fine tuning, transactions, logging, and multiprocess concurrent database access.
  
  The following is a description of the legacy :mod:`bsddb` interface compatible
