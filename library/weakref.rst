@@ -141,7 +141,7 @@
 
 .. method:: WeakKeyDictionary.iterkeyrefs()
 
-..   Return an :term:`iterator` that yields the weak references to the keys.
+   .. Return an :term:`iterator` that yields the weak references to the keys.
 
    キーへの弱参照を生成する :term:`iterator` を返します。
 
@@ -149,7 +149,7 @@
 
 .. method:: WeakKeyDictionary.keyrefs()
  
-..    Return a list of weak references to the keys.
+   .. Return a list of weak references to the keys.
 
    キーへの弱参照のリストを返します。
  
