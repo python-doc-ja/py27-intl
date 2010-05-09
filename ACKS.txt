@@ -1,10 +1,14 @@
-Contributors to the Python Documentation
+Pythonドキュメント 貢献者
 ----------------------------------------
 
-This section lists people who have contributed in some way to the Python
-documentation.  It is probably not complete -- if you feel that you or
-anyone else should be on this list, please let us know (send email to
-docs@python.org), and we'll be glad to correct the problem.
+.. This section lists people who have contributed in some way to the Python
+   documentation.  It is probably not complete -- if you feel that you or
+   anyone else should be on this list, please let us know (send email to
+   docs@python.org), and we'll be glad to correct the problem.
+
+この節では、Pythonドキュメントに何らかの形で貢献した人をリストアップしています。
+このリストは完全ではありません -- もし、このリストに載っているべき人を知っていたら、
+docs@python.org にメールで教えてください。私たちは喜んでその問題を修正します。
 
 .. acks::
 
