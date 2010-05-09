@@ -14,7 +14,9 @@ sys.path.append(os.path.abspath('tools/sphinxext'))
 # ---------------------
 
 extensions = ['sphinx.ext.refcounting', 'sphinx.ext.coverage',
-              'sphinx.ext.doctest', 'pyspecific']
+              'sphinx.ext.doctest', 'pyspecific',
+              'sphinx.ext.todo',
+              ]
 templates_path = ['tools/sphinxext']
 
 # General substitutions.
@@ -32,7 +34,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # and replace the values accordingly.
 import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.6', '2.6.0'
+version, release = '2.6', '2.6.2'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
