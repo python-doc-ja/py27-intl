@@ -21,10 +21,10 @@ Python が使える計算機なら、インタプリタはたいてい :file:`/u
 .. % % putting \file{/usr/local/bin} in your \UNIX{} shell's search path
 .. % % makes it possible to start it by typing the command
 
-Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\Python24` にインストールされますが、インストーラ実行時に変更すること
+Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\Python26` にインストールされますが、インストーラ実行時に変更すること
 ができます。 このディレクトリをあなたのパスに追加するには、 以下のコマンドをコマンドプロンプトで実行してください::
 
-   set path=%path%;C:\python24
+   set path=%path%;C:\python26
 
 ::
 
