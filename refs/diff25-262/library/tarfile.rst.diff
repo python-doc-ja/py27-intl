@@ -12,8 +12,8 @@
  
  .. versionadded:: 2.3
  
- .. moduleauthor:: Lars Gustäbel <lars@gustaebel.de>
- .. sectionauthor:: Lars Gustäbel <lars@gustaebel.de>
+ .. moduleauthor:: Lars Gustabel <lars@gustaebel.de>
+ .. sectionauthor:: Lars Gustabel <lars@gustaebel.de>
  
  
 -The :mod:`tarfile` module makes it possible to read and create tar archives.
@@ -114,19 +114,19 @@
 -   ``'filemode|[compression]'``.  :func:`open` will return a :class:`TarFile`
 -   object that processes its data as a stream of blocks.  No random seeking will be
 -   done on the file. If given, *fileobj* may be any object that has a :meth:`read`
--   or :meth:`write` method (depending on the *mode*). *bufsize* specifies the
--   blocksize and defaults to ``20 * 512`` bytes. Use this variant in combination
--   with e.g. ``sys.stdin``, a socket file object or a tape device. However, such a
--   :class:`TarFile` object is limited in that it does not allow to be accessed
--   randomly, see "Examples" (section :ref:`tar-examples`).  The currently possible
--   modes:
 +   ``'filemode|[compression]'``.  :func:`tarfile.open` will return a :class:`TarFile`
 +   object that processes its data as a stream of blocks.  No random seeking will
 +   be done on the file. If given, *fileobj* may be any object that has a
+-   or :meth:`write` method (depending on the *mode*). *bufsize* specifies the
+-   blocksize and defaults to ``20 * 512`` bytes. Use this variant in combination
 +   :meth:`read` or :meth:`write` method (depending on the *mode*). *bufsize*
 +   specifies the blocksize and defaults to ``20 * 512`` bytes. Use this variant
+-   with e.g. ``sys.stdin``, a socket file object or a tape device. However, such a
+-   :class:`TarFile` object is limited in that it does not allow to be accessed
 +   in combination with e.g. ``sys.stdin``, a socket file object or a tape
 +   device. However, such a :class:`TarFile` object is limited in that it does
+-   randomly, see "Examples" (section :ref:`tar-examples`).  The currently possible
+-   modes:
 +   not allow to be accessed randomly, see :ref:`tar-examples`.  The currently
 +   possible modes:
  
@@ -286,18 +286,19 @@
 +object, see :ref:`tarinfo-objects` for details.
 +
 +
+-.. class:: TarFile([name [, mode[, fileobj]]])
 +.. class:: TarFile(name=None, mode='r', fileobj=None, format=DEFAULT_FORMAT, tarinfo=TarInfo, dereference=False, ignore_zeros=False, encoding=ENCODING, errors=None, pax_headers=None, debug=0, errorlevel=0)
  
 +   All following arguments are optional and can be accessed as instance attributes
 +   as well.
- 
--.. class:: TarFile([name [, mode[, fileobj]]])
-+   *name* is the pathname of the archive. It can be omitted if *fileobj* is given.
-+   In this case, the file object's :attr:`name` attribute is used if it exists.
- 
+
 -   Open an *(uncompressed)* tar archive *name*. *mode* is either ``'r'`` to read
 -   from an existing archive, ``'a'`` to append data to an existing file or ``'w'``
 -   to create a new file overwriting an existing one. *mode* defaults to ``'r'``.
+ 
++   *name* is the pathname of the archive. It can be omitted if *fileobj* is given.
++   In this case, the file object's :attr:`name` attribute is used if it exists.
+ 
 +   *mode* is either ``'r'`` to read from an existing archive, ``'a'`` to append
 +   data to an existing file or ``'w'`` to create a new file overwriting an existing
 +   one.
@@ -572,22 +573,22 @@
 +   .. versionadded:: 2.6
 +      Raises :exc:`HeaderError` if the buffer is invalid..
  
--.. method:: TarInfo.tobuf(posix)
- 
--   Create a string buffer from a :class:`TarInfo` object. See :class:`TarFile`'s
--   :attr:`posix` attribute for information on the *posix* argument. It defaults to
--   :const:`False`.
 +.. method:: TarInfo.fromtarfile(tarfile)
  
--   .. versionadded:: 2.5
--      The *posix* parameter.
 +   Read the next member from the :class:`TarFile` object *tarfile* and return it as
 +   a :class:`TarInfo` object.
 +
 +   .. versionadded:: 2.6
 +
 +
+-.. method:: TarInfo.tobuf(posix)
 +.. method:: TarInfo.tobuf(format=DEFAULT_FORMAT, encoding=ENCODING, errors='strict')
+ 
+-   Create a string buffer from a :class:`TarInfo` object. See :class:`TarFile`'s
+-   :attr:`posix` attribute for information on the *posix* argument. It defaults to
+-   :const:`False`.
+-   .. versionadded:: 2.5
+-      The *posix* parameter.
 +
 +   Create a string buffer from a :class:`TarInfo` object. For information on the
 +   arguments see the constructor of the :class:`TarFile` class.
