@@ -36,9 +36,9 @@
    functions;
  
 -* Thread safety uses individual locking mechanism;
++* Thread safety uses individual locking mechanism.
 -
 -* Complete inline documentation;
-+* Thread safety uses individual locking mechanism.
  
  
  (De)compression of files
@@ -53,23 +53,23 @@
 +   Open a bz2 file. Mode can be either ``'r'`` or ``'w'``, for reading (default)
     or writing. When opened for writing, the file will be created if it doesn't
 -   exist, and truncated otherwise. If *buffering* is given, ``0`` means unbuffered,
--   and larger numbers specify the buffer size; the default is ``0``. If
--   *compresslevel* is given, it must be a number between ``1`` and ``9``; the
--   default is ``9``. Add a ``'U'`` to mode to open the file for input with
--   universal newline support. Any line ending in the input file will be seen as a
--   ``'\n'`` in Python.  Also, a file so opened gains the attribute
 +   exist, and truncated otherwise. If *buffering* is given, ``0`` means
+-   and larger numbers specify the buffer size; the default is ``0``. If
 +   unbuffered, and larger numbers specify the buffer size; the default is
+-   *compresslevel* is given, it must be a number between ``1`` and ``9``; the
 +   ``0``. If *compresslevel* is given, it must be a number between ``1`` and
+-   default is ``9``. Add a ``'U'`` to mode to open the file for input with
 +   ``9``; the default is ``9``. Add a ``'U'`` to mode to open the file for input
+-   universal newline support. Any line ending in the input file will be seen as a
 +   with universal newline support. Any line ending in the input file will be
+-   ``'\n'`` in Python.  Also, a file so opened gains the attribute
 +   seen as a ``'\n'`` in Python.  Also, a file so opened gains the attribute
     :attr:`newlines`; the value for this attribute is one of ``None`` (no newline
 -   read yet), ``'\r'``, ``'\n'``, ``'\r\n'`` or a tuple containing all the newline
--   types seen. Universal newlines are available only when reading. Instances
--   support iteration in the same way as normal :class:`file` instances.
 +   read yet), ``'\r'``, ``'\n'``, ``'\r\n'`` or a tuple containing all the
+-   types seen. Universal newlines are available only when reading. Instances
 +   newline types seen. Universal newlines are available only when
+-   support iteration in the same way as normal :class:`file` instances.
 +   reading. Instances support iteration in the same way as normal :class:`file`
 +   instances.
  
@@ -232,12 +232,12 @@
 +   .. method:: decompress(data)
  
 -   Provide more data to the decompressor object. It will return chunks of
--   decompressed data whenever possible. If you try to decompress data after the end
--   of stream is found, :exc:`EOFError` will be raised. If any data was found after
--   the end of stream, it'll be ignored and saved in :attr:`unused_data` attribute.
 +      Provide more data to the decompressor object. It will return chunks of
+-   decompressed data whenever possible. If you try to decompress data after the end
 +      decompressed data whenever possible. If you try to decompress data after
+-   of stream is found, :exc:`EOFError` will be raised. If any data was found after
 +      the end of stream is found, :exc:`EOFError` will be raised. If any data
+-   the end of stream, it'll be ignored and saved in :attr:`unused_data` attribute.
 +      was found after the end of stream, it'll be ignored and saved in
 +      :attr:`unused_data` attribute.
  
