@@ -1062,7 +1062,7 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 
 拡張 API は、doctest ケースから抽出した対話モードでの例題を 記憶するための二つのコンテナクラスを中心に構成されています:
 
-* :class:`Example`: 一つの Python :term:`文` と、その予想出力をペアにしたもの。
+* :class:`Example`: 1つの Python 文(:term:`statement`)と、その予想出力をペアにしたもの。
 
 * :class:`DocTest`: :class:`Example` の集まり。通常一つの docstring や テキストファイルから抽出されます。
 

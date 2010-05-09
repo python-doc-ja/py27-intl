@@ -1145,7 +1145,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    .. index:: single: Numerical Python
 
    ``range(start, stop, step)`` で指定される インデクスの集合を表す
-   :term:`sliece` (スライス)オブジェクトを返します。
+   スライス(:term:`slice`)オブジェクトを返します。
    ``range(start)`` スライスオブジェクトを返します。引数 *start* およ
    び *step* は標準では ``None`` です。
    スライスオブジェクトは読み出し専用の属性 :attr:`start`,

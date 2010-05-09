@@ -6,7 +6,7 @@
    :synopsis: Pythonバイトコードの逆アセンブラ。
 
 
-:mod:`dis` モジュールは Python :term:`バイトコード` を逆アセンブルしてバイトコードの解析を助けます。
+:mod:`dis` モジュールは Python バイトコード(:term:`bytecode`) を逆アセンブルしてバイトコードの解析を助けます。
 Pythonアセンブラがないため、このモジュールがPythonアセンブリ言語を定義しています。
 このモジュールが入力として受け取る Python バイトコード はファイル :file:`Include/opcode.h` に定義されており、
 コンパイラとインタプリタが使用しています。
@@ -468,7 +468,7 @@ Pythonバイトコード命令
 
 .. opcode:: YIELD_VALUE ()
 
-   ``TOS`` をポップし、それを :term:`ジェネレータ` からyieldします。
+   ``TOS`` をポップし、それをジェネレータ(:term:`generator`)からyieldします。
 
 
 .. opcode:: IMPORT_STAR ()

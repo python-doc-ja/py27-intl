@@ -58,7 +58,7 @@
 
 .. class:: AttributesImpl(attrs)
 
-   :class:`Attributes` interface (XXX reference: attributes-objects.html) (
+   :class:`Attributes` interface  (
    :ref:`attributes-objects` 参照)の実装です。辞書風のオブジェクトで、 :meth:`startElement`
    内で要素の属性表示をおこないます。多くの辞書 風オブジェクト操作に加え、ほかにもインターフェースに記述されているメ
    ソッドを、多数サポートしています。このクラスのオブジェクトはリーダ によってインスタンスを作成しなければなりません。また、*attrs* は
@@ -296,8 +296,8 @@ InputSource オブジェクト
 The :class:`Attributes` インターフェース
 ----------------------------------------
 
-:class:`Attributes` オブジェクトは :meth:`copy`、:meth:`get`、
-:meth:`has_key`、:meth:`items`、 :meth:`keys`、 :meth:`values`
+:class:`Attributes` オブジェクトは :meth:`copy`, :meth:`get`,
+:meth:`has_key`, :meth:`items`, :meth:`keys`, :meth:`values`
 などを含む、マッピング・プロトコルの一部を実装したも のです。さらに次のメソッドも提供されています。:
 
 
@@ -313,7 +313,7 @@ The :class:`Attributes` インターフェース
 
 .. method:: Attributes.getType(name)
 
-   属性名 *name* のタイプを返す。通常は ``'CDATA'``。
+   属性名 *name* のタイプを返す。通常は ``'CDATA'``
 
 
 .. method:: Attributes.getValue(name)
@@ -329,9 +329,9 @@ The :class:`Attributes` インターフェース
 :class:`AttributesNS` インターフェース
 --------------------------------------
 
-このインターフェースは :class:`Attributes` interface (XXX reference: attributes-
-objects.html)  (セクション :ref:`attributes-objects`参照) のサブタイプです。 Attributes インターフェー
-スがサポートしているすべてのメソッドは :class:`AttributesNS` オブジェク トでも利用可能です。
+このインターフェースは :class:`Attributes` interface
+(セクション :ref:`attributes-objects` 参照) のサブタイプです。 Attributes インターフェース
+がサポートしているすべてのメソッドは :class:`AttributesNS` オブジェク トでも利用可能です。
 
 そのほか、次のメソッドがサポートされています。:
 
