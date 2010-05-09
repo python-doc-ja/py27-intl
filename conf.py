@@ -36,6 +36,8 @@ import patchlevel
 #version, release = patchlevel.get_version_info()
 version, release = '2.6', '2.6.2'
 
+language = 'ja'
+
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
 today = ''
