@@ -1,5 +1,7 @@
 .. highlightlang:: none
 
+.. _history-and-license:
+
 *******************
 History and License
 *******************
@@ -9,85 +11,87 @@ Python の歴史
 =============
 
 Python は 1990 年代の始め、オランダにある Stichting Mathematisch Centrum (CWI,
-`<http://www.cwi.nl/>`_ 参照)  で Guido van Rossum によって ABC と呼ばれる言語の後継言語として生み
+http://www.cwi.nl/ 参照)  で Guido van Rossum によって ABC と呼ばれる言語の後継言語として生み
 出されました。その後多くの人々が Python に貢献していますが、 Guido は今日でも Python 製作者の先頭に立っています。
 
 1995 年、 Guido は米国ヴァージニア州レストンにある Corporation for National Reserch Initiatives
-(CNRI,  `<http://www.cnri.reston.va.us/>`_ 参照) で Python の開発に携わり、
+(CNRI,  http://www.cnri.reston.va.us/ 参照) で Python の開発に携わり、
 いくつかのバージョンをリリースしました。
 
 2000 年 3 月、 Guido と Python のコア開発チームは BeOpen.com に 移り、 BeOpen PythonLabs
 チームを結成しました。同年 10 月、 PythonLabs チームは Digital Creations (現在の Zope Corporation,
-`<http://www.zope.com/>`_ 参照) に移りました。 そして 2001 年、  Python に関する知的財産を保有するための非営利組織
-Python Software  Foundation (PSF、 `<http://www.python.org/psf/>`_ 参照)
+http://www.zope.com/ 参照) に移りました。 そして 2001 年、  Python に関する知的財産を保有するための非営利組織
+Python Software  Foundation (PSF、 http://www.python.org/psf/ 参照)
 を立ち上げました。このとき Zope Corporation は PSF の賛助会員に なりました。
 
-Python のリリースは全てオープンソース (オープンソースの定義は `<http://www.opensource.org/>`_ を参照してください)
+Python のリリースは全てオープンソース (オープンソースの定義は http://www.opensource.org/ を参照してください)
 です。 歴史的にみて、ごく一部を除くほとんどの Python リリースは GPL 互換になっています; 各リリースについては下表にまとめてあります。
 
-+----------------+-----------+-----------+------------+----------+
-| リリース       | ベース    | 年        | 権利       | GPL 互換 |
-+================+===========+===========+============+==========+
-| 0.9.0 thru 1.2 | n/a       | 1991-1995 | CWI        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 1.3 thru 1.5.2 | 1.2       | 1995-1999 | CNRI       | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 1.6            | 1.5.2     | 2000      | CNRI       | no       |
-+----------------+-----------+-----------+------------+----------+
-| 2.0            | 1.6       | 2000      | BeOpen.com | no       |
-+----------------+-----------+-----------+------------+----------+
-| 1.6.1          | 1.6       | 2001      | CNRI       | no       |
-+----------------+-----------+-----------+------------+----------+
-| 2.1            | 2.0+1.6.1 | 2001      | PSF        | no       |
-+----------------+-----------+-----------+------------+----------+
-| 2.0.1          | 2.0+1.6.1 | 2001      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.1.1          | 2.1+2.0.1 | 2001      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.2            | 2.1.1     | 2001      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.1.2          | 2.1.1     | 2002      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.1.3          | 2.1.2     | 2002      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.2.1          | 2.2       | 2002      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.2.2          | 2.2.1     | 2002      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.2.3          | 2.2.2     | 2002-2003 | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3            | 2.2.2     | 2002-2003 | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3.1          | 2.3       | 2002-2003 | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3.2          | 2.3.1     | 2003      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3.3          | 2.3.2     | 2003      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3.4          | 2.3.3     | 2004      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.3.5          | 2.3.4     | 2005      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.4            | 2.3       | 2004      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.4.1          | 2.4       | 2005      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.4.2          | 2.4.1     | 2005      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.4.3          | 2.4.2     | 2006      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.5            | 2.4       | 2006      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.5.1          | 2.5       | 2007      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.5.2          | 2.5.1     | 2008      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.5.3          | 2.5.2     | 2008      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.6            | 2.5       | 2008      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
-| 2.6.1          | 2.6       | 2008      | PSF        | yes      |
-+----------------+-----------+-----------+------------+----------+
++----------------+--------------+-----------+------------+-----------------+
+| リリース       | ベース       | 年        | 権利       | GPL 互換        |
++================+==============+===========+============+=================+
+| 0.9.0 - 1.2    | n/a          | 1991-1995 | CWI        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 1.3 - 1.5.2    | 1.2          | 1995-1999 | CNRI       | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 1.6            | 1.5.2        | 2000      | CNRI       | no              |
++----------------+--------------+-----------+------------+-----------------+
+| 2.0            | 1.6          | 2000      | BeOpen.com | no              |
++----------------+--------------+-----------+------------+-----------------+
+| 1.6.1          | 1.6          | 2001      | CNRI       | no              |
++----------------+--------------+-----------+------------+-----------------+
+| 2.1            | 2.0+1.6.1    | 2001      | PSF        | no              |
++----------------+--------------+-----------+------------+-----------------+
+| 2.0.1          | 2.0+1.6.1    | 2001      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.1.1          | 2.1+2.0.1    | 2001      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.2            | 2.1.1        | 2001      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.1.2          | 2.1.1        | 2002      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.1.3          | 2.1.2        | 2002      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.2.1          | 2.2          | 2002      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.2.2          | 2.2.1        | 2002      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.2.3          | 2.2.2        | 2002-2003 | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3            | 2.2.2        | 2002-2003 | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3.1          | 2.3          | 2002-2003 | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3.2          | 2.3.1        | 2003      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3.3          | 2.3.2        | 2003      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3.4          | 2.3.3        | 2004      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.3.5          | 2.3.4        | 2005      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.4            | 2.3          | 2004      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.4.1          | 2.4          | 2005      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.4.2          | 2.4.1        | 2005      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.4.3          | 2.4.2        | 2006      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.4.4          | 2.4.3        | 2006      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.5            | 2.4          | 2006      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.5.1          | 2.5          | 2007      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.5.2          | 2.5.1        | 2008      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.5.3          | 2.5.2        | 2008      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.6            | 2.5          | 2008      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.6.1          | 2.6          | 2008      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
 
 .. note::
 
@@ -102,7 +106,7 @@ Terms and conditions for accessing or otherwise using Python
 ============================================================
 
 
-.. centered:: **PSF LICENSE AGREEMENT FOR PYTHON |release|**
+.. centered:: PSF LICENSE AGREEMENT FOR PYTHON |release|
 
 #. This LICENSE AGREEMENT is between the Python Software Foundation ("PSF"), and
    the Individual or Organization ("Licensee") accessing and otherwise using Python
@@ -147,10 +151,10 @@ Terms and conditions for accessing or otherwise using Python
    to be bound by the terms and conditions of this License Agreement.
 
 
-.. centered:: **BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0**
+.. centered:: BEOPEN.COM LICENSE AGREEMENT FOR PYTHON 2.0
 
 
-.. centered:: **BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1**
+.. centered:: BEOPEN PYTHON OPEN SOURCE LICENSE AGREEMENT VERSION 1
 
 #. This LICENSE AGREEMENT is between BeOpen.com ("BeOpen"), having an office at
    160 Saratoga Avenue, Santa Clara, CA 95051, and the Individual or Organization
@@ -192,7 +196,7 @@ Terms and conditions for accessing or otherwise using Python
    bound by the terms and conditions of this License Agreement.
 
 
-.. centered:: **CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1**
+.. centered:: CNRI LICENSE AGREEMENT FOR PYTHON 1.6.1
 
 #. This LICENSE AGREEMENT is between the Corporation for National Research
    Initiatives, having an office at 1895 Preston White Drive, Reston, VA 20191
@@ -213,7 +217,7 @@ Terms and conditions for accessing or otherwise using Python
    Agreement.  This Agreement together with Python 1.6.1 may be located on the
    Internet using the following unique, persistent identifier (known as a handle):
    1895.22/1013.  This Agreement may also be obtained from a proxy server on the
-   Internet using the following URL: `<http://hdl.handle.net/1895.22/1013>`_."
+   Internet using the following URL: http://hdl.handle.net/1895.22/1013."
 
 #. In the event Licensee prepares a derivative work that is based on or
    incorporates Python 1.6.1 or any part thereof, and wants to make the derivative
@@ -257,7 +261,7 @@ Terms and conditions for accessing or otherwise using Python
 .. centered:: ACCEPT
 
 
-.. centered:: **CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2**
+.. centered:: CWI LICENSE AGREEMENT FOR PYTHON 0.9.0 THROUGH 1.2
 
 Copyright © 1991 - 1995, Stichting Mathematisch Centrum Amsterdam, The
 Netherlands.  All rights reserved.
@@ -290,7 +294,7 @@ Mersenne Twister
 ----------------
 
 The :mod:`_random` module includes code based on a download from
-`<http://www.math.keio.ac.jp/ matumoto/MT2002/emt19937ar.html>`_. The following
+http://www.math.keio.ac.jp/ matumoto/MT2002/emt19937ar.html . The following
 are the verbatim comments from the original code::
 
    A C-program for MT19937, with initialization improved 2002/1/26.
@@ -340,7 +344,7 @@ Sockets
 
 The :mod:`socket` module uses the functions, :func:`getaddrinfo`, and
 :func:`getnameinfo`, which are coded in separate source files from the WIDE
-Project, `<http://www.wide.ad.jp/about/index.html>`_. ::
+Project, http://www.wide.ad.jp/. ::
 
    Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
    All rights reserved.
@@ -642,3 +646,58 @@ The :mod:`xmlrpclib` module contains the following notice::
    ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
    OF THIS SOFTWARE.
 
+
+test_epoll
+----------
+
+The :mod:`test_epoll` contains the following notice::
+
+  Copyright (c) 2001-2006 Twisted Matrix Laboratories.
+
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this software and associated documentation files (the
+  "Software"), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
+
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Select kqueue
+-------------
+
+The :mod:`select` and contains the following notice for the kqueue interface::
+
+  Copyright (c) 2000 Doug White, 2006 James Knight, 2007 Christian Heimes
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+  OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+  SUCH DAMAGE.
