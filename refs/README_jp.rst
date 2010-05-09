@@ -118,9 +118,6 @@ jptool/converter/converter/filenamemap.py を読むことで、新規に追加�
 ===================
 /
    翻訳していくターゲットとなるディレクトリ.
-   cvs_r25 を reST に変換したもの。
-   ``$ python jptool/converter/convert.py refs/cvs_r25 .``
-   で作成。
 
 /refs/cvs_r25
    cvsリポジトリの r25 タグからcheckoutした日本語texファイルについて、converterで
