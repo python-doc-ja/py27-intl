@@ -58,8 +58,8 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
 .. data:: name
 
-   import されているオペレーティング・システム依存モジュールの名前です。現在次の名前が登録されています: ``'posix'``, ``'nt'`` 、
-   ``'dos'`` 、 ``'mac'`` 、 ``'os2'`` 、 ``'ce'`` 、 ``'java'`` 、 ``'riscos'`` 。
+   import されているオペレーティング・システム依存モジュールの名前です。現在次の名前が登録されています: ``'posix'``, ``'nt'``,
+   ``'dos'``, ``'mac'``, ``'os2'``, ``'ce'``, ``'java'``, ``'riscos'`` 。
 
 .. _os-procinfo:
 
@@ -188,8 +188,8 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
    .. index:: single: environment variables; setting
 
-   *varname* と名づけられた環境変数の値を文字列 *value* に設定します。このような環境変数への変更は、 :func:`os.system` 、
-   :func:`popen`  、 :func:`fork` および :func:`execv`  により起動された子プロセスに影響します。利用できる環境:
+   *varname* と名づけられた環境変数の値を文字列 *value* に設定します。このような環境変数への変更は、 :func:`os.system`,
+   :func:`popen` , :func:`fork` および :func:`execv`  により起動された子プロセスに影響します。利用できる環境:
    主な Unix互換環境、Windows。
 
    .. note::
@@ -297,7 +297,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
    .. index:: single: environment variables; deleting
 
-   *varname* という名前の環境変数を取り消します。このような環境の変化は :func:`os.system` 、 :func:`popen` または
+   *varname* という名前の環境変数を取り消します。このような環境の変化は :func:`os.system`, :func:`popen` または
    :func:`fork` と :func:`execv` で開始されるサブプロセスに影響を与えます。利用できる環境:  ほとんどの
    Unix互換環境、Windows
 
@@ -322,7 +322,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    :func:`open`  における対応する引数と同じ意味を持ちます。利用できる環境: Unix、Windows
 
    .. versionchanged:: 2.3
-      引数 *mode* は、指定されるならば、 ``'r'`` 、 ``'w'`` 、 ``'a'`` のいずれかの文字で始まらなければなりません。そうでなければ
+      引数 *mode* は、指定されるならば、 ``'r'``, ``'w'``, ``'a'`` のいずれかの文字で始まらなければなりません。そうでなければ
       :exc:`ValueError` が送出されます.
 
    .. versionchanged:: 2.5
@@ -455,7 +455,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    .. note::
 
       注:この関数は低レベルの I/O のためのもので、 :func:`open` や  :func:`pipe` が返すファイル記述子に対して適用しなければ
-      なりません。組み込み関数 :func:`open` や :func:`popen` 、 :func:`fdopen` の返す "ファイルオブジェクト"
+      なりません。組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す "ファイルオブジェクト"
       を閉じるには、オブジェクトの :meth:`close` メソッドを使ってください。
 
 
@@ -621,7 +621,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
       この関数は低レベルの I/O のためのもので、 :func:`open` や :func:`pipe`
       が返すファイル記述子に対して適用しなければなりません。
-      組み込み関数 :func:`open` や :func:`popen` 、 :func:`fdopen` の返す "ファイルオブジェクト"
+      組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す "ファイルオブジェクト"
       、あるいは :data:``sys.stdin`` から読み出すには、オブジェクトの
       :meth:`read` か :meth:`readline` メソッドを使ってください。
 
@@ -653,8 +653,8 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
       この関数は低レベルの I/O のためのもので、 :func:`open` や :func:`pipe`
       が返すファイル記述子に対して適用しなければなりません。
-      組み込み関数 :func:`open` や :func:`popen` 、 :func:`fdopen` の返す "ファイルオブジェクト"
-      、あるいは ``sys.stdout`` 、 ``sys.stderr`` に書き込むには、オブジェクトの :meth:`write`
+      組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す "ファイルオブジェクト"
+      、あるいは ``sys.stdout``, ``sys.stderr`` に書き込むには、オブジェクトの :meth:`write`
       メソッドを使ってください。
 
 .. The following constants are options for the *flags* parameter to the
@@ -736,7 +736,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    実 uid/gid を使って *path* に対するアクセスが可能か調べます。ほとんどのオペレーティングシステムは実行 uid/gid を使うため、
    このルーチンは suid/sgid 環境において、プログラムを起動したユーザが *path* に対するアクセス権をもっているかを調べる
    ために使われます。 *path* が存在するかどうかを調べるには  *mode* を :const:`F_OK` にします。ファイル操作許可
-   (permission) を調べるために :const:`R_OK` 、 :const:`W_OK` 、 :const:`X_OK`
+   (permission) を調べるために :const:`R_OK`, :const:`W_OK`, :const:`X_OK`
    から一つまたはそれ以上のフラグと OR をとることもできます。アクセスが許可されている場合 ``True`` を、そうでない場合 ``False``
    を返します。詳細は :manpage:`access(2)` のマニュアルページを参照してください。
    利用できる環境: Unix、Windows
@@ -858,7 +858,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    .. note::
 
       Windows でも :func:`chmod` はサポートされていますが、ファイルの読み込み専用フラグを (定数 ``S_IWRITE`` と
-      ``S_IREAD`` 、または対応する整数値を通して) 設定できるだけです。他のビットは全て無視されます。
+      ``S_IREAD``,または対応する整数値を通して) 設定できるだけです。他のビットは全て無視されます。
 
 
 .. function:: chown(path, uid, gid)
@@ -1041,7 +1041,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    :func:`removedirs` は *path* に現れる親ディレクトリをエラーが送出されるまで (このエラーは通常、
    指定したディレクトリの親ディレクトリが空でないことを意味するだけなので無視されます) 順に削除することを試みます。
    例えば、 ``os.removedirs('foo/bar/baz')`` では最初にディレクトリ ``'foo/bar/baz'`` を削除し、次に
-   ``'foo/bar'`` 、さらに ``'foo'`` をそれらが空ならば削除します。末端のディレクトリが削除できなかった場合には
+   ``'foo/bar'``,さらに ``'foo'`` をそれらが空ならば削除します。末端のディレクトリが削除できなかった場合には
    :exc:`OSError` が送出されます。
 
    .. versionadded:: 1.5.2
@@ -1106,16 +1106,16 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    :attr:`st_birthtime` (ファイル生成時刻) も利用可能なときがあります (ただし root
    がそれらを使うことにした場合以外は値が入っていないでしょう)。
 
-   Mac OS システムでは、以下の属性: :attr:`st_rsize` 、 :attr:`st_creator` 、 :attr:`st_type` 、
+   Mac OS システムでは、以下の属性: :attr:`st_rsize`, :attr:`st_creator`, :attr:`st_type`,
    も利用可能なときがあります。
 
    RISCOS システムでは、以下の属性: :attr:`st_ftype` (file type)、 :attr:`st_attrs`
    (attributes)、 :attr:`st_obtype` (object type)、も利用可能なときがあります。
 
    後方互換性のために、 :func:`stat` の戻り値は少なくとも 10 個の整数からなるタプルとしてアクセスすることができます。このタプルはもっとも重要な
-   (かつ可搬性のある) :ctype:`stat` 構造体のメンバを与えており、以下の順番、 :attr:`st_mode` 、 :attr:`st_ino` 、
-   :attr:`st_dev` 、 :attr:`st_nlink` 、 :attr:`st_uid` 、 :attr:`st_gid` 、
-   :attr:`st_size` 、 :attr:`st_atime` 、 :attr:`st_mtime` 、 :attr:`st_ctime` 、に並んでいます。
+   (かつ可搬性のある) :ctype:`stat` 構造体のメンバを与えており、以下の順番、 :attr:`st_mode`, :attr:`st_ino`,
+   :attr:`st_dev`, :attr:`st_nlink`, :attr:`st_uid`, :attr:`st_gid`,
+   :attr:`st_size`, :attr:`st_atime`, :attr:`st_mtime`, :attr:`st_ctime`,に並んでいます。
 
    .. index:: module: stat
 
@@ -1162,10 +1162,10 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 .. function:: statvfs(path)
 
    与えられた *path* に対して :cfunc:`statvfs` システムコールを実行します。戻り値はオブジェクトで、その属性は与えられたパスが収め
-   られているファイルシステムについて記述したものです。かく属性は :ctype:`statvfs` 構造体のメンバ: :attr:`f_bsize` 、
-   :attr:`f_frsize` 、 :attr:`f_blocks` 、 :attr:`f_bfree` 、 :attr:`f_bavail` 、
-   :attr:`f_files` 、 :attr:`f_ffree` 、 :attr:`f_favail` 、 :attr:`f_flag` 、
-   :attr:`f_namemax` 、に対応します。利用できる環境: Unix。
+   られているファイルシステムについて記述したものです。かく属性は :ctype:`statvfs` 構造体のメンバ: :attr:`f_bsize`,
+   :attr:`f_frsize`, :attr:`f_blocks`, :attr:`f_bfree`, :attr:`f_bavail`,
+   :attr:`f_files`, :attr:`f_ffree`, :attr:`f_favail`, :attr:`f_flag`,
+   :attr:`f_namemax`,に対応します。利用できる環境: Unix。
 
    .. index:: module: statvfs
 
@@ -1391,16 +1391,16 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    パラメタとして渡されます。
    どちらの場合も、子プロセスに渡す引数は動作させようとしているコマンドの名前から始めるべきですが、これは強制ではありません。
 
-   末尾近くに "p" をもつ型 (:func:`execlp` 、 :func:`execlpe` 、 :func:`execvp` 、および
+   末尾近くに "p" をもつ型 (:func:`execlp`, :func:`execlpe`, :func:`execvp`,および
    :func:`execvpe`) は、プログラム *file* を探すために環境変数 :envvar:`PATH` を利用します。環境変数が (次の段で述べる
    :func:`exec\*e` 型関数で) 置き換えられる場合、環境変数は :envvar:`PATH` を決定する上の情報源として使われます。
-   その他の型、 :func:`execl` 、 :func:`execle` 、 :func:`execv` 、および :func:`execve` では、実行
+   その他の型、 :func:`execl`, :func:`execle`, :func:`execv`,および :func:`execve` では、実行
    コードを探すために :envvar:`PATH` を使いません。 *path* には適切に設定された絶対パスまたは相対パスが入っていなくてはなりません。
 
-   :func:`execle` 、 :func:`execlpe` 、 :func:`execve` 、および :func:`execvpe`
+   :func:`execle`, :func:`execlpe`, :func:`execve`,および :func:`execvpe`
    (全て末尾に "e" がついていることに注意してください) では、 *env* パラメタは新たなプロセスで利用
    される環境変数を定義するためのマップ型でなくてはなりません(現在のプロセスの環境変数の代わりに利用されます);
-   :func:`execl` 、 :func:`execlp` 、 :func:`execv` 、および
+   :func:`execl`, :func:`execlp`, :func:`execv`,および
    :func:`execvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
    
    利用できる環境: Unix、Windows
@@ -1650,16 +1650,16 @@ Python で書かれたシステムプログラムに使います。
    関数の追加パラメタとなります。 "v" 型は、パラメタの数が可変の時に便利で、リストかタプルの引数が *args*
    パラメタとして渡されます。どちらの場合も、子プロセスに渡す引数は動作させようとしているコマンドの名前から始まらなくてはなりません。
 
-   末尾近くに "p" をもつ型 (:func:`spawnlp` 、 :func:`spawnlpe` 、 :func:`spawnvp` 、および
+   末尾近くに "p" をもつ型 (:func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`,および
    :func:`spawnvpe`) は、プログラム *file* を探すために環境変数 :envvar:`PATH` を利用します。環境変数が
    (次の段で述べる :func:`spawn\*e` 型関数で) 置き換えられる場合、環境変数は :envvar:`PATH`
-   を決定する上の情報源として使われます。その他の型、 :func:`spawnl` 、 :func:`spawnle` 、 :func:`spawnv` 、および
+   を決定する上の情報源として使われます。その他の型、 :func:`spawnl`, :func:`spawnle`, :func:`spawnv`,および
    :func:`spawnve` では、実行コードを探すために :envvar:`PATH` を使いません。 *path*
    には適切に設定された絶対パスまたは相対パスが入っていなくてはなりません。
 
-   :func:`spawnle` 、 :func:`spawnlpe` 、 :func:`spawnve` 、および :func:`spawnvpe`
+   :func:`spawnle`, :func:`spawnlpe`, :func:`spawnve`,および :func:`spawnvpe`
    (全て末尾に "e" がついていることに注意してください) では、 *env* パラメタは新たなプロセスで利用
-   される環境変数を定義するためのマップ型でなくてはなりません; :func:`spawnl` 、 :func:`spawnlp` 、 :func:`spawnv` 、
+   される環境変数を定義するためのマップ型でなくてはなりません; :func:`spawnl`, :func:`spawnlp`, :func:`spawnv`,
    および :func:`spawnvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
    *env* 辞書のキーと値は全て文字列である必要があります。不正なキーや値を与えると関数が失敗し、
    ``127`` を返します。
@@ -1674,7 +1674,7 @@ Python で書かれたシステムプログラムに使います。
 
    は等価です。利用できる環境: Unix、Windows。
 
-   :func:`spawnlp` 、 :func:`spawnlpe` 、 :func:`spawnvp`  および :func:`spawnvpe` は
+   :func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`  および :func:`spawnvpe` は
    Windows では利用できません。
 
    .. versionadded:: 1.6
@@ -1739,7 +1739,7 @@ Python で書かれたシステムプログラムに使います。
 .. function:: system(command)
 
    サブシェル内でコマンド (文字列) を実行します。この関数は標準 C 関数 :cfunc:`system` を使って実装されており、
-   :cfunc:`system` と同じ制限があります。 :data:`os.environ` 、 :data:`sys.stdin` 等に対する変更を行っても、
+   :cfunc:`system` と同じ制限があります。 :data:`os.environ`, :data:`sys.stdin` 等に対する変更を行っても、
    実行されるコマンドの環境には反映されません。
 
    Unixでは、戻り値はプロセスの終了ステータスで、 :func:`wait`  で定義されている書式にコード化されています。 POSIX は
@@ -1858,7 +1858,7 @@ Python で書かれたシステムプログラムに使います。
 
    .. versionadded:: 2.3
 
-以下の関数は :func:`system` 、 :func:`wait` 、あるいは :func:`waitpid` が返すプロセス状態コード
+以下の関数は :func:`system`, :func:`wait`, あるいは :func:`waitpid` が返すプロセス状態コード
 を引数にとります。これらの関数はプロセスの配置を決めるために利用することができます。
 
 
