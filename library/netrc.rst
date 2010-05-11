@@ -8,8 +8,6 @@
 .. sectionauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 
 
-.. % Note the \protect needed for \file... ;-(
-
 .. versionadded:: 1.5.2
 
 :class:`netrc` クラスは、Unix :program:`ftp` プログラムや他の FTP クライアントで用いられる netrc
@@ -19,14 +17,14 @@
 .. class:: netrc([file])
 
    :class:`netrc` のインスタンスやサブクラスのインスタンスは netrc ファイルのデータをカプセル化します。初期化の際の引数が存在する
-   場合、解析対象となるファイルの指定になります。引数がない場合、 ユーザのホームディレクトリ下にある :file:`.netrc` が読み出されます。
-   解析エラーが発生した場合、ファイル名、行番号、解析を中断したトークン に関する情報の入った :exc:`NetrcParseError` を送出します。
+   場合、解析対象となるファイルの指定になります。引数がない場合、ユーザのホームディレクトリ下にある :file:`.netrc` が読み出されます。
+   解析エラーが発生した場合、ファイル名、行番号、解析を中断したトークンに関する情報の入った :exc:`NetrcParseError` を送出します。
 
 
 .. exception:: NetrcParseError
 
    ソースファイルのテキスト中で文法エラーに遭遇した場合に :class:`netrc`  クラスによって送出される例外です。この例外のインスタンスは 3 つの
-   インスタンス変数を持っています: :attr:`msg` はテキストによる エラーの説明で、:attr:`filename` はソースファイルの名前、 そして
+   インスタンス変数を持っています: :attr:`msg` はテキストによるエラーの説明で、 :attr:`filename` はソースファイルの名前、そして
    :attr:`lineno` はエラーが発見された行番号です。
 
 
@@ -40,21 +38,21 @@ netrc オブジェクト
 
 .. method:: netrc.authenticators(host)
 
-   *host* の認証情報として、三要素のタプル  ``(login, account, password)`` を返します。 与えられた host
+   *host* の認証情報として、三要素のタプル  ``(login, account, password)`` を返します。与えられた host
    に対するエントリが netrc ファイルにない場合、 'default' エントリに関連付けられたタプルが返されます。 host
    に対応するエントリがなく、default エントリもない場合、 ``None`` を返します。
 
 
 .. method:: netrc.__repr__()
 
-   クラスの持っているデータを netrc ファイルの書式に従った文字列で 出力します。(コメントは無視され、エントリが並べ替えられる可能性 があります。)
+   クラスの持っているデータを netrc ファイルの書式に従った文字列で出力します。(コメントは無視され、エントリが並べ替えられる可能性があります。)
 
-:class:`netrc` のインスタンスは以下の公開されたインスタンス変数 を持っています:
+:class:`netrc` のインスタンスは以下の公開されたインスタンス変数を持っています:
 
 
 .. attribute:: netrc.hosts
 
-   ホスト名を ``(login, account, password)`` から なるタプルに対応づけている辞書です。'default' エントリがある場合、
+   ホスト名を ``(login, account, password)`` からなるタプルに対応づけている辞書です。'default' エントリがある場合、
    その名前の擬似ホスト名として表現されます。
 
 
