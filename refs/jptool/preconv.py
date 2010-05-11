@@ -7,11 +7,12 @@ import unicodedata
 
 R0 = re.compile(r"""``[^`]+``""")
 R1 = re.compile(r""":\w+:`[^`]+`""")
-R2 = re.compile(r"""\*[^\*]*[^ \*]+[^\*]*\*""")
+R2 = re.compile(r"""\*\*[^\*]*[^ \*]+[^\*]*\*\*""")
+R3 = re.compile(r"""\*[^\*]*[^ \*]+[^\*]*\*""")
 
-SPLITTER = """,. ()[]'\"\r\n"""
+SPLITTER = """,. ()[]'\"\r\n*"""
 
-REX = [R0, R1, R2]
+REX = [R0, R1, R2, R3]
 
 def _test(uc, i):
     if not uc:
