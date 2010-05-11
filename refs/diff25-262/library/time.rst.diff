@@ -57,6 +57,9 @@
 -  :func:`strftime`, is a sequence of 9 integers.  The return values of
 -  :func:`gmtime`, :func:`localtime`, and :func:`strptime` also offer attribute
 -  names for individual fields.
++  :func:`strftime`, may be considered as a sequence of 9 integers.  The return
++  values of :func:`gmtime`, :func:`localtime`, and :func:`strptime` also offer
++  attribute names for individual fields.
 -
 -  +-------+------------------+------------------------------+
 -  | Index | Attribute        | Values                       |
@@ -80,9 +83,6 @@
 -  +-------+------------------+------------------------------+
 -  | 8     | :attr:`tm_isdst` | 0, 1 or -1; see below        |
 -  +-------+------------------+------------------------------+
-+  :func:`strftime`, may be considered as a sequence of 9 integers.  The return
-+  values of :func:`gmtime`, :func:`localtime`, and :func:`strptime` also offer
-+  attribute names for individual fields.
 +
 +  +-------+-------------------+---------------------------------+
 +  | Index | Attribute         | Values                          |
@@ -120,7 +120,6 @@
       The time value sequence was changed from a tuple to a :class:`struct_time`, with
       the addition of attribute names for the fields.
  
--The module defines the following functions and data items:
 +* Use the following functions to convert between time representations:
  
 +  +-------------------------+-------------------------+-------------------------+
@@ -140,6 +139,7 @@
 +  +-------------------------+-------------------------+-------------------------+
 +
 +
+-The module defines the following functions and data items:
 +The module defines the following functions and data items:
  
  .. data:: accept2dyear
@@ -167,18 +167,18 @@
  
     Parse a string representing a time according to a format.  The return  value is
 -   a :class:`struct_time` as returned by :func:`gmtime` or :func:`localtime`.  The
++   a :class:`struct_time` as returned by :func:`gmtime` or :func:`localtime`.
 -   *format* parameter uses the same directives as those used by :func:`strftime`;
 -   it defaults to ``"%a %b %d %H:%M:%S %Y"`` which matches the formatting returned
 -   by :func:`ctime`.  If *string* cannot be parsed according to *format*,
++   The *format* parameter uses the same directives as those used by
++   :func:`strftime`; it defaults to ``"%a %b %d %H:%M:%S %Y"`` which matches the
++   formatting returned by :func:`ctime`. If *string* cannot be parsed according to
 -   :exc:`ValueError` is raised.  If the string to be parsed has excess data after
 -   parsing, :exc:`ValueError` is raised.  The default values used to fill in any
 -   missing data when more accurate values cannot be inferred are ``(1900, 1, 1, 0,
 -   0, 0, 0, 1, -1)`` .
-+   a :class:`struct_time` as returned by :func:`gmtime` or :func:`localtime`.
 +
-+   The *format* parameter uses the same directives as those used by
-+   :func:`strftime`; it defaults to ``"%a %b %d %H:%M:%S %Y"`` which matches the
-+   formatting returned by :func:`ctime`. If *string* cannot be parsed according to
 +   *format*, or if it has excess data after parsing, :exc:`ValueError` is raised.
 +   The default values used to fill in any missing data when more accurate values
 +   cannot be inferred are ``(1900, 1, 1, 0, 0, 0, 0, 1, -1)``.
