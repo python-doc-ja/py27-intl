@@ -277,15 +277,32 @@
 -   keystroke as a parameter; command dispatch is done on the result. This method
 -   returns the window contents as a string; whether blanks in the window are
 -   included is affected by the :attr:`stripspaces` member.
++      This is the entry point you will normally use.  It accepts editing
++      keystrokes until one of the termination keystrokes is entered.  If
++      *validator* is supplied, it must be a function.  It will be called for
++      each keystroke entered with the keystroke as a parameter; command dispatch
++      is done on the result. This method returns the window contents as a
++      string; whether blanks in the window are included is affected by the
++      :attr:`stripspaces` member.
++
++
 -
 -
 -.. method:: Textbox.do_command(ch)
 -
++   .. method:: do_command(ch)
++
 -   Process a single command keystroke.  Here are the supported special keystrokes:
++      Process a single command keystroke.  Here are the supported special
++      keystrokes:
++
 -
 -   +------------------+-------------------------------------------+
 -   | Keystroke        | Action                                    |
 -   +==================+===========================================+
++      +------------------+-------------------------------------------+
++      | Keystroke        | Action                                    |
++      +==================+===========================================+
 -   | :kbd:`Control-A` | Go to left edge of window.                |
 -   +------------------+-------------------------------------------+
 -   | :kbd:`Control-B` | Cursor left, wrapping to previous line if |
@@ -301,74 +318,6 @@
 -   +------------------+-------------------------------------------+
 -   | :kbd:`Control-G` | Terminate, returning the window contents. |
 -   +------------------+-------------------------------------------+
--   | :kbd:`Control-H` | Delete character backward.                |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-J` | Terminate if the window is 1 line,        |
--   |                  | otherwise insert newline.                 |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-K` | If line is blank, delete it, otherwise    |
--   |                  | clear to end of line.                     |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-L` | Refresh screen.                           |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-N` | Cursor down; move down one line.          |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-O` | Insert a blank line at cursor location.   |
--   +------------------+-------------------------------------------+
--   | :kbd:`Control-P` | Cursor up; move up one line.              |
--   +------------------+-------------------------------------------+
--
--   Move operations do nothing if the cursor is at an edge where the movement is not
--   possible.  The following synonyms are supported where possible:
--
--   +------------------------+------------------+
--   | Constant               | Keystroke        |
--   +========================+==================+
--   | :const:`KEY_LEFT`      | :kbd:`Control-B` |
--   +------------------------+------------------+
--   | :const:`KEY_RIGHT`     | :kbd:`Control-F` |
--   +------------------------+------------------+
--   | :const:`KEY_UP`        | :kbd:`Control-P` |
--   +------------------------+------------------+
--   | :const:`KEY_DOWN`      | :kbd:`Control-N` |
--   +------------------------+------------------+
--   | :const:`KEY_BACKSPACE` | :kbd:`Control-h` |
--   +------------------------+------------------+
--
--   All other keystrokes are treated as a command to insert the given character and
--   move right (with line wrapping).
--
--
--.. method:: Textbox.gather()
--
--   This method returns the window contents as a string; whether blanks in the
--   window are included is affected by the :attr:`stripspaces` member.
--
--
--.. attribute:: Textbox.stripspaces
--
--   This data member is a flag which controls the interpretation of blanks in the
--   window.  When it is on, trailing blanks on each line are ignored; any cursor
--   motion that would land the cursor on a trailing blank goes to the end of that
--   line instead, and trailing blanks are stripped when the window contents are
--   gathered.
-+      This is the entry point you will normally use.  It accepts editing
-+      keystrokes until one of the termination keystrokes is entered.  If
-+      *validator* is supplied, it must be a function.  It will be called for
-+      each keystroke entered with the keystroke as a parameter; command dispatch
-+      is done on the result. This method returns the window contents as a
-+      string; whether blanks in the window are included is affected by the
-+      :attr:`stripspaces` member.
-+
-+
-+   .. method:: do_command(ch)
-+
-+      Process a single command keystroke.  Here are the supported special
-+      keystrokes:
-+
-+      +------------------+-------------------------------------------+
-+      | Keystroke        | Action                                    |
-+      +==================+===========================================+
 +      | :kbd:`Control-A` | Go to left edge of window.                |
 +      +------------------+-------------------------------------------+
 +      | :kbd:`Control-B` | Cursor left, wrapping to previous line if |
@@ -384,6 +333,14 @@
 +      +------------------+-------------------------------------------+
 +      | :kbd:`Control-G` | Terminate, returning the window contents. |
 +      +------------------+-------------------------------------------+
+-   | :kbd:`Control-H` | Delete character backward.                |
+-   +------------------+-------------------------------------------+
+-   | :kbd:`Control-J` | Terminate if the window is 1 line,        |
+-   |                  | otherwise insert newline.                 |
+-   +------------------+-------------------------------------------+
+-   | :kbd:`Control-K` | If line is blank, delete it, otherwise    |
+-   |                  | clear to end of line.                     |
+-   +------------------+-------------------------------------------+
 +      | :kbd:`Control-H` | Delete character backward.                |
 +      +------------------+-------------------------------------------+
 +      | :kbd:`Control-J` | Terminate if the window is 1 line,        |
@@ -392,6 +349,14 @@
 +      | :kbd:`Control-K` | If line is blank, delete it, otherwise    |
 +      |                  | clear to end of line.                     |
 +      +------------------+-------------------------------------------+
+-   | :kbd:`Control-L` | Refresh screen.                           |
+-   +------------------+-------------------------------------------+
+-   | :kbd:`Control-N` | Cursor down; move down one line.          |
+-   +------------------+-------------------------------------------+
+-   | :kbd:`Control-O` | Insert a blank line at cursor location.   |
+-   +------------------+-------------------------------------------+
+-   | :kbd:`Control-P` | Cursor up; move up one line.              |
+-   +------------------+-------------------------------------------+
 +      | :kbd:`Control-L` | Refresh screen.                           |
 +      +------------------+-------------------------------------------+
 +      | :kbd:`Control-N` | Cursor down; move down one line.          |
@@ -400,10 +365,27 @@
 +      +------------------+-------------------------------------------+
 +      | :kbd:`Control-P` | Cursor up; move up one line.              |
 +      +------------------+-------------------------------------------+
+-
+-   Move operations do nothing if the cursor is at an edge where the movement is not
+-   possible.  The following synonyms are supported where possible:
 +
 +      Move operations do nothing if the cursor is at an edge where the movement
 +      is not possible.  The following synonyms are supported where possible:
 +
+-
+-   +------------------------+------------------+
+-   | Constant               | Keystroke        |
+-   +========================+==================+
+-   | :const:`KEY_LEFT`      | :kbd:`Control-B` |
+-   +------------------------+------------------+
+-   | :const:`KEY_RIGHT`     | :kbd:`Control-F` |
+-   +------------------------+------------------+
+-   | :const:`KEY_UP`        | :kbd:`Control-P` |
+-   +------------------------+------------------+
+-   | :const:`KEY_DOWN`      | :kbd:`Control-N` |
+-   +------------------------+------------------+
+-   | :const:`KEY_BACKSPACE` | :kbd:`Control-h` |
+-   +------------------------+------------------+
 +      +------------------------+------------------+
 +      | Constant               | Keystroke        |
 +      +========================+==================+
@@ -417,16 +399,32 @@
 +      +------------------------+------------------+
 +      | :const:`KEY_BACKSPACE` | :kbd:`Control-h` |
 +      +------------------------+------------------+
-+
+-
+-   All other keystrokes are treated as a command to insert the given character and
+-   move right (with line wrapping).
 +      All other keystrokes are treated as a command to insert the given
 +      character and move right (with line wrapping).
 +
-+
+-
+-.. method:: Textbox.gather()
+-
+-   This method returns the window contents as a string; whether blanks in the
+-   window are included is affected by the :attr:`stripspaces` member.
 +   .. method:: gather()
 +
 +      This method returns the window contents as a string; whether blanks in the
 +      window are included is affected by the :attr:`stripspaces` member.
 +
++
+-
+-
+-.. attribute:: Textbox.stripspaces
+-
+-   This data member is a flag which controls the interpretation of blanks in the
+-   window.  When it is on, trailing blanks on each line are ignored; any cursor
+-   motion that would land the cursor on a trailing blank goes to the end of that
+-   line instead, and trailing blanks are stripped when the window contents are
+-   gathered.
 +
 +   .. attribute:: stripspaces
 +
