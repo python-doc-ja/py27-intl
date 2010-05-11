@@ -425,7 +425,6 @@
 +   there are no file descriptors for the file. Availability: Unix,
     Windows.
  
--For each of the following :func:`popen` variants, if *bufsize* is specified, it
 +There are a number of different :func:`popen\*` functions that provide slightly
 +different ways to create subprocesses.
 +
@@ -433,6 +432,7 @@
 +   All of the :func:`popen\*` functions are obsolete. Use the :mod:`subprocess`
 +   module.
 +
+-For each of the following :func:`popen` variants, if *bufsize* is specified, it
 +For each of the :func:`popen\*` variants, if *bufsize* is specified, it
  specifies the buffer size for the I/O pipes. *mode*, if provided, should be the
  string ``'b'`` or ``'t'``; on Windows this is needed to determine whether the
@@ -1561,14 +1561,14 @@
 +   and will have the same process id as the caller.  Errors will be reported as
     :exc:`OSError` exceptions.
  
--   The ``'l'`` and ``'v'`` variants of the :func:`exec\*` functions differ in how
--   command-line arguments are passed.  The ``'l'`` variants are perhaps the easiest
 +   The current process is replaced immediately. Open file objects and
 +   descriptors are not flushed, so if there may be data buffered
 +   on these open files, you should flush them using
 +   :func:`sys.stdout.flush` or :func:`os.fsync` before calling an
 +   :func:`exec\*` function.
 +
+-   The ``'l'`` and ``'v'`` variants of the :func:`exec\*` functions differ in how
+-   command-line arguments are passed.  The ``'l'`` variants are perhaps the easiest
 +   The "l" and "v" variants of the :func:`exec\*` functions differ in how
 +   command-line arguments are passed.  The "l" variants are perhaps the easiest
     to work with if the number of parameters is fixed when the code is written; the
