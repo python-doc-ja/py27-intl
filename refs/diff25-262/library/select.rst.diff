@@ -49,7 +49,6 @@
     by polling objects.
  
  
--.. function:: select(iwtd, owtd, ewtd[, timeout])
 +.. function:: kqueue()
 +
 +   (Only supported on BSD.)  Returns a kernel queue object object; see section
@@ -66,6 +65,7 @@
 +   .. versionadded:: 2.6
 +
 +
+-.. function:: select(iwtd, owtd, ewtd[, timeout])
 +.. function:: select(rlist, wlist, xlist[, timeout])
  
     This is a straightforward interface to the Unix :cfunc:`select` system call.
