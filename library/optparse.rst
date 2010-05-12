@@ -932,7 +932,7 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
   ``callback`` に指定された関数を次のように呼び出します。  ::
 
-     func(option, opt_str, value, parser, *args, * *kwargs)
+     func(option, opt_str, value, parser, *args, **kwargs)
 
   詳細は、 :ref:`optparse-option-callbacks` 節を参照してください。
 
@@ -1341,7 +1341,7 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 コールバックは全て以下の形式で呼び出されます::
 
-   func(option, opt_str, value, parser, *args, * *kwargs)
+   func(option, opt_str, value, parser, *args, **kwargs)
 
 ここで、
 
