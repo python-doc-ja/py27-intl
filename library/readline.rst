@@ -5,13 +5,13 @@
 .. module:: readline
    :platform: Unix
    :synopsis: Python のための GNU readline サポート。
-.. sectionauthor:: Skip Montanaro <skip@mojam.com>
+.. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 
-:mod:`readline` モジュールでは、補完をしやすくしたり、 ヒストリファイルを Python インタプリタから読み書きできるように
-するためのいくつかの関数を定義しています。 このモジュールは直接使うことも :mod:`rlcompleter` モジュールを介して使うこともできます。
+:mod:`readline` モジュールでは、補完をしやすくしたり、ヒストリファイルを Python インタプリタから読み書きできるように
+するためのいくつかの関数を定義しています。このモジュールは直接使うことも :mod:`rlcompleter` モジュールを介して使うこともできます。
 このモジュールで利用される設定はインタプリタの対話プロンプトの振舞い、
-組み込みの:func:`raw_input`と:func:`input`関数の振舞いに影響します。
+組み込みの :func:`raw_input` と :func:`input` 関数の振舞いに影響します。
 
 :mod:`readline` モジュールでは以下の関数を定義しています:
 
@@ -33,17 +33,17 @@
 
 .. function:: read_init_file([filename])
 
-   readline 初期化ファイルを解釈します。 標準のファイル名設定は最後に使われたファイル名です。
+   readline 初期化ファイルを解釈します。標準のファイル名設定は最後に使われたファイル名です。
 
 
 .. function:: read_history_file([filename])
 
-   readline ヒストリファイルを読み出します。 標準のファイル名設定は :file:`~/.history` です。
+   readline ヒストリファイルを読み出します。標準のファイル名設定は :file:`~/.history` です。
 
 
 .. function:: write_history_file([filename])
 
-   readline ヒストリファイルを保存します。 標準のファイル名設定は :file:`~/.history` です。
+   readline ヒストリファイルを保存します。標準のファイル名設定は :file:`~/.history` です。
 
 
 .. function:: clear_history()
@@ -55,26 +55,26 @@
 
 .. function:: get_history_length()
 
-   ヒストリファイルに必要な長さを返します。負の値はヒストリファイル のサイズに制限がないことを示します。
+   ヒストリファイルに必要な長さを返します。負の値はヒストリファイルのサイズに制限がないことを示します。
 
 
 .. function:: set_history_length(length)
 
    ヒストリファイルに必要な長さを設定します。この値は :func:`write_history_file` がヒストリを保存する際にファイルを
-   切り詰めるために使います。負の値はヒストリファイルのサイズを制限 しないことを示します。
+   切り詰めるために使います。負の値はヒストリファイルのサイズを制限しないことを示します。
 
 
 .. function:: get_current_history_length()
 
-   現在のヒストリ行数を返します(この値は:func:`get_history_length`で取
-   得する異なります。:func:`get_history_length`はヒストリファイルに書 き出される最大行数を返します)。
+   現在のヒストリ行数を返します(この値は :func:`get_history_length` で取
+   得する異なります。 :func:`get_history_length` はヒストリファイルに書き出される最大行数を返します)。
 
    .. versionadded:: 2.3
 
 
 .. function:: get_history_item(index)
 
-   現在のヒストリから、*index* 番目の項目を返します。
+   現在のヒストリから、 *index* 番目の項目を返します。
 
    .. versionadded:: 2.3
 
@@ -102,32 +102,40 @@
 
 .. function:: set_startup_hook([function])
 
-   startup_hook 関数を設定または除去します。*function* が指定されて いれば、新たな startup_hook 関数として用いられます;
-   省略されるか ``None`` になっていれば、現在インストール されているフック関数は除去されます。 startup_hook 関数は readline
-   が最初のプロンプトを出力する 直前に引数なしで呼び出されます。
+   startup_hook 関数を設定または除去します。 *function* が指定されていれば、新たな startup_hook 関数として用いられます;
+   省略されるか ``None`` になっていれば、現在インストールされているフック関数は除去されます。 startup_hook 関数は readline
+   が最初のプロンプトを出力する直前に引数なしで呼び出されます。
 
 
 .. function:: set_pre_input_hook([function])
 
-   pre_input_hook 関数を設定または除去します。*function* が指定されて いれば、新たな pre_input_hook
-   関数として用いられます;  省略されるか ``None`` になっていれば、現在インストール されているフック関数は除去されます。 pre_input_hook
-   関数は readline が最初のプロンプトを出力した 後で、かつ readline が入力された文字を読み込み始める直前に 引数なしで呼び出されます。
+   pre_input_hook 関数を設定または除去します。 *function* が指定されていれば、新たな pre_input_hook
+   関数として用いられます;  省略されるか ``None`` になっていれば、現在インストールされているフック関数は除去されます。 pre_input_hook
+   関数は readline が最初のプロンプトを出力した後で、かつ readline が入力された文字を読み込み始める直前に引数なしで呼び出されます。
 
 
 .. function:: set_completer([function])
 
-   completer 関数を設定または除去します。*function* が指定されて いれば、新たな completer 関数として用いられます;  省略されるか
-   ``None`` になっていれば、現在インストール されている completer 関数は除去されます。 completer 関数は
+   completer 関数を設定または除去します。 *function* が指定されていれば、新たな completer 関数として用いられます;  省略されるか
+   ``None`` になっていれば、現在インストールされている completer 関数は除去されます。 completer 関数は
    ``function(text, state)`` の形式で、関数が文字列でない値を返すまで *state* を ``0``, ``1``, ``2``,
-   ..., にして呼び出します。 この関数は *text* から始まる文字列の補完結果として可能性の あるものを返さなくてはなりません。
+   ..., にして呼び出します。この関数は *text* から始まる文字列の補完結果として可能性のあるものを返さなくてはなりません。
 
 
 .. function:: get_completer()
 
-   completer 関数を取得します。completer 関数が設定されていなければ ``None``を返します。
+   completer 関数を取得します。completer 関数が設定されていなければ ``None`` を返します。
 
    .. versionadded:: 2.3
 
+
+.. function:: get_completion_type()
+
+   .. Get the type of completion being attempted.
+
+   実行中の補完のタイプを取得します。
+
+   .. versionadded:: 2.6
 
 .. function:: get_begidx()
 
@@ -148,6 +156,23 @@
 
    タブ補完のための readline 単語区切り文字を取得します。
 
+.. function:: set_completion_display_matches_hook([function])
+
+   .. Set or remove the completion display function.  If *function* is
+      specified, it will be used as the new completion display function;
+      if omitted or ``None``, any completion display function already
+      installed is removed.  The completion display function is called as
+      ``function(substitution, [matches], longest_match_length)`` once
+      each time matches need to be displayed.
+
+   補完表示関数を設定あるいは解除します。
+   *function* が指定された場合、それが新しい補完表示関数として利用されます。
+   省略されたり、 ``None`` が渡された場合、既に設定されていた補完表示関数が解除されます。
+   補完表示関数は、マッチの表示が必要になるたびに、
+   ``function(substitution, [matches], longest_match_length)``
+   という形で呼び出されます。
+
+   .. versionadded:: 2.6
 
 .. function:: add_history(line)
 
@@ -166,7 +191,7 @@
 --
 
 以下の例では、ユーザのホームディレクトリにある :file:`.pyhist` という
-名前のヒストリファイルを自動的に読み書きするために、:mod:`readline` モジュールによるヒストリの読み書き関数をどのように使うかを例示しています。
+名前のヒストリファイルを自動的に読み書きするために、 :mod:`readline` モジュールによるヒストリの読み書き関数をどのように使うかを例示しています。
 以下のソースコードは通常、対話セッションの中で :envvar:`PYTHONSTARTUP` ファイルから読み込まれ自動的に実行されることになります。 ::
 
    import os
@@ -179,7 +204,7 @@
    atexit.register(readline.write_history_file, histfile)
    del os, histfile
 
-次の例では :class:`code.InteractiveConsole` クラスを拡張し、ヒストリの保 存・復旧をサポートします。 ::
+次の例では :class:`code.InteractiveConsole` クラスを拡張し、ヒストリの保存・復旧をサポートします。 ::
 
    import code
    import readline
