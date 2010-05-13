@@ -1,10 +1,17 @@
-
 :mod:`httplib` --- HTTP プロトコルクライアント
 ==============================================
 
 .. module:: httplib
    :synopsis: HTTP および HTTPS プロトコルのクライアント  (ソケットを必要とします) 。
 
+.. .. note::
+   The :mod:`httplib` module has been renamed to :mod:`http.client` in Python
+   3.0.  The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to 3.0.
+
+.. note::
+   :mod:`httplib` モジュールは、Python 3.0 では :mod:`http.client` にリネームされました。
+   :term:`2to3` ツールが自動的にソースコードのimportを修正します。
 
 .. index::
    pair: HTTP; protocol
@@ -12,7 +19,7 @@
 
 .. index:: module: urllib
 
-このモジュールでは HTTP および HTTPS プロトコルのクライアント側 を実装しているクラスを定義しています。通常、このモジュールは直接 使いません
+このモジュールでは HTTP および HTTPS プロトコルのクライアント側を実装しているクラスを定義しています。通常、このモジュールは直接使いません
 --- :mod:`urllib` モジュールが HTTP や HTTPS を使った URL を扱う上でこのモジュールを使います。
 
 .. note::
@@ -22,45 +29,74 @@
 このモジュールでは以下のクラスを提供しています:
 
 
-.. class:: HTTPConnection(host[, port])
+.. class:: HTTPConnection(host[, port[, strict[, timeout]]])
 
-   :class:`HTTPConnection` インスタンスは、HTTP サーバとの一回の トランザクションを表現します。インスタンスの生成はホスト名と
-   オプションのポート番号を与えて行います。ポート番号を指定しなかった 場合、ホスト名文字列が ``host:port``
-   の形式であれば、ホスト名からポート番号を導き、そうでない 場合には標準の HTTP ポート番号 (80) を使います。例えば、
-   以下の呼び出しは全て同じサーバの同じポートに接続するインスタンス を生成します::
+   :class:`HTTPConnection` インスタンスは、HTTP サーバとの一回のトランザクションを表現します。インスタンスの生成はホスト名と
+   オプションのポート番号を与えて行います。
+   ポート番号を指定しなかった場合、ホスト名文字列が ``host:port``
+   の形式であれば、ホスト名からポート番号を導き、そうでない場合には標準の HTTP ポート番号 (80) を使います。
+
+   オプションの引数 *strict* に ``True`` が渡された場合(デフォルトでは ``False``)、
+   ステータスラインが正しい(valid)　HTTP/1.0 もしくは 1.1 status line
+   としてパースできなかった時に、 ``BadStatusLine`` 例外を発生させます。
+
+   オプションの引数 *timeout* が渡された場合、ブロックする処理(コネクション接続など)
+   のタイムアウト時間(秒数)として利用されます。(渡されなかった場合は、グローバルのデフォルト
+   タイムアウト設定が利用されます。)
+
+   例えば、以下の呼び出しは全て同じサーバの同じポートに接続するインスタンスを生成します::
 
       >>> h1 = httplib.HTTPConnection('www.cwi.nl')
       >>> h2 = httplib.HTTPConnection('www.cwi.nl:80')
       >>> h3 = httplib.HTTPConnection('www.cwi.nl', 80)
+      >>> h3 = httplib.HTTPConnection('www.cwi.nl', 80, timeout=10)
 
+   .. versionadded:: 2.0
+ 
+   .. versionchanged:: 2.6
+      *timeout* 引数が追加されました
+ 
 
-.. class:: HTTPSConnection(host[, port, key_file, cert_file])
+.. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout]]]]])
 
-   :class:`HTTPConnection` のサブクラスで、セキュアなサーバと 通信するために SSL を使います。標準のポート番号は ``443``
+   :class:`HTTPConnection` のサブクラスで、セキュアなサーバと通信するために SSL を使います。標準のポート番号は ``443``
    です。
-   *key_file*には、秘密鍵を格納したPEM形式ファイルのファイル名を指定します。*cert_file*には、PEM形式の証明書チェーンファイルを指定します。
+   *key_file* には、秘密鍵を格納したPEM形式ファイルのファイル名を指定します。 *cert_file* には、PEM形式の証明書チェーンファイルを指定します。
 
    .. warning::
 
       この関数は証明書の検査を行いません！
 
-必要に応じて以下の例外が送出されます:
+   .. versionchanged:: 2.6
+      *timeout* 引数が追加されました
 
+.. class:: HTTPResponse(sock[, debuglevel=0][, strict=0])
+
+   コネクションに成功したときに、このクラスのインスタンスが返されます。
+   ユーザーから直接利用されることはありません。
+
+   .. versionadded:: 2.0
+
+
+必要に応じて以下の例外が送出されます:
 
 .. exception:: HTTPException
 
    このモジュールにおける他の例外クラスの基底クラスです。 :exc:`Exception` のサブクラスです。
 
+    .. versionadded:: 2.0
 
 .. exception:: NotConnected
 
    :exc:`HTTPException` サブクラスです。
 
+    .. versionadded:: 2.0
 
 .. exception:: InvalidURL
 
-   :exc:`HTTPException` のサブクラスです。ポート番号を指定した ものの、その値が数字でなかったり空のオブジェクトであった場合に送出されます。
+   :exc:`HTTPException` のサブクラスです。ポート番号を指定したものの、その値が数字でなかったり空のオブジェクトであった場合に送出されます。
 
+    .. versionadded:: 2.3
 
 .. exception:: UnknownProtocol
 
@@ -109,7 +145,7 @@
 
 .. exception:: BadStatusLine
 
-   :exc:`HTTPException` のサブクラスです。 サーバが理解できない HTTP 状態コードで応答した場合に送出されます。
+   :exc:`HTTPException` のサブクラスです。サーバが理解できない HTTP 状態コードで応答した場合に送出されます。
 
 このモジュールで定義されている定数は以下の通りです:
 
@@ -336,24 +372,29 @@ HTTPConnection オブジェクト
 
 .. method:: HTTPConnection.request(method, url[, body[, headers]])
 
-   このメソッドは、 HTTP 要求メソッド *method* およびセレクタ *url* を使って、要求をサーバに送ります。*body* 引数を指定する場合、
-   ヘッダが終了した後に送信する文字列データでなければなりません。 ヘッダの Content-Length は自動的に正しい値に設定されます。 *headers*
-   引数は要求と同時に送信される拡張 HTTP ヘッダの内容からなる マップ型でなくてはなりません。
+   このメソッドは、 HTTP 要求メソッド *method* およびセレクタ *url* を使って、要求をサーバに送ります。
+   *body* 引数を指定する場合、ヘッダが終了した後に送信する文字列データでなければなりません。
+   もしくは、開いているファイルオブジェクトを *body* に渡すこともできます。その場合、そのファイルの内容が送信されます。
+   このファイルオブジェクトは、 ``fileno()`` と ``read()`` メソッドをサポートしている必要があります。
+   ヘッダの Content-Length は自動的に正しい値に設定されます。 *headers*
+   引数は要求と同時に送信される拡張 HTTP ヘッダの内容からなるマップ型でなくてはなりません。
 
+   .. versionchanged:: 2.6
+      *body* にファイルオブジェクトを渡せるようになりました
 
 .. method:: HTTPConnection.getresponse()
 
-   サーバに対して HTTP 要求を送り出した後に呼び出されなければりません。 要求に対する応答を取得します。:class:`HTTPResponse`
-   インスタンスを 返します。
+   サーバに対して HTTP 要求を送り出した後に呼び出されなければりません。要求に対する応答を取得します。 :class:`HTTPResponse`
+   インスタンスを返します。
 
    .. note::
 
-      すべての応答を読み込んでからでなければ新しい要求をサーバに送ること はできないことに注意しましょう。
+      すべての応答を読み込んでからでなければ新しい要求をサーバに送ることはできないことに注意しましょう。
 
 
 .. method:: HTTPConnection.set_debuglevel(level)
 
-   デバッグレベル (印字されるデバッグ出力の量) を設定します。 標準のデバッグレベルは ``0`` で、デバッグ出力を全く印字 しません。
+   デバッグレベル (印字されるデバッグ出力の量) を設定します。標準のデバッグレベルは ``0`` で、デバッグ出力を全く印字しません。
 
 
 .. method:: HTTPConnection.connect()
@@ -365,21 +406,21 @@ HTTPConnection オブジェクト
 
    サーバへの接続を閉じます。
 
-上で説明した:meth:`request`メソッドを使うかわりに、以下の4つの関数を 使用して要求をステップバイステップで送信することもできます。
+上で説明した :meth:`request` メソッドを使うかわりに、以下の4つの関数を使用して要求をステップバイステップで送信することもできます。
 
 
 .. method:: HTTPConnection.putrequest(request, selector[, skip_host[, skip_accept_encoding]])
 
-   サーバへの接続が確立したら、最初にこのメソッドを呼び出さなくては なりません。このメソッドは *request* 文字列、*selector* 文字列、 そして
-   HTTP バージョン (``HTTP/1.1``) からなる一行を送信します。 ``Host:`` や``Accept-Encoding:``
-   ヘッダの自動送信を無効にしたい 場合 (例えば別のコンテンツエンコーディングを受け入れたい場合) には、 *skip_host* や
-   *skip_accept_encoding* を偽でない値に設定 してください。
+   サーバへの接続が確立したら、最初にこのメソッドを呼び出さなくてはなりません。このメソッドは *request* 文字列、 *selector* 文字列、そして
+   HTTP バージョン (``HTTP/1.1``) からなる一行を送信します。 ``Host:`` や ``Accept-Encoding:``
+   ヘッダの自動送信を無効にしたい場合 (例えば別のコンテンツエンコーディングを受け入れたい場合) には、 *skip_host* や
+   *skip_accept_encoding* を偽でない値に設定してください。
 
 
 .. method:: HTTPConnection.putheader(header, argument[, ...])
 
-   :rfc:`822` 形式のヘッダをサーバに送ります。この処理では、*header*、 コロンとスペース、そして最初の引数からなる 1 行をサーバに送ります。
-   追加の引数を指定した場合、継続して各行にタブ一つと引数の入った引数行が 送信されます。
+   :rfc:`822` 形式のヘッダをサーバに送ります。この処理では、 *header* 、コロンとスペース、そして最初の引数からなる 1 行をサーバに送ります。
+   追加の引数を指定した場合、継続して各行にタブ一つと引数の入った引数行が送信されます。
 
 
 .. method:: HTTPConnection.endheaders()
@@ -403,7 +444,7 @@ HTTPResponse オブジェクト
 
 .. method:: HTTPResponse.read([amt])
 
-   応答の本体全体か、*amt* バイトまで読み出して返します。
+   応答の本体全体か、 *amt* バイトまで読み出して返します。
 
 
 .. method:: HTTPResponse.getheader(name[, default])
@@ -443,7 +484,7 @@ HTTPResponse オブジェクト
 例
 --
 
-以下は``GET`` リクエストの送信方法を示した例です::
+以下は ``GET`` リクエストの送信方法を示した例です::
 
    >>> import httplib
    >>> conn = httplib.HTTPConnection("www.python.org")
