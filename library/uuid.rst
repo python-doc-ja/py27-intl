@@ -10,21 +10,21 @@
 
 .. versionadded:: 2.5
 
-このモジュールでは immutable（変更不能）な :class:`UUID` オブジェクト（:class:`UUID` クラス）と :rfc:`4122`
-の定めるバージョン 1、3、4、5 の UUID を生成するための:func:`uuid1` 、 :func:`uuid2` 、:func:`uuid3`
-、:func:`uuid4` 、:func:`uuid` が提供されています。
+このモジュールでは immutable（変更不能）な :class:`UUID` オブジェクト（ :class:`UUID` クラス）と :rfc:`4122`
+の定めるバージョン 1、3、4、5 の UUID を生成するための :func:`uuid1`, :func:`uuid2`, :func:`uuid3`,
+:func:`uuid4`, :func:`uuid`, が提供されています。
 
-もしユニークな ID が必要なだけであれば、おそらく :func:`uuid1` か :func:`uuid4`をコールすれば良いでしょう。
+もしユニークな ID が必要なだけであれば、おそらく :func:`uuid1` か :func:`uuid4` をコールすれば良いでしょう。
 :func:`uuid1` はコンピュータのネットワークアドレスを含む UUID を生成するために
-プライバシーを侵害するかもしれない点に注意してください。:func:`uuid4` はランダムな UUID を生成します。
+プライバシーを侵害するかもしれない点に注意してください。 :func:`uuid4` はランダムな UUID を生成します。
 
 
 .. class:: UUID([hex[, bytes[, bytes_le[, fields[, int[, version]]]]]])
 
-   32 桁の 16 進数文字列、*bytes* に 16 バイトの文字列、*bytes_le* 引数に 16 バイトのリトルエンディアンの文字列、*field*
-   引数に 6 つの整数のタプル（32ビット*time_low*、 16 ビット *time_mid*、16ビット *time_hi_version*, 8ビット
-   *clock_seq_hi_variant*, 8ビット *clock_seq_low*, 48ビット *node*）、または *int* に一つの 128
-   ビット整数の いずれかから UUID を生成します。16 進数が与えられた時、波括弧、ハイフン、それと URN 接頭辞は無視されます。
+   32 桁の 16 進数文字列、 *bytes* に 16 バイトの文字列、 *bytes_le* 引数に 16 バイトのリトルエンディアンの文字列、 *field*
+   引数に 6 つの整数のタプル（32ビット *time_low*, 16 ビット *time_mid*, 16ビット *time_hi_version*, 8ビット
+   *clock_seq_hi_variant*, 8ビット *clock_seq_low*, 48ビット *node* ）、または *int* に一つの 128
+   ビット整数のいずれかから UUID を生成します。16 進数が与えられた時、波括弧、ハイフン、それと URN 接頭辞は無視されます。
    例えば、これらの表現は全て同じ UUID を払い出します。 ::
 
       UUID('{12345678-1234-5678-1234-567812345678}')
@@ -36,9 +36,9 @@
       UUID(fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
       UUID(int=0x12345678123456781234567812345678)
 
-   *hex*、*bytes*、*bytes_le*、*fields*、または *int* のうち、どれかただ一つだけが与えられなければいけません。
-   *version* 引数は オプションです；与えられた場合、結果の UUID は与えられた *hex*、*bytes*、
-   *bytes_le*、*fields*、または *int* をオーバーライドして、 RFC 4122 に準拠した variant と version
+   *hex*, *bytes*, *bytes_le*, *fields*, または *int* のうち、どれかただ一つだけが与えられなければいけません。
+   *version* 引数はオプションです；与えられた場合、結果の UUID は与えられた *hex*, *bytes*, 
+   *bytes_le*, *fields*, または *int* をオーバーライドして、 RFC 4122 に準拠した variant と version
    ナンバーのセットを持つことになります。 *bytes_le*, *fields*, or *int*.
 
 :class:`UUID` インスタンスは以下の読み取り専用属性を持ちます：
@@ -51,7 +51,7 @@
 
 .. attribute:: UUID.bytes_le
 
-   16 バイト文字列（*time_low*、*time_mid*、*time_hi_version* を リトルエンディアンで持つ）の UUID。
+   16 バイト文字列（ *time_low*, *time_mid*, *time_hi_version* をリトルエンディアンで持つ）の UUID。
 
 
 .. attribute:: UUID.fields
@@ -96,22 +96,22 @@
 
 .. attribute:: UUID.variant
 
-   UUID の内部レイアウトを決定する UUID の variant。 これは整数の定数 The UUID variant, which determines
+   UUID の内部レイアウトを決定する UUID の variant。これは整数の定数 The UUID variant, which determines
    the internal layout of the UUID. This will be one of the integer constants
-   :const:`RESERVED_NCS`、 :const:`RFC_4122`、 :const:`RESERVED_MICROSOFT`、又は
+   :const:`RESERVED_NCS`, :const:`RFC_4122`, :const:`RESERVED_MICROSOFT`, 又は
    :const:`RESERVED_FUTURE` のいずれかになります。
 
 
 .. attribute:: UUID.version
 
-   UUID の version 番号（1 から 5、variant が :const:`RFC_4122` である 場合だけ意味があります）。
+   UUID の version 番号（1 から 5、variant が :const:`RFC_4122` である場合だけ意味があります）。
 
 The :mod:`uuid` モジュールには以下の関数があります：
 
 
 .. function:: getnode()
 
-   48 ビットの正の整数としてハードウェアアドレスを取得します。 最初にこれを起動すると、別個のプログラムが立ち上がって非常に遅くなることがあります。
+   48 ビットの正の整数としてハードウェアアドレスを取得します。最初にこれを起動すると、別個のプログラムが立ち上がって非常に遅くなることがあります。
    もしハードウェアを取得する試みが全て失敗すると、ランダムな 48 ビットに RFC 4122 で推奨されているように 8 番目のビットを 1
    に設定した数を使います。 "ハードウェアアドレス" とはネットワークインターフェースの MAC アドレスを指し、
    複数のネットワークインターフェースを持つマシンの場合、それらのどれか一つの MAC アドレスが返るでしょう。
@@ -121,8 +121,8 @@ The :mod:`uuid` モジュールには以下の関数があります：
 
 .. function:: uuid1([node[, clock_seq]])
 
-   UUID をホスト ID、シーケンス番号、現在時刻から生成します。 *node* が与えられなければ、:func:`getnode` がハードウェアアドレス
-   取得のために使われます。 *clock_seq* が与えられると、これはシーケンス番号として使われます； さもなくば 14
+   UUID をホスト ID、シーケンス番号、現在時刻から生成します。 *node* が与えられなければ、 :func:`getnode` がハードウェアアドレス
+   取得のために使われます。 *clock_seq* が与えられると、これはシーケンス番号として使われます；さもなくば 14
    ビットのランダムなシーケンス番号が選ばれます。
 
 .. index:: single: uuid1
@@ -148,7 +148,7 @@ The :mod:`uuid` モジュールには以下の関数があります：
 
 .. index:: single: uuid5
 
-:mod:`uuid` モジュールは :func:`uuid3` または :func:`uuid5` で利用するために 次の名前空間識別子を定義しています。
+:mod:`uuid` モジュールは :func:`uuid3` または :func:`uuid5` で利用するために次の名前空間識別子を定義しています。
 
 
 .. data:: NAMESPACE_DNS
