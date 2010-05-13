@@ -36,7 +36,8 @@
 -   default to the empty string when not given).
 +   method call ``connect(host)`` is made.  When *user* is given, additionally
 +   the method call ``login(user, passwd, acct)`` is made (where *passwd* and
-+   *acct* default to the empty string when not given).  The optional *timeout*
++   *acct* default to the empty string when not given).
++ The optional *timeout*
 +   parameter specifies a timeout in seconds for blocking operations like the
 +   connection attempt (if is not specified, the global default timeout setting
 +   will be used).
