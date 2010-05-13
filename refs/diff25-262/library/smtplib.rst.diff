@@ -183,7 +183,6 @@
  
 +.. method:: SMTP.ehlo_or_helo_if_needed()
  
--.. method:: XXX Class.has_extn(name)
 +   This method call :meth:`ehlo` and or :meth:`helo` if there has been no
 +   previous ``EHLO`` or ``HELO`` command this session.  It tries ESMTP ``EHLO``
 +   first.
@@ -193,6 +192,7 @@
 +
 +   .. versionadded:: 2.6
 +
+-.. method:: XXX Class.has_extn(name)
 +.. method:: SMTP.has_extn(name)
  
     Return :const:`True` if *name* is in the set of SMTP service extensions returned
@@ -250,7 +250,6 @@
 +   :exc:`SMTPHeloError`
 +      The server didn't reply properly to the ``HELO`` greeting.
  
--.. method:: XXX Class.sendmail(from_addr, to_addrs, msg[, mail_options, rcpt_options])
 +   :exc:`SMTPException`
 +     The server does not support the STARTTLS extension.
 +
@@ -260,6 +259,7 @@
 +     SSL/TLS support is not available to your python interpreter.
 +
 +
+-.. method:: XXX Class.sendmail(from_addr, to_addrs, msg[, mail_options, rcpt_options])
 +.. method:: SMTP.sendmail(from_addr, to_addrs, msg[, mail_options, rcpt_options])
  
     Send mail.  The required arguments are an :rfc:`822` from-address string, a list
