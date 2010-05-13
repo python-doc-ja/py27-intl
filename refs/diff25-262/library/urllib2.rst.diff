@@ -105,11 +105,11 @@
     problem.  It is a subclass of :exc:`IOError`.
  
 +   .. attribute:: reason
- 
--.. exception:: HTTPError
 +      The reason for this error.  It can be a message string or another exception
 +      instance (:exc:`socket.error` for remote URLs, :exc:`OSError` for local
 +      URLs).
+ 
+-.. exception:: HTTPError
  
 -   A subclass of :exc:`URLError`, it can also function as a  non-exceptional file-
 -   like return value (the same thing that :func:`urlopen` returns).  This is useful
