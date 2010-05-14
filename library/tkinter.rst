@@ -759,7 +759,7 @@ bind メソッドの形式は::
 sequence
    は対象とするイベントの型を示す文字列です。
    (詳細については、bind の man ページと
-   John Ousterhout の本の201ページをを参照してください。)
+   John Ousterhout の本の201ページを参照してください。)
 
 func
    は一引数を取り、イベントが起きるときに呼び出される Python

@@ -256,7 +256,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 .. function:: demo_app(environ, start_response)
 
    この関数は小規模ながら完全な WSGI アプリケーションで、 "Hello world!" メッセージと、 *environ* パラメタに提供されている
-   キー／値のペアをを含むテキストページを返します。これは WSGI サーバ（ :mod:`wsgiref.simple_server` のような）がシンプルな
+   キー／値のペアを含むテキストページを返します。これは WSGI サーバ（ :mod:`wsgiref.simple_server` のような）がシンプルな
    WSGI アプリケーションを正しく実行できるかを確かめるのに便利です。
 
 
