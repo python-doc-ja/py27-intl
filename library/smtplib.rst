@@ -12,7 +12,7 @@
    single: Simple Mail Transfer Protocol
 
 :mod:`smtplib` モジュールは、SMTPまたはESMTPのリスナーデーモンを備えた
-任意のインターネット上のホストにメイルを送るために使用することができる SMTPクライアント・セッション・オブジェクトを定義します。
+任意のインターネット上のホストにメールを送るために使用することができる SMTPクライアント・セッション・オブジェクトを定義します。
 SMTPおよびESMTPオペレーションの詳細は、 :rfc:`821` (Simple Mail Transfer Protocol) や
 :rfc:`1869` (SMTP Service Extensions)を調べてください。
 
@@ -211,8 +211,8 @@ SMTP オブジェクト
    このメソッドは先に ESMTP ``EHLO`` を試します。
 
    :exc:`SMTPHeloError`
-     .. The server didn't reply properly to the ``HELO`` greeting.
-     サーバーが ``HELO`` に正しく返事しなかった.
+      サーバーが ``HELO`` に正しく返事しなかった.
+      .. The server didn't reply properly to the ``HELO`` greeting.
 
    .. versionadded:: 2.6
 

@@ -7,7 +7,7 @@
 
 
 
-mailcap ファイルは、メイルリーダや Web ブラウザのような MIME 対応の\
+mailcap ファイルは、メールリーダや Web ブラウザのような MIME 対応の\
 アプリケーションが、異なる MIME タイプのファイルにどのように反応\
 するかを設定するために使われます ("mailcap" の名前は
 "mail capability" から取られました)。 例えば、ある mailcap
