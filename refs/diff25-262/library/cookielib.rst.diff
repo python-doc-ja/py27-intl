@@ -86,12 +86,12 @@
     1) are treated according to the RFC 2965 rules.  However, if RFC 2965 handling
     is turned off or :attr:`rfc2109_as_netscape` is True, RFC 2109 cookies are
 -   'downgraded' by the :class:`CookieJar` instance to Netscape cookies, by setting
--   the :attr:`version` attribute of the :class:`Cookie` instance to 0.
--   :class:`DefaultCookiePolicy` also provides some parameters to allow some fine-
--   tuning of policy.
 +   'downgraded' by the :class:`CookieJar` instance to Netscape cookies, by
+-   the :attr:`version` attribute of the :class:`Cookie` instance to 0.
 +   setting the :attr:`version` attribute of the :class:`Cookie` instance to 0.
+-   :class:`DefaultCookiePolicy` also provides some parameters to allow some fine-
 +   :class:`DefaultCookiePolicy` also provides some parameters to allow some
+-   tuning of policy.
 +   fine-tuning of policy.
  
  
@@ -204,13 +204,13 @@
  
     .. note::
  
--      This loses information about RFC 2965 cookies, and also about newer or non-
--      standard cookie-attributes such as ``port``.
 +      Version 3 of the Firefox web browser no longer writes cookies in the
 +      ``cookies.txt`` file format.
 +
 +   .. note::
 +
+-      This loses information about RFC 2965 cookies, and also about newer or non-
+-      standard cookie-attributes such as ``port``.
 +      This loses information about RFC 2965 cookies, and also about newer or
 +      non-standard cookie-attributes such as ``port``.
  
