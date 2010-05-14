@@ -1,18 +1,21 @@
-
-:mod:`mhlib` --- MH のメイルボックスへのアクセス機構
+:mod:`mhlib` --- MH のメールボックスへのアクセス機構
 ====================================================
 
 .. module:: mhlib
-   :synopsis: Python から MH のメイルボックスを操作します。
+   :synopsis: Python から MH のメールボックスを操作します。
+   :deprecated:
+ 
+.. deprecated:: 2.6
+    :mod:`mhlib` は Python 3.0 では削除されています。
+    代わりに :mod:`mailbox` をお使い下さい。
 
+.. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
-.. % LaTeX'ized from the comments in the module by Skip Montanaro
-.. % <skip@mojam.com>.
+:mod:`mhlib` モジュールは MH フォルダおよびその内容に対する Python インタフェースを提供します。
 
-:mod:`mhlib` モジュールは MH フォルダおよびその内容に対する Python  インタフェースを提供します。
-
-このモジュールには、あるフォルダの集まりを表現する :class:`MH`、 単一のフォルダを表現する :class:`Folder`、単一のメッセージを表現
-する :class:`Message`、の 3 つのクラスが入っています。
+このモジュールには、あるフォルダの集まりを表現する :class:`MH` 、
+単一のフォルダを表現する :class:`Folder` 、
+単一のメッセージを表現する :class:`Message` 、の 3 つのクラスが入っています。
 
 
 .. class:: MH([path[, profile]])
@@ -22,13 +25,13 @@
 
 .. class:: Folder(mh, name)
 
-   :class:`Folder` クラスは単一のフォルダとフォルダ内のメッセージ群を 表現します。
+   :class:`Folder` クラスは単一のフォルダとフォルダ内のメッセージ群を表現します。
 
 
 .. class:: Message(folder, number[, name])
 
-   :class:`Message` オブジェクトはフォルダ内の個々のメッセージを表現 します。メッセージクラスは
-   :class:`mimetools.Message` から 導出されています。
+   :class:`Message` オブジェクトはフォルダ内の個々のメッセージを表現します。
+   メッセージクラスは :class:`mimetools.Message` から導出されています。
 
 
 .. _mh-objects:
@@ -51,7 +54,7 @@ MH オブジェクト
 
 .. method:: MH.getpath()
 
-   メイルボックスのパス名を返します。
+   メールボックスのパス名を返します。
 
 
 .. method:: MH.getcontext()
@@ -104,7 +107,7 @@ MH オブジェクト
 Folder オブジェクト
 -------------------
 
-:class:`Folder` インスタンスは開かれたフォルダを表現し、以下のメソッドを 持っています:
+:class:`Folder` インスタンスは開かれたフォルダを表現し、以下のメソッドを持っています:
 
 
 .. method:: Folder.error(format[, ...])
@@ -159,7 +162,7 @@ Folder オブジェクト
 
 .. method:: Folder.getsequences()
 
-   フォルダ内のシーケンスからなる辞書を返します。シーケンス名がキーとして 使われ、値はシーケンスに含まれるメッセージ番号のリストになります。
+   フォルダ内のシーケンスからなる辞書を返します。シーケンス名がキーとして使われ、値はシーケンスに含まれるメッセージ番号のリストになります。
 
 
 .. method:: Folder.putsequences(dict)
@@ -192,10 +195,10 @@ Folder オブジェクト
 Message オブジェクト
 --------------------
 
-:class:`Message` クラスは :class:`mimetools.Message` の メソッドに加え、一つメソッドを持っています:
+:class:`Message` クラスは :class:`mimetools.Message` のメソッドに加え、一つメソッドを持っています:
 
 
 .. method:: Message.openmessage(n)
 
-   新たな開かれたメッセージオブジェクトを返します (ファイル記述子を 一つ消費します)。
+   新たな開かれたメッセージオブジェクトを返します (ファイル記述子を一つ消費します)。
 
