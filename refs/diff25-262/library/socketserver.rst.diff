@@ -109,20 +109,21 @@
  
  
 -.. function:: handle_request()
+-   Process a single request.  This function calls the following methods in order:
+-   :meth:`get_request`, :meth:`verify_request`, and :meth:`process_request`.  If
+-   the user-provided :meth:`handle` method of the handler class raises an
+-   exception, the server's :meth:`handle_error` method will be called.
 +.. method:: BaseServer.handle_request()
 +
 +   Process a single request.  This function calls the following methods in
 +   order: :meth:`get_request`, :meth:`verify_request`, and
 +   :meth:`process_request`.  If the user-provided :meth:`handle` method of the
 +   handler class raises an exception, the server's :meth:`handle_error` method
-+   will be called.  If no request is received within :attr:`self.timeout`
++   will be called.
++   If no request is received within :attr:`self.timeout`
 +   seconds, :meth:`handle_timeout` will be called and :meth:`handle_request`
 +   will return.
  
--   Process a single request.  This function calls the following methods in order:
--   :meth:`get_request`, :meth:`verify_request`, and :meth:`process_request`.  If
--   the user-provided :meth:`handle` method of the handler class raises an
--   exception, the server's :meth:`handle_error` method will be called.
  
 +.. method:: BaseServer.serve_forever(poll_interval=0.5)
  
@@ -135,12 +136,12 @@
  
 +.. method:: BaseServer.shutdown()
  
--.. data:: address_family
 +   Tells the :meth:`serve_forever` loop to stop and waits until it does.
 +
 +   .. versionadded:: 2.6
 +
 +
+-.. data:: address_family
 +.. attribute:: BaseServer.address_family
  
     The family of protocols to which the server's socket belongs.
@@ -170,10 +171,10 @@
     The socket object on which the server will listen for incoming requests.
  
 -The server classes support the following class variables:
++The server classes support the following class variables:
  
 -.. % XXX should class variables be covered before instance variables, or
 -.. % vice versa?
-+The server classes support the following class variables:
  
 +.. XXX should class variables be covered before instance variables, or vice versa?
  
@@ -242,7 +243,6 @@
     standard output and continue handling further requests.
  
  
--.. function:: process_request(request, client_address)
 +.. method:: BaseServer.handle_timeout()
 +
 +   This function is called when the :attr:`timeout` attribute has been set to a
@@ -252,6 +252,7 @@
 +   in threading servers this method does nothing.
 +
 +
+-.. function:: process_request(request, client_address)
 +.. method:: BaseServer.process_request(request, client_address)
  
     Calls :meth:`finish_request` to create an instance of the
