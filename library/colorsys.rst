@@ -1,4 +1,3 @@
-
 :mod:`colorsys` --- 色体系間の変換
 ==================================
 
@@ -7,13 +6,18 @@
 .. sectionauthor:: David Ascher <da@python.net>
 
 
-:mod:`colorsys` モジュールは、計算機のディスプレイモニタで 使われている RGB (Red Green Blue) 色空間で表された色と、他の
-3 種類の色座標系: YIQ, HLS (Hue Lightness Saturation: 色相、彩度、 飽和) および HSV (Hue
-Saturation Value: 色相、彩度、明度) との 間の双方向の色値変換を定義します。 これらの色空間における色座標系は全て浮動小数点数で表されます。
-YIQ 空間では、Y 軸は 0 から 1 ですが、 I および Q 軸は正の値も 負の値もとり得ます。他の色空間では、各軸は全て 0 から 1 の値を
+:mod:`colorsys` モジュールは、計算機のディスプレイモニタで使われている RGB (Red Green Blue) 色空間で表された色と、他の
+3 種類の色座標系: YIQ, HLS (Hue Lightness Saturation: 色相、彩度、飽和) および HSV (Hue
+Saturation Value: 色相、彩度、明度) との間の双方向の色値変換を定義します。これらの色空間における色座標系は全て浮動小数点数で表されます。
+YIQ 空間では、Y 軸は 0 から 1 ですが、 I および Q 軸は正の値も負の値もとり得ます。他の色空間では、各軸は全て 0 から 1 の値を
 とります。
 
-色空間に関するより詳細な情報は `<http://www.poynton.com/ColorFAQ.html>`_ にあります。
+.. seealso::
+
+   色空間に関するより詳細な情報は
+   http://www.poynton.com/ColorFAQ.html と
+   http://www.cambridgeincolour.com/tutorials/color-spaces.htm
+   にあります。
 
 :mod:`colorsys` モジュールでは、以下の関数が定義されています:
 
