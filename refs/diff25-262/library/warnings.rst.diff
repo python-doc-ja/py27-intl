@@ -145,7 +145,6 @@
 +      Added the *module_globals* parameter.
  
  
--.. function:: showwarning(message, category, filename, lineno[, file])
 +.. function:: warnpy3k(message[, category[, stacklevel]])
 +
 +   Issue a warning related to Python 3.x deprecation. Warnings are only shown
@@ -154,6 +153,7 @@
 +   is using :exc:`DeprecationWarning` as default warning class.
 +
 +
+-.. function:: showwarning(message, category, filename, lineno[, file])
 +.. function:: showwarning(message, category, filename, lineno[, file[, line]])
  
     Write a warning to a file.  The default implementation calls
