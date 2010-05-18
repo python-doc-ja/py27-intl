@@ -39,23 +39,34 @@
 -.. % 
 -
 -It is preferred that tests for the :mod:`test` package use the :mod:`unittest`
--module and follow a few guidelines. One is to name the test module by starting
--it with ``test_`` and end it with the name of the module being tested. The test
+-module and follow a few guidelines.
++It is preferred that tests that use the :mod:`unittest` module follow a few
++guidelines.
+-One is to name the test module by starting
+-it with ``test_`` and end it with the name of the module being tested.
++One is to name the test module by starting it with ``test_`` and end
++it with the name of the module being tested.
+-The test
 -methods in the test module should start with ``test_`` and end with a
--description of what the method is testing. This is needed so that the methods
--are recognized by the test driver as test methods. Also, no documentation string
--for the method should be included. A comment (such as ``# Tests function returns
+-description of what the method is testing.
++The test methods in the test module
++should start with ``test_`` and end with a description of what the method is
++testing.
+-This is needed so that the methods
+-are recognized by the test driver as test methods.
++This is needed so that the methods are recognized by the test driver as
++test methods.
+-Also, no documentation string
+-for the method should be included.
++Also, no documentation string for the method should be included.
+-A comment (such as ``# Tests function returns
 -only True or False``) should be used to provide documentation for test methods.
++A
++comment (such as ``# Tests function returns only True or False``) should be used
++to provide documentation for test methods.
 -This is done because documentation strings get printed out if they exist and
 -thus what test is being run is not stated.
-+It is preferred that tests that use the :mod:`unittest` module follow a few
-+guidelines. One is to name the test module by starting it with ``test_`` and end
-+it with the name of the module being tested. The test methods in the test module
-+should start with ``test_`` and end with a description of what the method is
-+testing. This is needed so that the methods are recognized by the test driver as
-+test methods. Also, no documentation string for the method should be included. A
-+comment (such as ``# Tests function returns only True or False``) should be used
-+to provide documentation for test methods. This is done because documentation
++This is done because documentation
 +strings get printed out if they exist and thus what test is being run is not
 +stated.
  
