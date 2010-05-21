@@ -136,7 +136,7 @@
    .. versionadded:: 2.2.2
 
 .. versionchanged:: 2.5
-   以前の非推奨メソッド :meth:`__call__` は削除されま した。.
+   以前の非推奨メソッド :meth:`__call__` は削除されま した。
 
 .. rubric:: Footnotes
 
