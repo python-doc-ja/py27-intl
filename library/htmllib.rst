@@ -170,7 +170,6 @@ HTMLParser オブジェクト
 
 .. data:: codepoint2name
 
-   A dictionary that maps Unicode codepoints to HTML entity names.
    UnicodeのコードポイントをHTMLのエンティティ名に変換するための辞書です。
 
    .. versionadded:: 2.3
