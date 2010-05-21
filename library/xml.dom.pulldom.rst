@@ -9,7 +9,7 @@
 
 .. versionadded:: 2.0
 
-:mod:`xml.dom.pulldom` では、SAX イベントから、文書の文書オブジェクト モデル表現の選択された一部分だけを構築できるようにします。
+:mod:`xml.dom.pulldom` では、SAX イベントから、文書の文書オブジェクトモデル表現の選択された一部分だけを構築できるようにします。
 
 
 .. class:: PullDOM([documentFactory])
@@ -42,7 +42,7 @@
    :func:`parse` の *bufsize* パラメタのデフォルト値です。
 
    .. versionchanged:: 2.1
-      この変数の値は :func:`parse` を呼び出す前に 変更することができ、その場合新たな値が効果を持つようになります.
+      この変数の値は :func:`parse` を呼び出す前に変更することができ、その場合新たな値が効果を持つようになります.
 
 
 .. _domeventstream-objects:
