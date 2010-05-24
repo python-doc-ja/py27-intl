@@ -236,16 +236,16 @@
 -   object passing this test has a __get__ attribute but not a __set__ attribute,
 -   but beyond that the set of attributes varies.  __name__ is usually sensible, and
 -   __doc__ often is.
--
--   Methods implemented via descriptors that also pass one of the other tests return
--   false from the ismethoddescriptor() test, simply because the other tests promise
--   more -- you can, e.g., count on having the im_func attribute (etc) when an
--   object passes ismethod().
 +   This is new as of Python 2.2, and, for example, is true of
 +   ``int.__add__``. An object passing this test has a :attr:`__get__` attribute
 +   but not a :attr:`__set__` attribute, but beyond that the set of attributes
 +   varies.  :attr:`__name__` is usually sensible, and :attr:`__doc__` often is.
+-
 +
+-   Methods implemented via descriptors that also pass one of the other tests return
+-   false from the ismethoddescriptor() test, simply because the other tests promise
+-   more -- you can, e.g., count on having the im_func attribute (etc) when an
+-   object passes ismethod().
 +   Methods implemented via descriptors that also pass one of the other tests
 +   return false from the :func:`ismethoddescriptor` test, simply because the
 +   other tests promise more -- you can, e.g., count on having the
