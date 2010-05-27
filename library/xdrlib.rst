@@ -33,7 +33,7 @@
 .. seealso::
 
    :rfc:`1014` - XDR: External Data Representation Standard
-      この RFC が、かつてこのモジュールが最初に書かれた当時に XDR 標準でであったデータのエンコード方法を定義していました。現在は :rfc:`1832`
+      この RFC が、かつてこのモジュールが最初に書かれた当時に XDR 標準であったデータのエンコード方法を定義していました。現在は :rfc:`1832`
       に更新されているようです。
 
    :rfc:`1832` - XDR: External Data Representation Standard
