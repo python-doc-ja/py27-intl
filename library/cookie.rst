@@ -193,7 +193,7 @@ Morselオブジェクト
 
 .. method:: Morsel.output([attrs[, header]])
 
-   MoselをHTTPヘッダ形式の文字列表現にして返します。 *attrs* を指定しない場合、デフォルトですべての属性を含めます。 *attrs* を指定する場合，
+   MoselをHTTPヘッダ形式の文字列表現にして返します。 *attrs* を指定しない場合、デフォルトですべての属性を含めます。 *attrs* を指定する場合、
    属性をリストで渡さなければなりません。 *header* のデフォルトは ``"Set-Cookie:"`` です。
 
 

@@ -39,8 +39,8 @@
    :class:`TarFile` オブジェクトと、利用出来るキーワード引数に関する詳細な情報については、
    :ref:`tarfile-objects` 節を参照してください。
 
-   *mode* は ``'filemode[:compression]'`` の形式をとる文字列でなければなりません．デフォルトの値は ``'r'``
-   です．以下に *mode* のとりうる組み合わせ全てを示します．
+   *mode* は ``'filemode[:compression]'`` の形式をとる文字列でなければなりません。デフォルトの値は ``'r'``
+   です。以下に *mode* のとりうる組み合わせ全てを示します。
 
    +----------------------+-----------------------------------------------------------------+
    | mode                 | 動作                                                            |
@@ -70,12 +70,12 @@
    もし *fileobj* が指定されていれば、それは *name* でオープンされたファイルオブジェクトの代替として使うことができます。
    そのファイルオブジェクトの、ファイルポジションが0であることを前提に動作します。
 
-   特別な目的のために、 *mode* の2番目の形式: ``'ファイルモード|[圧縮]'`` があります。この形式を使うと，
-   :func:`tarfile.open` が返すのはデータをブロックからなるストリームとして扱う :class:`TarFile` オブジェクトになります．この場合，ファイルに対して
-   ランダムな seek を行えなくなります． *fileobj* を指定する場合， ``read()`` および ``write()``
-   メソッドを持つ任意のオブジェクトにできます． *bufsize* にはブロックサイズを指定します．デフォルトは ``20 * 512``
-   バイトです。 ``sys.stdin`` ，ソケットファイルオブジェクト，テープデバイスと組み合わせる場合にはこの形式を
-   使ってください．ただし，このような :class:`TarFile` オブジェクトにはランダムアクセスを行えないという制限があります．
+   特別な目的のために、 *mode* の2番目の形式: ``'ファイルモード|[圧縮]'`` があります。この形式を使うと、
+   :func:`tarfile.open` が返すのはデータをブロックからなるストリームとして扱う :class:`TarFile` オブジェクトになります。この場合、ファイルに対して
+   ランダムな seek を行えなくなります。 *fileobj* を指定する場合、 ``read()`` および ``write()``
+   メソッドを持つ任意のオブジェクトにできます。 *bufsize* にはブロックサイズを指定します。デフォルトは ``20 * 512``
+   バイトです。 ``sys.stdin`` 、ソケットファイルオブジェクト、テープデバイスと組み合わせる場合にはこの形式を
+   使ってください。ただし、このような :class:`TarFile` オブジェクトにはランダムアクセスを行えないという制限があります。
    :ref:`tar-examples` 節を参照してください。現在可能なモードは：
 
    +-------------+-----------------------------------------------------------------+
@@ -99,19 +99,19 @@
 
 .. class:: TarFile
 
-   tar アーカイブを読んだり、書いたりするためのクラスです。このクラスを直接使わず，代わりに :func:`tarfile.open` を使ってください．
-   :ref:`tarfile-objects` を参照してください．
+   tar アーカイブを読んだり、書いたりするためのクラスです。このクラスを直接使わず、代わりに :func:`tarfile.open` を使ってください。
+   :ref:`tarfile-objects` を参照してください。
 
 
 .. function:: is_tarfile(name)
 
-   もし *name* が tar アーカイブファイルであり， :mod:`tarfile` モジュールで読み出せる場合に :const:`True` を返します．
+   もし *name* が tar アーカイブファイルであり、 :mod:`tarfile` モジュールで読み出せる場合に :const:`True` を返します。
 
 
 .. class:: TarFileCompat(filename, mode='r', compression=TAR_PLAIN)
 
    ``zipfile`` \ -風なインターフェースを持つ tar アーカイブへの制限されたアクセスのためのクラスです。詳細は
-   ``zipfile`` のドキュメントを参照してください． *compression* は、以下の定数のどれかでなければなりません：
+   ``zipfile`` のドキュメントを参照してください。 *compression* は、以下の定数のどれかでなければなりません：
 
 
    .. data:: TAR_PLAIN
@@ -356,7 +356,7 @@ TarFile オブジェクト
 .. method:: TarFile.list(verbose=True)
 
    コンテンツの表を ``sys.stdout`` に印刷します。もし *verbose* が :const:`False`
-   であれば、メンバー名のみ印刷します。もしそれが :const:`True` であれば、 ``"ls -l"`` に似た出力を生成します．
+   であれば、メンバー名のみ印刷します。もしそれが :const:`True` であれば、 ``"ls -l"`` に似た出力を生成します。
 
 
 .. method:: TarFile.next()
@@ -554,10 +554,10 @@ TarInfo オブジェクト
 
 .. attribute:: TarInfo.type
 
-   ファイルタイプです． *type* は普通、以下の定数: :const:`REGTYPE`, :const:`AREGTYPE`,
+   ファイルタイプです。 *type* は普通、以下の定数: :const:`REGTYPE`, :const:`AREGTYPE`,
    :const:`LNKTYPE`, :const:`SYMTYPE`, :const:`DIRTYPE`, :const:`FIFOTYPE`,
    :const:`CONTTYPE`, :const:`CHRTYPE`, :const:`BLKTYPE`, :const:`GNUTYPE_SPARSE`
-   のいずれかです． :class:`TarInfo` オブジェクトのタイプをもっと便利に決定するには、下記の ``is_*()`` メソッドを使って下さい。
+   のいずれかです。 :class:`TarInfo` オブジェクトのタイプをもっと便利に決定するには、下記の ``is_*()`` メソッドを使って下さい。
 
 
 .. attribute:: TarInfo.linkname
@@ -568,22 +568,22 @@ TarInfo オブジェクト
 
 .. attribute:: TarInfo.uid
 
-   ファイルメンバを保存した元のユーザのユーザ ID です．
+   ファイルメンバを保存した元のユーザのユーザ ID です。
 
 
 .. attribute:: TarInfo.gid
 
-   ファイルメンバを保存した元のユーザのグループ ID です．
+   ファイルメンバを保存した元のユーザのグループ ID です。
 
 
 .. attribute:: TarInfo.uname
 
-   ファイルメンバを保存した元のユーザのユーザ名です．
+   ファイルメンバを保存した元のユーザのユーザ名です。
 
 
 .. attribute:: TarInfo.gname
 
-   ファイルメンバを保存した元のユーザのグループ名です．
+   ファイルメンバを保存した元のユーザのグループ名です。
 
 .. attribute:: TarInfo.pax_headers
 

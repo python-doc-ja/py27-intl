@@ -23,9 +23,9 @@
    single: ini file
    single: Windows ini file
 
-このモジュールでは， :class:`ConfigParser` クラスを定義しています。 :class:`ConfigParser`
-クラスは，Microsoft Windows の INI ファイルに見られるような構造をもつ，基礎的な設定ファイルを実装しています．
-このモジュールを使って，エンドユーザーが簡単にカスタマイズできるような Python プログラムを書くことができます。
+このモジュールでは、 :class:`ConfigParser` クラスを定義しています。 :class:`ConfigParser`
+クラスは、Microsoft Windows の INI ファイルに見られるような構造をもつ、基礎的な設定ファイルを実装しています。
+このモジュールを使って、エンドユーザーが簡単にカスタマイズできるような Python プログラムを書くことができます。
 
 .. % The \class{ConfigParser} class implements a basic configuration file
 .. % parser language which provides a structure similar to what you would
@@ -52,9 +52,9 @@
 
 設定ファイルは 1 つ以上のセクションからなり、セクションは ``[section]`` ヘッダとそれに続く
 :rfc:`822` 形式の ``name: value`` エントリからなっています。(section 3.1.1 "LONG HEADER FIELDS" を参照)
-``name=value`` という形式も使えます。値の先頭にある空白文字は削除されるので注意してください．
-オプションの値には，同じセクションか ``DEFAULT`` セクションにある値を参照するような書式化文字列を含めることができます．
-初期化時や検索時に別のデフォルト値を与えることもできます． ``'#'`` か ``';'`` ではじまる行は無視され，コメントを書くために利用できます。
+``name=value`` という形式も使えます。値の先頭にある空白文字は削除されるので注意してください。
+オプションの値には、同じセクションか ``DEFAULT`` セクションにある値を参照するような書式化文字列を含めることができます。
+初期化時や検索時に別のデフォルト値を与えることもできます。 ``'#'`` か ``';'`` ではじまる行は無視され、コメントを書くために利用できます。
 
 例::
 
@@ -234,7 +234,7 @@
 .. seealso::
 
    Module :mod:`shlex`
-      Unix のシェルに似た，アプリケーションの設定ファイル用フォーマットとして使えるもう一つの小型言語です．
+      Unix のシェルに似た、アプリケーションの設定ファイル用フォーマットとして使えるもう一つの小型言語です。
 
       .. % Support for a creating \UNIX{} shell-like
       .. % minilanguages which can be used as an alternate format
@@ -441,7 +441,7 @@ RawConfigParser オブジェクト
 
 .. method:: RawConfigParser.optionxform(option)
 
-   入力ファイル中に見つかったオプション名か，クライアントコードから渡されたオプション名 *option* を，
+   入力ファイル中に見つかったオプション名か、クライアントコードから渡されたオプション名 *option* を、
    内部で利用する形式に変換します。デフォルトでは *option* を全て小文字に変換した名前が返されます。サブルクラスではこの関数をオーバー
    ライドすることでこの振舞いを替えることができます。たとえば、このメソッドを :func:`str` に設定することで大小文字の差を区別するように
    変更することができます。
