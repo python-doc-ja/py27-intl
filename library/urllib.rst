@@ -120,7 +120,7 @@
    認証を必要とするプロキシは現在のところサポートされていません。これは実装上の制限 (implementation limitation) と考えています。
 
    .. versionchanged:: 2.3
-      *proxies* のサポートを追加しました。.
+      *proxies* のサポートを追加しました。
 
    .. versionchanged:: 2.6
       .. Added :meth:`getcode` to returned object and support for the
@@ -165,7 +165,7 @@
       属性に保存されています。
 
       *Content-Length* ヘッダが無い場合、urlretrieve はダウンロードされた
-      データのサイズをチェックできず、単にそれを返します。この場合は、ダウンロードは成功したと見なす必要があります。.
+      データのサイズをチェックできず、単にそれを返します。この場合は、ダウンロードは成功したと見なす必要があります。
 
 
 .. data:: _urlopener

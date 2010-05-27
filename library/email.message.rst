@@ -561,7 +561,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
    .. versionchanged:: 2.5
       以前の非推奨メソッド :meth:`get_type` 、 :meth:`get_main_type` 、
-      :meth:`get_subtype` は削除されました。.
+      :meth:`get_subtype` は削除されました。
 
    :class:`Message` オブジェクトはオプションとして 2つのインスタンス属性を\
    とることができます。これはある MIME メッセージからプレーンテキストを\

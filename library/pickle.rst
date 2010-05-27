@@ -139,7 +139,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
 もっとも高いバージョンのものが使われます。
 
 .. versionchanged:: 2.3
-   *protocol* パラメータが導入されました。.
+   *protocol* パラメータが導入されました。
 
 *protocol* version >= 1 を指定することで、少しだけ効率の高いバイナリ
 形式を選ぶことができます。
@@ -188,7 +188,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
     の内、もっとも高いバージョンのものが使われます。
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが導入されました。.
+      *protocol* パラメータが導入されました。
 
    *file* は、単一の文字列引数を受理する :meth:`write` メソッド を持た
     なければなりません。従って、 *file* としては、書き込みのために開か
@@ -225,7 +225,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
    の内、もっとも高いバージョンのものが使われます。
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが追加されました。.
+      *protocol* パラメータが追加されました。
 
 
 .. function:: loads(string)
@@ -271,7 +271,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
    の内、もっとも高いバージョンのものが使われます。
 
    .. versionchanged:: 2.3
-      *protocol* パラメータが導入されました。.
+      *protocol* パラメータが導入されました。
 
    *file* は単一の文字列引数を受理する :meth:`write` メソッドを 持たな
    ければなりません。従って、 *file* としては、書き込みのために開かれ
@@ -545,7 +545,7 @@ pickle 化プロトコル
    * 呼び出し可能なオブジェクトのための引数からなるタプル
 
      .. versionchanged:: 2.5
-        以前は、この引数には ``None`` もあり得ました。.
+        以前は、この引数には ``None`` もあり得ました。
 
    * オプションとして、 :ref:`pickle-inst` 節で記述されているようにオ
      ブジェクトの :meth:`__setstate__` メソッドに渡される、オブジェクト

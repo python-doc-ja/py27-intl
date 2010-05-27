@@ -286,7 +286,7 @@
    は :mod:`weakref` モジュールを参照してください。
 
    .. versionadded:: 2.2
-      以前は :exc:`weakref.ReferenceError` 例外として知られていました。.
+      以前は :exc:`weakref.ReferenceError` 例外として知られていました。
 
 
 .. exception:: RuntimeError
@@ -363,7 +363,7 @@
    実に呼出し元の方に伝わっていってインタプリタを終了させます。
 
    .. versionchanged:: 2.5
-      :exc:`BaseException` から導出されるように変更され ました。.
+      :exc:`BaseException` から導出されるように変更され ました。
 
 
 .. exception:: TypeError
@@ -505,5 +505,5 @@
 組み込み例外のクラス階層は以下のようになっています:
 
 
-.. literalinclude:: ../../Lib/test/exception_hierarchy.txt
+.. literalinclude:: ../../../Lib/test/exception_hierarchy.txt
 

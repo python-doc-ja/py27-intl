@@ -54,8 +54,8 @@ GNUのソフトウェアでサポートされているような長形式のオ�
 
    *long_options* は長形式のオプションの名前を示す文字列のリストです。名前には、先頭の ``'-`` \ ``-'`` は含めません。引数が必要な場合
    には名前の最後に等号(``'='``)を入れます。長形式のオプションだけを受けつけるためには、 *options* は空文字列である必要があります。
-   長形式のオプションは、該当するオプションを一意に決定できる長さまで入力されていれば認識されます。たとえば、 *long_options* が ``['foo',
-   'frob']``の場合、 :option:`--fo` は :option:`--foo` に該当しますが、 :option:`--f` では一意に決定できないので、
+   長形式のオプションは、該当するオプションを一意に決定できる長さまで入力されていれば認識されます。たとえば、 *long_options* が
+   ``['foo', 'frob']`` の場合、 :option:`--fo` は :option:`--foo` に該当しますが、 :option:`--f` では一意に決定できないので、
    :exc:`GetoptError` が発生します。
 
    .. % \var{long_options}, if specified, must be a list of strings with the
@@ -128,7 +128,7 @@ GNUのソフトウェアでサポートされているような長形式のオ�
    .. % relates, \member{opt} is an empty string.
 
    .. versionchanged:: 1.6
-      :exc:`GetoptError` は :exc:`error` の別名として導入されました。.
+      :exc:`GetoptError` は :exc:`error` の別名として導入されました。
 
 
 .. exception:: error

@@ -101,7 +101,7 @@
   要素の型が正しくない :class:`struct_time` を与えた場合には、 :exc:`TypeError` が送出されます。
 
   .. versionchanged:: 2.2
-     時刻値の配列はタプルから :class:`struct_time` に変更され、それぞれのフィールドに属性名がつけられました。.
+     時刻値の配列はタプルから :class:`struct_time` に変更され、それぞれのフィールドに属性名がつけられました。
 
 .. * Use the following functions to convert between time representations:
 
@@ -203,7 +203,7 @@
    :func:`time` が返す値を現在の時刻として使います。現在の時刻に DST が適用される場合、 dst フラグは ``1`` に設定されます。
 
    .. versionchanged:: 2.1
-      *secs* を省略できるようになりました。.
+      *secs* を省略できるようになりました。
 
    .. versionchanged:: 2.4
       *secs* が :const:`None` の場合に現在時刻を使うようになりました.
@@ -234,13 +234,13 @@
    は文字列でなくてはなりません。 *t* のいずれかのフィールドが許容範囲外の数値であった場合、 :exc:`ValueError` を送出します。
 
    .. versionchanged:: 2.1
-      *t* を省略できるようになりました。.
+      *t* を省略できるようになりました。
 
    .. versionchanged:: 2.4
       *t* のフィールド値が許容範囲外の値の場合に :exc:`ValueError` を送出するようになりました.
 
    .. versionchanged:: 2.5
-      0 は時刻値タプルのどこでも使用可能になりました。もし不正な値の場合には正常な値に修正されます。.
+      0 は時刻値タプルのどこでも使用可能になりました。もし不正な値の場合には正常な値に修正されます。
 
    *format* 文字列には以下の指示語 (directive) を埋め込むことができます。これらはフィールド長や精度のオプションを付けずに表され、
    :func:`strftime` の結果の対応する文字列と入れ替えられます:
