@@ -851,7 +851,7 @@ doctest がどうやって判断するかを制御します:
 
    オプション引数 *extraglobs*, *verbose*, *report*, *optionflags*, *raise_on_error*, および
    *globs* は上で説明した :func:`testfile` の引数と同じです。ただし、 *globs* のデフォルト値は ``m.__dict__``
-    になります。
+   になります。
 
    .. versionchanged:: 2.3
       *optionflags* パラメタを追加しました.
@@ -1398,12 +1398,12 @@ DocTestRunner オブジェクト
       future-import フラグセットになります。
 
       各例題の出力は :class:`DocTestRunner` の出力チェッカで検査され、その結果は
-      :meth:`DocTestRunner.report_\*`. メソッドで書式化されます。
+      :meth:`DocTestRunner.report_\*` メソッドで書式化されます。
 
    .. method:: summarize([verbose])
 
       この DocTestRunner が実行した全てのテストケースのサマリを出力し、
-      :tuple:`名前付きタプル` (named tuple) ``TestResults(failed, attempted)`` を返します。
+      名前付きタプル (:term:`named tuple`) ``TestResults(failed, attempted)`` を返します。
 
       オプションの *verbose* 引数を使うと、どのくらいサマリを詳しくするかを制御できます。
       冗長度を指定しない場合、 :class:`DocTestRunner` 自体の冗長度を使います。
