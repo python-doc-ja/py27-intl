@@ -123,6 +123,7 @@ printループを実装います。それは標準的なPythonの対話インタ
 
 .. The following example demonstrates the different ways to print and format the
    exception and traceback::
+
 以下の例は、例外とトレースバックに対する print と format の違いをデモします。 ::
 
    import sys, traceback
@@ -161,6 +162,7 @@ printループを実装います。それは標準的なPythonの対話インタ
 
 
 .. The output for the example would look similar to this::
+
 この例の出力は次のようになります。 ::
 
    *** print_tb:
@@ -208,7 +210,8 @@ printループを実装います。それは標準的なPythonの対話インタ
 
 
 .. The following example shows the different ways to print and format the stack::
-次の例は、スタックの print と format の違いを示しています。
+
+次の例は、スタックの print と format の違いを示しています。 ::
 
    >>> import traceback
    >>> def another_function():
@@ -235,6 +238,7 @@ printループを実装います。それは標準的なPythonの対話インタ
 
 
 .. This last example demonstrates the final few formatting functions::
+
 最後の例は、残りの幾つかの関数のデモをします。 ::
 
    >>> import traceback

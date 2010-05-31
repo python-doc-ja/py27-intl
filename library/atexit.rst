@@ -90,7 +90,8 @@
    # or:
    atexit.register(goodbye, adjective='nice', name='Donny')
 
-.. Usage as a :term:`decorator`::
+.. Usage as a :term:`decorator`
+
 デコレータ(:term:`decorator`)として利用する例::
 
    import atexit
@@ -100,4 +101,5 @@
        print "You are now leaving the Python sector."
 
 .. This obviously only works with functions that don't take arguments.
+
 もちろん、デコレータとして利用できるのは、その関数が引数を受け取らない場合に限られます。

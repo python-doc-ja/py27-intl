@@ -260,6 +260,7 @@ Note:
 .. function:: isabstract(object)
 
    .. Return true if the object is an abstract base class.
+
    *object* が抽象規定型(ABC)であるときに真を返します。
 
    .. versionadded:: 2.6
