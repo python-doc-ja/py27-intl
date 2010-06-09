@@ -76,7 +76,7 @@ posixfile オブジェクトでは以下の追加メソッドを定義してい�
    引数についてのより詳しい情報はシステムの :manpage:`fcntl(2)` マニュアルページを参照してください。
 
 
-.. mrthod:: posixfile.flags([flags])
+.. method:: posixfile.flags([flags])
 
    ファイルオブジェクトが参照しているファイルに指定したフラグを設定します。
    新しいフラグは特に指定しない限り以前のフラグと OR されます。
