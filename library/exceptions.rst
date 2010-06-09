@@ -505,5 +505,5 @@
 組み込み例外のクラス階層は以下のようになっています:
 
 
-.. literalinclude:: ../../../Lib/test/exception_hierarchy.txt
+.. literalinclude:: ../includes/exception_hierarchy.txt
 
