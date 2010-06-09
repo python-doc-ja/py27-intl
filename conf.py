@@ -13,7 +13,10 @@ sys.path.append(os.path.abspath('tools/sphinxext'))
 # General configuration
 # ---------------------
 
-extensions = ['sphinx.ext.refcounting', 'sphinx.ext.coverage',
+# ../Include ディレクトリが存在しないので、coverage拡張を無効化
+# 翻訳時のtodoを記録するために、todo拡張を有効化
+
+extensions = ['sphinx.ext.refcounting',
               'sphinx.ext.doctest', 'pyspecific',
               'sphinx.ext.todo',
               ]
@@ -81,6 +84,8 @@ exclude_trees = [
         'using',
         'whatsnew',
 ]
+
+exclude_dirnames = ['diff', 'orig']
 
 
 # Options for HTML output
