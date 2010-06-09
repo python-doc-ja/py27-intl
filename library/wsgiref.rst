@@ -348,7 +348,8 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    で禁止はされていないかもしれない挙動を指摘します。これらは Python のコマンドラインオプションや :mod:`warnings` API で
    抑制されなければ、 ``sys.stderr`` (たまたま同一のオブジェクトで無い限り  ``wsgi.errors`` では *ない*)に書き出されます。
 
-   .. Example usage::
+   .. Example usage:
+
    利用例::
 
       from wsgiref.validate import validator

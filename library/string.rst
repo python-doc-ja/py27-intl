@@ -25,12 +25,14 @@
 
 .. data:: ascii_lowercase
 
-   小文字 ``'abcdefghijklmnopqrstuvwxyz'``。この値はロケールに依存せ ず、固定です。
+   小文字 ``'abcdefghijklmnopqrstuvwxyz'`` 。
+   この値はロケールに依存せず、固定です。
 
 
 .. data:: ascii_uppercase
 
-   大文字 ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'``。この値はロケールに依存せ ず、固定です。
+   大文字 ``'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`` 。
+   この値はロケールに依存せず、固定です。
 
 
 .. data:: digits
@@ -163,8 +165,8 @@ Templateの使い方の例を以下に示します::
 
 .. % $
 
-* *delimiter* -- プレースホルダの開始を示すリテラル文字列 です。デフォルトの値は ``$`` です。実装系はこの文字列に対して 必要に応じて
-  :meth:`re.escape` を呼び出すので、正規表現を表す ような文字列にしては *なりません*。
+* *delimiter* -- プレースホルダの開始を示すリテラル文字列です。デフォルトの値は ``$`` です。実装系はこの文字列に対して必要に応じて
+  :meth:`re.escape` を呼び出すので、正規表現を表すような文字列にしては *なりません* 。
 
 * *idpattern* -- 波括弧でくくらない形式のプレースホルダ の表記パターンを示す正規表現です (波括弧は自動的に適切な場所に追加
   されます)。で尾フォルトの値は``[_a-z][_a-z0-9]*`` という 正規表現です。
@@ -202,8 +204,8 @@ Templateの使い方の例を以下に示します::
 
    .. warning::
 
-      :const:`lowercase` と :const:`uppercase` から取り出した 文字列を引数に使ってはなりません;
-      ロケールによっては、これらは同じ 長さになりません。大文字小文字の変換には、常に:func:`lower`  または
+      :const:`lowercase` と :const:`uppercase` から取り出した文字列を引数に使ってはなりません;
+      ロケールによっては、これらは同じ長さになりません。大文字小文字の変換には、常に:func:`lower` または
       :func:`upper`を使ってください。
 
 

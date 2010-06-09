@@ -188,8 +188,8 @@ Cmdオブジェクト
 .. attribute:: Cmd.use_rawinput
 
    フラグ、デフォルトでは真。
-    真ならば、:meth:`cmdloop` はプロンプトを表示して次のコマンド読み込むために:func:`raw_input` を使います。
-    偽ならば、:meth:`sys.stdout.write` と:meth:`sys.stdin.readline` が使われます。
+   真ならば、:meth:`cmdloop` はプロンプトを表示して次のコマンド読み込むために:func:`raw_input` を使います。
+   偽ならば、:meth:`sys.stdout.write` と:meth:`sys.stdin.readline` が使われます。
    (これが意味するのは、:mod:`readline` を import することによって、
    それをサポートするシステム上では、インタープリタが自動的に
    :program:`Emacs` 形式の行編集と コマンド履歴のキーストロークをサポートするということです。)

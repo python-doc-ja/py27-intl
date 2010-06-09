@@ -53,7 +53,7 @@ ABC                        継承しているクラス     Abstract Methods     
 :class:`Hashable`                                 ``__hash__``
 :class:`Iterable`                                 ``__iter__``
 :class:`Iterator`          :class:`Iterable`      ``__next__``            ``__iter__``
-:class:`Sized`          			              ``__len__``
+:class:`Sized`                                    ``__len__``
 :class:`Callable`                                 ``__call__``
 
 :class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.
