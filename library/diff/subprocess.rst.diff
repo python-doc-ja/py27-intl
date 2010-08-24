@@ -77,19 +77,17 @@
     specified by the :envvar:`COMSPEC` environment variable.
  
     *stdin*, *stdout* and *stderr* specify the executed programs' standard input,
--   standard output and standard error file handles, respectively.  Valid values are
--   ``PIPE``, an existing file descriptor (a positive integer), an existing file
--   object, and ``None``.  ``PIPE`` indicates that a new pipe to the child should be
--   created.  With ``None``, no redirection will occur; the child's file handles
--   will be inherited from the parent.  Additionally, *stderr* can be ``STDOUT``,
--   which indicates that the stderr data from the applications should be captured
--   into the same file handle as for stdout.
-+   standard output and standard error file handles, respectively.  Valid values
+-   are ``PIPE``, an existing file descriptor (a positive integer), an
 +   are :data:`PIPE`, an existing file descriptor (a positive integer), an
+-   existing file object, and ``None``.  ``PIPE`` indicates that a new pipe
 +   existing file object, and ``None``.  :data:`PIPE` indicates that a new pipe
+-   to the child should be created.  With ``None``, no redirection will occur;
 +   to the child should be created.  With ``None``, no redirection will occur;
+-   the child's file handles will be inherited from the parent.  Additionally,
 +   the child's file handles will be inherited from the parent.  Additionally,
+-   *stderr* can be ``STDOUT``, which indicates that the stderr data from the applications should be captured
 +   *stderr* can be :data:`STDOUT`, which indicates that the stderr data from the
+-   into the same file handle as for stdout.
 +   applications should be captured into the same file handle as for stdout.
  
     If *preexec_fn* is set to a callable object, this object will be called in the
@@ -206,20 +204,20 @@
 -.. method:: XXX Class.poll()
 +.. method:: Popen.poll()
 +
+-   Check if child process has terminated.  Returns returncode attribute.
 +   Check if child process has terminated.  Set and return :attr:`returncode`
 +   attribute.
 +
  
--   Check if child process has terminated.  Returns returncode attribute.
+-.. method:: XXX Class.wait()
 +.. method:: Popen.wait()
  
+-   Wait for child process to terminate.  Returns returncode attribute.
 +   Wait for child process to terminate.  Set and return :attr:`returncode`
 +   attribute.
  
--.. method:: XXX Class.wait()
 +   .. warning::
  
--   Wait for child process to terminate.  Returns returncode attribute.
 +      This will deadlock if the child process generates enough output to a
 +      stdout or stderr pipe such that it blocks waiting for the OS pipe buffer
 +      to accept more data.  Use :meth:`communicate` to avoid that.
@@ -281,42 +279,42 @@
  The following attributes are also available:
  
 +.. warning::
- 
--.. attribute:: XXX Class.stdin
 +   Use :meth:`communicate` rather than :meth:`.stdin.write`,
 +   :meth:`.stdout.read` or :meth:`.stderr.read` to avoid deadlocks due
 +   to any of the other OS pipe buffers filling up and blocking the child
 +   process.
  
--   If the *stdin* argument is ``PIPE``, this attribute is a file object that
--   provides input to the child process.  Otherwise, it is ``None``.
- 
+-.. attribute:: XXX Class.stdin
 +.. attribute:: Popen.stdin
  
--.. attribute:: XXX Class.stdout
+-   If the *stdin* argument is ``PIPE``, this attribute is a file object that
+-   provides input to the child process.  Otherwise, it is ``None``.
 +   If the *stdin* argument was :data:`PIPE`, this attribute is a file object
 +   that provides input to the child process.  Otherwise, it is ``None``.
  
--   If the *stdout* argument is ``PIPE``, this attribute is a file object that
--   provides output from the child process.  Otherwise, it is ``None``.
  
+-.. attribute:: XXX Class.stdout
 +.. attribute:: Popen.stdout
  
--.. attribute:: XXX Class.stderr
+-   If the *stdout* argument is ``PIPE``, this attribute is a file object that
+-   provides output from the child process.  Otherwise, it is ``None``.
 +   If the *stdout* argument was :data:`PIPE`, this attribute is a file object
 +   that provides output from the child process.  Otherwise, it is ``None``.
  
--   If the *stderr* argument is ``PIPE``, this attribute is file object that
--   provides error output from the child process.  Otherwise, it is ``None``.
  
+-.. attribute:: XXX Class.stderr
 +.. attribute:: Popen.stderr
  
--.. attribute:: XXX Class.pid
+-   If the *stderr* argument is ``PIPE``, this attribute is file object that
+-   provides error output from the child process.  Otherwise, it is ``None``.
 +   If the *stderr* argument was :data:`PIPE`, this attribute is a file object
 +   that provides error output from the child process.  Otherwise, it is
 +   ``None``.
+ 
+ 
 +
 +
+-.. attribute:: XXX Class.pid
 +.. attribute:: Popen.pid
  
     The process ID of the child process.
@@ -325,6 +323,9 @@
 -.. attribute:: XXX Class.returncode
 +.. attribute:: Popen.returncode
 +
+-   The child return code.  A ``None`` value indicates that the process hasn't
+-   terminated yet.  A negative value -N indicates that the child was terminated by
+-   signal N (Unix only).
 +   The child return code, set by :meth:`poll` and :meth:`wait` (and indirectly
 +   by :meth:`communicate`).  A ``None`` value indicates that the process
 +   hasn't terminated yet.
@@ -332,9 +333,6 @@
 +   A negative value ``-N`` indicates that the child was terminated by signal
 +   ``N`` (Unix only).
  
--   The child return code.  A ``None`` value indicates that the process hasn't
--   terminated yet.  A negative value -N indicates that the child was terminated by
--   signal N (Unix only).
  
 +.. _subprocess-replacements:
  
