@@ -14,15 +14,15 @@
    program.  The fundamental thing to remember in using signals and threads
    simultaneously is: always perform :func:`signal` operations in the main thread
 -  of execution.  Any thread can perform an :func:`alarm`, :func:`getsignal`, or
++  of execution.  Any thread can perform an :func:`alarm`, :func:`getsignal`,
 -  :func:`pause`; only the main thread can set a new signal handler, and the main
++  :func:`pause`, :func:`setitimer` or :func:`getitimer`; only the main thread
 -  thread will be the only one to receive signals (this is enforced by the Python
++  can set a new signal handler, and the main thread will be the only one to
 -  :mod:`signal` module, even if the underlying thread implementation supports
++  receive signals (this is enforced by the Python :mod:`signal` module, even
 -  sending signals to individual threads).  This means that signals can't be used
 -  as a means of inter-thread communication.  Use locks instead.
-+  of execution.  Any thread can perform an :func:`alarm`, :func:`getsignal`,
-+  :func:`pause`, :func:`setitimer` or :func:`getitimer`; only the main thread
-+  can set a new signal handler, and the main thread will be the only one to
-+  receive signals (this is enforced by the Python :mod:`signal` module, even
 +  if the underlying thread implementation supports sending signals to
 +  individual threads).  This means that signals can't be used as a means of
 +  inter-thread communication.  Use locks instead.
