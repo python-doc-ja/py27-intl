@@ -1,7 +1,7 @@
 .. _glossary:
 
 ********
-Glossary
+用語集
 ********
 
 .. if you add new entries, keep the alphabetical sorting!
@@ -9,30 +9,51 @@ Glossary
 .. glossary::
 
    ``>>>``
-      The default Python prompt of the interactive shell.  Often seen for code
-      examples which can be executed interactively in the interpreter.
+      .. The default Python prompt of the interactive shell.  Often seen for code
+         examples which can be executed interactively in the interpreter.
+
+      インタラクティブシェルにおける、デフォルトのPythonプロンプト。
+      インタラクティブに実行されるコードサンプルとしてよく出てきます。
 
    ``...``
-      The default Python prompt of the interactive shell when entering code for
-      an indented code block or within a pair of matching left and right
-      delimiters (parentheses, square brackets or curly braces).
+      .. The default Python prompt of the interactive shell when entering code for
+         an indented code block or within a pair of matching left and right
+         delimiters (parentheses, square brackets or curly braces).
+
+      インタラクティブシェルにおける、インデントされたコードブロックや対応する括弧(丸括弧()、
+      角括弧[]、curly brace{})の内側で表示されるデフォルトのプロンプト。
 
    2to3
-      A tool that tries to convert Python 2.x code to Python 3.x code by
-      handling most of the incompatibilites which can be detected by parsing the
-      source and traversing the parse tree.
+      .. A tool that tries to convert Python 2.x code to Python 3.x code by
+         handling most of the incompatibilites which can be detected by parsing the
+         source and traversing the parse tree.
 
-      2to3 is available in the standard library as :mod:`lib2to3`; a standalone
-      entry point is provided as :file:`Tools/scripts/2to3`.  See
-      :ref:`2to3-reference`.
+      Python 2.x のコードを Python 3.x のコードに変換するツール。
+      ソースコードを解析して、その解析木を巡回(traverse)して、非互換なコードの大部分を処理する。
+
+      .. 2to3 is available in the standard library as :mod:`lib2to3`; a standalone
+         entry point is provided as :file:`Tools/scripts/2to3`.  See
+         :ref:`2to3-reference`.
+
+      2to3 は、 :mod:`lib2to3` モジュールとして標準ライブラリに含まれています。
+      スタンドアローンのツールとして使うときのコマンドは :file:`Tools/scripts/2to3`
+      として提供されています。 :ref:`2to3-reference` を参照してください。
 
    abstract base class
-      Abstract Base Classes (abbreviated ABCs) complement :term:`duck-typing` by
-      providing a way to define interfaces when other techniques like :func:`hasattr`
-      would be clumsy. Python comes with many builtin ABCs for data structures
-      (in the :mod:`collections` module), numbers (in the :mod:`numbers`
-      module), and streams (in the :mod:`io` module). You can create your own
-      ABC with the :mod:`abc` module.
+      .. Abstract Base Classes (abbreviated ABCs) complement :term:`duck-typing` by
+         providing a way to define interfaces when other techniques like :func:`hasattr`
+         would be clumsy. Python comes with many builtin ABCs for data structures
+         (in the :mod:`collections` module), numbers (in the :mod:`numbers`
+         module), and streams (in the :mod:`io` module). You can create your own
+         ABC with the :mod:`abc` module.
+
+      (抽象基底クラス) Abstract Base Classes (ABCs と略されます)は :term:`duck-typing`
+      を補完するもので、 :func:`hasattr` などの別のテクニックでは不恰好になる場合に
+      インタフェースを定義する方法を提供します。
+      Pythonは沢山のビルトインABCsを、(:mod:`collections` モジュールで)データ構造、
+      (:mod:`numbers` モジュールで)数値型、(:mod:`io` モジュールで)ストリーム型で
+      提供いています。
+      :mod:`abc` モジュールを利用して独自のABCをお作成することもできます。
 
    argument
       (引数)
