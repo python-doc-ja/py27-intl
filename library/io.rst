@@ -1,4 +1,3 @@
-.. -*- coding: utf-8; -*-
 :mod:`io` --- ストリームを扱うコアツール
 =================================================
 
@@ -10,9 +9,10 @@
 .. sectionauthor:: Benjamin Peterson
 .. versionadded:: 2.6
 
-:mod:`io` モジュールはストリーム処理をするPythonインタフェースを提供します。組み込み関数 :func:`open` はこのモジュールで定義されています。
+:mod:`io` モジュールはストリーム処理をする Python インタフェースを提供します。
+組み込み関数 :func:`open` はこのモジュールで定義されています。
 
-I/O階層の最上位には抽象基底クラスの :class:`IOBase` があります。
+I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があります。
 :class:`IOBase` ではストリームに対して基本的なインタフェースを定義しています。
 しかしながら、ストリームの読みと書きの間に違いがないことに留意してください。
 実装においては与えられた操作をサポートしない場合は :exc:`IOError` を投げることが許されています。
@@ -20,65 +20,69 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 :class:`IOBase` の拡張は生のバイト列の読み書きをしてストリームに落とす処理を単純に扱う :class:`RawIOBase` です。
 :class:`FileIO` は :class:`RawIOBase` を継承してマシンのファイルシステム中のファイルへのインタフェースを提供します。
 
-:class:`BufferedIOBase` では生のバイトストリーム処理を扱います。（ :class:`RawIOBase` ）
-そのサブクラスの :class:`BufferdWriter` :class:`BufferedReader` :class:`BufferedRWPair` ではそれぞれ読み込み専用、書き込み専用、読み書き可能なストリームをバッファします。
+:class:`BufferedIOBase` では生のバイトストリーム (:class:`RawIOBase`) の上にバッファ処理を追加します。
+そのサブクラスの :class:`BufferedWriter`, :class:`BufferedReader`, :class:`BufferedRWPair` ではそれぞれ読み込み専用、書き込み専用、読み書き可能なストリームをバッファします。
 :class:`BufferedRandom` ではランダムアクセスストリームに対してバッファされたインタフェースを提供します。
 :class:`BytesIO` はインメモリバイトへのシンプルなストリームです。
 
 もう一つの :class:`IOBase` のサブクラスである、 :class:`TextIOBase` は文字列を表すバイトストリームやその文字列に対するエンコーディングやデコーディングといった処理を行います。
-:class:`TextIOWrapper` はその拡張で、バッファされた生ストリーム（ :class:`BufferedIOBase` ）へのバッファされた文字列インタフェースです。
+:class:`TextIOWrapper` はその拡張で、バッファされた生ストリーム (:class:`BufferedIOBase`) へのバッファされた文字列インタフェースです。
 最後に :class:`StringIO` は文字列に対するインメモリストリームです。
 
-引数名は規約に含まれていません。また :func:`open` の引数はキーワード引数として用いられることが意図されています。
+引数名は規約に含まれていません。
+また :func:`open` の引数はキーワード引数として用いられることが意図されています。
 
 
 モジュールインタフェース
---------------------
+------------------------
 
 .. data:: DEFAULT_BUFFER_SIZE
 
-   モジュールのバッファI/Oクラスに使用されるデフォルトのバッファサイズを指定する整数値です。
-   :func:`open` は可能であればファイル全体のサイズを使用します。（ファイル全体のサイズは :func:`os.stat` で取得されます）
+   モジュールのバッファ I/O クラスに使用されるデフォルトのバッファサイズを指定する整数値です。
+   :func:`open` は可能であればファイル全体のサイズを使用します。（ファイル全体のサイズは :func:`os.stat` で取得されます)
 
 .. function:: open(file[, mode[, buffering[, encoding[, errors[, newline[, closefd=True]]]]]])
 
-   *file* を開きストリームを返します。もしファイルを開くことが出来なかった場合、 :exc:`IOError` が発生します。
+   *file* を開きストリームを返します。
+   もしファイルを開くことが出来なかった場合、 :exc:`IOError` が発生します。
 
-   *file* は開きたいファイルの名前（とカレントディレクトリにない場合はそのパス）を示す文字列であるか、開きたいファイルのファイルディスクリプタです。
-   （たとえば :func:`os.fdopen` から得られるようなファイルディスクリプタが与えられた場合、 *closefd* が ``False`` に設定されていなければ、返されたI/Oオブジェクトが閉じられたときにそのファイルディスクリプタは閉じられます）
+   *file* は開きたいファイルの名前(とカレントディレクトリにない場合はそのパス)を示す文字列であるか、開きたいファイルのファイルディスクリプタです。
+   (たとえば :func:`os.fdopen` から得られるようなファイルディスクリプタが与えられた場合、 *closefd* が ``False`` に設定されていなければ、返されたI/Oオブジェクトが閉じられたときにそのファイルディスクリプタは閉じられます)
 
    *mode* はオプションの文字列です。これによってファイルをどのようなモードで開くか明示することができます。
    デフォルトは ``'r'`` でテキストモードで読み取り専用で開くことを指します。
-   他にも ``'w'`` は書き込み専用（もしファイルが存在していた場合は上書きになります）となり、 ``'a'`` では追記モードとなります。（ ``'a'`` は *いくつかの* Unixシステムでは *すべての* 書き込みがシーク位置がどこにあろうともファイルの末尾に追記されることを意味します）
-   テキストモードではもし *encoding* が指定されていなかった場合、エンコーディングはプラットフォーム依存となります。（生のバイトデータの読み込みと書き込みはバイナリモードを用いて、 *encoding* は未指定のままとします）
+   他にも ``'w'`` は書き込み専用(もしファイルが存在していた場合は上書きになります)となり、 ``'a'`` では追記モードとなります。
+   (``'a'`` は *いくつかの* Unixシステムでは *すべての* 書き込みがシーク位置がどこにあろうともファイルの末尾に追記されることを意味します)
+   テキストモードではもし *encoding* が指定されていなかった場合、エンコーディングはプラットフォーム依存となります。
+   (生のバイトデータの読み込みと書き込みはバイナリモードを用いて、 *encoding* は未指定のままとします)
    指定可能なモードは次の表の通りです。
 
    ========= ===============================================================
    文字       意味
    --------- ---------------------------------------------------------------
-   ``'r'``   読み込み専用で開く（デフォルト）
+   ``'r'``   読み込み専用で開く(デフォルト)
    ``'w'``   書き込み専用で開く。ファイルの内容をまず初期化する。
    ``'a'``   書き込み専用で開く。ファイルが存在する場合は末尾に追記する。
    ``'b'``   バイナリモード
-   ``'t'``   テキストモード（デフォルト）
-   ``'+'``	 ファイルを更新用に開く（読み込み／書き込み）
+   ``'t'``   テキストモード(デフォルト)
+   ``'+'``     ファイルを更新用に開く(読み込み／書き込み)
    ``'U'``   ユニバーサルニューラインモード
-             （後方互換性のためのモードであり、新規コードでは使用すべきではありません）
+             (後方互換性のためのモードであり、新規コードでは使用すべきではありません)
    ========= ===============================================================
 
 
-   デフォルトモードは ``'rt'`` です。（テキストを読み込み専用で開ます）
+   デフォルトモードは ``'rt'`` です。(テキストを読み込み専用で開ます)
    バイナリのランダムアクセスでは ``'w+b'`` でファイルを開き、0バイトに初期化します。
    一方で ``'r+b'`` でファイルを開くと初期化は行われません。
 
    Pythonではバイナリモードで開かれたファイルとテキストモードで開かれたファイルを区別します。
    オペレーティングシステムが区別しない場合でもそれは適用されます。
-   バイナリモードで開かれたファイル（つまり *mode* 引数に ``'b'`` が含まれるとき）では中身を ``bytes`` オブジェクトとして返し、一切のデコードを行いません。
-   テキストモード（デフォルトか *mode* 引数に ``'t'`` が含まれている場合）ではファイルの中身は文字列として返され、バイト列はプラットフォーム依存のエンコーディングをされるか、 *encoding* が指定された場合は指定されたエンコーディングを行います。
+   バイナリモードで開かれたファイル(つまり *mode* 引数に ``'b'`` が含まれるとき)では中身を ``bytes`` オブジェクトとして返し、一切のデコードを行いません。
+   テキストモード(デフォルトか *mode* 引数に ``'t'`` が含まれている場合)ではファイルの中身は文字列として返され、バイト列はプラットフォーム依存のエンコーディングをされるか、 *encoding* が指定された場合は指定されたエンコーディングを行います。
 
    オプションである *buffering* はバッファ用の設定を行う整数値です。
    デフォルトではフルバッファがオンに設定されています。
-   0を設定することでバッファがオフになります。（バイナリモードでのみ有効です）
+   0を設定することでバッファがオフになります。(バイナリモードでのみ有効です)
    1の場合は１行ごとのバッファリングを行い、1より大きい場合はフルバッファが行われます。
 
    *encoding* はファイルをエンコードあるいはデコードするために使われるエンコーディング名です。
@@ -88,12 +92,12 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 
    *errors* はエンコードやデコードの際のエラーをどのように扱うかを指定する文字列です。
    ``'strict'`` を指定するとエンコードエラーがあった場合 :exc:`ValueError` 例外を発生させます。
-   （ デフォルトである ``None`` は同様の処理を行います）
-   ``'ignore'`` を指定した場合はエラーを無視します。 ``'replace'`` を指定した場合は正常に変換されなかった文字の代わりにマーカ（例えば ``'?'`` のような文字）を挿入します。
-   書き込みの際に ``'xmlcharrefreplace'`` （適切なXML文字リファレンスに置き換える）か ``'backslashreplace'`` （バックスラッシュによるエスケープシーケンスに置き換える）のどちらかが使用出来ます。
+   (デフォルトである ``None`` は同様の処理を行います)
+   ``'ignore'`` を指定した場合はエラーを無視します。 ``'replace'`` を指定した場合は正常に変換されなかった文字の代わりにマーカ(例えば ``'?'`` のような文字)を挿入します。
+   書き込みの際に ``'xmlcharrefreplace'`` (適切なXML文字参照に置き換える)か ``'backslashreplace'`` (バックスラッシュによるエスケープシーケンスに置き換える)のどちらかが使用出来ます。
    :func:`codecs.register_error` に登録されている他のエラー処理名も指定出来ます。
 
-   *newline* ではユニバーサルニューラインの挙動を制御しています。（テキストモードのみ有効です）
+   *newline* ではユニバーサルニューラインの挙動を制御しています。(テキストモードのみ有効です)
    ``None``, ``''``, ``'\n'``, ``'\r'``, ``'\r\n'`` が指定出来ます。
    以下のように動作します：
 
@@ -107,11 +111,11 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
      もし *newline* に他の適切な値が指定された場合は、 ``'\n'`` 文字は与えられた文字に変換されます。
 
    もし *closefd* が ``False`` で、ファイル名ではなくてファイルディスクリプタが与えられていた場合、処理中のファイルディスクリプタはファイルが閉じられた後も開いたままとなります。
-   もしファイル名が与えられていた場合は、 *closefd* は関係ありません。しかし ``True`` でなければいけません。（デフォルト値）
+   もしファイル名が与えられていた場合は、 *closefd* は関係ありません。しかし ``True`` でなければいけません。(デフォルト値)
 
-   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合（ ``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など）、 :class:`TextIOWrapper` が返されます。
+   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合( ``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など)、 :class:`TextIOWrapper` が返されます。
    バイナリモードでファイルを開くときに使われた場合、返される値は変わってきます。もし読み取り専用のバイナリモードだった場合は :class:`BufferedReader` が返されます。
-   書き込み専用のバイナリモードだった場合は :class:`BufferdWriter` が返されます。
+   書き込み専用のバイナリモードだった場合は :class:`BufferedWriter` が返されます。
    読み書き可能なバイナリモードの場合は :class:`BufferedRandom` が返されます。
 
    もし文字列やバイト列をファイルとして読み書きすることも可能です。
@@ -121,14 +125,14 @@ I/O階層の最上位には抽象基底クラスの :class:`IOBase` がありま
 
 .. exception:: BlockingIOError
 
-   .. :exc:`IOError`.
-   非ブロッキングストリームでブロック処理が起きた場合に発生するエラーです。 :exc:`IOError` を継承しています。
+   非ブロッキングストリームでブロック処理が起きた場合に発生するエラーです。
+   :exc:`IOError` を継承しています。
 
    :exc:`IOError` で持っている属性以外に :exc:`BlockingIOError` では次の属性を持っています。
 
    .. attribute:: characters_written
 
-	  ブロック前にストリームに書き込まれる文字数を保持する整数値です。
+      ブロック前にストリームに書き込まれる文字数を保持する整数値です。
 
 
 .. exception:: UnsupportedOperation
@@ -155,13 +159,13 @@ I/O ベースクラス
    
 
    ファイル等への読み書きに用いられるバイナリデータに使われるバイナリ型は :class:`bytes` です。
-   :class:`bytearray` も許可されています。ほかにもいくつかのクラス（たとえば :class:`readinto` ）
+   :class:`bytearray` も許可されています。ほかにもいくつかのクラス(たとえば :class:`readinto`)
    が必要です。文字列のI/Oクラスは :class:`str` のデータを扱っています。
 
-   閉じたストリームでメソッドを呼び出し（問い合わせでさえ）は定義されていません。
+   閉じたストリームでメソッドを呼び出し(問い合わせでさえ)は定義されていません。
    この場合実装は :exc:`IOError` を発生させます。
 
-   IOBase（とそのサブクラス）はイテレータプロトコルをサポートします。
+   IOBase(とそのサブクラス)はイテレータプロトコルをサポートします。
    それはつまり :class:`IOBase` オブジェクトはストリーム内の行をyieldを使って
    イテレートすることが出来ます。
 
@@ -176,47 +180,47 @@ I/O ベースクラス
 
    .. method:: close()
 
-   	  このストリームをフラッシュして閉じます。このメソッドはファイルが既に閉じられていた場合
-	  特になにも影響を与えません。
+      このストリームをフラッシュして閉じます。このメソッドはファイルが既に閉じられていた場合
+      特になにも影響を与えません。
 
    .. attribute:: closed
 
-   	  ストリームが閉じられていた場合Trueになります。
+      ストリームが閉じられていた場合Trueになります。
 
    .. method:: fileno()
    
-      ストリームが保持しているファイルディスクリプタ（整数値）が存在する場合はそれを返します。
-	  もしIOオブジェクトがファイルディスクリプタを使っていない場合は :exc:`IOError` が発生します。
+      ストリームが保持しているファイルディスクリプタ(整数値)が存在する場合はそれを返します。
+      もしIOオブジェクトがファイルディスクリプタを使っていない場合は :exc:`IOError` が発生します。
 
    .. method:: flush()
 
       適用可能であればストリームの書き込みバッファをフラッシュします。
-	  読み込み専用や非ブロッキングストリームには影響を与えません。
+      読み込み専用や非ブロッキングストリームには影響を与えません。
 
    .. method:: isatty()
 
-      ストリームが相互作用的であれば（つまりターミナルやttyデバイスにつながっている場合）
-	  ``True`` を返します。
+      ストリームが相互作用的であれば(つまりターミナルやttyデバイスにつながっている場合)
+      ``True`` を返します。
 
    .. method:: readable()
 
       ストリームが読み込める場合 ``True`` を返します。
-	  Falseの場合は :meth:`read` は :exc:`IOError` を発生させます。
+      Falseの場合は :meth:`read` は :exc:`IOError` を発生させます。
 
    .. method:: readline([limit])
 
-	  ストリームから1行読み込んで返します。
-	  もし *limit* が指定された場合、最大で *limit* バイトが読み込まれます。
+      ストリームから1行読み込んで返します。
+      もし *limit* が指定された場合、最大で *limit* バイトが読み込まれます。
 
-	  バイナリファイルでは行末文字は常に ``b'\n'`` となります。テキストファイルでは
-	  :func:`open` への *newlines* 引数は行末文字が認識されたときに使われます。
+      バイナリファイルでは行末文字は常に ``b'\n'`` となります。テキストファイルでは
+      :func:`open` への *newlines* 引数は行末文字が認識されたときに使われます。
 
    .. method:: readlines([hint])
 
       ストリームから行のリストを読み込んで返します。
-	  *hint* を指定することで、何行読み込むかを指定出来ます。
-      もし読み込んだすべての行のサイズ（バイト数、もしくは文字数）が *hint* の値を超えた場合
-      読み込みをそこで終了します。
+      *hint* を指定することで、何行読み込むかを指定出来ます。
+      もし読み込んだすべての行のサイズ(バイト数、もしくは文字数)が
+      *hint* の値を超えた場合読み込みをそこで終了します。
 
    .. method:: seek(offset[, whence])
 
@@ -224,7 +228,7 @@ I/O ベースクラス
       *offset* は *whence* で指定された位置からの相対位置として解釈されます。
       *whence* に入力できる値は：
 
-      * ``0`` -- ストリームの最初（デフォルト）です。 *offset* はゼロもしくは正の値です。
+      * ``0`` -- ストリームの最初(デフォルト)です。 *offset* はゼロもしくは正の値です。
       * ``1`` -- 現在のストリーム位置です。 *offset* は負の値です。
       * ``2`` -- ストリームの最後です。 *offset* は通常負の値です。
 
@@ -241,7 +245,7 @@ I/O ベースクラス
 
    .. method:: truncate([size])
 
-      最大 *size* バイト分ファイルを切り捨てます。
+      高々 *size* バイトまでファイルを切り詰めます。
       *size* のデフォルト値は現在のファイルの位置で、 :meth:`tell` が返す値と同値です。
 
    .. method:: writable()
@@ -264,15 +268,15 @@ I/O ベースクラス
 
    .. method:: read([n])
 
-      EOFまで、あるいは *n* が指定された場合 *n* バイトまでストリームから
+      EOF まで、あるいは *n* が指定された場合 *n* バイトまでストリームから\
       すべてのバイトを読み込んで返します。たった1つのシステムコールが呼ばれます。
-      空のバイトオブジェクトはEOFの上に返されます。
+      既に EOF に達していたら空のバイトオブジェクトが返されます。
       もしオブジェクトがブロックされず読み込むべきデータがない場合は ``None`` が返されます。
-      
+
    .. method:: readall()
 
-      EOFまでストリームからすべてのバイトを読み込みます。必要な場合はストリームに対して
-      複数の呼び出しをします。
+      EOF までストリームからすべてのバイトを読み込みます。
+      必要な場合はストリームに対して複数の呼び出しをします。
 
    .. method:: readinto(b)
 
@@ -281,8 +285,9 @@ I/O ベースクラス
    .. method:: write(b)
 
       与えられたバイトあるいはバイト列オブジェクト *b* を生のストリームに書き込んで、
-      書き込んだバイト数を返します。（決して ``len(b)`` よりも小さくなることはありません。
-      なぜならはもし書き込みに失敗した場合は :exc:`IOError` が発生するからです）
+      書き込んだバイト数を返します。
+      (決して ``len(b)`` よりも小さくなることはありません。
+      なぜならはもし書き込みに失敗した場合は :exc:`IOError` が発生するからです)
 
 
 生ファイルI/O
@@ -290,219 +295,219 @@ I/O ベースクラス
 
 .. class:: FileIO(name[, mode])
 
-   :class:`FileIO` represents a file containing bytes data.  It implements
-   the :class:`RawIOBase` interface (and therefore the :class:`IOBase`
-   interface, too).
+   :class:`FileIO` はバイトデータを含むファイルを表します。
+   :class:`RawIOBase` インタフェースを (そしてしたがって
+   :class:`IOBase` インタフェースも) 実装しています。
 
-   The *mode* can be ``'r'``, ``'w'`` or ``'a'`` for reading (default), writing,
-   or appending.  The file will be created if it doesn't exist when opened for
-   writing or appending; it will be truncated when opened for writing.  Add a
-   ``'+'`` to the mode to allow simultaneous reading and writing.
+   *mode* はそれぞれ読み込み(デフォルト)、書き込み、追記を表す
+   ``'r'``, ``'w'``, ``'a'`` にすることができます。
+   ファイルは書き込みまたは追記モードで開かれたときに存在しなければ作成されます。
+   書き込みモードでは存在したファイル内容は消されます。
+   読み込みと書き込みを同時に行いたければ ``'+'`` をモードに加えて下さい。
 
-   In addition to the attributes and methods from :class:`IOBase` and
-   :class:`RawIOBase`, :class:`FileIO` provides the following data
-   attributes and methods:
+   :class:`IOBase` および :class:`RawIOBase` から継承した属性とメソッドに加えて、
+   :class:`FileIO` は以下のデータ属性とメソッドを提供しています:
 
    .. attribute:: mode
 
-      The mode as given in the constructor.
+      コンストラクタに渡されたモードです。
 
    .. attribute:: name
 
-      The file name.  This is the file descriptor of the file when no name is
-      given in the constructor.
+      ファイル名。
+      コンストラクタに名前が渡されなかったときはファイルディスクリプタになります。
 
    .. method:: read([n])
 
-      Read and return at most *n* bytes.  Only one system call is made, so it is
-      possible that less data than was requested is returned.  Use :func:`len`
-      on the returned bytes object to see how many bytes were actually returned.
-      (In non-blocking mode, ``None`` is returned when no data is available.)
+      最大で *n* バイト読み込み、返します。
+      システムコールを一度呼び出すだけなので、要求されたより少ないデータが返されることもあります。
+      実際に返されたバイト数を得たければ :func:`len` を返されたバイトオブジェクトに対して使って下さい。
+      (非ブロッキングモードでは、データが取れなければ ``None`` が返されます。)
 
    .. method:: readall()
 
-      Read and return the entire file's contents in a single bytes object.  As
-      much as immediately available is returned in non-blocking mode.  If the
-      EOF has been reached, ``b''`` is returned.
+      ファイルの全内容を読み込み、単一のバイトオブジェクトに入れて返します。
+      非ブロッキングモードでは直ちに取得できる限りのものが返されます。
+      EOF に到達すると、 ``b''`` が返されます。
 
    .. method:: write(b)
 
-      Write the bytes or bytearray object, *b*, to the file, and return
-      the number actually written. Only one system call is made, so it
-      is possible that only some of the data is written.
+      与えられたバイトあるいはバイト列オブジェクト *b* をファイルに書き込み、
+      実際に書き込まれた(バイト)数を返します。
+      システムコールを一度呼び出すだけなので、データの一部だけが書き込まれることもあり得ます。
 
-   Note that the inherited ``readinto()`` method should not be used on
-   :class:`FileIO` objects.
+   :class:`FileIO` オブジェクトでは継承された ``readinto()`` メソッドを使うべきではないということを忘れないで下さい。
 
 
-バッファドストリーム
-------------------
+バッファ付きストリーム
+----------------------
 
 .. class:: BufferedIOBase
 
-   Base class for streams that support buffering.  It inherits :class:`IOBase`.
-   There is no public constructor.
+   バッファリングをサポートするストリームの基底クラスです。
+   :class:`IOBase` を継承します。
+   パブリックなコンストラクタはありません。
 
-   The main difference with :class:`RawIOBase` is that the :meth:`read` method
-   supports omitting the *size* argument, and does not have a default
-   implementation that defers to :meth:`readinto`.
+   :class:`RawIOBase` との主な違いは :meth:`read` メソッドが *size*
+   引数の省略を許し、 :meth:`readinto` と異なるデフォルト実装を持たないことです。
 
-   In addition, :meth:`read`, :meth:`readinto`, and :meth:`write` may raise
-   :exc:`BlockingIOError` if the underlying raw stream is in non-blocking mode
-   and not ready; unlike their raw counterparts, they will never return
-   ``None``.
+   さらに、 :meth:`read`, :meth:`readinto`, :meth:`write` が、
+   元になる生ストリームが非ブロッキングモードでかつ準備ができていない場合に、
+   :exc:`BlockingIOError` を送出するかもしれません。
+   対応する"生"バージョンと違って、 ``None`` を返すことはありません。
 
-   A typical implementation should not inherit from a :class:`RawIOBase`
-   implementation, but wrap one like :class:`BufferedWriter` and
-   :class:`BufferedReader`.
+   通常の実装では :class:`RawIOBase` 実装を継承して実装せず、
+   :class:`BufferedWriter` と :class:`BufferedReader` のようにラップすべきです。
 
-   :class:`BufferedIOBase` provides or overrides these methods in addition to
-   those from :class:`IOBase`:
+   :class:`BufferedIOBase` は :class:`IOBase` からのメソッドに加えて、
+   以下のメソッドを提供するかもしくはオーバーライドします:
 
    .. method:: read([n])
 
-      Read and return up to *n* bytes.  If the argument is omitted, ``None``, or
-      negative, data is read and returned until EOF is reached.  An empty bytes
-      object is returned if the stream is already at EOF.
+      最大で *n* バイト読み込み、返します。
+      引数が省略されるか、 ``None`` か、または負の値であった場合、
+      データは EOF に到達するまで読み込まれます。
+      ストリームが既に EOF に到達していた場合空の bytes オブジェクトが返されます。
 
-      If the argument is positive, and the underlying raw stream is not
-      interactive, multiple raw reads may be issued to satisfy the byte count
-      (unless EOF is reached first).  But for interactive raw streams, at most
-      one raw read will be issued, and a short result does not imply that EOF is
-      imminent.
+      引数が正で、元になる生ストリームが対話的でなければ、
+      複数回の生 read が必要なバイト数を満たすように発行されるかもしれません
+      (先に EOF に到達しない限りは)。
+      対話的である場合には、最大で一回の raw read しか発行されず、
+      短い結果でも EOF に達したことを意味しません。
 
-      A :exc:`BlockingIOError` is raised if the underlying raw stream has no
-      data at the moment.
+      元になる生ストリームが呼び出された時点でデータを持っていなければ、
+      :exc:`BlockingIOError` が送出されます。
 
    .. method:: readinto(b)
 
-      Read up to len(b) bytes into bytearray *b* and return the number of bytes
-      read.
+      len(b) バイトを上限に bytearray *b* に読み込み、何バイト読んだかを返します。
 
-      Like :meth:`read`, multiple reads may be issued to the underlying raw
-      stream, unless the latter is 'interactive.'
+      :meth:`read` と同様、元になる生ストリームに、それが対話的でない限り、
+      複数回の read が発行されるかもしれません。
 
-      A :exc:`BlockingIOError` is raised if the underlying raw stream has no
-      data at the moment.
+      元になる生ストリームが呼び出された時点でデータを持っていなければ、
+      :exc:`BlockingIOError` が送出されます。
 
    .. method:: write(b)
 
-      Write the given bytes or bytearray object, *b*, to the underlying raw
-      stream and return the number of bytes written (never less than ``len(b)``,
-      since if the write fails an :exc:`IOError` will be raised).
+      与えられた bytes または bytearray オブジェクト *b* を、
+      元になる生ストリームに書き込み、書き込まれたバイト数を返します
+      (決して ``len(b)`` よりも小さくなることはありません。
+      なぜならはもし書き込みに失敗した場合は :exc:`IOError` が発生するからです)
 
-      A :exc:`BlockingIOError` is raised if the buffer is full, and the
-      underlying raw stream cannot accept more data at the moment.
+      バッファが満杯で元になる生ストリームが書き込み時点でさらなるデータを受け付けられない場合
+      :exc:`BlockingIOError` が送出されます。
 
 
 .. class:: BytesIO([initial_bytes])
 
-   A stream implementation using an in-memory bytes buffer.  It inherits
-   :class:`BufferedIOBase`.
+   インメモリの bytes バッファを利用したストリームの実装。
+   :class:`BufferedIOBase` を継承します。
 
-   The argument *initial_bytes* is an optional initial bytearray.
+   引数 *initial_bytes* は省略可能な bytearray の初期値です。
 
-   :class:`BytesIO` provides or overrides these methods in addition to those
-   from :class:`BufferedIOBase` and :class:`IOBase`:
+   :class:`BytesIO` は :class:`BufferedIOBase` または :class:`IOBase`
+   からのメソッドに加えて、以下のメソッドを提供するかもしくはオーバーライドします:
 
    .. method:: getvalue()
 
-      Return ``bytes`` containing the entire contents of the buffer.
+      バッファの全内容を保持した ``bytes`` を返します。
 
    .. method:: read1()
 
-      In :class:`BytesIO`, this is the same as :meth:`read`.
+      :class:`BytesIO` においては、このメソッドは :meth:`read` と同じです。
 
    .. method:: truncate([size])
 
-      Truncate the buffer to at most *size* bytes.  *size* defaults to the
-      current stream position, as returned by :meth:`tell`.
+      高々 *size* バイトまでバッファを切り詰めます。
+      *size* のデフォルトは :meth:`tell` で返される現在のストリーム位置です。
 
 
 .. class:: BufferedReader(raw[, buffer_size])
 
-   A buffer for a readable, sequential :class:`RawIOBase` object.  It inherits
-   :class:`BufferedIOBase`.
+   読み込み可能でシーケンシャルな :class:`RawIOBase` オブジェクトのバッファです。
+   :class:`BufferedIOBase` を継承します。
 
-   The constructor creates a :class:`BufferedReader` for the given readable
-   *raw* stream and *buffer_size*.  If *buffer_size* is omitted,
-   :data:`DEFAULT_BUFFER_SIZE` is used.
+   このコンストラクタは与えられた *raw* ストリームと *buffer_size* に対し
+   :class:`BufferedReader` を生成します。
+   *buffer_size* が省略された場合 :data:`DEFAULT_BUFFER_SIZE` が代わりに使われます。
 
-   :class:`BufferedReader` provides or overrides these methods in addition to
-   those from :class:`BufferedIOBase` and :class:`IOBase`:
+   :class:`BufferedReader` は :class:`BufferedIOBase` または :class:`IOBase`
+   からのメソッドに加えて、以下のメソッドを提供するかもしくはオーバーライドします:
 
    .. method:: peek([n])
 
-      Return 1 (or *n* if specified) bytes from a buffer without advancing the
-      position.  Only a single read on the raw stream is done to satisfy the
-      call. The number of bytes returned may be less than requested since at
-      most all the buffer's bytes from the current position to the end are
-      returned.
+      1 (または指定されれば *n*) バイトをバッファから位置を変更せずに読んで返します。
+      これを果たすために生ストリームに対して行われる read はただ一度だけです。
+      返されるバイト数は、
+      最大でもバッファの現在の位置から最後までのバイト列なので、
+      要求されたより少なくなるかもしれません。
 
    .. method:: read([n])
 
-      Read and return *n* bytes, or if *n* is not given or negative, until EOF
-      or if the read call would block in non-blocking mode.
+      *n* バイトを読み込んで返します。
+      *n* が与えられないかまたは負の値ならば、EOF まで、
+      または非ブロッキングモード中で read 呼び出しがブロックされるまでを返します。
 
    .. method:: read1(n)
 
-      Read and return up to *n* bytes with only one call on the raw stream.  If
-      at least one byte is buffered, only buffered bytes are returned.
-      Otherwise, one raw stream read call is made.
+      生ストリームに対しただ一度の呼び出しで最大 *n* バイトを読み込んで返します。
+      少なくとも 1 バイトがバッファされていれば、バッファされているバイト列だけが返されます。
+      それ以外の場合にはちょうど一回生ストリームに read 呼び出しが行われます。
 
 
 .. class:: BufferedWriter(raw[, buffer_size[, max_buffer_size]])
 
-   A buffer for a writeable sequential RawIO object.  It inherits
-   :class:`BufferedIOBase`.
+   書き込み可能でシーケンシャルな :class:`RawIOBase` オブジェクトのバッファです。
+   :class:`BufferedIOBase` を継承します。
 
-   The constructor creates a :class:`BufferedWriter` for the given writeable
-   *raw* stream.  If the *buffer_size* is not given, it defaults to
-   :data:`DEAFULT_BUFFER_SIZE`.  If *max_buffer_size* is omitted, it defaults to
-   twice the buffer size.
+   このコンストラクタは与えられた書き込み可能な *raw* ストリームに対し
+   :class:`BufferedWriter` を生成します。
+   *buffer_size* が省略された場合 :data:`DEFAULT_BUFFER_SIZE` がデフォルトになります。
+   *max_buffer_size* が省略された場合、バッファサイズの 2 倍がデフォルトになります。
 
-   :class:`BufferedWriter` provides or overrides these methods in addition to
-   those from :class:`BufferedIOBase` and :class:`IOBase`:
+   :class:`BufferedWriter` は :class:`BufferedIOBase` または :class:`IOBase`
+   からのメソッドに加えて、以下のメソッドを提供するかもしくはオーバーライドします:
 
    .. method:: flush()
 
-      Force bytes held in the buffer into the raw stream.  A
-      :exc:`BlockingIOError` should be raised if the raw stream blocks.
+      バッファに保持されたバイト列を生ストリームに流し込みます。
+      生ストリームがブロックした場合 :exc:`BlockingIOError` が送出されます。
 
    .. method:: write(b)
 
-      Write the bytes or bytearray object, *b*, onto the raw stream and return
-      the number of bytes written.  A :exc:`BlockingIOError` is raised when the
-      raw stream blocks.
+      bytes または bytearray オブジェクト *b* を生ストリームに書き込み、
+      書き込んだバイト数を返します。
+      生ストリームがブロックした場合 :exc:`BlockingIOError` が送出されます。
 
 
 .. class:: BufferedRWPair(reader, writer[, buffer_size[, max_buffer_size]])
 
-   A combined buffered writer and reader object for a raw stream that can be
-   written to and read from.  It has and supports both :meth:`read`, :meth:`write`,
-   and their variants.  This is useful for sockets and two-way pipes.
-   It inherits :class:`BufferedIOBase`.
+   読み書きできる生ストリームのための組み合わされたバッファ付きライターとリーダーです。
+   :meth:`read` 系、 :meth:`write` 系メソッド両方ともサポートされます。
+   ソケットや両方向パイプに便利です。
+   :class:`BufferedIOBase` を継承しています。
 
-   *reader* and *writer* are :class:`RawIOBase` objects that are readable and
-   writeable respectively.  If the *buffer_size* is omitted it defaults to
-   :data:`DEFAULT_BUFFER_SIZE`.  The *max_buffer_size* (for the buffered writer)
-   defaults to twice the buffer size.
+   *reader* と *writer* はそれぞれ読み込み可能、書き込み可能な :class:`RawIOBase`
+   オブジェクトです。
+   *buffer_size* が省略された場合 :data:`DEFAULT_BUFFER_SIZE` がデフォルトになります。
+   (バッファ付きライターのための) *max_buffer_size* が省略された場合、バッファサイズの 2 倍がデフォルトになります。
 
-   :class:`BufferedRWPair` implements all of :class:`BufferedIOBase`\'s methods.
+   :class:`BufferedRWPair` は :class:`BufferedIOBase` の全てのメソッドを実装します。
 
 
 .. class:: BufferedRandom(raw[, buffer_size[, max_buffer_size]])
 
-   A buffered interface to random access streams.  It inherits
-   :class:`BufferedReader` and :class:`BufferedWriter`.
+   ランダムアクセスストリームへのバッファ付きインタフェース。
+   :class:`BufferedReader` および :class:`BufferedWriter` を継承しています。
 
-   The constructor creates a reader and writer for a seekable raw stream, given
-   in the first argument.  If the *buffer_size* is omitted it defaults to
-   :data:`DEFAULT_BUFFER_SIZE`.  The *max_buffer_size* (for the buffered writer)
-   defaults to twice the buffer size.
+   このコンストラクタは第一引数として与えられるシーク可能な生ストリームに対し、
+   リーダーおよびライターを作成します。
+   *buffer_size* が省略された場合 :data:`DEFAULT_BUFFER_SIZE` がデフォルトになります。
+   (バッファ付きライターのための) *max_buffer_size* が省略された場合、バッファサイズの 2 倍がデフォルトになります。
 
-   :class:`BufferedRandom` is capable of anything :class:`BufferedReader` or
-   :class:`BufferedWriter` can do.
+   :class:`BufferedRandom` は :class:`BufferedReader` や :class:`BufferedWriter`
+   にできることは何でもできます。
 
 
 文字列 I/O
@@ -510,101 +515,103 @@ I/O ベースクラス
 
 .. class:: TextIOBase
 
-   Base class for text streams.  This class provides a character and line based
-   interface to stream I/O.  There is no :meth:`readinto` method because
-   Python's character strings are immutable.  It inherits :class:`IOBase`.
-   There is no public constructor.
+   テキストストリームの基底クラスです。
+   このクラスはストリーム I/O への文字と行に基づいたインタフェースを提供します。
+   :meth:`readinto` メソッドは Python の文字列が変更不可能なので存在しません。
+   :class:`IOBase` を継承します。
+   パブリックなコンストラクタはありません。
 
-   :class:`TextIOBase` provides or overrides these data attributes and
-   methods in addition to those from :class:`IOBase`:
+   :class:`IOBase` から継承した属性とメソッドに加えて、
+   :class:`TextIOBase` は以下のデータ属性とメソッドを提供しています:
 
    .. attribute:: encoding
 
-      The name of the encoding used to decode the stream's bytes into
-      strings, and to encode strings into bytes.
+      エンコーディング名で、ストリームのバイト列を文字列にデコードするとき、
+      また文字列をバイト列にエンコードするときに使われます。
 
    .. attribute:: newlines
 
-      A string, a tuple of strings, or ``None``, indicating the newlines
-      translated so far.
+      文字列、文字列のタプル、または ``None`` で、改行がどのように読み換えられるかを指定します。
 
    .. method:: read(n)
 
-      Read and return at most *n* characters from the stream as a single
-      :class:`str`.  If *n* is negative or ``None``, reads to EOF.
+      最大 *n* 文字をストリームから読み込み、一つの文字列にして返します。
+      *n* が負の値または ``None`` ならば、 EOF まで読みます。
 
    .. method:: readline()
 
-      Read until newline or EOF and return a single ``str``.  If the stream is
-      already at EOF, an empty string is returned.
+      改行または EOF まで読み込み、一つの ``str`` を返します。
+      ストリームが既に EOF に到達している場合、空文字列が返されます。
 
    .. method:: write(s)
 
-      Write the string *s* to the stream and return the number of characters
-      written.
+      文字列 *s* をストリームに書き込み、書き込まれた文字数を返します。
 
 
 .. class:: TextIOWrapper(buffer[, encoding[, errors[, newline[, line_buffering]]]])
 
-   A buffered text stream over a :class:`BufferedIOBase` raw stream, *buffer*.
-   It inherits :class:`TextIOBase`.
+   :class:`BufferedIOBase` 生ストリーム *buffer* 上のバッファ付きテキストストリーム。
+   :class:`TextIOBase` を継承します。
 
-   *encoding* gives the name of the encoding that the stream will be decoded or
-   encoded with.  It defaults to :func:`locale.getpreferredencoding`.
+   *encoding* にはストリームをデコードしたりそれを使ってエンコードしたりするエンコーディング名を渡します。
+   デフォルトは :func:`locale.getpreferredencoding` です。
 
-   *errors* is an optional string that specifies how encoding and decoding
-   errors are to be handled.  Pass ``'strict'`` to raise a :exc:`ValueError`
-   exception if there is an encoding error (the default of ``None`` has the same
-   effect), or pass ``'ignore'`` to ignore errors.  (Note that ignoring encoding
-   errors can lead to data loss.)  ``'replace'`` causes a replacement marker
-   (such as ``'?'``) to be inserted where there is malformed data.  When
-   writing, ``'xmlcharrefreplace'`` (replace with the appropriate XML character
-   reference) or ``'backslashreplace'`` (replace with backslashed escape
-   sequences) can be used.  Any other error handling name that has been
-   registered with :func:`codecs.register_error` is also valid.
+   *errors* はオプションの文字列でエンコードやデコードの際のエラーをどのように扱うかを指定します。
+   エンコードエラーがあったら :exc:`ValueError` 例外を送出させるには
+   ``'strict'`` を渡します(デフォルトの ``None`` でも同じです)。
+   エラーを無視させるには ``'ignore'`` です。
+   (注意しなければならないのはエンコーディングエラーを無視するとデータ喪失につながる可能性があるということです。)
+   ``'replace'`` は正常に変換されなかった文字の代わりにマーカ
+   (たとえば ``'?'``) を挿入させます。
+   書き込み時には ``'xmlcharrefreplace'`` (適切な XML 文字参照に置き換え) や、
+   ``'backslashreplace'`` (バックスラッシュによるエスケープシーケンスに置き換え)
+   も使えます。
+   他にも :func:`codecs.register_error` で登録されたエラー処理名が有効です。
 
-   *newline* can be ``None``, ``''``, ``'\n'``, ``'\r'``, or ``'\r\n'``.  It
-   controls the handling of line endings.  If it is ``None``, universal newlines
-   is enabled.  With this enabled, on input, the lines endings ``'\n'``,
-   ``'\r'``, or ``'\r\n'`` are translated to ``'\n'`` before being returned to
-   the caller.  Conversely, on output, ``'\n'`` is translated to the system
-   default line seperator, :data:`os.linesep`.  If *newline* is any other of its
-   legal values, that newline becomes the newline when the file is read and it
-   is returned untranslated.  On output, ``'\n'`` is converted to the *newline*.
+   *newline* は ``None``, ``''``, ``'\n'``, ``'\r'``, ``'\r\n'`` のいずれかです。
+   行末の扱いを制御します。
+   ``None`` では、ユニバーサルニューラインが有効になります。
+   これが有効になると、入力時、行末の ``'\n'``, ``'\r'``, ``'\r\n'`` は ``'\n'`` 
+   に変換されて呼び出し側に返されます。
+   逆に出力時は ``'\n'`` がシステムのデフォルト行区切り文字 (:data:`os.linesep`)
+   に変換されます。
+   *newline* が他の適切な値の場合には、ファイル読み込みの際にその改行で改行されるようになり、
+   変換は行われません。
+   出力時には ``'\n'`` が *newline* に変換されます。
+   
+   *line_buffering* が ``True`` の場合、write への呼び出しが改行文字を含んでいれば
+   :meth:`flush` がそれに伴って呼び出されます。
 
-   If *line_buffering* is ``True``, :meth:`flush` is implied when a call to
-   write contains a newline character.
-
-   :class:`TextIOWrapper` provides these data attributes in addition to those of
-   :class:`TextIOBase` and its parents:
+   :class:`TextIOBase` およびその親クラスの属性に加えて、
+   :class:`TextIOWrapper` は以下のデータ属性を提供しています:
 
    .. attribute:: errors
 
-      The encoding and decoding error setting.
+      エンコーディングおよびデコーディングエラーの設定。
 
    .. attribute:: line_buffering
 
-      Whether line buffering is enabled.
+      行バッファリングが有効かどうか。
    
 
 .. class:: StringIO([initial_value[, encoding[, errors[, newline]]]])
 
-   An in-memory stream for text.  It in inherits :class:`TextIOWrapper`.
+   テキストのためのインメモリストリーム。
+   :class:`TextIOWrapper` を継承します。
 
-   Create a new StringIO stream with an inital value, encoding, error handling,
-   and newline setting.  See :class:`TextIOWrapper`\'s constructor for more
-   information.
+   新しい StringIO ストリーム を初期値、エンコーディング、エラーの扱い、改行設定から作成します。
+   より詳しい情報は :class:`TextIOWrapper` のコンストラクタを参照して下さい。
 
-   :class:`StringIO` provides this method in addition to those from
-   :class:`TextIOWrapper` and its parents:
+   :class:`TextIOWrapper` およびその親クラスから継承したメソッドに加えて
+   :class:`StringIO` は以下のメソッドを提供しています:
 
    .. method:: getvalue()
 
-      Return a ``str`` containing the entire contents of the buffer.
+      バッファの全内容を保持した ``str`` を返します。
 
 
 .. class:: IncrementalNewlineDecoder
 
-   A helper codec that decodes newlines for universal newlines mode.  It
-   inherits :class:`codecs.IncrementalDecoder`.
+   ユニバーサルニューラインモード向けに改行をデコードする補助コーデック。
+   :class:`codecs.IncrementalDecoder` を継承します。
 
