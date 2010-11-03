@@ -26,13 +26,6 @@
 
 .. function:: iglob(pathname)
 
-   全ての値を一度に格納することなく :func:`glob` と同じ値を生成するすイテレータを返します。
-
-   .. versionadded:: 2.5
-
-
-.. function:: iglob(pathname)
-
    実際には一度に全てを格納せずに、 :func:`glob` と同じ値を順に生成するイテレータを返します。
 
    .. versionadded:: 2.5
