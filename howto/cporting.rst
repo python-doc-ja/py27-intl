@@ -1,56 +1,55 @@
 .. highlightlang:: c
 
-********************************
-Porting Extension Modules to 3.0
-********************************
+**************************
+3.0 への拡張モジュール移植
+**************************
 
 :author: Benjamin Peterson
 
 
-.. topic:: Abstract
+.. topic:: 概要
 
-   Although changing the C-API was not one of Python 3.0's objectives, the many
-   Python level changes made leaving 2.x's API intact impossible.  In fact, some
-   changes such as :func:`int` and :func:`long` unification are more obvious on
-   the C level.  This document endeavors to document incompatibilities and how
-   they can be worked around.
+   C-API の変更は Python 3.0 の目標には入っていませんでしたが、Python レベルでの
+   変更がたくさんあったので、2.x の API を無傷で済ませることはできませんでした。
+   実際、 :func:`int` と :func:`long` の統合などは C レベルのほうが目立ちます。
+   この文書では、なくなった互換性と、その対処方法について記述しようと思います。
 
 
-Conditional compilation
-=======================
+条件コンパイル
+==============
 
-The easiest way to compile only some code for 3.0 is to check if
-:cmacro:`PY_MAJOR_VERSION` is greater than or equal to 3. ::
+一部のコードを 3.0 にだけコンパイルするための一番簡単な方法は、
+:cmacro:`PY_MAJOR_VERSION` が 3 以上かどうかチェックすることです。 ::
 
    #if PY_MAJOR_VERSION >= 3
    #define IS_PY3K
    #endif
 
-API functions that are not present can be aliased to their equivalents within
-conditional blocks.
+存在しなくなった関数については、条件ブロックの中で同等品に
+エイリアスすれば良いでしょう。
 
 
-Changes to Object APIs
-======================
+オブジェクト API の変更
+=======================
 
-Python 3.0 merged together some types with similar functions while cleanly
-separating others.
-
-
-str/unicode Unification
------------------------
+Python 3.0 では、似た機能を持つタイプのいくつかを、
+統合したり、きっちり分けたりしました。
 
 
-Python 3.0's :func:`str` (``PyString_*`` functions in C) type is equivalent to
-2.x's :func:`unicode` (``PyUnicode_*``).  The old 8-bit string type has become
-:func:`bytes`.  Python 2.6 and later provide a compatibility header,
-:file:`bytesobject.h`, mapping ``PyBytes`` names to ``PyString`` ones.  For best
-compatibility with 3.0, :ctype:`PyUnicode` should be used for textual data and
-:ctype:`PyBytes` for binary data.  It's also important to remember that
-:ctype:`PyBytes` and :ctype:`PyUnicode` in 3.0 are not interchangeable like
-:ctype:`PyString` and :ctype:`PyString` are in 2.x.  The following example shows
-best practices with regards to :ctype:`PyUnicode`, :ctype:`PyString`, and
-:ctype:`PyBytes`. ::
+str/unicode の統合
+------------------
+
+
+Python 3.0 の :func:`str` (C では ``PyString_*`` 関数) タイプは 2.x の
+:func:`unicode` (``PyUnicode_*``) と同じものです。昔の 8 ビット文字列タイプは
+:func:`bytes` です。Python 2.6 以降には互換性ヘッダ :file:`bytesobject.h`
+が用意されており、 ``PyBytes`` 系の名前を ``PyString`` 系にマップしています。
+3.0 との互換性を最大限確保するには、 :ctype:`PyUnicode` は文字データに、
+:ctype:`PyBytes` はバイナリデータにだけ使うべきです。ほかにも、3.0 の
+:ctype:`PyBytes` と :ctype:`PyUnicode` は 2.x の :ctype:`PyString` や
+:ctype:`PyUnicode` とは違って交換不可能だということも重要です。以下の例では
+:ctype:`PyUnicode`, :ctype:`PyString`, :ctype:`PyBytes` に関する
+ベストプラクティスを見ることができます。 ::
 
    #include "stdlib.h"
    #include "Python.h"
@@ -89,15 +88,16 @@ best practices with regards to :ctype:`PyUnicode`, :ctype:`PyString`, and
    }
 
 
-long/int Unification
---------------------
+long/int の統合
+---------------
 
-In Python 3.0, there is only one integer type.  It is called :func:`int` on the
-Python level, but actually corresponds to 2.x's :func:`long` type.  In the
-C-API, ``PyInt_*`` functions are replaced by their ``PyLong_*`` neighbors.  The
-best course of action here is using the ``PyInt_*`` functions aliased to
-``PyLong_*`` found in :file:`intobject.h`.  The the abstract ``PyNumber_*`` APIs
-can also be used in some cases. ::
+Python 3.0 では整数タイプが一つしかありません。これは Python レベルでは
+:func:`int` と呼ばれますが、実際には 2.x の :func:`long` タイプと
+同じものです。C-API では ``PyInt_*`` 関数群の中身が、お隣さんの
+``PyLong_*`` に交換されています。ここでとるべき最良の行動指針は、
+:file:`intobject.h` で ``PyLong_*`` にエイリアスされている ``PyInt_*``
+を使うというものです。ある場合には抽象 API 群 ``PyNumber_*`` も使える
+かもしれません。 ::
 
    #include "Python.h"
    #include "intobject.h"
@@ -115,13 +115,14 @@ can also be used in some cases. ::
 
 
 
-Module initialization and state
-===============================
+モジュールの初期化と状態情報
+============================
 
-Python 3.0 has a revamped extension module initialization system.  (See PEP
-:pep:`3121`.)  Instead of storing module state in globals, they should be stored
-in an interpreter specific structure.  Creating modules that act correctly in
-both 2.x and 3.0 is tricky.  The following simple example demonstrates how. ::
+Python 3.0 には、改良された拡張モジュール初期化システムがあります (PEP
+:pep:`3121` 参照)。モジュールの状態はグローバル変数に持つのではなく、
+インタプリタ固有の構造体に持つべきだということになったのです。2.x と 3.0
+のどちらでも動くモジュールを作るのにはコツが要ります。次の簡単な例で、
+その方法を実演してみます。 ::
 
    #include "Python.h"
 
@@ -207,10 +208,11 @@ both 2.x and 3.0 is tricky.  The following simple example demonstrates how. ::
    }
 
 
-Other options
-=============
+ほかの選択肢
+============
 
-If you are writing a new extension module, you might consider `Cython
-<http://www.cython.org>`_.  It translates a Python-like language to C.  The
-extension modules it creates are compatible with Python 3.x and 2.x.
+新規に拡張モジュールを書こうと思っているのであれば、 `Cython
+<http://www.cython.org>`_ を検討してみても良いでしょう。これは
+Python 風の言語を C に翻訳してくれるもので、出力される
+拡張モジュールは Python 3.x と 2.x に両方対応しています。
 

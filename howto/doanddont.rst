@@ -1,100 +1,109 @@
-************************************
-  Idioms and Anti-Idioms in Python  
-************************************
+*********************************
+  Python 良い慣用句、悪い慣用句
+*********************************
 
 :Author: Moshe Zadka
 
 This document is placed in the public domain.
+(この文書はパブリックドメインです。)
 
 
-.. topic:: Abstract
+.. topic:: 概要
 
-   This document can be considered a companion to the tutorial. It shows how to use
-   Python, and even more importantly, how *not* to use Python.
-
-
-Language Constructs You Should Not Use
-======================================
-
-While Python has relatively few gotchas compared to other languages, it still
-has some constructs which are only useful in corner cases, or are plain
-dangerous.
+   この文書はチュートリアルのおまけと考えてもらって結構です。
+   Python をどう使うべきか、そして更に重要なこととして、どう
+   使うべきで *ない* かを例示しています。
 
 
-from module import \*
----------------------
+使うべきでない構文
+==================
+
+Python の落とし穴は他言語と比べればほとんどないようなものですが、
+中には特殊な場面でしか役に立たなかったり、単に危険なだけの構文も
+存在しています。
 
 
-Inside Function Definitions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``from module import *`` is *invalid* inside function definitions. While many
-versions of Python do not check for the invalidity, it does not make it more
-valid, no more then having a smart lawyer makes a man innocent. Do not use it
-like that ever. Even in versions where it was accepted, it made the function
-execution slower, because the compiler could not be certain which names are
-local and which are global. In Python 2.1 this construct causes warnings, and
-sometimes even errors.
+from モジュール import \*
+-------------------------
 
 
-At Module Level
-^^^^^^^^^^^^^^^
+関数定義の中で
+^^^^^^^^^^^^^^
 
-While it is valid to use ``from module import *`` at module level it is usually
-a bad idea. For one, this loses an important property Python otherwise has ---
-you can know where each toplevel name is defined by a simple "search" function
-in your favourite editor. You also open yourself to trouble in the future, if
-some module grows additional functions or classes.
+関数定義内での ``from モジュール import *`` は *不正* です。
+多くの古い Python では不正としてチェックされないものの、
+だからと言って有効になるわけではありません。
+やり手の弁護士を雇って無罪になっても、潔白になれるわけではないのと同じですね。
+ですから絶対にそういう使い方をしないでください。
+不正にされないバージョンでも、コンパイラはどの名前がローカルで
+どの名前がグローバルなのか判然としなくなるので、関数の実行が
+遅くなってしまいます。Python 2.1 で、この構文は警告や、
+場合によってはエラーも出すようになりました。
 
-One of the most awful question asked on the newsgroup is why this code::
+
+モジュールレベルで
+^^^^^^^^^^^^^^^^^^
+
+モジュールレベルで ``from モジュール import *`` を使うのは
+有効ではありますが、大抵は、やめたほうが良いですよ。
+理由のひとつとして、それをやると本来 Python が持っている
+大事な特徴を失ってしまうということが挙げられます。
+その特徴とは、トップレベルの名前がそれぞれどこで定義されているのか、
+エディタの検索機能だけでわかるというものです。
+それに、将来モジュールに関数やクラスが増えていくと、
+ややこしいことになりかねません。
+
+ニュースグループで出てくる最低の質問には、なぜこのコード::
 
    f = open("www")
    f.read()
 
-does not work. Of course, it works just fine (assuming you have a file called
-"www".) But it does not work if somewhere in the module, the statement ``from os
-import *`` is present. The :mod:`os` module has a function called :func:`open`
-which returns an integer. While it is very useful, shadowing builtins is one of
-its least useful properties.
+が動かないのか、というものがあります。もちろんこれで動きますよ
+(ただし "www" というファイルがあれば)。でもモジュールのどこかに
+``from os import *`` があればダメです。 :mod:`os` モジュール
+は、整数を返す :func:`open` 関数を持っているのです。これは
+とても便利ではありますが、ビルトインを隠してしまうのは、
+非常に不便な特徴のひとつと言えます。
 
-Remember, you can never know for sure what names a module exports, so either
-take what you need --- ``from module import name1, name2``, or keep them in the
-module and access on a per-need basis ---  ``import module;print module.name``.
-
-
-When It Is Just Fine
-^^^^^^^^^^^^^^^^^^^^
-
-There are situations in which ``from module import *`` is just fine:
-
-* The interactive prompt. For example, ``from math import *`` makes Python an
-  amazing scientific calculator.
-
-* When extending a module in C with a module in Python.
-
-* When the module advertises itself as ``from import *`` safe.
+モジュールがエクスポートする名前は確実にはわからないのですから、必要なものだけ
+``from モジュール import 名前1, 名前2`` で取るか、モジュールから出さずに
+``import モジュール;print モジュール.name`` としておいて必要に応じてアクセスする
+ようにしましょう。
 
 
-Unadorned :keyword:`exec`, :func:`execfile` and friends
--------------------------------------------------------
+問題ない状況
+^^^^^^^^^^^^
 
-The word "unadorned" refers to the use without an explicit dictionary, in which
-case those constructs evaluate code in the *current* environment. This is
-dangerous for the same reasons ``from import *`` is dangerous --- it might step
-over variables you are counting on and mess up things for the rest of your code.
-Simply do not do that.
+``from モジュール import *`` が問題とならない状況もあります:
 
-Bad examples::
+* 対話的プロンプト。たとえば ``from math import *`` すれば
+  Python がスーパー関数電卓に変身します。
+
+* C のモジュールを Python のモジュールで拡張するとき。
+
+* そのモジュールは ``from import *`` 可だ、と作者が言っているとき。
+
+
+そのまんまな :keyword:`exec`, :func:`execfile` と仲間たち
+---------------------------------------------------------
+
+「そのまんま」という言葉は辞書を明示せずに使うという意味で、
+そういう構文ではコードが *その時点の* 環境に対して評価されます。
+これは ``from import *`` と同じ理由で危険です --- 使っている最中の変数を
+土足で踏んで行って、コード全体をメチャクチャにしてしまう可能性があるからです。
+これは、とにかくやめてください。
+
+悪い見本::
 
    >>> for name in sys.argv[1:]:
    >>>     exec "%s=1" % name
    >>> def func(s, **kw):
    >>>     for var, val in kw.items():
-   >>>         exec "s.%s=val" % var  # invalid!
+   >>>         exec "s.%s=val" % var  # ダメ!
    >>> execfile("handler.py")
    >>> handle()
 
-Good examples::
+良い見本::
 
    >>> d = {}
    >>> for name in sys.argv[1:]:
@@ -108,18 +117,19 @@ Good examples::
    >>> handle()
 
 
-from module import name1, name2
--------------------------------
+from モジュール import 名前1, 名前2
+-----------------------------------
 
-This is a "don't" which is much weaker then the previous "don't"s but is still
-something you should not do if you don't have good reasons to do that. The
-reason it is usually bad idea is because you suddenly have an object which lives
-in two separate namespaces. When the binding in one namespace changes, the
-binding in the other will not, so there will be a discrepancy between them. This
-happens when, for example, one module is reloaded, or changes the definition of
-a function at runtime.
+今回のは、これまでの「ダメ」よりかなり弱い「ダメ」ですが、やはりそれなりの
+理由がなければ、やめておいたほうが良いことに変わりありません。
+これが大抵うまくないのは、いつの間にか
+二つ別々の名前空間に住む一つのオブジェクトを持つことになるからです。
+一方の名前空間でそのバインディングが変更されたとき、もう一方の
+バインディングは変更されないので、食い違いができてしまいます。
+これが起こるのは、たとえば、モジュールを読み直したり、
+ランタイムで関数の定義を変更したときなどです。
 
-Bad example::
+悪い見本::
 
    # foo.py
    a = 1
@@ -127,9 +137,9 @@ Bad example::
    # bar.py
    from foo import a
    if something():
-       a = 2 # danger: foo.a != a 
+       a = 2 # 危険: foo.a != a 
 
-Good example::
+良い見本::
 
    # foo.py
    a = 1
@@ -143,41 +153,42 @@ Good example::
 except:
 -------
 
-Python has the ``except:`` clause, which catches all exceptions. Since *every*
-error in Python raises an exception, this makes many programming errors look
-like runtime problems, and hinders the debugging process.
+Python には ``except:`` 節があり、これはあらゆる例外を捕捉します。
+Python のエラーは *すべて* 例外を出しますから、こんなことをすれば
+各種のプログラミングエラーがランタイムの問題のように見えてしまい、
+デバグの邪魔になります。
 
-The following code shows a great example::
+以下のコードが好例です::
 
    try:
-       foo = opne("file") # misspelled "open"
+       foo = opne("file") # "open" を打ち間違えた
    except:
        sys.exit("could not open file!")
 
-The second line triggers a :exc:`NameError` which is caught by the except
-clause. The program will exit, and you will have no idea that this has nothing
-to do with the readability of ``"file"``.
+この 2 行目は :exc:`NameError` を引き起こし、続く except 節で捕捉されます。
+プログラムがエラー終了しますが、実際の問題は ``"file"`` の読み出しと
+関係ないことなど、これではまったくわかりません。
 
-The example above is better written ::
+前述の例はこう書けばマシになります::
 
    try:
-       foo = opne("file") # will be changed to "open" as soon as we run it
+       foo = opne("file") # 実行すればすぐ "open" に直すことになる
    except IOError:
        sys.exit("could not open file")
 
-There are some situations in which the ``except:`` clause is useful: for
-example, in a framework when running callbacks, it is good not to let any
-callback disturb the framework.
+``except:`` 節が役立つ状況もあります: たとえば、フレームワークで
+コールバックを実行するとき、コールバックがフレームワーク自体の
+邪魔をしないようにするのは良いことです。
 
 
-Exceptions
-==========
+例外
+====
 
-Exceptions are a useful feature of Python. You should learn to raise them
-whenever something unexpected occurs, and catch them only where you can do
-something about them.
+例外は Python の有用な機能です。何か期待している以外のことが
+起これば例外を出す、という習慣を持つべきですが、それと同時に、
+何か対処できるときにだけ捕捉する、ということも習慣にしてください。
 
-The following is a very popular anti-idiom ::
+以下は非常にありがちな悪い見本です::
 
    def get_status(file):
        if not os.path.exists(file):
@@ -185,15 +196,16 @@ The following is a very popular anti-idiom ::
            sys.exit(1)
        return open(file).readline()
 
-Consider the case the file gets deleted between the time the call to
-:func:`os.path.exists` is made and the time :func:`open` is called. That means
-the last line will throw an :exc:`IOError`. The same would happen if *file*
-exists but has no read permission. Since testing this on a normal machine on
-existing and non-existing files make it seem bugless, that means in testing the
-results will seem fine, and the code will get shipped. Then an unhandled
-:exc:`IOError` escapes to the user, who has to watch the ugly traceback.
+ここで、 :func:`os.path.exists` を呼んでから :func:`open` を呼ぶまでの間に
+ファイルが消された場合を考えてください。そうなれば最後の行は :exc:`IOError` を
+投げるでしょう。同じことは、 *file* は存在しているけれど読み出し権限がなかった、
+という場合にも起こります。これをテストする際、ふつうのマシンで、存在するファイル
+と存在しないファイルに対してだけやったのではバグがないように見えてしまい、テスト
+結果が大丈夫そうなのでコードはそのまま出荷されてしまうことになります。こうして、
+対処されない :exc:`IOError` はユーザの所まで逃げのびて、
+汚いトレースバックを見せることになるのです。
 
-Here is a better way to do it. ::
+もっと良い方法はこちら::
 
    def get_status(file):
        try:
@@ -202,106 +214,110 @@ Here is a better way to do it. ::
            print "file not found"
            sys.exit(1)
 
-In this version, \*either\* the file gets opened and the line is read (so it
-works even on flaky NFS or SMB connections), or the message is printed and the
-application aborted.
+このバージョンでは、ファイルが開かれて一行目も読まれる (だから、あてにならない
+NFS や SMB 接続でも動く) か、あるいはメッセージが表示されてアプリケーションが
+強制終了するかの \*いずれか\* 一方しか起こりません。
 
-Still, :func:`get_status` makes too many assumptions --- that it will only be
-used in a short running script, and not, say, in a long running server. Sure,
-the caller could do something like ::
+とはいえ、このバージョンの :func:`get_status` でさえ、前提としている条件が
+多過ぎます --- すぐ終わるスクリプトでだけ使って、長く動作させる、いわゆる
+サーバでは使わない前提なのです。もちろん呼び出し側はこうすることもできます::
 
    try:
        status = get_status(log)
    except SystemExit:
        status = None
 
-So, try to make as few ``except`` clauses in your code --- those will usually be
-a catch-all in the :func:`main`, or inside calls which should always succeed.
+でも、もっと良い方法があります。コードで使う ``except`` 節を、
+できるだけ少なくするのです --- 使うとすれば、
+必ず成功するはずの呼び出し内か、main 関数での全捕捉ですね。
 
-So, the best version is probably ::
+というわけで、たぶんもっと良い :func:`get_status` はこちら::
 
    def get_status(file):
        return open(file).readline()
 
-The caller can deal with the exception if it wants (for example, if it  tries
-several files in a loop), or just let the exception filter upwards to *its*
-caller.
+呼び出した側は、望むなら例外を処理することもできますし (たとえばループで
+複数ファイルに試行するときとか)、そのまま *自分の* 呼び出し親まで上げる
+こともできます。
 
-The last version is not very good either --- due to implementation details, the
-file would not be closed when an exception is raised until the handler finishes,
-and perhaps not at all in non-C implementations (e.g., Jython). ::
+しかし、この最終バージョンにも深刻な問題があります --- CPython 実装の
+細部に原因があるのですが、例外が起きたときにはその例外ハンドラが
+終了するまでファイルが閉じられないのです; しかも、なお悪いことに、
+他の実装 (たとえば Jython) では例外の有無に関わらず閉じられません。
+
+この関数の一番良いバージョンでは :func:`open` をコンテクストマネジャ
+として使って、関数が返るとすぐにファイルが閉じられるようにしています::
 
    def get_status(file):
-       fp = open(file)
-       try:
+       with open(file) as fp:
            return fp.readline()
-       finally:
-           fp.close()
 
 
-Using the Batteries
-===================
+使い捨てじゃなくて充電池を使う
+==============================
 
-Every so often, people seem to be writing stuff in the Python library again,
-usually poorly. While the occasional module has a poor interface, it is usually
-much better to use the rich standard library and data types that come with
-Python then inventing your own.
+どうも皆、Python ライブラリに最初からあるものを自分で書こうとして、
+大抵うまくいっていないようです。そういう場当たりなモジュールには
+貧弱なインタフェースしかないことを考えると、ふつうは Python に付いてくる
+高機能な標準ライブラリとデータ型を使うほうが、自分でひねり出すより
+格段に良いですよ。
 
-A useful module very few people know about is :mod:`os.path`. It  always has the
-correct path arithmetic for your operating system, and will usually be much
-better then whatever you come up with yourself.
+便利なのにほとんど知られていないモジュールに :mod:`os.path` があります。
+このモジュールには OS に合ったパス演算が備わっていて、大抵は
+自分でどれだけ苦労して作ったものよりもずっと良いものです。
 
-Compare::
+比べてください::
 
-   # ugh!
+   # うげえ!
    return dir+"/"+file
-   # better
+   # 改良版
    return os.path.join(dir, file)
 
-More useful functions in :mod:`os.path`: :func:`basename`,  :func:`dirname` and
-:func:`splitext`.
+:mod:`os.path` にはさらに便利な関数が他にもあります: :func:`basename` や
+:func:`dirname`, :func:`splitext` などです。
 
-There are also many useful builtin functions people seem not to be aware of for
-some reason: :func:`min` and :func:`max` can find the minimum/maximum of any
-sequence with comparable semantics, for example, yet many people write their own
-:func:`max`/:func:`min`. Another highly useful function is :func:`reduce`. A
-classical use of :func:`reduce` is something like ::
+加えて、なぜか気付かれていない多くのビルトイン関数があります:
+たとえば :func:`min` と :func:`max` を使えば、大小比較のできるシーケンスなら
+何からでも最小値/最大値を見つけることができるのに、多くの人々が自家製の
+:func:`max`/:func:`min` を書いています。また別の超便利な関数は
+:func:`reduce` です。古典的な使い方はこういった感じです::
 
    import sys, operator
    nums = map(float, sys.argv[1:])
    print reduce(operator.add, nums)/len(nums)
 
-This cute little script prints the average of all numbers given on the command
-line. The :func:`reduce` adds up all the numbers, and the rest is just some
-pre- and postprocessing.
+このキュートな小っちゃいスクリプトが、コマンドラインで与えられた数値
+すべての平均値を表示するのです。 :func:`reduce` がすべての数を
+合計する部分で、残りは単なる準備や後処理に過ぎません。
 
-On the same note, note that :func:`float`, :func:`int` and :func:`long` all
-accept arguments of type string, and so are suited to parsing --- assuming you
-are ready to deal with the :exc:`ValueError` they raise.
+ついでにメモ。 :func:`float` と :func:`int` と :func:`long` はすべて
+文字列型の引数を受け付けますから、パース処理にピッタリです --- ただし
+:exc:`ValueError` に対応できるよう準備は必要ですが。
 
 
-Using Backslash to Continue Statements
-======================================
+バックスラッシュで文を続ける
+============================
 
-Since Python treats a newline as a statement terminator, and since statements
-are often more then is comfortable to put in one line, many people do::
+Python は改行を文の終わりとして扱いますので、そして文は一行
+にうまく収まらないことがよくありますので、こうする人が多いです::
 
    if foo.bar()['first'][0] == baz.quux(1, 2)[5:9] and \
       calculate_number(10, 20) != forbulate(500, 360):
          pass
 
-You should realize that this is dangerous: a stray space after the ``\`` would
-make this line wrong, and stray spaces are notoriously hard to see in editors.
-In this case, at least it would be a syntax error, but if the code was::
+これは危険だということに気づいたほうが良いですよ: はぐれスペースが ``\``
+の後に来ればその行の意味が変わってしまいますが、
+スペースはエディタで見えにくいことに定評があるのです。
+今回の場合は構文エラーにはなりますが、もしこうなら::
 
    value = foo.bar()['first'][0]*baz.quux(1, 2)[5:9] \
            + calculate_number(10, 20)*forbulate(500, 360)
 
-then it would just be subtly wrong.
+微妙に違う意味になるだけで、エラーが出ません。
 
-It is usually much better to use the implicit continuation inside parenthesis:
+それで、ふつうは括弧に入れて暗黙のうちに行をつなげるほうが賢明です:
 
-This version is bulletproof::
+このバージョンで鉄壁です::
 
    value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9] 
            + calculate_number(10, 20)*forbulate(500, 360))
