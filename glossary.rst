@@ -4,6 +4,10 @@
 用語集
 ********
 
+.. tutorial/glossary が古い版ですが、全体的にインデントが変わっててdiffが使いにくい。
+   まずは tutorial/glossary にあるものを全部移植＆updateして、あとで残りを翻訳していく。
+   new-style class まで移植した。
+
 .. if you add new entries, keep the alphabetical sorting!
 
 .. glossary::
@@ -75,8 +79,12 @@
       *a* it would be referenced as *o.a*.
 
    BDFL
-      Benevolent Dictator For Life, a.k.a. `Guido van Rossum
-      <http://www.python.org/~guido/>`_, Python's creator.
+      慈悲ぶかき独裁者 (Benevolent Dictator For Life) の略です。
+      Python の作者、 `Guido van Rossum <http://www.python.org/~guido/>`_
+      のことです。
+
+      .. Benevolent Dictator For Life, a.k.a. `Guido van Rossum
+         <http://www.python.org/~guido/>`_, Python's creator.
 
    bytecode
       (バイトコード)
@@ -94,21 +102,38 @@
       class.
 
    classic class
-      Any class which does not inherit from :class:`object`.  See
-      :term:`new-style class`.  Classic classes will be removed in Python 3.0.
+      (旧スタイルクラス)
+      :class:`object` を継承していないクラス全てを指します。
+      *新スタイルクラス (:term:`new-style class`)* も参照してください。
+      旧スタイルクラスはPython 3.0で削除されます。
+
+      .. Any class which does not inherit from :class:`object`.  See
+         :term:`new-style class`.  Classic classes will be removed in Python 3.0.
 
    coercion
-      The implicit conversion of an instance of one type to another during an
-      operation which involves two arguments of the same type.  For example,
-      ``int(3.15)`` converts the floating point number to the integer ``3``, but
-      in ``3+4.5``, each argument is of a different type (one int, one float),
-      and both must be converted to the same type before they can be added or it
-      will raise a ``TypeError``.  Coercion between two operands can be
-      performed with the ``coerce`` builtin function; thus, ``3+4.5`` is
-      equivalent to calling ``operator.add(*coerce(3, 4.5))`` and results in
-      ``operator.add(3.0, 4.5)``.  Without coercion, all arguments of even
-      compatible types would have to be normalized to the same value by the
-      programmer, e.g., ``float(3)+4.5`` rather than just ``3+4.5``.
+      (型強制)
+      同じ型の2つの引数を要する演算の最中に、ある型のインスタンスを別の型に暗黙のうちに変換することです。
+      例えば、 ``int(3.15)`` は浮動小数点数を整数の ``3`` にします。
+      しかし、 ``3+4.5`` の場合、各引数は型が異なっていて(一つは整数、一つは浮動小数点数)、
+      加算をする前に同じ型に変換しなければいけません。 そうでないと、 ``TypeError`` 例外が投げられます。
+      2つの被演算子間の型強制は組み込み関数の ``coerce`` を使って行えます。 
+      従って、 ``3+4.5`` は ``operator.add(*coerce(3, 4.5))`` を呼び出すことに等しく、
+      ``operator.add(3.0, 4.5)`` という結果になります。
+      型強制を行わない場合、たとえ互換性のある型であっても、すべての引数はプログラマーが、
+      単に ``3+4.5`` とするのではなく、
+      ``float(3)+4.5`` というように、同じ型に正規化しなければいけません。
+
+      .. The implicit conversion of an instance of one type to another during an
+         operation which involves two arguments of the same type.  For example,
+         ``int(3.15)`` converts the floating point number to the integer ``3``, but
+         in ``3+4.5``, each argument is of a different type (one int, one float),
+         and both must be converted to the same type before they can be added or it
+         will raise a ``TypeError``.  Coercion between two operands can be
+         performed with the ``coerce`` builtin function; thus, ``3+4.5`` is
+         equivalent to calling ``operator.add(*coerce(3, 4.5))`` and results in
+         ``operator.add(3.0, 4.5)``.  Without coercion, all arguments of even
+         compatible types would have to be normalized to the same value by the
+         programmer, e.g., ``float(3)+4.5`` rather than just ``3+4.5``.
 
    complex number
       An extension of the familiar real number system in which all numbers are
@@ -167,10 +192,15 @@
 
    dictionary
       (辞書)
-      An associative array, where arbitrary keys are mapped to values.  The use
-      of :class:`dict` closely resembles that for :class:`list`, but the keys can
-      be any object with a :meth:`__hash__` function, not just integers.
-      Called a hash in Perl.
+      任意のキーを値に対応付ける連想配列です。
+      :class:`dict` の使い方は :class:`list` に似ていますが、ゼロから始まる整数に限らず、
+      :meth:`__hash__` 関数を実装している全てのオブジェクトをキーにできます。
+      Perl ではハッシュ (hash) と呼ばれています。
+
+      .. An associative array, where arbitrary keys are mapped to values.  The use
+         of :class:`dict` closely resembles that for :class:`list`, but the keys can
+         be any object with a :meth:`__hash__` function, not just integers.
+         Called a hash in Perl.
 
    docstring
       A string literal which appears as the first expression in a class,
@@ -181,23 +211,39 @@
       object.
 
    duck-typing
-      A pythonic programming style which determines an object's type by inspection
-      of its method or attribute signature rather than by explicit relationship
-      to some type object ("If it looks like a duck and quacks like a duck, it
-      must be a duck.")  By emphasizing interfaces rather than specific types,
-      well-designed code improves its flexibility by allowing polymorphic
-      substitution.  Duck-typing avoids tests using :func:`type` or
-      :func:`isinstance`. (Note, however, that duck-typing can be complemented
-      with abstract base classes.) Instead, it typically employs :func:`hasattr`
-      tests or :term:`EAFP` programming.
+      Python 的なプログラムスタイルではオブジェクトの型を（型オブジェクトとの関係ではなく）
+      メソッドや属性といったシグネチャを見ることで判断します。
+      （「もしそれがガチョウのようにみえて、ガチョウのように鳴けば、それはガ チョウである」）
+      インタフェースを型より重視することで、上手くデザインされたコードは
+      (polymorphicな置換を許可することによって)柔軟性を増すことができます。
+      duck-typing は :func:`type` や:func:`isinstance` を避けます。
+      (ただし、duck-typing を抽象ベースクラス(abstract base classes)で補完することもできます。)
+      その代わりに :func:`hasattr` テストや *EAFP* プログラミング を利用します。
+
+      .. A pythonic programming style which determines an object's type by inspection
+         of its method or attribute signature rather than by explicit relationship
+         to some type object ("If it looks like a duck and quacks like a duck, it
+         must be a duck.")  By emphasizing interfaces rather than specific types,
+         well-designed code improves its flexibility by allowing polymorphic
+         substitution.  Duck-typing avoids tests using :func:`type` or
+         :func:`isinstance`. (Note, however, that duck-typing can be complemented
+         with abstract base classes.) Instead, it typically employs :func:`hasattr`
+         tests or :term:`EAFP` programming.
 
    EAFP
-      Easier to ask for forgiveness than permission.  This common Python coding
-      style assumes the existence of valid keys or attributes and catches
-      exceptions if the assumption proves false.  This clean and fast style is
-      characterized by the presence of many :keyword:`try` and :keyword:`except`
-      statements.  The technique contrasts with the :term:`LBYL` style
-      common to many other languages such as C.
+      「認可をとるより許しを請う方が容易  (easier to ask for forgiveness than permission、マーフィーの法則)」
+      の略です。 Python で広く使われているコーディングスタイルでは、通常は有効なキーや
+      属性が存在するものと仮定し、その仮定が誤っていた場合に例外を捕捉します。
+      この簡潔で手早く書けるコーディングスタイルには、 :keyword:`try` 文および
+      :keyword:`except` 文がたくさんあるのが特徴です。
+      このテクニックは、C のような言語でよく使われている :term:`LBYL` スタイルと対照的なものです。
+
+      .. Easier to ask for forgiveness than permission.  This common Python coding
+         style assumes the existence of valid keys or attributes and catches
+         exceptions if the assumption proves false.  This clean and fast style is
+         characterized by the presence of many :keyword:`try` and :keyword:`except`
+         statements.  The technique contrasts with the :term:`LBYL` style
+         common to many other languages such as C.
 
    expression
       (式)
@@ -226,17 +272,16 @@
       the body. See also :term:`argument` and :term:`method`.
 
    __future__
-      A pseudo module which programmers can use to enable new language features
-      which are not compatible with the current interpreter.  For example, the
-      expression ``11/4`` currently evaluates to ``2``. If the module in which
-      it is executed had enabled *true division* by executing::
+      互換性のない新たな機能を現在のインタプリタで有効にするためにプログラマが
+      利用できる擬似モジュールです。例えば、式 ``11/4`` は現状では ``2``
+      になります。この式を実行しているモジュールで ::
 
          from __future__ import division
 
-      the expression ``11/4`` would evaluate to ``2.75``.  By importing the
-      :mod:`__future__` module and evaluating its variables, you can see when a
-      new feature was first added to the language and when it will become the
-      default::
+      を行って *真の除算操作 (true division)* を有効にすると、式 ``11/4`` は
+      ``2.75`` になります。実際に:mod:`__future__` モジュールを import
+      してその変数を評価すれば、新たな機能が初めて追加されたのがいつで、
+      いつデフォルトの機能になる予定かわかります。 ::
 
          >>> import __future__
          >>> __future__.division
@@ -248,40 +293,65 @@
       collector that is able to detect and break reference cycles.
 
    generator
-      A function which returns an iterator.  It looks like a normal function
-      except that values are returned to the caller using a :keyword:`yield`
-      statement instead of a :keyword:`return` statement.  Generator functions
-      often contain one or more :keyword:`for` or :keyword:`while` loops which
-      :keyword:`yield` elements back to the caller.  The function execution is
-      stopped at the :keyword:`yield` keyword (returning the result) and is
-      resumed there when the next element is requested by calling the
-      :meth:`next` method of the returned iterator.
+      (ジェネレータ)
+      イテレータを返す関数です。:keyword:`return` 文の代わりに :keyword:`yield`
+      文を使って呼び出し側に要素を返す他は、通常の関数と同じに見えます。
 
-      .. index:: single: generator expression
+      よくあるジェネレータ関数は一つまたはそれ以上の :keyword:`for` ループや :keyword:`while` ループ
+      を含んでおり、ループの呼び出し側に要素を返す(:keyword:`yield`)ようになっています。
+      ジェネレータが返すイテレータを使って関数を実行すると、関数は
+      :keyword:`yield` キーワードで (値を返して) 一旦停止し、 :meth:`next`
+      を呼んで次の要素を要求するたびに実行を再開します。
+
+      .. A function which returns an iterator.  It looks like a normal function
+         except that values are returned to the caller using a :keyword:`yield`
+         statement instead of a :keyword:`return` statement.  Generator functions
+         often contain one or more :keyword:`for` or :keyword:`while` loops which
+         :keyword:`yield` elements back to the caller.  The function execution is
+         stopped at the :keyword:`yield` keyword (returning the result) and is
+         resumed there when the next element is requested by calling the
+         :meth:`next` method of the returned iterator.
 
    generator expression
-      An expression that returns a generator.  It looks like a normal expression
-      followed by a :keyword:`for` expression defining a loop variable, range,
-      and an optional :keyword:`if` expression.  The combined expression
-      generates values for an enclosing function::
+      (ジェネレータ式)
+      ジェネレータを返す式です。
+      普通の式に、ループ変を定義している :keyword:`for` 式、範囲、そしてオプショナルな
+      :keyword:`if` 式がつづいているように見えます。
+      こうして構成された式は、外側の関数に対して値を生成します。::
 
          >>> sum(i*i for i in range(10))         # sum of squares 0, 1, 4, ... 81
          285
 
+      .. An expression that returns a generator.  It looks like a normal expression
+         followed by a :keyword:`for` expression defining a loop variable, range,
+         and an optional :keyword:`if` expression.  The combined expression
+         generates values for an enclosing function::
+
+
    GIL
-      See :term:`global interpreter lock`.
+      グローバルインタプリタロック(:term:`global interpreter lock`)を参照してください。
 
    global interpreter lock
-      The lock used by Python threads to assure that only one thread
-      executes in the :term:`CPython` :term:`virtual machine` at a time.
-      This simplifies the CPython implementation by assuring that no two
-      processes can access the same memory at the same time.  Locking the
-      entire interpreter makes it easier for the interpreter to be
-      multi-threaded, at the expense of much of the parallelism afforded by
-      multi-processor machines.  Efforts have been made in the past to
-      create a "free-threaded" interpreter (one which locks shared data at a
-      much finer granularity), but so far none have been successful because
-      performance suffered in the common single-processor case.
+      (グローバルインタプリタロック)
+      :term:`CPython` のVM(:term:`virtual machine`)の中で一度に一つのスレッドだけが
+      どうさすることを保証するために使われているロックです。
+      このロックによって、同時に同じメモリにアクセスする二つのプロセスは存在しないと保証されているので、
+      CPython を単純な構造にできるのです。
+      インタプリタ全体にロックをかけると、多重プロセサ計算機における並列性の恩恵と引き換えにインタプリタの
+      多重スレッド化を簡単に行えます。かつて "スレッド自由な (free-threaded)"
+      インタプリタを作ろうと 努力したことがありましたが、広く使われている単一プロセッサの場合には
+      パフォーマンスが低下するという事態に悩まされました。
+
+      .. The lock used by Python threads to assure that only one thread
+         executes in the :term:`CPython` :term:`virtual machine` at a time.
+         This simplifies the CPython implementation by assuring that no two
+         processes can access the same memory at the same time.  Locking the
+         entire interpreter makes it easier for the interpreter to be
+         multi-threaded, at the expense of much of the parallelism afforded by
+         multi-processor machines.  Efforts have been made in the past to
+         create a "free-threaded" interpreter (one which locks shared data at a
+         much finer granularity), but so far none have been successful because
+         performance suffered in the common single-processor case.
 
    hashable
       (ハッシュ可能)
@@ -299,11 +369,16 @@
       compare unequal, and their hash value is their :func:`id`.
 
    IDLE
-      An Integrated Development Environment for Python.  IDLE is a basic editor
-      and interpreter environment which ships with the standard distribution of
-      Python.  Good for beginners, it also serves as clear example code for
-      those wanting to implement a moderately sophisticated, multi-platform GUI
-      application.
+      Python の組み込み開発環境 (Integrated DeveLopment Environment) です。
+      IDLE は Pythonの標準的な配布物についてくる基本的な機能のエディタとインタプリタ環境です。
+      初心者に向いている点として、 IDLEはよく洗練され、複数プラットフォームで動作する GUI
+      アプリケーションを実装したい人むけの明解なコード例にもなっています。
+
+      .. An Integrated Development Environment for Python.  IDLE is a basic editor
+         and interpreter environment which ships with the standard distribution of
+         Python.  Good for beginners, it also serves as clear example code for
+         those wanting to implement a moderately sophisticated, multi-platform GUI
+         application.
 
    immutable
       (不変)
@@ -338,13 +413,21 @@
       modules and packages (remember ``help(x)``).
 
    interpreted
-      Python is an interpreted language, as opposed to a compiled one,
-      though the distinction can be blurry because of the presence of the
-      bytecode compiler.  This means that source files can be run directly
-      without explicitly creating an executable which is then run.
-      Interpreted languages typically have a shorter development/debug cycle
-      than compiled ones, though their programs generally also run more
-      slowly.  See also :term:`interactive`.
+      Python はインタプリタ形式の言語であり、コンパイラ言語の対極に位置します。
+      (バイトコードコンパイラがあるために、この区別は曖昧ですが。)
+      ここでのインタプリタ言語とは、ソースコードのファイルを、
+      まず実行可能形式にしてから実行させるといった操作なしに、直接実行できることを意味します。
+      インタプリタ形式の言語は通常、
+      コンパイラ形式の言語よりも開発／デバッグのサイクルは短いものの、プログラムの実行は一般に遅いです。
+      対話的(:term:`interactive`)も参照してください。
+
+      .. Python is an interpreted language, as opposed to a compiled one,
+         though the distinction can be blurry because of the presence of the
+         bytecode compiler.  This means that source files can be run directly
+         without explicitly creating an executable which is then run.
+         Interpreted languages typically have a shorter development/debug cycle
+         than compiled ones, though their programs generally also run more
+         slowly.  See also :term:`interactive`.
 
    iterable
       A container object capable of returning its members one at a
@@ -363,21 +446,40 @@
       :term:`iterator`, :term:`sequence`, and :term:`generator`.
 
    iterator
-      An object representing a stream of data.  Repeated calls to the iterator's
-      :meth:`next` method return successive items in the stream.  When no more
-      data are available a :exc:`StopIteration` exception is raised instead.  At
-      this point, the iterator object is exhausted and any further calls to its
-      :meth:`next` method just raise :exc:`StopIteration` again.  Iterators are
-      required to have an :meth:`__iter__` method that returns the iterator
-      object itself so every iterator is also iterable and may be used in most
-      places where other iterables are accepted.  One notable exception is code
-      which attempts multiple iteration passes.  A container object (such as a
-      :class:`list`) produces a fresh new iterator each time you pass it to the
-      :func:`iter` function or use it in a :keyword:`for` loop.  Attempting this
-      with an iterator will just return the same exhausted iterator object used
-      in the previous iteration pass, making it appear like an empty container.
+      一連のデータ列 (stream) を表現するオブジェクトです。
+      イテレータの :meth:`next` メソッドを繰り返し呼び出すと、
+      データ列中の要素を一つずつ返します。
+      後続のデータがなくなると、 データの代わりに :exc:`StopIteration` 例外を送出します。
+      その時点で、イテレータオブジェクトは全てのオブジェクトを出し尽くしており、
+      それ以降は :meth:`next` を何度呼んでも:exc:`StopIteration` を送出します。
+      イテレータは、そのイテレータオブジェクト自体を返す :meth:`__iter__`
+      メソッドを実装しなければならなくなっており、そのため全てのイテレータは他の
+      反復可能オブジェクトを受理できるほとんどの場所で利用できます。
+      著しい例外は複数の反復を行うようなコードです。
+      (:class:`list` のような) コンテナオブジェクトでは、:func:`iter`
+      関数にオブジェクトを渡したり、:keyword:`for` ループ内で使うたびに、
+      新たな未使用のイテレータを生成します。
+      このイテレータをさらに別の場所でイテレータとして使おうとすると、
+      前回のイテレーションパスで使用された同じイテレータオブジェクトを返すため、
+      空のコンテナのように見えます。
 
-      More information can be found in :ref:`typeiter`.
+      より詳細な情報は :ref:`typeiter` にあります。
+
+      .. An object representing a stream of data.  Repeated calls to the iterator's
+         :meth:`next` method return successive items in the stream.  When no more
+         data are available a :exc:`StopIteration` exception is raised instead.  At
+         this point, the iterator object is exhausted and any further calls to its
+         :meth:`next` method just raise :exc:`StopIteration` again.  Iterators are
+         required to have an :meth:`__iter__` method that returns the iterator
+         object itself so every iterator is also iterable and may be used in most
+         places where other iterables are accepted.  One notable exception is code
+         which attempts multiple iteration passes.  A container object (such as a
+         :class:`list`) produces a fresh new iterator each time you pass it to the
+         :func:`iter` function or use it in a :keyword:`for` loop.  Attempting this
+         with an iterator will just return the same exhausted iterator object used
+         in the previous iteration pass, making it appear like an empty container.
+
+         More information can be found in :ref:`typeiter`.
 
    keyword argument
       Arguments which are preceded with a ``variable_name=`` in the call.
@@ -475,12 +577,20 @@
       scope.  Likewise, global variables read and write to the global namespace.
 
    new-style class
-      Any class which inherits from :class:`object`.  This includes all built-in
-      types like :class:`list` and :class:`dict`.  Only new-style classes can
-      use Python's newer, versatile features like :attr:`__slots__`,
-      descriptors, properties, and :meth:`__getattribute__`.
+      (新スタイルクラス)
+      :class:`object` から継承したクラス全てを指します。これには :class:`list` や :class:`dict`
+      のような全ての組み込み型が含まれます。 :meth:`__slots__`, デスクリプタ、プロパティ、
+      :meth:`__getattribute__` といった、
+      Python の新しい機能を使えるのは新スタイルクラスだけです。
 
-      More information can be found in :ref:`newstyle`.
+      より詳しい情報は :ref:`newstyle` を参照してください。
+
+      .. Any class which inherits from :class:`object`.  This includes all built-in
+         types like :class:`list` and :class:`dict`.  Only new-style classes can
+         use Python's newer, versatile features like :attr:`__slots__`,
+         descriptors, properties, and :meth:`__getattribute__`.
+
+         More information can be found in :ref:`newstyle`.
 
    object
       Any data with state (attributes or value) and defined behavior
@@ -495,9 +605,13 @@
       :term:`argument`.
 
    Python 3000
-      Nickname for the next major Python version, 3.0 (coined long ago
-      when the release of version 3 was something in the distant future.)  This
-      is also abbreviated "Py3k".
+      Pythonの次のメジャーバージョンである Python 3.0 のニックネームです。
+      (Python 3 が遠い将来の話だった頃に作られた言葉です。)
+      "Py3k" と略されることもあります。
+
+      .. Nickname for the next major Python version, 3.0 (coined long ago
+         when the release of version 3 was something in the distant future.)  This
+         is also abbreviated "Py3k".
 
    Pythonic
       An idea or piece of code which closely follows the most common idioms
@@ -524,11 +638,18 @@
       reference count for a particular object.
 
    __slots__
-      A declaration inside a :term:`new-style class` that saves memory by
-      pre-declaring space for instance attributes and eliminating instance
-      dictionaries.  Though popular, the technique is somewhat tricky to get
-      right and is best reserved for rare cases where there are large numbers of
-      instances in a memory-critical application.
+      新スタイルクラス(:term:`new-style class`)内で、インスタンス属性の記憶に
+      必要な領域をあらかじめ定義しておき、それとひきかえにインスタンス辞書を排除して
+      メモリの節約を行うための宣言です。
+      これはよく使われるテクニックですが、正しく動作させるのには少々手際を要するので、
+      例えばメモリが死活問題となるようなアプリケーション内にインスタンスが大量に
+      存在するといった稀なケースを除き、使わないのがベストです。
+
+      .. A declaration inside a :term:`new-style class` that saves memory by
+         pre-declaring space for instance attributes and eliminating instance
+         dictionaries.  Though popular, the technique is somewhat tricky to get
+         right and is best reserved for rare cases where there are large numbers of
+         instances in a memory-critical application.
 
    sequence
       An :term:`iterable` which supports efficient element access using integer
@@ -577,6 +698,10 @@
       executes the :term:`bytecode` emitted by the bytecode compiler.
 
    Zen of Python
-      Listing of Python design principles and philosophies that are helpful in
-      understanding and using the language.  The listing can be found by typing
-      "``import this``" at the interactive prompt.
+      (Pythonの悟り)
+      Python を理解し利用する上での導きとなる、Python の設計原則と哲学をリストにしたものです。
+      対話プロンプトで "``import this``" とするとこのリストを読めます。
+
+      .. Listing of Python design principles and philosophies that are helpful in
+         understanding and using the language.  The listing can be found by typing
+         "``import this``" at the interactive prompt.
