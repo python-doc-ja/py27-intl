@@ -1,55 +1,59 @@
 .. _reporting-bugs:
 
 ************************
-Reporting Bugs in Python
+Pythonのバグを報告する
 ************************
 
-Python is a mature programming language which has established a reputation for
-stability.  In order to maintain this reputation, the developers would like to
-know of any deficiencies you find in Python.
+Python は安定性について高い評価を得た、成熟した言語です。
+この評価を守るために、開発者たちはあなたが見つけたPythonの不備を知りたいと思っています。
 
-Bug reports should be submitted via the Python Bug Tracker
-(http://bugs.python.org/).  The bug tracker offers a Web form which allows
-pertinent information to be entered and submitted to the developers.
+バグ報告は Python Bug Tracker (http://bugs.python.org/) に投稿してください。
+このバグトラッカーは、関連情報を入力して開発者に報告するための
+Webフォームを提供しています。
 
-The first step in filing a report is to determine whether the problem has
-already been reported.  The advantage in doing so, aside from saving the
-developers time, is that you learn what has been done to fix it; it may be that
-the problem has already been fixed for the next release, or additional
-information is needed (in which case you are welcome to provide it if you can!).
-To do this, search the bug database using the search box on the top of the page.
+問題報告の最初のステップは、その問題がすでの報告済みのものかどうかを判断することです。
+報告済みの問題かどうかを判断するメリットとして、開発者の時間を節約する以外にも、
+その問題を解決するために既に何が行われているのかを知ることができるというものもあります。
+問題は解決済みで次のリリースで解決されるかもしれませんし、さらなる情報を必要としている
+(そしてあなたがその上方を提供できる)かもしれません。
+そのため、ページの先頭にある検索ボックスを使って、バグデータベースから検索してください。
 
-If the problem you're reporting is not already in the bug tracker, go back to
-the Python Bug Tracker.  If you don't already have a tracker account, select the
-"Register" link in the sidebar and undergo the registration procedure.
-Otherwise, if you're not logged in, enter your credentials and select "Login".
-It is not possible to submit a bug report anonymously.
+もし問題がまだバグトラッカーに登録されていない場合、バグトラッカーのトップページに
+戻ってください。もしまだバグトラッカーのアカウントをもっていないのであれば、
+サイドバーの "Register" リンクからアカウントを作成してください。
+もしログインしていない場合、ユーザー名とパスワードを入力して "Login" してください。
+匿名での問題報告はできません。
 
-Being now logged in, you can submit a bug.  Select the "Create New" link in the
-sidebar to open the bug reporting form.
+ログインできたら、バグを登録できます。サイドバーの "Create New" リンクから
+バグ報告フォームを開きます。
 
-The submission form has a number of fields.  For the "Title" field, enter a
-*very* short description of the problem; less than ten words is good.  In the
-"Type" field, select the type of your problem; also select the "Component" and
-"Versions" to which the bug relates.
+バグ報告フォームには幾つかのフィールドがあります。
+"Title" フィールドには、問題の概要を *非常に* 簡潔に書いてください。
+10語以下くらいが目安です。 "Type" フィールドでは、問題の種類を選択してください。
+問題と関係する "Component" と "Versions" も選択してください。
 
-In the "Comment" field, describe the problem in detail, including what you
-expected to happen and what did happen.  Be sure to include whether any
-extension modules were involved, and what hardware and software platform you
-were using (including version information as appropriate).
+"Comment" フィールドで、問題の詳細を、あなたが期待した結果と実際の結果も含めて
+説明してください。拡張モジュール[#]_が関係しているかどうか、どのハードウェアと
+ソフトウェアプラットフォームを使っているか(適切なバージョン情報も含めて)なども
+報告に含めてください。
 
-Each bug report will be assigned to a developer who will determine what needs to
-be done to correct the problem.  You will receive an update each time action is
-taken on the bug.
+.. rubric:: 訳注
+
+.. [#] 原文ではextension moduleですが、これはC言語で書かれたモジュールという
+       意味ではなくて、広義で非標準ライブラリを挿しているかもしれません。
+
+各バグ報告は開発者に割り当てられ、その人がその問題を修正するのに何が必要かを決定します。
+そのバグ報告に対して何かアクションがあるたびに、更新情報があなたにメールで届きます。
 
 
 .. seealso::
 
    `How to Report Bugs Effectively <http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>`_
-      Article which goes into some detail about how to create a useful bug report.
-      This describes what kind of information is useful and why it is useful.
+      有益なバグ報告について詳しく説明した記事です。
+      どんな情報が、なぜ有益なのかを説明しています。
 
    `Bug Writing Guidelines <http://developer.mozilla.org/en/docs/Bug_writing_guidelines>`_
-      Information about writing a good bug report.  Some of this is specific to the
-      Mozilla project, but describes general good practices.
+      良いバグ報告を書くための情報です。
+      この情報の一部はMozillaプロジェクト独自のものですが、一般的に良いプラクティスを
+      解説しています。
 
