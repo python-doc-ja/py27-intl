@@ -53,7 +53,7 @@
       Pythonは沢山のビルトインABCsを、(:mod:`collections` モジュールで)データ構造、
       (:mod:`numbers` モジュールで)数値型、(:mod:`io` モジュールで)ストリーム型で
       提供いています。
-      :mod:`abc` モジュールを利用して独自のABCをお作成することもできます。
+      :mod:`abc` モジュールを利用して独自のABCを作成することもできます。
 
    argument
       (引数)
@@ -164,23 +164,26 @@
          it's almost certain you can safely ignore them.
 
    context manager
-      An object which controls the environment seen in a :keyword:`with`
-      statement by defining :meth:`__enter__` and :meth:`__exit__` methods.
-      See :pep:`343`.
+      (コンテキストマネージャー)
+      :keyword:`with` 文で扱われる、環境を制御するオブジェクト。
+      :meth:`__enter__` と :meth:`__exit__` メソッドを定義することで作られる。
+
+      :pep:`343` を参照。
 
    CPython
-      The canonical implementation of the Python programming language.  The
-      term "CPython" is used in contexts when necessary to distinguish this
-      implementation from others such as Jython or IronPython.
+      Pythonプログラミング言語の基準となる実装。
+      CPython という単語は、この実装を Jython や IronPython といった他の実装と
+      区別する必要が有る文脈で利用されます。
 
    decorator
       (デコレータ)
-      A function returning another function, usually applied as a function
-      transformation using the ``@wrapper`` syntax.  Common examples for
-      decorators are :func:`classmethod` and :func:`staticmethod`.
+      関数を返す関数。
+      通常、 ``@wrapper`` という文法によって関数を変換するのに利用されます。
+      デコレータの一般的な利用レとして、 :func:`classmethod` と
+      :func:`staticmethod` があります。
 
-      The decorator syntax is merely syntactic sugar, the following two
-      function definitions are semantically equivalent::
+      デコレータの文法はシンタックスシュガーです。
+      次の2つの関数定義は意味的に同じものです。 ::
 
          def f(...):
              ...
@@ -190,8 +193,9 @@
          def f(...):
              ...
 
-      See :ref:`the documentation for function definition <function>` for more
-      about decorators.
+      デコレータについてのより詳しい情報は、
+      :ref:`the documentation for function definition <function>`
+      を参照してください。
 
    descriptor
       (デスクリプタ)
@@ -234,12 +238,14 @@
          Called a hash in Perl.
 
    docstring
-      A string literal which appears as the first expression in a class,
-      function or module.  While ignored when the suite is executed, it is
-      recognized by the compiler and put into the :attr:`__doc__` attribute
-      of the enclosing class, function or module.  Since it is available via
-      introspection, it is the canonical place for documentation of the
-      object.
+      クラス、関数、モジュールの最初の式となっている文字列リテラルです。
+      実行時には無視されますが、コンパイラによって識別され、そのクラス、
+      関数、モジュールの :attr:`__doc__` 属性として保存されます。
+      イントロスペクションできる（訳注: 属性として参照できる）ので、
+      オブジェクトのドキュメントを書く正しい場所です。
+
+      .. todo::
+         ドキュメンテーション文字列？？　統一した訳語を定義する。
 
    duck-typing
       Python 的なプログラムスタイルではオブジェクトの型を（型オブジェクトとの関係ではなく）
@@ -486,37 +492,24 @@
 
    iterable
       (反復可能オブジェクト)
+      要素を一つずつ返せるオブジェクトです。
 
-      .. todo::
-         反復可能オブジェクトはコンテナ(:meth:`__contains__` メソッドを要求する)とは限らないはずです。
-         多分原文が間違っているので、現在バグ報告中です。
+      反復可能オブジェクトの例には、(:class:`list`,:class:`str`,:class:`tuple` といった)
+      全てのシーケンス型や、:class:`dict` や:class:`file` といった幾つかの非シーケンス型、
+      あるいは :meth:`__iter__` か :meth:`__getitem__` メソッドを実装したクラスのインスタンスが含まれます。
 
-      (2.5のglossaryより)
-      コンテナオブジェクトで、コンテナ内のメンバを一つづつ返せる ようになっているものです。反復可能オブジェクトの例には、
-      (:class:`list`、:class:`str`、および :class:`tuple` といった)  全てのシーケンス型や、:class:`dict` や
-      :class:`file` といった 非シーケンス型、あるいは :meth:`__iter__` や :meth:`__getitem__`
-      メソッドを実装したクラスのインスタンスが含まれます。 反復可能オブジェクトは :keyword:`for` ループ内やその他多くの シーケンスが必要となる状況
-      (:func:`zip`、 :func:`map`, ...) で利用できます。反復可能オブジェクトを組み込み関数 :func:`iter`
-      の引数として渡すと、オブジェクトに対する イテレータを返します。このイテレータは一連の値を引き渡す際に便利
-      です。反復可能オブジェクトを使う際には、通常:func:`iter`  を呼んだり、イテレータオブジェクトを自分で扱う必要はありません。 ``for``
-      文ではこの操作を自動的に行い、無名の変数を作成して、 ループの間イテレータを記憶します。 *イテレータ (iterator)*、 *シーケンス
-      (sequence)*、および *ジェネレータ (generator)* も参照してください。
+      反復可能オブジェクトは :keyword:`for` ループ内やその他多くのシーケンス
+      (訳注: ここでのシーケンスとは、シーケンス型ではなくただの列という意味)が必要となる状況
+      (:func:`zip`, :func:`map`, ...) で利用できます。
 
-      (原文より)
-      A container object capable of returning its members one at a
-      time. Examples of iterables include all sequence types (such as
-      :class:`list`, :class:`str`, and :class:`tuple`) and some non-sequence
-      types like :class:`dict` and :class:`file` and objects of any classes you
-      define with an :meth:`__iter__` or :meth:`__getitem__` method.  Iterables
-      can be used in a :keyword:`for` loop and in many other places where a
-      sequence is needed (:func:`zip`, :func:`map`, ...).  When an iterable
-      object is passed as an argument to the builtin function :func:`iter`, it
-      returns an iterator for the object.  This iterator is good for one pass
-      over the set of values.  When using iterables, it is usually not necessary
-      to call :func:`iter` or deal with iterator objects yourself.  The ``for``
-      statement does that automatically for you, creating a temporary unnamed
-      variable to hold the iterator for the duration of the loop.  See also
-      :term:`iterator`, :term:`sequence`, and :term:`generator`.
+      反復可能オブジェクトを組み込み関数 :func:`iter` の引数として渡すと、
+      オブジェクトに対するイテレータを返します。
+      このイテレータは一連の値を引き渡す際に便利です。
+      反復可能オブジェクトを使う際には、通常 :func:`iter` を呼んだり、
+      イテレータオブジェクトを自分で扱う必要はありません。
+      ``for`` 文ではこの操作を自動的に行い、無名の変数を作成してループの間イテレータを記憶します。
+      *イテレータ(:term:`iterator`)*, *シーケンス(:term:`sequence`)*,
+      および *ジェネレータ(:term:`generator`)* も参照してください。
 
    iterator
       一連のデータ列 (stream) を表現するオブジェクトです。
