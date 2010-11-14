@@ -34,20 +34,23 @@ getpassモジュールは二つの関数を提供します:
 
    .. versionchanged:: 2.5
       パラメータ *stream* の追加.
+
    .. versionchanged:: 2.6
+
       .. On Unix it defaults to using /dev/tty before falling back
          to ``sys.stdin`` and ``sys.stderr``.
-      Unix ではデフォルトで、 ``sys.stdin`` と ``sys.stderr` へfallback
+
+      Unix ではデフォルトで、 ``sys.stdin`` と ``sys.stderr`` へfallback
       するまえに /dev/tty を利用します。
+
    .. note::
-      .. If you call getpass from within IDLE, the input may be done in the
-         terminal you launched IDLE from rather than the idle window itself.
       IDLE から getpass を呼び出した場合、入力はIDLEのウィンドウではなく、
       IDLE を起動したターミナルから行われます。
 
 .. exception:: GetPassWarning
 
    .. A :exc:`UserWarning` subclass issued when password input may be echoed.
+
    :exc:`UserWarning` のサブクラスで、入力がエコーされてしまった場合に発生します。
  
 

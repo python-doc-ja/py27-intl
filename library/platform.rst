@@ -77,6 +77,7 @@
 .. function:: python_branch()
 
    .. Returns a string identifying the Python implementation SCM branch.
+
    Python実装のバージョン管理システム上のブランチを特定する文字列を返します。
 
    .. versionadded:: 2.6
@@ -86,6 +87,7 @@
 
    .. Returns a string identifying the Python implementation. Possible return values
       are: 'CPython', 'IronPython', 'Jython'
+
    Python実装を指定する文字列を返します。
    戻り値は: `CPython`, `IronPython`, `Jython` のいずれかです。
 
@@ -95,6 +97,7 @@
 .. function:: python_revision()
 
    .. Returns a string identifying the Python implementation SCM revision.
+
    Python実装のバージョン管理システム上のリビジョンを特定する文字列を返します。
 
    .. versionadded:: 2.6

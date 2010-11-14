@@ -234,10 +234,10 @@
    .. method:: dispatch_exception(frame, arg)
 
       .. If the debugger should stop at this exception, invokes the
-      :meth:`user_exception` method (which should be overridden in subclasses).
-      Raise a :exc:`BdbQuit` exception if the :attr:`Bdb.quitting` flag is set
-      (which can be set from :meth:`user_exception`).  Return a reference to the
-      :meth:`trace_dispatch` method for further tracing in that scope.
+         :meth:`user_exception` method (which should be overridden in subclasses).
+         Raise a :exc:`BdbQuit` exception if the :attr:`Bdb.quitting` flag is set
+         (which can be set from :meth:`user_exception`).  Return a reference to the
+         :meth:`trace_dispatch` method for further tracing in that scope.
 
       デバッガーがこの例外発生で止まるべきであれば、 :meth:`user_call` メソッド
       (サブクラスでオーバーライドされる)を呼び出します。

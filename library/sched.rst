@@ -49,6 +49,7 @@
 代わりに、より推奨される方法として、 :class:`threading.Timer` クラスを利用してください。
 
 .. Example
+
 例::
 
     >>> import time

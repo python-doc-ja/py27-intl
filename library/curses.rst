@@ -36,8 +36,7 @@ Unix 環境では curses は非常に広く用いられていますが、DOS、O
       import locale
       locale.setlocale(locale.LC_ALL, '')
       code = locale.getpreferredencoding()
-
-   .. Then use *code* as the encoding for :meth:`str.encode` calls.
+   
    この後、 :meth:`str.encode` を呼び出すときに *code* を利用します。
 
 .. seealso::

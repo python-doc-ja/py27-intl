@@ -615,6 +615,7 @@ Differ の例
 .. _difflib-interface:
 
 .. A command-line interface to difflib
+
 difflib のコマンドラインインタフェース
 ---------------------------------------
 

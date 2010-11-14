@@ -314,6 +314,7 @@ kqueue オブジェクト
 .. _kevent-objects:
 
 .. Kevent Objects
+
 kevent オブジェクト
 --------------------
 

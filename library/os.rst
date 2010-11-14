@@ -1192,8 +1192,8 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
    .. warning::
 
-      :func:`tempnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile` (第:ref:`os-
-      newstreams`節) を使うよう検討してください。
+      :func:`tempnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
+      (:ref:`os-newstreams`) を使うよう検討してください。
 
    利用できる環境: Unix、 Windows。
 
@@ -1206,8 +1206,8 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 
    .. warning::
 
-      :func:`tmpnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`  (第:ref:`os-
-      newstreams`節) を使うよう検討してください。
+      :func:`tmpnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
+      (:ref:`os-newstreams`) を使うよう検討してください。
 
    利用できる環境: Unix、Windows。この関数はおそらく Windows では使うべきではないでしょう; Micorosoft の
    :func:`tmpnam` 実装では、常に現在のドライブのルートディレクトリ下のファイル名を生成しますが、これは一般的には

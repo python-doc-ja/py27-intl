@@ -497,6 +497,7 @@ store アクション
     parser.add_option_group(group)
 
 .. This would result in the following help output::
+
 この結果のヘルプ出力は次のようになります。 ::
 
     usage:  [options] arg1 arg2

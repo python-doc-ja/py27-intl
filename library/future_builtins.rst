@@ -40,6 +40,7 @@ Python 2のコードをPython 3用に変換する :term:`2to3` ツールは、
 
 
 .. Available builtins are:
+
 利用できるビルトイン関数は、以下の通りです。
 
 .. function:: ascii(object)
@@ -74,6 +75,7 @@ Python 2のコードをPython 3用に変換する :term:`2to3` ツールは、
 .. function:: map(function, iterable, ...)
 
    .. Works like :func:`itertools.imap`.
+
    :func:`itertools.imap` と同じように動作します。
 
 .. function:: oct(object)
@@ -88,4 +90,5 @@ Python 2のコードをPython 3用に変換する :term:`2to3` ツールは、
 .. function:: zip(*iterables)
 
    .. Works like :func:`itertools.izip`.
+
    :func:`itertools.izip` と同じように動作します。
