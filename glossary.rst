@@ -4,10 +4,6 @@
 用語集
 ********
 
-.. tutorial/glossary が古い版ですが、全体的にインデントが変わっててdiffが使いにくい。
-   まずは tutorial/glossary にあるものを全部移植＆updateして、あとで残りを翻訳していく。
-   new-style class まで移植した。
-
 .. if you add new entries, keep the alphabetical sorting!
 
 .. glossary::
@@ -88,12 +84,20 @@
 
    bytecode
       (バイトコード)
-      Python source code is compiled into bytecode, the internal representation
-      of a Python program in the interpreter.  The bytecode is also cached in
-      ``.pyc`` and ``.pyo`` files so that executing the same file is faster the
-      second time (recompilation from source to bytecode can be avoided).  This
-      "intermediate language" is said to run on a :term:`virtual machine`
-      that executes the machine code corresponding to each bytecode.
+      Pythonのソースコードはバイトコードへとコンパイルされます。
+      バイトコードはPythonプログラムのインタプリタ内部での形です。
+      バイトコードはまた、 ``.pyc`` や ``.pyo`` ファイルにキャッシュされ、
+      同じファイルを二度目に実行した際により高速に実行できるようにします
+      (ソースコードからバイトコードへの再度のコンパイルは回避されます)。
+      このバイトコードは、各々のバイトコードに対応するサブルーチンを呼び出すような
+      "仮想計算機(:term:`virtual machine`)" で動作する "中間言語 (intermediate language)" といえます。
+
+      .. Python source code is compiled into bytecode, the internal representation
+         of a Python program in the interpreter.  The bytecode is also cached in
+         ``.pyc`` and ``.pyo`` files so that executing the same file is faster the
+         second time (recompilation from source to bytecode can be avoided).  This
+         "intermediate language" is said to run on a :term:`virtual machine`
+         that executes the machine code corresponding to each bytecode.
 
    class
       (クラス)
@@ -136,16 +140,28 @@
          programmer, e.g., ``float(3)+4.5`` rather than just ``3+4.5``.
 
    complex number
-      An extension of the familiar real number system in which all numbers are
-      expressed as a sum of a real part and an imaginary part.  Imaginary
-      numbers are real multiples of the imaginary unit (the square root of
-      ``-1``), often written ``i`` in mathematics or ``j`` in
-      engineering. Python has builtin support for complex numbers, which are
-      written with this latter notation; the imaginary part is written with a
-      ``j`` suffix, e.g., ``3+1j``.  To get access to complex equivalents of the
-      :mod:`math` module, use :mod:`cmath`.  Use of complex numbers is a fairly
-      advanced mathematical feature.  If you're not aware of a need for them,
-      it's almost certain you can safely ignore them.
+      (複素数)
+      よく知られている実数系を拡張したもので、すべての数は実部と虚部の和として表されます。
+      虚数は虚数単位元(``-1`` の平方根)に実数を掛けたもので、一般に数学では ``i``
+      と書かれ、工業では ``j`` と書かれます。
+
+      Pythonは複素数に組込みで対応し、後者の表記を取っています。
+      虚部は末尾に ``j`` をつけて書きます。例えば、 ``3+1j`` となります。
+      :mod:`math` モジュールの複素数版を利用するには、:mod:`cmath` を使います。
+
+      複素数の使用はかなり高度な数学の機能です。
+      必要性を感じなければ、ほぼ間違いなく無視してしまってよいでしょう。
+
+      .. An extension of the familiar real number system in which all numbers are
+         expressed as a sum of a real part and an imaginary part.  Imaginary
+         numbers are real multiples of the imaginary unit (the square root of
+         ``-1``), often written ``i`` in mathematics or ``j`` in
+         engineering. Python has builtin support for complex numbers, which are
+         written with this latter notation; the imaginary part is written with a
+         ``j`` suffix, e.g., ``3+1j``.  To get access to complex equivalents of the
+         :mod:`math` module, use :mod:`cmath`.  Use of complex numbers is a fairly
+         advanced mathematical feature.  If you're not aware of a need for them,
+         it's almost certain you can safely ignore them.
 
    context manager
       An object which controls the environment seen in a :keyword:`with`
@@ -178,17 +194,32 @@
       about decorators.
 
    descriptor
-      Any *new-style* object which defines the methods :meth:`__get__`,
-      :meth:`__set__`, or :meth:`__delete__`.  When a class attribute is a
-      descriptor, its special binding behavior is triggered upon attribute
-      lookup.  Normally, using *a.b* to get, set or delete an attribute looks up
-      the object named *b* in the class dictionary for *a*, but if *b* is a
-      descriptor, the respective descriptor method gets called.  Understanding
-      descriptors is a key to a deep understanding of Python because they are
-      the basis for many features including functions, methods, properties,
-      class methods, static methods, and reference to super classes.
+      (デスクリプタ)
+      メソッド :meth:`__get__`, :meth:`__set__`, あるいは :meth:`__delete__`
+      が定義されている *新スタイル (new-style)* のオブジェクトです。
+      あるクラス属性がデスクリプタである場合、その属性を参照するときに、
+      そのデスクリプタに束縛されている特別な動作を呼び出します。
+      通常、get,set,deleteのために *a.b* と書くと、*a* のクラス辞書内でオブジェクト
+      *b* を検索しますが、 *b* がデスクリプタの場合にはデスクリプタで定義された
+      メソッドを呼び出します。
+      デスクリプタの理解は、 Python を深く理解する上で鍵となります。
+      というのは、デスクリプタこそが、関数、メソッド、プロパティ、
+      クラスメソッド、静的メソッド、そしてスーパクラスの参照といった多くの機能の基盤だからです。
 
-      For more information about descriptors' methods, see :ref:`descriptors`.
+      .. todo::
+         デスクリプタとディスクリプタのどちらかに統一する。
+
+      .. Any *new-style* object which defines the methods :meth:`__get__`,
+         :meth:`__set__`, or :meth:`__delete__`.  When a class attribute is a
+         descriptor, its special binding behavior is triggered upon attribute
+         lookup.  Normally, using *a.b* to get, set or delete an attribute looks up
+         the object named *b* in the class dictionary for *a*, but if *b* is a
+         descriptor, the respective descriptor method gets called.  Understanding
+         descriptors is a key to a deep understanding of Python because they are
+         the basis for many features including functions, methods, properties,
+         class methods, static methods, and reference to super classes.
+
+         For more information about descriptors' methods, see :ref:`descriptors`.
 
    dictionary
       (辞書)
@@ -292,6 +323,8 @@
       performs garbage collection via reference counting and a cyclic garbage
       collector that is able to detect and break reference cycles.
 
+      .. index:: single: generator
+
    generator
       (ジェネレータ)
       イテレータを返す関数です。:keyword:`return` 文の代わりに :keyword:`yield`
@@ -311,6 +344,8 @@
          stopped at the :keyword:`yield` keyword (returning the result) and is
          resumed there when the next element is requested by calling the
          :meth:`next` method of the returned iterator.
+
+      .. index:: single: generator expression
 
    generator expression
       (ジェネレータ式)
@@ -381,36 +416,56 @@
          application.
 
    immutable
-      (不変)
-      An object with a fixed value.  Immutable objects include numbers, strings and
-      tuples.  Such an object cannot be altered.  A new object has to
-      be created if a different value has to be stored.  They play an important
-      role in places where a constant hash value is needed, for example as a key
-      in a dictionary.
+      (不変オブジェクト)
+      固定の値を持ったオブジェクトです。
+      変更不能なオブジェクトには、 数値、文字列、およびタプルなどがあります。
+      これらのオブジェクトは値を変えられません。
+      別の値を記憶させる際には、 新たなオブジェクトを作成しなければなりません。
+      不変オブジェクトは、固定のハッシュ値が必要となる状況で重要な役割を果たします。
+      辞書におけるキーがその例です。
+
+      .. An object with a fixed value.  Immutable objects include numbers, strings and
+         tuples.  Such an object cannot be altered.  A new object has to
+         be created if a different value has to be stored.  They play an important
+         role in places where a constant hash value is needed, for example as a key
+         in a dictionary.
 
    integer division
-      Mathematical division discarding any remainder.  For example, the
-      expression ``11/4`` currently evaluates to ``2`` in contrast to the
-      ``2.75`` returned by float division.  Also called *floor division*.
-      When dividing two integers the outcome will always be another integer
-      (having the floor function applied to it). However, if one of the operands
-      is another numeric type (such as a :class:`float`), the result will be
-      coerced (see :term:`coercion`) to a common type.  For example, an integer
-      divided by a float will result in a float value, possibly with a decimal
-      fraction.  Integer division can be forced by using the ``//`` operator
-      instead of the ``/`` operator.  See also :term:`__future__`.
+      (整数除算)
+      剰余を考慮しない数学的除算です。例えば、式 ``11/4`` は現状では ``2.75`` ではなく
+      ``2`` になります。これは *切り捨て除算 (floor division)* とも呼ばれます。
+      二つの整数間で除算を行うと、結果は (端数切捨て関数が適用されて)  常に整数になります。
+      しかし、被演算子の一方が (:class:`float` のような) 別の数値型の場合、
+      演算の結果は共通の型に型強制されます (型強制(:term:`coercion`)参照)。
+      例えば、浮動小数点数で整数を除算すると結果は浮動小数点になり、
+      場合によっては端数部分を伴います。 ``//`` 演算子を
+      ``/`` の代わりに使うと、整数除算を強制できます。
+      :term:`__future__` も参照してください。
+
+      .. Mathematical division discarding any remainder.  For example, the
+         expression ``11/4`` currently evaluates to ``2`` in contrast to the
+         ``2.75`` returned by float division.  Also called *floor division*.
+         When dividing two integers the outcome will always be another integer
+         (having the floor function applied to it). However, if one of the operands
+         is another numeric type (such as a :class:`float`), the result will be
+         coerced (see :term:`coercion`) to a common type.  For example, an integer
+         divided by a float will result in a float value, possibly with a decimal
+         fraction.  Integer division can be forced by using the ``//`` operator
+         instead of the ``/`` operator.  See also :term:`__future__`.
 
    importer
       An object that both finds and loads a module; both a
       :term:`finder` and :term:`loader` object.
 
    interactive
-      Python has an interactive interpreter which means you can enter
-      statements and expressions at the interpreter prompt, immediately
-      execute them and see their results.  Just launch ``python`` with no
-      arguments (possibly by selecting it from your computer's main
-      menu). It is a very powerful way to test out new ideas or inspect
-      modules and packages (remember ``help(x)``).
+      (対話的)
+      Python には対話的インタプリタがあり、文や式をインタプリタのプロンプトに
+      入力すると即座に実行されて結果を見ることができます。
+      ``python`` と何も引数を与えずに実行してください。(コンピュータのメインメニューから
+      Pythonの対話的インタプリタを起動できるかもしれません。)
+      対話的インタプリタは、新しいあアイデアを試してみたり、モジュールや
+      パッケージの中を覗いてみる(``help(x)`` を覚えておいてください)
+      のに非常に便利なツールです。
 
    interpreted
       Python はインタプリタ形式の言語であり、コンパイラ言語の対極に位置します。
@@ -430,6 +485,24 @@
          slowly.  See also :term:`interactive`.
 
    iterable
+      (反復可能オブジェクト)
+
+      .. todo::
+         反復可能オブジェクトはコンテナ(:meth:`__contains__` メソッドを要求する)とは限らないはずです。
+         多分原文が間違っているので、現在バグ報告中です。
+
+      (2.5のglossaryより)
+      コンテナオブジェクトで、コンテナ内のメンバを一つづつ返せる ようになっているものです。反復可能オブジェクトの例には、
+      (:class:`list`、:class:`str`、および :class:`tuple` といった)  全てのシーケンス型や、:class:`dict` や
+      :class:`file` といった 非シーケンス型、あるいは :meth:`__iter__` や :meth:`__getitem__`
+      メソッドを実装したクラスのインスタンスが含まれます。 反復可能オブジェクトは :keyword:`for` ループ内やその他多くの シーケンスが必要となる状況
+      (:func:`zip`、 :func:`map`, ...) で利用できます。反復可能オブジェクトを組み込み関数 :func:`iter`
+      の引数として渡すと、オブジェクトに対する イテレータを返します。このイテレータは一連の値を引き渡す際に便利
+      です。反復可能オブジェクトを使う際には、通常:func:`iter`  を呼んだり、イテレータオブジェクトを自分で扱う必要はありません。 ``for``
+      文ではこの操作を自動的に行い、無名の変数を作成して、 ループの間イテレータを記憶します。 *イテレータ (iterator)*、 *シーケンス
+      (sequence)*、および *ジェネレータ (generator)* も参照してください。
+
+      (原文より)
       A container object capable of returning its members one at a
       time. Examples of iterables include all sequence types (such as
       :class:`list`, :class:`str`, and :class:`tuple`) and some non-sequence
@@ -493,10 +566,15 @@
       a lambda function is ``lambda [arguments]: expression``
 
    LBYL
-      Look before you leap.  This coding style explicitly tests for
-      pre-conditions before making calls or lookups.  This style contrasts with
-      the :term:`EAFP` approach and is characterized by the presence of many
-      :keyword:`if` statements.
+      「ころばぬ先の杖」 (look before you leap) の略です。
+      このコーディングスタイルでは、呼び出しや検索を行う前に、明示的に前提条件
+      (pre-condition) 判定を行います。
+      *EAFP* アプローチと対照的で、:keyword:`if` 文がたくさん使われるのが特徴的です。
+
+      .. Look before you leap.  This coding style explicitly tests for
+         pre-conditions before making calls or lookups.  This style contrasts with
+         the :term:`EAFP` approach and is characterized by the presence of many
+         :keyword:`if` statements.
 
    list
       A built-in Python :term:`sequence`.  Despite its name it is more akin
@@ -504,12 +582,20 @@
       elements are O(1).
 
    list comprehension
-      A compact way to process all or part of the elements in a sequence and
-      return a list with the results.  ``result = ["0x%02x" % x for x in
-      range(256) if x % 2 == 0]`` generates a list of strings containing
-      even hex numbers (0x..) in the range from 0 to 255. The :keyword:`if`
-      clause is optional.  If omitted, all elements in ``range(256)`` are
-      processed.
+      (リスト内包表記)
+      シーケンス内の全てあるいは一部の要素を処理して、その結果からなるリストを返す、
+      コンパクトな書き方です。
+      ``result = ["0x%02x" % x for x in range(256) if x % 2 == 0]``
+      とすると、 0 から 255 までの偶数を 16進数表記 (0x..) した文字列からなるリストを生成します。
+      :keyword:`if` 節はオプションです。:keyword:`if` 節がない場合、
+      ``range(256)`` の全ての要素が処理されます。
+
+      .. A compact way to process all or part of the elements in a sequence and
+         return a list with the results.  ``result = ["0x%02x" % x for x in
+         range(256) if x % 2 == 0]`` generates a list of strings containing
+         even hex numbers (0x..) in the range from 0 to 255. The :keyword:`if`
+         clause is optional.  If omitted, all elements in ``range(256)`` are
+         processed.
 
    loader
       An object that loads a module. It must define a method named
@@ -517,21 +603,36 @@
       :term:`finder`. See :pep:`302` for details.
 
    mapping
-      A container object (such as :class:`dict`) which supports arbitrary key
-      lookups using the special method :meth:`__getitem__`.
+      (マップ)
+      特殊メソッド :meth:`__getitem__` を使って、任意のキーに対する検索をサポートする
+      (:class:`dict` のような)コンテナオブジェクトです。
+
+      .. A container object (such as :class:`dict`) which supports arbitrary key
+         lookups using the special method :meth:`__getitem__`.
 
    metaclass
-      The class of a class.  Class definitions create a class name, a class
-      dictionary, and a list of base classes.  The metaclass is responsible for
-      taking those three arguments and creating the class.  Most object oriented
-      programming languages provide a default implementation.  What makes Python
-      special is that it is possible to create custom metaclasses.  Most users
-      never need this tool, but when the need arises, metaclasses can provide
-      powerful, elegant solutions.  They have been used for logging attribute
-      access, adding thread-safety, tracking object creation, implementing
-      singletons, and many other tasks.
+      (メタクラス)
+      クラスのクラスです。
+      クラス定義は、クラス名、クラスの辞書と、基底クラスのリストを作ります。
+      メタクラスは、それら3つを引数として受け取り、クラスを作る責任を負います。
+      ほとんどのオブジェクト指向言語は(訳注:メタクラスの)デフォルトの実装を提供しています。
+      Pythonはカスタムのメタクラスを作成できる点が特別です。
+      ほとんどのユーザーに取って、メタクラスは全く必要のないものです。
+      しかし、一部の場面では、メタクラスは強力でエレガントな方法を提供します。
+      たとえば属性アクセスのログを取ったり、スレッドセーフ性を追加したり、オブジェクトの
+      生成を追跡したり、シングルトンを実装するなど、多くの場面で利用されます。
 
-      More information can be found in :ref:`metaclasses`.
+      .. The class of a class.  Class definitions create a class name, a class
+         dictionary, and a list of base classes.  The metaclass is responsible for
+         taking those three arguments and creating the class.  Most object oriented
+         programming languages provide a default implementation.  What makes Python
+         special is that it is possible to create custom metaclasses.  Most users
+         never need this tool, but when the need arises, metaclasses can provide
+         powerful, elegant solutions.  They have been used for logging attribute
+         access, adding thread-safety, tracking object creation, implementing
+         singletons, and many other tasks.
+
+         More information can be found in :ref:`metaclasses`.
 
    method
       A function which is defined inside a class body.  If called as an attribute
@@ -540,8 +641,12 @@
       See :term:`function` and :term:`nested scope`.
 
    mutable
-      Mutable objects can change their value but keep their :func:`id`.  See
-      also :term:`immutable`.
+      (変更可能オブジェクト)
+      変更可能なオブジェクトは、:func:`id` を変えることなく値を変更できます。
+      変更不能 (:term:`immutable`) も参照してください。
+
+      .. Mutable objects can change their value but keep their :func:`id`.  See
+         also :term:`immutable`.
 
    named tuple
       Any tuple-like class whose indexable elements are also accessible using
@@ -557,24 +662,44 @@
       ``Employee(name='jones', title='programmer')``.
 
    namespace
-      The place where a variable is stored.  Namespaces are implemented as
-      dictionaries.  There are the local, global and builtin namespaces as well
-      as nested namespaces in objects (in methods).  Namespaces support
-      modularity by preventing naming conflicts.  For instance, the functions
-      :func:`__builtin__.open` and :func:`os.open` are distinguished by their
-      namespaces.  Namespaces also aid readability and maintainability by making
-      it clear which module implements a function.  For instance, writing
-      :func:`random.seed` or :func:`itertools.izip` makes it clear that those
-      functions are implemented by the :mod:`random` and :mod:`itertools`
-      modules, respectively.
+      (名前空間)
+      変数を記憶している場所です。
+      名前空間は辞書を用いて実装されています。
+      名前空間には、ローカル、グローバル、組み込み名前空間、そして (メソッド内の)
+      オブジェクトのネストされた名前空間があります。
+      例えば、関数 :func:`__builtin__.open` と :func:`os.open`
+      は名前空間で区別されます。
+      名前空間はまた、ある関数をどのモジュールが実装しているかをはっきりさせることで、
+      可読性やメンテナンス性に寄与します。
+      例えば、:func:`random.seed`, :func:`itertools.izip` と書くことで、これらの関数がそれぞれ
+      :mod:`random` モジュールや :mod:`itertools`
+      モジュールで実装されていることがはっきりします。
+
+      .. The place where a variable is stored.  Namespaces are implemented as
+         dictionaries.  There are the local, global and builtin namespaces as well
+         as nested namespaces in objects (in methods).  Namespaces support
+         modularity by preventing naming conflicts.  For instance, the functions
+         :func:`__builtin__.open` and :func:`os.open` are distinguished by their
+         namespaces.  Namespaces also aid readability and maintainability by making
+         it clear which module implements a function.  For instance, writing
+         :func:`random.seed` or :func:`itertools.izip` makes it clear that those
+         functions are implemented by the :mod:`random` and :mod:`itertools`
+         modules, respectively.
 
    nested scope
-      The ability to refer to a variable in an enclosing definition.  For
-      instance, a function defined inside another function can refer to
-      variables in the outer function.  Note that nested scopes work only for
-      reference and not for assignment which will always write to the innermost
-      scope.  In contrast, local variables both read and write in the innermost
-      scope.  Likewise, global variables read and write to the global namespace.
+      (ネストされたスコープ)
+      外側で定義されている変数を参照する機能。
+      具体的に言えば、ある関数が別の関数の中で定義されている場合、内側の関数は外側の関数中の変数を参照できます。
+      ネストされたスコープは変数の参照だけができ、変数の代入はできないので注意してください。
+      変数の代入は、常に最も内側のスコープにある変数に対する書き込みになります。
+      同様に、グローバル変数を使うとグローバル名前空間の値を読み書きします。
+
+      .. The ability to refer to a variable in an enclosing definition.  For
+         instance, a function defined inside another function can refer to
+         variables in the outer function.  Note that nested scopes work only for
+         reference and not for assignment which will always write to the innermost
+         scope.  In contrast, local variables both read and write in the innermost
+         scope.  Likewise, global variables read and write to the global namespace.
 
    new-style class
       (新スタイルクラス)
@@ -652,14 +777,23 @@
          instances in a memory-critical application.
 
    sequence
-      An :term:`iterable` which supports efficient element access using integer
-      indices via the :meth:`__getitem__` special method and defines a
-      :meth:`len` method that returns the length of the sequence.
-      Some built-in sequence types are :class:`list`, :class:`str`,
-      :class:`tuple`, and :class:`unicode`. Note that :class:`dict` also
-      supports :meth:`__getitem__` and :meth:`__len__`, but is considered a
-      mapping rather than a sequence because the lookups use arbitrary
-      :term:`immutable` keys rather than integers.
+      (シーケンス)
+      特殊メソッド :meth:`__getitem__` で整数インデックスによる効率的な要素へのアクセスを
+      サポートし、 :meth:`len` で長さを返すような *反復可能オブジェクト(:term:`iterable`)* です。
+      組み込みシーケンス型には、:class:`list`, :class:`str`, :class:`tuple`, :class:`unicode`
+      などがあります。
+      :class:`dict` は :meth:`__getitem__` と :meth:`__len__` もサポートしますが、
+      検索の際に任意の *変更不能 (:term:`immutable`)* なキーを使うため、シーケンスではなく
+      マップ (mapping) とみなされて いるので注意してください。
+
+      .. An :term:`iterable` which supports efficient element access using integer
+         indices via the :meth:`__getitem__` special method and defines a
+         :meth:`len` method that returns the length of the sequence.
+         Some built-in sequence types are :class:`list`, :class:`str`,
+         :class:`tuple`, and :class:`unicode`. Note that :class:`dict` also
+         supports :meth:`__getitem__` and :meth:`__len__`, but is considered a
+         mapping rather than a sequence because the lookups use arbitrary
+         :term:`immutable` keys rather than integers.
 
    slice
       An object usually containing a portion of a :term:`sequence`.  A slice is
