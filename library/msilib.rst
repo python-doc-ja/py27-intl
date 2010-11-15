@@ -1,4 +1,3 @@
-
 :mod:`msilib` --- Microsoft インストーラーファイルの読み書き
 ============================================================
 
@@ -35,7 +34,7 @@
    MSI 作成の様々なステップに対する Python コールバックは現在暴露されていません。
 
 
-.. function:: UUIDCreate()
+.. function:: UuidCreate()
 
    新しい一意識別子の文字列表現を返します。この関数は Windows API の関数 :cfunc:`UuidCreate` と
    :cfunc:`UuidToString` をラップしたものです。
@@ -66,9 +65,15 @@
    データベースはこの関数から返された時点でスキーマとバリデーションレコードだけが収められています。
 
 
-.. function:: add_data(database, records)
+.. function:: add_data(database, table, records)
 
-   全ての *records* を *database* に追加します。 *records* はタプルのリストで、それぞれのタプルにはテーブルのスキーマに従った
+   全ての *records* を *database* の *table* テーブルに追加します。
+
+   *table* 引数は MSI スキーマで事前に定義されたテーブルでなければなりません。
+   例えば、 ``'Feature'``, ``'File'``, ``'Component'``, ``'Dialog'``, ``'Control'``,
+   などです。
+
+   *records* はタプルのリストで、それぞれのタプルにはテーブルのスキーマに従った
    レコードの全てのフィールドを含んでいるものでなければなりません。オプションのフィールドには ``None`` を渡すことができます。
 
    フィールドの値には、整数・長整数・文字列・Binary クラスのインスタンスが使えます。
@@ -128,7 +133,7 @@
 
 .. seealso::
 
-   `MSIOpenView <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiopenview.asp>`_
+   `MSIDatabaseOpenView <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msidatabaseopenview.asp>`_
    `MSIDatabaseCommit <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msidatabasecommit.asp>`_
    `MSIGetSummaryInformation <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msigetsummaryinformation.asp>`_
 
@@ -138,10 +143,11 @@
 ------------------
 
 
-.. method:: View.Execute([params=None])
+.. method:: View.Execute(params)
 
-   :cfunc:`MSIViewExecute` を通してビューに対する SQL 問い合わせを実行します。 *params*
-   はオプションのレコードでクエリ中のパラメータトークンの実際の値を与えるものです。
+   :cfunc:`MSIViewExecute` を通してビューに対する SQL 問い合わせを実行します。
+   *params* が ``None`` でない場合、
+   クエリ中のパラメータトークンの実際の値を与えるものです。
 
 
 .. method:: View.GetColumnInfo(kind)
@@ -230,6 +236,16 @@
    :cfunc:`MsiRecordGetFieldCount` を通してレコードのフィールド数を返します。
 
 
+.. method:: Record.GetInteger(field)
+
+   *field* の値を可能なら整数として返します。 *field* は整数でなければなりません。
+
+
+.. method:: Record.GetString(field)
+
+   *field* の値を可能なら文字列として返します。 *field* は整数でなければなりません。
+
+
 .. method:: Record.SetString(field, value)
 
    :cfunc:`MsiRecordSetString` を通して *field* を *value* にセットします。 *field* は整数、 *value*
@@ -283,17 +299,17 @@ CAB オブジェクト
    *name* は MSI ファイル中の CAB ファイルの名前です。
 
 
-.. method:: CAB.append(full, logical)
+   .. method:: append(full, logical)
 
-   パス名 *full* のファイルを CAB ファイルに *logical* という名で追加します。 *logical*
-   という名が既に存在したならば、新しいファイル名が作られます。
+      パス名 *full* のファイルを CAB ファイルに *logical* という名で追加します。 *logical*
+      という名が既に存在したならば、新しいファイル名が作られます。
 
-   ファイルの CAB ファイル中のインデクスと新しいファイル名を返します。
+      ファイルの CAB ファイル中のインデクスと新しいファイル名を返します。
 
 
-.. method:: CAB.append(database)
+   .. method:: commit(database)
 
-   CAB ファイルを作り、MSI ファイルにストリームとして追加し、 ``Media`` テーブルに送り込み、作ったファイルはディスクから削除します。
+      CAB ファイルを作り、MSI ファイルにストリームとして追加し、 ``Media`` テーブルに送り込み、作ったファイルはディスクから削除します。
 
 
 .. _msi-directory:
@@ -311,30 +327,30 @@ CAB オブジェクト
    スロットを指定します。 *componentflags* は新しいコンポーネントが得るデフォルトのフラグを指定します。
 
 
-.. method:: Directory.start_component([component[, feature[, flags[, keyfile[, uuid]]]]])
+   .. method:: start_component([component[, feature[, flags[, keyfile[, uuid]]]]])
 
-   エントリを Component テーブルに追加し、このコンポーネントをこのディレクトリの
-   現在のコンポーネントにします。もしコンポーネント名が与えられなければディレクトリ名が使われます。 *feature*
-   が与えられなければ、ディレクトリのデフォルトフラグが使われます。 *keyfile* が与えられなければ、Component テーブルの KeyPath は
-   null のままになります。
-
-
-.. method:: Directory.add_file(file[, src[, version[, language]]])
-
-   ファイルをディレクトリの現在のコンポーネントに追加します。このとき現在のコンポーネントが
-   なければ新しいものを開始します。デフォルトではソースとファイルテーブルのファイル名は同じになります。 *src*
-   ファイルが与えられたならば、それば現在のディレクトリから相対的に解釈されます。オプションで *version* と *language* を File
-   テーブルのエントリ用に指定することができます。
+      エントリを Component テーブルに追加し、このコンポーネントをこのディレクトリの
+      現在のコンポーネントにします。もしコンポーネント名が与えられなければディレクトリ名が使われます。 *feature*
+      が与えられなければ、ディレクトリのデフォルトフラグが使われます。 *keyfile* が与えられなければ、Component テーブルの KeyPath は
+      null のままになります。
 
 
-.. method:: Directory.glob(pattern[, exclude])
+   .. method:: add_file(file[, src[, version[, language]]])
 
-   現在のコンポーネントに glob パターンで指定されたファイルのリストを追加します。個々のファイルを *exclude* リストで除外することができます。
+      ファイルをディレクトリの現在のコンポーネントに追加します。このとき現在のコンポーネントが
+      なければ新しいものを開始します。デフォルトではソースとファイルテーブルのファイル名は同じになります。 *src*
+      ファイルが与えられたならば、それば現在のディレクトリから相対的に解釈されます。オプションで *version* と *language* を File
+      テーブルのエントリ用に指定することができます。
 
 
-.. method:: Directory.remove_pyc()
+   .. method:: glob(pattern[, exclude])
 
-   アンインストールの際に ``.pyc`` / ``.pyo`` を削除します。
+      現在のコンポーネントに glob パターンで指定されたファイルのリストを追加します。個々のファイルを *exclude* リストで除外することができます。
+
+
+   .. method:: remove_pyc()
+
+      アンインストールの際に ``.pyc`` / ``.pyo`` を削除します。
 
 
 .. seealso::
@@ -357,10 +373,10 @@ CAB オブジェクト
    :class:`Directory` の :meth:`start_component` メソッドに渡すことができます。
 
 
-.. method:: Feature.set_current()
+   .. method:: set_current()
 
-   このフィーチャーを :mod:`msilib` の現在のフィーチャーにします。フィーチャーが明ら様に指定されない限り、
-   新しいコンポーネントが自動的にデフォルトのフィーチャーに追加されます。
+      このフィーチャーを :mod:`msilib` の現在のフィーチャーにします。フィーチャーが明ら様に指定されない限り、
+      新しいコンポーネントが自動的にデフォルトのフィーチャーに追加されます。
 
 
 .. seealso::
@@ -382,19 +398,19 @@ GUI クラス
    ダイアログコントロールの基底クラス。 *dlg* はコントロールの属するダイアログオブジェクト、 *name* はコントロールの名前です。
 
 
-.. method:: Control.event(event, argument[,  condition = ``1''[, ordering]])
+   .. method:: event(event, argument[,  condition=1[, ordering]])
 
-   このコントロールの ``ControlEvent`` テーブルにエントリを作ります。
-
-
-.. method:: Control.mapping(event, attribute)
-
-   このコントロールの ``EventMapping`` テーブルにエントリを作ります。
+      このコントロールの ``ControlEvent`` テーブルにエントリを作ります。
 
 
-.. method:: Control.condition(action, condition)
+   .. method:: mapping(event, attribute)
 
-   このコントロールの ``ControlCondition`` テーブルにエントリを作ります。
+      このコントロールの ``EventMapping`` テーブルにエントリを作ります。
+
+
+   .. method:: condition(action, condition)
+
+      このコントロールの ``ControlCondition`` テーブルにエントリを作ります。
 
 
 .. class:: RadioButtonGroup(dlg, name, property)
@@ -403,10 +419,10 @@ GUI クラス
    インストーラープロパティです。
 
 
-.. method:: RadioButtonGroup.add(name, x, y, width, height, text [, value])
+   .. method:: add(name, x, y, width, height, text [, value])
 
-   グループに *name* という名前で、座標 *x*, *y* に大きさが *width*, *height* で *text* というラベルの付いた
-   ラジオボタンを追加します。 *value* が省略された場合、デフォルトは *name* になります。
+      グループに *name* という名前で、座標 *x*, *y* に大きさが *width*, *height* で *text* というラベルの付いた
+      ラジオボタンを追加します。 *value* が省略された場合、デフォルトは *name* になります。
 
 
 .. class:: Dialog(db, name, x, y, w, h, attr, title, first,  default, cancel)
@@ -415,41 +431,41 @@ GUI クラス
    指定された座標、ダイアログ属性、タイトル、最初とデフォルトとキャンセルコントロールの名前を持ったエントリが作られます。
 
 
-.. method:: Dialog.control(name, type, x, y, width, height,  attributes, property, text, control_next, help)
+   .. method:: Dialog.control(name, type, x, y, width, height,  attributes, property, text, control_next, help)
 
-   新しい :class:`Control` オブジェクトを返します。 ``Control`` テーブルに指定されたパラメータのエントリが作られます。
+      新しい :class:`Control` オブジェクトを返します。 ``Control`` テーブルに指定されたパラメータのエントリが作られます。
 
-   これは汎用のメソッドで、特定の型に対しては特化したメソッドが提供されています。
-
-
-.. method:: Dialog.text(name, x, y, width, height, attributes, text)
-
-   ``Text`` コントロールを追加して返します。
+      これは汎用のメソッドで、特定の型に対しては特化したメソッドが提供されています。
 
 
-.. method:: Dialog.bitmap(name, x, y, width, height, text)
+   .. method:: text(name, x, y, width, height, attributes, text)
 
-   ``Bitmap`` コントロールを追加して返します。
-
-
-.. method:: Dialog.line(name, x, y, width, height)
-
-   ``Line`` コントロールを追加して返します。
+      ``Text`` コントロールを追加して返します。
 
 
-.. method:: Dialog.pushbutton(name, x, y, width, height, attributes,  text, next_control)
+   .. method:: bitmap(name, x, y, width, height, text)
 
-   ``PushButton`` コントロールを追加して返します。
-
-
-.. method:: Dialog.radiogroup(name, x, y, width, height,  attributes, property, text, next_control)
-
-   ``RadioButtonGroup`` コントロールを追加して返します。
+      ``Bitmap`` コントロールを追加して返します。
 
 
-.. method:: Dialog.checkbox(name, x, y, width, height,  attributes, property, text, next_control)
+   .. method:: line(name, x, y, width, height)
 
-   ``CheckBox`` コントロールを追加して返します。
+      ``Line`` コントロールを追加して返します。
+
+
+   .. method:: pushbutton(name, x, y, width, height, attributes,  text, next_control)
+
+      ``PushButton`` コントロールを追加して返します。
+
+
+   .. method:: radiogroup(name, x, y, width, height,  attributes, property, text, next_control)
+
+      ``RadioButtonGroup`` コントロールを追加して返します。
+
+
+   .. method:: checkbox(name, x, y, width, height,  attributes, property, text, next_control)
+
+      ``CheckBox`` コントロールを追加して返します。
 
 
 .. seealso::
@@ -486,4 +502,3 @@ GUI クラス
 .. data:: text
 
    このモジュールは標準的なインストーラーのアクションのための UIText および ActionText テーブルの定義を含んでいます。
-
