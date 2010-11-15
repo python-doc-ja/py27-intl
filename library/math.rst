@@ -133,7 +133,7 @@
 
 .. function:: trunc(x)
 
-   *x* の :class:`Integral` (たいてい長整数)へ切り捨てられた :class:`Real` 
+   *x* の :class:`Integral` (たいてい長整数)へ切り捨てられた :class:`Real`
    値を返します。 ``x.__trunc__()`` に委譲されます。
 
    .. versionadded:: 2.6

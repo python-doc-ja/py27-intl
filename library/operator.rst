@@ -117,7 +117,7 @@ C 言語で実装された関数セットを提供します。例えば、
 
    *obj* のビット単位反転を返します。 ``~obj`` と同じです。
 
-   .. versionadded:: 2.0 
+   .. versionadded:: 2.0
       名前 :func:`invert` および :func:`__invert__` が追加されました。
 
 
@@ -550,7 +550,7 @@ operator の関数を使う例を挙げます::
    これらもそのメソッドに引き渡されます。
    ``f = methodcaller('name')`` とした後で、 ``f(b)`` を呼び出すと ``b.name()`` を返します。
    ``f = methodcaller('name', 'foo', bar=1)`` とした後で、 ``f(b)`` を呼び出すと ``b.name('foo', bar=1)`` を返します。
- 
+
 
 .. _operator-map:
 

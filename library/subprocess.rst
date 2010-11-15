@@ -262,7 +262,7 @@ Popen オブジェクト
 
    .. versionadded:: 2.6
 
- 
+
 以下の属性も利用できます:
 
 .. warning::
@@ -274,7 +274,7 @@ Popen オブジェクト
    :meth:`.stdin.write`, :meth:`.stdout.read`, :meth:`.stderr.read` を利用すると、
    別のパイプのOSパイプバッファがいっぱいになってデッドロックする恐れがあります。
    これを避けるためには :meth:`communicate` を利用してください。
- 
+
 
 .. attribute:: Popen.stdin
 
@@ -303,7 +303,7 @@ Popen オブジェクト
 
    :meth:`poll` か :meth:`wait` (か、間接的に :meth:`communicate` )から設定された、子プロセスの終了ステータスが入ります。
    ``None`` はまだその子プロセスが終了していないことを示します。
-   
+
    負の値 -N は子プロセスがシグナル N により中止させられたことを示します (Unix のみ)。
 
 

@@ -85,7 +85,7 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 
      - *addr_type* は TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, TIPC_ADDR_ID のうちのどれかです。
      - *scope* は TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, TIPC_NODE_SCOPE のうちのどれかです。
-     - *addr_type* が TIPC_ADDR_NAME の場合、 *v1* はサーバータイプ、 *v2* 
+     - *addr_type* が TIPC_ADDR_NAME の場合、 *v1* はサーバータイプ、 *v2*
        はポートID (the port identifier)、そして *v3* は 0 であるべきです。
 
        *addr_type* が TIPC_ADDR_NAMESEQ の場合、 *v1* はサーバータイプ、 *v2*
@@ -280,11 +280,11 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 .. function:: gethostname()
 
    Pythonインタープリタを現在実行中のマシンのホスト名を示す文字列を取得します。
-   
+
    実行中マシンのIPアドレスが必要であれば、
    ``gethostbyname(gethostname())`` を使用してください。
    この処理は実行中ホストのアドレス-ホスト名変換が可能であることを前提としていますが、常に変換可能であるとは限りません。
-   
+
    注意: :func:`gethostname` は完全修飾ドメイン名を返すとは限りません。完全修飾ドメイン名が必要であれば、
    ``gethostbyaddr(gethostname())`` としてください(下記参照)。
 

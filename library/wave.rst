@@ -82,8 +82,8 @@ Wave_read オブジェクト
 
 .. method:: Wave_read.getcompname()
 
-   :meth:`getcomptype` を人に判読可能な形にしたものです。通常、 ``'NONE'`` に対して``'not
-   compressed'``が返されます。
+   :meth:`getcomptype` を人に判読可能な形にしたものです。通常、 ``'NONE'`` に対して
+   ``'not compressed'`` が返されます。
 
 
 .. method:: Wave_read.getparams()
