@@ -106,7 +106,7 @@ html_sidebars = {
 
 # Additional templates that should be rendered to pages.
 html_additional_pages = {
-    'download': 'download.html',
+    #'download': 'download.html',
     'index': 'indexcontent.html',
 }
 
