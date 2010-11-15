@@ -419,8 +419,8 @@ OpenerDirector オブジェクトは、以下の 3 つのステージに分け�
    形式のメソッドを試します。メソッドが全て :const:`None` を返すと、さらに同じアルゴリズムを繰り返して :meth:`unknown_open`
    を呼び出します。
 
-   これらのメソッドの実装には、親となる :class:`OpenerDirector`  インスタンスの :meth:`.open`
-   や :meth:`.error` といったメソッド呼び出しが入る場合があるので注意してください。
+   これらのメソッドの実装には、親となる :class:`OpenerDirector` インスタンスの :meth:`OpenDirector.open`
+   や :meth:`OpenDirector.error` といったメソッド呼び出しが入る場合があるので注意してください。
 
 #. :samp:`{protocol}_response` 形式のメソッドを持つ全てのハンドラに対してそのメソッドを呼び出し、リクエストの
    ポストプロセスを行います。

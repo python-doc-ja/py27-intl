@@ -75,17 +75,17 @@ exclude_trees = [
 	'refs',
 	'maclib',
         # todo: translate later
-        'c-api', 
-        'distutils',
-        'extending',
-        'howto',
-        'install',
-        'reference',
-        'using',
-        'whatsnew',
+        #'c-api', 
+        #'distutils',
+        #'extending',
+        #'howto',
+        #'install',
+        #'reference',
+        #'using',
+        #'whatsnew',
 ]
 
-exclude_dirnames = ['diff', 'orig']
+exclude_dirnames = ['diff', 'orig', 'tools']
 
 
 # Options for HTML output
