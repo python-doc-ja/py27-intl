@@ -10,23 +10,19 @@
 オペレーティングシステムへのインタフェース
 ==========================================
 
-:mod:`os` (XXX reference: ../lib/module-os.html) モジュールは、
-オペレーティングシステムと対話するための何ダースもの関数を 提供しています:
-
-.. % % The \ulink{\module{os}}{../lib/module-os.html}
-.. % % module provides dozens of functions for interacting with the
-.. % % operating system:
+:mod:`os` モジュールは、オペレーティングシステムと対話するための
+何ダースもの関数を提供しています:
 
 ::
 
-   >>> import os 
-   >>> os.system('time 0:02') 
-   0 
+   >>> import os
+   >>> os.system('time 0:02')
+   0
    >>> os.getcwd()      # 現在の作業ディレクトリを返す
-   'C:\\Python24' 
-   >>> os.chdir('/server/accesslogs') 
+   'C:\\Python26'
+   >>> os.chdir('/server/accesslogs')
 
-``from os import *`` ではなく、 ``import os`` 形式を使う ようにしてください。そうすることで、
+``from os import *`` ではなく、 ``import os`` 形式を使うようにしてください。そうすることで、
 動作が大きく異なる組み込み関数 :func:`open` が :func:`os.open` で隠蔽されるのを避けられます。
 
 .. % % Be sure to use the \samp{import os} style instead of
@@ -44,24 +40,20 @@
 
 ::
 
-   >>> import os 
-   >>> dir(os) 
-   <returns a list of all module functions> 
-   >>> help(os) 
-   <returns an extensive manual page created from the module's docstrings> 
+   >>> import os
+   >>> dir(os)
+   <returns a list of all module functions>
+   >>> help(os)
+   <returns an extensive manual page created from the module's docstrings>
 
-ファイルやディレクトリの日常的な管理作業のために、 より簡単に使える高レベルインタフェースが :mod:`shutil` (XXX reference:
-../lib/module-shutil.html)  モジュールで提供されています:
-
-.. % % For daily file and directory management tasks, the
-.. % % \ulink{\module{shutil}}{../lib/module-shutil.html}
-.. % % module provides a higher level interface that is easier to use:
+ファイルやディレクトリの日常的な管理作業のために、より簡単に使える高レベルインタフェースが
+:mod:`shutil` モジュールで提供されています。
 
 ::
 
-   >>> import shutil 
-   >>> shutil.copyfile('data.db', 'archive.db') 
-   >>> shutil.move('/build/executables', 'installdir') 
+   >>> import shutil
+   >>> shutil.copyfile('data.db', 'archive.db')
+   >>> shutil.move('/build/executables', 'installdir')
 
 
 .. _tut-file-wildcards:
@@ -69,8 +61,8 @@
 ファイルのワイルドカード表記
 ============================
 
-:mod:`glob` (XXX reference: ../lib/module-glob.html) モジュールでは、
-ディレクトリのワイルドカード検索からファイルのリストを生成する ための関数を提供しています:
+:mod:`glob` モジュールでは、
+ディレクトリのワイルドカード検索からファイルのリストを生成するための関数を提供しています:
 
 .. % % The \ulink{\module{glob}}{../lib/module-glob.html}
 .. % % module provides a function for making file lists from directory
@@ -78,9 +70,9 @@
 
 ::
 
-   >>> import glob 
-   >>> glob.glob('*.py') 
-   ['primes.py', 'random.py', 'quote.py'] 
+   >>> import glob
+   >>> glob.glob('*.py')
+   ['primes.py', 'random.py', 'quote.py']
 
 
 .. _tut-command-line-arguments:
@@ -88,9 +80,9 @@
 コマンドライン引数
 ==================
 
-広く使われているユーティリティスクリプトでは、しばしばコマンドライン 引数の処理を呼び出します。これらの引数は :mod:`sys` (XXX
-reference: ../lib/module-sys.html) モジュールの *argv*  属性にリストとして記憶されます。例えば、以下の出力は、
-``python demo.py one two three`` をコマンドライン上で起動した際に 得られるものです:
+広く使われているユーティリティスクリプトでは、しばしばコマンドライン引数の処理を呼び出します。
+これらの引数は :mod:`sys` モジュールの *argv*  属性にリストとして記憶されます。
+例えば、以下の出力は、 ``python demo.py one two three`` をコマンドライン上で起動した際に得られるものです:
 
 .. % % Common utility scripts often need to process command line arguments.
 .. % % These arguments are stored in the
@@ -100,13 +92,13 @@ reference: ../lib/module-sys.html) モジュールの *argv*  属性にリスト
 
 ::
 
-   >>> import sys 
-   >>> print sys.argv 
-   ['demo.py', 'one', 'two', 'three'] 
+   >>> import sys
+   >>> print sys.argv
+   ['demo.py', 'one', 'two', 'three']
 
-:mod:`getopt` (XXX reference: ../lib/module-getopt.html)  モジュールは、*sys.argv* を
-Unix の :func:`getopt` 関数の 慣習に従って処理します。より強力で柔軟性のあるコマンドライン処理機能は、 :mod:`optparse`
-(XXX reference: ../lib/module-optparse.html) モジュールで 提供されています。
+:mod:`getopt` モジュールは、 *sys.argv* を
+Unix の :func:`getopt` 関数の慣習に従って処理します。より強力で柔軟性のあるコマンドライン処理機能は、 :mod:`optparse`
+モジュールで提供されています。
 
 .. % % The \ulink{\module{getopt}}{../lib/module-getopt.html}
 .. % % module processes \var{sys.argv} using the conventions of the \UNIX{}
@@ -120,9 +112,9 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 エラー出力のリダイレクトとプログラムの終了
 ==========================================
 
-:mod:`sys` (XXX reference: ../lib/module-sys.html) モジュールには、 *stdin*、
-*stdout*、および *stderr* を表す属性値も 存在します。後者の *stderr* は、警告やエラーメッセージを出力して、 *stdout*
-がリダイレクトされた場合でもそれらが読めるようにする 上で便利です:
+:mod:`sys` モジュールには、 *stdin*, *stdout*, *stderr* を表す属性値も存在します。
+後者の *stderr* は、警告やエラーメッセージを出力して、 *stdout*
+がリダイレクトされた場合でもそれらが読めるようにする上で便利です:
 
 .. % % The \ulink{\module{sys}}{../lib/module-sys.html}
 .. % % module also has attributes for \var{stdin}, \var{stdout}, and
@@ -131,8 +123,8 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 
 ::
 
-   >>> sys.stderr.write('Warning, log file not found starting a new one\n') 
-   Warning, log file not found starting a new one 
+   >>> sys.stderr.write('Warning, log file not found starting a new one\n')
+   Warning, log file not found starting a new one
 
 ``sys.exit()`` は、スクリプトを終了させるもっとも直接的な方法です。
 
@@ -144,8 +136,9 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 文字列のパターンマッチング
 ==========================
 
-:mod:`re` (XXX reference: ../lib/module-re.html)  モジュールでは、より高度な文字列処理のための正規表現
-(regular expression)  を提供しています。正規表現は複雑な一致検索や操作に対して簡潔で最適化 された解決策を与えます:
+:mod:`re` モジュールでは、より高度な文字列処理のための正規表現
+(regular expression) を提供しています。
+正規表現は複雑な一致検索や操作に対して簡潔で最適化された解決策を与えます:
 
 .. % % The \ulink{\module{re}}{../lib/module-re.html}
 .. % % module provides regular expression tools for advanced string processing.
@@ -154,21 +147,21 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 
 ::
 
-   >>> import re 
-   >>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest') 
-   ['foot', 'fell', 'fastest'] 
-   >>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat') 
-   'cat in the hat' 
+   >>> import re
+   >>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
+   ['foot', 'fell', 'fastest']
+   >>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat')
+   'cat in the hat'
 
-最小限の機能だけが必要なら、読みやすくデバッグしやすい文字列メソッドの 方がお勧めです:
+最小限の機能だけが必要なら、読みやすくデバッグしやすい文字列メソッドの方がお勧めです:
 
 .. % % When only simple capabilities are needed, string methods are preferred
 .. % % because they are easier to read and debug:
 
 ::
 
-   >>> 'tea for too'.replace('too', 'two') 
-   'tea for two' 
+   >>> 'tea for too'.replace('too', 'two')
+   'tea for two'
 
 
 .. _tut-mathematics:
@@ -176,37 +169,33 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 数学
 ====
 
-:mod:`math` (XXX reference: ../lib/module-math.html) モジュールでは、 根底にある浮動小数点演算のための C
-言語ライブラリ関数にアクセス する手段を提供しています:
-
-.. % % The \ulink{\module{math}}{../lib/module-math.html} module gives
-.. % % access to the underlying C library functions for floating point math:
+:mod:`math` モジュールでは、根底にある浮動小数点演算のための C
+言語ライブラリ関数にアクセスする手段を提供しています:
 
 ::
 
-   >>> import math 
-   >>> math.cos(math.pi / 4.0) 
-   0.70710678118654757 
-   >>> math.log(1024, 2) 
-   10.0 
+   >>> import math
+   >>> math.cos(math.pi / 4.0)
+   0.70710678118654757
+   >>> math.log(1024, 2)
+   10.0
 
-:mod:`random` (XXX reference: ../lib/module-random.html)
-モジュールでは、乱数に基づいた要素選択のためのツールを提供しています:
+:mod:`random` モジュールでは、乱数に基づいた要素選択のためのツールを提供しています:
 
 .. % % The \ulink{\module{random}}{../lib/module-random.html}
 .. % % module provides tools for making random selections:
 
 ::
 
-   >>> import random 
-   >>> random.choice(['apple', 'pear', 'banana']) 
-   'apple' 
+   >>> import random
+   >>> random.choice(['apple', 'pear', 'banana'])
+   'apple'
    >>> random.sample(xrange(100), 10)   # 要素を戻さないサンプリング
-   [30, 83, 16, 4, 8, 81, 41, 50, 18, 33] 
+   [30, 83, 16, 4, 8, 81, 41, 50, 18, 33]
    >>> random.random()    # ランダムな浮動小数点数
-   0.17970987693706186 
+   0.17970987693706186
    >>> random.randrange(6)    # range(6) からランダムに選ばれた整数
-   4 
+   4
 
 
 .. _tut-internet-access:
@@ -214,35 +203,31 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 インターネットへのアクセス
 ==========================
 
-インターネットにアクセスしたり、インターネットプロトコルを処理したり するための数多くのモジュールがあります。その中でも最も単純な二つ のモジュールは、URL
-を指定してデータを取得するための :mod:`urllib2` (XXX reference: ../lib/module-urllib2.html)
-と、メイルを送信するための :mod:`smtplib` (XXX reference: ../lib/module-smtplib.html)  です:
-
-.. % % There are a number of modules for accessing the internet and processing
-.. % % internet protocols. Two of the simplest are
-.. % % \ulink{\module{urllib2}}{../lib/module-urllib2.html}
-.. % % for retrieving data from urls and
-.. % % \ulink{\module{smtplib}}{../lib/module-smtplib.html}
-.. % % for sending mail:
+インターネットにアクセスしたり、インターネットプロトコルを処理したりするための数多くのモジュールがあります。
+その中でも特にシンプルなモジュールとして、URL
+を指定してデータを取得するための :mod:`urllib2`
+と、メールを送信するための :mod:`smtplib` があります。
 
 ::
 
-   >>> import urllib2 
-   >>> for line in urllib2.urlopen('http://tycho.usno.navy.mil/cgi-bin/timer.pl'): 
-   ...     if 'EST' in line or 'EDT' in line:      # look for Eastern Time 
-   ...         print line 
+   >>> import urllib2
+   >>> for line in urllib2.urlopen('http://tycho.usno.navy.mil/cgi-bin/timer.pl'):
+   ...     if 'EST' in line or 'EDT' in line:      # look for Eastern Time
+   ...         print line
 
-   <BR>Nov. 25, 09:43:32 PM EST 
+   <BR>Nov. 25, 09:43:32 PM EST
 
-   >>> import smtplib 
-   >>> server = smtplib.SMTP('localhost') 
-   >>> server.sendmail('soothsayer@example.org', 'jcaesar@example.org', 
-   """To: jcaesar@example.org 
-   From: soothsayer@example.org 
+   >>> import smtplib
+   >>> server = smtplib.SMTP('localhost')
+   >>> server.sendmail('soothsayer@example.org', 'jcaesar@example.org',
+   ... """To: jcaesar@example.org
+   ... From: soothsayer@example.org
+   ...
+   ... Beware the Ides of March.
+   ... """)
+   >>> server.quit()
 
-   Beware the Ides of March. 
-   """) 
-   >>> server.quit() 
+(2つ目の例は localhost でメールサーバーが動いている必要があることに注意してください。)
 
 
 .. _tut-dates-and-times:
@@ -250,9 +235,9 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 日付と時刻
 ==========
 
-:mod:`datetime` (XXX reference: ../lib/module-datetime.html) モジュールは、
-日付や時刻を操作するためのクラスを、単純な方法と複雑な方法の両方で 供給しています。日付や時刻に対する算術がサポートされている一方、
-実装では出力の書式化や操作のための効率的なデータメンバ抽出に 重点を置いています。 このモジュールでは、タイムゾーンに対応したオブジェクトもサポート
+:mod:`datetime` モジュールは、
+日付や時刻を操作するためのクラスを、単純な方法と複雑な方法の両方で供給しています。日付や時刻に対する算術がサポートされている一方、
+実装では出力の書式化や操作のための効率的なデータメンバ抽出に重点を置いています。このモジュールでは、タイムゾーンに対応したオブジェクトもサポート
 しています。
 
 .. % % The \ulink{\module{datetime}}{../lib/module-datetime.html} module
@@ -264,19 +249,19 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 
 ::
 
-   # dates are easily constructed and formatted 
-   >>> from datetime import date 
-   >>> now = date.today() 
-   >>> now 
-   datetime.date(2003, 12, 2) 
-   >>> now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B") 
-   '12-02-03. 02 Dec 2003 is a Tuesday on the 02 day of December' 
+   # dates are easily constructed and formatted
+   >>> from datetime import date
+   >>> now = date.today()
+   >>> now
+   datetime.date(2003, 12, 2)
+   >>> now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B")
+   '12-02-03. 02 Dec 2003 is a Tuesday on the 02 day of December'
 
-   # dates support calendar arithmetic 
-   >>> birthday = date(1964, 7, 31) 
-   >>> age = now - birthday 
-   >>> age.days 
-   14368 
+   # dates support calendar arithmetic
+   >>> birthday = date(1964, 7, 31)
+   >>> age = now - birthday
+   >>> age.days
+   14368
 
 
 .. _tut-data-compression:
@@ -284,11 +269,8 @@ Unix の :func:`getopt` 関数の 慣習に従って処理します。より強�
 データ圧縮
 ==========
 
-データの書庫化や圧縮で広く使われている形式については、 :mod:`zlib` (XXX reference: ../lib/module-
-zlib.html)、 :mod:`gzip` (XXX reference: ../lib/module-gzip.html)、 :mod:`bz2`
-(XXX reference: ../lib/module-bz2.html)、 :mod:`zipfile` (XXX reference: ../lib
-/module-zipfile.html)、および :mod:`tarfile` (XXX reference: ../lib/module-
-tarfile.html) と いったモジュールで直接サポートしています。
+データの書庫化や圧縮で広く使われている形式については、 :mod:`zlib`,
+:mod:`gzip`, :mod:`bz2`, :mod:`zipfile`, :mod:`tarfile` といったモジュールで直接サポートしています。
 
 .. % % Common data archiving and compression formats are directly supported
 .. % % by modules including:
@@ -300,16 +282,16 @@ tarfile.html) と いったモジュールで直接サポートしています�
 
 ::
 
-   >>> import zlib 
-   >>> s = 'witch which has which witches wrist watch' 
-   >>> len(s) 
-   41 
-   >>> t = zlib.compress(s) 
-   >>> len(t) 
-   37 
-   >>> zlib.decompress(t) 
-   'witch which has which witches wrist watch' 
-   >>> zlib.crc32(s) 
+   >>> import zlib
+   >>> s = 'witch which has which witches wrist watch'
+   >>> len(s)
+   41
+   >>> t = zlib.compress(s)
+   >>> len(t)
+   37
+   >>> zlib.decompress(t)
+   'witch which has which witches wrist watch'
+   >>> zlib.crc32(s)
    226805979
 
 
@@ -318,17 +300,16 @@ tarfile.html) と いったモジュールで直接サポートしています�
 パフォーマンスの計測
 ====================
 
-Python ユーザの中には、同じ問題を異なったアプローチで解いた 際の相対的なパフォーマンスについて知りたいという深遠な興味を
-抱いている人がいます。Python では、そういった疑問に即座に答える 計測ツールを提供しています。
+Python ユーザの中には、同じ問題を異なったアプローチで解いた際の相対的なパフォーマンスについて知りたいという深い興味を
+持っている人がいます。Python では、そういった疑問に即座に答える計測ツールを提供しています。
 
 .. % % Some Python users develop a deep interest in knowing the relative
 .. % % performance between different approaches to the same problem.
 .. % % Python provides a measurement tool that answers those questions
 .. % % immediately.
 
-例えば、引数の入れ替え操作に対して、伝統的なアプローチの代わりに タプルのパックやアンパックを使ってみたい気持ちになるかもしれません。
-:mod:`timeit` (XXX reference: ../lib/module-timeit.html) モジュールを
-使えば、パフォーマンス上の利点はほぼ互角だとわかります:
+例えば、引数の入れ替え操作に対して、伝統的なアプローチの代わりにタプルのパックやアンパックを使ってみたい気持ちになるかもしれません。
+:mod:`timeit` モジュールを使えば、パフォーマンス上の利点はほぼ互角だとわかります:
 
 .. % % For example, it may be tempting to use the tuple packing and unpacking
 .. % % feature instead of the traditional approach to swapping arguments.
@@ -337,14 +318,14 @@ Python ユーザの中には、同じ問題を異なったアプローチで解�
 
 ::
 
-   >>> from timeit import Timer 
-   >>> Timer('t=a; a=b; b=t', 'a=1; b=2').timeit() 
+   >>> from timeit import Timer
+   >>> Timer('t=a; a=b; b=t', 'a=1; b=2').timeit()
    0.57535828626024577
    >>> Timer('a,b = b,a', 'a=1; b=2').timeit()
    0.54962537085770791
 
-:mod:`timeit` では高い粒度レベルを提供しているのに対し、 :mod:`profile` (XXX reference: ../lib
-/module-profile.html) や :mod:`pstats`  モジュールではより大きなコードブロックにおいて律速となる部分を
+:mod:`timeit` では高い粒度レベルを提供しているのに対し、 :mod:`profile` や
+:mod:`pstats`  モジュールではより大きなコードブロックにおいて律速となる部分を
 判定するためのツールを提供しています。
 
 .. % % In contrast to \module{timeit}'s fine level of granularity, the
@@ -358,16 +339,16 @@ Python ユーザの中には、同じ問題を異なったアプローチで解�
 品質管理
 ========
 
-高い品質のソフトウェアを開発するための一つのアプローチは、全ての関数 に対して開発と同時にテストを書き、開発の過程で頻繁にテストを走らせる というものです。
+高い品質のソフトウェアを開発するための一つのアプローチは、全ての関数に対して開発と同時にテストを書き、開発の過程で頻繁にテストを走らせるというものです。
 
 .. % % One approach for developing high quality software is to write tests for
 .. % % each function as it is developed and to run those tests frequently during
 .. % % the development process.
 
-:mod:`doctest` (XXX reference: ../lib/module-doctest.html) モジュールでは、
-モジュールを検索して、プログラムの docstring に埋め込まれたテストの 評価を行うためのツールを提供しています。テストの作り方は単純で、
-典型的な呼び出し例とその結果を docstring にカット& ペーストすると いうものです。この作業は、ユーザに使用例を与えるという意味で
-ドキュメントの情報を増やすと同時に、ドキュメントに書かれている内容が 正しいかどうか doctest モジュールが確認できるようにしています:
+:mod:`doctest` モジュールでは、
+モジュールを検索して、プログラムの docstring に埋め込まれたテストの評価を行うためのツールを提供しています。テストの作り方は単純で、
+典型的な呼び出し例とその結果を docstring にカット& ペーストするというものです。この作業は、ユーザに使用例を与えるという意味で
+ドキュメントの情報を増やすと同時に、ドキュメントに書かれている内容が正しいかどうか doctest モジュールが確認できるようにしています:
 
 .. % % The \ulink{\module{doctest}}{../lib/module-doctest.html} module provides
 .. % % a tool for scanning a module and validating tests embedded in a program's
@@ -378,19 +359,19 @@ Python ユーザの中には、同じ問題を異なったアプローチで解�
 
 ::
 
-   def average(values): 
-       """Computes the arithmetic mean of a list of numbers. 
+   def average(values):
+       """Computes the arithmetic mean of a list of numbers.
 
-       >>> print average([20, 30, 70]) 
-       40.0 
-       """ 
-       return sum(values, 0.0) / len(values) 
+       >>> print average([20, 30, 70])
+       40.0
+       """
+       return sum(values, 0.0) / len(values)
 
-   import doctest 
-   doctest.testmod()   # automatically validate the embedded tests 
+   import doctest
+   doctest.testmod()   # automatically validate the embedded tests
 
-:mod:`unittest` (XXX reference: ../lib/module-unittest.html) モジュールは
-:mod:`doctest` モジュールほど気楽に使えるものではありませんが、 より網羅的なテストセットを別のファイルで管理することができます:
+:mod:`unittest` モジュールは
+:mod:`doctest` モジュールほど気楽に使えるものではありませんが、より網羅的なテストセットを別のファイルで管理することができます:
 
 .. % % The \ulink{\module{unittest}}{../lib/module-unittest.html} module is not
 .. % % as effortless as the \module{doctest} module, but it allows a more
@@ -398,17 +379,17 @@ Python ユーザの中には、同じ問題を異なったアプローチで解�
 
 ::
 
-   import unittest 
+   import unittest
 
-   class TestStatisticalFunctions(unittest.TestCase): 
+   class TestStatisticalFunctions(unittest.TestCase):
 
-       def test_average(self): 
-           self.assertEqual(average([20, 30, 70]), 40.0) 
-           self.assertEqual(round(average([1, 5, 7]), 1), 4.3) 
-           self.assertRaises(ZeroDivisionError, average, []) 
-           self.assertRaises(TypeError, average, 20, 30, 70) 
+       def test_average(self):
+           self.assertEqual(average([20, 30, 70]), 40.0)
+           self.assertEqual(round(average([1, 5, 7]), 1), 4.3)
+           self.assertRaises(ZeroDivisionError, average, [])
+           self.assertRaises(TypeError, average, 20, 30, 70)
 
-   unittest.main() # Calling from the command line invokes all tests 
+   unittest.main() # Calling from the command line invokes all tests
 
 
 .. _tut-batteries-included:
@@ -416,17 +397,17 @@ Python ユーザの中には、同じ問題を異なったアプローチで解�
 バッテリー同梱
 ==============
 
-Python には "バッテリー同梱 (batteries included)" 哲学が あります。この哲学は、洗練され、安定した機能を持つ Python
-の膨大な パッケージ群に如実に表れています。例えば:
+Python には "バッテリー同梱 (batteries included)" 哲学があります。この哲学は、洗練され、安定した機能を持つ Python
+の膨大なパッケージ群に如実に表れています。例えば:
 
 .. % % Python has a ``batteries included'' philosophy.  This is best seen
 .. % % through the sophisticated and robust capabilities of its larger
 .. % % packages. For example:
 
-* The :mod:`xmlrpclib` (XXX reference: ../lib/module-xmlrpclib.html) および
-  :mod:`SimpleXMLRPCServer` (XXX reference: ../lib/module-SimpleXMLRPCServer.html)
-  モジュールは、遠隔手続き呼び出し (remote procedure call) を全く たいしたことのない作業に変えてしまいます。モジュール名とは違い、XML
-  を扱う ための直接的な知識は必要ありません。
+* The :mod:`xmlrpclib`  および
+  :mod:`SimpleXMLRPCServer` 
+  モジュールは、遠隔手続き呼び出し (remote procedure call) を全くたいしたことのない作業に変えてしまいます。モジュール名とは違い、XML
+  を扱うための直接的な知識は必要ありません。
 
   .. % % \item The \ulink{\module{email}}{../lib/module-email.html}
   .. % % package is a library for managing email messages,
@@ -436,10 +417,10 @@ Python には "バッテリー同梱 (batteries included)" 哲学が ありま�
   .. % % decoding complex message structures (including attachments)
   .. % % and for implementing internet encoding and header protocols.
 
-* The :mod:`email` (XXX reference: ../lib/module-email.html)  パッケージは、MIME やその他の
-  RFC 2822 に基づくメッセージ文書を含む 電子メイルメッセージを管理するためのライブラリです。 実際にメッセージを送信したり受信したりする
-  :mod:`smtplib` や :mod:`poplib` と違って、email パッケージには (添付文書を 含む)
-  複雑なメッセージ構造の構築やデコードを行ったり、 インターネット標準のエンコードやヘッダプロトコルの実装を行ったり するための完全なツールセットを備えています。
+* The :mod:`email`   パッケージは、MIME やその他の
+  RFC 2822 に基づくメッセージ文書を含む電子メイルメッセージを管理するためのライブラリです。実際にメッセージを送信したり受信したりする
+  :mod:`smtplib` や :mod:`poplib` と違って、email パッケージには (添付文書を含む)
+  複雑なメッセージ構造の構築やデコードを行ったり、インターネット標準のエンコードやヘッダプロトコルの実装を行ったりするための完全なツールセットを備えています。
 
   .. % % \item The \ulink{\module{xml.dom}}{../lib/module-xml.dom.html} and
   .. % % \ulink{\module{xml.sax}}{../lib/module-xml.sax.html} packages provide
@@ -448,10 +429,10 @@ Python には "バッテリー同梱 (batteries included)" 哲学が ありま�
   .. % % database format.  Together, these modules and packages greatly simplify
   .. % % data interchange between python applications and other tools.
 
-* :mod:`xml.dom` (XXX reference: ../lib/module-xml.dom.html) および :mod:`xml.sax`
-  (XXX reference: ../lib/module-xml.sax.html) パッケージでは、 一般的なデータ交換形式である XML
-  を解析するための頑健なサポートを 提供しています。同様に、:mod:`csv` モジュールでは、広く用いられている
-  データベース形式のデータを直接読み書きする機能をサポートしています。 これらのモジュールやパッケージは併用することで、Python アプリケーション
+* :mod:`xml.dom` および :mod:`xml.sax`
+   パッケージでは、一般的なデータ交換形式である XML
+  を解析するための頑健なサポートを提供しています。同様に、 :mod:`csv` モジュールでは、広く用いられている
+  データベース形式のデータを直接読み書きする機能をサポートしています。これらのモジュールやパッケージは併用することで、Python アプリケーション
   と他のツール群との間でのデータ交換を劇的に簡単化します。
 
   .. % % \item Internationalization is supported by a number of modules including
@@ -459,8 +440,7 @@ Python には "バッテリー同梱 (batteries included)" 哲学が ありま�
   .. % % \ulink{\module{locale}}{../lib/module-locale.html}, and the
   .. % % \ulink{\module{codecs}}{../lib/module-codecs.html} package.
 
-* 国際化に関する機能は、 :mod:`gettext` (XXX reference: ../lib/module-gettext.html)、
-  :mod:`locale` (XXX reference: ../lib/module-locale.html)、および :mod:`codecs` (XXX
-  reference: ../lib/module-codecs.html) パッケージ といったモジュール群でサポートされています。
+* 国際化に関する機能は、 :mod:`gettext`,
+  :mod:`locale` および :mod:`codecs` パッケージといったモジュール群でサポートされています。
 
 

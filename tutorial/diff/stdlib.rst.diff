@@ -357,6 +357,9 @@
 -  :mod:`SimpleXMLRPCServer` (XXX reference: ../lib/module-SimpleXMLRPCServer.html)
 -  modules make implementing remote procedure calls into an almost trivial task.
 -  Despite the modules names, no direct knowledge or handling of XML is needed.
++* The :mod:`xmlrpclib` and :mod:`SimpleXMLRPCServer` modules make implementing
++  remote procedure calls into an almost trivial task.  Despite the modules
++  names, no direct knowledge or handling of XML is needed.
 -
 -* The :mod:`email` (XXX reference: ../lib/module-email.html) package is a
 -  library for managing email messages, including MIME and other RFC 2822-based
@@ -364,6 +367,12 @@
 -  and receive messages, the email package has a complete toolset for building or
 -  decoding complex message structures (including attachments) and for implementing
 -  internet encoding and header protocols.
++* The :mod:`email` package is a library for managing email messages, including
++  MIME and other RFC 2822-based message documents. Unlike :mod:`smtplib` and
++  :mod:`poplib` which actually send and receive messages, the email package has
++  a complete toolset for building or decoding complex message structures
++  (including attachments) and for implementing internet encoding and header
++  protocols.
 -
 -* The :mod:`xml.dom` (XXX reference: ../lib/module-xml.dom.html) and
 -  :mod:`xml.sax` (XXX reference: ../lib/module-xml.sax.html) packages provide
@@ -371,16 +380,7 @@
 -  :mod:`csv` (XXX reference: ../lib/module-csv.html) module supports direct reads
 -  and writes in a common database format. Together, these modules and packages
 -  greatly simplify data interchange between python applications and other tools.
-+* The :mod:`xmlrpclib` and :mod:`SimpleXMLRPCServer` modules make implementing
-+  remote procedure calls into an almost trivial task.  Despite the modules
-+  names, no direct knowledge or handling of XML is needed.
 +
-+* The :mod:`email` package is a library for managing email messages, including
-+  MIME and other RFC 2822-based message documents. Unlike :mod:`smtplib` and
-+  :mod:`poplib` which actually send and receive messages, the email package has
-+  a complete toolset for building or decoding complex message structures
-+  (including attachments) and for implementing internet encoding and header
-+  protocols.
 +
 +* The :mod:`xml.dom` and :mod:`xml.sax` packages provide robust support for
 +  parsing this popular data interchange format. Likewise, the :mod:`csv` module
