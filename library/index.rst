@@ -79,3 +79,5 @@ Windows 向けの Python インストーラはたいてい標準ライブラリ�
    sgi.rst
    sun.rst
    undoc.rst
+
+   jptranslation.rst
