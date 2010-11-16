@@ -4,7 +4,7 @@
 標準ライブラリミニツアー -- その 2
 **********************************
 
-もう一つのツアーでは、プロフェッショナルプログラミングを支える もっと高度なモジュールをカバーします。ここで挙げるモジュールは、
+もう一つのツアーでは、プロフェッショナルプログラミングを支えるもっと高度なモジュールをカバーします。ここで挙げるモジュールは、
 小さなスクリプトの開発ではほとんど使いません。
 
 .. % Brief Tour of the Standard Library -- Part II
@@ -15,7 +15,7 @@
 出力のフォーマット
 ==================
 
-:mod:`repr` (XXX reference: ../lib/module-repr.html) モジュールでは、
+:mod:`repr` モジュールでは、
 大きなコンテナや、深くネストしたコンテナを省略して表示するバージョンの :func:`repr` を提供しています:
 
 .. % Output Formatting
@@ -25,12 +25,12 @@
 
 ::
 
-   >>> import repr   
+   >>> import repr
    >>> repr.repr(set('supercalifragilisticexpialidocious'))
    "set(['a', 'c', 'd', 'e', 'f', 'g', ...])"
 
-:mod:`pprint` (XXX reference: ../lib/module-pprint.html) モジュールを使うと、
-組み込み型やユーザ定義型がより洗練された形式で出力されるよう制御できます。 出力が複数行にわたる場合には、"pretty printer" が改行を追加して、
+:mod:`pprint` モジュールを使うと、
+組み込み型やユーザ定義型がより洗練された形式で出力されるよう制御できます。出力が複数行にわたる場合には、"pretty printer" が改行を追加して、
 入れ子構造を理解しやすいようにインデントを挿入します:
 
 .. % The \ulink{\module{pprint}}{../lib/module-pprint.html} module offers
@@ -52,7 +52,7 @@
      [['magenta', 'yellow'],
       'blue']]]
 
-:mod:`textwrap` (XXX reference: ../lib/module-textwrap.html) モジュールは、
+:mod:`textwrap` モジュールは、
 一段落の文を指定したスクリーン幅にぴったり収まるように調整します:
 
 .. % The \ulink{\module{textwrap}}{../lib/module-textwrap.html} module
@@ -71,9 +71,9 @@
    instead of one big string with newlines
    to separate the wrapped lines.
 
-:mod:`locale` (XXX reference: ../lib/module-locale.html) モジュールは、文化ごと
+:mod:`locale` モジュールは、文化ごと
 に特化したデータ表現形式のデータベースにアクセスします。 :mod:`locale` の :func:`format` 関数の grouping
-属性を使えば、数値の各桁を適切な 区切り文字でグループ化してフォーマットできます:
+属性を使えば、数値の各桁を適切な区切り文字でグループ化してフォーマットできます:
 
 .. % The \ulink{\module{locale}}{../lib/module-locale.html} module accesses
 .. % a database of culture specific data formats.  The grouping attribute
@@ -90,7 +90,7 @@
    >>> locale.format("%d", x, grouping=True)
    '1,234,567'
    >>> locale.format("%s%.*f", (conv['currency_symbol'],
-   ...	      conv['frac_digits'], x), grouping=True)
+   ...               conv['frac_digits'], x), grouping=True)
    '$1,234,567.80'
 
 
@@ -99,9 +99,9 @@
 文字列テンプレート
 ==================
 
-:mod:`string` (XXX reference: ../lib/module-string.html) モジュールには、
-柔軟で、エンドユーザが簡単に編集できる簡単な構文を備えた:class:`Template`
-クラスが入っています。このクラスを使うと、ユーザがアプリケーションの出力 をカスタマイズしたいときに全てを置き換えなくてもすみます。
+:mod:`string` モジュールには、
+柔軟で、エンドユーザが簡単に編集できる簡単な構文を備えた :class:`Template`
+クラスが入っています。このクラスを使うと、ユーザがアプリケーションの出力をカスタマイズしたいときに全てを置き換えなくてもすみます。
 
 .. % Templating
 .. % The \ulink{\module{string}}{../lib/module-string.html} module includes a
@@ -109,8 +109,8 @@
 .. % editing by end-users.  This allows users to customize their applications
 .. % without having to alter the application.
 
-テンプレートでは、``$`` と有効な Python 識別子名 (英数字と アンダースコア) からなるプレースホルダ名を使います。プレースホルダの
-周りを丸括弧で囲えば、間にスペースをはさまなくても後ろに英数文字を 続けられます。``$$`` のようにすると、``$`` 自体をエスケープ できます:
+テンプレートでは、 ``$`` と有効な Python 識別子名 (英数字とアンダースコア) からなるプレースホルダ名を使います。プレースホルダの
+周りを丸括弧で囲えば、間にスペースをはさまなくても後ろに英数文字を続けられます。 ``$$`` のようにすると、 ``$`` 自体をエスケープできます:
 
 .. % The format uses placeholder names formed by \samp{\$} with valid Python
 .. % identifiers (alphanumeric characters and underscores).  Surrounding the
@@ -125,8 +125,8 @@
    >>> t.substitute(village='Nottingham', cause='the ditch fund')
    'Nottinghamfolk send $10 to the ditch fund.'
 
-:meth:`substitute` メソッドは、プレースホルダに相当する値が辞書や キーワード引数にない場合に :exc:`KeyError` を送出します。
-メールマージ型アプリケーションの場合、ユーザが入力するデータは不完全 なことがあるので、欠落したデータがあるとプレースホルダをそのままにして 出力する
+:meth:`substitute` メソッドは、プレースホルダに相当する値が辞書やキーワード引数にない場合に :exc:`KeyError` を送出します。
+メールマージ型アプリケーションの場合、ユーザが入力するデータは不完全なことがあるので、欠落したデータがあるとプレースホルダをそのままにして出力する
 :meth:`safe_substitute` メソッドを使う方が適切でしょう:
 
 .. % The \method{substitute} method raises a \exception{KeyError} when a
@@ -147,7 +147,7 @@
    'Return the unladen swallow to $owner.'
 
 :class:`Template` をサブクラス化すると、区切り文字を自作できます。例えば、
-画像ブラウザ用にバッチで名前を変更するユーティリティを作っていたとして、 現在の日付や画像のシーケンス番号、ファイル形式といったプレースホルダに
+画像ブラウザ用にバッチで名前を変更するユーティリティを作っていたとして、現在の日付や画像のシーケンス番号、ファイル形式といったプレースホルダに
 パーセント記号を選んだとします:
 
 .. % Template subclasses can specify a custom delimiter.  For example, a batch
@@ -168,14 +168,14 @@
    >>> for i, filename in enumerate(photofiles):
    ...     base, ext = os.path.splitext(filename)
    ...     newname = t.substitute(d=date, n=i, f=ext)
-   ...     print '%s --> %s' % (filename, newname)
+   ...     print '{0} --> {1}'.format(filename, newname)
 
    img_1074.jpg --> Ashley_0.jpg
    img_1076.jpg --> Ashley_1.jpg
    img_1077.jpg --> Ashley_2.jpg
 
-テンプレートのもう一つの用途は、複数ある出力様式からのプログラムロジック の分離です。テンプレートを使えば、カスタムのテンプレートを XML ファイル
-用や平文テキストのレポート、 HTML で書かれた web レポート用などに 置き換えられます。
+テンプレートのもう一つの用途は、複数ある出力様式からのプログラムロジックの分離です。テンプレートを使えば、カスタムのテンプレートを XML ファイル
+用や平文テキストのレポート、 HTML で書かれた web レポート用などに置き換えられます。
 
 .. % Another application for templating is separating program logic from the
 .. % details of multiple output formats.  This makes it possible to substitute
@@ -187,18 +187,18 @@
 バイナリデータレコードの操作
 ============================
 
-:mod:`struct` (XXX reference: ../lib/module-struct.html) モジュールでは、
-可変長のバイナリレコード形式を操作する:func:`pack` や  :func:`unpack` といった関数を提供しています。以下の例では、 ZIP
-ファイルのヘッダ情報にわたってループする方法を示しています (2バイトと 4 バイトの符号無し整数を表すパックコード ``"H"``  と``"L"``
-を使っています):
++The :mod:`struct` module provides :func:`pack` and :func:`unpack` functions for
++working with variable length binary record formats.  The following example shows
++how to loop through header information in a ZIP file without using the
++:mod:`zipfile` module.  Pack codes ``"H"`` and ``"I"`` represent two and four
++byte unsigned numbers respectively.  The ``"<"`` indicates that they are
++standard size and in little-endian byte order
 
-.. % Working with Binary Data Record Layouts
-.. % The \ulink{\module{struct}}{../lib/module-struct.html} module provides
-.. % \function{pack()} and \function{unpack()} functions for working with
-.. % variable length binary record formats.  The following example shows how
-.. % to loop through header information in a ZIP file (with pack codes
-.. % \code{"H"} and \code{"L"} representing two and four byte unsigned
-.. % numbers respectively):
+:mod:`struct` モジュールでは、
+可変長のバイナリレコード形式を操作する :func:`pack` や  :func:`unpack` といった関数を提供しています。
+以下の例では、  :mod:`zipfile` モジュールを使わずに、ZIPファイルのヘッダ情報を巡回する方法を示しています
+``"H"``  と ``"I"`` というパック符号は、それぞれ2バイトと4バイトの符号無し整数を表しています。
+``"<"`` は、そのパック符号が通常のサイズであり、バイトオーダーがリトルエンディアンであることを示しています。
 
 ::
 
@@ -208,7 +208,7 @@
    start = 0
    for i in range(3):                      # show the first 3 file headers
        start += 14
-       fields = struct.unpack('LLLHH', data[start:start+16])
+       fields = struct.unpack('<IIIHH', data[start:start+16])
        crc32, comp_size, uncomp_size, filenamesize, extra_size = fields
 
        start += 16
@@ -225,8 +225,8 @@
 マルチスレッド処理
 ==================
 
-スレッド処理 (threading) とは、順序的な依存関係にない複数のタスクを 分割するテクニックです。スレッド処理は、ユーザの入力を受け付けつつ、
-背後で別のタスクを動かすようなアプリケーションの応答性を高めます。 主なユースケースには、 I/O を別のスレッドの計算処理と並列して
+スレッド処理 (threading) とは、順序的な依存関係にない複数のタスクを分割するテクニックです。スレッド処理は、ユーザの入力を受け付けつつ、
+背後で別のタスクを動かすようなアプリケーションの応答性を高めます。主なユースケースには、 I/O を別のスレッドの計算処理と並列して
 動作させるというものがあります。
 
 .. % Multi-threading
@@ -236,8 +236,8 @@
 .. % background.  A related use case is running I/O in parallel with
 .. % computations in another thread.
 
-以下のコードでは、高水準のモジュール :mod:`threading` (XXX reference: ../lib/module-
-threading.html) で メインのプログラムを動かしながら背後で別のタスクを動作させられる ようにする方法を示しています:
+以下のコードでは、高水準のモジュール :mod:`threading`
+でメインのプログラムを動かしながら背後で別のタスクを動作させられるようにする方法を示しています:
 
 .. % The following code shows how the high level
 .. % \ulink{\module{threading}}{../lib/module-threading.html} module can run
@@ -249,7 +249,7 @@ threading.html) で メインのプログラムを動かしながら背後で別
 
    class AsyncZip(threading.Thread):
        def __init__(self, infile, outfile):
-           threading.Thread.__init__(self)        
+           threading.Thread.__init__(self)
            self.infile = infile
            self.outfile = outfile
        def run(self):
@@ -265,7 +265,7 @@ threading.html) で メインのプログラムを動かしながら背後で別
    background.join()    # Wait for the background task to finish
    print 'Main program waited until background was done.'
 
-マルチスレッドアプリケーションを作る上で最も難しい問題は、データやリソース を共有するスレッド間の調整 (coordination)
+マルチスレッドアプリケーションを作る上で最も難しい問題は、データやリソースを共有するスレッド間の調整 (coordination)
 です。この問題を解決するため、 :mod:`threading` モジュールではロックやイベント、状態変数、セマフォ
 といった数々の同期プリミティブを提供しています。
 
@@ -274,9 +274,11 @@ threading.html) で メインのプログラムを動かしながら背後で別
 .. % module provides a number of synchronization primitives including locks,
 .. % events, condition variables, and semaphores.
 
-こうしたツールは強力な一方、ちょっとした設計上の欠陥で再現困難な 問題を引き起こすことがあります。したがって、タスク間調整では :mod:`Queue`
-(XXX reference: ../lib/module-Queue.html) モジュールを使って 他のスレッドから一つのスレッドにリクエストを送り込み、
-一つのリソースへのアクセスをできるだけ一つのスレッドに集中させる アプローチを勧めます。スレッド間の通信や調整に:class:`Queue`
+こうしたツールは強力な一方、ちょっとした設計上の欠陥で再現困難な問題を引き起こすことがあります。
+したがって、タスク間調整では :mod:`Queue`
+モジュールを使って他のスレッドから一つのスレッドにリクエストを送り込み、
+一つのリソースへのアクセスをできるだけ一つのスレッドに集中させるアプローチを勧めます。
+スレッド間の通信や調整に :class:`Queue.Queue`
 オブジェクトを使うと、設計が容易になり、可読性が高まり、信頼性が増します。
 
 .. % While those tools are powerful, minor design errors can result in
@@ -294,8 +296,8 @@ threading.html) で メインのプログラムを動かしながら背後で別
 ログ記録
 ========
 
-:mod:`logging` (XXX reference: ../lib/module-logging.html) モジュールでは、
-数多くの機能をそなえた柔軟性のあるログ記録システムを提供しています。 最も簡単な使い方では、ログメッセージをファイルや ``sys.stderr``
+:mod:`logging` モジュールでは、
+数多くの機能をそなえた柔軟性のあるログ記録システムを提供しています。最も簡単な使い方では、ログメッセージをファイルや ``sys.stderr``
 に送信します:
 
 .. % Logging
@@ -318,8 +320,8 @@ threading.html) で メインのプログラムを動かしながら背後で別
    ERROR:root:Error occurred
    CRITICAL:root:Critical error -- shutting down
 
-デフォルトでは、単なる情報やデバッグメッセージの出力は抑制され、 出力は標準エラーに送信されます。選択可能な送信先には、email、データグラム、 ソケット、
-HTTP サーバへの送信などがあります。新たにフィルタを作成 すると、:const:`DEBUG`, :const:`INFO`,
+デフォルトでは、単なる情報やデバッグメッセージの出力は抑制され、出力は標準エラーに送信されます。選択可能な送信先には、email、データグラム、ソケット、
+HTTP サーバへの送信などがあります。新たにフィルタを作成すると、 :const:`DEBUG`, :const:`INFO`,
 :const:`WARNING`,  :const:`ERROR`, :const:`CRITICAL` といったメッセージのプライオリティに
 従って配送先を変更できます。
 
@@ -330,7 +332,7 @@ HTTP サーバへの送信などがあります。新たにフィルタを作成
 .. % \constant{DEBUG}, \constant{INFO}, \constant{WARNING}, \constant{ERROR},
 .. % and \constant{CRITICAL}.
 
-ログ記録システムは Python から直接設定できますし、アプリケーションを 変更しなくてもカスタマイズできるよう、ユーザが編集できる設定ファイル
+ログ記録システムは Python から直接設定できますし、アプリケーションを変更しなくてもカスタマイズできるよう、ユーザが編集できる設定ファイル
 でも設定できます。
 
 .. % The logging system can be configured directly from Python or can be
@@ -343,16 +345,18 @@ HTTP サーバへの送信などがあります。新たにフィルタを作成
 弱参照
 ======
 
-Python は自動的にメモリを管理します (ほとんどのオブジェクトの参照回数を カウントし、ガベージコレクションによって循環参照を除去します)。
-オブジェクトに対する最後の参照がなくなってしばらくするとメモリは解放 されます。
+Python は自動的にメモリを管理します (ほとんどのオブジェクトは参照カウント方式で管理し、
+ガベージコレクション(:term:`garbage collection`)で循環参照を除去します)。
+オブジェクトに対する最後の参照がなくなってしばらくするとメモリは解放されます。
 
 .. % Weak References
 
-このようなアプローチはほとんどのアプリケーションでうまく動作しますが、 中にはオブジェクトをどこか別の場所で利用するまでの間だけ追跡しておきたい
-場合もあります。残念ながら、オブジェクトを追跡するだけでは、オブジェクトに 対する恒久的な参照を作ることになってしまいます。 :mod:`weakref`
-(XXX reference: ../lib/module-weakref.html) モジュールでは、
-オブジェクトを参照を作らずに追跡するためのツールを提供しています。 弱参照オブジェクトが不要になると、弱参照 (weakref) テーブルから自動的に
-除去され、コールバック関数がトリガされます。弱参照を使う典型的な 応用例には、作成コストの大きいオブジェクトのキャッシュがあります::
+このようなアプローチはほとんどのアプリケーションでうまく動作しますが、
+中にはオブジェクトをどこか別の場所で利用するまでの間だけ追跡しておきたい場合もあります。
+残念ながら、オブジェクトを追跡するだけでオブジェクトに対する恒久的な参照を作ることになってしまいます。
+:mod:`weakref` モジュールでは、オブジェクトへの参照を作らずに追跡するためのツールを提供しています。
+弱参照オブジェクトが不要になると、弱参照 (weakref) テーブルから自動的に除去され、
+コールバック関数がトリガされます。弱参照を使う典型的な応用例には、作成コストの大きいオブジェクトのキャッシュがあります::
 
    >>> import weakref, gc
    >>> class A:
@@ -371,9 +375,9 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
    0
    >>> d['primary']                # entry was automatically removed
    Traceback (most recent call last):
-     File "<pyshell#108>", line 1, in -toplevel-
+     File "<stdin>", line 1, in <module>
        d['primary']                # entry was automatically removed
-     File "C:/PY24/lib/weakref.py", line 46, in __getitem__
+     File "C:/python26/lib/weakref.py", line 46, in __getitem__
        o = self.data[key]()
    KeyError: 'primary'
 
@@ -383,7 +387,7 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 リスト操作のためのツール
 ========================
 
-多くのデータ構造は、組み込みリスト型を使った実装で事足ります。 とはいえ、時には組み込みリストとは違うパフォーマンス上のトレードオフを
+多くのデータ構造は、組み込みリスト型を使った実装で事足ります。とはいえ、時には組み込みリストとは違うパフォーマンス上のトレードオフを
 持つような実装が必要になこともあります。
 
 .. % Tools for Working with Lists
@@ -391,10 +395,11 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 .. % However, sometimes there is a need for alternative implementations
 .. % with different performance trade-offs.
 
-:mod:`array` (XXX reference: ../lib/module-array.html) モジュールでは、
-同じ形式のデータだけをコンパクトに 保存できる、リスト型に似た:class:`array()` オブジェクトを提供しています。 以下の例では、通常要素あたり
-16 バイトを必要とする Python 整数型の リストの代りに、 2 バイトの符号無しの 2 進数 (タイプコード ``"H"``)
-を使っている数値アレイを示します:
+:mod:`array` モジュールでは、
+同じ形式のデータだけをコンパクトに保存できる、リスト型に似た :class:`array()` オブジェクトを提供しています。
+以下の例では、通常要素あたり
+16 バイトを必要とする Python 整数型のリストの代りに、 2 バイトの符号無しの 2 進数 (タイプコード ``"H"``)
+を使っている数値配列を示します:
 
 .. % The \ulink{\module{array}}{../lib/module-array.html} module provides an
 .. % \class{array()} object that is like a list that stores only homogenous
@@ -412,10 +417,10 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
    >>> a[1:3]
    array('H', [10, 700])
 
-:mod:`collections` (XXX reference: ../lib/module-collections.html) モジュールでは、
+:mod:`collections` モジュールでは、
 リスト型に似た :class:`deque()` オブジェクトを提供しています。 :class:`deque()`
-オブジェクトでは、データの追加と左端からの取り出しが高速 な半面、中間にある値の検索が低速になります。こうしたオブジェクトは キューの実装や幅優先
-(breadth first) のツリー探索に向いています:
+オブジェクトでは、データの追加と左端からの取り出しが高速な半面、中間にある値の検索が低速になります。
+こうしたオブジェクトはキューの実装や幅優先(breadth first)のツリー探索に向いています:
 
 .. % The \ulink{\module{collections}}{../lib/module-collections.html} module
 .. % provides a \class{deque()} object that is like a list with faster
@@ -439,8 +444,8 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
                return m
            unsearched.append(m)
 
-リストのもう一つの実装の他に、このライブラリではソート済みのリストを 操作するための関数を備えた:mod:`bisect` (XXX reference:
-../lib/module-bisect.html) のようなツールも提供しています:
+リストの代わりの実装以外にも、標準ライブラリにはソート済みのリストを操作するための関数を備えた :mod:`bisect`
+のようなツールも提供しています:
 
 .. % In addition to alternative list implementations, the library also offers
 .. % other tools such as the \ulink{\module{bisect}}{../lib/module-bisect.html}
@@ -454,9 +459,9 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
    >>> scores
    [(100, 'perl'), (200, 'tcl'), (300, 'ruby'), (400, 'lua'), (500, 'python')]
 
-:mod:`heapq` (XXX reference: ../lib/module-heapq.html) モジュールでは、
-通常のリストでヒープを実装するための関数を提供しています。 ヒープでは、最も低い値をもつエントリがつねにゼロの位置に配置
-されます。ヒープは、毎回リストをソートすることなく、最小の値をもつ 要素に繰り返しアクセスするようなアプリケーションで便利です:
+:mod:`heapq` モジュールでは、
+通常のリストでヒープを実装するための関数を提供しています。ヒープでは、最も低い値をもつエントリがつねにゼロの位置に配置
+されます。ヒープは、毎回リストをソートすることなく、最小の値をもつ要素に繰り返しアクセスするようなアプリケーションで便利です:
 
 .. % The \ulink{\module{heapq}}{../lib/module-heapq.html} module provides
 .. % functions for implementing heaps based on regular lists.  The lowest
@@ -479,10 +484,10 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 10 進浮動小数演算
 =================
 
-:mod:`decimal` (XXX reference: ../lib/module-decimal.html) では、 10 進浮動小数の
-算術演算をサポートする :class:`Decimal` データ型を提供しています。 組み込みの 2 進浮動小数の実装である :class:`float`
-に比べて、この新たな クラスがとりわけ便利なのは、厳密な 10 進表記や計算精度の制御、法的または
-規制上の理由に基づく値丸めの制御、有効桁数の追跡が必要になる金融計算など のアプリケーションや、ユーザが手計算の結果と同じ演算結果を期待するような
+:mod:`decimal` では、 10 進浮動小数の
+算術演算をサポートする :class:`Decimal` データ型を提供しています。組み込みの 2 進浮動小数の実装である :class:`float`
+に比べて、この新たなクラスがとりわけ便利なのは、厳密な 10 進表記や計算精度の制御、法的または
+規制上の理由に基づく値丸めの制御、有効桁数の追跡が必要になる金融計算などのアプリケーションや、ユーザが手計算の結果と同じ演算結果を期待するような
 アプリケーションの場合です。
 
 .. % Decimal Floating Point Arithmetic
@@ -496,7 +501,7 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 .. % match calculations done by hand.
 
 例えば、 70 セントの電話代にかかる 5% の税金を計算しようとすると、 10 進の浮動小数点値と 2 進の浮動小数点値では違う結果になってしまいます。
-例えば以下のような例では、計算結果を四捨五入してセント単位にしようと すると違いがはっきり現れます:
+例えば以下のような例では、計算結果を四捨五入してセント単位にしようとすると違いがはっきり現れます:
 
 .. % For example, calculating a 5\%{} tax on a 70 cent phone charge gives
 .. % different results in decimal floating point and binary floating point.
@@ -505,14 +510,14 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 
 ::
 
-   >>> from decimal import *       
+   >>> from decimal import *
    >>> Decimal('0.70') * Decimal('1.05')
    Decimal("0.7350")
    >>> .70 * 1.05
-   0.73499999999999999       
+   0.73499999999999999
 
-:class:`Decimal` を使った計算では、末尾桁のゼロが保存されており、有効数字2桁の 被乗数から自動的に有効数字を  4
-桁と判断しています。:class:`Decimal` は 手計算と同じ方法で計算を行い、 2 進浮動小数点が 10 進小数成分を正確に
+:class:`Decimal` を使った計算では、末尾桁のゼロが保存されており、有効数字2桁の被乗数から自動的に有効数字を  4
+桁と判断しています。 :class:`Decimal` は手計算と同じ方法で計算を行い、 2 進浮動小数点が 10 進小数成分を正確に
 表現できないことによって起きる問題を回避しています。
 
 .. % The \class{Decimal} result keeps a trailing zero, automatically inferring four
@@ -520,7 +525,7 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
 .. % mathematics as done by hand and avoids issues that can arise when binary
 .. % floating point cannot exactly represent decimal quantities.
 
-:class:`Decimal` クラスは厳密な値を表現できるため、2 進浮動小数点数 では期待通りに計算できないようなモジュロの計算や等値テストも実現
+:class:`Decimal` クラスは厳密な値を表現できるため、2 進浮動小数点数では期待通りに計算できないようなモジュロの計算や等値テストも実現
 できます:
 
 .. % Exact representation enables the \class{Decimal} class to perform
@@ -537,7 +542,7 @@ Python は自動的にメモリを管理します (ほとんどのオブジェ�
    >>> sum([Decimal('0.1')]*10) == Decimal('1.0')
    True
    >>> sum([0.1]*10) == 1.0
-   False      
+   False
 
 :mod:`decimal` モジュールを使うと、必要なだけの精度で算術演算を行えます:
 
