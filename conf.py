@@ -91,7 +91,7 @@ exclude_dirnames = ['diff', 'orig', 'tools']
 # Options for HTML output
 # -----------------------
 
-html_theme = 'nature'
+html_theme = 'sphinxdoc'
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
