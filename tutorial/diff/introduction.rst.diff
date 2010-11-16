@@ -23,10 +23,10 @@
  Many of the examples in this manual, even those entered at the interactive
  prompt, include comments.  Comments in Python start with the hash character,
 -``'#'``, and extend to the end of the physical line.  A comment may appear at
--the start of a line or following whitespace or code, but not within a string
--literal.  A hash  character within a string literal is just a hash character.
 +``#``, and extend to the end of the physical line.  A comment may appear at the
+-the start of a line or following whitespace or code, but not within a string
 +start of a line or following whitespace or code, but not within a string
+-literal.  A hash  character within a string literal is just a hash character.
 +literal.  A hash character within a string literal is just a hash character.
 +Since comments are to clarify code and are not interpreted by Python, they may
 +be omitted when typing in examples.
@@ -224,27 +224,27 @@
 -   `Sequence Types <../lib/typesseq.html>`_
 -      Strings, and the Unicode strings described in the next section, are examples of
 -      *sequence types*, and support the common operations supported by such types.
--
--   `String Methods <../lib/string-methods.html>`_
--      Both strings and Unicode strings support a large number of methods for basic
--      transformations and searching.
--
--   `String Formatting Operations <../lib/typesseq-strings.html>`_
--      The formatting operations invoked when strings and Unicode strings are the left
--      operand of the ``%`` operator are described in more detail here.
 +   :ref:`typesseq`
 +      Strings, and the Unicode strings described in the next section, are
 +      examples of *sequence types*, and support the common operations supported
 +      by such types.
-+
+-
+-   `String Methods <../lib/string-methods.html>`_
+-      Both strings and Unicode strings support a large number of methods for basic
+-      transformations and searching.
 +   :ref:`string-methods`
 +      Both strings and Unicode strings support a large number of methods for
 +      basic transformations and searching.
+-
++
 +
 +   :ref:`new-string-formatting`
 +      Information about string formatting with :meth:`str.format` is described
 +      here.
 +
+-   `String Formatting Operations <../lib/typesseq-strings.html>`_
+-      The formatting operations invoked when strings and Unicode strings are the left
+-      operand of the ``%`` operator are described in more detail here.
 +   :ref:`string-formatting`
 +      The old formatting operations invoked when strings and Unicode strings are
 +      the left operand of the ``%`` operator are described in more detail here.
@@ -290,10 +290,10 @@
  
  For experts, there is also a raw mode just like the one for normal strings. You
 -have to prefix the opening quote with 'ur' to have Python use the *Raw-Unicode-
--Escape* encoding. It will only apply the above ``\uXXXX`` conversion if there is
--an uneven number of backslashes in front of the small 'u'. ::
 +have to prefix the opening quote with 'ur' to have Python use the
+-Escape* encoding. It will only apply the above ``\uXXXX`` conversion if there is
 +*Raw-Unicode-Escape* encoding. It will only apply the above ``\uXXXX``
+-an uneven number of backslashes in front of the small 'u'. ::
 +conversion if there is an uneven number of backslashes in front of the small
 +'u'. ::
  
