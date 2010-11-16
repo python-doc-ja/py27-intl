@@ -5,10 +5,10 @@
 **************************
 
 あるバージョンの Python インタプリタでは、Korn シェルや GNU Bash シェルに見られる機能に似た、現在の入力行に対する編集機能や
-ヒストリ置換機能をサポートしています。 この機能は *GNU Readline* ライブラリを使って実装されています。 このライブラリは Emacs スタイルと
-vi スタイルの編集をサポート しています。ライブラリには独自のドキュメントがあり、ここでそれを 繰り返すつもりはありません;
-とはいえ、基本について簡単に解説する ことにします。ここで述べる対話的な編集とヒストリについては、 Unix 版と Cygwin
-版のインタプリタでオプションとして利用 することができます。
+ヒストリ置換機能をサポートしています。この機能は *GNU Readline* ライブラリを使って実装されています。このライブラリは Emacs スタイルと
+vi スタイルの編集をサポートしています。ライブラリには独自のドキュメントがあり、ここでそれを繰り返すつもりはありません;
+とはいえ、基本について簡単に解説することにします。ここで述べる対話的な編集とヒストリについては、 Unix 版と Cygwin
+版のインタプリタでオプションとして利用することができます。
 
 .. % Interactive Input Editing and History Substitution
 .. % % Some versions of the Python interpreter support editing of the current
@@ -21,7 +21,7 @@ vi スタイルの編集をサポート しています。ライブラリには�
 .. % % available in the \UNIX{} and Cygwin versions of the interpreter.
 
 この章では、Mark Hammond の PythonWin パッケージや、 Python とともに配布される Tk ベースの環境である IDLE にある
-編集機能については解説*しません*。 NT 上の DOS ボックスやその他の DOS および Windows 類で働く
+編集機能については解説 *しません* 。 NT 上の DOS ボックスやその他の DOS および Windows 類で働く
 コマンド行ヒストリ呼出しもまた別のものです。
 
 .. % % This chapter does \emph{not} document the editing facilities of Mark
@@ -36,12 +36,12 @@ vi スタイルの編集をサポート しています。ライブラリには�
 行編集
 ======
 
-入力行の編集がサポートされている場合、インタプリタが一次または二次 プロンプトを出力している際にはいつでも有効になっています。現在の行は、 慣例的な Emacs
-制御文字を使って編集することができます。 そのうち最も重要なものとして、以下のようなキーがあります: :kbd:`C-A` (Control-A)
+入力行の編集がサポートされている場合、インタプリタが一次または二次プロンプトを出力している際にはいつでも有効になっています。現在の行は、慣例的な Emacs
+制御文字を使って編集することができます。そのうち最も重要なものとして、以下のようなキーがあります: :kbd:`C-A` (Control-A)
 はカーソルを行の先頭へ移動させます。 :kbd:`C-E` は末尾へ移動させます。 :kbd:`C-B` は逆方向へ一つ移動させます。 :kbd:`C-F`
 は順方向へ移動させます。 Backspace は逆方向に向かって文字を消します。 :kbd:`C-D` は順方向に向かって消します。 :kbd:`C-K`
-は順方向に向かって行の残りを kill し (消し) ます 、 :kbd:`C-Y` は最後に kill された文字列を再び yank し (取り出し) ます。
-:kbd:`C-underscore` 最後の変更を元に戻します; これは、繰り返して どんどんさかのぼることができます。
+は順方向に向かって行の残りを kill し (消し) ます、 :kbd:`C-Y` は最後に kill された文字列を再び yank し (取り出し) ます。
+:kbd:`C-underscore` 最後の変更を元に戻します; これは、繰り返してどんどんさかのぼることができます。
 
 .. % Line Editing
 .. % % If supported, input line editing is active whenever the interpreter
@@ -62,9 +62,9 @@ vi スタイルの編集をサポート しています。ライブラリには�
 ヒストリ置換
 ============
 
-ヒストリ置換は次のように働きます。入力された行のうち、空行でない 実行された行はすべてヒストリバッファに保存されます。そして、プロンプト
-が呈示されるときには、ヒストリバッファの最も下の新たな行に移動 します。:kbd:`C-P` はヒストリバッファの中を一行だけ上に移動し (戻し)
-ます。:kbd:`C-N` は 1 行だけ下に移動します。ヒストリバッファの どの行も編集することができます。行が編集されると、それを示すために
+ヒストリ置換は次のように働きます。入力された行のうち、空行でない実行された行はすべてヒストリバッファに保存されます。そして、プロンプト
+が呈示されるときには、ヒストリバッファの最も下の新たな行に移動します。 :kbd:`C-P` はヒストリバッファの中を一行だけ上に移動し (戻し)
+ます。 :kbd:`C-N` は 1 行だけ下に移動します。ヒストリバッファのどの行も編集することができます。行が編集されると、それを示すために
 プロンプトの前にアスタリスクが表示されます  [#]_。 :kbd:`Return` キーを押すと現在行がインタプリタへ渡されます。 :kbd:`C-R`
 はインクリメンタルな逆方向サーチ (reverse search) を開始し、 :kbd:`C-S` は順方向サーチ (forward search)
 を開始します。
@@ -86,8 +86,8 @@ vi スタイルの編集をサポート しています。ライブラリには�
 キー割り当て
 ============
 
-Readline ライブラリのキー割り当て (key binding) やその他のパラメタ は、:file:`~/.inputrc` という初期化ファイル
-[#]_にコマンドを置くことでカスタマイズできます。 キー割り当ての形式は
+Readline ライブラリのキー割り当て (key binding) やその他のパラメタは、 :file:`~/.inputrc` という初期化ファイル
+[#]_にコマンドを置くことでカスタマイズできます。キー割り当ての形式は
 
 .. % Key Bindings
 .. % % The key bindings and some other parameters of the Readline library can
@@ -131,8 +131,8 @@ Readline ライブラリのキー割り当て (key binding) やその他のパ�
    "\C-u": universal-argument
    "\C-x\C-r": re-read-init-file
 
-Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の挿入です。 Readline
-のデフォルトであるファイル名補完関数ではないので注意して ください。 もし、どうしても Readline のデフォルトを割り当てたいのなら、
+Python では、 :kbd:`Tab` に対するデフォルトの割り当ては TAB の挿入です。 Readline
+のデフォルトであるファイル名補完関数ではないので注意してください。もし、どうしても Readline のデフォルトを割り当てたいのなら、
 :file:`~/.inputrc` に
 
 .. % % Note that the default binding for \kbd{Tab} in Python is to insert a
@@ -143,7 +143,7 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
 
    Tab: complete
 
-を入れれば設定を上書きすることができます。 (もちろん、:kbd:`Tab`  を使って補完を行うのに慣れている場合、この設定を行うと
+を入れれば設定を上書きすることができます。 (もちろん、 :kbd:`Tab`  を使って補完を行うのに慣れている場合、この設定を行うと
 インデントされた継続行を入力しにくくなります。)
 
 .. % % in your \file{\~{}/.inputrc}.  (Of course, this makes it harder to
@@ -154,7 +154,7 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
    module: rlcompleter
    module: readline
 
-変数名とモジュール名の自動的な補完がオプションとして利用できます。 補完をインタプリタの対話モードで有効にするには、
+変数名とモジュール名の自動的な補完がオプションとして利用できます。補完をインタプリタの対話モードで有効にするには、
 以下の設定をスタートアップファイルに追加します:  [#]_
 
 .. % % Automatic completion of variable and module names is optionally
@@ -170,10 +170,10 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
    import rlcompleter, readline
    readline.parse_and_bind('tab: complete')
 
-この設定は、:kbd:`Tab` キーを補完関数に束縛します。従って、 :kbd:`Tab` キーを二回たたくと補完候補が示されます; 補完機能は Python
-の文の名前、現在のローカル変数、および利用可能なモジュール名を 検索します。``string.a`` のようなドットで区切られた式については、 最後の
-``'.'`` までの式を評価し、結果として得られたオブジェクトの 属性から補完候補を示します。 :meth:`__getattr__`
-メソッドを持ったオブジェクトが式に含まれている 場合、:meth:`__getattr__` がアプリケーション定義のコードを実行する
+この設定は、 :kbd:`Tab` キーを補完関数に束縛します。従って、 :kbd:`Tab` キーを二回たたくと補完候補が示されます; 補完機能は Python
+の文の名前、現在のローカル変数、および利用可能なモジュール名を検索します。 ``string.a`` のようなドットで区切られた式については、最後の
+``'.'`` までの式を評価し、結果として得られたオブジェクトの属性から補完候補を示します。 :meth:`__getattr__`
+メソッドを持ったオブジェクトが式に含まれている場合、 :meth:`__getattr__` がアプリケーション定義のコードを実行する
 かもしれないので注意してください。
 
 .. % % This binds the \kbd{Tab} key to the completion function, so hitting
@@ -185,10 +185,12 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
 .. % % that this may execute application-defined code if an object with a
 .. % % \method{__getattr__()} method is part of the expression.
 
-より良くできたスタートアップファイルは以下例のようになります。 この例では、作成した名前が不要になると削除されるので気をつけてください;
-これは、スタートアップファイルが対話コマンドと同じ名前空間で実行され ているので、不要な名前を除去して対話環境に副作用を生まないように
-するためです。import されたモジュールのうち、:mod:`os` のような インタプリタのほとんどのセッションで必要なものについては、残しておくと
-便利に思うかもしれません。
+より良くできたスタートアップファイルは以下例のようになります。
+この例では、作成した名前が不要になると削除されるのに注目してください。
+これは、スタートアップファイルが対話コマンドと同じ名前空間で実行されているので、
+不要な名前を除去して対話環境に副作用を生まないようにするためです。
+import されたモジュールのうち、 :mod:`os` のようなインタプリタのほとんどのセッションで
+必要なものについては、残しておくと便利に思うかもしれません。
 
 .. % % A more capable startup file might look like this example.  Note that
 .. % % this deletes the names it creates once they are no longer needed; this
@@ -205,7 +207,7 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
    # bound to the Esc key by default (you can change it - see readline docs).
    #
    # Store the file in ~/.pystartup, and set an environment variable to point
-   # to it, e.g. "export PYTHONSTARTUP=/max/home/itamar/.pystartup" in bash.
+   # to it, e.g. "export PYTHONSTARTUP=/home/user/.pystartup" in bash.
    #
    # Note that PYTHONSTARTUP does *not* expand "~", so you have to put in the
    # full path to your home directory.
@@ -234,8 +236,8 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
 ====
 
 この機能は、初期の版のインタプリタに比べれば大きな進歩です; とはいえ、まだいくつかの要望が残されています: 例えば、
-行を継続するときに正しいインデントが呈示されたら快適でしょう (パーサは 次の行でインデントトークンが必要かどうかを知っています)。
-補完機構がインタプリタのシンボルテーブルを使ってもよいかもしれません。 かっこやクォートなどの対応をチェックする (あるいは指示する) コマンドも
+行を継続するときに正しいインデントが呈示されたら快適でしょう (パーサは次の行でインデントトークンが必要かどうかを知っています)。
+補完機構がインタプリタのシンボルテーブルを使ってもよいかもしれません。かっこやクォートなどの対応をチェックする (あるいは指示する) コマンドも
 有用でしょう。
 
 .. % Commentary
@@ -251,9 +253,9 @@ Python では、:kbd:`Tab` に対するデフォルトの割り当ては TAB の
 .. rubric:: Footnotes
 
 .. [#] 訳注: これはデフォルト設定の Readline では現れません。 ``set mark-modified-lines on`` という行を
-   :file:`~/.inputrc` または 環境変数 :envvar:`INPUTRC` が指定するファイルに置くことによって 現れるようになります。
+   :file:`~/.inputrc` または環境変数 :envvar:`INPUTRC` が指定するファイルに置くことによって現れるようになります。
 
-.. [#] 訳注: このファイル名は 環境変数 :envvar:`INPUTRC` がもしあればその指定が優先されます。
+.. [#] 訳注: このファイル名は環境変数 :envvar:`INPUTRC` がもしあればその指定が優先されます。
 
 .. [#] Python は、対話インタプリタを開始する時に :envvar:`PYTHONSTARTUP`  環境変数が指定するファイルの内容を実行します。
 
