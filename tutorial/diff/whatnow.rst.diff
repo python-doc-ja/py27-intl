@@ -65,29 +65,29 @@
  
  For Python-related questions and problem reports, you can post to the newsgroup
 -:newsgroup:`comp.lang.python`, or send them to the mailing list at python-
--list@python.org.  The newsgroup and mailing list are gatewayed, so messages
--posted to one will automatically be forwarded to the other.  There are around
--120 postings a day (with peaks up to several hundred), asking (and answering)
--questions, suggesting new features, and announcing new modules.  Before posting,
--be sure to check the list of `Frequently Asked Questions
 +:newsgroup:`comp.lang.python`, or send them to the mailing list at
+-list@python.org.  The newsgroup and mailing list are gatewayed, so messages
 +python-list@python.org.  The newsgroup and mailing list are gatewayed, so
+-posted to one will automatically be forwarded to the other.  There are around
 +messages posted to one will automatically be forwarded to the other.  There are
+-120 postings a day (with peaks up to several hundred), asking (and answering)
 +around 120 postings a day (with peaks up to several hundred), asking (and
+-questions, suggesting new features, and announcing new modules.  Before posting,
 +answering) questions, suggesting new features, and announcing new modules.
+-be sure to check the list of `Frequently Asked Questions
 +Before posting, be sure to check the list of `Frequently Asked Questions
  <http://www.python.org/doc/faq/>`_ (also called the FAQ), or look for it in the
  :file:`Misc/` directory of the Python source distribution.  Mailing list
 -archives are available at `<http://mail.python.org/pipermail/>`_. The FAQ
++archives are available at http://mail.python.org/pipermail/. The FAQ answers
 -answers many of the questions that come up again and again, and may already
++many of the questions that come up again and again, and may already contain the
 -contain the solution for your problem.
++solution for your problem.
 -
 -.. % Postings figure based on average of last six months activity as
 -.. % reported by www.egroups.com; Jan. 2000 - June 2000: 21272 msgs / 182
 -.. % days = 116.9 msgs / day and steadily increasing.
-+archives are available at http://mail.python.org/pipermail/. The FAQ answers
-+many of the questions that come up again and again, and may already contain the
-+solution for your problem.
 +
 +.. Postings figure based on average of last six months activity as
 +   reported by www.egroups.com; Jan. 2000 - June 2000: 21272 msgs / 182
