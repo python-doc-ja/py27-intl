@@ -93,3 +93,4 @@ Pythonの個別の機能や、よく使われる機能でさえ完全にカバ�
    whatnow.rst
    interactive.rst
    floatingpoint.rst
+   jptranslation.rst
