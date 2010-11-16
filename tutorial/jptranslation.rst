@@ -14,7 +14,7 @@
 
 
 翻訳者一覧 (敬称略)
-===================
+-------------------
 
 1.3 和訳: SUZUKI Hisao <suzuki at acm.org> (August 27, 1995) ---  1.4 和訳: SUZUKI
 Hisao <suzuki at acm.org> (April 20, 1997) ---  1.5.1 和訳: SUZUKI Hisao <suzuki

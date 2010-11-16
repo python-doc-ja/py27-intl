@@ -14,7 +14,7 @@
 
 
 翻訳者一覧 (敬称略)
-===================
+-------------------
 
 Akihiro Takizawa,  Aoki Nobuaki,  Atsuo Ishimoto,  G.Yoshida,  Hiroyuki
 Yoshimura,  Minami Masanori,  Shinsei Nakano,  Sumiya Sakoda,  YASOZUMI Daisuke,
@@ -24,13 +24,13 @@ sakito,  umi-at-venus.dti.ne.jp,  ふるかわとおる,  浦郷圭介,  梶山�
 
 
 2.4 差分翻訳者一覧 (敬称略)
-===========================
+---------------------------
 
 Akihiro Takizawa,  G.Yoshida,  Yasushi MASUDA,  新山祐介,  森若和雄
 
 
 2.5 差分翻訳者一覧 (敬称略)
-===========================
+---------------------------
 
 Kazuo Moriwaka, TAKAGI Masahiro, MATSUI Tetsushi, Minami Masanori, Hiroshi
 Okagawa, hkurosawa, Naoki INADA, Keisuke Urago, Shinya Okano, Toshiyuki
