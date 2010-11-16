@@ -397,15 +397,15 @@
  
 -:mod:`pickle` (XXX reference: ../lib/module-pickle.html) is the standard way to
 -make Python objects which can be stored and reused by other programs or by a
++:mod:`pickle` is the standard way to make Python objects which can be stored and
 -future invocation of the same program; the technical term for this is a
++reused by other programs or by a future invocation of the same program; the
++technical term for this is a :dfn:`persistent` object.  Because :mod:`pickle` is
 -:dfn:`persistent` object.  Because :mod:`pickle` (XXX reference: ../lib/module-
++so widely used, many authors who write Python extensions take care to ensure
 -pickle.html) is so widely used, many authors who write Python extensions take
 -care to ensure that new data types such as matrices can be properly pickled and
 -unpickled.
-+:mod:`pickle` is the standard way to make Python objects which can be stored and
-+reused by other programs or by a future invocation of the same program; the
-+technical term for this is a :dfn:`persistent` object.  Because :mod:`pickle` is
-+so widely used, many authors who write Python extensions take care to ensure
 +that new data types such as matrices can be properly pickled and unpickled.
  
  
