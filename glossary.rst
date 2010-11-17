@@ -57,22 +57,31 @@
 
    argument
       (引数)
-      A value passed to a function or method, assigned to a named local
-      variable in the function body.  A function or method may have both
-      positional arguments and keyword arguments in its definition.
-      Positional and keyword arguments may be variable-length: ``*`` accepts
-      or passes (if in the function definition or call) several positional
-      arguments in a list, while ``**`` does the same for keyword arguments
-      in a dictionary.
+      関数やメソッドに渡された値。関数の中では、名前の付いたローカル変数に代入されます。
 
-      Any expression may be used within the argument list, and the evaluated
-      value is passed to the local variable.
+      関数やメソッドは、その定義中に位置指定引数(positional arguments, 訳注: ``f(1, 2)``
+      のように呼び出し側で名前を指定せず、引数の位置に引数の値を対応付けるもの)
+      とキーワード引数(keyword arguments, 訳注: ``f(a=1, b=2)`` のように、引数名に
+      引数の値を対応付けるもの)の両方を持つことができます。
+      位置指定引数とキーワード引数は可変長です。
+      関数定義や呼び出しは、 ``*`` を使って、不定数個の位置指定引数をシーケンス型に入れて
+      受け取ったり渡したりすることができます。
+      同じく、キーワード引数は ``**`` を使って、辞書に入れて受け取ったり渡したりできます。
+
+      引数リスト内では任意の式を使うことができ、その式を評価した値が渡されます。
+
+      .. todo::
+         キーワード引数？名前付き引数？
+         順序付き引数？順序引数？位置指定引数？
 
    attribute
       (属性)
       A value associated with an object which is referenced by name using
       dotted expressions.  For example, if an object *o* has an attribute
       *a* it would be referenced as *o.a*.
+      オブジェクトに関連付けられ、ドット演算子を利用して名前で参照される値。
+      例えば、オブジェクト *o` が属性 *a* を持っているとき、その属性は
+      *o.a* で参照されます。
 
    BDFL
       慈悲ぶかき独裁者 (Benevolent Dictator For Life) の略です。
@@ -101,9 +110,8 @@
 
    class
       (クラス)
-      A template for creating user-defined objects. Class definitions
-      normally contain method definitions which operate on instances of the
-      class.
+      ユーザー定義オブジェクトを作成するためのテンプレート。
+      クラス定義は普通、そのクラスのインスタンス上の操作をするメソッドの定義を含みます。
 
    classic class
       (旧スタイルクラス)
@@ -284,29 +292,28 @@
 
    expression
       (式)
-      A piece of syntax which can be evaluated to some value.  In other words,
-      an expression is an accumulation of expression elements like literals, names,
-      attribute access, operators or function calls which all return a value.
-      In contrast to many other languages, not all language constructs are expressions.
-      There are also :term:`statement`\s which cannot be used as expressions,
-      such as :keyword:`print` or :keyword:`if`.  Assignments are also statements,
-      not expressions.
+      何かの値に評価される、一つづきの構文(a piece of syntax).
+      言い換えると、リテラル、名前、属性アクセス、演算子や関数呼び出しといった、
+      値を返す式の要素の組み合わせ。
+      他の多くの言語と違い、Pythonは言語の全ての構成要素が式というわけではありません。
+      :keyword:`print` や :keyword:`if` のように、式にはならない、文(:term:`statement`)
+      もあります。代入も式ではなく文です。
 
    extension module
       (拡張モジュール)
-      A module written in C or C++, using Python's C API to interact with the core and
-      with user code.
+      CやC++で書かれたモジュール。ユーザーコードやPythonのコアとやりとりするために、
+      PythonのC APIを利用します。
 
    finder
-      An object that tries to find the :term:`loader` for a module. It must
-      implement a method named :meth:`find_module`. See :pep:`302` for
-      details.
+      モジュールの :term:`loader` を探すオブジェクト。
+      :meth:`find_module` という名前のメソッドを実装していなければなりません。
+      詳細については :pep:`302` を参照してください。
 
    function
       (関数)
-      A series of statements which returns some value to a caller. It can also
-      be passed zero or more arguments which may be used in the execution of
-      the body. See also :term:`argument` and :term:`method`.
+      呼び出し側に値を返す、一連の文。
+      ゼロ個以上の引数を受け取り、それを関数の本体を実行するときに諒できます。
+      :term:`argument` や :term:`method` も参照してください。
 
    __future__
       互換性のない新たな機能を現在のインタプリタで有効にするためにプログラマが
@@ -325,9 +332,10 @@
          _Feature((2, 2, 0, 'alpha', 2), (3, 0, 0, 'alpha', 0), 8192)
 
    garbage collection
-      The process of freeing memory when it is not used anymore.  Python
-      performs garbage collection via reference counting and a cyclic garbage
-      collector that is able to detect and break reference cycles.
+      (ガベージコレクション)
+      もう使われなくなったメモリを開放する処理。
+      Pythonは、Pythonは参照カウントと循環参照を見つけて破壊する循環参照コレクタ
+      を使ってガベージコレクションを行います。
 
       .. index:: single: generator
 
@@ -396,18 +404,19 @@
 
    hashable
       (ハッシュ可能)
-      An object is *hashable* if it has a hash value which never changes during
-      its lifetime (it needs a :meth:`__hash__` method), and can be compared to
-      other objects (it needs an :meth:`__eq__` or :meth:`__cmp__` method).
-      Hashable objects which compare equal must have the same hash value.
+      *ハッシュ可能* なオブジェクトとは、生存期間中変わらないハッシュ値を持ち
+      (:meth:`__hash__` メソッドが必要)、他のオブジェクトと比較ができる
+      (:meth:`__eq__` か :meth:`__cmp__` メソッドが必要) オブジェクトです。
+      同値なハッシュ可能オブジェクトは必ず同じハッシュ値を持つ必要があります。
 
-      Hashability makes an object usable as a dictionary key and a set member,
-      because these data structures use the hash value internally.
+      辞書のキーや集合型のメンバーは、内部でハッシュ値を使っているので、
+      ハッシュ可能オブジェクトである必要があります。
 
-      All of Python's immutable built-in objects are hashable, while no mutable
-      containers (such as lists or dictionaries) are.  Objects which are
-      instances of user-defined classes are hashable by default; they all
-      compare unequal, and their hash value is their :func:`id`.
+      Python の全ての不変(:term:`immutable`)なビルドインオブジェクトはハッシュ可能です。
+      リストや辞書といった変更可能なコンテナ型はハッシュ可能ではありません。
+
+      ユーザー定義クラスのインスタンスはデフォルトでハッシュ可能です。
+      それらは、比較すると常に不等で、ハッシュ値は :func:`id` になります。
 
    IDLE
       Python の組み込み開発環境 (Integrated DeveLopment Environment) です。
@@ -460,8 +469,8 @@
          instead of the ``/`` operator.  See also :term:`__future__`.
 
    importer
-      An object that both finds and loads a module; both a
-      :term:`finder` and :term:`loader` object.
+      モジュールを探してロードするオブジェクト。 :term:`finder` と :term:`loader`
+      のどちらでもあるオブジェクト。
 
    interactive
       (対話的)
@@ -548,15 +557,18 @@
          More information can be found in :ref:`typeiter`.
 
    keyword argument
-      Arguments which are preceded with a ``variable_name=`` in the call.
-      The variable name designates the local name in the function to which the
-      value is assigned.  ``**`` is used to accept or pass a dictionary of
-      keyword arguments.  See :term:`argument`.
+      (キーワード引数)
+      呼び出し時に、 ``variable_name=`` が手前にある引数。
+      変数名は、その値が関数内のどのローカル変数に渡されるかを指定します。
+      キーワード引数として辞書を受け取ったり渡したりするために ``**``
+      を使うことができます。 :term:`argument` も参照してください。
 
    lambda
-      An anonymous inline function consisting of a single :term:`expression`
-      which is evaluated when the function is called.  The syntax to create
-      a lambda function is ``lambda [arguments]: expression``
+      (ラムダ)
+      無名のインライン関数で、関数が呼び出されたときに評価される1つの式
+      (:term:`expression`) を持ちます。
+      ラムダ関数を作る構文は、 ``lambda [arguments]: expression`` です。
+
 
    LBYL
       「ころばぬ先の杖」 (look before you leap) の略です。
@@ -570,9 +582,10 @@
          :keyword:`if` statements.
 
    list
-      A built-in Python :term:`sequence`.  Despite its name it is more akin
-      to an array in other languages than to a linked list since access to
-      elements are O(1).
+      (リスト)
+      Python のビルトインのシーケンス型(:term:`sequence`)です。
+      リストという名前ですが、リンクリストではなく、他の言語で言う配列(array)と
+      同種のもので、要素へのアクセスは O(1) です。
 
    list comprehension
       (リスト内包表記)
@@ -591,9 +604,9 @@
          processed.
 
    loader
-      An object that loads a module. It must define a method named
-      :meth:`load_module`. A loader is typically returned by a
-      :term:`finder`. See :pep:`302` for details.
+      モジュールをロードするオブジェクト。
+      :meth:`load_module` という名前のメソッドを定義していなければなりません。
+      詳細は :pep:`302` を参照してください。
 
    mapping
       (マップ)
@@ -628,10 +641,11 @@
          More information can be found in :ref:`metaclasses`.
 
    method
-      A function which is defined inside a class body.  If called as an attribute
-      of an instance of that class, the method will get the instance object as
-      its first :term:`argument` (which is usually called ``self``).
-      See :term:`function` and :term:`nested scope`.
+      クラス内で定義された関数。
+      クラス属性として呼び出された場合、メソッドはインスタンスオブジェクトを
+      第一引数(:term:`argument`) として受け取ります(この第一引数は普段
+      ``self`` と呼ばれます)。
+      :term:`function` と :term:`nested scope` も参照してください。
 
    mutable
       (変更可能オブジェクト)
@@ -642,17 +656,19 @@
          also :term:`immutable`.
 
    named tuple
-      Any tuple-like class whose indexable elements are also accessible using
-      named attributes (for example, :func:`time.localtime` returns a
-      tuple-like object where the *year* is accessible either with an
-      index such as ``t[0]`` or with a named attribute like ``t.tm_year``).
+      (名前付きタプル)
+      タプルに似ていて、インデックスによりアクセスする要素に名前付き属性としても
+      アクセス出来るクラス。
+      (例えば、 :func:`time.localtime` はタプルに似たオブジェクトを返し、
+      その *year* には ``t[0]`` のようなインデックスによるアクセスと、
+      ``t.tm_year`` のような名前付き要素としてのアクセスが可能です。)
 
-      A named tuple can be a built-in type such as :class:`time.struct_time`,
-      or it can be created with a regular class definition.  A full featured
-      named tuple can also be created with the factory function
-      :func:`collections.namedtuple`.  The latter approach automatically
-      provides extra features such as a self-documenting representation like
-      ``Employee(name='jones', title='programmer')``.
+      名前付きタプルには、 :class:`time.struct_time` のようなビルトイン型もありますし、
+      通常のクラス定義によって作成することもできます。
+      名前付きタプルを :func:`collections.namedtuple` ファクトリ関数で作成することもできます。
+      最後の方法で作った名前付きタプルには自動的に、
+      ``Employee(name='jones', title='programmer')`` のような自己ドキュメント表現(self-documenting
+      representation) 機能が付いてきます。
 
    namespace
       (名前空間)
@@ -711,16 +727,17 @@
          More information can be found in :ref:`newstyle`.
 
    object
-      Any data with state (attributes or value) and defined behavior
-      (methods).  Also the ultimate base class of any :term:`new-style
-      class`.
+      状態(属性や値)と定義された振る舞い(メソッド)をもつ全てのデータ。
+      もしくは、全ての新スタイルクラス(:term:`new-style class`)
+      の基底クラスのこと。
 
    positional argument
-      The arguments assigned to local names inside a function or method,
-      determined by the order in which they were given in the call.  ``*`` is
-      used to either accept multiple positional arguments (when in the
-      definition), or pass several arguments as a list to a function.  See
-      :term:`argument`.
+      (位置指定引数)
+      引数のうち、呼び出すときの順序で、関数やメソッドの中のどの名前に
+      代入されるかが決定されるもの。
+      複数の位置指定引数を、関数定義側が受け取ったり、渡したりするために、
+      ``*`` を使うことができます。
+      :term:`argument` も参照してください。
 
    Python 3000
       Pythonの次のメジャーバージョンである Python 3.0 のニックネームです。
@@ -732,28 +749,28 @@
          is also abbreviated "Py3k".
 
    Pythonic
-      An idea or piece of code which closely follows the most common idioms
-      of the Python language, rather than implementing code using concepts
-      common to other languages.  For example, a common idiom in Python is
-      to loop over all elements of an iterable using a :keyword:`for`
-      statement.  Many other languages don't have this type of construct, so
-      people unfamiliar with Python sometimes use a numerical counter instead::
+      他の言語で一般的な考え方で書かれたコードではなく、Python の特に一般的な
+      イディオムに繋がる、考え方やコード。
+      例えば、Python の一般的なイディオムに iterable の要素を :keyword:`for`
+      文を使って巡回することです。この仕組を持たない言語も多くあるので、Python
+      に慣れ親しんでいない人は数値のカウンターを使うかもしれません。 ::
 
           for i in range(len(food)):
               print food[i]
 
-      As opposed to the cleaner, Pythonic method::
+      これと対照的な、よりきれいな Pythonic な方法はこうなります。 ::
 
          for piece in food:
              print piece
 
    reference count
-      The number of references to an object.  When the reference count of an
-      object drops to zero, it is deallocated.  Reference counting is
-      generally not visible to Python code, but it is a key element of the
-      :term:`CPython` implementation.  The :mod:`sys` module defines a
-      :func:`getrefcount` function that programmers can call to return the
-      reference count for a particular object.
+      (参照カウント)
+      あるオブジェクトに対する参照の数。
+      参照カウントが0になったとき、そのオブジェクトは破棄されます。
+      参照カウントは通常は Python のコード上には現れませんが、
+      :term:`CPython` 実装の重要な要素です。
+      :mod:`sys` モジュールは、プログラマーが任意のオブジェクトの参照カウントを
+      知るための :func:`getrefcount` 関数を提供しています。
 
    __slots__
       新スタイルクラス(:term:`new-style class`)内で、インスタンス属性の記憶に
@@ -789,40 +806,47 @@
          :term:`immutable` keys rather than integers.
 
    slice
-      An object usually containing a portion of a :term:`sequence`.  A slice is
-      created using the subscript notation, ``[]`` with colons between numbers
-      when several are given, such as in ``variable_name[1:3:5]``.  The bracket
-      (subscript) notation uses :class:`slice` objects internally (or in older
-      versions, :meth:`__getslice__` and :meth:`__setslice__`).
+      (スライス)
+      多くの場合、シーケンス(:term:`sequence`)の一部を含むオブジェクト。
+      スライスは、添字記号 ``[]`` で数字の間にコロンを書いたときに作られます。
+      例えば、 ``variable_name[1:3:5]`` です。
+      添字記号は :class:`slice` オブジェクトを内部で利用しています。
+      (もしくは、古いバージョンの、 :meth:`__getslice__` と :meth:`__setslice__`
+      を利用します。)
 
    special method
-      A method that is called implicitly by Python to execute a certain
-      operation on a type, such as addition.  Such methods have names starting
-      and ending with double underscores.  Special methods are documented in
-      :ref:`specialnames`.
+      (特殊メソッド)
+      ある型に対する特定の動作をするために、 Python から暗黙的に呼ばれるメソッド。
+      この種類のメソッドは、メソッド名の最初と最後にアンダースコア2つを持ちます。
+      特殊メソッドについては :ref:`specialnames` で解説されています。
 
    statement
-      A statement is part of a suite (a "block" of code).  A statement is either
-      an :term:`expression` or a one of several constructs with a keyword, such
-      as :keyword:`if`, :keyword:`while` or :keyword:`print`.
+      (文)
+      文は一種のコードブロックです。
+      文は :term:`expression` か、それ以外のキーワードにより構成されます。
+      例えば :keyword:`if`, :keyword:`while`, :keyword:`print` は文です。
 
    triple-quoted string
-      A string which is bound by three instances of either a quotation mark
-      (") or an apostrophe (').  While they don't provide any functionality
-      not available with single-quoted strings, they are useful for a number
-      of reasons.  They allow you to include unescaped single and double
-      quotes within a string and they can span multiple lines without the
-      use of the continuation character, making them especially useful when
-      writing docstrings.
+      (三重クォート文字列)
+      3つの連続したクォート記号(")かアポストロフィー(')で囲まれた文字列。
+      通常の(一重)クォート文字列に比べて表現できる文字列に違いはありませんが、
+      幾つかの理由で有用です。
+      1つか2つの連続したクォート記号をエスケープ無しに書くことができますし、
+      行継続文字(\\)を使わなくても複数行にまたがることができるので、
+      ドキュメンテーション文字列を書く時に特に便利です。
 
    type
-      The type of a Python object determines what kind of object it is; every
-      object has a type.  An object's type is accessible as its
-      :attr:`__class__` attribute or can be retrieved with ``type(obj)``.
+      (型)
+      Python のオブジェクトの型は、そのオブジェクトの種類を決定します。
+      全てのオブジェクトは型を持っています。
+      オブジェクトの型は、 :attr:`__class__` 属性からアクセスしたり、
+      ``type(obj)`` で取得することができます。
 
    virtual machine
-      A computer defined entirely in software.  Python's virtual machine
-      executes the :term:`bytecode` emitted by the bytecode compiler.
+      (仮想マシン)
+      ソフトウェアにより定義されたコンピュータ。
+      Python の仮想マシンは、バイトコードコンパイラが出力したバイトコード
+      (:term:`bytecode`)を実行します。
 
    Zen of Python
       (Pythonの悟り)
