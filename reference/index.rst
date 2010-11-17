@@ -35,3 +35,4 @@ C 言語あるいはC++プログラマ向けには、このマニュアルとは
    compound_stmts.rst
    toplevel_components.rst
 
+   jptranslation.rst

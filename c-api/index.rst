@@ -27,3 +27,5 @@ API の詳細までは記述していないので、このドキュメントが�
    init.rst
    memory.rst
    objimpl.rst
+
+   jptranslation.rst

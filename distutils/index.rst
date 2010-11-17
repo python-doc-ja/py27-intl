@@ -26,3 +26,5 @@
    extending.rst
    commandref.rst
    apiref.rst
+
+   jptranslation.rst

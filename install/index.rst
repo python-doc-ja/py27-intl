@@ -972,12 +972,7 @@ Cygwin を使って Distutils に拡張モジュールをコンパイルさせ�
       Cygwin/MinGW および Borland 形式に変換済みの import ライブラリと、 Distutils がビルド済みの Python
       の場所を特定するために必要なレジストリ エントリを作成するためのスクリプトがあります。
 
-
-日本語訳について
-================
-
-XXX: input{jptranslation} :XXX
-.. rubric:: Footnotes
+.. rubric:: 脚注
 
 .. [#] つまり、全ての既存の COFF ライブラリを同名の OMF ライブラリに 置き換えてもかまわないということです
 
@@ -985,4 +980,10 @@ XXX: input{jptranslation} :XXX
    を参照してください
 
 .. [#] このモードでは POSIX エミュレーションを利用できませんが、 :file:`cygwin1.dll` も必要なくなります。
+
+
+日本語訳について
+================
+.. toctree::
+   jptranslation.rst
 

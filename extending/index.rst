@@ -37,3 +37,5 @@ Python/C API 全体の詳しい説明は、別のドキュメントである、
    building.rst
    windows.rst
    embedding.rst
+
+   jptranslation.rst
