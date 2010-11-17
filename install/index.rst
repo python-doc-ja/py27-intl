@@ -21,8 +21,6 @@
 .. % Finally, it might be useful to include all the material from my "Care
 .. % and Feeding of a Python Installation" talk in here somewhere.  Yow!
 
-XXX: input{boilerplatejp} :XXX
-
 .. topic:: Abstract
 
    このドキュメントでは、 Python モジュール配布ユーティリティ (Python Distribution Utilities, "Distutils")
