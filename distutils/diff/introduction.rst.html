@@ -1,0 +1,60 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to21__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/distutils/introduction.rst =&gt; rest262/distutils/introduction.rst</th></tr></thead>
+            <tbody>
+    <tr><td class="diff_next" id="difflib_chg_to21__1"><a href="#difflib_chg_to21__1">n</a></td><td class="diff_header" id="from21_1">1-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;_intro:</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to21__1"><a href="#difflib_chg_to21__1">n</a></td><td class="diff_header" id="to21_1">1+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;_distutils-intro:</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from21_2">2</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_3">3</td><td nowrap="nowrap">****************************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_4">4</td><td nowrap="nowrap">An&nbsp;Introduction&nbsp;to&nbsp;Distutils</td></tr>            <tr><td class="diff_next" id="difflib_chg_to21__2"></td><td class="diff_header" id="from21_5">5</td><td nowrap="nowrap">****************************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_6">6</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_7">7</td><td nowrap="nowrap">This&nbsp;document&nbsp;covers&nbsp;using&nbsp;the&nbsp;Distutils&nbsp;to&nbsp;distribute&nbsp;your&nbsp;Python&nbsp;modules,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_8">8</td><td nowrap="nowrap">concentrating&nbsp;on&nbsp;the&nbsp;role&nbsp;of&nbsp;developer/distributor:&nbsp;if&nbsp;you're&nbsp;looking&nbsp;for</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to21__2">n</a></td><td class="diff_header" id="from21_9">9-</td><td nowrap="nowrap">information&nbsp;on&nbsp;installing&nbsp;Python&nbsp;modules,&nbsp;you&nbsp;should&nbsp;refer&nbsp;to&nbsp;the<span class="diff_sub">&nbsp;Installing</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to21__2">n</a></td><td class="diff_header" id="to21_9">9+</td><td nowrap="nowrap">information&nbsp;on&nbsp;installing&nbsp;Python&nbsp;modules,&nbsp;you&nbsp;should&nbsp;refer&nbsp;to&nbsp;the</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from21_10">10-</td><td nowrap="nowrap"><span class="diff_sub">Python&nbsp;Modules&nbsp;(XXX&nbsp;reference:&nbsp;../inst/inst.html)&nbsp;manual.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to21_10">10+</td><td nowrap="nowrap"><span class="diff_add">:ref:`install-index`&nbsp;chapter.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from21_11">11</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_12">12</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to21__3">n</a></td><td class="diff_header" id="from21_13">13-</td><td nowrap="nowrap"><span class="diff_sub">..&nbsp;_concepts:</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to21__3">n</a></td><td class="diff_header" id="to21_13">13+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;_distutils-concepts:</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from21_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_15">15</td><td nowrap="nowrap">Concepts&nbsp;&amp;&nbsp;Terminology</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_16">16</td><td nowrap="nowrap">======================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_18">18</td><td nowrap="nowrap">Using&nbsp;the&nbsp;Distutils&nbsp;is&nbsp;quite&nbsp;simple,&nbsp;both&nbsp;for&nbsp;module&nbsp;developers&nbsp;and&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_19">19</td><td nowrap="nowrap">users/administrators&nbsp;installing&nbsp;third-party&nbsp;modules.&nbsp;&nbsp;As&nbsp;a&nbsp;developer,&nbsp;your</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_20">20</td><td nowrap="nowrap">responsibilities&nbsp;(apart&nbsp;from&nbsp;writing&nbsp;solid,&nbsp;well-documented&nbsp;and&nbsp;well-tested</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_21">21</td><td nowrap="nowrap">code,&nbsp;of&nbsp;course!)&nbsp;are:</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to21__3"></td><td class="diff_header" id="from21_36">36</td><td nowrap="nowrap">address&nbsp;this&nbsp;need.&nbsp;&nbsp;Packagers&nbsp;will&nbsp;take&nbsp;source&nbsp;distributions&nbsp;released&nbsp;by&nbsp;module</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_37">37</td><td nowrap="nowrap">developers,&nbsp;build&nbsp;them&nbsp;on&nbsp;one&nbsp;or&nbsp;more&nbsp;platforms,&nbsp;and&nbsp;release&nbsp;the&nbsp;resulting&nbsp;built</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_38">38</td><td nowrap="nowrap">distributions.&nbsp;&nbsp;Thus,&nbsp;users&nbsp;on&nbsp;the&nbsp;most&nbsp;popular&nbsp;platforms&nbsp;will&nbsp;be&nbsp;able&nbsp;to</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_39">39</td><td nowrap="nowrap">install&nbsp;most&nbsp;popular&nbsp;Python&nbsp;module&nbsp;distributions&nbsp;in&nbsp;the&nbsp;most&nbsp;natural&nbsp;way&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_40">40</td><td nowrap="nowrap">their&nbsp;platform,&nbsp;without&nbsp;having&nbsp;to&nbsp;run&nbsp;a&nbsp;single&nbsp;setup&nbsp;script&nbsp;or&nbsp;compile&nbsp;a&nbsp;line&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_41">41</td><td nowrap="nowrap">code.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_42">42</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_43">43</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to21__top">t</a></td><td class="diff_header" id="from21_44">44-</td><td nowrap="nowrap">..&nbsp;_simple-example:</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to21__top">t</a></td><td class="diff_header" id="to21_44">44+</td><td nowrap="nowrap">..&nbsp;_<span class="diff_add">distutils-</span>simple-example:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from21_45">45</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_46">46</td><td nowrap="nowrap">A&nbsp;Simple&nbsp;Example</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_47">47</td><td nowrap="nowrap">================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_48">48</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_49">49</td><td nowrap="nowrap">The&nbsp;setup&nbsp;script&nbsp;is&nbsp;usually&nbsp;quite&nbsp;simple,&nbsp;although&nbsp;since&nbsp;it's&nbsp;written&nbsp;in&nbsp;Python,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_50">50</td><td nowrap="nowrap">there&nbsp;are&nbsp;no&nbsp;arbitrary&nbsp;limits&nbsp;to&nbsp;what&nbsp;you&nbsp;can&nbsp;do&nbsp;with&nbsp;it,&nbsp;though&nbsp;you&nbsp;should&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_51">51</td><td nowrap="nowrap">careful&nbsp;about&nbsp;putting&nbsp;arbitrarily&nbsp;expensive&nbsp;operations&nbsp;in&nbsp;your&nbsp;setup&nbsp;script.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_52">52</td><td nowrap="nowrap">Unlike,&nbsp;say,&nbsp;Autoconf-style&nbsp;configure&nbsp;scripts,&nbsp;the&nbsp;setup&nbsp;script&nbsp;may&nbsp;be&nbsp;run</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

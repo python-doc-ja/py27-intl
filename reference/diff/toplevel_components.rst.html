@@ -1,0 +1,58 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to299__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/reference/toplevel_components.rst =&gt; rest262/reference/toplevel_components.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to299__0"></td><td class="diff_header" id="from299_61">61</td><td nowrap="nowrap">..&nbsp;_file-input:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_62">62</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_63">63</td><td nowrap="nowrap">File&nbsp;input</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_64">64</td><td nowrap="nowrap">==========</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_65">65</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_66">66</td><td nowrap="nowrap">All&nbsp;input&nbsp;read&nbsp;from&nbsp;non-interactive&nbsp;files&nbsp;has&nbsp;the&nbsp;same&nbsp;form:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_67">67</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_68">68</td><td nowrap="nowrap">..&nbsp;productionlist::</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to299__1">n</a></td><td class="diff_header" id="from299_69">69-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;file_input:&nbsp;(NEWLINE&nbsp;<span class="diff_sub">\</span>|&nbsp;`statement`)<span class="diff_sub">\</span>*</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to299__1">n</a></td><td class="diff_header" id="to299_69">69+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;file_input:&nbsp;(NEWLINE&nbsp;|&nbsp;`statement`)*</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from299_70">70</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_71">71</td><td nowrap="nowrap">This&nbsp;syntax&nbsp;is&nbsp;used&nbsp;in&nbsp;the&nbsp;following&nbsp;situations:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_72">72</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_73">73</td><td nowrap="nowrap">*&nbsp;when&nbsp;parsing&nbsp;a&nbsp;complete&nbsp;Python&nbsp;program&nbsp;(from&nbsp;a&nbsp;file&nbsp;or&nbsp;from&nbsp;a&nbsp;string);</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_74">74</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_75">75</td><td nowrap="nowrap">*&nbsp;when&nbsp;parsing&nbsp;a&nbsp;module;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_76">76</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_77">77</td><td nowrap="nowrap">*&nbsp;when&nbsp;parsing&nbsp;a&nbsp;string&nbsp;passed&nbsp;to&nbsp;the&nbsp;:keyword:`exec`&nbsp;statement;</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to299__1"></td><td class="diff_header" id="from299_80">80</td><td nowrap="nowrap">..&nbsp;_interactive:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_81">81</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_82">82</td><td nowrap="nowrap">Interactive&nbsp;input</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_83">83</td><td nowrap="nowrap">=================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_84">84</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_85">85</td><td nowrap="nowrap">Input&nbsp;in&nbsp;interactive&nbsp;mode&nbsp;is&nbsp;parsed&nbsp;using&nbsp;the&nbsp;following&nbsp;grammar:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_86">86</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_87">87</td><td nowrap="nowrap">..&nbsp;productionlist::</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to299__2">n</a></td><td class="diff_header" id="from299_88">88-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interactive_input:&nbsp;[`stmt_list`]&nbsp;NEWLINE&nbsp;<span class="diff_sub">\</span>|&nbsp;`compound_stmt`&nbsp;NEWLINE</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to299__2">n</a></td><td class="diff_header" id="to299_88">88+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interactive_input:&nbsp;[`stmt_list`]&nbsp;NEWLINE&nbsp;|&nbsp;`compound_stmt`&nbsp;NEWLINE</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from299_89">89</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_90">90</td><td nowrap="nowrap">Note&nbsp;that&nbsp;a&nbsp;(top-level)&nbsp;compound&nbsp;statement&nbsp;must&nbsp;be&nbsp;followed&nbsp;by&nbsp;a&nbsp;blank&nbsp;line&nbsp;in</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_91">91</td><td nowrap="nowrap">interactive&nbsp;mode;&nbsp;this&nbsp;is&nbsp;needed&nbsp;to&nbsp;help&nbsp;the&nbsp;parser&nbsp;detect&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;input.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_92">92</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_93">93</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_94">94</td><td nowrap="nowrap">..&nbsp;_expression-input:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_95">95</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_96">96</td><td nowrap="nowrap">Expression&nbsp;input</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to299__2"></td><td class="diff_header" id="from299_99">99</td><td nowrap="nowrap">..&nbsp;index::&nbsp;single:&nbsp;input</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_100">100</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_101">101</td><td nowrap="nowrap">..&nbsp;index::&nbsp;builtin:&nbsp;eval</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_102">102</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_103">103</td><td nowrap="nowrap">There&nbsp;are&nbsp;two&nbsp;forms&nbsp;of&nbsp;expression&nbsp;input.&nbsp;&nbsp;Both&nbsp;ignore&nbsp;leading&nbsp;whitespace.&nbsp;The</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_104">104</td><td nowrap="nowrap">string&nbsp;argument&nbsp;to&nbsp;:func:`eval`&nbsp;must&nbsp;have&nbsp;the&nbsp;following&nbsp;form:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_105">105</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_106">106</td><td nowrap="nowrap">..&nbsp;productionlist::</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to299__top">t</a></td><td class="diff_header" id="from299_107">107-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;eval_input:&nbsp;`expression_list`&nbsp;NEWLINE<span class="diff_sub">\</span>*</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to299__top">t</a></td><td class="diff_header" id="to299_107">107+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;eval_input:&nbsp;`expression_list`&nbsp;NEWLINE*</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from299_108">108</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_109">109</td><td nowrap="nowrap">..&nbsp;index::&nbsp;builtin:&nbsp;input</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_110">110</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_111">111</td><td nowrap="nowrap">The&nbsp;input&nbsp;line&nbsp;read&nbsp;by&nbsp;:func:`input`&nbsp;must&nbsp;have&nbsp;the&nbsp;following&nbsp;form:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_112">112</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_113">113</td><td nowrap="nowrap">..&nbsp;productionlist::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_114">114</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;input_input:&nbsp;`expression_list`&nbsp;NEWLINE</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from299_115">115</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

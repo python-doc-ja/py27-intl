@@ -1,0 +1,78 @@
+--- rest25/extending/building.rst	2008-12-19 16:58:05.000000000 +0900
++++ rest262/extending/building.rst	2009-04-05 05:01:41.000000000 +0900
+@@ -30,40 +30,39 @@
+ 
+    module1 = Extension('demo',
+                        sources = ['demo.c'])
+ 
+    setup (name = 'PackageName',
+           version = '1.0',
+           description = 'This is a demo package',
+           ext_modules = [module1])
+ 
+ 
+ With this :file:`setup.py`, and a file :file:`demo.c`, running ::
+ 
+-   python setup.py build 
++   python setup.py build
+ 
+ will compile :file:`demo.c`, and produce an extension module named ``demo`` in
+ the :file:`build` directory. Depending on the system, the module file will end
+ up in a subdirectory :file:`build/lib.system`, and may have a name like
+ :file:`demo.so` or :file:`demo.pyd`.
+ 
+ In the :file:`setup.py`, all execution is performed by calling the ``setup``
+-function. This takes a variable number of keyword  arguments, of which the
+-example above uses only a subset. Specifically, the example specifies meta-
+-information to build packages, and it specifies the contents of the package.
+-Normally, a package will contain of addition modules, like Python source
+-modules, documentation, subpackages, etc. Please refer to the distutils
+-documentation in Distributing Python Modules (XXX reference: ../dist/dist.html)
+-to learn more about the features of distutils; this section explains building
+-extension modules only.
++function. This takes a variable number of keyword arguments, of which the
++example above uses only a subset. Specifically, the example specifies
++meta-information to build packages, and it specifies the contents of the
++package.  Normally, a package will contain of addition modules, like Python
++source modules, documentation, subpackages, etc. Please refer to the distutils
++documentation in :ref:`distutils-index` to learn more about the features of
++distutils; this section explains building extension modules only.
+ 
+ It is common to pre-compute arguments to :func:`setup`, to better structure the
+ driver script. In the example above, the\ ``ext_modules`` argument to
+ :func:`setup` is a list of extension modules, each of which is an instance of
+ the :class:`Extension`. In the example, the instance defines an extension named
+ ``demo`` which is build by compiling a single source file, :file:`demo.c`.
+ 
+ In many cases, building an extension is more complex, since additional
+ preprocessor defines and libraries may be needed. This is demonstrated in the
+ example below. ::
+ 
+    from distutils.core import setup, Extension
+@@ -72,25 +71,25 @@
+                        define_macros = [('MAJOR_VERSION', '1'),
+                                         ('MINOR_VERSION', '0')],
+                        include_dirs = ['/usr/local/include'],
+                        libraries = ['tcl83'],
+                        library_dirs = ['/usr/local/lib'],
+                        sources = ['demo.c'])
+ 
+    setup (name = 'PackageName',
+           version = '1.0',
+           description = 'This is a demo package',
+           author = 'Martin v. Loewis',
+           author_email = 'martin@v.loewis.de',
+-          url = 'http://www.python.org/doc/current/ext/building.html',
++          url = 'http://docs.python.org/extending/building',
+           long_description = '''
+    This is really just a demo package.
+    ''',
+           ext_modules = [module1])
+ 
+ 
+ In this example, :func:`setup` is called with additional meta-information, which
+ is recommended when distribution packages have to be built. For the extension
+ itself, it specifies preprocessor defines, include directories, library
+ directories, and libraries. Depending on the compiler, distutils passes this
+ information in different ways to the compiler. For example, on Unix, this may
+ result in the compilation commands ::

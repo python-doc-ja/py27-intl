@@ -1,0 +1,347 @@
+--- rest25/distutils/setupscript.rst	2008-12-19 16:58:05.000000000 +0900
++++ rest262/distutils/setupscript.rst	2009-04-05 05:01:40.000000000 +0900
+@@ -1,63 +1,61 @@
+ .. _setup-script:
+ 
+ ************************
+ Writing the Setup Script
+ ************************
+ 
+ The setup script is the centre of all activity in building, distributing, and
+ installing modules using the Distutils.  The main purpose of the setup script is
+ to describe your module distribution to the Distutils, so that the various
+ commands that operate on your modules do the right thing.  As we saw in section
+-:ref:`simple-example` above, the setup script consists mainly of a call to
++:ref:`distutils-simple-example` above, the setup script consists mainly of a call to
+ :func:`setup`, and most information supplied to the Distutils by the module
+ developer is supplied as keyword arguments to :func:`setup`.
+ 
+ Here's a slightly more involved example, which we'll follow for the next couple
+ of sections: the Distutils' own setup script.  (Keep in mind that although the
+ Distutils are included with Python 1.6 and later, they also have an independent
+ existence so that Python 1.5.2 users can use them to install other module
+ distributions.  The Distutils' own setup script, shown here, is used to install
+ the package into Python 1.5.2.) ::
+ 
+    #!/usr/bin/env python
+ 
+    from distutils.core import setup
+ 
+    setup(name='Distutils',
+          version='1.0',
+          description='Python Distribution Utilities',
+          author='Greg Ward',
+          author_email='gward@python.net',
+          url='http://www.python.org/sigs/distutils-sig/',
+          packages=['distutils', 'distutils.command'],
+         )
+ 
+ There are only two differences between this and the trivial one-file
+-distribution presented in section :ref:`simple-example`: more metadata, and the
++distribution presented in section :ref:`distutils-simple-example`: more metadata, and the
+ specification of pure Python modules by package, rather than by module.  This is
+ important since the Distutils consist of a couple of dozen modules split into
+ (so far) two packages; an explicit list of every module would be tedious to
+ generate and difficult to maintain.  For more information on the additional
+ meta-data, see section :ref:`meta-data`.
+ 
+ Note that any pathnames (files or directories) supplied in the setup script
+ should be written using the Unix convention, i.e. slash-separated.  The
+ Distutils will take care of converting this platform-neutral representation into
+ whatever is appropriate on your current platform before actually using the
+ pathname.  This makes your setup script portable across operating systems, which
+ of course is one of the major goals of the Distutils.  In this spirit, all
+-pathnames in this document are slash-separated.  (Mac OS 9 programmers should
+-keep in mind that the *absence* of a leading slash indicates a relative path,
+-the opposite of the Mac OS convention with colons.)
++pathnames in this document are slash-separated.
+ 
+ This, of course, only applies to pathnames given to Distutils functions.  If
+ you, for example, use standard Python functions such as :func:`glob.glob` or
+ :func:`os.listdir` to specify files, you should be careful to write portable
+ code instead of hardcoding path separators::
+ 
+    glob.glob(os.path.join('mydir', 'subdir', '*.html'))
+    os.listdir(os.path.join('mydir', 'subdir'))
+ 
+ 
+ .. _listing-packages:
+ 
+@@ -105,48 +103,48 @@
+ :option:`packages`: the Distutils will *not* recursively scan your source tree
+ looking for any directory with an :file:`__init__.py` file.)
+ 
+ 
+ .. _listing-modules:
+ 
+ Listing individual modules
+ ==========================
+ 
+ For a small module distribution, you might prefer to list all modules rather
+ than listing packages---especially the case of a single module that goes in the
+ "root package" (i.e., no package at all).  This simplest case was shown in
+-section :ref:`simple-example`; here is a slightly more involved example::
++section :ref:`distutils-simple-example`; here is a slightly more involved example::
+ 
+    py_modules = ['mod1', 'pkg.mod2']
+ 
+ This describes two modules, one of them in the "root" package, the other in the
+ :mod:`pkg` package.  Again, the default package/directory layout implies that
+ these two modules can be found in :file:`mod1.py` and :file:`pkg/mod2.py`, and
+ that :file:`pkg/__init__.py` exists as well. And again, you can override the
+ package/directory correspondence using the :option:`package_dir` option.
+ 
+ 
+ .. _describing-extensions:
+ 
+ Describing extension modules
+ ============================
+ 
+ Just as writing Python extension modules is a bit more complicated than writing
+ pure Python modules, describing them to the Distutils is a bit more complicated.
+ Unlike pure modules, it's not enough just to list modules or packages and expect
+ the Distutils to go out and find the right files; you have to specify the
+ extension name, source file(s), and any compile/link requirements (include
+ directories, libraries to link with, etc.).
+ 
+-.. % XXX read over this section
++.. XXX read over this section
+ 
+ All of this is done through another keyword argument to :func:`setup`, the
+ :option:`ext_modules` option.  :option:`ext_modules` is just a list of
+ :class:`Extension` instances, each of which describes a single extension module.
+ Suppose your distribution includes a single extension, called :mod:`foo` and
+ implemented by :file:`foo.c`.  If no additional instructions to the
+ compiler/linker are needed, describing this extension is quite simple::
+ 
+    Extension('foo', ['foo.c'])
+ 
+ The :class:`Extension` class can be imported from :mod:`distutils.core` along
+ with :func:`setup`.  Thus, the setup script for a module distribution that
+@@ -176,51 +174,62 @@
+ 
+    Extension('pkg.foo', ['src/foo1.c', 'src/foo2.c'])
+ 
+ describes the same extension in the :mod:`pkg` package.  The source files and
+ resulting object code are identical in both cases; the only difference is where
+ in the filesystem (and therefore where in Python's namespace hierarchy) the
+ resulting extension lives.
+ 
+ If you have a number of extensions all in the same package (or all under the
+ same base package), use the :option:`ext_package` keyword argument to
+ :func:`setup`.  For example, ::
+ 
+-   setup(...
++   setup(...,
+          ext_package='pkg',
+          ext_modules=[Extension('foo', ['foo.c']),
+                       Extension('subpkg.bar', ['bar.c'])],
+         )
+ 
+ will compile :file:`foo.c` to the extension :mod:`pkg.foo`, and :file:`bar.c` to
+ :mod:`pkg.subpkg.bar`.
+ 
+ 
+ Extension source files
+ ----------------------
+ 
+ The second argument to the :class:`Extension` constructor is a list of source
+ files.  Since the Distutils currently only support C, C++, and Objective-C
+ extensions, these are normally C/C++/Objective-C source files.  (Be sure to use
+ appropriate extensions to distinguish C++\ source files: :file:`.cc` and
+ :file:`.cpp` seem to be recognized by both Unix and Windows compilers.)
+ 
+ However, you can also include SWIG interface (:file:`.i`) files in the list; the
+ :command:`build_ext` command knows how to deal with SWIG extensions: it will run
+ SWIG on the interface file and compile the resulting C/C++ file into your
+ extension.
+ 
+-**\*\*** SWIG support is rough around the edges and largely untested; especially
+-SWIG support for C++ extensions!  Explain in more detail here when the interface
+-firms up. **\*\***
++**\*\*** SWIG support is rough around the edges and largely untested! **\*\***
++
++This warning notwithstanding, options to SWIG can be currently passed like
++this::
++
++   setup(...,
++         ext_modules=[Extension('_foo', ['foo.i'],
++                                swig_opts=['-modern', '-I../include'])],
++         py_modules=['foo'],
++        )
++
++Or on the commandline like this::
++
++   > python setup.py build_ext --swig-opts="-modern -I../include"
+ 
+ On some platforms, you can include non-source files that are processed by the
+ compiler and included in your extension.  Currently, this just means Windows
+ message text (:file:`.mc`) files and resource definition (:file:`.rc`) files for
+ Visual C++. These will be compiled to binary resource (:file:`.res`) files and
+ linked into the executable.
+ 
+ 
+ Preprocessor options
+ --------------------
+ 
+ Three optional arguments to :class:`Extension` will help if you need to specify
+@@ -390,25 +399,25 @@
+ strings, each of which names a Python module or package, and optionally
+ identifies the version.  If the version is not specified, it is assumed to match
+ that of the distribution.
+ 
+ Some examples:
+ 
+ +---------------------+----------------------------------------------+
+ | Provides Expression | Explanation                                  |
+ +=====================+==============================================+
+ | ``mypkg``           | Provide ``mypkg``, using the distribution    |
+ |                     | version                                      |
+ +---------------------+----------------------------------------------+
+-| ``mypkg (1.1``      | Provide ``mypkg`` version 1.1, regardless of |
++| ``mypkg (1.1)``     | Provide ``mypkg`` version 1.1, regardless of |
+ |                     | the distribution version                     |
+ +---------------------+----------------------------------------------+
+ 
+ A package can declare that it obsoletes other packages using the *obsoletes*
+ keyword argument.  The value for this is similar to that of the *requires*
+ keyword: a list of strings giving module or package specifiers.  Each specifier
+ consists of a module or package name optionally followed by one or more version
+ qualifiers.  Version qualifiers are given in parentheses after the module or
+ package name.
+ 
+ The versions identified by the qualifiers are those that are obsoleted by the
+ distribution being described.  If no qualifiers are given, all versions of the
+@@ -423,25 +432,25 @@
+ 
+ Scripts are files containing Python source code, intended to be started from the
+ command line.  Scripts don't require Distutils to do anything very complicated.
+ The only clever feature is that if the first line of the script starts with
+ ``#!`` and contains the word "python", the Distutils will adjust the first line
+ to refer to the current interpreter location. By default, it is replaced with
+ the current interpreter location.  The :option:`--executable` (or :option:`-e`)
+ option will allow the interpreter path to be explicitly overridden.
+ 
+ The :option:`scripts` option simply is a list of files to be handled in this
+ way.  From the PyXML setup script::
+ 
+-   setup(... 
++   setup(...,
+          scripts=['scripts/xmlproc_parse', 'scripts/xmlproc_val']
+          )
+ 
+ 
+ Installing Package Data
+ =======================
+ 
+ Often, additional files need to be installed into a package.  These files are
+ often data that's closely related to the package's implementation, or text files
+ containing documentation that might be of interest to programmers using the
+ package.  These files are called :dfn:`package data`.
+ 
+@@ -481,25 +490,25 @@
+ 
+ 
+ Installing Additional Files
+ ===========================
+ 
+ The :option:`data_files` option can be used to specify additional files needed
+ by the module distribution: configuration files, message catalogs, data files,
+ anything which doesn't fit in the previous categories.
+ 
+ :option:`data_files` specifies a sequence of (*directory*, *files*) pairs in the
+ following way::
+ 
+-   setup(...
++   setup(...,
+          data_files=[('bitmaps', ['bm/b1.gif', 'bm/b2.gif']),
+                      ('config', ['cfg/data.cfg']),
+                      ('/etc/init.d', ['init-script'])]
+         )
+ 
+ Note that you can specify the directory names where the data files will be
+ installed, but you cannot rename the data files themselves.
+ 
+ Each (*directory*, *files*) pair in the sequence specifies the installation
+ directory and the files to install there.  If *directory* is a relative path, it
+ is interpreted relative to the installation prefix (Python's ``sys.prefix`` for
+ pure-Python packages, ``sys.exec_prefix`` for packages that contain extension
+@@ -545,47 +554,49 @@
+ | ``description``      | short, summary            | short string    |        |
+ |                      | description of the        |                 |        |
+ |                      | package                   |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``long_description`` | longer description of the | long string     |        |
+ |                      | package                   |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``download_url``     | location where the        | URL             | \(4)   |
+ |                      | package may be downloaded |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``classifiers``      | a list of classifiers     | list of strings | \(4)   |
+ +----------------------+---------------------------+-----------------+--------+
++| ``platforms``        | a list of platforms       | list of strings |        |
+++----------------------+---------------------------+-----------------+--------+
+ 
+ Notes:
+ 
+ (1)
+    These fields are required.
+ 
+ (2)
+    It is recommended that versions take the form *major.minor[.patch[.sub]]*.
+ 
+ (3)
+    Either the author or the maintainer must be identified.
+ 
+ (4)
+    These fields should not be used if your package is to be compatible with Python
+    versions prior to 2.2.3 or 2.3.  The list is available from the `PyPI website
+-   <http://www.python.org/pypi>`_.
++   <http://pypi.python.org/pypi>`_.
+ 
+ 'short string'
+    A single line of text, not more than 200 characters.
+ 
+ 'long string'
+    Multiple lines of plain text in reStructuredText format (see
+-   `<http://docutils.sf.net/>`_).
++   http://docutils.sf.net/).
+ 
+ 'list of strings'
+    See below.
+ 
+ None of the string values may be Unicode.
+ 
+ Encoding the version information is an art in itself. Python packages generally
+ adhere to the version format *major.minor[.patch][sub]*. The major number is 0
+ for initial, experimental releases of software. It is incremented for releases
+ that represent major milestones in a package. The minor number is incremented
+ when important new features are added to the package. The patch number
+ increments when bug-fix releases are made. Additional trailing version
+@@ -593,25 +604,25 @@
+ "a1,a2,...,aN" (for alpha releases, where functionality and API may change),
+ "b1,b2,...,bN" (for beta releases, which only fix bugs) and "pr1,pr2,...,prN"
+ (for final pre-release release testing). Some examples:
+ 
+ 0.1.0
+    the first, experimental release of a package
+ 
+ 1.0.1a2
+    the second alpha release of the first patch version of 1.0
+ 
+ :option:`classifiers` are specified in a python list::
+ 
+-   setup(...
++   setup(...,
+          classifiers=[
+              'Development Status :: 4 - Beta',
+              'Environment :: Console',
+              'Environment :: Web Environment',
+              'Intended Audience :: End Users/Desktop',
+              'Intended Audience :: Developers',
+              'Intended Audience :: System Administrators',
+              'License :: OSI Approved :: Python Software Foundation License',
+              'Operating System :: MacOS :: MacOS X',
+              'Operating System :: Microsoft :: Windows',
+              'Operating System :: POSIX',
+              'Programming Language :: Python',

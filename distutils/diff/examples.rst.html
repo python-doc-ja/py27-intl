@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to18__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">rest25/distutils/examples.rst =&gt; rest262/distutils/examples.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to18__0"></td><td class="diff_header" id="from18_6">6</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_7">7</td><td nowrap="nowrap">This&nbsp;chapter&nbsp;provides&nbsp;a&nbsp;number&nbsp;of&nbsp;basic&nbsp;examples&nbsp;to&nbsp;help&nbsp;get&nbsp;started&nbsp;with</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_8">8</td><td nowrap="nowrap">distutils.&nbsp;&nbsp;Additional&nbsp;information&nbsp;about&nbsp;using&nbsp;distutils&nbsp;can&nbsp;be&nbsp;found&nbsp;in&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_9">9</td><td nowrap="nowrap">Distutils&nbsp;Cookbook.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_10">10</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_11">11</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_12">12</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_13">13</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to18__1">n</a></td><td class="diff_header" id="from18_14">14-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;`Distutils&nbsp;Cookbook&nbsp;&lt;http://w<span class="diff_chg">ww</span>.python.org/<span class="diff_sub">cgi-bin/moin</span>moin/DistutilsCookbook&gt;`_</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to18__1">n</a></td><td class="diff_header" id="to18_14">14+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;`Distutils&nbsp;Cookbook&nbsp;&lt;http://w<span class="diff_chg">iki</span>.python.org/moin/Distutils<span class="diff_add">/</span>Cookbook&gt;`_</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from18_15">15</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Collection&nbsp;of&nbsp;recipes&nbsp;showing&nbsp;how&nbsp;to&nbsp;achieve&nbsp;more&nbsp;control&nbsp;over&nbsp;distutils.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_18">18</td><td nowrap="nowrap">..&nbsp;_pure-mod:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_19">19</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_20">20</td><td nowrap="nowrap">Pure&nbsp;Python&nbsp;distribution&nbsp;(by&nbsp;module)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_21">21</td><td nowrap="nowrap">====================================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_22">22</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to18__1"></td><td class="diff_header" id="from18_26">26</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_27">27</td><td nowrap="nowrap">In&nbsp;the&nbsp;simplest&nbsp;case,&nbsp;you'll&nbsp;have&nbsp;two&nbsp;files&nbsp;to&nbsp;worry&nbsp;about:&nbsp;a&nbsp;setup&nbsp;script&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_28">28</td><td nowrap="nowrap">the&nbsp;single&nbsp;module&nbsp;you're&nbsp;distributing,&nbsp;:file:`foo.py`&nbsp;in&nbsp;this&nbsp;example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_29">29</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_30">30</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&lt;root&gt;/</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_31">31</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setup.py</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foo.py</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_33">33</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to18__top">t</a></td><td class="diff_header" id="from18_34">34-</td><td nowrap="nowrap">(In&nbsp;all&nbsp;diagrams&nbsp;in&nbsp;this&nbsp;section,&nbsp;<span class="diff_chg">``</span>&lt;root&gt;<span class="diff_chg">``</span>&nbsp;will&nbsp;refer&nbsp;to&nbsp;the&nbsp;distribution&nbsp;root</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to18__top">t</a></td><td class="diff_header" id="to18_34">34+</td><td nowrap="nowrap">(In&nbsp;all&nbsp;diagrams&nbsp;in&nbsp;this&nbsp;section,&nbsp;<span class="diff_chg">*</span>&lt;root&gt;<span class="diff_chg">*</span>&nbsp;will&nbsp;refer&nbsp;to&nbsp;the&nbsp;distribution&nbsp;root</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from18_35">35</td><td nowrap="nowrap">directory.)&nbsp;&nbsp;A&nbsp;minimal&nbsp;setup&nbsp;script&nbsp;to&nbsp;describe&nbsp;this&nbsp;situation&nbsp;would&nbsp;be::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_36">36</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;distutils.core&nbsp;import&nbsp;setup</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;setup(name='foo',</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_39">39</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;version='1.0',</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;py_modules=['foo'],</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from18_42">42</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

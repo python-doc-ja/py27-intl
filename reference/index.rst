@@ -1,20 +1,27 @@
 .. _reference-index:
 
 #################################
-  The Python language reference
+ Python リファレンスマニュアル
 #################################
 
 :Release: |version|
 :Date: |today|
 
-This reference manual describes the syntax and "core semantics" of the
-language. It is terse, but attempts to be exact and complete. The semantics of
-non-essential built-in object types and of the built-in functions and modules
-are described in :ref:`library-index`. For an informal introduction to the
-language, see :ref:`tutorial-index`. For C or C++ programmers, two additional
-manuals exist: :ref:`extending-index` describes the high-level picture of how to
-write a Python extension module, and the :ref:`c-api-index` describes the
-interfaces available to C/C++ programmers in detail.
+このリファレンスマニュアルでは、Python 言語の文法と、
+"コアとなるセマンティクス" について記述します。
+このマニュアルはそっけない書き方かもしれませんが、
+的確かつ完璧な記述を目指しています。
+必須でない組み込みオブジェクト型や組み込み関数、
+組み込みモジュールに関するセマンティクスは、
+:ref:`library-index` で述べられています。
+形式ばらない Python 言語入門には、 :ref:`tutorial-index`
+を参照してください。
+C 言語あるいはC++プログラマ向けには、このマニュアルとは別に二つの
+マニュアルがあります。
+:ref:`extending-index` では、Python 拡張モジュールを書くための
+高レベルな様式について述べています。
+また、 :ref:`c-api-index` では、C/C++ プログラマが利用できる
+インタフェースについて詳細に記述しています。
 
 .. toctree::
    :maxdepth: 2

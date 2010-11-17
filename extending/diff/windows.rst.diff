@@ -1,0 +1,171 @@
+--- rest25/extending/windows.rst	2008-12-19 16:58:05.000000000 +0900
++++ rest262/extending/windows.rst	2009-04-05 05:01:41.000000000 +0900
+@@ -1,57 +1,53 @@
+ .. highlightlang:: c
+ 
+ 
+ .. _building-on-windows:
+ 
+ ****************************************
+ Building C and C++ Extensions on Windows
+ ****************************************
+ 
+-.. % 
+-
+ This chapter briefly explains how to create a Windows extension module for
+ Python using Microsoft Visual C++, and follows with more detailed background
+ information on how it works.  The explanatory material is useful for both the
+ Windows programmer learning to build Python extensions and the Unix programmer
+ interested in producing software which can be successfully built on both Unix
+ and Windows.
+ 
+ Module authors are encouraged to use the distutils approach for building
+ extension modules, instead of the one described in this section. You will still
+ need the C compiler that was used to build Python; typically Microsoft Visual
+ C++.
+ 
+ .. note::
+ 
+    This chapter mentions a number of filenames that include an encoded Python
+    version number.  These filenames are represented with the version number shown
+-   as ``XY``; in practive, ``'X'`` will be the major version number and ``'Y'``
++   as ``XY``; in practice, ``'X'`` will be the major version number and ``'Y'``
+    will be the minor version number of the Python release you're working with.  For
+    example, if you are using Python 2.2.1, ``XY`` will actually be ``22``.
+ 
+ 
+ .. _win-cookbook:
+ 
+ A Cookbook Approach
+ ===================
+ 
+ There are two approaches to building extension modules on Windows, just as there
+-are on Unix: use the :mod:`distutils` (XXX reference: ../lib/module-
+-distutils.html) package to control the build process, or do things manually.
+-The distutils approach works well for most extensions; documentation on using
+-:mod:`distutils` (XXX reference: ../lib/module-distutils.html) to build and
+-package extension modules is available in Distributing Python Modules (XXX
+-reference: ../dist/dist.html).  This section describes the manual approach to
+-building Python extensions written in C or C++.
++are on Unix: use the :mod:`distutils` package to control the build process, or
++do things manually.  The distutils approach works well for most extensions;
++documentation on using :mod:`distutils` to build and package extension modules
++is available in :ref:`distutils-index`.  This section describes the manual
++approach to building Python extensions written in C or C++.
+ 
+ To build extensions using these instructions, you need to have a copy of the
+ Python sources of the same version as your installed Python. You will need
+ Microsoft Visual C++ "Developer Studio"; project files are supplied for VC++
+ version 7.1, but you can use older versions of VC++.  Notice that you should use
+ the same version of VC++that was used to build Python itself. The example files
+ described here are distributed with the Python sources in the
+ :file:`PC\\example_nt\\` directory.
+ 
+ #. **Copy the example files** ---  The :file:`example_nt` directory is a
+    subdirectory of the :file:`PC` directory, in order to keep all the PC-specific
+    files under the same directory in the source distribution.  However, the
+@@ -59,33 +55,33 @@
+    first need to copy or move it up one level, so that :file:`example_nt` is a
+    sibling of the :file:`PC` and :file:`Include` directories.  Do all your work
+    from within this new location.
+ 
+ #. **Open the project** ---  From VC++, use the :menuselection:`File --> Open
+    Solution` dialog (not :menuselection:`File --> Open`!).  Navigate to and select
+    the file :file:`example.sln`, in the *copy* of the :file:`example_nt` directory
+    you made above.  Click Open.
+ 
+ #. **Build the example DLL** ---  In order to check that everything is set up
+    right, try building:
+ 
+-#. Select a configuration.  This step is optional.  Choose :menuselection:`Build
+-      --> Configuration Manager --> Active  Solution Configuration` and select either
+-      :guilabel:`Release`  or\ :guilabel:`Debug`.  If you skip this step, VC++ will
+-      use the Debug configuration by default.
++#. Select a configuration.  This step is optional.  Choose
++   :menuselection:`Build --> Configuration Manager --> Active Solution Configuration`
++   and select either :guilabel:`Release`  or :guilabel:`Debug`.  If you skip this
++   step, VC++ will use the Debug configuration by default.
+ 
+ #. Build the DLL.  Choose :menuselection:`Build --> Build Solution`.  This
+-      creates all intermediate and result files in a subdirectory called either
+-      :file:`Debug` or :file:`Release`, depending on which configuration you selected
+-      in the preceding step.
++   creates all intermediate and result files in a subdirectory called either
++   :file:`Debug` or :file:`Release`, depending on which configuration you selected
++   in the preceding step.
+ 
+ #. **Testing the debug-mode DLL** ---  Once the Debug build has succeeded, bring
+    up a DOS box, and change to the :file:`example_nt\\Debug` directory.  You should
+    now be able to repeat the following session (``C>`` is the DOS prompt, ``>>>``
+    is the Python prompt; note that build information and various debug output from
+    Python may not match this screen dump exactly)::
+ 
+       C>..\..\PCbuild\python_d
+       Adding parser accelerators ...
+       Done.
+       Python 2.2 (#28, Dec 19 2001, 23:26:37) [MSC 32 bit (Intel)] on win32
+       Type "copyright", "credits" or "license" for more information.
+@@ -97,28 +93,32 @@
+       >>>
+ 
+    Congratulations!  You've successfully built your first Python extension module.
+ 
+ #. **Creating your own project** ---  Choose a name and create a directory for
+    it.  Copy your C sources into it.  Note that the module source file name does
+    not necessarily have to match the module name, but the name of the
+    initialization function should match the module name --- you can only import a
+    module :mod:`spam` if its initialization function is called :cfunc:`initspam`,
+    and it should call :cfunc:`Py_InitModule` with the string ``"spam"`` as its
+    first argument (use the minimal :file:`example.c` in this directory as a guide).
+    By convention, it lives in a file called :file:`spam.c` or :file:`spammodule.c`.
+-   The output file should be called :file:`spam.dll` or :file:`spam.pyd` (the
+-   latter is supported to avoid confusion with a system library :file:`spam.dll` to
+-   which your module could be a Python interface) in Release mode, or
+-   :file:`spam_d.dll` or :file:`spam_d.pyd` in Debug mode.
++   The output file should be called :file:`spam.pyd` (in Release mode) or
++   :file:`spam_d.pyd` (in Debug mode). The extension :file:`.pyd` was chosen
++   to avoid confusion with a system library :file:`spam.dll` to which your module
++   could be a Python interface.
++
++   .. versionchanged:: 2.5
++      Previously, file names like :file:`spam.dll` (in release mode) or
++      :file:`spam_d.dll` (in debug mode) were also recognized.
+ 
+    Now your options are:
+ 
+ #. Copy :file:`example.sln` and :file:`example.vcproj`, rename them to
+       :file:`spam.\*`, and edit them by hand, or
+ 
+ #. Create a brand new project; instructions are below.
+ 
+    In either case, copy :file:`example_nt\\example.def` to :file:`spam\\spam.def`,
+    and edit the new :file:`spam.def` so its second line contains the string
+    '``initspam``'.  If you created a new project yourself, add the file
+    :file:`spam.def` to the project now.  (This is an annoying little file with only
+@@ -174,25 +174,25 @@
+ If your module creates a new type, you may have trouble with this line::
+ 
+    PyObject_HEAD_INIT(&PyType_Type)
+ 
+ Change it to::
+ 
+    PyObject_HEAD_INIT(NULL)
+ 
+ and add the following to the module initialization function::
+ 
+    MyObject_Type.ob_type = &PyType_Type;
+ 
+-Refer to section 3 of the `Python FAQ <http://www.python.org/doc/FAQ.html>`_ for
++Refer to section 3 of the `Python FAQ <http://www.python.org/doc/faq>`_ for
+ details on why you must do this.
+ 
+ 
+ .. _dynamic-linking:
+ 
+ Differences Between Unix and Windows
+ ====================================
+ 
+ .. sectionauthor:: Chris Phoenix <cphoenix@best.com>
+ 
+ 
+ Unix and Windows use completely different paradigms for run-time loading of
