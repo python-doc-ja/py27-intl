@@ -1,28 +1,33 @@
 .. _extending-index:
 
-##################################################
-  Extending and Embedding the Python Interpreter
-##################################################
+#######################################
+  Python インタプリタの拡張と埋め込み
+#######################################
 
 :Release: |version|
 :Date: |today|
 
-This document describes how to write modules in C or C++ to extend the Python
-interpreter with new modules.  Those modules can define new functions but also
-new object types and their methods.  The document also describes how to embed
-the Python interpreter in another application, for use as an extension language.
-Finally, it shows how to compile and link extension modules so that they can be
-loaded dynamically (at run time) into the interpreter, if the underlying
-operating system supports this feature.
+このドキュメントでは、Python インタプリタを拡張するために C/C++
+でモジュールを書く方法について述べます。
+拡張モジュールでは、新たな関数を定義できるだけでなく、
+新たなオブジェクト型とそのメソッドも定義できます。
+このドキュメントではまた、Python インタプリタを別のアプリケーションに
+埋め込み (embedding)、拡張言語として使う方法についても述べます。
+また、動的に(実行時に)拡張モジュールをロードする機能をOSがサポートしている場合に、
+動的ロード可能な拡張モジュールをコンパイルしてリンクする方法を示します。
 
-This document assumes basic knowledge about Python.  For an informal
-introduction to the language, see :ref:`tutorial-index`.  :ref:`reference-index`
-gives a more formal definition of the language.  :ref:`modules-index` documents
-the existing object types, functions and modules (both built-in and written in
-Python) that give the language its wide application range.
+このドキュメントでは、読者は Python について基礎的な知識を持ち合わせて
+いるものと仮定しています。形式ばらない Python 言語の入門には、
+:ref:`tutorial-index` を読んでください。
+:ref:`reference-index` を読めば、
+Python 言語についてより形式的な定義を得られます。
+また、 :ref:`module-index` では、Python に広い適用範囲をもたらしている
+既存のオブジェクト型、関数、
+および (組み込み、および Python で書かれたものの両方の) モジュール
+について解説しています。
 
-For a detailed description of the whole Python/C API, see the separate
-:ref:`c-api-index`.
+Python/C API 全体の詳しい説明は、別のドキュメントである、
+:ref:`c-api-index` を参照してください。
 
 .. toctree::
    :maxdepth: 2
