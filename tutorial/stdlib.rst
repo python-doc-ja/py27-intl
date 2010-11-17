@@ -430,7 +430,7 @@ Python には "バッテリー同梱 (batteries included)" 哲学があります
   .. % % data interchange between python applications and other tools.
 
 * :mod:`xml.dom` および :mod:`xml.sax`
-   パッケージでは、一般的なデータ交換形式である XML
+  パッケージでは、一般的なデータ交換形式である XML
   を解析するための頑健なサポートを提供しています。同様に、 :mod:`csv` モジュールでは、広く用いられている
   データベース形式のデータを直接読み書きする機能をサポートしています。これらのモジュールやパッケージは併用することで、Python アプリケーション
   と他のツール群との間でのデータ交換を劇的に簡単化します。
