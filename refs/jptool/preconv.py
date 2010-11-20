@@ -36,6 +36,7 @@ def char_filter(line):
     return ' '.join(parts_).encode('utf-8')
 
 def apply_line(line):
+    line = line.rstrip() + line[-1]
     line = char_filter(line)
     for r in REX:
         pos = 0
