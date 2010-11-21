@@ -27,10 +27,23 @@
    このオプションを指定すると、 :func:`repr` の代わりに :func:`str` を使ってオブジェクトを書き込みます。
 
 
+.. cfunction:: int PyObject_HasAttr(PyObject *o, PyObject *attr_name)
+
+   *o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。
+   この関数は Python の式
+   ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。
+
 .. cfunction:: int PyObject_HasAttrString(PyObject *o, const char *attr_name)
 
    *o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。この関数は Python の式
    ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。
+
+
+.. cfunction:: PyObject* PyObject_GetAttr(PyObject *o, PyObject *attr_name)
+
+   オブジェクト *o* から、名前 *attr_name* の属性を取得します。
+   成功すると属性値を返し失敗すると *NULL* を返します。この関数は
+   Python の式 ``o.attr_name`` と同じです。
 
 
 .. cfunction:: PyObject* PyObject_GetAttrString(PyObject *o, const char *attr_name)
@@ -39,16 +52,10 @@
    Python の式 ``o.attr_name`` と同じです。
 
 
-.. cfunction:: int PyObject_HasAttr(PyObject *o, PyObject *attr_name)
+.. cfunction:: int PyObject_SetAttr(PyObject *o, PyObject *attr_name, PyObject *v)
 
-   *o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。この関数は Python の式
-   ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。
-
-
-.. cfunction:: PyObject* PyObject_GetAttr(PyObject *o, PyObject *attr_name)
-
-   オブジェクト *o* から、名前 *attr_name* の属性を取得します。成功すると属性値を返し失敗すると *NULL* を返します。この関数は
-   Python の式 ``o.attr_name`` と同じです。
+   オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
+   の式 ``o.attr_name = v`` と同じです。
 
 
 .. cfunction:: int PyObject_SetAttrString(PyObject *o, const char *attr_name, PyObject *v)
@@ -57,19 +64,13 @@
    の式 ``o.attr_name = v`` と同じです。
 
 
-.. cfunction:: int PyObject_SetAttr(PyObject *o, PyObject *attr_name, PyObject *v)
-
-   オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
-   の式 ``o.attr_name = v`` と同じです。
-
-
-.. cfunction:: int PyObject_DelAttrString(PyObject *o, const char *attr_name)
+.. cfunction:: int PyObject_DelAttr(PyObject *o, PyObject *attr_name)
 
    オブジェクト *o* の *attr_name* という名の属性を削除します。失敗すると ``-1`` を返します。この関数は Python の文 ``del
    o.attr_name`` と同じです。
 
 
-.. cfunction:: int PyObject_DelAttr(PyObject *o, PyObject *attr_name)
+.. cfunction:: int PyObject_DelAttrString(PyObject *o, const char *attr_name)
 
    オブジェクト *o* の *attr_name* という名の属性を削除します。失敗すると ``-1`` を返します。この関数は Python の文 ``del
    o.attr_name`` と同じです。
@@ -548,6 +549,15 @@
    、 ``0`` を返します。変換が不可能な場合や、その他何らかのエラーが生じた場合、 ``-1`` (失敗) を返し、参照カウントをインクリメントしません。
    ``PyNumber_Coerce(&o1, &o2)`` の呼び出しは Python 文 ``o1, o2 = coerce(o1, o2)`` と同じです。
 
+
+.. cfunction:: int PyNumber_CoerceEx(PyObject **p1, PyObject **p2)
+
+   This function is similar to :cfunc:`PyNumber_Coerce`, except that it returns
+   ``1`` when the conversion is not possible and when no error is raised.
+   Reference counts are still not increased in this case.
+
+   .. todo::
+      訳
 
 .. cfunction:: PyObject* PyNumber_Int(PyObject *o)
 
