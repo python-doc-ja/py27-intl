@@ -1,15 +1,15 @@
 ****************************
-  What's New in Python 2.4  
+  What's New in Python 2.4
 ****************************
 
 :Author: A.M. Kuchling
 
 .. |release| replace:: 1.02
 
-.. % $Id: whatsnew24.tex,v 1.2 2006/11/09 13:20:57 moriwaka Exp $
-.. % Don't write extensive text for new sections; I'll do that.
-.. % Feel free to add commented-out reminders of things that need
-.. % to be covered.  --amk
+.. $Id: whatsnew24.tex 54632 2007-03-31 11:59:54Z georg.brandl $
+.. Don't write extensive text for new sections; I'll do that.
+.. Feel free to add commented-out reminders of things that need
+.. to be covered.  --amk
 
 This article explains the new features in Python 2.4.1, released on March 30,
 2005.
@@ -25,12 +25,11 @@ fixed between Python 2.3 and 2.4.  Both figures are likely to be underestimates.
 This article doesn't attempt to provide a complete specification of every single
 new feature, but instead provides a brief introduction to each feature.  For
 full details, you should refer to the documentation for Python 2.4, such as the
-Python Library Reference (XXX reference: ../lib/lib.html) and the Python
-Reference Manual (XXX reference: ../ref/ref.html).  Often you will be referred
-to the PEP for a particular new feature for explanations of the implementation
-and design rationale.
+Python Library Reference and the Python Reference Manual.  Often you will be
+referred to the PEP for a particular new feature for explanations of the
+implementation and design rationale.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 218: Built-In Set Objects
@@ -64,10 +63,10 @@ symmetric differences. ::
    >>> a.add('z')                          # add a new element
    >>> a.update('wxy')                     # add multiple new elements
    >>> a
-   set(['a', 'c', 'b', 'd', 'r', 'w', 'y', 'x', 'z'])       
+   set(['a', 'c', 'b', 'd', 'r', 'w', 'y', 'x', 'z'])
    >>> a.remove('x')                       # take one element out
    >>> a
-   set(['a', 'c', 'b', 'd', 'r', 'w', 'y', 'z'])       
+   set(['a', 'c', 'b', 'd', 'r', 'w', 'y', 'z'])
 
 The :func:`frozenset` type is an immutable version of :func:`set`. Since it is
 immutable and hashable, it may be used as a dictionary key or as a member of
@@ -84,7 +83,7 @@ currently no plans to deprecate the module.
       Originally proposed by Greg Wilson and ultimately implemented by Raymond
       Hettinger.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 237: Unifying Long Integers and Integers
@@ -109,7 +108,7 @@ the correct answer, 8589934592.
       Original PEP written by Moshe Zadka and GvR.  The changes for 2.4 were
       implemented by  Kalle Svensson.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 289: Generator Expressions
@@ -166,7 +165,7 @@ list comprehensions match generator expressions in this respect.
       Proposed by Raymond Hettinger and implemented by Jiwon Seo with early efforts
       steered by Hye-Shik Chang.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 292: Simpler String Substitutions
@@ -200,17 +199,11 @@ PEP 292 adds a :class:`Template` class to the :mod:`string` module that uses
 
 If a key is missing from the dictionary, the :meth:`substitute` method will
 raise a :exc:`KeyError`.  There's also a :meth:`safe_substitute` method that
-ignores missing keys:
-
-.. % $ Terminate $-mode for Emacs
-
-::
+ignores missing keys::
 
    >>> t = string.Template('$page: $title')
    >>> t.safe_substitute({'page':3})
    '3: $title'
-
-.. % $ Terminate math-mode for Emacs
 
 
 .. seealso::
@@ -218,7 +211,7 @@ ignores missing keys:
    :pep:`292` - Simpler String Substitutions
       Written and implemented  by Barry Warsaw.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 318: Decorators for Functions and Methods
@@ -347,7 +340,7 @@ returned.
    http://www.python.org/moin/PythonDecoratorLibrary
       This Wiki page contains several examples of decorators.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 322: Reverse Iteration
@@ -358,7 +351,7 @@ iterator that loops over the elements of the sequence  in reverse order.   ::
 
    >>> for i in reversed(xrange(1,4)):
    ...    print i
-   ... 
+   ...
    3
    2
    1
@@ -373,7 +366,7 @@ you want to reverse an iterator, first convert it to  a list with :func:`list`.
    >>> input = open('/etc/passwd', 'r')
    >>> for line in reversed(list(input)):
    ...   print line
-   ... 
+   ...
    root:*:0:0:System Administrator:/var/root:/bin/tcsh
      ...
 
@@ -383,7 +376,7 @@ you want to reverse an iterator, first convert it to  a list with :func:`list`.
    :pep:`322` - Reverse Iteration
       Written and implemented by Raymond Hettinger.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 324: New subprocess Module
@@ -403,10 +396,10 @@ single class called :class:`Popen`  whose constructor supports a number of
 different keyword arguments. ::
 
    class Popen(args, bufsize=0, executable=None,
-   	    stdin=None, stdout=None, stderr=None,
-   	    preexec_fn=None, close_fds=False, shell=False,
-   	    cwd=None, env=None, universal_newlines=False,
-   	    startupinfo=None, creationflags=0):
+               stdin=None, stdout=None, stderr=None,
+               preexec_fn=None, close_fds=False, shell=False,
+               cwd=None, env=None, universal_newlines=False,
+               startupinfo=None, creationflags=0):
 
 *args* is commonly a sequence of strings that will be the arguments to the
 program executed as the subprocess.  (If the *shell* argument is true, *args*
@@ -469,7 +462,7 @@ of the PEP is highly recommended.
       Written and implemented by Peter Åstrand, with assistance from Fredrik Lundh and
       others.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 327: Decimal Data Type
@@ -657,7 +650,7 @@ the precision of the default context::
    28
    >>> decimal.Decimal(1) / decimal.Decimal(7)
    Decimal("0.1428571428571428571428571429")
-   >>> decimal.getcontext().prec = 9 
+   >>> decimal.getcontext().prec = 9
    >>> decimal.Decimal(1) / decimal.Decimal(7)
    Decimal("0.142857143")
 
@@ -672,7 +665,7 @@ raised::
    >>> decimal.getcontext().traps[decimal.DivisionByZero] = False
    >>> decimal.Decimal(1) / decimal.Decimal(0)
    Decimal("Infinity")
-   >>> 
+   >>>
 
 The :class:`Context` instance also has various methods for formatting  numbers
 such as :meth:`to_eng_string` and :meth:`to_sci_string`.
@@ -699,7 +692,7 @@ includes a quick-start tutorial and a reference.
       proposed as a standard, and underlies the new Python decimal type.  Much of this
       material was written by Mike Cowlishaw, designer of the Rexx language.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 328: Multi-line Imports
@@ -735,7 +728,7 @@ PEP was not implemented for Python 2.4, but was completed for Python 2.5.
    :pep:`328` - Imports: Multi-Line and Absolute/Relative
       Written by Aahz.  Multi-line imports were implemented by Dima Dorfman.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 PEP 331: Locale-Independent Float/String Conversions
@@ -763,7 +756,7 @@ API that perform ASCII-only conversions, ignoring the locale setting:
   :ctype:`double` to an ASCII string.
 
 The code for these functions came from the GLib library
-(`<http://developer.gnome.org/arch/gtk/glib.html>`_), whose developers kindly
+(http://developer.gnome.org/arch/gtk/glib.html), whose developers kindly
 relicensed the relevant functions and donated them to the Python Software
 Foundation.  The :mod:`locale` module  can now change the numeric locale,
 letting extensions such as GTK+  produce the correct results.
@@ -774,7 +767,7 @@ letting extensions such as GTK+  produce the correct results.
    :pep:`331` - Locale-Independent Float/String Conversions
       Written by Christian R. Reis, and implemented by Gustavo Carneiro.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 Other Language Changes
@@ -810,7 +803,7 @@ Here are all of the changes that Python 2.4 makes to the core Python language.
      >>> 'www.python.org'.split('.', 1)
      ['www', 'python.org']
      'www.python.org'.rsplit('.', 1)
-     ['www.python', 'org']        
+     ['www.python', 'org']
 
 * Three keyword parameters, *cmp*, *key*, and *reverse*, were added to the
   :meth:`sort` method of lists. These parameters make some common usages of
@@ -933,7 +926,7 @@ Here are all of the changes that Python 2.4 makes to the core Python language.
 * :const:`None` is now a constant; code that binds a new value to  the name
   ``None`` is now a syntax error. (Contributed by Raymond Hettinger.)
 
-.. % ======================================================================
+.. ======================================================================
 
 
 Optimizations
@@ -984,15 +977,13 @@ benchmark around 5% faster than Python 2.3 and 35% faster than Python 2.2.
 measurement of Python's performance.  Your own applications may show greater or
 smaller benefits from Python 2.4.)
 
-.. % pystone is almost useless for comparing different versions of Python;
-.. % instead, it excels at predicting relative Python performance on
-.. % different machines.
-.. % So, this section would be more informative if it used other tools
-.. % such as pybench and parrotbench.  For a more application oriented
-.. % benchmark, try comparing the timings of test_decimal.py under 2.3
-.. % and 2.4.
+.. pystone is almost useless for comparing different versions of Python;
+   instead, it excels at predicting relative Python performance on different
+   machines.  So, this section would be more informative if it used other tools
+   such as pybench and parrotbench.  For a more application oriented benchmark,
+   try comparing the timings of test_decimal.py under 2.3 and 2.4.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 New, Improved, and Deprecated Modules
@@ -1054,7 +1045,7 @@ complete list of changes, or look through the CVS logs for all the details.
      >>> list(d)                 # list the contents of the deque
      ['g', 'h', 'i']
      >>> 'h' in d                # search the deque
-     True  
+     True
 
   Several modules, such as the :mod:`Queue` and :mod:`threading` modules, now take
   advantage of :class:`collections.deque` for improved performance.  (Contributed
@@ -1115,13 +1106,13 @@ complete list of changes, or look through the CVS logs for all the details.
      >>> L = [2, 4, 6, 7, 8, 9, 11, 12, 14]
      >>> for key_val, it in itertools.groupby(L, lambda x: x % 2):
      ...    print key_val, list(it)
-     ... 
+     ...
      0 [2, 4, 6]
      1 [7]
      0 [8]
      1 [9, 11]
      0 [12, 14]
-     >>> 
+     >>>
 
   :func:`groupby` is typically used with sorted input.  The logic for
   :func:`groupby` is similar to the Unix ``uniq`` filter which makes it handy for
@@ -1129,21 +1120,21 @@ complete list of changes, or look through the CVS logs for all the details.
 
      >>> word = 'abracadabra'
      >>> letters = sorted(word)   # Turn string into a sorted list of letters
-     >>> letters 
+     >>> letters
      ['a', 'a', 'a', 'a', 'a', 'b', 'b', 'c', 'd', 'r', 'r']
      >>> for k, g in itertools.groupby(letters):
      ...    print k, list(g)
-     ... 
+     ...
      a ['a', 'a', 'a', 'a', 'a']
      b ['b', 'b']
      c ['c']
      d ['d']
      r ['r', 'r']
      >>> # List unique letters
-     >>> [k for k, g in groupby(letters)]                     
+     >>> [k for k, g in groupby(letters)]
      ['a', 'b', 'c', 'd', 'r']
      >>> # Count letter occurrences
-     >>> [(k, len(list(g))) for k, g in groupby(letters)]     
+     >>> [(k, len(list(g))) for k, g in groupby(letters)]
      [('a', 5), ('b', 2), ('c', 1), ('d', 1), ('r', 2)]
 
   (Contributed by Hye-Shik Chang.)
@@ -1160,7 +1151,7 @@ complete list of changes, or look through the CVS logs for all the details.
      [1, 2, 3]
      >>> list(i2)               # Run the second iterator to exhaustion
      [1, 2, 3]
-     >
+
   Note that :func:`tee` has to keep copies of the values returned  by the
   iterator; in the worst case, it may need to keep all of them.   This should
   therefore be used carefully if the leading iterator can run far ahead of the
@@ -1184,7 +1175,7 @@ complete list of changes, or look through the CVS logs for all the details.
      import logging
      logging.basicConfig(filename='/var/log/application.log',
          level=0,  # Log all messages
-         format='%(levelname):%(process):%(thread):%(message)')	            
+         format='%(levelname):%(process):%(thread):%(message)')
 
   Other additions to the :mod:`logging` package include a :meth:`log(level, msg)`
   convenience method, as well as a :class:`TimedRotatingFileHandler` class that
@@ -1323,9 +1314,9 @@ complete list of changes, or look through the CVS logs for all the details.
 * The :mod:`mpz`, :mod:`rotor`, and :mod:`xreadlines` modules have  been
   removed.
 
-.. % ======================================================================
-.. % whole new modules get described in subsections here
-.. % =====================
+.. ======================================================================
+.. whole new modules get described in subsections here
+.. =====================
 
 
 cookielib
@@ -1349,7 +1340,7 @@ URLs.
 
 This module was contributed by John J. Lee.
 
-.. % ==================
+.. ==================
 
 
 doctest
@@ -1437,7 +1428,7 @@ Running the above function's tests with :const:`doctest.REPORT_UDIFF` specified,
 you get the following output::
 
    **********************************************************************
-   File ``t.py'', line 15, in g
+   File "t.py", line 15, in g
    Failed example:
        g(4)
    Differences (unified diff with -expected +actual):
@@ -1448,7 +1439,7 @@ you get the following output::
        +rather
    **********************************************************************
 
-.. % ======================================================================
+.. ======================================================================
 
 
 Build and C API Changes
@@ -1501,7 +1492,7 @@ Some of the changes to Python's build process and to the C API are:
 * The :ctype:`tracebackobject` type has been renamed to
   :ctype:`PyTracebackObject`.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 Port-Specific Changes
@@ -1510,7 +1501,7 @@ Port-Specific Changes
 * The Windows port now builds under MSVC++ 7.1 as well as version 6.
   (Contributed by Martin von Löwis.)
 
-.. % ======================================================================
+.. ======================================================================
 
 
 Porting to Python 2.4
@@ -1557,10 +1548,10 @@ code:
   for certain illegal values; previously these errors would pass silently.  For
   example, you can no longer set a handler on the :const:`SIGKILL` signal.
 
-.. % ======================================================================
+.. ======================================================================
 
 
-.. _acks:
+.. _24acks:
 
 Acknowledgements
 ================

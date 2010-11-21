@@ -1,13 +1,13 @@
 ****************************
-  What's New in Python 2.5  
+  What's New in Python 2.5
 ****************************
 
 :Author: A.M. Kuchling
 
-.. |release| replace:: 1.0
+.. |release| replace:: 1.01
 
-.. % $Id: whatsnew25.tex,v 1.1 2006/11/09 13:20:57 moriwaka Exp $
-.. % Fix XXX comments
+.. $Id: whatsnew25.tex 56611 2007-07-29 08:26:10Z georg.brandl $
+.. Fix XXX comments
 
 This article explains the new features in Python 2.5.  The final release of
 Python 2.5 is scheduled for August 2006; :pep:`356` describes the planned
@@ -16,9 +16,9 @@ release schedule.
 The changes in Python 2.5 are an interesting mix of language and library
 improvements. The library enhancements will be more important to Python's user
 community, I think, because several widely-useful packages were added.  New
-modules include ElementTree for XML processing (section :ref:`module-etree`),
-the SQLite database module (section :ref:`module-sqlite`), and the :mod:`ctypes`
-module for calling C functions (section :ref:`module-ctypes`).
+modules include ElementTree for XML processing (:mod:`xml.etree`),
+the SQLite database module (:mod:`sqlite`), and the :mod:`ctypes`
+module for calling C functions.
 
 The language changes are of middling significance.  Some pleasant new features
 were added, but most of them aren't features that you'll use every day.
@@ -39,14 +39,13 @@ finds there were 353 patches applied and 458 bugs fixed between Python 2.4 and
 This article doesn't try to be a complete specification of the new features;
 instead changes are briefly introduced using helpful examples.  For full
 details, you should always refer to the documentation for Python 2.5 at
-`<http://docs.python.org>`_. If you want to understand the complete
-implementation and design rationale, refer to the PEP for a particular new
-feature.
+http://docs.python.org. If you want to understand the complete implementation
+and design rationale, refer to the PEP for a particular new feature.
 
 Comments, suggestions, and error reports for this document are welcome; please
 e-mail them to the author or open a bug in the Python bug tracker.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-308:
@@ -124,7 +123,7 @@ conditional expressions, you won't run into this case.
       PEP written by Guido van Rossum and Raymond D. Hettinger; implemented by Thomas
       Wouters.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-309:
@@ -202,7 +201,7 @@ example would be::
       PEP proposed and written by Peter Harris; implemented by Hye-Shik Chang and Nick
       Coghlan, with adaptations by Raymond Hettinger.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-314:
@@ -221,7 +220,7 @@ in the package index, determine the dependencies for a package, and download the
 required packages. ::
 
    VERSION = '1.0'
-   setup(name='PyPackage', 
+   setup(name='PyPackage',
          version=VERSION,
          requires=['numarray', 'zlib (>=1.1.4)'],
          obsoletes=['OldPackage']
@@ -230,7 +229,7 @@ required packages. ::
         )
 
 Another new enhancement to the Python package index at
-`<http://cheeseshop.python.org>`_ is storing source and binary archives for a
+http://cheeseshop.python.org is storing source and binary archives for a
 package.  The new :command:`upload` Distutils command will upload a package to
 the repository.
 
@@ -249,7 +248,7 @@ Package uploading was implemented by Martin von Löwis and Richard Jones.
       PEP proposed and written by A.M. Kuchling, Richard Jones, and Fred Drake;
       implemented by Richard Jones and Fred Drake.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-328:
@@ -334,7 +333,7 @@ statement, only the ``from ... import`` form.
    http://codespeak.net/py/current/doc/index.html
       The py library by Holger Krekel, which contains the :mod:`py.std` package.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-338:
@@ -360,7 +359,7 @@ archive.
    :pep:`338` - Executing modules as scripts
       PEP written and  implemented by Nick Coghlan.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-341:
@@ -373,7 +372,7 @@ use a :keyword:`finally` block to ensure that code is always executed, or one or
 more :keyword:`except` blocks to catch  specific exceptions.  You couldn't
 combine both :keyword:`except` blocks and a :keyword:`finally` block, because
 generating the right bytecode for the combined version was complicated and it
-wasn't clear what the semantics of the combined should be.
+wasn't clear what the semantics of the combined statement should be.
 
 Guido van Rossum spent some time working with Java, which does support the
 equivalent of combining :keyword:`except` blocks and a :keyword:`finally` block,
@@ -389,7 +388,7 @@ write::
    else:
        else-block
    finally:
-       final-block 
+       final-block
 
 The code in *block-1* is executed.  If the code raises an exception, the various
 :keyword:`except` blocks are tested: if the exception is of class
@@ -408,7 +407,7 @@ in the *final-block* is still run.
    :pep:`341` - Unifying try-except and try-finally
       PEP written by Georg Brandl;  implementation by Thomas Lee.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-342:
@@ -486,14 +485,14 @@ And here's an example of changing the counter::
    9
    >>> print it.next()
    Traceback (most recent call last):
-     File ``t.py'', line 15, in ?
+     File "t.py", line 15, in ?
        print it.next()
    StopIteration
 
-Because :keyword:`yield` will often be returning :const:`None`, you should
-always check for this case.  Don't just use its value in expressions unless
-you're sure that the :meth:`send` method will be the only method used resume
-your generator function.
+:keyword:`yield` will usually return :const:`None`, so you should always check
+for this case.  Don't just use its value in expressions unless you're sure that
+the :meth:`send` method will be the only method used to resume your generator
+function.
 
 In addition to :meth:`send`, there are two other new methods on generators:
 
@@ -502,11 +501,12 @@ In addition to :meth:`send`, there are two other new methods on generators:
   where the generator's execution is paused.
 
 * :meth:`close` raises a new :exc:`GeneratorExit` exception inside the generator
-  to terminate the iteration.   On receiving this exception, the generator's code
-  must either raise :exc:`GeneratorExit` or :exc:`StopIteration`; catching the
-  exception and doing anything else is illegal and will trigger a
-  :exc:`RuntimeError`.  :meth:`close` will also be called by  Python's garbage
-  collector when the generator is garbage-collected.
+  to terminate the iteration.  On receiving this exception, the generator's code
+  must either raise :exc:`GeneratorExit` or :exc:`StopIteration`.  Catching the
+  :exc:`GeneratorExit` exception and returning a value is illegal and will trigger
+  a :exc:`RuntimeError`; if the function raises some other exception, that
+  exception is propagated to the caller.  :meth:`close` will also be called by
+  Python's garbage collector when the generator is garbage-collected.
 
   If you need to run cleanup code when a :exc:`GeneratorExit` occurs, I suggest
   using a ``try: ... finally:`` suite instead of  catching :exc:`GeneratorExit`.
@@ -553,7 +553,7 @@ exhausted.
    http://www.sidhe.org/~dan/blog/archives/000178.html
       An explanation of coroutines from a Perl point of view, written by Dan Sugalski.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-343:
@@ -574,13 +574,19 @@ structure is::
        with-block
 
 The expression is evaluated, and it should result in an object that supports the
-context management protocol.  This object may return a value that can optionally
-be bound to the name *variable*.  (Note carefully that *variable* is *not*
-assigned the result of *expression*.)  The object can then run set-up code
-before *with-block* is executed and some clean-up code is executed after the
-block is done, even if the block raised an exception.
+context management protocol (that is, has :meth:`__enter__` and :meth:`__exit__`
+methods.
 
-To enable the statement in Python 2.5, you need  to add the following directive
+The object's :meth:`__enter__` is called before *with-block* is executed and
+therefore can run set-up code. It also may return a value that is bound to the
+name *variable*, if given.  (Note carefully that *variable* is *not* assigned
+the result of *expression*.)
+
+After execution of the *with-block* is finished, the object's :meth:`__exit__`
+method is called, even if the block raised an exception, and can therefore run
+clean-up code.
+
+To enable the statement in Python 2.5, you need to add the following directive
 to your module::
 
    from __future__ import with_statement
@@ -596,8 +602,13 @@ be used with the ':keyword:`with`' statement. File objects are one example::
            ... more processing code ...
 
 After this statement has executed, the file object in *f* will have been
-automatically closed, even if the 'for' loop raised an exception part-way
-through the block.
+automatically closed, even if the :keyword:`for` loop raised an exception part-
+way through the block.
+
+.. note::
+
+   In this case, *f* is the same object created by :func:`open`, because
+   :meth:`file.__enter__` returns *self*.
 
 The :mod:`threading` module's locks and condition variables  also support the
 ':keyword:`with`' statement::
@@ -626,7 +637,7 @@ precision and rounding characteristics for computations::
        print v.sqrt()
 
 
-.. _context-managers:
+.. _new-25-context-managers:
 
 Writing Context Managers
 ------------------------
@@ -725,7 +736,7 @@ add a :keyword:`return` statement at the marked location. ::
                # return False
 
 
-.. _module-contextlib:
+.. _contextlibmod:
 
 The contextlib module
 ---------------------
@@ -790,10 +801,9 @@ bound to a variable, and calls ``object.close`` at the end of the block. ::
       ':keyword:`with`' statement, which can be helpful in learning how the statement
       works.
 
-   ../lib/module-contextlib.html
-      The documentation  for the :mod:`contextlib` module.
+   The documentation  for the :mod:`contextlib` module.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-352:
@@ -825,8 +835,8 @@ catch all exceptions, so you commonly need to list :exc:`KeyboardInterrupt` and
        ...
    except (KeyboardInterrupt, SystemExit):
        raise
-   except: 
-       # Log error...  
+   except:
+       # Log error...
        # Continue running program...
 
 In Python 2.5, you can now write ``except Exception`` to achieve the same
@@ -852,7 +862,7 @@ to be able to remove the string-exception feature in a few releases.
    :pep:`352` - Required Superclass for Exceptions
       PEP written by  Brett Cannon and Guido van Rossum; implemented by Brett Cannon.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-353:
@@ -871,8 +881,8 @@ in an :ctype:`int`.  The C compilers for most 64-bit platforms still define
 :ctype:`int` as a 32-bit type, so that meant that lists could only hold up to
 ``2**31 - 1`` = 2147483647 items. (There are actually a few different
 programming models that 64-bit C compilers can use -- see
-`<http://www.unix.org/version2/whatsnew/lp64_wp.html>`_ for a discussion -- but
-the most commonly available model leaves :ctype:`int` as 32 bits.)
+http://www.unix.org/version2/whatsnew/lp64_wp.html for a discussion -- but the
+most commonly available model leaves :ctype:`int` as 32 bits.)
 
 A limit of 2147483647 items doesn't really matter on a 32-bit platform because
 you'll run out of memory before hitting the length limit. Each list item
@@ -911,7 +921,7 @@ read to learn about supporting 64-bit platforms.
    :pep:`353` - Using ssize_t as the index type
       PEP written and implemented by Martin von Löwis.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _pep-357:
@@ -937,7 +947,7 @@ arguments and returns an integer giving the slice index to use.  For example::
 
    class C:
        def __index__ (self):
-           return self.value  
+           return self.value
 
 The return value must be either a Python integer or long integer. The
 interpreter will check that the type returned is correct, and raises a
@@ -954,7 +964,7 @@ A corresponding :attr:`nb_index` slot was added to the C-level
    :pep:`357` - Allowing Any Object to be Used for Slicing
       PEP written  and implemented by Travis Oliphant.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _other-lang:
@@ -1014,7 +1024,7 @@ Here are all of the changes that Python 2.5 makes to the core Python language.
 
   (Implemented by Georg Brandl following a suggestion by Tom Lynn.)
 
-  .. % RFE #1491485
+  .. RFE #1491485
 
 * The :func:`min` and :func:`max` built-in functions gained a ``key`` keyword
   parameter analogous to the ``key`` argument for :meth:`sort`.  This parameter
@@ -1025,9 +1035,9 @@ Here are all of the changes that Python 2.5 makes to the core Python language.
 
      L = ['medium', 'longest', 'short']
      # Prints 'longest'
-     print max(L, key=len)              
+     print max(L, key=len)
      # Prints 'short', because lexicographically 'short' has the largest value
-     print max(L)         
+     print max(L)
 
   (Contributed by Steven Bethard and Raymond Hettinger.)
 
@@ -1038,14 +1048,14 @@ Here are all of the changes that Python 2.5 makes to the core Python language.
   returned by the iterator evaluate as true. (Suggested by Guido van Rossum, and
   implemented by Raymond Hettinger.)
 
-* The result of a class's :meth:`__hash__` method can now  be either a long
+* The result of a class's :meth:`__hash__` method can now be either a long
   integer or a regular integer.  If a long integer is returned, the hash of that
-  value is taken.  In earlier versions the hash value was required to be a regular
-  integer, but in 2.5 the :func:`id` built-in was changed to always return non-
-  negative numbers, and users often seem to use ``id(self)`` in :meth:`__hash__`
-  methods (though this is discouraged).
+  value is taken.  In earlier versions the hash value was required to be a
+  regular integer, but in 2.5 the :func:`id` built-in was changed to always
+  return non-negative numbers, and users often seem to use ``id(self)`` in
+  :meth:`__hash__` methods (though this is discouraged).
 
-  .. % Bug #1536021
+  .. Bug #1536021
 
 * ASCII is now the default encoding for modules.  It's now  a syntax error if a
   module contains string literals with 8-bit characters but doesn't have an
@@ -1060,8 +1070,8 @@ Here are all of the changes that Python 2.5 makes to the core Python language.
   using the default ASCII encoding.   The result of the comparison is false::
 
      >>> chr(128) == unichr(128)   # Can't convert chr(128) to Unicode
-     __main__:1: UnicodeWarning: Unicode equal comparison failed 
-       to convert both arguments to Unicode - interpreting them 
+     __main__:1: UnicodeWarning: Unicode equal comparison failed
+       to convert both arguments to Unicode - interpreting them
        as being unequal
      False
      >>> chr(127) == unichr(127)   # chr(127) can be converted
@@ -1096,10 +1106,10 @@ Here are all of the changes that Python 2.5 makes to the core Python language.
 
   (Implemented by Brett Cannon.)
 
-.. % ======================================================================
+.. ======================================================================
 
 
-.. _interactive:
+.. _25interactive:
 
 Interactive Interpreter Changes
 -------------------------------
@@ -1119,7 +1129,7 @@ The Python executable now accepts the standard long options  :option:`--help`
 and :option:`--version`; on Windows,  it also accepts the :option:`/?` option
 for displaying a help message. (Implemented by Georg Brandl.)
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _opts:
@@ -1145,14 +1155,24 @@ marked in the following list.
   Andrew Dalke at the NeedForSpeed sprint. Character maps were improved by Walter
   Dörwald and Martin von Löwis.)
 
-  .. % Patch 1313939, 1359618
+  .. Patch 1313939, 1359618
 
 * The :func:`long(str, base)` function is now faster on long digit strings
   because fewer intermediate results are calculated.  The peak is for strings of
   around 800--1000 digits where  the function is 6 times faster. (Contributed by
   Alan McIntyre and committed at the NeedForSpeed sprint.)
 
-  .. % Patch 1442927
+  .. Patch 1442927
+
+* It's now illegal to mix iterating over a file  with ``for line in file`` and
+  calling  the file object's :meth:`read`/:meth:`readline`/:meth:`readlines`
+  methods.  Iteration uses an internal buffer and the  :meth:`read\*` methods
+  don't use that buffer.   Instead they would return the data following the
+  buffer, causing the data to appear out of order.  Mixing iteration and these
+  methods will now trigger a :exc:`ValueError` from the :meth:`read\*` method.
+  (Implemented by Thomas Wouters.)
+
+  .. Patch 1397960
 
 * The :mod:`struct` module now compiles structure format  strings into an
   internal representation and caches this representation, yielding a 20% speedup.
@@ -1174,8 +1194,8 @@ marked in the following list.
   sprint.)  Frame objects are also slightly smaller, which may improve cache
   locality and reduce memory usage a bit.  (Contributed by Neal Norwitz.)
 
-  .. % Patch 876206
-  .. % Patch 1337051
+  .. Patch 876206
+  .. Patch 1337051
 
 * Python's built-in exceptions are now new-style classes, a change that speeds
   up instantiation considerably.  Exception handling in Python 2.5 is therefore
@@ -1186,12 +1206,12 @@ marked in the following list.
   that the interpreter makes fewer  :cfunc:`open` and :cfunc:`stat` calls on
   startup. (Contributed by Martin von Löwis and Georg Brandl.)
 
-  .. % Patch 921466
+  .. Patch 921466
 
-.. % ======================================================================
+.. ======================================================================
 
 
-.. _modules:
+.. _25modules:
 
 New, Improved, and Removed Modules
 ==================================
@@ -1214,7 +1234,7 @@ complete list of changes, or look through the SVN logs for all the details.
   entire input was fed to the non-incremental codec. See the :mod:`codecs` module
   documentation for details. (Designed and implemented by Walter Dörwald.)
 
-  .. % Patch  1436130
+  .. Patch  1436130
 
 * The :mod:`collections` module gained a new type, :class:`defaultdict`, that
   subclasses the standard :class:`dict` type.  The new type mostly behaves like a
@@ -1239,10 +1259,10 @@ complete list of changes, or look through the SVN logs for all the details.
 
   Printing ``index`` results in the following output::
 
-     defaultdict(<type 'list'>, {'c': ['cammin', 'che'], 'e': ['era'], 
-             'd': ['del', 'di', 'diritta'], 'm': ['mezzo', 'mi'], 
-             'l': ['la'], 'o': ['oscura'], 'n': ['nel', 'nostra'], 
-             'p': ['per'], 's': ['selva', 'smarrita'], 
+     defaultdict(<type 'list'>, {'c': ['cammin', 'che'], 'e': ['era'],
+             'd': ['del', 'di', 'diritta'], 'm': ['mezzo', 'mi'],
+             'l': ['la'], 'o': ['oscura'], 'n': ['nel', 'nostra'],
+             'p': ['per'], 's': ['selva', 'smarrita'],
              'r': ['ritrovai'], 'u': ['una'], 'v': ['vita', 'via']}
 
   (Contributed by Guido van Rossum.)
@@ -1253,7 +1273,7 @@ complete list of changes, or look through the SVN logs for all the details.
   (Contributed by Raymond Hettinger.)
 
 * New module: The :mod:`contextlib` module contains helper functions for use
-  with the new ':keyword:`with`' statement.  See section :ref:`module-contextlib`
+  with the new ':keyword:`with`' statement.  See section :ref:`contextlibmod`
   for more about this module.
 
 * New module: The :mod:`cProfile` module is a C implementation of  the existing
@@ -1311,12 +1331,12 @@ complete list of changes, or look through the SVN logs for all the details.
   easier to use non-ASCII characters in  tests contained within a docstring.
   (Contributed by Bjorn Tillenius.)
 
-  .. % Patch 1080727
+  .. Patch 1080727
 
 * The :mod:`email` package has been updated to version 4.0. (Contributed by
   Barry Warsaw.)
 
-  .. % XXX need to provide some more detail here
+  .. XXX need to provide some more detail here
 
 * The :mod:`fileinput` module was made more flexible. Unicode filenames are now
   supported, and a *mode* parameter that defaults to ``"r"`` was added to the
@@ -1374,7 +1394,7 @@ complete list of changes, or look through the SVN logs for all the details.
 
   (Contributed by Georg Brandl.)
 
-  .. % Patch 1180296
+  .. Patch 1180296
 
 * The :mod:`mailbox` module underwent a massive rewrite to add the capability to
   modify mailboxes in addition to reading them.  A new set of classes that include
@@ -1442,7 +1462,7 @@ complete list of changes, or look through the SVN logs for all the details.
   :attr:`st_birthtime`. The :attr:`st_flags` member is also available, if the
   platform supports it. (Contributed by Antti Louko and  Diego Pettenò.)
 
-  .. % (Patch 1180695, 1212117)
+  .. (Patch 1180695, 1212117)
 
 * The Python debugger provided by the :mod:`pdb` module can now store lists of
   commands to execute when a breakpoint is reached and execution stops.  Once
@@ -1451,7 +1471,7 @@ complete list of changes, or look through the SVN logs for all the details.
   include commands that resume execution, such as ``continue`` or ``next``.
   (Contributed by Grégoire Dooms.)
 
-  .. % Patch 790710
+  .. Patch 790710
 
 * The :mod:`pickle` and :mod:`cPickle` modules no longer accept a return value
   of ``None`` from the :meth:`__reduce__` method; the method must return a tuple
@@ -1473,6 +1493,12 @@ complete list of changes, or look through the SVN logs for all the details.
 * The :mod:`pyexpat` module now uses version 2.0 of the Expat parser.
   (Contributed by Trent Mick.)
 
+* The :class:`Queue` class provided by the :mod:`Queue` module gained two new
+  methods.  :meth:`join` blocks until all items in the queue have been retrieved
+  and all processing work on the items  have been completed.  Worker threads call
+  the other new method,  :meth:`task_done`, to signal that processing for an item
+  has been completed.  (Contributed by Raymond Hettinger.)
+
 * The old :mod:`regex` and :mod:`regsub` modules, which have been  deprecated
   ever since Python 2.0, have finally been deleted.   Other deleted modules:
   :mod:`statcache`, :mod:`tzparse`, :mod:`whrandom`.
@@ -1486,24 +1512,24 @@ complete list of changes, or look through the SVN logs for all the details.
   :mod:`readline` module and therefore now works on non-Unix platforms. (Patch
   from Robert Kiendl.)
 
-  .. % Patch #1472854
+  .. Patch #1472854
 
 * The :mod:`SimpleXMLRPCServer` and :mod:`DocXMLRPCServer`  classes now have a
   :attr:`rpc_paths` attribute that constrains XML-RPC operations to a limited set
   of URL paths; the default is to allow only ``'/'`` and ``'/RPC2'``.  Setting
   :attr:`rpc_paths` to ``None`` or an empty tuple disables  this path checking.
 
-  .. % Bug #1473048
+  .. Bug #1473048
 
 * The :mod:`socket` module now supports :const:`AF_NETLINK` sockets on Linux,
   thanks to a patch from Philippe Biondi.   Netlink sockets are a Linux-specific
   mechanism for communications between a user-space process and kernel code; an
-  introductory  article about them is at
-  `<http://www.linuxjournal.com/article/7356>`_. In Python code, netlink addresses
-  are represented as a tuple of 2 integers,  ``(pid, group_mask)``.
+  introductory  article about them is at http://www.linuxjournal.com/article/7356.
+  In Python code, netlink addresses are represented as a tuple of 2 integers,
+  ``(pid, group_mask)``.
 
-  Two new methods on socket objects, :meth:`recv_buf(buffer)` and
-  :meth:`recvfrom_buf(buffer)`, store the received data in an object  that
+  Two new methods on socket objects, :meth:`recv_into(buffer)` and
+  :meth:`recvfrom_into(buffer)`, store the received data in an object  that
   supports the buffer protocol instead of returning the data as a string.  This
   means you can put the data directly into an array or a memory-mapped file.
 
@@ -1559,7 +1585,7 @@ complete list of changes, or look through the SVN logs for all the details.
   The compression used for a tarfile opened in stream mode can now be autodetected
   using the mode ``'r|*'``. (Contributed by Lars Gustäbel.)
 
-  .. % patch 918101
+  .. patch 918101
 
 * The :mod:`threading` module now lets you set the stack size used when new
   threads are created. The :func:`stack_size([*size*])` function returns the
@@ -1567,7 +1593,7 @@ complete list of changes, or look through the SVN logs for all the details.
   sets a new value.  Not all platforms support changing the stack size, but
   Windows, POSIX threading, and OS/2 all do. (Contributed by Andrew MacIntyre.)
 
-  .. % Patch 1454481
+  .. Patch 1454481
 
 * The :mod:`unicodedata` module has been updated to use version 4.1.0 of the
   Unicode character database.  Version 3.2.0 is required  by some specifications,
@@ -1617,29 +1643,29 @@ complete list of changes, or look through the SVN logs for all the details.
   of additional browsers were added to the supported list such as Firefox, Opera,
   Konqueror, and elinks.  (Contributed by Oleg Broytmann and Georg Brandl.)
 
-  .. % Patch #754022
+  .. Patch #754022
 
 * The :mod:`xmlrpclib` module now supports returning  :class:`datetime` objects
   for the XML-RPC date type.  Supply  ``use_datetime=True`` to the :func:`loads`
   function or the :class:`Unmarshaller` class to enable this feature. (Contributed
   by Skip Montanaro.)
 
-  .. % Patch 1120353
+  .. Patch 1120353
 
 * The :mod:`zipfile` module now supports the ZIP64 version of the  format,
   meaning that a .zip archive can now be larger than 4 GiB and can contain
   individual files larger than 4 GiB.  (Contributed by Ronald Oussoren.)
 
-  .. % Patch 1446489
+  .. Patch 1446489
 
 * The :mod:`zlib` module's :class:`Compress` and :class:`Decompress` objects now
   support a :meth:`copy` method that makes a copy of the  object's internal state
   and returns a new  :class:`Compress` or :class:`Decompress` object.
   (Contributed by Chris AtLee.)
 
-  .. % Patch 1435422
+  .. Patch 1435422
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _module-ctypes:
@@ -1718,10 +1744,9 @@ modules, now that :mod:`ctypes` is included with core Python.
    http://starship.python.net/crew/theller/ctypes/
       The ctypes web page, with a tutorial, reference, and FAQ.
 
-   ../lib/module-ctypes.html
-      The documentation  for the :mod:`ctypes` module.
+   The documentation  for the :mod:`ctypes` module.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _module-etree:
@@ -1737,7 +1762,7 @@ included.
 
 The rest of this section will provide a brief overview of using ElementTree.
 Full documentation for ElementTree is available at
-`<http://effbot.org/zone/element-index.htm>`_.
+http://effbot.org/zone/element-index.htm.
 
 ElementTree represents an XML document as a tree of element nodes. The text
 content of the document is stored as the :attr:`.text` and :attr:`.tail`
@@ -1838,7 +1863,7 @@ read the package's official documentation for more details.
    http://effbot.org/zone/element-index.htm
       Official documentation for ElementTree.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _module-hashlib:
@@ -1859,17 +1884,17 @@ is that the constructor functions for creating new hashing objects are named
 differently. ::
 
    # Old versions
-   h = md5.md5()   
-   h = md5.new()   
+   h = md5.md5()
+   h = md5.new()
 
-   # New version 
+   # New version
    h = hashlib.md5()
 
    # Old versions
-   h = sha.sha()   
-   h = sha.new()   
+   h = sha.sha()
+   h = sha.new()
 
-   # New version 
+   # New version
    h = hashlib.sha1()
 
    # Hash that weren't previously available
@@ -1890,10 +1915,9 @@ with the same digest state.
 
 .. seealso::
 
-   ../lib/module-hashlib.html
-      The documentation  for the :mod:`hashlib` module.
+   The documentation  for the :mod:`hashlib` module.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _module-sqlite:
@@ -1901,17 +1925,19 @@ with the same digest state.
 The sqlite3 package
 -------------------
 
-The pysqlite module (`<http://www.pysqlite.org>`_), a wrapper for the SQLite
-embedded database, has been added to the standard library under the package name
+The pysqlite module (http://www.pysqlite.org), a wrapper for the SQLite embedded
+database, has been added to the standard library under the package name
 :mod:`sqlite3`.
 
-SQLite is a C library that provides a SQL-language database that stores data in
-disk files without requiring a separate server process. pysqlite was written by
-Gerhard Häring and provides a SQL interface compliant with the DB-API 2.0
-specification described by :pep:`249`. This means that it should be possible to
-write the first version of your applications using SQLite for data storage.  If
-switching to a larger database such as PostgreSQL or Oracle is later necessary,
-the switch should be relatively easy.
+SQLite is a C library that provides a lightweight disk-based database that
+doesn't require a separate server process and allows accessing the database
+using a nonstandard variant of the SQL query language. Some applications can use
+SQLite for internal data storage.  It's also possible to prototype an
+application using SQLite and then port the code to a larger database such as
+PostgreSQL or Oracle.
+
+pysqlite was written by Gerhard Häring and provides a SQL interface compliant
+with the DB-API 2.0 specification described by :pep:`249`.
 
 If you're compiling the Python source yourself, note that the source tree
 doesn't include the SQLite code, only the wrapper module. You'll need to have
@@ -1933,8 +1959,8 @@ and call its :meth:`execute` method to perform SQL commands::
 
    # Create table
    c.execute('''create table stocks
-   (date timestamp, trans varchar, symbol varchar,
-    qty decimal, price decimal)''')
+   (date text, trans text, symbol text,
+    qty real, price real)''')
 
    # Insert a row of data
    c.execute("""insert into stocks
@@ -1983,7 +2009,7 @@ This example uses the iterator form::
    >>>
 
 For more information about the SQL dialect supported by SQLite, see
-`<http://www.sqlite.org>`_.
+http://www.sqlite.org.
 
 
 .. seealso::
@@ -1995,13 +2021,12 @@ For more information about the SQL dialect supported by SQLite, see
       The SQLite web page; the documentation describes the syntax and the available
       data types for the supported SQL dialect.
 
-   ../lib/module-sqlite3.html
-      The documentation  for the :mod:`sqlite3` module.
+   The documentation  for the :mod:`sqlite3` module.
 
    :pep:`249` - Database API Specification 2.0
       PEP written by Marc-André Lemburg.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _module-wsgiref:
@@ -2014,7 +2039,7 @@ between web servers and Python web applications and is described in :pep:`333`.
 The :mod:`wsgiref` package is a reference implementation of the WSGI
 specification.
 
-.. % XXX should this be in a PEP 333 section instead?
+.. XXX should this be in a PEP 333 section instead?
 
 The package includes a basic HTTP server that will run a WSGI application; this
 server is useful for debugging but isn't intended for  production use.  Setting
@@ -2029,8 +2054,8 @@ up a server takes only a few lines of code::
    httpd = simple_server.make_server(host, port, wsgi_app)
    httpd.serve_forever()
 
-.. % XXX discuss structure of WSGI applications?
-.. % XXX provide an example using Django or some other framework?
+.. XXX discuss structure of WSGI applications?
+.. XXX provide an example using Django or some other framework?
 
 
 .. seealso::
@@ -2041,7 +2066,7 @@ up a server takes only a few lines of code::
    :pep:`333` - Python Web Server Gateway Interface v1.0
       PEP written by Phillip J. Eby.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _build-api:
@@ -2059,7 +2084,7 @@ Changes to Python's build process and to the C API include:
   provided the results of their examination of the Python source code.  The
   analysis found about 60 bugs that  were quickly fixed.  Many of the bugs were
   refcounting problems, often occurring in error-handling code.  See
-  `<http://scan.coverity.com>`_ for the statistics.
+  http://scan.coverity.com for the statistics.
 
 * The largest change to the C API came from :pep:`353`, which modifies the
   interpreter to use a :ctype:`Py_ssize_t` type definition instead of
@@ -2100,8 +2125,8 @@ Changes to Python's build process and to the C API include:
   Schemenauer, plus the participants in a number of AST sprints at conferences
   such as PyCon.
 
-  .. % List of names taken from Jeremy's python-dev post at
-  .. % http://mail.python.org/pipermail/python-dev/2005-October/057500.html
+  .. List of names taken from Jeremy's python-dev post at
+  .. http://mail.python.org/pipermail/python-dev/2005-October/057500.html
 
 * Evan Jones's patch to obmalloc, first described in a talk at PyCon DC 2005,
   was applied.  Python 2.4 allocated small objects in 256K-sized arenas, but never
@@ -2166,10 +2191,10 @@ Changes to Python's build process and to the C API include:
   case that your extensions were using it, you can replace it by something like
   the following::
 
-     range = PyObject_CallFunction((PyObject*) &PyRange_Type, "lll", 
+     range = PyObject_CallFunction((PyObject*) &PyRange_Type, "lll",
                                    start, stop, step);
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _ports:
@@ -2180,16 +2205,16 @@ Port-Specific Changes
 * MacOS X (10.3 and higher): dynamic loading of modules now uses the
   :cfunc:`dlopen` function instead of MacOS-specific functions.
 
-* MacOS X: a :option:`--enable-universalsdk` switch was added to the
+* MacOS X: an :option:`--enable-universalsdk` switch was added to the
   :program:`configure` script that compiles the interpreter as a universal binary
   able to run on both PowerPC and Intel processors. (Contributed by Ronald
-  Oussoren.)
+  Oussoren; :issue:`2573`.)
 
 * Windows: :file:`.dll` is no longer supported as a filename extension for
   extension modules.  :file:`.pyd` is now the only filename extension that will be
   searched for.
 
-.. % ======================================================================
+.. ======================================================================
 
 
 .. _porting:
@@ -2244,10 +2269,8 @@ code:
   allocated with  one family's :cfunc:`\*_Malloc` must be  freed with the
   corresponding family's :cfunc:`\*_Free` function.
 
-.. % ======================================================================
+.. ======================================================================
 
-
-.. _acks:
 
 Acknowledgements
 ================
