@@ -5,10 +5,10 @@ import re
 import sys
 import unicodedata
 
-R0 = re.compile(r"""``[^`]+``""")
+R0 = re.compile(r"""(?<=[^`\\])``[^`]+``""")
 R1 = re.compile(r""":\w+:`[^`]+`""")
-R2 = re.compile(r"""\*\*[^\*]*[^ \*]+[^\*]*\*\*""")
-R3 = re.compile(r"""\*[^\*]*[^ \*]+[^\*]*\*""")
+R2 = re.compile(r"""(?<=[^`\\])\*\*[^\*]*[^ \\*]+\*\*""")
+R3 = re.compile(r"""(?<=[^`\\])\*[^\*]*[^ \\*]+\*""")
 
 SPLITTER = """:,. ()[]'\"\r\n*"""
 
@@ -38,6 +38,8 @@ def char_filter(line):
 def apply_line(line):
     line = line.rstrip() + line[-1]
     line = char_filter(line)
+    if line.startswith('.. '):
+        return line
     for r in REX:
         pos = 0
         buf = ""
