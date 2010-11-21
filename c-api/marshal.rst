@@ -2,93 +2,82 @@
 
 .. _marshalling-utils:
 
-Data marshalling support
-========================
+データ整列化 (data marshalling) のサポート
+==========================================
 
-These routines allow C code to work with serialized objects using the same data
-format as the :mod:`marshal` module.  There are functions to write data into the
-serialization format, and additional functions that can be used to read the data
-back.  Files used to store marshalled data must be opened in binary mode.
+以下のルーチン群は、 :mod:`marshal` モジュールと同じ形式を使った整列化オブジェクトを C コードから使えるようにします。
+整列化形式でデータを書き出す関数に加えて、データを読み戻す関数もあります。整列化されたデータを記録するファイルはバイナリモードで
+開かれていなければなりません。
 
-Numeric values are stored with the least significant byte first.
+数値は最小桁が先にくるように記録されます。
 
-The module supports two versions of the data format: version 0 is the historical
-version, version 1 (new in Python 2.4) shares interned strings in the file, and
-upon unmarshalling.  Version 2 (new in Python 2.5) uses a binary format for
-floating point numbers.
-*Py_MARSHAL_VERSION* indicates the current file format (currently 2).
+このモジュールでは、二つのバージョンのデータ形式をサポートしています。バージョン 0 は従来のもので、(Python 2.4 で新たに追加された) バージョン
+1  は intern 化された文字列をファイル内で共有し、逆マーシャル化の時にも共有されるようにします。 *PY_MARSHAL_VERSION*
+は現在のバージョン (バージョン 1) を示します。
 
 
 .. cfunction:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
 
-   Marshal a :ctype:`long` integer, *value*, to *file*.  This will only write the
-   least-significant 32 bits of *value*; regardless of the size of the native
-   :ctype:`long` type.
+   :ctype:`long` 型の整数値 *value* を *file* へ整列化します。この関数は *value* の下桁 32 ビットを書き込むだけです;
+   ネイティブの :ctype:`long` 型サイズには関知しません。
 
    .. versionchanged:: 2.4
-      *version* indicates the file format.
+      ファイル形式を示す *version* が追加されました.
 
 
 .. cfunction:: void PyMarshal_WriteObjectToFile(PyObject *value, FILE *file, int version)
 
-   Marshal a Python object, *value*, to *file*.
+   Python オブジェクト *value* を *file* へ整列化します。
 
    .. versionchanged:: 2.4
-      *version* indicates the file format.
+      ファイル形式を示す *version* が追加されました.
 
 
 .. cfunction:: PyObject* PyMarshal_WriteObjectToString(PyObject *value, int version)
 
-   Return a string object containing the marshalled representation of *value*.
+   *value* の整列化表現が入った文字列オブジェクトを返します。
 
    .. versionchanged:: 2.4
-      *version* indicates the file format.
+      ファイル形式を示す *version* が追加されました.
 
+以下の関数を使うと、整列化された値を読み戻せます。
 
-The following functions allow marshalled values to be read back in.
-
-XXX What about error detection?  It appears that reading past the end of the
-file will always result in a negative numeric value (where that's relevant), but
-it's not clear that negative values won't be handled properly when there's no
-error.  What's the right way to tell? Should only non-negative values be written
-using these routines?
+.. % XXX What about error detection?  It appears that reading past the end
+.. % of the file will always result in a negative numeric value (where
+.. % that's relevant), but it's not clear that negative values won't be
+.. % handled properly when there's no error.  What's the right way to tell?
+.. % Should only non-negative values be written using these routines?
 
 
 .. cfunction:: long PyMarshal_ReadLongFromFile(FILE *file)
 
-   Return a C :ctype:`long` from the data stream in a :ctype:`FILE\*` opened for
-   reading.  Only a 32-bit value can be read in using this function, regardless of
-   the native size of :ctype:`long`.
+   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 C の :ctype:`long` 型データを読み出して返します。
+   この関数は、ネイティブの :ctype:`long` のサイズに関係なく、 32 ビットの値だけを読み出せます。
 
 
 .. cfunction:: int PyMarshal_ReadShortFromFile(FILE *file)
 
-   Return a C :ctype:`short` from the data stream in a :ctype:`FILE\*` opened for
-   reading.  Only a 16-bit value can be read in using this function, regardless of
-   the native size of :ctype:`short`.
+   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 C の :ctype:`short` 型データを読み出して返します。
+   この関数は、ネイティブの :ctype:`short` のサイズに関係なく、 16 ビットの値だけを読み出せます。
 
 
 .. cfunction:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
 
-   Return a Python object from the data stream in a :ctype:`FILE\*` opened for
-   reading.  On error, sets the appropriate exception (:exc:`EOFError` or
-   :exc:`TypeError`) and returns *NULL*.
+   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
+   エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
 
-   Return a Python object from the data stream in a :ctype:`FILE\*` opened for
-   reading.  Unlike :cfunc:`PyMarshal_ReadObjectFromFile`, this function assumes
-   that no further objects will be read from the file, allowing it to aggressively
-   load file data into memory so that the de-serialization can operate from data in
-   memory rather than reading a byte at a time from the file.  Only use these
-   variant if you are certain that you won't be reading anything else from the
-   file.  On error, sets the appropriate exception (:exc:`EOFError` or
-   :exc:`TypeError`) and returns *NULL*.
+   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
+   :cfunc:`PyMarshal_ReadObjectFromFile` と違い、この関数はファイル中に後続のオブジェクトが存在しないと仮定し、ファイルから
+   メモリ上にファイルデータを一気にメモリにロードして、逆整列化機構がファイルから一バイトづつ読み出す代わりにメモリ上のデータを操作
+   できるようにします。対象のファイルから他に何も読み出さないと分かっている場合にのみ、この関数を使ってください。エラーが生じた場合、適切な例外
+   (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyMarshal_ReadObjectFromString(char *string, Py_ssize_t len)
 
-   Return a Python object from the data stream in a character buffer containing
-   *len* bytes pointed to by *string*.  On error, sets the appropriate exception
-   (:exc:`EOFError` or :exc:`TypeError`) and returns *NULL*.
+   *string* が指している *len* バイトの文字列バッファに納められたデータストリームから Python オブジェクトを読み出して返します。
+   エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
+

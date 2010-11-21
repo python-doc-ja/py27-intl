@@ -2,33 +2,30 @@
 
 .. _importing:
 
-Importing Modules
-=================
+モジュールの import
+===================
 
 
 .. cfunction:: PyObject* PyImport_ImportModule(const char *name)
 
    .. index::
-      single: package variable; __all__
       single: __all__ (package variable)
+      single: package variable; __all__
       single: modules (in module sys)
 
-   This is a simplified interface to :cfunc:`PyImport_ImportModuleEx` below,
-   leaving the *globals* and *locals* arguments set to *NULL* and *level* set
-   to 0.  When the *name*
-   argument contains a dot (when it specifies a submodule of a package), the
-   *fromlist* argument is set to the list ``['*']`` so that the return value is the
-   named module rather than the top-level package containing it as would otherwise
-   be the case.  (Unfortunately, this has an additional side effect when *name* in
-   fact specifies a subpackage instead of a submodule: the submodules specified in
-   the package's ``__all__`` variable are  loaded.)  Return a new reference to the
-   imported module, or *NULL* with an exception set on failure.  Before Python 2.4,
-   the module may still be created in the failure case --- examine ``sys.modules``
-   to find out.  Starting with Python 2.4, a failing import of a module no longer
-   leaves the module in ``sys.modules``.
+   この関数は下で述べる :cfunc:`PyImport_ImportModuleEx` を単純化したインタフェースで、 *globals* および
+   *locals*  引数を *NULL* のままにし、 *level* を 0 にしたものです。
+   *name* 引数にドットが含まれる場合 (あるパッケージのサブモジュールを指定している場合)、
+   *fromlist* 引数がリスト ``['*']`` に追加され、戻り値がモジュールを含む
+   トップレベルパッケージではなく名前つきモジュール (named module) になるようにします。 (残念ながらこのやり方には、 *name*
+   が実際にはサブモジュールでなくサブパッケージを指定している場合、パッケージの  ``__all__``   変数に指定されている
+   サブモジュールがロードされてしまうという副作用があります。) import されたモジュールへの新たな参照を返します。失敗した
+   場合には例外をセットし、 *NULL* を返します。 Python 2.4 以前では、失敗した場合でもモジュールは生成されていることがあります ---
+   ``sys.modules``  を使って調べてください。 Python 2.4 以降では、 import に失敗したモジュールは
+   ``sys.modules`` に残りません。
 
    .. versionchanged:: 2.4
-      failing imports remove incomplete module objects.
+      import に失敗した場合、不完全なモジュールを除去するようになりました.
 
    .. versionchanged:: 2.6
       always use absolute imports
@@ -51,18 +48,15 @@ Importing Modules
 
    .. index:: builtin: __import__
 
-   Import a module.  This is best described by referring to the built-in Python
-   function :func:`__import__`, as the standard :func:`__import__` function calls
-   this function directly.
+   モジュールを import します。モジュールの import については組み込みの Python 関数 :func:`__import__`
+   を読むとよく分かります。というのも、標準の :func:`__import__`  はこの関数を直接呼び出しているからです。
 
-   The return value is a new reference to the imported module or top-level package,
-   or *NULL* with an exception set on failure (before Python 2.4, the module may
-   still be created in this case).  Like for :func:`__import__`, the return value
-   when a submodule of a package was requested is normally the top-level package,
-   unless a non-empty *fromlist* was given.
+   戻り値は import されたモジュールかトップレベルパッケージへの新たな参照になります。失敗した場合には例外をセットし、 *NULL* を返します
+   (Python 2.4 よりも前のバージョンでは、モジュールは生成されている場合があります) :func:`__import__`
+   と同じく、パッケージに対してサブモジュールを要求した場合の戻り値は通常、空でない *fromlist* を指定しない限りトップレベルパッケージになります。
 
    .. versionchanged:: 2.4
-      failing imports remove incomplete module objects.
+      import に失敗した場合、不完全なモジュールを除去するようになりました.
 
    .. versionchanged:: 2.6
       The function is an alias for :cfunc:`PyImport_ImportModuleLevel` with
@@ -89,10 +83,9 @@ Importing Modules
       module: rexec
       module: ihooks
 
-   This is a higher-level interface that calls the current "import hook function".
-   It invokes the :func:`__import__` function from the ``__builtins__`` of the
-   current globals.  This means that the import is done using whatever import hooks
-   are installed in the current environment, e.g. by :mod:`rexec` or :mod:`ihooks`.
+   現在の "import フック関数" を呼び出すための高水準のインタフェースです。この関数は現在のグローバル変数辞書内の ``__builtins__``
+   から :func:`__import__` 関数を呼び出します。すなわち、現在の環境にインストールされている import フック、例えば
+   :mod:`rexec` や :mod:`ihooks` を使って import を行います。
 
    .. versionchanged:: 2.6
       always use absolute imports
@@ -102,120 +95,97 @@ Importing Modules
 
    .. index:: builtin: reload
 
-   Reload a module.  This is best described by referring to the built-in Python
-   function :func:`reload`, as the standard :func:`reload` function calls this
-   function directly.  Return a new reference to the reloaded module, or *NULL*
-   with an exception set on failure (the module still exists in this case).
+   モジュールを再ロード (reload) します。モジュールの再ロードについては組み込みの Python 関数 :func:`reload`
+   を読むとよく分かります。というのも、標準の :func:`reload`  はこの関数を直接呼び出しているからです。
+   戻り値は再ロードしたモジュールかトップレベルパッケージへの新たな参照になります。失敗した場合には例外をセットし、 *NULL* を返します
+   (その場合でも、モジュールは生成されている場合があります)
 
 
 .. cfunction:: PyObject* PyImport_AddModule(const char *name)
 
-   Return the module object corresponding to a module name.  The *name* argument
-   may be of the form ``package.module``. First check the modules dictionary if
-   there's one there, and if not, create a new one and insert it in the modules
-   dictionary. Return *NULL* with an exception set on failure.
+   モジュール名に対応するモジュールオブジェクトを返します。 *name* 引数は ``package.module`` の形式でもかまいません。
+   まずモジュール辞書に該当するモジュールがあるかどうか調べ、なければ新たなモジュールを生成してモジュール辞書に挿入します。失敗した場合には例外をセットして
+   *NULL* を返します。
 
    .. note::
 
-      This function does not load or import the module; if the module wasn't already
-      loaded, you will get an empty module object. Use :cfunc:`PyImport_ImportModule`
-      or one of its variants to import a module.  Package structures implied by a
-      dotted name for *name* are not created if not already present.
+      この関数はモジュールの import やロードを行いません; モジュールがまだロードされていなければ、空のモジュールオブジェクトを得ることになります。
+      :cfunc:`PyImport_ImportModule` やその別形式を使ってモジュールを import してください。ドット名表記で
+      指定した *name* が存在しない場合、パッケージ構造は作成されません。
 
 
 .. cfunction:: PyObject* PyImport_ExecCodeModule(char *name, PyObject *co)
 
    .. index:: builtin: compile
 
-   Given a module name (possibly of the form ``package.module``) and a code object
-   read from a Python bytecode file or obtained from the built-in function
-   :func:`compile`, load the module.  Return a new reference to the module object,
-   or *NULL* with an exception set if an error occurred.  Before Python 2.4, the
-   module could still be created in error cases.  Starting with Python 2.4, *name*
-   is removed from :attr:`sys.modules` in error cases, and even if *name* was already
-   in :attr:`sys.modules` on entry to :cfunc:`PyImport_ExecCodeModule`.  Leaving
-   incompletely initialized modules in :attr:`sys.modules` is dangerous, as imports of
-   such modules have no way to know that the module object is an unknown (and
-   probably damaged with respect to the module author's intents) state.
+   モジュール名 (``package.module`` 形式でもかまいません) および Python のバイトコードファイルや組み込み関数
+   :func:`compile`  で得られたコードオブジェクトを元にモジュールをロードします。モジュールオブジェクトへの新たな参照を返します。失敗した
+   場合には例外をセットし、 *NULL* を返します。Python 2.4 以前では、失敗した場合でもモジュールは生成されていることがありました。 Python
+   2.4 以降では、たとえ :cfunc:`PyImport_ExecCodeModule` の処理に入った時に *name* が :attr:``sys.modules``
+   に入っていたとしても、 import に失敗したモジュールは :attr:``sys.modules`` に残りません。初期化の不完全なモジュールを
+   :attr:``sys.modules`` に残すのは危険であり、そのようなモジュールを import するコードにとっては、モジュールの状態がわからない
+   (モジュール作者の意図から外れた壊れた状態かもしれない) からです。
 
-   This function will reload the module if it was already imported.  See
-   :cfunc:`PyImport_ReloadModule` for the intended way to reload a module.
+   この関数は、すでに import されているモジュールの場合には再ロードを行います。意図的にモジュールの再ロードを行う方法は
+   :cfunc:`PyImport_ReloadModule` を参照してください。
 
-   If *name* points to a dotted name of the form ``package.module``, any package
-   structures not already created will still not be created.
+   *name* が ``package.module`` 形式のドット名表記であった場合、まだ作成されていないパッケージ構造はその作成されないままになります。
 
    .. versionchanged:: 2.4
-      *name* is removed from :attr:`sys.modules` in error cases.
+      エラーが発生した場合に *name* を :attr:``sys.modules`` から除去するようになりました.
 
 
 .. cfunction:: long PyImport_GetMagicNumber()
 
-   Return the magic number for Python bytecode files (a.k.a. :file:`.pyc` and
-   :file:`.pyo` files).  The magic number should be present in the first four bytes
-   of the bytecode file, in little-endian byte order.
+   Python バイトコードファイル (いわゆる :file:`.pyc` および :file:`.pyo` ファイル)
+   のマジックナンバを返します。マジックナンバはバイトコードファイルの先頭 4 バイトにリトルエンディアン整列で配置されています。
 
 
 .. cfunction:: PyObject* PyImport_GetModuleDict()
 
-   Return the dictionary used for the module administration (a.k.a.
-   ``sys.modules``).  Note that this is a per-interpreter variable.
-
-
-.. cfunction:: PyObject* PyImport_GetImporter(PyObject *path)
-
-   Return an importer object for a :data:`sys.path`/:attr:`pkg.__path__` item
-   *path*, possibly by fetching it from the :data:`sys.path_importer_cache`
-   dict.  If it wasn't yet cached, traverse :data:`sys.path_hooks` until a hook
-   is found that can handle the path item.  Return ``None`` if no hook could;
-   this tells our caller it should fall back to the builtin import mechanism.
-   Cache the result in :data:`sys.path_importer_cache`.  Return a new reference
-   to the importer object.
-
-   .. versionadded:: 2.6
+   モジュール管理のための辞書 (いわゆる ``sys.modules`` )を返します。この辞書はインタプリタごとに一つだけある変数なので注意してください。
 
 
 .. cfunction:: void _PyImport_Init()
 
-   Initialize the import mechanism.  For internal use only.
+   import 機構を初期化します。内部使用だけのための関数です。
 
 
 .. cfunction:: void PyImport_Cleanup()
 
-   Empty the module table.  For internal use only.
+   モジュールテーブルを空にします。内部使用だけのための関数です。
 
 
 .. cfunction:: void _PyImport_Fini()
 
-   Finalize the import mechanism.  For internal use only.
+   import 機構を終了処理します。内部使用だけのための関数です。
 
 
 .. cfunction:: PyObject* _PyImport_FindExtension(char *, char *)
 
-   For internal use only.
+   内部使用だけのための関数です。
 
 
 .. cfunction:: PyObject* _PyImport_FixupExtension(char *, char *)
 
-   For internal use only.
+   内部使用だけのための関数です。
 
 
 .. cfunction:: int PyImport_ImportFrozenModule(char *name)
 
-   Load a frozen module named *name*.  Return ``1`` for success, ``0`` if the
-   module is not found, and ``-1`` with an exception set if the initialization
-   failed.  To access the imported module on a successful load, use
-   :cfunc:`PyImport_ImportModule`.  (Note the misnomer --- this function would
-   reload the module if it was already imported.)
+   *name* という名前のフリーズ (freeze) されたモジュールをロードします。成功すると ``1`` を、モジュールが見つからなかった場合には
+   ``0`` を、初期化が失敗した場合には例外をセットして ``-1`` を返します。ロードに成功したモジュールにアクセスするには
+   :cfunc:`PyImport_ImportModule` を使ってください。 (Note この関数名はいささか誤称めいています --- この関数はすでに
+   import 済みのモジュールをリロードしてしまいます。)
 
 
 .. ctype:: struct _frozen
 
    .. index:: single: freeze utility
 
-   This is the structure type definition for frozen module descriptors, as
-   generated by the :program:`freeze` utility (see :file:`Tools/freeze/` in the
-   Python source distribution).  Its definition, found in :file:`Include/import.h`,
-   is::
+   :program:`freeze` ユーティリティが生成するようなフリーズ化モジュールデスクリプタの構造体型定義です。 (Python ソース配布物の
+   :file:`Tools/freeze/` を参照してください) この構造体の定義は :file:`Include/import.h` にあり、以下のように
+   なっています::
 
       struct _frozen {
           char *name;
@@ -226,30 +196,24 @@ Importing Modules
 
 .. cvar:: struct _frozen* PyImport_FrozenModules
 
-   This pointer is initialized to point to an array of :ctype:`struct _frozen`
-   records, terminated by one whose members are all *NULL* or zero.  When a frozen
-   module is imported, it is searched in this table.  Third-party code could play
-   tricks with this to provide a dynamically created collection of frozen modules.
+   このポインタは :ctype:`struct _frozen` のレコードからなり、終端の要素のメンバが *NULL* かゼロになっているような配列
+   を指すよう初期化されます。フリーズされたモジュールを import するとき、このテーブルを検索します。サードパーティ製のコードから
+   このポインタに仕掛けを講じて、動的に生成されたフリーズ化モジュールの集合を提供するようにできます。
 
 
 .. cfunction:: int PyImport_AppendInittab(char *name, void (*initfunc)(void))
 
-   Add a single module to the existing table of built-in modules.  This is a
-   convenience wrapper around :cfunc:`PyImport_ExtendInittab`, returning ``-1`` if
-   the table could not be extended.  The new module can be imported by the name
-   *name*, and uses the function *initfunc* as the initialization function called
-   on the first attempted import.  This should be called before
-   :cfunc:`Py_Initialize`.
+   既存の組み込みモジュールテーブルに単一のモジュールを追加します。この関数は利便性を目的とした :cfunc:`PyImport_ExtendInittab`
+   のラッパ関数で、テーブルが拡張できないときには ``-1`` を返します。新たなモジュールは *name* で import でき、最初に import を
+   試みた際に呼び出される関数として *initfunc* を使います。 :cfunc:`Py_Initialize` よりも前に呼び出さねばなりません。
 
 
 .. ctype:: struct _inittab
 
-   Structure describing a single entry in the list of built-in modules.  Each of
-   these structures gives the name and initialization function for a module built
-   into the interpreter.  Programs which embed Python may use an array of these
-   structures in conjunction with :cfunc:`PyImport_ExtendInittab` to provide
-   additional built-in modules.  The structure is defined in
-   :file:`Include/import.h` as::
+   組み込みモジュールリスト内の一つのエントリを記述している構造体です。リスト内の各構造体には、インタプリタ内に組み込まれているモジュールの
+   名前と初期化関数が指定されています。 Python を埋め込むようなプログラムは、この構造体の配列と
+   :cfunc:`PyImport_ExtendInittab` を組み合わせて、追加の
+   組み込みモジュールを提供できます。構造体は :file:`Include/import.h`  で以下のように定義されています::
 
       struct _inittab {
           char *name;
@@ -259,9 +223,8 @@ Importing Modules
 
 .. cfunction:: int PyImport_ExtendInittab(struct _inittab *newtab)
 
-   Add a collection of modules to the table of built-in modules.  The *newtab*
-   array must end with a sentinel entry which contains *NULL* for the :attr:`name`
-   field; failure to provide the sentinel value can result in a memory fault.
-   Returns ``0`` on success or ``-1`` if insufficient memory could be allocated to
-   extend the internal table.  In the event of failure, no modules are added to the
-   internal table.  This should be called before :cfunc:`Py_Initialize`.
+   組み込みモジュールのテーブルに一群のモジュールを追加します。配列 *newtab* は :attr:`name` フィールドが *NULL* になっている
+   センチネル (sentinel) エントリで終端されていなければなりません; センチネル値を与えられなかった場合にはメモリ違反になるかもしれません。成功すると
+   ``0`` を、内部テーブルを拡張するのに十分なメモリを確保できなかった場合には ``-1`` を返します。操作が失敗した場合、
+   モジュールは一切内部テーブルに追加されません。 :cfunc:`Py_Initialize` よりも前に呼び出さねばなりません。
+

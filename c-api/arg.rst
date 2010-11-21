@@ -2,378 +2,278 @@
 
 .. _arg-parsing:
 
-Parsing arguments and building values
-=====================================
+引数の解釈と値の構築
+====================
 
-These functions are useful when creating your own extensions functions and
-methods.  Additional information and examples are available in
-:ref:`extending-index`.
+これらの関数は独自の拡張モジュール用の関数やメソッドを作成する際に便利です。詳しい情報や用例は Python インタプリタの拡張と埋め込み (XXX
+reference: ../ext/ext.html) にあります。
 
-The first three of these functions described, :cfunc:`PyArg_ParseTuple`,
-:cfunc:`PyArg_ParseTupleAndKeywords`, and :cfunc:`PyArg_Parse`, all use *format
-strings* which are used to tell the function about the expected arguments.  The
-format strings use the same syntax for each of these functions.
+最初に説明する 3 つの関数、 :cfunc:`PyArg_ParseTuple` 、
+:cfunc:`PyArg_ParseTupleAndKeywords` 、および :cfunc:`PyArg_Parse` はいずれも *書式化文字列
+(format string)* を使います。書式化文字列は、関数が受け取るはずの引数に関する情報を伝えるのに
+用いられます。いずれの関数における書式化文字列も、同じ書式を使っています。
 
-A format string consists of zero or more "format units."  A format unit
-describes one Python object; it is usually a single character or a parenthesized
-sequence of format units.  With a few exceptions, a format unit that is not a
-parenthesized sequence normally corresponds to a single address argument to
-these functions.  In the following description, the quoted form is the format
-unit; the entry in (round) parentheses is the Python object type that matches
-the format unit; and the entry in [square] brackets is the type of the C
-variable(s) whose address should be passed.
+書式化文字列は、ゼロ個またはそれ以上の "書式化単位 (format unit)" から成り立ちます。一つの書式化単位は一つの Python オブジェクトを
+表します; 通常は単一の文字か、書式化単位からなる文字列を括弧で囲ったものになります。例外として、括弧で囲われていない
+書式化単位文字列が単一のアドレス引数に対応する場合がいくつかあります。以下の説明では、引用符のついた形式は書式化単位です;
+(丸)括弧で囲った部分は書式化単位に対応する Python のオブジェクト型です; [角] 括弧は値をアドレス渡しする際に使う C の変数型です。
 
-``s`` (string or Unicode object) [const char \*]
-   Convert a Python string or Unicode object to a C pointer to a character string.
-   You must not provide storage for the string itself; a pointer to an existing
-   string is stored into the character pointer variable whose address you pass.
-   The C string is NUL-terminated.  The Python string must not contain embedded NUL
-   bytes; if it does, a :exc:`TypeError` exception is raised. Unicode objects are
-   converted to C strings using the default encoding.  If this conversion fails, a
-   :exc:`UnicodeError` is raised.
+``s`` (文字列型または Unicode オブジェクト型) [const char \*]
+   Python の文字列または Unicode オブジェクトを、キャラクタ文字列を指す C のポインタに変換します。
+   変換先の文字列自体の記憶領域を提供する必要はありません; キャラクタ型ポインタ変数のアドレスを渡すと、すでに存在している
+   文字列へのポインタをその変数に記録します。C 文字列は NUL で終端されています。Python の文字列型は、NUL バイトが途中に埋め込まれて
+   いてはなりません; もし埋め込まれていれば :exc:`TypeError` 例外を送出します。Unicode オブジェクトはデフォルトエンコーディングを使って
+   C 文字列に変換されます。変換に失敗すると :exc:`UnicodeError` を送出します。
 
-``s#`` (string, Unicode or any read buffer compatible object) [const char \*, int (or :ctype:`Py_ssize_t`, see below)]
-   This variant on ``s`` stores into two C variables, the first one a pointer to a
-   character string, the second one its length.  In this case the Python string may
-   contain embedded null bytes.  Unicode objects pass back a pointer to the default
-   encoded string version of the object if such a conversion is possible.  All
-   other read-buffer compatible objects pass back a reference to the raw internal
-   data representation.
+``s#`` (文字列型、Unicode オブジェクト型または任意の読み出しバッファ互換型) [const char \*, int]
+   これは ``s`` の変化形で、値を二つの変数に記録します。一つ目の変数はキャラクタ文字列へのポインタで、二つ目はその長さです。
+   この書式化単位の場合には、Python 文字列に null バイトが埋め込まれていてもかまいません。 Unicode オブジェクトの場合、デフォルト
+   エンコーディングでの変換が可能ならば、変換したオブジェクトから文字列へのポインタを返します。その他の読み出しバッファ互換オブジェクトは
+   生の内部データ表現への参照を返します。
 
-   Starting with Python 2.5 the type of the length argument can be
-   controlled by defining the macro :cmacro:`PY_SSIZE_T_CLEAN` before
-   including :file:`Python.h`.  If the macro is defined, length is a
-   :ctype:`Py_ssize_t` rather than an int.
+``z `` (文字列型または `` None``) [const char \*]
+   ``s`` に似ていますが、Python オブジェクトは ``None`` でもよく、その場合には C のポインタは *NULL* にセットされます。
 
-``s*`` (string, Unicode, or any buffer compatible object) [Py_buffer \*]
-   Similar to ``s#``, this code fills a Py_buffer structure provided by the caller.
-   The buffer gets locked, so that the caller can subsequently use the buffer even
-   inside a ``Py_BEGIN_ALLOW_THREADS`` block; the caller is responsible for calling
-   ``PyBuffer_Release`` with the structure after it has processed the data.
+``z# `` (文字列型、`` None``、または任意の読み出しバッファ互換型) [const char \*, int]
+   ``s#`` の ``s`` を ``z`` にしたような意味です。
 
-   .. versionadded:: 2.6
+``u`` (Unicode オブジェクト型) [Py_UNICODE \*]
+   Python の Unicode オブジェクトを、NUL で終端された 16 ビットの Unicode (UTF-16) データに変換します。 ``s``
+   と同様に、 Unicode データバッファ用に記憶領域を提供する必要はありません; :ctype:`Py_UNICODE`
+   型ポインタ変数のアドレスを渡すと、すでに存在している Unicode データへのポインタをその変数に記録します。
 
-``z`` (string or ``None``) [const char \*]
-   Like ``s``, but the Python object may also be ``None``, in which case the C
-   pointer is set to *NULL*.
+``u#`` (Unicode オブジェクト型) [Py_UNICODE \*, int]
+   これは ``u`` の変化形で、値を二つの変数に記録します。一つ目の変数は Unicode データバッファへのポインタで、二つ目はその長さです。非
+   Unicode のオブジェクトの場合、読み出しバッファのポインタを :ctype:`Py_UNICODE` 型シーケンスへのポインタと解釈して扱います。
 
-``z#`` (string or ``None`` or any read buffer compatible object) [const char \*, int]
-   This is to ``s#`` as ``z`` is to ``s``.
+``es`` (文字列型、Unicode オブジェクト型または任意の読み出しバッファ互換型)[const char \*encoding, char \*\*buffer]
+   これは ``s`` の変化形で、Unicode オブジェクトや Unicode に変換可能なオブジェクトをキャラクタ型バッファにエンコードするために
+   用いられます。NUL バイトが埋め込まれていない文字列でのみ動作します。
 
-``z*`` (string or ``None`` or any buffer compatible object) [Py_buffer*]
-   This is to ``s*`` as ``z`` is to ``s``.
+   この書式化単位には二つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :ctype:`const char\*`
+   型でなければなりません。指定したエンコード名を Python が理解できない場合には例外を送出します。第二の引数は :ctype:`char\*\*`
+   でなければなりません; この引数が参照しているポインタの値は、引数に指定したテキストの内容が入ったバッファへのポインタになります。
+   テキストは最初の引数に指定したエンコード方式でエンコードされます。
 
-   .. versionadded:: 2.6
+   :cfunc:`PyArg_ParseTuple` を使うと、必要なサイズのバッファを確保し、そのバッファにエンコード後のデータをコピーして、
+   *\*buffer* がこの新たに確保された記憶領域を指すように変更します。呼び出し側には、確保されたバッファを使い終わった後に
+   :cfunc:`PyMem_Free` で解放する責任があります。
 
-``u`` (Unicode object) [Py_UNICODE \*]
-   Convert a Python Unicode object to a C pointer to a NUL-terminated buffer of
-   16-bit Unicode (UTF-16) data.  As with ``s``, there is no need to provide
-   storage for the Unicode data buffer; a pointer to the existing Unicode data is
-   stored into the :ctype:`Py_UNICODE` pointer variable whose address you pass.
+``et`` (文字列型、Unicode オブジェクト型または文字列バッファ互換型) [const char \*encoding, char \*\*buffer]
+   ``es`` と同じです。ただし、8 ビット幅の文字列オブジェクトをエンコードし直さずに渡します。その代わり、実装では文字列オブジェクトが
+   パラメタに渡したエンコードを使っているものと仮定します。
 
-``u#`` (Unicode object) [Py_UNICODE \*, int]
-   This variant on ``u`` stores into two C variables, the first one a pointer to a
-   Unicode data buffer, the second one its length. Non-Unicode objects are handled
-   by interpreting their read-buffer pointer as pointer to a :ctype:`Py_UNICODE`
-   array.
+``es#`` (文字列型、Unicode オブジェクト型または文字列バッファ互換型) [const char \*encoding, char \*\*buffer, int \*buffer_length]
+   ``s#`` の変化形で、Unicode オブジェクトや Unicode に変換可能なオブジェクトをキャラクタ型バッファにエンコードするために
+   用いられます。 ``es`` 書式化単位と違って、この変化形はバイトが埋め込まれていてもかまいません。
 
-``es`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
-   This variant on ``s`` is used for encoding Unicode and objects convertible to
-   Unicode into a character buffer. It only works for encoded data without embedded
-   NUL bytes.
+   この書式化単位には三つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :ctype:`const char\*`
+   型か *NULL* でなければなりません。 *NULL* の場合にはデフォルトエンコーディングを使います。指定したエンコード名を Python が理解できない
+   場合には例外を送出します。第二の引数は :ctype:`char\*\*` でなければなりません; この引数が参照しているポインタの値は、引数に指定した
+   テキストの内容が入ったバッファへのポインタになります。テキストは最初の引数に指定したエンコード方式でエンコードされます。
+   第三の引数は整数へのポインタでなければなりません; ポインタが参照している整数の値は出力バッファ内のバイト数にセットされます。
 
-   This format requires two arguments.  The first is only used as input, and
-   must be a :ctype:`const char\*` which points to the name of an encoding as a
-   NUL-terminated string, or *NULL*, in which case the default encoding is used.
-   An exception is raised if the named encoding is not known to Python.  The
-   second argument must be a :ctype:`char\*\*`; the value of the pointer it
-   references will be set to a buffer with the contents of the argument text.
-   The text will be encoded in the encoding specified by the first argument.
+   この書式化単位の処理には二つのモードがあります:
 
-   :cfunc:`PyArg_ParseTuple` will allocate a buffer of the needed size, copy the
-   encoded data into this buffer and adjust *\*buffer* to reference the newly
-   allocated storage.  The caller is responsible for calling :cfunc:`PyMem_Free` to
-   free the allocated buffer after use.
+   *\*buffer * が* NULL* ポインタを指している場合、関数は必要なサイズのバッファを確保し、そのバッファにエンコード後の
+   データをコピーして、*\*buffer* がこの新たに確保された記憶領域を指すように変更します。呼び出し側には、確保されたバッファを使い終わった後に
+   :cfunc:`PyMem_Free` で解放する責任があります。
 
-``et`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
-   Same as ``es`` except that 8-bit string objects are passed through without
-   recoding them.  Instead, the implementation assumes that the string object uses
-   the encoding passed in as parameter.
+   *\*buffer* が非 *NULL* のポインタ (すでにメモリ確保済みのバッファ) を指している場合、 :cfunc:`PyArg_ParseTuple`
+   はこのメモリ位置をバッファとして用い、*\*buffer_length*
+   の初期値をバッファサイズとして用います。 :cfunc:`PyArg_ParseTuple`  は次にエンコード済みのデータをバッファにコピーして、NUL で終端
+   します。バッファの大きさが足りなければ :exc:`ValueError`  がセットされます。
 
-``es#`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
-   This variant on ``s#`` is used for encoding Unicode and objects convertible to
-   Unicode into a character buffer.  Unlike the ``es`` format, this variant allows
-   input data which contains NUL characters.
+   どちらの場合も、 *\*buffer_length* は終端の NUL バイトを含まないエンコード済みデータの長さにセットされます。
 
-   It requires three arguments.  The first is only used as input, and must be a
-   :ctype:`const char\*` which points to the name of an encoding as a
-   NUL-terminated string, or *NULL*, in which case the default encoding is used.
-   An exception is raised if the named encoding is not known to Python.  The
-   second argument must be a :ctype:`char\*\*`; the value of the pointer it
-   references will be set to a buffer with the contents of the argument text.
-   The text will be encoded in the encoding specified by the first argument.
-   The third argument must be a pointer to an integer; the referenced integer
-   will be set to the number of bytes in the output buffer.
+``et#`` (文字列型、Unicode オブジェクト型または文字列バッファ互換型) [const char \*encoding, char \*\*buffer]
+   ``es#`` と同じです。ただし、文字列オブジェクトをエンコードし直さずに渡します。その代わり、実装では文字列オブジェクトが
+   パラメタに渡したエンコードを使っているものと仮定します。
 
-   There are two modes of operation:
+``b`` (整数型) [char]
+   Python の整数型を、 C の :ctype:`char` 型の小さな整数に変換します。
 
-   If *\*buffer* points a *NULL* pointer, the function will allocate a buffer of
-   the needed size, copy the encoded data into this buffer and set *\*buffer* to
-   reference the newly allocated storage.  The caller is responsible for calling
-   :cfunc:`PyMem_Free` to free the allocated buffer after usage.
-
-   If *\*buffer* points to a non-*NULL* pointer (an already allocated buffer),
-   :cfunc:`PyArg_ParseTuple` will use this location as the buffer and interpret the
-   initial value of *\*buffer_length* as the buffer size.  It will then copy the
-   encoded data into the buffer and NUL-terminate it.  If the buffer is not large
-   enough, a :exc:`ValueError` will be set.
-
-   In both cases, *\*buffer_length* is set to the length of the encoded data
-   without the trailing NUL byte.
-
-``et#`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
-   Same as ``es#`` except that string objects are passed through without recoding
-   them. Instead, the implementation assumes that the string object uses the
-   encoding passed in as parameter.
-
-``b`` (integer) [unsigned char]
-   Convert a nonnegative Python integer to an unsigned tiny int, stored in a C
-   :ctype:`unsigned char`.
-
-``B`` (integer) [unsigned char]
-   Convert a Python integer to a tiny int without overflow checking, stored in a C
-   :ctype:`unsigned char`.
+``B`` (整数型) [unsigned char]
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned char` 型の小さな整数に変換します。
 
    .. versionadded:: 2.3
 
-``h`` (integer) [short int]
-   Convert a Python integer to a C :ctype:`short int`.
+``h`` (整数型) [short int]
+   Python の整数型を、 C の :ctype:`short int` 型に変換します。
 
-``H`` (integer) [unsigned short int]
-   Convert a Python integer to a C :ctype:`unsigned short int`, without overflow
-   checking.
-
-   .. versionadded:: 2.3
-
-``i`` (integer) [int]
-   Convert a Python integer to a plain C :ctype:`int`.
-
-``I`` (integer) [unsigned int]
-   Convert a Python integer to a C :ctype:`unsigned int`, without overflow
-   checking.
+``H`` (整数型) [unsigned short int]
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned short int` 型に変換します。
 
    .. versionadded:: 2.3
 
-``l`` (integer) [long int]
-   Convert a Python integer to a C :ctype:`long int`.
+``i`` (整数型) [int]
+   Python の整数型を、 C の :ctype:`int` 型に変換します。
 
-``k`` (integer) [unsigned long]
-   Convert a Python integer or long integer to a C :ctype:`unsigned long` without
-   overflow checking.
+``I`` (整数型) [unsigned int]
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned int` 型に変換します。
 
    .. versionadded:: 2.3
 
-``L`` (integer) [PY_LONG_LONG]
-   Convert a Python integer to a C :ctype:`long long`.  This format is only
-   available on platforms that support :ctype:`long long` (or :ctype:`_int64` on
-   Windows).
+``l`` (整数型) [long int]
+   Python の整数型を、 C の :ctype:`long int` 型に変換します。
 
-``K`` (integer) [unsigned PY_LONG_LONG]
-   Convert a Python integer or long integer to a C :ctype:`unsigned long long`
-   without overflow checking.  This format is only available on platforms that
-   support :ctype:`unsigned long long` (or :ctype:`unsigned _int64` on Windows).
+``k`` (整数型) [unsigned long]
+   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned long int` 型に変換します。
+
+   .. versionadded:: 2.3
+
+``L`` (整数型) [PY_LONG_LONG]
+   Python の整数型を、 C の :ctype:`long long` 型に変換します。この書式化単位は、 :ctype:`long long` 型 (または
+   Windows の  :ctype:`_int64` 型) がサポートされているプラットフォームでのみ利用できます。 Convert a Python
+   integer to a C :ctype:`long long`.  This format is only available on platforms
+   that support :ctype:`long long` (or :ctype:`_int64` on Windows).
+
+``K`` (整数型) [unsigned PY_LONG_LONG]
+   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned long long` 型に変換します。
+   この書式化単位は、 :ctype:`unsigned long long` 型 (または Windows の  :ctype:`unsigned _int64`
+   型) がサポートされているプラットフォームでのみ利用できます。
 
    .. versionadded:: 2.3
 
 ``n`` (integer) [Py_ssize_t]
-   Convert a Python integer or long integer to a C :ctype:`Py_ssize_t`.
+   Python の整数型もしくは長整数型をCの :ctype:`Py_ssize_t` 型に変換します。
 
    .. versionadded:: 2.5
 
-``c`` (string of length 1) [char]
-   Convert a Python character, represented as a string of length 1, to a C
-   :ctype:`char`.
+``c`` (長さ 1 の文字列型) [char]
+   長さ 1 の文字列として表現されている Python キャラクタを C の :ctype:`char` 型に変換します。
 
-``f`` (float) [float]
-   Convert a Python floating point number to a C :ctype:`float`.
+``f`` (浮動小数点型) [float]
+   Python の浮動小数点型を、 C の :ctype:`float` 型に変換します。
 
-``d`` (float) [double]
-   Convert a Python floating point number to a C :ctype:`double`.
+``d`` (浮動小数点型) [double]
+   Python の浮動小数点型を、 C の :ctype:`double` 型に変換します。
 
-``D`` (complex) [Py_complex]
-   Convert a Python complex number to a C :ctype:`Py_complex` structure.
+``D`` (複素数型) [Py_complex]
+   Python の複素数型を、 C の :ctype:`Py_complex` 構造体に変換します。
 
-``O`` (object) [PyObject \*]
-   Store a Python object (without any conversion) in a C object pointer.  The C
-   program thus receives the actual object that was passed.  The object's reference
-   count is not increased.  The pointer stored is not *NULL*.
+``O`` (オブジェクト) [PyObject \*]
+   Python オブジェクトを (一切変換を行わずに) C の Python オブジェクト型ポインタに保存します。これにより、C
+   プログラムは実際のオブジェクトを受け渡しされます。オブジェクトの参照カウントは増加しません。保存されるポインタが *NULL* になることはありません。
 
-``O!`` (object) [*typeobject*, PyObject \*]
-   Store a Python object in a C object pointer.  This is similar to ``O``, but
-   takes two C arguments: the first is the address of a Python type object, the
-   second is the address of the C variable (of type :ctype:`PyObject\*`) into which
-   the object pointer is stored.  If the Python object does not have the required
-   type, :exc:`TypeError` is raised.
+``O!`` (オブジェクト) [*typeobject*, PyObject \*]
+   Python オブジェクトを C の Python オブジェクト型ポインタに保存します。 ``O`` に似ていますが、二つの C の引数をとります:
+   一つ目の引数は Python の型オブジェクトへのアドレスで、二つ目の引数はオブジェクトへのポインタが保存されている (:ctype:`PyObject\*`
+   の) C の変数へのアドレスです。Python オブジェクトが指定した型ではない場合、 :exc:`TypeError` を送出します。
 
-``O&`` (object) [*converter*, *anything*]
-   Convert a Python object to a C variable through a *converter* function.  This
-   takes two arguments: the first is a function, the second is the address of a C
-   variable (of arbitrary type), converted to :ctype:`void \*`.  The *converter*
-   function in turn is called as follows::
+``O&`` (オブジェクト) [*converter*, *anything*]
+   Python オブジェクトを *converter* 関数を介して C の変数に変換します。二つの引数をとります: 一つ目は関数で、二つ目は (任意の型の)
+   C 変数へのアドレスを :ctype:`void \*` 型に変換したものです。 *converter* は以下のようにして呼び出されます:
 
-      status = converter(object, address);
+   *status* ``=``*converter *``(``* object*, *address* ``);``
 
-   where *object* is the Python object to be converted and *address* is the
-   :ctype:`void\*` argument that was passed to the :cfunc:`PyArg_Parse\*` function.
-   The returned *status* should be ``1`` for a successful conversion and ``0`` if
-   the conversion has failed.  When the conversion fails, the *converter* function
-   should raise an exception and leave the content of *address* unmodified.
+   ここで *object* は変換対象の Python オブジェクトで、 *address* は :cfunc:`PyArg_Parse\*` に渡した
+   :ctype:`void\*`  型の引数です。戻り値 *status* は変換に成功した際に ``1`` 、失敗した場合には ``0``
+   になります。変換に失敗した場合、 *converter* 関数は例外を送出しなくてはなりません。
 
-``S`` (string) [PyStringObject \*]
-   Like ``O`` but requires that the Python object is a string object.  Raises
-   :exc:`TypeError` if the object is not a string object.  The C variable may also
-   be declared as :ctype:`PyObject\*`.
+``S`` (文字列型) [PyStringObject \*]
+   ``O`` に似ていますが、Python オブジェクトは文字列オブジェクトでなければなりません。
+   オブジェクトが文字列オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :ctype:`PyObject\*`
+   で宣言しておいてもかまいません。
 
-``U`` (Unicode string) [PyUnicodeObject \*]
-   Like ``O`` but requires that the Python object is a Unicode object.  Raises
-   :exc:`TypeError` if the object is not a Unicode object.  The C variable may also
-   be declared as :ctype:`PyObject\*`.
+``U`` (Unicode 文字列型) [PyUnicodeObject \*]
+   ``O`` に似ていますが、Python オブジェクトは Unicode オブジェクトでなければなりません。オブジェクトが Unicode
+   オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :ctype:`PyObject\*` で宣言しておいてもかまいません。
 
-``t#`` (read-only character buffer) [char \*, int]
-   Like ``s#``, but accepts any object which implements the read-only buffer
-   interface.  The :ctype:`char\*` variable is set to point to the first byte of
-   the buffer, and the :ctype:`int` is set to the length of the buffer.  Only
-   single-segment buffer objects are accepted; :exc:`TypeError` is raised for all
-   others.
+``t#`` (読み出し専用キャラクタバッファ) [char \*, int]
+   ``s#`` に似ていますが、読み出し専用バッファインタフェースを実装している任意のオブジェクトを受理します。 :ctype:`char\*`
+   変数はバッファの最初のバイトを指すようにセットされ、 :ctype:`int` はバッファの長さにセットされます。
+   単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
-``w`` (read-write character buffer) [char \*]
-   Similar to ``s``, but accepts any object which implements the read-write buffer
-   interface.  The caller must determine the length of the buffer by other means,
-   or use ``w#`` instead.  Only single-segment buffer objects are accepted;
-   :exc:`TypeError` is raised for all others.
+``w`` (読み書き可能なキャラクタバッファ) [char \*]
+   ``s`` と同様ですが、読み書き可能なバッファインタフェースを実装している任意のオブジェクトを受理します。
+   呼び出し側は何らかの別の手段でバッファの長さを決定するか、あるいは ``w#`` を使わねばなりません。
+   単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
-``w#`` (read-write character buffer) [char \*, Py_ssize_t]
-   Like ``s#``, but accepts any object which implements the read-write buffer
-   interface.  The :ctype:`char \*` variable is set to point to the first byte of
-   the buffer, and the :ctype:`int` is set to the length of the buffer.  Only
-   single-segment buffer objects are accepted; :exc:`TypeError` is raised for all
-   others.
+``w#`` (読み書き可能なキャラクタバッファ) [char \*, int]
+   ``s#`` に似ていますが、読み書き可能なバッファインタフェースを実装している任意のオブジェクトを受理します。 :ctype:`char\*`
+   変数はバッファの最初のバイトを指すようにセットされ、 :ctype:`int` はバッファの長さにセットされます。
+   単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
-``w*`` (read-write byte-oriented buffer) [Py_buffer \*]
-   This is to ``w`` what ``s*`` is to ``s``.
-
-   .. versionadded:: 2.6
-
-``(items)`` (tuple) [*matching-items*]
-   The object must be a Python sequence whose length is the number of format units
-   in *items*.  The C arguments must correspond to the individual format units in
-   *items*.  Format units for sequences may be nested.
+``(items)`` (タプル) [*matching-items*]
+   オブジェクトは *items* に入っている書式化単位の数だけの長さを持つ Python のシーケンス型でなくてはなりません。各 C 引数は *items* 内の
+   個々の書式化単位に対応づけできねばなりません。シーケンスの書式化単位は入れ子構造にできます。
 
    .. note::
 
-      Prior to Python version 1.5.2, this format specifier only accepted a tuple
-      containing the individual parameters, not an arbitrary sequence.  Code which
-      previously caused :exc:`TypeError` to be raised here may now proceed without an
-      exception.  This is not expected to be a problem for existing code.
+      Python のバージョン 1.5.2 より以前は、この書式化指定文字列はパラメタ列ではなく、個別のパラメタが入ったタプルでなければなりません
+      でした。このため、以前は :exc:`TypeError` を引き起こしていたようなコードが現在は例外を出さずに処理されるかもしれません。
+      とはいえ、既存のコードにとってこれは問題ないと思われます。
 
-It is possible to pass Python long integers where integers are requested;
-however no proper range checking is done --- the most significant bits are
-silently truncated when the receiving field is too small to receive the value
-(actually, the semantics are inherited from downcasts in C --- your mileage may
-vary).
+Python 整数型を要求している場所に Python 長整数型を渡すのは可能です; しかしながら、適切な値域チェックはまったく行われません ---
+値を受け取るためのフィールドが、値全てを受け取るには小さすぎる場合、上桁のビット群は暗黙のうちに切り詰められます (実際のところ、このセマンティクスは C
+のダウンキャスト (downcast) から継承しています --- その恩恵は人それぞれかもしれませんが)。
 
-A few other characters have a meaning in a format string.  These may not occur
-inside nested parentheses.  They are:
+その他、書式化文字列において意味を持つ文字がいくつかあります。それらの文字は括弧による入れ子内には使えません。以下に文字を示します:
 
 ``|``
-   Indicates that the remaining arguments in the Python argument list are optional.
-   The C variables corresponding to optional arguments should be initialized to
-   their default value --- when an optional argument is not specified,
-   :cfunc:`PyArg_ParseTuple` does not touch the contents of the corresponding C
-   variable(s).
+   Python 引数リスト中で、この文字以降の引数がオプションであることを示します。オプションの引数に対応する C の変数はデフォルトの値で初期化して
+   おかねばなりません --- オプションの引数が省略された場合、 :cfunc:`PyArg_ParseTuple` は対応する C 変数の内容に
+   手を加えません。
 
 ``:``
-   The list of format units ends here; the string after the colon is used as the
-   function name in error messages (the "associated value" of the exception that
-   :cfunc:`PyArg_ParseTuple` raises).
+   この文字があると、書式化単位の記述はそこで終わります; コロン以降の文字列は、エラーメッセージにおける関数名
+   (:cfunc:`PyArg_ParseTuple` が送出する例外の "付属値 (associated value)") として使われます。
 
 ``;``
-   The list of format units ends here; the string after the semicolon is used as
-   the error message *instead* of the default error message.  ``:`` and ``;``
-   mutually exclude each other.
+   この文字があると、書式化単位の記述はそこで終わります; セミコロン以降の文字列は、デフォルトエラーメッセージを *置き換える*
+   エラーメッセージとして使われます。言うまでもなく、 ``:`` と ``;`` は相互に排他の文字です。
 
-Note that any Python object references which are provided to the caller are
-*borrowed* references; do not decrement their reference count!
+呼び出し側に提供される Python オブジェクトの参照は全て  *借りた (borrowed)* ものです; オブジェクトの参照カウントを
+デクリメントしてはなりません!
 
-Additional arguments passed to these functions must be addresses of variables
-whose type is determined by the format string; these are used to store values
-from the input tuple.  There are a few cases, as described in the list of format
-units above, where these parameters are used as input values; they should match
-what is specified for the corresponding format unit in that case.
+以下の関数に渡す補助引数 (additional argument) は、書式化文字列から決定される型へのアドレスでなければなりません; 補助引数に指定した
+アドレスは、タプルから入力された値を保存するために使います。上の書式化単位のリストで説明したように、補助引数を入力値として使う場合がいくつかあります;
+その場合、対応する書式化単位の指定する形式に従うようにせねばなりません。
 
-For the conversion to succeed, the *arg* object must match the format
-and the format must be exhausted.  On success, the
-:cfunc:`PyArg_Parse\*` functions return true, otherwise they return
-false and raise an appropriate exception. When the
-:cfunc:`PyArg_Parse\*` functions fail due to conversion failure in one
-of the format units, the variables at the addresses corresponding to that
-and the following format units are left untouched.
+変換を正しく行うためには、 *arg* オブジェクトは書式化文字に一致しなければならず、かつ書式化文字列内の書式化単位に全て値が入るようにせねばなりません。
+成功すると、 :cfunc:`PyArg_Parse\*` 関数は真を返します。それ以外の場合には偽を返し、適切な例外を送出します。
 
 
 .. cfunction:: int PyArg_ParseTuple(PyObject *args, const char *format, ...)
 
-   Parse the parameters of a function that takes only positional parameters into
-   local variables.  Returns true on success; on failure, it returns false and
-   raises the appropriate exception.
+   固定引数のみを引数にとる関数のパラメタを解釈して、ローカルな変数に変換します。成功すると真を返します;失敗すると偽を返し、適切な例外を送出します。
 
 
 .. cfunction:: int PyArg_VaParse(PyObject *args, const char *format, va_list vargs)
 
-   Identical to :cfunc:`PyArg_ParseTuple`, except that it accepts a va_list rather
-   than a variable number of arguments.
+   :cfunc:`PyArg_ParseTuple` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
 .. cfunction:: int PyArg_ParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], ...)
 
-   Parse the parameters of a function that takes both positional and keyword
-   parameters into local variables.  Returns true on success; on failure, it
-   returns false and raises the appropriate exception.
+   固定引数およびキーワード引数をとる関数のパラメタを解釈して、ローカルな変数に変換します。成功すると真を返します;失敗すると偽を返し、適切な例外を送出します。
 
 
 .. cfunction:: int PyArg_VaParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], va_list vargs)
 
-   Identical to :cfunc:`PyArg_ParseTupleAndKeywords`, except that it accepts a
-   va_list rather than a variable number of arguments.
+   :cfunc:`PyArg_ParseTupleAndKeywords` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
 .. cfunction:: int PyArg_Parse(PyObject *args, const char *format, ...)
 
-   Function used to deconstruct the argument lists of "old-style" functions ---
-   these are functions which use the :const:`METH_OLDARGS` parameter parsing
-   method.  This is not recommended for use in parameter parsing in new code, and
-   most code in the standard interpreter has been modified to no longer use this
-   for that purpose.  It does remain a convenient way to decompose other tuples,
-   however, and may continue to be used for that purpose.
+   "旧スタイル" の関数における引数リストを分析するために使われる関数です --- 旧スタイルの関数は、引数解釈手法に
+   :const:`METH_OLDARGS` を使います。新たに書かれるコードでのパラメタ解釈にはこの関数の使用は奨められず、
+   標準のインタプリタにおけるほとんどのコードがもはや引数解釈のためにこの関数を使わないように変更済みです。
+   この関数を残しているのは、この関数が依然として引数以外のタプルを分析する上で便利だからですが、この目的においては将来も使われつづけるかもしれません。
 
 
 .. cfunction:: int PyArg_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssize_t max, ...)
 
-   A simpler form of parameter retrieval which does not use a format string to
-   specify the types of the arguments.  Functions which use this method to retrieve
-   their parameters should be declared as :const:`METH_VARARGS` in function or
-   method tables.  The tuple containing the actual parameters should be passed as
-   *args*; it must actually be a tuple.  The length of the tuple must be at least
-   *min* and no more than *max*; *min* and *max* may be equal.  Additional
-   arguments must be passed to the function, each of which should be a pointer to a
-   :ctype:`PyObject\*` variable; these will be filled in with the values from
-   *args*; they will contain borrowed references.  The variables which correspond
-   to optional parameters not given by *args* will not be filled in; these should
-   be initialized by the caller. This function returns true on success and false if
-   *args* is not a tuple or contains the wrong number of elements; an exception
-   will be set if there was a failure.
+   パラメータ取得を簡単にした形式で、引数の型を指定する書式化文字列を使いません。パラメタの取得にこの手法を使う関数は、関数宣言テーブル、またはメソッド
+   宣言テーブル内で :const:`METH_VARARGS` として宣言しなくてはなりません。実引数の入ったタプルは *args* に渡します;
+   このタプルは本当のタプルでなくてはなりません。タプルの長さは少なくとも *min* で、 *max* を超えてはなりません; *min* と *max*
+   が等しくてもかまいません。補助引数を関数に渡さなくてはならず、各補助引数は :ctype:`PyObject\*`  変数へのポインタでなくてはなりません;
+   これらの補助引数には、 *args* の値が入ります; 値の参照は借りた参照です。オプションのパラメタに対応する変数のうち、 *args* に指定していない
+   ものには値が入りません; 呼び出し側はそれらの値を初期化しておかねばなりません。この関数は成功すると真を返し、 *args* がタプルでない場合や
+   間違った数の要素が入っている場合に偽を返します; 何らかの失敗が起きた場合には例外をセットします。
 
-   This is an example of the use of this function, taken from the sources for the
-   :mod:`_weakref` helper module for weak references::
+   この関数の使用例を以下に示します。この例は、弱参照のための :mod:`_weakref` 補助モジュールのソースコードからとったものです::
 
       static PyObject *
       weakref_ref(PyObject *self, PyObject *args)
@@ -388,155 +288,132 @@ and the following format units are left untouched.
           return result;
       }
 
-   The call to :cfunc:`PyArg_UnpackTuple` in this example is entirely equivalent to
-   this call to :cfunc:`PyArg_ParseTuple`::
+   この例における :cfunc:`PyArg_UnpackTuple` 呼び出しは、 :cfunc:`PyArg_ParseTuple` を使った以下の呼び出し::
 
       PyArg_ParseTuple(args, "O|O:ref", &object, &callback)
+
+   と全く等価です。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* Py_BuildValue(const char *format, ...)
 
-   Create a new value based on a format string similar to those accepted by the
-   :cfunc:`PyArg_Parse\*` family of functions and a sequence of values.  Returns
-   the value or *NULL* in the case of an error; an exception will be raised if
-   *NULL* is returned.
+   :cfunc:`PyArg_Parse\*` ファミリの関数が受け取るのと似た形式の書式化文字列および値列に基づいて、新たな値を生成します。
+   生成した値を返します。エラーの場合には *NULL* を返します; *NULL* を返す場合、例外を送出するでしょう。
 
-   :cfunc:`Py_BuildValue` does not always build a tuple.  It builds a tuple only if
-   its format string contains two or more format units.  If the format string is
-   empty, it returns ``None``; if it contains exactly one format unit, it returns
-   whatever object is described by that format unit.  To force it to return a tuple
-   of size 0 or one, parenthesize the format string.
+   :cfunc:`Py_BuildValue` は常にタプルを生成するとは限りません。この関数がタプルを生成するのは、書式化文字列に二つ以上の書式化単位
+   が入っているときだけです。書式化文字列が空の場合、 ``None``  を返します; 書式化単位が厳密に一つだけ入っている場合、
+   書式化単位で指定されている何らかのオブジェクト単体を返します。サイズがゼロや 1 のタプルを返すように強制するには、丸括弧で囲われた書式化文字列を使います。
 
-   When memory buffers are passed as parameters to supply data to build objects, as
-   for the ``s`` and ``s#`` formats, the required data is copied.  Buffers provided
-   by the caller are never referenced by the objects created by
-   :cfunc:`Py_BuildValue`.  In other words, if your code invokes :cfunc:`malloc`
-   and passes the allocated memory to :cfunc:`Py_BuildValue`, your code is
-   responsible for calling :cfunc:`free` for that memory once
-   :cfunc:`Py_BuildValue` returns.
+   書式化単位 ``s`` や ``s#`` の場合のように、オブジェクトを構築する際にデータを供給するためにメモリバッファをパラメタとして渡す
+   場合には、指定したデータはコピーされます。 :cfunc:`Py_BuildValue` が生成したオブジェクトは、呼び出し側が提供したバッファを決して参照
+   しません。別の言い方をすれば、 :cfunc:`malloc` を呼び出してメモリを確保し、それを :cfunc:`Py_BuildValue`
+   に渡した場合、コード内で :cfunc:`Py_BuildValue` が返った後で :cfunc:`free` を呼び出す責任があるということです。
 
-   In the following description, the quoted form is the format unit; the entry in
-   (round) parentheses is the Python object type that the format unit will return;
-   and the entry in [square] brackets is the type of the C value(s) to be passed.
+   以下の説明では、引用符のついた形式は書式化単位です; (丸)括弧で囲った部分は書式化単位が返す Python のオブジェクト型です; [角]
+   括弧は関数に渡す値の C 変数型です。
 
-   The characters space, tab, colon and comma are ignored in format strings (but
-   not within format units such as ``s#``).  This can be used to make long format
-   strings a tad more readable.
+   書式化文字列内では、(``s#`` のような書式化単位を除いて) スペース、タブ、コロンおよびコンマは無視されます。
+   これらの文字を使うと、長い書式化文字列をちょっとだけ読みやすくできます。
 
-   ``s`` (string) [char \*]
-      Convert a null-terminated C string to a Python object.  If the C string pointer
-      is *NULL*, ``None`` is used.
+   ``s`` (文字列型) [char \*]
+      null 終端された C 文字列から Python オブジェクトに変換します。 C 文字列ポインタが *NULL* の場合、 ``None`` になります。
 
-   ``s#`` (string) [char \*, int]
-      Convert a C string and its length to a Python object.  If the C string pointer
-      is *NULL*, the length is ignored and ``None`` is returned.
+   ``s#`` (文字列型) [char \*, int]
+      C 文字列とその長さから Python オブジェクトに変換します。 C 文字列ポインタが *NULL* の場合、長さは無視され ``None`` になります。
 
    ``z`` (string or ``None``) [char \*]
-      Same as ``s``.
+      ``s`` と同じです。
 
    ``z#`` (string or ``None``) [char \*, int]
-      Same as ``s#``.
+      ``s#`` と同じです。
 
    ``u`` (Unicode string) [Py_UNICODE \*]
-      Convert a null-terminated buffer of Unicode (UCS-2 or UCS-4) data to a Python
-      Unicode object.  If the Unicode buffer pointer is *NULL*, ``None`` is returned.
+      null 終端された Unicode (UCS-2 または UCS-4) データのバッファから Python オブジェクトに変換します。 Unicode
+      バッファポインタが *NULL* の場合、 ``None`` になります。
 
    ``u#`` (Unicode string) [Py_UNICODE \*, int]
-      Convert a Unicode (UCS-2 or UCS-4) data buffer and its length to a Python
-      Unicode object.   If the Unicode buffer pointer is *NULL*, the length is ignored
-      and ``None`` is returned.
+      null 終端された Unicode (UCS-2 または UCS-4) データのバッファとその長さから Python オブジェクトに変換します。
+      Unicode バッファポインタが *NULL* の場合、長さは無視され ``None`` になります。
 
-   ``i`` (integer) [int]
-      Convert a plain C :ctype:`int` to a Python integer object.
+   ``i`` (整数型) [int]
+      通常の C の :ctype:`int` を Python の整数オブジェクトに変換します。
 
-   ``b`` (integer) [char]
-      Convert a plain C :ctype:`char` to a Python integer object.
+   ``b`` (整数型) [char]
+      ``i`` と同じです。通常のC の :ctype:`char` を Python の整数オブジェクトに変換します。
 
-   ``h`` (integer) [short int]
-      Convert a plain C :ctype:`short int` to a Python integer object.
+   ``h`` (整数型) [short int]
+      通常のC の :ctype:`short int` を Python の整数オブジェクトに変換します。
 
-   ``l`` (integer) [long int]
-      Convert a C :ctype:`long int` to a Python integer object.
+   ``l`` (整数型) [long int]
+      C の :ctype:`long int` を Python の整数オブジェクトに変換します。
 
    ``B`` (integer) [unsigned char]
-      Convert a C :ctype:`unsigned char` to a Python integer object.
+      C の :ctype:`unsigned char` を Python の整数オブジェクトに変換します。
 
    ``H`` (integer) [unsigned short int]
-      Convert a C :ctype:`unsigned short int` to a Python integer object.
+      C の :ctype:`unsigned short int` を Python の整数オブジェクトに変換します。
 
    ``I`` (integer/long) [unsigned int]
-      Convert a C :ctype:`unsigned int` to a Python integer object or a Python long
-      integer object, if it is larger than ``sys.maxint``.
+      C の :ctype:`unsigned int` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
+      より大きければ長整数オブジェクトに変換します。
 
    ``k`` (integer/long) [unsigned long]
-      Convert a C :ctype:`unsigned long` to a Python integer object or a Python long
-      integer object, if it is larger than ``sys.maxint``.
+      C の :ctype:`unsigned long` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
+      より大きければ長整数オブジェクトに変換します。
 
    ``L`` (long) [PY_LONG_LONG]
-      Convert a C :ctype:`long long` to a Python long integer object. Only available
-      on platforms that support :ctype:`long long`.
+      C の :ctype:`long long` を Python の長整数オブジェクトに変換します。 :ctype:`long long`
+      をサポートしているプラットフォームでのみ利用可能です。
 
    ``K`` (long) [unsigned PY_LONG_LONG]
-      Convert a C :ctype:`unsigned long long` to a Python long integer object. Only
-      available on platforms that support :ctype:`unsigned long long`.
+      C の :ctype:`unsigned long long` を Python の長整数オブジェクトに変換します。 :ctype:`long long`
+      をサポートしているプラットフォームでのみ利用可能です。
 
    ``n`` (int) [Py_ssize_t]
-      Convert a C :ctype:`Py_ssize_t` to a Python integer or long integer.
+      C の :ctype:`unsigned long` を Python の整数オブジェクト、あるいは長整数オブジェクトに変換します。
 
       .. versionadded:: 2.5
 
    ``c`` (string of length 1) [char]
-      Convert a C :ctype:`int` representing a character to a Python string of length
-      1.
+      文字を表す通常の C の :ctype:`int` を、長さ 1 の Python の文字列オブジェクトに変換します。
 
-   ``d`` (float) [double]
-      Convert a C :ctype:`double` to a Python floating point number.
+   ``d`` (浮動小数点型) [double]
+      C の :ctype:`double` を Python の浮動小数点数に変換します。
 
-   ``f`` (float) [float]
-      Same as ``d``.
+   ``f`` (浮動小数点型) [float]
+      ``d`` と同じです。
 
-   ``D`` (complex) [Py_complex \*]
-      Convert a C :ctype:`Py_complex` structure to a Python complex number.
+   ``D`` (複素数型) [Py_complex \*]
+      C の :ctype:`Py_complex` 構造体を Python の複素数に変換します。
 
-   ``O`` (object) [PyObject \*]
-      Pass a Python object untouched (except for its reference count, which is
-      incremented by one).  If the object passed in is a *NULL* pointer, it is assumed
-      that this was caused because the call producing the argument found an error and
-      set an exception. Therefore, :cfunc:`Py_BuildValue` will return *NULL* but won't
-      raise an exception.  If no exception has been raised yet, :exc:`SystemError` is
-      set.
+   ``O`` (オブジェクト) [PyObject \*]
+      Python オブジェクトを手を加えずに渡します (ただし、参照カウントは 1 インクリメントします)。渡したオブジェクトが *NULL* ポインタ
+      の場合、この引数を生成するのに使った何らかの呼び出しがエラーになったのが原因であると仮定して、例外をセットします。従ってこのとき
+      :cfunc:`Py_BuildValue` は *NULL* を返しますが :cfunc:`Py_BuildValue` 自体は例外を送出しません。
+      例外をまだ送出していなければ :exc:`SystemError` をセットします。
 
-   ``S`` (object) [PyObject \*]
-      Same as ``O``.
+   ``S`` (オブジェクト) [PyObject \*]
+      ``O`` と同じです。
 
-   ``N`` (object) [PyObject \*]
-      Same as ``O``, except it doesn't increment the reference count on the object.
-      Useful when the object is created by a call to an object constructor in the
-      argument list.
+   ``N`` (オブジェクト) [PyObject \*]
+      ``O`` と同じです。ただし、オブジェクトの参照カウントをインクリメントしません。オブジェクトが引数リスト内のオブジェクト
+      コンストラクタ呼び出しによって生成されている場合に便利です。
 
-   ``O&`` (object) [*converter*, *anything*]
-      Convert *anything* to a Python object through a *converter* function.  The
-      function is called with *anything* (which should be compatible with :ctype:`void
-      \*`) as its argument and should return a "new" Python object, or *NULL* if an
-      error occurred.
+   ``O&`` (オブジェクト) [*converter*, *anything*]
+      *anything* を *converter* 関数を介して Python オブジェクトに変換します。この関数は *anything*
+      (:ctype:`void \*` と互換の型でなければなりません) を引数にして呼び出され、"新たな" オブジェクトを返すか、失敗した場合には
+      *NULL* を返すようにしなければなりません。
 
-   ``(items)`` (tuple) [*matching-items*]
-      Convert a sequence of C values to a Python tuple with the same number of items.
+   ``(items)`` (タプル型) [*matching-items*]
+      C の値からなる配列を、同じ要素数を持つ Python のタプルに変換します。
 
-   ``[items]`` (list) [*matching-items*]
-      Convert a sequence of C values to a Python list with the same number of items.
+   ``[items]`` (リスト型) [*matching-items*]
+      C の値からなる配列を、同じ要素数を持つ Python のリストに変換します。
 
-   ``{items}`` (dictionary) [*matching-items*]
-      Convert a sequence of C values to a Python dictionary.  Each pair of consecutive
-      C values adds one item to the dictionary, serving as key and value,
-      respectively.
+   ``{items}`` (辞書型) [*matching-items*]
+      C の値からなる配列を Python の辞書に変換します。一連のペアからなる C の値が、それぞれキーおよび値となって辞書に追加されます。
 
-   If there is an error in the format string, the :exc:`SystemError` exception is
-   set and *NULL* returned.
+   書式化文字列に関するエラーが生じると、 :exc:`SystemError` 例外をセットして *NULL* を返します。
 
-.. cfunction:: PyObject* Py_VaBuildValue(const char *format, va_list vargs)
-
-   Identical to :cfunc:`Py_BuildValue`, except that it accepts a va_list
-   rather than a variable number of arguments.
