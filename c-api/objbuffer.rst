@@ -2,45 +2,41 @@
 
 .. _abstract-buffer:
 
-Buffer Protocol
-===============
+バッファプロトコル (buffer protocol)
+====================================
 
 
 .. cfunction:: int PyObject_AsCharBuffer(PyObject *obj, const char **buffer, Py_ssize_t *buffer_len)
 
-   Returns a pointer to a read-only memory location usable as character-based
-   input.  The *obj* argument must support the single-segment character buffer
-   interface.  On success, returns ``0``, sets *buffer* to the memory location and
-   *buffer_len* to the buffer length.  Returns ``-1`` and sets a :exc:`TypeError`
-   on error.
+   文字ベースの入力として使える読み出し専用メモリ上の位置へのポインタを返します。 *obj* 引数は単一セグメントからなる
+   文字バッファインタフェースをサポートしていなければなりません。成功すると ``0`` を返し、 *buffer* をメモリの位置に、  *buffer_len*
+   をバッファの長さに設定します。エラーの際には  ``-1`` を返し、 :exc:`TypeError` をセットします。
 
    .. versionadded:: 1.6
 
 
 .. cfunction:: int PyObject_AsReadBuffer(PyObject *obj, const void **buffer, Py_ssize_t *buffer_len)
 
-   Returns a pointer to a read-only memory location containing arbitrary data.  The
-   *obj* argument must support the single-segment readable buffer interface.  On
-   success, returns ``0``, sets *buffer* to the memory location and *buffer_len* to
-   the buffer length.  Returns ``-1`` and sets a :exc:`TypeError` on error.
+   任意のデータを収めた読み出し専用のメモリ上の位置へのポインタを返します。 *obj* 引数は単一セグメントからなる読み出し可能
+   バッファインタフェースをサポートしていなければなりません。成功すると ``0`` を返し、 *buffer* をメモリの位置に、  *buffer_len*
+   をバッファの長さに設定します。エラーの際には  ``-1`` を返し、 :exc:`TypeError` をセットします。
 
    .. versionadded:: 1.6
 
 
 .. cfunction:: int PyObject_CheckReadBuffer(PyObject *o)
 
-   Returns ``1`` if *o* supports the single-segment readable buffer interface.
-   Otherwise returns ``0``.
+   *o* が単一セグメントからなる読み出し可能バッファインタフェースをサポートしている場合に ``1`` を返します。それ以外の場合には ``0``
+   を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyObject_AsWriteBuffer(PyObject *obj, void **buffer, Py_ssize_t *buffer_len)
 
-   Returns a pointer to a writeable memory location.  The *obj* argument must
-   support the single-segment, character buffer interface.  On success, returns
-   ``0``, sets *buffer* to the memory location and *buffer_len* to the buffer
-   length.  Returns ``-1`` and sets a :exc:`TypeError` on error.
+   書き込み可能なメモリ上の位置へのポインタを返します。 *obj*  引数は単一セグメントからなる文字バッファインタフェース
+   をサポートしていなければなりません。成功すると ``0`` を返し、 *buffer* をメモリの位置に、 *buffer_len* をバッファの
+   長さに設定します。エラーの際には ``-1`` を返し、 :exc:`TypeError` をセットします。
 
    .. versionadded:: 1.6
 

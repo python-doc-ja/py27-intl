@@ -2,169 +2,149 @@
 
 .. _sequence:
 
-Sequence Protocol
-=================
+シーケンス型プロトコル (sequence protocol)
+==========================================
 
 
 .. cfunction:: int PySequence_Check(PyObject *o)
 
-   Return ``1`` if the object provides sequence protocol, and ``0`` otherwise.
-   This function always succeeds.
+   オブジェクトがシーケンス型プロトコルを提供している場合に ``1`` を返し、そうでないときには ``0`` を返します。この関数呼び出しは常に成功します。
 
 
 .. cfunction:: Py_ssize_t PySequence_Size(PyObject *o)
 
    .. index:: builtin: len
 
-   Returns the number of objects in sequence *o* on success, and ``-1`` on failure.
-   For objects that do not provide sequence protocol, this is equivalent to the
-   Python expression ``len(o)``.
+   成功するとシーケンス *o* 中のオブジェクトの数を返し、失敗すると ``-1`` を返します。
+   シーケンス型プロトコルをサポートしないオブジェクトに対しては、 Python の式 ``len(o)`` と同じになります。
 
 
 .. cfunction:: Py_ssize_t PySequence_Length(PyObject *o)
 
-   Alternate name for :cfunc:`PySequence_Size`.
+   :cfunc:`PySequence_Size` の別名です。
 
 
 .. cfunction:: PyObject* PySequence_Concat(PyObject *o1, PyObject *o2)
 
-   Return the concatenation of *o1* and *o2* on success, and *NULL* on failure.
-   This is the equivalent of the Python expression ``o1 + o2``.
+   成功すると *o1* と *o2* の連結 (concatenation) を返し、失敗すると *NULL* を返します。 Python の式 ``o1 +
+   o2`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_Repeat(PyObject *o, Py_ssize_t count)
 
-   Return the result of repeating sequence object *o* *count* times, or *NULL* on
-   failure.  This is the equivalent of the Python expression ``o * count``.
+   成功するとオブジェクト *o* の *count* 回繰り返しを返し、失敗すると *NULL* を返します。 Python の式 ``o * count``
+   と同じです。
 
 
 .. cfunction:: PyObject* PySequence_InPlaceConcat(PyObject *o1, PyObject *o2)
 
-   Return the concatenation of *o1* and *o2* on success, and *NULL* on failure.
-   The operation is done *in-place* when *o1* supports it.  This is the equivalent
-   of the Python expression ``o1 += o2``.
+   成功すると *o1* と *o2* の連結 (concatenation) を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
+   演算をサポートする場合、in-place 演算を行います。 Python の式 ``o1 += o2`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_InPlaceRepeat(PyObject *o, Py_ssize_t count)
 
-   Return the result of repeating sequence object *o* *count* times, or *NULL* on
-   failure.  The operation is done *in-place* when *o* supports it.  This is the
-   equivalent of the Python expression ``o *= count``.
+   成功するとオブジェクト *o* の *count* 回繰り返しを返し、失敗すると *NULL* を返します。 *o1* が *in-place*
+   演算をサポートする場合、in-place 演算を行います。 Python の式 ``o *= count`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_GetItem(PyObject *o, Py_ssize_t i)
 
-   Return the *i*th element of *o*, or *NULL* on failure. This is the equivalent of
-   the Python expression ``o[i]``.
+   成功すると *o* の *i* 番目の要素を返し、失敗すると *NULL* を返します。 Python の式 ``o[i]`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_GetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
 
-   Return the slice of sequence object *o* between *i1* and *i2*, or *NULL* on
-   failure. This is the equivalent of the Python expression ``o[i1:i2]``.
+   成功すると *o* の *i1* から *i2* までの間のスライスを返し、失敗すると *NULL* を返します。 Python の式 ``o[i1:i2]``
+   と同じです。
 
 
-.. cfunction:: int PySequence_SetItem(PyObject *o, Py_ssize_t i, PyObject *v)
+.. cfunction:: int PySequence_SetItem(PyObject *o, int Py_ssize_t, PyObject *v)
 
-   Assign object *v* to the *i*th element of *o*.  Returns ``-1`` on failure.  This
-   is the equivalent of the Python statement ``o[i] = v``.  This function *does
-   not* steal a reference to *v*.
+   *o* の *i* 番目の要素に *v* を代入します。失敗すると ``-1`` を返します。 Python の文 ``o[i] = v`` と同じです。
+   この関数は *v* への参照を盗み取り *ません* 。
 
 
 .. cfunction:: int PySequence_DelItem(PyObject *o, Py_ssize_t i)
 
-   Delete the *i*th element of object *o*.  Returns ``-1`` on failure.  This is the
-   equivalent of the Python statement ``del o[i]``.
+   *o* の *i* 番目の要素を削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[i]`` と同じです。
 
 
 .. cfunction:: int PySequence_SetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2, PyObject *v)
 
-   Assign the sequence object *v* to the slice in sequence object *o* from *i1* to
-   *i2*.  This is the equivalent of the Python statement ``o[i1:i2] = v``.
+   *o* の *i1* から *i2* までの間のスライスに *v* を代入します。 Python の文 ``o[i1:i2] = v`` と同じです。
 
 
-.. cfunction:: int PySequence_DelSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
+.. cfunction:: int PySequence_DelSlice(PyObject *o, int Py_ssize_t, int Py_ssize_t)
 
-   Delete the slice in sequence object *o* from *i1* to *i2*.  Returns ``-1`` on
-   failure.  This is the equivalent of the Python statement ``del o[i1:i2]``.
+   シーケンスオブジェクト *o* の *i1* から *i2* までの間のスライスを削除します。失敗すると ``-1`` を返します。 Python の文
+   ``del o[i1:i2]`` と同じです。
 
 
-.. cfunction:: Py_ssize_t PySequence_Count(PyObject *o, PyObject *value)
+.. cfunction:: int PySequence_Count(PyObject *o, PyObject *value)
 
-   Return the number of occurrences of *value* in *o*, that is, return the number
-   of keys for which ``o[key] == value``.  On failure, return ``-1``.  This is
-   equivalent to the Python expression ``o.count(value)``.
+   *o* における *value* の出現回数、すなわち  ``o[key] == value`` となる *key* の個数を返します。失敗すると
+   ``-1`` を返します。 Python の式 ``o.count(value)`` と同じです。
 
 
 .. cfunction:: int PySequence_Contains(PyObject *o, PyObject *value)
 
-   Determine if *o* contains *value*.  If an item in *o* is equal to *value*,
-   return ``1``, otherwise return ``0``. On error, return ``-1``.  This is
-   equivalent to the Python expression ``value in o``.
+   *o* に *value* が入っているか判定します。 *o* のある要素が *value* と等価 (equal) ならば ``1`` を
+   返し、それ以外の場合には ``0`` を返します。エラーが発生すると ``-1`` を返します。 Python の式 ``value in o``
+   と同じです。
 
 
-.. cfunction:: Py_ssize_t PySequence_Index(PyObject *o, PyObject *value)
+.. cfunction:: int PySequence_Index(PyObject *o, PyObject *value)
 
-   Return the first index *i* for which ``o[i] == value``.  On error, return
-   ``-1``.    This is equivalent to the Python expression ``o.index(value)``.
+   ``o[i] == value`` となる最初に見つかったインデクス *i* を返します。エラーが発生すると ``-1`` を返します。 Python の式
+   ``o.index(value)`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_List(PyObject *o)
 
-   Return a list object with the same contents as the arbitrary sequence *o*.  The
-   returned list is guaranteed to be new.
+   任意のシーケンス *o* と同じ内容を持つリストオブジェクトを返します。返されるリストは必ず新しいリストオブジェクトになります。
 
 
 .. cfunction:: PyObject* PySequence_Tuple(PyObject *o)
 
    .. index:: builtin: tuple
 
-   Return a tuple object with the same contents as the arbitrary sequence *o* or
-   *NULL* on failure.  If *o* is a tuple, a new reference will be returned,
-   otherwise a tuple will be constructed with the appropriate contents.  This is
-   equivalent to the Python expression ``tuple(o)``.
+   任意のシーケンス *o* と同じ内容を持つタプルオブジェクトを返します。失敗したら *NULL* を返します。 *o* がタプルの場合、新たな参照を返します。
+   それ以外の場合、適切な内容が入ったタプルを構築して返します。 Pythonの式 ``tuple(o)`` と同じです。
 
 
 .. cfunction:: PyObject* PySequence_Fast(PyObject *o, const char *m)
 
-   Returns the sequence *o* as a tuple, unless it is already a tuple or list, in
-   which case *o* is returned.  Use :cfunc:`PySequence_Fast_GET_ITEM` to access the
-   members of the result.  Returns *NULL* on failure.  If the object is not a
-   sequence, raises :exc:`TypeError` with *m* as the message text.
+   シーケンス *o* がすでにタプルやリストであれば *o* を返し、そうでなければ *o* をタプルで返します。返されるタプルのメンバにアクセスするには
+   :cfunc:`PySequence_Fast_GET_ITEM` を使ってください。失敗すると *NULL* を返します。
+   オブジェクトがシーケンスでなければ、 *m* がメッセージテキストになっている :exc:`TypeError` を送出します。
 
 
 .. cfunction:: PyObject* PySequence_Fast_GET_ITEM(PyObject *o, Py_ssize_t i)
 
-   Return the *i*th element of *o*, assuming that *o* was returned by
-   :cfunc:`PySequence_Fast`, *o* is not *NULL*, and that *i* is within bounds.
+   *o* が *NULL* でなく、 :cfunc:`PySequence_Fast` が返したオブジェクトであり、かつ *i* がインデクスの範囲内にあると
+   仮定して、 *o* の *i* 番目の要素を返します。
 
 
 .. cfunction:: PyObject** PySequence_Fast_ITEMS(PyObject *o)
 
-   Return the underlying array of PyObject pointers.  Assumes that *o* was returned
-   by :cfunc:`PySequence_Fast` and *o* is not *NULL*.
-   
-   Note, if a list gets resized, the reallocation may relocate the items array.
-   So, only use the underlying array pointer in contexts where the sequence 
-   cannot change.
+   PyObject ポインタの背後にあるアレイを返します．この関数では， *o* は :cfunc:`PySequence_Fast` の返したオブジェクトであり，
+   *NULL* でないものと仮定しています．
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: PyObject* PySequence_ITEM(PyObject *o, Py_ssize_t i)
 
-   Return the *i*th element of *o* or *NULL* on failure. Macro form of
-   :cfunc:`PySequence_GetItem` but without checking that
-   :cfunc:`PySequence_Check(o)` is true and without adjustment for negative
-   indices.
+   成功すると the *i* th element of *o* を返し、失敗すると *NULL* を返します。
+   :cfunc:`PySequence_GetItem` ですが、 :cfunc:`PySequence_Check(o)` が真になるかチェックせず、
+   負のインデクスに対する調整を行いません。
 
    .. versionadded:: 2.3
 
 
-.. cfunction:: Py_ssize_t PySequence_Fast_GET_SIZE(PyObject *o)
+.. cfunction:: int PySequence_Fast_GET_SIZE(PyObject *o)
 
-   Returns the length of *o*, assuming that *o* was returned by
-   :cfunc:`PySequence_Fast` and that *o* is not *NULL*.  The size can also be
-   gotten by calling :cfunc:`PySequence_Size` on *o*, but
-   :cfunc:`PySequence_Fast_GET_SIZE` is faster because it can assume *o* is a list
-   or tuple.
+   *o* が *NULL* でなく、 :cfunc:`PySequence_Fast` が返したオブジェクトであると仮定して、 *o* の長さを返します。 *o*
+   のサイズは :cfunc:`PySequence_Size` を呼び出しても得られますが、 :cfunc:`PySequence_Fast_GET_SIZE`
+   の方が *o* をリストかタプルであると仮定して処理するため、より高速です。

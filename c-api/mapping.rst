@@ -2,77 +2,72 @@
 
 .. _mapping:
 
-Mapping Protocol
-================
+マップ型プロトコル (mapping protocol)
+=====================================
 
 
 .. cfunction:: int PyMapping_Check(PyObject *o)
 
-   Return ``1`` if the object provides mapping protocol, and ``0`` otherwise.  This
-   function always succeeds.
+   オブジェクトがマップ型プロトコルを提供している場合に ``1`` を返し、そうでないときには ``0`` を返します。この関数呼び出しは常に成功します。
 
 
 .. cfunction:: Py_ssize_t PyMapping_Length(PyObject *o)
 
    .. index:: builtin: len
 
-   Returns the number of keys in object *o* on success, and ``-1`` on failure.  For
-   objects that do not provide mapping protocol, this is equivalent to the Python
-   expression ``len(o)``.
+   成功するとオブジェクト *o* 中のキーの数を返し、失敗すると ``-1`` を返します。マップ型プロトコルを提供していないオブジェクトに対しては、
+   Python の式 ``len(o)`` と同じになります。
 
 
 .. cfunction:: int PyMapping_DelItemString(PyObject *o, char *key)
 
-   Remove the mapping for object *key* from the object *o*. Return ``-1`` on
-   failure.  This is equivalent to the Python statement ``del o[key]``.
+   オブジェクト *o* から *key* に関する対応付けを削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[key]``
+   と同じです。
 
 
 .. cfunction:: int PyMapping_DelItem(PyObject *o, PyObject *key)
 
-   Remove the mapping for object *key* from the object *o*. Return ``-1`` on
-   failure.  This is equivalent to the Python statement ``del o[key]``.
+   オブジェクト *o* から *key* に対する対応付けを削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[key]``
+   と同じです。
 
 
 .. cfunction:: int PyMapping_HasKeyString(PyObject *o, char *key)
 
-   On success, return ``1`` if the mapping object has the key *key* and ``0``
-   otherwise.  This is equivalent to ``o[key]``, returning ``True`` on success
-   and ``False`` on an exception.  This function always succeeds.
+   成功すると、マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、そうでないときには ``0`` を返します。 Python の式
+   ``o.has_key(key)`` と同じです。この関数呼び出しは常に成功します。
 
 
 .. cfunction:: int PyMapping_HasKey(PyObject *o, PyObject *key)
 
-   Return ``1`` if the mapping object has the key *key* and ``0`` otherwise.
-   This is equivalent to ``o[key]``, returning ``True`` on success and ``False``
-   on an exception.  This function always succeeds.
+   マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、そうでないときには ``0`` を返します。 Python の式
+   ``o.has_key(key)`` と同じです。この関数呼び出しは常に成功します。
 
 
 .. cfunction:: PyObject* PyMapping_Keys(PyObject *o)
 
-   On success, return a list of the keys in object *o*.  On failure, return *NULL*.
-   This is equivalent to the Python expression ``o.keys()``.
+   成功するとオブジェクト *o* のキーからなるリストを返します。失敗すると *NULL* を返します。 Python の式 ``o.keys()``
+   と同じです。
 
 
 .. cfunction:: PyObject* PyMapping_Values(PyObject *o)
 
-   On success, return a list of the values in object *o*.  On failure, return
-   *NULL*. This is equivalent to the Python expression ``o.values()``.
+   成功するとオブジェクト *o* のキーに対応する値からなるリストを返します。失敗すると *NULL* を返します。 Python の式
+   ``o.values()`` と同じです。
 
 
 .. cfunction:: PyObject* PyMapping_Items(PyObject *o)
 
-   On success, return a list of the items in object *o*, where each item is a tuple
-   containing a key-value pair.  On failure, return *NULL*. This is equivalent to
-   the Python expression ``o.items()``.
+   成功するとオブジェクト *o* の要素対、すなわちキーと値のペアが入ったタプルからなるリストを返します。失敗すると *NULL* を返します。 Python
+   の式 ``o.items()`` と同じです。
 
 
 .. cfunction:: PyObject* PyMapping_GetItemString(PyObject *o, char *key)
 
-   Return element of *o* corresponding to the object *key* or *NULL* on failure.
-   This is the equivalent of the Python expression ``o[key]``.
+   オブジェクト *key* に対応する *o* の要素を返します。失敗すると *NULL* を返します。 Python の式 ``o[key]`` と同じです。
 
 
 .. cfunction:: int PyMapping_SetItemString(PyObject *o, char *key, PyObject *v)
 
-   Map the object *key* to the value *v* in object *o*. Returns ``-1`` on failure.
-   This is the equivalent of the Python statement ``o[key] = v``.
+   オブジェクト *o* で *key* を値 *v* に対応付けます。失敗すると ``-1`` を返します。 Python の文 ``o[key] = v``
+   と同じです。
+
