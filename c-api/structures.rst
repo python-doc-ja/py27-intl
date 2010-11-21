@@ -2,52 +2,46 @@
 
 .. _common-structs:
 
-Common Object Structures
-========================
+共通のオブジェクト構造体 (common object structure)
+==================================================
 
-There are a large number of structures which are used in the definition of
-object types for Python.  This section describes these structures and how they
-are used.
+Python では、オブジェクト型を定義する上で数多くの構造体が使われます。この節では三つの構造体とその利用方法について説明します。
 
-All Python objects ultimately share a small number of fields at the beginning of
-the object's representation in memory.  These are represented by the
-:ctype:`PyObject` and :ctype:`PyVarObject` types, which are defined, in turn, by
-the expansions of some macros also used, whether directly or indirectly, in the
-definition of all other Python objects.
+全ての Python オブジェクトは、オブジェクトのメモリ内表現の先頭部分にある少数のフィールドを完全に共有しています。このフィールドは
+:ctype:`PyObject` および :ctype:`PyVarObject` 型で表現されます。 :ctype:`PyObject` 型や
+:ctype:`PyVarObject` 型もまた、他の全ての Python  オブジェクトを定義する上で直接的・間接的に使われているマクロを
+使って定義されています。
 
 
 .. ctype:: PyObject
 
-   All object types are extensions of this type.  This is a type which contains the
-   information Python needs to treat a pointer to an object as an object.  In a
-   normal "release" build, it contains only the object's reference count and a
-   pointer to the corresponding type object.  It corresponds to the fields defined
-   by the expansion of the ``PyObject_HEAD`` macro.
+   全てのオブジェクト型はこの型を拡張したものです。この型には、あるオブジェクトに対するオブジェクトとしてのポインタを Python
+   から扱う必要がある際に必要な情報が入っています。通常に "リリースされている" ビルドでは、この構造体にはオブジェクトの
+   参照カウントと、オブジェクトに対応する型オブジェクトだけが入っています。
+
+   ``PyObject_HEAD`` マクロ展開で定義されているフィールドに対応します。
 
 
 .. ctype:: PyVarObject
 
-   This is an extension of :ctype:`PyObject` that adds the :attr:`ob_size` field.
-   This is only used for objects that have some notion of *length*.  This type does
-   not often appear in the Python/C API.  It corresponds to the fields defined by
-   the expansion of the ``PyObject_VAR_HEAD`` macro.
+   :ctype:`PyObject` を拡張して、 :attr:`ob_size` フィールドを追加したものです。この構造体は、 *長さ (length)*
+   の概念を持つオブジェクトだけに対して使います。この型が Python/C API で使われることはほとんどありません。
+   ``PyObject_VAR_HEAD`` マクロ展開で定義されているフィールドに対応します。
 
-These macros are used in the definition of :ctype:`PyObject` and
-:ctype:`PyVarObject`:
+:ctype:`PyObject` および :ctype:`PyVarObject` の定義には以下のマクロが使われています:
 
 
 .. cmacro:: PyObject_HEAD
 
-   This is a macro which expands to the declarations of the fields of the
-   :ctype:`PyObject` type; it is used when declaring new types which represent
-   objects without a varying length.  The specific fields it expands to depend on
-   the definition of :cmacro:`Py_TRACE_REFS`.  By default, that macro is not
-   defined, and :cmacro:`PyObject_HEAD` expands to::
+   :ctype:`PyObject` 型のフィールド宣言に展開されるマクロです;  可変でない長さを持つオブジェクトを表現する新たな型を宣言する
+   場合に使います。展開によってどのフィールドが宣言されるかは、 :cmacro:`Py_TRACE_REFS` の定義に依存します。
+   デフォルトでは、 :cmacro:`Py_TRACE_REFS` は定義されておらず、 :cmacro:`PyObject_HEAD`
+   は以下のコードに展開されます::
 
       Py_ssize_t ob_refcnt;
       PyTypeObject *ob_type;
 
-   When :cmacro:`Py_TRACE_REFS` is defined, it expands to::
+   :cmacro:`Py_TRACE_REFS` が定義されている場合、以下のように展開されます::
 
       PyObject *_ob_next, *_ob_prev;
       Py_ssize_t ob_refcnt;
@@ -56,123 +50,101 @@ These macros are used in the definition of :ctype:`PyObject` and
 
 .. cmacro:: PyObject_VAR_HEAD
 
-   This is a macro which expands to the declarations of the fields of the
-   :ctype:`PyVarObject` type; it is used when declaring new types which represent
-   objects with a length that varies from instance to instance.  This macro always
-   expands to::
+   マクロです。 :ctype:`PyVarObject` 型のフィールド宣言に展開されるマクロです;
+   インスタンスによって可変の長さを持つオブジェクトを表現する新たな型を宣言する場合に使います。マクロは常に以下のように展開されます::
 
       PyObject_HEAD
       Py_ssize_t ob_size;
 
-   Note that :cmacro:`PyObject_HEAD` is part of the expansion, and that its own
-   expansion varies depending on the definition of :cmacro:`Py_TRACE_REFS`.
+   マクロ展開結果の一部に :cmacro:`PyObject_HEAD` が含まれており、 :cmacro:`PyObject_HEAD`
+   の展開結果は :cmacro:`Py_TRACE_REFS` の定義に依存します。
 
-PyObject_HEAD_INIT
+
+.. cmacro:: PyObject_HEAD_INIT
 
 
 .. ctype:: PyCFunction
 
-   Type of the functions used to implement most Python callables in C. Functions of
-   this type take two :ctype:`PyObject\*` parameters and return one such value.  If
-   the return value is *NULL*, an exception shall have been set.  If not *NULL*,
-   the return value is interpreted as the return value of the function as exposed
-   in Python.  The function must return a new reference.
+   ほとんどの Python の呼び出し可能オブジェクトを C で実装する際に用いられている関数の型です。この型の関数は二つの
+   :ctype:`PyObject\*` 型パラメタをとり、 :ctype:`PyObject\*` 型の値を返します。戻り値を *NULL* にする場合、
+   例外をセットしておかなければなりません。 *NULL* でない値を返す場合、戻り値は Python に関数の戻り値として公開される値として解釈されます。
+   この型の関数は新たな参照を返さなければなりません。
 
 
 .. ctype:: PyMethodDef
 
-   Structure used to describe a method of an extension type.  This structure has
-   four fields:
+   拡張型のメソッドを記述する際に用いる構造体です。この構造体には 4 つのフィールドがあります:
 
-   +------------------+-------------+-------------------------------+
-   | Field            | C Type      | Meaning                       |
-   +==================+=============+===============================+
-   | :attr:`ml_name`  | char \*     | name of the method            |
-   +------------------+-------------+-------------------------------+
-   | :attr:`ml_meth`  | PyCFunction | pointer to the C              |
-   |                  |             | implementation                |
-   +------------------+-------------+-------------------------------+
-   | :attr:`ml_flags` | int         | flag bits indicating how the  |
-   |                  |             | call should be constructed    |
-   +------------------+-------------+-------------------------------+
-   | :attr:`ml_doc`   | char \*     | points to the contents of the |
-   |                  |             | docstring                     |
-   +------------------+-------------+-------------------------------+
+   +------------------+-------------+----------------------------------------------+
+   | フィールド       | C データ型  | 意味                                         |
+   +==================+=============+==============================================+
+   | :attr:`ml_name`  | char \*     | メソッド名                                   |
+   +------------------+-------------+----------------------------------------------+
+   | :attr:`ml_meth`  | PyCFunction | C 実装へのポインタ                           |
+   +------------------+-------------+----------------------------------------------+
+   | :attr:`ml_flags` | int         | 呼び出しをどのように行うかを示すフラグビット |
+   +------------------+-------------+----------------------------------------------+
+   | :attr:`ml_doc`   | char \*     | docstring の内容を指すポインタ               |
+   +------------------+-------------+----------------------------------------------+
 
-The :attr:`ml_meth` is a C function pointer.  The functions may be of different
-types, but they always return :ctype:`PyObject\*`.  If the function is not of
-the :ctype:`PyCFunction`, the compiler will require a cast in the method table.
-Even though :ctype:`PyCFunction` defines the first parameter as
-:ctype:`PyObject\*`, it is common that the method implementation uses a the
-specific C type of the *self* object.
+:attr:`ml_meth` は C の関数ポインタです。関数は別の型で定義されていてもかまいませんが、常に  :ctype:`PyObject\*`
+を返します。関数が :ctype:`PyFunction` でない場合、メソッドテーブル内でキャストを行うようコンパイラが要求することになるでしょう。
+:ctype:`PyCFunction` では最初のパラメタが :ctype:`PyObject\*` 型であると定義していますが、固有の C 型を
+*self* オブジェクトに使う実装はよく行われています。
 
-The :attr:`ml_flags` field is a bitfield which can include the following flags.
-The individual flags indicate either a calling convention or a binding
-convention.  Of the calling convention flags, only :const:`METH_VARARGS` and
-:const:`METH_KEYWORDS` can be combined (but note that :const:`METH_KEYWORDS`
-alone is equivalent to ``METH_VARARGS | METH_KEYWORDS``). Any of the calling
-convention flags can be combined with a binding flag.
+:attr:`ml_flags` フィールドはビットフィールドで、以下のフラグが入ります。個々のフラグは呼び出し規約 (calling convention)
+や束縛規約 (binding convention) を表します。呼び出し規約フラグでは、 :const:`METH_VARARGS` および
+:const:`METH_KEYWORDS` を組み合わせられます (ただし、 :const:`METH_KEYWORDS` 単体の指定を行っても
+``METH_VARARGS | METH_KEYWORDS`` と同じなので注意してください)。呼び出し規約フラグは束縛フラグと組み合わせられます。
 
 
 .. data:: METH_VARARGS
 
-   This is the typical calling convention, where the methods have the type
-   :ctype:`PyCFunction`. The function expects two :ctype:`PyObject\*` values.  The
-   first one is the *self* object for methods; for module functions, it has the
-   value given to :cfunc:`Py_InitModule4` (or *NULL* if :cfunc:`Py_InitModule` was
-   used).  The second parameter (often called *args*) is a tuple object
-   representing all arguments. This parameter is typically processed using
-   :cfunc:`PyArg_ParseTuple` or :cfunc:`PyArg_UnpackTuple`.
+   :ctype:`PyCFunction` 型のメソッドで典型的に使われる呼び出し規約です。関数は :ctype:`PyObject\*`
+   型の引数値を二つ要求します。最初の引数はメソッドの *self* オブジェクトです; モジュール関数の場合、 :cfunc:`Py_InitModule4`
+   に与えることになる値が入ります (*NULL* にすると :cfunc:`Py_InitModule` が使われます)。第二のパラメタ (よく *args*
+   と呼ばれます) は、全ての引数を表現するタプルオブジェクトです。パラメタは通常、 :cfunc:`PyArg_ParseTuple` や
+   :cfunc:`PyArg_UnpackTuple` で処理されます。
 
 
 .. data:: METH_KEYWORDS
 
-   Methods with these flags must be of type :ctype:`PyCFunctionWithKeywords`.  The
-   function expects three parameters: *self*, *args*, and a dictionary of all the
-   keyword arguments.  The flag is typically combined with :const:`METH_VARARGS`,
-   and the parameters are typically processed using
-   :cfunc:`PyArg_ParseTupleAndKeywords`.
+   このフラグを持つメソッドは :ctype:`PyCFunctionWithKeywords`
+   型でなければなりません。 :ctype:`PyCFunctionWithKeywords` は三つのパラメタ:*self* 、 *args* 、
+   およびキーワード引数全てからなる辞書、を要求します。このフラグは通常 :const:`METH_VARARGS` と組み合わされ、パラメタは
+   :cfunc:`PyArg_ParseTupleAndKeywords` で処理されます。
 
 
 .. data:: METH_NOARGS
 
-   Methods without parameters don't need to check whether arguments are given if
-   they are listed with the :const:`METH_NOARGS` flag.  They need to be of type
-   :ctype:`PyCFunction`.  When used with object methods, the first parameter is
-   typically named ``self`` and will hold a reference to the object instance.  In
-   all cases the second parameter will be *NULL*.
+   引数のないメソッドは、 :const:`METH_NOARGS` フラグをつけた場合、必要な引数が指定されているかをチェックしなくなります。こうしたメソッドは
+   :ctype:`PyCFunction` 型でなくてはなりません。オブジェクトのメソッドに使った場合、第一のパラメタは ``self``
+   になり、オブジェクトインスタンスへの参照を保持することになります。いずれにせよ、第二のパラメタは *NULL* になります。
 
 
 .. data:: METH_O
 
-   Methods with a single object argument can be listed with the :const:`METH_O`
-   flag, instead of invoking :cfunc:`PyArg_ParseTuple` with a ``"O"`` argument.
-   They have the type :ctype:`PyCFunction`, with the *self* parameter, and a
-   :ctype:`PyObject\*` parameter representing the single argument.
+   単一のオブジェクト引数だけをとるメソッドは、 :cfunc:`PyArg_ParseTuple` を引数 ``"O"`` にして呼び出す代わりに、
+   :const:`METH_O` フラグつきで指定できます。メソッドは :ctype:`PyCFunction` 型で、 *self*
+   パラメタと単一の引数を表現する :ctype:`PyObject\*` パラメタを伴います。
 
 
 .. data:: METH_OLDARGS
 
-   This calling convention is deprecated.  The method must be of type
-   :ctype:`PyCFunction`.  The second argument is *NULL* if no arguments are given,
-   a single object if exactly one argument is given, and a tuple of objects if more
-   than one argument is given.  There is no way for a function using this
-   convention to distinguish between a call with multiple arguments and a call with
-   a tuple as the only argument.
+   この呼び出し規約は撤廃されました。メソッドは :ctype:`PyCFunction` 型でなければなりません。第二引数は、引数がない場合には
+   *NULL* 、単一の引数の場合にはその引数オブジェクト、複数個の引数の場合には引数オブジェクトからなるタプルです。この呼び出し規約を使うと、複数個の
+   引数の場合と、単一のタプルが唯一引数の場合を区別できなくなってしまいます。
 
-These two constants are not used to indicate the calling convention but the
-binding when use with methods of classes.  These may not be used for functions
-defined for modules.  At most one of these flags may be set for any given
-method.
+以下の二つの定数は、呼び出し規約を示すものではなく、クラスのメソッドとして使う際の束縛方式を示すものです。
+モジュールに対して定義された関数で用いてはなりません。メソッドに対しては、最大で一つしかこのフラグをセットできません。
 
 
 .. data:: METH_CLASS
 
    .. index:: builtin: classmethod
 
-   The method will be passed the type object as the first parameter rather than an
-   instance of the type.  This is used to create *class methods*, similar to what
-   is created when using the :func:`classmethod` built-in function.
+   メソッドの最初の引数には、型のインスタンスではなく型オブジェクトが渡されます。このフラグは組み込み関数 :func:`classmethod`
+   を使って生成するのと同じ *クラスメソッド (class method)* を生成するために使われます。
 
    .. versionadded:: 2.3
 
@@ -181,32 +153,27 @@ method.
 
    .. index:: builtin: staticmethod
 
-   The method will be passed *NULL* as the first parameter rather than an instance
-   of the type.  This is used to create *static methods*, similar to what is
-   created when using the :func:`staticmethod` built-in function.
+   メソッドの最初の引数には、型のインスタンスではなく *NULL* が渡されます。このフラグは、 :func:`staticmethod`
+   を使って生成するのと同じ *静的メソッド (static method)* を生成するために使われます。
 
    .. versionadded:: 2.3
 
-One other constant controls whether a method is loaded in place of another
-definition with the same method name.
+もう一つの定数は、あるメソッドを同名の別のメソッド定義と置き換えるかどうかを制御します。
 
 
 .. data:: METH_COEXIST
 
-   The method will be loaded in place of existing definitions.  Without
-   *METH_COEXIST*, the default is to skip repeated definitions.  Since slot
-   wrappers are loaded before the method table, the existence of a *sq_contains*
-   slot, for example, would generate a wrapped method named :meth:`__contains__`
-   and preclude the loading of a corresponding PyCFunction with the same name.
-   With the flag defined, the PyCFunction will be loaded in place of the wrapper
-   object and will co-exist with the slot.  This is helpful because calls to
-   PyCFunctions are optimized more than wrapper object calls.
+   メソッドを既存の定義を置き換える形でロードします。 *METH_COEXIST* を指定しなければ、デフォルトの設定にしたがって、
+   定義が重複しないようスキップします。スロットラッパはメソッドテーブルよりも前にロードされるので、例えば *sq_contains* スロットは
+   ラップしているメソッド :meth:`__contains__` を生成し、同名の PyCFunction のロードを阻止します。このフラグを定義すると、
+   PyCFunction はラッパオブジェクトを置き換える形でロードされ、スロットと連立します。 PyCFunctions の呼び出しはラッパオブジェクトの
+   呼び出しよりも最適化されているので、こうした仕様が便利になります。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: PyObject* Py_FindMethod(PyMethodDef table[], PyObject *ob, char *name)
 
-   Return a bound method object for an extension type implemented in C.  This can
-   be useful in the implementation of a :attr:`tp_getattro` or :attr:`tp_getattr`
-   handler that does not use the :cfunc:`PyObject_GenericGetAttr` function.
+   C で実装された拡張型の束縛メソッドオブジェクトを返します。 :cfunc:`PyObject_GenericGetAttr` 関数を使わない
+   :attr:`tp_getattro` や :attr:`tp_getattr` ハンドラを実装する際に便利です。
+

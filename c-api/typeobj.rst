@@ -2,587 +2,474 @@
 
 .. _type-structs:
 
-Type Objects
-============
+型オブジェクト
+==============
 
-Perhaps one of the most important structures of the Python object system is the
-structure that defines a new type: the :ctype:`PyTypeObject` structure.  Type
-objects can be handled using any of the :cfunc:`PyObject_\*` or
-:cfunc:`PyType_\*` functions, but do not offer much that's interesting to most
-Python applications. These objects are fundamental to how objects behave, so
-they are very important to the interpreter itself and to any extension module
-that implements new types.
+新スタイルの型を定義する構造体: :ctype:`PyTypeObject` 構造体は、おそらく Python
+オブジェクトシステムの中で最も重要な構造体の一つでしょう。型オブジェクトは :cfunc:`PyObject_\*` 系や :cfunc:`PyType_\*`
+系の関数で扱えますが、ほとんどの Python アプリケーションにとって、さして面白みのある機能を提供しません。
+とはいえ、型オブジェクトはオブジェクトがどのように振舞うかを決める基盤ですから、インタプリタ自体や新たな型を定義する拡張モジュールでは非常に重要な存在です。
 
-Type objects are fairly large compared to most of the standard types. The reason
-for the size is that each type object stores a large number of values, mostly C
-function pointers, each of which implements a small part of the type's
-functionality.  The fields of the type object are examined in detail in this
-section.  The fields will be described in the order in which they occur in the
-structure.
+型オブジェクトは標準の型 (standard type) に比べるとかなり大きな構造体です。その理由は、型オブジェクトがある型の様々な機能を実現する
+小さな機能単位を実装した C 関数へのポインタが大部分を占めるような多数の値を保持しているからです。この節では、型オブジェクトの各
+フィールドについて詳細を説明します。各フィールドは、構造体内で出現する順番に説明されています。
 
 Typedefs: unaryfunc, binaryfunc, ternaryfunc, inquiry, coercion, intargfunc,
 intintargfunc, intobjargproc, intintobjargproc, objobjargproc, destructor,
 freefunc, printfunc, getattrfunc, getattrofunc, setattrfunc, setattrofunc,
 cmpfunc, reprfunc, hashfunc
 
-The structure definition for :ctype:`PyTypeObject` can be found in
-:file:`Include/object.h`.  For convenience of reference, this repeats the
-definition found there:
-
-.. literalinclude:: ../includes/typestruct.h
+:ctype:`PyTypeObject` の構造体定義は :file:`Include/object.h`
+で見つけられるはずです。参照の手間を省くために、ここでは定義を繰り返します:
 
 
-The type object structure extends the :ctype:`PyVarObject` structure. The
-:attr:`ob_size` field is used for dynamic types (created by  :func:`type_new`,
-usually called from a class statement). Note that :cdata:`PyType_Type` (the
-metatype) initializes :attr:`tp_itemsize`, which means that its instances (i.e.
-type objects) *must* have the :attr:`ob_size` field.
+.. include:: ../includes/typestruct.h
+   :literal:
+
+型オブジェクト構造体は :ctype:`PyVarObject` 構造体を拡張したものです。 :attr:`ob_size` フィールドは、(通常 class
+文が呼び出す :func:`type_new` で生成される) 動的な型に使います。 :cdata:`PyType_Type` (メタタイプ)
+は :attr:`tp_itemsize` を初期化するので注意してください。すなわち、インスタンス (つまり型オブジェクト) には
+:attr:`ob_size` フィールドがなければ *なりません* 。
 
 
 .. cmember:: PyObject* PyObject._ob_next
              PyObject* PyObject._ob_prev
 
-   These fields are only present when the macro ``Py_TRACE_REFS`` is defined.
-   Their initialization to *NULL* is taken care of by the ``PyObject_HEAD_INIT``
-   macro.  For statically allocated objects, these fields always remain *NULL*.
-   For dynamically allocated objects, these two fields are used to link the object
-   into a doubly-linked list of *all* live objects on the heap.  This could be used
-   for various debugging purposes; currently the only use is to print the objects
-   that are still alive at the end of a run when the environment variable
-   :envvar:`PYTHONDUMPREFS` is set.
+   これらのフィールドはマクロ  ``Py_TRACE_REFS`` が定義されている場合のみ存在します。 ``PyObject_HEAD_INIT``
+   マクロを使うと、フィールドを *NULL* に初期化します。静的にメモリ確保されているオブジェクトでは、これらのフィールドは常に *NULL* のままです。
+   動的にメモリ確保されるオブジェクトの場合、これら二つのフィールドは、ヒープ上の *全ての* 存続中のオブジェクトからなる二重リンクリスト
+   でオブジェクトをリンクする際に使われます。このことは様々なデバッグ目的に利用できます; 現状では、環境変数 :envvar:`PYTHONDUMPREFS`
+   が設定されているときに、プログラムの実行終了時点で存続しているオブジェクトを出力するのが唯一の用例です。
 
-   These fields are not inherited by subtypes.
+   サブタイプはこのフィールドを継承しません。
 
 
 .. cmember:: Py_ssize_t PyObject.ob_refcnt
 
-   This is the type object's reference count, initialized to ``1`` by the
-   ``PyObject_HEAD_INIT`` macro.  Note that for statically allocated type objects,
-   the type's instances (objects whose :attr:`ob_type` points back to the type) do
-   *not* count as references.  But for dynamically allocated type objects, the
-   instances *do* count as references.
+   型オブジェクトの参照カウントで、 ``PyObject_HEAD_INIT`` はこの値を ``1`` に初期化します。静的にメモリ確保された型オブジェクト
+   では、型のインスタンス (:attr:`ob_type` が該当する型を指しているオブジェクト) は参照をカウントする対象には *なりません* 。
+   動的にメモリ確保される型オブジェクトの場合、インスタンスは参照カウントの対象に *なります* 。
 
-   This field is not inherited by subtypes.
+   サブタイプはこのフィールドを継承しません。
 
 
 .. cmember:: PyTypeObject* PyObject.ob_type
 
-   This is the type's type, in other words its metatype.  It is initialized by the
-   argument to the ``PyObject_HEAD_INIT`` macro, and its value should normally be
-   ``&PyType_Type``.  However, for dynamically loadable extension modules that must
-   be usable on Windows (at least), the compiler complains that this is not a valid
-   initializer.  Therefore, the convention is to pass *NULL* to the
-   ``PyObject_HEAD_INIT`` macro and to initialize this field explicitly at the
-   start of the module's initialization function, before doing anything else.  This
-   is typically done like this::
+   型自体の型、別の言い方をするとメタタイプです。 ``PyObject_HEAD_INIT`` マクロで初期化され、通常は ``&PyType_Type``
+   になります。しかし、(少なくとも) Windows で利用できる動的ロード可能な拡張モジュールでは、コンパイラは
+   有効な初期化ではないと文句をつけます。そこで、ならわしとして、 ``PyObject_HEAD_INIT`` には *NULL* を渡して初期化しておき、
+   他の操作を行う前にモジュールの初期化関数で明示的にこのフィールドを初期化することになっています。この操作は以下のように行います::
 
       Foo_Type.ob_type = &PyType_Type;
 
-   This should be done before any instances of the type are created.
-   :cfunc:`PyType_Ready` checks if :attr:`ob_type` is *NULL*, and if so,
-   initializes it: in Python 2.2, it is set to ``&PyType_Type``; in Python 2.2.1
-   and later it is initialized to the :attr:`ob_type` field of the base class.
-   :cfunc:`PyType_Ready` will not change this field if it is non-zero.
+   上の操作は、該当する型のいかなるインスタンス生成よりも前にしておかねばなりません。 :cfunc:`PyType_Ready` は
+   :attr:`ob_type` が *NULL* かどうか調べ、 *NULL* の場合には初期化します: Python 2.2
+   では、 ``&PyType_Type`` にセットします; in Python 2.2.1 およびそれ以降では基底クラスの :attr:`ob_type`
+   フィールドに初期化します。 :attr:`ob_type` が非ゼロの場合、 :cfunc:`PyType_Ready` はこのフィールドを変更しません。
 
-   In Python 2.2, this field is not inherited by subtypes.  In 2.2.1, and in 2.3
-   and beyond, it is inherited by subtypes.
+   Python 2.2 では、サブタイプはこのフィールドを継承しません。 2.2.1 と 2.3 以降では、サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: Py_ssize_t PyVarObject.ob_size
 
-   For statically allocated type objects, this should be initialized to zero.  For
-   dynamically allocated type objects, this field has a special internal meaning.
+   静的にメモリ確保されている型オブジェクトの場合、このフィールドはゼロに初期化されます。動的にメモリ確保されている型オブジェクトの
+   場合、このフィールドは内部使用される特殊な意味を持ちます。
 
-   This field is not inherited by subtypes.
+   サブタイプはこのフィールドを継承しません。
 
 
 .. cmember:: char* PyTypeObject.tp_name
 
-   Pointer to a NUL-terminated string containing the name of the type. For types
-   that are accessible as module globals, the string should be the full module
-   name, followed by a dot, followed by the type name; for built-in types, it
-   should be just the type name.  If the module is a submodule of a package, the
-   full package name is part of the full module name.  For example, a type named
-   :class:`T` defined in module :mod:`M` in subpackage :mod:`Q` in package :mod:`P`
-   should have the :attr:`tp_name` initializer ``"P.Q.M.T"``.
+   型の名前が入っている NUL 終端された文字列へのポインタです。モジュールのグローバル変数としてアクセスできる型の場合、
+   この文字列は完全なモジュール名、ドット、そして型の名前と続く文字列になります; 組み込み型の場合、ただの型の名前です。
+   モジュールがあるパッケージのサブモジュールの場合、完全なパッケージ名が完全なモジュール名の一部になっています。例えば、パッケージ :mod:`P`
+   内のサブモジュール :mod:`Q` に入っているモジュール :mod:`M` 内で定義されている :class:`T` は、 :attr:`tp_name` を
+   ``"P.Q.M.T"`` に初期化します。
 
-   For dynamically allocated type objects, this should just be the type name, and
-   the module name explicitly stored in the type dict as the value for key
-   ``'__module__'``.
+   動的にメモリ確保される型オブジェクトの場合、このフィールドは単に型の名前になり、モジュール名は型の辞書内でキー ``'__module__'``
+   に対する値として明示的に保存されます。
 
-   For statically allocated type objects, the tp_name field should contain a dot.
-   Everything before the last dot is made accessible as the :attr:`__module__`
-   attribute, and everything after the last dot is made accessible as the
-   :attr:`__name__` attribute.
+   静的にメモリ確保される型オブジェクトの場合、 :attr:`tp_name` フィールドにはドットが入っているはずです。最後のドットよりも前にある
+   部分文字列全体は :attr:`__module__` 属性として、またドットよりも後ろにある部分は :attr:`__name__`
+   属性としてアクセスできます。
 
-   If no dot is present, the entire :attr:`tp_name` field is made accessible as the
-   :attr:`__name__` attribute, and the :attr:`__module__` attribute is undefined
-   (unless explicitly set in the dictionary, as explained above).  This means your
-   type will be impossible to pickle.
+   ドットが入っていない場合、 :attr:`tp_name` フィールドの内容全てが :attr:`__name__` 属性になり、
+   :attr:`__module__` 属性は (前述のように型の辞書内で明示的にセットしないかぎり) 未定義になります。このため、こうした型オブジェクトは
+   pickle 化できないことになります。
 
-   This field is not inherited by subtypes.
+   サブタイプはこのフィールドを継承しません。
 
 
 .. cmember:: Py_ssize_t PyTypeObject.tp_basicsize
              Py_ssize_t PyTypeObject.tp_itemsize
 
-   These fields allow calculating the size in bytes of instances of the type.
+   これらのフィールドは、型インスタンスのバイトサイズを計算できるようにします。
 
-   There are two kinds of types: types with fixed-length instances have a zero
-   :attr:`tp_itemsize` field, types with variable-length instances have a non-zero
-   :attr:`tp_itemsize` field.  For a type with fixed-length instances, all
-   instances have the same size, given in :attr:`tp_basicsize`.
+   型には二つの種類があります: 固定長インスタンスの型は、 :attr:`tp_itemsize` フィールドがゼロで、可変長インスタンスの方は
+   :attr:`tp_itemsize` フィールドが非ゼロの値になります。固定長インスタンスの型の場合、全てのインスタンスは等しく
+   :attr:`tp_basicsize` で与えられたサイズになります。
 
-   For a type with variable-length instances, the instances must have an
-   :attr:`ob_size` field, and the instance size is :attr:`tp_basicsize` plus N
-   times :attr:`tp_itemsize`, where N is the "length" of the object.  The value of
-   N is typically stored in the instance's :attr:`ob_size` field.  There are
-   exceptions:  for example, long ints use a negative :attr:`ob_size` to indicate a
-   negative number, and N is ``abs(ob_size)`` there.  Also, the presence of an
-   :attr:`ob_size` field in the instance layout doesn't mean that the instance
-   structure is variable-length (for example, the structure for the list type has
-   fixed-length instances, yet those instances have a meaningful :attr:`ob_size`
-   field).
+   可変長インスタンスの型の場合、インスタンスには :attr:`ob_size`  フィールドがなくてはならず、インスタンスのサイズは N をオブジェクトの
+   "長さ" として、 :attr:`tp_basicsize` と N かける :attr:`tp_itemsize` の加算になります。N
+   の値は通常、インスタンスの :attr:`ob_size`  フィールドに記憶されます。ただし例外がいくつかあります: 例えば、長整数では負の値を
+   :attr:`ob_size` に使って、インスタンスの表す値が負であることを示し、 N 自体は ``abs(ob_size)``
+   になります。また、 :attr:`ob_size` フィールドがあるからといって、必ずしもインスタンスが可変長であることを意味しません (例えば、
+   リスト型の構造体は固定長のインスタンスになるにもかかわらず、インスタンスにはちゃんと意味を持った :attr:`ob_size` フィールドがあります)。
 
-   The basic size includes the fields in the instance declared by the macro
-   :cmacro:`PyObject_HEAD` or :cmacro:`PyObject_VAR_HEAD` (whichever is used to
-   declare the instance struct) and this in turn includes the :attr:`_ob_prev` and
-   :attr:`_ob_next` fields if they are present.  This means that the only correct
-   way to get an initializer for the :attr:`tp_basicsize` is to use the
-   ``sizeof`` operator on the struct used to declare the instance layout.
-   The basic size does not include the GC header size (this is new in Python 2.2;
-   in 2.1 and 2.0, the GC header size was included in :attr:`tp_basicsize`).
+   基本サイズには、 :cmacro:`PyObject_HEAD` マクロまたは  :cmacro:`PyObject_VAR_HEAD` マクロ
+   (インスタンス構造体を宣言するのに使ったどちらかのマクロ) で宣言されているフィールドが入っています。さらに、 :attr:`_ob_prev` および
+   :attr:`_ob_next` フィールドがある場合、これらのフィールドもサイズに加算されます。
 
-   These fields are inherited separately by subtypes.  If the base type has a
-   non-zero :attr:`tp_itemsize`, it is generally not safe to set
-   :attr:`tp_itemsize` to a different non-zero value in a subtype (though this
-   depends on the implementation of the base type).
+   従って、 :attr:`tp_basicsize` の正しい初期化パラメタを得るには、インスタンスデータのレイアウトを宣言するのに使う構造体に対して
+   :keyword:`sizeof` 演算子を使うしかありません。基本サイズには、GC ヘッダサイズは入っていません (これは Python 2.2
+   からの新しい仕様です; 2.1 や 2.0 では、GC ヘッダサイズは :attr:`tp_basicsize` に入っていました)。
 
-   A note about alignment: if the variable items require a particular alignment,
-   this should be taken care of by the value of :attr:`tp_basicsize`.  Example:
-   suppose a type implements an array of ``double``. :attr:`tp_itemsize` is
-   ``sizeof(double)``. It is the programmer's responsibility that
-   :attr:`tp_basicsize` is a multiple of ``sizeof(double)`` (assuming this is the
-   alignment requirement for ``double``).
+   バイト整列 (alignment) に関する注釈: 変数の各要素を配置する際に特定のバイト整列が必要となる場合、 :attr:`tp_basicsize`
+   の値に気をつけなければなりません。一例: 例えばある型が ``double`` の配列を実装しているとします。 :attr:`tp_itemsize` は
+   ``sizeof(double)`` です。(``double`` のバイト整列条件に従って) :attr:`tp_basicsize`
+   が ``sizeof(double)`` の個数分のサイズになるようにするのはプログラマの責任です。
 
 
 .. cmember:: destructor PyTypeObject.tp_dealloc
 
-   A pointer to the instance destructor function.  This function must be defined
-   unless the type guarantees that its instances will never be deallocated (as is
-   the case for the singletons ``None`` and ``Ellipsis``).
+   インスタンスのデストラクタ関数へのポインタです。この関数は (単量子 ``None`` や ``Ellipsis`` の場合のように、インスタンスが
+   決してメモリ解放されない型でない限り) 必ず定義しなければなりません。
 
-   The destructor function is called by the :cfunc:`Py_DECREF` and
-   :cfunc:`Py_XDECREF` macros when the new reference count is zero.  At this point,
-   the instance is still in existence, but there are no references to it.  The
-   destructor function should free all references which the instance owns, free all
-   memory buffers owned by the instance (using the freeing function corresponding
-   to the allocation function used to allocate the buffer), and finally (as its
-   last action) call the type's :attr:`tp_free` function.  If the type is not
-   subtypable (doesn't have the :const:`Py_TPFLAGS_BASETYPE` flag bit set), it is
-   permissible to call the object deallocator directly instead of via
-   :attr:`tp_free`.  The object deallocator should be the one used to allocate the
-   instance; this is normally :cfunc:`PyObject_Del` if the instance was allocated
-   using :cfunc:`PyObject_New` or :cfunc:`PyObject_VarNew`, or
-   :cfunc:`PyObject_GC_Del` if the instance was allocated using
-   :cfunc:`PyObject_GC_New` or :cfunc:`PyObject_GC_VarNew`.
+   デストラクタ関数は、 :cfunc:`Py_DECREF` や :cfunc:`Py_XDECREF`
+   マクロで、操作後の参照カウントがゼロになった際に呼び出されます。呼び出された時点では、インスタンスはまだ存在しますが、インスタンスに
+   対する参照は全ない状態です。デストラクタ関数はインスタンスが保持している全ての参照を解放し、インスタンスが確保している全てのメモリバッファを
+   (バッファの確保時に使った関数に対応するメモリ解放関数を使って) 解放し、最後に (かならず最後に行う操作として) その型の :attr:`tp_free`
+   関数を呼び出します。ある型がサブタイプを作成できない  (:const:`Py_TPFLAGS_BASETYPE` フラグがセットされていない) 場合、
+   :attr:`tp_free` の代わりにオブジェクトのメモリ解放関数 (deallocator) を
+   直接呼び出してもかまいません。オブジェクトのメモリ解放関数は、インスタンスのメモリ確保を行う際に使った関数と同じファミリでなければなりません;
+   インスタンスを :cfunc:`PyObject_New` や :cfunc:`PyObject_VarNew` でメモリ確保した場合には、通常
+   :cfunc:`PyObject_Del` を使い、 :cfunc:`PyObject_GC_New` や :cfunc:`PyObject_GC_VarNew`
+   で確保した場合には :cfunc:`PyObject_GC_Del` を使います。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: printfunc PyTypeObject.tp_print
 
-   An optional pointer to the instance print function.
+   オプションのフィールドです。ポインタで、インスタンスの出力 (print) を行う関数を指します。
 
-   The print function is only called when the instance is printed to a *real* file;
-   when it is printed to a pseudo-file (like a :class:`StringIO` instance), the
-   instance's :attr:`tp_repr` or :attr:`tp_str` function is called to convert it to
-   a string.  These are also called when the type's :attr:`tp_print` field is
-   *NULL*.  A type should never implement :attr:`tp_print` in a way that produces
-   different output than :attr:`tp_repr` or :attr:`tp_str` would.
+   出力関数は、インスタンスが *実体のある (real)* ファイルに出力される場合にのみ呼び出されます; (:class:`StringIO`
+   インスタンスのような) 擬似ファイルに出力される場合には、インスタンスの :attr:`tp_repr` や :attr:`tp_str`
+   が指す関数が呼び出され、文字列への変換を行います。また、 :attr:`tp_print` が *NULL* の場合にもこれらの関数が呼び出されます。
+   :attr:`tp_repr` や :attr:`tp_str` と異なる出力を生成するような :attr:`tp_print`
+   は、決して型に実装してはなりません。
 
-   The print function is called with the same signature as :cfunc:`PyObject_Print`:
-   ``int tp_print(PyObject *self, FILE *file, int flags)``.  The *self* argument is
-   the instance to be printed.  The *file* argument is the stdio file to which it
-   is to be printed.  The *flags* argument is composed of flag bits. The only flag
-   bit currently defined is :const:`Py_PRINT_RAW`. When the :const:`Py_PRINT_RAW`
-   flag bit is set, the instance should be printed the same way as :attr:`tp_str`
-   would format it; when the :const:`Py_PRINT_RAW` flag bit is clear, the instance
-   should be printed the same was as :attr:`tp_repr` would format it. It should
-   return ``-1`` and set an exception condition when an error occurred during the
-   comparison.
+   出力関数は :cfunc:`PyObject_Print` と同じシグネチャ: ``int tp_print(PyObject *self, FILE
+   *file, int flags)`` で呼び出されます。* self* 引数は出力するインスタンスを指します。 *file* 引数は出力先となる標準入出力
+   (stdio) ファイルです。 *flags* 引数はフラグビットを組み合わせた値です。現在定義されているフラグビットは
+   :const:`Py_PRINT_RAW` のみです。 :const:`Py_PRINT_RAW` フラグビットがセットされていれば、
+   インスタンスは :attr:`tp_str` と同じ書式で出力されます。 :const:`Py_PRINT_RAW` フラグビットがクリアならば、
+   インスタンスは :attr:`tp_repr` と同じ書式で出力されます。この関数は、操作中にエラーが生じた場合、 ``-1`` を返して例外状態を
+   セットしなければなりません。
 
-   It is possible that the :attr:`tp_print` field will be deprecated. In any case,
-   it is recommended not to define :attr:`tp_print`, but instead to rely on
-   :attr:`tp_repr` and :attr:`tp_str` for printing.
+   :attr:`tp_print` フィールドは撤廃されるかもしれません。いずれにせよ、 :attr:`tp_print`
+   は定義せず、代わりに :attr:`tp_repr` や :attr:`tp_str` に頼って出力を行うようにしてください。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: getattrfunc PyTypeObject.tp_getattr
 
-   An optional pointer to the get-attribute-string function.
+   オプションのフィールドです。ポインタで、 get-attribute-string を行う関数を指します。
 
-   This field is deprecated.  When it is defined, it should point to a function
-   that acts the same as the :attr:`tp_getattro` function, but taking a C string
-   instead of a Python string object to give the attribute name.  The signature is
-   the same as for :cfunc:`PyObject_GetAttrString`.
+   このフィールドは撤廃されています。このフィールドを定義する場合、 :attr:`tp_getattro` 関数と同じように動作し、属性名は Python 文字列
+   オブジェクトではなく C 文字列で指定するような関数を指すようにしなければなりません。シグネチャは
+   :cfunc:`PyObject_GetAttrString` と同じです。
 
-   This field is inherited by subtypes together with :attr:`tp_getattro`: a subtype
-   inherits both :attr:`tp_getattr` and :attr:`tp_getattro` from its base type when
-   the subtype's :attr:`tp_getattr` and :attr:`tp_getattro` are both *NULL*.
+   このフィールドは :attr:`tp_getattro` と共にサブタイプに継承されます: すなわち、サブタイプの :attr:`tp_getattr` および
+   :attr:`tp_getattro` が共に *NULL* の場合、サブタイプは基底タイプから :attr:`tp_getattr` と
+   :attr:`tp_getattro` を一緒に継承します。
 
 
 .. cmember:: setattrfunc PyTypeObject.tp_setattr
 
-   An optional pointer to the set-attribute-string function.
+   オプションのフィールドです。ポインタで、 set-attribute-string を行う関数を指します。
 
-   This field is deprecated.  When it is defined, it should point to a function
-   that acts the same as the :attr:`tp_setattro` function, but taking a C string
-   instead of a Python string object to give the attribute name.  The signature is
-   the same as for :cfunc:`PyObject_SetAttrString`.
+   このフィールドは撤廃されています。このフィールドを定義する場合、 :attr:`tp_setattro` 関数と同じように動作し、属性名は Python 文字列
+   オブジェクトではなく C 文字列で指定するような関数を指すようにしなければなりません。シグネチャは
+   :cfunc:`PyObject_SetAttrString` と同じです。
 
-   This field is inherited by subtypes together with :attr:`tp_setattro`: a subtype
-   inherits both :attr:`tp_setattr` and :attr:`tp_setattro` from its base type when
-   the subtype's :attr:`tp_setattr` and :attr:`tp_setattro` are both *NULL*.
+   このフィールドは :attr:`tp_setattro` と共にサブタイプに継承されます: すなわち、サブタイプの :attr:`tp_setattr` および
+   :attr:`tp_setattro` が共に *NULL* の場合、サブタイプは基底タイプから :attr:`tp_setattr` と
+   :attr:`tp_setattro` を一緒に継承します。
 
 
 .. cmember:: cmpfunc PyTypeObject.tp_compare
 
-   An optional pointer to the three-way comparison function.
+   オプションのフィールドです。ポインタで、三値比較 (three-way comparison) を行う関数を指します。
 
-   The signature is the same as for :cfunc:`PyObject_Compare`. The function should
-   return ``1`` if *self* greater than *other*, ``0`` if *self* is equal to
-   *other*, and ``-1`` if *self* less than *other*.  It should return ``-1`` and
-   set an exception condition when an error occurred during the comparison.
+   シグネチャは :cfunc:`PyObject_Compare` と同じです。この関数は *self* が *other* よりも大きければ ``1`` 、
+   *self* と *other* の値が等しければ ``0`` 、 *self* が *other* より小さければ ``-1`` を返します。
+   この関数は、比較操作中にエラーが生じた場合、例外状態をセットして ``-1`` を返さねばなりません。
 
-   This field is inherited by subtypes together with :attr:`tp_richcompare` and
-   :attr:`tp_hash`: a subtypes inherits all three of :attr:`tp_compare`,
-   :attr:`tp_richcompare`, and :attr:`tp_hash` when the subtype's
-   :attr:`tp_compare`, :attr:`tp_richcompare`, and :attr:`tp_hash` are all *NULL*.
+   このフィールドは :attr:`tp_richcompare` および :attr:`tp_hash` と共にサブタイプに継承されます: すなわち、サブタイプの
+   :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   :attr:`tp_hash` の三つを一緒に継承します。
 
 
 .. cmember:: reprfunc PyTypeObject.tp_repr
 
    .. index:: builtin: repr
 
-   An optional pointer to a function that implements the built-in function
-   :func:`repr`.
+   オプションのフィールドです。ポインタで、組み込み関数 :func:`repr` を実装している関数を指します。
 
-   The signature is the same as for :cfunc:`PyObject_Repr`; it must return a string
-   or a Unicode object.  Ideally, this function should return a string that, when
-   passed to :func:`eval`, given a suitable environment, returns an object with the
-   same value.  If this is not feasible, it should return a string starting with
-   ``'<'`` and ending with ``'>'`` from which both the type and the value of the
-   object can be deduced.
+   シグネチャは :cfunc:`PyObject_Repr` と同じです。この関数は文字列オブジェクトか Unicode オブジェクトを返さねば
+   なりません。理想的には、この関数が返す文字列は、適切な環境で :func:`eval` に渡した場合、同じ値を持つオブジェクトになるような
+   文字列でなければなりません。不可能な場合には、オブジェクトの型と値から導出した内容の入った ``'<'``  から始まって ``'>'``
+   で終わる文字列を返さねばなりません。
 
-   When this field is not set, a string of the form ``<%s object at %p>`` is
-   returned, where ``%s`` is replaced by the type name, and ``%p`` by the object's
-   memory address.
+   このフィールドが設定されていない場合、 ``<%s object at %p>``  の形式をとる文字列が返されます。 ``%s`` は型の名前に、 ``%p``
+   はオブジェクトのメモリアドレスに置き換えられます。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
-.. cmember:: PyNumberMethods* tp_as_number
+PyNumberMethods \*tp_as_number;
 
-   Pointer to an additional structure that contains fields relevant only to
-   objects which implement the number protocol.  These fields are documented in
-   :ref:`number-structs`.
+XXX
 
-   The :attr:`tp_as_number` field is not inherited, but the contained fields are
-   inherited individually.
+PySequenceMethods \*tp_as_sequence;
 
+XXX
 
-.. cmember:: PySequenceMethods* tp_as_sequence
+PyMappingMethods \*tp_as_mapping;
 
-   Pointer to an additional structure that contains fields relevant only to
-   objects which implement the sequence protocol.  These fields are documented
-   in :ref:`sequence-structs`.
-
-   The :attr:`tp_as_sequence` field is not inherited, but the contained fields
-   are inherited individually.
-
-
-.. cmember:: PyMappingMethods* tp_as_mapping
-
-   Pointer to an additional structure that contains fields relevant only to
-   objects which implement the mapping protocol.  These fields are documented in
-   :ref:`mapping-structs`.
-
-   The :attr:`tp_as_mapping` field is not inherited, but the contained fields
-   are inherited individually.
+XXX
 
 
 .. cmember:: hashfunc PyTypeObject.tp_hash
 
    .. index:: builtin: hash
 
-   An optional pointer to a function that implements the built-in function
-   :func:`hash`.
+   オプションのフィールドです。ポインタで、組み込み関数 :func:`hash` を実装している関数を指します。
 
-   The signature is the same as for :cfunc:`PyObject_Hash`; it must return a C
-   long.  The value ``-1`` should not be returned as a normal return value; when an
-   error occurs during the computation of the hash value, the function should set
-   an exception and return ``-1``.
+   シグネチャは :cfunc:`PyObject_Hash` と同じです。この関数は C の :ctype:`long` 型の値を返さねばなりません。通常時には
+   ``-1`` を戻り値にしてはなりません; ハッシュ値の計算中にエラーが生じた場合、関数は例外をセットして ``-1`` を返さねばなりません。
 
-   This field can be set explicitly to :cfunc:`PyObject_HashNotImplemented` to
-   block inheritance of the hash method from a parent type. This is interpreted
-   as the equivalent of ``__hash__ = None`` at the Python level, causing
-   ``isinstance(o, collections.Hashable)`` to correctly return ``False``. Note
-   that the converse is also true - setting ``__hash__ = None`` on a class at
-   the Python level will result in the ``tp_hash`` slot being set to
-   :cfunc:`PyObject_HashNotImplemented`.
+   このフィールドが設定されていない場合、二つの可能性があります: :attr:`tp_compare` および :attr:`tp_richcompare`
+   フィールドの両方が *NULL* の場合、オブジェクトのアドレスに基づいたデフォルトのハッシュ値が返されます;
+   それ以外の場合、 :exc:`TypeError`  が送出されます。
 
-   When this field is not set, two possibilities exist: if the :attr:`tp_compare`
-   and :attr:`tp_richcompare` fields are both *NULL*, a default hash value based on
-   the object's address is returned; otherwise, a :exc:`TypeError` is raised.
-
-   This field is inherited by subtypes together with :attr:`tp_richcompare` and
-   :attr:`tp_compare`: a subtypes inherits all three of :attr:`tp_compare`,
-   :attr:`tp_richcompare`, and :attr:`tp_hash`, when the subtype's
-   :attr:`tp_compare`, :attr:`tp_richcompare` and :attr:`tp_hash` are all *NULL*.
+   このフィールドは :attr:`tp_compare` および :attr:`tp_richcompare` と共にサブタイプに継承されます:
+   すなわち、サブタイプの :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   :attr:`tp_hash` の三つを一緒に継承します。
 
 
 .. cmember:: ternaryfunc PyTypeObject.tp_call
 
-   An optional pointer to a function that implements calling the object.  This
-   should be *NULL* if the object is not callable.  The signature is the same as
-   for :cfunc:`PyObject_Call`.
+   オプションのフィールドです。ポインタで、オブジェクトの呼び出しを実装している関数を指します。オブジェクトが呼び出し可能でない場合には *NULL*
+   にしなければなりません。シグネチャは :cfunc:`PyObject_Call` と同じです。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: reprfunc PyTypeObject.tp_str
 
-   An optional pointer to a function that implements the built-in operation
-   :func:`str`.  (Note that :class:`str` is a type now, and :func:`str` calls the
-   constructor for that type.  This constructor calls :cfunc:`PyObject_Str` to do
-   the actual work, and :cfunc:`PyObject_Str` will call this handler.)
+   オプションのフィールドです。ポインタで、組み込みの演算 :func:`str` を実装している関数を指します。(:class:`str`
+   が型の一つになったため、 :func:`str` は :class:`str` のコンストラクタを呼び出す
+   ことに注意してください。このコンストラクタは実際の処理を行う上で :cfunc:`PyObject_Str` を呼び出し、さらに
+   :cfunc:`PyObject_Str` がこのハンドラを呼び出すことになります。)
 
-   The signature is the same as for :cfunc:`PyObject_Str`; it must return a string
-   or a Unicode object.  This function should return a "friendly" string
-   representation of the object, as this is the representation that will be used by
-   the print statement.
+   シグネチャは :cfunc:`PyObject_Str` と同じです; この関数は文字列オブジェクトか Unicode オブジェクトを返さねばなりません。
+   また、この関数はオブジェクトを "分かりやすく (friendly)" 表現した文字列を返さねばなりません。というのは、この文字列は
+   :keyword:`print` 文で使われることになる表記だからです。
 
-   When this field is not set, :cfunc:`PyObject_Repr` is called to return a string
-   representation.
+   このフィールドが設定されていない場合、文字列表現を返すためには :cfunc:`PyObject_Repr` が呼び出されます。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: getattrofunc PyTypeObject.tp_getattro
 
-   An optional pointer to the get-attribute function.
+   オプションのフィールドです。ポインタで、 get-attribute を実装している関数を指します。
 
-   The signature is the same as for :cfunc:`PyObject_GetAttr`.  It is usually
-   convenient to set this field to :cfunc:`PyObject_GenericGetAttr`, which
-   implements the normal way of looking for object attributes.
+   シグネチャは :cfunc:`PyObject_GetAttr` と同じです。
+   対する通常の属性検索を実装している :cfunc:`PyObject_GenericGetAttr`  をこのフィールドに設定しておくと往々にして便利です。
 
-   This field is inherited by subtypes together with :attr:`tp_getattr`: a subtype
-   inherits both :attr:`tp_getattr` and :attr:`tp_getattro` from its base type when
-   the subtype's :attr:`tp_getattr` and :attr:`tp_getattro` are both *NULL*.
+   このフィールドは :attr:`tp_getattr` と共にサブタイプに継承されます: すなわち、サブタイプの :attr:`tp_getattr` および
+   :attr:`tp_getattro` が共に *NULL* の場合、サブタイプは基底タイプから :attr:`tp_getattr` と
+   :attr:`tp_getattro` を一緒に継承します。
 
 
 .. cmember:: setattrofunc PyTypeObject.tp_setattro
 
-   An optional pointer to the set-attribute function.
+   オプションのフィールドです。ポインタで、 set-attribute を行う関数を指します。
 
-   The signature is the same as for :cfunc:`PyObject_SetAttr`.  It is usually
-   convenient to set this field to :cfunc:`PyObject_GenericSetAttr`, which
-   implements the normal way of setting object attributes.
+   シグネチャは :cfunc:`PyObject_SetAttr` と同じです。
+   対する通常の属性設定を実装している :cfunc:`PyObject_GenericSetAttr`  をこのフィールドに設定しておくと往々にして便利です。
 
-   This field is inherited by subtypes together with :attr:`tp_setattr`: a subtype
-   inherits both :attr:`tp_setattr` and :attr:`tp_setattro` from its base type when
-   the subtype's :attr:`tp_setattr` and :attr:`tp_setattro` are both *NULL*.
+   このフィールドは :attr:`tp_setattr` と共にサブタイプに継承されます: すなわち、サブタイプの :attr:`tp_setattr` および
+   :attr:`tp_setattro` が共に *NULL* の場合、サブタイプは基底タイプから :attr:`tp_setattr` と
+   :attr:`tp_setattro` を一緒に継承します。
 
 
 .. cmember:: PyBufferProcs* PyTypeObject.tp_as_buffer
 
-   Pointer to an additional structure that contains fields relevant only to objects
-   which implement the buffer interface.  These fields are documented in
-   :ref:`buffer-structs`.
+   バッファインタフェースを実装しているオブジェクトにのみ関連する、一連のフィールド群が入った別の構造体を指すポインタです。構造体内の各フィールドは
+   "バッファオブジェクト構造体"  (:ref:`buffer-structs` 節) で説明します。
 
-   The :attr:`tp_as_buffer` field is not inherited, but the contained fields are
-   inherited individually.
+   :attr:`tp_as_buffer` フィールド自体は継承されませんが、フィールド内に入っているフィールドは個別に継承されます。
 
 
 .. cmember:: long PyTypeObject.tp_flags
 
-   This field is a bit mask of various flags.  Some flags indicate variant
-   semantics for certain situations; others are used to indicate that certain
-   fields in the type object (or in the extension structures referenced via
-   :attr:`tp_as_number`, :attr:`tp_as_sequence`, :attr:`tp_as_mapping`, and
-   :attr:`tp_as_buffer`) that were historically not always present are valid; if
-   such a flag bit is clear, the type fields it guards must not be accessed and
-   must be considered to have a zero or *NULL* value instead.
+   このフィールドは様々なフラグからなるビットマスクです。いくつかのフラグは、特定の状況において変則的なセマンティクスが適用されることを示します;
+   その他のフラグは、型オブジェクト (あるいは :attr:`tp_as_number` 、 :attr:`tp_as_sequence` 、
+   :attr:`tp_as_mapping` 、および :attr:`tp_as_buffer` が参照している拡張機能構造体: extention
+   structure ) の特定のフィールドのうち、過去から現在までずっと存在しているわけではないものが有効になっていることを示すために使われます;
+   フラグビットがクリアであれば、フラグが保護しているフィールドにはアクセスしない代わりに、その値はゼロか *NULL* になっているとみなさなければなりません。
 
-   Inheritance of this field is complicated.  Most flag bits are inherited
-   individually, i.e. if the base type has a flag bit set, the subtype inherits
-   this flag bit.  The flag bits that pertain to extension structures are strictly
-   inherited if the extension structure is inherited, i.e. the base type's value of
-   the flag bit is copied into the subtype together with a pointer to the extension
-   structure.  The :const:`Py_TPFLAGS_HAVE_GC` flag bit is inherited together with
-   the :attr:`tp_traverse` and :attr:`tp_clear` fields, i.e. if the
-   :const:`Py_TPFLAGS_HAVE_GC` flag bit is clear in the subtype and the
-   :attr:`tp_traverse` and :attr:`tp_clear` fields in the subtype exist (as
-   indicated by the :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` flag bit) and have *NULL*
-   values.
+   このフィールドの継承は複雑です。ほとんどのフラグビットは個別に継承されます。つまり、基底タイプであるフラグビットがセット
+   されている場合、サブタイプはそのフラグビットを継承します。機能拡張のための構造体に関するフラグビットは、その機能拡張構造体
+   が継承されるときに限定して継承されます。すなわち、基底タイプのフラグビットの値は、機能拡張構造体へのポインタと一緒にサブタイプにコピーされます。
+   :const:`Py_TPFLAGS_HAVE_GC` フラグビットは、 :attr:`tp_traverse`  および :attr:`tp_clear`
+   フィールドと合わせてコピーされます。すなわち、サブタイプの :const:`Py_TPFLAGS_HAVE_GC` フラグビットがクリアで、かつ
+   (:const:`Py_TPFLAGS_HAVE_RICHCOMPARE` フラグビットの指定によって)  :attr:`tp_traverse` および
+   :attr:`tp_clear`  フィールドがサブタイプ内に存在しており、かつ値が *NULL* の場合に基底タイプから値を継承します。
 
-   The following bit masks are currently defined; these can be ORed together using
-   the ``|`` operator to form the value of the :attr:`tp_flags` field.  The macro
-   :cfunc:`PyType_HasFeature` takes a type and a flags value, *tp* and *f*, and
-   checks whether ``tp->tp_flags & f`` is non-zero.
+   以下のビットマスクは現在定義されているものです; フラグは ``|`` 演算子で論理和を取って :attr:`tp_flags` フィールドの値にできます。
+   :cfunc:`PyType_HasFeature` マクロは型とフラグ値、 *tp* および *f* をとり、 ``tp->tp_flags & f``
+   が非ゼロかどうか調べます。
 
 
    .. data:: Py_TPFLAGS_HAVE_GETCHARBUFFER
 
-      If this bit is set, the :ctype:`PyBufferProcs` struct referenced by
-      :attr:`tp_as_buffer` has the :attr:`bf_getcharbuffer` field.
+      このビットがセットされていれば、 :attr:`tp_as_buffer` が参照する :ctype:`PyBufferProcs` 構造体には
+      :attr:`bf_getcharbuffer` フィールドがあります。
 
 
    .. data:: Py_TPFLAGS_HAVE_SEQUENCE_IN
 
-      If this bit is set, the :ctype:`PySequenceMethods` struct referenced by
-      :attr:`tp_as_sequence` has the :attr:`sq_contains` field.
+      このビットがセットされていれば、 :attr:`tp_as_sequence` が参照する :ctype:`PySequenceMethods` 構造体には
+      :attr:`sq_contains` フィールドがあります。
 
 
    .. data:: Py_TPFLAGS_GC
 
-      This bit is obsolete.  The bit it used to name is no longer in use.  The symbol
-      is now defined as zero.
+      このビットは旧式のものです。このシンボルが指し示していたビットはもはや使われていません。シンボルの現在の定義はゼロになっています。
 
 
    .. data:: Py_TPFLAGS_HAVE_INPLACEOPS
 
-      If this bit is set, the :ctype:`PySequenceMethods` struct referenced by
-      :attr:`tp_as_sequence` and the :ctype:`PyNumberMethods` structure referenced by
-      :attr:`tp_as_number` contain the fields for in-place operators. In particular,
-      this means that the :ctype:`PyNumberMethods` structure has the fields
-      :attr:`nb_inplace_add`, :attr:`nb_inplace_subtract`,
-      :attr:`nb_inplace_multiply`, :attr:`nb_inplace_divide`,
-      :attr:`nb_inplace_remainder`, :attr:`nb_inplace_power`,
-      :attr:`nb_inplace_lshift`, :attr:`nb_inplace_rshift`, :attr:`nb_inplace_and`,
-      :attr:`nb_inplace_xor`, and :attr:`nb_inplace_or`; and the
-      :ctype:`PySequenceMethods` struct has the fields :attr:`sq_inplace_concat` and
-      :attr:`sq_inplace_repeat`.
+      このビットがセットされていれば、 :attr:`tp_as_sequence` が参照する :ctype:`PySequenceMethods`
+      構造体、および :attr:`tp_as_number` が参照する :ctype:`PyNumberMethods` 構造体には in-place
+      演算に関するフィールドが入っています。具体的に言うと、 :ctype:`PyNumberMethods` 構造体はフィールド
+      :attr:`nb_inplace_add` 、 :attr:`nb_inplace_subtract` 、
+      :attr:`nb_inplace_multiply` 、 :attr:`nb_inplace_divide` 、
+      :attr:`nb_inplace_remainder` 、 :attr:`nb_inplace_power` 、
+      :attr:`nb_inplace_lshift` 、 :attr:`nb_inplace_rshift` 、 :attr:`nb_inplace_and` 、
+      :attr:`nb_inplace_xor` 、および :attr:`nb_inplace_or` を持つことになります; また、
+      :ctype:`PySequenceMethods` 構造体はフィールド :attr:`sq_inplace_concat` および
+      :attr:`sq_inplace_repeat` を持つことになります。
 
 
    .. data:: Py_TPFLAGS_CHECKTYPES
 
-      If this bit is set, the binary and ternary operations in the
-      :ctype:`PyNumberMethods` structure referenced by :attr:`tp_as_number` accept
-      arguments of arbitrary object types, and do their own type conversions if
-      needed.  If this bit is clear, those operations require that all arguments have
-      the current type as their type, and the caller is supposed to perform a coercion
-      operation first.  This applies to :attr:`nb_add`, :attr:`nb_subtract`,
-      :attr:`nb_multiply`, :attr:`nb_divide`, :attr:`nb_remainder`, :attr:`nb_divmod`,
-      :attr:`nb_power`, :attr:`nb_lshift`, :attr:`nb_rshift`, :attr:`nb_and`,
-      :attr:`nb_xor`, and :attr:`nb_or`.
+      このビットがセットされていれば、 :attr:`tp_as_number` が参照する :ctype:`PyNumberMethods`
+      構造体内で定義されている二項演算子および三項演算子は任意のオブジェクト型を非演算子にとるようになり、
+      必要に応じて引数の型変換を行います。このビットがクリアなら、演算子は全ての引数が現在のオブジェクト型と同じであるよう要求し、
+      演算の呼び出し側は演算に先立って型変換を行うものと想定します。対象となる演算子は :attr:`nb_add` 、 :attr:`nb_subtract` 、
+      :attr:`nb_multiply` 、 :attr:`nb_divide` 、 :attr:`nb_remainder` 、 :attr:`nb_divmod` 、
+      :attr:`nb_power` 、 :attr:`nb_lshift` 、 :attr:`nb_rshift` 、 :attr:`nb_and` 、
+      :attr:`nb_xor` 、および :attr:`nb_or` です。
 
 
    .. data:: Py_TPFLAGS_HAVE_RICHCOMPARE
 
-      If this bit is set, the type object has the :attr:`tp_richcompare` field, as
-      well as the :attr:`tp_traverse` and the :attr:`tp_clear` fields.
+      このビットがセットされていれば、型オブジェクトには :attr:`tp_richcompare` フィールド、そして :attr:`tp_traverse`
+      および :attr:`tp_clear` フィールドがあります。
 
 
    .. data:: Py_TPFLAGS_HAVE_WEAKREFS
 
-      If this bit is set, the :attr:`tp_weaklistoffset` field is defined.  Instances
-      of a type are weakly referenceable if the type's :attr:`tp_weaklistoffset` field
-      has a value greater than zero.
+      このビットがセットされていれば、構造体には :attr:`tp_weaklistoffset`
+      フィールドが定義されています。 :attr:`tp_weaklistoffset` フィールドの
+      値がゼロより大きければ、この型のインスタンスは弱参照で参照できます。
 
 
    .. data:: Py_TPFLAGS_HAVE_ITER
 
-      If this bit is set, the type object has the :attr:`tp_iter` and
-      :attr:`tp_iternext` fields.
+      このビットがセットされていれば、型オブジェクトには :attr:`tp_iter`  および :attr:`tp_iternext` フィールドがあります。
 
 
    .. data:: Py_TPFLAGS_HAVE_CLASS
 
-      If this bit is set, the type object has several new fields defined starting in
-      Python 2.2: :attr:`tp_methods`, :attr:`tp_members`, :attr:`tp_getset`,
-      :attr:`tp_base`, :attr:`tp_dict`, :attr:`tp_descr_get`, :attr:`tp_descr_set`,
-      :attr:`tp_dictoffset`, :attr:`tp_init`, :attr:`tp_alloc`, :attr:`tp_new`,
-      :attr:`tp_free`, :attr:`tp_is_gc`, :attr:`tp_bases`, :attr:`tp_mro`,
-      :attr:`tp_cache`, :attr:`tp_subclasses`, and :attr:`tp_weaklist`.
+      このビットがセットされていれば、型オブジェクトは Python 2.2 以降で定義されている新たなフィールド: :attr:`tp_methods` 、
+      :attr:`tp_members` 、 :attr:`tp_getset` 、 :attr:`tp_base` 、 :attr:`tp_dict` 、
+      :attr:`tp_descr_get` 、 :attr:`tp_descr_set` 、 :attr:`tp_dictoffset` 、
+      :attr:`tp_init` 、 :attr:`tp_alloc` 、 :attr:`tp_new` 、 :attr:`tp_free` 、
+      :attr:`tp_is_gc` 、 :attr:`tp_bases` 、 :attr:`tp_mro` 、 :attr:`tp_cache` 、
+      :attr:`tp_subclasses` 、および :attr:`tp_weaklist` があります。
 
 
    .. data:: Py_TPFLAGS_HEAPTYPE
 
-      This bit is set when the type object itself is allocated on the heap.  In this
-      case, the :attr:`ob_type` field of its instances is considered a reference to
-      the type, and the type object is INCREF'ed when a new instance is created, and
-      DECREF'ed when an instance is destroyed (this does not apply to instances of
-      subtypes; only the type referenced by the instance's ob_type gets INCREF'ed or
-      DECREF'ed).
+      型オブジェクト自体がヒープにメモリ確保される場合にセットされるビットです。型オブジェクト自体がヒープにメモリ確保される場合、インスタンスの
+      :attr:`ob_type` フィールドは型オブジェクトへの参照とみなされます。この場合、新たなインスタンスを生成する度に型オブジェクトを INCREF
+      し、インスタンスを解放するたびに DECREF します (サブタイプのインスタンスには適当されません;  インスタンスが :attr:`ob_type`
+      で参照している型だけが INCREF および DECREF されます)。
 
 
    .. data:: Py_TPFLAGS_BASETYPE
 
-      This bit is set when the type can be used as the base type of another type.  If
-      this bit is clear, the type cannot be subtyped (similar to a "final" class in
-      Java).
+      型を別の型の基底タイプとして使える場合にセットされるビットです。このビットがクリアならば、この型のサブタイプは生成できません (Java における
+      "final" クラスに似たクラスになります)。
 
 
    .. data:: Py_TPFLAGS_READY
 
-      This bit is set when the type object has been fully initialized by
-      :cfunc:`PyType_Ready`.
+      型オブジェクトが :cfunc:`PyType_Ready` で完全に初期化されるとセットされるビットです。
 
 
    .. data:: Py_TPFLAGS_READYING
 
-      This bit is set while :cfunc:`PyType_Ready` is in the process of initializing
-      the type object.
+      :cfunc:`PyType_Ready` による型オブジェクトの初期化処理中にセットされるビットです。
 
 
    .. data:: Py_TPFLAGS_HAVE_GC
 
-      This bit is set when the object supports garbage collection.  If this bit
-      is set, instances must be created using :cfunc:`PyObject_GC_New` and
-      destroyed using :cfunc:`PyObject_GC_Del`.  More information in section
-      :ref:`supporting-cycle-detection`.  This bit also implies that the
-      GC-related fields :attr:`tp_traverse` and :attr:`tp_clear` are present in
-      the type object; but those fields also exist when
-      :const:`Py_TPFLAGS_HAVE_GC` is clear but
-      :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` is set.
+      オブジェクトがガベージコレクション (GC) をサポートする場合にセットされるビットです。このビットがセットされている場合、インスタンスは
+      :cfunc:`PyObject_GC_New` を使って生成し、 :cfunc:`PyObject_GC_Del` を使って破壊しなければなりません。
+      詳しい情報は XXX 節のガベージコレクションに関する説明中にあります。このビットはまた、GC に関連するフィールド :attr:`tp_traverse`
+      および :attr:`tp_clear` が型オブジェクト内に存在することを示します; しかし、これらのフィールドは
+      :const:`Py_TPFLAGS_HAVE_GC` がクリアでも :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`
+      がセットされている場合には存在します。
 
 
    .. data:: Py_TPFLAGS_DEFAULT
 
-      This is a bitmask of all the bits that pertain to the existence of certain
-      fields in the type object and its extension structures. Currently, it includes
-      the following bits: :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER`,
-      :const:`Py_TPFLAGS_HAVE_SEQUENCE_IN`, :const:`Py_TPFLAGS_HAVE_INPLACEOPS`,
-      :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`, :const:`Py_TPFLAGS_HAVE_WEAKREFS`,
-      :const:`Py_TPFLAGS_HAVE_ITER`, and :const:`Py_TPFLAGS_HAVE_CLASS`.
+      型オブジェクトおよび拡張機能構造体の特定のフィールドの存在の有無に関連する全てのビットからなるビットマスクです。現状では、このビットマスクには以下のビット:
+      :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER` 、 :const:`Py_TPFLAGS_HAVE_SEQUENCE_IN` 、
+      :const:`Py_TPFLAGS_HAVE_INPLACEOPS` 、 :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` 、
+      :const:`Py_TPFLAGS_HAVE_WEAKREFS` 、 :const:`Py_TPFLAGS_HAVE_ITER` 、および
+      :const:`Py_TPFLAGS_HAVE_CLASS` が入っています。
 
 
 .. cmember:: char* PyTypeObject.tp_doc
 
-   An optional pointer to a NUL-terminated C string giving the docstring for this
-   type object.  This is exposed as the :attr:`__doc__` attribute on the type and
-   instances of the type.
+   オプションのフィールドです。ポインタで、この型オブジェクトの docstring を与える NUL 終端された C の文字列を指します。
+   この値は型オブジェクトと型のインスタンスにおける :attr:`__doc__` 属性として公開されます。
 
-   This field is *not* inherited by subtypes.
+   サブタイプはこのフィールドを継承 *しません* 。
 
-The following three fields only exist if the
-:const:`Py_TPFLAGS_HAVE_RICHCOMPARE` flag bit is set.
+以下の三つのフィールドは、 :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合にのみ存在します。
 
 
 .. cmember:: traverseproc PyTypeObject.tp_traverse
 
-   An optional pointer to a traversal function for the garbage collector.  This is
-   only used if the :const:`Py_TPFLAGS_HAVE_GC` flag bit is set.  More information
-   about Python's garbage collection scheme can be found in section
-   :ref:`supporting-cycle-detection`.
+   オプションのフィールドです。ポインタで、ガベージコレクタのためのトラバーサル関数 (traversal function)
+   を指します。 :const:`Py_TPFLAGS_HAVE_GC` がセットされている
+   場合にのみ使われます。Pythonのガベージコレクションの枠組みに関する詳細は :ref:`supporting-cycle-detection` にあります。
 
-   The :attr:`tp_traverse` pointer is used by the garbage collector to detect
-   reference cycles. A typical implementation of a :attr:`tp_traverse` function
-   simply calls :cfunc:`Py_VISIT` on each of the instance's members that are Python
-   objects.  For example, this is function :cfunc:`local_traverse` from the
-   :mod:`thread` extension module::
+   :attr:`tp_traverse` ポインタは、ガベージコレクタが循環参照を見つけるために使われます。 :attr:`tp_traverse`
+   関数の典型的な実装は、インスタンスの各メンバのうち Pythonオブジェクトに対して :cfunc:`Py_VISIT` を呼び出します。例えば、次のコードは
+   :mod:`thread` 拡張モジュールの :cfunc:`local_traverse` 関数になります::
 
       static int
       local_traverse(localobject *self, visitproc visit, void *arg)
@@ -593,43 +480,35 @@ The following three fields only exist if the
           return 0;
       }
 
-   Note that :cfunc:`Py_VISIT` is called only on those members that can participate
-   in reference cycles.  Although there is also a ``self->key`` member, it can only
-   be *NULL* or a Python string and therefore cannot be part of a reference cycle.
+   :cfunc:`Py_VISIT` が循環参照になる恐れのあるメンバにだけ呼び出されていることに注目してください。 ``self->key``
+   メンバもありますが、それは *NULL* か Python文字列なので、循環参照の一部になることはありません。
 
-   On the other hand, even if you know a member can never be part of a cycle, as a
-   debugging aid you may want to visit it anyway just so the :mod:`gc` module's
-   :func:`get_referents` function will include it.
+   一方、メンバが循環参照の一部になり得ないと判っていても、デバッグ目的で巡回したい場合があるかもしれないので、 :mod:`gc` モジュールの
+   :cfunc:`get_reference` 関数は循環参照になり得ないメンバも返します。
 
-   Note that :cfunc:`Py_VISIT` requires the *visit* and *arg* parameters to
-   :cfunc:`local_traverse` to have these specific names; don't name them just
-   anything.
+   :cfunc:`Py_VISIT` は :cfunc:`local_traverse` が *visit* と *arg*
+   という決まった名前の引数を持つことを要求します。
 
-   This field is inherited by subtypes together with :attr:`tp_clear` and the
-   :const:`Py_TPFLAGS_HAVE_GC` flag bit: the flag bit, :attr:`tp_traverse`, and
-   :attr:`tp_clear` are all inherited from the base type if they are all zero in
-   the subtype *and* the subtype has the :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` flag
-   bit set.
+   このフィールドは :attr:`tp_clear` および :const:`Py_TPFLAGS_HAVE_GC` フラグビットと一緒に継承されます:
+   フラグビット、 :attr:`tp_traverse` 、および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
+   サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
 .. cmember:: inquiry PyTypeObject.tp_clear
 
-   An optional pointer to a clear function for the garbage collector. This is only
-   used if the :const:`Py_TPFLAGS_HAVE_GC` flag bit is set.
+   オプションのフィールドです。ポインタで、ガベージコレクタにおける消去関数 (clear function) を指します。
+   :const:`Py_TPFLAGS_HAVE_GC` がセットされている場合にのみ使われます。
 
-   The :attr:`tp_clear` member function is used to break reference cycles in cyclic
-   garbage detected by the garbage collector.  Taken together, all :attr:`tp_clear`
-   functions in the system must combine to break all reference cycles.  This is
-   subtle, and if in any doubt supply a :attr:`tp_clear` function.  For example,
-   the tuple type does not implement a :attr:`tp_clear` function, because it's
-   possible to prove that no reference cycle can be composed entirely of tuples.
-   Therefore the :attr:`tp_clear` functions of other types must be sufficient to
-   break any cycle containing a tuple.  This isn't immediately obvious, and there's
-   rarely a good reason to avoid implementing :attr:`tp_clear`.
+   :attr:`tp_clear` メンバ関数はGCが見つけた循環しているゴミの循環参照を壊すために用いられます。システム内の全ての
+   :attr:`tp_clear` 関数によって、全ての循環参照を破壊しなければなりません。 (訳注:
+   ある型が :attr:`tp_clear` を実装しなくても全ての循環参照が破壊できるのであれば実装しなくても良い)
+   これはとても繊細で、もし少しでも不確かな部分があるのであれば、 :attr:`tp_clear` 関数を提供するべきです。
+   例えば、タプルは :attr:`tp_clear` を実装しません。なぜなら、タプルだけで構成された循環参照がみつかることは無いからです。
+   したがって、タプル以外の型 :attr:`tp_clear` 関数たちが、タプルを含むどんな循環参照も破壊できる必要があります。
+   これは簡単に判ることでははありません。 :attr:`tp_clear` の実装を避ける良い理由はめったにありません。
 
-   Implementations of :attr:`tp_clear` should drop the instance's references to
-   those of its members that may be Python objects, and set its pointers to those
-   members to *NULL*, as in the following example::
+   :attr:`tp_clear` の実装は、次の実装のように、インスタンスの
+   (Pythonオブジェクト)メンバに対する参照を捨てて、メンバに対するポインタ変数を *NULL* にセットするべきです::
 
       static int
       local_clear(localobject *self)
@@ -641,110 +520,85 @@ The following three fields only exist if the
           return 0;
       }
 
-   The :cfunc:`Py_CLEAR` macro should be used, because clearing references is
-   delicate:  the reference to the contained object must not be decremented until
-   after the pointer to the contained object is set to *NULL*.  This is because
-   decrementing the reference count may cause the contained object to become trash,
-   triggering a chain of reclamation activity that may include invoking arbitrary
-   Python code (due to finalizers, or weakref callbacks, associated with the
-   contained object). If it's possible for such code to reference *self* again,
-   it's important that the pointer to the contained object be *NULL* at that time,
-   so that *self* knows the contained object can no longer be used.  The
-   :cfunc:`Py_CLEAR` macro performs the operations in a safe order.
+   参照のクリアはデリケートなので、 :cfunc:`Py_CLEAR` マクロを使うべきです:
+   ポインタを *NULL* にせっとするまで、そのオブジェクトの参照カウントをデクリメントしてはいけません。
+   参照カウントのデクリメントすると、そのオブジェクトが破棄されるかもしれず、 (そのオブジェクトに関連付けられたファイナライザ、弱参照のコールバックにより)
+   任意のPythonコードの実行を含む後片付け処理が実行されるかもしれないからです。もしそういったコードが再び *self* を参照することがあれば、すでに
+   持っていたオブジェクトへのポインタは *NULL* になっているので、 *self* は所有していたオブジェクトをもう利用できないことを認識できます。
+   :cfunc:`Py_CLEAR` マクロはその手続きを安全な順番で実行します。
 
-   Because the goal of :attr:`tp_clear` functions is to break reference cycles,
-   it's not necessary to clear contained objects like Python strings or Python
-   integers, which can't participate in reference cycles. On the other hand, it may
-   be convenient to clear all contained Python objects, and write the type's
-   :attr:`tp_dealloc` function to invoke :attr:`tp_clear`.
+   :attr:`tp_clear` 関数の目的は参照カウントを破壊することなので、Python文字列や
+   Python整数のような、循環参照になりえないオブジェクトをクリアする必要はありません。一方、全部の所有オブジェクトをクリアするようにし、
+   :attr:`tp_dealloc` 関数が :attr:`tp_clear` 関数を実行するようにすると実相が楽です。
 
-   More information about Python's garbage collection scheme can be found in
-   section :ref:`supporting-cycle-detection`.
+   Pythonのガベージコレクションの仕組みについての詳細は、 :ref:`supporting-cycle-detection` にあります。
 
-   This field is inherited by subtypes together with :attr:`tp_traverse` and the
-   :const:`Py_TPFLAGS_HAVE_GC` flag bit: the flag bit, :attr:`tp_traverse`, and
-   :attr:`tp_clear` are all inherited from the base type if they are all zero in
-   the subtype *and* the subtype has the :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` flag
-   bit set.
+   このフィールドは :attr:`tp_traverse` および :const:`Py_TPFLAGS_HAVE_GC` フラグビットと一緒に継承されます:
+   フラグビット、 :attr:`tp_traverse` 、および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
+   サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
 .. cmember:: richcmpfunc PyTypeObject.tp_richcompare
 
-   An optional pointer to the rich comparison function, whose signature is
-   ``PyObject *tp_richcompare(PyObject *a, PyObject *b, int op)``.
+   オプションのフィールドです。ポインタで、拡張比較関数 (rich comparison function) を指します。
 
-   The function should return the result of the comparison (usually ``Py_True``
-   or ``Py_False``).  If the comparison is undefined, it must return
-   ``Py_NotImplemented``, if another error occurred it must return ``NULL`` and
-   set an exception condition.
+   シグネチャは :cfunc:`PyObject_RichCompare` と同じです。この関数は、比較結果を返すべきです。(普通は ``Py_True`` か
+   ``Py_False`` です。) 比較が未定義の場合は、 ``Py_NotImplemented`` を、それ以外のエラーが発生した場合には例外状態をセットして
+   ``NULL`` を返さねばなりません。
 
-   .. note::
+   このフィールドは :attr:`tp_compare` および :attr:`tp_hash` と共にサブタイプに継承されます: すなわち、サブタイプの
+   :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   :attr:`tp_hash` の三つを一緒に継承します。
 
-      If you want to implement a type for which only a limited set of
-      comparisons makes sense (e.g. ``==`` and ``!=``, but not ``<`` and
-      friends), directly raise :exc:`TypeError` in the rich comparison function.
+   :attr:`tp_richcompare` および :cfunc:`PyObject_RichCompare`
+   関数の第三引数に使うための定数としては以下が定義されています:
 
-   This field is inherited by subtypes together with :attr:`tp_compare` and
-   :attr:`tp_hash`: a subtype inherits all three of :attr:`tp_compare`,
-   :attr:`tp_richcompare`, and :attr:`tp_hash`, when the subtype's
-   :attr:`tp_compare`, :attr:`tp_richcompare`, and :attr:`tp_hash` are all *NULL*.
+   +----------------+--------+
+   | 定数           | 比較   |
+   +================+========+
+   | :const:`Py_LT` | ``<``  |
+   +----------------+--------+
+   | :const:`Py_LE` | ``<=`` |
+   +----------------+--------+
+   | :const:`Py_EQ` | ``==`` |
+   +----------------+--------+
+   | :const:`Py_NE` | ``!=`` |
+   +----------------+--------+
+   | :const:`Py_GT` | ``>``  |
+   +----------------+--------+
+   | :const:`Py_GE` | ``>=`` |
+   +----------------+--------+
 
-   The following constants are defined to be used as the third argument for
-   :attr:`tp_richcompare` and for :cfunc:`PyObject_RichCompare`:
+次のフィールドは、 :const:`Py_TPFLAGS_HAVE_WEAKREFS` フラグビットがセットされている場合にのみ存在します。
 
-   +----------------+------------+
-   | Constant       | Comparison |
-   +================+============+
-   | :const:`Py_LT` | ``<``      |
-   +----------------+------------+
-   | :const:`Py_LE` | ``<=``     |
-   +----------------+------------+
-   | :const:`Py_EQ` | ``==``     |
-   +----------------+------------+
-   | :const:`Py_NE` | ``!=``     |
-   +----------------+------------+
-   | :const:`Py_GT` | ``>``      |
-   +----------------+------------+
-   | :const:`Py_GE` | ``>=``     |
-   +----------------+------------+
-
-
-The next field only exists if the :const:`Py_TPFLAGS_HAVE_WEAKREFS` flag bit is
-set.
 
 .. cmember:: long PyTypeObject.tp_weaklistoffset
 
-   If the instances of this type are weakly referenceable, this field is greater
-   than zero and contains the offset in the instance structure of the weak
-   reference list head (ignoring the GC header, if present); this offset is used by
-   :cfunc:`PyObject_ClearWeakRefs` and the :cfunc:`PyWeakref_\*` functions.  The
-   instance structure needs to include a field of type :ctype:`PyObject\*` which is
-   initialized to *NULL*.
+   型のインスタンスが弱参照可能な場合、このフィールドはゼロよりも大きな数になり、インスタンス構造体における弱参照リストの先頭を示すオフセットが入ります (GC
+   ヘッダがある場合には無視します); このオフセット値は :cfunc:`PyObject_ClearWeakRefs` および
+   :cfunc:`PyWeakref_\*` 関数が利用します。インスタンス構造体には、 *NULL* に初期化された :ctype:`PyObject\*` 型の
+   フィールドが入っていなければなりません。
 
-   Do not confuse this field with :attr:`tp_weaklist`; that is the list head for
-   weak references to the type object itself.
+   このフィールドを :attr:`tp_weaklist` と混同しないようにしてください; :attr:`tp_weaklist`
+   は型オブジェクト自体の弱参照リストの先頭です。
 
-   This field is inherited by subtypes, but see the rules listed below. A subtype
-   may override this offset; this means that the subtype uses a different weak
-   reference list head than the base type.  Since the list head is always found via
-   :attr:`tp_weaklistoffset`, this should not be a problem.
+   サブタイプはこのフィールドを継承しますが、以下の規則があるので読んでください。サブタイプはこのオフセット値をオーバライドできます; 従って、
+   サブタイプでは弱参照リストの先頭が基底タイプとは異なる場合があります。リストの先頭は常に :attr:`tp_weaklistoffset` で
+   分かるはずなので、このことは問題にはならないはずです。
 
-   When a type defined by a class statement has no :attr:`__slots__` declaration,
-   and none of its base types are weakly referenceable, the type is made weakly
-   referenceable by adding a weak reference list head slot to the instance layout
-   and setting the :attr:`tp_weaklistoffset` of that slot's offset.
+   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言が全くなく、かつ基底タイプが弱参照可能でない場合、
+   その型を弱参照可能にするには弱参照リストの先頭を表すスロットをインスタンスデータレイアウト構造体に追加し、スロットのオフセットを
+   :attr:`tp_weaklistoffset` に設定します。
 
-   When a type's :attr:`__slots__` declaration contains a slot named
-   :attr:`__weakref__`, that slot becomes the weak reference list head for
-   instances of the type, and the slot's offset is stored in the type's
-   :attr:`tp_weaklistoffset`.
+   型の :attr:`__slots__` 宣言中に :attr:`__weakref__` という名前の
+   スロットが入っている場合、スロットはその型のインスタンスにおける弱参照リストの先頭を表すスロットになり、スロットのオフセットが型の
+   :attr:`tp_weaklistoffset` に入ります。
 
-   When a type's :attr:`__slots__` declaration does not contain a slot named
-   :attr:`__weakref__`, the type inherits its :attr:`tp_weaklistoffset` from its
-   base type.
+   型の :attr:`__slots__` 宣言に :attr:`__weakref__` という名のスロット
+   が入っていない場合、その型は基底タイプから :attr:`tp_weaklistoffset`  を継承します。
 
-The next two fields only exist if the :const:`Py_TPFLAGS_HAVE_CLASS` flag bit is
-set.
+次の二つのフィールドは、 :const:`Py_TPFLAGS_HAVE_CLASS` フラグビットがセットされている場合にのみ存在します。
 
 
 .. cmember:: getiterfunc PyTypeObject.tp_iter
@@ -756,685 +610,471 @@ set.
 
    This function has the same signature as :cfunc:`PyObject_GetIter`.
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: iternextfunc PyTypeObject.tp_iternext
 
-   An optional pointer to a function that returns the next item in an iterator.
-   When the iterator is exhausted, it must return *NULL*; a :exc:`StopIteration`
-   exception may or may not be set.  When another error occurs, it must return
-   *NULL* too.  Its presence normally signals that the instances of this type
-   are iterators (although classic instances always have this function, even if
-   they don't define a :meth:`next` method).
+   オプションのフィールドです。ポインタで、イテレータにおいて次の要素を返すか、イテレータの要素がなくなると :exc:`StopIteration`
+   を送出する関数を指します。このフィールドがあると、通常この型のインスタンスがイテレータであることを示します (ただし、旧スタイルのインスタンスでは、たとえ
+   :meth:`next` メソッドが定義されていなくても常にこの関数を持っています)。
 
-   Iterator types should also define the :attr:`tp_iter` function, and that
-   function should return the iterator instance itself (not a new iterator
-   instance).
+   イテレータ型では、 :attr:`tp_iter` 関数も定義していなければならず、 :attr:`tp_iter` は
+   (新たなイテレータインスタンスではなく)  イテレータインスタンス自体を返さねばなりません。
 
-   This function has the same signature as :cfunc:`PyIter_Next`.
+   この関数のシグネチャは :cfunc:`PyIter_Next` と同じです。
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
-The next fields, up to and including :attr:`tp_weaklist`, only exist if the
-:const:`Py_TPFLAGS_HAVE_CLASS` flag bit is set.
+次の :attr:`tp_weaklist` までのフィールドは、 :const:`Py_TPFLAGS_HAVE_CLASS`
+フラグビットがセットされている場合にのみ存在します。
 
 
 .. cmember:: struct PyMethodDef* PyTypeObject.tp_methods
 
-   An optional pointer to a static *NULL*-terminated array of :ctype:`PyMethodDef`
-   structures, declaring regular methods of this type.
+   オプションのフィールドです。ポインタで、この型の正規 (regular) のメソッドを宣言している :ctype:`PyMethodDef`
+   構造体からなる、 *NULL* で終端された静的な配列を指します。
 
-   For each entry in the array, an entry is added to the type's dictionary (see
-   :attr:`tp_dict` below) containing a method descriptor.
+   配列の各要素ごとに、メソッドデスクリプタの入ったエントリが型辞書 (下記の :attr:`tp_dict` 参照) に追加されます。
 
-   This field is not inherited by subtypes (methods are inherited through a
-   different mechanism).
+   サブタイプはこのフィールドを継承しません (メソッドは別個のメカニズムで継承されています)。
 
 
 .. cmember:: struct PyMemberDef* PyTypeObject.tp_members
 
-   An optional pointer to a static *NULL*-terminated array of :ctype:`PyMemberDef`
-   structures, declaring regular data members (fields or slots) of instances of
-   this type.
+   オプションのフィールドです。ポインタで、型の正規 (regular) のデータメンバ (フィールドおよびスロット) を
+   宣言している :ctype:`PyMemberDef` 構造体からなる、 *NULL* で終端された静的な配列を指します。
 
-   For each entry in the array, an entry is added to the type's dictionary (see
-   :attr:`tp_dict` below) containing a member descriptor.
+   配列の各要素ごとに、メンバデスクリプタの入ったエントリが型辞書 (下記の :attr:`tp_dict` 参照) に追加されます。
 
-   This field is not inherited by subtypes (members are inherited through a
-   different mechanism).
+   サブタイプはこのフィールドを継承しません (メンバは別個のメカニズムで継承されています)。
 
 
 .. cmember:: struct PyGetSetDef* PyTypeObject.tp_getset
 
-   An optional pointer to a static *NULL*-terminated array of :ctype:`PyGetSetDef`
-   structures, declaring computed attributes of instances of this type.
+   オプションのフィールドです。ポインタで、インスタンスの算出属性 (computed attribute) を
+   宣言している :ctype:`PyGetSetDef` 構造体からなる、 *NULL* で終端された静的な配列を指します。
 
-   For each entry in the array, an entry is added to the type's dictionary (see
-   :attr:`tp_dict` below) containing a getset descriptor.
+   配列の各要素ごとに、getset デスクリプタの入ったエントリが型辞書 (下記の :attr:`tp_dict` 参照) に追加されます。
 
-   This field is not inherited by subtypes (computed attributes are inherited
-   through a different mechanism).
+   サブタイプはこのフィールドを継承しません (算出属性は別個のメカニズムで継承されています)。
 
    Docs for PyGetSetDef (XXX belong elsewhere)::
 
-      typedef PyObject *(*getter)(PyObject *, void *);
+      typedef PyObject *(* getter)(PyObject *, void *);
       typedef int (*setter)(PyObject *, PyObject *, void *);
 
       typedef struct PyGetSetDef {
-          char *name;    /* attribute name */
-          getter get;    /* C function to get the attribute */
-          setter set;    /* C function to set the attribute */
-          char *doc;     /* optional doc string */
-          void *closure; /* optional additional data for getter and setter */
+          char *name;    /* 属性名 */
+          getter get;    /* 属性の get を行う C 関数 */
+          setter set;    /* 属性の set を行う C 関数 */
+          char *doc;     /* オプションの docstring  */
+          void *closure; /* オプションの get/set 関数用追加データ */
       } PyGetSetDef;
 
 
 .. cmember:: PyTypeObject* PyTypeObject.tp_base
 
-   An optional pointer to a base type from which type properties are inherited.  At
-   this level, only single inheritance is supported; multiple inheritance require
-   dynamically creating a type object by calling the metatype.
+   オプションのフィールドです。ポインタで、型に関するプロパティを継承する基底タイプへのポインタです。このフィールドのレベルでは、単継承 (single
+   inheritance) だけがサポートされています; 多重継承はメタタイプの呼び出しによる動的な型オブジェクトの生成を必要とします。
 
-   This field is not inherited by subtypes (obviously), but it defaults to
-   ``&PyBaseObject_Type`` (which to Python programmers is known as the type
-   :class:`object`).
+   (当たり前ですが) サブタイプはこのフィールドを継承しません。しかし、このフィールドのデフォルト値は  (Python
+   プログラマは :class:`object` 型として知っている) ``&PyBaseObject_Type`` になります。 .
 
 
 .. cmember:: PyObject* PyTypeObject.tp_dict
 
-   The type's dictionary is stored here by :cfunc:`PyType_Ready`.
+   型の辞書は :cfunc:`PyType_Ready` によってこのフィールドに収められます。
 
-   This field should normally be initialized to *NULL* before PyType_Ready is
-   called; it may also be initialized to a dictionary containing initial attributes
-   for the type.  Once :cfunc:`PyType_Ready` has initialized the type, extra
-   attributes for the type may be added to this dictionary only if they don't
-   correspond to overloaded operations (like :meth:`__add__`).
+   このフィールドは通常、 :cfunc:`PyType_Ready` を呼び出す前に *NULL* に初期化しておかねばなりません; あるいは、型の初期属性の入った
+   辞書で初期化しておいてもかまいません。 :cfunc:`PyType_Ready` が型をひとたび初期化すると、型の新たな属性をこの辞書に追加できるのは、
+   属性が (:meth:`__add__` のような) オーバロード用演算でないときだけです。
 
-   This field is not inherited by subtypes (though the attributes defined in here
-   are inherited through a different mechanism).
+   サブタイプはこのフィールドを継承しません (が、この辞書内で定義されている属性は異なるメカニズムで継承されます)。
 
 
 .. cmember:: descrgetfunc PyTypeObject.tp_descr_get
 
-   An optional pointer to a "descriptor get" function.
+   オプションのフィールドです。ポインタで、 "デスクリプタ get" 関数を指します。
 
-   The function signature is ::
+   関数のシグネチャは次のとおりです。 ::
 
       PyObject * tp_descr_get(PyObject *self, PyObject *obj, PyObject *type);
 
-   XXX explain.
+   XXX blah, blah.
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: descrsetfunc PyTypeObject.tp_descr_set
 
-   An optional pointer to a "descriptor set" function.
+   オプションのフィールドです。ポインタで、 "デスクリプタ set" 関数を指します。
 
-   The function signature is ::
+   関数のシグネチャは次のとおりです。 ::
 
       int tp_descr_set(PyObject *self, PyObject *obj, PyObject *value);
 
-   This field is inherited by subtypes.
+   サブタイプはこのフィールドを継承します。
 
-   XXX explain.
+   XXX blah, blah.
 
 
 .. cmember:: long PyTypeObject.tp_dictoffset
 
-   If the instances of this type have a dictionary containing instance variables,
-   this field is non-zero and contains the offset in the instances of the type of
-   the instance variable dictionary; this offset is used by
-   :cfunc:`PyObject_GenericGetAttr`.
+   型のインスタンスにインスタンス変数の入った辞書がある場合、このフィールドは非ゼロの値になり、型のインスタンスデータ構造体
+   におけるインスタンス変数辞書へのオフセットが入ります; このオフセット値は :cfunc:`PyObject_GenericGetAttr` が使います。
 
-   Do not confuse this field with :attr:`tp_dict`; that is the dictionary for
-   attributes of the type object itself.
+   このフィールドを :attr:`tp_dict` と混同しないでください; :attr:`tp_dict` は型オブジェクト自体の属性のための辞書です。
 
-   If the value of this field is greater than zero, it specifies the offset from
-   the start of the instance structure.  If the value is less than zero, it
-   specifies the offset from the *end* of the instance structure.  A negative
-   offset is more expensive to use, and should only be used when the instance
-   structure contains a variable-length part.  This is used for example to add an
-   instance variable dictionary to subtypes of :class:`str` or :class:`tuple`. Note
-   that the :attr:`tp_basicsize` field should account for the dictionary added to
-   the end in that case, even though the dictionary is not included in the basic
-   object layout.  On a system with a pointer size of 4 bytes,
-   :attr:`tp_dictoffset` should be set to ``-4`` to indicate that the dictionary is
-   at the very end of the structure.
+   このフィールドの値がゼロより大きければ、値はインスタンス構造体の先頭からのオフセットを表します。値がゼロより小さければ、インスタンス構造体の *末尾*
+   からのオフセットを表します。負のオフセットを使うコストは比較的高くつくので、インスタンス構造体に可変長の部分があるときのみ使うべきです。
+   例えば、 :class:`str` や :class:`tuple` のサブタイプにインスタンス辞書を追加する場合には、負のオフセットを使います。
+   この場合、たとえ辞書が基本のオブジェクトレイアウトに含まれていなくても、 :attr:`tp_basicsize`
+   フィールドは追加された辞書を考慮にいれなければならないので注意してください。ポインタサイズが 4 バイトのシステムでは、
+   構造体の最後尾に辞書が宣言されていることを示す場合、 :attr:`tp_dictoffset` を ``-4`` にしなければなりません。
 
-   The real dictionary offset in an instance can be computed from a negative
-   :attr:`tp_dictoffset` as follows::
+   :attr:`tp_dictoffset` が負の場合、インスタンスにおける実際の辞書のオフセットは以下のようにして計算されます::
 
       dictoffset = tp_basicsize + abs(ob_size)*tp_itemsize + tp_dictoffset
       if dictoffset is not aligned on sizeof(void*):
           round up to sizeof(void*)
 
-   where :attr:`tp_basicsize`, :attr:`tp_itemsize` and :attr:`tp_dictoffset` are
-   taken from the type object, and :attr:`ob_size` is taken from the instance.  The
-   absolute value is taken because long ints use the sign of :attr:`ob_size` to
-   store the sign of the number.  (There's never a need to do this calculation
-   yourself; it is done for you by :cfunc:`_PyObject_GetDictPtr`.)
+   ここで、 :attr:`tp_basicsize` 、 :attr:`tp_itemsize` および :attr:`tp_dictoffset`
+   は型オブジェクトから取り出され、 :attr:`ob_size` はインスタンスから取り出されます。長整数は符号を記憶するのに :attr:`ob_size`
+   の符号を使うため、 :attr:`ob_size` は絶対値を使います。(この計算を自分で行う必要はまったくありません;
+   :cfunc:`_PyObject_GetDictPtr` がやってくれます。)
 
-   This field is inherited by subtypes, but see the rules listed below. A subtype
-   may override this offset; this means that the subtype instances store the
-   dictionary at a difference offset than the base type.  Since the dictionary is
-   always found via :attr:`tp_dictoffset`, this should not be a problem.
+   サブタイプはこのフィールドを継承しますが、以下の規則があるので読んでください。サブタイプはこのオフセット値をオーバライドできます; 従って、
+   サブタイプでは辞書のオフセットが基底タイプとは異なる場合があります。辞書へのオフセット常に :attr:`tp_dictoffset` で
+   分かるはずなので、このことは問題にはならないはずです。
 
-   When a type defined by a class statement has no :attr:`__slots__` declaration,
-   and none of its base types has an instance variable dictionary, a dictionary
-   slot is added to the instance layout and the :attr:`tp_dictoffset` is set to
-   that slot's offset.
+   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言が
+   全くなく、かつ基底タイプの全てにインスタンス変数辞書がない場合、辞書のスロットをインスタンスデータレイアウト構造体に追加し、
+   スロットのオフセットを :attr:`tp_dictoffset` に設定します。
 
-   When a type defined by a class statement has a :attr:`__slots__` declaration,
-   the type inherits its :attr:`tp_dictoffset` from its base type.
+   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言がある場合、この型は基底タイプから
+   :attr:`tp_dictoffset` を継承します。
 
-   (Adding a slot named :attr:`__dict__` to the :attr:`__slots__` declaration does
-   not have the expected effect, it just causes confusion.  Maybe this should be
-   added as a feature just like :attr:`__weakref__` though.)
+   (:attr:`__dict__` という名前のスロットを :attr:`__slots__` 宣言に
+   追加しても、期待どおりの効果は得られず、単に混乱を招くだけになります。とはいえ、これは将来 :attr:`__weakref__` のように
+   追加されるはずです。)
 
 
 .. cmember:: initproc PyTypeObject.tp_init
 
-   An optional pointer to an instance initialization function.
+   オプションのフィールドです。ポインタで、インスタンス初期化関数を指します。
 
-   This function corresponds to the :meth:`__init__` method of classes.  Like
-   :meth:`__init__`, it is possible to create an instance without calling
-   :meth:`__init__`, and it is possible to reinitialize an instance by calling its
-   :meth:`__init__` method again.
+   この関数はクラスにおける  :meth:`__init__` メソッドに対応します。 :meth:`__init__` と同様、 :meth:`__init__`
+   を呼び出さずにインスタンスを作成できます。また、 :meth:`__init__` を再度呼び出してインスタンスの再初期化もできます。
 
-   The function signature is ::
+   関数のシグネチャは ::
 
       int tp_init(PyObject *self, PyObject *args, PyObject *kwds)
 
-   The self argument is the instance to be initialized; the *args* and *kwds*
-   arguments represent positional and keyword arguments of the call to
-   :meth:`__init__`.
+   です。
 
-   The :attr:`tp_init` function, if not *NULL*, is called when an instance is
-   created normally by calling its type, after the type's :attr:`tp_new` function
-   has returned an instance of the type.  If the :attr:`tp_new` function returns an
-   instance of some other type that is not a subtype of the original type, no
-   :attr:`tp_init` function is called; if :attr:`tp_new` returns an instance of a
-   subtype of the original type, the subtype's :attr:`tp_init` is called.  (VERSION
-   NOTE: described here is what is implemented in Python 2.2.1 and later.  In
-   Python 2.2, the :attr:`tp_init` of the type of the object returned by
-   :attr:`tp_new` was always called, if not *NULL*.)
+   *self* 引数は初期化するインスタンスです; *args* および *kwds* 引数は、 :meth:`__init__` を呼び出す際の
+   固定引数およびキーワード引数です。
 
-   This field is inherited by subtypes.
+   :attr:`tp_init` 関数のフィールドが *NULL* でない場合、型の呼び出しで普通にインスタンスを生成する際に、型の :attr:`tp_new`
+   がインスタンスを返した後に :attr:`tp_init` が呼び出されます。 :attr:`tp_new` が元の型のサブタイプでない別の型を返す場合、
+   :attr:`tp_init` は全く呼び出されません; :attr:`tp_new` が元の型のサブタイプのインスタンスを返す場合、サブタイプの
+   :attr:`tp_init` が呼び出されます。 (VERSION NOTE: ここに書かれている内容は、Python 2.2.1
+   以降での実装に関するものです。Python 2.2 では、 :attr:`tp_init` は *NULL* でない限り :attr:`tp_new` が返す全ての
+   オブジェクトに対して常に呼び出されます。) not *NULL*.)
+
+   サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: allocfunc PyTypeObject.tp_alloc
 
-   An optional pointer to an instance allocation function.
+   オプションのフィールドです。ポインタで、インスタンスのメモリ確保関数を指します。
 
-   The function signature is ::
+   関数のシグネチャは ::
 
       PyObject *tp_alloc(PyTypeObject *self, Py_ssize_t nitems)
 
-   The purpose of this function is to separate memory allocation from memory
-   initialization.  It should return a pointer to a block of memory of adequate
-   length for the instance, suitably aligned, and initialized to zeros, but with
-   :attr:`ob_refcnt` set to ``1`` and :attr:`ob_type` set to the type argument.  If
-   the type's :attr:`tp_itemsize` is non-zero, the object's :attr:`ob_size` field
-   should be initialized to *nitems* and the length of the allocated memory block
-   should be ``tp_basicsize + nitems*tp_itemsize``, rounded up to a multiple of
-   ``sizeof(void*)``; otherwise, *nitems* is not used and the length of the block
-   should be :attr:`tp_basicsize`.
+   です。
 
-   Do not use this function to do any other instance initialization, not even to
-   allocate additional memory; that should be done by :attr:`tp_new`.
+   この関数の目的は、メモリ確保をメモリ初期化から分離することにあります。この関数は、インスタンス用の的確なサイズを持ち、適切にバイト整列
+   され、ゼロで初期化され、ただし :attr:`ob_refcnt` を ``1``  にセットされ、 :attr:`ob_type` が型引数 (type
+   argument) にセットされているようなメモリブロックを返さねばなりません。型の :attr:`tp_itemsize`
+   がゼロでない場合、オブジェクトの :attr:`ob_size` フィールドは *nitems* に初期化され、確保されるメモリブロックの長さは
+   ``tp_basicsize + nitems *tp_itemsize`` を ``sizeof(void*)`` の倍数で丸めた値になるはずです;
+   それ以外の場合、 *nitems* の値は使われず、メモリブロックの長さは :attr:`tp_basicsize` になるはずです。
 
-   This field is inherited by static subtypes, but not by dynamic subtypes
-   (subtypes created by a class statement); in the latter, this field is always set
-   to :cfunc:`PyType_GenericAlloc`, to force a standard heap allocation strategy.
-   That is also the recommended value for statically defined types.
+   この関数をインスタンス初期化の他のどの処理にも、追加でメモリ確保をする場合でさえ使ってはなりません; そうした処理は :attr:`tp_new`
+   で行わねばなりません。
+
+   静的なサブタイプはこのフィールドを継承しますが、動的なサブタイプ (:keyword:`class` 文で生成するサブタイプ) の場合は継承しません;
+   後者の場合、このフィールドは常に :cfunc:`PyType_GenericAlloc` にセットされ、標準のヒープ上メモリ確保戦略が強制されます。
+   静的に定義する型の場合でも、 :cfunc:`PyType_GenericAlloc` を推奨します。
 
 
 .. cmember:: newfunc PyTypeObject.tp_new
 
-   An optional pointer to an instance creation function.
+   オプションのフィールドです。ポインタで、インスタンス生成関数を指します。
 
-   If this function is *NULL* for a particular type, that type cannot be called to
-   create new instances; presumably there is some other way to create instances,
-   like a factory function.
+   このフィールドが *NULL* を指している型では、型を呼び出して新たなインスタンスを生成できません; こうした型では、おそらくファクトリ
+   関数のように、インスタンスを生成する他の方法があるはずです。
 
-   The function signature is ::
+   関数のシグネチャは ::
 
       PyObject *tp_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 
-   The subtype argument is the type of the object being created; the *args* and
-   *kwds* arguments represent positional and keyword arguments of the call to the
-   type.  Note that subtype doesn't have to equal the type whose :attr:`tp_new`
-   function is called; it may be a subtype of that type (but not an unrelated
-   type).
+   です。
 
-   The :attr:`tp_new` function should call ``subtype->tp_alloc(subtype, nitems)``
-   to allocate space for the object, and then do only as much further
-   initialization as is absolutely necessary.  Initialization that can safely be
-   ignored or repeated should be placed in the :attr:`tp_init` handler.  A good
-   rule of thumb is that for immutable types, all initialization should take place
-   in :attr:`tp_new`, while for mutable types, most initialization should be
-   deferred to :attr:`tp_init`.
+   引数 *subtype* は生成するオブジェクトの型です;  *args* および *kwds* 引数は、型を呼び出すときの
+   固定引数およびキーワード引数です。サブタイプは :attr:`tp_new` 関数を呼び出すときに使う型と等価というわけではないので注意してください;
+   :attr:`tp_new` 関数を呼び出すときに使う型 (と無関係ではない)  サブタイプのこともあります。
 
-   This field is inherited by subtypes, except it is not inherited by static types
-   whose :attr:`tp_base` is *NULL* or ``&PyBaseObject_Type``.  The latter exception
-   is a precaution so that old extension types don't become callable simply by
-   being linked with Python 2.2.
+   :attr:`tp_new` 関数は ``subtype->tp_alloc(subtype, nitems)``
+   を呼び出してオブジェクトのメモリ領域を確保し、初期化で本当に必要とされる処理だけを行います。省略したり繰り返したりしても問題のない
+   初期化処理は :attr:`tp_init` ハンドラ内に配置しなければなりません。経験則からいうと、変更不能な型の場合、初期化は全て
+   :attr:`tp_new` で行い、変更可能な型の場合はほとんどの初期化を :attr:`tp_init` に回すべきです。
+
+   サブタイプはこのフィールドを継承します。例外として、 :attr:`tp_base` が *NULL* か ``&PyBaseObject_Type``
+   になっている静的な型では継承しません。後者が例外になっているのは、旧式の拡張型が Python 2.2
+   でリンクされたときに呼び出し可能オブジェクトにならないようにするための予防措置です。
 
 
 .. cmember:: destructor PyTypeObject.tp_free
 
-   An optional pointer to an instance deallocation function.
+   オプションのフィールドです。ポインタで、インスタンスのメモリ解放関数を指します。
 
-   The signature of this function has changed slightly: in Python 2.2 and 2.2.1,
-   its signature is :ctype:`destructor`::
+   この関数のシグネチャは少し変更されています; Python 2.2 および 2.2.1 では、シグネチャは :ctype:`destructor` ::
 
       void tp_free(PyObject *)
 
-   In Python 2.3 and beyond, its signature is :ctype:`freefunc`::
+   でしたが、 Python 2.3 以降では、シグネチャは :ctype:`freefunc`::
 
       void tp_free(void *)
 
-   The only initializer that is compatible with both versions is ``_PyObject_Del``,
-   whose definition has suitably adapted in Python 2.3.
+   になっています。
 
-   This field is inherited by static subtypes, but not by dynamic subtypes
-   (subtypes created by a class statement); in the latter, this field is set to a
-   deallocator suitable to match :cfunc:`PyType_GenericAlloc` and the value of the
-   :const:`Py_TPFLAGS_HAVE_GC` flag bit.
+   両方のバージョンと互換性のある初期値は ``_PyObject_Del`` です。 ``_PyObject_Del`` の定義は Python 2.3
+   で適切に対応できるよう変更されました。
+
+   静的なサブタイプはこのフィールドを継承しますが、動的なサブタイプ (:keyword:`class` 文で生成するサブタイプ) の場合は継承しません;
+   後者の場合、このフィールドには :cfunc:`PyType_GenericAlloc` と :const:`Py_TPFLAGS_HAVE_GC`
+   フラグビットの値に対応させるのにふさわしいメモリ解放関数がセットされます。
 
 
 .. cmember:: inquiry PyTypeObject.tp_is_gc
 
-   An optional pointer to a function called by the garbage collector.
+   オプションのフィールドです。ポインタで、ガベージコレクタから呼び出される関数を指します。
 
-   The garbage collector needs to know whether a particular object is collectible
-   or not.  Normally, it is sufficient to look at the object's type's
-   :attr:`tp_flags` field, and check the :const:`Py_TPFLAGS_HAVE_GC` flag bit.  But
-   some types have a mixture of statically and dynamically allocated instances, and
-   the statically allocated instances are not collectible.  Such types should
-   define this function; it should return ``1`` for a collectible instance, and
-   ``0`` for a non-collectible instance. The signature is ::
+   ガベージコレクタは、オブジェクトがガベージとして収集可能かどうかを知る必要があります。これを知るには、通常はオブジェクトの型の
+   :attr:`tp_flags` フィールドを見て、 :const:`Py_TPFLAGS_HAVE_GC`
+   フラグビットを調べるだけで十分です。しかし、静的なメモリ確保と動的なメモリ確保が混じっているインスタンスを持つような型や、
+   静的にメモリ確保されたインスタンスは収集できません。こうした型では、このフィールドに関数を定義しなければなりません; 関数はインスタンスが収集可能の場合には
+   ``1`` を、収集不能の場合には ``0`` を返さねばなりません。シグネチャは ::
 
       int tp_is_gc(PyObject *self)
 
-   (The only example of this are types themselves.  The metatype,
-   :cdata:`PyType_Type`, defines this function to distinguish between statically
-   and dynamically allocated types.)
+   です。
 
-   This field is inherited by subtypes.  (VERSION NOTE: in Python 2.2, it was not
-   inherited.  It is inherited in 2.2.1 and later versions.)
+   (上記のような型の例は、型オブジェクト自体です。メタタイプ :cdata:`PyType_Type` は、型のメモリ確保が静的か動的かを
+   区別するためにこの関数を定義しています。)
+
+   サブタイプはこのフィールドを継承します。 (VERSION NOTE: Python 2.2 では、このフィールドは継承されませんでした。 2.2.1
+   以降のバージョンから継承されるようになりました。)
 
 
 .. cmember:: PyObject* PyTypeObject.tp_bases
 
-   Tuple of base types.
+   基底型からなるタプルです。
 
-   This is set for types created by a class statement.  It should be *NULL* for
-   statically defined types.
+   :keyword:`class` 文で生成されたクラスの場合このフィールドがセットされます。静的に定義されている型の場合には、このフィールドは *NULL*
+   になります。
 
-   This field is not inherited.
+   このフィールドは継承されません。
 
 
 .. cmember:: PyObject* PyTypeObject.tp_mro
 
-   Tuple containing the expanded set of base types, starting with the type itself
-   and ending with :class:`object`, in Method Resolution Order.
+   基底クラス群を展開した集合が入っているタプルです。集合は該当する型自体からはじまり、 :class:`object` で終わります。メソッド解決順
+   (Method Resolution Order) の順に並んでいます。
 
-   This field is not inherited; it is calculated fresh by :cfunc:`PyType_Ready`.
+   このフィールドは継承されません; フィールドの値は :cfunc:`PyType_Ready` で毎回計算されます。
 
 
 .. cmember:: PyObject* PyTypeObject.tp_cache
 
-   Unused.  Not inherited.  Internal use only.
+   使用されていません。継承されません。内部で使用するためだけのものです。
 
 
 .. cmember:: PyObject* PyTypeObject.tp_subclasses
 
-   List of weak references to subclasses.  Not inherited.  Internal use only.
+   サブクラスへの弱参照からなるリストです。継承されません。内部で使用するためだけのものです。
 
 
 .. cmember:: PyObject* PyTypeObject.tp_weaklist
 
-   Weak reference list head, for weak references to this type object.  Not
-   inherited.  Internal use only.
+   この型オブジェクトに対する弱参照からなるリストの先頭です。
 
-The remaining fields are only defined if the feature test macro
-:const:`COUNT_ALLOCS` is defined, and are for internal use only. They are
-documented here for completeness.  None of these fields are inherited by
-subtypes.
+残りのフィールドは、機能テスト用のマクロである :const:`COUNT_ALLOCS` が定義されている場合のみ利用でき、内部で使用するためだけのものです。
+これらのフィールドについて記述するのは単に完全性のためです。サブタイプはこれらのフィールドを継承しません。
 
 
 .. cmember:: Py_ssize_t PyTypeObject.tp_allocs
 
-   Number of allocations.
+   メモリ確保の回数です。
 
 
 .. cmember:: Py_ssize_t PyTypeObject.tp_frees
 
-   Number of frees.
+   メモリ解放の回数です。
 
 
 .. cmember:: Py_ssize_t PyTypeObject.tp_maxalloc
 
-   Maximum simultaneously allocated objects.
+   同時にメモリ確保できる最大オブジェクト数です。
 
 
 .. cmember:: PyTypeObject* PyTypeObject.tp_next
 
-   Pointer to the next type object with a non-zero :attr:`tp_allocs` field.
+   :attr:`tp_allocs` フィールドが非ゼロの、(リンクリストの) 次の型オブジェクトを指すポインタです。
 
-Also, note that, in a garbage collected Python, tp_dealloc may be called from
-any Python thread, not just the thread which created the object (if the object
-becomes part of a refcount cycle, that cycle might be collected by a garbage
-collection on any thread).  This is not a problem for Python API calls, since
-the thread on which tp_dealloc is called will own the Global Interpreter Lock
-(GIL). However, if the object being destroyed in turn destroys objects from some
-other C or C++ library, care should be taken to ensure that destroying those
-objects on the thread which called tp_dealloc will not violate any assumptions
-of the library.
-
-
-.. _number-structs:
-
-Number Object Structures
-========================
-
-.. sectionauthor:: Amaury Forgeot d'Arc
-
-
-.. ctype:: PyNumberMethods
-
-   This structure holds pointers to the functions which an object uses to
-   implement the number protocol.  Almost every function below is used by the
-   function of similar name documented in the :ref:`number` section.
-
-   Here is the structure definition::
-
-       typedef struct {
-            binaryfunc nb_add;
-            binaryfunc nb_subtract;
-            binaryfunc nb_multiply;
-            binaryfunc nb_remainder;
-            binaryfunc nb_divmod;
-            ternaryfunc nb_power;
-            unaryfunc nb_negative;
-            unaryfunc nb_positive;
-            unaryfunc nb_absolute;
-            inquiry nb_nonzero;       /* Used by PyObject_IsTrue */
-            unaryfunc nb_invert;
-            binaryfunc nb_lshift;
-            binaryfunc nb_rshift;
-            binaryfunc nb_and;
-            binaryfunc nb_xor;
-            binaryfunc nb_or;
-            coercion nb_coerce;       /* Used by the coerce() function */
-            unaryfunc nb_int;
-            unaryfunc nb_long;
-            unaryfunc nb_float;
-            unaryfunc nb_oct;
-            unaryfunc nb_hex;
-
-            /* Added in release 2.0 */
-            binaryfunc nb_inplace_add;
-            binaryfunc nb_inplace_subtract;
-            binaryfunc nb_inplace_multiply;
-            binaryfunc nb_inplace_remainder;
-            ternaryfunc nb_inplace_power;
-            binaryfunc nb_inplace_lshift;
-            binaryfunc nb_inplace_rshift;
-            binaryfunc nb_inplace_and;
-            binaryfunc nb_inplace_xor;
-            binaryfunc nb_inplace_or;
-
-            /* Added in release 2.2 */
-            binaryfunc nb_floor_divide;
-            binaryfunc nb_true_divide;
-            binaryfunc nb_inplace_floor_divide;
-            binaryfunc nb_inplace_true_divide;
-
-            /* Added in release 2.5 */
-            unaryfunc nb_index;
-       } PyNumberMethods;
-
-
-Binary and ternary functions may receive different kinds of arguments, depending
-on the flag bit :const:`Py_TPFLAGS_CHECKTYPES`:
-
-- If :const:`Py_TPFLAGS_CHECKTYPES` is not set, the function arguments are
-  guaranteed to be of the object's type; the caller is responsible for calling
-  the coercion method specified by the :attr:`nb_coerce` member to convert the
-  arguments:
-
-  .. cmember:: coercion PyNumberMethods.nb_coerce
-
-     This function is used by :cfunc:`PyNumber_CoerceEx` and has the same
-     signature.  The first argument is always a pointer to an object of the
-     defined type.  If the conversion to a common "larger" type is possible, the
-     function replaces the pointers with new references to the converted objects
-     and returns ``0``.  If the conversion is not possible, the function returns
-     ``1``.  If an error condition is set, it will return ``-1``.
-
-- If the :const:`Py_TPFLAGS_CHECKTYPES` flag is set, binary and ternary
-  functions must check the type of all their operands, and implement the
-  necessary conversions (at least one of the operands is an instance of the
-  defined type).  This is the recommended way; with Python 3.0 coercion will
-  disappear completely.
-
-If the operation is not defined for the given operands, binary and ternary
-functions must return ``Py_NotImplemented``, if another error occurred they must
-return ``NULL`` and set an exception.
+また、 Python のガベージコレクションでは、 *tp_dealloc* を呼び出すのはオブジェクトを生成したスレッドだけではなく、任意の Python
+スレッドかもしれないという点にも注意して下さい。 (オブジェクトが循環参照の一部の場合、任意のスレッドのガベージコレクション
+によって解放されてしまうかもしれません)。Python API 側からみれば、 *tp_dealloc* を呼び出すスレッドはグローバルインタプリタロック
+(GIL: Global Interpreter Lock) を獲得するので、これは問題ではありません。
+しかしながら、削除されようとしているオブジェクトが何らかの C や C++ ライブラリ由来のオブジェクトを削除する場合、 *tp_dealloc* を
+呼び出すスレッドのオブジェクトを削除することで、ライブラリの仮定している何らかの規約に違反しないように気を付ける必要があります。
 
 
 .. _mapping-structs:
 
-Mapping Object Structures
-=========================
-
-.. sectionauthor:: Amaury Forgeot d'Arc
+マップ型オブジェクト構造体 (mapping object structure)
+=====================================================
 
 
 .. ctype:: PyMappingMethods
 
-   This structure holds pointers to the functions which an object uses to
-   implement the mapping protocol.  It has three members:
+   拡張型でマップ型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
 
-.. cmember:: lenfunc PyMappingMethods.mp_length
 
-   This function is used by :cfunc:`PyMapping_Length` and
-   :cfunc:`PyObject_Size`, and has the same signature.  This slot may be set to
-   *NULL* if the object has no defined length.
+.. _number-structs:
 
-.. cmember:: binaryfunc PyMappingMethods.mp_subscript
+数値オブジェクト構造体 (number object structure)
+================================================
 
-   This function is used by :cfunc:`PyObject_GetItem` and has the same
-   signature.  This slot must be filled for the :cfunc:`PyMapping_Check`
-   function to return ``1``, it can be *NULL* otherwise.
 
-.. cmember:: objobjargproc PyMappingMethods.mp_ass_subscript
+.. ctype:: PyNumberMethods
 
-   This function is used by :cfunc:`PyObject_SetItem` and has the same
-   signature.  If this slot is *NULL*, the object does not support item
-   assignment.
+   拡張型で数値型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
 
 
 .. _sequence-structs:
 
-Sequence Object Structures
-==========================
-
-.. sectionauthor:: Amaury Forgeot d'Arc
+シーケンスオブジェクト構造体 (sequence object structure)
+========================================================
 
 
 .. ctype:: PySequenceMethods
 
-   This structure holds pointers to the functions which an object uses to
-   implement the sequence protocol.
-
-.. cmember:: lenfunc PySequenceMethods.sq_length
-
-   This function is used by :cfunc:`PySequence_Size` and :cfunc:`PyObject_Size`,
-   and has the same signature.
-
-.. cmember:: binaryfunc PySequenceMethods.sq_concat
-
-   This function is used by :cfunc:`PySequence_Concat` and has the same
-   signature.  It is also used by the ``+`` operator, after trying the numeric
-   addition via the :attr:`tp_as_number.nb_add` slot.
-
-.. cmember:: ssizeargfunc PySequenceMethods.sq_repeat
-
-   This function is used by :cfunc:`PySequence_Repeat` and has the same
-   signature.  It is also used by the ``*`` operator, after trying numeric
-   multiplication via the :attr:`tp_as_number.nb_mul` slot.
-
-.. cmember:: ssizeargfunc PySequenceMethods.sq_item
-
-   This function is used by :cfunc:`PySequence_GetItem` and has the same
-   signature.  This slot must be filled for the :cfunc:`PySequence_Check`
-   function to return ``1``, it can be *NULL* otherwise.
-
-   Negative indexes are handled as follows: if the :attr:`sq_length` slot is
-   filled, it is called and the sequence length is used to compute a positive
-   index which is passed to :attr:`sq_item`.  If :attr:`sq_length` is *NULL*,
-   the index is passed as is to the function.
-
-.. cmember:: ssizeobjargproc PySequenceMethods.sq_ass_item
-
-   This function is used by :cfunc:`PySequence_SetItem` and has the same
-   signature.  This slot may be left to *NULL* if the object does not support
-   item assignment.
-
-.. cmember:: objobjproc PySequenceMethods.sq_contains
-
-   This function may be used by :cfunc:`PySequence_Contains` and has the same
-   signature.  This slot may be left to *NULL*, in this case
-   :cfunc:`PySequence_Contains` simply traverses the sequence until it finds a
-   match.
-
-.. cmember:: binaryfunc PySequenceMethods.sq_inplace_concat
-
-   This function is used by :cfunc:`PySequence_InPlaceConcat` and has the same
-   signature.  It should modify its first operand, and return it.
-
-.. cmember:: ssizeargfunc PySequenceMethods.sq_inplace_repeat
-
-   This function is used by :cfunc:`PySequence_InPlaceRepeat` and has the same
-   signature.  It should modify its first operand, and return it.
-
-.. XXX need to explain precedence between mapping and sequence
-.. XXX explains when to implement the sq_inplace_* slots
+   拡張型でシーケンス型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
 
 
 .. _buffer-structs:
 
-Buffer Object Structures
-========================
+バッファオブジェクト構造体 (buffer object structure)
+====================================================
 
 .. sectionauthor:: Greg J. Stein <greg@lyra.org>
 
 
-The buffer interface exports a model where an object can expose its internal
-data as a set of chunks of data, where each chunk is specified as a
-pointer/length pair.  These chunks are called :dfn:`segments` and are presumed
-to be non-contiguous in memory.
+バッファインタフェースは、あるオブジェクトの内部データを一連のデータチャンク (chunk) として見せるモデルを外部から利用できるようにします。
+各チャンクはポインタ/データ長からなるペアで指定します。チャンクはセグメント(:dfn:`segment`) と呼ばれ、
+メモリ内に不連続的に配置されるものと想定されています。
 
-If an object does not export the buffer interface, then its :attr:`tp_as_buffer`
-member in the :ctype:`PyTypeObject` structure should be *NULL*.  Otherwise, the
-:attr:`tp_as_buffer` will point to a :ctype:`PyBufferProcs` structure.
+バッファインタフェースを利用できるようにしたくないオブジェクトでは、 :ctype:`PyTypeObject` 構造体の
+:attr:`tp_as_buffer` メンバを *NULL* にしなくてはなりません。利用できるようにする場合、 :attr:`tp_as_buffer`
+は :ctype:`PyBufferProcs` 構造体を指さねばなりません。
 
 .. note::
 
-   It is very important that your :ctype:`PyTypeObject` structure uses
-   :const:`Py_TPFLAGS_DEFAULT` for the value of the :attr:`tp_flags` member rather
-   than ``0``.  This tells the Python runtime that your :ctype:`PyBufferProcs`
-   structure contains the :attr:`bf_getcharbuffer` slot. Older versions of Python
-   did not have this member, so a new Python interpreter using an old extension
-   needs to be able to test for its presence before using it.
+   :ctype:`PyTypeObject` 構造体の :attr:`tp_flags` メンバの値を ``0`` でなく
+   :const:`Py_TPFLAGS_DEFAULT` にしておくことがとても重要です。この設定は、 :ctype:`PyBufferProcs` 構造体に
+   :attr:`bf_getcharbuffer`  スロットが入っていることを Python ランタイムに教えます。 Python の古いバージョンには
+   :attr:`bf_getcharbuffer` メンバが存在しないので、古い拡張モジュールを使おうとしている新しいバージョンの Python
+   インタプリタは、このメンバがあるかどうかテストしてから使えるようにする必要があるのです。
 
 
 .. ctype:: PyBufferProcs
 
-   Structure used to hold the function pointers which define an implementation of
-   the buffer protocol.
+   バッファプロトコルの実装を定義している関数群へのポインタを保持するのに使われる構造体です。
 
-   The first slot is :attr:`bf_getreadbuffer`, of type :ctype:`getreadbufferproc`.
-   If this slot is *NULL*, then the object does not support reading from the
-   internal data.  This is non-sensical, so implementors should fill this in, but
-   callers should test that the slot contains a non-*NULL* value.
+   最初のスロットは :attr:`bf_getreadbuffer` で、 :ctype:`getreadbufferproc` 型です。このスロットが
+   *NULL* の場合、オブジェクトは内部データの読み出しをサポートしません。そのような仕様には意味がないので、
+   実装を行う側はこのスロットに値を埋めるはずですが、呼び出し側では非 *NULL* の値かどうかきちんと調べておくべきです。
 
-   The next slot is :attr:`bf_getwritebuffer` having type
-   :ctype:`getwritebufferproc`.  This slot may be *NULL* if the object does not
-   allow writing into its returned buffers.
+   次のスロットは :attr:`bf_getwritebuffer` で、 :ctype:`getwritebufferproc`
+   型です。オブジェクトが返すバッファに対して書き込みを許可しない場合はこのスロットを *NULL* にできます。
 
-   The third slot is :attr:`bf_getsegcount`, with type :ctype:`getsegcountproc`.
-   This slot must not be *NULL* and is used to inform the caller how many segments
-   the object contains.  Simple objects such as :ctype:`PyString_Type` and
-   :ctype:`PyBuffer_Type` objects contain a single segment.
+   第三のスロットは :attr:`bf_getsegcount` で、 :ctype:`getsegcountproc` 型です。このスロットは *NULL*
+   であってはならず、オブジェクトにいくつセグメントが入っているかを呼び出し側に教えるために使われます。 :ctype:`PyString_Type` や
+   :ctype:`PyBuffer_Type` オブジェクトのような単純なオブジェクトには単一のセグメントしか入っていません。
 
    .. index:: single: PyType_HasFeature()
 
-   The last slot is :attr:`bf_getcharbuffer`, of type :ctype:`getcharbufferproc`.
-   This slot will only be present if the :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER`
-   flag is present in the :attr:`tp_flags` field of the object's
-   :ctype:`PyTypeObject`. Before using this slot, the caller should test whether it
-   is present by using the :cfunc:`PyType_HasFeature` function.  If the flag is
-   present, :attr:`bf_getcharbuffer` may be *NULL*, indicating that the object's
-   contents cannot be used as *8-bit characters*. The slot function may also raise
-   an error if the object's contents cannot be interpreted as 8-bit characters.
-   For example, if the object is an array which is configured to hold floating
-   point values, an exception may be raised if a caller attempts to use
-   :attr:`bf_getcharbuffer` to fetch a sequence of 8-bit characters. This notion of
-   exporting the internal buffers as "text" is used to distinguish between objects
-   that are binary in nature, and those which have character-based content.
+   最後のスロットは :attr:`bf_getcharbuffer` で、 :ctype:`getcharbufferproc` です。オブジェクトの
+   :ctype:`PyTypeObject` 構造体における :attr:`tp_flags` フィールドに、
+   :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER` ビットフラグがセットされている場合にのみ、このスロットが存在することになります。
+   このスロットの使用に先立って、呼び出し側は :cfunc:`PyType_HasFeature` を使ってスロットが存在するか調べねばなりません。
+   フラグが立っていても、 :attr:`bf_getcharbuffer` は *NULL* のときもあり、 *NULL* はオブジェクトの内容を *8 ビット文字列*
+   として利用できないことを示します。このスロットに入る関数も、オブジェクトの内容を 8 ビット文字列に
+   変換できない場合に例外を送出することがあります。例えば、オブジェクトが浮動小数点数を保持するように設定されたアレイの場合、呼び出し側が
+   :attr:`bf_getcharbuffer` を使って 8 ビット文字列としてデータを取り出そうとすると例外を送出するようにできます。
+   この、内部バッファを "テキスト" として取り出すという概念は、本質的にはバイナリで、文字ベースの内容を持ったオブジェクト間の区別に使われます。
 
    .. note::
 
-      The current policy seems to state that these characters may be multi-byte
-      characters. This implies that a buffer size of *N* does not mean there are *N*
-      characters present.
+      現在のポリシでは、文字 (character) はマルチバイト文字でもかまわないと決めているように思われます。従って、サイズ *N* のバッファが *N*
+      個のキャラクタからなるとはかぎらないことになります。
 
 
 .. data:: Py_TPFLAGS_HAVE_GETCHARBUFFER
 
-   Flag bit set in the type structure to indicate that the :attr:`bf_getcharbuffer`
-   slot is known.  This being set does not indicate that the object supports the
-   buffer interface or that the :attr:`bf_getcharbuffer` slot is non-*NULL*.
+   型構造体中のフラグビットで、 :attr:`bf_getcharbuffer` スロットが既知の値になっていることを示します。このフラグビットがセット
+   されていたとしても、オブジェクトがバッファインタフェースをサポートしていることや、 :attr:`bf_getcharbuffer` スロットが
+   *NULL* でないことを示すわけではありません。
 
 
-.. ctype:: Py_ssize_t (*readbufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
+.. ctype:: Py_ssize_t (*getreadbufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
 
-   Return a pointer to a readable segment of the buffer in ``*ptrptr``.  This
-   function is allowed to raise an exception, in which case it must return ``-1``.
-   The *segment* which is specified must be zero or positive, and strictly less
-   than the number of segments returned by the :attr:`bf_getsegcount` slot
-   function.  On success, it returns the length of the segment, and sets
-   ``*ptrptr`` to a pointer to that memory.
+   ``*ptrptr`` の中の読み出し可能なバッファセグメントへのポインタを返します。この関数は例外を送出してもよく、送出する場合には ``-1``
+   を返さねばなりません。 *segment* に渡す値はゼロまたは正の値で、 :attr:`bf_getsegcount`
+   スロット関数が返すセグメント数よりも必ず小さな値でなければなりません。成功すると、セグメントのサイズを返し、 ``*ptrptr`` を
+   そのセグメントを指すポインタ値にセットします。
 
 
-.. ctype:: Py_ssize_t (*writebufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
+.. ctype:: Py_ssize_t (*getwritebufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
 
-   Return a pointer to a writable memory buffer in ``*ptrptr``, and the length of
-   that segment as the function return value.  The memory buffer must correspond to
-   buffer segment *segment*.  Must return ``-1`` and set an exception on error.
-   :exc:`TypeError` should be raised if the object only supports read-only buffers,
-   and :exc:`SystemError` should be raised when *segment* specifies a segment that
-   doesn't exist.
+   読み出し可能なバッファセグメントへのポインタを ``*ptrptr`` に返し、セグメントの長さを関数の戻り値として返します。エラーによる例外の場合には
+   ``-1`` を ``-1`` を返さねばなりません。オブジェクトが呼び出し専用バッファしかサポートしていない場合には :exc:`TypeError`
+   を、 *segment* が存在しないセグメントを指している場合には :exc:`SystemError` を送出しなければなりません。
 
-   .. Why doesn't it raise ValueError for this one?
-      GJS: because you shouldn't be calling it with an invalid
-      segment. That indicates a blatant programming error in the C code.
+   .. % Why doesn't it raise ValueError for this one?
+   .. % GJS: because you shouldn't be calling it with an invalid
+   .. % segment. That indicates a blatant programming error in the C
+   .. % code.
 
 
-.. ctype:: Py_ssize_t (*segcountproc) (PyObject *self, Py_ssize_t *lenp)
+.. ctype:: Py_ssize_t (*getsegcountproc) (PyObject *self, Py_ssize_t *lenp)
 
-   Return the number of memory segments which comprise the buffer.  If *lenp* is
-   not *NULL*, the implementation must report the sum of the sizes (in bytes) of
-   all segments in ``*lenp``. The function cannot fail.
+   バッファを構成するメモリセグメントの数を返します。 *lenp* が *NULL* でない場合、この関数の実装は全てのセグメントのサイズ (バイト単位)
+   の合計値を ``*lenp`` を介して報告しなければなりません。この関数呼び出しは失敗させられません。
 
 
-.. ctype:: Py_ssize_t (*charbufferproc) (PyObject *self, Py_ssize_t segment, const char **ptrptr)
+.. ctype:: Py_ssize_t (*getcharbufferproc) (PyObject *self, Py_ssize_t segment, const char **ptrptr)
 
-   Return the size of the segment *segment* that *ptrptr*  is set to.  ``*ptrptr``
-   is set to the memory buffer. Returns ``-1`` on error.
+   セグメント *segment* のメモリバッファを *ptrptr* に入れ、そのサイズを返します。エラーのときに ``-1`` を返します。
+
+
+.. _supporting-iteration:
+
+イテレータプロトコルをサポートする
+==================================
+

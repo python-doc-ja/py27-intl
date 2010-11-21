@@ -2,8 +2,8 @@
 
 .. _allocating-objects:
 
-Allocating Objects on the Heap
-==============================
+オブジェクトをヒープ上にメモリ確保する
+======================================
 
 
 .. cfunction:: PyObject* _PyObject_New(PyTypeObject *type)
@@ -17,88 +17,75 @@ Allocating Objects on the Heap
 
 .. cfunction:: PyObject* PyObject_Init(PyObject *op, PyTypeObject *type)
 
-   Initialize a newly-allocated object *op* with its type and initial reference.
-   Returns the initialized object.  If *type* indicates that the object
-   participates in the cyclic garbage detector, it is added to the detector's set
-   of observed objects. Other fields of the object are not affected.
+   新たにメモリ確保されたオブジェクト *op* に対し、型と初期状態での参照 (initial reference) を初期化します。
+   初期化されたオブジェクトを返します。 *type* からそのオブジェクトが循環参照ガベージ検出の機能を有する場合、検出機構が監視対象とする
+   オブジェクトのセットに追加されます。オブジェクトの他のフィールドには影響を及ぼしません。
 
 
 .. cfunction:: PyVarObject* PyObject_InitVar(PyVarObject *op, PyTypeObject *type, Py_ssize_t size)
 
-   This does everything :cfunc:`PyObject_Init` does, and also initializes the
-   length information for a variable-size object.
+   :cfunc:`PyObject_Init` の全ての処理を行い、可変サイズオブジェクトの場合には長さ情報も初期化します。
 
 
 .. cfunction:: TYPE* PyObject_New(TYPE, PyTypeObject *type)
 
-   Allocate a new Python object using the C structure type *TYPE* and the Python
-   type object *type*.  Fields not defined by the Python object header are not
-   initialized; the object's reference count will be one.  The size of the memory
-   allocation is determined from the :attr:`tp_basicsize` field of the type object.
+   C 構造体型 *TYPE* と Python 型オブジェクト *type* を使って新たな Python オブジェクトをメモリ確保します。 Python
+   オブジェクトヘッダで定義されていないフィールドは初期化されません; オブジェクトの参照カウントは 1 になります。メモリ確保のサイズは型オブジェクトの
+   :attr:`tp_basicsize` で決定します。
 
 
 .. cfunction:: TYPE* PyObject_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
-   Allocate a new Python object using the C structure type *TYPE* and the Python
-   type object *type*.  Fields not defined by the Python object header are not
-   initialized.  The allocated memory allows for the *TYPE* structure plus *size*
-   fields of the size given by the :attr:`tp_itemsize` field of *type*.  This is
-   useful for implementing objects like tuples, which are able to determine their
-   size at construction time.  Embedding the array of fields into the same
-   allocation decreases the number of allocations, improving the memory management
-   efficiency.
+   C 構造体型 *TYPE* と Python 型オブジェクト *type* を使って新たな Python オブジェクトをメモリ確保します。 Python
+   オブジェクトヘッダで定義されていないフィールドは初期化されません。確保されたメモリは、 *TYPE* 構造体に加え、vartype の
+   :attr:`tp_itemsize` フィールドで指定されているサイズ中の *size* フィールドを
+   収容できます。この関数は、例えばタプルのように生成時にサイズを決定できるオブジェクトを実装する際に便利です。一連の複数のフィールドに
+   対するアロケーション操作を一つにして埋め込むと、アロケーション回数が減り、メモリ管理の処理効率が向上します。
 
 
 .. cfunction:: void PyObject_Del(PyObject *op)
 
-   Releases memory allocated to an object using :cfunc:`PyObject_New` or
-   :cfunc:`PyObject_NewVar`.  This is normally called from the :attr:`tp_dealloc`
-   handler specified in the object's type.  The fields of the object should not be
-   accessed after this call as the memory is no longer a valid Python object.
+   :cfunc:`PyObject_New` や :cfunc:`PyObject_NewVar` で
+   確保されたメモリを解放します。この関数は、通常オブジェクトの型に指定されている :attr:`tp_dealloc` ハンドラ内で呼び出します。
+   この関数を呼び出した後では、オブジェクトのメモリ領域はもはや有効な Python オブジェクトを表現してはいないので、オブジェクトのフィールド
+   に対してアクセスしてはなりません。
 
 
 .. cfunction:: PyObject* Py_InitModule(char *name, PyMethodDef *methods)
 
-   Create a new module object based on a name and table of functions, returning the
-   new module object.
+   *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。
 
    .. versionchanged:: 2.3
-      Older versions of Python did not support *NULL* as the value for the *methods*
-      argument.
+      以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
 .. cfunction:: PyObject* Py_InitModule3(char *name, PyMethodDef *methods, char *doc)
 
-   Create a new module object based on a name and table of functions, returning the
-   new module object.  If *doc* is non-*NULL*, it will be used to define the
-   docstring for the module.
+   *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。 *doc* が
+   *NULL* でない場合、モジュールの docstring として使われます。
 
    .. versionchanged:: 2.3
-      Older versions of Python did not support *NULL* as the value for the *methods*
-      argument.
+      以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
 .. cfunction:: PyObject* Py_InitModule4(char *name, PyMethodDef *methods, char *doc, PyObject *self, int apiver)
 
-   Create a new module object based on a name and table of functions, returning the
-   new module object.  If *doc* is non-*NULL*, it will be used to define the
-   docstring for the module.  If *self* is non-*NULL*, it will passed to the
-   functions of the module as their (otherwise *NULL*) first parameter.  (This was
-   added as an experimental feature, and there are no known uses in the current
-   version of Python.)  For *apiver*, the only value which should be passed is
-   defined by the constant :const:`PYTHON_API_VERSION`.
+   *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。 *doc* が
+   *NULL* でない場合、モジュールの docstring として使われます。 *self* が *NULL* でない場合、モジュール内の各関数
+   の第一引数として渡されます (*NULL* の時には第一引数も *NULL* になります)。 (この関数は実験的な機能のために追加されたもので、現在の Python
+   のバージョンで使われてはいないはずです。) *apiver* に渡してよい値は、 :const:`PYTHON_API_VERSION`
+   で定義されている定数だけです。
 
    .. note::
 
-      Most uses of this function should probably be using the :cfunc:`Py_InitModule3`
-      instead; only use this if you are sure you need it.
+      この関数のほとんどの用途は、代わりに :cfunc:`Py_InitModule3` を使えるはずです; 本当にこの関数を使いたいときにだけ利用してください
 
    .. versionchanged:: 2.3
-      Older versions of Python did not support *NULL* as the value for the *methods*
-      argument.
+      以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
 .. cvar:: PyObject _Py_NoneStruct
 
-   Object which is visible in Python as ``None``.  This should only be accessed
-   using the ``Py_None`` macro, which evaluates to a pointer to this object.
+   Python からは ``None`` に見えるオブジェクトです。この値へのアクセスは、このオブジェクトへのポインタを評価する ``Py_None``
+   マクロを使わねばなりません。
+
