@@ -14,7 +14,3 @@ anyone wishing to stay up-to-date after a new release.
    2.6.rst
    2.5.rst
    2.4.rst
-   2.3.rst
-   2.2.rst
-   2.1.rst
-   2.0.rst
