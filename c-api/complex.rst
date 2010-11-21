@@ -2,31 +2,26 @@
 
 .. _complexobjects:
 
-Complex Number Objects
-----------------------
+浮動小数点オブジェクト (complex number object)
+----------------------------------------------
 
 .. index:: object: complex number
 
-Python's complex number objects are implemented as two distinct types when
-viewed from the C API:  one is the Python object exposed to Python programs, and
-the other is a C structure which represents the actual complex number value.
-The API provides functions for working with both.
+Python の複素数オブジェクトは、 C API 側から見ると二つの別個の型として実装されています: 一方は Python プログラムに対して公開
+されている Python のオブジェクトで、他方は実際の複素数値を表現する C の構造体です。 API では、これら双方を扱う関数を提供しています。
 
 
-Complex Numbers as C Structures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C 構造体としての複素数
+^^^^^^^^^^^^^^^^^^^^^^
 
-Note that the functions which accept these structures as parameters and return
-them as results do so *by value* rather than dereferencing them through
-pointers.  This is consistent throughout the API.
+複素数の C 構造体を引数として受理したり、戻り値として返したりする関数は、ポインタ渡しを行うのではなく *値渡し* を行うので注意してください。これは
+API 全体を通して一貫しています。
 
 
 .. ctype:: Py_complex
 
-   The C structure which corresponds to the value portion of a Python complex
-   number object.  Most of the functions for dealing with complex number objects
-   use structures of this type as input or output values, as appropriate.  It is
-   defined as::
+   Python 複素数オブジェクトの値の部分に対応する C の構造体です。複素数オブジェクトを扱うほとんどの関数は、この型の構造体を
+   場合に応じて入力や出力として使います。構造体は以下のように定義されています::
 
       typedef struct {
          double real;
@@ -36,97 +31,85 @@ pointers.  This is consistent throughout the API.
 
 .. cfunction:: Py_complex _Py_c_sum(Py_complex left, Py_complex right)
 
-   Return the sum of two complex numbers, using the C :ctype:`Py_complex`
-   representation.
+   二つの複素数の和を C の :ctype:`Py_complex` 型で返します。
 
 
 .. cfunction:: Py_complex _Py_c_diff(Py_complex left, Py_complex right)
 
-   Return the difference between two complex numbers, using the C
-   :ctype:`Py_complex` representation.
+   二つの複素数の差を C の :ctype:`Py_complex` 型で返します。
 
 
 .. cfunction:: Py_complex _Py_c_neg(Py_complex complex)
 
-   Return the negation of the complex number *complex*, using the C
-   :ctype:`Py_complex` representation.
+   複素数 *complex* の符号反転 C の :ctype:`Py_complex` 型で返します。
 
 
 .. cfunction:: Py_complex _Py_c_prod(Py_complex left, Py_complex right)
 
-   Return the product of two complex numbers, using the C :ctype:`Py_complex`
-   representation.
+   二つの複素数の積を C の :ctype:`Py_complex` 型で返します。
 
 
 .. cfunction:: Py_complex _Py_c_quot(Py_complex dividend, Py_complex divisor)
 
-   Return the quotient of two complex numbers, using the C :ctype:`Py_complex`
-   representation.
+   二つの複素数の商を C の :ctype:`Py_complex` 型で返します。
 
 
 .. cfunction:: Py_complex _Py_c_pow(Py_complex num, Py_complex exp)
 
-   Return the exponentiation of *num* by *exp*, using the C :ctype:`Py_complex`
-   representation.
+   指数 *exp* の *num* 乗を C の :ctype:`Py_complex` 型で返します。
 
 
-Complex Numbers as Python Objects
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Python オブジェクトとしての複素数型
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. ctype:: PyComplexObject
 
-   This subtype of :ctype:`PyObject` represents a Python complex number object.
+   この :ctype:`PyObject` のサブタイプは Python の複素数オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyComplex_Type
 
-   This instance of :ctype:`PyTypeObject` represents the Python complex number
-   type. It is the same object as ``complex`` and ``types.ComplexType``.
+   この :ctype:`PyTypeObject` のインスタンスは Python の複素数型を表現します。
+   Pythonの ``complex`` や ``types.ComplexType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyComplex_Check(PyObject *p)
 
-   Return true if its argument is a :ctype:`PyComplexObject` or a subtype of
-   :ctype:`PyComplexObject`.
+   引数が :ctype:`PyComplexObject` 型か :ctype:`PyComplexObject` 型のサブタイプのときに真を返します。
 
    .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
+      サブタイプを引数にとれるようになりました.
 
 
 .. cfunction:: int PyComplex_CheckExact(PyObject *p)
 
-   Return true if its argument is a :ctype:`PyComplexObject`, but not a subtype of
-   :ctype:`PyComplexObject`.
+   引数が :ctype:`PyComplexObject` 型で、かつ :ctype:`PyComplexObject` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyComplex_FromCComplex(Py_complex v)
 
-   Create a new Python complex number object from a C :ctype:`Py_complex` value.
+   C の :ctype:`Py_complex` 型から Python の複素数値を生成します。
 
 
 .. cfunction:: PyObject* PyComplex_FromDoubles(double real, double imag)
 
-   Return a new :ctype:`PyComplexObject` object from *real* and *imag*.
+   新たな :ctype:`PyComplexObject` オブジェクトを *real* と *imag* から生成します。
 
 
 .. cfunction:: double PyComplex_RealAsDouble(PyObject *op)
 
-   Return the real part of *op* as a C :ctype:`double`.
+   *op* の実数部分を C の :ctype:`double` 型で返します。
 
 
 .. cfunction:: double PyComplex_ImagAsDouble(PyObject *op)
 
-   Return the imaginary part of *op* as a C :ctype:`double`.
+   *op* の虚数部分を C の :ctype:`double` 型で返します。
 
 
 .. cfunction:: Py_complex PyComplex_AsCComplex(PyObject *op)
 
-   Return the :ctype:`Py_complex` value of the complex number *op*.
+   複素数値 *op* から :ctype:`Py_complex` 型を生成します。
 
-   .. versionchanged:: 2.6
-      If *op* is not a Python complex number object but has a :meth:`__complex__`
-      method, this method will first be called to convert *op* to a Python complex
-      number object.

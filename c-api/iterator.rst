@@ -2,61 +2,57 @@
 
 .. _iterator-objects:
 
-Iterator Objects
-----------------
+イテレータオブジェクト (iterator object)
+----------------------------------------
 
-Python provides two general-purpose iterator objects.  The first, a sequence
-iterator, works with an arbitrary sequence supporting the :meth:`__getitem__`
-method.  The second works with a callable object and a sentinel value, calling
-the callable for each item in the sequence, and ending the iteration when the
-sentinel value is returned.
+Python では二種類のイテレータオブジェクトを提供しています。一つ目はシーケンスイテレータで、 :meth:`__getitem__` メソッドを
+サポートする任意のシーケンスを取り扱います。二つ目は呼び出し可能オブジェクトとセンチネル値 (sentinel value) を扱い、
+シーケンス内の要素ごとに呼び出し可能オブジェクトを呼び出して、センチネル値が返されたときに反復処理を終了します。
 
 
 .. cvar:: PyTypeObject PySeqIter_Type
 
-   Type object for iterator objects returned by :cfunc:`PySeqIter_New` and the
-   one-argument form of the :func:`iter` built-in function for built-in sequence
-   types.
+   :cfunc:`PySeqIter_New` や、組み込みシーケンス型に対して 1 引数形式の組み込み関数 :func:`iter` を呼び出したときに
+   返される、イテレータオブジェクトの型オブジェクトです。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PySeqIter_Check(op)
 
-   Return true if the type of *op* is :cdata:`PySeqIter_Type`.
+   :cdata:`PySeqIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PySeqIter_New(PyObject *seq)
 
-   Return an iterator that works with a general sequence object, *seq*.  The
-   iteration ends when the sequence raises :exc:`IndexError` for the subscripting
-   operation.
+   一般的なシーケンスオブジェクト *seq* を扱うイテレータを返します。反復処理は、シーケンスが添字指定操作の際に :exc:`IndexError` を
+   返したときに終了します。
 
    .. versionadded:: 2.2
 
 
 .. cvar:: PyTypeObject PyCallIter_Type
 
-   Type object for iterator objects returned by :cfunc:`PyCallIter_New` and the
-   two-argument form of the :func:`iter` built-in function.
+   :cfunc:`PyCallIter_New` や、組み込み関数 :func:`iter` の 2 引数形式が返すイテレータオブジェクトの型オブジェクトです。
+   :func:`iter` built-in function.
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyCallIter_Check(op)
 
-   Return true if the type of *op* is :cdata:`PyCallIter_Type`.
+   :cdata:`PyCallIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyCallIter_New(PyObject *callable, PyObject *sentinel)
 
-   Return a new iterator.  The first parameter, *callable*, can be any Python
-   callable object that can be called with no parameters; each call to it should
-   return the next item in the iteration.  When *callable* returns a value equal to
-   *sentinel*, the iteration will be terminated.
+   新たなイテレータを返します。最初のパラメタ *callable* は引数なしで呼び出せる Python の呼び出し可能オブジェクトならなんでもかまいません;
+   *callable* は、呼び出されるたびに次の反復処理対象オブジェクトを返さなければなりません。生成されたイテレータは、 *callable* が
+   *sentinel* に等しい値を返すと反復処理を終了します。
 
    .. versionadded:: 2.2
+

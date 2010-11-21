@@ -2,71 +2,63 @@
 
 .. _method-objects:
 
-Method Objects
---------------
+メソッドオブジェクト (method object)
+------------------------------------
 
 .. index:: object: method
 
-There are some useful functions that are useful for working with method objects.
+メソッドオブジェクトを操作する上で便利な関数がいくつかあります。
 
 
 .. cvar:: PyTypeObject PyMethod_Type
 
    .. index:: single: MethodType (in module types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python method type.  This
-   is exposed to Python programs as ``types.MethodType``.
+   この :ctype:`PyTypeObject` のインスタンスは Python のメソッドオブジェクト
+   型を表現します。このオブジェクトは、 ``types.MethodType``  として Python プログラムに公開されています。
 
 
 .. cfunction:: int PyMethod_Check(PyObject *o)
 
-   Return true if *o* is a method object (has type :cdata:`PyMethod_Type`).  The
-   parameter must not be *NULL*.
+   *o* がメソッドオブジェクト (:cdata:`PyMethod_Type` 型である) 場合に真を返します。パラメタは *NULL* にできません。
 
 
 .. cfunction:: PyObject* PyMethod_New(PyObject *func, PyObject *self, PyObject *class)
 
-   Return a new method object, with *func* being any callable object; this is the
-   function that will be called when the method is called.  If this method should
-   be bound to an instance, *self* should be the instance and *class* should be the
-   class of *self*, otherwise *self* should be *NULL* and *class* should be the
-   class which provides the unbound method..
+   任意の呼び出し可能オブジェクト *func* を使った新たなメソッドオブジェクトを返します; 関数 *func* は、メソッドが呼び出された
+   時に呼び出されるオブジェクトです。このメソッドをインスタンスに束縛 (bind) したい場合、 *self* をインスタンス自体にして、 *class*
+   を *self* のクラスにしなければなりません。それ以外の場合は *self* を *NULL* に、 *class* を
+   非束縛メソッドを提供しているクラスにしなければなりません。
 
 
 .. cfunction:: PyObject* PyMethod_Class(PyObject *meth)
 
-   Return the class object from which the method *meth* was created; if this was
-   created from an instance, it will be the class of the instance.
+   メソッドオブジェクト *meth* を生成したクラスオブジェクトを返します; インスタンスがメソッドオブジェクトを生成した場合、戻り値は
+   インスタンスのクラスになります。
 
 
 .. cfunction:: PyObject* PyMethod_GET_CLASS(PyObject *meth)
 
-   Macro version of :cfunc:`PyMethod_Class` which avoids error checking.
+   :cfunc:`PyMethod_Class` をマクロで実装したバージョンで、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyMethod_Function(PyObject *meth)
 
-   Return the function object associated with the method *meth*.
+   *meth* に関連付けられている関数オブジェクトを返します。
 
 
 .. cfunction:: PyObject* PyMethod_GET_FUNCTION(PyObject *meth)
 
-   Macro version of :cfunc:`PyMethod_Function` which avoids error checking.
+   :cfunc:`PyMethod_Function` のマクロ版で、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyMethod_Self(PyObject *meth)
 
-   Return the instance associated with the method *meth* if it is bound, otherwise
-   return *NULL*.
+   *meth* が束縛メソッドの場合には、メソッドに関連付けられているインスタンスを返します。それ以外の場合には *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyMethod_GET_SELF(PyObject *meth)
 
-   Macro version of :cfunc:`PyMethod_Self` which avoids error checking.
+   :cfunc:`PyMethod_Self` のマクロ版で、エラーチェックを行いません。
 
 
-.. cfunction:: int PyMethod_ClearFreeList(void)
-
-   Clear the free list. Return the total number of freed items.
-
-   .. versionadded:: 2.6

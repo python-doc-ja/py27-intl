@@ -2,37 +2,38 @@
 
 .. _gen-objects:
 
-Generator Objects
------------------
+ジェネレータオブジェクト
+------------------------
 
-Generator objects are what Python uses to implement generator iterators. They
-are normally created by iterating over a function that yields values, rather
-than explicitly calling :cfunc:`PyGen_New`.
+ジェネレータ (generator) オブジェクトは、 Python がジェネレータ型イテレータを実装するために使っているオブジェクトです。
+ジェネレータオブジェクトは、通常、 :cfunc:`PyGen_New` で明示的に生成されることはなく、値を逐次生成するような関数に対してイテレーションを
+行うときに生成されます。
+
+.. % Generator Objects
 
 
 .. ctype:: PyGenObject
 
-   The C structure used for generator objects.
+   ジェネレータオブジェクトに使われている C 構造体です。
 
 
 .. cvar:: PyTypeObject PyGen_Type
 
-   The type object corresponding to generator objects
+   ジェネレータオブジェクトに対応する型オブジェクトです。
 
 
 .. cfunction:: int PyGen_Check(ob)
 
-   Return true if *ob* is a generator object; *ob* must not be *NULL*.
+   *ob* がジェネレータオブジェクトの場合に真を返します。 *ob* が *NULL* であってはなりません。
 
 
 .. cfunction:: int PyGen_CheckExact(ob)
 
-   Return true if *ob*'s type is *PyGen_Type* is a generator object; *ob* must not
-   be *NULL*.
+   *ob* の型が *PyGen_Type* の場合に真を返します。 *ob* が *NULL* であってはなりません。
 
 
 .. cfunction:: PyObject* PyGen_New(PyFrameObject *frame)
 
-   Create and return a new generator object based on the *frame* object. A
-   reference to *frame* is stolen by this function. The parameter must not be
-   *NULL*.
+   *frame* オブジェクトに基づいて新たなジェネレータオブジェクトを生成して返します。この関数は *frame* への参照を盗みます。パラメタが
+   *NULL* であってはなりません。
+

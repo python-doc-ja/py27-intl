@@ -2,53 +2,52 @@
 
 .. _boolobjects:
 
-Boolean Objects
----------------
+Bool 型オブジェクト
+-------------------
 
-Booleans in Python are implemented as a subclass of integers.  There are only
-two booleans, :const:`Py_False` and :const:`Py_True`.  As such, the normal
-creation and deletion functions don't apply to booleans.  The following macros
-are available, however.
+Python の Bool 型は整数のサブクラスとして実装されています。ブール型の値は、 :const:`Py_False` と
+:const:`Py_True` の 2 つしかありません。従って、通常の生成／削除関数はブール型にはあてはまりません。
+とはいえ、以下のマクロが利用できます。
+
+.. % Boolean Objects
 
 
 .. cfunction:: int PyBool_Check(PyObject *o)
 
-   Return true if *o* is of type :cdata:`PyBool_Type`.
+   *o* が :cdata:`PyBool_Type` の場合に真を返します。
 
    .. versionadded:: 2.3
 
 
 .. cvar:: PyObject* Py_False
 
-   The Python ``False`` object.  This object has no methods.  It needs to be
-   treated just like any other object with respect to reference counts.
+   Python における ``False`` オブジェクトです。このオブジェクトはメソッドを持ちません。参照カウントの点では、他のオブジェクトと同様に扱う必要が
+   あります。
 
 
 .. cvar:: PyObject* Py_True
 
-   The Python ``True`` object.  This object has no methods.  It needs to be treated
-   just like any other object with respect to reference counts.
+   Python における ``True`` オブジェクトです。このオブジェクトはメソッドを持ちません。参照カウントの点では、他のオブジェクトと同様に扱う必要が
+   あります。
 
 
 .. cmacro:: Py_RETURN_FALSE
 
-   Return :const:`Py_False` from a function, properly incrementing its reference
-   count.
+   :const:`Py_False` に適切な参照カウントのインクリメントを行って、関数から返すためのマクロです。
 
    .. versionadded:: 2.4
 
 
 .. cmacro:: Py_RETURN_TRUE
 
-   Return :const:`Py_True` from a function, properly incrementing its reference
-   count.
+   :const:`Py_True` に適切な参照カウントのインクリメントを行って、関数から返すためのマクロです。
 
    .. versionadded:: 2.4
 
 
-.. cfunction:: PyObject* PyBool_FromLong(long v)
+.. cfunction:: int PyBool_FromLong(long v)
 
-   Return a new reference to :const:`Py_True` or :const:`Py_False` depending on the
-   truth value of *v*.
+   *v* の値に応じて :const:`Py_True` または :const:`Py_False` への新しい参照を返します。
 
    .. versionadded:: 2.3
+

@@ -2,72 +2,53 @@
 
 .. _typeobjects:
 
-Type Objects
-------------
+型オブジェクト (type object)
+----------------------------
 
 .. index:: object: type
 
 
 .. ctype:: PyTypeObject
 
-   The C structure of the objects used to describe built-in types.
+   組み込み型を記述する際に用いられる、オブジェクトを表す C 構造体です。
 
 
 .. cvar:: PyObject* PyType_Type
 
    .. index:: single: TypeType (in module types)
 
-   This is the type object for type objects; it is the same object as ``type`` and
-   ``types.TypeType`` in the Python layer.
+   型オブジェクト自身の型オブジェクトです; Python レイヤにおける ``type`` や ``types.TypeType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyType_Check(PyObject *o)
 
-   Return true if the object *o* is a type object, including instances of types
-   derived from the standard type object.  Return false in all other cases.
+   オブジェクト *o* が型オブジェクトの場合に真を返します。標準型オブジェクトから導出されたサブタイプ (subtype) のインスタンスも
+   含みます。その他の場合には偽を返します。
 
 
 .. cfunction:: int PyType_CheckExact(PyObject *o)
 
-   Return true if the object *o* is a type object, but not a subtype of the
-   standard type object.  Return false in all other cases.
+   オブジェクト *o* が型オブジェクトの場合に真を返します。標準型のサブタイプの場合は含みません。その他の場合には偽を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: unsigned int PyType_ClearCache(void)
-
-   Clear the internal lookup cache. Return the current version tag.
-
-   .. versionadded:: 2.6
-
-
-.. cfunction:: void PyType_Modified(PyTypeObject *type)
-
-   Invalidate the internal lookup cache for the type and all of its
-   subtypes.  This function must be called after any manual
-   modification of the attributes or base classes of the type.
-
-   .. versionadded:: 2.6
-
-
 .. cfunction:: int PyType_HasFeature(PyObject *o, int feature)
 
-   Return true if the type object *o* sets the feature *feature*.  Type features
-   are denoted by single bit flags.
+   型オブジェクト *o* に、型機能 *feature* が設定されている場合に真を返します。型機能は各々単一ビットのフラグで表されます。
 
 
 .. cfunction:: int PyType_IS_GC(PyObject *o)
 
-   Return true if the type object includes support for the cycle detector; this
-   tests the type flag :const:`Py_TPFLAGS_HAVE_GC`.
+   型オブジェクトが *o* が循環参照検出をサポートしている場合に真を返します; この関数は型機能フラグ :const:`Py_TPFLAGS_HAVE_GC`
+   の設定状態をチェックします。
 
    .. versionadded:: 2.0
 
 
 .. cfunction:: int PyType_IsSubtype(PyTypeObject *a, PyTypeObject *b)
 
-   Return true if *a* is a subtype of *b*.
+   *a* が *b* のサブタイプの場合に真を返します。
 
    .. versionadded:: 2.2
 
@@ -84,9 +65,9 @@ Type Objects
 
 .. cfunction:: int PyType_Ready(PyTypeObject *type)
 
-   Finalize a type object.  This should be called on all type objects to finish
-   their initialization.  This function is responsible for adding inherited slots
-   from a type's base class.  Return ``0`` on success, or return ``-1`` and sets an
-   exception on error.
+   型オブジェクトの後始末処理 (finalize) を行います。この関数は全てのオブジェクトで初期化を完了するために呼び出されなくてはなりません。
+   この関数は、基底クラス型から継承したスロットを型オブジェクトに追加する役割があります。成功した場合には ``0`` を返し、エラーの場合には ``-1``
+   を返して例外情報を設定します。
 
    .. versionadded:: 2.2
+

@@ -2,8 +2,8 @@
 
 .. _bufferobjects:
 
-Buffer Objects
---------------
+バッファーオブジェクト
+----------------------
 
 .. sectionauthor:: Greg Stein <gstein@lyra.org>
 
@@ -12,108 +12,96 @@ Buffer Objects
    object: buffer
    single: buffer interface
 
-Python objects implemented in C can export a group of functions called the
-"buffer interface."  These functions can be used by an object to expose its data
-in a raw, byte-oriented format. Clients of the object can use the buffer
-interface to access the object data directly, without needing to copy it first.
+C で実装された Python オブジェクトは、"バッファインタフェース (buffer interface)" と呼ばれる一連の
+関数を公開していることがあります。これらの関数は、あるオブジェクトのデータを生 (raw) のバイト列形式で公開するために使います。
+このオブジェクトの使い手は、バッファインタフェースを使うことで、オブジェクトをあらかじめコピーしておく必要なしに、オブジェクトの
+データに直接アクセスできます。
 
-Two examples of objects that support the buffer interface are strings and
-arrays. The string object exposes the character contents in the buffer
-interface's byte-oriented form. An array can also expose its contents, but it
-should be noted that array elements may be multi-byte values.
+バッファインタフェースをサポートするオブジェクトの例として、文字列型とアレイ (array) 型の二つがあります。文字列オブジェクトは、
+その内容をバッファインタフェースのバイト単位形式で公開しています。アレイもその内容を公開していますが、注意する必要が
+あるのはアレイの要素は複数バイトの値になりうる、ということです。
 
-An example user of the buffer interface is the file object's :meth:`write`
-method. Any object that can export a series of bytes through the buffer
-interface can be written to a file. There are a number of format codes to
-:cfunc:`PyArg_ParseTuple` that operate against an object's buffer interface,
-returning data from the target object.
+バッファインタフェースの使い手の一例として、ファイルオブジェクトの :meth:`write` メソッドがあります。バッファインタフェースを
+介してバイト列を公開しているオブジェクトは全て、ファイルへの書き出しができます。オブジェクトのバッファインタフェースを操作し、
+対象となるオブジェクトからデータを返させる  :cfunc:`PyArg_ParseTuple` には数多くのデータ書式化コードがあります。
 
 .. index:: single: PyBufferProcs
 
-More information on the buffer interface is provided in the section
-:ref:`buffer-structs`, under the description for :ctype:`PyBufferProcs`.
+バッファインタフェースに関するより詳しい情報は、 "バッファオブジェクト構造体" 節 ( :ref:`buffer-structs` 節) の、
+:ctype:`PyBufferProcs` の説明のところにあります。
 
-A "buffer object" is defined in the :file:`bufferobject.h` header (included by
-:file:`Python.h`). These objects look very similar to string objects at the
-Python programming level: they support slicing, indexing, concatenation, and
-some other standard string operations. However, their data can come from one of
-two sources: from a block of memory, or from another object which exports the
-buffer interface.
+"バッファオブジェクト" はヘッダファイル :file:`bufferobject.h`  の中で定義されています (このファイルは
+:file:`Python.h` がインクルードしています)。バッファオブジェクトは、 Python プログラミングの
+レベルからは文字列オブジェクトと非常によく似ているように見えます: スライス、インデクス指定、結合、その他標準の文字列操作をサポート
+しています。しかし、バッファオブジェクトのデータは二つのデータソース: 何らかのメモリブロックか、バッファインタフェースを公開している
+別のオブジェクト、のいずれかに由来しています。
 
-Buffer objects are useful as a way to expose the data from another object's
-buffer interface to the Python programmer. They can also be used as a zero-copy
-slicing mechanism. Using their ability to reference a block of memory, it is
-possible to expose any data to the Python programmer quite easily. The memory
-could be a large, constant array in a C extension, it could be a raw block of
-memory for manipulation before passing to an operating system library, or it
-could be used to pass around structured data in its native, in-memory format.
+バッファオブジェクトは、他のオブジェクトのバッファインタフェースから Python プログラマにデータを公開する方法として便利です。
+バッファオブジェクトはゼロコピーなスライス機構 (zero-copy slicing  mechanism) としても使われます。ブロックメモリを参照するという
+バッファオブジェクトの機能を使うことで、任意のデータをきわめて簡単に Python プログラマに公開できます。メモリブロックは巨大でもかまいませんし、C
+拡張モジュール内の定数配列でもかまいません。また、オペレーティングシステムライブラリ側に渡す前の、操作用の生のブロックメモリでもかまいませんし、
+構造化されたデータをネイティブのメモリ配置形式でやりとりするためにも使えます。
 
 
 .. ctype:: PyBufferObject
 
-   This subtype of :ctype:`PyObject` represents a buffer object.
+   この :ctype:`PyObject` のサブタイプはバッファオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyBuffer_Type
 
    .. index:: single: BufferType (in module types)
 
-   The instance of :ctype:`PyTypeObject` which represents the Python buffer type;
-   it is the same object as ``buffer`` and  ``types.BufferType`` in the Python
-   layer. .
+   Python バッファ型 (buffer type) を表現する :ctype:`PyTypeObject` です; Python レイヤにおける
+   ``buffer`` や ``types.BufferType`` と同じオブジェクトです。
 
 
 .. cvar:: int Py_END_OF_BUFFER
 
-   This constant may be passed as the *size* parameter to
-   :cfunc:`PyBuffer_FromObject` or :cfunc:`PyBuffer_FromReadWriteObject`.  It
-   indicates that the new :ctype:`PyBufferObject` should refer to *base* object
-   from the specified *offset* to the end of its exported buffer.  Using this
-   enables the caller to avoid querying the *base* object for its length.
+   この定数は、 :cfunc:`PyBuffer_FromObject` またはの :cfunc:`PyBuffer_FromReadWriteObject`
+   *size* パラメタに渡します。このパラメタを渡すと、 :ctype:`PyBufferObject` は指定された *offset*
+   からバッファの終わりまでを *base* オブジェクトとして参照します。このパラメタを使うことで、関数の呼び出し側が *base* オブジェクト
+   のサイズを調べる必要がなくなります。
 
 
 .. cfunction:: int PyBuffer_Check(PyObject *p)
 
-   Return true if the argument has type :cdata:`PyBuffer_Type`.
+   引数が :cdata:`PyBuffer_Type` 型のときに真を返します。
 
 
 .. cfunction:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
-   Return a new read-only buffer object.  This raises :exc:`TypeError` if *base*
-   doesn't support the read-only buffer protocol or doesn't provide exactly one
-   buffer segment, or it raises :exc:`ValueError` if *offset* is less than zero.
-   The buffer will hold a reference to the *base* object, and the buffer's contents
-   will refer to the *base* object's buffer interface, starting as position
-   *offset* and extending for *size* bytes. If *size* is :const:`Py_END_OF_BUFFER`,
-   then the new buffer's contents extend to the length of the *base* object's
-   exported buffer data.
+   新たな読み出し専用バッファオブジェクトを返します。 *base* が読み出し専用バッファに必要なバッファプロトコルをサポートしていない
+   場合や、厳密に一つのバッファセグメントを提供していない場合には :exc:`TypeError` を送出し、 *offset* がゼロ以下の場合には
+   :exc:`ValueError` を送出します。バッファオブジェクトはは *base* オブジェクトに対する参照を保持し、バッファオブジェクトのの内容は
+   *base* オブジェクトの *offset* から *size* バイトのバッファインタフェースへの参照になります。 *size* が
+   :const:`Py_END_OF_BUFFER` の場合、新たに作成するバッファオブジェクトの内容は *base* から公開されているバッファの
+   末尾までにわたります。
 
 
 .. cfunction:: PyObject* PyBuffer_FromReadWriteObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
-   Return a new writable buffer object.  Parameters and exceptions are similar to
-   those for :cfunc:`PyBuffer_FromObject`.  If the *base* object does not export
-   the writeable buffer protocol, then :exc:`TypeError` is raised.
+   新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外は :cfunc:`PyBuffer_FromObject` と同じです。 *base*
+   オブジェクトが書き込み可能バッファに必要なバッファプロトコルを公開していない場合、 :exc:`TypeError` を送出します。
 
 
 .. cfunction:: PyObject* PyBuffer_FromMemory(void *ptr, Py_ssize_t size)
 
-   Return a new read-only buffer object that reads from a specified location in
-   memory, with a specified size.  The caller is responsible for ensuring that the
-   memory buffer, passed in as *ptr*, is not deallocated while the returned buffer
-   object exists.  Raises :exc:`ValueError` if *size* is less than zero.  Note that
-   :const:`Py_END_OF_BUFFER` may *not* be passed for the *size* parameter;
-   :exc:`ValueError` will be raised in that case.
+   メモリ上の指定された場所から指定されたサイズのデータを読み出せる、新たな読み出し専用バッファオブジェクトを返します。
+   この関数が返すバッファオブジェクトが存続する間、 *ptr* で与えられたメモリバッファがデアロケートされないようにするのは呼び出し側の責任です。 *size*
+   がゼロ以下の場合には :exc:`ValueError` を送出します。 *size* には :const:`Py_END_OF_BUFFER` を指定しては
+   *なりません* ; 指定すると、 :exc:`ValueError` を送出します。
 
 
 .. cfunction:: PyObject* PyBuffer_FromReadWriteMemory(void *ptr, Py_ssize_t size)
 
-   Similar to :cfunc:`PyBuffer_FromMemory`, but the returned buffer is writable.
+   :cfunc:`PyBuffer_FromMemory` に似ていますが、書き込み可能なバッファを返します。
 
 
 .. cfunction:: PyObject* PyBuffer_New(Py_ssize_t size)
 
-   Return a new writable buffer object that maintains its own memory buffer of
-   *size* bytes.  :exc:`ValueError` is returned if *size* is not zero or positive.
-   Note that the memory buffer (as returned by :cfunc:`PyObject_AsWriteBuffer`) is
-   not specifically aligned.
+   *size* バイトのメモリバッファを独自に維持する新たな書き込み可能バッファオブジェクトを返します。 *size*
+   がゼロまたは正の値でない場合、 :exc:`ValueError` を送出します。(:cfunc:`PyObject_AsWriteBuffer`
+   が返すような) メモリバッファは特に整列されていないので注意して下さい。
+
+

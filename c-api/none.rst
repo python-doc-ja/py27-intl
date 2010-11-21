@@ -2,27 +2,23 @@
 
 .. _noneobject:
 
-The None Object
----------------
+None オブジェクト
+-----------------
 
 .. index:: object: None
 
-Note that the :ctype:`PyTypeObject` for ``None`` is not directly exposed in the
-Python/C API.  Since ``None`` is a singleton, testing for object identity (using
-``==`` in C) is sufficient. There is no :cfunc:`PyNone_Check` function for the
-same reason.
+``None`` に対する :ctype:`PyTypeObject` は、 Python/C API では直接公開されていないので注意してください。
+``None `` は単量子 (singleton) なので、オブジェクトのアイデンティティテスト (C では `` ==``) を使うだけで十分だからです。
+同じ理由から、 :cfunc:`PyNone_Check` 関数はありません。
 
 
 .. cvar:: PyObject* Py_None
 
-   The Python ``None`` object, denoting lack of value.  This object has no methods.
-   It needs to be treated just like any other object with respect to reference
-   counts.
+   Python における ``None`` オブジェクトで、値がないことを表します。このオブジェクトにはメソッドがありません。リファレンスカウントに
+   ついては、このオブジェクトも他のオブジェクトと同様に扱う必要があります。
 
 
 .. cmacro:: Py_RETURN_NONE
 
-   Properly handle returning :cdata:`Py_None` from within a C function.
-
-   .. versionadded:: 2.4
+   C 関数から :cdata:`Py_None` を戻す操作を適切に行うためのマクロです。
 

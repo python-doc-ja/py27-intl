@@ -2,82 +2,79 @@
 
 .. _function-objects:
 
-Function Objects
-----------------
+関数オブジェクト (Function Objects)
+-----------------------------------
 
 .. index:: object: function
 
-There are a few functions specific to Python functions.
+Pythonの関数にはいくつかの種類があります。
 
 
 .. ctype:: PyFunctionObject
 
-   The C structure used for functions.
+   関数に使われるCの構造体
 
 
 .. cvar:: PyTypeObject PyFunction_Type
 
    .. index:: single: MethodType (in module types)
 
-   This is an instance of :ctype:`PyTypeObject` and represents the Python function
-   type.  It is exposed to Python programmers as ``types.FunctionType``.
+   :ctype:`PyTypeObject` 型のインスタンスで、 Python の関数型を表します。これは Python プログラムに
+   ``types.FunctionType`` として公開されます。
 
 
 .. cfunction:: int PyFunction_Check(PyObject *o)
 
-   Return true if *o* is a function object (has type :cdata:`PyFunction_Type`).
-   The parameter must not be *NULL*.
+   *o* が関数オブジェクト (:cdata:`PyFunction_Type` を持っている) なら true を返します。引数は *NULL*
+   であってはいけません。
 
 
 .. cfunction:: PyObject* PyFunction_New(PyObject *code, PyObject *globals)
 
-   Return a new function object associated with the code object *code*. *globals*
-   must be a dictionary with the global variables accessible to the function.
+   コードオブジェクト *code* に関連付けられた新しい関数オブジェクトを返します。 *globals*
+   はこの関数からアクセスできるグローバル変数の辞書でなければなりません。
 
-   The function's docstring, name and *__module__* are retrieved from the code
-   object, the argument defaults and closure are set to *NULL*.
+   関数のドキュメント文字列、名前および *__module__* はコードオブジェクトから取得されます。引数のデフォルト値やクロージャは *NULL*
+   にセットされます。
 
 
 .. cfunction:: PyObject* PyFunction_GetCode(PyObject *op)
 
-   Return the code object associated with the function object *op*.
+   関数オブジェクト *op* に関連付けられたコードオブジェクトを返します。
 
 
 .. cfunction:: PyObject* PyFunction_GetGlobals(PyObject *op)
 
-   Return the globals dictionary associated with the function object *op*.
+   関数オブジェクト *op* に関連付けられたglobals辞書を返します。
 
 
 .. cfunction:: PyObject* PyFunction_GetModule(PyObject *op)
 
-   Return the *__module__* attribute of the function object *op*. This is normally
-   a string containing the module name, but can be set to any other object by
-   Python code.
+   関数オブジェクト *op* の *__module__* 属性を返します。　これは普通はモジュール名の文字列が入っていますが、Python コードから
+   他のオブジェクトをセットされることもあります。
 
 
 .. cfunction:: PyObject* PyFunction_GetDefaults(PyObject *op)
 
-   Return the argument default values of the function object *op*. This can be a
-   tuple of arguments or *NULL*.
+   関数オブジェクト *op* の引数のデフォルト値を返します。引数のタプルか *NULL* になります。
 
 
 .. cfunction:: int PyFunction_SetDefaults(PyObject *op, PyObject *defaults)
 
-   Set the argument default values for the function object *op*. *defaults* must be
-   *Py_None* or a tuple.
+   関数オブジェクト *op* の引数のデフォルト値を設定します。 *defaults* は *Py_None* かタプルでなければいけません。
 
-   Raises :exc:`SystemError` and returns ``-1`` on failure.
+   失敗した時は、 :exc:`SystemError` を発生し、 ``-1`` を返します。
 
 
 .. cfunction:: PyObject* PyFunction_GetClosure(PyObject *op)
 
-   Return the closure associated with the function object *op*. This can be *NULL*
-   or a tuple of cell objects.
+   関数オブジェクト *op* に設定されたクロージャを返します。 *NULL* か cell オブジェクトのタプルです。
 
 
 .. cfunction:: int PyFunction_SetClosure(PyObject *op, PyObject *closure)
 
-   Set the closure associated with the function object *op*. *closure* must be
-   *Py_None* or a tuple of cell objects.
+   関数オブジェクト *op* にクロージャを設定します。 *closure* は、 *Py_None* もしくは cell
+   オブジェクトのタプルでなければなりません。
 
-   Raises :exc:`SystemError` and returns ``-1`` on failure.
+   失敗した時は、 :exc:`SystemError` を送出し、 ``-1`` を返します。
+

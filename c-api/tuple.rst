@@ -2,123 +2,107 @@
 
 .. _tupleobjects:
 
-Tuple Objects
--------------
+タプルオブジェクト (tuple object)
+---------------------------------
 
 .. index:: object: tuple
 
 
 .. ctype:: PyTupleObject
 
-   This subtype of :ctype:`PyObject` represents a Python tuple object.
+   この :ctype:`PyObject` のサブタイプは Python のタプルオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyTuple_Type
 
    .. index:: single: TupleType (in module types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python tuple type; it is
-   the same object as ``tuple`` and ``types.TupleType`` in the Python layer..
+   この :ctype:`PyTypeObject` のインスタンスは Python のタプル型を表現します; Python レイヤにおける ``tuple``
+   や ``types.TupleType``  と同じオブジェクトです。
 
 
 .. cfunction:: int PyTuple_Check(PyObject *p)
 
-   Return true if *p* is a tuple object or an instance of a subtype of the tuple
-   type.
+   *p* がタプルオブジェクトか、タプル型のサブタイプのインスタンスである場合に真を返します。
 
    .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
+      サブタイプを引数にとれるようになりました.
 
 
 .. cfunction:: int PyTuple_CheckExact(PyObject *p)
 
-   Return true if *p* is a tuple object, but not an instance of a subtype of the
-   tuple type.
+   *p* がタプルオブジェクトで、かつタプル型のサブタイプのインスタンスでない場合に真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyTuple_New(Py_ssize_t len)
 
-   Return a new tuple object of size *len*, or *NULL* on failure.
+   サイズが *len* 新たなタプルオブジェクトを返します。失敗すると *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyTuple_Pack(Py_ssize_t n, ...)
 
-   Return a new tuple object of size *n*, or *NULL* on failure. The tuple values
-   are initialized to the subsequent *n* C arguments pointing to Python objects.
-   ``PyTuple_Pack(2, a, b)`` is equivalent to ``Py_BuildValue("(OO)", a, b)``.
+   サイズ *n* 新たなタプルオブジェクトを返します。失敗すると *NULL* を返します。タプルの値は後続の *n* 個の Python オブジェクトを指す C
+   引数になります。 ``PyTuple_Pack(2, a, b)`` は ``Py_BuildValue("(OO)", a, b)`` と同じです。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: Py_ssize_t PyTuple_Size(PyObject *p)
 
-   Take a pointer to a tuple object, and return the size of that tuple.
+   タプルオブジェクトへのポインタを引数にとり、そのタプルのサイズを返します。
 
 
 .. cfunction:: Py_ssize_t PyTuple_GET_SIZE(PyObject *p)
 
-   Return the size of the tuple *p*, which must be non-*NULL* and point to a tuple;
-   no error checking is performed.
+   タプル *p* のサイズを返しますが、 *p* は非 *NULL* でなくてはならず、タプルオブジェクトを指していなければなりません;
+   エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyTuple_GetItem(PyObject *p, Py_ssize_t pos)
 
-   Return the object at position *pos* in the tuple pointed to by *p*.  If *pos* is
-   out of bounds, return *NULL* and sets an :exc:`IndexError` exception.
+   *p* の指すタプルオブジェクト内の、位置 *pos* にあるオブジェクトを返します。 *pos* が範囲を超えている場合、 *NULL* を返して
+   :exc:`IndexError` 例外をセットします。
 
 
 .. cfunction:: PyObject* PyTuple_GET_ITEM(PyObject *p, Py_ssize_t pos)
 
-   Like :cfunc:`PyTuple_GetItem`, but does no checking of its arguments.
+   :cfunc:`PyTuple_GetItem` に似ていますが、引数に対するエラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyTuple_GetSlice(PyObject *p, Py_ssize_t low, Py_ssize_t high)
 
-   Take a slice of the tuple pointed to by *p* from *low* to *high* and return it
-   as a new tuple.
+   *p* の指すタプルオブジェクト内の、位置 *low* から *high* までのスライスを取り出して、タプルオブジェクトとして返します。
 
 
 .. cfunction:: int PyTuple_SetItem(PyObject *p, Py_ssize_t pos, PyObject *o)
 
-   Insert a reference to object *o* at position *pos* of the tuple pointed to by
-   *p*. Return ``0`` on success.
+   *p* の指すタプルオブジェクト内の位置 *pos* に、オブジェクト *o* への参照を挿入します。成功した場合には ``0`` を返します。
 
    .. note::
 
-      This function "steals" a reference to *o*.
+      この関数は *o* への参照を "盗み取り" ます。
 
 
 .. cfunction:: void PyTuple_SET_ITEM(PyObject *p, Py_ssize_t pos, PyObject *o)
 
-   Like :cfunc:`PyTuple_SetItem`, but does no error checking, and should *only* be
-   used to fill in brand new tuples.
+   :cfunc:`PyTuple_SetItem` に似ていますが、エラーチェックを行わず、新たなタプルに値を入れるとき *以外には使ってはなりません* 。
 
    .. note::
 
-      This function "steals" a reference to *o*.
+      この関数は *o* への参照を "盗み取り" ます。
 
 
 .. cfunction:: int _PyTuple_Resize(PyObject **p, Py_ssize_t newsize)
 
-   Can be used to resize a tuple.  *newsize* will be the new length of the tuple.
-   Because tuples are *supposed* to be immutable, this should only be used if there
-   is only one reference to the object.  Do *not* use this if the tuple may already
-   be known to some other part of the code.  The tuple will always grow or shrink
-   at the end.  Think of this as destroying the old tuple and creating a new one,
-   only more efficiently.  Returns ``0`` on success. Client code should never
-   assume that the resulting value of ``*p`` will be the same as before calling
-   this function. If the object referenced by ``*p`` is replaced, the original
-   ``*p`` is destroyed.  On failure, returns ``-1`` and sets ``*p`` to *NULL*, and
-   raises :exc:`MemoryError` or :exc:`SystemError`.
+   タプルをリサイズする際に使えます。 *newsize* はタプルの新たな長さです。タプルは変更不能なオブジェクト *ということになっている*
+   ので、この関数は対象のオブジェクトに対してただ一つしか参照がない時以外には使ってはなりません。タプルがコード中の他の部分ですでに参照
+   されている場合には、この関数を *使ってはなりません* 。タプルは常に指定サイズの末尾まで伸縮します。成功した場合には ``0`` を返します。
+   クライアントコードは、 ``*p`` の値が呼び出し前と同じになると気体してはなりません。 ``*p`` が置き換えられた場合、オリジナルの ``*p``
+   は破壊されます。失敗すると ``-1`` を返し、 ``*p`` を *NULL* に設定して、  :exc:`MemoryError` または
+   :exc:`SystemError` を送出します。
 
    .. versionchanged:: 2.2
-      Removed unused third parameter, *last_is_sticky*.
+      使われていなかった三つ目のパラメタ、 *last_is_sticky* を削除しました.
 
-
-.. cfunction:: int PyTuple_ClearFreeList(void)
-
-   Clear the free list. Return the total number of freed items.
-
-   .. versionadded:: 2.6

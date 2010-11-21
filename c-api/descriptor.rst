@@ -2,16 +2,16 @@
 
 .. _descriptor-objects:
 
-Descriptor Objects
-------------------
+デスクリプタオブジェクト (descriptor object)
+--------------------------------------------
 
-"Descriptors" are objects that describe some attribute of an object. They are
-found in the dictionary of type objects.
+"デスクリプタ (descriptor)" は、あるオブジェクトのいくつかの属性について記述したオブジェクトです。デスクリプタオブジェクトは
+型オブジェクトの辞書内にあります。
 
 
 .. cvar:: PyTypeObject PyProperty_Type
 
-   The type object for the built-in descriptor types.
+   組み込みデスクリプタ型の型オブジェクトです。
 
    .. versionadded:: 2.2
 
@@ -36,16 +36,10 @@ found in the dictionary of type objects.
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyDescr_NewClassMethod(PyTypeObject *type, PyMethodDef *method)
-
-   .. versionadded:: 2.3
-
-
 .. cfunction:: int PyDescr_IsData(PyObject *descr)
 
-   Return true if the descriptor objects *descr* describes a data attribute, or
-   false if it describes a method.  *descr* must be a descriptor object; there is
-   no error checking.
+   デスクリプタオブジェクト *descr* がデータ属性のデスクリプタの場合には真を、メソッドデスクリプタの場合には偽を返します。 *descr*
+   はデスクリプタオブジェクトでなければなりません; エラーチェックは行いません。
 
    .. versionadded:: 2.2
 
@@ -53,3 +47,5 @@ found in the dictionary of type objects.
 .. cfunction:: PyObject* PyWrapper_New(PyObject *, PyObject *)
 
    .. versionadded:: 2.2
+
+

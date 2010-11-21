@@ -2,65 +2,59 @@
 
 .. _floatobjects:
 
-Floating Point Objects
-----------------------
+浮動小数点型オブジェクト (floating point object)
+------------------------------------------------
 
 .. index:: object: floating point
 
 
 .. ctype:: PyFloatObject
 
-   This subtype of :ctype:`PyObject` represents a Python floating point object.
+   この :ctype:`PyObject` のサブタイプは Python 浮動小数点型オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyFloat_Type
 
    .. index:: single: FloatType (in modules types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python floating point
-   type.  This is the same object as ``float`` and ``types.FloatType``.
+   この :ctype:`PyTypeObject` のインスタンスは Python 浮動小数点型を表現します。これは
+   ``float`` や ``types.FloatType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyFloat_Check(PyObject *p)
 
-   Return true if its argument is a :ctype:`PyFloatObject` or a subtype of
-   :ctype:`PyFloatObject`.
+   引数が :ctype:`PyFloatObject` か :ctype:`PyFloatObject` のサブタイプのときに真を返します。
 
    .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
+      サブタイプを引数にとれるようになりました.
 
 
 .. cfunction:: int PyFloat_CheckExact(PyObject *p)
 
-   Return true if its argument is a :ctype:`PyFloatObject`, but not a subtype of
-   :ctype:`PyFloatObject`.
+   引数が :ctype:`PyFloatObject` 型で、かつ :ctype:`PyFloatObject` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyFloat_FromString(PyObject *str, char **pend)
 
-   Create a :ctype:`PyFloatObject` object based on the string value in *str*, or
-   *NULL* on failure.  The *pend* argument is ignored.  It remains only for
-   backward compatibility.
+   *str* の文字列値をもとに :ctype:`PyFloatObject` オブジェクトを生成します。失敗すると *NULL* を返します。引数
+   *pend* は無視されます。この引数は後方互換性のためだけに残されています。
 
 
 .. cfunction:: PyObject* PyFloat_FromDouble(double v)
 
-   Create a :ctype:`PyFloatObject` object from *v*, or *NULL* on failure.
+   *v* から :ctype:`PyFloatObject` オブジェクトを生成して返します。失敗すると *NULL* を返します。
 
 
 .. cfunction:: double PyFloat_AsDouble(PyObject *pyfloat)
 
-   Return a C :ctype:`double` representation of the contents of *pyfloat*.  If
-   *pyfloat* is not a Python floating point object but has a :meth:`__float__`
-   method, this method will first be called to convert *pyfloat* into a float.
+   *pyfloat* の指す値を、 C の :ctype:`double` 型表現で返します。
 
 
 .. cfunction:: double PyFloat_AS_DOUBLE(PyObject *pyfloat)
 
-   Return a C :ctype:`double` representation of the contents of *pyfloat*, but
-   without error checking.
+   *pyfloat* の指す値を、 C の :ctype:`double` 型表現で返しますが、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyFloat_GetInfo(void)
@@ -85,10 +79,3 @@ Floating Point Objects
 
    .. versionadded:: 2.6
 
-
-.. cfunction:: int PyFloat_ClearFreeList(void)
-
-   Clear the float free list. Return the number of items that could not
-   be freed.
-
-   .. versionadded:: 2.6

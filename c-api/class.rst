@@ -38,28 +38,27 @@ will want to work with type objects (section :ref:`typeobjects`).
 
 .. index:: object: instance
 
-There are very few functions specific to instance objects.
+インスタンスオブジェクト固有の関数はきわめてわずかです。
 
 
 .. cvar:: PyTypeObject PyInstance_Type
 
-   Type object for class instances.
+   クラスインスタンスの型オブジェクトです。
 
 
 .. cfunction:: int PyInstance_Check(PyObject *obj)
 
-   Return true if *obj* is an instance.
+   *obj* がインスタンスの場合に真を返します。
 
 
 .. cfunction:: PyObject* PyInstance_New(PyObject *class, PyObject *arg, PyObject *kw)
 
-   Create a new instance of a specific class.  The parameters *arg* and *kw* are
-   used as the positional and keyword parameters to the object's constructor.
+   特定クラスの新たなインスタンスを生成します。パラメタ *arg*  および *kw* はそれぞれオブジェクトのコンストラクタに渡す
+   実引数およびキーワードパラメタとして使われます。
 
 
 .. cfunction:: PyObject* PyInstance_NewRaw(PyObject *class, PyObject *dict)
 
-   Create a new instance of a specific class without calling its constructor.
-   *class* is the class of new object.  The *dict* parameter will be used as the
-   object's :attr:`__dict__`; if *NULL*, a new dictionary will be created for the
-   instance.
+   特定クラスの新たなインスタンスを、コンストラクタを呼ばずに生成します。 *class* は新たに作成するオブジェクトのクラスです。 *dict* パラメタは
+   オブジェクトの :attr:`__dict__` に使われます; *dict* が *NULL* なら、インスタンス用に新たな辞書が作成されます。
+

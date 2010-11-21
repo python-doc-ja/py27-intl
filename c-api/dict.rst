@@ -2,15 +2,15 @@
 
 .. _dictobjects:
 
-Dictionary Objects
-------------------
+辞書オブジェクト (dictionary object)
+------------------------------------
 
 .. index:: object: dictionary
 
 
 .. ctype:: PyDictObject
 
-   This subtype of :ctype:`PyObject` represents a Python dictionary object.
+   この :ctype:`PyObject` のサブタイプは Python の辞書オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyDict_Type
@@ -19,157 +19,145 @@ Dictionary Objects
       single: DictType (in module types)
       single: DictionaryType (in module types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python dictionary type.
-   This is exposed to Python programs as ``dict`` and ``types.DictType``.
+   この :ctype:`PyTypeObject` のインスタンスは Python の辞書を表現します。このオブジェクトは、Python プログラムには
+   ``dict`` および ``types.DictType`` として公開されています。
 
 
 .. cfunction:: int PyDict_Check(PyObject *p)
 
-   Return true if *p* is a dict object or an instance of a subtype of the dict
-   type.
-
-   .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
+   引数が :ctype:`PyDictObject` のときに真を返します。
 
 
 .. cfunction:: int PyDict_CheckExact(PyObject *p)
 
-   Return true if *p* is a dict object, but not an instance of a subtype of the
-   dict type.
+   *p* が辞書型オブジェクトであり、かつ辞書型のサブクラスのインスタンスでない場合に真を返します。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: PyObject* PyDict_New()
 
-   Return a new empty dictionary, or *NULL* on failure.
+   *p* が辞書型オブジェクトで、かつ辞書型のサブタイプのインスタンスでない場合に真を返します。
 
 
 .. cfunction:: PyObject* PyDictProxy_New(PyObject *dict)
 
-   Return a proxy object for a mapping which enforces read-only behavior.  This is
-   normally used to create a proxy to prevent modification of the dictionary for
-   non-dynamic class types.
+   あるマップ型オブジェクトに対して、読み出し専用に制限されたプロキシオブジェクト (proxy object) を返します。通常、この関数は動的でないクラス型
+   (non-dynamic class type) のクラス辞書を変更させないためにプロキシを作成するために使われます。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: void PyDict_Clear(PyObject *p)
 
-   Empty an existing dictionary of all key-value pairs.
+   現在辞書に入っている全てのキーと値のペアを除去して空にします。
 
 
 .. cfunction:: int PyDict_Contains(PyObject *p, PyObject *key)
 
-   Determine if dictionary *p* contains *key*.  If an item in *p* is matches *key*,
-   return ``1``, otherwise return ``0``.  On error, return ``-1``.  This is
-   equivalent to the Python expression ``key in p``.
+   辞書 *p* に *key* が入っているか判定します。 *p* の要素が *key* に一致した場合は ``1`` を返し、それ以外の場合には ``0``
+   を返します。エラーの場合 ``-1`` を返します。この関数は Python の式 ``key in p`` と等価です。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: PyObject* PyDict_Copy(PyObject *p)
 
-   Return a new dictionary that contains the same key-value pairs as *p*.
+   *p* と同じキーと値のペアが入った新たな辞書を返します。
 
    .. versionadded:: 1.6
 
 
 .. cfunction:: int PyDict_SetItem(PyObject *p, PyObject *key, PyObject *val)
 
-   Insert *value* into the dictionary *p* with a key of *key*.  *key* must be
-   :term:`hashable`; if it isn't, :exc:`TypeError` will be raised. Return ``0``
-   on success or ``-1`` on failure.
+   辞書 *p* に、 *key* をキーとして値 *value* を挿入します。
+   *key* はハッシュ可能(:term:`hashable`)でなければなりません; ハッシュ可能でない場合、
+   :exc:`TypeError` を送出します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
 .. cfunction:: int PyDict_SetItemString(PyObject *p, const char *key, PyObject *val)
 
    .. index:: single: PyString_FromString()
 
-   Insert *value* into the dictionary *p* using *key* as a key. *key* should be a
-   :ctype:`char\*`.  The key object is created using ``PyString_FromString(key)``.
-   Return ``0`` on success or ``-1`` on failure.
+   辞書 *p* に、 *key* をキーとして値 *value* を挿入します。 *key* は :ctype:`char\*` 型でなければなりません。
+   キーオブジェクトは ``PyString_FromString(key)`` で生成されます。成功した場合には ``0`` を、失敗した場合には ``-1``
+   を返します。
 
 
 .. cfunction:: int PyDict_DelItem(PyObject *p, PyObject *key)
 
-   Remove the entry in dictionary *p* with key *key*. *key* must be hashable; if it
-   isn't, :exc:`TypeError` is raised.  Return ``0`` on success or ``-1`` on
-   failure.
+   辞書 *p* から *key* をキーとするエントリを除去します。 *key* はハッシュ可能でなければなりません;  ハッシュ可能でない場合、
+   :exc:`TypeError` を送出します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
 .. cfunction:: int PyDict_DelItemString(PyObject *p, char *key)
 
-   Remove the entry in dictionary *p* which has a key specified by the string
-   *key*.  Return ``0`` on success or ``-1`` on failure.
+   辞書 *p* から文字列 *key* をキーとするエントリを除去します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
 .. cfunction:: PyObject* PyDict_GetItem(PyObject *p, PyObject *key)
 
-   Return the object from dictionary *p* which has a key *key*.  Return *NULL* if
-   the key *key* is not present, but *without* setting an exception.
+   辞書 *p* 内で *key* をキーとするオブジェクトを返します。キー *key* が存在しない場合には *NULL* を返しますが、例外をセット
+   *しません* 。
 
 
 .. cfunction:: PyObject* PyDict_GetItemString(PyObject *p, const char *key)
 
-   This is the same as :cfunc:`PyDict_GetItem`, but *key* is specified as a
-   :ctype:`char\*`, rather than a :ctype:`PyObject\*`.
+   :cfunc:`PyDict_GetItem` と同じですが、 *key* は :ctype:`PyObject\*` ではなく :ctype:`char\*`
+   で指定します。
 
 
 .. cfunction:: PyObject* PyDict_Items(PyObject *p)
 
-   Return a :ctype:`PyListObject` containing all the items from the dictionary, as
-   in the dictionary method :meth:`dict.items`.
+   辞書オブジェクトのメソッド :meth:`item` のように、辞書内の全ての要素対が入った :ctype:`PyListObject` を返します。
+   (:meth:`items` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
+   参照してください。)
 
 
 .. cfunction:: PyObject* PyDict_Keys(PyObject *p)
 
-   Return a :ctype:`PyListObject` containing all the keys from the dictionary, as
-   in the dictionary method :meth:`dict.keys`.
+   辞書オブジェクトのメソッド :meth:`keys` のように、辞書内の全てのキーが入った :ctype:`PyListObject` を返します。
+   (:meth:`keys` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
+   参照してください。)
 
 
 .. cfunction:: PyObject* PyDict_Values(PyObject *p)
 
-   Return a :ctype:`PyListObject` containing all the values from the dictionary
-   *p*, as in the dictionary method :meth:`dict.values`.
+   辞書オブジェクトのメソッド :meth:`values` のように、辞書内の全ての値が入った :ctype:`PyListObject` を返します。
+   (:meth:`values` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
+   参照してください。)
 
 
 .. cfunction:: Py_ssize_t PyDict_Size(PyObject *p)
 
    .. index:: builtin: len
 
-   Return the number of items in the dictionary.  This is equivalent to ``len(p)``
-   on a dictionary.
+   辞書内の要素の数を返します。辞書に対して ``len(p)`` を実行するのと同じです。
 
 
 .. cfunction:: int PyDict_Next(PyObject *p, Py_ssize_t *ppos, PyObject **pkey, PyObject **pvalue)
 
-   Iterate over all key-value pairs in the dictionary *p*.  The :ctype:`int`
-   referred to by *ppos* must be initialized to ``0`` prior to the first call to
-   this function to start the iteration; the function returns true for each pair in
-   the dictionary, and false once all pairs have been reported.  The parameters
-   *pkey* and *pvalue* should either point to :ctype:`PyObject\*` variables that
-   will be filled in with each key and value, respectively, or may be *NULL*.  Any
-   references returned through them are borrowed.  *ppos* should not be altered
-   during iteration. Its value represents offsets within the internal dictionary
-   structure, and since the structure is sparse, the offsets are not consecutive.
+   辞書 *p* 内の全てのキー/値のペアにわたる反復処理を行います。 *ppos* が参照している :ctype:`int` 型は、この関数で反復処理
+   を開始する際に、最初に関数を呼び出すよりも前に ``0`` に初期化しておかなければなりません; この関数は辞書内の各ペアを
+   取り上げるごとに真を返し、全てのペアを取り上げたことが分かると偽を返します。パラメタ *pkey* および *pvalue* には、
+   それぞれ辞書の各々のキーと値を指すポインタか、または *NULL* が入ります。この関数から返される参照はすべて借りた参照になります。反復処理中に
+   *ppos* を変更してはなりません。この値は内部的な辞書構造体のオフセットを表現しており、構造体はスパースなので、オフセットの値に一貫性がないためです。
 
-   For example::
+   以下に例を示します::
 
       PyObject *key, *value;
-      Py_ssize_t pos = 0;
+      int pos = 0;
 
       while (PyDict_Next(self->dict, &pos, &key, &value)) {
-          /* do something interesting with the values... */
+          /* 取り出した値で何らかの処理を行う... */
           ...
       }
 
-   The dictionary *p* should not be mutated during iteration.  It is safe (since
-   Python 2.1) to modify the values of the keys as you iterate over the dictionary,
-   but only so long as the set of keys does not change.  For example::
+   反復処理中に辞書 *p* を変更してはなりません。 (Python 2.1 からは) 辞書を反復処理する際に、キーに対応する値を
+   変更しても大丈夫になりましたが、キーの集合を変更しないことが前提です。以下に例を示します::
 
       PyObject *key, *value;
-      Py_ssize_t pos = 0;
+      int pos = 0;
 
       while (PyDict_Next(self->dict, &pos, &key, &value)) {
           int i = PyInt_AS_LONG(value) + 1;
@@ -186,31 +174,30 @@ Dictionary Objects
 
 .. cfunction:: int PyDict_Merge(PyObject *a, PyObject *b, int override)
 
-   Iterate over mapping object *b* adding key-value pairs to dictionary *a*. *b*
-   may be a dictionary, or any object supporting :func:`PyMapping_Keys` and
-   :func:`PyObject_GetItem`. If *override* is true, existing pairs in *a* will be
-   replaced if a matching key is found in *b*, otherwise pairs will only be added
-   if there is not a matching key in *a*. Return ``0`` on success or ``-1`` if an
-   exception was raised.
+   マップ型オブジェクト *b* の全ての要素にわたって、反復的にキー/値のペアを辞書 *a* に追加します。 *b*
+   は辞書か、 :func:`PyMapping_Keys` または :func:`PyObject_GetItem` をサポートする何らかのオブジェクト
+   にできます。 *override* が真ならば、 *a* のキーと一致するキーが *b* にある際に、既存のペアを置き換えます。それ以外の場合は、 *b*
+   のキーに一致するキーが *a* にないときのみ追加を行います。成功した場合には ``0`` を返し、例外が送出された場合には ``-1`` を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyDict_Update(PyObject *a, PyObject *b)
 
-   This is the same as ``PyDict_Merge(a, b, 1)`` in C, or ``a.update(b)`` in
-   Python.  Return ``0`` on success or ``-1`` if an exception was raised.
+   C で表せば ``PyDict_Merge(a, b, 1)`` と同じ、 Python で表せば ``a.update(b)`` と同じです。成功した場合には
+   ``0`` を返し、例外が送出された場合には ``-1`` を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyDict_MergeFromSeq2(PyObject *a, PyObject *seq2, int override)
 
-   Update or merge into dictionary *a*, from the key-value pairs in *seq2*.  *seq2*
-   must be an iterable object producing iterable objects of length 2, viewed as
-   key-value pairs.  In case of duplicate keys, the last wins if *override* is
-   true, else the first wins. Return ``0`` on success or ``-1`` if an exception was
-   raised. Equivalent Python (except for the return value)::
+   *seq2* 内のキー/値ペアを使って、辞書 *a* の内容を更新したり統合したりします。 *seq2* は、キー/値のペアとみなせる長さ 2 の
+   反復可能オブジェクト(iterable object) を生成する反復可能オブジェクトでなければなりません。重複するキーが存在する場合、 *override*
+   が真ならば先に出現したキーを使い、そうでない場合は後に出現したキーを使います。成功した場合には ``0`` を返し、例外が送出された場合には ``-1``
+   を返します。
+
+   (戻り値以外は) 等価な Python コードを書くと、以下のようになります::
 
       def PyDict_MergeFromSeq2(a, seq2, override):
           for key, value in seq2:
@@ -218,3 +205,4 @@ Dictionary Objects
                   a[key] = value
 
    .. versionadded:: 2.2
+

@@ -2,114 +2,99 @@
 
 .. _intobjects:
 
-Plain Integer Objects
----------------------
+(通常)整数型オブジェクト (plain integer object)
+-----------------------------------------------
 
 .. index:: object: integer
 
 
 .. ctype:: PyIntObject
 
-   This subtype of :ctype:`PyObject` represents a Python integer object.
+   この :ctype:`PyObject` のサブタイプは Python の整数型オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyInt_Type
 
    .. index:: single: IntType (in modules types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python plain integer type.
-   This is the same object as ``int`` and ``types.IntType``.
+   この :ctype:`PyTypeObject` のインスタンスは Python の (長整数でない)整数型を表現します。これは
+   ``int`` や ``types.IntType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyInt_Check(PyObject *o)
 
-   Return true if *o* is of type :cdata:`PyInt_Type` or a subtype of
-   :cdata:`PyInt_Type`.
+   *o* が :cdata:`PyInt_Type` 型か :cdata:`PyInt_Type` 型のサブタイプであるときに真を返します。
 
    .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
+      サブタイプを引数にとれるようになりました.
 
 
 .. cfunction:: int PyInt_CheckExact(PyObject *o)
 
-   Return true if *o* is of type :cdata:`PyInt_Type`, but not a subtype of
-   :cdata:`PyInt_Type`.
+   *o* が :cdata:`PyInt_Type` 型で、かつ :cdata:`PyInt_Type` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyInt_FromString(char *str, char **pend, int base)
 
-   Return a new :ctype:`PyIntObject` or :ctype:`PyLongObject` based on the string
-   value in *str*, which is interpreted according to the radix in *base*.  If
-   *pend* is non-*NULL*, ``*pend`` will point to the first character in *str* which
-   follows the representation of the number.  If *base* is ``0``, the radix will be
-   determined based on the leading characters of *str*: if *str* starts with
-   ``'0x'`` or ``'0X'``, radix 16 will be used; if *str* starts with ``'0'``, radix
-   8 will be used; otherwise radix 10 will be used.  If *base* is not ``0``, it
-   must be between ``2`` and ``36``, inclusive.  Leading spaces are ignored.  If
-   there are no digits, :exc:`ValueError` will be raised.  If the string represents
-   a number too large to be contained within the machine's :ctype:`long int` type
-   and overflow warnings are being suppressed, a :ctype:`PyLongObject` will be
-   returned.  If overflow warnings are not being suppressed, *NULL* will be
-   returned in this case.
+   *str* の文字列値に基づいて、新たな :ctype:`PyIntObject` または :ctype:`PyLongObject` を返します。このとき
+   *base* を基数として文字列を解釈します。 *pend* が *NULL* でなければ、 ``*pend`` は *str* 中で
+   数が表現されている部分以後の先頭の文字のアドレスを指しています。 *base* が ``0`` ならば、 *str* の先頭の文字列に基づいて基数を決定します:
+   もし *str* が ``'0x'`` または ``'0X'`` で始まっていれば、基数に 16 を使います; *str* が ``'0'``
+   で始まっていれば、基数に 8 を使います; その他の場合には基数に 10 を使います。 *base* が ``0`` でなければ、 *base* は ``2``
+   以上 ``36`` 以下の数でなければなりません。先頭に空白がある場合は無視されます。数字が全くない場合、 :exc:`ValueError` が送出
+   されます。使用しているマシンの :ctype:`long int` 型で表現し切れないくらい大きな数が文字列に入っており、オーバフロー警告が抑制されていれば、
+   :ctype:`PyLongObject` を返します。オーバフロー警告が抑制されていなければ、 *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyInt_FromLong(long ival)
 
-   Create a new integer object with a value of *ival*.
+   *ival* の値を使って新たな整数オブジェクトを生成します。
 
-   The current implementation keeps an array of integer objects for all integers
-   between ``-5`` and ``256``, when you create an int in that range you actually
-   just get back a reference to the existing object. So it should be possible to
-   change the value of ``1``.  I suspect the behaviour of Python in this case is
-   undefined. :-)
+   現在の実装では、 ``-5`` から ``256`` までの全ての整数に対する整数オブジェクトの配列を保持するようにしており、
+   この範囲の数を生成すると、実際には既存のオブジェクトに対する参照が返るようになっています。従って、 ``1`` の
+   値を変えることすら可能です。変えてしまった場合の Python の挙動は未定義です :-)
 
 
 .. cfunction:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
 
-   Create a new integer object with a value of *ival*. If the value exceeds
-   ``LONG_MAX``, a long integer object is returned.
+   *ival* の値を使って新たな整数オブジェクトを生成します。値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
 
    .. versionadded:: 2.5
 
 
 .. cfunction:: long PyInt_AsLong(PyObject *io)
 
-   Will first attempt to cast the object to a :ctype:`PyIntObject`, if it is not
-   already one, and then return its value. If there is an error, ``-1`` is
-   returned, and the caller should check ``PyErr_Occurred()`` to find out whether
-   there was an error, or whether the value just happened to be -1.
+   オブジェクトがまだ :ctype:`PyIntObject` でなければまず型キャストを試み、次にその値を返します。
+   エラーが発生した場合、 ``-1`` が返されます。その時呼び出し側は、 ``PyErr_Occurred()`` を使って、エラーが発生したのか、
+   単に値が-1だったのかを判断するべきです。
 
 
 .. cfunction:: long PyInt_AS_LONG(PyObject *io)
 
-   Return the value of the object *io*.  No error checking is performed.
+   オブジェクト *io* の値を返します。エラーチェックを行いません。
 
 
 .. cfunction:: unsigned long PyInt_AsUnsignedLongMask(PyObject *io)
 
-   Will first attempt to cast the object to a :ctype:`PyIntObject` or
-   :ctype:`PyLongObject`, if it is not already one, and then return its value as
-   unsigned long.  This function does not check for overflow.
+   オブジェクトがまだ :ctype:`PyIntObject` または :ctype:`PyLongObject` で
+   なければまず型キャストを試み、次にその値を :ctype:`unsigned long` 型で返します。この関数はオーバフローをチェックしません。
 
    .. versionadded:: 2.3
 
 
 .. cfunction:: unsigned PY_LONG_LONG PyInt_AsUnsignedLongLongMask(PyObject *io)
 
-   Will first attempt to cast the object to a :ctype:`PyIntObject` or
-   :ctype:`PyLongObject`, if it is not already one, and then return its value as
-   unsigned long long, without checking for overflow.
+   オブジェクトがまだ :ctype:`PyIntObject` または :ctype:`PyLongObject` で
+   なければまず型キャストを試み、次にその値を :ctype:`unsigned long long` 型で返します。オーバフローをチェックしません。
 
    .. versionadded:: 2.3
 
 
 .. cfunction:: Py_ssize_t PyInt_AsSsize_t(PyObject *io)
 
-   Will first attempt to cast the object to a :ctype:`PyIntObject` or
-   :ctype:`PyLongObject`, if it is not already one, and then return its value as
-   :ctype:`Py_ssize_t`.
+   オブジェクトがまだ :ctype:`PyIntObject` でなければまず型キャストを試み、次にその値を :ctype:`Py_ssize_t` 型で返します。
 
    .. versionadded:: 2.5
 
@@ -118,13 +103,5 @@ Plain Integer Objects
 
    .. index:: single: LONG_MAX
 
-   Return the system's idea of the largest integer it can handle
-   (:const:`LONG_MAX`, as defined in the system header files).
+   システムの知識に基づく、扱える最大の整数値 (システムのヘッダファイルに定義されている :const:`LONG_MAX`) を返します。
 
-
-.. cfunction:: int PyInt_ClearFreeList(void)
-
-   Clear the integer free list. Return the number of items that could not
-   be freed.
-
-   .. versionadded:: 2.6

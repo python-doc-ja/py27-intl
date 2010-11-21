@@ -2,55 +2,50 @@
 
 .. _slice-objects:
 
-Slice Objects
--------------
+スライスオブジェクト (slice object)
+-----------------------------------
 
 
 .. cvar:: PyTypeObject PySlice_Type
 
    .. index:: single: SliceType (in module types)
 
-   The type object for slice objects.  This is the same as ``slice`` and
-   ``types.SliceType``.
+   スライスオブジェクトの型オブジェクトです。 ``slice`` や ``types.SliceType`` と同じです。
 
 
 .. cfunction:: int PySlice_Check(PyObject *ob)
 
-   Return true if *ob* is a slice object; *ob* must not be *NULL*.
+   *ob* がスライスオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
 
 .. cfunction:: PyObject* PySlice_New(PyObject *start, PyObject *stop, PyObject *step)
 
-   Return a new slice object with the given values.  The *start*, *stop*, and
-   *step* parameters are used as the values of the slice object attributes of the
-   same names.  Any of the values may be *NULL*, in which case the ``None`` will be
-   used for the corresponding attribute.  Return *NULL* if the new object could not
-   be allocated.
+   指定した値から新たなスライスオブジェクトを返します。パラメタ *start*, *stop*, および *step* はスライスオブジェクトに
+   おける同名の属性として用いられます。これらの値はいずれも *NULL* にでき、対応する値には ``None`` が使われます。新たな
+   オブジェクトをアロケーションできない場合には *NULL* を返します。
 
 
 .. cfunction:: int PySlice_GetIndices(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step)
 
-   Retrieve the start, stop and step indices from the slice object *slice*,
-   assuming a sequence of length *length*. Treats indices greater than *length* as
-   errors.
+   スライスオブジェクト *slice* における *start*, *stop*,  および *step* のインデクス値を取得します。このときシーケンスの
+   長さを *length* と仮定します。 *length* よりも大きなインデクスになるとエラーとして扱います。
 
-   Returns 0 on success and -1 on error with no exception set (unless one of the
-   indices was not :const:`None` and failed to be converted to an integer, in which
-   case -1 is returned with an exception set).
+   成功のときには ``0`` を、エラーのときには例外をセットせずに ``-1`` を返します (ただし、指定インデクスのいずれか一つが
+   :const:`None` ではなく、かつ整数に変換できなかった場合を除きます。この場合、 ``-1`` を返して例外をセットします)。
 
-   You probably do not want to use this function.  If you want to use slice objects
-   in versions of Python prior to 2.3, you would probably do well to incorporate
-   the source of :cfunc:`PySlice_GetIndicesEx`, suitably renamed, in the source of
-   your extension.
+   おそらくこの関数を使う気にはならないでしょう。バージョン 2.3 以前の Python でスライスオブジェクトを使いたいのなら、
+   :cfunc:`PySlice_GetIndicesEx` のソースを適切に名前変更して自分の拡張モジュールのソースコード内に組み込むとよいでしょう。
 
 
 .. cfunction:: int PySlice_GetIndicesEx(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step, Py_ssize_t *slicelength)
 
-   Usable replacement for :cfunc:`PySlice_GetIndices`.  Retrieve the start, stop,
-   and step indices from the slice object *slice* assuming a sequence of length
-   *length*, and store the length of the slice in *slicelength*.  Out of bounds
-   indices are clipped in a manner consistent with the handling of normal slices.
+   :cfunc:`PySlice_GetIndices` の置き換えとして使える関数です。
 
-   Returns 0 on success and -1 on error with exception set.
+   スライスオブジェクト *slice* における *start*, *stop*,  および *step* のインデクス値を取得します。このときシーケンスの
+   長さを *length* と仮定します。スライスの長さを *slicelength* に記憶します。境界をはみだしたインデクスは、通常のスライスを扱うのと
+   同じ一貫したやり方でクリップされます。
+
+   成功のときには ``0`` を、エラーのときには例外をセットして ``-1`` を返します。
 
    .. versionadded:: 2.3
+

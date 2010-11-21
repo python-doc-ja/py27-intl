@@ -10,138 +10,119 @@ List Objects
 
 .. ctype:: PyListObject
 
-   This subtype of :ctype:`PyObject` represents a Python list object.
+   この :ctype:`PyObject` のサブタイプは Python のリストオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyList_Type
 
    .. index:: single: ListType (in module types)
 
-   This instance of :ctype:`PyTypeObject` represents the Python list type.  This is
-   the same object as ``list`` and ``types.ListType`` in the Python layer.
+   この :ctype:`PyTypeObject` のインスタンスは Python のタプル型を表現します。これは Python レイヤにおける
+   ``list`` や ``types.ListType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyList_Check(PyObject *p)
 
-   Return true if *p* is a list object or an instance of a subtype of the list
-   type.
-
-   .. versionchanged:: 2.2
-      Allowed subtypes to be accepted.
-
-
-.. cfunction:: int PyList_CheckExact(PyObject *p)
-
-   Return true if *p* is a list object, but not an instance of a subtype of the
-   list type.
-
-   .. versionadded:: 2.2
+   引数が :ctype:`PyListObject` である場合に真を返します。
 
 
 .. cfunction:: PyObject* PyList_New(Py_ssize_t len)
 
-   Return a new list of length *len* on success, or *NULL* on failure.
+   サイズが *len* 新たなリストオブジェクトを返します。失敗すると *NULL* を返します。
 
    .. note::
 
-      If *length* is greater than zero, the returned list object's items are set to
-      ``NULL``.  Thus you cannot use abstract API functions such as
-      :cfunc:`PySequence_SetItem`  or expose the object to Python code before setting
-      all items to a real object with :cfunc:`PyList_SetItem`.
+      *len* が0より大きいとき、返されるリストオブジェクトの要素には ``NULL`` がセットされています。
+      なので、 :cfunc:`PyList_SetItem` で本当にオブジェクトをセットする
+      までは、Pythonコードにこのオブジェクトを渡したり、 :cfunc:`PySequence_SetItem` のような抽象APIを利用してはいけません。
 
 
 .. cfunction:: Py_ssize_t PyList_Size(PyObject *list)
 
    .. index:: builtin: len
 
-   Return the length of the list object in *list*; this is equivalent to
-   ``len(list)`` on a list object.
+   リストオブジェクト *list* の長さを返します;  リストオブジェクトにおける ``len(list)`` と同じです。
 
 
 .. cfunction:: Py_ssize_t PyList_GET_SIZE(PyObject *list)
 
-   Macro form of :cfunc:`PyList_Size` without error checking.
+   マクロ形式でできた :cfunc:`PyList_Size` で、エラーチェックをしません。
 
 
 .. cfunction:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
 
-   Return the object at position *pos* in the list pointed to by *p*.  The position
-   must be positive, indexing from the end of the list is not supported.  If *pos*
-   is out of bounds, return *NULL* and set an :exc:`IndexError` exception.
+   *p* の指すリストオブジェクト内の、位置 *pos* にあるオブジェクトを返します。位置は正である必要があり、リスとの終端からのインデックスは
+   サポートされていません。 *pos* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
 
 
 .. cfunction:: PyObject* PyList_GET_ITEM(PyObject *list, Py_ssize_t i)
 
-   Macro form of :cfunc:`PyList_GetItem` without error checking.
+   マクロ形式でできた :cfunc:`PyList_GetItem` で、エラーチェックをしません。
 
 
 .. cfunction:: int PyList_SetItem(PyObject *list, Py_ssize_t index, PyObject *item)
 
-   Set the item at index *index* in list to *item*.  Return ``0`` on success or
-   ``-1`` on failure.
+   リストオブジェクト内の位置 *index* に、オブジェクト *item*  を挿入します。成功した場合には ``0`` を返し、失敗すると ``-1``
+   を返します。
 
    .. note::
 
-      This function "steals" a reference to *item* and discards a reference to an item
-      already in the list at the affected position.
+      この関数は *item* への参照を "盗み取り" ます。また、変更先のインデクスにすでに別の要素が入っている場合、その要素に対する参照を放棄します。
 
 
 .. cfunction:: void PyList_SET_ITEM(PyObject *list, Py_ssize_t i, PyObject *o)
 
-   Macro form of :cfunc:`PyList_SetItem` without error checking. This is normally
-   only used to fill in new lists where there is no previous content.
+   :cfunc:`PyList_SetItem` をマクロによる実装で、エラーチェックを行いません。この関数は、新たなリストのまだ要素を入れたことのない
+   位置に要素を入れるときにのみ使います。
 
    .. note::
 
-      This function "steals" a reference to *item*, and, unlike
-      :cfunc:`PyList_SetItem`, does *not* discard a reference to any item that it
-      being replaced; any reference in *list* at position *i* will be leaked.
+      この関数は *item* への参照を "盗み取り" ます。また、 :cfunc:`PyList_SetItem` と違って、要素の置き換えが生じても
+      置き換えられるオブジェクトへの参照を放棄 *しません* ; その結果、 *list* 中の位置 *i* で参照されていたオブジェクト
+      がメモリリークを引き起こします。
 
 
 .. cfunction:: int PyList_Insert(PyObject *list, Py_ssize_t index, PyObject *item)
 
-   Insert the item *item* into list *list* in front of index *index*.  Return ``0``
-   if successful; return ``-1`` and set an exception if unsuccessful.  Analogous to
-   ``list.insert(index, item)``.
+   要素 *item* をインデクス *index* の前に挿入します。成功すると ``0`` を返します。失敗すると ``-1`` を返し、
+   例外をセットします。 ``list.insert(index, item)`` に類似した機能です。
 
 
 .. cfunction:: int PyList_Append(PyObject *list, PyObject *item)
 
-   Append the object *item* at the end of list *list*. Return ``0`` if successful;
-   return ``-1`` and set an exception if unsuccessful.  Analogous to
-   ``list.append(item)``.
+   オブジェクト *item* を *list* の末尾に追加します。成功すると ``0`` を返します; 失敗すると ``-1`` を返し、
+   例外をセットします。 ``list.append(item)``  に類似した機能です。
 
 
 .. cfunction:: PyObject* PyList_GetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high)
 
-   Return a list of the objects in *list* containing the objects *between* *low*
-   and *high*.  Return *NULL* and set an exception if unsuccessful. Analogous to
-   ``list[low:high]``.
+   *list* 内の、 *low* から *high* の *間の* オブジェクトからなるリストを返します。失敗すると *NULL* を返し、
+   例外をセットします。 ``list[low:high]`` に類似した機能です。
 
 
 .. cfunction:: int PyList_SetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high, PyObject *itemlist)
 
-   Set the slice of *list* between *low* and *high* to the contents of *itemlist*.
-   Analogous to ``list[low:high] = itemlist``. The *itemlist* may be *NULL*,
-   indicating the assignment of an empty list (slice deletion). Return ``0`` on
-   success, ``-1`` on failure.
+   *list* 内の、 *low* から *high* の間のオブジェクトを、 *itemlist* の内容にします。 ``list[low:high] =
+   itemlist`` と類似の機能です。 *itemlist* は *NULL* でもよく、空リストの代入 (指定スライスの削除) になります。
+   成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
 .. cfunction:: int PyList_Sort(PyObject *list)
 
-   Sort the items of *list* in place.  Return ``0`` on success, ``-1`` on failure.
-   This is equivalent to ``list.sort()``.
+   *list* の内容をインプレースでソートします。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。 success, ``-1``
+   on failure.   ``list.sort()`` と同じです。
 
 
 .. cfunction:: int PyList_Reverse(PyObject *list)
 
-   Reverse the items of *list* in place.  Return ``0`` on success, ``-1`` on
-   failure.  This is the equivalent of ``list.reverse()``.
+   *list* の要素をインプレースで反転します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
+   ``list.reverse()`` と同じです。
 
 
 .. cfunction:: PyObject* PyList_AsTuple(PyObject *list)
 
    .. index:: builtin: tuple
 
-   Return a new tuple object containing the contents of *list*; equivalent to
-   ``tuple(list)``.
+   *list* の内容が入った新たなタプルオブジェクトを返します; ``tuple(list)``. と同じです。
+
+

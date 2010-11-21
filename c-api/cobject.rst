@@ -2,55 +2,52 @@
 
 .. _cobjects:
 
-CObjects
---------
+Cオブジェクト (CObject)
+-----------------------
 
 .. index:: object: CObject
 
-Refer to :ref:`using-cobjects` for more information on using these objects.
+このオブジェクトの使用法に関する情報は、 *Python インタプリタの拡張と埋め込み* 1.12 節、 "Providing a C API for an
+Extension Module," を参照してください。
 
 
 .. ctype:: PyCObject
 
-   This subtype of :ctype:`PyObject` represents an opaque value, useful for C
-   extension modules who need to pass an opaque value (as a :ctype:`void\*`
-   pointer) through Python code to other C code.  It is often used to make a C
-   function pointer defined in one module available to other modules, so the
-   regular import mechanism can be used to access C APIs defined in dynamically
-   loaded modules.
+   この :ctype:`PyObject` のサブタイプは不透明型値 (opaque value) を表現します。C 拡張モジュールが Python
+   コードから不透明型値を  (:ctype:`void\*` ポインタで) 他の C コードに渡す必要があるときに便利です。正規の import
+   機構を使って動的にロードされるモジュール内で定義されている C API にアクセスするために、あるモジュール内で定義されている C
+   関数ポインタを別のモジュールでも利用できるようにするためによく使われます。
 
 
 .. cfunction:: int PyCObject_Check(PyObject *p)
 
-   Return true if its argument is a :ctype:`PyCObject`.
+   引数が :ctype:`PyCObject` の場合に真を返します。
 
 
 .. cfunction:: PyObject* PyCObject_FromVoidPtr(void* cobj, void (*destr)(void *))
 
-   Create a :ctype:`PyCObject` from the ``void *`` *cobj*.  The *destr* function
-   will be called when the object is reclaimed, unless it is *NULL*.
+   ``void*`` *cobj* から :ctype:`PyCObject` を生成します。関数 *destr* が *NULL*
+   でない場合、オブジェクトを再利用する際に呼び出します。
 
 
 .. cfunction:: PyObject* PyCObject_FromVoidPtrAndDesc(void* cobj, void* desc, void (*destr)(void *, void *))
 
-   Create a :ctype:`PyCObject` from the :ctype:`void \*` *cobj*.  The *destr*
-   function will be called when the object is reclaimed. The *desc* argument can
-   be used to pass extra callback data for the destructor function.
+   ``void*`` *cobj* から :ctype:`PyCObject` を生成します。関数 *destr* が *NULL*
+   でない場合、オブジェクトを再利用する際に呼び出します。引数 *desc* を使って、デストラクタ関数に追加のコールバックデータを渡せます。
 
 
 .. cfunction:: void* PyCObject_AsVoidPtr(PyObject* self)
 
-   Return the object :ctype:`void \*` that the :ctype:`PyCObject` *self* was
-   created with.
+   :ctype:`PyCObject` オブジェクト *self* を生成するのに用いたオブジェクト :ctype:`void \*` を返します。
 
 
 .. cfunction:: void* PyCObject_GetDesc(PyObject* self)
 
-   Return the description :ctype:`void \*` that the :ctype:`PyCObject` *self* was
-   created with.
+   :ctype:`PyCObject` オブジェクト *self* を生成するのに用いたコールバックデータ :ctype:`void \*` を返します。
 
 
 .. cfunction:: int PyCObject_SetVoidPtr(PyObject* self, void* cobj)
 
-   Set the void pointer inside *self* to *cobj*. The :ctype:`PyCObject` must not
-   have an associated destructor. Return true on success, false on failure.
+   *self* 内の void ポインタ *cobj* に設定します。 :ctype:`PyCObject` にデストラクタが関連づけられていてはなりません。
+   成功すると真値を返し、失敗すると偽値を返します。
+

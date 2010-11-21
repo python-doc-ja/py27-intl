@@ -1,76 +1,68 @@
 .. highlightlang:: c
 
-.. _weakrefobjects:
+.. _weakref-objects:
 
-Weak Reference Objects
-----------------------
+弱参照オブジェクト (weak reference object)
+------------------------------------------
 
-Python supports *weak references* as first-class objects.  There are two
-specific object types which directly implement weak references.  The first is a
-simple reference object, and the second acts as a proxy for the original object
-as much as it can.
+Python は *弱参照* を第一級オブジェクト (first-class object)
+としてサポートします。弱参照を直接実装する二種類の固有のオブジェクト型があります。第一は単純な参照オブジェクトで、第二はオリジナルの
+オブジェクトに対して可能な限りプロキシとして振舞うオブジェクトです。
 
 
 .. cfunction:: int PyWeakref_Check(ob)
 
-   Return true if *ob* is either a reference or proxy object.
+   *ob* が参照オブジェクトかプロキシオブジェクトの場合に真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyWeakref_CheckRef(ob)
 
-   Return true if *ob* is a reference object.
+   *ob* が参照オブジェクトの場合に真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: int PyWeakref_CheckProxy(ob)
 
-   Return true if *ob* is a proxy object.
+   *ob* がプロキシオブジェクトの場合に真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyWeakref_NewRef(PyObject *ob, PyObject *callback)
 
-   Return a weak reference object for the object *ob*.  This will always return
-   a new reference, but is not guaranteed to create a new object; an existing
-   reference object may be returned.  The second parameter, *callback*, can be a
-   callable object that receives notification when *ob* is garbage collected; it
-   should accept a single parameter, which will be the weak reference object
-   itself. *callback* may also be ``None`` or *NULL*.  If *ob* is not a
-   weakly-referencable object, or if *callback* is not callable, ``None``, or
-   *NULL*, this will return *NULL* and raise :exc:`TypeError`.
+   *ob* に対する弱参照オブジェクトを返します。この関数は常に新たな参照を返しますが、必ずしも新たなオブジェクトを作る保証はありません;
+   既存の参照オブジェクトが返されることもあります。第二のパラメタ *callback* は呼び出し可能オブジェクトで、 *ob*
+   がガーベジコレクションされた際に通知を受け取ります; *callback* は弱参照オブジェクト自体を単一のパラメタとして受け取ります。 *callback*
+   は ``None`` や *NULL* にしてもかまいません。 *ob* が弱参照できないオブジェクトの場合や、 *callback*
+   が呼び出し可能オブジェクト、 ``None`` 、 *NULL* のいずれでもない場合は、 *NULL* を返して :exc:`TypeError` を送出します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyWeakref_NewProxy(PyObject *ob, PyObject *callback)
 
-   Return a weak reference proxy object for the object *ob*.  This will always
-   return a new reference, but is not guaranteed to create a new object; an
-   existing proxy object may be returned.  The second parameter, *callback*, can
-   be a callable object that receives notification when *ob* is garbage
-   collected; it should accept a single parameter, which will be the weak
-   reference object itself. *callback* may also be ``None`` or *NULL*.  If *ob*
-   is not a weakly-referencable object, or if *callback* is not callable,
-   ``None``, or *NULL*, this will return *NULL* and raise :exc:`TypeError`.
+   *ob* に対する弱参照プロキシオブジェクトを返します。この関数は常に新たな参照を返しますが、必ずしも新たなオブジェクトを作る保証はありません;
+   既存の参照オブジェクトが返されることもあります。第二のパラメタ *callback* は呼び出し可能オブジェクトで、 *ob*
+   がガーベジコレクションされた際に通知を受け取ります; *callback* は弱参照オブジェクト自体を単一のパラメタとして受け取ります。 *callback*
+   は ``None`` や *NULL* にしてもかまいません。 *ob* が弱参照できないオブジェクトの場合や、 *callback*
+   が呼び出し可能オブジェクト、 ``None`` 、 *NULL* のいずれでもない場合は、 *NULL* を返して :exc:`TypeError` を送出します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyWeakref_GetObject(PyObject *ref)
 
-   Return the referenced object from a weak reference, *ref*.  If the referent is
-   no longer live, returns ``None``.
+   弱参照 *ref* が参照しているオブジェクトを返します。被参照オブジェクトがすでに存続していない場合、 ``None`` を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyWeakref_GET_OBJECT(PyObject *ref)
 
-   Similar to :cfunc:`PyWeakref_GetObject`, but implemented as a macro that does no
-   error checking.
+   :cfunc:`PyWeakref_GetObject` に似ていますが、マクロで実装されていて、エラーチェックを行いません。
 
    .. versionadded:: 2.2
+
