@@ -2,57 +2,51 @@
 
 .. _os:
 
-Operating System Utilities
-==========================
+オペレーティングシステム関連のユーティリティ
+============================================
 
 
 .. cfunction:: int Py_FdIsInteractive(FILE *fp, const char *filename)
 
-   Return true (nonzero) if the standard I/O file *fp* with name *filename* is
-   deemed interactive.  This is the case for files for which ``isatty(fileno(fp))``
-   is true.  If the global flag :cdata:`Py_InteractiveFlag` is true, this function
-   also returns true if the *filename* pointer is *NULL* or if the name is equal to
-   one of the strings ``'<stdin>'`` or ``'???'``.
+   *filename* という名前の標準 I/O ファイル *fp* が対話的 (interactive) であると考えられる場合に真 (非ゼロ) を返します。
+   これは ``isatty(fileno(fp))`` が真になるファイルの場合です。グローバルなフラグ :cdata:`Py_InteractiveFlag`
+   が真の場合には、 *filename* ポインタが *NULL* か、名前が ``'<stdin>'`` または ``'???'``
+   のいずれかに等しい場合にも真を返します。
 
 
 .. cfunction:: long PyOS_GetLastModificationTime(char *filename)
 
-   Return the time of last modification of the file *filename*. The result is
-   encoded in the same way as the timestamp returned by the standard C library
-   function :cfunc:`time`.
+   ファイル *filename* の最終更新時刻を返します。結果は標準 C ライブラリ関数 :cfunc:`time` が返すタイムスタンプと
+   同じ様式で符号化されています。
 
 
 .. cfunction:: void PyOS_AfterFork()
 
-   Function to update some internal state after a process fork; this should be
-   called in the new process if the Python interpreter will continue to be used.
-   If a new executable is loaded into the new process, this function does not need
-   to be called.
+   プロセスが fork した後の内部状態を更新するための関数です; fork 後 Python インタプリタを使い続ける場合、新たなプロセス内で
+   この関数を呼び出さねばなりません。新たなプロセスに新たな実行可能物をロードする場合、この関数を呼び出す必要はありません。
 
 
 .. cfunction:: int PyOS_CheckStack()
 
-   Return true when the interpreter runs out of stack space.  This is a reliable
-   check, but is only available when :const:`USE_STACKCHECK` is defined (currently
-   on Windows using the Microsoft Visual C++ compiler).  :const:`USE_STACKCHECK`
-   will be defined automatically; you should never change the definition in your
-   own code.
+   インタプリタがスタック空間を使い尽くしたときに真を返します。このチェック関数には信頼性がありますが、 :const:`USE_STACKCHECK`
+   が定義されている場合 (現状では Microsoft Visual C++ コンパイラでビルドした Windows 版) にしか利用できません .
+   :const:`USE_CHECKSTACK` は自動的に定義されます; 自前のコードでこの定義を変更してはなりません。
 
 
 .. cfunction:: PyOS_sighandler_t PyOS_getsig(int i)
 
-   Return the current signal handler for signal *i*.  This is a thin wrapper around
-   either :cfunc:`sigaction` or :cfunc:`signal`.  Do not call those functions
-   directly! :ctype:`PyOS_sighandler_t` is a typedef alias for :ctype:`void
-   (\*)(int)`.
+   シグナル *i* に対する現在のシグナルハンドラを返します。この関数は :cfunc:`sigaction` または :cfunc:`signal`
+   のいずれかに対する薄いラッパです。 :cfunc:`sigaction` や :cfunc:`signal` を直接呼び出してはなりません!
+   :ctype:`PyOS_sighandler_t` は :ctype:`void (\*)(int)` の typedef  による別名です。
 
 
 .. cfunction:: PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
 
-   Set the signal handler for signal *i* to be *h*; return the old signal handler.
-   This is a thin wrapper around either :cfunc:`sigaction` or :cfunc:`signal`.  Do
-   not call those functions directly!  :ctype:`PyOS_sighandler_t` is a typedef
-   alias for :ctype:`void (\*)(int)`.
+   シグナル *i* に対する現在のシグナルハンドラを *h* に設定します; 以前のシグナルハンドラを返します。この関数は
+   :cfunc:`sigaction` または :cfunc:`signal` のいずれかに対する薄いラッパです。 :cfunc:`sigaction` や
+   :cfunc:`signal` を直接呼び出してはなりません!  :ctype:`PyOS_sighandler_t` は :ctype:`void
+   (\*)(int)` の typedef  による別名です。
+
 
 .. _systemfunctions:
 
@@ -114,23 +108,20 @@ accessible to C code.  They all work with the current interpreter thread's
 
    As above, but write to :data:`sys.stderr` or *stderr* instead.
 
-
 .. _processcontrol:
 
-Process Control
-===============
+プロセス制御
+============
 
 
 .. cfunction:: void Py_FatalError(const char *message)
 
    .. index:: single: abort()
 
-   Print a fatal error message and kill the process.  No cleanup is performed.
-   This function should only be invoked when a condition is detected that would
-   make it dangerous to continue using the Python interpreter; e.g., when the
-   object administration appears to be corrupted.  On Unix, the standard C library
-   function :cfunc:`abort` is called which will attempt to produce a :file:`core`
-   file.
+   致命的エラーメッセージ (fatal error message) を出力してプロセスを強制終了 (kill)
+   します。後始末処理は行われません。この関数は、Python  インタプリタを使い続けるのが危険であるような状況が検出されたとき;
+   例えば、オブジェクト管理が崩壊していると思われるときにのみ、呼び出されるようにしなければなりません。Unixでは、標準 C ライブラリ関数
+   :cfunc:`abort` を呼び出して :file:`core` を生成しようと試みます。
 
 
 .. cfunction:: void Py_Exit(int status)
@@ -139,8 +130,8 @@ Process Control
       single: Py_Finalize()
       single: exit()
 
-   Exit the current process.  This calls :cfunc:`Py_Finalize` and then calls the
-   standard C library function ``exit(status)``.
+   現在のプロセスを終了 (exit) します。この関数は :cfunc:`Py_Finalize` を呼び出し、次いで標準 C ライブラリ関数
+   ``exit(status)`` を呼び出します。
 
 
 .. cfunction:: int Py_AtExit(void (*func) ())
@@ -149,10 +140,8 @@ Process Control
       single: Py_Finalize()
       single: cleanup functions
 
-   Register a cleanup function to be called by :cfunc:`Py_Finalize`.  The cleanup
-   function will be called with no arguments and should return no value.  At most
-   32 cleanup functions can be registered.  When the registration is successful,
-   :cfunc:`Py_AtExit` returns ``0``; on failure, it returns ``-1``.  The cleanup
-   function registered last is called first. Each cleanup function will be called
-   at most once.  Since Python's internal finalization will have completed before
-   the cleanup function, no Python APIs should be called by *func*.
+   :cfunc:`Py_Finalize` から呼び出される後始末処理を行う関数 (cleanup function) を登録します。
+   後始末関数は引数無しで呼び出され、値を返しません。最大で 32 の後始末処理関数を登録できます。登録に成功すると、 :cfunc:`Py_AtExit` は
+   ``0`` を返します;  失敗すると ``-1`` を返します。最後に登録した後始末処理関数から先に呼び出されます。各関数は高々一度しか呼び出されません。
+   Python の内部的な終了処理は後始末処理関数より以前に完了しているので、 *func* からはいかなる Python API も呼び出してはなりません。
+
