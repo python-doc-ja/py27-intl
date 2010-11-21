@@ -26,7 +26,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    single: exc_traceback (in module sys)
 
 エラーインジケータは  Python変数 ``sys.exc_type``, ``sys.exc_value`` および
-``sys.exc_traceback``に対応する三つのPythonオブジェクトからからなります。
+``sys.exc_traceback`` に対応する三つのPythonオブジェクトからからなります。
 いろいろな方法でエラーインジケータとやりとりするためにAPI関数が存在します。各スレッドに別々のエラーインジケータがあります。
 
 .. % XXX Order of these should be more thoughtful.
@@ -355,7 +355,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 標準例外
 ========
 
-``PyExc_``の後ろにPythonの例外名が続く名前をもつグローバル変数として、
+``PyExc_`` の後ろにPythonの例外名が続く名前をもつグローバル変数として、
 すべての標準Python例外が利用可能です。これらは型 :ctype:`PyObject\*` を
 持ち、すべてクラスオブジェクトです。完璧を期するために、すべての変数を以下に列挙します:
 
