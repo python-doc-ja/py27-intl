@@ -6,7 +6,7 @@ $(document).ready(function() {
     base += parts[parts.length-2] + '/' + parts[parts.length-1];
     $('a.headerlink').each(function() {
             var html = '<a href="' + base + $(this).attr('href') +
-                       '" class="reference internal" title="原文へのリンク">原文</a>';
+                       '" class="reference internal" title="原文へのリンク"><small>(原文)</small></a>';
             $(this).after(html);
         })
 });
