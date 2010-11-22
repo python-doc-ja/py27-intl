@@ -77,7 +77,10 @@ Pythonの個別の機能や、よく使われる機能でさえ完全にカバ�
 読み書きできるようになり、「Python ライブラリリファレンス (Python Library Reference)」
 に記述されているさまざまな Python ライブラリモジュールについて学べるようになるでしょう。
 
+:ref:`glossary` もまた役に立つはずです。
+
 .. toctree::
+   :numbered:
 
    appetite.rst
    interpreter.rst
