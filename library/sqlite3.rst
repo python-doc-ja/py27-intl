@@ -242,7 +242,7 @@ Connection オブジェクト
    .. This method rolls back any changes to the database since the last call to
       :meth:`commit`.
 
-   このメソッドは最後に行った:meth:`commit` 後の全ての変更をロールバックします。
+   このメソッドは最後に行った :meth:`commit` 後の全ての変更をロールバックします。
 
 .. method:: Connection.close()
 

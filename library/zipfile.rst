@@ -120,14 +120,14 @@ ZipFile オブジェクト
 
 .. method:: ZipFile.close()
 
-   アーカイブファイルを閉じます。:meth:`close` は プログラムを終了する前に必ず呼び出さなければなりません。
+   アーカイブファイルを閉じます。 :meth:`close` は プログラムを終了する前に必ず呼び出さなければなりません。
    さもないとアーカイブ上の重要なレコードが書き込まれません。
 
 
 .. method:: ZipFile.getinfo(name)
 
    アーカイブメンバ *name* に関する情報を持つ :class:`ZipInfo`  オブジェクトを返します。
-   アーカイブに含まれないファイル名に対して :meth:`getinfo` を呼び出すと、:exc:`KeyError` が送出されます。
+   アーカイブに含まれないファイル名に対して :meth:`getinfo` を呼び出すと、 :exc:`KeyError` が送出されます。
 
 .. method:: ZipFile.infolist()
 
@@ -226,7 +226,7 @@ ZipFile オブジェクト
 
    アーカイブ中の全てのファイルを読み、CRC チェックサムとヘッダが正常か調べます。
    最初に見つかった不正なファイルの名前を返します。 不正なファイルがなければ ``None`` を返します。
-   閉じた ZipFile に対して :meth:`testzip` メソッドを呼び出すと、:exc:`RuntimeError` が送出されます。
+   閉じた ZipFile に対して :meth:`testzip` メソッドを呼び出すと、 :exc:`RuntimeError` が送出されます。
 
 .. method:: ZipFile.write(filename[, arcname[, compress_type]])
 

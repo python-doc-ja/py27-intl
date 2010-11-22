@@ -21,7 +21,7 @@
 通常、このモジュールが直接使用されることはなく、特定の機能を持つ Web サーバを構築するために使われます。
 :mod:`SimpleHTTPServer` および :mod:`CGIHTTPServer` モジュール を参照してください。
 
-最初のクラス、:class:`HTTPServer` は :class:`SocketServer.TCPServer`
+最初のクラス, :class:`HTTPServer` は :class:`SocketServer.TCPServer`
 のサブクラスで、従って :class:`SocketServer.BaseServer` インタフェースを実装しています。
 :class:`HTTPServer` は HTTP ソケットを生成して リクエスト待ち (listen)
 を行い、リクエストをハンドラに渡します。 サーバを作成して動作させるためのコードは以下のようになります::
@@ -111,7 +111,7 @@
 
    .. attribute:: sys_version
 
-      Python 処理系のバージョンが、:attr:`version_string` メソッドや :attr:`server_version`
+      Python 処理系のバージョンが, :attr:`version_string` メソッドや :attr:`server_version`
       クラス変数で利用可能な形式で入っています。 例えば ``'Python/1.4'`` です。
 
 
@@ -177,7 +177,7 @@
 
       完全なエラー応答をクライアントに送信し、ログ記録します。 *code* は数値型で、HTTP エラーコードを指定します。
       *message* はオプションで、より詳細なメッセージテキストです。
-      完全なヘッダのセットが送信された後、:attr:`error_message_format` クラス変数を使って組み立てられたテキストが送られます。
+      完全なヘッダのセットが送信された後, :attr:`error_message_format` クラス変数を使って組み立てられたテキストが送られます。
 
 
    .. method:: send_response(code[, message])
@@ -215,7 +215,7 @@
    .. method:: log_message(format, ...)
 
       任意のメッセージを ``sys.stderr`` にログ記録します。 このメソッドは通常、カスタムのエラーログ記録機構を作成するために
-      上書きされます。 *format* 引数は標準の printf 形式の書式化 文字列で、:meth:`log_message` に渡された追加の引数は
+      上書きされます。 *format* 引数は標準の printf 形式の書式化 文字列で, :meth:`log_message` に渡された追加の引数は
       書式化の入力として適用されます。ログ記録される全てのメッセージ には、クライアントのアドレスおよび現在の日付、時刻が先頭に付けられます。
 
 

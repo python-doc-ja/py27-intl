@@ -530,13 +530,13 @@ Pythonバイトコード命令
 .. opcode:: STORE_NAME (namei)
 
    ``name = TOS`` を実行します。
-   *namei* はコードオブジェクトの属性:attr:`co_names` における *name* のインデックスです。
+   *namei* はコードオブジェクトの属性 :attr:`co_names` における *name* のインデックスです。
    コンパイラは可能ならば ``STORE_FAST`` または ``STORE_GLOBAL`` を使おうとします。
 
 
 .. opcode:: DELETE_NAME (namei)
 
-   ``del name`` を実行します。ここで、 *namei* はコードオブジェクトの:attr:`co_names` 属性へのインデックスです。
+   ``del name`` を実行します。ここで、 *namei* はコードオブジェクトの :attr:`co_names` 属性へのインデックスです。
 
 
 .. opcode:: UNPACK_SEQUENCE (count)
@@ -552,7 +552,7 @@ Pythonバイトコード命令
 
 .. opcode:: STORE_ATTR (namei)
 
-   ``TOS.name = TOS1`` を実行します。ここで、 *namei* は:attr:`co_names` における名前のインデックスです。
+   ``TOS.name = TOS1`` を実行します。ここで、 *namei* は :attr:`co_names` における名前のインデックスです。
 
 
 .. opcode:: DELETE_ATTR (namei)
@@ -642,7 +642,7 @@ Pythonバイトコード命令
 
 .. opcode:: FOR_ITER (delta)
 
-   ``TOS`` はイテレータです。その:meth:`next` メソッドを呼び出します。
+   ``TOS`` はイテレータです。その :meth:`next` メソッドを呼び出します。
    これが新しい値を作り出すならば、それを(その下にイテレータを残したまま)スタックにプッシュします。
    イテレータが尽きたことを示した場合は、 ``TOS`` がポップされます。
    そして、バイトコードカウンタが *delta* だけ増やされます。

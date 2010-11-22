@@ -201,7 +201,7 @@ FTP オブジェクト
 .. method:: FTP.storlines(command, file[, callback])
 
    ASCII転送モードでファイルを転送します。 *command* は適切な ``STOR`` コマンドでなければなりません（:meth:`st
-   orbinary`を参照）。 *file* は開かれたファイルオブジェクトで、 :meth:`readline` メソッド
+   orbinary` を参照）。 *file* は開かれたファイルオブジェクトで、 :meth:`readline` メソッド
    でEOFまで読み込まれ、各行がデータが転送されます。
    *callback* はオプションの引数で、引数を1つとる呼び出し可能オブジェクトを渡します。
    各行が送信された後に、その行数を引数にして呼び出されます。

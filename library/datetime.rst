@@ -73,28 +73,28 @@
 
    理想化された naive な日付表現で、実質的には、これまでもこれからも現
    在のグレゴリオ暦 (Gregorian calender) であると仮定しています。
-   属性: :attr:`year` 、 :attr:`month` 、および :attr:`day` 。
+   属性: :attr:`year`, :attr:`month`,および :attr:`day` 。
 
 
 .. class:: time
 
    理想化された時刻表現で、あらゆる特定の日における影響から独立してお
    り、毎日厳密に 24\*60\*60 秒であると仮定します ("うるう秒: leap
-   seconds" の概念はありません)。 属性: :attr:`hour` 、 :attr:`minute`
-   、 :attr:`second` 、 :attr:`microsecond` 、 および :attr:`tzinfo`
+   seconds" の概念はありません)。 属性: :attr:`hour`, :attr:`minute`
+  , :attr:`second`, :attr:`microsecond`, および :attr:`tzinfo`
    。
 
 
 .. class:: datetime
 
-   日付と時刻を組み合わせたもの。属性: :attr:`year` 、 :attr:`month`
-   、 :attr:`day` 、 :attr:`hour` 、 :attr:`minute` 、 :attr:`second`
-   、 :attr:`microsecond` 、および :attr:`tzinfo` 。
+   日付と時刻を組み合わせたもの。属性: :attr:`year`, :attr:`month`
+  , :attr:`day`, :attr:`hour`, :attr:`minute`, :attr:`second`
+  , :attr:`microsecond`,および :attr:`tzinfo` 。
 
 
 .. class:: timedelta
 
-   :class:`date` 、 :class:`time` 、あるいは :class:`datetime` クラス
+   :class:`date`, :class:`time`,あるいは :class:`datetime` クラス
    の二つのインスタンス間の時間差をマイクロ秒精度で表す経過時間値です。
 
 
@@ -141,7 +141,7 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
    全ての引数がオプションで、デフォルト値は *0* です。引数は整数、長整
    数、浮動小数点数にすることができ、正でも負でもかまいません。
 
-   *days* 、 *seconds* および *microseconds* のみが内部に記憶されます。
+   *days*, *seconds* および *microseconds* のみが内部に記憶されます。
     引数は以下のようにして変換されます:
 
    * 1 ミリ秒は 1000 マイクロ秒に変換されます。
@@ -236,7 +236,7 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 |                                | -*t1.seconds*, -*t1.microseconds*)、および *t1*\*               |
 |                                | -1 と同じです。 (1)(4)                                          |
 +--------------------------------+-----------------------------------------------------------------+
-| ``abs(t)``                     | ``t.days >= 0`` のときには +*t* 、``t.days < 0`` の             |
+| ``abs(t)``                     | ``t.days >= 0`` のときには +*t*,``t.days < 0`` の               |
 |                                | ときには -*t* となります。(2)                                   |
 +--------------------------------+-----------------------------------------------------------------+
 
@@ -299,8 +299,8 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 
 :class:`date` オブジェクトは日付 (年、月、および日) を表します。日付は
 理想的なカレンダー、すなわち現在のグレゴリオ暦を過去と未来の両方向に無
-限に延長したもので表されます。 1 年の 1 月 1 日は日番号 1 、 1 年 1 月
-2 日は日番号 2 、となっていきます。この暦法は、全ての計算における基本
+限に延長したもので表されます。 1 年の 1 月 1 日は日番号 1, 1 年 1 月
+2 日は日番号 2,となっていきます。この暦法は、全ての計算における基本
 カレンダーである、 Dershowitz と Reingold の書籍 Calendrical
 Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の定義
 に一致します。
@@ -473,9 +473,9 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 .. method:: date.isoweekday()
 
-   月曜日を 1 、日曜日を 7 として、曜日を整数で返します。 例えば、
+   月曜日を 1,日曜日を 7 として、曜日を整数で返します。 例えば、
    ``date(2002, 12, 4).weekday() == 3`` であり、水曜日を示します。
-   :meth:`weekday` 、:meth:`isocalendar` も参照してください。
+   :meth:`weekday`, :meth:`isocalendar` も参照してください。
 
 
 .. method:: date.isocalendar()
@@ -588,7 +588,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 :class:`time` オブジェクトの全ての情報が入っている単一のオブジェクトで
 す。 :class:`date` オブジェクトと同様に、 :class:`datetime` は現在のグ
 レゴリオ暦が両方向に延長されているものと仮定します; また、
-:class:`time` オブジェクトと同様に、:class:`datetime` は毎日が厳密に
+:class:`time` オブジェクトと同様に, :class:`datetime` は毎日が厳密に
 3600\*24 秒であると仮定します。
 
 以下にコンストラクタを示します:
@@ -617,7 +617,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    現在のローカルな :class:`datetime` を :attr:`tzinfo` が ``None`` で
    あるものとして返します。 これは
-   ``datetime.fromtimestamp(time.time())`` と等価です。 :meth:`now` 、
+   ``datetime.fromtimestamp(time.time())`` と等価です。 :meth:`now`,
    :meth:`fromtimestamp` も参照してください。
 
 
@@ -846,7 +846,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
       出されます。しかしながら、被比較演算子のもう一方が
       :meth:`timetuple` 属性を持つ場合には ``NotImplemented`` が返され
       ます。このフックにより、他種の日付オブジェクトに型混合比較を実装
-      するチャンスを与えています。そうでない場合、:class:`datetime` オ
+      するチャンスを与えています。そうでない場合, :class:`datetime` オ
       ブジェクトと異なる型のオブジェクトが比較されると、比較演算子が
       ``==`` または ``!=`` でないかぎり :exc:`TypeError` が送出されま
       す。後者の場合、それぞれ :const:`False` または :const:`True` を
@@ -919,7 +919,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    ``dt.replace(tzinfo=None)`` を使ってください。
 
    デフォルトの :meth:`tzinfo.fromutc` メソッドを :class:`tzinfo`
-   のサブクラスで上書きして、:meth:`astimezone` が返す結果に 影響を及
+   のサブクラスで上書きして, :meth:`astimezone` が返す結果に 影響を及
    ぼすことができます。エラーの場合を無視すると、
    :meth:`astimezone` は以下のように動作します::
 
@@ -960,7 +960,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    d.weekday(), d.toordinal() - date(d.year, 1, 1).toordinal() + 1, dst))`` と等価です。
    返されるタプルの :attr:`tm_isdst` フラグは :meth:`dst` メソッドに 従って設定されます:  :attr:`tzinfo` が
    ``None`` か :meth:`dst` が ``None`` を返す場合、 :attr:`tm_isdst` は ``-1`` に設定されます;
-   そうでない場合、 :meth:`dst` がゼロでない値を返すと、:attr:`tm_isdst` は ``1`` となります; それ以外の場合には
+   そうでない場合、 :meth:`dst` がゼロでない値を返すと, :attr:`tm_isdst` は ``1`` となります; それ以外の場合には
    ``tm_isdst`` は``0`` に設定 されます。
 
 
@@ -971,7 +971,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    時刻に影響を及ぼすことは決してありません。
 
    *d* が aware の場合、*d* から ``d.utcoffset()`` が差し 引かれて UTC 時刻に正規化され、正規化された時刻の
-   :class:`time.struct_time` を返します。:attr:`tm_isdst` は 0 に強制されます。 *d*.year が
+   :class:`time.struct_time` を返します。 :attr:`tm_isdst` は 0 に強制されます。 *d*.year が
    ``MINYEAR`` や ``MAXUEAR`` で、UTC への修正の結果 表現可能な年の境界を越えた場合には、戻り値の :attr:`tm_year`
    メンバは :const:`MINYEAR`\ -1 または :const:`MAXYEAR`\ +1 になることがあります。
 
@@ -1143,7 +1143,7 @@ datetime を tzinfo と組み合わせて使う:
 :class:`time` オブジェクト
 --------------------------
 
-:class:`time` オブジェクトは (ローカルの) 日中時刻を表現します。 この時刻表現は特定の日の影響を受けず、:class:`tzinfo`
+:class:`time` オブジェクトは (ローカルの) 日中時刻を表現します。 この時刻表現は特定の日の影響を受けず, :class:`tzinfo`
 オブジェクト を介した修正の対象となります。
 
 
@@ -1177,7 +1177,7 @@ datetime を tzinfo と組み合わせて使う:
 .. attribute:: time.resolution
 
    等しくない :class:`datetime` オブジェクト間の最小の差で、  ``timedelta(microseconds=1)``
-   ですが、:class:`time` オブジェクト間の四則演算はサポートされて いないので注意してください。
+   ですが, :class:`time` オブジェクト間の四則演算はサポートされて いないので注意してください。
 
 以下に (読み出し専用の) インスタンス属性を示します:
 
@@ -1214,7 +1214,7 @@ datetime を tzinfo と組み合わせて使う:
   が送出されます。両方の被演算子が aware で、 同じ :attr:`tzinfo` メンバを持つ場合、共通の :attr:`tzinfo`
   メンバは無視され、基本の datetime 間の比較が行われます。 両方の被演算子が aware で異なる :attr:`tzinfo` メンバを持つ
   場合、被演算子はまず (``self.utcoffset()`` で得られる) UTC  オフセット で修正されます。
-  型混合の比較がデフォルトのオブジェクトアドレス比較となってしまう のを抑止するために、:class:`time` オブジェクトが他の型のオブジェクトと
+  型混合の比較がデフォルトのオブジェクトアドレス比較となってしまう のを抑止するために, :class:`time` オブジェクトが他の型のオブジェクトと
   比較された場合、比較演算子が ``==`` または ``!=`` でないかぎり :exc:`TypeError` が送出されます。 後者の場合、それぞれ
   :const:`False` または :const:`True` を返します。
 
@@ -1222,7 +1222,7 @@ datetime を tzinfo と組み合わせて使う:
 
 * 効率的な pickle 化
 
-* ブール演算コンテキストでは、:class:`time` オブジェクトは、 分に変換し、:meth:`utfoffset` (``None``
+* ブール演算コンテキストでは, :class:`time` オブジェクトは、 分に変換し, :meth:`utfoffset` (``None``
   を返した場合には ``0``) を差し引いて変換した後の結果がゼロでない場合、かつその ときに限って真とみなされます。
 
 以下にインスタンスメソッドを示します:
@@ -1365,7 +1365,7 @@ pickle 化についての特殊な要求事項: :class:`tzinfo` のサブクラ�
    夏時間 (DST) 修正を、 UTC から東向きを正とした分で返します。 DST 情
    報が未知の場合、 ``None`` が返されます。 DST が有効でない場合には
    ``timedelta(0)`` を返します。 DST が有効の場合、オフセットは
-   :class:`timedelta` オブジェクトで返します (詳細は:meth:`utcoffset`
+   :class:`timedelta` オブジェクトで返します (詳細は :meth:`utcoffset`
    を参照してください)。 DST オフセットが利用可能な場合、この値は
    :meth:`utcoffset` が返す UTC からのオフセットには既に加算されている
    ため、 DST を個別に取得する必要がない限り :meth:`dst` を使って問い
@@ -1420,10 +1420,10 @@ pickle 化についての特殊な要求事項: :class:`tzinfo` のサブクラ�
    :class:`datetime` オブジェクト *dt* に対応するタイムゾーン名を文字
    列で返します。 :mod:`datetime` モジュールでは文字列名について何も定
    義しておらず、特に何かを意味するといった要求仕様もまったくありませ
-   ん。例えば、 "GMT" 、"UTC" 、 "-500" 、 "-5:00" 、 "EDT" 、
-   "US/Eastern" 、 "America/New York" は全て有効な応答となります。文字
+   ん。例えば、 "GMT","UTC", "-500", "-5:00", "EDT",
+   "US/Eastern", "America/New York" は全て有効な応答となります。文字
    列名が未知の場合には ``None`` を返してください。 :class:`tzinfo` の
-   サブクラスでは、特に、:class:`tzinfo` クラスが夏時間について記述し
+   サブクラスでは、特に, :class:`tzinfo` クラスが夏時間について記述し
    ている場合のように、渡された *dt* の特定の値によって異なった名前を
    返したい場合があるため、文字列値ではなくメソッドとなっていることに
    注意してください。
@@ -1545,7 +1545,7 @@ UTC や、他のオフセットが固定された :class:`tzinfo` のサブク�
 :meth:`strftime` の振る舞い
 ---------------------------
 
-:class:`date` 、 :class:`datetime` 、および :class:`time` オブジェクト
+:class:`date`, :class:`datetime`,および :class:`time` オブジェクト
 は全て、明示的な書式化文字列でコントロールして時刻表現文字列を生成する
 ための ``strftime(format)`` メソッドをサポートしています。大雑把にいう
 と、 ``d.strftime(fmt)`` は :mod:`time` モジュールの
