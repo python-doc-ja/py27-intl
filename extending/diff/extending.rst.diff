@@ -196,10 +196,10 @@
  When embedding Python, the :cfunc:`initspam` function is not called
  automatically unless there's an entry in the :cdata:`_PyImport_Inittab` table.
 -The easiest way to handle this is to  statically initialize your statically-
--linked modules by directly calling :cfunc:`initspam` after the call to
--:cfunc:`Py_Initialize`::
 +The easiest way to handle this is to statically initialize your
+-linked modules by directly calling :cfunc:`initspam` after the call to
 +statically-linked modules by directly calling :cfunc:`initspam` after the call
+-:cfunc:`Py_Initialize`::
 +to :cfunc:`Py_Initialize`::
  
     int
