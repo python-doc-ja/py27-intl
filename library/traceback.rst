@@ -31,8 +31,8 @@
 
 .. function:: print_exc([limit[, file]])
 
-   これは``print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, limit,
-   file)``のための省略表現です。(非推奨の変数を使う代わりにスレッドセーフな方法で同じ情報を引き出すために、実際には :func:`sys.exc_info` を使います。)
+   これは ``print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, limit, file)``
+   のための省略表現です。(非推奨の変数を使う代わりにスレッドセーフな方法で同じ情報を引き出すために、実際には :func:`sys.exc_info` を使います。)
 
 
 .. function:: format_exc([limit])
@@ -44,20 +44,25 @@
 
 .. function:: print_last([limit[, file]])
 
-   これは``print_exception(sys.last_type, sys.last_value, sys.last_traceback, limit,
-   file)``の省略表現です。
+   これは ``print_exception(sys.last_type, sys.last_value, sys.last_traceback, limit, file)``
+   の省略表現です。
 
 
 .. function:: print_stack([f[, limit[, file]]])
 
-   この関数は呼び出された時点からのスタックトレースを出力します。オプションの *f* 引数は代わりの最初のスタックフレームを指定するために使えます。 :func:`print_exception` に付いて言えば、オプションの *limit* と *file* 引数は同じ意味を持ちます。
+   この関数は呼び出された時点からのスタックトレースを出力します。
+   オプションの *f* 引数は代わりの最初のスタックフレームを指定するために使えます。
+   :func:`print_exception` に付いて言えば、オプションの *limit* と *file* 引数は同じ意味を持ちます。
 
 
 .. function:: extract_tb(traceback[, limit])
 
-   トレースバックオブジェクト *traceback* から *limit* まで取り出された"前処理済み"スタックトレース項目のリストを返します。スタックトレースの代わりの書式設定を行うために役に立ちます。 *limit* が省略されるか ``None`` の場合は、すべての項目が取り出されます。"前処理済み"スタックトレース項目とは四つの部分からなる(*filename*,
+   トレースバックオブジェクト *traceback* から *limit* まで取り出された"前処理済み"スタックトレース項目のリストを返します。
+   スタックトレースの代わりの書式設定を行うために役に立ちます。
+   *limit* が省略されるか ``None`` の場合は、すべての項目が取り出されます。"前処理済み"スタックトレース項目とは四つの部分からなる(*filename*,
    *line number*, *function name*,
-   *text*)で、スタックトレースに対して通常出力される情報を表しています。 *text* は前と後ろに付いている空白を取り除いた文字列です。ソースが使えない場合は ``None`` です。
+   *text*)で、スタックトレースに対して通常出力される情報を表しています。
+   *text* は前と後ろに付いている空白を取り除いた文字列です。ソースが使えない場合は ``None`` です。
 
 
 .. function:: extract_stack([f[, limit]])

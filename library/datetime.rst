@@ -235,7 +235,7 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 |                                | -*t1.seconds*, -*t1.microseconds*)、および *t1*\*               |
 |                                | -1 と同じです。 (1)(4)                                          |
 +--------------------------------+-----------------------------------------------------------------+
-| ``abs(t)``                     | ``t.days >= 0`` のときには +*t*,``t.days < 0`` の               |
+| ``abs(t)``                     | ``t.days >= 0`` のときには +*t*, ``t.days < 0`` の              |
 |                                | ときには -*t* となります。(2)                                   |
 +--------------------------------+-----------------------------------------------------------------+
 
@@ -933,21 +933,21 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 .. method:: datetime.utcoffset()
 
-   :attr:`tzinfo` が ``None`` の場合、``None`` を返し、 そうでない場合には
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には
    ``self.tzinfo.utcoffset(self)`` を返します。後者の式が ``None`` か、1 日以下の大きさを持つ 経過時間を表す
    :class:`timedelta` オブジェクトのいずれかを返さない 場合には例外を送出します。
 
 
 .. method:: datetime.dst()
 
-   :attr:`tzinfo` が ``None`` の場合、``None`` を返し、 そうでない場合には ``self.tzinfo.dst(self)``
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には ``self.tzinfo.dst(self)``
    を返します。後者の式が ``None`` か、1 日以下の大きさを持つ 経過時間を表す :class:`timedelta` オブジェクトのいずれかを返さない
    場合には例外を送出します。
 
 
 .. method:: datetime.tzname()
 
-   :attr:`tzinfo` が ``None`` の場合、``None`` を返し、 そうでない場合には
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には
    ``self.tzinfo.tzname(self)`` を返します。後者の式が ``None`` か文字列オブジェクトのいずれか
    を返さない場合には例外を送出します。
 
@@ -966,7 +966,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.utctimetuple()
 
    :class:`datetime` インスタンス *d* が naive の場合、このメソッドは ``d.timetuple()``
-   と同じであり、``d.dst()`` の返す内容に かかわらず :attr:`tm_isdst` が 0 に強制される点だけが異なります。 DST が UTC
+   と同じであり、 ``d.dst()`` の返す内容に かかわらず :attr:`tm_isdst` が 0 に強制される点だけが異なります。 DST が UTC
    時刻に影響を及ぼすことは決してありません。
 
    *d* が aware の場合、*d* から ``d.utcoffset()`` が差し 引かれて UTC 時刻に正規化され、正規化された時刻の
