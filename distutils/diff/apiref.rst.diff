@@ -16,144 +16,144 @@
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
 -   | argument name      | value                          | type                                                             |
 -   +====================+================================+==================================================================+
++   +--------------------+--------------------------------+-------------------------------------------------------------+
++   | argument name      | value                          | type                                                        |
++   +====================+================================+=============================================================+
 -   | *name*             | The name of the package        | a string                                                         |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *name*             | The name of the package        | a string                                                    |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *version*          | The version number of the      | See :mod:`distutils.version`                                     |
 -   |                    | package                        |                                                                  |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *version*          | The version number of the      | See :mod:`distutils.version`                                |
++   |                    | package                        |                                                             |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *description*      | A single line describing the   | a string                                                         |
 -   |                    | package                        |                                                                  |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *description*      | A single line describing the   | a string                                                    |
++   |                    | package                        |                                                             |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *long_description* | Longer description of the      | a string                                                         |
 -   |                    | package                        |                                                                  |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *long_description* | Longer description of the      | a string                                                    |
++   |                    | package                        |                                                             |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *author*           | The name of the package author | a string                                                         |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *author*           | The name of the package author | a string                                                    |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *author_email*     | The email address of the       | a string                                                         |
 -   |                    | package author                 |                                                                  |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
++   | *author_email*     | The email address of the       | a string                                                    |
++   |                    | package author                 |                                                             |
++   +--------------------+--------------------------------+-------------------------------------------------------------+
 -   | *maintainer*       | The name of the current        | a string                                                         |
 -   |                    | maintainer, if different from  |                                                                  |
 -   |                    | the author                     |                                                                  |
 -   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *maintainer_email* | The email address of the       |                                                                  |
--   |                    | current maintainer, if         |                                                                  |
--   |                    | different from the author      |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *url*              | A URL for the package          | a URL                                                            |
--   |                    | (homepage)                     |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *download_url*     | A URL to download the package  | a URL                                                            |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *packages*         | A list of Python packages that | a list of strings                                                |
--   |                    | distutils will manipulate      |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *py_modules*       | A list of Python modules that  | a list of strings                                                |
--   |                    | distutils will manipulate      |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *scripts*          | A list of standalone script    | a list of strings                                                |
--   |                    | files to be built and          |                                                                  |
--   |                    | installed                      |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *ext_modules*      | A list of Python extensions to | A list of  instances of                                          |
--   |                    | be built                       | :class:`distutils.core.Extension`                                |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *classifiers*      | A list of categories for the   | The list of available                                            |
--   |                    | package                        | categorizations is at                                            |
--   |                    |                                | `<http://cheeseshop.python.org/pypi?:action=list_classifiers>`_. |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *distclass*        | the :class:`Distribution`      | A subclass of                                                    |
--   |                    | class to use                   | :class:`distutils.core.Distribution`                             |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *script_name*      | The name of the setup.py       | a string                                                         |
--   |                    | script - defaults to           |                                                                  |
--   |                    | ``sys.argv[0]``                |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *script_args*      | Arguments to supply to the     | a list of strings                                                |
--   |                    | setup script                   |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *options*          | default options for the setup  | a string                                                         |
--   |                    | script                         |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *license*          | The license for the package    |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *keywords*         | Descriptive meta-data. See     |                                                                  |
--   |                    | :pep:`314`                     |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *platforms*        |                                |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
--   | *cmdclass*         | A mapping of command names to  | a dictionary                                                     |
--   |                    | :class:`Command` subclasses    |                                                                  |
--   +--------------------+--------------------------------+------------------------------------------------------------------+
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | argument name      | value                          | type                                                        |
-+   +====================+================================+=============================================================+
-+   | *name*             | The name of the package        | a string                                                    |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | *version*          | The version number of the      | See :mod:`distutils.version`                                |
-+   |                    | package                        |                                                             |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | *description*      | A single line describing the   | a string                                                    |
-+   |                    | package                        |                                                             |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | *long_description* | Longer description of the      | a string                                                    |
-+   |                    | package                        |                                                             |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | *author*           | The name of the package author | a string                                                    |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
-+   | *author_email*     | The email address of the       | a string                                                    |
-+   |                    | package author                 |                                                             |
-+   +--------------------+--------------------------------+-------------------------------------------------------------+
 +   | *maintainer*       | The name of the current        | a string                                                    |
 +   |                    | maintainer, if different from  |                                                             |
 +   |                    | the author                     |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *maintainer_email* | The email address of the       |                                                                  |
+-   |                    | current maintainer, if         |                                                                  |
+-   |                    | different from the author      |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *maintainer_email* | The email address of the       |                                                             |
 +   |                    | current maintainer, if         |                                                             |
 +   |                    | different from the author      |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *url*              | A URL for the package          | a URL                                                            |
+-   |                    | (homepage)                     |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *url*              | A URL for the package          | a URL                                                       |
 +   |                    | (homepage)                     |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *download_url*     | A URL to download the package  | a URL                                                            |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *download_url*     | A URL to download the package  | a URL                                                       |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *packages*         | A list of Python packages that | a list of strings                                                |
+-   |                    | distutils will manipulate      |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *packages*         | A list of Python packages that | a list of strings                                           |
 +   |                    | distutils will manipulate      |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *py_modules*       | A list of Python modules that  | a list of strings                                                |
+-   |                    | distutils will manipulate      |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *py_modules*       | A list of Python modules that  | a list of strings                                           |
 +   |                    | distutils will manipulate      |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *scripts*          | A list of standalone script    | a list of strings                                                |
+-   |                    | files to be built and          |                                                                  |
+-   |                    | installed                      |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *scripts*          | A list of standalone script    | a list of strings                                           |
 +   |                    | files to be built and          |                                                             |
 +   |                    | installed                      |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *ext_modules*      | A list of Python extensions to | A list of  instances of                                          |
+-   |                    | be built                       | :class:`distutils.core.Extension`                                |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *ext_modules*      | A list of Python extensions to | A list of  instances of                                     |
 +   |                    | be built                       | :class:`distutils.core.Extension`                           |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *classifiers*      | A list of categories for the   | The list of available                                            |
+-   |                    | package                        | categorizations is at                                            |
+-   |                    |                                | `<http://cheeseshop.python.org/pypi?:action=list_classifiers>`_. |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *classifiers*      | A list of categories for the   | The list of available                                       |
 +   |                    | package                        | categorizations is at                                       |
 +   |                    |                                | http://pypi.python.org/pypi?:action=list_classifiers.       |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *distclass*        | the :class:`Distribution`      | A subclass of                                                    |
+-   |                    | class to use                   | :class:`distutils.core.Distribution`                             |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *distclass*        | the :class:`Distribution`      | A subclass of                                               |
 +   |                    | class to use                   | :class:`distutils.core.Distribution`                        |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *script_name*      | The name of the setup.py       | a string                                                         |
+-   |                    | script - defaults to           |                                                                  |
+-   |                    | ``sys.argv[0]``                |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *script_name*      | The name of the setup.py       | a string                                                    |
 +   |                    | script - defaults to           |                                                             |
 +   |                    | ``sys.argv[0]``                |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *script_args*      | Arguments to supply to the     | a list of strings                                                |
+-   |                    | setup script                   |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *script_args*      | Arguments to supply to the     | a list of strings                                           |
 +   |                    | setup script                   |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *options*          | default options for the setup  | a string                                                         |
+-   |                    | script                         |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *options*          | default options for the setup  | a string                                                    |
 +   |                    | script                         |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *license*          | The license for the package    |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *license*          | The license for the package    | a string                                                    |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *keywords*         | Descriptive meta-data. See     |                                                                  |
+-   |                    | :pep:`314`                     |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *keywords*         | Descriptive meta-data, see     |                                                             |
 +   |                    | :pep:`314`                     |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *platforms*        |                                |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *platforms*        |                                |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
+-   | *cmdclass*         | A mapping of command names to  | a dictionary                                                     |
+-   |                    | :class:`Command` subclasses    |                                                                  |
+-   +--------------------+--------------------------------+------------------------------------------------------------------+
 +   | *cmdclass*         | A mapping of command names to  | a dictionary                                                |
 +   |                    | :class:`Command` subclasses    |                                                             |
 +   +--------------------+--------------------------------+-------------------------------------------------------------+
@@ -745,14 +745,14 @@
     with the same name; otherwise, it must be a filename. (If the file exists, it
     will be ruthlessly clobbered.) If *preserve_mode* is true (the default), the
 -   file's mode (type and permission bits, or whatever is analogous on the current
--   platform) is copied. If *preserve_times* is true (the default), the last-
--   modified and last-access times are copied as well. If *update* is true, *src*
--   will only be copied if *dst* does not exist, or if *dst* does exist but is older
--   than *src*.
 +   file's mode (type and permission bits, or whatever is analogous on the
+-   platform) is copied. If *preserve_times* is true (the default), the last-
 +   current platform) is copied. If *preserve_times* is true (the default), the
+-   modified and last-access times are copied as well. If *update* is true, *src*
 +   last-modified and last-access times are copied as well. If *update* is true,
+-   will only be copied if *dst* does not exist, or if *dst* does exist but is older
 +   *src* will only be copied if *dst* does not exist, or if *dst* does exist but
+-   than *src*.
 +   is older than *src*.
  
     *link* allows you to make hard links (using :func:`os.link`) or symbolic links
@@ -813,31 +813,31 @@
     Examples of returned values:
  
 -* ``linux-i586``
+-* ``linux-alpha``
+-* ``solaris-2.6-sun4u``
+-* ``irix-5.3``
+-* ``irix64-6.2``
 +   * ``linux-i586``
 +   * ``linux-alpha``
 +   * ``solaris-2.6-sun4u``
 +   * ``irix-5.3``
 +   * ``irix64-6.2``
  
--* ``linux-alpha``
+-   For non-POSIX platforms, currently just returns ``sys.platform``.
 +   For non-POSIX platforms, currently just returns ``sys.platform``.
  
--* ``solaris-2.6-sun4u``
 +   For Mac OS X systems the OS version reflects the minimal version on which
 +   binaries will run (that is, the value of ``MACOSX_DEPLOYMENT_TARGET``
 +   during the build of Python), not the OS version of the current system.
  
--* ``irix-5.3``
 +   For universal binary builds on Mac OS X the architecture value reflects
 +   the univeral binary status instead of the architecture of the current
 +   processor. For 32-bit universal binaries the architecture is ``fat``,
 +   for 64-bit universal binaries the architecture is ``fat64``, and
 +   for 4-way universal binaries the architecture is ``universal``.
  
--* ``irix64-6.2``
 +   Examples of returned values on Mac OS X:
  
--   For non-POSIX platforms, currently just returns ``sys.platform``.
 +   * ``macosx-10.3-ppc``
 +
 +   * ``macosx-10.3-fat``
@@ -1306,16 +1306,16 @@
 +.. method:: Command.finalize_options()
  
 -   Set final values for all the options that this command supports. This is always
--   called as late as possible, ie.  after any option assignments from the command-
--   line or from other commands have been done.  Thus, this is the place to to code
--   option dependencies: if *foo* depends on *bar*, then it is safe to set *foo*
--   from  *bar* as long as *foo* still has the same value it was assigned in
--   :meth:`initialize_options`.
 +   Set final values for all the options that this command supports. This is
+-   called as late as possible, ie.  after any option assignments from the command-
 +   always called as late as possible, ie.  after any option assignments from the
+-   line or from other commands have been done.  Thus, this is the place to to code
 +   command-line or from other commands have been done.  Thus, this is the place
+-   option dependencies: if *foo* depends on *bar*, then it is safe to set *foo*
 +   to to code option dependencies: if *foo* depends on *bar*, then it is safe to
+-   from  *bar* as long as *foo* still has the same value it was assigned in
 +   set *foo* from *bar* as long as *foo* still has the same value it was
+-   :meth:`initialize_options`.
 +   assigned in :meth:`initialize_options`.
  
  
