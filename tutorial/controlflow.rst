@@ -164,7 +164,7 @@ Python の :keyword:`for` 文は、読者が C 言語や Pascal 言語 で使い
 :keyword:`pass` 文
 ==================
 
-:keyword:`pass` 文は何もしません。:keyword:`pass` は、文を書くことが
+:keyword:`pass` 文は何もしません。 :keyword:`pass` は、文を書くことが
 構文上要求されているが、プログラム上何の動作もする必要がない時に使われます。
 
 
