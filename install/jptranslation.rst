@@ -27,3 +27,7 @@ Yasushi Masuda <y.masuda@acm.org>  (April 2, 2004)
 
 Kazuo Moriwaka
 
+2.6 差分翻訳者一覧 (敬称略)
+===========================
+
+INADA Naoki
