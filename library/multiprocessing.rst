@@ -628,7 +628,7 @@
       未終了タスク数がゼロになると :meth:`~Queue.join` はブロッキングを解除します。
 
 その他の関数(Miscellaneous)
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. function:: active_children()
 
