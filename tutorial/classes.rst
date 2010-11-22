@@ -247,7 +247,7 @@ Python プログラマにとって 有用です。
 .. % % rely on dynamic name resolution!  (In fact, local variables are
 .. % % already determined statically.)
 
-Python 特有の癖として、代入を行うと名前がいつも最も内側のスコープに 入るというものがあります。代入はデータのコピーを行いません ---
+Python 特有の癖として、代入を行うと -- どの :keyword:`global` 文も有効でない場合は -- 名前がいつも最も内側のスコープに 入るというものがあります。代入はデータのコピーを行いません ---
 単に名前をオブジェクトに結びつける (bind) だけです。オブジェクトの削除 でも同じです: ``del x`` は、``x``
 をローカルスコープが参照している 名前空間から削除します。実際、新たな名前を導入する操作は全てローカル スコープを用います: とりわけ、 import
 文や関数定義は、モジュールや 関数の名前をローカルスコープに結び付けます。(:keyword:`global` 文を使えば、
@@ -358,7 +358,7 @@ Python 特有の癖として、代入を行うと名前がいつも最も内側�
 ::
 
    class MyClass:
-       "A simple example class"
+       """A simple example class"""
        i = 12345
        def f(self):
            return 'hello world'
@@ -431,7 +431,7 @@ Python 特有の癖として、代入を行うと名前がいつも最も内側�
    ...     def __init__(self, realpart, imagpart):
    ...         self.r = realpart
    ...         self.i = imagpart
-   ... 
+   ...
    >>> x = Complex(3.0, -4.5)
    >>> x.r, x.i
    (3.0, -4.5)
@@ -586,7 +586,7 @@ append, insert, remove, sort などといった メソッドがあります。�
 
 .. % Random Remarks
 .. % % [These should perhaps be placed more carefully...]
-.. % [これらはおそらくもっと注意深く配置すべきだろう…]
+.. これらはおそらくもっと注意深く配置すべきだろう…
 
 データ属性は同じ名前のメソッド属性を上書きしてしまいます; 大規模なプログラムでみつけにくいバグを引き起こすことがある
 この偶然的な名前の衝突を避けるには、衝突の可能性を最小限にするような 規約を使うのが賢明です。
@@ -712,6 +712,8 @@ import された関数やモジュールや、 その中で定義された関数
 .. % % this global scope, and in the next section we'll find some good
 .. % % reasons why a method would want to reference its own class!
 
+個々の値はオブジェクトなので、 *クラス* (*型* とも言います) を持っています。
+それは ``object.__class__`` に保持されています。
 
 .. _tut-inheritance:
 
@@ -736,7 +738,7 @@ import された関数やモジュールや、 その中で定義された関数
        <文-N>
 
 基底クラス (base class) の名前 :class:`BaseClassName` は、
-派生クラス定義の入っているスコープで定義されていなければなりません。 基底クラス名のかわりに任意の式を入れることもできます。 これは以下のように、
+導出クラス定義の入っているスコープで定義されていなければなりません。 基底クラス名のかわりに任意の式を入れることもできます。 これは以下のように、
 
 .. % % The name \class{BaseClassName} must be defined in a scope containing
 .. % % the derived class definition.  In place of a base class name, other
@@ -773,7 +775,7 @@ import された関数やモジュールや、 その中で定義された関数
 導出クラスは基底クラスのメソッドを上書き (override) してもかまいません。 メソッドは同じオブジェクトの別のメソッドを呼び出す際に何ら特殊な権限を
 持ちません。このため、ある基底クラスのメソッドが、同じ基底クラスで 定義されているもう一つのメソッド呼び出しを行っている場合、
 導出クラスで上書きされた何らかのメソッドが呼び出されることになる かもしれません。 (C++ プログラマへ:  Python では、すべてのメソッドは 事実上
-:keyword:`virtual` です。)
+``virtual`` です。)
 
 .. % % Derived classes may override methods of their base classes.  Because
 .. % % methods have no special privileges when calling other methods of the
@@ -794,6 +796,11 @@ import された関数やモジュールや、 その中で定義された関数
 .. % % occasionally useful to clients as well.  (Note that this only works if
 .. % % the base class is defined or imported directly in the global scope.)
 
+Python には継承に関係する 2 つの組み込み関数があります:
+
+* :func:`isinstance` を使うとオブジェクトの型が調べられます: ``isinstance(obj, int)`` は ``obj.__class__`` が :class:`int` や :class:`int` の導出クラスの場合に限り ``True`` になります。
+
+* :func:`issubclass` を使うとクラスの継承関係が調べられます: :class:`bool` は :class:`int` のサブクラスなので ``issubclass(bool, int)`` は ``True`` です。しかし、 :class:`unicode` は :class:`str` のサブクラスではない (単に共通の祖先 :class:`basestring` を共有している) ので ``issubclass(unicode, str)`` は ``False`` です。
 
 .. _tut-multiple:
 
@@ -816,8 +823,8 @@ Python では、限られた形式の多重継承 (multiple inheritance) も サ
        .
        <文-N>
 
-多重継承への意味付けを説明する上で必要な唯一の規則は、クラス属性の 参照を行うときに用いられる名前解決の規則 (resolution rule) です。
-解決規則は深さ優先 (depth-first)、左から右へ (left-to-right) と なっています。従って、ある属性が
+旧形式のクラスでは、
+解決規則は深さ優先 (depth-first)、左から右へ (left-to-right) だけです。従って、ある属性が
 :class:`DerivedClassName` で 見つからなければ :class:`Base1` で検索され、次に :class:`Base1` の
 基底クラスで (再帰的に) 検索されます。それでも見つからなければ はじめて :class:`Base2` で検索される、といった具合です。
 
@@ -843,10 +850,10 @@ Python では、限られた形式の多重継承 (multiple inheritance) も サ
 .. % % rule makes no differences between direct and inherited attributes of
 .. % % \class{Base1}.)
 
-Python では偶然的な名前の衝突を慣習に頼って回避しているので、 見境なく多重継承の使用すると、メンテナンスの悪夢に陥ることは明らかです。
-多重継承に関するよく知られた問題は、二つのクラスから導出された クラスがたまたま共通の基底クラスを持つ場合です。
-この場合になにが起こるかを結論することは簡単です (インスタンスは 共通の基底クラスで使われている "インスタンス変数" の単一の コピーを持つことになります)
-が、この意味付けが何の役に立つのかは 明らかではありません。
+.. % Python では偶然的な名前の衝突を慣習に頼って回避しているので、 見境なく多重継承の使用すると、メンテナンスの悪夢に陥ることは明らかです。
+.. % 多重継承に関するよく知られた問題は、二つのクラスから導出された クラスがたまたま共通の基底クラスを持つ場合です。
+.. % この場合になにが起こるかを結論することは簡単です (インスタンスは 共通の基底クラスで使われている "インスタンス変数" の単一の コピーを持つことになります)
+.. % が、この意味付けが何の役に立つのかは 明らかではありません。
 
 .. % % It is clear that indiscriminate use of multiple inheritance is a
 .. % % maintenance nightmare, given the reliance in Python on conventions to
@@ -858,6 +865,17 @@ Python では偶然的な名前の衝突を慣習に頼って回避している�
 .. % % not clear that these semantics are in any way useful.
 
 .. % % XXX Add rules for new-style MRO?
+
+.. glossary
+
+:term:`new-style class` では、 :func:`super` が適切に呼び出せるようにするためにメソッドの解決順序は動的に変わります。
+このアプローチは他の多重継承のある言語で call-next-method として知られており、単一継承しかない言語の super 呼び出しよりも強力です。
+
+新形式のクラスについて、多重継承の全ての場合に 1 つかそれ以上のダイヤモンド継承 (少なくとも 1 つの祖先クラスに対し最も下のクラスから到達する経路が複数ある状態) があるので動的順序付けが必要です。
+例えば、全ての新形式のクラスは :class:`object` を継承しているので、どの多重継承でも :class:`object` へ到達するための道は複数存在します。
+基底クラスが複数回アクセスされないようにするために、動的アルゴリズムで検索順序を直列化し、各クラスで指定されている祖先クラスどうしの左から右への順序は崩さず、各祖先クラスを一度だけ呼び出し、かつ一様になる (つまり祖先クラスの順序に影響を与えずにサブクラス化できる) ようにします。
+まとめると、これらの特徴のおかげで信頼性と拡張性のある多重継承したクラスを設計することができるのです。
+さらに詳細を知りたければ、 http://www.python.org/download/releases/2.3/mro/ を見てください。
 
 
 .. _tut-private:
@@ -946,6 +964,7 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
 ある特定の抽象データ型を要求する Python コードの断片には、 そのデータ型のメソッドをエミュレーションするクラスを代わりに渡す
 ことができます。例えば、ファイルオブジェクトから何らかのデータを書式化 する関数がある場合、:meth:`read` と :meth:`readline`
 を持つクラス を定義して、ファイルではなく文字列バッファからデータを書式するように しておき、引数として渡すことができます。
+(残念なことに、このテクニックには限界があります: クラスにはシーケンスの添字アクセスや算術演算などの特殊構文でアクセスされる操作が定義できず、"疑似ファイル" を sys.stdin に代入してもそこからインタープリタに入力データを読み込ませることはできません。)
 
 .. % % A piece of Python code that expects a particular abstract data type
 .. % % can often be passed a class that emulates the methods of that data
@@ -1145,7 +1164,7 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
 ジェネレータ (generator)
 ========================
 
-ジェネレータは、イテレータを作成するための簡潔で強力なツールです。 ジェネレータは通常の関数のように書かれますが、何らかのデータを返すときには
+:term:`Generator` は、イテレータを作成するための簡潔で強力なツールです。 ジェネレータは通常の関数のように書かれますが、何らかのデータを返すときには
 :keyword:`yield` 文を使います。 :meth:`next` が呼び出されるたびに、 ジェネレータは以前に中断した処理を再開します
 (ジェネレータは、全てのデータ値と 最後にどの文が実行されたかを記憶しています)。以下の例を見れば、ジェネレータ がとても簡単に作成できることがわかります:
 
@@ -1168,7 +1187,7 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
    f
    l
    o
-   g	
+   g
 
 ジェネレータを使ってできることは、前節で記述したクラスに基づいたイテレータを 使えばできます。ジェネレータを使うとコンパクトに記述できるのは、
 :meth:`__iter__` と :meth:`next` メソッドが自動的に作成されるからです。
