@@ -130,6 +130,7 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
    *name* に関連づけられた表現形式を返します。 *name* が表現形式名でない場合には :exc:`Error` を送出します。
 
    .. versionchanged:: 2.5
+
       .. This function now returns an immutable :class:`Dialect`.  Previously an
          instance of the requested dialect was returned.  Users could modify the
          underlying class, changing the behavior of active readers and writers.

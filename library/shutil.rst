@@ -139,7 +139,7 @@
       ignores names based on glob-style patterns.
 
    *ignore* 引数を利用する場合、その呼び出し可能オブジェクトは、引数として、
-   :func:`copytree` が走査するディレクトリと、:func:`os.listdir` が返すそのディレクトリの内容を
+   :func:`copytree` が走査するディレクトリと、 :func:`os.listdir` が返すそのディレクトリの内容を
    受け取ります。
    :func:`copytree` は再帰的に呼び出されるので、 *ignore* はコピーされる各ディレクトリ\
    毎に呼び出されます。 *ignore* の戻り値は、ファイルやディレクトリに対する\

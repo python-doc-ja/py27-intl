@@ -254,7 +254,7 @@ proleptic Gregorian 暦に一致しており、 同書では全ての計算の�
 .. function:: monthcalendar(year, month)
 
    月のカレンダーを行列で返します。各行が週を表し、月の範囲外の日は0になります。
-   それぞれの週は:func:`setfirstweekday` で設定をしていない限り月曜日から始まります。
+   それぞれの週は :func:`setfirstweekday` で設定をしていない限り月曜日から始まります。
 
 
 .. function:: prmonth(theyear, themonth[, w[, l]])
@@ -288,7 +288,7 @@ proleptic Gregorian 暦に一致しており、 同書では全ての計算の�
    関連はありませんが便利な関数で、:mod:`time` モジュールの :func:`gmtime`
    関数の戻値のような時間のタプルを受け取り、
    1970年を起点とし、POSIX規格のエンコードによるUnixのタイムスタンプに相当する
-   値を返します。実際、:func:`time.gmtime` と:func:`timegm` は反対の動作をします。
+   値を返します。実際、 :func:`time.gmtime` と :func:`timegm` は反対の動作をします。
 
    .. versionadded:: 2.0
 

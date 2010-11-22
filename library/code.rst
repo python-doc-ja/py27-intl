@@ -67,18 +67,18 @@
 .. method:: InteractiveInterpreter.runsource(source[, filename[, symbol]])
 
    インタプリタ内のあるソースをコンパイルし実行します。
-   引数は:func:`compile_command` のものと同じです。
+   引数は :func:`compile_command` のものと同じです。
    *filename* のデフォルトは ``'<input>'`` で、 *symbol* は ``'single'`` です。
    あるいくつかのことが起きる可能性があります:
 
-   * 入力はが正しくない。:func:`compile_command` が例外(:exc:`SyntaxError` か:exc:`OverflowError`)を起こした場合。
+   * 入力はが正しくない。 :func:`compile_command` が例外(:exc:`SyntaxError` か:exc:`OverflowError`)を起こした場合。
      :meth:`showsyntaxerror` メソッドの呼び出によって、構文トレースバックが表示されるでしょう。
      :meth:`runsource` は ``False`` を返します。
 
-   * 入力が完全でなく、さらに入力が必要。:func:`compile_command` が ``None`` を返した場合。
+   * 入力が完全でなく、さらに入力が必要。 :func:`compile_command` が ``None`` を返した場合。
      :meth:`runsource` は ``True`` を返します。
 
-   * 入力が完全。:func:`compile_command` がコードオブジェクトを返した場合。
+   * 入力が完全。 :func:`compile_command` がコードオブジェクトを返した場合。
      (:exc:`SystemExit` を除く実行時例外も処理する):meth:`runcode` を呼び出すことによって、
      コードは実行されます。:meth:`runsource` は ``False`` を返します。
 
@@ -155,6 +155,6 @@
 
    プロンプトを書き込み、一行を読み込みます。返る行は末尾に改行を含みません。
    ユーザがEOFキーシーケンスを入力したときは、:exc:`EOFError` を発生させます。
-   基本実装では、組み込み関数:func:`raw_input` を使います。
+   基本実装では、組み込み関数 :func:`raw_input` を使います。
    サブクラスはこれを異なる実装と置き換えるかもしれません。
 
