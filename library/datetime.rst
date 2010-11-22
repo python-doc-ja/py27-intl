@@ -80,16 +80,15 @@
 
    理想化された時刻表現で、あらゆる特定の日における影響から独立してお
    り、毎日厳密に 24\*60\*60 秒であると仮定します ("うるう秒: leap
-   seconds" の概念はありません)。 属性: :attr:`hour`, :attr:`minute`
-  , :attr:`second`, :attr:`microsecond`, および :attr:`tzinfo`
-   。
+   seconds" の概念はありません)。 属性: :attr:`hour`, :attr:`minute`,
+   :attr:`second`, :attr:`microsecond`, および :attr:`tzinfo` 。
 
 
 .. class:: datetime
 
-   日付と時刻を組み合わせたもの。属性: :attr:`year`, :attr:`month`
-  , :attr:`day`, :attr:`hour`, :attr:`minute`, :attr:`second`
-  , :attr:`microsecond`,および :attr:`tzinfo` 。
+   日付と時刻を組み合わせたもの。属性: :attr:`year`, :attr:`month`,
+   :attr:`day`, :attr:`hour`, :attr:`minute`, :attr:`second`,
+   :attr:`microsecond`, および :attr:`tzinfo` 。
 
 
 .. class:: timedelta
