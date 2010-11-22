@@ -52,6 +52,7 @@ unused_docs = [
     'maclib/scrap',
     'library/xmllib',
     'library/xml.etree',
+    'documenting/sphinx',
 ]
 
 # Relative filename of the reference count data file.
