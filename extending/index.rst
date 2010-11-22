@@ -21,7 +21,7 @@
 :ref:`tutorial-index` を読んでください。
 :ref:`reference-index` を読めば、
 Python 言語についてより形式的な定義を得られます。
-また、 :ref:`module-index` では、Python に広い適用範囲をもたらしている
+また、 :ref:`library-index` では、Python に広い適用範囲をもたらしている
 既存のオブジェクト型、関数、
 および (組み込み、および Python で書かれたものの両方の) モジュール
 について解説しています。
@@ -31,6 +31,7 @@ Python/C API 全体の詳しい説明は、別のドキュメントである、
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
 
    extending.rst
    newtypes.rst
