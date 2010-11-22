@@ -649,7 +649,7 @@
 
    mutable
       (変更可能オブジェクト)
-      変更可能なオブジェクトは、:func:`id` を変えることなく値を変更できます。
+      変更可能なオブジェクトは、 :func:`id` を変えることなく値を変更できます。
       変更不能 (:term:`immutable`) も参照してください。
 
       .. Mutable objects can change their value but keep their :func:`id`.  See
