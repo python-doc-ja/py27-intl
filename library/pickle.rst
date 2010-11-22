@@ -239,7 +239,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
 
 .. exception:: PickleError
 
-   下で定義されている他の例外で共通の基底クラスです。:exc:`Exception`
+   下で定義されている他の例外で共通の基底クラスです。 :exc:`Exception`
    を継承しています。
 
 
@@ -258,7 +258,7 @@ Python で書かれていないプログラムが pickle 化された Python オ
    注意してください。
 
 :mod:`pickle` モジュールでは、2 つの呼び出し可能オブジェクト  [#]_ と
-して、:class:`Pickler` および :class:`Unpickler` を提供しています:
+して、 :class:`Pickler` および :class:`Unpickler` を提供しています:
 
 
 .. class:: Pickler(file[, protocol])
@@ -535,9 +535,9 @@ pickle 化プロトコル
 
      逆 pickle 化の環境下では、このオブジェクトはクラスか、 "安全なコ
      ンストラクタ (safe constructor, 下記参照)" として登録
-     されていたり属性:attr:`__safe_for_unpickling__` の値が真であるよ
+     されていたり属性 :attr:`__safe_for_unpickling__` の値が真であるよ
      うな 呼び出し可能オブジェクトでなければなりません。
-     そうでない場合、逆 pickle 化を行う環境で:exc:`UnpicklingError` が
+     そうでない場合、逆 pickle 化を行う環境で :exc:`UnpicklingError` が
      送出されます。通常通り、 callable は名前だけで
      pickle 化されるので 注意してください。
 
@@ -711,7 +711,7 @@ Unpickler をサブクラス化する
 は:mod:`pickle`  と :mod:`cPickle` のどちらを使うかで異なります  [#]_。
 
 
-:mod:`pickle` モジュールでは、:class:`Unpickler` からサブクラスを 導出
+:mod:`pickle` モジュールでは、 :class:`Unpickler` からサブクラスを 導出
 し、 :meth:`load_global` メソッドを上書きする必要があります。
 :meth:`load_global` は pickle データ列から最初の 2 行を読まなければな
 らず、ここで最初の行はそのクラスを含むモジュールの名前、2 行目は その
@@ -788,7 +788,7 @@ import のやり直しです。そしてそのクラスのインスタンスが 
 
 より大きな例で、クラスを pickle 化する挙動を変更するやり方を示します。
 :class:`TextReader` クラスはテキストファイルを開き、 :meth:`readline`
-メソッドが呼ばれるたびに行番号と行の内容を 返します。:class:`TextReader`
+メソッドが呼ばれるたびに行番号と行の内容を 返します。 :class:`TextReader`
 インスタンスが pickle 化された場合、 ファイルオブジェクト *以外の* 全
 ての属性が保存されます。 インスタンスが unpickle 化された際、ファイル
 は再度開かれ、以前のファイル位置から読み出しを再開します。上記の動作を
@@ -915,7 +915,7 @@ import のやり直しです。そしてそのクラスのインスタンスが 
    あるオブジェクトに変更を加えて、その後同じ :class:`Pickler` を使っ
    て 再度 pickle 化しようとしても、そのオブジェクトは pickle 化しなお
    され ません --- そのオブジェクトに対する参照が pickle 化さ
-   れ、:class:`Unpickler` は変更された値ではなく、元の値を返します。こ
+   れ、 :class:`Unpickler` は変更された値ではなく、元の値を返します。こ
    れには 2 つの問題点 : (1) 変更の検出、そして (2) 最小限の変更を整列
    化すること、があります。ガーベジコレクションもまた問題になります。
 
