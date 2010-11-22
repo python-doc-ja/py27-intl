@@ -1066,7 +1066,7 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 その他に、 doctest の例題を検索、パーズ、実行、チェックするための処理クラスが以下のように定義されています:
 
 * :class:`DocTestFinder`: 与えられたモジュールから全ての docstring を検索し、対話モードでの例題が入った各
-  docstring から :class:`DocTestParser` を使って:class:`DocTest` を生成します。
+  docstring から :class:`DocTestParser` を使って :class:`DocTest` を生成します。
 
 * :class:`DocTestParser`: (オブジェクトにつけられた docstring のような) 文字列から :class:`DocTest`
   オブジェクトを生成します。

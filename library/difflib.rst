@@ -41,7 +41,7 @@
 
 .. class:: Differ
 
-   テキスト行からなるシーケンスを比較するクラスです。人が読むことのできる差異を作成します。Differクラスは:class:`SequenceMatcher`
+   テキスト行からなるシーケンスを比較するクラスです。人が読むことのできる差異を作成します。Differクラスは :class:`SequenceMatcher`
    クラスを利用して、行からなるシーケンスを比較したり、行内の(ほぼ)同一の文字を比較します。
 
    :class:`Differ` クラスによる差異の各行は、2文字のコードではじめられます。
@@ -179,7 +179,7 @@
 
 .. function:: ndiff(a, b[, linejunk[, charjunk]])
 
-   *a* と *b* （文字列からなるリスト）を比較し、:class:`Differ`  オブジェクト形式の差異(差異のある列を生成する :term:`generator`)を返します。
+   *a* と *b* （文字列からなるリスト）を比較し、 :class:`Differ` オブジェクト形式の差異(差異のある列を生成する :term:`generator`)を返します。
 
    オプションのパラメータ *linejunk* と *charjunk* は、filter 機能のためのキーワードです（使わないときは空にする）。
 

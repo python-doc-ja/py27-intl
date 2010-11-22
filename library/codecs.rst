@@ -386,7 +386,7 @@ Codec オブジェクト
    *errors* は適用するエラー処理を定義します。 ``'strict'`` がデフォル
     ト値です。
 
-   このメソッドは、:class:`Codec` インスタンスに内部状態を保存してはな
+   このメソッドは、 :class:`Codec` インスタンスに内部状態を保存してはな
    りません。効率よくエンコード／デコードするために状態を保持しなけれ
    ばならないような codecs には :class:`StreamCodec` を使ってください。
 
@@ -717,7 +717,7 @@ StreamReaderWriter オブジェクト
    するファクトリ関数かファクトリクラスでなければなりません。エラー処
    理は、ストリームリーダとライタで定義したものと同じように行われます。
 
-:class:`StreamReaderWriter` インスタンスは、:class:`StreamReader` クラ
+:class:`StreamReaderWriter` インスタンスは、 :class:`StreamReader` クラ
 スと :class:`StreamWriter` クラスを合わせたインタフェースを継承します。
 元になるストリームからは、他のメソッドや属性を継承します。
 

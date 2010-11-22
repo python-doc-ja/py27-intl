@@ -197,7 +197,7 @@ DOMImplementation オブジェクト
 
 .. method:: DOMImplementation.createDocument(namespaceUri, qualifiedName, doctype)
 
-   新たな(DOMのスーパークラスである):class:`Document` クラスのオブジェクトを返します。
+   新たな(DOMのスーパークラスである) :class:`Document` クラスのオブジェクトを返します。
    このクラスは *namespaceUri* と *qualifiedName* が設定された子クラス :class:`Element` のオブジェクトを所有しています。
    *doctype* は :meth:`createDocumentType` によって生成された :class:`DocumentType` クラスのオブジェクト、
    または ``None`` である必要があります。 Python DOM APIでは、子クラスである :class:`Element` を作成しないことを

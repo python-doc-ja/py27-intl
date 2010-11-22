@@ -12,7 +12,7 @@
 
 
 :mod:`CGIHTTPServer` モジュールでは、 :class:`BaseHTTPServer.BaseHTTPRequestHandler`
-互換のインタフェースを持ち、:class:`SimpleHTTPServer.SimpleHTTPRequestHandler` の動作を継承していますが
+互換のインタフェースを持ち、 :class:`SimpleHTTPServer.SimpleHTTPRequestHandler` の動作を継承していますが
 CGI スクリプトを動作することもできる、 HTTP 要求処理機構クラスを定義しています。
 
 .. note::

@@ -56,7 +56,7 @@
       Starting with Python version 2.6, it is recommended to use
       :class:`collections.MutableMapping` instead of :class:`DictMixin`.
 
-   Python 2.6 からは、:class:`DictMixin` の代わりに、 :class:`collections.MutableMapping`
+   Python 2.6 からは、 :class:`DictMixin` の代わりに、 :class:`collections.MutableMapping`
    を利用することが推奨されています。
 
 

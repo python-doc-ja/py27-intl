@@ -23,14 +23,14 @@
 .. class:: InteractiveConsole([locals[, filename]])
 
    対話的なPythonインタプリタの振る舞いを厳密にエミュレートします。
-   このクラスは:class:`InteractiveInterpreter` を元に作られていて、通常の
+   このクラスは :class:`InteractiveInterpreter` を元に作られていて、通常の
    ``sys.ps1`` と ``sys.ps2`` をつかったプロンプト出力と入力バッファリングが追加されています。
 
 
 .. function:: interact([banner[, readfunc[, local]]])
 
    read-eval-printループを実行するための便利な関数。
-   これは:class:`InteractiveConsole` の新しいインスタンスを作り、
+   これは :class:`InteractiveConsole` の新しいインスタンスを作り、
    *readfunc* が与えられた場合は :meth:`raw_input`
    メソッドとして使われるように設定します。
    *local* が与えられた場合は、インタプリタループのデフォルト名前空間として使うために
@@ -53,8 +53,8 @@
 
    コマンドが完全で有効ならば、コードオブジェクトを返します(``compile(source, filename,
    symbol)`` と同じ)。コマンドが完全でないならば、 ``None`` を返します。
-   コマンドが完全で構文エラーを含む場合は、:exc:`SyntaxError` を発生させます。
-   または、コマンドが無効なリテラルを含む場合は、:exc:`OverflowError` もしくは:exc:`ValueError`
+   コマンドが完全で構文エラーを含む場合は、 :exc:`SyntaxError` を発生させます。
+   または、コマンドが無効なリテラルを含む場合は、 :exc:`OverflowError` もしくは :exc:`ValueError`
    を発生させます。
 
 
@@ -71,7 +71,7 @@
    *filename* のデフォルトは ``'<input>'`` で、 *symbol* は ``'single'`` です。
    あるいくつかのことが起きる可能性があります:
 
-   * 入力はが正しくない。 :func:`compile_command` が例外(:exc:`SyntaxError` か:exc:`OverflowError`)を起こした場合。
+   * 入力はが正しくない。 :func:`compile_command` が例外(:exc:`SyntaxError` か :exc:`OverflowError`)を起こした場合。
      :meth:`showsyntaxerror` メソッドの呼び出によって、構文トレースバックが表示されるでしょう。
      :meth:`runsource` は ``False`` を返します。
 
@@ -89,7 +89,7 @@
 
    コードオブジェクトを実行します。例外が生じたときは、トレースバックを表示するために
    :meth:`showtraceback` が呼び出されます。
-   伝わることが許されている:exc:`SystemExit` を除くすべての例外が捉えられます。
+   伝わることが許されている :exc:`SystemExit` を除くすべての例外が捉えられます。
 
    :exc:`KeyboardInterrupt` についての注意。
    このコードの他の場所でこの例外が生じる可能性がありますし、常に捕らえることができるとは限りません。
@@ -123,7 +123,7 @@
 対話的なコンソールオブジェクト
 ------------------------------
 
-:class:`InteractiveConsole` クラスは:class:`InteractiveInterpreter` のサブクラスです。
+:class:`InteractiveConsole` クラスは :class:`InteractiveInterpreter` のサブクラスです。
 以下の追加メソッドだけでなく、インタプリタオブジェクトのすべてのメソッドも提供します。
 
 
@@ -154,7 +154,7 @@
 .. method:: InteractiveConsole.raw_input([prompt])
 
    プロンプトを書き込み、一行を読み込みます。返る行は末尾に改行を含みません。
-   ユーザがEOFキーシーケンスを入力したときは、:exc:`EOFError` を発生させます。
+   ユーザがEOFキーシーケンスを入力したときは、 :exc:`EOFError` を発生させます。
    基本実装では、組み込み関数 :func:`raw_input` を使います。
    サブクラスはこれを異なる実装と置き換えるかもしれません。
 

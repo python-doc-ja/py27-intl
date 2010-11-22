@@ -8,7 +8,7 @@
 
 .. note::
    :mod:`_winreg` モジュールは Python 3.0 では :mod:`winreg` にリネームされました。
-   ソースコードを3.0ように変換するときは、:term:`2to3` ツールが自動的に import を修正します。
+   ソースコードを3.0用に変換するときは、 :term:`2to3` ツールが自動的に import を修正します。
 
 
 .. versionadded:: 2.0
