@@ -45,7 +45,7 @@ language = 'ja'
 # non-false value, then it is used:
 today = ''
 # Else, today_fmt is used as the format for a strftime call.
-today_fmt = '%B %d, %Y'
+today_fmt = u'%Y年 %m月 %d日'
 
 # List of files that shouldn't be included in the build.
 unused_docs = [
