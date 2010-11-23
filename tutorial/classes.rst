@@ -216,7 +216,7 @@ Python プログラマにとって有用です。
 
 名前がグローバルであると宣言されている場合、その名前に対する参照や代入は全て、モジュールのグローバルな名前の入った中間のスコープに
 対して直接行われます。そうでない場合、最も内側のスコープより外側にある変数は全て読み出し専用(そのような変数に対する書き込みは、単に
-*新しい*ローカル変数もっとも内側のスコープで作成し、外部のスコープの値は変化しません)となります。
+*新しい* ローカル変数もっとも内側のスコープで作成し、外部のスコープの値は変化しません)となります。
 
 .. % % If a name is declared global, then all references and assignments go
 .. % % directly to the middle scope containing the module's global names.
@@ -321,7 +321,7 @@ Python 特有の癖として、代入を行うと -- どの :keyword:`global` �
 .. % % go into this new namespace.  In particular, function definitions bind
 .. % % the name of the new function here.
 
-クラス定義から普通に (定義の終端に到達して) 抜けると、 *クラスオブジェクト (class object) * が生成されます。
+クラス定義から普通に (定義の終端に到達して) 抜けると、 *クラスオブジェクト (class object)* が生成されます。
 クラスオブジェクトは、基本的にはクラス定義で作成された名前空間の内容をくるむラッパ (wrapper) です; クラスオブジェクトについては
 次の節で詳しく学ぶことにします。(クラス定義に入る前に有効だった) 元のローカルスコープが復帰し、生成されたクラスオブジェクトは
 復帰したローカルスコープにクラス定義のヘッダで指定した名前 (上の例では :class:`ClassName`) で結び付けられます。
