@@ -34,5 +34,6 @@ C 言語あるいはC++プログラマ向けには、このマニュアルとは
    simple_stmts.rst
    compound_stmts.rst
    toplevel_components.rst
+   grammar.rst
 
    jptranslation.rst
