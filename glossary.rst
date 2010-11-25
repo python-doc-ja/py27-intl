@@ -76,11 +76,8 @@
 
    attribute
       (属性)
-      A value associated with an object which is referenced by name using
-      dotted expressions.  For example, if an object *o* has an attribute
-      *a* it would be referenced as *o.a*.
       オブジェクトに関連付けられ、ドット演算子を利用して名前で参照される値。
-      例えば、オブジェクト *o` が属性 *a* を持っているとき、その属性は
+      例えば、オブジェクト *o* が属性 *a* を持っているとき、その属性は
       *o.a* で参照されます。
 
    BDFL
