@@ -1160,7 +1160,7 @@ C における値をどのように変換しあうかを定めるものです。
 :attr:`tp_setattr` ハンドラは、クラスのインスタンスの :meth:`__setattr__` または :meth:`__delattr__`
 メソッドが呼ばれるであろう状況で呼び出されます。ある属性が削除されるとき、3番目のパラメータは *NULL* に
 なります。以下の例はたんに例外を発生させるものですが、もし本当にこれと同じことをしたいなら、 :attr:`tp_setattr` ハンドラを
-*NULL*に設定すべきです。 ::
+*NULL* に設定すべきです。 ::
 
    static int
    newdatatype_setattr(newdatatypeobject *obj, char *name, PyObject *v)
