@@ -2229,7 +2229,7 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
 
 .. method:: file.seek(offset[, whence])
 
-   ``stdio`` の :cfunc:`fseek` と同様に、ファイルの現在位置を返します。
+   ``stdio`` の :cfunc:`fseek` と同様に、ファイルの現在位置を設定します。
    *whence* 引数はオプションで、標準の値は ``os.SEEK_SET`` もしくは
    ``0`` (絶対位置指定) です; 他に取り得る値は ``os.SEEK_CUR`` もしく
    は ``1`` (現在のファイル位置から相対的に seek する) および
@@ -2237,7 +2237,7 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
    る) です。戻り値はありません。
 
    例えば、 ``f.seek(2, os.SEEK_CUR)`` 位置を2つ進めます。
-   ``f.seek(-3, os.SEEK_END)`` では最後から3つめに設定します。
+   ``f.seek(-3, os.SEEK_END)`` では終端の3つ手前に設定します。
 
    ファイルを追記モード (モード ``'a'`` または ``'a+'``) で開いた場合、
    書き込みを行うまでに行った :meth:`seek` 操作はすべて元に戻されるの
