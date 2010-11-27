@@ -5,7 +5,7 @@
 .. module:: sgmllib
    :synopsis: HTML を解析するのに必要な機能だけを備えた SGML パーザ。
    :deprecated:
- 
+
 .. deprecated:: 2.6
     :mod:`sgmllib` は Python 3.0 で削除されました。
 

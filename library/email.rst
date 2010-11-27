@@ -70,10 +70,10 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 .. seealso::
 
    Module :mod:`smtplib`
-      SMTP プロトコル クライアント
+      SMTP プロトコルクライアント
 
    Module :mod:`nntplib`
-      NNTP プロトコル クライアント
+      NNTP プロトコルクライアント
 
 
 
@@ -132,7 +132,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   エンコードされているセグメントおよびエンコードされていないセグメントに対して行われました\
   が、エンコードされたセグメントのみで行われるようになりました。
 
-:mod:`email` バージョン 3 と バージョン 2 との違いは以下のようなものです:
+:mod:`email` バージョン 3 とバージョン 2 との違いは以下のようなものです:
 
 * :class:`FeedParser` クラスが新しく導入され、 :class:`Parser` クラスは :class:`FeedParser`
   を使って実装されるようになりました。このパーザは non-strict なものであり、解析はベストエフォート方式でおこなわれ
@@ -154,7 +154,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 
 * Python 2.3 以前はサポートされなくなりました。
 
-:mod:`email` バージョン 2 と バージョン 1 との違いは以下のようなものです:
+:mod:`email` バージョン 2 とバージョン 1 との違いは以下のようなものです:
 
 * :mod:`email.Header` モジュールおよび :mod:`email.Charset` モジュールが
   追加されています。
@@ -165,7 +165,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   お使いのアプリケーションが :class:`Message` インスタンスを pickle あるいは
   unpickle しているなら、現在 :mod:`email` バージョン 2 では
   プライベート変数 *_charset* および
-  *_default_type* を 含むようになったということに注意してください。
+  *_default_type* を含むようになったということに注意してください。
 
 * :class:`Message` クラス中のいくつかのメソッドは推奨されなくなったか、
   あるいは呼び出し形式が変更になっています。また、多くの新しいメソッドが\
@@ -178,7 +178,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   この content type はスカラー形式のペイロードとして表現されていました。
   つまり、コンテナメッセージの
   :meth:`is_multipart` は false を返し、
-  :meth:`get_payload` はリストオブジェクトではなく 単一の
+  :meth:`get_payload` はリストオブジェクトではなく単一の
   :class:`Message` インスタンスを直接返すようになっていたのです。
 
   この構造はパッケージ中のほかの部分と整合がとれていなかったため、
@@ -194,10 +194,10 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   :class:`Message` インスタンスにじかに :meth:`set_payload`
   しないようにさえすればよいのです。
 
-* :class:`Parser` コンストラクタに *strict* 引数が 追加され、
+* :class:`Parser` コンストラクタに *strict* 引数が追加され、
   :meth:`parse` および :meth:`parsestr`
   メソッドには *headersonly* 引数がつきました。
-  *strict* フラグは また :func:`email.message_from_file` と
+  *strict* フラグはまた :func:`email.message_from_file` と
   :func:`email.message_from_string` にも追加されています。
 
 * :meth:`Generator.__call__` はもはや推奨されなくなりました。
@@ -219,7 +219,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   :func:`make_msgid`, :func:`decode_rfc2231`, :func:`encode_rfc2231` そして
   :func:`decode_params` 。
 
-* Public ではない関数 :func:`email.iterators._structure` が 追加されました。
+* Public ではない関数 :func:`email.iterators._structure` が追加されました。
 
 
 :mod:`mimelib` との違い
@@ -232,13 +232,13 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 その意味も変更されています。しかしほとんどの部分において、 :mod:`mimelib`
 パッケージで使うことのできた機能は、ときどきその方法が変わってはいるものの
 :mod:`email` パッケージでも使用可能です。 :mod:`mimelib`
-パッケージと :mod:`email` パッケージの間の 下位互換性はあまり優先はされませんでした。
+パッケージと :mod:`email` パッケージの間の下位互換性はあまり優先はされませんでした。
 
 以下では :mod:`mimelib` パッケージと :mod:`email` パッケージにおける\
 違いを簡単に説明し、それに沿ってアプリケーションを移植するさいの\
 指針を述べています。
 
-おそらく 2つのパッケージのもっとも明らかな違いは、 パッケージ名が
+おそらく 2つのパッケージのもっとも明らかな違いは、パッケージ名が
 :mod:`email` に変更されたことでしょう。
 さらにトップレベルのパッケージが以下のように変更されました:
 
@@ -289,7 +289,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 
 * :meth:`getbodyastext` メソッドは廃止されました。
   これと同様の機能は :mod:`email.iterators` モジュールにある
-  :func:`typed_subpart_iterator` を使ってイテレータを作ることにより 実現できます。
+  :func:`typed_subpart_iterator` を使ってイテレータを作ることにより実現できます。
 
 :class:`Parser` クラスは、その public なインターフェイスは変わっていませんが、
 これはより一層かしこくなって :mimetype:`message/delivery-status` 形式のメッセージを\
@@ -315,9 +315,9 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   *_minor* 引数も *_subtype* に名前が変更されています。
 
 * ``MessageRFC822`` クラスおよびモジュールは ``MIMEMessage`` に名前が変更されました。
-  注意: 従来バージョンの :mod:`mimelib` では、 このクラスおよびモジュールは
+  注意: 従来バージョンの :mod:`mimelib` では、このクラスおよびモジュールは
   ``RFC822`` という名前でしたが、これは大文字小文字を区別しないファイルシステムでは
-  Python の標準ライブラリモジュール :mod:`rfc822` と 名前がかち合ってしまっていました。
+  Python の標準ライブラリモジュール :mod:`rfc822` と名前がかち合ってしまっていました。
 
   また、 :class:`MIMEMessage` クラスはいまや :mimetype:`message`
   main type をもつあらゆる種類の MIME メッセージを表現できるようになりました。
@@ -325,7 +325,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   ようになっています。デフォルトでは、 *_subtype* は :mimetype:`rfc822` になります。
 
 :mod:`mimelib` では、 :mod:`address` および :mod:`date` モジュールで\
-いくつかのユーティリティ関数が提供されていました。 これらの関数はすべて
+いくつかのユーティリティ関数が提供されていました。これらの関数はすべて
 :mod:`email.utils` モジュールの中に移されています。
 
 ``MsgReader`` クラスおよびモジュールは廃止されました。

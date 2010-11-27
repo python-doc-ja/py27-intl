@@ -71,11 +71,11 @@ LIFOキューでは、最後に追加されたエントリが最初に取り出�
    が呼ばれたとき、送出される例外です。
 
 .. .. seealso::
-.. 
+..
 ..    :class:`collections.deque` is an alternative implementation of unbounded
 ..    queues with fast atomic :func:`append` and :func:`popleft` operations that
 ..    do not require locking.
-.. 
+..
 
 .. seealso::
 

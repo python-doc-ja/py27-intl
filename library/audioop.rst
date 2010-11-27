@@ -145,7 +145,7 @@
 
       逆に、8bitから16bitや32bitに変換する場合も、同じことが言えます。
 
- 
+
 
 .. function:: lin2ulaw(fragment, width)
 

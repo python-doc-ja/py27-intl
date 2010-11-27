@@ -52,10 +52,10 @@
       >>> h3 = httplib.HTTPConnection('www.cwi.nl', 80, timeout=10)
 
    .. versionadded:: 2.0
- 
+
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました
- 
+
 
 .. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout]]]]])
 

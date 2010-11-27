@@ -52,7 +52,7 @@ getpassモジュールは二つの関数を提供します:
    .. A :exc:`UserWarning` subclass issued when password input may be echoed.
 
    :exc:`UserWarning` のサブクラスで、入力がエコーされてしまった場合に発生します。
- 
+
 
 .. function:: getuser()
 

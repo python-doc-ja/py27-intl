@@ -7,7 +7,7 @@
 
 .. deprecated:: 2.6
    :mod:`dbhash` モジュールは Python 3.0 では削除されます。
- 
+
 
 .. index:: module: bsddb
 

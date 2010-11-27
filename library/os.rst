@@ -36,7 +36,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    .. If not separately noted, all functions that claim "Availability: Unix" are
       supported on Mac OS X, which builds on a Unix core.
 
-   特に記述がない場合、 「利用できる環境: Unix」 と書かれている関数は、
+   特に記述がない場合、「利用できる環境: Unix」と書かれている関数は、
    Unixをコアにしている Mac OS X でも利用することができます。
 
 .. note::
@@ -355,7 +355,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 .. function:: tmpfile()
 
    更新モード(``w+b``)で開かれた新しいファイルオブジェクトを返します。このファイルはディレクトリエントリ登録に関連付けられておらず、
-   このファイルに対するファイル記述子がなくなると自動的に削除されます。 利用できる環境: Unix、Windows
+   このファイルに対するファイル記述子がなくなると自動的に削除されます。利用できる環境: Unix、Windows
 
 .. There are a number of different :func:`popen\*` functions that provide slightly
    different ways to create subprocesses.
@@ -395,7 +395,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
       .. This function is obsolete.  Use the :mod:`subprocess` module.  Check especially the :ref:`subprocess-replacements` section.
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
-   
+
    利用できる環境: Unix、Windows
 
    .. versionadded:: 2.0
@@ -410,7 +410,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
       .. This function is obsolete.  Use the :mod:`subprocess` module.  Check especially the :ref:`subprocess-replacements` section.
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
-   
+
    利用できる環境: Unix、Windows
 
    .. versionadded:: 2.0
@@ -425,7 +425,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
       .. This function is obsolete.  Use the :mod:`subprocess` module.  Check especially the :ref:`subprocess-replacements` section.
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
-   
+
    利用できる環境: Unix、Windows
 
    .. versionadded:: 2.0
@@ -584,7 +584,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    の標準の設定値は ``0777`` (8進表現) で、先に現在の umask を使ってマスクを掛けます。新たに開かれたファイルの
    のファイル記述子を返します。
    利用できる環境: Unix、Windows
-   
+
    フラグとファイルモードの値についての詳細は C
    ランタイムのドキュメントを参照してください; (:const:`O_RDONLY` や :const:`O_WRONLY` のような)
    フラグ定数はこのモジュールでも定義されています (以下を参照してください)。
@@ -926,7 +926,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
 .. function:: mknod(filename[, mode=0600, device])
 
    *filename* という名前で、ファイルシステム・ノード (ファイル、デバイス特殊ファイル、または、名前つきパイプ) を作ります。 *mode*
-   は、作ろうとするノードの使用権限とタイプを、 ``stat.S_IFREG``, ``stat.S_IFCHR``, ``stat.S_IFBLK``, ``stat.S_IFIFO`` 
+   は、作ろうとするノードの使用権限とタイプを、 ``stat.S_IFREG``, ``stat.S_IFCHR``, ``stat.S_IFBLK``, ``stat.S_IFIFO``
    (これらの定数は :mod:`stat` で使用可能)
    のいずれかと（ビット OR で）組み合わせて指定します。 ``S_IFCHR`` と ``S_IFBLK`` を指定すると、 *device* は新しく作
    られたデバイス特殊ファイルを (おそらく :func:`os.makedev` を使って)  定義し、指定しなかった場合には無視します。
@@ -1238,7 +1238,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
       subsequent :func:`stat` call, depending on the resolution with which your
       operating system records access and modification times; see :func:`stat`.
 
-   
+
    *path* で指定されたファイルに最終アクセス時刻および最終修正時刻を設定します。
    *times* が ``None`` の場合、ファイルの最終アクセス時刻および最終更新時刻は現在の時刻になります。
    (この動作は、その *path* に対してUnixの :program:`touch` プログラムを実行するのに似ています)
@@ -1402,7 +1402,7 @@ Pythonの、全てのOS依存モジュールの設計方針は、可能な限り
    される環境変数を定義するためのマップ型でなくてはなりません(現在のプロセスの環境変数の代わりに利用されます);
    :func:`execl`, :func:`execlp`, :func:`execv`,および
    :func:`execvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
-   
+
    利用できる環境: Unix、Windows
 
 
@@ -1561,7 +1561,7 @@ Python で書かれたシステムプログラムに使います。
 
    FreeBSD <= 6.3, Cygwin, OS/2 EMX を含む幾つかのプラットフォームにおいて、
    fork() をスレッド内から利用した場合に既知の問題があることに注意してください。
-   
+
    利用できる環境: Unix。
 
 

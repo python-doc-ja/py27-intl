@@ -141,7 +141,7 @@ HTMLParser オブジェクト
 .. module:: htmlentitydefs
    :synopsis: HTML 一般エンティティの定義。
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
- 
+
 .. note::
 
    Python 3.0 で :mod:`htmlentitydefs` モジュールは :mod:`html.entities`

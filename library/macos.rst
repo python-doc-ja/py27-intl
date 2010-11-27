@@ -35,7 +35,7 @@
    す。値は静的リンクした Python は ``'static'`` 、Mac OS X
    framework  で構築した Python は ``'framework'`` 、標準の Unix
    共有ライブラリ (shared library)で構築された Python は ``'shared'``
-   となります。 古いバージョンの Python の場合、Mac OS 9 互換の
+   となります。古いバージョンの Python の場合、Mac OS 9 互換の
    Python では ``'cfm'`` となります。
 
 

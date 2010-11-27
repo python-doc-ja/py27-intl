@@ -95,7 +95,7 @@
 
       * ブレークポイント番号
       * テンポラリブレークポイントかどうか
-      * ファイル/行 の位置
+      * ファイル/行の位置
       * ブレークする条件
       * 次のN回無視されるか
       * ヒットカウント
@@ -344,7 +344,7 @@
       .. Stop on the next line in or below the given frame.
 
       与えられたフレームかそれより下(のフレーム)にある、次の行でストップします。
-      
+
 
    .. method:: set_return(frame)
 
@@ -547,7 +547,7 @@
 
       この場所でブレークする必要があるかどうかを、ブレークポイント *b* が設定された
       方法に依存する方法でチェックします。
-   
+
    .. If it was set via line number, it checks if ``b.line`` is the same as the one
       in the frame also passed as argument.  If the breakpoint was set via function
       name, we have to check we are in the right frame (the right function) and if
@@ -562,7 +562,7 @@
 
    .. Determine if there is an effective (active) breakpoint at this line of code.
       Return breakpoint number or 0 if none.
-	
+
    アクティブなブレークポイントがこのコードの行にあるかどうかをチェックします。
    ブレークポイントがあればその番号を、なければ (None, None) を返します。
 

@@ -8,7 +8,7 @@
 .. note::
    :mod:`BaseHTTPServer` モジュールは Python 3.0 では :mod:`http.server` に統合されました。
    ソースコードを 3.0 用に変換する時は、 :term:`2to3` ツールが自動的に import を修正します。
-   
+
 
 
 :mod:`CGIHTTPServer` モジュールでは、 :class:`BaseHTTPServer.BaseHTTPRequestHandler`
@@ -40,7 +40,7 @@ CGI スクリプトを動作することもできる、 HTTP 要求処理機構�
    他の一般的なサーバ設定は特殊な拡張子を使って CGI スクリプトであることを示すのに対し、
    ディレクトリベースの CGI だけが使われます。
 
-   :func:`do_GET` および :func:`do_HEAD` 関数は、HTTP 要求 が ``cgi_directories``
+   :func:`do_GET` および :func:`do_HEAD` 関数は、HTTP 要求が ``cgi_directories``
    パス以下のどこかを指している場合、ファイルを提供するのではなく、CGI
    スクリプトを実行してその出力を提供するように変更されています。
 

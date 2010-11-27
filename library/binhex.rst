@@ -31,7 +31,7 @@
 .. function:: hexbin(input[, output])
 
    binhex 形式のファイル *input* をデコードします。
-   *input* は ファイル名でも、 :meth:`write` および :meth:`close` メソッドを\
+   *input* はファイル名でも、 :meth:`write` および :meth:`close` メソッドを\
    サポートするようなファイル様オブジェクトでもかまいません。
    変換結果のファイルはファイル名 *output* になります。
    この引数が省略された場合、出力ファイルは binhex ファイルの中から復元されます。

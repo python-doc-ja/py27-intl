@@ -82,7 +82,7 @@ Fraction インスタンスは一対の整数、他の有理数または文字�
 
    .. method:: limit_denominator(max_denominator=1000000)
 
-      高々 max_denominator を分母に持つ ``self`` に最も近い :class:`Fraction` 
+      高々 max_denominator を分母に持つ ``self`` に最も近い :class:`Fraction`
       を見付けて返します。
       このメソッドは与えられた浮動小数点数の有理数近似を見つけるのに役立ちます:
 

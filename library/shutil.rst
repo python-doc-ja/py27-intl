@@ -94,7 +94,7 @@
 
 .. function:: ignore_patterns(\*patterns)
 
-   .. 
+   ..
       This factory function creates a function that can be used as a callable for
       :func:`copytree` \'s *ignore* argument, ignoring files and directories that
       match one of the glob-style *patterns* provided.  See the example below.
@@ -127,7 +127,7 @@
    *symlinks* が真であれば、元のディレクトリ内のシンボリックリンクはコピー先のディレクトリ内へシンボリックリンクとして
    コピーされます。偽が与えられたり省略された場合は元のディレクトリ内のリンクの対象となっているファイルがコピー先のディレクトリ内へコピーされま
    す。
-   
+
    .. If *ignore* is given, it must be a callable that will receive as its
       arguments the directory being visited by :func:`copytree`, and a list of its
       contents, as returned by :func:`os.listdir`.  Since :func:`copytree` is

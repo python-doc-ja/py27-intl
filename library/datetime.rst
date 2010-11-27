@@ -36,7 +36,7 @@
 :class:`tzinfo` オブジェクトは UTC 時刻からのオフセット、タイムゾーン
 名、夏時間が有効になっているかどうか、といった情報を記憶しています。
 :mod:`datetime` モジュールでは具体的な :class:`tsinfo` クラスを提供し
-ていないので注意してください。必要な詳細仕様を備えた タイムゾーン機能
+ていないので注意してください。必要な詳細仕様を備えたタイムゾーン機能
 を提供するのはアプリケーションの責任です。世界各国における時刻の修正に
 関する法則は合理的というよりも政治的なものであり、全てのアプリケーショ
 ンに適した標準というものが存在しないのです。
@@ -80,7 +80,7 @@
 
    理想化された時刻表現で、あらゆる特定の日における影響から独立してお
    り、毎日厳密に 24\*60\*60 秒であると仮定します ("うるう秒: leap
-   seconds" の概念はありません)。 属性: :attr:`hour`, :attr:`minute`,
+   seconds" の概念はありません)。属性: :attr:`hour`, :attr:`minute`,
    :attr:`second`, :attr:`microsecond`, および :attr:`tzinfo` 。
 
 
@@ -164,7 +164,7 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
    日の値を正規化した結果、指定された範囲の外側になった場合には、
    :exc:`OverflowError` が送出されます。
 
-   負の値を正規化すると、一見混乱するような値になります。 例えば、
+   負の値を正規化すると、一見混乱するような値になります。例えば、
 
       >>> from datetime import timedelta
       >>> d = timedelta(microseconds=-1)
@@ -216,10 +216,10 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 | 演算                           | 結果                                                            |
 +================================+=================================================================+
 | ``t1 = t2 + t3``               | *t2* と *t3* を加算します。演算後、  *t1*-*t2* == *t3*          |
-|                                | および *t1*-*t3* == *t2* は 真になります。 (1)                  |
+|                                | および *t1*-*t3* == *t2* は真になります。 (1)                  |
 +--------------------------------+-----------------------------------------------------------------+
 | ``t1 = t2 - t3``               | *t2* と *t3* の差分です。演算後、  *t1* == *t2* - *t3*          |
-|                                | および *t2* == *t1* + *t3* は 真になります。 (1)                |
+|                                | および *t2* == *t1* + *t3* は真になります。 (1)                |
 +--------------------------------+-----------------------------------------------------------------+
 | ``t1 = t2 * i or t1 = i * t2`` | 整数や長整数による乗算です。演算後、  *t1* // i == *t2* は      |
 |                                | ``i != 0`` であれば真となります。                               |
@@ -271,7 +271,7 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 ``timedelta(0)`` に等しくない場合かつそのときに限り真となります。
 
 使用例:
- 
+
     >>> from datetime import timedelta
     >>> year = timedelta(days=365)
     >>> another_year = timedelta(weeks=40, days=84, hours=23,
@@ -340,7 +340,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    予期的グレゴリオ暦順序に対応する日付を表し、 1 年 1 月 1 日が序数 1
    となります。 ``1 <= ordinal <= date.max.toordinal()`` でない場合、
-   :exc:`ValueError` が送出されます。 任意の日付 *d* に対し、
+   :exc:`ValueError` が送出されます。任意の日付 *d* に対し、
    ``date.fromordinal(d.toordinal()) ==  d`` となります。
 
 
@@ -421,7 +421,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 (4)
    別の言い方をすると、 ``date1.toordinal() < date2.toordinal()`` であ
    り、かつそのときに限り ``date1 < date2`` となります。型混合の比較が
-   デフォルトのオブジェクトアドレス比較となってしまう のを抑止するため
+   デフォルトのオブジェクトアドレス比較となってしまうのを抑止するため
    に、 :class:`timedelta` オブジェクトと異なる型のオブジェクトが比較
    されると :exc:`TypeError` が送出されます。しかしながら、被比較演算
    子のもう一方が :meth:`timetuple` 属性を持つ場合には
@@ -472,7 +472,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 .. method:: date.isoweekday()
 
-   月曜日を 1,日曜日を 7 として、曜日を整数で返します。 例えば、
+   月曜日を 1,日曜日を 7 として、曜日を整数で返します。例えば、
    ``date(2002, 12, 4).weekday() == 3`` であり、水曜日を示します。
    :meth:`weekday`, :meth:`isocalendar` も参照してください。
 
@@ -615,7 +615,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.today()
 
    現在のローカルな :class:`datetime` を :attr:`tzinfo` が ``None`` で
-   あるものとして返します。 これは
+   あるものとして返します。これは
    ``datetime.fromtimestamp(time.time())`` と等価です。 :meth:`now`,
    :meth:`fromtimestamp` も参照してください。
 
@@ -623,13 +623,13 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.now([tz])
 
    現在のローカルな日付および時刻を返します。オプションの引数 *tz* が
-   ``None`` であるか指定されていない場合、この メソッドは
+   ``None`` であるか指定されていない場合、このメソッドは
    :meth:`today` と同様ですが、可能ならば :func:`time.time` タイムスタ
    ンプを通じて得ることができる、より高い精度で時刻を提供します (例え
    ば、プラットフォームが C  関数 :cfunc:`gettimeofday` をサポートする
    場合には可能なことがあります)。
 
-   そうでない場合、*tz* はクラス :class:`tzinfo` のサブクラスの インス
+   そうでない場合、*tz* はクラス :class:`tzinfo` のサブクラスのインス
    タンスでなければならず、現在の日付および時刻は *tz* のタイムゾーン
    に変換されます。この場合、結果は
    ``tz.fromutc(datetime.utcnow().replace(tzinfo=tz))`` と等価になりま
@@ -674,7 +674,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :func:`time.time` が返すような POSIX タイムスタンプに対応する、 UTC
    での :class:`datetime` オブジェクトを返します。タイムスタンプがプラッ
    トフォームにおける C 関数 :cfunc:`localtime` でサポートされている範
-   囲を超えている場合には :exc:`ValueError` を送出します。 この値はよ
+   囲を超えている場合には :exc:`ValueError` を送出します。この値はよ
    く 1970 年から 2038 年に制限されていることがあります。
    :meth:`fromtimestamp` も参照してください。
 
@@ -801,7 +801,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 (2)
    datetime2 + timedelta == datetime1 となるような datetime2 を計算し
    ます。ちなみに、結果は入力の datetime と同じ :attr:`tzinfo` メンバ
-   を持ち、入力が aware でもタイムゾーン修正は全く行われ ません。この
+   を持ち、入力が aware でもタイムゾーン修正は全く行われません。この
    操作は date1 + (-timedelta) と等価ではありません。なぜならば、
    date1 - timedeltaがオーバフローしない場合でも、-timedelta 単体がオー
    バフローする可能性があるからです。
@@ -812,7 +812,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    方が aware でもう一方が naive の場合、 :exc:`TypeError` が送出され
    ます。
 
-   両方とも naive か、両方とも aware で同じ :attr:`tzinfo` メンバ を持
+   両方とも naive か、両方とも aware で同じ :attr:`tzinfo` メンバを持
    つ場合、 :attr:`tzinfo` メンバは無視され、結果は ``datetime2 + t ==
    datetime1`` であるような :class:`timedelta` オブジェクト *t* となり
    ます。
@@ -913,12 +913,12 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    単にタイムゾーンオブジェクト *tz* を :class:`datetime` オブジェクト
    *dt* に追加したいだけで、日付や時刻データメンバへの調整を行わないの
    なら、 ``dt.replace(tzinfo=tz)`` を使ってください。単に aware な :class:`datetime`
-   オブジェクト *dt* からタイムゾーン オブジェクトを除去したいだけで、
+   オブジェクト *dt* からタイムゾーンオブジェクトを除去したいだけで、
    日付や時刻データメンバの変換を行わないのなら、
    ``dt.replace(tzinfo=None)`` を使ってください。
 
    デフォルトの :meth:`tzinfo.fromutc` メソッドを :class:`tzinfo`
-   のサブクラスで上書きして, :meth:`astimezone` が返す結果に 影響を及
+   のサブクラスで上書きして, :meth:`astimezone` が返す結果に影響を及
    ぼすことができます。エラーの場合を無視すると、
    :meth:`astimezone` は以下のように動作します::
 
@@ -933,21 +933,21 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 .. method:: datetime.utcoffset()
 
-   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には
-   ``self.tzinfo.utcoffset(self)`` を返します。後者の式が ``None`` か、1 日以下の大きさを持つ 経過時間を表す
-   :class:`timedelta` オブジェクトのいずれかを返さない 場合には例外を送出します。
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、そうでない場合には
+   ``self.tzinfo.utcoffset(self)`` を返します。後者の式が ``None`` か、1 日以下の大きさを持つ経過時間を表す
+   :class:`timedelta` オブジェクトのいずれかを返さない場合には例外を送出します。
 
 
 .. method:: datetime.dst()
 
-   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には ``self.tzinfo.dst(self)``
-   を返します。後者の式が ``None`` か、1 日以下の大きさを持つ 経過時間を表す :class:`timedelta` オブジェクトのいずれかを返さない
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、そうでない場合には ``self.tzinfo.dst(self)``
+   を返します。後者の式が ``None`` か、1 日以下の大きさを持つ経過時間を表す :class:`timedelta` オブジェクトのいずれかを返さない
    場合には例外を送出します。
 
 
 .. method:: datetime.tzname()
 
-   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、 そうでない場合には
+   :attr:`tzinfo` が ``None`` の場合、 ``None`` を返し、そうでない場合には
    ``self.tzinfo.tzname(self)`` を返します。後者の式が ``None`` か文字列オブジェクトのいずれか
    を返さない場合には例外を送出します。
 
@@ -957,21 +957,21 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :func:`time.localtime` が返す形式の :class:`time.struct_time` を返します。 ``d.timetuple()``
    は ``time.struct_time((d.year, d.month, d.day, d.hour, d.minute, d.second,
    d.weekday(), d.toordinal() - date(d.year, 1, 1).toordinal() + 1, dst))`` と等価です。
-   返されるタプルの :attr:`tm_isdst` フラグは :meth:`dst` メソッドに 従って設定されます:  :attr:`tzinfo` が
+   返されるタプルの :attr:`tm_isdst` フラグは :meth:`dst` メソッドに従って設定されます:  :attr:`tzinfo` が
    ``None`` か :meth:`dst` が ``None`` を返す場合、 :attr:`tm_isdst` は ``-1`` に設定されます;
    そうでない場合、 :meth:`dst` がゼロでない値を返すと, :attr:`tm_isdst` は ``1`` となります; それ以外の場合には
-   ``tm_isdst`` は``0`` に設定 されます。
+   ``tm_isdst`` は``0`` に設定されます。
 
 
 .. method:: datetime.utctimetuple()
 
    :class:`datetime` インスタンス *d* が naive の場合、このメソッドは ``d.timetuple()``
-   と同じであり、 ``d.dst()`` の返す内容に かかわらず :attr:`tm_isdst` が 0 に強制される点だけが異なります。 DST が UTC
+   と同じであり、 ``d.dst()`` の返す内容にかかわらず :attr:`tm_isdst` が 0 に強制される点だけが異なります。 DST が UTC
    時刻に影響を及ぼすことは決してありません。
 
-   *d* が aware の場合、*d* から ``d.utcoffset()`` が差し 引かれて UTC 時刻に正規化され、正規化された時刻の
+   *d* が aware の場合、*d* から ``d.utcoffset()`` が差し引かれて UTC 時刻に正規化され、正規化された時刻の
    :class:`time.struct_time` を返します。 :attr:`tm_isdst` は 0 に強制されます。 *d*.year が
-   ``MINYEAR`` や ``MAXUEAR`` で、UTC への修正の結果 表現可能な年の境界を越えた場合には、戻り値の :attr:`tm_year`
+   ``MINYEAR`` や ``MAXUEAR`` で、UTC への修正の結果表現可能な年の境界を越えた場合には、戻り値の :attr:`tm_year`
    メンバは :const:`MINYEAR`\ -1 または :const:`MAXYEAR`\ +1 になることがあります。
 
 
@@ -1002,9 +1002,9 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    日付と時刻を ISO 8601 形式、すなわち YYYY-MM-DDTHH:MM:SS.mmmmmm か、 :attr:`microsecond` が 0
    の場合には YYYY-MM-DDTHH:MM:SS で表した文字列を返します。 :meth:`utcoffset` が ``None`` を返さない場合、
    UTC からのオフセットを時間と分を表した (符号付きの) 6 文字からなる  文字列が追加されます: すなわち、 YYYY-MM-
-   DDTHH:MM:SS.mmmmmm+HH:MM となるか、 :attr:`microsecond` が ゼロの場合には YYYY-MM-
-   DDTHH:MM:SS+HH:MM となります。 オプションの引数 *sep* (デフォルトでは ``'T'`` です)  は 1
-   文字のセパレータで、結果の文字列の日付と時刻の間に置かれます。 例えば、 ::
+   DDTHH:MM:SS.mmmmmm+HH:MM となるか、 :attr:`microsecond` がゼロの場合には YYYY-MM-
+   DDTHH:MM:SS+HH:MM となります。オプションの引数 *sep* (デフォルトでは ``'T'`` です)  は 1
+   文字のセパレータで、結果の文字列の日付と時刻の間に置かれます。例えば、 ::
 
       >>> from datetime import tzinfo, timedelta, datetime
       >>> class TZ(tzinfo):
@@ -1024,8 +1024,8 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.ctime()
 
    日付を表す文字列を、例えば ``datetime(2002, 12, 4, 20, 30, 40).ctime() == 'Wed Dec  4
-   20:30:40 2002'`` のようにして返します。 ネイティブの C 関数 :cfunc:`ctime`  (:func:`time.ctime`
-   はこの関数を呼び出しますが、 :meth:`datetime.ctime` は呼び出しません) が C 標準に準拠 しているプラットフォームでは、
+   20:30:40 2002'`` のようにして返します。ネイティブの C 関数 :cfunc:`ctime`  (:func:`time.ctime`
+   はこの関数を呼び出しますが、 :meth:`datetime.ctime` は呼び出しません) が C 標準に準拠しているプラットフォームでは、
    ``d.ctime()`` は ``time.ctime(time.mktime(d.timetuple()))`` と等価です。
 
 
@@ -1142,14 +1142,14 @@ datetime を tzinfo と組み合わせて使う:
 :class:`time` オブジェクト
 --------------------------
 
-:class:`time` オブジェクトは (ローカルの) 日中時刻を表現します。 この時刻表現は特定の日の影響を受けず, :class:`tzinfo`
-オブジェクト を介した修正の対象となります。
+:class:`time` オブジェクトは (ローカルの) 日中時刻を表現します。この時刻表現は特定の日の影響を受けず, :class:`tzinfo`
+オブジェクトを介した修正の対象となります。
 
 
 .. class:: time(hour[, minute[, second[, microsecond[, tzinfo]]]])
 
    全ての引数はオプションです。*tzinfo* は ``None`` または :class:`tzinfo` クラスのサブクラスのインスタンス
-   にすることができます。残りの引数は整数または長整数で、 以下のような範囲に入ります:
+   にすることができます。残りの引数は整数または長整数で、以下のような範囲に入ります:
 
    * ``0 <= hour < 24``
    * ``0 <= minute < 60``
@@ -1176,7 +1176,7 @@ datetime を tzinfo と組み合わせて使う:
 .. attribute:: time.resolution
 
    等しくない :class:`datetime` オブジェクト間の最小の差で、  ``timedelta(microseconds=1)``
-   ですが, :class:`time` オブジェクト間の四則演算はサポートされて いないので注意してください。
+   ですが, :class:`time` オブジェクト間の四則演算はサポートされていないので注意してください。
 
 以下に (読み出し専用の) インスタンス属性を示します:
 
@@ -1203,33 +1203,33 @@ datetime を tzinfo と組み合わせて使う:
 
 .. attribute:: time.tzinfo
 
-   :class:`time` コンストラクタに *tzinfo* 引数として 与えられたオブジェクトになり、何も渡されなかった場合には ``None``
+   :class:`time` コンストラクタに *tzinfo* 引数として与えられたオブジェクトになり、何も渡されなかった場合には ``None``
    になります。
 
 以下にサポートされている操作を示します:
 
 * :class:`time` と :class:`time` の比較では、*a* が時刻として *b* よりも前を表す場合に *a* は *b*
-  よりも小さいと見なされます。 被演算子の片方が naive でもう一方が aware の場合、 :exc:`TypeError`
-  が送出されます。両方の被演算子が aware で、 同じ :attr:`tzinfo` メンバを持つ場合、共通の :attr:`tzinfo`
-  メンバは無視され、基本の datetime 間の比較が行われます。 両方の被演算子が aware で異なる :attr:`tzinfo` メンバを持つ
-  場合、被演算子はまず (``self.utcoffset()`` で得られる) UTC  オフセット で修正されます。
-  型混合の比較がデフォルトのオブジェクトアドレス比較となってしまう のを抑止するために, :class:`time` オブジェクトが他の型のオブジェクトと
-  比較された場合、比較演算子が ``==`` または ``!=`` でないかぎり :exc:`TypeError` が送出されます。 後者の場合、それぞれ
+  よりも小さいと見なされます。被演算子の片方が naive でもう一方が aware の場合、 :exc:`TypeError`
+  が送出されます。両方の被演算子が aware で、同じ :attr:`tzinfo` メンバを持つ場合、共通の :attr:`tzinfo`
+  メンバは無視され、基本の datetime 間の比較が行われます。両方の被演算子が aware で異なる :attr:`tzinfo` メンバを持つ
+  場合、被演算子はまず (``self.utcoffset()`` で得られる) UTC  オフセットで修正されます。
+  型混合の比較がデフォルトのオブジェクトアドレス比較となってしまうのを抑止するために, :class:`time` オブジェクトが他の型のオブジェクトと
+  比較された場合、比較演算子が ``==`` または ``!=`` でないかぎり :exc:`TypeError` が送出されます。後者の場合、それぞれ
   :const:`False` または :const:`True` を返します。
 
 * ハッシュ化、辞書のキーとしての利用
 
 * 効率的な pickle 化
 
-* ブール演算コンテキストでは, :class:`time` オブジェクトは、 分に変換し, :meth:`utfoffset` (``None``
-  を返した場合には ``0``) を差し引いて変換した後の結果がゼロでない場合、かつその ときに限って真とみなされます。
+* ブール演算コンテキストでは, :class:`time` オブジェクトは、分に変換し, :meth:`utfoffset` (``None``
+  を返した場合には ``0``) を差し引いて変換した後の結果がゼロでない場合、かつそのときに限って真とみなされます。
 
 以下にインスタンスメソッドを示します:
 
 
 .. method:: time.replace([hour[, minute[, second[, microsecond[, tzinfo]]]]])
 
-   キーワード引数で指定したメンバの値を除き、同じ値をもつ :class:`time` オブジェクトを返します。 メンバに対する変換を行わずに aware な
+   キーワード引数で指定したメンバの値を除き、同じ値をもつ :class:`time` オブジェクトを返します。メンバに対する変換を行わずに aware な
    datetime オブジェクトから  naive な :class:`time` オブジェクトを生成するために、 ``tzinfo=None``
    を指定することもできます。
 
@@ -1300,7 +1300,7 @@ datetime を tzinfo と組み合わせて使う:
     >>> t.strftime("%H:%M:%S %Z")
     '12:10:30 Europe/Prague'
 
-    
+
 .. _datetime-tzinfo:
 
 :class:`tzinfo` オブジェクト
@@ -1315,9 +1315,9 @@ datetime を tzinfo と組み合わせて使う:
 
 :class:`tzinfo` (の具体的なサブクラス) のインスタンスは
 :class:`datetime` および :class:`time` オブジェクトのコンストラクタに
-渡すことができます。 後者のオブジェクトでは、データメンバをローカル時
+渡すことができます。後者のオブジェクトでは、データメンバをローカル時
 刻におけるものとして見ており、 :class:`tzinfo` オブジェクトはローカル
-時刻の UTC からの オフセット、タイムゾーンの名前、 DST オフセットを、
+時刻の UTC からのオフセット、タイムゾーンの名前、 DST オフセットを、
 渡された日付および時刻オブジェクトからの相対で示すためのメソッドを提供
 します。
 
@@ -1369,13 +1369,13 @@ pickle 化についての特殊な要求事項: :class:`tzinfo` のサブクラ�
    :meth:`utcoffset` が返す UTC からのオフセットには既に加算されている
    ため、 DST を個別に取得する必要がない限り :meth:`dst` を使って問い
    合わせる必要はないので注意してください。例えば、
-   :meth:`datetime.timetuple` は :attr:`tzinfo` メンバ の :meth:`dst`
+   :meth:`datetime.timetuple` は :attr:`tzinfo` メンバの :meth:`dst`
    メソッドを呼んで :attr:`tm_isdst` フラグがセットされているかどうか
    判断し、 :meth:`tzinfo.fromutc` は :meth:`dst` タイムゾーンを移動す
    る際に DST による変更があるかどうかを調べます。
 
    標準および夏時間の両方をモデル化している :class:`tzinfo` サブクラス
-   の インスタンス *tz* は以下の式:
+   のインスタンス *tz* は以下の式:
 
    ``tz.utcoffset(dt) - tz.dst(dt)``
 
@@ -1500,7 +1500,7 @@ pickle 化についての特殊な要求事項: :class:`tzinfo` のサブクラ�
 いる :class:`tzinfo` のサブクラスでは、回避不能の難解な問題が年に 2 度
 あるので注意してください。具体的な例として、東部アメリカ時刻 (US
 Eastern, UTC -5000) を考えます。 EDT は 4 月の最初の日曜日の 1:59
-(EST) 以後に開始し、10 月の最後の日曜日の 1:59 (EDT) に 終了します::
+(EST) 以後に開始し、10 月の最後の日曜日の 1:59 (EDT) に終了します::
 
      UTC   3:MM  4:MM  5:MM  6:MM  7:MM  8:MM
      EST  22:MM 23:MM  0:MM  1:MM  2:MM  3:MM
@@ -1522,7 +1522,7 @@ DST が終了する際 ("end" の並び) では、問題はさらに悪化しま
 間、ローカルの壁時計ではっきりと時刻をいえなくなります:
 それは夏時間の最後の 1 時間です。東部時刻では、その日の UTC での 5:MM
 に夏時間は終了します。ローカルの壁時計は 1:59 (夏時間) から 1:00 (標準
-時) に再び巻き戻されます。ローカルの時刻に おける 1:MM はあいまいにな
+時) に再び巻き戻されます。ローカルの時刻における 1:MM はあいまいにな
 ります。 :meth:`astimezone` は二つの UTC 時刻を同じローカルの時刻に対
 応付けることでローカルの時計の振る舞いをまねます。東部時刻の例では、
 5:MM および 6:MM の形式をとる UTC 時刻は両方とも、東部時刻に変換された
@@ -1533,7 +1533,7 @@ DST が終了する際 ("end" の並び) では、問題はさらに悪化しま
 することができます。
 
 このようなあいまいさを許容できないアプリケーションは、ハイブリッドな
-:class:`tzinfo` サブクラスを使って問題を回避しなければ なりません;
+:class:`tzinfo` サブクラスを使って問題を回避しなければなりません;
 UTC や、他のオフセットが固定された :class:`tzinfo` のサブクラス (EST
 (-5 時間の固定オフセット) のみを表すクラスや、 EDT (-4 時間の固定オフ
 セット) のみを表すクラス) を使う限り、あいまいさは発生しません。
@@ -1685,20 +1685,20 @@ Notes:
    :func:`strptime` 関数と共に使われた場合、 ``%f`` 指定子は 1 桁から
    6 桁の数字を受け付け、右側から 0 埋めされます。
    ``%f`` は C 標準規格の書式セットに拡張されます。
- 
+
 (2)
    :func:`strptime` 関数と共に使われた場合、 ``%p`` 指定子は出力の時間
    フィールドのみに影響し、 ``%I`` 指定子が使われたかのように振る舞い
    ます。
- 
+
 (3)
    範囲は ``0`` から ``61`` で正しいです; これはうるう秒と、 (極めて稀
    ですが) 2秒のうるう秒を考慮してのことです。
- 
+
 (4)
    :func:`strptime` 関数と共に使われた場合、 ``%U`` と ``%W`` 指定子は、
    年と曜日が指定された場合の計算でのみ使われます。
- 
+
 (5)
    例えば、 :meth:`utcoffset` が ``timedelta(hours=-3, minutes=-30)``
    を返すとしたら、 ``%z`` は文字列、 ``'-0330'`` で置き換えられます。

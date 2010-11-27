@@ -24,8 +24,8 @@
    このモジュールからも使えるようにしたのは Python 3 と前方互換なコードを書けるようにするためです。
 
    .. versionadded:: 2.6
- 
- 
+
+
 .. function:: partial(func[, *args][, **keywords])
 
    新しい :class:`partial` オブジェクトを返します。このオブジェクトは呼び出されると位置引数 *args* とキーワード引数
@@ -61,7 +61,7 @@
    関数の一致する属性に直接書き込まれる(assigned)か、また wrapper
    関数のどの属性が元の関数の対応する属性でアップデートされる(updated)か、
    を指定します。これらの引数のデフォルト値はモジュール定数
-   *WRAPPER_ASSIGNMENTS* (wrapper 関数に *__name__* 、 *__module__* 
+   *WRAPPER_ASSIGNMENTS* (wrapper 関数に *__name__* 、 *__module__*
    そしてドキュメンテーション文字列 *__doc__* を書き込みます) と
    *WRAPPER_UPDATES* (wrapper 関数のインスタンス辞書をアップデートします) です。
 

@@ -54,7 +54,7 @@
 
 .. function:: keysubst(arguments, keydict)
 
-   Python キーワード引数辞書 ``arguments`` を、写像による4文字の OSA 
+   Python キーワード引数辞書 ``arguments`` を、写像による4文字の OSA
    キーとして ``keydict`` の中で指定された Python
    識別子であるキーの交換により ``packevent`` によって要求されるフォーマットへ\
    変換します。生成されたパッケージ群によって使用されます。

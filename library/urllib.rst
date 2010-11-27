@@ -49,7 +49,7 @@
    .. index:: module: mimetools
 
    :meth:`info` メソッドは開いた URL に関連付けられたメタ情報を含む :class:`httplib.HTTPMessage`
-   クラスのインスタンスを返します。 
+   クラスのインスタンスを返します。
    URL へのアクセスメソッドが HTTP である場合、メタ情報中のヘッダ情報はサーバが HTML
    ページを返すときに先頭に付加するヘッダ情報です (Content-Length および Content-Type を含みます)。
    アクセスメソッドが FTP

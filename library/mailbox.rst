@@ -134,7 +134,7 @@
                __iter__()
                values()
 
-      :meth:`itervalues` または :meth:`__iter__` 
+      :meth:`itervalues` または :meth:`__iter__`
       として呼び出されると全てのメッセージの表現についてのイテレータを返しますが、
       :meth:`values` として呼び出されるとその表現のリストを返します。
       メッセージは適切な形式ごとの :class:`Message`
@@ -220,7 +220,7 @@
    .. method:: pop(key[, default])
 
       *key* に対応するメッセージの表現を返します。
-      もし対応するメッセージが存在しなければ *default* 
+      もし対応するメッセージが存在しなければ *default*
       が供給されていればその値を返し、そうでなければ
       :exc:`KeyError` 例外を送出します。
       メッセージは適切な形式ごとの :class:`Message`

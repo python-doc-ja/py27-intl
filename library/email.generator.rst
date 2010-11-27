@@ -34,10 +34,10 @@
    文の出力ファイルとして使えるようになっている必要があります。
 
    オプション引数 *mangle_from_* はフラグで、
-   ``True`` のときは メッセージ本体に現れる行頭のすべての ``From``
+   ``True`` のときはメッセージ本体に現れる行頭のすべての ``From``
    という文字列の最初に ``>`` という文字を追加します。これは、このような行が
    Unix の mailbox 形式のエンペローブヘッダ区切り文字列として誤認識されるの\
-   を防ぐための、 移植性ある唯一の方法です (詳しくは `WHY THE CONTENT-LENGTH
+   を防ぐための、移植性ある唯一の方法です (詳しくは `WHY THE CONTENT-LENGTH
    FORMAT IS BAD (なぜ Content-Length 形式が有害か)
    <http://www.jwz.org/doc/content-length.html>`_
    を参照してください)。デフォルトでは *mangle_from_* は ``True`` になっていますが、
@@ -88,7 +88,7 @@
    .. method:: write(s)
 
       文字列 *s* を既定のファイルに出力します。
-      ここでいう出力先は :class:`Generator` コンストラクタに 渡した *outfp*
+      ここでいう出力先は :class:`Generator` コンストラクタに渡した *outfp*
       のことをさします。この関数はただ単に\
       拡張 print 文で使われる :class:`Generator` インスタンスに対して\
       ファイル操作風の API を提供するためだけのものです。
@@ -107,9 +107,9 @@
 
 .. class:: DecodedGenerator(outfp[, mangle_from_[, maxheaderlen[, fmt]]])
 
-   このクラスは :class:`Generator` から派生したもので、 メッセージの
+   このクラスは :class:`Generator` から派生したもので、メッセージの
    subpart をすべて渡り歩きます。subpart の主形式が :mimetype:`text`
-   だった場合、これはその subpart のペイロードを デコードして出力します。
+   だった場合、これはその subpart のペイロードをデコードして出力します。
    オプション引数 *_mangle_from_* および *maxheaderlen* の意味は基底\
    クラス :class:`Generator` のそれと同じです。
 
@@ -129,14 +129,14 @@
 
   * ``encoding`` -- 非 :mimetype:`text` 型 subpart の Content-transfer-encoding
 
-   *fmt* のデフォルト値は ``None`` です。 こうすると以下の形式で出力します::
+   *fmt* のデフォルト値は ``None`` です。こうすると以下の形式で出力します::
 
       [Non-text (%(type)s) part of message omitted, filename %(filename)s]
 
    .. versionadded:: 2.2.2
 
 .. versionchanged:: 2.5
-   以前の非推奨メソッド :meth:`__call__` は削除されま した。
+   以前の非推奨メソッド :meth:`__call__` は削除されました。
 
 .. rubric:: Footnotes
 

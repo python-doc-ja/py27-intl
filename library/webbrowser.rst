@@ -135,7 +135,7 @@ Notes:
    Windowsプラットフォームのみ。
 
 (3)
-   Mac OSプラットフォームのみ； 標準MacPythonモジュール :mod:`ic` を必要とします。
+   Mac OSプラットフォームのみ；標準MacPythonモジュール :mod:`ic` を必要とします。
 
 (4)
    Mac OS X プラットフォームのみ。

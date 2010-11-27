@@ -55,7 +55,7 @@ Python に適した形に修正されています。
 :func:`islice`          seq, [start,] stop [, step]     seq[start:stop:step]                                  ``islice('ABCDEFG', 2, None) --> C D E F G``
 :func:`imap`            func, p, q, ...                 func(p0, q0), func(p1, q1), ...                       ``imap(pow, (2,3,10), (5,2,3)) --> 32 9 1000``
 :func:`starmap`         func, seq                       func(\*seq[0]), func(\*seq[1]), ...                   ``starmap(pow, [(2,5), (3,2), (10,3)]) --> 32 9 1000``
-:func:`tee`             it, n                           it1, it2 , ... itn  一つのイテレータを n 個に分ける  
+:func:`tee`             it, n                           it1, it2 , ... itn  一つのイテレータを n 個に分ける
 :func:`takewhile`       pred, seq                       seq[0], seq[1], pred が偽になるまで                   ``takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4``
 :func:`izip`            p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip('ABCD', 'xy') --> Ax By``
 :func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-``
@@ -167,7 +167,7 @@ Itertool関数
 .. function:: count([n])
 
    *n* で始まる、連続した整数を返すイテレータを作成します。
-   *n* を 指定しなかった場合、デフォルト値はゼロです。
+   *n* を指定しなかった場合、デフォルト値はゼロです。
    :func:`imap` で連続したデータを生成する場合や
    :func:`izip` でシーケンスに番号を追加する場合などに引数として使用することができます。
    この関数は以下のスクリプトと同等です： ::

@@ -15,7 +15,7 @@
 Python 内では AppleEvent ディスクリプタは、組み込み型である
 AEDesc の Python オブジェクトとして扱われます。
 :class:`AEDesc` は :mod:`Carbon.AE` モジュールで定義されています。
- 
+
 .. warning::
 
    このモジュールは 3.0 で削除されます。
@@ -74,7 +74,7 @@ AEDesc の Python オブジェクトとして扱われます。
    Python リストとして返され、リストの要素は再帰的にアンパックされます。
    ``formodulename`` の指定がない場合、オブジェクト参照 (例： ``line 3 of document
    1``)が、 :class:`aetypes.ObjectSpecifier` のインスタ\
-   ンスとして返されます。ディスクリプタ型が typeFSS である AppleEvent 
+   ンスとして返されます。ディスクリプタ型が typeFSS である AppleEvent
    ディスクリプタが、 :class:`FSSpec` オブジェクトとして返されます。
    AppleEventレコードディスクリプタが、再帰的にアンパックされた、型の4
    文字キーと要素を持つPython辞書として返されます。

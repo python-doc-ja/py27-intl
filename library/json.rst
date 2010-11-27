@@ -10,11 +10,11 @@
 JSON (JavaScript Object Notation) <http://json.org> は JavaScript 文法
 (ECMA-262 3rd edition) のサブセットで軽量のデータ交換形式として使われています。
 
-:mod:`json` の API は標準ライブラリの :mod:`marshal` や :mod:`pickle` 
+:mod:`json` の API は標準ライブラリの :mod:`marshal` や :mod:`pickle`
 のユーザに馴染み深いものです。
 
 基本的な Python オブジェクト階層のエンコーディング::
-    
+
     >>> import json
     >>> json.dumps(['foo', {'bar': ('baz', None, 1.0, 2)}])
     '["foo", {"bar": ["baz", null, 1.0, 2]}]'
@@ -43,7 +43,7 @@ JSON (JavaScript Object Notation) <http://json.org> は JavaScript 文法
     >>> import json
     >>> print json.dumps({'4': 5, '6': 7}, sort_keys=True, indent=4)
     {
-        "4": 5, 
+        "4": 5,
         "6": 7
     }
 
@@ -66,7 +66,7 @@ JSON オブジェクトのデコーディング方法を誂える::
     ...     if '__complex__' in dct:
     ...         return complex(dct['real'], dct['imag'])
     ...     return dct
-    ... 
+    ...
     >>> json.loads('{"__complex__": true, "real": 1, "imag": 2}',
     ...     object_hook=as_complex)
     (1+2j)
@@ -75,21 +75,21 @@ JSON オブジェクトのデコーディング方法を誂える::
     Decimal('1.1')
 
 :class:`JSONEncoder` の拡張::
-    
+
     >>> import json
     >>> class ComplexEncoder(json.JSONEncoder):
     ...     def default(self, obj):
     ...         if isinstance(obj, complex):
     ...             return [obj.real, obj.imag]
     ...         return json.JSONEncoder.default(self, obj)
-    ... 
+    ...
     >>> dumps(2 + 1j, cls=ComplexEncoder)
     '[2.0, 1.0]'
     >>> ComplexEncoder().encode(2 + 1j)
     '[2.0, 1.0]'
     >>> list(ComplexEncoder().iterencode(2 + 1j))
     ['[', '2.0', ', ', '1.0', ']']
-    
+
 
 .. highlight:: none
 
@@ -104,7 +104,7 @@ JSON オブジェクトのデコーディング方法を誂える::
 
 .. highlight:: python
 
-.. note:: 
+.. note::
 
    このモジュールのデフォルト設定で生成される JSON は YAML のサブセットですので、
    その直列化にも使うことができるでしょう。
@@ -124,7 +124,7 @@ JSON オブジェクトのデコーディング方法を誂える::
    :exc:`TypeError` を送出せずに読み飛ばされます。
 
    *ensure_ascii* が ``False`` (デフォルトは ``True``) ならば、
-   *fp* へ書き込まれるチャンクは 通常の Python における :class:`str` から
+   *fp* へ書き込まれるチャンクは通常の Python における :class:`str` から
    :class:`unicode` への型強制ルールに従って :class:`unicode`
    インスタンスになることがあります。 ``fp.write()`` が
    (:func:`codecs.getwriter` のように) 前もって :class:`unicode`
@@ -370,7 +370,7 @@ JSON オブジェクトのデコーディング方法を誂える::
       (:exc:`TypeError` を送出するために) 呼び出すかします。
 
       たとえば、任意のイテレータをサポートするために、次のように実装します::
-            
+
          def default(self, o):
             try:
                 iterable = iter(o)
@@ -393,6 +393,6 @@ JSON オブジェクトのデコーディング方法を誂える::
 
       与えられたオブジェクト *o* をエンコードし、得られた文字列表現ごとに
       yield します。たとえば::
-            
+
             for chunk in JSONEncoder().iterencode(bigobject):
                 mysocket.write(chunk)

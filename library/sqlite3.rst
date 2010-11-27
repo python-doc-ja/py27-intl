@@ -661,7 +661,7 @@ SQLite と Python の型
 
 SQLite が最初からサポートしているのは次の型です。
 
-   ``NULL``, ``INTEGER``, ``REAL``, ``TEXT``, ``BLOB`` 
+   ``NULL``, ``INTEGER``, ``REAL``, ``TEXT``, ``BLOB``
 
 したがって、次の Python の型は問題なく SQLite に送り込めます:
 

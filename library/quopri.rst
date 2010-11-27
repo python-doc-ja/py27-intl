@@ -22,7 +22,7 @@ quoted-printable エンコーディングは比較的印字不可能な文字の
 .. function:: decode(input, output[,header])
 
    ファイル *input* の内容をデコードして、デコードされたバイナリ\
-   データを ファイル *output* に書き出します。 *input* および
+   データをファイル *output* に書き出します。 *input* および
    *output* はファイルか、ファイルオブジェクトの\
    インタフェースを真似たオブジェクトでなければなりません。 *input* は
    ``input.readline()`` が空文字列を返すまで\

@@ -4,7 +4,7 @@
 .. module:: mhlib
    :synopsis: Python から MH のメールボックスを操作します。
    :deprecated:
- 
+
 .. deprecated:: 2.6
     :mod:`mhlib` は Python 3.0 では削除されています。
     代わりに :mod:`mailbox` をお使い下さい。

@@ -24,7 +24,7 @@
 .. class:: AEServer()
 
    AppleEvent の分岐を処理するクラス。作成するアプリケーションはこのクラスと、
-   :class:`MiniApplication` あるいは :class:`FrameWork.Application` 
+   :class:`MiniApplication` あるいは :class:`FrameWork.Application`
    のサブクラスでなければなりません。サブクラス化したクラスでは :meth:`__init__`
    メソッドで、継承した両方のクラスの :meth:`__init__` メソッドを呼びださ\
    なければなりません。

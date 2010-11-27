@@ -48,7 +48,7 @@ FeedParser API
 .. versionadded:: 2.4
 
 :mod:`email.feedparser` モジュールからインポートされる :class:`FeedParser` は email
-メッセージをインクリメンタルに解析するのに 向いた API を提供します。
+メッセージをインクリメンタルに解析するのに向いた API を提供します。
 これは email メッセージのテキストを (ソケットなどの) 読み込みがブロックされる\
 可能性のある情報源から入力するときに必要となります。もちろん :class:`FeedParser` は
 文字列またはファイルにすべて格納されている email メッセージを解析するのにも\
@@ -151,7 +151,7 @@ Parser クラス API
 
       オプション引数 *headersonly* はヘッダ部分を解析しただけで終了するか\
       否かを指定します。デフォルトの値は ``False``
-      で、これはそのファイルの 内容すべてを解析することを意味しています。
+      で、これはそのファイルの内容すべてを解析することを意味しています。
 
    .. versionchanged:: 2.2.2
       *headersonly* フラグが追加されました.
@@ -179,7 +179,7 @@ Parser クラス API
 .. function:: message_from_string(s[, _class[, strict]])
 
    文字列からメッセージオブジェクト構造を作成し返します。
-   これは ``Parser().parsestr(s)`` とまったく同じです。 オプション引数
+   これは ``Parser().parsestr(s)`` とまったく同じです。オプション引数
    *_class* および *strict* は :class:`Parser` クラスの\
    コンストラクタと同様に解釈されます。
 
@@ -229,16 +229,16 @@ Parser クラス API
 * いくつかの標準的でないメッセージは、 :mimetype:`multipart` の使い方に\
   統一がとれていない場合があります。このようなメッセージは
   :mailheader:`Content-Type` ヘッダに :mimetype:`multipart`
-  を指定しているものの、 その :meth:`is_multipart` メソッドは ``False``
-  を返すことがあります。 もしこのようなメッセージが
-  :class:`FeedParser` によって解析されると、 その *defects* 属性のリスト中には
+  を指定しているものの、その :meth:`is_multipart` メソッドは ``False``
+  を返すことがあります。もしこのようなメッセージが
+  :class:`FeedParser` によって解析されると、その *defects* 属性のリスト中には
   :class:`MultipartInvariantViolationDefect` クラスの\
   インスタンスが現れます。詳しい情報については
-  :mod:`email.errors` を 参照してください。
+  :mod:`email.errors` を参照してください。
 
 .. rubric:: Footnotes
 
-.. [#] Python 2.4 から導入 された email パッケージ バージョン 3.0 では、
+.. [#] Python 2.4 から導入された email パッケージバージョン 3.0 では、
    旧式の :class:`Parser` は :class:`FeedParser` によって書き直されました。
    そのためパーザの意味論と得られる結果は 2つのパーザで同一のものになります。
 

@@ -58,12 +58,12 @@ ABC                        継承しているクラス     Abstract Methods     
 
 :class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.
                            :class:`Iterable`,                             ``index``, ``count``
-                           :class:`Container`     
-                                                  
+                           :class:`Container`
+
 :class:`MutableSequnce`    :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
                                                   ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,
                                                   ``insert``,             ``remove``, ``__iadd__``
-                                                  
+
 :class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,
                            :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``
                            :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``
@@ -71,11 +71,11 @@ ABC                        継承しているクラス     Abstract Methods     
 :class:`MutableSet`        :class:`Set`           ``add``,                Set から継承したメソッドと、
                                                   ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,
                                                                           ``__iand__``, ``__ixor__``, ``__isub__``
-                                                  
+
 :class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,
                            :class:`Iterable`,                             ``get``, ``__eq__``, ``__ne__``
                            :class:`Container`
-                                                  
+
 :class:`MutableMapping`    :class:`Mapping`       ``__setitem__``         Mapping から継承したメソッドと、
                                                   ``__detitem__``,        ``pop``, ``popitem``, ``clear``, ``update``,
                                                                           ``setdefault``
@@ -95,7 +95,7 @@ ABC                        継承しているクラス     Abstract Methods     
     if isinstance(myvar, collections.Sized):
        size = len(myvar)
 
-幾つかの ABC はコンテナ型APIを提供するクラスを開発するのを助ける mixin型 としても
+幾つかの ABC はコンテナ型APIを提供するクラスを開発するのを助ける mixin型としても
 使えます。例えば、 :class:`Set` API を提供するクラスを作る場合、3つの基本になる
 抽象メソッド :meth:`__contains__`, :meth:`__iter__`, :meth:`__len__` だけが
 必要です。 ABC が残りの :meth:`__and__` や :meth:`isdisjoint` といったメソッドを
@@ -120,7 +120,7 @@ ABC                        継承しているクラス     Abstract Methods     
     s2 = ListBasedSet('defghi')
     overlap = s1 & s2            # __and__() は ABC により自動的に提供される
 
-:class:`Set` と :class:`MutableSet` を mixin型 として利用するときの注意点:
+:class:`Set` と :class:`MutableSet` を mixin型として利用するときの注意点:
 
 (1)
    幾つかの set の操作は新しい set を作るので、デフォルトの mixin メソッドは
@@ -337,11 +337,11 @@ d[n]`` の純粋な Python 実装では pop したい要素まで :meth:`rotate`
 
 長さが制限された deque は Unix における ``tail`` フィルタに相当する機能を
 提供します::
- 
+
    def tail(filename, n=10):
        'ファイルの最後の n 行を返す.'
        return deque(open(filename), n)
- 
+
 .. _defaultdict-objects:
 
 :class:`defaultdict` オブジェクト
@@ -467,7 +467,7 @@ multisetのように)要素の数え上げに便利に使うことができま�
    docstring (型名と属性名が入っています) や、 tuple の内容を ``name=value`` という
    形のリストで返す使いやすい :meth:`__repr__` も持っています。
 
-   *field_names* は各属性名を空白文字 (whitespace) と/あるいは カンマ (,) で区切った
+   *field_names* は各属性名を空白文字 (whitespace) と/あるいはカンマ (,) で区切った
    文字列です。例えば、 ``'x y'`` か ``'x, y'`` です。代わりに *field_names* に
    ``['x', 'y']`` のような文字列のシーケンスを渡すこともできます。
 
@@ -521,7 +521,7 @@ Example:
                if kwds:
                    raise ValueError('Got unexpected field names: %r' % kwds.keys())
                return result
-   <BLANKLINE>            
+   <BLANKLINE>
            def __getnewargs__(self):
                return tuple(self)
    <BLANKLINE>
@@ -539,7 +539,7 @@ Example:
    >>> p                       # name=value スタイルの読みやすい __repr__
    Point(x=11, y=22)
 
-名前付きタプルは :mod:`csv` や :mod:`sqlite3` モジュール が返すタプルのフィールドに名前を
+名前付きタプルは :mod:`csv` や :mod:`sqlite3` モジュールが返すタプルのフィールドに名前を
 付けるときにとても便利です::
 
    EmployeeRecord = namedtuple('EmployeeRecord', 'name, age, title, department, paygrade')

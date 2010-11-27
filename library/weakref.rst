@@ -36,11 +36,11 @@
 弱参照辞書の実装に使われている低水準の機構は、高度な利用を行う際に恩恵をうけられるよう :mod:`weakref` モジュールで公開されています。
 
 .. .. note::
-.. 
+..
 ..    Weak references to an object are cleared before the object's :meth:`__del__`
 ..    is called, to ensure that the weak reference callback (if any) finds the
 ..    object still alive.
-.. 
+..
 
 .. note::
 
@@ -148,14 +148,14 @@
    .. versionadded:: 2.5
 
 .. method:: WeakKeyDictionary.keyrefs()
- 
+
    .. Return a list of weak references to the keys.
 
    キーへの弱参照のリストを返します。
- 
+
    .. versionadded:: 2.5
- 
- 
+
+
 .. class:: WeakValueDictionary([dict])
 
    値を弱く参照するマッピングクラス。値への強い参照がもはや存在しなくなったときに、辞書のエントリは捨てられます。

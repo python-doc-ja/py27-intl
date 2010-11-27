@@ -119,7 +119,7 @@
    .. % appropriate for the \samp{\%()s} string interpolation.  Note that
    .. % \var{__name__} is an intrinsic default; its value is the section name,
    .. % and will override any value provided in \var{defaults}.
-   .. % 
+   .. %
    .. % All option names used in interpolation will be passed through the
    .. % \method{optionxform()} method just like any other option name
    .. % reference.  For example, using the default implementation of

@@ -3,7 +3,7 @@
 ====================================================
 
 .. module:: calendar
-   :synopsis: Unix の cal プログラム相当の機能を含んだカレン ダーに関する関数群
+   :synopsis: Unix の cal プログラム相当の機能を含んだカレンダーに関する関数群
 .. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
 
 
@@ -20,7 +20,7 @@
 このモジュールで提供する関数とクラスのほとんどは :mod:`datetime` に依存しており、
 過去も未来も現代のグレゴリオ暦を利用します。
 この方式は Dershowitz と Reingold の書籍「Calendrical Calculations」にある
-proleptic Gregorian 暦に一致しており、 同書では全ての計算の基礎となる暦としています。r
+proleptic Gregorian 暦に一致しており、同書では全ての計算の基礎となる暦としています。r
 ---  (訳注: proleptic Gregorian 暦とはグレゴリオ暦制定(1582年)以前についても
 グレゴリオ暦で言い表す暦の方式のことで ISO 8601 などでも採用されています)
 
@@ -173,9 +173,9 @@ proleptic Gregorian 暦に一致しており、 同書では全ての計算の�
 
       一年分のカレンダーを一つの完全な HTML ページとして返します。
       *width* の値(デフォルトでは 3 です) は何ヶ月分を一行に収めるかを指定します。
-      *css* は使われるカスケーディング スタイルシートの名前です。
+      *css* は使われるカスケーディングスタイルシートの名前です。
       スタイルシートを使わないようにするために :const:`None` を渡すこともできます。
-      *encoding* には 出力に使うエンコーディングを指定します (デフォルトではシステムデフォルトのエンコーディングです)。
+      *encoding* には出力に使うエンコーディングを指定します (デフォルトではシステムデフォルトのエンコーディングです)。
 
 
 .. class:: LocaleTextCalendar([firstweekday[, locale]])
@@ -322,7 +322,7 @@ proleptic Gregorian 暦に一致しており、 同書では全ての計算の�
 .. seealso::
 
    Module :mod:`datetime`
-      :mod:`time` モジュールと似た機能を持った 日付と時間用のオブジェクト指向インタフェース。
+      :mod:`time` モジュールと似た機能を持った日付と時間用のオブジェクト指向インタフェース。
 
    Module :mod:`time`
       低レベルの時間に関連した関数群。

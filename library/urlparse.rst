@@ -199,7 +199,7 @@
          the *url*'s host name and/or scheme will be present in the result.  For example:
 
       *url* が(``//`` か ``scheme://`` で始まっている)絶対URLであれば、
-      その *url* のホスト名 と/もしくは scheme は、結果に反映されます。例えば:
+      その *url* のホスト名と/もしくは scheme は、結果に反映されます。例えば:
 
    .. doctest::
 
@@ -212,7 +212,7 @@
 
    もしこの動作が望みのものでない場合は、 *url* を :func:`urlsplit` と :func:`urlunsplit`
    で先に処理して、 *scheme* と *netloc* を削除してください。
-   
+
 
 
 .. function:: urldefrag(url)

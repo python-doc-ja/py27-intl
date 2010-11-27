@@ -57,7 +57,7 @@
 
 * ハードウェアによる 2 進浮動小数点表現と違い、 :mod:`decimal`
   モジュールでは計算精度をユーザが変更できます(デフォルトでは 28
-  桁です)。 この桁数はほとんどの問題解決に十分な大きさです::
+  桁です)。この桁数はほとんどの問題解決に十分な大きさです::
 
      >>> getcontext().prec = 6
      >>> Decimal(1) / Decimal(7)
@@ -68,7 +68,7 @@
 
 * 2進と10進の浮動小数点は、いずれも広く公開されている標準仕様の\
   もとに実装されています。組み込みの浮動小数点型では、標準仕様で提唱されている\
-  機能のほんのささやかな部分を利用できるにすぎませんが、 :mod:`decimal` 
+  機能のほんのささやかな部分を利用できるにすぎませんが、 :mod:`decimal`
   では標準仕様が要求している全ての機能を利用できます。必要に応じて、\
   プログラマは値の丸めやシグナル処理を完全に制御できます。
   この中には全ての不正確な操作を例外でブロックして正確な算術を遵守させる\
@@ -78,7 +78,7 @@
   (固定小数点算術と呼ばれることもある)と\
   丸めありの浮動小数点数算術」(10進数演算仕様より引用)\
   をサポートするようにデザインされました。
- 
+
 このモジュールは、10進数型、算術コンテキスト (context for arithmetic)、
 そしてシグナル (signal) という三つの概念を中心に設計されています、
 
@@ -100,7 +100,7 @@
 シグナルとは、演算の過程で生じる例外的条件です。個々のシグナルは、\
 アプリケーションそれぞれの要求に従って、無視されたり、単なる情報と\
 みなされたり、例外として扱われたりします。
-:mod:`decimal` モジュール には、 :const:`Clamped`,
+:mod:`decimal` モジュールには、 :const:`Clamped`,
 :const:`InvalidOperation`, :const:`DivisionByZero`, :const:`Inexact`,
 :const:`Rounded`, :const:`Subnormal`, :const:`Overflow`,
 および :const:`Underflow` といったシグナルがあります。
@@ -224,7 +224,7 @@ error も含めて) 明示的に残せます。 :class:`Decimal` は
    Decimal('2.302585092994045684017991455')
    >>> Decimal('10').log10()
    Decimal('1')
- 
+
 :meth:`quantize` メソッドは位を固定して数値を丸めます。このメソッドは、\
 計算結果を固定の桁数で丸めることがよくある、通貨を扱うアプリケーションで\
 便利です:
@@ -324,7 +324,7 @@ Decimal オブジェクト
 
    *value* に基づいて新たな :class:`Decimal` オブジェクトを構築します。
 
-   *value* は整数、文字列、タプル、および他の :class:`Decimal` 
+   *value* は整数、文字列、タプル、および他の :class:`Decimal`
    オブジェクトにできます。
    *value* を指定しない場合、 ``Decimal("0")`` を返します。
    *value* が文字列の場合、先頭と末尾の空白を取り除いた後には以下の
@@ -396,9 +396,9 @@ Decimal オブジェクト
       引数の標準的(canonical)エンコーディングを返します。現在のところ、
       :class:`Deciaml` インスタンスのエンコーディングは常に標準的なので、
       この操作は引数に手を加えずに返します。
- 
+
       .. versionadded:: 2.6
- 
+
    .. method:: compare(other[, context])
 
       二つの Decimal インスタンスを比較します。この演算は通常の比較メソッド
@@ -417,20 +417,20 @@ Decimal オブジェクト
       シグナルを送るところが異なります。すなわち、どちらの比較対象も発信
       (signaling) NaN でないならば無言(quiet) NaN である比較対象が\
       あたかも発信 NaN であるかのように扱われます。
- 
+
       .. versionadded:: 2.6
 
    .. method:: compare_total(other)
- 
+
       二つの対象を数値によらず抽象表現によって比較します。 :meth:`compare`
       に似ていますが、結果は :class:`Decimal` に全順序を与えます。
       この順序づけによると、数値的に等しくても異なった表現を持つ二つの
       :class:`Decimal` インスタンスの比較は等しくなりません:
- 
+
          >>> Decimal('12.0').compare_total(Decimal('12'))
          Decimal('-1')
 
-      
+
       無言 NaN と発信 NaN もこの全順序に位置付けられます。
       この関数の結果は、もし比較対象が同じ表現を持つならば ``Decimal('0')``
       であり、一つめの比較対象が二つめより下位にあれば ``Decimal('-1')`` 、
@@ -441,7 +441,7 @@ Decimal オブジェクト
    .. method:: compare_total_mag(other)
 
       二つの対象を :meth:`compare_total` のように数値によらず抽象表現によって\
-      比較しますが、両者の符号を無視します。 ``x.compare_total_mag(y)`` 
+      比較しますが、両者の符号を無視します。 ``x.compare_total_mag(y)``
       は ``x.copy_abs().compare_total(y.copy_abs())`` と等価です。
 
       .. versionadded:: 2.6
@@ -683,7 +683,7 @@ Decimal オブジェクト
       数値を正規化 (normalize) して、右端に連続しているゼロを除去し、
       :const:`Decimal('0')` と同じ結果はすべて
       :const:`Decimal('0e0')` に変換します。
-      同じクラスの値から基準表現を生成する際に用います。 たとえば、
+      同じクラスの値から基準表現を生成する際に用います。たとえば、
       ``Decimal('32.100')`` と ``Decimal('0.321000e+2')`` の正規化は、いずれも同じ値
       ``Decimal('32.1')`` になります。
 
@@ -929,7 +929,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    単一スレッドの環境では、このコンテキストを使わないよう薦めます。
    下で述べるように明示的にコンテキストを作成してください。
 
-   デフォルトの値は精度 28 桁、丸め規則 :const:`ROUND_HALF_EVEN` で、 トラップ
+   デフォルトの値は精度 28 桁、丸め規則 :const:`ROUND_HALF_EVEN` で、トラップ
    :const:`Overflow`, :const:`InvalidOperation`, および :const:`DivisionByZero`
    が有効になっています。
 
@@ -939,7 +939,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
 
 .. class:: Context(prec=None, rounding=None, traps=None, flags=None, Emin=None, Emax=None, capitals=1)
 
-   新たなコンテキストを生成します。あるフィールドが定義されていないか :const:`None` 
+   新たなコンテキストを生成します。あるフィールドが定義されていないか :const:`None`
    であれば、 :const:`DefaultContext` からデフォルト値をコピーします。
    *flags* フィールドが設定されていいか :const:`None` の場合には、
    全てのフラグがクリアされます。
@@ -975,7 +975,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
 
    .. versionchanged:: 2.6
       :const:`ROUND_05UP` 丸めモードが追加されました。
- 
+
    :class:`Context` クラスでは、いくつかの汎用のメソッドの他、現在の\
    コンテキストで算術演算を直接行うためのメソッドを数多く定義しています。
    加えて、 :class:`Decimal` の各メソッドについて(:meth:`adjusted` および
@@ -1012,7 +1012,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
       結果が変わり得るという見本です :
 
       .. doctest:: newcontext
- 
+
          >>> getcontext().prec = 3
          >>> Decimal('3.4445') + Decimal('1.0023')
          Decimal('4.45')
@@ -1021,7 +1021,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
 
       このメソッドは IBM 仕様の to-number 演算を実装したものです。
       引数が文字列の場合、前や後ろに余計な空白を付けることは許されません。
- 
+
    .. method:: Etiny()
 
       ``Emin - prec + 1`` に等しい値を返します。
@@ -1037,7 +1037,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    インスタンスを生成して、算術演算を適用するというアプローチを\
    とります。演算はアクティブなスレッドにおける現在のコンテキストの\
    下で行われます。もう一つのアプローチは、コンテキストのメソッドを\
-   使った特定のコンテキスト下での計算です。 コンテキストのメソッドは
+   使った特定のコンテキスト下での計算です。コンテキストのメソッドは
    :class:`Decimal` クラスのメソッドに似ているので、
    ここでは簡単な説明にとどめます。
 
@@ -1055,7 +1055,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    .. method:: canonical(x)
 
       同じ Decimal オブジェクト *x* を返します。
- 
+
    .. method:: compare(x, y)
 
       二つの値を数値として比較します。
@@ -1063,7 +1063,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    .. method:: compare_signal(x, y)
 
       二つの演算対象の値を数値として比較します。
- 
+
    .. method:: compare_total(x, y)
 
       二つの演算対象を抽象的な表現を使って比較します。
@@ -1251,7 +1251,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
          - ``x`` と ``y`` の少なくともどちらかはゼロでない
          - ``modulo`` は非零で大きくても 'precision' 桁
 
-      ``Context.power(x, y, modulo)`` の結果は ``(x**y) % modulo`` 
+      ``Context.power(x, y, modulo)`` の結果は ``(x**y) % modulo``
       を精度無制限で計算して得られるものと同一ですが、より効率的に計算されます。
       これは常に正確です。
 
@@ -1506,7 +1506,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    Decimal('9.51111111')
    >>> u + (v + w)
    Decimal('9.51111111')
-   >>> 
+   >>>
    >>> u, v, w = Decimal(20000), Decimal(-6), Decimal('6.0000003')
    >>> (u*v) + (u*w)
    Decimal('0.0060000')

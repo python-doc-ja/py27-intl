@@ -43,7 +43,7 @@
    これは直接 :meth:`Message.add_header` に渡されます。
 
    :class:`MIMEBase` クラスはつねに
-   (*_maintype* 、 *_subtype* 、 および *_params* にもとづいた)
+   (*_maintype* 、 *_subtype* 、および *_params* にもとづいた)
    :mailheader:`Content-Type` ヘッダと、 :mailheader:`MIME-Version` ヘッダ
    (必ず ``1.0`` に設定される) を追加します。
 
@@ -72,7 +72,7 @@
    :class:`MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式の MIME
    メッセージのための中間的な基底クラスです。オプション引数 *_subtype* は\
    デフォルトでは :mimetype:`mixed` になっていますが、そのメッセージの副形式
-   (subtype) を 指定するのに使うことができます。メッセージオブジェクトには
+   (subtype) を指定するのに使うことができます。メッセージオブジェクトには
    :mimetype:`multipart/_subtype` という値をもつ :mailheader:`Content-Type` ヘッダとともに、
    :mailheader:`MIME-Version` ヘッダが追加されるでしょう。
 
@@ -97,11 +97,11 @@
 
    Module: :mod:`email.mime.application`
 
-   :class:`MIMENonMultipart` のサブクラスである :class:`MIMEApplication` 
+   :class:`MIMENonMultipart` のサブクラスである :class:`MIMEApplication`
    クラスは MIME メッセージオブジェクトのメジャータイプ :mimetype:`application`
    を表します。
    *_data* は生のバイト列が入った文字列です。オプション引数 *_subtype* は
-   MIME のサブタイプを設定します。 サブタイプのデフォルトは :mimetype:`octet-stream`
+   MIME のサブタイプを設定します。サブタイプのデフォルトは :mimetype:`octet-stream`
    です。
 
    オプション引数の *_encoder* は呼び出し可能なオブジェクト(関数など)で、
@@ -137,7 +137,7 @@
    *_subtype* の指定もない場合は、 :exc:`TypeError` が発生します。
 
    オプション引数 *_encoder* は呼び出し可能なオブジェクト (関数など) で、
-   トランスポートのさいに画像の実際のエンコードをおこないます。 このオブジェクトは
+   トランスポートのさいに画像の実際のエンコードをおこないます。このオブジェクトは
    :class:`MIMEAudio` インスタンスの引数をひとつだけ取ることができます。
    この関数は、与えられたペイロードをエンコードされた形式に変換するのに
    :meth:`get_payload` および :meth:`set_payload` を使う必要があります。

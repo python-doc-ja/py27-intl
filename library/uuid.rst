@@ -37,7 +37,7 @@
       UUID(int=0x12345678123456781234567812345678)
 
    *hex*, *bytes*, *bytes_le*, *fields*, または *int* のうち、どれかただ一つだけが与えられなければいけません。
-   *version* 引数はオプションです；与えられた場合、結果の UUID は与えられた *hex*, *bytes*, 
+   *version* 引数はオプションです；与えられた場合、結果の UUID は与えられた *hex*, *bytes*,
    *bytes_le*, *fields*, または *int* をオーバーライドして、 RFC 4122 に準拠した variant と version
    ナンバーのセットを持つことになります。 *bytes_le*, *fields*, or *int*.
 

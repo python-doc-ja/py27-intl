@@ -8,7 +8,7 @@
 
 :mod:`dis` モジュールは Python バイトコード(:term:`bytecode`) を逆アセンブルしてバイトコードの解析を助けます。
 Pythonアセンブラがないため、このモジュールがPythonアセンブリ言語を定義しています。
-このモジュールが入力として受け取る Python バイトコード はファイル :file:`Include/opcode.h` に定義されており、
+このモジュールが入力として受け取る Python バイトコードはファイル :file:`Include/opcode.h` に定義されており、
 コンパイラとインタプリタが使用しています。
 
 例: 関数 :func:`myfunc` を考えると::
@@ -22,7 +22,7 @@ Pythonアセンブラがないため、このモジュールがPythonアセン�
      2           0 LOAD_GLOBAL              0 (len)
                  3 LOAD_FAST                0 (alist)
                  6 CALL_FUNCTION            1
-                 9 RETURN_VALUE        
+                 9 RETURN_VALUE
 
 ("2"は行番号です)。
 
@@ -451,7 +451,7 @@ Pythonバイトコード命令
 
 .. opcode:: LIST_APPEND ()
 
-   ``list.append(TOS1, TOS)`` を呼びます。 リスト内包表記を実装するために使われます。
+   ``list.append(TOS1, TOS)`` を呼びます。リスト内包表記を実装するために使われます。
 
 
 .. opcode:: LOAD_LOCALS ()
@@ -504,14 +504,14 @@ Pythonバイトコード命令
 .. opcode:: WITH_CLEANUP ()
 
    :keyword:`with` ステートメントブロックがあるときに、スタックをクリーンアップします。
-   スタックのトップは 1--3 個の値で、 なぜ/どのように finally 項に到達したかを表します:
+   スタックのトップは 1--3 個の値で、なぜ/どのように finally 項に到達したかを表します:
 
    * TOP = ``None``
    * (TOP, SECOND) = (``WHY_{RETURN,CONTINUE}``), retval
    * TOP = ``WHY_*``; no retval below it
    * (TOP, SECOND, THIRD) = exc_info()
 
-   その下に、 コンテキストマネージャーの :meth:`__exit__` バウンドメソッドの EXIT があります。
+   その下に、コンテキストマネージャーの :meth:`__exit__` バウンドメソッドの EXIT があります。
 
    最後のケースでは、 ``EXIT(TOP, SECOND, THIRD)`` が呼ばれ、それ以外では
    ``EXIT(None, None, None)`` が呼ばれます。
@@ -738,7 +738,7 @@ Pythonバイトコード命令
 .. opcode:: MAKE_CLOSURE (argc)
 
    新しい関数オブジェクトを作り出し、その *func_closure* スロットを設定し、それをスタックにプッシュします。
-   TOSは関数に関連付けられたコードで、TOS1 は クロージャ の自由変数に対する cell を格納したタプルです。
+   TOSは関数に関連付けられたコードで、TOS1 はクロージャの自由変数に対する cell を格納したタプルです。
    関数はセルの前にある *argc* デフォルトパラメータも持っています。
 
 

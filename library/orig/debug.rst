@@ -14,4 +14,4 @@ allowing you to identify bottlenecks in your programs.
    profile.rst
    hotshot.rst
    timeit.rst
-   trace.rst
+   trace.rstt

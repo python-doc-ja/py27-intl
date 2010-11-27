@@ -17,7 +17,7 @@
 どちらにも含まれません。
 
 ヘッダは大文字小文字を区別した形式で保存されますが、
-ヘッダ名が一致するかどうかの検査は 大文字小文字を区別せずにおこなうことができます。
+ヘッダ名が一致するかどうかの検査は大文字小文字を区別せずにおこなうことができます。
 *Unix-From* ヘッダまたは ``From_`` ヘッダとして知られる\
 エンベロープヘッダがひとつ存在することもあります。
 ペイロードは、単純なメッセージオブジェクトの場合は単なる文字列ですが、
@@ -42,7 +42,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
    .. method:: as_string([unixfrom])
 
-      メッセージ全体をフラットな文字列として返します。 オプション *unixfrom* が
+      メッセージ全体をフラットな文字列として返します。オプション *unixfrom* が
       ``True`` の場合、返される文字列にはエンベロープヘッダも含まれます。
       *unixfrom* のデフォルトは ``False`` です。
 
@@ -120,7 +120,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       のときにかぎりデコードされます。これ以外のエンコーディングが\
       使われている場合、 :mailheader:`Content-Transfer-Encoding` ヘッダが\
       ない場合、あるいは曖昧なbase64データが含まれる場合は、ペイロードはそのまま
-      (デコードされずに) 返されます。 もしメッセージが multipart で
+      (デコードされずに) 返されます。もしメッセージが multipart で
       *decode* フラグが ``True`` の場合は ``None`` が返されます。
       *decode* のデフォルト値は ``False`` です。
 
@@ -128,7 +128,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: set_payload(payload[, charset])
 
       メッセージ全体のオブジェクトのペイロードを *payload* に設定します。
-      ペイロードの形式をととのえるのは呼び出し側の責任です。 オプションの
+      ペイロードの形式をととのえるのは呼び出し側の責任です。オプションの
       *charset* はメッセージのデフォルト文字セットを設定します。
       詳しくは :meth:`set_charset` を参照してください。
 
@@ -175,7 +175,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
    こういった意味のちがいは意図的なもので、最大の利便性をもつようにつくられています。
 
-   注意: どんな場合も、メッセージ中のエンベロープヘッダは このマップ形式の\
+   注意: どんな場合も、メッセージ中のエンベロープヘッダはこのマップ形式の\
    インタフェイスには含まれません。
 
 
@@ -188,7 +188,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       メッセージオブジェクトが *name* という名前のフィールドを持っていれば
       true を返します。この検査では名前の大文字小文字は区別されません。
-      *name* は最後にコロンをふくんでいてはいけません。 このメソッドは以下のように
+      *name* は最後にコロンをふくんでいてはいけません。このメソッドは以下のように
       ``in`` 演算子で使われます::
 
          if 'message-id' in myMessage:
@@ -198,7 +198,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: __getitem__(name)
 
       指定された名前のヘッダフィールドの値を返します。
-      *name* は最後にコロンをふくんでいてはいけません。 そのヘッダがない場合は ``None``
+      *name* は最後にコロンをふくんでいてはいけません。そのヘッダがない場合は ``None``
       が返され、 :exc:`KeyError` 例外は発生しません。
 
       注意: 指定された名前のフィールドがメッセージのヘッダに2回以上現れている場合、
@@ -252,7 +252,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: get(name[, failobj])
 
       指定された名前をもつフィールドの値を返します。
-      これは指定された名前がないときにオプション引数の *failobj* 
+      これは指定された名前がないときにオプション引数の *failobj*
       (デフォルトでは ``None``) を返すことをのぞけば、
       :meth:`__getitem__` と同じです。
 
@@ -327,7 +327,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: Message.get_content_maintype()
 
       そのメッセージの主 content-type を返します。
-      これは :meth:`get_content_type` によって 返される文字列の
+      これは :meth:`get_content_type` によって返される文字列の
       :mimetype:`maintype` 部分です。
 
       .. versionadded:: 2.2.2
@@ -336,7 +336,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: Message.get_content_subtype()
 
       そのメッセージの副 content-type (sub content-type、subtype) を返します。
-      これは :meth:`get_content_type` によって 返される文字列の
+      これは :meth:`get_content_type` によって返される文字列の
       :mimetype:`subtype` 部分です。
 
       .. versionadded:: 2.2.2
@@ -358,7 +358,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       *ctype* は :mimetype:`text/plain` あるいは
       :mimetype:`message/rfc822` である必要がありますが、強制ではありません。
       デフォルトの content-type はヘッダの
-      :mailheader:`Content-Type` には 格納されません。
+      :mailheader:`Content-Type` には格納されません。
 
       .. versionadded:: 2.2.2
 
@@ -413,7 +413,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
          param = email.utils.collapse_rfc2231_value(rawparam)
 
       いずれの場合もパラメータの値は (文字列であれ3要素タプルの ``VALUE`` 項目であれ)
-      つねに unquote されます。 ただし、
+      つねに unquote されます。ただし、
       *unquote* が ``False`` に指定されている場合は unquote されません。
 
       .. versionchanged:: 2.2.2
@@ -430,12 +430,12 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       が設定され、新しいパラメータ値が末尾に追加されます。
 
       オプション引数 *header* が与えられた場合、
-      :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。 オプション引数
+      :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。オプション引数
       *unquote* が ``False`` でない限り、
       この値は unquote されます (デフォルトは ``True``)。
 
       オプション引数 *charset* が与えられると、
-      そのパラメータは :rfc:`2231` に従ってエンコードされます。 オプション引数
+      そのパラメータは :rfc:`2231` に従ってエンコードされます。オプション引数
       *language* は RFC 2231 の言語を指定しますが、
       デフォルトではこれは空文字列となります。 *charset* と *language*
       はどちらも文字列である必要があります。
@@ -448,7 +448,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       指定されたパラメータを :mailheader:`Content-Type` ヘッダ中から完全に\
       とりのぞきます。ヘッダはそのパラメータと値がない状態に書き換えられます。
       *requote* が ``False`` でない限り (デフォルトでは
-      ``True`` です)、 すべての値は必要に応じて quote されます。
+      ``True`` です)、すべての値は必要に応じて quote されます。
       オプション変数 *header* が与えられた場合、
       :mailheader:`Content-Type` のかわりにそのヘッダが使用されます。
 
@@ -479,7 +479,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       そのメッセージ中の :mailheader:`Content-Disposition` ヘッダにある、
       ``filename`` パラメータの値を返します。
-      目的のヘッダに ``filename`` パラメータがない場合には ``name`` 
+      目的のヘッダに ``filename`` パラメータがない場合には ``name``
       パラメータを探します。
       それも無い場合またはヘッダが無い場合には *failobj* が返されます。
       返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
@@ -498,14 +498,14 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       メッセージ中の :mailheader:`Content-Type` ヘッダにある、 ``boundary``
       パラメータに値を設定します。
-      :meth:`set_boundary` は 必要に応じて *boundary* を quote します。
+      :meth:`set_boundary` は必要に応じて *boundary* を quote します。
       そのメッセージが :mailheader:`Content-Type` ヘッダを含んでいない場合、
       :exc:`HeaderParseError` が発生します。
 
       注意: このメソッドを使うのは、古い :mailheader:`Content-Type` ヘッダを\
       削除して新しい boundary をもったヘッダを :meth:`add_header` で\
-      足すのとは少し違います。 :meth:`set_boundary` は 一連のヘッダ中での
-      :mailheader:`Content-Type` ヘッダの位置を保つからです。 しかし、これは元の
+      足すのとは少し違います。 :meth:`set_boundary` は一連のヘッダ中での
+      :mailheader:`Content-Type` ヘッダの位置を保つからです。しかし、これは元の
       :mailheader:`Content-Type` ヘッダ中に存在していた\
       連続する行の順番までは *保ちません* 。
 
@@ -533,7 +533,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       リスト中の各要素は文字列であり、これは対応する subpart 中の\
       それぞれの :mailheader:`Content-Type` ヘッダにある
-      ``charset`` の値です。 しかし、その subpart が
+      ``charset`` の値です。しかし、その subpart が
       :mailheader:`Content-Type` をもってないか、
       ``charset`` がないか、あるいは MIME maintype が :mimetype:`text` でない\
       いずれかの場合には、リストの要素として *failobj* が返されます。
@@ -580,11 +580,11 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       *preamble* 属性は MIME ドキュメントに加えるこの最初の MIME
       範囲外テキストを含んでいます。 :class:`Parser`
-      があるテキストをヘッダ以降に発見したが、 それはまだ最初の MIME
-      境界文字列が現れる前だった場合、 パーザはそのテキストをメッセージの *preamble*
+      があるテキストをヘッダ以降に発見したが、それはまだ最初の MIME
+      境界文字列が現れる前だった場合、パーザはそのテキストをメッセージの *preamble*
       属性に格納します。 :class:`Generator` がある MIME メッセージから\
       プレーンテキスト形式を生成するとき、これはそのテキストをヘッダと最初の MIME
-      境界の間に挿入します。 詳細は :mod:`email.parser` および
+      境界の間に挿入します。詳細は :mod:`email.parser` および
       :mod:`email.Generator` を参照してください。
 
       注意: そのメッセージに preamble がない場合、

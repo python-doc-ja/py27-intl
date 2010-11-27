@@ -10,7 +10,7 @@
 mailcap ファイルは、メールリーダや Web ブラウザのような MIME 対応の\
 アプリケーションが、異なる MIME タイプのファイルにどのように反応\
 するかを設定するために使われます ("mailcap" の名前は
-"mail capability" から取られました)。 例えば、ある mailcap
+"mail capability" から取られました)。例えば、ある mailcap
 ファイルに ``video/mpeg; xmpeg %s`` のような\
 行が入っていたとします。ユーザが email メッセージや Web ドキュメント\
 上でその MIME タイプ :mimetype:`video/mpeg` に遭遇すると、 ``%s`` はファイル名
@@ -19,7 +19,7 @@ mailcap ファイルは、メールリーダや Web ブラウザのような MIM
 
 mailcap の形式は :rfc:`1524`, "A User Agent Configuration Mechanism
 For Multimedia Mail Format Information" で文書化されていますが、
-この文書はインターネット標準ではありません。 しかしながら、 mailcap
+この文書はインターネット標準ではありません。しかしながら、 mailcap
 ファイルはほとんどの Unix システムでサポートされています。
 
 
@@ -46,7 +46,7 @@ For Multimedia Mail Format Information" で文書化されていますが、
    上書きする必要があるでしょう。
 
    *plist* は名前付けされたパラメタのリストです; 標準の値は単なる\
-   空のリストです。リスト中の各エントリはパラメタ名を含む文字列、 等号
+   空のリストです。リスト中の各エントリはパラメタ名を含む文字列、等号
    (``'='``)、およびパラメタの値でなければなりません。
    mailcap エントリには ``%{foo}`` といったような名前つき\
    のパラメタを含めることができ、'foo' と名づけられたパラメタの値に\
@@ -55,7 +55,7 @@ For Multimedia Mail Format Information" で文書化されていますが、
    *plist* が ``['id=1', 'number=2', 'total=3']`` に設定されていれば、
    コマンドラインは ``'showpartial 1 2 3'`` になります。
 
-   mailcap ファイル中では、 オプションの "test" フィールドを\
+   mailcap ファイル中では、オプションの "test" フィールドを\
    使って、(計算機アーキテクチャや、利用しているウィンドウシステムといった)
    何らかの外部条件をテストするよう指定することができます。
    :func:`findmatch` はこれらの条件を自動的にチェックし、

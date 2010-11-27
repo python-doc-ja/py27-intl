@@ -260,7 +260,7 @@ TarFile オブジェクト
       defined at module level.
 
    *format* はアーカイブのフォーマットを制御します。
-   モジュールレベルで定義されている、 :const:`USTAR_FORMAT`, :const:`GNU_FORMAT`, :const:`PAX_FORMAT` 
+   モジュールレベルで定義されている、 :const:`USTAR_FORMAT`, :const:`GNU_FORMAT`, :const:`PAX_FORMAT`
    のいずれかである必要があります。
 
    .. versionadded:: 2.6
@@ -729,7 +729,7 @@ gzip 圧縮 tar アーカイブを作成してメンバー情報のいくつか�
      format with virtually no limits. It supports long filenames and linknames, large
      files and stores pathnames in a portable way. However, not all tar
      implementations today are able to handle pax archives properly.
-   
+
      The *pax* format is an extension to the existing *ustar* format. It uses extra
      headers for information that cannot be stored otherwise. There are two flavours
      of pax headers: Extended headers only affect the subsequent file header, global
@@ -758,7 +758,7 @@ gzip 圧縮 tar アーカイブを作成してメンバー情報のいくつか�
      characters, there is no user/group name information. Some archives have
      miscalculated header checksums in case of fields with non-ASCII characters.
 
-* ancient V7 format. 
+* ancient V7 format.
   これは Unix 7th Edition から存在する、最初の tar フォーマットです。
   通常のファイルとディレクトリのみ保存します。
   名前は100文字を超えてはならず、ユーザー/グループ名に関する情報は保存されません。

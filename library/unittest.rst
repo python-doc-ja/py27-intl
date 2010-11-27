@@ -33,7 +33,7 @@ test fixture (テストフィクスチャー)
 test case (テストケース)
    :dfn:`test case` はテストの最小単位で、各入力に対する結果をチェック
    します。テストケースを作成する場合は、 :mod:`unittest` が提供する
-   :class:`TestCase` クラス を基底クラスとして利用することができます。
+   :class:`TestCase` クラスを基底クラスとして利用することができます。
 
 test suite (テストスイート)
    :dfn:`test suite` はテストケースとテストスイートの集まりで、同時に
@@ -328,7 +328,7 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 一般的には、 :class:`TestCase` のサブクラスには良く似た名前のテスト関
 数が複数定義されますので、 :mod:`unittest` ではテストスイートを作成し
 て個々のテストで満たすプロセスを自動化するのに使う :class:`TestLoader`
-を用意しています。 たとえば、::
+を用意しています。たとえば、::
 
    suite = unittest.TestLoader().loadTestsFromTestCase(WidgetTestCase)
 
@@ -727,7 +727,7 @@ TestSuite オブジェクト
 
 .. method:: TestSuite.debug()
 
-   このスイートに関連づけられたテストを結果を収集せずに実行します。 こ
+   このスイートに関連づけられたテストを結果を収集せずに実行します。こ
    れによりテストで送出された例外は呼び出し元に伝わるようになり、デバッ
    ガの下でのテスト実行をサポートできるようになります。
 
@@ -798,7 +798,7 @@ TestResultオブジェクト
    このメソッドを呼び出して :class:`TestResult` の ``shouldStop`` 属性
    に :const:`True` をセットすることで、実行中のテストは中断しなければ
    ならないというシグナルを送ることができます。 :class:`TestRunner` オ
-   ブジェ クトはこのフラグを尊重してそれ以上のテストを実行することなく
+   ブジェクトはこのフラグを尊重してそれ以上のテストを実行することなく
    復帰しなければなりません。
 
    たとえばこの機能は、ユーザのキーボード割り込みを受け取って
@@ -936,7 +936,7 @@ TestLoader オブジェクト
 .. attribute:: TestLoader.testMethodPrefix
 
    テストメソッドの名前と判断されるメソッド名の接頭語を示す文字列。デ
-   フォ ルト値は ``'test'`` です。
+   フォルト値は ``'test'`` です。
 
    この値は :meth:`getTestCaseNames` と全ての :meth:`loadTestsFrom\*`
    メソッドに影響を与えます。

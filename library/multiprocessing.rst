@@ -11,7 +11,7 @@
 --------
 
 :mod:`multiprocessing` はPythonの標準ライブラリのパッケージで
-:mod:`threading` とよく似た API を使ってプロセスを生成することができます。 
+:mod:`threading` とよく似た API を使ってプロセスを生成することができます。
 :mod:`multiprocessing` パッケージを使用すると、
 ローカルとリモート両方の並列制御を行うことができます。
 また、このパッケージはスレッドの代わりにサブプロセスを使用することにより、
@@ -425,7 +425,7 @@
          このプロセスが終了してしまうと
          他のプロセスのデッドロックの原因になるでしょう。
 
-   プロセスオブジェクトが作成したプロセスのみが :meth:`start`, :meth:`join`, 
+   プロセスオブジェクトが作成したプロセスのみが :meth:`start`, :meth:`join`,
    :meth:`is_alive` と :attr:`exit_code` のメソッドを呼び出すべきです。
 
    以下の例では :class:`Process` のメソッドの使い方を示しています。 ::
@@ -841,7 +841,7 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
    *block* が ``True`` 且つ *timeout* が ``None`` ではないなら、
    タイムアウトが秒単位で設定されます。
    *block* が ``False`` なら *timeout* は無視されます。
-   
+
    Mac OS X では ``sem_timedwait`` がサポートされていないので、
    タイムアウトの引数は無視されることに注意してください。
 
@@ -1003,7 +1003,7 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
 ( ``MyStruct`` テーブル内には :class:`ctypes.Structure` のサブクラスがあります。)
 
 ==================== ============================ ================================
-ctypes               type を使用する sharedctypes typecode を使用する sharedctypes 
+ctypes               type を使用する sharedctypes typecode を使用する sharedctypes
 ==================== ============================ ================================
 c_double(2.4)        RawValue(c_double, 2.4)      RawValue('d', 2.4)
 MyStruct(4, 6)       RawValue(MyStruct, 4, 6)
@@ -1310,7 +1310,7 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    ...
    >>> QueueManager.register('get_queue', callable=lambda:queue)
    >>> m = QueueManager(address=('', 50000), authkey='abracadabra')
-   >>> s = m.get_server() 
+   >>> s = m.get_server()
    >>> s.serveForever()
 
 あるクライアントからサーバへのアクセスは次のようになります。
@@ -1411,7 +1411,7 @@ Proxy オブジェクト
 
    :mod:`multiprocessing` のプロキシ型は値による比較に対して何もサポートしません。
    そのため、インスタンスでは、
-   
+
    ::
 
        manager.list([1,2,3]) == [1,2,3]
@@ -1427,7 +1427,7 @@ Proxy オブジェクト
       プロキシの参照対象のメソッドの実行結果を返します。
 
       ``proxy`` がプロキシで、プロキシ内の参照対象が ``obj`` なら、
-      
+
       ::
 
          proxy._callmethod(methodname, args, kwds)

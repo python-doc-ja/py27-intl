@@ -35,7 +35,7 @@ Tcl コードを書く必要はありませんが、Tk のドキュメントや�
 節を参照してください。
 
 .. toctree::
-   
+
    tkinter.rst
    tix.rst
    scrolledtext.rst

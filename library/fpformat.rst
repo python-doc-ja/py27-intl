@@ -5,10 +5,10 @@
 .. module:: fpformat
    :synopsis: 浮動小数点をフォーマットする汎用関数。
    :deprecated:
-   
+
 .. deprecated:: 2.6
     :mod:`fpformat` は Python 3.0 で削除されました。
-   
+
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 

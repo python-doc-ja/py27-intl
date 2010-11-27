@@ -41,7 +41,7 @@ glyph metrics; printer  matching。
 
 .. function:: enumerate()
 
-   利用可能なフォント名のリストを返します。 この関数は :cfunc:`fmenumerate` へのインタフェースです。
+   利用可能なフォント名のリストを返します。この関数は :cfunc:`fmenumerate` へのインタフェースです。
 
 
 .. function:: prstr(string)
@@ -52,7 +52,7 @@ glyph metrics; printer  matching。
 
 .. function:: setpath(string)
 
-   フォントの検索パスを設定します。 ``fmsetpath(string)`` を呼び出します。 （XXX 機能しない！？！）
+   フォントの検索パスを設定します。 ``fmsetpath(string)`` を呼び出します。（XXX 機能しない！？！）
 
 
 .. function:: fontpath()
@@ -81,12 +81,12 @@ glyph metrics; printer  matching。
 
 .. method:: font handle.getcomment()
 
-   このフォントに関連付けられたコメント文字列を返します。 コメント文字列が何もなければ例外を返します。 ``fmgetcomment(fh)`` を呼び出します。
+   このフォントに関連付けられたコメント文字列を返します。コメント文字列が何もなければ例外を返します。 ``fmgetcomment(fh)`` を呼び出します。
 
 
 .. method:: font handle.getfontinfo()
 
-   このフォントに関連したデータを含むタプルを返します。 これは ``fmgetfontinfo()`` へのインタフェースです。 以下の数値を含むタプルを返します：
+   このフォントに関連したデータを含むタプルを返します。これは ``fmgetfontinfo()`` へのインタフェースです。以下の数値を含むタプルを返します：
    ``(printermatched, fixed_width, xorig, yorig, xsize, ysize, height, nglyphs)`` 。
 
 

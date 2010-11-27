@@ -70,7 +70,7 @@
     From print_time 930343700.273
     930343701.301
 
- 
+
 
 .. _scheduler-objects:
 
@@ -120,11 +120,11 @@
    呼出しコードはもはや適切でないキャンセルイベントに対して責任があります。
 
 .. .. attribute:: scheduler.queue
-.. 
+..
 ..    Read-only attribute returning a list of upcoming events in the order they
 ..    will be run.  Each event is shown as a :term:`named tuple` with the
 ..    following fields:  time, priority, action, argument.
-.. 
+..
 ..    .. versionadded:: 2.6
 
 .. attribute:: scheduler.queue

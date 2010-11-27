@@ -233,7 +233,7 @@
 
 .. function:: gauss(mu, sigma)
 
-   ガウス分布です。 *mu* は平均であり、 *sigma* は 標準偏差です。
+   ガウス分布です。 *mu* は平均であり、 *sigma* は標準偏差です。
    この関数は後で定義する関数 :func:`normalvariate` より少しだけ高速です。
 
 

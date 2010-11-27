@@ -223,7 +223,7 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
    csvfile.seek(0)
    reader = csv.reader(csvfile, dialect)
    # ... process CSV file contents here ...
- 
+
 :mod:`csv` モジュールでは以下の定数を定義しています:
 
 
