@@ -5,11 +5,11 @@
 MacOS ツールボックスモジュール
 ******************************
 
-各種のMacOSツールボックスへのインターフェースを与えるモジュール群があ ります。対応するモジュールがあるなら、そのモジュールではツールボックス
-で宣言された各種の構造体のPythonオブジェクトが定義され、操作は定義され たオブジェクトのメソッドとして実装されています。その他の操作はモジュー
-ルの関数として実装されています。 Cで可能な操作がすべてPythonで可能なわ けではありませんし(コールバックはよく問題になります)、パラメータが
-Pythonだと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。 全てのメソッドと関数は :attr:`__doc__`
-文字列があるので、引数と返り値 の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
+各種のMacOSツールボックスへのインターフェースを与えるモジュール群があります。対応するモジュールがあるなら、そのモジュールではツールボックス
+で宣言された各種の構造体のPythonオブジェクトが定義され、操作は定義されたオブジェクトのメソッドとして実装されています。その他の操作はモジュー
+ルの関数として実装されています。 Cで可能な操作がすべてPythonで可能なわけではありませんし(コールバックはよく問題になります)、パラメータが
+Pythonだと違ってしまうことはよくあります(特に入力バッファや出力バッファ)。全てのメソッドと関数は :attr:`__doc__`
+文字列があるので、引数と返り値の説明を得る事ができます。他の情報源としては、 `Inside Macintosh
 <http://developer.apple.com/documentation/macos8/mac8.html>`_などを参照してください。
 
 .. % MacOS Toolbox Modules
@@ -26,9 +26,9 @@ Pythonだと違ってしまうことはよくあります(特に入力バッフ�
 .. % % \citetitle[http://developer.apple.com/documentation/macos8/mac8.html]{Inside
 .. % % Macintosh} or similar works.
 
-これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。 この名前にもかかわらずそれら全てが Carbon
-フレームワークの一部なわけで はありません。CF は、CoreFoundationフレームワークの中に実際はあります
-し、QtはQuickTimeフレームワークにあります。ツールボックスモジュールは普通以下 のようにして利用します。
+これらのモジュールは全て :mod:`Carbon` パッケージに含まれています。この名前にもかかわらずそれら全てが Carbon
+フレームワークの一部なわけではありません。CF は、CoreFoundationフレームワークの中に実際はあります
+し、QtはQuickTimeフレームワークにあります。ツールボックスモジュールは普通以下のようにして利用します。
 
 .. % % These modules all live in a package called \module{Carbon}. Despite that name
 .. % % they are not all part of the Carbon framework: CF is really in the CoreFoundation
@@ -39,7 +39,7 @@ Pythonだと違ってしまうことはよくあります(特に入力バッフ�
 
    from Carbon import AE
 
-**注意！**これらのモジュールはまだ文書化されていません。これらの モジュールのどれでもよいですが文書化に協力したいという方は、
+**注意！**これらのモジュールはまだ文書化されていません。これらのモジュールのどれでもよいですが文書化に協力したいという方は、
 docs@python.org まで連絡をください。
 
 .. % % \strong{Warning!}  These modules are not yet documented.  If you
@@ -97,7 +97,7 @@ docs@python.org まで連絡をください。
 
 
 ``CFBase``, ``CFArray``, ``CFData``, ``CFDictionary``, ``CFString`` と ``CFURL``
-オブジェクトがいくらか部分的にサポート されています。
+オブジェクトがいくらか部分的にサポートされています。
 
 .. % Interface to the Core Foundation.
 .. % % The

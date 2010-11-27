@@ -11,9 +11,9 @@
 .. % Interactive application framework.
 
 :mod:`FrameWork` モジュールは、対話型 Macintosh アプリケーションのク
-ラスで、同時にフレームワークを提供します。プログラマは、サブクラスを作っ て基底クラスの様々なメソッドをオーバーライドし、必要な機能を実装するこ
-とでアプリケーションを組み立てられます。機能のオーバーライドは、時によっ て様々な異なるレベルで行われます。つまり、ある一つのダイアログウィンド
-ウでクリックの処理を普段と違う方法で行うには、完全なイベント処理をオー バーライドする必要はありません。
+ラスで、同時にフレームワークを提供します。プログラマは、サブクラスを作って基底クラスの様々なメソッドをオーバーライドし、必要な機能を実装するこ
+とでアプリケーションを組み立てられます。機能のオーバーライドは、時によって様々な異なるレベルで行われます。つまり、ある一つのダイアログウィンド
+ウでクリックの処理を普段と違う方法で行うには、完全なイベント処理をオーバーライドする必要はありません。
 
 .. % % The \module{FrameWork} module contains classes that together provide a
 .. % % framework for an interactive Macintosh application. The programmer
@@ -25,8 +25,8 @@
 .. % % handling.
 
 :mod:`FrameWork` の開発は事実上停止しています。現在では :mod:`PyObjC`
-を使用すればPythonからCocoaの全機能を使用することがで きます。このドキュメントでは最も重要な機能だけしか記述していませんし、
-それさえも論理的な形で書かれてもいません。ソースか例題を詳しく見てくだ さい。次にあげるのは、MacPython ニュースグループにポストされたコメントで、
+を使用すればPythonからCocoaの全機能を使用することができます。このドキュメントでは最も重要な機能だけしか記述していませんし、
+それさえも論理的な形で書かれてもいません。ソースか例題を詳しく見てください。次にあげるのは、MacPython ニュースグループにポストされたコメントで、
 :mod:`FrameWork` の強力さと限界について述べています。
 
 .. % % Work on the \module{FrameWork} has pretty much stopped, now that
@@ -40,9 +40,9 @@
 
 .. epigraph::
 
-   :mod:`FrameWork` の最大の強みは、制御の流れをたくさんの異なる部分に 分割できることです。例えば :mod:`W` を使って、いろいろな方法でメ
-   ニューをオン/オフしたり、残りをいじらずにうまくプラグインさせることが できます。:mod:`FrameWork` の弱点は、コマンドインタフェースが抽象化
-   されていないこと(といっても難しいわけではないですが)、ダイアログサポー トが最低限しかないこと、それからコントロール/ツールバーサポートが全く ないことです。
+   :mod:`FrameWork` の最大の強みは、制御の流れをたくさんの異なる部分に分割できることです。例えば :mod:`W` を使って、いろいろな方法でメ
+   ニューをオン/オフしたり、残りをいじらずにうまくプラグインさせることができます。:mod:`FrameWork` の弱点は、コマンドインタフェースが抽象化
+   されていないこと(といっても難しいわけではないですが)、ダイアログサポートが最低限しかないこと、それからコントロール/ツールバーサポートが全くないことです。
 
    .. % % The strong point of \module{FrameWork} is that it allows you to break
    .. % % into the control-flow at many different places. \refmodule{W}, for
@@ -59,8 +59,8 @@
 
 .. function:: Application()
 
-   アプリケーション全体を表現しているオブジェクト。メソッドについての詳細 は以下の記述を参照してください。デフォルト :meth:`__init__` ルーチ
-   ンは、空のウィンドウ辞書とアップルメニューつきのメニューバーをを作成し ます。
+   アプリケーション全体を表現しているオブジェクト。メソッドについての詳細は以下の記述を参照してください。デフォルト :meth:`__init__` ルーチ
+   ンは、空のウィンドウ辞書とアップルメニューつきのメニューバーをを作成します。
 
    .. % % An object representing the complete application. See below for a
    .. % % description of the methods. The default \method{__init__()} routine
@@ -69,7 +69,7 @@
 
 .. function:: MenuBar()
 
-   メニューバーを表現するオブジェクト。このオブジェクトは普通はユーザは 作成しません。
+   メニューバーを表現するオブジェクト。このオブジェクトは普通はユーザは作成しません。
 
    .. % % An object representing the menubar. This object is usually not created
    .. % % by the user.
@@ -88,8 +88,8 @@
 
 .. function:: MenuItem(menu, title[, shortcut, callback])
 
-   メニューアイテムオブジェクトを作成します。引数は作成するメニューと、ア イテムのタイトル文字列、オプションのキーボードショートカット、コールバッ
-   クルーチンです。コールバックは、メニューID、メニュー内のアイテム番号(1 から数える)、現在のフロントウィンドウ、イベントレコードを引数に呼ばれ ます。
+   メニューアイテムオブジェクトを作成します。引数は作成するメニューと、アイテムのタイトル文字列、オプションのキーボードショートカット、コールバッ
+   クルーチンです。コールバックは、メニューID、メニュー内のアイテム番号(1 から数える)、現在のフロントウィンドウ、イベントレコードを引数に呼ばれます。
 
    .. % % Create a menu item object. The arguments are the menu to create, the
    .. % % item item title string and optionally the keyboard shortcut
@@ -97,7 +97,7 @@
    .. % % menu-id, item number within menu (1-based), current front window and
    .. % % the event record.
 
-   呼び出し可能なオブジェクトのかわりに、コールバックは文字列でも良いです。 この場合、メニューの選択は、最前面のウィンドウとアプリケーションの中で
+   呼び出し可能なオブジェクトのかわりに、コールバックは文字列でも良いです。この場合、メニューの選択は、最前面のウィンドウとアプリケーションの中で
    メソッド探索を引き起こします。メソッド名は、コールバック文字列の前に  ``'domenu_'`` を付けたものです。
 
    .. % % Instead of a callable object the callback can also be a string. In
@@ -106,7 +106,7 @@
    .. % % with \code{'domenu_'} prepended.
 
    ``MenuBar`` の :meth:`fixmenudimstate`メソッドを呼びだすと、現在
-   のフロントウィンドウにもとづいて、適切なディム化を全てのメニューアイテ ムに対してほどこします。
+   のフロントウィンドウにもとづいて、適切なディム化を全てのメニューアイテムに対してほどこします。
 
    .. % % Calling the \code{MenuBar} \method{fixmenudimstate()} method sets the
    .. % % correct dimming for all menu items based on the current front window.
@@ -121,7 +121,7 @@
 
 .. function:: SubMenu(menu, label)
 
-   *label* の名前のサブメニューを、メニュー *menu* の下に作成しま す。メニューオブジェクトが返されます。
+   *label* の名前のサブメニューを、メニュー *menu* の下に作成します。メニューオブジェクトが返されます。
 
    .. % % Create a submenu named \var{label} under menu \var{menu}. The menu
    .. % % object is returned.
@@ -129,7 +129,7 @@
 
 .. function:: Window(parent)
 
-   (モードレス)ウィンドウを作成します。*Parent* は、ウィンドウが属す るアプリケーションオブジェクトです。作成されたウィンドウはまだ表示され ません。
+   (モードレス)ウィンドウを作成します。*Parent* は、ウィンドウが属するアプリケーションオブジェクトです。作成されたウィンドウはまだ表示されません。
 
    .. % % Creates a (modeless) window. \var{Parent} is the application object to
    .. % % which the window belongs. The window is not displayed until later.
@@ -145,7 +145,7 @@
 .. function:: windowbounds(width, height)
 
    与えた幅と高さのウィンドウを作成するのに必要な、``(left, top, right, bottom)`` からなるタプルを返します。ウィ
-   ンドウは以前のウィンドウに対して位置をずらして作成され、全体のウィンド ウが画面からなるべく外れないようにします。しかし、ウィンドウはいつでも
+   ンドウは以前のウィンドウに対して位置をずらして作成され、全体のウィンドウが画面からなるべく外れないようにします。しかし、ウィンドウはいつでも
    全く同じサイズで、そのため一部は画面から隠れる場合もあります。
 
    .. % % Return a \code{(\var{left}, \var{top}, \var{right}, \var{bottom})}
@@ -174,7 +174,7 @@
 アプリケーションオブジェクト
 ----------------------------
 
-アプリケーションオブジェクトのメソッドは各種ありますが、次のメソッドを あげておきます。
+アプリケーションオブジェクトのメソッドは各種ありますが、次のメソッドをあげておきます。
 
 .. % Application Objects
 .. % % Application objects have the following methods, among others:
@@ -182,7 +182,7 @@
 
 .. method:: Application.makeusermenus()
 
-   アプリケーションでメニューを使う必要がある場合、このメソッドをオーバー ライドします。属性 :attr:`menubar` にメニューを追加します。
+   アプリケーションでメニューを使う必要がある場合、このメソッドをオーバーライドします。属性 :attr:`menubar` にメニューを追加します。
 
    .. % % Override this method if you need menus in your application. Append the
    .. % % menus to the attribute \member{menubar}.
@@ -190,7 +190,7 @@
 
 .. method:: Application.getabouttext()
 
-   このメソッドをオーバーライドすることで、アプリケーションの説明を記述す るテキスト文字列を返します。代わりに、:meth:`do_about` メソッドをオー
+   このメソッドをオーバーライドすることで、アプリケーションの説明を記述するテキスト文字列を返します。代わりに、:meth:`do_about` メソッドをオー
    バーライドすれば、もっと凝った"アバウト"メッセージを出す事ができます。
 
    .. % % Override this method to return a text string describing your
@@ -200,9 +200,9 @@
 
 .. method:: Application.mainloop([mask[, wait]])
 
-   このルーチンがメインイベントループで、作成したアプリケーションが動き出 すためにはこれを呼ぶことになります。*Mask* は操作したいイベントを
-   選択するマスクです。 *wait* は並行に動作しているアプリケーションに 割り当てたいチック数(1/60秒)です(デフォルトで 0 ですが、あまり良い値で
-   はありません)。*self* フラグを立ててメインループを抜ける方法はまだ サポートされていますが、これはお勧めできません。代わりに
+   このルーチンがメインイベントループで、作成したアプリケーションが動き出すためにはこれを呼ぶことになります。*Mask* は操作したいイベントを
+   選択するマスクです。 *wait* は並行に動作しているアプリケーションに割り当てたいチック数(1/60秒)です(デフォルトで 0 ですが、あまり良い値で
+   はありません)。*self* フラグを立ててメインループを抜ける方法はまだサポートされていますが、これはお勧めできません。代わりに
    ``self._quit()``を呼んでください。
 
    .. % % This routine is the main event loop, call it to set your application
@@ -212,20 +212,20 @@
    .. % % idea). While raising \var{self} to exit the mainloop is still
    .. % % supported it is not recommended: call \code{self._quit()} instead.
 
-   イベントループは小さなパーツに分割されていて、各々をオーバーライドでき るようになっています。これらのメソッドは、デフォルトでウィンドウとダイ
+   イベントループは小さなパーツに分割されていて、各々をオーバーライドできるようになっています。これらのメソッドは、デフォルトでウィンドウとダイ
    アログや、ドラッグとリサイズの操作、 AppleEvent、非FrameWorkのウィンド
-   ウに関するウィンドウの操作などに関するイベントを分岐することなどまで面 倒をみてくれます。
+   ウに関するウィンドウの操作などに関するイベントを分岐することなどまで面倒をみてくれます。
 
    .. % % The event loop is split into many small parts, each of which can be
    .. % % overridden. The default methods take care of dispatching events to
    .. % % windows and dialogs, handling drags and resizes, Apple Events, events
    .. % % for non-FrameWork windows, etc.
 
-   原則として、全てのイベントハンドラは、イベントが完全に取り扱われた場合 は ``1`` を返さなくてはいけませんし、それ以外では ``0`` を返さな
-   くてはいけません(例えば、前面のウィンドウは FrameWork ウィンドウではな い場合を考えてください)。こうしなくてはいけない理由は、アップデートイ
-   ベントなどが Sioux コンソールウィンドウなどの他のウィンドウにきちんと渡さ れるようにするためです。*our_dispatch*
+   原則として、全てのイベントハンドラは、イベントが完全に取り扱われた場合は ``1`` を返さなくてはいけませんし、それ以外では ``0`` を返さな
+   くてはいけません(例えば、前面のウィンドウは FrameWork ウィンドウではない場合を考えてください)。こうしなくてはいけない理由は、アップデートイ
+   ベントなどが Sioux コンソールウィンドウなどの他のウィンドウにきちんと渡されるようにするためです。*our_dispatch*
    やその呼び出し元の内部から  :func:`MacOS.HandleEvent` を呼んではいけません。そうしたコードが Python
-   の内部ループのイベントハンドラを経由して呼ばれると、無限ループ になりかねないからです。
+   の内部ループのイベントハンドラを経由して呼ばれると、無限ループになりかねないからです。
 
    .. % % In general, all event handlers should return \code{1} if the event is fully
    .. % % handled and \code{0} otherwise (because the front window was not a FrameWork
@@ -239,12 +239,12 @@
 
 .. method:: Application.asyncevents(onoff)
 
-   非同期でイベント操作をしたい場合は、非ゼロの引数でこのメソッドを呼んで ください。こうすることで、イベントが生じた時に、内部のインタプリタのルー
+   非同期でイベント操作をしたい場合は、非ゼロの引数でこのメソッドを呼んでください。こうすることで、イベントが生じた時に、内部のインタプリタのルー
    プで、アプリケーションイベントハンドラ *async_dispatch* が呼ばれる
-   ことになります。すると、長時間の計算を行っている場合でも、FrameWorkウィ ンドウがアップデートされ、ユーザーインターフェースが動き続けるようにな
+   ことになります。すると、長時間の計算を行っている場合でも、FrameWorkウィンドウがアップデートされ、ユーザーインターフェースが動き続けるようにな
    ります。ただし、インタプリタの動作が減速し、非リエントラントのコード  (例えばFrameWork自身など)に奇妙な動作が見られるかもしれません。デフォル
    トでは *async_dispatch* はすぐに *our_dispatch* を呼びますが、
-   このメソッドをオーバーライドすると、特定のイベントを非同期で操作しても 良くなります。処理しないイベントは Sioux などに渡されることになります。
+   このメソッドをオーバーライドすると、特定のイベントを非同期で操作しても良くなります。処理しないイベントは Sioux などに渡されることになります。
 
    .. % % Call this method with a nonzero parameter to enable
    .. % % asynchronous event handling. This will tell the inner interpreter loop
@@ -264,7 +264,7 @@
 
 .. method:: Application._quit()
 
-   実行中の :meth:`mainloop` 呼び出しを、次の適当なタイミングで終了さ せます。
+   実行中の :meth:`mainloop` 呼び出しを、次の適当なタイミングで終了させます。
 
    .. % % Terminate the running \method{mainloop()} call at the next convenient
    .. % % moment.
@@ -273,7 +273,7 @@
 .. method:: Application.do_char(c, event)
 
    ユーザーが文字 *c* をタイプした時に呼ばれます。イベントの全詳細は event構造体の中にあります。このメソッドはウィンドウオブジェクト内で使
-   うためにも提供されています。このオブジェクトのウィンドウが最前面にある 場合は、アプリケーション全般について本ハンドラをオーバーライドします。
+   うためにも提供されています。このオブジェクトのウィンドウが最前面にある場合は、アプリケーション全般について本ハンドラをオーバーライドします。
 
    .. % % The user typed character \var{c}. The complete details of the event
    .. % % can be found in the \var{event} structure. This method can also be
@@ -283,8 +283,8 @@
 
 .. method:: Application.do_dialogevent(event)
 
-   イベントループ内部で最初に呼ばれて、モードレスダイアログイベントを処理 します。デフォルトではメソッドは単にイベントを適切なダイアログに分岐す
-   るだけです(関連したダイアログウィンドウオブジェクトを経由してではあり ません)。特別にダイアログイベント(キーボードショートカットなど)を処理す
+   イベントループ内部で最初に呼ばれて、モードレスダイアログイベントを処理します。デフォルトではメソッドは単にイベントを適切なダイアログに分岐す
+   るだけです(関連したダイアログウィンドウオブジェクトを経由してではありません)。特別にダイアログイベント(キーボードショートカットなど)を処理す
    る必要がある場合にオーバーライドしてください。
 
    .. % % Called early in the event loop to handle modeless dialog events. The
@@ -295,7 +295,7 @@
 
 .. method:: Application.idle(event)
 
-   イベントが無い場合にメインイベントループから呼ばれます。 null イベン トも渡されます(つまりマウス位置などを監視することができます)。
+   イベントが無い場合にメインイベントループから呼ばれます。 null イベントも渡されます(つまりマウス位置などを監視することができます)。
 
    .. % % Called by the main event loop when no events are available. The
    .. % % null-event is passed (so you can look at mouse position, etc).
@@ -314,8 +314,8 @@
 
 .. method:: Window.open()
 
-   ウィンドウを開く時はこのメソッドをオーバーライドします。MacOS ウィンド ウ ID を :attr:`self.wid` に入れて
-   :meth:`do_postopen` メソッドを 呼ぶと、親アプリケーションにウィンドウを登録します。
+   ウィンドウを開く時はこのメソッドをオーバーライドします。MacOS ウィンドウ ID を :attr:`self.wid` に入れて
+   :meth:`do_postopen` メソッドを呼ぶと、親アプリケーションにウィンドウを登録します。
 
    .. % % Override this method to open a window. Store the MacOS window-id in
    .. % % \member{self.wid} and call the \method{do_postopen()} method to
@@ -324,7 +324,7 @@
 
 .. method:: Window.close()
 
-   ウィンドウを閉じるときに特別な処理をする場合はこのメソッドをオーバーラ イドします。親アプリケーションからウィンドウの登録を削除するには、
+   ウィンドウを閉じるときに特別な処理をする場合はこのメソッドをオーバーライドします。親アプリケーションからウィンドウの登録を削除するには、
    :meth:`do_postclose` を呼びます。
 
    .. % % Override this method to do any special processing on window
@@ -334,7 +334,7 @@
 
 .. method:: Window.do_postresize(width, height, macoswindowid)
 
-   ウィンドウがリサイズされた後に呼ばれます。``InvalRect`` を呼び出す 以外にもすることがある場合はこれをオーバーライドします。
+   ウィンドウがリサイズされた後に呼ばれます。``InvalRect`` を呼び出す以外にもすることがある場合はこれをオーバーライドします。
 
    .. % % Called after the window is resized. Override if more needs to be done
    .. % % than calling \code{InvalRect}.
@@ -342,7 +342,7 @@
 
 .. method:: Window.do_contentclick(local, modifiers, event)
 
-   ウィンドウのコンテント部分をユーザーがクリックすると呼ばれます。引数は 位置座標(ウィンドウを基準)、キーモディファイア、生のイベントです。
+   ウィンドウのコンテント部分をユーザーがクリックすると呼ばれます。引数は位置座標(ウィンドウを基準)、キーモディファイア、生のイベントです。
 
    .. % % The user clicked in the content part of a window. The arguments are
    .. % % the coordinates (window-relative), the key modifiers and the raw
@@ -351,7 +351,7 @@
 
 .. method:: Window.do_update(macoswindowid, event)
 
-   ウィンドウのアップデートイベントが受信された時に呼ばれます。ウィンドウ を再描画します。
+   ウィンドウのアップデートイベントが受信された時に呼ばれます。ウィンドウを再描画します。
 
    .. % % An update event for the window was received. Redraw the window.
 
@@ -371,7 +371,7 @@
 コントロールウィンドウオブジェクト
 ----------------------------------
 
-コントロールウィンドウオブジェクトには ``Window`` オブジェクトのメ ソッドの他に次のメソッドがあります。
+コントロールウィンドウオブジェクトには ``Window`` オブジェクトのメソッドの他に次のメソッドがあります。
 
 .. % ControlsWindow Object
 .. % % ControlsWindow objects have the following methods besides those of
@@ -380,7 +380,7 @@
 
 .. method:: ControlsWindow.do_controlhit(window, control, pcode, event)
 
-   コントロール *control* のパートコード *pcode* がユーザーにヒットされた 場合に呼ばれます。トラッキングなどは任せておいてかまいません。
+   コントロール *control* のパートコード *pcode* がユーザーにヒットされた場合に呼ばれます。トラッキングなどは任せておいてかまいません。
 
    .. % % Part \var{pcode} of control \var{control} was hit by the
    .. % % user. Tracking and such has already been taken care of.
@@ -391,7 +391,7 @@
 スクロールウィンドウオブジェクト
 --------------------------------
 
-スクロールウィンドウオブジェクトは、次のメソッドを追加したコントロール ウィンドウオブジェクトです。
+スクロールウィンドウオブジェクトは、次のメソッドを追加したコントロールウィンドウオブジェクトです。
 
 .. % ScrolledWindow Object
 .. % % ScrolledWindow objects are ControlsWindow objects with the following
@@ -400,7 +400,7 @@
 
 .. method:: ScrolledWindow.scrollbars([wantx[, wanty]])
 
-   水平スクロールバーと垂直スクロールバーを作成します(あるいは破棄します)。 引数はどちらが欲しいか指定します(デフォルトは両方)。スクロールバーは常 に最小値
+   水平スクロールバーと垂直スクロールバーを作成します(あるいは破棄します)。引数はどちらが欲しいか指定します(デフォルトは両方)。スクロールバーは常に最小値
    ``0`` 、最大値 ``32767`` です。
 
    .. % % Create (or destroy) horizontal and vertical scrollbars. The arguments
@@ -410,8 +410,8 @@
 
 .. method:: ScrolledWindow.getscrollbarvalues()
 
-   このメソッドは必ず作っておかなくてはいけません。現在のスクロールバーの 位置を与えるタプル ``(x, y)`` を(``0`` の  ``32767``
-   間で)返してください。バーの方向について全文書が可視状態で あること知らせるため ``None`` を返す事もできます。
+   このメソッドは必ず作っておかなくてはいけません。現在のスクロールバーの位置を与えるタプル ``(x, y)`` を(``0`` の  ``32767``
+   間で)返してください。バーの方向について全文書が可視状態であること知らせるため ``None`` を返す事もできます。
 
    .. % % You must supply this method. It should return a tuple \code{(\var{x},
    .. % % \var{y})} giving the current position of the scrollbars (between
@@ -431,7 +431,7 @@
 
    あらかじめ与えておくメソッドで、ユーザーとの対話により呼ばれます。  *which* は ``'x'`` か ``'y'`` 、*what*は ``'-'``,
    ``'--'``, ``'set'``,``'++'``,  ``'+'``のどれかです。 ``'set'``
-   の場合は、*value*に新しいスクロールバー位置を入れてお きます。
+   の場合は、*value*に新しいスクロールバー位置を入れておきます。
 
    .. % % Supplied by you and called after user interaction. \var{which} will
    .. % % be \code{'x'} or \code{'y'}, \var{what} will be \code{'-'},
@@ -442,7 +442,7 @@
 .. method:: ScrolledWindow.scalebarvalues(absmin, absmax, curmin, curmax)
 
    :meth:`getscrollbarvalues` の結果から値を計算するのを助ける補助的な
-   メソッドです。文書の最小値と最大値、可視部分に関する最先頭値(最左値)と 最底値(最右値)を渡すと、正しい数か ``None`` を返します。
+   メソッドです。文書の最小値と最大値、可視部分に関する最先頭値(最左値)と最底値(最右値)を渡すと、正しい数か ``None`` を返します。
 
    .. % % Auxiliary method to help you calculate values to return from
    .. % % \method{getscrollbarvalues()}. You pass document minimum and maximum value
@@ -452,7 +452,7 @@
 
 .. method:: ScrolledWindow.do_activate(onoff, event)
 
-   ウィンドウが最前面になった時、スクロールバーのディム(dimming)/ハイライ トの面倒をみます。このメソッドをオーバーライドするなら、オーバーライド
+   ウィンドウが最前面になった時、スクロールバーのディム(dimming)/ハイライトの面倒をみます。このメソッドをオーバーライドするなら、オーバーライド
    したメソッドの最後でオリジナルのメソッドを呼んでください。
 
    .. % % Takes care of dimming/highlighting scrollbars when a window becomes
@@ -462,7 +462,7 @@
 
 .. method:: ScrolledWindow.do_postresize(width, height, window)
 
-   スクロールバーを正しい位置に移動させます。オーバーライドする時は、オー バーライドしたメソッドの一番最初でオリジナルのメソッドを呼んでください。
+   スクロールバーを正しい位置に移動させます。オーバーライドする時は、オーバーライドしたメソッドの一番最初でオリジナルのメソッドを呼んでください。
 
    .. % % Moves scrollbars to the correct position. Call this method initially
    .. % % if you override it.
@@ -470,8 +470,8 @@
 
 .. method:: ScrolledWindow.do_controlhit(window, control, pcode, event)
 
-   スクロールバーのインタラクションを処理します。これをオーバーライドする 時は、オリジナルのメソッドを最初に呼び出してください。非ゼロの返り値は
-   スクロールバー内がヒットされたことを意味し、実際に処理が進むことになり ます。
+   スクロールバーのインタラクションを処理します。これをオーバーライドする時は、オリジナルのメソッドを最初に呼び出してください。非ゼロの返り値は
+   スクロールバー内がヒットされたことを意味し、実際に処理が進むことになります。
 
    .. % % Handles scrollbar interaction. If you override it call this method
    .. % % first, a nonzero return value indicates the hit was in the scrollbars
@@ -483,7 +483,7 @@
 ダイアログウィンドウオブジェクト
 --------------------------------
 
-ダイアログウィンドウオブジェクトには、``Window`` オブジェクトのメソッ ドの他に次のメソッドがあります。
+ダイアログウィンドウオブジェクトには、``Window`` オブジェクトのメソッドの他に次のメソッドがあります。
 
 .. % DialogWindow Objects
 .. % % DialogWindow objects have the following methods besides those of
@@ -492,7 +492,7 @@
 
 .. method:: DialogWindow.open(resid)
 
-   ID *resid* の DLOG リソースからダイアログウィンドウを作成します。 ダイアログオブジェクトは :attr:`self.wid` に保存されます。
+   ID *resid* の DLOG リソースからダイアログウィンドウを作成します。ダイアログオブジェクトは :attr:`self.wid` に保存されます。
 
    .. % % Create the dialog window, from the DLOG resource with id
    .. % % \var{resid}. The dialog object is stored in \member{self.wid}.
@@ -500,7 +500,7 @@
 
 .. method:: DialogWindow.do_itemhit(item, event)
 
-   アイテム番号 *item* がヒットされた時に呼ばれます。トグルボタンなど の再描画は自分で処理してください。
+   アイテム番号 *item* がヒットされた時に呼ばれます。トグルボタンなどの再描画は自分で処理してください。
 
    .. % % Item number \var{item} was hit. You are responsible for redrawing
    .. % % toggle buttons, etc.

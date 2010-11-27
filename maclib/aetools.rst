@@ -13,10 +13,10 @@
 .. % Basic support for sending Apple Events
 
 :mod:`aetools` モジュールは Python で AppleScript クライアントとして
-の機能をサポートするアプリケーションを構築するための基本的な機能を含ん でいます。さらに、このモジュールは、 :mod:`aetypes` および
-:mod:`aepack` モジュールの中核機能をインポートし再 エクスポートします。 :mod:`gensuitemodule`
+の機能をサポートするアプリケーションを構築するための基本的な機能を含んでいます。さらに、このモジュールは、 :mod:`aetypes` および
+:mod:`aepack` モジュールの中核機能をインポートし再エクスポートします。 :mod:`gensuitemodule`
 によって生成されたスタブパッケージは  :mod:`aetools` のかなり適切な部分をインポートするので、通常はそれを
-明示的にインポートする必要はありません。生成されたパッケージ群を使用す ることができない場合と、スクリプト対応のためにより低いレベルのアクセス
+明示的にインポートする必要はありません。生成されたパッケージ群を使用することができない場合と、スクリプト対応のためにより低いレベルのアクセス
 を必要としている場合、例外が発生します。
 
 .. % % The \module{aetools} module contains the basic functionality
@@ -29,9 +29,9 @@
 .. % % cannot use a generated suite package and need lower-level
 .. % % access to scripting.
 
-:mod:`aetools` モジュールはそれ自身、:mod:`Carbon.AE` モジュールに よって提供される AppleEvent
-サポートを利用します。このモジュールにはウィ ンドウマネージャへのアクセスを必要とするという1つの欠点があります。詳 細は第
-:ref:`osx-gui-scripts` 章を見てください。この制限は将来のリリー スで撤廃されるかもしれません。
+:mod:`aetools` モジュールはそれ自身、:mod:`Carbon.AE` モジュールによって提供される AppleEvent
+サポートを利用します。このモジュールにはウィンドウマネージャへのアクセスを必要とするという1つの欠点があります。詳細は第
+:ref:`osx-gui-scripts` 章を見てください。この制限は将来のリリースで撤廃されるかもしれません。
 
 .. % % The \module{aetools} module itself uses the AppleEvent support
 .. % % provided by the \module{Carbon.AE} module. This has one drawback:
@@ -45,8 +45,8 @@
 
 .. function:: packevent(ae, parameters, attributes)
 
-   あらかじめ作成された ``Carbon.AE.AEDesc`` オブジェクト中のパラメー ターおよび属性を保存します。``parameters`` と
-   ``attributes`` は Python オブジェクトの4文字の OSA パラメータのキーを写像した辞書です。 このオブジェクトをパックするには
+   あらかじめ作成された ``Carbon.AE.AEDesc`` オブジェクト中のパラメーターおよび属性を保存します。``parameters`` と
+   ``attributes`` は Python オブジェクトの4文字の OSA パラメータのキーを写像した辞書です。このオブジェクトをパックするには
    ``aepack.pack()`` を使います。
 
    .. % % Stores parameters and attributes in a pre-created \code{Carbon.AE.AEDesc}
@@ -57,8 +57,8 @@
 
 .. function:: unpackevent(ae[, formodulename])
 
-   再帰的に、``Carbon.AE.AEDesc`` イベントをPython オブジェクトへアン パックします。関数は引数の辞書および属性の辞書を返します。
-   ``formodulename`` 引数は AppleScript クラスをどこに捜しに行くか制御 するために、生成されたスタブパッケージにより使用されます。
+   再帰的に、``Carbon.AE.AEDesc`` イベントをPython オブジェクトへアンパックします。関数は引数の辞書および属性の辞書を返します。
+   ``formodulename`` 引数は AppleScript クラスをどこに捜しに行くか制御するために、生成されたスタブパッケージにより使用されます。
 
    .. % % Recursively unpacks a \code{Carbon.AE.AEDesc} event to Python objects.
    .. % % The function returns the parameter dictionary and the attribute dictionary.
@@ -69,7 +69,7 @@
 .. function:: keysubst(arguments, keydict)
 
    Python キーワード引数辞書 ``arguments`` を、写像による4文字の OSA  キーとして ``keydict`` の中で指定されたPython
-   識別子であるキーの交 換により ``packevent`` によって要求されるフォーマットへ変換します。 生成されたパッケージ群によって使用されます。
+   識別子であるキーの交換により ``packevent`` によって要求されるフォーマットへ変換します。生成されたパッケージ群によって使用されます。
 
    .. % % Converts a Python keyword argument dictionary \code{arguments} to
    .. % % the format required by \code{packevent} by replacing the keys,
@@ -80,8 +80,8 @@
 
 .. function:: enumsubst(arguments, key, edict)
 
-   ``arguments`` 辞書が ``key`` へのエントリーを含んでいる場合、辞 書 ``edict``
-   のエントリーに見合う値に変換します。これは人間に判読可 能なように Python 列挙名を OSA 4文字のコードに変換します。生成されたパッ
+   ``arguments`` 辞書が ``key`` へのエントリーを含んでいる場合、辞書 ``edict``
+   のエントリーに見合う値に変換します。これは人間に判読可能なように Python 列挙名を OSA 4文字のコードに変換します。生成されたパッ
    ケージ群によって使用されます。
 
    .. % % If the \code{arguments} dictionary contains an entry for \code{key}
@@ -99,7 +99,7 @@
 .. class:: TalkTo([signature=None, start=0, timeout=0])
 
    アプリケーションとの対話に利用する代理の基底クラスです。 ``signature`` はクラス属性 ``_signature`` (サブクラスによって通
-   常設定される)を上書きした、対話するアプリケーションを定義する4文字クリ エートコードです。``start`` にはクラスインスタンス上でアプリケーショ
+   常設定される)を上書きした、対話するアプリケーションを定義する4文字クリエートコードです。``start`` にはクラスインスタンス上でアプリケーショ
    ンを実行することを可能にするために、真を設定する事ができます。 ``timeout`` を明示的に設定する事で、 AppleEvent の返答を待つデフォ
    ルトのタイムアウト時間を変更する事ができます。
 
@@ -113,17 +113,17 @@
 
 .. method:: TalkTo._start()
 
-   アプリケーションが起動していてるか確認し、起動していなければ起動しよう とします。
+   アプリケーションが起動していてるか確認し、起動していなければ起動しようとします。
 
    .. % % Test whether the application is running, and attempt to start it if not.
 
 
 .. method:: TalkTo.send(code, subcode[, parameters, attributes])
 
-   OSA指示子  ``code, subcode`` (いずれも通常4文字の文字列です)を持った 変数のために、``parameters``
-   をパックし、``attributes``に戻し、 目標アプリケーションにそれを送って、返答を待ち、``unpackevent`` を
-   含んだ返答をアンパックし、AppleEvent の返答を返し、辞書としてアンパッ クした値と属性を返して、AppleEvent
-   ``Carbon.AE.AEDesc`` を作成しま す。
+   OSA指示子  ``code, subcode`` (いずれも通常4文字の文字列です)を持った変数のために、``parameters``
+   をパックし、``attributes``に戻し、目標アプリケーションにそれを送って、返答を待ち、``unpackevent`` を
+   含んだ返答をアンパックし、AppleEvent の返答を返し、辞書としてアンパックした値と属性を返して、AppleEvent
+   ``Carbon.AE.AEDesc`` を作成します。
 
    .. % % Create the AppleEvent \code{Carbon.AE.AEDesc} for the verb with
    .. % % the OSA designation \code{code, subcode} (which are the usual 4-character

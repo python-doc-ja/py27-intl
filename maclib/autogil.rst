@@ -11,7 +11,7 @@
 .. % Global Interpreter Lock handling in event loops
 .. % Global Interpreter Lock handling in event loops.
 
-:mod:`autoGIL`モジュールは、自動的にイベントループを実行する場合 、 Python のグローバルインタープリタをロックしたり、ロックの解除をした
+:mod:`autoGIL`モジュールは、自動的にイベントループを実行する場合、 Python のグローバルインタープリタをロックしたり、ロックの解除をした
 りするための関数 :func:`installAutoGIL` を提供します。
 
 .. % % The \module{autoGIL} module provides a function \function{installAutoGIL} that
@@ -21,7 +21,7 @@
 
 .. exception:: AutoGILError
 
-   例えば現在のスレッドがループしていないなど、オブザーバにコールバックが できない場合に発生します。
+   例えば現在のスレッドがループしていないなど、オブザーバにコールバックができない場合に発生します。
 
    .. % % Raised if the observer callback cannot be installed, for example because
    .. % % the current thread does not have a run loop.
@@ -29,8 +29,8 @@
 
 .. function:: installAutoGIL()
 
-   現在のスレッドのイベントループ(CFRunLoop)中のオブザーバにコールバッ クを行ない、適切な時にグローバルインタープリタロック(GIL)を、イ
-   ベントループが使用されていない間、他の Python スレッドの起動がで きるようにロックしたり、ロックの解除をしたりします。
+   現在のスレッドのイベントループ(CFRunLoop)中のオブザーバにコールバックを行ない、適切な時にグローバルインタープリタロック(GIL)を、イ
+   ベントループが使用されていない間、他の Python スレッドの起動ができるようにロックしたり、ロックの解除をしたりします。
 
    .. % %     Install an observer callback in the event loop (CFRunLoop) for the
    .. % %     current thread, that will lock and unlock the Global Interpreter Lock

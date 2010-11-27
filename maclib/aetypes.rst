@@ -18,10 +18,10 @@ Eventオブジェクト指定子 (object specifier) を表現するクラスを�
 .. % % The \module{aetypes} defines classes used to represent Apple Event data
 .. % % descriptors and Apple Event object specifiers.
 
-Apple Event データはデスクリプタに含まれていて、これらのデスクリプタは 片付けされています。多くのデスクリプタは、単に対応するPython の型で
-表現されています。例えば、OSA 中の ``typeText`` は Python 文字 列型で、``typeFloat`` は
-浮動小数点型になる、といった具合です。 このモジュールでは、OSA の型のうち、直接的に対応する Python の型がない
-もののためにクラスを定義しています。そのようなクラスのインスタンスに対 するパックやアンパック操作は、 :mod:`aepack` モジュール自動的に処理
+Apple Event データはデスクリプタに含まれていて、これらのデスクリプタは片付けされています。多くのデスクリプタは、単に対応するPython の型で
+表現されています。例えば、OSA 中の ``typeText`` は Python 文字列型で、``typeFloat`` は
+浮動小数点型になる、といった具合です。このモジュールでは、OSA の型のうち、直接的に対応する Python の型がない
+もののためにクラスを定義しています。そのようなクラスのインスタンスに対するパックやアンパック操作は、 :mod:`aepack` モジュール自動的に処理
 します。
 
 .. % % Apple Event data is is contained in descriptors, and these descriptors
@@ -31,10 +31,10 @@ Apple Event データはデスクリプタに含まれていて、これらの�
 .. % % Python counterpart this module declares classes. Packing and unpacking
 .. % % instances of these classes is handled automatically by \module{aepack}.
 
-オブジェクト指定子は、本質的には Apple Event サーバ中に実装されている オブジェクトへのアドレスです。Apple Event 指定子は、Apple
-Event の オブジェクトそのものとして、あるいはオプションパラメタの引数として 使われます。 :mod:`aetypes` モジュールには OSA
-クラスやプロパティを表現するための 基底クラスが入っています。これらのクラスは、:mod:`gensuitemodule`
-が生成するパッケージ内で、目的に応じてクラスやプロパティを増やす 際に使われます。
+オブジェクト指定子は、本質的には Apple Event サーバ中に実装されているオブジェクトへのアドレスです。Apple Event 指定子は、Apple
+Event のオブジェクトそのものとして、あるいはオプションパラメタの引数として使われます。 :mod:`aetypes` モジュールには OSA
+クラスやプロパティを表現するための基底クラスが入っています。これらのクラスは、:mod:`gensuitemodule`
+が生成するパッケージ内で、目的に応じてクラスやプロパティを増やす際に使われます。
 
 .. % % An object specifier is essentially an address of an object implemented
 .. % % in a Apple Event server. An Apple Event specifier is used as the direct
@@ -44,9 +44,9 @@ Event の オブジェクトそのものとして、あるいはオプション�
 .. % % \module{gensuitemodule} to populate the classes and properties in a
 .. % % given suite.
 
-以前のバージョンとの互換性や、スタブパッケージを生成していないような アプリケーションをスクリプトで書く必要がある場合のために、
-このモジュールには``Document`` 、``Window``、``Character``、 といったよく使われる OSA
-クラスのいくつかを指定できるオブジェクト 指定子も入っています。
+以前のバージョンとの互換性や、スタブパッケージを生成していないようなアプリケーションをスクリプトで書く必要がある場合のために、
+このモジュールには``Document`` 、``Window``、``Character``、といったよく使われる OSA
+クラスのいくつかを指定できるオブジェクト指定子も入っています。
 
 .. % % For reasons of backward compatibility, and for cases where you need to
 .. % % script an application for which you have not generated the stub package
@@ -72,7 +72,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 
 .. class:: Enum(enum)
 
-   列挙値 (enumeration value) を表すクラスです。 値は 4 文字の文字列型になります。
+   列挙値 (enumeration value) を表すクラスです。値は 4 文字の文字列型になります。
 
    .. % % An enumeration value with the given 4-character string value.
 
@@ -93,21 +93,21 @@ Event の オブジェクトそのものとして、あるいはオプション�
 
 .. class:: StyledText(style, text)
 
-   スタイル情報 (フォント、タイプフェイスなど) つきのテキストを表す クラスです。
+   スタイル情報 (フォント、タイプフェイスなど) つきのテキストを表すクラスです。
 
    .. % % Text with style information (font, face, etc) included.
 
 
 .. class:: AEText(script, style, text)
 
-   スクリプトシステム (script system) およびスタイル情報の入った テキストを表すクラスです。
+   スクリプトシステム (script system) およびスタイル情報の入ったテキストを表すクラスです。
 
    .. % % Text with script system and style information included.
 
 
 .. class:: IntlText(script, language, text)
 
-   スクリプトシステムと言語情報 (language information) の入った テキストを表すクラスです。
+   スクリプトシステムと言語情報 (language information) の入ったテキストを表すクラスです。
 
    .. % % Text with script system and language information included.
 
@@ -163,7 +163,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 
 .. class:: Ordinal(abso)
 
-   先頭を表す ``"firs"`` や中央を表す``"midd"`` のように、 数値でない絶対位置指定子を表すクラスです。
+   先頭を表す ``"firs"`` や中央を表す``"midd"`` のように、数値でない絶対位置指定子を表すクラスです。
 
    .. % % Non-numeric absolute positions, such as \code{"firs"}, first, or \code{"midd"},
    .. % % middle.
@@ -171,7 +171,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 
 .. class:: Logical(logc, term)
 
-   演算子 ``logc`` を``term`` に適用したときの論理式を 表すクラスです。
+   演算子 ``logc`` を``term`` に適用したときの論理式を表すクラスです。
 
    .. % % The logical expression of applying operator \code{logc} to
    .. % % \code{term}.
@@ -183,7 +183,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 
    .. % % The comparison \code{relo} of \code{obj1} to \code{obj2}.
 
-以下のクラスは、生成されたスタブパッケージが、 AppleScript のクラスやプロパティを Python で表現する上で 基底クラスとして利用します。
+以下のクラスは、生成されたスタブパッケージが、 AppleScript のクラスやプロパティを Python で表現する上で基底クラスとして利用します。
 
 .. % % The following classes are used as base classes by the generated stub
 .. % % packages to represent AppleScript classes and properties in Python:
@@ -192,8 +192,8 @@ Event の オブジェクトそのものとして、あるいはオプション�
 .. class:: ComponentItem(which[, fr])
 
    OSA クラス用の抽象基底クラスです。サブクラスでは、クラス属性 ``want`` を 4 文字の OSA クラスコードに設定せねばなりません。
-   このクラスのサブクラスのインスタンスは AppleScript オブジェクト指定子 と同じになります。インスタンス化を行う最には、``which``
-   にセレクタを 渡さねばなりません。また、任意で親オブジェクトを``fr`` に渡せます。
+   このクラスのサブクラスのインスタンスは AppleScript オブジェクト指定子と同じになります。インスタンス化を行う最には、``which``
+   にセレクタを渡さねばなりません。また、任意で親オブジェクトを``fr`` に渡せます。
 
    .. % % Abstract baseclass for an OSA class. The subclass should set the class
    .. % % attribute \code{want} to the 4-character OSA class code. Instances of
@@ -205,7 +205,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 .. class:: NProperty(fr)
 
    OSA プロパティ用の抽象基底クラスです。サブクラスでは、クラス属性 ``want`` と ``which`` を設定して、どのプロパティを表しているかを
-   指定せねばなりません。このクラスのサブクラスのインスタンスは オブジェクト指定子と同じになります。
+   指定せねばなりません。このクラスのサブクラスのインスタンスはオブジェクト指定子と同じになります。
 
    .. % % Abstract basclass for an OSA property. The subclass should set the class
    .. % % attributes \code{want} and \code{which} to designate which property we
@@ -216,7 +216,7 @@ Event の オブジェクトそのものとして、あるいはオプション�
 .. class:: ObjectSpecifier(want, form, seld[, fr])
 
    ``ComponentItem`` と ``NProperty`` の基底クラスで、汎用の OSA  オブジェクト指定子を表します。パラメタの説明は Apple
-   Open Scripting Architecture のドキュメントを参照してください。 このクラスは抽象クラスではないので注意してください。
+   Open Scripting Architecture のドキュメントを参照してください。このクラスは抽象クラスではないので注意してください。
 
    .. % % Base class of \code{ComponentItem} and \code{NProperty}, a general
    .. % % OSA Object Specifier. See the Apple Open Scripting Architecture

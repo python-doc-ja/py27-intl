@@ -25,7 +25,7 @@ Macintosh のパス名を Mac OS X (あるいはその他の任意のプラッ�
 
 次の関数がこのモジュールで利用できます。 :func:`normcase`、 :func:`normpath`、 :func:`isabs`、
 :func:`join`、 :func:`split`、 :func:`isdir`、 :func:`isfile`、 :func:`walk`、
-:func:`exists`。 :mod:`os.path` で利用できる他の関数については、ダミーの関数として相 当する物が利用できます。
+:func:`exists`。 :mod:`os.path` で利用できる他の関数については、ダミーの関数として相当する物が利用できます。
 
 .. % % The following functions are available in this module:
 .. % % For other functions available in \module{os.path} dummy counterparts

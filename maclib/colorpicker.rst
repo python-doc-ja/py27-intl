@@ -12,7 +12,7 @@
 .. % Color selection dialog
 .. % Interface to the standard color selection dialog.
 
-:mod:`ColorPicker` モジュールは標準色選択ダイアログへのアクセスを提 供します。
+:mod:`ColorPicker` モジュールは標準色選択ダイアログへのアクセスを提供します。
 
 .. % % The \module{ColorPicker} module provides access to the standard color
 .. % % picker dialog.
@@ -20,8 +20,8 @@
 
 .. function:: GetColor(prompt, rgb)
 
-   標準色選択ダイアログを表示し、ユーザが色を選択することを可能にします。 *prompt* の文字列によりユーザに指示を与えられ、デフォルトの選択 色を
-   *rgb* で設定する事ができます。*rgb* は赤、緑、青の色要 素のタプルで与えてください。:func:`GetColor` はユーザが選択した
+   標準色選択ダイアログを表示し、ユーザが色を選択することを可能にします。 *prompt* の文字列によりユーザに指示を与えられ、デフォルトの選択色を
+   *rgb* で設定する事ができます。*rgb* は赤、緑、青の色要素のタプルで与えてください。:func:`GetColor` はユーザが選択した
    色のタプルと色が選択されたか、取り消されたかを示すフラグを返します。
 
    .. % %   Show a standard color selection dialog and allow the user to select

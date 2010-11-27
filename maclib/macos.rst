@@ -10,14 +10,14 @@
 .. % Access to Mac OS interpreter features
 .. % Access to Mac OS-specific interpreter features.
 
-このモジュールは、Python インタプリタ内の MacOS 固有の機能に対するアク セスを提供します。例えば、インタプリタのイベントループ関数などです。十
+このモジュールは、Python インタプリタ内の MacOS 固有の機能に対するアクセスを提供します。例えば、インタプリタのイベントループ関数などです。十
 分注意して利用してください。
 
 .. % % This module provides access to MacOS specific functionality in the
 .. % % Python interpreter, such as how the interpreter eventloop functions
 .. % % and the like. Use with care.
 
-モジュール名が大文字で始まることに注意してください。これは昔からの約束 です。
+モジュール名が大文字で始まることに注意してください。これは昔からの約束です。
 
 .. % % Note the capitalization of the module name; this is a historical
 .. % % artifact.
@@ -36,10 +36,10 @@
 
 .. data:: linkmodel
 
-   インタープリタがどのような方法でリンクされているかを返します。拡張モ ジュールがリンクモデル間で非互換性かもしれない場合、パッケージはより多
-   くの適切なエラーメッセージを伝えるためにこの情報を使用することができま す。値は静的リンクした Python は ``'static'``、Mac OS X
+   インタープリタがどのような方法でリンクされているかを返します。拡張モジュールがリンクモデル間で非互換性かもしれない場合、パッケージはより多
+   くの適切なエラーメッセージを伝えるためにこの情報を使用することができます。値は静的リンクした Python は ``'static'``、Mac OS X
    framework  で構築した Python は ``'framework'``、標準の Unix 共有ライブラリ (shared
-   library)で構築された Python は ``'shared'`` となります。 古いバージョンの Python の場合、Mac OS 9 互換の
+   library)で構築された Python は ``'shared'`` となります。古いバージョンの Python の場合、Mac OS 9 互換の
    Python では ``'cfm'`` となります。
 
    .. % % The way the interpreter has been linked. As extension modules may be
@@ -55,8 +55,8 @@
 
    .. index:: module: macerrors
 
-   MacOS でエラーがあると、このモジュールの関数か、Mac 固有なツールボック スインターフェースモジュールから、この例外が生成されます。引数は、整数
-   エラーコード(:cdata:`OSErr` 値)とテキストで記述されたエラーコードです。 分かっている全てのエラーコードのシンボル名は、標準モジュール
+   MacOS でエラーがあると、このモジュールの関数か、Mac 固有なツールボックスインターフェースモジュールから、この例外が生成されます。引数は、整数
+   エラーコード(:cdata:`OSErr` 値)とテキストで記述されたエラーコードです。分かっている全てのエラーコードのシンボル名は、標準モジュール
    :mod:`macerrors` で定義されています。
 
    .. % % This exception is raised on MacOS generated errors, either from
@@ -101,8 +101,8 @@
 
 .. function:: GetCreatorAndType(file)
 
-   2つの4文字の文字列としてファイルクリエータおよびファイルタイプを返しま す。*file* 引数はパスもしくは、``FSSpec``、``FSRef``
-   オブジェ クトを与える事ができます。
+   2つの4文字の文字列としてファイルクリエータおよびファイルタイプを返します。*file* 引数はパスもしくは、``FSSpec``、``FSRef``
+   オブジェクトを与える事ができます。
 
    .. % % Return the file creator and file type as two four-character strings.
    .. % % The \var{file} parameter can be a pathname or an \code{FSSpec} or
@@ -111,7 +111,7 @@
 
 .. function:: SetCreatorAndType(file, creator, type)
 
-   ファイルクリエータおよびファイルタイプを設定します。*file* 引数は パスもしくは、``FSSpec``、``FSRef`` オブジェクトを与える事ができ
+   ファイルクリエータおよびファイルタイプを設定します。*file* 引数はパスもしくは、``FSSpec``、``FSRef`` オブジェクトを与える事ができ
    ます。*creator* と *type* は4文字の文字列が必要です。
 
    .. % % Set the file creator and file type.
@@ -123,7 +123,7 @@
 .. function:: openrf(name [, mode])
 
    ファイルのリソースフォークを開きます。引数は組み込み関数  :func:`open` と同じです。返されたオブジェクトはファイルのように
-   見えるかもしれませんが、これは Python のファイルオブジェクトではあり ませんので扱いに微妙な違いがあります。
+   見えるかもしれませんが、これは Python のファイルオブジェクトではありませんので扱いに微妙な違いがあります。
 
    .. % % Open the resource fork of a file. Arguments are the same as for the
    .. % % built-in function \function{open()}. The object returned has file-like
@@ -133,9 +133,9 @@
 
 .. function:: WMAvailable()
 
-   現在のプロセスが動作しているウィンドウマネージャにアクセスします。例え ば、Mac OS X サーバー上、あるいは SSH でログインしている、もしくは現在
+   現在のプロセスが動作しているウィンドウマネージャにアクセスします。例えば、Mac OS X サーバー上、あるいは SSH でログインしている、もしくは現在
    のインタープリタがフルブローンアプリケーションバンドル(fullblown application
-   bundle)から起動されていない場合などのような、ウィンドウマネー ジャが存在しない場合は ``False`` を返します。
+   bundle)から起動されていない場合などのような、ウィンドウマネージャが存在しない場合は ``False`` を返します。
 
    .. % % Checks wether the current process has access to the window manager.
    .. % % The method will return \code{False} if the window manager is not available,

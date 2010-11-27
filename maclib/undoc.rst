@@ -5,7 +5,7 @@
 文書化されていないモジュール
 ****************************
 
-この章のモジュールは、ほとんど (あるいはまったく) ドキュメント化されて いません。これらのモジュールのいずれかについてドキュメントを寄与したいと
+この章のモジュールは、ほとんど (あるいはまったく) ドキュメント化されていません。これらのモジュールのいずれかについてドキュメントを寄与したいと
 考えているなら、`docs@python.org <mailto:docs@python.org>`_ までご連絡ください。
 
 .. % Undocumented Modules
@@ -51,8 +51,8 @@
    :synopsis: コードフラグメントリソースを扱うモジュール
 
 
-:mod:`cfmfile` は、コードフラグメントと関連する"cfrg"リソースを処 理するモジュールです。このモジュールでコードフラグメントを分解やマージ
-できて、全てのプラグインモジュールをまとめて、一つの実行可能ファイルに するため、BuildApplicationによって利用されます。
+:mod:`cfmfile` は、コードフラグメントと関連する"cfrg"リソースを処理するモジュールです。このモジュールでコードフラグメントを分解やマージ
+できて、全てのプラグインモジュールをまとめて、一つの実行可能ファイルにするため、BuildApplicationによって利用されます。
 
 .. % Code Fragment Resource module
 .. % Code Fragment Resource module.
@@ -71,7 +71,7 @@
    :synopsis: open()と Internet Config の置き換え
 
 
-:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファ イル用にファイルタイプおよびクリエーターを設定するために
+:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファイル用にファイルタイプおよびクリエーターを設定するために
 Internet Configを使用するバージョンに置き換えます。
 
 .. % Internet Config replacement for \method{open()}
@@ -105,8 +105,8 @@ Internet Configを使用するバージョンに置き換えます。
    :synopsis: スクリプトのリソースを見つける
 
 
-:mod:`macresource` はスクリプトが MacPython 上や MacPython アプレッ トおよび OSX Python
-上で起動されている時、特別な処理をせずにダイアログ やメニューなどのようなリソースを見つけるためのヘルパースクリプトです。
+:mod:`macresource` はスクリプトが MacPython 上や MacPython アプレットおよび OSX Python
+上で起動されている時、特別な処理をせずにダイアログやメニューなどのようなリソースを見つけるためのヘルパースクリプトです。
 
 .. % Locate script resources
 .. % Locate script resources.
@@ -157,7 +157,7 @@ Navigation Servicesの低レベルインターフェース。
 
 
 :mod:`videoreader` は QuickTime ムービーを読み込み、デコードし、プロ
-グラムへ渡せます。このモジュールはさらにオーディオトラックをサ ポートしています。
+グラムへ渡せます。このモジュールはさらにオーディオトラックをサポートしています。
 
 .. % Read QuickTime movies
 .. % Read QuickTime movies frame by frame for further processing.
