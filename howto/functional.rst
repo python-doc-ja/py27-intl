@@ -203,7 +203,7 @@ Python 機能から見ていきましょう: イテレータです。
     Traceback (most recent call last):
       File "<stdin>", line 1, in ?
     StopIteration
-    >>>      
+    >>>
 
 Python は色々な文脈でイテラブルなオブジェクトを期待しますが、
 最も重要なのは ``for`` 文です。 ``for X in Y`` という文の Y は、
@@ -350,7 +350,7 @@ Haskell (http://www.haskell.org) にインスパイアされました。
 ジェネレータ式は丸括弧 "()" で囲まれ、リスト内包表記は
 角括弧 "[]" で囲まれます。ジェネレータ式の形式は次のとおりです::
 
-    ( expression for expr in sequence1 
+    ( expression for expr in sequence1
                  if condition1
                  for expr2 in sequence2
                  if condition2
@@ -404,8 +404,8 @@ Python コードと同じ意味になります::
     >>> seq1 = 'abc'
     >>> seq2 = (1,2,3)
     >>> [(x,y) for x in seq1 for y in seq2]
-    [('a', 1), ('a', 2), ('a', 3), 
-     ('b', 1), ('b', 2), ('b', 3), 
+    [('a', 1), ('a', 2), ('a', 3),
+     ('b', 1), ('b', 2), ('b', 3),
      ('c', 1), ('c', 2), ('c', 3)]
 
 Python の文法に曖昧さを紛れ込ませないように、 ``expression``
@@ -746,7 +746,7 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     True
     >>> all([0,1,0])
     False
-    >>> all([0,0,0]) 
+    >>> all([0,0,0])
     False
     >>> all([1,1,1])
     True
@@ -956,7 +956,7 @@ itertools モジュール
 ``itertools.starmap(func, iter)`` は、イテラブルがタプルを返すものとして、
 そのタプルを引数に使って ``func()`` を呼びます::
 
-    itertools.starmap(os.path.join, 
+    itertools.starmap(os.path.join,
                       [('/usr', 'bin', 'java'), ('/bin', 'python'),
                        ('/usr', 'bin', 'perl'),('/usr', 'bin', 'ruby')])
     =>
@@ -1023,9 +1023,9 @@ itertools モジュール
 
 ::
 
-    city_list = [('Decatur', 'AL'), ('Huntsville', 'AL'), ('Selma', 'AL'), 
+    city_list = [('Decatur', 'AL'), ('Huntsville', 'AL'), ('Selma', 'AL'),
                  ('Anchorage', 'AK'), ('Nome', 'AK'),
-                 ('Flagstaff', 'AZ'), ('Phoenix', 'AZ'), ('Tucson', 'AZ'), 
+                 ('Flagstaff', 'AZ'), ('Phoenix', 'AZ'), ('Tucson', 'AZ'),
                  ...
                 ]
 
@@ -1040,7 +1040,7 @@ itertools モジュール
     where
     iterator-1 =>
       ('Decatur', 'AL'), ('Huntsville', 'AL'), ('Selma', 'AL')
-    iterator-2 => 
+    iterator-2 =>
       ('Anchorage', 'AK'), ('Nome', 'AK')
     iterator-3 =>
       ('Flagstaff', 'AZ'), ('Phoenix', 'AZ'), ('Tucson', 'AZ')
@@ -1134,7 +1134,7 @@ Collin Winter の
 
     >>> double(add(5, 6))
     22
-                    
+
 ``unpack`` キーワードが用意されているのは、Python には完全に `カリー化
 <http://en.wikipedia.org/wiki/Currying>`__ されていない関数があるという
 現実に対処するためです。既定では ``inner`` 関数も単一オブジェクトを返し
@@ -1143,15 +1143,15 @@ Collin Winter の
 ``outer`` に渡す前に展開するようになります。ですから単なる ::
 
     compose(f, g)(5, 6)
-                    
+
 は次の書き方と同じことです::
 
     f(g(5, 6))
-                    
+
 けれども ::
 
     compose(f, g, unpack=True)(5, 6)
-                    
+
 は次と同じ意味になります::
 
     f(*g(5, 6))
@@ -1162,15 +1162,15 @@ Collin Winter の
 ``functional`` でも ``functools`` でも提供されています)。 ::
 
     from functional import compose, partial
-        
+
     multi_compose = partial(reduce, compose)
-        
-    
+
+
 ``map()``, ``compose()``, ``partial()`` を使って、引数を文字列に
 変換するバージョンの ``"".join(...)`` を組み立てることもできます::
 
     from functional import compose, partial
-        
+
     join = compose("".join, partial(map, str))
 
 
@@ -1203,7 +1203,7 @@ Collin Winter の
 
     f(f(f(0, 1), 2), 3)
 
-    
+
 ``foldl()`` は以下の再帰関数とほぼ同じです::
 
     def foldl(func, start, seq):

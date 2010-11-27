@@ -137,7 +137,7 @@ from モジュール import 名前1, 名前2
    # bar.py
    from foo import a
    if something():
-       a = 2 # 危険: foo.a != a 
+       a = 2 # 危険: foo.a != a
 
 良い見本::
 
@@ -319,6 +319,6 @@ Python は改行を文の終わりとして扱いますので、そして文は�
 
 このバージョンで鉄壁です::
 
-   value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9] 
+   value = (foo.bar()['first'][0]*baz.quux(1, 2)[5:9]
            + calculate_number(10, 20)*forbulate(500, 360))
 
