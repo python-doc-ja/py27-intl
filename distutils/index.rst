@@ -8,7 +8,7 @@
 :Date: |today|
 
 このドキュメントでは、 Python 配布ユーティリティ
-(Python Distribution Utilities, "Distutils") について、 
+(Python Distribution Utilities, "Distutils") について、
 モジュール開発者の視点に立ち、多くの人々がビルド/リリース/インストール
 の手間をほとんどかけずに Python モジュールや拡張モジュールを入手できるようにする方法について述べます。
 
