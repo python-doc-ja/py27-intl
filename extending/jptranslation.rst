@@ -4,7 +4,7 @@
 ========================
 
 この文書は、Pythonドキュメント翻訳プロジェクトによる  Extending and Embedding the Python Interpreter
-の日本語訳版です。 日本語訳に対する質問や提案などが ありましたら、Pythonドキュメント翻訳プロジェクトのメーリングリスト
+の日本語訳版です。日本語訳に対する質問や提案などがありましたら、Pythonドキュメント翻訳プロジェクトのメーリングリスト
 
 http://www.python.jp/mailman/listinfo/python-doc-jp
 
