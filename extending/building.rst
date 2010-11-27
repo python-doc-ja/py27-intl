@@ -43,7 +43,7 @@ distutils ベースのパッケージには、駆動スクリプト (driver scri
 :file:`setup.py` 内では、コマンドの実行はすべて ``setup`` 関数を呼び出して行います。この関数は可変個のキーワード引数をとります。
 例ではその一部を使っているにすぎません。もっと具体的にいうと、例の中ではパッケージをビルドするためのメタ情報と、パッケージの内容を指定しています。
 通常、パッケージには Python ソースモジュールやドキュメント、サブパッケージ等といった別のファイルも入ります。 distutils
-の機能に関する詳細は、 Python モジュールの配布 (XXX reference: ../dist/dist.html) に書かれている distutils
+の機能に関する詳細は、 :ref:`distutils-index` に書かれている distutils
 のドキュメントを参照してください;  この節では、拡張モジュールのビルドについてのみ説明します。
 
 駆動スクリプトをよりよく構成するために、決め打ちの引数を :func:`setup` に入れておくことがよくあります。上の例では、 :func:`setup`
@@ -69,7 +69,7 @@ distutils ベースのパッケージには、駆動スクリプト (driver scri
           description = 'This is a demo package',
           author = 'Martin v. Loewis',
           author_email = 'martin@v.loewis.de',
-          url = 'http://www.python.org/doc/current/ext/building.html',
+          url = 'http://docs.python.org/extending/building',
           long_description = '''
    This is really just a demo package.
    ''',
