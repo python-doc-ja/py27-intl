@@ -19,8 +19,8 @@ Python が関係しない --- その代わりに、アプリケーションの�
 実行させる --- かもしれない、ということです。
 
 従って、 Python の埋め込みを行う場合、自作のメインプログラムを提供しなければなりません。メインプログラムがやらなければならないことの一つに、
-Python インタプリタの初期化があります。とにかく少なくとも関数 :cfunc:`Py_Initialize`  (Mac OS
-なら :cfunc:`PyMac_Initialize`) を呼び出さねばなりません。オプションとして、Python
+Python インタプリタの初期化があります。とにかく少なくとも関数 :cfunc:`Py_Initialize`
+を呼び出さねばなりません。オプションとして、Python
 側にコマンドライン引数を渡すために関数呼び出しを行います。その後、アプリケーションのどこでもインタプリタを呼び出せるようになります。
 
 インタプリタを呼び出すには、異なるいくつかの方法があります: Python 文が入った文字列を :cfunc:`PyRun_SimpleString` に渡す、
@@ -33,7 +33,7 @@ Python の埋め込みを行っている簡単なデモは、ソース配布物�
 
 .. seealso::
 
-   `Python/C API リファレンスマニュアル <../api/api.html>`_
+   :ref:`c-api-index`
       Python  C インタフェースの詳細はこのマニュアルに書かれています。必要な情報の大部分はここにあるはずです。
 
 
@@ -108,9 +108,7 @@ Python を埋め込む場合には、インタフェースコードが行う作�
 
 Python スクリプト内で定義されている関数を実行するためのコードは以下のようになります:
 
-
-.. include:: ../includes/run-func.c
-   :literal:
+.. literalinclude:: ../includes/run-func.c
 
 このコードは ``argv[1]`` を使って Python スクリプトをロードし、 ``argv[2]`` 内に指定された名前の関数を呼び出します。
 関数の整数引数は ``argv`` 配列中の他の値になります。このプログラムをコンパイルしてリンクし (できた実行可能形式を :program:`call`
@@ -131,8 +129,6 @@ Python スクリプト内で定義されている関数を実行するための�
 
 この程度の機能を実現するにはプログラムがいささか大きすぎますが、ほとんどは Python から C へのデータ変換やエラー報告のための
 コードです。Python の埋め込みという観点から最も興味深い部分は以下のコード、
-
-.. % $
 
 ::
 
@@ -208,16 +204,8 @@ Python スクリプト内で定義されている関数を実行するための�
 
 実際のアプリケーションでは、こうしたメソッドでアプリケーション内の API を Python に公開することになります。
 
-.. % \section{For the future}
-.. %
-.. % You don't happen to have a nice library to get textual
-.. % equivalents of numeric values do you :-) ?
-.. % Callbacks here ? (I may be using information from that section
-.. % ?!)
-.. % threads
-.. % code examples do not really behave well if errors happen
-.. % (what to watch out for)
-
+.. TODO: threads, code examples do not really behave well if errors happen
+   (what to watch out for)
 
 .. _embeddingincplusplus:
 
