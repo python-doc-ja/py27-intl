@@ -74,7 +74,7 @@
 読み取られた行については表示しません。
 
 
-:ref:`bltin-exceptions` 
+:ref:`bltin-exceptions`
 には、組み込み例外とその意味がリストされています。
 
 

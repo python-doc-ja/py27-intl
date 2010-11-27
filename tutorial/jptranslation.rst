@@ -18,7 +18,7 @@
 
 * 1.3 和訳: SUZUKI Hisao <suzuki at acm.org> (August 27, 1995)
 * 1.4 和訳: SUZUKI Hisao <suzuki at acm.org> (April 20, 1997)
-* 1.5.1 和訳: SUZUKI Hisao <suzuki at acm.org> (August 23, 1998) 
+* 1.5.1 和訳: SUZUKI Hisao <suzuki at acm.org> (August 23, 1998)
 * 2.1 和訳: SUZUKI Hisao <suzuki at acm.org> (June 10, 2001)
 * 2.2.3 差分和訳: sakito <sakito at s2.xrea.com> (August 10, 2003)
 * 2.2.3 敬体訳: ymasuda <y.masuda at acm.org> (September 5, 2003)

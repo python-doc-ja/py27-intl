@@ -679,7 +679,7 @@ raw モードは、正規表現を記述する時のように、沢山のバッ�
    >>> str(u"あいう")
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
-   UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-5: 
+   UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-5:
    ordinal not in range(128)
 
 特定のエンコーディングを使って Unicode 文字列を 8 ビットの文字列に変換するために、Unicode オブジェクトでは :func:`encode`
@@ -783,7 +783,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> a
    [123, 'bletch', 'xyzzy', 1234]
    >>> # それ自身 (のコピー) を先頭に挿入する
-   >>> a[:0] = a    
+   >>> a[:0] = a
    >>> a
    [123, 'bletch', 'xyzzy', 1234, 123, 'bletch', 'xyzzy', 1234]
    >>> # リストをクリアする: 全てのアイテムを空のリストに置換する
@@ -850,7 +850,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> while b < 10:
    ...     print b
    ...     a, b = b, a+b
-   ... 
+   ...
    1
    1
    2

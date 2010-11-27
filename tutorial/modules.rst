@@ -223,11 +223,11 @@ Python プログラマは、自分の行っている操作を理解している�
 
   .. index:: module: compileall
 
-* :mod:`compileall` 
+* :mod:`compileall`
   は、 :file:`.pyc` ファイル (または :option:`-O` を使ったときは :file:`.pyo` ファイル) を
   ディレクトリ内の全てのモジュールに対して生成することができます。
 
-  .. % 
+  .. %
 
 
 .. _tut-standardmodules:
@@ -257,7 +257,7 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
    >>> sys.ps1 = 'C> '
    C> print 'Yuck!'
    Yuck!
-   C> 
+   C>
 
 これらの二つの変数は、インタプリタが対話モードにあるときだけ定義されています。
 
@@ -289,7 +289,7 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
    ['__name__', 'fib', 'fib2']
    >>> dir(sys)
    ['__displayhook__', '__doc__', '__excepthook__', '__name__', '__stderr__',
-    '__stdin__', '__stdout__', '_getframe', 'api_version', 'argv', 
+    '__stdin__', '__stdout__', '_getframe', 'api_version', 'argv',
     'builtin_module_names', 'byteorder', 'callstats', 'copyright',
     'displayhook', 'exc_clear', 'exc_info', 'exc_type', 'excepthook',
     'exec_prefix', 'executable', 'exit', 'getdefaultencoding', 'getdlopenflags',
@@ -328,7 +328,7 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
     'FloatingPointError', 'FutureWarning', 'IOError', 'ImportError',
     'IndentationError', 'IndexError', 'KeyError', 'KeyboardInterrupt',
     'LookupError', 'MemoryError', 'NameError', 'None', 'NotImplemented',
-    'NotImplementedError', 'OSError', 'OverflowError', 
+    'NotImplementedError', 'OSError', 'OverflowError',
     'PendingDeprecationWarning', 'ReferenceError', 'RuntimeError',
     'RuntimeWarning', 'StandardError', 'StopIteration', 'SyntaxError',
     'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'True',

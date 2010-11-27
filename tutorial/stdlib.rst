@@ -405,7 +405,7 @@ Python には "バッテリー同梱 (batteries included)" 哲学があります
 .. % % packages. For example:
 
 * The :mod:`xmlrpclib`  および
-  :mod:`SimpleXMLRPCServer` 
+  :mod:`SimpleXMLRPCServer`
   モジュールは、遠隔手続き呼び出し (remote procedure call) を全くたいしたことのない作業に変えてしまいます。モジュール名とは違い、XML
   を扱うための直接的な知識は必要ありません。
 
