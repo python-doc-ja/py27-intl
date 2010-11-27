@@ -38,7 +38,7 @@ reST 標準のインラインマークアップは非常にシンプルです。
 アップ用の区切り文字と混合する場合は、バックスラッシュ(訳注: 日本語フォントでは、
 一般的に円記号になります)でエスケープする必要があります。
 
-インラインマークアップの幾つかの制限に気をつけてください: 
+インラインマークアップの幾つかの制限に気をつけてください:
 
 * ネストできません。
 * マークアップされる内容の先頭や終端に空白文字があってはなりません:
@@ -75,7 +75,7 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 ..    * This is a bulleted list.
 ..    * It has two items, the second
 ..      item uses two lines.
-.. 
+..
 ..    #. This is a numbered list.
 ..    #. It has two items too.
 
@@ -95,10 +95,10 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 
 ..    * this is
 ..    * a list
-.. 
+..
 ..      * with a nested list
 ..      * and some subitems
-.. 
+..
 ..    * and here the parent list continues
 
 .. Definition lists are created as follows::
@@ -115,9 +115,9 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 
 ..    term (up to a line of text)
 ..       Definition of the term, which must be indented
-.. 
+..
 ..       and can even consist of multiple paragraphs
-.. 
+..
 ..    next term
 ..       Description.
 
@@ -149,12 +149,12 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
    ここでまた通常の段落になります。
 
 ..    This is a normal text paragraph. The next paragraph is a code sample::
-.. 
+..
 ..       It is not processed in any way, except
 ..       that the indentation is removed.
-.. 
+..
 ..       It can span multiple lines.
-.. 
+..
 ..    This is a normal text paragraph again.
 
 .. The handling of the ``::`` marker is smart:
@@ -237,15 +237,15 @@ reST は独自の "interpreted text roles" に対応していて、囲まれた�
 .. Python documentation, we use this convention:
 
 通常、特定の文字に特定の見出しレベルが割り当てられておらず、ヘッダ構造から
-自動的にレベルが決まります。しかし、 Python ドキュメント においては、以下の
+自動的にレベルが決まります。しかし、 Python ドキュメントにおいては、以下の
 ルールを使います:
 
-* ``#`` (オーバーライン付き) を 編(part) に
-* ``*`` (オーバーライン付き) を 章(chapter) に
-* ``=`` を 節(section) に
-* ``-`` を 項(subsection) に
-* ``^`` を 小区分(subsubsection) に
-* ``"`` を 段落(paragraph) に
+* ``#`` (オーバーライン付き) を編(part) に
+* ``*`` (オーバーライン付き) を章(chapter) に
+* ``=`` を節(section) に
+* ``-`` を項(subsection) に
+* ``^`` を小区分(subsubsection) に
+* ``"`` を段落(paragraph) に
 
 .. * ``#`` with overline, for parts
 .. * ``*`` with overline, for chapters
@@ -307,7 +307,7 @@ reSTの拡張メカニズムの一つで、 Sphinx はディレクティブを�
 ..    .. function:: foo(x)
 ..                  foo(y, z)
 ..       :bar: no
-.. 
+..
 ..       Return a line of text input from the user.
 
 .. ``function`` is the directive name.  It is given two arguments here, the
@@ -315,7 +315,7 @@ reSTの拡張メカニズムの一つで、 Sphinx はディレクティブを�
 .. (as you can see, options are given in the lines immediately following the
 .. arguments and indicated by the colons).
 
-``function`` はディレクティブの名前です。 ここでは引数が二つあり、一つは一行目の
+``function`` はディレクティブの名前です。ここでは引数が二つあり、一つは一行目の
 残りの部分で、もう一つは次の行です。オプションも一つ、 ``bar`` があります。
 (ごらんの通り、オプションは引数の行のすぐ次の行にあり、コロンで示されます.)
 
@@ -346,9 +346,9 @@ reSTの拡張メカニズムの一つで、 Sphinx はディレクティブを�
    .. [#] 二つ目の脚注の内容
 
 ..    Lorem ipsum [#]_ dolor sit amet ... [#]_
-.. 
+..
 ..    .. rubric:: Footnotes
-.. 
+..
 ..    .. [#] Text of the first footnote.
 ..    .. [#] Text of the second footnote.
 
@@ -381,7 +381,7 @@ Unicode文字を使って直接記述することなので、そのエンコー�
 .. All Python documentation source files must be in UTF-8 encoding, and the HTML
 .. documents written from them will be in that encoding as well.
 
-全ての Python ドキュメント のソースファイルは UTF-8 エンコード でなければなりません。
+全ての Python ドキュメントのソースファイルは UTF-8 エンコードでなければなりません。
 そしてHTMLドキュメントもUTF-8で出力するのが良いでしょう。
 
 判っていること

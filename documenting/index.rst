@@ -19,7 +19,7 @@ Python のドキュメントのマークアップには、 `docutils`_ プロジ
 .. reStructuredText markup introduced to support Python documentation and how it
 .. should be used, as well as the Sphinx build system.
 
-このドキュメントでは、ドキュメントを作成する上でのスタイルガイドと、 
+このドキュメントでは、ドキュメントを作成する上でのスタイルガイドと、
 Python のドキュメントのために作られた独自の reStructuredText マークアップと
 その利用方法、そして Sphinx のビルドシステムについて説明します。
 

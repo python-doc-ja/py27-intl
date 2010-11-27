@@ -33,7 +33,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
    現在のセクションの著者を示します。引数には、(公表されないにしても)公表されても
    良いような名前と、email アドレスを含むべきです。
-   アドレスのドメイン名部分は小文字で記述されるべきです。 例::
+   アドレスのドメイン名部分は小文字で記述されるべきです。例::
 
       .. sectionauthor:: Guido van Rossum <guido@python.org>
 
@@ -60,7 +60,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 ..    :mod:`parrot` -- Dead parrot access
 ..    ===================================
-.. 
+..
 ..    .. module:: parrot
 ..       :platform: Unix, Windows
 ..       :synopsis: Analyze and reanimate dead parrots.
@@ -70,7 +70,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 .. As you can see, the module-specific markup consists of two directives, the
 .. ``module`` directive and the ``moduleauthor`` directive.
 
-ごらんの通り、モジュール専用マークアップには、 ``module`` と ``moduleauthor`` 
+ごらんの通り、モジュール専用マークアップには、 ``module`` と ``moduleauthor``
 という二つのディレクティブを持ちます。
 
 .. describe:: module
@@ -81,24 +81,24 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
    ``platform`` オプションは、そのモジュールが利用可能なプラットフォームをカンマで
    区切ったリストです。（全てのプラットフォームで利用可能であるなら、このオプションは
-   外すべきです） 要素は短い識別子で、 "IRIX", "Mac", "Windows", "Unix" などが使われ
+   外すべきです）要素は短い識別子で、 "IRIX", "Mac", "Windows", "Unix" などが使われ
    ています。できるだけ、すでに使われている識別子を使うようにしてください。
 
    ``synopsis`` オプションは、モジュールの目的を説明する一文で構成されます。
    これは、現在のところ、 Global Module Index でのみ利用されています。
 
 .. .. describe:: module
-.. 
+..
 ..    This directive marks the beginning of the description of a module (or package
 ..    submodule, in which case the name should be fully qualified, including the
 ..    package name).
-.. 
+..
 ..    The ``platform`` option, if present, is a comma-separated list of the
 ..    platforms on which the module is available (if it is available on all
 ..    platforms, the option should be omitted).  The keys are short identifiers;
 ..    examples that are in use include "IRIX", "Mac", "Windows", and "Unix".  It is
 ..    important to use a key which has already been used when applicable.
-.. 
+..
 ..    The ``synopsis`` option should consist of one sentence describing the
 ..    module's purpose -- it is currently only used in the Global Module Index.
 
@@ -109,7 +109,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    現在、このディレクティブは出力に利用されていません。
 
 .. .. describe:: moduleauthor
-.. 
+..
 ..    The ``moduleauthor`` directive, which can appear multiple times, names the
 ..    authors of the module code, just like ``sectionauthor`` names the author(s)
 ..    of a piece of documentation.  It too does not result in any output currently.
@@ -121,7 +121,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    table-of-contents ツリーに利用されるので、意味が解るようにしてください。
 
 .. .. note::
-.. 
+..
 ..    It is important to make the section title of a module-describing file
 ..    meaningful since that value will be inserted in the table-of-contents trees
 ..    in overview files.
@@ -161,7 +161,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 オブジェクトのメソッドやデータ属性(attribute)のシグネチャは、文脈からどの型に
 属しているかが明らかな場合であっても、 (``.. method::FileInput.input(...)``) の
-ように型名を含める必要があります。 これは、一貫したクロスリファレンスを実現する
+ように型名を含める必要があります。これは、一貫したクロスリファレンスを実現する
 ためです。
 "context managers" といった抽象プロトコルに属するメソッドを解説する場合にも、
 インデックスを判りやすくするために、（仮想）型名を付けてください。
@@ -183,14 +183,14 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    覚えておいてください。reST のインラインに対するパース処理は行われません。
 
 .. .. describe:: cfunction
-.. 
+..
 ..    Describes a C function. The signature should be given as in C, e.g.::
-.. 
+..
 ..       .. cfunction:: PyObject* PyType_GenericAlloc(PyTypeObject *type, Py_ssize_t nitems)
-.. 
+..
 ..    This is also used to describe function-like preprocessor macros.  The names
 ..    of the arguments should be given so they may be used in the description.
-.. 
+..
 ..    Note that you don't have to backslash-escape asterisks in the signature,
 ..    as it is not parsed by the reST inliner.
 
@@ -201,13 +201,13 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
       .. cmember:: PyObject* PyTypeObject.tp_bases
 
    説明文は、値の取り得る範囲、値がどのように扱われるか、値を変更しても良いのかどうかに
-   ついて記述するべきです。 テキストの中で構造体のメンバを参照するときには ``member`` role を
+   ついて記述するべきです。テキストの中で構造体のメンバを参照するときには ``member`` role を
    利用するべきです。
 
 .. describe:: cmacro
 
-   "シンプル"な C言語のマクロについて説明します。 シンプルなマクロとは、引数を取らず、
-   関数として解説されないものです。 このディレクティブは単純な定数の定義には利用しません。
+   "シンプル"な C言語のマクロについて説明します。シンプルなマクロとは、引数を取らず、
+   関数として解説されないものです。このディレクティブは単純な定数の定義には利用しません。
    Python ドキュメントの中でこのディレクティブが使われている例には、 :cmacro:`PyObject_HEAD` と
    :cmacro:`Py_BEGIN_ALLOW_THREADS` があります。
 
@@ -219,15 +219,15 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 .. describe:: cvar
 
-   C のグローバル変数を説明します。 シグネチャは、次の例のように、型を含めるべき
+   C のグローバル変数を説明します。シグネチャは、次の例のように、型を含めるべき
    です::
 
       .. cvar:: PyObject* PyClass_Type
 
 .. describe:: data
 
-   モジュール内のグローバルなデータを説明します。変数にも、 "定数として宣言された" 
-   値にも利用します。 クラスとオブジェクトの属性には使いません。
+   モジュール内のグローバルなデータを説明します。変数にも、 "定数として宣言された"
+   値にも利用します。クラスとオブジェクトの属性には使いません。
 
 ..    Describes global data in a module, including both variables and values used
 ..    as "defined constants."  Class and object attributes are not documented
@@ -235,7 +235,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 .. describe:: exception
 
-   例外クラスについて説明します。 シグネチャは、必要ではありませんが、コンストラクタ
+   例外クラスについて説明します。シグネチャは、必要ではありませんが、コンストラクタ
    引数と丸括弧を含むことができます。
 
 ..    Describes an exception class.  The signature can, but need not include
@@ -300,15 +300,15 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    ために利用しています。例::
 
       .. describe:: opcode
-      
+
          Python バイトコードの命令を説明します。
 
 ..    This directive produces the same formatting as the specific ones explained
 ..    above but does not create index entries or cross-referencing targets.  It is
 ..    used, for example, to describe the directives in this document. Example::
-.. 
+..
 ..       .. describe:: opcode
-.. 
+..
 ..          Describes a Python bytecode instruction.
 
 
@@ -370,25 +370,25 @@ Python ソースコードやインタラクティブセッションの例は、 
 .. * There is a "highlighting language" for each source file.  Per default,
 ..   this is ``'python'`` as the majority of files will have to highlight Python
 ..   snippets.
-.. 
+..
 .. * Within Python highlighting mode, interactive sessions are recognized
 ..   automatically and highlighted appropriately.
-.. 
+..
 .. * The highlighting language can be changed using the ``highlightlang``
 ..   directive, used as follows::
-.. 
+..
 ..      .. highlightlang:: c
-.. 
+..
 ..   This language is used until the next ``highlightlang`` directive is
 ..   encountered.
-.. 
+..
 .. * The valid values for the highlighting language are:
-.. 
+..
 ..   * ``python`` (the default)
 ..   * ``c``
 ..   * ``rest``
 ..   * ``none`` (no highlighting)
-.. 
+..
 .. * If highlighting with the current language fails, the block is not highlighted
 ..   in any way.
 
@@ -426,7 +426,7 @@ Python ソースファイルを取り込む場合は::
   ``:role:`title <target>``` は *target* を参照しますが、リンクテキストは *title*
   になります。
 
-* コンテントにprefix ``!`` を付けると、 参照もハイパーリンクも作られません。
+* コンテントにprefix ``!`` を付けると、参照もハイパーリンクも作られません。
 
 * Python オブジェクトのロールにおいて、コンテントに ``~`` というprefixをつけると、
   リンクターゲットはターゲットの最後の部分になります。例えば、 ``:meth:`~Queue.Queue.get```
@@ -466,7 +466,7 @@ Python ソースファイルを取り込む場合は::
 
 .. describe:: const
 
-   定数として "宣言された" 名前。これは C言語 の ``#define`` か、
+   定数として "宣言された" 名前。これは C言語の ``#define`` か、
    Python の変更されないことを意図された変数である。
 
 ..    The name of a "defined" constant.  This may be a C-language ``#define``
@@ -600,9 +600,9 @@ Python ソースファイルを取り込む場合は::
 
 ..    The name of a file or directory.  Within the contents, you can use curly
 ..    braces to indicate a "variable" part, for example::
-.. 
+..
 ..       ... is installed in :file:`/usr/lib/python2.{x}/site-packages` ...
-.. 
+..
 ..    In the built documentation, the ``x`` will be displayed differently to
 ..    indicate that it is to be replaced by the Python minor version.
 
@@ -695,11 +695,11 @@ Python ソースファイルを取り込む場合は::
 ..    submenus and choosing a specific operation, or any subsequence of such a
 ..    sequence.  The names of individual selections should be separated by
 ..    ``-->``.
-.. 
+..
 ..    For example, to mark the selection "Start > Programs", use this markup::
-.. 
+..
 ..       :menuselection:`Start --> Programs`
-.. 
+..
 ..    When including a selection that includes some trailing indicator, such as the
 ..    ellipsis some operating systems use to indicate that the command opens a
 ..    dialog, the indicator should be omitted from the selection name.
@@ -749,7 +749,7 @@ Python ソースファイルを取り込む場合は::
    利用できます。
 
    "可変" 部分が要らないのであれば、通常の ````code```` を使ってください。
- 
+
 .. describe:: var
 
    Python か C の、変数か引数の名前。
@@ -803,7 +803,7 @@ reST 標準の方法がその目的に利用できるからです。
 .. source.
 
 ドキュメント中の任意のセクションに対してのクロスリファレンスをサポートするには、
-reST 標準のラベルはあまり良くありません。 全てのラベルはセクションタイトルの前に
+reST 標準のラベルはあまり良くありません。全てのラベルはセクションタイトルの前に
 おかなければならず、全てのラベルの名前はドキュメントのソース全体に渡って
 ユニークでなければなりません。
 
@@ -828,9 +828,9 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
 
 ..    Section to cross-reference
 ..    --------------------------
-.. 
+..
 ..    This is the text of the section.
-.. 
+..
 ..    It refers to the section itself, see :ref:`my-reference-label`.
 
 .. The ``:ref:`` invocation is replaced with the section title.
@@ -889,7 +889,7 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
    に追加されたのかを示します。このディレクティブがモジュール全体に適用する場合、
    ディレクティブをモジュールセクションのどの文章よりも先におかれるべきです。
 
-   最初の引数は必須で、バージョンです。二つ目の引数は任意で、変更点の *簡潔な* 
+   最初の引数は必須で、バージョンです。二つ目の引数は任意で、変更点の *簡潔な*
    説明です。
 
    例::
@@ -914,7 +914,7 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
 
    たくさんのセクションで、モジュールドキュメントや外部ドキュメントが参照されています。
    これらのリストは、 ``seealso`` ディレクティブで作成されます。
-   
+
    ``seealso`` ディレクティブは一般的に、セクションの中で、どのサブセクションより
    前に置かれます。 HTML 出力では、本文の流れから切り離された区画の中に表示されます。
 
@@ -946,9 +946,9 @@ reST 標準のラベルはあまり良くありません。 全てのラベル�
          段落の内容
 
 ..    This directive creates a centered boldfaced paragraph.  Use it as follows::
-.. 
+..
 ..       .. centered::
-.. 
+..
 ..          Paragraph contents.
 
 .. Table-of-contents markup
@@ -959,7 +959,7 @@ Table-of-contents マークアップ (Table-of-contents markup)
 
 reST が複数のドキュメントを繋いだり、ドキュメントを複数のファイルに分割して出力する
 機能を持たないので、 Sphinx は table-of-contents を作成したり、ドキュメントの元ファイル
-間に関連を持たせたりするためにカスタムのディレクティブを利用しています。 ``toctree`` 
+間に関連を持たせたりするためにカスタムのディレクティブを利用しています。 ``toctree``
 ディレクティブはその中心になる要素です。
 
 .. Since reST does not have facilities to interconnect several documents, or split
@@ -969,7 +969,7 @@ reST が複数のドキュメントを繋いだり、ドキュメントを複数
 
 .. describe:: toctree
 
-   このディレクティブは、ディレクティブの要素として与えられたファイルの中の TOCs 
+   このディレクティブは、ディレクティブの要素として与えられたファイルの中の TOCs
    ("sub-TOC trees" を含む) から作成した "TOC tree" をその場所に挿入します。
    ``maxdepth`` オプションに数値を指定することで、 "TOC tree" の深さを指定できます。
    デフォルトでは全レベルを利用します。
@@ -1005,7 +1005,7 @@ reST が複数のドキュメントを繋いだり、ドキュメントを複数
 .. TODO: 日本語ドキュメントをビルドしたときにリンクがどういう文字列になるか確認する。
 
 ..    This accomplishes two things:
-.. 
+..
 ..    * Tables of contents from all those files are inserted, with a maximum depth
 ..      of two, that means one nested heading.  ``toctree`` directives in those
 ..      files are also taken into account.
@@ -1013,7 +1013,7 @@ reST が複数のドキュメントを繋いだり、ドキュメントを複数
 ..      ``strings.rst`` and so forth, and it knows that they are children of the
 ..      shown file, the library index.  From this information it generates "next
 ..      chapter", "previous chapter" and "parent chapter" links.
-.. 
+..
 ..    In the end, all files included in the build process must occur in one
 ..    ``toctree`` directive; Sphinx will emit a warning if it finds a file that is
 ..    not included, because that means that this file will not be reachable through
@@ -1147,9 +1147,9 @@ module, keyword, operator, object, exception, statement, builtin
 ..    following definition.  If the definition spans multiple lines, each
 ..    continuation line must begin with a colon placed at the same column as in the
 ..    first line.
-.. 
+..
 ..    Blank lines are not allowed within ``productionlist`` directive arguments.
-.. 
+..
 ..    The definition can contain token names which are marked as interpreted text
 ..    (e.g. ``sum ::= `integer` "+" `integer```) -- this generates cross-references
 ..    to the productions of these tokens.  Note that vertical bars used to indicate
@@ -1157,7 +1157,7 @@ module, keyword, operator, object, exception, statement, builtin
 ..    indicate a substitution reference to the reST parser.
 
 
-.. XXX describe optional first parameter 
+.. XXX describe optional first parameter
 
 以下は Python リファレンスマニュアルの中の例です::
 
@@ -1186,7 +1186,7 @@ module, keyword, operator, object, exception, statement, builtin
 .. describe:: |version|
 
    ドキュメントが言及している Python バージョンへ置換されます。これは、たとえば
-   バージョン 2.5.1 において ``2.5`` の様に、バージョン文字列のうち メジャー・
+   バージョン 2.5.1 において ``2.5`` の様に、バージョン文字列のうちメジャー・
    マイナー部のみで構成されます。
 
 .. describe:: |today|
