@@ -57,11 +57,9 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: bin(x)
 
-   Convert an integer number to a binary string. The result is a valid Python
    整数値をバイナリ文字列に変換します。結果は正常な Python の表現となります。
-   *x* が Python の :class:`int` オブジェクトで無い場合、 :meth:`__index__`
-   expression.  If *x* is not a Python :class:`int` object, it has to define an
-   :meth:`__index__` method that returns an integer.
+   *x* が Python の :class:`int` オブジェクトでない場合、整数値を返す
+   :meth:`__index__` メソッドが定義されていなければなりません。
 
    .. versionadded:: 2.6
 
@@ -294,7 +292,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    b)`` であり、 *q* は通常 ``math.floor(a / b)`` ですが、そうではなく
    1 になることもあります。
    いずれにせよ、 ``q * b + a % b`` は *a* に非常に近い値になり、 ``a %
-   b`` がゼロでない値の場合、その符号は *b* と同じで、 `` 0 <= abs(a %
+   b`` がゼロでない値の場合、その符号は *b* と同じで、 ``0 <= abs(a %
    b) < abs(b)`` になります。
 
    .. versionchanged:: 2.3
@@ -380,8 +378,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       以前は *locals* も辞書でなければなりませんでした.
 
    *locals* 辞書が省略された場合、標準の値として *globals* に設定され
-    ます。辞書が両方とも省略された場合、表現式は :func:`execfiles` が
-    呼び出されている環境の下で実行されます。戻り値は ``None`` です。
+   ます。辞書が両方とも省略された場合、表現式は :func:`execfiles` が
+   呼び出されている環境の下で実行されます。戻り値は ``None`` です。
 
    .. warning::
 
@@ -1273,7 +1271,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
    *super* の典型的な使用例を2例示します。クラスの階層は単一の継承とし、
    *super* は名前を明示することなく親クラスを参照することができるとし
-   *ます。コードはメンテナンスが容易になるようにします。この用途の
+   ます。コードはメンテナンスが容易になるようにします。この用途の
    *super* は他のプログラミング言語で見られるものと同じ方向性です。
 
    ふたつめの使用例は、動的な実行環境下での複数の継承をサポートするた
@@ -1324,7 +1322,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: type(object)
 
    *object* の型を返します。オブジェクトの型の検査には
-    :func:`isinstance` 組み込み関数を使うことが推奨されます。
+   :func:`isinstance` 組み込み関数を使うことが推奨されます。
 
    3 引数で呼び出された場合には :func:`type` 関数は後述するようにコン
    ストラクタとして働きます。
@@ -1439,8 +1437,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       の "short" 整数型) に制限しており、要素数がネイティブの C long
       型の範囲内に収まるよう要求しています。もし大きな範囲が必要ならば、
       別の実装である :mod:`itertools` モジュールの、
-      ``islice(count(start, step), (stop-start+step-1)//step)``.を使う
-      のが巧い方法かも知れません。
+      ``islice(count(start, step), (stop-start+step-1)//step)``
+      を使うのが巧い方法かも知れません。
 
 
 .. function:: zip([iterable, ...])
