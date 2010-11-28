@@ -10,7 +10,7 @@
    single: parser
    single: token
 
-Python で書かれたプログラムは *パーザ (parser)* に読み込まれます。パーザへの入力は、*字句解析器 (lexical analyzer)*
+Python で書かれたプログラムは *パーザ (parser)* に読み込まれます。パーザへの入力は、 *字句解析器 (lexical analyzer)*
 によって生成された一連の *トークン (token)* からなります。この章では、字句解析器がファイルをトークン列に分解する方法について解説します。
 
 Python は 7-bit の ASCII 文字セットをプログラムのテキストに使います。
@@ -67,7 +67,7 @@ Unix形式ではASCII LF (行送り: linefeed)文字、 Windows形式ではASCII
 に続いて行送り) 、 Macintosh形式ではASCII CR (復帰) 文字です。これら全ての形式のコードは、
 違うプラットフォームでも等しく使用することができます。
 
-Pythonに埋め込む場合には、標準のC言語の改行文字の変換規則 (ASCII LFを表現した文字コード``\n``が行終端となります) に従って、
+Pythonに埋め込む場合には、標準のC言語の改行文字の変換規則 (ASCII LFを表現した文字コード ``\n`` が行終端となります) に従って、
 Python APIにソースコードを渡す必要があります。
 
 
@@ -111,8 +111,7 @@ Python スクリプト中の最初の行か、二行目にあるコメントが�
 文字列リテラルは文法的な解析を行うために Unicode に変換され、解釈が行われる前に元のエンコードに戻されます。エンコード宣言は
 宣言全体が一行に収まっていなければなりません。
 
-.. % XXX there should be a list of supported encodings.
-
+.. XXX there should be a list of supported encodings.
 
 .. _explicit-joining:
 
@@ -127,11 +126,7 @@ Python スクリプト中の最初の行か、二行目にあるコメントが�
 
 二つまたはそれ以上の物理行を論理行としてつなげるためには、バックスラッシュ文字 (``\``) を使って以下のようにします:
 物理行が文字列リテラルやコメント中の文字でないバックスラッシュで終わっている場合、後続する行とつなげて一つの論理行を構成し、
-バックスラッシュおよびバックスラッシュの後ろにある行末文字を削除します。例えば:
-
-.. %
-
-::
+バックスラッシュおよびバックスラッシュの後ろにある行末文字を削除します。例えば::
 
    if 1900 < year < 2100 and 1 <= month <= 12 \
       and 1 <= day <= 31 and 0 <= hour < 24 \
@@ -216,7 +211,7 @@ Python スクリプト中の最初の行か、二行目にあるコメントが�
 スタックの先頭に積まれてゆく数字は、常にスタックの末尾から先頭にかけて厳密に増加するようになっています。各論理行の開始位置において、
 その行のインデントレベル値がスタックの先頭の値と比較されます。値が等しければ何もしません。インデントレベル値がスタック上の値よりも
 大きければ、インデントレベル値はスタックに積まれ、INDENT トークンが一つ生成されます。インデントレベル値がスタック上の値よりも小さい場合、
-その値はスタック内のいずれかの値と*等しくなければなりません* ; スタック上のインデントレベル値よりも大きい値はすべて除去され、値が一つ除去されるごとに
+その値はスタック内のいずれかの値と *等しくなければなりません* ; スタック上のインデントレベル値よりも大きい値はすべて除去され、値が一つ除去されるごとに
 DEDENT トークンが一つ生成されます。ファイルの末尾では、スタックに残っているゼロより大きい値は全て除去され、値が一つ除去されるごとに DEDENT
 トークンが一つ生成されます。
 
@@ -263,8 +258,8 @@ DEDENT トークンが一つ生成されます。ファイルの末尾では、�
 その他のトークン
 ================
 
-NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴリ: *識別子
-(identifier)*、*キーワード(keyword)*、*リテラル*、 *演算子 (operator)* 、*デリミタ (delimiter)*
+NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴリ: *識別子 (identifier)*,
+*キーワード(keyword)*, *リテラル*, *演算子 (operator)*, *デリミタ (delimiter)*
 が存在します。空白文字 (上で述べた行終端文字以外) はトークンではありませんが、トークンを区切る働きがあります。
 トークンの解析にあいまいさが生じた場合、トークンは左から右に読んで不正でないトークンを構築できる最長の文字列を含むように構築されます。
 
@@ -281,8 +276,8 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
 識別子 (または *名前 (name)*) は、以下の字句定義で記述されます:
 
 .. productionlist::
-   identifier: (`letter`\|"_") (`letter` \| `digit` \| "_")\*
-   letter: `lowercase` \| `uppercase`
+   identifier: (`letter`|"_") (`letter` | `digit` | "_")*
+   letter: `lowercase` | `uppercase`
    lowercase: "a"..."z"
    uppercase: "A"..."Z"
    digit: "0"..."9"
@@ -300,12 +295,7 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
    single: reserved word
 
 以下の識別子は、予約語、または Python 言語における *キーワード (keyword)* として使われ、通常の識別子として
-使うことはできません。キーワードは厳密に下記の通りに綴らなければなりません:
-
-.. %
-.. %
-
-::
+使うことはできません。キーワードは厳密に下記の通りに綴らなければなりません::
 
    and       del       from      not       while
    as        elif      global    or        with
@@ -318,16 +308,16 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
 .. % When adding keywords, use reswords.py for reformatting
 
 .. versionchanged:: 2.4
-   :const:`None` became a constant and is now recognized by the compiler as a name
-   for the built-in object このバージョンから:const:`None`は定数になり、
-   組み込みオブジェクト:const:`None`の名前としてコンパイラに認識されるようになりました。これは予約語ではありませんが、
-   これに他のオブジェクトを割り当てることはできません。.
+   このバージョンから :const:`None` は定数になり、
+   組み込みオブジェクト :const:`None` の名前としてコンパイラに認識されるようになりました。これは予約語ではありませんが、
+   これに他のオブジェクトを割り当てることはできません。
 
-.. versionchanged:: 2.6
-   ``with_statement``機能をfuture文によって有効にしたときにのみ、
-   キーワード:keyword:`as`と:keyword:`with`は認識されます。この機能はPython 2.6で正式に有効になる予定です。詳しくは、
-   :ref:`with`節を参照してください。 :keyword:`as`と:keyword:`with`を識別子として使用した場合は、
-   たとえfuture文で``with_statement``が有効になっていなかったとしても常にワーニングが表示されます。.
+.. versionchanged:: 2.5
+   ``with_statement`` 機能をfuture文によって有効にしたときにのみ、
+   キーワード :keyword:`as` と :keyword:`with` は認識されます。
+   この機能はPython 2.6で正式に有効になる予定です。詳しくは、
+   :ref:`with` 節を参照してください。 :keyword:`as` と :keyword:`with` を識別子として使用した場合は、
+   たとえfuture文で ``with_statement`` が有効になっていなかったとしても常にワーニングが表示されます。
 
 
 .. _id-classes:
@@ -340,23 +330,23 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
 ``_*``
    この識別子は ``from module import *`` で import されません。
    対話インタプリタでは、最も最近行われた値評価の結果を記憶するために特殊な識別子 ``_`` が使われます; この識別子は :mod:`__builtin__`
-   モジュール内に記憶されます。対話モードでない場合、``_`` には特殊な意味はなく、定義されていません。 :ref:`import` 節、
-   ":keyword:`import` 文" を参照してください。
+   モジュール内に記憶されます。対話モードでない場合、 ``_`` には特殊な意味はなく、定義されていません。
+   :ref:`import` を参照してください。
 
    .. note::
 
       名前 ``_`` は、しばしば国際化 (internationalization) と共に用いられます; この慣習についての詳しい情報は、
-      :mod:`gettext` module (XXX reference: ../lib/module-gettext.html) を参照してください。
+      :mod:`gettext` 参照してください。
 
 ``__*__``
    システムで定義された (system-defined) 名前です。これらの名前はインタプリタと (標準ライブラリを含む) 実装上で定義されています;
    アプリケーション側では、この名前規約を使って別の名前を定義しようとすべきではありません。この種の名前のうち、Python で定義されている
-   名前のセットは、将来のバージョンで拡張される可能性があります。  :ref:`specialnames` 節、"特殊なメソッド名" を参照してください。
+   名前のセットは、将来のバージョンで拡張される可能性があります。  :ref:`specialnames` を参照してください。
 
 ``__*``
    クラスプライベート (class-private) な名前です。このカテゴリに属する名前は、クラス定義のコンテキスト上で用いられた場合、基底クラスと
-   導出クラスの "プライベートな" 属性間で名前衝突が起こるのを防ぐために書き直されます。  :ref:`atom-identifiers` 節、"識別子
-   (名前)" を参照してください。
+   導出クラスの "プライベートな" 属性間で名前衝突が起こるのを防ぐために書き直されます。  :ref:`atom-identifiers`
+   を参照してください。
 
 
 .. _literals:
@@ -383,20 +373,20 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
 .. index:: single: ASCII@ASCII
 
 .. productionlist::
-   stringliteral: [`stringprefix`](`shortstring` \| `longstring`)
-   stringprefix: "r" \| "u" \| "ur" \| "R" \| "U" \| "UR" \| "Ur" \| "uR"
-   shortstring: "'" `shortstringitem`\* "'" \| '"' `shortstringitem`\* '"'
-   longstring: ""'" `longstringitem`\* ""'"
-             : \| '"""' `longstringitem`\* '"""'
-   shortstringitem: `shortstringchar` \| `escapeseq`
-   longstringitem: `longstringchar` \| `escapeseq`
+   stringliteral: [`stringprefix`](`shortstring` | `longstring`)
+   stringprefix: "r" | "u" | "ur" | "R" | "U" | "UR" | "Ur" | "uR"
+   shortstring: "'" `shortstringitem`* "'" | '"' `shortstringitem`* '"'
+   longstring: "'''" `longstringitem`* "'''"
+             : | '"""' `longstringitem`* '"""'
+   shortstringitem: `shortstringchar` | `escapeseq`
+   longstringitem: `longstringchar` | `escapeseq`
    shortstringchar: <any source character except "\" or newline or the quote>
    longstringchar: <any source character except "\">
    escapeseq: "\" <any ASCII character>
 
 上記の生成規則で示されていない文法的な制限が一つあります。それは文字列リテラルの :token:`stringprefix` と残りの部分の間に
 空白を入れてはならないということです。ソースコード文字セット (source character set) はエンコード宣言で決まります．エンコード
-宣言がない場合には ASCII になります．:ref:`encodings` 節を参照してください．
+宣言がない場合には ASCII になります． :ref:`encodings` 節を参照してください．
 
 .. index::
    single: triple-quoted string
@@ -404,17 +394,17 @@ NEWLINE、INDENT、および DEDENT の他、以下のトークンのカテゴ�
    single: string; Unicode
 
 より平易な説明: 文字列リテラルは、対応する一重引用符 (``'``) または二重引用符 (``"``) で囲われます。また、対応する三連の一重引用符
-や二重引用符で囲うこともできます  (通常、*三重クオート文字列: triple-quoted string* として参照されます)。バックスラッシュ
+や二重引用符で囲うこともできます  (通常、 *三重クオート文字列: triple-quoted string* として参照されます)。バックスラッシュ
 (``\``) 文字を使って、ある文字を例えば改行文字やバックスラッシュ自体、クオート文字といった別の意味を持つようにエスケープすることができます。
 文字列リテラルの前には、オプションとして ``'r'`` または ``'R'`` 一文字を接頭してもかまいません; このような文字列は :dfn:`raw
-文字列 (raw string)` と呼ばれ、バックスラッシュによるエスケープシーケンスの解釈規則が異なります。``'u'`` や ``'U'``
+文字列 (raw string)` と呼ばれ、バックスラッシュによるエスケープシーケンスの解釈規則が異なります。 ``'u'`` や ``'U'``
 を接頭すると、文字列は Unicode 文字列 (Unicode string) になります。Unicode 文字列は Unicode コンソーシアムおよび
 ISO 10646 で定義されている Unicode 文字セットを使います。Unicode 文字列では、文字セットに加えて、以下で説明するような
-エスケープシーケンスを利用できます。二つの接頭文字を組み合わせることもできます; この場合、``'u'`` は ``'r'`` より前に出現しなくては
+エスケープシーケンスを利用できます。二つの接頭文字を組み合わせることもできます; この場合、 ``'u'`` は ``'r'`` より前に出現しなくては
 なりません。
 
 三重クオート文字列中には、三連のエスケープされないクオート文字で文字列を終端してしまわないかぎり、エスケープされていない改行やクオートを書くことができます
-(さらに、それらはそのまま文字列中に残ります)。 (ここでいう "クオート" とは、文字列の囲みを開始するときに使った文字を示し、``'`` か ``"``
+(さらに、それらはそのまま文字列中に残ります)。 (ここでいう "クオート" とは、文字列の囲みを開始するときに使った文字を示し、 ``'`` か ``"``
 のいずれかです)。
 
 .. index::
@@ -482,7 +472,7 @@ ISO 10646 で定義されている Unicode 文字セットを使います。Unic
    標準 C と同じく、最大で 3 桁の 8 進数まで受理します。
 
 (4)
-   標準 C とは違い、最大で 2 桁の 16 進数しか受理されません。
+   標準 C とは違い、ちょうど 2 桁の 16 進数しか受理されません。
 
 (5)
    文字列リテラル中では， 16 進および 8 進エスケープはエスケープの示すバイト文字になります．そのバイト文字がソース文字セットで
@@ -497,18 +487,19 @@ ISO 10646 で定義されている Unicode 文字セットを使います。Unic
 
 接頭文字 ``'r'`` または ``'R'`` がある場合、バックスラッシュの後にくる文字はそのまま文字列中に入り、*バックスラッシュは全て
 文字列中に残されます*。例えば、文字列リテラル ``r"\n"`` は二つの文字: バックスラッシュと小文字の ``'n'`` からなる文字列を表すことに
-なります。引用符はバックスラッシュでエスケープすることができますが、バックスラッシュ自体も残ってしまいます; 例えば、``r"\""`` は不正でない
+なります。引用符はバックスラッシュでエスケープすることができますが、バックスラッシュ自体も残ってしまいます; 例えば、 ``r"\""`` は不正でない
 文字列リテラルで、バックスラッシュと二重引用符からなる文字列を表します;  ``r"\"`` は正しくない文字列リテラルです (raw 文字列を奇数個連なった
-バックスラッシュで終わらせることはできません)。厳密にいえば、 (バックスラッシュが直後のクオート文字をエスケープしてしまうため)  *raw
-文字列を単一のバックスラッシュで終わらせることはできない* ということになります。また、バックスラッシュの直後に改行がきても、行継続を意味する*のではなく*
+バックスラッシュで終わらせることはできません)。厳密にいえば、 (バックスラッシュが直後のクオート文字をエスケープしてしまうため) 
+*raw文字列を単一のバックスラッシュで終わらせることはできない*
+ということになります。また、バックスラッシュの直後に改行がきても、行継続を意味する *のではなく*
 、それら二つの文字として解釈されるので注意してください。
 
-``'r'`` および ``'R'`` 接頭文字を ``'u'`` や ``'U'`` と合わせて使った場合、``\uXXXX``および
+``'r'`` および ``'R'`` 接頭文字を ``'u'`` や ``'U'`` と合わせて使った場合、 ``\uXXXX`` および
 ``\UXXXXXXXX`` エスケープシーケンスは処理されますが、 *その他のバックスラッシュはすべて文字列中に残されます* 。例えば、文字列リテラル
 ``ur"\u0062\n"`` は、3つの Unicode 文字:  'LATIN SMALL LETTER B' (ラテン小文字 B)、'REVERSE
 SOLIDUS' (逆向き斜線)、および 'LATIN SMALL LETTER N' (ラテン小文字 N) を表します。
 バックスラッシュの前にバックスラッシュをつけてエスケープすることはできます; しかし、バックスラッシュは両方とも文字列中に残されます。
-その結果、``\uXXXX`` エスケープシーケンスは、バックスラッシュが奇数個連なっている場合にのみ認識されます。
+その結果、 ``\uXXXX`` エスケープシーケンスは、バックスラッシュが奇数個連なっている場合にのみ認識されます。
 
 
 .. _string-catenation:
@@ -517,7 +508,7 @@ SOLIDUS' (逆向き斜線)、および 'LATIN SMALL LETTER N' (ラテン小文�
 ------------------------------------
 
 複数の文字列リテラルは、互いに異なる引用符を使っていても  (空白文字で区切って) 隣接させることができ、その意味は各々の文字列を
-結合したものと同じになります。したがって、``"hello" 'world'`` は ``"helloworld"``
+結合したものと同じになります。したがって、 ``"hello" 'world'`` は ``"helloworld"``
 と同じになります。この機能を使うと、長い文字列を分離して、複数行にまたがらせる際に便利です。また、部分文字列ごとに
 コメントを追加することもできます。例えば::
 
@@ -546,6 +537,7 @@ number)、そして虚数 (imaginary number) です。複素数のためのリ�
    single: long integer literal
    single: floating point literal
    single: hexadecimal literal
+   single: binary literal
    single: octal literal
    single: decimal literal
    single: imaginary literal
@@ -563,16 +555,18 @@ number)、そして虚数 (imaginary number) です。複素数のためのリ�
 整数および長整数リテラルは以下の字句定義で記述されます:
 
 .. productionlist::
-   longinteger: `integer` ("l" \| "L")
-   integer: `decimalinteger` \| `octinteger` \| `hexinteger`
-   decimalinteger: `nonzerodigit` `digit`\* \| "0"
-   octinteger: "0" `octdigit`\ +
-   hexinteger: "0" ("x" \| "X") `hexdigit`\ +
+   longinteger: `integer` ("l" | "L")
+   integer: `decimalinteger` | `octinteger` | `hexinteger` | `bininteger`
+   decimalinteger: `nonzerodigit` `digit`* | "0"
+   octinteger: "0" ("o" | "O") `octdigit`+ | "0" `octdigit`+
+   hexinteger: "0" ("x" | "X") `hexdigit`+
+   bininteger: "0" ("b" | "B") `bindigit`+
    nonzerodigit: "1"..."9"
    octdigit: "0"..."7"
-   hexdigit: `digit` \| "a"..."f" \| "A"..."F"
+   bindigit: "0" | "1"
+   hexdigit: `digit` | "a"..."f" | "A"..."F"
 
-長整数を表す末尾の文字は小文字の ``'l'`` でも大文字の ``'L'``  でもかまいませんが、``'l'`` は ``'1'`` に良く似ているので、
+長整数を表す末尾の文字は小文字の ``'l'`` でも大文字の ``'L'``  でもかまいませんが、 ``'l'`` は ``'1'`` に良く似ているので、
 常に ``'L'`` を使うよう強く勧めます。
 
 整数で表現できる最大の値よりも大きい整数のリテラル  (例えば 32-bit 整数を使っている場合には 2147483647) は、
@@ -593,15 +587,15 @@ number)、そして虚数 (imaginary number) です。複素数のためのリ�
 浮動小数点数リテラルは以下の字句定義で記述されます:
 
 .. productionlist::
-   floatnumber: `pointfloat` \| `exponentfloat`
-   pointfloat: [`intpart`] `fraction` \| `intpart` "."
-   exponentfloat: (`intpart` \| `pointfloat`) `exponent`
-   intpart: `digit`\ +
-   fraction: "." `digit`\ +
-   exponent: ("e" \| "E") ["+" \| "-"] `digit`\ +
+   floatnumber: `pointfloat` | `exponentfloat`
+   pointfloat: [`intpart`] `fraction` | `intpart` "."
+   exponentfloat: (`intpart` | `pointfloat`) `exponent`
+   intpart: `digit`+
+   fraction: "." `digit`+
+   exponent: ("e" | "E") ["+" | "-"] `digit`+
 
 浮動小数点数における整数部と指数部は 8 進数のように見えることもありますが、10 を基数として解釈されるので注意してください。
-例えば、``077e010`` は正しい表記であり、``77e10`` と同じ数を表します。浮動小数点数リテラルの取りうる値の範囲は実装に依存します。
+例えば、 ``077e010`` は正しい表記であり、 ``77e10`` と同じ数を表します。浮動小数点数リテラルの取りうる値の範囲は実装に依存します。
 浮動小数点数リテラルの例をいくつか示します::
 
    3.14    10.    .001    1e100    3.14e-10    0e0
@@ -618,10 +612,10 @@ number)、そして虚数 (imaginary number) です。複素数のためのリ�
 虚数リテラルは以下のような字句定義で記述されます:
 
 .. productionlist::
-   imagnumber: (`floatnumber` \| `intpart`) ("j" \| "J")
+   imagnumber: (`floatnumber` | `intpart`) ("j" | "J")
 
 虚数リテラルは、実数部が 0.0 の複素数を表します。複素数は二つ組の浮動小数点型の数値で表され、それぞれの数値は浮動小数点型と同じ定義域の
-範囲を持ちます。実数部がゼロでない浮動小数点を生成するには、``(3+4j)`` のように虚数リテラルに浮動小数点数を加算します。以下に虚数リテラルの
+範囲を持ちます。実数部がゼロでない浮動小数点を生成するには、 ``(3+4j)`` のように虚数リテラルに浮動小数点数を加算します。以下に虚数リテラルの
 例をいくつか示します::
 
    3.14j   10.j    10j     .001j   1e100j  3.14e-10j
