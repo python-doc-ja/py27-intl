@@ -14,7 +14,7 @@
 :const:`Py_single_input` です。開始期号の説明はこれらを引数として取る関数の後にあります。
 
 これらの関数のいくつかが :ctype:`FILE\*` 引数をとることにも注意してください。
-注意深く扱う必要がある特別な問題には、異なるCライブラリの :ctype:`FILE` 構造体は異なっていて互換性がない可能性があるということが関係しています。
+注意深く扱う必要がある特別な問題の1つは、異なるCライブラリの :ctype:`FILE` 構造体は異なっていて互換性がない可能性があるということです。
 実際に(少なくとも)Windowsでは、動的リンクされる拡張が異なるライブラリを
 使うことが可能であり、したがって、 :ctype:`FILE\*` 引数がPythonランタイムが
 使っているライブラリと同じライブラリによって作成されたことが確かならば、単にこれらの関数へ渡すだけということに注意すべきです。
@@ -28,6 +28,8 @@
    戻り値は :func:`sys.exit` 関数へ渡される整数でしょう。例外が原因でインタプリタが終了した場合は ``1`` 、あるいは、
    引数リストが有効なPythonコマンドラインになっていない場合は ``2`` です。
 
+   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemError` 例外が発生すると、
+   この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
 .. cfunction:: int PyRun_AnyFile(FILE *fp, const char *filename)
 
@@ -64,6 +66,10 @@
    :mod:`__main__` モジュールの中で *flags* に従って *command* に含まれる Python ソースコードを
    実行します。 :mod:`__main__` がまだ存在しない場合は作成されます。正常終了の場合は ``0`` を返し、また例外が発生した場合は ``-1`` を
    返します。エラーがあっても、例外情報を得る方法はありません。
+   *flags* の意味については、後述します。
+
+   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemError` 例外が発生すると、
+   この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
 
 .. cfunction:: int PyRun_SimpleFile(FILE *fp, const char *filename)
@@ -199,6 +205,44 @@
    コードがパースできなかったりコンパイルできなかったりした場合に、これは *NULL* を返します。
 
 
+.. cfunction:: PyObject* PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
+
+   :cfunc:`PyEval_EvalCodeEx` に対するシンプルなインタフェースで、
+   コードオブジェクトと、グローバル・ローカル変数辞書だけを受け取ります。
+   他の引数には *NULL* が渡されます。
+
+
+.. cfunction:: PyObject* PyEval_EvalCodeEx(PyCodeObject *co, PyObject *globals, PyObject *locals, PyObject **args, int argcount, PyObject **kws, int kwcount, PyObject **defs, int defcount, PyObject *closure)
+
+   与えられた特定の環境で、コンパイル済みのコードオブジェクトを評価します。
+   環境はグローバルとローカルの辞書、引き数の配列、キーワードとデフォルト値、
+   クロージャーのためのセルのタプルで構成されています。
+
+
+.. cfunction:: PyObject* PyEval_EvalFrame(PyFrameObject *f)
+
+   実行フレームを評価します。
+   これは PyEval_EvalFrameEx に対するシンプルなインタフェースで、
+   後方互換性のためのものです。
+
+
+.. cfunction:: PyObject* PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+
+   Python のインタープリタの主要な、直接的な関数です。
+   この関数には 2000 行ほどあります。
+   実行フレーム *f* に関連付けられたコードオブジェクトを実行します。
+   バイトコードを解釈して、必要に応じて呼び出しを実行します。
+   追加の *throwflag* 引数はほとんど無視できます。 - もし true なら、
+   すぐに例外を発生させます。これはジェネレータオブジェクトの :meth:`throw`
+   メソッドで利用されます。
+
+
+.. cfunction:: int PyEval_MergeCompilerFlags(PyCompilerFlags *cf)
+
+   現在の評価フレームのフラグを変更します。
+   成功したら true を、失敗したら false を返します。
+
+
 .. cvar:: int Py_eval_input
 
    .. index:: single: Py_CompileString()
@@ -228,8 +272,8 @@
    行する場合には ``PyCompilerFlags *flags`` として渡されます。この場合、 ``from __future__  import`` は
    *flags* の内容を変更できます。
 
-   ``PyCompilerFlags *flags`` が* NULL*の場合、 :attr:`cf_flags` は ``0`` として扱われ、``from
-   __future__ import`` による変更は無視されます。 ::
+   ``PyCompilerFlags *flags`` が *NULL* の場合、 :attr:`cf_flags` は ``0`` として扱われ、
+   ``from __future__ import`` による変更は無視されます。 ::
 
       struct PyCompilerFlags {
           int cf_flags;
