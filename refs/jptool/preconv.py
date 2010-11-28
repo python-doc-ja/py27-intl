@@ -5,14 +5,16 @@ import re
 import sys
 import unicodedata
 
-R0 = re.compile(r"""(?<=[^`\\])``.+?(?<=[^`\\])``""")
+R0 = re.compile(r"""(?<![`\\])``.+?(?<![`\\])``""")
 R1 = re.compile(r""":\w+:`.+?(?<=[^`\\])`""")
-R2 = re.compile(r"""(?<=[^`\\])\*\*.*?[^ \\*]\*\*""")
-R3 = re.compile(r"""(?<=[^`\\])\*.*?[^ \\*]\*""")
+R2 = re.compile(r"""(?<![`\\])\*\*.*?[^ \\*]\*\*""")
+R3 = re.compile(r"""(?<![`\\])\*.*?[^ \\*]\*""")
+RX = re.compile(r"""(?<![`\\])``.+?(?<![`\\])``|:\w+:`.+?(?<=[^`\\])`|(?<![`\\])\*\*.*?[^ \\*]\*\*|(?<![`\\])\*.*?[^ \\*]\*""")
 
 SPLITTER = """:,. ()[]'\"\r\n*/"""
 
-REX = [R0, R1, R2, R3]
+#REX = [R0, R1, R2, R3]
+REX = [RX]
 
 def _test(uc, i):
     if not uc:
@@ -35,7 +37,7 @@ def char_filter(line):
         i += 1
     return ' '.join(parts_).encode('utf-8')
 
-def apply_line(line):
+def apply_line(line, n=0):
     line = line.rstrip() + line[-1]
     line = char_filter(line)
     if line.startswith('.. '):
@@ -44,6 +46,7 @@ def apply_line(line):
         pos = 0
         buf = ""
         for m in r.finditer(line):
+            print(n, m.group(0))
             start, end = m.span()
             buf += line[pos:start]
             if start > 0 and line[start-1] not in SPLITTER:
@@ -72,8 +75,8 @@ def apply_to_file(file):
     fi = open(orig, 'rb')
     fo = open(file, 'wb')
 
-    for l in fi:
-        fo.write(apply_line(l))
+    for n, l in enumerate(fi):
+        fo.write(apply_line(l, n))
 
     fi.close()
     fo.close()
