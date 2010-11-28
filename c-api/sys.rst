@@ -50,63 +50,62 @@
 
 .. _systemfunctions:
 
-System Functions
+システム関数
 ================
 
-These are utility functions that make functionality from the :mod:`sys` module
-accessible to C code.  They all work with the current interpreter thread's
-:mod:`sys` module's dict, which is contained in the internal thread state structure.
+:mod:`sys` モジュールが提供している機能にCのコードからアクセスする関数です。
+すべての関数は現在のインタプリタスレッドの :mod:`sys` モジュールの辞書に対して動作します。
+この辞書は内部のスレッド状態構造体に格納されています。
 
 .. cfunction:: PyObject *PySys_GetObject(char *name)
 
-   Return the object *name* from the :mod:`sys` module or *NULL* if it does
-   not exist, without setting an exception.
+   :mod:`sys` モジュールの *name* オブジェクトを返すか、存在しなければ
+   例外を設定せずに *NULL* を返します。
 
 .. cfunction:: FILE *PySys_GetFile(char *name, FILE *def)
 
-   Return the :ctype:`FILE*` associated with the object *name* in the
-   :mod:`sys` module, or *def* if *name* is not in the module or is not associated
-   with a :ctype:`FILE*`.
+   :mod:`sys` モジュールの *name* に関連付けられた :ctype:`FILE*` を返します。
+   *name* がなかった場合や :ctype:`FILE*` に関連付けられていなかった場合は *def* を返します。
 
 .. cfunction:: int PySys_SetObject(char *name, PyObject *v)
 
-   Set *name* in the :mod:`sys` module to *v* unless *v* is *NULL*, in which
-   case *name* is deleted from the sys module. Returns ``0`` on success, ``-1``
-   on error.
+   *v* が *NULL* で無い場合、 :mod:`sys` モジュールの *name* に *v* を設定します。
+   *v* が *NULL* なら、 sys モジュールから *name* を削除します。
+   成功したら ``0`` を、エラー時は ``-1`` を返します。
 
-.. cfunction:: void PySys_ResetWarnOptions(void)
+.. cfunction:: void PySys_ResetWarnOptions()
 
-   Reset :data:`sys.warnoptions` to an empty list.
+   :data:`sys.warnoptions` を、空リストにリセットします。
 
 .. cfunction:: void PySys_AddWarnOption(char *s)
 
-   Append *s* to :data:`sys.warnoptions`.
+   :data:`sys.warnoptions` に *s* を追加します。
 
 .. cfunction:: void PySys_SetPath(char *path)
 
-   Set :data:`sys.path` to a list object of paths found in *path* which should
-   be a list of paths separated with the platform's search path delimiter
-   (``:`` on Unix, ``;`` on Windows).
+   :data:`sys.path` を *path* に含まれるパスの、リストオブジェクトに設定します。
+   *path* はプラットフォームの検索パスデリミタ(Unixでは ``:``, Windows では ``;``)
+   で区切られたパスのリストでなければなりません。
 
 .. cfunction:: void PySys_WriteStdout(const char *format, ...)
 
-   Write the output string described by *format* to :data:`sys.stdout`.  No
-   exceptions are raised, even if truncation occurs (see below).
+   *format* で指定された出力文字列を :data:`sys.stdout` に出力します。
+   切り詰めが起こった場合を含め、例外は一切発生しません。(後述)
 
-   *format* should limit the total size of the formatted output string to
-   1000 bytes or less -- after 1000 bytes, the output string is truncated.
-   In particular, this means that no unrestricted "%s" formats should occur;
-   these should be limited using "%.<N>s" where <N> is a decimal number
-   calculated so that <N> plus the maximum size of other formatted text does not
-   exceed 1000 bytes.  Also watch out for "%f", which can print hundreds of
-   digits for very large numbers.
+   *format* は、フォーマット後の出力文字列のトータルの大きさを1000バイト以下に
+   抑えるべきです。 -- 1000 バイト以降の出力文字列は切り詰められます。
+   特に、制限のない "%s" フォーマットを使うべきではありません。
+   "%.<N>s" のようにして N に10進数の値を指定し、<N> + その他のフォーマット後の
+   最大サイズが1000を超えないように設定するべきです。
+   同じように "%f" にも気を付ける必要があります。非常に大きい数値に対して、
+   数百の数字を出力する可能性があります。
 
-   If a problem occurs, or :data:`sys.stdout` is unset, the formatted message
-   is written to the real (C level) *stdout*.
+   問題が発生したり、 :data:`sys.stdout` が設定されていなかった場合、
+   フォーマット後のメッセージは本物の(Cレベルの) *stdout* に出力されます。
 
 .. cfunction:: void PySys_WriteStderr(const char *format, ...)
 
-   As above, but write to :data:`sys.stderr` or *stderr* instead.
+   上と同じですが、 :data:`sys.stderr` か *stderr* に出力します。
 
 .. _processcontrol:
 
@@ -144,4 +143,3 @@ accessible to C code.  They all work with the current interpreter thread's
    後始末関数は引数無しで呼び出され、値を返しません。最大で 32 の後始末処理関数を登録できます。登録に成功すると、 :cfunc:`Py_AtExit` は
    ``0`` を返します;  失敗すると ``-1`` を返します。最後に登録した後始末処理関数から先に呼び出されます。各関数は高々一度しか呼び出されません。
    Python の内部的な終了処理は後始末処理関数より以前に完了しているので、 *func* からはいかなる Python API も呼び出してはなりません。
-
