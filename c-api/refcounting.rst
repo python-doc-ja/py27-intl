@@ -52,7 +52,7 @@
 
    .. versionadded:: 2.4
 
-以下の関数: :cfunc:`Py_IncRef(PyObject \*o)`, :cfunc:`Py_DecRef(PyObject \*o)`.
+以下の関数: ``Py_IncRef(PyObject *o)``, ``Py_DecRef(PyObject *o)``,
 は，実行時の動的な Python 埋め込みで使われる関数です．これらの関数はそれぞれ :cfunc:`Py_XINCREF` および
 :cfunc:`Py_XDECREF` をエクスポートしただけです．
 
