@@ -29,8 +29,8 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 ``sys.exc_traceback`` に対応する三つのPythonオブジェクトからからなります。
 いろいろな方法でエラーインジケータとやりとりするためにAPI関数が存在します。各スレッドに別々のエラーインジケータがあります。
 
-.. % XXX Order of these should be more thoughtful.
-.. % Either alphabetical or some kind of structure.
+.. XXX Order of these should be more thoughtful.
+   Either alphabetical or some kind of structure.
 
 
 .. cfunction:: void PyErr_PrintEx(int set_sys_last_vars)
@@ -38,14 +38,14 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    ``sys.stderr`` へ標準トレースバックをプリントし、エラーインジケータをクリアします。エラーインジケータが設定されているときにだけ、この関数を
    呼び出してください。(それ以外の場合、致命的なエラーを引き起こすでしょう!)
 
-   If *set_sys_last_vars* is nonzero, the variables :data:`sys.last_type`,
-   :data:`sys.last_value` and :data:`sys.last_traceback` will be set to the
-   type, value and traceback of the printed exception, respectively.
+   *set_sys_last_vars* が非ゼロであれば、 :data:`sys.last_type`, :data:`sys.last_value`,
+   :data:`sys.last_traceback` 変数が、表示される例外のタイプ、値、トレースバックそれぞれに
+   反映されます。
 
 
 .. cfunction:: void PyErr_Print()
 
-   Alias for ``PyErr_PrintEx(1)``.
+   ``PyErr_PrintEx(1)`` のエイリアス.
 
 
 .. cfunction:: PyObject* PyErr_Occurred()
@@ -303,6 +303,16 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    効果を得るために、 *module* と *registry* 引数は *NULL* に設定することができます。
 
 
+.. cfunction:: int PyErr_WarnPy3k(char *message, int stacklevel)
+
+   Issue a :exc:`DeprecationWarning` with the given *message* and *stacklevel*
+   if the :cdata:`Py_Py3kWarningFlag` flag is enabled.
+   :cdata:`Py_Py3kWarningFlag` フラグが有効な場合、
+   与えられた *message* と *stacklevel* に応じて :exc:`DeprecationWarning` を発生させます。
+
+   .. versionadded:: 2.6
+
+
 .. cfunction:: int PyErr_CheckSignals()
 
    .. index::
@@ -313,7 +323,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    この関数はPythonのシグナル処理とやりとりすることができます。シグナルがそのプロセスへ送られたかどうかチェックし、そうならば対応する
    シグナルハンドラを呼び出します。 :mod:`signal` モジュールがサポートされている場合は、
    これはPythonで書かれたシグナルハンドラを呼び出せます。すべての場合で、 :const:`SIGINT` のデフォルトの効果は
-   :exc:`KeyboardInterrupt` 例外を発生させることです。例外が発生した場合、エラーインジケータが設定され、関数は ``1`` を返します。
+   :exc:`KeyboardInterrupt` 例外を発生させることです。例外が発生した場合、エラーインジケータが設定され、関数は ``-1`` を返します。
    そうでなければ、関数は ``0`` を返します。エラーインジケータが以前に設定されている場合は、それがクリアされるかどうかわからない。
 
 
@@ -326,6 +336,18 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    この関数は廃止されています。 :const:`SIGINT` シグナルが到達した影響をシミュレートします --- 次に
    :cfunc:`PyErr_CheckSignals` が呼ばれるとき、
    :exc:`KeyboardInterrupt` は送出されるでしょう。インタプリタロックを保持することなく呼び出すことができます。
+
+
+.. cfunction:: int PySignal_SetWakeupFd(int fd)
+
+   このユーティリティ関数は、シグナルを受信したときに ``'\0'`` バイトを書き込む
+   ファイルディスクリプタを指定します。戻り値は、それまで設定されていたファイル
+   ディスクリプタです。
+   ``-1`` はこの機能を無効にします。これは初期状態です。
+   これは Python の :func:`signal.set_wakeup_fd` と同じものですが、
+   エラーチェックを行ないません。
+   *fd* は有効なファイルディスクリプタであるべきです。
+   この関数の呼び出しはメインスレッドのみから行われるべきです。
 
 
 .. cfunction:: PyObject* PyErr_NewException(char *name, PyObject *base, PyObject *dict)
