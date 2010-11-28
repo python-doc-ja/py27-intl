@@ -1,0 +1,32 @@
+=== modified file 'Doc/c-api/int.rst'
+--- Doc/c-api/int.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/int.rst	2010-11-17 12:18:12 +0000
+@@ -68,6 +68,15 @@
+ 
+ .. cfunction:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
+ 
++   Create a new integer object with a value of *ival*. If the value is larger
++   than ``LONG_MAX`` or smaller than ``LONG_MIN``, a long integer object is
++   returned.
++
++   .. versionadded:: 2.5
++
++
++.. cfunction:: PyObject* PyInt_FromSize_t(size_t ival)
++
+    Create a new integer object with a value of *ival*. If the value exceeds
+    ``LONG_MAX``, a long integer object is returned.
+ 
+@@ -120,3 +129,11 @@
+ 
+    Return the system's idea of the largest integer it can handle
+    (:const:`LONG_MAX`, as defined in the system header files).
++
++
++.. cfunction:: int PyInt_ClearFreeList()
++
++   Clear the integer free list. Return the number of items that could not
++   be freed.
++
++   .. versionadded:: 2.6
+

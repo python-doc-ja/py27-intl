@@ -1,0 +1,157 @@
+=== modified file 'Doc/c-api/string.rst'
+--- Doc/c-api/string.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/string.rst	2010-11-17 12:18:12 +0000
+@@ -2,12 +2,18 @@
+ 
+ .. _stringobjects:
+ 
+-String Objects
+---------------
++String/Bytes Objects
++--------------------
+ 
+ These functions raise :exc:`TypeError` when expecting a string parameter and are
+ called with a non-string parameter.
+ 
++.. note::
++
++   These functions have been renamed to PyBytes_* in Python 3.x. Unless
++   otherwise noted, the PyBytes functions available in 3.x are aliased to their
++   PyString_* equivalents to help porting.
++
+ .. index:: object: string
+ 
+ 
+@@ -54,6 +60,10 @@
+    *len* on success, and *NULL* on failure.  If *v* is *NULL*, the contents of the
+    string are uninitialized.
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` type for *len*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyString_FromFormat(const char *format, ...)
+ 
+@@ -120,7 +130,7 @@
+ 
+ .. cfunction:: PyObject* PyString_FromFormatV(const char *format, va_list vargs)
+ 
+-   Identical to :func:`PyString_FromFormat` except that it takes exactly two
++   Identical to :cfunc:`PyString_FromFormat` except that it takes exactly two
+    arguments.
+ 
+ 
+@@ -128,11 +138,19 @@
+ 
+    Return the length of the string in string object *string*.
+ 
++   .. versionchanged:: 2.5
++      This function returned an :ctype:`int` type. This might require changes
++      in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: Py_ssize_t PyString_GET_SIZE(PyObject *string)
+ 
+    Macro form of :cfunc:`PyString_Size` but without error checking.
+ 
++   .. versionchanged:: 2.5
++      This macro returned an :ctype:`int` type. This might require changes in
++      your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: char* PyString_AsString(PyObject *string)
+ 
+@@ -168,6 +186,10 @@
+    *string* and operates on that.  If *string* is not a string object at all,
+    :cfunc:`PyString_AsStringAndSize` returns ``-1`` and raises :exc:`TypeError`.
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int *` type for *length*. This might
++      require changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: void PyString_Concat(PyObject **string, PyObject *newpart)
+ 
+@@ -196,6 +218,9 @@
+    fails, the original string object at *\*string* is deallocated, *\*string* is
+    set to *NULL*, a memory exception is set, and ``-1`` is returned.
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` type for *newsize*. This might
++      require changes in your code for properly supporting 64-bit systems.
+ 
+ .. cfunction:: PyObject* PyString_Format(PyObject *format, PyObject *args)
+ 
+@@ -215,6 +240,10 @@
+    reference-count-neutral; you own the object after the call if and only if you
+    owned it before the call.)
+ 
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
++
+ 
+ .. cfunction:: PyObject* PyString_InternFromString(const char *v)
+ 
+@@ -223,6 +252,10 @@
+    been interned, or a new ("owned") reference to an earlier interned string object
+    with the same value.
+ 
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
++
+ 
+ .. cfunction:: PyObject* PyString_Decode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
+ 
+@@ -232,6 +265,14 @@
+    The codec to be used is looked up using the Python codec registry.  Return
+    *NULL* if an exception was raised by the codec.
+ 
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
++
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` type for *size*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyString_AsDecodedObject(PyObject *str, const char *encoding, const char *errors)
+ 
+@@ -241,6 +282,10 @@
+    The codec to be used is looked up using the Python codec registry. Return *NULL*
+    if an exception was raised by the codec.
+ 
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
++
+ 
+ .. cfunction:: PyObject* PyString_Encode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
+ 
+@@ -250,6 +295,14 @@
+    :meth:`encode` method. The codec to be used is looked up using the Python codec
+    registry.  Return *NULL* if an exception was raised by the codec.
+ 
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
++
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` type for *size*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyString_AsEncodedObject(PyObject *str, const char *encoding, const char *errors)
+ 
+@@ -258,3 +311,7 @@
+    parameters of the same name in the string :meth:`encode` method. The codec to be
+    used is looked up using the Python codec registry. Return *NULL* if an exception
+    was raised by the codec.
++
++   .. note::
++
++      This function is not available in 3.x and does not have a PyBytes alias.
+

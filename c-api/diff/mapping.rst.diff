@@ -1,0 +1,46 @@
+=== modified file 'Doc/c-api/mapping.rst'
+--- Doc/c-api/mapping.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/mapping.rst	2010-11-17 12:18:12 +0000
+@@ -12,7 +12,8 @@
+    function always succeeds.
+ 
+ 
+-.. cfunction:: Py_ssize_t PyMapping_Length(PyObject *o)
++.. cfunction:: Py_ssize_t PyMapping_Size(PyObject *o)
++               Py_ssize_t PyMapping_Length(PyObject *o)
+ 
+    .. index:: builtin: len
+ 
+@@ -20,6 +21,10 @@
+    objects that do not provide mapping protocol, this is equivalent to the Python
+    expression ``len(o)``.
+ 
++   .. versionchanged:: 2.5
++      These functions returned an :ctype:`int` type. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: int PyMapping_DelItemString(PyObject *o, char *key)
+ 
+@@ -36,15 +41,15 @@
+ .. cfunction:: int PyMapping_HasKeyString(PyObject *o, char *key)
+ 
+    On success, return ``1`` if the mapping object has the key *key* and ``0``
+-   otherwise.  This is equivalent to the Python expression ``o.has_key(key)``.
+-   This function always succeeds.
++   otherwise.  This is equivalent to ``o[key]``, returning ``True`` on success
++   and ``False`` on an exception.  This function always succeeds.
+ 
+ 
+ .. cfunction:: int PyMapping_HasKey(PyObject *o, PyObject *key)
+ 
+-   Return ``1`` if the mapping object has the key *key* and ``0`` otherwise.  This
+-   is equivalent to the Python expression ``o.has_key(key)``.  This function always
+-   succeeds.
++   Return ``1`` if the mapping object has the key *key* and ``0`` otherwise.
++   This is equivalent to ``o[key]``, returning ``True`` on success and ``False``
++   on an exception.  This function always succeeds.
+ 
+ 
+ .. cfunction:: PyObject* PyMapping_Keys(PyObject *o)
+

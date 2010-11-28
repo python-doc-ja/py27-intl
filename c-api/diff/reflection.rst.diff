@@ -1,0 +1,13 @@
+=== modified file 'Doc/c-api/reflection.rst'
+--- Doc/c-api/reflection.rst	2008-01-19 22:14:27 +0000
++++ Doc/c-api/reflection.rst	2010-11-17 12:18:12 +0000
+@@ -15,7 +15,7 @@
+ 
+    Return a dictionary of the local variables in the current execution frame,
+    or *NULL* if no frame is currently executing.
+-   
++
+ 
+ .. cfunction:: PyObject* PyEval_GetGlobals()
+ 
+

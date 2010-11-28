@@ -1,0 +1,24 @@
+=== modified file 'Doc/c-api/module.rst'
+--- Doc/c-api/module.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/module.rst	2010-11-17 12:18:12 +0000
+@@ -103,3 +103,19 @@
+    null-terminated.  Return ``-1`` on error, ``0`` on success.
+ 
+    .. versionadded:: 2.0
++
++.. cfunction:: int PyModule_AddIntMacro(PyObject *module, macro)
++
++   Add an int constant to *module*. The name and the value are taken from
++   *macro*. For example ``PyModule_AddConstant(module, AF_INET)`` adds the int
++   constant *AF_INET* with the value of *AF_INET* to *module*.
++   Return ``-1`` on error, ``0`` on success.
++
++   .. versionadded:: 2.6
++
++.. cfunction:: int PyModule_AddStringMacro(PyObject *module, macro)
++
++   Add a string constant to *module*.
++
++  .. versionadded:: 2.6
++
+

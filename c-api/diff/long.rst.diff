@@ -1,0 +1,69 @@
+=== modified file 'Doc/c-api/long.rst'
+--- Doc/c-api/long.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/long.rst	2010-11-17 12:18:12 +0000
+@@ -49,6 +49,22 @@
+    *NULL* on failure.
+ 
+ 
++.. cfunction:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
++
++   Return a new :ctype:`PyLongObject` object from a C :ctype:`Py_ssize_t`, or
++   *NULL* on failure.
++
++   .. versionadded:: 2.6
++
++
++.. cfunction:: PyObject* PyLong_FromSize_t(size_t v)
++
++   Return a new :ctype:`PyLongObject` object from a C :ctype:`size_t`, or
++   *NULL* on failure.
++
++   .. versionadded:: 2.6
++
++
+ .. cfunction:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`long long`, or *NULL*
+@@ -90,6 +106,10 @@
+ 
+    .. versionadded:: 1.6
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` for *length*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyLong_FromVoidPtr(void *p)
+ 
+@@ -109,7 +129,21 @@
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`long` representation of the contents of *pylong*.  If
+-   *pylong* is greater than :const:`LONG_MAX`, an :exc:`OverflowError` is raised.
++   *pylong* is greater than :const:`LONG_MAX`, an :exc:`OverflowError` is raised
++   and ``-1`` will be returned.
++
++
++.. cfunction:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
++
++   .. index::
++      single: PY_SSIZE_T_MAX
++      single: OverflowError (built-in exception)
++
++   Return a C :ctype:`Py_ssize_t` representation of the contents of *pylong*.  If
++   *pylong* is greater than :const:`PY_SSIZE_T_MAX`, an :exc:`OverflowError` is raised
++   and ``-1`` will be returned.
++
++   .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
+@@ -174,6 +208,6 @@
+    .. versionadded:: 1.5.2
+ 
+    .. versionchanged:: 2.5
+-      For values outside 0..LONG_MAX, both signed and unsigned integers are acccepted.
++      For values outside 0..LONG_MAX, both signed and unsigned integers are accepted.
+ 
+ 
+

@@ -1,0 +1,38 @@
+=== modified file 'Doc/c-api/type.rst'
+--- Doc/c-api/type.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/type.rst	2010-11-17 12:18:12 +0000
+@@ -35,6 +35,22 @@
+    .. versionadded:: 2.2
+ 
+ 
++.. cfunction:: unsigned int PyType_ClearCache()
++
++   Clear the internal lookup cache. Return the current version tag.
++
++   .. versionadded:: 2.6
++
++
++.. cfunction:: void PyType_Modified(PyTypeObject *type)
++
++   Invalidate the internal lookup cache for the type and all of its
++   subtypes.  This function must be called after any manual
++   modification of the attributes or base classes of the type.
++
++   .. versionadded:: 2.6
++
++
+ .. cfunction:: int PyType_HasFeature(PyObject *o, int feature)
+ 
+    Return true if the type object *o* sets the feature *feature*.  Type features
+@@ -60,6 +76,10 @@
+ 
+    .. versionadded:: 2.2
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` type for *nitems*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyType_GenericNew(PyTypeObject *type, PyObject *args, PyObject *kwds)
+ 
+

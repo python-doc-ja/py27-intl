@@ -1,0 +1,13 @@
+=== modified file 'Doc/c-api/sys.rst'
+--- Doc/c-api/sys.rst	2008-01-19 22:14:27 +0000
++++ Doc/c-api/sys.rst	2010-11-17 12:18:12 +0000
+@@ -80,7 +80,7 @@
+    case *name* is deleted from the sys module. Returns ``0`` on success, ``-1``
+    on error.
+ 
+-.. cfunction:: void PySys_ResetWarnOptions(void)
++.. cfunction:: void PySys_ResetWarnOptions()
+ 
+    Reset :data:`sys.warnoptions` to an empty list.
+ 
+

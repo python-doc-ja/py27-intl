@@ -1,0 +1,72 @@
+=== modified file 'Doc/c-api/set.rst'
+--- Doc/c-api/set.rst	2008-01-19 22:08:21 +0000
++++ Doc/c-api/set.rst	2010-11-17 12:18:12 +0000
+@@ -52,6 +52,19 @@
+ the constructor functions work with any iterable Python object.
+ 
+ 
++.. cfunction:: int PySet_Check(PyObject *p)
++
++   Return true if *p* is a :class:`set` object or an instance of a subtype.
++
++   .. versionadded:: 2.6
++
++.. cfunction:: int PyFrozenSet_Check(PyObject *p)
++
++   Return true if *p* is a :class:`frozenset` object or an instance of a
++   subtype.
++
++   .. versionadded:: 2.6
++
+ .. cfunction:: int PyAnySet_Check(PyObject *p)
+ 
+    Return true if *p* is a :class:`set` object, a :class:`frozenset` object, or an
+@@ -86,6 +99,11 @@
+    set on success or *NULL* on failure.  Raise :exc:`TypeError` if *iterable* is
+    not actually iterable.
+ 
++   .. versionchanged:: 2.6
++      Now guaranteed to return a brand-new :class:`frozenset`.  Formerly,
++      frozensets of zero-length were a singleton.  This got in the way of
++      building-up new frozensets with :meth:`PySet_Add`.
++
+ The following functions and macros are available for instances of :class:`set`
+ or :class:`frozenset` or instances of their subtypes.
+ 
+@@ -98,6 +116,10 @@
+    ``len(anyset)``.  Raises a :exc:`PyExc_SystemError` if *anyset* is not a
+    :class:`set`, :class:`frozenset`, or an instance of a subtype.
+ 
++   .. versionchanged:: 2.5
++      This function returned an :ctype:`int`. This might require changes in
++      your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: Py_ssize_t PySet_GET_SIZE(PyObject *anyset)
+ 
+@@ -112,9 +134,6 @@
+    the *key* is unhashable. Raise :exc:`PyExc_SystemError` if *anyset* is not a
+    :class:`set`, :class:`frozenset`, or an instance of a subtype.
+ 
+-The following functions are available for instances of :class:`set` or its
+-subtypes but not for instances of :class:`frozenset` or its subtypes.
+-
+ 
+ .. cfunction:: int PySet_Add(PyObject *set, PyObject *key)
+ 
+@@ -124,6 +143,14 @@
+    Raise a :exc:`SystemError` if *set* is an not an instance of :class:`set` or its
+    subtype.
+ 
++   .. versionchanged:: 2.6
++      Now works with instances of :class:`frozenset` or its subtypes.
++      Like :cfunc:`PyTuple_SetItem` in that it can be used to fill-in the
++      values of brand new frozensets before they are exposed to other code.
++
++The following functions are available for instances of :class:`set` or its
++subtypes but not for instances of :class:`frozenset` or its subtypes.
++
+ 
+ .. cfunction:: int PySet_Discard(PyObject *set, PyObject *key)
+ 
+
