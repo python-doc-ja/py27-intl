@@ -16,4 +16,4 @@
    robotparser.rst
    netrc.rst
    xdrlib.rst
-   plistlib.rstt
+   plistlib.rst

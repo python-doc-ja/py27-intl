@@ -13,4 +13,4 @@
    profile.rst
    hotshot.rst
    timeit.rst
-   trace.rstt
+   trace.rst
