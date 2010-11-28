@@ -231,7 +231,7 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
    ここで *y1* や *y2* は年を表します。
 
    .. versionchanged:: 2.0
-      Python 1.5.2では、この関数は世紀をまたがった範囲では動作しません。.
+      Python 1.5.2では、この関数は世紀をまたがった範囲では動作しません。
 
 
 .. function:: weekday(year, month, day)
