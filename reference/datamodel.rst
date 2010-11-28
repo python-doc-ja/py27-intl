@@ -633,10 +633,22 @@ Ellipsis
    共有ライブラリファイルのパス名になります。
 
 クラス
-   クラスオブジェクトはクラス定義 ( :ref:`class` 節、 "クラス定義" 参照) で生成されます。クラスは辞書で実装された名前空間を持っています。
-   クラス属性への参照は、この辞書に対する検索 (lookup) に翻訳されます。例えば、 ``C.x`` は ``C.__dict__["x"]`` と同じです。
-   属性がこの検索で見つからない場合、現在のクラスの基底クラスへと検索を続けます。検索は深さ優先 (depth-first)、かつ基底クラスの
+   2種類のクラス、 type (新スタイルクラス) と class object (旧スタイルクラス) の両方とも、
+   通常はクラス定義 (:ref:`class` 参照) で生成されます。
+
+   クラスは辞書で実装された名前空間を持っています。
+   クラス属性への参照は、この辞書に対する検索 (lookup) に翻訳されます。
+   例えば、 ``C.x`` は ``C.__dict__["x"]`` と同じです。(ただし、特に新スタイルクラスにおいて、
+   属性参照の意味を変えられる幾つかのフックがあります)
+
+   属性がこの検索で見つからない場合、現在のクラスの基底クラスへと検索を続けます。
+   旧スタイルクラスの場合、検索は深さ優先 (depth-first)、かつ基底クラスの
    挙げられているリスト中の左から右 (left-to-right) の順番で行われます。
+   新スタイルクラスは、より複雑な、C3メソッド解決順序(MRO=method resolution order)
+   を利用していて、複数の継承パスが共通の祖先にたどり着く「ダイアモンド継承」があっても
+   正しく動作します。
+   C3 MRO についてのより詳細な情報は、2.3リリースに付属するドキュメントにあります。
+   (http://www.python.org/download/releases/2.3/mro/)
 
    .. index::
       object: class
@@ -652,7 +664,8 @@ Ellipsis
    メソッドオブジェクトに変換されます。要求している属性がクラスメソッドオブジェクトの場合、 :attr:`im_class` とその
    :attr:`im_self` 属性がどちらも :class:`C` であるようなユーザ定義メソッドオブジェクトに変換されます。
    要求している属性が静的メソッドオブジェクトの場合、静的メソッドオブジェクトでラップされたオブジェクトに変換されます。クラスから取り出した属性と実際に
-   :attr:`__dict__` に入っているものが異なるような他の場合については、  :ref:`descriptors` 節を参照してください。
+   :attr:`__dict__` に入っているものが異なるような他の場合については、  :ref:`descriptors` を参照してください。
+   (新スタイルクラスだけがディスクリプタをサポートしていることに注意してください)
 
    .. index:: triple: class; attribute; assignment
 
@@ -702,7 +715,7 @@ Ellipsis
       object: mapping
 
    クラスインスタンスは、ある特定の名前のメソッドを持っている場合、数値型やシーケンス型、あるいはマップ型のように振舞うことができます。
-   :ref:`specialnames` 節、 "特殊メソッド名" を参照してください。
+   :ref:`specialnames` を参照してください。
 
    .. index::
       single: __dict__ (instance attribute)
@@ -728,8 +741,8 @@ Ellipsis
    :func:`os.fdopen`, および socke オブジェクトの :meth:`makefile` メソッド
    (その他の拡張モジュールで提供されている関数やメソッド) で生成されます。 ``sys.stdin``, ``sys.stdout`` および
    ``sys.stderr`` といったオブジェクトは、インタプリタの標準入力、標準出力、および標準エラー出力
-   ストリームに対応するよう初期化されます。ファイルオブジェクトに関する完全な記述については、Python ライブラリリファレンス (XXX
-   reference: ../lib/lib.html) を参照してください。
+   ストリームに対応するよう初期化されます。ファイルオブジェクトに関する完全な記述については、 :ref:`bltin-file-objects`
+   を参照してください。
 
 内部型 (internal type)
    .. index::
@@ -744,7 +757,7 @@ Ellipsis
          single: bytecode
          object: code
 
-      コードオブジェクトは *バイトコンパイルされた (byte-compiled)* 実行可能な Python コード、別名 *バイトコード (bytecode)*
+      コードオブジェクトは *バイトコンパイルされた (byte-compiled)* 実行可能な Python コード、別名バイトコード(:term:`bytecode`)
       を表現します。コードオブジェクトと関数オブジェクトの違いは、関数オブジェクトが関数のグローバル変数 (関数を定義しているモジュールのグローバル)
       に対して明示的な参照を持っているのに対し、コードオブジェクトにはコンテキストがないということです; また、関数オブジェクトでは
       デフォルト引数値を記憶できますが、コードオブジェクトではできません (実行時に計算される値を表現するため)。関数オブジェクトと違い、
@@ -831,8 +844,6 @@ Ellipsis
       を書き込むことで、ジャンプ命令 (Set Next Statement 命令とも呼ばれます) を実装できます。
 
    トレースバック (traceback) オブジェクト
-      .. _traceback:
-
       .. index::
          object: traceback
          pair: stack; trace
@@ -847,7 +858,7 @@ Ellipsis
 
       トレースバックオブジェクトは例外のスタックトレースを表現します。トレースバックオブジェクトは例外が発生した際に生成されます。
       例外ハンドラを検索して実行スタックを戻っていく際、戻ったレベル毎に、トレースバックオブジェクトが現在のトレースバックの前に
-      挿入されます。例外ハンドラに入ると、スタックトレースをプログラム側で利用できるようになります ( :ref:`try` 節 "``try`` 文" を参照)。
+      挿入されます。例外ハンドラに入ると、スタックトレースをプログラム側で利用できるようになります (:ref:`try` を参照)。
       トレースバックは ``sys.exc_traceback`` として得ることができ、 ``sys.exc_info()``
       が返すタプルの三番目の要素としても得られます. インタフェースとしては後者の方が推奨されていますが、これは
       プログラムがマルチスレッドを使っている場合に正しく動作するからです。プログラムに適切なハンドラがない場合、スタックトレースは (うまく書式化されて)
@@ -908,26 +919,27 @@ Ellipsis
       defined method)" で説明されています。クラスメソッドオブジェクトは組み込みのコンストラクタ  :func:`classmethod`
       で生成されます。
 
-   .. % Internal types
 
-.. % Types
-.. % =========================================================================
-
+.. _newstyle:
 
 新スタイルと旧スタイル
 ======================
 
-クラスとインスタンスは好みに合わせて2種類の方法で記述することができます: 旧スタイルもしくはクラシックスタイルと新スタイルです。
+クラスとインスタンスは好みに合わせて2種類の方法で記述することができます:
+旧スタイル(もしくはクラシックスタイル)と新スタイルです。
 
 Python 2.1以降では、ユーザが好んで指定した場合のみ旧スタイルが使用されます。 (旧スタイルの)クラスの概念と型の概念には関連性があります:
 もし *x* が旧スタイルのクラスのインスタンスだった場合、 ``x.__class__`` というコードはクラス *x* を指定しますが、
 ``type(x)`` は常に ``<type'instance'>`` となります。これは、すべての旧スタイルのインスタンスが、それらのクラスがどのクラスであるか
 にかかわらず、 ``instance`` と呼ばれる一つの内蔵型として実行されるということを反映しています。
 
-新スタイルのクラスは、クラスと型を統一するためにPython 2.2で導入されました。新スタイルのクラスはユーザ定義型と少しも変わりません。
+新スタイルのクラスは、クラスと型を統一するためにPython 2.2で導入されました。
+新スタイルのクラスはユーザ定義型と少しも変わりません。
 もし、 *x* が新スタイルクラスのインスタンスであった場合、 ``type(x)`` は ``x.__class__`` と同じになります。
+(ただし、これは保証されている動作ではありません。新スタイルクラスのインスタンスは、
+``x.__class__`` で返る値をオーバーライドすることができます。)
 
-新スタイルクラスを導入する一番の理由は、メタモデルを用いた統一的なオブジェクトモデルを提供することにあります。これには、
+新スタイルクラスを導入する一番の理由は、メタモデルを用いた統一的なオブジェクトモデルを提供することにあります。
 また、ほとんどの組み込み型のサブクラスが作成できる、属性を計算するための"デスクリプタ"の導入できる等の利点があります。
 
 互換性のために、デフォルトではクラスは旧スタイルになります。新スタイルのクラスは、他の新スタイルクラス (すなわち型)を親クラスとして定義する、
@@ -936,18 +948,18 @@ Python 2.1以降では、ユーザが好んで指定した場合のみ旧スタ�
 特殊メソッドの呼び出しなど、これらの変更は新オブジェクトモデルの基盤となっています。それ以外の部分は、多重継承時のメソッドの解決順などのように、
 互換性の問題で以前は実装が不可能であった"修正"が新クラスに含まれています。
 
-このマニュアルは新スタイルのクラスに対しては最新情報を含んでいません。より詳細な情報を得たい場合は、
-`<http://www.python.org/doc/newstyle.html>`_を参照してください。
+このマニュアルは Python のクラスメカニズムに関する総合的な情報を提供しようとしていますが、
+新スタイルクラスについては、まだ足りない部分があるかもしれません。より詳細な情報を得たい場合は、
+`<http://www.python.org/doc/newstyle.html>`_ を参照してください。
+
 
 .. index::
-   single: class
-   single: class
-   single: class
+   single: class; new-style
+   single: class; classic
+   single: class; old-style
 
-旧クラスを廃止にして、新クラスのセマンティクスのみを残すことが計画されています。この変更は、Python 3.0で採用されることになるでしょう。 new-
-style classic old-style
+Python 3.0 では旧スタイルクラスが削除されて、新スタイルクラスが唯一のクラスになりました。
 
-.. % =========================================================================
 
 
 .. _specialnames:
@@ -961,10 +973,12 @@ style classic old-style
 
 特殊な名前をもったメソッドを定義することで、特殊な構文 (算術演算や添え字表記、スライス表記のような) 特定の演算をクラスで実装することができます。
 これは、個々のクラスが Python 言語で提供されている演算子に対応した独自の振る舞いをできるようにするための、演算子のオーバロード
-(:dfn:`operator overloading`) に対する Python のアプローチです。例えば、あるクラスが
-:meth:`__getitem__` という名前のメソッドを定義しており、 ``x`` がこのクラスのインスタンスであるとすると、 ``x[i]`` は
-``x.__getitem__(i)`` と等価  [#]_ になります。特に注釈のない限り、適切なメソッドが定義されていない場合にこのような演算を行おうと
-すると例外が送出されます。
+(:dfn:`operator overloading`) に対する Python のアプローチです。
+例えば、あるクラスが :meth:`__getitem__` という名前のメソッドを定義しており、
+``x`` がこのクラスのインスタンスであるとすると、 ``x[i]`` は
+旧スタイルクラスの場合 ``x.__getitem__(i)`` と、新スタイルクラスの場合 ``type(x).__getitem__(x, i)`` とほぼ等価になります。
+特に注釈のない限り、適切なメソッドが定義されていない場合にこのような演算を行おうとすると例外が送出されます。
+(発生する例外はたいてい、 :exc:`AttributeError` か :exc:`TypeError` です。)
 
 組み込み型をエミュレーションするようなクラスを実装する際には、エミューレーションの実装をモデル化しようとしているオブジェクトで
 意味のある範囲だけにとどめることが重要です。例えば、シーケンスによっては個々の要素の取り出し操作が意味のある操作で
@@ -977,8 +991,9 @@ style classic old-style
 基本的なカスタマイズ
 --------------------
 
-
 .. method:: object.__new__(cls[, args...])
+
+   .. index:: pair: subclassing; immutable types
 
    クラス *cls* の新しいインスタンスを作るために呼び出されます。 :meth:`__new__` は静的メソッドで (このメソッドは特別扱いされている
    ので、明示的に静的メソッドと宣言する必要はありません)、インスタンスを生成するよう要求されているクラスを第一引数にとります。残りの引数はオブ
@@ -996,6 +1011,7 @@ style classic old-style
 
    :meth:`__new__` の主な目的は、変更不能な型 (int, str, tuple など)
    のサブクラスでインスタンス生成をカスタマイズすることにあります。
+   また、クラス生成をカスタマイズするために、カスタムのメタクラスでよくオーバーライドされます。
 
 
 .. method:: object.__init__(self[, ...])
@@ -1034,15 +1050,16 @@ style classic old-style
       ``sys.last_traceback`` に入れることで解決できます。ごみオブジェクトと化した循環参照は、オプションの循環参照検出機構 (cycle
       detector) が有効にされている場合 (これはデフォルトの設定です) には検出されますが、検出された循環参照を消去するのは Python レベルで
       :meth:`__del__` メソッドが定義されていない場合だけです。 :meth:`__del__` メソッドが循環参照検出機構でどのように
-      扱われるか、とりわけ ``garbage`` 値の記述に関しては、 :mod:`gc` モジュール (XXX reference: ../lib/module-
-      gc.html) のドキュメントを参照してください。
+      扱われるか、とりわけ ``garbage`` 値の記述に関しては、 :mod:`gc` モジュールのドキュメントを参照してください。
 
    .. warning::
 
-      :meth:`__del__` メソッドの呼び出しが起きるのは不安定な状況なので、 :meth:`__del__` の実行中に発生した例外は無視され、代わりに
-      ``sys.stderr`` に警告が出力されます。また、 (例えばプログラムの実行終了による) モジュールの削除に伴って :meth:`__del__`
-      が呼び出される際には、 :meth:`__del__`  メソッドが参照している他のグローバル変数はすでに削除されているかもしれません。この理由から、
-      :meth:`__del__` メソッドでは外部の不変関係を維持する上で絶対最低限必要なことだけをすべきです。バージョン 1.5
+      :meth:`__del__` メソッドの呼び出しが起きるのは不安定な状況下なので、
+      :meth:`__del__` の実行中に発生した例外は無視され、代わりに ``sys.stderr`` に警告が出力されます。
+      また、 (例えばプログラムの実行終了による) モジュールの削除に伴って :meth:`__del__`
+      が呼び出される際には、 :meth:`__del__`  メソッドが参照している他のグローバル変数は
+      すでに削除されていたり、削除中(例えば、import機構のシャットダウン中)かもしれません。
+      この理由から、 :meth:`__del__` メソッドでは外部の不変関係を維持する上で絶対最低限必要なことだけをすべきです。バージョン 1.5
       からは、単一のアンダースコアで始まるようなグローバル変数は、他のグローバル変数が削除される前にモジュールから削除されるように Python
       側で保証しています; これらのアンダースコア付きグローバル変数は、 :meth:`__del__` が呼び出された際に、import
       されたモジュールがまだ残っているか確認する上で役に立ちます。
@@ -1088,23 +1105,35 @@ style classic old-style
 
    .. versionadded:: 2.1
 
+   .. index::
+      single: comparisons
+
    これらのメソッドは "拡張比較 (rich comparison)" メソッドと呼ばれ、下記の :meth:`__cmp__` に優先して呼び出されます。
    演算子シンボルとメソッド名の対応は以下の通りです: ``x<y`` は ``x.__lt__(y)`` を呼び出します; ``x<=y`` は
    ``x.__le__(y)`` を呼び出します; ``x==y`` は ``x.__eq__(y)`` を呼び出します; ``x!=y`` および
    ``x<>y`` は ``x.__ne__(y)`` を呼び出します; ``x>y`` は ``x.__gt__(y)`` を呼び出します; ``x>=y``
-   は ``x.__ge__(y)`` を呼び出します。これらのメソッドは任意の値を返すことができますが、比較演算子が
-   ブール値のコンテキストで使われた場合、戻り値はブール値として解釈可能でなければなりません。そうでない場合には :exc:`TypeError`
-   が送出されます。慣習的には、 ``False`` は偽値、 ``True`` は真値として用いられます。
+   は ``x.__ge__(y)`` を呼び出します。
 
-   比較演算子間には、暗黙的な論理関係はありません。すなわち、 ``x==y`` が真である場合、暗黙のうちに  ``x!=y`` が偽になるわけではありません。
-   従って、 :meth:`__eq__` を実装する際、演算子が期待通りに動作するようにするために :meth:`__ne__` も定義する必要があります。
+   拡張比較メソッドは、与えられた引数のペアに対する操作を実装していないときに、 ``NotImplemented``
+   というシングルトンを返すかもしれません。
+   慣例として、正常に比較が行われたときには ``False`` か ``True`` を返します。
+   しかし、これらのメソッドは任意の値を返すことができるので、比較演算子が
+   ブール値のコンテキスト(たとえば、 ``if`` 文の条件部分)で使われた場合、
+   Python はその値に対して :func:`bool` を呼び出して結果の真偽を判断します。
+
+   比較演算子間には、暗黙的な論理関係はありません。
+   すなわち、 ``x==y`` が真である場合、暗黙のうちに  ``x!=y`` が偽になるわけではありません。
+   従って、 :meth:`__eq__` を実装する際、演算子が期待通りに動作するようにするために
+   :meth:`__ne__` も定義する必要があります。
+   カスタムの比較演算をサポートしていて、辞書のキーに使うことができるハッシュ可能(:term:`hashable`)
+   オブジェクトを作るときの重要な注意点について、 :meth:`__hash__`
+   のドキュメント内に書かれているので参照してください。
 
    これらのメソッドには、(左引数が演算をサポートしないが、右引数はサポートする場合に用いられるような) 鏡像となる (引数を入れ替えた)
    バージョンは存在しません; むしろ、 :meth:`__lt__` と :meth:`__gt__` は互いに鏡像であり、 :meth:`__le__` と
    :meth:`__ge__` 、および :meth:`__eq__` と :meth:`__ne__` はそれぞれ互いに鏡像です。
 
-   拡張比較メソッドの引数には型強制 (coerce) が起こりません。与えられた引数ペアの間で演算が実装されていない場合、拡張比較メソッドは
-   ``NotImplemented`` を返します。
+   拡張比較メソッドの引数には型強制 (coerce) が起こりません。
 
 
 .. method:: object.__cmp__(self, other)
@@ -1133,30 +1162,54 @@ style classic old-style
 
    .. index:: object: dictionary
 
-   辞書演算の際にキーとなるオブジェクトに対して呼び出されたり、組み込み関数 :func:`hash` から呼び出されたりします。
-   辞書演算におけるハッシュ値として利用できる、32 ビットの整数を返さなければなりません。このメソッドに必要な性質は、比較結果が等価であるオブジェクトは
-   同じハッシュ値をもつということです; オブジェクト間で比較を行う際には、オブジェクトの各要素に対するハッシュ値を  (排他的論理和をとるなどして)
-   何らかの方法で混合するよう勧めます。クラスが :meth:`__cmp__` メソッドを定義していない場合、 :meth:`__hash__`
+   ビルトインの :func:`hash` 関数や、 :class:`set`, :class:`frozenset`,
+   :class:`dict` のようなハッシュを使ったコレクション型の要素に対する操作から
+   呼び出されます。 :meth:`__hash__` は整数を返さなければなりません。
+   このメソッドに必要な性質は、比較結果が等しいオブジェクトは同じハッシュ値を持つということです。
+   オブジェクトを比較するときに利用する要素のそれぞれのハッシュ値を、(排他的論理和等の)
+   なんらかの方法で合成することをおすすめします。
+
+   クラスが :meth:`__cmp__` や :meth:`__eq__` メソッドを定義していない場合、 :meth:`__hash__`
    メソッドも定義してはなりません; クラスが :meth:`__cmp__` または :meth:`__eq__` を定義しているが、
    :meth:`__hash__` を定義していない場合、インスタンスを辞書のキーとして使うことはできません。
    クラスが変更可能なオブジェクトを定義しており、 :meth:`__cmp__`  または :meth:`__eq__`
-   メソッドを実装している場合、 :meth:`__hash__` を定義してはなりません。これは、辞書の実装においてハッシュ値が変更不能
-   であることが要求されているからです (オブジェクトのハッシュ値が変化すると、キーが誤ったハッシュバケツ: hash bucket に入っていることに
+   メソッドを実装している場合、 :meth:`__hash__` を定義してはなりません。
+   これは、辞書の実装においてハッシュ値が変更不能であることが要求されているからです
+   (オブジェクトのハッシュ値が変化すると、キーが誤ったハッシュバケツ: hash bucket に入っていることに
    なってしまいます)。
 
+   ユーザー定義クラスはデフォルトで :meth:`__cmp__` と :meth:`__hash__` メソッドを持っています。
+   これらは、同一以外のすべてのオブジェクトに対して比較結果が偽になり、
+   ``x.__hash__()`` は ``id(x)`` を返します。
+
+   親クラスから :meth:`__hash__` メソッドを継承して、 :meth:`__cmp__` か :meth:`__eq__`
+   の意味を変更している(例えば、値ベースの同値関係から同一性ベースの同値関係に変更する)
+   クラスのハッシュ値は妥当ではなくなるので、 ``__hash__ = None`` をクラス定義に書く事で、
+   明示的にハッシュ不可能であることを宣言できます。
+   こうすると、プログラムがそのクラスのインスタンスのハッシュ値を取得しようとしたときに
+   適切な :exc:`TypeError` 例外を送出するようになるだけでなく、
+   (:exc:`TypeError` を発生させる :meth:`__hash__` メソッドを持つクラスと違って)
+   ``isinstance(obj, collections.Hashable)`` をチェックしたときに、ハッシュ不可能と
+   判定されるようになります。
+
    .. versionchanged:: 2.5
-      :meth:`__hash__` は現在では長整数オブジェクトも返すでしょう。32ビット整数はこのオブジェクトのハッシュから導出されます。.
+      :meth:`__hash__` は現在では長整数オブジェクトも返せるようになりました。
+      32ビット整数はこのオブジェクトのハッシュから導出されます。
 
-   .. index:: single: __cmp__() (object method)
-
+   .. versionchanged:: 2.6
+      クラスのインスタンスがハッシュ不可能であることを明示的に宣言するために、
+      :attr:`__hash__` に :const:`None` を設定することができるようになりました。
 
 .. method:: object.__nonzero__(self)
 
    .. index:: single: __len__() (mapping object method)
 
-   真値テストや組み込み演算 ``bool()`` を実現するために呼び出されます; ``False`` または ``True`` か、等価な整数値 ``0``
-   または ``1`` を返さなければなりません。このメソッドが定義されていない場合、 :meth:`__len__` (下記参照)
-   が定義されていれば呼び出されます。 :meth:`__len__` と :meth:`__nonzero__` のどちらもクラスで定義されていない場合、
+   真値テストや組み込み演算 ``bool()`` を実現するために呼び出されます;
+   ``False`` または ``True`` か、等価な整数値 ``0``
+   または ``1`` を返さなければなりません。
+   このメソッドが定義されていない場合、 :meth:`__len__`
+   が定義されていれば呼び出され、その結果が nonzero であれば真になります。
+   :meth:`__len__` と :meth:`__nonzero__` のどちらもクラスで定義されていない場合、
    そのクラスのインスタンスはすべて真の値を持つものとみなされます。
 
 
@@ -1186,9 +1239,9 @@ style classic old-style
    .. index:: single: __setattr__() (object method)
 
    通常のメカニズムを介して属性値が見つかった場合、 :meth:`__getattr__`
-   は呼び出されないので注意してください。(:meth:`__getattr__`  と :meth:`__setattr__`
-   の間は意図的に非対称性にされています。これは :meth:`__getattr__` および :meth:`__setattr__` 双方に
-   とっての効率性という理由と、こうしなければ :meth:`__setattr__` がインスタンスの他の属性値にアクセスする方法がなくなるためです。
+   は呼び出されないので注意してください。(これは、 :meth:`__getattr__`  と :meth:`__setattr__`
+   の間に意図的に導入された非対称性です。)
+   これは、効率性のためと、こうしなければ :meth:`__getattr__` がインスタンスの他の属性値にアクセスする方法がなくなるためです。
    少なくともインスタンス変数に対しては、値をインスタンスの属性値辞書に挿入しないようにして (代わりに他のオブジェクトに挿入することで)
    属性値が完全に制御されているように見せかけられることに注意してください。新スタイルクラスで実際に完全な制御を行う方法は、以下の
    :meth:`__getattribute__` メソッドを参照してください。
@@ -1223,12 +1276,20 @@ style classic old-style
 
 .. method:: object.__getattribute__(self, name)
 
-   クラスのインスタンスに対する属性アクセスを実装するために、無条件に呼び出されます。クラスが :meth:`__getattr__` も定義している
-   場合、 :meth:`__getattr__` は、 :meth:`__getattribute__` で明示的に呼び出すか、
-   :exc:`AttributeError` 例外を送出しない限り呼ばれないでしょう。呼び出されることはありません。このメソッドは (計算された) 属性値を
-   返すか、 :exc:`AttributeError` 例外を送出します。このメソッドが再帰的に際限なく呼び出されてしまうのを防ぐため、実装の際には常に、例えば
-   ``object.__getattribute__(self, name)``  のように基底クラスのメソッドを同じ属性名を使って呼び出し、
-   必要な属性値全てにアクセスしなければなりません。
+   クラスのインスタンスに対する属性アクセスを実装するために、無条件に呼び出されます。
+   クラスが :meth:`__getattr__` も定義している場合、 :meth:`__getattr__` は、 :meth:`__getattribute__` で明示的に呼び出すか、
+   :exc:`AttributeError` 例外を送出しない限り呼ばれません。
+   このメソッドは (計算された) 属性値を返すか、 :exc:`AttributeError` 例外を送出します。
+   このメソッドが再帰的に際限なく呼び出されてしまうのを防ぐため、実装の際には常に、
+   必要な属性全てへのアクセスで、例えば
+   ``object.__getattribute__(self, name)`` のように基底クラスのメソッドを同じ属性名を使って
+   呼び出さなければなりません。
+
+   .. note::
+
+      ビルトイン関数や言語構文により暗黙的に特殊メソッドが検索されるときは、
+      このメソッドの呼び出しはバイパスされるでしょう。
+      :ref:`new-style-special-lookup` を参照してください。
 
 
 .. _descriptors:
@@ -1298,8 +1359,9 @@ style classic old-style
    ``B`` に対して ``obj.__class_.__mro__`` を検索し、次に呼び出し: ``A.__dict__['m'].__get__(obj,
    A)`` でデスクリプタを呼び出します。
 
-インスタンス束縛では、デスクリプタ呼び出しの優先順位はどのデスクリプタが定義されているかに依存します。データデスクリプタでは、 :meth:`__get__`
-と :meth:`__set__` を定義します。非データデスクリプタには :meth:`__get__` メソッドしかありません。
+インスタンス束縛では、デスクリプタ呼び出しの優先順位はどのデスクリプタが定義されているかに依存します。
+通常、データデスクリプタでは、 :meth:`__get__` と :meth:`__set__` を定義し、
+一方、非データデスクリプタには :meth:`__get__` メソッドしかありません。
 インスタンス辞書内で属性値が再定義されても、データデスクリプタは常にこの値をオーバライドします。対照的に、非データデスクリプタの
 場合には、属性値はインスタンス側でオーバライドされます。
 
@@ -1334,20 +1396,23 @@ __slots__
 
 *__slots__* を利用する際の注意
 
+* *__slots__* を持たないクラスから継承する場合、 *__dict__* 属性は常にアクセス可能なので、
+  サブクラスで *__slots__* を定義しても意味がありません。
+
 * *__dict__* 変数がない場合、 *__slots__* に列挙されていない新たな変数をインスタンスに代入することはできません。
   列挙されていない変数名を使って代入しようとした場合、 :exc:`AttributeError` が送出されます。
   新たな変数を動的に代入したいのなら、 *__slots__* を宣言する際に ``'__dict__'`` を変数名のシーケンスに追加してください。
 
   .. versionchanged:: 2.3
      これまでは、 ``'__dict__'`` を *__slots__* 宣言に追加しても、インスタンス変数名として他にリストされていない
-     新たな属性の代入はできませんでした。.
+     新たな属性の代入はできませんでした。
 
 * *__slots__* を定義しているクラスの各インスタンスに *__weakref__* 変数がない場合、インスタンスに対する弱参照 (weak
   reference) はサポートされません。弱参照のサポートが必要なら、 *__slots__* を宣言する際に ``'__weakref__'``
   を変数名のシーケンスに追加してください。
 
   .. versionchanged:: 2.3
-     これまでは、 ``'__weakref__'`` を *__slots__* 宣言に追加しても、弱参照のサポートを有効にできませんでした。.
+     これまでは、 ``'__weakref__'`` を *__slots__* 宣言に追加しても、弱参照のサポートを有効にできませんでした。
 
 * *__slots__* は、クラスのレベルで各変数に対するデスクリプタ  (:ref:`descriptors` を参照) を使って実装されます。その結果、
   *__slots__* に定義されているインスタンス変数のデフォルト値はクラス属性を使って設定できなくなっています; そうしないと、
@@ -1360,11 +1425,17 @@ __slots__
 * *__slots__* 宣言が動作するのは、定義が行われたクラスだけに限られています。その結果、サブクラスでは、 *__slots__* を定義しない限り
   *__dict__* を持つことになります。
 
-* *__slots__* は、 :class:`long` 、 :class:`str` 、および :class:`tuple` といった、"可変長
+* 空でない *__slots__* は、 :class:`long` 、 :class:`str` 、および :class:`tuple` といった、"可変長
   (variable-length)" の組み込み型から導出されたクラスでは動作しません。
 
 * *__slots__* には、文字列でない反復可能オブジェクトを代入することができます。辞書型も使うことができます; しかし将来、
   辞書の各キーに相当する値に何らかの特殊な意味が割り当てられるかもしれません。
+
+* *__class__* への代入は、両方のクラスが同じ *__slots__* を持っているときのみ動作します。
+
+  .. versionchanged:: 2.6
+     以前は、新旧どちらかのクラスが *__slots__* を持っていたら *__class__* への代入は
+     エラーを発生していました。
 
 
 .. _metaclasses:
@@ -1384,6 +1455,18 @@ __slots__
 
 といった、クラス生成のプロセスを監視したり置き換えたりするクラスや関数を書くことができます。
 
+これらのステップは、メタクラスの :meth:`__new__` メソッドで実行されなければなりません。
+-- このメソッドから他の属性を持ったクラスを作るには、 :meth:`type.__new__` を呼び出すことができます。
+次の例ではクラスを生成する前に新しい要素をクラス辞書に追加しています。 ::
+
+  class metacls(type):
+      def __new__(mcs, name, bases, dict):
+          dict['foo'] = 'metacls was here'
+          return type.__new__(mcs, name, bases, dict)
+
+もちろん、他のクラスメソッドをオーバーライドする(または新しいメソッドを追加する)こともできます。
+例えば、カスタムの :meth:`__call__` メソッドをメタクラスに定義して、
+新しいインスタンスを常には造らないといったカスタムの動作を実装できます。
 
 .. data:: __metaclass__
 
@@ -1426,66 +1509,37 @@ __slots__
 コンテナをエミュレートする
 --------------------------
 
-.. index::
-   single: keys() (mapping object method)
-   single: values() (mapping object method)
-   single: items() (mapping object method)
-   single: iterkeys() (mapping object method)
-   single: itervalues() (mapping object method)
-   single: iteritems() (mapping object method)
-   single: has_key() (mapping object method)
-   single: get() (mapping object method)
-   single: setdefault() (mapping object method)
-   single: pop() (mapping object method)
-   single: popitem() (mapping object method)
-   single: clear() (mapping object method)
-   single: copy() (mapping object method)
-   single: update() (mapping object method)
-   single: __contains__() (mapping object method)
-   single: append() (sequence object method)
-   single: count() (sequence object method)
-   single: extend() (sequence object method)
-   single: index() (sequence object method)
-   single: insert() (sequence object method)
-   single: pop() (sequence object method)
-   single: remove() (sequence object method)
-   single: reverse() (sequence object method)
-   single: sort() (sequence object method)
-   single: __add__() (sequence object method)
-   single: __radd__() (sequence object method)
-   single: __iadd__() (sequence object method)
-   single: __mul__() (sequence object method)
-   single: __rmul__() (sequence object method)
-   single: __imul__() (sequence object method)
-   single: __contains__() (sequence object method)
-   single: __iter__() (sequence object method)
-   single: __coerce__() (numeric object method)
-
 以下のメソッドを定義して、コンテナオブジェクトを実装することができます。コンテナは通常、(リストやタプルのような) シーケンスや、(辞書のような)
 マップ型を指しますが、他のコンテナも同じように表現することができます。最初の一連のメソッドは、シーケンスをエミュレートしたり、マップ型を
 エミュレートするために使われます; その違いとして、シーケンスの場合には、キーとして許されているのが、シーケンスの長さが *N* であるときの ``0 <=
 k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライスオブジェクトでなければならないということです。
 (後方互換性のため、 :meth:`__getslice__` (以下参照) を定義して、拡張されていない単純なスライスを扱うようにもできます。)
-変更可能なシーケンスでは、Python の標準リストオブジェクトのように、メソッド :meth:`append` 、 :meth:`count` 、
-:meth:`index` 、 :meth:`extend` 、 :meth:`insert` 、 :meth:`pop` 、
-:meth:`remove` 、 :meth:`reverse` 、および :meth:`sort` を提供しなければなりません。マップ型でも、Python
-の標準辞書オブジェクトのように、 :meth:`keys` 、 :meth:`values` 、 :meth:`items` 、 :meth:`has_key` 、
-:meth:`get` 、 :meth:`clear` 、 :meth:`setdefault` 、 :meth:`iterkeys` 、
-:meth:`itervalues` 、 :meth:`iteritems` 、 :meth:`pop` 、 :meth:`popitem` 、
-:meth:`copy` 、および :meth:`update` といったメソッドをマップ型で提供するよう推奨しています。 :mod:`UserDict`
-モジュールでは、これらのメソッドを :meth:`__getitem__` 、 :meth:`__setitem__` 、
-:meth:`__delitem__` 、および :meth:`keys` といった基本セットから作成する上で役に立つ :class:`DictMixin`
-クラスを提供しています。最後に、シーケンス型では以下に述べるメソッド群 :meth:`__add__` 、 :meth:`__radd__` 、
-:meth:`__iadd__` 、 :meth:`__mul__` 、 :meth:`__rmul__` 、および :meth:`__imul__`  を定義して、
+
+変更可能なシーケンスでは、Python の標準リストオブジェクトのように、メソッド :meth:`append`, :meth:`count`,
+:meth:`index`, :meth:`extend`, :meth:`insert`, :meth:`pop`,
+:meth:`remove`, :meth:`reverse`,および :meth:`sort` を提供しなければなりません。
+
+マップ型でも、Python の標準辞書オブジェクトのように、 :meth:`keys`, :meth:`values`, :meth:`items`, :meth:`has_key`,
+:meth:`get`, :meth:`clear`, :meth:`setdefault`, :meth:`iterkeys`,
+:meth:`itervalues`, :meth:`iteritems`, :meth:`pop`, :meth:`popitem`,
+:meth:`copy`,および :meth:`update` といったメソッドをマップ型で提供するよう推奨しています。
+:mod:`UserDict` モジュールでは、これらのメソッドを :meth:`__getitem__`, :meth:`__setitem__`,
+:meth:`__delitem__`,および :meth:`keys` といった基本セットから作成する上で役に立つ :class:`DictMixin`
+クラスを提供しています。
+
+最後に、シーケンス型では以下に述べるメソッド群 :meth:`__add__`, :meth:`__radd__`,
+:meth:`__iadd__`, :meth:`__mul__`, :meth:`__rmul__`,および :meth:`__imul__`  を定義して、
 (シーケンス間の結合を意味する) 加算操作と (要素の繰り返しを意味する) 乗算操作を実装しなければなりません;  :meth:`__coerce__`
-や、その他の数値演算子を定義してはなりません。マップでもシーケンスでも、 ``in`` 演算子が有効利用できるように :meth:`__contains__`
+や、その他の数値演算子を定義してはなりません。
+
+マップでもシーケンスでも、 ``in`` 演算子が有効利用できるように :meth:`__contains__`
 メソッドの定義を推奨します; マップ型では、 ``in`` は :meth:`has_key` と等価でなければなりません; シーケンスでは、
 シーケンス内の値にわたって検索を行わなければなりません。さらに、マップでもシーケンスでも、コンテナ内にわたる反復操作ができるようにするため、
 :meth:`__iter__` を実装するよう勧めます; マップ型の場合、 :meth:`__iter__` は :meth:`iterkeys`
 と等価でなければなりません; シーケンスの場合、シーケンス内の値にわたって反復操作を行わなければなりません。
 
 
-.. method:: container object.__len__(self)
+.. method:: object.__len__(self)
 
    .. index::
       builtin: len
@@ -1496,7 +1550,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    メソッドがゼロを返す場合には、ブール演算コンテキストでは偽であるとみなされます。
 
 
-.. method:: container object.__getitem__(self, key)
+.. method:: object.__getitem__(self, key)
 
    .. index:: object: slice
 
@@ -1513,36 +1567,55 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
       が送出されるものと期待しています。
 
 
-.. method:: container object.__setitem__(self, key, value)
+.. method:: object.__setitem__(self, key, value)
 
    ``self[key]`` に対する代入を実現するために呼び出されます。 :meth:`__getitem__` と同じ注意事項があてはまります。
    このメソッドを実装できるのは、あるキーに対する値の変更をサポートしているか、新たなキーを追加できるようなマップの場合と、ある要素を置き換えることができる
    シーケンスの場合だけです。不正な *key* に対しては、 :meth:`__getitem__` メソッドと同様の例外の送出を行わなければなりません。
 
 
-.. method:: container object.__delitem__(self, key)
+.. method:: object.__delitem__(self, key)
 
    ``self[key]`` の削除を実現するために呼び出されます。 :meth:`__getitem__` と同じ注意事項があてはまります。
    このメソッドを実装できるのは、キーの削除をサポートしているマップの場合と、要素を削除できるシーケンスの場合だけです。不正な *key*
    に対しては、 :meth:`__getitem__` メソッドと同様の例外の送出を行わなければなりません。
 
 
-.. method:: container object.__iter__(self)
+.. method:: object.__iter__(self)
 
    このメソッドは、コンテナに対してイテレータが要求された際に呼び出されます。このメソッドは、コンテナ内の全てのオブジェクトにわたる反復処理ができる
    ような、新たなイテレータオブジェクトを返さなければなりません。マップの場合、コンテナ内のキーに渡る反復処理でなければならず、
    かつ :meth:`iterkeys` によって利用できなければなりません。
 
    イテレータオブジェクトでもこのメソッドを実装する必要があります; イテレータの場合、自分自身を返さなければなりません。イテレータオブジェクト
-   に関するより詳細な情報は、 Python ライブラリリファレンス (XXX reference: ../lib/lib.html) の "イテレータ型 (XXX
-   reference: ../lib/typeiter.html)" を参照してください。
+   に関するより詳細な情報は、 :ref:`typeiter` を参照してください。
+
+.. method:: object.__reversed__(self)
+
+   :func:`reversed` ビルトイン関数が逆方向イテレーションを実装するために、(存在すれば)呼び出します。
+   コンテナ内の全要素を逆順にイテレートする、新しいイテレータを返すべきです。
+
+   If the :meth:`__reversed__` method is not provided, the
+   :func:`reversed` builtin will fall back to using the sequence protocol
+   (:meth:`__len__` and :meth:`__getitem__`).  Objects should normally
+   only provide :meth:`__reversed__` if they do not support the sequence
+   protocol and an efficient implementation of reverse iteration is possible.
+
+   :meth:`__reversed__` メソッドが提供されない場合、 :func:`reversed`
+   ビルトイン関数はシーケンスプロトコル (:meth:`__len__` と :meth:`__getitem__`)
+   へとフォールバックします。
+   オブジェクトは通常、シーケンスプロトコルをサポートしておらず、効率的な逆方向
+   イテレーションが可能な場合のみ、 :meth:`__reversed__` を提供するべきです。
+
+   .. versionadded:: 2.6
+
 
 メンバシップテスト演算子 (:keyword:`in` および :keyword:`not in`) は通常、
 シーケンスに渡る反復処理を使って実装されます。しかし、コンテナオブジェクトで以下の特殊メソッドを定義して、より効率的な実装を行ったり、オブジェクト
 がシーケンスでなくてもよいようにできます。
 
 
-.. method:: container object.__contains__(self, item)
+.. method:: object.__contains__(self, item)
 
    メンバシップテスト演算を実現するために呼び出されます。 *item* が *self* 内に存在する場合には真を、そうでない場合には
    偽を返さなければなりません。マップオブジェクトの場合、値やキーと値の組ではなく、キーに対するメンバシップテストを考えなければなりません。
@@ -1557,10 +1630,12 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
 :meth:`__getslice__` が定義できるだけです; 変更可能なシーケンスでは三つのメソッド全てを定義できます。
 
 
-.. method:: sequence object.__getslice__(self, i, j)
+.. method:: object.__getslice__(self, i, j)
 
    .. deprecated:: 2.0
       スライスオブジェクトは :meth:`__getitem__` メソッドのパラメタとしてサポートするようになりました。
+      (しかし、現在の CPython はいまだに :meth:`__getslice__` を実装しています。
+      なので、派生クラスでスライスを実装する場合は、このメソッドをオーバーライドしなければなりません。)
 
    ``self[i:j]`` の値評価を実現するために呼び出されます。返されるオブジェクトは *self* と同じ型でなければなりません。スライス表記で
    *i* や *j* がない場合には、それぞれゼロや ``sys.maxint`` に置き換えられるので注意してください。
@@ -1570,7 +1645,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    スライスオブジェクトが生成されて :meth:`__getitem__` に渡されます。
 
 
-.. method:: sequence object.__setslice__(self, i, j, sequence)
+.. method:: object.__setslice__(self, i, j, sequence)
 
    ``self[i:j]`` への代入を実現するために呼び出されます。 *i* および *j* に関しては、 :meth:`__getslice__`
    と同じ注釈があてはまります。
@@ -1579,7 +1654,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    の場合には、 :meth:`__setslice__` が呼ばれる代わりにスライスオブジェクトが生成され、 :meth:`__setitem__` に渡されます。
 
 
-.. method:: sequence object.__delslice__(self, i, j)
+.. method:: object.__delslice__(self, i, j)
 
    ``self[i:j]`` の削除を実現するために呼び出されます。 *i* および *j* に関しては、 :meth:`__getslice__`
    と同じ注釈があてはまります。
@@ -1633,19 +1708,18 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
 以下のメソッドを定義して、数値型オブジェクトをエミュレートすることができます。特定の種類の数値型ではサポートされていないような演算に対応するメソッド
 (非整数の数値に対するビット単位演算など) は、未定義のままにしておかなければなりません。
 
-
-.. method:: numeric object.__add__(self, other)
-            numeric object.__sub__(self, other)
-            numeric object.__mul__(self, other)
-            numeric object.__floordiv__(self, other)
-            numeric object.__mod__(self, other)
-            numeric object.__divmod__(self, other)
-            numeric object.__pow__(self, other[, modulo])
-            numeric object.__lshift__(self, other)
-            numeric object.__rshift__(self, other)
-            numeric object.__and__(self, other)
-            numeric object.__xor__(self, other)
-            numeric object.__or__(self, other)
+.. method:: object.__add__(self, other)
+            object.__sub__(self, other)
+            object.__mul__(self, other)
+            object.__floordiv__(self, other)
+            object.__mod__(self, other)
+            object.__divmod__(self, other)
+            object.__pow__(self, other[, modulo])
+            object.__lshift__(self, other)
+            object.__rshift__(self, other)
+            object.__and__(self, other)
+            object.__xor__(self, other)
+            object.__or__(self, other)
 
    .. index::
       builtin: divmod
@@ -1653,8 +1727,8 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
       builtin: pow
 
    これらのメソッドは、二項算術演算 (``+``, ``-``, ``*``, ``//``, ``%``, :func:`divmod`,
-   :func:`pow`, ``**``, ``<<``, ``>>``, ``&``, ``^``, ``|``) を実現するために呼び出されます。例えば、式
-   *x* ``+`` *y* の場合、 *x* が :meth:`__add__` メソッドをもつクラスのインスタンスであれば、 ``x.__add__(y)``
+   :func:`pow`, ``**``, ``<<``, ``>>``, ``&``, ``^``, ``|``) を実現するために呼び出されます。
+   例えば、式 ``x + y`` の場合、 *x* が :meth:`__add__` メソッドをもつクラスのインスタンスであれば、 ``x.__add__(y)``
    が呼び出されます。 :meth:`__divmod__` メソッドは、 :meth:`__floordiv__` と :meth:`__mod__`
    を使った場合と等価にならなければなりません;  :meth:`__truediv__` (下記参照) と関連づける必要はありません。
    組み込みの三項演算子バージョンの関数 :func:`pow` をサポートする場合には、 :meth:`__pow__`
@@ -1663,8 +1737,8 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    こらのメソッドが渡された引き数に対する操作を提供していない場合には、 ``NotImplemented`` を送出しなければなりません。
 
 
-.. method:: numeric object.__div__(self, other)
-            numeric object.__truediv__(self, other)
+.. method:: object.__div__(self, other)
+            object.__truediv__(self, other)
 
    除算演算 (``/``) は、これらのメソッドで実現されています。 :meth:`__truediv__` は、 ``__future__.division``
    が有効であるときに使われます。それ以外の場合には :meth:`__div__` が使われますs。
@@ -1672,20 +1746,20 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    が送出されます。
 
 
-.. method:: numeric object.__radd__(self, other)
-            numeric object.__rsub__(self, other)
-            numeric object.__rmul__(self, other)
-            numeric object.__rdiv__(self, other)
-            numeric object.__rtruediv__(self, other)
-            numeric object.__rfloordiv__(self, other)
-            numeric object.__rmod__(self, other)
-            numeric object.__rdivmod__(self, other)
-            numeric object.__rpow__(self, other)
-            numeric object.__rlshift__(self, other)
-            numeric object.__rrshift__(self, other)
-            numeric object.__rand__(self, other)
-            numeric object.__rxor__(self, other)
-            numeric object.__ror__(self, other)
+.. method:: object.__radd__(self, other)
+            object.__rsub__(self, other)
+            object.__rmul__(self, other)
+            object.__rdiv__(self, other)
+            object.__rtruediv__(self, other)
+            object.__rfloordiv__(self, other)
+            object.__rmod__(self, other)
+            object.__rdivmod__(self, other)
+            object.__rpow__(self, other)
+            object.__rlshift__(self, other)
+            object.__rrshift__(self, other)
+            object.__rand__(self, other)
+            object.__rxor__(self, other)
+            object.__ror__(self, other)
 
    .. index::
       builtin: divmod
@@ -1696,7 +1770,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    (reflected, swapped: 入れ替えられて) います。これらの関数は、左側の被演算子が対応する演算をサポートしておらず
    かつ両者の演算子が異なる場合にのみ呼び出されます。 [#]_
 
-   例えば、 *x* ``-`` *y* の式を評価する場合、 *y* が :meth:`__rsub__` メソッドを持つクラスのインスタンスであって、しかも
+   例えば、 ``x - y`` の式を評価する場合、 *y* が :meth:`__rsub__` メソッドを持つクラスのインスタンスであって、しかも
    ``x.__sub__(y)`` が *NotImplemented* を返す場合には、 ``y.__rsub__(x)`` が呼び出されます。
 
    .. index:: builtin: pow
@@ -1710,44 +1784,45 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
       左側の被演算子の非逆転メソッドが呼ばれる前に、このメソッドが呼ばれます。この振る舞いにより、サブクラスが親の操作をオーバーライドすることが可能になります。
 
 
-.. method:: numeric object.__iadd__(self, other)
-            numeric object.__isub__(self, other)
-            numeric object.__imul__(self, other)
-            numeric object.__idiv__(self, other)
-            numeric object.__itruediv__(self, other)
-            numeric object.__ifloordiv__(self, other)
-            numeric object.__imod__(self, other)
-            numeric object.__ipow__(self, other[, modulo])
-            numeric object.__ilshift__(self, other)
-            numeric object.__irshift__(self, other)
-            numeric object.__iand__(self, other)
-            numeric object.__ixor__(self, other)
-            numeric object.__ior__(self, other)
+.. method:: object.__iadd__(self, other)
+            object.__isub__(self, other)
+            object.__imul__(self, other)
+            object.__idiv__(self, other)
+            object.__itruediv__(self, other)
+            object.__ifloordiv__(self, other)
+            object.__imod__(self, other)
+            object.__ipow__(self, other[, modulo])
+            object.__ilshift__(self, other)
+            object.__irshift__(self, other)
+            object.__iand__(self, other)
+            object.__ixor__(self, other)
+            object.__ior__(self, other)
 
-   これらのメソッドは、累算算術演算 (augmented arithmetic operations, ``+=``, ``-=``, ``*=``,
-   ``/=``, ``%=``, ``**=``, ``<`` \ ``<=``, ``>`` \ ``>=``, ``&=``, ``**=``, ``<`` \
-   ``<=``, ``>`` \ ``>=``, ``&=``, ``^=``, ``|=``) を実現するために呼び出されます。
+
+   これらのメソッドは、累算算術代入 (augmented arithmetic assignments, ``+=``, ``-=``, ``*=``,
+   ``/=``, ``//=``, ``%=``, ``**=``, ``<<=``, ``>>=``, ``&=``, ``^=``, ``|=``) を実現するために呼び出されます。
    これらのメソッドは、演算をその場で(*self* を変更する形で) 行うよう試み、その結果(変更された *self* またはその代わり
-   のもの)を返さなければなりません。特定のメソッドが定義されていない場合、その累算算術演算は通常のメソッドで代用されます。例えば、 *x* ``+=``*y*
-   を評価する際、 *x* が :meth:`__iadd__` メソッドを持つクラスのインスタンスであれば、 ``x.__iadd__(y)``
-   が呼び出されます。反対に、 *x* が :meth:`__iadd` メソッドを持たないクラスのインスタンスであれば、 *x* ``+``*y* に基づいて
-   ``x.__add__(y)`` および ``y.__radd__(x)``  を考慮します。
+   のもの)を返さなければなりません。特定のメソッドが定義されていない場合、その累算算術演算は通常のメソッドで代用されます。
+   例えば、 ``x += y`` を評価する際、 *x* が :meth:`__iadd__` メソッドを持つクラスのインスタンスであれば、 ``x.__iadd__(y)``
+   が呼び出されます。
+   逆に、 *x* が :meth:`__iadd` メソッドを持たないクラスのインスタンスであれば、 ``x + y``
+   の評価と同じように ``x.__add__(y)`` および ``y.__radd__(x)`` を考慮します。
 
 
-.. method:: numeric object.__neg__(self)
-            numeric object.__pos__(self)
-            numeric object.__abs__(self)
-            numeric object.__invert__(self)
+.. method:: object.__neg__(self)
+            object.__pos__(self)
+            object.__abs__(self)
+            object.__invert__(self)
 
    .. index:: builtin: abs
 
    単項算術演算 (``-``, ``+``, :func:`abs` および ``~``) を実現するために呼び出されます。
 
 
-.. method:: numeric object.__complex__(self)
-            numeric object.__int__(self)
-            numeric object.__long__(self)
-            numeric object.__float__(self)
+.. method:: object.__complex__(self)
+            object.__int__(self)
+            object.__long__(self)
+            object.__float__(self)
 
    .. index::
       builtin: complex
@@ -1759,8 +1834,8 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    を実現するために呼び出されます。適切な型の値を返さなければなりません。
 
 
-.. method:: numeric object.__oct__(self)
-            numeric object.__hex__(self)
+.. method:: object.__oct__(self)
+            object.__hex__(self)
 
    .. index::
       builtin: oct
@@ -1769,7 +1844,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    組み込み関数 :func:`oct` および :func:`hex` を実現するために呼び出されます。文字列型を返さなければなりません。
 
 
-.. method:: numeric object.__index__(self)
+.. method:: object.__index__(self)
 
    :func:`operator.index` を実装するために呼び出されます。また、（スライシング）のように Python が整数オブジェクトを必要とする
    場合には何処でも呼び出されます。整数（int もしくは long）を返す必要があります。
@@ -1777,7 +1852,7 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    .. versionadded:: 2.5
 
 
-.. method:: numeric object.__coerce__(self, other)
+.. method:: object.__coerce__(self, other)
 
    "型混合モード (mixed-mode)" での数値間の算術演算を実現するために呼び出されます。 *self* と *other* を共通の数値型に変換して、
    2 要素のタプルにして返すか、不可能な場合には ``None`` を返さなければなりません。共通の型が ``other`` の型になる場合、 ``None``
@@ -1849,11 +1924,11 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
 
 *
 
-  *x* ``+`` *y* において、 *x* が結合 (concatenation) 演算を実装しているシーケンスであれば、シーケンスの結合が実行されます。
+  ``x + y`` において、 *x* が結合 (concatenation) 演算を実装しているシーケンスであれば、シーケンスの結合が実行されます。
 
 *
 
-  *x* ``*`` *y* において、一方の演算子が繰り返し (repeat) 演算を実装しているシーケンスであり、かつ他方が整数 (:class:`int`
+  ``x * y`` において、一方の演算子が繰り返し (repeat) 演算を実装しているシーケンスであり、かつ他方が整数 (:class:`int`
   または  :class:`long`) である場合、シーケンスの繰り返しが実行されます。
 
 *
@@ -1864,7 +1939,8 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
 *
 
   現在の実装では、組み込み数値型 :class:`int`, :class:`long` および :class:`float` は型強制を行いません;
-  一方、 :class:`complex` は型強制を使います。こうした違いは、これらの型をサブクラス化する際に顕在化してきます。そのうち、
+  一方、 :class:`complex` は上記のルールと異なり、2項演算と拡張比較のために型強制を使います。
+  こうした違いは、これらの型をサブクラス化する際に顕在化してきます。そのうち、
   :class:`complex` 型についても型強制を避けるよう修正されるかもしれません。これらの型は全て、関数 :func:`coerce` から
   利用するための :meth:`__coerce__` メソッドを実装しています。
 
@@ -1887,18 +1963,16 @@ with文とコンテキストマネージャ
 コンテキストマネージャの代表的な使い方としては、様々なグローバル情報の保存および更新、リソースのロックとアンロック、
 ファイルのオープンとクローズなどが挙げられます。
 
-For more information on context managers, see コンテキストマネージャ Python Library
-Reference (XXX reference: ../lib/lib.html). にある "Context Types (XXX reference:
-../lib/typecontextmanager.html)" を参照してください。
+コンテキストマネージャについてのさらなる情報については、 :ref:`typecontextmanager` を参照してください。
 
 
-.. method:: context manager.__enter__(self)
+.. method:: object.__enter__(self)
 
    コンテキストマネージャのの入り口で実行される処理です。 :keyword:`with` 文は、文の :keyword:`as` 節で規定された値を返す
    このメソッドを呼び出します。
 
 
-.. method:: context manager.__exit__(self, exc_type, exc_value, traceback)
+.. method:: object.__exit__(self, exc_type, exc_value, traceback)
 
    コンテキストマネージャの出口で実行される処理です。パラメータは、コンテキストが終了した原因となった例外について説明しています。
    コンテキストが例外を送出せず終了した場合は、全ての引き数に :const:`None` が設定されます。
@@ -1914,15 +1988,127 @@ Reference (XXX reference: ../lib/lib.html). にある "Context Types (XXX refere
    :pep:`0343` - The "with" statement
       Python の :keyword:`with` 文の仕様、背景、および例が記載されています。
 
-.. rubric:: Footnotes
 
-.. [#] Python 2.2 以降、型とクラスの段階的な統合が始まっているため、このドキュメントで主張されている内容が 100% 正確で完全と
-   いうわけではなくなりました: 例えば、場合によっては、ある管理された条件下でなら、オブジェクトの型を *変更することができます* 。
-   このマニュアルに大幅な改訂が施されるまでは、このドキュメントでの記述は、"旧クラス型 (classic class)" に関してのみ
-   信頼できる内容と考えねばなりません。Python 2.2 および 2.3 では、互換性のためにクラシックなクラスがまだデフォルトとなっています。
-   更なる情報は`<http://www.python.org/doc/newstyle.html>`_を参照してください。
+.. _old-style-special-lookup:
 
-.. [#] この部分およびそれ以外の説明は、新スタイルクラスのインスタンスについても概ね当てはまります。
+旧スタイルクラスの特殊メソッド検索
+-------------------------------------------
+
+旧スタイルクラスにおいて、特殊メソッドは常に他のメソッドや属性と同じ方法で
+検索されます。
+これは、メソッドが ``x.__getitem__(i)`` のように明示的に検索された時も、
+``x[i]`` のように暗黙的に検索された時も同じです。
+
+This behaviour means that special methods may exhibit different behaviour
+for different instances of a single old-style class if the appropriate
+special attributes are set differently:
+
+これにより、1つの旧スタイルクラスの異なるインスタンスが、それぞれ
+別の適切な特殊属性を持っている場合、異なる動作をすることになります。 ::
+
+   >>> class C:
+   ...     pass
+   ...
+   >>> c1 = C()
+   >>> c2 = C()
+   >>> c1.__len__ = lambda: 5
+   >>> c2.__len__ = lambda: 9
+   >>> len(c1)
+   5
+   >>> len(c2)
+   9
+
+
+.. _new-style-special-lookup:
+
+新スタイルクラスの特殊メソッド検索
+-------------------------------------------
+
+新スタイルクラスでは、特殊メソッドの暗黙的な呼び出しは、オブジェクトインスタンスの辞書ではなく、
+type の辞書で定義されているときにのみ正しく動作することが保証されます。
+この動作は、以下のコードが(旧スタイルクラスの同等な例と異なり)例外を発生させる理由です。 ::
+
+   >>> class C(object):
+   ...     pass
+   ...
+   >>> c = C()
+   >>> c.__len__ = lambda: 5
+   >>> len(c)
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   TypeError: object of type 'C' has no len()
+
+この動作の背景となる理由は、 :meth:`__hash__` と :meth:`__repr__` といった
+type オブジェクトを含むすべてのオブジェクトで定義されている特殊メソッドにあります。
+これらのメソッドの暗黙の検索が通常の検索プロセスを使った場合、
+type オブジェクト自体に対して実行されたときに失敗してしまいます。
+
+::
+
+   >>> 1.__hash__() == hash(1)
+   True
+   >>> int.__hash__() == hash(int)
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   TypeError: descriptor '__hash__' of 'int' object needs an argument
+
+クラスの非結合メソッドをこのようにして実行しようとすることは、
+'metaclass confusion' と呼ばれることもあり、特殊メソッドを検索するときは
+インスタンスをバイパスすることで回避されます。
+
+::
+
+   >>> type(1).__hash__(1) == hash(1)
+   True
+   >>> type(int).__hash__(int) == hash(int)
+   True
+
+正確性のためにインスタンス属性をスキップするのに加えて、
+特殊メソッド検索はオブジェクトのメタクラスを含めて、 :meth:`__getattribute__`
+メソッドもバイパスします。
+
+::
+
+   >>> class Meta(type):
+   ...    def __getattribute__(*args):
+   ...       print "Metaclass getattribute invoked"
+   ...       return type.__getattribute__(*args)
+   ...
+   >>> class C(object):
+   ...     __metaclass__ = Meta
+   ...     def __len__(self):
+   ...         return 10
+   ...     def __getattribute__(*args):
+   ...         print "Class getattribute invoked"
+   ...         return object.__getattribute__(*args)
+   ...
+   >>> c = C()
+   >>> c.__len__()                 # Explicit lookup via instance
+   Class getattribute invoked
+   10
+   >>> type(c).__len__(c)          # Explicit lookup via type
+   Metaclass getattribute invoked
+   10
+   >>> len(c)                      # Implicit lookup
+   10
+
+このように :meth:`__getattribute__` 機構をバイパスすることで、
+特殊メソッドの扱いに関するある程度の自由度(特殊メソッドはインタプリタから
+確実に実行されるためにクラスオブジェクトに設定 *しなければならない。*)と引き換えに、
+インタープリタを高速化するための大きな余地を手に入れています。
+
+.. rubric:: 脚注
+
+.. [#] 特定の条件が満たされた場合、オブジェクトの type を変更することが *できます* 。
+   これは、正しく扱われなかった場合にとても奇妙な動作を引き起こすので、
+   一般的には良い考えではありません。
+
+.. [#] ディスクリプタは :meth:`__get__`, :meth:`__set__`, :meth:`__delete__` の
+   任意の組み合わせで定義することができます。
+   :meth:`__get__` を定義していない場合、その属性へのアクセスはインスタンスに対してであっても
+   ディスクリプタ自体を返します。
+   ディスクリプタが :meth:`__set__` かつ/または :meth:`__delete__` を定義していた場合、
+   これはデータディスクリプタで、両方とも定義されていない場合は非データディスクリプタです。
 
 .. [#] 同じ型の操作に対しては、（:meth:`__add__`のような）逆転できないメソッドが失敗した時と同じような想定のもと処理されます。
    これは、逆転したメソッドを呼び出すことができないからです。
