@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/slice.rst'
 --- Doc/c-api/slice.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/slice.rst	2010-11-17 12:18:12 +0000
-@@ -22,35 +22,47 @@
+@@ -9,48 +9,60 @@
+ .. cvar:: PyTypeObject PySlice_Type
+ 
+    .. index:: single: SliceType (in module types)
+ 
+    The type object for slice objects.  This is the same as ``slice`` and
+    ``types.SliceType``.
+ 
+ 
+ .. cfunction:: int PySlice_Check(PyObject *ob)
+ 
+    Return true if *ob* is a slice object; *ob* must not be *NULL*.
+ 
+ 
  .. cfunction:: PyObject* PySlice_New(PyObject *start, PyObject *stop, PyObject *step)
  
     Return a new slice object with the given values.  The *start*, *stop*, and
@@ -20,7 +33,9 @@
     Retrieve the start, stop and step indices from the slice object *slice*,
 -   assuming a sequence of length *length*. Treats indices greater than *length* as
 -   errors.
--
++   assuming a sequence of length *length*. Treats indices greater than
++   *length* as errors.
+ 
 -   Returns 0 on success and -1 on error with no exception set (unless one of the
 -   indices was not :const:`None` and failed to be converted to an integer, in which
 -   case -1 is returned with an exception set).
@@ -29,9 +44,6 @@
 -   in versions of Python prior to 2.3, you would probably do well to incorporate
 -   the source of :cfunc:`PySlice_GetIndicesEx`, suitably renamed, in the source of
 -   your extension.
-+   assuming a sequence of length *length*. Treats indices greater than
-+   *length* as errors.
-+
 +   Returns 0 on success and -1 on error with no exception set (unless one of
 +   the indices was not :const:`None` and failed to be converted to an integer,
 +   in which case -1 is returned with an exception set).

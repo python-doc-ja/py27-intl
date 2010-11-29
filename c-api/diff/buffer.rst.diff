@@ -1,7 +1,19 @@
 === modified file 'Doc/c-api/buffer.rst'
 --- Doc/c-api/buffer.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/buffer.rst	2010-11-17 12:18:12 +0000
-@@ -13,9 +13,10 @@
+@@ -1,119 +1,419 @@
+ .. highlightlang:: c
+ 
+ .. _bufferobjects:
+ 
+ Buffer Objects
+ --------------
+ 
+ .. sectionauthor:: Greg Stein <gstein@lyra.org>
+ 
+ 
+ .. index::
+    object: buffer
     single: buffer interface
  
  Python objects implemented in C can export a group of functions called the
@@ -15,7 +27,12 @@
  
  Two examples of objects that support the buffer interface are strings and
  arrays. The string object exposes the character contents in the buffer
-@@ -28,25 +29,300 @@
+ interface's byte-oriented form. An array can also expose its contents, but it
+ should be noted that array elements may be multi-byte values.
+ 
+ An example user of the buffer interface is the file object's :meth:`write`
+ method. Any object that can export a series of bytes through the buffer
+ interface can be written to a file. There are a number of format codes to
  :cfunc:`PyArg_ParseTuple` that operate against an object's buffer interface,
  returning data from the target object.
  
@@ -326,7 +343,20 @@
  
  
  .. ctype:: PyBufferObject
-@@ -67,9 +343,10 @@
+ 
+    This subtype of :ctype:`PyObject` represents a buffer object.
+ 
+ 
+ .. cvar:: PyTypeObject PyBuffer_Type
+ 
+    .. index:: single: BufferType (in module types)
+ 
+    The instance of :ctype:`PyTypeObject` which represents the Python buffer type;
+    it is the same object as ``buffer`` and  ``types.BufferType`` in the Python
+    layer. .
+ 
+ 
+ .. cvar:: int Py_END_OF_BUFFER
  
     This constant may be passed as the *size* parameter to
     :cfunc:`PyBuffer_FromObject` or :cfunc:`PyBuffer_FromReadWriteObject`.  It
@@ -340,7 +370,9 @@
  
  
  .. cfunction:: int PyBuffer_Check(PyObject *p)
-@@ -79,41 +356,64 @@
+ 
+    Return true if the argument has type :cdata:`PyBuffer_Type`.
+ 
  
  .. cfunction:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
  

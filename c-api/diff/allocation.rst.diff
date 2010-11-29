@@ -1,7 +1,17 @@
 === modified file 'Doc/c-api/allocation.rst'
 --- Doc/c-api/allocation.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/allocation.rst	2010-11-17 12:18:12 +0000
-@@ -11,16 +11,21 @@
+@@ -1,104 +1,122 @@
+ .. highlightlang:: c
+ 
+ .. _allocating-objects:
+ 
+ Allocating Objects on the Heap
+ ==============================
+ 
+ 
+ .. cfunction:: PyObject* _PyObject_New(PyTypeObject *type)
+ 
  
  .. cfunction:: PyVarObject* _PyObject_NewVar(PyTypeObject *type, Py_ssize_t size)
  
@@ -27,7 +37,7 @@
  
  
  .. cfunction:: PyVarObject* PyObject_InitVar(PyVarObject *op, PyTypeObject *type, Py_ssize_t size)
-@@ -28,77 +33,90 @@
+ 
     This does everything :cfunc:`PyObject_Init` does, and also initializes the
     length information for a variable-size object.
  

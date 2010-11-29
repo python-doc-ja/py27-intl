@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/dict.rst'
 --- Doc/c-api/dict.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/dict.rst	2010-11-17 12:18:12 +0000
-@@ -19,8 +19,9 @@
+@@ -6,215 +6,228 @@
+ ------------------
+ 
+ .. index:: object: dictionary
+ 
+ 
+ .. ctype:: PyDictObject
+ 
+    This subtype of :ctype:`PyObject` represents a Python dictionary object.
+ 
+ 
+ .. cvar:: PyTypeObject PyDict_Type
+ 
+    .. index::
        single: DictType (in module types)
        single: DictionaryType (in module types)
  
@@ -13,7 +26,13 @@
  
  
  .. cfunction:: int PyDict_Check(PyObject *p)
-@@ -34,8 +35,8 @@
+ 
+    Return true if *p* is a dict object or an instance of a subtype of the dict
+    type.
+ 
+    .. versionchanged:: 2.2
+       Allowed subtypes to be accepted.
+ 
  
  .. cfunction:: int PyDict_CheckExact(PyObject *p)
  
@@ -24,7 +43,11 @@
  
     .. versionadded:: 2.4
  
-@@ -47,9 +48,9 @@
+ 
+ .. cfunction:: PyObject* PyDict_New()
+ 
+    Return a new empty dictionary, or *NULL* on failure.
+ 
  
  .. cfunction:: PyObject* PyDictProxy_New(PyObject *dict)
  
@@ -37,7 +60,11 @@
  
     .. versionadded:: 2.2
  
-@@ -61,9 +62,9 @@
+ 
+ .. cfunction:: void PyDict_Clear(PyObject *p)
+ 
+    Empty an existing dictionary of all key-value pairs.
+ 
  
  .. cfunction:: int PyDict_Contains(PyObject *p, PyObject *key)
  
@@ -50,7 +77,14 @@
  
     .. versionadded:: 2.4
  
-@@ -78,24 +79,25 @@
+ 
+ .. cfunction:: PyObject* PyDict_Copy(PyObject *p)
+ 
+    Return a new dictionary that contains the same key-value pairs as *p*.
+ 
+    .. versionadded:: 1.6
+ 
+ 
  .. cfunction:: int PyDict_SetItem(PyObject *p, PyObject *key, PyObject *val)
  
     Insert *value* into the dictionary *p* with a key of *key*.  *key* must be
@@ -84,7 +118,10 @@
  
  
  .. cfunction:: int PyDict_DelItemString(PyObject *p, char *key)
-@@ -106,8 +108,8 @@
+ 
+    Remove the entry in dictionary *p* which has a key specified by the string
+    *key*.  Return ``0`` on success or ``-1`` on failure.
+ 
  
  .. cfunction:: PyObject* PyDict_GetItem(PyObject *p, PyObject *key)
  
@@ -95,7 +132,10 @@
  
  
  .. cfunction:: PyObject* PyDict_GetItemString(PyObject *p, const char *key)
-@@ -118,41 +120,46 @@
+ 
+    This is the same as :cfunc:`PyDict_GetItem`, but *key* is specified as a
+    :ctype:`char\*`, rather than a :ctype:`PyObject\*`.
+ 
  
  .. cfunction:: PyObject* PyDict_Items(PyObject *p)
  
@@ -159,7 +199,11 @@
  
     For example::
  
-@@ -164,9 +171,10 @@
+       PyObject *key, *value;
+       Py_ssize_t pos = 0;
+ 
+       while (PyDict_Next(self->dict, &pos, &key, &value)) {
+           /* do something interesting with the values... */
            ...
        }
  
@@ -173,7 +217,16 @@
  
        PyObject *key, *value;
        Py_ssize_t pos = 0;
-@@ -183,15 +191,19 @@
+ 
+       while (PyDict_Next(self->dict, &pos, &key, &value)) {
+           int i = PyInt_AS_LONG(value) + 1;
+           PyObject *o = PyInt_FromLong(i);
+           if (o == NULL)
+               return -1;
+           if (PyDict_SetItem(self->dict, key, o) < 0) {
+               Py_DECREF(o);
+               return -1;
+           }
            Py_DECREF(o);
        }
  
@@ -199,7 +252,14 @@
  
     .. versionadded:: 2.2
  
-@@ -206,11 +218,12 @@
+ 
+ .. cfunction:: int PyDict_Update(PyObject *a, PyObject *b)
+ 
+    This is the same as ``PyDict_Merge(a, b, 1)`` in C, or ``a.update(b)`` in
+    Python.  Return ``0`` on success or ``-1`` if an exception was raised.
+ 
+    .. versionadded:: 2.2
+ 
  
  .. cfunction:: int PyDict_MergeFromSeq2(PyObject *a, PyObject *seq2, int override)
  
@@ -217,4 +277,8 @@
  
        def PyDict_MergeFromSeq2(a, seq2, override):
            for key, value in seq2:
+               if override or key not in a:
+                   a[key] = value
+ 
+    .. versionadded:: 2.2
 

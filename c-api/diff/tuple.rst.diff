@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/tuple.rst'
 --- Doc/c-api/tuple.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/tuple.rst	2010-11-17 12:18:12 +0000
-@@ -42,6 +42,10 @@
+@@ -29,89 +29,136 @@
+    .. versionchanged:: 2.2
+       Allowed subtypes to be accepted.
+ 
+ 
+ .. cfunction:: int PyTuple_CheckExact(PyObject *p)
+ 
+    Return true if *p* is a tuple object, but not an instance of a subtype of the
+    tuple type.
+ 
+    .. versionadded:: 2.2
+ 
+ 
+ .. cfunction:: PyObject* PyTuple_New(Py_ssize_t len)
  
     Return a new tuple object of size *len*, or *NULL* on failure.
  
@@ -12,7 +25,9 @@
  
  .. cfunction:: PyObject* PyTuple_Pack(Py_ssize_t n, ...)
  
-@@ -51,34 +55,58 @@
+    Return a new tuple object of size *n*, or *NULL* on failure. The tuple values
+    are initialized to the subsequent *n* C arguments pointing to Python objects.
+    ``PyTuple_Pack(2, a, b)`` is equivalent to ``Py_BuildValue("(OO)", a, b)``.
  
     .. versionadded:: 2.4
  
@@ -71,7 +86,10 @@
  
  .. cfunction:: int PyTuple_SetItem(PyObject *p, Py_ssize_t pos, PyObject *o)
  
-@@ -89,6 +117,10 @@
+    Insert a reference to object *o* at position *pos* of the tuple pointed to by
+    *p*. Return ``0`` on success.
+ 
+    .. note::
  
        This function "steals" a reference to *o*.
  
@@ -82,7 +100,10 @@
  
  .. cfunction:: void PyTuple_SET_ITEM(PyObject *p, Py_ssize_t pos, PyObject *o)
  
-@@ -99,6 +131,10 @@
+    Like :cfunc:`PyTuple_SetItem`, but does no error checking, and should *only* be
+    used to fill in brand new tuples.
+ 
+    .. note::
  
        This function "steals" a reference to *o*.
  
@@ -93,7 +114,16 @@
  
  .. cfunction:: int _PyTuple_Resize(PyObject **p, Py_ssize_t newsize)
  
-@@ -115,3 +151,14 @@
+    Can be used to resize a tuple.  *newsize* will be the new length of the tuple.
+    Because tuples are *supposed* to be immutable, this should only be used if there
+    is only one reference to the object.  Do *not* use this if the tuple may already
+    be known to some other part of the code.  The tuple will always grow or shrink
+    at the end.  Think of this as destroying the old tuple and creating a new one,
+    only more efficiently.  Returns ``0`` on success. Client code should never
+    assume that the resulting value of ``*p`` will be the same as before calling
+    this function. If the object referenced by ``*p`` is replaced, the original
+    ``*p`` is destroyed.  On failure, returns ``-1`` and sets ``*p`` to *NULL*, and
+    raises :exc:`MemoryError` or :exc:`SystemError`.
  
     .. versionchanged:: 2.2
        Removed unused third parameter, *last_is_sticky*.

@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/list.rst'
 --- Doc/c-api/list.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/list.rst	2010-11-17 12:18:12 +0000
-@@ -15,10 +15,8 @@
+@@ -2,146 +2,188 @@
+ 
+ .. _listobjects:
+ 
+ List Objects
+ ------------
+ 
+ .. index:: object: list
+ 
+ 
+ .. ctype:: PyListObject
+ 
+    This subtype of :ctype:`PyObject` represents a Python list object.
+ 
  
  .. cvar:: PyTypeObject PyList_Type
  
@@ -14,7 +27,13 @@
  
  
  .. cfunction:: int PyList_Check(PyObject *p)
-@@ -32,8 +30,8 @@
+ 
+    Return true if *p* is a list object or an instance of a subtype of the list
+    type.
+ 
+    .. versionchanged:: 2.2
+       Allowed subtypes to be accepted.
+ 
  
  .. cfunction:: int PyList_CheckExact(PyObject *p)
  
@@ -25,7 +44,10 @@
  
     .. versionadded:: 2.2
  
-@@ -44,10 +42,14 @@
+ 
+ .. cfunction:: PyObject* PyList_New(Py_ssize_t len)
+ 
+    Return a new list of length *len* on success, or *NULL* on failure.
  
     .. note::
  
@@ -44,7 +66,9 @@
  
  
  .. cfunction:: Py_ssize_t PyList_Size(PyObject *list)
-@@ -57,80 +59,120 @@
+ 
+    .. index:: builtin: len
+ 
     Return the length of the list object in *list*; this is equivalent to
     ``len(list)`` on a list object.
  
@@ -191,4 +215,15 @@
  
  
  .. cfunction:: int PyList_Reverse(PyObject *list)
+ 
+    Reverse the items of *list* in place.  Return ``0`` on success, ``-1`` on
+    failure.  This is the equivalent of ``list.reverse()``.
+ 
+ 
+ .. cfunction:: PyObject* PyList_AsTuple(PyObject *list)
+ 
+    .. index:: builtin: tuple
+ 
+    Return a new tuple object containing the contents of *list*; equivalent to
+    ``tuple(list)``.
 

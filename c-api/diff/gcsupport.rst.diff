@@ -1,7 +1,15 @@
 === modified file 'Doc/c-api/gcsupport.rst'
 --- Doc/c-api/gcsupport.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/gcsupport.rst	2010-11-17 12:18:12 +0000
-@@ -9,7 +9,8 @@
+@@ -1,153 +1,165 @@
+ .. highlightlang:: c
+ 
+ .. _supporting-cycle-detection:
+ 
+ Supporting Cyclic Garbage Collection
+ ====================================
+ 
+ Python's support for detecting and collecting garbage which involves circular
  references requires support from object types which are "containers" for other
  objects which may also be containers.  Types which do not store references to
  other objects, or which only store references to atomic types (such as numbers
@@ -11,7 +19,13 @@
  
  .. An example showing the use of these interfaces can be found in "Supporting the
  .. Cycle Collector (XXX not found: ../ext/example-cycle-support.html)".
-@@ -23,13 +24,14 @@
+ 
+ To create a container type, the :attr:`tp_flags` field of the type object must
+ include the :const:`Py_TPFLAGS_HAVE_GC` and provide an implementation of the
+ :attr:`tp_traverse` handler.  If instances of the type are mutable, a
+ :attr:`tp_clear` implementation must also be provided.
+ 
+ 
  .. data:: Py_TPFLAGS_HAVE_GC
     :noindex:
  
@@ -30,20 +44,27 @@
  
  #. Once all the fields which may contain references to other containers are
     initialized, it must call :cfunc:`PyObject_GC_Track`.
-@@ -46,20 +48,28 @@
+ 
+ 
+ .. cfunction:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
+ 
+    Analogous to :cfunc:`PyObject_New` but for container objects with the
+    :const:`Py_TPFLAGS_HAVE_GC` flag set.
+ 
+ 
+ .. cfunction:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
+ 
     Analogous to :cfunc:`PyObject_NewVar` but for container objects with the
     :const:`Py_TPFLAGS_HAVE_GC` flag set.
  
--
--.. cfunction:: PyVarObject * PyObject_GC_Resize(PyVarObject *op, Py_ssize_t)
--
--   Resize an object allocated by :cfunc:`PyObject_NewVar`.  Returns the resized
--   object or *NULL* on failure.
 +   .. versionchanged:: 2.5
 +      This function used an :ctype:`int` type for *size*. This might require
 +      changes in your code for properly supporting 64-bit systems.
-+
-+
+ 
+-.. cfunction:: PyVarObject * PyObject_GC_Resize(PyVarObject *op, Py_ssize_t)
+ 
+-   Resize an object allocated by :cfunc:`PyObject_NewVar`.  Returns the resized
+-   object or *NULL* on failure.
 +.. cfunction:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 +
 +   Resize an object allocated by :cfunc:`PyObject_NewVar`.  Returns the
@@ -69,7 +90,25 @@
  
  
  .. cfunction:: void _PyObject_GC_TRACK(PyObject *op)
-@@ -85,10 +95,10 @@
+ 
+    A macro version of :cfunc:`PyObject_GC_Track`.  It should not be used for
+    extension modules.
+ 
+ Similarly, the deallocator for the object must conform to a similar pair of
+ rules:
+ 
+ #. Before fields which refer to other containers are invalidated,
+    :cfunc:`PyObject_GC_UnTrack` must be called.
+ 
+ #. The object's memory must be deallocated using :cfunc:`PyObject_GC_Del`.
+ 
+ 
+ .. cfunction:: void PyObject_GC_Del(void *op)
+ 
+    Releases memory allocated to an object using :cfunc:`PyObject_GC_New` or
+    :cfunc:`PyObject_GC_NewVar`.
+ 
+ 
  .. cfunction:: void PyObject_GC_UnTrack(void *op)
  
     Remove the object *op* from the set of container objects tracked by the
@@ -84,7 +123,12 @@
  
  
  .. cfunction:: void _PyObject_GC_UNTRACK(PyObject *op)
-@@ -101,11 +111,12 @@
+ 
+    A macro version of :cfunc:`PyObject_GC_UnTrack`.  It should not be used for
+    extension modules.
+ 
+ The :attr:`tp_traverse` handler accepts a function parameter of this type:
+ 
  
  .. ctype:: int (*visitproc)(PyObject *object, void *arg)
  
@@ -102,7 +146,8 @@
  
  The :attr:`tp_traverse` handler must have the following type:
  
-@@ -114,10 +125,10 @@
+ 
+ .. ctype:: int (*traverseproc)(PyObject *self, visitproc visit, void *arg)
  
     Traversal function for a container object.  Implementations must call the
     *visit* function for each object directly contained by *self*, with the
@@ -117,7 +162,8 @@
  
  To simplify writing :attr:`tp_traverse` handlers, a :cfunc:`Py_VISIT` macro is
  provided.  In order to use this macro, the :attr:`tp_traverse` implementation
-@@ -126,9 +137,9 @@
+ must name its arguments exactly *visit* and *arg*:
+ 
  
  .. cfunction:: void Py_VISIT(PyObject *o)
  
@@ -130,7 +176,11 @@
  
        static int
        my_traverse(Noddy *self, visitproc visit, void *arg)
-@@ -140,14 +151,15 @@
+       {
+           Py_VISIT(self->foo);
+           Py_VISIT(self->bar);
+           return 0;
+       }
  
     .. versionadded:: 2.4
  

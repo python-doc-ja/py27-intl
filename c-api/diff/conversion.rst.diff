@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/conversion.rst'
 --- Doc/c-api/conversion.rst	2008-01-19 22:14:27 +0000
 +++ Doc/c-api/conversion.rst	2010-11-17 12:18:12 +0000
-@@ -77,7 +77,7 @@
+@@ -64,40 +64,40 @@
+ 
+    See the Unix man page :manpage:`strtod(2)` for details.
+ 
+ 
+ .. cfunction:: char * PyOS_ascii_formatd(char *buffer, size_t buf_len, const char *format, double d)
+ 
+    Convert a :ctype:`double` to a string using the ``'.'`` as the decimal
+    separator. *format* is a :cfunc:`printf`\ -style format string specifying the
+    number format. Allowed conversion characters are ``'e'``, ``'E'``, ``'f'``,
+    ``'F'``, ``'g'`` and ``'G'``.
+ 
+    The return value is a pointer to *buffer* with the converted string or NULL if
+    the conversion failed.
  
     .. versionadded:: 2.4
  
@@ -10,7 +23,8 @@
  .. cfunction:: double PyOS_ascii_atof(const char *nptr)
  
     Convert a string to a :ctype:`double` in a locale-independent way.
-@@ -86,18 +86,18 @@
+ 
+    .. versionadded:: 2.4
  
     See the Unix man page :manpage:`atof(2)` for details.
  

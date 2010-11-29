@@ -1,7 +1,16 @@
 === modified file 'Doc/c-api/arg.rst'
 --- Doc/c-api/arg.rst	2008-01-19 22:14:27 +0000
 +++ Doc/c-api/arg.rst	2010-11-17 12:18:12 +0000
-@@ -10,120 +10,144 @@
+@@ -1,509 +1,559 @@
+ .. highlightlang:: c
+ 
+ .. _arg-parsing:
+ 
+ Parsing arguments and building values
+ =====================================
+ 
+ These functions are useful when creating your own extensions functions and
+ methods.  Additional information and examples are available in
  :ref:`extending-index`.
  
  The first three of these functions described, :cfunc:`PyArg_ParseTuple`,
@@ -38,8 +47,6 @@
 -   encoded string version of the object if such a conversion is possible.  All
 -   other read-buffer compatible objects pass back a reference to the raw internal
 -   data representation.
--
--``z`` (string or ``None``) [const char \*]
 +describes one Python object; it is usually a single character or a
 +parenthesized sequence of format units.  With a few exceptions, a format unit
 +that is not a parenthesized sequence normally corresponds to a single address
@@ -76,7 +83,8 @@
 +   the buffer even inside a ``Py_BEGIN_ALLOW_THREADS`` block; the caller is
 +   responsible for calling ``PyBuffer_Release`` with the structure after it
 +   has processed the data.
-+
+ 
+-``z`` (string or ``None``) [const char \*]
 +   .. versionadded:: 2.6
 +
 +``z`` (string, Unicode  or ``None``) [const char \*]
@@ -138,8 +146,6 @@
 -   encoded data into this buffer and adjust *\*buffer* to reference the newly
 -   allocated storage.  The caller is responsible for calling :cfunc:`PyMem_Free` to
 -   free the allocated buffer after use.
--
--``et`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
 +   must be a :ctype:`const char\*` which points to the name of an encoding as
 +   a NUL-terminated string, or *NULL*, in which case the default encoding is
 +   used.  An exception is raised if the named encoding is not known to Python.
@@ -152,12 +158,15 @@
 +   the encoded data into this buffer and adjust *\*buffer* to reference the
 +   newly allocated storage.  The caller is responsible for calling
 +   :cfunc:`PyMem_Free` to free the allocated buffer after use.
-+
+ 
+-``et`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
 +``et`` (string, Unicode or character buffer compatible object) [const char \*encoding, char \*\*buffer]
     Same as ``es`` except that 8-bit string objects are passed through without
 -   recoding them.  Instead, the implementation assumes that the string object uses
 -   the encoding passed in as parameter.
--
++   recoding them.  Instead, the implementation assumes that the string object
++   uses the encoding passed in as parameter.
+ 
 -``es#`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
 -   This variant on ``s#`` is used for encoding Unicode and objects convertible to
 -   Unicode into a character buffer.  Unlike the ``es`` format, this variant allows
@@ -172,9 +181,6 @@
 -   The text will be encoded in the encoding specified by the first argument.
 -   The third argument must be a pointer to an integer; the referenced integer
 -   will be set to the number of bytes in the output buffer.
-+   recoding them.  Instead, the implementation assumes that the string object
-+   uses the encoding passed in as parameter.
-+
 +``es#`` (string, Unicode or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
 +   This variant on ``s#`` is used for encoding Unicode and objects convertible
 +   to Unicode into a character buffer.  Unlike the ``es`` format, this variant
@@ -238,7 +244,7 @@
  
     .. versionadded:: 2.3
  
-@@ -131,8 +155,8 @@
+ ``h`` (integer) [short int]
     Convert a Python integer to a C :ctype:`short int`.
  
  ``H`` (integer) [unsigned short int]
@@ -249,7 +255,16 @@
  
     .. versionadded:: 2.3
  
-@@ -149,20 +173,21 @@
+ ``i`` (integer) [int]
+    Convert a Python integer to a plain C :ctype:`int`.
+ 
+ ``I`` (integer) [unsigned int]
+    Convert a Python integer to a C :ctype:`unsigned int`, without overflow
+    checking.
+ 
+    .. versionadded:: 2.3
+ 
+ ``l`` (integer) [long int]
     Convert a Python integer to a C :ctype:`long int`.
  
  ``k`` (integer) [unsigned long]
@@ -276,7 +291,22 @@
  
     .. versionadded:: 2.3
  
-@@ -185,97 +210,104 @@
+ ``n`` (integer) [Py_ssize_t]
+    Convert a Python integer or long integer to a C :ctype:`Py_ssize_t`.
+ 
+    .. versionadded:: 2.5
+ 
+ ``c`` (string of length 1) [char]
+    Convert a Python character, represented as a string of length 1, to a C
+    :ctype:`char`.
+ 
+ ``f`` (float) [float]
+    Convert a Python floating point number to a C :ctype:`float`.
+ 
+ ``d`` (float) [double]
+    Convert a Python floating point number to a C :ctype:`double`.
+ 
+ ``D`` (complex) [Py_complex]
     Convert a Python complex number to a C :ctype:`Py_complex` structure.
  
  ``O`` (object) [PyObject \*]
@@ -432,7 +462,7 @@
     ``;`` mutually exclude each other.
  
  Note that any Python object references which are provided to the caller are
-@@ -283,26 +315,29 @@
+ *borrowed* references; do not decrement their reference count!
  
  Additional arguments passed to these functions must be addresses of variables
  whose type is determined by the format string; these are used to store values
@@ -470,7 +500,17 @@
  
  
  .. cfunction:: int PyArg_ParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], ...)
-@@ -320,32 +355,33 @@
+ 
+    Parse the parameters of a function that takes both positional and keyword
+    parameters into local variables.  Returns true on success; on failure, it
+    returns false and raises the appropriate exception.
+ 
+ 
+ .. cfunction:: int PyArg_VaParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], va_list vargs)
+ 
+    Identical to :cfunc:`PyArg_ParseTupleAndKeywords`, except that it accepts a
+    va_list rather than a variable number of arguments.
+ 
  
  .. cfunction:: int PyArg_Parse(PyObject *args, const char *format, ...)
  
@@ -524,7 +564,14 @@
  
        static PyObject *
        weakref_ref(PyObject *self, PyObject *args)
-@@ -360,50 +396,56 @@
+       {
+           PyObject *object;
+           PyObject *callback = NULL;
+           PyObject *result = NULL;
+ 
+           if (PyArg_UnpackTuple(args, "ref", 1, 2, &object, &callback)) {
+               result = PyWeakref_NewRef(object, callback);
+           }
            return result;
        }
  
@@ -584,14 +631,15 @@
 -   In the following description, the quoted form is the format unit; the entry in
 -   (round) parentheses is the Python object type that the format unit will return;
 -   and the entry in [square] brackets is the type of the C value(s) to be passed.
+-
+-   The characters space, tab, colon and comma are ignored in format strings (but
+-   not within format units such as ``s#``).  This can be used to make long format
+-   strings a tad more readable.
 +   In the following description, the quoted form is the format unit; the entry
 +   in (round) parentheses is the Python object type that the format unit will
 +   return; and the entry in [square] brackets is the type of the C value(s) to
 +   be passed.
- 
--   The characters space, tab, colon and comma are ignored in format strings (but
--   not within format units such as ``s#``).  This can be used to make long format
--   strings a tad more readable.
++
 +   The characters space, tab, colon and comma are ignored in format strings
 +   (but not within format units such as ``s#``).  This can be used to make
 +   long format strings a tad more readable.
@@ -610,7 +658,8 @@
  
     ``z`` (string or ``None``) [char \*]
        Same as ``s``.
-@@ -412,13 +454,14 @@
+ 
+    ``z#`` (string or ``None``) [char \*, int]
        Same as ``s#``.
  
     ``u`` (Unicode string) [Py_UNICODE \*]
@@ -630,7 +679,20 @@
  
     ``i`` (integer) [int]
        Convert a plain C :ctype:`int` to a Python integer object.
-@@ -439,20 +482,20 @@
+ 
+    ``b`` (integer) [char]
+       Convert a plain C :ctype:`char` to a Python integer object.
+ 
+    ``h`` (integer) [short int]
+       Convert a plain C :ctype:`short int` to a Python integer object.
+ 
+    ``l`` (integer) [long int]
+       Convert a C :ctype:`long int` to a Python integer object.
+ 
+    ``B`` (integer) [unsigned char]
+       Convert a C :ctype:`unsigned char` to a Python integer object.
+ 
+    ``H`` (integer) [unsigned short int]
        Convert a C :ctype:`unsigned short int` to a Python integer object.
  
     ``I`` (integer/long) [unsigned int]
@@ -659,7 +721,7 @@
  
     ``n`` (int) [Py_ssize_t]
        Convert a C :ctype:`Py_ssize_t` to a Python integer or long integer.
-@@ -460,8 +503,8 @@
+ 
        .. versionadded:: 2.5
  
     ``c`` (string of length 1) [char]
@@ -670,7 +732,12 @@
  
     ``d`` (float) [double]
        Convert a C :ctype:`double` to a Python floating point number.
-@@ -474,36 +517,43 @@
+ 
+    ``f`` (float) [float]
+       Same as ``d``.
+ 
+    ``D`` (complex) [Py_complex \*]
+       Convert a C :ctype:`Py_complex` structure to a Python complex number.
  
     ``O`` (object) [PyObject \*]
        Pass a Python object untouched (except for its reference count, which is
@@ -720,9 +787,6 @@
 -      Convert a sequence of C values to a Python dictionary.  Each pair of consecutive
 -      C values adds one item to the dictionary, serving as key and value,
 -      respectively.
--
--   If there is an error in the format string, the :exc:`SystemError` exception is
--   set and *NULL* returned.
 +      Convert a sequence of C values to a Python dictionary.  Each pair of
 +      consecutive C values adds one item to the dictionary, serving as key and
 +      value, respectively.
@@ -731,7 +795,9 @@
 +   is set and *NULL* returned.
 +
 +.. cfunction:: PyObject* Py_VaBuildValue(const char *format, va_list vargs)
-+
+ 
+-   If there is an error in the format string, the :exc:`SystemError` exception is
+-   set and *NULL* returned.
 +   Identical to :cfunc:`Py_BuildValue`, except that it accepts a va_list
 +   rather than a variable number of arguments.
 

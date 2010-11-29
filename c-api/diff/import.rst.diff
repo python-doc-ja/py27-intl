@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/import.rst'
 --- Doc/c-api/import.rst	2008-01-19 22:14:27 +0000
 +++ Doc/c-api/import.rst	2010-11-17 12:18:12 +0000
-@@ -28,10 +28,10 @@
+@@ -15,100 +15,100 @@
+ 
+    This is a simplified interface to :cfunc:`PyImport_ImportModuleEx` below,
+    leaving the *globals* and *locals* arguments set to *NULL* and *level* set
+    to 0.  When the *name*
+    argument contains a dot (when it specifies a submodule of a package), the
+    *fromlist* argument is set to the list ``['*']`` so that the return value is the
+    named module rather than the top-level package containing it as would otherwise
+    be the case.  (Unfortunately, this has an additional side effect when *name* in
+    fact specifies a subpackage instead of a submodule: the submodules specified in
+    the package's ``__all__`` variable are  loaded.)  Return a new reference to the
+    imported module, or *NULL* with an exception set on failure.  Before Python 2.4,
+    the module may still be created in the failure case --- examine ``sys.modules``
+    to find out.  Starting with Python 2.4, a failing import of a module no longer
     leaves the module in ``sys.modules``.
  
     .. versionchanged:: 2.4
@@ -14,7 +27,30 @@
  
  
  .. cfunction:: PyObject* PyImport_ImportModuleNoBlock(const char *name)
-@@ -62,7 +62,7 @@
+ 
+    This version of :cfunc:`PyImport_ImportModule` does not block. It's intended
+    to be used in C functions that import other modules to execute a function.
+    The import may block if another thread holds the import lock. The function
+    :cfunc:`PyImport_ImportModuleNoBlock` never blocks. It first tries to fetch
+    the module from sys.modules and falls back to :cfunc:`PyImport_ImportModule`
+    unless the lock is held, in which case the function will raise an
+    :exc:`ImportError`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: PyObject* PyImport_ImportModuleEx(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist)
+ 
+    .. index:: builtin: __import__
+ 
+    Import a module.  This is best described by referring to the built-in Python
+    function :func:`__import__`, as the standard :func:`__import__` function calls
+    this function directly.
+ 
+    The return value is a new reference to the imported module or top-level package,
+    or *NULL* with an exception set on failure (before Python 2.4, the module may
+    still be created in this case).  Like for :func:`__import__`, the return value
+    when a submodule of a package was requested is normally the top-level package,
     unless a non-empty *fromlist* was given.
  
     .. versionchanged:: 2.4
@@ -23,7 +59,32 @@
  
     .. versionchanged:: 2.6
        The function is an alias for :cfunc:`PyImport_ImportModuleLevel` with
-@@ -95,7 +95,7 @@
+       -1 as level, meaning relative import.
+ 
+ 
+ .. cfunction:: PyObject* PyImport_ImportModuleLevel(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist, int level)
+ 
+    Import a module.  This is best described by referring to the built-in Python
+    function :func:`__import__`, as the standard :func:`__import__` function calls
+    this function directly.
+ 
+    The return value is a new reference to the imported module or top-level package,
+    or *NULL* with an exception set on failure.  Like for :func:`__import__`,
+    the return value when a submodule of a package was requested is normally the
+    top-level package, unless a non-empty *fromlist* was given.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. cfunction:: PyObject* PyImport_Import(PyObject *name)
+ 
+    .. index::
+       module: rexec
+       module: ihooks
+ 
+    This is a higher-level interface that calls the current "import hook function".
+    It invokes the :func:`__import__` function from the ``__builtins__`` of the
+    current globals.  This means that the import is done using whatever import hooks
     are installed in the current environment, e.g. by :mod:`rexec` or :mod:`ihooks`.
  
     .. versionchanged:: 2.6
@@ -32,7 +93,33 @@
  
  
  .. cfunction:: PyObject* PyImport_ReloadModule(PyObject *m)
-@@ -138,6 +138,9 @@
+ 
+    .. index:: builtin: reload
+ 
+    Reload a module.  This is best described by referring to the built-in Python
+    function :func:`reload`, as the standard :func:`reload` function calls this
+    function directly.  Return a new reference to the reloaded module, or *NULL*
+    with an exception set on failure (the module still exists in this case).
+ 
+ 
+ .. cfunction:: PyObject* PyImport_AddModule(const char *name)
+ 
+    Return the module object corresponding to a module name.  The *name* argument
+    may be of the form ``package.module``. First check the modules dictionary if
+@@ -125,55 +125,77 @@
+ 
+ .. cfunction:: PyObject* PyImport_ExecCodeModule(char *name, PyObject *co)
+ 
+    .. index:: builtin: compile
+ 
+    Given a module name (possibly of the form ``package.module``) and a code object
+    read from a Python bytecode file or obtained from the built-in function
+    :func:`compile`, load the module.  Return a new reference to the module object,
+    or *NULL* with an exception set if an error occurred.  Before Python 2.4, the
+    module could still be created in error cases.  Starting with Python 2.4, *name*
+    is removed from :attr:`sys.modules` in error cases, and even if *name* was already
+    in :attr:`sys.modules` on entry to :cfunc:`PyImport_ExecCodeModule`.  Leaving
+    incompletely initialized modules in :attr:`sys.modules` is dangerous, as imports of
     such modules have no way to know that the module object is an unknown (and
     probably damaged with respect to the module author's intents) state.
  
@@ -42,7 +129,10 @@
     This function will reload the module if it was already imported.  See
     :cfunc:`PyImport_ReloadModule` for the intended way to reload a module.
  
-@@ -148,6 +151,12 @@
+    If *name* points to a dotted name of the form ``package.module``, any package
+    structures not already created will still not be created.
+ 
+    .. versionchanged:: 2.4
        *name* is removed from :attr:`sys.modules` in error cases.
  
  
@@ -55,7 +145,13 @@
  .. cfunction:: long PyImport_GetMagicNumber()
  
     Return the magic number for Python bytecode files (a.k.a. :file:`.pyc` and
-@@ -161,6 +170,19 @@
+    :file:`.pyo` files).  The magic number should be present in the first four bytes
+    of the bytecode file, in little-endian byte order.
+ 
+ 
+ .. cfunction:: PyObject* PyImport_GetModuleDict()
+ 
+    Return the dictionary used for the module administration (a.k.a.
     ``sys.modules``).  Note that this is a per-interpreter variable.
  
  
@@ -75,4 +171,17 @@
  .. cfunction:: void _PyImport_Init()
  
     Initialize the import mechanism.  For internal use only.
+ 
+ 
+ .. cfunction:: void PyImport_Cleanup()
+ 
+    Empty the module table.  For internal use only.
+ 
+ 
+ .. cfunction:: void _PyImport_Fini()
+ 
+    Finalize the import mechanism.  For internal use only.
+ 
+ 
+ .. cfunction:: PyObject* _PyImport_FindExtension(char *, char *)
 

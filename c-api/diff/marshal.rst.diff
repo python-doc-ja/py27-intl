@@ -1,7 +1,11 @@
 === modified file 'Doc/c-api/marshal.rst'
 --- Doc/c-api/marshal.rst	2008-01-19 22:14:27 +0000
 +++ Doc/c-api/marshal.rst	2010-11-17 12:18:12 +0000
-@@ -5,24 +5,26 @@
+@@ -1,93 +1,100 @@
+ .. highlightlang:: c
+ 
+ .. _marshalling-utils:
+ 
  Data marshalling support
  ========================
  
@@ -39,7 +43,24 @@
  
     .. versionchanged:: 2.4
        *version* indicates the file format.
-@@ -47,24 +49,24 @@
+ 
+ 
+ .. cfunction:: void PyMarshal_WriteObjectToFile(PyObject *value, FILE *file, int version)
+ 
+    Marshal a Python object, *value*, to *file*.
+ 
+    .. versionchanged:: 2.4
+       *version* indicates the file format.
+ 
+ 
+ .. cfunction:: PyObject* PyMarshal_WriteObjectToString(PyObject *value, int version)
+ 
+    Return a string object containing the marshalled representation of *value*.
+ 
+    .. versionchanged:: 2.4
+       *version* indicates the file format.
+ 
+ 
  The following functions allow marshalled values to be read back in.
  
  XXX What about error detection?  It appears that reading past the end of the
@@ -74,7 +95,12 @@
  
  
  .. cfunction:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
-@@ -77,17 +79,22 @@
+ 
+    Return a Python object from the data stream in a :ctype:`FILE\*` opened for
+    reading.  On error, sets the appropriate exception (:exc:`EOFError` or
+    :exc:`TypeError`) and returns *NULL*.
+ 
+ 
  .. cfunction:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
  
     Return a Python object from the data stream in a :ctype:`FILE\*` opened for

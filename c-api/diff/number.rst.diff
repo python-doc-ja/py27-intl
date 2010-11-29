@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/number.rst'
 --- Doc/c-api/number.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/number.rst	2010-11-17 12:18:12 +0000
-@@ -285,11 +285,22 @@
+@@ -272,37 +272,48 @@
+ 
+    Returns the *o* converted to a long integer object on success, or *NULL* on
+    failure.  This is the equivalent of the Python expression ``long(o)``.
+ 
+ 
+ .. cfunction:: PyObject* PyNumber_Float(PyObject *o)
+ 
+    .. index:: builtin: float
+ 
+    Returns the *o* converted to a float object on success, or *NULL* on failure.
+    This is the equivalent of the Python expression ``float(o)``.
+ 
+ 
  .. cfunction:: PyObject* PyNumber_Index(PyObject *o)
  
     Returns the *o* converted to a Python int or long on success or *NULL* with a
@@ -25,4 +38,17 @@
  .. cfunction:: Py_ssize_t PyNumber_AsSsize_t(PyObject *o, PyObject *exc)
  
     Returns *o* converted to a Py_ssize_t value if *o* can be interpreted as an
+    integer. If *o* can be converted to a Python int or long but the attempt to
+    convert to a Py_ssize_t value would raise an :exc:`OverflowError`, then the
+    *exc* argument is the type of exception that will be raised (usually
+    :exc:`IndexError` or :exc:`OverflowError`).  If *exc* is *NULL*, then the
+    exception is cleared and the value is clipped to *PY_SSIZE_T_MIN* for a negative
+    integer or *PY_SSIZE_T_MAX* for a positive integer.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. cfunction:: int PyIndex_Check(PyObject *o)
+ 
+    Returns True if *o* is an index integer (has the nb_index slot of  the
 

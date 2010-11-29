@@ -1,7 +1,14 @@
 === modified file 'Doc/c-api/datetime.rst'
 --- Doc/c-api/datetime.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/datetime.rst	2010-11-17 12:18:12 +0000
-@@ -8,9 +8,10 @@
+@@ -1,29 +1,30 @@
+ .. highlightlang:: c
+ 
+ .. _datetimeobjects:
+ 
+ DateTime Objects
+ ----------------
+ 
  Various date and time objects are supplied by the :mod:`datetime` module.
  Before using any of these functions, the header file :file:`datetime.h` must be
  included in your source (note that this is not included by :file:`Python.h`),
@@ -15,4 +22,17 @@
  
  Type-check macros:
  
+ 
+ .. cfunction:: int PyDate_Check(PyObject *ob)
+ 
+    Return true if *ob* is of type :cdata:`PyDateTime_DateType` or a subtype of
+    :cdata:`PyDateTime_DateType`.  *ob* must not be *NULL*.
+ 
+    .. versionadded:: 2.4
+ 
+ 
+ .. cfunction:: int PyDate_CheckExact(PyObject *ob)
+ 
+    Return true if *ob* is of type :cdata:`PyDateTime_DateType`. *ob* must not be
+    *NULL*.
 

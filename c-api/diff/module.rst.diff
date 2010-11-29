@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/module.rst'
 --- Doc/c-api/module.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/module.rst	2010-11-17 12:18:12 +0000
-@@ -103,3 +103,19 @@
+@@ -90,16 +90,32 @@
+ .. cfunction:: int PyModule_AddIntConstant(PyObject *module, const char *name, long value)
+ 
+    Add an integer constant to *module* as *name*.  This convenience function can be
+    used from the module's initialization function. Return ``-1`` on error, ``0`` on
+    success.
+ 
+    .. versionadded:: 2.0
+ 
+ 
+ .. cfunction:: int PyModule_AddStringConstant(PyObject *module, const char *name, const char *value)
+ 
+    Add a string constant to *module* as *name*.  This convenience function can be
+    used from the module's initialization function.  The string *value* must be
     null-terminated.  Return ``-1`` on error, ``0`` on success.
  
     .. versionadded:: 2.0

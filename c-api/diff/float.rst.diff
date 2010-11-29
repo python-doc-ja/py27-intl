@@ -1,7 +1,20 @@
 === modified file 'Doc/c-api/float.rst'
 --- Doc/c-api/float.rst	2008-01-19 22:08:21 +0000
 +++ Doc/c-api/float.rst	2010-11-17 12:18:12 +0000
-@@ -72,15 +72,23 @@
+@@ -59,28 +59,36 @@
+ 
+ .. cfunction:: double PyFloat_AS_DOUBLE(PyObject *pyfloat)
+ 
+    Return a C :ctype:`double` representation of the contents of *pyfloat*, but
+    without error checking.
+ 
+ 
+ .. cfunction:: PyObject* PyFloat_GetInfo(void)
+ 
+    Return a structseq instance which contains information about the
+    precision, minimum and maximum values of a float. It's a thin wrapper
+    around the header file :file:`float.h`.
+ 
     .. versionadded:: 2.6
  
  
