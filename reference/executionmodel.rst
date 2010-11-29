@@ -66,7 +66,7 @@
 ある名前がブロック内で束縛されている場合、名前はそのブロックにおけるローカル変数 (local variable) です。
 ある名前がモジュールレベルで束縛されている場合、名前はグローバル変数 (global variable) です。
 (モジュールコードブロックの変数は、ローカル変数でもあるし、グローバル変数でもあります。) ある変数がコードブロック内で使われているが、そのブロックでは定義
-されていない場合、変数は自由変数 :dfn:`free variable` です。
+されていない場合、変数は自由変数(:dfn:`free variable`)です。
 
 .. index::
    single: NameError (built-in exception)
@@ -80,7 +80,7 @@
 
 名前への束縛は、以下の文構成(construct)で行われます: 関数の仮引数 (formal parameter) 指定、 :keyword:`import`
 文、クラスや関数の定義 (定義を行ったブロック中で、クラスや関数名の束縛が行われます)、
-代入時に代入対象が識別子である場合、 :keyword:`for` ループのヘッダ、:keyword:`except` 文ヘッダの
+代入時に代入対象が識別子である場合、 :keyword:`for` ループのヘッダ、 :keyword:`except` 文ヘッダの
 第二要素、 :keyword:`with` 文の中の :keyword:`as` の後ろ。
 
 "``from...import *``" 形式の import 文は、 import しようとするモジュール内で定義されている名前について、
