@@ -28,18 +28,17 @@
       import に失敗した場合、不完全なモジュールを除去するようになりました.
 
    .. versionchanged:: 2.6
-      always use absolute imports
+      常に絶対 import を使うようになりました。
 
 
 .. cfunction:: PyObject* PyImport_ImportModuleNoBlock(const char *name)
 
-   This version of :cfunc:`PyImport_ImportModule` does not block. It's intended
-   to be used in C functions that import other modules to execute a function.
-   The import may block if another thread holds the import lock. The function
-   :cfunc:`PyImport_ImportModuleNoBlock` never blocks. It first tries to fetch
-   the module from sys.modules and falls back to :cfunc:`PyImport_ImportModule`
-   unless the lock is held, in which case the function will raise an
-   :exc:`ImportError`.
+   このバージョンの :cfunc:`PyImport_ImportModule` はブロックしません。
+   関数を実行するために他のモジュールをインポートするC関数から使われることを意図しています。
+   インポート処理は他のスレッドがインポートロックを持っている場合はブロックします。
+   この関数はブロックしません。まず sys.modules からモジュールのフェッチを試み、
+   失敗したら、ロックが取られていなければ :cfunc:`PyImport_ImportModule` を実行します。
+   ロックが取られていた場合は :exc:`ImportError` を発生させます。
 
    .. versionadded:: 2.6
 
@@ -59,20 +58,19 @@
       import に失敗した場合、不完全なモジュールを除去するようになりました.
 
    .. versionchanged:: 2.6
-      The function is an alias for :cfunc:`PyImport_ImportModuleLevel` with
-      -1 as level, meaning relative import.
+      この関数は :cfunc:`PyImport_ImportModuleLevel` のエイリアスです。
+      level には相対インポートを意味する -1 が渡されます。
 
 
 .. cfunction:: PyObject* PyImport_ImportModuleLevel(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist, int level)
 
-   Import a module.  This is best described by referring to the built-in Python
-   function :func:`__import__`, as the standard :func:`__import__` function calls
-   this function directly.
+   モジュールをインポートします。このモジュールの動作については、Python ビルトイン関数の
+   :func:`__import__` でよく説明されています。 :func:`__import__` は直接この関数を実行します。
 
-   The return value is a new reference to the imported module or top-level package,
-   or *NULL* with an exception set on failure.  Like for :func:`__import__`,
-   the return value when a submodule of a package was requested is normally the
-   top-level package, unless a non-empty *fromlist* was given.
+   戻り値は、インポートされたモジュールかトップレベルパッケージへの新しい参照か、
+   失敗した場合は例外を設定して *NULL* を返します。
+   :func:`__import__` と同じように、パッケージのサブモジュールが要求されたときは、
+   空でない *fromlist* を渡された時以外は、トップレベルのパッケージを返します。
 
    .. versionadded:: 2.5
 
@@ -88,7 +86,7 @@
    :mod:`rexec` や :mod:`ihooks` を使って import を行います。
 
    .. versionchanged:: 2.6
-      always use absolute imports
+      常に絶対importを使うようになりました。
 
 
 .. cfunction:: PyObject* PyImport_ReloadModule(PyObject *m)
@@ -126,6 +124,8 @@
    :attr:``sys.modules`` に残すのは危険であり、そのようなモジュールを import するコードにとっては、モジュールの状態がわからない
    (モジュール作者の意図から外れた壊れた状態かもしれない) からです。
 
+   モジュールの :attr:`__file__` 属性が、コードオブジェクトの :cmember:`co_filename` に設定されます。
+
    この関数は、すでに import されているモジュールの場合には再ロードを行います。意図的にモジュールの再ロードを行う方法は
    :cfunc:`PyImport_ReloadModule` を参照してください。
 
@@ -133,6 +133,14 @@
 
    .. versionchanged:: 2.4
       エラーが発生した場合に *name* を :attr:``sys.modules`` から除去するようになりました.
+
+
+.. cfunction:: PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)
+
+   Like :cfunc:`PyImport_ExecCodeModule`, but the :attr:`__file__` attribute of
+   the module object is set to *pathname* if it is non-``NULL``.
+   :cfunc:`PyImport_ExecCodeModule` に似ていますが、 *pathname* が ``NULL`` で無い場合、
+   モジュールオブジェクトの :attr:`__file__` 属性に設定します。
 
 
 .. cfunction:: long PyImport_GetMagicNumber()
@@ -144,6 +152,20 @@
 .. cfunction:: PyObject* PyImport_GetModuleDict()
 
    モジュール管理のための辞書 (いわゆる ``sys.modules`` )を返します。この辞書はインタプリタごとに一つだけある変数なので注意してください。
+
+
+.. cfunction:: PyObject* PyImport_GetImporter(PyObject *path)
+
+   :data:`sys.path`/:attr:`pkg.__path__` の要素 *path* の、 importer オブジェクトを返します。
+   可能なら、 :data:`sys.path_importer_cache` からフェッチします。
+   まだキャッシュされていない場合、そのパスを扱える hook が見つかるまで :data:`sys.path_hooks`
+   を巡回します。
+   hook が見つからない場合、 ``None`` を返します。この場合、呼び出し元は
+   ビルトインの import 機構にフォールバックします。
+   結果は :data:`sys.path_importer_cache` にキャッシュされます。
+   importer オブジェクトへの新しい参照を返します。
+
+   .. versionadded:: 2.6
 
 
 .. cfunction:: void _PyImport_Init()
@@ -213,7 +235,7 @@
    組み込みモジュールリスト内の一つのエントリを記述している構造体です。リスト内の各構造体には、インタプリタ内に組み込まれているモジュールの
    名前と初期化関数が指定されています。 Python を埋め込むようなプログラムは、この構造体の配列と
    :cfunc:`PyImport_ExtendInittab` を組み合わせて、追加の
-   組み込みモジュールを提供できます。構造体は :file:`Include/import.h`  で以下のように定義されています::
+   組み込みモジュールを提供できます。構造体は :file:`Include/import.h` で以下のように定義されています::
 
       struct _inittab {
           char *name;
