@@ -10,12 +10,12 @@
  ========================
  
 -These routines allow C code to work with serialized objects using the same data
--format as the :mod:`marshal` module.  There are functions to write data into the
--serialization format, and additional functions that can be used to read the data
--back.  Files used to store marshalled data must be opened in binary mode.
 +These routines allow C code to work with serialized objects using the same
+-format as the :mod:`marshal` module.  There are functions to write data into the
 +data format as the :mod:`marshal` module.  There are functions to write data
+-serialization format, and additional functions that can be used to read the data
 +into the serialization format, and additional functions that can be used to
+-back.  Files used to store marshalled data must be opened in binary mode.
 +read the data back.  Files used to store marshalled data must be opened in
 +binary mode.
  

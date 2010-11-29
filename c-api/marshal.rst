@@ -11,9 +11,11 @@
 
 数値は最小桁が先にくるように記録されます。
 
-このモジュールでは、二つのバージョンのデータ形式をサポートしています。バージョン 0 は従来のもので、(Python 2.4 で新たに追加された) バージョン
-1  は intern 化された文字列をファイル内で共有し、逆マーシャル化の時にも共有されるようにします。 *PY_MARSHAL_VERSION*
-は現在のバージョン (バージョン 1) を示します。
+このモジュールでは、3つのバージョンのデータ形式をサポートしています。
+バージョン 0 は従来のもので、(Python 2.4 で新たに追加された) バージョン
+1  は intern 化された文字列をファイル内で共有し、逆マーシャル化の時にも共有されるようにします。
+(Python 2.5 で新たに追加された) バージョン2は、浮動小数点数に対してバイナリフォーマットを利用します。
+*PY_MARSHAL_VERSION* は現在のバージョン (バージョン 2) を示します。
 
 
 .. cfunction:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
@@ -42,12 +44,11 @@
 
 以下の関数を使うと、整列化された値を読み戻せます。
 
-.. % XXX What about error detection?  It appears that reading past the end
-.. % of the file will always result in a negative numeric value (where
-.. % that's relevant), but it's not clear that negative values won't be
-.. % handled properly when there's no error.  What's the right way to tell?
-.. % Should only non-negative values be written using these routines?
-
+.. XXX What about error detection?  It appears that reading past the end
+.. of the file will always result in a negative numeric value (where
+.. that's relevant), but it's not clear that negative values won't be
+.. handled properly when there's no error.  What's the right way to tell?
+.. Should only non-negative values be written using these routines?
 
 .. cfunction:: long PyMarshal_ReadLongFromFile(FILE *file)
 
@@ -81,3 +82,6 @@
    *string* が指している *len* バイトの文字列バッファに納められたデータストリームから Python オブジェクトを読み出して返します。
    エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      以前は *len* の型は :ctype:`int` でした。
+      この変更により、64bitシステムをサポートするには対応する修正が必要になります。
