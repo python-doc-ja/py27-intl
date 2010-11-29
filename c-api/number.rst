@@ -208,8 +208,9 @@
 
 .. cfunction:: PyObject* PyNumber_InPlaceOr(PyObject *o1, PyObject *o2)
 
-   成功すると *o1* と *o2* の "ビット単位論理和 (bitwise or)" を返し失敗すると *NULL* を返します。 *o1* が *in-
-   place* 演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 |= o2`` と同じです。
+   成功すると *o1* と *o2* の "ビット単位論理和 (bitwise or)" を返し失敗すると *NULL* を返します。
+   *o1* が *in-place* 演算をサポートする場合、in-place 演算を行います。
+   Python の文 ``o1 |= o2`` と同じです。
 
 
 .. cfunction:: int PyNumber_Coerce(PyObject **p1, PyObject **p2)
@@ -228,15 +229,17 @@
    This function is similar to :cfunc:`PyNumber_Coerce`, except that it returns
    ``1`` when the conversion is not possible and when no error is raised.
    Reference counts are still not increased in this case.
+   この関数は :cfunc:`PyNumber_Coerce` と似ていますが、
+   変換が失敗た場合にはエラーを発生させず、 ``-1`` を返します。
+   この場合、参照カウントはインクリメントされません。
 
-   .. todo::
-      訳
 
 .. cfunction:: PyObject* PyNumber_Int(PyObject *o)
 
    .. index:: builtin: int
 
-   成功すると *o* を整数に変換したものを返し、失敗すると *NULL* を返します。  引数の値が整数の範囲外の場合、長整数を代わりに返します。 Python
+   成功すると *o* を整数に変換したものを返し、失敗すると *NULL* を返します。
+   引数の値が整数の範囲外の場合、長整数を代わりに返します。 Python
    の式 ``int(o)`` と同じです。
 
 
@@ -244,21 +247,36 @@
 
    .. index:: builtin: long
 
-   成功すると *o* を長整数に変換したものを返し、失敗すると *NULL* を返します。   Python の式 ``long(o)`` と同じです。
+   成功すると *o* を長整数に変換したものを返し、失敗すると *NULL* を返します。
+   Python の式 ``long(o)`` と同じです。
 
 
 .. cfunction:: PyObject* PyNumber_Float(PyObject *o)
 
    .. index:: builtin: float
 
-   成功すると *o* を浮動小数点数に変換したものを返し、失敗すると *NULL* を返します。   Python の式 ``float(o)`` と同じです。
+   成功すると *o* を浮動小数点数に変換したものを返し、失敗すると *NULL* を返します。
+   Python の式 ``float(o)`` と同じです。
 
 
 .. cfunction:: PyObject* PyNumber_Index(PyObject *o)
 
-   *o* をPythonのintもしくはlong型に変換し、成功したらその値を、失敗したら *NULL* が返され、TypeError例外が送出されます。
+   *o* をPythonのintもしくはlong型に変換し、成功したらその値を返します。
+   失敗したら *NULL* が返され、 :exc:`TypeError` 例外が送出されます。
 
    .. versionadded:: 2.5
+
+
+.. cfunction:: PyObject* PyNumber_ToBase(PyObject *n, int base)
+
+   整数 *n* を、 *base* 進数の文字列に変換し、適切であれば ``'0b'``, ``'0o'``,
+   ``'0x'`` の基数マーカーをつけます。
+   *base* が 2, 8, 10, 16 のいずれでも無い場合、フォーマットは x を基数として
+   ``'x#num'`` となります。
+   もし *n* が整数オブジェクトでない場合、まず :cfunc:`PyNumber_Index` を使って
+   変換されます。
+
+   .. versionadded:: 2.6
 
 
 .. cfunction:: Py_ssize_t PyNumber_AsSsize_t(PyObject *o, PyObject *exc)
