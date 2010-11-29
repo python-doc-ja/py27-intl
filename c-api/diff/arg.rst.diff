@@ -15,61 +15,61 @@
  
  The first three of these functions described, :cfunc:`PyArg_ParseTuple`,
 -:cfunc:`PyArg_ParseTupleAndKeywords`, and :cfunc:`PyArg_Parse`, all use *format
--strings* which are used to tell the function about the expected arguments.  The
--format strings use the same syntax for each of these functions.
 +:cfunc:`PyArg_ParseTupleAndKeywords`, and :cfunc:`PyArg_Parse`, all use
+-strings* which are used to tell the function about the expected arguments.  The
 +*format strings* which are used to tell the function about the expected
+-format strings use the same syntax for each of these functions.
 +arguments.  The format strings use the same syntax for each of these
 +functions.
  
  A format string consists of zero or more "format units."  A format unit
 -describes one Python object; it is usually a single character or a parenthesized
--sequence of format units.  With a few exceptions, a format unit that is not a
--parenthesized sequence normally corresponds to a single address argument to
--these functions.  In the following description, the quoted form is the format
--unit; the entry in (round) parentheses is the Python object type that matches
--the format unit; and the entry in [square] brackets is the type of the C
--variable(s) whose address should be passed.
--
--``s`` (string or Unicode object) [const char \*]
--   Convert a Python string or Unicode object to a C pointer to a character string.
--   You must not provide storage for the string itself; a pointer to an existing
--   string is stored into the character pointer variable whose address you pass.
--   The C string is NUL-terminated.  The Python string must not contain embedded NUL
--   bytes; if it does, a :exc:`TypeError` exception is raised. Unicode objects are
--   converted to C strings using the default encoding.  If this conversion fails, a
--   :exc:`UnicodeError` is raised.
--
--``s#`` (string, Unicode or any read buffer compatible object) [const char \*, int]
--   This variant on ``s`` stores into two C variables, the first one a pointer to a
--   character string, the second one its length.  In this case the Python string may
--   contain embedded null bytes.  Unicode objects pass back a pointer to the default
--   encoded string version of the object if such a conversion is possible.  All
--   other read-buffer compatible objects pass back a reference to the raw internal
--   data representation.
 +describes one Python object; it is usually a single character or a
+-sequence of format units.  With a few exceptions, a format unit that is not a
 +parenthesized sequence of format units.  With a few exceptions, a format unit
+-parenthesized sequence normally corresponds to a single address argument to
 +that is not a parenthesized sequence normally corresponds to a single address
+-these functions.  In the following description, the quoted form is the format
 +argument to these functions.  In the following description, the quoted form is
+-unit; the entry in (round) parentheses is the Python object type that matches
 +the format unit; the entry in (round) parentheses is the Python object type
+-the format unit; and the entry in [square] brackets is the type of the C
 +that matches the format unit; and the entry in [square] brackets is the type
+-variable(s) whose address should be passed.
 +of the C variable(s) whose address should be passed.
 +
+-
+-``s`` (string or Unicode object) [const char \*]
 +``s`` (string or Unicode) [const char \*]
+-   Convert a Python string or Unicode object to a C pointer to a character string.
 +   Convert a Python string or Unicode object to a C pointer to a character
+-   You must not provide storage for the string itself; a pointer to an existing
 +   string.  You must not provide storage for the string itself; a pointer to
+-   string is stored into the character pointer variable whose address you pass.
 +   an existing string is stored into the character pointer variable whose
+-   The C string is NUL-terminated.  The Python string must not contain embedded NUL
 +   address you pass.  The C string is NUL-terminated.  The Python string must
+-   bytes; if it does, a :exc:`TypeError` exception is raised. Unicode objects are
 +   not contain embedded NUL bytes; if it does, a :exc:`TypeError` exception is
+-   converted to C strings using the default encoding.  If this conversion fails, a
 +   raised. Unicode objects are converted to C strings using the default
+-   :exc:`UnicodeError` is raised.
 +   encoding.  If this conversion fails, a :exc:`UnicodeError` is raised.
 +
+-
+-``s#`` (string, Unicode or any read buffer compatible object) [const char \*, int]
 +``s#`` (string, Unicode or any read buffer compatible object) [const char \*, int (or :ctype:`Py_ssize_t`, see below)]
+-   This variant on ``s`` stores into two C variables, the first one a pointer to a
 +   This variant on ``s`` stores into two C variables, the first one a pointer
+-   character string, the second one its length.  In this case the Python string may
 +   to a character string, the second one its length.  In this case the Python
+-   contain embedded null bytes.  Unicode objects pass back a pointer to the default
 +   string may contain embedded null bytes.  Unicode objects pass back a
+-   encoded string version of the object if such a conversion is possible.  All
 +   pointer to the default encoded string version of the object if such a
+-   other read-buffer compatible objects pass back a reference to the raw internal
 +   conversion is possible.  All other read-buffer compatible objects pass back
+-   data representation.
 +   a reference to the raw internal data representation.
 +
 +   Starting with Python 2.5 the type of the length argument can be controlled
@@ -84,9 +84,9 @@
 +   responsible for calling ``PyBuffer_Release`` with the structure after it
 +   has processed the data.
  
--``z`` (string or ``None``) [const char \*]
 +   .. versionadded:: 2.6
 +
+-``z`` (string or ``None``) [const char \*]
 +``z`` (string, Unicode  or ``None``) [const char \*]
     Like ``s``, but the Python object may also be ``None``, in which case the C
     pointer is set to *NULL*.
@@ -95,68 +95,68 @@
 +``z#`` (string, Unicode, ``None`` or any read buffer compatible object) [const char \*, int]
     This is to ``s#`` as ``z`` is to ``s``.
  
--``u`` (Unicode object) [Py_UNICODE \*]
--   Convert a Python Unicode object to a C pointer to a NUL-terminated buffer of
--   16-bit Unicode (UTF-16) data.  As with ``s``, there is no need to provide
--   storage for the Unicode data buffer; a pointer to the existing Unicode data is
--   stored into the :ctype:`Py_UNICODE` pointer variable whose address you pass.
--
--``u#`` (Unicode object) [Py_UNICODE \*, int]
--   This variant on ``u`` stores into two C variables, the first one a pointer to a
--   Unicode data buffer, the second one its length. Non-Unicode objects are handled
--   by interpreting their read-buffer pointer as pointer to a :ctype:`Py_UNICODE`
--   array.
--
--``es`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
--   This variant on ``s`` is used for encoding Unicode and objects convertible to
--   Unicode into a character buffer. It only works for encoded data without embedded
--   NUL bytes.
 +``z*`` (string, Unicode, ``None`` or any buffer compatible object) [Py_buffer]
 +   This is to ``s*`` as ``z`` is to ``s``.
 +
 +   .. versionadded:: 2.6
 +
+-``u`` (Unicode object) [Py_UNICODE \*]
 +``u`` (Unicode) [Py_UNICODE \*]
+-   Convert a Python Unicode object to a C pointer to a NUL-terminated buffer of
+-   16-bit Unicode (UTF-16) data.  As with ``s``, there is no need to provide
+-   storage for the Unicode data buffer; a pointer to the existing Unicode data is
+-   stored into the :ctype:`Py_UNICODE` pointer variable whose address you pass.
 +   Convert a Python Unicode object to a C pointer to a NUL-terminated buffer
 +   of 16-bit Unicode (UTF-16) data.  As with ``s``, there is no need to
 +   provide storage for the Unicode data buffer; a pointer to the existing
 +   Unicode data is stored into the :ctype:`Py_UNICODE` pointer variable whose
 +   address you pass.
 +
+-
+-``u#`` (Unicode object) [Py_UNICODE \*, int]
 +``u#`` (Unicode) [Py_UNICODE \*, int]
+-   This variant on ``u`` stores into two C variables, the first one a pointer to a
+-   Unicode data buffer, the second one its length. Non-Unicode objects are handled
+-   by interpreting their read-buffer pointer as pointer to a :ctype:`Py_UNICODE`
+-   array.
 +   This variant on ``u`` stores into two C variables, the first one a pointer
 +   to a Unicode data buffer, the second one its length. Non-Unicode objects
 +   are handled by interpreting their read-buffer pointer as pointer to a
 +   :ctype:`Py_UNICODE` array.
 +
+-
+-``es`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
 +``es`` (string, Unicode or character buffer compatible object) [const char \*encoding, char \*\*buffer]
+-   This variant on ``s`` is used for encoding Unicode and objects convertible to
 +   This variant on ``s`` is used for encoding Unicode and objects convertible
+-   Unicode into a character buffer. It only works for encoded data without embedded
 +   to Unicode into a character buffer. It only works for encoded data without
+-   NUL bytes.
 +   embedded NUL bytes.
  
     This format requires two arguments.  The first is only used as input, and
 -   must be a :ctype:`const char\*` which points to the name of an encoding as a
--   NUL-terminated string, or *NULL*, in which case the default encoding is used.
--   An exception is raised if the named encoding is not known to Python.  The
--   second argument must be a :ctype:`char\*\*`; the value of the pointer it
--   references will be set to a buffer with the contents of the argument text.
--   The text will be encoded in the encoding specified by the first argument.
--
--   :cfunc:`PyArg_ParseTuple` will allocate a buffer of the needed size, copy the
--   encoded data into this buffer and adjust *\*buffer* to reference the newly
--   allocated storage.  The caller is responsible for calling :cfunc:`PyMem_Free` to
--   free the allocated buffer after use.
 +   must be a :ctype:`const char\*` which points to the name of an encoding as
+-   NUL-terminated string, or *NULL*, in which case the default encoding is used.
 +   a NUL-terminated string, or *NULL*, in which case the default encoding is
+-   An exception is raised if the named encoding is not known to Python.  The
 +   used.  An exception is raised if the named encoding is not known to Python.
+-   second argument must be a :ctype:`char\*\*`; the value of the pointer it
 +   The second argument must be a :ctype:`char\*\*`; the value of the pointer
+-   references will be set to a buffer with the contents of the argument text.
 +   it references will be set to a buffer with the contents of the argument
+-   The text will be encoded in the encoding specified by the first argument.
 +   text.  The text will be encoded in the encoding specified by the first
 +   argument.
 +
+-
+-   :cfunc:`PyArg_ParseTuple` will allocate a buffer of the needed size, copy the
 +   :cfunc:`PyArg_ParseTuple` will allocate a buffer of the needed size, copy
+-   encoded data into this buffer and adjust *\*buffer* to reference the newly
 +   the encoded data into this buffer and adjust *\*buffer* to reference the
+-   allocated storage.  The caller is responsible for calling :cfunc:`PyMem_Free` to
 +   newly allocated storage.  The caller is responsible for calling
+-   free the allocated buffer after use.
 +   :cfunc:`PyMem_Free` to free the allocated buffer after use.
  
 -``et`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer]
@@ -168,9 +168,14 @@
 +   uses the encoding passed in as parameter.
  
 -``es#`` (string, Unicode object or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
++``es#`` (string, Unicode or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
 -   This variant on ``s#`` is used for encoding Unicode and objects convertible to
++   This variant on ``s#`` is used for encoding Unicode and objects convertible
 -   Unicode into a character buffer.  Unlike the ``es`` format, this variant allows
 -   input data which contains NUL characters.
++   to Unicode into a character buffer.  Unlike the ``es`` format, this variant
++   allows input data which contains NUL characters.
++
 -
 -   It requires three arguments.  The first is only used as input, and must be a
 -   :ctype:`const char\*` which points to the name of an encoding as a
@@ -181,11 +186,6 @@
 -   The text will be encoded in the encoding specified by the first argument.
 -   The third argument must be a pointer to an integer; the referenced integer
 -   will be set to the number of bytes in the output buffer.
-+``es#`` (string, Unicode or character buffer compatible object) [const char \*encoding, char \*\*buffer, int \*buffer_length]
-+   This variant on ``s#`` is used for encoding Unicode and objects convertible
-+   to Unicode into a character buffer.  Unlike the ``es`` format, this variant
-+   allows input data which contains NUL characters.
-+
 +   It requires three arguments.  The first is only used as input, and must be
 +   a :ctype:`const char\*` which points to the name of an encoding as a
 +   NUL-terminated string, or *NULL*, in which case the default encoding is
