@@ -11,13 +11,17 @@
    オブジェクトがマップ型プロトコルを提供している場合に ``1`` を返し、そうでないときには ``0`` を返します。この関数呼び出しは常に成功します。
 
 
-.. cfunction:: Py_ssize_t PyMapping_Length(PyObject *o)
+.. cfunction:: Py_ssize_t PyMapping_Size(PyObject *o)
+               Py_ssize_t PyMapping_Length(PyObject *o)
 
    .. index:: builtin: len
 
    成功するとオブジェクト *o* 中のキーの数を返し、失敗すると ``-1`` を返します。マップ型プロトコルを提供していないオブジェクトに対しては、
    Python の式 ``len(o)`` と同じになります。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyMapping_DelItemString(PyObject *o, char *key)
 
@@ -33,14 +37,20 @@
 
 .. cfunction:: int PyMapping_HasKeyString(PyObject *o, char *key)
 
-   成功すると、マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、そうでないときには ``0`` を返します。 Python の式
-   ``o.has_key(key)`` と同じです。この関数呼び出しは常に成功します。
+   成功すると、マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、
+   そうでないときには ``0`` を返します。
+   これは、 ``o[key]`` が成功したときに ``True`` を、例外が発生したときに
+   ``False`` を返すのと等価です。
+   この関数呼び出しは常に成功します。
 
 
 .. cfunction:: int PyMapping_HasKey(PyObject *o, PyObject *key)
 
-   マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、そうでないときには ``0`` を返します。 Python の式
-   ``o.has_key(key)`` と同じです。この関数呼び出しは常に成功します。
+   マップ型オブジェクトがキー *key* を持つ場合に ``1`` を返し、そうでないときには
+   ``0`` を返します。
+   これは、 ``o[key]`` が成功したときに ``True`` を、例外が発生したときに
+   ``False`` を返すのと等価です。
+   この関数呼び出しは常に成功します。
 
 
 .. cfunction:: PyObject* PyMapping_Keys(PyObject *o)
