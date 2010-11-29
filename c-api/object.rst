@@ -38,6 +38,17 @@
    Python の式 ``o.attr_name`` と同じです。
 
 
+.. cfunction:: PyObject* PyObject_GenericGetAttr(PyObject *o, PyObject *name)
+
+   汎用の属性取得関数で、 type オブジェクトの ``tp_getattro`` スロットに
+   置かれることを意図されています。
+   この関数は、オブジェクトのMRO中のクラスの辞書にあるディスクリプタと、オブジェクトの
+   :attr:`__dict__` (があれば)に格納されている属性を検索します。
+   :ref:`descriptors` で説明されているように、データディスクリプタはインスタンス属性より
+   優先され、非データディスクリプタは後回しにされます。
+   見つからなかった場合は :exc:`AttributeError` を発生させます。
+
+
 .. cfunction:: int PyObject_SetAttr(PyObject *o, PyObject *attr_name, PyObject *v)
 
    オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
@@ -48,6 +59,16 @@
 
    オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
    の式 ``o.attr_name = v`` と同じです。
+
+
+.. cfunction:: int PyObject_GenericSetAttr(PyObject *o, PyObject *name, PyObject *value)
+
+   汎用の属性設定関数で、typeオブジェクトの ``tp_setattro`` スロットに
+   置かれることを意図しています。
+   オブジェクトのMROにあるクラス列の辞書からデータディスクリプタを探し、
+   見つかればインスタンス辞書への格納よりもデータディスクリプタを優先します。
+   見つからなければ、オブジェクトの :attr:`__dict__` (があれば) に属性を設定します。
+   失敗した場合、 :exc:`AttributeError` を発生させて ``-1`` を返します。
 
 
 .. cfunction:: int PyObject_DelAttr(PyObject *o, PyObject *attr_name)
@@ -114,6 +135,14 @@
 
    *o* の文字列表現を計算します。成功すると文字列表現を返し、失敗すると *NULL* を返します。Python 式 ``str(o)``
    と同じです。この関数は組み込み関数 :func:`str` や :keyword:`print` 文の処理で呼び出されます。
+
+
+.. cfunction:: PyObject* PyObject_Bytes(PyObject *o)
+
+   .. index:: builtin: bytes
+
+   *o* オブジェクトの bytes 表現を計算します。
+   2.x では、単に :cfunc:`PyObject_Str` のエイリアスです。
 
 
 .. cfunction:: PyObject* PyObject_Unicode(PyObject *o)
@@ -237,6 +266,16 @@
    オブジェクト *o* のハッシュ値を計算して返します。失敗すると ``-1`` を返します。 Python の式 ``hash(o)`` と同じです。
 
 
+.. cfunction:: long PyObject_HashNotImplemented(PyObject *o)
+
+   ``type(o)`` がハッシュ不可能であることを示す :exc:`TypeError` を設定し、
+   ``-1`` を返します。
+   この関数は ``tp_hash`` スロットに格納されたときには特別な扱いを受け、
+   その type がハッシュ不可能であることをインタプリタに明示的に示します。
+
+   .. versionadded:: 2.6
+
+
 .. cfunction:: int PyObject_IsTrue(PyObject *o)
 
    *o* が真を表すとみなせる場合には ``1`` を、そうでないときには ``0`` を返します。   Python の式 ``not not o``
@@ -274,6 +313,9 @@
    *o* の長さを返します。オブジェクト *o* がシーケンス型プロトコルとマップ型プロトコルの両方を提供している場合、シーケンスとしての長さを
    返します。エラーが生じると ``-1`` を返します。 Python の式 ``len(o)`` と同じです。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctypes:`int` 型を返していました。
+      この変更により、 64bit システムを適切にサポートするためにはコードの修正が必要になります。
 
 .. cfunction:: PyObject* PyObject_GetItem(PyObject *o, PyObject *key)
 
