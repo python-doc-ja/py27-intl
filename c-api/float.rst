@@ -59,23 +59,28 @@
 
 .. cfunction:: PyObject* PyFloat_GetInfo(void)
 
-   Return a structseq instance which contains information about the
-   precision, minimum and maximum values of a float. It's a thin wrapper
-   around the header file :file:`float.h`.
+   float の精度、最小値、最大値に関する情報を含む structseq インスタンスを返します。
+   これは、 :file:`float.h` ファイルの薄いラッパーです。
 
    .. versionadded:: 2.6
 
 
-.. cfunction:: double PyFloat_GetMax(void)
+.. cfunction:: double PyFloat_GetMax()
 
-   Return the maximum representable finite float *DBL_MAX* as C :ctype:`double`.
-
-   .. versionadded:: 2.6
-
-
-.. cfunction:: double PyFloat_GetMin(void)
-
-   Return the minimum normalized positive float *DBL_MIN* as C :ctype:`double`.
+   float の表現できる最大限解値 *DBL_MAX* を C の :ctype:`double` 型で返します。
 
    .. versionadded:: 2.6
 
+
+.. cfunction:: double PyFloat_GetMin()
+
+   float の正規化された最小の正の値 *DBL_MIN* を C の :ctype:`double` 型で返します。
+
+   .. versionadded:: 2.6
+
+.. cfunction:: int PyFloat_ClearFreeList()
+
+   float の free list をクリアします。
+   開放できなかったアイテム数を返します。
+
+   .. versionadded:: 2.6

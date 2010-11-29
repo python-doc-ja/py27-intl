@@ -33,6 +33,23 @@
    .. versionadded:: 2.2
 
 
+.. cfunction:: unsigned int PyType_ClearCache()
+
+   内部の検索キャッシュをクリアします。
+   現在のバージョンタグを返します。
+
+   .. versionadded:: 2.6
+
+
+.. cfunction:: void PyType_Modified(PyTypeObject *type)
+
+   内部の検索キャッシュを、その type とすべてのサブタイプに対して無効にします。
+   この関数は type の属性や基底クラス列を変更したあとに手動で呼び出さなければ
+   なりません。
+
+   .. versionadded:: 2.6
+
+
 .. cfunction:: int PyType_HasFeature(PyObject *o, int feature)
 
    型オブジェクト *o* に、型機能 *feature* が設定されている場合に真を返します。型機能は各々単一ビットのフラグで表されます。
@@ -56,6 +73,10 @@
 .. cfunction:: PyObject* PyType_GenericAlloc(PyTypeObject *type, Py_ssize_t nitems)
 
    .. versionadded:: 2.2
+
+   .. versionchanged:: 2.5
+      この関数は以前は *nitems* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyType_GenericNew(PyTypeObject *type, PyObject *args, PyObject *kwds)

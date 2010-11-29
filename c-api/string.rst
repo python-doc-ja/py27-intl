@@ -2,10 +2,16 @@
 
 .. _stringobjects:
 
-文字列オブジェクト (string object)
-----------------------------------
+文字列/バイトオブジェクト
+-------------------------
 
 以下の関数では、文字列が渡されるはずのパラメタに非文字列が渡された場合に :exc:`TypeError` を送出します。
+
+.. note::
+
+   これらの関数群は Python 3.x では PyBytes_* へリネームされます。
+   移植を容易にするために、特に注釈されていない限り、 3.x で利用できる PyBytes 関数群は
+   同等の PyString_* 関数へのエイリアスにされています。
 
 .. index:: object: string
 
@@ -49,6 +55,9 @@
    値が *v* で長さが *len* の新たな文字列オブジェクトを返します。失敗すると *NULL* を返します。 *v* が *NULL*
    の場合、文字列の中身は未初期化の状態になります。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *len* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_FromFormat(const char *format, ...)
 
@@ -100,17 +109,24 @@
 
 .. cfunction:: PyObject* PyString_FromFormatV(const char *format, va_list vargs)
 
-   :func:`PyString_FromFormat` と同じです。ただし、こちらの関数は二つしか引数をとりません。
+   :cfunc:`PyString_FromFormat` と同じです。ただし、こちらの関数は二つしか引数をとりません。
 
 
 .. cfunction:: Py_ssize_t PyString_Size(PyObject *string)
 
    文字列オブジェクト *string* 内の文字列値の長さを返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyString_GET_SIZE(PyObject *string)
 
    :cfunc:`PyString_Size` をマクロで実装したもので、エラーチェックを行いません。
+
+   .. versionchanged:: 2.5
+      この関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: char* PyString_AsString(PyObject *string)
@@ -146,6 +162,9 @@
    デフォルトエンコーディング版に対して操作を行います。 *string* が文字列オブジェクトですらない場合、
    :cfunc:`PyString_AsStringAndSize` は ``-1`` を返して :exc:`TypeError` を送出します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *length* の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyString_Concat(PyObject **string, PyObject *newpart)
 
@@ -170,6 +189,9 @@
    *\*string* に入っていた元の文字列オブジェクトを解放し、 *\*string* を *NULL* にセットし、メモリ例外をセットし、 ``-1``
    を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_Format(PyObject *format, PyObject *args)
 
@@ -185,12 +207,16 @@
    参照カウントについては沢山説明して来ましtが、この関数は参照カウント中立 (reference-count-neutral) と考えてください;
    この関数では、関数の呼び出し後にオブジェクトに対して参照の所有権を持てるのは、関数を呼び出す前にすでに所有権を持っていた場合に限ります。)
 
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. cfunction:: PyObject* PyString_InternFromString(const char *v)
 
    :cfunc:`PyString_FromString` と  :cfunc:`PyString_InternInPlace` を組み合わせたもので、
    隔離済みの新たな文字列オブジェクトを返すか、同じ値を持つすでに隔離済みの文字列オブジェクトに対する新たな ("所有権を得た") 参照を返します。
 
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. cfunction:: PyObject* PyString_Decode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
 
@@ -199,6 +225,13 @@
    に与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec
    が例外を送出した場合には *NULL* を返します。
 
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyString_AsDecodedObject(PyObject *str, const char *encoding, const char *errors)
 
@@ -206,6 +239,8 @@
    および *errors* は文字列型の :meth:`encode` メソッドに与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、
    Python の codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. cfunction:: PyObject* PyString_Encode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
 
@@ -214,6 +249,12 @@
    メソッドに与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec
    が例外を送出した場合には *NULL* を返します。
 
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_AsEncodedObject(PyObject *str, const char *encoding, const char *errors)
 
@@ -222,4 +263,5 @@
    同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec が例外を送出した場合には
    *NULL* を返します。
 
-
+   .. note::
+      この関数は 3.x では利用できず、 PyBytes エイリアスもありません。

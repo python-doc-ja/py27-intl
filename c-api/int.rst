@@ -59,7 +59,16 @@
 
 .. cfunction:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
 
-   *ival* の値を使って新たな整数オブジェクトを生成します。値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
+   *ival* の値を使って新たな整数オブジェクトを生成します。
+   値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
+
+   .. versionadded:: 2.5
+
+
+.. cfunction:: PyObject* PyInt_FromSize_t(size_t ival)
+
+   *ival* の値を使って新たな整数オブジェクトを生成します。
+   値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
 
    .. versionadded:: 2.5
 
@@ -105,3 +114,9 @@
 
    システムの知識に基づく、扱える最大の整数値 (システムのヘッダファイルに定義されている :const:`LONG_MAX`) を返します。
 
+.. cfunction:: int PyInt_ClearFreeList()
+
+   整数の free list をクリアします。
+   開放できなかった要素の数を返します。
+
+   .. versionadded:: 2.6

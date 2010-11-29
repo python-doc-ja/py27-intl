@@ -47,6 +47,22 @@
    失敗のときには *NULL* を返します。
 
 
+.. cfunction:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
+
+   C の :ctype:`Py_ssize_t` 型から新たな :ctype:`PyLongObject` オブジェクトを生成して返します。
+   失敗のときには *NULL* を返します。
+
+   .. versionadded:: 2.6
+
+
+.. cfunction:: PyObject* PyLong_FromSize_t(size_t v)
+
+   C の :ctype:`size_t` 型から新たな :ctype:`PyLongObject` オブジェクトを生成して返します。
+   失敗のときには *NULL* を返します。
+
+   .. versionadded:: 2.6
+
+
 .. cfunction:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
 
    C の :ctype:`long long` 型から新たな :ctype:`PyLongObject` オブジェクトを生成して返します。失敗のときには
@@ -82,6 +98,9 @@
 
    .. versionadded:: 1.6
 
+   .. versionchanged:: 2.5
+      この関数は以前は *length* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyLong_FromVoidPtr(void *p)
 
@@ -101,7 +120,20 @@
       single: OverflowError (built-in exception)
 
    *pylong* の指す長整数値を、 C の :ctype:`long` 型表現で返します。 *pylong* が :const:`LONG_MAX` よりも
-   大きい場合、 :exc:`OverflowError` を送出します。
+   大きい場合、 :exc:`OverflowError` を送出し、 ``-1`` を返します。
+
+
+.. cfunction:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
+
+   .. index::
+      single: PY_SSIZE_T_MAX
+      single: OverflowError (built-in exception)
+
+   *pylong* の指す長整数値を、 C の :ctype:`Py_ssize_t` 型表現で返します。
+   *pylong* が :const:`PY_SSIZE_T_MAX` よりも大きい場合、
+   :exc:`OverflowError` を送出し、 ``-1`` を返します。
+
+   .. versionadded:: 2.6
 
 
 .. cfunction:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
