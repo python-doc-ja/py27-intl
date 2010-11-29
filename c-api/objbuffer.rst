@@ -2,18 +2,26 @@
 
 .. _abstract-buffer:
 
-バッファプロトコル (buffer protocol)
-====================================
+古いバッファプロトコル
+=======================
 
+このセクションは Python 1.6 で導入された古いバッファプロトコルについて解説します。
+このプロトコルは、 Python 2.x 系ではサポートされていますが廃止予定扱いです。
+Python 3.0 から、このプロトコルの弱点や欠点を克服した新しいバッファプロトコルが導入され、
+Python 2.6 へと逆移植されました。詳細は :ref:`bufferobjects` を参照してください。
 
 .. cfunction:: int PyObject_AsCharBuffer(PyObject *obj, const char **buffer, Py_ssize_t *buffer_len)
 
-   文字ベースの入力として使える読み出し専用メモリ上の位置へのポインタを返します。 *obj* 引数は単一セグメントからなる
-   文字バッファインタフェースをサポートしていなければなりません。成功すると ``0`` を返し、 *buffer* をメモリの位置に、  *buffer_len*
+   文字ベースの入力として使える読み出し専用メモリ上の位置へのポインタを返します。
+   *obj* 引数は単一セグメントからなる文字バッファインタフェースをサポートしていなければなりません。
+   成功すると ``0`` を返し、 *buffer* をメモリの位置に、  *buffer_len*
    をバッファの長さに設定します。エラーの際には  ``-1`` を返し、 :exc:`TypeError` をセットします。
 
    .. versionadded:: 1.6
 
+   .. versionchanged:: 2.5
+      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyObject_AsReadBuffer(PyObject *obj, const void **buffer, Py_ssize_t *buffer_len)
 
@@ -23,6 +31,9 @@
 
    .. versionadded:: 1.6
 
+   .. versionchanged:: 2.5
+      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyObject_CheckReadBuffer(PyObject *o)
 
@@ -40,3 +51,6 @@
 
    .. versionadded:: 1.6
 
+   .. versionchanged:: 2.5
+      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
