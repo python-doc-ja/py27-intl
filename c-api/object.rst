@@ -314,7 +314,7 @@
    返します。エラーが生じると ``-1`` を返します。 Python の式 ``len(o)`` と同じです。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctypes:`int` 型を返していました。
+      これらの関数は以前は :ctype:`int` 型を返していました。
       この変更により、 64bit システムを適切にサポートするためにはコードの修正が必要になります。
 
 .. cfunction:: PyObject* PyObject_GetItem(PyObject *o, PyObject *key)
