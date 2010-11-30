@@ -2,15 +2,18 @@
 
 .. _unicodeobjects:
 
-Unicode オブジェクト (Unicode object)
--------------------------------------
+Unicode オブジェクトと codec
+-----------------------------
 
 .. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
 
+Unicode オブジェクト
+^^^^^^^^^^^^^^^^^^^^^
+
+Unicode type
+"""""""""""""
 
 以下は Python の Unicode 実装に用いられている基本 Unicode  オブジェクト型です:
-
-.. % --- Unicode Type -------------------------------------------------------
 
 
 .. ctype:: Py_UNICODE
@@ -60,12 +63,18 @@ UCS2とUCS4のPythonビルドの間にはバイナリ互換性がないことに
 
    オブジェクトのサイズを返します。 *o* は :ctype:`PyUnicodeObject` でなければなりません (チェックはしません)。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyUnicode_GET_DATA_SIZE(PyObject *o)
 
    オブジェクトの内部バッファのサイズをバイト数で返します。 *o* は :ctype:`PyUnicodeObject` でなければなりません
    (チェックはしません)。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_UNICODE* PyUnicode_AS_UNICODE(PyObject *o)
 
@@ -78,10 +87,19 @@ UCS2とUCS4のPythonビルドの間にはバイナリ互換性がないことに
    オブジェクト内部バッファへのポインタを返します。  *o* は :ctype:`PyUnicodeObject` でなければなりません
    (チェックはしません)。
 
+.. cfunction:: int PyUnicode_ClearFreeList()
+
+   free list をクリアします。
+   開放できなかった要素数を返します。
+
+   .. versionadded:: 2.6
+
+
+Unicode 文字プロパティ
+""""""""""""""""""""""""
+
 Unicode は数多くの異なる文字プロパティ (character property) を提供しています。よく使われる文字プロパティは、以下のマクロ
 で利用できます。これらのマクロは Python の設定に応じて、各々 C の関数に対応付けられています。
-
-.. % --- Unicode character properties ---------------------------------------
 
 
 .. cfunction:: int Py_UNICODE_ISSPACE(Py_UNICODE ch)
@@ -165,9 +183,11 @@ Unicode は数多くの異なる文字プロパティ (character property) を�
 
    *ch* を :ctype:`double` に変換したものを返します。不可能ならば ``-1.0`` を返します。このマクロは例外を送出しません。
 
-Unicode オブジェクトを生成したり、Unicode のシーケンスとしての基本的なプロパティにアクセスしたりするには、以下の API を使ってください:
 
-.. % --- Plain Py_UNICODE ---------------------------------------------------
+Plain Py_UNICODE
+""""""""""""""""
+
+Unicode オブジェクトを生成したり、Unicode のシーケンスとしての基本的なプロパティにアクセスしたりするには、以下の API を使ってください:
 
 
 .. cfunction:: PyObject* PyUnicode_FromUnicode(const Py_UNICODE *u, Py_ssize_t size)
@@ -177,6 +197,9 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
    コピーされます。バッファが *NULL* でない場合、戻り値は共有されたオブジェクトになることがあります。従って、この関数が返す Unicode
    オブジェクトを変更してよいのは *u* が *NULL* のときだけです。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_UNICODE* PyUnicode_AsUnicode(PyObject *unicode)
 
@@ -188,6 +211,9 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
 
    Unicode オブジェクトの長さを返します。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_FromEncodedObject(PyObject *obj, const char *encoding, const char *errors)
 
@@ -212,12 +238,18 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
 :ctype:`wchar_t` に対するインタフェースを確立することがあります。このサポートは、Python 自体の :ctype:`Py_UNICODE`
 型がシステムの :ctype:`wchar_t` と同一の場合に最適化をもたらします。
 
-.. % --- wchar_t support for platforms which support it ---------------------
+wchar_t サポート
+"""""""""""""""""
 
+wchar_t をサポートするプラットフォームでの wchar_t サポート:
 
 .. cfunction:: PyObject* PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
 
    *size* の :ctype:`wchar_t` バッファ *w* から Unicode オブジェクトを生成します。失敗すると *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: Py_ssize_t PyUnicode_AsWideChar(PyUnicodeObject *unicode, wchar_t *w, Py_ssize_t size)
@@ -227,13 +259,18 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
    文字の個数を返します。エラーの時には -1 を返します。 :ctype:`wchar_t` 文字列は 0-終端されている場合も、されていない場合も
    あります。関数の呼び出し手の責任で、アプリケーションの必要に応じて :ctype:`wchar_t` 文字列を 0-終端してください。
 
+   .. versionchanged:: 2.5
+      この関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
+
 .. _builtincodecs:
 
 組み込み codec (built-in codec)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Python では、処理速度を高めるために C で書かれた一そろいの codec を提供しています。これらの codec は全て以下の関数を介して
-直接利用できます。
+Python では、処理速度を高めるために C で書かれた一そろいの codec を提供しています。
+これらの codec は全て以下の関数を介して直接利用できます。
 
 以下の API の多くが、 *encoding* と *errors* という二つの引数をとります。これらのパラメタは、組み込みの Unicode
 オブジェクトコンストラクタである :func:`unicode` における同名のパラメタと同じセマンティクスになっています。
@@ -249,10 +286,11 @@ Python では、処理速度を高めるために C で書かれた一そろい�
 個々の codec は全て同様のインタフェースを使っています。個別の codec の説明では、説明を簡単にするために以下の汎用のインタフェースとの
 違いだけを説明しています。
 
+
+Generic Codecs
+""""""""""""""
+
 以下は汎用 codec の API です:
-
-.. % --- Generic Codecs -----------------------------------------------------
-
 
 .. cfunction:: PyObject* PyUnicode_Decode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
 
@@ -260,6 +298,9 @@ Python では、処理速度を高めるために C で書かれた一そろい�
    *encoding* と *errors* は、組み込み関数 unicode() の同名のパラメタと同じ意味を持ちます。使用する codec の検索は、
    Python の codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_Encode(const Py_UNICODE *s, Py_ssize_t size, const char *encoding, const char *errors)
 
@@ -268,6 +309,9 @@ Python では、処理速度を高めるために C で書かれた一そろい�
    同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec が例外を送出した場合には
    *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_AsEncodedString(PyObject *unicode, const char *encoding, const char *errors)
 
@@ -275,9 +319,11 @@ Python では、処理速度を高めるために C で書かれた一そろい�
    Unicode 型の :meth:`encode` メソッドに与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、 Python の
    codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
-以下は UTF-8 codec の APIです:
 
-.. % --- UTF-8 Codecs -------------------------------------------------------
+UTF-8 Codecs
+""""""""""""
+
+以下は UTF-8 codec の APIです:
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF8(const char *s, Py_ssize_t size, const char *errors)
@@ -285,6 +331,9 @@ Python では、処理速度を高めるために C で書かれた一そろい�
    UTF-8 でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec が例外を送出した場合には
    *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF8Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)
 
@@ -294,94 +343,105 @@ Python では、処理速度を高めるために C で書かれた一そろい�
 
    .. versionadded:: 2.4
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_EncodeUTF8(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを UTF-8 でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_AsUTF8String(PyObject *unicode)
 
    UTF-8 で Unicode オブジェクトをエンコードし、結果を Python 文字列オブジェクトとして返します。エラー処理は "strict" です。
    codec が例外を送出した場合には *NULL* を返します。
 
-These are the UTF-32 codec APIs:
 
-.. % --- UTF-32 Codecs ------------------------------------------------------ */
+UTF-32 Codecs
+"""""""""""""
+
+以下は UTF-32 codec API です。
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF32(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
 
-   Decode *length* bytes from a UTF-32 encoded buffer string and return the
-   corresponding Unicode object.  *errors* (if non-*NULL*) defines the error
-   handling. It defaults to "strict".
+   UTF-32 でエンコードされたバッファ文字列から *length* バイトをデコードし、
+   Unicodeオブジェクトとして返します。
+   *errors* は(非 *NULL* なら)エラーハンドラを指定します。デフォルトは "strict" です。
 
-   If *byteorder* is non-*NULL*, the decoder starts decoding using the given byte
-   order::
+   *byteorder* が非 *NULL* の時、デコーダは与えられたオーダーでデコードを開始します。 ::
 
       *byteorder == -1: little endian
       *byteorder == 0:  native order
       *byteorder == 1:  big endian
 
-   and then switches if the first four bytes of the input data are a byte order mark
-   (BOM) and the specified byte order is native order.  This BOM is not copied into
-   the resulting Unicode string.  After completion, *\*byteorder* is set to the
-   current byte order at the end of input data.
+   ``*byteorder`` が 0 で入力データの最初の4バイトがバイトオーダーマーク(BOM)だった場合、
+   デコーダーはBOMによってバイトオーダーを切り替え、BOMは結果の unicode 文字列には含まれません。
+   ``*byteorder`` が ``-1`` か ``1`` だった場合、すべてのBOMは出力へコピーされます。
 
-   In a narrow build codepoints outside the BMP will be decoded as surrogate pairs.
+   デコードが完了した後、入力データの終端に来た時点でのバイトオーダーを *\*byteorder* にセットします。
 
-   If *byteorder* is *NULL*, the codec starts in native order mode.
+   narrow build の場合、BMP外のコードポイントはサロゲートペアとしてデコードされます。
 
-   Return *NULL* if an exception was raised by the codec.
+   *byteorder* が *NULL* のとき、コーデックは native order モードで開始します。
+
+   codec が例外を発生させたときは *NULL* を返します。
 
    .. versionadded:: 2.6
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF32Stateful(const char *s, Py_ssize_t size, const char *errors, int *byteorder, Py_ssize_t *consumed)
 
-   If *consumed* is *NULL*, behave like :cfunc:`PyUnicode_DecodeUTF32`. If
-   *consumed* is not *NULL*, :cfunc:`PyUnicode_DecodeUTF32Stateful` will not treat
-   trailing incomplete UTF-32 byte sequences (such as a number of bytes not divisible
-   by four) as an error. Those bytes will not be decoded and the number of bytes
-   that have been decoded will be stored in *consumed*.
+   *consumed* が *NULL* のとき、 :cfunc:`PyUnicode_DecodeUTF32` と同じように振る舞います。
+   *consumed* が非 *NULL* のとき、 :cfunc:`PyUnicode_DecodeUTF32Stateful` は末尾の
+   不完全な(4で割り切れない数などの)UTF-32バイト列をエラーとして扱いません。
+   末尾の不完全なバイト列はデコードされず、デコードされたバイトすが *consumed*
+   に格納されます。
 
    .. versionadded:: 2.6
 
 
 .. cfunction:: PyObject* PyUnicode_EncodeUTF32(const Py_UNICODE *s, Py_ssize_t size, const char *errors, int byteorder)
 
-   Return a Python bytes object holding the UTF-32 encoded value of the Unicode
-   data in *s*.  If *byteorder* is not ``0``, output is written according to the
-   following byte order::
+   *s* の Unicode データを UTF-32 にエンコードした値を格納した Python の bytes
+   オブジェクトを返します。
+   出力は以下のバイトオーダーで従って書かれます。 ::
 
       byteorder == -1: little endian
       byteorder == 0:  native byte order (writes a BOM mark)
       byteorder == 1:  big endian
 
-   If byteorder is ``0``, the output string will always start with the Unicode BOM
-   mark (U+FEFF). In the other two modes, no BOM mark is prepended.
+   byteorder が ``0`` のとき、出力文字列は常にUnicode BOMマーク(U+FEFF)で始まります。
+   それ以外の2つのモードでは、先頭にBOMマークは出力されません。
 
-   If *Py_UNICODE_WIDE* is not defined, surrogate pairs will be output
-   as a single codepoint.
+   *Py_UNICODE_WIDE* が定義されていないとき、サロゲートペアを1つのコードポイントとして
+   出力します。
 
-   Return *NULL* if an exception was raised by the codec.
+   コーデックが例外を発生させた場合、 *NULL* を返します。
 
    .. versionadded:: 2.6
 
 
 .. cfunction:: PyObject* PyUnicode_AsUTF32String(PyObject *unicode)
 
-   Return a Python string using the UTF-32 encoding in native byte order. The
-   string always starts with a BOM mark.  Error handling is "strict".  Return
-   *NULL* if an exception was raised by the codec.
+   ネイティブバイトオーダーで UTF-32 エンコーディングを使って Python 文字列を
+   返します。
+   文字列は常に BOM マークで始まります。
+   エラーハンドラは "strict" です。
+   コーデックが例外を発生させたときは *NULL* を返します。
 
    .. versionadded:: 2.6
 
 
-以下は UTF-16 codec の APIです:
+UTF-16 Codecs
+"""""""""""""
 
-.. % --- UTF-16 Codecs ------------------------------------------------------ */
+以下は UTF-16 codec の APIです:
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF16(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
@@ -396,13 +456,22 @@ These are the UTF-32 codec APIs:
       *byteorder == 0:  ネイティブ
       *byteorder == 1:  ビッグエンディアン
 
-   その後、入力データ中に見つかった全てのバイト整列マーカ  (byte order mark, BOM) に従って、バイト整列を切り替えます。 BOM
-   はデコード結果の Unicode 文字列中にはコピーされません。デコードを完結した後、*\*byteorder* は入力データの終点現在に
-   おけるバイト整列に設定されます。
+   ``*byteorder`` が 0 で、入力データの先頭2バイトがバイトオーダーマーク (BOM)
+   だった場合、デコーダは BOM が示すバイトオーダーに切り替え、そのBOMを結果の Unicode
+   文字列にコピーしません。
+   ``*byteorder`` が ``-1`` か ``1`` だった場合、すべてのBOMは出力へコピーされます。
+   (出力では ``\ufeff`` か ``\ufffe`` のどちらかになるでしょう)
+
+   デコードを完結した後、*\*byteorder* は入力データの終点現在に
+   おけるバイトオーダーに設定されます。
 
    *byteorder* が *NULL* の場合、 codec はネイティブバイト整列のモードで開始します。
 
    codec が例外を送出した場合には *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUTF16Stateful(const char *s, Py_ssize_t size, const char *errors, int *byteorder, Py_ssize_t *consumed)
@@ -414,33 +483,76 @@ These are the UTF-32 codec APIs:
 
    .. versionadded:: 2.4
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_EncodeUTF16(const Py_UNICODE *s, Py_ssize_t size, const char *errors, int byteorder)
 
-   *s* 中の Unicode データを UTF-16 でエンコードした結果が入っている Python 文字列オブジェクトを返します。 *byteorder* が
-   ``0`` でない場合、出力は以下のバイト整列指定に従って書き出されます::
+   *s* 中の Unicode データを UTF-16 でエンコードした結果が入っている Python 文字列オブジェクトを返します。
+   出力は以下のバイトオーダーに従って書き出されます::
 
       byteorder == -1: リトルエンディアン
       byteorder == 0:  ネイティブ (BOM マーカを書き出します)
       byteorder == 1:  ビッグエンディアン
 
-   バイトオーダが ``0`` の場合、出力結果となる文字列は常に Unicode BOM マーカ (U+FEFF) で始まります。それ以外のモードでは、 BOM
-   マーカを頭につけません。
+   byteorder が ``0`` の場合、出力結果となる文字列は常に Unicode BOM マーカ
+   (U+FEFF) で始まります。それ以外のモードでは、 BOM マーカを頭につけません。
 
    *Py_UNICODE_WIDE* が定義されている場合、単一の :ctype:`Py_UNICODE` 値はサロゲートペアとして表現されることがあります。
    *Py_UNICODE_WIDE* が定義されていなければ、各 :ctype:`Py_UNICODE` 値は UCS-2 文字として表現されます。
 
    codec が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_AsUTF16String(PyObject *unicode)
 
    ネイティブバイトオーダの UTF-16 でエンコードされた Python 文字列を返します。文字列は常に BOM マーカから始まります。エラー処理は
    "strict" です。 codec が例外を送出した場合には *NULL* を返します。
 
-以下は "Unicode Escape" codec の APIです:
 
-.. % --- Unicode-Escape Codecs ----------------------------------------------
+UTF-7 Codecs
+""""""""""""
+以下は UTF-7 コーデックのAPIです。
+
+.. cfunction:: PyObject* PyUnicode_DecodeUTF7(const char *s, Py_ssize_t size, const char *errors)
+
+   UTF-7 でエンコードされた *size* バイトの文字列 *s* をデコードして
+   Unicode オブジェクトを作成します。
+   コーデックが例外を発生させたときは *NULL* を返します。
+
+
+.. cfunction:: PyObject* PyUnicode_DecodeUTF8Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)
+
+   *consumed* が *NULL* のとき、 :cfunc:`PyUnicode_DecodeUTF7` と同じように動作します。
+   *consumed* が非 *NULL* のとき、末尾の不完全な UTF-7 base-64 部分をエラーとしません。
+   不完全な部分のバイト列はデコードせずに、デコードしたバイト数を *consumed* に格納します。
+
+
+.. cfunction:: PyObject* PyUnicode_EncodeUTF7(const Py_UNICODE *s, Py_ssize_t size, int base64SetO, int base64WhiteSpace, const char *errors)
+
+   与えられたサイズの :ctype:`Py_UNICODE` バッファを UTF-7 でエンコードして、
+   Python の bytes オブジェクトとして返します。
+   コーデックが例外を発生させたときは *NULL* を返します。
+
+   If *base64SetO* is nonzero, "Set O" (punctuation that has no otherwise
+   special meaning) will be encoded in base-64.  If *base64WhiteSpace* is
+   nonzero, whitespace will be encoded in base-64.  Both are set to zero for the
+   Python "utf-7" codec.
+   *base64SetO* が非ゼロのとき、 "Set O" 文字
+   (他の場合には何も特別な意味を持たない句読点) を base-64 エンコードします。
+   *base64WhiteSpace* が非ゼロのとき、空白文字を base-64 エンコードします。
+   Python の "utf-7" コーデックでは、両方ともゼロに設定されています。
+
+
+Unicode-Escape Codecs
+"""""""""""""""""""""""
+
+以下は "Unicode Escape" codec の APIです:
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeUnicodeEscape(const char *s, Py_ssize_t size, const char *errors)
@@ -448,11 +560,19 @@ These are the UTF-32 codec APIs:
    Unicode-Escape でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec
    が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_EncodeUnicodeEscape(const Py_UNICODE *s, Py_ssize_t size)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを Unicode-Escape でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_AsUnicodeEscapeString(PyObject *unicode)
@@ -460,9 +580,11 @@ These are the UTF-32 codec APIs:
    Unicode-Escape で Unicode オブジェクトをエンコードし、結果を  Python 文字列オブジェクトとして返します。エラー処理は
    "strict" です。 codec が例外を送出した場合には *NULL* を返します。
 
-以下は "Raw Unicode Escape" codec の APIです:
 
-.. % --- Raw-Unicode-Escape Codecs ------------------------------------------
+Raw-Unicode-Escape Codecs
+"""""""""""""""""""""""""
+
+以下は "Raw Unicode Escape" codec の APIです:
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeRawUnicodeEscape(const char *s, Py_ssize_t size, const char *errors)
@@ -470,11 +592,19 @@ These are the UTF-32 codec APIs:
    Raw-Unicode-Escape でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec
    が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_EncodeRawUnicodeEscape(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを Raw-Unicode-Escape でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_AsRawUnicodeEscapeString(PyObject *unicode)
@@ -482,10 +612,11 @@ These are the UTF-32 codec APIs:
    Raw-Unicode-Escape で Unicode オブジェクトをエンコードし、結果を  Python 文字列オブジェクトとして返します。エラー処理は
    "strict" です。 codec が例外を送出した場合には *NULL* を返します。
 
+Latin-1 Codecs
+""""""""""""""
+
 以下は Latin-1 codec の APIです: Latin-1 は、 Unicode 序数の最初の 256 個に対応し、エンコード時にはこの 256
 個だけを受理します。
-
-.. % --- Latin-1 Codecs -----------------------------------------------------
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeLatin1(const char *s, Py_ssize_t size, const char *errors)
@@ -493,11 +624,19 @@ These are the UTF-32 codec APIs:
    Latin-1 でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec が例外を送出した場合には
    *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_EncodeLatin1(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを Latin-1 でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_AsLatin1String(PyObject *unicode)
@@ -505,9 +644,10 @@ These are the UTF-32 codec APIs:
    Latin-1 で Unicode オブジェクトをエンコードし、結果を Python 文字列オブジェクトとして返します。エラー処理は "strict" です。
    codec が例外を送出した場合には *NULL* を返します。
 
-以下は ASCII codec の APIです: 7 ビットの ASCII データだけを受理します。その他のコードはエラーになります。
+ASCII Codecs
+""""""""""""
 
-.. % --- ASCII Codecs -------------------------------------------------------
+以下は ASCII codec の APIです: 7 ビットの ASCII データだけを受理します。その他のコードはエラーになります。
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeASCII(const char *s, Py_ssize_t size, const char *errors)
@@ -515,11 +655,19 @@ These are the UTF-32 codec APIs:
    ASCII でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec が例外を送出した場合には
    *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_EncodeASCII(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを ASCII でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_AsASCIIString(PyObject *unicode)
@@ -527,9 +675,11 @@ These are the UTF-32 codec APIs:
    ASCII で Unicode オブジェクトをエンコードし、結果を Python 文字列オブジェクトとして返します。エラー処理は "strict" です。
    codec が例外を送出した場合には *NULL* を返します。
 
-以下は mapping codec の APIです:
 
-.. % --- Character Map Codecs -----------------------------------------------
+Character Map Codecs
+""""""""""""""""""""
+
+以下は mapping codec の APIです:
 
 この codec は、多くの様々な codec を実装する際に使われるという点で特殊な codec です (実際、 :mod:`encodings`
 パッケージに入っている標準 codecs のほとんどは、この codec を使っています)。この codec は、文字のエンコードやデコードにマップ型
@@ -563,12 +713,18 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    .. versionchanged:: 2.4
       mapping引数としてunicodeが使えるようになりました.
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_EncodeCharmap(const Py_UNICODE *s, Py_ssize_t size, PyObject *mapping, const char *errors)
 
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを *mapping* に指定されたオブジェクトを使ってエンコードし、
    Python 文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_AsCharmapString(PyObject *unicode, PyObject *mapping)
 
@@ -590,18 +746,27 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    シーケンス型を使ってもうまく動作します。対応付けを行っていない (:exc:`LookupError` を起こすような) 文字序数に対しては、
    変換は行わず、そのままコピーします。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
+MBCS codecs for Windows
+"""""""""""""""""""""""
+
 以下は MBCS codec の API です。この codec は現在のところ、 Windows 上だけで利用でき、変換の実装には Win32 MBCS
 変換機構 (Win32 MBCS converter) を使っています。 MBCS (または DBCS) はエンコード方式の種類 (class)
 を表す言葉で、単一のエンコード方式を表すわけでなないので注意してください。利用されるエンコード方式 (target encoding) は、 codec
 を動作させているマシン上のユーザ設定で定義されています。
-
-.. % --- MBCS codecs for Windows --------------------------------------------
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeMBCS(const char *s, Py_ssize_t size, const char *errors)
 
    MBCS でエンコードされた *size* バイトの文字列 *s* から Unicode オブジェクトを生成します。codec が例外を送出した場合には
    *NULL* を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_DecodeMBCSStateful(const char *s, int size, const char *errors, int *consumed)
@@ -618,14 +783,19 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    *size* で指定された長さを持つ :ctype:`Py_UNICODE` 型バッファを MBCS でエンコードし、 Python
    文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: PyObject* PyUnicode_AsMBCSString(PyObject *unicode)
 
    MBCS で Unicode オブジェクトをエンコードし、結果を Python 文字列オブジェクトとして返します。エラー処理は "strict" です。
    codec が例外を送出した場合には *NULL* を返します。
 
-.. % --- Methods & Slots ----------------------------------------------------
 
+Methods & Slots
+"""""""""""""""
 
 .. _unicodemethodsandslots:
 
@@ -649,6 +819,9 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    分割を行います。それ以外の場合、指定された文字を使って分割を行います。最大で *maxsplit* 個までの分割を行います。 *maxsplit*
    が負ならば分割数に制限を設けません。分割結果のリスト内には分割文字は含みません。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *maxsplit* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyUnicode_Splitlines(PyObject *s, int keepend)
 
@@ -682,6 +855,10 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    *str*[*start*:*end*] とマッチする場合に 1 を返し、それ以外の場合には 0 を返します。エラーが発生した時は ``-1``
    を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *start*, *end* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: Py_ssize_t PyUnicode_Find(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
 
@@ -689,16 +866,28 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    (*direction* == 1 は順方向検索、 *direction* == -1 は逆方向検索) で検索します。戻り値は最初にマッチが見つかった場所の
    インデクスです; 戻り値 ``-1`` はマッチが見つからなかったことを表し、 ``-2`` はエラーが発生して例外情報が設定されていることを表します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *start*, *end* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
 
 .. cfunction:: Py_ssize_t PyUnicode_Count(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end)
 
    ``str[start:end]`` に *substr* が重複することなく出現する回数を返します。エラーが発生した場合には ``-1`` を返します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *start*, *end* と戻り値の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyUnicode_Replace(PyObject *str, PyObject *substr, PyObject *replstr, Py_ssize_t maxcount)
 
    *str* 中に出現する *substr* を最大で *maxcount* 個 *replstr* に置換し、置換結果を Unicode オブジェクトにして
    返します。 *maxcount* == -1 にすると、全ての *substr* を置換します。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *maxcount* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: int PyUnicode_Compare(PyObject *left, PyObject *right)
@@ -710,15 +899,13 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
 
    二つのunicode文字列を比較して、下のうちの一つを返します:
 
-* ``NULL`` を、例外が発生したときに返します。
-
-* :const:`Py_True` もしくは :const:`Py_False` を、正しく比較できた時に返します。
-
-* :const:`Py_NotImplemented` を、leftとrightがのどちらかに対する
+   * ``NULL`` を、例外が発生したときに返します。
+   * :const:`Py_True` もしくは :const:`Py_False` を、正しく比較できた時に返します。
+   * :const:`Py_NotImplemented` を、leftとrightがのどちらかに対する
      :cfunc:`PyUnicode_FromObject` が失敗したときに返します。(原文: in case the type combination is
      unknown)
 
-     .. % 訳注: 原文が分かりにくいので翻訳者が解説しました。
+   .. 訳注: 原文が分かりにくいので翻訳者が解説しました。
 
    :const:`Py_EQ` と :const:`Py_NE` の比較は、引数からUnicodeへの変換が :exc:`UnicodeDecodeError`
    で失敗した時に、 :exc:`UnicodeWarning` を発生する可能性があることに注意してください。
@@ -737,5 +924,6 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
 
    *element* が *container* 内にあるか調べ、その結果に応じて真または偽を返します。
 
-   *element* は単要素の Unicode 文字に型強制できなければなりません。エラーが生じた場合には ``-1`` を返します。
+   *element* は単要素の Unicode 文字に型強制できなければなりません。
+   エラーが生じた場合には ``-1`` を返します。
 
