@@ -40,6 +40,9 @@
 
    サイズが *len* 新たなタプルオブジェクトを返します。失敗すると *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *len* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_Pack(Py_ssize_t n, ...)
 
@@ -48,33 +51,51 @@
 
    .. versionadded:: 2.4
 
+   .. versionchanged:: 2.5
+      この関数は以前は *n* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyTuple_Size(PyObject *p)
 
    タプルオブジェクトへのポインタを引数にとり、そのタプルのサイズを返します。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyTuple_GET_SIZE(PyObject *p)
 
    タプル *p* のサイズを返しますが、 *p* は非 *NULL* でなくてはならず、タプルオブジェクトを指していなければなりません;
    エラーチェックを行いません。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GetItem(PyObject *p, Py_ssize_t pos)
 
    *p* の指すタプルオブジェクト内の、位置 *pos* にあるオブジェクトを返します。 *pos* が範囲を超えている場合、 *NULL* を返して
    :exc:`IndexError` 例外をセットします。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GET_ITEM(PyObject *p, Py_ssize_t pos)
 
    :cfunc:`PyTuple_GetItem` に似ていますが、引数に対するエラーチェックを行いません。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GetSlice(PyObject *p, Py_ssize_t low, Py_ssize_t high)
 
    *p* の指すタプルオブジェクト内の、位置 *low* から *high* までのスライスを取り出して、タプルオブジェクトとして返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *low*, *high* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyTuple_SetItem(PyObject *p, Py_ssize_t pos, PyObject *o)
 
@@ -84,6 +105,9 @@
 
       この関数は *o* への参照を "盗み取り" ます。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyTuple_SET_ITEM(PyObject *p, Py_ssize_t pos, PyObject *o)
 
@@ -93,6 +117,9 @@
 
       この関数は *o* への参照を "盗み取り" ます。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int _PyTuple_Resize(PyObject **p, Py_ssize_t newsize)
 
@@ -106,3 +133,13 @@
    .. versionchanged:: 2.2
       使われていなかった三つ目のパラメタ、 *last_is_sticky* を削除しました.
 
+   .. versionchanged:: 2.5
+      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
+
+.. cfunction:: int PyTuple_ClearFreeList()
+
+   free list をクリアします。
+   開放したアイテム数を返します。
+
+   .. versionadded:: 2.6
