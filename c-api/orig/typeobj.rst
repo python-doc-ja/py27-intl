@@ -64,6 +64,10 @@ type objects) *must* have the :attr:`ob_size` field.
 
    This field is not inherited by subtypes.
 
+   .. versionchanged:: 2.5
+      This field used to be an :ctype:`int` type. This might require changes
+      in your code for properly supporting 64-bit systems.
+
 
 .. cmember:: PyTypeObject* PyObject.ob_type
 
@@ -185,7 +189,7 @@ type objects) *must* have the :attr:`ob_size` field.
    instance; this is normally :cfunc:`PyObject_Del` if the instance was allocated
    using :cfunc:`PyObject_New` or :cfunc:`PyObject_VarNew`, or
    :cfunc:`PyObject_GC_Del` if the instance was allocated using
-   :cfunc:`PyObject_GC_New` or :cfunc:`PyObject_GC_VarNew`.
+   :cfunc:`PyObject_GC_New` or :cfunc:`PyObject_GC_NewVar`.
 
    This field is inherited by subtypes.
 
@@ -1156,6 +1160,7 @@ Number Object Structures
             binaryfunc nb_add;
             binaryfunc nb_subtract;
             binaryfunc nb_multiply;
+            binaryfunc nb_divide;
             binaryfunc nb_remainder;
             binaryfunc nb_divmod;
             ternaryfunc nb_power;
