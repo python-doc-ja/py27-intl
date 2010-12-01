@@ -36,6 +36,10 @@
    おそらくこの関数を使う気にはならないでしょう。バージョン 2.3 以前の Python でスライスオブジェクトを使いたいのなら、
    :cfunc:`PySlice_GetIndicesEx` のソースを適切に名前変更して自分の拡張モジュールのソースコード内に組み込むとよいでしょう。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *length* の型に :ctype:`int` を、 *start*, *stop*, *step*
+      の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySlice_GetIndicesEx(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step, Py_ssize_t *slicelength)
 
@@ -49,3 +53,7 @@
 
    .. versionadded:: 2.3
 
+   .. versionchanged:: 2.5
+      この関数は以前は *length* の型に :ctype:`int` を、 *start*, *stop*, *step*,
+      *slicelength* の型に :ctype:`int *` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
