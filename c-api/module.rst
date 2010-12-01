@@ -98,3 +98,18 @@
    .. versionadded:: 2.0
 
 
+.. cfunction:: int PyModule_AddIntMacro(PyObject *module, macro)
+
+   *module* に int 定数を追加します。名前と値は *macro* から取得されます。
+   例えば、 ``PyModule_AddConstant(module, AF_INTE)`` とすると、 *AF_INET*
+   という名前の int 型定数を *AF_INET* の値で *module* に追加します。
+   エラー時には ``-1`` を、成功時には ``0`` を返します。
+
+   .. versionadded:: 2.6
+
+.. cfunction:: int PyModule_AddStringMacro(PyObject *module, macro)
+
+   文字列定数を *module* に追加します。
+
+  .. versionadded:: 2.6
+
