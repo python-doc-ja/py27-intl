@@ -15,9 +15,11 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
 
 .. ctype:: PyObject
 
-   全てのオブジェクト型はこの型を拡張したものです。この型には、あるオブジェクトに対するオブジェクトとしてのポインタを Python
-   から扱う必要がある際に必要な情報が入っています。通常に "リリースされている" ビルドでは、この構造体にはオブジェクトの
-   参照カウントと、オブジェクトに対応する型オブジェクトだけが入っています。
+   全てのオブジェクト型はこの型を拡張したものです。
+   この型には、あるオブジェクトに対するオブジェクトとしてのポインタを Python
+   から扱う必要がある際に必要な情報が入っています。通常に "リリースされている"
+   ビルドでは、この構造体にはオブジェクトの参照カウントと、オブジェクトに
+   対応する型オブジェクトだけが入っています。
 
    ``PyObject_HEAD`` マクロ展開で定義されているフィールドに対応します。
 
@@ -60,7 +62,23 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    の展開結果は :cmacro:`Py_TRACE_REFS` の定義に依存します。
 
 
-.. cmacro:: PyObject_HEAD_INIT
+.. cmacro:: PyObject_HEAD_INIT(type)
+
+   新しい :ctype:`PyObject` 型のための初期値に展開するマクロです。
+   このマクロは次のように展開されます。 ::
+
+      _PyObject_EXTRA_INIT
+      1, type,
+
+
+.. cmacro:: PyVarObject_HEAD_INIT(type, size)
+
+   新しい、 :attr:`ob_size` フィールドを含む :ctype:`PyVarObject`
+   型のための初期値に展開するマクロです。
+   このマクロは次のように展開されます。 ::
+
+      _PyObject_EXTRA_INIT
+      1, type, size,+}}}
 
 
 .. ctype:: PyCFunction
@@ -171,6 +189,72 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
 
    .. versionadded:: 2.4
 
+
+.. ctype:: PyMemberDef
+
+   Structure which describes an attribute of a type which corresponds to a C
+   struct member.  Its fields are:
+   type の構造体に C 言語のメンバとして格納されている、 type の属性を表す構造体です。
+   この構造体のフィールドは以下のとおりです。
+
+
+   +------------------+-------------+-------------------------------+
+   | フィールド       | C の型      | 意味                          |
+   +==================+=============+===============================+
+   | :attr:`name`     | char \*     | メンバ名                      |
+   +------------------+-------------+-------------------------------+
+   | :attr:`type`     | int         | C 構造体の中のメンバの型      |
+   +------------------+-------------+-------------------------------+
+   | :attr:`offset`   | Py_ssize_t  | そのメンバの type object      |
+   |                  |             | 構造体中の場所の offset       |
+   |                  |             | バイト数                      |
+   +------------------+-------------+-------------------------------+
+   | :attr:`flags`    | int         | フィールドが読み込み専用か    |
+   |                  |             | 書込み可能なのかを示すビット  |
+   |                  |             | フラグ                        |
+   +------------------+-------------+-------------------------------+
+   | :attr:`doc`      | char \*     | docstring の内容へのポインタ  |
+   +------------------+-------------+-------------------------------+
+
+   :attr:`type` はたくさんのCの型を意味する ``T_`` マクロのうちの1つです。
+   メンバが Python からアクセスされるとき、そのメンバは対応する Python
+   の型に変換されます。
+
+   =============== ==================
+   マクロ名          Cの型
+   =============== ==================
+   T_SHORT         short
+   T_INT           int
+   T_LONG          long
+   T_FLOAT         float
+   T_DOUBLE        double
+   T_STRING        char \*
+   T_OBJECT        PyObject \*
+   T_OBJECT_EX     PyObject \*
+   T_CHAR          char
+   T_BYTE          char
+   T_UBYTE         unsigned char
+   T_UINT          unsigned int
+   T_USHORT        unsigned short
+   T_ULONG         unsigned long
+   T_BOOL          char
+   T_LONGLONG      long long
+   T_ULONGLONG     unsigned long long
+   T_PYSSIZET      Py_ssize_t
+   =============== ==================
+
+   :cmacro:`T_OBJECT` と :cmacro:`T_OBJECT_EX` は、
+   :cmacro:`T_OBJECT` がメンバが *NULL* だったときに ``None`` を返すのに対し、
+   :cmacro:`T_OBJECT_EX` は :exc:`AttributeError` を発生させる点が異なります。
+   :cmacro:`T_OBJECT_EX` は属性に対する :keyword:`del` 文をより正しくあつかうので、
+   できれば :cmacro:`T_OBJECT` よりも :cmacro:`T_OBJECT_EX` を使ってください。
+
+   :attr:`flags` には読み書きアクセス可能なら 0 で、読み込み専用なら
+   :cmacro:`READONLY` を設定します。
+   :attr:`type` に :cmacro:`T_STRING` を使うと、強制的に :cmacro:`READONLY`
+   扱いになります。
+   :cmacro:`T_OBJECT` and :cmacro:`T_OBJECT_EX` メンバだけが del 可能です。
+   (*NULL* が代入されます).
 
 .. cfunction:: PyObject* Py_FindMethod(PyMethodDef table[], PyObject *ob, char *name)
 
