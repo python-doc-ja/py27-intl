@@ -5,10 +5,12 @@
 DateTime オブジェクト
 ---------------------
 
-:mod:`datetime` モジュールでは、様々な日付オブジェクトや時刻オブジェクト
-を提供しています。以下に示す関数を使う場合には、あらかじめヘッダファイル :file:`datetime.h` をソースに include し
-(:file:`Python.h` はこのファイルを  include しません)、 :cfunc:`PyDateTime_IMPORT` マクロを起動しておく
-必要があります。このマクロは以下のマクロで使われる静的変数 ``PyDateTimeAPI`` に C 構造体へのポインタを入れます。
+:mod:`datetime` モジュールでは、様々な日付オブジェクトや時刻オブジェクトを
+提供しています。以下に示す関数を使う場合には、あらかじめヘッダファイル
+:file:`datetime.h` をソースに include し (:file:`Python.h` はこのファイルを
+include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモジュール
+初期化関数から、起動しておく必要があります。このマクロは以下のマクロで
+使われる静的変数 :cdata:`PyDateTimeAPI` に C 構造体へのポインタを入れます。
 
 .. % DateTime Objects
 
