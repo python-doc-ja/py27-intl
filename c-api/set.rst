@@ -46,9 +46,23 @@
 同様に、コンストラクタはすべてのイテレート可能なPythonオブジェクトに対して動作します。
 
 
+.. cfunction:: int PySet_Check(PyObject *p)
+
+   *p* が :class:`set` かそのサブタイプのオブジェクトであるときに真を返します。
+
+   .. versionadded:: 2.6
+
+.. cfunction:: int PyFrozenSet_Check(PyObject *p)
+
+   *p* が :class:`frozenset` かそのサブタイプのオブジェクトであるときに
+   真を返します。
+
+   .. versionadded:: 2.6
+
 .. cfunction:: int PyAnySet_Check(PyObject *p)
 
-   *p* が :class:`set` か :class:`frozenset` 、あるいはそのサブタイプのオブジェクトであれば、trueを返します。
+   *p* が :class:`set` か :class:`frozenset` 、あるいはそのサブタイプの
+   オブジェクトであれば、trueを返します。
 
 
 .. cfunction:: int PyAnySet_CheckExact(PyObject *p)
@@ -74,6 +88,11 @@
    *iterable* が返すオブジェクトを含む新しい :class:`frozenset` を返します。 *iterable* が *NULL*
    のときは、空のfrozensetを返します。 *iterable* がイテレート可能で無い場合は、 :exc:`TypeError` を送出します。
 
+   .. versionchanged:: 2.6
+      完全に新しい :class:`frozenset` オブジェクトを返すことが保証されるように
+      なりました。以前は、大きさがゼロの frozenset はシングルトンでした。
+      これは新しい frozenset を :meth:`PySet_Add` を使って作成するためです。
+
 以降の関数やマクロは、 :class:`set` と :class:`frozenset` とそのサブタイプのインスタンスに対して利用できます。
 
 
@@ -85,6 +104,9 @@
    *anyset* が :class:`set` 、 :class:`frozenset` 及びそのサブタイプのオブジェクトで
    無い場合は、 :exc:`PyExc_SystemError` を送出します。
 
+   .. versionchanged:: 2.5
+      これらの関数は以前は :ctype:`int` を返していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PySet_GET_SIZE(PyObject *anyset)
 
@@ -98,8 +120,6 @@
    *key* がハッシュ可能で無い場合、 :exc:`TypeError` を送出します。 *anyset* が :class:`set`,
    :class:`frozenset` 及びそのサブタイプのオブジェクトで無い場合は :exc:`PyExc_SystemError` を送出します。
 
-以降の関数は、 :class:`set` とそのサブタイプに対して利用可能です。 :class:`frozenset` とそのサブタイプには利用できません。
-
 
 .. cfunction:: int PySet_Add(PyObject *set, PyObject *key)
 
@@ -108,6 +128,14 @@
    setを大きくする余裕が無い場合は、 :exc:`MemoryError` を送出します。
    *set* が :class:`set` とそのサブタイプのインスタンスで無い場合は、 :exc:`SystemError` を送出します。
 
+   .. versionchanged:: 2.6
+      :class:`frozenset` やそのサブタイプのインスタンスに対して利用できる
+      ようになりました。
+      :cfunc:`PyTuple_SetItem` のように、新しい frozenset を他のコードに渡す
+      まえに内容を追加するためのに使うことができます。
+
+以降の関数は、 :class:`set` とそのサブタイプに対して利用可能です。
+:class:`frozenset` とそのサブタイプには利用できません。
 
 .. cfunction:: int PySet_Discard(PyObject *set, PyObject *key)
 
