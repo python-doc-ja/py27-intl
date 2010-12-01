@@ -55,10 +55,16 @@ Python は *弱参照* を第一級オブジェクト (first-class object)
 
 .. cfunction:: PyObject* PyWeakref_GetObject(PyObject *ref)
 
-   弱参照 *ref* が参照しているオブジェクトを返します。被参照オブジェクトがすでに存続していない場合、 ``None`` を返します。
+   弱参照 *ref* が参照しているオブジェクトを返します。被参照オブジェクトが
+   すでに存続していない場合、 :const:`Py_None` を返します。
 
    .. versionadded:: 2.2
 
+   .. warning::
+
+      この関数は参照先オブジェクトの **借り物の参照** を返します。
+      そのため、そのオブジェクトを利用している間そのオブジェクトが破棄されない
+      ことが判っている場合を除き、常に :cfunc:`Py_INCREF` を呼び出すべきです。
 
 .. cfunction:: PyObject* PyWeakref_GET_OBJECT(PyObject *ref)
 
