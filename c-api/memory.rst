@@ -110,8 +110,13 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 
 .. cfunction:: TYPE* PyMem_Resize(void *p, TYPE, size_t n)
 
-   :cfunc:`PyMem_Realloc` と同じですが、 ``(n * sizeof(TYPE))`` バイトにサイズ変更されたメモリを確保します。
+   :cfunc:`PyMem_Realloc` と同じですが、 ``(n * sizeof(TYPE))``
+   バイトにサイズ変更されたメモリを確保します。
    :ctype:`TYPE\*` に型キャストされたポインタを返します。
+   関数が終わったとき、 *p* は新しいメモリ領域のポインタか、失敗した場合は
+   *NULL* になります。これは C プリプロセッサのマクロで、 p
+   は常に上書きされます。エラーを処理するときにメモリを失う事を避けるには、
+   p の元の値を保存しておいてください。
 
 
 .. cfunction:: void PyMem_Del(void *p)
