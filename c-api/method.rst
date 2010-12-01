@@ -62,3 +62,9 @@
    :cfunc:`PyMethod_Self` のマクロ版で、エラーチェックを行いません。
 
 
+.. cfunction:: int PyMethod_ClearFreeList()
+
+   free list をクリアします。
+   開放された要素数を返します。
+
+   .. versionadded:: 2.6
