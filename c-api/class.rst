@@ -2,39 +2,40 @@
 
 .. _classobjects:
 
-Class and Instance Objects
---------------------------
+クラスとインスタンスオブジェクト
+--------------------------------
 
 .. index:: object: class
 
-Note that the class objects described here represent old-style classes, which
-will go away in Python 3. When creating new types for extension modules, you
-will want to work with type objects (section :ref:`typeobjects`).
-
+ここで説明されているクラスオブジェクトは旧スタイルクラスのもので、
+Python 3 では削除されることに注意してください。
+新スタイルクラス(type)を拡張モジュールで作成する場合は、 type オブジェクトを
+扱うべきです。 (:ref:`typeobjects` を参照)
 
 .. ctype:: PyClassObject
 
-   The C structure of the objects used to describe built-in classes.
+   ビルトインクラスを表すためのオブジェクトの構造体
 
 
 .. cvar:: PyObject* PyClass_Type
 
    .. index:: single: ClassType (in module types)
 
-   This is the type object for class objects; it is the same object as
-   ``types.ClassType`` in the Python layer.
+   クラスオブジェクトのための type オブジェクト。
+   Python レイヤーの、 ``types.ClassType`` と同じオブジェクト。
 
 
 .. cfunction:: int PyClass_Check(PyObject *o)
 
-   Return true if the object *o* is a class object, including instances of types
-   derived from the standard class object.  Return false in all other cases.
+   *o* が、標準のクラスオブジェクトから派生した type のインスタンスだった場合を含めて、
+   クラスオブジェクトだった場合に真を返します。
+   それ以外の場合は偽を返します。
 
 
 .. cfunction:: int PyClass_IsSubclass(PyObject *klass, PyObject *base)
 
-   Return true if *klass* is a subclass of *base*. Return false in all other cases.
-
+   *klass* が *base* のサブクラスだった場合に真を返します。
+   それ以外の場合は偽を返します。
 
 .. index:: object: instance
 
