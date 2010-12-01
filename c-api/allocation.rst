@@ -11,6 +11,9 @@
 
 .. cfunction:: PyVarObject* _PyObject_NewVar(PyTypeObject *type, Py_ssize_t size)
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void _PyObject_Del(PyObject *op)
 
@@ -26,6 +29,9 @@
 
    :cfunc:`PyObject_Init` の全ての処理を行い、可変サイズオブジェクトの場合には長さ情報も初期化します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: TYPE* PyObject_New(TYPE, PyTypeObject *type)
 
@@ -42,6 +48,9 @@
    収容できます。この関数は、例えばタプルのように生成時にサイズを決定できるオブジェクトを実装する際に便利です。一連の複数のフィールドに
    対するアロケーション操作を一つにして埋め込むと、アロケーション回数が減り、メモリ管理の処理効率が向上します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyObject_Del(PyObject *op)
 
