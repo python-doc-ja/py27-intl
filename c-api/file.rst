@@ -2,31 +2,35 @@
 
 .. _fileobjects:
 
-ファイルオブジェクト (file object)
-----------------------------------
+ファイルオブジェクト
+--------------------
 
 .. index:: object: file
 
-Python の組み込みファイルオブジェクトは、全て標準 C ライブラリの :ctype:`FILE\*` サポートの上に実装されています。以下の詳細説明は
+Python の組み込みファイルオブジェクトは、全て標準 C ライブラリの
+:ctype:`FILE\*` サポートの上に実装されています。以下の詳細説明は
 一実装に関するもので、将来の Python のリリースで変更されるかもしれません。
 
 
 .. ctype:: PyFileObject
 
-   この :ctype:`PyObject` のサブタイプは Python のファイル型オブジェクトを表現します。
+   この :ctype:`PyObject` のサブタイプは Python のファイル型オブジェクトを
+   表現します。
 
 
 .. cvar:: PyTypeObject PyFile_Type
 
    .. index:: single: FileType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のファイル型を表現します。このオブジェクトは ``file`` および
-   ``types.FileType`` として Python プログラムで公開されています。
+   この :ctype:`PyTypeObject` のインスタンスは Python のファイル型を表現します。
+   このオブジェクトは ``file`` および ``types.FileType`` として Python
+   プログラムで公開されています。
 
 
 .. cfunction:: int PyFile_Check(PyObject *p)
 
-   引数が :ctype:`PyFileObject` か :ctype:`PyFileObject` のサブタイプのときに真を返します。
+   引数が :ctype:`PyFileObject` か :ctype:`PyFileObject` のサブタイプのときに
+   真を返します。
 
    .. versionchanged:: 2.2
       サブタイプを引数にとれるようになりました.
@@ -34,7 +38,8 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
 .. cfunction:: int PyFile_CheckExact(PyObject *p)
 
-   引数が :ctype:`PyFileObject` 型で、かつ :ctype:`PyFileObject` 型のサブタイプでないときに真を返します。
+   引数が :ctype:`PyFileObject` 型で、かつ :ctype:`PyFileObject` 型の
+   サブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
@@ -43,30 +48,73 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: fopen()
 
-   成功すると、 *filename* に指定した名前のファイルを *mode* に指定したファイルモードで開いて得た新たなファイルオブジェクトを返します。
-   *mode* のセマンティクスは標準 C ルーチン :cfunc:`fopen` と同じです。失敗すると *NULL* を返します。
+   成功すると、 *filename* に指定した名前のファイルを *mode* に指定した
+   ファイルモードで開いて得た新たなファイルオブジェクトを返します。
+   *mode* のセマンティクスは標準 C ルーチン :cfunc:`fopen` と同じです。
+   失敗すると *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
 
-   すでに開かれている標準 C ファイルポインタ *fp* から新たな :ctype:`PyFileObject` を生成します。この関数で生成した
-   ファイルオブジェクトは、閉じる際に *close* に指定した関数を呼び出します。失敗すると *NULL* を返します。
+   すでに開かれている標準 C ファイルポインタ *fp* から新たな
+   :ctype:`PyFileObject` を生成します。この関数で生成したファイルオブジェクト
+   は、閉じる際に *close* に指定した関数を呼び出します。失敗すると
+   *NULL* を返します。
 
 
 .. cfunction:: FILE* PyFile_AsFile(PyObject *p)
 
    *p* に関連付けられたファイルオブジェクトを :ctype:`FILE\*` で返します。
 
+   呼び出し側が GIL を開放している間もこの関数が返した :ctype:`FILE\*`
+   オブジェクトを使うのであれば、以下に解説されている :cfunc:`PyFile_IncUseCount`
+   と :cfunc:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
+
+
+.. cfunction:: void PyFile_IncUseCount(PyFileObject \*p)
+
+   PyFileObject 内部の、 :ctype:`FILE\*` が使用中であることを示す使用数カウント
+   をインクリメントします。
+   これは、別のスレッドで使用中の :ctype:`FILE\*` に対して Python が
+   fclose() を呼び出すことを防ぎます。
+   この関数の呼び出し側は、 :ctype:`FILE\*` を使い終わったときに必ず
+   :cfunc:`PyFile_DecUseCount` を呼び出さなければなりません。
+   そうしなければ、 Python はそのファイルオブジェクトを永遠に閉じません。
+
+   この関数を呼び出すときは、GILを取得していなければなりません。
+
+   例えば、 :cfunc:`PyFile_AsFile` を呼び出した直後、GILを開放する
+   前にこの関数を呼び出します。
+
+   .. versionadded:: 2.6
+
+
+.. cfunction:: void PyFile_DecUseCount(PyFileObject \*p)
+
+   PyFileObject 内部の、 :ctype:`FILE\*` が使用中であることを示す unlocked_count
+   メンバーをデクリメントして、呼び出し元が :ctype:`FILE\*` を使い終わった
+   ことを示します。
+   これは、先に行った :cfunc:`PyFile_IncUseCount` の呼び出しを取り消すため
+   だけに呼び出されるでしょう。
+
+   この関数を呼び出すときは、GILを取得していなければなりません。
+
+   .. versionadded:: 2.6
 
 .. cfunction:: PyObject* PyFile_GetLine(PyObject *p, int n)
 
    .. index:: single: EOFError (built-in exception)
 
-   ``p.readline([*n*])`` と同じで、この関数はオブジェクト *p* の各行を読み出します。 *p* は
-   ファイルオブジェクトか、 :meth:`readline` メソッドを持つ何らかのオブジェクトでかまいません。 *n* が ``0`` の場合、
-   行の長さに関係なく正確に 1 行だけ読み出します。 *n* が ``0`` より大きければ、 *n* バイト以上のデータは読み出しません;
-   従って、行の一部だけが返される場合があります。どちらの場合でも、読み出し後すぐにファイルの終端に到達した場合には空文字列を返します。 *n* が ``0``
-   より小さければ、長さに関わらず 1 行だけを読み出しますが、すぐにファイルの終端に到達した場合には :exc:`EOFError` を送出します。
+   ``p.readline([*n*])`` と同じで、この関数はオブジェクト *p*
+   の各行を読み出します。 *p* はファイルオブジェクトか、 :meth:`readline`
+   メソッドを持つ何らかのオブジェクトでかまいません。
+   *n* が ``0`` の場合、行の長さに関係なく正確に 1 行だけ読み出します。
+   *n* が ``0`` より大きければ、 *n* バイト以上のデータは読み出しません;
+   従って、行の一部だけが返される場合があります。
+   どちらの場合でも、読み出し後すぐにファイルの終端に到達した場合には空文字列を
+   返します。 *n* が ``0`` より小さければ、長さに関わらず 1 行だけを
+   読み出しますが、すぐにファイルの終端に到達した場合には :exc:`EOFError`
+   を送出します。
 
 
 .. cfunction:: PyObject* PyFile_Name(PyObject *p)
@@ -78,24 +126,38 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: setvbuf()
 
-   :cfunc:`setvbuf` があるシステムでのみ利用できます。この関数を呼び出してよいのはファイルオブジェクトの生成直後のみです。
+   :cfunc:`setvbuf` があるシステムでのみ利用できます。
+   この関数を呼び出してよいのはファイルオブジェクトの生成直後のみです。
 
 
 .. cfunction:: int PyFile_SetEncoding(PyFileObject *p, const char *enc)
 
-   Unicode オブジェクトをファイルに出力するときにのエンコード方式を *enc* にします。成功すると ``1`` を、失敗すると ``0`` を返します。
+   Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
+   にします。成功すると ``1`` を、失敗すると ``0`` を返します。
 
    .. versionadded:: 2.3
+
+
+.. cfunction:: int PyFile_SetEncodingAndErrors(PyFileObject *p, const char *enc, *errors)
+
+   Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
+   に設定し、そのエラーモードを *err* に設定します。
+
+   .. versionadded:: 2.6
 
 
 .. cfunction:: int PyFile_SoftSpace(PyObject *p, int newflag)
 
    .. index:: single: softspace (file attribute)
 
-   この関数はインタプリタの内部的な利用のために存在します。この関数は *p* の :attr:`softspace`   属性を *newflag* に
-   設定し、以前の設定値を返します。この関数を正しく動作させるために、 *p* がファイルオブジェクトである必然性はありません; 任意の
-   オブジェクトをサポートします (:attr:`softspace` 属性が設定されているかどうかのみが問題だと思ってください)。
-   この関数は全てのエラーを解消し、属性値が存在しない場合や属性値を取得する際にエラーが生じると、 ``0`` を以前の値として返します。
+   この関数はインタプリタの内部的な利用のために存在します。
+   この関数は *p* の :attr:`softspace` 属性を *newflag* に設定し、
+   以前の設定値を返します。この関数を正しく動作させるために、 *p*
+   がファイルオブジェクトである必然性はありません; 任意のオブジェクトを
+   サポートします (:attr:`softspace` 属性が設定されているかどうかのみが
+   問題だと思ってください)。
+   この関数は全てのエラーを解消し、属性値が存在しない場合や属性値を
+   取得する際にエラーが生じると、 ``0`` を以前の値として返します。
    この関数からはエラーを検出できませんが、そもそもそういう必要はありません。
 
 
@@ -103,13 +165,16 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: Py_PRINT_RAW
 
-   オブジェクト *obj* をファイルオブジェクト *p* に書き込みます。 *flag* がサポートするフラグは :const:`Py_PRINT_RAW`
-   だけです; このフラグを指定すると、オブジェクトに :func:`repr` ではなく :func:`str` を適用した結果をファイルに書き出します。
-   成功した場合には ``0`` を返し、失敗すると ``-1`` を返して適切な例外をセットします。
+   オブジェクト *obj* をファイルオブジェクト *p* に書き込みます。
+   *flag* がサポートするフラグは :const:`Py_PRINT_RAW` だけです;
+   このフラグを指定すると、オブジェクトに :func:`repr` ではなく :func:`str`
+   を適用した結果をファイルに書き出します。
+   成功した場合には ``0`` を返し、失敗すると ``-1`` を返して適切な例外を
+   セットします。
 
 
 .. cfunction:: int PyFile_WriteString(const char *s, PyObject *p)
 
-   文字列 *s* をファイルオブジェクト *p* に書き出します。成功した場合には ``0`` を返し、失敗すると ``-1`` を返して
-   適切な例外をセットします。
+   文字列 *s* をファイルオブジェクト *p* に書き出します。成功した場合には
+   ``0`` を返し、失敗すると ``-1`` を返して適切な例外をセットします。
 
