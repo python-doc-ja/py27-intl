@@ -1141,32 +1141,94 @@ cmpfunc, reprfunc, hashfunc
 
 .. cmember:: lenfunc PyMappingMethods.mp_length
 
-   This function is used by :cfunc:`PyMapping_Length` and
-   :cfunc:`PyObject_Size`, and has the same signature.  This slot may be set to
-   *NULL* if the object has no defined length.
+   この関数は :cfunc:`PyMapping_Length` や :cfunc:`PyObject_Size`
+   から利用され、それらと同じシグネチャを持っています。
+   オブジェクトが定義された長さを持たない場合は、このスロットは
+   *NULL* に設定されることがあります。
 
 .. cmember:: binaryfunc PyMappingMethods.mp_subscript
 
-   This function is used by :cfunc:`PyObject_GetItem` and has the same
-   signature.  This slot must be filled for the :cfunc:`PyMapping_Check`
-   function to return ``1``, it can be *NULL* otherwise.
+   この関数は :cfunc:`PyObject_GetItem` から利用され、同じシグネチャを持っています。
+   このスロットは :cfunc:`PyMapping_Check` が ``1`` を返すためには
+   必要で、そうでなければ *NULL* の場合があります。
 
 .. cmember:: objobjargproc PyMappingMethods.mp_ass_subscript
 
-   This function is used by :cfunc:`PyObject_SetItem` and has the same
-   signature.  If this slot is *NULL*, the object does not support item
-   assignment.
+   この関数は :cfunc:`PyObject_SetItem` から利用され、同じシグネチャを持っています。
+   もしこのスロットが *NULL* なら、このオブジェクトはアイテムの代入をサポートしません。
 
 
 .. _sequence-structs:
 
-シーケンスオブジェクト構造体 (sequence object structure)
-========================================================
+シーケンスオブジェクト構造体
+=============================
 
+.. sectionauthor:: Amaury Forgeot d'Arc
 
 .. ctype:: PySequenceMethods
 
-   拡張型でシーケンス型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
+   拡張型でシーケンス型プロトコルを実装するために使われる関数群への
+   ポインタを保持するために使われる構造体です。
+
+.. cmember:: lenfunc PySequenceMethods.sq_length
+
+   この関数は :cfunc:`PySequence_Size` や :cfunc:`PyObject_Size`
+   から利用され、それらと同じシグネチャを持っています。
+
+.. cmember:: binaryfunc PySequenceMethods.sq_concat
+
+   この関数は :cfunc:`PySequence_Concat`
+   から利用され、同じシグネチャを持っています。
+   また、 ``+`` 演算からも、 :attr:`tp_as_number.nb_add` スロットによる
+   数値加算を試したあとに利用されます。
+
+.. cmember:: ssizeargfunc PySequenceMethods.sq_repeat
+
+   この関数は :cfunc:`PySequence_Repeat`
+   から利用され、同じシグネチャを持っています。
+   また、 ``*`` 演算からも、 :attr:`tp_as_number.nb_mul` スロットによる
+   数値乗算を試したあとに利用されます。
+
+.. cmember:: ssizeargfunc PySequenceMethods.sq_item
+
+   この関数は :cfunc:`PySequence_GetItem`
+   から利用され、同じシグネチャを持っています。
+   このスロットは :cfunc:`PySequence_Check` が ``1`` を返すためには埋めなければならず、
+   それ以外の場合は *NULL* の可能性があります。
+
+   負のインデックスは次のように処理されます: :attr:`sq_length` スロットが
+   埋められていれば、それを呼び出してシーケンスの長さから正のインデックスを
+   計算し、 :attr:`sq_item` に渡します。 :attr:`sq_length` が *NULL*
+   の場合は、インデックスはそのままこの関数に渡されます。
+
+.. cmember:: ssizeobjargproc PySequenceMethods.sq_ass_item
+
+   この関数は :cfunc:`PySequence_SetItem`
+   から利用され、同じシグネチャを持っています。
+   このスロットはオブジェクトが要素の代入をサポートしていない場合は
+   *NULL* かもしれません。
+
+.. cmember:: objobjproc PySequenceMethods.sq_contains
+
+   この関数は :cfunc:`PySequence_Contains`
+   から利用され、同じシグネチャを持っています。
+   このスロットは *NULL* の場合があり、その時 :cfunc:`PySequence_Contains`
+   はシンプルにマッチするオブジェクトを見つけるまでシーケンスを巡回します。
+
+.. cmember:: binaryfunc PySequenceMethods.sq_inplace_concat
+
+   この関数は :cfunc:`PySequence_InPlaceConcat`
+   から利用され、同じシグネチャを持っています。
+   この関数は最初のオペランドを修正してそれを返すべきです。
+
+.. cmember:: ssizeargfunc PySequenceMethods.sq_inplace_repeat
+
+   この関数は :cfunc:`PySequence_InPlaceRepeat`
+   から利用され、同じシグネチャを持っています。
+   この関数は最初のオペランドを修正してそれを返すべきです。
+
+.. XXX need to explain precedence between mapping and sequence
+.. XXX explains when to implement the sq_inplace_* slots
 
 
 .. _buffer-structs:
@@ -1263,6 +1325,5 @@ cmpfunc, reprfunc, hashfunc
 .. ctype:: Py_ssize_t (*getcharbufferproc) (PyObject *self, Py_ssize_t segment, const char **ptrptr)
 
    セグメント *segment* のメモリバッファを *ptrptr* に入れ、そのサイズを返します。エラーのときに ``-1`` を返します。
-
 
 
