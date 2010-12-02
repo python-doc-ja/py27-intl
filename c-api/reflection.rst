@@ -2,49 +2,49 @@
 
 .. _reflection:
 
-Reflection
-==========
+リフレクション
+=================
 
 .. cfunction:: PyObject* PyEval_GetBuiltins()
 
-   Return a dictionary of the builtins in the current execution frame,
-   or the interpreter of the thread state if no frame is currently executing.
+   現在の実行フレーム内のビルトインの辞書か、もし実行中のフレームがなければ
+   スレッド状態のインタプリタのビルトイン辞書を返します。
 
 
 .. cfunction:: PyObject* PyEval_GetLocals()
 
-   Return a dictionary of the local variables in the current execution frame,
-   or *NULL* if no frame is currently executing.
+   現在の実行フレーム内のローカル変数の辞書か、実行中のフレームがなければ
+   *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyEval_GetGlobals()
 
-   Return a dictionary of the global variables in the current execution frame,
-   or *NULL* if no frame is currently executing.
+   現在の実行フレームのグローバル変数の辞書か、実行中のフレームがなければ
+   *NULL* を返します。
 
 
 .. cfunction:: PyFrameObject* PyEval_GetFrame()
 
-   Return the current thread state's frame, which is *NULL* if no frame is
-   currently executing.
+   現在のスレッド状態のフレームを返します。
+   現在実行中のフレームがなければ *NULL* を返します。
 
 
 .. cfunction:: int PyEval_GetRestricted()
 
-   If there is a current frame and it is executing in restricted mode, return true,
-   otherwise false.
+   現在のフレームがありそれが制限モードで実行していた場合、真を返します。
+   それ以外の場合は僞を返します。
 
 
 .. cfunction:: const char* PyEval_GetFuncName(PyObject *func)
 
-   Return the name of *func* if it is a function, class or instance object, else the
-   name of *func*\s type.
+   *func* が 関数、クラス、インスタンスオブジェクトであればその名前を、
+   そうでなければ *func* の型を返します。
 
 
 .. cfunction:: const char* PyEval_GetFuncDesc(PyObject *func)
 
-   Return a description string, depending on the type of *func*.
-   Return values include "()" for functions and methods, " constructor",
-   " instance", and " object".  Concatenated with the result of
-   :cfunc:`PyEval_GetFuncName`, the result will be a description of
-   *func*.
+   *func* の型に依存する、解説文字列(description string)を返します。
+   戻り値は、関数とメソッドに対しては "()", " constructor", " instance",
+   " object" です。
+   :cfunc:`PyEval_GetFuncName` と連結された結果、 *func* の解説になります。
+   
