@@ -9,8 +9,9 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 他のコンテナも含みます) となるオブジェクト型によるサポートが必要です。他のオブジェクトに対する参照を記憶しないオブジェクトや、 (数値や文字列のような)
 アトム型 (atomic type) への参照だけを記憶するような型では、ガベージコレクションに際して特別これといったサポートを提供する必要はありません。
 
-ここで説明しているインタフェースの使い方を示した例は、 Python の拡張と埋め込み (XXX reference: ../ext/ext.html) の
-"循環参照の収集をサポートする (XXX reference: ../ext/example-cycle-support.html)" にあります。
+.. ここで説明しているインタフェースの使い方を示した例は、 Python の拡張と埋め込み (XXX reference: ../ext/ext.html) の
+   "循環参照の収集をサポートする (XXX reference: ../ext/example-cycle-support.html)" にあります。
+
 コンテナ型を作るには、型オブジェクトの :attr:`tp_flags` フィールドに :const:`Py_TPFLAGS_HAVE_GC`
 フラグがなくてはならず、 :attr:`tp_traverse` ハンドラの実装を提供しなければなりません。
 実装する型のインスタンスを変更可能なオブジェクトにするなら、 :attr:`tp_clear` の実装も提供しなければなりません。
@@ -24,7 +25,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 コンテナ型のコンストラクタは以下の二つの規則に適合しなければなりません:
 
-#. オブジェクトのメモリは :cfunc:`PyObject_GC_New` または :cfunc:`PyObject_GC_VarNew`
+#. オブジェクトのメモリは :cfunc:`PyObject_GC_New` または :cfunc:`PyObject_GC_NewVar`
    で確保しなければなりません。
 
 #. 一度他のコンテナへの参照が入るかもしれないフィールドが全て初期化されたら、 :cfunc:`PyObject_GC_Track` を呼び出さねば
@@ -33,21 +34,27 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 .. cfunction:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
 
-   :cfunc:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC` のセットされたコンテナオブジェクト
-   用です。
+   :cfunc:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
+   のセットされたコンテナオブジェクト用です。
 
 
 .. cfunction:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
-   :cfunc:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC` のセットされたコンテナオブジェクト
-   用です。
+   :cfunc:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
+   のセットされたコンテナオブジェクト用です。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: PyVarObject * PyObject_GC_Resize(PyVarObject *op, Py_ssize_t)
+.. cfunction:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
-   :cfunc:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。リサイズされたオブジェクトを返します。失敗すると
-   *NULL* を返します。
+   :cfunc:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。
+   リサイズされたオブジェクトを返します。失敗すると *NULL* を返します。
 
+   .. versionchanged:: 2.5
+      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyObject_GC_Track(PyObject *op)
 
