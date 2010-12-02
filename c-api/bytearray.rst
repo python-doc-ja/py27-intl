@@ -2,8 +2,8 @@
 
 .. _bytearrayobjects:
 
-Byte Array Objects
-------------------
+bytearray オブジェクト
+------------------------
 
 .. index:: object: bytearray
 
@@ -12,76 +12,75 @@ Byte Array Objects
 
 .. ctype:: PyByteArrayObject
 
-   This subtype of :ctype:`PyObject` represents a Python bytearray object.
+   Python の bytearray オブジェクトを示す :ctype:`PyObject` のサブタイプ
 
 
 .. cvar:: PyTypeObject PyByteArray_Type
 
-   This instance of :ctype:`PyTypeObject` represents the Python bytearray type;
-   it is the same object as ``bytearray`` in the Python layer.
+   この :ctype:`PyTypeObject` のインスタンスは、 Python bytearray 型を示します。
+   Python レイヤでの ``bytearray`` と同じオブジェクトです。
 
-Type check macros
+型チェックマクロ
 ^^^^^^^^^^^^^^^^^
 
 .. cfunction:: int PyByteArray_Check(PyObject *o)
 
-   Return true if the object *o* is a bytearray object or an instance of a
-   subtype of the bytearray type.
+   *o* が bytearray かそのサブタイプのインスタンスだった場合に真を返します。
 
 
 .. cfunction:: int PyByteArray_CheckExact(PyObject *o)
 
-   Return true if the object *o* is a bytearray object, but not an instance of a
-   subtype of the bytearray type.
+   *o* が bytearray オブジェクトで、そのサブタイプのインスタンスでは無いときに、
+   真を返します。
 
 
-Direct API functions
+ダイレクト API 関数
 ^^^^^^^^^^^^^^^^^^^^
 
 .. cfunction:: PyObject* PyByteArray_FromObject(PyObject *o)
 
-   Return a new bytearray object from any object, *o*, that implements the
-   buffer protocol.
+   バッファプロトコルを実装している任意のオブジェクト *o* から、
+   新しい bytearray オブジェクトを作成し返します。
 
    .. XXX expand about the buffer protocol, at least somewhere
 
 
 .. cfunction:: PyObject* PyByteArray_FromStringAndSize(const char *string, Py_ssize_t len)
 
-   Create a new bytearray object from *string* and its length, *len*.  On
-   failure, *NULL* is returned.
+   *string* とその長さ *len* から新しい bytearray オブジェクトを返します。
+   失敗した場合は *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyByteArray_Concat(PyObject *a, PyObject *b)
 
-   Concat bytearrays *a* and *b* and return a new bytearray with the result.
+   bytearray *a* と *b* を連結した結果を新しい bytearray として返します。
 
 
 .. cfunction:: Py_ssize_t PyByteArray_Size(PyObject *bytearray)
 
-   Return the size of *bytearray* after checking for a *NULL* pointer.
+   *NULL* ポインタチェックの後に *bytearray* のサイズを返します。
 
 
 .. cfunction:: char* PyByteArray_AsString(PyObject *bytearray)
 
-   Return the contents of *bytearray* as a char array after checking for a
-   *NULL* pointer.
+   *NULL* ポインタチェックの後に *bytearray* の内容を char 配列として返します。
 
 
 .. cfunction:: int PyByteArray_Resize(PyObject *bytearray, Py_ssize_t len)
 
-   Resize the internal buffer of *bytearray* to *len*.
+   *bytearray* の内部バッファを *len* へリサイズします。
 
-Macros
+マクロ
 ^^^^^^
 
-These macros trade safety for speed and they don't check pointers.
+以下のマクロは、ポインタのチェックをしないことにより安全性を犠牲にして
+スピードを優先しています。
 
 .. cfunction:: char* PyByteArray_AS_STRING(PyObject *bytearray)
 
-   Macro version of :cfunc:`PyByteArray_AsString`.
+   :cfunc:`PyByteArray_AsString` のマクロバージョン。
 
 
 .. cfunction:: Py_ssize_t PyByteArray_GET_SIZE(PyObject *bytearray)
 
-   Macro version of :cfunc:`PyByteArray_Size`.
+   :cfunc:`PyByteArray_Size` のマクロバージョン。
