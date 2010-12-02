@@ -6,13 +6,17 @@
 ==============
 
 新スタイルの型を定義する構造体: :ctype:`PyTypeObject` 構造体は、おそらく Python
-オブジェクトシステムの中で最も重要な構造体の一つでしょう。型オブジェクトは :cfunc:`PyObject_\*` 系や :cfunc:`PyType_\*`
-系の関数で扱えますが、ほとんどの Python アプリケーションにとって、さして面白みのある機能を提供しません。
-とはいえ、型オブジェクトはオブジェクトがどのように振舞うかを決める基盤ですから、インタプリタ自体や新たな型を定義する拡張モジュールでは非常に重要な存在です。
+オブジェクトシステムの中で最も重要な構造体の1つでしょう。型オブジェクトは
+:cfunc:`PyObject_\*` 系や :cfunc:`PyType_\*` 系の関数で扱えますが、ほとんどの
+Python アプリケーションにとって、さして面白みのある機能を提供しません。
+型オブジェクトはオブジェクトがどのように振舞うかを決める基盤ですから、
+インタプリタ自体や新たな型を定義する拡張モジュールでは非常に重要な存在です。
 
-型オブジェクトは標準の型 (standard type) に比べるとかなり大きな構造体です。その理由は、型オブジェクトがある型の様々な機能を実現する
-小さな機能単位を実装した C 関数へのポインタが大部分を占めるような多数の値を保持しているからです。この節では、型オブジェクトの各
-フィールドについて詳細を説明します。各フィールドは、構造体内で出現する順番に説明されています。
+型オブジェクトは標準の型 (standard type) に比べるとかなり大きな構造体です。
+各型オブジェクトは多くの値を保持しており、そのほとんどは C 関数へのポインタで、
+それぞれの関数はその型の機能の小さい部分を実装しています。
+この節では、型オブジェクトの各フィールドについて詳細を説明します。
+各フィールドは、構造体内で出現する順番に説明されています。
 
 Typedefs: unaryfunc, binaryfunc, ternaryfunc, inquiry, coercion, intargfunc,
 intintargfunc, intobjargproc, intintobjargproc, objobjargproc, destructor,
@@ -22,36 +26,47 @@ cmpfunc, reprfunc, hashfunc
 :ctype:`PyTypeObject` の構造体定義は :file:`Include/object.h`
 で見つけられるはずです。参照の手間を省くために、ここでは定義を繰り返します:
 
+.. literalinclude:: ../includes/typestruct.h
 
-.. include:: ../includes/typestruct.h
-   :literal:
 
-型オブジェクト構造体は :ctype:`PyVarObject` 構造体を拡張したものです。 :attr:`ob_size` フィールドは、(通常 class
-文が呼び出す :func:`type_new` で生成される) 動的な型に使います。 :cdata:`PyType_Type` (メタタイプ)
-は :attr:`tp_itemsize` を初期化するので注意してください。すなわち、インスタンス (つまり型オブジェクト) には
-:attr:`ob_size` フィールドがなければ *なりません* 。
+型オブジェクト構造体は :ctype:`PyVarObject` 構造体を拡張したものです。
+:attr:`ob_size` フィールドは、(通常 class 文が呼び出す :func:`type_new`
+で生成される) 動的な型に使います。 :cdata:`PyType_Type` (メタタイプ)
+は :attr:`tp_itemsize` を初期化するので注意してください。すなわち、
+インスタンス (つまり型オブジェクト) には :attr:`ob_size`
+フィールドがなければ *なりません* 。
 
 
 .. cmember:: PyObject* PyObject._ob_next
              PyObject* PyObject._ob_prev
 
-   これらのフィールドはマクロ  ``Py_TRACE_REFS`` が定義されている場合のみ存在します。 ``PyObject_HEAD_INIT``
-   マクロを使うと、フィールドを *NULL* に初期化します。静的にメモリ確保されているオブジェクトでは、これらのフィールドは常に *NULL* のままです。
-   動的にメモリ確保されるオブジェクトの場合、これら二つのフィールドは、ヒープ上の *全ての* 存続中のオブジェクトからなる二重リンクリスト
-   でオブジェクトをリンクする際に使われます。このことは様々なデバッグ目的に利用できます; 現状では、環境変数 :envvar:`PYTHONDUMPREFS`
-   が設定されているときに、プログラムの実行終了時点で存続しているオブジェクトを出力するのが唯一の用例です。
+   これらのフィールドはマクロ  ``Py_TRACE_REFS`` が定義されている場合のみ
+   存在します。 ``PyObject_HEAD_INIT`` マクロを使うと、フィールドを *NULL*
+   に初期化します。静的にメモリ確保されているオブジェクトでは、これらの
+   フィールドは常に *NULL* のままです。動的にメモリ確保されるオブジェクトの
+   場合、これら二つのフィールドは、ヒープ上の *全ての* 存続中のオブジェクト
+   からなる二重リンクリストでオブジェクトをリンクする際に使われます。
+   このことは様々なデバッグ目的に利用できます; 現状では、環境変数
+   :envvar:`PYTHONDUMPREFS` が設定されているときに、プログラムの実行終了時点で
+   存続しているオブジェクトを出力するのが唯一の用例です。
 
    サブタイプはこのフィールドを継承しません。
 
 
 .. cmember:: Py_ssize_t PyObject.ob_refcnt
 
-   型オブジェクトの参照カウントで、 ``PyObject_HEAD_INIT`` はこの値を ``1`` に初期化します。静的にメモリ確保された型オブジェクト
-   では、型のインスタンス (:attr:`ob_type` が該当する型を指しているオブジェクト) は参照をカウントする対象には *なりません* 。
-   動的にメモリ確保される型オブジェクトの場合、インスタンスは参照カウントの対象に *なります* 。
+   型オブジェクトの参照カウントで、 ``PyObject_HEAD_INIT`` はこの値を ``1``
+   に初期化します。静的にメモリ確保された型オブジェクトでは、型のインスタンス
+   (:attr:`ob_type` が該当する型を指しているオブジェクト) は参照をカウントする
+   対象には *なりません* 。
+   動的にメモリ確保される型オブジェクトの場合、インスタンスは参照カウントの
+   対象に *なります* 。
 
    サブタイプはこのフィールドを継承しません。
 
+   .. versionchanged:: 2.5
+      このフィールドは以前は :ctype:`int` でした。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cmember:: PyTypeObject* PyObject.ob_type
 
@@ -124,6 +139,10 @@ cmpfunc, reprfunc, hashfunc
    :keyword:`sizeof` 演算子を使うしかありません。基本サイズには、GC ヘッダサイズは入っていません (これは Python 2.2
    からの新しい仕様です; 2.1 や 2.0 では、GC ヘッダサイズは :attr:`tp_basicsize` に入っていました)。
 
+   これらのフィールドはサブタイプに別々に継承されます。
+   基底タイプが 0 でない :attr:`tp_itemsize` を持っていた場合、基底タイプの実装に依存しますが、
+   一般的にはサブタイプで別の 0 で無い値を :attr:`tp_itemsize` に設定するのは安全ではありません。
+
    バイト整列 (alignment) に関する注釈: 変数の各要素を配置する際に特定のバイト整列が必要となる場合、 :attr:`tp_basicsize`
    の値に気をつけなければなりません。一例: 例えばある型が ``double`` の配列を実装しているとします。 :attr:`tp_itemsize` は
    ``sizeof(double)`` です。(``double`` のバイト整列条件に従って) :attr:`tp_basicsize`
@@ -132,43 +151,58 @@ cmpfunc, reprfunc, hashfunc
 
 .. cmember:: destructor PyTypeObject.tp_dealloc
 
-   インスタンスのデストラクタ関数へのポインタです。この関数は (単量子 ``None`` や ``Ellipsis`` の場合のように、インスタンスが
-   決してメモリ解放されない型でない限り) 必ず定義しなければなりません。
+   インスタンスのデストラクタ関数へのポインタです。この関数は (単量子 ``None``
+   や ``Ellipsis`` の場合のように) インスタンスが決してメモリ解放されない型で
+   ない限り必ず定義しなければなりません。
 
-   デストラクタ関数は、 :cfunc:`Py_DECREF` や :cfunc:`Py_XDECREF`
-   マクロで、操作後の参照カウントがゼロになった際に呼び出されます。呼び出された時点では、インスタンスはまだ存在しますが、インスタンスに
-   対する参照は全ない状態です。デストラクタ関数はインスタンスが保持している全ての参照を解放し、インスタンスが確保している全てのメモリバッファを
-   (バッファの確保時に使った関数に対応するメモリ解放関数を使って) 解放し、最後に (かならず最後に行う操作として) その型の :attr:`tp_free`
-   関数を呼び出します。ある型がサブタイプを作成できない  (:const:`Py_TPFLAGS_BASETYPE` フラグがセットされていない) 場合、
-   :attr:`tp_free` の代わりにオブジェクトのメモリ解放関数 (deallocator) を
-   直接呼び出してもかまいません。オブジェクトのメモリ解放関数は、インスタンスのメモリ確保を行う際に使った関数と同じファミリでなければなりません;
-   インスタンスを :cfunc:`PyObject_New` や :cfunc:`PyObject_VarNew` でメモリ確保した場合には、通常
-   :cfunc:`PyObject_Del` を使い、 :cfunc:`PyObject_GC_New` や :cfunc:`PyObject_GC_VarNew`
-   で確保した場合には :cfunc:`PyObject_GC_Del` を使います。
+   デストラクタ関数は、 :cfunc:`Py_DECREF` や :cfunc:`Py_XDECREF` マクロで、
+   操作後の参照カウントがゼロになった際に呼び出されます。呼び出された時点では、
+   インスタンスはまだ存在しますが、インスタンスに対する参照は全くない状態です。
+   デストラクタ関数はインスタンスが保持している全ての参照を解放し、
+   インスタンスが確保している全てのメモリバッファを (バッファの確保時に使った
+   関数に対応するメモリ解放関数を使って) 解放し、最後に (かならず最後に行う
+   操作として) その型の :attr:`tp_free` 関数を呼び出します。
+   ある型がサブタイプを作成できない (:const:`Py_TPFLAGS_BASETYPE`
+   フラグがセットされていない) 場合、 :attr:`tp_free` の代わりにオブジェクトの
+   メモリ解放関数 (deallocator) を直接呼び出してもかまいません。オブジェクトの
+   メモリ解放関数は、インスタンスのメモリ確保を行う際に使った関数と同じ
+   ファミリでなければなりません;
+   インスタンスを :cfunc:`PyObject_New` や :cfunc:`PyObject_VarNew` でメモリ
+   確保した場合には、通常 :cfunc:`PyObject_Del` を使い、
+   :cfunc:`PyObject_GC_New` や :cfunc:`PyObject_GC_NewVar` で確保した場合には
+   :cfunc:`PyObject_GC_Del` を使います。
 
    サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: printfunc PyTypeObject.tp_print
 
-   オプションのフィールドです。ポインタで、インスタンスの出力 (print) を行う関数を指します。
+   オプションのフィールドで、インスタンスの出力 (print) を行う関数を
+   指すポインタです。
 
-   出力関数は、インスタンスが *実体のある (real)* ファイルに出力される場合にのみ呼び出されます; (:class:`StringIO`
-   インスタンスのような) 擬似ファイルに出力される場合には、インスタンスの :attr:`tp_repr` や :attr:`tp_str`
-   が指す関数が呼び出され、文字列への変換を行います。また、 :attr:`tp_print` が *NULL* の場合にもこれらの関数が呼び出されます。
-   :attr:`tp_repr` や :attr:`tp_str` と異なる出力を生成するような :attr:`tp_print`
-   は、決して型に実装してはなりません。
+   出力関数は、インスタンスが *実体のある (real)* ファイルに出力される場合に
+   のみ呼び出されます; (:class:`StringIO` インスタンスのような) 擬似ファイルに
+   出力される場合には、インスタンスの :attr:`tp_repr` や :attr:`tp_str` が指す
+   関数が呼び出され、文字列への変換を行います。
+   また、 :attr:`tp_print` が *NULL* の場合にもこれらの関数が呼び出されます。
+   :attr:`tp_repr` や :attr:`tp_str` と異なる出力を生成するような
+   :attr:`tp_print` は、決して型に実装してはなりません。
 
-   出力関数は :cfunc:`PyObject_Print` と同じシグネチャ: ``int tp_print(PyObject *self, FILE
-   *file, int flags)`` で呼び出されます。* self* 引数は出力するインスタンスを指します。 *file* 引数は出力先となる標準入出力
-   (stdio) ファイルです。 *flags* 引数はフラグビットを組み合わせた値です。現在定義されているフラグビットは
-   :const:`Py_PRINT_RAW` のみです。 :const:`Py_PRINT_RAW` フラグビットがセットされていれば、
-   インスタンスは :attr:`tp_str` と同じ書式で出力されます。 :const:`Py_PRINT_RAW` フラグビットがクリアならば、
-   インスタンスは :attr:`tp_repr` と同じ書式で出力されます。この関数は、操作中にエラーが生じた場合、 ``-1`` を返して例外状態を
-   セットしなければなりません。
+   出力関数は :cfunc:`PyObject_Print` と同じシグネチャ:
+   ``int tp_print(PyObject *self, FILE *file, int flags)`` で呼び出されます。
+   *self* 引数は出力するインスタンスを指します。
+   *file* 引数は出力先となる標準入出力 (stdio) ファイルです。
+   *flags* 引数はフラグビットを組み合わせた値です。
+   現在定義されているフラグビットは :const:`Py_PRINT_RAW` のみです。
+   :const:`Py_PRINT_RAW` フラグビットがセットされていれば、 インスタンスは
+   :attr:`tp_str` と同じ書式で出力されます。 :const:`Py_PRINT_RAW`
+   フラグビットがクリアならば、インスタンスは :attr:`tp_repr`
+   と同じ書式で出力されます。この関数は、操作中にエラーが生じた場合、
+   ``-1`` を返して例外状態をセットしなければなりません。
 
-   :attr:`tp_print` フィールドは撤廃されるかもしれません。いずれにせよ、 :attr:`tp_print`
-   は定義せず、代わりに :attr:`tp_repr` や :attr:`tp_str` に頼って出力を行うようにしてください。
+   :attr:`tp_print` フィールドは撤廃されるかもしれません。いずれにせよ、
+   :attr:`tp_print` は定義せず、代わりに :attr:`tp_repr` や :attr:`tp_str`
+   に頼って出力を行うようにしてください。
 
    サブタイプはこのフィールドを継承します。
 
@@ -203,13 +237,13 @@ cmpfunc, reprfunc, hashfunc
 
    オプションのフィールドです。ポインタで、三値比較 (three-way comparison) を行う関数を指します。
 
-   シグネチャは :cfunc:`PyObject_Compare` と同じです。この関数は *self* が *other* よりも大きければ ``1`` 、
-   *self* と *other* の値が等しければ ``0`` 、 *self* が *other* より小さければ ``-1`` を返します。
+   シグネチャは :cfunc:`PyObject_Compare` と同じです。この関数は *self* が *other* よりも大きければ ``1``,
+   *self* と *other* の値が等しければ ``0``, *self* が *other* より小さければ ``-1`` を返します。
    この関数は、比較操作中にエラーが生じた場合、例外状態をセットして ``-1`` を返さねばなりません。
 
-   このフィールドは :attr:`tp_richcompare` および :attr:`tp_hash` と共にサブタイプに継承されます: すなわち、サブタイプの
-   :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
-   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   このフィールドは :attr:`tp_richcompare` および :attr:`tp_hash` と共にサブタイプに継承されます:
+   すなわち、サブタイプの :attr:`tp_compare`, :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare`, :attr:`tp_richcompare`,
    :attr:`tp_hash` の三つを一緒に継承します。
 
 
@@ -229,41 +263,68 @@ cmpfunc, reprfunc, hashfunc
 
    サブタイプはこのフィールドを継承します。
 
-PyNumberMethods \*tp_as_number;
+.. cmember:: PyNumberMethods* tp_as_number
 
-XXX
+   数値プロトコルを実装した追加の構造体を指すポインタです。
+   これらのフィールドについては :ref:`number-structs` で説明されています。
 
-PySequenceMethods \*tp_as_sequence;
+   :attr:`tp_as_number` フィールドは継承されませんが、そこの含まれるフィールドが
+   個別に継承されます。
 
-XXX
 
-PyMappingMethods \*tp_as_mapping;
+.. cmember:: PySequenceMethods* tp_as_sequence
 
-XXX
+   シーケンスプロトコルを実装した追加の構造体を指すポインタです。
+   これらのフィールドについては :ref:`sequence-structs` で説明されています。
+
+   :attr:`tp_as_sequence` フィールドは継承されませんが、そこの含まれるフィールドが
+   個別に継承されます。
+
+
+.. cmember:: PyMappingMethods* tp_as_mapping
+
+   マッピングプロトコルを実装した追加の構造体を指すポインタです。
+   これらのフィールドについては :ref:`mapping-structs` で説明されています。
+
+   :attr:`tp_as_mapping` フィールドは継承されませんが、そこの含まれるフィールドが
+   個別に継承されます。
 
 
 .. cmember:: hashfunc PyTypeObject.tp_hash
 
    .. index:: builtin: hash
 
-   オプションのフィールドです。ポインタで、組み込み関数 :func:`hash` を実装している関数を指します。
+   オプションのフィールドです。ポインタで、組み込み関数 :func:`hash`
+   を実装している関数を指します。
 
-   シグネチャは :cfunc:`PyObject_Hash` と同じです。この関数は C の :ctype:`long` 型の値を返さねばなりません。通常時には
-   ``-1`` を戻り値にしてはなりません; ハッシュ値の計算中にエラーが生じた場合、関数は例外をセットして ``-1`` を返さねばなりません。
+   シグネチャは :cfunc:`PyObject_Hash` と同じです。この関数は C の
+   :ctype:`long` 型の値を返さねばなりません。通常時には ``-1``
+   を戻り値にしてはなりません; ハッシュ値の計算中にエラーが生じた場合、
+   関数は例外をセットして ``-1`` を返さねばなりません。
 
-   このフィールドが設定されていない場合、二つの可能性があります: :attr:`tp_compare` および :attr:`tp_richcompare`
-   フィールドの両方が *NULL* の場合、オブジェクトのアドレスに基づいたデフォルトのハッシュ値が返されます;
+   このフィールドは明示的に :cfunc:`PyObject_HashNotImplemented` に設定することで、
+   親 type からのハッシュメソッドの継承をブロックすることができます。
+   これは Python レベルでの ``__hash__ = None`` と同等に解釈され、
+   ``isinstance(o, collections.Hashable)`` が正しく ``False`` を返すようになります。
+   逆もまた可能であることに注意してください - Python レベルで ``__hash__ = None``
+   を設定することで ``tp_hash`` スロットは :cfunc:`PyObject_HashNotImplemented`
+   に設定されます。
+
+   このフィールドが設定されていない場合、二つの可能性があります:
+   :attr:`tp_compare` および :attr:`tp_richcompare` フィールドの両方が *NULL*
+   の場合、オブジェクトのアドレスに基づいたデフォルトのハッシュ値が返されます;
    それ以外の場合、 :exc:`TypeError`  が送出されます。
 
    このフィールドは :attr:`tp_compare` および :attr:`tp_richcompare` と共にサブタイプに継承されます:
-   すなわち、サブタイプの :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
-   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   すなわち、サブタイプの :attr:`tp_compare`, :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare`, :attr:`tp_richcompare`,
    :attr:`tp_hash` の三つを一緒に継承します。
 
 
 .. cmember:: ternaryfunc PyTypeObject.tp_call
 
-   オプションのフィールドです。ポインタで、オブジェクトの呼び出しを実装している関数を指します。オブジェクトが呼び出し可能でない場合には *NULL*
+   オプションのフィールドです。ポインタで、オブジェクトの呼び出しを実装している
+   関数を指します。オブジェクトが呼び出し可能でない場合には *NULL*
    にしなければなりません。シグネチャは :cfunc:`PyObject_Call` と同じです。
 
    サブタイプはこのフィールドを継承します。
@@ -311,18 +372,22 @@ XXX
 
 .. cmember:: PyBufferProcs* PyTypeObject.tp_as_buffer
 
-   バッファインタフェースを実装しているオブジェクトにのみ関連する、一連のフィールド群が入った別の構造体を指すポインタです。構造体内の各フィールドは
-   "バッファオブジェクト構造体"  (:ref:`buffer-structs` 節) で説明します。
+   バッファインタフェースを実装しているオブジェクトにのみ関連する、
+   一連のフィールド群が入った別の構造体を指すポインタです。
+   構造体内の各フィールドは :ref:`buffer-structs` で説明します。
 
-   :attr:`tp_as_buffer` フィールド自体は継承されませんが、フィールド内に入っているフィールドは個別に継承されます。
+   :attr:`tp_as_buffer` フィールド自体は継承されませんが、
+   フィールド内に入っているフィールドは個別に継承されます。
 
 
 .. cmember:: long PyTypeObject.tp_flags
 
-   このフィールドは様々なフラグからなるビットマスクです。いくつかのフラグは、特定の状況において変則的なセマンティクスが適用されることを示します;
-   その他のフラグは、型オブジェクト (あるいは :attr:`tp_as_number` 、 :attr:`tp_as_sequence` 、
-   :attr:`tp_as_mapping` 、および :attr:`tp_as_buffer` が参照している拡張機能構造体: extention
-   structure ) の特定のフィールドのうち、過去から現在までずっと存在しているわけではないものが有効になっていることを示すために使われます;
+   このフィールドは様々なフラグからなるビットマスクです。いくつかのフラグは、
+   特定の状況において変則的なセマンティクスが適用されることを示します;
+   その他のフラグは、型オブジェクト (あるいは :attr:`tp_as_number`,
+   :attr:`tp_as_sequence`, :attr:`tp_as_mapping`,および :attr:`tp_as_buffer`
+   が参照している拡張機能構造体: extention structure) の特定のフィールドのうち、
+   過去から現在までずっと存在しているわけではないものが有効になっていることを示すために使われます;
    フラグビットがクリアであれば、フラグが保護しているフィールドにはアクセスしない代わりに、その値はゼロか *NULL* になっているとみなさなければなりません。
 
    このフィールドの継承は複雑です。ほとんどのフラグビットは個別に継承されます。つまり、基底タイプであるフラグビットがセット
@@ -352,7 +417,8 @@ XXX
 
    .. data:: Py_TPFLAGS_GC
 
-      このビットは旧式のものです。このシンボルが指し示していたビットはもはや使われていません。シンボルの現在の定義はゼロになっています。
+      このビットは旧式のものです。このシンボルが指し示していたビットはもはや
+      使われていません。シンボルの現在の定義はゼロになっています。
 
 
    .. data:: Py_TPFLAGS_HAVE_INPLACEOPS
@@ -360,11 +426,11 @@ XXX
       このビットがセットされていれば、 :attr:`tp_as_sequence` が参照する :ctype:`PySequenceMethods`
       構造体、および :attr:`tp_as_number` が参照する :ctype:`PyNumberMethods` 構造体には in-place
       演算に関するフィールドが入っています。具体的に言うと、 :ctype:`PyNumberMethods` 構造体はフィールド
-      :attr:`nb_inplace_add` 、 :attr:`nb_inplace_subtract` 、
-      :attr:`nb_inplace_multiply` 、 :attr:`nb_inplace_divide` 、
-      :attr:`nb_inplace_remainder` 、 :attr:`nb_inplace_power` 、
-      :attr:`nb_inplace_lshift` 、 :attr:`nb_inplace_rshift` 、 :attr:`nb_inplace_and` 、
-      :attr:`nb_inplace_xor` 、および :attr:`nb_inplace_or` を持つことになります; また、
+      :attr:`nb_inplace_add`, :attr:`nb_inplace_subtract`,
+      :attr:`nb_inplace_multiply`, :attr:`nb_inplace_divide`,
+      :attr:`nb_inplace_remainder`, :attr:`nb_inplace_power`,
+      :attr:`nb_inplace_lshift`, :attr:`nb_inplace_rshift`, :attr:`nb_inplace_and`,
+      :attr:`nb_inplace_xor`,および :attr:`nb_inplace_or` を持つことになります; また、
       :ctype:`PySequenceMethods` 構造体はフィールド :attr:`sq_inplace_concat` および
       :attr:`sq_inplace_repeat` を持つことになります。
 
@@ -374,10 +440,10 @@ XXX
       このビットがセットされていれば、 :attr:`tp_as_number` が参照する :ctype:`PyNumberMethods`
       構造体内で定義されている二項演算子および三項演算子は任意のオブジェクト型を非演算子にとるようになり、
       必要に応じて引数の型変換を行います。このビットがクリアなら、演算子は全ての引数が現在のオブジェクト型と同じであるよう要求し、
-      演算の呼び出し側は演算に先立って型変換を行うものと想定します。対象となる演算子は :attr:`nb_add` 、 :attr:`nb_subtract` 、
-      :attr:`nb_multiply` 、 :attr:`nb_divide` 、 :attr:`nb_remainder` 、 :attr:`nb_divmod` 、
-      :attr:`nb_power` 、 :attr:`nb_lshift` 、 :attr:`nb_rshift` 、 :attr:`nb_and` 、
-      :attr:`nb_xor` 、および :attr:`nb_or` です。
+      演算の呼び出し側は演算に先立って型変換を行うものと想定します。対象となる演算子は :attr:`nb_add`, :attr:`nb_subtract`,
+      :attr:`nb_multiply`, :attr:`nb_divide`, :attr:`nb_remainder`, :attr:`nb_divmod`,
+      :attr:`nb_power`, :attr:`nb_lshift`, :attr:`nb_rshift`, :attr:`nb_and`,
+      :attr:`nb_xor`,および :attr:`nb_or` です。
 
 
    .. data:: Py_TPFLAGS_HAVE_RICHCOMPARE
@@ -400,12 +466,12 @@ XXX
 
    .. data:: Py_TPFLAGS_HAVE_CLASS
 
-      このビットがセットされていれば、型オブジェクトは Python 2.2 以降で定義されている新たなフィールド: :attr:`tp_methods` 、
-      :attr:`tp_members` 、 :attr:`tp_getset` 、 :attr:`tp_base` 、 :attr:`tp_dict` 、
-      :attr:`tp_descr_get` 、 :attr:`tp_descr_set` 、 :attr:`tp_dictoffset` 、
-      :attr:`tp_init` 、 :attr:`tp_alloc` 、 :attr:`tp_new` 、 :attr:`tp_free` 、
-      :attr:`tp_is_gc` 、 :attr:`tp_bases` 、 :attr:`tp_mro` 、 :attr:`tp_cache` 、
-      :attr:`tp_subclasses` 、および :attr:`tp_weaklist` があります。
+      このビットがセットされていれば、型オブジェクトは Python 2.2 以降で定義されている新たなフィールド: :attr:`tp_methods`,
+      :attr:`tp_members`, :attr:`tp_getset`, :attr:`tp_base`, :attr:`tp_dict`,
+      :attr:`tp_descr_get`, :attr:`tp_descr_set`, :attr:`tp_dictoffset`,
+      :attr:`tp_init`, :attr:`tp_alloc`, :attr:`tp_new`, :attr:`tp_free`,
+      :attr:`tp_is_gc`, :attr:`tp_bases`, :attr:`tp_mro`, :attr:`tp_cache`,
+      :attr:`tp_subclasses`,および :attr:`tp_weaklist` があります。
 
 
    .. data:: Py_TPFLAGS_HEAPTYPE
@@ -434,9 +500,11 @@ XXX
 
    .. data:: Py_TPFLAGS_HAVE_GC
 
-      オブジェクトがガベージコレクション (GC) をサポートする場合にセットされるビットです。このビットがセットされている場合、インスタンスは
-      :cfunc:`PyObject_GC_New` を使って生成し、 :cfunc:`PyObject_GC_Del` を使って破壊しなければなりません。
-      詳しい情報は XXX 節のガベージコレクションに関する説明中にあります。このビットはまた、GC に関連するフィールド :attr:`tp_traverse`
+      オブジェクトがガベージコレクション (GC) をサポートする場合にセットされるビットです。
+      このビットがセットされている場合、インスタンスは :cfunc:`PyObject_GC_New` を使って生成し、
+      :cfunc:`PyObject_GC_Del` を使って破壊しなければなりません。
+      詳しい情報は :ref:`supporting-cycle-detection` にあります。
+      このビットはまた、GC に関連するフィールド :attr:`tp_traverse`
       および :attr:`tp_clear` が型オブジェクト内に存在することを示します; しかし、これらのフィールドは
       :const:`Py_TPFLAGS_HAVE_GC` がクリアでも :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`
       がセットされている場合には存在します。
@@ -445,9 +513,9 @@ XXX
    .. data:: Py_TPFLAGS_DEFAULT
 
       型オブジェクトおよび拡張機能構造体の特定のフィールドの存在の有無に関連する全てのビットからなるビットマスクです。現状では、このビットマスクには以下のビット:
-      :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER` 、 :const:`Py_TPFLAGS_HAVE_SEQUENCE_IN` 、
-      :const:`Py_TPFLAGS_HAVE_INPLACEOPS` 、 :const:`Py_TPFLAGS_HAVE_RICHCOMPARE` 、
-      :const:`Py_TPFLAGS_HAVE_WEAKREFS` 、 :const:`Py_TPFLAGS_HAVE_ITER` 、および
+      :const:`Py_TPFLAGS_HAVE_GETCHARBUFFER`, :const:`Py_TPFLAGS_HAVE_SEQUENCE_IN`,
+      :const:`Py_TPFLAGS_HAVE_INPLACEOPS`, :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`,
+      :const:`Py_TPFLAGS_HAVE_WEAKREFS`, :const:`Py_TPFLAGS_HAVE_ITER`,および
       :const:`Py_TPFLAGS_HAVE_CLASS` が入っています。
 
 
@@ -490,7 +558,7 @@ XXX
    という決まった名前の引数を持つことを要求します。
 
    このフィールドは :attr:`tp_clear` および :const:`Py_TPFLAGS_HAVE_GC` フラグビットと一緒に継承されます:
-   フラグビット、 :attr:`tp_traverse` 、および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
+   フラグビット、 :attr:`tp_traverse`,および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
    サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
@@ -521,7 +589,7 @@ XXX
       }
 
    参照のクリアはデリケートなので、 :cfunc:`Py_CLEAR` マクロを使うべきです:
-   ポインタを *NULL* にせっとするまで、そのオブジェクトの参照カウントをデクリメントしてはいけません。
+   ポインタを *NULL* にセットするまで、そのオブジェクトの参照カウントをデクリメントしてはいけません。
    参照カウントのデクリメントすると、そのオブジェクトが破棄されるかもしれず、 (そのオブジェクトに関連付けられたファイナライザ、弱参照のコールバックにより)
    任意のPythonコードの実行を含む後片付け処理が実行されるかもしれないからです。もしそういったコードが再び *self* を参照することがあれば、すでに
    持っていたオブジェクトへのポインタは *NULL* になっているので、 *self* は所有していたオブジェクトをもう利用できないことを認識できます。
@@ -529,26 +597,34 @@ XXX
 
    :attr:`tp_clear` 関数の目的は参照カウントを破壊することなので、Python文字列や
    Python整数のような、循環参照になりえないオブジェクトをクリアする必要はありません。一方、全部の所有オブジェクトをクリアするようにし、
-   :attr:`tp_dealloc` 関数が :attr:`tp_clear` 関数を実行するようにすると実相が楽です。
+   :attr:`tp_dealloc` 関数が :attr:`tp_clear` 関数を実行するようにすると実装が楽です。
 
    Pythonのガベージコレクションの仕組みについての詳細は、 :ref:`supporting-cycle-detection` にあります。
 
    このフィールドは :attr:`tp_traverse` および :const:`Py_TPFLAGS_HAVE_GC` フラグビットと一緒に継承されます:
-   フラグビット、 :attr:`tp_traverse` 、および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
+   フラグビット、 :attr:`tp_traverse`,および :attr:`tp_clear` の値がサブタイプで全てゼロになっており、 *かつ*
    サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
 .. cmember:: richcmpfunc PyTypeObject.tp_richcompare
 
-   オプションのフィールドです。ポインタで、拡張比較関数 (rich comparison function) を指します。
+   オプションのフィールドで、拡張比較関数 (rich comparison function)
+   を指すポインタです。拡張比較関数のシグネチャは
+   ``PyObject *tp_richcompare(PyObject *a, PyObject *b, int op)`` です。
 
-   シグネチャは :cfunc:`PyObject_RichCompare` と同じです。この関数は、比較結果を返すべきです。(普通は ``Py_True`` か
-   ``Py_False`` です。) 比較が未定義の場合は、 ``Py_NotImplemented`` を、それ以外のエラーが発生した場合には例外状態をセットして
-   ``NULL`` を返さねばなりません。
+   この関数は、比較結果を返すべきです。(普通は ``Py_True`` か ``Py_False``
+   です。) 比較が未定義の場合は、 ``Py_NotImplemented`` を、それ以外のエラーが
+   発生した場合には例外状態をセットして ``NULL`` を返さねばなりません。
+
+   .. note::
+
+      限られた種類の比較だけが可能 (例えば、 ``==`` と ``!=`` が可能で ``<``
+      などが不可能) な型を実装したい場合、拡張比較関数で直接 :exc:`TypeError`
+      を返します。
 
    このフィールドは :attr:`tp_compare` および :attr:`tp_hash` と共にサブタイプに継承されます: すなわち、サブタイプの
-   :attr:`tp_compare` 、 :attr:`tp_richcompare` および :attr:`tp_hash` が共に
-   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare` 、 :attr:`tp_richcompare` 、
+   :attr:`tp_compare`, :attr:`tp_richcompare` および :attr:`tp_hash` が共に
+   *NULL* の場合、サブタイプは基底タイプから :attr:`tp_compare`, :attr:`tp_richcompare`,
    :attr:`tp_hash` の三つを一緒に継承します。
 
    :attr:`tp_richcompare` および :cfunc:`PyObject_RichCompare`
@@ -575,7 +651,8 @@ XXX
 
 .. cmember:: long PyTypeObject.tp_weaklistoffset
 
-   型のインスタンスが弱参照可能な場合、このフィールドはゼロよりも大きな数になり、インスタンス構造体における弱参照リストの先頭を示すオフセットが入ります (GC
+   型のインスタンスが弱参照可能な場合、このフィールドはゼロよりも大きな数になり、
+   インスタンス構造体における弱参照リストの先頭を示すオフセットが入ります (GC
    ヘッダがある場合には無視します); このオフセット値は :cfunc:`PyObject_ClearWeakRefs` および
    :cfunc:`PyWeakref_\*` 関数が利用します。インスタンス構造体には、 *NULL* に初期化された :ctype:`PyObject\*` 型の
    フィールドが入っていなければなりません。
@@ -598,26 +675,32 @@ XXX
    型の :attr:`__slots__` 宣言に :attr:`__weakref__` という名のスロット
    が入っていない場合、その型は基底タイプから :attr:`tp_weaklistoffset`  を継承します。
 
-次の二つのフィールドは、 :const:`Py_TPFLAGS_HAVE_CLASS` フラグビットがセットされている場合にのみ存在します。
+次の二つのフィールドは、 :const:`Py_TPFLAGS_HAVE_ITER` フラグビットがセットされている場合にのみ存在します。
 
 
 .. cmember:: getiterfunc PyTypeObject.tp_iter
 
-   An optional pointer to a function that returns an iterator for the object.  Its
-   presence normally signals that the instances of this type are iterable (although
-   sequences may be iterable without this function, and classic instances always
-   have this function, even if they don't define an :meth:`__iter__` method).
+   オプションの変数で、そのオブジェクトのイテレータを返す関数へのポインタです。
+   この値が存在することは、通常この型のインスタンスがイテレート可能であることを
+   示しています。(しかし、シーケンスはこの関数がなくてもイテレート可能ですし、
+   旧スタイルクラスのインスタンスは :meth:`__iter__` メソッドを定義していなくても
+   この関数を持っています)
 
-   This function has the same signature as :cfunc:`PyObject_GetIter`.
+   この関数は :cfunc:`PyObject_GetIter` と同じシグネチャを持っています。
 
    サブタイプはこのフィールドを継承します。
 
 
 .. cmember:: iternextfunc PyTypeObject.tp_iternext
 
-   オプションのフィールドです。ポインタで、イテレータにおいて次の要素を返すか、イテレータの要素がなくなると :exc:`StopIteration`
-   を送出する関数を指します。このフィールドがあると、通常この型のインスタンスがイテレータであることを示します (ただし、旧スタイルのインスタンスでは、たとえ
-   :meth:`next` メソッドが定義されていなくても常にこの関数を持っています)。
+   オプションのフィールドで、イテレータにおいて次の要素を返す関数への
+   ポインタです。
+   イテレータの要素がなくなると、この関数は *NULL* を返さなければなりません。
+   :exc:`StopIteration` 例外は設定してもしなくても良いです。
+   その他のエラーが発生したときも、 *NULL* を返さなければなりません。
+   このフィールドがあると、通常この型のインスタンスがイテレータであることを示します
+   (ただし、旧スタイルのインスタンスでは、たとえ :meth:`next` メソッドが
+   定義されていなくても常にこの関数を持っています)。
 
    イテレータ型では、 :attr:`tp_iter` 関数も定義していなければならず、 :attr:`tp_iter` は
    (新たなイテレータインスタンスではなく)  イテレータインスタンス自体を返さねばなりません。
@@ -724,40 +807,51 @@ XXX
    型のインスタンスにインスタンス変数の入った辞書がある場合、このフィールドは非ゼロの値になり、型のインスタンスデータ構造体
    におけるインスタンス変数辞書へのオフセットが入ります; このオフセット値は :cfunc:`PyObject_GenericGetAttr` が使います。
 
-   このフィールドを :attr:`tp_dict` と混同しないでください; :attr:`tp_dict` は型オブジェクト自体の属性のための辞書です。
+   このフィールドを :attr:`tp_dict` と混同しないでください;
+   :attr:`tp_dict` は型オブジェクト自体の属性のための辞書です。
 
-   このフィールドの値がゼロより大きければ、値はインスタンス構造体の先頭からのオフセットを表します。値がゼロより小さければ、インスタンス構造体の *末尾*
-   からのオフセットを表します。負のオフセットを使うコストは比較的高くつくので、インスタンス構造体に可変長の部分があるときのみ使うべきです。
-   例えば、 :class:`str` や :class:`tuple` のサブタイプにインスタンス辞書を追加する場合には、負のオフセットを使います。
-   この場合、たとえ辞書が基本のオブジェクトレイアウトに含まれていなくても、 :attr:`tp_basicsize`
-   フィールドは追加された辞書を考慮にいれなければならないので注意してください。ポインタサイズが 4 バイトのシステムでは、
-   構造体の最後尾に辞書が宣言されていることを示す場合、 :attr:`tp_dictoffset` を ``-4`` にしなければなりません。
+   このフィールドの値がゼロより大きければ、値はインスタンス構造体の先頭からの
+   オフセットを表します。値がゼロより小さければ、インスタンス構造体の *末尾*
+   からのオフセットを表します。負のオフセットを使うコストは比較的高くつくので、
+   インスタンス構造体に可変長の部分があるときのみ使うべきです。
+   例えば、 :class:`str` や :class:`tuple` のサブタイプにインスタンス辞書を
+   追加する場合には、負のオフセットを使います。
+   この場合、たとえ辞書が基本のオブジェクトレイアウトに含まれていなくても、
+   :attr:`tp_basicsize` フィールドは追加された辞書を考慮にいれなければ
+   ならないので注意してください。ポインタサイズが 4 バイトのシステムでは、
+   構造体の最後尾に辞書が宣言されていることを示す場合、
+   :attr:`tp_dictoffset` を ``-4`` にしなければなりません。
 
-   :attr:`tp_dictoffset` が負の場合、インスタンスにおける実際の辞書のオフセットは以下のようにして計算されます::
+   :attr:`tp_dictoffset` が負の場合、インスタンスにおける実際の辞書の
+   オフセットは以下のようにして計算されます::
 
       dictoffset = tp_basicsize + abs(ob_size)*tp_itemsize + tp_dictoffset
       if dictoffset is not aligned on sizeof(void*):
           round up to sizeof(void*)
 
-   ここで、 :attr:`tp_basicsize` 、 :attr:`tp_itemsize` および :attr:`tp_dictoffset`
-   は型オブジェクトから取り出され、 :attr:`ob_size` はインスタンスから取り出されます。長整数は符号を記憶するのに :attr:`ob_size`
-   の符号を使うため、 :attr:`ob_size` は絶対値を使います。(この計算を自分で行う必要はまったくありません;
+   ここで、 :attr:`tp_basicsize`, :attr:`tp_itemsize` および :attr:`tp_dictoffset`
+   は型オブジェクトから取り出され、 :attr:`ob_size` はインスタンスから取り出されます。
+   長整数は符号を記憶するのに :attr:`ob_size` の符号を使うため、
+   :attr:`ob_size` は絶対値を使います。(この計算を自分で行う必要はまったくありません;
    :cfunc:`_PyObject_GetDictPtr` がやってくれます。)
 
-   サブタイプはこのフィールドを継承しますが、以下の規則があるので読んでください。サブタイプはこのオフセット値をオーバライドできます; 従って、
-   サブタイプでは辞書のオフセットが基底タイプとは異なる場合があります。辞書へのオフセット常に :attr:`tp_dictoffset` で
-   分かるはずなので、このことは問題にはならないはずです。
+   サブタイプはこのフィールドを継承しますが、以下の規則があるので読んでください。
+   サブタイプはこのオフセット値をオーバライドできます;
+   従って、サブタイプでは辞書のオフセットが基底タイプとは異なる場合があります。
+   辞書へのオフセット常に :attr:`tp_dictoffset` で分かるはずなので、
+   このことは問題にはならないはずです。
 
-   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言が
-   全くなく、かつ基底タイプの全てにインスタンス変数辞書がない場合、辞書のスロットをインスタンスデータレイアウト構造体に追加し、
+   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言がなく、
+   かつ基底タイプの全てにインスタンス変数辞書がない場合、辞書のスロットを
+   インスタンスデータレイアウト構造体に追加し、
    スロットのオフセットを :attr:`tp_dictoffset` に設定します。
 
-   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言がある場合、この型は基底タイプから
-   :attr:`tp_dictoffset` を継承します。
+   :keyword:`class` 文で定義された型に :attr:`__slots__` 宣言がある場合、
+   この型は基底タイプから :attr:`tp_dictoffset` を継承します。
 
    (:attr:`__dict__` という名前のスロットを :attr:`__slots__` 宣言に
-   追加しても、期待どおりの効果は得られず、単に混乱を招くだけになります。とはいえ、これは将来 :attr:`__weakref__` のように
-   追加されるはずです。)
+   追加しても、期待どおりの効果は得られず、単に混乱を招くだけになります。
+   とはいえ、これは将来 :attr:`__weakref__` のように追加されるはずです。)
 
 
 .. cmember:: initproc PyTypeObject.tp_init
@@ -773,8 +867,8 @@ XXX
 
    です。
 
-   *self* 引数は初期化するインスタンスです; *args* および *kwds* 引数は、 :meth:`__init__` を呼び出す際の
-   固定引数およびキーワード引数です。
+   *self* 引数は初期化するインスタンスです; *args* および *kwds* 引数は、
+   :meth:`__init__` を呼び出す際の固定引数およびキーワード引数です。
 
    :attr:`tp_init` 関数のフィールドが *NULL* でない場合、型の呼び出しで普通にインスタンスを生成する際に、型の :attr:`tp_new`
    がインスタンスを返した後に :attr:`tp_init` が呼び出されます。 :attr:`tp_new` が元の型のサブタイプでない別の型を返す場合、
@@ -944,26 +1038,124 @@ XXX
 呼び出すスレッドのオブジェクトを削除することで、ライブラリの仮定している何らかの規約に違反しないように気を付ける必要があります。
 
 
-.. _mapping-structs:
-
-マップ型オブジェクト構造体 (mapping object structure)
-=====================================================
-
-
-.. ctype:: PyMappingMethods
-
-   拡張型でマップ型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
-
-
 .. _number-structs:
 
-数値オブジェクト構造体 (number object structure)
-================================================
+数値オブジェクト構造体
+======================
 
+.. sectionauthor:: Amaury Forgeot d'Arc
 
 .. ctype:: PyNumberMethods
 
    拡張型で数値型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
+   以下のほとんどすべての関数は :ref:`number` で解説されている似た名前の関数から利用されます。
+
+   以下は構造体の定義です。 ::
+
+       typedef struct {
+            binaryfunc nb_add;
+            binaryfunc nb_subtract;
+            binaryfunc nb_multiply;
+            binaryfunc nb_divide;
+            binaryfunc nb_remainder;
+            binaryfunc nb_divmod;
+            ternaryfunc nb_power;
+            unaryfunc nb_negative;
+            unaryfunc nb_positive;
+            unaryfunc nb_absolute;
+            inquiry nb_nonzero;       /* Used by PyObject_IsTrue */
+            unaryfunc nb_invert;
+            binaryfunc nb_lshift;
+            binaryfunc nb_rshift;
+            binaryfunc nb_and;
+            binaryfunc nb_xor;
+            binaryfunc nb_or;
+            coercion nb_coerce;       /* Used by the coerce() function */
+            unaryfunc nb_int;
+            unaryfunc nb_long;
+            unaryfunc nb_float;
+            unaryfunc nb_oct;
+            unaryfunc nb_hex;
+
+            /* Added in release 2.0 */
+            binaryfunc nb_inplace_add;
+            binaryfunc nb_inplace_subtract;
+            binaryfunc nb_inplace_multiply;
+            binaryfunc nb_inplace_divide;
+            binaryfunc nb_inplace_remainder;
+            ternaryfunc nb_inplace_power;
+            binaryfunc nb_inplace_lshift;
+            binaryfunc nb_inplace_rshift;
+            binaryfunc nb_inplace_and;
+            binaryfunc nb_inplace_xor;
+            binaryfunc nb_inplace_or;
+
+            /* Added in release 2.2 */
+            binaryfunc nb_floor_divide;
+            binaryfunc nb_true_divide;
+            binaryfunc nb_inplace_floor_divide;
+            binaryfunc nb_inplace_true_divide;
+
+            /* Added in release 2.5 */
+            unaryfunc nb_index;
+       } PyNumberMethods;
+
+
+2引数および3引数の関数は、 :const:`Py_TPFLAGS_CHECKTYPES` フラグによっては、
+異なる種類の引数を受け取るかもしれません。
+
+- :const:`Py_TPFLAGS_CHECKTYPES` がセットされていない場合、関数の引数は
+  オブジェクトの型であることが保証されます。呼び出し側は :attr:`nb_coerce`
+  メンバで指定されている型強制メソッドを呼び出して引数を変換する責任があります。
+
+  .. cmember:: coercion PyNumberMethods.nb_coerce
+
+     この関数は :cfunc:`PyNumber_CoerceEx` から利用され、同じシグネチャを持ちます。
+     最初の引数は定義された型のオブジェクトを指すポインタでなければなりません。
+     共通の "大きな" 型への変換が可能であれば、この関数はポインタを変換後の
+     オブジェクトへの新しい参照へ置き換えて、 ``0`` を返します。
+     変換ができないなら、この関数は ``1`` を返します。
+     エラーが設定荒れた場合は、 ``-1`` を返します。
+
+- :const:`Py_TPFLAGS_CHECKTYPES` フラグがセットされている場合、2引数および
+  3引数関数はすべてのオペランドの型をチェクし、必要な変換を行わなければなりません。
+  (少なくとも、オペランドのうち1つは定義している型のものです)
+  これは推奨された方式です。 Python 3.0 では型強制は完全に取り除かれています。
+
+与えられたオペランドに対して操作が定義されていな場合は、2引数および3引数関数は
+``Py_NotImplemented`` を返さなければなりません。
+その他のエラーが発生した場合は、例外を設定して ``NULL`` を返さなければなりません。
+
+
+.. _mapping-structs:
+
+マップ型オブジェクト構造体
+==========================
+
+.. sectionauthor:: Amaury Forgeot d'Arc
+
+.. ctype:: PyMappingMethods
+
+   拡張型でマップ型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
+   以下の3つのメンバを持っています。
+
+.. cmember:: lenfunc PyMappingMethods.mp_length
+
+   This function is used by :cfunc:`PyMapping_Length` and
+   :cfunc:`PyObject_Size`, and has the same signature.  This slot may be set to
+   *NULL* if the object has no defined length.
+
+.. cmember:: binaryfunc PyMappingMethods.mp_subscript
+
+   This function is used by :cfunc:`PyObject_GetItem` and has the same
+   signature.  This slot must be filled for the :cfunc:`PyMapping_Check`
+   function to return ``1``, it can be *NULL* otherwise.
+
+.. cmember:: objobjargproc PyMappingMethods.mp_ass_subscript
+
+   This function is used by :cfunc:`PyObject_SetItem` and has the same
+   signature.  If this slot is *NULL*, the object does not support item
+   assignment.
 
 
 .. _sequence-structs:
