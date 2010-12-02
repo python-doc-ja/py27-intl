@@ -2,102 +2,100 @@
 
 .. _string-conversion:
 
-String conversion and formatting
+文字列の変換と書式化
 ================================
 
-Functions for number conversion and formatted string output.
+数値変換と、書式化文字列出力のための関数群
 
 
 .. cfunction:: int PyOS_snprintf(char *str, size_t size,  const char *format, ...)
 
-   Output not more than *size* bytes to *str* according to the format string
-   *format* and the extra arguments. See the Unix man page :manpage:`snprintf(2)`.
+   書式化文字列 *format* と追加の引数から、 *size* バイトを超えない文字列を
+   *str* に出力します。
+   Unix man page の :manpage:`snprintf(2)` を参照してください。
 
 
 .. cfunction:: int PyOS_vsnprintf(char *str, size_t size, const char *format, va_list va)
 
-   Output not more than *size* bytes to *str* according to the format string
-   *format* and the variable argument list *va*. Unix man page
-   :manpage:`vsnprintf(2)`.
+   書式化文字列 *format* と可変長引数リスト *va* から、 *size* バイトを超えない文字列を
+   *str* に出力します。
+   Unix man page の :manpage:`vsnprintf(2)` を参照してください。
 
-:cfunc:`PyOS_snprintf` and :cfunc:`PyOS_vsnprintf` wrap the Standard C library
-functions :cfunc:`snprintf` and :cfunc:`vsnprintf`. Their purpose is to
-guarantee consistent behavior in corner cases, which the Standard C functions do
-not.
+:cfunc:`PyOS_snprintf` と :cfunc:`PyOS_vsnprintf` は標準Cライブラリの
+:cfunc:`snprintf` と :cfunc:`vsnprintf` 関数をラップします。
+これらの関数の目的は、C標準ライブラリが保証していないコーナーケースでの
+動作を保証することです。
 
-The wrappers ensure that *str*[*size*-1] is always ``'\0'`` upon return. They
-never write more than *size* bytes (including the trailing ``'\0'`` into str.
-Both functions require that ``str != NULL``, ``size > 0`` and ``format !=
-NULL``.
+これらのラッパ関数は、戻るときに *str*[*size*-1] が常に ``'\0'`` であることを保証します。
+(str の末尾の ``'\0'`` を含めて) *size* バイト以上を書き込みません。
+``str != NULL``, ``size > 0``, ``format != NULL`` を要求します。
 
-If the platform doesn't have :cfunc:`vsnprintf` and the buffer size needed to
-avoid truncation exceeds *size* by more than 512 bytes, Python aborts with a
-*Py_FatalError*.
+
+もし :cfunc:`vsnprintf` のないプラットフォームで、切り捨てを避けるために必要な
+バッファサイズが *size* を512バイトより大きく超過していれば、 Python は
+*Py_FatalError* で abort します。
 
 The return value (*rv*) for these functions should be interpreted as follows:
+これらの関数の戻り値 (*rv*) は次のように解釈されなければなりません:
 
-* When ``0 <= rv < size``, the output conversion was successful and *rv*
-  characters were written to *str* (excluding the trailing ``'\0'`` byte at
-  *str*[*rv*]).
+* ``0 <= rv < size`` のとき、変換出力は成功して、 (最後の *str*[*rv*] にある
+  ``'\0'`` を除いて) *rv* 文字が *str* に出力された。
 
-* When ``rv >= size``, the output conversion was truncated and a buffer with
-  ``rv + 1`` bytes would have been needed to succeed. *str*[*size*-1] is ``'\0'``
-  in this case.
+* ``rv >= size`` のとき、変換出力は切り詰められており、成功するためには ``rv + 1``
+  バイトが必要だったことを示します。 *str*[*size*-1] は ``'\0'`` です。
 
-* When ``rv < 0``, "something bad happened." *str*[*size*-1] is ``'\0'`` in
-  this case too, but the rest of *str* is undefined. The exact cause of the error
-  depends on the underlying platform.
+* ``rv < 0`` のときは、何か悪いことが起こった時です。この場合でも *str*[*size*-1]
+  は ``'\0'`` ですが、 *str* のそれ以外の部分は未定義です。エラーの正確な原因は
+  プラットフォーム依存です。
 
-The following functions provide locale-independent string to number conversions.
+以下の関数は locale 非依存な文字列から数値への変換を行ないます。
 
 
 .. cfunction:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
 
-   Convert a string to a :ctype:`double`. This function behaves like the Standard C
-   function :cfunc:`strtod` does in the C locale. It does this without changing the
-   current locale, since that would not be thread-safe.
+   文字列を :ctype:`double` へ変換します。
+   この関数は、C locale におけるC標準の :cfunc:`strtod` と同じように動作します。
+   スレッドセーフのために、この関数は現在の locale を変更せずに実装されています。
 
-   :cfunc:`PyOS_ascii_strtod` should typically be used for reading configuration
-   files or other non-user input that should be locale independent.
+   :cfunc:`PyOS_ascii_strtod` は通常、設定ファイルを読み込むときや、ロケール独立な
+   非ユーザーからの入力を読み込むときに使われるべきです。
 
    .. versionadded:: 2.4
 
-   See the Unix man page :manpage:`strtod(2)` for details.
+   詳細は Unix man page の :manpage:`strtod(2)` を参照してください。
 
 
 .. cfunction:: char * PyOS_ascii_formatd(char *buffer, size_t buf_len, const char *format, double d)
 
-   Convert a :ctype:`double` to a string using the ``'.'`` as the decimal
-   separator. *format* is a :cfunc:`printf`\ -style format string specifying the
-   number format. Allowed conversion characters are ``'e'``, ``'E'``, ``'f'``,
-   ``'F'``, ``'g'`` and ``'G'``.
+   :ctype:`double` を ``'.'`` を小数点記号に利用して文字列に変換します。
+   *format* は数値のフォーマットを指定する :cfunc:`printf` スタイルの文字列です。
+   利用できる変換文字は ``'e'``, ``'E'``, ``'f'``, ``'F'``, ``'g'``, ``'G'`` です。
 
-   The return value is a pointer to *buffer* with the converted string or NULL if
-   the conversion failed.
+   戻り値は、変換された文字列が格納された *buffer* へのポインタか、失敗した場合は NULL です。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: double PyOS_ascii_atof(const char *nptr)
 
-   Convert a string to a :ctype:`double` in a locale-independent way.
+   文字列を、 locale 非依存な方法で :ctype:`double` へ変換します。
 
    .. versionadded:: 2.4
 
-   See the Unix man page :manpage:`atof(2)` for details.
+   詳細は Unix man page の :manpage:`atof(2)` を参照してください。
 
 
 .. cfunction:: char * PyOS_stricmp(char *s1, char *s2)
 
-   Case insensitive comparison of strings. The function works almost
-   identically to :cfunc:`strcmp` except that it ignores the case.
+   大文字/小文字を区別しない文字列比較。
+   大文字/小文字を無視する以外は、 :cfunc:`strcmp` と同じ動作をします。
 
    .. versionadded:: 2.6
 
 
 .. cfunction:: char * PyOS_strnicmp(char *s1, char *s2, Py_ssize_t  size)
 
-   Case insensitive comparison of strings. The function works almost
-   identically to :cfunc:`strncmp` except that it ignores the case.
+   大文字/小文字を区別しない文字列比較。
+   大文字/小文字を無視する以外は、 :cfunc:`strncmp` と同じ動作をします。
 
    .. versionadded:: 2.6
