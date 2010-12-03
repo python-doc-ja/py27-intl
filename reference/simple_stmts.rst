@@ -11,20 +11,20 @@
 
 .. productionlist::
    simple_stmt: `expression_stmt`
-              : \| `assert_stmt`
-              : \| `assignment_stmt`
-              : \| `augmented_assignment_stmt`
-              : \| `pass_stmt`
-              : \| `del_stmt`
-              : \| `print_stmt`
-              : \| `return_stmt`
-              : \| `yield_stmt`
-              : \| `raise_stmt`
-              : \| `break_stmt`
-              : \| `continue_stmt`
-              : \| `import_stmt`
-              : \| `global_stmt`
-              : \| `exec_stmt`
+              : | `assert_stmt`
+              : | `assignment_stmt`
+              : | `augmented_assignment_stmt`
+              : | `pass_stmt`
+              : | `del_stmt`
+              : | `print_stmt`
+              : | `return_stmt`
+              : | `yield_stmt`
+              : | `raise_stmt`
+              : | `break_stmt`
+              : | `continue_stmt`
+              : | `import_stmt`
+              : | `global_stmt`
+              : | `exec_stmt`
 
 
 .. _exprstmts:
@@ -32,7 +32,9 @@
 式文 (expression statement)
 ===========================
 
-.. index:: pair: expression; statement
+.. index::
+   pair: expression; statement
+   pair: expression; list
 
 式文は、 (主に対話的な使い方では) 値を計算して出力するために使ったり、(通常は) プロシジャ (procedure: 有意な結果を返さない
 関数のことです; Python では、プロシジャは値 ``None`` を返します) を呼び出すために使います。その他の使い方でも式文を使うことができ
@@ -40,8 +42,6 @@
 
 .. productionlist::
    expression_stmt: `expression_list`
-
-.. index:: pair: expression; list
 
 式文は式のリスト (単一の式のこともあります) を値評価します。
 
@@ -59,43 +59,6 @@
 になる式文の値は書き出されないので、プロシジャ呼び出しを行っても出力は得られません。)
 
 
-.. _assert:
-
-Assert 文 (assert statement)
-============================
-
-.. index:: statement: assert
-
-Assert 文は、プログラム内にデバッグ用アサーション (debugging assertion) を仕掛けるための便利な方法です:
-
-.. productionlist::
-   assert_stmt: "assert" `expression` ["," `expression`]
-
-単純な形式 ``assert expression`` は、 ::
-
-   if __debug__:
-      if not expression: raise AssertionError
-
-と等価です。拡張形式 ``assert expression1, expression2`` は、 ::
-
-   if __debug__:
-      if not expression1: raise AssertionError, expression2
-
-と等価です。
-
-.. index::
-   single: __debug__
-   exception: AssertionError
-
-上記の等価関係は、 ``__debug__`` と :exc:`AssertionError` が、同名の組み込み
-変数を参照しているという前提の上に成り立っています。現在の実装では、組み込み変数 ``__debug__`` は通常の状況では ``True``
-であり、最適化がリクエストされた場合（コマンドラインオプション -O）は ``False`` です。現状のコード生成器は、コンパイル時に最適化が要求されて
-いると assert 文に対するコードを全く出力しません。実行に失敗した式のソースコードをエラーメッセージ内に入れる必要はありません;
-メッセージはスタックトレース内で表示されます。
-
-``__debug__`` への代入は不正な操作です。組み込み変数の値は、インタプリタが開始するときに決定されます。
-
-
 .. _assignment:
 
 代入文 (assignment statement)
@@ -111,14 +74,14 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 代入文は、名前を値に (再) 束縛したり、変更可能なオブジェクトの属性や要素を変更したりするために使われます:
 
 .. productionlist::
-   assignment_stmt: (`target_list` "=")+ `expression_list`
-   target_list: `target` ("," `target`)\* [","]
+   assignment_stmt: (`target_list` "=")+ (`expression_list` | `yield_expression`)
+   target_list: `target` ("," `target`)* [","]
    target: `identifier`
-         : \| "(" `target_list` ")"
-         : \| "[" `target_list` "]"
-         : \| `attributeref`
-         : \| `subscription`
-         : \| `slicing`
+         : | "(" `target_list` ")"
+         : | "[" `target_list` "]"
+         : | `attributeref`
+         : | `subscription`
+         : | `slicing`
 
 (末尾の三つのシンボルの構文については  :ref:`primaries` 節を参照してください。)
 
@@ -143,7 +106,7 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 * ターゲットリストが単一のターゲットからなる場合: オブジェクトはそのターゲットに代入されます。
 
 * ターゲットリストが、カンマで区切られた複数のターゲットからなるリストの場合: オブジェクトはターゲットリスト中のターゲット数と
-  同じ数の要素からなるシーケンスでなければならず、その各要素は左から右へと対応するターゲットに代入されます。(これは Python 1.5
+  同じ数の要素からなるイテレート可能オブジェクトでなければならず、その各要素は左から右へと対応するターゲットに代入されます。(これは Python 1.5
   で緩和された規則です; 以前のバージョンでは、代入するオブジェクトはタプルでなければなりませんでした。文字列もシーケンスなので、今では ``a, b =
   "xy"`` のような代入は文字列が正しい長さを持つ限り正規の操作になります。)
 
@@ -151,23 +114,22 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 
 * ターゲットが識別子 (名前) の場合:
 
-    .. index:: statement: global
+   .. index:: statement: global
 
-* 名前が現在のコードブロック内の :keyword:`global` 文に書かれていない場合: 名前は現在のローカル名前空間内のオブジェクトに
-    束縛されます。
+   * 名前が現在のコードブロック内の :keyword:`global` 文に書かれていない場合: 名前は現在のローカル名前空間内のオブジェクトに
+     束縛されます。
 
-* それ以外の場合: 名前は現在のグローバル名前空間内のオブジェクトに束縛されます。
+   * それ以外の場合: 名前は現在のグローバル名前空間内のオブジェクトに束縛されます。
 
-  .. index:: single: destructor
+   .. index:: single: destructor
 
-  名前がすでに束縛済みの場合、再束縛 (rebind) がおこなわれます。再束縛によって、以前その名前に束縛されていたオブジェクトの参照カウント
-  (reference count) がゼロになった場合、オブジェクトは解放 (deallocate) され、デストラクタ  (destructor) が
-  (存在すれば) 呼び出されます。
+   名前がすでに束縛済みの場合、再束縛 (rebind) がおこなわれます。再束縛によって、以前その名前に束縛されていたオブジェクトの参照カウント
+   (reference count) がゼロになった場合、オブジェクトは解放 (deallocate) され、デストラクタ  (destructor) が
+   (存在すれば) 呼び出されます。
 
-  .. % nested
-
-* ターゲットが丸括弧や角括弧で囲われたターゲットリストの場合: オブジェクトはターゲットリスト中のターゲット数と
-  同じ数の要素からなるシーケンスでなければならず、その各要素は左から右へと対応するターゲットに代入されます。
+* ターゲットが丸括弧や角括弧で囲われたターゲットリストの場合: オブジェクトは
+  ターゲットリスト中のターゲット数と同じ数の要素からなるイテレート可能
+  オブジェクトでなければならず、その各要素は左から右へと対応するターゲットに代入されます。
 
   .. index:: pair: attribute; assignment
 
@@ -232,9 +194,10 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 累算代入文は、二項演算と代入文を組み合わせて一つの文にしたものです:
 
 .. productionlist::
-   augmented_assignment_stmt: `target` `augop` `expression_list`
-   augop: "+=" \| "-=" \| "\*=" \| "/=" \| "%=" \| "\*\*="
-        : \| ">>=" \| "<<=" \| "&=" \| "^=" \| "\|="
+   augmented_assignment_stmt: `augtarget` `augop` (`expression_list` | `yield_expression`)
+   augtarget: `identifier` | `attributeref` | `subscription` | `slicing`
+   augop: "+=" | "-=" | "*=" | "/=" | "//=" | "%=" | "**="
+        : | ">>=" | "<<=" | "&=" | "^=" | "|="
 
 累算代入文は、ターゲット (通常の代入文と違って、アンパックは起こりません) と式リストを評価し、それら二つの被演算子間で特定の累算
 代入型の二項演算を行い、結果をもとのターゲットに代入します。ターゲットは一度しか評価されません。
@@ -261,17 +224,56 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 のように、 :meth:`getattr` がクラス変数を参照していても、 :meth:`setattr` はインスタンス変数への書き込みを行ってしまいます。
 
 
+.. _assert:
+
+:keyword:`assert` 文
+============================
+
+.. index::
+   statement: assert
+   pair: debugging; assertions
+
+assert 文は、プログラム内にデバッグ用アサーション (debugging assertion) を仕掛けるための便利な方法です:
+
+.. productionlist::
+   assert_stmt: "assert" `expression` ["," `expression`]
+
+単純な形式 ``assert expression`` は、 ::
+
+   if __debug__:
+      if not expression: raise AssertionError
+
+と等価です。拡張形式 ``assert expression1, expression2`` は、 ::
+
+   if __debug__:
+      if not expression1: raise AssertionError, expression2
+
+と等価です。
+
+.. index::
+   single: __debug__
+   exception: AssertionError
+
+上記の等価関係は、 ``__debug__`` と :exc:`AssertionError` が、同名の組み込み
+変数を参照しているという前提の上に成り立っています。現在の実装では、組み込み変数 ``__debug__`` は通常の状況では ``True``
+であり、最適化がリクエストされた場合（コマンドラインオプション -O）は ``False`` です。現状のコード生成器は、コンパイル時に最適化が要求されて
+いると assert 文に対するコードを全く出力しません。実行に失敗した式のソースコードをエラーメッセージ内に入れる必要はありません;
+コードはスタックトレース内で表示されます。
+
+``__debug__`` への代入は不正な操作です。組み込み変数の値は、インタプリタが開始するときに決定されます。
+
+
 .. _pass:
 
 :keyword:`pass` 文
 ==================
 
-.. index:: statement: pass
+.. index::
+   statement: pass
+   pair: null; operation
 
 .. productionlist::
    pass_stmt: "pass"
-
-.. index:: pair: null; operation
 
 :keyword:`pass` はヌル操作 (null operation) です --- :keyword:`pass`
 が実行されても、何も起きません。 :keyword:`pass` は、例えば::
@@ -288,14 +290,13 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 :keyword:`del` 文
 =================
 
-.. index:: statement: del
+.. index::
+   statement: del
+   pair: deletion; target
+   triple: deletion; target; list
 
 .. productionlist::
    del_stmt: "del" `target_list`
-
-.. index::
-   pair: deletion; target
-   triple: deletion; target; list
 
 オブジェクトの削除 (deletion) は、代入の定義と非常に似た方法で再帰的に定義されています。ここでは完全な詳細を記述するよりも
 いくつかのヒントを述べるにとどめます。
@@ -328,8 +329,8 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 .. index:: statement: print
 
 .. productionlist::
-   print_stmt: "print" ( [`expression` ("," `expression`)\* [","]]
-             : \| ">>" `expression` [("," `expression`)+ [","]] )
+   print_stmt: "print" ([`expression` ("," `expression`)* [","]]
+             : | ">>" `expression` [("," `expression`)+ [","]])
 
 :keyword:`print` は、式を逐次的に評価し、得られたオブジェクトを標準出力に書き出します。オブジェクトが文字列でなければ、まず文字列
 変換規則を使って文字列に変換され、次いで (得られた文字列か、オリジナルの文字列が) 書き出されます。出力系の現在の書き出し位置が行頭にある
@@ -345,8 +346,6 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 .. index::
    single: output
    pair: writing; values
-
-.. index::
    pair: trailing; comma
    pair: newline; suppression
 
@@ -377,14 +376,13 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 :keyword:`return` 文
 ====================
 
-.. index:: statement: return
+.. index::
+   statement: return
+   pair: function; definition
+   pair: class; definition
 
 .. productionlist::
    return_stmt: "return" [`expression_list`]
-
-.. index::
-   pair: function; definition
-   pair: class; definition
 
 :keyword:`return` は、関数定義内で構文法的にネストして現れますが、ネストしたクラス定義内には現れません。
 
@@ -407,16 +405,15 @@ Assert 文は、プログラム内にデバッグ用アサーション (debuggin
 :keyword:`yield` 文
 ===================
 
-.. index:: statement: yield
-
-.. productionlist::
-   yield_stmt: "yield" `expression_list`
-
 .. index::
+   statement: yield
    single: generator; function
    single: generator; iterator
    single: function; generator
    exception: StopIteration
+
+.. productionlist::
+   yield_stmt: `yield_expression`
 
 :keyword:`yield` 文は、ジェネレータ関数 (generator function) を
 定義するときだけ使われ、かつジェネレータ関数の本体の中でだけ用いられます。関数定義中で :keyword:`yield`
@@ -438,8 +435,8 @@ Python バージョン 2.5 では、 :keyword:`yield` 文が  :keyword:`try` ...
 
 .. note::
 
-   Python 2.2 では、 ``generators`` 機能が有効になっている場合にのみ :keyword:`yield` 文を使えます。Python 2.3
-   では、常に有効になっています。 ``__future__`` import 文を使うと、この機能を有効にできます::
+   Python 2.2 では、 ``generators`` 機能が有効になっている場合にのみ :keyword:`yield` 文を使えました。
+   この機能を有効にするための ``__future__`` import 文は次のとおりでした。 ::
 
       from __future__ import generators
 
@@ -459,14 +456,13 @@ Python バージョン 2.5 では、 :keyword:`yield` 文が  :keyword:`try` ...
 :keyword:`raise` 文
 ===================
 
-.. index:: statement: raise
+.. index::
+   statement: raise
+   single: exception
+   pair: raising; exception
 
 .. productionlist::
    raise_stmt: "raise" [`expression` ["," `expression` ["," `expression`]]]
-
-.. index::
-   single: exception
-   pair: raising; exception
 
 式を伴わない場合、 :keyword:`raise` は現在のスコープで最終的に有効になっている例外を再送出します。そのような例外が現在のスコープで
 アクティブでない場合、 :exc:`TypeError` 例外が送出されて、これがエラーであることを示します (IDLE で実行した場合は、代わりに
@@ -486,7 +482,7 @@ exceptionQueue.Empty 例外を送出します)。
 .. index:: object: traceback
 
 第三のオブジェクトが存在し、かつ ``None`` でなければ、オブジェクトはトレースバック  オブジェクトでなければなりません (
-:ref:`traceback` 節参照)。また、例外が発生した場所は現在の処理位置に置き換えられます。
+:ref:`types` 節参照)。また、例外が発生した場所は現在の処理位置に置き換えられます。
 第三のオブジェクトが存在し、オブジェクトがトレースバックオブジェクトでも ``None`` でもなければ、 :exc:`TypeError`
 例外が送出されます。 :keyword:`raise` の三連式型は、 :keyword:`except`
 節から透過的に例外を再送出するのに便利ですが、再送出すべき例外が現在のスコープで発生した最も新しいアクティブな例外である場合には、式なしの
@@ -500,15 +496,14 @@ exceptionQueue.Empty 例外を送出します)。
 :keyword:`break` 文
 ===================
 
-.. index:: statement: break
-
-.. productionlist::
-   break_stmt: "break"
-
 .. index::
+   statement: break
    statement: for
    statement: while
    pair: loop; statement
+
+.. productionlist::
+   break_stmt: "break"
 
 :keyword:`break` 文は、構文としては :keyword:`for` ループや :keyword:`while` ループの
 内側でのみ出現することができますが、ループ内の関数定義やクラス定義の内側には出現できません。
@@ -533,24 +528,26 @@ exceptionQueue.Empty 例外を送出します)。
 :keyword:`continue` 文
 ======================
 
-.. index:: statement: continue
-
-.. productionlist::
-   continue_stmt: "continue"
-
-:keyword:`continue` 文は :keyword:`for` ループや :keyword:`while` ループ内の
-ネストで構文法的にのみ現れますが、ループ内の関数定義やクラス定義、 :keyword:`finally` 文の中には現れません。 [#]_
-
 .. index::
+   statement: continue
    statement: for
    statement: while
    pair: loop; statement
    keyword: finally
 
+.. productionlist::
+   continue_stmt: "continue"
+
+:keyword:`continue` 文は :keyword:`for` ループや :keyword:`while` ループ内の
+ネストで構文法的にのみ現れますが、ループ内の関数定義やクラス定義、
+:keyword:`finally` 句の中には現れません。
 :keyword:`continue` 文は、文を囲う最も内側のループの次の周期に処理を継続します。
 
+:keyword:`continue` が :keyword:`finally` 句を持った :keyword:`try` 文を抜けるとき、
+その :keyword:`finally` 句が次のループサイクルを始める前に実行されます。
 
 .. _import:
+.. _from:
 
 :keyword:`import` 文
 ====================
@@ -562,50 +559,142 @@ exceptionQueue.Empty 例外を送出します)。
    keyword: from
 
 .. productionlist::
-   import_stmt: "import" `module` ["as" `name`] ( "," `module` ["as" `name`] )\*
-              : \| "from" `module` "import" `identifier` ["as" `name`]
-              : ( "," `identifier` ["as" `name`] )\*
-              : \| "from" `module` "import" "(" `identifier` ["as" `name`]
-              : ( "," `identifier` ["as" `name`] )\* [","] ")"
-              : \| "from" `module` "import" "\*"
-   module: (`identifier` ".")\* `identifier`
+   import_stmt: "import" `module` ["as" `name`] ( "," `module` ["as" `name`] )*
+              : | "from" `relative_module` "import" `identifier` ["as" `name`]
+              : ( "," `identifier` ["as" `name`] )*
+              : | "from" `relative_module` "import" "(" `identifier` ["as" `name`]
+              : ( "," `identifier` ["as" `name`] )* [","] ")"
+              : | "from" `module` "import" "*"
+   module: (`identifier` ".")* `identifier`
+   relative_module: "."* `module` | "."+
+   name: `identifier`
 
 import 文は、(1) モジュールを探し、必要なら初期化 (initialize) する; (:keyword:`import` 文のあるスコープにおける)
-ローカルな名前空間で名前を定義する、の二つの段階を踏んで初期化されます。第一形式 (:keyword:`from` のない形式)
-は、上記の段階をリスト中にある各識別子に対して繰り返し実行していきます。 :keyword:`from` のある形式では、(1) を一度だけ行い、次いで
+ローカルな名前空間で名前を定義する、の二つの段階を踏んで初期化されます。
+:keyword:`import` 文には、 :keyword:`from` を使うか使わないかの2種類の形式があります。
+第一形式 (:keyword:`from` のない形式) は、上記の段階をリスト中にある各識別子に対して
+繰り返し実行していきます。 :keyword:`from` のある形式では、(1) を一度だけ行い、次いで
 (2) を繰り返し実行します。
 
-組み込みモジュールや拡張モジュールの "初期化" は、ここでは初期化関数の呼び出しを意味します。モジュールは初期化を行うために
-かならず初期化関数を提供しなければなりません (リファレンス実装では、関数名はモジュール名の前に "init" をつけたものになっています); Python
-で書かれたモジュールの "初期化" は、モジュール本体の実行を意味します。
+.. index::
+    single: package
+
+ステップ(1)がどのように行われるのかを理解するには、まず、 Python が階層的な
+モジュール名をどう扱うのかを理解する必要があります。
+モジュールを組織化し名前に階層を持たせるために、Python は パッケージ という
+概念を持っています。
+モジュールが他のモジュールやパッケージを含むことができないのに対して、
+パッケージは他のパッケージやモジュールを含むことができます。
+ファイルシステムの視点から見ると、パッケージはディレクトリでモジュールはファイルです。
+オリジナルの `specification for packages
+<http://www.python.org/doc/essays/packages.html>`_ は今でも読むことができますが、
+小さい詳細部分はこのドキュメントが書かれた後に変更されています。
 
 .. index::
-   single: modules (in module sys)
-   single: sys.modules
-   pair: module; name
-   pair: built-in; module
-   pair: user-defined; module
-   module: sys
-   pair: filename; extension
-   triple: module; search; path
+    single: sys.modules
 
-Python 処理系は、すでに初期化済みのモジュールや、初期化中のモジュールをモジュール名でインデクス化したテーブルを維持しています。   このテーブルは
-``sys.modules`` からアクセスできます。モジュール名がこのテーブル内にあるなら、段階 (1) は完了しています。
-そうでなければ、処理系はモジュール定義の検索を開始します。モジュールが見つかった場合、モジュールを読み込み (load) ます。モジュール検索や
-読み込みプロセスの詳細は、実装やプラットフォームに依存します。一般的には、ある名前のモジュールを検索する際、まず同名の "組み込み (built-in)"
-モジュールを探し、次に ``sys.path`` で列挙されている場所を探します。
+モジュール名(特に記述していない場合は、 "モジュール" とはパッケージと
+モジュール両方を指しています)が判ったとき、モジュールかパッケージの検索が始まります。
+最初にチェックされる場所は、それまでにインポートされたすべてのモジュールのキャッシュ
+である :data:`sys.modules` です。
+もしモジュールがそこで見つかれば、それが import のステップ(2)で利用されます。
 
 .. index::
-   pair: module; initialization
-   exception: ImportError
-   single: code block
-   exception: SyntaxError
+    single: sys.meta_path
+    single: finder
+    pair: finder; find_module
+    single: __path__
 
-組み込みモジュールが見つかった場合、組み込みの初期化コードが実行され、段階 (1) を完結します。合致するファイルが見つからなかった場合、
-:exc:`ImportError` が送出されます。  ファイルが見つかった場合、ファイルを構文解析して実行可能な
-コードブロックにします。構文エラーが起きた場合、 :exc:`SyntaxError` が送出されます。
-それ以外の場合、まず指定された名前をもつ空のモジュールを作成し、モジュールテーブルに挿入します。次に、このモジュールの実行コンテキスト
-下でコードブロックを実行します。実行中に例外が発生すると、段階 (1) を終了 (terminate) します。
+キャッシュにモジュールが見つからなかった場合、次は :data:`sys.meta_path` が検索されます。
+(:data:`sys.meta_path` の仕様は :pep:`302` に見つけることができます。)
+これは :term:`finder` オブジェクトのリストで、そのモジュールを読み込む方法を
+知っているかどうかをその :meth:`find_module` メソッドをモジュール名を引数として
+呼び出すことで、順番に問い合せていきます。
+モジュールがパッケージに含まれていた(モジュール名の中にドットが含まれていた)場合、
+:meth:`find_module` の第2引数に親パッケージの :attr:`__path__` 属性が渡されます。
+(モジュール名の最後のドットより前のすべてがインポートされます)
+finder はモジュールを見つけたとき、(後で解説する) :term:`loader` か :keyword:`None`
+を返します。
+
+.. index::
+    single: sys.path_hooks
+    single: sys.path_importer_cache
+    single: sys.path
+
+:data:`sys.meta_path` に含まれるすべての finder が module を見つけられない場合、
+幾つかの暗黙的に定義されている finder に問い合わせられます。
+どんな暗黙の meta path finder が定義されているかは Python の実装によって様々です。
+すべての実装が定義しなければならない1つの finder は、 :data:`sys.path_hooks`
+を扱います。
+
+
+この暗黙の finder は要求されたモジュールを、2箇所のどちらかで定義されている "paths"
+から探します。 ("paths" がファイルシステムパスである必要はありません)
+インポート仕様としているモジュールがパッケージに含まれている場合、親パッケージの
+:attr:`__path__` が :meth:`find_module` の第2引数として渡され、それが paths
+として扱われます。モジュールがパッケージに含まれていない場合、 :data:`sys.path`
+が paths として扱われます。
+
+paths が決定されたら、それを巡回してその path を扱える finder を探します。
+:data:`sys.path_importer_cache` 辞書は path に対する finder をキャッシュしており、
+finder を探すときにチェックされます。
+path がキャッシュに登録されていない場合は、 :data:`sys.path_hooks` の各オブジェクトを
+1つの引数 path で呼び出します。各オブジェクトは finder を返すか、 :exc:`ImportError`
+を発生させます。
+finder が返された場合、それを :data:`sys.path_importer_cache` にキャッシュして、
+その path に対してその finder を使います。
+finder が見つからず、 path が存在している場合、 :keyword:`None`
+が :data:`sys.path_importer_cache` に格納されて、暗黙の、
+単一のファイルとしてモジュールが格納されているとしてあつかうファイルベースの finder
+をその path に対して利用することを示します。
+その path が存在しなかった場合、常に :keyword:`None` を返す finder がその
+path に対するキャッシュとして格納されます。
+
+
+.. index::
+    single: loader
+    pair: loader; load_module
+    exception: ImportError
+
+全ての finder がそのモジュールを見つけられないときは、 :exc:`ImportError`
+が発生します。そうでなければ、どれかの finder が loader を返し、その :meth:`load_module`
+メソッドがモジュール名を引数に呼び出されてロードを行ないます。
+(ローダーのオリジナルの定義については :pep:`302` を参照してください。)
+loader はロードするモジュールに対して幾つかの責任があります。
+まず、そのモジュールがすでに :data:`sys.modules` にあれば、
+(ローダーが import 機構の外から呼ばれた場合に有り得ます)
+そのモジュールを初期化に使い、新しいモジュールを使いません。
+:data:`sys.modules` にそのモジュールがなければ、初期化を始める前に :data:`sys.modules`
+に追加します。 :data:`sys.modules` に追加したあと、モジュールのロード中に
+エラーが発生した場合は、その辞書から削除します。
+モジュールが既に :data:`sys.modules` にあった場合は、エラーが発生しても
+その辞書に残しておきます。
+
+.. index::
+    single: __name__
+    single: __file__
+    single: __path__
+    single: __package__
+    single: __loader__
+
+ローダーは幾つかの属性をモジュールに設定しなければなりません。
+モジュール名を :data:`__name__` に設定します。
+ファイルの "path" を :data:`__file__` に設定しますが、ビルトインモジュール
+(:data:`sys.builtin_module_names` にリストされている) の場合には
+その属性を設定しません。
+インポートしているのがパッケージだった場合は、そのパッケージが含むモジュールや
+パッケージを探す場所の path のリストを :data:`__path_` に設定します。
+:data:`__package__` はオプションですが、そのモジュールやパッケージを含む
+パッケージ名(パッケージに含まれていないモジュールには空文字列)を
+設定するべきです。 :data:`__loader__` もオプションですが、そのモジュールを
+ロードした loader オブジェクトを設定するべきです。
+
+.. index::
+    exception: ImportError
+
+ロード中にエラーが発生した場合、他の例外がすでに伝播していないのであれば、
+loader は :exc:`ImportError` を発生させます。
+それ以外の場合は、 loader はロードして初期化したモジュールを返します。
 
 段階 (1) が例外を送出することなく完了したなら、段階 (2) を開始します。
 
@@ -638,28 +727,29 @@ name) 全てを :keyword:`import` 文のある場所のローカルな名前空�
 :exc:`SyntaxError` を送出します。
 
 .. index::
-   keyword: from
-   statement: from
+    single: relative; import
 
-.. index::
-   triple: hierarchical; module; names
-   single: packages
-   single: __init__.py
+インポートするモジュールを指定するとき、そのモジュールの絶対名(absolute name)
+を指定する必要はありません。
+モジュールやパッケージが他のパッケージに含まれている場合、共通のトップパッケージ
+からそのパッケージ名を記述することなく相対インポートすることができます。
+:keyword:`from` の後に指定されるモジュールやパッケージの先頭に複数個のドットを
+付けることで、正確な名前を指定することなしに現在のパッケージ階層からいくつ
+上の階層へ行くかを指定することができます。先頭のドットが1つの場合、
+import をおこなっているモジュールが存在する現在のパッケージを示します。
+3つのドットは2つ上のレベルを示します。
+なので、 ``pkg`` パッケージの中のモジュールで ``from . import mod`` を実行すると、
+``pkg.mod`` をインポートすることになります。
+``pkg.subpkg1`` の中から ``from ..subpkg2 import mod`` を実行すると、
+``pkg.subpkg2.mod`` をインポートします。
+相対インポートの仕様は :pep:`328` に含まれています。
 
-**階層的なモジュール名:** モジュール名に一つまたはそれ以上のドットが入っている場合、モジュール検索パスは違った扱われ方をします。最後のドットまでの
-各識別子からなる列は、"パッケージ (package)"  を見つけるために使われます; 次に、パッケージ内から各識別子が
-検索されます。パッケージとは、一般には ``sys.path`` 上のディレクトリのサブディレクトリで、 :file:`__init__.py`.
-ファイルを持つものです。 [XXX この説明については、ここでは今のところこれ以上詳しく書けません;
-詳細や、パッケージ内モジュールの検索がどのように行われるかは、
-`<http://www.python.org/doc/essays/packages.html>`_ を参照してください]
-
-.. %
 
 .. index:: builtin: __import__
 
-どのモジュールがロードされるべきかを動的に決めたいアプリケーションのために、組み込み関数 :func:`__import__` が提供されています;
-詳細は、Python ライブラリリファレンス (XXX reference: ../lib/lib.html) の組み込み関数 (XXX reference:
-../lib/built-in-funcs.html) を参照してください。
+どのモジュールがロードされるべきかを動的に決めたいアプリケーションのために、
+組み込み関数 :func:`__import__` が提供されています;
+詳細は、 :ref:`built-in-funcs` を参照してください。
 
 
 .. _future:
@@ -675,26 +765,24 @@ future 文 (future statement)
 文によって、新たな機能が標準化されたリリースが出される前に、その機能をモジュール単位で使えるようにします。
 
 .. productionlist:: *
-   future_statement: "from" "__future__" "import" feature ["as" name] ("," feature ["as" name])\*
-                   : \| "from" "__future__" "import" "(" feature ["as" name] ("," feature ["as" name])\* [","] ")"
-   feature: identifier
-   name: identifier
+   future_statement: "from" "__future__" "import" feature ["as" name]
+                   : ("," feature ["as" name])*
+                   : | "from" "__future__" "import" "(" feature ["as" name]
+                   : ("," feature ["as" name])* [","] ")"
 
 future 文は、モジュールの先頭周辺に書かなければなりません。 future 文の前に書いてよい内容は:
 
-* the module docstring (if any),
-
-* comments,
-
-* blank lines, and
-
-* other future statements.
+* モジュールのドキュメンテーション文字列(あれば)
+* コメント
+* 空行
+* その他の future 文
 
 です。
 
-Python 2.3 が feature 文で新たに認識するようになった機能は、 ``generators`` 、 ``division`` 、および
-``nested_scopes`` です。 ``generators`` および ``nested_scopes`` は Python 2.3
-では常に有効になっているので、冗長な機能名といえます。
+Python 2.6 が認識する機能は、 ``unicode_literals``, ``print_function`,
+``absolute_import``, ``division``, ``generators``,
+``nested_scopes``, ``with_statement`` です。 ``generators``, ``with_statement``,
+``nested_scopes`` は Python 2.6 異常では常に有効なので冗長です。
 
 future 文は、コンパイル時に特別なやり方で認識され、扱われます: 言語の中核をなす構文構成 (construct) に対する意味付けが変更されて
 いる場合、変更部分はしばしば異なるコードを生成することで実現されています。新たな機能によって、(新たな予約語のような)
@@ -720,8 +808,7 @@ future 文の実行時における特別な意味付けは、future 文で有効
 future 文の入ったモジュール :mod:`M` 内で使われている :keyword:`exec` 文、組み込み関数 :func:`compile` や
 :func:`execfile` によってコンパイルされるコードは、デフォルトの設定では、 future
 文に関係する新たな構文や意味付けを使うようになっています。 Python 2.2 からは、この仕様を :func:`compile` のオプション引数
-で制御できるようになりました --- 詳細は  Python ライブラリリファレンス (XXX reference: ../lib/built-in-
-funcs.html) でこの関数に関するドキュメントを参照してください。
+で制御できるようになりました --- 詳細はこの関数に関するドキュメントを参照してください。
 
 対話的インタプリタのプロンプトでタイプ入力した future 文は、その後のインタプリタセッション中で有効になります。インタプリタを
 :option:`-i` オプションで起動して実行すべきスクリプト名を渡し、スクリプト中に future 文を入れておくと、新たな機能は
@@ -733,12 +820,12 @@ funcs.html) でこの関数に関するドキュメントを参照してくだ�
 :keyword:`global` 文
 ====================
 
-.. index:: statement: global
+.. index::
+   statement: global
+   triple: global; name; binding
 
 .. productionlist::
-   global_stmt: "global" `identifier` ("," `identifier`)\*
-
-.. index:: triple: global; name; binding
+   global_stmt: "global" `identifier` ("," `identifier`)*
 
 :keyword:`global` 文は、現在のコードブロック全体で維持される宣言文です。 :keyword:`global`
 文は、列挙した識別子をグローバル変数として解釈するよう指定することを意味します。 :keyword:`global`
@@ -775,12 +862,13 @@ funcs.html) でこの関数に関するドキュメントを参照してくだ�
 .. index:: statement: exec
 
 .. productionlist::
-   exec_stmt: "exec" `expression` ["in" `expression` ["," `expression`]]
+   exec_stmt: "exec" `or_expr` ["in" `expression` ["," `expression`]]
 
 この文は、Python コードの動的な実行をサポートします。最初の式の値評価結果は文字列か、開かれたファイルオブジェクトか、
 コードオブジェクトでなければなりません。文字列の場合、一連の Python 実行文として解析し、(構文エラーが生じない限り)
-実行します。開かれたファイルであれば、ファイルを EOF まで読んで解析し、実行します。コードオブジェクトなら、単にこれを実行します。全ての
-場合で、実行されたコードはファイル入力として有効であることが期待されます (セクション :ref:`file-input` 、"ファイル入力"を参照)。
+実行します。 [#]_
+開かれたファイルであれば、ファイルを EOF まで読んで解析し、実行します。コードオブジェクトなら、単にこれを実行します。全ての
+場合で、実行されたコードはファイル入力として有効であることが期待されます (セクション :ref:`file-input` を参照)。
 :keyword:`return` と :keyword:`yield` 文は、 :keyword:`exec` 文に
 渡されたコードの文脈中においても関数定義の外では使われない点に注意してください。
 
@@ -808,8 +896,8 @@ funcs.html) でこの関数に関するドキュメントを参照してくだ�
 :func:`globals` および :func:`locals` は、それぞれ現在のグローバル辞書とローカル辞書を返すので、
 :keyword:`exec` に渡して使うと便利です。
 
-.. rubric:: Footnotes
+.. rubric:: 脚注
 
-.. [#] :keyword:`except` 節や :keyword:`else` 節中に置くことはできます。:keyword:`try` 文に置けない
-   という制限は、実装側の不精によるもので、そのうち改善されることでしょう。
-
+.. [#] パーサーは Unix スタイルの行末の慣習しか許可しないことに注意してください。
+       コードをファイルから読み込む場合、Windows や Mac スタイルの改行を変換するために
+       必ずユニバーサル改行モード(universal newline mode)を利用してください。
