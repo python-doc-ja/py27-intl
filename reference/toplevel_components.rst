@@ -57,7 +57,7 @@ Unixの環境下では、完全なプログラムをインタプリタに渡す�
 非対話的なファイルから読み出された入力は、全て同じ形式:
 
 .. productionlist::
-   file_input: (NEWLINE \| `statement`)\*
+   file_input: (NEWLINE | `statement`)*
 
 をとります。この構文法は、以下の状況で用いられます:
 
@@ -76,7 +76,7 @@ Unixの環境下では、完全なプログラムをインタプリタに渡す�
 対話モードでの入力は、以下の文法の下に構文解析されます:
 
 .. productionlist::
-   interactive_input: [`stmt_list`] NEWLINE \| `compound_stmt` NEWLINE
+   interactive_input: [`stmt_list`] NEWLINE | `compound_stmt` NEWLINE
 
 対話モードでは、(トップレベルの) 複合文の最後に空白行を入れなくてはならないことに注意してください; これは、複合文の終端をパーザが検出するた
 めの手がかりとして必要です。
@@ -94,7 +94,8 @@ Unixの環境下では、完全なプログラムをインタプリタに渡す�
 式入力には二つの形式があります。双方とも、先頭の空白を無視します。 :func:`eval` に対する文字列引数は、以下の形式をとらなければなりません:
 
 .. productionlist::
-   eval_input: `expression_list` NEWLINE\*
+   eval_input: `expression_list` NEWLINE*
+ 
 
 .. index:: builtin: input
 
