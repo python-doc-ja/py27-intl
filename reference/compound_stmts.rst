@@ -36,16 +36,16 @@
 まとめると、以下のようになります:
 
 .. productionlist::
-   compound_stmt: `if_stmt`
-                : \| `while_stmt`
-                : \| `for_stmt`
-                : \| `try_stmt`
-                : \| `with_stmt`
-                : \| `funcdef`
-                : \| `classdef`
-   suite: `stmt_list` NEWLINE \| NEWLINE INDENT `statement`\ + DEDENT
-   statement: `stmt_list` NEWLINE \| `compound_stmt`
-   stmt_list: `simple_stmt` (";" `simple_stmt`)\* [";"]
+                : | `while_stmt`
+                : | `for_stmt`
+                : | `try_stmt`
+                : | `with_stmt`
+                : | `funcdef`
+                : | `classdef`
+                : | `decorated`
+   suite: `stmt_list` NEWLINE | NEWLINE INDENT `statement`+ DEDENT
+   statement: `stmt_list` NEWLINE | `compound_stmt`
+   stmt_list: `simple_stmt` (";" `simple_stmt`)* [";"]
 
 .. index::
    single: NEWLINE token
@@ -61,22 +61,23 @@
 
 
 .. _if:
+.. _elif:
+.. _else:
 
 :keyword:`if` 文
 ================
 
-.. index:: statement: if
+.. index::
+   statement: if
+   keyword: elif
+   keyword: else
 
 :keyword:`if` 文は、条件分岐を実行するために使われます:
 
 .. productionlist::
    if_stmt: "if" `expression` ":" `suite`
-          : ( "elif" `expression` ":" `suite` )\*
+          : ( "elif" `expression` ":" `suite` )*
           : ["else" ":" `suite`]
-
-.. index::
-   keyword: elif
-   keyword: else
 
 :keyword:`if` 文は、式を一つ一つ評価してゆき、真になるまで続けて、真になった節のスイートだけを選択します (真: true と偽: false
 の定義については、 :ref:`booleans` 節を参照してください); 次に、選択したスイートを実行します (または、 :keyword:`if`
@@ -91,14 +92,13 @@
 .. index::
    statement: while
    pair: loop; statement
+   keyword: else
 
 :keyword:`while` 文は、式の値が真である間、実行を繰り返すために使われます:
 
 .. productionlist::
    while_stmt: "while" `expression` ":" `suite`
              : ["else" ":" `suite`]
-
-.. index:: keyword: else
 
 :keyword:`while` 文は式を繰り返し真偽評価し、真であれば最初のスイートを実行します。式が偽であれば (最初から偽になっていることも
 ありえます)、:keyword:`else` 節がある場合にはそれを実行し、ループを終了します。
@@ -119,8 +119,10 @@
 .. index::
    statement: for
    pair: loop; statement
-
-.. index:: object: sequence
+   keyword: in
+   keyword: else
+   pair: target; list
+   object: sequence
 
 :keyword:`for` 文は、シーケンス (文字列、タプルまたはリスト) や、その他の反復可能なオブジェクト (iterable object)
 内の要素に渡って反復処理を行うために使われます:
@@ -128,11 +130,6 @@
 .. productionlist::
    for_stmt: "for" `target_list` "in" `expression_list` ":" `suite`
            : ["else" ":" `suite`]
-
-.. index::
-   keyword: in
-   keyword: else
-   pair: target; list
 
 式リストは一度だけ評価されます; 結果はイテレーション可能オブジェクトにならねばなりません。``expression_list`` の結果に対してイテレータ
 を生成し、その後、シーケンスの各要素についてインデクスの小さい順に一度だけスイートを実行します。
@@ -176,18 +173,23 @@
 
 
 .. _try:
+.. _except:
+.. _finally:
 
 :keyword:`try` 文
 =================
 
-.. index:: statement: try
+.. index::
+   statement: try
+   keyword: except
+   keyword: finally
 
 :keyword:`try` 文は、ひとまとめの文に対して、例外処理かつ/またはクリーンアップコードを指定します:
 
 .. productionlist::
-   try_stmt: try1_stmt \| try2_stmt
+   try_stmt: try1_stmt | try2_stmt
    try1_stmt: "try" ":" `suite`
-            : ("except" [`expression` ["," `target`]] ":" `suite`)+
+            : ("except" [`expression` [("as" | ",") `target`]] ":" `suite`)+
             : ["else" ":" `suite`]
             : ["finally" ":" `suite`]
    try2_stmt: "try" ":" `suite`
@@ -197,8 +199,6 @@
    以前のバージョンの Python では、 :keyword:`try`...\ :keyword:`except`...\ :keyword:`finally`
    が機能しませんでした。 :keyword:`try`...\ :keyword:`except` は :keyword:`try`...\
    :keyword:`finally` 中でネストされなければいけません。.
-
-.. index:: keyword: except
 
 :keyword:`except` 節は一つまたはそれ以上の例外ハンドラを指定します。 :keyword:`try`
 節内で全く例外が起きなければ、どの例外ハンドラも実行されません。:keyword:`try` スイート内で例外が発生すると、
@@ -231,8 +231,8 @@
 
 :keyword:`except` 節のスイートが実行される前に、例外に関する詳細が :mod:`sys` モジュール内の三つの変数に代入されます:
 ``sys.exc_type`` は、例外を示すオブジェクトを受け取ります; ``sys.exc_value`` は例外のパラメタを受け取ります;
-``sys.exc_traceback`` は、プログラム上の例外が発生した位置を識別するトレースバックオブジェクト ( :ref:`traceback`
-節参照) を受け取ります。これらの詳細はまた、関数 :func:`sys.exc_info` を介して入手することもできます。この関数はタプル
+``sys.exc_traceback`` は、プログラム上の例外が発生した位置を識別するトレースバックオブジェクト
+(:ref:`types` 参照) を受け取ります。これらの詳細はまた、関数 :func:`sys.exc_info` を介して入手することもできます。この関数はタプル
 ``(exc_type, exc_value, exc_traceback)``  を返します。ただしこの関数に対応する変数の使用は、スレッドを使った
 プログラムで安全に使えないため撤廃されています。 Python 1.5 からは、例外を処理した関数から戻るときに、以前の値 (関数呼び出し前の値)
 に戻されます。
@@ -276,6 +276,7 @@
 
 
 .. _with:
+.. _as:
 
 :keyword:`with` 文
 ==================
@@ -289,7 +290,7 @@
 :keyword:`except`...\ :keyword:`finally` 利用パターンをカプセル化して便利に再利用することができます。
 
 .. productionlist::
-   with_stmt: "with" `expression` ["as" target] ":" `suite`
+   with_stmt: "with" `expression` ["as" `target`] ":" `suite`
 
 :keyword:`with` 文の実行は以下のように進行します：
 
@@ -318,11 +319,8 @@
 
 .. note::
 
-   Python 2.5 では、:keyword:`with` 文は ``with_statement`` 機能が有効にされた場合にだけ許可されます。これは
-   Python 2.6 では常に有効になります。``__future__`` インポート文がこの機能を有効にするために利用できます： ::
-
-      from __future__ import with_statement
-
+   Python 2.5 では、:keyword:`with` 文は ``with_statement`` 機能が有効にされた場合にだけ利用できます。
+   Python 2.6 では常に利用できます。
 
 .. seealso::
 
@@ -331,6 +329,7 @@
 
 
 .. _function:
+.. _def:
 
 関数定義
 ========
@@ -340,36 +339,39 @@
    statement: def
 
 .. index::
+   pair: function; definition
+   pair: function; name
+   pair: name; binding
    object: user-defined function
    object: function
 
 関数定義は、ユーザ定義関数オブジェクトを定義します ( :ref:`types` 節参照):
 
 .. productionlist::
-   funcdef: [`decorators`] "def" `funcname` "(" [`parameter_list`] ")" ":" `suite`
-   decorators: `decorator`\ +
+   decorated: decorators (classdef | funcdef)
+   decorators: `decorator`+
    decorator: "@" `dotted_name` ["(" [`argument_list` [","]] ")"] NEWLINE
-   dotted_name: `identifier` ("." `identifier`)\*
-   parameter_list: (`defparameter` ",")\*
-                 : (  "\*" `identifier` [, "\*\*" `identifier`]
-                 : \| "\*\*" `identifier`
-                 : \| `defparameter` [","] )
+   funcdef: "def" `funcname` "(" [`parameter_list`] ")" ":" `suite`
+   dotted_name: `identifier` ("." `identifier`)*
+   parameter_list: (`defparameter` ",")*
+                 : (  "*" `identifier` [, "**" `identifier`]
+                 : | "**" `identifier`
+                 : | `defparameter` [","] )
    defparameter: `parameter` ["=" `expression`]
-   sublist: `parameter` ("," `parameter`)\* [","]
-   parameter: `identifier` \| "(" `sublist` ")"
+   sublist: `parameter` ("," `parameter`)* [","]
+   parameter: `identifier` | "(" `sublist` ")"
    funcname: `identifier`
-
-.. index::
-   pair: function; name
-   pair: name; binding
 
 関数定義は実行可能な文です。関数定義を実行すると、現在のローカルな名前空間内で関数名を関数オブジェクト (関数の実行可能コードをくるむラッパ)
 に束縛します。この関数オブジェクトには、関数が呼び出された際に使われるグローバルな名前空間として、現在のグローバルな名前空間への参照が入っています。
 
-関数定義は関数本体を実行しません; 関数本体は関数が呼び出された時にのみ実行されます。
+関数定義は関数本体を実行しません; 関数本体は関数が呼び出された時にのみ実行されます。 [#]_
 
-関数定義は一つまたは複数のデコレータ式 (decorator expression) でラップ
-できます。デコレータ式は関数を定義する時点で、関数定義の入っているスコープにおいて評価されます。デコレータは呼び出し可能オブジェクトを返さねば
+.. index::
+   statement: @
+
+関数定義は一つまたは複数のデコレータ(:term:`decorator`)式でラップできます。
+デコレータ式は関数を定義する時点で、関数定義の入っているスコープにおいて評価されます。デコレータは呼び出し可能オブジェクトを返さねば
 なりません。また、デコレータのとれる引数は関数オブジェクトひとつだけです。デコレータの返す値は関数オブジェクトではなく、関数名にバインドされます。
 複数のデコレータを入れ子にして適用してもかまいません。例えば、以下のようなコード::
 
@@ -403,6 +405,10 @@
        penguin.append("property of the zoo")
        return penguin
 
+.. index::
+   statement: *
+   statement: **
+
 関数呼び出しの意味付けに関する詳細は、 :ref:`calls` 節で述べられています。関数呼び出しを行うと、パラメタリストに記述された全てのパラメタ
 に対して、固定引数、キーワード引数、デフォルト引数のいずれかから値を代入します。"``*identifier``" 形式が存在する場合、
 余った固定引数を受け取るタプルに初期化されます。この変数のデフォルト値は空のタプルです。"``**identifier``" 形式が
@@ -426,10 +432,15 @@
 ==========
 
 .. index::
-   pair: class; definition
+   object: class
    statement: class
+   pair: class; definition
+   pair: class; name
+   pair: name; binding
+   pair: execution; frame
+   single: inheritance
+   single: docstring
 
-.. index:: object: class
 
 クラス定義は、クラスオブジェクトを定義します ( :ref:`types` 節参照):
 
@@ -438,29 +449,39 @@
    inheritance: "(" [`expression_list`] ")"
    classname: `identifier`
 
-.. index::
-   single: inheritance
-   pair: class; name
-   pair: name; binding
-   pair: execution; frame
-
-クラス定義は実行可能な文です。クラス定義では、まず継承リストがあればそれを評価します。継承リストの各要素の値評価結果はクラスオブジェクトか、
+クラス定義は実行可能な文です。クラス定義では、まず継承リストがあればそれを評価します。
+継承リストの各要素の値評価結果はクラスオブジェクトか、
 サブクラス可能なクラス型でなければなりません。次にクラスのスイートが新たな実行フレーム内で、
-新たなローカル名前空間と元々のグローバル名前空間を使って実行されます  ( :ref:`naming` 節を参照してください)。
+新たなローカル名前空間と元々のグローバル名前空間を使って実行されます
+(:ref:`naming` 節を参照してください)。
 (通常、スイートには関数定義のみが含まれます) クラスのスイートを実行し終えると、実行フレームは無視されますが、ローカルな
 名前空間は保存されます。次に、基底クラスの継承リストを使ってクラスオブジェクトが生成され、ローカルな名前空間を属性値辞書
 として保存します。最後に、もとのローカルな名前空間において、クラス名がこのクラスオブジェクトに束縛されます。
 
 **プログラマのための注釈:** クラス定義内で定義された変数はクラス変数です; クラス変数は全てのインスタンス間で共有されます。
-インスタンス変数を定義するには、:meth:`__init__` メソッドや他のメソッド中で変数に値を与えます。クラス変数もインスタンス変数も
+インスタンス変数を作成するには、メソッドの中で ``self.name = value`` でセットできます。クラス変数もインスタンス変数も
 "``self.name``" 表記でアクセスすることができます。この表記でアクセスする場合、インスタンス変数は同名のクラス変数を隠蔽します。
-変更不能な値をもつクラス変数は、インスタンス変数のデフォルト値として使えます。新スタイルクラスでは、デスクリプタを使ってインスタンス変数の振舞い
-を変更できます。
+クラス変数は、インスタンス変数のデフォルト値として使えますが、変更可能な値をそこに使うと予期せぬ結果につながります。
+新スタイルクラス(:term:`new-style class`)では、デスクリプタを使ってインスタンス変数の振舞いを変更できます。
 
-.. rubric:: Footnotes
+Class definitions, like function definitions, may be wrapped by one or more
+:term:`decorator` expressions.  The evaluation rules for the decorator
+expressions are the same as for functions.  The result must be a class object,
+which is then bound to the class name.
+クラス定義は、関数定義と同じように、1つ以上のデコレータ(:term:`decorator`)式でラップすることができます。
+デコレータ式の評価は関数と同じです。結果はクラスオブジェクトでなければならず、
+それがクラス名に束縛されます。
+
+.. rubric:: 脚注
 
 .. [#] 例外は、例外を打ち消す :keyword:`finally` 節が無い場合にのみ呼び出しスタックへ伝わります。
 
-.. [#] 現在、制御が "末尾に到達する" のは、例外が発生したり、 :keyword:`return`、:keyword:`continue`、または
-   :keyword:`break` 文が実行される場合を除きます。
+.. [#] 現在、制御が "末尾に到達する" のは、例外が発生したり、 :keyword:`return`,
+   :keyword:`continue`, または :keyword:`break` 文が実行される場合を除きます。
 
+.. [#] 関数の本体の最初の文として現われる文字列リテラルは、その関数の ``__doc__``
+   属性に変換され、その関数のドキュメンテーション文字列(:term:`docstring`)
+   になります。
+
+.. [#] クラスの本体の最初の文として現われる文字列リテラルは、その名前空間の ``__doc__``
+   要素となり、そのクラスのドキュメンテーション文字列(:term:`docstring`)になります。
