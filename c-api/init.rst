@@ -350,13 +350,10 @@
 .. cfunction:: void Py_SetPythonHome(char *home)
 
    Python の標準ライブラリがある、デフォルトの "home" ディレクトリを設定します。
-   標準ライブラリは :file:`{home}/lib/python{version}` から探されます。
+   *home* の文字列の意味については、 :envvar:`PYTHONHOME` を参照してください。
    引数は静的なストレージに置かれてプログラム実行中に書き換えられないような
    ゼロ終端の文字列であるべきです。
    Python インタプリタはこのストレージの内容を変更しません。
-
-   .. todo::
-      :file:`{home}/lib/python{version}` が2回でてきているのがなぜか問い合わせ中
 
 .. cfunction:: char* Py_GetPythonHome()
 
