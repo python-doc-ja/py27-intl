@@ -17,17 +17,7 @@
 翻訳者一覧 (敬称略)
 ===================
 
-Yasushi Masuda <y.masuda at acm.org> (March 12, 2004)
-
-
-2.4 差分翻訳者一覧 (敬称略)
-===========================
-
-Kazuo Moriwaka (May 8, 2006)
-
-
-2.5 差分翻訳者一覧 (敬称略)
-===========================
-
-Naoki INADA
+* Yasushi Masuda <y.masuda at acm.org> (March 12, 2004)
+* Kazuo Moriwaka (May 8, 2006)
+* INADA Naoki <inada-n at klab.jp>
 
