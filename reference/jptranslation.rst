@@ -17,9 +17,10 @@
 翻訳者一覧 (敬称略)
 ----------------------------
 
-* 2.3.2 和訳 Yasushi Masuda <y.masuda at acm.org> (Feb 3, 2004)
-* 2.3.3 差分 Yasushi Masuda (May 31, 2004)
-* 2.4 差分 Yasushi Masuda (May 20, 2006)
-* 2.5 差分 Toshiyuki Kawanishi, hkurosawa
-* 2.6 差分 INADA Naoki, 森本哲也
+* Yasushi Masuda <y.masuda at acm.org> (Feb 3, 2004)
+* Yasushi Masuda (May 20, 2006)
+* Toshiyuki Kawanishi
+* hkurosawa
+* INADA Naoki
+* 森本哲也
 
