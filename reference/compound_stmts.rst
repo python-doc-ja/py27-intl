@@ -36,6 +36,7 @@
 まとめると、以下のようになります:
 
 .. productionlist::
+   compound_stmt: `if_stmt`
                 : | `while_stmt`
                 : | `for_stmt`
                 : | `try_stmt`
