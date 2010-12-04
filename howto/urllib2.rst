@@ -1,6 +1,6 @@
-************************************************
-  HOWTO Fetch Internet Resources Using urllib2
-************************************************
+******************************************************
+  HOWTO Fetch Internet Resources Using urllib2 (英語)
+******************************************************
 
 :Author: `Michael Foord <http://www.voidspace.org.uk/python/index.shtml>`_
 

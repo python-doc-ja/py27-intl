@@ -1,8 +1,8 @@
 .. _regex-howto:
 
-****************************
-  Regular Expression HOWTO
-****************************
+***********************************
+  Regular Expression HOWTO (英語)
+***********************************
 
 :Author: A.M. Kuchling
 :Release: 0.05

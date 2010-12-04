@@ -1,8 +1,8 @@
 .. _curses-howto:
 
-**********************************
-  Curses Programming with Python
-**********************************
+*****************************************
+  Curses Programming with Python (英語)
+*****************************************
 
 :Author: A.M. Kuchling, Eric S. Raymond
 :Release: 2.03
