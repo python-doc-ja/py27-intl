@@ -23,3 +23,4 @@ Python ライブラリリファレンスよりも詳細な文書を作ってい�
    urllib2.rst
    webservers.rst
 
+   jptranslation.rst
