@@ -17,13 +17,8 @@ http://sourceforge.jp/tracker/?atid=116&group_id=11&func=browse
 
 翻訳者一覧 (敬称略)
 ------------------------------
-Yasushi MASUDA, Yusuke SHINYAMA
-
-2.4 差分翻訳者一覧 (敬称略)
-------------------------------
-Yasushi MASUDA, Yusuke SHINYAMA
-
-2.5 差分翻訳者一覧 (敬称略)
-------------------------------
-Kazuo Moriwaka, TAKAGI Masahiro
-
+* Yasushi MASUDA
+* Yusuke SHINYAMA
+* Kazuo Moriwaka
+* TAKAGI Masahiro
+* INADA Naoki <inada-n at klab.jp>
