@@ -16,23 +16,40 @@
 翻訳者一覧 (敬称略)
 -------------------
 
-Akihiro Takizawa,  Aoki Nobuaki,  Atsuo Ishimoto,  G.Yoshida,  Hiroyuki
-Yoshimura,  Minami Masanori,  Shinsei Nakano,  Sumiya Sakoda,  YASOZUMI Daisuke,
-Yasushi Iwata,  Yasushi MASUDA,  Hiroshi Ayukawa,  ippei-at-mbd.nifty.com,
-sakito,  umi-at-venus.dti.ne.jp,  ふるかわとおる,  浦郷圭介,  梶山大輔,  根岸史郎,  山中裕史,  山本昇,
-新山祐介,  森若和雄
+* Akihiro Takizawa
+* Aoki Nobuaki
+* Atsuo Ishimoto
+* G.Yoshida
+* Hiroyuki
+* Yoshimura
+* Minami Masanori
+* Shinsei Nakano
+* Sumiya Sakoda
+* YASOZUMI Daisuke
+* Yasushi Iwata
+* Yasushi MASUDA
+* Hiroshi Ayukawa
+* ippei-at-mbd.nifty.com
+* sakito
+* umi-at-venus.dti.ne.jp
+* ふるかわとおる
+* 浦郷圭介
+* 梶山大輔
+* 根岸史郎
+* 山中裕史
+* 山本昇
+* 新山祐介
+* 森若和雄
 
-
-2.4 差分翻訳者一覧 (敬称略)
----------------------------
-
-Akihiro Takizawa,  G.Yoshida,  Yasushi MASUDA,  新山祐介,  森若和雄
-
-
-2.5 差分翻訳者一覧 (敬称略)
----------------------------
-
-Kazuo Moriwaka, TAKAGI Masahiro, MATSUI Tetsushi, Minami Masanori, Hiroshi
-Okagawa, hkurosawa, Naoki INADA, Keisuke Urago, Shinya Okano, Toshiyuki
-Kawanishi
-
+* TAKAGI Masahiro
+* MATSUI Tetsushi
+* Hiroshi
+* Okagawa
+* hkurosawa
+* INADA Naoki
+* Keisuke Urago
+* Shinya Okano
+* Toshiyuki
+* Kawanishi
+* 松江
+* 森本哲也
