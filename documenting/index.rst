@@ -42,3 +42,5 @@ Python のドキュメントを寄贈したいと思っているなら、その�
    rest.rst
    markup.rst
    fromlatex.rst
+
+   jptranslation.rst
