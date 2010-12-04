@@ -19,11 +19,6 @@
 翻訳者一覧 (敬称略)
 ===================
 
-Yasushi MASUDA
-
-
-2.5, 2.6 差分翻訳者一覧 (敬称略)
-=================================
-
-INADA Naoki
+* Yasushi MASUDA
+* INADA Naoki <inada-n at klab.jp>
 
