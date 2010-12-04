@@ -20,8 +20,7 @@
 * Aoki Nobuaki
 * Atsuo Ishimoto
 * G.Yoshida
-* Hiroyuki
-* Yoshimura
+* Hiroyuki Yoshimura
 * Minami Masanori
 * Shinsei Nakano
 * Sumiya Sakoda
@@ -53,3 +52,6 @@
 * Kawanishi
 * 松江
 * 森本哲也
+
+.. maclib から移植
+* osawa <osawa at sm.rim.or.jp> (2.0) 
