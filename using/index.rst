@@ -17,3 +17,4 @@
    windows.rst
    mac.rst
 
+   jptranslation.rst
