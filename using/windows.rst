@@ -2,44 +2,49 @@
 
 .. _using-on-windows:
 
-*************************
- Using Python on Windows
-*************************
+**************************
+ Windows で Python を使う
+**************************
 
 .. sectionauthor:: Robert Lehmann <lehmannro@gmail.com>
 
-This document aims to give an overview of Windows-specific behaviour you should
-know about when using Python on Microsoft Windows.
+このドキュメントは、 Python を Microsoft Windows で使うときに知っておくべき、
+Windows 独特の動作についての概要を伝えることを目的としています。
 
 
-Installing Python
-=================
+Python のインストール
+======================
 
-Unlike most Unix systems and services, Windows does not require Python natively
-and thus does not pre-install a version of Python.  However, the CPython team
-has compiled Windows installers (MSI packages) with every `release
-<http://www.python.org/download/releases/>`_ for many years.
+ほとんどの Unix システムやサービスと異なり、 Windows は Python に依存しておらず、
+プリインストールの Python はありません。
+しかし、 CPython チームは長年にわたり、コンパイル済みの Windows インストーラ
+(MSI パッケージ)を `リリース <http://www.python.org/download/releases/>`_
+毎に用意しています。
 
-With ongoing development of Python, some platforms that used to be supported
-earlier are no longer supported (due to the lack of users or developers).
-Check :pep:`11` for details on all unsupported platforms.
 
-* DOS and Windows 3.x are deprecated since Python 2.0 and code specific to these
-  systems was removed in Python 2.1.
-* Up to 2.5, Python was still compatible with Windows 95, 98 and ME (but already
-  raised a deprecation warning on installation).  For Python 2.6 (and all
-  following releases), this support was dropped and new releases are just
-  expected to work on the Windows NT family.
-* `Windows CE <http://pythonce.sourceforge.net/>`_ is still supported.
-* The `Cygwin <http://cygwin.com/>`_ installer offers to install the `Python
-  interpreter <http://cygwin.com/packages/python>`_ as well; it is located under
-  "Interpreters." (cf. `Cygwin package source
+Python の継続的な開発の中で、過去にサポートされていた幾つかのプラットフォームが
+(ユーザーと開発者の不足のために) サポートされなくなっています。
+全てのサポートされないプラットフォームについての詳細は :pep:`11` をチェックしてください。
+
+* DOS と Windows 3.x は Python 2.0 から廃止予定になり、Python 2.1 でこれらのシステム
+  専用のコードは削除されました。
+* 2.5 まで、 Python は Windows 95, 98, ME で動きました (ですが、すでにインストール時に
+  廃止予定の警告をだしていました)。 Python 2.6 (とその後の全てのリリース) は、
+  これらの OS のサポートが止められ、新しいリリースは Windows NT ファミリーしか
+  考慮されていません。
+* `Windows CE <http://pythonce.sourceforge.net/>`_ は今でもサポートされています。
+* `Cygwin <http://cygwin.com/>`_ インストーラも `Python インタープリタ
+  <http://cygwin.com/packages/python>`_ のインストールを提供しています。
+  これは "Interpreters" の下に置かれています。(cf. `Cygwin package source
   <ftp://ftp.uni-erlangen.de/pub/pc/gnuwin32/cygwin/mirrors/cygnus/
   release/python>`_, `Maintainer releases
   <http://www.tishler.net/jason/software/python/>`_)
 
-See `Python for Windows (and DOS) <http://www.python.org/download/windows/>`_
-for detailed information about platforms with precompiled installers.
+
+コンパイル済みインストーラが提供されているプラットフォームについての詳細な情報は
+`Python for Windows (and DOS) <http://www.python.org/download/windows/>`_
+を参照してください。
+
 
 .. seealso::
 
