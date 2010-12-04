@@ -269,11 +269,6 @@ table を '**' 記法を使ってキーワード引数として渡す方法も�
 古い文字列フォーマット方法
 ---------------------------
 
-The ``%`` operator can also be used for string formatting. It interprets the
-left argument much like a :cfunc:`sprintf`\ -style format string to be applied
-to the right argument, and returns the string resulting from this formatting
-operation. For example
-
 ``%`` 演算しを使って文字列フォーマットをする方法もあります。
 これは、演算子の左側の :cfunc:`sprintf` スタイルのフォーマット文字列に、
 演算子の右側の値を適用し、その結果の文字列を返します。例えば::
