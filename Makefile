@@ -16,7 +16,7 @@ ALLSPHINXOPTS = -b $(BUILDER) -d build/doctrees -D latex_paper_size=$(PAPER) \
 
 .PHONY: help checkout update build html htmlhelp latex text changes linkcheck \
 	suspicious coverage doctest pydoc-topics htmlview clean dist check serve \
-	autobuild-dev autobuild-stable
+	autobuild-dev autobuild-stable pdf epub
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -70,6 +70,10 @@ htmlhelp: BUILDER = htmlhelp
 htmlhelp: build
 	@echo "Build finished; now you can run HTML Help Workshop with the" \
 	      "build/htmlhelp/pydoc.hhp project file."
+
+epub: BUILDER = epub
+epub: build
+	@echo "Build finished. The epub file is in build/epub."
 
 latex: BUILDER = latex
 latex: build
@@ -175,3 +179,7 @@ autobuild-stable:
 		exit 1;; \
 	esac
 	@make autobuild-dev
+
+pdf: BUILDER = pdf
+pdf: build
+	@echo "Build finished; the PDF files are in build/pdf"

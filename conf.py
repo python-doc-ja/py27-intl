@@ -17,8 +17,10 @@ sys.path.append(os.path.abspath('tools/sphinxext'))
 # 翻訳時のtodoを記録するために、todo拡張を有効化
 
 extensions = ['sphinx.ext.refcounting',
-              'sphinx.ext.doctest', 'pyspecific',
+              'sphinx.ext.doctest',
+              'pyspecific',
               'sphinx.ext.todo',
+              'rst2pdf.pdfbuilder',
               ]
 templates_path = ['tools/sphinxext']
 
@@ -210,3 +212,43 @@ coverage_c_regexes = {
 coverage_ignore_c_items = {
 #    'cfunction': [...]
 }
+
+
+# -- Options for Epub output ---------------------------------------------------
+
+# Bibliographic Dublin Core info.
+epub_title = u'Python ドキュメント 日本語訳'
+epub_author = u'Python ドキュメント 翻訳プロジェクト'
+epub_publisher = epub_author
+epub_copyright = u'2010, Pythonドキュメント翻訳プロジェクト'
+
+# The language of the text. It defaults to the language option
+# or en if the language is not set.
+#epub_language = ''
+
+# The scheme of the identifier. Typical schemes are ISBN or URL.
+#epub_scheme = ''
+
+# The unique identifier of the text. This can be a ISBN number
+# or the project homepage.
+#epub_identifier = ''
+
+# A unique identification for the text.
+#epub_uid = ''
+
+# HTML files that should be inserted before the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#epub_pre_files = []
+
+# HTML files shat should be inserted after the pages created by sphinx.
+# The format is a list of tuples containing the path and title.
+#epub_post_files = []
+
+# A list of files that should not be packed into the epub file.
+#epub_exclude_files = []
+
+# The depth of the table of contents in toc.ncx.
+#epub_tocdepth = 3
+
+# Allow duplicate toc entries.
+#epub_tocdup = True
