@@ -18,14 +18,14 @@ http://www.cwi.nl/ 参照)  で Guido van Rossum によって ABC と呼ばれ�
 (CNRI,  http://www.cnri.reston.va.us/ 参照) で Python の開発に携わり、
 いくつかのバージョンをリリースしました。
 
-2000 年 3 月、 Guido と Python のコア開発チームは BeOpen.com に 移り、 BeOpen PythonLabs
+2000 年 3 月、 Guido と Python のコア開発チームは BeOpen.com に移り、 BeOpen PythonLabs
 チームを結成しました。同年 10 月、 PythonLabs チームは Digital Creations (現在の Zope Corporation,
-http://www.zope.com/ 参照) に移りました。 そして 2001 年、  Python に関する知的財産を保有するための非営利組織
+http://www.zope.com/ 参照) に移りました。そして 2001 年、  Python に関する知的財産を保有するための非営利組織
 Python Software  Foundation (PSF、 http://www.python.org/psf/ 参照)
-を立ち上げました。このとき Zope Corporation は PSF の賛助会員に なりました。
+を立ち上げました。このとき Zope Corporation は PSF の賛助会員になりました。
 
 Python のリリースは全てオープンソース (オープンソースの定義は http://www.opensource.org/ を参照してください)
-です。 歴史的にみて、ごく一部を除くほとんどの Python リリースは GPL 互換になっています; 各リリースについては下表にまとめてあります。
+です。歴史的にみて、ごく一部を除くほとんどの Python リリースは GPL 互換になっています; 各リリースについては下表にまとめてあります。
 
 +----------------+--------------+-----------+------------+-----------------+
 | リリース       | ベース       | 年        | 権利       | GPL 互換        |
@@ -95,11 +95,11 @@ Python のリリースは全てオープンソース (オープンソースの�
 
 .. note::
 
-   「GPL 互換」という表現は、Python が GPL で配布されていると いう意味ではありません。Python のライセンスは全て、 GPL と違い、
-   変更したバージョンを配布する際に変更をオープンソースにしなくても かまいません。 GPL 互換のライセンスの下では、GPL でリリースされて
-   いる他のソフトウェアと Python を組み合わせられますが、それ以外の ライセンスではそうではありません。
+   「GPL 互換」という表現は、Python が GPL で配布されているという意味ではありません。Python のライセンスは全て、 GPL と違い、
+   変更したバージョンを配布する際に変更をオープンソースにしなくてもかまいません。 GPL 互換のライセンスの下では、GPL でリリースされて
+   いる他のソフトウェアと Python を組み合わせられますが、それ以外のライセンスではそうではありません。
 
-Guido の指示の下、これらのリリースを可能にしてくださった多くの ボランティアのみなさんに感謝します。
+Guido の指示の下、これらのリリースを可能にしてくださった多くのボランティアのみなさんに感謝します。
 
 
 Terms and conditions for accessing or otherwise using Python
