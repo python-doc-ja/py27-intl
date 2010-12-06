@@ -352,8 +352,8 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. cmdoption:: -3
 
-   Warn about Python 3.x incompatibilities which cannot be fixed trivially by
-   :ref:`2to3 <2to3-reference>`. Among these are:
+   Python 3.x との、 :ref:`2to3 <2to3-reference>` によって簡単に解決できない
+   互換性の問題について警告します。以下のものが該当します。
 
    * :meth:`dict.has_key`
    * :func:`apply`
@@ -363,148 +363,161 @@ Python を起動するとき、以下のうち任意のオプションを指定�
    * :func:`reduce`
    * :func:`reload`
 
-   Using these will emit a :exc:`DeprecationWarning`.
+   これらを使うと、 :exc:`DeprecationWarning` を発生させます。
 
    .. versionadded:: 2.6
 
-Options you shouldn't use
+使うべきでないオプション
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. cmdoption:: -J
 
-   Reserved for use by Jython_.
+   Jython_ のために予約されています。
 
 .. _Jython: http://jython.org
 
 .. cmdoption:: -U
 
-   Turns all string literals into unicodes globally.  Do not be tempted to use
-   this option as it will probably break your world.  It also produces
-   ``.pyc`` files with a different magic number than normal.  Instead, you can
-   enable unicode literals on a per-module basis by using::
+   全ての文字列リテラルを、全部 unicode にします。
+   このオプションはあなたの世界を破壊してしまうかもしれないので、
+   このオプションを使おうとしないでください。
+   これは、通常とは違うマジックナンバーを使って ``.pyc`` ファイルを生成します。
+   ファイルの先頭に次のように書いて、このオプションの代わりにモジュール単位で
+   unicode リテラルを有効にできます。 ::
 
         from __future__ import unicode_literals
 
-   at the top of the file.  See :mod:`__future__` for details.
+   詳細は :mod:`__future__` を参照してください。
+
 
 .. cmdoption:: -X
 
-    Reserved for alternative implementations of Python to use for their own
-    purposes.
+    別の Python の実装が独自の目的で利用するために予約されています。
 
 .. _using-on-envvars:
 
-Environment variables
----------------------
+環境変数
+---------
 
-These environment variables influence Python's behavior.
+以下の環境変数は Python の動作に影響します。
 
 .. envvar:: PYTHONHOME
 
-   Change the location of the standard Python libraries.  By default, the
-   libraries are searched in :file:`{prefix}/lib/python{version}` and
-   :file:`{exec_prefix}/lib/python{version}`, where :file:`{prefix}` and
-   :file:`{exec_prefix}` are installation-dependent directories, both defaulting
-   to :file:`/usr/local`.
+   標準 Python ライブラリの場所を変更します。デフォルトでは、ライブラリは
+   :file:`{prefix}/lib/python{version}` と :file:`{exec_prefix}/lib/python{version}`
+   から探されます。ここで、 :file:`{prefix}` と :file:`{exec_prefix}` は
+   インストール依存のディレクトリで、両方共デフォルトでは :file:`/usr/local`
+   です。
 
-   When :envvar:`PYTHONHOME` is set to a single directory, its value replaces
-   both :file:`{prefix}` and :file:`{exec_prefix}`.  To specify different values
-   for these, set :envvar:`PYTHONHOME` to :file:`{prefix}:{exec_prefix}`.
+   :envvar:`PYTHONHOME` が1つのディレクトリに設定されている場合、その値は
+   :file:`{prefix}` と :file:`{exec_prefix}` の両方を置き換えます。
+   それらに別々の値を指定したい場合は、 :envvar:`PYTHONHOME` を
+   :file:`{prefix}:{exec_prefix}` のように指定します。
 
 
 .. envvar:: PYTHONPATH
 
-   Augment the default search path for module files.  The format is the same as
-   the shell's :envvar:`PATH`: one or more directory pathnames separated by
-   :data:`os.pathsep` (e.g. colons on Unix or semicolons on Windows).
-   Non-existent directories are silently ignored.
+   モジュールファイルのデフォルトの検索パスを追加します。
+   この環境変数のフォーマットはシェルの :envvar:`PATH` と同じで、
+   :data:`os.pathsep` (Unix ならコロン、 Windows ならセミコロン)
+   で区切られた1つ以上のディレクトリパスです。
+   存在しないディレクトリは警告なしに無視されます。
 
-   In addition to normal directories, individual :envvar:`PYTHONPATH` entries
-   may refer to zipfiles containing pure Python modules (in either source or
-   compiled form). Extension modules cannot be imported from zipfiles.
+   通常のディレクトリに加えて、 :envvar:`PYTHONPATH` のエントリはピュアPython
+   モジュール(ソース形式でもコンパイルされた形式でも) を含む zip ファイルを
+   参照することもできます。
+   拡張モジュールは zip ファイルの中から import することはできません。
 
-   The default search path is installation dependent, but generally begins with
-   :file:`{prefix}/lib/python{version}` (see :envvar:`PYTHONHOME` above).  It
-   is *always* appended to :envvar:`PYTHONPATH`.
+   デフォルトの検索パスはインストール依存ですが、通常は
+   :file:`{prefix}/lib/python{version}` で始まります。 (上の :envvar:`PYTHONHOME`
+   を参照してください。)
+   これは *常に* :envvar:`PYTHONPATH` に追加されます。
 
-   An additional directory will be inserted in the search path in front of
-   :envvar:`PYTHONPATH` as described above under
-   :ref:`using-on-interface-options`. The search path can be manipulated from
-   within a Python program as the variable :data:`sys.path`.
+   上の :ref:`using-on-interface-options` で説明されているように、
+   追加の検索パスディレクトリが :envvar:`PYTHONPATH` の手前に追加されます。
+   検索パスは Python プログラムから :data:`sys.path` 変数として操作することが
+   できます。
 
 
 .. envvar:: PYTHONSTARTUP
 
-   If this is the name of a readable file, the Python commands in that file are
-   executed before the first prompt is displayed in interactive mode.  The file
-   is executed in the same namespace where interactive commands are executed so
-   that objects defined or imported in it can be used without qualification in
-   the interactive session.  You can also change the prompts :data:`sys.ps1` and
-   :data:`sys.ps2` in this file.
+   もし読込み可能ファイルの名前であれば、インタラクティブモードで最初のプロンプトを
+   表示する前にそのファイル内の Python コマンドを実行します。
+   このファイルはインタラクティブコマンドが実行されるのと同じ名前空間の中で
+   実行されるので、このファイル内で定義されたり import されたオブジェクトは
+   インタラクティブセッションから制限無しに利用することができます。
+   このファイルで :data:`sys.ps1` と :data:`sys.ps2` を変更してプロンプトを
+   変更することもできます。
+   
 
 
 .. envvar:: PYTHONY2K
 
-   Set this to a non-empty string to cause the :mod:`time` module to require
-   dates specified as strings to include 4-digit years, otherwise 2-digit years
-   are converted based on rules described in the :mod:`time` module
-   documentation.
+   この変数に空でない文字列を設定すると、 :mod:`time` モジュールが
+   文字列で指定される日付に4桁の年を含むことを要求するようになります。
+   そうでなければ、2桁の年は :mod:`time` モジュールのドキュメントに書かれている
+   ルールで変換されます。
 
 
 .. envvar:: PYTHONOPTIMIZE
 
-   If this is set to a non-empty string it is equivalent to specifying the
-   :option:`-O` option.  If set to an integer, it is equivalent to specifying
-   :option:`-O` multiple times.
+   この変数に空でない文字列を設定すると、 :option:`-O`
+   オプションを指定したのと同じになります。
+   整数を指定した場合、 :option:`-O` を複数回指定したのと
+   同じになります。
 
 
 .. envvar:: PYTHONDEBUG
 
-   If this is set to a non-empty string it is equivalent to specifying the
-   :option:`-d` option.  If set to an integer, it is equivalent to specifying
-   :option:`-d` multiple times.
+   この変数に空でない文字列を設定すると、 :option:`-d`
+   オプションを指定したのと同じになります。
+   整数を指定した場合、 :option:`-d` を複数回指定したのと
+   同じになります。
 
 
 .. envvar:: PYTHONINSPECT
 
-   If this is set to a non-empty string it is equivalent to specifying the
-   :option:`-i` option.
+   この変数に空でない文字列を設定すると、 :option:`-i`
+   オプションを指定したのと同じになります。
 
-   This variable can also be modified by Python code using :data:`os.environ`
-   to force inspect mode on program termination.
+   この変数は Python コードから :data:`os.environ` を使って変更して、
+   プログラム終了時のインスペクトモードを強制することができます。
 
 
 .. envvar:: PYTHONUNBUFFERED
 
-   If this is set to a non-empty string it is equivalent to specifying the
-   :option:`-u` option.
+   この変数に空でない文字列を設定すると、 :option:`-u`
+   オプションを指定したのと同じになります。
 
 
 .. envvar:: PYTHONVERBOSE
 
-   If this is set to a non-empty string it is equivalent to specifying the
-   :option:`-v` option.  If set to an integer, it is equivalent to specifying
-   :option:`-v` multiple times.
+   この変数に空でない文字列を設定すると、 :option:`-v`
+   オプションを指定したのと同じになります。
+   整数を指定した場合、 :option:`-v` を複数回指定したのと
+   同じになります。
 
 
 .. envvar:: PYTHONCASEOK
 
-   If this is set, Python ignores case in :keyword:`import` statements.  This
-   only works on Windows.
+   この環境変数が設定されていると、 Python は :keyword:`import`
+   文で大文字/小文字を区別しません。
+   これは Windows でのみ動作します。
 
 
 .. envvar:: PYTHONDONTWRITEBYTECODE
 
-   If this is set, Python won't try to write ``.pyc`` or ``.pyo`` files on the
-   import of source modules.
+   この環境変数が設定されていると、 Python はソースモジュールの
+   import 時に ``.pyc``, ``.pyo`` ファイルを生成しません。
 
    .. versionadded:: 2.6
 
 .. envvar:: PYTHONIOENCODING
 
-   Overrides the encoding used for stdin/stdout/stderr, in the syntax
-   ``encodingname:errorhandler``.  The ``:errorhandler`` part is optional and
-   has the same meaning as in :func:`str.encode`.
+   stdin/stdout/stderr のエンコーディングを強制します。
+   シンタックスは ``encodingname:errorhandler`` です。
+   ``:errorhandler`` の部分はオプションで、 :func:`str.encode`
+   の引数と同じ意味です。
 
    .. versionadded:: 2.6
 
@@ -512,6 +525,8 @@ These environment variables influence Python's behavior.
 .. envvar:: PYTHONNOUSERSITE
 
    If this is set, Python won't add the user site directory to sys.path
+   この環境変数が設定されている場合、 Python はユーザー site ディレクトリを
+   sys.path に追加しません。
 
    .. versionadded:: 2.6
 
@@ -522,7 +537,7 @@ These environment variables influence Python's behavior.
 
 .. envvar:: PYTHONUSERBASE
 
-   Sets the base directory for the user site directory
+   ユーザー site ディレクトリのベースディレクトリを設定します。
 
    .. versionadded:: 2.6
 
@@ -533,32 +548,32 @@ These environment variables influence Python's behavior.
 
 .. envvar:: PYTHONEXECUTABLE
 
-   If this environment variable is set, ``sys.argv[0]`` will be set to its
-   value instead of the value got through the C runtime.  Only works on
-   Mac OS X.
+   この環境変数が設定されていると、 ``sys.argv[0]`` に、 C ランタイムから
+   取得した値の代わりにこの環境変数の値が設定されます。
+   Mac OS X でのみ動作します。
 
 
-Debug-mode variables
+デバッグモード変数
 ~~~~~~~~~~~~~~~~~~~~
 
-Setting these variables only has an effect in a debug build of Python, that is,
-if Python was configured with the :option:`--with-pydebug` build option.
+以下の環境変数は、 :option:`--with-pydebug` ビルドオプションを指定して
+構成されたデバッグビルド版の Python でのみ効果があります。
 
 .. envvar:: PYTHONTHREADDEBUG
 
-   If set, Python will print threading debug info.
+   設定された場合、 Python はスレッドデバッグ情報を表示します。
 
    .. versionchanged:: 2.6
-      Previously, this variable was called ``THREADDEBUG``.
+      以前は、この変数は ``THREADDEBUG`` という名前でした。
 
 .. envvar:: PYTHONDUMPREFS
 
-   If set, Python will dump objects and reference counts still alive after
-   shutting down the interpreter.
+   設定された場合、 Python はインタプリタのシャットダウン後に残っている
+   オブジェクトとリファレンスカウントをダンプします。
 
 
 .. envvar:: PYTHONMALLOCSTATS
 
-   If set, Python will print memory allocation statistics every time a new
-   object arena is created, and on shutdown.
+   設定された場合、 Python は、新しいオブジェクトアリーナを作成するときと、
+   シャットダウン時に、メモリアロケーション統計情報を表示します。
 
