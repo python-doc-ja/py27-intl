@@ -127,8 +127,8 @@ Finder からスクリプトを実行するのには 2 つの方法がありま�
 .. * Drag it to :program:`PythonLauncher`
 
 * Finder の情報ウィンドウから :program:`PythonLauncher` をそのスクリプト (もしくは .py スクリプト全て) を開くデフォルトのアプリケーションとして選び、スクリプトファイルをダブルクリックしてください。
-:program:`PythonLauncher` の環境設定にはどのようにスクリプトを実行するかを管理する様々な設定があります。
-option キーを押しながらドラッグすることで実行するごとにこれらの設定を変えられますし、環境設定メニューから全ての実行に対して設定変更することもできます。
+  :program:`PythonLauncher` の環境設定にはどのようにスクリプトを実行するかを管理する様々な設定があります。
+  option キーを押しながらドラッグすることで実行するごとにこれらの設定を変えられますし、環境設定メニューから全ての実行に対して設定変更することもできます。
 
 .. * Select :program:`PythonLauncher` as the default application to open your
 ..   script (or any .py script) through the finder Info window and double-click it.
