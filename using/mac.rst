@@ -90,7 +90,7 @@ IDLE にはヘルプメニューがあり Python のドキュメントにアク�
 
 
 Python スクリプトの実行方法
---------------------------
+----------------------------
 
 Mac OS X で Python を始める最良の方法は統合開発環境である IDLE を使うことです、 :ref:`ide` 節を参照し IDE を実行しているときにヘルプメニューを使ってください。
 
@@ -190,7 +190,7 @@ http://hkn.eecs.berkeley.edu/~dyoo/python/idle_intro/index.html に IDLE を使�
 .. _mac-package-manager:
 
 追加の Python パッケージのインストール
-=====================================
+=======================================
 
 追加の Python パッケージをインストールする方法がいくつかあります:
 
@@ -212,7 +212,7 @@ http://hkn.eecs.berkeley.edu/~dyoo/python/idle_intro/index.html に IDLE を使�
 
 
 Mac での GUI プログラミング
-==========================
+============================
 
 Python で Mac 上の GUI アプリケーションをビルドする方法がいくつかあります。
 
