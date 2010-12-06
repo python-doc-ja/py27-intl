@@ -1,6 +1,6 @@
 .. highlightlang:: c
 
-.. _datetime-objects:
+.. _datetimeobjects:
 
 DateTime オブジェクト
 ---------------------
