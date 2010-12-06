@@ -76,29 +76,18 @@ Python のモジュールには、スクリプトとしても便利に使える�
 引数の受け渡し
 --------------
 
-スクリプト名と引数を指定してインタプリタを起動した場合、スクリプト名やスクリプト名以後に指定した引数は、スクリプトからは ``sys.argv`` で
-アクセスできるようになります。 ``sys.argv`` は文字列からなるリストで、少なくとも一つ要素が入っています。スクリプト名も引数も指定し
-なければ ``sys.argv[0]`` は空の文字列になります。スクリプト名の代わりに ``'-'`` (標準入力を意味します) を指定すると、
-``sys.argv[0]`` は ``'-'`` になります。 :option:`-c`  *command* を使うと、 ``sys.argv[0]`` は
-``'-c'`` になります。 :option:`-m` *module* を使った場合、 ``sys.argv[0]`` は
-モジュールのフルパスになります。 :option:`-c` *command* や :option:`-m` *module*
-の後ろにオプションを指定した場合、Python インタプリタ自体はこれらの引数を処理せず、 ``sys.argv`` を介して
+スクリプト名と引数を指定してインタプリタを起動した場合、スクリプト名や
+スクリプト名以後に指定した引数は、スクリプトからは ``sys.argv`` で
+アクセスできるようになります。
+``sys.argv`` は文字列からなるリストで、少なくとも一つ要素が入っています。
+スクリプト名も引数も指定しなければ ``sys.argv[0]`` は空の文字列になります。
+スクリプト名の代わりに ``'-'`` (標準入力を意味します) を指定すると、
+``sys.argv[0]`` は ``'-'`` になります。 :option:`-c`  *command* を使うと、
+``sys.argv[0]`` は ``'-c'`` になります。 :option:`-m` *module* を使った場合、
+``sys.argv[0]`` はモジュールのフルパスになります。
+:option:`-c` *command* や :option:`-m` *module* の後ろにオプションを指定した場合、
+Python インタプリタ自体はこれらの引数を処理せず、 ``sys.argv`` を介して
 *command* や *module* から扱えるようになります。
-
-.. % Argument Passing
-.. % % When known to the interpreter, the script name and additional
-.. % % arguments thereafter are passed to the script in the variable
-.. % % \code{sys.argv}, which is a list of strings.  Its length is at least
-.. % % one; when no script and no arguments are given, \code{sys.argv[0]} is
-.. % % an empty string.  When the script name is given as \code{'-'} (meaning
-.. % % standard input), \code{sys.argv[0]} is set to \code{'-'}.  When
-.. % % \programopt{-c} \var{command} is used, \code{sys.argv[0]} is set to
-.. % \code{'-c'}.  When \programopt{-m} \var{module} is used, \code{sys.argv[0]}
-.. % is set to the full name of the located module.  Options found after
-.. % \programopt{-c} \var{command} or \programopt{-m} \var{module} are
-.. % not consumed
-.. % by the Python interpreter's option processing but left in \code{sys.argv} for
-.. % the command or module to handle.
 
 
 .. _tut-interactive:
@@ -106,21 +95,15 @@ Python のモジュールには、スクリプトとしても便利に使える�
 対話モード
 ----------
 
-インタプリタが命令を端末 (tty) やコマンドプロンプトから読み取っている場合、インタプリタは *対話モード (interactive mode)*
-で動作しているといいます。このモードでは、インタプリタは *一次プロンプト (primary prompt)*
-を表示して、ユーザにコマンドを入力するようします。一次プロンプトは普通、三つの「大なり記号」 (``>>>``) です。一つの入力が次の行まで続く
-(行継続: continuation line を行う) 場合、インタプリタは *二次プロンプト (secondary prompt)* を表示します。二
-次プロンプトは、デフォルトでは三つのドット (``...``) です。インタプリタは、最初のプロンプトを出す前にバージョン番号と著作権表示から始ま
-る起動メッセージを出力します。
-
-.. % Interactive Mode
-.. % % When commands are read from a tty, the interpreter is said to be in
-.. % % \emph{interactive mode}.  In this mode it prompts for the next command
-.. % % with the \emph{primary prompt}, usually three greater-than signs
-.. % % (\samp{>\code{>}>~}); for continuation lines it prompts with the
-.. % % \emph{secondary prompt}, by default three dots (\samp{...~}).
-.. % % The interpreter prints a welcome message stating its version number
-.. % % and a copyright notice before printing the first prompt:
+インタプリタが命令を端末 (tty) やコマンドプロンプトから読み取っている場合、
+インタプリタは *対話モード (interactive mode)* で動作しているといいます。
+このモードでは、インタプリタは *一次プロンプト (primary prompt)* を表示して、
+ユーザにコマンドを入力するよう促します。
+一次プロンプトは普通、三つの「大なり記号」 (``>>>``) です。一つの入力が次の行まで続く
+(行継続: continuation line を行う) 場合、インタプリタは
+*二次プロンプト (secondary prompt)* を表示します。二次プロンプトは、
+デフォルトでは三つのドット (``...``) です。
+インタプリタは、最初のプロンプトを出す前にバージョン番号と著作権表示から始まる起動メッセージを出力します。
 
 ::
 
@@ -129,10 +112,7 @@ Python のモジュールには、スクリプトとしても便利に使える�
    Type "help", "copyright", "credits" or "license" for more information.
    >>>
 
-行継続は、例えば以下の :keyword:`if` 文のように、複数の行からなる構文を入力するときに必要です:
-
-.. % % Continuation lines are needed when entering a multi-line construct.
-.. % % As an example, take a look at this \keyword{if} statement:
+行継続は、例えば以下の :keyword:`if` 文のように、複数の行からなる構文を入力するときに必要です。
 
 ::
 
@@ -142,54 +122,32 @@ Python のモジュールには、スクリプトとしても便利に使える�
    ...
    Be careful not to fall off!
 
-.. % %% XXX ProofReeding Done To Here XXX %%%
-
 
 .. _tut-interp:
 
 インタプリタとその環境
 ======================
 
-.. % The Interpreter and Its Environment
-
-
 .. _tut-error:
 
 エラー処理
 ----------
 
-エラーが発生すると、インタプリタはエラーメッセージとスタックトレース (stack trace) を出力します。対話モードにいるときは、インタプリタは
-一次プロンプトに戻ります; 入力がファイルからきているときには、インタプリタはスタックトレースを出力した後、非ゼロの終了状態で終了します。 (``try``
-文の :keyword:`except` 節で処理された例外は、ここでいうエラーにはあたりません。)
-いくつかのエラーは無条件に致命的であり、非ゼロの終了状態となるプログラムの終了を引き起こします; これにはインタプリタ内部の矛盾や
-ある種のメモリ枯渇が当てはまります。エラーメッセージは全て標準エラー出力ストリームに書き込まれます;
+エラーが発生すると、インタプリタはエラーメッセージとスタックトレース
+(stack trace) を出力します。対話モードにいるときは、インタプリタは
+一次プロンプトに戻ります;
+入力がファイルからきているときには、インタプリタはスタックトレースを出力した後、
+非ゼロの終了状態で終了します。 (:keyword:`try` 文の :keyword:`except`
+節で処理された例外は、ここでいうエラーにはあたりません。)
+いくつかのエラーは無条件に致命的であり、非ゼロの終了状態となるプログラムの終了を引き起こします;
+これにはインタプリタ内部の矛盾やある種のメモリ枯渇が当てはまります。
+エラーメッセージは全て標準エラー出力ストリームに書き込まれます;
 これに対して、実行した命令からの通常出力される内容は標準出力に書き込まれます。
 
-.. % Error Handling
-.. % % When an error occurs, the interpreter prints an error
-.. % % message and a stack trace.  In interactive mode, it then returns to
-.. % % the primary prompt; when input came from a file, it exits with a
-.. % % nonzero exit status after printing
-.. % % the stack trace.  (Exceptions handled by an \code{except} clause in a
-.. % % \code{try} statement are not errors in this context.)  Some errors are
-.. % % unconditionally fatal and cause an exit with a nonzero exit; this
-.. % % applies to internal inconsistencies and some cases of running out of
-.. % % memory.  All error messages are written to the standard error stream;
-.. % % normal output from the executed commands is written to standard
-.. % % output.
-
 割り込み文字 (interrupt character、普通は Control-C か DEL) を
-一次または二次プロンプトに対して打鍵すると、入力が取り消されて一次プロンプトに戻ります。  [#]_ コマンドの実行中に割り込み文字を打鍵すると
-:exc:`KeyboardInterrupt`  例外が送出されます。この例外は ``try`` 文で処理できます。
-
-.. % % Typing the interrupt character (usually Control-C or DEL) to the
-.. % % primary or secondary prompt cancels the input and returns to the
-.. % % primary prompt.\footnote{
-.. % %         A problem with the GNU Readline package may prevent this.
-.. % % }
-.. % % Typing an interrupt while a command is executing raises the
-.. % % \code{KeyboardInterrupt} exception, which may be handled by a
-.. % % \code{try} statement.
+一次または二次プロンプトに対して打鍵すると、入力が取り消されて一次プロンプトに戻ります。 [#]_
+コマンドの実行中に割り込み文字を打鍵すると
+:exc:`KeyboardInterrupt`  例外が送出されます。この例外は :keyword:`try` 文で処理できます。
 
 
 .. _tut-scripts:
@@ -197,37 +155,22 @@ Python のモジュールには、スクリプトとしても便利に使える�
 実行可能な Python スクリプト
 ----------------------------
 
-BSD 風の Unix システムでは、Python スクリプトはシェルスクリプトのようにして直接実行可能にできます。これを行うには、以下の行
-
-.. % Executable Python Scripts
-.. % % On BSD'ish \UNIX{} systems, Python scripts can be made directly
-.. % % executable, like shell scripts, by putting the line
+BSD 風の Unix システムでは、Python スクリプトはシェルスクリプトのように
+直接実行可能にできます。これを行うには、以下の行
 
 ::
 
    #! /usr/bin/env python
 
-(ここではインタプリタがユーザの :envvar:`PATH` 上にあると仮定しています) をスクリプトの先頭に置き、スクリプトファイルに実行可能モードを
-与えます。 ``#!`` はファイルの最初の２文字でなければなりません。プラットフォームによっては、この最初の行を終端する改行文字が
+(ここではインタプリタがユーザの :envvar:`PATH` 上にあると仮定しています)
+をスクリプトの先頭に置き、スクリプトファイルに実行可能モードを与えます。
+``#!`` はファイルの最初の２文字でなければなりません。
+プラットフォームによっては、この最初の行を終端する改行文字が
 Windows 形式 (``'\r\n'``) ではなく、 Unix形式(``'\n'``)でなければならないことがあります。
-ハッシュまたはポンド文字、すなわち ``'#'`` は、Python  ではコメントを書き始めるために使われているので注意してください。
+ハッシュまたはポンド文字、すなわち ``'#'`` は、Python  ではコメントを書き始めるために
+使われていることに注意してください。
 
-.. % % (assuming that the interpreter is on the user's \envvar{PATH}) at the
-.. % % beginning of the script and giving the file an executable mode.  The
-.. % % \samp{\#!} must be the first two characters of the file.  On some
-.. % % platforms, this first line must end with a \UNIX-style line ending
-.. % % (\character{\e n}), not a Mac OS (\character{\e r}) or Windows
-.. % % (\character{\e r\e n}) line ending.  Note that
-.. % % the hash, or pound, character, \character{\#}, is used to start a
-.. % % comment in Python.
-
-:program:`chmod` コマンドを使えば、スクリプトに実行モード (または実行権限) を与えることができます:
-
-.. % % The script can be given a executable mode, or permission, using the
-.. % % \program{chmod} command:
-.. % % begin{verbatim}
-.. % % $ chmod +x myscript.py
-.. % % end{verbatim} % $ <-- bow to font-lock
+:program:`chmod` コマンドを使えば、スクリプトに実行モード (または実行権限) を与えることができます。
 
 ::
 
@@ -243,33 +186,39 @@ Python のインストーラーは自動的に ``.py`` ファイルを ``python.
 ソースコードの文字コード方式 (encoding)
 ---------------------------------------
 
-ASCII 形式でない文字コード化方式 (エンコーディング: encoding) を Python  ソースコードファイル中で使うことができます。最良の方法は、
-``#!`` 行の直後に一行かそれ以上の特殊なコメントを挿入して、ソースファイルのエンコードを指定するというものです:
-
-.. % % It is possible to use encodings different than \ASCII{} in Python source
-.. % % files. The best way to do it is to put one more special comment line
-.. % % right after the \code{\#!} line to define the source file encoding:
+ASCII 形式でない文字コード化方式 (エンコーディング: encoding) を Python
+ソースコードファイル中で使うことができます。
+最良の方法は、 ``#!`` 行の直後に一行かそれ以上の特殊なコメントを挿入して、
+ソースファイルのエンコードを指定するというものです。
 
 ::
 
-   # -\*- coding: encoding -\*-
+   # -*- coding: エンコーディング -*-
 
-
-このように宣言しておくと、ソースファイル中の全ての文字は *encoding* という文字コードでエンコードされているものとして扱われ、Unicode 文字列
+このように宣言しておくと、ソースファイル中の全ての文字は *エンコーディング*
+という文字コードでエンコードされているものとして扱われ、Unicode 文字列
 リテラルを指定したエンコードで直接記述できます。
-利用可能なエンコードのリストは Python ライブラリリファレンスの
+実際に利用できるエンコードのリストは Python ライブラリリファレンスの
 :mod:`codecs` の節にあります。
 
-.. % % With that declaration, all characters in the source file will be treated as
-.. % % {}\code{iso-8859-1}, and it will be
-.. % % possible to directly write Unicode string literals in the selected
-.. % % encoding.  The list of possible encodings can be found in the
-.. % % \citetitle[../lib/lib.html]{Python Library Reference}, in the section
-.. % % on \ulink{\module{codecs}}{../lib/module-codecs.html}.
+.. note::
+   訳注: *エンコーディング* の部分には、
+   実際には ``utf-8`` や ``cp932`` など、そのソースのエンコーディングを記述します。
+   プログラムから日本語を扱う場合には、必ずある程度の文字コードの知識が必要になります。
+   もし文字コードについてよく判らないのであれば、まずは英語だけ扱いながらチュートリアルを読み進めて、
+   並行して文字コードについても勉強してみましょう。
 
-例えばユーロ通過記号を含む Unicode リテラルを書くには、 ISO-8859-15 エンコーディングを使えます。 ISO-8859-15 では、ユーロ
-通過記号の序数 (ordinal) は 164 です。以下のスクリプトは 8364 という値 (Unicode でユーロ記号に対応するコードポイントの値) を
-出力して終了します:
+   現在は、 Unicode の扱い易さの観点から、推奨される文字コードは ``utf-8`` です。
+   ただし、 ``utf-8`` でソースを書いた場合、 ``utf-8`` を表示できない Windows の
+   コマンドプロンプトは ``print "こんにちは"`` を実行すると文字化けを起こすでしょう。
+   その場合は、互換性のために古い ``cp932`` エンコーディングを使うか、
+   ``print u"こんにちは"`` のように Unicode 文字列を使います。
+
+例えばユーロ通貨記号を含む Unicode リテラルを書くには、 ISO-8859-15
+エンコーディングを使えます。
+ISO-8859-15 では、ユーロ通過記号の序数 (ordinal) は 164 です。
+以下のスクリプトは 8364 という値 (Unicode でユーロ記号に対応するコードポイントの値)
+を出力して終了します。
 
 .. % For example, to write Unicode literals including the Euro currency
 .. % symbol, the ISO-8859-15 encoding can be used, with the Euro symbol
@@ -298,10 +247,12 @@ Python リリースは UTF-8 シグネチャを理解しませんし、オペレ
 .. % % and earlier), and also not understood by the operating system for
 .. % +script files with \code{\#!} lines (only used on \UNIX{} systems).
 
-UTF-8 を (シグネチャやエンコード宣言を行って) 使うと、世界中のほとんどの言語で使われている文字を文字列リテラルやコメントの中に
-同時に使うことができます。識別子に対する非 ASCII 文字の使用はサポートされていません。全ての文字を正しく表示できるようにするには、使っている
-エディタがファイルを UTF-8 であると認識することができなければならず、かつファイル内で使われている全ての文字をサポートするようなフォントを
-使わなければなりません。
+UTF-8 を (シグネチャやエンコード宣言を行って) 使うと、世界中のほとんどの
+言語で使われている文字を文字列リテラルやコメントの中に同時に使うことができます。
+識別子に対する非 ASCII 文字の使用はサポートされていません。
+全ての文字を正しく表示できるようにするには、使っているエディタがファイルを
+UTF-8 であると認識することができなければならず、かつファイル内で使われている
+全ての文字をサポートするようなフォントを使わなければなりません。
 
 .. % % By using UTF-8 (either through the signature or an encoding
 .. % % declaration), characters of most languages in the world can be used
