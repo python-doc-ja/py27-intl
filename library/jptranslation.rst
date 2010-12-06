@@ -39,7 +39,6 @@
 * 山本昇
 * 新山祐介
 * 森若和雄
-
 * TAKAGI Masahiro
 * MATSUI Tetsushi
 * Hiroshi
@@ -52,6 +51,5 @@
 * Kawanishi
 * 松江
 * 森本哲也
-
-.. maclib から移植
 * osawa <osawa at sm.rim.or.jp> (2.0) 
+
