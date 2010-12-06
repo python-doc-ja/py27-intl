@@ -1,6 +1,6 @@
 .. highlightlang:: c
 
-.. _weakref-objects:
+.. _weakrefobjects:
 
 弱参照オブジェクト (weak reference object)
 ------------------------------------------
