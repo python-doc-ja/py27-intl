@@ -4,121 +4,71 @@
 Python インタプリタを使う
 *************************
 
-.. % Using the Python Interpreter
-
-
 .. _tut-invoking:
 
 インタプリタを起動する
 ======================
 
-Python が使える計算機なら、インタプリタはたいてい :file:`/usr/local/bin/python` にインストールされています。Unix シェ
-ルのサーチパスに :file:`/usr/local/bin` を入れれば、シェルで
-
-.. % Invoking the Interpreter
-.. % % The Python interpreter is usually installed as
-.. % % \file{/usr/local/bin/python} on those machines where it is available;
-.. % % putting \file{/usr/local/bin} in your \UNIX{} shell's search path
-.. % % makes it possible to start it by typing the command
-
-Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\Python26` にインストールされますが、インストーラ実行時に変更すること
-ができます。このディレクトリをあなたのパスに追加するには、以下のコマンドをコマンドプロンプトで実行してください::
-
-   set path=%path%;C:\python26
+Python が使える計算機なら、インタプリタは大抵 :file:`/usr/local/bin/python`
+にインストールされています。Unix シェルの検索パスに :file:`/usr/local/bin`
+を入れれば、シェルで
 
 ::
 
    python
 
-とコマンドを入力すれば使えるようになります。インストールする際にどのディレクトリに Python インタプリタを入れるかをオプションで指定できるので、
-インタプリタは他のディレクトリにあるかもしれません; 身近な Python の導師 (guru) か、システム管理者に聞いてみてください。(例えば、その他の場
-所としては :file:`/usr/local/python` が一般的です。)
+とコマンドを入力すれば使えるようになります。
+インストールする際にどのディレクトリに Python インタプリタを入れるかを
+オプションで指定できるので、インタプリタは他のディレクトリにあるかも
+しれません; 身近な Python の導師 (guru) か、システム管理者に聞いてみてください。
+(例えば、その他の場所としては :file:`/usr/local/python` が一般的です。)
 
-.. % % to the shell.  Since the choice of the directory where the interpreter
-.. % % lives is an installation option, other places are possible; check with
-.. % % your local Python guru or system administrator.  (E.g.,
-.. % % \file{/usr/local/python} is a popular alternative location.)
+Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\\Python26`
+にインストールされますが、インストーラ実行時に変更することができます。
+このディレクトリをあなたのパスに追加するには、以下のコマンドをコマンドプロンプトで実行してください::
+
+   set path=%path%;C:\python26
 
 ファイル終端文字 (Unixでは :kbd:`Control-D` 、DOS や Windows では :kbd:`Control-Z`) を一次プロンプト
 (primary prompt) に入力すると、インタプリタが終了状態ゼロで終了します。もしこの操作がうまく働かないなら、コマンド: ``import
 sys; sys.exit()`` と入力すればインタプリタを終了できます。
 
-.. % % Typing an end-of-file character (\kbd{Control-D} on \UNIX,
-.. % % \kbd{Control-Z} on DOS or Windows) at the primary prompt causes the
-.. % % interpreter to exit with a zero exit status.  If that doesn't work,
-.. % % you can exit the interpreter by typing the following commands:
-.. % % \samp{import sys; sys.exit()}.
-
-通常、インタプリタの行編集機能は、あまり洗練されたものではありません。 Unixシステムでは、インタプリタをインストールした誰かが GNU readline
+通常、インタプリタの行編集機能は、あまり洗練されたものではありません。
+Unixシステムでは、インタプリタをインストールした誰かが GNU readline
 ライブラリのサポートを有効にしていれば、洗練された対話的行編集やヒストリ機能が追加されます。
-コマンドライン編集機能がサポートされているかを最も手っ取り早く調べる方法は、おそらく最初に表示された Python プロンプトに Control-P を入力し
-てみることでしょう。ビープ音が鳴るなら、コマンドライン編集機能があります。編集キーについての解説は付録 :ref:`tut-interacting`
-を参照してください。何も起こらないように見えるか、 ``^P`` がエコーバックされるなら、コ
-マンドライン編集機能は利用できません。この場合、現在編集中の行から文字を削除するにはバックスペースを使うしかありません。
+コマンドライン編集機能がサポートされているかを最も手っ取り早く調べる方法は、
+おそらく最初に表示された Python プロンプトに Control-P を入力してみることでしょう。
+ビープ音が鳴るなら、コマンドライン編集機能があります。編集キーについての解説は付録 :ref:`tut-interacting`
+を参照してください。何も起こらないように見えるか、 ``^P`` がエコーバックされるなら、
+コマンドライン編集機能は利用できません。
+この場合、現在編集中の行から文字を削除するにはバックスペースを使うしかありません。
 
-.. % % The interpreter's line-editing features usually aren't very
-.. % % sophisticated.  On \UNIX, whoever installed the interpreter may have
-.. % % enabled support for the GNU readline library, which adds more
-.. % % elaborate interactive editing and history features. Perhaps the
-.. % % quickest check to see whether command line editing is supported is
-.. % % typing Control-P to the first Python prompt you get.  If it beeps, you
-.. % % have command line editing; see Appendix \ref{interacting} for an
-.. % % introduction to the keys.  If nothing appears to happen, or if
-.. % % \code{\^P} is echoed, command line editing isn't available; you'll
-.. % % only be able to use backspace to remove characters from the current
-.. % % line.
+インタプリタはさながら Unix シェルのように働きます。
+標準入力が端末に接続された状態で呼び出されると、コマンドを対話的に読み込んで実行します。
+ファイル名を引数にしたり、標準入力からファイルを入力すると、インタプリタはファイルから
+*スクリプト* を読み込んで実行します。
 
-インタプリタはさながら Unix シェルのように働きます。標準入力が端末に接続された状態で呼び出されると、コマンドを対話的に読み込んで実行しま
-す。ファイル名を引数にしたり、標準入力からファイルを入力すると、インタプリタはファイルから *スクリプト* を読み込んで実行します。
+インタプリタを起動する第二の方法は ``python -c command [arg] ...`` です。
+この形式では、シェルの :option:`-c` オプションと同じように、 *command*
+に指定した文を実行します。
+Python 文には、スペースなどのシェルにとって特殊な意味をもつ文字がしばしば
+含まれるので、 *command* 全体を二重引用符を囲っておいたほうが良いでしょう。
 
-.. % % The interpreter operates somewhat like the \UNIX{} shell: when called
-.. % % with standard input connected to a tty device, it reads and executes
-.. % % commands interactively; when called with a file name argument or with
-.. % % a file as standard input, it reads and executes a \emph{script} from
-.. % % that file.
+Python のモジュールには、スクリプトとしても便利に使えるものがあります。
+``python -m module [arg] ...`` のようにすると、 *module* のソースファイルを、
+フルパスを指定して起動したかのように実行できます。
 
-インタプリタを起動する第二の方法は ``python -c command [arg] ...`` です。この形式では、シェルの :option:`-c`
-オプションと同じように、 *command* に指定した文を実行します。Python 文には、スペースなどの
-シェルにとって特殊な意味をもつ文字がしばしば含まれるので、 *command* 全体を二重引用符を囲っておいたほうが良いでしょう。
+``python file`` と ``python <file`` の違いに注意してください。
+後者の場合、プログラム内で :func:`input` や :func:`raw_input` が呼び出され、
+ユーザからの入力が必要な場合、入力は *ファイル* から取り込まれます。
+この場合、パーザはプログラムの実行を開始される前にファイルを終端まで
+読み込んでおくので、プログラムはすぐに入力の終わりまで到達してしまいます。
+前者の場合 (大抵はこちらの方が望ましい動作です)、入力には Python
+インタプリタの標準入力に接続された何らかのファイルまたはデバイスが充てられます。
 
-.. % % A second way of starting the interpreter is
-.. % % \samp{\program{python} \programopt{-c} \var{command} [arg] ...}, which
-.. % % executes the statement(s) in \var{command}, analogous to the shell's
-.. % % \programopt{-c} option.  Since Python statements often contain spaces
-.. % % or other characters that are special to the shell, it is best to quote
-.. % % \var{command} in its entirety with double quotes.
-
-Python のモジュールには、スクリプトとしても便利に使えるものがあります。 ``python -m module [arg] ...`` のようにすると、
-*module* のソースファイルを、フルパスを指定して起動したかのように実行できます。
-
-.. % +Some Python modules are also useful as scripts.  These can be invoked using
-.. % +\samp{\program{python} \programopt{-m} \var{module} [arg] ...}, which
-.. % +executes the source file for \var{module} as if you had spelled out its
-.. % +full name on the command line.
-
-``python file`` と ``python <file`` の違いに注意してください。後者の場合、プログラム内で :func:`input` や
-:func:`raw_input` が呼び出され、ユーザからの入力が必要な場合、入力は *ファイル* から
-取り込まれます。この場合、パーザはプログラムの実行を開始される前にファイルを終端まで読み込んでおくので、プログラムはすぐに入力の終わりまで到
-達してしまいます。前者の場合 (大抵はこちらの方が望ましい動作です)、入力には Python インタプリタの標準入力に接続された何らかのファイルまたは
-デバイスが充てられます。
-
-.. % % Note that there is a difference between \samp{python file} and
-.. % % \samp{python <file}.  In the latter case, input requests from the
-.. % % program, such as calls to \code{input()} and \code{raw_input()}, are
-.. % % satisfied from \emph{file}.  Since this file has already been read
-.. % % until the end by the parser before the program starts executing, the
-.. % % program will encounter end-of-file immediately.  In the former case
-.. % % (which is usually what you want) they are satisfied from whatever file
-.. % % or device is connected to standard input of the Python interpreter.
-
-スクリプトファイルが使われた場合、スクリプトを走らせて、そのまま対話モードに入れると便利なことがあります。これには :option:`-i` をスク
-リプトの前に追加します。(前の段落で述べたのと同じ理由から、スクリプトを標準入力から読み込んだ場合には、このオプションはうまく働きません。)
-
-.. % % When a script file is used, it is sometimes useful to be able to run
-.. % % the script and enter interactive mode afterwards.  This can be done by
-.. % % passing \programopt{-i} before the script.  (This does not work if the
-.. % % script is read from standard input, for the same reason as explained
-.. % % in the previous paragraph.)
+スクリプトファイルが使われた場合、スクリプトを走らせて、そのまま対話モードに
+入れると便利なことがあります。これには :option:`-i` をスクリプトの前に追加します。
+(前の段落で述べたのと同じ理由から、スクリプトを標準入力から読み込んだ場合には、このオプションはうまく働きません。)
 
 
 .. _tut-argpassing:
