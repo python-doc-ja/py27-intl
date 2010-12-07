@@ -13,7 +13,7 @@
 
 このマニュアルにある例の多くは、対話プロンプトで入力されるものでもコメントを含んでいます。
 Python におけるコメント文はハッシュ文字 ``#`` で始まり、物理行の終わりまで続きます。
-コメントは行の先頭にも、空白やコードの後にも書くことができますが、文字列リテラル (string literal)
+コメントは行の先頭にも、空白やコードの後にも書くことができますが、文字列リテラル
 の内部に置くことはできません。文字列リテラル中のハッシュ文字はただのハッシュ文字です。
 
 コメントはコードを明快にするためのものであり、Pythonはコメントを解釈しません。
@@ -32,12 +32,9 @@ Python におけるコメント文はハッシュ文字 ``#`` で始まり、物
 Python を電卓として使う
 =======================
 
-それでは、簡単な Python コマンドをいくつか試しましょう。インタプリタを起動して、一次プロンプト、 ``>>>`` が現れるのを待ちます。
+それでは、簡単な Python コマンドをいくつか試しましょう。
+インタプリタを起動して、一次プロンプト、 ``>>>`` が現れるのを待ちます。
 (そう長くはかからないはずです)
-
-.. % Using Python as a Calculator
-.. % % Let's try some simple Python commands.  Start the interpreter and wait
-.. % % for the primary prompt, \samp{>>>~}.  (It shouldn't take long.)
 
 
 .. _tut-numbers:
@@ -45,9 +42,11 @@ Python を電卓として使う
 数
 --
 
-インタプリタは単純な電卓のように動作します:  式をタイプ入力することができ、その結果が書き出されます。式の文法は素直なものです: 演算子 ``+``,
-``-``, ``*``, ``/``  は (Pascal や C といった) 他のほとんどの言語と同じように動作します。
-括弧をグループ化に使うこともできます。例えば:
+インタプリタは単純な電卓のように動作します:  式を入力することができ、
+その結果が表示されます。
+式の文法は素直なものです: 演算子 ``+``, ``-``, ``*``, ``/``  は
+(Pascal や C といった) 他のほとんどの言語と同じように動作します。
+括弧をグループ化に使うこともできます。例えば、
 
 .. % Numbers
 .. % % The interpreter acts as a simple calculator: you can type an
@@ -73,12 +72,8 @@ Python を電卓として使う
    >>> 7/-3
    -3
 
-等号 (``'='``) は変数に値を代入するときに使います。代入を行っても、その結果が次のプロンプトの前に出力されたりはしません:
-
-.. % +The equal sign (\character{=}) is used to assign a value to a variable.
-.. % +Afterwards, no result is displayed before the next interactive prompt:
-.. % % Like in C, the equal sign (\character{=}) is used to assign a value to a
-.. % % variable.  The value of an assignment is not written:
+等号 (``'='``) は変数に値を代入するときに使います。
+代入を行っても、その結果が次のプロンプトの前に出力されたりはしません。
 
 ::
 
@@ -87,9 +82,7 @@ Python を電卓として使う
    >>> width * height
    900
 
-複数の変数に同時に値を代入することができます:
-
-.. % % A value can be assigned to several variables simultaneously:
+複数の変数に同時に値を代入することができます。
 
 ::
 
@@ -101,8 +94,10 @@ Python を電卓として使う
    >>> z
    0
 
-変数は、利用する前に(値を代入することにより) "定義" しなければなりません。
-定義していない変数を利用しようとするとエラーが発生します。 ::
+変数は、利用する前に(値を代入することによって) "定義" しなければなりません。
+定義していない変数を利用しようとするとエラーが発生します。
+
+::
 
    >>> # try to access an undefined variable
    ... n
@@ -110,10 +105,8 @@ Python を電卓として使う
      File "<stdin>", line 1, in <module>
    NameError: name 'n' is not defined
 
-浮動小数点は完全にサポートしています; 被演算子の型が混合されているときには、演算子は整数の被演算子を浮動小数点型に変換します。
-
-.. % % There is full support for floating point; operators with mixed type
-.. % % operands convert the integer operand to floating point:
+浮動小数点を完全にサポートしています;
+被演算子の型が混合されているときには、演算子は整数の被演算子を浮動小数点型に変換します。
 
 ::
 
@@ -122,13 +115,9 @@ Python を電卓として使う
    >>> 7.0 / 2
    3.5
 
-複素数もサポートされています。虚数は接尾辞 ``j`` または ``J`` を付けて書き表します。ゼロでない実数部をもつ複素数は
-``(real+imagj)`` のように書き表すか、 ``complex(real, imag)`` 関数で生成できます。
-
-.. % % Complex numbers are also supported; imaginary numbers are written with
-.. % % a suffix of \samp{j} or \samp{J}.  Complex numbers with a nonzero
-.. % % real component are written as \samp{(\var{real}+\var{imag}j)}, or can
-.. % % be created with the \samp{complex(\var{real}, \var{imag})} function.
+複素数もサポートされています。虚数は接尾辞 ``j`` または ``J`` を付けて書き表します。
+ゼロでない実数部をもつ複素数は ``(実数部+虚数部j)`` のように書き表すか、
+``complex(実数部, 虚数部)`` 関数で生成できます。
 
 ::
 
@@ -143,12 +132,8 @@ Python を電卓として使う
    >>> (1+2j)/(1+1j)
    (1.5+0.5j)
 
-複素数は、常に実部と虚部に相当する二つの浮動小数点数で表されます。複素数 *z* からそれぞれの部分を取り出すには、 ``z.real``  と
-``z.imag`` を使います。
-
-.. % % Complex numbers are always represented as two floating point numbers,
-.. % % the real and imaginary part.  To extract these parts from a complex
-.. % % number \var{z}, use \code{\var{z}.real} and \code{\var{z}.imag}.
+複素数は、常に実数部と虚数部に相当する二つの浮動小数点数で表されます。
+複素数 *z* からそれぞれの部分を取り出すには、 ``z.real``  と ``z.imag`` を使います。
 
 ::
 
@@ -158,15 +143,10 @@ Python を電卓として使う
    >>> a.imag
    0.5
 
-数値を浮動小数点数や整数へに変換する関数 (:func:`float`,  :func:`int`, :func:`long`) は複素数に対しては動作しません
----  複素数を実数に変換する方法には、ただ一つの正解というものがないからです。絶対値 (magnitude) を (浮動小数点数として) 得るには
+数値を浮動小数点数や整数へに変換する関数 (:func:`float`, :func:`int`, :func:`long`) は複素数に対しては動作しません
+---  複素数を実数に変換する方法には、ただ一つの正解というものがないからです。
+絶対値 (magnitude) を (浮動小数点数として) 得るには
 ``abs(z)`` を使い、実部を得るには ``z.real`` を使ってください。
-
-.. % % The conversion functions to floating point and integer
-.. % % (\function{float()}, \function{int()} and \function{long()}) don't
-.. % % work for complex numbers --- there is no one correct way to convert a
-.. % % complex number to a real number.  Use \code{abs(\var{z})} to get its
-.. % % magnitude (as a float) or \code{z.real} to get its real part.
 
 ::
 
@@ -183,13 +163,9 @@ Python を電卓として使う
    5.0
    >>>
 
-対話モードでは、最後に印字された式は変数 ``_`` に代入されます。このことを利用すると、 Python を電卓として使うときに、計算を連続して
-行う作業が多少楽になります。以下に例を示します:
-
-.. % % In interactive mode, the last printed expression is assigned to the
-.. % % variable \code{_}.  This means that when you are using Python as a
-.. % % desk calculator, it is somewhat easier to continue calculations, for
-.. % % example:
+対話モードでは、最後に表示された結果は変数 ``_`` に代入されます。
+このことを利用すると、 Python を電卓として使うときに、計算を連続して行う作業が多少楽になります。
+以下に例を示します。
 
 ::
 
@@ -203,13 +179,10 @@ Python を電卓として使う
    113.06
    >>>
 
-ユーザはこの変数を読取り専用の値として扱うべきです。この変数に明示的な代入を行ってはいけません --- そんなことをすれば、
-この組み込み変数と同じ名前で、元の組み込み変数の不思議な動作を覆い隠してしまうような、別個のローカルな変数が生成されてしまいます。
-
-.. % % This variable should be treated as read-only by the user.  Don't
-.. % % explicitly assign a value to it --- you would create an independent
-.. % % local variable with the same name masking the built-in variable with
-.. % % its magic behavior.
+ユーザはこの変数を読取り専用の値として扱うべきです。
+この変数に明示的な代入を行ってはいけません --- そんなことをすれば、
+同じ名前で、元の組み込み変数の特別な動作を覆い隠してしまうような、
+別個のローカルな変数が生成されてしまいます。
 
 
 .. _tut-strings:
@@ -217,12 +190,8 @@ Python を電卓として使う
 文字列
 ------
 
-数のほかに、Python は文字列も操作できます。文字列はいくつもの方法で表現できます。文字列はシングルまたはダブルのクォートで囲みます。
-
-.. % Strings
-.. % % Besides numbers, Python can also manipulate strings, which can be
-.. % % expressed in several ways.  They can be enclosed in single quotes or
-.. % % double quotes:
+数のほかに、Python は文字列も操作できます。文字列はいくつもの方法で表現できます。
+文字列はシングルまたはダブルのクォートで囲みます。
 
 ::
 
@@ -239,8 +208,9 @@ Python を電卓として使う
    >>> '"Isn\'t," she said.'
    '"Isn\'t," she said.'
 
-文字列リテラルはいくつかの方法で複数行にまたがって記述できます。継続行を使うことができ、これには行の末尾の文字を
-バックスラッシュにします。こうすることで、次の行が現在の行と論理的に継続していることを示します:
+文字列リテラルはいくつかの方法で複数行にまたがって記述できます。
+継続行を使うことができ、これには行の末尾の文字をバックスラッシュにします。
+こうすることで、次の行が現在の行と論理的に継続していることを示します。
 
 .. % % String literals can span multiple lines in several ways.  Continuation
 .. % % lines can be used, with a backslash as the last character on the line
@@ -255,12 +225,9 @@ Python を電卓として使う
 
    print hello
 
-``\n`` を使って文字列に改行位置を埋め込まなくてはならないことに注意してください; 末尾のバックスラッシュの後ろにある改行文字は無視されます。
-従って、上の例は以下のような出力を行います:
-
-.. % % Note that newlines would still need to be embedded in the string using
-.. % % \code{\e n}; the newline following the trailing backslash is
-.. % % discarded.  This example would print the following:
+``\n`` を使って文字列に改行位置を埋め込まなくてはならないことに注意してください;
+末尾のバックスラッシュの後ろにある改行文字は無視されます。
+従って、上の例は以下のような出力を行います。
 
 ::
 
@@ -269,7 +236,9 @@ Python を電卓として使う
        Note that whitespace at the beginning of the line is significant.
 
 また、対になった三重クォート ``"""`` または ``'''`` で文字列を囲むこともできます。
-三重クォートを使っているときには、行末をエスケープする必要はありません、しかし、行末の改行文字も文字列に含まれることになります。
+三重クォートを使っているときには、行末をエスケープする必要はありません。
+しかし、行末の改行文字も文字列に含まれることになります。
+
 ::
 
    print """
@@ -278,19 +247,18 @@ Python を電卓として使う
         -H hostname               Hostname to connect to
    """
 
-は以下のような出力を行います。 ::
+は以下のような出力を行います。
+
+::
 
    Usage: thingy [OPTIONS]
         -h                        Display this usage message
         -H hostname               Hostname to connect to
 
-文字列リテラルを "raw" 文字列にすると、 ``\n`` のようなエスケープシーケンスは改行に変換されません。逆に、行末のバックスラッシュ
-やソースコード中の改行文字が文字列データに含められます。つまり、以下の例:
-
-.. % % If we make the string literal a ``raw'' string, however, the
-.. % % \code{\e n} sequences are not converted to newlines, but the backslash
-.. % % at the end of the line, and the newline character in the source, are
-.. % % both included in the string as data.  Thus, the example:
+文字列リテラルを "raw" 文字列にすると、 ``\n`` のようなエスケープシーケンスは
+改行に変換されません。
+逆に、行末のバックスラッシュやソースコード中の改行文字が文字列データに含められます。
+つまり、以下の例:
 
 ::
 
@@ -299,32 +267,22 @@ Python を電卓として使う
 
    print hello
 
-は、以下のような出力を行います:
-
-.. % % would print:
+は、以下のような出力を行います。
 
 ::
 
    This is a rather long string containing\n\
    several lines of text much as you would do in C.
 
-インタプリタは、文字列演算の結果を、タイプ入力する時のと同じ方法で出力します: 文字列はクオート文字で囲い、クオート文字自体やその他の
-奇妙な文字は、正しい文字が表示されるようにするためにバックスラッシュでエスケープします。
-文字列がシングルクオートを含み、かつダブルクオートを含まない場合には、全体をダブルクオートで囲います。そうでない場合にはシングルクオートで囲みます。
-(後で述べる :keyword:`print` を使って、クオートやエスケープのない文字列を書くことができます。)
+インタプリタは、文字列演算の結果を、タイプして入力する時と同じ方法で出力します:
+文字列はクオート文字で囲い、クオート文字自体やその他の特別な文字は、
+正しい文字が表示されるようにするためにバックスラッシュでエスケープします。
+文字列がシングルクオートを含み、かつダブルクオートを含まない場合には、全体をダブルクオートで囲います。
+そうでない場合にはシングルクオートで囲みます。
+(後で述べる :keyword:`print` を使って、クオートやエスケープのない文字列を表示することができます。)
 
-.. % % The interpreter prints the result of string operations in the same way
-.. % % as they are typed for input: inside quotes, and with quotes and other
-.. % % funny characters escaped by backslashes, to show the precise
-.. % % value.  The string is enclosed in double quotes if the string contains
-.. % % a single quote and no double quotes, else it's enclosed in single
-.. % % quotes.  (The \keyword{print} statement, described later, can be used
-.. % % to write strings without quotes or escapes.)
-
-文字列は ``+`` 演算子で連結させる (くっつけて一つにする) ことができ、 ``*`` 演算子で反復させることができます。
-
-.. % % Strings can be concatenated (glued together) with the
-.. % % \code{+} operator, and repeated with \code{*}:
+文字列は ``+`` 演算子で連結させる (くっつけて一つにする) ことができ、
+``*`` 演算子で反復させることができます。
 
 ::
 
@@ -334,7 +292,8 @@ Python を電卓として使う
    >>> '<' + word*5 + '>'
    '<HelpAHelpAHelpAHelpAHelpA>'
 
-互いに隣あった二つの文字列リテラルは自動的に連結されます: 例えば、上記の最初の行は ``word = 'Help' 'A'`` と書くこともできました;
+互いに隣あった二つの文字列リテラルは自動的に連結されます:
+例えば、上記の最初の行は ``word = 'Help' 'A'`` と書くこともできました;
 この機能は二つともリテラルの場合にのみ働くもので、任意の文字列表現で使うことができるわけではありません。
 
 .. % % Two string literals next to each other are automatically concatenated;
@@ -354,8 +313,10 @@ Python を電卓として使う
                      ^
    SyntaxError: invalid syntax
 
-文字列は添字表記 (インデクス表記) することができます;  C 言語と同じく、文字列の最初の文字の添字 (インデクス) は 0 となります。
-独立した文字型というものはありません; 単一の文字は、単にサイズが 1 の文字列です。Icon 言語と同じく、部分文字列を  *スライス表記*:
+文字列は添字表記 (インデクス表記) することができます;
+C 言語と同じく、文字列の最初の文字の添字 (インデクス) は 0 となります。
+独立した文字型というものはありません; 単一の文字は、単にサイズが 1 の文字列です。
+Icon 言語と同じく、部分文字列を  *スライス表記*:
 コロンで区切られた二つのインデクスで指定することができます。
 
 .. % % Strings can be subscripted (indexed); like in C, the first character
@@ -373,8 +334,8 @@ Python を電卓として使う
    >>> word[2:4]
    'lp'
 
-スライスのインデクスには便利なデフォルト値があります; 最初のインデクスを省略すると、0 と見なされます。第 2
-のインデクスを省略すると、スライスしようとする文字列のサイズとみなされます。
+スライスのインデクスには便利なデフォルト値があります; 最初のインデクスを省略すると、0 と見なされます。
+第 2 のインデクスを省略すると、スライスしようとする文字列のサイズとみなされます。
 
 .. % % Slice indices have useful defaults; an omitted first index defaults to
 .. % % zero, an omitted second index defaults to the size of the string being
@@ -387,7 +348,8 @@ Python を電卓として使う
    >>> word[2:]    # 最初の 2 文字を除くすべて
    'lpA'
 
-C 言語の文字列と違い、Python の文字列は変更できません。インデクス指定された文字列中のある位置に代入を行おうとするとエラーになります:
+C 言語の文字列と違い、Python の文字列は変更できません。
+インデックス指定された文字列中のある位置に代入を行おうとするとエラーになります:
 
 .. % % Unlike a C string, Python strings cannot be changed.  Assigning to an
 .. % % indexed position in the string results in an error:
@@ -403,7 +365,7 @@ C 言語の文字列と違い、Python の文字列は変更できません。�
      File "<stdin>", line 1, in ?
    TypeError: object doesn't support slice assignment
 
-一方、要素どうしを組み合わせた新たな文字列の生成は、簡単で効率的です:
+一方、文字列同士の内容を組み合わせた新しい文字列の生成は、簡単で効率的です。
 
 .. % % However, creating a new string with the combined content is easy and
 .. % % efficient:
@@ -427,7 +389,8 @@ C 言語の文字列と違い、Python の文字列は変更できません。�
    >>> word[:3] + word[3:]
    'HelpA'
 
-スライス表記に行儀の悪いインデクス指定をしても、値はたしなみよく処理されます: インデクスが大きすぎる場合は文字列のサイズと置き換えられます。
+スライス表記に行儀の悪いインデクス指定をしても、値はたしなみよく処理されます:
+インデクスが大きすぎる場合は文字列のサイズと置き換えられます。
 スライスの下境界 (文字列の左端) よりも小さいインデクス値を上境界 (文字列の右端) に指定すると、空文字列が返されます。
 
 .. % % Degenerate slice indices are handled gracefully: an index that is too
@@ -469,8 +432,8 @@ C 言語の文字列と違い、Python の文字列は変更できません。�
    >>> word[-0]     # (-0 は 0 に等しい)
    'H'
 
-負で、かつ範囲外のインデクスをスライス表記で行うと、インデクスは切り詰められます。しかし、単一の要素を指定する (スライスでない)
-インデクス指定でこれを行ってはいけません:
+負で、かつ範囲外のインデクスをスライス表記で行うと、インデクスは切り詰められます。
+しかし、単一の要素を指定する (スライスでない) インデクス指定でこれを行ってはいけません:
 
 .. % % Out-of-range negative slice indices are truncated, but don't try this
 .. % % for single-element (non-slice) indices:
@@ -556,10 +519,12 @@ Unicode 文字列
 
 .. % Unicode Strings
 
-Python 2.0 から、プログラマはテキスト・データを格納するための新しいデータ型、Unicode オブジェクトを利用できるようになりました。
+Python 2.0 から、プログラマはテキスト・データを格納するための新しいデータ型、
+Unicode オブジェクトを利用できるようになりました。
 Unicode オブジェクトを使うと、Unicode データ (http://www.unicode.org/ 参照)
-を記憶したり、操作したりできます。また、 Unicode オブジェクトは既存の文字列オブジェクトとよく統合していて、必要に応じた自動変換機能を
-提供しています。
+を記憶したり、操作したりできます。
+また、 Unicode オブジェクトは既存の文字列オブジェクトとよく統合していて、
+必要に応じた自動変換機能を提供しています。
 
 .. % % Starting with Python 2.0 a new data type for storing text data is
 .. % % available to the programmer: the Unicode object. It can be used to
