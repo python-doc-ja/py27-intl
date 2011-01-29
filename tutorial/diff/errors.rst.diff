@@ -1,0 +1,179 @@
+--- r262/tutorial/errors.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/tutorial/errors.rst	2009-10-27 23:50:20.761604000 +0900
+@@ -156,32 +156,29 @@
+ The use of the :keyword:`else` clause is better than adding additional code to
+ the :keyword:`try` clause because it avoids accidentally catching an exception
+ that wasn't raised by the code being protected by the :keyword:`try` ...
+ :keyword:`except` statement.
+ 
+ When an exception occurs, it may have an associated value, also known as the
+ exception's *argument*. The presence and type of the argument depend on the
+ exception type.
+ 
+ The except clause may specify a variable after the exception name (or tuple).
+ The variable is bound to an exception instance with the arguments stored in
+ ``instance.args``.  For convenience, the exception instance defines
+-:meth:`__getitem__` and :meth:`__str__` so the arguments can be accessed or
+-printed directly without having to reference ``.args``.
++:meth:`__str__` so the arguments can be printed directly without having to
++reference ``.args``.
+ 
+-But use of ``.args`` is discouraged.  Instead, the preferred use is to pass a
+-single argument to an exception (which can be a tuple if multiple arguments are
+-needed) and have it bound to the ``message`` attribute.  One may also
+-instantiate an exception first before raising it and add any attributes to it as
+-desired. ::
++One may also instantiate an exception first before raising it and add any
++attributes to it as desired. ::
+ 
+    >>> try:
+    ...    raise Exception('spam', 'eggs')
+    ... except Exception as inst:
+    ...    print type(inst)     # the exception instance
+    ...    print inst.args      # arguments stored in .args
+    ...    print inst           # __str__ allows args to printed directly
+    ...    x, y = inst          # __getitem__ allows args to be unpacked directly
+    ...    print 'x =', x
+    ...    print 'y =', y
+    ...
+    <type 'exceptions.Exception'>
+@@ -207,117 +204,119 @@
+    ...
+    Handling run-time error: integer division or modulo by zero
+ 
+ 
+ .. _tut-raising:
+ 
+ Raising Exceptions
+ ==================
+ 
+ The :keyword:`raise` statement allows the programmer to force a specified
+ exception to occur. For example::
+ 
+-   >>> raise NameError, 'HiThere'
++   >>> raise NameError('HiThere')
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    NameError: HiThere
+ 
+-The first argument to :keyword:`raise` names the exception to be raised.  The
+-optional second argument specifies the exception's argument.  Alternatively, the
+-above could be written as ``raise NameError('HiThere')``.  Either form works
+-fine, but there seems to be a growing stylistic preference for the latter.
++The argument to :keyword:`raise` is an exception class or instance to be
++raised.  There is a deprecated alternate syntax that separates class and
++constructor arguments; the above could be written as ``raise NameError,
++'HiThere'``.  Since it once was the only one available, the latter form is
++prevalent in older code.
+ 
+ If you need to determine whether an exception was raised but don't intend to
+ handle it, a simpler form of the :keyword:`raise` statement allows you to
+ re-raise the exception::
+ 
+    >>> try:
+-   ...     raise NameError, 'HiThere'
++   ...     raise NameError('HiThere')
+    ... except NameError:
+    ...     print 'An exception flew by!'
+    ...     raise
+    ...
+    An exception flew by!
+    Traceback (most recent call last):
+      File "<stdin>", line 2, in ?
+    NameError: HiThere
+ 
+ 
+ .. _tut-userexceptions:
+ 
+ User-defined Exceptions
+ =======================
+ 
+-Programs may name their own exceptions by creating a new exception class.
+-Exceptions should typically be derived from the :exc:`Exception` class, either
+-directly or indirectly.  For example::
++Programs may name their own exceptions by creating a new exception class (see
++:ref:`tut-classes` for more about Python classes).  Exceptions should typically
++be derived from the :exc:`Exception` class, either directly or indirectly.  For
++example::
+ 
+    >>> class MyError(Exception):
+    ...     def __init__(self, value):
+    ...         self.value = value
+    ...     def __str__(self):
+    ...         return repr(self.value)
+    ...
+    >>> try:
+    ...     raise MyError(2*2)
+    ... except MyError as e:
+    ...     print 'My exception occurred, value:', e.value
+    ...
+    My exception occurred, value: 4
+-   >>> raise MyError, 'oops!'
++   >>> raise MyError('oops!')
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    __main__.MyError: 'oops!'
+ 
+ In this example, the default :meth:`__init__` of :class:`Exception` has been
+ overridden.  The new behavior simply creates the *value* attribute.  This
+ replaces the default behavior of creating the *args* attribute.
+ 
+ Exception classes can be defined which do anything any other class can do, but
+ are usually kept simple, often only offering a number of attributes that allow
+ information about the error to be extracted by handlers for the exception.  When
+ creating a module that can raise several distinct errors, a common practice is
+ to create a base class for exceptions defined by that module, and subclass that
+ to create specific exception classes for different error conditions::
+ 
+    class Error(Exception):
+        """Base class for exceptions in this module."""
+        pass
+ 
+    class InputError(Error):
+        """Exception raised for errors in the input.
+ 
+        Attributes:
+-           expression -- input expression in which the error occurred
+-           message -- explanation of the error
++           expr -- input expression in which the error occurred
++           msg  -- explanation of the error
+        """
+ 
+-       def __init__(self, expression, message):
+-           self.expression = expression
+-           self.message = message
++       def __init__(self, expr, msg):
++           self.expr = expr
++           self.msg = msg
+ 
+    class TransitionError(Error):
+        """Raised when an operation attempts a state transition that's not
+        allowed.
+ 
+        Attributes:
+-           previous -- state at beginning of transition
++           prev -- state at beginning of transition
+            next -- attempted new state
+-           message -- explanation of why the specific transition is not allowed
++           msg  -- explanation of why the specific transition is not allowed
+        """
+ 
+-       def __init__(self, previous, next, message):
+-           self.previous = previous
++       def __init__(self, prev, next, msg):
++           self.prev = prev
+            self.next = next
+-           self.message = message
++           self.msg = msg
+ 
+ Most exceptions are defined with names that end in "Error," similar to the
+ naming of the standard exceptions.
+ 
+ Many standard modules define their own exceptions to report errors that may
+ occur in functions they define.  More information on classes is presented in
+ chapter :ref:`tut-classes`.
+ 
+ 
+ .. _tut-cleanup:
+ 
+ Defining Clean-up Actions

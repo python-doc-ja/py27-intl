@@ -1,0 +1,68 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to257__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/tutorial/interactive.rst =&gt; r266/tutorial/interactive.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to257__0"><a href="#difflib_chg_to257__0">f</a></td><td class="diff_header" id="from257_1">1</td><td nowrap="nowrap">..&nbsp;_tut-interacting:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_2">2</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_3">3</td><td nowrap="nowrap">**************************************************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_4">4</td><td nowrap="nowrap">Interactive&nbsp;Input&nbsp;Editing&nbsp;and&nbsp;History&nbsp;Substitution</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_5">5</td><td nowrap="nowrap">**************************************************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_6">6</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_7">7</td><td nowrap="nowrap">Some&nbsp;versions&nbsp;of&nbsp;the&nbsp;Python&nbsp;interpreter&nbsp;support&nbsp;editing&nbsp;of&nbsp;the&nbsp;current&nbsp;input</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_8">8</td><td nowrap="nowrap">line&nbsp;and&nbsp;history&nbsp;substitution,&nbsp;similar&nbsp;to&nbsp;facilities&nbsp;found&nbsp;in&nbsp;the&nbsp;Korn&nbsp;shell&nbsp;and</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to257__1">n</a></td><td class="diff_header" id="from257_9">9-</td><td nowrap="nowrap">the&nbsp;GNU&nbsp;Bash&nbsp;shell.&nbsp;&nbsp;This&nbsp;is&nbsp;implemented&nbsp;using&nbsp;the&nbsp;<span class="diff_chg">*</span>GNU&nbsp;Readline<span class="diff_chg">*</span>&nbsp;library,<span class="diff_sub">&nbsp;which</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to257__1">n</a></td><td class="diff_header" id="to257_9">9+</td><td nowrap="nowrap">the&nbsp;GNU&nbsp;Bash&nbsp;shell.&nbsp;&nbsp;This&nbsp;is&nbsp;implemented&nbsp;using&nbsp;the&nbsp;<span class="diff_chg">`</span>GNU&nbsp;Readline<span class="diff_chg">`_</span>&nbsp;library,</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from257_10">10-</td><td nowrap="nowrap">supports&nbsp;Emacs-style&nbsp;and&nbsp;vi-style&nbsp;editing.&nbsp;&nbsp;This&nbsp;library&nbsp;has&nbsp;its&nbsp;own</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_10">10+</td><td nowrap="nowrap"><span class="diff_add">which&nbsp;</span>supports&nbsp;Emacs-style&nbsp;and&nbsp;vi-style&nbsp;editing.&nbsp;&nbsp;This&nbsp;library&nbsp;has&nbsp;its&nbsp;own</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from257_11">11</td><td nowrap="nowrap">documentation&nbsp;which&nbsp;I&nbsp;won't&nbsp;duplicate&nbsp;here;&nbsp;however,&nbsp;the&nbsp;basics&nbsp;are&nbsp;easily</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_12">12</td><td nowrap="nowrap">explained.&nbsp;&nbsp;The&nbsp;interactive&nbsp;editing&nbsp;and&nbsp;history&nbsp;described&nbsp;here&nbsp;are&nbsp;optionally</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_13">13</td><td nowrap="nowrap">available&nbsp;in&nbsp;the&nbsp;Unix&nbsp;and&nbsp;Cygwin&nbsp;versions&nbsp;of&nbsp;the&nbsp;interpreter.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_15">15</td><td nowrap="nowrap">This&nbsp;chapter&nbsp;does&nbsp;*not*&nbsp;document&nbsp;the&nbsp;editing&nbsp;facilities&nbsp;of&nbsp;Mark&nbsp;Hammond's</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_16">16</td><td nowrap="nowrap">PythonWin&nbsp;package&nbsp;or&nbsp;the&nbsp;Tk-based&nbsp;environment,&nbsp;IDLE,&nbsp;distributed&nbsp;with&nbsp;Python.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_17">17</td><td nowrap="nowrap">The&nbsp;command&nbsp;line&nbsp;history&nbsp;recall&nbsp;which&nbsp;operates&nbsp;within&nbsp;DOS&nbsp;boxes&nbsp;on&nbsp;NT&nbsp;and&nbsp;some</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_18">18</td><td nowrap="nowrap">other&nbsp;DOS&nbsp;and&nbsp;Windows&nbsp;flavors&nbsp;&nbsp;is&nbsp;yet&nbsp;another&nbsp;beast.</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to257__1"></td><td class="diff_header" id="from257_143">143</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readline.read_history_file(historyPath)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_144">144</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_145">145</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;atexit.register(save_history)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_146">146</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;del&nbsp;os,&nbsp;atexit,&nbsp;readline,&nbsp;rlcompleter,&nbsp;save_history,&nbsp;historyPath</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_147">147</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_148">148</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_149">149</td><td nowrap="nowrap">..&nbsp;_tut-commentary:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_150">150</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to257__2">n</a></td><td class="diff_header" id="from257_151">151-</td><td nowrap="nowrap"><span class="diff_sub">Commentary</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to257__2">n</a></td><td class="diff_header" id="to257_151">151+</td><td nowrap="nowrap"><span class="diff_add">Alternatives&nbsp;to&nbsp;the&nbsp;Interactive&nbsp;Interpreter</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from257_152">152-</td><td nowrap="nowrap"><span class="diff_sub">==========</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_152">152+</td><td nowrap="nowrap"><span class="diff_add">===========================================</span></td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to257__2"></td><td class="diff_header" id="from257_153">153</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_154">154</td><td nowrap="nowrap">This&nbsp;facility&nbsp;is&nbsp;an&nbsp;enormous&nbsp;step&nbsp;forward&nbsp;compared&nbsp;to&nbsp;earlier&nbsp;versions&nbsp;of&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_155">155</td><td nowrap="nowrap">interpreter;&nbsp;however,&nbsp;some&nbsp;wishes&nbsp;are&nbsp;left:&nbsp;It&nbsp;would&nbsp;be&nbsp;nice&nbsp;if&nbsp;the&nbsp;proper</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_156">156</td><td nowrap="nowrap">indentation&nbsp;were&nbsp;suggested&nbsp;on&nbsp;continuation&nbsp;lines&nbsp;(the&nbsp;parser&nbsp;knows&nbsp;if&nbsp;an&nbsp;indent</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_157">157</td><td nowrap="nowrap">token&nbsp;is&nbsp;required&nbsp;next).&nbsp;&nbsp;The&nbsp;completion&nbsp;mechanism&nbsp;might&nbsp;use&nbsp;the&nbsp;interpreter's</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_158">158</td><td nowrap="nowrap">symbol&nbsp;table.&nbsp;&nbsp;A&nbsp;command&nbsp;to&nbsp;check&nbsp;(or&nbsp;even&nbsp;suggest)&nbsp;matching&nbsp;parentheses,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_159">159</td><td nowrap="nowrap">quotes,&nbsp;etc.,&nbsp;would&nbsp;also&nbsp;be&nbsp;useful.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_160">160</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to257__3">n</a></td><td class="diff_header" id="to257_161">161+</td><td nowrap="nowrap"><span class="diff_add">One&nbsp;alternative&nbsp;enhanced&nbsp;interactive&nbsp;interpreter&nbsp;that&nbsp;has&nbsp;been&nbsp;around&nbsp;for&nbsp;quite</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_162">162+</td><td nowrap="nowrap"><span class="diff_add">some&nbsp;time&nbsp;is&nbsp;`IPython`_,&nbsp;which&nbsp;features&nbsp;tab&nbsp;completion,&nbsp;object&nbsp;exploration&nbsp;and</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_163">163+</td><td nowrap="nowrap"><span class="diff_add">advanced&nbsp;history&nbsp;management.&nbsp;&nbsp;It&nbsp;can&nbsp;also&nbsp;be&nbsp;thoroughly&nbsp;customized&nbsp;and&nbsp;embedded</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_164">164+</td><td nowrap="nowrap"><span class="diff_add">into&nbsp;other&nbsp;applications.&nbsp;&nbsp;Another&nbsp;similar&nbsp;enhanced&nbsp;interactive&nbsp;environment&nbsp;is</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_165">165+</td><td nowrap="nowrap"><span class="diff_add">`bpython`_.</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to257__3"></td><td class="diff_header" id="to257_166">166+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from257_161">161</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_162">162</td><td nowrap="nowrap">..&nbsp;rubric::&nbsp;Footnotes</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_163">163</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_164">164</td><td nowrap="nowrap">..&nbsp;[#]&nbsp;Python&nbsp;will&nbsp;execute&nbsp;the&nbsp;contents&nbsp;of&nbsp;a&nbsp;file&nbsp;identified&nbsp;by&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_165">165</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:envvar:`PYTHONSTARTUP`&nbsp;environment&nbsp;variable&nbsp;when&nbsp;you&nbsp;start&nbsp;an&nbsp;interactive</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_166">166</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interpreter.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from257_167">167</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to257__top">t</a></td><td class="diff_header" id="to257_174">174+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_175">175+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;_GNU&nbsp;Readline:&nbsp;http://tiswww.case.edu/php/chet/readline/rltop.html</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_176">176+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;_IPython:&nbsp;http://ipython.scipy.org/</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to257_177">177+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;_bpython:&nbsp;http://www.bpython-interpreter.org/</span></td></tr>
+        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

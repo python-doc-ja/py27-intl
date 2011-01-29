@@ -1,0 +1,69 @@
+--- r262/tutorial/interactive.rst	2008-01-06 05:33:46.954265000 +0900
++++ r266/tutorial/interactive.rst	2009-10-27 23:41:50.977591000 +0900
+@@ -1,22 +1,22 @@
+ .. _tut-interacting:
+ 
+ **************************************************
+ Interactive Input Editing and History Substitution
+ **************************************************
+ 
+ Some versions of the Python interpreter support editing of the current input
+ line and history substitution, similar to facilities found in the Korn shell and
+-the GNU Bash shell.  This is implemented using the *GNU Readline* library, which
+-supports Emacs-style and vi-style editing.  This library has its own
++the GNU Bash shell.  This is implemented using the `GNU Readline`_ library,
++which supports Emacs-style and vi-style editing.  This library has its own
+ documentation which I won't duplicate here; however, the basics are easily
+ explained.  The interactive editing and history described here are optionally
+ available in the Unix and Cygwin versions of the interpreter.
+ 
+ This chapter does *not* document the editing facilities of Mark Hammond's
+ PythonWin package or the Tk-based environment, IDLE, distributed with Python.
+ The command line history recall which operates within DOS boxes on NT and some
+ other DOS and Windows flavors  is yet another beast.
+ 
+ 
+ .. _tut-lineediting:
+ 
+@@ -139,29 +139,39 @@
+        import readline
+        readline.write_history_file(historyPath)
+ 
+    if os.path.exists(historyPath):
+        readline.read_history_file(historyPath)
+ 
+    atexit.register(save_history)
+    del os, atexit, readline, rlcompleter, save_history, historyPath
+ 
+ 
+ .. _tut-commentary:
+ 
+-Commentary
+-==========
++Alternatives to the Interactive Interpreter
++===========================================
+ 
+ This facility is an enormous step forward compared to earlier versions of the
+ interpreter; however, some wishes are left: It would be nice if the proper
+ indentation were suggested on continuation lines (the parser knows if an indent
+ token is required next).  The completion mechanism might use the interpreter's
+ symbol table.  A command to check (or even suggest) matching parentheses,
+ quotes, etc., would also be useful.
+ 
++One alternative enhanced interactive interpreter that has been around for quite
++some time is `IPython`_, which features tab completion, object exploration and
++advanced history management.  It can also be thoroughly customized and embedded
++into other applications.  Another similar enhanced interactive environment is
++`bpython`_.
++
+ 
+ .. rubric:: Footnotes
+ 
+ .. [#] Python will execute the contents of a file identified by the
+    :envvar:`PYTHONSTARTUP` environment variable when you start an interactive
+    interpreter.
+ 
++
++.. _GNU Readline: http://tiswww.case.edu/php/chet/readline/rltop.html
++.. _IPython: http://ipython.scipy.org/
++.. _bpython: http://www.bpython-interpreter.org/
