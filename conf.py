@@ -20,7 +20,6 @@ extensions = ['sphinx.ext.refcounting',
               'sphinx.ext.doctest',
               'pyspecific',
               'sphinx.ext.todo',
-              'rst2pdf.pdfbuilder',
               ]
 templates_path = ['tools/sphinxext']
 
