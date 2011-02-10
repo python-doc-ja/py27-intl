@@ -199,13 +199,13 @@ Python の :keyword:`for` 文は、読者が C 言語や Pascal 言語で使い�
    >>> def fib(n):    # n までのフィボナッチ級数を出力する
    ...     """Print a Fibonacci series up to n."""
    ...     a, b = 0, 1
-   ...     while b < n:
-   ...         print b,
+   ...     while a < n:
+   ...         print a,
    ...         a, b = b, a+b
    ...
    >>> # 今しがた定義した関数を呼び出す:
    ... fib(2000)
-   1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
+   0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987 1597
 
 .. index::
    single: documentation strings
@@ -245,7 +245,7 @@ function) として認識される型を持ちます。この値は別の名前�
    <function fib at 10042ed0>
    >>> f = fib
    >>> f(100)
-   1 1 2 3 5 8 13 21 34 55 89
+   0 1 1 2 3 5 8 13 21 34 55 89
 
 他の言語出身の人からは、 ``fib`` は値を返さないので関数ではなく手続き (procedure) だと異論があるかもしれませんね。
 技術的に言えば、実際には手続きもややつまらない値ですが値を返しています。この値は ``None`` と呼ばれます
@@ -268,14 +268,14 @@ function) として認識される型を持ちます。この値は別の名前�
    ...     """Return a list containing the Fibonacci series up to n."""
    ...     result = []
    ...     a, b = 0, 1
-   ...     while b < n:
-   ...         result.append(b)    # 下記参照
+   ...     while a < n:
+   ...         result.append(a)    # 下記参照
    ...         a, b = b, a+b
    ...     return result
    ...
    >>> f100 = fib2(100)    # 関数を呼び出す
    >>> f100                # 結果を出力する
-   [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+   [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
 
 例によって、この例は Python の新しい機能を示しています:
 
@@ -283,13 +283,13 @@ function) として認識される型を持ちます。この値は別の名前�
 * :keyword:`return` 文では、関数から一つ値を返します。 :keyword:`return` の引数となる式がない場合、 ``None``
   が返ります。関数が終了したときにも ``None`` が返ります。
 
-* 文 ``result.append(b)`` では、リストオブジェクト ``result`` の *メソッド (method)* を呼び出しています。
+* 文 ``result.append(a)`` では、リストオブジェクト ``result`` の *メソッド (method)* を呼び出しています。
   メソッドとは、オブジェクトに '属している' 関数のことで、 ``obj`` を何らかのオブジェクト (式であっても構いません)、 ``methodname``
   をそのオブジェクトで定義されているメソッド名とすると、 ``obj.methodname`` と書き表されます。
   異なる型は異なるメソッドを定義しています。異なる型のメソッドで同じ名前のメソッドを持つことができ、あいまいさを生じることはありません。
-  (自前のオブジェクト型とメソッドを定義することもできます。これには、後でこのチュートリアルで述べる *クラス (class)* を使います。)
+  (*クラス (class)* を使うことで、自前のオブジェクト型とメソッドを定義することもできます。:ref:`tut-classes` 参照)
   例で示されているメソッド :meth:`append` は、リストオブジェクトで定義されています; このメソッドはリストの末尾に新たな要素を追加します。
-  この例での :meth:`append` は ``result = result + [b]`` と等価ですが、より効率的です。
+  この例での :meth:`append` は ``result = result + [a]`` と等価ですが、より効率的です。
 
 
 .. _tut-defining:
@@ -315,15 +315,26 @@ function) として認識される型を持ちます。この値は別の名前�
    def ask_ok(prompt, retries=4, complaint='Yes or no, please!'):
        while True:
            ok = raw_input(prompt)
-           if ok in ('y', 'ye', 'yes'): return True
-           if ok in ('n', 'no', 'nop', 'nope'): return False
+           if ok in ('y', 'ye', 'yes'):
+               return True
+           if ok in ('n', 'no', 'nop', 'nope'):
+               return False
            retries = retries - 1
-           if retries < 0: raise IOError, 'refusenik user'
+           if retries < 0:
+               raise IOError('refusenik user')
            print complaint
 
-この関数は、 ``ask_ok('Do you really want to quit?')`` のようにも、 ``ask_ok('OK to
-overwrite the file?', 2)`` のようにも呼び出すことができます。
+この関数はいくつかの方法で呼び出せます:
 
+* 必須の引数のみ与える:
+  ``ask_ok('Do you really want to quit?')``
+* 一つのオプション引数を与える:
+  ``ask_ok('OK to overwrte the file?', 2)``
+* 全ての引数を与える:
+  ``ask_ok('OK to overwrte the file?', 2, 'Come on, only yes or no!')``
+
+この例では :keyword:`in` キーワードが導入されています。
+このキーワードはシークエンスが特定の値を含んでいるかどうか調べるのに使われます。
 
 デフォルト値は、関数が定義された時点で、関数を *定義している* 側のスコープ (scope) で評価されるので、
 
