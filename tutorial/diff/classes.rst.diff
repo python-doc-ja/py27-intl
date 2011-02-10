@@ -17,20 +17,22 @@
 +name.  Objects can contain an arbitrary amount of data.
  
  In C++ terminology, all class members (including the data members) are *public*,
--and all member functions are *virtual*.  There are no special constructors or
+-and all member functions are *virtual*.
++and all member functions are *virtual*.
+-There are no special constructors or
 -destructors.  As in Modula-3, there are no shorthands for referencing the
 -object's members from its methods: the method function is declared with an
++As in Modula-3, there are no shorthands
++for referencing the object's members from its methods: the method function is
 -explicit first argument representing the object, which is provided implicitly by
++declared with an explicit first argument representing the object, which is
 -the call.  As in Smalltalk, classes themselves are objects, albeit in the wider
++provided implicitly by the call.  As in Smalltalk, classes themselves are
 -sense of the word: in Python, all data types are objects.  This provides
++objects.  This provides semantics for importing and renaming.  Unlike C++ and
 -semantics for importing and renaming.  Unlike  C++ and Modula-3, built-in types
 -can be used as base classes for extension by the user.  Also, like in C++ but
 -unlike in Modula-3, most built-in operators with special syntax (arithmetic
-+and all member functions are *virtual*.  As in Modula-3, there are no shorthands
-+for referencing the object's members from its methods: the method function is
-+declared with an explicit first argument representing the object, which is
-+provided implicitly by the call.  As in Smalltalk, classes themselves are
-+objects.  This provides semantics for importing and renaming.  Unlike C++ and
 +Modula-3, built-in types can be used as base classes for extension by the user.
 +Also, like in C++, most built-in operators with special syntax (arithmetic
  operators, subscripting etc.) can be redefined for class instances.
@@ -58,15 +60,15 @@
  usually not appreciated on a first glance at Python, and can be safely ignored
  when dealing with immutable basic types (numbers, strings, tuples).  However,
 -aliasing has an (intended!) effect on the semantics of Python code involving
++aliasing has a possibly surprising effect on the semantics of Python code
 -mutable objects such as lists, dictionaries, and most types representing
++involving mutable objects such as lists, dictionaries, and most other types.
 -entities outside the program (files, windows, etc.).  This is usually used to
 -the benefit of the program, since aliases behave like pointers in some respects.
 -For example, passing an object is cheap since only a pointer is passed by the
 -implementation; and if a function modifies an object passed as an argument, the
 -caller will see the change --- this eliminates the need for two different
 -argument passing mechanisms as in Pascal.
-+aliasing has a possibly surprising effect on the semantics of Python code
-+involving mutable objects such as lists, dictionaries, and most other types.
 +This is usually used to the benefit of the program, since aliases behave like
 +pointers in some respects.  For example, passing an object is cheap since only a
 +pointer is passed by the implementation; and if a function modifies an object
@@ -172,22 +174,22 @@
  already determined statically.)
  
 -A special quirk of Python is that -- if no :keyword:`global`
--statement is in effect -- assignments to names always go
--into the innermost scope.  Assignments do not copy data --- they just bind names
--to objects.  The same is true for deletions: the statement ``del x`` removes the
--binding of ``x`` from the namespace referenced by the local scope.  In fact, all
--operations that introduce new names use the local scope: in particular, import
--statements and function definitions bind the module or function name in the
--local scope.  (The :keyword:`global` statement can be used to indicate that
--particular variables live in the global scope.)
 +A special quirk of Python is that -- if no :keyword:`global` statement is in
+-statement is in effect -- assignments to names always go
 +effect -- assignments to names always go into the innermost scope.  Assignments
+-into the innermost scope.  Assignments do not copy data --- they just bind names
 +do not copy data --- they just bind names to objects.  The same is true for
+-to objects.  The same is true for deletions: the statement ``del x`` removes the
 +deletions: the statement ``del x`` removes the binding of ``x`` from the
+-binding of ``x`` from the namespace referenced by the local scope.  In fact, all
 +namespace referenced by the local scope.  In fact, all operations that introduce
+-operations that introduce new names use the local scope: in particular, import
 +new names use the local scope: in particular, :keyword:`import` statements and
+-statements and function definitions bind the module or function name in the
 +function definitions bind the module or function name in the local scope.  (The
+-local scope.  (The :keyword:`global` statement can be used to indicate that
 +:keyword:`global` statement can be used to indicate that particular variables
+-particular variables live in the global scope.)
 +live in the global scope.)
  
  
@@ -215,9 +217,9 @@
  (pointers to) the instance object and the function object just found together in
  an abstract object: this is the method object.  When the method object is called
 -with an argument list, it is unpacked again, a new argument list is constructed
++with an argument list, a new argument list is constructed from the instance
 -from the instance object and the original argument list, and the function object
 -is called with this new argument list.
-+with an argument list, a new argument list is constructed from the instance
 +object and the argument list, and the function object is called with this new
 +argument list.
  
@@ -343,16 +345,32 @@
  Private Variables
  =================
  
++"Private" instance variables that cannot be accessed except from inside an
++object, don't exist in Python.  However, there is a convention that is followed
++by most Python code: a name prefixed with an underscore (e.g. ``_spam``) should
++be treated as a non-public part of the API (whether it is a function, a method
++or a data member).  It should be considered an implementation detail and subject
++to change without notice.
++
++Since there is a valid use-case for class-private members (namely to avoid name
++clashes of names with names defined by subclasses), there is limited support for
 -There is limited support for class-private identifiers.  Any identifier of the
++such a mechanism, called :dfn:`name mangling`.  Any identifier of the form
 -form ``__spam`` (at least two leading underscores, at most one trailing
++``__spam`` (at least two leading underscores, at most one trailing underscore)
 -underscore) is textually replaced with ``_classname__spam``, where ``classname``
++is textually replaced with ``_classname__spam``, where ``classname`` is the
 -is the current class name with leading underscore(s) stripped.  This mangling is
++current class name with leading underscore(s) stripped.  This mangling is done
 -done without regard to the syntactic position of the identifier, so it can be
++without regard to the syntactic position of the identifier, as long as it
 -used to define class-private instance and class variables, methods, variables
++occurs within the definition of a class.
 -stored in globals, and even variables stored in instances. private to this class
 -on instances of *other* classes.  Truncation may occur when the mangled name
 -would be longer than 255 characters. Outside classes, or when the class name
 -consists of only underscores, no mangling occurs.
++
 -
 -Name mangling is intended to give classes an easy way to define "private"
 -instance variables and methods, without having to worry about instance variables
@@ -363,22 +381,6 @@
 -as in the debugger, and that's one reason why this loophole is not closed.
 -(Buglet: derivation of a class with the same name as the base class makes use of
 -private variables of the base class possible.)
-+"Private" instance variables that cannot be accessed except from inside an
-+object, don't exist in Python.  However, there is a convention that is followed
-+by most Python code: a name prefixed with an underscore (e.g. ``_spam``) should
-+be treated as a non-public part of the API (whether it is a function, a method
-+or a data member).  It should be considered an implementation detail and subject
-+to change without notice.
-+
-+Since there is a valid use-case for class-private members (namely to avoid name
-+clashes of names with names defined by subclasses), there is limited support for
-+such a mechanism, called :dfn:`name mangling`.  Any identifier of the form
-+``__spam`` (at least two leading underscores, at most one trailing underscore)
-+is textually replaced with ``_classname__spam``, where ``classname`` is the
-+current class name with leading underscore(s) stripped.  This mangling is done
-+without regard to the syntactic position of the identifier, as long as it
-+occurs within the definition of a class.
-+
 +Note that the mangling rules are designed mostly to avoid accidents; it still is
 +possible to access or modify a variable that is considered private.  This can
 +even be useful in special circumstances, such as in the debugger.
@@ -420,11 +422,11 @@
     raise instance.__class__, instance
  
 -A class in an except clause is compatible with an exception if it is the same
++A class in an :keyword:`except` clause is compatible with an exception if it is
 -class or a base class thereof (but not the other way around --- an except clause
++the same class or a base class thereof (but not the other way around --- an
 -listing a derived class is not compatible with a base class).  For example, the
 -following code will print B, C, D in that order::
-+A class in an :keyword:`except` clause is compatible with an exception if it is
-+the same class or a base class thereof (but not the other way around --- an
 +except clause listing a derived class is not compatible with a base class).  For
 +example, the following code will print B, C, D in that order::
  
