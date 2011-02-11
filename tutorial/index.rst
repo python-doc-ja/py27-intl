@@ -49,17 +49,14 @@ Python はまた、カスタマイズ可能なアプリケーションを作る�
 Python インタプリタが手元にあれば、自分で試しながら学ぶ助けになりますが、
 例題は全て明解なので、チュートリアルはオフラインでも十分読めます。
 
-..  For a description of standard objects and modules, see the Python Library
-    Reference document. The Python Reference Manual gives a more formal definition
-    of the language. To write extensions in C or C++, read Extending and Embedding
-    the Python Interpreter and Python/C API Reference. There are also several books
-    covering Python in depth.
+..  For a description of standard objects and modules, see :ref:`library-index`.
+    :ref:`reference-index` gives a more formal definition of the language.  To write
+    extensions in C or C++, read :ref:`extending-index` and
+    :ref:`c-api-index`. There are also several books covering Python in depth.
 
-標準のオブジェクトやモジュールの記述については、
-「Python ライブラリリファレンス (Python Library Reference)」を参照してください。
-C 言語や C++ 言語で拡張モジュールを書くなら、「Python インタプリタの拡張と埋め込み
-(Extending and Embedding the Python Interpreter)」や
-「Python/C API リファレンス (Python/C API Reference)」を参照してください。
+標準のオブジェクトやモジュールの記述については、 :ref:`library-index` を参照してください。
+:ref:`reference-index` には、より形式的な言語の定義が書いてあります。
+C 言語や C++ 言語で拡張モジュールを書くなら、 :ref:`extending-index` や :ref:`c-api-index` を参照してください。
 他にも、 Python について広く深くカバーしている書籍はいくつかあります。
 
 ..  This tutorial does not attempt to be comprehensive and cover every single
@@ -67,14 +64,14 @@ C 言語や C++ 言語で拡張モジュールを書くなら、「Python イン
     Python's most noteworthy features, and will give you a good idea of the
     language's flavor and style. After reading it, you will be able to read and
     write Python modules and programs, and you will be ready to learn more about the
-    various Python library modules described in the Python Library Reference.
+    various Python library modules described in :ref:`library-index`.
 
 このチュートリアルは網羅的な内容を目指しているわけではありませんし、
 Pythonの個別の機能や、よく使われる機能でさえ完全にカバーしてはいません。
 その代わり、このチュートリアルではPythonの特筆すべき機能をたくさん紹介して、
 この言語の持ち味やスタイルについて好印象を持ってもらうつもりです。
 このチュートリアルを読んだ後には、読者のみなさんは Python のモジュールやプログラムを
-読み書きできるようになり、「Python ライブラリリファレンス (Python Library Reference)」
+読み書きできるようになり、 :ref:`library-index`
 に記述されているさまざまな Python ライブラリモジュールについて学べるようになるでしょう。
 
 :ref:`glossary` もまた役に立つはずです。
