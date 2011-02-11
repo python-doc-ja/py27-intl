@@ -161,7 +161,6 @@ Python を電卓として使う
    4.0
    >>> abs(a)  # sqrt(a.real **2 + a.imag** 2)
    5.0
-   >>>
 
 対話モードでは、最後に表示された結果は変数 ``_`` に代入されます。
 このことを利用すると、 Python を電卓として使うときに、計算を連続して行う作業が多少楽になります。
@@ -177,7 +176,6 @@ Python を電卓として使う
    113.0625
    >>> round(_, 2)
    113.06
-   >>>
 
 ユーザはこの変数を読取り専用の値として扱うべきです。
 この変数に明示的な代入を行ってはいけません --- そんなことをすれば、
@@ -229,7 +227,7 @@ Python を電卓として使う
 末尾のバックスラッシュの後ろにある改行文字は無視されます。
 従って、上の例は以下のような出力を行います。
 
-::
+.. code-block:: text
 
    This is a rather long string containing
    several lines of text just as you would do in C.
@@ -249,7 +247,7 @@ Python を電卓として使う
 
 は以下のような出力を行います。
 
-::
+.. code-block:: text
 
    Usage: thingy [OPTIONS]
         -h                        Display this usage message
@@ -269,7 +267,7 @@ Python を電卓として使う
 
 は、以下のような出力を行います。
 
-::
+.. code-block:: text
 
    This is a rather long string containing\n\
    several lines of text much as you would do in C.
@@ -359,11 +357,11 @@ C 言語の文字列と違い、Python の文字列は変更できません。
    >>> word[0] = 'x'
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
-   TypeError: object doesn't support item assignment
+   TypeError: object does not support item assignment
    >>> word[:1] = 'Splat'
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
-   TypeError: object doesn't support slice assignment
+   TypeError: object does not support slice assignment
 
 一方、文字列同士の内容を組み合わせた新しい文字列の生成は、簡単で効率的です。
 
@@ -715,7 +713,16 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> 3*a[:3] + ['Boo!']
    ['spam', 'eggs', 100, 'spam', 'eggs', 100, 'spam', 'eggs', 100, 'Boo!']
 
-*変化不可能 (:term:`immutable`)* な文字列型と違い、リストは個々の要素を変更することができます。
+..  All slice operations return a new list containing the requested elements.  This
+    means that the following slice returns a shallow copy of the list *a*::
+
+すべてのスライス演算は、要求された要素を含む新しいリストを返します。
+これは、以下のスライスがリスト *a* の浅いコピーを返すことを意味します。
+
+   >>> a[:]
+   ['spam', 'eggs', 100, 1234]
+
+:term:`immutable` な文字列型と違い、リストは個々の要素を変更することができます。
 
 .. % % Unlike strings, which are \emph{immutable}, it is possible to change
 .. % % individual elements of a list:
