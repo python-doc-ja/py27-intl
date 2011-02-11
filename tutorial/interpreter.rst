@@ -30,8 +30,7 @@ Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\\Python26`
    set path=%path%;C:\python26
 
 ファイル終端文字 (Unixでは :kbd:`Control-D` 、DOS や Windows では :kbd:`Control-Z`) を一次プロンプト
-(primary prompt) に入力すると、インタプリタが終了状態ゼロで終了します。もしこの操作がうまく働かないなら、コマンド: ``import
-sys; sys.exit()`` と入力すればインタプリタを終了できます。
+(primary prompt) に入力すると、インタプリタが終了状態ゼロで終了します。もしこの操作がうまく働かないなら、コマンド: ``quit()`` と入力すればインタプリタを終了できます。
 
 通常、インタプリタの行編集機能は、あまり洗練されたものではありません。
 Unixシステムでは、インタプリタをインストールした誰かが GNU readline
