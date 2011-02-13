@@ -34,14 +34,16 @@ echo.
 goto end
 
 :checkout
-svn co %SVNROOT%/external/Sphinx-0.6.5/sphinx tools/sphinx
+::svn co %SVNROOT%/external/Sphinx-0.6.5/sphinx tools/sphinx
+hg clone https://sphinx-ja.python-doc-ja.googlecode.com/hg/ tools/sphinx
 svn co %SVNROOT%/external/docutils-0.6/docutils tools/docutils
 svn co %SVNROOT%/external/Jinja-2.3.1/jinja2 tools/jinja2
 svn co %SVNROOT%/external/Pygments-1.3.1/pygments tools/pygments
 goto end
 
 :update
-svn update tools/sphinx
+::svn update tools/sphinx
+hg --cwd tools/sphinx pull -uf
 svn update tools/docutils
 svn update tools/jinja2
 svn update tools/pygments

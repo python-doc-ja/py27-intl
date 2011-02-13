@@ -7,7 +7,12 @@
     :license: Python license.
 """
 
+import os
 import sys
+
+_sphinx_path = os.path.dirname(os.path.abspath(__file__)) + '/sphinx'
+if os.path.isdir(_sphinx_path):
+    sys.path.insert(0, _sphinx_path)
 
 if __name__ == '__main__':
 
