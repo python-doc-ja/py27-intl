@@ -121,7 +121,7 @@
 
 .. function:: getrandbits(k)
 
-   乱数ビット *k* とともに Python の :class:`long` 整数を返します。
+   *k* ビット分の乱数ビットを納めた Python の :class:`long` 整数を返します。
    このメソッドは MersenneTwister 生成器で提供されており、その他の\
    乱数生成器でもオプションのAPIとして提供されているかもしれません。
    このメソッドが使えるとき、 :meth:`randrange` メソッドは大きな\
@@ -199,8 +199,10 @@
 .. function:: uniform(a, b)
 
    ``a <= b`` であれば ``a <= N <= b`` であるようなランダムな浮動小数点数
-   *N* を返し、 ``b < a`` であれば ``b <= N < a`` になります。
+   *N* を返し、 ``b < a`` であれば ``b <= N <= a`` になります。
 
+   端点 b が値の範囲に含まれるかどうかは、等式
+   a + (b-a) * random() における浮動小数点の丸めに依存します。
 
 .. function:: triangular(low, high, mode)
 
