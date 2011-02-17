@@ -9,7 +9,7 @@
 .. distinguishable kinds of errors: *syntax errors* and *exceptions*.
 
 これまでエラーメッセージについては簡単に触れるだけでしたが、チュートリアル中の例を自分で試していたら、実際にいくつかのエラーメッセージを見ている
-ことでしょう。エラーには (少なくとも) 二つのはっきり異なる種類があります: それは *構文エラー (syntax error)* と*例外
+ことでしょう。エラーには (少なくとも) 二つのはっきり異なる種類があります: それは *構文エラー (syntax error)* と *例外
 (exception)* です。
 
 
@@ -20,7 +20,7 @@
 ==========
 
 .. Syntax errors, also known as parsing errors, are perhaps the most common kind of
-.. complaint you get while you are still learning Python::
+.. complaint you get while you are still learning Python:
 
 構文エラーは構文解析エラー (parsing error) としても知られており、まだ Python
 を学習中なら、おそらくもっともよく受け取る種の文句でしょう:
@@ -59,7 +59,7 @@
 .. error when an attempt is made to execute it. Errors detected during execution
 .. are called *exceptions* and are not unconditionally fatal: you will soon learn
 .. how to handle them in Python programs.  Most exceptions are not handled by
-.. programs, however, and result in error messages as shown here::
+.. programs, however, and result in error messages as shown here:
 
 たとえ文や式が構文的に正しくても、実行しようとしたときにエラーが発生するかもしれません。実行中に検出されたエラーは *例外 (exception)*
 と呼ばれ、常に致命的とは限りません: Python プログラムで例外をどのように扱うかは、
@@ -81,6 +81,7 @@
      File "<stdin>", line 1, in ?
    TypeError: cannot concatenate 'str' and 'int' objects
 
+
 .. The last line of the error message indicates what happened. Exceptions come in
 .. different types, and the type is printed as part of the message: the types in
 .. the example are :exc:`ZeroDivisionError`, :exc:`NameError` and :exc:`TypeError`.
@@ -88,7 +89,6 @@
 .. that occurred.  This is true for all built-in exceptions, but need not be true
 .. for user-defined exceptions (although it is a useful convention). Standard
 .. exception names are built-in identifiers (not reserved keywords).
-
 
 エラーメッセージの最終行は何が起こったかを示しています。例外は様々な例外型 (type) で起こり、その型がエラーメッセージの一部として出力されます:
 上の例での型は :exc:`ZeroDivisionError`, :exc:`NameError`, :exc:`TypeError` です。
@@ -128,7 +128,7 @@
 .. following example, which asks the user for input until a valid integer has been
 .. entered, but allows the user to interrupt the program (using :kbd:`Control-C` or
 .. whatever the operating system supports); note that a user-generated interruption
-.. is signalled by raising the :exc:`KeyboardInterrupt` exception. ::
+.. is signalled by raising the :exc:`KeyboardInterrupt` exception.
 
 例外を選別して処理するようなプログラムを書くことができます。以下の例を見てください。この例では、有効な文字列が入力されるまで
 ユーザに入力を促しますが、ユーザがプログラムに (:kbd:`Control-C` か、またはオペレーティングシステムがサポートしている何らかのキーを使って)
@@ -190,7 +190,7 @@
 .. handlers for different exceptions.  At most one handler will be executed.
 .. Handlers only handle exceptions that occur in the corresponding try clause, not
 .. in other handlers of the same :keyword:`try` statement.  An except clause may
-.. name multiple exceptions as a parenthesized tuple, for example::
+.. name multiple exceptions as a parenthesized tuple, for example:
 
 一つの :keyword:`try` 文に複数の except 節を設けて、さまざまな例外に対するハンドラを指定することができます。同時に一つ以上のハンドラが
 実行されることはありません。ハンドラは対応する try 節内で発生した例外だけを処理し、同じ try 節内の別の例外ハンドラで起きた例外は
@@ -206,7 +206,7 @@
 .. The last except clause may omit the exception name(s), to serve as a wildcard.
 .. Use this with extreme caution, since it is easy to mask a real programming error
 .. in this way!  It can also be used to print an error message and then re-raise
-.. the exception (allowing a caller to handle the exception as well)::
+.. the exception (allowing a caller to handle the exception as well):
 
 最後の except 節では例外名を省いて、ワイルドカード (wildcard、総称記号) にすることができます。ワイルドカードの except
 節は非常に注意して使ってください。というのは、ワイルドカードは通常のプログラムエラーをたやすく隠してしまうからです！ワイルドカードの except
@@ -233,13 +233,14 @@
 .. The :keyword:`try` ... :keyword:`except` statement has an optional *else
 .. clause*, which, when present, must follow all except clauses.  It is useful for
 .. code that must be executed if the try clause does not raise an exception.  For
-.. example::
+.. example:
 
 :keyword:`try` ... :keyword:`except` 文には、オプションで *else 節 (else clause)*
 を設けることができます。
 :keyword:`else` 節を設ける場合、全ての :keyword:`except` 節よりも後ろに置かねばなりません。
 :keyword:`else` 節は try 節で全く例外が送出されなかったときに実行されるコードを書くのに役立ちます。
 例えば以下のようにします。
+
 
 ::
 
@@ -283,7 +284,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 
 .. One may also instantiate an exception first before raising it and add any
-.. attributes to it as desired. ::
+.. attributes to it as desired.
 
 例外をraiseする前にインスタンス化をするときだけでなく、必要に応じて属性を追加できます。
 
@@ -315,7 +316,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 .. Exception handlers don't just handle exceptions if they occur immediately in the
 .. try clause, but also if they occur inside functions that are called (even
-.. indirectly) in the try clause. For example::
+.. indirectly) in the try clause. For example:
 
 例外ハンドラは、try 節でじかに発生した例外を処理するだけではなく、その try 節から呼び出された関数の内部で発生した例外も処理します
 (間接的に呼ばれていてもです) 。例えば:
@@ -334,13 +335,14 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
    Handling run-time error: integer division or modulo by zero
 
 
+
 .. _tut-raising:
 
 例外を送出する
 ==============
 
 .. The :keyword:`raise` statement allows the programmer to force a specified
-.. exception to occur. For example::
+.. exception to occur. For example:
 
 :keyword:`raise` 文を使うと、プログラマは指定した例外を強制的に送出させられます。例えば:
 
@@ -367,7 +369,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 .. If you need to determine whether an exception was raised but don't intend to
 .. handle it, a simpler form of the :keyword:`raise` statement allows you to
-.. re-raise the exception::
+.. re-raise the exception:
 
 例外が発生したかどうかは判定したいが、その処理を行おうとは思っていない場合、単純な形式の :keyword:`raise` 文を使って例外を再送出させることが
 できます:
@@ -395,7 +397,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. Programs may name their own exceptions by creating a new exception class (see
 .. :ref:`tut-classes` for more about Python classes).  Exceptions should typically
 .. be derived from the :exc:`Exception` class, either directly or indirectly.  For
-.. example::
+.. example:
 
 プログラム上で新しい例外クラスを作成することで、独自の例外を指定することができます
 (Python のクラスについては :ref:`tut-classes` 参照)。例外は、典型的に :exc:`Exception` クラスから、
@@ -435,7 +437,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. information about the error to be extracted by handlers for the exception.  When
 .. creating a module that can raise several distinct errors, a common practice is
 .. to create a base class for exceptions defined by that module, and subclass that
-.. to create specific exception classes for different error conditions::
+.. to create specific exception classes for different error conditions:
 
 例外クラスでは、他のクラスができることなら何でも定義することができますが、通常は単純なものにしておきます。たいていは、いくつかの
 属性だけを提供し、例外が発生したときにハンドラがエラーに関する情報を取り出せるようにする程度にとどめます。
@@ -498,7 +500,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 .. The :keyword:`try` statement has another optional clause which is intended to
 .. define clean-up actions that must be executed under all circumstances.  For
-.. example::
+.. example:
 
 :keyword:`try` 文にはもう一つオプションの節があります。この節はクリーンアップ動作を定義するためのもので、どんな状況でも必ず
 実行されます。例えば:
@@ -526,7 +528,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. when any other clause of the :keyword:`try` statement is left via a
 .. :keyword:`break`, :keyword:`continue` or :keyword:`return` statement.  A more
 .. complicated example (having :keyword:`except` and :keyword:`finally` clauses in
-.. the same :keyword:`try` statement works as of Python 2.5)::
+.. the same :keyword:`try` statement works as of Python 2.5):
 
 *finally 節 (finally clause)* は、 :keyword:`try`
 節で例外が発生したかどうかに関係なく常に :keyword:`try` 節のあとに実行されます。
@@ -581,7 +583,6 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 
 
-
 .. _tut-cleanup-with:
 
 定義済み完了処理
@@ -590,7 +591,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. Some objects define standard clean-up actions to be undertaken when the object
 .. is no longer needed, regardless of whether or not the operation using the object
 .. succeeded or failed. Look at the following example, which tries to open a file
-.. and print its contents to the screen. ::
+.. and print its contents to the screen.
 
 オブジェクトのなかには、その利用の成否にかかわらず、不要になった際に実行される標準的な完了処理が定義されているものがあります。
 以下の、ファイルをオープンして内容を画面に表示する例をみてください:
@@ -606,7 +607,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. amount of time after the code has finished executing. This is not an issue in
 .. simple scripts, but can be a problem for larger applications. The
 .. :keyword:`with` statement allows objects like files to be used in a way that
-.. ensures they are always cleaned up promptly and correctly. ::
+.. ensures they are always cleaned up promptly and correctly.
 
 このコードの問題点は、このコードが実行されてから、ファイルをいつまで openしたままでいるかわからないことです。
 これは単純なスクリプトでは問題になりませんが、大きなアプリケーションでは問題になりえます。 :keyword:`with` 文はファイルのようなオブジェクトが
@@ -626,6 +627,3 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 文が実行されたあと、行の処理中に問題があったかどうかに関係なく、ファイル *f* は常にcloseされます。他の定義済み完了処理をもつオブジェクト
 については、それぞれのドキュメントで示されます。
-
-
-
