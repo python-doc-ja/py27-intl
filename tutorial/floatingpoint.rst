@@ -116,7 +116,7 @@
 になるでしょう！ Python プロンプトは、文字列表現を得るために何に対しても :func:`repr` を使います。浮動小数点数の場合、
 ``repr(float)`` は真の 10 進値を有効数字 17 桁で丸め、以下のような表示
 
-.. % % instead!  The Python prompt uses the builtin
+.. % % instead!  The Python prompt uses the built-in
 .. % % \function{repr()} function to obtain a string version of everything it
 .. % % displays.  For floats, \code{repr(\var{float})} rounds the true
 .. % % decimal value to 17 significant digits, giving
@@ -147,7 +147,7 @@
 Python の組み込みの :func:`str` 関数は有効数字 12 桁しか生成しません。このため、この関数を代わりに使用したいと思うかもしれません。
 この関数は ``eval(str(x))`` としたときに *x* を再現しないことが多いですが、出力を目で見るには好ましいかもしれません:
 
-.. % % Python's builtin \function{str()} function produces only 12
+.. % % Python's built-in \function{str()} function produces only 12
 .. % % significant digits, and you may wish to use that instead.  It's
 .. % % unusual for \code{eval(str(\var{x}))} to reproduce \var{x}, but the
 .. % % output may be more pleasant to look at:
@@ -274,7 +274,7 @@ Python の組み込みの :func:`str` 関数は有効数字 12 桁しか生成�
 IEEE-754 浮動小数点演算を使用しており、ほとんどすべてのプラットフォームでは Python の浮動小数点を IEEE-754 における "倍精度
 (double precision)"  に対応付けます。754 の double には 53 ビットの精度を持つ数が入るので、
 計算機に入力を行おうとすると、可能な限り 0.1 を最も近い値の分数に変換し、
-*J*/2\*\**N* の形式にしようと努力します。 *J* はちょうど 53 ビットの精度の整数です。
+*J*/2**\ *N* の形式にしようと努力します。 *J* はちょうど 53 ビットの精度の整数です。
 
 .. % % Why is that?  1/10 is not exactly representable as a binary fraction.
 .. % % Almost all machines today (November 2000) use IEEE-754 floating point
