@@ -274,22 +274,18 @@
 .. The except clause may specify a variable after the exception name (or tuple).
 .. The variable is bound to an exception instance with the arguments stored in
 .. ``instance.args``.  For convenience, the exception instance defines
-.. :meth:`__getitem__` and :meth:`__str__` so the arguments can be accessed or
-.. printed directly without having to reference ``.args``.
+.. :meth:`__str__` so the arguments can be printed directly without having to
+.. reference ``.args``.
 
 except 節では、例外名 (または例外名タプル) の後に変数を指定することができます。この変数は例外インスタンスに結び付けられており、
-``instance.args`` に例外インスタンス生成時の引数が入っています。例外インスタンスには :meth:`__getitem__` および
-:meth:`__str__` が定義されており、 ``.args`` を参照しなくても引数に直接アクセスしたり印字したりできるように利便性が図られています。
+``instance.args`` に例外インスタンス生成時の引数が入っています。例外インスタンスには
+:meth:`__str__` が定義されており、 ``.args`` を参照しなくても引数を直接印字できるように利便性が図られています。
 
 
-.. But use of ``.args`` is discouraged.  Instead, the preferred use is to pass a
-.. single argument to an exception (which can be a tuple if multiple arguments are
-.. needed) and have it bound to the ``message`` attribute.  One may also
-.. instantiate an exception first before raising it and add any attributes to it as
-.. desired. ::
+.. One may also instantiate an exception first before raising it and add any
+.. attributes to it as desired. ::
 
-しかし ``.args`` の利用は推奨されません。そのかわりに、例外へ引数を1つだけ渡してください（複数の値が必要な場合にはタプルを使用でき
-ます）。そしてそれを ``message`` 属性に結びつけます。例外をraiseする前にインスタンス化をするときだけでなく、必要に応じて属性を追加できます。
+例外をraiseする前にインスタンス化をするときだけでなく、必要に応じて属性を追加できます。
 
 
 ::
@@ -351,19 +347,22 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 ::
 
-   >>> raise NameError, 'HiThere'
+   >>> raise NameError('HiThere')
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
    NameError: HiThere
 
 
-.. The first argument to :keyword:`raise` names the exception to be raised.  The
-.. optional second argument specifies the exception's argument.  Alternatively, the
-.. above could be written as ``raise NameError('HiThere')``.  Either form works
-.. fine, but there seems to be a growing stylistic preference for the latter.
+.. The argument to :keyword:`raise` is an exception class or instance to be
+.. raised.  There is a deprecated alternate syntax that separates class and
+.. constructor arguments; the above could be written as ``raise NameError,
+.. 'HiThere'``.  Since it once was the only one available, the latter form is
+.. prevalent in older code.
 
-:keyword:`raise` の第一引数には、ひき起こすべき例外を指定します。オプションの第二引数では例外の引数を指定します。同じことを　``raise
-NameError('HiThere')``　としても記述できます。どちらの形式でもうまく動きますが後者のほうがスタイルがよくみえます。
+:keyword:`raise` の引数は、送出したい例外クラスまたはインスタンスです。
+推奨されない別の構文として、クラスとコンストラクタへの引数を別々に指定する方法があります。
+上記の例は ``raise NameError, 'HiThere'`` と書くことができます。
+以前は一通りの形式しかなかったので、古いコードでは後者の形式が一般的です。
 
 
 .. If you need to determine whether an exception was raised but don't intend to
@@ -377,7 +376,7 @@ NameError('HiThere')``　としても記述できます。どちらの形式で�
 ::
 
    >>> try:
-   ...     raise NameError, 'HiThere'
+   ...     raise NameError('HiThere')
    ... except NameError:
    ...     print 'An exception flew by!'
    ...     raise
@@ -393,11 +392,13 @@ NameError('HiThere')``　としても記述できます。どちらの形式で�
 ユーザ定義の例外
 ================
 
-.. Programs may name their own exceptions by creating a new exception class.
-.. Exceptions should typically be derived from the :exc:`Exception` class, either
-.. directly or indirectly.  For example::
+.. Programs may name their own exceptions by creating a new exception class (see
+.. :ref:`tut-classes` for more about Python classes).  Exceptions should typically
+.. be derived from the :exc:`Exception` class, either directly or indirectly.  For
+.. example::
 
-プログラム上で新しい例外クラスを作成することで、独自の例外を指定することができます。例外は、典型的に :exc:`Exception` クラスから、
+プログラム上で新しい例外クラスを作成することで、独自の例外を指定することができます
+(Python のクラスについては :ref:`tut-classes` 参照)。例外は、典型的に :exc:`Exception` クラスから、
 直接または間接的に導出したものです。例えば:
 
 
@@ -415,7 +416,7 @@ NameError('HiThere')``　としても記述できます。どちらの形式で�
    ...     print 'My exception occurred, value:', e.value
    ...
    My exception occurred, value: 4
-   >>> raise MyError, 'oops!'
+   >>> raise MyError('oops!')
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
    __main__.MyError: 'oops!'
@@ -451,28 +452,28 @@ NameError('HiThere')``　としても記述できます。どちらの形式で�
        """Exception raised for errors in the input.
 
        Attributes:
-           expression -- input expression in which the error occurred
-           message -- explanation of the error
+           expr -- input expression in which the error occurred
+           msg  -- explanation of the error
        """
 
-       def __init__(self, expression, message):
-           self.expression = expression
-           self.message = message
+       def __init__(self, expr, msg):
+           self.expr = expr
+           self.msg = msg
 
    class TransitionError(Error):
        """Raised when an operation attempts a state transition that's not
        allowed.
 
        Attributes:
-           previous -- state at beginning of transition
+           prev -- state at beginning of transition
            next -- attempted new state
-           message -- explanation of why the specific transition is not allowed
+           msg  -- explanation of why the specific transition is not allowed
        """
 
-       def __init__(self, previous, next, message):
-           self.previous = previous
+       def __init__(self, prev, next, msg):
+           self.prev = prev
            self.next = next
-           self.message = message
+           self.msg = msg
 
 
 .. Most exceptions are defined with names that end in "Error," similar to the
