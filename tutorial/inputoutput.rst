@@ -179,23 +179,23 @@
    >>> '3.14159265359'.zfill(5)
    '3.14159265359'
 
-Basic usage of the :meth:`str.format` method looks like this::
+.. % % Basic usage of the :meth:`str.format` method looks like this::
 
 :meth:`str.format` メソッドの基本的な使い方は次のようなものです。 ::
 
    >>> print 'We are the {0} who say "{1}!"'.format('knights', 'Ni')
    We are the knights who say "Ni!"
 
-括弧とその中の文字(これをフォーマットフィールドと呼びます)は、 format メソッドに
+括弧とその中の文字(これをフォーマットフィールドと呼びます)は、:meth:`~str.format` メソッドに
 渡されたオブジェクトに置換されます。
-括弧の中の数字は format メソッドに渡されたオブジェクトの位置を表します。 ::
+括弧の中の数字は :meth:`~str.format` メソッドに渡されたオブジェクトの位置を表します。 ::
 
    >>> print '{0} and {1}'.format('spam', 'eggs')
    spam and eggs
    >>> print '{1} and {0}'.format('spam', 'eggs')
    eggs and spam
 
-フォーマットメソッドにキーワード引数が渡された場合、その値はキーワード引数の名前に
+:meth:`~str.format` メソッドにキーワード引数が渡された場合、その値はキーワード引数の名前に
 よって参照されます。 ::
 
    >>> print 'This {food} is {adjective}.'.format(
@@ -208,9 +208,17 @@ Basic usage of the :meth:`str.format` method looks like this::
    ...                                                    other='Georg')
    The story of Bill, Manfred, and Georg.
 
-An optional ``':'`` and format specifier can follow the field name. This also
-greater control over how the value is formatted.  The following example
-truncates the Pi to three places after the decimal.
+:func:`str` を適応する``'!s'`` や:func:`repr` を適応する``'!r'`` を使って値がフォーマットされる前に変換することができます。::
+
+   >>> import math
+   >>> print 'The value of PI is approximately {0}.'.format(math.pi)
+   The value of PI is approximately 3.14159265359.
+   >>> print 'The value of PI is approximately {0!r}.'.format(math.pi)
+   The value of PI is approximately 3.141592653589793.
+
+.. % % An optional ``':'`` and format specifier can follow the field name. This also
+.. % % greater control over how the value is formatted.  The following example
+.. % % truncates the Pi to three places after the decimal.
 
 オプションの ``':'`` とフォーマット指定子を、フィールド名の後ろに付けることができます。
 フォーマット指定子によって値がどうフォーマットされるかを制御することができます。
@@ -320,7 +328,7 @@ table を '**' 記法を使ってキーワード引数として渡す方法も�
 .. % % it's omitted.
 
 Windows では、 *mode* に ``'b'`` を追加するとファイルをバイナリモードで開きます。したがって、
-``'rb'``,  ``'wb'``, ``'r+b'`` といったモードがあります。 Windows はテキストファイルとバイナリファイルを区別しています;
+``'rb'``,  ``'wb'``, ``'r+b'`` といったモードがあります。 Windows 上で動くPython はテキストファイルとバイナリファイルを区別しています;
 テキストファイルでは、読み書きの際に行末文字が自動的に少し変更されます。この舞台裏でのファイルデータ変更は、ASCII でできたテキストファイル
 では差し支えないものですが、 :file:`JPEG` や :file:`EXE` ファイルのようなバイナリデータは破損してしまうことになるでしょう。
 こうしたファイルを読み書きする際にはバイナリモードを使うよう十分注意してください。
@@ -495,7 +503,7 @@ point) にオフセット値 *offset* を足して計算されます; 参照点�
     >>> f.closed
     True
 
-ファイルオブジェクトには、他にも :meth:`isatty` や :meth:`truncate`  といった、あまり使われないメソッドがあります。
+ファイルオブジェクトには、他にも :meth:`~file.isatty` や :meth:`~file.truncate`  といった、あまり使われないメソッドがあります。
 ファイルオブジェクトについての完全なガイドは、ライブラリリファレンスを参照してください。
 
 .. % % File objects have some additional methods, such as
