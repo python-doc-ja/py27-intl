@@ -22,8 +22,8 @@
 .. Syntax errors, also known as parsing errors, are perhaps the most common kind of
 .. complaint you get while you are still learning Python:
 
-構文エラーは構文解析エラー (parsing error) としても知られており、まだ Python
-を学習中なら、おそらくもっともよく受け取る種の文句でしょう:
+構文エラーは構文解析エラー (parsing error) としても知られており、おそらくあなたが Python
+を学習中に受け取るもっともありがちな種類の文句でしょう:
 
 
 ::
@@ -42,9 +42,9 @@
 .. (``':'``) is missing before it.  File name and line number are printed so you
 .. know where to look in case the input came from a script.
 
-パーサは違反の起きている行を繰り返し、小さな '矢印' を表示して、
+パーサは違反の起きている行を繰り返し、小さな「矢印」を表示して、
 違反の起きている行中でエラーが検出された最初の位置を示します。エラーは矢印の *直前の*
-トークンでひき起こされています (または、少なくともそこで検出されています)。上述の例の中では、エラーは :keyword:`print`
+トークンでひき起こされています (または、少なくともそこで検出されています)。上記の例の中では、エラーは :keyword:`print`
 で検出されています。コロン (``':'``) がその前に無いからです。入力がスクリプトから来ている場合は、どこを見ればよいか分かるように
 ファイル名と行番号が出力されます。
 
@@ -62,8 +62,8 @@
 .. programs, however, and result in error messages as shown here:
 
 たとえ文や式が構文的に正しくても、実行しようとしたときにエラーが発生するかもしれません。実行中に検出されたエラーは *例外 (exception)*
-と呼ばれ、常に致命的とは限りません: Python プログラムで例外をどのように扱うかは、
-すぐに習得することでしょう。ほとんどの例外はプログラムで処理されず、以下に示されるようなメッセージになります:
+と呼ばれ、常に致命的とは限りません: Python プログラムで例外をどのように扱うかをこれから学んでいきます。
+ほとんどの例外はプログラムで処理されず、以下に示されるようなメッセージになります:
 
 
 ::
@@ -268,8 +268,8 @@
 .. exception's *argument*. The presence and type of the argument depend on the
 .. exception type.
 
-例外が発生するとき、例外に関連付けられた値を持つことができます。この値は例外の例外の *引数 (argument)* としても知られています。
-引数の有無と引数の型がどうなっているかは例外の型に依存します。
+例外が発生するとき、例外は関連付けられた値を持つことができます。この値は例外の *引数 (argument)* としても知られています。
+引数の有無および引数の型は、例外の型に依存します。
 
 
 .. The except clause may specify a variable after the exception name (or tuple).
@@ -286,7 +286,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. One may also instantiate an exception first before raising it and add any
 .. attributes to it as desired.
 
-例外をraiseする前にインスタンス化をするときだけでなく、必要に応じて属性を追加できます。
+必要なら、例外を送出する前にインスタンス化して、任意の属性を追加できます。
 
 
 ::
@@ -311,15 +311,16 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. If an exception has an argument, it is printed as the last part ('detail') of
 .. the message for unhandled exceptions.
 
-処理されない例外の場合、例外が引数を持っていれば、メッセージの最後の ('詳細説明の') 部分に出力されます。
+例外が引数を持っていれば、それは処理されない例外のメッセージの最後の部分 (「詳細説明」) に出力されます。
 
 
 .. Exception handlers don't just handle exceptions if they occur immediately in the
 .. try clause, but also if they occur inside functions that are called (even
 .. indirectly) in the try clause. For example:
 
-例外ハンドラは、try 節でじかに発生した例外を処理するだけではなく、その try 節から呼び出された関数の内部で発生した例外も処理します
-(間接的に呼ばれていてもです) 。例えば:
+例外ハンドラは、 try 節の直接内側で発生した例外を処理するだけではなく、
+その try 節から (たとえ間接的にでも) 呼び出された関数の内部で発生した
+例外も処理します。例えば:
 
 
 ::
@@ -344,7 +345,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. The :keyword:`raise` statement allows the programmer to force a specified
 .. exception to occur. For example:
 
-:keyword:`raise` 文を使うと、プログラマは指定した例外を強制的に送出させられます。例えば:
+:keyword:`raise` 文を使うと、プログラマは指定した例外を強制的に送出することができます。例えば:
 
 
 ::
@@ -371,8 +372,8 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. handle it, a simpler form of the :keyword:`raise` statement allows you to
 .. re-raise the exception:
 
-例外が発生したかどうかは判定したいが、その処理を行おうとは思っていない場合、単純な形式の :keyword:`raise` 文を使って例外を再送出させることが
-できます:
+例外が発生したかどうかを判定したいだけで、その例外を処理するつもりがなければ、
+単純な形式の :keyword:`raise` 文を使って例外を再送出させることができます:
 
 
 ::
@@ -429,7 +430,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. replaces the default behavior of creating the *args* attribute.
 
 この例では :class:`Exception` のデフォルト :meth:`__init__` がオーバーライドされています。新しいふるまいでは、単に
-*value* 属性を作ります。これはデフォルトの *args* 属性を作成するふるまいを置き換えています。
+*value* 属性を作ります。これは、デフォルトの *args* 属性を作成するふるまいを置き換えています。
 
 
 .. Exception classes can be defined which do anything any other class can do, but
@@ -441,7 +442,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 例外クラスでは、他のクラスができることなら何でも定義することができますが、通常は単純なものにしておきます。たいていは、いくつかの
 属性だけを提供し、例外が発生したときにハンドラがエラーに関する情報を取り出せるようにする程度にとどめます。
-複数の別個の例外を送出するようなモジュールを作成する際には、そのモジュールで定義されている例外の基底クラスを作成するのが一般的なならわしです:
+複数の別個の例外を送出するようなモジュールを作成する際には、そのモジュールで定義されている例外の基底クラスを作成するのが一般的なプラクティスです:
 
 
 ::
@@ -481,7 +482,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. Most exceptions are defined with names that end in "Error," similar to the
 .. naming of the standard exceptions.
 
-ほとんどの例外は、標準の例外の名前付けと同様に、 "Error,"  で終わる名前で定義されています。
+ほとんどの例外は、標準の例外の名前付けと同様に、 "Error" で終わる名前で定義されています。
 
 
 .. Many standard modules define their own exceptions to report errors that may
@@ -495,8 +496,8 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 .. _tut-cleanup:
 
-後片付け動作を定義する
-======================
+クリーンアップ動作を定義する
+============================
 
 .. The :keyword:`try` statement has another optional clause which is intended to
 .. define clean-up actions that must be executed under all circumstances.  For
@@ -532,11 +533,11 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 
 *finally 節 (finally clause)* は、 :keyword:`try`
 節で例外が発生したかどうかに関係なく常に :keyword:`try` 節のあとに実行されます。
-:keyword:`try` 節の中で例外が発生して、 :keyword:`except` 節でハンドルされ
+:keyword:`try` 節の中で例外が発生して、 :keyword:`except` 節で処理され
 ていない場合、または :keyword:`except` 節か :keyword:`else` 節で例外が発生した場合は、 :keyword:`finally`
 節を実行した後、その例外を再送出します。 :keyword:`finally` 節はまた、 :keyword:`try` 節から :keyword:`break`
 文や  :keyword:`continue` 文、 :keyword:`return` 文経由で抜ける際にも、 "抜ける途中で" 実行されます。
-より複雑な例です (:keyword:`except` 節や :keyword:`finally` 節が同じ :keyword:`try` 文の中にあっても Python 2.5 と同じように動作します):
+より複雑な例です (:keyword:`except` 節や :keyword:`finally` 節が同じ :keyword:`try` 文の中にあって、 Python 2.5 以降で動作します):
 
 
 ::
@@ -570,8 +571,8 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. :keyword:`except` clause and therefore re-raised after the :keyword:`finally`
 .. clause has been executed.
 
-見てわかるとおり、 :keyword:`finally` 節はどの場合にも実行されています。文字列を割り算することで発生した　 :exc:`TypeError` は
-:keyword:`except` 節でハンドルされていませんので、 :keyword:`finally` 節実行後に再度raiseされています。
+見てわかるとおり、 :keyword:`finally` 節はどの場合にも実行されています。文字列を割り算することで発生した :exc:`TypeError` は
+:keyword:`except` 節で処理されていませんので、 :keyword:`finally` 節実行後に再度送出されています。
 
 
 .. In real world applications, the :keyword:`finally` clause is useful for
@@ -579,21 +580,21 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. of whether the use of the resource was successful.
 
 実世界のアプリケーションでは、 :keyword:`finally` 節は(ファイルやネットワー
-ク接続などの)外部リソースを利用の成否にかかわらず開放するために便利です。
+ク接続などの)外部リソースを利用の成否にかかわらず解放するために便利です。
 
 
 
 .. _tut-cleanup-with:
 
-定義済み完了処理
-================
+定義済みクリーンアップ処理
+==========================
 
 .. Some objects define standard clean-up actions to be undertaken when the object
 .. is no longer needed, regardless of whether or not the operation using the object
 .. succeeded or failed. Look at the following example, which tries to open a file
 .. and print its contents to the screen.
 
-オブジェクトのなかには、その利用の成否にかかわらず、不要になった際に実行される標準的な完了処理が定義されているものがあります。
+オブジェクトのなかには、その利用の成否にかかわらず、不要になった際に実行される標準的なクリーンアップ処理が定義されているものがあります。
 以下の、ファイルをオープンして内容を画面に表示する例をみてください:
 
 
@@ -609,9 +610,9 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. :keyword:`with` statement allows objects like files to be used in a way that
 .. ensures they are always cleaned up promptly and correctly.
 
-このコードの問題点は、このコードが実行されてから、ファイルをいつまで openしたままでいるかわからないことです。
+このコードの問題点は、コードが実行された後に不定の時間ファイルを open したままでいることです。
 これは単純なスクリプトでは問題になりませんが、大きなアプリケーションでは問題になりえます。 :keyword:`with` 文はファイルのようなオブジェクトが
-常に、即座に正しく完了されることを保証します。
+常に、即座に正しくクリーンアップされることを保証します。
 
 
 ::
@@ -625,5 +626,5 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. problem was encountered while processing the lines. Other objects which provide
 .. predefined clean-up actions will indicate this in their documentation.
 
-文が実行されたあと、行の処理中に問題があったかどうかに関係なく、ファイル *f* は常にcloseされます。他の定義済み完了処理をもつオブジェクト
+この文が実行されたあとで、たとえ行の処理中に問題があったとしても、ファイル *f* は常に close されます。他の定義済みクリーンアップ処理を持つオブジェクト
 については、それぞれのドキュメントで示されます。
