@@ -8,9 +8,10 @@
 .. out the examples you have probably seen some.  There are (at least) two
 .. distinguishable kinds of errors: *syntax errors* and *exceptions*.
 
-これまでエラーメッセージについては簡単に触れるだけでしたが、チュートリアル中の例を自分で試していたら、実際にいくつかのエラーメッセージを見ている
-ことでしょう。エラーには (少なくとも) 二つのはっきり異なる種類があります: それは *構文エラー (syntax error)* と *例外
-(exception)* です。
+これまでエラーメッセージについては簡単に触れるだけでしたが、チュートリアル中の例を自分で試していたら、
+実際にいくつかのエラーメッセージを見ていることでしょう。
+エラーには (少なくとも) 二つのはっきり異なる種類があります: それは *構文エラー (syntax error)* と
+*例外 (exception)* です。
 
 
 
@@ -22,9 +23,8 @@
 .. Syntax errors, also known as parsing errors, are perhaps the most common kind of
 .. complaint you get while you are still learning Python:
 
-構文エラーは構文解析エラー (parsing error) としても知られており、おそらくあなたが Python
-を学習中に受け取るもっともありがちな種類の文句でしょう:
-
+構文エラーは構文解析エラー (parsing error) としても知られており、 Python を勉強している間に
+最もよく遭遇する問題の一つでしょう。
 
 ::
 
@@ -36,16 +36,17 @@
 
 
 .. The parser repeats the offending line and displays a little 'arrow' pointing at
-.. the earliest point in the line where the error was detected.  The error is
-.. caused by (or at least detected at) the token *preceding* the arrow: in the
-.. example, the error is detected at the keyword :keyword:`print`, since a colon
-.. (``':'``) is missing before it.  File name and line number are printed so you
-.. know where to look in case the input came from a script.
+   the earliest point in the line where the error was detected.  The error is
+   caused by (or at least detected at) the token *preceding* the arrow: in the
+   example, the error is detected at the keyword :keyword:`print`, since a colon
+   (``':'``) is missing before it.  File name and line number are printed so you
+   know where to look in case the input came from a script.
 
-パーサは違反の起きている行を繰り返し、小さな「矢印」を表示して、
-違反の起きている行中でエラーが検出された最初の位置を示します。エラーは矢印の *直前の*
-トークンでひき起こされています (または、少なくともそこで検出されています)。上記の例の中では、エラーは :keyword:`print`
-で検出されています。コロン (``':'``) がその前に無いからです。入力がスクリプトから来ている場合は、どこを見ればよいか分かるように
+パーサは違反の起きている行を表示し、小さな「矢印」を表示して、行中でエラーが
+検出された最初の位置を示します。
+エラーは矢印の *直前の* トークンでひき起こされています (または、少なくともそこで検出されています)。
+上記の例では、エラーは :keyword:`print` で検出されています。
+コロン (``':'``) がその前に無いからです。入力がスクリプトから来ている場合は、どこを見ればよいか分かるように
 ファイル名と行番号が出力されます。
 
 
@@ -61,10 +62,10 @@
 .. how to handle them in Python programs.  Most exceptions are not handled by
 .. programs, however, and result in error messages as shown here:
 
-たとえ文や式が構文的に正しくても、実行しようとしたときにエラーが発生するかもしれません。実行中に検出されたエラーは *例外 (exception)*
-と呼ばれ、常に致命的とは限りません: Python プログラムで例外をどのように扱うかをこれから学んでいきます。
-ほとんどの例外はプログラムで処理されず、以下に示されるようなメッセージになります:
-
+たとえ文や式が構文的に正しくても、実行しようとしたときにエラーが発生するかもしれません。
+実行中に検出されたエラーは *例外 (exception)* と呼ばれ、常に致命的とは限りません:
+これから、 Python プログラムで例外をどのように扱うかを学んでいきます。
+ほとんどの例外はプログラムで処理されず、以下に示されるようなメッセージになります。
 
 ::
 
@@ -90,10 +91,13 @@
 .. for user-defined exceptions (although it is a useful convention). Standard
 .. exception names are built-in identifiers (not reserved keywords).
 
-エラーメッセージの最終行は何が起こったかを示しています。例外は様々な例外型 (type) で起こり、その型がエラーメッセージの一部として出力されます:
+エラーメッセージの最終行は何が起こったかを示しています。
+例外は様々な例外型 (type) で起こり、その型がエラーメッセージの一部として出力されます:
 上の例での型は :exc:`ZeroDivisionError`, :exc:`NameError`, :exc:`TypeError` です。
-例外型として出力される文字列は、発生した例外の組み込み名です。これは全ての組み込み例外について成り立ちますが、ユーザ定義の例外では
-(成り立つようにするのは有意義な慣習ですが) 必ずしも成り立ちません。標準例外の名前は組み込みの識別子です (予約語ではありません)。
+例外型として出力される文字列は、発生した例外の組み込み名です。
+これは全ての組み込み例外について成り立ちますが、ユーザ定義の例外では
+(成り立つようにするのは有意義な慣習ですが) 必ずしも成り立ちません。
+標準例外の名前は組み込みの識別子です (予約語ではありません)。
 
 
 .. The rest of the line provides detail based on the type of exception and what
@@ -130,7 +134,8 @@
 .. whatever the operating system supports); note that a user-generated interruption
 .. is signalled by raising the :exc:`KeyboardInterrupt` exception.
 
-例外を選別して処理するようなプログラムを書くことができます。以下の例を見てください。この例では、有効な文字列が入力されるまで
+例外を選別して処理するようなプログラムを書くことができます。
+以下の例を見てください。この例では、有効な文字列が入力されるまで
 ユーザに入力を促しますが、ユーザがプログラムに (:kbd:`Control-C` か、またはオペレーティングシステムがサポートしている何らかのキーを使って)
 割り込みをかけてプログラムを中断させることができるようにしています; ユーザが生成した割り込みは、 :exc:`KeyboardInterrupt`
 例外が送出されることで通知されるということに注意してください。
@@ -172,7 +177,7 @@
 
 * try 節内の実行中に例外が発生すると、その節の残りは飛ばされます。
   次に、例外型が :keyword:`except` キーワードの後に指定されている
-  例外に一致する場合、except 節が実行された後、 :keyword:`try` 節の後の文に実行が継続されます。
+  例外に一致する場合、except 節が実行された後、 :keyword:`try` 文の後ろへ実行が継続されます。
 
 
 .. * If an exception occurs which does not match the exception named in the except
@@ -194,8 +199,7 @@
 
 一つの :keyword:`try` 文に複数の except 節を設けて、さまざまな例外に対するハンドラを指定することができます。同時に一つ以上のハンドラが
 実行されることはありません。ハンドラは対応する try 節内で発生した例外だけを処理し、同じ try 節内の別の例外ハンドラで起きた例外は
-処理しません。except 節には複数の例外を丸括弧で囲ったタプルにして渡すことができます。例えば以下のようにします:
-
+処理しません。except 節には複数の例外を丸括弧で囲ったタプルにして渡すことができます。例えば以下のようにします。
 
 ::
 
@@ -210,8 +214,7 @@
 
 最後の except 節では例外名を省いて、ワイルドカード (wildcard、総称記号) にすることができます。ワイルドカードの except
 節は非常に注意して使ってください。というのは、ワイルドカードは通常のプログラムエラーをたやすく隠してしまうからです！ワイルドカードの except
-節はエラーメッセージを出力した後に例外を再送出する (関数やメソッドの呼び出し側が同様にして例外を処理できるようにする) 用途にも使えます:
-
+節はエラーメッセージを出力した後に例外を再送出する (関数やメソッドの呼び出し側が同様にして例外を処理できるようにする) 用途にも使えます。
 
 ::
 
@@ -296,8 +299,8 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
    ... except Exception as inst:
    ...    print type(inst)     # 例外インスタンス
    ...    print inst.args      # .args に記憶されている引数
-   ...    print inst           # __str__ で引数を直接出力できる
-   ...    x, y = inst          # __getitem__ で引数を直接アンパックできる
+   ...    print inst           # __str__ により引数を直接出力できる
+   ...    x, y = inst          # __getitem__ により引数を直接アンパックできる
    ...    print 'x =', x
    ...    print 'y =', y
    ...
@@ -531,11 +534,12 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. complicated example (having :keyword:`except` and :keyword:`finally` clauses in
 .. the same :keyword:`try` statement works as of Python 2.5):
 
-*finally 節 (finally clause)* は、 :keyword:`try`
-節で例外が発生したかどうかに関係なく常に :keyword:`try` 節のあとに実行されます。
+*finally 節 (finally clause)* は、例外が発生したかどうかに関わらず、
+:keyword:`try` 文を抜ける前に常に実行されます。
 :keyword:`try` 節の中で例外が発生して、 :keyword:`except` 節で処理され
 ていない場合、または :keyword:`except` 節か :keyword:`else` 節で例外が発生した場合は、 :keyword:`finally`
-節を実行した後、その例外を再送出します。 :keyword:`finally` 節はまた、 :keyword:`try` 節から :keyword:`break`
+節を実行した後、その例外を再送出します。
+:keyword:`finally` 節はまた、 :keyword:`try` 節から :keyword:`break`
 文や  :keyword:`continue` 文、 :keyword:`return` 文経由で抜ける際にも、 "抜ける途中で" 実行されます。
 より複雑な例です (:keyword:`except` 節や :keyword:`finally` 節が同じ :keyword:`try` 文の中にあって、 Python 2.5 以降で動作します):
 
@@ -580,7 +584,7 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. of whether the use of the resource was successful.
 
 実世界のアプリケーションでは、 :keyword:`finally` 節は(ファイルやネットワー
-ク接続などの)外部リソースを利用の成否にかかわらず解放するために便利です。
+ク接続などの)外部リソースを、利用が成功したかどうかにかかわらず解放するために便利です。
 
 
 
@@ -597,12 +601,10 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 オブジェクトのなかには、その利用の成否にかかわらず、不要になった際に実行される標準的なクリーンアップ処理が定義されているものがあります。
 以下の、ファイルをオープンして内容を画面に表示する例をみてください:
 
-
 ::
 
    for line in open("myfile.txt"):
        print line
-
 
 .. The problem with this code is that it leaves the file open for an indeterminate
 .. amount of time after the code has finished executing. This is not an issue in
@@ -611,7 +613,8 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
 .. ensures they are always cleaned up promptly and correctly.
 
 このコードの問題点は、コードが実行された後に不定の時間ファイルを open したままでいることです。
-これは単純なスクリプトでは問題になりませんが、大きなアプリケーションでは問題になりえます。 :keyword:`with` 文はファイルのようなオブジェクトが
+これは単純なスクリプトでは問題になりませんが、大きなアプリケーションでは問題になりえます。
+:keyword:`with` 文はファイルのようなオブジェクトが
 常に、即座に正しくクリーンアップされることを保証します。
 
 
