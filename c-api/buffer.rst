@@ -131,7 +131,8 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
 .. cfunction:: int PyObject_CheckBuffer(PyObject *obj)
 
-   Return 1 if *obj* supports the buffer interface otherwise 0.
+   *obj* がバッファインタフェースをサポートしている場合に 1 を、
+   それ以外の場合に 0 を返します。
 
 
 .. cfunction:: int PyObject_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
