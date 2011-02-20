@@ -77,6 +77,7 @@ epub: build
 
 latex: BUILDER = latex
 latex: build
+	cp refs/mendex/*.dic build/latex/
 	@echo "Build finished; the LaTeX files are in build/latex."
 	@echo "Run \`make all-pdf' or \`make all-ps' in that directory to" \
 	      "run these through (pdf)latex."
