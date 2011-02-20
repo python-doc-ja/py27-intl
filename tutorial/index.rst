@@ -47,7 +47,7 @@ Python はまた、カスタマイズ可能なアプリケーションを作る�
 
 このチュートリアルでは、Python の言語仕様と仕組みについて、基本的な概念と機能をざっと紹介します。
 Python インタプリタが手元にあれば、自分で試しながら学ぶ助けになりますが、
-例題は全て明解なので、チュートリアルはオフラインでも十分読めます。
+例題は全て自己完結しているので、オフラインでも十分読めます。
 
 ..  For a description of standard objects and modules, see :ref:`library-index`.
     :ref:`reference-index` gives a more formal definition of the language.  To write
