@@ -126,21 +126,28 @@ first-out") 。スタックの一番上に要素を追加するには :meth:`app
 
 .. sectionauthor:: Ka-Ping Yee <ping@lfw.org>
 
-リストをキュー (queue) として手軽に使うこともできます。キューでは、最初に追加された要素が最初に取り出されます ("first-in, first-
-out")。キューの末尾に項目を追加するには :meth:`append` を使います。キューの先頭から項目を取り出すには  インデクスに ``0``
-を指定して :meth:`pop` を使います。例えば以下のようにします。
+ひとつの可能性として、リストをキュー (queue) として使うこともありえます。
+この場合、最初に追加した要素を最初に取り出します ("first-in, first-out")。
+しかし、リストでは効率的にこの目的を達成することが出来ません。
+追加（append）や取り出し（pop）をリストの末尾に対しておこなうと速いのですが、
+挿入（insert）や取り出し（pop）をリストの先頭に対しておこなうと遅くなってしまいます
+（他の要素をひとつずつずらす必要があるからです）。
+
+キューの実装には、 :class:`collections.deque` を使うと良いでしょう。
+このクラスは良く設計されていて、高速な追加（append）と取り出し（pop）を両端に対して実現しています。例えば以下のようにします。
 
 ::
 
-   >>> queue = ["Eric", "John", "Michael"]
-   >>> queue.append("Terry")           # Terry が到着 (arrive) する
-   >>> queue.append("Graham")          # Graham が到着する
-   >>> queue.pop(0)
+   >>> from collections import deque
+   >>> queue = deque(["Eric", "John", "Michael"])
+   >>> queue.append("Terry")           # Terry arrives
+   >>> queue.append("Graham")          # Graham arrives
+   >>> queue.popleft()                 # The first to arrive now leaves
    'Eric'
-   >>> queue.pop(0)
+   >>> queue.popleft()                 # The second to arrive now leaves
    'John'
-   >>> queue
-   ['Michael', 'Terry', 'Graham']
+   >>> queue                           # Remaining queue in order of arrival
+   deque(['Michael', 'Terry', 'Graham'])
 
 
 .. _tut-functional:

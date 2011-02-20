@@ -129,7 +129,7 @@ html_split_index = True
 latex_paper_size = 'a4'
 
 # The font size ('10pt', '11pt' or '12pt').
-latex_font_size = '12pt'
+latex_font_size = '10pt'
 
 # todo: translate commented topics.
 # Grouping the document tree into LaTeX files. List of tuples
