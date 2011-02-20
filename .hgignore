@@ -1,3 +1,6 @@
 syntax: glob
 *.pyc
 build
+tools/pygments
+tools/jinja2
+tools/docutils
