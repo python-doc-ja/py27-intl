@@ -61,18 +61,18 @@ C/C++/Java プログラムを書くこともできますが、最初の試し書
 .. % % domain than Awk or even Perl, yet many things are at
 .. % % least as easy in Python as in those languages.
 
-Pyhonは簡単に利用できますが、本物のプログラミング言語であり、シェルスクリプトや
-バッチファイルで提供されるよりもたくさんの、大規模プログラムむけの構造や支援を
+Pyhon は簡単に利用できますが、本物のプログラミング言語であり、シェルスクリプトや
+バッチファイルで提供されるよりもたくさんの、大規模プログラム向けの構造やサポートを
 提供しています。
-一方、PythonはCよりたくさんのエラーチェックを提供しており、
-*超高級言語(very-high-level language)* であり、可変長配列や辞書などのハイレベルな
+一方、 Python は C よりたくさんのエラーチェックを提供しており、
+*超高級言語(very-high-level language)* であり、可変長配列や辞書などの高級な
 型を組込みで持っています。
-そのような型は一般的なため、PythonはAwkやPerlが扱うものより (多くの場合、
+そのような型は一般的なため、 Python は Awk や Perl が扱うものより (多くの場合、
 少なくともそれらの言語と同じくらい簡単に)大規模な問題に利用できます。
 
 Python ではプログラムをモジュールに分割して他の Python プログラムで再利用できます。
 Python には膨大な標準モジュールが付属していて、プログラムを作る上での基盤として、
-あるいは Python プログラミングを学ぶために利用できます。
+あるいは Python プログラミングを学ぶためのサンプルとして利用できます。
 組み込みモジュールではまた、ファイル I/O 、システムコール、ソケットといった機能や、
 Tk のようなグラフィカルユーザインタフェースツールキットを使うためのインタフェース
 なども提供しています。
@@ -84,8 +84,9 @@ Tk のようなグラフィカルユーザインタフェースツールキッ�
 .. % % modules provide things like file I/O, system calls,
 .. % % sockets, and even interfaces to graphical user interface toolkits like Tk.
 
-Python はインタプリタ言語です。このため、コンパイルやリンクが必要ないので、プログラムを開発する際にかなりの時間を節約できます。インタプリタ
-は対話的な使い方もできます。インタプリタは対話的にも使えるので、言語の様々な機能について実験してみたり、やっつけ仕事のプログラムを書いたり、
+Python はインタプリタ言語です。コンパイルやリンクが必要ないので、プログラムを開発する際にかなりの時間を節約できます。
+インタプリタは対話的な使い方もできます。
+インタプリタは対話的にも使えるので、言語の様々な機能について実験してみたり、書き捨てのプログラムを書いたり、
 ボトムアップでプログラムを開発する際に関数をテストしたりといったことが簡単にできます。便利な電卓にもなります。
 
 .. % % Python is an interpreted language, which can save you considerable time
@@ -95,30 +96,22 @@ Python はインタプリタ言語です。このため、コンパイルやリ�
 .. % % programs, or to test functions during bottom-up program development.
 .. % % It is also a handy desk calculator.
 
-Python では、とてもコンパクトで読みやすいプログラムを書けます。Python で書かれたプログラムは大抵、同じ機能を提供する C 言語, C++ 言語や
-Javaのプログラムよりもはるかに短くなります。これには以下のようないくつかの理由があります:
-
-.. % % Python allows writing very compact and readable programs.  Programs
-.. % % written in Python are typically much shorter than equivalent C or
-.. % % \Cpp{} programs, for several reasons:
-.. % % \begin{itemize}
-.. % % \item
-.. % % the high-level data types allow you to express complex operations in a
-.. % % single statement;
-.. % % \item
-.. % % statement grouping is done by indentation instead of beginning and ending
-.. % % brackets;
-.. % % \item
-.. % % no variable or argument declarations are necessary.
-.. % % \end{itemize}
+Python では、とてもコンパクトで読みやすいプログラムを書けます。
+Python で書かれたプログラムは大抵、同じ機能を提供する C 言語, C++ 言語や
+Java のプログラムよりもはるかに短くなります。
+これには以下のようないくつかの理由があります:
 
 * 高レベルのデータ型によって、複雑な操作を一つの実行文で表現できます。
+
 * 実行文のグループ化を、グループの開始や終了の括弧ではなくインデントで行えます。
+
 * 変数や引数の宣言が不要です。
 
-Python は *拡張* できます: C 言語でプログラムを書く方法を知っているなら、新たな組み込み関数やモジュールを簡単にインタプリタに追加できま
-す。これによって、処理速度を決定的に左右する操作を最大速度で動作するように実現したり、(ベンダ特有のグラフィクスライブラリのように) バイナリ
-形式でしか手に入らないライブラリを Python にリンクしたりできます。その気になれば、Python インタプリタを C で書かれたアプリケーションにリンク
+Python は *拡張* できます: C 言語でプログラムを書く方法を知っているなら、
+新たな組み込み関数やモジュールを簡単にインタプリタに追加できます。
+これによって、処理速度を決定的に左右する操作を最大速度で動作するように実現したり、(ベンダ特有のグラフィクスライブラリのように) バイナリ
+形式でしか手に入らないライブラリを Python にリンクしたりできます。
+その気になれば、Python インタプリタを C で書かれたアプリケーションにリンク
 して、アプリケーションに対する拡張言語や命令言語としても使えます。
 
 .. % % Python is \emph{extensible}: if you know how to program in C it is easy
@@ -130,8 +123,9 @@ Python は *拡張* できます: C 言語でプログラムを書く方法を�
 .. % % and use it as an extension or command language for that application.
 
 ところで、この言語は BBC のショー番組、"モンティパイソンの空飛ぶサーカス (Monty Python's Flying Circus)"
-から取ったもので、爬虫類とは関係ありません。このドキュメントにあるモンティパイソンの寸劇は、
-参照してもかまわないというより、むしろ積極的に見るようおすすめします！
+から取ったもので、爬虫類とは関係ありません。
+このドキュメントでは、モンティパイソンの寸劇への参照が許可されているだけでなく、
+むしろ推奨されています！
 
 .. % % By the way, the language is named after the BBC show ``Monty Python's
 .. % % Flying Circus'' and has nothing to do with nasty reptiles.  Making
@@ -144,17 +138,21 @@ Python は *拡張* できます: C 言語でプログラムを書く方法を�
 .. % % to use it, the tutorial invites you to play with the Python interpreter
 .. % % as you read.
 
-さて、皆さんはもう Python にワクワクして、もうちょっと詳しく調べてみたくなったはずです。プログラミング言語を習得する最良の方法は使ってみるこ
-とですから、このチュートリアルではみなさんが読んだ内容を Python  インタプリタで試してみることをおすすめします。
+さて、皆さんはもう Python にワクワクして、もうちょっと詳しく調べてみたくなったはずです。
+プログラミング言語を習得する最良の方法は使ってみることですから、
+このチュートリアルではみなさんが読んだ内容を Python インタプリタで試してみることをおすすめします。
 
-次の章では、まずインタプリタを使うための機微を説明します。これはさして面白みのない情報なのですが、後に説明する例題を試してみる上で不可欠なことです。
+次の章では、まずインタプリタを使うための機微を説明します。
+これはさして面白みのない情報なのですが、後に説明する例題を試してみる上で不可欠なことです。
 
 .. % % In the next chapter, the mechanics of using the interpreter are
 .. % % explained.  This is rather mundane information, but essential for
 .. % % trying out the examples shown later.
 
-チュートリアルの残りの部分では、Python プログラム言語と実行システムの様々な機能を例題を交えて紹介します。単純な式、実行文、データ型から始め
-て、関数とモジュールを経て、最後には例外処理やユーザ定義クラスといったやや高度な概念にも触れます。
+チュートリアルの残りの部分では、Python プログラム言語と実行システムの様々な
+機能を例題を交えて紹介します。
+単純な式、実行文、データ型から始めて、関数とモジュールを経て、最後には
+例外処理やユーザ定義クラスといったやや高度な概念にも触れます。
 
 .. % % The rest of the tutorial introduces various features of the Python
 .. % % language and system through examples, beginning with simple
