@@ -72,11 +72,30 @@
       そしてヘッダの終了を示す空白行が続き、さらにその後にファイルの内容が続きます。このファイルはコンテントタイプが ``text/`` で始まっている場合
       はテキストモードで、そうでなければバイナリモードで開かれます。
 
-      使用例については関数 :func:`test` の実装を参照してください。
+      :mod:`SimpleHTTPServer` モジュールの :func:`test` 関数は
+      :class:`SimpleHTTPRequestHandler` をハンドラとして使うサーバを作る例になっています。
 
       .. versionadded:: 2.5
          ``'Last-Modified'`` ヘッダ.
 
+:mod:`SimpleHTTPServer` モジュールを使って現在のディレクトリ以下にあるファイルにアクセスできるだけの、非常に初歩的な Web サーバを立ち上げる方法は以下の通りです。::
+
+        import SimpleHTTPServer
+        import SocketServer
+ 
+        PORT = 8000
+ 
+        Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+ 
+        httpd = SocketServer.TCPServer(("", PORT), Handler)
+ 
+        print "serving at port", PORT
+        httpd.serve_forever()
+
+インタプリタの ``-m`` スイッチで :mod:`SimpleHTTPServer` モジュールと ``ポート番号`` を指定して直接実行することもできます。
+上の例と同じように、ここで立ち上がったサーバは現在のディレクトリ以下のファイルへのアクセスを提供します。::
+
+        python -m SimpleHTTPServer 8000
 
 .. seealso::
 
