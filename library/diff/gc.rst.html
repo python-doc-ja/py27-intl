@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to125__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/gc.rst =&gt; r266/library/gc.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to125__0"></td><td class="diff_header" id="from125_43">43</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;may&nbsp;be&nbsp;an&nbsp;integer&nbsp;specifying&nbsp;which&nbsp;generation&nbsp;to&nbsp;collect&nbsp;(from&nbsp;0&nbsp;to&nbsp;2).&nbsp;&nbsp;A</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_44">44</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:`ValueError`&nbsp;is&nbsp;raised&nbsp;if&nbsp;the&nbsp;generation&nbsp;number&nbsp;&nbsp;is&nbsp;invalid.&nbsp;The&nbsp;number&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_45">45</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;unreachable&nbsp;objects&nbsp;found&nbsp;is&nbsp;returned.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;optional&nbsp;*generation*&nbsp;argument&nbsp;was&nbsp;added.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_49">49</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.6</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to125__top">t</a></td><td class="diff_header" id="from125_51">51-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;free&nbsp;lists&nbsp;maintained&nbsp;for&nbsp;a&nbsp;number&nbsp;of&nbsp;builtin&nbsp;types&nbsp;are&nbsp;cleared</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to125__top">t</a></td><td class="diff_header" id="to125_51">51+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;free&nbsp;lists&nbsp;maintained&nbsp;for&nbsp;a&nbsp;number&nbsp;of&nbsp;built<span class="diff_add">-</span>in&nbsp;types&nbsp;are&nbsp;cleared</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from125_52">52</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;whenever&nbsp;a&nbsp;full&nbsp;collection&nbsp;or&nbsp;collection&nbsp;of&nbsp;the&nbsp;highest&nbsp;generation&nbsp;(2)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is&nbsp;run.&nbsp;&nbsp;Not&nbsp;all&nbsp;items&nbsp;in&nbsp;some&nbsp;free&nbsp;lists&nbsp;may&nbsp;be&nbsp;freed&nbsp;due&nbsp;to&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_54">54</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;particular&nbsp;implementation,&nbsp;in&nbsp;particular&nbsp;:class:`int`&nbsp;and&nbsp;:class:`float`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_55">55</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_56">56</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_57">57</td><td nowrap="nowrap">..&nbsp;function::&nbsp;set_debug(flags)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_58">58</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from125_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Set&nbsp;the&nbsp;garbage&nbsp;collection&nbsp;debugging&nbsp;flags.&nbsp;Debugging&nbsp;information&nbsp;will&nbsp;be</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

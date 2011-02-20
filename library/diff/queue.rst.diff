@@ -1,0 +1,47 @@
+--- r262/library/queue.rst	2009-03-10 09:11:32.551742000 +0900
++++ r266/library/queue.rst	2010-05-19 23:15:15.797156000 +0900
+@@ -17,41 +17,41 @@
+ availability of thread support in Python; see the :mod:`threading`
+ module.
+ 
+ Implements three types of queue whose only difference is the order that
+ the entries are retrieved.  In a FIFO queue, the first tasks added are
+ the first retrieved. In a LIFO queue, the most recently added entry is
+ the first retrieved (operating like a stack).  With a priority queue,
+ the entries are kept sorted (using the :mod:`heapq` module) and the
+ lowest valued entry is retrieved first.
+ 
+ The :mod:`Queue` module defines the following classes and exceptions:
+ 
+-.. class:: Queue(maxsize)
++.. class:: Queue(maxsize=0)
+ 
+    Constructor for a FIFO queue.  *maxsize* is an integer that sets the upperbound
+    limit on the number of items that can be placed in the queue.  Insertion will
+    block once this size has been reached, until queue items are consumed.  If
+    *maxsize* is less than or equal to zero, the queue size is infinite.
+ 
+-.. class:: LifoQueue(maxsize)
++.. class:: LifoQueue(maxsize=0)
+ 
+    Constructor for a LIFO queue.  *maxsize* is an integer that sets the upperbound
+    limit on the number of items that can be placed in the queue.  Insertion will
+    block once this size has been reached, until queue items are consumed.  If
+    *maxsize* is less than or equal to zero, the queue size is infinite.
+ 
+    .. versionadded:: 2.6
+ 
+-.. class:: PriorityQueue(maxsize)
++.. class:: PriorityQueue(maxsize=0)
+ 
+    Constructor for a priority queue.  *maxsize* is an integer that sets the upperbound
+    limit on the number of items that can be placed in the queue.  Insertion will
+    block once this size has been reached, until queue items are consumed.  If
+    *maxsize* is less than or equal to zero, the queue size is infinite.
+ 
+    The lowest valued entries are retrieved first (the lowest valued entry is the
+    one returned by ``sorted(list(entries))[0]``).  A typical pattern for entries
+    is a tuple in the form: ``(priority_number, data)``.
+ 
+    .. versionadded:: 2.6
+ 

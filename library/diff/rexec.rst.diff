@@ -1,0 +1,47 @@
+--- r262/library/rexec.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/rexec.rst	2009-10-27 23:19:50.039185000 +0900
+@@ -1,13 +1,12 @@
+-
+ :mod:`rexec` --- Restricted execution framework
+ ===============================================
+ 
+ .. module:: rexec
+    :synopsis: Basic restricted execution framework.
+    :deprecated:
+ 
+ .. deprecated:: 2.6
+    The :mod:`rexec` module has been removed in Python 3.0.
+ 
+ .. versionchanged:: 2.3
+    Disabled module.
+@@ -264,27 +263,27 @@
+ 
+ Let us say that we want a slightly more relaxed policy than the standard
+ :class:`RExec` class.  For example, if we're willing to allow files in
+ :file:`/tmp` to be written, we can subclass the :class:`RExec` class::
+ 
+    class TmpWriterRExec(rexec.RExec):
+        def r_open(self, file, mode='r', buf=-1):
+            if mode in ('r', 'rb'):
+                pass
+            elif mode in ('w', 'wb', 'a', 'ab'):
+                # check filename : must begin with /tmp/
+                if file[:5]!='/tmp/':
+-                   raise IOError, "can't write outside /tmp"
++                   raise IOError("can't write outside /tmp")
+                elif (string.find(file, '/../') >= 0 or
+                     file[:3] == '../' or file[-3:] == '/..'):
+-                   raise IOError, "'..' in filename forbidden"
+-           else: raise IOError, "Illegal open() mode"
++                   raise IOError("'..' in filename forbidden")
++           else: raise IOError("Illegal open() mode")
+            return open(file, mode, buf)
+ 
+ Notice that the above code will occasionally forbid a perfectly valid filename;
+ for example, code in the restricted environment won't be able to open a file
+ called :file:`/tmp/foo/../bar`.  To fix this, the :meth:`r_open` method would
+ have to simplify the filename to :file:`/tmp/bar`, which would require splitting
+ apart the filename and performing various operations on it.  In cases where
+ security is at stake, it may be preferable to write simple code which is
+ sometimes overly restrictive, instead of more general code that is also more
+ complex and may harbor a subtle security hole.

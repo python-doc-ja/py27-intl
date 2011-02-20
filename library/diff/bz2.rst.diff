@@ -1,0 +1,33 @@
+--- r262/library/bz2.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/bz2.rst	2010-03-23 22:20:39.728857000 +0900
+@@ -11,27 +11,28 @@
+ .. versionadded:: 2.3
+ 
+ This module provides a comprehensive interface for the bz2 compression library.
+ It implements a complete file interface, one-shot (de)compression functions, and
+ types for sequential (de)compression.
+ 
+ For other archive formats, see the :mod:`gzip`, :mod:`zipfile`, and
+ :mod:`tarfile` modules.
+ 
+ Here is a summary of the features offered by the bz2 module:
+ 
+ * :class:`BZ2File` class implements a complete file interface, including
+-  :meth:`readline`, :meth:`readlines`, :meth:`writelines`, :meth:`seek`, etc;
++  :meth:`~BZ2File.readline`, :meth:`~BZ2File.readlines`,
++  :meth:`~BZ2File.writelines`, :meth:`~BZ2File.seek`, etc;
+ 
+-* :class:`BZ2File` class implements emulated :meth:`seek` support;
++* :class:`BZ2File` class implements emulated :meth:`~BZ2File.seek` support;
+ 
+ * :class:`BZ2File` class implements universal newline support;
+ 
+ * :class:`BZ2File` class offers an optimized line iteration using the readahead
+   algorithm borrowed from file objects;
+ 
+ * Sequential (de)compression supported by :class:`BZ2Compressor` and
+   :class:`BZ2Decompressor` classes;
+ 
+ * One-shot (de)compression supported by :func:`compress` and :func:`decompress`
+   functions;
+ 

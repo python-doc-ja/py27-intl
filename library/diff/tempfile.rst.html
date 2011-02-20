@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to215__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/tempfile.rst =&gt; r266/library/tempfile.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to215__0"></td><td class="diff_header" id="from215_46">46</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;be&nbsp;read&nbsp;and&nbsp;written&nbsp;without&nbsp;being&nbsp;closed.&nbsp;&nbsp;Binary&nbsp;mode&nbsp;is&nbsp;used&nbsp;so&nbsp;that&nbsp;it</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;behaves&nbsp;consistently&nbsp;on&nbsp;all&nbsp;platforms&nbsp;without&nbsp;regard&nbsp;for&nbsp;the&nbsp;data&nbsp;that&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;stored.&nbsp;&nbsp;*bufsize*&nbsp;defaults&nbsp;to&nbsp;``-1``,&nbsp;meaning&nbsp;that&nbsp;the&nbsp;operating&nbsp;system</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;default&nbsp;is&nbsp;used.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_50">50</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_51">51</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;*dir*,&nbsp;*prefix*&nbsp;and&nbsp;*suffix*&nbsp;parameters&nbsp;are&nbsp;passed&nbsp;to&nbsp;:func:`mkstemp`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_52">52</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;returned&nbsp;object&nbsp;is&nbsp;a&nbsp;true&nbsp;file&nbsp;object&nbsp;on&nbsp;POSIX&nbsp;platforms.&nbsp;&nbsp;On&nbsp;other</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to215__1">n</a></td><td class="diff_header" id="from215_54">54-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;platforms,&nbsp;it&nbsp;is&nbsp;a&nbsp;file-like&nbsp;object&nbsp;whose&nbsp;:attr:`file`&nbsp;attribute&nbsp;is&nbsp;the</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to215__1">n</a></td><td class="diff_header" id="to215_54">54+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;platforms,&nbsp;it&nbsp;is&nbsp;a&nbsp;file-like&nbsp;object&nbsp;whose&nbsp;:attr:`<span class="diff_add">!</span>file`&nbsp;attribute&nbsp;is&nbsp;the</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from215_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;underlying&nbsp;true&nbsp;file&nbsp;object.&nbsp;This&nbsp;file-like&nbsp;object&nbsp;can&nbsp;be&nbsp;used&nbsp;in&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:keyword:`with`&nbsp;statement,&nbsp;just&nbsp;like&nbsp;a&nbsp;normal&nbsp;file.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_57">57</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_58">58</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_59">59</td><td nowrap="nowrap">..&nbsp;function::&nbsp;NamedTemporaryFile([mode='w+b'[,&nbsp;bufsize=-1[,&nbsp;suffix=''[,&nbsp;prefix='tmp'[,&nbsp;dir=None[,&nbsp;delete=True]]]]]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_60">60</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_61">61</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;operates&nbsp;exactly&nbsp;as&nbsp;:func:`TemporaryFile`&nbsp;does,&nbsp;except&nbsp;that</td></tr>            <tr><td class="diff_next" id="difflib_chg_to215__1"></td><td class="diff_header" id="from215_62">62</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;file&nbsp;is&nbsp;guaranteed&nbsp;to&nbsp;have&nbsp;a&nbsp;visible&nbsp;name&nbsp;in&nbsp;the&nbsp;file&nbsp;system&nbsp;(on</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_63">63</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Unix,&nbsp;the&nbsp;directory&nbsp;entry&nbsp;is&nbsp;not&nbsp;unlinked).&nbsp;&nbsp;That&nbsp;name&nbsp;can&nbsp;be&nbsp;retrieved</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_64">64</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;:attr:`name`&nbsp;member&nbsp;of&nbsp;the&nbsp;file&nbsp;object.&nbsp;&nbsp;Whether&nbsp;the&nbsp;name&nbsp;can&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_65">65</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;used&nbsp;to&nbsp;open&nbsp;the&nbsp;file&nbsp;a&nbsp;second&nbsp;time,&nbsp;while&nbsp;the&nbsp;named&nbsp;temporary&nbsp;file&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_66">66</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;still&nbsp;open,&nbsp;varies&nbsp;across&nbsp;platforms&nbsp;(it&nbsp;can&nbsp;be&nbsp;so&nbsp;used&nbsp;on&nbsp;Unix;&nbsp;it&nbsp;cannot</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_67">67</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;on&nbsp;Windows&nbsp;NT&nbsp;or&nbsp;later).&nbsp;&nbsp;If&nbsp;*delete*&nbsp;is&nbsp;true&nbsp;(the&nbsp;default),&nbsp;the&nbsp;file&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_68">68</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;deleted&nbsp;as&nbsp;soon&nbsp;as&nbsp;it&nbsp;is&nbsp;closed.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_69">69</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to215__top">t</a></td><td class="diff_header" id="from215_70">70-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;returned&nbsp;object&nbsp;is&nbsp;always&nbsp;a&nbsp;file-like&nbsp;object&nbsp;whose&nbsp;:attr:`file`</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to215__top">t</a></td><td class="diff_header" id="to215_70">70+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;returned&nbsp;object&nbsp;is&nbsp;always&nbsp;a&nbsp;file-like&nbsp;object&nbsp;whose&nbsp;:attr:`<span class="diff_add">!</span>file`</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from215_71">71</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;attribute&nbsp;is&nbsp;the&nbsp;underlying&nbsp;true&nbsp;file&nbsp;object.&nbsp;This&nbsp;file-like&nbsp;object&nbsp;can</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_72">72</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;be&nbsp;used&nbsp;in&nbsp;a&nbsp;:keyword:`with`&nbsp;statement,&nbsp;just&nbsp;like&nbsp;a&nbsp;normal&nbsp;file.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_73">73</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_74">74</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_75">75</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_76">76</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_77">77</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;*delete*&nbsp;parameter.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from215_78">78</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

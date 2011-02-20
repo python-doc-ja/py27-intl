@@ -1,0 +1,33 @@
+--- r262/library/ic.rst	2008-05-13 06:42:13.839063000 +0900
++++ r266/library/ic.rst	2009-04-29 03:23:28.138007000 +0900
+@@ -1,28 +1,27 @@
+-
+ :mod:`ic` --- Access to the Mac OS X Internet Config
+ ====================================================
+ 
+ .. module:: ic
+    :platform: Mac
+    :synopsis: Access to the Mac OS X Internet Config.
+    :deprecated:
+ 
+ 
+ This module provides access to various internet-related preferences set through
+ :program:`System Preferences` or the :program:`Finder`.
+ 
+-.. warning::
++.. note::
+ 
+-   This module is removed in 3.0.
++   This module has been removed in Python 3.x.
+ 
+ 
+ .. index:: module: icglue
+ 
+ There is a low-level companion module :mod:`icglue` which provides the basic
+ Internet Config access functionality.  This low-level module is not documented,
+ but the docstrings of the routines document the parameters and the routine names
+ are the same as for the Pascal or C API to Internet Config, so the standard IC
+ programmers' documentation can be used if this module is needed.
+ 
+ The :mod:`ic` module defines the :exc:`error` exception and symbolic names for
+ all error codes Internet Config can produce; see the source for details.

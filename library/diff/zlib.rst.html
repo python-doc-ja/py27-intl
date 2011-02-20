@@ -1,0 +1,60 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to242__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/zlib.rst =&gt; r266/library/zlib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to242__0"></td><td class="diff_header" id="from242_110">110</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;return&nbsp;value&nbsp;is&nbsp;unsigned&nbsp;and&nbsp;in&nbsp;the&nbsp;range&nbsp;[0,&nbsp;2**32-1]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_111">111</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;regardless&nbsp;of&nbsp;platform.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_112">112</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_113">113</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_114">114</td><td nowrap="nowrap">..&nbsp;function::&nbsp;decompress(string[,&nbsp;wbits[,&nbsp;bufsize]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_115">115</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_116">116</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Decompresses&nbsp;the&nbsp;data&nbsp;in&nbsp;*string*,&nbsp;returning&nbsp;a&nbsp;string&nbsp;containing&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_117">117</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;uncompressed&nbsp;data.&nbsp;&nbsp;The&nbsp;*wbits*&nbsp;parameter&nbsp;controls&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;window</td></tr><tr><td class="diff_next" id="difflib_chg_to242__1"><a href="#difflib_chg_to242__1">n</a></td><td class="diff_header" id="to242_118">118+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;buffer,&nbsp;and&nbsp;is&nbsp;discussed&nbsp;further&nbsp;below.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from242_118">118-</td><td nowrap="nowrap">&nbsp;<span class="diff_sub">&nbsp;&nbsp;buffer.</span>&nbsp;&nbsp;If&nbsp;*bufsize*&nbsp;is&nbsp;given,&nbsp;it&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;initial&nbsp;size&nbsp;of&nbsp;the&nbsp;output</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to242_119">119+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;If&nbsp;*bufsize*&nbsp;is&nbsp;given,&nbsp;it&nbsp;is&nbsp;used&nbsp;as&nbsp;the&nbsp;initial&nbsp;size&nbsp;of&nbsp;the&nbsp;output</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from242_119">119</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;buffer.&nbsp;&nbsp;Raises&nbsp;the&nbsp;:exc:`error`&nbsp;exception&nbsp;if&nbsp;any&nbsp;error&nbsp;occurs.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_120">120</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_121">121</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;absolute&nbsp;value&nbsp;of&nbsp;*wbits*&nbsp;is&nbsp;the&nbsp;base&nbsp;two&nbsp;logarithm&nbsp;of&nbsp;the&nbsp;size&nbsp;of&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_122">122</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;history&nbsp;buffer&nbsp;(the&nbsp;"window&nbsp;size")&nbsp;used&nbsp;when&nbsp;compressing&nbsp;data.&nbsp;&nbsp;Its&nbsp;absolute</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_123">123</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;value&nbsp;should&nbsp;be&nbsp;between&nbsp;8&nbsp;and&nbsp;15&nbsp;for&nbsp;the&nbsp;most&nbsp;recent&nbsp;versions&nbsp;of&nbsp;the&nbsp;zlib</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_124">124</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;library,&nbsp;larger&nbsp;values&nbsp;resulting&nbsp;in&nbsp;better&nbsp;compression&nbsp;at&nbsp;the&nbsp;expense&nbsp;of&nbsp;greater</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to242__top">t</a></td><td class="diff_header" id="to242_126">126+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;memory&nbsp;usage.&nbsp;&nbsp;When&nbsp;decompressing&nbsp;a&nbsp;stream,&nbsp;*wbits*&nbsp;must&nbsp;not&nbsp;be&nbsp;smaller</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to242_127">127+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;than&nbsp;the&nbsp;size&nbsp;originally&nbsp;used&nbsp;to&nbsp;compress&nbsp;the&nbsp;stream;&nbsp;using&nbsp;a&nbsp;too-small</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to242_128">128+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;value&nbsp;will&nbsp;result&nbsp;in&nbsp;an&nbsp;exception.&nbsp;The&nbsp;default&nbsp;value&nbsp;is&nbsp;therefore&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from242_125">125-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;<span class="diff_chg">memory&nbsp;usa</span>g<span class="diff_sub">e.&nbsp;&nbsp;T</span>he<span class="diff_chg">&nbsp;defaul</span>t&nbsp;value<span class="diff_chg">&nbsp;is</span>&nbsp;15.&nbsp;&nbsp;When&nbsp;*wbits*&nbsp;is&nbsp;negative,&nbsp;the&nbsp;standard</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to242_129">129+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;<span class="diff_chg">hi</span>ghe<span class="diff_chg">s</span>t&nbsp;value<span class="diff_chg">,</span>&nbsp;15.&nbsp;&nbsp;When&nbsp;*wbits*&nbsp;is&nbsp;negative,&nbsp;the&nbsp;standard</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from242_126">126-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;:program:`gzip`&nbsp;header&nbsp;is&nbsp;suppressed;&nbsp;this&nbsp;is&nbsp;an&nbsp;undocumented&nbsp;feature&nbsp;of&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to242_130">130+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:program:`gzip`&nbsp;header&nbsp;is&nbsp;suppressed.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from242_127">127-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;zlib&nbsp;library,&nbsp;used&nbsp;for&nbsp;compatibility&nbsp;with&nbsp;:program:`unzip`'s&nbsp;compression&nbsp;file</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from242_128">128-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;format.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from242_129">129</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_130">130</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*bufsize*&nbsp;is&nbsp;the&nbsp;initial&nbsp;size&nbsp;of&nbsp;the&nbsp;buffer&nbsp;used&nbsp;to&nbsp;hold&nbsp;decompressed&nbsp;data.&nbsp;&nbsp;If</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_131">131</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;more&nbsp;space&nbsp;is&nbsp;required,&nbsp;the&nbsp;buffer&nbsp;size&nbsp;will&nbsp;be&nbsp;increased&nbsp;as&nbsp;needed,&nbsp;so&nbsp;you</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_132">132</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;don't&nbsp;have&nbsp;to&nbsp;get&nbsp;this&nbsp;value&nbsp;exactly&nbsp;right;&nbsp;tuning&nbsp;it&nbsp;will&nbsp;only&nbsp;save&nbsp;a&nbsp;few&nbsp;calls</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_133">133</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;to&nbsp;:cfunc:`malloc`.&nbsp;&nbsp;The&nbsp;default&nbsp;size&nbsp;is&nbsp;16384.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_134">134</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_135">135</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from242_136">136</td><td nowrap="nowrap">..&nbsp;function::&nbsp;decompressobj([wbits])</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

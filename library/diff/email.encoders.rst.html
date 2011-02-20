@@ -1,0 +1,66 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to109__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/email.encoders.rst =&gt; r266/library/email.encoders.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to109__0"><a href="#difflib_chg_to109__0">f</a></td><td class="diff_header" id="from109_1">1</td><td nowrap="nowrap">:mod:`email`:&nbsp;Encoders</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_2">2</td><td nowrap="nowrap">----------------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_3">3</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_4">4</td><td nowrap="nowrap">..&nbsp;module::&nbsp;email.encoders</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_5">5</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Encoders&nbsp;for&nbsp;email&nbsp;message&nbsp;payloads.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_6">6</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to109__1"></td><td class="diff_header" id="from109_7">7</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to109__1">n</a></td><td class="diff_header" id="from109_8">8-</td><td nowrap="nowrap">When&nbsp;creating&nbsp;:class:`Message`&nbsp;objects&nbsp;from&nbsp;scratch,&nbsp;you&nbsp;often<span class="diff_sub">&nbsp;need&nbsp;to&nbsp;encode</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to109__1">n</a></td><td class="diff_header" id="to109_8">8+</td><td nowrap="nowrap">When&nbsp;creating&nbsp;:class:`<span class="diff_add">~email.message.</span>Message`&nbsp;objects&nbsp;from&nbsp;scratch,&nbsp;you&nbsp;often</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_9">9-</td><td nowrap="nowrap">the&nbsp;payloads&nbsp;for&nbsp;transport&nbsp;through&nbsp;compliant&nbsp;mail&nbsp;servers.&nbsp;This<span class="diff_sub">&nbsp;is&nbsp;especially</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_9">9+</td><td nowrap="nowrap"><span class="diff_add">need&nbsp;to&nbsp;encode&nbsp;</span>the&nbsp;payloads&nbsp;for&nbsp;transport&nbsp;through&nbsp;compliant&nbsp;mail&nbsp;servers.&nbsp;This</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_10">10-</td><td nowrap="nowrap">true&nbsp;for&nbsp;:mimetype:`image/\*`&nbsp;and&nbsp;:mimetype:`text/\*`&nbsp;type&nbsp;messages<span class="diff_sub">&nbsp;containing</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_10">10+</td><td nowrap="nowrap"><span class="diff_add">is&nbsp;especially&nbsp;</span>true&nbsp;for&nbsp;:mimetype:`image/\*`&nbsp;and&nbsp;:mimetype:`text/\*`&nbsp;type&nbsp;messages</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_11">11-</td><td nowrap="nowrap"><span class="diff_sub">binary&nbsp;data.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_11">11+</td><td nowrap="nowrap"><span class="diff_add">containing&nbsp;binary&nbsp;data.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from109_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_13">13</td><td nowrap="nowrap">The&nbsp;:mod:`email`&nbsp;package&nbsp;provides&nbsp;some&nbsp;convenient&nbsp;encodings&nbsp;in&nbsp;its</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_14">14</td><td nowrap="nowrap">:mod:`encoders`&nbsp;module.&nbsp;&nbsp;These&nbsp;encoders&nbsp;are&nbsp;actually&nbsp;used&nbsp;by&nbsp;the</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to109__top">t</a></td><td class="diff_header" id="from109_15">15-</td><td nowrap="nowrap"><span class="diff_sub">:class:`MIMEAudio`&nbsp;and&nbsp;:class:`MIMEImage`&nbsp;class&nbsp;constructors&nbsp;to&nbsp;provide&nbsp;default</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to109__top">t</a></td><td class="diff_header" id="to109_15">15+</td><td nowrap="nowrap"><span class="diff_add">:class:`~email.mime.audio.MIMEAudio`&nbsp;and&nbsp;:class:`~email.mime.image.MIMEImage`</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_16">16-</td><td nowrap="nowrap"><span class="diff_sub">encodings.&nbsp;&nbsp;All&nbsp;encoder&nbsp;functions&nbsp;take&nbsp;exactly&nbsp;one&nbsp;argument,&nbsp;the&nbsp;message&nbsp;object</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_16">16+</td><td nowrap="nowrap"><span class="diff_add">class&nbsp;constructors&nbsp;to&nbsp;provide&nbsp;default&nbsp;encodings.&nbsp;&nbsp;All&nbsp;encoder&nbsp;functions&nbsp;take</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_17">17-</td><td nowrap="nowrap"><span class="diff_sub">to&nbsp;encode.&nbsp;&nbsp;They&nbsp;usually&nbsp;extract&nbsp;the&nbsp;payload,&nbsp;encode&nbsp;it,&nbsp;and&nbsp;reset&nbsp;the&nbsp;payload</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_17">17+</td><td nowrap="nowrap"><span class="diff_add">exactly&nbsp;one&nbsp;argument,&nbsp;the&nbsp;message&nbsp;object&nbsp;to&nbsp;encode.&nbsp;&nbsp;They&nbsp;usually&nbsp;extract&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_18">18-</td><td nowrap="nowrap"><span class="diff_sub">to&nbsp;this&nbsp;newly&nbsp;encoded&nbsp;value.&nbsp;&nbsp;They&nbsp;should&nbsp;also&nbsp;set&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_18">18+</td><td nowrap="nowrap"><span class="diff_add">payload,&nbsp;encode&nbsp;it,&nbsp;and&nbsp;reset&nbsp;the&nbsp;payload&nbsp;to&nbsp;this&nbsp;newly&nbsp;encoded&nbsp;value.&nbsp;&nbsp;They</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from109_19">19-</td><td nowrap="nowrap">:mailheader:`Content-Transfer-Encoding`&nbsp;header&nbsp;as&nbsp;appropriate.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to109_19">19+</td><td nowrap="nowrap"><span class="diff_add">should&nbsp;also&nbsp;set&nbsp;the&nbsp;</span>:mailheader:`Content-Transfer-Encoding`&nbsp;header&nbsp;as&nbsp;appropriate.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from109_20">20</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_21">21</td><td nowrap="nowrap">Here&nbsp;are&nbsp;the&nbsp;encoding&nbsp;functions&nbsp;provided:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_22">22</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_23">23</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_24">24</td><td nowrap="nowrap">..&nbsp;function::&nbsp;encode_quopri(msg)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_25">25</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Encodes&nbsp;the&nbsp;payload&nbsp;into&nbsp;quoted-printable&nbsp;form&nbsp;and&nbsp;sets&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from109_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:mailheader:`Content-Transfer-Encoding`&nbsp;header&nbsp;to&nbsp;``quoted-printable``&nbsp;[#]_.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

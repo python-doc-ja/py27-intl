@@ -1,0 +1,32 @@
+--- r262/library/timeit.rst	2008-01-06 05:33:46.954265000 +0900
++++ r266/library/timeit.rst	2009-10-27 23:29:22.069083000 +0900
+@@ -17,26 +17,27 @@
+ for measuring execution times.  See also Tim Peters' introduction to the
+ "Algorithms" chapter in the Python Cookbook, published by O'Reilly.
+ 
+ The module defines the following public class:
+ 
+ 
+ .. class:: Timer([stmt='pass' [, setup='pass' [, timer=<timer function>]]])
+ 
+    Class for timing execution speed of small code snippets.
+ 
+    The constructor takes a statement to be timed, an additional statement used for
+    setup, and a timer function.  Both statements default to ``'pass'``; the timer
+-   function is platform-dependent (see the module doc string).  The statements may
+-   contain newlines, as long as they don't contain multi-line string literals.
++   function is platform-dependent (see the module doc string).  *stmt* and *setup*
++   may also contain multiple statements separated by ``;`` or newlines, as long as
++   they don't contain multi-line string literals.
+ 
+    To measure the execution time of the first statement, use the :meth:`timeit`
+    method.  The :meth:`repeat` method is a convenience to call :meth:`timeit`
+    multiple times and return a list of results.
+ 
+    .. versionchanged:: 2.6
+       The *stmt* and *setup* parameters can now also take objects that are callable
+       without arguments. This will embed calls to them in a timer function that will
+       then be executed by :meth:`timeit`.  Note that the timing overhead is a little
+       larger in this case because of the extra function calls.
+ 
+ 

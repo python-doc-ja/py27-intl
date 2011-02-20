@@ -1,0 +1,32 @@
+--- r262/library/tarfile.rst	2008-08-02 20:26:39.585701000 +0900
++++ r266/library/tarfile.rst	2009-04-29 03:18:53.052283000 +0900
+@@ -375,26 +375,27 @@
+       See the warning for :meth:`extractall`.
+ 
+ 
+ .. method:: TarFile.extractfile(member)
+ 
+    Extract a member from the archive as a file object. *member* may be a filename
+    or a :class:`TarInfo` object. If *member* is a regular file, a file-like object
+    is returned. If *member* is a link, a file-like object is constructed from the
+    link's target. If *member* is none of the above, :const:`None` is returned.
+ 
+    .. note::
+ 
+-      The file-like object is read-only and provides the following methods:
+-      :meth:`read`, :meth:`readline`, :meth:`readlines`, :meth:`seek`, :meth:`tell`.
++      The file-like object is read-only.  It provides the methods
++      :meth:`read`, :meth:`readline`, :meth:`readlines`, :meth:`seek`, :meth:`tell`,
++      and :meth:`close`, and also supports iteration over its lines.
+ 
+ 
+ .. method:: TarFile.add(name, arcname=None, recursive=True, exclude=None)
+ 
+    Add the file *name* to the archive. *name* may be any type of file (directory,
+    fifo, symbolic link, etc.). If given, *arcname* specifies an alternative name
+    for the file in the archive. Directories are added recursively by default. This
+    can be avoided by setting *recursive* to :const:`False`. If *exclude* is given
+    it must be a function that takes one filename argument and returns a boolean
+    value. Depending on this value the respective file is either excluded
+    (:const:`True`) or added (:const:`False`).
+ 

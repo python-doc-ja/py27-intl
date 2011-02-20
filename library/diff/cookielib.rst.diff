@@ -1,0 +1,63 @@
+--- r262/library/cookielib.rst	2009-02-23 19:41:11.107573000 +0900
++++ r266/library/cookielib.rst	2010-07-11 14:21:35.249009000 +0900
+@@ -112,28 +112,24 @@
+    :class:`CookieJar` instance.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`urllib2`
+       URL opening with automatic cookie handling.
+ 
+    Module :mod:`Cookie`
+       HTTP cookie classes, principally useful for server-side code.  The
+       :mod:`cookielib` and :mod:`Cookie` modules do not depend on each other.
+ 
+-   http://wwwsearch.sf.net/ClientCookie/
+-      Extensions to this module, including a class for reading Microsoft Internet
+-      Explorer cookies on Windows.
+-
+    http://wp.netscape.com/newsref/std/cookie_spec.html
+       The specification of the original Netscape cookie protocol.  Though this is
+       still the dominant protocol, the 'Netscape cookie protocol' implemented by all
+       the major browsers (and :mod:`cookielib`) only bears a passing resemblance to
+       the one sketched out in ``cookie_spec.html``.
+ 
+    :rfc:`2109` - HTTP State Management Mechanism
+       Obsoleted by RFC 2965. Uses :mailheader:`Set-Cookie` with version=1.
+ 
+    :rfc:`2965` - HTTP State Management Mechanism
+       The Netscape protocol with the bugs fixed.  Uses :mailheader:`Set-Cookie2` in
+       place of :mailheader:`Set-Cookie`.  Not widely used.
+@@ -301,29 +297,26 @@
+    If true, load cookies lazily from disk.  This attribute should not be assigned
+    to.  This is only a hint, since this only affects performance, not behaviour
+    (unless the cookies on disk are changing). A :class:`CookieJar` object may
+    ignore it.  None of the :class:`FileCookieJar` classes included in the standard
+    library lazily loads cookies.
+ 
+ 
+ .. _file-cookie-jar-classes:
+ 
+ FileCookieJar subclasses and co-operation with web browsers
+ -----------------------------------------------------------
+ 
+-The following :class:`CookieJar` subclasses are provided for reading and writing
+-.  Further :class:`CookieJar` subclasses, including one that reads Microsoft
+-Internet Explorer cookies, are available at
+-http://wwwsearch.sf.net/ClientCookie/.
+-
++The following :class:`CookieJar` subclasses are provided for reading and
++writing .
+ 
+ .. class:: MozillaCookieJar(filename, delayload=None, policy=None)
+ 
+    A :class:`FileCookieJar` that can load from and save cookies to disk in the
+    Mozilla ``cookies.txt`` file format (which is also used by the Lynx and Netscape
+    browsers).
+ 
+    .. note::
+ 
+       Version 3 of the Firefox web browser no longer writes cookies in the
+       ``cookies.txt`` file format.
+ 

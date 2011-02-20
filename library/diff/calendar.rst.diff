@@ -1,0 +1,56 @@
+--- r262/library/calendar.rst	2008-05-16 18:47:29.513124000 +0900
++++ r266/library/calendar.rst	2010-01-17 17:33:18.566333000 +0900
+@@ -120,25 +120,25 @@
+       Return a month's calendar in a multi-line string. If *w* is provided, it
+       specifies the width of the date columns, which are centered. If *l* is
+       given, it specifies the number of lines that each week will use. Depends
+       on the first weekday as specified in the constructor or set by the
+       :meth:`setfirstweekday` method.
+ 
+ 
+    .. method:: prmonth(theyear, themonth[, w[, l]])
+ 
+       Print a month's calendar as returned by :meth:`formatmonth`.
+ 
+ 
+-   .. method:: formatyear(theyear, themonth[, w[, l[, c[, m]]]])
++   .. method:: formatyear(theyear[, w[, l[, c[, m]]]])
+ 
+       Return a *m*-column calendar for an entire year as a multi-line string.
+       Optional parameters *w*, *l*, and *c* are for date column width, lines per
+       week, and number of spaces between month columns, respectively. Depends on
+       the first weekday as specified in the constructor or set by the
+       :meth:`setfirstweekday` method.  The earliest year for which a calendar
+       can be generated is platform-dependent.
+ 
+ 
+    .. method:: pryear(theyear[, w[, l[, c[, m]]]])
+ 
+       Print the calendar for an entire year as returned by :meth:`formatyear`.
+@@ -151,25 +151,25 @@
+    .. versionadded:: 2.5
+ 
+    :class:`HTMLCalendar` instances have the following methods:
+ 
+ 
+    .. method:: formatmonth(theyear, themonth[, withyear])
+ 
+       Return a month's calendar as an HTML table. If *withyear* is true the year
+       will be included in the header, otherwise just the month name will be
+       used.
+ 
+ 
+-   .. method:: formatyear(theyear, themonth[, width])
++   .. method:: formatyear(theyear[, width])
+ 
+       Return a year's calendar as an HTML table. *width* (defaulting to 3)
+       specifies the number of months per row.
+ 
+ 
+    .. method:: formatyearpage(theyear[, width[, css[, encoding]]])
+ 
+       Return a year's calendar as a complete HTML page. *width* (defaulting to
+       3) specifies the number of months per row. *css* is the name for the
+       cascading style sheet to be used. :const:`None` can be passed if no style
+       sheet should be used. *encoding* specifies the encoding to be used for the
+       output (defaulting to the system default encoding).

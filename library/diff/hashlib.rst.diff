@@ -1,0 +1,53 @@
+--- r262/library/hashlib.rst	2009-01-14 09:08:09.462418000 +0900
++++ r266/library/hashlib.rst	2010-05-22 05:28:10.406575000 +0900
+@@ -69,29 +69,29 @@
+ 
+ Using :func:`new` with an algorithm provided by OpenSSL:
+ 
+    >>> h = hashlib.new('ripemd160')
+    >>> h.update("Nobody inspects the spammish repetition")
+    >>> h.hexdigest()
+    'cc4a5ce1b3df48aec5d22d1f16b894a0b894eccc'
+ 
+ The following values are provided as constant attributes of the hash objects
+ returned by the constructors:
+ 
+ 
+-.. data:: digest_size
++.. data:: hash.digest_size
+ 
+    The size of the resulting hash in bytes.
+ 
+-.. data:: block_size
++.. data:: hash.block_size
+ 
+    The internal block size of the hash algorithm in bytes.
+ 
+ A hash object has the following methods:
+ 
+ 
+ .. method:: hash.update(arg)
+ 
+    Update the hash object with the string *arg*.  Repeated calls are equivalent to
+    a single call with the concatenation of all the arguments: ``m.update(a);
+    m.update(b)`` is equivalent to ``m.update(a+b)``.
+ 
+@@ -118,16 +118,16 @@
+ 
+ .. seealso::
+ 
+    Module :mod:`hmac`
+       A module to generate message authentication codes using hashes.
+ 
+    Module :mod:`base64`
+       Another way to encode binary hashes for non-binary environments.
+ 
+    http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
+       The FIPS 180-2 publication on Secure Hash Algorithms.
+ 
+-   http://www.cryptography.com/cnews/hash.html
+-      Hash Collision FAQ with information on which algorithms have known issues and
++   http://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms
++      Wikipedia article with information on which algorithms have known issues and
+       what that means regarding their use.
+ 

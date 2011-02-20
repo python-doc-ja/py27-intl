@@ -1,0 +1,40 @@
+--- r262/library/gl.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/gl.rst	2009-04-29 03:23:28.138007000 +0900
+@@ -1,34 +1,33 @@
+-
+ :mod:`gl` --- *Graphics Library* interface
+ ==========================================
+ 
+ .. module:: gl
+    :platform: IRIX
+    :synopsis: Functions from the Silicon Graphics Graphics Library.
+    :deprecated:
+ 
+ 
+ .. deprecated:: 2.6
+     The :mod:`gl` module has been deprecated for removal in Python 3.0.
+ 
+ 
+ This module provides access to the Silicon Graphics *Graphics Library*. It is
+ available only on Silicon Graphics machines.
+ 
+ .. warning::
+ 
+-   Some illegal calls to the GL library cause the Python interpreter to dump core.
+-   In particular, the use of most GL calls is unsafe before the first window is
+-   opened.
++   Some illegal calls to the GL library cause the Python interpreter to dump
++   core.  In particular, the use of most GL calls is unsafe before the first
++   window is opened.
+ 
+ The module is too large to document here in its entirety, but the following
+ should help you to get started. The parameter conventions for the C functions
+ are translated to Python as follows:
+ 
+ * All (short, long, unsigned) int values are represented by Python integers.
+ 
+ * All float and double values are represented by Python floating point numbers.
+   In most cases, Python integers are also allowed.
+ 
+ * All arrays are represented by one-dimensional Python lists. In most cases,
+   tuples are also allowed.

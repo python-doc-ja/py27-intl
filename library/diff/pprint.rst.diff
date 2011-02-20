@@ -1,0 +1,29 @@
+--- r262/library/pprint.rst	2008-06-22 02:43:56.218468000 +0900
++++ r266/library/pprint.rst	2009-10-27 23:37:48.900246000 +0900
+@@ -4,25 +4,25 @@
+ 
+ .. module:: pprint
+    :synopsis: Data pretty printer.
+ .. moduleauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+ .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+ 
+ 
+ The :mod:`pprint` module provides a capability to "pretty-print" arbitrary
+ Python data structures in a form which can be used as input to the interpreter.
+ If the formatted structures include objects which are not fundamental Python
+ types, the representation may not be loadable.  This may be the case if objects
+ such as files, sockets, classes, or instances are included, as well as many
+-other builtin objects which are not representable as Python constants.
++other built-in objects which are not representable as Python constants.
+ 
+ The formatted representation keeps objects on a single line if it can, and
+ breaks them onto multiple lines if they don't fit within the allowed width.
+ Construct :class:`PrettyPrinter` objects explicitly if you need to adjust the
+ width constraint.
+ 
+ .. versionchanged:: 2.5
+    Dictionaries are sorted by key before the display is computed; before 2.5, a
+    dictionary was sorted only if its display required more than one line, although
+    that wasn't documented.
+ 
+ .. versionchanged:: 2.6

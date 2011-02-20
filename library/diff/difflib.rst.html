@@ -1,0 +1,66 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to102__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/difflib.rst =&gt; r266/library/difflib.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to102__0"></td><td class="diff_header" id="from102_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;sequences,&nbsp;but&nbsp;does&nbsp;tend&nbsp;to&nbsp;yield&nbsp;matches&nbsp;that&nbsp;"look&nbsp;right"&nbsp;to&nbsp;people.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_33">33</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;**Timing:**&nbsp;The&nbsp;basic&nbsp;Ratcliff-Obershelp&nbsp;algorithm&nbsp;is&nbsp;cubic&nbsp;time&nbsp;in&nbsp;the&nbsp;worst</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_35">35</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;case&nbsp;and&nbsp;quadratic&nbsp;time&nbsp;in&nbsp;the&nbsp;expected&nbsp;case.&nbsp;:class:`SequenceMatcher`&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;quadratic&nbsp;time&nbsp;for&nbsp;the&nbsp;worst&nbsp;case&nbsp;and&nbsp;has&nbsp;expected-case&nbsp;behavior&nbsp;dependent&nbsp;in&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;complicated&nbsp;way&nbsp;on&nbsp;how&nbsp;many&nbsp;elements&nbsp;the&nbsp;sequences&nbsp;have&nbsp;in&nbsp;common;&nbsp;best&nbsp;case</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;time&nbsp;is&nbsp;linear.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_39">39</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to102__1">n</a></td><td class="diff_header" id="to102_40">40+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;**Heuristic:**&nbsp;To&nbsp;speed-up&nbsp;matching,&nbsp;items&nbsp;that&nbsp;appear&nbsp;more&nbsp;than&nbsp;1%&nbsp;of&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_41">41+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;time&nbsp;in&nbsp;sequences&nbsp;of&nbsp;at&nbsp;least&nbsp;200&nbsp;items&nbsp;are&nbsp;treated&nbsp;as&nbsp;junk.&nbsp;&nbsp;This&nbsp;has&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_42">42+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;unfortunate&nbsp;side-effect&nbsp;of&nbsp;giving&nbsp;bad&nbsp;results&nbsp;for&nbsp;sequences&nbsp;constructed&nbsp;from</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_43">43+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;a&nbsp;small&nbsp;set&nbsp;of&nbsp;items.&nbsp;&nbsp;An&nbsp;option&nbsp;to&nbsp;turn&nbsp;off&nbsp;the&nbsp;heuristic&nbsp;will&nbsp;be&nbsp;added&nbsp;to&nbsp;a</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_44">44+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;future&nbsp;version.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from102_40">40</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_41">41</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Differ</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_42">42</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_43">43</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;a&nbsp;class&nbsp;for&nbsp;comparing&nbsp;sequences&nbsp;of&nbsp;lines&nbsp;of&nbsp;text,&nbsp;and&nbsp;producing</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_44">44</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;human-readable&nbsp;differences&nbsp;or&nbsp;deltas.&nbsp;&nbsp;Differ&nbsp;uses&nbsp;:class:`SequenceMatcher`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_45">45</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;both&nbsp;to&nbsp;compare&nbsp;sequences&nbsp;of&nbsp;lines,&nbsp;and&nbsp;to&nbsp;compare&nbsp;sequences&nbsp;of&nbsp;characters</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_46">46</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;within&nbsp;similar&nbsp;(near-matching)&nbsp;lines.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_47">47</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to102__1"></td><td class="diff_header" id="from102_572">572</td><td nowrap="nowrap">:meth:`get_opcodes`:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_573">573</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_574">574</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;for&nbsp;opcode&nbsp;in&nbsp;s.get_opcodes():</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_575">575</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"%6s&nbsp;a[%d:%d]&nbsp;b[%d:%d]"&nbsp;%&nbsp;opcode</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_576">576</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;equal&nbsp;a[0:8]&nbsp;b[0:8]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_577">577</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;insert&nbsp;a[8:8]&nbsp;b[8:17]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_578">578</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;equal&nbsp;a[8:29]&nbsp;b[17:38]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_579">579</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to102__top">t</a></td><td class="diff_header" id="to102_585">585+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;seealso::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_586">586+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from102_580">580-</td><td nowrap="nowrap"><span class="diff_chg">See&nbsp;also&nbsp;t</span>he<span class="diff_sub">&nbsp;function</span>&nbsp;:func:`get_close_matches`&nbsp;in&nbsp;this&nbsp;module<span class="diff_sub">,</span>&nbsp;which&nbsp;shows&nbsp;how</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_587">587+</td><td nowrap="nowrap"><span class="diff_chg">&nbsp;&nbsp;&nbsp;*&nbsp;T</span>he&nbsp;:func:`get_close_matches`&nbsp;<span class="diff_add">function&nbsp;</span>in&nbsp;this&nbsp;module&nbsp;which&nbsp;shows&nbsp;how</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from102_581">581-</td><td nowrap="nowrap">simple&nbsp;code&nbsp;building&nbsp;on&nbsp;:class:`SequenceMatcher`&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;do&nbsp;useful<span class="diff_sub">&nbsp;work.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_588">588+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>simple&nbsp;code&nbsp;building&nbsp;on&nbsp;:class:`SequenceMatcher`&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;do&nbsp;useful</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_589">589+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;work.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_590">590+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_591">591+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*&nbsp;`Simple&nbsp;version&nbsp;control&nbsp;recipe</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_592">592+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;http://code.activestate.com/recipes/576729/&gt;`_&nbsp;for&nbsp;a&nbsp;small&nbsp;application</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to102_593">593+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;built&nbsp;with&nbsp;:class:`SequenceMatcher`.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from102_582">582</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_583">583</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_584">584</td><td nowrap="nowrap">..&nbsp;_differ-objects:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_585">585</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_586">586</td><td nowrap="nowrap">Differ&nbsp;Objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_587">587</td><td nowrap="nowrap">--------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_588">588</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from102_589">589</td><td nowrap="nowrap">Note&nbsp;that&nbsp;:class:`Differ`\&nbsp;-generated&nbsp;deltas&nbsp;make&nbsp;no&nbsp;claim&nbsp;to&nbsp;be&nbsp;**minimal**</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

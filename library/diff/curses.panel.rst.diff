@@ -1,0 +1,20 @@
+--- r262/library/curses.panel.rst	2008-01-06 05:33:46.954265000 +0900
++++ r266/library/curses.panel.rst	2009-10-27 23:29:22.069083000 +0900
+@@ -1,15 +1,14 @@
+-
+-:mod:`curses.panel` --- A panel stack extension for curses.
+-===========================================================
++:mod:`curses.panel` --- A panel stack extension for curses
++==========================================================
+ 
+ .. module:: curses.panel
+    :synopsis: A panel stack extension that adds depth to  curses windows.
+ .. sectionauthor:: A.M. Kuchling <amk@amk.ca>
+ 
+ 
+ Panels are windows with the added feature of depth, so they can be stacked on
+ top of each other, and only the visible portions of each window will be
+ displayed.  Panels can be added, moved up or down in the stack, and removed.
+ 
+ 
+ .. _cursespanel-functions:

@@ -1,0 +1,56 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to79__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/cd.rst =&gt; r266/library/cd.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to79__0"></td><td class="diff_header" id="from79_11">11</td><td nowrap="nowrap">..&nbsp;deprecated::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_12">12</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;:mod:`cd`&nbsp;module&nbsp;has&nbsp;been&nbsp;deprecated&nbsp;for&nbsp;removal&nbsp;in&nbsp;Python&nbsp;3.0.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_13">13</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_15">15</td><td nowrap="nowrap">This&nbsp;module&nbsp;provides&nbsp;an&nbsp;interface&nbsp;to&nbsp;the&nbsp;Silicon&nbsp;Graphics&nbsp;CD&nbsp;library.&nbsp;It&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_16">16</td><td nowrap="nowrap">available&nbsp;only&nbsp;on&nbsp;Silicon&nbsp;Graphics&nbsp;systems.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_18">18</td><td nowrap="nowrap">The&nbsp;way&nbsp;the&nbsp;library&nbsp;works&nbsp;is&nbsp;as&nbsp;follows.&nbsp;&nbsp;A&nbsp;program&nbsp;opens&nbsp;the&nbsp;CD-ROM&nbsp;device&nbsp;with</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to79__1">n</a></td><td class="diff_header" id="from79_19">19-</td><td nowrap="nowrap">:func:`open`&nbsp;and&nbsp;creates&nbsp;a&nbsp;parser&nbsp;to&nbsp;parse&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;CD&nbsp;with</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to79__1">n</a></td><td class="diff_header" id="to79_19">19+</td><td nowrap="nowrap">:func:`<span class="diff_add">.</span>open`&nbsp;and&nbsp;creates&nbsp;a&nbsp;parser&nbsp;to&nbsp;parse&nbsp;the&nbsp;data&nbsp;from&nbsp;the&nbsp;CD&nbsp;with</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from79_20">20-</td><td nowrap="nowrap">:func:`createparser`.&nbsp;&nbsp;The&nbsp;object&nbsp;returned&nbsp;by&nbsp;:func:`open`&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;read</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to79_20">20+</td><td nowrap="nowrap">:func:`createparser`.&nbsp;&nbsp;The&nbsp;object&nbsp;returned&nbsp;by&nbsp;:func:`<span class="diff_add">.</span>open`&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;read</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from79_21">21</td><td nowrap="nowrap">data&nbsp;from&nbsp;the&nbsp;CD,&nbsp;but&nbsp;also&nbsp;to&nbsp;get&nbsp;status&nbsp;information&nbsp;for&nbsp;the&nbsp;CD-ROM&nbsp;device,&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_22">22</td><td nowrap="nowrap">to&nbsp;get&nbsp;information&nbsp;about&nbsp;the&nbsp;CD,&nbsp;such&nbsp;as&nbsp;the&nbsp;table&nbsp;of&nbsp;contents.&nbsp;&nbsp;Data&nbsp;from&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_23">23</td><td nowrap="nowrap">CD&nbsp;is&nbsp;passed&nbsp;to&nbsp;the&nbsp;parser,&nbsp;which&nbsp;parses&nbsp;the&nbsp;frames,&nbsp;and&nbsp;calls&nbsp;any&nbsp;callback</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_24">24</td><td nowrap="nowrap">functions&nbsp;that&nbsp;have&nbsp;previously&nbsp;been&nbsp;added.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_25">25</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_26">26</td><td nowrap="nowrap">An&nbsp;audio&nbsp;CD&nbsp;is&nbsp;divided&nbsp;into&nbsp;:dfn:`tracks`&nbsp;or&nbsp;:dfn:`programs`&nbsp;(the&nbsp;terms&nbsp;are&nbsp;used</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_27">27</td><td nowrap="nowrap">interchangeably).&nbsp;&nbsp;Tracks&nbsp;can&nbsp;be&nbsp;subdivided&nbsp;into&nbsp;:dfn:`indices`.&nbsp;&nbsp;An&nbsp;audio&nbsp;CD</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_28">28</td><td nowrap="nowrap">contains&nbsp;a&nbsp;:dfn:`table&nbsp;of&nbsp;contents`&nbsp;which&nbsp;gives&nbsp;the&nbsp;starts&nbsp;of&nbsp;the&nbsp;tracks&nbsp;on&nbsp;the</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to79__1"></td><td class="diff_header" id="from79_128">128</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;set&nbsp;by&nbsp;the&nbsp;:meth:`addcallback`&nbsp;method&nbsp;of&nbsp;CD&nbsp;parser&nbsp;objects&nbsp;(see&nbsp;below).</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_129">129</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_130">130</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_131">131</td><td nowrap="nowrap">..&nbsp;_player-objects:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_132">132</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_133">133</td><td nowrap="nowrap">Player&nbsp;Objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_134">134</td><td nowrap="nowrap">--------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_135">135</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to79__top">t</a></td><td class="diff_header" id="from79_136">136-</td><td nowrap="nowrap">Player&nbsp;objects&nbsp;(returned&nbsp;by&nbsp;:func:`open`)&nbsp;have&nbsp;the&nbsp;following&nbsp;methods:</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to79__top">t</a></td><td class="diff_header" id="to79_136">136+</td><td nowrap="nowrap">Player&nbsp;objects&nbsp;(returned&nbsp;by&nbsp;:func:`<span class="diff_add">.</span>open`)&nbsp;have&nbsp;the&nbsp;following&nbsp;methods:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from79_137">137</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_138">138</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_139">139</td><td nowrap="nowrap">..&nbsp;method::&nbsp;CD&nbsp;player.allowremoval()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_140">140</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_141">141</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Unlocks&nbsp;the&nbsp;eject&nbsp;button&nbsp;on&nbsp;the&nbsp;CD-ROM&nbsp;drive&nbsp;permitting&nbsp;the&nbsp;user&nbsp;to&nbsp;eject&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_142">142</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;caddy&nbsp;if&nbsp;desired.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_143">143</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from79_144">144</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

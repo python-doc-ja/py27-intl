@@ -1,0 +1,33 @@
+--- r262/library/binhex.rst	2008-09-14 02:41:16.853203000 +0900
++++ r266/library/binhex.rst	2009-04-29 03:23:28.138007000 +0900
+@@ -1,28 +1,27 @@
+-
+ :mod:`binhex` --- Encode and decode binhex4 files
+ =================================================
+ 
+ .. module:: binhex
+    :synopsis: Encode and decode files in binhex4 format.
+ 
+ 
+ This module encodes and decodes files in binhex4 format, a format allowing
+ representation of Macintosh files in ASCII.  On the Macintosh, both forks of a
+ file and the finder information are encoded (or decoded), on other platforms
+ only the data fork is handled.
+ 
+-.. warning::
++.. note::
+ 
+-   In 3.0, special Macintosh support is removed.
++   In Python 3.x, special Macintosh support has been removed.
+ 
+ 
+ The :mod:`binhex` module defines the following functions:
+ 
+ 
+ .. function:: binhex(input, output)
+ 
+    Convert a binary file with filename *input* to binhex file *output*. The
+    *output* parameter can either be a filename or a file-like object (any object
+    supporting a :meth:`write` and :meth:`close` method).
+ 
+ 

@@ -1,0 +1,68 @@
+--- r262/library/difflib.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/difflib.rst	2010-07-31 17:00:13.334848000 +0900
+@@ -28,24 +28,29 @@
+    find the longest contiguous matching subsequence that contains no "junk"
+    elements (the Ratcliff and Obershelp algorithm doesn't address junk).  The same
+    idea is then applied recursively to the pieces of the sequences to the left and
+    to the right of the matching subsequence.  This does not yield minimal edit
+    sequences, but does tend to yield matches that "look right" to people.
+ 
+    **Timing:** The basic Ratcliff-Obershelp algorithm is cubic time in the worst
+    case and quadratic time in the expected case. :class:`SequenceMatcher` is
+    quadratic time for the worst case and has expected-case behavior dependent in a
+    complicated way on how many elements the sequences have in common; best case
+    time is linear.
+ 
++   **Heuristic:** To speed-up matching, items that appear more than 1% of the
++   time in sequences of at least 200 items are treated as junk.  This has the
++   unfortunate side-effect of giving bad results for sequences constructed from
++   a small set of items.  An option to turn off the heuristic will be added to a
++   future version.
+ 
+ .. class:: Differ
+ 
+    This is a class for comparing sequences of lines of text, and producing
+    human-readable differences or deltas.  Differ uses :class:`SequenceMatcher`
+    both to compare sequences of lines, and to compare sequences of characters
+    within similar (near-matching) lines.
+ 
+    Each line of a :class:`Differ` delta begins with a two-letter code:
+ 
+    +----------+-------------------------------------------+
+    | Code     | Meaning                                   |
+@@ -568,26 +573,33 @@
+ dummy, ``(len(a), len(b), 0)``, and this is the only case in which the last
+ tuple element (number of elements matched) is ``0``.
+ 
+ If you want to know how to change the first sequence into the second, use
+ :meth:`get_opcodes`:
+ 
+    >>> for opcode in s.get_opcodes():
+    ...     print "%6s a[%d:%d] b[%d:%d]" % opcode
+     equal a[0:8] b[0:8]
+    insert a[8:8] b[8:17]
+     equal a[8:29] b[17:38]
+ 
+-See also the function :func:`get_close_matches` in this module, which shows how
+-simple code building on :class:`SequenceMatcher` can be used to do useful work.
++.. seealso::
++
++   * The :func:`get_close_matches` function in this module which shows how
++     simple code building on :class:`SequenceMatcher` can be used to do useful
++     work.
++
++   * `Simple version control recipe
++     <http://code.activestate.com/recipes/576729/>`_ for a small application
++     built with :class:`SequenceMatcher`.
+ 
+ 
+ .. _differ-objects:
+ 
+ Differ Objects
+ --------------
+ 
+ Note that :class:`Differ`\ -generated deltas make no claim to be **minimal**
+ diffs. To the contrary, minimal diffs are often counter-intuitive, because they
+ synch up anywhere possible, sometimes accidental matches 100 pages apart.
+ Restricting synch points to contiguous matches preserves some notion of
+ locality, at the occasional cost of producing a longer diff.

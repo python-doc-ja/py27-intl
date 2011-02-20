@@ -1,0 +1,29 @@
+--- r262/library/sched.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/sched.rst	2009-05-26 16:50:52.528138000 +0900
+@@ -91,25 +91,25 @@
+ 
+ 
+ .. method:: scheduler.enter(delay, priority, action, argument)
+ 
+    Schedule an event for *delay* more time units. Other then the relative time, the
+    other arguments, the effect and the return value are the same as those for
+    :meth:`enterabs`.
+ 
+ 
+ .. method:: scheduler.cancel(event)
+ 
+    Remove the event from the queue. If *event* is not an event currently in the
+-   queue, this method will raise a :exc:`RuntimeError`.
++   queue, this method will raise a :exc:`ValueError`.
+ 
+ 
+ .. method:: scheduler.empty()
+ 
+    Return true if the event queue is empty.
+ 
+ 
+ .. method:: scheduler.run()
+ 
+    Run all scheduled events. This function will wait  (using the :func:`delayfunc`
+    function passed to the constructor) for the next event, then execute it and so
+    on until there are no more scheduled events.

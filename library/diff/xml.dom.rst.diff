@@ -1,0 +1,29 @@
+--- r262/library/xml.dom.rst	2009-04-06 06:48:06.719229000 +0900
++++ r266/library/xml.dom.rst	2010-03-22 04:01:15.885902000 +0900
+@@ -70,25 +70,25 @@
+ implementations are free to support the strict mapping from IDL).  See section
+ :ref:`dom-conformance` for a detailed discussion of mapping requirements.
+ 
+ 
+ .. seealso::
+ 
+    `Document Object Model (DOM) Level 2 Specification <http://www.w3.org/TR/DOM-Level-2-Core/>`_
+       The W3C recommendation upon which the Python DOM API is based.
+ 
+    `Document Object Model (DOM) Level 1 Specification <http://www.w3.org/TR/REC-DOM-Level-1/>`_
+       The W3C recommendation for the DOM supported by :mod:`xml.dom.minidom`.
+ 
+-   `Python Language Mapping Specification <http://www.omg.org/docs/formal/02-11-05.pdf>`_
++   `Python Language Mapping Specification <http://www.omg.org/spec/PYTH/1.2/PDF>`_
+       This specifies the mapping from OMG IDL to Python.
+ 
+ 
+ Module Contents
+ ---------------
+ 
+ The :mod:`xml.dom` contains the following functions:
+ 
+ 
+ .. function:: registerDOMImplementation(name, factory)
+ 
+    Register the *factory* function with the name *name*.  The factory function

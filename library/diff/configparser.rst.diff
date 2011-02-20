@@ -1,0 +1,176 @@
+--- r262/library/configparser.rst	2009-03-01 11:07:25.691649000 +0900
++++ r266/library/configparser.rst	2010-08-02 06:48:47.574872000 +0900
+@@ -18,54 +18,66 @@
+ .. index::
+    pair: .ini; file
+    pair: configuration; file
+    single: ini file
+    single: Windows ini file
+ 
+ This module defines the class :class:`ConfigParser`.   The :class:`ConfigParser`
+ class implements a basic configuration file parser language which provides a
+ structure similar to what you would find on Microsoft Windows INI files.  You
+ can use this to write Python programs which can be customized by end users
+ easily.
+ 
+-.. warning::
++.. note::
+ 
+-   This library does *not* interpret or write the value-type prefixes used in the
+-   Windows Registry extended version of INI syntax.
++   This library does *not* interpret or write the value-type prefixes used in
++   the Windows Registry extended version of INI syntax.
+ 
+ The configuration file consists of sections, led by a ``[section]`` header and
+ followed by ``name: value`` entries, with continuations in the style of
+ :rfc:`822` (see section 3.1.1, "LONG HEADER FIELDS"); ``name=value`` is also
+ accepted.  Note that leading whitespace is removed from values. The optional
+ values can contain format strings which refer to other values in the same
+ section, or values in a special ``DEFAULT`` section.  Additional defaults can be
+ provided on initialization and retrieval.  Lines beginning with ``'#'`` or
+ ``';'`` are ignored and may be used to provide comments.
+ 
++Configuration files may include comments, prefixed by specific characters (``#``
++and ``;``).  Comments may appear on their own in an otherwise empty line, or may
++be entered in lines holding values or spection names.  In the latter case, they
++need to be preceded by a whitespace character to be recognized as a comment.
++(For backwards compatibility, only ``;`` starts an inline comment, while ``#``
++does not.)
++
++On top of the core functionality, :class:`SafeConfigParser` supports
++interpolation.  This means values can contain format strings which refer to
++other values in the same section, or values in a special ``DEFAULT`` section.
++Additional defaults can be provided on initialization.
++
+ For example::
+ 
+    [My Section]
+    foodir: %(dir)s/whatever
+    dir=frob
+    long: this value continues
+       in the next line
+ 
+ would resolve the ``%(dir)s`` to the value of ``dir`` (``frob`` in this case).
+ All reference expansions are done on demand.
+ 
+ Default values can be specified by passing them into the :class:`ConfigParser`
+ constructor as a dictionary.  Additional defaults  may be passed into the
+ :meth:`get` method which will override all others.
+ 
+-Sections are normally stored in a builtin dictionary. An alternative dictionary
++Sections are normally stored in a built-in dictionary. An alternative dictionary
+ type can be passed to the :class:`ConfigParser` constructor. For example, if a
+ dictionary type is passed that sorts its keys, the sections will be sorted on
+ write-back, as will be the keys within each section.
+ 
+ 
+ .. class:: RawConfigParser([defaults[, dict_type]])
+ 
+    The basic configuration object.  When *defaults* is given, it is initialized
+    into the dictionary of intrinsic defaults.  When *dict_type* is given, it will
+    be used to create the dictionary objects for the list of sections, for the
+    options within a section, and for the default values. This class does not
+    support the magical interpolation behavior.
+@@ -95,24 +107,29 @@
+ .. class:: SafeConfigParser([defaults[, dict_type]])
+ 
+    Derived class of :class:`ConfigParser` that implements a more-sane variant of
+    the magical interpolation feature.  This implementation is more predictable as
+    well. New applications should prefer this version if they don't need to be
+    compatible with older versions of Python.
+ 
+    .. XXX Need to explain what's safer/more predictable about it.
+ 
+    .. versionadded:: 2.3
+ 
+ 
++.. exception:: Error
++
++   Base class for all other configparser exceptions.
++
++
+ .. exception:: NoSectionError
+ 
+    Exception raised when a specified section is not found.
+ 
+ 
+ .. exception:: DuplicateSectionError
+ 
+    Exception raised if :meth:`add_section` is called with the name of a section
+    that is already present.
+ 
+ 
+ .. exception:: NoOptionError
+@@ -308,48 +325,61 @@
+ 
+    .. versionadded:: 1.6
+ 
+ 
+ .. method:: RawConfigParser.remove_section(section)
+ 
+    Remove the specified *section* from the configuration. If the section in fact
+    existed, return ``True``. Otherwise return ``False``.
+ 
+ 
+ .. method:: RawConfigParser.optionxform(option)
+ 
+-   Transforms the option name *option* as found in an input file or as passed in by
+-   client code to the form that should be used in the internal structures.  The
+-   default implementation returns a lower-case version of *option*; subclasses may
+-   override this or client code can set an attribute of this name on instances to
+-   affect this behavior.  Setting this to :func:`str`, for example, would make
+-   option names case sensitive.
++   Transforms the option name *option* as found in an input file or as passed in
++   by client code to the form that should be used in the internal structures.
++   The default implementation returns a lower-case version of *option*;
++   subclasses may override this or client code can set an attribute of this name
++   on instances to affect this behavior.
++
++   You don't necessarily need to subclass a ConfigParser to use this method, you
++   can also re-set it on an instance, to a function that takes a string
++   argument.  Setting it to ``str``, for example, would make option names case
++   sensitive::
++
++      cfgparser = ConfigParser()
++      ...
++      cfgparser.optionxform = str
++
++   Note that when reading configuration files, whitespace around the
++   option names are stripped before :meth:`optionxform` is called.
+ 
+ 
+ .. _configparser-objects:
+ 
+ ConfigParser Objects
+ --------------------
+ 
+ The :class:`ConfigParser` class extends some methods of the
+ :class:`RawConfigParser` interface, adding some optional arguments.
+ 
+ 
+ .. method:: ConfigParser.get(section, option[, raw[, vars]])
+ 
+-   Get an *option* value for the named *section*.  All the ``'%'`` interpolations
+-   are expanded in the return values, based on the defaults passed into the
+-   constructor, as well as the options *vars* provided, unless the *raw* argument
+-   is true.
+-
++   Get an *option* value for the named *section*.  If *vars* is provided, it
++   must be a dictionary.  The *option* is looked up in *vars* (if provided),
++   *section*, and in *defaults* in that order.
++
++   All the ``'%'`` interpolations are expanded in the return values, unless the
++   *raw* argument is true.  Values for interpolation keys are looked up in the
++   same manner as the option.
+ 
+ .. method:: ConfigParser.items(section[, raw[, vars]])
+ 
+    Return a list of ``(name, value)`` pairs for each option in the given *section*.
+    Optional arguments have the same meaning as for the :meth:`get` method.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. _safeconfigparser-objects:
+ 
+ SafeConfigParser Objects

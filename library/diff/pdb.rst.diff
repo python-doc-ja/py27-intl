@@ -1,0 +1,87 @@
+--- r262/library/pdb.rst	2009-04-04 06:56:36.770670000 +0900
++++ r266/library/pdb.rst	2010-03-22 04:34:26.632505000 +0900
+@@ -14,25 +14,25 @@
+ programs.  It supports setting (conditional) breakpoints and single stepping at
+ the source line level, inspection of stack frames, source code listing, and
+ evaluation of arbitrary Python code in the context of any stack frame.  It also
+ supports post-mortem debugging and can be called under program control.
+ 
+ .. index::
+    single: Pdb (class in pdb)
+    module: bdb
+    module: cmd
+ 
+ The debugger is extensible --- it is actually defined as the class :class:`Pdb`.
+ This is currently undocumented but easily understood by reading the source.  The
+-extension interface uses the modules :mod:`bdb` (undocumented) and :mod:`cmd`.
++extension interface uses the modules :mod:`bdb` and :mod:`cmd`.
+ 
+ The debugger's prompt is ``(Pdb)``. Typical usage to run a program under control
+ of the debugger is::
+ 
+    >>> import pdb
+    >>> import mymodule
+    >>> pdb.run('mymodule.test()')
+    > <string>(0)?()
+    (Pdb) continue
+    > <string>(1)?()
+    (Pdb) continue
+    NameError: 'spam'
+@@ -44,25 +44,34 @@
+ 
+    python -m pdb myscript.py
+ 
+ When invoked as a script, pdb will automatically enter post-mortem debugging if
+ the program being debugged exits abnormally. After post-mortem debugging (or
+ after normal exit of the program), pdb will restart the program. Automatic
+ restarting preserves pdb's state (such as breakpoints) and in most cases is more
+ useful than quitting the debugger upon program's exit.
+ 
+ .. versionadded:: 2.4
+    Restarting post-mortem behavior added.
+ 
+-Typical usage to inspect a crashed program is::
++The typical usage to break into the debugger from a running program is to
++insert ::
++
++   import pdb; pdb.set_trace()
++
++at the location you want to break into the debugger.  You can then step through
++the code following this statement, and continue running without the debugger using
++the ``c`` command.
++
++The typical usage to inspect a crashed program is::
+ 
+    >>> import pdb
+    >>> import mymodule
+    >>> mymodule.test()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+      File "./mymodule.py", line 4, in test
+        test2()
+      File "./mymodule.py", line 3, in test2
+        print spam
+    NameError: spam
+    >>> pdb.pm()
+@@ -334,20 +343,20 @@
+    Deletes the specified alias.
+ 
+ [!]\ *statement*
+    Execute the (one-line) *statement* in the context of the current stack frame.
+    The exclamation point can be omitted unless the first word of the statement
+    resembles a debugger command. To set a global variable, you can prefix the
+    assignment command with a ``global`` command on the same line, e.g.::
+ 
+       (Pdb) global list_options; list_options = ['-l']
+       (Pdb)
+ 
+ run [*args* ...]
+-   Restart the debugged python program. If an argument is supplied, it is split
++   Restart the debugged Python program. If an argument is supplied, it is split
+    with "shlex" and the result is used as the new sys.argv. History, breakpoints,
+    actions and debugger options are preserved. "restart" is an alias for "run".
+ 
+    .. versionadded:: 2.6
+ 
+ q(uit)
+    Quit from the debugger. The program being executed is aborted.

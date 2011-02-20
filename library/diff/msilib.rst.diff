@@ -1,0 +1,115 @@
+--- r262/library/msilib.rst	2008-07-02 05:18:10.894822000 +0900
++++ r266/library/msilib.rst	2009-10-28 00:08:27.384772000 +0900
+@@ -387,53 +387,53 @@
+ 
+       Add a list of files to the current component as specified in the glob
+       pattern.  Individual files can be excluded in the *exclude* list.
+ 
+ 
+    .. method:: remove_pyc()
+ 
+       Remove ``.pyc``/``.pyo`` files on uninstall.
+ 
+ 
+ .. seealso::
+ 
+-   `Directory Table <http://msdn.microsoft.com/library/en-us/msi/setup/directory_table.asp>`_
+-   `File Table <http://msdn.microsoft.com/library/en-us/msi/setup/file_table.asp>`_
+-   `Component Table <http://msdn.microsoft.com/library/en-us/msi/setup/component_table.asp>`_
+-   `FeatureComponents Table <http://msdn.microsoft.com/library/en-us/msi/setup/featurecomponents_table.asp>`_
++   `Directory Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/directory_table.asp>`_
++   `File Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/file_table.asp>`_
++   `Component Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/component_table.asp>`_
++   `FeatureComponents Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/featurecomponents_table.asp>`_
+ 
+ .. _features:
+ 
+ Features
+ --------
+ 
+ 
+ .. class:: Feature(database, id, title, desc, display[, level=1[, parent[, directory[,  attributes=0]]]])
+ 
+    Add a new record to the ``Feature`` table, using the values *id*, *parent.id*,
+    *title*, *desc*, *display*, *level*, *directory*, and *attributes*. The
+    resulting feature object can be passed to the :meth:`start_component` method of
+    :class:`Directory`.
+ 
+ 
+    .. method:: set_current()
+ 
+       Make this feature the current feature of :mod:`msilib`. New components are
+       automatically added to the default feature, unless a feature is explicitly
+       specified.
+ 
+ 
+ .. seealso::
+ 
+-   `Feature Table <http://msdn.microsoft.com/library/en-us/msi/setup/feature_table.asp>`_
++   `Feature Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/feature_table.asp>`_
+ 
+ .. _msi-gui:
+ 
+ GUI classes
+ -----------
+ 
+ :mod:`msilib` provides several classes that wrap the GUI tables in an MSI
+ database. However, no standard user interface is provided; use :mod:`bdist_msi`
+ to create MSI files with a user-interface for installing Python packages.
+ 
+ 
+ .. class:: Control(dlg, name)
+@@ -509,31 +509,31 @@
+    .. method:: radiogroup(name, x, y, width, height,  attributes, property, text, next_control)
+ 
+       Add and return a ``RadioButtonGroup`` control.
+ 
+ 
+    .. method:: checkbox(name, x, y, width, height,  attributes, property, text, next_control)
+ 
+       Add and return a ``CheckBox`` control.
+ 
+ 
+ .. seealso::
+ 
+-   `Dialog Table <http://msdn.microsoft.com/library/en-us/msi/setup/dialog_table.asp>`_
+-   `Control Table <http://msdn.microsoft.com/library/en-us/msi/setup/control_table.asp>`_
+-   `Control Types <http://msdn.microsoft.com/library/en-us/msi/setup/controls.asp>`_
+-   `ControlCondition Table <http://msdn.microsoft.com/library/en-us/msi/setup/controlcondition_table.asp>`_
+-   `ControlEvent Table <http://msdn.microsoft.com/library/en-us/msi/setup/controlevent_table.asp>`_
+-   `EventMapping Table <http://msdn.microsoft.com/library/en-us/msi/setup/eventmapping_table.asp>`_
+-   `RadioButton Table <http://msdn.microsoft.com/library/en-us/msi/setup/radiobutton_table.asp>`_
++   `Dialog Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/dialog_table.asp>`_
++   `Control Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/control_table.asp>`_
++   `Control Types <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controls.asp>`_
++   `ControlCondition Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controlcondition_table.asp>`_
++   `ControlEvent Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controlevent_table.asp>`_
++   `EventMapping Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/eventmapping_table.asp>`_
++   `RadioButton Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/radiobutton_table.asp>`_
+ 
+ .. _msi-tables:
+ 
+ Precomputed tables
+ ------------------
+ 
+ :mod:`msilib` provides a few subpackages that contain only schema and table
+ definitions. Currently, these definitions are based on MSI version 2.0.
+ 
+ 
+ .. data:: schema
+ 
+@@ -544,14 +544,12 @@
+ 
+ .. data:: sequence
+ 
+    This module contains table contents for the standard sequence tables:
+    *AdminExecuteSequence*, *AdminUISequence*, *AdvtExecuteSequence*,
+    *InstallExecuteSequence*, and *InstallUISequence*.
+ 
+ 
+ .. data:: text
+ 
+    This module contains definitions for the UIText and ActionText tables, for the
+    standard installer actions.
+-
+-

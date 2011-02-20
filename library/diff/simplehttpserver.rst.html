@@ -1,0 +1,74 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to194__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/simplehttpserver.rst =&gt; r266/library/simplehttpserver.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to194__0"></td><td class="diff_header" id="from194_76">76</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;``'Content-type:'``&nbsp;header&nbsp;with&nbsp;the&nbsp;guessed&nbsp;content&nbsp;type&nbsp;is&nbsp;output,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_77">77</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;followed&nbsp;by&nbsp;a&nbsp;``'Content-Length:'``&nbsp;header&nbsp;with&nbsp;the&nbsp;file's&nbsp;size&nbsp;and&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_78">78</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``'Last-Modified:'``&nbsp;header&nbsp;with&nbsp;the&nbsp;file's&nbsp;modification&nbsp;time.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_79">79</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Then&nbsp;follows&nbsp;a&nbsp;blank&nbsp;line&nbsp;signifying&nbsp;the&nbsp;end&nbsp;of&nbsp;the&nbsp;headers,&nbsp;and&nbsp;then&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contents&nbsp;of&nbsp;the&nbsp;file&nbsp;are&nbsp;output.&nbsp;If&nbsp;the&nbsp;file's&nbsp;MIME&nbsp;type&nbsp;starts&nbsp;with</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;``text/``&nbsp;the&nbsp;file&nbsp;is&nbsp;opened&nbsp;in&nbsp;text&nbsp;mode;&nbsp;otherwise&nbsp;binary&nbsp;mode&nbsp;is&nbsp;used.</td></tr>            <tr><td class="diff_next" id="difflib_chg_to194__1"></td><td class="diff_header" id="from194_83">83</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to194__1">n</a></td><td class="diff_header" id="from194_84">84-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For&nbsp;example&nbsp;usage,&nbsp;see&nbsp;the&nbsp;implementation&nbsp;of&nbsp;the&nbsp;:func:`test`&nbsp;function.</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to194__1">n</a></td><td class="diff_header" id="to194_84">84+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;:func:`test`&nbsp;function&nbsp;in&nbsp;the&nbsp;:mod:`SimpleHTTPServer`&nbsp;module&nbsp;is&nbsp;an</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_85">85+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;example&nbsp;which&nbsp;creates&nbsp;a&nbsp;server&nbsp;using&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_86">86+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:class:`SimpleHTTPRequestHandler`&nbsp;as&nbsp;the&nbsp;Handler.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from194_85">85</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_86">86</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.5</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_87">87</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;``'Last-Modified'``&nbsp;header.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_88">88</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to194__top">t</a></td><td class="diff_header" id="to194_91">91+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_92">92+</td><td nowrap="nowrap"><span class="diff_add">The&nbsp;:mod:`SimpleHTTPServer`&nbsp;module&nbsp;can&nbsp;be&nbsp;used&nbsp;the&nbsp;following&nbsp;manner&nbsp;in&nbsp;order&nbsp;to</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_93">93+</td><td nowrap="nowrap"><span class="diff_add">set&nbsp;up&nbsp;a&nbsp;very&nbsp;basic&nbsp;web&nbsp;server&nbsp;serving&nbsp;files&nbsp;relative&nbsp;to&nbsp;the&nbsp;current</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_94">94+</td><td nowrap="nowrap"><span class="diff_add">directory.::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_95">95+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_96">96+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;SimpleHTTPServer</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_97">97+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;SocketServer</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_98">98+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_99">99+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PORT&nbsp;=&nbsp;8000</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_100">100+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_101">101+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Handler&nbsp;=&nbsp;SimpleHTTPServer.SimpleHTTPRequestHandler</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_102">102+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_103">103+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpd&nbsp;=&nbsp;SocketServer.TCPServer(("",&nbsp;PORT),&nbsp;Handler)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_104">104+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_105">105+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"serving&nbsp;at&nbsp;port",&nbsp;PORT</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_106">106+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpd.serve_forever()</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_107">107+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_108">108+</td><td nowrap="nowrap"><span class="diff_add">:mod:`SimpleHTTPServer`&nbsp;module&nbsp;can&nbsp;also&nbsp;be&nbsp;invoked&nbsp;directly&nbsp;using&nbsp;the&nbsp;``-m``</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_109">109+</td><td nowrap="nowrap"><span class="diff_add">switch&nbsp;of&nbsp;interpreter&nbsp;with&nbsp;a&nbsp;``port&nbsp;number``&nbsp;argument.&nbsp;Similar&nbsp;to&nbsp;previous</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_110">110+</td><td nowrap="nowrap"><span class="diff_add">example,&nbsp;this&nbsp;serves&nbsp;the&nbsp;files&nbsp;relative&nbsp;to&nbsp;the&nbsp;current&nbsp;directory.::</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_111">111+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to194_112">112+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;python&nbsp;-m&nbsp;SimpleHTTPServer&nbsp;8000</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from194_89">89</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_90">90</td><td nowrap="nowrap">..&nbsp;seealso::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_91">91</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_92">92</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Module&nbsp;:mod:`BaseHTTPServer`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_93">93</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Base&nbsp;class&nbsp;implementation&nbsp;for&nbsp;Web&nbsp;server&nbsp;and&nbsp;request&nbsp;handler.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from194_94">94</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

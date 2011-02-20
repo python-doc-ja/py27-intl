@@ -1,0 +1,53 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to220__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/timeit.rst =&gt; r266/library/timeit.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to220__0"></td><td class="diff_header" id="from220_21">21</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_22">22</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_23">23</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Timer([stmt='pass'&nbsp;[,&nbsp;setup='pass'&nbsp;[,&nbsp;timer=&lt;timer&nbsp;function&gt;]]])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_24">24</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_25">25</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Class&nbsp;for&nbsp;timing&nbsp;execution&nbsp;speed&nbsp;of&nbsp;small&nbsp;code&nbsp;snippets.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_26">26</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;constructor&nbsp;takes&nbsp;a&nbsp;statement&nbsp;to&nbsp;be&nbsp;timed,&nbsp;an&nbsp;additional&nbsp;statement&nbsp;used&nbsp;for</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_28">28</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;setup,&nbsp;and&nbsp;a&nbsp;timer&nbsp;function.&nbsp;&nbsp;Both&nbsp;statements&nbsp;default&nbsp;to&nbsp;``'pass'``;&nbsp;the&nbsp;timer</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to220__top">t</a></td><td class="diff_header" id="from220_29">29-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;function&nbsp;is&nbsp;platform-dependent&nbsp;(see&nbsp;the&nbsp;module&nbsp;doc&nbsp;string).&nbsp;&nbsp;<span class="diff_chg">The&nbsp;</span>stat<span class="diff_chg">ements&nbsp;may</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to220__top">t</a></td><td class="diff_header" id="to220_29">29+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;function&nbsp;is&nbsp;platform-dependent&nbsp;(see&nbsp;the&nbsp;module&nbsp;doc&nbsp;string).&nbsp;&nbsp;<span class="diff_chg">*</span>st<span class="diff_add">mt*&nbsp;</span>a<span class="diff_add">nd&nbsp;*se</span>t<span class="diff_chg">up*</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from220_30">30-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;contain&nbsp;newlines,&nbsp;as&nbsp;long&nbsp;as&nbsp;they&nbsp;don't&nbsp;contain&nbsp;multi-line&nbsp;string&nbsp;literals.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to220_30">30+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;may&nbsp;also&nbsp;contain&nbsp;multiple&nbsp;statements&nbsp;separated&nbsp;by&nbsp;``;``&nbsp;or&nbsp;newlines,&nbsp;as&nbsp;long&nbsp;as</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to220_31">31+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;they&nbsp;don't&nbsp;contain&nbsp;multi-line&nbsp;string&nbsp;literals.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from220_31">31</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;To&nbsp;measure&nbsp;the&nbsp;execution&nbsp;time&nbsp;of&nbsp;the&nbsp;first&nbsp;statement,&nbsp;use&nbsp;the&nbsp;:meth:`timeit`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_33">33</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;method.&nbsp;&nbsp;The&nbsp;:meth:`repeat`&nbsp;method&nbsp;is&nbsp;a&nbsp;convenience&nbsp;to&nbsp;call&nbsp;:meth:`timeit`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;multiple&nbsp;times&nbsp;and&nbsp;return&nbsp;a&nbsp;list&nbsp;of&nbsp;results.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_35">35</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_36">36</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_37">37</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;*stmt*&nbsp;and&nbsp;*setup*&nbsp;parameters&nbsp;can&nbsp;now&nbsp;also&nbsp;take&nbsp;objects&nbsp;that&nbsp;are&nbsp;callable</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from220_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;without&nbsp;arguments.&nbsp;This&nbsp;will&nbsp;embed&nbsp;calls&nbsp;to&nbsp;them&nbsp;in&nbsp;a&nbsp;timer&nbsp;function&nbsp;that&nbsp;will</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

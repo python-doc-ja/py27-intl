@@ -1,0 +1,42 @@
+--- r262/library/numbers.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/numbers.rst	2010-05-06 06:53:32.011342000 +0900
+@@ -15,36 +15,36 @@
+ .. class:: Number
+ 
+    The root of the numeric hierarchy. If you just want to check if an argument
+    *x* is a number, without caring what kind, use ``isinstance(x, Number)``.
+ 
+ 
+ The numeric tower
+ -----------------
+ 
+ .. class:: Complex
+ 
+    Subclasses of this type describe complex numbers and include the operations
+-   that work on the builtin :class:`complex` type. These are: conversions to
++   that work on the built-in :class:`complex` type. These are: conversions to
+    :class:`complex` and :class:`bool`, :attr:`.real`, :attr:`.imag`, ``+``,
+    ``-``, ``*``, ``/``, :func:`abs`, :meth:`conjugate`, ``==``, and ``!=``. All
+    except ``-`` and ``!=`` are abstract.
+ 
+    .. attribute:: real
+ 
+-      Abstract. Retrieves the :class:`Real` component of this number.
++      Abstract. Retrieves the real component of this number.
+ 
+    .. attribute:: imag
+ 
+-      Abstract. Retrieves the :class:`Real` component of this number.
++      Abstract. Retrieves the imaginary component of this number.
+ 
+    .. method:: conjugate()
+ 
+       Abstract. Returns the complex conjugate. For example, ``(1+3j).conjugate()
+       == (1-3j)``.
+ 
+ .. class:: Real
+ 
+    To :class:`Complex`, :class:`Real` adds the operations that work on real
+    numbers.
+ 
+    In short, those are: a conversion to :class:`float`, :func:`trunc`,

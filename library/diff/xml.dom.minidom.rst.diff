@@ -1,0 +1,76 @@
+--- r262/library/xml.dom.minidom.rst	2008-04-13 03:36:09.977949000 +0900
++++ r266/library/xml.dom.minidom.rst	2010-05-19 23:16:14.150302000 +0900
+@@ -21,25 +21,25 @@
+    from xml.dom.minidom import parse, parseString
+ 
+    dom1 = parse('c:\\temp\\mydata.xml') # parse an XML file by name
+ 
+    datasource = open('c:\\temp\\mydata.xml')
+    dom2 = parse(datasource)   # parse an open file
+ 
+    dom3 = parseString('<myxml>Some data<empty/> some more data</myxml>')
+ 
+ The :func:`parse` function can take either a filename or an open file object.
+ 
+ 
+-.. function:: parse(filename_or_file, parser)
++.. function:: parse(filename_or_file[, parser[, bufsize]])
+ 
+    Return a :class:`Document` from the given input. *filename_or_file* may be
+    either a file name, or a file-like object. *parser*, if given, must be a SAX2
+    parser object. This function will change the document handler of the parser and
+    activate namespace support; other parser configuration (like setting an entity
+    resolver) must have been done in advance.
+ 
+ If you have XML in a string, you can use the :func:`parseString` function
+ instead:
+ 
+ 
+ .. function:: parseString(string[, parser])
+@@ -76,40 +76,30 @@
+    text = newdoc.createTextNode('Some textual content.')
+    top_element.appendChild(text)
+ 
+ Once you have a DOM document object, you can access the parts of your XML
+ document through its properties and methods.  These properties are defined in
+ the DOM specification.  The main property of the document object is the
+ :attr:`documentElement` property.  It gives you the main element in the XML
+ document: the one that holds all others.  Here is an example program::
+ 
+    dom3 = parseString("<myxml>Some data</myxml>")
+    assert dom3.documentElement.tagName == "myxml"
+ 
+-When you are finished with a DOM, you should clean it up.  This is necessary
+-because some versions of Python do not support garbage collection of objects
+-that refer to each other in a cycle.  Until this restriction is removed from all
+-versions of Python, it is safest to write your code as if cycles would not be
+-cleaned up.
+-
+-The way to clean up a DOM is to call its :meth:`unlink` method::
+-
+-   dom1.unlink()
+-   dom2.unlink()
+-   dom3.unlink()
+-
+-:meth:`unlink` is a :mod:`xml.dom.minidom`\ -specific extension to the DOM API.
+-After calling :meth:`unlink` on a node, the node and its descendants are
+-essentially useless.
+-
++When you are finished with a DOM tree, you may optionally call the
++:meth:`unlink` method to encourage early cleanup of the now-unneeded
++objects.  :meth:`unlink` is a :mod:`xml.dom.minidom`\ -specific
++extension to the DOM API that renders the node and its descendants are
++essentially useless.  Otherwise, Python's garbage collector will
++eventually take care of the objects in the tree.
+ 
+ .. seealso::
+ 
+    `Document Object Model (DOM) Level 1 Specification <http://www.w3.org/TR/REC-DOM-Level-1/>`_
+       The W3C recommendation for the DOM supported by :mod:`xml.dom.minidom`.
+ 
+ 
+ .. _minidom-objects:
+ 
+ DOM Objects
+ -----------
+ 

@@ -1,0 +1,63 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to110__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/email.errors.rst =&gt; r266/library/email.errors.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to110__0"></td><td class="diff_header" id="from110_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_13">13</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;exceptions&nbsp;that&nbsp;the&nbsp;:mod:`email`&nbsp;package&nbsp;can</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_14">14</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;raise.&nbsp;&nbsp;It&nbsp;is&nbsp;derived&nbsp;from&nbsp;the&nbsp;standard&nbsp;:exc:`Exception`&nbsp;class&nbsp;and&nbsp;defines&nbsp;no</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_15">15</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;additional&nbsp;methods.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_18">18</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;MessageParseError()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_19">19</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to110__1">n</a></td><td class="diff_header" id="from110_20">20-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;base&nbsp;class&nbsp;for&nbsp;exceptions&nbsp;thrown&nbsp;by&nbsp;the&nbsp;:class:`Parser`<span class="diff_sub">&nbsp;class.&nbsp;&nbsp;It</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to110__1">n</a></td><td class="diff_header" id="to110_20">20+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;base&nbsp;class&nbsp;for&nbsp;exceptions&nbsp;thrown&nbsp;by&nbsp;the&nbsp;:class:`<span class="diff_add">~email.parser.</span>Parser`</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from110_21">21-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;is&nbsp;derived&nbsp;from&nbsp;:exc:`MessageError`.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to110_21">21+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;class.&nbsp;&nbsp;It</span>&nbsp;is&nbsp;derived&nbsp;from&nbsp;:exc:`MessageError`.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from110_22">22</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_23">23</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_24">24</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;HeaderParseError()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_25">25</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_26">26</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Raised&nbsp;under&nbsp;some&nbsp;error&nbsp;conditions&nbsp;when&nbsp;parsing&nbsp;the&nbsp;:rfc:`2822`&nbsp;headers&nbsp;of&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;message,&nbsp;this&nbsp;class&nbsp;is&nbsp;derived&nbsp;from&nbsp;:exc:`MessageParseError`.&nbsp;It&nbsp;can&nbsp;be&nbsp;raised</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_28">28</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;:meth:`Parser.parse`&nbsp;or&nbsp;:meth:`Parser.parsestr`&nbsp;methods.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_29">29</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to110__1"></td><td class="diff_header" id="from110_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`add_payload`,&nbsp;but&nbsp;the&nbsp;payload&nbsp;is&nbsp;already&nbsp;a&nbsp;scalar&nbsp;and&nbsp;the&nbsp;message's</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_51">51</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:mailheader:`Content-Type`&nbsp;main&nbsp;type&nbsp;is&nbsp;not&nbsp;either&nbsp;:mimetype:`multipart`&nbsp;or</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_52">52</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;missing.&nbsp;&nbsp;:exc:`MultipartConversionError`&nbsp;multiply&nbsp;inherits&nbsp;from</td></tr>            <tr><td class="diff_next" id="difflib_chg_to110__2"></td><td class="diff_header" id="from110_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:`MessageError`&nbsp;and&nbsp;the&nbsp;built-in&nbsp;:exc:`TypeError`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_54">54</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_55">55</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Since&nbsp;:meth:`Message.add_payload`&nbsp;is&nbsp;deprecated,&nbsp;this&nbsp;exception&nbsp;is&nbsp;rarely&nbsp;raised</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_56">56</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;in&nbsp;practice.&nbsp;&nbsp;However&nbsp;the&nbsp;exception&nbsp;may&nbsp;also&nbsp;be&nbsp;raised&nbsp;if&nbsp;the&nbsp;:meth:`attach`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_57">57</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;method&nbsp;is&nbsp;called&nbsp;on&nbsp;an&nbsp;instance&nbsp;of&nbsp;a&nbsp;class&nbsp;derived&nbsp;from</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to110__2">n</a></td><td class="diff_header" id="from110_58">58-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;:class:`MIMENonMultipart`&nbsp;(e.g.&nbsp;:class:`MIMEImage`).</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to110__2">n</a></td><td class="diff_header" id="to110_58">58+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:class:`~email.mime.nonmultipart.MIMENonMultipart`&nbsp;(e.g.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to110_59">59+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:class:`~email.mime.image.MIMEImage`).</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from110_59">59</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to110__top">t</a></td><td class="diff_header" id="from110_60">60-</td><td nowrap="nowrap">Here's&nbsp;the&nbsp;list&nbsp;of&nbsp;the&nbsp;defects&nbsp;that&nbsp;the&nbsp;:class:`FeedParser`<span class="diff_sub">&nbsp;can&nbsp;find&nbsp;while</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to110__top">t</a></td><td class="diff_header" id="to110_61">61+</td><td nowrap="nowrap">Here's&nbsp;the&nbsp;list&nbsp;of&nbsp;the&nbsp;defects&nbsp;that&nbsp;the&nbsp;:class:`<span class="diff_add">~email.mime.parser.</span>FeedParser`</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from110_61">61-</td><td nowrap="nowrap">parsing&nbsp;messages.&nbsp;&nbsp;Note&nbsp;that&nbsp;the&nbsp;defects&nbsp;are&nbsp;added&nbsp;to&nbsp;the&nbsp;message<span class="diff_sub">&nbsp;where&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to110_62">62+</td><td nowrap="nowrap"><span class="diff_add">can&nbsp;find&nbsp;while&nbsp;</span>parsing&nbsp;messages.&nbsp;&nbsp;Note&nbsp;that&nbsp;the&nbsp;defects&nbsp;are&nbsp;added&nbsp;to&nbsp;the&nbsp;message</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from110_62">62-</td><td nowrap="nowrap">problem&nbsp;was&nbsp;found,&nbsp;so&nbsp;for&nbsp;example,&nbsp;if&nbsp;a&nbsp;message&nbsp;nested&nbsp;inside&nbsp;a</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to110_63">63+</td><td nowrap="nowrap"><span class="diff_add">where&nbsp;the&nbsp;</span>problem&nbsp;was&nbsp;found,&nbsp;so&nbsp;for&nbsp;example,&nbsp;if&nbsp;a&nbsp;message&nbsp;nested&nbsp;inside&nbsp;a</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from110_63">63</td><td nowrap="nowrap">:mimetype:`multipart/alternative`&nbsp;had&nbsp;a&nbsp;malformed&nbsp;header,&nbsp;that&nbsp;nested&nbsp;message</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_64">64</td><td nowrap="nowrap">object&nbsp;would&nbsp;have&nbsp;a&nbsp;defect,&nbsp;but&nbsp;the&nbsp;containing&nbsp;messages&nbsp;would&nbsp;not.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_65">65</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_66">66</td><td nowrap="nowrap">All&nbsp;defect&nbsp;classes&nbsp;are&nbsp;subclassed&nbsp;from&nbsp;:class:`email.errors.MessageDefect`,&nbsp;but</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_67">67</td><td nowrap="nowrap">this&nbsp;class&nbsp;is&nbsp;*not*&nbsp;an&nbsp;exception!</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_69">69</td><td nowrap="nowrap">..&nbsp;versionadded::&nbsp;2.4</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from110_70">70</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;All&nbsp;the&nbsp;defect&nbsp;classes&nbsp;were&nbsp;added.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

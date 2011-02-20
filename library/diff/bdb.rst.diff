@@ -1,0 +1,45 @@
+--- r262/library/bdb.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/bdb.rst	2009-10-27 23:59:26.886697000 +0900
+@@ -53,32 +53,40 @@
+    .. method:: pprint([out])
+ 
+       Print all the information about the breakpoint:
+ 
+       * The breakpoint number.
+       * If it is temporary or not.
+       * Its file,line position.
+       * The condition that causes a break.
+       * If it must be ignored the next N times.
+       * The breakpoint hit count.
+ 
+ 
+-.. class:: Bdb()
++.. class:: Bdb(skip=None)
+ 
+-   The :class:`Bdb` acts as a generic Python debugger base class.
++   The :class:`Bdb` class acts as a generic Python debugger base class.
+ 
+    This class takes care of the details of the trace facility; a derived class
+    should implement user interaction.  The standard debugger class
+    (:class:`pdb.Pdb`) is an example.
+ 
++   The *skip* argument, if given, must be an iterable of glob-style
++   module name patterns.  The debugger will not step into frames that
++   originate in a module that matches one of these patterns. Whether a
++   frame is considered to originate in a certain module is determined
++   by the ``__name__`` in the frame globals.
++
++   .. versionadded:: 2.7
++      The *skip* argument.
+ 
+    The following methods of :class:`Bdb` normally don't need to be overridden.
+ 
+    .. method:: canonic(filename)
+ 
+       Auxiliary method for getting a filename in a canonical form, that is, as a
+       case-normalized (on case-insensitive filesystems) absolute path, stripped
+       of surrounding angle brackets.
+ 
+    .. method:: reset()
+ 
+       Set the :attr:`botframe`, :attr:`stopframe`, :attr:`returnframe` and

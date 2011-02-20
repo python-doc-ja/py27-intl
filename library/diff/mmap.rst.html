@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to155__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/mmap.rst =&gt; r266/library/mmap.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to155__0"></td><td class="diff_header" id="from155_94">94</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;defaults&nbsp;to&nbsp;0.&nbsp;&nbsp;*offset*&nbsp;must&nbsp;be&nbsp;a&nbsp;multiple&nbsp;of&nbsp;the&nbsp;PAGESIZE&nbsp;or</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_95">95</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;ALLOCATIONGRANULARITY.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_96">96</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to155__1"></td><td class="diff_header" id="from155_97">97</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;example&nbsp;shows&nbsp;a&nbsp;simple&nbsp;way&nbsp;of&nbsp;using&nbsp;:class:`mmap`::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_98">98</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_99">99</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import&nbsp;mmap</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_100">100</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_101">101</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;write&nbsp;a&nbsp;simple&nbsp;example&nbsp;file</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to155__1">n</a></td><td class="diff_header" id="from155_102">102-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;open("hello.txt",&nbsp;"w")&nbsp;as&nbsp;f:</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to155__1">n</a></td><td class="diff_header" id="to155_102">102+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;open("hello.txt",&nbsp;"w<span class="diff_add">b</span>")&nbsp;as&nbsp;f:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from155_103">103</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;f.write("Hello&nbsp;Python!\n")</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_104">104</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to155__top">t</a></td><td class="diff_header" id="from155_105">105-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;open("hello.txt",&nbsp;"r+")&nbsp;as&nbsp;f:</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to155__top">t</a></td><td class="diff_header" id="to155_105">105+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with&nbsp;open("hello.txt",&nbsp;"r+<span class="diff_add">b</span>")&nbsp;as&nbsp;f:</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from155_106">106</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;memory-map&nbsp;the&nbsp;file,&nbsp;size&nbsp;0&nbsp;means&nbsp;whole&nbsp;file</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_107">107</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;map&nbsp;=&nbsp;mmap.mmap(f.fileno(),&nbsp;0)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_108">108</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;read&nbsp;content&nbsp;via&nbsp;standard&nbsp;file&nbsp;methods</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_109">109</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;map.readline()&nbsp;&nbsp;#&nbsp;prints&nbsp;"Hello&nbsp;Python!"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_110">110</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;read&nbsp;content&nbsp;via&nbsp;slice&nbsp;notation</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_111">111</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;map[:5]&nbsp;&nbsp;#&nbsp;prints&nbsp;"Hello"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_112">112</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;update&nbsp;content&nbsp;using&nbsp;slice&nbsp;notation;</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from155_113">113</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;note&nbsp;that&nbsp;new&nbsp;content&nbsp;must&nbsp;have&nbsp;same&nbsp;size</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

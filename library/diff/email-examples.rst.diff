@@ -1,0 +1,17 @@
+--- r262/library/email-examples.rst	2008-02-02 19:49:58.177493000 +0900
++++ r266/library/email-examples.rst	2009-05-26 18:04:23.728183000 +0900
+@@ -1,12 +1,14 @@
++.. _email-examples:
++
+ :mod:`email`: Examples
+ ----------------------
+ 
+ Here are a few examples of how to use the :mod:`email` package to read, write,
+ and send simple email messages, as well as more complex MIME messages.
+ 
+ First, let's see how to create and send a simple text message:
+ 
+ .. literalinclude:: ../includes/email-simple.py
+ 
+ 
+ Here's an example of how to send a MIME message containing a bunch of family

@@ -1,0 +1,29 @@
+--- r262/library/heapq.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/heapq.rst	2009-10-27 23:37:48.900246000 +0900
+@@ -138,25 +138,25 @@
+    Return a list with the *n* smallest elements from the dataset defined by
+    *iterable*.  *key*, if provided, specifies a function of one argument that is
+    used to extract a comparison key from each element in the iterable:
+    ``key=str.lower`` Equivalent to:  ``sorted(iterable, key=key)[:n]``
+ 
+    .. versionadded:: 2.4
+ 
+    .. versionchanged:: 2.5
+       Added the optional *key* argument.
+ 
+ The latter two functions perform best for smaller values of *n*.  For larger
+ values, it is more efficient to use the :func:`sorted` function.  Also, when
+-``n==1``, it is more efficient to use the builtin :func:`min` and :func:`max`
++``n==1``, it is more efficient to use the built-in :func:`min` and :func:`max`
+ functions.
+ 
+ 
+ Theory
+ ------
+ 
+ (This explanation is due to François Pinard.  The Python code for this module
+ was contributed by Kevin O'Connor.)
+ 
+ Heaps are arrays for which ``a[k] <= a[2*k+1]`` and ``a[k] <= a[2*k+2]`` for all
+ *k*, counting elements from 0.  For the sake of comparison, non-existing
+ elements are considered to be infinite.  The interesting property of a heap is

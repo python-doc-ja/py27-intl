@@ -1,0 +1,20 @@
+--- r262/library/contextlib.rst	2009-04-06 06:48:06.719229000 +0900
++++ r266/library/contextlib.rst	2009-10-27 23:29:22.069083000 +0900
+@@ -1,15 +1,14 @@
+-
+-:mod:`contextlib` --- Utilities for :keyword:`with`\ -statement contexts.
+-=========================================================================
++:mod:`contextlib` --- Utilities for :keyword:`with`\ -statement contexts
++========================================================================
+ 
+ .. module:: contextlib
+    :synopsis: Utilities for with-statement contexts.
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ This module provides utilities for common tasks involving the :keyword:`with`
+ statement. For more information see also :ref:`typecontextmanager` and
+ :ref:`context-managers`.
+ 
+ Functions provided:

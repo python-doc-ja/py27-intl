@@ -1,0 +1,16 @@
+--- r262/library/python.rst	2008-06-08 02:11:00.813399000 +0900
++++ r266/library/python.rst	2010-05-19 23:07:38.794038000 +0900
+@@ -18,12 +18,13 @@
+    __main__.rst
+    warnings.rst
+    contextlib.rst
+    abc.rst
+    atexit.rst
+    traceback.rst
+    __future__.rst
+    gc.rst
+    inspect.rst
+    site.rst
+    user.rst
+    fpectl.rst
++   distutils.rst

@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to176__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/profile.rst =&gt; r266/library/profile.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to176__0"></td><td class="diff_header" id="from176_2">2</td><td nowrap="nowrap">..&nbsp;_profile:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_3">3</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_4">4</td><td nowrap="nowrap">********************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_5">5</td><td nowrap="nowrap">The&nbsp;Python&nbsp;Profilers</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_6">6</td><td nowrap="nowrap">********************</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_7">7</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_8">8</td><td nowrap="nowrap">..&nbsp;sectionauthor::&nbsp;James&nbsp;Roskind</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_9">9</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to176__1">n</a></td><td class="diff_header" id="to176_10">10+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;module::&nbsp;profile</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to176_11">11+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:synopsis:&nbsp;Python&nbsp;source&nbsp;profiler.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from176_10">10</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_11">11</td><td nowrap="nowrap">..&nbsp;index::&nbsp;single:&nbsp;InfoSeek&nbsp;Corporation</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_13">13</td><td nowrap="nowrap">Copyright&nbsp;©&nbsp;1994,&nbsp;by&nbsp;InfoSeek&nbsp;Corporation,&nbsp;all&nbsp;rights&nbsp;reserved.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_15">15</td><td nowrap="nowrap">Written&nbsp;by&nbsp;James&nbsp;Roskind.&nbsp;[#]_</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_17">17</td><td nowrap="nowrap">Permission&nbsp;to&nbsp;use,&nbsp;copy,&nbsp;modify,&nbsp;and&nbsp;distribute&nbsp;this&nbsp;Python&nbsp;software&nbsp;and&nbsp;its</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to176__1"></td><td class="diff_header" id="from176_117">117</td><td nowrap="nowrap">script.&nbsp;&nbsp;For&nbsp;example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_118">118</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_119">119</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;python&nbsp;-m&nbsp;cProfile&nbsp;myscript.py</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_120">120</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_121">121</td><td nowrap="nowrap">:file:`cProfile.py`&nbsp;accepts&nbsp;two&nbsp;optional&nbsp;arguments&nbsp;on&nbsp;the&nbsp;command&nbsp;line::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_122">122</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_123">123</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;cProfile.py&nbsp;[-o&nbsp;output_file]&nbsp;[-s&nbsp;sort_order]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_124">124</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to176__top">t</a></td><td class="diff_header" id="from176_125">125-</td><td nowrap="nowrap"><span class="diff_chg">:option:</span>`-s`&nbsp;only&nbsp;applies&nbsp;to&nbsp;standard&nbsp;output&nbsp;(<span class="diff_chg">:option:</span>`-o`&nbsp;is&nbsp;not&nbsp;supplied).</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to176__top">t</a></td><td class="diff_header" id="to176_127">127+</td><td nowrap="nowrap"><span class="diff_chg">`</span>`-s`<span class="diff_add">`</span>&nbsp;only&nbsp;applies&nbsp;to&nbsp;standard&nbsp;output&nbsp;(<span class="diff_chg">`</span>`-o`<span class="diff_add">`</span>&nbsp;is&nbsp;not&nbsp;supplied).</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from176_126">126</td><td nowrap="nowrap">Look&nbsp;in&nbsp;the&nbsp;:class:`Stats`&nbsp;documentation&nbsp;for&nbsp;valid&nbsp;sort&nbsp;values.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_127">127</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_128">128</td><td nowrap="nowrap">When&nbsp;you&nbsp;wish&nbsp;to&nbsp;review&nbsp;the&nbsp;profile,&nbsp;you&nbsp;should&nbsp;use&nbsp;the&nbsp;methods&nbsp;in&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_129">129</td><td nowrap="nowrap">:mod:`pstats`&nbsp;module.&nbsp;&nbsp;Typically&nbsp;you&nbsp;would&nbsp;load&nbsp;the&nbsp;statistics&nbsp;data&nbsp;as&nbsp;follows::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_130">130</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_131">131</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;pstats</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_132">132</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;p&nbsp;=&nbsp;pstats.Stats('fooprof')</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from176_133">133</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

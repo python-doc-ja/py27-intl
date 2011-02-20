@@ -1,0 +1,88 @@
+--- r262/library/test.rst	2008-09-11 21:11:06.420596000 +0900
++++ r266/library/test.rst	2010-08-02 07:26:02.314226000 +0900
+@@ -1,20 +1,27 @@
+ 
+ :mod:`test` --- Regression tests package for Python
+ ===================================================
+ 
+ .. module:: test
+    :synopsis: Regression tests package containing the testing suite for Python.
+ .. sectionauthor:: Brett Cannon <brett@python.org>
+ 
++.. note::
++    The :mod:`test` package is meant for internal use by Python only. It is
++    documented for the benefit of the core developers of Python. Any use of
++    this package outside of Python's standard library is discouraged as code
++    mentioned here can change or be removed without notice between releases of
++    Python.
++
+ 
+ The :mod:`test` package contains all regression tests for Python as well as the
+ modules :mod:`test.test_support` and :mod:`test.regrtest`.
+ :mod:`test.test_support` is used to enhance your tests while
+ :mod:`test.regrtest` drives the testing suite.
+ 
+ Each module in the :mod:`test` package whose name starts with ``test_`` is a
+ testing suite for a specific module or feature. All new tests should be written
+ using the :mod:`unittest` or :mod:`doctest` module.  Some older tests are
+ written using a "traditional" testing style that compares output printed to
+ ``sys.stdout``; this style of test is considered deprecated.
+ 
+@@ -179,29 +186,25 @@
+ tests.
+ 
+ 
+ :mod:`test.test_support` --- Utility functions for tests
+ ========================================================
+ 
+ .. module:: test.test_support
+    :synopsis: Support for Python regression tests.
+ 
+ .. note::
+ 
+    The :mod:`test.test_support` module has been renamed to :mod:`test.support`
+-   in Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
+-   converting your sources to 3.0.
+-
+-
+-
++   in Python 3.x.
+ 
+ The :mod:`test.test_support` module provides support for Python's regression
+ tests.
+ 
+ This module defines the following exceptions:
+ 
+ 
+ .. exception:: TestFailed
+ 
+    Exception to be raised when a test fails. This is deprecated in favor of
+    :mod:`unittest`\ -based tests and :class:`unittest.TestCase`'s assertion
+    methods.
+@@ -317,25 +320,25 @@
+           warnings.warn("bar")
+           assert str(w.message) == "bar"
+           assert str(w.warnings[0].message) == "foo"
+           assert str(w.warnings[1].message) == "bar"
+           w.reset()
+           assert len(w.warnings) == 0
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. function:: captured_stdout()
+ 
+-   This is a context manager than runs the :keyword:`with` statement body using
++   This is a context manager that runs the :keyword:`with` statement body using
+    a :class:`StringIO.StringIO` object as sys.stdout.  That object can be
+    retrieved using the ``as`` clause of the :keyword:`with` statement.
+ 
+    Example use::
+ 
+       with captured_stdout() as s:
+           print "hello"
+       assert s.getvalue() == "hello"
+ 
+    .. versionadded:: 2.6
+ 
+ 

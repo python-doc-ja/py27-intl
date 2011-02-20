@@ -1,0 +1,158 @@
+--- r262/library/ftplib.rst	2009-01-09 12:04:01.309569000 +0900
++++ r266/library/ftplib.rst	2010-08-02 07:10:15.705715000 +0900
+@@ -24,77 +24,77 @@
+    >>> ftp.retrlines('LIST')     # list directory contents
+    total 24418
+    drwxrwsr-x   5 ftp-usr  pdmaint     1536 Mar 20 09:48 .
+    dr-xr-srwt 105 ftp-usr  pdmaint     1536 Mar 21 14:32 ..
+    -rw-r--r--   1 ftp-usr  pdmaint     5305 Mar 20 09:48 INDEX
+     .
+     .
+     .
+    >>> ftp.retrbinary('RETR README', open('README', 'wb').write)
+    '226 Transfer complete.'
+    >>> ftp.quit()
+ 
+-The module defines the following items:
+ 
++The module defines the following items:
+ 
+ .. class:: FTP([host[, user[, passwd[, acct[, timeout]]]]])
+ 
+    Return a new instance of the :class:`FTP` class.  When *host* is given, the
+    method call ``connect(host)`` is made.  When *user* is given, additionally
+    the method call ``login(user, passwd, acct)`` is made (where *passwd* and
+    *acct* default to the empty string when not given).  The optional *timeout*
+    parameter specifies a timeout in seconds for blocking operations like the
+    connection attempt (if is not specified, the global default timeout setting
+    will be used).
+ 
+    .. versionchanged:: 2.6
+       *timeout* was added.
+ 
+ 
+-   .. attribute:: all_errors
++.. exception:: error_reply
+ 
+-      The set of all exceptions (as a tuple) that methods of :class:`FTP`
+-      instances may raise as a result of problems with the FTP connection (as
+-      opposed to programming errors made by the caller).  This set includes the
+-      four exceptions listed below as well as :exc:`socket.error` and
+-      :exc:`IOError`.
++   Exception raised when an unexpected reply is received from the server.
+ 
+ 
+-   .. exception:: error_reply
++.. exception:: error_temp
+ 
+-      Exception raised when an unexpected reply is received from the server.
++   Exception raised when an error code in the range 400--499 is received.
+ 
+ 
+-   .. exception:: error_temp
++.. exception:: error_perm
+ 
+-      Exception raised when an error code in the range 400--499 is received.
++   Exception raised when an error code in the range 500--599 is received.
+ 
+ 
+-   .. exception:: error_perm
++.. exception:: error_proto
+ 
+-      Exception raised when an error code in the range 500--599 is received.
++   Exception raised when a reply is received from the server that does not
++   begin with a digit in the range 1--5.
+ 
+ 
+-   .. exception:: error_proto
++.. data:: all_errors
+ 
+-      Exception raised when a reply is received from the server that does not
+-      begin with a digit in the range 1--5.
++   The set of all exceptions (as a tuple) that methods of :class:`FTP`
++   instances may raise as a result of problems with the FTP connection (as
++   opposed to programming errors made by the caller).  This set includes the
++   four exceptions listed below as well as :exc:`socket.error` and
++   :exc:`IOError`.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`netrc`
+-      Parser for the :file:`.netrc` file format.  The file :file:`.netrc` is typically
+-      used by FTP clients to load user authentication information before prompting the
+-      user.
++      Parser for the :file:`.netrc` file format.  The file :file:`.netrc` is
++      typically used by FTP clients to load user authentication information
++      before prompting the user.
+ 
+    .. index:: single: ftpmirror.py
+ 
+    The file :file:`Tools/scripts/ftpmirror.py` in the Python source distribution is
+    a script that can mirror FTP sites, or portions thereof, using the :mod:`ftplib`
+    module. It can be used as an extended example that applies this module.
+ 
+ 
+ .. _ftp-objects:
+ 
+ FTP Objects
+ -----------
+@@ -138,25 +138,26 @@
+    connection.  (This message sometimes contains disclaimers or help information
+    that may be relevant to the user.)
+ 
+ 
+ .. method:: FTP.login([user[, passwd[, acct]]])
+ 
+    Log in as the given *user*.  The *passwd* and *acct* parameters are optional and
+    default to the empty string.  If no *user* is specified, it defaults to
+    ``'anonymous'``.  If *user* is ``'anonymous'``, the default *passwd* is
+    ``'anonymous@'``.  This function should be called only once for each instance,
+    after a connection has been established; it should not be called at all if a
+    host and user were given when the instance was created.  Most FTP commands are
+-   only allowed after the client has logged in.
++   only allowed after the client has logged in.  The *acct* parameter supplies
++   "accounting information"; few systems implement this.
+ 
+ 
+ .. method:: FTP.abort()
+ 
+    Abort a file transfer that is in progress.  Using this does not always work, but
+    it's worth a try.
+ 
+ 
+ .. method:: FTP.sendcmd(command)
+ 
+    Send a simple command string to the server and return the response string.
+ 
+@@ -176,27 +177,27 @@
+    block. The optional *maxblocksize* argument specifies the maximum chunk size to
+    read on the low-level socket object created to do the actual transfer (which
+    will also be the largest size of the data blocks passed to *callback*).  A
+    reasonable default is chosen. *rest* means the same thing as in the
+    :meth:`transfercmd` method.
+ 
+ 
+ .. method:: FTP.retrlines(command[, callback])
+ 
+    Retrieve a file or directory listing in ASCII transfer mode.  *command*
+    should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
+    command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
+-   ``'LIST'``).  The *callback* function is called for each line, with the
+-   trailing CRLF stripped.  The default *callback* prints the line to
+-   ``sys.stdout``.
++   ``'LIST'``).  The *callback* function is called for each line with a
++   string argument containing the line with the trailing CRLF stripped.
++   The default *callback* prints the line to ``sys.stdout``.
+ 
+ 
+ .. method:: FTP.set_pasv(boolean)
+ 
+    Enable "passive" mode if *boolean* is true, other disable passive mode.  (In
+    Python 2.0 and before, passive mode was off by default; in Python 2.1 and later,
+    it is on by default.)
+ 
+ 
+ .. method:: FTP.storbinary(command, file[, blocksize, callback])
+ 
+    Store a file in binary transfer mode.  *command* should be an appropriate

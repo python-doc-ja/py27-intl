@@ -1,0 +1,28 @@
+--- r262/library/gzip.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/gzip.rst	2010-03-22 04:34:26.632505000 +0900
+@@ -49,24 +49,25 @@
+    in binary mode for cross-platform portability.
+ 
+    The *compresslevel* argument is an integer from ``1`` to ``9`` controlling the
+    level of compression; ``1`` is fastest and produces the least compression, and
+    ``9`` is slowest and produces the most compression.  The default is ``9``.
+ 
+    Calling a :class:`GzipFile` object's :meth:`close` method does not close
+    *fileobj*, since you might wish to append more material after the compressed
+    data.  This also allows you to pass a :class:`StringIO` object opened for
+    writing as *fileobj*, and retrieve the resulting memory buffer using the
+    :class:`StringIO` object's :meth:`getvalue` method.
+ 
++   :class:`GzipFile` supports iteration.
+ 
+ .. function:: open(filename[, mode[, compresslevel]])
+ 
+    This is a shorthand for ``GzipFile(filename,`` ``mode,`` ``compresslevel)``.
+    The *filename* argument is required; *mode* defaults to ``'rb'`` and
+    *compresslevel* defaults to ``9``.
+ 
+ 
+ .. _gzip-usage-examples:
+ 
+ Examples of usage
+ -----------------

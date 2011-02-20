@@ -1,0 +1,45 @@
+--- r262/library/pyclbr.rst	2008-04-28 11:59:45.358208000 +0900
++++ r266/library/pyclbr.rst	2009-10-27 23:36:50.397095000 +0900
+@@ -69,25 +69,25 @@
+ 
+    A dictionary mapping method names to line numbers.
+ 
+ 
+ .. attribute:: Class.file
+ 
+    Name of the file containing the ``class`` statement defining the class.
+ 
+ 
+ .. attribute:: Class.lineno
+ 
+    The line number of the ``class`` statement within the file named by
+-   :attr:`file`.
++   :attr:`~Class.file`.
+ 
+ 
+ .. _pyclbr-function-objects:
+ 
+ Function Objects
+ ----------------
+ 
+ The :class:`Function` objects used as values in the dictionary returned by
+ :func:`readmodule_ex` provide the following data members:
+ 
+ 
+ .. attribute:: Function.module
+@@ -100,14 +100,14 @@
+ 
+    The name of the function.
+ 
+ 
+ .. attribute:: Function.file
+ 
+    Name of the file containing the ``def`` statement defining the function.
+ 
+ 
+ .. attribute:: Function.lineno
+ 
+    The line number of the ``def`` statement within the file named by
+-   :attr:`file`.
++   :attr:`~Function.file`.
+ 

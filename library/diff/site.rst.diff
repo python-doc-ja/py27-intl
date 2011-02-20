@@ -1,0 +1,19 @@
+--- r262/library/site.rst	2008-09-28 07:54:08.859913000 +0900
++++ r266/library/site.rst	2009-09-26 12:00:26.665577000 +0900
+@@ -123,14 +123,14 @@
+ 
+ 
+ .. envvar:: PYTHONUSERBASE
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. function:: addsitedir(sitedir, known_paths=None)
+ 
+    Adds a directory to sys.path and processes its pth files.
+ 
+ 
+-XXX Update documentation
+-XXX document python -m site --user-base --user-site
++.. XXX Update documentation
++.. XXX document python -m site --user-base --user-site

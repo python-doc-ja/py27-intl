@@ -1,0 +1,19 @@
+--- r262/library/msvcrt.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/msvcrt.rst	2010-03-22 04:16:28.299911000 +0900
+@@ -144,15 +144,13 @@
+    .. versionadded:: 2.6
+ 
+ 
+ .. _msvcrt-other:
+ 
+ Other Functions
+ ---------------
+ 
+ 
+ .. function:: heapmin()
+ 
+    Force the :cfunc:`malloc` heap to clean itself up and return unused blocks to
+-   the operating system.  This only works on Windows NT.  On failure, this raises
+-   :exc:`IOError`.
+-
++   the operating system.  On failure, this raises :exc:`IOError`.

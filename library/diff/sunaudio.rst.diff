@@ -1,0 +1,29 @@
+--- r262/library/sunaudio.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/sunaudio.rst	2009-10-27 23:36:50.397095000 +0900
+@@ -45,25 +45,25 @@
+ 
+    As per the manpage, this module first looks in the environment variable
+    ``AUDIODEV`` for the base audio device filename.  If not found, it falls back to
+    :file:`/dev/audio`.  The control device is calculated by appending "ctl" to the
+    base audio device.
+ 
+ 
+ .. _audio-device-objects:
+ 
+ Audio Device Objects
+ --------------------
+ 
+-The audio device objects are returned by :func:`open` define the following
++The audio device objects are returned by :func:`.open` define the following
+ methods (except ``control`` objects which only provide :meth:`getinfo`,
+ :meth:`setinfo`, :meth:`fileno`, and :meth:`drain`):
+ 
+ 
+ .. method:: audio device.close()
+ 
+    This method explicitly closes the device. It is useful in situations where
+    deleting the object does not immediately close it since there are other
+    references to it. A closed device should not be used again.
+ 
+ 
+ .. method:: audio device.fileno()

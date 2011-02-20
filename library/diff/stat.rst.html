@@ -1,0 +1,173 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to202__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/stat.rst =&gt; r266/library/stat.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to202__0"></td><td class="diff_header" id="from202_131">131</td><td nowrap="nowrap">The&nbsp;interpretation&nbsp;of&nbsp;"file&nbsp;size"&nbsp;changes&nbsp;according&nbsp;to&nbsp;the&nbsp;file&nbsp;type.&nbsp;&nbsp;For&nbsp;plain</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_132">132</td><td nowrap="nowrap">files&nbsp;this&nbsp;is&nbsp;the&nbsp;size&nbsp;of&nbsp;the&nbsp;file&nbsp;in&nbsp;bytes.&nbsp;&nbsp;For&nbsp;FIFOs&nbsp;and&nbsp;sockets&nbsp;under&nbsp;most</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_133">133</td><td nowrap="nowrap">flavors&nbsp;of&nbsp;Unix&nbsp;(including&nbsp;Linux&nbsp;in&nbsp;particular),&nbsp;the&nbsp;"size"&nbsp;is&nbsp;the&nbsp;number&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_134">134</td><td nowrap="nowrap">bytes&nbsp;waiting&nbsp;to&nbsp;be&nbsp;read&nbsp;at&nbsp;the&nbsp;time&nbsp;of&nbsp;the&nbsp;call&nbsp;to&nbsp;:func:`os.stat`,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_135">135</td><td nowrap="nowrap">:func:`os.fstat`,&nbsp;or&nbsp;:func:`os.lstat`;&nbsp;this&nbsp;can&nbsp;sometimes&nbsp;be&nbsp;useful,&nbsp;especially</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_136">136</td><td nowrap="nowrap">for&nbsp;polling&nbsp;one&nbsp;of&nbsp;these&nbsp;special&nbsp;files&nbsp;after&nbsp;a&nbsp;non-blocking&nbsp;open.&nbsp;&nbsp;The&nbsp;meaning</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_137">137</td><td nowrap="nowrap">of&nbsp;the&nbsp;size&nbsp;field&nbsp;for&nbsp;other&nbsp;character&nbsp;and&nbsp;block&nbsp;devices&nbsp;varies&nbsp;more,&nbsp;depending</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_138">138</td><td nowrap="nowrap">on&nbsp;the&nbsp;implementation&nbsp;of&nbsp;the&nbsp;underlying&nbsp;system&nbsp;call.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to202__top">t</a></td><td class="diff_header" id="to202_139">139+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_140">140+</td><td nowrap="nowrap"><span class="diff_add">The&nbsp;variables&nbsp;below&nbsp;define&nbsp;the&nbsp;flags&nbsp;used&nbsp;in&nbsp;the&nbsp;:data:`ST_MODE`&nbsp;field.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_141">141+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_142">142+</td><td nowrap="nowrap"><span class="diff_add">Use&nbsp;of&nbsp;the&nbsp;functions&nbsp;above&nbsp;is&nbsp;more&nbsp;portable&nbsp;than&nbsp;use&nbsp;of&nbsp;the&nbsp;first&nbsp;set&nbsp;of&nbsp;flags:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_143">143+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_144">144+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFMT</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_145">145+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_146">146+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Bit&nbsp;mask&nbsp;for&nbsp;the&nbsp;file&nbsp;type&nbsp;bit&nbsp;fields.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_147">147+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_148">148+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFSOCK</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_149">149+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_150">150+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Socket.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_151">151+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_152">152+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFLNK</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_153">153+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_154">154+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Symbolic&nbsp;link.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_155">155+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_156">156+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFREG</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_157">157+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_158">158+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Regular&nbsp;file.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_159">159+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_160">160+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFBLK</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_161">161+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_162">162+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Block&nbsp;device.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_163">163+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_164">164+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFDIR</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_165">165+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_166">166+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Directory.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_167">167+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_168">168+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFCHR</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_169">169+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_170">170+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Character&nbsp;device.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_171">171+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_172">172+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IFIFO</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_173">173+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_174">174+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;FIFO.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_175">175+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_176">176+</td><td nowrap="nowrap"><span class="diff_add">The&nbsp;following&nbsp;flags&nbsp;can&nbsp;also&nbsp;be&nbsp;used&nbsp;in&nbsp;the&nbsp;*mode*&nbsp;argument&nbsp;of&nbsp;:func:`os.chmod`:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_177">177+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_178">178+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_ISUID</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_179">179+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_180">180+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Set&nbsp;UID&nbsp;bit.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_181">181+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_182">182+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_ISGID</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_183">183+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_184">184+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Set-group-ID&nbsp;bit.&nbsp;&nbsp;This&nbsp;bit&nbsp;has&nbsp;several&nbsp;special&nbsp;uses.&nbsp;&nbsp;For&nbsp;a&nbsp;directory</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_185">185+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;it&nbsp;indicates&nbsp;that&nbsp;BSD&nbsp;semantics&nbsp;is&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;that&nbsp;directory:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_186">186+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;files&nbsp;created&nbsp;there&nbsp;inherit&nbsp;their&nbsp;group&nbsp;ID&nbsp;from&nbsp;the&nbsp;directory,&nbsp;not</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_187">187+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;from&nbsp;the&nbsp;effective&nbsp;group&nbsp;ID&nbsp;of&nbsp;the&nbsp;creating&nbsp;process,&nbsp;and&nbsp;directories</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_188">188+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;created&nbsp;there&nbsp;will&nbsp;also&nbsp;get&nbsp;the&nbsp;:data:`S_ISGID`&nbsp;bit&nbsp;set.&nbsp;&nbsp;For&nbsp;a</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_189">189+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;file&nbsp;that&nbsp;does&nbsp;not&nbsp;have&nbsp;the&nbsp;group&nbsp;execution&nbsp;bit&nbsp;(:data:`S_IXGRP`)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_190">190+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;set,&nbsp;the&nbsp;set-group-ID&nbsp;bit&nbsp;indicates&nbsp;mandatory&nbsp;file/record&nbsp;locking</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_191">191+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;(see&nbsp;also&nbsp;:data:`S_ENFMT`).</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_192">192+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_193">193+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_ISVTX</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_194">194+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_195">195+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Sticky&nbsp;bit.&nbsp;&nbsp;When&nbsp;this&nbsp;bit&nbsp;is&nbsp;set&nbsp;on&nbsp;a&nbsp;directory&nbsp;it&nbsp;means&nbsp;that&nbsp;a&nbsp;file</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_196">196+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;in&nbsp;that&nbsp;directory&nbsp;can&nbsp;be&nbsp;renamed&nbsp;or&nbsp;deleted&nbsp;only&nbsp;by&nbsp;the&nbsp;owner&nbsp;of&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_197">197+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;file,&nbsp;by&nbsp;the&nbsp;owner&nbsp;of&nbsp;the&nbsp;directory,&nbsp;or&nbsp;by&nbsp;a&nbsp;privileged&nbsp;process.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_198">198+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_199">199+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IRWXU</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_200">200+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_201">201+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Mask&nbsp;for&nbsp;file&nbsp;owner&nbsp;permissions.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_202">202+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_203">203+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IRUSR</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_204">204+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_205">205+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Owner&nbsp;has&nbsp;read&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_206">206+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_207">207+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IWUSR</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_208">208+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_209">209+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Owner&nbsp;has&nbsp;write&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_210">210+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_211">211+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IXUSR</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_212">212+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_213">213+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Owner&nbsp;has&nbsp;execute&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_214">214+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_215">215+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IRWXG</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_216">216+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_217">217+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Mask&nbsp;for&nbsp;group&nbsp;permissions.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_218">218+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_219">219+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IRGRP</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_220">220+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_221">221+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Group&nbsp;has&nbsp;read&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_222">222+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_223">223+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IWGRP</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_224">224+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_225">225+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Group&nbsp;has&nbsp;write&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_226">226+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_227">227+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IXGRP</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_228">228+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_229">229+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Group&nbsp;has&nbsp;execute&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_230">230+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_231">231+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IRWXO</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_232">232+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_233">233+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Mask&nbsp;for&nbsp;permissions&nbsp;for&nbsp;others&nbsp;(not&nbsp;in&nbsp;group).</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_234">234+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_235">235+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IROTH</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_236">236+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_237">237+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Others&nbsp;have&nbsp;read&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_238">238+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_239">239+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IWOTH</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_240">240+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_241">241+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Others&nbsp;have&nbsp;write&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_242">242+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_243">243+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IXOTH</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_244">244+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_245">245+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Others&nbsp;have&nbsp;execute&nbsp;permission.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_246">246+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_247">247+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_ENFMT</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_248">248+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_249">249+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;System&nbsp;V&nbsp;file&nbsp;locking&nbsp;enforcement.&nbsp;&nbsp;This&nbsp;flag&nbsp;is&nbsp;shared&nbsp;with&nbsp;:data:`S_ISGID`:</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_250">250+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;file/record&nbsp;locking&nbsp;is&nbsp;enforced&nbsp;on&nbsp;files&nbsp;that&nbsp;do&nbsp;not&nbsp;have&nbsp;the&nbsp;group</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_251">251+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;execution&nbsp;bit&nbsp;(:data:`S_IXGRP`)&nbsp;set.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_252">252+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_253">253+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IREAD</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_254">254+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_255">255+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Unix&nbsp;V7&nbsp;synonym&nbsp;for&nbsp;:data:`S_IRUSR`.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_256">256+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_257">257+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IWRITE</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_258">258+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_259">259+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Unix&nbsp;V7&nbsp;synonym&nbsp;for&nbsp;:data:`S_IWUSR`.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_260">260+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_261">261+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;data::&nbsp;S_IEXEC</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_262">262+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to202_263">263+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Unix&nbsp;V7&nbsp;synonym&nbsp;for&nbsp;:data:`S_IXUSR`.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from202_139">139</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_140">140</td><td nowrap="nowrap">Example::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_141">141</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_142">142</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;os,&nbsp;sys</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_143">143</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;stat&nbsp;import&nbsp;*</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_144">144</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_145">145</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;def&nbsp;walktree(top,&nbsp;callback):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from202_146">146</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'''recursively&nbsp;descend&nbsp;the&nbsp;directory&nbsp;tree&nbsp;rooted&nbsp;at&nbsp;top,</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

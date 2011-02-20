@@ -1,0 +1,70 @@
+--- r262/library/macostools.rst	2008-05-13 06:42:13.839063000 +0900
++++ r266/library/macostools.rst	2010-02-07 20:39:16.160663000 +0900
+@@ -4,50 +4,65 @@
+ 
+ .. module:: macostools
+    :platform: Mac
+    :synopsis: Convenience routines for file manipulation.
+    :deprecated:
+ 
+ 
+ This module contains some convenience routines for file-manipulation on the
+ Macintosh. All file parameters can be specified as pathnames, :class:`FSRef` or
+ :class:`FSSpec` objects.  This module expects a filesystem which supports forked
+ files, so it should not be used on UFS partitions.
+ 
+-.. warning::
++.. note::
++
++   This module has been removed in Python 3.0.
++
+ 
+-   This module is removed in 3.0.
+ 
+ The :mod:`macostools` module defines the following functions:
+ 
+ 
+ .. function:: copy(src, dst[, createpath[, copytimes]])
+ 
+    Copy file *src* to *dst*.  If *createpath* is non-zero the folders leading to
+    *dst* are created if necessary. The method copies data and resource fork and
+    some finder information (creator, type, flags) and optionally the creation,
+    modification and backup times (default is to copy them). Custom icons, comments
+    and icon position are not copied.
+ 
++   .. note::
++
++      This function does not work in 64-bit code because it uses APIs that
++      are not available in 64-bit mode.
+ 
+ .. function:: copytree(src, dst)
+ 
+    Recursively copy a file tree from *src* to *dst*, creating folders as needed.
+    *src* and *dst* should be specified as pathnames.
+ 
++   .. note::
++
++      This function does not work in 64-bit code because it uses APIs that
++      are not available in 64-bit mode.
+ 
+ .. function:: mkalias(src, dst)
+ 
+    Create a finder alias *dst* pointing to *src*.
+ 
++   .. note::
++
++      This function does not work in 64-bit code because it uses APIs that
++      are not available in 64-bit mode.
++
+ 
+ .. function:: touched(dst)
+ 
+    Tell the finder that some bits of finder-information such as creator or type for
+    file *dst* has changed. The file can be specified by pathname or fsspec. This
+    call should tell the finder to redraw the files icon.
+ 
+    .. deprecated:: 2.6
+       The function is a no-op on OS X.
+ 
+ 
+ .. data:: BUFSIZ

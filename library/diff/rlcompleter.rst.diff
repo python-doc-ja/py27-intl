@@ -1,0 +1,28 @@
+--- r262/library/rlcompleter.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/rlcompleter.rst	2009-10-27 23:19:50.039185000 +0900
+@@ -43,24 +43,24 @@
+ 
+ 
+ .. _completer-objects:
+ 
+ Completer Objects
+ -----------------
+ 
+ Completer objects have the following method:
+ 
+ 
+ .. method:: Completer.complete(text, state)
+ 
+-   Return the *state*th completion for *text*.
++   Return the *state*\ th completion for *text*.
+ 
+    If called for *text* that doesn't include a period character (``'.'``), it will
+    complete from names currently defined in :mod:`__main__`, :mod:`__builtin__` and
+    keywords (as defined by the :mod:`keyword` module).
+ 
+    If called for a dotted name, it will try to evaluate anything without obvious
+    side-effects (functions will not be evaluated, but it can generate calls to
+    :meth:`__getattr__`) up to the last part, and find matches for the rest via the
+    :func:`dir` function.  Any exception raised during the evaluation of the
+    expression is caught, silenced and :const:`None` is returned.
+ 

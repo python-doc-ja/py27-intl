@@ -1,0 +1,143 @@
+--- r262/library/csv.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/library/csv.rst	2010-08-02 07:26:02.314226000 +0900
+@@ -52,42 +52,42 @@
+ .. _csv-contents:
+ 
+ Module Contents
+ ---------------
+ 
+ The :mod:`csv` module defines the following functions:
+ 
+ 
+ .. function:: reader(csvfile[, dialect='excel'][, fmtparam])
+ 
+    Return a reader object which will iterate over lines in the given *csvfile*.
+    *csvfile* can be any object which supports the :term:`iterator` protocol and returns a
+-   string each time its :meth:`next` method is called --- file objects and list
++   string each time its :meth:`!next` method is called --- file objects and list
+    objects are both suitable.   If *csvfile* is a file object, it must be opened
+    with the 'b' flag on platforms where that makes a difference.  An optional
+    *dialect* parameter can be given which is used to define a set of parameters
+    specific to a particular CSV dialect.  It may be an instance of a subclass of
+    the :class:`Dialect` class or one of the strings returned by the
+    :func:`list_dialects` function.  The other optional *fmtparam* keyword arguments
+    can be given to override individual formatting parameters in the current
+    dialect.  For full details about the dialect and formatting parameters, see
+    section :ref:`csv-fmt-params`.
+ 
+-   All data read are returned as strings.  No automatic data type conversion is
+-   performed.
++   Each row read from the csv file is returned as a list of strings.  No
++   automatic data type conversion is performed.
+ 
+    A short usage example::
+ 
+       >>> import csv
+-      >>> spamReader = csv.reader(open('eggs.csv'), delimiter=' ', quotechar='|')
++      >>> spamReader = csv.reader(open('eggs.csv', 'rb'), delimiter=' ', quotechar='|')
+       >>> for row in spamReader:
+       ...     print ', '.join(row)
+       Spam, Spam, Spam, Spam, Spam, Baked Beans
+       Spam, Lovely Spam, Wonderful Spam
+ 
+    .. versionchanged:: 2.5
+       The parser is now stricter with respect to multi-line quoted fields. Previously,
+       if a line ended within a quoted field without a terminating newline character, a
+       newline would be inserted into the returned field. This behavior caused problems
+       when reading files which contained carriage return characters within fields.
+       The behavior was changed to return the field without inserting newlines. As a
+       consequence, if newlines embedded within fields are important, the input should
+@@ -107,26 +107,26 @@
+    can be given to override individual formatting parameters in the current
+    dialect.  For full details about the dialect and formatting parameters, see
+    section :ref:`csv-fmt-params`. To make it
+    as easy as possible to interface with modules which implement the DB API, the
+    value :const:`None` is written as the empty string.  While this isn't a
+    reversible transformation, it makes it easier to dump SQL NULL data values to
+    CSV files without preprocessing the data returned from a ``cursor.fetch*`` call.
+    All other non-string data are stringified with :func:`str` before being written.
+ 
+    A short usage example::
+ 
+       >>> import csv
+-      >>> spamWriter = csv.writer(open('eggs.csv', 'w'), delimiter=' ',
+-      ...                         quotechar='|', quoting=QUOTE_MINIMAL)
++      >>> spamWriter = csv.writer(open('eggs.csv', 'wb'), delimiter=' ',
++      ...                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
+       >>> spamWriter.writerow(['Spam'] * 5 + ['Baked Beans'])
+       >>> spamWriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
+ 
+ 
+ .. function:: register_dialect(name[, dialect][, fmtparam])
+ 
+    Associate *dialect* with *name*.  *name* must be a string or Unicode object. The
+    dialect can be specified either by passing a sub-class of :class:`Dialect`, or
+    by *fmtparam* keyword arguments, or both, with keyword arguments overriding
+    parameters of the dialect. For full details about the dialect and formatting
+    parameters, see section :ref:`csv-fmt-params`.
+ 
+@@ -158,31 +158,30 @@
+    given, this becomes the new limit.
+ 
+    .. versionadded:: 2.5
+ 
+ The :mod:`csv` module defines the following classes:
+ 
+ 
+ .. class:: DictReader(csvfile[, fieldnames=None[, restkey=None[, restval=None[, dialect='excel'[, *args, **kwds]]]]])
+ 
+    Create an object which operates like a regular reader but maps the information
+    read into a dict whose keys are given by the optional  *fieldnames* parameter.
+    If the *fieldnames* parameter is omitted, the values in the first row of the
+-   *csvfile* will be used as the fieldnames. If the row read has fewer fields than
+-   the fieldnames sequence, the value of *restval* will be used as the default
+-   value.  If the row read has more fields than the fieldnames sequence, the
+-   remaining data is added as a sequence keyed by the value of *restkey*.  If the
+-   row read has fewer fields than the fieldnames sequence, the remaining keys take
+-   the value of the optional *restval* parameter.  Any other optional or keyword
+-   arguments are passed to the underlying :class:`reader` instance.
++   *csvfile* will be used as the fieldnames.  If the row read has more fields
++   than the fieldnames sequence, the remaining data is added as a sequence
++   keyed by the value of *restkey*.  If the row read has fewer fields than the
++   fieldnames sequence, the remaining keys take the value of the optional
++   *restval* parameter.  Any other optional or keyword arguments are passed to
++   the underlying :class:`reader` instance.
+ 
+ 
+ .. class:: DictWriter(csvfile, fieldnames[, restval=''[, extrasaction='raise'[, dialect='excel'[, *args, **kwds]]]])
+ 
+    Create an object which operates like a regular writer but maps dictionaries onto
+    output rows.  The *fieldnames* parameter identifies the order in which values in
+    the dictionary passed to the :meth:`writerow` method are written to the
+    *csvfile*.  The optional *restval* parameter specifies the value to be written
+    if the dictionary is missing a key in *fieldnames*.  If the dictionary passed to
+    the :meth:`writerow` method contains a key not found in *fieldnames*, the
+    optional *extrasaction* parameter indicates what action to take.  If it is set
+    to ``'raise'`` a :exc:`ValueError` is raised.  If it is set to ``'ignore'``,
+@@ -226,25 +225,25 @@
+       reflecting the parameters found.  If the optional *delimiters* parameter
+       is given, it is interpreted as a string containing possible valid
+       delimiter characters.
+ 
+ 
+    .. method:: has_header(sample)
+ 
+       Analyze the sample text (presumed to be in CSV format) and return
+       :const:`True` if the first row appears to be a series of column headers.
+ 
+ An example for :class:`Sniffer` use::
+ 
+-   csvfile = open("example.csv")
++   csvfile = open("example.csv", "rb")
+    dialect = csv.Sniffer().sniff(csvfile.read(1024))
+    csvfile.seek(0)
+    reader = csv.reader(csvfile, dialect)
+    # ... process CSV file contents here ...
+ 
+ 
+ The :mod:`csv` module defines the following constants:
+ 
+ .. data:: QUOTE_ALL
+ 
+    Instructs :class:`writer` objects to quote all fields.
+ 

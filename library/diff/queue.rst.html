@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to180__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/queue.rst =&gt; r266/library/queue.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to180__0"></td><td class="diff_header" id="from180_21">21</td><td nowrap="nowrap">the&nbsp;entries&nbsp;are&nbsp;retrieved.&nbsp;&nbsp;In&nbsp;a&nbsp;FIFO&nbsp;queue,&nbsp;the&nbsp;first&nbsp;tasks&nbsp;added&nbsp;are</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_22">22</td><td nowrap="nowrap">the&nbsp;first&nbsp;retrieved.&nbsp;In&nbsp;a&nbsp;LIFO&nbsp;queue,&nbsp;the&nbsp;most&nbsp;recently&nbsp;added&nbsp;entry&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_23">23</td><td nowrap="nowrap">the&nbsp;first&nbsp;retrieved&nbsp;(operating&nbsp;like&nbsp;a&nbsp;stack).&nbsp;&nbsp;With&nbsp;a&nbsp;priority&nbsp;queue,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_24">24</td><td nowrap="nowrap">the&nbsp;entries&nbsp;are&nbsp;kept&nbsp;sorted&nbsp;(using&nbsp;the&nbsp;:mod:`heapq`&nbsp;module)&nbsp;and&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_25">25</td><td nowrap="nowrap">lowest&nbsp;valued&nbsp;entry&nbsp;is&nbsp;retrieved&nbsp;first.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_26">26</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_27">27</td><td nowrap="nowrap">The&nbsp;:mod:`Queue`&nbsp;module&nbsp;defines&nbsp;the&nbsp;following&nbsp;classes&nbsp;and&nbsp;exceptions:</td></tr>            <tr><td class="diff_next" id="difflib_chg_to180__1"></td><td class="diff_header" id="from180_28">28</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to180__1">n</a></td><td class="diff_header" id="from180_29">29-</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Queue(maxsize)</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to180__1">n</a></td><td class="diff_header" id="to180_29">29+</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Queue(maxsize<span class="diff_add">=0</span>)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from180_30">30</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_31">31</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Constructor&nbsp;for&nbsp;a&nbsp;FIFO&nbsp;queue.&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;an&nbsp;integer&nbsp;that&nbsp;sets&nbsp;the&nbsp;upperbound</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;limit&nbsp;on&nbsp;the&nbsp;number&nbsp;of&nbsp;items&nbsp;that&nbsp;can&nbsp;be&nbsp;placed&nbsp;in&nbsp;the&nbsp;queue.&nbsp;&nbsp;Insertion&nbsp;will</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_33">33</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;block&nbsp;once&nbsp;this&nbsp;size&nbsp;has&nbsp;been&nbsp;reached,&nbsp;until&nbsp;queue&nbsp;items&nbsp;are&nbsp;consumed.&nbsp;&nbsp;If</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_34">34</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;zero,&nbsp;the&nbsp;queue&nbsp;size&nbsp;is&nbsp;infinite.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_35">35</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to180__2">n</a></td><td class="diff_header" id="from180_36">36-</td><td nowrap="nowrap">..&nbsp;class::&nbsp;LifoQueue(maxsize)</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to180__2">n</a></td><td class="diff_header" id="to180_36">36+</td><td nowrap="nowrap">..&nbsp;class::&nbsp;LifoQueue(maxsize<span class="diff_add">=0</span>)</td></tr>
+            <tr><td class="diff_next" id="difflib_chg_to180__2"></td><td class="diff_header" id="from180_37">37</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_38">38</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Constructor&nbsp;for&nbsp;a&nbsp;LIFO&nbsp;queue.&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;an&nbsp;integer&nbsp;that&nbsp;sets&nbsp;the&nbsp;upperbound</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_39">39</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;limit&nbsp;on&nbsp;the&nbsp;number&nbsp;of&nbsp;items&nbsp;that&nbsp;can&nbsp;be&nbsp;placed&nbsp;in&nbsp;the&nbsp;queue.&nbsp;&nbsp;Insertion&nbsp;will</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;block&nbsp;once&nbsp;this&nbsp;size&nbsp;has&nbsp;been&nbsp;reached,&nbsp;until&nbsp;queue&nbsp;items&nbsp;are&nbsp;consumed.&nbsp;&nbsp;If</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_41">41</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;zero,&nbsp;the&nbsp;queue&nbsp;size&nbsp;is&nbsp;infinite.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_42">42</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_43">43</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_44">44</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to180__top">t</a></td><td class="diff_header" id="from180_45">45-</td><td nowrap="nowrap">..&nbsp;class::&nbsp;PriorityQueue(maxsize)</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to180__top">t</a></td><td class="diff_header" id="to180_45">45+</td><td nowrap="nowrap">..&nbsp;class::&nbsp;PriorityQueue(maxsize<span class="diff_add">=0</span>)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from180_46">46</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_47">47</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Constructor&nbsp;for&nbsp;a&nbsp;priority&nbsp;queue.&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;an&nbsp;integer&nbsp;that&nbsp;sets&nbsp;the&nbsp;upperbound</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_48">48</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;limit&nbsp;on&nbsp;the&nbsp;number&nbsp;of&nbsp;items&nbsp;that&nbsp;can&nbsp;be&nbsp;placed&nbsp;in&nbsp;the&nbsp;queue.&nbsp;&nbsp;Insertion&nbsp;will</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_49">49</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;block&nbsp;once&nbsp;this&nbsp;size&nbsp;has&nbsp;been&nbsp;reached,&nbsp;until&nbsp;queue&nbsp;items&nbsp;are&nbsp;consumed.&nbsp;&nbsp;If</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_50">50</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*maxsize*&nbsp;is&nbsp;less&nbsp;than&nbsp;or&nbsp;equal&nbsp;to&nbsp;zero,&nbsp;the&nbsp;queue&nbsp;size&nbsp;is&nbsp;infinite.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_51">51</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_52">52</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;lowest&nbsp;valued&nbsp;entries&nbsp;are&nbsp;retrieved&nbsp;first&nbsp;(the&nbsp;lowest&nbsp;valued&nbsp;entry&nbsp;is&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from180_53">53</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;one&nbsp;returned&nbsp;by&nbsp;``sorted(list(entries))[0]``).&nbsp;&nbsp;A&nbsp;typical&nbsp;pattern&nbsp;for&nbsp;entries</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

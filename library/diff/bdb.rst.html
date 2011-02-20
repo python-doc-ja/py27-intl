@@ -1,0 +1,60 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to73__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/bdb.rst =&gt; r266/library/bdb.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to73__0"></td><td class="diff_header" id="from73_57">57</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;breakpoint&nbsp;number.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_58">58</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;it&nbsp;is&nbsp;temporary&nbsp;or&nbsp;not.</td></tr>            <tr><td class="diff_next" id="difflib_chg_to73__1"></td><td class="diff_header" id="from73_59">59</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Its&nbsp;file,line&nbsp;position.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_60">60</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;condition&nbsp;that&nbsp;causes&nbsp;a&nbsp;break.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_61">61</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;it&nbsp;must&nbsp;be&nbsp;ignored&nbsp;the&nbsp;next&nbsp;N&nbsp;times.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_62">62</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;breakpoint&nbsp;hit&nbsp;count.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_63">63</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_64">64</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next" id="difflib_chg_to73__2"><a href="#difflib_chg_to73__1">n</a></td><td class="diff_header" id="from73_65">65-</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Bdb()</td></tr>
+<tr><td class="diff_next" id="difflib_chg_to73__2"><a href="#difflib_chg_to73__1">n</a></td><td class="diff_header" id="to73_65">65+</td><td nowrap="nowrap">..&nbsp;class::&nbsp;Bdb(<span class="diff_add">skip=None</span>)</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from73_66">66</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to73__2">n</a></td><td class="diff_header" id="from73_67">67-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;:class:`Bdb`&nbsp;acts&nbsp;as&nbsp;a&nbsp;generic&nbsp;Python&nbsp;debugger&nbsp;base&nbsp;class.</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to73__2">n</a></td><td class="diff_header" id="to73_67">67+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;:class:`Bdb`&nbsp;<span class="diff_add">class&nbsp;</span>acts&nbsp;as&nbsp;a&nbsp;generic&nbsp;Python&nbsp;debugger&nbsp;base&nbsp;class.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from73_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_69">69</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;class&nbsp;takes&nbsp;care&nbsp;of&nbsp;the&nbsp;details&nbsp;of&nbsp;the&nbsp;trace&nbsp;facility;&nbsp;a&nbsp;derived&nbsp;class</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_70">70</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;should&nbsp;implement&nbsp;user&nbsp;interaction.&nbsp;&nbsp;The&nbsp;standard&nbsp;debugger&nbsp;class</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_71">71</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(:class:`pdb.Pdb`)&nbsp;is&nbsp;an&nbsp;example.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_72">72</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to73__top">t</a></td><td class="diff_header" id="to73_73">73+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;*skip*&nbsp;argument,&nbsp;if&nbsp;given,&nbsp;must&nbsp;be&nbsp;an&nbsp;iterable&nbsp;of&nbsp;glob-style</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_74">74+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;module&nbsp;name&nbsp;patterns.&nbsp;&nbsp;The&nbsp;debugger&nbsp;will&nbsp;not&nbsp;step&nbsp;into&nbsp;frames&nbsp;that</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_75">75+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;originate&nbsp;in&nbsp;a&nbsp;module&nbsp;that&nbsp;matches&nbsp;one&nbsp;of&nbsp;these&nbsp;patterns.&nbsp;Whether&nbsp;a</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_76">76+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;frame&nbsp;is&nbsp;considered&nbsp;to&nbsp;originate&nbsp;in&nbsp;a&nbsp;certain&nbsp;module&nbsp;is&nbsp;determined</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_77">77+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;by&nbsp;the&nbsp;``__name__``&nbsp;in&nbsp;the&nbsp;frame&nbsp;globals.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_78">78+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_79">79+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.7</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to73_80">80+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;*skip*&nbsp;argument.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from73_73">73</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_74">74</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;following&nbsp;methods&nbsp;of&nbsp;:class:`Bdb`&nbsp;normally&nbsp;don't&nbsp;need&nbsp;to&nbsp;be&nbsp;overridden.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_75">75</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_76">76</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;method::&nbsp;canonic(filename)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_77">77</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_78">78</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auxiliary&nbsp;method&nbsp;for&nbsp;getting&nbsp;a&nbsp;filename&nbsp;in&nbsp;a&nbsp;canonical&nbsp;form,&nbsp;that&nbsp;is,&nbsp;as&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_79">79</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case-normalized&nbsp;(on&nbsp;case-insensitive&nbsp;filesystems)&nbsp;absolute&nbsp;path,&nbsp;stripped</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from73_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;of&nbsp;surrounding&nbsp;angle&nbsp;brackets.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

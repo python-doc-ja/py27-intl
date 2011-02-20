@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to100__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/dbhash.rst =&gt; r266/library/dbhash.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to100__0"></td><td class="diff_header" id="from100_67">67</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Utility&nbsp;module&nbsp;used&nbsp;to&nbsp;determine&nbsp;the&nbsp;type&nbsp;of&nbsp;an&nbsp;existing&nbsp;database.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_68">68</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_69">69</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_70">70</td><td nowrap="nowrap">..&nbsp;_dbhash-objects:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_71">71</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_72">72</td><td nowrap="nowrap">Database&nbsp;Objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_73">73</td><td nowrap="nowrap">----------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_74">74</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next" id="difflib_chg_to100__1"><a href="#difflib_chg_to100__1">n</a></td><td class="diff_header" id="from100_75">75-</td><td nowrap="nowrap">The&nbsp;database&nbsp;objects&nbsp;returned&nbsp;by&nbsp;:func:`open`&nbsp;provide&nbsp;the&nbsp;methods&nbsp;&nbsp;common&nbsp;to&nbsp;all</td></tr>
+<tr><td class="diff_next" id="difflib_chg_to100__1"><a href="#difflib_chg_to100__1">n</a></td><td class="diff_header" id="to100_75">75+</td><td nowrap="nowrap">The&nbsp;database&nbsp;objects&nbsp;returned&nbsp;by&nbsp;:func:`<span class="diff_add">.</span>open`&nbsp;provide&nbsp;the&nbsp;methods&nbsp;&nbsp;common&nbsp;to&nbsp;all</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from100_76">76</td><td nowrap="nowrap">the&nbsp;DBM-style&nbsp;databases&nbsp;and&nbsp;mapping&nbsp;objects.&nbsp;&nbsp;The&nbsp;following&nbsp;methods&nbsp;are</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_77">77</td><td nowrap="nowrap">available&nbsp;in&nbsp;addition&nbsp;to&nbsp;the&nbsp;standard&nbsp;methods.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_78">78</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_79">79</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_80">80</td><td nowrap="nowrap">..&nbsp;method::&nbsp;dbhash.first()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_81">81</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;It's&nbsp;possible&nbsp;to&nbsp;loop&nbsp;over&nbsp;every&nbsp;key/value&nbsp;pair&nbsp;in&nbsp;the&nbsp;database&nbsp;using&nbsp;this</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to100__top">t</a></td><td class="diff_header" id="from100_83">83-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;method&nbsp;<span class="diff_sub">&nbsp;&nbsp;</span>and&nbsp;the&nbsp;:meth:`next`&nbsp;method.&nbsp;&nbsp;The&nbsp;traversal&nbsp;is&nbsp;ordered&nbsp;by&nbsp;the&nbsp;databases</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to100__top">t</a></td><td class="diff_header" id="to100_83">83+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;method&nbsp;and&nbsp;the&nbsp;:meth:`<span class="diff_add">!</span>next`&nbsp;method.&nbsp;&nbsp;The&nbsp;traversal&nbsp;is&nbsp;ordered&nbsp;by&nbsp;the&nbsp;databases</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from100_84">84</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;internal&nbsp;hash&nbsp;values,&nbsp;and&nbsp;won't&nbsp;be&nbsp;sorted&nbsp;by&nbsp;the&nbsp;key&nbsp;values.&nbsp;&nbsp;This&nbsp;method</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_85">85</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;returns&nbsp;the&nbsp;starting&nbsp;key.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_86">86</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_87">87</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_88">88</td><td nowrap="nowrap">..&nbsp;method::&nbsp;dbhash.last()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_89">89</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_90">90</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;last&nbsp;key/value&nbsp;pair&nbsp;in&nbsp;a&nbsp;database&nbsp;traversal.&nbsp;&nbsp;This&nbsp;may&nbsp;be&nbsp;used&nbsp;to</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from100_91">91</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;begin&nbsp;a&nbsp;reverse-order&nbsp;traversal;&nbsp;see&nbsp;:meth:`previous`.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

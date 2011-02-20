@@ -1,0 +1,22 @@
+--- r262/library/markup.rst	2008-05-20 15:08:38.424050000 +0900
++++ r266/library/markup.rst	2010-03-22 04:29:04.684594000 +0900
+@@ -26,19 +26,12 @@
+    htmlparser.rst
+    sgmllib.rst
+    htmllib.rst
+    pyexpat.rst
+    xml.dom.rst
+    xml.dom.minidom.rst
+    xml.dom.pulldom.rst
+    xml.sax.rst
+    xml.sax.handler.rst
+    xml.sax.utils.rst
+    xml.sax.reader.rst
+    xml.etree.elementtree.rst
+-
+-.. seealso::
+-
+-   `Python/XML Libraries <http://pyxml.sourceforge.net/>`_
+-      Home page for the PyXML package, containing an extension of :mod:`xml` package
+-      bundled with Python.
+-

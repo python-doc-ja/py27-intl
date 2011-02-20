@@ -1,0 +1,56 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to199__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/socketserver.rst =&gt; r266/library/socketserver.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to199__0"></td><td class="diff_header" id="from199_451">451</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;handle(self):</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_452">452</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;self.request[0].strip()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_453">453</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;socket&nbsp;=&nbsp;self.request[1]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_454">454</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;"%s&nbsp;wrote:"&nbsp;%&nbsp;self.client_address[0]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_455">455</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;data</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_456">456</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;socket.sendto(data.upper(),&nbsp;self.client_address)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_457">457</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_458">458</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;if&nbsp;__name__&nbsp;==&nbsp;"__main__":</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to199__1">n</a></td><td class="diff_header" id="from199_459">459-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HOST,&nbsp;PORT&nbsp;=&nbsp;"localhost",&nbsp;9999</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to199__1">n</a></td><td class="diff_header" id="to199_459">459+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HOST,&nbsp;PORT&nbsp;=&nbsp;"localhost",&nbsp;9999</td></tr>
+<tr><td class="diff_next" id="difflib_chg_to199__1"></td><td class="diff_header" id="from199_460">460-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server&nbsp;=&nbsp;SocketServer.UDPServer((HOST,&nbsp;PORT),&nbsp;MyUDPHandler)</td></tr>
+<tr><td class="diff_next" id="difflib_chg_to199__1"></td><td class="diff_header" id="to199_460">460+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server&nbsp;=&nbsp;SocketServer.UDPServer((HOST,&nbsp;PORT),&nbsp;MyUDPHandler)</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from199_461">461-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server.serve_forever()</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to199_461">461+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server.serve_forever()</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from199_462">462</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_463">463</td><td nowrap="nowrap">This&nbsp;is&nbsp;the&nbsp;client&nbsp;side::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_464">464</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_465">465</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;socket</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_466">466</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;import&nbsp;sys</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_467">467</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to199__top">t</a></td><td class="diff_header" id="from199_468">468-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;HOST,&nbsp;PORT&nbsp;=&nbsp;"localhost"</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to199__top">t</a></td><td class="diff_header" id="to199_468">468+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;HOST,&nbsp;PORT&nbsp;=&nbsp;"localhost"<span class="diff_add">,&nbsp;9999</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from199_469">469</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;data&nbsp;=&nbsp;"&nbsp;".join(sys.argv[1:])</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_470">470</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_471">471</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;SOCK_DGRAM&nbsp;is&nbsp;the&nbsp;socket&nbsp;type&nbsp;to&nbsp;use&nbsp;for&nbsp;UDP&nbsp;sockets</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_472">472</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;sock&nbsp;=&nbsp;socket.socket(socket.AF_INET,&nbsp;socket.SOCK_DGRAM)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_473">473</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_474">474</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;As&nbsp;you&nbsp;can&nbsp;see,&nbsp;there&nbsp;is&nbsp;no&nbsp;connect()&nbsp;call;&nbsp;UDP&nbsp;has&nbsp;no&nbsp;connections.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_475">475</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#&nbsp;Instead,&nbsp;data&nbsp;is&nbsp;directly&nbsp;sent&nbsp;to&nbsp;the&nbsp;recipient&nbsp;via&nbsp;sendto().</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from199_476">476</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;sock.sendto(data&nbsp;+&nbsp;"\n",&nbsp;(HOST,&nbsp;PORT))</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+--- r262/library/xmlrpclib.rst	2009-02-23 19:41:11.107573000 +0900
++++ r266/library/xmlrpclib.rst	2010-03-22 04:29:04.684594000 +0900
+@@ -85,25 +85,25 @@
+    |                                 | instance of the :class:`DateTime` class) or |
+    |                                 | a :class:`datetime.datetime` instance.      |
+    +---------------------------------+---------------------------------------------+
+    | :const:`binary data`            | pass in an instance of the :class:`Binary`  |
+    |                                 | wrapper class                               |
+    +---------------------------------+---------------------------------------------+
+ 
+    This is the full set of data types supported by XML-RPC.  Method calls may also
+    raise a special :exc:`Fault` instance, used to signal XML-RPC server errors, or
+    :exc:`ProtocolError` used to signal an error in the HTTP/HTTPS transport layer.
+    Both :exc:`Fault` and :exc:`ProtocolError` derive from a base class called
+    :exc:`Error`.  Note that even though starting with Python 2.2 you can subclass
+-   builtin types, the xmlrpclib module currently does not marshal instances of such
++   built-in types, the xmlrpclib module currently does not marshal instances of such
+    subclasses.
+ 
+    When passing strings, characters special to XML such as ``<``, ``>``, and ``&``
+    will be automatically escaped.  However, it's the caller's responsibility to
+    ensure that the string is free of characters that aren't allowed in XML, such as
+    the control characters with ASCII values between 0 and 31 (except, of course,
+    tab, newline and carriage return); failing to do this will result in an XML-RPC
+    request that isn't well-formed XML.  If you have to pass arbitrary strings via
+    XML-RPC, use the :class:`Binary` wrapper class described below.
+ 
+    :class:`Server` is retained as an alias for :class:`ServerProxy` for backwards
+    compatibility.  New code should use :class:`ServerProxy`.
+@@ -151,39 +151,39 @@
+ grouped under the reserved :attr:`system` member:
+ 
+ 
+ .. method:: ServerProxy.system.listMethods()
+ 
+    This method returns a list of strings, one for each (non-system) method
+    supported by the XML-RPC server.
+ 
+ 
+ .. method:: ServerProxy.system.methodSignature(name)
+ 
+    This method takes one parameter, the name of a method implemented by the XML-RPC
+-   server.It returns an array of possible signatures for this method. A signature
++   server. It returns an array of possible signatures for this method. A signature
+    is an array of types. The first of these types is the return type of the method,
+    the rest are parameters.
+ 
+    Because multiple signatures (ie. overloading) is permitted, this method returns
+    a list of signatures rather than a singleton.
+ 
+    Signatures themselves are restricted to the top level parameters expected by a
+    method. For instance if a method expects one array of structs as a parameter,
+    and it returns a string, its signature is simply "string, array". If it expects
+    three integers and returns a string, its signature is "string, int, int, int".
+ 
+    If no signature is defined for the method, a non-array value is returned. In
+    Python this means that the type of the returned  value will be something other
+-   that list.
++   than list.
+ 
+ 
+ .. method:: ServerProxy.system.methodHelp(name)
+ 
+    This method takes one parameter, the name of a method implemented by the XML-RPC
+    server.  It returns a documentation string describing the use of that method. If
+    no such string is available, an empty string is returned. The documentation
+    string may contain HTML markup.
+ 
+ 
+ .. _boolean-objects:
+ 
+@@ -309,39 +309,39 @@
+    XML-RPC spec was written.
+ 
+ It also supports certain of Python's built-in operators through a
+ :meth:`__cmp__` method.
+ 
+ Example usage of the binary objects.  We're going to transfer an image over
+ XMLRPC::
+ 
+    from SimpleXMLRPCServer import SimpleXMLRPCServer
+    import xmlrpclib
+ 
+    def python_logo():
+-        with open("python_logo.jpg") as handle:
++        with open("python_logo.jpg", "rb") as handle:
+             return xmlrpclib.Binary(handle.read())
+ 
+    server = SimpleXMLRPCServer(("localhost", 8000))
+    print "Listening on port 8000..."
+    server.register_function(python_logo, 'python_logo')
+ 
+    server.serve_forever()
+ 
+ The client gets the image and saves it to a file::
+ 
+    import xmlrpclib
+ 
+    proxy = xmlrpclib.ServerProxy("http://localhost:8000/")
+-   with open("fetched_python_logo.jpg", "w") as handle:
++   with open("fetched_python_logo.jpg", "wb") as handle:
+        handle.write(proxy.python_logo().data)
+ 
+ .. _fault-objects:
+ 
+ Fault Objects
+ -------------
+ 
+ A :class:`Fault` object encapsulates the content of an XML-RPC fault tag. Fault
+ objects have the following members:
+ 
+ 
+ .. attribute:: Fault.faultCode
+@@ -405,30 +405,30 @@
+ 
+ .. attribute:: ProtocolError.errmsg
+ 
+    The error message or diagnostic string.
+ 
+ 
+ .. attribute:: ProtocolError.headers
+ 
+    A string containing the headers of the HTTP/HTTPS request that triggered the
+    error.
+ 
+ In the following example we're going to intentionally cause a :exc:`ProtocolError`
+-by providing an invalid URI::
++by providing an URI that doesn't point to an XMLRPC server::
+ 
+    import xmlrpclib
+ 
+-   # create a ServerProxy with an invalid URI
+-   proxy = xmlrpclib.ServerProxy("http://invalidaddress/")
++   # create a ServerProxy with an URI that doesn't respond to XMLRPC requests
++   proxy = xmlrpclib.ServerProxy("http://www.google.com/")
+ 
+    try:
+        proxy.some_method()
+    except xmlrpclib.ProtocolError, err:
+        print "A protocol error occurred"
+        print "URL: %s" % err.url
+        print "HTTP/HTTPS headers: %s" % err.headers
+        print "Error code: %d" % err.errcode
+        print "Error message: %s" % err.errmsg
+ 
+ MultiCall Objects
+ -----------------

@@ -1,0 +1,71 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to117__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/exceptions.rst =&gt; r266/library/exceptions.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to117__0"></td><td class="diff_header" id="from117_79">79</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;base&nbsp;class&nbsp;for&nbsp;those&nbsp;built-in&nbsp;exceptions&nbsp;that&nbsp;are&nbsp;raised&nbsp;for&nbsp;various</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;arithmetic&nbsp;errors:&nbsp;:exc:`OverflowError`,&nbsp;:exc:`ZeroDivisionError`,</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_82">82</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:`FloatingPointError`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_83">83</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_84">84</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_85">85</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;LookupError</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_86">86</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to117__1">n</a></td><td class="diff_header" id="from117_87">87-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;base&nbsp;class&nbsp;for&nbsp;the&nbsp;exceptions&nbsp;that&nbsp;are&nbsp;raised&nbsp;when&nbsp;a&nbsp;key&nbsp;or&nbsp;index&nbsp;used&nbsp;on<span class="diff_sub">&nbsp;a</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to117__1">n</a></td><td class="diff_header" id="to117_87">87+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;base&nbsp;class&nbsp;for&nbsp;the&nbsp;exceptions&nbsp;that&nbsp;are&nbsp;raised&nbsp;when&nbsp;a&nbsp;key&nbsp;or&nbsp;index&nbsp;used&nbsp;on</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from117_88">88-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;mapping&nbsp;or&nbsp;sequence&nbsp;is&nbsp;invalid:&nbsp;:exc:`IndexError`,&nbsp;:exc:`KeyError`.&nbsp;&nbsp;This<span class="diff_sub">&nbsp;can&nbsp;be</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_88">88+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;a</span>&nbsp;mapping&nbsp;or&nbsp;sequence&nbsp;is&nbsp;invalid:&nbsp;:exc:`IndexError`,&nbsp;:exc:`KeyError`.&nbsp;&nbsp;This</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from117_89">89-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;raised&nbsp;directly&nbsp;by&nbsp;:func:`sys.setdefaultencoding`.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_89">89+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;can&nbsp;be&nbsp;raised&nbsp;directly&nbsp;by&nbsp;:func:`codecs.lookup`.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from117_90">90</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_91">91</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_92">92</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;EnvironmentError</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_93">93</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_94">94</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;base&nbsp;class&nbsp;for&nbsp;exceptions&nbsp;that&nbsp;can&nbsp;occur&nbsp;outside&nbsp;the&nbsp;Python&nbsp;system:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_95">95</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:`IOError`,&nbsp;:exc:`OSError`.&nbsp;&nbsp;When&nbsp;exceptions&nbsp;of&nbsp;this&nbsp;type&nbsp;are&nbsp;created&nbsp;with&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_96">96</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;2-tuple,&nbsp;the&nbsp;first&nbsp;item&nbsp;is&nbsp;available&nbsp;on&nbsp;the&nbsp;instance's&nbsp;:attr:`errno`&nbsp;attribute</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_97">97</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;(it&nbsp;is&nbsp;assumed&nbsp;to&nbsp;be&nbsp;an&nbsp;error&nbsp;number),&nbsp;and&nbsp;the&nbsp;second&nbsp;item&nbsp;is&nbsp;available&nbsp;on&nbsp;the</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to117__1"></td><td class="diff_header" id="from117_276">276</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Raised&nbsp;when&nbsp;an&nbsp;error&nbsp;is&nbsp;detected&nbsp;that&nbsp;doesn't&nbsp;fall&nbsp;in&nbsp;any&nbsp;of&nbsp;the&nbsp;other</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_277">277</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;categories.&nbsp;&nbsp;The&nbsp;associated&nbsp;value&nbsp;is&nbsp;a&nbsp;string&nbsp;indicating&nbsp;what&nbsp;precisely&nbsp;went</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_278">278</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;wrong.&nbsp;&nbsp;(This&nbsp;exception&nbsp;is&nbsp;mostly&nbsp;a&nbsp;relic&nbsp;from&nbsp;a&nbsp;previous&nbsp;version&nbsp;of&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_279">279</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interpreter;&nbsp;it&nbsp;is&nbsp;not&nbsp;used&nbsp;very&nbsp;much&nbsp;any&nbsp;more.)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_280">280</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_281">281</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_282">282</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;StopIteration</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_283">283</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to117__2">n</a></td><td class="diff_header" id="from117_284">284-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Raised&nbsp;by&nbsp;an&nbsp;:term:`iterator`\'s&nbsp;:meth:`next`&nbsp;method&nbsp;to&nbsp;signal&nbsp;that<span class="diff_sub">&nbsp;there&nbsp;are</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to117__2">n</a></td><td class="diff_header" id="to117_284">284+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Raised&nbsp;by&nbsp;an&nbsp;:term:`iterator`\'s&nbsp;:meth:`<span class="diff_add">~iterator.</span>next`&nbsp;method&nbsp;to&nbsp;signal&nbsp;that</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from117_285">285-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;no&nbsp;further&nbsp;values.&nbsp;&nbsp;This&nbsp;is&nbsp;derived&nbsp;from&nbsp;:exc:`Exception`&nbsp;rather<span class="diff_sub">&nbsp;than</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_285">285+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;there&nbsp;are</span>&nbsp;no&nbsp;further&nbsp;values.&nbsp;&nbsp;This&nbsp;is&nbsp;derived&nbsp;from&nbsp;:exc:`Exception`&nbsp;rather</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from117_286">286-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:exc:`StandardError`,&nbsp;since&nbsp;this&nbsp;is&nbsp;not&nbsp;considered&nbsp;an&nbsp;error&nbsp;in&nbsp;its<span class="diff_sub">&nbsp;normal</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_286">286+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;than</span>&nbsp;:exc:`StandardError`,&nbsp;since&nbsp;this&nbsp;is&nbsp;not&nbsp;considered&nbsp;an&nbsp;error&nbsp;in&nbsp;its</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from117_287">287-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;application.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_287">287+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;normal</span>&nbsp;application.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from117_288">288</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_289">289</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.2</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_290">290</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_291">291</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_292">292</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;SyntaxError</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_293">293</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_294">294</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Raised&nbsp;when&nbsp;the&nbsp;parser&nbsp;encounters&nbsp;a&nbsp;syntax&nbsp;error.&nbsp;&nbsp;This&nbsp;may&nbsp;occur&nbsp;in&nbsp;an</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_295">295</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:keyword:`import`&nbsp;statement,&nbsp;in&nbsp;an&nbsp;:keyword:`exec`&nbsp;statement,&nbsp;in&nbsp;a&nbsp;call&nbsp;to&nbsp;the</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to117__2"></td><td class="diff_header" id="from117_472">472</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_473">473</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_474">474</td><td nowrap="nowrap">..&nbsp;exception::&nbsp;UnicodeWarning</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_475">475</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_476">476</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Base&nbsp;class&nbsp;for&nbsp;warnings&nbsp;related&nbsp;to&nbsp;Unicode.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_477">477</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next" id="difflib_chg_to117__3"></td><td class="diff_header" id="from117_478">478</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.5</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_479">479</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to117__3">n</a></td><td class="diff_header" id="to117_480">480+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_481">481+</td><td nowrap="nowrap"><span class="diff_add">Exception&nbsp;hierarchy</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_482">482+</td><td nowrap="nowrap"><span class="diff_add">-------------------</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to117_483">483+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from117_480">480</td><td nowrap="nowrap">The&nbsp;class&nbsp;hierarchy&nbsp;for&nbsp;built-in&nbsp;exceptions&nbsp;is:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from117_481">481</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to117__top">t</a></td><td class="diff_header" id="from117_482">482-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from117_483">483</td><td nowrap="nowrap">..&nbsp;literalinclude::&nbsp;../../Lib/test/exception_hierarchy.txt</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

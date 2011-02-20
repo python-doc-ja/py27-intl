@@ -1,0 +1,34 @@
+--- r262/library/types.rst	2008-08-24 06:40:15.426343000 +0900
++++ r266/library/types.rst	2009-10-28 00:08:27.384772000 +0900
+@@ -232,26 +232,29 @@
+    descriptor for object attributes; it has the same purpose as the
+    :class:`property` type, but for classes defined in extension modules.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. data:: MemberDescriptorType
+ 
+    The type of objects defined in extension modules with ``PyMemberDef``, such
+    as ``datetime.timedelta.days``.  This type is used as descriptor for simple C
+    data members which use standard conversion functions; it has the same purpose
+    as the :class:`property` type, but for classes defined in extension modules.
+-   In other implementations of Python, this type may be identical to
+-   ``GetSetDescriptorType``.
++
++   .. impl-detail::
++
++      In other implementations of Python, this type may be identical to
++      ``GetSetDescriptorType``.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. data:: StringTypes
+ 
+    A sequence containing ``StringType`` and ``UnicodeType`` used to facilitate
+    easier checking for any string object.  Using this is more portable than using a
+    sequence of the two string types constructed elsewhere since it only contains
+    ``UnicodeType`` if it has been built in the running version of Python.  For
+    example: ``isinstance(s, types.StringTypes)``.
+ 

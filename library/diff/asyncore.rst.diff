@@ -1,0 +1,58 @@
+--- r262/library/asyncore.rst	2008-06-10 22:53:24.449607000 +0900
++++ r266/library/asyncore.rst	2010-05-19 23:14:45.010791000 +0900
+@@ -72,25 +72,26 @@
+ 
+    The firing of low-level events at certain times or in certain connection
+    states tells the asynchronous loop that certain higher-level events have
+    taken place.  For example, if we have asked for a socket to connect to
+    another host, we know that the connection has been made when the socket
+    becomes writable for the first time (at this point you know that you may
+    write to it with the expectation of success).  The implied higher-level
+    events are:
+ 
+    +----------------------+----------------------------------------+
+    | Event                | Description                            |
+    +======================+========================================+
+-   | ``handle_connect()`` | Implied by the first write event       |
++   | ``handle_connect()`` | Implied by the first read or write     |
++   |                      | event                                  |
+    +----------------------+----------------------------------------+
+    | ``handle_close()``   | Implied by a read event with no data   |
+    |                      | available                              |
+    +----------------------+----------------------------------------+
+    | ``handle_accept()``  | Implied by a read event on a listening |
+    |                      | socket                                 |
+    +----------------------+----------------------------------------+
+ 
+    During asynchronous processing, each mapped channel's :meth:`readable` and
+    :meth:`writable` methods are used to determine whether the channel's socket
+    should be added to the list of channels :cfunc:`select`\ ed or
+    :cfunc:`poll`\ ed for read and write events.
+@@ -192,25 +193,26 @@
+ 
+ 
+    .. method:: listen(backlog)
+ 
+       Listen for connections made to the socket.  The *backlog* argument
+       specifies the maximum number of queued connections and should be at least
+       1; the maximum value is system-dependent (usually 5).
+ 
+ 
+    .. method:: bind(address)
+ 
+       Bind the socket to *address*.  The socket must not already be bound.  (The
+-      format of *address* depends on the address family --- see above.)  To mark
++      format of *address* depends on the address family --- refer to the
++      :mod:`socket` documentation for more information.)  To mark
+       the socket as re-usable (setting the :const:`SO_REUSEADDR` option), call
+       the :class:`dispatcher` object's :meth:`set_reuse_addr` method.
+ 
+ 
+    .. method:: accept()
+ 
+       Accept a connection.  The socket must be bound to an address and listening
+       for connections.  The return value is a pair ``(conn, address)`` where
+       *conn* is a *new* socket object usable to send and receive data on the
+       connection, and *address* is the address bound to the socket on the other
+       end of the connection.
+ 

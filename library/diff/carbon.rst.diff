@@ -1,0 +1,32 @@
+--- r262/library/carbon.rst	2009-03-31 01:03:41.796456000 +0900
++++ r266/library/carbon.rst	2009-04-29 03:23:28.138007000 +0900
+@@ -13,27 +13,27 @@
+ (callbacks are often a problem), and parameters will occasionally be different
+ in Python (input and output buffers, especially).  All methods and functions
+ have a :attr:`__doc__` string describing their arguments and return values, and
+ for additional description you are referred to `Inside Macintosh
+ <http://developer.apple.com/documentation/macos8/mac8.html>`_ or similar works.
+ 
+ These modules all live in a package called :mod:`Carbon`. Despite that name they
+ are not all part of the Carbon framework: CF is really in the CoreFoundation
+ framework and Qt is in the QuickTime framework. The normal use pattern is ::
+ 
+    from Carbon import AE
+ 
+-.. warning::
++.. note::
+ 
+-   The Carbon modules are removed in 3.0.
++   The Carbon modules have been removed in Python 3.0.
+ 
+ 
+ :mod:`Carbon.AE` --- Apple Events
+ =================================
+ 
+ .. module:: Carbon.AE
+    :platform: Mac
+    :synopsis: Interface to the Apple Events toolbox.
+    :deprecated:
+ 
+ 
+ 

@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to192__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/library/shutil.rst =&gt; r266/library/shutil.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to192__0"></td><td class="diff_header" id="from192_211">211</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_212">212</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;copystat(src,&nbsp;dst)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_213">213</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;except&nbsp;WindowsError:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_214">214</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;can't&nbsp;copy&nbsp;file&nbsp;access&nbsp;times&nbsp;on&nbsp;Windows</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_215">215</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_216">216</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;except&nbsp;OSError,&nbsp;why:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_217">217</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errors.extend((src,&nbsp;dst,&nbsp;str(why)))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_218">218</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;errors:</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to192__top">t</a></td><td class="diff_header" id="from192_219">219-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;Error<span class="diff_chg">,&nbsp;</span>errors</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to192__top">t</a></td><td class="diff_header" id="to192_219">219+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;Error<span class="diff_chg">(</span>errors<span class="diff_add">)</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from192_220">220</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_221">221</td><td nowrap="nowrap">Another&nbsp;example&nbsp;that&nbsp;uses&nbsp;the&nbsp;:func:`ignore_patterns`&nbsp;helper::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_222">222</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_223">223</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;from&nbsp;shutil&nbsp;import&nbsp;copytree,&nbsp;ignore_patterns</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_224">224</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_225">225</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;copytree(source,&nbsp;destination,&nbsp;ignore=ignore_patterns('*.pyc',&nbsp;'tmp*'))</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_226">226</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from192_227">227</td><td nowrap="nowrap">This&nbsp;will&nbsp;copy&nbsp;everything&nbsp;except&nbsp;``.pyc``&nbsp;files&nbsp;and&nbsp;files&nbsp;or&nbsp;directories&nbsp;whose</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

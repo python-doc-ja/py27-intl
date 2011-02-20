@@ -1,0 +1,29 @@
+--- r262/library/multifile.rst	2008-01-06 05:33:46.954265000 +0900
++++ r266/library/multifile.rst	2009-10-27 23:36:50.397095000 +0900
+@@ -100,25 +100,25 @@
+ 
+    Note that this test is used intended as a fast guard for the real boundary
+    tests; if it always returns false it will merely slow processing, not cause it
+    to fail.
+ 
+ 
+ .. method:: MultiFile.push(str)
+ 
+    Push a boundary string.  When a decorated version of this boundary  is found as
+    an input line, it will be interpreted as a section-divider  or end-marker
+    (depending on the decoration, see :rfc:`2045`).  All subsequent reads will
+    return the empty string to indicate end-of-file, until a call to :meth:`pop`
+-   removes the boundary a or :meth:`next` call reenables it.
++   removes the boundary a or :meth:`.next` call reenables it.
+ 
+    It is possible to push more than one boundary.  Encountering the
+    most-recently-pushed boundary will return EOF; encountering any other
+    boundary will raise an error.
+ 
+ 
+ .. method:: MultiFile.pop()
+ 
+    Pop a section boundary.  This boundary will no longer be interpreted as EOF.
+ 
+ 
+ .. method:: MultiFile.section_divider(str)

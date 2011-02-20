@@ -1,0 +1,241 @@
+--- r262/library/unittest.rst	2009-03-24 09:21:36.008080000 +0900
++++ r266/library/unittest.rst	2010-02-28 12:42:56.242774000 +0900
+@@ -97,38 +97,38 @@
+ suffice to meet the needs of most users.
+ 
+ Here is a short script to test three functions from the :mod:`random` module::
+ 
+    import random
+    import unittest
+ 
+    class TestSequenceFunctions(unittest.TestCase):
+ 
+        def setUp(self):
+            self.seq = range(10)
+ 
+-       def testshuffle(self):
++       def test_shuffle(self):
+            # make sure the shuffled sequence does not lose any elements
+            random.shuffle(self.seq)
+            self.seq.sort()
+            self.assertEqual(self.seq, range(10))
+ 
+-       def testchoice(self):
++       def test_choice(self):
+            element = random.choice(self.seq)
+-           self.assert_(element in self.seq)
++           self.assertTrue(element in self.seq)
+ 
+-       def testsample(self):
++       def test_sample(self):
+            self.assertRaises(ValueError, random.sample, self.seq, 20)
+            for element in random.sample(self.seq, 5):
+-               self.assert_(element in self.seq)
++               self.assertTrue(element in self.seq)
+ 
+    if __name__ == '__main__':
+        unittest.main()
+ 
+ A testcase is created by subclassing :class:`unittest.TestCase`. The three
+ individual tests are defined with methods whose names start with the letters
+ ``test``.  This naming convention informs the test runner about which methods
+ represent tests.
+ 
+ The crux of each test is a call to :meth:`assertEqual` to check for an expected
+ result; :meth:`assert_` to verify a condition; or :meth:`assertRaises` to verify
+ that an expected exception gets raised.  These methods are used instead of the
+@@ -151,27 +151,27 @@
+    OK
+ 
+ Instead of :func:`unittest.main`, there are other ways to run the tests with a
+ finer level of control, less terse output, and no requirement to be run from the
+ command line.  For example, the last two lines may be replaced with::
+ 
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+ 
+ Running the revised script from the interpreter or another script produces the
+ following output::
+ 
+-   testchoice (__main__.TestSequenceFunctions) ... ok
+-   testsample (__main__.TestSequenceFunctions) ... ok
+-   testshuffle (__main__.TestSequenceFunctions) ... ok
++   test_choice (__main__.TestSequenceFunctions) ... ok
++   test_sample (__main__.TestSequenceFunctions) ... ok
++   test_shuffle (__main__.TestSequenceFunctions) ... ok
+ 
+    ----------------------------------------------------------------------
+    Ran 3 tests in 0.110s
+ 
+    OK
+ 
+ The above examples show the most commonly used :mod:`unittest` features which
+ are sufficient to meet many everyday testing needs.  The remainder of the
+ documentation explores the full feature set from first principles.
+ 
+ 
+ .. _organizing-tests:
+@@ -225,32 +225,32 @@
+ Luckily, we can factor out such set-up code by implementing a method called
+ :meth:`setUp`, which the testing framework will automatically call for us when
+ we run the test::
+ 
+    import unittest
+ 
+    class SimpleWidgetTestCase(unittest.TestCase):
+        def setUp(self):
+            self.widget = Widget('The widget')
+ 
+    class DefaultWidgetSizeTestCase(SimpleWidgetTestCase):
+        def runTest(self):
+-           self.failUnless(self.widget.size() == (50,50),
+-                           'incorrect default size')
++           self.assertEqual(self.widget.size(), (50,50),
++                            'incorrect default size')
+ 
+    class WidgetResizeTestCase(SimpleWidgetTestCase):
+        def runTest(self):
+            self.widget.resize(100,150)
+-           self.failUnless(self.widget.size() == (100,150),
+-                           'wrong size after resize')
++           self.assertEqual(self.widget.size(), (100,150),
++                            'wrong size after resize')
+ 
+ If the :meth:`setUp` method raises an exception while the test is running, the
+ framework will consider the test to have suffered an error, and the
+ :meth:`runTest` method will not be executed.
+ 
+ Similarly, we can provide a :meth:`tearDown` method that tidies up after the
+ :meth:`runTest` method has been run::
+ 
+    import unittest
+ 
+    class SimpleWidgetTestCase(unittest.TestCase):
+        def setUp(self):
+@@ -272,76 +272,77 @@
+ mechanism::
+ 
+    import unittest
+ 
+    class WidgetTestCase(unittest.TestCase):
+        def setUp(self):
+            self.widget = Widget('The widget')
+ 
+        def tearDown(self):
+            self.widget.dispose()
+            self.widget = None
+ 
+-       def testDefaultSize(self):
+-           self.failUnless(self.widget.size() == (50,50),
+-                           'incorrect default size')
++       def test_default_size(self):
++           self.assertEqual(self.widget.size(), (50,50),
++                            'incorrect default size')
+ 
+-       def testResize(self):
++       def test_resize(self):
+            self.widget.resize(100,150)
+-           self.failUnless(self.widget.size() == (100,150),
+-                           'wrong size after resize')
++           self.assertEqual(self.widget.size(), (100,150),
++                            'wrong size after resize')
+ 
+-Here we have not provided a :meth:`runTest` method, but have instead provided
+-two different test methods.  Class instances will now each run one of the
+-:meth:`test\*`  methods, with ``self.widget`` created and destroyed separately
+-for each instance.  When creating an instance we must specify the test method it
+-is to run.  We do this by passing the method name in the constructor::
++Here we have not provided a :meth:`~TestCase.runTest` method, but have instead
++provided two different test methods.  Class instances will now each run one of
++the :meth:`test_\*` methods, with ``self.widget`` created and destroyed
++separately for each instance.  When creating an instance we must specify the
++test method it is to run.  We do this by passing the method name in the
++constructor::
+ 
+-   defaultSizeTestCase = WidgetTestCase('testDefaultSize')
+-   resizeTestCase = WidgetTestCase('testResize')
++   defaultSizeTestCase = WidgetTestCase('test_default_size')
++   resizeTestCase = WidgetTestCase('test_resize')
+ 
+ Test case instances are grouped together according to the features they test.
+ :mod:`unittest` provides a mechanism for this: the :dfn:`test suite`,
+ represented by :mod:`unittest`'s :class:`TestSuite` class::
+ 
+    widgetTestSuite = unittest.TestSuite()
+-   widgetTestSuite.addTest(WidgetTestCase('testDefaultSize'))
+-   widgetTestSuite.addTest(WidgetTestCase('testResize'))
++   widgetTestSuite.addTest(WidgetTestCase('test_default_size'))
++   widgetTestSuite.addTest(WidgetTestCase('test_resize'))
+ 
+ For the ease of running tests, as we will see later, it is a good idea to
+ provide in each test module a callable object that returns a pre-built test
+ suite::
+ 
+    def suite():
+        suite = unittest.TestSuite()
+-       suite.addTest(WidgetTestCase('testDefaultSize'))
+-       suite.addTest(WidgetTestCase('testResize'))
++       suite.addTest(WidgetTestCase('test_default_size'))
++       suite.addTest(WidgetTestCase('test_resize'))
+        return suite
+ 
+ or even::
+ 
+    def suite():
+-       tests = ['testDefaultSize', 'testResize']
++       tests = ['test_default_size', 'test_resize']
+ 
+        return unittest.TestSuite(map(WidgetTestCase, tests))
+ 
+ Since it is a common pattern to create a :class:`TestCase` subclass with many
+ similarly named test functions, :mod:`unittest` provides a :class:`TestLoader`
+ class that can be used to automate the process of creating a test suite and
+ populating it with individual tests. For example, ::
+ 
+    suite = unittest.TestLoader().loadTestsFromTestCase(WidgetTestCase)
+ 
+-will create a test suite that will run ``WidgetTestCase.testDefaultSize()`` and
+-``WidgetTestCase.testResize``. :class:`TestLoader` uses the ``'test'`` method
++will create a test suite that will run ``WidgetTestCase.test_default_size()`` and
++``WidgetTestCase.test_resize``. :class:`TestLoader` uses the ``'test'`` method
+ name prefix to identify test methods automatically.
+ 
+ Note that the order in which the various test cases will be run is determined by
+ sorting the test function names with the built-in :func:`cmp` function.
+ 
+ Often it is desirable to group suites of test cases together, so as to run tests
+ for the whole system at once.  This is easy, since :class:`TestSuite` instances
+ can be added to a :class:`TestSuite` just as :class:`TestCase` instances can be
+ added to a :class:`TestSuite`::
+ 
+    suite1 = module1.TheTestSuite()
+    suite2 = module2.TheTestSuite()
+@@ -426,26 +427,26 @@
+    in the :mod:`unittest` universe.  This class is intended to be used as a base
+    class, with specific tests being implemented by concrete subclasses.  This class
+    implements the interface needed by the test runner to allow it to drive the
+    test, and methods that the test code can use to check for and report various
+    kinds of failure.
+ 
+    Each instance of :class:`TestCase` will run a single test method: the method
+    named *methodName*.  If you remember, we had an earlier example that went
+    something like this::
+ 
+       def suite():
+           suite = unittest.TestSuite()
+-          suite.addTest(WidgetTestCase('testDefaultSize'))
+-          suite.addTest(WidgetTestCase('testResize'))
++          suite.addTest(WidgetTestCase('test_default_size'))
++          suite.addTest(WidgetTestCase('test_resize'))
+           return suite
+ 
+    Here, we create two instances of :class:`WidgetTestCase`, each of which runs a
+    single test.
+ 
+    *methodName* defaults to ``'runTest'``.
+ 
+ 
+ .. class:: FunctionTestCase(testFunc[, setUp[, tearDown[, description]]])
+ 
+    This class implements the portion of the :class:`TestCase` interface which
+    allows the test runner to drive the test, but does not provide the methods which
