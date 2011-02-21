@@ -19,12 +19,13 @@
 その他のアーカイブフォーマットに関しては、 :mod:`gzip`, :mod:`zipfile`, :mod:`tarfile`
 モジュールを参照してください。
 
-bz2 モジュールで提供されている機能を以下にまとめます:
+bz2 モジュールで提供されている機能を以下にまとめます。
 
-* :class:`BZ2File` クラスは、 :meth:`readline`, :meth:`readlines`, :meth:`writelines`,
-  :meth:`seek` 等を含む、完全なファイルインタフェースを実装します。
+* :class:`BZ2File` クラスは、 :meth:`~BZ2File.readline`,
+  :meth:`~BZ2File.readlines`, :meth:`~BZ2File.writelines`, :meth:`~BZ2File.seek`
+  等を含む、完全なファイルインタフェースを実装します。
 
-* :class:`BZ2File` クラスは :meth:`seek` をエミュレーションでサポートします。
+* :class:`BZ2File` クラスは :meth:`~BZ2File.seek` をエミュレーションでサポートします。
 
 * :class:`BZ2File` クラスは広範囲の改行文字バリエーションをサポートします。
 
