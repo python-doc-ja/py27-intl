@@ -16,9 +16,9 @@
 手段を提供しています。 :mod:`subprocess` モジュールを使う方が :mod:`commands`
 モジュールを使うより好ましいです。
 
-.. warning::
+.. note::
 
-   3.x において、 :func:`getstatus` および二つの隠し関数(:func:`mk2arg` と
+   Python 3.x において、 :func:`getstatus` および二つの隠し関数(:func:`mk2arg` と
    :func:`mkarg`) は削除されました。また、 :func:`getstatusoutput` と
    :func:`getoutput` は :mod:`subprocess` モジュールに移動されました。
 
