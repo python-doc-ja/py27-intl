@@ -46,12 +46,16 @@
         >>> p.map(f, [1,2,3])
         Process PoolWorker-1:
         Process PoolWorker-2:
+        Process PoolWorker-3:
+        Traceback (most recent call last):
         Traceback (most recent call last):
         Traceback (most recent call last):
         AttributeError: 'module' object has no attribute 'f'
         AttributeError: 'module' object has no attribute 'f'
         AttributeError: 'module' object has no attribute 'f'
 
+    (このサンプルを試すと、3つのトレースバック全てがほぼランダムに交互に重なって
+    表示されます、そうなったらどうにかしてマスタープロセスを止めましょう。)
 
 :class:`Process` クラス
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -378,10 +382,13 @@
 
       初期値は作成するプロセスから継承します。
 
-      プロセスが終了するとき、全てのデーモンの子プロセスを終了させようとします。
+      プロセスが終了するとき、その子プロセスのデーモンプロセス全てを終了させようとします。
 
       デーモンプロセスは子プロセスを作成できないことに注意してください。
       もしそうでなければ、そのデーモンの親プロセスが終了したときに子プロセスが孤児になってしまう場合があるからです。
+      加えて Unix デーモンまたはサービスで **ない** 場合には、
+      非デーモンプロセスが終了したとき、普通のプロセスとして (join されずに)
+      終了します。
 
    :class:`Threading.Thread` クラスのAPIに加えて :class:`Process` クラスのオブジェクトには
    以下の属性およびメソッドがあります。
@@ -428,7 +435,9 @@
    プロセスオブジェクトが作成したプロセスのみが :meth:`start`, :meth:`join`,
    :meth:`is_alive` と :attr:`exit_code` のメソッドを呼び出すべきです。
 
-   以下の例では :class:`Process` のメソッドの使い方を示しています。 ::
+   以下の例では :class:`Process` のメソッドの使い方を示しています。
+
+   .. doctest::
 
        >>> import multiprocessing, time, signal
        >>> p = multiprocessing.Process(target=time.sleep, args=(1000,))
@@ -438,6 +447,7 @@
        >>> print p, p.is_alive()
        <Process(Process-1, started)> True
        >>> p.terminate()
+       >>> time.sleep(0.1)
        >>> print p, p.is_alive()
        <Process(Process-1, stopped[SIGTERM])> False
        >>> p.exitcode == -signal.SIGTERM
@@ -690,8 +700,8 @@
    :func:`threading.settrace`, :func:`threading.setprofile`,
    :class:`threading.Timer` や :class:`threading.local` のような関数はありません。
 
-Connection Objects
-~~~~~~~~~~~~~~~~~~
+Connection オブジェクト
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Connection オブジェクトは pickle でシリアライズ可能なオブジェクトか文字列を送ったり、受け取ったりします。
 そういったオブジェクトはメッセージ指向の接続ソケットと考えられます。
@@ -758,6 +768,8 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
       ``e`` が例外インスタンスとすると完全なメッセージは ``e.args[0]`` で確認できます。
 
 例:
+
+.. doctest::
 
     >>> from multiprocessing import Pipe
     >>> a, b = Pipe()
@@ -843,7 +855,8 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
    *block* が ``False`` なら *timeout* は無視されます。
 
    Mac OS X では ``sem_timedwait`` がサポートされていないので、
-   タイムアウトの引数は無視されることに注意してください。
+   ``acquire()`` タイムアウトを与えて呼ぶと、
+   擬似的なスリーピングループ関数を実行することになります。
 
 .. note::
 
@@ -1035,7 +1048,7 @@ MyStruct(4, 6)       RawValue(MyStruct, 4, 6)
        lock = Lock()
 
        n = Value('i', 7)
-       x = Value(ctypes.c_double, 1.0/3.0, lock=False)
+       x = Value(c_double, 1.0/3.0, lock=False)
        s = Array('c', 'hello world', lock=lock)
        A = Array(Point, [(1.875,-6.25), (-5.75,2.0), (2.375,9.5)], lock=lock)
 
@@ -1090,7 +1103,7 @@ Manager は別のプロセス間で共有されるデータの作成方法を提
    BaseManager オブジェクトを作成します。
 
    作成後、マネージャオブジェクトが開始されたマネージャプロセスの参照を保証するために
-   :meth:`start` か :meth:`serve_forever` を呼び出します。
+   :meth:`start` か ``get_server().serve_forever()`` を呼び出します。
 
    *address* はマネージャプロセスが新たなコネクションを待ち受けるアドレスです。
    *address* が ``None`` の場合、任意のアドレスが設定されます。
@@ -1104,33 +1117,28 @@ Manager は別のプロセス間で共有されるデータの作成方法を提
 
       マネージャを開始するためにサブプロセスを開始します。
 
-   .. method:: serve_forever()
-
-      カレントプロセスでサーバを実行します。
-
-   .. method:: from_address(address, authkey)
-
-      引数として渡されたアドレスと認証キーを使用して既存のサーバプロセスを参照する
-      マネージャオブジェクトを作成するクラスメソッドです。
-
    .. method:: get_server()
 
       マネージャの制御下にある実際のサーバに相当する :class:`Server` オブジェクトを返します。
       :class:`Server` オブジェクトは :meth:`serve_forever` メソッドをサポートします。
+      
+      ::
 
       >>> from multiprocessing.managers import BaseManager
-      >>> m = BaseManager(address=('', 50000), authkey='abc'))
-      >>> server = m.get_server()
-      >>> s.serve_forever()
+      >>> manager = BaseManager(address=('', 50000), authkey='abc'))
+      >>> server = manager.get_server()
+      >>> server.serve_forever()
 
       :class:`Server` はさらに :attr:`address` 属性も持っています。
 
    .. method:: connect()
 
       ローカルからリモートのマネージャオブジェクトへ接続します。
+      
+      ::
 
       >>> from multiprocessing.managers import BaseManager
-      >>> m = BaseManager(address='127.0.0.1', authkey='abc))
+      >>> m = BaseManager(address=('127.0.0.1', 5000), authkey='abc))
       >>> m.connect()
 
    .. method:: shutdown()
@@ -1250,7 +1258,7 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
 しかし、Namespace オブジェクトのためにプロキシを使用するとき
 ``'_'`` が先頭に付く属性はプロキシの属性になり、参照対象の属性にはなりません。
 
-::
+.. doctest::
 
    >>> manager = multiprocessing.Manager()
    >>> Global = manager.Namespace()
@@ -1307,11 +1315,10 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
    >>> import Queue
    >>> queue = Queue.Queue()
    >>> class QueueManager(BaseManager): pass
-   ...
    >>> QueueManager.register('get_queue', callable=lambda:queue)
    >>> m = QueueManager(address=('', 50000), authkey='abracadabra')
    >>> s = m.get_server()
-   >>> s.serveForever()
+   >>> s.serve_forever()
 
 あるクライアントからサーバへのアクセスは次のようになります。
 
@@ -1319,7 +1326,6 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
 
    >>> from multiprocessing.managers import BaseManager
    >>> class QueueManager(BaseManager): pass
-   ...
    >>> QueueManager.register('get_queue')
    >>> m = QueueManager(address=('foo.bar.org', 50000), authkey='abracadabra')
    >>> m.connect()
@@ -1332,10 +1338,10 @@ Namespace オブジェクトはプライベートなメソッドを持ってい�
 
    >>> from multiprocessing.managers import BaseManager
    >>> class QueueManager(BaseManager): pass
-   ...
-   >>> QueueManager.register('getQueue')
-   >>> m = QueueManager.from_address(address=('foo.bar.org', 50000), authkey='abracadabra')
-   >>> queue = m.getQueue()
+   >>> QueueManager.register('get_queue')
+   >>> m = QueueManager(address=('foo.bar.org', 50000), authkey='abracadabra')
+   >>> m.connect()
+   >>> queue = m.get_queue()
    >>> queue.get()
    'hello'
 
@@ -1374,7 +1380,7 @@ Proxy オブジェクト
 (そうは言っても、参照対象の全てのメソッドが必ずしもプロキシ経由で利用可能ではありません)
 プロキシは通常その参照対象ができることと同じ方法で使用されます。
 
-::
+.. doctest::
 
    >>> from multiprocessing import Manager
    >>> manager = Manager()
@@ -1382,7 +1388,7 @@ Proxy オブジェクト
    >>> print l
    [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
    >>> print repr(l)
-   <ListProxy object, typeid 'list' at 0xb799974c>
+   <ListProxy object, typeid 'list' at 0x...>
    >>> l[4]
    16
    >>> l[2:5]
@@ -1396,7 +1402,7 @@ Proxy オブジェクト
 そのプロキシを unpickle するとその参照対象を生成することを覚えておいてください。
 例えば、これはある共有オブジェクトに別の共有オブジェクトが含められることを意味します。
 
-::
+.. doctest::
 
    >>> a = manager.list()
    >>> b = manager.list()
@@ -1412,11 +1418,12 @@ Proxy オブジェクト
    :mod:`multiprocessing` のプロキシ型は値による比較に対して何もサポートしません。
    そのため、インスタンスでは、
 
-   ::
+   .. doctest::
 
-       manager.list([1,2,3]) == [1,2,3]
+       >>> manager.list([1,2,3]) == [1,2,3]
+       False
 
-   は ``False`` が返されます。比較を行いたいときは参照対象のコピーを使用してください。
+   比較を行いたいときは参照対象のコピーを使用してください。
 
 .. class:: BaseProxy
 
@@ -1451,7 +1458,7 @@ Proxy オブジェクト
 
       :meth:`_callmethod` の使用例になります。
 
-      ::
+      .. doctest::
 
          >>> l = manager.list(range(10))
          >>> l._callmethod('__len__')
@@ -1506,6 +1513,9 @@ Proxy オブジェクト
    .. method:: apply(func[, args[, kwds]])
 
       :func:`apply` 組み込み関数と同じです。その結果を返せるようになるまでブロックします。
+      これらのブロックが与えられる場合、:meth:`apply_async` の方が
+      うまく並列実行を処理します。
+      さらに関数はプールの中の一つのワーカーにのみ渡されます。
 
    .. method:: apply_async(func[, args[, kwds[, callback]]])
 
@@ -1657,7 +1667,7 @@ Listeners and Clients
    フォーマットから推測できるので、これは指定されません。
    ( :ref:`multiprocessing-address-formats` を参照してください)
 
-   *authentication* が ``True`` か *authkey* が文字列の場合、
+   *authenticate* が ``True`` か *authkey* が文字列の場合、
    ダイジェスト認証が使用されます。認証に使用されるキーは *authkey* 、
    又は *authkey* が ``None`` の場合は ``current_process().authkey`` のどちらかです。
    認証が失敗した場合 :exc:`AuthenticationError` が発生します。
@@ -1687,7 +1697,7 @@ Listeners and Clients
    リスナーオブジェクトがソケットを使用する場合、ソケットに束縛されるときに
    *backlog* (デフォルトでは1つ) がソケットの :meth:`listen` メソッドに対して渡されます。
 
-   *authentication* が ``True``  (デフォルトでは ``False`` ) か
+   *authenticate* が ``True``  (デフォルトでは ``False`` ) か
    *authkey* が ``None`` ではない場合、ダイジェスト認証が使用されます。
 
    *authkey* が文字列の場合、認証キーとして使用されます。そうでない場合は *None* でなければいけません。
@@ -1854,12 +1864,12 @@ Listeners and Clients
     >>> logger.warning('doomed')
     [WARNING/MainProcess] doomed
     >>> m = multiprocessing.Manager()
-    [INFO/SyncManager-1] child process calling self.run()
-    [INFO/SyncManager-1] created temp directory /.../pymp-Wh47O_
-    [INFO/SyncManager-1] manager serving at '/.../listener-lWsERs'
+    [INFO/SyncManager-...] child process calling self.run()
+    [INFO/SyncManager-...] created temp directory /.../pymp-...
+    [INFO/SyncManager-...] manager serving at '/.../listener-...'
     >>> del m
     [INFO/MainProcess] sending shutdown message to manager
-    [INFO/SyncManager-1] manager exiting with exitcode 0
+    [INFO/SyncManager-...] manager exiting with exitcode 0
 
 これらの2つのロギング関数があることに加えて、
 multiprocessing モジュールも2つの追加ロギングレベル属性を提供します。
@@ -1888,18 +1898,18 @@ multiprocessing モジュールも2つの追加ロギングレベル属性を提
     >>> logger.warning('doomed')
     [WARNING/MainProcess] doomed
     >>> m = multiprocessing.Manager()
-    [INFO/SyncManager-1] child process calling self.run()
-    [INFO/SyncManager-1] created temp directory /.../pymp-djGBXN
-    [INFO/SyncManager-1] manager serving at '/.../pymp-djGBXN/listener-knBYGe'
+    [INFO/SyncManager-...] child process calling self.run()
+    [INFO/SyncManager-...] created temp directory /.../pymp-...
+    [INFO/SyncManager-...] manager serving at '/.../pymp-.../listener-...'
     >>> del m
     [SUBDEBUG/MainProcess] finalizer calling ...
     [INFO/MainProcess] sending shutdown message to manager
     [DEBUG/SyncManager-1] manager received shutdown message
-    [SUBDEBUG/SyncManager-1] calling <Finalize object, callback=unlink, ...
-    [SUBDEBUG/SyncManager-1] finalizer calling <built-in function unlink> ...
-    [SUBDEBUG/SyncManager-1] calling <Finalize object, dead>
-    [SUBDEBUG/SyncManager-1] finalizer calling <function rmtree at 0x5aa730> ...
-    [INFO/SyncManager-1] manager exiting with exitcode 0
+    [SUBDEBUG/SyncManager-...] calling <Finalize object, callback=unlink, ...
+    [SUBDEBUG/SyncManager-...] finalizer calling <built-in function unlink> ...
+    [SUBDEBUG/SyncManager-...] calling <Finalize object, dead>
+    [SUBDEBUG/SyncManager-...] finalizer calling <function rmtree at 0x5aa730> ...
+    [INFO/SyncManager-...] manager exiting with exitcode 0
 
 :mod:`multiprocessing.dummy` モジュール
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2033,6 +2043,42 @@ pickle/unpickle より継承する方が良い
            for i in range(10):
                 Process(target=f, args=(lock,)).start()
 
+sys.stdin をファイル形式のオブジェクトへ置き換えることに注意してください
+
+    :mod:`muliprocessing` は元々 :method:`muliprocessing.Process.__bootstrap` の
+    中で無条件に
+
+    ::
+        os.close(sys.stdin.fileno())
+
+    を呼び出していました --- これはプロセス間で問題が起こしてしまいます。
+    そこで、これは以下のように変更されました。
+    
+    ::
+        sys.stdin.close()
+        sys.stdin = open(os.devnull)
+
+    これによってプロセス間同士が衝突して bad file descripter エラーを起こすという
+    基本的な問題は解決しました、しかし、アプリケーションの出力バッファーを
+    :func:`sys.stdin` からファイル形式のオブジェクトに置き換えるという潜在的危険を
+    持ち込みます。
+    複数のプロセスがファイル形式オブジェクトの :func:`close()` を呼び出した場合、
+    オブジェクトに同じデータが何度もフラッシュされ、衝突が起きる危険があります。
+
+    もし、ファイル形式オブジェクトを書いて、独自のキャッシュ実装する場合、
+    キャッシュする時に常に pid を記録しておく、
+    pid が変わったらキュッシュを捨てることでフォークセーフにできます。
+    例::
+
+        @property
+        def cache(self):
+            pid = os.getpid()
+            if pid != self._pid:
+                self._pid = pid
+                self._cache = []
+            return self._cache
+
+    より詳しい情報は :issue:`5155` 、 :issue:`5351` 、 :issue:`5331` を見てください。
 
 Windows
 ~~~~~~~
@@ -2132,9 +2178,3 @@ Windows では :func:`os.fork` がないので幾つか追加制限がありま�
 
 .. literalinclude:: ../includes/mp_benchmarks.py
 
-プロセスを分散して、SSH 経由でアクセスできるネットワーク上のマシンの "クラスタ" に
-対する分散キューを経由するシステム上で構築された :class:`managers.SyncManager`,
-:class:`Process` やその他の使用方法の例/デモです。
-この処理を実行するために全てのホストで秘密鍵認証を行う必要があります。
-
-.. literalinclude:: ../includes/mp_distributing.py
