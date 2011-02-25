@@ -36,16 +36,55 @@ subprocess モジュールを使う
 
    各引数の説明は以下のとおりです:
 
-   *args* は文字列か、あるいはプログラムへの引数のシーケンスである必要があります。
+   *args* は文字列か、あるいはプログラムへの引数のシーケンスです。
    実行するプログラムは通常 *args* シーケンスあるいは文字列の最初の要素ですが、
    *executable* 引数を使うことにより明示的に指定することもできます。
+   *executable* が与えられると、その引数シーケンスの最初の要素は、
+   多くのプログラムではコマンド名として扱われます。
+   ただ、コマンド名は実際に実行される名前とは違う場合があります。
+   Unix では、コマンド名は :program:`ps` のようなユーティリティプログラムに表示されます。
 
    Unix で *shell=False* の場合 (デフォルト): この場合、 Popen クラスは子プログラムを実行するのに
-   :meth:`os.execvp` を使います。 *args* は通常シーケンスでなければなりません。文字列の場合はひとつだけの文字列要素
-   (=実行するプログラム名) をもったシーケンスとして扱われます。
+   :meth:`os.execvp` を使います。 文字列が引数として与えられた場合、
+   実行されるプログラムの名前かパスとして使われます；
+   ただし、プログラムは引数無しの場合のみ動作します。
 
-   Unix で *shell=True* の場合: args が文字列の場合、これはシェルを介して実行されるコマンドライン文字列を指定します。 *args* が
-   シーケンスの場合、その最初の要素はコマンドライン文字列となり、それ以降の要素はすべてシェルへの追加の引数として扱われます。
+   .. note::
+
+      *args* を正しくトークン化するには、:meth:`shlex.split` が便利です。
+      このメソッドは特に複雑な状況で活躍します。
+
+      ::
+
+        >>> import shlex, subprocess
+        >>> command_line = raw_input()
+        /bin/vikings -input eggs.txt -output "spam spam.txt" -cmd "echo '$MONEY'"
+        >>> args = shlex.split(command_line)
+        >>> print args
+        ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', "ech '$MONEY"]
+        >>> p = subprocess.Popen(args) # Success!
+
+      シェルの中で (*-input* 、 *eggs.txt* のように) 
+      スペースで区切られたオプションと引数は
+      リストの別の要素として区切られていること、
+      シェルの中で (上にあるようなスペースを含むファイル名や
+      *echo* コマンドのように) クォーティングか
+      バックスラッシュエスケープが必要なものは
+      単一のリスト要素にされていることに注目してください。
+
+
+   Unix で *shell=True* の場合: args が文字列の場合、
+   シェルを介して実行されるコマンドライン文字列を指定します。
+   文字列は厳密にシェルプロンプトで打つ形式と一致しなければなりません。
+   例えば、文字列の中にスペースを含むファイル名がある場合、
+   はクォーティングかバックスラッシュエスケープが必要です。
+   args が文字列の場合には最初の要素はコマンド名を表わす文字列として
+   そして残りの要素は続く引数としてシェルに渡されます。
+   これは、以下の *Popen* と等価ということです。
+
+   ::
+
+      Popen(['/bin/sh', '-c', args[0], args[1], ...])
 
    Windows の場合: :class:`Popen` クラスは子プログラムを実行するのに文字列の扱える CreateProcess()
    を使います。 *args* がシーケンスの場合、これは :meth:`list2cmdline` メソッドをつかってコマンドライン文字列に変換されます。注意:
@@ -57,10 +96,18 @@ subprocess モジュールを使う
    その大きさのバッファが使われることを意味します。負の *bufsize* はシステムのデフォルト値が使われることを意味し、
    通常これはバッファがすべて有効となります。 *bufsize* のデフォルト値は :const:`0` (バッファされない) です。
 
+   .. note::
+      パフォーマンス上の問題がある場合、*bufsize* を -1 か十分大きな
+      正の値 (例えば 4096) に設定し、バッファを有効にすることを勧めます。
+
    *executable* 引数には実行するプログラムを指定します。これはほとんど必要ありません: ふつう、実行するプログラムは *args*
    引数で指定されるからです。 ``shell=True`` の場合、 *executable* 引数は使用するシェルを指定します。 Unix
    では、デフォルトのシェルは :file:`/bin/sh` です。Windows では、デフォルトのシェルは :envvar:`COMSPEC`
    環境変数で指定されます。
+   Windows で ``shell=True`` を有効にする必要があるのは ``dir`` や ``copy`` などの
+   シェル組み込みのコマンドを使いたい場合だけです。
+   バッチファイルを実行するときも、コンソールベースで起動するときも、
+   ``shell=True`` にする必要はありません。
 
    *stdin*, *stdout* および *stderr* には、実行するプログラムの標準入力、標準出力、および標準エラー出力の
    ファイルハンドルをそれぞれ指定します。とりうる値は :data:`PIPE` 、既存のファイル記述子 (正の整数)、既存のファイルオブジェクト、そして
@@ -85,6 +132,15 @@ subprocess モジュールを使う
 
    *env* が ``None`` 以外の場合、これは新しいプロセスでの環境変数を定義します。
    デフォルトでは、子プロセスは現在のプロセスの環境変数を引き継ぎます。
+
+   .. note::
+
+      *env* を特定の値として与える場合、プログラムを実行するのに
+      必要な変数全てを与えなければなりません。
+      Windows で `side-by-side assembly`_ を実行するためには、
+      *env* は正しい :envvar:`SystemRoot` を **含まなければいけません** 。
+
+    .. _side-by-side assembly: http://en.wikipedia.org/wiki/Side-by-Side_Assembly
 
    *universal_newlines* が :const:`True` の場合、 stdout および stderr
    のファイルオブジェクトはテキストファイルとして open されますが、行の終端は Unix形式の行末 ``'\n'`` か、古い Macintosh 形式の行末
@@ -130,9 +186,9 @@ subprocess モジュールを使う
 
    コマンドを指定された引数で実行し、そのコマンドが完了するのを待って、 :attr:`returncode` 属性を返します。
 
-   この引数は Popen コンストラクタの引数と同じです。使用例::
+   この引数は :class:`Popen` コンストラクタの引数と同じです。使用例::
 
-      retcode = call(["ls", "-l"])
+      >>> retcode = call(["ls", "-l"])
 
 
 .. function:: check_call(*popenargs, **kwargs)
@@ -141,9 +197,10 @@ subprocess モジュールを使う
    :exc:`CalledProcessError` 例外を送出します。 :exc:`CalledProcessError` オブジェクトにはリターンコードが
    :attr:`returncode` 属性として収められています。
 
-   引数は Popen のコンストラクタと一緒です。使用例::
+   引数は :class:`Popen` コンストラクタと一緒です。使用例::
 
-      check_call(["ls", "-l"])
+      >>> subprocess.check_call(["ls", "-l"])
+      0
 
    .. versionadded:: 2.5
 
@@ -298,6 +355,8 @@ Popen オブジェクト
 
    子プロセスのプロセス ID が入ります。
 
+   *shell* 引数を ``True`` にセットした場合は、生成されたシェルのプロセス ID になります。
+
 
 .. attribute:: Popen.returncode
 
@@ -344,15 +403,15 @@ Popen オブジェクト
    output = p2.communicate()[0]
 
 
-os.system() を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^
+:func:`os.system()` を置き換える
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
    sts = os.system("mycmd" + " myarg")
    ==>
    p = Popen("mycmd" + " myarg", shell=True)
-   sts = os.waitpid(p.pid, 0)
+   sts = os.waitpid(p.pid, 0)[1]
 
 注意:
 
@@ -372,8 +431,8 @@ os.system() を置き換える
        print >>sys.stderr, "実行に失敗しました:", e
 
 
-os.spawn 関数群を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:func:`os.spawn <os.spawnl>` 関数群を置き換える
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 P_NOWAIT の例::
 
@@ -400,26 +459,26 @@ P_WAIT の例::
    Popen(["/bin/mycmd", "myarg"], env={"PATH": "/usr/bin"})
 
 
-os.popen, os.popen2, os.popen3 を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:func:`os.popen`, :func:`os.popen2`, :func:`os.popen3` を置き換える
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
-   pipe = os.popen(cmd, 'r', bufsize)
+   pipe = os.popen("cmd", 'r', bufsize)
    ==>
-   pipe = Popen(cmd, shell=True, bufsize=bufsize, stdout=PIPE).stdout
+   pipe = Popen("cmd", shell=True, bufsize=bufsize, stdout=PIPE).stdout
 
 ::
 
-   pipe = os.popen(cmd, 'w', bufsize)
+   pipe = os.popen("cmd", 'w', bufsize)
    ==>
-   pipe = Popen(cmd, shell=True, bufsize=bufsize, stdin=PIPE).stdin
+   pipe = Popen("cmd", shell=True, bufsize=bufsize, stdin=PIPE).stdin
 
 ::
 
-   (child_stdin, child_stdout) = os.popen2(cmd, mode, bufsize)
+   (child_stdin, child_stdout) = os.popen2("cmd", mode, bufsize)
    ==>
-   p = Popen(cmd, shell=True, bufsize=bufsize,
+   p = Popen("cmd", shell=True, bufsize=bufsize,
              stdin=PIPE, stdout=PIPE, close_fds=True)
    (child_stdin, child_stdout) = (p.stdin, p.stdout)
 
@@ -427,9 +486,9 @@ os.popen, os.popen2, os.popen3 を置き換える
 
    (child_stdin,
     child_stdout,
-    child_stderr) = os.popen3(cmd, mode, bufsize)
+    child_stderr) = os.popen3("cmd", mode, bufsize)
    ==>
-   p = Popen(cmd, shell=True, bufsize=bufsize,
+   p = Popen("cmd", shell=True, bufsize=bufsize,
              stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
    (child_stdin,
     child_stdout,
@@ -437,20 +496,45 @@ os.popen, os.popen2, os.popen3 を置き換える
 
 ::
 
-   (child_stdin, child_stdout_and_stderr) = os.popen4(cmd, mode, bufsize)
+   (child_stdin, child_stdout_and_stderr) = os.popen4("cmd", mode,
+                                                      bufsize)
    ==>
-   p = Popen(cmd, shell=True, bufsize=bufsize,
+   p = Popen("cmd", shell=True, bufsize=bufsize,
              stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
    (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
 
+Unix では、 os.popen2、os.popen3、os.popen4 は
+実行するコマンドとしてシーケンスも受け入れます。
+どちらにせよ、引数はシェルの干渉を受けることなく直接渡されます。
+この使い方は以下のように置き換えられます。
 
-popen2 モジュールの関数群を置き換える
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+::
 
-.. note::
+   (child_stdin, child_stdout) = os.popen2(["/bin/ls", "-l"], mode,
+                                           bufsize)
+   ==>
+   p = Popen(["/bin/ls", "-l"], bufsize=bufsize,
+             stdin=PIPE, stdout=PIPE)
+   (child_stdin, child_stdout) = (p.stdin, p.stdout)
 
-   popen2 に対するコマンド引数が文字列の場合、そのコマンドは /bin/sh 経由で実行されます。いっぽうこれが
-   リストの場合、そのコマンドは直接実行されます。
+終了コードハンドリングは以下のように解釈します。
+
+::
+
+   pipe = os.popen("cmd", 'w')
+   ...
+   rc = pipe.close()
+   if rc is not None and rc >> 8:
+       print "There were some errors"
+   ==>
+   process = Popen("cmd", 'w', shell=True, stdin=PIPE)
+   ...
+   process.stdin.close()
+   if process.wait() != 0:
+       print "There were some errors"
+
+:mod:`popen2` モジュールの関数群を置き換える
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ::
 
@@ -460,9 +544,14 @@ popen2 モジュールの関数群を置き換える
              stdin=PIPE, stdout=PIPE, close_fds=True)
    (child_stdout, child_stdin) = (p.stdout, p.stdin)
 
+Unix では、 popen2 は実行するコマンドとしてシーケンスも受け入れます。
+どちらにせよ、引数はシェルの干渉を受けることなく、直接渡されます。
+この使い方は、以下のように置き換えられます。
+
 ::
 
-   (child_stdout, child_stdin) = popen2.popen2(["mycmd", "myarg"], bufsize, mode)
+   (child_stdout, child_stdin) = popen2.popen2(["mycmd", "myarg"], bufsize,
+                                               mode)
    ==>
    p = Popen(["mycmd", "myarg"], bufsize=bufsize,
              stdin=PIPE, stdout=PIPE, close_fds=True)
