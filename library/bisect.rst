@@ -80,3 +80,31 @@
    >>> map(grade, [33, 99, 77, 44, 12, 88])
    ['E', 'A', 'B', 'D', 'F', 'A']
 
+.. Unlike the :func:`sorted` function, it does not make sense for the :func:`bisect`
+   functions to have *key* or *reversed* arguments because that would lead to an
+   inefficent design (successive calls to bisect functions would not "remember"
+   all of the previous key lookups).
+
+:func:`sorted` 関数と違い、 :func:`bisect` 関数に *key* や *reversed* 引数を
+用意するのは、設計が非効率になるので、非合理的です。 (連続する bisect 関数の
+呼び出しは前回の key 参照の結果を覚えません)
+
+.. Instead, it is better to search a list of precomputed keys to find the index
+   of the record in question::
+
+代わりに、事前に計算しておいたキーのリストから検索して、レコードのインデックスを
+見つけます。
+
+::
+
+    >>> data = [('red', 5), ('blue', 1), ('yellow', 8), ('black', 0)]
+    >>> data.sort(key=lambda r: r[1])
+    >>> keys = [r[1] for r in data]         # precomputed list of keys
+    >>> data[bisect_left(keys, 0)]
+    ('black', 0)
+    >>> data[bisect_left(keys, 1)]
+    ('blue', 1)
+    >>> data[bisect_left(keys, 5)]
+    ('red', 5)
+    >>> data[bisect_left(keys, 8)]
+    ('yellow', 8)

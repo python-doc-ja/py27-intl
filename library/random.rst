@@ -56,7 +56,11 @@
 最近の改良についてはページの最後に挙げた参考文献を参照してください。
 
 .. versionchanged:: 2.3
-   MersenneTwister を Wichmann-Hill の代わりに使う.
+   MersenneTwister が Wichmann-Hill の代わりにデフォルト生成器になりました。
+
+:mod:`random` モジュールは :class:`SystemRandom` クラスも提供していますが、
+このクラスは OS が提供している乱数発生源を利用して乱数を生成するシステム関数
+:func:`os.urandom` を使うものです。
 
 保守関数:
 

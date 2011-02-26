@@ -5,7 +5,7 @@
 Python ランタイムサービス
 **************************
 
-この章では、PythonインタープリタやPython環境に深く関連する各種の機能を解説します。
+この章では、 Python インタープリタや Python 環境に深く関連する各種の機能を解説します。
 以下に一覧を示します:
 
 
@@ -26,3 +26,4 @@ Python ランタイムサービス
    site.rst
    user.rst
    fpectl.rst
+   distutils.rst

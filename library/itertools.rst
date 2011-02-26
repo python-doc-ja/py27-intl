@@ -24,8 +24,8 @@ Python に適した形に修正されています。
 
 例えば、SML の作表ツール ``tabulate(f)`` は ``f(0), f(1), ...``
 のシーケンスを作成します。
-このツールボックスでは :func:`imap` と :func:`count` を用意しており、
-この二つを組み合わせて ``imap(f, count())`` とすれば同じ結果を得る事ができます。
+同じことを Python では :func:`imap` と :func:`count` を組み合わせて
+``imap(f, count())`` という形で実現できます。
 
 これらのツールと、対をなすビルトインの組み合わせは、 :mod:`operator` モジュール\
 にある高速な関数を使うことでうまく実現できます。
@@ -68,7 +68,7 @@ Python に適した形に修正されています。
 ==============================================   ====================       =============================================================
 :func:`product`                                  p, q, ... [repeat=1]       デカルト積、ネストしたforループと等価
 :func:`permutations`                             p[, r]                     長さrのタプル列, 全ての順列.
-:func:`combinations`                             p[, r]                     長さrのタプル列, 全ての組み合わせ.
+:func:`combinations`                             p, r                       長さrのタプル列, 全ての組み合わせ.
 |
 ``product('ABCD', repeat=2)``                                               ``AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD``
 ``permutations('ABCD', 2)``                                                 ``AB AC AD BA BC BD CA CB CD DA DB DC``
@@ -100,7 +100,7 @@ Itertool関数
                   yield element
 
 
-.. function:: itertools.chain.from_iterable(iterable)
+.. classmethod:: chain.from_iterable(iterable)
 
    もう一つの :func:`chain` のためのコンストラクタです。
    遅延評価される唯一のイテラブル引数から連鎖した入力を受け取ります。
@@ -637,7 +637,7 @@ Itertool関数
 レシピ
 ------
 
-この節では、既存の itertools をビルディングブロックとしてツールセットを拡張するためのレシピを示します。
+この節では、既存の itertools を素材としてツールセットを拡張するためのレシピを示します。
 
 iterable 全体を一度にメモリ上に置くよりも、
 要素を一つづつ処理する方がメモリ効率上の有利さを保てます。
@@ -652,16 +652,19 @@ iterable 全体を一度にメモリ上に置くよりも、
        "Return first n items of the iterable as a list"
        return list(islice(iterable, n))
 
-   def enumerate(iterable, start=0):
-       return izip(count(start), iterable)
-
    def tabulate(function, start=0):
        "Return function(0), function(1), ..."
        return imap(function, count(start))
 
    def consume(iterator, n):
        "Advance the iterator n-steps ahead. If n is none, consume entirely."
-       collections.deque(islice(iterator, n), maxlen=0)
+       # The technique uses objects that consume iterators at C speed.
+       if n is None:
+           # feed the entire iterator into a zero-length deque
+           collections.deque(iterator, maxlen=0)
+       else:
+           # advance to the emtpy slice starting at position n
+           next(islice(iterator, n, n), None)
 
    def nth(iterable, n, default=None):
        "Returns the nth item or a default value"
@@ -680,13 +683,14 @@ iterable 全体を一度にメモリ上に置くよりも、
 
    def ncycles(iterable, n):
        "Returns the sequence elements n times"
-       return chain.from_iterable(repeat(iterable, n))
+       return chain.from_iterable(repeat(tuple(iterable), n))
 
    def dotproduct(vec1, vec2):
        return sum(imap(operator.mul, vec1, vec2))
 
    def flatten(listOfLists):
-       return list(chain.from_iterable(listOfLists))
+       "Flatten one level of nesting"
+       return chain.from_iterable(listOfLists)
 
    def repeatfunc(func, times=None, *args):
        """Repeat calls to func with specified arguments.
@@ -721,11 +725,6 @@ iterable 全体を一度にメモリ上に置くよりも、
                pending -= 1
                nexts = cycle(islice(nexts, pending))
 
-   def powerset(iterable):
-       "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
-       s = list(iterable)
-       return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
-
    def compress(data, selectors):
        "compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F"
        return (d for d, s in izip(data, selectors) if s)
@@ -748,6 +747,11 @@ iterable 全体を一度にメモリ上に置くよりも、
            indices[i:] = [indices[i] + 1] * (r - i)
            yield tuple(pool[i] for i in indices)
 
+   def powerset(iterable):
+       "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+       s = list(iterable)
+       return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
    def unique_everseen(iterable, key=None):
        "List unique elements, preserving order. Remember all elements ever seen."
        # unique_everseen('AAAABBBCCDAABBB') --> A B C D
@@ -755,10 +759,9 @@ iterable 全体を一度にメモリ上に置くよりも、
        seen = set()
        seen_add = seen.add
        if key is None:
-           for element in iterable:
-               if element not in seen:
-                   seen_add(element)
-                   yield element
+           for element in ifilterfalse(seen.__contains__, iterable):
+               seen_add(element)
+               yield element
        else:
            for element in iterable:
                k = key(element)
@@ -771,3 +774,59 @@ iterable 全体を一度にメモリ上に置くよりも、
        # unique_justseen('AAAABBBCCDAABBB') --> A B C D A B
        # unique_justseen('ABBCcAD', str.lower) --> A B C A D
        return imap(next, imap(itemgetter(1), groupby(iterable, key)))
+
+   def iter_except(func, exception, first=None):
+       """ Call a function repeatedly until an exception is raised.
+
+       Converts a call-until-exception interface to an iterator interface.
+       Like __builtin__.iter(func, sentinel) but uses an exception instead
+       of a sentinel to end the loop.
+
+       Examples:
+           bsddbiter = iter_except(db.next, bsddb.error, db.first)
+           heapiter = iter_except(functools.partial(heappop, h), IndexError)
+           dictiter = iter_except(d.popitem, KeyError)
+           dequeiter = iter_except(d.popleft, IndexError)
+           queueiter = iter_except(q.get_nowait, Queue.Empty)
+           setiter = iter_except(s.pop, KeyError)
+
+       """
+       try:
+           if first is not None:
+               yield first()
+           while 1:
+               yield func()
+       except exception:
+           pass
+
+   def random_product(*args, **kwds):
+       "Random selection from itertools.product(*args, **kwds)"
+       pools = map(tuple, args) * kwds.get('repeat', 1)
+       return tuple(random.choice(pool) for pool in pools)
+
+   def random_permutation(iterable, r=None):
+       "Random selection from itertools.permutations(iterable, r)"
+       pool = tuple(iterable)
+       r = len(pool) if r is None else r
+       return tuple(random.sample(pool, r))
+
+   def random_combination(iterable, r):
+       "Random selection from itertools.combinations(iterable, r)"
+       pool = tuple(iterable)
+       n = len(pool)
+       indices = sorted(random.sample(xrange(n), r))
+       return tuple(pool[i] for i in indices)
+
+   def random_combination_with_replacement(iterable, r):
+       "Random selection from itertools.combinations_with_replacement(iterable, r)"
+       pool = tuple(iterable)
+       n = len(pool)
+       indices = sorted(random.randrange(n) for i in xrange(r))
+       return tuple(pool[i] for i in indices)
+
+上記のレシピはデフォルト値を指定してグローバルな名前検索をローカル変数の\
+検索に変えることで、より効率を上げることができます。
+例えば、 *dotproduct* のレシピを書き換えるとすればこんな具合です::
+
+   def dotproduct(vec1, vec2, sum=sum, imap=imap, mul=operator.mul):
+       return sum(imap(mul, vec1, vec2))
