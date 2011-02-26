@@ -1,9 +1,9 @@
 
-:mod:`unittest` --- 単体テストフレームワーク
-============================================
+:mod:`unittest` --- ユニットテストフレームワーク
+================================================
 
 .. module:: unittest
-   :synopsis: 単体テストフレームワーク
+   :synopsis: ユニットテストフレームワーク
 .. moduleauthor:: Steve Purcell <stephen_purcell@yahoo.com>
 .. sectionauthor:: Steve Purcell <stephen_purcell@yahoo.com>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
@@ -12,10 +12,10 @@
 
 .. versionadded:: 2.1
 
-この Python 単体テストフレームワークは時に "PyUnit" とも呼ばれ、 Kent
-Beck と Erich Gamma による JUnit の Python 版です。 JUnit はまた Kent
-の Smalltalk 用テストフレームワークの Java 版で、どちらもそれぞれの言
-語で業界標準の単体テストフレームワークとなっています。
+この Python ユニットテストフレームワークは時に "PyUnit" とも呼ばれ、
+Kent Beck と Erich Gamma による JUnit の Python 版です。
+JUnit はまた Kent の Smalltalk 用テストフレームワークの Java 版で、
+どちらもそれぞれの言語で業界標準のユニットテストフレームワークとなっています。
 
 :mod:`unittest` では、テストの自動化・初期設定と終了処理の共有・テスト
 の分類・テスト実行と結果レポートの分離などの機能を提供しており、
@@ -74,18 +74,18 @@ test runner (テストランナー)
 .. seealso::
 
    Module :mod:`doctest`
-      Another test-support module with a very different flavor.
+      もうひとつのテストをサポートするモジュールで、本モジュールと趣きが異なっています。
 
    `Simple Smalltalk Testing: With Patterns <http://www.XProgramming.com/testfram.htm>`_
-      Kent Beck's original paper on testing frameworks using the pattern shared by
-      :mod:`unittest`.
+      Kent Beck のテスティングフレームワークに関する原論文で、ここに記載されたパターンを
+      :mod:`unittest` が使用しています。
 
-   `Nose <http://code.google.com/p/python-nose/>`_ and `py.test <http://pytest.org>`_
-      Third-party unittest frameworks with a lighter-weight syntax
-      for writing tests.  For example, ``assert func(10) == 42``.
+   `Nose <http://code.google.com/p/python-nose/>`_ と `py.test <http://pytest.org>`_
+      サードパーティのユニットテストフレームワークで軽量な文法でテストを書くことができます。
+      例えば、``assert func(10) == 42``  のように書きます。
 
-   `python-mock <http://python-mock.sourceforge.net/>`_ and `minimock <http://blog.ianbicking.org/minimock.html>`_
-      Tools for creating mock test objects (objects simulating external resources).
+   `python-mock <http://python-mock.sourceforge.net/>`_ と `minimock <http://blog.ianbicking.org/minimock.html>`_
+      テスト用のモックオブジェクトを作成するツールです (モックオブジェクトは外部リソースをシミュレートします)。
 
 .. _unittest-minimal-example:
 
@@ -106,20 +106,20 @@ test runner (テストランナー)
        def setUp(self):
            self.seq = range(10)
 
-       def testshuffle(self):
+       def test_shuffle(self):
            # make sure the shuffled sequence does not lose any elements
            random.shuffle(self.seq)
            self.seq.sort()
            self.assertEqual(self.seq, range(10))
 
-       def testchoice(self):
+       def test_choice(self):
            element = random.choice(self.seq)
-           self.assert_(element in self.seq)
+           self.assertTrue(element in self.seq)
 
-       def testsample(self):
+       def test_sample(self):
            self.assertRaises(ValueError, random.sample, self.seq, 20)
            for element in random.sample(self.seq, 5):
-               self.assert_(element in self.seq)
+               self.assertTrue(element in self.seq)
 
    if __name__ == '__main__':
        unittest.main()
@@ -162,9 +162,9 @@ test runner (テストランナー)
 変更後のスクリプトをインタープリタや別のスクリプトから実行すると、以下
 の出力が得られます::
 
-   testchoice (__main__.TestSequenceFunctions) ... ok
-   testsample (__main__.TestSequenceFunctions) ... ok
-   testshuffle (__main__.TestSequenceFunctions) ... ok
+   test_choice (__main__.TestSequenceFunctions) ... ok
+   test_sample (__main__.TestSequenceFunctions) ... ok
+   test_shuffle (__main__.TestSequenceFunctions) ... ok
 
    ----------------------------------------------------------------------
    Ran 3 tests in 0.110s
@@ -181,7 +181,7 @@ test runner (テストランナー)
 テストの構成
 ------------
 
-単体テストの基礎となる構築要素は、 :dfn:`test case` --- セットアップと
+ユニットテストの基礎となる構築要素は、 :dfn:`test case` --- セットアップと
 正しさのチェックを行う、独立したシナリオ --- です。 :mod:`unittest` で
 は、テストケースは :mod:`unittest` モジュールの :class:`TestCase` クラ
 スのインスタンスで示します。テストケースを作成するには
@@ -234,13 +234,13 @@ test runner (テストランナー)
 
    class DefaultWidgetSizeTestCase(SimpleWidgetTestCase):
        def runTest(self):
-           self.failUnless(self.widget.size() == (50,50),
+           self.assertEqual(self.widget.size(), (50,50),
                            'incorrect default size')
 
    class WidgetResizeTestCase(SimpleWidgetTestCase):
        def runTest(self):
            self.widget.resize(100,150)
-           self.failUnless(self.widget.size() == (100,150),
+           self.assertEqual(self.widget.size(), (100,150),
                            'wrong size after resize')
 
 テスト中に :meth:`setUp` メソッドで例外が発生した場合、テストフレーム
@@ -281,23 +281,23 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
            self.widget.dispose()
            self.widget = None
 
-       def testDefaultSize(self):
-           self.failUnless(self.widget.size() == (50,50),
-                           'incorrect default size')
+       def test_default_size(self):
+           self.assertEqual(self.widget.size(), (50,50),
+                            'incorrect default size')
 
-       def testResize(self):
+       def test_resize(self):
            self.widget.resize(100,150)
-           self.failUnless(self.widget.size() == (100,150),
-                           'wrong size after resize')
+           self.assertEqual(self.widget.size(), (100,150),
+                            'wrong size after resize')
 
-この例では :meth:`runTest` がありませんが、二つのテストメソッドを定義
-しています。このクラスのインスタンスは :meth:`test\*` メソッドのどちら
+この例では :meth:`~TestCase.runTest` がありませんが、二つのテストメソッドを定義
+しています。このクラスのインスタンスは :meth:`test_\*` メソッドのどちら
 か一方の実行と、 ``self.widget`` の生成・解放を行います。この場合、テ
 ストケースインスタンス生成時に、コンストラクタの引数として実行するメソッ
 ド名を指定します::
 
-   defaultSizeTestCase = WidgetTestCase('testDefaultSize')
-   resizeTestCase = WidgetTestCase('testResize')
+   defaultSizeTestCase = WidgetTestCase('test_default_size')
+   resizeTestCase = WidgetTestCase('test_resize')
 
 :mod:`unittest` では :class:`test suite` によってテストケースインスタ
 ンスをテスト対象の機能によってグループ化することができます。
@@ -305,8 +305,8 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 作成します。::
 
    widgetTestSuite = unittest.TestSuite()
-   widgetTestSuite.addTest(WidgetTestCase('testDefaultSize'))
-   widgetTestSuite.addTest(WidgetTestCase('testResize'))
+   widgetTestSuite.addTest(WidgetTestCase('test_default_size'))
+   widgetTestSuite.addTest(WidgetTestCase('test_resize'))
 
 各テストモジュールで、テストケースを組み込んだテストスイートオブジェク
 トを作成する呼び出し可能オブジェクトを用意しておくと、テストの実行や参
@@ -314,14 +314,14 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 
    def suite():
        suite = unittest.TestSuite()
-       suite.addTest(WidgetTestCase('testDefaultSize'))
-       suite.addTest(WidgetTestCase('testResize'))
+       suite.addTest(WidgetTestCase('test_default_size'))
+       suite.addTest(WidgetTestCase('test_resize'))
        return suite
 
 または::
 
    def suite():
-       tests = ['testDefaultSize', 'testResize']
+       tests = ['test_default_size', 'test_resize']
 
        return unittest.TestSuite(map(WidgetTestCase, tests))
 
@@ -332,8 +332,8 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 
    suite = unittest.TestLoader().loadTestsFromTestCase(WidgetTestCase)
 
-は ``WidgetTestCase.testDefaultSize()`` と
-``WidgetTestCase.testResize`` を走らせるテストスイートを作成します。
+は ``WidgetTestCase.test_default_size()`` と
+``WidgetTestCase.test_resize`` を走らせるテストスイートを作成します。
 :class:`TestLoader` は自動的にテストメソッドを識別するのに ``'test'``
 というメソッド名の接頭辞を使います。
 
@@ -435,8 +435,8 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 
       def suite():
           suite = unittest.TestSuite()
-          suite.addTest(WidgetTestCase('testDefaultSize'))
-          suite.addTest(WidgetTestCase('testResize'))
+          suite.addTest(WidgetTestCase('test_default_size'))
+          suite.addTest(WidgetTestCase('test_resize'))
           return suite
 
    ここでは、それぞれが一つずつのテストを実行するような
