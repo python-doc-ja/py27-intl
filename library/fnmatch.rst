@@ -34,10 +34,9 @@
 
 .. function:: fnmatch(filename, pattern)
 
-   filenameの文字列がpatternの文字列にマッチするかテストして、真、偽のいずれかを返します。
+   filenameの文字列がpatternの文字列にマッチするかテストして、 :const:`True` 、 :const:`False` のいずれかを返します。
    オペレーティングシステムが大文字、小文字を区別しない場合、比較を行う前に、両方のパラメタを全て大文字、または全て小文字に揃えます。
-   オペレーティングシステムが標準でどうなっているかに関係なく、大小文字を区別して比較したい場合には、 :func:`fnmatchcase` を代わりに使って
-   ください。
+   オペレーティングシステムが標準でどうなっているかに関係なく、大小文字を区別して比較する場合には、 :func:`fnmatchcase` が使えます。
 
    .. This example will print all file names in the current directory with the
       extension ``.txt``::
@@ -53,7 +52,7 @@
 
 .. function:: fnmatchcase(filename, pattern)
 
-   *filename* が *pattern* にマッチするかテストして、真、偽を返します。比較は大文字、小文字を区別します。
+   *filename* が *pattern* にマッチするかテストして、 :const:`True` 、 :const:`False` を返します。比較は大文字、小文字を区別します。
 
 
 .. function:: filter(names, pattern)
@@ -79,7 +78,7 @@
       >>> regex
       '.*\\.txt$'
       >>> reobj = re.compile(regex)
-      >>> print reobj.match('foobar.txt')
+      >>> reobj.match('foobar.txt')
       <_sre.SRE_Match object at 0x...>
 
 
