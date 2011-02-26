@@ -1,13 +1,13 @@
-:mod:`__future__` --- Future ステートメントの定義
+:mod:`__future__` --- future 文の定義
 =================================================
 
 .. module:: __future__
-   :synopsis: Future ステートメントの定義
+   :synopsis: future 文の定義
 
 
 .. :mod:`__future__` is a real module, and serves three purposes:
 
-:mod:`__future__` は実際にモジュールであり、3つの役割があります。
+:mod:`__future__` は実際にモジュールであり、次の3つの役割があります。
 
 
 .. * To avoid confusing existing tools that analyze import statements and expect to
@@ -23,20 +23,21 @@
 ..   its contents.
 
 
-* import ステートメントを解析する既存のツールを混乱させるのを避け、
-  そのステートメントがインポートしようとしているモジュールを見つけられるようにするため。
+* import 文を解析する既存のツールを混乱させることを避け、
+  インポートしようとしているモジュールを見つけられるようにするため。
 
-* 2.1 以前のリリースで :ref:`future ステートメント <future>` が実行されれば、最低でもランタイム例外を投げるようにするため。
-  (:mod:`__future__` はインポートできません。というのも、2.1 以前にはそういう名前のモジュールはなかったからです。)
+* 2.1 以前のリリースで :ref:`future 文 <future>` が実行された場合に、最低でもランタイム例外を投げるようにするため。
+  (:mod:`__future__` のインポートは失敗します。なぜなら、 2.1 以前にはそういう名前のモジュールはなかったからです。)
 
-* いつ互換でない変化が導入され、いつ強制的になる -- あるいは、なった -- のか文書化するため。
-  これは実行できる形式で書かれたドキュメントでなので、:mod:`__future__`
-  をインポートし、その中身を調べるようプログラムすれば確かめられます。
+* 互換性のない変化がいつ言語に導入され、いつ言語の一部になる --- あるい
+  は、なった --- のかを文書化するため。これは実行できる形式で書かれたド
+  キュメントなので、 :mod:`__future__` をインポートしてその中身を調べる
+  ことでプログラムから調査することができます。
 
 
 .. Each statement in :file:`__future__.py` is of the form:
 
-:file:`__future__.py` の各ステートメントは次のような形をしています::
+:file:`__future__.py` のそれぞれの文は次のような形式をしています::
 
 
    FeatureName = _Feature(OptionalRelease, MandatoryRelease,
@@ -76,7 +77,7 @@
 
 その他の場合、 *MandatoryRelease* はその機能がいつ言語の一部になったのかを記録します。
 そのリリースから、あるいはそれ以降のリリースでは、この機能を使う際に
-future ステートメントは必要ではありませんが、future ステートメントを使い続けても構いません。
+future 文は必要ではありませんが、 future 文を使い続けても構いません。
 
 
 .. *MandatoryRelease* may also be ``None``, meaning that a planned feature got
@@ -97,8 +98,8 @@ future ステートメントは必要ではありませんが、future ステー
 .. dynamically compiled code.  This flag is stored in the :attr:`compiler_flag`
 .. attribute on :class:`_Feature` instances.
 
-*CompilerFlag* は動的にコンパイルされるコードでその機能を有効にするために、組み込み関数 :func:`compile`
-の第4引数に渡されなければならない (ビットフィールド)フラグです。このフラグは :class:`_Feature` インスタンスの
+*CompilerFlag* は、動的にコンパイルされるコードでその機能を有効にするために、組み込み関数 :func:`compile`
+の第4引数に渡す(ビットフィールド)フラグです。このフラグは :class:`_Feature` インスタンスの
 :attr:`compilier_flag` 属性に保存されています。
 
 
@@ -106,9 +107,9 @@ future ステートメントは必要ではありませんが、future ステー
 .. introduction in Python 2.1 the following features have found their way into the
 .. language using this mechanism:
 
-:mod:`__future__` で解説されている機能のうち、削除されたものはまだありません。
-Python 2.1 で Future ステートメントが導入されて以来、この仕組みを使って
-以下の機能が言語に導入されてきました。
+機能の記述が :mod:`__future__` から削除されたことはまだありません。
+Python 2.1 で future 文が導入されて以来、この仕組みを使って以下の機能が
+言語に導入されてきました。
 
 
 +------------------+-------------+--------------+---------------------------------------------+
