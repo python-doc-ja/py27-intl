@@ -422,7 +422,7 @@ first-out") 。スタックの一番上に要素を追加するには :meth:`app
 ======
 
 Python には、 *集合 (set)* を扱うためのデータ型もあります。集合とは、重複する要素をもたない、順序づけられていない要素の集まりです。 Set
-オブジェクトは、結合 (union)、交差 (intersection)、差分 (difference)、対象差 (symmetric difference)
+オブジェクトは、結合 (union)、交差 (intersection)、差分 (difference)、対称差 (symmetric difference)
 といった数学的な演算もサポートしています。
 
 簡単なデモンストレーションを示します::
