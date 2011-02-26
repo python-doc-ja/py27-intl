@@ -14,12 +14,12 @@
 .. adapted to custom applications in which Python code needs to be edited
 .. automatically.
 
-2to3 は Python 2.x のソースコードを読み込み、 *変換プログラム* の系列
-を適用し、 Python 3.x のコードに変換するプログラムです。標準ライブラリ
+2to3 は、 Python 2.x のソースコードを読み込み、一連の *変換プログラム*
+を適用して Python 3.x のコードに変換するプログラムです。標準ライブラリ
 はほとんど全てのコードを取り扱うのに十分な変換プログラムを含んでいます。
-2to3 を支援しているライブラリは、柔軟かつ一般的な :mod:`lib2to3` です
-が、 2to3 のために、あなた自身が変換プログラムを書くこともできます。
-:mod:`lib2to3` は Python コードを自動編集する必要がある場合にも、適用
+ただし 2to3 を構成している :mod:`lib2to3` は柔軟かつ一般的なライブラリ
+なので、 2to3 のために自分で変換プログラムを書くこともできます。
+:mod:`lib2to3` は、 Python コードを自動編集する必要がある場合にも適用
 することができます。
 
 
@@ -46,8 +46,10 @@
 
 .. Here is a sample Python 2.x source file, :file:`example.py`:
 
-Python 2.x のサンプルコード、 :file:`example.py` を示します。::
+Python 2.x のサンプルコード、 :file:`example.py` を示します。
 
+
+::
 
    def greet(name):
        print "Hello, {0}!".format(name)
@@ -59,8 +61,10 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 .. It can be converted to Python 3.x code via 2to3 on the command line:
 
 これは、コマンドラインから 2to3 を呼び出すことで、 Python 3.x コードに
-変換されます。::
+変換されます。
 
+
+::
 
    $ 2to3 example.py
 
@@ -71,18 +75,22 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 .. enabled with the :option:`-w` flag:
 
 オリジナルのソースファイルに対する差分が表示されます。 2to3 は必要となる
-変更をソースファイルに書き込むこともできます ( もちろんオリジナルの
-バックアップも作成されます ) 。変更の書き戻しは、 :option:`-w` フラグ
-によって有効化されます。::
+変更をソースファイルに書き込むこともできます (もちろんオリジナルの
+バックアップも作成されます)。変更の書き戻しは :option:`-w` フラグ
+によって有効化されます。
 
+
+::
 
    $ 2to3 -w example.py
 
 
 .. After transformation, :file:`example.py` looks like this:
 
-変換後、 :file:`example.py` は以下のようになります。::
+変換後、 :file:`example.py` は以下のようになります。
 
+
+::
 
    def greet(name):
        print("Hello, {0}!".format(name))
@@ -101,20 +109,24 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 .. can be given with :option:`-f`.  Likewise the :option:`-x` explicitly disables a
 .. fixer.  The following example runs only the ``imports`` and ``has_key`` fixers:
 
-デフォルトでは、 2to3 は一連の `事前定義された変換プログラム <2to3-fixers>`_ を実行
-します。オプション :option:`-l` フラグは、利用可能な変換プログラムの一
-覧を表示します。オプション :option:`-f` フラグにより、実行する変換プロ
-グラムを明示的に与えることもできます。下記の例では、 ``imports`` と、
-``has_key`` 変換プログラムだけを実行します。::
+デフォルトでは、 2to3 は一連の `事前定義された変換プログラム
+<2to3-fixers>`_ を実行します。 :option:`-l` フラグは、利用可能な変換プ
+ログラムの一覧を表示します。 :option:`-f` フラグにより、実行する変換プ
+ログラムを明示的に与えることもできます。下記の例では、 ``imports`` と
+``has_key`` 変換プログラムだけを実行します。
 
+
+::
 
    $ 2to3 -f imports -f has_key example.py
 
 
-.. This command runs every fixer except the ``apply`` fixer::
+.. This command runs every fixer except the ``apply`` fixer:
 
-このコマンドは ``apply`` 以外のすべての変換プログラムを実行します。::
+このコマンドは ``apply`` 以外のすべての変換プログラムを実行します。
 
+
+::
 
    $ 2to3 -x apply example.py
 
@@ -126,8 +138,10 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 いくつかの変換プログラムは *明示的* 、つまり、デフォルトでは実行され
 ず、コマンドラインで実行するものとして列記する必要があります。
 デフォルトの変換プログラムに ``idioms`` 変換プログラムを追加して実行す
-るには、下記のようにします。::
+るには、下記のようにします。
 
+
+::
 
    $ 2to3 -f all -f idioms example.py
 
@@ -143,10 +157,10 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 .. beneath the diff for a file.  You should address the warning in order to have
 .. compliant 3.x code.
 
-時に、 2to3 はあなたのソースコードに修正すべき点を見つけるでしょう。し
-かし、 2to3 は自動的には修正できません。この場合、 2to3 はファイルの変
-更点の下に警告を表示します。あなたは、 3.x に準拠したコードにするよう、
-警告に対処しなくてはなりません。
+2to3 がソースコードに修正すべき点を見つけても、自動的には修正できない場
+合もあります。この場合、 2to3 はファイルの変更点の下に警告を表示します。
+3.x に準拠したコードにするために、あなたはこの警告に対処しなくてはなり
+ません。
 
 
 .. 2to3 can also refactor doctests.  To enable this mode, use the :option:`-d`
@@ -154,19 +168,17 @@ Python 2.x のサンプルコード、 :file:`example.py` を示します。::
 .. the module to be valid Python.  For example, doctest like examples in a reST
 .. document could also be refactored with this option.
 
-2to3 は、 doctests の修正もできます。このモードを有効化するには、オプ
-ション、 :option:`-d` フラグを指定して下さい。
-doctests *だけ* が修正されることに注意して下さい。これは、モジュール
-が有効な Python であることを要求しないことでもあります。例えば、
-doctest に似た、例えば reST ドキュメントなども、このオプションで修正す
-ることができるということです。
+2to3 は doctest の修正もできます。このモードを有効化するには
+:option:`-d` フラグを指定して下さい。 doctest *だけ* が修正されることに
+注意して下さい。これは、モジュールが有効な Python コードであることを要
+求しないということでもあります。例えば、 reST ドキュメント中の doctest
+に似たサンプルコードなども、このオプションで修正することができます。
 
 
 .. The :option:`-v` option enables output of more information on the translation
 .. process.
 
-オプション、 :option:`-v` は、変換処理のより詳しい情報の出力を有効化し
-ます。
+:option:`-v` は、変換処理のより詳しい情報の出力を有効化します。
 
 
 .. Since some print statements can be parsed as function calls or statements, 2to3
@@ -182,7 +194,7 @@ doctest に似た、例えば reST ドキュメントなども、このオプシ
 ``from __future__ import print_function`` コンパイラディレクティブが存
 在することを検出すると、内部の文法を変更して :func:`print` を関数として
 解釈するようになります。 :option:`-p` フラグによって手動でこの変更を有
-効にすることもできます。 print 文を変換済みのコードに対して変換プログラ
+効化することもできます。 print 文を変換済みのコードに対して変換プログラ
 ムを適用するには :option:`-p` を使用してください。
 
 
@@ -197,7 +209,7 @@ doctest に似た、例えば reST ドキュメントなども、このオプシ
 
 コード変形の各ステップは変換プログラムに隠蔽されます。  ``2to3 -l`` コ
 マンドは変換プログラムのリストを表示します。 :ref:`上記 <2to3-using>` の通り、
-それぞれの変換プログラムを個別に有効にしたり無効にしたりすることができ
+それぞれの変換プログラムを個別に有効化したり無効化したりすることができ
 ます。ここではそれらをさらに詳細に説明します。
 
 
@@ -676,7 +688,7 @@ doctest に似た、例えば reST ドキュメントなども、このオプシ
    .. The :mod:`lib2to3` API should be considered unstable and may change
    .. drastically in the future.
 
-   :mod:`lib2to3` API は不安定で、将来、劇的に変更されるかも知れないと
+   :mod:`lib2to3` API は安定しておらず、将来、劇的に変更されるかも知れないと
    考えるべきです。
 
 
