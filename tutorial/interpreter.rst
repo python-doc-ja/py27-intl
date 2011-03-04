@@ -9,36 +9,36 @@ Python インタプリタを使う
 インタプリタを起動する
 ======================
 
-Python が使える計算機なら、インタプリタは大抵 :file:`/usr/local/bin/python`
+Python が使えるコンピュータなら、インタプリタは大抵 :file:`/usr/local/bin/python`
 にインストールされています。Unix シェルの検索パスに :file:`/usr/local/bin`
-を入れれば、シェルで
-
-::
+を入れれば、シェルで ::
 
    python
 
 とコマンドを入力すれば使えるようになります。
-インストールする際にどのディレクトリに Python インタプリタを入れるかを
-オプションで指定できるので、インタプリタは他のディレクトリにあるかも
-しれません; 身近な Python の導師 (guru) か、システム管理者に聞いてみてください。
+
+どのディレクトリに Python インタプリタをインストールするかは
+インストール時に選択できるので、インタプリタは他のディレクトリにあるかも
+しれません; 身近な Python に詳しい人か、システム管理者に聞いてみてください。
 (例えば、その他の場所としては :file:`/usr/local/python` が一般的です。)
 
-Windows マシンの場合には、Pythonは大抵の場合 :file:`C:\\Python26`
+Windows では、 Python は大抵の場合 :file:`C:\\Python26`
 にインストールされますが、インストーラ実行時に変更することができます。
-このディレクトリをあなたのパスに追加するには、以下のコマンドをコマンドプロンプトで実行してください::
+このディレクトリをあなたのパスに追加するには、以下のコマンドを
+コマンドプロンプトで実行してください。 ::
 
    set path=%path%;C:\python26
 
 ファイル終端文字 (Unixでは :kbd:`Control-D` 、DOS や Windows では
-:kbd:`Control-Z`) を一次プロンプト (primary prompt) に入力すると、
-インタプリタが終了コード 0 で終了します。
+:kbd:`Control-Z`) を一次プロンプト (訳注: '>>>' のこと) に入力すると、
+インタプリタが終了ステータス 0 で終了します。
 もしこの操作がうまく働かないなら、コマンド: ``quit()`` と入力すれば
 インタプリタを終了できます。
 
 通常、インタプリタの行編集機能は、あまり洗練されたものではありません。
-Unix システムでは、インタプリタをインストールした誰かが GNU readline
+Unix では、インタプリタをインストールした誰かが GNU readline
 ライブラリのサポートを有効にしていれば、洗練された対話的行編集やヒストリ機能が
-追加されます。
+利用できます。
 コマンドライン編集機能がサポートされているかを最も手っ取り早く調べる方法は、
 おそらく最初に表示された Python プロンプトに Control-P を入力してみることでしょう。
 ビープ音が鳴るなら、コマンドライン編集機能があります。編集キーについての解説は付録
@@ -55,7 +55,7 @@ Unix システムでは、インタプリタをインストールした誰かが
 この形式では、シェルの :option:`-c` オプションと同じように、 *command*
 に指定した文を実行します。
 Python 文には、スペースなどのシェルにとって特殊な意味をもつ文字がしばしば
-含まれるので、 *command* 全体を二重引用符を囲っておいたほうが良いでしょう。
+含まれるので、 *command* 全体をシングルクォート(訳注: ``'``)で囲っておいたほうが良いでしょう。
 
 Python のモジュールには、スクリプトとしても便利に使えるものがあります。
 ``python -m module [arg] ...`` のようにすると、 *module* のソースファイルを、
@@ -63,7 +63,7 @@ Python のモジュールには、スクリプトとしても便利に使える�
 
 ``python file`` と ``python <file`` の違いに注意してください。
 後者の場合、プログラム内で :func:`input` や :func:`raw_input` が呼び出され、
-ユーザからの入力が必要な場合、入力は *ファイル* から取り込まれます。
+ユーザからの入力が必要な場合、入力は *file* から取り込まれます。
 この場合、パーザはプログラムの実行を開始される前にファイルを終端まで
 読み込んでおくので、プログラムはすぐに入力の終わりまで到達してしまいます。
 前者の場合 (大抵はこちらの方が望ましい動作です)、入力には Python
@@ -140,18 +140,20 @@ Python インタプリタ自体はこれらの引数を処理せず、 ``sys.arg
 エラーが発生すると、インタプリタはエラーメッセージとスタックトレース
 (stack trace) を出力します。対話モードにいるときは、インタプリタは
 一次プロンプトに戻ります;
-入力がファイルからきているときには、インタプリタはスタックトレースを出力した後、
-非ゼロの終了状態で終了します。 (:keyword:`try` 文の :keyword:`except`
-節で処理された例外は、ここでいうエラーにはあたりません。)
-いくつかのエラーは無条件に致命的であり、非ゼロの終了状態となるプログラムの終了を引き起こします;
-これにはインタプリタ内部の矛盾やある種のメモリ枯渇が当てはまります。
-エラーメッセージは全て標準エラー出力ストリームに書き込まれます;
-これに対して、実行した命令からの通常出力される内容は標準出力に書き込まれます。
+スクリプトをファイルから実行しているときは、インタプリタはスタックトレースを
+出力した後、非ゼロの終了ステータスで終了します。 (:keyword:`try` 文の
+:keyword:`except` 節で処理された例外は、ここでいうエラーにはあたりません。)
+いくつかのエラーは常に致命的であり、非ゼロの終了ステータスとなるプログラムの
+終了を引き起こします。
+例えばインタプリタ内部の矛盾やある種のメモリ枯渇が当てはまります。
+エラーメッセージは全て標準エラー出力に書き込まれます;
+これに対して、通常は実行した命令から出力される内容は標準出力に書き込まれます。
 
 割り込み文字 (interrupt character、普通は Control-C か DEL) を
-一次または二次プロンプトに対して打鍵すると、入力が取り消されて一次プロンプトに戻ります。 [#]_
-コマンドの実行中に割り込み文字を打鍵すると
-:exc:`KeyboardInterrupt`  例外が送出されます。この例外は :keyword:`try` 文で処理できます。
+一次または二次プロンプトに対してタイプすると、入力が取り消されて一次プロンプトに
+戻ります。 [#]_
+コマンドの実行中に割り込み文字をタイプすると :exc:`KeyboardInterrupt`
+例外が送出されます。この例外は :keyword:`try` 文で処理できます。
 
 
 .. _tut-scripts:
@@ -167,14 +169,16 @@ BSD 風の Unix システムでは、Python スクリプトはシェルスクリ
    #! /usr/bin/env python
 
 (ここではインタプリタがユーザの :envvar:`PATH` 上にあると仮定しています)
-をスクリプトの先頭に置き、スクリプトファイルに実行可能モードを与えます。
+をスクリプトの先頭に置き、スクリプトファイルに実行可能モードを設定します。
 ``#!`` はファイルの最初の２文字でなければなりません。
 プラットフォームによっては、この最初の行を終端する改行文字が
-Windows 形式 (``'\r\n'``) ではなく、 Unix形式(``'\n'``)でなければならないことがあります。
-ハッシュまたはポンド文字、すなわち ``'#'`` は、Python  ではコメントを書き始めるために
-使われていることに注意してください。
+Windows 形式 (``'\r\n'``) ではなく、 Unix形式(``'\n'``)でなければ
+ならないことがあります。
+ハッシュまたはポンド文字、すなわち ``'#'`` は、Python ではコメントを
+書き始めるために使われていることに注意してください。
 
-:program:`chmod` コマンドを使えば、スクリプトに実行モード (または実行権限) を与えることができます。
+:program:`chmod` コマンドを使えば、スクリプトに実行モード (または実行権)
+を与えることができます。
 
 ::
 
@@ -187,13 +191,13 @@ Python のインストーラーは自動的に ``.py`` ファイルを ``python.
 抑制して実行します。
 
 
-ソースコードの文字コード方式 (encoding)
----------------------------------------
+ソースコードの文字コード
+-------------------------
 
-ASCII 形式でない文字コード化方式 (エンコーディング: encoding) を Python
-ソースコードファイル中で使うことができます。
-最良の方法は、 ``#!`` 行の直後に一行かそれ以上の特殊なコメントを挿入して、
-ソースファイルのエンコードを指定するというものです。
+ASCII 形式でない文字コードエンコーディング を Python ソースコードファイル中で
+使うことができます。
+最良の方法は、 ``#!`` 行の直後にもう一行特殊なコメントを挿入して、
+ソースファイルのエンコーディングを指定するというものです。
 
 ::
 
@@ -207,10 +211,13 @@ ASCII 形式でない文字コード化方式 (エンコーディング: encodin
 
 .. note::
    訳注: *エンコーディング* の部分には、
-   実際には ``utf-8`` や ``cp932`` など、そのソースのエンコーディングを記述します。
-   プログラムから日本語を扱う場合には、必ずある程度の文字コードの知識が必要になります。
-   もし文字コードについてよく判らないのであれば、まずは英語だけ扱いながらチュートリアルを読み進めて、
-   並行して文字コードについても勉強してみましょう。
+   実際には ``utf-8`` や ``cp932`` など、そのソースコードのエンコーディングを
+   記述します。
+
+   プログラムから日本語を扱う場合には、必ずある程度の文字コードの知識が必要に
+   なります。
+   もし文字コードについてよく判らないのであれば、まずは英語だけ扱いながら
+   チュートリアルを読み進めて、並行して文字コードについても勉強してみましょう。
 
    現在は、 Unicode の扱い易さの観点から、推奨される文字コードは ``utf-8`` です。
    ただし、 ``utf-8`` でソースを書いた場合、 ``utf-8`` を表示できない Windows の
@@ -218,17 +225,11 @@ ASCII 形式でない文字コード化方式 (エンコーディング: encodin
    その場合は、互換性のために古い ``cp932`` エンコーディングを使うか、
    ``print u"こんにちは"`` のように Unicode 文字列を使います。
 
-例えばユーロ通貨記号を含む Unicode リテラルを書くには、 ISO-8859-15
+例えばユーロ通貨記号を含む Unicode リテラルを書くために、 ISO-8859-15
 エンコーディングを使えます。
 ISO-8859-15 では、ユーロ通過記号の序数 (ordinal) は 164 です。
 以下のスクリプトは 8364 という値 (Unicode でユーロ記号に対応するコードポイントの値)
 を出力して終了します。
-
-.. % For example, to write Unicode literals including the Euro currency
-.. % symbol, the ISO-8859-15 encoding can be used, with the Euro symbol
-.. % having the ordinal value 164.  This script will print the value 8364
-.. % (the Unicode codepoint corresponding to the Euro symbol) and then
-.. % exit:
 
 ::
 
@@ -237,34 +238,21 @@ ISO-8859-15 では、ユーロ通過記号の序数 (ordinal) は 164 です。
    currency = u"€"
    print ord(currency)
 
-利用しているエディタがファイルを UTF-8 バイト整列記号 (通称 BOM: Byte Order Mark) 付きの ``UTF-8``
-で保存できる場合、エンコード宣言の代わりに使うことができます。 IDLE は  ``Options/General/Default Source
-Encoding/UTF-8`` が設定されている場合、 UTF-8 でエンコードされたファイルの識別機能をサポートします。ただし、 (2.2 以前の) 古い
-Python リリースは UTF-8 シグネチャを理解しませんし、オペレーティングシステムは (Unix システムでしか使われていませんが) ``#!``
+利用しているエディタがファイルを UTF-8 バイト整列記号 (通称 BOM:
+Byte Order Mark) 付きの ``UTF-8`` で保存できる場合、エンコード宣言の
+代わりに使うことができます。 IDLE は 
+``Options/General/Default Source Encoding/UTF-8`` が設定されている場合、
+UTF-8 でエンコードされたファイルの識別機能をサポートします。
+ただし、 (2.2 以前の) 古い Python リリースは UTF-8 シグネチャを理解しませんし、
+オペレーティングシステムは (Unix システムでしか使われていませんが) ``#!``
 の行を含むスクリプトファイルを判別できなくなるので注意してください。
 
-.. % % If your editor supports saving files as \code{UTF-8} with a UTF-8
-.. % % \emph{byte order mark} (aka BOM), you can use that instead of an
-.. % % encoding declaration. IDLE supports this capability if
-.. % % \code{Options/General/Default Source Encoding/UTF-8} is set. Notice
-.. % % that this signature is not understood in older Python releases (2.2
-.. % % and earlier), and also not understood by the operating system for
-.. % +script files with \code{\#!} lines (only used on \UNIX{} systems).
-
-UTF-8 を (シグネチャやエンコード宣言を行って) 使うと、世界中のほとんどの
+UTF-8 を (シグネチャやエンコーディング宣言を行って) 使うと、世界中のほとんどの
 言語で使われている文字を文字列リテラルやコメントの中に同時に使うことができます。
 識別子に対する非 ASCII 文字の使用はサポートされていません。
 全ての文字を正しく表示できるようにするには、使っているエディタがファイルを
 UTF-8 であると認識することができなければならず、かつファイル内で使われている
 全ての文字をサポートするようなフォントを使わなければなりません。
-
-.. % % By using UTF-8 (either through the signature or an encoding
-.. % % declaration), characters of most languages in the world can be used
-.. % % simultaneously in string literals and comments. Using non-\ASCII
-.. % % characters in identifiers is not supported. To display all these
-.. % % characters properly, your editor must recognize that the file is
-.. % % UTF-8, and it must use a font that supports all the characters in the
-.. % % file.
 
 
 .. _tut-startup:
@@ -272,35 +260,28 @@ UTF-8 であると認識することができなければならず、かつフ�
 対話モード用の起動時実行ファイル
 --------------------------------
 
-Python を対話的に使うときには、インタプリタが起動する度に実行される何らかの標準的なコマンドがあると便利なことがよくあります。
-これを行うには、 :envvar:`PYTHONSTARTUP` と呼ばれる環境変数を、インタプリタ起動時に実行されるコマンドが入ったファイル名に設定します。
+Python を対話的に使うときには、インタプリタが起動する度に実行される何らかの
+標準的なコマンドがあると便利なことがよくあります。
+これを行うには、 :envvar:`PYTHONSTARTUP` と呼ばれる環境変数を、インタプリタ
+起動時に実行されるコマンドが入ったファイル名に設定します。
 この機能は Unix シェルの :file:`.profile` に似ています。
 
-このファイルは対話セッションのときだけ読み出されます。Python がコマンドをスクリプトから読み出しているときや、 :file:`/dev/tty`
-がコマンドの入力元として明示的に指定されている (この場合対話的セッションのように動作します) *わけではない* 場合にはこのファイルは読み出されません。
-ファイル内のコマンドは、対話的コマンドが実行される名前空間と同じ名前空間内で実行されます。このため、ファイル内で定義されていたり import された
-オブジェクトは、限定子をつけなくても対話セッション内で使うことができます。また、このファイル内で ``sys.ps1`` や ``sys.ps2``
+このファイルは対話セッションのときだけ読み出されます。
+Python がコマンドをスクリプトから読み出しているときや、 :file:`/dev/tty`
+がコマンドの入力元として明示的に指定されている(この場合対話的セッションの
+ように動作します) *わけではない* 場合にはこのファイルは読み出されません。
+ファイル内のコマンドは、対話的コマンドが実行される名前空間と同じ名前空間内で
+実行されます。このため、ファイル内で定義されていたり import された
+オブジェクトは、そのまま対話セッション内で使うことができます。
+また、このファイル内で ``sys.ps1`` や ``sys.ps2``
 を変更して、プロンプトを変更することもできます。
 
-.. % % This file is only read in interactive sessions, not when Python reads
-.. % % commands from a script, and not when \file{/dev/tty} is given as the
-.. % % explicit source of commands (which otherwise behaves like an
-.. % % interactive session).  It is executed in the same namespace where
-.. % % interactive commands are executed, so that objects that it defines or
-.. % % imports can be used without qualification in the interactive session.
-.. % % You can also change the prompts \code{sys.ps1} and \code{sys.ps2} in
-.. % % this file.
-
-もし現在のディレクトリから追加的なスタートアップファイルを読み出したいのなら、グローバルのスタートアップファイルの中で ``if
-os.path.isfile('.pythonrc.py'): execfile('.pythonrc.py')``
-のようなコードのプログラムを書くことができます。スクリプト中でスタートアップファイルを使いたいのなら、以下のようにして
-スクリプト中で明示的に実行しなければなりません:
-
-.. % % If you want to read an additional start-up file from the current
-.. % % directory, you can program this in the global start-up file using code
-.. % % like \samp{if os.path.isfile('.pythonrc.py'):
-.. % % execfile('.pythonrc.py')}.  If you want to use the startup file in a
-.. % % script, you must do this explicitly in the script:
+もし現在のディレクトリから追加でスタートアップファイルを読み出したいのなら、
+グローバルのスタートアップファイルの中に
+``if os.path.isfile('.pythonrc.py'): execfile('.pythonrc.py')``
+のようなプログラムを書くことができます。
+スクリプト中でスタートアップファイルを使いたいのなら、以下のようにして
+スクリプト中で明示的に実行しなければなりません。
 
 ::
 
