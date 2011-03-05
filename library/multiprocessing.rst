@@ -54,8 +54,8 @@
         AttributeError: 'module' object has no attribute 'f'
         AttributeError: 'module' object has no attribute 'f'
 
-    (このサンプルを試すと、3つのトレースバック全てがほぼランダムに交互に重なって
-    表示されます、そうなったらどうにかしてマスタープロセスを止めましょう。)
+    (このサンプルを試すと、3つのトレースバック全てがほぼランダムに交互に重なって表示されます。
+    そうなったら、なんとかしてマスタープロセスを止めましょう。)
 
 :class:`Process` クラス
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2045,7 +2045,7 @@ pickle/unpickle より継承する方が良い
 
 sys.stdin をファイル形式のオブジェクトへ置き換えることに注意してください
 
-    :mod:`muliprocessing` は元々 :method:`muliprocessing.Process.__bootstrap` の
+    :mod:`muliprocessing` は元々 :meth:`muliprocessing.Process.__bootstrap` の
     中で無条件に
 
     ::
