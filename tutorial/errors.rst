@@ -5,14 +5,13 @@
 ************
 
 .. Until now error messages haven't been more than mentioned, but if you have tried
-.. out the examples you have probably seen some.  There are (at least) two
-.. distinguishable kinds of errors: *syntax errors* and *exceptions*.
+   out the examples you have probably seen some.  There are (at least) two
+   distinguishable kinds of errors: *syntax errors* and *exceptions*.
 
-これまでエラーメッセージについては簡単に触れるだけでしたが、チュートリアル中の例を自分で試していたら、
-実際にいくつかのエラーメッセージを見ていることでしょう。
-エラーには (少なくとも) 二つのはっきり異なる種類があります: それは *構文エラー (syntax error)* と
-*例外 (exception)* です。
-
+これまでエラーメッセージについては簡単に触れるだけでしたが、チュートリアル中の
+例を自分で試していたら、実際にいくつかのエラーメッセージを見ていることでしょう。
+エラーには (少なくとも) 二つのはっきり異なる種類があります。
+それは *構文エラー (syntax error)* と *例外 (exception)* です。
 
 
 .. _tut-syntaxerrors:
@@ -21,7 +20,7 @@
 ==========
 
 .. Syntax errors, also known as parsing errors, are perhaps the most common kind of
-.. complaint you get while you are still learning Python:
+   complaint you get while you are still learning Python:
 
 構文エラーは構文解析エラー (parsing error) としても知られており、 Python を勉強している間に
 最もよく遭遇する問題の一つでしょう。
