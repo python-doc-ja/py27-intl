@@ -5,7 +5,7 @@ def trunc_whitespace(app, doctree, docname):
     for node in doctree.traverse(Text):
         if isinstance(node.parent, paragraph):
             lines = node.astext().splitlines()
-            newlines = [lines[0]]
+            newlines = [lines[0] if lines else '']
             for i in xrange(1, len(lines)):
                 line = lines[i]
                 prev = lines[i-1]
