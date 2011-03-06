@@ -34,7 +34,7 @@ XML ファイルを読み書きするインターフェイスを提供します�
 
 .. seealso::
 
-   `PList manual page <http://developer.apple.com/documentation/Darwin/Reference/ManPages/man5/plist.5.html>`
+   `PList manual page <http://developer.apple.com/documentation/Darwin/Reference/ManPages/man5/plist.5.html>`_
       このファイル形式の Apple の文書。
 
 
@@ -78,7 +78,7 @@ XML ファイルを読み書きするインターフェイスを提供します�
 
     .. warning::
 
-       3.0 では、この関数は削除されます。
+       3.x では、この関数は削除されています。
 
 
 .. function:: writePlistToResource(rootObject, path[, restype='plst'[, resid=0]])
@@ -88,7 +88,7 @@ XML ファイルを読み書きするインターフェイスを提供します�
 
     .. warning::
 
-       3.0 では、この関数は削除されます。
+       3.x では、この関数は削除されてます。
 
 
 以下のクラスが使用可能です。
