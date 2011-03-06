@@ -1,19 +1,14 @@
+from docutils.nodes import Text, paragraph
+import re
+
+_PAT = re.compile(ur"([^\u0000-\u00ff])\n([^\u0000-\u00ff])")
+
 def trunc_whitespace(app, doctree, docname):
-    from docutils.nodes import Text, paragraph
     if not app.config.japanesesupport_trunc_whitespace:
         return
     for node in doctree.traverse(Text):
         if isinstance(node.parent, paragraph):
-            lines = node.astext().splitlines()
-            newlines = [lines[0] if lines else '']
-            for i in xrange(1, len(lines)):
-                line = lines[i]
-                prev = lines[i-1]
-                if prev and ord(prev[-1]) > 255 and line and ord(line[0]) > 255:
-                    newlines[-1] += line
-                else:
-                    newlines.append(line)
-            newtext = '\n'.join(newlines)
+            newtext = _PAT.sub(ur"\1\2", node.astext())
             node.parent.replace(node, Text(newtext))
 
 def setup(app):
