@@ -684,17 +684,26 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
    john.dept = 'computer lab'
    john.salary = 1000
 
-ある特定の抽象データ型を要求する Python コードの断片には、そのデータ型のメソッドをエミュレーションするクラスを代わりに渡す
-ことができます。例えば、ファイルオブジェクトから何らかのデータを書式化する関数がある場合、 :meth:`read` と :meth:`readline`
-を持つクラスを定義して、ファイルではなく文字列バッファからデータを書式するようにしておき、引数として渡すことができます。
-(残念なことに、このテクニックには限界があります: クラスにはシーケンスの添字アクセスや算術演算などの特殊構文でアクセスされる操作が定義できず、"疑似ファイル" を sys.stdin に代入してもそこからインタープリタに入力データを読み込ませることはできません。)
+ある特定の抽象データ型を要求する Python コードの断片に、そのデータ型の
+メソッドをエミュレーションするクラスを代わりに渡すことができます。
+例えば、ファイルオブジェクトから何らかのデータを構築する関数がある場合、
+:meth:`read` と :meth:`readline` を持つクラスを定義して、ファイルではなく
+文字列バッファからデータを取得するようにしておき、引数として渡すことができます。
 
-インスタンスメソッドオブジェクトにもまた、属性があります:  ``m.im_self`` はメソッド :meth:`m` の属しているインスタンスオブジェクトで、
+.. コメントアウトされてる
+.. (Unfortunately, this technique has its limitations: a class can't define
+   operations that are accessed by special syntax such as sequence subscripting
+   or arithmetic operators, and assigning such a "pseudo-file" to sys.stdin will
+   not cause the interpreter to read further input from it.)
+
+.. (残念なことに、このテクニックには限界があります: クラスにはシーケンスの
+   添字アクセスや算術演算などの特殊構文でアクセスされる操作が定義できず、
+   "疑似ファイル" を sys.stdin に代入してもそこからインタープリタに入力
+   データを読み込ませることはできません。)
+
+インスタンスメソッドオブジェクトにも属性があります。
+``m.im_self`` はメソッド :meth:`m` の属しているインスタンスオブジェクトで、
 ``m.im_func`` はメソッドに対応する関数オブジェクトです。
-
-.. % % Instance method objects have attributes, too: \code{m.im_self} is the
-.. % % instance object with the method \method{m}, and \code{m.im_func} is the
-.. % % function object corresponding to the method.
 
 
 .. _tut-exceptionclasses:
@@ -705,7 +714,7 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
 ユーザ定義の例外をクラスとして識別することもできます。
 このメカニズムを使って、拡張可能な階層化された例外を作成することができます。
 
-新しく二つの (意味付け的な) 形式の :keyword:`raise` 文ができました。
+新しい二つの (意味付け的な) 形式の :keyword:`raise` 文があります。
 
 ::
 
@@ -713,14 +722,16 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
 
    raise instance
 
-第一の形式では、 ``instance`` は :class:`Class` またはその導出クラスのインスタンスでなければなりません。
+第一の形式では、 ``instance`` は :class:`Class` またはその導出クラスの
+インスタンスでなければなりません。
 第二の形式は以下の表記の短縮された記法です。
 
 ::
 
    raise instance.__class__, instance
 
-:keyword:`except` 節のクラスは、同じクラスか基底クラスの例外のときに互換(compatible)となります。
+:keyword:`except` 節のクラスは、例外と同じクラスか基底クラスのときに互換
+(compatible)となります。
 (逆方向では成り立ちません --- 導出クラスの例外がリストされている  except
 節は基底クラスの例外と互換ではありません)。
 例えば、次のコードは、 B, C, D を順序通りに出力します。
@@ -734,9 +745,9 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
    class D(C):
        pass
 
-   for c in [B, C, D]:
+   for cls in [B, C, D]:
        try:
-           raise c()
+           raise cls()
        except D:
            print "D"
        except C:
@@ -744,22 +755,13 @@ Pascal の "レコード (record)" や、C 言語の "構造体 (struct)" のよ
        except B:
            print "B"
 
-except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)、 B, B, B と出力されるはずだったことに注意してください ---
+except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)、 B, B, B
+と出力されるはずだったことに注意してください ---
 最初に一致した except 節が駆動されるのです。
 
-.. % % Note that if the except clauses were reversed (with
-.. % % \samp{except B} first), it would have printed B, B, B --- the first
-.. % % matching except clause is triggered.
-
-処理されないクラスの例外に対してエラーメッセージが出力されるとき、まずクラス名が出力され、続いてコロン、スペース、最後に組み込み関数 :func:`str`
+処理されないクラスの例外に対してエラーメッセージが出力されるとき、
+まずクラス名が出力され、続いてコロン、スペース、最後に組み込み関数 :func:`str`
 を使って文字列に変換したインスタンスが出力されます。
-
-.. % % When an error message is printed for an unhandled exception, the
-.. % % exception's class name is printed, then a colon and a space, and
-.. % % finally the instance converted to a string using the built-in function
-.. % % \function{str()}.
-
-.. % % \section{Iterators\label{iterators}}
 
 
 .. _tut-iterators:
@@ -767,10 +769,8 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
 イテレータ (iterator)
 =====================
 
-すでに気づいているでしょうが、 ``for`` 文を使うとほとんどのコンテナオブジェクトにわたってループを行うことができます:
-
-.. % % By now you have probably noticed that most container objects can looped over
-.. % % using a \code{for} statement:
+すでに気づいているでしょうが、 ``for`` 文を使うとほとんどのコンテナ
+オブジェクトにわたってループを行うことができます。
 
 ::
 
@@ -786,18 +786,13 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
        print line
 
 こうしたアクセス方法は明確で、簡潔で、かつ便利なものです。イテレータの使用は Python
-全体に普及していて、統一性をもたらしています。背後では、 ``for`` 文はコンテナオブジェクトの :func:`iter` を呼び出しています。この関数は
-:meth:`next` メソッドの定義されたイテレータオブジェクトを返します。 :meth:`next`
-メソッドは一度コンテナ内の要素に一度に一つづつアクセスします。コンテナ内にアクセスすべき要素がなくなると、 :meth:`next` は
-:exc:`StopIteration` 例外を送出し、 ``for`` ループを終了させます。実際にどのように動作するかを以下の例に示します:
-
-.. % % This style of access is clear, concise, and convenient.  The use of iterators
-.. % % pervades and unifies Python.  Behind the scenes, the \code{for} statement calls
-.. % % \function{iter()} on the container object.  The function returns an iterator
-.. % % object that defines the method \method{next()} which accesses elements in the
-.. % % container one at a time.  When there are no more elements, \method{next()}
-.. % % raises a \exception{StopIteration} exception which tells the \code{for} loop
-.. % % to terminate.  This example shows how it all works:
+全体に普及していて、統一性をもたらしています。背後では、 ``for`` 文は
+コンテナオブジェクトの :func:`iter` を呼び出しています。
+この関数は :meth:`next` メソッドの定義されたイテレータオブジェクトを返します。
+:meth:`next` メソッドは一度コンテナ内の要素に一度に一つづつアクセスします。
+コンテナ内にアクセスすべき要素がなくなると、 :meth:`next` は
+:exc:`StopIteration` 例外を送出し、 ``for`` ループを終了させます。
+実際にどのように動作するかを以下の例に示します。
 
 ::
 
@@ -851,24 +846,18 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
    s
 
 
-.. % % \section{Generators\label{generators}}
-
-
 .. _tut-generators:
 
 ジェネレータ (generator)
 ========================
 
-:term:`Generator` は、イテレータを作成するための簡潔で強力なツールです。ジェネレータは通常の関数のように書かれますが、何らかのデータを返すときには
-:keyword:`yield` 文を使います。 :meth:`next` が呼び出されるたびに、ジェネレータは以前に中断した処理を再開します
-(ジェネレータは、全てのデータ値と最後にどの文が実行されたかを記憶しています)。以下の例を見れば、ジェネレータがとても簡単に作成できることがわかります:
-
-.. % % Generators are a simple and powerful tool for creating iterators.  They are
-.. % % written like regular functions but use the \keyword{yield} statement whenever
-.. % % they want to return data.  Each time the \method{next()} is called, the
-.. % % generator resumes where it left-off (it remembers all the data values and
-.. % % which statement was last executed).  An example shows that generators can
-.. % % be trivially easy to create:
+ジェネレータ(:term:`generator`)は、イテレータを作成するための簡潔で強力な
+ツールです。
+ジェネレータは通常の関数のように書かれますが、何らかのデータを返すときには
+:keyword:`yield` 文を使います。
+:meth:`next` が呼び出されるたびに、ジェネレータは以前に中断した処理を再開します
+(ジェネレータは、全てのデータ値と最後にどの文が実行されたかを記憶しています)。
+以下の例を見れば、ジェネレータがとても簡単に作成できることがわかります。
 
 ::
 
@@ -884,29 +873,19 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
    o
    g
 
-ジェネレータを使ってできることは、前節で記述したクラスに基づいたイテレータを使えばできます。ジェネレータを使うとコンパクトに記述できるのは、
+ジェネレータを使ってできることは、前節で記述したクラスベースのイテレータを
+使ってもできます。ジェネレータを使うとコンパクトに記述できるのは、
 :meth:`__iter__` と :meth:`next` メソッドが自動的に作成されるからです。
 
-.. % % Anything that can be done with generators can also be done with class based
-.. % % iterators as described in the previous section.  What makes generators so
-.. % % compact is that the \method{__iter__()} and \method{next()} methods are
-.. % % created automatically.
+ジェネレータのもう一つの重要な機能は、呼び出しごとにローカル変数と実行状態が
+自動的に保存されるということです。これにより、 ``self.index`` や
+``self.data`` といったインスタンス変数を使ったアプローチよりも簡単に関数を
+書くことができるようになります。
 
-ジェネレータのもう一つの重要な機能は、呼び出しごとにローカル変数と実行状態が自動的に保存されるということです。これにより、 ``self.index`` や
-``self.data`` といったインスタンス変数を使ったアプローチよりも簡単に関数を書くことができるようになります。
-
-.. % % Another key feature is that the local variables and execution state
-.. % % are automatically saved between calls.  This made the function easier to write
-.. % % and much more clear than an approach using instance variables like
-.. % % \code{self.index} and \code{self.data}.
-
-メソッドを自動生成したりプログラムの実行状態を自動保存するほかに、ジェネレータは終了時に自動的に :exc:`StopIteration` を送出します。
-これらの機能を組み合わせると、通常の関数を書くのに比べ、全く苦労することなく簡単にイテレータを生成できます。
-
-.. % % In addition to automatic method creation and saving program state, when
-.. % % generators terminate, they automatically raise \exception{StopIteration}.
-.. % % In combination, these features make it easy to create iterators with no
-.. % % more effort than writing a regular function.
+メソッドを自動生成したりプログラムの実行状態を自動保存するほかに、
+ジェネレータは終了時に自動的に :exc:`StopIteration` を送出します。
+これらの機能を組み合わせると、通常の関数を書くのと同じ労力で、
+簡単にイテレータを生成できます。
 
 
 .. _tut-genexps:
@@ -914,17 +893,12 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
 ジェネレータ式
 ==============
 
-単純なジェネレータなら、式を使って簡潔にコードする方法があります。リスト内包に似た構文の式ですが、各括弧ではなく丸括弧を使います。
-ジェネレータ式は、関数の中でジェネレータをすぐに使いたいような状況のために用意されています。ジェネレータ式はコンパクトですが、
-完全なジェネレータに比べてちょっと融通の効かないところがあります。同じ内容を返すリスト内包よりはメモリに優しいことが多いという利点もあります。
-
-.. % Generator Expressions
-.. % Some simple generators can be coded succinctly as expressions using a syntax
-.. % similar to list comprehensions but with parentheses instead of brackets.  These
-.. % expressions are designed for situations where the generator is used right
-.. % away by an enclosing function.  Generator expressions are more compact but
-.. % less versatile than full generator definitions and tend to be more memory
-.. % friendly than equivalent list comprehensions.
+単純なジェネレータなら、式を使って簡潔にコードする方法があります。
+リスト内包に似た構文の式ですが、各括弧ではなく丸括弧を使います。
+ジェネレータ式は、関数の中でジェネレータをすぐに使いたいような
+状況のために用意されています。ジェネレータ式はコンパクトですが、
+完全なジェネレータに比べてちょっと融通の効かないところがありますが、
+同じ内容を返すリスト内包よりはメモリに優しいことが多いという利点があります。
 
 例::
 
@@ -951,7 +925,9 @@ except 節が逆に並んでいた場合 (``except B`` が最初にくる場合)
 
 .. rubric:: Footnotes
 
-.. [#] 例外が一つあります。モジュールオブジェクトには、秘密の読取り専用の属性 :attr:`__dict__`
-   があり、モジュールの名前空間を実装するために使われている辞書を返します; :attr:`__dict__` という名前は属性ですが、グローバルな名前では
-   ありません。この属性を利用すると名前空間の実装に対する抽象化を侵すことになるので、プログラムを検死するデバッガのような用途に限るべきです。
+.. [#] 例外が一つあります。モジュールオブジェクトには、秘密の読取り専用の属性
+   :attr:`__dict__` があり、モジュールの名前空間を実装するために使われている
+   辞書を返します; :attr:`__dict__` という名前は属性ですが、グローバルな名前では
+   ありません。この属性を利用すると名前空間の実装に対する抽象化を侵すことに
+   なるので、プログラムを検死するデバッガのような用途に限るべきです。
 
