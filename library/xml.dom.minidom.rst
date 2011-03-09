@@ -29,7 +29,7 @@ DOM アプリケーションは典型的に、XML を DOM に解析 (parse) す�
 :func:`parse` 関数はファイル名か、開かれたファイルオブジェクトを引数にとることができます。
 
 
-.. function:: parse(filename_or_file, parser)
+.. function:: parse(filename_or_file[, parser[, bufsize]])
 
    与えられた入力から :class:`Document` を返します。 *filename_or_file*
    はファイル名でもファイルオブジェクトでもかまいません。 *parser* を指定する場合、SAX2 パーザオブジェクトでなければなりません。
@@ -74,19 +74,12 @@ DOM 文書オブジェクトを手にしたら、XML 文書のプロパティや
    dom3 = parseString("<myxml>Some data</myxml>")
    assert dom3.documentElement.tagName == "myxml"
 
-DOM を使い終えたら、後片付けを行わなければなりません。 Python のバージョンによっては、循環的に互いを参照するオブジェクト
-に対するガベージコレクションをサポートしていないため、この操作が必要となります。この制限が全てのバージョンの Python から除去される
-までは、循環参照オブジェクトが消去されないものとしてコードを書くのが無難です。
-
-DOM を片付けるには、 :meth:`unlink` メソッドを呼び出します::
-
-   dom1.unlink()
-   dom2.unlink()
-   dom3.unlink()
-
+DOMツリーを使い終えた後に、 :meth:`unlink` メソッドを呼び出すことで
+利用されなくなったオブジェクトが早くクリーンアップされるように助けることができます。
 :meth:`unlink` は、 DOM API に対する :mod:`xml.dom.minidom`  特有の拡張です。ノードに対して
 :meth:`unlink` を呼び出した後は、ノードとその下位ノードは本質的には無意味なものとなります。
-
+このメソッドを呼び出さなくても、 Python のガベージコレクタがいつかはツリーの
+オブジェクトを後片付けします。
 
 .. seealso::
 
