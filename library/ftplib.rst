@@ -33,8 +33,8 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
    '226 Transfer complete.'
    >>> ftp.quit()
 
-このモジュールは以下の項目を定義しています：
 
+このモジュールは以下の項目を定義しています。
 
 .. class:: FTP([host[, user[, passwd[, acct[, timeout]]]]])
 
@@ -49,37 +49,40 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
       *timeout* が追加されました。
 
 
-   .. attribute:: all_errors
+.. exception:: error_reply
 
-      :class:`FTP` インスタンスのメソッドの結果、FTP接続で（プログラミングのエラーと考えられるメソッドの実行によって）発生する全ての例外（タプル形
-      式）。この例外には以下の４つのエラーはもちろん、 :exc:`socket.error` と :exc:`IOError` も含まれます。
-
-
-   .. exception:: error_reply
-
-      サーバから想定外の応答があった時に発生する例外。
+   サーバから想定外の応答があった時に発生する例外。
 
 
-   .. exception:: error_temp
+.. exception:: error_temp
 
-      400--499の範囲のエラー応答コードを受け取った時に発生する例外。
-
-
-   .. exception:: error_perm
-
-      500--599の範囲のエラー応答コードを受け取った時に発生する例外。
+   400--499の範囲のエラー応答コードを受け取った時に発生する例外。
 
 
-   .. exception:: error_proto
+.. exception:: error_perm
 
-      1--5の数字で始まらない応答コードをサーバから受け取った時に発生する例外。
+   500--599の範囲のエラー応答コードを受け取った時に発生する例外。
+
+
+.. exception:: error_proto
+
+   1--5の数字で始まらない応答コードをサーバから受け取った時に発生する例外。
+
+
+.. data:: all_errors
+
+   :class:`FTP` インスタンスのメソッド実行時、FTP接続で（プログラミングの
+   エラーと考えられるメソッドの実行によって）発生する全ての例外（タプル形式）。
+   この例外には以下の４つのエラーはもちろん、 :exc:`socket.error` と
+   :exc:`IOError` も含まれます。
 
 
 .. seealso::
 
    Module :mod:`netrc`
-      :file:`.netrc` ファイルフォーマットのパーザ。 :file:`.netrc` ファイルは、FTPクライアントがユーザにプロンプトを出す前に、
-      ユーザ認証情報をロードするのによく使われます。
+      :file:`.netrc` ファイルフォーマットのパーザ。 :file:`.netrc` ファイルは、
+      FTPクライアントがユーザにプロンプトを出す前に、ユーザ認証情報を
+      ロードするのによく使われます。
 
    .. index:: single: ftpmirror.py
 
@@ -129,12 +132,18 @@ FTP オブジェクト
 
 .. method:: FTP.login([user[, passwd[, acct]]])
 
-   ct 与えられた *user* でログインします。 *passwd* と *acct* のパラメータは省略可能で、デフォルトでは空文字列です。
+   与えられた *user* でログインします。 *passwd* と *acct* のパラメータは
+   省略可能で、デフォルトでは空文字列です。
    もし *user* が指定されないなら、デフォルトで ``'anonymous'`` になります。
-   もし *user* が ``'anonymous'`` なら、デフォルトの *passwd* は ``'anonymous@'`` になります。
-   このfunctionは各インスタンスについて一度だけ、接続が確立した後に呼び出さなければなりません；
-   インスタンスが作られた時にホスト名とユーザ名が与えられていたら、このメソッドを実行すべきではありません。
+   もし *user* が ``'anonymous'`` なら、デフォルトの *passwd* は
+   ``'anonymous@'`` になります。
+   この関数は各インスタンスについて一度だけ、接続が確立した後に呼び出さなければ
+   なりません。
+   インスタンスが作られた時にホスト名とユーザ名が与えられていたら、この
+   メソッドを実行すべきではありません。
    ほとんどのFTPコマンドはクライアントがログインした後に実行可能になります。
+   *acct* 引数は "accounting information" を提供します。ほとんどのシステムは
+   これを実装していません。
 
 
 .. method:: FTP.abort()
@@ -166,15 +175,16 @@ FTP オブジェクト
    .. Retrieve a file or directory listing in ASCII transfer mode.  *command*
       should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
       command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
-      ``'LIST'``).  The *callback* function is called for each line, with the
-      trailing CRLF stripped.  The default *callback* prints the line to
-      ``sys.stdout``.
+      ``'LIST'``).  The *callback* function is called for each line with a
+      string argument containing the line with the trailing CRLF stripped.
+      The default *callback* prints the line to ``sys.stdout``.
 
    ASCII転送モードでファイルとディレクトリのリストを受信します。
    *command* は、適切な ``RETR`` コマンド(:meth:`retrbinary` を参照)あるいは
-   ``LIST``, ``NLST``, ``MLSD`` のようなコマンド(通常は文字列 ``'LIST'``)でなければなりません。
-   関数 *callback* は末尾のCRLFを取り除いた各行に対して実行されます。
-   デフォルトでは *callback* は ``sys.stdout`` に各行を印字します。
+   ``LIST``, ``NLST``, ``MLSD`` のようなコマンド(通常は文字列 ``'LIST'``)で
+   なければなりません。
+   関数 *callback* は末尾のCRLFを取り除いた各行を引数にして実行されます。
+   デフォルトでは *callback* は ``sys.stdout`` に各行を表示します。
 
 
 .. method:: FTP.set_pasv(boolean)
