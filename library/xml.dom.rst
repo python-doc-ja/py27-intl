@@ -67,7 +67,7 @@ Python での対応づけは、大部分がこの仕様の IDL 版に基づい�
    `Document Object Model (DOM) Level 1 Specification <http://www.w3.org/TR/REC-DOM-Level-1/>`_
       :mod:`xml.dom.minidom` でサポートされている W3C の DOM に関する勧告。
 
-   `Python Language Mapping Specification <http://www.omg.org/docs/formal/02-11-05.pdf>`_
+   `Python Language Mapping Specification <http://www.omg.org/spec/PYTH/1.2/PDF>`_
       このドキュメントでは OMG IDL から Python への対応付けを記述しています。
 
 
