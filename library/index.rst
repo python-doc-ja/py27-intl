@@ -41,7 +41,6 @@ Windows 向けの Python インストーラはたいてい標準ライブラリ�
    intro.rst
    functions.rst
    constants.rst
-   objects.rst
    stdtypes.rst
    exceptions.rst
 
