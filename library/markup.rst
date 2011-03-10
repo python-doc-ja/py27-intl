@@ -37,9 +37,3 @@ Python による DOM および SAX インタフェースへのバインディン
    xml.sax.utils.rst
    xml.sax.reader.rst
    xml.etree.elementtree.rst
-
-.. seealso::
-
-   `Python/XML ライブラリ <http://pyxml.sourceforge.net/>`_
-      Python にバンドルされてくる :mod:`xml` パッケージへの拡張である PyXML パッケージのホームページです。
-
