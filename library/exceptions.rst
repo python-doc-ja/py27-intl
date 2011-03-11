@@ -116,10 +116,10 @@
    です。
 
 
+   .. .. versionchanged:: 2.5
+   ..    .. Changed to inherit from :exc:`BaseException`.
+
    .. versionchanged:: 2.5
-
-      .. Changed to inherit from :exc:`BaseException`.
-
       :exc:`BaseException` から導出するように変更されました.
 
 
@@ -270,10 +270,10 @@
 
    .. versionadded:: 2.5
 
+   .. .. versionchanged:: 2.6
+   ..    .. Changed to inherit from :exc:`BaseException`.
+
    .. versionchanged:: 2.6
-
-      .. Changed to inherit from :exc:`BaseException`.
-
       :exc:`BaseException` からの継承に変更されました。
 
 
@@ -297,10 +297,10 @@
    :exc:`EnvironmentError` に関する議論を参照してください。
 
 
+   .. .. versionchanged:: 2.6
+   ..    .. Changed :exc:`socket.error` to use this as a base class.
+
    .. versionchanged:: 2.6
-
-      .. Changed :exc:`socket.error` to use this as a base class.
-
       :exc:`socket.error` は、これを基底クラスとして使うように変更され
       ました。
 
@@ -360,10 +360,10 @@
    ます。
 
 
+   .. .. versionchanged:: 2.5
+   ..    .. Changed to inherit from :exc:`BaseException`.
+
    .. versionchanged:: 2.5
-
-      .. Changed to inherit from :exc:`BaseException`.
-
       :exc:`BaseException` から導出されるように変更されました.
 
 
@@ -473,10 +473,10 @@
    は :mod:`weakref` モジュールを参照してください。
 
 
+   .. .. versionadded:: 2.2
+   ..    .. Previously known as the :exc:`weakref.ReferenceError` exception.
+
    .. versionadded:: 2.2
-
-      .. Previously known as the :exc:`weakref.ReferenceError` exception.
-
       以前は :exc:`weakref.ReferenceError` 例外として知られていました。
 
 
@@ -611,10 +611,10 @@
    実に呼出し元の方に伝わっていってインタプリタを終了させます。
 
 
+   .. .. versionchanged:: 2.5
+   ..    .. Changed to inherit from :exc:`BaseException`.
+
    .. versionchanged:: 2.5
-
-      .. Changed to inherit from :exc:`BaseException`.
-
       :exc:`BaseException` から導出されるように変更されました。
 
 
@@ -723,10 +723,10 @@
 
    .. versionadded:: 2.0
 
+   .. .. versionchanged:: 2.5
+   ..    .. Previous versions put the :cfunc:`GetLastError` codes into :attr:`errno`.
+
    .. versionchanged:: 2.5
-
-      .. Previous versions put the :cfunc:`GetLastError` codes into :attr:`errno`.
-
       以前のバージョンは :cfunc:`GetLastError` のコードを
       :attr:`errno` に入れていました。
 
