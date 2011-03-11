@@ -12,10 +12,9 @@
 .. exceptions are provided in the built-in namespace as well as the
 .. :mod:`exceptions` module.
 
-例外はクラスオブジェクトです。例外はモジュール :mod:`exceptions` で定
-義されています。このモジュールを明示的にインポートする必要はありません:
-例外は :mod:`exceptions` モジュールと同様に組み込み名前空間で与えられ
-ます。
+例外はクラスオブジェクトです。例外はモジュール :mod:`exceptions`
+で定義されています。このモジュールを明示的にインポートする必要はありません。
+例外は :mod:`exceptions` モジュールと同様に組み込み名前空間で与えられます。
 
 
 .. index::
@@ -31,9 +30,9 @@
 
 :keyword:`try` 文の中で、 :keyword:`except` 節を使って特定の例外クラス
 について記述した場合、その節は指定した例外クラスから導出されたクラスも
-扱います (指定した例外クラスを導出した元のクラスは含みません) 。
-サブクラス化の関係にない例外クラスが二つあった場合、それらに同じ名前を
-付けたとしても、等しくなることはありません。
+扱います (指定した例外クラスを導出した元のクラスは含みません)。
+サブクラス化の関係にない 2 つの例外クラスは、それらが同じ名前だったとしても
+等しくなることはありません。
 
 
 .. index:: statement: raise
@@ -51,7 +50,7 @@
 ます。特に注記しないかぎり、これらの例外はエラーの詳しい原因を示してい
 る、 "関連値 (associated value)" を持ちます。この値は文字列または複数
 の情報 (例えばエラーコードや、エラーコードを説明する文字列) を含むタプ
-ルです。この関連値は :keyword:`raise` 文の二つ目の引数です。
+ルです。この関連値は :keyword:`raise` 文の 2 番目の引数です。
 例外が標準のルートクラスである :exc:`BaseException` から導出された場合、
 関連値は例外インスタンスの :attr:`args` 属性中に置かれます。
 
@@ -64,8 +63,8 @@
 ユーザによるコードも組み込み例外を送出することができます。これは例外処
 理をテストしたり、インタプリタがある例外を送出する状況と "ちょうど同じ
 ような" エラー条件であることを報告させるために使うことができます。しか
-し、ユーザが適切でないエラーを送出するようコードするのを妨げる方法はな
-いので注意してください。
+し、ユーザが適切でないエラーを送出するようコードすることを妨げる方法は
+ないので注意してください。
 
 
 .. The built-in exception classes can be sub-classed to define new exceptions;
@@ -74,11 +73,10 @@
 .. defining exceptions is available in the Python Tutorial under
 .. :ref:`tut-userexceptions`.
 
-組み込み例外クラスは新たな例外を定義するためにサブクラス化することがで
-きます; プログラマには、新しい例外を少なくとも :exc:`Exception` クラス
-から導出するよう勧めます。 :exc:`BaseException` からは導出しないで下さ
-い。例外を定義する上での詳しい情報は、 Python チュートリアルの "ユーザ
-定義の例外" (:ref:`tut-userexceptions`) の項目にあります。
+組み込み例外クラスは新たな例外を定義するためにサブクラス化することができます。
+新しい例外は、少なくとも :exc:`Exception` クラスから導出することをお勧めします。
+:exc:`BaseException` からは導出しないで下さい。例外を定義する上での詳しい情報は、
+Python チュートリアルの :ref:`tut-userexceptions` の項目にあります。
 
 
 .. The following exceptions are only used as base classes for other exceptions.
@@ -96,7 +94,7 @@
    .. as a tuple.
 
    全ての組み込み例外のルートクラスです。ユーザ定義例外を直接このクラ
-   スから導出することは意図していません(そういう場合は
+   スから導出することは意図していません (そうした場合は
    :exc:`Exception` を使ってください)。このクラスに対して :func:`str`
    や :func:`unicode` が呼ばれた場合、引数の文字列表現かまたは引数が無
    い時には空文字列が返されます。
@@ -129,10 +127,9 @@
    .. :exc:`GeneratorExit`, :exc:`KeyboardInterrupt` and :exc:`SystemExit`.
    .. :exc:`StandardError` itself is derived from :exc:`Exception`.
 
-   :exc:`StopIteration` 、:exc:`SystemExit` 、
-   :exc:`KeyboardInterrupt` および :exc:`SystemExit` 以外の、全ての組
-   み込み例外の基底クラスです。 :exc:`StandardError` 自体は
-   :exc:`Exception` から導出されています。
+   :exc:`StopIteration`, :exc:`SystemExit`, :exc:`KeyboardInterrupt`,
+   :exc:`SystemExit` 以外の、全ての組み込み例外の基底クラスです。
+   :exc:`StandardError` 自体は :exc:`Exception` から導出されています。
 
 
 .. exception:: ArithmeticError
@@ -141,8 +138,8 @@
    .. arithmetic errors: :exc:`OverflowError`, :exc:`ZeroDivisionError`,
    .. :exc:`FloatingPointError`.
 
-   算術上の様々なエラーにおいて送出される組み込み例外:
-   :exc:`OverflowError` 、:exc:`ZeroDivisionError` 、
+   算術上の様々なエラーにおいて送出される組み込み例外
+   :exc:`OverflowError`, :exc:`ZeroDivisionError`,
    :exc:`FloatingPointError` の基底クラスです。
 
 
@@ -152,8 +149,8 @@
    .. a mapping or sequence is invalid: :exc:`IndexError`, :exc:`KeyError`.  This
    .. can be raised directly by :func:`codecs.lookup`.
 
-   マップ型またはシーケンス型に使ったキーやインデクスが無効な値の場合
-   に送出される例外: :exc:`IndexError` 、 :exc:`KeyError` の基底クラス
+   マップ型またはシーケンス型に使われたキーやインデックスが無効な場合
+   に送出される例外 :exc:`IndexError` および :exc:`KeyError` の基底クラス
    です。 :func:`codecs.lookup` によって直接送出されることもあります。
 
 
@@ -166,13 +163,12 @@
    .. :attr:`strerror` attribute (it is usually the associated error message).  The
    .. tuple itself is also available on the :attr:`args` attribute.
 
-   Python システムの外部で起こっているはずの例外: :exc:`IOError` 、
-   :exc:`OSError` の基底クラスです。この型の例外が 2 つの要素をもつタ
-   プルで生成された場合、最初の要素はインスタンスの :attr:`errno`  属
-   性で得ることができます (この値はエラー番号と見なされます) 。二つめ
+   Python システムの外部で起こる可能性のある例外 :exc:`IOError` および
+   :exc:`OSError` の基底クラスです。この型の例外が 2 つの要素を持つ
+   タプルで生成された場合、 1 番目の要素はインスタンスの :attr:`errno`
+   属性で得ることができます (この値はエラー番号と見なされます)。 2 番目
    の要素は :attr:`strerror` 属性です (この値は通常、エラーに関連する
-   メッセージです) 。タプル自体は :attr:`args` 属性から得ることもでき
-   ます。
+   メッセージです)。タプル自体は :attr:`args` 属性から得ることもできます。
 
 
    .. versionadded:: 1.5.2
@@ -184,7 +180,7 @@
    .. arguments.
 
    :exc:`EnvironmentError` 例外が 3 要素のタプルで生成された場合、最初
-   の 2 つの要素は上と同様に得ることができる一方、 3 つ目の要素は
+   の 2 つの要素は上記と同様に値を得ることができ、さらに 3 番目の要素は
    :attr:`filename` 属性で得ることができます。しかしながら、以前のバー
    ジョンとの互換性のために、 :attr:`args` 属性にはコンストラクタに渡
    した最初の 2 つの引数からなる 2 要素のタプルしか含みません。
@@ -197,7 +193,7 @@
    .. tuple.
 
    この例外が 3 つ以外の引数で生成された場合、 :attr:`filename` 属性は
-   ``None`` になります。この例外が 2 または 3 つ以外の引数で生成された
+   ``None`` になります。この例外が 2 つまたは 3 つ以外の引数で生成された
    場合、 :attr:`errno` および :attr:`strerror` 属性も ``None`` になり
    ます。後者のケースでは、 :attr:`args` がコンストラクタに与えた引数
    をそのままタプルの形で含んでいます。
@@ -223,9 +219,9 @@
    .. assignment fails.  (When an object does not support attribute references or
    .. attribute assignments at all, :exc:`TypeError` is raised.)
 
-   属性の参照 (:ref:`attribute-references` を参照下さい) や代入が失敗
+   属性の参照 (:ref:`attribute-references` を参照) や代入が失敗
    した場合に送出されます (オブジェクトが属性の参照や属性の代入をまっ
-   たくサポートしていない場合には :exc:`TypeError` が送出されます ) 。
+   たくサポートしていない場合には :exc:`TypeError` が送出されます)。
 
 
 .. exception:: EOFError
@@ -237,9 +233,8 @@
 
    組み込み関数 (:func:`input` または :func:`raw_input`) のいずれかで、
    データを全く読まないうちにファイルの終端 (EOF) に到達した場合に送出
-   されます (注意: :meth:`file.read` および :meth:`file.readline` メソッ
-   ドの場合、データを読まないうちに EOF にたどり着くと空の文字列を返し
-   ます) 。
+   されます (注意: :meth:`file.read` および :meth:`file.readline` メソッド
+   の場合、データを読まないうちに EOF にたどり着くと空の文字列を返します)。
 
 
 .. exception:: FloatingPointError
@@ -249,9 +244,9 @@
    .. :option:`--with-fpectl` option, or the :const:`WANT_SIGFPE_HANDLER` symbol is
    .. defined in the :file:`pyconfig.h` file.
 
-   浮動小数点演算が失敗した場合に送出されます。この例外はどの Python
-   のバージョンでも常に定義されていますが、 Python が
-   :option:`--with-fpectl` オプションをつけた状態に設定されているか、
+   浮動小数点演算が失敗した場合に送出されます。この例外は Python
+   のどのバージョンでも常に定義されていますが、 Python が
+   :option:`--with-fpectl` オプションを有効にしてコンパイルされているか、
    :file:`pyconfig.h` ファイルにシンボル :const:`WANT_SIGFPE_HANDLER`
    が定義されている場合にのみ送出されます。
 
@@ -263,7 +258,7 @@
    .. it is technically not an error.
 
    ジェネレータ (:term:`generator`) の :meth:`close` メソッドが呼び出
-   されたときに送出されます。この例外は技術的にはエラーでないので
+   されたときに送出されます。この例外は厳密にはエラーではないので、
    :exc:`StandardError` ではなく :exc:`BaseException` から導出されてい
    ます。
 
@@ -274,7 +269,7 @@
    ..    .. Changed to inherit from :exc:`BaseException`.
 
    .. versionchanged:: 2.6
-      :exc:`BaseException` からの継承に変更されました。
+      :exc:`BaseException` から継承するように変更されました。
 
 
 .. exception:: IOError
@@ -301,8 +296,7 @@
    ..    .. Changed :exc:`socket.error` to use this as a base class.
 
    .. versionchanged:: 2.6
-      :exc:`socket.error` は、これを基底クラスとして使うように変更され
-      ました。
+      :exc:`socket.error` は、この例外を基底クラスとして使うように変更されました。
 
 
 .. exception:: ImportError
@@ -311,8 +305,7 @@
    .. or when a ``from ... import`` fails to find a name that is to be imported.
 
    :keyword:`import` 文でモジュール定義を見つけられなかった場合や、
-   ``from ... import`` 文で指定した名前をインポートすることができなかっ
-   ... た場合に送出されます。
+   ``from ... import`` 文で指定した名前をインポートすることができなかった場合に送出されます。
 
 
 .. exception:: IndexError
@@ -321,10 +314,10 @@
    .. truncated to fall in the allowed range; if an index is not a plain integer,
    .. :exc:`TypeError` is raised.)
 
-   シーケンスのインデクス指定がシーケンスの範囲を超えている場合に送出
-   されます　(スライスのインデクスはシーケンスの範囲に収まるように暗黙
-   のうちに調整されます; インデクスが通常の整数でない場合、
-   :exc:`TypeError` が送出されます) 。
+   シーケンスのインデックス指定がシーケンスの範囲を超えている場合に送出
+   されます　(スライスのインデックスはシーケンスの範囲に収まるように暗黙
+   のうちに調整されます; インデックスが通常の整数でない場合、
+   :exc:`TypeError` が送出されます)。
 
 
    .. XXX xref to sequences
@@ -350,14 +343,13 @@
    .. :exc:`BaseException` so as to not be accidentally caught by code that catches
    .. :exc:`Exception` and thus prevent the interpreter from exiting.
 
-   ユーザが割り込みキー (通常は :kbd:`Control-C` または :kbd:`Delete`
-   キーです) を押した場合に送出されます。割り込みが起きたかどうかはイ
-   ンタプリタの実行中に定期的に調べられます。組み込み関数
-   :func:`input` や :func:`raw_input` がユーザの入力を待っている間に割
-   り込みキーを押しても、この例外が送出されます。この例外は
-   :exc:`Exception` を捕まえるコードに間違って捕まってインタプリタが終
-   了するのを阻止されないように  :exc:`BaseException` から導出されてい
-   ます。
+   ユーザが割り込みキー (通常は :kbd:`Control-C` または :kbd:`Delete` キー)
+   を押した場合に送出されます。割り込みが起きたかどうかはインタプリタの
+   実行中に定期的に調べられます。組み込み関数 :func:`input` や
+   :func:`raw_input` がユーザの入力を待っている間に割り込みキーを押しても
+   この例外が送出されます。この例外は :exc:`Exception` を処理するコードに
+   誤って捕捉されてインタプリタの終了が阻害されないように :exc:`BaseException`
+   から導出されています。
 
 
    .. .. versionchanged:: 2.5
@@ -378,8 +370,8 @@
    .. case a run-away program was the cause.
 
    ある操作中にメモリが不足したが、その状況は (オブジェクトをいくつか
-   消去することで) まだ復旧可能かもしれない場合に送出されます。例外に
-   関連づけられた値は、どの種の (内部) 操作がメモリ不足になっているか
+   消去することで) まだ復旧可能かもしれない場合に送出されます。例外の
+   関連値は、どんな種類の (内部) 操作がメモリ不足になっているか
    を示す文字列です。背後にあるメモリ管理アーキテクチャ (C の
    :cfunc:`malloc` 関数) によっては、インタプリタが常にその状況を完璧
    に復旧できるとはかぎらないので注意してください; プログラムの暴走が
@@ -394,8 +386,8 @@
    .. name that could not be found.
 
    ローカルまたはグローバルの名前が見つからなかった場合に送出されます。
-   これは非限定の名前のみに適用されます。関連付けられた値は見つからな
-   かった名前を含むエラーメッセージです。
+   これは非限定の名前のみに適用されます。関連値は見つからなかった名前を
+   含むエラーメッセージです。
 
 
 .. exception:: NotImplementedError
@@ -404,9 +396,9 @@
    .. classes, abstract methods should raise this exception when they require derived
    .. classes to override the method.
 
-   この例外は :exc:`RuntimeError` から導出されています。ユーザ定義の基
-   底クラスにおいて、そのクラスの導出クラスにおいてオーバライドするこ
-   とが必要な抽象化メソッドはこの例外を送出しなくてはなりません。
+   この例外は :exc:`RuntimeError` から導出されています。ユーザ定義の基底
+   クラスにおいて、抽象メソッドが導出クラスでオーバライドされることを
+   要求する場合、この例外を送出しなくてはなりません。
 
    .. versionadded:: 1.5.2
 
@@ -424,21 +416,21 @@
    .. by the underlying operating system.
 
    このクラスは :exc:`EnvironmentError` から導出されています。
-   関数がシステムに関連したエラーを返した場合に送出されます (引数の
-   型が間違っている場合や、他の偶発的なエラーは除きます ) 。
-   :attr:`errno` 属性は、 :cdata:`errno` に基づく数字のエラーコードで
-   あり、 :attr:`strerror` 属性は、 C の :cfunc:`perror` 関数で印字さ
-   れる文字列とみなされます。
-   オペレーティングシステムに依存したエラーコードの定義と名前について
-   は、 :mod:`errno` モジュールを参照下さい。
+   関数がシステムに関連したエラーを返した場合に送出されます
+   (引数の型が間違っている場合や、他の偶発的なエラーは除きます)。
+   :attr:`errno` 属性は :cdata:`errno` に基づく数字のエラーコードで、
+   :attr:`strerror` 属性は C の :cfunc:`perror` 関数で表示されるような
+   文字列です。
+   オペレーティングシステムに依存したエラーコードの定義と名前については、
+   :mod:`errno` モジュールを参照して下さい。
 
    .. For exceptions that involve a file system path (such as :func:`chdir` or
    .. :func:`unlink`), the exception instance will contain a third attribute,
    .. :attr:`filename`, which is the file name passed to the function.
 
-   ファイルシステムのパスに関係する例外 ( :func:`chdir` や
-   :func:`unlink` など ) では、例外インスタンスは関数に渡されたファイ
-   ル名を 3 つめの属性として :attr:`filename` を持ちます。
+   ファイルシステムのパスに関係する例外 (:func:`chdir` や
+   :func:`unlink` など) では、例外インスタンスは 3 番目の属性
+   :attr:`filename` を持ちます。これは関数に渡されたファイル名です。
 
    .. versionadded:: 1.5.2
 
@@ -452,12 +444,13 @@
    .. of floating point exception handling in C, most floating point operations
    .. also aren't checked.
 
-   算術演算の結果、表現するには大きすぎる値になった場合に送出されます。
-   これは長整数の演算では起こらず (長整数の演算ではむしろ
-   :exc:`MemoryError` が送出されることになるでしょう) 、通常の整数
-   に関するほとんどの操作では長整数を返します。 C では浮動小数点演算に
-   おける例外処理の標準化が行われていないので、ほとんどの浮動小数点演
-   算もチェックされていません。
+   算術演算の結果が表現できない大きな値になった場合に送出されます。
+   これは long integer の演算と通常の整数に関するほとんどの操作では
+   起こりません (long integer の演算ではむしろ :exc:`MemoryError` が
+   送出されることになるでしょう)。整数に関するほとんどの操作では、
+   代わりに long integer が返されます。
+   C の浮動小数点演算の例外処理は標準化されていないので、ほとんどの
+   浮動小数点演算もチェックされません。
 
 
 .. exception:: ReferenceError
@@ -467,10 +460,10 @@
    .. after it has been garbage collected. For more information on weak references,
    .. see the :mod:`weakref` module.
 
-   :func:`weakref.proxy` によって生成された弱参照 (weak reference) プ
-   ロキシを使って、ガーベジコレクションによって処理された後の参照対象
-   オブジェクトの属性にアクセスした場合に送出されます。弱参照について
-   は :mod:`weakref` モジュールを参照してください。
+   :func:`weakref.proxy` によって生成された弱参照 (weak reference)
+   プロキシを使って、ガーベジコレクションによって回収された後の参照対象
+   オブジェクトの属性にアクセスした場合に送出されます。弱参照については
+   :mod:`weakref` モジュールを参照してください。
 
 
    .. .. versionadded:: 2.2
@@ -487,10 +480,10 @@
    .. wrong.  (This exception is mostly a relic from a previous version of the
    .. interpreter; it is not used very much any more.)
 
-   他のカテゴリに分類できないエラーが検出された場合に送出されます。関
-   連付けられた値は何が問題だったのかをより詳細に示す文字列です (こ
-   の例外はほとんど過去のバージョンのインタプリタにおける遺物です; こ
-   の例外はもはやあまり使われることはありません) 。
+   他のカテゴリに分類できないエラーが検出された場合に送出されます。
+   関連値は、何が問題だったのかをより詳細に示す文字列です
+   (この例外はほとんど過去のバージョンのインタプリタにおける遺物です。
+   今ではあまり使われることはありません)。
 
 
 .. exception:: StopIteration
@@ -502,9 +495,8 @@
 
    イテレータ (:term:`iterator`) の :meth:`~iterator.next` メソッドにより、それ
    以上要素がないことを知らせるために送出されます。
-   この例外は、通常のアプリケーションではエラーとはみなされないので、
-   :exc:`StandardError` ではなく :exc:`Exception` から導出されていま
-   す。
+   この例外は、通常の利用方法ではエラーとはみなされないため、
+   :exc:`StandardError` ではなく :exc:`Exception` から導出されています。
 
    .. versionadded:: 2.2
 
@@ -527,8 +519,8 @@
    .. of the exception instance returns only the message.
 
    このクラスのインスタンスは、例外の詳細に簡単にアクセスできるように
-   するために、属性 :attr:`filename` 、:attr:`lineno` 、
-   :attr:`offset` および :attr:`text` を持ちます。例外インスタンスに
+   するために、属性 :attr:`filename`, :attr:`lineno`,
+   :attr:`offset`, :attr:`text` を持ちます。例外インスタンスに
    対する :func:`str` はメッセージのみを返します。
 
 
@@ -539,8 +531,8 @@
    .. string indicating what went wrong (in low-level terms).
 
    インタプリタが内部エラーを発見したが、その状況は全ての望みを棄てさ
-   せるほど深刻ではないように思われる場合に送出されます。関連づけられ
-   た値は (控えめな言い方で) 何がまずいのかを示す文字列です。
+   せるほど深刻ではないように思われる場合に送出されます。関連値は
+   (下位層の言葉で) 何がまずいのかを示す文字列です。
 
 
    .. You should report this to the author or maintainer of your Python interpreter.
@@ -550,11 +542,11 @@
    .. program that triggered the error.
 
    Python の作者か、あなたの Python インタプリタを保守している人にこの
-   エラーを報告してください。このとき、 Python インタプリタのバージョ
-   ン (``sys.version``; Python の対話的セッションを開始した際にも出力
-   されます) 、正確なエラーメッセージ (例外に関連付けられた値) を忘れ
-   ずに報告してください。そしてもし可能ならエラーを引き起こしたプログ
-   ラムのソースコードを報告してください。
+   エラーを報告してください。このとき、 Python インタプリタのバージョン
+   (``sys.version``; Python の対話的セッションを開始した際にも出力
+   されます)、正確なエラーメッセージ (例外の関連値) を忘れずに報告して
+   ください。そしてもし可能ならエラーを引き起こしたプログラムの
+   ソースコードを報告してください。
 
 
 .. exception:: SystemExit
@@ -566,13 +558,12 @@
    .. it has another type (such as a string), the object's value is printed and the
    .. exit status is one.
 
-   この例外は :func:`sys.exit` 関数によって送出されます。この例外が処
-   理されなかった場合、 Python インタプリタは終了します; スタックのト
-   レースバックは全く印字されません。関連付けられた値が通常の整数であ
-   る場合、システム終了状態を指定しています (:cfunc:`exit` 関数に渡さ
-   れます); 値が ``None`` の場合、終了状態はゼロです; (文字列のような)
-   他の型の場合、そのオブジェクトの値が印字され、終了状態は 1 になりま
-   す。
+   この例外は :func:`sys.exit` 関数によって送出されます。この例外が
+   処理されなかった場合、スタックのトレースバックを全く表示することなく
+   Python インタプリタは終了します。関連値が通常の整数であれば、
+   システム終了ステータスを表します (:cfunc:`exit` 関数に渡されます)。
+   値が ``None`` の場合、終了ステータスは 0 です。 (文字列のような) 他の
+   型の場合、そのオブジェクトの値が表示され、終了ステータスは 1 になります。
 
    .. Instances have an attribute :attr:`code` which is set to the proposed exit
    .. status or error message (defaulting to ``None``). Also, this exception derives
@@ -580,9 +571,9 @@
    .. technically an error.
 
    この例外のインスタンスは属性 :attr:`code` を持ちます。この値は終了
-   状態またはエラーメッセージ (標準では ``None`` です) に設定されます。
-   また、この例外は技術的にはエラーではないため、 :exc:`StandardError`
-   からではなく、:exc:`BaseException` から導出されています。
+   ステータスまたはエラーメッセージ (標準では ``None``) に設定されます。
+   また、この例外は厳密にはエラーではないため、 :exc:`StandardError`
+   ではなく :exc:`BaseException` から導出されています。
 
 
    .. A call to :func:`sys.exit` is translated into an exception so that clean-up
@@ -592,7 +583,7 @@
    .. absolutely positively necessary to exit immediately (for example, in the child
    .. process after a call to :func:`fork`).
 
-   :func:`sys.exit` は、後始末のための処理 (:keyword:`try` 文の
+   :func:`sys.exit` は、クリーンアップのための処理 (:keyword:`try` 文の
    :keyword:`finally` 節) が実行されるようにするため、またデバッガが制
    御不能になるリスクを冒さずにスクリプトを実行できるようにするために
    例外に翻訳されます。即座に終了することが真に強く必要であるとき (例
@@ -624,8 +615,7 @@
    .. type.  The associated value is a string giving details about the type mismatch.
 
    組み込み演算または関数が適切でない型のオブジェクトに対して適用され
-   た際に送出されます。関連付けられる値は型の不整合に関して詳細を述べ
-   た文字列です。
+   た際に送出されます。関連値は型の不整合に関して詳細を述べた文字列です。
 
 
 .. exception:: UnboundLocalError
@@ -635,7 +625,7 @@
    .. :exc:`NameError`.
 
    関数やメソッド内のローカルな変数に対して参照を行ったが、その変数に
-   は値がバインドされていなかった際に送出されます。 :exc:`NameError`
+   は値が代入されていなかった場合に送出されます。 :exc:`NameError`
    のサブクラスです。
 
    .. versionadded:: 2.0
@@ -691,16 +681,15 @@
    .. right type but an inappropriate value, and the situation is not described by a
    .. more precise exception such as :exc:`IndexError`.
 
-   組み込み演算や関数が、正しい型だが適切でない値を受け取った場合、お
-   よび :exc:`IndexError` のように、より詳細な説明のできない状況で送出
-   されます。
+   組み込み演算や関数が、正しい型だが適切でない値を受け取った場合や、
+   :exc:`IndexError` のような詳細な説明のできない状況で送出されます。
 
 
 .. exception:: VMSError
 
    .. Only available on VMS.  Raised when a VMS-specific error occurs.
 
-   VMS においてのみ利用可能。 VMS独自のエラーが起こったときに発生する。
+   VMS においてのみ利用可能です。 VMS 特有のエラーが起こったときに送出されます。
 
 
 .. exception:: WindowsError
@@ -713,13 +702,12 @@
    .. corresponding ``errno.h`` values. This is a subclass of :exc:`OSError`.
 
    Windows 特有のエラーか、エラー番号が :cdata:`errno` 値に対応しない
-   場合に送出されます。 :attr:`winerrno` および :attr:`strerror` 値は
-   Windows プラットフォーム API の関数、 :cfunc:`GetLastError` と
+   場合に送出されます。 :attr:`winerrno` および :attr:`strerror` の値は
+   Windows プラットフォーム API の関数 :cfunc:`GetLastError` と
    :cfunc:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の
-   値は :attr:`winerror` 値を対応する ``errno.h`` の値に対応付けたもの
-   です。
-
+   値は :attr:`winerror` の値を対応する ``errno.h`` の値にマップしたものです。
    :exc:`OSError` のサブクラスです。
+
 
    .. versionadded:: 2.0
 
@@ -737,15 +725,14 @@
    .. associated value is a string indicating the type of the operands and the
    .. operation.
 
-   除算またモジュロ演算における二つ目の引数がゼロであった場合に送出さ
-   れます。関連付けられている値は文字列で、その演算における被演算子の
-   型を示します。
+   除算またモジュロ演算における 2 番目の引数が 0 であった場合に送出されます。
+   関連値は文字列で、その演算における被演算子と演算子の型を示します。
 
 
 .. The following exceptions are used as warning categories; see the :mod:`warnings`
 .. module for more information.
 
-以下の例外は警告カテゴリとして使われます; 詳細については
+以下の例外は警告カテゴリとして使われます。詳細については
 :mod:`warnings` モジュールを参照してください。
 
 
@@ -767,14 +754,14 @@
 
    .. Base class for warnings about deprecated features.
 
-   廃用された機能に対する警告の基底クラスです。
+   廃止された機能に対する警告の基底クラスです。
 
 
 .. exception:: PendingDeprecationWarning
 
    .. Base class for warnings about features which will be deprecated in the future.
 
-   将来廃用されることになっている機能に対する警告の基底クラスです。
+   将来廃止される予定の機能に対する警告の基底クラスです。
 
 
 .. exception:: SyntaxWarning
