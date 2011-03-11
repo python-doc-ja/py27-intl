@@ -148,14 +148,13 @@
 
 .. exception:: LookupError
 
-   .. The base class for the exceptions that are raised when a key or index used on a
-   .. mapping or sequence is invalid: :exc:`IndexError`, :exc:`KeyError`.  This can be
-   .. raised directly by :func:`sys.setdefaultencoding`.
+   .. The base class for the exceptions that are raised when a key or index used on
+   .. a mapping or sequence is invalid: :exc:`IndexError`, :exc:`KeyError`.  This
+   .. can be raised directly by :func:`codecs.lookup`.
 
    マップ型またはシーケンス型に使ったキーやインデクスが無効な値の場合
    に送出される例外: :exc:`IndexError` 、 :exc:`KeyError` の基底クラス
-   です。 :func:`sys.setdefaultencoding` によって直接送出されることも
-   あります。
+   です。 :func:`codecs.lookup` によって直接送出されることもあります。
 
 
 .. exception:: EnvironmentError
@@ -496,12 +495,12 @@
 
 .. exception:: StopIteration
 
-   .. Raised by an :term:`iterator`\'s :meth:`next` method to signal that there are
-   .. no further values.  This is derived from :exc:`Exception` rather than
-   .. :exc:`StandardError`, since this is not considered an error in its normal
-   .. application.
+   .. Raised by an :term:`iterator`\'s :meth:`~iterator.next` method to signal that
+   .. there are no further values.  This is derived from :exc:`Exception` rather
+   .. than :exc:`StandardError`, since this is not considered an error in its
+   .. normal application.
 
-   イテレータ (:term:`iterator`) の :meth:`next` メソッドにより、それ
+   イテレータ (:term:`iterator`) の :meth:`~iterator.next` メソッドにより、それ
    以上要素がないことを知らせるために送出されます。
    この例外は、通常のアプリケーションではエラーとはみなされないので、
    :exc:`StandardError` ではなく :exc:`Exception` から導出されていま
@@ -817,6 +816,9 @@
 
    .. versionadded:: 2.5
 
+
+Exception hierarchy
+-------------------
 
 .. The class hierarchy for built-in exceptions is:
 
