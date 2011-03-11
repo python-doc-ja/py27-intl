@@ -8,11 +8,10 @@
 
 .. This module provides direct access to all 'built-in' identifiers of Python; for
 .. example, ``__builtin__.open`` is the full name for the built-in function
-.. :func:`open`.  See chapter :ref:`builtin`.
+.. :func:`open`.
 
 このモジュールはPythonの全ての「組み込み」識別子を直接アクセスするためのものです。
 例えば ``__builtin__.open`` は :func:`open` 関数のための全ての組み込み関数を表示します。
-:ref:`builtin` 章も参照してください。
 
 
 .. This module is not normally accessed explicitly by most applications, but can be
@@ -46,13 +45,16 @@
 
        # ...
 
-.. As an implementation detail, most modules have the name ``__builtins__`` (note
-.. the ``'s'``) made available as part of their globals.  The value of
-.. ``__builtins__`` is normally either this module or the value of this modules's
-.. :attr:`__dict__` attribute.  Since this is an implementation detail, it may not
-.. be used by alternate implementations of Python.
 
-実装の詳細に属することですが、ほとんどのモジュールでは ``__builtins__`` (``'s'`` に注意) がグローバルの一部として
-使えるようになっています。 ``__builtins__`` の内容は通常このモジュールそのものか、またはこのモジュールの :attr:`__dict__`
-属性です。実装の詳細部分ということで、異なる Python の実装の下ではこのようになっていないかもしれません。
+.. impl-detail::
+
+   .. Most modules have the name ``__builtins__`` (note the ``'s'``) made available
+   .. as part of their globals.  The value of ``__builtins__`` is normally either
+   .. this module or the value of this modules's :attr:`__dict__` attribute.  Since
+   .. this is an implementation detail, it may not be used by alternate
+   .. implementations of Python.
+
+   ほとんどのモジュールでは ``__builtins__`` (``'s'`` に注意) がグローバルの一部として
+   使えるようになっています。 ``__builtins__`` の内容は通常このモジュールそのものか、またはこのモジュールの :attr:`__dict__`
+   属性です。実装の詳細部分ということで、異なる Python の実装の下ではこのようになっていないかもしれません。
 
