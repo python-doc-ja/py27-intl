@@ -10,8 +10,8 @@
 .. example, ``__builtin__.open`` is the full name for the built-in function
 .. :func:`open`.
 
-このモジュールはPythonの全ての「組み込み」識別子を直接アクセスするためのものです。
-例えば ``__builtin__.open`` は :func:`open` 関数のための全ての組み込み関数を表示します。
+このモジュールは Python の全ての「組み込み」識別子に直接アクセスするためのものです。
+例えば ``__builtin__.open`` は組み込み関数 :func:`open` の完全な名前です。
 
 
 .. This module is not normally accessed explicitly by most applications, but can be
@@ -20,10 +20,11 @@
 .. that wants to implement an :func:`open` function that wraps the built-in
 .. :func:`open`, this module can be used directly:
 
-このモジュールは通常ほとんどのアプリケーションにおいて直接名指しでアクセスされることはありませんが、
-組み込みの名前と同じ名前のオブジェクトを提供しつつ組み込みのその名前も必要であるようなモジュールにおいて有用です。
-たとえば、 :func:`open` という関数を組み込みの :func:`open` をラップして実装したいというモジュールがあったとすると、
-このモジュールは次のように直接的に使われます。
+通常このモジュールはほとんどのアプリケーションで明示的にアクセスされることはありませんが、
+組み込みの値と同じ名前のオブジェクトを提供するモジュールが同時にその名前の組み込み
+オブジェクトも必要とするような場合には有用です。
+たとえば、組み込みの :func:`open` をラップした :func:`open` という関数を実装したい
+モジュールがあったとすると、 ``__builtin__`` モジュールは次のように直接的に使われます。
 
 
 ::
@@ -54,7 +55,7 @@
    .. this is an implementation detail, it may not be used by alternate
    .. implementations of Python.
 
-   ほとんどのモジュールでは ``__builtins__`` (``'s'`` に注意) がグローバルの一部として
-   使えるようになっています。 ``__builtins__`` の内容は通常このモジュールそのものか、またはこのモジュールの :attr:`__dict__`
-   属性です。実装の詳細部分ということで、異なる Python の実装の下ではこのようになっていないかもしれません。
-
+   ほとんどのモジュールではグローバル変数の一部として ``__builtins__`` (``'s'`` に注意) が
+   利用できるようになっています。 ``__builtins__`` の内容は通常 ``__builtin__`` モジュールそのものか、
+   あるいは ``__builtin__`` モジュールの :attr:`__dict__` 属性です。
+   これは実装の詳細部分なので、異なる Python の実装では ``__builtins__`` は使われていないこともあります。
