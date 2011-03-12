@@ -61,20 +61,26 @@
 
    拡張スライス文と同時に用いられる特殊な値です。
 
-   .. XXX Someone who understands extended slicing should fill in here.
-
 
 .. data:: __debug__
 
    .. This constant is true if Python was not started with an :option:`-O` option.
-   .. Assignments to :const:`__debug__` are illegal and raise a :exc:`SyntaxError`.
-   .. See also the :keyword:`assert` statement.
+   .. It cannot be reassigned.  See also the :keyword:`assert` statement.
 
    この定数は Python が :option:`-O` オプションを付して開始されていな
    いときに真となります。
-   :const:`__debug__` に対しての代入は不正であり、 :exc:`SyntaxError`
-   を送出します。
+   :const:`__debug__` に対して再代入はできません。
    :keyword:`assert` ステートメントも参照下さい。
+
+
+.. note::
+
+   .. The name :data:`None` cannot be reassigned (assignments to it, even as an
+   .. attribute name, raise :exc:`SyntaxError`), so it can be considered a "true"
+   .. constant.
+
+   :data:`None` という名前は再代入できないので (``None`` に対する代入は、たとえ属性名としてであっても
+   :exc:`SyntaxError` が送出されます)、 ``None`` は「真の」定数であると考えることができます。
 
 
 .. Constants added by the :mod:`site` module
@@ -98,7 +104,7 @@
 
    .. Objects that when printed, print a message like "Use quit() or Ctrl-D
    .. (i.e. EOF) to exit", and when called, raise :exc:`SystemExit` with the
-   .. specified exit code, and when .
+   .. specified exit code.
 
    オブジェクトは、画面出力されたとき、 "Use quit() or Ctrl-D
    (i.e. EOF) to exit" のような画面出力をだします。呼び出されたときには、
