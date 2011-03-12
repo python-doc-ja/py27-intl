@@ -101,9 +101,6 @@
       HTTP のクッキークラスで、基本的にはサーバサイドのコードで有用です。 :mod:`cookielib` および :mod:`Cookie` モジュールは
       互いに依存してはいません。
 
-   http://wwwsearch.sf.net/ClientCookie/
-      このモジュールの拡張で、 Windows 上の Microsoft Internet Explorer クッキーを読みこむクラスが含まれています。
-
    http://wp.netscape.com/newsref/std/cookie_spec.html
       元祖 Netscape のクッキープロトコルの仕様です。今でもこれが主流のプロトコルですが、現在のメジャーなブラウザ (と
       :mod:`cookielib`) が実装している「Netscape クッキープロトコル」は ``cookie_spec.html`` で述べられているものと
@@ -273,10 +270,7 @@ CookieJar および FileCookieJar オブジェクト
 FileCookieJar のサブクラスと web ブラウザとの連携
 -------------------------------------------------
 
-クッキーの読み書きのために、以下の :class:`CookieJar` サブクラスが提供されています。これ以外の :class:`CookieJar`
-サブクラスは、Microsoft Internet Explorer ブラウザのクッキーを読みこむものも含め、
-http://wwwsearch.sf.net/ClientCookie/ から使用可能です。
-
+クッキーの読み書きのために、以下の :class:`CookieJar` サブクラスが提供されています。
 
 .. class:: MozillaCookieJar(filename, delayload=None, policy=None)
 
