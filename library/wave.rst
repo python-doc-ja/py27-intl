@@ -34,7 +34,7 @@
 
 .. function:: openfp(file, mode)
 
-   :func:`open` と同義。後方互換性のために残されています。
+   :func:`.open` と同義。後方互換性のために残されています。
 
 
 .. exception:: Error
@@ -47,8 +47,8 @@
 Wave_read オブジェクト
 ----------------------
 
-:func:`open` によって返されるWave_readオブジェクトには、以下のメソッドがあります：
-
+:func:`.open` によって返される Wave_read オブジェクトには、以下のメソッドが
+あります：
 
 .. method:: Wave_read.close()
 
@@ -131,8 +131,8 @@ Wave_read オブジェクト
 Wave_write オブジェクト
 -----------------------
 
-:func:`open` によって返されるWave_writeオブジェクトには、以下のメソッドがあります：
-
+:func:`.open` によって返される Wave_write オブジェクトには、以下のメソッドが
+あります：
 
 .. method:: Wave_write.close()
 
