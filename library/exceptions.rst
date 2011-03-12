@@ -804,7 +804,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. versionadded:: 2.5
 
 
-Exception hierarchy
+例外のクラス階層
 -------------------
 
 .. The class hierarchy for built-in exceptions is:
