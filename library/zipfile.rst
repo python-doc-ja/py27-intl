@@ -190,12 +190,13 @@ ZipFile オブジェクト
    :meth:`namelist` で返されるリストの部分集合でなければなりません。 *pwd* は、暗号化ファイルに
    使われるパスワードです。
 
-   .. warning::
+   .. warning
+      Never extract archives from untrusted sources without prior inspection.
+      It is possible that files are created outside of *path*, e.g. members
+      that have absolute filenames starting with ``"/"`` or filenames with two
+      dots ``".."``.
 
-      .. Never extract archives from untrusted sources without prior inspection.
-         It is possible that files are created outside of *path*, e.g. members
-         that have absolute filenames starting with ``"/"`` or filenames with two
-         dots ``".."``.
+   .. warning::
 
       信頼できないソースからきた Zip ファイルを、事前に中身をチェックせずに
       展開してはいけません。ファイルを *path* の外側に作成することができるからです。
