@@ -41,12 +41,13 @@
    .. versionchanged:: 2.5
       オプションの引数 *generation* が追加されました.
 
-   .. versionchanged:: 2.6
-      .. The free lists maintained for a number of builtin types are cleared
-         whenever a full collection or collection of the highest generation (2)
-         is run.  Not all items in some free lists may be freed due to the
-         particular implementation, in particular :class:`int` and :class:`float`.
+   .. .. versionchanged:: 2.6
+      The free lists maintained for a number of builtin types are cleared
+      whenever a full collection or collection of the highest generation (2)
+      is run.  Not all items in some free lists may be freed due to the
+      particular implementation, in particular :class:`int` and :class:`float`.
 
+   .. versionchanged:: 2.6
       幾つかの組み込み型のフリーリストは、最高(第二)世代のGC、あるいはフルGCが
       実行されるたびにクリアされます。
       幾つかの型(特に :class:`int` と :class:`float`)では、実装によっては、
