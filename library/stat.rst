@@ -130,6 +130,201 @@
 を非ブロックモードで開いた後にポーリングを行いたいといった場合に便利です。他のキャラクタ型およびブロック型デバイスにおけるサイズ
 フィールドの意味はさらに異なっていて、背後のシステムコールの実装によります。
 
+.. The variables below define the flags used in the :data:`ST_MODE` field.
+
+以下の変数は、 :data:`ST_MODE` フィールドで使用されるフラグを定義しています。
+
+.. Use of the functions above is more portable than use of the first set of flags:
+
+最初に挙げる、以下のフラグを使うよりは、上記の関数を使うほうがポータブルです:
+
+.. data:: S_IFMT
+
+   .. Bit mask for the file type bit fields.
+
+   ファイルタイプのビットフィールド用のビットマスク
+
+.. data:: S_IFSOCK
+
+   .. Socket.
+
+   ソケット
+
+.. data:: S_IFLNK
+
+   .. Symbolic link.
+   
+   シンボリックリンク
+
+.. data:: S_IFREG
+
+   .. Regular file.
+
+   通常のファイル
+
+.. data:: S_IFBLK
+
+   .. Block device.
+
+   ブロックデバイス
+
+.. data:: S_IFDIR
+
+   .. Directory.
+
+   ディレクトリ
+
+.. data:: S_IFCHR
+
+   .. Character device.
+
+   キャラクターデバイス
+
+.. data:: S_IFIFO
+
+   FIFO.
+
+.. The following flags can also be used in the *mode* argument of :func:`os.chmod`:
+
+以下のフラグは、 :func:`os.chmod` の *mode* 引数に使うこともできます:
+
+.. data:: S_ISUID
+
+   .. Set UID bit.
+
+   UID ビットを設定する
+
+.. data:: S_ISGID
+
+   .. Set-group-ID bit.  This bit has several special uses.  For a directory
+      it indicates that BSD semantics is to be used for that directory:
+      files created there inherit their group ID from the directory, not
+      from the effective group ID of the creating process, and directories
+      created there will also get the :data:`S_ISGID` bit set.  For a
+      file that does not have the group execution bit (:data:`S_IXGRP`)
+      set, the set-group-ID bit indicates mandatory file/record locking
+      (see also :data:`S_ENFMT`).
+
+   グループIDビットを設定する。このビットには幾つかの特殊ケースがあります。
+   ディレクトリに対して設定されていた場合、 BSD のセマンティクスが利用される
+   事を示しています。すなわち、そこに作成されるファイルは、作成したプロセスの
+   有効グループID (effective group ID) ではなくそのディレクトリのグループIDを
+   継承し、そこに作成されるディレクトリにも :data:`S_ISGID` ビットが設定されます。
+   グループ実行ビット (:data:`S_IXGRP`) が設定されていないファイルに対して
+   このビットが設定されていた場合、強制ファイル/レコードロックを意味します。
+   (:data:`S_ENFMT` も参照してください。)
+
+.. data:: S_ISVTX
+
+   .. Sticky bit.  When this bit is set on a directory it means that a file
+      in that directory can be renamed or deleted only by the owner of the
+      file, by the owner of the directory, or by a privileged process.
+
+   スティッキービット。このビットがディレクトリに対して設定されているとき、
+   そのディレクトリ内のファイルは、そのファイルのオーナー、あるいはその
+   ディレクトリのオーナーか特権プロセスのみが、リネームや削除をすることが
+   出来ることを意味しています。
+
+.. data:: S_IRWXU
+
+   .. Mask for file owner permissions.
+
+   ファイルオーナーの権限に対するマスク
+
+.. data:: S_IRUSR
+
+   .. Owner has read permission.
+
+   オーナーがリード権限を持っている
+
+.. data:: S_IWUSR
+
+   .. Owner has write permission.
+
+   オーナーがライト権限を持っている
+
+.. data:: S_IXUSR
+
+   .. Owner has execute permission.
+
+   オーナーが実行権限を持っている
+
+.. data:: S_IRWXG
+
+   .. Mask for group permissions.
+
+   グループの権限に対するマスク
+
+.. data:: S_IRGRP
+
+   .. Group has read permission.
+
+   グループがリード権限を持っている
+
+.. data:: S_IWGRP
+
+   .. Group has write permission.
+
+   グループがライト権限を持っている
+
+.. data:: S_IXGRP
+
+   .. Group has execute permission.
+
+   グループが実行権限を持っている
+
+.. data:: S_IRWXO
+
+   .. Mask for permissions for others (not in group).
+
+   その他 (グループ外) の権限に対するマスク
+
+.. data:: S_IROTH
+
+   .. Others have read permission.
+
+   その他はリード権限を持っている
+
+.. data:: S_IWOTH
+
+   .. Others have write permission.
+
+   その他はライト権限を持っている
+
+.. data:: S_IXOTH
+
+   .. Others have execute permission.
+
+   その他は実行権限を持っている
+
+.. data:: S_ENFMT
+
+   .. System V file locking enforcement.  This flag is shared with :data:`S_ISGID`:
+      file/record locking is enforced on files that do not have the group
+      execution bit (:data:`S_IXGRP`) set.
+
+   System V ファイルロック強制。このフラグは :data:`S_ISGID` と共有されています。
+   グループ実行ビット (:data:`S_IXGRP`) が設定されていないファイルでは、
+   ファイル/レコードのロックが強制されます。
+
+.. data:: S_IREAD
+
+   .. Unix V7 synonym for :data:`S_IRUSR`.
+
+   :data:`S_IRUSR` の、 Unix V7 のシノニム
+
+.. data:: S_IWRITE
+
+   .. Unix V7 synonym for :data:`S_IWUSR`.
+
+   :data:`S_IWUSR` の、 Unix V7 のシノニム
+
+.. data:: S_IEXEC
+
+   .. Unix V7 synonym for :data:`S_IXUSR`.
+
+   :data:`S_IXUSR` の、 Unix V7 のシノニム
+
 例を以下に示します::
 
    import os, sys
