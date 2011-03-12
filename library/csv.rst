@@ -54,7 +54,7 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
 .. function:: reader(csvfile[, dialect='excel'][, fmtparam])
 
    与えられた *csvfile* 内の行を反復処理するような reader  オブジェクトを返します。 *csvfile* はイテレータ(:term:`iterator`)プロトコル
-   をサポートし、 :meth:`next` メソッドが呼ばれた際に常に文字列を返すような任意のオブジェクトにすることができます --- ファイルオブジェクトでも
+   をサポートし、 :meth:`!next` メソッドが呼ばれた際に常に文字列を返すような任意のオブジェクトにすることができます --- ファイルオブジェクトでも
    リストでも構いません。 *csvfile* がファイルオブジェクトの場合、ファイルオブジェクトの形式に違いがあるようなプラットフォームでは 'b'
    フラグを付けて開かなければなりません。オプションとして *dialect* パラメタを与えることができ、特定の CSV 表現形式 (dialect)
    特有のパラメタの集合を定義するために使われます。 *dialect* パラメタは :class:`Dialect` クラスのサブクラス
@@ -62,14 +62,15 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
    キーワード引数は、現在の表現形式における個々の書式パラメタを上書きするために与えることができます。表現形式および書式化パラメタの詳細については、
    :ref:`csv-fmt-params` 節を参照してください。
 
-   読み出されたデータは全て文字列として返されます。データ型の変換が自動的に行われることはありません。
+   csv ファイルから読み込まれた各行は、文字列のリストとして返されます。
+   データ型の変換が自動的に行われることはありません。
 
    .. A short usage example:
 
    短い利用例::
 
       >>> import csv
-      >>> spamReader = csv.reader(open('eggs.csv'), delimiter=' ', quotechar='|')
+      >>> spamReader = csv.reader(open('eggs.csv', 'rb'), delimiter=' ', quotechar='|')
       >>> for row in spamReader:
       ...     print ', '.join(row)
       Spam, Spam, Spam, Spam, Spam, Baked Beans
@@ -107,8 +108,8 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
    短い利用例::
 
       >>> import csv
-      >>> spamWriter = csv.writer(open('eggs.csv', 'w'), delimiter=' ',
-      ...                         quotechar='|', quoting=QUOTE_MINIMAL)
+      >>> spamWriter = csv.writer(open('eggs.csv', 'wb'), delimiter=' ',
+      ...                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
       >>> spamWriter.writerow(['Spam'] * 5 + ['Baked Beans'])
       >>> spamWriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
 
@@ -156,12 +157,16 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
 
 .. class:: DictReader(csvfile[, fieldnames=None[, restkey=None[, restval=None[, dialect='excel'[, *args, **kwds]]]]])
 
-   省略可能な *fieldnames* パラメタで与えられたキーを読み出された情報に対応付ける他は正規の reader のように動作するオブジェクトを生成します。
-   *fieldnames* パラメタが無い場合には、 *csvfile* の最初の行の値がフィールド名として利用されます。読み出された行が *fieldnames*
-   のシーケンスよりも多くのフィールドを持っていた場合、残りのフィールドデータは *restkey* の値をキーとするシーケンスに追加されます。読み出された行が
-   *fieldnames* のシーケンスよりも少ないフィールドしか持たない場合、残りのキーはオプションの *restval*
-   パラメタに指定された値を取ります。その他の省略可能またはキーワード形式のパラメタはベースになっている :class:`reader` のインス
-   タンスに渡されます。
+   省略可能な *fieldnames* パラメタで与えられたキーを読み出された情報に
+   対応付ける他は正規の reader のように動作するオブジェクトを生成します。
+   *fieldnames* パラメタが無い場合には、 *csvfile* の最初の行の値がフィールド名
+   として利用されます。
+   読み出された行が *fieldnames* のシーケンスよりも多くのフィールドを持っていた場合、
+   残りのフィールドデータは *restkey* の値をキーとするシーケンスに追加されます。
+   読み出された行が *fieldnames* のシーケンスよりも少ないフィールドしか持たない場合、
+   残りのキーはオプションの *restval* パラメタに指定された値を取ります。
+   その他の省略可能またはキーワード形式のパラメタはベースになっている
+   :class:`reader` のインスタンスに渡されます。
 
 
 .. class:: DictWriter(csvfile, fieldnames[, restval=''[, extrasaction='raise'[, dialect='excel'[, *args, **kwds]]]])
@@ -218,7 +223,7 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
 
 :class:`Sniffer` の利用例::
 
-   csvfile = open("example.csv")
+   csvfile = open("example.csv", "rb")
    dialect = csv.Sniffer().sniff(csvfile.read(1024))
    csvfile.seek(0)
    reader = csv.reader(csvfile, dialect)
