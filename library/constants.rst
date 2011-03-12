@@ -4,7 +4,7 @@
 
 .. A small number of constants live in the built-in namespace.  They are:
 
-組み込み空間には少しだけ定数があります。以下にそれらの定数を示します。:
+組み込み空間には少数の定数があります。以下にそれらの定数を示します。
 
 
 .. data:: False
@@ -31,17 +31,16 @@
    .. represent the absence of a value, as when default arguments are not passed to a
    .. function.
 
-   :attr:`types.NoneType` の唯一の値です。 ``None`` は、例えば関数にデ
-   フォルトの値が渡されないときのように、値がないことを表すためにしば
-   しば用いられます。
+   :attr:`types.NoneType` の唯一の値です。 ``None`` は、例えば関数に
+   デフォルト値が渡されないときのように、値がないことを表すために
+   しばしば用いられます。
 
 
    .. .. versionchanged:: 2.4
    ..    Assignments to ``None`` are illegal and raise a :exc:`SyntaxError`.
 
    .. versionchanged:: 2.4
-      ``None`` に対する割り当ては不正であり、 :exc:`SyntaxError` を送
-      出します。
+      ``None`` に対する代入は不正であり、 :exc:`SyntaxError` を送出します。
 
 
 .. data:: NotImplemented
@@ -50,9 +49,9 @@
    .. (:meth:`__eq__`, :meth:`__lt__`, and friends), to indicate that the comparison
    .. is not implemented with respect to the other type.
 
-   "特殊な比較 (rich comparison)" を行う特殊メソッド (:meth:`__eq__`,
-   :meth:`__lt__`, およびその仲間) に対して、他の型に対しては比較が実
-   装されていないことを示すために返される値です。
+   "拡張比較 (rich comparison)" を行う特殊メソッド (:meth:`__eq__`,
+   :meth:`__lt__`, およびその仲間) によって返される特別な値で、
+   もう片方の型に対しては比較が実装されていないことを示します。
 
 
 .. data:: Ellipsis
@@ -67,10 +66,9 @@
    .. This constant is true if Python was not started with an :option:`-O` option.
    .. It cannot be reassigned.  See also the :keyword:`assert` statement.
 
-   この定数は Python が :option:`-O` オプションを付して開始されていな
-   いときに真となります。
+   この定数は Python が :option:`-O` オプションを有効にして開始されていないときに真となります。
    :const:`__debug__` に対して再代入はできません。
-   :keyword:`assert` ステートメントも参照下さい。
+   :keyword:`assert` 文も参照して下さい。
 
 
 .. note::
@@ -106,9 +104,9 @@
    .. (i.e. EOF) to exit", and when called, raise :exc:`SystemExit` with the
    .. specified exit code.
 
-   オブジェクトは、画面出力されたとき、 "Use quit() or Ctrl-D
-   (i.e. EOF) to exit" のような画面出力をだします。呼び出されたときには、
-   :exc:`SystemExit` を送出し、特定の終了コードで終了します。
+   表示されたときに "Use quit() or Ctrl-D (i.e. EOF) to exit" のような
+   メッセージを出力し、呼び出されたときには指定された終了コードを伴って
+   :exc:`SystemExit` を送出するオブジェクトです。
 
 
 .. data:: copyright
@@ -119,6 +117,6 @@
    .. full license text", and when called, display the corresponding text in a
    .. pager-like fashion (one screen at a time).
 
-   オブジェクトは、画面出力されたとき、 "Type license() to see the
-   full license text" のような画面出力をだします。呼び出されたときには、
-   それぞれのテキストをページャのような形式 (1画面分づつ) で表示します。
+   表示されたときに "Type license() to see the full license text" のような
+   メッセージを出力し、呼び出されたときにはそれぞれのテキストをページャのような
+   形式で (1画面分づつ) 表示するオブジェクトです。
