@@ -9,8 +9,8 @@
 
 
 .. index::
-   pair: UNIX@Unix; file control
-   pair: UNIX@Unix; I/O control
+   pair: UNIX; file control
+   pair: UNIX; I/O control
 
 このモジュールでは、ファイル記述子 (file descriptor) に基づいたファイル制御\
 および I/O 制御を実現します。このモジュールは、 Unix
@@ -99,7 +99,7 @@
 .. function:: flock(fd, op)
 
    ファイル記述子 *fd* (:meth:`fileno` メソッドを提供しているファイルオブジェクトも含む) に対してロック操作 *op* を実行します。
-   詳細は Unix マニュアルの :manpage:`flock(3)` を参照してください (システムによっては、この関数は :cfunc:`fcntl`
+   詳細は Unix マニュアルの :manpage:`flock(2)` を参照してください (システムによっては、この関数は :cfunc:`fcntl`
    を使ってエミュレーションされています)。
 
 
@@ -154,6 +154,5 @@
 .. seealso::
 
    :mod:`os` モジュール
-      もし :const:`O_SHLOCK` と :const:`O_EXLOCK` が :mod:`os`
-      モジュールに存在する場合、 :func:`os.open` 関数は :func:`lockf` や
-      :func:`flock` 関数よりもよりプラットフォーム独立なロック機構を提供します。
+      もし :mod:`os` モジュールに :const:`O_SHLOCK` と :const:`O_EXLOCK` が 存在する場合
+      (BSD のみ)、 :func:`os.open` 関数は :func:`lockf` や :func:`flock` 関数を代替できます。
