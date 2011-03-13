@@ -74,11 +74,11 @@ SHA1、SHA224、SHA256、SHA384およびSHA512 (FIPS 180-2 で定義されてい
 コンストラクタが返すハッシュオブジェクトには、次のような定数属性が用意されています。
 
 
-.. data:: digest_size
+.. data:: hash.digest_size
 
    生成されたハッシュのバイト数。
 
-.. data:: block_size
+.. data:: hash.block_size
 
    内部で使われるハッシュアルゴリズムのブロックのバイト数。
 
@@ -122,3 +122,6 @@ SHA1、SHA224、SHA256、SHA384およびSHA512 (FIPS 180-2 で定義されてい
    http://www.cryptography.com/cnews/hash.html
       Hash Collision FAQ。既知の問題を持つアルゴリズムとその使用上の注意点に関する情報があります。
 
+   http://en.wikipedia.org/wiki/Cryptographic_hash_function#Cryptographic_hash_algorithms
+      どのアルゴリズムにどんな既知の問題があって、それが実際に利用する際にどう
+      影響するかについての Wikipedia の記事
