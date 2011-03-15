@@ -6,16 +6,27 @@
    :synopsis: Pythonバイトコードの逆アセンブラ。
 
 
-.. The :mod:`dis` module supports the analysis of Python :term:`bytecode` by disassembling
-.. it.  Since there is no Python assembler, this module defines the Python assembly
-.. language.  The Python bytecode which this module takes as an input is defined
-.. in the file  :file:`Include/opcode.h` and used by the compiler and the
-.. interpreter.
+.. The :mod:`dis` module supports the analysis of CPython :term:`bytecode` by
+.. disassembling it. The CPython bytecode which this module takes as an
+.. input is defined in the file :file:`Include/opcode.h` and used by the compiler
+.. and the interpreter.
 
-:mod:`dis` モジュールは Python バイトコード(:term:`bytecode`) を逆アセンブルしてバイトコードの解析を助けます。
-Pythonアセンブラがないため、このモジュールがPythonアセンブリ言語を定義しています。
-このモジュールが入力として受け取る Python バイトコードはファイル :file:`Include/opcode.h` に定義されており、
+:mod:`dis` モジュールは CPython バイトコード(:term:`bytecode`) を逆アセンブルしてバイトコードの解析を助けます。
+このモジュールが入力として受け取る CPython バイトコードはファイル :file:`Include/opcode.h` に定義されており、
 コンパイラとインタプリタが使用しています。
+
+
+.. impl-detail::
+
+   .. Bytecode is an implementation detail of the CPython interpreter!  No
+   .. guarantees are made that bytecode will not be added, removed, or changed
+   .. between versions of Python.  Use of this module should not be considered to
+   .. work across Python VMs or Python releases.
+
+   バイトコードは CPython インタプリタの実装詳細です! Python のバージョン
+   間でバイトコードの追加や、削除、変更がないという保証はありません。この
+   モジュールを使用することによって Python の異なる VM または異なるリリース
+   の間で動作すると考えるべきではありません。
 
 
 .. Example: Given the function :func:`myfunc`:
@@ -984,12 +995,12 @@ Pythonバイトコード命令
 
 .. opcode:: FOR_ITER (delta)
 
-   .. ``TOS`` is an :term:`iterator`.  Call its :meth:`next` method.  If this
+   .. ``TOS`` is an :term:`iterator`.  Call its :meth:`!next` method.  If this
    .. yields a new value, push it on the stack (leaving the iterator below it).  If
    .. the iterator indicates it is exhausted ``TOS`` is popped, and the bytecode
    .. counter is incremented by *delta*.
 
-   ``TOS`` はイテレータです。その :meth:`next` メソッドを呼び出します。
+   ``TOS`` はイテレータです。その :meth:`!next` メソッドを呼び出します。
    これが新しい値を作り出すならば、それを(その下にイテレータを残したまま)スタックにプッシュします。
    イテレータが尽きたことを示した場合は、 ``TOS`` がポップされます。
    そして、バイトコードカウンタが *delta* だけ増やされます。
