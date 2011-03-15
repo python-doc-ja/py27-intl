@@ -11,7 +11,7 @@
 .. input is defined in the file :file:`Include/opcode.h` and used by the compiler
 .. and the interpreter.
 
-:mod:`dis` モジュールは CPython バイトコード(:term:`bytecode`) を逆アセンブルしてバイトコードの解析を助けます。
+:mod:`dis` モジュールは CPython バイトコード (:term:`bytecode`) を逆アセンブルすることでバイトコードの解析をサポートします。
 このモジュールが入力として受け取る CPython バイトコードはファイル :file:`Include/opcode.h` に定義されており、
 コンパイラとインタプリタが使用しています。
 
@@ -31,7 +31,7 @@
 
 .. Example: Given the function :func:`myfunc`:
 
-例: 関数 :func:`myfunc` を考えると
+例: 以下の関数 :func:`myfunc` を考えると
 
 
 ::
@@ -42,7 +42,7 @@
 
 .. the following command can be used to get the disassembly of :func:`myfunc`:
 
-次のコマンドを :func:`myfunc` の逆アセンブリを得るために使うことができます
+:func:`myfunc` の逆アセンブル結果を得るために次のコマンドを使うことができます
 
 
 ::
@@ -72,10 +72,10 @@
    .. sequence, it prints one line per bytecode instruction.  If no object is
    .. provided, it disassembles the last traceback.
 
-   *bytesource* オブジェクトを逆アセンブルします
+   *bytesource* オブジェクトを逆アセンブルします。
    *bytesource* はモジュール、クラス、関数、あるいはコードオブジェクトのいずれかを示します。
    モジュールに対しては、すべての関数を逆アセンブルします。クラスに対しては、すべてのメソッドを逆アセンブルします。
-   単一のコードシーケンスに対しては、バイトコード命令ごとに一行をプリントします。
+   単一のコード列に対しては、バイトコード命令ごとに 1 行を出力します。
    オブジェクトが与えられない場合は、最後のトレースバックを逆アセンブルします。
 
 
@@ -109,16 +109,16 @@
    #. 現在の命令。 ``-->`` として示されます。
    #. ラベル付けされた命令。 ``>>`` とともに表示されます。
    #. 命令のアドレス。
-   #. 演算コード名。
-   #. 演算パラメータ。
-   #. 括弧の中のパラメータのインタプリテーション。
+   #. 命令コード名。
+   #. 命令パラメータ。
+   #. パラメータの解釈を括弧で囲んだもの。
 
 
    .. The parameter interpretation recognizes local and global variable names,
    .. constant values, branch targets, and compare operators.
 
-   パラメータインタープリテーションはローカルおよびグルーバル変数名、定数値、
-   分岐目標、そして比較演算子を認識します。
+   パラメータの解釈は、ローカル変数とグローバル変数の名前、定数の値、
+   分岐先、比較命令を認識します。
 
 
 .. function:: disco(code[, lasti])
@@ -133,70 +133,70 @@
 
    .. Sequence of operation names, indexable using the bytecode.
 
-   演算名。一連のバイトコードを使ってインデキシングできます。
+   命令コード名のリスト。バイトコードをインデックスに使って参照できます。
 
 
 .. data:: opmap
 
    .. Dictionary mapping bytecodes to operation names.
 
-   バイトコードからオペレーション名へのマッピング辞書。
+   バイトコードから命令コード名へのマッピング辞書。
 
 
 .. data:: cmp_op
 
    .. Sequence of all compare operation names.
 
-   すべての比較演算名。
+   すべての比較命令の名前のリスト。
 
 
 .. data:: hasconst
 
    .. Sequence of bytecodes that have a constant parameter.
 
-   定数パラメータを持つ一連のバイトコード。
+   定数パラメータを持つバイトコードのリスト。
 
 
 .. data:: hasfree
 
    .. Sequence of bytecodes that access a free variable.
 
-   自由変数にアクセスする一連のバイトコード。
+   自由変数にアクセスするバイトコードのリスト。
 
 
 .. data:: hasname
 
    .. Sequence of bytecodes that access an attribute by name.
 
-   名前によって属性にアクセスする一連のバイトコード。
+   名前によって属性にアクセスするバイトコードのリスト。
 
 
 .. data:: hasjrel
 
    .. Sequence of bytecodes that have a relative jump target.
 
-   相対ジャンプターゲットをもつ一連のバイトコード。
+   相対ジャンプ先を持つバイトコードのリスト。
 
 
 .. data:: hasjabs
 
    .. Sequence of bytecodes that have an absolute jump target.
 
-   絶対ジャンプターゲットをもつ一連のバイトコード。
+   絶対ジャンプ先を持つバイトコードのリスト。
 
 
 .. data:: haslocal
 
    .. Sequence of bytecodes that access a local variable.
 
-   ローカル変数にアクセスする一連のバイトコード。
+   ローカル変数にアクセスするバイトコードのリスト。
 
 
 .. data:: hascompare
 
    .. Sequence of bytecodes of Boolean operations.
 
-   ブール演算の一連のバイトコード。
+   ブール命令のバイトコードのリスト。
 
 
 .. _bytecodes:
@@ -213,7 +213,7 @@ Pythonバイトコード命令
 
    .. Indicates end-of-code to the compiler, not used by the interpreter.
 
-   コンパイラにend-of-code(コードの終わり)を知らせます。インタプリタでは使われません。
+   コンパイラにコードの終わりを知らせます。インタプリタでは使われません。
 
 
 .. opcode:: NOP ()
@@ -227,14 +227,14 @@ Pythonバイトコード命令
 
    .. Removes the top-of-stack (TOS) item.
 
-   top-of-stack (TOS)(スタックの先頭)の項目を取り除きます。
+   スタックの先頭 (TOS) の要素を取り除きます。
 
 
 .. opcode:: ROT_TWO ()
 
    .. Swaps the two top-most stack items.
 
-   スタックの先頭から二つの項目を入れ替えます。
+   スタックの先頭の 2 つの要素を入れ替えます。
 
 
 .. opcode:: ROT_THREE ()
@@ -242,7 +242,7 @@ Pythonバイトコード命令
    .. Lifts second and third stack item one position up, moves top down to position
    .. three.
 
-   スタックの二番目と三番目の項目の位置を一つ上げ、先頭を三番目へ下げます。
+   スタックの二番目と三番目の要素の位置を 1 つ上げ、先頭を三番目へ下げます。
 
 
 .. opcode:: ROT_FOUR ()
@@ -250,84 +250,84 @@ Pythonバイトコード命令
    .. Lifts second, third and forth stack item one position up, moves top down to
    .. position four.
 
-   スタックの二番目、三番目および四番目の位置を一つ上げ、先頭を四番目に下げます。
+   スタックの二番目、三番目および四番目の位置を 1 つ上げ、先頭を四番目に下げます。
 
 
 .. opcode:: DUP_TOP ()
 
    .. Duplicates the reference on top of the stack.
 
-   スタックの先頭に参照の複製を作ります。
+   スタックの先頭にある参照の複製を作ります。
 
 
 .. Unary Operations take the top of the stack, apply the operation, and push the
 .. result back on the stack.
 
-一項演算はスタックの先頭を取り出して演算を適用し、結果をスタックへプッシュし戻します。
+単項命令はスタックの先頭を取り出して操作を適用し、結果をスタックへプッシュし戻します。
 
 
 .. opcode:: UNARY_POSITIVE ()
 
    .. Implements ``TOS = +TOS``.
 
-   ``TOS = +TOS`` を実行します。
+   ``TOS = +TOS`` に対応します。
 
 
 .. opcode:: UNARY_NEGATIVE ()
 
    .. Implements ``TOS = -TOS``.
 
-   ``TOS = -TOS`` を実行します。
+   ``TOS = -TOS`` に対応します。
 
 
 .. opcode:: UNARY_NOT ()
 
    .. Implements ``TOS = not TOS``.
 
-   ``TOS = not TOS`` を実行します。
+   ``TOS = not TOS`` に対応します。
 
 
 .. opcode:: UNARY_CONVERT ()
 
    .. Implements ``TOS = `TOS```.
 
-   ``TOS = `TOS``` を実行します。
+   ``TOS = `TOS``` に対応します。
 
 
 .. opcode:: UNARY_INVERT ()
 
    .. Implements ``TOS = ~TOS``.
 
-   ``TOS = ~TOS`` を実行します。
+   ``TOS = ~TOS`` に対応します。
 
 
 .. opcode:: GET_ITER ()
 
    .. Implements ``TOS = iter(TOS)``.
 
-   ``TOS = iter(TOS)`` を実行します。
+   ``TOS = iter(TOS)`` に対応します。
 
 
 .. Binary operations remove the top of the stack (TOS) and the second top-most
 .. stack item (TOS1) from the stack.  They perform the operation, and put the
 .. result back on the stack.
 
-二項演算はスタックからスタックの先頭(TOS)と先頭から二番目のスタック項目を取り除きます。
-演算を実行し、スタックへ結果をプッシュし戻します。
+二項命令はスタックの先頭(TOS)と先頭から二番目の要素をスタックから取り除きます。
+命令を実行し、スタックへ結果をプッシュし戻します。
 
 
 .. opcode:: BINARY_POWER ()
 
    .. Implements ``TOS = TOS1 ** TOS``.
 
-   ``TOS = TOS1 ** TOS`` を実行します。
+   ``TOS = TOS1 ** TOS`` に対応します。
 
 
 .. opcode:: BINARY_MULTIPLY ()
 
    .. Implements ``TOS = TOS1 * TOS``.
 
-   ``TOS = TOS1 * TOS`` を実行します。
+   ``TOS = TOS1 * TOS`` に対応します。
 
 
 .. opcode:: BINARY_DIVIDE ()
@@ -335,14 +335,14 @@ Pythonバイトコード命令
    .. Implements ``TOS = TOS1 / TOS`` when ``from __future__ import division`` is not
    .. in effect.
 
-   ``from __future__ import division`` が有効でないとき、 ``TOS = TOS1 / TOS`` を実行します。
+   ``from __future__ import division`` が有効でないときの ``TOS = TOS1 / TOS`` に対応します。
 
 
 .. opcode:: BINARY_FLOOR_DIVIDE ()
 
    .. Implements ``TOS = TOS1 // TOS``.
 
-   ``TOS = TOS1 // TOS`` を実行します。
+   ``TOS = TOS1 // TOS`` に対応します。
 
 
 .. opcode:: BINARY_TRUE_DIVIDE ()
@@ -350,70 +350,70 @@ Pythonバイトコード命令
    .. Implements ``TOS = TOS1 / TOS`` when ``from __future__ import division`` is in
    .. effect.
 
-   ``from __future__ import division`` が有効でないとき、 ``TOS = TOS1 / TOS`` を実行します。
+   ``from __future__ import division`` が有効なときの ``TOS = TOS1 / TOS`` に対応します。
 
 
 .. opcode:: BINARY_MODULO ()
 
    .. Implements ``TOS = TOS1 % TOS``.
 
-   ``TOS = TOS1 % TOS`` を実行します。
+   ``TOS = TOS1 % TOS`` に対応します。
 
 
 .. opcode:: BINARY_ADD ()
 
    .. Implements ``TOS = TOS1 + TOS``.
 
-   ``TOS = TOS1 + TOS`` を実行します。
+   ``TOS = TOS1 + TOS`` に対応します。
 
 
 .. opcode:: BINARY_SUBTRACT ()
 
    .. Implements ``TOS = TOS1 - TOS``.
 
-   ``TOS = TOS1 - TOS`` を実行します。
+   ``TOS = TOS1 - TOS`` に対応します。
 
 
 .. opcode:: BINARY_SUBSCR ()
 
    .. Implements ``TOS = TOS1[TOS]``.
 
-   ``TOS = TOS1[TOS]`` を実行します。
+   ``TOS = TOS1[TOS]`` に対応します。
 
 
 .. opcode:: BINARY_LSHIFT ()
 
    .. Implements ``TOS = TOS1 << TOS``.
 
-   ``TOS = TOS1 << TOS`` を実行します。
+   ``TOS = TOS1 << TOS`` に対応します。
 
 
 .. opcode:: BINARY_RSHIFT ()
 
    .. Implements ``TOS = TOS1 >> TOS``.
 
-   ``TOS = TOS1 >> TOS`` を実行します。
+   ``TOS = TOS1 >> TOS`` に対応します。
 
 
 .. opcode:: BINARY_AND ()
 
    .. Implements ``TOS = TOS1 & TOS``.
 
-   ``TOS = TOS1 & TOS`` を実行します。
+   ``TOS = TOS1 & TOS`` に対応します。
 
 
 .. opcode:: BINARY_XOR ()
 
    .. Implements ``TOS = TOS1 ^ TOS``.
 
-   ``TOS = TOS1 ^ TOS`` を実行します。
+   ``TOS = TOS1 ^ TOS`` に対応します。
 
 
 .. opcode:: BINARY_OR ()
 
    .. Implements ``TOS = TOS1 | TOS``.
 
-   ``TOS = TOS1 | TOS`` を実行します。
+   ``TOS = TOS1 | TOS`` に対応します。
 
 
 .. In-place operations are like binary operations, in that they remove TOS and
@@ -421,23 +421,23 @@ Pythonバイトコード命令
 .. when TOS1 supports it, and the resulting TOS may be (but does not have to be)
 .. the original TOS1.
 
-インプレース演算はTOSとTOS1を取り除いて結果をスタックへプッシュするという点で二項演算と似ています。
-しかし、TOS1がインプレース演算をサポートしている場合には演算が直接TOS1に行われます。
-また、演算結果のTOSは元のTOS1と同じオブジェクトになることが多いですが、常に同じというわけではありません。
+インプレース命令はTOSとTOS1を取り除いて結果をスタックへプッシュするという点で二項命令と似ています。
+しかし、TOS1がインプレース命令をサポートしている場合には操作が直接TOS1に行われます。
+また、操作結果のTOSは (常に同じというわけではありませんが) 元のTOS1と同じオブジェクトになることが多いです。
 
 
 .. opcode:: INPLACE_POWER ()
 
    .. Implements in-place ``TOS = TOS1 ** TOS``.
 
-   インプレースに ``TOS = TOS1 ** TOS`` を実行します。
+   インプレースの ``TOS = TOS1 ** TOS`` に対応します。
 
 
 .. opcode:: INPLACE_MULTIPLY ()
 
    .. Implements in-place ``TOS = TOS1 * TOS``.
 
-   インプレースに ``TOS = TOS1 * TOS`` を実行します。
+   インプレースの ``TOS = TOS1 * TOS`` に対応します。
 
 
 .. opcode:: INPLACE_DIVIDE ()
@@ -445,14 +445,14 @@ Pythonバイトコード命令
    .. Implements in-place ``TOS = TOS1 / TOS`` when ``from __future__ import
    .. division`` is not in effect.
 
-   ``from __future__ import division`` が有効でないとき、インプレースに ``TOS = TOS1 / TOS`` を実行します。
+   ``from __future__ import division`` が有効でないときのインプレースの ``TOS = TOS1 / TOS`` に対応します。
 
 
 .. opcode:: INPLACE_FLOOR_DIVIDE ()
 
    .. Implements in-place ``TOS = TOS1 // TOS``.
 
-   インプレースに ``TOS = TOS1 // TOS`` を実行します。
+   インプレースの ``TOS = TOS1 // TOS`` に対応します。
 
 
 .. opcode:: INPLACE_TRUE_DIVIDE ()
@@ -460,177 +460,178 @@ Pythonバイトコード命令
    .. Implements in-place ``TOS = TOS1 / TOS`` when ``from __future__ import
    .. division`` is in effect.
 
-   ``from __future__ import division`` が有効でないとき、インプレースに ``TOS = TOS1 / TOS`` を実行します。
+   ``from __future__ import division`` が有効なときのインプレースの ``TOS = TOS1 / TOS`` に対応します。
 
 
 .. opcode:: INPLACE_MODULO ()
 
    .. Implements in-place ``TOS = TOS1 % TOS``.
 
-   インプレースに ``TOS = TOS1 % TOS`` を実行します。
+   インプレースの ``TOS = TOS1 % TOS`` に対応します。
 
 
 .. opcode:: INPLACE_ADD ()
 
    .. Implements in-place ``TOS = TOS1 + TOS``.
 
-   インプレースに ``TOS = TOS1 + TOS`` を実行します。
+   インプレースの ``TOS = TOS1 + TOS`` に対応します。
 
 
 .. opcode:: INPLACE_SUBTRACT ()
 
    .. Implements in-place ``TOS = TOS1 - TOS``.
 
-   インプレースに ``TOS = TOS1 - TOS`` を実行します。
+   インプレースの ``TOS = TOS1 - TOS`` に対応します。
 
 
 .. opcode:: INPLACE_LSHIFT ()
 
    .. Implements in-place ``TOS = TOS1 << TOS``.
 
-   インプレースに ``TOS = TOS1 << TOS`` を実行します。
+   インプレースの ``TOS = TOS1 << TOS`` に対応します。
 
 
 .. opcode:: INPLACE_RSHIFT ()
 
    .. Implements in-place ``TOS = TOS1 >> TOS``.
 
-   インプレースに ``TOS = TOS1 >> TOS`` を実行します。
+   インプレースの ``TOS = TOS1 >> TOS`` に対応します。
 
 
 .. opcode:: INPLACE_AND ()
 
    .. Implements in-place ``TOS = TOS1 & TOS``.
 
-   インプレースに ``TOS = TOS1 & TOS`` を実行します。
+   インプレースの ``TOS = TOS1 & TOS`` に対応します。
 
 
 .. opcode:: INPLACE_XOR ()
 
    .. Implements in-place ``TOS = TOS1 ^ TOS``.
 
-   インプレースに ``TOS = TOS1 ^ TOS`` を実行します。
+   インプレースの ``TOS = TOS1 ^ TOS`` に対応します。
 
 
 .. opcode:: INPLACE_OR ()
 
    .. Implements in-place ``TOS = TOS1 | TOS``.
 
-   インプレースに ``TOS = TOS1 | TOS`` を実行します。
+   インプレースの ``TOS = TOS1 | TOS`` に対応します。
 
 
 .. The slice opcodes take up to three parameters.
 
-スライス演算は三つまでのパラメータを取ります。
+スライス命令コードは最大 3 つのパラメータを取ります。
 
 
 .. opcode:: SLICE+0 ()
 
    .. Implements ``TOS = TOS[:]``.
 
-   ``TOS = TOS[:]`` を実行します。
+   ``TOS = TOS[:]`` に対応します。
 
 
 .. opcode:: SLICE+1 ()
 
    .. Implements ``TOS = TOS1[TOS:]``.
 
-   ``TOS = TOS1[TOS:]`` を実行します。
+   ``TOS = TOS1[TOS:]`` に対応します。
 
 
 .. opcode:: SLICE+2 ()
 
    .. Implements ``TOS = TOS1[:TOS]``.
 
-   ``TOS = TOS1[:TOS]`` を実行します。
+   ``TOS = TOS1[:TOS]`` に対応します。
 
 
 .. opcode:: SLICE+3 ()
 
    .. Implements ``TOS = TOS2[TOS1:TOS]``.
 
-   ``TOS = TOS2[TOS1:TOS]`` を実行します。
+   ``TOS = TOS2[TOS1:TOS]`` に対応します。
 
 
 .. Slice assignment needs even an additional parameter.  As any statement, they put
 .. nothing on the stack.
 
-スライス代入はさらに別のパラメータを必要とします。どんな文もそうであるように、スタックに何もプッシュしません。
+スライス代入はさらにもう 1 つのパラメータを必要とします。
+他の文と同じく、これらはスタックに何もプッシュしません。
 
 
 .. opcode:: STORE_SLICE+0 ()
 
    .. Implements ``TOS[:] = TOS1``.
 
-   ``TOS[:] = TOS1`` を実行します。
+   ``TOS[:] = TOS1`` に対応します。
 
 
 .. opcode:: STORE_SLICE+1 ()
 
    .. Implements ``TOS1[TOS:] = TOS2``.
 
-   ``TOS1[TOS:] = TOS2`` を実行します。
+   ``TOS1[TOS:] = TOS2`` に対応します。
 
 
 .. opcode:: STORE_SLICE+2 ()
 
    .. Implements ``TOS1[:TOS] = TOS2``.
 
-   ``TOS1[:TOS] = TOS2`` を実行します。
+   ``TOS1[:TOS] = TOS2`` に対応します。
 
 
 .. opcode:: STORE_SLICE+3 ()
 
    .. Implements ``TOS2[TOS1:TOS] = TOS3``.
 
-   ``TOS2[TOS1:TOS] = TOS3`` を実行します。
+   ``TOS2[TOS1:TOS] = TOS3`` に対応します。
 
 
 .. opcode:: DELETE_SLICE+0 ()
 
    .. Implements ``del TOS[:]``.
 
-   ``del TOS[:]`` を実行します。
+   ``del TOS[:]`` に対応します。
 
 
 .. opcode:: DELETE_SLICE+1 ()
 
    .. Implements ``del TOS1[TOS:]``.
 
-   ``del TOS1[TOS:]`` を実行します。
+   ``del TOS1[TOS:]`` に対応します。
 
 
 .. opcode:: DELETE_SLICE+2 ()
 
    .. Implements ``del TOS1[:TOS]``.
 
-   ``del TOS1[:TOS]`` を実行します。
+   ``del TOS1[:TOS]`` に対応します。
 
 
 .. opcode:: DELETE_SLICE+3 ()
 
    .. Implements ``del TOS2[TOS1:TOS]``.
 
-   ``del TOS2[TOS1:TOS]`` を実行します。
+   ``del TOS2[TOS1:TOS]`` に対応します。
 
 
 .. opcode:: STORE_SUBSCR ()
 
    .. Implements ``TOS1[TOS] = TOS2``.
 
-   ``TOS1[TOS] = TOS2`` を実行します。
+   ``TOS1[TOS] = TOS2`` に対応します。
 
 
 .. opcode:: DELETE_SUBSCR ()
 
    .. Implements ``del TOS1[TOS]``.
 
-   ``del TOS1[TOS]`` を実行します。
+   ``del TOS1[TOS]`` に対応します。
 
 
 .. Miscellaneous opcodes.
 
-その他の演算。
+その他の命令コード。
 
 
 .. opcode:: PRINT_EXPR ()
@@ -639,7 +640,7 @@ Pythonバイトコード命令
    .. from the stack and printed.  In non-interactive mode, an expression statement is
    .. terminated with ``POP_STACK``.
 
-   対話モードのための式文を実行します。TOSはスタックから取り除かれプリントされます。
+   対話モードのための式文に対応します。TOSはスタックから取り除かれ表示されます。
    非対話モードにおいては、式文は ``POP_STACK`` で終了しています。
 
 
@@ -648,8 +649,8 @@ Pythonバイトコード命令
    .. Prints TOS to the file-like object bound to ``sys.stdout``.  There is one such
    .. instruction for each item in the :keyword:`print` statement.
 
-   ``sys.stdout`` に束縛されたファイル互換のオブジェクトへTOSをプリントします。
-   :keyword:`print` 文に、各項目に対するこのような命令が一つあります。
+   ``sys.stdout`` に束縛されたファイル互換オブジェクトに対してTOSを出力します。
+   :keyword:`print` 文の各要素に対してこのような命令が一つずつあります。
 
 
 .. opcode:: PRINT_ITEM_TO ()
@@ -657,7 +658,7 @@ Pythonバイトコード命令
    .. Like ``PRINT_ITEM``, but prints the item second from TOS to the file-like object
    .. at TOS.  This is used by the extended print statement.
 
-   ``PRINT_ITEM`` と似ていますが、TOSから二番目の項目をTOSにあるファイル互換オブジェクトへプリントします。
+   ``PRINT_ITEM`` と似ていますが、TOSから二番目の要素をTOSにあるファイル互換オブジェクトへ出力します。
    これは拡張print文で使われます。
 
 
@@ -666,8 +667,8 @@ Pythonバイトコード命令
    .. Prints a new line on ``sys.stdout``.  This is generated as the last operation of
    .. a :keyword:`print` statement, unless the statement ends with a comma.
 
-   ``sys.stdout`` へ改行をプリントします。
-   これは:keyword:`print` 文がコンマで終わっていない場合に:keyword:`print` 文の最後の演算として生成されます。
+   ``sys.stdout`` へ改行を表示します。
+   これは :keyword:`print` 文がコンマで終わっていない場合に :keyword:`print` 文の最後の命令として生成されます。
 
 
 .. opcode:: PRINT_NEWLINE_TO ()
@@ -675,14 +676,15 @@ Pythonバイトコード命令
    .. Like ``PRINT_NEWLINE``, but prints the new line on the file-like object on the
    .. TOS.  This is used by the extended print statement.
 
-   ``PRINT_NEWLINE`` と似ていますが、TOSのファイル互換オブジェクトに改行をプリントします。これは拡張print文で使われます。
+   ``PRINT_NEWLINE`` と似ていますが、TOSのファイル互換オブジェクトに改行を表示します。
+   これは拡張print文で使われます。
 
 
 .. opcode:: BREAK_LOOP ()
 
    .. Terminates a loop due to a :keyword:`break` statement.
 
-   :keyword:`break` 文があるためループを終了します。
+   :keyword:`break` 文によってループを終了します。
 
 
 .. opcode:: CONTINUE_LOOP (target)
@@ -690,8 +692,8 @@ Pythonバイトコード命令
    .. Continues a loop due to a :keyword:`continue` statement.  *target* is the
    .. address to jump to (which should be a ``FOR_ITER`` instruction).
 
-   :keyword:`continue` 文があるためループを継続します。
-   *target* はジャンプするアドレスです(アドレスは ``FOR_ITER`` 命令であるべきです)。
+   :keyword:`continue` 文によってループを継続します。
+   *target* はジャンプするアドレスです (アドレスは ``FOR_ITER`` 命令でなければなりません)。
 
 
 .. opcode:: LIST_APPEND ()
@@ -734,7 +736,7 @@ Pythonバイトコード命令
 
    ``'_'`` で始まっていないすべてのシンボルをモジュールTOSから直接ローカル名前空間へロードします。
    モジュールはすべての名前をロードした後にポップされます。
-   この演算コードは ``from module import *`` を実行します。
+   この命令コードは ``from module import *`` に対応します。
 
 
 .. opcode:: EXEC_STMT ()
@@ -742,7 +744,7 @@ Pythonバイトコード命令
    .. Implements ``exec TOS2,TOS1,TOS``.  The compiler fills missing optional
    .. parameters with ``None``.
 
-   ``exec TOS2,TOS1,TOS`` を実行します。コンパイラは見つからないオプションのパラメータを ``None`` で埋めます。
+   ``exec TOS2,TOS1,TOS`` に対応します。コンパイラは指定されなかったオプションのパラメータを ``None`` で埋めます。
 
 
 .. opcode:: POP_BLOCK ()
@@ -751,7 +753,7 @@ Pythonバイトコード命令
    .. denoting nested loops, try statements, and such.
 
    ブロックスタックからブロックを一つ取り除きます。
-   フレームごとにブロックのスタックがあり、ネストしたループ、try文などを意味しています。
+   フレームごとにブロックのスタックがあり、ネストしたループやtry文などを表しています。
 
 
 .. opcode:: END_FINALLY ()
@@ -760,9 +762,9 @@ Pythonバイトコード命令
    .. exception has to be re-raised, or whether the function returns, and continues
    .. with the outer-next block.
 
-   :keyword:`finally` 節を終わらせます。
-   インタプリタは例外を再び発生させなければならないかどうか、あるいは、
-   関数が返り外側の次のブロックに続くかどうかを思い出します。
+   :keyword:`finally` 節を終了します。
+   インタプリタは例外を再送出しなければならないかどうか、あるいは、
+   関数から return して外側の次のブロックに続くかどうかを再度判断します。
 
 
 .. opcode:: BUILD_CLASS ()
@@ -778,8 +780,9 @@ Pythonバイトコード命令
    .. Cleans up the stack when a :keyword:`with` statement block exits.  On top of
    .. the stack are 1--3 values indicating how/why the finally clause was entered:
 
-   :keyword:`with` ステートメントブロックがあるときに、スタックをクリーンアップします。
-   スタックのトップは 1--3 個の値で、なぜ/どのように finally 項に到達したかを表します:
+   :keyword:`with` 式ブロックを抜けるときに、スタックをクリーンアップします。
+   スタックの先頭は 1--3 個の値で、それらはなぜ/どのように finally 節に
+   到達したかを表しています:
 
 
    * TOP = ``None``
@@ -790,7 +793,8 @@ Pythonバイトコード命令
 
    .. Under them is EXIT, the context manager's :meth:`__exit__` bound method.
 
-   その下に、コンテキストマネージャーの :meth:`__exit__` バウンドメソッドの EXIT があります。
+   これらの値の下には、コンテキストマネージャーの :meth:`__exit__` 結合メソッド
+   (bound method) である EXIT があります。
 
 
    .. In the last case, ``EXIT(TOP, SECOND, THIRD)`` is called, otherwise
@@ -807,9 +811,9 @@ Pythonバイトコード命令
    .. still be resumed.)
 
    EXIT はスタックから取り除かれ、その上の値は順序を維持したまま残されます。
-   加えて、スタックが例外を表し、 *かつ* 関数呼び出しが *true* 値を返した場合、
-   ``END_FINALLY`` を例外の再創出から守るためにこの情報は削除されます("zapped")。
-   (しかし、 non-local goto はなお実行されます)
+   加えて、スタックが例外処理中であることを示し、 *かつ* 関数呼び出しが *true* 値を返した場合、
+   ``END_FINALLY`` が例外を再送出することを防ぐため、この情報は削除されます ("zapped")。
+   (しかし、 non-local goto は再開されます)
 
 
    .. XXX explain the WHY stuff!
@@ -818,7 +822,7 @@ Pythonバイトコード命令
 .. All of the following opcodes expect arguments.  An argument is two bytes, with
 .. the more significant byte last.
 
-次の演算コードはすべて引数を要求します。引数はより重要なバイトを下位にもつ2バイトです。
+以下の命令コードはすべて引数を必要とします。引数は 2 バイトで、最上位バイトが後になります。
 
 
 .. opcode:: STORE_NAME (namei)
@@ -827,7 +831,7 @@ Pythonバイトコード命令
    .. :attr:`co_names` of the code object. The compiler tries to use ``STORE_FAST``
    .. or ``STORE_GLOBAL`` if possible.
 
-   ``name = TOS`` を実行します。
+   ``name = TOS`` に対応します。
    *namei* はコードオブジェクトの属性 :attr:`co_names` における *name* のインデックスです。
    コンパイラは可能ならば ``STORE_FAST`` または ``STORE_GLOBAL`` を使おうとします。
 
@@ -837,7 +841,7 @@ Pythonバイトコード命令
    .. Implements ``del name``, where *namei* is the index into :attr:`co_names`
    .. attribute of the code object.
 
-   ``del name`` を実行します。ここで、 *namei* はコードオブジェクトの :attr:`co_names` 属性へのインデックスです。
+   ``del name`` に対応します。 *namei* はコードオブジェクトの :attr:`co_names` 属性へのインデックスです。
 
 
 .. opcode:: UNPACK_SEQUENCE (count)
@@ -845,7 +849,7 @@ Pythonバイトコード命令
    .. Unpacks TOS into *count* individual values, which are put onto the stack
    .. right-to-left.
 
-   TOSを *count* 個のへ個別の値に分け、右から左にスタックに置かれます。
+   TOS を *count* 個の個別の値にアンパックして、右から左の順にスタックに置きます。
 
 
 .. opcode:: DUP_TOPX (count)
@@ -853,8 +857,8 @@ Pythonバイトコード命令
    .. Duplicate *count* items, keeping them in the same order. Due to implementation
    .. limits, *count* should be between 1 and 5 inclusive.
 
-   *count* 個の項目を同じ順番を保ちながら複製します。
-   実装上の制限から、 *count* は1から5の間(5を含む)でなければいけません。
+   *count* 個の要素を順番を保ちながら複製します。
+   実装上の制限から、 *count* は1から5の間(5を含む)でなければなりません。
 
 
 .. opcode:: STORE_ATTR (namei)
@@ -862,28 +866,28 @@ Pythonバイトコード命令
    .. Implements ``TOS.name = TOS1``, where *namei* is the index of name in
    .. :attr:`co_names`.
 
-   ``TOS.name = TOS1`` を実行します。ここで、 *namei* は :attr:`co_names` における名前のインデックスです。
+   ``TOS.name = TOS1`` に対応します。 *namei* は :attr:`co_names` における名前のインデックスです。
 
 
 .. opcode:: DELETE_ATTR (namei)
 
    .. Implements ``del TOS.name``, using *namei* as index into :attr:`co_names`.
 
-   :attr:`co_names` へのインデックスとして *namei* を使い、 ``del TOS.name`` を実行します。
+   ``del TOS.name`` に対応します。 :attr:`co_names` へのインデックスとして *namei* を使います。
 
 
 .. opcode:: STORE_GLOBAL (namei)
 
    .. Works as ``STORE_NAME``, but stores the name as a global.
 
-   ``STORE_NAME`` として機能しますが、グローバルとして名前を記憶します。
+   ``STORE_NAME`` と同じように動作しますが、 name をグローバルとして保存します。
 
 
 .. opcode:: DELETE_GLOBAL (namei)
 
    .. Works as ``DELETE_NAME``, but deletes a global name.
 
-   ``DELETE_NAME`` として機能しますが、グルーバル名を削除します。
+   ``DELETE_NAME`` と同じように動作しますが、グローバルの name を削除します。
 
 
 .. opcode:: LOAD_CONST (consti)
@@ -905,14 +909,14 @@ Pythonバイトコード命令
    .. Creates a tuple consuming *count* items from the stack, and pushes the resulting
    .. tuple onto the stack.
 
-   スタックから *count* 個の項目を消費するタプルを作り出し、できたタプルをスタックにプッシュします。
+   スタックから *count* 個の要素を消費してタプルを作り出し、できたタプルをスタックにプッシュします。
 
 
 .. opcode:: BUILD_LIST (count)
 
    .. Works as ``BUILD_TUPLE``, but creates a list.
 
-   ``BUILD_TUPLE`` として機能しますが、リストを作り出します。
+   ``BUILD_TUPLE`` と同じように動作しますが、リストを作り出します。
 
 
 .. opcode:: BUILD_MAP (count)
@@ -936,7 +940,7 @@ Pythonバイトコード命令
    .. Performs a Boolean operation.  The operation name can be found in
    .. ``cmp_op[opname]``.
 
-   ブール演算を実行します。演算名は ``cmp_op[opname]`` にあります。
+   ブール命令を実行します。命令名は ``cmp_op[opname]`` にあります。
 
 
 .. opcode:: IMPORT_NAME (namei)
@@ -950,7 +954,7 @@ Pythonバイトコード命令
    モジュール ``co_names[namei]`` をインポートします。
    TOS と TOS1 がポップされ、 :func:`__import__` の *fromlist* と *level* 引数になります。
    モジュールオブジェクトはスタックへプッシュされます。現在の名前空間は影響されません:
-   適切なimport文に対して、それに続く ``STORE_FAST`` 命令が名前空間を変更します。
+   適切な import 文のためには、後続の ``STORE_FAST`` 命令が名前空間を変更します。
 
 
 .. opcode:: IMPORT_FROM (namei)
@@ -959,8 +963,8 @@ Pythonバイトコード命令
    .. resulting object is pushed onto the stack, to be subsequently stored by a
    .. ``STORE_FAST`` instruction.
 
-   属性 ``co_names[namei]`` をTOSに見つかるモジュールからロードします。
-   作成されたオブジェクトはスタックにプッシュされ、その後 ``STORE_FAST`` 命令によって記憶されます。
+   TOS にあるモジュールから属性 ``co_names[namei]`` をロードします。
+   作成されたオブジェクトはスタックにプッシュされ、後続の ``STORE_FAST`` 命令によって保存されます。
 
 
 .. opcode:: JUMP_FORWARD (delta)
@@ -1001,8 +1005,8 @@ Pythonバイトコード命令
    .. counter is incremented by *delta*.
 
    ``TOS`` はイテレータです。その :meth:`!next` メソッドを呼び出します。
-   これが新しい値を作り出すならば、それを(その下にイテレータを残したまま)スタックにプッシュします。
-   イテレータが尽きたことを示した場合は、 ``TOS`` がポップされます。
+   新しい値が yield された場合は、それをスタックにプッシュします (イテレータはその下に残されます)。
+   イテレータの呼び出しで要素が尽きたことが示された場合は、 ``TOS`` がポップされます。
    そして、バイトコードカウンタが *delta* だけ増やされます。
 
 
@@ -1010,7 +1014,7 @@ Pythonバイトコード命令
 
    .. Loads the global named ``co_names[namei]`` onto the stack.
 
-   グルーバル名 ``co_names[namei]`` をスタック上にロードします。
+   ``co_names[namei]`` という名前のグローバルをスタック上にロードします。
 
 
 .. opcode:: SETUP_LOOP (delta)
@@ -1018,7 +1022,7 @@ Pythonバイトコード命令
    .. Pushes a block for a loop onto the block stack.  The block spans from the
    .. current instruction with a size of *delta* bytes.
 
-   ブロックスタックにループのためのブロックをプッシュします。
+   ループのためのブロックをブロックスタックにプッシュします。
    ブロックは現在の命令から *delta* バイトの大きさを占めます。
 
 
@@ -1036,7 +1040,8 @@ Pythonバイトコード命令
    .. Pushes a try block from a try-except clause onto the block stack. *delta* points
    .. to the finally block.
 
-   try-except節からtryブロックをブロックスタックにプッシュします。 *delta* はfinallyブロックを指します。
+   try-except節からtryブロックをブロックスタックにプッシュします。
+   *delta* はfinallyブロックを指します。
 
 
 .. opcode:: STORE_MAP ()
@@ -1044,8 +1049,8 @@ Pythonバイトコード命令
    .. Store a key and value pair in a dictionary.  Pops the key and value while leaving
    .. the dictionary on the stack.
 
-   key, value のペアを辞書に格納します。辞書がスタックに残っている間 (while leaving the dictionary on the stack)
-   key と value をポップします。
+   key, value のペアを辞書に格納します。
+   key と value をポップする一方、辞書はスタックに残されます。
 
 
 .. opcode:: LOAD_FAST (var_num)
@@ -1076,9 +1081,9 @@ Pythonバイトコード命令
    .. less than the length of *co_cellvars*.  Otherwise it is  ``co_freevars[i -
    .. len(co_cellvars)]``.
 
-   セルと自由変数記憶領域のスロット *i* に含まれるセルへの参照をプッシュします。
+   セルと自由変数の記憶領域のスロット *i* に含まれるセルへの参照をプッシュします。
    *i* が *co_cellvars* の長さより小さければ、変数の名前は ``co_cellvars[i]`` です。
-   そうでなければ、それは ``co_freevars[i - len(co_cellvars)]`` です。
+   そうでなければ ``co_freevars[i - len(co_cellvars)]`` です。
 
 
 .. opcode:: LOAD_DEREF (i)
@@ -1086,7 +1091,7 @@ Pythonバイトコード命令
    .. Loads the cell contained in slot *i* of the cell and free variable storage.
    .. Pushes a reference to the object the cell contains on the stack.
 
-   セルと自由変数記憶領域のスロット *i* に含まれるセルをロードします。
+   セルと自由変数の記憶領域のスロット *i* に含まれるセルをロードします。
    セルが持つオブジェクトへの参照をスタックにプッシュします。
 
 
@@ -1095,14 +1100,14 @@ Pythonバイトコード命令
    .. Stores TOS into the cell contained in slot *i* of the cell and free variable
    .. storage.
 
-   セルと自由変数記憶領域のスロット *i* に含まれるセルへTOSを保存します。
+   セルと自由変数の記憶領域のスロット *i* に含まれるセルへTOSを保存します。
 
 
 .. opcode:: SET_LINENO (lineno)
 
    .. This opcode is obsolete.
 
-   このペコードは廃止されました。
+   この命令コードは廃止されました。
 
 
 .. opcode:: RAISE_VARARGS (argc)
@@ -1112,7 +1117,7 @@ Pythonバイトコード命令
    .. the parameter as TOS1, and the exception as TOS.
 
    例外を発生させます。 *argc* はraise文へ与えるパラメータの数を0から3の範囲で示します。
-   ハンドラはTOS2としてトレースバック、TOS1としてパラメータ、そしてTOSとして例外を見つけられます。
+   ハンドラはTOS2をトレースバック、TOS1をパラメータ、TOSを例外として探します。
 
 
 .. opcode:: CALL_FUNCTION (argc)
@@ -1125,12 +1130,12 @@ Pythonバイトコード命令
    .. the function object to call is on the stack.  Pops all function arguments, and
    .. the function itself off the stack, and pushes the return value.
 
-   関数を呼び出します。 *argc* の低位バイトは位置パラメータを示し、高位バイトはキーワードパラメータの数を示します。
-   オペコードは最初にキーワードパラメータをスタック上に見つけます。
-   それぞれのキーワード引数に対して、その値はキーの上にあります。
-   スタック上のキーワードパラメータの下に位置パラメータはあり、先頭に最も右のパラメータがあります。
-   スタック上のパラメータの下には、呼び出す関数オブジェクトがあります。
-   全ての関数引数をポップし、関数自体もスタックから取り除き、戻り値をプッシュします。
+   関数を呼び出します。 *argc* の下位バイトは位置パラメータの数を、上位バイトはキーワードパラメータの数を示します。
+   スタック上では、最初にキーワードパラメータが見つかります。
+   それぞれのキーワード引数に対しては、値がキーより上に来ます。
+   スタック上のキーワードパラメータの下に位置パラメータがあり、最も右のパラメータが先頭になります。
+   スタック上のパラメータの下には、呼び出される関数オブジェクトが置かれます。
+   すべての関数引数をポップし、関数自体もスタックから取り除き、戻り値をプッシュします。
 
 
 .. opcode:: MAKE_FUNCTION (argc)
@@ -1151,8 +1156,8 @@ Pythonバイトコード命令
    .. containing cells for the closure's free variables.  The function also has
    .. *argc* default parameters, which are found below the cells.
 
-   新しい関数オブジェクトを作り出し、その *func_closure* スロットを設定し、それをスタックにプッシュします。
-   TOSは関数に関連付けられたコードで、TOS1 はクロージャの自由変数に対する cell を格納したタプルです。
+   新しい関数オブジェクトを作り出し、その *func_closure* スロットを設定し、スタックにプッシュします。
+   TOSは関数に関連付けられたコードで、TOS1 はクロージャの自由変数に対するセルを格納したタプルです。
    関数はセルの前にある *argc* デフォルトパラメータも持っています。
 
 
@@ -1177,9 +1182,9 @@ Pythonバイトコード命令
    .. subsequent opcode's argument, comprise a four-byte argument, *ext* being the two
    .. most-significant bytes.
 
-   大きすぎてデフォルトの二バイトに当てはめることができない引数をもつあらゆるオペコードの前に置かれます。
-   *ext* は二つの追加バイトを保持し、その後ろのオペコードの引数と一緒になって取られます。
-   それらは四バイト引数を構成し、 *ext* はその最上位バイトです。
+   デフォルトの 2 バイトに収まりきらない大きな引数を持つあらゆる命令コードの前に置かれます。
+   *ext* は追加の 2 バイトを保持し、後続の命令コードの引数と組み合わされます。
+   それらは 4 バイト引数を構成し、 *ext* はその最上位バイトです。
 
 
 .. opcode:: CALL_FUNCTION_VAR (argc)
@@ -1188,8 +1193,8 @@ Pythonバイトコード命令
    .. on the stack contains the variable argument list, followed by keyword and
    .. positional arguments.
 
-   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` のように解釈実行されます。
-   スタックの先頭の要素は変数引数リストを含んでおり、その後にキーワードと位置引数が続きます。
+   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` と同じように解釈されます。
+   スタックの先頭の要素は可変引数リストを含んでおり、その後にキーワード引数と位置引数が続きます。
 
 
 .. opcode:: CALL_FUNCTION_KW (argc)
@@ -1198,8 +1203,8 @@ Pythonバイトコード命令
    .. on the stack contains the keyword arguments dictionary,  followed by explicit
    .. keyword and positional arguments.
 
-   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` のように解釈実行されます。
-   スタックの先頭の要素はキーワード引数辞書を含んでおり、その後に明示的なキーワードと位置引数が続きます。
+   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` と同じように解釈されます。
+   スタックの先頭の要素はキーワード引数辞書を含んでおり、その後に明示的なキーワード引数と位置引数が続きます。
 
 
 .. opcode:: CALL_FUNCTION_VAR_KW (argc)
@@ -1208,9 +1213,9 @@ Pythonバイトコード命令
    .. element on the stack contains the keyword arguments dictionary, followed by the
    .. variable-arguments tuple, followed by explicit keyword and positional arguments.
 
-   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` のように解釈実行されます。
+   関数を呼び出します。 *argc* は ``CALL_FUNCTION`` と同じように解釈されます。
    スタックの先頭の要素はキーワード引数辞書を含んでおり、その後に変数引数のタプルが続き、
-   さらに明示的なキーワードと位置引数が続きます。
+   さらに明示的なキーワード引数と位置引数が続きます。
 
 
 .. opcode:: HAVE_ARGUMENT ()
@@ -1219,5 +1224,5 @@ Pythonバイトコード命令
    .. which don't take arguments ``< HAVE_ARGUMENT`` and those which do ``>=
    .. HAVE_ARGUMENT``.
 
-   これはオペコードではありません。引数をとらないオペコード ``< HAVE_ARGUMENT``  と、
-   とるオペコード ``>= HAVE_ARGUMENT`` を分割する行です。
+   これは実際の命令コードではありません。引数を取らない命令コード ``< HAVE_ARGUMENT``  と、
+   引数を取る命令コード ``>= HAVE_ARGUMENT`` の分割行を表します。
