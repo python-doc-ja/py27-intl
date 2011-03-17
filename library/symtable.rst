@@ -13,7 +13,7 @@
 .. identifier in the code.  :mod:`symtable` provides an interface to examine these
 .. tables.
 
-記号表(symbol table)が作られるのはコンパイラが AST からバイトコードを生成する直前です。
+記号表(symbol table)は、コンパイラが AST からバイトコードを生成する直前に作られます。
 記号表はコード中の全ての識別子のスコープの算出に責任を持ちます。
 :mod:`symtable` はこうした記号表を調べるインターフェイスを提供します。
 
@@ -21,7 +21,7 @@
 .. Generating Symbol Tables
 .. ------------------------
 
-記号表の作成
+記号表の生成
 ------------
 
 .. function:: symtable(code, filename, compile_type)
@@ -45,7 +45,7 @@
 
    .. A namespace table for a block.  The constructor is not public.
 
-   ブロックに対する名前空間の表。
+   ブロックに対する名前空間の記号表。
    コンストラクタはパブリックではありません。
 
    .. method:: get_type()
@@ -60,7 +60,7 @@
 
       .. Return the table's identifier.
 
-      表の識別子を返します。
+      記号表の識別子を返します。
 
    .. method:: get_name()
 
@@ -68,21 +68,21 @@
       .. for a class, the name of the function if the table is for a function, or
       .. ``'top'`` if the table is global (:meth:`get_type` returns ``'module'``).
 
-      表の名前を返します。この名前は表がクラスに対するものであればクラス名であり、
+      記号表の名前を返します。この名前は記号表がクラスに対するものであればクラス名であり、
       関数に対するものであれば関数名であり、グローバルな (:meth:`get_type` が
-      ``'module'`` を返す) 表であれば ``'top'`` です。
+      ``'module'`` を返す) 記号表であれば ``'top'`` です。
 
    .. method:: get_lineno()
 
       .. Return the number of the first line in the block this table represents.
 
-      この表が表しているブロックの一行目の行番号を返します。
+      この記号表に対応するブロックの一行目の行番号を返します。
 
    .. method:: is_optimized()
 
       .. Return ``True`` if the locals in this table can be optimized.
 
-      この表の locals が最適化できるならば ``True`` を返します。
+      この記号表に含まれるローカル変数が最適化できるならば ``True`` を返します。
 
    .. method:: is_nested()
 
@@ -95,7 +95,7 @@
       .. Return ``True`` if the block has nested namespaces within it.  These can
       .. be obtained with :meth:`get_children`.
 
-      ブロックが入れ子の名前空間を抱えているならば ``True`` を返します。
+      ブロックが入れ子の名前空間を含んでいるならば ``True`` を返します。
       入れ子の名前空間は :meth:`get_children` で得られます。
 
    .. method:: has_exec()
@@ -108,26 +108,26 @@
 
       .. Return ``True`` if the block uses a starred from-import.
 
-      ブロックの中でアスタリスクの from-import が使われているならば
+      ブロックの中で * を使った from-import が使われているならば
       ``True`` を返します。
 
    .. method:: get_identifiers()
 
       .. Return a list of names of symbols in this table.
 
-      この表にある記号の名前のリストを返します。
+      この記号表にある記号の名前のリストを返します。
 
    .. method:: lookup(name)
 
       .. Lookup *name* in the table and return a :class:`Symbol` instance.
 
-      表から *name* を見つけ出して :class:`Symbol` インスタンスとして返します。
+      記号表から名前 *name* を見つけ出して :class:`Symbol` インスタンスとして返します。
 
    .. method:: get_symbols()
 
       .. Return a list of :class:`Symbol` instances for names in the table.
 
-      表中の名前を表す :class:`Symbol` インスタンスのリストを返します。
+      記号表中の名前を表す :class:`Symbol` インスタンスのリストを返します。
 
    .. method:: get_children()
 
@@ -154,13 +154,13 @@
 
       .. Return a tuple containing names of locals in this function.
 
-      この関数のローカルな名前からなるタプルを返します。
+      この関数のローカル変数の名前からなるタプルを返します。
 
    .. method:: get_globals()
 
       .. Return a tuple containing names of globals in this function.
 
-      この関数のグローバルな名前からなるタプルを返します。
+      この関数のグローバル変数の名前からなるタプルを返します。
 
    .. method:: get_frees()
 
@@ -201,7 +201,7 @@
 
       .. Return ``True`` if the symbol is used in its block.
 
-      記号がブロックの中で使われていれば ``True`` を返します。
+      記号がそのブロックの中で使われていれば ``True`` を返します。
 
    .. method:: is_imported()
 
@@ -231,20 +231,20 @@
 
       .. Return ``True`` if the symbol is local to its block.
 
-      記号がブロックのローカルならば ``True`` を返します。
+      記号がそのブロックに対してローカルならば ``True`` を返します。
 
    .. method:: is_free()
 
       .. Return ``True`` if the symbol is referenced in its block, but not assigned
       .. to.
 
-      記号がブロックの中で参照されても代入は行われないならば ``True`` を返します。
+      記号がそのブロックの中で参照されていて、しかし代入は行われないならば ``True`` を返します。
 
    .. method:: is_assigned()
 
       .. Return ``True`` if the symbol is assigned to in its block.
 
-      記号がブロックの中で代入されているならば ``True`` を返します。
+      記号がそのブロックの中で代入されているならば ``True`` を返します。
 
    .. method:: is_namespace()
 
@@ -255,7 +255,7 @@
       .. If the name is used as the target of a function or class statement, this
       .. will be true.
 
-      名前が関数またはクラス文のターゲットとして使われるならば、真です。
+      名前が関数または class 文のターゲットとして使われるならば、真です。
 
       .. For example:
 
@@ -270,7 +270,7 @@
       .. list, that does not introduce a new namespace.
 
       一つの名前が複数のオブジェクトに束縛されうることに注意しましょう。
-      結果が ``True`` であったとしても、その名前が他のオブジェクトにも束縛され、
+      結果が ``True`` であったとしても、その名前は他のオブジェクトにも束縛されるかもしれず、
       それがたとえば整数やリストであれば、そこでは新たな名前空間は導入されません。
 
    .. method:: get_namespaces()
