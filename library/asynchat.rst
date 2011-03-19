@@ -73,12 +73,6 @@
    :exc:`NotImplementedError` 例外を送出します。
 
 
-.. このmethodのセクションは、最新版のasynchatのドキュメントでは消えている？ので訳さない。
-   .. method:: async_chat._collect_incoming_data(data)
-
-      Sample implementation of a data collection rutine to be used in conjunction
-      with :meth:`_get_data` in a user-specified :meth:`found_terminator`.
-
 .. method:: async_chat.discard_buffers()
 
    非常用のメソッドで、全ての入出力バッファとproducer fifoを廃棄します。
@@ -90,60 +84,24 @@
    致した場合に呼び出されます。このメソッドは必ずオーバライドする必要があり、デフォルトの実装では、 :exc:`NotImplementedError`
    例外を送出します。入力データを参照する必要がある場合でも引数としては与えられないため、入力バッファをインスタンス属性として参照しなければなりません。
 
-.. このメソッドも、2.7ではundocumented.
-   .. method:: async_chat._get_data()
-
-      Will return and clear the data received with the sample
-      :meth:`_collect_incoming_data` implementation.
 
 .. method:: async_chat.get_terminator()
 
    現在のチャネルの終了条件を返します。
 
 
-.. method:: async_chat.handle_close()
-
-   チャネル閉じた時に呼び出されます。デフォルトの実装では単にチャネルのソケットをクローズします。
-
-
-.. method:: async_chat.handle_read()
-
-   チャネルの非同期ループでreadイベントが発生した時に呼び出され、デフォル
-   トの実装では、 :meth:`set_terminator` で設定された終了条件をチェックします。終了条件として、特定の文字列か受信文字数を指定する事ができま
-   す。終了条件が満たされている場合、 :meth:`handle_read` は終了条件が成立
-   するよりも前のデータを引数として :meth:`collect_incoming_data` を呼び
-   出し、その後 :meth:`found_terminator` を呼び出します。
-
-
-.. method:: async_chat.handle_write()
-
-   アプリケーションがデータを出力する時に呼び出され、デフォルトの実装では
-   :meth:`initiate_send` を呼び出します。 :meth:`initiate_send` では
-   :meth:`refill_buffer` を呼び出し、チャネルのproducer fifoからデータを取得します。
-
-
 .. method:: async_chat.push(data)
 
-   dataを持つ :class:`simple_producer` (*後述*)オブジェクトを生成し、チ
-   ャネルの ``producer_fifo`` にプッシュして転送します。データをチャネルに書き出すために必要なのはこれだけですが、データの暗号化やチャンク化な
-   どを行う場合には独自のproducerを使用する事もできます。
+   チャネルの fifo にデータをプッシュして転送します。
+   データをチャネルに書き出すために必要なのはこれだけですが、
+   データの暗号化やチャンク化などを行う場合には独自の producer
+   を使用する事もできます。
 
 
 .. method:: async_chat.push_with_producer(producer)
 
    指定したproducerオブジェクトをチャネルのfifoに追加します。これより前にpushされたproducerが全て枯渇した後、チャネルはこのproducer
    から :meth:`more` メソッドでデータを取得し、リモート端点に送信します。
-
-
-.. method:: async_chat.readable()
-
-   :cfunc:`select` ループでこのチャネルの読み込み可能チェックを行う場合には、 ``True`` を返します。
-
-
-.. method:: async_chat.refill_buffer()
-
-   fifoの先頭にあるproducerの :meth:`more` メソッドを呼び出し、出力バッファを補充します。先頭のproducerが枯渇状態の場合にはfifoからポ
-   ップされ、その次のproducerがアクティブになります。アクティブなproducerが ``None`` になると、チャネルはクローズされます。
 
 
 .. method:: async_chat.set_terminator(term)
@@ -165,33 +123,15 @@
    終了条件が成立しても、その後に続くデータは、 :meth:`found_terminator` の呼出し後に再びチャネルを読み込めば取得する事ができます。
 
 
-.. method:: async_chat.writable()
-
-   Should return ``True`` as long as items remain on the producer fifo, or the
-   channel is connected and the channel's output buffer is non-empty.
-
-   producer fifoが空ではないか、チャネルが接続中で出力バッファが空でない場合、 ``True`` を返します。
-
-
-asynchat - 補助クラスと関数
+asynchat - 補助クラス
 ---------------------------
-
-
-.. class:: simple_producer(data[, buffer_size=512])
-
-   :class:`simple_producer` には、一連のデータと、オプションとしてバッファ
-   サイズを指定する事ができます。 :meth:`more` が呼び出されると、その都度 *buffer_size* 以下の長さのデータを返します。
-
-   .. method:: more()
-
-      producerから取得した次のデータか、空文字列を返します。
 
 
 .. class:: fifo([list=None])
 
-   各チャネルは、アプリケーションからプッシュされ、まだチャネルに書き出さ
-   れていないデータを :class:`fifo` に保管しています。 :class:`fifo` では、必
-   要なデータとproducerのリストを管理しています。引数 *list* には、producerかチャネルに出力するデータを指定する事ができます。
+   アプリケーションからプッシュされ、まだチャネルに書き出されていないデータを保持するための :class:`fifo` 。
+   :class:`fifo` は必要になるまでデータと producer を保持するために使われるリストです。
+   引数 *list* には、チャネルに出力する producer またはデータを指定する事ができます。
 
 
    .. method:: is_empty()
@@ -213,13 +153,6 @@ asynchat - 補助クラスと関数
 
       fifoが空でなければ、 ``(True, first())`` を返し、ポップされたアイテムを削除します。
       fifoが空であれば ``(False, None)`` を返します。
-
-:mod:`asynchat` は、ネットワークとテキスト分析操作で使えるユーティリティ関数を提供しています。
-
-
-.. function:: find_prefix_at_end(haystack, needle)
-
-   文字列 *haystack* の末尾が *needle* の先頭と一致したとき、 ``True`` を返します。
 
 
 .. _asynchat-example:
