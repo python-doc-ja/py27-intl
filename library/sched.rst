@@ -100,7 +100,7 @@
 .. method:: scheduler.cancel(event)
 
    キューからイベントを消去します。もし *event* がキューにある現在のイベントでないならば、
-   このメソッドは :exc:`RuntimeError` を送出します。
+   このメソッドは :exc:`ValueError` を送出します。
 
 
 .. method:: scheduler.empty()

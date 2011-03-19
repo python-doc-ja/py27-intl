@@ -93,7 +93,7 @@ POSIX *termios* 形式の端末制御をサポートする Unix のバージョ�
 :func:`tcgetattr` と :keyword:`try` ... :keyword:`finally`
 文によるテクニックが使われています::
 
-   def getpass(prompt = "Password: "):
+   def getpass(prompt="Password: "):
        import termios, sys
        fd = sys.stdin.fileno()
        old = termios.tcgetattr(fd)
