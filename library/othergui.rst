@@ -48,7 +48,7 @@
       `PythonCAD <http://www.pythoncad.org/>`_ 。オンライン `チュートリアル
       <http://www.pygtk.org/pygtk2tutorial/index.html>`_ が手に入ります。
 
-   `PyQt <http://www.riverbankcomputing.co.uk/pyqt/index.php>`_
+   `PyQt <http://www.riverbankcomputing.co.uk/software/pyqt/>`_
       PyQtは :program:`sip` でラップされた Qt ツールキットへのバインディ\
       ングです。Qt は Unix、Windows および Mac OS X で利用できる大規模な
       C++ GUI ツールキットです。 :program:`sip` は Python クラスとして C++
