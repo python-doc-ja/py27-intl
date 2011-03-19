@@ -1,0 +1,134 @@
+--- r262/distutils/setupscript.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/distutils/setupscript.rst	2010-07-09 16:51:43.865524000 +0900
+@@ -198,25 +198,25 @@
+ 
+ The second argument to the :class:`Extension` constructor is a list of source
+ files.  Since the Distutils currently only support C, C++, and Objective-C
+ extensions, these are normally C/C++/Objective-C source files.  (Be sure to use
+ appropriate extensions to distinguish C++\ source files: :file:`.cc` and
+ :file:`.cpp` seem to be recognized by both Unix and Windows compilers.)
+ 
+ However, you can also include SWIG interface (:file:`.i`) files in the list; the
+ :command:`build_ext` command knows how to deal with SWIG extensions: it will run
+ SWIG on the interface file and compile the resulting C/C++ file into your
+ extension.
+ 
+-**\*\*** SWIG support is rough around the edges and largely untested! **\*\***
++.. XXX SWIG support is rough around the edges and largely untested!
+ 
+ This warning notwithstanding, options to SWIG can be currently passed like
+ this::
+ 
+    setup(...,
+          ext_modules=[Extension('_foo', ['foo.i'],
+                                 swig_opts=['-modern', '-I../include'])],
+          py_modules=['foo'],
+         )
+ 
+ Or on the commandline like this::
+ 
+@@ -317,25 +317,25 @@
+              libraries=['gdbm', 'readline'])
+ 
+ If you need to link with libraries in a non-standard location, you'll have to
+ include the location in ``library_dirs``::
+ 
+    Extension(...,
+              library_dirs=['/usr/X11R6/lib'],
+              libraries=['X11', 'Xt'])
+ 
+ (Again, this sort of non-portable construct should be avoided if you intend to
+ distribute your code.)
+ 
+-**\*\*** Should mention clib libraries here or somewhere else! **\*\***
++.. XXX Should mention clib libraries here or somewhere else!
+ 
+ 
+ Other options
+ -------------
+ 
+ There are still some other options which can be used to handle special cases.
+ 
+ The :option:`extra_objects` option is a list of object files to be passed to the
+ linker. These files must not have extensions, as the default extension for the
+ compiler is used.
+ 
+ :option:`extra_compile_args` and :option:`extra_link_args` can be used to
+@@ -556,41 +556,50 @@
+ |                      | package                   |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``long_description`` | longer description of the | long string     |        |
+ |                      | package                   |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``download_url``     | location where the        | URL             | \(4)   |
+ |                      | package may be downloaded |                 |        |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``classifiers``      | a list of classifiers     | list of strings | \(4)   |
+ +----------------------+---------------------------+-----------------+--------+
+ | ``platforms``        | a list of platforms       | list of strings |        |
+ +----------------------+---------------------------+-----------------+--------+
++| ``license``          | license for the package   | short string    | \(6)   |
+++----------------------+---------------------------+-----------------+--------+
+ 
+ Notes:
+ 
+ (1)
+    These fields are required.
+ 
+ (2)
+    It is recommended that versions take the form *major.minor[.patch[.sub]]*.
+ 
+ (3)
+    Either the author or the maintainer must be identified.
+ 
+ (4)
+    These fields should not be used if your package is to be compatible with Python
+    versions prior to 2.2.3 or 2.3.  The list is available from the `PyPI website
+    <http://pypi.python.org/pypi>`_.
+ 
++(6)
++    The ``license`` field is a text indicating the license covering the
++    package where the license is not a selection from the "License" Trove
++    classifiers. See the ``Classifier`` field. Notice that
++    there's a ``licence`` distribution option which is deprecated but still
++    acts as an alias for ``license``.
++
+ 'short string'
+    A single line of text, not more than 200 characters.
+ 
+ 'long string'
+    Multiple lines of plain text in reStructuredText format (see
+    http://docutils.sf.net/).
+ 
+ 'list of strings'
+    See below.
+ 
+ None of the string values may be Unicode.
+ 
+@@ -602,25 +611,25 @@
+ increments when bug-fix releases are made. Additional trailing version
+ information is sometimes used to indicate sub-releases.  These are
+ "a1,a2,...,aN" (for alpha releases, where functionality and API may change),
+ "b1,b2,...,bN" (for beta releases, which only fix bugs) and "pr1,pr2,...,prN"
+ (for final pre-release release testing). Some examples:
+ 
+ 0.1.0
+    the first, experimental release of a package
+ 
+ 1.0.1a2
+    the second alpha release of the first patch version of 1.0
+ 
+-:option:`classifiers` are specified in a python list::
++:option:`classifiers` are specified in a Python list::
+ 
+    setup(...,
+          classifiers=[
+              'Development Status :: 4 - Beta',
+              'Environment :: Console',
+              'Environment :: Web Environment',
+              'Intended Audience :: End Users/Desktop',
+              'Intended Audience :: Developers',
+              'Intended Audience :: System Administrators',
+              'License :: OSI Approved :: Python Software Foundation License',
+              'Operating System :: MacOS :: MacOS X',
+              'Operating System :: Microsoft :: Windows',

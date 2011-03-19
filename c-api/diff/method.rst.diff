@@ -1,0 +1,21 @@
+--- r262/c-api/method.rst	2009-02-02 17:27:16.400413000 +0900
++++ r266/c-api/method.rst	2009-10-27 23:34:21.573917000 +0900
+@@ -56,17 +56,17 @@
+ 
+ .. cfunction:: PyObject* PyMethod_Self(PyObject *meth)
+ 
+    Return the instance associated with the method *meth* if it is bound, otherwise
+    return *NULL*.
+ 
+ 
+ .. cfunction:: PyObject* PyMethod_GET_SELF(PyObject *meth)
+ 
+    Macro version of :cfunc:`PyMethod_Self` which avoids error checking.
+ 
+ 
+-.. cfunction:: int PyMethod_ClearFreeList(void)
++.. cfunction:: int PyMethod_ClearFreeList()
+ 
+    Clear the free list. Return the total number of freed items.
+ 
+    .. versionadded:: 2.6

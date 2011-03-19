@@ -1,0 +1,68 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to39__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/distutils/sourcedist.rst =&gt; r266/distutils/sourcedist.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to39__0"></td><td class="diff_header" id="from39_63">63</td><td nowrap="nowrap">If&nbsp;you&nbsp;don't&nbsp;supply&nbsp;an&nbsp;explicit&nbsp;list&nbsp;of&nbsp;files&nbsp;(or&nbsp;instructions&nbsp;on&nbsp;how&nbsp;to</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_64">64</td><td nowrap="nowrap">generate&nbsp;one),&nbsp;the&nbsp;:command:`sdist`&nbsp;command&nbsp;puts&nbsp;a&nbsp;minimal&nbsp;default&nbsp;set&nbsp;into&nbsp;the</td></tr>            <tr><td class="diff_next" id="difflib_chg_to39__1"></td><td class="diff_header" id="from39_65">65</td><td nowrap="nowrap">source&nbsp;distribution:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_66">66</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_67">67</td><td nowrap="nowrap">*&nbsp;all&nbsp;Python&nbsp;source&nbsp;files&nbsp;implied&nbsp;by&nbsp;the&nbsp;:option:`py_modules`&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_68">68</td><td nowrap="nowrap">&nbsp;&nbsp;:option:`packages`&nbsp;options</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_69">69</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_70">70</td><td nowrap="nowrap">*&nbsp;all&nbsp;C&nbsp;source&nbsp;files&nbsp;mentioned&nbsp;in&nbsp;the&nbsp;:option:`ext_modules`&nbsp;or</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to39__1">n</a></td><td class="diff_header" id="from39_71">71-</td><td nowrap="nowrap">&nbsp;&nbsp;:option:`libraries`&nbsp;options<span class="diff_sub">&nbsp;(</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to39__1">n</a></td><td class="diff_header" id="to39_71">71+</td><td nowrap="nowrap">&nbsp;&nbsp;:option:`libraries`&nbsp;options</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from39_72">72</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to39__2">n</a></td><td class="diff_header" id="from39_73">73-</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_chg">**\*\***&nbsp;g</span>etting&nbsp;C&nbsp;library&nbsp;sources&nbsp;currently&nbsp;broken--<span class="diff_chg">-</span>no</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to39__2">n</a></td><td class="diff_header" id="to39_73">73+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_chg">..&nbsp;XXX&nbsp;G</span>etting&nbsp;C&nbsp;library&nbsp;sources<span class="diff_add">&nbsp;is</span>&nbsp;currently&nbsp;broken<span class="diff_add">&nbsp;</span>--<span class="diff_chg">&nbsp;</span>no</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_74">74-</td><td nowrap="nowrap">&nbsp;&nbsp;:meth:`get_source_files`&nbsp;method&nbsp;in&nbsp;:file:`build_clib.py`!<span class="diff_sub">&nbsp;**\*\***)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to39_74">74+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;</span>&nbsp;&nbsp;:meth:`get_source_files`&nbsp;method&nbsp;in&nbsp;:file:`build_clib.py`!</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from39_75">75</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_76">76</td><td nowrap="nowrap">*&nbsp;scripts&nbsp;identified&nbsp;by&nbsp;the&nbsp;:option:`scripts`&nbsp;option</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_77">77</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_78">78</td><td nowrap="nowrap">*&nbsp;anything&nbsp;that&nbsp;looks&nbsp;like&nbsp;a&nbsp;test&nbsp;script:&nbsp;:file:`test/test\*.py`&nbsp;(currently,&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_79">79</td><td nowrap="nowrap">&nbsp;&nbsp;Distutils&nbsp;don't&nbsp;do&nbsp;anything&nbsp;with&nbsp;test&nbsp;scripts&nbsp;except&nbsp;include&nbsp;them&nbsp;in&nbsp;source</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_80">80</td><td nowrap="nowrap">&nbsp;&nbsp;distributions,&nbsp;but&nbsp;in&nbsp;the&nbsp;future&nbsp;there&nbsp;will&nbsp;be&nbsp;a&nbsp;standard&nbsp;for&nbsp;testing&nbsp;Python</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_81">81</td><td nowrap="nowrap">&nbsp;&nbsp;module&nbsp;distributions)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_82">82</td><td nowrap="nowrap"></td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to39__2"></td><td class="diff_header" id="from39_186">186</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_187">187</td><td nowrap="nowrap">*&nbsp;use&nbsp;the&nbsp;list&nbsp;of&nbsp;files&nbsp;now&nbsp;in&nbsp;:file:`MANIFEST`&nbsp;(either&nbsp;just&nbsp;generated&nbsp;or&nbsp;read</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_188">188</td><td nowrap="nowrap">&nbsp;&nbsp;in)&nbsp;to&nbsp;create&nbsp;the&nbsp;source&nbsp;distribution&nbsp;archive(s)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_189">189</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_190">190</td><td nowrap="nowrap">There&nbsp;are&nbsp;a&nbsp;couple&nbsp;of&nbsp;options&nbsp;that&nbsp;modify&nbsp;this&nbsp;behaviour.&nbsp;&nbsp;First,&nbsp;use&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_191">191</td><td nowrap="nowrap">:option:`--no-defaults`&nbsp;and&nbsp;:option:`--no-prune`&nbsp;to&nbsp;disable&nbsp;the&nbsp;standard</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_192">192</td><td nowrap="nowrap">"include"&nbsp;and&nbsp;"exclude"&nbsp;sets.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_193">193</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to39__3">n</a></td><td class="diff_header" id="from39_194">194-</td><td nowrap="nowrap"><span class="diff_sub">Second,&nbsp;you&nbsp;might&nbsp;want&nbsp;to&nbsp;force&nbsp;the&nbsp;manifest&nbsp;to&nbsp;be&nbsp;regenerated---for&nbsp;example,&nbsp;if</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_195">195-</td><td nowrap="nowrap"><span class="diff_sub">you&nbsp;have&nbsp;added&nbsp;or&nbsp;removed&nbsp;files&nbsp;or&nbsp;directories&nbsp;that&nbsp;match&nbsp;an&nbsp;existing&nbsp;pattern&nbsp;in</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_196">196-</td><td nowrap="nowrap"><span class="diff_sub">the&nbsp;manifest&nbsp;template,&nbsp;you&nbsp;should&nbsp;regenerate&nbsp;the&nbsp;manifest::</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to39__3"></td><td class="diff_header" id="from39_197">197-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_198">198-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;python&nbsp;setup.py&nbsp;sdist&nbsp;--force-manifest</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_199">199-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_200">200-</td><td nowrap="nowrap"><span class="diff_chg">Or</span>,&nbsp;you&nbsp;might&nbsp;just&nbsp;want&nbsp;to&nbsp;(re)generate&nbsp;the&nbsp;manifest,&nbsp;but&nbsp;not&nbsp;create&nbsp;a&nbsp;source</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to39_194">194+</td><td nowrap="nowrap"><span class="diff_chg">Second</span>,&nbsp;you&nbsp;might&nbsp;just&nbsp;want&nbsp;to&nbsp;(re)generate&nbsp;the&nbsp;manifest,&nbsp;but&nbsp;not&nbsp;create&nbsp;a&nbsp;source</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from39_201">201</td><td nowrap="nowrap">distribution::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_202">202</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_203">203</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;python&nbsp;setup.py&nbsp;sdist&nbsp;--manifest-only</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_204">204</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to39__top">t</a></td><td class="diff_header" id="from39_205">205-</td><td nowrap="nowrap"><span class="diff_sub">:option:`--manifest-only`&nbsp;implies&nbsp;:option:`--force-manifest`.&nbsp;:option:`-o`&nbsp;is&nbsp;a</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to39__top">t</a></td><td class="diff_header" id="to39_199">199+</td><td nowrap="nowrap"><span class="diff_add">:option:`-o`&nbsp;is&nbsp;a&nbsp;shortcut&nbsp;for&nbsp;:option:`--manifest-only`.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_206">206-</td><td nowrap="nowrap"><span class="diff_sub">shortcut&nbsp;for&nbsp;:option:`--manifest-only`,&nbsp;and&nbsp;:option:`-f`&nbsp;for</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from39_207">207-</td><td nowrap="nowrap"><span class="diff_sub">:option:`--force-manifest`.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from39_208">208</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from39_209">209</td><td nowrap="nowrap"></td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

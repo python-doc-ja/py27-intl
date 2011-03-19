@@ -1,0 +1,88 @@
+--- r262/howto/urllib2.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/howto/urllib2.rst	2009-10-27 23:37:48.900246000 +0900
+@@ -173,28 +173,27 @@
+     data = urllib.urlencode(values)
+     req = urllib2.Request(url, data, headers)
+     response = urllib2.urlopen(req)
+     the_page = response.read()
+ 
+ The response also has two useful methods. See the section on `info and geturl`_
+ which comes after we have a look at what happens when things go wrong.
+ 
+ 
+ Handling Exceptions
+ ===================
+ 
+-*urlopen* raises :exc:`URLError` when it cannot handle a response (though as usual
+-with Python APIs, builtin exceptions such as
+-:exc:`ValueError`, :exc:`TypeError` etc. may also
+-be raised).
++*urlopen* raises :exc:`URLError` when it cannot handle a response (though as
++usual with Python APIs, built-in exceptions such as :exc:`ValueError`,
++:exc:`TypeError` etc. may also be raised).
+ 
+ :exc:`HTTPError` is the subclass of :exc:`URLError` raised in the specific case of
+ HTTP URLs.
+ 
+ URLError
+ --------
+ 
+ Often, URLError is raised because there is no network connection (no route to
+ the specified server), or the specified server doesn't exist.  In this case, the
+ exception raised will have a 'reason' attribute, which is a tuple containing an
+ error code and a text error message.
+ 
+@@ -302,25 +301,25 @@
+               'The gateway server did not receive a timely response'),
+         505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
+         }
+ 
+ When an error is raised the server responds by returning an HTTP error code
+ *and* an error page. You can use the :exc:`HTTPError` instance as a response on the
+ page returned. This means that as well as the code attribute, it also has read,
+ geturl, and info, methods. ::
+ 
+     >>> req = urllib2.Request('http://www.python.org/fish.html')
+     >>> try:
+     >>>     urllib2.urlopen(req)
+-    >>> except URLError, e:
++    >>> except HTTPError, e:
+     >>>     print e.code
+     >>>     print e.read()
+     >>>
+     404
+     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+         "http://www.w3.org/TR/html4/loose.dtd">
+     <?xml-stylesheet href="./css/ht2html.css"
+         type="text/css"?>
+     <html><head><title>Error 404: File Not Found</title>
+     ...... etc...
+ 
+ Wrapping it Up
+@@ -479,25 +478,25 @@
+     # create "opener" (OpenerDirector instance)
+     opener = urllib2.build_opener(handler)
+ 
+     # use the opener to fetch a URL
+     opener.open(a_url)
+ 
+     # Install the opener.
+     # Now all calls to urllib2.urlopen use our opener.
+     urllib2.install_opener(opener)
+ 
+ .. note::
+ 
+-    In the above example we only supplied our ``HHTPBasicAuthHandler`` to
++    In the above example we only supplied our ``HTTPBasicAuthHandler`` to
+     ``build_opener``. By default openers have the handlers for normal situations
+     -- ``ProxyHandler``, ``UnknownHandler``, ``HTTPHandler``,
+     ``HTTPDefaultErrorHandler``, ``HTTPRedirectHandler``, ``FTPHandler``,
+     ``FileHandler``, ``HTTPErrorProcessor``.
+ 
+ ``top_level_url`` is in fact *either* a full URL (including the 'http:' scheme
+ component and the hostname and optionally the port number)
+ e.g. "http://example.com/" *or* an "authority" (i.e. the hostname,
+ optionally including the port number) e.g. "example.com" or "example.com:8080"
+ (the latter example includes a port number).  The authority, if present, must
+ NOT contain the "userinfo" component - for example "joe@password:example.com" is
+ not correct.

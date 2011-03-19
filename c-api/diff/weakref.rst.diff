@@ -1,0 +1,34 @@
+--- r262/c-api/weakref.rst	2009-02-02 17:27:16.400413000 +0900
++++ r266/c-api/weakref.rst	2010-08-03 06:45:43.685855000 +0900
+@@ -54,23 +54,30 @@
+    be a callable object that receives notification when *ob* is garbage
+    collected; it should accept a single parameter, which will be the weak
+    reference object itself. *callback* may also be ``None`` or *NULL*.  If *ob*
+    is not a weakly-referencable object, or if *callback* is not callable,
+    ``None``, or *NULL*, this will return *NULL* and raise :exc:`TypeError`.
+ 
+    .. versionadded:: 2.2
+ 
+ 
+ .. cfunction:: PyObject* PyWeakref_GetObject(PyObject *ref)
+ 
+    Return the referenced object from a weak reference, *ref*.  If the referent is
+-   no longer live, returns ``None``.
++   no longer live, returns :const:`Py_None`.
+ 
+    .. versionadded:: 2.2
+ 
++   .. warning::
++
++      This function returns a **borrowed reference** to the referenced object.
++      This means that you should always call :cfunc:`Py_INCREF` on the object
++      except if you know that it cannot be destroyed while you are still
++      using it.
++
+ 
+ .. cfunction:: PyObject* PyWeakref_GET_OBJECT(PyObject *ref)
+ 
+    Similar to :cfunc:`PyWeakref_GetObject`, but implemented as a macro that does no
+    error checking.
+ 
+    .. versionadded:: 2.2

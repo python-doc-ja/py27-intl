@@ -1,0 +1,125 @@
+--- r262/distutils/builtdist.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/distutils/builtdist.rst	2010-08-03 06:45:43.685855000 +0900
+@@ -134,26 +134,26 @@
+ | :command:`bdist_wininst` | wininst               |
+ +--------------------------+-----------------------+
+ 
+ The following sections give details on the individual :command:`bdist_\*`
+ commands.
+ 
+ 
+ .. _creating-dumb:
+ 
+ Creating dumb built distributions
+ =================================
+ 
+-**\*\*** Need to document absolute vs. prefix-relative packages here, but first
+-I have to implement it! **\*\***
++.. XXX Need to document absolute vs. prefix-relative packages here, but first
++       I have to implement it!
+ 
+ 
+ .. _creating-rpms:
+ 
+ Creating RPM packages
+ =====================
+ 
+ The RPM format is used by many popular Linux distributions, including Red Hat,
+ SuSE, and Mandrake.  If one of these (or any of the other RPM-based Linux
+ distributions) is your usual environment, creating RPM packages for other users
+ of that same distribution is trivial. Depending on the complexity of your module
+ distribution and differences between Linux distributions, you may also be able
+@@ -164,25 +164,25 @@
+ 
+    python setup.py bdist_rpm
+ 
+ or the :command:`bdist` command with the :option:`--format` option::
+ 
+    python setup.py bdist --formats=rpm
+ 
+ The former allows you to specify RPM-specific options; the latter allows  you to
+ easily specify multiple formats in one run.  If you need to do both, you can
+ explicitly specify multiple :command:`bdist_\*` commands and their options::
+ 
+    python setup.py bdist_rpm --packager="John Doe <jdoe@example.org>" \
+-                   bdist_wininst --target_version="2.0"
++                   bdist_wininst --target-version="2.0"
+ 
+ Creating RPM packages is driven by a :file:`.spec` file, much as using the
+ Distutils is driven by the setup script.  To make your life easier, the
+ :command:`bdist_rpm` command normally creates a :file:`.spec` file based on the
+ information you supply in the setup script, on the command line, and in any
+ Distutils configuration files.  Various options and sections in the
+ :file:`.spec` file are derived from options in the setup script as follows:
+ 
+ +------------------------------------------+----------------------------------------------+
+ | RPM :file:`.spec` file option or section | Distutils setup script option                |
+ +==========================================+==============================================+
+ | Name                                     | :option:`name`                               |
+@@ -309,25 +309,25 @@
+ Windows platform, and will be Python version dependent. The installer filename
+ will reflect this and now has the form :file:`foo-1.0.win32-py2.0.exe`.  You
+ have to create a separate installer for every Python version you want to
+ support.
+ 
+ The installer will try to compile pure modules into :term:`bytecode` after installation
+ on the target system in normal and optimizing mode.  If you don't want this to
+ happen for some reason, you can run the :command:`bdist_wininst` command with
+ the :option:`--no-target-compile` and/or the :option:`--no-target-optimize`
+ option.
+ 
+ By default the installer will display the cool "Python Powered" logo when it is
+-run, but you can also supply your own bitmap which must be a Windows
++run, but you can also supply your own 152x161 bitmap which must be a Windows
+ :file:`.bmp` file with the :option:`--bitmap` option.
+ 
+ The installer will also display a large title on the desktop background window
+ when it is run, which is constructed from the name of your distribution and the
+ version number.  This can be changed to another text by using the
+ :option:`--title` option.
+ 
+ The installer file will be written to the "distribution directory" --- normally
+ :file:`dist/`, but customizable with the :option:`--dist-dir` option.
+ 
+ .. _cross-compile-windows:
+ 
+@@ -417,30 +417,32 @@
+ 
+       "CSIDL_COMMON_PROGRAMS"
+       "CSIDL_PROGRAMS"
+ 
+       "CSIDL_FONTS"
+ 
+    If the folder cannot be retrieved, :exc:`OSError` is raised.
+ 
+    Which folders are available depends on the exact Windows version, and probably
+    also the configuration.  For details refer to Microsoft's documentation of the
+    :cfunc:`SHGetSpecialFolderPath` function.
+ 
+-Vista User Access Control (UAC)
+-===============================
+-
+-Starting with Python 2.6, bdist_wininst supports a :option:`--user-access-control`
+-option.  The default is 'none' (meaning no UAC handling is done), and other
+-valid values are 'auto' (meaning prompt for UAC elevation if Python was
+-installed for all users) and 'force' (meaning always prompt for elevation)
+ 
+ .. function:: create_shortcut(target, description, filename[, arguments[, workdir[, iconpath[, iconindex]]]])
+ 
+    This function creates a shortcut. *target* is the path to the program to be
+    started by the shortcut. *description* is the description of the shortcut.
+    *filename* is the title of the shortcut that the user will see. *arguments*
+    specifies the command line arguments, if any. *workdir* is the working directory
+    for the program. *iconpath* is the file containing the icon for the shortcut,
+    and *iconindex* is the index of the icon in the file *iconpath*.  Again, for
+    details consult the Microsoft documentation for the :class:`IShellLink`
+    interface.
++
++
++Vista User Access Control (UAC)
++===============================
++
++Starting with Python 2.6, bdist_wininst supports a :option:`--user-access-control`
++option.  The default is 'none' (meaning no UAC handling is done), and other
++valid values are 'auto' (meaning prompt for UAC elevation if Python was
++installed for all users) and 'force' (meaning always prompt for elevation).

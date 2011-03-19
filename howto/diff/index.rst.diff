@@ -1,0 +1,25 @@
+--- r262/howto/index.rst	2008-09-26 11:58:36.001088000 +0900
++++ r266/howto/index.rst	2010-04-11 17:17:32.454948000 +0900
+@@ -7,20 +7,22 @@
+ Documentation Project's HOWTO collection, this collection is an
+ effort to foster documentation that's more detailed than the
+ Python Library Reference.
+ 
+ Currently, the HOWTOs are:
+ 
+ .. toctree::
+    :maxdepth: 1
+ 
+    advocacy.rst
+    cporting.rst
+    curses.rst
++   descriptor.rst
+    doanddont.rst
+    functional.rst
+    regex.rst
+    sockets.rst
++   sorting.rst
+    unicode.rst
+    urllib2.rst
+    webservers.rst
+ 

@@ -1,0 +1,305 @@
+--- r262/c-api/init.rst	2009-04-06 06:26:31.956399000 +0900
++++ r266/c-api/init.rst	2010-05-22 02:22:43.998748000 +0900
+@@ -13,34 +13,35 @@
+    .. index::
+       single: Py_SetProgramName()
+       single: PyEval_InitThreads()
+       single: PyEval_ReleaseLock()
+       single: PyEval_AcquireLock()
+       single: modules (in module sys)
+       single: path (in module sys)
+       module: __builtin__
+       module: __main__
+       module: sys
+       triple: module; search; path
+       single: PySys_SetArgv()
++      single: PySys_SetArgvEx()
+       single: Py_Finalize()
+ 
+    Initialize the Python interpreter.  In an application embedding  Python, this
+    should be called before using any other Python/C API functions; with the
+    exception of :cfunc:`Py_SetProgramName`, :cfunc:`PyEval_InitThreads`,
+    :cfunc:`PyEval_ReleaseLock`, and :cfunc:`PyEval_AcquireLock`. This initializes
+    the table of loaded modules (``sys.modules``), and creates the fundamental
+    modules :mod:`__builtin__`, :mod:`__main__` and :mod:`sys`.  It also initializes
+    the module search path (``sys.path``). It does not set ``sys.argv``; use
+-   :cfunc:`PySys_SetArgv` for that.  This is a no-op when called for a second time
++   :cfunc:`PySys_SetArgvEx` for that.  This is a no-op when called for a second time
+    (without calling :cfunc:`Py_Finalize` first).  There is no return value; it is a
+    fatal error if the initialization fails.
+ 
+ 
+ .. cfunction:: void Py_InitializeEx(int initsigs)
+ 
+    This function works like :cfunc:`Py_Initialize` if *initsigs* is 1. If
+    *initsigs* is 0, it skips initialization registration of signal handlers, which
+    might be useful when Python is embedded.
+ 
+    .. versionadded:: 2.4
+ 
+@@ -248,60 +249,52 @@
+    side-effect of deriving the default module search path  from the program name
+    (set by :cfunc:`Py_SetProgramName` above). The returned string points into
+    static storage; the caller should not modify its value.  The value is available
+    to Python code as ``sys.executable``.
+ 
+ 
+ .. cfunction:: char* Py_GetPath()
+ 
+    .. index::
+       triple: module; search; path
+       single: path (in module sys)
+ 
+-   Return the default module search path; this is computed from the  program name
+-   (set by :cfunc:`Py_SetProgramName` above) and some environment variables.  The
+-   returned string consists of a series of directory names separated by a platform
+-   dependent delimiter character.  The delimiter character is ``':'`` on Unix and
+-   Mac OS X, ``';'`` on Windows.  The returned string points into static storage;
+-   the caller should not modify its value.  The value is available to Python code
+-   as the list ``sys.path``, which may be modified to change the future search path
+-   for loaded modules.
++   Return the default module search path; this is computed from the program name
++   (set by :cfunc:`Py_SetProgramName` above) and some environment variables.
++   The returned string consists of a series of directory names separated by a
++   platform dependent delimiter character.  The delimiter character is ``':'``
++   on Unix and Mac OS X, ``';'`` on Windows.  The returned string points into
++   static storage; the caller should not modify its value.  The list
++   :data:`sys.path` is initialized with this value on interpreter startup; it
++   can be (and usually is) modified later to change the search path for loading
++   modules.
+ 
+    .. XXX should give the exact rules
+ 
+ 
+ .. cfunction:: const char* Py_GetVersion()
+ 
+    Return the version of this Python interpreter.  This is a string that looks
+    something like ::
+ 
+       "1.5 (#67, Dec 31 1997, 22:34:28) [GCC 2.7.2.2]"
+ 
+    .. index:: single: version (in module sys)
+ 
+    The first word (up to the first space character) is the current Python version;
+    the first three characters are the major and minor version separated by a
+    period.  The returned string points into static storage; the caller should not
+    modify its value.  The value is available to Python code as ``sys.version``.
+ 
+ 
+-.. cfunction:: const char* Py_GetBuildNumber()
+-
+-   Return a string representing the Subversion revision that this Python executable
+-   was built from.  This number is a string because it may contain a trailing 'M'
+-   if Python was built from a mixed revision source tree.
+-
+-   .. versionadded:: 2.5
+-
+-
+ .. cfunction:: const char* Py_GetPlatform()
+ 
+    .. index:: single: platform (in module sys)
+ 
+    Return the platform identifier for the current platform.  On Unix, this is
+    formed from the "official" name of the operating system, converted to lower
+    case, followed by the major revision number; e.g., for Solaris 2.x, which is
+    also known as SunOS 5.x, the value is ``'sunos5'``.  On Mac OS X, it is
+    ``'darwin'``.  On Windows, it is ``'win'``.  The returned string points into
+    static storage; the caller should not modify its value.  The value is available
+    to Python code as ``sys.platform``.
+ 
+@@ -337,52 +330,83 @@
+    Return information about the sequence number and build date and time  of the
+    current Python interpreter instance, for example ::
+ 
+       "#67, Aug  1 1997, 22:34:28"
+ 
+    .. index:: single: version (in module sys)
+ 
+    The returned string points into static storage; the caller should not modify its
+    value.  The value is available to Python code as part of the variable
+    ``sys.version``.
+ 
+ 
+-.. cfunction:: void PySys_SetArgv(int argc, char **argv)
++.. cfunction:: void PySys_SetArgvEx(int argc, char **argv, int updatepath)
+ 
+    .. index::
+       single: main()
+       single: Py_FatalError()
+       single: argv (in module sys)
+ 
+    Set :data:`sys.argv` based on *argc* and *argv*.  These parameters are
+    similar to those passed to the program's :cfunc:`main` function with the
+    difference that the first entry should refer to the script file to be
+    executed rather than the executable hosting the Python interpreter.  If there
+    isn't a script that will be run, the first entry in *argv* can be an empty
+    string.  If this function fails to initialize :data:`sys.argv`, a fatal
+    condition is signalled using :cfunc:`Py_FatalError`.
+ 
+-   This function also prepends the executed script's path to :data:`sys.path`.
+-   If no script is executed (in the case of calling ``python -c`` or just the
+-   interactive interpreter), the empty string is used instead.
++   If *updatepath* is zero, this is all the function does.  If *updatepath*
++   is non-zero, the function also modifies :data:`sys.path` according to the
++   following algorithm:
++
++   - If the name of an existing script is passed in ``argv[0]``, the absolute
++     path of the directory where the script is located is prepended to
++     :data:`sys.path`.
++   - Otherwise (that is, if *argc* is 0 or ``argv[0]`` doesn't point
++     to an existing file name), an empty string is prepended to
++     :data:`sys.path`, which is the same as prepending the current working
++     directory (``"."``).
++
++   .. note::
++      It is recommended that applications embedding the Python interpreter
++      for purposes other than executing a single script pass 0 as *updatepath*,
++      and update :data:`sys.path` themselves if desired.
++      See `CVE-2008-5983 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_.
++
++      On versions before 2.6.6, you can achieve the same effect by manually
++      popping the first :data:`sys.path` element after having called
++      :cfunc:`PySys_SetArgv`, for example using::
++
++         PyRun_SimpleString("import sys; sys.path.pop(0)\n");
++
++   .. versionadded:: 2.6.6
+ 
+    .. XXX impl. doesn't seem consistent in allowing 0/NULL for the params;
+       check w/ Guido.
+ 
+ 
++.. cfunction:: void PySys_SetArgv(int argc, char **argv)
++
++   This function works like :cfunc:`PySys_SetArgv` with *updatepath* set to 1.
++
++
+ .. cfunction:: void Py_SetPythonHome(char *home)
+ 
+    Set the default "home" directory, that is, the location of the standard
+    Python libraries.  The libraries are searched in
+    :file:`{home}/lib/python{version}` and :file:`{home}/lib/python{version}`.
++   The argument should point to a zero-terminated character string in static
++   storage whose contents will not change for the duration of the program's
++   execution.  No code in the Python interpreter will change the contents of
++   this storage.
+ 
+ 
+ .. cfunction:: char* Py_GetPythonHome()
+ 
+    Return the default "home", that is, the value set by a previous call to
+    :cfunc:`Py_SetPythonHome`, or the value of the :envvar:`PYTHONHOME`
+    environment variable if it is set.
+ 
+ 
+ .. _threads:
+ 
+ Thread State and the Global Interpreter Lock
+@@ -410,28 +434,27 @@
+ (this can be changed with  :func:`sys.setcheckinterval`).  The lock is also
+ released and reacquired around potentially blocking I/O operations like reading
+ or writing a file, so that other threads can run while the thread that requests
+ the I/O is waiting for the I/O operation to complete.
+ 
+ .. index::
+    single: PyThreadState
+    single: PyThreadState
+ 
+ The Python interpreter needs to keep some bookkeeping information separate per
+ thread --- for this it uses a data structure called :ctype:`PyThreadState`.
+ There's one global variable, however: the pointer to the current
+-:ctype:`PyThreadState` structure.  While most thread packages have a way to
+-store "per-thread global data," Python's internal platform independent thread
+-abstraction doesn't support this yet.  Therefore, the current thread state must
+-be manipulated explicitly.
++:ctype:`PyThreadState` structure.  Before the addition of :dfn:`thread-local
++storage` (:dfn:`TLS`) the current thread state had to be manipulated
++explicitly.
+ 
+ This is easy enough in most cases.  Most code manipulating the global
+ interpreter lock has the following simple structure::
+ 
+    Save the thread state in a local variable.
+    Release the global interpreter lock.
+    ...Do some blocking I/O operation...
+    Reacquire the global interpreter lock.
+    Restore the thread state from the local variable.
+ 
+ This is so common that a pair of macros exists to simplify it::
+ 
+@@ -483,52 +506,68 @@
+ :cfunc:`PyEval_ReleaseLock` and :cfunc:`PyEval_AcquireLock` are not available.
+ This is done so that dynamically loaded extensions compiled with thread support
+ enabled can be loaded by an interpreter that was compiled with disabled thread
+ support.
+ 
+ The global interpreter lock is used to protect the pointer to the current thread
+ state.  When releasing the lock and saving the thread state, the current thread
+ state pointer must be retrieved before the lock is released (since another
+ thread could immediately acquire the lock and store its own thread state in the
+ global variable). Conversely, when acquiring the lock and restoring the thread
+ state, the lock must be acquired before storing the thread state pointer.
+ 
+-Why am I going on with so much detail about this?  Because when threads are
+-created from C, they don't have the global interpreter lock, nor is there a
+-thread state data structure for them.  Such threads must bootstrap themselves
+-into existence, by first creating a thread state data structure, then acquiring
+-the lock, and finally storing their thread state pointer, before they can start
+-using the Python/C API.  When they are done, they should reset the thread state
+-pointer, release the lock, and finally free their thread state data structure.
++It is important to note that when threads are created from C, they don't have
++the global interpreter lock, nor is there a thread state data structure for
++them.  Such threads must bootstrap themselves into existence, by first
++creating a thread state data structure, then acquiring the lock, and finally
++storing their thread state pointer, before they can start using the Python/C
++API.  When they are done, they should reset the thread state pointer, release
++the lock, and finally free their thread state data structure.
+ 
+ Beginning with version 2.3, threads can now take advantage of the
+ :cfunc:`PyGILState_\*` functions to do all of the above automatically.  The
+ typical idiom for calling into Python from a C thread is now::
+ 
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+ 
+    /* Perform Python actions here.  */
+    result = CallSomeFunction();
+    /* evaluate result */
+ 
+    /* Release the thread. No Python API allowed beyond this point. */
+    PyGILState_Release(gstate);
+ 
+ Note that the :cfunc:`PyGILState_\*` functions assume there is only one global
+ interpreter (created automatically by :cfunc:`Py_Initialize`).  Python still
+ supports the creation of additional interpreters (using
+ :cfunc:`Py_NewInterpreter`), but mixing multiple interpreters and the
+ :cfunc:`PyGILState_\*` API is unsupported.
+ 
++Another important thing to note about threads is their behaviour in the face
++of the C :cfunc:`fork` call. On most systems with :cfunc:`fork`, after a
++process forks only the thread that issued the fork will exist. That also
++means any locks held by other threads will never be released. Python solves
++this for :func:`os.fork` by acquiring the locks it uses internally before
++the fork, and releasing them afterwards. In addition, it resets any
++:ref:`lock-objects` in the child. When extending or embedding Python, there
++is no way to inform Python of additional (non-Python) locks that need to be
++acquired before or reset after a fork. OS facilities such as
++:cfunc:`posix_atfork` would need to be used to accomplish the same thing.
++Additionally, when extending or embedding Python, calling :cfunc:`fork`
++directly rather than through :func:`os.fork` (and returning to or calling
++into Python) may result in a deadlock by one of Python's internal locks
++being held by a thread that is defunct after the fork.
++:cfunc:`PyOS_AfterFork` tries to reset the necessary locks, but is not
++always able to.
+ 
+ .. ctype:: PyInterpreterState
+ 
+    This data structure represents the state shared by a number of cooperating
+    threads.  Threads belonging to the same interpreter share their module
+    administration and a few other internal items. There are no public members in
+    this structure.
+ 
+    Threads belonging to different interpreters initially share nothing, except
+    process state like available memory, open file descriptors and such.  The global
+    interpreter lock is also shared by all threads, regardless of to which
+    interpreter they belong.

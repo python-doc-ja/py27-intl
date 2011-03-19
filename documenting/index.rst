@@ -15,32 +15,40 @@ Python のドキュメントのマークアップには、 `docutils`_ プロジ
 利用しています。そして、 `Sphinx`_ というツールセットを利用して、HTML 出力へと
 変換しています。
 
-.. This document describes the style guide for our documentation, the custom
-.. reStructuredText markup introduced to support Python documentation and how it
-.. should be used, as well as the Sphinx build system.
+.. This document describes the style guide for our documentation as well as the
+   custom reStructuredText markup introduced by Sphinx to support Python
+   documentation and how it should be used.
 
 このドキュメントでは、ドキュメントを作成する上でのスタイルガイドと、
-Python のドキュメントのために作られた独自の reStructuredText マークアップと
-その利用方法、そして Sphinx のビルドシステムについて説明します。
+Python のドキュメントのために作られた Sphinx による独自の reStructuredText
+マークアップとその利用方法を説明します。
 
 .. _reStructuredText: http://docutils.sf.net/rst.html
 .. _docutils: http://docutils.sf.net/
 .. _Sphinx: http://sphinx.pocoo.org/
 
-.. If you're interested in contributing to Python's documentation, there's no need
-.. to write reStructuredText if you're not so inclined; plain text contributions
-.. are more than welcome as well.
+.. .. note::
+   If you're interested in contributing to Python's documentation, there's no
+   need to write reStructuredText if you're not so inclined; plain text
+   contributions are more than welcome as well.  Send an e-mail to
+   docs@python.org or open an issue on the :ref:`tracker <reporting-bugs>`.
 
-Python のドキュメントを寄贈したいと思っているなら、そのために reStructuredText
-をわざわざ学ぶ必要はありません; 平文での寄贈も大歓迎です。
+.. note::
+
+   Python のドキュメントを寄贈したいと思っているなら、そのために reStructuredText
+   をわざわざ学ぶ必要はありません; 平文での寄贈も大歓迎です。
+   Eメールで docs@python.org に送るか、 :ref:`Tracker <reporting-bugs>`
+   に課題 (issue) を登録してください。
 
 .. toctree::
    :numbered:
+   :maxdepth: 1
 
    intro.rst
    style.rst
    rest.rst
    markup.rst
    fromlatex.rst
+   building.rst
 
    jptranslation.rst

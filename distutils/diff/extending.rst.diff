@@ -1,0 +1,31 @@
+--- r262/distutils/extending.rst	2008-01-06 05:33:46.954265000 +0900
++++ r266/distutils/extending.rst	2010-08-02 07:19:17.150851000 +0900
+@@ -6,26 +6,26 @@
+ 
+ Distutils can be extended in various ways.  Most extensions take the form of new
+ commands or replacements for existing commands.  New commands may be written to
+ support new types of platform-specific packaging, for example, while
+ replacements for existing commands may be made to modify details of how the
+ command operates on a package.
+ 
+ Most extensions of the distutils are made within :file:`setup.py` scripts that
+ want to modify existing commands; many simply add a few file extensions that
+ should be copied into packages in addition to :file:`.py` files as a
+ convenience.
+ 
+-Most distutils command implementations are subclasses of the :class:`Command`
+-class from :mod:`distutils.cmd`.  New commands may directly inherit from
++Most distutils command implementations are subclasses of the
++:class:`distutils.cmd.Command` class.  New commands may directly inherit from
+ :class:`Command`, while replacements often derive from :class:`Command`
+ indirectly, directly subclassing the command they are replacing.  Commands are
+ required to derive from :class:`Command`.
+ 
+ .. % \section{Extending existing commands}
+ .. % \label{extend-existing}
+ 
+ .. % \section{Writing new commands}
+ .. % \label{new-commands}
+ .. % \XXX{Would an uninstall command be a good example here?}
+ 
+ 

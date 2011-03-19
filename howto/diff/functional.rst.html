@@ -1,0 +1,54 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to49__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/howto/functional.rst =&gt; r266/howto/functional.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to49__0"></td><td class="diff_header" id="from49_330">330</td><td nowrap="nowrap">Two&nbsp;common&nbsp;operations&nbsp;on&nbsp;an&nbsp;iterator's&nbsp;output&nbsp;are&nbsp;1)&nbsp;performing&nbsp;some&nbsp;operation</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_331">331</td><td nowrap="nowrap">for&nbsp;every&nbsp;element,&nbsp;2)&nbsp;selecting&nbsp;a&nbsp;subset&nbsp;of&nbsp;elements&nbsp;that&nbsp;meet&nbsp;some&nbsp;condition.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_332">332</td><td nowrap="nowrap">For&nbsp;example,&nbsp;given&nbsp;a&nbsp;list&nbsp;of&nbsp;strings,&nbsp;you&nbsp;might&nbsp;want&nbsp;to&nbsp;strip&nbsp;off&nbsp;trailing</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_333">333</td><td nowrap="nowrap">whitespace&nbsp;from&nbsp;each&nbsp;line&nbsp;or&nbsp;extract&nbsp;all&nbsp;the&nbsp;strings&nbsp;containing&nbsp;a&nbsp;given</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_334">334</td><td nowrap="nowrap">substring.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_335">335</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_336">336</td><td nowrap="nowrap">List&nbsp;comprehensions&nbsp;and&nbsp;generator&nbsp;expressions&nbsp;(short&nbsp;form:&nbsp;"listcomps"&nbsp;and</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_337">337</td><td nowrap="nowrap">"genexps")&nbsp;are&nbsp;a&nbsp;concise&nbsp;notation&nbsp;for&nbsp;such&nbsp;operations,&nbsp;borrowed&nbsp;from&nbsp;the</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to49__1">n</a></td><td class="diff_header" id="from49_338">338-</td><td nowrap="nowrap">functional&nbsp;programming&nbsp;language&nbsp;Haskell&nbsp;(http://www.haskell.org).&nbsp;&nbsp;You&nbsp;can&nbsp;strip</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to49__1">n</a></td><td class="diff_header" id="to49_338">338+</td><td nowrap="nowrap">functional&nbsp;programming&nbsp;language&nbsp;Haskell&nbsp;(http://www.haskell.org<span class="diff_add">/</span>).&nbsp;&nbsp;You&nbsp;can&nbsp;strip</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from49_339">339</td><td nowrap="nowrap">all&nbsp;the&nbsp;whitespace&nbsp;from&nbsp;a&nbsp;stream&nbsp;of&nbsp;strings&nbsp;with&nbsp;the&nbsp;following&nbsp;code::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_340">340</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_341">341</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;line_list&nbsp;=&nbsp;['&nbsp;&nbsp;line&nbsp;1\n',&nbsp;'line&nbsp;2&nbsp;&nbsp;\n',&nbsp;...]</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_342">342</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_343">343</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Generator&nbsp;expression&nbsp;--&nbsp;returns&nbsp;iterator</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_344">344</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;stripped_iter&nbsp;=&nbsp;(line.strip()&nbsp;for&nbsp;line&nbsp;in&nbsp;line_list)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_345">345</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_346">346</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;List&nbsp;comprehension&nbsp;--&nbsp;returns&nbsp;list</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to49__1"></td><td class="diff_header" id="from49_467">467</td><td nowrap="nowrap">statement&nbsp;is&nbsp;that&nbsp;on&nbsp;reaching&nbsp;a&nbsp;``yield``&nbsp;the&nbsp;generator's&nbsp;state&nbsp;of&nbsp;execution&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_468">468</td><td nowrap="nowrap">suspended&nbsp;and&nbsp;local&nbsp;variables&nbsp;are&nbsp;preserved.&nbsp;&nbsp;On&nbsp;the&nbsp;next&nbsp;call&nbsp;to&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_469">469</td><td nowrap="nowrap">generator's&nbsp;``.next()``&nbsp;method,&nbsp;the&nbsp;function&nbsp;will&nbsp;resume&nbsp;executing.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_470">470</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_471">471</td><td nowrap="nowrap">Here's&nbsp;a&nbsp;sample&nbsp;usage&nbsp;of&nbsp;the&nbsp;``generate_ints()``&nbsp;generator:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_472">472</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_473">473</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen&nbsp;=&nbsp;generate_ints(3)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_474">474</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to49__top">t</a></td><td class="diff_header" id="from49_475">475-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&lt;generator&nbsp;object&nbsp;at&nbsp;...&gt;</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to49__top">t</a></td><td class="diff_header" id="to49_475">475+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&lt;generator&nbsp;object&nbsp;<span class="diff_add">gener</span>at<span class="diff_add">e_ints&nbsp;at</span>&nbsp;...&gt;</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from49_476">476</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen.next()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_477">477</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;0</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_478">478</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen.next()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_479">479</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;1</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_480">480</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen.next()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_481">481</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;2</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_482">482</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&gt;&nbsp;gen.next()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from49_483">483</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;Traceback&nbsp;(most&nbsp;recent&nbsp;call&nbsp;last):</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

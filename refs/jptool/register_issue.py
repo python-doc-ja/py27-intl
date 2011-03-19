@@ -18,7 +18,7 @@ _PASSWORD = 'secretstring'
 
 _client = None
 
-def get_clinet(user=None, password=None):
+def get_client(user=None, password=None):
     global _client
     if _client is None:
         _client = _create_client(user, password)
@@ -41,7 +41,7 @@ def register_issue(module, title, client=None):
     client = client or get_client()
     issue_title = u"%s/%s の翻訳 (2.6.6)" % (module, title)
     client.add_issue('python-doc-ja', issue_title, issue_title, "---",
-                    labels=DEFAULT_LABELS + [module.title()])
+                    labels=DEFAULT_LABELS + ['Module-' + module.title()])
 
 def usage(exit=False):
     print "Usage: register_issue.py directory_contains_diff module_name"

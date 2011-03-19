@@ -1,0 +1,31 @@
+--- r262/c-api/long.rst	2009-04-06 06:11:43.798160000 +0900
++++ r266/c-api/long.rst	2009-04-29 17:00:05.894850000 +0900
+@@ -97,24 +97,28 @@
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromUnicode(Py_UNICODE *u, Py_ssize_t length, int base)
+ 
+    Convert a sequence of Unicode digits to a Python long integer value.  The first
+    parameter, *u*, points to the first character of the Unicode string, *length*
+    gives the number of characters, and *base* is the radix for the conversion.  The
+    radix must be in the range [2, 36]; if it is out of range, :exc:`ValueError`
+    will be raised.
+ 
+    .. versionadded:: 1.6
+ 
++   .. versionchanged:: 2.5
++      This function used an :ctype:`int` for *length*. This might require
++      changes in your code for properly supporting 64-bit systems.
++
+ 
+ .. cfunction:: PyObject* PyLong_FromVoidPtr(void *p)
+ 
+    Create a Python integer or long integer from the pointer *p*. The pointer value
+    can be retrieved from the resulting value using :cfunc:`PyLong_AsVoidPtr`.
+ 
+    .. versionadded:: 1.5.2
+ 
+    .. versionchanged:: 2.5
+       If the integer is larger than LONG_MAX, a positive long integer is returned.
+ 
+ 

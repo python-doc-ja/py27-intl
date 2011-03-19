@@ -1,0 +1,92 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to20__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/c-api/objbuffer.rst =&gt; r266/c-api/objbuffer.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to20__0"><a href="#difflib_chg_to20__0">f</a></td><td class="diff_header" id="from20_1">1</td><td nowrap="nowrap">..&nbsp;highlightlang::&nbsp;c</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_2">2</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_3">3</td><td nowrap="nowrap">..&nbsp;_abstract-buffer:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_4">4</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__1">n</a></td><td class="diff_header" id="from20_5">5-</td><td nowrap="nowrap">Buffer&nbsp;Protocol</td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to20__1">n</a></td><td class="diff_header" id="to20_5">5+</td><td nowrap="nowrap"><span class="diff_add">Old&nbsp;</span>Buffer&nbsp;Protocol</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_6">6-</td><td nowrap="nowrap">===============</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_6">6+</td><td nowrap="nowrap">===============<span class="diff_add">====</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_7">7+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_8">8+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_9">9+</td><td nowrap="nowrap"><span class="diff_add">This&nbsp;section&nbsp;describes&nbsp;the&nbsp;legacy&nbsp;buffer&nbsp;protocol,&nbsp;which&nbsp;has&nbsp;been&nbsp;introduced</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_10">10+</td><td nowrap="nowrap"><span class="diff_add">in&nbsp;Python&nbsp;1.6.&nbsp;It&nbsp;is&nbsp;still&nbsp;supported&nbsp;but&nbsp;deprecated&nbsp;in&nbsp;the&nbsp;Python&nbsp;2.x&nbsp;series.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_11">11+</td><td nowrap="nowrap"><span class="diff_add">Python&nbsp;3.0&nbsp;introduces&nbsp;a&nbsp;new&nbsp;buffer&nbsp;protocol&nbsp;which&nbsp;fixes&nbsp;weaknesses&nbsp;and</span></td></tr>
+<tr><td class="diff_next" id="difflib_chg_to20__1"></td><td class="diff_header" id="to20_12">12+</td><td nowrap="nowrap"><span class="diff_add">shortcomings&nbsp;of&nbsp;the&nbsp;protocol,&nbsp;and&nbsp;has&nbsp;been&nbsp;backported&nbsp;to&nbsp;Python&nbsp;2.6.&nbsp;&nbsp;See</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_13">13+</td><td nowrap="nowrap"><span class="diff_add">:ref:`bufferobjects`&nbsp;for&nbsp;more&nbsp;information.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_7">7</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_8">8</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_9">9</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyObject_AsCharBuffer(PyObject&nbsp;*obj,&nbsp;const&nbsp;char&nbsp;**buffer,&nbsp;Py_ssize_t&nbsp;*buffer_len)</td></tr>            <tr><td class="diff_next" id="difflib_chg_to20__2"></td><td class="diff_header" id="from20_10">10</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_11">11</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Returns&nbsp;a&nbsp;pointer&nbsp;to&nbsp;a&nbsp;read-only&nbsp;memory&nbsp;location&nbsp;usable&nbsp;as&nbsp;character-based</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_12">12</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;input.&nbsp;&nbsp;The&nbsp;*obj*&nbsp;argument&nbsp;must&nbsp;support&nbsp;the&nbsp;single-segment&nbsp;character&nbsp;buffer</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__2">n</a></td><td class="diff_header" id="from20_13">13-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interface.&nbsp;&nbsp;On&nbsp;success,&nbsp;returns&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location<span class="diff_sub">&nbsp;and</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to20__2">n</a></td><td class="diff_header" id="to20_20">20+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;interface.&nbsp;&nbsp;On&nbsp;success,&nbsp;returns&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_14">14-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*buffer_len*&nbsp;to&nbsp;the&nbsp;buffer&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a<span class="diff_sub">&nbsp;:exc:`TypeError`</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_21">21+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;and</span>&nbsp;*buffer_len*&nbsp;to&nbsp;the&nbsp;buffer&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_15">15-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;on&nbsp;error.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_22">22+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:exc:`TypeError`&nbsp;on&nbsp;error.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_17">17</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;1.6</td></tr><tr><td class="diff_next" id="difflib_chg_to20__3"><a href="#difflib_chg_to20__3">n</a></td><td class="diff_header" id="to20_25">25+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_26">26+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_27">27+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;used&nbsp;an&nbsp;:ctype:`int&nbsp;*`&nbsp;type&nbsp;for&nbsp;*buffer_len*.&nbsp;This&nbsp;might</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_28">28+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;require&nbsp;changes&nbsp;in&nbsp;your&nbsp;code&nbsp;for&nbsp;properly&nbsp;supporting&nbsp;64-bit&nbsp;systems.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_18">18</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_19">19</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_20">20</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyObject_AsReadBuffer(PyObject&nbsp;*obj,&nbsp;const&nbsp;void&nbsp;**buffer,&nbsp;Py_ssize_t&nbsp;*buffer_len)</td></tr>            <tr><td class="diff_next" id="difflib_chg_to20__4"></td><td class="diff_header" id="from20_21">21</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__4">n</a></td><td class="diff_header" id="from20_22">22-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Returns&nbsp;a&nbsp;pointer&nbsp;to&nbsp;a&nbsp;read-only&nbsp;memory&nbsp;location&nbsp;containing&nbsp;arbitrary&nbsp;data.<span class="diff_sub">&nbsp;&nbsp;The</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to20__4">n</a></td><td class="diff_header" id="to20_33">33+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Returns&nbsp;a&nbsp;pointer&nbsp;to&nbsp;a&nbsp;read-only&nbsp;memory&nbsp;location&nbsp;containing&nbsp;arbitrary&nbsp;data.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_23">23-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*obj*&nbsp;argument&nbsp;must&nbsp;support&nbsp;the&nbsp;single-segment&nbsp;readable&nbsp;buffer<span class="diff_sub">&nbsp;interface.&nbsp;&nbsp;On</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_34">34+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;The</span>&nbsp;*obj*&nbsp;argument&nbsp;must&nbsp;support&nbsp;the&nbsp;single-segment&nbsp;readable&nbsp;buffer</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_24">24-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;success,&nbsp;returns&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location<span class="diff_sub">&nbsp;and&nbsp;*buffer_len*&nbsp;to</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_35">35+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;interface.&nbsp;&nbsp;On</span>&nbsp;success,&nbsp;returns&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_25">25-</td><td nowrap="nowrap"><span class="diff_sub">&nbsp;&nbsp;&nbsp;the&nbsp;buffer&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a&nbsp;:exc:`TypeError`&nbsp;on&nbsp;error.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_36">36+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;and&nbsp;*buffer_len*&nbsp;to&nbsp;the&nbsp;buffer&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_37">37+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;:exc:`TypeError`&nbsp;on&nbsp;error.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_26">26</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_27">27</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;1.6</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__5">n</a></td><td class="diff_header" id="to20_40">40+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_41">41+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_42">42+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;used&nbsp;an&nbsp;:ctype:`int&nbsp;*`&nbsp;type&nbsp;for&nbsp;*buffer_len*.&nbsp;This&nbsp;might</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_43">43+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;require&nbsp;changes&nbsp;in&nbsp;your&nbsp;code&nbsp;for&nbsp;properly&nbsp;supporting&nbsp;64-bit&nbsp;systems.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_28">28</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_29">29</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_30">30</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyObject_CheckReadBuffer(PyObject&nbsp;*o)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_31">31</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_32">32</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Returns&nbsp;``1``&nbsp;if&nbsp;*o*&nbsp;supports&nbsp;the&nbsp;single-segment&nbsp;readable&nbsp;buffer&nbsp;interface.</td></tr>            <tr><td class="diff_next" id="difflib_chg_to20__5"></td><td class="diff_header" id="from20_33">33</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Otherwise&nbsp;returns&nbsp;``0``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_34">34</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_35">35</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.2</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_36">36</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_37">37</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_38">38</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyObject_AsWriteBuffer(PyObject&nbsp;*obj,&nbsp;void&nbsp;**buffer,&nbsp;Py_ssize_t&nbsp;*buffer_len)</td></tr>            <tr><td class="diff_next" id="difflib_chg_to20__6"></td><td class="diff_header" id="from20_39">39</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_40">40</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Returns&nbsp;a&nbsp;pointer&nbsp;to&nbsp;a&nbsp;writeable&nbsp;memory&nbsp;location.&nbsp;&nbsp;The&nbsp;*obj*&nbsp;argument&nbsp;must</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__6">n</a></td><td class="diff_header" id="from20_41">41-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;support&nbsp;the&nbsp;single-segment,&nbsp;character&nbsp;buffer&nbsp;interface.&nbsp;&nbsp;On&nbsp;success,<span class="diff_sub">&nbsp;returns</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to20__6">n</a></td><td class="diff_header" id="to20_57">57+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;support&nbsp;the&nbsp;single-segment,&nbsp;character&nbsp;buffer&nbsp;interface.&nbsp;&nbsp;On&nbsp;success,</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_42">42-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location&nbsp;and&nbsp;*buffer_len*&nbsp;to&nbsp;the<span class="diff_sub">&nbsp;buffer</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_58">58+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;returns</span>&nbsp;``0``,&nbsp;sets&nbsp;*buffer*&nbsp;to&nbsp;the&nbsp;memory&nbsp;location&nbsp;and&nbsp;*buffer_len*&nbsp;to&nbsp;the</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from20_43">43-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a&nbsp;:exc:`TypeError`&nbsp;on&nbsp;error.</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_59">59+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;buffer</span>&nbsp;length.&nbsp;&nbsp;Returns&nbsp;``-1``&nbsp;and&nbsp;sets&nbsp;a&nbsp;:exc:`TypeError`&nbsp;on&nbsp;error.</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from20_44">44</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_45">45</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;1.6</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from20_46">46</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to20__top">t</a></td><td class="diff_header" id="to20_63">63+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_64">64+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This&nbsp;function&nbsp;used&nbsp;an&nbsp;:ctype:`int&nbsp;*`&nbsp;type&nbsp;for&nbsp;*buffer_len*.&nbsp;This&nbsp;might</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_65">65+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;require&nbsp;changes&nbsp;in&nbsp;your&nbsp;code&nbsp;for&nbsp;properly&nbsp;supporting&nbsp;64-bit&nbsp;systems.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to20_66">66+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

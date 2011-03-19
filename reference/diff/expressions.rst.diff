@@ -1,0 +1,334 @@
+--- r262/reference/expressions.rst	2009-02-23 19:41:11.107573000 +0900
++++ r266/reference/expressions.rst	2010-04-03 07:13:35.556745000 +0900
+@@ -176,24 +176,25 @@
+ .. index::
+    pair: list; display
+    pair: list; comprehensions
+ 
+ A list display is a possibly empty series of expressions enclosed in square
+ brackets:
+ 
+ .. productionlist::
+    list_display: "[" [`expression_list` | `list_comprehension`] "]"
+    list_comprehension: `expression` `list_for`
+    list_for: "for" `target_list` "in" `old_expression_list` [`list_iter`]
+    old_expression_list: `old_expression` [("," `old_expression`)+ [","]]
++   old_expression: `or_test` | `old_lambda_form`
+    list_iter: `list_for` | `list_if`
+    list_if: "if" `old_expression` [`list_iter`]
+ 
+ .. index::
+    pair: list; comprehensions
+    object: list
+    pair: empty; list
+ 
+ A list display yields a new list object.  Its contents are specified by
+ providing either a list of expressions or a list comprehension.  When a
+ comma-separated list of expressions is supplied, its elements are evaluated from
+ left to right and placed into the list object in that order.  When a list
+@@ -654,31 +655,31 @@
+ already filled, a :exc:`TypeError` exception is raised. Otherwise, the value of
+ the argument is placed in the slot, filling it (even if the expression is
+ ``None``, it fills the slot).  When all arguments have been processed, the slots
+ that are still unfilled are filled with the corresponding default value from the
+ function definition.  (Default values are calculated, once, when the function is
+ defined; thus, a mutable object such as a list or dictionary used as default
+ value will be shared by all calls that don't specify an argument value for the
+ corresponding slot; this should usually be avoided.)  If there are any unfilled
+ slots for which no default value is specified, a :exc:`TypeError` exception is
+ raised.  Otherwise, the list of filled slots is used as the argument list for
+ the call.
+ 
+-.. note::
++.. impl-detail::
+ 
+-   An implementation may provide builtin functions whose positional parameters do
+-   not have names, even if they are 'named' for the purpose of documentation, and
+-   which therefore cannot be supplied by keyword.  In CPython, this is the case for
+-   functions implemented in C that use :cfunc:`PyArg_ParseTuple` to parse their
+-   arguments.
++   An implementation may provide built-in functions whose positional parameters
++   do not have names, even if they are 'named' for the purpose of documentation,
++   and which therefore cannot be supplied by keyword.  In CPython, this is the
++   case for functions implemented in C that use :cfunc:`PyArg_ParseTuple` to
++   parse their arguments.
+ 
+ If there are more positional arguments than there are formal parameter slots, a
+ :exc:`TypeError` exception is raised, unless a formal parameter using the syntax
+ ``*identifier`` is present; in this case, that formal parameter receives a tuple
+ containing the excess positional arguments (or an empty tuple if there were no
+ excess positional arguments).
+ 
+ If any keyword argument does not correspond to a formal parameter name, a
+ :exc:`TypeError` exception is raised, unless a formal parameter using the syntax
+ ``**identifier`` is present; in this case, that formal parameter receives a
+ dictionary containing the excess keyword arguments (using the keywords as keys
+ and the argument values as corresponding values), or a (new) empty dictionary if
+@@ -1023,25 +1024,25 @@
+ Note that ``a op1 b op2 c`` doesn't imply any kind of comparison between *a* and
+ *c*, so that, e.g., ``x < y > z`` is perfectly legal (though perhaps not
+ pretty).
+ 
+ The forms ``<>`` and ``!=`` are equivalent; for consistency with C, ``!=`` is
+ preferred; where ``!=`` is mentioned below ``<>`` is also accepted.  The ``<>``
+ spelling is considered obsolescent.
+ 
+ The operators ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=`` compare the
+ values of two objects.  The objects need not have the same type. If both are
+ numbers, they are converted to a common type.  Otherwise, objects of different
+ types *always* compare unequal, and are ordered consistently but arbitrarily.
+-You can control comparison behavior of objects of non-builtin types by defining
++You can control comparison behavior of objects of non-built-in types by defining
+ a ``__cmp__`` method or rich comparison methods like ``__gt__``, described in
+ section :ref:`specialnames`.
+ 
+ (This unusual definition of comparison was used to simplify the definition of
+ operations like sorting and the :keyword:`in` and :keyword:`not in` operators.
+ In the future, the comparison rules for objects of different types are likely to
+ change.)
+ 
+ Comparison of objects of the same type depends on the type:
+ 
+ * Numbers are compared arithmetically.
+ 
+@@ -1054,54 +1055,61 @@
+   compare equal and the two sequences must be of the same type and have the same
+   length.
+ 
+   If not equal, the sequences are ordered the same as their first differing
+   elements.  For example, ``cmp([1,2,x], [1,2,y])`` returns the same as
+   ``cmp(x,y)``.  If the corresponding element does not exist, the shorter sequence
+   is ordered first (for example, ``[1,2] < [1,2,3]``).
+ 
+ * Mappings (dictionaries) compare equal if and only if their sorted (key, value)
+   lists compare equal. [#]_ Outcomes other than equality are resolved
+   consistently, but are not otherwise defined. [#]_
+ 
+-* Most other objects of builtin types compare unequal unless they are the same
++* Most other objects of built-in types compare unequal unless they are the same
+   object; the choice whether one object is considered smaller or larger than
+   another one is made arbitrarily but consistently within one execution of a
+   program.
+ 
++.. _membership-test-details:
++
+ The operators :keyword:`in` and :keyword:`not in` test for collection
+ membership.  ``x in s`` evaluates to true if *x* is a member of the collection
+ *s*, and false otherwise.  ``x not in s`` returns the negation of ``x in s``.
+ The collection membership test has traditionally been bound to sequences; an
+ object is a member of a collection if the collection is a sequence and contains
+ an element equal to that object.  However, it make sense for many other object
+ types to support membership tests without being a sequence.  In particular,
+ dictionaries (for keys) and sets support membership testing.
+ 
+ For the list and tuple types, ``x in y`` is true if and only if there exists an
+ index *i* such that ``x == y[i]`` is true.
+ 
+ For the Unicode and string types, ``x in y`` is true if and only if *x* is a
+ substring of *y*.  An equivalent test is ``y.find(x) != -1``.  Note, *x* and *y*
+ need not be the same type; consequently, ``u'ab' in 'abc'`` will return
+ ``True``. Empty strings are always considered to be a substring of any other
+ string, so ``"" in "abc"`` will return ``True``.
+ 
+ .. versionchanged:: 2.3
+    Previously, *x* was required to be a string of length ``1``.
+ 
+ For user-defined classes which define the :meth:`__contains__` method, ``x in
+ y`` is true if and only if ``y.__contains__(x)`` is true.
+ 
+-For user-defined classes which do not define :meth:`__contains__` and do define
++For user-defined classes which do not define :meth:`__contains__` but do define
++:meth:`__iter__`, ``x in y`` is true if some value ``z`` with ``x == z`` is
++produced while iterating over ``y``.  If an exception is raised during the
++iteration, it is as if :keyword:`in` raised that exception.
++
++Lastly, the old-style iteration protocol is tried: if a class defines
+ :meth:`__getitem__`, ``x in y`` is true if and only if there is a non-negative
+ integer index *i* such that ``x == y[i]``, and all lower integer indices do not
+ raise :exc:`IndexError` exception. (If any other exception is raised, it is as
+ if :keyword:`in` raised that exception).
+ 
+ .. index::
+    operator: in
+    operator: not in
+    pair: membership; test
+    object: sequence
+ 
+ The operator :keyword:`not in` is defined to have the inverse true value of
+@@ -1120,98 +1128,109 @@
+ .. _booleans:
+ .. _and:
+ .. _or:
+ .. _not:
+ 
+ Boolean operations
+ ==================
+ 
+ .. index::
+    pair: Conditional; expression
+    pair: Boolean; operation
+ 
+-Boolean operations have the lowest priority of all Python operations:
+-
+ .. productionlist::
+-   expression: `conditional_expression` | `lambda_form`
+-   old_expression: `or_test` | `old_lambda_form`
+-   conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
+    or_test: `and_test` | `or_test` "or" `and_test`
+    and_test: `not_test` | `and_test` "and" `not_test`
+    not_test: `comparison` | "not" `not_test`
+ 
+ In the context of Boolean operations, and also when expressions are used by
+ control flow statements, the following values are interpreted as false:
+ ``False``, ``None``, numeric zero of all types, and empty strings and containers
+ (including strings, tuples, lists, dictionaries, sets and frozensets).  All
+ other values are interpreted as true.  (See the :meth:`~object.__nonzero__`
+ special method for a way to change this.)
+ 
+ .. index:: operator: not
+ 
+ The operator :keyword:`not` yields ``True`` if its argument is false, ``False``
+ otherwise.
+ 
+-The expression ``x if C else y`` first evaluates *C* (*not* *x*); if *C* is
+-true, *x* is evaluated and its value is returned; otherwise, *y* is evaluated
+-and its value is returned.
+-
+-.. versionadded:: 2.5
+-
+ .. index:: operator: and
+ 
+ The expression ``x and y`` first evaluates *x*; if *x* is false, its value is
+ returned; otherwise, *y* is evaluated and the resulting value is returned.
+ 
+ .. index:: operator: or
+ 
+ The expression ``x or y`` first evaluates *x*; if *x* is true, its value is
+ returned; otherwise, *y* is evaluated and the resulting value is returned.
+ 
+ (Note that neither :keyword:`and` nor :keyword:`or` restrict the value and type
+ they return to ``False`` and ``True``, but rather return the last evaluated
+ argument. This is sometimes useful, e.g., if ``s`` is a string that should be
+ replaced by a default value if it is empty, the expression ``s or 'foo'`` yields
+ the desired value.  Because :keyword:`not` has to invent a value anyway, it does
+ not bother to return a value of the same type as its argument, so e.g., ``not
+ 'foo'`` yields ``False``, not ``''``.)
+ 
+ 
++Conditional Expressions
++=======================
++
++.. versionadded:: 2.5
++
++.. index::
++   pair: conditional; expression
++   pair: ternary; operator
++
++.. productionlist::
++   conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
++   expression: `conditional_expression` | `lambda_form`
++
++Conditional expressions (sometimes called a "ternary operator") have the lowest
++priority of all Python operations.
++
++The expression ``x if C else y`` first evaluates the condition, *C* (*not* *x*);
++if *C* is true, *x* is evaluated and its value is returned; otherwise, *y* is
++evaluated and its value is returned.
++
++See :pep:`308` for more details about conditional expressions.
++
++
+ .. _lambdas:
++.. _lambda:
+ 
+ Lambdas
+ =======
+ 
+ .. index::
+    pair: lambda; expression
+    pair: lambda; form
+    pair: anonymous; function
+ 
+ .. productionlist::
+    lambda_form: "lambda" [`parameter_list`]: `expression`
+    old_lambda_form: "lambda" [`parameter_list`]: `old_expression`
+ 
+ Lambda forms (lambda expressions) have the same syntactic position as
+ expressions.  They are a shorthand to create anonymous functions; the expression
+ ``lambda arguments: expression`` yields a function object.  The unnamed object
+ behaves like a function object defined with ::
+ 
+    def name(arguments):
+        return expression
+ 
+ See section :ref:`function` for the syntax of parameter lists.  Note that
+ functions created with lambda forms cannot contain statements.
+ 
+-.. _lambda:
+-
+ 
+ .. _exprlists:
+ 
+ Expression lists
+ ================
+ 
+ .. index:: pair: expression; list
+ 
+ .. productionlist::
+    expression_list: `expression` ( "," `expression` )* [","]
+ 
+ .. index:: object: tuple
+@@ -1261,24 +1280,26 @@
+ precedence (least binding) to highest precedence (most binding). Operators in
+ the same box have the same precedence.  Unless the syntax is explicitly given,
+ operators are binary.  Operators in the same box group left to right (except for
+ comparisons, including tests, which all have the same precedence and chain from
+ left to right --- see section :ref:`comparisons` --- and exponentiation, which
+ groups from right to left).
+ 
+ +-----------------------------------------------+-------------------------------------+
+ | Operator                                      | Description                         |
+ +===============================================+=====================================+
+ | :keyword:`lambda`                             | Lambda expression                   |
+ +-----------------------------------------------+-------------------------------------+
++| :keyword:`if` -- :keyword:`else`              | Conditional expression              |
+++-----------------------------------------------+-------------------------------------+
+ | :keyword:`or`                                 | Boolean OR                          |
+ +-----------------------------------------------+-------------------------------------+
+ | :keyword:`and`                                | Boolean AND                         |
+ +-----------------------------------------------+-------------------------------------+
+ | :keyword:`not` *x*                            | Boolean NOT                         |
+ +-----------------------------------------------+-------------------------------------+
+ | :keyword:`in`, :keyword:`not` :keyword:`in`,  | Comparisons, including membership   |
+ | :keyword:`is`, :keyword:`is not`, ``<``,      | tests and identity tests,           |
+ | ``<=``, ``>``, ``>=``, ``<>``, ``!=``, ``==`` |                                     |
+ +-----------------------------------------------+-------------------------------------+
+ | ``|``                                         | Bitwise OR                          |
+ +-----------------------------------------------+-------------------------------------+
+@@ -1320,25 +1341,25 @@
+    first argument instead, and so returns ``-1e-100`` in this case. Which approach
+    is more appropriate depends on the application.
+ 
+ .. [#] If x is very close to an exact integer multiple of y, it's possible for
+    ``floor(x/y)`` to be one larger than ``(x-x%y)/y`` due to rounding.  In such
+    cases, Python returns the latter result, in order to preserve that
+    ``divmod(x,y)[0] * y + x % y`` be very close to ``x``.
+ 
+ .. [#] While comparisons between unicode strings make sense at the byte
+    level, they may be counter-intuitive to users. For example, the
+    strings ``u"\u00C7"`` and ``u"\u0043\u0327"`` compare differently,
+    even though they both represent the same unicode character (LATIN
+-   CAPTITAL LETTER C WITH CEDILLA). To compare strings in a human
++   CAPITAL LETTER C WITH CEDILLA). To compare strings in a human
+    recognizable way, compare using :func:`unicodedata.normalize`.
+ 
+ .. [#] The implementation computes this efficiently, without constructing lists or
+    sorting.
+ 
+ .. [#] Earlier versions of Python used lexicographic comparison of the sorted (key,
+    value) lists, but this was very expensive for the common case of comparing for
+    equality.  An even earlier version of Python compared dictionaries by identity
+    only, but this caused surprises because people expected to be able to test a
+    dictionary for emptiness by comparing it to ``{}``.
+ 
+ .. [#] Due to automatic garbage-collection, free lists, and the dynamic nature of

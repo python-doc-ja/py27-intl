@@ -1,0 +1,260 @@
+--- r262/reference/simple_stmts.rst	2009-04-06 06:11:43.798160000 +0900
++++ r266/reference/simple_stmts.rst	2009-10-28 00:08:27.384772000 +0900
+@@ -142,29 +142,48 @@
+   for the object previously bound to the name to reach zero, causing the object to
+   be deallocated and its destructor (if it has one) to be called.
+ 
+ * If the target is a target list enclosed in parentheses or in square brackets:
+   The object must be an iterable with the same number of items as there are
+   targets in the target list, and its items are assigned, from left to right,
+   to the corresponding targets.
+ 
+   .. index:: pair: attribute; assignment
+ 
+ * If the target is an attribute reference: The primary expression in the
+   reference is evaluated.  It should yield an object with assignable attributes;
+-  if this is not the case, :exc:`TypeError` is raised.  That object is then asked
+-  to assign the assigned object to the given attribute; if it cannot perform the
+-  assignment, it raises an exception (usually but not necessarily
++  if this is not the case, :exc:`TypeError` is raised.  That object is then
++  asked to assign the assigned object to the given attribute; if it cannot
++  perform the assignment, it raises an exception (usually but not necessarily
+   :exc:`AttributeError`).
+ 
++  .. _attr-target-note:
++
++  Note: If the object is a class instance and the attribute reference occurs on
++  both sides of the assignment operator, the RHS expression, ``a.x`` can access
++  either an instance attribute or (if no instance attribute exists) a class
++  attribute.  The LHS target ``a.x`` is always set as an instance attribute,
++  creating it if necessary.  Thus, the two occurrences of ``a.x`` do not
++  necessarily refer to the same attribute: if the RHS expression refers to a
++  class attribute, the LHS creates a new instance attribute as the target of the
++  assignment::
++
++     class Cls:
++         x = 3             # class variable
++     inst = Cls()
++     inst.x = inst.x + 1   # writes inst.x as 4 leaving Cls.x as 3
++
++  This description does not necessarily apply to descriptor attributes, such as
++  properties created with :func:`property`.
++
+   .. index::
+      pair: subscription; assignment
+      object: mutable
+ 
+ * If the target is a subscription: The primary expression in the reference is
+   evaluated.  It should yield either a mutable sequence object (such as a list) or
+   a mapping object (such as a dictionary). Next, the subscript expression is
+   evaluated.
+ 
+   .. index::
+      object: sequence
+      object: list
+@@ -191,27 +210,29 @@
+ * If the target is a slicing: The primary expression in the reference is
+   evaluated.  It should yield a mutable sequence object (such as a list).  The
+   assigned object should be a sequence object of the same type.  Next, the lower
+   and upper bound expressions are evaluated, insofar they are present; defaults
+   are zero and the sequence's length.  The bounds should evaluate to (small)
+   integers.  If either bound is negative, the sequence's length is added to it.
+   The resulting bounds are clipped to lie between zero and the sequence's length,
+   inclusive.  Finally, the sequence object is asked to replace the slice with the
+   items of the assigned sequence.  The length of the slice may be different from
+   the length of the assigned sequence, thus changing the length of the target
+   sequence, if the object allows it.
+ 
+-(In the current implementation, the syntax for targets is taken to be the same
+-as for expressions, and invalid syntax is rejected during the code generation
+-phase, causing less detailed error messages.)
++.. impl-detail::
++
++   In the current implementation, the syntax for targets is taken to be the same
++   as for expressions, and invalid syntax is rejected during the code generation
++   phase, causing less detailed error messages.
+ 
+ WARNING: Although the definition of assignment implies that overlaps between the
+ left-hand side and the right-hand side are 'safe' (for example ``a, b = b, a``
+ swaps two variables), overlaps *within* the collection of assigned-to variables
+ are not safe!  For instance, the following program prints ``[0, 2]``::
+ 
+    x = [0, 1]
+    i = 0
+    i, x[i] = 1, 2
+    print x
+ 
+ 
+@@ -244,34 +265,26 @@
+ An augmented assignment expression like ``x += 1`` can be rewritten as ``x = x +
+ 1`` to achieve a similar, but not exactly equal effect. In the augmented
+ version, ``x`` is only evaluated once. Also, when possible, the actual operation
+ is performed *in-place*, meaning that rather than creating a new object and
+ assigning that to the target, the old object is modified instead.
+ 
+ With the exception of assigning to tuples and multiple targets in a single
+ statement, the assignment done by augmented assignment statements is handled the
+ same way as normal assignments. Similarly, with the exception of the possible
+ *in-place* behavior, the binary operation performed by augmented assignment is
+ the same as the normal binary operations.
+ 
+-For targets which are attribute references, the initial value is retrieved with
+-a :meth:`getattr` and the result is assigned with a :meth:`setattr`.  Notice
+-that the two methods do not necessarily refer to the same variable.  When
+-:meth:`getattr` refers to a class variable, :meth:`setattr` still writes to an
+-instance variable. For example::
+-
+-   class A:
+-       x = 3    # class variable
+-   a = A()
+-   a.x += 1     # writes a.x as 4 leaving A.x as 3
++For targets which are attribute references, the same :ref:`caveat about class
++and instance attributes <attr-target-note>` applies as for regular assignments.
+ 
+ 
+ .. _assert:
+ 
+ The :keyword:`assert` statement
+ ===============================
+ 
+ .. index::
+    statement: assert
+    pair: debugging; assertions
+ 
+ Assert statements are a convenient way to insert debugging assertions into a
+@@ -279,25 +292,25 @@
+ 
+ .. productionlist::
+    assert_stmt: "assert" `expression` ["," `expression`]
+ 
+ The simple form, ``assert expression``, is equivalent to ::
+ 
+    if __debug__:
+       if not expression: raise AssertionError
+ 
+ The extended form, ``assert expression1, expression2``, is equivalent to ::
+ 
+    if __debug__:
+-      if not expression1: raise AssertionError, expression2
++      if not expression1: raise AssertionError(expression2)
+ 
+ .. index::
+    single: __debug__
+    exception: AssertionError
+ 
+ These equivalences assume that :const:`__debug__` and :exc:`AssertionError` refer to
+ the built-in variables with those names.  In the current implementation, the
+ built-in variable :const:`__debug__` is ``True`` under normal circumstances,
+ ``False`` when optimization is requested (command line option -O).  The current
+ code generator emits no code for an assert statement when optimization is
+ requested at compile time.  Note that it is unnecessary to include the source
+ code for the expression that failed in the error message; it will be displayed
+@@ -377,27 +390,28 @@
+ 
+ .. productionlist::
+    print_stmt: "print" ([`expression` ("," `expression`)* [","]]
+              : | ">>" `expression` [("," `expression`)+ [","]])
+ 
+ :keyword:`print` evaluates each expression in turn and writes the resulting
+ object to standard output (see below).  If an object is not a string, it is
+ first converted to a string using the rules for string conversions.  The
+ (resulting or original) string is then written.  A space is written before each
+ object is (converted and) written, unless the output system believes it is
+ positioned at the beginning of a line.  This is the case (1) when no characters
+ have yet been written to standard output, (2) when the last character written to
+-standard output is ``'\n'``, or (3) when the last write operation on standard
+-output was not a :keyword:`print` statement.  (In some cases it may be
+-functional to write an empty string to standard output for this reason.)
++standard output is a whitespace character except ``' '``, or (3) when the last
++write operation on standard output was not a :keyword:`print` statement.
++(In some cases it may be functional to write an empty string to standard output
++for this reason.)
+ 
+ .. note::
+ 
+    Objects which act like file objects but which are not the built-in file objects
+    often do not properly emulate this aspect of the file object's behavior, so it
+    is best not to rely on this.
+ 
+ .. index::
+    single: output
+    pair: writing; values
+    pair: trailing; comma
+    pair: newline; suppression
+@@ -885,37 +899,42 @@
+ the usual way at the time the future statement is executed.
+ 
+ The interesting runtime semantics depend on the specific feature enabled by the
+ future statement.
+ 
+ Note that there is nothing special about the statement::
+ 
+    import __future__ [as name]
+ 
+ That is not a future statement; it's an ordinary import statement with no
+ special semantics or syntax restrictions.
+ 
+-Code compiled by an :keyword:`exec` statement or calls to the builtin functions
++Code compiled by an :keyword:`exec` statement or calls to the built-in functions
+ :func:`compile` and :func:`execfile` that occur in a module :mod:`M` containing
+ a future statement will, by default, use the new  syntax or semantics associated
+ with the future statement.  This can, starting with Python 2.2 be controlled by
+ optional arguments to :func:`compile` --- see the documentation of that function
+ for details.
+ 
+ A future statement typed at an interactive interpreter prompt will take effect
+ for the rest of the interpreter session.  If an interpreter is started with the
+ :option:`-i` option, is passed a script name to execute, and the script includes
+ a future statement, it will be in effect in the interactive session started
+ after the script is executed.
+ 
++.. seealso::
++
++   :pep:`236` - Back to the __future__
++      The original proposal for the __future__ mechanism.
++
+ 
+ .. _global:
+ 
+ The :keyword:`global` statement
+ ===============================
+ 
+ .. index::
+    statement: global
+    triple: global; name; binding
+ 
+ .. productionlist::
+    global_stmt: "global" `identifier` ("," `identifier`)*
+@@ -924,27 +943,29 @@
+ current code block.  It means that the listed identifiers are to be interpreted
+ as globals.  It would be impossible to assign to a global variable without
+ :keyword:`global`, although free variables may refer to globals without being
+ declared global.
+ 
+ Names listed in a :keyword:`global` statement must not be used in the same code
+ block textually preceding that :keyword:`global` statement.
+ 
+ Names listed in a :keyword:`global` statement must not be defined as formal
+ parameters or in a :keyword:`for` loop control target, :keyword:`class`
+ definition, function definition, or :keyword:`import` statement.
+ 
+-(The current implementation does not enforce the latter two restrictions, but
+-programs should not abuse this freedom, as future implementations may enforce
+-them or silently change the meaning of the program.)
++.. impl-detail::
++
++   The current implementation does not enforce the latter two restrictions, but
++   programs should not abuse this freedom, as future implementations may enforce
++   them or silently change the meaning of the program.
+ 
+ .. index::
+    statement: exec
+    builtin: eval
+    builtin: execfile
+    builtin: compile
+ 
+ **Programmer's note:** the :keyword:`global` is a directive to the parser.  It
+ applies only to code parsed at the same time as the :keyword:`global` statement.
+ In particular, a :keyword:`global` statement contained in an :keyword:`exec`
+ statement does not affect the code block *containing* the :keyword:`exec`
+ statement, and code contained in an :keyword:`exec` statement is unaffected by

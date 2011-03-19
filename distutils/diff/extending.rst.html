@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to37__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/distutils/extending.rst =&gt; r266/distutils/extending.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to37__0"></td><td class="diff_header" id="from37_10">10</td><td nowrap="nowrap">replacements&nbsp;for&nbsp;existing&nbsp;commands&nbsp;may&nbsp;be&nbsp;made&nbsp;to&nbsp;modify&nbsp;details&nbsp;of&nbsp;how&nbsp;the</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_11">11</td><td nowrap="nowrap">command&nbsp;operates&nbsp;on&nbsp;a&nbsp;package.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_12">12</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_13">13</td><td nowrap="nowrap">Most&nbsp;extensions&nbsp;of&nbsp;the&nbsp;distutils&nbsp;are&nbsp;made&nbsp;within&nbsp;:file:`setup.py`&nbsp;scripts&nbsp;that</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_14">14</td><td nowrap="nowrap">want&nbsp;to&nbsp;modify&nbsp;existing&nbsp;commands;&nbsp;many&nbsp;simply&nbsp;add&nbsp;a&nbsp;few&nbsp;file&nbsp;extensions&nbsp;that</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_15">15</td><td nowrap="nowrap">should&nbsp;be&nbsp;copied&nbsp;into&nbsp;packages&nbsp;in&nbsp;addition&nbsp;to&nbsp;:file:`.py`&nbsp;files&nbsp;as&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_16">16</td><td nowrap="nowrap">convenience.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_17">17</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to37__top">t</a></td><td class="diff_header" id="from37_18">18-</td><td nowrap="nowrap">Most&nbsp;distutils&nbsp;command&nbsp;implementations&nbsp;are&nbsp;subclasses&nbsp;of&nbsp;the<span class="diff_sub">&nbsp;:class:`Command`</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to37__top">t</a></td><td class="diff_header" id="to37_18">18+</td><td nowrap="nowrap">Most&nbsp;distutils&nbsp;command&nbsp;implementations&nbsp;are&nbsp;subclasses&nbsp;of&nbsp;the</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from37_19">19-</td><td nowrap="nowrap">class<span class="diff_sub">&nbsp;from&nbsp;:mod</span>:`distutils.cmd`.&nbsp;&nbsp;New&nbsp;commands&nbsp;may&nbsp;directly&nbsp;inherit&nbsp;from</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to37_19">19+</td><td nowrap="nowrap"><span class="diff_add">:</span>class:`distutils.cmd<span class="diff_add">.Command</span>`<span class="diff_add">&nbsp;class</span>.&nbsp;&nbsp;New&nbsp;commands&nbsp;may&nbsp;directly&nbsp;inherit&nbsp;from</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from37_20">20</td><td nowrap="nowrap">:class:`Command`,&nbsp;while&nbsp;replacements&nbsp;often&nbsp;derive&nbsp;from&nbsp;:class:`Command`</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_21">21</td><td nowrap="nowrap">indirectly,&nbsp;directly&nbsp;subclassing&nbsp;the&nbsp;command&nbsp;they&nbsp;are&nbsp;replacing.&nbsp;&nbsp;Commands&nbsp;are</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_22">22</td><td nowrap="nowrap">required&nbsp;to&nbsp;derive&nbsp;from&nbsp;:class:`Command`.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_23">23</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_24">24</td><td nowrap="nowrap">..&nbsp;%&nbsp;\section{Extending&nbsp;existing&nbsp;commands}</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_25">25</td><td nowrap="nowrap">..&nbsp;%&nbsp;\label{extend-existing}</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_26">26</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from37_27">27</td><td nowrap="nowrap">..&nbsp;%&nbsp;\section{Writing&nbsp;new&nbsp;commands}</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

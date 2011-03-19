@@ -1,0 +1,110 @@
+--- r262/extending/newtypes.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/extending/newtypes.rst	2010-06-01 07:57:24.966192000 +0900
+@@ -243,25 +243,25 @@
+ 
+ Let's expend the basic example to add some data and methods.  Let's also make
+ the type usable as a base class. We'll create a new module, :mod:`noddy2` that
+ adds these capabilities:
+ 
+ .. literalinclude:: ../includes/noddy2.c
+ 
+ 
+ This version of the module has a number of changes.
+ 
+ We've added an extra include::
+ 
+-   #include "structmember.h"
++   #include <structmember.h>
+ 
+ This include provides declarations that we use to handle attributes, as
+ described a bit later.
+ 
+ The name of the :class:`Noddy` object structure has been shortened to
+ :class:`Noddy`.  The type object name has been shortened to :class:`NoddyType`.
+ 
+ The  :class:`Noddy` type now has three data attributes, *first*, *last*, and
+ *number*.  The *first* and *last* variables are Python strings containing first
+ and last names. The *number* attribute is an integer.
+ 
+ The object structure is updated accordingly::
+@@ -437,25 +437,25 @@
+        {"last", T_OBJECT_EX, offsetof(Noddy, last), 0,
+         "last name"},
+        {"number", T_INT, offsetof(Noddy, number), 0,
+         "noddy number"},
+        {NULL}  /* Sentinel */
+    };
+ 
+ and put the definitions in the :attr:`tp_members` slot::
+ 
+    Noddy_members,             /* tp_members */
+ 
+ Each member definition has a member name, type, offset, access flags and
+-documentation string. See the "Generic Attribute Management" section below for
++documentation string. See the :ref:`Generic-Attribute-Management` section below for
+ details.
+ 
+ A disadvantage of this approach is that it doesn't provide a way to restrict the
+ types of objects that can be assigned to the Python attributes.  We expect the
+ first and last names to be strings, but any Python objects can be assigned.
+ Further, the attributes can be deleted, setting the C pointers to *NULL*.  Even
+ though we can make sure the members are initialized to non-*NULL* values, the
+ members can be set to *NULL* if the attributes are deleted.
+ 
+ We define a single method, :meth:`name`, that outputs the objects name as the
+ concatenation of the first and last names. ::
+ 
+@@ -810,25 +810,25 @@
+ Most extensions will use the versions automatically provided.
+ 
+ 
+ Subclassing other types
+ -----------------------
+ 
+ It is possible to create new extension types that are derived from existing
+ types. It is easiest to inherit from the built in types, since an extension can
+ easily use the :class:`PyTypeObject` it needs. It can be difficult to share
+ these :class:`PyTypeObject` structures between extension modules.
+ 
+ In this example we will create a :class:`Shoddy` type that inherits from the
+-builtin :class:`list` type. The new type will be completely compatible with
++built-in :class:`list` type. The new type will be completely compatible with
+ regular lists, but will have an additional :meth:`increment` method that
+ increases an internal counter. ::
+ 
+    >>> import shoddy
+    >>> s = shoddy.Shoddy(range(3))
+    >>> s.extend(s)
+    >>> print len(s)
+    6
+    >>> print s.increment()
+    1
+    >>> print s.increment()
+    2
+@@ -1120,24 +1120,26 @@
+    /* ... */
+    getattrofunc tp_getattrofunc;   /* PyObject * version */
+    setattrofunc tp_setattrofunc;
+ 
+ If accessing attributes of an object is always a simple operation (this will be
+ explained shortly), there are generic implementations which can be used to
+ provide the :ctype:`PyObject\*` version of the attribute management functions.
+ The actual need for type-specific attribute handlers almost completely
+ disappeared starting with Python 2.2, though there are many examples which have
+ not been updated to use some of the new generic mechanism that is available.
+ 
+ 
++.. _generic-attribute-management:
++
+ Generic Attribute Management
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ .. versionadded:: 2.2
+ 
+ Most extension types only use *simple* attributes.  So, what makes the
+ attributes simple?  There are only a couple of conditions that must be met:
+ 
+ #. The name of the attributes must be known when :cfunc:`PyType_Ready` is
+    called.
+ 
+ #. No special processing is needed to record that an attribute was looked up or
