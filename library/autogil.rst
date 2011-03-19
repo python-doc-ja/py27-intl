@@ -14,9 +14,9 @@ Python のグローバルインタープリタロック(:term:`Global Interprete
 をロックしたり、ロックの解除をしたりするための関数 :func:`installAutoGIL`
 を提供します。
 
-.. warning::
+.. note::
 
-   このモジュールは 3.0 で削除されます。
+   このモジュールは Python 3.x で削除されました。
 
 
 .. exception:: AutoGILError
