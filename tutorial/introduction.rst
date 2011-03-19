@@ -4,11 +4,12 @@
 形式ばらない Python の紹介
 **************************
 
-以下の例では、入力と出力は (``>>>`` や ``...``) といったプロンプトがあるかないかで区別します: 例どおりに実行するなら、
-プロンプトが表示されているときに、例中のプロンプトよりも後ろの内容全てをタイプ入力しなければなりません; プロンプトが先頭にない行はインタプリタ
-からの出力です。
+以下の例では、入力と出力は (``>>>`` や ``...``) といったプロンプトがあるかないかで区別します。
+例を実際に試してみるためには、プロンプトが表示されているときに、
+例中のプロンプトよりも後ろの内容全てをタイプ入力しなければなりません。
+プロンプトが先頭にない行はインタプリタからの出力です。
 
-例中には二次プロンプトだけが表示されている行がありますが、これは空行を入力しなければならないことを意味するので注意してください;
+例中には二次プロンプトだけが表示されている行がありますが、これは空行を入力しなければならないことを意味しています。
 空行の入力は複数の行からなる命令の終わりをインタプリタに教えるために使われます。
 
 このマニュアルにある例の多くは、対話プロンプトで入力されるものでもコメントを含んでいます。
@@ -42,18 +43,11 @@ Python を電卓として使う
 数
 --
 
-インタプリタは単純な電卓のように動作します:  式を入力することができ、
+インタプリタは単純な電卓のように動作します: 式を入力すると、
 その結果が表示されます。
 式の文法は素直なものです: 演算子 ``+``, ``-``, ``*``, ``/``  は
 (Pascal や C といった) 他のほとんどの言語と同じように動作します。
-括弧をグループ化に使うこともできます。例えば、
-
-.. % Numbers
-.. % % The interpreter acts as a simple calculator: you can type an
-.. % % expression at it and it will write the value.  Expression syntax is
-.. % % straightforward: the operators \code{+}, \code{-}, \code{*} and
-.. % % \code{/} work just like in most other languages (for example, Pascal
-.. % % or C); parentheses can be used for grouping.  For example:
+丸括弧をグループ化に使うこともできます。例えば、
 
 ::
 
@@ -99,14 +93,15 @@ Python を電卓として使う
 
 ::
 
-   >>> # try to access an undefined variable
+   >>> # 未定義変数にアクセスする
    ... n
    Traceback (most recent call last):
      File "<stdin>", line 1, in <module>
    NameError: name 'n' is not defined
 
-浮動小数点を完全にサポートしています;
-被演算子の型が混合されているときには、演算子は整数の被演算子を浮動小数点型に変換します。
+浮動小数点を完全にサポートしています。
+演算対象の値(オペランド)の型が統一されていない場合、
+演算子は整数のオペランドを浮動小数点型に変換します。
 
 ::
 
@@ -143,10 +138,10 @@ Python を電卓として使う
    >>> a.imag
    0.5
 
-数値を浮動小数点数や整数へに変換する関数 (:func:`float`, :func:`int`, :func:`long`) は複素数に対しては動作しません
+浮動小数点数や整数へと変換する関数 (:func:`float`, :func:`int`, :func:`long`) は複素数に対しては動作しません
 ---  複素数を実数に変換する方法には、ただ一つの正解というものがないからです。
 絶対値 (magnitude) を (浮動小数点数として) 得るには
-``abs(z)`` を使い、実部を得るには ``z.real`` を使ってください。
+``abs(z)`` を使い、実数部を得るには ``z.real`` を使ってください。
 
 ::
 
@@ -159,7 +154,7 @@ Python を電卓として使う
    3.0
    >>> a.imag
    4.0
-   >>> abs(a)  # sqrt(a.real **2 + a.imag** 2)
+   >>> abs(a)  # sqrt(a.real**2 + a.imag**2)
    5.0
 
 対話モードでは、最後に表示された結果は変数 ``_`` に代入されます。
@@ -179,8 +174,8 @@ Python を電卓として使う
 
 ユーザはこの変数を読取り専用の値として扱うべきです。
 この変数に明示的な代入を行ってはいけません --- そんなことをすれば、
-同じ名前で、元の組み込み変数の特別な動作を覆い隠してしまうような、
-別個のローカルな変数が生成されてしまいます。
+同じ名前で元の特別な動作をする組み込み変数を覆い隠してしまうような、
+別のローカルな変数が生成されてしまいます。
 
 
 .. _tut-strings:
@@ -207,12 +202,8 @@ Python を電卓として使う
    '"Isn\'t," she said.'
 
 文字列リテラルはいくつかの方法で複数行にまたがって記述できます。
-継続行を使うことができ、これには行の末尾の文字をバックスラッシュにします。
+一つ目の方法は継続行を使うことで、これには行の末尾の文字をバックスラッシュにします。
 こうすることで、次の行が現在の行と論理的に継続していることを示します。
-
-.. % % String literals can span multiple lines in several ways.  Continuation
-.. % % lines can be used, with a backslash as the last character on the line
-.. % % indicating that the next line is a logical continuation of the line:
 
 ::
 
@@ -223,7 +214,7 @@ Python を電卓として使う
 
    print hello
 
-``\n`` を使って文字列に改行位置を埋め込まなくてはならないことに注意してください;
+``\n`` を使って文字列に改行位置を埋め込まなくてはならないことに注意してください。
 末尾のバックスラッシュの後ろにある改行文字は無視されます。
 従って、上の例は以下のような出力を行います。
 
@@ -233,9 +224,9 @@ Python を電卓として使う
    several lines of text just as you would do in C.
        Note that whitespace at the beginning of the line is significant.
 
-また、対になった三重クォート ``"""`` または ``'''`` で文字列を囲むこともできます。
+別の方法として、対になった三重クォート ``"""`` または ``'''`` で文字列を囲むこともできます。
 三重クォートを使っているときには、行末をエスケープする必要はありません。
-しかし、行末の改行文字も文字列に含まれることになります。
+代わりに、行末の改行文字も文字列に含まれることになります。
 
 ::
 
@@ -272,12 +263,12 @@ Python を電卓として使う
    This is a rather long string containing\n\
    several lines of text much as you would do in C.
 
-インタプリタは、文字列演算の結果を、タイプして入力する時と同じ方法で出力します:
+インタプリタは、文字列演算の結果を、タイプして入力する時と同じ方法で出力します。
 文字列はクオート文字で囲い、クオート文字自体やその他の特別な文字は、
-正しい文字が表示されるようにするためにバックスラッシュでエスケープします。
+正しい文字が表示されるようにバックスラッシュでエスケープします。
 文字列がシングルクオートを含み、かつダブルクオートを含まない場合には、全体をダブルクオートで囲います。
 そうでない場合にはシングルクオートで囲みます。
-(後で述べる :keyword:`print` を使って、クオートやエスケープのない文字列を表示することができます。)
+(後で述べる :keyword:`print` 文を使って、クオートやエスケープのない文字列を表示することができます。)
 
 文字列は ``+`` 演算子で連結させる (くっつけて一つにする) ことができ、
 ``*`` 演算子で反復させることができます。
@@ -290,14 +281,9 @@ Python を電卓として使う
    >>> '<' + word*5 + '>'
    '<HelpAHelpAHelpAHelpAHelpA>'
 
-互いに隣あった二つの文字列リテラルは自動的に連結されます:
+隣あった二つの文字列リテラルは自動的に連結されます:
 例えば、上記の最初の行は ``word = 'Help' 'A'`` と書くこともできました;
 この機能は二つともリテラルの場合にのみ働くもので、任意の文字列表現で使うことができるわけではありません。
-
-.. % % Two string literals next to each other are automatically concatenated;
-.. % % the first line above could also have been written \samp{word = 'Help'
-.. % % 'A'}; this only works with two literals, not with arbitrary string
-.. % % expressions:
 
 ::
 
@@ -317,12 +303,6 @@ C 言語と同じく、文字列の最初の文字の添字 (インデクス) �
 Icon 言語と同じく、部分文字列を  *スライス表記*:
 コロンで区切られた二つのインデクスで指定することができます。
 
-.. % % Strings can be subscripted (indexed); like in C, the first character
-.. % % of a string has subscript (index) 0.  There is no separate character
-.. % % type; a character is simply a string of size one.  Like in Icon,
-.. % % substrings can be specified with the \emph{slice notation}: two indices
-.. % % separated by a colon.
-
 ::
 
    >>> word[4]
@@ -335,10 +315,6 @@ Icon 言語と同じく、部分文字列を  *スライス表記*:
 スライスのインデクスには便利なデフォルト値があります; 最初のインデクスを省略すると、0 と見なされます。
 第 2 のインデクスを省略すると、スライスしようとする文字列のサイズとみなされます。
 
-.. % % Slice indices have useful defaults; an omitted first index defaults to
-.. % % zero, an omitted second index defaults to the size of the string being
-.. % % sliced.
-
 ::
 
    >>> word[:2]    # 最初の 2 文字
@@ -347,10 +323,7 @@ Icon 言語と同じく、部分文字列を  *スライス表記*:
    'lpA'
 
 C 言語の文字列と違い、Python の文字列は変更できません。
-インデックス指定された文字列中のある位置に代入を行おうとするとエラーになります:
-
-.. % % Unlike a C string, Python strings cannot be changed.  Assigning to an
-.. % % indexed position in the string results in an error:
+インデックス指定された文字列中のある位置に代入を行おうとするとエラーになります。
 
 ::
 
@@ -365,9 +338,6 @@ C 言語の文字列と違い、Python の文字列は変更できません。
 
 一方、文字列同士の内容を組み合わせた新しい文字列の生成は、簡単で効率的です。
 
-.. % % However, creating a new string with the combined content is easy and
-.. % % efficient:
-
 ::
 
    >>> 'x' + word[1:]
@@ -376,9 +346,6 @@ C 言語の文字列と違い、Python の文字列は変更できません。
    'SplatA'
 
 スライス演算には便利な不変式があります:  ``s[:i] + s[i:]`` は ``s`` に等しくなります。
-
-.. % % Here's a useful invariant of slice operations:
-.. % % \code{s[:i] + s[i:]} equals \code{s}.
 
 ::
 
@@ -391,10 +358,6 @@ C 言語の文字列と違い、Python の文字列は変更できません。
 インデクスが大きすぎる場合は文字列のサイズと置き換えられます。
 スライスの下境界 (文字列の左端) よりも小さいインデクス値を上境界 (文字列の右端) に指定すると、空文字列が返されます。
 
-.. % % Degenerate slice indices are handled gracefully: an index that is too
-.. % % large is replaced by the string size, an upper bound smaller than the
-.. % % lower bound returns an empty string.
-
 ::
 
    >>> word[1:100]
@@ -404,10 +367,7 @@ C 言語の文字列と違い、Python の文字列は変更できません。
    >>> word[2:1]
    ''
 
-インデクスを負の数にして、右から数えることもできます。例えば:
-
-.. % % Indices may be negative numbers, to start counting from the right.
-.. % % For example:
+インデクスを負の数にして、右から数えることもできます。例えば、
 
 ::
 
@@ -422,9 +382,6 @@ C 言語の文字列と違い、Python の文字列は変更できません。
 
 -0 は 0 と全く同じなので、右から数えることができません。注意してください!
 
-.. % % But note that -0 is really the same as 0, so it does not count from
-.. % % the right!
-
 ::
 
    >>> word[-0]     # (-0 は 0 に等しい)
@@ -432,9 +389,6 @@ C 言語の文字列と違い、Python の文字列は変更できません。
 
 負で、かつ範囲外のインデクスをスライス表記で行うと、インデクスは切り詰められます。
 しかし、単一の要素を指定する (スライスでない) インデクス指定でこれを行ってはいけません:
-
-.. % % Out-of-range negative slice indices are truncated, but don't try this
-.. % % for single-element (non-slice) indices:
 
 ::
 
@@ -446,12 +400,7 @@ C 言語の文字列と違い、Python の文字列は変更できません。
    IndexError: string index out of range
 
 スライスの働きかたをおぼえる良い方法は、インデクスが文字と文字の *あいだ (between)* を指しており、最初の文字の左端が 0
-になっていると考えることです。そうすると、 *n* 文字からなる文字列中の最後の文字の右端はインデクス *n* となります。例えば:
-
-.. % % The best way to remember how slices work is to think of the indices as
-.. % % pointing \emph{between} characters, with the left edge of the first
-.. % % character numbered 0.  Then the right edge of the last character of a
-.. % % string of \var{n} characters has index \var{n}, for example:
+になっていると考えることです。そうすると、 *n* 文字からなる文字列中の最後の文字の右端はインデクス *n* となります。例えば、
 
 ::
 
@@ -464,23 +413,12 @@ C 言語の文字列と違い、Python の文字列は変更できません。
 といった具合です。
 
 数が記された行のうち、最初の方の行は、文字列中のインデクス 0...5 の位置を表します; 次の行は、対応する負のインデクスを表しています。 *i* から
-*j* までのスライスは、それぞれ *i*, *j*  とラベル付けされたけられた端点間のすべての文字からなります。
+*j* までのスライスは、それぞれ *i*, *j*  とラベル付けされたけられた境界の間のすべての文字からなります。
 
-.. % % The first row of numbers gives the position of the indices 0...5 in
-.. % % the string; the second row gives the corresponding negative indices.
-.. % % The slice from \var{i} to \var{j} consists of all characters between
-.. % % the edges labeled \var{i} and \var{j}, respectively.
-
-非負のインデクス対の場合、スライスされたシーケンスの長さは、スライスの両端のインデクスが境界内にあるかぎり、インデクス間の差になります。例えば、
+非負のインデクス対の場合、スライスされたシーケンスの長さは、スライスの両端のインデクスが範囲内にあるかぎり、インデクス間の差になります。例えば、
 ``word[1:3]`` の長さは 2 になります。
 
-.. % % For non-negative indices, the length of a slice is the difference of
-.. % % the indices, if both are within bounds.  For example, the length of
-.. % % \code{word[1:3]} is 2.
-
 組込み関数 :func:`len` は文字列の長さ (length) を返します。
-
-.. % % The built-in function \function{len()} returns the length of a string:
 
 ::
 
@@ -515,39 +453,20 @@ Unicode 文字列
 .. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
 
 
-.. % Unicode Strings
-
 Python 2.0 から、プログラマはテキスト・データを格納するための新しいデータ型、
 Unicode オブジェクトを利用できるようになりました。
 Unicode オブジェクトを使うと、Unicode データ (http://www.unicode.org/ 参照)
 を記憶したり、操作したりできます。
-また、 Unicode オブジェクトは既存の文字列オブジェクトとよく統合していて、
-必要に応じた自動変換機能を提供しています。
+また、 Unicode オブジェクトは既存の文字列オブジェクトとよく統合されていて、
+必要に応じて自動変換されます。
 
-.. % % Starting with Python 2.0 a new data type for storing text data is
-.. % % available to the programmer: the Unicode object. It can be used to
-.. % % store and manipulate Unicode data (see \url{http://www.unicode.org/})
-.. % % and integrates well with the existing string objects providing
-.. % % auto-conversions where necessary.
-
-Unicode には、古今のテキストで使われているあらゆる書き文字のあらゆる文字について、対応付けを行うための一つの序数を規定しているという利点があります。
+Unicode には、古今のテキストで使われているあらゆる書き文字のあらゆる文字について、
+対応付けを行うための一つの序数を規定しているという利点があります。
 これまでは、書き文字のために利用可能な序数は 256 個しかなく、テキストは書き文字の対応付けを行っているコードページに束縛されているのが通常でした。
-このことは、とりわけソフトウェアの国際化 (通常 ``i18n`` --- ``'i'`` + 18 文字 + ``'n'`` の意) に対して大きな
+このことは、とりわけソフトウェアの国際化 (internationalization. よく、 ``i18n`` と書かれます --- ``'i'`` + 18 文字 + ``'n'`` の意) に対して大きな
 混乱をもたらしました。Unicode では、すべての書き文字に対して単一のコードページを定義することで、これらの問題を解決しています。
 
-.. % % Unicode has the advantage of providing one ordinal for every character
-.. % % in every script used in modern and ancient texts. Previously, there
-.. % % were only 256 possible ordinals for script characters and texts were
-.. % % typically bound to a code page which mapped the ordinals to script
-.. % % characters. This lead to very much confusion especially with respect
-.. % % to internationalization (usually written as \samp{i18n} ---
-.. % % \character{i} + 18 characters + \character{n}) of software.  Unicode
-.. % % solves these problems by defining one code page for all scripts.
-
-Python では、Unicode 文字列の作成は通常の文字列を作成するのと同じように単純なものです:
-
-.. % % Creating Unicode strings in Python is just as simple as creating
-.. % % normal strings:
+Python では、Unicode 文字列の作成は通常の文字列を作成するのと同じように単純なものです。
 
 ::
 
@@ -555,12 +474,7 @@ Python では、Unicode 文字列の作成は通常の文字列を作成する�
    u'Hello World !'
 
 クオートの前にある小文字の ``'u'`` は、Unicode 文字列を生成することになっていることを示します。文字列に特殊な文字を
-含めたければ、Python の *Unicode-Escape* エンコーディングを使って行えます。以下はその方法を示しています:
-
-.. % % The small \character{u} in front of the quote indicates that an
-.. % % Unicode string is supposed to be created. If you want to include
-.. % % special characters in the string, you can do so by using the Python
-.. % % \emph{Unicode-Escape} encoding. The following example shows how:
+含めたければ、Python の *Unicode-Escape* エンコーディングを使って行えます。以下はその方法を示しています。
 
 ::
 
@@ -569,30 +483,14 @@ Python では、Unicode 文字列の作成は通常の文字列を作成する�
 
 エスケープシーケンス ``\u0020`` は、序数の値 0x0020 を持つ  Unicode 文字 (スペース文字) を、指定場所に挿入することを示します。
 
-.. % % The escape sequence \code{\e u0020} indicates to insert the Unicode
-.. % % character with the ordinal value 0x0020 (the space character) at the
-.. % % given position.
-
 他の文字は、それぞれの序数値をそのまま Unicode の序数値に用いて解釈されます。多くの西洋諸国で使われている標準 Latin-1 エンコーディング
 のリテラル文字列があれば、Unicode の下位 256 文字が Latin-1 の 256  文字と同じになっていて便利だと思うことでしょう。
-
-.. % % Other characters are interpreted by using their respective ordinal
-.. % % values directly as Unicode ordinals.  If you have literal strings
-.. % % in the standard Latin-1 encoding that is used in many Western countries,
-.. % % you will find it convenient that the lower 256 characters
-.. % % of Unicode are the same as the 256 characters of Latin-1.
 
 上級者のために、通常の文字列の場合と同じく raw モードもあります。
 これには、文字列を開始するクオート文字の前に 'ur' を付けて、 Python に
 *Raw-Unicode-Escape* エンコーディングを使わせなければなりません。
 このモードでは、上記の ``\uXXXX`` の変換は、小文字の
 'u' の前に奇数個のバックスラッシュがあるときにだけ適用されます。
-
-.. % % For experts, there is also a raw mode just like the one for normal
-.. % % strings. You have to prefix the opening quote with 'ur' to have
-.. % % Python use the \emph{Raw-Unicode-Escape} encoding. It will only apply
-.. % % the above \code{\e uXXXX} conversion if there is an uneven number of
-.. % % backslashes in front of the small 'u'.
 
 ::
 
@@ -603,15 +501,8 @@ Python では、Unicode 文字列の作成は通常の文字列を作成する�
 
 raw モードは、正規表現を記述する時のように、沢山のバックスラッシュを入力しなければならないときとても役に立ちます。
 
-.. % % The raw mode is most useful when you have to enter lots of
-.. % % backslashes, as can be necessary in regular expressions.
-
 これら標準のエンコーディングにとは別に、Python では、既知の文字エンコーディングに基づいて Unicode 文字列を生成する一連の
 手段を提供しています。
-
-.. % % Apart from these standard encodings, Python provides a whole set of
-.. % % other ways of creating Unicode strings on the basis of a known
-.. % % encoding.
 
 .. index:: builtin: unicode
 
@@ -621,17 +512,6 @@ raw モードは、正規表現を記述する時のように、沢山のバッ�
 バイトまたはそれ以上のバイト列に保存します。デフォルトのエンコーディングは通常 ASCIIに設定されています。ASCIIでは 0 から 127 の範囲の
 文字だけを通過させ、それ以外の文字は受理せずエラーを出します。 Unicode 文字列を印字したり、ファイルに書き出したり、 :func:`str`
 で変換すると、デフォルトのエンコーディングを使った変換が行われます。
-
-.. % % The built-in function \function{unicode()}\bifuncindex{unicode} provides
-.. % % access to all registered Unicode codecs (COders and DECoders). Some of
-.. % % the more well known encodings which these codecs can convert are
-.. % % \emph{Latin-1}, \emph{ASCII}, \emph{UTF-8}, and \emph{UTF-16}.
-.. % % The latter two are variable-length encodings that store each Unicode
-.. % % character in one or more bytes. The default encoding is
-.. % % normally set to \ASCII, which passes through characters in the range
-.. % % 0 to 127 and rejects any other characters with an error.
-.. % % When a Unicode string is printed, written to a file, or converted
-.. % % with \function{str()}, conversion takes place using this default encoding.
 
 ::
 
@@ -645,31 +525,28 @@ raw モードは、正規表現を記述する時のように、沢山のバッ�
    UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-5:
    ordinal not in range(128)
 
-特定のエンコーディングを使って Unicode 文字列を 8 ビットの文字列に変換するために、Unicode オブジェクトでは :func:`encode`
-メソッドを提供しています。このメソッドは単一の引数としてエンコーディングの名前をとります。エンコーディング名には小文字の使用が推奨されています。
+.. note::
+   訳注: IDLE をはじめ、ほとんどの Python 2 用のインタラクティブシェルは、非ASCII
+   文字を含む Unicode リテラルを利用することができません。このサンプルを実行するには、
+   インタプリタ内蔵のインタラクティブシェルを利用する必要があります。
 
-.. % % To convert a Unicode string into an 8-bit string using a specific
-.. % % encoding, Unicode objects provide an \function{encode()} method
-.. % % that takes one argument, the name of the encoding.  Lowercase names
-.. % % for encodings are preferred.
+   この問題は Python 3 では解決されています。
+
+特定のエンコーディングを使って Unicode 文字列を 8 ビットの文字列に変換するために、Unicode オブジェクトは :func:`encode`
+メソッドを提供しています。このメソッドは第一引数としてエンコーディングの名前をとります。エンコーディング名には小文字の使用が推奨されています。
 
 ::
 
    >>> u"あいう".encode('utf-8')
-   '\xc2\x82\xc2\xa0\xc2\x82\xc2\xa2\xc2\x82\xc2\xa4'
+   '\xe3\x81\x82\xe3\x81\x84\xe3\x81\x86'
 
 特定のエンコーディングで書かれているデータがあり、そこから Unicode 文字列を生成したいなら、 :func:`unicode` を使い、第 2
 引数にエンコーディング名を指定します。
 
-.. % % If you have data in a specific encoding and want to produce a
-.. % % corresponding Unicode string from it, you can use the
-.. % % \function{unicode()} function with the encoding name as the second
-.. % % argument.
-
 ::
 
-   unicode('\xc2\x82\xc2\xa0\xc2\x82\xc2\xa2\xc2\x82\xc2\xa4', 'utf-8')
-   u'\x82\xa0\x82\xa2\x82\xa4'
+   >>> unicode('\xe3\x81\x82\xe3\x81\x84\xe3\x81\x86', 'utf-8')
+   u'\u3042\u3044\u3046'
 
 
 .. _tut-lists:
@@ -681,22 +558,13 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
 最も汎用的なデータ型は *リスト(list)* で、コンマで区切られた値からなるリストを各カッコで囲んだものとして書き表されます。
 リストの要素をすべて同じ型にする必要はありません。
 
-.. % Lists
-.. % % Python knows a number of \emph{compound} data types, used to group
-.. % % together other values.  The most versatile is the \emph{list}, which
-.. % % can be written as a list of comma-separated values (items) between
-.. % % square brackets.  List items need not all have the same type.
-
 ::
 
    >>> a = ['spam', 'eggs', 100, 1234]
    >>> a
    ['spam', 'eggs', 100, 1234]
 
-文字列のインデクスと同じく、リストのインデクスは 0 から開始します。また、スライス、連結なども行えます:
-
-.. % % Like string indices, list indices start at 0, and lists can be sliced,
-.. % % concatenated and so on:
+文字列のインデクスと同じく、リストのインデクスは 0 から開始します。また、スライス、連結なども行えます。
 
 ::
 
@@ -722,10 +590,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> a[:]
    ['spam', 'eggs', 100, 1234]
 
-:term:`immutable` な文字列型と違い、リストは個々の要素を変更することができます。
-
-.. % % Unlike strings, which are \emph{immutable}, it is possible to change
-.. % % individual elements of a list:
+不変(:term:`immutable`) な文字列型と違い、リストは個々の要素を変更することができます。
 
 ::
 
@@ -735,10 +600,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> a
    ['spam', 'eggs', 123, 1234]
 
-スライスに代入することもできます。スライスの代入を行って、リストのサイズを変更したり、完全に消すことさえできます:
-
-.. % % Assignment to slices is also possible, and this can even change the size
-.. % % of the list or clear it entirely:
+スライスに代入することもできます。スライスの代入を行って、リストのサイズを変更したり、完全に消すことさえできます。
 
 ::
 
@@ -765,8 +627,6 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
 
 組込み関数 :func:`len` はリストにも適用できます。
 
-.. % % The built-in function \function{len()} also applies to lists:
-
 ::
 
    >>> a = ['a', 'b', 'c', 'd']
@@ -774,9 +634,6 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    4
 
 リストを入れ子にする (ほかのリストを含むリストを造る) ことも可能です。例えば、
-
-.. % % It is possible to nest lists (create lists containing other lists),
-.. % % for example:
 
 ::
 
@@ -794,11 +651,8 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
    >>> q
    [2, 3, 'xtra']
 
-最後の例では、 ``p[1]`` と ``q`` が実際には同一のオブジェクトを参照していることに注意してください!　 *オブジェクトの意味付け
-(semantics)* については、後ほど触れることにします。
-
-.. % % Note that in the last example, \code{p[1]} and \code{q} really refer to
-.. % % the same object!  We'll come back to \emph{object semantics} later.
+最後の例では、 ``p[1]`` と ``q`` が実際には同一のオブジェクトを参照していることに注意してください!
+*オブジェクトの意味付け(semantics)* については、後ほど触れることにします。
 
 
 .. _tut-firststeps:
@@ -807,12 +661,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
 ========================
 
 もちろん、2 たす 2 よりももっと複雑な仕事にも Python を使うことができます。 *Fibonacci* 級数列の先頭の部分列は次のようにして
-書くことができます:
-
-.. % First Steps Towards Programming
-.. % % Of course, we can use Python for more complicated tasks than adding
-.. % % two and two together.  For instance, we can write an initial
-.. % % sub-sequence of the \emph{Fibonacci} series as follows:
+書くことができます。
 
 ::
 
@@ -832,25 +681,24 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
 
 上の例では、いくつか新しい機能を取り入れています。
 
-.. % % This example introduces several new features.
-
-* 最初の行には * 複数同時の代入 (multiple assignment)* が入っています: 変数 ``a`` と ``b`` は、それぞれ同時に新しい値
+* 最初の行には *複数同時の代入 (multiple assignment)* が入っています: 変数 ``a`` と ``b`` は、それぞれ同時に新しい値
   0 と 1 になっています。この代入は最後の行でも再度使われており、代入が行われる前に右辺の式がまず評価されます。右辺の式は左から右へと
   順番に評価されます。
 
 * :keyword:`while` は、条件 (ここでは ``b < 10``) が真である限り実行を繰り返し (ループし) ます。Python では、C
-  言語と同様に、ゼロでない整数値は真となり、ゼロは偽です。条件式は文字列値やリスト値、実際には任意のシーケンス型でもかまいません。例中で使われている条件テスト
-  は単なる比較です。標準的な比較演算子は C 言語と同様です: すなわち、 ``<`` (より小さい)、 ``>`` (より大きい)、 ``==`` (等しい)、
-  ``<=`` (より小さいか等しい)、 ``>=`` (より大きいか等しい)、および ``!=`` (等しくない) 、です。
+  言語と同様に、ゼロでない整数値は真となり、ゼロは偽です。条件式は文字列値やリスト値、実際には任意のシーケンス型でもかまいません。
+  1つ以上の長さのシーケンスは真で、空のシーケンスは偽になります。
+  例中で使われている条件テストはシンプルな比較です。標準的な比較演算子は C 言語と同様です: すなわち、 ``<`` (より小さい)、 ``>`` (より大きい)、 ``==`` (等しい)、
+  ``<=`` (より小さいか等しい)、 ``>=`` (より大きいか等しい)、および ``!=`` (等しくない)、です。
 
-* ループの* 本体 (body)* は* インデント (indent, 字下げ)*  されています: インデントは Python
+* ループの *本体 (body)* は *インデント (indent, 字下げ)*  されています: インデントは Python
   において実行文をグループにまとめる方法です。Python は (いまだに!) 賢い入力行編集機能を提供していないので、
   インデントされた各行を入力するにはタブや (複数個の) スペースを使わなければなりません。実際には、Python へのより複雑な入力を準備する
   にはテキストエディタを使うことになるでしょう; ほとんどのテキストエディタは自動インデント機能を持っています。
   複合文を対話的に入力するときには、(パーザはいつ最後の行を入力したのか推し量ることができないので) 入力の完了を示すために最後に空行を
   続けなければなりません。基本ブロックの各行は同じだけインデントされていなければならないので注意してください。
 
-* :keyword:`print` は指定した (1 つまたは複数の) 式の値を書き出します。 :keyword:`print` は、(電卓の例でしたように)
+* :keyword:`print` は指定した (1つまたは複数の) 式の値を書き出します。 :keyword:`print` は、(電卓の例でしたように)
   単に値を出力したい式を書くのとは、複数の式や文字列を扱う方法が違います。文字列は引用符無しで出力され、複数の要素の間にはスペースが挿入されるので、
   以下のように出力をうまく書式化できます。 ::
 
@@ -858,9 +706,7 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
      >>> print 'The value of i is', i
      The value of i is 65536
 
-  末尾にコンマを入れると、出力を行った後に改行されません:
-
-  .. % % A trailing comma avoids the newline after the output:
+  末尾にコンマを入れると、出力を行った後に改行されません。
 
   ::
 
@@ -873,7 +719,4 @@ Python は数多くの *複合 (compound)* データ型を備えており、別�
 
   インタプリタは、最後に入力した行がまだ完全な文になっていない場合、
   改行をはさんで次のプロンプトを出力することに注意してください。
-
-  .. % % Note that the interpreter inserts a newline before it prints the next
-  .. % % prompt if the last line was not completed.
 

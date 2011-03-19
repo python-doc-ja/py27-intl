@@ -84,7 +84,7 @@ class HtmlDiffMod(difflib.HtmlDiff):
         if self._wrapcolumn:
             diffs = self._line_wrapper(diffs)
 
-        diffs = list(diffs)
+        diffs = list(diffs)  # OVERWRITED HERE
 
         # collect up from/to lines and flags into lists (also format the lines)
         fromlist,tolist,flaglist = self._collect_lines(diffs)
@@ -95,8 +95,8 @@ class HtmlDiffMod(difflib.HtmlDiff):
 
         s = []
         fmt_diff = '            <tr><td class="diff_next"%s>%s</td>%s</tr>' + \
-              '<tr><td class="diff_next">%s</td>%s</tr>\n'
-        fmt_0 = '<tr><td class="diff_next"%s>%s</td>%s</tr>\n'
+              '<tr><td class="diff_next">%s</td>%s</tr>\n'  # OVERWRITED HERE
+        fmt_0 = '<tr><td class="diff_next"%s>%s</td>%s</tr>\n'  # OVERWRITED HERE
 
         fmt0 = '            <tr><td class="diff_next"%s>%s</td>%s</tr>' 
         for i in range(len(flaglist)):
@@ -105,7 +105,7 @@ class HtmlDiffMod(difflib.HtmlDiff):
                 # generated for the first line
                 if i > 0:
                     s.append('        </tbody>        \n        <tbody>\n')
-            elif flaglist[i] == True:
+            elif flaglist[i] == True:  # OVERWRITED HERE
                 if diffs[i][0][0]:
                     s.append( fmt_0 % (next_id[i], next_href[i], fromlist[i]) )
                 if diffs[i][1][0]:     
@@ -114,7 +114,7 @@ class HtmlDiffMod(difflib.HtmlDiff):
                 s.append( fmt0 % (next_id[i],next_href[i],fromlist[i] ))
 
         if fromdesc or todesc:
-            header_row = '<thead><tr>%s%s</tr></thead>' % (
+            header_row = '<thead><tr>%s%s</tr></thead>' % (  # OVERWRITED HERE
                 '<th class="diff_next"><br /></th>',
                 '<th colspan="2" class="diff_header">%s =&gt; %s</th>' % (fromdesc, todesc))
         else:

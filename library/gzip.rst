@@ -20,7 +20,8 @@
 .. :program:`gzip`\ -format files, automatically compressing or decompressing the
 .. data so that it looks like an ordinary file object.
 
-:mod:`gzip` モジュールは、Pythonのファイルオブジェクトに似た :class:`GzipFile` クラスを提供しています。
+:mod:`gzip` モジュールは、Pythonのファイルオブジェクトに似た
+:class:`GzipFile` クラスを提供しています。
 :class:`GzipFile` クラスは :program:`gzip` フォーマットのファイルを読み書きします。
 自動的にデータを圧縮・伸張するので、外からは通常のファイルオブジェクトのように見えます。
 
@@ -43,36 +44,53 @@
 
 .. class:: GzipFile([filename[, mode[, compresslevel[, fileobj]]]])
 
-   :class:`GzipFile` クラスのコンストラクタです。 :class:`GzipFile` オブジェクトは :meth:`readinto` と
-   :meth:`truncate` メソッドを除くほとんどのファイルオブジェクトのメソッドをシミュレートします。少なくとも *fileobj* および
-   *filename* は有効な値でなければなりません。
+   :class:`GzipFile` クラスのコンストラクタです。
+   :class:`GzipFile` オブジェクトは :meth:`readinto` と
+   :meth:`truncate` メソッドを除くほとんどのファイルオブジェクトの
+   メソッドをシミュレートします。
+   少なくとも *fileobj* および *filename* は有効な値でなければなりません。
 
-   クラスの新しいインスタンスは、 *fileobj* に基づいて作成されます。 *fileobj* は通常のファイル、 :class:`StringIO`
-   オブジェクト、そしてその他ファイルをシミュレートできるオブジェクトでかまいません。値はデフォルトでは None で、ファイルオブジェクトを生成するために
+   クラスの新しいインスタンスは、 *fileobj* に基づいて作成されます。
+   *fileobj* は通常のファイル、 :class:`StringIO` オブジェクト、
+   そしてその他ファイルをシミュレートできるオブジェクトでかまいません。
+   値はデフォルトでは None で、ファイルオブジェクトを生成するために
    *filename* を開きます。
 
-   :program:`gzip` ファイルヘッダ中には、ファイルが解凍されたときの元のファイル名を収めることができますが、 *fileobj* が
-   ``None``  でない場合、引数 *filename* がファイル名として認識できる文字列であれば、 *filename*
-   はファイルヘッダに収めるためだけに使われます。そうでない場合（この値はデフォルトでは空文字列です）、元のファイル名はヘッダに収められません。
+   :program:`gzip` ファイルヘッダ中には、
+   ファイルが解凍されたときの元のファイル名を収めることができますが、 *fileobj* が
+   ``None``  でない場合、引数 *filename* がファイル名として認識できる文字列であれば、
+   *filename* はファイルヘッダに収めるためだけに使われます。
+   そうでない場合（この値はデフォルトでは空文字列です）、
+   元のファイル名はヘッダに収められません。
 
-   *mode* 引数は、ファイルを読み出すのか、書き込むのかによって、  ``'r'``, ``'rb'``, ``'a'``, ``'ab'``,
-   ``'w'``,  そして ``'wb'``, のいずれかになります。 *fileobj* のファイルモードが認識可能な場合、 *mode* はデフォルトで
-   *fileobj* のモードと同じになります。そうでない場合、デフォルトのモードは ``'rb'`` です。'b' フラグがついて
-   いなくても、ファイルがバイナリモードで開かれることを保証するために 'b' フラグが追加されます。これはプラットフォーム間での移植性のためです。
+   *mode* 引数は、ファイルを読み出すのか、書き込むのかによって、
+   ``'r'``, ``'rb'``, ``'a'``, ``'ab'``, ``'w'``,  そして ``'wb'``
+   のいずれかになります。
+   *fileobj* のファイルモードが認識可能な場合、 *mode* はデフォルトで
+   *fileobj* のモードと同じになります。
+   そうでない場合、デフォルトのモードは ``'rb'`` です。
+   'b' フラグがついていなくても、ファイルがバイナリモードで開かれることを保証するために
+   'b' フラグが追加されます。これはプラットフォーム間での移植性のためです。
 
-   *compresslevel* 引数は ``1`` から ``9`` までの整数で、圧縮のレベルを制御します。 ``1`` は最も高速で最小限の圧縮しか
-   行いません。 ``9`` は最も低速ですが、最大限の圧縮を行います。デフォルトの値は ``9`` です。
+   *compresslevel* 引数は ``1`` から ``9`` までの整数で、圧縮のレベルを制御します。
+   ``1`` は最も高速で最小限の圧縮しか行いません。
+   ``9`` は最も低速ですが、最大限の圧縮を行います。デフォルトの値は ``9`` です。
 
-   圧縮したデータの後ろにさらに何か追記したい場合もあるので、 :class:`GzipFile` オブジェクトの :meth:`close` メソッド呼び出しは
-   *fileobj* をクローズしません。この機能によって、書き込みのためにオープンした :class:`StringIO` オブジェクトを *fileobj*
-   として渡し、（ :class:`GzipFile` を :meth:`close` した後に） :class:`StringIO` オブジェクトの
-   :meth:`getvalue` メソッドを使って書き込んだデータの入っているメモリバッファを取得することができます。
+   圧縮したデータの後ろにさらに何か追記したい場合もあるので、
+   :class:`GzipFile` オブジェクトの :meth:`close` メソッド呼び出しは
+   *fileobj* をクローズしません。
+   この機能によって、書き込みのためにオープンした :class:`StringIO` オブジェクトを
+   *fileobj* として渡し、(:class:`GzipFile` を :meth:`close` した後に)
+   :class:`StringIO` オブジェクトの :meth:`getvalue` メソッドを使って
+   書き込んだデータの入っているメモリバッファを取得することができます。
 
+   :class:`GzipFile` はイテレーションをサポートします。
 
 .. function:: open(filename[, mode[, compresslevel]])
 
-   ``GzipFile(filename,`` ``mode,`` ``compresslevel)`` の短縮形です。引数 *filename*
-   は必須です。デフォルトで *mode* は ``'rb'`` に、 *compresslevel* は ``9`` に設定されています。
+   ``GzipFile(filename,`` ``mode,`` ``compresslevel)`` の短縮形です。
+   引数 *filename* は必須です。
+   デフォルトで *mode* は ``'rb'`` に、 *compresslevel* は ``9`` に設定されています。
 
 
 .. _gzip-usage-examples:

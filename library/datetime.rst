@@ -43,7 +43,6 @@
 
 :mod:`datetime` モジュールでは以下の定数を公開しています:
 
-
 .. data:: MINYEAR
 
    :class:`date` や :class:`datetime` オブジェクトで許されている、年を
@@ -68,8 +67,8 @@
 利用可能なデータ型
 ------------------
 
-
 .. class:: date
+   :noindex:
 
    理想化された naive な日付表現で、実質的には、これまでもこれからも現
    在のグレゴリオ暦 (Gregorian calender) であると仮定しています。
@@ -77,6 +76,7 @@
 
 
 .. class:: time
+   :noindex:
 
    理想化された時刻表現で、あらゆる特定の日における影響から独立してお
    り、毎日厳密に 24\*60\*60 秒であると仮定します ("うるう秒: leap
@@ -85,6 +85,7 @@
 
 
 .. class:: datetime
+   :noindex:
 
    日付と時刻を組み合わせたもの。属性: :attr:`year`, :attr:`month`,
    :attr:`day`, :attr:`hour`, :attr:`minute`, :attr:`second`,
@@ -92,6 +93,7 @@
 
 
 .. class:: timedelta
+   :noindex:
 
    :class:`date`, :class:`time`,あるいは :class:`datetime` クラス
    の二つのインスタンス間の時間差をマイクロ秒精度で表す経過時間値です。
@@ -134,7 +136,6 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 
 :class:`timedelta` オブジェクトは経過時間、すなわち二つの日付や時刻間の差を表します。
 
-
 .. class:: timedelta([days[, seconds[, microseconds[, milliseconds[, minutes[, hours[, weeks]]]]]]])
 
    全ての引数がオプションで、デフォルト値は *0* です。引数は整数、長整
@@ -171,8 +172,8 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
       >>> (d.days, d.seconds, d.microseconds)
       (-1, 86399, 999999)
 
-クラス属性を以下に示します:
 
+クラス属性を以下に示します:
 
 .. attribute:: timedelta.min
 
@@ -238,6 +239,15 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 | ``abs(t)``                     | ``t.days >= 0`` のときには +*t*, ``t.days < 0`` の              |
 |                                | ときには -*t* となります。(2)                                   |
 +--------------------------------+-----------------------------------------------------------------+
+| ``str(t)``                     | ``[D day[s], ][H]H:MM:SS[.UUUUUU]`` という形式の文字列          |
+|                                | を返します。                                                    |
+|                                | ``t`` が負の値の場合は ``D`` は負の値となります。(5)            |
++--------------------------------+-----------------------------------------------------------------+
+| ``repr(t)``                    | ``datetime.timedelta(D[, S[, U]])`` という形式の文字列を        |
+|                                | 返します。                                                      |
+|                                | ``t`` が負の場合は D は負の値となります。(5)                    |
++--------------------------------+-----------------------------------------------------------------+
+
 
 注釈:
 
@@ -252,6 +262,15 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 
 (4)
    -*timedelta.max* は :class:`timedelta` オブジェクトで表現することができません。
+
+(5)
+   :class:`timedelta` オブジェクトの文字列表現は内部表現に類似した形に正規化されます。
+   そのため負の timedelta はいくぶん珍しい結果となります。例えば:
+
+   >>> timedelta(hours=-5)
+   datetime.timedelta(-1, 68400)
+   >>> print(_)
+   -1 day, 19:00:00
 
 上に列挙した操作に加えて、 :class:`timedelta` オブジェクトは
 :class:`date` および :class:`datetime` オブジェクトとの間で加減算をサ
@@ -318,14 +337,13 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 他のコンストラクタ、および全てのクラスメソッドを以下に示します:
 
-
-.. method:: date.today()
+.. classmethod:: date.today()
 
    現在のローカルな日付を返します。
    ``date.fromtimestamp(time.time())`` と等価です。
 
 
-.. method:: date.fromtimestamp(timestamp)
+.. classmethod:: date.fromtimestamp(timestamp)
 
    :func:`time.time` が返すような POSIX タイムスタンプに対応する、ロー
    カルな日付を返します。タイムスタンプがプラットフォームにおける C 関
@@ -336,7 +354,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :meth:`fromtimestamp` はうるう秒を無視します。
 
 
-.. method:: date.fromordinal(ordinal)
+.. classmethod:: date.fromordinal(ordinal)
 
    予期的グレゴリオ暦順序に対応する日付を表し、 1 年 1 月 1 日が序数 1
    となります。 ``1 <= ordinal <= date.max.toordinal()`` でない場合、
@@ -345,7 +363,6 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 
 以下にクラス属性を示します:
-
 
 .. attribute:: date.min
 
@@ -364,7 +381,6 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 以下に (読み出し専用の) インスタンス属性を示します:
 
-
 .. attribute:: date.year
 
    両端値を含む :const:`MINYEAR` から :const:`MAXYEAR` までの値です。
@@ -378,6 +394,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. attribute:: date.day
 
    1 から与えられた月と年における日数までの値です。
+
 
 サポートされている操作を以下に示します:
 
@@ -438,7 +455,6 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 以下にインスタンスメソッドを示します:
 
-
 .. method:: date.replace(year, month, day)
 
    キーワード引数で指定されたデータメンバが置き換えられることを除き、
@@ -483,7 +499,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    ISO カレンダーはグレゴリオ暦の変種として広く用いられています。細か
    い説明については
-   http://www.phys.uu.nl/vgent/calendar/isocalendar.htm を参照してくだ
+   http://www.phys.uu.nl/~vgent/calendar/isocalendar.htm を参照してくだ
    さい。
 
    ISO 年は完全な週が 52 または 53 週あり、週は月曜から始まって日曜に
@@ -524,7 +540,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    明示的な書式化文字列で制御された、日付を表現する文字列を返します。
    時間、分、秒を表す書式化コードは値 0 になります。
-   :ref:`strftime-behavior` も参照下さい。
+   :ref:`strftime-strptime-behavior` も参照下さい。
 
 イベントまでの日数を数える例を示します::
 
@@ -592,7 +608,6 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 以下にコンストラクタを示します:
 
-
 .. class:: datetime(year, month, day[, hour[, minute[, second[, microsecond[, tzinfo]]]]])
 
    年、月、および日の引数は必須です。 *tzinfo* は ``None`` または
@@ -612,7 +627,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 その他のコンストラクタ、およびクラスメソッドを以下に示します:
 
 
-.. method:: datetime.today()
+.. classmethod:: datetime.today()
 
    現在のローカルな :class:`datetime` を :attr:`tzinfo` が ``None`` で
    あるものとして返します。これは
@@ -620,7 +635,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :meth:`fromtimestamp` も参照してください。
 
 
-.. method:: datetime.now([tz])
+.. classmethod:: datetime.now([tz])
 
    現在のローカルな日付および時刻を返します。オプションの引数 *tz* が
    ``None`` であるか指定されていない場合、このメソッドは
@@ -636,7 +651,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    す。 :meth:`today`, :meth:`utcnow` も参照してください。
 
 
-.. method:: datetime.utcnow()
+.. classmethod:: datetime.utcnow()
 
    現在の UTC における日付と時刻を、 :attr:`tzinfo` が ``None`` である
    ものとして返します。このメソッドは :meth:`now` に似ていますが、現在
@@ -644,7 +659,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    として返します。 :meth:`now` も参照してください。
 
 
-.. method:: datetime.fromtimestamp(timestamp[, tz])
+.. classmethod:: datetime.fromtimestamp(timestamp[, tz])
 
    :func:`time.time` が返すような、 POSIX タイムスタンプに対応するロー
    カルな日付と時刻を返します。オプションの引数 *tz* が ``None`` であ
@@ -669,7 +684,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :meth:`utcfromtimestamp` も参照してください。
 
 
-.. method:: datetime.utcfromtimestamp(timestamp)
+.. classmethod:: datetime.utcfromtimestamp(timestamp)
 
    :func:`time.time` が返すような POSIX タイムスタンプに対応する、 UTC
    での :class:`datetime` オブジェクトを返します。タイムスタンプがプラッ
@@ -679,7 +694,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    :meth:`fromtimestamp` も参照してください。
 
 
-.. method:: datetime.fromordinal(ordinal)
+.. classmethod:: datetime.fromordinal(ordinal)
 
    1 年 1 月 1 日を序数 1 とする予測的グレゴリオ暦序数に対応する
    :class:`datetime` オブジェクトを返します。 ``1 <= ordinal <=
@@ -688,7 +703,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    ロ秒はすべて 0 となり、 :attr:`tzinfo` は ``None`` となります。
 
 
-.. method:: datetime.combine(date, time)
+.. classmethod:: datetime.combine(date, time)
 
    与えられた :class:`date` オブジェクトと同じデータメンバを持ち、時刻
    と :attr:`tzinfo` メンバが与えられた :class:`time` オブジェクトと等
@@ -699,19 +714,20 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    無視されます。
 
 
-.. method:: datetime.strptime(date_string, format)
+.. classmethod:: datetime.strptime(date_string, format)
 
    *date_string* に対応した :class:`datetime` をかえします。 *format*
    にしたがって構文解析されます。これは、
    ``datetime(*(time.strptime(date_string, format)[0:6]))`` と等価です。
    date_stringとformatが :func:`time.strptime` で構文解析できない場合
    や、この関数が時刻タプルを返してこない場合には :exc:`ValueError` を
-   送出します。
+   送出します。セクション :ref:`strftime-strptime-behavior` を
+   参照して下さい。
 
    .. versionadded:: 2.5
 
-以下にクラス属性を示します:
 
+以下にクラス属性を示します:
 
 .. attribute:: datetime.min
 
@@ -730,8 +746,8 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    等しくない :class:`datetime` オブジェクト間の最小の差で、
    ``timedelta(microseconds=1)`` です。
 
-以下に (読み出し専用の) インスタンス属性を示します:
 
+以下に (読み出し専用の) インスタンス属性を示します:
 
 .. attribute:: datetime.year
 
@@ -772,6 +788,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    :class:`datetime` コンストラクタに *tzinfo* 引数として与えられたオ
    ブジェクトになり、何も渡されなかった場合には ``None`` になります。
+
 
 以下にサポートされている演算を示します:
 
@@ -857,7 +874,6 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 であるとみなされます。
 
 インスタンスメソッドを以下に示します:
-
 
 .. method:: datetime.date()
 
@@ -1032,7 +1048,8 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.strftime(format)
 
    明示的な書式化文字列で制御された、日付を表現する文字列を返します。 :meth:`strftime` のふるまいについてのセクション
-   :ref:`strftime-behavior` を参照してください。
+   :ref:`strftime-strptime-behavior` を参照してください。
+
 
 datetime オブジェクトを使う例:
 
@@ -1145,7 +1162,6 @@ datetime を tzinfo と組み合わせて使う:
 :class:`time` オブジェクトは (ローカルの) 日中時刻を表現します。この時刻表現は特定の日の影響を受けず, :class:`tzinfo`
 オブジェクトを介した修正の対象となります。
 
-
 .. class:: time(hour[, minute[, second[, microsecond[, tzinfo]]]])
 
    全ての引数はオプションです。*tzinfo* は ``None`` または :class:`tzinfo` クラスのサブクラスのインスタンス
@@ -1178,8 +1194,8 @@ datetime を tzinfo と組み合わせて使う:
    等しくない :class:`datetime` オブジェクト間の最小の差で、  ``timedelta(microseconds=1)``
    ですが, :class:`time` オブジェクト間の四則演算はサポートされていないので注意してください。
 
-以下に (読み出し専用の) インスタンス属性を示します:
 
+以下に (読み出し専用の) インスタンス属性を示します:
 
 .. attribute:: time.hour
 
@@ -1206,6 +1222,7 @@ datetime を tzinfo と組み合わせて使う:
    :class:`time` コンストラクタに *tzinfo* 引数として与えられたオブジェクトになり、何も渡されなかった場合には ``None``
    になります。
 
+
 以下にサポートされている操作を示します:
 
 * :class:`time` と :class:`time` の比較では、*a* が時刻として *b* よりも前を表す場合に *a* は *b*
@@ -1225,7 +1242,6 @@ datetime を tzinfo と組み合わせて使う:
   を返した場合には ``0``) を差し引いて変換した後の結果がゼロでない場合、かつそのときに限って真とみなされます。
 
 以下にインスタンスメソッドを示します:
-
 
 .. method:: time.replace([hour[, minute[, second[, microsecond[, tzinfo]]]]])
 
@@ -1499,8 +1515,8 @@ pickle 化についての特殊な要求事項: :class:`tzinfo` のサブクラ�
 標準時間 (standard time) および夏時間 (daylight time) の両方を記述して
 いる :class:`tzinfo` のサブクラスでは、回避不能の難解な問題が年に 2 度
 あるので注意してください。具体的な例として、東部アメリカ時刻 (US
-Eastern, UTC -5000) を考えます。 EDT は 4 月の最初の日曜日の 1:59
-(EST) 以後に開始し、10 月の最後の日曜日の 1:59 (EDT) に終了します::
+Eastern, UTC -5000) を考えます。 EDT は 3 月の第二日曜日の 1:59
+(EST) 以後に開始し、11 月の最初の日曜日の 1:59 (EDT) に終了します::
 
      UTC   3:MM  4:MM  5:MM  6:MM  7:MM  8:MM
      EST  22:MM 23:MM  0:MM  1:MM  2:MM  3:MM
@@ -1539,10 +1555,10 @@ UTC や、他のオフセットが固定された :class:`tzinfo` のサブク�
 セット) のみを表すクラス) を使う限り、あいまいさは発生しません。
 
 
-.. _strftime-behavior:
+.. _strftime-strptime-behavior:
 
-:meth:`strftime` の振る舞い
----------------------------
+:meth:`strftime` と :meth:`strptime` の振る舞い
+-----------------------------------------------
 
 :class:`date`, :class:`datetime`,および :class:`time` オブジェクト
 は全て、明示的な書式化文字列でコントロールして時刻表現文字列を生成する
@@ -1552,9 +1568,14 @@ UTC や、他のオフセットが固定された :class:`tzinfo` のサブク�
 オブジェクトが :meth:`timetuple` メソッドをサポートしているわけではあ
 りません。
 
+逆に :meth:`datetime.strptime` クラスメソッドは日付や時刻に対応する
+フォーマット文字列から :class:`datetime` オブジェクトを生成します。
+``datetime.strptime(date_string, format)`` は
+``datetime(*(time.strptime(date_string, format)[0:6]))`` と等価です。
+
 :class:`time` オブジェクトでは、年、月、日の値がないため、それらの書式
 化コードを使うことができません。無理矢理使った場合、年は ``1900`` に置
-き換えられ、月と日は ``0`` に置き換えられます。
+き換えられ、月と日は ``1`` に置き換えられます。
 
 :class:`date` オブジェクトでは、時、分、秒、マイクロ秒の値がないため、
 それらの書式化コードを使うことができません。無理矢理使った場合、これら
@@ -1682,12 +1703,12 @@ Python はプラットフォームの C ライブラリから :func:`strftime`
 Notes:
 
 (1)
-   :func:`strptime` 関数と共に使われた場合、 ``%f`` 指定子は 1 桁から
+   :meth:`strptime` メソッドと共に使われた場合、 ``%f`` 指定子は 1 桁から
    6 桁の数字を受け付け、右側から 0 埋めされます。
    ``%f`` は C 標準規格の書式セットに拡張されます。
 
 (2)
-   :func:`strptime` 関数と共に使われた場合、 ``%p`` 指定子は出力の時間
+   :meth:`strptime` メソッドと共に使われた場合、 ``%p`` 指定子は出力の時間
    フィールドのみに影響し、 ``%I`` 指定子が使われたかのように振る舞い
    ます。
 
@@ -1696,7 +1717,7 @@ Notes:
    ですが) 2秒のうるう秒を考慮してのことです。
 
 (4)
-   :func:`strptime` 関数と共に使われた場合、 ``%U`` と ``%W`` 指定子は、
+   :meth:`strptime` メソッドと共に使われた場合、 ``%U`` と ``%W`` 指定子は、
    年と曜日が指定された場合の計算でのみ使われます。
 
 (5)

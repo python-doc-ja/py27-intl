@@ -30,9 +30,6 @@ Windows システム上でも利用できます。
    `Tkinter reference: a GUI for Python <http://inhost.nmt.edu/tcc/help/pubs/lang.html>`_
       オンラインリファレンス資料です。
 
-   `Tkinter for JPython <http://jtkinter.sourceforge.net>`_
-      Jython から Tkinter へのインタフェースです。
-
    `Python and Tkinter Programming <http://www.amazon.com/exec/obidos/ASIN/1884777813>`_
       John Graysonによる解説書 (ISBN 1-884777-81-3) です。
 
@@ -575,13 +572,13 @@ side
 この関連付け機能がうまく働くのは、 :mod:`Tkinter` モジュール内で
 Variable というクラスからサブクラス化されている変数によるオプションだけです。
 
-Variable には、 :class:`StringVar` 、 :class:`IntVar` 、 :class:`DoubleVar`
-および :class:`BooleanVar` といった便利なサブクラスがすでにすでに数多く定義\
-されています。こうした変数の現在の値を読み出したければ、
-:meth:`get` メソッドを呼び出します。
-また、値を変更したければ :meth:`set` メソッドを呼び出します。
-このプロトコルに従っている限り、それ以上なにも手を加えなくても\
-ウィジェットは常に現在値に追従します。
+Variable には、 :class:`StringVar`, :class:`IntVar`, :class:`DoubleVar`,
+:class:`BooleanVar` といった便利なサブクラスがすでにすでに数多く定義されて
+います。こうした変数の現在の値を読み出したければ、 :meth:`get` メソッドを
+呼び出します。
+また、値を変更したければ :meth:`!set` メソッドを呼び出します。
+このプロトコルに従っている限り、それ以上なにも手を加えなくてもウィジェットは
+常に現在値に追従します。
 
 例えば::
 
@@ -732,7 +729,7 @@ relief
    ``"raised"`` 、 ``"sunken"`` 、 ``"flat"`` 、 ``"groove"`` 、と ``"ridge"`` 。
 
 scrollcommand
-   これはほとんど常にスクロールバー・ウィジェットの :meth:`set` メソッドですが、
+   これはほとんど常にスクロールバー・ウィジェットの :meth:`!set` メソッドですが、
    一引数を取るどんなウィジェットメソッドでもあり得ます。例えば、
    Python ソース配布の :file:`Demo/tkinter/matt/canvas-with-scrollbars.py`
    ファイルを参照してください。

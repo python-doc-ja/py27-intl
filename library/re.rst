@@ -1,4 +1,3 @@
-
 :mod:`re` --- 正規表現操作
 ==========================
 
@@ -202,8 +201,8 @@
    :const:`re.M` (MULTILINEモード), :const:`re.S` (DOTALLモード),
    :const:`re.U` (Unicode依存), :const:`re.X` (冗長) ) を設定します。
    (フラグについては、 :ref:`contents-of-module-re` に記述があります)
-   これは、もし *flag* 引数を :func:`compile` 関数に渡さずに、そのフラグを正規表現の一部として
-   含めたいならば役に立ちます。
+   これは、もし *flag* 引数を :func:`re.compile` 関数に渡さずに、そのフラグを
+   正規表現の一部として含めたいならば役に立ちます。
 
    ``(?x)`` フラグは、式が構文解析される方法を変更することに注意して下さい。
    これは式文字列内の最初か、あるいは1つ以上の空白文字の後で使うべきです。
@@ -310,8 +309,9 @@
    (backspace)文字を表します。
 
 ``\B``
-   空文字列とマッチしますが、それが単語の先頭あるいは末尾に *ない* 時だけです。これは ``\b`` の
-   ちょうど反対ですので、 ``LOCALE`` と ``UNICODE`` の設定にも影響されます。
+   空文字列とマッチしますが、それが単語の先頭あるいは末尾に *ない* 時だけです。
+   これは ``\b`` のちょうど反対ですので、同じように ``LOCALE`` と ``UNICODE``
+   の設定に影響されます。
 
 ``\d``
    :const:`UNICODE` フラグが指定されていない場合、任意の十進数とマッチします；これは集合
@@ -422,7 +422,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 
       result = re.match(pattern, string)
 
-   と同じ意味ですが、 :func:`compile` を使ってその結果の正規表現オブジェクトを\
+   と同じ意味ですが、 :func:`re.compile` を使ってその結果の正規表現オブジェクトを
    再利用した方が、その式を一つのプログラムで何回も使う時にはより効率的です。
 
    .. note::
@@ -502,7 +502,8 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 
    .. note::
 
-      もし *string* のどこかにマッチを位置付けたいのであれば、代わりに :meth:`search` を使って下さい。
+      もし *string* のどこかにマッチを位置付けたいのであれば、代わりに
+      :func:`search` を使って下さい。
 
 
 .. function:: split(pattern, string[, maxsplit=0])
@@ -619,6 +620,13 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
    マッチしたいとき、役に立ちます。
 
 
+.. function:: purge()
+
+   .. Clear the regular expression cache.
+
+   正規表現キャッシュをクリアします。
+
+
 .. exception:: error
 
    ここでの関数の一つに渡された文字列が、正しい正規表現ではない時 (例えば、その括弧が対になっていなかった)、あるいはコンパイルや
@@ -630,26 +638,77 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 正規表現オブジェクト
 --------------------
 
-コンパイルされた正規表現オブジェクトは、以下のメソッドと属性をサポートします：
+.. class:: RegexObject
 
+   :class:`RegexObject` クラスは以下のメソッドと属性をサポートします:
 
-.. method:: RegexObject.match(string[, pos[, endpos]])
+   .. method:: RegexObject.search(string[, pos[, endpos]])
+      .. Scan through *string* looking for a location where this regular expression
+         produces a match, and return a corresponding :class:`MatchObject` instance.
+         Return ``None`` if no position in the string matches the pattern; note that this
+         is different from finding a zero-length match at some point in the string.
 
-   もし *string* の先頭の 0 個以上の文字がこの正規表現とマッチすれば、対応する :class:`MatchObject` インスタンスを返します。
-   もし文字列がパタンーとマッチしなければ、 ``None`` を返します；これは長さゼロのマッチとは異なることに注意して下さい。
+      *string* を走査して、この正規表現がマッチする場所を探し、対応する
+      :class:`MatchObject` インスタンスを返します。
+      string のどこにもマッチしない場合は ``None`` を返します。これは、 string
+      内のどこかで長さ0でマッチした場合と異なることに注意してください。
 
-   .. note::
+      .. The optional second parameter *pos* gives an index in the string where the
+         search is to start; it defaults to ``0``.  This is not completely equivalent to
+         slicing the string; the ``'^'`` pattern character matches at the real beginning
+         of the string and at positions just after a newline, but not necessarily at the
+         index where the search is to start.
 
-      もしマッチを *string* のどこかに位置付けたければ、代わりに :meth:`search` を使って下さい。
+      省略可能な、2つ目の引数 *pos* は、 string のどこから探し始めるかを指定する
+      index で、デフォルトでは 0 です。これは、文字列をスライスしてから検索するのと、
+      完全には同じではありません。パターン文字 ``'^'`` は本当の文字列の先頭と、
+      改行の直後にマッチしますが、検索を開始する index がマッチするとは限りません。
 
-   省略可能な第2のパラメータ *pos* は、文字列内の検索を始めるインデッスクを与えます；デフォールトでは ``0`` です。これは、文字列のスライシングと
-   完全に同じ意味だというわけではありません； ``'^'`` パターン文字は、文字列の実際の先頭と改行の直後とマッチしますが、
-   それが必ずしも検索が開始するインデックスであるわけではないからです。
+      .. The optional parameter *endpos* limits how far the string will be searched; it
+         will be as if the string is *endpos* characters long, so only the characters
+         from *pos* to ``endpos - 1`` will be searched for a match.  If *endpos* is less
+         than *pos*, no match will be found, otherwise, if *rx* is a compiled regular
+         expression object, ``rx.search(string, 0, 50)`` is equivalent to
+         ``rx.search(string[:50], 0)``.
 
-   省略可能なパラメータ *endpos* は、どこまで文字列が検索されるかを制限します；あたかもその文字列が *endpos* 文字長であるかのように
-   しますので、 *pos* から ``endpos - 1`` までの文字が、マッチのために検索されます。もし *endpos* が *pos* より小さければ、
-   マッチは見つかりませんが、そうでなくて、もし *rx* がコンパイルされた正規表現オブジェクトであれば、 ``rx.match(string, 0, 50)``
-   は ``rx.match(string[:50], 0)`` と同じ意味になります。
+      省略可能な引数 *endpos* は string のどこまでを検索するかを制限します。
+      これは string の長さが *endpos* 文字だった場合と同じように動作します。
+      つまり、 *pos* から ``endpos - 1`` の範囲の文字に対してパターンマッチします。
+      *endpos* が *pos* よりも小さい場合は、マッチは見つかりません。
+      それ以外の場合は、 *rx* がコンパイルされた正規表現として、
+      ``rx.search(string, 0, 50)`` は ``rx.search(string[:50], 0)`` と同じです。
+
+      >>> pattern = re.compile("d")
+      >>> pattern.search("dog")     # Match at index 0
+      <_sre.SRE_Match object at ...>
+      >>> pattern.search("dog", 1)  # No match; search doesn't include the "d"
+
+   .. method:: RegexObject.match(string[, pos[, endpos]])
+
+      .. If zero or more characters at the *beginning* of *string* match this regular
+         expression, return a corresponding :class:`MatchObject` instance.  Return
+         ``None`` if the string does not match the pattern; note that this is different
+         from a zero-length match.
+
+      もし *string* の **先頭の** 0 個以上の文字がこの正規表現とマッチすれば、
+      対応する :class:`MatchObject` インスタンスを返します。
+      もし文字列がパタンーとマッチしなければ、 ``None`` を返します。
+      これは長さゼロのマッチとは異なることに注意して下さい。
+
+      .. The optional *pos* and *endpos* parameters have the same meaning as for the
+         :meth:`~RegexObject.search` method.
+
+      省略可能な引数 *pos* と *endpos* 引数は、 :meth:`~RegexObject.search`
+      メソッドと同じ意味を持ちます。
+
+      .. .. note:
+         If you want to locate a match anywhere in *string*, use
+         :meth:`~RegexObject.search` instead.
+
+      .. note::
+
+         *string* のどこにでもマッチさせたければ、代わりに
+         :meth:`~RegexObject.search` を使って下さい。
 
       >>> pattern = re.compile("o")
       >>> pattern.match("dog")      # "o" は文字列 "dog." の先頭にないため、マッチしません
@@ -657,59 +716,57 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       <_sre.SRE_Match object at ...>
 
 
-.. method:: RegexObject.search(string[, pos[, endpos]])
+   .. method:: RegexObject.split(string[, maxsplit= 0])
 
-   *string* 全体を走査して、この正規表現がマッチする位置を探して、対応する :class:`MatchObject`
-   インスタンスを返します。もし文字列内にパターンとマッチする位置がないならば、 ``None`` を返します；
-   これは文字列内のある点で長さゼロのマッチを探すこととは異なることに注意して下さい。
-
-   省略可能な *pos* と *endpos* パラメータは、 :meth:`match` メソッドのものと同じ意味を持ちます。
+      :func:`split` 関数と同様で、コンパイルしたパターンを使います。
+      ただし、 :meth:`match` と同じように、省略可能な *pos*, *endpos*
+      引数で検索範囲を指定することができます。
 
 
-.. method:: RegexObject.split(string[, maxsplit= 0])
+   .. method:: RegexObject.findall(string[, pos[, endpos]])
 
-   :func:`split` 関数と同様で、コンパイルしたパターンを使います。
-
-
-.. method:: RegexObject.findall(string[, pos[, endpos]])
-
-   :func:`findall` 関数と同様で、コンパイルしたパターンを使います。
+      :func:`findall` 関数と同様で、コンパイルしたパターンを使います。
+      ただし、 :meth:`match` と同じように、省略可能な *pos*, *endpos*
+      引数で検索範囲を指定することができます。
 
 
-.. method:: RegexObject.finditer(string[, pos[, endpos]])
+   .. method:: RegexObject.finditer(string[, pos[, endpos]])
 
-   :func:`finditer` 関数と同様で、コンパイルしたパターンを使います。
-
-
-.. method:: RegexObject.sub(repl, string[, count=0])
-
-   :func:`sub` 関数と同様で、コンパイルしたパターンを使います。
+      :func:`finditer` 関数と同様で、コンパイルしたパターンを使います。
+      ただし、 :meth:`match` と同じように、省略可能な *pos*, *endpos*
+      引数で検索範囲を指定することができます。
 
 
-.. method:: RegexObject.subn(repl, string[, count=0])
+   .. method:: RegexObject.sub(repl, string[, count=0])
 
-   :func:`subn` 関数と同様で、コンパイルしたパターンを使います。
-
-
-.. attribute:: RegexObject.flags
-
-   flags 引数は、RE オブジェクトがコンパイルされたとき使われ、もし flags が何も提供されなければ ``0`` です。
+      :func:`sub` 関数と同様で、コンパイルしたパターンを使います。
 
 
-.. attribute:: RegexObject.groups
+   .. method:: RegexObject.subn(repl, string[, count=0])
 
-   パターンにあるキャプチャグループの数です。
-
-
-.. attribute:: RegexObject.groupindex
-
-   ``(?P<id>)`` で定義された任意の記号グループ名の、グループ番号への辞書マッピングです。もし記号グループが
-   パターン内で何も使われていなければ、辞書は空です。
+      :func:`subn` 関数と同様で、コンパイルしたパターンを使います。
 
 
-.. attribute:: RegexObject.pattern
+   .. attribute:: RegexObject.flags
 
-   RE オブジェクトがそれからコンパイルされたパターン文字列です。
+      RE オブジェクトがコンパイルされたとき使われた flags 引数です。
+      もし flags が何も提供されなければ ``0`` です。
+
+
+   .. attribute:: RegexObject.groups
+
+      パターンにあるキャプチャグループの数です。
+
+
+   .. attribute:: RegexObject.groupindex
+
+      ``(?P<id>)`` で定義された任意の記号グループ名の、グループ番号への辞書マッピングです。もし記号グループが
+      パターン内で何も使われていなければ、辞書は空です。
+
+
+   .. attribute:: RegexObject.pattern
+
+      RE オブジェクトがそれからコンパイルされたパターン文字列です。
 
 
 .. _match-objects:
@@ -717,170 +774,189 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 MatchObject オブジェクト
 ------------------------
 
-:class:`MatchObject` は、常に真偽値 :const:`True` を持ちます。
-そのため、例えば :func:`match` がマッチしたかどうかを if 文で確認することができます。
-:class:`MatchObject` は以下のメソッドと、属性を持ちます。
+.. class:: MatchObject
+
+   :class:`MatchObject` は、常に真偽値 :const:`True` を持ちます。
+   そのため、例えば :func:`match` がマッチしたかどうかを単純な if 文で確認する
+   ことができます。
+   :class:`MatchObject` は以下のメソッドと、属性を持ちます。
 
 
-.. method:: MatchObject.expand(template)
+   .. method:: MatchObject.expand(template)
 
-   テンプレート文字列 *template* に、 :meth:`sub` メソッドがするようなバックスラッシュ置換をして得られる文字列を返します。
-   ``\n`` のようなエスケープは適当な文字に変換され、数値の後方参照 (``\1`` 、 ``\2``) と名前付きの後方参照 (``\g<1>`` 、
-   ``\g<name>``) は、対応するグループの内容で置き換えられます。
-
-
-.. method:: MatchObject.group([group1, ...])
-
-   マッチした1個以上のサブグループを返します。もし引数で一つであれば、その結果は一つの文字列です；複数の引数があれば、
-   その結果は、引数ごとに一項目を持つタプルです。引数がなければ、 *group1* はデフォールトでゼロです(マッチしたもの
-   すべてが返されます)。もし *groupN* 引数がゼロであれば、対応する戻り値は、マッチする文字列全体です；
-   もしそれが範囲 [1..99] 内であれば、それは、対応する丸括弧つきグループとマッチする文字列です。もしグループ番号が
-   負であるか、あるいはパターンで定義されたグループの数より大きければ、 :exc:`IndexError` 例外が発生します。
-   グループがマッチしなかったパターンの一部に含まれていれば、対応する結果は ``None`` です。グループが、複数回マッチ
-   したパターンの一部に含まれていれば、最後のマッチが返されます。
-
-      >>> m = re.match(r"(\w+) (\w+)", "Isaac Newton, physicist")
-      >>> m.group(0)       # マッチした全体
-      'Isaac Newton'
-      >>> m.group(1)       # ひとつめのパターン化されたサブグループ
-      'Isaac'
-      >>> m.group(2)       # ふたつめのパターン化されたサブグループ
-      'Newton'
-      >>> m.group(1, 2)    # 複数の引数を与えるとタプルが返る
-      ('Isaac', 'Newton')
+      テンプレート文字列 *template* に、 :meth:`~RegexObject.sub` メソッドが
+      するようなバックスラッシュ置換をして得られる文字列を返します。
+      ``\n`` のようなエスケープは適当な文字に変換され、数値の後方参照
+      (``\1``, ``\2``) と名前付きの後方参照 (``\g<1>``, ``\g<name>``) は、
+      対応するグループの内容で置き換えられます。
 
 
-   もし正規表現が ``(?P<name>...)`` シンタクスを使うならば、
-   *groupN* 引数は、それらのグループ名によってグループを識別する文字列であっても構いません。
-   もし文字列引数がパターンのグループ名として使われていないものであれば、
-   :exc:`IndexError` 例外が発生します。
+   .. method:: MatchObject.group([group1, ...])
 
-   適度に複雑な例題:
+      マッチした1個以上のサブグループを返します。
+      もし引数で一つであれば、その結果は一つの文字列です。複数の引数があれば、
+      その結果は、引数ごとに一項目を持つタプルです。引数がなければ、 *group1*
+      はデフォールトでゼロです(マッチしたものすべてが返されます)。
+      もし *groupN* 引数がゼロであれば、対応する戻り値は、マッチする文字列
+      全体です。
+      もしそれが範囲 [1..99] 内であれば、それは、対応する丸括弧つきグループと
+      マッチする文字列です。もしグループ番号が負であるか、あるいはパターンで
+      定義されたグループの数より大きければ、 :exc:`IndexError` 例外が発生します。
+      グループがマッチしなかったパターンの一部に含まれていれば、対応する結果は
+      ``None`` です。グループが、複数回マッチしたパターンの一部に含まれて
+      いれば、最後のマッチが返されます。
 
-      >>> m = re.match(r"(?P<first_name>\w+) (?P<last_name>\w+)", "Malcom Reynolds")
-      >>> m.group('first_name')
-      'Malcom'
-      >>> m.group('last_name')
-      'Reynolds'
+         >>> m = re.match(r"(\w+) (\w+)", "Isaac Newton, physicist")
+         >>> m.group(0)       # マッチした全体
+         'Isaac Newton'
+         >>> m.group(1)       # ひとつめのパターン化されたサブグループ
+         'Isaac'
+         >>> m.group(2)       # ふたつめのパターン化されたサブグループ
+         'Newton'
+         >>> m.group(1, 2)    # 複数の引数を与えるとタプルが返る
+         ('Isaac', 'Newton')
 
-   名前の付けられたグループは、そのインデックスにより参照できます。
+      もし正規表現が ``(?P<name>...)`` シンタックスを使うならば、 *groupN*
+      引数は、それらのグループ名によってグループを識別する文字列であっても
+      構いません。
+      もし文字列引数がパターンのグループ名として使われていないものであれば、
+      :exc:`IndexError` 例外が発生します。
 
-      >>> m.group(1)
-      'Malcom'
-      >>> m.group(2)
-      'Reynolds'
+      適度に複雑な例題:
 
-   もし、グループが複数回マッチする場合、最後のマッチだけが利用可能となります。:
+         >>> m = re.match(r"(?P<first_name>\w+) (?P<last_name>\w+)", "Malcom Reynolds")
+         >>> m.group('first_name')
+         'Malcom'
+         >>> m.group('last_name')
+         'Reynolds'
 
-      >>> m = re.match(r"(..)+", "a1b2c3")  # 3回マッチする
-      >>> m.group(1)                        # 最後のマッチだけが返る
-      'c3'
+      名前の付けられたグループは、そのインデックスによっても参照できます。
 
+         >>> m.group(1)
+         'Malcom'
+         >>> m.group(2)
+         'Reynolds'
 
-.. method:: MatchObject.groups([default])
+      もし、グループが複数回マッチする場合、最後のマッチだけが利用可能となります。
 
-   1からどれだけ多くであろうがパターン内にあるグループ数までの、マッチの、すべてのサブグループを含む
-   タプルを返します。 *default* 引数は、マッチに加わらなかったグループ用に使われます；それは
-   デフォールトでは ``None`` です。 (非互換性ノート：オリジナルの Python 1.5 リリースでは、
-   たとえタプルが一要素長であっても、その代わりに文字列を返すことはありません。
-   (1.5.1 以降の)後のバージョンでは、そのような場合には、シングルトンタプルが返されます。)
-
-   例えば:
-
-      >>> m = re.match(r"(\d+)\.(\d+)", "24.1632")
-      >>> m.groups()
-      ('24', '1632')
-
-   もし、整数部にのみ着目し、あとの部分をオプションとした場合、マッチの中に現れないグループがあるかも
-   知れません。
-   それらのグループは、 *default* 引数が与えられていない場合、デフォルトでは ``None`` になります。:
-
-      >>> m = re.match(r"(\d+)\.?(\d+)?", "24")
-      >>> m.groups()      # ふたつめのグループはデフォルトでは None になる
-      ('24', None)
-      >>> m.groups('0')   # この場合、ふたつめのグループのデフォルトは 0 になる
-      ('24', '0')
-
-
-
-.. method:: MatchObject.groupdict([default])
-
-   すべての *名前つきの* サブグループを含む、マッチの、サブグループ名でキー付けされた
-   辞書を返します。 *default* 引数はマッチに加わらなかったグループに使われます；
-   それはデフォールトでは ``None`` です。例えば、
-
-      >>> m = re.match(r"(?P<first_name>\w+) (?P<last_name>\w+)", "Malcom Reynolds")
-      >>> m.groupdict()
-      {'first_name': 'Malcom', 'last_name': 'Reynolds'}
+         >>> m = re.match(r"(..)+", "a1b2c3")  # 3回マッチする
+         >>> m.group(1)                        # 最後のマッチだけが返る
+         'c3'
 
 
+   .. method:: MatchObject.groups([default])
 
-.. method:: MatchObject.start([group])
-            MatchObject.end([group])
+      マッチの、1からパターン内にある全グループ数までのすべてのサブグループを
+      含むタプルを返します。
+      *default* 引数は、マッチに加わらなかったグループ用に使われ、
+      デフォールトでは ``None`` です。
+      (非互換性ノート：オリジナルの Python 1.5 リリースでは、
+      たとえタプルが一要素長であっても、その代わりに文字列を返していました。
+      (1.5.1 以降の)後のバージョンでは、そのような場合には、要素がひとつの
+      タプルが返されます。)
 
-   *group* とマッチしたサブ文字列の先頭と末尾のインデックスを返します； *group* は、デフォルトでは
-   (マッチしたサブ文字列全体を意味する）ゼロです。 *group* が存在してもマッチに寄与しなかった場合は、
-   ``-1`` を返します。マッチオブジェクト *m* および、マッチに寄与しなかったグループ *g* があって、
-   グループ *g* とマッチしたサブ文字列 ( ``m.group(g)`` と同じ意味ですが ) は、
+      例えば:
 
-      m.string[m.start(g):m.end(g)]
+         >>> m = re.match(r"(\d+)\.(\d+)", "24.1632")
+         >>> m.groups()
+         ('24', '1632')
 
-   です。もし *group* がヌル文字列とマッチすれば、 ``m.start(group)`` が ``m.end(group)``
-   と等しくなることに注意して下さい。例えば、 ``m = re.search('b(c?)', 'cba')`` の後では、
-   ``m.start(0)`` は 1 で、 ``m.end(0)`` は 2 であり、 ``m.start(1)`` と ``m.end(1)`` は
-   ともに 2 であり、 ``m.start(2)`` は :exc:`IndexError` 例外を発生します。
+      もし、整数部にのみ着目し、あとの部分をオプションとした場合、
+      マッチの中に現れないグループがあるかも知れません。
+      それらのグループは、 *default* 引数が与えられていない場合、デフォルトでは
+      ``None`` になります。
 
-   例として、電子メールのアドレスから *remove_this* を取り除く場合を示します :
-
-      >>> email = "tony@tiremove_thisger.net"
-      >>> m = re.search("remove_this", email)
-      >>> email[:m.start()] + email[m.end():]
-      'tony@tiger.net'
-
-
-.. method:: MatchObject.span([group])
-
-   :class:`MatchObject` *m* については、 2-タプル ``(m.start(group), m.end(group))`` を
-   返します。もし *group* がマッチに寄与しなかったら、これは ``(-1, -1)`` です。また *group*
-   はデフォルトでゼロです。
+         >>> m = re.match(r"(\d+)\.?(\d+)?", "24")
+         >>> m.groups()      # ふたつめのグループはデフォルトでは None になる
+         ('24', None)
+         >>> m.groups('0')   # この場合、ふたつめのグループのデフォルトは 0 になる
+         ('24', '0')
 
 
-.. attribute:: MatchObject.pos
+   .. method:: MatchObject.groupdict([default])
 
-   :class:`RegexObject` の :func:`search` あるいは :func:`match`  メソッドに渡された
-   *pos* の値です。
-   これは RE エンジンがマッチを探し始める位置の文字列のインデックスです。
+      マッチの、すべての *名前つきの* サブグループを含む、サブグループ名でキー付けされた
+      辞書を返します。 *default* 引数はマッチに加わらなかったグループに使われ、
+      デフォールトでは ``None`` です。例えば、
 
-
-.. attribute:: MatchObject.endpos
-
-   :class:`RegexObject` の :func:`search` あるいは :func:`match`  メソッドに渡された
-   *endpos* の値です。これは RE エンジンがそれ以上は進まない位置の文字列のインデックスです。
+         >>> m = re.match(r"(?P<first_name>\w+) (?P<last_name>\w+)", "Malcom Reynolds")
+         >>> m.groupdict()
+         {'first_name': 'Malcom', 'last_name': 'Reynolds'}
 
 
-.. attribute:: MatchObject.lastindex
+   .. method:: MatchObject.start([group])
+               MatchObject.end([group])
 
-   最後にマッチした取り込みグループの整数インデックスです。もしどのグループも全くマッチしなければ ``None``
-   です。例えば、 ``(a)b``, ``((a)(b))`` や  ``((ab))`` といった表現が ``'ab'`` に適用された場合、
-   ``lastindex == 1``  となり、同じ文字列に ``(a)(b)`` が適用された場合には ``lastindex == 2``
-   となるでしょう。
+      *group* とマッチした部分文字列の先頭と末尾のインデックスを返します。
+      *group* は、デフォルトでは(マッチした部分文字列全体を意味する）ゼロです。
+      *group* が存在してもマッチに寄与しなかった場合は、 ``-1`` を返します。
+      マッチオブジェクト *m* および、マッチに寄与しなかったグループ *g* があって、
+      グループ *g* とマッチしたサブ文字列 ( ``m.group(g)`` と同じ意味ですが ) は、
+
+         m.string[m.start(g):m.end(g)]
+
+      です。もし *group* が空文字列とマッチすれば、 ``m.start(group)`` が
+      ``m.end(group)`` と等しくなることに注意して下さい。例えば、
+      ``m = re.search('b(c?)', 'cba')`` とすると、 ``m.start(0)`` は 1 で、
+      ``m.end(0)`` は 2 であり、 ``m.start(1)`` と ``m.end(1)`` は
+      ともに 2 であり、 ``m.start(2)`` は :exc:`IndexError` 例外を発生します。
+
+      例として、電子メールのアドレスから *remove_this* を取り除く場合を示します。
+
+         >>> email = "tony@tiremove_thisger.net"
+         >>> m = re.search("remove_this", email)
+         >>> email[:m.start()] + email[m.end():]
+         'tony@tiger.net'
 
 
-.. attribute:: MatchObject.lastgroup
+   .. method:: MatchObject.span([group])
 
-   最後にマッチした取り込みグループの名前です。もしグループに名前がないか、あるいはどのグループも全くマッチ
-   しなければ ``None`` です。
-
-
-.. attribute:: MatchObject.re
-
-   その :meth:`match` あるいは :meth:`search` メソッドが、この :class:`MatchObject`
-   インスタンスを生成した正規表現オブジェクトです。
+      :class:`MatchObject` *m* について、大きさ2のタプル
+      ``(m.start(group), m.end(group))`` を返します。
+      もし *group* がマッチに寄与しなかったら、これは ``(-1, -1)`` です。
+      また *group* はデフォルトでゼロです。
 
 
-.. attribute:: MatchObject.string
+   .. attribute:: MatchObject.pos
 
-   :func:`match` あるいは :func:`search` に渡された文字列です。
+      :class:`RegexObject` の :meth:`~RegexObject.search` か
+      :meth:`~RegexObject.match` に渡された *pos* の値です。
+      これは RE エンジンがマッチを探し始める位置の文字列のインデックスです。
+
+
+   .. attribute:: MatchObject.endpos
+
+      :class:`RegexObject` の :meth:`~RegexObject.search` か
+      :meth:`~RegexObject.match` に渡された *endpos* の値です。
+      これは RE エンジンがそれ以上は進まない位置の文字列のインデックスです。
+
+
+   .. attribute:: MatchObject.lastindex
+
+      最後にマッチした取り込みグループの整数インデックスです。
+      もしどのグループも全くマッチしなければ ``None`` です。
+      例えば、 ``(a)b``, ``((a)(b))`` や  ``((ab))`` といった表現が ``'ab'`` に適用された場合、
+      ``lastindex == 1``  となり、同じ文字列に ``(a)(b)`` が適用された場合には ``lastindex == 2``
+      となるでしょう。
+
+
+   .. attribute:: MatchObject.lastgroup
+
+      最後にマッチした取り込みグループの名前です。もしグループに名前がないか、
+      あるいはどのグループも全くマッチしなければ ``None`` です。
+
+
+   .. attribute:: MatchObject.re
+
+      この :class:`MatchObject` インスタンスを :meth:`~RegexObject.match`
+      あるいは :meth:`~RegexObject.search` メソッドで生成した正規表現
+      オブジェクトです。
+
+
+   .. attribute:: MatchObject.string
+
+      :meth:`~RegexObject.match` あるいは :meth:`~RegexObject.search`
+      に渡された文字列です。
 
 
 例
@@ -925,8 +1001,7 @@ MatchObject オブジェクト
    "<Match: '354aa', groups=('a',)>"
 
 どのカードのペアになっているかを調べるため、下記のように :class:`MatchObject` の
-:func:`group` メソッドを使う場合があります :
-
+:meth:`~RegexObject.group` メソッドを使う場合があります。
 
 .. doctest::
 
@@ -1112,9 +1187,9 @@ search() vs. match()
    ...   random.shuffle(inner_word)
    ...   return m.group(1) + "".join(inner_word) + m.group(3)
    >>> text = "Professor Abdolmalek, please report your absences promptly."
-   >>> re.sub("(\w)(\w+)(\w)", repl, text)
+   >>> re.sub(r"(\w)(\w+)(\w)", repl, text)
    'Poefsrosr Aealmlobdk, pslaee reorpt your abnseces plmrptoy.'
-   >>> re.sub("(\w)(\w+)(\w)", repl, text)
+   >>> re.sub(r"(\w)(\w+)(\w)", repl, text)
    'Pofsroser Aodlambelk, plasee reoprt yuor asnebces potlmrpy.'
 
 

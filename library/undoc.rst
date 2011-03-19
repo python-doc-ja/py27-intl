@@ -20,8 +20,7 @@
 
 :mod:`ihooks`
    --- import フックのサポートです (:mod:`rexec` のためのものです; 撤廃されるかもしれません)。
-
-   .. warning:: :mod:`ihooks` モジュールは Python 3.0 で削除されました。
+   Python 3.0 で削除されました。
 
 
 プラットフォーム固有のモジュール
@@ -47,24 +46,22 @@
 
 :mod:`audiodev`
    --- 音声データを再生するためのプラットフォーム非依存の API です。
-
-   .. warning:: :mod:`audiodev` モジュールは Python 3.0 で削除されました。
+   Python 3.0 で削除されました。
 
 :mod:`linuxaudiodev`
-   --- Linux 音声デバイスで音声データを再生します。Python 2.3 では :mod:`ossaudiodev` モジュールと置き換えられました。
-
-   .. warning:: :mod:`linuxaudiodev` モジュールは Python 3.0 で削除されました。
+   --- Linux 音声デバイスで音声データを再生します。Python 2.3 では
+   :mod:`ossaudiodev` モジュールと置き換えられました。
+   Python 3.0 で削除されました。
 
 :mod:`sunaudio`
-   --- Sun 音声データヘッダを解釈します (撤廃されるか、ツール/デモになるかもしれません)。
-
-   .. warning:: :mod:`sunaudio` モジュールは Python 3.0 で削除されました。
+   --- Sun 音声データヘッダを解釈します (撤廃されるか、ツール/デモに
+   なるかもしれません)。
+   Python 3.0 で削除されました。
 
 :mod:`toaiff`
-   --- "任意の" 音声ファイルを AIFF ファイルに変換します; おそらくツールかデモになるはずです。外部プログラム :program:`sox`
-   が必要です。
-
-   .. warning:: :mod:`toaiff` モジュールは Python 3.0 で削除されました。
+   --- "任意の" 音声ファイルを AIFF ファイルに変換します; おそらくツールか
+   デモになるはずです。外部プログラム :program:`sox` が必要です。
+   Python 3.0 で削除されました。
 
 
 .. _undoc-mac-modules:
@@ -120,8 +117,8 @@
    :deprecated:
 
 
-:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファ\
-イル用にファイルタイプおよびクリエーターを設定するために
+:mod:`icopen` をインポートすると、組込み :meth:`open` を新しいファイル用に
+ファイルタイプおよびクリエーターを設定するために
 Internet Configを使用するバージョンに置き換えます。
 
 .. deprecated:: 2.6
@@ -238,9 +235,7 @@ Navigation Servicesの低レベルインターフェース。
 
 :mod:`timing`
    --- 高い精度で経過時間を計測します (:func:`time.clock` を使ってください)。
-   (拡張モジュールです。)
-
-   .. warning:: :mod:`timing` モジュールは Python 3.0 で削除されました。
+   Python 3.0 で削除されました。
 
 
 SGI 固有の拡張モジュール
@@ -253,5 +248,4 @@ SGI 固有の拡張モジュール
 
 :mod:`sv`
    --- SGI Indigo 上の "simple video" ボード(旧式のハードウェアです) へのインタフェースです。
-
-   .. warning:: :mod:`sv` モジュールは Python 3.0 で削除されました。
+   Python 3.0 で削除されました。

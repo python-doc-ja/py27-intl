@@ -4,31 +4,19 @@
 対話入力編集とヒストリ置換
 **************************
 
-あるバージョンの Python インタプリタでは、Korn シェルや GNU Bash シェルに見られる機能に似た、現在の入力行に対する編集機能や
-ヒストリ置換機能をサポートしています。この機能は `GNU Readline`_ ライブラリを使って実装されています。このライブラリは Emacs スタイルと
-vi スタイルの編集をサポートしています。ライブラリには独自のドキュメントがあり、ここでそれを繰り返すつもりはありません;
-とはいえ、基本について簡単に解説することにします。ここで述べる対話的な編集とヒストリについては、 Unix 版と Cygwin
+あるバージョンの Python インタプリタでは、Korn シェルや GNU Bash シェルに
+見られる機能に似た、現在の入力行に対する編集機能やヒストリ置換機能を
+サポートしています。この機能は `GNU Readline`_ ライブラリを使って
+実装されています。このライブラリは Emacs スタイルと vi スタイルの編集を
+サポートしています。ライブラリには独自のドキュメントがあり、ここでそれを
+繰り返すつもりはありません。とはいえ、基本について簡単に解説することにします。
+ここで述べる対話的な編集とヒストリについては、 Unix 版と Cygwin
 版のインタプリタでオプションとして利用することができます。
 
-.. % Interactive Input Editing and History Substitution
-.. % % Some versions of the Python interpreter support editing of the current
-.. % % input line and history substitution, similar to facilities found in
-.. % % the Korn shell and the GNU Bash shell.  This is implemented using the
-.. % % \emph{GNU Readline} library, which supports Emacs-style and vi-style
-.. % % editing.  This library has its own documentation which I won't
-.. % % duplicate here; however, the basics are easily explained.  The
-.. % % interactive editing and history described here are optionally
-.. % % available in the \UNIX{} and Cygwin versions of the interpreter.
-
-この章では、Mark Hammond の PythonWin パッケージや、 Python とともに配布される Tk ベースの環境である IDLE にある
-編集機能については解説 *しません* 。 NT 上の DOS ボックスやその他の DOS および Windows 類で働く
-コマンド行ヒストリ呼出しもまた別のものです。
-
-.. % % This chapter does \emph{not} document the editing facilities of Mark
-.. % % Hammond's PythonWin package or the Tk-based environment, IDLE,
-.. % % distributed with Python.  The command line history recall which
-.. % % operates within DOS boxes on NT and some other DOS and Windows flavors
-.. % % is yet another beast.
+この章では、Mark Hammond の PythonWin パッケージや、 Python とともに配布される
+Tk ベースの環境である IDLE にある編集機能については解説 *しません* 。
+NT 上の DOS ボックスやその他の DOS および Windows 類で働くコマンド行
+ヒストリ呼出しもまた別のものです。
 
 
 .. _tut-lineediting:
@@ -36,25 +24,17 @@ vi スタイルの編集をサポートしています。ライブラリには�
 行編集
 ======
 
-入力行の編集がサポートされている場合、インタプリタが一次または二次プロンプトを出力している際にはいつでも有効になっています。現在の行は、慣例的な Emacs
-制御文字を使って編集することができます。そのうち最も重要なものとして、以下のようなキーがあります: :kbd:`C-A` (Control-A)
-はカーソルを行の先頭へ移動させます。 :kbd:`C-E` は末尾へ移動させます。 :kbd:`C-B` は逆方向へ一つ移動させます。 :kbd:`C-F`
-は順方向へ移動させます。 Backspace は逆方向に向かって文字を消します。 :kbd:`C-D` は順方向に向かって消します。 :kbd:`C-K`
-は順方向に向かって行の残りを kill し (消し) ます、 :kbd:`C-Y` は最後に kill された文字列を再び yank し (取り出し) ます。
-:kbd:`C-underscore` 最後の変更を元に戻します; これは、繰り返してどんどんさかのぼることができます。
-
-.. % Line Editing
-.. % % If supported, input line editing is active whenever the interpreter
-.. % % prints a primary or secondary prompt.  The current line can be edited
-.. % % using the conventional Emacs control characters.  The most important
-.. % % of these are: \kbd{C-A} (Control-A) moves the cursor to the beginning
-.. % % of the line, \kbd{C-E} to the end, \kbd{C-B} moves it one position to
-.. % % the left, \kbd{C-F} to the right.  Backspace erases the character to
-.. % % the left of the cursor, \kbd{C-D} the character to its right.
-.. % % \kbd{C-K} kills (erases) the rest of the line to the right of the
-.. % % cursor, \kbd{C-Y} yanks back the last killed string.
-.. % % \kbd{C-underscore} undoes the last change you made; it can be repeated
-.. % % for cumulative effect.
+入力行の編集がサポートされている場合、インタプリタが一次または二次プロンプトを
+出力している際にはいつでも有効になっています。現在の行は、慣例的な Emacs
+制御文字を使って編集することができます。そのうち最も重要なものとして、次の
+ようなキーがあります。 :kbd:`C-A` (Control-A)はカーソルを行の先頭へ
+移動させます。 :kbd:`C-E` は末尾へ移動させます。 :kbd:`C-B` は逆方向へ
+一つ移動させます。 :kbd:`C-F` は順方向へ移動させます。 Backspace は逆方向に
+向かって文字を消します。 :kbd:`C-D` は順方向に向かって消します。 :kbd:`C-K`
+は順方向に向かって行の残りを kill し (消し) ます、 :kbd:`C-Y` は最後に kill
+された文字列を再び yank し (取り出し) ます。
+:kbd:`C-underscore` 最後の変更を元に戻します。
+これは、繰り返してどんどんさかのぼることができます。
 
 
 .. _tut-history:
@@ -62,23 +42,16 @@ vi スタイルの編集をサポートしています。ライブラリには�
 ヒストリ置換
 ============
 
-ヒストリ置換は次のように働きます。入力された行のうち、空行でない実行された行はすべてヒストリバッファに保存されます。そして、プロンプト
-が呈示されるときには、ヒストリバッファの最も下の新たな行に移動します。 :kbd:`C-P` はヒストリバッファの中を一行だけ上に移動し (戻し)
-ます。 :kbd:`C-N` は 1 行だけ下に移動します。ヒストリバッファのどの行も編集することができます。行が編集されると、それを示すために
-プロンプトの前にアスタリスクが表示されます  [#]_。 :kbd:`Return` キーを押すと現在行がインタプリタへ渡されます。 :kbd:`C-R`
-はインクリメンタルな逆方向サーチ (reverse search) を開始し、 :kbd:`C-S` は順方向サーチ (forward search)
-を開始します。
-
-.. % History Substitution
-.. % % History substitution works as follows.  All non-empty input lines
-.. % % issued are saved in a history buffer, and when a new prompt is given
-.. % % you are positioned on a new line at the bottom of this buffer.
-.. % % \kbd{C-P} moves one line up (back) in the history buffer,
-.. % % \kbd{C-N} moves one down.  Any line in the history buffer can be
-.. % % edited; an asterisk appears in front of the prompt to mark a line as
-.. % % modified.  Pressing the \kbd{Return} key passes the current line to
-.. % % the interpreter.  \kbd{C-R} starts an incremental reverse search;
-.. % % \kbd{C-S} starts a forward search.
+ヒストリ置換は次のように働きます。入力された行のうち、空行でない実行された
+行はすべてヒストリバッファに保存されます。そして、プロンプトが提示される
+ときには、ヒストリバッファの最も下の新たな行に移動します。
+:kbd:`C-P` はヒストリバッファの中を一行だけ上に移動し (戻し) ます。
+:kbd:`C-N` は 1 行だけ下に移動します。ヒストリバッファのどの行も
+編集することができます。行が編集されると、それを示すためにプロンプトの前に
+アスタリスクが表示されます  [#]_。
+:kbd:`Return` キーを押すと現在行がインタプリタへ渡されます。 :kbd:`C-R`
+はインクリメンタルな逆方向サーチ (reverse search) を開始し、 :kbd:`C-S`
+は順方向サーチ (forward search)を開始します。
 
 
 .. _tut-keybindings:
@@ -86,13 +59,9 @@ vi スタイルの編集をサポートしています。ライブラリには�
 キー割り当て
 ============
 
-Readline ライブラリのキー割り当て (key binding) やその他のパラメタは、 :file:`~/.inputrc` という初期化ファイル
-[#]_にコマンドを置くことでカスタマイズできます。キー割り当ての形式は
-
-.. % Key Bindings
-.. % % The key bindings and some other parameters of the Readline library can
-.. % % be customized by placing commands in an initialization file called
-.. % % \file{\~{}/.inputrc}.  Key bindings have the form
+Readline ライブラリのキー割り当て (key binding) やその他のパラメタは、
+:file:`~/.inputrc` という初期化ファイル[#]_にコマンドを置くことで
+カスタマイズできます。キー割り当ての形式は
 
 ::
 
@@ -100,23 +69,17 @@ Readline ライブラリのキー割り当て (key binding) やその他のパ�
 
 または
 
-.. % % or
-
 ::
 
    "string": function-name
 
 で、オプションの設定方法は
 
-.. % % and options can be set with
-
 ::
 
    set option-name value
 
-です。例えば、以下のように設定します:
-
-.. % % For example:
+です。例えば、以下のように設定します。
 
 ::
 
@@ -131,74 +94,47 @@ Readline ライブラリのキー割り当て (key binding) やその他のパ�
    "\C-u": universal-argument
    "\C-x\C-r": re-read-init-file
 
-Python では、 :kbd:`Tab` に対するデフォルトの割り当ては TAB の挿入です。 Readline
-のデフォルトであるファイル名補完関数ではないので注意してください。もし、どうしても Readline のデフォルトを割り当てたいのなら、
+Python では、 :kbd:`Tab` に対するデフォルトの割り当ては TAB の挿入です。
+Readline のデフォルトであるファイル名補完関数ではないので注意してください。
+もし、どうしても Readline のデフォルトを割り当てたいのなら、
 :file:`~/.inputrc` に
-
-.. % % Note that the default binding for \kbd{Tab} in Python is to insert a
-.. % % \kbd{Tab} character instead of Readline's default filename completion
-.. % % function.  If you insist, you can override this by putting
 
 ::
 
    Tab: complete
 
-を入れれば設定を上書きすることができます。 (もちろん、 :kbd:`Tab`  を使って補完を行うのに慣れている場合、この設定を行うと
-インデントされた継続行を入力しにくくなります。)
-
-.. % % in your \file{\~{}/.inputrc}.  (Of course, this makes it harder to
-.. % % type indented continuation lines if you're accustomed to using
-.. % % \kbd{Tab} for that purpose.)
+を入れれば設定を上書きすることができます。 (もちろん、 :kbd:`Tab` を使って
+インデントするのに慣れている場合、この設定を行うとインデントされた継続行を
+入力しにくくなります。)
 
 .. index::
    module: rlcompleter
    module: readline
 
-変数名とモジュール名の自動的な補完がオプションとして利用できます。補完をインタプリタの対話モードで有効にするには、
-以下の設定をスタートアップファイルに追加します:  [#]_
-
-.. % % Automatic completion of variable and module names is optionally
-.. % % available.  To enable it in the interpreter's interactive mode, add
-.. % % the following to your startup file:\footnote{
-.. % %   Python will execute the contents of a file identified by the
-.. % %   \envvar{PYTHONSTARTUP} environment variable when you start an
-.. % %   interactive interpreter.}
-.. % % \refstmodindex{rlcompleter}\refbimodindex{readline}
+変数名とモジュール名の自動的な補完がオプションとして利用できます。補完を
+インタプリタの対話モードで有効にするには、以下の設定をスタートアップファイルに
+追加します。 [#]_
 
 ::
 
    import rlcompleter, readline
    readline.parse_and_bind('tab: complete')
 
-この設定は、 :kbd:`Tab` キーを補完関数に束縛します。従って、 :kbd:`Tab` キーを二回たたくと補完候補が示されます; 補完機能は Python
-の文の名前、現在のローカル変数、および利用可能なモジュール名を検索します。 ``string.a`` のようなドットで区切られた式については、最後の
-``'.'`` までの式を評価し、結果として得られたオブジェクトの属性から補完候補を示します。 :meth:`__getattr__`
-メソッドを持ったオブジェクトが式に含まれている場合、 :meth:`__getattr__` がアプリケーション定義のコードを実行する
-かもしれないので注意してください。
-
-.. % % This binds the \kbd{Tab} key to the completion function, so hitting
-.. % % the \kbd{Tab} key twice suggests completions; it looks at Python
-.. % % statement names, the current local variables, and the available module
-.. % % names.  For dotted expressions such as \code{string.a}, it will
-.. % % evaluate the expression up to the final \character{.} and then
-.. % % suggest completions from the attributes of the resulting object.  Note
-.. % % that this may execute application-defined code if an object with a
-.. % % \method{__getattr__()} method is part of the expression.
+この設定は、 :kbd:`Tab` キーを補完関数に束縛します。従って、 :kbd:`Tab` キーを
+二回たたくと補完候補が示されます。
+補完機能は Python の文の名前、現在のローカル変数、および利用可能な
+モジュール名を検索します。 ``string.a`` のようなドットで区切られた式に
+ついては、最後の ``'.'`` までの式を評価し、結果として得られたオブジェクトの
+属性から補完候補を示します。 :meth:`__getattr__` メソッドを持ったオブジェクトが
+式に含まれている場合、 :meth:`__getattr__` がアプリケーション定義のコードを
+実行するかもしれないので注意してください。
 
 より良くできたスタートアップファイルは以下例のようになります。
 この例では、作成した名前が不要になると削除されるのに注目してください。
 これは、スタートアップファイルが対話コマンドと同じ名前空間で実行されているので、
 不要な名前を除去して対話環境に副作用を生まないようにするためです。
-import されたモジュールのうち、 :mod:`os` のようなインタプリタのほとんどのセッションで
-必要なものについては、残しておくと便利に思うかもしれません。
-
-.. % % A more capable startup file might look like this example.  Note that
-.. % % this deletes the names it creates once they are no longer needed; this
-.. % % is done since the startup file is executed in the same namespace as
-.. % % the interactive commands, and removing the names avoids creating side
-.. % % effects in the interactive environments.  You may find it convenient
-.. % % to keep some of the imported modules, such as \module{os}, which turn
-.. % % out to be needed in most sessions with the interpreter.
+import されたモジュールのうち、 :mod:`os` のようなインタプリタのほとんどの
+セッションで必要なものについては、残しておくと便利に思うかもしれません。
 
 ::
 
@@ -235,36 +171,32 @@ import されたモジュールのうち、 :mod:`os` のようなインタプ�
 インタラクティブインタプタの代替
 ================================
 
-この機能は、初期の版のインタプリタに比べれば大きな進歩です; とはいえ、まだいくつかの要望が残されています: 例えば、
-行を継続するときに正しいインデントが呈示されたら快適でしょう (パーサは次の行でインデントトークンが必要かどうかを知っています)。
-補完機構がインタプリタのシンボルテーブルを使ってもよいかもしれません。かっこやクォートなどの対応をチェックする (あるいは指示する) コマンドも
+この機能は、初期の版のインタプリタに比べれば大きな進歩です。とはいえ、
+まだいくつかの要望が残されています。例えば、行を継続するときに正しい
+インデントが提示されたら快適でしょう (パーサは次の行でインデントトークンが
+必要かどうかを知っています)。
+補完機構がインタプリタのシンボルテーブルを使ってもよいかもしれません。
+括弧やクォートなどの対応をチェックする (あるいは指示する) コマンドも
 有用でしょう。
 
-より優れたインタラクティブインタプリタの代替の一つは `IPython`_ があります。
-このインタプリタは、様々なところで使われていて、
-タブ補完、オブジェクト探索や先進的な履歴管理といった機能を持っています。
+より優れたインタラクティブインタプリタの代替の一つに `IPython`_ があります。
+このインタプリタは、様々なところで使われていて、タブ補完、オブジェクト探索や
+先進的な履歴管理といった機能を持っています。
 他のアプリケーションにカスタマイズされたり、組込まれこともあります。
 別の優れたインタラクティブ環境としては `bpython`_ があります。
-
-.. % Commentary
-.. % % This facility is an enormous step forward compared to earlier versions
-.. % % of the interpreter; however, some wishes are left: It would be nice if
-.. % % the proper indentation were suggested on continuation lines (the
-.. % % parser knows if an indent token is required next).  The completion
-.. % % mechanism might use the interpreter's symbol table.  A command to
-.. % % check (or even suggest) matching parentheses, quotes, etc., would also
-.. % % be useful.
 
 
 .. rubric:: Footnotes
 
-.. [#] 訳注: これはデフォルト設定の Readline では現れません。 ``set mark-modified-lines on`` という行を
-   :file:`~/.inputrc` または環境変数 :envvar:`INPUTRC` が指定するファイルに置くことによって現れるようになります。
+.. [#] 訳注: これはデフォルト設定の Readline では現れません。
+   ``set mark-modified-lines on`` という行を :file:`~/.inputrc` または環境変数
+   :envvar:`INPUTRC` が指定するファイルに置くことによって現れるようになります。
 
-.. [#] 訳注: このファイル名は環境変数 :envvar:`INPUTRC` がもしあればその指定が優先されます。
+.. [#] 訳注: このファイル名は環境変数 :envvar:`INPUTRC` がもしあればその指定が
+   優先されます。
 
-.. [#] Python は、対話インタプリタを開始する時に :envvar:`PYTHONSTARTUP`  環境変数が指定するファイルの内容を実行します。
-
+.. [#] Python は、対話インタプリタを開始する時に :envvar:`PYTHONSTARTUP`
+   環境変数が指定するファイルの内容を実行します。
 
 .. _GNU Readline: http://tiswww.case.edu/php/chet/readline/rltop.html
 .. _IPython: http://ipython.scipy.org/

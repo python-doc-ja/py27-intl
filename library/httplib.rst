@@ -63,9 +63,9 @@
    です。
    *key_file* には、秘密鍵を格納したPEM形式ファイルのファイル名を指定します。 *cert_file* には、PEM形式の証明書チェーンファイルを指定します。
 
-   .. warning::
+   .. note::
 
-      この関数は証明書の検査を行いません！
+      この関数は証明書の検査を行いません
 
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました
@@ -76,6 +76,19 @@
    ユーザーから直接利用されることはありません。
 
    .. versionadded:: 2.0
+
+.. class:: HTTPMessage
+
+   .. An :class:`HTTPMessage` instance is used to hold the headers from an HTTP
+      response. It is implemented using the :class:`mimetools.Message` class and
+      provides utility functions to deal with HTTP Headers. It is not directly
+      instantiated by the users.
+
+   :class:`HTTPMessage` のインスタンスは、 HTTP レスポンスヘッダを格納する
+   ために利用されます。 :class:`mimetools.Message` クラスを利用して実装されて
+   いて、 HTTP ヘッダを扱うための便利な関数を提供しています。このクラスは
+   ユーザーが直接インスタンス生成するものではありません。
+
 
 
 必要に応じて以下の例外が送出されます:
@@ -484,7 +497,7 @@ HTTPResponse オブジェクト
 例
 --
 
-以下は ``GET`` リクエストの送信方法を示した例です::
+以下は ``GET`` リクエストの送信方法を示した例です。 ::
 
    >>> import httplib
    >>> conn = httplib.HTTPConnection("www.python.org")
@@ -499,6 +512,24 @@ HTTPResponse オブジェクト
    404 Not Found
    >>> data2 = r2.read()
    >>> conn.close()
+
+.. Here is an example session that uses ``HEAD`` method. Note that ``HEAD`` method
+   never returns any data. :
+
+次の例のセッションでは、 ``HEAD`` メソッドを利用しています。
+``HEAD`` メソッドは全くデータを返さないことに注目してください。 ::
+
+   >>> import httplib
+   >>> conn = httplib.HTTPConnection("www.python.org")
+   >>> conn.request("HEAD","/index.html")
+   >>> res = conn.getresponse()
+   >>> print res.status, res.reason
+   200 OK
+   >>> data = res.read()
+   >>> print len(data)
+   0
+   >>> data == ''
+   True
 
 以下は ``POST`` リクエストの送信方法を示した例です::
 

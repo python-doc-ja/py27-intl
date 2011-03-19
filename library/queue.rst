@@ -28,13 +28,13 @@ LIFOキューでは、最後に追加されたエントリが最初に取り出�
 
 :mod:`Queue` モジュールは以下のクラスと例外を定義します:
 
-.. class:: Queue(maxsize)
+.. class:: Queue(maxsize=0)
 
    FIFOキューのコンストラクタです。
    *maxsize* はキューに置くことのできる要素数の上限を設定する整数です。
    いったんこの大きさに達したら、挿入はキューの要素が消費されるまでブロックされます。もし *maxsize* が0以下であるならば、キューの大きさは無限です。
 
-.. class:: LifoQueue(maxsize)
+.. class:: LifoQueue(maxsize=0)
 
    LIFOキューのコンストラクタです。
    *maxsize* はキューに置くことのできる要素数の上限を設定する整数です。
@@ -42,15 +42,15 @@ LIFOキューでは、最後に追加されたエントリが最初に取り出�
 
    .. versionadded:: 2.6
 
-.. class:: PriorityQueue(maxsize)
+.. class:: PriorityQueue(maxsize=0)
 
    優先順位付きキューのコンストラクタです。
    *maxsize* はキューに置くことのできる要素数の上限を設定する整数です。
    いったんこの大きさに達したら、挿入はキューの要素が消費されるまでブロックされます。もし *maxsize* が0以下であるならば、キューの大きさは無限です。
 
-..   The lowest valued entries are retrieved first (the lowest valued entry is the
-..   one returned by ``sorted(list(entries))[0]``).  A typical pattern for entries
-..   is a tuple in the form: ``(priority_number, data)``.
+.. The lowest valued entries are retrieved first (the lowest valued entry is the
+   one returned by ``sorted(list(entries))[0]``).  A typical pattern for entries
+   is a tuple in the form: ``(priority_number, data)``.
 
    最も低い値のエントリが最初に取り出されます。(最も低い値のエントリとは、 ``sorted(list(entries))[0]``
    の結果の事です)

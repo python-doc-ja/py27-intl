@@ -782,7 +782,7 @@ future 文は、モジュールの先頭周辺に書かなければなりませ�
 Python 2.6 が認識する機能は、 ``unicode_literals``, ``print_function`,
 ``absolute_import``, ``division``, ``generators``,
 ``nested_scopes``, ``with_statement`` です。 ``generators``, ``with_statement``,
-``nested_scopes`` は Python 2.6 異常では常に有効なので冗長です。
+``nested_scopes`` は Python 2.6 以上では常に有効なので冗長です。
 
 future 文は、コンパイル時に特別なやり方で認識され、扱われます: 言語の中核をなす構文構成 (construct) に対する意味付けが変更されて
 いる場合、変更部分はしばしば異なるコードを生成することで実現されています。新たな機能によって、(新たな予約語のような)

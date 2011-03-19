@@ -17,7 +17,7 @@
 
 .. exception:: MessageParseError()
 
-   これは :class:`Parser` クラスが発生しうる例外の基底クラスです。
+   これは :class:`~email.parser.Parser` クラスが発生しうる例外の基底クラスです。
    :exc:`MessageError` から派生しています。
 
 
@@ -58,16 +58,18 @@
    :exc:`MessageError` と組み込みの :exc:`TypeError` を両方継承しています。
 
    :meth:`Message.add_payload` はもはや推奨されないメソッドのため、
-   この例外はふつうめったに発生しません。しかしこの例外は
-   :meth:`attach` メソッドが :class:`MIMENonMultipart` から派生したクラスの\
-   インスタンス (例: :class:`MIMEImage` など) に対して呼ばれたときにも発生する\
-   ことがあります。
+   この例外はめったに発生しません。しかしこの例外は
+   :meth:`attach` メソッドが :class:`~email.mime.nonmultipart.MIMENonMultipart`
+   から派生したクラスのインスタンス (例: :class:`~email.mime.image.MIMEImage`
+   など) に対して呼ばれたときにも発生することがあります。
 
-以下は :class:`FeedParser` がメッセージの解析中に検出する障害 (defect) の一覧です。
-注意:
-これらの障害は、問題が見つかったメッセージに追加されるため、たとえば :mimetype:`multipart/alternative`
+以下は :class:`~email.mime.FeedParser` がメッセージの解析中に検出する障害
+(defect) の一覧です。
+これらの障害は、問題が見つかったメッセージに追加されるため、たとえば
+:mimetype:`multipart/alternative`
 内にあるネストしたメッセージが異常なヘッダをもっていた場合には、
-そのネストしたメッセージが障害を持っているが、その親メッセージには障害はないとみなされます。
+そのネストしたメッセージが障害を持っているが、その親メッセージには障害はないと
+みなされることに注意してください。
 
 すべての障害クラスは :class:`email.errors.MessageDefect` のサブクラスですが、
 これは例外とは *違います* ので注意してください。

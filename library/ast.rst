@@ -221,8 +221,8 @@
       このビジターが :meth:`generic_visit` を呼び出すかそれ自身で子ノードを\
       訪れない限り訪れられないということです。
 
-  トラバースの途中でノードを変化させたいならば :class:`NodeVisitor` を使ってはいけません。
-  そうした目的のために変更を許す特別なビジター (:class:`NodeTransformer`) があります。
+   トラバースの途中でノードを変化させたいならば :class:`NodeVisitor` を使ってはいけません。
+   そうした目的のために変更を許す特別なビジター (:class:`NodeTransformer`) があります。
 
 
 .. class:: NodeTransformer()

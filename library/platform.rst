@@ -154,7 +154,9 @@ Java プラットフォーム
 
 .. function:: java_ver(release='', vendor='', vminfo=('','',''), osinfo=('','',''))
 
-   Jython用のバージョンインターフェースで、タプル ``(release, vendor, vminfo, osinfo)`` を返します。 *vminfo* は
+   Jython用のバージョンインターフェースです。
+   
+   タプル ``(release, vendor, vminfo, osinfo)`` を返します。 *vminfo* は
    タプル ``(vm_name, vm_release, vm_vendor)`` 、 *osinfo* はタプル``(os_name, os_version,
    os_arch)``です。不明な項目は引数で指定した値(デフォルトは ``''``) となります。
 
@@ -215,7 +217,12 @@ Unix プラットフォーム
 
 .. function:: dist(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...))
 
-   この関数は :func:`linux_distribution` のエイリアスです。
+   この関数は、現在 :func:`linux_distribution` が提供している機能の古い
+   バージョンです。新しいコードを書くときは、 :func:`linux_distribution`
+   を利用してください。
+
+   :func:`linux_distribution` との違いは、 ``dist()`` は常に ``supported_dists``
+   引数から取った短い名前を返す事です。
 
 .. function:: linux_distribution(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...), full_distribution_name=1)
 
@@ -244,6 +251,8 @@ Unix プラットフォーム
 
    戻り値はタプル ``(distname, version, id)`` で、不明な項目は引数で指定した値となります。
 
+
+   .. versionadded:: 2.6
 
 .. function:: libc_ver(executable=sys.executable, lib='', version='', chunksize=2048)
 

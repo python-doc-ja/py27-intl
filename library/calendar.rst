@@ -20,10 +20,8 @@
 このモジュールで提供する関数とクラスのほとんどは :mod:`datetime` に依存しており、
 過去も未来も現代のグレゴリオ暦を利用します。
 この方式は Dershowitz と Reingold の書籍「Calendrical Calculations」にある
-proleptic Gregorian 暦に一致しており、同書では全ての計算の基礎となる暦としています。r
----  (訳注: proleptic Gregorian 暦とはグレゴリオ暦制定(1582年)以前についても
-グレゴリオ暦で言い表す暦の方式のことで ISO 8601 などでも採用されています)
-
+proleptic Gregorian 暦に一致しており、同書では全ての計算の基礎となる暦としています。
+[#]_
 
 .. class:: Calendar([firstweekday])
 
@@ -163,13 +161,13 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
       が真であればヘッダには年も含まれます。そうでなければ月の名前だけが使われます。
 
 
-   .. method:: HTMLCalendar.formatyear(theyear[, width])
+   .. method:: formatyear(theyear[, width])
 
       一年分のカレンダーを HTML のテーブルとして返します。
       *width* の値 (デフォルトでは 3 です) は何ヶ月分を一行に収めるかを指定します。
 
 
-   .. method:: HTMLCalendar.formatyearpage(theyear[, width[, css[, encoding]]])
+   .. method:: formatyearpage(theyear[, width[, css[, encoding]]])
 
       一年分のカレンダーを一つの完全な HTML ページとして返します。
       *width* の値(デフォルトでは 3 です) は何ヶ月分を一行に収めるかを指定します。
@@ -327,3 +325,7 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
    Module :mod:`time`
       低レベルの時間に関連した関数群。
 
+.. rubric:: Footnotes
+
+.. [#] 訳注: proleptic Gregorian 暦とはグレゴリオ暦制定(1582年)以前についても\
+   グレゴリオ暦で言い表す暦の方式のことで ISO 8601 などでも採用されています

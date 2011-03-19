@@ -13,11 +13,6 @@
 
 ここに挙げた関数の詳細なドキュメントについては、プラットフォーム API ドキュメントで見つけることができます。
 
-The module implements both the normal and wide char variants of the console I/O
-api. The normal API deals only with ASCII characters and is of limited use
-for internationalized applications. The wide char API should be used where
-ever possible
-
 このモジュールは、通常版とワイド文字列版の両方のコンソールI/O APIを実装しています。
 通常版のAPIはASCII文字列のためのもので、国際化アプリケーションでは利用が制限されます。
 可能な限りワイド文字列版APIを利用するべきです。
@@ -141,6 +136,6 @@ ever possible
 
 .. function:: heapmin()
 
-   :cfunc:`malloc` されたヒープ領域を強制的に消去させて、未使用のメモリブロックをオペレーティングシステムに返します。この関数は Windows
-   NT 上でのみ動作します。失敗した場合、 :exc:`IOError` を送出します。
-
+   :cfunc:`malloc` されたヒープ領域を強制的に消去させて、
+   未使用のメモリブロックをオペレーティングシステムに返します。
+   失敗した場合、 :exc:`IOError` を送出します。

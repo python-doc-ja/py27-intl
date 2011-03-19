@@ -20,6 +20,9 @@
 
 :mod:`EasyDialogs` モジュールでは以下の関数を定義しています。
 
+.. note::
+
+   このモジュールは Python 3.x では削除されます。
 
 .. function:: Message(str[, id[, ok]])
 

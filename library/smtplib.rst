@@ -273,7 +273,7 @@ SMTP オブジェクト
    .. versionchanged:: 2.6
 
    :exc:`RuntimeError`
-      実行中のPythonインタプリタで、 SSL/TLS サポートが利用できない
+      実行中の Python インタプリタで、 SSL/TLS サポートが利用できない
 
 
 .. method:: SMTP.sendmail(from_addr, to_addrs, msg[, mail_options, rcpt_options])
@@ -368,3 +368,13 @@ SMTP 使用例
    server.sendmail(fromaddr, toaddrs, msg)
    server.quit()
 
+
+.. note::
+
+   .. In general, you will want to use the :mod:`email` package's features to
+      construct an email message, which you can then convert to a string and send
+      via :meth:`sendmail`; see :ref:`email-examples`.
+
+   多くの場合、 :mod:`email` パッケージの機能を使って email メッセージを構築し、
+   それを文字列に変換して、 :meth:`sendmail` で送信する、という手順を用います。
+   :ref:`email-examples` を参照してください。

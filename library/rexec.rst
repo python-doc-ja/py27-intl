@@ -1,4 +1,3 @@
-
 :mod:`rexec` --- 制限実行のフレームワーク
 =========================================
 
@@ -230,11 +229,11 @@ RExec オブジェクト
            elif mode in ('w', 'wb', 'a', 'ab'):
                # ファイル名をチェックします :  /tmp/ で始まらなければなりません
                if file[:5]!='/tmp/':
-                   raise IOError, " /tmp 以外へは書き込みできません"
+                   raise IOError(" /tmp 以外へは書き込みできません")
                elif (string.find(file, '/../') >= 0 or
                     file[:3] == '../' or file[-3:] == '/..'):
-                   raise IOError, "ファイル名の '..' は禁じられています"
-           else: raise IOError, "open() モードが正しくありません"
+                   raise IOError("ファイル名の '..' は禁じられています")
+           else: raise IOError("open() モードが正しくありません")
            return open(file, mode, buf)
 
 上のコードは、完全に正しいファイル名でも、時には禁止する場合があることに

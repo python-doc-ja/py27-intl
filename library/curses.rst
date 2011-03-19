@@ -4,9 +4,9 @@
 
 .. module:: curses
    :synopsis: 可搬性のある端末操作を提供する curses ライブラリへのインタフェース．
+   :platform: Unix
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 .. sectionauthor:: Eric Raymond <esr@thyrsus.com>
-
 
 .. versionchanged:: 1.6
    ``ncurses`` ライブラリのサポートを追加し、パッケージに変換しました.
@@ -175,7 +175,7 @@ Unix 環境では curses は非常に広く用いられていますが、DOS、O
 
 .. function:: filter()
 
-   :func:`filter` ルーチンを使う場合、 :func:`initscr` を呼ぶ前に呼び出さなくてはなりません。この手順のもたらす効果は以下の
+   :func:`.filter` ルーチンを使う場合、 :func:`initscr` を呼ぶ前に呼び出さなくてはなりません。この手順のもたらす効果は以下の
    通りです: まず二つの関数の呼び出しの間は、LINES は 1 に設定されます; clear、cup、cud、cud1、cuu1、cuu、vpa
    は無効化されます; home 文字列は cr の値に設定されます。これにより、カーソルは現在の行に制限されるので、スクリーンの更新も同様に制限されます。
    この関数は、スクリーンの他の部分に影響を及ぼさずに文字単位の行編集を行う場合に利用できます。
@@ -695,8 +695,10 @@ Window オブジェクト
 
 .. method:: window.getch([y, x])
 
-   文字を取得します。返される整数は ASCII の範囲の値となる *わけではない* ので注意してください: ファンクションキー、キーパッド上のキー等は 256
-   よりも大きな数字を返します。無遅延 (no-delay) モードでは、入力がない場合 -1 が返されます。
+   文字を取得します。返される整数は ASCII の範囲の値となる *わけではない* ので
+   注意してください。ファンクションキー、キーパッド上のキー等は 256 よりも
+   大きな数字を返します。無遅延 (no-delay) モードでは、入力がない場合 -1 が
+   返されます。それ以外の場合は、 :func:`getch` はキー入力を待ちます。
 
 
 .. method:: window.getkey([y, x])

@@ -20,6 +20,7 @@ extensions = ['sphinx.ext.refcounting',
               'sphinx.ext.doctest',
               'pyspecific',
               'sphinx.ext.todo',
+              'jpsupport',
               ]
 templates_path = ['tools/sphinxext']
 

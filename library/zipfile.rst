@@ -17,9 +17,7 @@ ZIP は一般によく知られているアーカイブ（書庫化）および�
 `PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_. に定義されている
 ZIP ファイルフォーマットを理解することが必要になるでしょう。
 
-このモジュールは現在のところ、コメントを追記した ZIP ファイルやマルチディスク ZIP ファイルを扱うことはできません
-(しかしながら、個々のアーカイブメンバーに付与されたコメントを扱うことはできます。それについては、 :ref:`zipinfo-objects`
-を参照して下さい)。
+このモジュールは現在のところ、マルチディスク ZIP ファイルを扱うことはできません
 ZIP64 拡張を利用する ZIP ファイル (サイズが 4GB を超えるような ZIP ファイル) は扱えます。
 このモジュールは暗号化されたアーカイブの復号をサポートしますが、現在のところ、暗号化ファイルを作成することはできません。
 C言語ではなく、Pythonで実装されているため、復号は非常に遅いです。
@@ -64,8 +62,8 @@ C言語ではなく、Pythonで実装されているため、復号は非常に�
 
 .. function:: is_zipfile(filename)
 
-   *filename* が正しいマジックナンバをもつ ZIP ファイルのときに ``True`` を返し、そうでない場合 ``False`` を返します。この
-   モジュールは現在のところ、コメントを追記した ZIP ファイルを扱うことができません。
+   *filename* が正しいマジックナンバをもつ ZIP ファイルのときに ``True`` を返し、
+   そうでない場合 ``False`` を返します。
 
 
 .. data:: ZIP_STORED
@@ -192,9 +190,20 @@ ZipFile オブジェクト
    :meth:`namelist` で返されるリストの部分集合でなければなりません。 *pwd* は、暗号化ファイルに
    使われるパスワードです。
 
+   .. warning
+      Never extract archives from untrusted sources without prior inspection.
+      It is possible that files are created outside of *path*, e.g. members
+      that have absolute filenames starting with ``"/"`` or filenames with two
+      dots ``".."``.
+
+   .. warning::
+
+      信頼できないソースからきた Zip ファイルを、事前に中身をチェックせずに
+      展開してはいけません。ファイルを *path* の外側に作成することができるからです。
+      例えば、 ``"/"`` で始まる絶対パスを持ったメンバーや、 2 つのドット
+      ``".."`` を持つファイル名などの場合です。
+
    .. versionadded:: 2.6
-
-
 
 
 .. method:: ZipFile.printdir()

@@ -11,12 +11,15 @@
 .. sectionauthor:: Greg Ward <gward@python.net>
 
 
-:mod:`optparse` モジュールは、昔からある ``getopt`` よりも簡便で、柔軟性に富み、かつ強力なコマンドライン解析ライブラリです。
-:mod:`optparse` では、より明快なスタイルのコマンドライン解析手法、すなわち :class:`OptionParser`
-のインスタンスを作成してオプションを追加してゆき、そのインスタンスでコマンドラインを解析するという手法をとっています。 ``optparse``
-を使うと、GNU/POSIX 構文でオプションを指定できるだけでなく、使用法やヘルプメッセージの生成も行えます。
+:mod:`optparse` モジュールは、昔からある :mod:`getopt` よりも簡便で、
+柔軟性に富み、かつ強力なコマンドライン解析ライブラリです。
+:mod:`optparse` では、より宣言的なスタイルのコマンドライン解析手法、すなわち
+:class:`OptionParser` のインスタンスを作成してオプションを追加してゆき、その
+インスタンスでコマンドラインを解析するという手法をとっています。
+:mod:`optparse` を使うと、GNU/POSIX 構文でオプションを指定できるだけでなく、
+使用法やヘルプメッセージの生成も行えます。
 
-:mod:`optparse` を使った簡単なスクリプト例を以下に示します::
+:mod:`optparse` を使った簡単なスクリプトの例を以下に示します。 ::
 
    from optparse import OptionParser
 
@@ -30,15 +33,19 @@
 
    (options, args) = parser.parse_args()
 
-このようにわずかな行数のコードによって、スクリプトのユーザはコマンドライン上で例えば以下のような「よくある使い方」を実行できるようになります::
+このようにわずかな行数のコードによって、スクリプトのユーザはコマンドライン上で
+例えば以下のような「よくある使い方」を実行できるようになります。 ::
 
    <yourscript> --file=outfile -q
 
-コマンドライン解析の中で、 ``optparse`` はユーザの指定したコマンドライン引数値に応じて :meth:`parse_args` の返す
+コマンドライン解析の中で、 :mod:`optparse` はユーザの指定した
+コマンドライン引数値に応じて :meth:`parse_args` の返す
 ``options`` の属性値を設定してゆきます。 :meth:`parse_args` がコマンドライン解析から処理を戻したとき、
 ``options.filename`` は ``"outfile"`` に、 ``options.verbose`` は ``False``
-になっているはずです。 ``optparse`` は長い形式と短い形式の両方のオプション表記をサポートしており、
-短い形式は結合して指定できます。また、様々な形でオプションに引数値を関連付けられます。従って、以下のコマンドラインは全て上の例と同じ意味になります::
+になっているはずです。 :mod:`optparse` は長い形式と短い形式の両方のオプション表記をサポートしており、
+短い形式は結合して指定できます。
+また、様々な形でオプションに引数値を関連付けられます。
+従って、以下のコマンドラインは全て上の例と同じ意味になります。 ::
 
    <yourscript> -f outfile --quiet
    <yourscript> --quiet --file outfile
@@ -50,7 +57,9 @@
    <yourscript> -h
    <yourscript> --help
 
-のいずれかを実行すると、 :mod:`optparse` はスクリプトのオプションについて簡単にまとめた内容を出力します::
+のいずれかを実行すると、 :mod:`optparse` はスクリプトのオプションについて簡単にまとめた内容を出力します。
+
+.. code-block:: text
 
    usage: <yourscript> [options]
 
@@ -109,12 +118,16 @@
 
 オプション引数 (option argument)
    あるオプションの後ろに続く引数で、そのオプションに密接な関連をもち、オプションと同時に引数リストから取り出されます。 :mod:`optparse`
-   では、オプション引数は以下のように別々の引数にできます::
+   では、オプション引数は以下のように別々の引数にできます。
+
+   .. code-block:: text
 
       -f foo
       --file foo
 
-   また、一つの引数中にも入れられます::
+   また、一つの引数中にも入れられます。
+
+   .. code-block:: text
 
       -ffoo
       --file=foo
@@ -131,9 +144,7 @@
 必須のオプション (required option)
    コマンドラインで与えなければならないオプションです; 「必須なオプション (required
    option)」という語は、英語では矛盾した言葉です。 :mod:`optparse`
-   では必須オプションの実装を妨げてはいませんが、とりたてて実装上役立つこともしていません。 :mod:`optparse`
-   で必須オプションを実装する方法は、 :mod:`optparse` ソースコード配布物中の ``examples/required_1.py`` や
-   ``examples/required_2.py`` を参照してください。
+   では必須オプションの実装を妨げてはいませんが、とりたてて実装上役立つこともしていません。
 
 例えば、下記のような架空のコマンドラインを考えてみましょう::
 
@@ -242,8 +253,10 @@ GUI でできた「環境設定」ダイアログ上のウィジェットであ�
 
 * オプションの解析後に残った固定引数からなるリスト ``args`` 。
 
-このチュートリアルの節では、最も重要な四つのオプション属性: :attr:`action`, :attr:`type`, :attr:`dest`
-(destination), および :attr:`help` についてしか触れません。このうち最も重要なのは :attr:`action` です。
+このチュートリアルの節では、最も重要な四つのオプション属性:
+:attr:`~Option.action`, :attr:`~Option.type`, :attr:`~Option.dest`
+(destination), :attr:`~Option.help` についてしか触れません。
+このうち最も重要なのは :attr:`~Option.action` です。
 
 
 .. _optparse-understanding-option-actions:
@@ -338,16 +351,16 @@ store アクション
 
 この他にも、 :mod:`optparse` は以下のようなアクションをサポートしています:
 
-``store_const``
+``"store_const"``
    定数値を保存します。
 
-``append``
+``"append"``
    オプションの引数を指定のリストに追加します。
 
-``count``
+``"count"``
    指定のカウンタを 1 増やします。
 
-``callback``
+``"callback"``
    指定の関数を呼び出します。
 
 これらのアクションについては、 :ref:`optparse-reference-guide` 節の「リファレンスガイド」および
@@ -400,7 +413,8 @@ store アクション
 ^^^^^^^^^^^^
 
 :mod:`optparse` にはヘルプと使い方の説明 (usage text) を生成する機能があり、
-ユーザに優しいコマンドラインインタフェースを作成する上で役立ちます。やらなければならないのは、各オプションに対する :attr:`help` の値と、
+ユーザに優しいコマンドラインインタフェースを作成する上で役立ちます。
+やらなければならないのは、各オプションに対する :attr:`~Option.help` の値と、
 必要ならプログラム全体の使用法を説明する短いメッセージを与えることだけです。
 
 ユーザフレンドリな (ドキュメント付きの) オプションを追加した :class:`OptionParser` を以下に示します::
@@ -414,7 +428,7 @@ store アクション
                      action="store_false", dest="verbose",
                      help="be vewwy quiet (I'm hunting wabbits)")
    parser.add_option("-f", "--filename",
-                     metavar="FILE", help="write output to FILE"),
+                     metavar="FILE", help="write output to FILE")
    parser.add_option("-m", "--mode",
                      default="intermediate",
                      help="interaction mode: novice, intermediate, "
@@ -422,7 +436,9 @@ store アクション
 
 :mod:`optparse` がコマンドライン上で ``"-h"`` や ``"--help"`` を
 見つけた場合や、 :meth:`parser.print_help` を呼び出した場合、この :class:`OptionParser`
-は以下のようなメッセージを標準出力に出力します::
+は以下のようなメッセージを標準出力に出力します。
+
+.. code-block:: text
 
    usage: <yourscript> [options] arg1 arg2
 
@@ -498,7 +514,9 @@ store アクション
 
 .. This would result in the following help output::
 
-この結果のヘルプ出力は次のようになります。 ::
+この結果のヘルプ出力は次のようになります。
+
+.. code-block:: text
 
     usage:  [options] arg1 arg2
 
@@ -537,6 +555,30 @@ store アクション
 
 のようになります。
 
+.. The following two methods can be used to print and get the ``version`` string:
+
+以下の2つのメソッドを、 ``version`` 文字列を表示するために利用できます。
+
+.. method:: OptionParser.print_version(file=None)
+
+   .. Print the version message for the current program (``self.version``) to
+      *file* (default stdout).  As with :meth:`print_usage`, any occurrence
+      of ``"%prog"`` in ``self.version`` is replaced with the name of the current
+      program.  Does nothing if ``self.version`` is empty or undefined.
+
+   現在のプログラムのバージョン (``self.version``) を *file* (デフォルト: stdout)
+   へ表示します。 :meth:`print_usage` と同じく、 ``self.version`` の中の全ての
+   ``"%prog"`` が現在のプログラム名に置き換えられます。
+   ``self.version`` が空文字列だだったり未定義だったときは何もしません。
+
+.. method:: OptionParser.get_version()
+
+   .. Same as :meth:`print_version` but returns the version string instead of
+      printing it.
+
+   :meth:`print_version` と同じですが、バージョン文字列を表示する代わりに
+   返します。
+
 
 .. _optparse-how-optparse-handles-errors:
 
@@ -545,13 +587,16 @@ store アクション
 
 :mod:`optparse` を使う場合に気を付けねばならないエラーには、大きく分けてプログラマ側のエラーとユーザ側のエラーという二つの種類があります。
 プログラマ側のエラーの多くは、例えば不正なオプション文字列や定義されていないオプション属性の指定、あるいはオプション属性を指定し忘れるといった、
-誤った ``parser.add_option()`` 呼び出しによるものです。
-こうした誤りは通常通りに処理されます。すなわち、例外(``optparse.OptionError`` や :exc:``TypeError``)
-を送出して、プログラムをクラッシュさせます。もっと重要なのはユーザ側のエラーの処理です。というのも、ユーザの操作エラーという\
+誤った ``OptionParser.add_option()`` 呼び出しによるものです。
+こうした誤りは通常通りに処理されます。すなわち、例外(:exc:``optparse.OptionError`` や :exc:``TypeError``)
+を送出して、プログラムをクラッシュさせます。
+
+もっと重要なのはユーザ側のエラーの処理です。というのも、ユーザの操作エラーという\
 ものはコードの安定性に関係なく起こるからです。 :mod:`optparse` は、誤ったオプション引数の指定 (整数を引数にとるオプション
 :option:`-n` に対して ``"-n4x"`` と指定してしまうなど) や、引数を指定し忘れた場合 (:option:`-n`
 が何らかの引数をとるオプションであるのに、 ``"-n"`` が引数の末尾に来ている場合) といった、ユーザによるエラーを自動的に\
-検出します。また、アプリケーション側で定義されたエラー条件が起きた場合、 ``parser.error()`` を呼び出してエラーを通知できます::
+検出します。また、アプリケーション側で定義されたエラー条件が起きた場合、
+:func:``OptionParser.error()`` を呼び出してエラーを通知できます::
 
    (options, args) = parser.parse_args()
    [...]
@@ -576,10 +621,11 @@ store アクション
    foo: error: -n option requires an argument
 
 :mod:`optparse` は、常にエラーを引き起こしたオプションについて説明の入ったエラーメッセージを生成するよう気を配ります;
-従って、 ``parser.error()`` をアプリケーションコードから呼び出す場合にも、同じようなメッセージになるようにしてください。
+従って、 :func:``OptionParser.error()`` をアプリケーションコードから呼び出す場合にも、同じようなメッセージになるようにしてください。
 
 :mod:`optparse` のデフォルトのエラー処理動作が気に入らないのなら、 :class:`OptionParser`
-をサブクラス化して、 :meth:`exit` かつ/または :meth:`error` をオーバライドする必要があります。
+をサブクラス化して、 :meth:`~OptionParser.exit` かつ/または
+:meth:`~OptionParser.error` をオーバライドする必要があります。
 
 
 .. _optparse-putting-it-all-together:
@@ -625,9 +671,9 @@ store アクション
 parserを作る
 ^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` を使う最初の一歩は OptionParser インスタンスを作ることです。  ::
+:mod:`optparse` を使う最初の一歩は OptionParser インスタンスを作ることです。
 
-   parser = OptionParser(...)
+.. class:: OptionParser(...)
 
 OptionParser のコンストラクタの引数はどれも必須ではありませんが、いくつものキーワード引数がオプションとして使えます。これらはキーワード引数と\
 して渡さなければなりません。すなわち、引数が宣言されている順番に頼ってはいけません。
@@ -635,8 +681,8 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
    ``usage`` (デフォルト: ``"%prog [options]"``)
       プログラムが間違った方法で実行されるかまたはヘルプオプションを付けて実行された場合に表示される使用法です。 :mod:`optparse` は使用法の文\
       字列を表示する際に ``%prog`` を ``os.path.basename(sys.argv[0])`` (または ``prog``
-      キーワード引数が指定されていればその値) に展開します。使用法メッセージを抑制するためには特別な ``optparse.SUPPRESS_USAGE``
-      という値を指定します。
+      キーワード引数が指定されていればその値) に展開します。使用法メッセージを抑制するためには特別な
+      :data:``optparse.SUPPRESS_USAGE`` という値を指定します。
 
    ``option_list`` (デフォルト: ``[]``)
       パーザに追加する Option オブジェクトのリストです。 ``option_list`` の中のオプションは ``standard_option_list``
@@ -659,7 +705,7 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
       プログラムの概要を表す一段落のテキストです。 :mod:`optparse` はユーザがヘルプを要求したときにこの概要を現在のターミナルの幅に合わせて\
       整形し直して表示します (``usage`` の後、オプションリストの前に表示されます)。
 
-   ``formatter`` (デフォルト: 新しい IndentedHelpFormatter)
+   ``formatter`` (デフォルト: 新しい :class:`IndentedHelpFormatter`)
       ヘルプテキストを表示する際に使われる optparse.HelpFormatter のインスタンスです。 :mod:`optparse`
       はこの目的のためにすぐ使えるクラスを二つ提供しています。 IndentedHelpFormatter と TitledHelpFormatter がそれです。
 
@@ -671,6 +717,11 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
       ``usage`` や ``version`` の中の ``"%prog"`` を展開するときに
       ``os.path.basename(sys.argv[0])`` の代わりに使われる文字列です。
 
+   ``epilog`` (default: ``None``)
+
+      .. A paragraph of help text to print after the option help.
+
+      オプションのヘルプの後に表示されるヘルプテキスト.
 
 
 .. _optparse-populating-parser:
@@ -680,8 +731,8 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
 パーザにオプションを加えていくにはいくつか方法があります。
 推奨するのは :ref:`optparse-tutorial` 節で示したような
-``OptionParser.add_option()`` を使う方法です。
-:meth:`add_option` は以下の二つのうちいずれかの方法で呼び出せます:
+meth:``OptionParser.add_option()`` を使う方法です。
+:meth:`add_option` は以下の二つのうちいずれかの方法で呼び出せます。
 
 * (:func:`make_option` などが返す) :class:`Option` インスタンスを渡します。
 
@@ -716,63 +767,75 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 一つの :class:`Option` には任意の数のオプションを短い形式でも長い形式でも指定できます。
 ただし、少なくとも一つは指定せねばなりません。
 
-正しい方法で :class:`Option` インスタンスを生成するには、 :class:`OptionParser` の :meth:`add_option`
-を使います::
+正しい方法で :class:`Option` インスタンスを生成するには、 :class:`OptionParser`
+の :meth:`add_option` を使います。
 
-   parser.add_option(opt_str[, ...], attr=value, ...)
+.. method:: OptionParser.add_option(opt_str[, ...], attr=value, ...)
 
-短い形式のオプション文字列を一つだけ持つようなオプションを生成するには::
+   短い形式のオプション文字列を一つだけ持つようなオプションを生成するには
+   次のようにします。 ::
 
-   parser.add_option("-f", attr=value, ...)
+      parser.add_option("-f", attr=value, ...)
 
-のようにします。
 
-また、長い形式のオプション文字列を一つだけ持つようなオプションの定義は::
+   また、長い形式のオプション文字列を一つだけ持つようなオプションの定義は
+   次のようになります。 ::
 
-   parser.add_option("--foo", attr=value, ...)
+      parser.add_option("--foo", attr=value, ...)
 
-のようになります。
+   .. The keyword arguments define attributes of the new Option object.  The most
+      important option attribute is :attr:`~Option.action`, and it largely
+      determines which other attributes are relevant or required.  If you pass
+      irrelevant option attributes, or fail to pass required ones, :mod:`optparse`
+      raises an :exc:`OptionError` exception explaining your mistake.
 
-キーワード引数は新しい :class:`Option` オブジェクトの属性を定義します。オプションの属性のうちでもっとも重要なのは :attr:`action`
-です。 :attr:`action` は他のどの属性と関連があるか、そしてどの属性が必要かに大きく作用します。関係のないオプション属性を指定したり、
-必要な属性を指定し忘れたりすると、 :mod:`optparse` は誤りを解説した :exc:`OptionError` 例外を送出します。
+   キーワード引数は新しい :class:`Option` オブジェクトの属性を定義します。
+   オプションの属性のうちでもっとも重要なのは :attr:`~Option.action` です。
+   この属性は、他のどの属性と関連があるか、そしてどの属性が必要かに大きく
+   作用します。関係のないオプション属性を指定したり、必要な属性を指定し忘れたり
+   すると、 :mod:`optparse` は誤りを解説した :exc:`OptionError` 例外を送出します。
 
-コマンドライン上にあるオプションが見つかったときの :mod:`optparse` の振舞いを決定しているのは *アクション(action)* です。
-:mod:`optparse` でハードコードされている標準的なアクションには以下のようなものがあります:
+   コマンドライン上にあるオプションが見つかったときの :mod:`optparse` の振舞いを
+   決定しているのは *アクション(action)* です。 :mod:`optparse` でハードコード
+   されている標準的なアクションには以下のようなものがあります:
 
-``store``
-   オプションの引数を保存します (デフォルトの動作です)
+   ``"store"``
+      オプションの引数を保存します (デフォルトの動作です)
 
-``store_const``
-   定数を保存します
+   ``"store_const"``
+      定数を保存します
 
-``store_true``
-   真 (:const:`True`) を保存します
+   ``"store_true"``
+      真 (:const:`True`) を保存します
 
-``store_false``
-   偽 (:const:`False`) を保存します
+   ``"store_false"``
+      偽 (:const:`False`) を保存します
 
-``append``
-   オプションの引数をリストに追加します
+   ``"append"``
+      オプションの引数をリストに追加します
 
-``append_const``
-   定数をリストに追加します
+   ``"append_const"``
+      定数をリストに追加します
 
-``count``
-   カウンタを一つ増やします
+   ``"count"``
+      カウンタを一つ増やします
 
-``callback``
-   指定された関数を呼び出します
+   ``"callback"``
+      指定された関数を呼び出します
 
-:attr:`help`
-   全てのオプションとそのドキュメントの入った使用法メッセージを出力します。
+   ``"help"``
+      全てのオプションとそのドキュメントの入った使用法メッセージを出力します。
 
-(アクションを指定しない場合、デフォルトは ``store`` になります。このアクションでは、 :attr:`type` および :attr:`dest`
-オプション属性を指定せねばなりません。下記を参照してください。)
+   (アクションを指定しない場合、デフォルトは ``"store"`` になります。
+   このアクションでは、 :attr:`~Option.type` および :attr:`~Option.dest`
+   オプション属性を指定できます。
+   :ref:`optparse-standard-option-actions` を参照してください。)
 
-すでにお分かりのように、ほとんどのアクションはどこかに値を保存したり、値を更新したりします。この目的のために、 :mod:`optparse`
-は常に特別なオブジェクトを作り出し、それは通常 ``options`` と呼ばれます (``optparse.Values`` の
-インスタンスになっています)。オプションの引数 (や、その他の様々な値) は、 :attr:`dest` (保存先:  destination)
+すでにお分かりのように、ほとんどのアクションはどこかに値を保存したり、
+値を更新したりします。この目的のために、 :mod:`optparse`
+は常に特別なオブジェクトを作り出し、それは通常 ``options`` と呼ばれます
+(:class:`optparse.Values` のインスタンスになっています)。オプションの引数
+(や、その他の様々な値) は、 :attr:`~Option.dest` (保存先:  destination)
 オプション属性に従って、 *options* の属性として保存されます。
 
 例えば、 ::
@@ -783,7 +846,7 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
    options = Values()
 
-パーザ中で以下のようなオプション  ::
+パーザ中で以下のようなオプション ::
 
    parser.add_option("-f", "--file", action="store", type="string", dest="filename")
 
@@ -800,8 +863,95 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
 と同等の処理を行います。
 
-:attr:`type` および :attr:`dest` オプション属性は :attr:`action` と同じくらい重要ですが、 *全ての*
-オプションで意味をなすのは :attr:`action` だけなのです。
+:attr:`~Option.type` および :attr:`~Option.dest` オプション属性は
+:attr:`~Option.action` と同じくらい重要ですが、 *全ての*
+オプションで意味をなすのは :attr:`~Option.action` だけなのです。
+
+
+.. _optparse-option-attributes:
+
+オプション属性
+^^^^^^^^^^^^^^
+
+以下のオプション属性は :meth:`parser.add_option` へのキーワード引数として渡す
+ことができます。特定のオプションに無関係なオプション属性を渡した場合、または
+必須のオプションを渡しそこなった場合、 :mod:`optparse` は :exc:`OptionError`
+を送出します。
+
+.. attribute:: Option.action
+
+   (デフォルト: ``"store"``)
+
+  このオプションがコマンドラインにあった場合に :mod:`optparse` に何を
+  させるかを決めます。
+  取りうるオプションについては
+  :ref:`こちら <optparse-standard-option-actions>` を参照してください。
+
+.. attribute:: Option.type
+
+   (デフォルト: ``"string"``)
+
+  このオプションに与えられる引数の型 (たとえば ``"string"`` や ``"int"``)
+  です。
+  取りうるオプションについては
+  :ref:`こちら <optparse-standard-option-types>` を参照してください。
+
+.. attribute:: Option.dest
+
+   (デフォルト: オプション文字列を使う)
+
+  このオプションのアクションがある値をどこかに書いたり書き換えたりを意味する
+  場合、これは :mod:`optparse` にその書く場所を教えます。詳しく言えば
+  :attr:`~Option.dest` には :mod:`optparse` がコマンドラインを解析しながら
+  組み立てる ``options`` オブジェクトの属性の名前を指定します。
+
+.. attribute:: Option.default
+
+  コマンドラインに指定がなかったときにこのオプションの対象に使われる値です。
+  :meth:`OptionParser.set_defaults` も参照してください。
+
+.. attribute:: Option.nargs
+
+   (デフォルト: 1)
+
+  このオプションがあったときに幾つの :attr:`~Option.type` 型の引数が
+  消費されるべきかを指定します。 1 より大きい場合、 :mod:`optparse` は
+  :attr:`~Option.dest` に値のタプルを格納します。
+
+.. attribute:: Option.const
+
+  定数を格納する動作のための、その定数です。
+
+.. attribute:: Option.choices
+
+  ``"choice"`` 型オプションに対してユーザが選べる選択肢となる文字列の
+  リストです。
+
+.. attribute:: Option.callback
+
+  アクションが ``"callback"`` であるオプションに対し、このオプションがあった
+  ときに呼ばれる呼び出し可能オブジェクトです。呼び出し時に渡される引数の
+  詳細については、 :ref:`optparse-option-callbacks` を参照してください。
+
+.. attribute:: Option.callback_args
+               Option.callback_kwargs
+
+  ``callback`` に渡される標準的な4つのコールバック引数の後ろに追加する、
+  位置指定引数とキーワード引数。
+
+.. attribute:: Option.help
+
+  ユーザが :attr:`~Option.help` オプション(``"--help"`` のような)を指定
+  したときに表示される、使用可能な全オプションのリストの中のこのオプションに
+  関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
+  オプションを隠すには特殊な値 :data:`optparse.SUPPRESS_HELP` を使います。
+
+.. attribute:: Option.metavar
+
+   (デフォルト: オプション文字列から)
+
+  説明文を表示する際にオプションの引数の身代わりになるものです。
+  例は :ref:`optparse-tutorial` 節を参照してください。
 
 
 .. _optparse-standard-option-actions:
@@ -809,23 +959,31 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 標準的なオプション・アクション
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-様々なオプション・アクションにはどれも互いに少しづつ異なった条件と作用があります。ほとんどのアクションに関連するオプション属性がいくつかあり、値を指定して
-:mod:`optparse` の挙動を操作できます; いくつかのアクションには必須の属性があり、必ず値を指定せねばなりません。
+様々なオプション・アクションにはどれも互いに少しづつ異なった条件と作用が
+あります。ほとんどのアクションに関連するオプション属性がいくつかあり、
+値を指定して :mod:`optparse` の挙動を操作できます。いくつかのアクションには
+必須の属性があり、必ず値を指定せねばなりません。
 
-* ``store`` [relevant: :attr:`type`, :attr:`dest`, ``nargs``, ``choices``]
+* ``"store"`` [関連: :attr:`~Option.type`, :attr:`~Option.dest`,
+  :attr:`~Option.nargs`, :attr:`~Option.choices`]
 
-  オプションの後には必ず引数が続きます。引数は :attr:`type` に従った値に変換されて :attr:`dest` に保存されます。 *nargs* > 1
-  の場合、複数の引数をコマンドラインから取り出します; 引数は全て :attr:`type` に従って変換され、 :attr:`dest`
-  にタプルとして保存されます。下記の :ref:`optparse-standard-option-types` 節「標準のオプション型」を
+  オプションの後には必ず引数が続きます。引数は :attr:`~Option.type` に従って
+  値に変換されて :attr:`~Option.dest` に保存されます。
+  :attr:`~Option.nargs` > 1 の場合、複数の引数をコマンドラインから取り出します。
+  引数は全て :attr:`~Option.type` に従って変換され、 :attr:`~Option.dest`
+  にタプルとして保存されます。 :ref:`optparse-standard-option-types` 節を
   参照してください。
 
-  ``choices`` を(文字列のリストかタプルで) 指定した場合、型のデフォルト値は "choice" になります。
+  :attr:`~Option.choices` を(文字列のリストかタプルで) 指定した場合、型の
+  デフォルト値は ``"choice"`` になります。
 
-  :attr:`type` を指定しない場合、デフォルトの値は ``string`` です。
+  :attr:`~Option.type` を指定しない場合、デフォルトの値は ``"string"`` です。
 
-  :attr:`dest` を指定しない場合、 :mod:`optparse` は保存先を最初の長い形式のオプション文字列から導出します
-  (例えば、 ``"--foo-bar"`` は ``foo_bar`` になります)。長い形式のオプション文字列がない場合、 :mod:`optparse`
-  は最初の短い形式のオプションから保存先の変数名を導出します (``"-f"`` は ``f`` になります)。
+  :attr:`~Option.dest` を指定しない場合、 :mod:`optparse` は保存先を最初の
+  長い形式のオプション文字列から導出します
+  (例えば、 ``"--foo-bar"`` は ``foo_bar`` になります)。長い形式の
+  オプション文字列がない場合、 :mod:`optparse` は最初の短い形式のオプション
+  から保存先の変数名を導出します (``"-f"`` は ``f`` になります)。
 
   例えば::
 
@@ -844,9 +1002,10 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
   のように設定を行います。
 
-* ``store_const`` [required: ``const``; relevant: :attr:`dest`]
+* ``"store_const"`` [関連: :attr:`~Option.const`; 関連:
+  :attr:`~Option.dest`]
 
-  値 ``cost`` を :attr:`dest` に保存します。
+  値 :attr:`~Option.cost` を :attr:`dest` に保存します。
 
   例えば::
 
@@ -857,34 +1016,36 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
      parser.add_option("--noisy",
                        action="store_const", const=2, dest="verbose")
 
-  とします。
-
-  ``"--noisy"`` が見つかると、 :mod:`optparse` は  ::
+  とします。 ``"--noisy"`` が見つかると、 :mod:`optparse` は  ::
 
      options.verbose = 2
 
   のように設定を行います。
 
-* ``store_true`` [relevant: :attr:`dest`]
+* ``"store_true"`` [関連: :attr:`~Option.dest`]
 
-  ``store_const`` の特殊なケースで、真 (True) を :attr:`dest` に保存します。
+  ``"store_const"`` の特殊なケースで、真 (True) を :attr:`dest` に保存します。
 
-* ``store_false`` [relevant: :attr:`dest`]
+* ``"store_false"`` [関連::attr:`~Option.dest`]
 
-  ``store_true`` と同じですが、偽 (False) を保存します。
+  ``"store_true"`` と似ていて、偽 (False) を保存します。
 
   例::
 
      parser.add_option("--clobber", action="store_true", dest="clobber")
      parser.add_option("--no-clobber", action="store_false", dest="clobber")
 
-* ``append`` [relevant: :attr:`type`, :attr:`dest`, ``nargs``, ``choices``]
+* ``"append"`` [関連: :attr:`~Option.type`, :attr:`~Option.dest`,
+  :attr:`~Option.nargs`, :attr:`~Option.choices`]
 
-  このオプションの後ろには必ず引数が続きます。引数は :attr:`dest` のリストに追加されます。 :attr:`dest`
-  のデフォルト値を指定しなかった場合、 :mod:`optparse` がこのオプションを最初にみつけた時点で空のリストを自動的に生成します。 ``nargs``
-  > 1 の場合、複数の引数をコマンドラインから取り出し、長さ ``nargs`` のタプルを生成して :attr:`dest` に追加します。
+  このオプションの後ろには必ず引数が続きます。引数は :attr:`~Option.dest` の
+  リストに追加されます。 :attr:`~Option.dest` のデフォルト値を指定しなかった場合、
+  :mod:`optparse` がこのオプションを最初にみつけた時点で空のリストを自動的に生成します。
+  :attr:`~Option.nargs` > 1 の場合、複数の引数をコマンドラインから取り出し、
+  長さ :attr:`~Option.nargs` のタプルを生成して :attr:`~Option.dest` に追加します。
 
-  :attr:`type` および :attr:`dest` のデフォルト値は ``store`` アクションと同じです。
+  :attr:`~Option.type` および :attr:`~Option.dest` のデフォルト値は ``"store"``
+  アクションと同じです。
 
   例::
 
@@ -903,14 +1064,18 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
   を実行します。
 
-* ``append_const`` [required: ``const``; relevant: :attr:`dest`]
+* ``"append_const"`` [関連: :attr:`~Option.const`; 関連:
+  :attr:`~Option.dest`]
 
-  ``store_const`` と同様ですが、 ``const`` の値は :attr:`dest` に追加(append)されます。 ``append``
-  の場合と同じように :attr:`dest` のデフォルトは ``None`` ですがこのオプションを最初にみつけた時点で空のリストを自動的に生成します。
+  ``"store_const"`` と同様ですが、 :attr:`~Option.const` の値は
+  :attr:`~Option.dest` に追加(append)されます。 ``"append"``
+  の場合と同じように :attr:`~Option.dest` のデフォルトは ``None``
+  ですがこのオプションを最初にみつけた時点で空のリストを自動的に生成します。
 
-* ``count`` [relevant: :attr:`dest`]
+* ``"count"`` [関連: :attr:`~Option.dest`]
 
-  :attr:`dest` に保存されている整数値をインクリメントします。 :attr:`dest` は (デフォルトの値を指定しない限り)
+  :attr:`~Option.dest` に保存されている整数値をインクリメントします。
+  :attr:`~Option.dest` は (デフォルトの値を指定しない限り)
   最初にインクリメントを行う前にゼロに設定されます。
 
   例::
@@ -930,41 +1095,50 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
   を実行します。
 
-* ``callback`` [required: ``callback``; relevant: :attr:`type`, ``nargs``,
-  ``callback_args``, ``callback_kwargs``]
+* ``"callback"`` [必須: :attr:`~Option.callback`; 関連:
+  :attr:`~Option.type`, :attr:`~Option.nargs`, :attr:`~Option.callback_args`,
+  :attr:`~Option.callback_kwargs`]
 
-  ``callback`` に指定された関数を次のように呼び出します。  ::
+  :attr:`~Option.callback` に指定された関数を次のように呼び出します。  ::
 
      func(option, opt_str, value, parser, *args, **kwargs)
 
   詳細は、 :ref:`optparse-option-callbacks` 節を参照してください。
 
-* :attr:`help`
+* ``"help"``
 
-  現在のオプションパーザ内の全てのオプションに対する完全なヘルプメッセージを出力します。ヘルプメッセージは :class:`OptionParser`
-  のコンストラクタに渡した ``usage``  文字列と、各オプションに渡した :attr:`help` 文字列から生成します。
+  現在のオプションパーザ内の全てのオプションに対する完全なヘルプメッセージを出力します。
+  ヘルプメッセージは :class:`OptionParser`
+  のコンストラクタに渡した ``usage``  文字列と、各オプションに渡した
+  :attr:`~Option.help` 文字列から生成します。
 
-  オプションに :attr:`help` 文字列が指定されていなくても、オプションは
-  ヘルプメッセージ中に列挙されます。オプションを完全に表示させないようにするには、特殊な値 ``optparse.SUPPRESS_HELP``
-  を使ってください。
+  オプションに :attr:`~Option.help` 文字列が指定されていなくても、オプションは
+  ヘルプメッセージ中に列挙されます。オプションを完全に表示させないようにするには、
+  特殊な値 :data:`optparse.SUPPRESS_HELP` を使ってください。
 
-  :mod:`optparse` は全ての :class:`OptionParser` に自動的に :attr:`help`
+  :mod:`optparse` は全ての :class:`OptionParser` に自動的に :attr:`~Option.help`
   オプションを追加するので、通常自分で生成する必要はありません。
 
   例::
 
      from optparse import OptionParser, SUPPRESS_HELP
 
-     parser = OptionParser()
-     parser.add_option("-h", "--help", action="help"),
+     # 通常、 help オプションは自動的に追加されますが、
+     # add_help_option 引数を使って抑制することができます。
+     parser = OptionParser(add_help_option=False)
+
+     parser.add_option("-h", "--help", action="help")
      parser.add_option("-v", action="store_true", dest="verbose",
                        help="Be moderately verbose")
      parser.add_option("--file", dest="filename",
-                       help="Input file to read data from"),
+                       help="Input file to read data from")
      parser.add_option("--secret", help=SUPPRESS_HELP)
 
-  :mod:`optparse` がコマンドライン上に ``"-h"`` または  ``"--help"`` を見つけると、以下のようなヘルプメッセージを
-  標準出力に出力します (``sys.argv[0]`` は ``"foo.py"`` だとします)::
+  :mod:`optparse` がコマンドライン上に ``"-h"`` または  ``"--help"`` を
+  見つけると、以下のようなヘルプメッセージを標準出力に出力します
+  (``sys.argv[0]`` は ``"foo.py"`` だとします)。
+
+  .. code-block:: text
 
      usage: foo.py [options]
 
@@ -973,76 +1147,18 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
        -v                Be moderately verbose
        --file=FILENAME   Input file to read data from
 
-  ヘルプメッセージの出力後、 :mod:`optparse` は ``sys.exit(0)`` でプロセスを終了します。
+  ヘルプメッセージの出力後、 :mod:`optparse` は ``sys.exit(0)`` で
+  プロセスを終了します。
 
-* ``version``
+* ``"version"``
 
-  :class:`OptionParser` に指定されているバージョン番号を標準出力に出力して終了します。バージョン番号は、実際には
-  :class:`OptionParser` の :meth:`print_version` メソッドで書式化されてから出力されます。通常、
-  :class:`OptionParser` のコンストラクタに *version* が指定されたときのみ関係のあるアクションです。 :attr:`help`
-  オプションと同様、 :mod:`optparse` はこのオプションを必要に応じて自動的に追加するので、 ``version`` オプションを作成する
-  ことはほとんどないでしょう。
-
-
-.. _optparse-option-attributes:
-
-オプション属性
-^^^^^^^^^^^^^^
-
-以下のオプション属性は ``parser.add_option()`` へのキーワード引数として
-渡すことができます。特定のオプションに無関係なオプション属性を渡した場合、または必須のオプションを渡しそこなった場合、 :mod:`optparse` は
-:exc:`OptionError` を送出します。
-
-* :attr:`action` (デフォルト: ``"store"``)
-
-  このオプションがコマンドラインにあった場合に :mod:`optparse` に何をさせるかを決めます。取りうるオプションについては既に説明しました。
-
-* :attr:`type` (デフォルト: ``"string"``)
-
-  このオプションに与えられる引数の型 (たとえば ``"string"`` や ``"int"``) です。取りうるオプションの型については既に説明しました。
-
-* :attr:`dest` (デフォルト: オプション文字列から)
-
-  このオプションのアクションがある値をどこかに書いたり書き換えたりを意味する場合、これは :mod:`optparse` にその書く場所を教えます。詳しく言えば
-  :attr:`dest` には :mod:`optparse` がコマンドラインを解析しながら組み立てる ``options``
-  オブジェクトの属性の名前を指定します。
-
-* ``default`` (非推奨)
-
-  コマンドラインに指定がなかったときにこのオプションの対象に使われる値です。使用は推奨されません。代わりに ``parser.set_defaults()``
-  を使ってください。
-
-* ``nargs`` (デフォルト: 1)
-
-  このオプションがあったときに幾つの :attr:`type` 型の引数が消費されるべきかを指定します。もし > 1 ならば、 :mod:`optparse` は
-  :attr:`dest` に値のタプルを格納します。
-
-* ``const``
-
-  定数を格納する動作のための、その定数です。
-
-* ``choices``
-
-  ``"choice"`` 型オプションに対してユーザがその中から選べる文字列のリストです。
-
-* ``callback``
-
-  アクションが ``"callback"`` であるオプションに対し、このオプションがあったときに呼ばれる呼び出し可能オブジェクトです。 ``callable``
-  に渡す引数の詳細については、 :ref:`optparse-option-callbacks` 節を参照してください。
-
-* ``callback_args``, ``callback_kwargs``
-
-  ``callback`` に渡される標準的な4つのコールバック引数の後ろに追加する位置による引数またはキーワード引数です。
-
-* :attr:`help`
-
-  ユーザが :attr:`help` オプション(``"--help"`` のような)を指定したときに
-  表示される使用可能な全オプションのリストの中のこのオプションに関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
-  オプションを隠すには特殊な値 ``SUPPRESS_HELP`` を使います。
-
-* ``metavar`` (デフォルト: オプション文字列から)
-
-  説明文を表示する際にオプションの引数の身代わりになるものです。例は :ref:`optparse-tutorial` 節を参照してください。
+  :class:`OptionParser` に指定されているバージョン番号を標準出力に出力して
+  終了します。バージョン番号は、実際には :class:`OptionParser` の
+  :meth:`print_version` メソッドで書式化されてから出力されます。
+  通常、 :class:`OptionParser` のコンストラクタに ``version`` 引数が指定された
+  ときのみ関係のあるアクションです。 :attr:`~Option.help` オプションと同様、
+  :mod:`optparse` はこのオプションを必要に応じて自動的に追加するので、
+  ``version`` オプションを作成することはほとんどないでしょう。
 
 
 .. _optparse-standard-option-types:
@@ -1050,14 +1166,14 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 標準のオプション型
 ^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` には、 :dfn:`string` (文字列)、 :dfn:`int` (整数)、  :dfn:`long` (長整数)、
-:dfn:`choice` (選択肢)、 :dfn:`float` (浮動小数点数)  および :dfn:`complex` (複素数) の 6
-種類のオプション型があります。新たなオプションの型を追加したければ、 :ref:`optparse-extending-optparse`
+:mod:`optparse` には、 ``"string"``, ``"int"``, ``"long"``, ``"choice"``,
+``"float"``, ``"complex"`` の 6 種類のビルトインのオプション型があります。
+新たなオプションの型を追加したければ、 :ref:`optparse-extending-optparse`
 節を参照してください。
 
 文字列オプションの引数はチェックや変換を一切受けません: コマンドライン上のテキストは保存先にそのまま保存されます (またはコールバックに渡されます)。
 
-整数引数 (``int`` 型や ``long`` 型) は次のように読み取られます。
+整数引数 (``"int"`` 型や ``"long"`` 型) は次のように読み取られます。
 
 * 数が ``0x`` から始まるならば、16進数として読み取られます
 
@@ -1068,15 +1184,19 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 * それ以外の場合、数は10進数として読み取られます
 
 
-変換は適切な底(2, 8, 10, 16 のどれか)とともに ``int()`` または ``long()`` を呼び出すことで行なわれます。
-この変換が失敗した場合 :mod:`optparse` の処理も失敗に終わりますが、より役に立つエラーメッセージを出力します。
+変換は適切な底(2, 8, 10, 16 のどれか)とともに :func:`int` または :func:`long`
+を呼び出すことで行なわれます。
+この変換が失敗した場合 :mod:`optparse` の処理も失敗に終わりますが、
+より役に立つエラーメッセージを出力します。
 
-``float`` および ``complex`` のオプション引数は直接 ``float()`` や ``complex()`` で変換されます。
-エラーは同様の扱いです。
+``"float"`` および ``"complex"`` のオプション引数は直接 :func:`float` や
+:func:`complex` で変換されます。エラーは同様の扱いです。
 
-``choice`` オプションは ``string`` オプションのサブタイプです。 ``choice`` オプションの属性 (文字列からなるシーケンス)
-には、利用できるオプション引数のセットを指定します。 ``optparse.check_choice()``
-はユーザの指定したオプション引数とマスタリストを比較して、無効な文字列が指定された場合には :exc:`OptionValueError` を送出します。
+``"choice"`` オプションは ``"string"`` オプションのサブタイプです。
+:attr:`~Option.choice` オプションの属性 (文字列からなるシーケンス) には、
+利用できるオプション引数のセットを指定します。 :func:`optparse.check_choice`
+はユーザの指定したオプション引数とマスタリストを比較して、無効な文字列が
+指定された場合には :exc:`OptionValueError` を送出します。
 
 
 .. _optparse-parsing-arguments:
@@ -1094,20 +1214,24 @@ OptionParser を作成してオプションを追加していく上で大事な�
    処理する引数のリスト (デフォルト: ``sys.argv[1:]``)
 
 ``values``
-   オプション引数を格納するオブジェクト (デフォルト: 新しい optparse.Values のインスタンス)
+   オプション引数を格納する :class:`optparse.Values` のオブジェクト
+   (デフォルト: 新しい :class:`Values` のインスタンス) --
+   既存のオブジェクトを指定した場合、オプションのデフォルトは
+   初期化されません。
 
 であり、戻り値は
 
 ``options``
-   ``values`` に渡されたものと同じオブジェクト、または :mod:`optparse` によって生成された optparse.Values
-   インスタンス
+   ``values`` に渡されたものと同じオブジェクト、または :mod:`optparse`
+   によって生成された optparse.Values インスタンス
 
 ``args``
    全てのオプションの処理が終わった後で残った位置引数
 
 です。
 
-一番普通の使い方は一切キーワード引数を使わないというものです。 ``options`` を指定した場合、それは繰り返される ``setattr()``
+一番普通の使い方は一切キーワード引数を使わないというものです。
+``values`` を指定した場合、それは繰り返される :func:`setattr`
 の呼び出し (大雑把に言うと保存される各オプション引数につき一回ずつ) で更新されていき、 :meth:`parse_args` で返されます。
 
 :meth:`parse_args` が引数リストでエラーに遭遇した場合、 OptionParser の :meth:`error`
@@ -1120,38 +1244,67 @@ OptionParser を作成してオプションを追加していく上で大事な�
 オプション解析器への問い合わせと操作
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-自前のオプションパーザをつつきまわして、何が起こるかを調べると便利なことがあります。 :class:`OptionParser` では便利な二つのメソッドを提供
-しています:
 オプションパーザのデフォルトの振る舞いは、ある程度カスタマイズすることができます。
 また、オプションパーザの中を調べることもできます。
 :class:`OptionParser` は幾つかのヘルパーメソッドを提供しています。
 
-``disable_interspersed_args()``
-  オプションで無い最初の引数を見つけた時点でパースを止めるように設定します。
-  別のコマンドを実行するコマンドをプロセッサを作成する際、別のコマンドの\
-  オプションと自身のオプションが混ざるのを防ぐために利用することができます。
-  例えば、各コマンドがそれぞれ異なるオプションのセットを持つ場合などに有効です。
+.. method:: OptionParser.disable_interspersed_args()
 
-``enable_interspersed_args()``
+   .. Set parsing to stop on the first non-option.  For example, if ``"-a"`` and
+      ``"-b"`` are both simple options that take no arguments, :mod:`optparse`
+      normally accepts this syntax:
+
+   オプションで無い最初の引数を見つけた時点でパースを止めるように設定します。
+   例えば、 ``"-a"`` と ``"-b"`` が両方とも引数を取らないシンプルなオプション
+   だったとすると、 :mod:`optparse` は通常次の構文を受け付け、 ::
+
+      prog -a arg1 -b arg2
+
+   .. and treats it as equivalent to :
+
+   それを次と同じように扱います。 ::
+
+      prog -a -b arg1 arg2
+
+   .. To disable this feature, call :meth:`disable_interspersed_args`.  This
+      restores traditional Unix syntax, where option parsing stops with the first
+      non-option argument.
+
+   この機能を無効にしたいときは、 :meth:`disable_interspersed_args` メソッドを
+   呼び出してください。古典的な Unix システムのように、最初のオプションでない
+   引数を見つけたときにオプションの解析を止めるようになります。
+
+   .. Use this if you have a command processor which runs another command which has
+      options of its own and you want to make sure these options don't get
+      confused.  For example, each command might have a different set of options.
+
+   別のコマンドを実行するコマンドをプロセッサを作成する際、別のコマンドの
+   オプションと自身のオプションが混ざるのを防ぐために利用することができます。
+   例えば、各コマンドがそれぞれ異なるオプションのセットを持つ場合などに有効です。
+
+.. method:: OptionParser.enable_interspersed_args()
+
   オプションで無い最初の引数を見つけてもパースを止めないように設定します。
   オプションとコマンド引数の順序が混ざっても良いようになります。
-  例えば、 ``"-s arg1 --long arg2"`` というコマンドライン引数に対して、
-  ``["arg1", "arg2"]`` とオプション ``-s --long`` を返します。
   これはデフォルトの動作です。
 
-``has_option(opt_str)``
-   :class:`OptionParser` に(``"-q"`` や ``"--verbose"`` のような) オプション ``opt_str``
-   がある場合、真を返します。
+.. method:: OptionParser.get_option(opt_str)
 
-``get_option(opt_str)``
-   オプション文字列 ``opt_str`` に対する :class:`Option` インスタンスを返します。該当するオプションがなければ ``None``
-   を返します。
+   オプション文字列 ``opt_str`` に対する :class:`Option` インスタンスを
+   返します。該当するオプションがなければ ``None`` を返します。
 
-``remove_option(opt_str)``
+.. method:: OptionParser.has_option(opt_str)
+
+   :class:`OptionParser` に(``"-q"`` や ``"--verbose"`` のような) オプション
+   ``opt_str`` がある場合、真を返します。
+
+.. method:: OptionParser.remove_option(opt_str)
+
    :class:`OptionParser` に ``opt_str`` に対応するオプションがある場合、
-   そのオプションを削除します。該当するオプションに他のオプション文字列が指定されていた場合、それらのオプション文字列は全て無効になります。
-   ``opt_str`` がこの :class:`OptionParser` オブジェクトのどのオプションにも属さない場合、 :exc:`ValueError`
-   を送出します。
+   そのオプションを削除します。該当するオプションに他のオプション文字列が
+   指定されていた場合、それらのオプション文字列は全て無効になります。
+   *opt_str* がこの :class:`OptionParser` オブジェクトのどのオプションにも
+   属さない場合、 :exc:`ValueError` を送出します。
 
 
 .. _optparse-conflicts-between-options:
@@ -1159,7 +1312,7 @@ OptionParser を作成してオプションを追加していく上で大事な�
 オプション間の衝突
 ^^^^^^^^^^^^^^^^^^
 
-注意が足りないと、衝突するオプションを定義しやすくなります::
+注意が足りないと、衝突するオプションを定義してしまうことがあります。 ::
 
    parser.add_option("-n", "--dry-run", ...)
    [...]
@@ -1178,10 +1331,11 @@ OptionParser を作成してオプションを追加していく上で大事な�
 
 衝突時の処理をおこなうハンドラ(handler)には、以下のものが利用できます:
 
-   ``error`` (デフォルトの設定)
-      オプション間の衝突をプログラム上のエラーとみなし、 :exc:`OptionConflictError` を送出します。
+   ``"error"`` (デフォルトの設定)
+      オプション間の衝突をプログラム上のエラーとみなし、
+      :exc:`OptionConflictError` を送出します。
 
-   ``resolve``
+   ``"resolve"``
       オプション間の衝突をインテリジェントに解決します (下記参照)。
 
 
@@ -1223,9 +1377,12 @@ OptionParser を作成してオプションを追加していく上で大事な�
 クリーンアップ
 ^^^^^^^^^^^^^^
 
-OptionParser インスタンスはいくつかの循環参照を抱えています。このことは Python のガーベジコレクタにとって問題になるわけではありませんが、
-使い終わった OptionParser に対して ``destroy()`` を呼び出すことでこの循環参照を意図的に断ち切るという方法を選ぶこともできます。
-この方法は特に長時間実行するアプリケーションで OptionParser から大きなオブジェクトグラフが到達可能になっているような場合に有用です。
+OptionParser インスタンスはいくつかの循環参照を抱えています。
+このことは Python のガーベジコレクタにとって問題になるわけではありませんが、
+使い終わった OptionParser に対して :meth:``~OptionParser.destroy``
+を呼び出すことでこの循環参照を意図的に断ち切るという方法を選ぶこともできます。
+この方法は特に長時間実行するアプリケーションで OptionParser から大きな
+オブジェクトグラフが到達可能になっているような場合に有用です。
 
 
 .. _optparse-other-methods:
@@ -1235,45 +1392,65 @@ OptionParser インスタンスはいくつかの循環参照を抱えていま�
 
 OptionParser にはその他にも幾つかの公開されたメソッドがあります:
 
-* ``set_usage(usage)``
+.. method:: OptionParser.set_usage(usage)
 
-  上で説明したコンストラクタの ``usage`` キーワード引数での規則に従った使用法の文字列をセットします。 ``None``
-  を渡すとデフォルトの使用法文字列が使われるようになり、 ``SUPPRESS_USAGE`` によって使用法メッセージを抑制できます。
+  上で説明したコンストラクタの ``usage`` キーワード引数での規則に従った使用法の
+  文字列をセットします。 ``None`` を渡すとデフォルトの使用法文字列が使われる
+  ようになり、 :data:`optparse.SUPPRESS_USAGE` によって使用法メッセージを抑制
+  できます。
 
-* ``enable_interspersed_args()``, ``disable_interspersed_args()``
+.. method:: OptionParser.print_usage(file=None)
 
-  位置引数をオプションと混ぜこぜにする GNU getopt のような扱いを有効化/無効化する (デフォルトでは有効)。たとえば、 ``"-a"`` と
-  ``"-b"`` はどちらも引数を取らない単純なオプションだとすると、 :mod:`optparse` は通常つぎのような文法を受け入れます。  ::
+   .. Print the usage message for the current program (``self.usage``) to *file*
+      (default stdout).  Any occurrence of the string ``"%prog"`` in ``self.usage``
+      is replaced with the name of the current program.  Does nothing if
+      ``self.usage`` is empty or not defined.
 
-     prog -a arg1 -b arg2
+   現在のプログラムの使用法メッセージ (``self.usage``) を *file* (デフォルト:
+   stdout) に表示します。 ``self.usage`` 内にある全ての ``"%prog"`` という文字列は
+   現在のプログラム名に置換されます。 ``self.usage`` が空もしくは未定義の時は
+   何もしません。
 
-  そして扱いは次のように指定した時と同じです。  ::
+.. method:: OptionParser.get_usage()
 
-     prog -a -b arg1 arg2
+   .. Same as :meth:`print_usage` but returns the usage string instead of
+      printing it.
 
-  この機能を無効化したい時は ``disable_interspersed_args()`` を呼び出してください。この呼び出しにより、伝統的な Unix
-  文法に回帰し、オプションの解析は最初のオプションでない引数で止まるようになります。
+   :meth:`print_usage` と同じですが、使用法メッセージを表示する代わりに
+   文字列として返します。
 
-* ``set_defaults(dest=value, ...)``
+.. method:: OptionParser.set_defaults(dest=value, ...)
 
-  幾つかの保存先に対してデフォルト値をまとめてセットします。 :meth:`set_defaults` を使うのは複数のオプションにデフォルト値をセットする
-  好ましいやり方です。というのも複数のオプションが同じ保存先を共有することがあり得るからです。たとえば幾つかの "mode"
-  オプションが全て同じ保存先をセットするものだったとすると、どのオプションもデフォルトをセットすることができ、しかし最後に指定したものが勝ちます。  ::
+   .. Set default values for several option destinations at once.  Using
+      :meth:`set_defaults` is the preferred way to set default values for options,
+      since multiple options can share the same destination.  For example, if
+      several "mode" options all set the same destination, any one of them can set
+      the default, and the last one wins:
 
-     parser.add_option("--advanced", action="store_const",
-                       dest="mode", const="advanced",
-                       default="novice")    # 上書きされます
-     parser.add_option("--novice", action="store_const",
-                       dest="mode", const="novice",
-                       default="advanced")  # 上の設定を上書きします
+   幾つかの保存先に対してデフォルト値をまとめてセットします。
+   :meth:`set_defaults` を使うのは複数のオプションにデフォルト値をセットする
+   好ましいやり方です。複数のオプションが同じ保存先を共有することがあり得るからです。
+   たとえば幾つかの "mode" オプションが全て同じ保存先をセットするものだったとすると、
+   どのオプションもデフォルトをセットすることができ、しかし最後に指定したもの
+   だけが有効になります。 ::
 
-  こうした混乱を避けるために :meth:`set_defaults` を使います。  ::
+      parser.add_option("--advanced", action="store_const",
+                        dest="mode", const="advanced",
+                        default="novice")    # overridden below
+      parser.add_option("--novice", action="store_const",
+                        dest="mode", const="novice",
+                        default="advanced")  # overrides above setting
 
-     parser.set_defaults(mode="advanced")
-     parser.add_option("--advanced", action="store_const",
-                       dest="mode", const="advanced")
-     parser.add_option("--novice", action="store_const",
-                       dest="mode", const="novice")
+   .. To avoid this confusion, use :meth:`set_defaults`:
+
+   こうした混乱を避けるために :meth:`set_defaults` を使います。 ::
+
+      parser.set_defaults(mode="advanced")
+      parser.add_option("--advanced", action="store_const",
+                        dest="mode", const="advanced")
+      parser.add_option("--novice", action="store_const",
+                        dest="mode", const="novice")
+
 
 
 .. _optparse-option-callbacks:
@@ -1287,9 +1464,10 @@ OptionParser にはその他にも幾つかの公開されたメソッドがあ�
 
 ``callback`` オプションの定義は二つのステップからなります:
 
-* ``callback`` アクションを使ってオプション自体を定義する。
+* ``"callback"`` アクションを使ってオプション自体を定義する。
 
-* コールバックを書く。コールバックは少なくとも後で説明する 4 つの引数をとる関数 (またはメソッド) でなければなりません。
+* コールバックを書く。コールバックは少なくとも後で説明する 4 つの引数をとる関数
+  (またはメソッド) でなければなりません。
 
 
 .. _optparse-defining-callback-option:
@@ -1297,8 +1475,9 @@ OptionParser にはその他にも幾つかの公開されたメソッドがあ�
 callbackオプションの定義
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-callbackオプションを最も簡単に定義するには、 ``parser.add_option()`` メソッドを使います。 :attr:`action`
-の他に指定しなければならない属性は ``callback`` 、すなわちコールバックする関数自体です::
+callback オプションを最も簡単に定義するには、 :meth:`OptionParser.add_option`
+メソッドを使います。 :attr:`~Option.action` の他に指定しなければならない属性は
+``callback`` すなわちコールバックする関数自体です::
 
    parser.add_option("-c", action="callback", callback=my_callback)
 
@@ -1309,8 +1488,9 @@ callbackオプションを最も簡単に定義するには、 ``parser.add_opti
 任意の個数のコマンドライン引数を消費させたいこともあるでしょう。これがコールバック関数をトリッキーなものにしています;
 これについてはこの節の後の方で説明します。
 
-:mod:`optparse` は常に四つの引数をコールバックに渡し、その他には ``callback_args`` および
-``callback_kwargs`` で指定した追加引数しか渡しません。従って、最小のコールバック関数シグネチャは::
+:mod:`optparse` は常に四つの引数をコールバックに渡し、その他には
+:attr:`~Optioncallback_args` および :attr:`callback_kwargs` で指定した
+追加引数しか渡しません。従って、最小のコールバック関数シグネチャは::
 
    def my_callback(option, opt, value, parser):
 
@@ -1320,21 +1500,23 @@ callbackオプションを最も簡単に定義するには、 ``parser.add_opti
 
 callback オプションを定義する場合には、他にもいくつかオプション属性を指定できます:
 
-:attr:`type`
+:attr:`~Option.type`
    他で使われているのと同じ意味です: ``store`` や ``append`` アクションの時と同じく、
-   この属性は :mod:`optparse` に引数を一つ消費して、 :attr:`type` に指定した型に変換させます。 :mod:`optparse`
-   は変換後の値をどこかに保存する代わりにコールバック関数に渡します。
+   この属性は :mod:`optparse` に引数を一つ消費して :attr:`~Option.type` で
+   指定した型に変換させます。 :mod:`optparse` は変換後の値をどこかに保存する
+   代わりにコールバック関数に渡します。
 
-``nargs``
-   これも他で使われているのと同じ意味です: このオプションが指定されていて、かつ ``nargs`` > 1 である場合、 :mod:`optparse`
-   は ``nargs`` 個の引数を消費します。このとき各引数は :attr:`type`
-   型に変換できねばなりません。変換後の値はタプルとしてコールバックに渡されます。
+:attr:`~Option.nargs`
+   これも他で使われているのと同じ意味です: このオプションが指定されていて、かつ
+   ``nargs`` > 1 である場合、 :mod:`optparse` は ``nargs`` 個の引数を消費
+   します。このとき各引数は :attr:`type` 型に変換できねばなりません。
+   変換後の値はタプルとしてコールバックに渡されます。
 
-``callback_args``
-   その他の固定引数からなるタプルで、コールバックに渡されます。
+:attr:`~Option.callback_args`
+   その他の位置指定引数からなるタプルで、コールバックに渡されます。
 
-``callback_kwargs``
-   その他のキーワード引数からなるタプルで、コールバックに渡されます。
+:attr:`~Option.callback_kwargs`
+   その他のキーワード引数からなる辞書で、コールバックに渡されます。
 
 
 .. _optparse-how-callbacks-called:
@@ -1357,10 +1539,13 @@ callback オプションを定義する場合には、他にもいくつかオ�
    をコマンドラインに入力した時には、 *opt_str*  は ``"--foobar"`` となります。)
 
 ``value``
-   オプションの引数で、コマンドライン上に見つかったものです。 :mod:`optparse` は、 ``type`` が設定されている場合、
-   単一の引数しかとりません; ``value`` の型はオプションの型として指定された型になります。このオプションに対する :attr:`type` が None
-   である(引数なしの) 場合、 *value* は None になります。 ``nargs`` > 1 であれば、 ``value`` は
-   は適切な型をもつ値のタプルになります。
+   オプションの引数で、コマンドライン上に見つかったものです。
+   :mod:`optparse` は、 :attr:`~Option.type` が設定されている場合、単一の
+   引数しかとりません。 ``value`` の型はオプションの型として指定された型に
+   なります。このオプションに対する :attr:`~Option.type` が ``None`` で
+   ある(引数なしの) 場合、 ``value`` は ``None`` になります。
+   :attr:`~Option.nargs` > 1 であれば、 ``value`` は適切な型をもつ値の
+   タプルになります。
 
 ``parser``
    現在のオプション解析の全てを駆動している :class:`OptionParser`  インスタンスです。この変数が有用なのは、この値を介してインスタンス属性と
@@ -1382,10 +1567,12 @@ callback オプションを定義する場合には、他にもいくつかオ�
       コマンドライン上にすでに現れているオプションの値にもアクセスできます。
 
 ``args``
-   ``callback_args`` オプション属性で与えられた任意の固定引数からなるタプルです。
+   :attr:`~Option.callback_args` オプション属性で与えられた任意の固定引数
+   からなるタプルです。
 
 ``kwargs``
-   ``callback_args`` オプション属性で与えられた任意のキーワード引数からなるタプルです。
+   :attr:`~Option.callback_kwargs` オプション属性で与えられた任意の
+   キーワード引数からなるタプルです。
 
 
 .. _optparse-raising-errors-in-callback:
@@ -1411,7 +1598,7 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
    parser.add_option("--foo", action="callback", callback=record_foo_seen)
 
-もちろん、 ``store_true`` アクションを使っても実現できます。
+もちろん、 ``"store_true"`` アクションを使っても実現できます。
 
 
 .. _optparse-callback-example-2:
@@ -1474,12 +1661,14 @@ callback オプションを定義する場合には、他にもいくつかオ�
 コールバックの例5: 固定引数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-決まった数の引数をとるようなコールパックオプションを定義するなら、問題はやや興味深くなってきます。引数をとるようコールバックに指定するのは、 ``store``
-や ``append`` オプションの定義に似ています: :attr:`type` を定義していれば、
-そのオプションは引数を受け取ったときに該当する型に変換できねばなりません; さらに ``nargs`` を指定すれば、オプションは ``nargs``
-個の引数を受け取ります。
+決まった数の引数をとるようなコールパックオプションを定義するなら、問題はやや
+興味深くなってきます。引数をとるようコールバックに指定するのは、 ``"store"``
+や ``"append"`` オプションの定義に似ています。 :attr:`~Option.type` を定義して
+いれば、そのオプションは引数を受け取ったときに該当する型に変換できねば
+なりません。さらに :attr:`~Option.nargs` を指定すれば、オプションは
+:attr:`~Option.nargs` 個の引数を受け取ります。
 
-標準の ``store`` アクションをエミュレートする例を以下に示します::
+標準の ``"store"`` アクションをエミュレートする例を以下に示します::
 
    def store_value(option, opt_str, value, parser):
        setattr(parser.values, option.dest, value)
@@ -1488,7 +1677,8 @@ callback オプションを定義する場合には、他にもいくつかオ�
                      action="callback", callback=store_value,
                      type="int", nargs=3, dest="foo")
 
-:mod:`optparse` は 3 個の引数を受け取り、それらを整数に変換するところまで面倒をみてくれます; ユーザは単にそれを保存するだけです。
+:mod:`optparse` は 3 個の引数を受け取り、それらを整数に変換するところまで
+面倒をみてくれます。ユーザは単にそれを保存するだけです。
 (他の処理もできます; いうまでもなく、この例にはコールバックは必要ありません)
 
 
@@ -1559,39 +1749,51 @@ callback オプションを定義する場合には、他にもいくつかオ�
 新しい型の追加
 ^^^^^^^^^^^^^^
 
-新しい型を追加するためには、 :mod:`optparse` の Option クラスのサブクラスを自身で定義する必要があります。このクラスには
-:mod:`optparse` における型を定義する一対の属性があります。それは :attr:`TYPES` と :attr:`TYPE_CHECKER`
-です。
+新しい型を追加するためには、 :mod:`optparse` の :class:`Option` クラスの
+サブクラスを自身で定義する必要があります。このクラスには
+:mod:`optparse` における型を定義する一対の属性があります。それは
+:attr:`~Option.TYPES` と :attr:`~Option.TYPE_CHECKER` です。
 
-:attr:`TYPES` は型名のタプルです。新しく作るサブクラスでは、タプル :attr:`TYPES`
-は単純に標準的なもののを利用して定義すると良いでしょう。
+.. attribute:: Option.TYPES
 
-:attr:`TYPE_CHECKER` は辞書で型名を型チェック関数に対応付けるものです。型チェック関数は以下のような引数をとります。  ::
+   :attr:`TYPES` は型名のタプルです。新しく作るサブクラスでは、タプル
+   :attr:`TYPES` を単純に標準のものを利用して新しく定義すると良いでしょう。
 
-   def check_mytype(option, opt, value)
+.. attribute:: Option.TYPE_CHECKER
 
-ここで ``option`` は :class:`Option` のインスタンスであり、 ``opt`` はオプション文字列(たとえば
-``"-f"``)で、 ``value`` は望みの型としてチェックされ変換されるべくコマンドラインで与えられる文字列です。 ``check_mytype()``
-は想定されている型 ``mytype`` のオブジェクトを返さなければなりません。型チェック関数から返される値は
-:meth:`OptionParser.parse_args` で返されるOptionValues インスタンスに収められるか、またはコールバックに
-``value`` パラメータとして渡されます。
+   :attr:`TYPE_CHECKER` は辞書で型名を型チェック関数に対応付けるものです。
+   型チェック関数は以下のようなシグネチャを持ちます。 ::
 
-型チェック関数は何か問題に遭遇したら :exc:`OptionValueError` を送出しなければなりません。
-:exc:`OptionValueError` は文字列一つを引数に取り、それはそのまま :class:`OptionParser` の
-:meth:`error` メソッドに渡され、そこでプログラム名と文字列
-``"error:"`` が前置されてプロセスが終了する前に stderr に出力されます。
+      def check_mytype(option, opt, value)
 
-馬鹿馬鹿しい例ですが、Python スタイルの複素数を解析する ``complex`` オプション型
-を作ってみせることにします。(:mod:`optparse` 1.3 が複素数のサポートを
-組み込んでしまったため以前にも増して馬鹿らしくなりましたが、気にしないでください。)
+   ここで ``option`` は :class:`Option` のインスタンスであり、 ``opt`` は
+   オプション文字列(たとえば ``"-f"``)で、 ``value`` は望みの型として
+   チェックされ変換されるべくコマンドラインで与えられる文字列です。
+   ``check_mytype()`` は想定されている型 ``mytype`` のオブジェクトを
+   返さなければなりません。型チェック関数から返される値は
+   :meth:`OptionParser.parse_args` で返されるOptionValues インスタンスに
+   収められるか、またはコールバックに ``value`` パラメータとして渡されます。
 
-最初に必要な import 文を書きます。  ::
+   型チェック関数は何か問題に遭遇したら :exc:`OptionValueError` を
+   送出しなければなりません。
+   :exc:`OptionValueError` は文字列一つを引数に取り、それはそのまま
+   :class:`OptionParser` の :meth:`error` メソッドに渡され、そこで
+   プログラム名と文字列 ``"error:"`` が前置されてプロセスが終了する前に
+   stderr に出力されます。
+
+馬鹿馬鹿しい例ですが、Python スタイルの複素数を解析する ``"complex"``
+オプション型を作ってみせることにします。(:mod:`optparse` 1.3 が複素数の
+サポートを組み込んでしまったため以前にも増して馬鹿らしくなりましたが、
+気にしないでください。)
+
+最初に必要な import 文を書きます。 ::
 
    from copy import copy
    from optparse import Option, OptionValueError
 
-まずは型チェック関数を定義しなければなりません。これは後で(これから定義する Option のサブクラスの :attr:`TYPE_CHECKER`
-クラス属性の中で)参照されることになります。  ::
+まずは型チェック関数を定義しなければなりません。これは後で(これから定義する
+Option のサブクラスの :attr:`~Option.TYPE_CHECKER` クラス属性の中で)
+参照されることになります。 ::
 
    def check_complex(option, opt, value):
        try:
@@ -1607,9 +1809,10 @@ callback オプションを定義する場合には、他にもいくつかオ�
        TYPE_CHECKER = copy(Option.TYPE_CHECKER)
        TYPE_CHECKER["complex"] = check_complex
 
-(もしここで :attr:`Option.TYPE_CHECKER` に :func:`copy` を適用しなければ、 :mod:`optparse` の
-Option クラスの :attr:`TYPE_CHECKER` 属性をいじってしまうことになります。Python
-の常として、良いマナーと常識以外にそうすることを止めるものはありません。)
+(もしここで :attr:`Option.TYPE_CHECKER` に :func:`copy` を適用しなければ、
+:mod:`optparse` の Option クラスの :attr:`~Option.TYPE_CHECKER` 属性を
+いじってしまうことになります。
+Python の常として、良いマナーと常識以外にそうすることを止めるものはありません。)
 
 これだけです! もう新しいオプション型を使うスクリプトを他の :mod:`optparse` に基づいた
 スクリプトとまるで同じように書くことができます。ただし、 OptionParser に Option でなく MyOption
@@ -1633,40 +1836,46 @@ Option クラスの :attr:`TYPE_CHECKER` 属性をいじってしまうことに
 新しいアクションの追加はもう少しトリッキーです。というのも :mod:`optparse`  が使っている二つのアクションの分類を理解する必要があるからです。
 
 "store" アクション
-   :mod:`optparse` が値を現在の OptionValues の属性に格納することになるアクションです。この種類のオプションは Option
-   のコンストラクタに :attr:`dest` 属性を与えることが要求されます。
+   :mod:`optparse` が値を現在の OptionValues の属性に格納することになる
+   アクションです。この種類のオプションは Option のコンストラクタに
+   :attr:`~Option.dest` 属性を与えることが要求されます。
 
 "typed" アクション
    コマンドラインから引数を受け取り、それがある型であることが期待されているアクションです。もう少しはっきり言えば、その型に変換される文字列を受け取るものです。
    この種類のオプションは Option のコンストラクタに :attr:`type` 属性を与えることが要求されます。
 
 この分類には重複する部分があります。デフォルトの "store" アクションには
-``store``, ``store_const``, ``append``, ``count`` などがありますが、デフォルトの "typed" オプションは
-``store``, ``append``, ``callback`` の三つです。
+``"store"``, ``"store_const"``, ``"append"``, ``"count"`` などがありますが、
+デフォルトの "typed" オプションは ``"store"``, ``"append"``, ``"callback"``
+の三つです。
 
 アクションを追加する際に、以下の Option のクラス属性(全て文字列のリストです)
 の中の少なくとも一つに付け加えることでそのアクションを分類する必要があります。
 
-:attr:`ACTIONS`
+.. attribute:: Option.ACTIONS
+
    全てのアクションは ACTIONS にリストされていなければなりません
 
-:attr:`STORE_ACTIONS`
+.. attribute:: Option.STORE_ACTIONS
+
    "store" アクションはここにもリストされます
 
-:attr:`TYPED_ACTIONS`
+.. attribute:: Option.TYPED_ACTIONS
+
    "typed" アクションはここにもリストされます
 
-``ALWAYS_TYPED_ACTIONS``
+.. attribute:: Option.ALWAYS_TYPED_ACTIONS
+
    型を取るアクション (つまりそのオプションが値を取る) はここにもリストされます。このことの唯一の効果は :mod:`optparse`
-   が、型の指定が無くアクションが ``ALWAYS_TYPED_ACTIONS`` のリストにあるオプションに、デフォルト型 ``string``
+   が、型の指定が無くアクションが :attr:`ALWAYS_TYPED_ACTIONS` のリストにあるオプションに、デフォルト型 ``"string"``
    を割り当てるということだけです。
 
 実際に新しいアクションを実装するには、Option の :meth:`take_action`
 メソッドをオーバライドしてそのアクションを認識する場合分けを追加しなければなりません。
 
-例えば、 ``extend`` アクションというのを追加してみましょう。このアクションは標準的な ``append``
+例えば、 ``"extend"`` アクションというのを追加してみましょう。このアクションは標準的な ``"append"``
 アクションと似ていますが、コマンドラインから一つだけ値を読み取って既存のリストに追加するのではなく、複数の値をコンマ区切りの文字列として
-読み取ってそれらで既存のリストを拡張します。すなわち、もし ``"--names"`` が ``string`` 型の ``extend``
+読み取ってそれらで既存のリストを拡張します。すなわち、もし ``"--names"`` が ``"string"`` 型の ``"extend"``
 オプションだとすると、次のコマンドライン  ::
 
    --names=foo,bar --names blah --names ding,dong
@@ -1677,7 +1886,7 @@ Option クラスの :attr:`TYPE_CHECKER` 属性をいじってしまうことに
 
 再び Option のサブクラスを定義します。  ::
 
-   class MyOption (Option):
+   class MyOption(Option):
 
        ACTIONS = Option.ACTIONS + ("extend",)
        STORE_ACTIONS = Option.STORE_ACTIONS + ("extend",)
@@ -1694,11 +1903,11 @@ Option クラスの :attr:`TYPE_CHECKER` 属性をいじってしまうことに
 
 注意すべきは次のようなところです。
 
-* ``extend`` はコマンドラインの値を予期していると同時にその値をどこかに格納しますので、 :attr:`STORE_ACTIONS` と
-  :attr:`TYPED_ACTIONS` の両方に入ります。
+* ``"extend"`` はコマンドラインの値を予期していると同時にその値をどこかに格納しますので、 :attr:`~Option.STORE_ACTIONS` と
+  :attr:`~Option.TYPED_ACTIONS` の両方に入ります。
 
-* :mod:`optparse` が ``extend`` アクションに ``string`` 型を割り当てるように ``extend`` アクションは
-  ``ALWAYS_TYPED_ACTIONS`` にも入れてあります。
+* :mod:`optparse` が ``extend`` アクションに ``"string"`` 型を割り当てるように ``"extend"`` アクションは
+  :attr:`~Option.ALWAYS_TYPED_ACTIONS` にも入れてあります。
 
 * :meth:`MyOption.take_action` にはこの新しいアクション一つの扱いだけを実装してあり、他の標準的な
   :mod:`optparse` のアクションについては :meth:`Option.take_action` に制御を戻すようにしてあります。
@@ -1710,7 +1919,7 @@ Option クラスの :attr:`TYPE_CHECKER` 属性をいじってしまうことに
      values.ensure_value(attr, value)
 
   ``values`` に ``attr`` 属性が無いか None だった場合に、 :meth:`ensure_value` は最初に ``value``
-  をセットし、それから ``value`` を返します。この振る舞いは ``extend``, ``append``, ``count``
+  をセットし、それから ``value`` を返します。この振る舞いは ``"extend"``, ``"append"``, ``"count"``
   のように、データを変数に集積し、またその変数がある型 (最初の二つはリスト、最後のは整数) であると期待されるアクション
   を作るのにとても使い易いものです。 :meth:`ensure_value` を使えば、
   作ったアクションを使うスクリプトはオプションに保存先にデフォルト値をセットすることに煩わされずに済みます。デフォルトを None にしておけば

@@ -250,7 +250,7 @@
        except OSError, why:
            errors.extend((src, dst, str(why)))
        if errors:
-           raise Error, errors
+           raise Error(errors)
 
 :func:`ignore_patterns` ヘルパ関数を利用する、もう1つの例です。 ::
 

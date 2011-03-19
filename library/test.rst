@@ -7,23 +7,24 @@
 
 .. sectionauthor:: Brett Cannon <brett@python.org>
 
+.. note::
+   :mod:`test` パッケージは、 Python の内部で使用されるためのものです。
+   ドキュメントが書かれたのは Python のコア開発者の利便性を考えてのことです。
+   Python の標準ライブラリ以外でこのパッケージを使用することは、
+   あまりお勧めできません。
+   ここで触れられているコードは、Python のリリースの間に予告なく変更されたり
+   削除されたりすることがあります。
 
+:mod:`test` パッケージには、Python 用の全ての回帰テストの他に、
+:mod:`test.test_support` モジュールと :mod:`test.regrtest` モジュール
+が入っています。 :mod:`test.test_support` はテストを充実させるために使い、
+:mod:`test.regrtest` はテストスイートを実行するのに使います。
 
-
-:mod:`test` パッケージには、Python 用の全ての回帰テストと、
-:mod:`test.test_support` および :mod:`test.regrtest` モジュール
-が入っています。 :mod:`test.test_support` はテストを充実させるために使い、 :mod:`test.regrtest`
-はテストスイートを駆動するのに使います。
-
-.. Each module in the :mod:`test` package whose name starts with ``test_`` is a
-   testing suite for a specific module or feature. All new tests should be written
-   using the :mod:`unittest` or :mod:`doctest` module.  Some older tests are
-   written using a "traditional" testing style that compares output printed to
-   ``sys.stdout``; this style of test is considered deprecated.
-
-:mod:`test` パッケージ内の各モジュールのうち、名前が ``test_`` で始まるものは、特定のモジュールや機能に対するテストスイートです。
-新しいテストはすべて :mod:`unittest` か :mod:`doctest` モジュールを使って書くようにしてください
-古いテストのいくつかは、 ``sys.stdout`` への出力を比較する"伝統的な"テスト形式になっていますが、
+:mod:`test` パッケージ内のモジュールのうち、名前が ``test_`` で始まるものは、
+特定のモジュールや機能に対するテストスイートです。
+新しいテストはすべて :mod:`unittest` か :mod:`doctest` モジュールを使って
+書くようにしてください。古いテストのいくつかは、
+``sys.stdout`` への出力を比較する「従来の」テスト形式になっていますが、
 この形式のテストは廃止予定です。
 
 
@@ -41,16 +42,21 @@
 :mod:`test` パッケージのためのユニットテストを書く
 --------------------------------------------------
 
-:mod:`unittest` モジュールを使ってテストを書く場合、幾つかのガイドラインに従うことが推奨されます。
-1つは、テストモジュールの名前を、 ``test_`` で始め、テスト対象となるモジュール名で終えることです。
+:mod:`unittest` モジュールを使ってテストを書く場合、幾つかのガイドラインに
+従うことが推奨されます。
+1つは、テストモジュールの名前を、 ``test_`` で始め、テスト対象となる
+モジュール名で終えることです。
 テストモジュール中のテストメソッドは名前を ``test_`` で始めて、
 そのメソッドが何をテストしているかという説明で終えます。
-これはテスト駆動プログラムにそのメソッドをテストメソッドとして認識させるため必要です。
+これはテスト実行プログラムが、そのメソッドをテストメソッドとして
+認識するために必要です。
 また、テストメソッドにはドキュメンテーション文字列を入れるべきではありません。
-テストメソッドのドキュメント記述には、 (``# True あるいは False だけを返すテスト関数`` のような)  コメントを使ってください。
-これは、ドキュメンテーション文字列が存在する場合にはその内容が出力されるため、どのテストを実行しているのかをいちいち表示しなくするためです。
+コメント（例えば ``# True あるいは False だけを返すテスト関数`` ）を使用して、 
+テストメソッドのドキュメントを記述してください。
+これは、ドキュメンテーション文字列が存在する場合はその内容が出力されてしまうため、
+どのテストを実行しているのかをいちいち表示したくないからです。
 
-以下のような基本的な決まり文句を使います::
+以下のような決まり文句を使います::
 
    import unittest
    from test import test_support
@@ -89,33 +95,49 @@
    if __name__ == '__main__':
        test_main()
 
-この定型的なコードによって、テストスイートを :mod:`regrtest.py` から起動できると同時に、スクリプト自体からも実行できるようになります。
+この定型的なコードによって、テストスイートを :mod:`regrtest.py` から
+起動できると同時に、スクリプト自体からも実行できるようになります。
 
-回帰テストの目的はコードの分解です。そのためには以下のいくつかのガイドラインに従ってください:
+回帰テストの目的はコードを解き明かすことです。
+そのためには以下のいくつかのガイドラインに従ってください:
 
-* テストスイートはすべてのクラス、関数および定数を用いるべきです。これは外部に公開される外部APIだけでなく"非公開"コードも含んでいます。
+* テストスイートから、すべてのクラス、関数および定数を実行するべきです。
+  これには外部に公開される外部APIだけでなく「プライベートな」コードも含みます。
 
-* ホワイトボックス・テスト (テストを書くときに対象のコードをすぐテストする) を推奨します。ブラックボックス・テスト (最終的に公開された
-  ユーザーインターフェイスだけをテストする) は、すべての境界条件と極端条件を確実にテストするには完全ではありません。
+* ホワイトボックス・テスト（対象のコードの詳細を元にテストを書くこと）を
+  推奨します。ブラックボックス・テスト
+  （公開されるインタフェース仕様だけをテストすること）は、
+  すべての境界条件を確実にテストするには完全ではありません。
 
-* 無効な値を含み、すべての取りうる値を確実にテストするようにしてください。そうすることで、全ての有効な値を受理するだけでなく、
-  不適切な値を正しく処理することも確認できます。
+* すべての取りうる値を、無効値も含めてテストするようにしてください。
+  そのようなテストを書くことで、全ての有効値が通るだけでなく、
+  不適切な値が正しく処理されることも確認できます。
 
-* できる限り多くのコード経路を網羅してください。分岐が生じるテストし、入力を調整して、コードの全体に渡って取りえる限りの個々の
-  処理経路を確実にたどらせるようにしてください。
+* コード内のできる限り多くのパスを網羅してください。
+  分岐するように入力を調整したテストを書くことで、
+  コードの多くのパスをたどることができます。
 
-* テスト対象のコードにどんなバグが発見された場合でも、明示的なテスト追加するようにしてください。そうすることで、将来コードを変更した
-  際にエラーが再発しないようにできます。
+* テスト対象のコードにバグが発見された場合は、
+  明示的にテスト追加するようにしてください。
+  そのようなテストを追加することで、将来コードを変更した
+  際にエラーが再発することを防止できます。
 
-* (一時ファイルをすべて閉じたり削除したりするといった) テストの後始末を必ず行ってください。
+* テストの後始末（例えば一時ファイルをすべて閉じたり削除したりすること）を
+  必ず行ってください。
 
-* テストがオペレーティングシステムの特定の状況に依存する場合、テストを開始する前に状況を確認してください。
+* テストがオペレーティングシステムの特定の状況に依存する場合、
+  テスト開始時に条件を満たしているかを検証してください。
 
-* import するモジュールをできるかぎり少なくし、可能な限り早期に import を行ってください。そうすることで、てテストの外部依存性を
-  最小限にし、モジュールの import による副作用から生じる変則的な動作を最小限にできます。
+* import するモジュールをできるかぎり少なくし、可能な限り早期に
+  import を行ってください。そうすることで、てテストの外部依存性を
+  最小限にし、モジュールの import による副作用から生じる変則的な動作を
+  最小限にできます。
 
-* コードの再利用を最大限に行うようにしてください。時として、テストの多様性はどんな型の入力を受け取るかの違いまで小さくなります。
-  例えば以下のように、入力が指定されたサブクラスで基底テストクラスをサブクラス化して、コードの複製を最小化します::
+* できる限りテストコードを再利用するようにしましょう。
+  時として、入力の違いだけを記述すれば良くなるくらい、
+  テストコードを小さくすることができます。
+  例えば以下のように、サブクラスで入力を指定することで、
+  コードの重複を最小化することができます::
 
      class TestFuncAcceptsSequences(unittest.TestCase):
 
@@ -145,25 +167,34 @@
 :mod:`test.regrtest` を使ってテストを実行する
 ---------------------------------------------
 
-:mod:`test.regrtest` を使うと Python の回帰テストスイートを駆動
-できます。スクリプトを単独で実行すると、自動的に :mod:`test` パッケージ内のすべての回帰テストを実行し始めます。パッケージ内の
-名前が ``test_`` で始まる全モジュールを見つけ、それをインポートし、もしあるなら関数 :func:`test_main` を実行してテストを行います。
-実行するテストの名前もスクリプトに渡される可能性もあります。単一の回帰テストを指定  (:program:`python regrtest.py`
-:option:`test_spam.py`) すると、出力を最小限にします。テストが成功したかあるいは失敗したかだけを出力
-するので、出力は最小限になります。
+:mod:`test.regrtest` を使うと Python の回帰テストスイートを実行
+できます。スクリプトを単独で実行すると、自動的に :mod:`test` パッケージ内の
+すべての回帰テストを実行し始めます。パッケージ内の名前が ``test_`` で始まる
+全モジュールを見つけ、それをインポートし、もしあるなら関数 :func:`test_main` を
+実行してテストを行います。
+実行するテストの名前もスクリプトに渡される可能性があります。
+単一の回帰テストを指定  (:program:`python regrtest.py`
+:option:`test_spam.py`) すると、出力を最小限にします。テストが成功したかあるいは
+失敗したかだけを出力するので、出力は最小限になります。
 
-直接 :mod:`test.regrtest` を実行すると、テストに利用するリソースを設定できます。これを行うには、 :option:`-u`
-コマンドラインオプションを使います。すべてのリソースを使うには、 :program:`python regrtest.py` :option:`-uall`
-を実行します。 :option:`-u` のオプションに :option:`all` を指定すると、すべてのリソースを有効にします。(よくある場合ですが)
-何か一つを除く全てが必要な場合、カンマで区切った不要なリソースのリストを :option:`all` の後に並べます。
+直接 :mod:`test.regrtest` を実行すると、テストに利用するリソースを設定できます。
+これを行うには、 :option:`-u` コマンドラインオプションを使います。
+すべてのリソースを使うには、 :program:`python regrtest.py` :option:`-uall`
+を実行します。 :option:`-u` のオプションに :option:`all` を指定すると、
+すべてのリソースを有効にします。(よくある場合ですが)
+何か一つを除く全てが必要な場合、カンマで区切った不要なリソースのリストを
+:option:`all` の後に並べます。
 コマンド :program:`python regrtest.py` :option:`-uall,-audio,-largefile`
 とすると、 :option:`audio` と :option:`largefile` リソースを除く
-全てのリソースを使って :mod:`test.regrtest` を実行します。すべてのリソースのリストと追加のコマンドラインオプションを出力
-するには、 :program:`python regrtest.py` :option:`-h` を実行してください。
+全てのリソースを使って :mod:`test.regrtest` を実行します。
+すべてのリソースのリストと追加のコマンドラインオプションを出力するには、
+:program:`python regrtest.py` :option:`-h` を実行してください。
 
-テストを実行しようとするプラットフォームによっては、回帰テストを実行する別の方法があります。 Unix では、Python
-をビルドしたトップレベルディレクトリで :program:`make` :option:`test` を実行できます。
-Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` を実行すると、すべての回帰テストを実行します。
+テストを実行しようとするプラットフォームによっては、回帰テストを実行する
+別の方法があります。 Unix では、Python をビルドしたトップレベルディレクトリで
+:program:`make` :option:`test` を実行できます。
+Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` を実行すると、
+すべての回帰テストを実行します。
 
 
 :mod:`test.test_support` --- テストのためのユーティリティ関数
@@ -172,16 +203,12 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 .. module:: test.test_support
    :synopsis: Python 回帰テストのサポート
 
-.. .. note::
-   The :mod:`test.test_support` module has been renamed to :mod:`test.support`
-   in Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
-   converting your sources to 3.0.
-
 .. note::
-   :mod:`test.test_support` モジュールは、Python 3では :mod:`test.support` にリネームされました。
-   :term:`2to3` ツールは、ソースコード内のimportを自動的にPython 3用に修正します。
+   :mod:`test.test_support` モジュールは、Python 3では :mod:`test.support` に
+   リネームされました。
 
-:mod:`test.test_support` モジュールでは、 Python の回帰テストに対するサポートを提供しています。
+:mod:`test.test_support` モジュールでは、 Python の回帰テストに対するサポートを
+提供しています。
 
 このモジュールは次の例外を定義しています:
 
@@ -189,19 +216,22 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 .. exception:: TestFailed
 
    テストが失敗したとき送出される例外です。
-   これは、 :mod:`unittest` ベースのテストでは廃止予定で、 :class:`unittest.TestCase`
+   これは、 :mod:`unittest` ベースのテストでは廃止予定で、
+   :class:`unittest.TestCase`
    の assertXXX メソッドが推奨されます。
 
 
 .. exception:: TestSkipped
 
-   :exc:`TestFailed` のサブクラスです。テストがスキップされたとき送出されます。テスト時に (ネットワーク接続のような) 必要なリソースが利用
-   できないときに送出されます。
+   :exc:`TestFailed` のサブクラスです。テストがスキップされたとき送出されます。
+   テスト時に (ネットワーク接続のような) 必要なリソースが利用できないときに
+   送出されます。
 
 
 .. exception:: ResourceDenied
 
-   :exc:`TestSkipped` のサブクラスです。 (ネットワーク接続のような)リソースが利用できないとき送出されます。
+   :exc:`TestSkipped` のサブクラスです。（ネットワーク接続のような）リソースが
+   利用できないとき送出されます。
    :func:`requires` 関数によって送出されます。
 
 :mod:`test.test_support` モジュールでは、以下の定数を定義しています:
@@ -209,8 +239,9 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
 .. data:: verbose
 
-   冗長な出力が有効な場合は :const:`True` です。実行中のテストについてのより詳細な情報が欲しいときにチェックします。 *verbose* は
-   :mod:`test.regrtest` によって設定されます。
+   冗長な出力が有効な場合は :const:`True` です。
+   実行中のテストについてのより詳細な情報が欲しいときにチェックします。
+   *verbose* は :mod:`test.regrtest` によって設定されます。
 
 
 .. data:: have_unicode
@@ -225,44 +256,46 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
 .. data:: TESTFN
 
-   一時ファイルを作成するパスに設定されます。作成した一時ファイルは全て閉じ、unlink (削除) せねばなりません。
+   一時ファイルを作成するパスに設定されます。作成した一時ファイルは全て閉じ、
+   unlink (削除) せねばなりません。
 
 :mod:`test.test_support` モジュールでは、以下の関数を定義しています:
 
 
 .. function:: forget(module_name)
 
-   モジュール名 *module_name* を :mod:`sys.modules` から取り除き、モジュールのバイトコンパイル済みファイルを全て削除します。
+   モジュール名 *module_name* を :mod:`sys.modules` から取り除き、
+   モジュールのバイトコンパイル済みファイルを全て削除します。
 
 
 .. function:: is_resource_enabled(resource)
 
    *resource* が有効で利用可能ならば :const:`True` を返します。
-   利用可能なリソースのリストは、 :mod:`test.regrtest` がテストを実行している間のみ設定されます。
+   利用可能なリソースのリストは、 :mod:`test.regrtest` がテストを実行している
+   間のみ設定されます。
 
 
 .. function:: requires(resource[, msg])
 
-   *resource* が利用できなければ、 :exc:`ResourceDenied` を送出します。その場合、 *msg* は
-   :exc:`ResourceDenied` の引数になります。 *__name__* が ``"__main__"`` である関数にから
-   呼び出された場合には常に真を返します。テストを :mod:`test.regrtest` から実行するときに使われます。
+   *resource* が利用できなければ、 :exc:`ResourceDenied` を送出します。
+   その場合、 *msg* は :exc:`ResourceDenied` の引数になります。
+    *__name__* が ``"__main__"`` である関数にから呼び出された場合には
+   常に真を返します。テストを :mod:`test.regrtest` から実行するときに使われます。
 
 
 .. function:: findfile(filename)
 
-   *filename* という名前のファイルへのパスを返します。一致するものが見つからなければ、 *filename* 自体を返します。 *filename*
-   自体もファイルへのパスでありえるので、 *filename* が返っても失敗ではありません。
+   *filename* という名前のファイルへのパスを返します。
+   一致するものが見つからなければ、 *filename* 自体を返します。
+   *filename* 自体もファイルへのパスでありえるので、
+   *filename* が返っても失敗ではありません。
 
 
 .. function:: run_unittest(*classes)
 
-   渡された :class:`unittest.TestCase` サブクラスを実行します。この関数は名前が ``test_`` で始まるメソッドを探して、
+   渡された :class:`unittest.TestCase` サブクラスを実行します。
+   この関数は名前が ``test_`` で始まるメソッドを探して、
    テストを個別に実行します。
-
-   .. It is also legal to pass strings as parameters; these should be keys in
-      ``sys.modules``. Each associated module will be scanned by
-      ``unittest.TestLoader.loadTestsFromModule()``. This is usually seen in the
-      following :func:`test_main` function::
 
    引数に文字列を渡すことも許可されています。その場合、文字列は ``sys.module``
    のキーでなければなりません。
@@ -273,45 +306,29 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
       def test_main():
           test_support.run_unittest(__name__)
 
-   .. This will run all tests defined in the named module.
-
-   この関数は、名前で指定されたモジュールの中の全ての定義されたテストを実行します。
+   この関数は、名前で指定されたモジュールの中の全ての定義されたテストを
+   実行します。
 
 
 .. function:: check_warnings()
-
-   .. A convenience wrapper for ``warnings.catch_warnings()`` that makes
-      it easier to test that a warning was correctly raised with a single
-      assertion. It is approximately equivalent to calling
-      ``warnings.catch_warnings(record=True)``.
 
    warning が正しく発行されているかどうか1つのassertionでチェックする、
    ``warnings.catch_warnings()`` を使いやすくするラッパーです。
    これは、 ``warnings.catch_warnings(record=True)`` を呼ぶのとほぼ同じです。
 
-   .. The main difference is that on entry to the context manager, a
-      :class:`WarningRecorder` instance is returned instead of a simple list.
-      The underlying warnings list is available via the recorder object's
-      :attr:`warnings` attribute, while the attributes of the last raised
-      warning are also accessible directly on the object. If no warning has
-      been raised, then the latter attributes will all be :const:`None`.
-
-   主な違いは、この関数がコンテキストマネージャーのエントリーになっていることです。
+   主な違いは、この関数がコンテキストマネージャーのエントリーになっている
+   ことです。
    ただのリストの代わりに、 :class:`WarningRecorder` のインスタンスが返されます。
-   warning のリストには、 recorder オブジェクトの :attr:`warnings` 属性からアクセスできます。
-   また、最後に発生した warning には、オブジェクトから直接アクセスすることができます。
+   warning のリストには、 recorder オブジェクトの :attr:`warnings` 属性から
+   アクセスできます。また、最後に発生した warning には、オブジェクトから
+   直接アクセスすることができます。
    warning が1つも発生しなかった場合は、後者の属性は :const:`None` になります。
 
    .. todo::
       訳注: 直接アクセスの部分が、具体的にどうするのか判ってないので確認する。
 
-   .. A :meth:`reset` method is also provided on the recorder object. This
-      method simply clears the warning list.
-
    recorder オブジェクトは :meth:`reset` メソッドを持っています。
    このメソッドは warning リストをクリアします。
-
-   .. The context manager is used like this::
 
    コンテキストマネージャーは次のようにして利用します。 ::
 
@@ -331,15 +348,9 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
 .. function:: captured_stdout()
 
-   .. This is a context manager than runs the :keyword:`with` statement body using
-      a :class:`StringIO.StringIO` object as sys.stdout.  That object can be
-      retrieved using the ``as`` clause of the :keyword:`with` statement.
-
-   これは、 :keyword:`with` 文の body で ``sys.stdout`` として :class:`StringIO.StringIO`
-   オブジェクトを利用するコンテキストマネージャーです。
+   これは、 :keyword:`with` 文の body で ``sys.stdout`` として
+   :class:`StringIO.StringIO` オブジェクトを利用するコンテキストマネージャーです。
    このオブジェクトは、 :keyword:`with` 文の ``as`` 節で受け取ることができます。
-
-   .. Example use::
 
    使用例::
 
@@ -350,29 +361,20 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
    .. versionadded:: 2.6
 
 
-.. The :mod:`test.test_support` module defines the following classes:
-
 :mod:`test.test_support` モジュールは以下のクラスを定義しています。
 
 .. class:: TransientResource(exc[, **kwargs])
 
-   .. Instances are a context manager that raises :exc:`ResourceDenied` if the
-      specified exception type is raised.  Any keyword arguments are treated as
-      attribute/value pairs to be compared against any exception raised within the
-      :keyword:`with` statement.  Only if all pairs match properly against
-      attributes on the exception is :exc:`ResourceDenied` raised.
-
-   このクラスのインスタンスはコンテキストマネージャーで、指定された型の例外が発生した場合に
-   :exc:`ResourceDenied` 例外を発生させます。
-   キーワード引数は全て、 :keyword:`with` 文の中で発生した全ての例外の属性名/属性値と比較されます。
-   全てのキーワード引数が例外の属性に一致した場合に、 :exc:`ResourceDenied` 例外が発生します。
+   このクラスのインスタンスはコンテキストマネージャーで、
+   指定された型の例外が発生した場合に :exc:`ResourceDenied` 例外を発生させます。
+   キーワード引数は全て、 :keyword:`with` 文の中で発生した全ての例外の
+   属性名/属性値と比較されます。
+   全てのキーワード引数が例外の属性に一致した場合に、
+   :exc:`ResourceDenied` 例外が発生します。
 
    .. versionadded:: 2.6
 
 .. class:: EnvironmentVarGuard()
-
-   .. Class used to temporarily set or unset environment variables.  Instances can be
-      used as a context manager.
 
    一時的に環境変数をセット・アンセットするためのクラスです。
    このクラスのインスタンスはコンテキストマネージャーとして利用されます。
@@ -382,21 +384,14 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
 .. method:: EnvironmentVarGuard.set(envvar, value)
 
-   .. Temporarily set the environment variable ``envvar`` to the value of ``value``.
-
    一時的に、 ``envvar`` を ``value`` にセットします。
 
 
 .. method:: EnvironmentVarGuard.unset(envvar)
 
-   .. Temporarily unset the environment variable ``envvar``.
-
    一時的に ``envvar`` をアンセットします。
 
 .. class:: WarningsRecorder()
-
-   ..  Class used to record warnings for unit tests. See documentation of
-      :func:`check_warnings` above for more details.
 
    ユニットテスト時にwarningを記録するためのクラスです。
    上の、 :func:`check_warnings` のドキュメントを参照してください。

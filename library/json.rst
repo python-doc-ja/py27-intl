@@ -175,11 +175,11 @@ JSON オブジェクトのデコーディング方法を誂える::
    *fp* の内容が ASCII に基づいたしかし UTF-8 ではないエンコーディング (たとえば
    latin-1) を使っているならば、適切な *encoding* 名が指定されなければなりません。
    エンコーディングが ASCII に基づかないもの (UCS-2 など) であることは許されないので、
-   ``codecs.getreader(fp)(encoding)`` というように包むか、または単に
+   ``codecs.getreader(encoding)(fp)`` というように包むか、または単に
    :class:`unicode` オブジェクトにデコードしたものを :func:`loads` に渡して下さい。
 
-   *object_hook* はオプションで渡す関数で全てのオブジェクトリテラルのデコード結果
-   (:class:`dict`) に対して呼ばれます。 *object_hook* の返値は :class:`dict`
+   *object_hook* はオプションで渡す関数で、全てのオブジェクトリテラルのデコード結果
+   (:class:`dict`) に対して呼ばれます。 *object_hook* の返り値は :class:`dict`
    の代わりに使われます。この機能は独自のデコーダ (たとえば JSON-RPC クラスヒンティング)
    を実装するのに使えます。
 

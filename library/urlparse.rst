@@ -34,10 +34,10 @@
 .. versionadded:: 2.5
    ``sftp`` および ``sips`` スキームのサポートが追加されました.
 
-:mod:`urlparse` モジュールには以下の関数が定義されています:
+:mod:`urlparse` モジュールには以下の関数が定義されています。
 
 
-.. function:: urlparse(urlstring[, default_scheme[, allow_fragments]])
+.. function:: urlparse(urlstring[, scheme[, allow_fragments]])
 
    URL を解釈して 6 つの構成要素にし、6 要素のタプルを返します。このタプルは URL の一般的な構造:
    ``scheme://netloc/path;parameters?query#fragment`` に対応しています。
@@ -57,7 +57,7 @@
       >>> o.geturl()
       'http://www.cwi.nl:80/%7Eguido/Python.html'
 
-   *default_scheme* 引数が指定されている場合、標準のアドレススキームを表し、アドレススキームを指定していない URL に対してのみ
+   *scheme* 引数が指定されている場合、標準のアドレススキームを表し、アドレススキームを指定していない URL に対してのみ
    使われます。この引数の標準の値は空文字列です。
 
    *allow_fragments* 引数が偽の場合、URL のアドレススキームがフラグメント指定をサポートしていても指定できなくなります。
@@ -110,6 +110,10 @@
 
    辞書等をクエリ文字列に変換する場合は :func:`urllib. urlencode` 関数を使用してください。
 
+   .. versionadded:: 2.6
+      :mod:`cgi` モジュールからコピーされてきました。
+
+
 .. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
 
    文字列引数として渡されたクエリ文字列  (:mimetype:`application/x-www-form-urlencoded` 型のデータ) を
@@ -124,6 +128,9 @@
 
    ペアのリストからクエリ文字列を生成する場合には :mod:`urllib`.urlencode() 関数を使用します。
 
+   .. versionadded:: 2.6
+      :mod:`cgi` モジュールからコピーされてきました。
+
 
 .. function:: urlunparse(parts)
 
@@ -133,7 +140,7 @@
    のようなもので、RFC はこれらを等価だと述べています。)
 
 
-.. function:: urlsplit(urlstring[, default_scheme[, allow_fragments]])
+.. function:: urlsplit(urlstring[, scheme[, allow_fragments]])
 
    :func:`urlparse` に似ていますが、URL から params を切り離しません。このメソッドは通常、URL の *path*
    部分において、各セグメントにパラメタ指定をできるようにした最近の URL 構文 (:rfc:`2396` 参照) が必要な
@@ -223,15 +230,24 @@
 
 .. seealso::
 
-   :rfc:`1738` - Uniform Resource Locators (URL)
-      この RFC では絶対 URL の形式的な文法と意味付けを仕様化しています。
-
-   :rfc:`1808` - Relative Uniform Resource Locators
-      この RFC には絶対 URL と相対 URL を結合するための規則がボーダケースの取扱い方を決定する "異常な例" つきで収められています。
+   :rfc:`3986` - Uniform Resource Identifiers
+      これが現在の標準規格(STD66)です。 urlparse モジュールに対するすべての変更は、
+      この規格を確認しなければなりません。
+      後方互換性のため、あるいは、メジャーなブラウザに見られる事実上標準となった
+      URL 解析への要求のために、この規格から外れている部分があります。
 
    :rfc:`2396` - Uniform Resource Identifiers (URI): Generic Syntax
       この RFC では Uniform Resource Name (URN) と Uniform Resource Locator (URL)
       の両方に対する一般的な文法的要求事項を記述しています。
+
+   :rfc:`2368` - The mailto URL scheme.
+      mailto URL スキームに対する文法的要求事項.
+ 
+   :rfc:`1808` - Relative Uniform Resource Locators
+      この RFC には絶対 URL と相対 URL を結合するための規則がボーダケースの取扱い方を決定する "異常な例" つきで収められています。
+
+   :rfc:`1738` - Uniform Resource Locators (URL)
+      この RFC では絶対 URL の形式的な文法と意味付けを仕様化しています。
 
 
 .. _urlparse-result-object:

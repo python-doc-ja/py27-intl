@@ -17,16 +17,6 @@ GNUのソフトウェアでサポートされているような長形式のオ�
 
 このモジュールは2つの関数と1つの例外を提供しています:
 
-.. % This module helps scripts to parse the command line arguments in
-.. % \code{sys.argv}.
-.. % It supports the same conventions as the \UNIX{} \cfunction{getopt()}
-.. % function (including the special meanings of arguments of the form
-.. % `\code{-}' and `\code{-}\code{-}').
-.. % % That's to fool latex2html into leaving the two hyphens alone!
-.. % Long options similar to those supported by
-.. % GNU software may be used as well via an optional third argument.
-.. % This module provides a single function and an exception:
-
 
 .. function:: getopt(args, options[, long_options])
 
@@ -35,41 +25,21 @@ GNUのソフトウェアでサポートされているような長形式のオ�
    はスクリプトで認識させたいオプション文字と、引数が必要な場合にはコロン(``':'``)をつけます。つまりUnixの
    :cfunc:`getopt` と同じフォーマットになります。
 
-   .. % Parses command line options and parameter list.  \var{args} is the
-   .. % argument list to be parsed, without the leading reference to the
-   .. % running program. Typically, this means \samp{sys.argv[1:]}.
-   .. % \var{options} is the string of option letters that the script wants to
-   .. % recognize, with options that require an argument followed by a colon
-   .. % (\character{:}; i.e., the same format that \UNIX{}
-   .. % \cfunction{getopt()} uses).
-
-   .. % \note{Unlike GNU \cfunction{getopt()}, after a non-option
-   .. % argument, all further arguments are considered also non-options.
-   .. % This is similar to the way non-GNU \UNIX{} systems work.}
-
    .. note::
 
-      GNUの :cfunc:`getopt` とは違って、オプションでない引数の後は全てオプションではないと判断されます。これは GNUでない、Unixシステムの挙
-      動に近いものです。
+      GNUの :cfunc:`getopt` とは違って、オプションでない引数の後は全て
+      オプションではないと判断されます。これは GNUでない、Unixシステムの挙動に
+      近いものです。
 
-   *long_options* は長形式のオプションの名前を示す文字列のリストです。名前には、先頭の ``'-`` \ ``-'`` は含めません。引数が必要な場合
-   には名前の最後に等号(``'='``)を入れます。長形式のオプションだけを受けつけるためには、 *options* は空文字列である必要があります。
-   長形式のオプションは、該当するオプションを一意に決定できる長さまで入力されていれば認識されます。たとえば、 *long_options* が
-   ``['foo', 'frob']`` の場合、 :option:`--fo` は :option:`--foo` に該当しますが、 :option:`--f` では一意に決定できないので、
-   :exc:`GetoptError` が発生します。
-
-   .. % \var{long_options}, if specified, must be a list of strings with the
-   .. % names of the long options which should be supported.  The leading
-   .. % \code{'-}\code{-'} characters should not be included in the option
-   .. % name.  Long options which require an argument should be followed by an
-   .. % equal sign (\character{=}).  To accept only long options,
-   .. % \var{options} should be an empty string.  Long options on the command
-   .. % line can be recognized so long as they provide a prefix of the option
-   .. % name that matches exactly one of the accepted options.  For example,
-   .. % if \var{long_options} is \code{['foo', 'frob']}, the option
-   .. % \longprogramopt{fo} will match as \longprogramopt{foo}, but
-   .. % \longprogramopt{f} will not match uniquely, so \exception{GetoptError}
-   .. % will be raised.
+   *long_options* は長形式のオプションの名前を示す文字列のリストです。
+   名前には、先頭の ``'-``\ ``-'`` は含めません。引数が必要な場合には名前の
+   最後に等号(``'='``)を入れます。オプション引数はサポートしていません。
+   長形式のオプションだけを受けつけるためには、 *options* は空文字列である
+   必要があります。
+   長形式のオプションは、該当するオプションを一意に決定できる長さまで入力されて
+   いれば認識されます。たとえば、 *long_options* が ``['foo', 'frob']`` の場合、
+   :option:`--fo` は :option:`--foo` に該当しますが、 :option:`--f` では一意に
+   決定できないので、 :exc:`GetoptError` が発生します。
 
    返り値は2つの要素から成っています: 最初は ``(option, value)`` のタプルのリスト、2つ目はオプションリス
    トを取り除いたあとに残ったプログラムの引数リストです(*args* の末尾部分のスライスになります)。
