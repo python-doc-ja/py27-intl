@@ -266,7 +266,7 @@ XML-RPCごしに画像を転送します。 ::
    import xmlrpclib
 
    def python_logo():
-        with open("python_logo.jpg") as handle:
+        with open("python_logo.jpg", "rb") as handle:
             return xmlrpclib.Binary(handle.read())
 
    server = SimpleXMLRPCServer(("localhost", 8000))
@@ -282,7 +282,7 @@ XML-RPCごしに画像を転送します。 ::
    import xmlrpclib
 
    proxy = xmlrpclib.ServerProxy("http://localhost:8000/")
-   with open("fetched_python_logo.jpg", "w") as handle:
+   with open("fetched_python_logo.jpg", "wb") as handle:
        handle.write(proxy.python_logo().data)
 
 .. _fault-objects:
@@ -368,12 +368,12 @@ ProtocolError オブジェクト
 .. In the following example we're going to intentionally cause a :exc:`ProtocolError`
    by providing an invalid URI::
 
-次の例では、不正なURIを利用して、故意に :exc:`ProtocolError` を発生させています。 ::
+次の例では、XMLRPC サーバを指していない URI を利用して、故意に :exc:`ProtocolError` を発生させています。 ::
 
    import xmlrpclib
 
-   # create a ServerProxy with an invalid URI
-   proxy = xmlrpclib.ServerProxy("http://invalidaddress/")
+   # create a ServerProxy with an URI that doesn't respond to XMLRPC requests
+   proxy = xmlrpclib.ServerProxy("http://www.google.com/")
 
    try:
        proxy.some_method()
