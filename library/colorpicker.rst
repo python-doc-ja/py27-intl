@@ -13,9 +13,9 @@
 :mod:`ColorPicker` モジュールは標準色選択ダイアログへのアクセスを提\
 供します。
 
-.. warning::
+.. note::
 
-   このモジュールは 3.0 で削除されます。
+   このモジュールは Python 3.x で削除されました。
 
 .. function:: GetColor(prompt, rgb)
 
