@@ -1,0 +1,50 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to46__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/howto/cporting.rst =&gt; r266/howto/cporting.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to46__0"></td><td class="diff_header" id="from46_113">113</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;PyInt_FromLong(one&nbsp;+&nbsp;two);</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_114">114</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;}</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_115">115</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_116">116</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_117">117</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_118">118</td><td nowrap="nowrap">Module&nbsp;initialization&nbsp;and&nbsp;state</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_119">119</td><td nowrap="nowrap">===============================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_120">120</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to46__top">t</a></td><td class="diff_header" id="from46_121">121-</td><td nowrap="nowrap">Python&nbsp;3.0&nbsp;has&nbsp;a&nbsp;revamped&nbsp;extension&nbsp;module&nbsp;initialization&nbsp;system.&nbsp;&nbsp;(See<span class="diff_sub">&nbsp;PEP</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to46__top">t</a></td><td class="diff_header" id="to46_121">121+</td><td nowrap="nowrap">Python&nbsp;3.0&nbsp;has&nbsp;a&nbsp;revamped&nbsp;extension&nbsp;module&nbsp;initialization&nbsp;system.&nbsp;&nbsp;(See</td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from46_122">122</td><td nowrap="nowrap">:pep:`3121`.)&nbsp;&nbsp;Instead&nbsp;of&nbsp;storing&nbsp;module&nbsp;state&nbsp;in&nbsp;globals,&nbsp;they&nbsp;should&nbsp;be&nbsp;stored</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_123">123</td><td nowrap="nowrap">in&nbsp;an&nbsp;interpreter&nbsp;specific&nbsp;structure.&nbsp;&nbsp;Creating&nbsp;modules&nbsp;that&nbsp;act&nbsp;correctly&nbsp;in</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_124">124</td><td nowrap="nowrap">both&nbsp;2.x&nbsp;and&nbsp;3.0&nbsp;is&nbsp;tricky.&nbsp;&nbsp;The&nbsp;following&nbsp;simple&nbsp;example&nbsp;demonstrates&nbsp;how.&nbsp;::</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_125">125</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_126">126</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;#include&nbsp;"Python.h"</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_127">127</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_128">128</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;struct&nbsp;module_state&nbsp;{</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from46_129">129</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PyObject&nbsp;*error;</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>
