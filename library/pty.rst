@@ -3,8 +3,8 @@
 =====================================
 
 .. module:: pty
-   :platform: IRIX, Linux
-   :synopsis: SGIとLinux用の擬似端末を制御する
+   :platform: Linux
+   :synopsis: Linux用の擬似端末を制御する
 .. moduleauthor:: Steen Lumholt
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
@@ -12,7 +12,7 @@
 :mod:`pty` モジュールは擬似端末(他のプロセスを実行してその制御をしている端末を\
 プログラムで読み書きする)を制御する操作を定義しています。
 
-擬似端末の制御はプラットフォームに強く依存するので、SGIとLinux用のコード\
+擬似端末の制御はプラットフォームに強く依存するので、Linux用のコード\
 しか存在していません。(Linux用のコードは他のプラットフォームでも動作するよう\
 に作られていますがテストされていません。)
 
@@ -31,7 +31,7 @@
 .. function:: openpty()
 
    新しい擬似端末のペアを開きます。利用できるなら :func:`os.openpty` を使い、
-   利用できなければSGIと一般的なUnixシステム用のエミュレーションコードを使います。
+   利用できなければ一般的なUnixシステム用のエミュレーションコードを使います。
    マスター、スレーブそれぞれのためのファイルディスクリプタ、
    ``(master, slave)`` のタプルを返します。
 

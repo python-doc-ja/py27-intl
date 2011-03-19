@@ -7,7 +7,7 @@
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
    :deprecated:
 
-.. deprecated::
+.. deprecated:: 2.6
    :mod:`mutex` モジュールは Python 3.0 で削除されました。
 
 

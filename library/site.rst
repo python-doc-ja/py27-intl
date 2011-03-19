@@ -123,5 +123,5 @@ Macintosh)を使います。
    ディレクトリを sys.path に追加して、その中の pth ファイルも処理する。
 
 
-XXX Update documentation
-XXX document python -m site --user-base --user-site
+.. XXX Update documentation
+.. XXX document python -m site --user-base --user-site

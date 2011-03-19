@@ -27,9 +27,9 @@ Python だと違ってしまうことはよくあります(特に入力バッフ
 
    from Carbon import AE
 
-.. warning::
+.. note::
 
-   Carbon モジュール群は 3.0 で削除されます。
+   Carbon モジュール群は Python 3.0 で削除されました。
 
 
 :mod:`Carbon.AE` --- Apple Events

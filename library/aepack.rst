@@ -16,9 +16,9 @@ Python 内では AppleEvent ディスクリプタは、組み込み型である
 AEDesc の Python オブジェクトとして扱われます。
 :class:`AEDesc` は :mod:`Carbon.AE` モジュールで定義されています。
 
-.. warning::
+.. note::
 
-   このモジュールは 3.0 で削除されます。
+   このモジュールは Python 3.x で削除されました。
 
 
 
