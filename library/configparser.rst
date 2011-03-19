@@ -37,7 +37,7 @@
 .. % prefixes used in the Windows Registry extended version of INI syntax.
 .. % \end{notice}
 
-.. warning::
+.. note::
 
    このライブラリでは、Windowsのレジストリ用に拡張された INI 文法はサポート *していません* 。
 
@@ -55,6 +55,15 @@
 ``name=value`` という形式も使えます。値の先頭にある空白文字は削除されるので注意してください。
 オプションの値には、同じセクションか ``DEFAULT`` セクションにある値を参照するような書式化文字列を含めることができます。
 初期化時や検索時に別のデフォルト値を与えることもできます。 ``'#'`` か ``';'`` ではじまる行は無視され、コメントを書くために利用できます。
+
+設定ファイルは、特定の文字 (``#`` と ``;``) で始まるコメントを含んでいることがあります。
+コメントはある行の中に単独で書かれる場合もありますし、値やセクション名のある行に書かれる場合もあります。
+後者がコメントとして認識されるためには、その前に空白文字が入っている必要があります。
+(後方互換性のために、 ``#`` ではなく ``;`` で一行コメントを書いてください。)
+
+最も高機能なクラス :class:`SafeConfigParser` は置換機能をサポートします。
+これは同じセクション内の値や ``DEFAULT`` という特別なセクションの値を参照するフォーマット文字列を使うことができるという意味です。
+さらに初期化のときにデフォルトの値を追加することもできます。
 
 例::
 
@@ -147,6 +156,12 @@
    .. XXX 何がどう安全で予測可能性なのか書くこと。
 
    .. versionadded:: 2.3
+
+
+.. memo configparser は :mod: の付け忘れか?
+.. exception:: Error
+
+   他の全ての configparser の例外の基底クラスです。
 
 
 .. exception:: NoSectionError
@@ -301,7 +316,7 @@ RawConfigParser オブジェクト
    扱われます。 *filenames* で指定されたファイルが開けない場合、そのファイルは無視されます。この挙動は設定ファイルが置かれる可能性のある場所(例えば、
    カレントディレクトリ、ホームディレクトリ、システム全体の設定を行うディレクトリ)を設定して、そこに存在する設定ファイルを読むことを想定して設計されています。
    設定ファイルが存在しなかった場合、 :class:`ConfigParser` のインスタンスは
-   空のデータセットを持ちます。初期値の設定ファイルを先に読み込んでおく必要があるアプリケーションでは、 :meth:`readfp())` を
+   空のデータセットを持ちます。初期値の設定ファイルを先に読み込んでおく必要があるアプリケーションでは、 :meth:`readfp` を
    :meth:`read` の前に呼び出すことでそのような動作を実現できます:
 
    .. % Attempt to read and parse a list of filenames, returning a list of filenames
@@ -443,16 +458,18 @@ RawConfigParser オブジェクト
 
    入力ファイル中に見つかったオプション名か、クライアントコードから渡されたオプション名 *option* を、
    内部で利用する形式に変換します。デフォルトでは *option* を全て小文字に変換した名前が返されます。サブルクラスではこの関数をオーバー
-   ライドすることでこの振舞いを替えることができます。たとえば、このメソッドを :func:`str` に設定することで大小文字の差を区別するように
-   変更することができます。
+   ライドすることでこの振舞いを替えることができます。
 
-   .. % Transforms the option name \var{option} as found in an input file or
-   .. % as passed in by  client code to the form that should be used in the
-   .. % internal structures.  The default implementation returns a lower-case
-   .. % version of \var{option}; subclasses may override this or client code
-   .. % can set an attribute of this name on instances to affect this
-   .. % behavior.  Setting this to \function{str()}, for example, would make
-   .. % option names case sensitive.
+   .. note ConfigParser に :class: が付かないのは誤植?
+   振舞いを替えるために ConfigParser を継承して新たにクラスを作る必要はありません、あるインスタンスのメソッドを文字列を引数に取る関数で置き換えることもできます。
+   たとえば、このメソッドを :func:`str` に設定することで大小文字の差を区別するように
+   変更することができます::
+
+      cfgparser = ConfigParser()
+      ...
+      cfgparser.optionxform = str
+
+   設定ファイルを読み込むときには、 :meth:`optionxform` が呼ばれる前にオプション名の前後の空白文字が取り除かれることに注意してください。
 
 
 .. _configparser-objects:
@@ -466,8 +483,12 @@ ConfigParser オブジェクト
 
 .. method:: ConfigParser.get(section, option[, raw[, vars]])
 
-   *section* の *option* 変数を取得します。 *raw* が真でない時には、全ての ``'%'`` 置換は
-   コンストラクタに渡されたデフォルト値か、 *vars* が与えられていればそれを元にして展開されてから返されます。
+   *section* の *option* 変数を取得します。このメソッドに渡される *vars* は辞書でなくてはいけません。
+   (もし渡されているならば) *vars* 、 *section* 、 *defaults* の順に *option* が探されます。
+
+
+   *raw* が真でない時には、全ての ``'%'`` 置換は展開されてから返されます。
+   置換後の値はオプションと同じ順序で探されます
 
    .. % Get an \var{option} value for the named \var{section}.  All the
    .. % \character{\%} interpolations are expanded in the return values, based
