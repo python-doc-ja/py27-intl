@@ -1,0 +1,38 @@
+--- r262/c-api/float.rst	2009-02-02 17:27:16.400413000 +0900
++++ r266/c-api/float.rst	2009-10-27 23:34:21.573917000 +0900
+@@ -63,32 +63,32 @@
+    without error checking.
+ 
+ 
+ .. cfunction:: PyObject* PyFloat_GetInfo(void)
+ 
+    Return a structseq instance which contains information about the
+    precision, minimum and maximum values of a float. It's a thin wrapper
+    around the header file :file:`float.h`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+-.. cfunction:: double PyFloat_GetMax(void)
++.. cfunction:: double PyFloat_GetMax()
+ 
+    Return the maximum representable finite float *DBL_MAX* as C :ctype:`double`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+-.. cfunction:: double PyFloat_GetMin(void)
++.. cfunction:: double PyFloat_GetMin()
+ 
+    Return the minimum normalized positive float *DBL_MIN* as C :ctype:`double`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+-.. cfunction:: int PyFloat_ClearFreeList(void)
++.. cfunction:: int PyFloat_ClearFreeList()
+ 
+    Clear the float free list. Return the number of items that could not
+    be freed.
+ 
+    .. versionadded:: 2.6

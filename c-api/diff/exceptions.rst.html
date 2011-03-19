@@ -1,0 +1,87 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to8__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/c-api/exceptions.rst =&gt; r266/c-api/exceptions.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to8__0"></td><td class="diff_header" id="from8_286">286</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Similar&nbsp;to&nbsp;:cfunc:`PyErr_SetFromWindowsErrWithFilename`,&nbsp;with&nbsp;an&nbsp;additional</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_287">287</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;parameter&nbsp;specifying&nbsp;the&nbsp;exception&nbsp;type&nbsp;to&nbsp;be&nbsp;raised.&nbsp;Availability:&nbsp;Windows.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_288">288</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_289">289</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;versionadded::&nbsp;2.3</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_290">290</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_291">291</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_292">292</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;void&nbsp;PyErr_BadInternalCall()</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_293">293</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to8__1">n</a></td><td class="diff_header" id="from8_294">294-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;a&nbsp;shorthand&nbsp;for&nbsp;``PyErr_SetString(PyExc_<span class="diff_chg">T</span>y<span class="diff_chg">p</span>eError,&nbsp;message)``,<span class="diff_sub">&nbsp;where</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to8__1">n</a></td><td class="diff_header" id="to8_294">294+</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;a&nbsp;shorthand&nbsp;for&nbsp;``PyErr_SetString(PyExc_<span class="diff_chg">S</span>y<span class="diff_chg">st</span>e<span class="diff_add">m</span>Error,&nbsp;message)``,</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from8_295">295-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;*message*&nbsp;indicates&nbsp;that&nbsp;an&nbsp;internal&nbsp;operation&nbsp;(e.g.&nbsp;a&nbsp;Python/C&nbsp;API<span class="diff_sub">&nbsp;function)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_295">295+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;where</span>&nbsp;*message*&nbsp;indicates&nbsp;that&nbsp;an&nbsp;internal&nbsp;operation&nbsp;(e.g.&nbsp;a&nbsp;Python/C&nbsp;API</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from8_296">296-</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;was&nbsp;invoked&nbsp;with&nbsp;an&nbsp;illegal&nbsp;argument.&nbsp;&nbsp;It&nbsp;is&nbsp;mostly&nbsp;for&nbsp;internal<span class="diff_sub">&nbsp;use.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_296">296+</td><td nowrap="nowrap">&nbsp;&nbsp;<span class="diff_add">&nbsp;function)</span>&nbsp;was&nbsp;invoked&nbsp;with&nbsp;an&nbsp;illegal&nbsp;argument.&nbsp;&nbsp;It&nbsp;is&nbsp;mostly&nbsp;for&nbsp;internal</td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_297">297+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;use.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from8_297">297</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_298">298</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_299">299</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyErr_WarnEx(PyObject&nbsp;*category,&nbsp;char&nbsp;*message,&nbsp;int&nbsp;stacklevel)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_300">300</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_301">301</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Issue&nbsp;a&nbsp;warning&nbsp;message.&nbsp;&nbsp;The&nbsp;*category*&nbsp;argument&nbsp;is&nbsp;a&nbsp;warning&nbsp;category&nbsp;(see</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_302">302</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;below)&nbsp;or&nbsp;*NULL*;&nbsp;the&nbsp;*message*&nbsp;argument&nbsp;is&nbsp;a&nbsp;message&nbsp;string.&nbsp;&nbsp;*stacklevel*&nbsp;is&nbsp;a</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_303">303</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;positive&nbsp;number&nbsp;giving&nbsp;a&nbsp;number&nbsp;of&nbsp;stack&nbsp;frames;&nbsp;the&nbsp;warning&nbsp;will&nbsp;be&nbsp;issued&nbsp;from</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_304">304</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;&nbsp;currently&nbsp;executing&nbsp;line&nbsp;of&nbsp;code&nbsp;in&nbsp;that&nbsp;stack&nbsp;frame.&nbsp;&nbsp;A&nbsp;*stacklevel*&nbsp;of&nbsp;1</td></tr>        </tbody>        
+        <tbody>
+            <tr><td class="diff_next" id="difflib_chg_to8__1"></td><td class="diff_header" id="from8_421">421</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;utility&nbsp;function&nbsp;prints&nbsp;a&nbsp;warning&nbsp;message&nbsp;to&nbsp;``sys.stderr``&nbsp;when&nbsp;an</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_422">422</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;exception&nbsp;has&nbsp;been&nbsp;set&nbsp;but&nbsp;it&nbsp;is&nbsp;impossible&nbsp;for&nbsp;the&nbsp;interpreter&nbsp;to&nbsp;actually</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_423">423</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;raise&nbsp;the&nbsp;exception.&nbsp;&nbsp;It&nbsp;is&nbsp;used,&nbsp;for&nbsp;example,&nbsp;when&nbsp;an&nbsp;exception&nbsp;occurs&nbsp;in&nbsp;an</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_424">424</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:meth:`__del__`&nbsp;method.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_425">425</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_426">426</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;The&nbsp;function&nbsp;is&nbsp;called&nbsp;with&nbsp;a&nbsp;single&nbsp;argument&nbsp;*obj*&nbsp;that&nbsp;identifies&nbsp;the&nbsp;context</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_427">427</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;in&nbsp;which&nbsp;the&nbsp;unraisable&nbsp;exception&nbsp;occurred.&nbsp;The&nbsp;repr&nbsp;of&nbsp;*obj*&nbsp;will&nbsp;be&nbsp;printed&nbsp;in</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_428">428</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;the&nbsp;warning&nbsp;message.</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to8__top">t</a></td><td class="diff_header" id="to8_430">430+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_431">431+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_432">432+</td><td nowrap="nowrap"><span class="diff_add">Recursion&nbsp;Control</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_433">433+</td><td nowrap="nowrap"><span class="diff_add">=================</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_434">434+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_435">435+</td><td nowrap="nowrap"><span class="diff_add">These&nbsp;two&nbsp;functions&nbsp;provide&nbsp;a&nbsp;way&nbsp;to&nbsp;perform&nbsp;safe&nbsp;recursive&nbsp;calls&nbsp;at&nbsp;the&nbsp;C</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_436">436+</td><td nowrap="nowrap"><span class="diff_add">level,&nbsp;both&nbsp;in&nbsp;the&nbsp;core&nbsp;and&nbsp;in&nbsp;extension&nbsp;modules.&nbsp;&nbsp;They&nbsp;are&nbsp;needed&nbsp;if&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_437">437+</td><td nowrap="nowrap"><span class="diff_add">recursive&nbsp;code&nbsp;does&nbsp;not&nbsp;necessarily&nbsp;invoke&nbsp;Python&nbsp;code&nbsp;(which&nbsp;tracks&nbsp;its</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_438">438+</td><td nowrap="nowrap"><span class="diff_add">recursion&nbsp;depth&nbsp;automatically).</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_439">439+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_440">440+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;cfunction::&nbsp;int&nbsp;Py_EnterRecursiveCall(char&nbsp;*where)</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_441">441+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_442">442+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Marks&nbsp;a&nbsp;point&nbsp;where&nbsp;a&nbsp;recursive&nbsp;C-level&nbsp;call&nbsp;is&nbsp;about&nbsp;to&nbsp;be&nbsp;performed.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_443">443+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_444">444+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;If&nbsp;:const:`USE_STACKCHECK`&nbsp;is&nbsp;defined,&nbsp;this&nbsp;function&nbsp;checks&nbsp;if&nbsp;the&nbsp;the&nbsp;OS</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_445">445+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;stack&nbsp;overflowed&nbsp;using&nbsp;:cfunc:`PyOS_CheckStack`.&nbsp;&nbsp;In&nbsp;this&nbsp;is&nbsp;the&nbsp;case,&nbsp;it</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_446">446+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;sets&nbsp;a&nbsp;:exc:`MemoryError`&nbsp;and&nbsp;returns&nbsp;a&nbsp;nonzero&nbsp;value.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_447">447+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_448">448+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;The&nbsp;function&nbsp;then&nbsp;checks&nbsp;if&nbsp;the&nbsp;recursion&nbsp;limit&nbsp;is&nbsp;reached.&nbsp;&nbsp;If&nbsp;this&nbsp;is&nbsp;the</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_449">449+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;case,&nbsp;a&nbsp;:exc:`RuntimeError`&nbsp;is&nbsp;set&nbsp;and&nbsp;a&nbsp;nonzero&nbsp;value&nbsp;is&nbsp;returned.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_450">450+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Otherwise,&nbsp;zero&nbsp;is&nbsp;returned.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_451">451+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_452">452+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*where*&nbsp;should&nbsp;be&nbsp;a&nbsp;string&nbsp;such&nbsp;as&nbsp;``"&nbsp;in&nbsp;instance&nbsp;check"``&nbsp;to&nbsp;be</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_453">453+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;concatenated&nbsp;to&nbsp;the&nbsp;:exc:`RuntimeError`&nbsp;message&nbsp;caused&nbsp;by&nbsp;the&nbsp;recursion&nbsp;depth</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_454">454+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;limit.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_455">455+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_456">456+</td><td nowrap="nowrap"><span class="diff_add">..&nbsp;cfunction::&nbsp;void&nbsp;Py_LeaveRecursiveCall()</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_457">457+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_458">458+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;Ends&nbsp;a&nbsp;:cfunc:`Py_EnterRecursiveCall`.&nbsp;&nbsp;Must&nbsp;be&nbsp;called&nbsp;once&nbsp;for&nbsp;each</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to8_459">459+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;*successful*&nbsp;invocation&nbsp;of&nbsp;:cfunc:`Py_EnterRecursiveCall`.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from8_429">429</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_430">430</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_431">431</td><td nowrap="nowrap">..&nbsp;_standardexceptions:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_432">432</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_433">433</td><td nowrap="nowrap">Standard&nbsp;Exceptions</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_434">434</td><td nowrap="nowrap">===================</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_435">435</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from8_436">436</td><td nowrap="nowrap">All&nbsp;standard&nbsp;Python&nbsp;exceptions&nbsp;are&nbsp;available&nbsp;as&nbsp;global&nbsp;variables&nbsp;whose&nbsp;names&nbsp;are</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

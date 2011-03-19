@@ -1,0 +1,32 @@
+--- r262/c-api/datetime.rst	2009-02-02 17:27:16.400413000 +0900
++++ r266/c-api/datetime.rst	2010-06-27 03:53:49.395786000 +0900
+@@ -1,25 +1,26 @@
+ .. highlightlang:: c
+ 
+ .. _datetimeobjects:
+ 
+ DateTime Objects
+ ----------------
+ 
+ Various date and time objects are supplied by the :mod:`datetime` module.
+ Before using any of these functions, the header file :file:`datetime.h` must be
+ included in your source (note that this is not included by :file:`Python.h`),
+-and the macro :cfunc:`PyDateTime_IMPORT` must be invoked.  The macro puts a
+-pointer to a C structure into a static variable,  ``PyDateTimeAPI``, that is
+-used by the following macros.
++and the macro :cmacro:`PyDateTime_IMPORT` must be invoked, usually as part of
++the module initialisation function.  The macro puts a pointer to a C structure
++into a static variable, :cdata:`PyDateTimeAPI`, that is used by the following
++macros.
+ 
+ Type-check macros:
+ 
+ 
+ .. cfunction:: int PyDate_Check(PyObject *ob)
+ 
+    Return true if *ob* is of type :cdata:`PyDateTime_DateType` or a subtype of
+    :cdata:`PyDateTime_DateType`.  *ob* must not be *NULL*.
+ 
+    .. versionadded:: 2.4
+ 
+ 

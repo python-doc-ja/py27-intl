@@ -1,0 +1,52 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to21__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/c-api/object.rst =&gt; r266/c-api/object.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to21__0"></td><td class="diff_header" id="from21_346">346</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Py_ssize_t&nbsp;PyObject_Size(PyObject&nbsp;*o)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_347">347</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_348">348</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;..&nbsp;index::&nbsp;builtin:&nbsp;len</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_349">349</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_350">350</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;the&nbsp;length&nbsp;of&nbsp;object&nbsp;*o*.&nbsp;&nbsp;If&nbsp;the&nbsp;object&nbsp;*o*&nbsp;provides&nbsp;either&nbsp;the&nbsp;sequence</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_351">351</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;and&nbsp;mapping&nbsp;protocols,&nbsp;the&nbsp;sequence&nbsp;length&nbsp;is&nbsp;returned.&nbsp;&nbsp;On&nbsp;error,&nbsp;``-1``&nbsp;is</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_352">352</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;returned.&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;equivalent&nbsp;to&nbsp;the&nbsp;Python&nbsp;expression&nbsp;``len(o)``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_353">353</td><td nowrap="nowrap"></td></tr><tr><td class="diff_next"><a href="#difflib_chg_to21__top">t</a></td><td class="diff_header" id="to21_354">354+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;..&nbsp;versionchanged::&nbsp;2.5</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to21_355">355+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;These&nbsp;functions&nbsp;returned&nbsp;an&nbsp;:ctype:`int`&nbsp;type.&nbsp;This&nbsp;might&nbsp;require</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to21_356">356+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;changes&nbsp;in&nbsp;your&nbsp;code&nbsp;for&nbsp;properly&nbsp;supporting&nbsp;64-bit&nbsp;systems.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to21_357">357+</td><td nowrap="nowrap"><span class="diff_add">&nbsp;</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from21_354">354</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_355">355</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;PyObject*&nbsp;PyObject_GetItem(PyObject&nbsp;*o,&nbsp;PyObject&nbsp;*key)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_356">356</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_357">357</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;element&nbsp;of&nbsp;*o*&nbsp;corresponding&nbsp;to&nbsp;the&nbsp;object&nbsp;*key*&nbsp;or&nbsp;*NULL*&nbsp;on&nbsp;failure.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_358">358</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;This&nbsp;is&nbsp;the&nbsp;equivalent&nbsp;of&nbsp;the&nbsp;Python&nbsp;expression&nbsp;``o[key]``.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_359">359</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_360">360</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from21_361">361</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyObject_SetItem(PyObject&nbsp;*o,&nbsp;PyObject&nbsp;*key,&nbsp;PyObject&nbsp;*v)</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

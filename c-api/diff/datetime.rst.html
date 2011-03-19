@@ -1,0 +1,55 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=ISO-8859-1" />
+    <title></title>
+    <style type="text/css">
+        table.diff {font-family:Courier; border:medium;}
+        .diff_header {background-color:#e0e0e0}
+        td.diff_header {text-align:right}
+        .diff_next {background-color:#c0c0c0}
+        .diff_add {background-color:#aaffaa}
+        .diff_chg {background-color:#ffff77}
+        .diff_sub {background-color:#ffaaaa}
+    </style>
+</head>
+
+<body>
+    
+        <table class="diff" id="difflib_chg_to6__top"
+               cellspacing="0" cellpadding="0" rules="groups" >
+            <colgroup></colgroup> <colgroup></colgroup> <colgroup></colgroup>
+            <thead><tr><th class="diff_next"><br /></th><th colspan="2" class="diff_header">r262/c-api/datetime.rst =&gt; r266/c-api/datetime.rst</th></tr></thead>
+            <tbody>
+                <tr><td class="diff_next" id="difflib_chg_to6__0"></td><td class="diff_header" id="from6_3">3</td><td nowrap="nowrap">..&nbsp;_datetimeobjects:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_4">4</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_5">5</td><td nowrap="nowrap">DateTime&nbsp;Objects</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_6">6</td><td nowrap="nowrap">----------------</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_7">7</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_8">8</td><td nowrap="nowrap">Various&nbsp;date&nbsp;and&nbsp;time&nbsp;objects&nbsp;are&nbsp;supplied&nbsp;by&nbsp;the&nbsp;:mod:`datetime`&nbsp;module.</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_9">9</td><td nowrap="nowrap">Before&nbsp;using&nbsp;any&nbsp;of&nbsp;these&nbsp;functions,&nbsp;the&nbsp;header&nbsp;file&nbsp;:file:`datetime.h`&nbsp;must&nbsp;be</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_10">10</td><td nowrap="nowrap">included&nbsp;in&nbsp;your&nbsp;source&nbsp;(note&nbsp;that&nbsp;this&nbsp;is&nbsp;not&nbsp;included&nbsp;by&nbsp;:file:`Python.h`),</td></tr><tr><td class="diff_next"><a href="#difflib_chg_to6__top">t</a></td><td class="diff_header" id="from6_11">11-</td><td nowrap="nowrap"><span class="diff_sub">and&nbsp;the&nbsp;macro&nbsp;:cfunc:`PyDateTime_IMPORT`&nbsp;must&nbsp;be&nbsp;invoked.&nbsp;&nbsp;The&nbsp;macro&nbsp;puts&nbsp;a</span></td></tr>
+<tr><td class="diff_next"><a href="#difflib_chg_to6__top">t</a></td><td class="diff_header" id="to6_11">11+</td><td nowrap="nowrap"><span class="diff_add">and&nbsp;the&nbsp;macro&nbsp;:cmacro:`PyDateTime_IMPORT`&nbsp;must&nbsp;be&nbsp;invoked,&nbsp;usually&nbsp;as&nbsp;part&nbsp;of</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from6_12">12-</td><td nowrap="nowrap"><span class="diff_sub">pointer&nbsp;to&nbsp;a&nbsp;C&nbsp;structure&nbsp;into&nbsp;a&nbsp;static&nbsp;variable,&nbsp;&nbsp;``PyDateTimeAPI``,&nbsp;that&nbsp;is</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to6_12">12+</td><td nowrap="nowrap"><span class="diff_add">the&nbsp;module&nbsp;initialisation&nbsp;function.&nbsp;&nbsp;The&nbsp;macro&nbsp;puts&nbsp;a&nbsp;pointer&nbsp;to&nbsp;a&nbsp;C&nbsp;structure</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="from6_13">13-</td><td nowrap="nowrap"><span class="diff_sub">used&nbsp;by&nbsp;the&nbsp;following&nbsp;macros.</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to6_13">13+</td><td nowrap="nowrap"><span class="diff_add">into&nbsp;a&nbsp;static&nbsp;variable,&nbsp;:cdata:`PyDateTimeAPI`,&nbsp;that&nbsp;is&nbsp;used&nbsp;by&nbsp;the&nbsp;following</span></td></tr>
+<tr><td class="diff_next"></td><td class="diff_header" id="to6_14">14+</td><td nowrap="nowrap"><span class="diff_add">macros.</span></td></tr>
+            <tr><td class="diff_next"></td><td class="diff_header" id="from6_14">14</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_15">15</td><td nowrap="nowrap">Type-check&nbsp;macros:</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_16">16</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_17">17</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_18">18</td><td nowrap="nowrap">..&nbsp;cfunction::&nbsp;int&nbsp;PyDate_Check(PyObject&nbsp;*ob)</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_19">19</td><td nowrap="nowrap"></td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_20">20</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;Return&nbsp;true&nbsp;if&nbsp;*ob*&nbsp;is&nbsp;of&nbsp;type&nbsp;:cdata:`PyDateTime_DateType`&nbsp;or&nbsp;a&nbsp;subtype&nbsp;of</td></tr>            <tr><td class="diff_next"></td><td class="diff_header" id="from6_21">21</td><td nowrap="nowrap">&nbsp;&nbsp;&nbsp;:cdata:`PyDateTime_DateType`.&nbsp;&nbsp;*ob*&nbsp;must&nbsp;not&nbsp;be&nbsp;*NULL*.</td></tr>        </tbody>
+        </table>
+    <table class="diff" summary="Legends">
+        <tr> <th colspan="2"> Legends </th> </tr>
+        <tr> <td> <table border="" summary="Colors">
+                      <tr><th> Colors </th> </tr>
+                      <tr><td class="diff_add">&nbsp;Added&nbsp;</td></tr>
+                      <tr><td class="diff_chg">Changed</td> </tr>
+                      <tr><td class="diff_sub">Deleted</td> </tr>
+                  </table></td>
+             <td> <table border="" summary="Links">
+                      <tr><th colspan="2"> Links </th> </tr>
+                      <tr><td>(f)irst change</td> </tr>
+                      <tr><td>(n)ext change</td> </tr>
+                      <tr><td>(t)op</td> </tr>
+                  </table></td> </tr>
+    </table>
+</body>
+
+</html>

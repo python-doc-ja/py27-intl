@@ -1,0 +1,125 @@
+--- r262/using/windows.rst	2009-01-04 06:55:17.853888000 +0900
++++ r266/using/windows.rst	2010-03-22 04:16:28.299911000 +0900
+@@ -60,27 +60,27 @@
+ 
+ 
+ Alternative bundles
+ ===================
+ 
+ Besides the standard CPython distribution, there are modified packages including
+ additional functionality.  The following is a list of popular versions and their
+ key features:
+ 
+ `ActivePython <http://www.activestate.com/Products/activepython/>`_
+     Installer with multi-platform compatibility, documentation, PyWin32
+ 
+-`Python Enthought Edition <http://code.enthought.com/enthon/>`_
++`Enthought Python Distribution <http://www.enthought.com/products/epd.php>`_
+     Popular modules (such as PyWin32) with their respective documentation, tool
+-    suite for building extensible python applications
++    suite for building extensible Python applications
+ 
+ Notice that these packages are likely to install *older* versions of Python.
+ 
+ 
+ 
+ Configuring Python
+ ==================
+ 
+ In order to run Python flawlessly, you might have to change certain environment
+ settings in Windows.
+ 
+ 
+@@ -159,30 +159,31 @@
+ :file:`C:\\Python\\Lib\\site-packages\\`.
+ 
+ .. `` this fixes syntax highlighting errors in some editors due to the \\ hackery
+ 
+ You can add folders to your search path to make Python's import mechanism search
+ in these directories as well.  Use :envvar:`PYTHONPATH`, as described in
+ :ref:`using-on-envvars`, to modify :data:`sys.path`.  On Windows, paths are
+ separated by semicolons, though, to distinguish them from drive identifiers
+ (:file:`C:\\` etc.).
+ 
+ .. ``
+ 
+-Modifying the module search path can also be done through the Windows registry:
+-Edit
+-:file:`HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath\\`,
+-as described above for the environment variable :envvar:`%PYTHONPATH%`.  A
+-convenient registry editor is :program:`regedit` (start it by typing "regedit"
+-into :menuselection:`Start --> Run`).
++Modifying the module search path can also be done through the Windows registry
++under the key :file:`HKLM\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath`.
++Subkeys which have semicolon-delimited path strings as their default value will
++cause each path to be searched.  Multiple subkeys can be created and are
++appended to the path in alphabetical order.  A convenient registry editor is
++:program:`regedit` (start it by typing "regedit" into :menuselection:`Start -->
++Run`).
+ 
+ 
+ Executing scripts
+ -----------------
+ 
+ Python scripts (files with the extension ``.py``) will be executed by
+ :program:`python.exe` by default.  This executable opens a terminal, which stays
+ open even if the program uses a GUI.  If you do not want this to happen, use the
+ extension ``.pyw`` which will cause the script to be executed by
+ :program:`pythonw.exe` by default (both executables are located in the top-level
+ of your Python installation directory).  This suppresses the terminal window on
+ startup.
+@@ -214,26 +215,25 @@
+ 
+ PyWin32
+ -------
+ 
+ The `PyWin32 <http://python.net/crew/mhammond/win32/>`_ module by Mark Hammond
+ is a collection of modules for advanced Windows-specific support.  This includes
+ utilities for:
+ 
+ * `Component Object Model <http://www.microsoft.com/com/>`_ (COM)
+ * Win32 API calls
+ * Registry
+ * Event log
+-* `Microsoft Foundation Classes <http://msdn.microsoft.com/library/
+-  en-us/vclib/html/_mfc_Class_Library_Reference_Introduction.asp>`_ (MFC)
++* `Microsoft Foundation Classes <http://msdn.microsoft.com/en-us/library/fe1cf721%28VS.80%29.aspx>`_ (MFC)
+   user interfaces
+ 
+ `PythonWin <http://web.archive.org/web/20060524042422/
+ http://www.python.org/windows/pythonwin/>`_ is a sample MFC application
+ shipped with PyWin32.  It is an embeddable IDE with a built-in debugger.
+ 
+ .. seealso::
+ 
+    `Win32 How Do I...? <http://timgolden.me.uk/python/win32_how_do_i.html>`_
+       by Tim Golden
+ 
+    `Python and COM <http://www.boddie.org.uk/python/COM.html>`_
+@@ -292,25 +292,25 @@
+ Check :file:`PC/readme.txt` for general information on the build process.
+ 
+ 
+ For extension modules, consult :ref:`building-on-windows`.
+ 
+ .. seealso::
+ 
+    `Python + Windows + distutils + SWIG + gcc MinGW <http://sebsauvage.net/python/mingw.html>`_
+       or "Creating Python extensions in C/C++ with SWIG and compiling them with
+       MinGW gcc under Windows" or "Installing Python extension with distutils
+       and without Microsoft Visual C++" by Sébastien Sauvage, 2003
+ 
+-   `MingW -- Python extensions <http://www.mingw.org/MinGWiki/index.php/Python%20extensions>`_
++   `MingW -- Python extensions <http://oldwiki.mingw.org/index.php/Python%20extensions>`_
+       by Trent Apted et al, 2007
+ 
+ 
+ Other resources
+ ===============
+ 
+ .. seealso::
+ 
+    `Python Programming On Win32 <http://www.oreilly.com/catalog/pythonwin32/>`_
+       "Help for Windows Programmers"
+       by Mark Hammond and Andy Robinson, O'Reilly Media, 2000,
+       ISBN 1-56592-621-8

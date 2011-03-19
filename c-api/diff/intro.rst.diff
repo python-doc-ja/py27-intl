@@ -1,0 +1,29 @@
+--- r262/c-api/intro.rst	2009-02-23 19:41:11.107573000 +0900
++++ r266/c-api/intro.rst	2009-04-29 03:23:28.138007000 +0900
+@@ -35,25 +35,25 @@
+ Include Files
+ =============
+ 
+ All function, type and macro definitions needed to use the Python/C API are
+ included in your code by the following line::
+ 
+    #include "Python.h"
+ 
+ This implies inclusion of the following standard headers: ``<stdio.h>``,
+ ``<string.h>``, ``<errno.h>``, ``<limits.h>``, and ``<stdlib.h>`` (if
+ available).
+ 
+-.. warning::
++.. note::
+ 
+    Since Python may define some pre-processor definitions which affect the standard
+    headers on some systems, you *must* include :file:`Python.h` before any standard
+    headers are included.
+ 
+ All user visible names defined by Python.h (except those defined by the included
+ standard headers) have one of the prefixes ``Py`` or ``_Py``.  Names beginning
+ with ``_Py`` are for internal use by the Python implementation and should not be
+ used by extension writers. Structure member names do not have a reserved prefix.
+ 
+ **Important:** user code should never define names that begin with ``Py`` or
+ ``_Py``.  This confuses the reader, and jeopardizes the portability of the user
