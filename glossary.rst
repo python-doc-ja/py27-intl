@@ -40,13 +40,6 @@
       として提供されています。 :ref:`2to3-reference` を参照してください。
 
    abstract base class
-      .. Abstract Base Classes (abbreviated ABCs) complement :term:`duck-typing` by
-         providing a way to define interfaces when other techniques like :func:`hasattr`
-         would be clumsy. Python comes with many builtin ABCs for data structures
-         (in the :mod:`collections` module), numbers (in the :mod:`numbers`
-         module), and streams (in the :mod:`io` module). You can create your own
-         ABC with the :mod:`abc` module.
-
       (抽象基底クラス) Abstract Base Classes (ABCs と略されます)は :term:`duck-typing`
       を補完するもので、 :func:`hasattr` などの別のテクニックでは不恰好になる場合に
       インタフェースを定義する方法を提供します。
@@ -132,18 +125,6 @@
       単に ``3+4.5`` とするのではなく、
       ``float(3)+4.5`` というように、同じ型に正規化しなければいけません。
 
-      .. The implicit conversion of an instance of one type to another during an
-         operation which involves two arguments of the same type.  For example,
-         ``int(3.15)`` converts the floating point number to the integer ``3``, but
-         in ``3+4.5``, each argument is of a different type (one int, one float),
-         and both must be converted to the same type before they can be added or it
-         will raise a ``TypeError``.  Coercion between two operands can be
-         performed with the ``coerce`` builtin function; thus, ``3+4.5`` is
-         equivalent to calling ``operator.add(*coerce(3, 4.5))`` and results in
-         ``operator.add(3.0, 4.5)``.  Without coercion, all arguments of even
-         compatible types would have to be normalized to the same value by the
-         programmer, e.g., ``float(3)+4.5`` rather than just ``3+4.5``.
-
    complex number
       (複素数)
       よく知られている実数系を拡張したもので、すべての数は実部と虚部の和として表されます。
@@ -156,17 +137,6 @@
 
       複素数の使用はかなり高度な数学の機能です。
       必要性を感じなければ、ほぼ間違いなく無視してしまってよいでしょう。
-
-      .. An extension of the familiar real number system in which all numbers are
-         expressed as a sum of a real part and an imaginary part.  Imaginary
-         numbers are real multiples of the imaginary unit (the square root of
-         ``-1``), often written ``i`` in mathematics or ``j`` in
-         engineering. Python has builtin support for complex numbers, which are
-         written with this latter notation; the imaginary part is written with a
-         ``j`` suffix, e.g., ``3+1j``.  To get access to complex equivalents of the
-         :mod:`math` module, use :mod:`cmath`.  Use of complex numbers is a fairly
-         advanced mathematical feature.  If you're not aware of a need for them,
-         it's almost certain you can safely ignore them.
 
    context manager
       (コンテキストマネージャー)
@@ -259,18 +229,10 @@
       インタフェースを型より重視することで、上手くデザインされたコードは
       (polymorphicな置換を許可することによって)柔軟性を増すことができます。
       duck-typing は :func:`type` や :func:`isinstance` を避けます。
-      (ただし、duck-typing を抽象ベースクラス(abstract base classes)で補完することもできます。)
-      その代わりに :func:`hasattr` テストや *EAFP* プログラミングを利用します。
-
-      .. A pythonic programming style which determines an object's type by inspection
-         of its method or attribute signature rather than by explicit relationship
-         to some type object ("If it looks like a duck and quacks like a duck, it
-         must be a duck.")  By emphasizing interfaces rather than specific types,
-         well-designed code improves its flexibility by allowing polymorphic
-         substitution.  Duck-typing avoids tests using :func:`type` or
-         :func:`isinstance`. (Note, however, that duck-typing can be complemented
-         with abstract base classes.) Instead, it typically employs :func:`hasattr`
-         tests or :term:`EAFP` programming.
+      (ただし、duck-typing を抽象ベースクラス(:term:`abstract base class`)で
+      補完することもできます。)
+      その代わりに :func:`hasattr` テストや :term:`EAFP` プログラミングを
+      利用します。
 
    EAFP
       「認可をとるより許しを請う方が容易  (easier to ask for forgiveness than permission、マーフィーの法則)」
@@ -360,19 +322,13 @@
 
    generator expression
       (ジェネレータ式)
-      ジェネレータを返す式です。
-      普通の式に、ループ変を定義している :keyword:`for` 式、範囲、そしてオプショナルな
+      イテレータを返す式です。
+      普通の式に、ループ変を定義している :keyword:`for` 式、範囲、そして省略可能な
       :keyword:`if` 式がつづいているように見えます。
       こうして構成された式は、外側の関数に対して値を生成します。::
 
          >>> sum(i*i for i in range(10))         # sum of squares 0, 1, 4, ... 81
          285
-
-      .. An expression that returns a generator.  It looks like a normal expression
-         followed by a :keyword:`for` expression defining a loop variable, range,
-         and an optional :keyword:`if` expression.  The combined expression
-         generates values for an enclosing function::
-
 
    GIL
       グローバルインタプリタロック(:term:`global interpreter lock`)を参照してください。
@@ -680,17 +636,6 @@
       例えば、 :func:`random.seed`, :func:`itertools.izip` と書くことで、これらの関数がそれぞれ
       :mod:`random` モジュールや :mod:`itertools`
       モジュールで実装されていることがはっきりします。
-
-      .. The place where a variable is stored.  Namespaces are implemented as
-         dictionaries.  There are the local, global and builtin namespaces as well
-         as nested namespaces in objects (in methods).  Namespaces support
-         modularity by preventing naming conflicts.  For instance, the functions
-         :func:`__builtin__.open` and :func:`os.open` are distinguished by their
-         namespaces.  Namespaces also aid readability and maintainability by making
-         it clear which module implements a function.  For instance, writing
-         :func:`random.seed` or :func:`itertools.izip` makes it clear that those
-         functions are implemented by the :mod:`random` and :mod:`itertools`
-         modules, respectively.
 
    nested scope
       (ネストされたスコープ)
