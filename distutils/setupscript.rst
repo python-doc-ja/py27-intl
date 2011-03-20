@@ -183,7 +183,7 @@ Unix と Windows 用の双方のコンパイラで認識されるようです。
 SWIG で書かれた拡張パッケージをどう扱えばよいか心得ています: :command:`build_ext`  は、インタフェースファイルを SWIG
 にかけ、得られた C/C++  ファイルをコンパイルして拡張モジュールを生成します。
 
-**\*\*** SWIG サポートはまだ荒削りで、ほとんどテストされていません!! **\*\***
+.. XXX SWIG support is rough around the edges and largely untested!
 
 この警告にかかわらず、現在次のようにしてSWIGに対してオプションを渡すことができます。 ::
 
@@ -297,7 +297,7 @@ Python をインストールしたかで異なります。) Python の include �
 
 (繰り返しになりますが、この手の可搬性のない書き方は、コードを配布するのが目的なら避けるべきです。)
 
-**\*\*** ここか、どこか別のところで clib ライブラリについて触れておかねば! **\*\***
+.. XXX Should mention clib libraries here or somewhere else!
 
 
 その他の操作
@@ -498,6 +498,8 @@ setup スクリプトには、名前やバージョンにとどまらず、そ�
 +----------------------+---------------------------------------------------+----------------------+--------+
 | ``platforms``        | プラットフォームのリスト                          | 文字列からなるリスト |        |
 +----------------------+---------------------------------------------------+----------------------+--------+
+| ``license``          | パッケージのライセンス                            | 文字列からなるリスト | \(6)   |
++----------------------+---------------------------------------------------+----------------------+--------+
 
 注記:
 
@@ -513,6 +515,20 @@ setup スクリプトには、名前やバージョンにとどまらず、そ�
 (4)
    これらのフィールドは、2.2.3 および 2.3 より以前のバージョンの Python でも互換性を持たせたい場合には指定してはなりません。リストは
    `PyPI ウェブサイト <http://pypi.python.org/pypi>`_ にあります。
+
+.. (6)
+   The ``license`` field is a text indicating the license covering the
+   package where the license is not a selection from the "License" Trove
+   classifiers. See the ``Classifier`` field. Notice that
+   there's a ``licence`` distribution option which is deprecated but still
+   acts as an alias for ``license``.
+
+(6)
+   ``license`` フィールドは、パッケージのライセンスが Trove Classifier の
+   "License" から選べない場合に、そのライセンスを示すテキストです。
+   ``Classifier`` を参照してください。
+   非推奨ですが、 ``licence`` というオプションも存在していて、 ``license``
+   のエイリアスになっています。
 
 「短い文字列」
    200 文字以内の一行のテキスト。

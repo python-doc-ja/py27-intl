@@ -92,6 +92,14 @@ Python のリリースは全てオープンソース (オープンソースの�
 +----------------+--------------+-----------+------------+-----------------+
 | 2.6.1          | 2.6          | 2008      | PSF        | yes             |
 +----------------+--------------+-----------+------------+-----------------+
+| 2.6.2          | 2.6.1        | 2009      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.6.3          | 2.6.2        | 2009      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.6.4          | 2.6.3        | 2009      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
+| 2.6.5          | 2.6.4        | 2010      | PSF        | yes             |
++----------------+--------------+-----------+------------+-----------------+
 
 .. note::
 
@@ -117,7 +125,7 @@ Terms and conditions for accessing or otherwise using Python
    analyze, test, perform and/or display publicly, prepare derivative works,
    distribute, and otherwise use Python |release| alone or in any derivative
    version, provided, however, that PSF's License Agreement and PSF's notice of
-   copyright, i.e., "Copyright © 2001-2009 Python Software Foundation; All Rights
+   copyright, i.e., "Copyright © 2001-2010 Python Software Foundation; All Rights
    Reserved" are retained in Python |release| alone or in any derivative version
    prepared by Licensee.
 
@@ -611,7 +619,7 @@ The :mod:`uu` module contains the following notice::
    - Use binascii module to do the actual line-by-line conversion
      between ascii and binary. This results in a 1000-fold speedup. The C
      version is still 5 times faster, though.
-   - Arguments more compliant with python standard
+   - Arguments more compliant with Python standard
 
 
 XML Remote Procedure Calls

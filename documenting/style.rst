@@ -14,8 +14,6 @@ Python ドキュメントは、可能な限り `Apple Publications Style Guide`_
 準拠することになっています。内容の合理性と、オンラインで容易に取得できることから、
 このスタイルガイドが選ばれました。
 
-.. _Apple Publications Style Guide: http://developer.apple.com/documentation/UserExperience/Conceptual/APStyleGuide/APSG_2008.pdf
-
 .. Topics which are not covered in the Apple's style guide will be discussed in
 .. this document if necessary.
 
@@ -106,3 +104,6 @@ Unicode
 
 Unix
     1970年代初頭に AT&T ベル研究所で開発されたオペレーティングシステムの名前です。
+ 
+.. _Apple Publications Style Guide: http://developer.apple.com/mac/library/documentation/UserExperience/Conceptual/APStyleGuide/APSG_2009.pdf
+

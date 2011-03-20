@@ -283,10 +283,27 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 .. describe:: opcode
 
-   Python バイトコードの命令を説明します。
+   Python バイトコード(:term:`bytecode`)の命令を説明します。
 
 ..    Describes a Python bytecode instruction.
 
+.. describe:: cmdoption
+
+   .. Describes a Python command line option or switch.  Option argument names
+      should be enclosed in angle brackets.  Example::
+
+   Python のコマンドラインオプションもしくはスイッチを説明します。
+   オプションの引数名は <> の括弧で囲います。 例::
+ 
+       .. cmdoption:: -m <module>
+ 
+          module をスクリプトとして実行します。
+
+.. describe:: envvar
+
+   .. Describes an environment variable that Python uses or defines.
+
+   Python が利用したり定義している環境変数を説明します。
 
 .. There is also a generic version of these directives:
 
@@ -873,15 +890,10 @@ reST 標準のラベルはあまり良くありません。全てのラベルは
 
    この warning に関係あるどの API を使うときにでも、ユーザーがとても慎重になるべき
    重要な情報。このディレクティブの内容は完全な文で、適切な句読点を全て含め
-   なければなりません。 ``note`` との違いは、セキュリティに関する情報について、
-   ``note`` よりも推奨されていることです。
-
-
-..    An important bit of information about an API that a user should be very aware
-..    of when using whatever bit of API the warning pertains to.  The content of
-..    the directive should be written in complete sentences and include all
-..    appropriate punctuation. This differs from ``note`` in that it is recommended
-..    over ``note`` for information regarding security.
+   なければなりません。
+   警告だらけのページでユーザーを怖がらせないように、 ``node`` ではなく
+   warning を使うのは、クラッシュ、データ損失、セキュリティに関する情報だけに
+   留めるべきです。
 
 .. describe:: versionadded
 
@@ -909,6 +921,27 @@ reST 標準のラベルはあまり良くありません。全てのラベルは
 ..    feature in some way (new parameters, changed side effects, etc.).
 
 --------------
+
+.. describe:: impl-detail
+
+   .. This directive is used to mark CPython-specific information.  Use either with
+      a block content or a single sentence as an argument, i.e. either ::
+
+   このディレクティブは、 CPython に限定された情報を区別するために使います。
+   ブロック要素としても、一文の引数としても利用できます。例えば ::
+
+      .. impl-detail::
+
+         This describes some implementation detail.
+
+         More explanation.
+
+   または、 ::
+
+      .. impl-detail:: This shortly mentions an implementation detail.
+
+   内容の先頭に、自動的に "\ **CPython implementation detail:**\ "
+   という一文が入ります。
 
 .. describe:: seealso
 
