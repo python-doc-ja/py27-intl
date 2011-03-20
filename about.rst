@@ -3,18 +3,13 @@
 =========================
 
 
-.. These documents are generated from `reStructuredText
-   <http://docutils.sf.net/rst.html>`_ sources by *Sphinx*, a document processor
-   specifically written for the Python documentation.
+このドキュメントは、 Python のドキュメントを主要な目的として作られた
+ドキュメントプロセッサの `Sphinx`_ を利用して、 `reStructuredText`_
+形式のソースから生成されました。
 
-このドキュメントは、 *Sphinx* を利用して、 `reStructuredText <http://docutils.sf.net/rst.html>`_
-から生成されました。
+.. _reStructuredText: http://docutils.sf.net/rst.html
+.. _Sphinx: http://sphinx.pocoo.org/
 
-.. In the online version of these documents, you can submit comments and suggest
-   changes directly on the documentation pages.
-
-このドキュメントのオンライン版では、コメントや変更の提案を、
-ドキュメントのページから直接投稿することができます。
 
 .. Development of the documentation and its toolchain takes place on the
    docs@python.org mailing list.  We're always looking for volunteers wanting
@@ -38,7 +33,13 @@
 
 .. See :ref:`reporting-bugs` for information how to report bugs in Python itself.
 
-Python自体のバグ報告については、 :ref:`reporting-bugs` を参照してください。
+このドキュメントや、 Python 自体のバグ報告については、 :ref:`reporting-bugs`
+を参照してください。
+
+.. note::
+   訳注: 日本語訳の問題については、 Google Project Hosting 上の Issue Tracker
+   <http://code.google.com/p/python-doc-ja/issues/list> に登録するか、
+   python-doc-jp@python.jp にメールで報告をお願いします。
 
 .. including the ACKS file here so that it can be maintained separately
 .. include:: ACKS.txt
