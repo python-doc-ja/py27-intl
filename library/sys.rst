@@ -539,7 +539,7 @@
     import するモジュールを探すために呼び出されます。
     import するモジュールがパッケージに含まれる場合、
     親パッケージの :attr:`__path__` 属性が第 2 引数として渡されます。
-    そのメソッドは、モジュールが見つからなかった場合は :keyword:`None` を、
+    そのメソッドは、モジュールが見つからなかった場合は :const:`None` を、
     見つかった場合は :term:`loader` を返します。
 
     .. :data:`sys.meta_path` is searched before any implicit default finders or
