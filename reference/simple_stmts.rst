@@ -613,7 +613,7 @@ import 文は、(1) モジュールを探し、必要なら初期化 (initialize
 モジュールがパッケージに含まれていた(モジュール名の中にドットが含まれていた)場合、
 :meth:`find_module` の第2引数に親パッケージの :attr:`__path__` 属性が渡されます。
 (モジュール名の最後のドットより前のすべてがインポートされます)
-finder はモジュールを見つけたとき、(後で解説する) :term:`loader` か :keyword:`None`
+finder はモジュールを見つけたとき、(後で解説する) :term:`loader` か :const:`None`
 を返します。
 
 .. index::
@@ -643,11 +643,11 @@ path がキャッシュに登録されていない場合は、 :data:`sys.path_h
 を発生させます。
 finder が返された場合、それを :data:`sys.path_importer_cache` にキャッシュして、
 その path に対してその finder を使います。
-finder が見つからず、 path が存在している場合、 :keyword:`None`
+finder が見つからず、 path が存在している場合、 :const:`None`
 が :data:`sys.path_importer_cache` に格納されて、暗黙の、
 単一のファイルとしてモジュールが格納されているとしてあつかうファイルベースの finder
 をその path に対して利用することを示します。
-その path が存在しなかった場合、常に :keyword:`None` を返す finder がその
+その path が存在しなかった場合、常に :const:`None` を返す finder がその
 path に対するキャッシュとして格納されます。
 
 

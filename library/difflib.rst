@@ -612,9 +612,9 @@ Differ の例
    +   5. Flat is better than nested.
 
 
-.. _difflib-interface:
-
 .. A command-line interface to difflib
+
+.. _difflib-interface:
 
 difflib のコマンドラインインタフェース
 ---------------------------------------

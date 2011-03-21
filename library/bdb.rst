@@ -180,11 +180,15 @@
 
       *arg* 引数は以前のイベントに依存します。
 
-      .. For more information on trace functions, see :ref:`debugger-hooks`.  For
-         more information on code and frame objects, refer to :ref:`types`.
+      ..
+         See the documentation for :func:`sys.settrace` for more information on the
+         trace function.  For more information on code and frame objects, refer to
+         :ref:`types`.
 
-      トレース関数についてのより詳しい情報は、 :ref:`debugger-hooks` を参照してください。
-      コードとフレームオブジェクトについてのより詳しい情報は、 :ref:`types` を参照してください。
+      トレース関数についてのより詳しい情報は、 :func:`sys.settrace` の
+      ドキュメントを参照してください。
+      コードとフレームオブジェクトについてのより詳しい情報は、 :ref:`types`
+      を参照してください。
 
    .. method:: dispatch_line(frame)
 

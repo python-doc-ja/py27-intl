@@ -1266,7 +1266,7 @@ datetime を tzinfo と組み合わせて使う:
 .. method:: time.strftime(format)
 
    明示的な書式化文字列で制御された、日付を表現する文字列を返します。 :meth:`strftime` のふるまいについてのセクション
-   :ref:`strftime-behavior` を参照してください。
+   :ref:`strftime-strptime-behavior` を参照してください。
 
 
 .. method:: time.utcoffset()

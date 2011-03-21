@@ -694,9 +694,9 @@ gzip 圧縮 tar アーカイブを作成してメンバー情報のいくつか�
            print "ファイル・ディレクトリ以外のものです。"
    tar.close()
 
-.. _tar-formats:
-
 .. Supported tar formats
+
+.. _tar-formats:
 
 サポートされる tar のフォーマット
 ----------------------------------

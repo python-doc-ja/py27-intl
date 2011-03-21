@@ -841,7 +841,13 @@ Python 2.1 以前では、双方の引数が整数型で、第二引数が負の
 されます。
 
 
+.. is以下のラベルは、WARNING対策のために Python 3.x のドキュメントから持ってきた。
+
 .. _comparisons:
+.. _is:
+.. _is not:
+.. _in:
+.. _not in:
 
 比較 (comparison)
 =================
