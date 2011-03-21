@@ -104,9 +104,9 @@ Windows の上ではソケットに対してしか動作しないので注意し
       WinSock によって生成されたものではないファイル記述子を扱うことができないのです。
 
 
-.. _epoll-objects:
-
 .. Edge and Level Trigger Polling (epoll) Objects
+
+.. _epoll-objects:
 
 エッジとレベルトリガのポーリング(epoll)オブジェクト
 ---------------------------------------------------
@@ -311,9 +311,9 @@ kqueue オブジェクト
    - *timeout* タイムアウト秒数(floatを利用可能)
 
 
-.. _kevent-objects:
-
 .. Kevent Objects
+
+.. _kevent-objects:
 
 kevent オブジェクト
 --------------------
