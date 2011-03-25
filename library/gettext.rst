@@ -181,9 +181,9 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
 
    :func:`translation` に *domain* 、 *localedir* 、および *codeset* を渡してできる関数 :func:`_` を
    Python の組み込み名前空間に組み込みます。 *unicode* フラグは :func:`translation` の返す翻訳オブジェクトの
-   :meth:`install` メソッドに渡されます。
+   :meth:`~NullTranslations.install` メソッドに渡されます。
 
-   *names* パラメタについては、翻訳オブジェクトの :meth:`install` メソッドの説明を参照ください。
+   *names* パラメタについては、翻訳オブジェクトの :meth:`~NullTranslations.install` メソッドの説明を参照ください。
 
    以下に示すように、通常はアプリケーション中の文字列を関数 :func:`_`  の呼び出しで包み込んで翻訳対象候補であることを示します::
 
