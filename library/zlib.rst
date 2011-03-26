@@ -64,7 +64,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    *data* のAdler-32 チェックサムを計算します。（Adler-32 チェックサムは、おおむね CRC32 と同等の信頼性を持ちながら
    はるかに高速に計算することができます。） *value* が与えられていれば、 *value* はチェックサム計算の
    初期値として使われます。それ以外の場合には固定のデフォルト値が使われます。この機能によって、複数の入力を結合したデータ全体
-   にわたり、通しのチェックサムを計算することができます。このアルゴリズムは暗号法論的には強力とはいえないので、認証やデジタル
+   にわたり、通しのチェックサムを計算することができます。このアルゴリズムは暗号論的には強力とはいえないので、認証やデジタル
    署名などに用いるべきではありません。このアルゴリズムはチェックサムアルゴリズムとして用いるために設計されたものなので、汎用的な
    ハッシュアルゴリズムには向きません。
 
@@ -82,7 +82,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. return value is the correct 32bit binary representation
    .. regardless of sign.
 
-   全てのPythonのバージョンとプラットフォームで共通な数値を正壊死するには、
+   全てのPythonのバージョンとプラットフォームで共通な数値を生成するには、
    ``adler32(data) & 0xffffffff`` を利用してください。
    もしチェックサムをパックされたバイナリフォーマットのためにしか利用しないのであれば、
    符号が関係なくなり、32bitのバイナリ値としては戻り値は正しいので、この処理は必要ありません。
@@ -150,8 +150,8 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    *data* の CRC (Cyclic Redundancy Check, 巡回符号方式)   チェックサムを計算します。 *value*
    が与えられていれば、チェックサム計算の初期値として使われます。与えられていなければデフォルトの初期値が使われます。 *value*
    を与えることで、複数の入力を結合したデータ全体にわたり、通しのチェックサムを計算することができます。
-   このアルゴリズムは暗号法論的には強力ではなく、認証やデジタル署名に用いるべきではありません。アルゴリズムはチェックサムアルゴリズムと
-   して設計されてえいるので、汎用のハッシュアルゴリズムには向きません。
+   このアルゴリズムは暗号論的には強力ではなく、認証やデジタル署名に用いるべきではありません。アルゴリズムはチェックサムアルゴリズムと
+   して設計されているので、汎用のハッシュアルゴリズムには向きません。
 
 
    .. This function always returns an integer object.
@@ -167,7 +167,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. return value is the correct 32bit binary representation
    .. regardless of sign.
 
-   全てのPythonのバージョンとプラットフォームで共通な数値を正壊死するには、
+   全てのPythonのバージョンとプラットフォームで共通な数値を生成するには、
    ``crc32(data) & 0xffffffff`` を利用してください。
    もしチェックサムをパックされたバイナリフォーマットのためにしか利用しないのであれば、
    符号が関係なくなり、32bitのバイナリ値としては戻り値は正しいので、この処理は必要ありません。
@@ -200,8 +200,8 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. If *bufsize* is given, it is used as the initial size of the output
    .. buffer.  Raises the :exc:`error` exception if any error occurs.
 
-   *string* 内のデータを解凍して、解凍されたデータを含む文字列を返します。 *wbits* パラメタはウィンドウバッファの大きさを制御します。詳細は以下で議論されています。
-   *bufsize* が与えられていれば、出力バッファの書記サイズとして使われます。解凍処理に何らかのエラーが生じた場合、 :exc:`error`
+   *string* 内のデータを解凍して、解凍されたデータを含む文字列を返します。 *wbits* パラメータはウィンドウバッファの大きさを制御します。より詳しい説明は後で行います。
+   *bufsize* が与えられていれば、出力バッファの初期サイズとして使われます。解凍処理に何らかのエラーが生じた場合、 :exc:`error`
    例外を送出します。
 
 
@@ -230,7 +230,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. to :cfunc:`malloc`.  The default size is 16384.
 
    *bufsize* は解凍されたデータを保持するためのバッファサイズの初期値です。バッファの空きは必要に応じて必要なだけ増加するので、
-   なれば、必ずしも正確な値を指定する必要はありません。この値のチューニングでできることは、 :cfunc:`malloc` が呼ばれる回数を
+   必ずしも正確な値を指定する必要はありません。この値のチューニングでできることは、 :cfunc:`malloc` が呼ばれる回数を
    数回減らすことぐらいです。デフォルトのサイズは 16384 です。
 
 
@@ -240,7 +240,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. won't fit into memory at once.  The *wbits* parameter controls the size of the
    .. window buffer.
 
-   メモリ上に一度に展開できないようなデータストリームを解凍するために用いられる解凍オブジェクトを返します。 *wbits* パラメタは
+   メモリ上に一度に展開できないようなデータストリームを解凍するために用いられる解凍オブジェクトを返します。 *wbits* パラメータは
    ウィンドウバッファのサイズを制御します。
 
 
@@ -256,7 +256,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. produced by any preceding calls to the :meth:`compress` method.  Some input may
    .. be kept in internal buffers for later processing.
 
-   *string* を圧縮し、圧縮されたデータを含む文字列を返します。この文字列は少なくとも *string* に相当します。このデータは以前に呼んだ
+   *string* を圧縮し、圧縮されたデータを含む文字列を返します。この文字列は少なくとも *string* の一部分のデータに対する圧縮データを含みます。このデータは以前に呼んだ
    :meth:`compress` が返した出力と結合することができます。入力の一部は以後の処理のために内部バッファに保存されることもあります。
 
 
@@ -302,8 +302,8 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. available.  If the whole string turned out to contain compressed data, this is
    .. ``""``, the empty string.
 
-   圧縮データの末尾までのバイト列が入った文字列です。すなわち、この値は圧縮データの入っているバイト列の最後の文字までが読み出せるかぎり ``""``
-   となります。入力文字列全てが圧縮データを含んでいた場合、この属性は ``""`` 、すなわち空文字列になります。
+   圧縮データの末尾より後のバイト列が入った文字列です。すなわち、この値は圧縮データの入っているバイト列の最後の文字が利用可能になるまでは ``""``
+   のままとなります。入力文字列全てが圧縮データを含んでいた場合、この属性は ``""`` 、すなわち空文字列になります。
 
 
    .. The only way to determine where a string of compressed data ends is by actually
@@ -353,7 +353,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. supplied then the whole input is decompressed, and :attr:`unconsumed_tail` is an
    .. empty string.
 
-   オプションパラメタ *max_length* が与えられると、返される解凍データの長さが *max_length* 以下に制限されます。このことは入力した圧縮
+   オプションパラメータ *max_length* が与えられると、返される解凍データの長さが *max_length* 以下に制限されます。このことは入力した圧縮
    データの全てが処理されるとは限らないことを意味し、処理されなかったデータは :attr:`unconsumed_tail` 属性に保存されます。
    解凍処理を継続したいならば、この保存されたデータを以降の :meth:`decompress` 呼び出しに渡さなくてはなりません。 *max_length*
    が与えられなかった場合、全ての入力が解凍され、 :attr:`unconsumed_tail` 属性は空文字列になります。
@@ -367,7 +367,7 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. to delete the object.
 
    未処理の入力データを全て処理し、最終的に圧縮されなかった残りの出力文字列を返します。 :meth:`flush` を呼んだ後、
-   :meth:`decompress`  を再度呼ぶべきではありません。このときできる唯一現実的な操作はオブジェクトの削除だけです。
+   :meth:`decompress`  を再度呼ぶべきではありません。このときできる唯一の現実的な操作はオブジェクトの削除だけです。
 
 
    .. The optional parameter *length* sets the initial size of the output buffer.
