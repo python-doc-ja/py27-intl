@@ -169,6 +169,30 @@ latex_preamble = r'''
   \strong{Python Software Foundation}\\
   Email: \email{docs@python.org}
 }
+\makeatletter
+\renewcommand{\DOCH}{
+  \raggedleft\CNV\FmN{\@chapapp}\space
+  \CNoV\thechapter\CNV\FmN{\@chappos}
+  \par\nobreak\vskip40\p@
+}
+\fancypagestyle{normal}{
+  \fancyhf{}
+  \fancyfoot[LE,RO]{{\py@HeaderFamily\thepage}}
+  \fancyfoot[LO]{{\py@HeaderFamily\nouppercase{\rightmark}}}
+  \fancyfoot[RE]{{\py@HeaderFamily\nouppercase{\leftmark}}}
+  \fancyhead[LE,RO]{{\py@HeaderFamily \@title, \py@release}}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+  \def\chaptermark##1{\markboth{\@chapapp\space\thechapter\space\@chappos\space ##1}{}}
+}
+\renewcommand{\appendix}{\par
+  \setcounter{chapter}{0}%
+  \setcounter{section}{0}%
+  \gdef\@chapapp{\appendixname}%
+  \gdef\@chappos{}%
+  \gdef\thechapter{\@Alph\c@chapter}
+}
+\makeatother
 '''
 
 # Documents to append as an appendix to all manuals.
