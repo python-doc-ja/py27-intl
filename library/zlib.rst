@@ -196,10 +196,11 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
 
    .. Decompresses the data in *string*, returning a string containing the
    .. uncompressed data.  The *wbits* parameter controls the size of the window
-   .. buffer.  If *bufsize* is given, it is used as the initial size of the output
+   .. buffer, and is discussed further below.
+   .. If *bufsize* is given, it is used as the initial size of the output
    .. buffer.  Raises the :exc:`error` exception if any error occurs.
 
-   *string* 内のデータを解凍して、解凍されたデータを含む文字列を返します。 *wbits* パラメタはウィンドウバッファの大きさを制御します。
+   *string* 内のデータを解凍して、解凍されたデータを含む文字列を返します。 *wbits* パラメタはウィンドウバッファの大きさを制御します。詳細は以下で議論されています。
    *bufsize* が与えられていれば、出力バッファの書記サイズとして使われます。解凍処理に何らかのエラーが生じた場合、 :exc:`error`
    例外を送出します。
 
@@ -208,16 +209,19 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
    .. history buffer (the "window size") used when compressing data.  Its absolute
    .. value should be between 8 and 15 for the most recent versions of the zlib
    .. library, larger values resulting in better compression at the expense of greater
-   .. memory usage.  The default value is 15.  When *wbits* is negative, the standard
-   .. :program:`gzip` header is suppressed; this is an undocumented feature of the
-   .. zlib library, used for compatibility with :program:`unzip`'s compression file
-   .. format.
+   .. memory usage.  When decompressing a stream, *wbits* must not be smaller
+   .. than the size originally used to compress the stream; using a too-small
+   .. value will result in an exception. The default value is therefore the
+   .. highest value, 15.  When *wbits* is negative, the standard
+   .. :program:`gzip` header is suppressed.
 
    *wbits* の絶対値は、データを圧縮する際に用いられるヒストリバッファのサイズ (ウィンドウサイズ) に対し、 2 を底とする対数を
    とったものです。最近のほとんどのバージョンの zlib ライブラリを使っているなら、 *wbits* の絶対値は 8 から 15 とするべきです。
-   より大きな値はより良好な圧縮につながりますが、より多くのメモリを必要とします。デフォルトの値は 15 です。 *wbits* の値が負の場合、標準的な
-   :program:`gzip` ヘッダを出力しません。これは zlib ライブラリの非公開仕様であり、 :program:`unzip` の
-   圧縮ファイル形式に対する互換性のためのものです。
+   より大きな値はより良好な圧縮につながりますが、より多くのメモリを必要とします。
+   ストリームを解凍するとき、 *wbits* は元のストリームを圧縮するために使用した
+   サイズより小さくしてはいけません。小さすぎる値を使用すると例外が発生します。
+   そのため、デフォルトの値は 15 です。 *wbits* の値が負の場合、標準的な
+   :program:`gzip` ヘッダを出力しません。
 
 
    .. *bufsize* is the initial size of the buffer used to hold decompressed data.  If
