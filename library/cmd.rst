@@ -145,17 +145,19 @@ Cmdオブジェクト
    引数の位置に依存した異なる補完を提供するのに使えます。
 
 
-   .. All subclasses of :class:`Cmd` inherit a predefined :meth:`do_help`. This
+   .. All subclasses of :class:`Cmd` inherit a predefined :meth:`do_help`.  This
    .. method, called with an argument ``'bar'``, invokes the corresponding method
-   .. :meth:`help_bar`.  With no argument, :meth:`do_help` lists all available help
-   .. topics (that is, all commands with corresponding :meth:`help_\*` methods), and
-   .. also lists any undocumented commands.
+   .. :meth:`help_bar`, and if that is not present, prints the docstring of
+   .. :meth:`do_bar`, if available.  With no argument, :meth:`do_help` lists all
+   .. available help topics (that is, all commands with corresponding
+   .. :meth:`help_\*` methods or commands that have docstrings), and also lists any
+   .. undocumented commands.
 
    :class:`Cmd` のすべてのサブクラスは、定義済みの :meth:`do_help` を継承します。
    このメソッドは、(引数 ``'bar'`` と共に呼ばれたとすると)対応するメソッド :meth:`help_bar`
-   を呼び出します。引数がなければ、 :meth:`do_help`
-   は、すべての利用可能なヘルプ見出し(すなわち、対応する :meth:`help_\*`
-   メソッドを持つすべてのコマンド)をリストアップします。
+   を呼び出します。そのメソッドが存在しない場合、 :meth:`do_bar` の docstring があればそれを表示します。
+   引数がなければ、 :meth:`do_help` は、すべての利用可能なヘルプ見出し(すなわち、対応する :meth:`help_\*`
+   メソッドを持つすべてのコマンドまたは docstring を持つコマンド)をリストアップします。
    また、文書化されていないコマンドでも、すべてリストアップします。
 
 
