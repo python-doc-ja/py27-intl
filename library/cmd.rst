@@ -13,7 +13,7 @@
 .. interface.
 
 :class:`Cmd` クラスでは、行指向のコマンドインタープリタを書くための簡単なフレームワークを提供します。
-テスト用の仕掛けや管理ツール、そして、後により洗練されたインターフェイスでラップするプロトタイプとして、
+テストハーネスや管理ツール、そして、後により洗練されたインターフェイスでラップするプロトタイプとして、
 こうしたインタープリタはよく役に立ちます。
 
 
@@ -34,7 +34,7 @@
    .. :mod:`readline` is available, command completion is done automatically.
 
    オプション引数 *completekey* は、補完キーの :mod:`readline` 名です。
-   デフォルトは:kbd:`Tab` です。 *completekey* が :const:`None` でなく、
+   デフォルトは :kbd:`Tab` です。 *completekey* が :const:`None` でなく、
    :mod:`readline` が利用できるならば、コマンド補完は自動的に行われます。
 
 
@@ -79,14 +79,14 @@ Cmdオブジェクト
    .. received input, and dispatch to action methods, passing them the remainder of
    .. the line as argument.
 
-   プロンプトを繰り返し出し、入力を受け取り、受け取った入力から取り去った先頭の語を解析し、
+   プロンプトを繰り返し出力し、入力を受け取り、受け取った入力から取り去った先頭の語を解析し、
    その行の残りを引数としてアクションメソッドへディスパッチします。
 
 
    .. The optional argument is a banner or intro string to be issued before the first
    .. prompt (this overrides the :attr:`intro` class member).
 
-   オプションの引数は、最初のプロンプトの前に表示されるバナーあるいは紹介用の文字列です
+   オプションの引数は、最初のプロンプトの前に表示されるバナーあるいはイントロ用の文字列です
    (これはクラスメンバ :attr:`intro` をオーバーライドします)。
 
 
@@ -98,8 +98,8 @@ Cmdオブジェクト
 
    :mod:`readline` モジュールがロードされているなら、入力は自動的に :program:`bash`
    のような履歴リスト編集機能を受け継ぎます(例えば、 :kbd:`Control-P`
-   は直前のコマンドへのスクロールバック、:kbd:`Control-N` は次のものへ進む、
-   :kbd:`Control-F` はカーソルを右へ非破壊的に進める、:kbd:`Control-B` はカーソルを非破壊的に左へ移動させる等)。
+   は直前のコマンドへのスクロールバック、 :kbd:`Control-N` は次のものへ進む、
+   :kbd:`Control-F` はカーソルを右へ非破壊的に進める、 :kbd:`Control-B` はカーソルを非破壊的に左へ移動させる等)。
 
 
    .. An end-of-file on input is passed back as the string ``'EOF'``.
@@ -138,7 +138,7 @@ Cmdオブジェクト
    補完が有効になっているなら、コマンドの補完が自動的に行われます。
    また、コマンド引数の補完は、引数 *text*, *line*, *begidx*, および *endidx*
    と共に :meth:`complete_foo` を呼び出すことによって行われます。
-   *text* は、我々がマッチしようとしている文字列の先頭の語です。
+   *text* は、マッチしようとしている文字列の先頭の語です。
    返されるマッチは全てそれで始まっていなければなりません。
    *line* は始めの空白を除いた現在の入力行です。
    *begidx* と *endidx* は先頭のテキストの始まりと終わりのインデックスで、
@@ -288,7 +288,7 @@ Cmdオブジェクト
    .. A string to issue as an intro or banner.  May be overridden by giving the
    .. :meth:`cmdloop` method an argument.
 
-   紹介またはバナーとして表示される文字列。
+   イントロあるいはバナーとして表示される文字列。
    :meth:`cmdloop` メソッドに引数を与えるために、オーバーライドされるかもしれません。
 
 
@@ -296,7 +296,7 @@ Cmdオブジェクト
 
    .. The header to issue if the help output has a section for documented commands.
 
-   ヘルプの出力に文書化されたコマンドの部分がある場合に表示するヘッダ。
+   ヘルプ出力に文書化されたコマンドのセクションがある場合に表示するヘッダ。
 
 
 .. attribute:: Cmd.misc_header
@@ -315,7 +315,7 @@ Cmdオブジェクト
    .. (that is, there are :meth:`do_\*` methods without corresponding :meth:`help_\*`
    .. methods).
 
-   ヘルプの出力に文書化されていないコマンドの部分がある(すなわち、対応する :meth:`help_\*`
+   ヘルプ出力に文書化されていないコマンドのセクションがある(すなわち、対応する :meth:`help_\*`
    メソッドを持たない :meth:`do_\*` メソッドが存在する)場合に表示するヘッダ。
 
 
@@ -336,10 +336,10 @@ Cmdオブジェクト
    .. :mod:`readline`, on systems that support it, the interpreter will automatically
    .. support :program:`Emacs`\ -like line editing  and command-history keystrokes.)
 
-   フラグ、デフォルトでは真。
+   フラグで、デフォルトでは真です。
    真ならば、 :meth:`cmdloop` はプロンプトを表示して次のコマンド読み込むために :func:`raw_input` を使います。
    偽ならば、 :meth:`sys.stdout.write` と :meth:`sys.stdin.readline` が使われます。
-   (これが意味するのは、:mod:`readline` を import することによって、
+   (これが意味するのは、 :mod:`readline` を import することによって、
    それをサポートするシステム上では、インタープリタが自動的に
    :program:`Emacs` 形式の行編集とコマンド履歴のキーストロークをサポートするということです。)
 
