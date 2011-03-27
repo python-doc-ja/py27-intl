@@ -192,8 +192,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       from wsgiref.util import setup_testing_defaults
       from wsgiref.simple_server import make_server
 
-      # 比較的シンプルなWSGIアプリケーション。
-      # setup_testing_defaults によって更新されたあとの environment を表示する
+      # 比較的シンプルなWSGIアプリケーション。 setup_testing_defaults に
+      # よって更新されたあとの environment 辞書を表示する
       def simple_app(environ, start_response):
           setup_testing_defaults(environ)
 
@@ -259,7 +259,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       from StringIO import StringIO
       from wsgiref.util import FileWrapper
 
-      # We're using a StringIO-buffer for as the file-like object
+      # ファイル風オブジェクトとして StringIO バッファを使用しています
       filelike = StringIO("This is an example file-like object"*10)
       wrapper = FileWrapper(filelike, blksize=5)
 
@@ -452,7 +452,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       httpd = make_server('', 8000, demo_app)
       print "Serving HTTP on port 8000..."
 
-      # プロセスが死ぬまでリクエストに答える
+      # プロセスが kill されるまでリクエストに応える
       httpd.serve_forever()
 
       # 代替：１つのリクエストを受けて終了する
@@ -658,18 +658,18 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       from wsgiref.validate import validator
       from wsgiref.simple_server import make_server
 
-      # Our callable object which is intentionally not compliant to the
-      # standard, so the validator is going to break
+      # 意図的に規格に準拠していない callable
+      # バリデーションは失敗する
       def simple_app(environ, start_response):
           status = '200 OK' # HTTP Status
           headers = [('Content-type', 'text/plain')] # HTTP Headers
           start_response(status, headers)
 
-          # This is going to break because we need to return a list, and
-          # the validator is going to inform us
+          # リストを返す必要があるので、これは規格違反です。
+          # バリデータはそれを教えてくれるでしょう。
           return "Hello World"
 
-      # This is the application wrapped in a validator
+      # これはバリデータでラップされたアプリケーションです
       validator_app = validator(simple_app)
 
       httpd = make_server('', 8000, validator_app)
@@ -1109,22 +1109,22 @@ WSGI アプリケーションとの通信の大部分を処理します。
 
    from wsgiref.simple_server import make_server
 
-   # Every WSGI application must have an application object - a callable
-   # object that accepts two arguments. For that purpose, we're going to
-   # use a function (note that you're not limited to a function, you can
-   # use a class for example). The first argument passed to the function
-   # is a dictionary containing CGI-style envrironment variables and the
-   # second variable is the callable object (see :pep:`333`)
+   # 全ての WSGI アプリケーションには application オブジェクト - 2つの
+   # 引数を受け取る callable オブジェクトが必要です。この目的のために、
+   # ここでは関数を使用しています (関数に限らず、例えばクラスを使用できる
+   # ことに注意してください)。関数に渡された最初の引数は CGI スタイルの
+   # 環境変数を含む辞書であり、 2 番目の変数は callable オブジェクトです
+   # (:pep:`333` を見てください)。
    def hello_world_app(environ, start_response):
        status = '200 OK' # HTTP Status
        headers = [('Content-type', 'text/plain')] # HTTP Headers
        start_response(status, headers)
 
-       # The returned object is going to be printed
+       # 返されたオブジェクトは表示されます
        return ["Hello World"]
 
    httpd = make_server('', 8000, hello_world_app)
    print "Serving on port 8000..."
 
-   # Serve until process is killed
+   # プロセスが kill されるまで実行する
    httpd.serve_forever()
