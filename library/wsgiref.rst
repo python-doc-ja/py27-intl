@@ -63,7 +63,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 .. :pep:`333` for a detailed specification.
 
 このモジュールは WSGI 環境で使う様々なユーティリティ関数を提供します。 WSGI 環境は :pep:`333` で記述されているような HTTP
-リクエスト変数を含む辞書です。全ての *environ* パラメタを取る関数は WSGI 準拠の辞書を与えられることを期待しています；細かい仕様については
+リクエスト変数を含む辞書です。全ての *environ* パラメータを取る関数は WSGI 準拠の辞書を与えられることを期待しています；細かい仕様については
 :pep:`333` を参照してください。
 
 
@@ -73,8 +73,9 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. checking for a ``HTTPS`` environment variable in the *environ* dictionary.  The
    .. return value is a string.
 
-   ``wsgi.url_scheme`` が "http" か "https" かについて、 *environ* 辞書の ``HTTPS``
-   環境変数を調べることでその推測を返します。戻り値は文字列(string)です。
+   *environ* 辞書の ``HTTPS`` 環境変数を調べることで ``wsgi.url_scheme`` が
+   "http" か "https" のどちらであるべきか推測し、その結果を返します。
+   戻り値は文字列です。
 
 
    .. This function is useful when creating a gateway that wraps CGI or a CGI-like
@@ -85,7 +86,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 
    この関数は、CGI や FastCGI のような CGI に似たプロトコルをラップするゲートウェイを作成する場合に便利です。典型的には、それらのプロトコルを
    提供するサーバが SSL 経由でリクエストを受け取った場合には ``HTTPS`` 変数に値 "1" "yes"、または "on"
-   を持つでしょう。ですので、この関数はそのような値が見つかった場合には "https" を返し、そうでなければ "http" を返します。
+   を持つでしょう。そのため、この関数はそのような値が見つかった場合には "https" を返し、そうでなければ "http" を返します。
 
 
 .. function:: request_uri(environ [, include_query=1])
@@ -94,7 +95,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. algorithm found in the "URL Reconstruction" section of :pep:`333`.  If
    .. *include_query* is false, the query string is not included in the resulting URI.
 
-   クエリ文字列をオプションで含むリクエスト URI 全体を、 :pep:`333` の "URL 再構築(URL Reconstruction)"
+   リクエスト URI 全体 (オプションでクエリ文字列を含む) を、 :pep:`333` の "URL 再構築(URL Reconstruction)"
    にあるアルゴリズムを使って返します。 *include_query* が false の場合、クエリ文字列は結果となる文字列には含まれません。
 
 
@@ -104,8 +105,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. ``QUERY_STRING`` variables are ignored.  The result is the base URI of the
    .. application object addressed by the request.
 
-   :func:`request_url` に似ていて、 ``PATH_INFO`` と ``QUERY_STRING`` 変数は
-   無視されます。結果はリクエストによって指定されたアプリケーションオブジェクトのベース URI です。
+   ``PATH_INFO`` と ``QUERY_STRING`` 変数が無視されることを除けば :func:`request_url` に似ています。
+   結果はリクエストによって指定されたアプリケーションオブジェクトのベース URI です。
 
 
 .. function:: shift_path_info(environ)
@@ -114,8 +115,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. The *environ* dictionary is *modified* in-place; use a copy if you need to keep
    .. the original ``PATH_INFO`` or ``SCRIPT_NAME`` intact.
 
-   ``PATH_INFO`` から ``SCRIPT_NAME`` まで一つの名前をシフトしてその名前を返します。 *environ*
-   辞書は *変更されます* ； ``PATH_INFO`` や ``SCRIPT_NAME`` のオリジナルをそのまま残したい場合にはコピーを使ってください。
+   ``PATH_INFO`` から ``SCRIPT_NAME`` に一つの名前をシフトしてその名前を返します。 *environ*
+   辞書は *変更されます* \ 。 ``PATH_INFO`` や ``SCRIPT_NAME`` のオリジナルをそのまま残したい場合にはコピーを使ってください。
 
 
    .. If there are no remaining path segments in ``PATH_INFO``, ``None`` is returned.
@@ -137,7 +138,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    典型的なこのルーチンの使い方はリクエスト URI のそれぞれの要素の処理で、例えばパスを一連の辞書のキーとして取り扱う場合です。
    このルーチンは、渡された環境を、ターゲット URL で示される別の WSGI アプリケーションの呼び出しに合うように調整します。例えば、 ``/foo`` に
    WSGI アプリケーションがあったとして、そしてリクエスト URL パスが ``/foo/bar/baz`` で、 ``/foo`` の WSGI
-   アプリケーションが :func:`shift_path_info` を呼んだ場合、これは "bar" 文字列を受け取り、環境は ``/foo/bar`` の
+   アプリケーションが :func:`shift_path_info` を呼んだ場合、これは "bar" 文字列を受け取り、 environ は ``/foo/bar`` の
    WSGI アプリケーションへの受け渡しに適するように更新されます。つまり、 ``SCRIPT_NAME`` は ``/foo`` から ``/foo/bar``
    に変わって、 ``PATH_INFO`` は ``/bar/baz`` から ``/baz`` に変化するのです。
 
@@ -159,7 +160,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 
    .. Update *environ* with trivial defaults for testing purposes.
 
-   テスト目的で、 *environ* を自明なデフォルト値 (trivial defaults) で更新します。
+   *environ* をテスト用に自明なデフォルト値で更新します。
 
 
    .. This routine adds various parameters required for WSGI, including ``HTTP_HOST``,
@@ -168,9 +169,9 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. only supplies default values, and does not replace any existing settings for
    .. these variables.
 
-   このルーチンは WSGI に必要な様々なパラメタを追加し、それには ``HTTP_HOST`` 、 ``SERVER_NAME`` 、 ``SERVER_PORT`` 、
-   ``REQUEST_METHOD`` 、 ``SCRIPT_NAME`` 、 ``PATH_INFO`` 、あとは :pep:`333` で定義されている
-   ``wsgi.*`` 変数群を含みます。これはデフォルト値のみを追加し、これらの変数の既存設定は一切置きかえません。
+   このルーチンは WSGI に必要な様々なパラメータを追加します。そのようなパラメータとして ``HTTP_HOST`` 、 ``SERVER_NAME`` 、 ``SERVER_PORT`` 、
+   ``REQUEST_METHOD`` 、 ``SCRIPT_NAME`` 、 ``PATH_INFO`` 、そして :pep:`333` で定義されている
+   ``wsgi.*`` 変数群が含まれます。このルーチンはデフォルト値を提供するだけで、これらの変数の既存設定は一切置きかえません。
 
 
    .. This routine is intended to make it easier for unit tests of WSGI servers and
@@ -234,10 +235,10 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. object's :meth:`read` method to obtain strings to yield.  When :meth:`read`
    .. returns an empty string, iteration is ended and is not resumable.
 
-   ファイルライクオブジェクトをイテレータ(:term:`iterator`)に変換するラッパです。結果のオブジェクトは :meth:`__getitem__` と :meth:`__iter__`
+   ファイル風オブジェクトをイテレータ(:term:`iterator`)に変換するラッパです。結果のオブジェクトは :meth:`__getitem__` と :meth:`__iter__`
    両方をサポートしますが、これは Python 2.1 と Jython の互換性のためです。オブジェクトがイテレートされる間、オプションの
-   *blksize* パラメタがくり返し *filelike* オブジェクトの :meth:`read` メソッドに渡されて
-   受け渡す文字列を取得します。 :meth:`read` が空文字列を返した場合イテレーションは終了して、再開されることはありません。
+   *blksize* パラメータがくり返し *filelike* オブジェクトの :meth:`read` メソッドに渡されて
+   受け渡す文字列を取得します。 :meth:`read` が空文字列を返した場合、イテレーションは終了して再開されることはありません。
 
 
    .. If *filelike* has a :meth:`close` method, the returned object will also have a
@@ -287,7 +288,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. :class:`Headers` object will directly update the *headers* list it was created
    .. with.
 
-   *headers* をラップするマップに似たオブジェクトを生成します。これは :pep:`333` に定義されるようなヘッダの名前／値のタプルのリストです。
+   *headers* をラップするマップ風オブジェクトを生成します。これは :pep:`333` に定義されるようなヘッダの名前／値のタプルのリストです。
    新しい :class:`Headers` オブジェクトに与えられた変更は、一緒に作成された *headers* リストを直接更新します。
 
 
@@ -305,7 +306,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    :meth:`setdefault` 、 :meth:`__delitem__` 、 :meth:`__contains__` と :meth:`has_key`
    を含みます。これらメソッドのそれぞれにおいて、キーはヘッダ名で（大文字小文字は区別しません）、値はそのヘッダ名に関連づけられた
    最初の値です。ヘッダを設定すると既存のヘッダ値は削除され、ラップされたヘッダのリストの末尾に新しい値が加えられます。既存のヘッダの順番は
-   一般的に整えられていて、ラップされたリストの最後に新しいヘッダが追加されます。
+   一般に維持され、ラップされたリストの最後に新しいヘッダが追加されます。
 
 
    .. Unlike a dictionary, :class:`Headers` objects do not raise an error when you try
@@ -325,11 +326,10 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. :meth:`items`, which is the same as the length of the wrapped header list.  In
    .. fact, the :meth:`items` method just returns a copy of the wrapped header list.
 
-   :class:`Headers` オブジェクトは :meth:`keys` 、 :meth:`values` 、 :meth:`items`
-   メソッドもサポートします。 :meth:`keys` と :meth:`items` で
-   返されるリストは、同じキーを一回以上含むことがあり、これは複数の値を持つヘッダの場合です。 :class:`Header` オブジェクトの ``len()``
-   は、その :meth:`items` の長さと同じであり、ラップされたヘッダリストの長さと同じです。事実、 :meth:`items` メソッドは
-   単にラップされたヘッダリストのコピーを返しているだけです。
+   :class:`Headers` オブジェクトは :meth:`keys` 、 :meth:`values` 、 :meth:`items` メソッドもサポートします。
+   複数の値を持つヘッダがある場合には、 :meth:`keys` と :meth:`items` で返されるリストは同じキーを一つ以上含むことがあります。
+   :class:`Header` オブジェクトの ``len()`` は、その :meth:`items` の長さと同じであり、ラップされたヘッダリストの長さと同じです。
+   実際、 :meth:`items` メソッドは単にラップされたヘッダリストのコピーを返しているだけです。
 
 
    .. Calling ``str()`` on a :class:`Headers` object returns a formatted string
@@ -348,7 +348,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. headers, and for adding headers with MIME parameters:
 
    これらのマッピングインターフェースと整形機能に加えて、 :class:`Headers` オブジェクトは複数の値を持つヘッダの取得と追加、MIME
-   パラメタでヘッダを追加するための以下のようなメソッド群も持っています：
+   パラメータでヘッダを追加するための以下のようなメソッド群も持っています：
 
 
    .. method:: Headers.get_all(name)
@@ -363,8 +363,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       .. fields deleted and re-inserted are always appended to the header list.  If no
       .. fields exist with the given name, returns an empty list.
 
-      返されるリストは、元々のヘッダリストに現れる順、またはこのインスタンスに追加された順に並んでいて、複製を含む場合があります。削除されて加えられた
-      フィールドは全てヘッダリストの末尾に付きます。ある名前のフィールドが何もなければ、空のリストが返ります。
+      返されるリストは、元々のヘッダリストに現れる順、またはこのインスタンスに追加された順に並んでいて、重複を含む場合があります。削除されて加えられた
+      フィールドは全てヘッダリストの末尾に付きます。与えられた name に対するフィールドが何もなければ、空のリストが返ります。
 
 
    .. method:: Headers.add_header(name, value, **_params)
@@ -372,7 +372,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       .. Add a (possibly multi-valued) header, with optional MIME parameters specified
       .. via keyword arguments.
 
-      ヘッダ（複数の値かもしれません）を、キーワード引数を通じて指定するオプションの MIME パラメタと共に追加します。
+      (複数の値を持つ可能性のある) ヘッダを、キーワード引数を通じて指定するオプションの MIME パラメータと共に追加します。
 
       .. *name* is the header field to add.  Keyword arguments can be used to set MIME
       .. parameters for the header field.  Each parameter must be a string or ``None``.
@@ -382,11 +382,13 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       .. form ``name="value"``. If it is ``None``, only the parameter name is added.
       .. (This is used for MIME parameters without a value.)  Example usage:
 
-      *name* は追加するヘッダフィールドです。このヘッダフィールドに MIME パラメタを
-      設定するためにキーワード引数を使うことができます。それぞれのパラメタは文字列か ``None`` で
-      なければいけません。パラメタ中のアンダースコアはダッシュに変換されます、これはダッシュが Python の識別子としては不正なのですが、多くの MIME
-      パラメタはダッシュを含むためです。パラメタ値が文字列の場合、これはヘッダ値のパラメタに ``name="value"`` の形で追加されます。これがもし
-      ``None`` の場合、パラメタ名だけが追加されます。（これは値なしの MIME パラメタの場合に使われます。）使い方の例は
+      *name* は追加するヘッダフィールドです。このヘッダフィールドに MIME パラメータを設定するために
+      キーワード引数を使うことができます。それぞれのパラメータは文字列か ``None`` でなければいけません。
+      パラメータ中のアンダースコアはダッシュ (-) に変換されます。
+      これは、ダッシュが Python の識別子としては不正なのですが、多くの MIME パラメータはダッシュを含むためです。
+      パラメータ値が文字列の場合、これはヘッダ値のパラメータに ``name="value"`` の形で追加されます。
+      この値がもし ``None`` の場合、パラメータ名だけが追加されます。
+      （これは値なしの MIME パラメータの場合に使われます。）使い方の例は、
 
 
       ::
@@ -419,11 +421,11 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 .. request.  (E.g., using the :func:`shift_path_info` function from
 .. :mod:`wsgiref.util`.)
 
-このモジュールは WSGI アプリケーションを提供するシンプルな HTTP サーバです（ :mod:`BaseHTTPServer` がベースです）。
+このモジュールは WSGI アプリケーションを提供するシンプルな HTTP サーバです (:mod:`BaseHTTPServer` がベースです)。
 個々のサーバインスタンスは単一の WSGI アプリケーションを、特定のホストとポート上で
 提供します。もし一つのホストとポート上で複数のアプリケーションを提供したいならば、 ``PATH_INFO``
-をパースして個々のリクエストでどのアプリケーションを呼び出すか選択するような WSGI アプリケーションを作るべきです。（例えば、
-:mod:`wsgiref.util` から :func:`shift_path_info` を利用します。）
+をパースして個々のリクエストでどのアプリケーションを呼び出すか選択するような WSGI アプリケーションを作る必要があります。
+（例えば、 :mod:`wsgiref.util` から :func:`shift_path_info` を利用します。）
 
 
 .. function:: make_server(host, port, app [, server_class=WSGIServer [, handler_class=WSGIRequestHandler]])
@@ -465,8 +467,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. as :mod:`wsgiref.simple_server`) is able to run a simple WSGI application
    .. correctly.
 
-   この関数は小規模ながら完全な WSGI アプリケーションで、 "Hello world!" メッセージと、 *environ* パラメタに提供されている
-   キー／値のペアを含むテキストページを返します。これは WSGI サーバ（ :mod:`wsgiref.simple_server` のような）がシンプルな
+   この関数は小規模ながら完全な WSGI アプリケーションで、 "Hello world!" メッセージと、 *environ* パラメータに提供されている
+   キー／値のペアを含むテキストページを返します。これは WSGI サーバ (:mod:`wsgiref.simple_server` のような) がシンプルな
    WSGI アプリケーションを正しく実行できるかを確かめるのに便利です。
 
 
@@ -492,8 +494,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. of its methods (such as :meth:`serve_forever` and :meth:`handle_request`) are
    .. available. :class:`WSGIServer` also provides these WSGI-specific methods:
 
-   :class:`WSGIServer` は :class:`BaseHTTPServer.HTTPServer` のサブクラスですので、
-   この全てのメソッド（ :meth:`serve_forever` や :meth:`handle_request` のような）が利用できます。
+   :class:`WSGIServer` は :class:`BaseHTTPServer.HTTPServer` のサブクラスなので、
+   その全てのメソッド (:meth:`serve_forever` や :meth:`handle_request` のような) が利用できます。
    :class:`WSGIServer` も以下のような WSGI 固有メソッドを提供します：
 
 
@@ -502,14 +504,14 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
       .. Sets the callable *application* as the WSGI application that will receive
       .. requests.
 
-      呼び出し可能（callable）な *application* をリクエストを受け取る WSGI アプリケーションとして設定します。
+      呼び出し可能 (callable) な *application* をリクエストを受け取る WSGI アプリケーションとして設定します。
 
 
    .. method:: WSGIServer.get_app()
 
       .. Returns the currently-set application callable.
 
-      現在設定されている呼び出し可能（callable）アプリケーションを返します。
+      現在設定されている呼び出し可能 (callable) アプリケーションを返します。
 
 
    .. Normally, however, you do not need to use these additional methods, as
@@ -525,8 +527,8 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
    .. Create an HTTP handler for the given *request* (i.e. a socket), *client_address*
    .. (a ``(host,port)`` tuple), and *server* (:class:`WSGIServer` instance).
 
-   与えられた *request* （すなわちソケット）の HTTP ハンドラ、 *client_address* （ ``host,port)`` のタプル）、
-   *server* （ :class:`WSGIServer` インスタンス）の HTTP ハンドラを作成します。
+   与えられた *request* （すなわちソケット）の HTTP ハンドラ、 *client_address*  (``(host,port)`` のタプル)、
+   *server*  (:class:`WSGIServer` インスタンス) の HTTP ハンドラを作成します。
 
 
    .. You do not need to create instances of this class directly; they are
@@ -586,7 +588,7 @@ HTTP サーバ、それと WSGI サーバとアプリケーションの WSGI 仕
 .. gateway and a WSGI application object, to check both sides for protocol
 .. conformance.
 
-WSGI アプリケーションのオブジェクト、フレームワーク、サーバ又はミドルウェアの作成時には、その新規のコードを
+WSGI アプリケーションのオブジェクト、フレームワーク、サーバまたはミドルウェアの作成時には、その新規のコードを
 :mod:`wsgiref.validate` を使って準拠の検証をすると便利です。このモジュールは WSGI サーバやゲートウェイと WSGI
 アプリケーションオブジェクト間の通信を検証する WSGI アプリケーションオブジェクトを作成する関数を提供し、双方のプロトコル準拠をチェックします。
 
@@ -597,8 +599,8 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
 .. certain that either the server or application is not 100% compliant.
 
 このユーティリティは完全な :pep:`333` 準拠を保証するものでないことは注意してください；
-このモジュールでエラーが出ないことは必ずしもエラーが存在しないことを意味しません。しかしこのモジュールがエラーを出したならば、サーバかアプリケーションの
-どちらかが 100% 準拠ではないことはほとんど確実です。
+このモジュールでエラーが出ないことは必ずしもエラーが存在しないことを意味しません。
+しかしこのモジュールがエラーを出したならば、ほぼ確実にサーバかアプリケーションのどちらかが 100% 準拠ではありません。
 
 
 .. This module is based on the :mod:`paste.lint` module from Ian Bicking's "Python
@@ -616,7 +618,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. the WSGI specification and to RFC 2616.
 
    *application* をラップし、新しい WSGI アプリケーションオブジェクトを返します。返されたアプリケーションは全てのリクエストを元々の
-   *application* にフォワードし、 *application* とそれを呼び出すサーバの両方が WSGI 仕様と RFC 2616
+   *application* に転送し、 *application* とそれを呼び出すサーバの両方が WSGI 仕様と RFC 2616
    の両方に準拠しているかをチェックします。
 
 
@@ -627,10 +629,10 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. something else) will simply output a message that an error has occurred, and
    .. dump the traceback to ``sys.stderr`` or some other error stream.
 
-   検出された非準拠は、投げられる :exc:`AssertionError` の中に入ります；
+   何らかの非準拠が検出されると、 :exc:`AssertionError` 例外が送出されます；
    しかし、このエラーがどう扱われるかはサーバ依存であることに注意してください。例えば、 :mod:`wsgiref.simple_server` とその他
    :mod:`wsgiref.handlers` ベースのサーバ（エラー処理メソッドが他のことをするようにオーバライドしていないもの）は
-   単純にエラーが発生したというメッセージとトラックバックのダンプを ``sys.stderr`` やその他のエラーストリームに出力します。
+   単純にエラーが発生したというメッセージとトレースバックのダンプを ``sys.stderr`` やその他のエラーストリームに出力します。
 
 
    .. This wrapper may also generate output using the :mod:`warnings` module to
@@ -640,9 +642,10 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. ``sys.stderr`` (*not* ``wsgi.errors``, unless they happen to be the same
    .. object).
 
-   このラッパは :mod:`warnings` モジュールを使って出力を生成し、疑問の余地はあるが実際には :pep:`333`
-   で禁止はされていないかもしれない挙動を指摘します。これらは Python のコマンドラインオプションや :mod:`warnings` API で
-   抑制されなければ、 ``sys.stderr`` (たまたま同一のオブジェクトで無い限り  ``wsgi.errors`` では *ない*)に書き出されます。
+   このラッパは、疑わしいものの実際には :pep:`333` で禁止されていないかもしれない挙動を指摘するために
+   :mod:`warnings` モジュールを使って出力を生成します。
+   これらは Python のコマンドラインオプションや :mod:`warnings` API で抑制されなければ、
+   ``sys.stderr`` (``wsgi.errors`` では *ありません* 。ただし、たまたま同一のオブジェクトだった場合を除く)に書き出されます。
 
 
    .. Example usage:
@@ -686,8 +689,9 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
 .. WSGI application, as long as they are given a CGI-like environment, along with
 .. input, output, and error streams.
 
-このモジュールは WSGI サーバとゲートウェイ実装のベースハンドラクラスを提供します。これらのベースクラスは CGI ライクの環境を与えられれば
-入力、出力そしてエラーストリームと共に WSGI アプリケーションとの通信の大部分を処理します。
+このモジュールは WSGI サーバとゲートウェイ実装のベースハンドラクラスを提供します。
+これらのベースクラスは、 CGI 風の環境と、それに加えて入力、出力そしてエラーストリームが与えられることで、
+WSGI アプリケーションとの通信の大部分を処理します。
 
 
 .. class:: CGIHandler()
@@ -733,8 +737,8 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
 
    このクラスは :class:`SimpleHandler` のサブクラスで、HTTP の "本サーバ" でない
    ソフトウェアと使うことを意図しています。もしあなたが ``Status:`` ヘッダを HTTP ステータスを送信するのに使うような
-   ゲートウェイプロトコルの実装（CGI、FastCGI、SCGIなど）を書いているとして、おそらく :class:`SimpleHandler`
-   でなくこれをサブクラス化したいことでしょう。
+   ゲートウェイプロトコルの実装（CGI、FastCGI、SCGIなど）を書いている場合、おそらく :class:`SimpleHandler`
+   ではなくこのクラスをサブクラス化するとよいでしょう。
 
 
 .. class:: SimpleHandler(stdin, stdout, stderr, environ [,multithread=True [, multiprocess=False]])
@@ -744,7 +748,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. want to subclass this instead of :class:`BaseCGIHandler`
 
    :class:`BaseCGIHandler` と似ていますが、HTTP の本サーバと使うためにデザインされています。もしあなたが HTTP
-   サーバ実装を書いている場合、おそらく :class:`BaseCGIHandler` でなくこれをサブクラス化したいことでしょう。
+   サーバ実装を書いている場合、おそらく :class:`BaseCGIHandler` ではなくこのクラスをサブクラス化するとよいでしょう。
 
 
    .. This class is a subclass of :class:`BaseHandler`.  It overrides the
@@ -766,13 +770,14 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. will handle a single HTTP request, although in principle you could create a
    .. subclass that was reusable for multiple requests.
 
-   これは WSGI アプリケーションを実行するための抽象ベースクラスです。原理上は複数のリクエスト用に再利用可能なサブクラスを作成することが
-   できますが、それぞれのインスタンスは一つの HTTP リクエストを処理します。
+   これは WSGI アプリケーションを実行するための抽象ベースクラスです。
+   それぞれのインスタンスは一つの HTTP リクエストを処理します。
+   しかし原理上は複数のリクエスト用に再利用可能なサブクラスを作成することができます。
 
 
    .. :class:`BaseHandler` instances have only one method intended for external use:
 
-   :class:`BaseHandler` インスタンスは外部からの利用にたった一つのメソッドを持ちます：
+   :class:`BaseHandler` インスタンスは外部から利用されるたった一つのメソッドを持ちます：
 
 
    .. method:: BaseHandler.run(app)
@@ -787,7 +792,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. customizing the process.
 
    その他の全ての :class:`BaseHandler` のメソッドはアプリケーション実行プロセスで
-   このメソッドから呼ばれます。ですので、主にそのプロセスのカスタマイズのために存在しています。
+   このメソッドから呼ばれます。したがって、それらは主にそのプロセスのカスタマイズのために存在しています。
 
 
    .. The following methods MUST be overridden in a subclass:
@@ -845,9 +850,9 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
    .. information before attempting to create a customized :class:`BaseHandler`
    .. subclass.
 
-   これらがオーバーライドするであろうメソッド及び属性です。しかしながら、このリストは単にサマリであり、オーバーライド可能な全てのメソッドは
-   含んでいません。カスタマイズした :class:`BaseHandler` サブクラスを作成しようとする前にドキュメント文字列 (docstrings)
-   やソースコードでさらなる情報を調べてください。
+   オーバーライドされることの多いメソッド及び属性を以下に挙げます。
+   しかし、このリストは単にサマリであり、オーバーライド可能な全てのメソッドは含んでいません。
+   カスタマイズした :class:`BaseHandler` サブクラスを作成しようとする前に docstring やソースコードでさらなる情報を調べてください。
 
 
    .. Attributes and methods for customizing the WSGI environment:
@@ -861,7 +866,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. defaults to true in :class:`BaseHandler`, but may have a different default (or
       .. be set by the constructor) in the other subclasses.
 
-      ``wsgi.multithread`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
+      ``wsgi.multithread`` 環境変数で使われる値。 :class:`BaseHandler` ではデフォルトが true
       ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて）異なる値を持つことがあります。
 
 
@@ -871,7 +876,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. defaults to true in :class:`BaseHandler`, but may have a different default (or
       .. be set by the constructor) in the other subclasses.
 
-      ``wsgi.multiprocess`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では true
+      ``wsgi.multiprocess`` 環境変数で使われる値。 :class:`BaseHandler` ではデフォルトが true
       ですが、別のサブクラスではデフォルトで（またはコンストラクタによって設定されて）異なる値を持つことがあります。
 
 
@@ -881,7 +886,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. defaults to false in :class:`BaseHandler`, but :class:`CGIHandler` sets it to
       .. true by default.
 
-      ``wsgi.run_once`` 環境変数で使われる値。デフォルトは :class:`BaseHandler` では false
+      ``wsgi.run_once`` 環境変数で使われる値。 :class:`BaseHandler` ではデフォルトが false
       ですが、 :class:`CGIHandler` はデフォルトでこれを true に設定します。
 
 
@@ -894,8 +899,8 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. read-only, since the default value is shared between multiple classes and
       .. instances.
 
-      全てのリクエストの WSGI 環境に含まれるデフォルトの環境変数。デフォルトでは、 :mod:`wsgiref.handlers` がインポートされた時点では
-      これは ``os.environ`` のコピーですが、サブクラスはクラスまたはインスタンスレベルでそれら自身のものを作ることができます。
+      全てのリクエストの WSGI 環境に含まれるデフォルトの環境変数。デフォルトでは :mod:`wsgiref.handlers` がインポートされた時点の
+      ``os.environ`` のコピーですが、サブクラスはクラスまたはインスタンスレベルでそれら自身のものを作ることができます。
       デフォルト値は複数のクラスとインスタンスで共有されるため、この辞書は読み取り専用と考えるべきだという点に注意してください。
 
 
@@ -909,7 +914,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
 
       :attr:`origin_server` 属性が設定されている場合、この属性の値がデフォルトの ``SERVER_SOFTWARE`` WSGI
       環境変数の設定や HTTP レスポンス中のデフォルトの ``Server:``
-      ヘッダの設定に使われます。これは（ :class:`BaseCGIHandler` や :class:`CGIHandler` のような）HTTP
+      ヘッダの設定に使われます。これは (:class:`BaseCGIHandler` や :class:`CGIHandler` のような) HTTP
       オリジンサーバでないハンドラでは無視されます。
 
 
@@ -934,7 +939,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. if not present, as long as the :attr:`origin_server` attribute is a true value
       .. and the :attr:`server_software` attribute is set.
 
-      :attr:`environ` 属性を、全てを導入済みの WSGI 環境に設定します。デフォルトの実装は、上記全てのメソッドと属性、加えて
+      :attr:`environ` 属性を、フル実装 (fully-populated) の WSGI 環境に設定します。デフォルトの実装は、上記全てのメソッドと属性、加えて
       :meth:`get_stdin` 、 :meth:`get_stderr` 、 :meth:`add_cgi_vars` メソッドと
       :attr:`wsgi_file_wrapper` 属性を利用します。これは、キーが存在せず、 :attr:`origin_server` 属性が true
       値で :attr:`server_software` 属性も設定されている場合に ``SERVER_SOFTWARE`` を挿入します。
@@ -982,15 +987,15 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. described in the "Error Handling" section of :pep:`333`).
 
       このメソッドは ``sys.exc_info()`` を使って現在のエラー情報にアクセスでき、その情報はこれを呼ぶときに *start_response* に
-      渡すべきです（ :pep:`333` の "Error Handling" セクションに記述があります）。
+      渡すべきです (:pep:`333` の "Error Handling" セクションに記述があります)。
 
 
       .. The default implementation just uses the :attr:`error_status`,
       .. :attr:`error_headers`, and :attr:`error_body` attributes to generate an output
       .. page.  Subclasses can override this to produce more dynamic error output.
 
-      デフォルト実装は単に :attr:`error_status` 、 :attr:`error_headers` 、そして :attr:`error_body`
-      属性を出力ページの生成に使います。サブクラスではこれをオーバーライドしてもっと動的なエラー出力をすることが出来ます。
+      デフォルト実装は単に :attr:`error_status` 、 :attr:`error_headers` 、 :attr:`error_body`
+      属性を出力ページの生成に使います。サブクラスではこれをオーバーライドしてもっと動的なエラー出力をすることができます。
 
 
       .. Note, however, that it's not recommended from a security perspective to spit out
@@ -998,7 +1003,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. enable diagnostic output, which is why the default implementation doesn't
       .. include any.
 
-      しかし、セキュリティの観点からは診断をあらゆる老練ユーザに吐き出すことは推奨されないことに気をつけてください；理想的には、診断的な出力を有効に
+      しかし、セキュリティの観点からは診断をあらゆるユーザに吐き出すことは推奨されないことに気をつけてください；理想的には、診断的な出力を有効に
       するには何らかの特別なことをする必要があるようにすべきで、これがデフォルト実装では何も含まれていない理由です。
 
 
@@ -1017,8 +1022,8 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. response headers (``(name, value)`` tuples), as described in :pep:`333`.  The
       .. default list just sets the content type to ``text/plain``.
 
-      エラーレスポンスで使われる HTTP ヘッダです。これは :pep:`333` で述べられているような、 WSGI レスポンスヘッダ（``(name,
-      value)`` タプル）のリストであるべきです。デフォルトのリストはコンテントタイプを ``text/plain`` にセットしているだけです。
+      エラーレスポンスで使われる HTTP ヘッダです。これは :pep:`333` で述べられているような、 WSGI レスポンスヘッダ (``(name,
+      value)`` タプル) のリストであるべきです。デフォルトのリストはコンテントタイプを ``text/plain`` にセットしているだけです。
 
 
    .. attribute:: BaseHandler.error_body
@@ -1073,7 +1078,7 @@ WSGI アプリケーションのオブジェクト、フレームワーク、サ
       .. ``Status:`` header.
 
       この属性はハンドラの :meth:`_write` と :meth:`_flush` が、特別に ``Status:`` ヘッダに HTTP
-      ステータスを求めるような CGI 状のゲートウェイプロトコル経由でなく、クライアントと直接通信をするような場合には true 値に設定されているべきです。
+      ステータスを求めるような CGI 風のゲートウェイプロトコル経由でなく、クライアントと直接通信をするような場合には true 値に設定されているべきです。
 
 
       .. This attribute's default value is true in :class:`BaseHandler`, but false in
