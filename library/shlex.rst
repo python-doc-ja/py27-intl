@@ -33,7 +33,7 @@
    受理した文字列内のコメントを解析しません
    (:class:`shlex` インスタンスの :attr:`commenters` メンバの値を空文字列にします)。
    この関数はデフォルトでは POSIX モードで動作し、
-   *posix* 引数が false の場合は non-POSIX モードでどうさします。
+   *posix* 引数が false の場合は non-POSIX モードで動作します。
 
    .. versionadded:: 2.3
 
