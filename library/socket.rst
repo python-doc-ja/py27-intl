@@ -83,24 +83,24 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
           If *addr_type* is TIPC_ADDR_ID, then *v1* is the node, *v2* is the
           reference, and *v3* should be set to 0.
 
-     - *addr_type* は TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, TIPC_ADDR_ID のうちのどれかです。
-     - *scope* は TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, TIPC_NODE_SCOPE のうちのどれかです。
-     - *addr_type* が TIPC_ADDR_NAME の場合、 *v1* はサーバータイプ、 *v2*
-       はポートID (the port identifier)、そして *v3* は 0 であるべきです。
+   - *addr_type* は TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, TIPC_ADDR_ID のうちのどれかです。
+   - *scope* は TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, TIPC_NODE_SCOPE のうちのどれかです。
+   - *addr_type* が TIPC_ADDR_NAME の場合、 *v1* はサーバータイプ、 *v2*
+     はポートID (the port identifier)、そして *v3* は 0 であるべきです。
 
-       *addr_type* が TIPC_ADDR_NAMESEQ の場合、 *v1* はサーバータイプ、 *v2*
-       はポート番号下位(lower port number)、 *v3* はポート番号上位(upper port number)
-       です。
+     *addr_type* が TIPC_ADDR_NAMESEQ の場合、 *v1* はサーバータイプ、 *v2*
+     はポート番号下位(lower port number)、 *v3* はポート番号上位(upper port number)
+     です。
 
-       *addr_type* が TIPC_ADDR_ID の場合、 *v1* はノード、 *v2* は参照、
-       *v3* は0であるべきです。
+     *addr_type* が TIPC_ADDR_ID の場合、 *v1* はノード、 *v2* は参照、
+     *v3* は0であるべきです。
 
 
 エラー時には例外が発生します。引数型のエラーやメモリ不足の場合には通常の例外が発生し、ソケットやアドレス関連のエラーの場合は
 :exc:`socket.error` が発生します。
 
-:meth:`setblocking` メソッドで、非ブロッキングモードを使用することがで
-きます。また、より汎用的に :meth:`settimeout` メソッドでタイムアウトを指定する事ができます。
+:meth:`~socket.setblocking` メソッドで、非ブロッキングモードを使用することがで
+きます。また、より汎用的に :meth:`~socket.settimeout` メソッドでタイムアウトを指定する事ができます。
 
 :mod:`socket` モジュールでは、以下の定数と関数を提供しています。
 
@@ -228,24 +228,36 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    .. versionadded:: 2.6
 
 
-.. function:: getaddrinfo(host, port[, family[, socktype[, proto[, flags]]]])
+.. function:: getaddrinfo(host, port, family=0, socktype=0, proto=0, flags=0)
 
-   *host* / *port* 引数の指すアドレス情報を解決して、ソケットを作成するために
-   必要な全ての引数が入った 5 要素のタプルを返します。
+   *host* / *port* 引数の指すアドレス情報を、そのサービスに接続された
+   ソケットを作成するために必要な全ての引数が入った 5 要素のタプルに変換します。
    *host* はドメイン名、IPv4/v6アドレスの文字列、または ``None`` です。
    *port* は ``'http'`` のようなサービス名文字列、ポート番号を表す数値、または ``None`` です。
-
-   これ以外の引数は省略可能で、指定する場合には数値でなければなりません。
    *host* と *port* に ``None`` を指定すると C APIに ``NULL`` を渡せます。
-   :func:`getattrinfo` 関数は以下の構造をとる 5 要素のタプルのリストを返します:
+
+   オプションの *family* 、 *socktype* 、 *proto* 引数を指定すると、
+   返されるアドレスのリストを絞り込むことができます。
+   これらの引数の値として 0 を渡すと絞る込まない結果を返します。
+   *flags* 引数には ``AI_*`` 定数のうち 1 つ以上が指定でき、結果の取り方を変えることができます。
+   例えば、 :const:`AI_NUMERICHOST` を指定するとドメイン名解決を行わないようにし、 *host* がドメイン名だった場合には例外を送出します。
+
+   この関数は以下の構造をとる 5 要素のタプルのリストを返します:
 
    ``(family, socktype, proto, canonname, sockaddr)``
 
-   *family*, *socktype*, *proto* は、 :func:`socket` 関数を呼び出す際に指定する値と同じ整数です。
-   *canonname* は *host* の規準名(canonical name)を示す文字列です。
-   :const:`AI_CANONNAME` を指定した場合、数値によるIPv4/v6アドレスを返します。
-   *sockaddr* は、ソケットアドレスを上述の形式で表すタプルです。
-   この関数の使い方については、 :mod:`socket` モジュールなどのソースを参考にしてください。
+   このタプルにある *family*, *socktype*, *proto* は、 :func:`socket` 関数を呼び出す際に指定する値と同じ整数です。
+   :const:`AI_CANONNAME` を含んだ *flags* を指定した場合、 *canonname* は *host* の規準名(canonical name)を示す文字列です; そうでない場合は *canonname* は空文字列です。
+   *sockaddr* は、ソケットアドレスを *family* に依存した形式で表すタプルで、
+   ( :const:`AF_INET` の場合は 2 要素のタプル ``(address, port)`` 、 :const:`AF_INET6` の場合は 4 要素のタプル ``(address, port, flow info, scope id)`` )
+   :meth:`socket.connect` に渡すためのものです。
+
+   次の例では ``www.python.org`` の 80 番ポートポートへの TCP 接続を得るためのアドレス情報を取得しようとしています。
+   (結果は IPv6 をサポートしているかどうかで変わります)::
+
+      >>> socket.getaddrinfo("www.python.org", 80, 0, 0, socket.SOL_TCP)
+      [(2, 1, 6, '', ('82.94.164.162', 80)),
+       (10, 1, 6, '', ('2001:888:2000:d::a2', 80, 0, 0))]
 
    .. versionadded:: 2.2
 
@@ -388,11 +400,14 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    長さ4の文字列として返します。この関数が返す値は、標準Cライブラリの :ctype:`struct in_addr`
    型を使用する関数に渡す事ができます。
 
+   :func:`inet_aton` はドットが 3 個以下の文字列も受け取ります;
+   詳細については Unix のマニュアル :manpage:`inet(3)` を参照してください。
+
    IPv4アドレス文字列が不正であれば、 :exc:`socket.error` が発生します。このチェックは、この関数で使用しているCの実装
    :cfunc:`inet_aton` で行われます。
 
    :func:`inet_aton` は、IPv6をサポートしません。IPv4/v6のデュアルスタックをサポートする場合は
-   :func:`getnameinfo` を使用します。
+   :func:`inet_pton` を使用します。
 
 
 .. function:: inet_ntoa(packed_ip)
@@ -403,7 +418,7 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 
    この関数に渡す文字列の長さが4バイト以外であれば、 :exc:`socket.error` が発生します。
    :func:`inet_ntoa` は、IPv6をサポートしません。IPv4/v6のデュアルスタ
-   ックをサポートする場合は :func:`getnameinfo` を使用します。
+   ックをサポートする場合は :func:`inet_pton` を使用します。
 
 
 .. function:: inet_pton(address_family, ip_string)
@@ -559,7 +574,9 @@ socket オブジェクト
       interface. Please refer to the MSDN documentation for more information.
 
    :meth:`ioctl` メソッドは WSAIoctl システムインタフェースへの制限されたインタフェースです。
-   詳しい情報については、MSDNのドキュメントを参照してください。
+   詳しい情報については、 `Win32 documentation <http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx>`_ を参照してください。
+
+   他のプラットフォームでは一般的な :func:`fcntl.fcntl` と :func:`fcntl.ioctl` が使われるでしょう; これらの関数は第 1 引数としてソケットオブジェクトを取ります。
 
    .. versionadded:: 2.6
 
@@ -575,7 +592,7 @@ socket オブジェクト
    .. index:: single: I/O control; buffering
 
    ソケットに関連付けられた :dfn:`ファイルオブジェクト` を返します
-   (ファイルオブジェクトについては:ref:`bltin-file-objects` を参照)。
+   (ファイルオブジェクトについては :ref:`bltin-file-objects` を参照)。
    ファイルオブジェクトはソケットを :cfunc:`dup` したファイルディスクリプタを使用しており、
    ソケットオブジェクトとファイルオブジェクトは別々にクローズしたりガベージコレクションで破棄したりする事ができます。
    ソケットはブロッキングモードでなければなりません(タイムアウトを設定することもできません)。
@@ -629,6 +646,7 @@ socket オブジェクト
    *nbytes* バイトまでのデータをソケットから受信して、そのデータを新しい文字列にするのではなく
    *buffer* に保存します。
    *nbytes* が指定されない(あるいは0が指定された)場合、 *buffer* の利用可能なサイズまで受信します。
+   受信したバイト数を返り値として返します。
    オプション引数 *flags* (デフォルト:0) の意味については、 Unix マニュアルページ :manpage:`recv(2)` を参照してください。
 
    .. versionadded:: 2.5
@@ -660,7 +678,7 @@ socket オブジェクト
    す。全てのソケットは、初期状態ではブロッキングモードです。非ブロッキングモードでは、 :meth:`recv` メソッド呼び出し時に読み込みデータが無かった
    り :meth:`send` メソッド呼び出し時にデータを処理する事ができないような場合に :exc:`error` 例外が発生します。しかし、ブロッキングモードでは
    呼び出しは処理が行われるまでブロックされます。 ``s.setblocking(0)`` は
-   ``s.settimeout(0)`` と、 ``s.setblocking(1)`` は ``s.settimeout(None)`` とそれぞれ同じ意味を持ちます。
+   ``s.settimeout(0.0)`` と、 ``s.setblocking(1)`` は ``s.settimeout(None)`` とそれぞれ同じ意味を持ちます。
 
 
 .. method:: socket.settimeout(value)
@@ -683,17 +701,18 @@ socket オブジェクト
 
 ソケットのブロッキングとタイムアウトについて:
 ソケットオブジェクトのモードは、ブロッキング・非ブロッキング・タイムアウトの何れかとなります。
-初期状態では常にブロッキングモードです。ブロッキングモードでは、処理が完了するまでブロックされます。
+初期状態では常にブロッキングモードです。ブロッキングモードでは、処理が完了するまで、もしくはシステムが (接続タイムアウトなどの) エラーを返すまでブロックされます。
 非ブロッキングモードでは、処理を行う事ができなければ(不幸にもシステムによって異なる値の)エラーとなります。
-タイムアウトモードでは、ソケットに指定したタイムアウトまでに完了しなければ処理は失敗となります。
-:meth:`setblocking` メソッドは、 :meth:`settimeout` の省略形式です。
+タイムアウトモードでは、ソケットに指定したタイムアウトまで、もしくはシステムがエラーを返すまでに完了しなければ処理は失敗となります。
+:meth:`~socket.setblocking` メソッドは、 :meth:`~socket.settimeout` の省略形式です。
 
 内部的には、タイムアウトモードではソケットを非ブロッキングモードに設定します。ブロッキングとタイムアウトの設定は、ソケットと同じネットワーク端点
-へ接続するファイルディスクリプタにも反映されます。この結果、 :meth:`makefile` で作成したファイルオブジェクトはブロッキングモードで
+へ接続するファイルディスクリプタにも反映されます。この結果、 :meth:`~socket.makefile` で作成したファイルオブジェクトはブロッキングモードで
 のみ使用することができます。これは非ブロッキングモードとタイムアウトモードでは、即座に完了しないファイル操作はエラーとなるためです。
 
-註: :meth:`connect` はタイムアウト設定に従います。一般的に、
-:meth:`settimeout` を :meth:`connect` の前に呼ぶことをおすすめします。
+註: :meth:`~socket.connect` はタイムアウト設定に従います。一般的に、
+:meth:`~socket.settimeout` を :meth:`~socket.connect` の前に呼ぶかタイムアウト値を :meth:`create_connection` に渡すことをおすすめします。
+システムのネットワークスタックは Python のソケットタイムアウトの設定を無視して、自身のコネクションタイムアウトエラーを返すこともあります。
 
 
 .. method:: socket.setsockopt(level, optname, value)
@@ -713,7 +732,7 @@ socket オブジェクト
    *how* が ``SHUT_RDWR`` の場合、以降は送受信を行えません。
 
 :meth:`read` メソッドと :meth:`write` メソッドは存在しませんので注意
-してください。代わりに *flags* を省略した :meth:`recv` と :meth:`send` を使うことができます。
+してください。代わりに *flags* を省略した :meth:`~socket.recv` と :meth:`~socket.send` を使うことができます。
 
 ソケットオブジェクトには以下の :class:`socket` コンストラクタに渡された値に対応した(読み出し専用)属性があります。
 
@@ -746,11 +765,11 @@ socket オブジェクト
 
 以下はTCP/IPプロトコルの簡単なサンプルとして、受信したデータをクライアントにそのまま返送するサーバ(接続可能なクライアントは一件のみ)と、サーバに
 接続するクライアントの例を示します。サーバでは、 :func:`socket` ・
-:meth:`bind` ・ :meth:`listen` ・ :meth:`accept` を実行し(複数のクラ
-イアントからの接続を受け付ける場合、 :meth:`accept` を複数回呼び出しま
-す)、クライアントでは :func:`socket` と :meth:`connect` だけを呼び出
-しています。サーバでは :meth:`send` / :meth:`recv` メソッドはlisten中
-のソケットで実行するのではなく、 :meth:`accept` で取得したソケットに対して実行している点にも注意してください。
+:meth:`~socket.bind` ・ :meth:`~socket.listen` ・ :meth:`~socket.accept` を実行し(複数のクラ
+イアントからの接続を受け付ける場合、 :meth:`~socket.accept` を複数回呼び出しま
+す)、クライアントでは :func:`socket` と :meth:`~socket.connect` だけを呼び出
+しています。サーバでは :meth:`~socket.send` / :meth:`~socket.recv` メソッドはlisten中
+のソケットで実行するのではなく、 :meth:`~socket.accept` で取得したソケットに対して実行している点にも注意してください。
 
 次のクライアントとサーバは、IPv4のみをサポートしています。 ::
 
