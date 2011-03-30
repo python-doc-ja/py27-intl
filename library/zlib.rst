@@ -394,10 +394,12 @@ http://www.zlib.net/manual.html にある zlib のマニュアルを参照する
 
    http://www.zlib.net
       .. The zlib library home page.
+
       zlib ライブラリホームページ
 
    http://www.zlib.net/manual.html
       .. The zlib manual explains  the semantics and usage of the library's many
       .. functions.
+
       zlib ライブラリの多くの関数の意味と使い方を解説したマニュアル
 
