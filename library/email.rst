@@ -2,8 +2,8 @@
 =========================================================
 
 .. module:: email
-   :synopsis: 電子メールのメッセージを解析、操作および生成を\
-    支援するパッケージ。これには MIME 文書もふくまれる。
+   :synopsis: 電子メールのメッセージを解析、操作および生成を支援するパッケージ。
+    これには MIME 文書もふくまれる。
 .. moduleauthor:: Barry A. Warsaw <barry@python.org>
 .. sectionauthor:: Barry A. Warsaw <barry@python.org>
 .. Copyright (C) 2001-2007 Python Software Foundation

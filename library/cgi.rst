@@ -239,7 +239,7 @@ urlencoded` データで入力された場合)、データ要素の実体は :cl
 他のクラス (:class:`FormContent` 、 :class:`InterpFormContentDict`) は
 非常に古いアプリケーションとの後方互換性のために存在します。
 
-+.. _functions-in-cgi-module:
+.. _functions-in-cgi-module:
 
 関数
 ----

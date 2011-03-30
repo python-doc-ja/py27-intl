@@ -52,7 +52,7 @@ ABC                        継承しているクラス     Abstract Methods     
 :class:`Container`                                ``__contains__``
 :class:`Hashable`                                 ``__hash__``
 :class:`Iterable`                                 ``__iter__``
-:class:`Iterator`          :class:`Iterable`      ``__next__``            ``__iter__``
+:class:`Iterator`          :class:`Iterable`      ``next``                ``__iter__``
 :class:`Sized`                                    ``__len__``
 :class:`Callable`                                 ``__call__``
 
@@ -151,11 +151,8 @@ ABC                        継承しているクラス     Abstract Methods     
    * ABCs についての詳細は、 :mod:`abc` モジュールと :pep:`3119` を参照してください。
 
 
-.. _deque-objects:
-
 :class:`deque` オブジェクト
 ---------------------------
-
 
 .. class:: deque([iterable[, maxlen]])
 
@@ -298,12 +295,31 @@ ABC                        継承しているクラス     Abstract Methods     
    deque(['c', 'b', 'a'])
 
 
-.. _deque-recipes:
-
 :class:`deque` のレシピ
 ------------------------
 
 この節では deque をつかったさまざまなアプローチを紹介します。
+
+長さが制限された deque は Unix における ``tail`` フィルタに相当する機能を
+提供します::
+
+   def tail(filename, n=10):
+       'ファイルの最後の n 行を返す.'
+       return deque(open(filename), n)
+
+別のアプローチとして deque を右に append して左に pop して使うことで追加した要素を維持するのに使えます::
+
+    def moving_average(iterable, n=3):
+        # moving_average([40, 30, 50, 46, 39, 44]) --> 40.0 42.0 45.0 43.0
+        # http://en.wikipedia.org/wiki/Moving_average
+        it = iter(iterable)
+        d = deque(itertools.islice(it, n-1))
+        d.appendleft(0)
+        s = sum(d)
+        for elem in it:
+            s += elem - d.popleft()
+            d.append(elem)
+            yield s / float(n)
 
 :meth:`rotate` メソッドのおかげで、 :class:`deque` の一部を切り出したり削除したりできることになります。たとえば ``del
 d[n]`` の純粋な Python 実装では pop したい要素まで :meth:`rotate` します ::
@@ -319,34 +335,9 @@ d[n]`` の純粋な Python 実装では pop したい要素まで :meth:`rotate`
 このアプローチをやや変えたものとして、Forth スタイルのスタック操作、つまり ``dup``, ``drop``, ``swap``, ``over``,
 ``pick``, ``rot``, および ``roll`` を実装するのも簡単です。
 
-複数パスのデータ・リダクションアルゴリズムは、 :meth:`popleft` を複数回呼んで要素をとりだし、リダクション用の関数を適用してから
-:meth:`append` で deque に戻してやることにより、簡潔かつ効率的に表現することができます。
-
-たとえば入れ子状になったリストでバランスされた二進木をつくりたい場合、
-2つの隣接するノードをひとつのリストにグループ化することになります:
-
-   >>> def maketree(iterable):
-   ...     d = deque(iterable)
-   ...     while len(d) > 1:
-   ...         pair = [d.popleft(), d.popleft()]
-   ...         d.append(pair)
-   ...     return list(d)
-   ...
-   >>> print maketree('abcdefgh')
-   [[[['a', 'b'], ['c', 'd']], [['e', 'f'], ['g', 'h']]]]
-
-長さが制限された deque は Unix における ``tail`` フィルタに相当する機能を
-提供します::
-
-   def tail(filename, n=10):
-       'ファイルの最後の n 行を返す.'
-       return deque(open(filename), n)
-
-.. _defaultdict-objects:
 
 :class:`defaultdict` オブジェクト
 ---------------------------------
-
 
 .. class:: defaultdict([default_factory[, ...]])
 
@@ -386,8 +377,6 @@ d[n]`` の純粋な Python 実装では pop したい要素まで :meth:`rotate`
       これは存在すればコンストラクタの第1引数によって初期化され、そうでなければ
       ``None`` になります。
 
-
-.. _defaultdict-examples:
 
 :class:`defaultdict` の使用例
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -450,8 +439,6 @@ multisetのように)要素の数え上げに便利に使うことができま�
    >>> d.items()
    [('blue', set([2, 4])), ('red', set([1, 3]))]
 
-.. _named-tuple-factory:
-
 :func:`namedtuple` 名前付きフィールドを持ったタプルのファクトリ関数
 --------------------------------------------------------------------
 
@@ -489,7 +476,19 @@ Example:
 .. doctest::
    :options: +NORMALIZE_WHITESPACE
 
-   >>> Point = namedtuple('Point', 'x y', verbose=True)
+   >>> Point = namedtuple('Point', 'x y')
+   >>> p = Point(11, y=22)     # 順序による引数やキーワード引数を使ってインスタンス化
+   >>> p[0] + p[1]             # 通常の tuple (11, 22) と同じようにインデックスアクセス
+   33
+   >>> x, y = p                # 通常の tuple と同じようにアンパック
+   >>> x, y
+   (11, 22)
+   >>> p.x + p.y               # 名前でフィールドにアクセス
+   33
+   >>> p                       # name=value スタイルの読みやすい __repr__
+   Point(x=11, y=22)
+
+   >>> Point = namedtuple('Point', 'x y', verbose=True) # クラス定義を表示
    class Point(tuple):
            'Point(x, y)'
    <BLANKLINE>
@@ -497,8 +496,8 @@ Example:
    <BLANKLINE>
            _fields = ('x', 'y')
    <BLANKLINE>
-           def __new__(cls, x, y):
-               return tuple.__new__(cls, (x, y))
+           def __new__(_cls, x, y):
+               return _tuple.__new__(cls, (x, y))
    <BLANKLINE>
            @classmethod
            def _make(cls, iterable, new=tuple.__new__, len=len):
@@ -515,9 +514,9 @@ Example:
                'Return a new dict which maps field names to their values'
                return {'x': t[0], 'y': t[1]}
    <BLANKLINE>
-           def _replace(self, **kwds):
+           def _replace(_self, **kwds):
                'Return a new Point object replacing specified fields with new values'
-               result = self._make(map(kwds.pop, ('x', 'y'), self))
+               result = _self._make(map(kwds.pop, ('x', 'y'), _self))
                if kwds:
                    raise ValueError('Got unexpected field names: %r' % kwds.keys())
                return result
@@ -528,16 +527,6 @@ Example:
            x = property(itemgetter(0))
            y = property(itemgetter(1))
 
-   >>> p = Point(11, y=22)     # 順序による引数やキーワード引数を使ってインスタンス化
-   >>> p[0] + p[1]             # 通常の tuple (11, 22) と同じようにインデックスアクセス
-   33
-   >>> x, y = p                # 通常の tuple と同じようにアンパック
-   >>> x, y
-   (11, 22)
-   >>> p.x + p.y               # 名前でフィールドにアクセス
-   33
-   >>> p                       # name=value スタイルの読みやすい __repr__
-   Point(x=11, y=22)
 
 名前付きタプルは :mod:`csv` や :mod:`sqlite3` モジュールが返すタプルのフィールドに名前を
 付けるときにとても便利です::
@@ -559,11 +548,11 @@ Example:
 一つの属性をサポートしています。フィールド名との衝突を避けるために
 メソッド名と属性名はアンダースコアで始まります。
 
-.. method:: somenamedtuple._make(iterable)
+.. classmethod:: somenamedtuple._make(iterable)
 
    既存の sequence や Iterable から新しいインスタンスを作るクラスメソッド.
 
-.. doctest::
+   .. doctest::
 
       >>> t = [11, 22]
       >>> Point._make(t)
@@ -578,9 +567,7 @@ Example:
 
 .. method:: somenamedtuple._replace(kwargs)
 
-   指定されたフィールドを新しい値で置き換えた、新しい名前付きタプルを作って返します:
-
-::
+   指定されたフィールドを新しい値で置き換えた、新しい名前付きタプルを作って返します::
 
       >>> p = Point(x=11, y=22)
       >>> p._replace(x=33)
@@ -594,7 +581,7 @@ Example:
    フィールド名をリストにしたタプル. 内省 (introspection) したり、既存の名前付きタプルを
    もとに新しい名前つきタプルを作成する時に便利です。
 
-.. doctest::
+   .. doctest::
 
       >>> p._fields            # view the field names
       ('x', 'y')
@@ -634,7 +621,7 @@ Example:
     Point: x=14.000  y= 0.714  hypot=14.018
 
 このサブクラスは ``__slots__`` に空のタプルをセットしています。
-これにより、インスタンス辞書の作成を抑制して低いメモリ使用量をキープしています。
+これにより、インスタンス辞書の作成を抑制してメモリ使用量を低く保つのに役立ちます。
 
 サブクラス化は新しいフィールドを追加するのには適していません。
 代わりに、新しい名前付きタプルを :attr:`_fields` 属性を元に作成してください:
