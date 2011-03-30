@@ -127,7 +127,7 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    :func:`gethostbyaddr` などで、 *h_errno* のようなアドレス関連のエラーが発生した場合に送出されます。
 
    例外の値は ``(h_errno, string)`` のペアで、ライブラリの呼び
-   出し結果を返します。 *string* はC関数 :cfunc:`hstrerror` で取得した、 *h_errno* の意味を示す文字列です。
+   出し結果を返します。 *string* はC関数 :c:func:`hstrerror` で取得した、 *h_errno* の意味を示す文字列です。
 
 
 .. exception:: gaierror
@@ -135,7 +135,7 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    この例外は :func:`getaddrinfo` と :func:`getnameinfo` でアドレス関連のエラーが発生した場合に送出されます。
 
    例外の値は ``(error, string)`` のペアで、ライブラリの呼び出
-   し結果を返します。 *string* はC関数 :cfunc:`gai_strerror` で取得した、 *h_errno* の意味を示す文字列です。
+   し結果を返します。 *string* はC関数 :c:func:`gai_strerror` で取得した、 *h_errno* の意味を示す文字列です。
    *error* の値は、このモジュールで定義される :const:`EAI_\*` 定数の何れかとなります。
 
 
@@ -397,14 +397,14 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 .. function:: inet_aton(ip_string)
 
    ドット記法によるIPv4アドレス(``'123.45.67.89'`` など)を32ビットにパックしたバイナリ形式に変換し、
-   長さ4の文字列として返します。この関数が返す値は、標準Cライブラリの :ctype:`struct in_addr`
+   長さ4の文字列として返します。この関数が返す値は、標準Cライブラリの :c:type:`struct in_addr`
    型を使用する関数に渡す事ができます。
 
    :func:`inet_aton` はドットが 3 個以下の文字列も受け取ります;
    詳細については Unix のマニュアル :manpage:`inet(3)` を参照してください。
 
    IPv4アドレス文字列が不正であれば、 :exc:`socket.error` が発生します。このチェックは、この関数で使用しているCの実装
-   :cfunc:`inet_aton` で行われます。
+   :c:func:`inet_aton` で行われます。
 
    :func:`inet_aton` は、IPv6をサポートしません。IPv4/v6のデュアルスタックをサポートする場合は
    :func:`inet_pton` を使用します。
@@ -414,7 +414,7 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 
    32ビットにパックしたバイナリ形式のIPv4アドレスを、ドット記法による文字列
    (``'123.45.67.89'`` など)に変換します。
-   この関数が返す値は、標準Cライブラリの:ctype:`struct in_addr` 型を使用する関数に渡す事ができます。
+   この関数が返す値は、標準Cライブラリの :c:type:`struct in_addr` 型を使用する関数に渡す事ができます。
 
    この関数に渡す文字列の長さが4バイト以外であれば、 :exc:`socket.error` が発生します。
    :func:`inet_ntoa` は、IPv6をサポートしません。IPv4/v6のデュアルスタ
@@ -423,14 +423,14 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 
 .. function:: inet_pton(address_family, ip_string)
 
-   IPアドレスを、アドレスファミリ固有の文字列からパックしたバイナリ形式に変換します。 :func:`inet_pton` は、:ctype:`struct
-   in_addr`型 (:func:`inet_aton` と同様)や :ctype:`struct in6_addr` を使用するライブ
+   IPアドレスを、アドレスファミリ固有の文字列からパックしたバイナリ形式に変換します。 :func:`inet_pton` は、 :c:type:`struct
+   in_addr`型 (:func:`inet_aton` と同様)や :c:type:`struct in6_addr` を使用するライブ
    ラリやネットワークプロトコルを呼び出す際に使用することができます。
 
    現在サポートされている *address_family* は、 :const:`AF_INET` と
    :const:`AF_INET6` です。 *ip_string* に不正なIPアドレス文字列を指定す
    ると、 :exc:`socket.error` が発生します。有効な *ip_string* は、
-   *address_family* と :cfunc:`inet_pton` の実装によって異なります。
+   *address_family* と :c:func:`inet_pton` の実装によって異なります。
 
    利用可能: Unix (サポートしていないプラットフォームもあります)
 
@@ -440,8 +440,8 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 .. function:: inet_ntop(address_family, packed_ip)
 
    パックしたIPアドレス(数文字の文字列)を、 ``'7.10.0.5'`` や ``'5aef:2b::8'`` などの標準的な、アドレスファミリ固有の文字列形式に変
-   換します。 :func:`inet_ntop` は(:func:`inet_ntoa` と同様に) :ctype:`struct
-   in_addr`型や :ctype:`struct in6_addr` 型のオブジェクトを返すライブラリやネットワークプロトコル等で使用することができます。
+   換します。 :func:`inet_ntop` は(:func:`inet_ntoa` と同様に) :c:type:`struct
+   in_addr` 型や :c:type:`struct in6_addr` 型のオブジェクトを返すライブラリやネットワークプロトコル等で使用することができます。
 
    現在サポートされている *address_family* は、 :const:`AF_INET` と
    :const:`AF_INET6` です。 *packed_ip* の長さが指定したアドレスファミリ
@@ -524,10 +524,10 @@ socket オブジェクト
 
 .. method:: socket.connect_ex(address)
 
-   ``connect(address)`` と同様ですが、C言語の :cfunc:`connect`
+   ``connect(address)`` と同様ですが、C言語の :c:func:`connect`
    関数の呼び出しでエラーが発生した場合には例外を送出せずにエラーを戻り値として返します。(これ以外の、"host not
    found,"等のエラーの場合には例外が発生します。)処理が正常に終了した場合には ``0`` を返し、エラー時には
-   :cdata:`errno` の値を返します。この関数は、非同期接続をサポートする場合などに使用することができます。
+   :c:data:`errno` の値を返します。この関数は、非同期接続をサポートする場合などに使用することができます。
 
    .. note::
 
@@ -593,7 +593,7 @@ socket オブジェクト
 
    ソケットに関連付けられた :dfn:`ファイルオブジェクト` を返します
    (ファイルオブジェクトについては :ref:`bltin-file-objects` を参照)。
-   ファイルオブジェクトはソケットを :cfunc:`dup` したファイルディスクリプタを使用しており、
+   ファイルオブジェクトはソケットを :c:func:`dup` したファイルディスクリプタを使用しており、
    ソケットオブジェクトとファイルオブジェクトは別々にクローズしたりガベージコレクションで破棄したりする事ができます。
    ソケットはブロッキングモードでなければなりません(タイムアウトを設定することもできません)。
    オプション引数の *mode* と *bufsize* には、 :func:`file` 組み込み関数と同じ値を指定します。
