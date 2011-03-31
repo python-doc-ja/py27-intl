@@ -10,7 +10,7 @@
 
 .. ctype:: PyDictObject
 
-   この :ctype:`PyObject` のサブタイプは Python の辞書オブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Python の辞書オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyDict_Type
@@ -19,13 +19,13 @@
       single: DictType (in module types)
       single: DictionaryType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python の辞書を表現します。このオブジェクトは、Python プログラムには
+   この :c:type:`PyTypeObject` のインスタンスは Python の辞書を表現します。このオブジェクトは、Python プログラムには
    ``dict`` および ``types.DictType`` として公開されています。
 
 
 .. cfunction:: int PyDict_Check(PyObject *p)
 
-   引数が :ctype:`PyDictObject` のときに真を返します。
+   引数が :c:type:`PyDictObject` のときに真を返します。
 
 
 .. cfunction:: int PyDict_CheckExact(PyObject *p)
@@ -79,7 +79,7 @@
 
    .. index:: single: PyString_FromString()
 
-   辞書 *p* に、 *key* をキーとして値 *value* を挿入します。 *key* は :ctype:`char\*` 型でなければなりません。
+   辞書 *p* に、 *key* をキーとして値 *value* を挿入します。 *key* は :c:type:`char\*` 型でなければなりません。
    キーオブジェクトは ``PyString_FromString(key)`` で生成されます。成功した場合には ``0`` を、失敗した場合には ``-1``
    を返します。
 
@@ -103,27 +103,27 @@
 
 .. cfunction:: PyObject* PyDict_GetItemString(PyObject *p, const char *key)
 
-   :cfunc:`PyDict_GetItem` と同じですが、 *key* は :ctype:`PyObject\*` ではなく :ctype:`char\*`
+   :c:func:`PyDict_GetItem` と同じですが、 *key* は :c:type:`PyObject\*` ではなく :c:type:`char\*`
    で指定します。
 
 
 .. cfunction:: PyObject* PyDict_Items(PyObject *p)
 
-   辞書オブジェクトのメソッド :meth:`item` のように、辞書内の全ての要素対が入った :ctype:`PyListObject` を返します。
+   辞書オブジェクトのメソッド :meth:`item` のように、辞書内の全ての要素対が入った :c:type:`PyListObject` を返します。
    (:meth:`items` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
 
 .. cfunction:: PyObject* PyDict_Keys(PyObject *p)
 
-   辞書オブジェクトのメソッド :meth:`keys` のように、辞書内の全てのキーが入った :ctype:`PyListObject` を返します。
+   辞書オブジェクトのメソッド :meth:`keys` のように、辞書内の全てのキーが入った :c:type:`PyListObject` を返します。
    (:meth:`keys` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
 
 .. cfunction:: PyObject* PyDict_Values(PyObject *p)
 
-   辞書オブジェクトのメソッド :meth:`values` のように、辞書内の全ての値が入った :ctype:`PyListObject` を返します。
+   辞書オブジェクトのメソッド :meth:`values` のように、辞書内の全ての値が入った :c:type:`PyListObject` を返します。
    (:meth:`values` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
@@ -135,13 +135,13 @@
    辞書内の要素の数を返します。辞書に対して ``len(p)`` を実行するのと同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は :ctype:`int` を返していました。
+      この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyDict_Next(PyObject *p, Py_ssize_t *ppos, PyObject **pkey, PyObject **pvalue)
 
    辞書 *p* 内の全てのキー/値のペアにわたる反復処理を行います。
-   *ppos* が参照している :ctype:`Py_ssize_t` 型は、この関数で反復処理を開始する際に、
+   *ppos* が参照している :c:type:`Py_ssize_t` 型は、この関数で反復処理を開始する際に、
    最初に関数を呼び出すよりも前に ``0`` に初期化しておかなければなりません;
    この関数は辞書内の各ペアを取り上げるごとに真を返し、
    全てのペアを取り上げたことが分かると偽を返します。
@@ -182,7 +182,7 @@
       }
 
    .. versionchanged:: 2.5
-      この関数は以前は *ppos* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *ppos* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyDict_Merge(PyObject *a, PyObject *b, int override)

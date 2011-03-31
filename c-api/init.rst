@@ -27,20 +27,20 @@
 
    Python インタプリタを初期化します。Python の埋め込みを行う
    アプリケーションでは、他のあらゆる Python/C API を使用するよりも前に
-   この関数を呼び出さねばなりません; ただし、 :cfunc:`Py_SetProgramName`,
-   :cfunc:`PyEval_InitThreads`, :cfunc:`PyEval_ReleaseLock`, および
-   :cfunc:`PyEval_AcquireLock` は例外です。この関数はロード済みモジュールの
+   この関数を呼び出さねばなりません; ただし、 :c:func:`Py_SetProgramName`,
+   :c:func:`PyEval_InitThreads`, :c:func:`PyEval_ReleaseLock`, および
+   :c:func:`PyEval_AcquireLock` は例外です。この関数はロード済みモジュールの
    テーブル (``sys.modules``) を初期化し、基盤となるモジュール群、
    :mod:`__builtin__`, :mod:`__main__` および :mod:`sys` を生成します。
    また、モジュール検索パス   (``sys.path``) も初期化します。 ``sys.argv``
-   の設定は行いません; 設定するには、 :cfunc:`PySys_SetArgvEx` を使ってください。
-   この関数を (:cfunc:`Py_Finalize` を呼ばずに) 再度呼び出しても何も行いません。
+   の設定は行いません; 設定するには、 :c:func:`PySys_SetArgvEx` を使ってください。
+   この関数を (:c:func:`Py_Finalize` を呼ばずに) 再度呼び出しても何も行いません。
    戻り値はありません; 初期化が失敗すれば、それは致命的なエラーです。
 
 
 .. cfunction:: void Py_InitializeEx(int initsigs)
 
-   *initsigs* に1を指定すれば :cfunc:`Py_Initialize` と同じ処理を実
+   *initsigs* に1を指定すれば :c:func:`Py_Initialize` と同じ処理を実
    行しますが、Python埋め込みアプリケーションでは *initsigs* を0として
    初期化時にシグナルハンドラの登録をスキップすることができます。
 
@@ -50,15 +50,15 @@
 .. cfunction:: int Py_IsInitialized()
 
    Python インタプリタがすでに初期化済みの場合に真 (非ゼロ) を返し、そうでない場合には偽 (ゼロ)
-   を返します。 :cfunc:`Py_Finalize` を呼び出すと、次に :cfunc:`Py_Initialize` を呼び出すまでこの関数は偽を返します。
+   を返します。 :c:func:`Py_Finalize` を呼び出すと、次に :c:func:`Py_Initialize` を呼び出すまでこの関数は偽を返します。
 
 
 .. cfunction:: void Py_Finalize()
 
-   :cfunc:`Py_Initialize` とそれ以後の Python/C API 関数で行った全ての初期化処理を取り消し、最後の
-   :cfunc:`Py_Initialize`  呼び出し以後に Python インタプリタが生成した全てのサブインタプリタ  (sub-interpreter,
-   下記の :cfunc:`Py_NewInterpreter` を参照) を消去します。理想的な状況では、この関数によって Python
-   インタプリタが確保したメモリは全て解放されます。この関数を (:cfunc:`Py_Initialize` を呼ばずに) 再度呼び出しても何も行いません。
+   :c:func:`Py_Initialize` とそれ以後の Python/C API 関数で行った全ての初期化処理を取り消し、最後の
+   :c:func:`Py_Initialize`  呼び出し以後に Python インタプリタが生成した全てのサブインタプリタ  (sub-interpreter,
+   下記の :c:func:`Py_NewInterpreter` を参照) を消去します。理想的な状況では、この関数によって Python
+   インタプリタが確保したメモリは全て解放されます。この関数を (:c:func:`Py_Initialize` を呼ばずに) 再度呼び出しても何も行いません。
    戻り値はありません; 終了処理中のエラーは無視されます。
 
    この関数が提供されている理由はいくつかあります。Python の埋め込みを行っているアプリケーションでは、アプリケーションを再起動することなく Python
@@ -71,7 +71,7 @@
    動的にロードされるようになっている拡張モジュールが Python によってロードされていた場合、アンロードされません。Python が確保した
    メモリがわずかながら解放されないかもしれません (メモリリークを発見したら、どうか報告してください)。オブジェクト間の循環参照に
    捕捉されているメモリは解放されないことがあります。拡張モジュールが確保したメモリは解放されないことがあります。拡張モジュールによっては、初期化ルーチンを 2
-   度以上呼び出すと正しく動作しないことがあります; こうした状況は、 :cfunc:`Py_Initialize`  や :cfunc:`Py_Finalize`
+   度以上呼び出すと正しく動作しないことがあります; こうした状況は、 :c:func:`Py_Initialize`  や :c:func:`Py_Finalize`
    を 2 度以上呼び出すと起こり得ます。
 
 
@@ -91,7 +91,7 @@
    (``sys.modules``)  およびモジュール検索パス (``sys.path``) もサブインタプリタ
    毎に別個のものになります。新たなサブインタプリタ環境には ``sys.argv`` 変数がありません。また、サブインタプリタは新たな標準 I/O ストリーム
    ``sys.stdin``, ``sys.stdout`` および ``sys.stderr`` を持ちます (とはいえ、これらのストリームは根底にある C
-   ライブラリの同じ :ctype:`FILE` 構造体を参照しています)。
+   ライブラリの同じ :c:type:`FILE` 構造体を参照しています)。
 
    戻り値は、新たなサブインタプリタが生成したスレッド状態 (thread state) オブジェクトのうち、最初のものを指しています。
    このスレッド状態が現在のスレッド状態 (current thread state) になります。実際のスレッドが生成されるわけではないので注意してください;
@@ -108,7 +108,7 @@
    拡張モジュールは以下のような形で (サブ) インタプリタ間で共有されます: ある特定の拡張モジュールを最初に import すると、
    モジュールを通常通りに初期化し、そのモジュールの辞書の (浅い) コピーをしまい込んでおきます。他の (サブ) インタプリタが同じ拡張モジュールを
    import すると、新たなモジュールを初期化し、先ほどのコピーの内容で辞書の値を埋めます; 拡張モジュールの ``init``
-   関数は呼び出されません。この挙動は、 :cfunc:`Py_Finalize` および :cfunc:`Py_Initialize` を呼び出して
+   関数は呼び出されません。この挙動は、 :c:func:`Py_Finalize` および :c:func:`Py_Initialize` を呼び出して
    インタプリタを完全に再初期化した後に拡張モジュールを import した際の挙動とは異なるので注意してください; 再初期化後に import を
    行うと、拡張モジュールの ``initmodule`` は再度 *呼び出され* ます。
 
@@ -123,8 +123,8 @@
    文は間違った (サブ) インタプリタのロード済みモジュール辞書に影響を及ぼす場合があるからです (XXX この問題は
    修正が難しいバグで、将来のリリースで解決される予定です)
 
-   この機能は PyObjC や ctypes のような、 :cfunc:`PyGILState_\*` API を利用する
-   タイプの拡張モジュールと相性が悪いことにも注意してください。 (これは、 :cfunc:`PyGILState_\*` 関数の動作特有の問題です)
+   この機能は PyObjC や ctypes のような、 :c:func:`PyGILState_\*` API を利用する
+   タイプの拡張モジュールと相性が悪いことにも注意してください。 (これは、 :c:func:`PyGILState_\*` 関数の動作特有の問題です)
    シンプルなことなら上手くいくかもしれませんが、いつ混乱させる動作をするかわかりません。
 
 
@@ -135,7 +135,7 @@
    指定されたスレッド状態 *tstate* で表現される (サブ) インタプリタを抹消します。 *tstate* は現在のスレッド状態でなければなりません。
    下記のスレッド状態に関する議論を参照してください。関数呼び出しが戻ったとき、現在のスレッド状態は *NULL* になっています。
    このインタプリタに関連付けられた全てのスレッド状態は抹消されます。 (この関数を呼び出す前にはグローバルインタプリタロックを保持して
-   おかねばならず、ロックは関数が戻ったときも保持されています。) :cfunc:`Py_Finalize` は、その時点で
+   おかねばならず、ロックは関数が戻ったときも保持されています。) :c:func:`Py_Finalize` は、その時点で
    明示的に抹消されていない全てのサブインタプリタを抹消します。
 
 
@@ -146,8 +146,8 @@
       single: main()
       single: Py_GetPath()
 
-   この関数を呼び出すなら、最初に :cfunc:`Py_Initialize` を呼び出すよりも前に呼び出さねばなりません。この関数はインタプリタに
-   プログラムの :cfunc:`main` 関数に指定した ``argv[0]`` 引数の値を教えます。この引数値は、 :cfunc:`Py_GetPath` や、
+   この関数を呼び出すなら、最初に :c:func:`Py_Initialize` を呼び出すよりも前に呼び出さねばなりません。この関数はインタプリタに
+   プログラムの :c:func:`main` 関数に指定した ``argv[0]`` 引数の値を教えます。この引数値は、 :c:func:`Py_GetPath` や、
    以下に示すその他の関数が、インタプリタの実行可能形式から Python ランタイムライブラリへの相対パスを取得するために使われます。
    デフォルトの値は ``'python'`` です。引数はゼロ終端されたキャラクタ文字列で、静的な記憶領域に入っていなければならず、
    その内容はプログラムの実行中に変更してはなりません。 Python インタプリタ内のコードで、この記憶領域の内容を変更するものは一切ありません。
@@ -157,14 +157,14 @@
 
    .. index:: single: Py_SetProgramName()
 
-   :cfunc:`Py_SetProgramName` で設定されたプログラム名か、デフォルトのプログラム名を返します。
+   :c:func:`Py_SetProgramName` で設定されたプログラム名か、デフォルトのプログラム名を返します。
    関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
 
 
 .. cfunction:: char* Py_GetPrefix()
 
    プラットフォーム非依存のファイル群がインストールされている場所である *prefix* を返します。この値は
-   :cfunc:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
+   :c:func:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
    例えば、プログラム名が ``'/usr/local/bin/python'`` の場合、prefix は ``'/usr/local'`` になります。
    関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。この値はトップレベルの :file:`Makefile`
    に指定されている変数 :makevar:`prefix` や、ビルド値に :program:`configure` スクリプトに指定した
@@ -175,7 +175,7 @@
 .. cfunction:: char* Py_GetExecPrefix()
 
    プラットフォーム *依存* のファイルがインストールされている場所である *exec-prefix* を返します。
-   この値は :cfunc:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
+   この値は :c:func:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
    例えば、プログラム名が ``'/usr/local/bin/python'`` の場合、exec-prefix は ``'/usr/local'`` になります。
    関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。この値はトップレベルの :file:`Makefile`
    に指定されている変数 :makevar:`exec_prefix` や、ビルド値に :program:`configure` スクリプトに指定した
@@ -206,7 +206,7 @@
       single: executable (in module sys)
 
    Python 実行可能形式の完全なプログラム名を返します; この値はデフォルトのモジュール検索パスを
-   (前述の :cfunc:`Py_SetProgramName`  で設定された) プログラム名から導出する際に副作用的に計算されます。
+   (前述の :c:func:`Py_SetProgramName`  で設定された) プログラム名から導出する際に副作用的に計算されます。
    関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。この値は Python コードからは
    ``sys.executable`` として利用できます。 Unixのみで有用です。
 
@@ -218,7 +218,7 @@
       single: path (in module sys)
 
    デフォルトモジュール検索パスを返します; パスは (上の
-   :cfunc:`Py_SetProgramName` で設定された) プログラム名と、
+   :c:func:`Py_SetProgramName` で設定された) プログラム名と、
    いくつかの環境変数から計算されます。
    戻り値となる文字列は、プラットフォーム依存のパスデリミタ文字で分割された
    一連のディレクトリ名からなります。デリミタ文字は Unix と Mac OS X では
@@ -302,12 +302,12 @@
       single: argv (in module sys)
 
    *argc* および *argv* に基づいて :data:`sys.argv` を設定します。
-   これらの引数はプログラムの :cfunc:`main` に渡した引数に似ていますが、
+   これらの引数はプログラムの :c:func:`main` に渡した引数に似ていますが、
    最初の要素が Python インタプリタの宿主となっている実行形式の名前ではなく、
    実行されるスクリプト名を参照しなければならない点が違います。
    実行するスクリプトがない場合、 *argv* の最初の要素は空文字列にしても
    かまいません。この関数が :data:`sys.argv` の初期化に失敗した場合、致命的エラー
-   条件を :cfunc:`Py_FatalError` でシグナルします。
+   条件を :c:func:`Py_FatalError` でシグナルします。
 
    If *updatepath* is zero, this is all the function does.  If *updatepath*
    is non-zero, the function also modifies :data:`sys.path` according to the
@@ -329,7 +329,7 @@
       `CVE-2008-5983 <http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2008-5983>`_
       を参照してください。
 
-      2.6.6 より前のバージョンでは、 :cfunc:`PySys_SetArgv` を呼出たあとに
+      2.6.6 より前のバージョンでは、 :c:func:`PySys_SetArgv` を呼出たあとに
       同じ事を手動で :data:`sys.path` の先頭の要素を取り除くことで実現できます。
       例えば、次のようにします。 ::
 
@@ -344,7 +344,7 @@
 
 .. cfunction:: void PySys_SetArgv(int argc, char **argv)
 
-   :cfunc:`PySys_SetArgv` の *updatepath* に 1 を設定したのと同じように動作します。
+   :c:func:`PySys_SetArgv` の *updatepath* に 1 を設定したのと同じように動作します。
 
 
 .. cfunction:: void Py_SetPythonHome(char *home)
@@ -357,7 +357,7 @@
 
 .. cfunction:: char* Py_GetPythonHome()
 
-   前回の :cfunc:`Py_SetPythonHome` 呼び出しで設定されたデフォルトの "home" か、
+   前回の :c:func:`Py_SetPythonHome` 呼び出しで設定されたデフォルトの "home" か、
    :envvar:`PYTHONHOME` 環境変数が設定されていればその値を返します。
 
 
@@ -392,9 +392,9 @@ Python インタプリタは完全にスレッド安全 (thread safe) ではあ�
    single: PyThreadState
 
 Python インタプリタはスレッドごとに何らかの予約情報を持っておかねばなりません
---- このため、Python は :ctype:`PyThreadState` と呼ばれるデータ構造を用います。
+--- このため、Python は :c:type:`PyThreadState` と呼ばれるデータ構造を用います。
 とはいえ、グローバル変数はまだ一つだけ残っています: それは現在の
-:ctype:`PyThreadState` 構造体を指すポインタです。
+:c:type:`PyThreadState` 構造体を指すポインタです。
 スレッドローカルストレージ(:dfn:`thread-local-storage`, :dfn:`TLS`)
 が追加される前は、現在のスレッドの状態を明示的に操作しなければなりませんでした。
 
@@ -418,8 +418,8 @@ Python インタプリタはスレッドごとに何らかの予約情報を持�
    single: Py_BEGIN_ALLOW_THREADS
    single: Py_END_ALLOW_THREADS
 
-:cmacro:`Py_BEGIN_ALLOW_THREADS` マクロは新たなブロック文を開始し、隠し
-ローカル変数を宣言します; :cmacro:`Py_END_ALLOW_THREADS`
+:c:macro:`Py_BEGIN_ALLOW_THREADS` マクロは新たなブロック文を開始し、隠し
+ローカル変数を宣言します; :c:macro:`Py_END_ALLOW_THREADS`
 はブロック文を終了します。これらの二つのマクロを使うもうひとつの利点は、
 Python をスレッドサポートなしでコンパイルしたとき、マクロの内容、
 すなわちスレッド状態の退避とGIL操作が空になるという点です。
@@ -450,12 +450,12 @@ Python をスレッドサポートなしでコンパイルしたとき、マク�
    single: PyEval_ReleaseLock()
    single: PyEval_AcquireLock()
 
-上の二つには微妙な違いがあります; とりわけ、 :cfunc:`PyEval_RestoreThread`
-はグローバル変数 :cdata:`errno` の値を保存しておいて元に戻す点が異なります。
-というのは、ロック操作が :cdata:`errno` に何もしないという保証がないからです。
-また、スレッドサポートが無効化されている場合、 :cfunc:`PyEval_SaveThread` および
-:cfunc:`PyEval_RestoreThread` はGILを操作しません; この場合、
-:cfunc:`PyEval_ReleaseLock` および :cfunc:`PyEval_AcquireLock` は利用できません。
+上の二つには微妙な違いがあります; とりわけ、 :c:func:`PyEval_RestoreThread`
+はグローバル変数 :c:data:`errno` の値を保存しておいて元に戻す点が異なります。
+というのは、ロック操作が :c:data:`errno` に何もしないという保証がないからです。
+また、スレッドサポートが無効化されている場合、 :c:func:`PyEval_SaveThread` および
+:c:func:`PyEval_RestoreThread` はGILを操作しません; この場合、
+:c:func:`PyEval_ReleaseLock` および :c:func:`PyEval_AcquireLock` は利用できません。
 この仕様は、スレッドサポートを無効化してコンパイルされているインタプリタが、
 スレッドサポートが有効化された状態でコンパイルされている動的ロード拡張モジュールを
 ロードできるようにするためのものです。
@@ -479,7 +479,7 @@ C でスレッドを生成した場合、そのスレッドにはグローバル
 
 インタプリタオブジェクトにアクセスできるという仮定の下では、C のスレッドから Python を呼び出す際の典型的な常套句は以下のようになります。
 
-バージョン 2.3 からは、上記の事を全て自動で行われて、スレッドは :cfunc:`PyGILState_\*` の恩恵に預かることができます。 C
+バージョン 2.3 からは、上記の事を全て自動で行われて、スレッドは :c:func:`PyGILState_\*` の恩恵に預かることができます。 C
 のスレッドから Python を呼び出す典型的な方法は以下のとおりです。 ::
 
    PyGILState_STATE gstate;
@@ -492,14 +492,14 @@ C でスレッドを生成した場合、そのスレッドにはグローバル
    /* Release the thread. No Python API allowed beyond this point. */
    PyGILState_Release(gstate);
 
-:cfunc:`PyGILState_\*` 関数は、(:cfunc:`Py_Initialize` によって自動的に作られる)
-グローバルインタプリタ一つだけが存在すると仮定する事に気をつけて下さい。 Python は (:cfunc:`Py_NewInterpreter` を使って)
-追加のインタプリタを作成できることに変わりはありませんが、複数インタプリタと :cfunc:`PyGILState_\*` API を混ぜて
+:c:func:`PyGILState_\*` 関数は、(:c:func:`Py_Initialize` によって自動的に作られる)
+グローバルインタプリタ一つだけが存在すると仮定する事に気をつけて下さい。 Python は (:c:func:`Py_NewInterpreter` を使って)
+追加のインタプリタを作成できることに変わりはありませんが、複数インタプリタと :c:func:`PyGILState_\*` API を混ぜて
 使うことはサポートされていません。
 
-注意しないといけないもう一つの重要な点は、 C の :cfunc:`fork` を呼び出した時の
+注意しないといけないもう一つの重要な点は、 C の :c:func:`fork` を呼び出した時の
 動作です。
-ほとんどの :cfunc:`fork` を持っているシステムでは、forkされたプロセスにはforkを
+ほとんどの :c:func:`fork` を持っているシステムでは、forkされたプロセスにはforkを
 実行したスレッドしか存在しません。
 これは、別のスレッドに取得されたロックがずっと開放されないことを意味します。
 Python は fork する前にロックを取得し、その後に fork を開放することで
@@ -508,12 +508,12 @@ Python は fork する前にロックを取得し、その後に fork を開放�
 Python を拡張したり埋め込んだりしている場合、 Python に fork 前に取得したり
 fork 後に開放しなければならない追加の (Python 以外の)ロックを Python に教える
 手段がありません。
-Python と同じことを実現するには、 :cfunc:`posix_atfork` のようなOSの機能を
+Python と同じことを実現するには、 :c:func:`posix_atfork` のようなOSの機能を
 使う必要があります。
 加えて、Python を拡張したり埋め込んだりしているときに、 :func:`os.fork`
-を通してではなく直接 :cfunc:`fork` を呼び出すと、fork後に失われるスレッドに
+を通してではなく直接 :c:func:`fork` を呼び出すと、fork後に失われるスレッドに
 取得されていた Python の内部ロックのためにデッドロックが発生するかもしれません。
-:cfunc:`PyOS_AfterFork` は必要なロックのリセットを試みますが、いつでも
+:c:func:`PyOS_AfterFork` は必要なロックのリセットを試みますが、いつでも
 それが可能とは限りません。
 
 .. ctype:: PyInterpreterState
@@ -528,7 +528,7 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 
 .. ctype:: PyThreadState
 
-   単一のスレッドの状態を表現する表現するデータ構造体です。データメンバ :ctype:`PyInterpreterState \*` :attr:`interp`
+   単一のスレッドの状態を表現する表現するデータ構造体です。データメンバ :c:type:`PyInterpreterState \*` :attr:`interp`
    だけが公開されていて、スレッドのインタプリタ状態を指すポインタになっています。
 
 
@@ -539,12 +539,12 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
       single: PyEval_ReleaseThread()
 
    グローバルインタプリタロックを初期化し、獲得します。この関数は、主スレッドが第二のスレッドを生成する以前や、
-   :cfunc:`PyEval_ReleaseLock` や ``PyEval_ReleaseThread(tstate)``
+   :c:func:`PyEval_ReleaseLock` や ``PyEval_ReleaseThread(tstate)``
    といった他のスレッド操作に入るよりも前に呼び出されるようにしておかなければなりません。
 
    .. index:: single: Py_Initialize()
 
-   二度目に呼び出すと何も行いません。この関数を :cfunc:`Py_Initialize` の前に呼び出しても安全です。
+   二度目に呼び出すと何も行いません。この関数を :c:func:`Py_Initialize` の前に呼び出しても安全です。
 
    .. index:: module: thread
 
@@ -557,7 +557,7 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
    従って、この関数がGILを初期化すると、同時にロックを獲得するようになって
    います。Python の :mod:`thread` モジュールは、新たなスレッドを作成する前に、
    ロックが存在するか、あるいはまだ作成されていないかを調べ、
-   :cfunc:`PyEval_InitThreads` を呼び出します。この関数から処理が戻った場合、
+   :c:func:`PyEval_InitThreads` を呼び出します。この関数から処理が戻った場合、
    ロックが作成作成され、呼び出し元スレッドがそのロックを獲得している事が
    保証されています。
 
@@ -569,7 +569,7 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 
 .. cfunction:: int PyEval_ThreadsInitialized()
 
-   :cfunc:`PyEval_InitThreads` をすでに呼び出している場合は真 (非ゼロ)
+   :c:func:`PyEval_InitThreads` をすでに呼び出している場合は真 (非ゼロ)
    を返します。この関数は、GILを獲得せずに呼び出すことができますので、
    シングルスレッドで実行している場合にはロック関連のAPI呼び出しを避けるために
    使うことができます。
@@ -625,27 +625,27 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 .. cmacro:: Py_BEGIN_ALLOW_THREADS
 
    このマクロを展開すると ``{ PyThreadState *_save; _save = PyEval_SaveThread();`` になります。
-   マクロに開き波括弧が入っていることに注意してください; この波括弧は後で :cmacro:`Py_END_ALLOW_THREADS`
+   マクロに開き波括弧が入っていることに注意してください; この波括弧は後で :c:macro:`Py_END_ALLOW_THREADS`
    マクロと対応させなければなりません。マクロについての詳しい議論は上記を参照してください。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
 .. cmacro:: Py_END_ALLOW_THREADS
 
    このマクロを展開すると ``PyEval_RestoreThread(_save); }`` になります。
-   マクロに開き波括弧が入っていることに注意してください; この波括弧は事前の :cmacro:`Py_BEGIN_ALLOW_THREADS` マクロと対応して
+   マクロに開き波括弧が入っていることに注意してください; この波括弧は事前の :c:macro:`Py_BEGIN_ALLOW_THREADS` マクロと対応して
    いなければなりません。マクロについての詳しい議論は上記を参照してください。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
 .. cmacro:: Py_BLOCK_THREADS
 
    このマクロを展開すると ``PyEval_RestoreThread(_save);`` になります:
-   閉じ波括弧のない :cmacro:`Py_END_ALLOW_THREADS` と同じです。コンパイル時にスレッドサポートが無効化されていると何も行いません。
+   閉じ波括弧のない :c:macro:`Py_END_ALLOW_THREADS` と同じです。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
 .. cmacro:: Py_UNBLOCK_THREADS
 
    このマクロを展開すると ``_save = PyEval_SaveThread();`` になります:
-   閉じ波括弧のない :cmacro:`Py_BEGIN_ALLOW_THREADS` と同じです。
+   閉じ波括弧のない :c:macro:`Py_BEGIN_ALLOW_THREADS` と同じです。
    コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 以下の全ての関数はコンパイル時にスレッドサポートが有効になっている時だけ
@@ -670,7 +670,7 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 
    インタプリタ状態オブジェクトを破壊します。
    グローバルインタプリタロックを保持しておく必要はありません。
-   インタプリタ状態は :cfunc:`PyInterpreterState_Clear` であらかじめリセットしておかなければなりません。
+   インタプリタ状態は :c:func:`PyInterpreterState_Clear` であらかじめリセットしておかなければなりません。
 
 
 .. cfunction:: PyThreadState* PyThreadState_New(PyInterpreterState *interp)
@@ -690,7 +690,7 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 
    スレッド状態オブジェクトを破壊します。
    グローバルインタプリタロックを保持していなければなりません。
-   スレッド状態は :cfunc:`PyThreadState_Clear` であらかじめリセットしておかなければなりません。
+   スレッド状態は :c:func:`PyThreadState_Clear` であらかじめリセットしておかなければなりません。
 
 
 .. cfunction:: PyThreadState* PyThreadState_Get()
@@ -733,19 +733,19 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 
    Pythonの状態やGILに関わらず、実行中スレッドでPython C APIの呼
    び出しが可能となるようにします。この関数はスレッド内で何度でも呼び出すことができますが、必ず全ての呼び出しに対応して
-   :cfunc:`PyGILState_Release` を呼び出す必要があります。
+   :c:func:`PyGILState_Release` を呼び出す必要があります。
 
-   通常、 :cfunc:`PyGILState_Ensure` 呼び出しと
-   :cfunc:`PyGILState_Release` 呼び出しの間でこれ以外のスレッド関連API
+   通常、 :c:func:`PyGILState_Ensure` 呼び出しと
+   :c:func:`PyGILState_Release` 呼び出しの間でこれ以外のスレッド関連API
    を使用することができますが、Release()の前にスレッド状態は復元されていな
-   ければなりません。通常の :cmacro:`Py_BEGIN_ALLOW_THREADS` マクロと
-   :cmacro:`Py_END_ALLOW_THREADS` も使用することができます。
+   ければなりません。通常の :c:macro:`Py_BEGIN_ALLOW_THREADS` マクロと
+   :c:macro:`Py_END_ALLOW_THREADS` も使用することができます。
 
-   戻り値は :cfunc:`PyGILState_Ensure` 呼び出し時のスレッド状態を隠蔽し
-   た"ハンドル"で、 :cfunc:`PyGILState_Release` に渡してPythonを同じ状態
+   戻り値は :c:func:`PyGILState_Ensure` 呼び出し時のスレッド状態を隠蔽し
+   た"ハンドル"で、 :c:func:`PyGILState_Release` に渡してPythonを同じ状態
    に保たなければなりません。再起呼び出しも可能ですが、ハンドルを共有することは *できません* -
-   それぞれの :cfunc:`PyGILState_Ensure` 呼び出し
-   でハンドルを保存し、対応する :cfunc:`PyGILState_Release` 呼び出しで渡してください。
+   それぞれの :c:func:`PyGILState_Ensure` 呼び出し
+   でハンドルを保存し、対応する :c:func:`PyGILState_Release` 呼び出しで渡してください。
 
    関数から復帰したとき、実行中のスレッドはGILを所有しています。処理の失敗は致命的なエラーです。
 
@@ -755,11 +755,11 @@ Python と同じことを実現するには、 :cfunc:`posix_atfork` のよう�
 .. cfunction:: void PyGILState_Release(PyGILState_STATE)
 
    獲得したすべてのリソースを開放します。この関数を呼び出すと、Pythonの状態
-   は対応する :cfunc:`PyGILState_Ensure` を呼び出す前と同じとなります。(通
+   は対応する :c:func:`PyGILState_Ensure` を呼び出す前と同じとなります。(通
    常、この状態は呼び出し元でははわかりませんので、GILState APIを利用するようにしてください。）
 
-   :cfunc:`PyGILState_Ensure` を呼び出す場合は、必ず同一スレッド内で対
-   応する :cfunc:`PyGILState_Release` を呼び出してください。
+   :c:func:`PyGILState_Ensure` を呼び出す場合は、必ず同一スレッド内で対
+   応する :c:func:`PyGILState_Release` を呼び出してください。
 
    .. versionadded:: 2.3
 
@@ -784,7 +784,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. ctype:: int (*Py_tracefunc)(PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 
-   :cfunc:`PyEval_SetProfile` および :cfunc:`PyEval_SetTrace`
+   :c:func:`PyEval_SetProfile` および :c:func:`PyEval_SetTrace`
    を使って登録できるトレース関数の形式です。最初のパラメタはオブジェクトで、登録関数に *obj* として渡されます。 *frame*
    はイベントが属している実行フレームオブジェクトで、 *what* は定数 :const:`PyTrace_CALL`,
    :const:`PyTrace_EXCEPTION`, :const:`PyTrace_LINE`, :const:`PyTrace_RETURN`,
@@ -812,14 +812,14 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. cvar:: int PyTrace_CALL
 
-   関数やメソッドが新たに呼び出されたり、ジェネレータが新たなエントリの処理に入ったことを報告する際の、 :ctype:`Py_tracefunc` の *what*
+   関数やメソッドが新たに呼び出されたり、ジェネレータが新たなエントリの処理に入ったことを報告する際の、 :c:type:`Py_tracefunc` の *what*
    の値です。イテレータやジェネレータ関数の生成は、対応するフレーム内の Python バイトコードに制御の委譲 (control transfer)
    が起こらないため報告されないので注意してください。
 
 
 .. cvar:: int PyTrace_EXCEPTION
 
-   例外が送出された際の :ctype:`Py_tracefunc` の *what* の値です。現在実行されているフレームで例外がセットされ、何らかのバイトコードが
+   例外が送出された際の :c:type:`Py_tracefunc` の *what* の値です。現在実行されているフレームで例外がセットされ、何らかのバイトコードが
    処理された後に、 *what* にこの値がセットされた状態でコールバック関数が呼び出されます。
 
    この結果、例外の伝播によって Python が呼び出しスタックを逆戻りする際に、各フレームから処理が戻るごとにコールバック関数が呼び出されます。
@@ -833,22 +833,22 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. cvar:: int PyTrace_RETURN
 
-   関数呼び出しが例外の伝播なしに返るときに :ctype:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   関数呼び出しが例外の伝播なしに返るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
 .. cvar:: int PyTrace_C_CALL
 
-   C関数を呼び出す直前に :ctype:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   C関数を呼び出す直前に :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
 .. cvar:: int PyTrace_C_EXCEPTION
 
-   C関数が例外を送出したときに :ctype:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   C関数が例外を送出したときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
 .. cvar:: int PyTrace_C_RETURN
 
-   C関数から戻るときに :ctype:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
+   C関数から戻るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
 .. cfunction:: void PyEval_SetProfile(Py_tracefunc func, PyObject *obj)
@@ -861,7 +861,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. cfunction:: void PyEval_SetTrace(Py_tracefunc func, PyObject *obj)
 
-   トレース関数を *func* にセットします。 :cfunc:`PyEval_SetProfile` に似ていますが、トレース関数は
+   トレース関数を *func* にセットします。 :c:func:`PyEval_SetProfile` に似ていますが、トレース関数は
    行番号イベントを受け取る点が違います。
 
 
@@ -892,7 +892,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. cfunction:: PyThreadState * PyInterpreterState_ThreadHead(PyInterpreterState *interp)
 
-   インタプリタ *interp* に関連付けられているスレッドからなるリストのうち、先頭にある :ctype:`PyThreadState`
+   インタプリタ *interp* に関連付けられているスレッドからなるリストのうち、先頭にある :c:type:`PyThreadState`
    オブジェクトを返します。
 
    .. versionadded:: 2.2
@@ -900,7 +900,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
 
 .. cfunction:: PyThreadState* PyThreadState_Next(PyThreadState *tstate)
 
-   *tstate* と同じ :ctype:`PyInterpreterState` オブジェクトに属しているスレッド状態オブジェクトのうち、 *tstate*
+   *tstate* と同じ :c:type:`PyInterpreterState` オブジェクトに属しているスレッド状態オブジェクトのうち、 *tstate*
    の次にあるものを返します。
 
    .. versionadded:: 2.2

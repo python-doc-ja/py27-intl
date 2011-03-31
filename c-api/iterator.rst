@@ -12,7 +12,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
 
 .. cvar:: PyTypeObject PySeqIter_Type
 
-   :cfunc:`PySeqIter_New` や、組み込みシーケンス型に対して 1 引数形式の組み込み関数 :func:`iter` を呼び出したときに
+   :c:func:`PySeqIter_New` や、組み込みシーケンス型に対して 1 引数形式の組み込み関数 :func:`iter` を呼び出したときに
    返される、イテレータオブジェクトの型オブジェクトです。
 
    .. versionadded:: 2.2
@@ -20,7 +20,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
 
 .. cfunction:: int PySeqIter_Check(op)
 
-   :cdata:`PySeqIter_Type` の型が *op* のときに真を返します。
+   :c:data:`PySeqIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 
@@ -35,7 +35,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
 
 .. cvar:: PyTypeObject PyCallIter_Type
 
-   :cfunc:`PyCallIter_New` や、組み込み関数 :func:`iter` の 2 引数形式が返すイテレータオブジェクトの型オブジェクトです。
+   :c:func:`PyCallIter_New` や、組み込み関数 :func:`iter` の 2 引数形式が返すイテレータオブジェクトの型オブジェクトです。
    :func:`iter` built-in function.
 
    .. versionadded:: 2.2
@@ -43,7 +43,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
 
 .. cfunction:: int PyCallIter_Check(op)
 
-   :cdata:`PyCallIter_Type` の型が *op* のときに真を返します。
+   :c:data:`PyCallIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 

@@ -15,19 +15,19 @@
 .. versionadded:: 2.5
 
 このセクションでは :class:`set` と :class:`frozenset` の公開APIについて詳しく述べます。
-以降で説明していない機能は、抽象オブジェクトプロトコル ( :cfunc:`PyObject_CallMethod`,
-:cfunc:`PyObject_RichCompareBool`, :cfunc:`PyObject_Hash`,
-:cfunc:`PyObject_Repr`, :cfunc:`PyObject_IsTrue`, :cfunc:`PyObject_Print`,
-:cfunc:`PyObject_GetIter` を含む) か抽象数値プロトコル ( :cfunc:`PyNumber_Add`,
-:cfunc:`PyNumber_Subtract`, :cfunc:`PyNumber_Or`, :cfunc:`PyNumber_Xor`,
-:cfunc:`PyNumber_InPlaceAdd`, :cfunc:`PyNumber_InPlaceSubtract`,
-:cfunc:`PyNumber_InPlaceOr`, :cfunc:`PyNumber_InPlaceXor` を含む) を使って利用できます。
+以降で説明していない機能は、抽象オブジェクトプロトコル ( :c:func:`PyObject_CallMethod`,
+:c:func:`PyObject_RichCompareBool`, :c:func:`PyObject_Hash`,
+:c:func:`PyObject_Repr`, :c:func:`PyObject_IsTrue`, :c:func:`PyObject_Print`,
+:c:func:`PyObject_GetIter` を含む) か抽象数値プロトコル ( :c:func:`PyNumber_Add`,
+:c:func:`PyNumber_Subtract`, :c:func:`PyNumber_Or`, :c:func:`PyNumber_Xor`,
+:c:func:`PyNumber_InPlaceAdd`, :c:func:`PyNumber_InPlaceSubtract`,
+:c:func:`PyNumber_InPlaceOr`, :c:func:`PyNumber_InPlaceXor` を含む) を使って利用できます。
 
 
 .. ctype:: PySetObject
 
-   この :ctype:`PyObject` を継承した型は、 :class:`set` と :class:`frozenset` 両方の
-   内部データを保存するのに用いられます。 :ctype:`PyDictObject`
+   この :c:type:`PyObject` を継承した型は、 :class:`set` と :class:`frozenset` 両方の
+   内部データを保存するのに用いられます。 :c:type:`PyDictObject`
    と同じように、小さい集合(set)に対しては(タプルのように)固定サイズであり、
    そうでない集合に対しては(リストと同じように)可変長のメモリブロックを用います。この構造体のどのフィールドも、非公開で変更される可能性があると考えて下さい。
    すべてのアクセスは、構造体の中の値を直接操作するのではなく、ドキュメントされた APIを用いて行うべきです。
@@ -35,12 +35,12 @@
 
 .. cvar:: PyTypeObject PySet_Type
 
-   この :ctype:`PyTypeObject` のインスタンスは、Pythonの :class:`set` 型を表します。
+   この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`set` 型を表します。
 
 
 .. cvar:: PyTypeObject PyFrozenSet_Type
 
-   この :ctype:`PyTypeObject` のインスタンスは、Pythonの :class:`frozenset` 型を表します。
+   この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`frozenset` 型を表します。
 
 以降の型チェックマクロはすべてのPythonオブジェクトに対するポインタに対して動作します。
 同様に、コンストラクタはすべてのイテレート可能なPythonオブジェクトに対して動作します。
@@ -105,12 +105,12 @@
    無い場合は、 :exc:`PyExc_SystemError` を送出します。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PySet_GET_SIZE(PyObject *anyset)
 
-   エラーチェックを行わない、 :cfunc:`PySet_Size` のマクロ形式。
+   エラーチェックを行わない、 :c:func:`PySet_Size` のマクロ形式。
 
 
 .. cfunction:: int PySet_Contains(PyObject *anyset, PyObject *key)
@@ -131,7 +131,7 @@
    .. versionchanged:: 2.6
       :class:`frozenset` やそのサブタイプのインスタンスに対して利用できる
       ようになりました。
-      :cfunc:`PyTuple_SetItem` のように、新しい frozenset を他のコードに渡す
+      :c:func:`PyTuple_SetItem` のように、新しい frozenset を他のコードに渡す
       まえに内容を追加するためのに使うことができます。
 
 以降の関数は、 :class:`set` とそのサブタイプに対して利用可能です。

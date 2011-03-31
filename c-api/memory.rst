@@ -40,7 +40,7 @@ Python におけるメモリ管理には、全ての Python オブジェクト�
    single: free()
 
 メモリ管理の崩壊を避けるため、拡張モジュールの作者は決して Python  オブジェクトを C ライブラリが公開している関数:
-:cfunc:`malloc` 、 :cfunc:`calloc` 、 :cfunc:`realloc` および :cfunc:`free` で操作しようとしては
+:c:func:`malloc` 、 :c:func:`calloc` 、 :c:func:`realloc` および :c:func:`free` で操作しようとしては
 なりません。こうした関数を使うと、C のメモリ操作関数と Python メモリマネージャとの間で関数呼び出しが交錯します。 C のメモリ操作関数とPython
 メモリマネージャは異なるアルゴリズムで実装されていて、異なるヒープを操作するため、呼び出しの交錯は致命的な結果を招きます。とはいえ、個別の目的のためなら、
 C ライブラリのメモリ操作関数を使って安全にメモリを確保したり解放したりできます。例えば、以下がそのような例です::
@@ -79,24 +79,24 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 
 .. cfunction:: void* PyMem_Malloc(size_t n)
 
-   *n* バイトをメモリ確保し、確保されたメモリを指す :ctype:`void\*`  型のポインタを返します。確保要求に失敗した場合には *NULL* を
+   *n* バイトをメモリ確保し、確保されたメモリを指す :c:type:`void\*`  型のポインタを返します。確保要求に失敗した場合には *NULL* を
    返します。 0 バイトをリクエストすると、可能ならば独立した非 *NULL* のポインタを返します。このポインタは
-   :cfunc:`PyMem_Malloc(1)`  を代わりに呼んだときのようなメモリ領域を指しています。
+   :c:func:`PyMem_Malloc(1)`  を代わりに呼んだときのようなメモリ領域を指しています。
    確保されたメモリ領域はいかなる初期化も行われていません。
 
 
 .. cfunction:: void* PyMem_Realloc(void *p, size_t n)
 
    *p* が指しているメモリブロックを *n* バイトにサイズ変更します。メモリの内容のうち、新旧のサイズのうち小さい方までの領域は変更されません。 *p* が
-   *NULL* ならば、この関数は :cfunc:`PyMem_Malloc(n)` と等価になります;  それ以外の場合で、 *n* がゼロに等しければ、
+   *NULL* ならば、この関数は :c:func:`PyMem_Malloc(n)` と等価になります;  それ以外の場合で、 *n* がゼロに等しければ、
    メモリブロックはサイズ変更されますが、解放されず、非 *NULL* のポインタを返します。 *p* の値を *NULL* にしないのなら、以前呼び出した
-   :cfunc:`PyMem_Malloc` や  :cfunc:`PyMem_Realloc` の返した値でなければなりません。
+   :c:func:`PyMem_Malloc` や  :c:func:`PyMem_Realloc` の返した値でなければなりません。
 
 
 .. cfunction:: void PyMem_Free(void *p)
 
-   *p* が指すメモリブロックを解放します。 *p* は以前呼び出した :cfunc:`PyMem_Malloc` や
-   :cfunc:`PyMem_Realloc` の返した値でなければなりません。それ以外の場合や、すでに :cfunc:`PyMem_Free(p)` を
+   *p* が指すメモリブロックを解放します。 *p* は以前呼び出した :c:func:`PyMem_Malloc` や
+   :c:func:`PyMem_Realloc` の返した値でなければなりません。それ以外の場合や、すでに :c:func:`PyMem_Free(p)` を
    呼び出した後だった場合、未定義の動作になります。 *p* が *NULL* なら、何も行いません。
 
 以下に挙げる型対象のマクロは利便性のために提供されているものです。 *TYPE* は任意の C の型を表します。
@@ -104,15 +104,15 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 
 .. cfunction:: TYPE* PyMem_New(TYPE, size_t n)
 
-   :cfunc:`PyMem_Malloc` と同じですが、 ``(n * sizeof(TYPE))`` バイトのメモリを確保します。
-   :ctype:`TYPE\*` に型キャストされたポインタを返します。メモリには何の初期化も行われていません。
+   :c:func:`PyMem_Malloc` と同じですが、 ``(n * sizeof(TYPE))`` バイトのメモリを確保します。
+   :c:type:`TYPE\*` に型キャストされたポインタを返します。メモリには何の初期化も行われていません。
 
 
 .. cfunction:: TYPE* PyMem_Resize(void *p, TYPE, size_t n)
 
-   :cfunc:`PyMem_Realloc` と同じですが、 ``(n * sizeof(TYPE))``
+   :c:func:`PyMem_Realloc` と同じですが、 ``(n * sizeof(TYPE))``
    バイトにサイズ変更されたメモリを確保します。
-   :ctype:`TYPE\*` に型キャストされたポインタを返します。
+   :c:type:`TYPE\*` に型キャストされたポインタを返します。
    関数が終わったとき、 *p* は新しいメモリ領域のポインタか、失敗した場合は
    *NULL* になります。これは C プリプロセッサのマクロで、 p
    は常に上書きされます。エラーを処理するときにメモリを失う事を避けるには、
@@ -121,14 +121,14 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 
 .. cfunction:: void PyMem_Del(void *p)
 
-   :cfunc:`PyMem_Free` と同じです。
+   :c:func:`PyMem_Free` と同じです。
 
 上記に加えて、C API 関数を介することなく Python メモリ操作関数を直接呼び出すための以下のマクロセットが提供されています。
 ただし、これらのマクロは Python バージョン間でのバイナリ互換性を保てず、それゆえに拡張モジュールでは撤廃されているので注意してください。
 
-:cfunc:`PyMem_MALLOC` 、 :cfunc:`PyMem_REALLOC` 、 :cfunc:`PyMem_FREE` 。
+:c:func:`PyMem_MALLOC` 、 :c:func:`PyMem_REALLOC` 、 :c:func:`PyMem_FREE` 。
 
-:cfunc:`PyMem_NEW` 、 :cfunc:`PyMem_RESIZE` 、 :cfunc:`PyMem_DEL` 。
+:c:func:`PyMem_NEW` 、 :c:func:`PyMem_RESIZE` 、 :c:func:`PyMem_DEL` 。
 
 
 .. _memoryexamples:
@@ -174,8 +174,8 @@ Python ヒープに対してメモリを確保したり解放したりするた�
    free(buf2);       /* Right -- allocated via malloc() */
    free(buf1);       /* Fatal -- should be PyMem_Del()  */
 
-素のメモリブロックを Python ヒープ上で操作する関数に加え、 :cfunc:`PyObject_New` 、
-:cfunc:`PyObject_NewVar` 、および :cfunc:`PyObject_Del` を使うと、 Python におけるオブジェクトを
+素のメモリブロックを Python ヒープ上で操作する関数に加え、 :c:func:`PyObject_New` 、
+:c:func:`PyObject_NewVar` 、および :c:func:`PyObject_Del` を使うと、 Python におけるオブジェクトを
 メモリ確保したり解放したりできます。
 
 これらの関数については、次章の C による新しいオブジェクト型の定義や実装に関する記述の中で説明します。

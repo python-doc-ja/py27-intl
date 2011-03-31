@@ -86,15 +86,15 @@ API はすべて C 言語を使って定義していますが、ヘッダファ�
 
 .. index:: object: type
 
-Python/C API 関数は、 :ctype:`PyObject\*` 型の一つ以上の引数と戻り値を持ちます。
+Python/C API 関数は、 :c:type:`PyObject\*` 型の一つ以上の引数と戻り値を持ちます。
 この型は、任意の Python オブジェクトを表現する不透明 (opaque) なデータ型へのポインタです。
 Python 言語は、全ての Python オブジェクト型をほとんどの状況 (例えば代入、スコープ規則
 (scope rule)、引数渡し) で同様に扱います。ほとんど全ての Python オブジェクトはヒープ
-(heap) 上に置かれます: このため、 :ctype:`PyObject` 型のオブジェクトは、
+(heap) 上に置かれます: このため、 :c:type:`PyObject` 型のオブジェクトは、
 自動記憶 (automatic) としても静的記憶 (static) としても宣言できません。
-:ctype:`PyObject\*` 型のポインタ変数のみ宣言できます。唯一の例外は、型オブジェクト
+:c:type:`PyObject\*` 型のポインタ変数のみ宣言できます。唯一の例外は、型オブジェクト
 です; 型オブジェクトはメモリ解放 (deallocate) してはならないので、
-通常は静的記憶の :ctype:`PyTypeObject` オブジェクトにします。
+通常は静的記憶の :c:type:`PyTypeObject` オブジェクトにします。
 
 全ての Python オブジェクトには (Python 整数型ですら) 型 (:dfn:`type`)  と参照カウント
 (:dfn:`reference count`) があります。
@@ -121,9 +121,9 @@ Python 言語は、全ての Python オブジェクト型をほとんどの状�
    single: Py_INCREF()
    single: Py_DECREF()
 
-参照カウントは、常に明示的なやり方で操作されます。通常の方法では、 :cfunc:`Py_INCREF`  でオブジェクトの参照を 1 インクリメントし、
-:cfunc:`Py_DECREF` で 1 デクリメントします。 :cfunc:`Py_DECREF` マクロは、incref よりもかなり
-複雑です。というのは、 :cfunc:`Py_DECREF` マクロは参照カウントがゼロになったかどうかを調べて、なった場合にはオブジェクトのデアロケータ
+参照カウントは、常に明示的なやり方で操作されます。通常の方法では、 :c:func:`Py_INCREF`  でオブジェクトの参照を 1 インクリメントし、
+:c:func:`Py_DECREF` で 1 デクリメントします。 :c:func:`Py_DECREF` マクロは、incref よりもかなり
+複雑です。というのは、 :c:func:`Py_DECREF` マクロは参照カウントがゼロになったかどうかを調べて、なった場合にはオブジェクトのデアロケータ
 (deallocator) を呼び出さなければならないからです。デアロケータとは、オブジェクトの型を定義している構造体内にある関数へのポインタです。
 型固有のデアロケータは、その型が複合オブジェクト (compound object) 型である場合には、オブジェクト内の他のオブジェクトに対する参照
 カウントをデクリメントするよう気を配るとともに、その他の必要なファイナライズ (finalize) 処理を実行します。
@@ -142,11 +142,11 @@ Python 言語は、全ての Python オブジェクト型をほとんどの状�
 しかしながら、よく陥る過ちとして、あるオブジェクトをリストから得たときに、参照カウントをインクリメントせずにしばらく放っておく
 というのがあります。他の操作がオブジェクトをリストから除去してしまい、参照カウントがデクリメントされてデアロケートされてしまうことが考えられます。
 本当に危険なのは、まったく無害そうにみえる操作が、上記の動作を引き起こす何らかの Python コードを呼び出しかねないということです;
-:cfunc:`Py_DECREF` からユーザへ制御を戻せるようなコードパスが存在するため、ほとんど全ての操作が潜在的に危険をはらむことになります。
+:c:func:`Py_DECREF` からユーザへ制御を戻せるようなコードパスが存在するため、ほとんど全ての操作が潜在的に危険をはらむことになります。
 
 安全に参照カウントを操作するアプローチは、汎用の操作 (関数名が  ``PyObject_``, ``PyNumber_``, ``PySequence_``,
 および  ``PyMapping_`` で始まる関数) の利用です。これらの操作は常に戻り値となるオブジェクトの参照カウントをインクリメントします。
-ユーザには戻り値が不要になったら :cfunc:`Py_DECREF` を呼ぶ責任が残されています; とはいえ、すぐにその習慣は身に付くでしょう。
+ユーザには戻り値が不要になったら :c:func:`Py_DECREF` を呼ぶ責任が残されています; とはいえ、すぐにその習慣は身に付くでしょう。
 
 
 .. _api-refcountdetails:
@@ -156,9 +156,9 @@ Python 言語は、全ての Python オブジェクト型をほとんどの状�
 
 Python/C API の各関数における参照カウントの振る舞いは、説明するには、 *参照の所有権 (ownership of references)*
 という言葉でうまく説明できます。所有権は参照に対するもので、オブジェクトに対するものではありません (オブジェクトは
-誰にも所有されず、常に共有されています)。ある参照の "所有" は、その参照が必要なくなった時点で :cfunc:`Py_DECREF`
+誰にも所有されず、常に共有されています)。ある参照の "所有" は、その参照が必要なくなった時点で :c:func:`Py_DECREF`
 を呼び出す役割を担うことを意味します。所有権は委譲でき、あるコードが委譲によって所有権を得ると、今度はそのコードが参照が必要なくなった際に最終的に
-:cfunc:`Py_DECREF` や :cfunc:`Py_XDECREF` を呼び出して decref する役割を担います --- あるいは、その役割を
+:c:func:`Py_DECREF` や :c:func:`Py_XDECREF` を呼び出して decref する役割を担います --- あるいは、その役割を
 (通常はコードを呼び出した元に) 受け渡します。ある関数が、関数の呼び出し側に対して参照の所有権を渡すと、呼び出し側は *新たな* 参照 (new
 reference) を得る、と言います。所有権が渡されない場合、呼び出し側は参照を *借りる* (borrow)
 といいます。借りた参照に対しては、何もする必要はありません。
@@ -172,8 +172,8 @@ reference) を得る、と言います。所有権が渡されない場合、呼
    single: PyList_SetItem()
    single: PyTuple_SetItem()
 
-参照を盗み取る関数はほとんどありません; 例外としてよく知られているのは、 :cfunc:`PyList_SetItem` と
-:cfunc:`PyTuple_SetItem` で、これらはシーケンスに入れる要素に対する参照を盗み取ります (しかし、要素の
+参照を盗み取る関数はほとんどありません; 例外としてよく知られているのは、 :c:func:`PyList_SetItem` と
+:c:func:`PyTuple_SetItem` で、これらはシーケンスに入れる要素に対する参照を盗み取ります (しかし、要素の
 入る先のタプルやリストの参照は盗み取りません!)。これらの関数は、リストやタプルの中に新たに作成されたオブジェクトを入れていく際の
 常套的な書き方をしやすくするために、参照を盗み取るように設計されています; 例えば、 ``(1, 2, "three")`` というタプルを生成するコードは
 以下のようになります (とりあえず例外処理のことは忘れておきます; もっとよい書き方を後で示します)::
@@ -185,8 +185,8 @@ reference) を得る、と言います。所有権が渡されない場合、呼
    PyTuple_SetItem(t, 1, PyInt_FromLong(2L));
    PyTuple_SetItem(t, 2, PyString_FromString("three"));
 
-ここで、 :cfunc:`PyInt_FromLong` は新しい参照を返し、すぐに :cfunc:`PyTuple_SetItem` に盗まれます。
-参照が盗まれた後もそのオブジェクトを利用したい場合は、参照盗む関数を呼び出す前に、 :cfunc:`Py_INCREF` を利用してもう一つの参照を取得
+ここで、 :c:func:`PyInt_FromLong` は新しい参照を返し、すぐに :c:func:`PyTuple_SetItem` に盗まれます。
+参照が盗まれた後もそのオブジェクトを利用したい場合は、参照盗む関数を呼び出す前に、 :c:func:`Py_INCREF` を利用してもう一つの参照を取得
 してください。
 
 .. % Here, \cfunction{PyInt_FromLong()} returns a new reference which is
@@ -195,14 +195,14 @@ reference) を得る、と言います。所有権が渡されない場合、呼
 .. % use \cfunction{Py_INCREF()} to grab another reference before calling the
 .. % reference-stealing function.
 
-ちなみに、 :cfunc:`PyTuple_SetItem` はタプルに値をセットするための *唯一の* 方法です; タプルは変更不能なデータ型なので、
-:cfunc:`PySequence_SetItem` や :cfunc:`PyObject_SetItem`
-を使うと上の操作は拒否されてしまいます。自分でタプルの値を入れていくつもりなら、 :cfunc:`PyTuple_SetItem` だけしか使えません。
+ちなみに、 :c:func:`PyTuple_SetItem` はタプルに値をセットするための *唯一の* 方法です; タプルは変更不能なデータ型なので、
+:c:func:`PySequence_SetItem` や :c:func:`PyObject_SetItem`
+を使うと上の操作は拒否されてしまいます。自分でタプルの値を入れていくつもりなら、 :c:func:`PyTuple_SetItem` だけしか使えません。
 
-同じく、リストに値を入れていくコードは :cfunc:`PyList_New` と  :cfunc:`PyList_SetItem` で書けます。
+同じく、リストに値を入れていくコードは :c:func:`PyList_New` と  :c:func:`PyList_SetItem` で書けます。
 
 しかし実際には、タプルやリストを生成して値を入れる際には、上記のような方法はほとんど使いません。
-より汎用性のある関数、 :cfunc:`Py_BuildValue` があり、ほとんどの主要なオブジェクトをフォーマット文字列 :dfn:`format
+より汎用性のある関数、 :c:func:`Py_BuildValue` があり、ほとんどの主要なオブジェクトをフォーマット文字列 :dfn:`format
 string` の指定に基づいて C の値から生成できます。例えば、上の二種類のコードブロックは、以下のように置き換えられます
 (エラーチェックにも配慮しています)::
 
@@ -211,7 +211,7 @@ string` の指定に基づいて C の値から生成できます。例えば、
    tuple = Py_BuildValue("(iis)", 1, 2, "three");
    list = Py_BuildValue("[iis]", 1, 2, "three");
 
-自作の関数に渡す引数のように、単に参照を借りるだけの要素に対しては、 :cfunc:`PyObject_SetItem` とその仲間を
+自作の関数に渡す引数のように、単に参照を借りるだけの要素に対しては、 :c:func:`PyObject_SetItem` とその仲間を
 使うのがはるかに一般的です。その場合、参照カウントをインクリメントする必要がなく、参照を引き渡せる ("参照を盗み取らせられる") ので、
 参照カウントに関する動作はより健全になります。例えば、以下の関数は与えられた要素をリスト中の全ての要素の値にセットします::
 
@@ -239,22 +239,22 @@ string` の指定に基づいて C の値から生成できます。例えば、
 関数の戻り値の場合には、状況は少し異なります。ほとんどの関数については、参照を渡してもその参照に対する
 所有権が変わることがない一方で、あるオブジェクトに対する参照を返すような多くの関数は、参照に対する所有権を呼び出し側に与えます。理由は簡単です:
 多くの場合、関数が返すオブジェクトはその場で (on the fly) 生成されるため、呼び出し側が得る参照は生成された
-オブジェクトに対する唯一の参照になるからです。従って、 :cfunc:`PyObject_GetItem` や
-:cfunc:`PySequence_GetItem` のように、オブジェクトに対する参照を返す汎用の関数は、常に新たな参照を返します (呼び出し側
+オブジェクトに対する唯一の参照になるからです。従って、 :c:func:`PyObject_GetItem` や
+:c:func:`PySequence_GetItem` のように、オブジェクトに対する参照を返す汎用の関数は、常に新たな参照を返します (呼び出し側
 が参照の所有者になります)。
 
 重要なのは、関数が返す参照の所有権を持てるかどうかは、どの関数を呼び出すかだけによる、と理解することです --- 関数呼び出し時の *お飾り*
-(関数に引数として渡したオブジェクトの型) は *この問題には関係ありません!* 従って、 :cfunc:`PyList_GetItem`
+(関数に引数として渡したオブジェクトの型) は *この問題には関係ありません!* 従って、 :c:func:`PyList_GetItem`
 を使ってリスト内の要素を得た場合には、参照の所有者にはなりません --- が、同じ要素を同じリストから
-:cfunc:`PySequence_GetItem` (図らずもこの関数は全く同じ引数をとります) を使って取り出すと、返されたオブジェクト
+:c:func:`PySequence_GetItem` (図らずもこの関数は全く同じ引数をとります) を使って取り出すと、返されたオブジェクト
 に対する参照を得ます。
 
 .. index::
    single: PyList_GetItem()
    single: PySequence_GetItem()
 
-以下は、整数からなるリストに対して各要素の合計を計算する関数をどのようにして書けるかを示した例です; 一つは :cfunc:`PyList_GetItem`
-を使っていて、もう一つは :cfunc:`PySequence_GetItem` を使っています。 ::
+以下は、整数からなるリストに対して各要素の合計を計算する関数をどのようにして書けるかを示した例です; 一つは :c:func:`PyList_GetItem`
+を使っていて、もう一つは :c:func:`PySequence_GetItem` を使っています。 ::
 
    long
    sum_list(PyObject *list)
@@ -306,8 +306,8 @@ string` の指定に基づいて C の値から生成できます。例えば、
 型
 --
 
-Python/C API において重要な役割を持つデータ型は、 :ctype:`PyObject` 型の他にもいくつかあります; ほとんどは
-:ctype:`int`, :ctype:`long`,  :ctype:`double`, および :ctype:`char\*` といった、単なる C
+Python/C API において重要な役割を持つデータ型は、 :c:type:`PyObject` 型の他にもいくつかあります; ほとんどは
+:c:type:`int`, :c:type:`long`,  :c:type:`double`, および :c:type:`char\*` といった、単なる C
 のデータ型です。また、モジュールで公開している関数を列挙する際に用いられる静的なテーブルや、新しいオブジェクト型におけるデータ属性を記述したり、
 複素数の値を記述したりするために構造体をいくつか使っています。これらの型については、その型を使う関数とともに説明してゆきます。
 
@@ -326,7 +326,7 @@ Python プログラマは、特定のエラー処理が必要なときだけし�
 説明がない限り例外を発行する可能性があります。一般的な話として、ある関数が何らかのエラーに遭遇すると、関数は
 例外を送出して、関数内における参照の所有権を全て放棄し、エラー指標 (error indicator) --- 通常は *NULL* または ``-1``
 を返します。いくつかの関数ではブール型で真/偽を返し、偽はエラーを示します。きわめて少数の関数では明確なエラー指標を返さなかったり、
-あいまいな戻り値を返したりするので、 :cfunc:`PyErr_Occurred` で明示的にエラーテストを行う必要があります。
+あいまいな戻り値を返したりするので、 :c:func:`PyErr_Occurred` で明示的にエラーテストを行う必要があります。
 
 .. index::
    single: PyErr_SetString()
@@ -334,10 +334,10 @@ Python プログラマは、特定のエラー処理が必要なときだけし�
 
 例外時の状態情報 (exception state)は、スレッド単位に用意された記憶領域 (per-thread storage) 内で管理されます
 (この記憶領域は、スレッドを使わないアプリケーションではグローバルな記憶領域と同じです)。一つのスレッドは二つの状態のどちらか:
-例外が発生したか、まだ発生していないか、をとります。関数 :cfunc:`PyErr_Occurred` を使うと、この状態を調べられます:
+例外が発生したか、まだ発生していないか、をとります。関数 :c:func:`PyErr_Occurred` を使うと、この状態を調べられます:
 この関数は例外が発生した際にはその例外型オブジェクトに対する借用参照 (borrowed reference) を返し、そうでないときには *NULL*
-を返します。例外状態を設定する関数は数多くあります: :cfunc:`PyErr_SetString` はもっともよく知られている
-(が、もっとも汎用性のない) 例外を設定するための関数で、 :cfunc:`PyErr_Clear` は例外状態情報を消し去る関数です。
+を返します。例外状態を設定する関数は数多くあります: :c:func:`PyErr_SetString` はもっともよく知られている
+(が、もっとも汎用性のない) 例外を設定するための関数で、 :c:func:`PyErr_Clear` は例外状態情報を消し去る関数です。
 
 .. index::
    single: exc_type (in module sys)
@@ -368,7 +368,7 @@ Python 1.5 からは、Python で書かれたコードから例外状態情報�
 
 .. index:: single: sum_sequence()
 
-例外を検出して渡す例は、上の :cfunc:`sum_sequence` で示しています。偶然にも、この例ではエラーを検出した際に何ら参照を放棄する必要が
+例外を検出して渡す例は、上の :c:func:`sum_sequence` で示しています。偶然にも、この例ではエラーを検出した際に何ら参照を放棄する必要が
 ありません。以下の関数の例では、エラーに対する後始末について示しています。まず、どうして Python で書くのが好きか思い出してもらうために、等価な
 Python コードを示します::
 
@@ -434,9 +434,9 @@ Python コードを示します::
    single: Py_XDECREF()
 
 なんとこの例は C で ``goto`` 文を使うお勧めの方法まで示していますね! この例では、特定の例外を処理するために
-:cfunc:`PyErr_ExceptionMatches`  および :cfunc:`PyErr_Clear` をどう使うかを
-示しています。また、所有権を持っている参照で、値が *NULL* になるかもしれないものを捨てるために  :cfunc:`Py_XDECREF`
-をどう使うかも示しています (関数名に ``'X'`` が付いていることに注意してください; :cfunc:`Py_DECREF` は *NULL*
+:c:func:`PyErr_ExceptionMatches`  および :c:func:`PyErr_Clear` をどう使うかを
+示しています。また、所有権を持っている参照で、値が *NULL* になるかもしれないものを捨てるために  :c:func:`Py_XDECREF`
+をどう使うかも示しています (関数名に ``'X'`` が付いていることに注意してください; :c:func:`Py_DECREF` は *NULL*
 参照に出くわすとクラッシュします)。正しく動作させるためには、所有権を持つ参照を保持するための変数を *NULL* で初期化することが重要です; 同様に、
 あらかじめ戻り値を定義する際には値を ``-1`` (失敗) で初期化しておいて、最後の関数呼び出しまでうまくいった場合にのみ ``0`` (成功)
 に設定します。
@@ -460,24 +460,24 @@ Python インタプリタの埋め込みを行う人 (いわば拡張モジュ�
    triple: module; search; path
    single: path (in module sys)
 
-基本的な初期化処理を行う関数は :cfunc:`Py_Initialize` です。この関数はロード済みのモジュールからなるテーブルを作成し、
+基本的な初期化処理を行う関数は :c:func:`Py_Initialize` です。この関数はロード済みのモジュールからなるテーブルを作成し、
 土台となるモジュール :mod:`__builtin__`, :mod:`__main__`, :mod:`sys`, および
 :mod:`exceptions` を作成します。また、モジュール検索パス (``sys.path``)    の初期化も行います。
 
 .. index:: single: PySys_SetArgv()
 
-:cfunc:`Py_Initialize` の中では、 "スクリプトへの引数リスト" (script argument list, ``sys.argv``
-のこと) を設定しません。この変数が後に実行される Python コード中で必要なら、 :cfunc:`Py_Initialize` に続いて
+:c:func:`Py_Initialize` の中では、 "スクリプトへの引数リスト" (script argument list, ``sys.argv``
+のこと) を設定しません。この変数が後に実行される Python コード中で必要なら、 :c:func:`Py_Initialize` に続いて
 ``PySys_SetArgv(argc, argv)`` を呼び出して明示的に設定しなければなりません。
 
-ほとんどのシステムでは (特に Unix と Windows は、詳細がわずかに異なりはしますが)、 :cfunc:`Py_Initialize` は標準の
+ほとんどのシステムでは (特に Unix と Windows は、詳細がわずかに異なりはしますが)、 :c:func:`Py_Initialize` は標準の
 Python インタプリタ実行形式の場所に対する推定結果に基づいて、 Python のライブラリが Python インタプリタ実行形式からの相対パスで
 見つかるという仮定の下にモジュール検索パスを計算します。とりわけこの検索では、シェルコマンド検索パス (環境変数 :envvar:`PATH`)
 上に見つかった :file:`python` という名前の実行ファイルの置かれているディレクトリの親ディレクトリからの相対で、
 :file:`lib/python{X.Y}` という名前のディレクトリを探します。
 
 例えば、 Python 実行形式が :file:`/usr/local/bin/python` で見つかった
-とすると、 :cfunc:`Py_Initialize` はライブラリが :file:`/usr/local/lib/python{X.Y}`
+とすると、 :c:func:`Py_Initialize` はライブラリが :file:`/usr/local/lib/python{X.Y}`
 にあるものと仮定します。 (実際には、このパスは "フォールバック (fallback)" のライブラリ位置でもあり、 :file:`python` が
 :envvar:`PATH` 上にない場合に使われます。) ユーザは :envvar:`PYTHONHOME` を設定することでこの動作をオーバライド
 したり、 :envvar:`PYTHONPATH` を設定して追加のディレクトリを標準モジュール検索パスの前に挿入したりできます。
@@ -489,21 +489,21 @@ Python インタプリタ実行形式の場所に対する推定結果に基づ�
    single: Py_GetExecPrefix()
    single: Py_GetProgramFullPath()
 
-埋め込みを行うアプリケーションでは、 :cfunc:`Py_Initialize` を呼び出す *前に*
+埋め込みを行うアプリケーションでは、 :c:func:`Py_Initialize` を呼び出す *前に*
 ``Py_SetProgramName(file)``  を呼び出すことで、上記の検索を操作できます。この埋め込みアプリケーションでの設定は依然として
 :envvar:`PYTHONHOME`  でオーバライドでき、標準のモジュール検索パスの前には以前として :envvar:`PYTHONPATH`
-が挿入されるので注意してください。アプリケーションでモジュール検索パスを完全に制御したいのなら、独自に :cfunc:`Py_GetPath`,
-:cfunc:`Py_GetPrefix`, :cfunc:`Py_GetExecPrefix`,  および
-:cfunc:`Py_GetProgramFullPath`  の実装を提供しなければなりません (これらは全て
+が挿入されるので注意してください。アプリケーションでモジュール検索パスを完全に制御したいのなら、独自に :c:func:`Py_GetPath`,
+:c:func:`Py_GetPrefix`, :c:func:`Py_GetExecPrefix`,  および
+:c:func:`Py_GetProgramFullPath`  の実装を提供しなければなりません (これらは全て
 :file:`Modules/getpath.c` で定義されています)。
 
 .. index:: single: Py_IsInitialized()
 
 たまに、 Python を "初期化しない" ようにしたいことがあります。例えば、あるアプリケーションでは実行を最初からやりなおし (start over)
-させる (:cfunc:`Py_Initialize` をもう一度呼び出させる) ようにしたいかもしれません。あるいは、アプリケーションが Python
-を一旦使い終えて、Python が確保したメモリを解放できるようにしたいかもしれません。 :cfunc:`Py_Finalize` を使うと、こうした処理を
-実現できます。また、関数 :cfunc:`Py_IsInitialized`  は、Python が現在初期化済みの状態にある場合に真を返します。
-これらの関数についてのさらなる情報は、後の章で説明します。 :cfunc:`Py_Finalize` がPythonインタプリタに確保された全てのメモリを
+させる (:c:func:`Py_Initialize` をもう一度呼び出させる) ようにしたいかもしれません。あるいは、アプリケーションが Python
+を一旦使い終えて、Python が確保したメモリを解放できるようにしたいかもしれません。 :c:func:`Py_Finalize` を使うと、こうした処理を
+実現できます。また、関数 :c:func:`Py_IsInitialized`  は、Python が現在初期化済みの状態にある場合に真を返します。
+これらの関数についてのさらなる情報は、後の章で説明します。 :c:func:`Py_Finalize` がPythonインタプリタに確保された全てのメモリを
 *開放するわけではない* ことに注意してください。例えば、拡張モジュールによって確保されたメモリは、現在のところ開放する事ができません。
 
 
@@ -519,10 +519,10 @@ Pythonデバッグ版ビルドの全ての種類のリストが、Pythonソー�
 :file:`Misc/SpecialBuilds.txt` にあります。参照カウントのトレース、メモリアロケータのデバッグ、インタプリタのメインループの
 低レベルプロファイリングが利用可能です。よく使われるビルドについてのみ、この節の残りの部分で説明します。
 
-インタプリタを :cmacro:`Py_DEBUG` マクロを有効にしてコンパイルすると、一般的に「デバッグビルド」といわれるPythonができます。
+インタプリタを :c:macro:`Py_DEBUG` マクロを有効にしてコンパイルすると、一般的に「デバッグビルド」といわれるPythonができます。
 Unix では、 :file:`configure` コマンドに :option:`--with-pydebug` を追加することで、
-:cmacro:`Py_DEBUG` が有効になります。その場合、暗黙的にPython専用ではない :cmacro:`_DEBUG` も有効になります。
-Unix ビルドでは、 :cmacro:`Py_DEBUG` が有効な場合、コンパイラの最適化が無効になります。
+:c:macro:`Py_DEBUG` が有効になります。その場合、暗黙的にPython専用ではない :c:macro:`_DEBUG` も有効になります。
+Unix ビルドでは、 :c:macro:`Py_DEBUG` が有効な場合、コンパイラの最適化が無効になります。
 
 あとで説明する参照カウントデバッグの他に、以下の追加チェックも有効になります。
 
@@ -547,10 +547,10 @@ Unix ビルドでは、 :cmacro:`Py_DEBUG` が有効な場合、コンパイラ�
 
 ここで言及されていない追加チェックもあるでしょう。
 
-:cmacro:`Py_TRACE_REFS` を宣言すると、参照トレースが有効になります。全ての :ctype:`PyObject`
+:c:macro:`Py_TRACE_REFS` を宣言すると、参照トレースが有効になります。全ての :c:type:`PyObject`
 に二つのフィールドを追加することで、使用中のオブジェクトの循環二重連結リストが管理されます。全ての割り当て(allocation)がトレースされます。
 終了時に、全ての残っているオブジェクトが表示されます。 (インタラクティブモードでは、インタプリタによる文の実行のたびに表示されます)
-:cmacro:`Py_TRACE_REFS` は :cmacro:`Py_DEBUG` によって暗黙的に有効になります。
+:c:macro:`Py_TRACE_REFS` は :c:macro:`Py_DEBUG` によって暗黙的に有効になります。
 
 より詳しい情報については、Pythonのソース配布(source distribution)の中の :file:`Misc/SpecialBuilds.txt`
 を参照してください。

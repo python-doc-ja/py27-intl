@@ -6,41 +6,41 @@
 ======================================
 
 
-.. cfunction:: PyObject* _PyObject_New(PyTypeObject *type)
+.. c:function:: PyObject* _PyObject_New(PyTypeObject *type)
 
 
-.. cfunction:: PyVarObject* _PyObject_NewVar(PyTypeObject *type, Py_ssize_t size)
+.. c:function:: PyVarObject* _PyObject_NewVar(PyTypeObject *type, Py_ssize_t size)
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: void _PyObject_Del(PyObject *op)
+.. c:function:: void _PyObject_Del(PyObject *op)
 
 
-.. cfunction:: PyObject* PyObject_Init(PyObject *op, PyTypeObject *type)
+.. c:function:: PyObject* PyObject_Init(PyObject *op, PyTypeObject *type)
 
    新たにメモリ確保されたオブジェクト *op* に対し、型と初期状態での参照 (initial reference) を初期化します。
    初期化されたオブジェクトを返します。 *type* からそのオブジェクトが循環参照ガベージ検出の機能を有する場合、検出機構が監視対象とする
    オブジェクトのセットに追加されます。オブジェクトの他のフィールドには影響を及ぼしません。
 
 
-.. cfunction:: PyVarObject* PyObject_InitVar(PyVarObject *op, PyTypeObject *type, Py_ssize_t size)
+.. c:function:: PyVarObject* PyObject_InitVar(PyVarObject *op, PyTypeObject *type, Py_ssize_t size)
 
-   :cfunc:`PyObject_Init` の全ての処理を行い、可変サイズオブジェクトの場合には長さ情報も初期化します。
+   :c:func:`PyObject_Init` の全ての処理を行い、可変サイズオブジェクトの場合には長さ情報も初期化します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: TYPE* PyObject_New(TYPE, PyTypeObject *type)
+.. c:function:: TYPE* PyObject_New(TYPE, PyTypeObject *type)
 
    C 構造体型 *TYPE* と Python 型オブジェクト *type* を使って新たな Python オブジェクトをメモリ確保します。 Python
    オブジェクトヘッダで定義されていないフィールドは初期化されません; オブジェクトの参照カウントは 1 になります。メモリ確保のサイズは型オブジェクトの
    :attr:`tp_basicsize` で決定します。
 
 
-.. cfunction:: TYPE* PyObject_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
+.. c:function:: TYPE* PyObject_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
    C 構造体型 *TYPE* と Python 型オブジェクト *type* を使って新たな Python オブジェクトをメモリ確保します。 Python
    オブジェクトヘッダで定義されていないフィールドは初期化されません。確保されたメモリは、 *TYPE* 構造体に加え、vartype の
@@ -49,18 +49,18 @@
    対するアロケーション操作を一つにして埋め込むと、アロケーション回数が減り、メモリ管理の処理効率が向上します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: void PyObject_Del(PyObject *op)
+.. c:function:: void PyObject_Del(PyObject *op)
 
-   :cfunc:`PyObject_New` や :cfunc:`PyObject_NewVar` で
+   :c:func:`PyObject_New` や :c:func:`PyObject_NewVar` で
    確保されたメモリを解放します。この関数は、通常オブジェクトの型に指定されている :attr:`tp_dealloc` ハンドラ内で呼び出します。
    この関数を呼び出した後では、オブジェクトのメモリ領域はもはや有効な Python オブジェクトを表現してはいないので、オブジェクトのフィールド
    に対してアクセスしてはなりません。
 
 
-.. cfunction:: PyObject* Py_InitModule(char *name, PyMethodDef *methods)
+.. c:function:: PyObject* Py_InitModule(char *name, PyMethodDef *methods)
 
    *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。
 
@@ -68,7 +68,7 @@
       以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
-.. cfunction:: PyObject* Py_InitModule3(char *name, PyMethodDef *methods, char *doc)
+.. c:function:: PyObject* Py_InitModule3(char *name, PyMethodDef *methods, char *doc)
 
    *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。 *doc* が
    *NULL* でない場合、モジュールの docstring として使われます。
@@ -77,7 +77,7 @@
       以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
-.. cfunction:: PyObject* Py_InitModule4(char *name, PyMethodDef *methods, char *doc, PyObject *self, int apiver)
+.. c:function:: PyObject* Py_InitModule4(char *name, PyMethodDef *methods, char *doc, PyObject *self, int apiver)
 
    *name* と関数のテーブルに基づいて新たなモジュールオブジェクトを生成し、生成されたモジュールオブジェクトを返します。 *doc* が
    *NULL* でない場合、モジュールの docstring として使われます。 *self* が *NULL* でない場合、モジュール内の各関数
@@ -87,13 +87,13 @@
 
    .. note::
 
-      この関数のほとんどの用途は、代わりに :cfunc:`Py_InitModule3` を使えるはずです; 本当にこの関数を使いたいときにだけ利用してください
+      この関数のほとんどの用途は、代わりに :c:func:`Py_InitModule3` を使えるはずです; 本当にこの関数を使いたいときにだけ利用してください
 
    .. versionchanged:: 2.3
       以前のバージョンの Python では、 *methods* 引数の値として *NULL* をサポートしていませんでした.
 
 
-.. cvar:: PyObject _Py_NoneStruct
+.. c:var:: PyObject _Py_NoneStruct
 
    Python からは ``None`` に見えるオブジェクトです。この値へのアクセスは、このオブジェクトへのポインタを評価する ``Py_None``
    マクロを使わねばなりません。

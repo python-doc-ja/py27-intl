@@ -75,7 +75,7 @@
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.5
-      この関数は以前は *nitems* の型に :ctype:`int` を利用していました。
+      この関数は以前は *nitems* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 

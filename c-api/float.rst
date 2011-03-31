@@ -10,20 +10,20 @@
 
 .. ctype:: PyFloatObject
 
-   この :ctype:`PyObject` のサブタイプは Python 浮動小数点型オブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Python 浮動小数点型オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyFloat_Type
 
    .. index:: single: FloatType (in modules types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python 浮動小数点型を表現します。これは
+   この :c:type:`PyTypeObject` のインスタンスは Python 浮動小数点型を表現します。これは
    ``float`` や ``types.FloatType`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyFloat_Check(PyObject *p)
 
-   引数が :ctype:`PyFloatObject` か :ctype:`PyFloatObject` のサブタイプのときに真を返します。
+   引数が :c:type:`PyFloatObject` か :c:type:`PyFloatObject` のサブタイプのときに真を返します。
 
    .. versionchanged:: 2.2
       サブタイプを引数にとれるようになりました.
@@ -31,30 +31,30 @@
 
 .. cfunction:: int PyFloat_CheckExact(PyObject *p)
 
-   引数が :ctype:`PyFloatObject` 型で、かつ :ctype:`PyFloatObject` 型のサブタイプでないときに真を返します。
+   引数が :c:type:`PyFloatObject` 型で、かつ :c:type:`PyFloatObject` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
 .. cfunction:: PyObject* PyFloat_FromString(PyObject *str, char **pend)
 
-   *str* の文字列値をもとに :ctype:`PyFloatObject` オブジェクトを生成します。失敗すると *NULL* を返します。引数
+   *str* の文字列値をもとに :c:type:`PyFloatObject` オブジェクトを生成します。失敗すると *NULL* を返します。引数
    *pend* は無視されます。この引数は後方互換性のためだけに残されています。
 
 
 .. cfunction:: PyObject* PyFloat_FromDouble(double v)
 
-   *v* から :ctype:`PyFloatObject` オブジェクトを生成して返します。失敗すると *NULL* を返します。
+   *v* から :c:type:`PyFloatObject` オブジェクトを生成して返します。失敗すると *NULL* を返します。
 
 
 .. cfunction:: double PyFloat_AsDouble(PyObject *pyfloat)
 
-   *pyfloat* の指す値を、 C の :ctype:`double` 型表現で返します。
+   *pyfloat* の指す値を、 C の :c:type:`double` 型表現で返します。
 
 
 .. cfunction:: double PyFloat_AS_DOUBLE(PyObject *pyfloat)
 
-   *pyfloat* の指す値を、 C の :ctype:`double` 型表現で返しますが、エラーチェックを行いません。
+   *pyfloat* の指す値を、 C の :c:type:`double` 型表現で返しますが、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyFloat_GetInfo(void)
@@ -67,14 +67,14 @@
 
 .. cfunction:: double PyFloat_GetMax()
 
-   float の表現できる最大限解値 *DBL_MAX* を C の :ctype:`double` 型で返します。
+   float の表現できる最大限解値 *DBL_MAX* を C の :c:type:`double` 型で返します。
 
    .. versionadded:: 2.6
 
 
 .. cfunction:: double PyFloat_GetMin()
 
-   float の正規化された最小の正の値 *DBL_MIN* を C の :ctype:`double` 型で返します。
+   float の正規化された最小の正の値 *DBL_MIN* を C の :c:type:`double` 型で返します。
 
    .. versionadded:: 2.6
 

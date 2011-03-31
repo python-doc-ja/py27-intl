@@ -8,8 +8,8 @@
 これらの関数は独自の拡張モジュール用の関数やメソッドを作成する際に便利です。
 詳しい情報や用例は :ref:`extending-index` にあります。
 
-最初に説明する 3 つの関数、 :cfunc:`PyArg_ParseTuple`,
-:cfunc:`PyArg_ParseTupleAndKeywords`,および :cfunc:`PyArg_Parse` はいずれも
+最初に説明する 3 つの関数、 :c:func:`PyArg_ParseTuple`,
+:c:func:`PyArg_ParseTupleAndKeywords`,および :c:func:`PyArg_Parse` はいずれも
 *書式化文字列 (format string)* を使います。
 書式化文字列は、関数が受け取るはずの引数に関する情報を伝えるのに用いられます。
 いずれの関数における書式化文字列も、同じ書式を使っています。
@@ -28,15 +28,15 @@
    いてはなりません; もし埋め込まれていれば :exc:`TypeError` 例外を送出します。Unicode オブジェクトはデフォルトエンコーディングを使って
    C 文字列に変換されます。変換に失敗すると :exc:`UnicodeError` を送出します。
 
-``s#`` (文字列型、Unicode 型または任意の読み出しバッファ互換型) [const char \*, int (または :ctype:`Py_ssize_t`, 下記参照)]
+``s#`` (文字列型、Unicode 型または任意の読み出しバッファ互換型) [const char \*, int (または :c:type:`Py_ssize_t`, 下記参照)]
    これは ``s`` の変化形で、値を二つの変数に記録します。一つ目の変数はキャラクタ文字列へのポインタで、二つ目はその長さです。
    この書式化単位の場合には、Python 文字列に null バイトが埋め込まれていてもかまいません。 Unicode オブジェクトの場合、デフォルト
    エンコーディングでの変換が可能ならば、変換したオブジェクトから文字列へのポインタを返します。その他の読み出しバッファ互換オブジェクトは
    生の内部データ表現への参照を返します。
 
    Python 2.5 から、長さの引数の型を、 :file:`Python.h` を include する前に
-   :cmacro:`PY_SSIZE_T_CLEAN` マクロ を定義することで制御できるようになりました。
-   もしこのマクロが定義されていた場合、長さは int ではなく :ctype:`Py_ssize_t`
+   :c:macro:`PY_SSIZE_T_CLEAN` マクロ を定義することで制御できるようになりました。
+   もしこのマクロが定義されていた場合、長さは int ではなく :c:type:`Py_ssize_t`
    になります。
 
 ``s*`` (文字列、Unicode、または任意のバッファー互換オブジェクト) [Py_buffer]
@@ -61,25 +61,25 @@
 
 ``u`` (Unicode 型) [Py_UNICODE \*]
    Python の Unicode オブジェクトを、NUL で終端された 16 ビットの Unicode (UTF-16) データに変換します。 ``s``
-   と同様に、 Unicode データバッファ用に記憶領域を提供する必要はありません; :ctype:`Py_UNICODE`
+   と同様に、 Unicode データバッファ用に記憶領域を提供する必要はありません; :c:type:`Py_UNICODE`
    型ポインタ変数のアドレスを渡すと、すでに存在している Unicode データへのポインタをその変数に記録します。
 
 ``u#`` (Unicode 型) [Py_UNICODE \*, int]
    これは ``u`` の変化形で、値を二つの変数に記録します。一つ目の変数は Unicode データバッファへのポインタで、二つ目はその長さです。非
-   Unicode のオブジェクトの場合、読み出しバッファのポインタを :ctype:`Py_UNICODE` 型シーケンスへのポインタと解釈して扱います。
+   Unicode のオブジェクトの場合、読み出しバッファのポインタを :c:type:`Py_UNICODE` 型シーケンスへのポインタと解釈して扱います。
 
 ``es`` (文字列型、Unicode 型または任意の読み出しバッファ互換型)[const char \*encoding, char \*\*buffer]
    これは ``s`` の変化形で、Unicode オブジェクトや Unicode に変換可能なオブジェクトをキャラクタ型バッファにエンコードするために
    用いられます。NUL バイトが埋め込まれていない文字列でのみ動作します。
 
-   この書式化単位には二つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :ctype:`const char\*`
-   型でなければなりません。指定したエンコード名を Python が理解できない場合には例外を送出します。第二の引数は :ctype:`char\*\*`
+   この書式化単位には二つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :c:type:`const char\*`
+   型でなければなりません。指定したエンコード名を Python が理解できない場合には例外を送出します。第二の引数は :c:type:`char\*\*`
    でなければなりません; この引数が参照しているポインタの値は、引数に指定したテキストの内容が入ったバッファへのポインタになります。
    テキストは最初の引数に指定したエンコード方式でエンコードされます。
 
-   :cfunc:`PyArg_ParseTuple` を使うと、必要なサイズのバッファを確保し、そのバッファにエンコード後のデータをコピーして、
+   :c:func:`PyArg_ParseTuple` を使うと、必要なサイズのバッファを確保し、そのバッファにエンコード後のデータをコピーして、
    *\*buffer* がこの新たに確保された記憶領域を指すように変更します。呼び出し側には、確保されたバッファを使い終わった後に
-   :cfunc:`PyMem_Free` で解放する責任があります。
+   :c:func:`PyMem_Free` で解放する責任があります。
 
 ``et`` (文字列型、Unicode 型または文字列バッファ互換型) [const char \*encoding, char \*\*buffer]
    ``es`` と同じです。ただし、8 ビット幅の文字列オブジェクトをエンコードし直さずに渡します。その代わり、実装では文字列オブジェクトが
@@ -89,9 +89,9 @@
    ``s#`` の変化形で、Unicode オブジェクトや Unicode に変換可能なオブジェクトをキャラクタ型バッファにエンコードするために
    用いられます。 ``es`` 書式化単位と違って、この変化形はバイトが埋め込まれていてもかまいません。
 
-   この書式化単位には三つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :ctype:`const char\*`
+   この書式化単位には三つの引数が必要です。一つ目は入力にのみ用いられ、 NUL で終端されたエンコード名文字列を指す :c:type:`const char\*`
    型か *NULL* でなければなりません。 *NULL* の場合にはデフォルトエンコーディングを使います。指定したエンコード名を Python が理解できない
-   場合には例外を送出します。第二の引数は :ctype:`char\*\*` でなければなりません; この引数が参照しているポインタの値は、引数に指定した
+   場合には例外を送出します。第二の引数は :c:type:`char\*\*` でなければなりません; この引数が参照しているポインタの値は、引数に指定した
    テキストの内容が入ったバッファへのポインタになります。テキストは最初の引数に指定したエンコード方式でエンコードされます。
    第三の引数は整数へのポインタでなければなりません; ポインタが参照している整数の値は出力バッファ内のバイト数にセットされます。
 
@@ -99,11 +99,11 @@
 
    *\*buffer * が* NULL* ポインタを指している場合、関数は必要なサイズのバッファを確保し、そのバッファにエンコード後の
    データをコピーして、*\*buffer* がこの新たに確保された記憶領域を指すように変更します。呼び出し側には、確保されたバッファを使い終わった後に
-   :cfunc:`PyMem_Free` で解放する責任があります。
+   :c:func:`PyMem_Free` で解放する責任があります。
 
-   *\*buffer* が非 *NULL* のポインタ (すでにメモリ確保済みのバッファ) を指している場合、 :cfunc:`PyArg_ParseTuple`
+   *\*buffer* が非 *NULL* のポインタ (すでにメモリ確保済みのバッファ) を指している場合、 :c:func:`PyArg_ParseTuple`
    はこのメモリ位置をバッファとして用い、*\*buffer_length*
-   の初期値をバッファサイズとして用います。 :cfunc:`PyArg_ParseTuple`  は次にエンコード済みのデータをバッファにコピーして、NUL で終端
+   の初期値をバッファサイズとして用います。 :c:func:`PyArg_ParseTuple`  は次にエンコード済みのデータをバッファにコピーして、NUL で終端
    します。バッファの大きさが足りなければ :exc:`ValueError`  がセットされます。
 
    どちらの場合も、 *\*buffer_length* は終端の NUL バイトを含まないエンコード済みデータの長さにセットされます。
@@ -113,64 +113,64 @@
    パラメタに渡したエンコードを使っているものと仮定します。
 
 ``b`` (整数型) [unsigned char]
-   Python の非負の整数型を、 C の :ctype:`unsigned char` 型の小さな符号無し整数に変換します。
+   Python の非負の整数型を、 C の :c:type:`unsigned char` 型の小さな符号無し整数に変換します。
 
 ``B`` (整数型) [unsigned char]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned char` 型の小さな整数に変換します。
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned char` 型の小さな整数に変換します。
 
    .. versionadded:: 2.3
 
 ``h`` (整数型) [short int]
-   Python の整数型を、 C の :ctype:`short int` 型に変換します。
+   Python の整数型を、 C の :c:type:`short int` 型に変換します。
 
 ``H`` (整数型) [unsigned short int]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned short int` 型に変換します。
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned short int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``i`` (整数型) [int]
-   Python の整数型を、 C の :ctype:`int` 型に変換します。
+   Python の整数型を、 C の :c:type:`int` 型に変換します。
 
 ``I`` (整数型) [unsigned int]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned int` 型に変換します。
+   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``l`` (整数型) [long int]
-   Python の整数型を、 C の :ctype:`long int` 型に変換します。
+   Python の整数型を、 C の :c:type:`long int` 型に変換します。
 
 ``k`` (整数型) [unsigned long]
-   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned long int` 型に変換します。
+   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``L`` (整数型) [PY_LONG_LONG]
-   Python の整数型を、 C の :ctype:`long long` 型に変換します。この書式化単位は、 :ctype:`long long` 型 (または
-   Windows の  :ctype:`_int64` 型) がサポートされているプラットフォームでのみ利用できます。
+   Python の整数型を、 C の :c:type:`long long` 型に変換します。この書式化単位は、 :c:type:`long long` 型 (または
+   Windows の  :c:type:`_int64` 型) がサポートされているプラットフォームでのみ利用できます。
 
 ``K`` (整数型) [unsigned PY_LONG_LONG]
-   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :ctype:`unsigned long long` 型に変換します。
-   この書式化単位は、 :ctype:`unsigned long long` 型 (または Windows の  :ctype:`unsigned _int64`
+   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long long` 型に変換します。
+   この書式化単位は、 :c:type:`unsigned long long` 型 (または Windows の  :c:type:`unsigned _int64`
    型) がサポートされているプラットフォームでのみ利用できます。
 
    .. versionadded:: 2.3
 
 ``n`` (integer) [Py_ssize_t]
-   Python の整数型もしくは長整数型をCの :ctype:`Py_ssize_t` 型に変換します。
+   Python の整数型もしくは長整数型をCの :c:type:`Py_ssize_t` 型に変換します。
 
    .. versionadded:: 2.5
 
 ``c`` (長さ 1 の文字列型) [char]
-   長さ 1 の文字列として表現されている Python キャラクタを C の :ctype:`char` 型に変換します。
+   長さ 1 の文字列として表現されている Python キャラクタを C の :c:type:`char` 型に変換します。
 
 ``f`` (浮動小数点型) [float]
-   Python の浮動小数点型を、 C の :ctype:`float` 型に変換します。
+   Python の浮動小数点型を、 C の :c:type:`float` 型に変換します。
 
 ``d`` (浮動小数点型) [double]
-   Python の浮動小数点型を、 C の :ctype:`double` 型に変換します。
+   Python の浮動小数点型を、 C の :c:type:`double` 型に変換します。
 
 ``D`` (複素数型) [Py_complex]
-   Python の複素数型を、 C の :ctype:`Py_complex` 構造体に変換します。
+   Python の複素数型を、 C の :c:type:`Py_complex` 構造体に変換します。
 
 ``O`` (オブジェクト) [PyObject \*]
    Python オブジェクトを (一切変換を行わずに) C の Python オブジェクト型ポインタに保存します。これにより、C
@@ -178,31 +178,31 @@
 
 ``O!`` (オブジェクト) [*typeobject*, PyObject \*]
    Python オブジェクトを C の Python オブジェクト型ポインタに保存します。 ``O`` に似ていますが、二つの C の引数をとります:
-   一つ目の引数は Python の型オブジェクトへのアドレスで、二つ目の引数はオブジェクトへのポインタが保存されている (:ctype:`PyObject\*`
+   一つ目の引数は Python の型オブジェクトへのアドレスで、二つ目の引数はオブジェクトへのポインタが保存されている (:c:type:`PyObject\*`
    の) C の変数へのアドレスです。Python オブジェクトが指定した型ではない場合、 :exc:`TypeError` を送出します。
 
 ``O&`` (オブジェクト) [*converter*, *anything*]
    Python オブジェクトを *converter* 関数を介して C の変数に変換します。二つの引数をとります: 一つ目は関数で、二つ目は (任意の型の)
-   C 変数へのアドレスを :ctype:`void \*` 型に変換したものです。 *converter* は以下のようにして呼び出されます:
+   C 変数へのアドレスを :c:type:`void \*` 型に変換したものです。 *converter* は以下のようにして呼び出されます:
 
    *status* ``=``*converter *``(``* object*, *address* ``);``
 
-   ここで *object* は変換対象の Python オブジェクトで、 *address* は :cfunc:`PyArg_Parse\*` に渡した
-   :ctype:`void\*`  型の引数です。戻り値 *status* は変換に成功した際に ``1``,失敗した場合には ``0``
+   ここで *object* は変換対象の Python オブジェクトで、 *address* は :c:func:`PyArg_Parse\*` に渡した
+   :c:type:`void\*`  型の引数です。戻り値 *status* は変換に成功した際に ``1``,失敗した場合には ``0``
    になります。変換に失敗した場合、 *converter* 関数は *address* の内容を変更せずに例外を送出しなくてはなりません。
 
 ``S`` (文字列型) [PyStringObject \*]
    ``O`` に似ていますが、Python オブジェクトは文字列オブジェクトでなければなりません。
-   オブジェクトが文字列オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :ctype:`PyObject\*`
+   オブジェクトが文字列オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :c:type:`PyObject\*`
    で宣言しておいてもかまいません。
 
 ``U`` (Unicode 型) [PyUnicodeObject \*]
    ``O`` に似ていますが、Python オブジェクトは Unicode オブジェクトでなければなりません。オブジェクトが Unicode
-   オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :ctype:`PyObject\*` で宣言しておいてもかまいません。
+   オブジェクトでない場合には :exc:`TypeError` を送出します。 C 変数は :c:type:`PyObject\*` で宣言しておいてもかまいません。
 
 ``t#`` (読み出し専用キャラクタバッファ) [char \*, int]
-   ``s#`` に似ていますが、読み出し専用バッファインタフェースを実装している任意のオブジェクトを受理します。 :ctype:`char\*`
-   変数はバッファの最初のバイトを指すようにセットされ、 :ctype:`int` はバッファの長さにセットされます。
+   ``s#`` に似ていますが、読み出し専用バッファインタフェースを実装している任意のオブジェクトを受理します。 :c:type:`char\*`
+   変数はバッファの最初のバイトを指すようにセットされ、 :c:type:`int` はバッファの長さにセットされます。
    単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
 ``w`` (読み書き可能なキャラクタバッファ) [char \*]
@@ -211,8 +211,8 @@
    単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
 ``w#`` (読み書き可能なキャラクタバッファ) [char \*, Py_ssize_t]
-   ``s#`` に似ていますが、読み書き可能なバッファインタフェースを実装している任意のオブジェクトを受理します。 :ctype:`char\*`
-   変数はバッファの最初のバイトを指すようにセットされ、 :ctype:`Py_ssize_t` はバッファの長さにセットされます。
+   ``s#`` に似ていますが、読み書き可能なバッファインタフェースを実装している任意のオブジェクトを受理します。 :c:type:`char\*`
+   変数はバッファの最初のバイトを指すようにセットされ、 :c:type:`Py_ssize_t` はバッファの長さにセットされます。
    単一セグメントからなるバッファオブジェクトだけを受理します; それ以外の場合には :exc:`TypeError` を送出します。
 
 ``w*`` (読み書きできるバイト列バッファ) [Py_buffer]
@@ -238,12 +238,12 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
 ``|``
    Python 引数リスト中で、この文字以降の引数がオプションであることを示します。オプションの引数に対応する C の変数はデフォルトの値で初期化して
-   おかねばなりません --- オプションの引数が省略された場合、 :cfunc:`PyArg_ParseTuple` は対応する C 変数の内容に
+   おかねばなりません --- オプションの引数が省略された場合、 :c:func:`PyArg_ParseTuple` は対応する C 変数の内容に
    手を加えません。
 
 ``:``
    この文字があると、書式化単位の記述はそこで終わります; コロン以降の文字列は、エラーメッセージにおける関数名
-   (:cfunc:`PyArg_ParseTuple` が送出する例外の "付属値 (associated value)") として使われます。
+   (:c:func:`PyArg_ParseTuple` が送出する例外の "付属値 (associated value)") として使われます。
 
 ``;``
    この文字があると、書式化単位の記述はそこで終わります; セミコロン以降の文字列は、デフォルトエラーメッセージを *置き換える*
@@ -257,8 +257,8 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 その場合、対応する書式化単位の指定する形式に従うようにせねばなりません。
 
 変換を正しく行うためには、 *arg* オブジェクトは書式化文字に一致しなければならず、かつ書式化文字列内の書式化単位に全て値が入るようにせねばなりません。
-成功すると、 :cfunc:`PyArg_Parse\*` 関数は真を返します。それ以外の場合には偽を返し、適切な例外を送出します。
-書式化単位のどれかの変換失敗により :cfunc:`PyArg_Parse\*` が失敗した場合、
+成功すると、 :c:func:`PyArg_Parse\*` 関数は真を返します。それ以外の場合には偽を返し、適切な例外を送出します。
+書式化単位のどれかの変換失敗により :c:func:`PyArg_Parse\*` が失敗した場合、
 失敗した書式化単位に対応するアドレスとそれ以降のアドレスの内容は変更されません。
 
 
@@ -270,7 +270,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
 .. cfunction:: int PyArg_VaParse(PyObject *args, const char *format, va_list vargs)
 
-   :cfunc:`PyArg_ParseTuple` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
+   :c:func:`PyArg_ParseTuple` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
 .. cfunction:: int PyArg_ParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], ...)
@@ -281,7 +281,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
 .. cfunction:: int PyArg_VaParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], va_list vargs)
 
-   :cfunc:`PyArg_ParseTupleAndKeywords` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
+   :c:func:`PyArg_ParseTupleAndKeywords` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
 .. cfunction:: int PyArg_Parse(PyObject *args, const char *format, ...)
@@ -297,7 +297,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    パラメータ取得を簡単にした形式で、引数の型を指定する書式化文字列を使いません。パラメタの取得にこの手法を使う関数は、関数宣言テーブル、またはメソッド
    宣言テーブル内で :const:`METH_VARARGS` として宣言しなくてはなりません。実引数の入ったタプルは *args* に渡します;
    このタプルは本当のタプルでなくてはなりません。タプルの長さは少なくとも *min* で、 *max* を超えてはなりません; *min* と *max*
-   が等しくてもかまいません。補助引数を関数に渡さなくてはならず、各補助引数は :ctype:`PyObject\*`  変数へのポインタでなくてはなりません;
+   が等しくてもかまいません。補助引数を関数に渡さなくてはならず、各補助引数は :c:type:`PyObject\*`  変数へのポインタでなくてはなりません;
    これらの補助引数には、 *args* の値が入ります; 値の参照は借りた参照です。オプションのパラメタに対応する変数のうち、 *args* に指定していない
    ものには値が入りません; 呼び出し側はそれらの値を初期化しておかねばなりません。この関数は成功すると真を返し、 *args* がタプルでない場合や
    間違った数の要素が入っている場合に偽を返します; 何らかの失敗が起きた場合には例外をセットします。
@@ -317,7 +317,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
           return result;
       }
 
-   この例における :cfunc:`PyArg_UnpackTuple` 呼び出しは、 :cfunc:`PyArg_ParseTuple` を使った以下の呼び出し::
+   この例における :c:func:`PyArg_UnpackTuple` 呼び出しは、 :c:func:`PyArg_ParseTuple` を使った以下の呼び出し::
 
       PyArg_ParseTuple(args, "O|O:ref", &object, &callback)
 
@@ -326,22 +326,22 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    .. versionadded:: 2.2
 
    .. versionchanged:: 2.5
-      この関数は *min* と *max* に :ctype:`int` を利用していました。
+      この関数は *min* と *max* に :c:type:`int` を利用していました。
       この変更により、64bitシステムを正しくサポートするためには修正が必要になるでしょう。
 
 .. cfunction:: PyObject* Py_BuildValue(const char *format, ...)
 
-   :cfunc:`PyArg_Parse\*` ファミリの関数が受け取るのと似た形式の書式化文字列および値列に基づいて、新たな値を生成します。
+   :c:func:`PyArg_Parse\*` ファミリの関数が受け取るのと似た形式の書式化文字列および値列に基づいて、新たな値を生成します。
    生成した値を返します。エラーの場合には *NULL* を返します; *NULL* を返す場合、例外を送出するでしょう。
 
-   :cfunc:`Py_BuildValue` は常にタプルを生成するとは限りません。この関数がタプルを生成するのは、書式化文字列に二つ以上の書式化単位
+   :c:func:`Py_BuildValue` は常にタプルを生成するとは限りません。この関数がタプルを生成するのは、書式化文字列に二つ以上の書式化単位
    が入っているときだけです。書式化文字列が空の場合、 ``None``  を返します; 書式化単位が厳密に一つだけ入っている場合、
    書式化単位で指定されている何らかのオブジェクト単体を返します。サイズがゼロや 1 のタプルを返すように強制するには、丸括弧で囲われた書式化文字列を使います。
 
    書式化単位 ``s`` や ``s#`` の場合のように、オブジェクトを構築する際にデータを供給するためにメモリバッファをパラメタとして渡す
-   場合には、指定したデータはコピーされます。 :cfunc:`Py_BuildValue` が生成したオブジェクトは、呼び出し側が提供したバッファを決して参照
-   しません。別の言い方をすれば、 :cfunc:`malloc` を呼び出してメモリを確保し、それを :cfunc:`Py_BuildValue`
-   に渡した場合、コード内で :cfunc:`Py_BuildValue` が返った後で :cfunc:`free` を呼び出す責任があるということです。
+   場合には、指定したデータはコピーされます。 :c:func:`Py_BuildValue` が生成したオブジェクトは、呼び出し側が提供したバッファを決して参照
+   しません。別の言い方をすれば、 :c:func:`malloc` を呼び出してメモリを確保し、それを :c:func:`Py_BuildValue`
+   に渡した場合、コード内で :c:func:`Py_BuildValue` が返った後で :c:func:`free` を呼び出す責任があるということです。
 
    以下の説明では、引用符のついた形式は書式化単位です; (丸)括弧で囲った部分は書式化単位が返す Python のオブジェクト型です; [角]
    括弧は関数に渡す値の C 変数型です。
@@ -370,60 +370,60 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
       Unicode バッファポインタが *NULL* の場合、長さは無視され ``None`` になります。
 
    ``i`` (整数型) [int]
-      通常の C の :ctype:`int` を Python の整数オブジェクトに変換します。
+      通常の C の :c:type:`int` を Python の整数オブジェクトに変換します。
 
    ``b`` (整数型) [char]
-      ``i`` と同じです。通常のC の :ctype:`char` を Python の整数オブジェクトに変換します。
+      ``i`` と同じです。通常のC の :c:type:`char` を Python の整数オブジェクトに変換します。
 
    ``h`` (整数型) [short int]
-      通常のC の :ctype:`short int` を Python の整数オブジェクトに変換します。
+      通常のC の :c:type:`short int` を Python の整数オブジェクトに変換します。
 
    ``l`` (整数型) [long int]
-      C の :ctype:`long int` を Python の整数オブジェクトに変換します。
+      C の :c:type:`long int` を Python の整数オブジェクトに変換します。
 
    ``B`` (integer) [unsigned char]
-      C の :ctype:`unsigned char` を Python の整数オブジェクトに変換します。
+      C の :c:type:`unsigned char` を Python の整数オブジェクトに変換します。
 
    ``H`` (integer) [unsigned short int]
-      C の :ctype:`unsigned short int` を Python の整数オブジェクトに変換します。
+      C の :c:type:`unsigned short int` を Python の整数オブジェクトに変換します。
 
    ``I`` (integer/long) [unsigned int]
-      C の :ctype:`unsigned int` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
+      C の :c:type:`unsigned int` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
       より大きければ長整数オブジェクトに変換します。
 
    ``k`` (integer/long) [unsigned long]
-      C の :ctype:`unsigned long` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
+      C の :c:type:`unsigned long` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
       より大きければ長整数オブジェクトに変換します。
 
    ``L`` (long) [PY_LONG_LONG]
-      C の :ctype:`long long` を Python の長整数オブジェクトに変換します。 :ctype:`long long`
+      C の :c:type:`long long` を Python の長整数オブジェクトに変換します。 :c:type:`long long`
       をサポートしているプラットフォームでのみ利用可能です。
 
    ``K`` (long) [unsigned PY_LONG_LONG]
-      C の :ctype:`unsigned long long` を Python の長整数オブジェクトに変換します。 :ctype:`long long`
+      C の :c:type:`unsigned long long` を Python の長整数オブジェクトに変換します。 :c:type:`long long`
       をサポートしているプラットフォームでのみ利用可能です。
 
    ``n`` (int) [Py_ssize_t]
-      C の :ctype:`unsigned long` を Python の整数オブジェクト、あるいは長整数オブジェクトに変換します。
+      C の :c:type:`unsigned long` を Python の整数オブジェクト、あるいは長整数オブジェクトに変換します。
 
       .. versionadded:: 2.5
 
    ``c`` (string of length 1) [char]
-      文字を表す通常の C の :ctype:`int` を、長さ 1 の Python の文字列オブジェクトに変換します。
+      文字を表す通常の C の :c:type:`int` を、長さ 1 の Python の文字列オブジェクトに変換します。
 
    ``d`` (浮動小数点型) [double]
-      C の :ctype:`double` を Python の浮動小数点数に変換します。
+      C の :c:type:`double` を Python の浮動小数点数に変換します。
 
    ``f`` (浮動小数点型) [float]
       ``d`` と同じです。
 
    ``D`` (複素数型) [Py_complex \*]
-      C の :ctype:`Py_complex` 構造体を Python の複素数に変換します。
+      C の :c:type:`Py_complex` 構造体を Python の複素数に変換します。
 
    ``O`` (オブジェクト) [PyObject \*]
       Python オブジェクトを手を加えずに渡します (ただし、参照カウントは 1 インクリメントします)。渡したオブジェクトが *NULL* ポインタ
       の場合、この引数を生成するのに使った何らかの呼び出しがエラーになったのが原因であると仮定して、例外をセットします。従ってこのとき
-      :cfunc:`Py_BuildValue` は *NULL* を返しますが :cfunc:`Py_BuildValue` 自体は例外を送出しません。
+      :c:func:`Py_BuildValue` は *NULL* を返しますが :c:func:`Py_BuildValue` 自体は例外を送出しません。
       例外をまだ送出していなければ :exc:`SystemError` をセットします。
 
    ``S`` (オブジェクト) [PyObject \*]
@@ -435,7 +435,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
    ``O&`` (オブジェクト) [*converter*, *anything*]
       *anything* を *converter* 関数を介して Python オブジェクトに変換します。この関数は *anything*
-      (:ctype:`void \*` と互換の型でなければなりません) を引数にして呼び出され、"新たな" オブジェクトを返すか、失敗した場合には
+      (:c:type:`void \*` と互換の型でなければなりません) を引数にして呼び出され、"新たな" オブジェクトを返すか、失敗した場合には
       *NULL* を返すようにしなければなりません。
 
    ``(items)`` (タプル型) [*matching-items*]
@@ -451,5 +451,5 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
 .. cfunction:: PyObject* Py_VaBuildValue(const char *format, va_list vargs)
 
-   :cfunc:`Py_BuildValue` と同じですが、可変長引数の代わりに va_list を受け取ります。
+   :c:func:`Py_BuildValue` と同じですが、可変長引数の代わりに va_list を受け取ります。
 

@@ -20,7 +20,7 @@ Python 2.6 へと逆移植されました。詳細は :ref:`bufferobjects` を�
    .. versionadded:: 1.6
 
    .. versionchanged:: 2.5
-      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *buffer_len* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyObject_AsReadBuffer(PyObject *obj, const void **buffer, Py_ssize_t *buffer_len)
@@ -32,7 +32,7 @@ Python 2.6 へと逆移植されました。詳細は :ref:`bufferobjects` を�
    .. versionadded:: 1.6
 
    .. versionchanged:: 2.5
-      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *buffer_len* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyObject_CheckReadBuffer(PyObject *o)
@@ -52,5 +52,5 @@ Python 2.6 へと逆移植されました。詳細は :ref:`bufferobjects` を�
    .. versionadded:: 1.6
 
    .. versionchanged:: 2.5
-      この関数は以前は *buffer_len* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *buffer_len* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。

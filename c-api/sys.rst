@@ -9,14 +9,14 @@
 .. cfunction:: int Py_FdIsInteractive(FILE *fp, const char *filename)
 
    *filename* という名前の標準 I/O ファイル *fp* が対話的 (interactive) であると考えられる場合に真 (非ゼロ) を返します。
-   これは ``isatty(fileno(fp))`` が真になるファイルの場合です。グローバルなフラグ :cdata:`Py_InteractiveFlag`
+   これは ``isatty(fileno(fp))`` が真になるファイルの場合です。グローバルなフラグ :c:data:`Py_InteractiveFlag`
    が真の場合には、 *filename* ポインタが *NULL* か、名前が ``'<stdin>'`` または ``'???'``
    のいずれかに等しい場合にも真を返します。
 
 
 .. cfunction:: long PyOS_GetLastModificationTime(char *filename)
 
-   ファイル *filename* の最終更新時刻を返します。結果は標準 C ライブラリ関数 :cfunc:`time` が返すタイムスタンプと
+   ファイル *filename* の最終更新時刻を返します。結果は標準 C ライブラリ関数 :c:func:`time` が返すタイムスタンプと
    同じ様式で符号化されています。
 
 
@@ -35,16 +35,16 @@
 
 .. cfunction:: PyOS_sighandler_t PyOS_getsig(int i)
 
-   シグナル *i* に対する現在のシグナルハンドラを返します。この関数は :cfunc:`sigaction` または :cfunc:`signal`
-   のいずれかに対する薄いラッパです。 :cfunc:`sigaction` や :cfunc:`signal` を直接呼び出してはなりません!
-   :ctype:`PyOS_sighandler_t` は :ctype:`void (\*)(int)` の typedef  による別名です。
+   シグナル *i* に対する現在のシグナルハンドラを返します。この関数は :c:func:`sigaction` または :c:func:`signal`
+   のいずれかに対する薄いラッパです。 :c:func:`sigaction` や :c:func:`signal` を直接呼び出してはなりません!
+   :c:type:`PyOS_sighandler_t` は :c:type:`void (\*)(int)` の typedef  による別名です。
 
 
 .. cfunction:: PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
 
    シグナル *i* に対する現在のシグナルハンドラを *h* に設定します; 以前のシグナルハンドラを返します。この関数は
-   :cfunc:`sigaction` または :cfunc:`signal` のいずれかに対する薄いラッパです。 :cfunc:`sigaction` や
-   :cfunc:`signal` を直接呼び出してはなりません!  :ctype:`PyOS_sighandler_t` は :ctype:`void
+   :c:func:`sigaction` または :c:func:`signal` のいずれかに対する薄いラッパです。 :c:func:`sigaction` や
+   :c:func:`signal` を直接呼び出してはなりません!  :c:type:`PyOS_sighandler_t` は :c:type:`void
    (\*)(int)` の typedef  による別名です。
 
 
@@ -64,8 +64,8 @@
 
 .. cfunction:: FILE *PySys_GetFile(char *name, FILE *def)
 
-   :mod:`sys` モジュールの *name* に関連付けられた :ctype:`FILE*` を返します。
-   *name* がなかった場合や :ctype:`FILE*` に関連付けられていなかった場合は *def* を返します。
+   :mod:`sys` モジュールの *name* に関連付けられた :c:type:`FILE*` を返します。
+   *name* がなかった場合や :c:type:`FILE*` に関連付けられていなかった場合は *def* を返します。
 
 .. cfunction:: int PySys_SetObject(char *name, PyObject *v)
 
@@ -120,7 +120,7 @@
    致命的エラーメッセージ (fatal error message) を出力してプロセスを強制終了 (kill)
    します。後始末処理は行われません。この関数は、Python  インタプリタを使い続けるのが危険であるような状況が検出されたとき;
    例えば、オブジェクト管理が崩壊していると思われるときにのみ、呼び出されるようにしなければなりません。Unixでは、標準 C ライブラリ関数
-   :cfunc:`abort` を呼び出して :file:`core` を生成しようと試みます。
+   :c:func:`abort` を呼び出して :file:`core` を生成しようと試みます。
 
 
 .. cfunction:: void Py_Exit(int status)
@@ -129,7 +129,7 @@
       single: Py_Finalize()
       single: exit()
 
-   現在のプロセスを終了 (exit) します。この関数は :cfunc:`Py_Finalize` を呼び出し、次いで標準 C ライブラリ関数
+   現在のプロセスを終了 (exit) します。この関数は :c:func:`Py_Finalize` を呼び出し、次いで標準 C ライブラリ関数
    ``exit(status)`` を呼び出します。
 
 
@@ -139,7 +139,7 @@
       single: Py_Finalize()
       single: cleanup functions
 
-   :cfunc:`Py_Finalize` から呼び出される後始末処理を行う関数 (cleanup function) を登録します。
-   後始末関数は引数無しで呼び出され、値を返しません。最大で 32 の後始末処理関数を登録できます。登録に成功すると、 :cfunc:`Py_AtExit` は
+   :c:func:`Py_Finalize` から呼び出される後始末処理を行う関数 (cleanup function) を登録します。
+   後始末関数は引数無しで呼び出され、値を返しません。最大で 32 の後始末処理関数を登録できます。登録に成功すると、 :c:func:`Py_AtExit` は
    ``0`` を返します;  失敗すると ``-1`` を返します。最後に登録した後始末処理関数から先に呼び出されます。各関数は高々一度しか呼び出されません。
    Python の内部的な終了処理は後始末処理関数より以前に完了しているので、 *func* からはいかなる Python API も呼び出してはなりません。

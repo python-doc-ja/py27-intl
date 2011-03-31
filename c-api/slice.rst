@@ -34,16 +34,16 @@
    :const:`None` ではなく、かつ整数に変換できなかった場合を除きます。この場合、 ``-1`` を返して例外をセットします)。
 
    おそらくこの関数を使う気にはならないでしょう。バージョン 2.3 以前の Python でスライスオブジェクトを使いたいのなら、
-   :cfunc:`PySlice_GetIndicesEx` のソースを適切に名前変更して自分の拡張モジュールのソースコード内に組み込むとよいでしょう。
+   :c:func:`PySlice_GetIndicesEx` のソースを適切に名前変更して自分の拡張モジュールのソースコード内に組み込むとよいでしょう。
 
    .. versionchanged:: 2.5
-      この関数は以前は *length* の型に :ctype:`int` を、 *start*, *stop*, *step*
-      の型に :ctype:`int *` を利用していました。
+      この関数は以前は *length* の型に :c:type:`int` を、 *start*, *stop*, *step*
+      の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySlice_GetIndicesEx(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step, Py_ssize_t *slicelength)
 
-   :cfunc:`PySlice_GetIndices` の置き換えとして使える関数です。
+   :c:func:`PySlice_GetIndices` の置き換えとして使える関数です。
 
    スライスオブジェクト *slice* における *start*, *stop*,  および *step* のインデクス値を取得します。このときシーケンスの
    長さを *length* と仮定します。スライスの長さを *slicelength* に記憶します。境界をはみだしたインデクスは、通常のスライスを扱うのと
@@ -54,6 +54,6 @@
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.5
-      この関数は以前は *length* の型に :ctype:`int` を、 *start*, *stop*, *step*,
-      *slicelength* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *length* の型に :c:type:`int` を、 *start*, *stop*, *step*,
+      *slicelength* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。

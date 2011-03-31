@@ -117,7 +117,7 @@
 
    *o1* と *o2* の値を比較します。このとき *o1* が比較ルーチンを持っていればそれを使い、なければ *o2* のルーチンを使います。比較結果は
    *result* に返されます。失敗すると ``-1`` を返します。 Python 文 ``result = cmp(o1, o2)``
-   と同じです。成功すると比較結果を返します。エラーが生じた場合の戻り値は未定義です; :cfunc:`PyErr_Occurred` を使ってエラー検出を
+   と同じです。成功すると比較結果を返します。エラーが生じた場合の戻り値は未定義です; :c:func:`PyErr_Occurred` を使ってエラー検出を
    行って下さい。Python 式 ``cmp(o1,  o2)`` と同じです。
 
 
@@ -142,7 +142,7 @@
    .. index:: builtin: bytes
 
    *o* オブジェクトの bytes 表現を計算します。
-   2.x では、単に :cfunc:`PyObject_Str` のエイリアスです。
+   2.x では、単に :c:func:`PyObject_Str` のエイリアスです。
 
 
 .. cfunction:: PyObject* PyObject_Unicode(PyObject *o)
@@ -157,7 +157,7 @@
 
    *inst* が *cls* のインスタンスか、 *cls* のサブクラスのインスタンスの場合に ``-1`` を返し、そうでなければ ``0`` を
    返します。エラーの時には ``-1`` を返し、例外をセットします。 *cls* がクラスオブジェクトではなく型オブジェクトの場合、
-   :cfunc:`PyObject_IsInstance` は *inst* が *cls* であるときに ``1`` を返します。 *cls*
+   :c:func:`PyObject_IsInstance` は *inst* が *cls* であるときに ``1`` を返します。 *cls*
    をタプルで指定した場合、 *cls* に指定した全てのエントリについてチェックを行います。少なくとも一つのエントリに対するチェックが ``1``
    を返せば結果は ``1`` になり、そうでなければ ``0`` になります。 *inst* がクラスインスタンスでなく、かつ *cls* が
    型オブジェクトでもクラスオブジェクトでもタプルでもない場合、 *inst* には :attr:`__class__` 属性がなくてはなりません ---
@@ -172,7 +172,7 @@
 :class:`B` がクラスオブジェクトの場合、 :class:`B` が :class:`A` のサブクラスとなるのは、 :class:`B` が
 :class:`A` を直接的あるいは間接的に継承 (inherit) している場合です。両方がクラスオブジェクトでない場合、二つのオブジェクト間の
 クラス関係を決めるには、より汎用の機構を使います。 *B* が *A* のサブクラスであるか調べたとき、 *A* が *B*
-と等しければ、 :cfunc:`PyObject_IsSubclass` は真を返します。 *A* および *B* が異なるオブジェクトなら、 *B* の
+と等しければ、 :c:func:`PyObject_IsSubclass` は真を返します。 *A* および *B* が異なるオブジェクトなら、 *B* の
 :attr:`__bases__` 属性から深さ優先探索 (depth-first search)で *A* を探索します ---
 オブジェクトに :attr:`__bases__` があるだけで、この決定法を適用する条件を満たしているとみなされます。
 
@@ -225,25 +225,25 @@
    .. index:: builtin: apply
 
    呼び出し可能な Python オブジェクト *callable_object* を可変数個の C 引数とともに呼び出します。C 引数は
-   :cfunc:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format*
+   :c:func:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format*
    は *NULL* にしてもよく、与える引数がないことを表します。成功すると呼び出し結果として得られたオブジェクトを返し、失敗すると *NULL* を返します。
    Python の式 ``apply(callable, args)`` あるいは ``callable(*args)`` と同じです。
-   もしも、 :ctype:`PyObject \*` args だけを引数に渡す場合は、 :cfunc:`PyObject_CallFunctionObjArgs`
+   もしも、 :c:type:`PyObject \*` args だけを引数に渡す場合は、 :c:func:`PyObject_CallFunctionObjArgs`
    がより速い方法であることを覚えておいてください。
 
 
 .. cfunction:: PyObject* PyObject_CallMethod(PyObject *o, char *method, char *format, ...)
 
    オブジェクト *o* の *method* という名前のメソッドを、可変数個の C 引数とともに呼び出します。C 引数はタプルを生成するような
-   :cfunc:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format*
+   :c:func:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format*
    は *NULL* にしてもよく、与える引数がないことを表します。成功すると呼び出し結果として得られたオブジェクトを返し、失敗すると *NULL* を返します。
-   Python の式 ``o.method(args)`` と同じです。もしも、 :ctype:`PyObject \*` args
-   だけを引数に渡す場合は、 :cfunc:`PyObject_CallMethodObjArgs` がより速い方法であることを覚えておいてください。
+   Python の式 ``o.method(args)`` と同じです。もしも、 :c:type:`PyObject \*` args
+   だけを引数に渡す場合は、 :c:func:`PyObject_CallMethodObjArgs` がより速い方法であることを覚えておいてください。
 
 
 .. cfunction:: PyObject* PyObject_CallFunctionObjArgs(PyObject *callable, ..., NULL)
 
-   呼び出し可能な Python オブジェクト *callable_object* を可変数個の :ctype:`PyObject\*`
+   呼び出し可能な Python オブジェクト *callable_object* を可変数個の :c:type:`PyObject\*`
    引数とともに呼び出します。引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
    成功すると呼び出し結果として得られたオブジェクトを返し失敗すると *NULL* を返します。
 
@@ -253,7 +253,7 @@
 .. cfunction:: PyObject* PyObject_CallMethodObjArgs(PyObject *o, PyObject *name, ..., NULL)
 
    オブジェクト *o* のメソッドを呼び出します、メソッド名は Python 文字列オブジェクト *name* で与えます。可変数個の
-   :ctype:`PyObject\*` 引数と共に呼び出されます. 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
+   :c:type:`PyObject\*` 引数と共に呼び出されます. 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
    成功すると呼び出し結果として得られたオブジェクトを返し失敗すると *NULL* を返します。
 
    .. versionadded:: 2.2
@@ -294,7 +294,7 @@
 
    *o* が *NULL* でない場合、オブジェクト *o* のオブジェクト型に相当する型オブジェクトを返します。失敗すると :exc:`SystemError`
    を送出して *NULL* を返します。 Python の式 ``type(o)`` と同じです。  この関数は戻り値の参照カウントをインクリメントします。
-   参照カウントのインクリメントが必要でない限り、広く使われていて :ctype:`PyTypeObject\*` 型のポインタを返す表記法
+   参照カウントのインクリメントが必要でない限り、広く使われていて :c:type:`PyTypeObject\*` 型のポインタを返す表記法
    ``o->ob_type`` の代わりに使う理由は全くありません。
 
 
@@ -314,7 +314,7 @@
    返します。エラーが生じると ``-1`` を返します。 Python の式 ``len(o)`` と同じです。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` 型を返していました。
+      これらの関数は以前は :c:type:`int` 型を返していました。
       この変更により、 64bit システムを適切にサポートするためにはコードの修正が必要になります。
 
 .. cfunction:: PyObject* PyObject_GetItem(PyObject *o, PyObject *key)
@@ -346,7 +346,7 @@
    この関数は Python の式 ``dir(o)`` と同じで、オブジェクトの変数名に割り当てている文字列からなるリスト (空の場合もあります)
    を返します。エラーの場合には *NULL* を返します。引数を *NULL* にすると、Python における ``dir()``
    と同様に、現在のローカルな名前を返します; この場合、アクティブな実行フレームがなければ *NULL* を返しますが、
-   :cfunc:`PyErr_Occurred` は偽を返します。
+   :c:func:`PyErr_Occurred` は偽を返します。
 
 
 .. cfunction:: PyObject* PyObject_GetIter(PyObject *o)

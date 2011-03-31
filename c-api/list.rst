@@ -10,18 +10,18 @@ List Objects
 
 .. ctype:: PyListObject
 
-   この :ctype:`PyObject` のサブタイプは Python のリストオブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Python のリストオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyList_Type
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のタプル型を表現します。
+   この :c:type:`PyTypeObject` のインスタンスは Python のタプル型を表現します。
    これは Python レイヤにおける ``list`` と同じオブジェクトです。
 
 
 .. cfunction:: int PyList_Check(PyObject *p)
 
-   引数が :ctype:`PyListObject` である場合に真を返します。
+   引数が :c:type:`PyListObject` である場合に真を返します。
 
 
 .. cfunction:: PyObject* PyList_New(Py_ssize_t len)
@@ -31,11 +31,11 @@ List Objects
    .. note::
 
       *len* が0より大きいとき、返されるリストオブジェクトの要素には ``NULL`` がセットされています。
-      なので、 :cfunc:`PyList_SetItem` で本当にオブジェクトをセットする
-      までは、Pythonコードにこのオブジェクトを渡したり、 :cfunc:`PySequence_SetItem` のような抽象APIを利用してはいけません。
+      なので、 :c:func:`PyList_SetItem` で本当にオブジェクトをセットする
+      までは、Pythonコードにこのオブジェクトを渡したり、 :c:func:`PySequence_SetItem` のような抽象APIを利用してはいけません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *len* の型に :ctype:`int` を利用していました。
+      この関数は以前は *len* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyList_Size(PyObject *list)
@@ -45,15 +45,15 @@ List Objects
    リストオブジェクト *list* の長さを返します;  リストオブジェクトにおける ``len(list)`` と同じです。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyList_GET_SIZE(PyObject *list)
 
-   マクロ形式でできた :cfunc:`PyList_Size` で、エラーチェックをしません。
+   マクロ形式でできた :c:func:`PyList_Size` で、エラーチェックをしません。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
@@ -62,15 +62,15 @@ List Objects
    サポートされていません。 *pos* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :ctype:`int` を利用していました。
+      この関数は以前は *index* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyList_GET_ITEM(PyObject *list, Py_ssize_t i)
 
-   マクロ形式でできた :cfunc:`PyList_GetItem` で、エラーチェックをしません。
+   マクロ形式でできた :c:func:`PyList_GetItem` で、エラーチェックをしません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyList_SetItem(PyObject *list, Py_ssize_t index, PyObject *item)
@@ -83,22 +83,22 @@ List Objects
       この関数は *item* への参照を "盗み取り" ます。また、変更先のインデクスにすでに別の要素が入っている場合、その要素に対する参照を放棄します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :ctype:`int` を利用していました。
+      この関数は以前は *index* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyList_SET_ITEM(PyObject *list, Py_ssize_t i, PyObject *o)
 
-   :cfunc:`PyList_SetItem` をマクロによる実装で、エラーチェックを行いません。
+   :c:func:`PyList_SetItem` をマクロによる実装で、エラーチェックを行いません。
    このマクロは、新たなリストのまだ要素を入れたことのない位置に要素を入れるときにのみ使います。
 
    .. note::
 
-      このマクロは *item* への参照を "盗み取り" ます。また、 :cfunc:`PyList_SetItem` と違って、要素の置き換えが生じても
+      このマクロは *item* への参照を "盗み取り" ます。また、 :c:func:`PyList_SetItem` と違って、要素の置き換えが生じても
       置き換えられるオブジェクトへの参照を放棄 *しません* ; その結果、 *list* 中の位置 *i* で参照されていたオブジェクト
       がメモリリークを引き起こします。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyList_Insert(PyObject *list, Py_ssize_t index, PyObject *item)
@@ -108,7 +108,7 @@ List Objects
    ``list.insert(index, item)`` に類似した機能です。
 
    .. versionchanged:: 2.5
-      この関数は以前は *index* の型に :ctype:`int` を利用していました。
+      この関数は以前は *index* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyList_Append(PyObject *list, PyObject *item)
@@ -125,7 +125,7 @@ List Objects
    ただし、 Python のスライスにある負のインデックスはサポートされていません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *low*, *high* の型に :ctype:`int` を利用していました。
+      この関数は以前は *low*, *high* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyList_SetSlice(PyObject *list, Py_ssize_t low, Py_ssize_t high, PyObject *itemlist)
@@ -136,7 +136,7 @@ List Objects
    Python のスライスにある負のインデックスはサポートされていません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *low*, *high* の型に :ctype:`int` を利用していました。
+      この関数は以前は *low*, *high* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyList_Sort(PyObject *list)

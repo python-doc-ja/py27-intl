@@ -66,7 +66,7 @@
 
    組み込み関数 :func:`pow` を参照してください。失敗すると *NULL* を返します。
    Python の式 ``pow(o1, o2, o3)`` と同じです。
-   *o3* はオプションです。 *o3* を無視させたいなら、 :cdata:`Py_None` を入れてください (*o3*
+   *o3* はオプションです。 *o3* を無視させたいなら、 :c:data:`Py_None` を入れてください (*o3*
    に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
 
 
@@ -176,9 +176,9 @@
    .. index:: builtin: pow
 
    組み込み関数 :func:`pow` を参照してください。失敗すると *NULL* を返します。 *o1* が *in-place*
-   演算をサポートする場合、in-place 演算を行います。この関数は *o3* が :cdata:`Py_None` の場合は Python 文 ``o1
+   演算をサポートする場合、in-place 演算を行います。この関数は *o3* が :c:data:`Py_None` の場合は Python 文 ``o1
    **= o2 `` と同じで、それ以外の場合は `` pow(o1, o2, o3)`` の in-place 版です。 *o3* を無視させたいなら、
-   :cdata:`Py_None` を入れてください (*o3* に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
+   :c:data:`Py_None` を入れてください (*o3* に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
 
 
 .. cfunction:: PyObject* PyNumber_InPlaceLshift(PyObject *o1, PyObject *o2)
@@ -217,7 +217,7 @@
 
    .. index:: builtin: coerce
 
-   この関数は :ctype:`PyObject\*` 型の二つの変数のアドレスを引数にとります。 ``*p1`` と ``*p2``
+   この関数は :c:type:`PyObject\*` 型の二つの変数のアドレスを引数にとります。 ``*p1`` と ``*p2``
    が指すオブジェクトが同じ型の場合、それぞれの参照カウントをインクリメントして ``0`` (成功) を返します。
    オブジェクトを変換して共通の数値型にできる場合、 ``*p1`` と ``*p2`` を変換後の値に置き換えて (参照カウントを '新しく' して)
    、 ``0`` を返します。変換が不可能な場合や、その他何らかのエラーが生じた場合、 ``-1`` (失敗) を返し、参照カウントをインクリメントしません。
@@ -226,10 +226,10 @@
 
 .. cfunction:: int PyNumber_CoerceEx(PyObject **p1, PyObject **p2)
 
-   This function is similar to :cfunc:`PyNumber_Coerce`, except that it returns
+   This function is similar to :c:func:`PyNumber_Coerce`, except that it returns
    ``1`` when the conversion is not possible and when no error is raised.
    Reference counts are still not increased in this case.
-   この関数は :cfunc:`PyNumber_Coerce` と似ていますが、
+   この関数は :c:func:`PyNumber_Coerce` と似ていますが、
    変換が失敗た場合にはエラーを発生させず、 ``-1`` を返します。
    この場合、参照カウントはインクリメントされません。
 
@@ -273,7 +273,7 @@
    ``'0x'`` の基数マーカーをつけます。
    *base* が 2, 8, 10, 16 のいずれでも無い場合、フォーマットは x を基数として
    ``'x#num'`` となります。
-   もし *n* が整数オブジェクトでない場合、まず :cfunc:`PyNumber_Index` を使って
+   もし *n* が整数オブジェクトでない場合、まず :c:func:`PyNumber_Index` を使って
    変換されます。
 
    .. versionadded:: 2.6

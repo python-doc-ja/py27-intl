@@ -14,13 +14,13 @@
 
    .. index:: single: MethodType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のメソッドオブジェクト
+   この :c:type:`PyTypeObject` のインスタンスは Python のメソッドオブジェクト
    型を表現します。このオブジェクトは、 ``types.MethodType``  として Python プログラムに公開されています。
 
 
 .. cfunction:: int PyMethod_Check(PyObject *o)
 
-   *o* がメソッドオブジェクト (:cdata:`PyMethod_Type` 型である) 場合に真を返します。パラメタは *NULL* にできません。
+   *o* がメソッドオブジェクト (:c:data:`PyMethod_Type` 型である) 場合に真を返します。パラメタは *NULL* にできません。
 
 
 .. cfunction:: PyObject* PyMethod_New(PyObject *func, PyObject *self, PyObject *class)
@@ -39,7 +39,7 @@
 
 .. cfunction:: PyObject* PyMethod_GET_CLASS(PyObject *meth)
 
-   :cfunc:`PyMethod_Class` をマクロで実装したバージョンで、エラーチェックを行いません。
+   :c:func:`PyMethod_Class` をマクロで実装したバージョンで、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyMethod_Function(PyObject *meth)
@@ -49,7 +49,7 @@
 
 .. cfunction:: PyObject* PyMethod_GET_FUNCTION(PyObject *meth)
 
-   :cfunc:`PyMethod_Function` のマクロ版で、エラーチェックを行いません。
+   :c:func:`PyMethod_Function` のマクロ版で、エラーチェックを行いません。
 
 
 .. cfunction:: PyObject* PyMethod_Self(PyObject *meth)
@@ -59,7 +59,7 @@
 
 .. cfunction:: PyObject* PyMethod_GET_SELF(PyObject *meth)
 
-   :cfunc:`PyMethod_Self` のマクロ版で、エラーチェックを行いません。
+   :c:func:`PyMethod_Self` のマクロ版で、エラーチェックを行いません。
 
 
 .. cfunction:: int PyMethod_ClearFreeList()

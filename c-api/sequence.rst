@@ -20,12 +20,12 @@
    シーケンス型プロトコルをサポートしないオブジェクトに対しては、 Python の式 ``len(o)`` と同じになります。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PySequence_Length(PyObject *o)
 
-   :cfunc:`PySequence_Size` の別名です。
+   :c:func:`PySequence_Size` の別名です。
 
 
 .. cfunction:: PyObject* PySequence_Concat(PyObject *o1, PyObject *o2)
@@ -52,7 +52,7 @@
    演算をサポートする場合、in-place 演算を行います。 Python の式 ``o *= count`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *count* の型に :ctype:`int` を利用していました。
+      この関数は以前は *count* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -62,7 +62,7 @@
    Python の式 ``o[i]`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -72,7 +72,7 @@
    と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_SetItem(PyObject *o, int Py_ssize_t, PyObject *v)
@@ -81,7 +81,7 @@
    この関数は *v* への参照を盗み取り *ません* 。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_DelItem(PyObject *o, Py_ssize_t i)
@@ -89,7 +89,7 @@
    *o* の *i* 番目の要素を削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[i]`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_SetSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2, PyObject *v)
@@ -97,7 +97,7 @@
    *o* の *i1* から *i2* までの間のスライスに *v* を代入します。 Python の文 ``o[i1:i2] = v`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_DelSlice(PyObject *o, int Py_ssize_t, int Py_ssize_t)
@@ -106,7 +106,7 @@
    ``del o[i1:i2]`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i1*, *i2* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_Count(PyObject *o, PyObject *value)
@@ -115,7 +115,7 @@
    ``-1`` を返します。 Python の式 ``o.count(value)`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は :ctype:`int` を返していました。
+      この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_Contains(PyObject *o, PyObject *value)
@@ -131,7 +131,7 @@
    ``o.index(value)`` と同じです。
 
    .. versionchanged:: 2.5
-      この関数は以前は :ctype:`int` を返していました。
+      この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PySequence_List(PyObject *o)
@@ -150,23 +150,23 @@
 .. cfunction:: PyObject* PySequence_Fast(PyObject *o, const char *m)
 
    シーケンス *o* がすでにタプルやリストであれば *o* を返し、そうでなければ *o* をタプルで返します。返されるタプルのメンバにアクセスするには
-   :cfunc:`PySequence_Fast_GET_ITEM` を使ってください。失敗すると *NULL* を返します。
+   :c:func:`PySequence_Fast_GET_ITEM` を使ってください。失敗すると *NULL* を返します。
    オブジェクトがシーケンスでなければ、 *m* がメッセージテキストになっている :exc:`TypeError` を送出します。
 
 
 .. cfunction:: PyObject* PySequence_Fast_GET_ITEM(PyObject *o, Py_ssize_t i)
 
-   *o* が *NULL* でなく、 :cfunc:`PySequence_Fast` が返したオブジェクトであり、かつ *i* がインデクスの範囲内にあると
+   *o* が *NULL* でなく、 :c:func:`PySequence_Fast` が返したオブジェクトであり、かつ *i* がインデクスの範囲内にあると
    仮定して、 *o* の *i* 番目の要素を返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject** PySequence_Fast_ITEMS(PyObject *o)
 
    PyObject ポインタの背後にあるアレイを返します．
-   この関数では， *o* は :cfunc:`PySequence_Fast` の返したオブジェクトであり，
+   この関数では， *o* は :c:func:`PySequence_Fast` の返したオブジェクトであり，
    *NULL* でないものと仮定しています．
 
    リストのサイズが変更されるとき、メモリ再確保が要素の配列を再配置するかもしれない
@@ -179,17 +179,17 @@
 .. cfunction:: PyObject* PySequence_ITEM(PyObject *o, Py_ssize_t i)
 
    成功すると the *i* th element of *o* を返し、失敗すると *NULL* を返します。
-   :cfunc:`PySequence_GetItem` ですが、 :cfunc:`PySequence_Check(o)` が真になるかチェックせず、
+   :c:func:`PySequence_GetItem` ですが、 :c:func:`PySequence_Check(o)` が真になるかチェックせず、
    負のインデクスに対する調整を行いません。
 
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.5
-      この関数は以前は *i* の型に :ctype:`int` を利用していました。
+      この関数は以前は *i* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PySequence_Fast_GET_SIZE(PyObject *o)
 
-   *o* が *NULL* でなく、 :cfunc:`PySequence_Fast` が返したオブジェクトであると仮定して、 *o* の長さを返します。 *o*
-   のサイズは :cfunc:`PySequence_Size` を呼び出しても得られますが、 :cfunc:`PySequence_Fast_GET_SIZE`
+   *o* が *NULL* でなく、 :c:func:`PySequence_Fast` が返したオブジェクトであると仮定して、 *o* の長さを返します。 *o*
+   のサイズは :c:func:`PySequence_Size` を呼び出しても得られますが、 :c:func:`PySequence_Fast_GET_SIZE`
    の方が *o* をリストかタプルであると仮定して処理するため、より高速です。

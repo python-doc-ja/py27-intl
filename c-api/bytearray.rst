@@ -12,12 +12,12 @@ bytearray オブジェクト
 
 .. ctype:: PyByteArrayObject
 
-   Python の bytearray オブジェクトを示す :ctype:`PyObject` のサブタイプ
+   Python の bytearray オブジェクトを示す :c:type:`PyObject` のサブタイプ
 
 
 .. cvar:: PyTypeObject PyByteArray_Type
 
-   この :ctype:`PyTypeObject` のインスタンスは、 Python bytearray 型を示します。
+   この :c:type:`PyTypeObject` のインスタンスは、 Python bytearray 型を示します。
    Python レイヤでの ``bytearray`` と同じオブジェクトです。
 
 型チェックマクロ
@@ -78,9 +78,9 @@ bytearray オブジェクト
 
 .. cfunction:: char* PyByteArray_AS_STRING(PyObject *bytearray)
 
-   :cfunc:`PyByteArray_AsString` のマクロバージョン。
+   :c:func:`PyByteArray_AsString` のマクロバージョン。
 
 
 .. cfunction:: Py_ssize_t PyByteArray_GET_SIZE(PyObject *bytearray)
 
-   :cfunc:`PyByteArray_Size` のマクロバージョン。
+   :c:func:`PyByteArray_Size` のマクロバージョン。

@@ -14,7 +14,7 @@ Python の Bool 型は整数のサブクラスとして実装されています�
 
 .. cfunction:: int PyBool_Check(PyObject *o)
 
-   *o* が :cdata:`PyBool_Type` の場合に真を返します。
+   *o* が :c:data:`PyBool_Type` の場合に真を返します。
 
    .. versionadded:: 2.3
 
