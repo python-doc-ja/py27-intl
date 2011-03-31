@@ -54,7 +54,7 @@ C のヘッダーファイル ``<audio.h>`` のシンボル定数は標準モジ
 .. function:: queryparams(device)
 
    引数 *device* は整数です。
-   返り値は :cfunc:`ALqueryparams` で返されるデータを含む整数のリストです。
+   返り値は :c:func:`ALqueryparams` で返されるデータを含む整数のリストです。
 
 
 .. function:: getparams(device, list)
