@@ -8,13 +8,13 @@
 .. index:: object: file
 
 Python の組み込みファイルオブジェクトは、全て標準 C ライブラリの
-:ctype:`FILE\*` サポートの上に実装されています。以下の詳細説明は
+:c:type:`FILE\*` サポートの上に実装されています。以下の詳細説明は
 一実装に関するもので、将来の Python のリリースで変更されるかもしれません。
 
 
 .. ctype:: PyFileObject
 
-   この :ctype:`PyObject` のサブタイプは Python のファイル型オブジェクトを
+   この :c:type:`PyObject` のサブタイプは Python のファイル型オブジェクトを
    表現します。
 
 
@@ -22,14 +22,14 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: FileType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のファイル型を表現します。
+   この :c:type:`PyTypeObject` のインスタンスは Python のファイル型を表現します。
    このオブジェクトは ``file`` および ``types.FileType`` として Python
    プログラムで公開されています。
 
 
 .. cfunction:: int PyFile_Check(PyObject *p)
 
-   引数が :ctype:`PyFileObject` か :ctype:`PyFileObject` のサブタイプのときに
+   引数が :c:type:`PyFileObject` か :c:type:`PyFileObject` のサブタイプのときに
    真を返します。
 
    .. versionchanged:: 2.2
@@ -38,7 +38,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
 .. cfunction:: int PyFile_CheckExact(PyObject *p)
 
-   引数が :ctype:`PyFileObject` 型で、かつ :ctype:`PyFileObject` 型の
+   引数が :c:type:`PyFileObject` 型で、かつ :c:type:`PyFileObject` 型の
    サブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
@@ -50,40 +50,40 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    成功すると、 *filename* に指定した名前のファイルを *mode* に指定した
    ファイルモードで開いて得た新たなファイルオブジェクトを返します。
-   *mode* のセマンティクスは標準 C ルーチン :cfunc:`fopen` と同じです。
+   *mode* のセマンティクスは標準 C ルーチン :c:func:`fopen` と同じです。
    失敗すると *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
 
    すでに開かれている標準 C ファイルポインタ *fp* から新たな
-   :ctype:`PyFileObject` を生成します。この関数で生成したファイルオブジェクト
+   :c:type:`PyFileObject` を生成します。この関数で生成したファイルオブジェクト
    は、閉じる際に *close* に指定した関数を呼び出します。失敗すると
    *NULL* を返します。
 
 
 .. cfunction:: FILE* PyFile_AsFile(PyObject *p)
 
-   *p* に関連付けられたファイルオブジェクトを :ctype:`FILE\*` で返します。
+   *p* に関連付けられたファイルオブジェクトを :c:type:`FILE\*` で返します。
 
-   呼び出し側が GIL を開放している間もこの関数が返した :ctype:`FILE\*`
-   オブジェクトを使うのであれば、以下に解説されている :cfunc:`PyFile_IncUseCount`
-   と :cfunc:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
+   呼び出し側が GIL を開放している間もこの関数が返した :c:type:`FILE\*`
+   オブジェクトを使うのであれば、以下に解説されている :c:func:`PyFile_IncUseCount`
+   と :c:func:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
 
 
 .. cfunction:: void PyFile_IncUseCount(PyFileObject \*p)
 
-   PyFileObject 内部の、 :ctype:`FILE\*` が使用中であることを示す使用数カウント
+   PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す使用数カウント
    をインクリメントします。
-   これは、別のスレッドで使用中の :ctype:`FILE\*` に対して Python が
+   これは、別のスレッドで使用中の :c:type:`FILE\*` に対して Python が
    fclose() を呼び出すことを防ぎます。
-   この関数の呼び出し側は、 :ctype:`FILE\*` を使い終わったときに必ず
-   :cfunc:`PyFile_DecUseCount` を呼び出さなければなりません。
+   この関数の呼び出し側は、 :c:type:`FILE\*` を使い終わったときに必ず
+   :c:func:`PyFile_DecUseCount` を呼び出さなければなりません。
    そうしなければ、 Python はそのファイルオブジェクトを永遠に閉じません。
 
    この関数を呼び出すときは、GILを取得していなければなりません。
 
-   例えば、 :cfunc:`PyFile_AsFile` を呼び出した直後、GILを開放する
+   例えば、 :c:func:`PyFile_AsFile` を呼び出した直後、GILを開放する
    前にこの関数を呼び出します。
 
    .. versionadded:: 2.6
@@ -91,10 +91,10 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
 .. cfunction:: void PyFile_DecUseCount(PyFileObject \*p)
 
-   PyFileObject 内部の、 :ctype:`FILE\*` が使用中であることを示す unlocked_count
-   メンバーをデクリメントして、呼び出し元が :ctype:`FILE\*` を使い終わった
+   PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す unlocked_count
+   メンバーをデクリメントして、呼び出し元が :c:type:`FILE\*` を使い終わった
    ことを示します。
-   これは、先に行った :cfunc:`PyFile_IncUseCount` の呼び出しを取り消すため
+   これは、先に行った :c:func:`PyFile_IncUseCount` の呼び出しを取り消すため
    だけに呼び出されるでしょう。
 
    この関数を呼び出すときは、GILを取得していなければなりません。
@@ -126,7 +126,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. index:: single: setvbuf()
 
-   :cfunc:`setvbuf` があるシステムでのみ利用できます。
+   :c:func:`setvbuf` があるシステムでのみ利用できます。
    この関数を呼び出してよいのはファイルオブジェクトの生成直後のみです。
 
 

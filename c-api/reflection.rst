@@ -46,5 +46,5 @@
    *func* の型に依存する、解説文字列(description string)を返します。
    戻り値は、関数とメソッドに対しては "()", " constructor", " instance",
    " object" です。
-   :cfunc:`PyEval_GetFuncName` と連結された結果、 *func* の解説になります。
+   :c:func:`PyEval_GetFuncName` と連結された結果、 *func* の解説になります。
    

@@ -25,35 +25,35 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 コンテナ型のコンストラクタは以下の二つの規則に適合しなければなりません:
 
-#. オブジェクトのメモリは :cfunc:`PyObject_GC_New` または :cfunc:`PyObject_GC_NewVar`
+#. オブジェクトのメモリは :c:func:`PyObject_GC_New` または :c:func:`PyObject_GC_NewVar`
    で確保しなければなりません。
 
-#. 一度他のコンテナへの参照が入るかもしれないフィールドが全て初期化されたら、 :cfunc:`PyObject_GC_Track` を呼び出さねば
+#. 一度他のコンテナへの参照が入るかもしれないフィールドが全て初期化されたら、 :c:func:`PyObject_GC_Track` を呼び出さねば
    なりません。
 
 
 .. cfunction:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
 
-   :cfunc:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
+   :c:func:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
    のセットされたコンテナオブジェクト用です。
 
 
 .. cfunction:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
-   :cfunc:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
+   :c:func:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
    のセットされたコンテナオブジェクト用です。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
-   :cfunc:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。
+   :c:func:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。
    リサイズされたオブジェクトを返します。失敗すると *NULL* を返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この関数は以前は *newsize* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyObject_GC_Track(PyObject *op)
@@ -66,23 +66,23 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 .. cfunction:: void _PyObject_GC_TRACK(PyObject *op)
 
-   :cfunc:`PyObject_GC_Track` のマクロ版です。拡張モジュールに使ってはなりません。
+   :c:func:`PyObject_GC_Track` のマクロ版です。拡張モジュールに使ってはなりません。
 
 同様に、オブジェクトのメモリ解放関数も以下の二つの規則に適合しなければなりません:
 
-#. 他のコンテナを参照しているフィールドを無効化する前に、 :cfunc:`PyObject_GC_UnTrack` を呼び出さねばなりません。
+#. 他のコンテナを参照しているフィールドを無効化する前に、 :c:func:`PyObject_GC_UnTrack` を呼び出さねばなりません。
 
-#. オブジェクトのメモリは :cfunc:`PyObject_GC_Del` で解放しなければなりません。
+#. オブジェクトのメモリは :c:func:`PyObject_GC_Del` で解放しなければなりません。
 
 
 .. cfunction:: void PyObject_GC_Del(void *op)
 
-   :cfunc:`PyObject_GC_New` や :cfunc:`PyObject_GC_NewVar` を使って確保されたメモリを解放します。
+   :c:func:`PyObject_GC_New` や :c:func:`PyObject_GC_NewVar` を使って確保されたメモリを解放します。
 
 
 .. cfunction:: void PyObject_GC_UnTrack(void *op)
 
-   ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。 :cfunc:`PyObject_GC_Track`
+   ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。 :c:func:`PyObject_GC_Track`
    を呼び出して、除去したオブジェクトを再度追跡対象セットに追加できるので注意してください。メモリ解放関数 (deallocator,
    :attr:`tp_dealloc` ハンドラ) は、 :attr:`tp_traverse` ハンドラが使用しているフィールドのいずれかが無効化されるよりも
    以前にオブジェクトに対して呼び出されていなければなりません。
@@ -90,7 +90,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 .. cfunction:: void _PyObject_GC_UNTRACK(PyObject *op)
 
-   :cfunc:`PyObject_GC_UnTrack` のマクロ版です。拡張モジュールに使ってはなりません。
+   :c:func:`PyObject_GC_UnTrack` のマクロ版です。拡張モジュールに使ってはなりません。
 
 :attr:`tp_traverse` ハンドラは以下の型を持つ関数を引数の一つとしてとります:
 
@@ -111,7 +111,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
    コンテナに入っている各オブジェクトと、このハンドラに渡された *arg* の値です。 *visit* 関数は *NULL* オブジェクトを引数に
    渡して呼び出してはなりません。 *visit* が非ゼロの値を返す場合、エラーが発生し、戻り値をそのまま返すようににしなければなりません。
 
-:attr:`tp_traverse` ハンドラの作成を単純化するため、 :cfunc:`Py_VISIT`
+:attr:`tp_traverse` ハンドラの作成を単純化するため、 :c:func:`Py_VISIT`
 マクロが提供されています。このマクロを使うには、 :attr:`tp_traverse` の実装で、引数を *visit* および *arg*
 という名前にしておかねばなりません:
 
@@ -131,7 +131,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
    .. versionadded:: 2.4
 
-:attr:`tp_clear` ハンドラは :ctype:`inquiry` 型にするか、オブジェクトが変更不能の場合には *NULL*
+:attr:`tp_clear` ハンドラは :c:type:`inquiry` 型にするか、オブジェクトが変更不能の場合には *NULL*
 にしなければなりません。 *NULL* if the object is immutable.
 
 
@@ -139,6 +139,6 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
    循環参照を形成しているとおぼしき参照群を放棄します。変更不可能なオブジェクトは循環参照を直接形成することが決してない
    ので、この関数を定義する必要はありません。このメソッドを呼び出した後でもオブジェクトは有効なままでなければならないので注意してください (参照に対して
-   :cfunc:`Py_DECREF` を呼ぶだけにしないでください)。ガベージコレクタは、オブジェクトが
+   :c:func:`Py_DECREF` を呼ぶだけにしないでください)。ガベージコレクタは、オブジェクトが
    循環参照を形成していることを検出した際にこのメソッドを呼び出します。
 

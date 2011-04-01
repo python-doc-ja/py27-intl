@@ -19,13 +19,13 @@ Pythonの関数にはいくつかの種類があります。
 
    .. index:: single: MethodType (in module types)
 
-   :ctype:`PyTypeObject` 型のインスタンスで、 Python の関数型を表します。これは Python プログラムに
+   :c:type:`PyTypeObject` 型のインスタンスで、 Python の関数型を表します。これは Python プログラムに
    ``types.FunctionType`` として公開されます。
 
 
 .. cfunction:: int PyFunction_Check(PyObject *o)
 
-   *o* が関数オブジェクト (:cdata:`PyFunction_Type` を持っている) なら true を返します。引数は *NULL*
+   *o* が関数オブジェクト (:c:data:`PyFunction_Type` を持っている) なら true を返します。引数は *NULL*
    であってはいけません。
 
 

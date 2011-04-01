@@ -20,8 +20,8 @@
 
 .. cfunction:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
 
-   :ctype:`long` 型の整数値 *value* を *file* へ整列化します。この関数は *value* の下桁 32 ビットを書き込むだけです;
-   ネイティブの :ctype:`long` 型サイズには関知しません。
+   :c:type:`long` 型の整数値 *value* を *file* へ整列化します。この関数は *value* の下桁 32 ビットを書き込むだけです;
+   ネイティブの :c:type:`long` 型サイズには関知しません。
 
    .. versionchanged:: 2.4
       ファイル形式を示す *version* が追加されました.
@@ -52,26 +52,26 @@
 
 .. cfunction:: long PyMarshal_ReadLongFromFile(FILE *file)
 
-   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 C の :ctype:`long` 型データを読み出して返します。
-   この関数は、ネイティブの :ctype:`long` のサイズに関係なく、 32 ビットの値だけを読み出せます。
+   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`long` 型データを読み出して返します。
+   この関数は、ネイティブの :c:type:`long` のサイズに関係なく、 32 ビットの値だけを読み出せます。
 
 
 .. cfunction:: int PyMarshal_ReadShortFromFile(FILE *file)
 
-   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 C の :ctype:`short` 型データを読み出して返します。
-   この関数は、ネイティブの :ctype:`short` のサイズに関係なく、 16 ビットの値だけを読み出せます。
+   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`short` 型データを読み出して返します。
+   この関数は、ネイティブの :c:type:`short` のサイズに関係なく、 16 ビットの値だけを読み出せます。
 
 
 .. cfunction:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
 
-   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
+   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
    エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
 
 .. cfunction:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
 
-   読み出し用に開かれた :ctype:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
-   :cfunc:`PyMarshal_ReadObjectFromFile` と違い、この関数はファイル中に後続のオブジェクトが存在しないと仮定し、ファイルから
+   読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
+   :c:func:`PyMarshal_ReadObjectFromFile` と違い、この関数はファイル中に後続のオブジェクトが存在しないと仮定し、ファイルから
    メモリ上にファイルデータを一気にメモリにロードして、逆整列化機構がファイルから一バイトづつ読み出す代わりにメモリ上のデータを操作
    できるようにします。対象のファイルから他に何も読み出さないと分かっている場合にのみ、この関数を使ってください。エラーが生じた場合、適切な例外
    (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
@@ -83,5 +83,5 @@
    エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
    .. versionchanged:: 2.5
-      以前は *len* の型は :ctype:`int` でした。
+      以前は *len* の型は :c:type:`int` でした。
       この変更により、64bitシステムをサポートするには対応する修正が必要になります。

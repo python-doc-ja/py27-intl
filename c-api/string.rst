@@ -18,14 +18,14 @@
 
 .. ctype:: PyStringObject
 
-   この :ctype:`PyObject` のサブタイプは Python の文字列オブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Python の文字列オブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyString_Type
 
    .. index:: single: StringType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python の文字列型を表現します; このオブジェクトは Python レイヤにおける
+   この :c:type:`PyTypeObject` のインスタンスは Python の文字列型を表現します; このオブジェクトは Python レイヤにおける
    ``str`` や ``types.TypeType`` と同じです。 .
 
 
@@ -56,12 +56,12 @@
    の場合、文字列の中身は未初期化の状態になります。
 
    .. versionchanged:: 2.5
-      この関数は以前は *len* の型に :ctype:`int` を利用していました。
+      この関数は以前は *len* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_FromFormat(const char *format, ...)
 
-   C 関数 :cfunc:`printf` 形式の *format* 文字列と可変個の引数をとり、書式化済みの文字列長を計算した上で、書式化を行った結果を
+   C 関数 :c:func:`printf` 形式の *format* 文字列と可変個の引数をとり、書式化済みの文字列長を計算した上で、書式化を行った結果を
    値とする Python 文字列にして返します。可変個の引数部は C のデータ型でなくてはならず、かつ *format* 文字列内の書式指定文字 (format
    character) に一致する型でなくてはなりません。利用できる書式化文字は以下の通りです:
 
@@ -109,7 +109,7 @@
 
 .. cfunction:: PyObject* PyString_FromFormatV(const char *format, va_list vargs)
 
-   :cfunc:`PyString_FromFormat` と同じです。ただし、こちらの関数は二つしか引数をとりません。
+   :c:func:`PyString_FromFormat` と同じです。ただし、こちらの関数は二つしか引数をとりません。
 
 
 .. cfunction:: Py_ssize_t PyString_Size(PyObject *string)
@@ -117,15 +117,15 @@
    文字列オブジェクト *string* 内の文字列値の長さを返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は :ctype:`int` を返していました。
+      この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyString_GET_SIZE(PyObject *string)
 
-   :cfunc:`PyString_Size` をマクロで実装したもので、エラーチェックを行いません。
+   :c:func:`PyString_Size` をマクロで実装したもので、エラーチェックを行いません。
 
    .. versionchanged:: 2.5
-      この関数は以前は :ctype:`int` を返していました。
+      この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -135,13 +135,13 @@
    バッファのコピーを指すわけではありません。 ``PyString_FromStringAndSize(NULL, size)`` を使って
    生成した文字列でない限り、バッファ内のデータはいかなる変更もしてはなりません。この文字列をデアロケートしてはなりません。 *string* が Unicode
    オブジェクトの場合、この関数は *string* のデフォルトエンコーディング版を計算し、デフォルトエンコーディング版に対して操作を行います。
-   *string* が文字列オブジェクトですらない場合、 :cfunc:`PyString_AsString` は *NULL* を返して
+   *string* が文字列オブジェクトですらない場合、 :c:func:`PyString_AsString` は *NULL* を返して
    :exc:`TypeError` を送出します。
 
 
 .. cfunction:: char* PyString_AS_STRING(PyObject *string)
 
-   :cfunc:`PyString_AsString` をマクロで実装したもので、エラーチェックを行いません。文字列オブジェクトだけをサポートします;
+   :c:func:`PyString_AsString` をマクロで実装したもので、エラーチェックを行いません。文字列オブジェクトだけをサポートします;
    Unicode オブジェクトを渡してはなりません。
 
 
@@ -160,10 +160,10 @@
 
    *string* が Unicode オブジェクトの場合、この関数は *string* のデフォルトエンコーディング版を計算し、
    デフォルトエンコーディング版に対して操作を行います。 *string* が文字列オブジェクトですらない場合、
-   :cfunc:`PyString_AsStringAndSize` は ``-1`` を返して :exc:`TypeError` を送出します。
+   :c:func:`PyString_AsStringAndSize` は ``-1`` を返して :exc:`TypeError` を送出します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *length* の型に :ctype:`int *` を利用していました。
+      この関数は以前は *length* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyString_Concat(PyObject **string, PyObject *newpart)
@@ -190,7 +190,7 @@
    を返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この関数は以前は *newsize* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_Format(PyObject *format, PyObject *args)
@@ -212,7 +212,7 @@
 
 .. cfunction:: PyObject* PyString_InternFromString(const char *v)
 
-   :cfunc:`PyString_FromString` と  :cfunc:`PyString_InternInPlace` を組み合わせたもので、
+   :c:func:`PyString_FromString` と  :c:func:`PyString_InternInPlace` を組み合わせたもので、
    隔離済みの新たな文字列オブジェクトを返すか、同じ値を持つすでに隔離済みの文字列オブジェクトに対する新たな ("所有権を得た") 参照を返します。
 
    .. note::
@@ -229,7 +229,7 @@
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -244,7 +244,7 @@
 
 .. cfunction:: PyObject* PyString_Encode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
 
-   *size* で指定されたサイズの :ctype:`char` バッファを *encoding* の名前で登録されている codec に渡してエンコードし、
+   *size* で指定されたサイズの :c:type:`char` バッファを *encoding* の名前で登録されている codec に渡してエンコードし、
    Python オブジェクトを返します。 *encoding* および *errors* は文字列型の :meth:`encode`
    メソッドに与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec
    が例外を送出した場合には *NULL* を返します。
@@ -253,7 +253,7 @@
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyString_AsEncodedObject(PyObject *str, const char *encoding, const char *errors)

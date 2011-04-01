@@ -23,7 +23,7 @@ C で実装された Python オブジェクトは、"バッファインタフェ
 
 バッファインタフェースの使い手の一例として、ファイルオブジェクトの :meth:`write` メソッドがあります。バッファインタフェースを
 介してバイト列を公開しているオブジェクトは全て、ファイルへの書き出しができます。オブジェクトのバッファインタフェースを操作し、
-対象となるオブジェクトからデータを返させる  :cfunc:`PyArg_ParseTuple` には数多くのデータ書式化コードがあります。
+対象となるオブジェクトからデータを返させる  :c:func:`PyArg_ParseTuple` には数多くのデータ書式化コードがあります。
 
 バージョン 1.6 から、Python は Python レベルのバッファオブジェクトと、
 C 言語レベルのバッファAPIを提供しており、任意のビルトイン型やユーザー定義型は
@@ -66,24 +66,24 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
    .. cmember:: int ndim
 
-      メモリが多次元配列を表している時の次元数。 0 の場合、 :cdata:`strides`
-      と :cdata:`suboffsets` は *NULL* でなければなりません。
+      メモリが多次元配列を表している時の次元数。 0 の場合、 :c:data:`strides`
+      と :c:data:`suboffsets` は *NULL* でなければなりません。
 
    .. cmember:: Py_ssize_t *shape
 
-      メモリが多次元配列を表しているとき、その形を示す長さ :cdata:`ndim` の
-      :ctype:`Py_ssize_t` の配列。
-      ``((*shape)[0] * ... * (*shape)[ndims-1])*itemsize`` は :cdata:`len`
+      メモリが多次元配列を表しているとき、その形を示す長さ :c:data:`ndim` の
+      :c:type:`Py_ssize_t` の配列。
+      ``((*shape)[0] * ... * (*shape)[ndims-1])*itemsize`` は :c:data:`len`
       と等しくなければならないことに気をつけてください。
 
    .. cmember:: Py_ssize_t *strides
 
-      各次元で次の要素を得るためにスキップするバイト数を示す、長さ :cdata:`ndim`
-      の :ctype:`Py_ssize_t` の配列。
+      各次元で次の要素を得るためにスキップするバイト数を示す、長さ :c:data:`ndim`
+      の :c:type:`Py_ssize_t` の配列。
 
    .. cmember:: Py_ssize_t *suboffsets
 
-      長さ :cdata:`ndim` の、 :ctype:`Py_ssize_t` の配列。
+      長さ :c:data:`ndim` の、 :c:type:`Py_ssize_t` の配列。
       suboffset の各数値が0以上であるとき、その次元に格納されているのはポインタで、
       suboffset の値はそのポインタの参照を解決するときに何バイトのオフセットを足すかを
       示しています。
@@ -110,7 +110,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    .. cmember:: Py_ssize_t itemsize
 
       これは共有メモリ上の各要素のbyte単位のサイズを格納する変数です。
-      これは :cfunc:`PyBuffer_SizeFromFormat` を使って計算できる値なので
+      これは :c:func:`PyBuffer_SizeFromFormat` を使って計算できる値なので
       技術的には不要なのですが、バッファを提供する側はフォーマット文字列を
       解析しなくてもこの情報を知っているでしょうし、バッファを受け取る側に
       とっては正しく解釈するのに必要な情報です。なので、要素サイズを格納する
@@ -137,7 +137,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
 .. cfunction:: int PyObject_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
 
-      *obj* を :ctype:`Py_buffer` *view* へエクスポートします。
+      *obj* を :c:type:`Py_buffer` *view* へエクスポートします。
       これらの引数は *NULL* であってはなりません。
       *flag* 引数は呼び出し側がどんなバッファを扱おうとしているのか、
       バッファ提供側がどんなバッファを返すことが許されているのかを示す、
@@ -150,7 +150,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       何かが不可能であることを伝えるためにエラーを発生させる必要があるかもしれません。
       その場合のエラーは、もしその問題を実際に引き起こしているのが別のエラーだったとしても、
       :exc:`BufferError` でなければなりません。
-      バッファ提供側は flag の情報を使って :cdata:`Py_buffer` 構造体のどのフィールドへの
+      バッファ提供側は flag の情報を使って :c:data:`Py_buffer` 構造体のどのフィールドへの
       非デフォルト値の設定を省略したり、要求されたシンプルな view を提供できない場合は
       エラーを発生させたりすることができます。
 
@@ -161,7 +161,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       +-----------------------------------+--------------------------------------------------------------+
       | Flag                              | 説明                                                         |
       +===================================+==============================================================+
-      | :cmacro:`PyBUF_SIMPLE`            | これはデフォルトの flag の状態です。                         |
+      | :c:macro:`PyBUF_SIMPLE`           | これはデフォルトの flag の状態です。                         |
       |                                   | 結果のバッファは書き込み可能かもしれませんし、不可能かも     |
       |                                   | しれません。データのフォーマットは unsigned byte とします。  |
       |                                   | これは "スタンドアロン" のフラグ定数です。他の定数と '|'     |
@@ -170,10 +170,10 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       |                                   | 場合に、エラーを発生させるかもしれません。                   |
       |                                   |                                                              |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_WRITABLE`          | 結果のバッファは書込み可能でなければなりません。             |
+      | :c:macro:`PyBUF_WRITABLE`         | 結果のバッファは書込み可能でなければなりません。             |
       |                                   | 書き込み不可能な場合はエラーを発生させます。                 |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_STRIDES`           | この値は :cmacro:`PyBUF_ND` を含みます。                     |
+      | :c:macro:`PyBUF_STRIDES`          | この値は :c:macro:`PyBUF_ND` を含みます。                    |
       |                                   | バッファは strides 情報を提供しなければなりません。          |
       |                                   | (言い換えると、 strides は NULL ではなりません。)            |
       |                                   | このフラグは、呼び出し元が、要素間に隙間のある不連続な       |
@@ -183,50 +183,50 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       |                                   | suboffset が必要な場合)はエラーを発生させます。              |
       |                                   |                                                              |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_ND`                | バッファは shape 情報を提供しなければなりません。            |
+      | :c:macro:`PyBUF_ND`               | バッファは shape 情報を提供しなければなりません。            |
       |                                   | メモリは C スタイルの並び (最後の次元が一番高速) だと仮定    |
       |                                   | されます。提供側はこの種類の連続バッファを提供できない場合は |
       |                                   | エラーを発生させます。このフラグが指定されていな場合は shape |
       |                                   | は *NULL* になります。                                       |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_C_CONTIGUOUS`      | これらのフラグは、返されるバッファの並びを指定します。       |
-      | :cmacro:`PyBUF_F_CONTIGUOUS`      | それぞれ、C並び(最後の次元が一番高速)、Fortran並び(最初の    |
-      | :cmacro:`PyBUF_ANY_CONTIGUOUS`    | 次元が一番高速), そのどちらでも、を意味します。              |
-      |                                   | これらのフラグは :cmacro:`PyBUF_STRIDES` を含んでおり、      |
+      | :c:macro:`PyBUF_C_CONTIGUOUS`     | これらのフラグは、返されるバッファの並びを指定します。       |
+      | :c:macro:`PyBUF_F_CONTIGUOUS`     | それぞれ、C並び(最後の次元が一番高速)、Fortran並び(最初の    |
+      | :c:macro:`PyBUF_ANY_CONTIGUOUS`   | 次元が一番高速), そのどちらでも、を意味します。              |
+      |                                   | これらのフラグは :c:macro:`PyBUF_STRIDES` を含んでおり、     |
       |                                   | strides 情報が正しく格納されていることを保証します。         |
       |                                   |                                                              |
       |                                   |                                                              |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_INDIRECT`          | このフラグは、返されるバッファが suboffsets 情報を含んで     |
+      | :c:macro:`PyBUF_INDIRECT`         | このフラグは、返されるバッファが suboffsets 情報を含んで     |
       |                                   | いることを示します。(suboffsets が必要無いときは NULL でも   |
       |                                   | かまいません。) このフラグは、バッファ利用側が suboffsets    |
       |                                   | を使って参照されている間接配列を扱えるときに利用されます。   |
-      |                                   | このフラグは :cmacro:`PyBUF_STRIDES` を含みます。            |
+      |                                   | このフラグは :c:macro:`PyBUF_STRIDES` を含みます。           |
       |                                   |                                                              |
       |                                   |                                                              |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_FORMAT`            | 返されるバッファは正しい format 情報を持っていなければ       |
+      | :c:macro:`PyBUF_FORMAT`           | 返されるバッファは正しい format 情報を持っていなければ       |
       |                                   | なりません。このフラグは、バッファ利用側が実際に格納されて   |
       |                                   | いるデータの '種類' をチェックするときに利用します。         |
       |                                   | バッファ提供側は、要求された場合は常にこの情報を提供できる   |
       |                                   | べきです。 format が明示的に要求されていない場合は format は |
       |                                   | *NULL* (``'B'``, unsigned byte を意味する)であるべきです。   |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_STRIDED`           | ``(PyBUF_STRIDES | PyBUF_WRITABLE)`` と同じ                  |
+      | :c:macro:`PyBUF_STRIDED`          | ``(PyBUF_STRIDES | PyBUF_WRITABLE)`` と同じ                  |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_STRIDED_RO`        | ``(PyBUF_STRIDES)`` と同じ                                   |
+      | :c:macro:`PyBUF_STRIDED_RO`       | ``(PyBUF_STRIDES)`` と同じ                                   |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_RECORDS`           | ``(PyBUF_STRIDES | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ   |
+      | :c:macro:`PyBUF_RECORDS`          | ``(PyBUF_STRIDES | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ   |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_RECORDS_RO`        | ``(PyBUF_STRIDES | PyBUF_FORMAT)`` と同じ                    |
+      | :c:macro:`PyBUF_RECORDS_RO`       | ``(PyBUF_STRIDES | PyBUF_FORMAT)`` と同じ                    |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_FULL`              | ``(PyBUF_INDIRECT | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ  |
+      | :c:macro:`PyBUF_FULL`             | ``(PyBUF_INDIRECT | PyBUF_FORMAT | PyBUF_WRITABLE)`` と同じ  |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_FULL_RO`           | ``(PyBUF_INDIRECT | PyBUF_FORMAT)`` と同じ                   |
+      | :c:macro:`PyBUF_FULL_RO`          | ``(PyBUF_INDIRECT | PyBUF_FORMAT)`` と同じ                   |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_CONTIG`            | ``(PyBUF_ND | PyBUF_WRITABLE)`` と同じ                       |
+      | :c:macro:`PyBUF_CONTIG`           | ``(PyBUF_ND | PyBUF_WRITABLE)`` と同じ                       |
       +-----------------------------------+--------------------------------------------------------------+
-      | :cmacro:`PyBUF_CONTIG_RO`         | ``(PyBUF_ND)`` と同じ                                        |
+      | :c:macro:`PyBUF_CONTIG_RO`        | ``(PyBUF_ND)`` と同じ                                        |
       +-----------------------------------+--------------------------------------------------------------+
 
 
@@ -240,7 +240,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
    .. cfunction:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
 
-      :cdata:`~Py_buffer.itemsize` の値を :cdata:`~PyBuffer.format` から返します。
+      :c:data:`~Py_buffer.itemsize` の値を :c:data:`~PyBuffer.format` から返します。
 
    .. cfunction:: int PyObject_CopyToObject(PyObject *obj, void *buf, Py_ssize_t len, char fortran)
 
@@ -287,7 +287,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 .. index:: single: PyBufferProcs
 
 バッファインタフェースに関するより詳しい情報は、 "バッファオブジェクト構造体" 節 ( :ref:`buffer-structs` 節) の、
-:ctype:`PyBufferProcs` の説明のところにあります。
+:c:type:`PyBufferProcs` の説明のところにあります。
 
 "バッファオブジェクト" はヘッダファイル :file:`bufferobject.h`  の中で定義されています (このファイルは
 :file:`Python.h` がインクルードしています)。バッファオブジェクトは、 Python プログラミングの
@@ -304,28 +304,28 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 
 .. ctype:: PyBufferObject
 
-   この :ctype:`PyObject` のサブタイプはバッファオブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプはバッファオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyBuffer_Type
 
    .. index:: single: BufferType (in module types)
 
-   Python バッファ型 (buffer type) を表現する :ctype:`PyTypeObject` です; Python レイヤにおける
+   Python バッファ型 (buffer type) を表現する :c:type:`PyTypeObject` です; Python レイヤにおける
    ``buffer`` や ``types.BufferType`` と同じオブジェクトです。
 
 
 .. cvar:: int Py_END_OF_BUFFER
 
-   この定数は、 :cfunc:`PyBuffer_FromObject` またはの :cfunc:`PyBuffer_FromReadWriteObject`
-   *size* パラメタに渡します。このパラメタを渡すと、 :ctype:`PyBufferObject` は指定された *offset*
+   この定数は、 :c:func:`PyBuffer_FromObject` またはの :c:func:`PyBuffer_FromReadWriteObject`
+   *size* パラメタに渡します。このパラメタを渡すと、 :c:type:`PyBufferObject` は指定された *offset*
    からバッファの終わりまでを *base* オブジェクトとして参照します。このパラメタを使うことで、関数の呼び出し側が *base* オブジェクト
    のサイズを調べる必要がなくなります。
 
 
 .. cfunction:: int PyBuffer_Check(PyObject *p)
 
-   引数が :cdata:`PyBuffer_Type` 型のときに真を返します。
+   引数が :c:data:`PyBuffer_Type` 型のときに真を返します。
 
 
 .. cfunction:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
@@ -338,16 +338,16 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    末尾までにわたります。
 
    .. versionchanged:: 2.5
-      この関数は以前は *offset*, *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *offset*, *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyBuffer_FromReadWriteObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
-   新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外は :cfunc:`PyBuffer_FromObject` と同じです。 *base*
+   新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外は :c:func:`PyBuffer_FromObject` と同じです。 *base*
    オブジェクトが書き込み可能バッファに必要なバッファプロトコルを公開していない場合、 :exc:`TypeError` を送出します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *offset*, *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *offset*, *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -359,25 +359,25 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    *なりません* ; 指定すると、 :exc:`ValueError` を送出します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. cfunction:: PyObject* PyBuffer_FromReadWriteMemory(void *ptr, Py_ssize_t size)
 
-   :cfunc:`PyBuffer_FromMemory` に似ていますが、書き込み可能なバッファを返します。
+   :c:func:`PyBuffer_FromMemory` に似ていますが、書き込み可能なバッファを返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyBuffer_New(Py_ssize_t size)
 
    *size* バイトのメモリバッファを独自に維持する新たな書き込み可能バッファオブジェクトを返します。 *size*
-   がゼロまたは正の値でない場合、 :exc:`ValueError` を送出します。(:cfunc:`PyObject_AsWriteBuffer`
+   がゼロまたは正の値でない場合、 :exc:`ValueError` を送出します。(:c:func:`PyObject_AsWriteBuffer`
    が返すような) メモリバッファは特に整列されていないので注意して下さい。
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :ctype:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 

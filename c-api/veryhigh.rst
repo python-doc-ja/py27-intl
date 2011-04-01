@@ -13,17 +13,17 @@
 使用できる開始記号は :const:`Py_eval_input` と :const:`Py_file_input` 、
 :const:`Py_single_input` です。開始期号の説明はこれらを引数として取る関数の後にあります。
 
-これらの関数のいくつかが :ctype:`FILE\*` 引数をとることにも注意してください。
-注意深く扱う必要がある特別な問題の1つは、異なるCライブラリの :ctype:`FILE` 構造体は異なっていて互換性がない可能性があるということです。
+これらの関数のいくつかが :c:type:`FILE\*` 引数をとることにも注意してください。
+注意深く扱う必要がある特別な問題の1つは、異なるCライブラリの :c:type:`FILE` 構造体は異なっていて互換性がない可能性があるということです。
 実際に(少なくとも)Windowsでは、動的リンクされる拡張が異なるライブラリを
-使うことが可能であり、したがって、 :ctype:`FILE\*` 引数がPythonランタイムが
+使うことが可能であり、したがって、 :c:type:`FILE\*` 引数がPythonランタイムが
 使っているライブラリと同じライブラリによって作成されたことが確かならば、単にこれらの関数へ渡すだけということに注意すべきです。
 
 
 .. cfunction:: int Py_Main(int argc, char **argv)
 
    標準インタプリタのためのメインプログラム。Pythonを組み込むプログラムのためにこれを利用できるようにしています。
-   *argc* と *argv* 引数をCプログラムの :cfunc:`main` 関数へ渡されるものとまったく同じに作成すべきです。
+   *argc* と *argv* 引数をCプログラムの :c:func:`main` 関数へ渡されるものとまったく同じに作成すべきです。
    引数リストが変更される可能性があるという点に注意することは重要です。 (しかし、引数リストが指している文字列の内容は変更されません)。
    戻り値は :func:`sys.exit` 関数へ渡される整数でしょう。例外が原因でインタプリタが終了した場合は ``1`` 、あるいは、
    引数リストが有効なPythonコマンドラインになっていない場合は ``2`` です。
@@ -33,31 +33,31 @@
 
 .. cfunction:: int PyRun_AnyFile(FILE *fp, const char *filename)
 
-   下記の :cfunc:`PyRun_AnyFileExFlags` の *closeit* を ``0`` に、 *flags* を
+   下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` に、 *flags* を
    *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_AnyFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   下記の :cfunc:`PyRun_AnyFileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_AnyFileEx(FILE *fp, const char *filename, int closeit)
 
-   下記の :cfunc:`PyRun_AnyFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_AnyFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_AnyFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
    *fp* が対話的デバイス(コンソールや端末入力あるいはUnix仮想端末)と関連づけられたファイルを参照しているならば、
-   :cfunc:`PyRun_InteractiveLoop` の値を返します。それ以外の場合は、
-   :cfunc:`PyRun_SimpleFile` の結果を返します。 *filename* が
+   :c:func:`PyRun_InteractiveLoop` の値を返します。それ以外の場合は、
+   :c:func:`PyRun_SimpleFile` の結果を返します。 *filename* が
    *NULL* ならば、この関数はファイル名として ``"???"`` を使います。
 
 
 .. cfunction:: int PyRun_SimpleString(const char *command)
 
-   下記の :cfunc:`PyRun_SimpleStringFlags` の *PyCompilerFlags\** を
+   下記の :c:func:`PyRun_SimpleStringFlags` の *PyCompilerFlags\** を
    *NULL* にして単純化したインタフェースです。
 
 
@@ -74,32 +74,32 @@
 
 .. cfunction:: int PyRun_SimpleFile(FILE *fp, const char *filename)
 
-   下記の :cfunc:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0`` に、 *flags* を
+   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0`` に、 *flags* を
    *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_SimpleFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
-   下記の :cfunc:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0``
+   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0``
    にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_SimpleFileEx(FILE *fp, const char *filename, int closeit)
 
-   下記の :cfunc:`PyRun_SimpleStringFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_SimpleStringFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_SimpleFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
-   Similar to :cfunc:`PyRun_SimpleStringFlags`, but the Python source
-   :cfunc:`PyRun_SimpleString` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。
+   Similar to :c:func:`PyRun_SimpleStringFlags`, but the Python source
+   :c:func:`PyRun_SimpleString` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。
    *filename* はそのファイルの名前でなければなりません。 *closeit* が真ならば、PyRun_SimpleFileExFlags は処理を戻す前に
    ファイルを閉じます。
 
 
 .. cfunction:: int PyRun_InteractiveOne(FILE *fp, const char *filename)
 
-   下記の :cfunc:`PyRun_InteractiveOneFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_InteractiveOneFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
@@ -115,7 +115,7 @@
 
 .. cfunction:: int PyRun_InteractiveLoop(FILE *fp, const char *filename)
 
-   下記の :cfunc:`PyRun_InteractiveLoopFlags` の *flags* を ``0`` にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_InteractiveLoopFlags` の *flags* を ``0`` にして単純化したインタフェースです。
 
 
 .. cfunction:: int PyRun_InteractiveLoopFlags(FILE *fp,  const char *filename, PyCompilerFlags *flags)
@@ -127,13 +127,13 @@
 
 .. cfunction:: struct _node* PyParser_SimpleParseString(const char *str, int start)
 
-   下記の :cfunc:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
+   下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
    に、 *flags* を ``0`` にして単純化したインタフェースです。
 
 
 .. cfunction:: struct _node* PyParser_SimpleParseStringFlags( const char *str, int start, int flags)
 
-   下記の :cfunc:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
+   下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
    にして単純化したインタフェースです。
 
 
@@ -145,18 +145,18 @@
 
 .. cfunction:: struct _node* PyParser_SimpleParseFile(FILE *fp, const char *filename, int start)
 
-   下記の :cfunc:`PyRun_SimpleParseFileFlags` の *flags* を ``0`` にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_SimpleParseFileFlags` の *flags* を ``0`` にして単純化したインタフェースです。
 
 
 .. cfunction:: struct _node* PyParser_SimpleParseFileFlags(FILE *fp, const char *filename, int start, int flags)
 
-   :cfunc:`PyParser_SimpleParseStringFlagsFilename` に似ていますが、
+   :c:func:`PyParser_SimpleParseStringFlagsFilename` に似ていますが、
    Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *filename* はそのファイルの名前でなけれななりません。
 
 
 .. cfunction:: PyObject* PyRun_String(const char *str, int start, PyObject *globals, PyObject *locals)
 
-   下記の :cfunc:`PyRun_StringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_StringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: PyObject* PyRun_StringFlags(const char *str, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
@@ -169,30 +169,30 @@
 
 .. cfunction:: PyObject* PyRun_File(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals)
 
-   下記の :cfunc:`PyRun_FileExFlags` の *closeit* を ``0`` にし、 *flags*
+   下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にし、 *flags*
    を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: PyObject* PyRun_FileEx(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit)
 
-   下記の :cfunc:`PyRun_FileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_FileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: PyObject* PyRun_FileFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
 
-   下記の :cfunc:`PyRun_FileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
+   下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
 
 
 .. cfunction:: PyObject* PyRun_FileExFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit, PyCompilerFlags *flags)
 
-   :cfunc:`PyRun_String` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *closeit*
-   を真にすると、 :cfunc:`PyRun_FileExFlags` から処理を戻す前にファイルを閉じます。
+   :c:func:`PyRun_String` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *closeit*
+   を真にすると、 :c:func:`PyRun_FileExFlags` から処理を戻す前にファイルを閉じます。
    *filename* はそのファイルの名前でなければなりません。
 
 
 .. cfunction:: PyObject* Py_CompileString(const char *str, const char *filename, int start)
 
-   下記の :cfunc:`Py_CompileStringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
+   下記の :c:func:`Py_CompileStringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
 .. cfunction:: PyObject* Py_CompileStringFlags(const char *str, const char *filename, int start, PyCompilerFlags *flags)
@@ -207,7 +207,7 @@
 
 .. cfunction:: PyObject* PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
 
-   :cfunc:`PyEval_EvalCodeEx` に対するシンプルなインタフェースで、
+   :c:func:`PyEval_EvalCodeEx` に対するシンプルなインタフェースで、
    コードオブジェクトと、グローバル・ローカル変数辞書だけを受け取ります。
    他の引数には *NULL* が渡されます。
 
@@ -247,14 +247,14 @@
 
    .. index:: single: Py_CompileString()
 
-   単独の式に対するPython文法の開始記号で、 :cfunc:`Py_CompileString` と一緒に使います。
+   単独の式に対するPython文法の開始記号で、 :c:func:`Py_CompileString` と一緒に使います。
 
 
 .. cvar:: int Py_file_input
 
    .. index:: single: Py_CompileString()
 
-   ファイルあるいは他のソースから読み込まれた文の並びに対するPython文法の開始記号で、 :cfunc:`Py_CompileString` と
+   ファイルあるいは他のソースから読み込まれた文の並びに対するPython文法の開始記号で、 :c:func:`Py_CompileString` と
    一緒に使います。これは任意の長さのPythonソースコードをコンパイルするときに使う記号です。
 
 
@@ -262,7 +262,7 @@
 
    .. index:: single: Py_CompileString()
 
-   単一の文に対するPython文法の開始記号で、 :cfunc:`Py_CompileString` と一緒に使います。
+   単一の文に対するPython文法の開始記号で、 :c:func:`Py_CompileString` と一緒に使います。
    これは対話式のインタプリタループのための記号です。
 
 

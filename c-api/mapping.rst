@@ -20,7 +20,7 @@
    Python の式 ``len(o)`` と同じになります。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyMapping_DelItemString(PyObject *o, char *key)

@@ -14,7 +14,7 @@
 
    .. index:: single: ModuleType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のモジュールオブジェクト型を表現します。このオブジェクトは、Python
+   この :c:type:`PyTypeObject` のインスタンスは Python のモジュールオブジェクト型を表現します。このオブジェクトは、Python
    プログラムには ``types.ModuleType``  として公開されています。
 
 
@@ -28,7 +28,7 @@
 
 .. cfunction:: int PyModule_CheckExact(PyObject *p)
 
-   *o* がモジュールオブジェクトで、かつモジュールオブジェクトのサブタイプでないときに真を返します。  :cdata:`PyModule_Type`.
+   *o* がモジュールオブジェクトで、かつモジュールオブジェクトのサブタイプでないときに真を返します。  :c:data:`PyModule_Type`.
 
    .. versionadded:: 2.2
 
@@ -50,7 +50,7 @@
 
    *module* の名前空間を実現する辞書オブジェクトを返します; このオブジェクトはモジュールオブジェクトの :attr:`__dict__`
    と同じです。この関数が失敗することはありません。  拡張モジュールでは、この関数で得たモジュールの :attr:`__dict__`
-   を直接いじるより、他の :cfunc:`PyModule_\*` および :cfunc:`PyObject_\*` 関数を使うよう勧めます。
+   を直接いじるより、他の :c:func:`PyModule_\*` および :c:func:`PyObject_\*` 関数を使うよう勧めます。
 
 
 .. cfunction:: char* PyModule_GetName(PyObject *module)

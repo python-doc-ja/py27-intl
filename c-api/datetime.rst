@@ -8,9 +8,9 @@ DateTime オブジェクト
 :mod:`datetime` モジュールでは、様々な日付オブジェクトや時刻オブジェクトを
 提供しています。以下に示す関数を使う場合には、あらかじめヘッダファイル
 :file:`datetime.h` をソースに include し (:file:`Python.h` はこのファイルを
-include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモジュール
+include しません)、 :c:macro:`PyDateTime_IMPORT` マクロを、通常はモジュール
 初期化関数から、起動しておく必要があります。このマクロは以下のマクロで
-使われる静的変数 :cdata:`PyDateTimeAPI` に C 構造体へのポインタを入れます。
+使われる静的変数 :c:data:`PyDateTimeAPI` に C 構造体へのポインタを入れます。
 
 .. % DateTime Objects
 
@@ -19,7 +19,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyDate_Check(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DateType` 型か :cdata:`PyDateTime_DateType`
+   *ob* が :c:data:`PyDateTime_DateType` 型か :c:data:`PyDateTime_DateType`
    型のサブタイプのオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
@@ -27,14 +27,14 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyDate_CheckExact(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DateType` 型のオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
+   *ob* が :c:data:`PyDateTime_DateType` 型のオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: int PyDateTime_Check(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DateTimeType` 型か :cdata:`PyDateTime_DateTimeType`
+   *ob* が :c:data:`PyDateTime_DateTimeType` 型か :c:data:`PyDateTime_DateTimeType`
    型のサブタイプのオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
@@ -42,7 +42,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyDateTime_CheckExact(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DateTimeType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
+   *ob* が :c:data:`PyDateTime_DateTimeType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
    であってはなりません。
 
    .. versionadded:: 2.4
@@ -50,7 +50,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyTime_Check(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_TimeType` 型か :cdata:`PyDateTime_TimeType`
+   *ob* が :c:data:`PyDateTime_TimeType` 型か :c:data:`PyDateTime_TimeType`
    型のサブタイプのオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
@@ -58,14 +58,14 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyTime_CheckExact(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_TimeType` 型のオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
+   *ob* が :c:data:`PyDateTime_TimeType` 型のオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
 
 
 .. cfunction:: int PyDelta_Check(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DeltaType` 型か :cdata:`PyDateTime_DeltaType`
+   *ob* が :c:data:`PyDateTime_DeltaType` 型か :c:data:`PyDateTime_DeltaType`
    型のサブタイプのオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
@@ -73,7 +73,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyDelta_CheckExact(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_DeltaType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
+   *ob* が :c:data:`PyDateTime_DeltaType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
    であってはなりません。
 
    .. versionadded:: 2.4
@@ -81,7 +81,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyTZInfo_Check(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_TZInfoType` 型か :cdata:`PyDateTime_TZInfoType`
+   *ob* が :c:data:`PyDateTime_TZInfoType` 型か :c:data:`PyDateTime_TZInfoType`
    型のサブタイプのオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
    .. versionadded:: 2.4
@@ -89,7 +89,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
 .. cfunction:: int PyTZInfo_CheckExact(PyObject *ob)
 
-   *ob* が :cdata:`PyDateTime_TZInfoType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
+   *ob* が :c:data:`PyDateTime_TZInfoType` 型のオブジェクトの場合に真を返します; *ob* は *NULL*
    であってはなりません。
 
    .. versionadded:: 2.4
@@ -125,8 +125,8 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
    .. versionadded:: 2.4
 
-以下のマクロは date オブジェクトからフィールド値を取り出すためのものです。引数は :cdata:`PyDateTime_Date` またはそのサブクラス
-(例えば :cdata:`PyDateTime_DateTime`)の  インスタンスでなければなりません。引数を *NULL* にしてはならず、
+以下のマクロは date オブジェクトからフィールド値を取り出すためのものです。引数は :c:data:`PyDateTime_Date` またはそのサブクラス
+(例えば :c:data:`PyDateTime_DateTime`)の  インスタンスでなければなりません。引数を *NULL* にしてはならず、
 型チェックは行いません:
 
 
@@ -150,7 +150,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
    .. versionadded:: 2.4
 
-以下のマクロは datetime オブジェクトからフィールド値を取り出すためのものです。引数は :cdata:`PyDateTime_DateTime`
+以下のマクロは datetime オブジェクトからフィールド値を取り出すためのものです。引数は :c:data:`PyDateTime_DateTime`
 またはそのサブクラスのインスタンスでなければなりません。引数を *NULL* にしてはならず、型チェックは行いません:
 
 
@@ -181,7 +181,7 @@ include しません)、 :cmacro:`PyDateTime_IMPORT` マクロを、通常はモ
 
    .. versionadded:: 2.4
 
-以下のマクロは time オブジェクトからフィールド値を取り出すためのものです。引数は :cdata:`PyDateTime_Time` またはそのサブクラスの
+以下のマクロは time オブジェクトからフィールド値を取り出すためのものです。引数は :c:data:`PyDateTime_Time` またはそのサブクラスの
 インスタンスでなければなりません。引数を *NULL* にしてはならず、型チェックは行いません:
 
 

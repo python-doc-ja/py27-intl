@@ -64,11 +64,11 @@ Python は *弱参照* を第一級オブジェクト (first-class object)
 
       この関数は参照先オブジェクトの **借り物の参照** を返します。
       そのため、そのオブジェクトを利用している間そのオブジェクトが破棄されない
-      ことが判っている場合を除き、常に :cfunc:`Py_INCREF` を呼び出すべきです。
+      ことが判っている場合を除き、常に :c:func:`Py_INCREF` を呼び出すべきです。
 
 .. cfunction:: PyObject* PyWeakref_GET_OBJECT(PyObject *ref)
 
-   :cfunc:`PyWeakref_GetObject` に似ていますが、マクロで実装されていて、エラーチェックを行いません。
+   :c:func:`PyWeakref_GetObject` に似ていますが、マクロで実装されていて、エラーチェックを行いません。
 
    .. versionadded:: 2.2
 

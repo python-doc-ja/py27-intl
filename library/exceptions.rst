@@ -410,7 +410,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. This exception is derived from :exc:`EnvironmentError`.  It is raised when a
    .. function returns a system-related error (not for illegal argument types or
    .. other incidental errors).  The :attr:`errno` attribute is a numeric error
-   .. code from :cdata:`errno`, and the :attr:`strerror` attribute is the
+   .. code from :c:data:`errno`, and the :attr:`strerror` attribute is the
    .. corresponding string, as would be printed by the C function :cfunc:`perror`.
    .. See the module :mod:`errno`, which contains names for the error codes defined
    .. by the underlying operating system.
@@ -418,7 +418,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    このクラスは :exc:`EnvironmentError` から導出されています。
    関数がシステムに関連したエラーを返した場合に送出されます
    (引数の型が間違っている場合や、他の偶発的なエラーは除きます)。
-   :attr:`errno` 属性は :cdata:`errno` に基づく数字のエラーコードで、
+   :attr:`errno` 属性は :c:data:`errno` に基づく数字のエラーコードで、
    :attr:`strerror` 属性は C の :cfunc:`perror` 関数で表示されるような
    文字列です。
    オペレーティングシステムに依存したエラーコードの定義と名前については、
@@ -695,13 +695,13 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 .. exception:: WindowsError
 
    .. Raised when a Windows-specific error occurs or when the error number does not
-   .. correspond to an :cdata:`errno` value.  The :attr:`winerror` and
+   .. correspond to an :c:data:`errno` value.  The :attr:`winerror` and
    .. :attr:`strerror` values are created from the return values of the
    .. :cfunc:`GetLastError` and :cfunc:`FormatMessage` functions from the Windows
    .. Platform API. The :attr:`errno` value maps the :attr:`winerror` value to
    .. corresponding ``errno.h`` values. This is a subclass of :exc:`OSError`.
 
-   Windows 特有のエラーか、エラー番号が :cdata:`errno` 値に対応しない
+   Windows 特有のエラーか、エラー番号が :c:data:`errno` 値に対応しない
    場合に送出されます。 :attr:`winerrno` および :attr:`strerror` の値は
    Windows プラットフォーム API の関数 :cfunc:`GetLastError` と
    :cfunc:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の

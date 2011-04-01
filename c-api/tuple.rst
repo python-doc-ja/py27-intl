@@ -10,14 +10,14 @@
 
 .. ctype:: PyTupleObject
 
-   この :ctype:`PyObject` のサブタイプは Python のタプルオブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Python のタプルオブジェクトを表現します。
 
 
 .. cvar:: PyTypeObject PyTuple_Type
 
    .. index:: single: TupleType (in module types)
 
-   この :ctype:`PyTypeObject` のインスタンスは Python のタプル型を表現します; Python レイヤにおける ``tuple``
+   この :c:type:`PyTypeObject` のインスタンスは Python のタプル型を表現します; Python レイヤにおける ``tuple``
    や ``types.TupleType``  と同じオブジェクトです。
 
 
@@ -41,7 +41,7 @@
    サイズが *len* 新たなタプルオブジェクトを返します。失敗すると *NULL* を返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *len* の型に :ctype:`int` を利用していました。
+      この関数は以前は *len* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_Pack(Py_ssize_t n, ...)
@@ -52,7 +52,7 @@
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      この関数は以前は *n* の型に :ctype:`int` を利用していました。
+      この関数は以前は *n* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyTuple_Size(PyObject *p)
@@ -60,7 +60,7 @@
    タプルオブジェクトへのポインタを引数にとり、そのタプルのサイズを返します。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: Py_ssize_t PyTuple_GET_SIZE(PyObject *p)
@@ -69,7 +69,7 @@
    エラーチェックを行いません。
 
    .. versionchanged:: 2.5
-      これらの関数は以前は :ctype:`int` を返していました。
+      これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GetItem(PyObject *p, Py_ssize_t pos)
@@ -78,15 +78,15 @@
    :exc:`IndexError` 例外をセットします。
 
    .. versionchanged:: 2.5
-      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この関数は以前は *pos* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GET_ITEM(PyObject *p, Py_ssize_t pos)
 
-   :cfunc:`PyTuple_GetItem` に似ていますが、引数に対するエラーチェックを行いません。
+   :c:func:`PyTuple_GetItem` に似ていますが、引数に対するエラーチェックを行いません。
 
    .. versionchanged:: 2.5
-      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この関数は以前は *pos* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: PyObject* PyTuple_GetSlice(PyObject *p, Py_ssize_t low, Py_ssize_t high)
@@ -94,7 +94,7 @@
    *p* の指すタプルオブジェクト内の、位置 *low* から *high* までのスライスを取り出して、タプルオブジェクトとして返します。
 
    .. versionchanged:: 2.5
-      この関数は以前は *low*, *high* の型に :ctype:`int` を利用していました。
+      この関数は以前は *low*, *high* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyTuple_SetItem(PyObject *p, Py_ssize_t pos, PyObject *o)
@@ -106,19 +106,19 @@
       この関数は *o* への参照を "盗み取り" ます。
 
    .. versionchanged:: 2.5
-      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この関数は以前は *pos* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: void PyTuple_SET_ITEM(PyObject *p, Py_ssize_t pos, PyObject *o)
 
-   :cfunc:`PyTuple_SetItem` に似ていますが、エラーチェックを行わず、新たなタプルに値を入れるとき *以外には使ってはなりません* 。
+   :c:func:`PyTuple_SetItem` に似ていますが、エラーチェックを行わず、新たなタプルに値を入れるとき *以外には使ってはなりません* 。
 
    .. note::
 
       この関数は *o* への参照を "盗み取り" ます。
 
    .. versionchanged:: 2.5
-      この関数は以前は *pos* の型に :ctype:`int` を利用していました。
+      この関数は以前は *pos* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int _PyTuple_Resize(PyObject **p, Py_ssize_t newsize)
@@ -134,7 +134,7 @@
       使われていなかった三つ目のパラメタ、 *last_is_sticky* を削除しました.
 
    .. versionchanged:: 2.5
-      この関数は以前は *newsize* の型に :ctype:`int` を利用していました。
+      この関数は以前は *newsize* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 .. cfunction:: int PyTuple_ClearFreeList()

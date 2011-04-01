@@ -21,8 +21,8 @@
    *str* に出力します。
    Unix man page の :manpage:`vsnprintf(2)` を参照してください。
 
-:cfunc:`PyOS_snprintf` と :cfunc:`PyOS_vsnprintf` は標準Cライブラリの
-:cfunc:`snprintf` と :cfunc:`vsnprintf` 関数をラップします。
+:c:func:`PyOS_snprintf` と :c:func:`PyOS_vsnprintf` は標準Cライブラリの
+:c:func:`snprintf` と :c:func:`vsnprintf` 関数をラップします。
 これらの関数の目的は、C標準ライブラリが保証していないコーナーケースでの
 動作を保証することです。
 
@@ -31,7 +31,7 @@
 ``str != NULL``, ``size > 0``, ``format != NULL`` を要求します。
 
 
-もし :cfunc:`vsnprintf` のないプラットフォームで、切り捨てを避けるために必要な
+もし :c:func:`vsnprintf` のないプラットフォームで、切り捨てを避けるために必要な
 バッファサイズが *size* を512バイトより大きく超過していれば、 Python は
 *Py_FatalError* で abort します。
 
@@ -53,11 +53,11 @@ The return value (*rv*) for these functions should be interpreted as follows:
 
 .. cfunction:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
 
-   文字列を :ctype:`double` へ変換します。
-   この関数は、C locale におけるC標準の :cfunc:`strtod` と同じように動作します。
+   文字列を :c:type:`double` へ変換します。
+   この関数は、C locale におけるC標準の :c:func:`strtod` と同じように動作します。
    スレッドセーフのために、この関数は現在の locale を変更せずに実装されています。
 
-   :cfunc:`PyOS_ascii_strtod` は通常、設定ファイルを読み込むときや、ロケール独立な
+   :c:func:`PyOS_ascii_strtod` は通常、設定ファイルを読み込むときや、ロケール独立な
    非ユーザーからの入力を読み込むときに使われるべきです。
 
    .. versionadded:: 2.4
@@ -67,8 +67,8 @@ The return value (*rv*) for these functions should be interpreted as follows:
 
 .. cfunction:: char * PyOS_ascii_formatd(char *buffer, size_t buf_len, const char *format, double d)
 
-   :ctype:`double` を ``'.'`` を小数点記号に利用して文字列に変換します。
-   *format* は数値のフォーマットを指定する :cfunc:`printf` スタイルの文字列です。
+   :c:type:`double` を ``'.'`` を小数点記号に利用して文字列に変換します。
+   *format* は数値のフォーマットを指定する :c:func:`printf` スタイルの文字列です。
    利用できる変換文字は ``'e'``, ``'E'``, ``'f'``, ``'F'``, ``'g'``, ``'G'`` です。
 
    戻り値は、変換された文字列が格納された *buffer* へのポインタか、失敗した場合は NULL です。
@@ -78,7 +78,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
 
 .. cfunction:: double PyOS_ascii_atof(const char *nptr)
 
-   文字列を、 locale 非依存な方法で :ctype:`double` へ変換します。
+   文字列を、 locale 非依存な方法で :c:type:`double` へ変換します。
 
    .. versionadded:: 2.4
 
@@ -88,7 +88,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
 .. cfunction:: char * PyOS_stricmp(char *s1, char *s2)
 
    大文字/小文字を区別しない文字列比較。
-   大文字/小文字を無視する以外は、 :cfunc:`strcmp` と同じ動作をします。
+   大文字/小文字を無視する以外は、 :c:func:`strcmp` と同じ動作をします。
 
    .. versionadded:: 2.6
 
@@ -96,6 +96,6 @@ The return value (*rv*) for these functions should be interpreted as follows:
 .. cfunction:: char * PyOS_strnicmp(char *s1, char *s2, Py_ssize_t  size)
 
    大文字/小文字を区別しない文字列比較。
-   大文字/小文字を無視する以外は、 :cfunc:`strncmp` と同じ動作をします。
+   大文字/小文字を無視する以外は、 :c:func:`strncmp` と同じ動作をします。
 
    .. versionadded:: 2.6

@@ -770,11 +770,11 @@ StreamRecoder オブジェクト
 --------------------------
 
 Unicode 文字列は内部的にはコードポイントのシーケンスとして格納されます
-(正確に言えば :ctype:`Py_UNICODE` 配列です)。
+(正確に言えば :c:type:`Py_UNICODE` 配列です)。
 Python がどのようにコンパイルされたか (デフォルトである
 :option:`--enable-unicode=ucs2` かまたは
 :option:`--enable-unicode=ucs4` のどちらか) によって、
-:ctype:`Py_UNICODE` は16ビットまたは32ビットのデータ型です。 Unicode
+:c:type:`Py_UNICODE` は16ビットまたは32ビットのデータ型です。 Unicode
 オブジェクトが CPU とメモリの外で使われることになると、 CPU のエンディ
 アンやこれらの配列がバイト列としてどのように格納されるかが問題になって
 きます。 Unicode オブジェクトをバイト列に変換することをエンコーディン
