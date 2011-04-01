@@ -124,7 +124,7 @@
    :attr:``sys.modules`` に残すのは危険であり、そのようなモジュールを import するコードにとっては、モジュールの状態がわからない
    (モジュール作者の意図から外れた壊れた状態かもしれない) からです。
 
-   モジュールの :attr:`__file__` 属性が、コードオブジェクトの :cmember:`co_filename` に設定されます。
+   モジュールの :attr:`__file__` 属性が、コードオブジェクトの :c:member:`co_filename` に設定されます。
 
    この関数は、すでに import されているモジュールの場合には再ロードを行います。意図的にモジュールの再ロードを行う方法は
    :c:func:`PyImport_ReloadModule` を参照してください。
@@ -201,7 +201,7 @@
    import 済みのモジュールをリロードしてしまいます。)
 
 
-.. ctype:: struct _frozen
+.. c:type:: struct _frozen
 
    .. index:: single: freeze utility
 
@@ -216,7 +216,7 @@
       };
 
 
-.. cvar:: struct _frozen* PyImport_FrozenModules
+.. c:var:: struct _frozen* PyImport_FrozenModules
 
    このポインタは :c:type:`struct _frozen` のレコードからなり、終端の要素のメンバが *NULL* かゼロになっているような配列
    を指すよう初期化されます。フリーズされたモジュールを import するとき、このテーブルを検索します。サードパーティ製のコードから
@@ -230,7 +230,7 @@
    試みた際に呼び出される関数として *initfunc* を使います。 :c:func:`Py_Initialize` よりも前に呼び出さねばなりません。
 
 
-.. ctype:: struct _inittab
+.. c:type:: struct _inittab
 
    組み込みモジュールリスト内の一つのエントリを記述している構造体です。リスト内の各構造体には、インタプリタ内に組み込まれているモジュールの
    名前と初期化関数が指定されています。 Python を埋め込むようなプログラムは、この構造体の配列と

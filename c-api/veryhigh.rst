@@ -243,14 +243,14 @@
    成功したら true を、失敗したら false を返します。
 
 
-.. cvar:: int Py_eval_input
+.. c:var:: int Py_eval_input
 
    .. index:: single: Py_CompileString()
 
    単独の式に対するPython文法の開始記号で、 :c:func:`Py_CompileString` と一緒に使います。
 
 
-.. cvar:: int Py_file_input
+.. c:var:: int Py_file_input
 
    .. index:: single: Py_CompileString()
 
@@ -258,7 +258,7 @@
    一緒に使います。これは任意の長さのPythonソースコードをコンパイルするときに使う記号です。
 
 
-.. cvar:: int Py_single_input
+.. c:var:: int Py_single_input
 
    .. index:: single: Py_CompileString()
 
@@ -266,7 +266,7 @@
    これは対話式のインタプリタループのための記号です。
 
 
-.. ctype:: struct PyCompilerFlags
+.. c:type:: struct PyCompilerFlags
 
    コンパイラフラグを収めておくための構造体です。コードをコンパイルするだけの場合、この構造体が ``int flags`` として渡されます。コードを実
    行する場合には ``PyCompilerFlags *flags`` として渡されます。この場合、 ``from __future__  import`` は
@@ -280,7 +280,7 @@
       }
 
 
-.. cvar:: int CO_FUTURE_DIVISION
+.. c:var:: int CO_FUTURE_DIVISION
 
    このビットを *flags* にセットすると、除算演算子 ``/`` は :pep:`238` による「真の除算 (true division)」
    として扱われます。

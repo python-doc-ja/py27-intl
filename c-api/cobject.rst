@@ -11,7 +11,7 @@ Cオブジェクト (CObject)
 Extension Module," を参照してください。
 
 
-.. ctype:: PyCObject
+.. c:type:: PyCObject
 
    この :c:type:`PyObject` のサブタイプは不透明型値 (opaque value) を表現します。C 拡張モジュールが Python
    コードから不透明型値を  (:c:type:`void\*` ポインタで) 他の C コードに渡す必要があるときに便利です。正規の import

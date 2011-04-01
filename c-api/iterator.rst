@@ -10,7 +10,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
 シーケンス内の要素ごとに呼び出し可能オブジェクトを呼び出して、センチネル値が返されたときに反復処理を終了します。
 
 
-.. cvar:: PyTypeObject PySeqIter_Type
+.. c:var:: PyTypeObject PySeqIter_Type
 
    :c:func:`PySeqIter_New` や、組み込みシーケンス型に対して 1 引数形式の組み込み関数 :func:`iter` を呼び出したときに
    返される、イテレータオブジェクトの型オブジェクトです。
@@ -33,7 +33,7 @@ Python では二種類のイテレータオブジェクトを提供していま�
    .. versionadded:: 2.2
 
 
-.. cvar:: PyTypeObject PyCallIter_Type
+.. c:var:: PyTypeObject PyCallIter_Type
 
    :c:func:`PyCallIter_New` や、組み込み関数 :func:`iter` の 2 引数形式が返すイテレータオブジェクトの型オブジェクトです。
    :func:`iter` built-in function.

@@ -12,12 +12,12 @@ Python 3 では削除されることに注意してください。
 新スタイルクラス(type)を拡張モジュールで作成する場合は、 type オブジェクトを
 扱うべきです。 (:ref:`typeobjects` を参照)
 
-.. ctype:: PyClassObject
+.. c:type:: PyClassObject
 
    ビルトインクラスを表すためのオブジェクトの構造体
 
 
-.. cvar:: PyObject* PyClass_Type
+.. c:var:: PyObject* PyClass_Type
 
    .. index:: single: ClassType (in module types)
 
@@ -42,7 +42,7 @@ Python 3 では削除されることに注意してください。
 インスタンスオブジェクト固有の関数はきわめてわずかです。
 
 
-.. cvar:: PyTypeObject PyInstance_Type
+.. c:var:: PyTypeObject PyInstance_Type
 
    クラスインスタンスの型オブジェクトです。
 

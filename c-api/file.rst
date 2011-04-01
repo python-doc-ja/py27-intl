@@ -12,13 +12,13 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 一実装に関するもので、将来の Python のリリースで変更されるかもしれません。
 
 
-.. ctype:: PyFileObject
+.. c:type:: PyFileObject
 
    この :c:type:`PyObject` のサブタイプは Python のファイル型オブジェクトを
    表現します。
 
 
-.. cvar:: PyTypeObject PyFile_Type
+.. c:var:: PyTypeObject PyFile_Type
 
    .. index:: single: FileType (in module types)
 

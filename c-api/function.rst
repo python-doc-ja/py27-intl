@@ -10,12 +10,12 @@
 Pythonの関数にはいくつかの種類があります。
 
 
-.. ctype:: PyFunctionObject
+.. c:type:: PyFunctionObject
 
    関数に使われるCの構造体
 
 
-.. cvar:: PyTypeObject PyFunction_Type
+.. c:var:: PyTypeObject PyFunction_Type
 
    .. index:: single: MethodType (in module types)
 

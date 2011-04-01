@@ -16,12 +16,12 @@
 .. index:: object: string
 
 
-.. ctype:: PyStringObject
+.. c:type:: PyStringObject
 
    この :c:type:`PyObject` のサブタイプは Python の文字列オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyString_Type
+.. c:var:: PyTypeObject PyString_Type
 
    .. index:: single: StringType (in module types)
 

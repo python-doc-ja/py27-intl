@@ -12,12 +12,12 @@
 .. % Generator Objects
 
 
-.. ctype:: PyGenObject
+.. c:type:: PyGenObject
 
    ジェネレータオブジェクトに使われている C 構造体です。
 
 
-.. cvar:: PyTypeObject PyGen_Type
+.. c:var:: PyTypeObject PyGen_Type
 
    ジェネレータオブジェクトに対応する型オブジェクトです。
 

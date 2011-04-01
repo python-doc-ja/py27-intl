@@ -8,12 +8,12 @@
 .. index:: object: tuple
 
 
-.. ctype:: PyTupleObject
+.. c:type:: PyTupleObject
 
    この :c:type:`PyObject` のサブタイプは Python のタプルオブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyTuple_Type
+.. c:var:: PyTypeObject PyTuple_Type
 
    .. index:: single: TupleType (in module types)
 

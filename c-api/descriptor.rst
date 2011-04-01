@@ -9,7 +9,7 @@
 型オブジェクトの辞書内にあります。
 
 
-.. cvar:: PyTypeObject PyProperty_Type
+.. c:var:: PyTypeObject PyProperty_Type
 
    組み込みデスクリプタ型の型オブジェクトです。
 

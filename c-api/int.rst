@@ -8,12 +8,12 @@
 .. index:: object: integer
 
 
-.. ctype:: PyIntObject
+.. c:type:: PyIntObject
 
    この :c:type:`PyObject` のサブタイプは Python の整数型オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyInt_Type
+.. c:var:: PyTypeObject PyInt_Type
 
    .. index:: single: IntType (in modules types)
 

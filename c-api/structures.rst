@@ -13,7 +13,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
 使って定義されています。
 
 
-.. ctype:: PyObject
+.. c:type:: PyObject
 
    全てのオブジェクト型はこの型を拡張したものです。
    この型には、あるオブジェクトに対するオブジェクトとしてのポインタを Python
@@ -24,7 +24,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    ``PyObject_HEAD`` マクロ展開で定義されているフィールドに対応します。
 
 
-.. ctype:: PyVarObject
+.. c:type:: PyVarObject
 
    :c:type:`PyObject` を拡張して、 :attr:`ob_size` フィールドを追加したものです。この構造体は、 *長さ (length)*
    の概念を持つオブジェクトだけに対して使います。この型が Python/C API で使われることはほとんどありません。
@@ -33,7 +33,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
 :c:type:`PyObject` および :c:type:`PyVarObject` の定義には以下のマクロが使われています:
 
 
-.. cmacro:: PyObject_HEAD
+.. c:macro:: PyObject_HEAD
 
    :c:type:`PyObject` 型のフィールド宣言に展開されるマクロです;  可変でない長さを持つオブジェクトを表現する新たな型を宣言する
    場合に使います。展開によってどのフィールドが宣言されるかは、 :c:macro:`Py_TRACE_REFS` の定義に依存します。
@@ -50,7 +50,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
       PyTypeObject *ob_type;
 
 
-.. cmacro:: PyObject_VAR_HEAD
+.. c:macro:: PyObject_VAR_HEAD
 
    マクロです。 :c:type:`PyVarObject` 型のフィールド宣言に展開されるマクロです;
    インスタンスによって可変の長さを持つオブジェクトを表現する新たな型を宣言する場合に使います。マクロは常に以下のように展開されます::
@@ -62,7 +62,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    の展開結果は :c:macro:`Py_TRACE_REFS` の定義に依存します。
 
 
-.. cmacro:: PyObject_HEAD_INIT(type)
+.. c:macro:: PyObject_HEAD_INIT(type)
 
    新しい :c:type:`PyObject` 型のための初期値に展開するマクロです。
    このマクロは次のように展開されます。 ::
@@ -71,7 +71,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
       1, type,
 
 
-.. cmacro:: PyVarObject_HEAD_INIT(type, size)
+.. c:macro:: PyVarObject_HEAD_INIT(type, size)
 
    新しい、 :attr:`ob_size` フィールドを含む :c:type:`PyVarObject`
    型のための初期値に展開するマクロです。
@@ -81,7 +81,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
       1, type, size,+}}}
 
 
-.. ctype:: PyCFunction
+.. c:type:: PyCFunction
 
    ほとんどの Python の呼び出し可能オブジェクトを C で実装する際に用いられている関数の型です。この型の関数は二つの
    :c:type:`PyObject\*` 型パラメタをとり、 :c:type:`PyObject\*` 型の値を返します。戻り値を *NULL* にする場合、
@@ -89,7 +89,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    この型の関数は新たな参照を返さなければなりません。
 
 
-.. ctype:: PyMethodDef
+.. c:type:: PyMethodDef
 
    拡張型のメソッドを記述する際に用いる構造体です。この構造体には 4 つのフィールドがあります:
 
@@ -190,7 +190,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    .. versionadded:: 2.4
 
 
-.. ctype:: PyMemberDef
+.. c:type:: PyMemberDef
 
    Structure which describes an attribute of a type which corresponds to a C
    struct member.  Its fields are:

@@ -42,46 +42,46 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 ==============================
 
 
-.. ctype:: Py_buffer
+.. c:type:: Py_buffer
 
-   .. cmember:: void *buf
+   .. c:member:: void *buf
 
       オブジェクトのメモリの開始位置へのポインタ
 
-   .. cmember:: Py_ssize_t len
+   .. c:member:: Py_ssize_t len
       :noindex:
 
       メモリのトータルサイズ[byte]
 
-   .. cmember:: int readonly
+   .. c:member:: int readonly
 
       バッファが読み込み専用かどうかを示す
 
-   .. cmember:: const char *format
+   .. c:member:: const char *format
       :noindex:
 
       バッファを通してアクセスできる要素の形式を指定する、 :mod:`struct`
       モジュールスタイル文法の、 *NULL* 終端文字列。
       このポインタの値が *NULL* なら、 ``"B"`` (符号無しバイト) として扱われます。
 
-   .. cmember:: int ndim
+   .. c:member:: int ndim
 
       メモリが多次元配列を表している時の次元数。 0 の場合、 :c:data:`strides`
       と :c:data:`suboffsets` は *NULL* でなければなりません。
 
-   .. cmember:: Py_ssize_t *shape
+   .. c:member:: Py_ssize_t *shape
 
       メモリが多次元配列を表しているとき、その形を示す長さ :c:data:`ndim` の
       :c:type:`Py_ssize_t` の配列。
       ``((*shape)[0] * ... * (*shape)[ndims-1])*itemsize`` は :c:data:`len`
       と等しくなければならないことに気をつけてください。
 
-   .. cmember:: Py_ssize_t *strides
+   .. c:member:: Py_ssize_t *strides
 
       各次元で次の要素を得るためにスキップするバイト数を示す、長さ :c:data:`ndim`
       の :c:type:`Py_ssize_t` の配列。
 
-   .. cmember:: Py_ssize_t *suboffsets
+   .. c:member:: Py_ssize_t *suboffsets
 
       長さ :c:data:`ndim` の、 :c:type:`Py_ssize_t` の配列。
       suboffset の各数値が0以上であるとき、その次元に格納されているのはポインタで、
@@ -107,7 +107,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
            }
 
 
-   .. cmember:: Py_ssize_t itemsize
+   .. c:member:: Py_ssize_t itemsize
 
       これは共有メモリ上の各要素のbyte単位のサイズを格納する変数です。
       これは :c:func:`PyBuffer_SizeFromFormat` を使って計算できる値なので
@@ -116,7 +116,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       とっては正しく解釈するのに必要な情報です。なので、要素サイズを格納する
       ほうが便利ですし高速です。
 
-   .. cmember:: void *internal
+   .. c:member:: void *internal
 
       バッファを提供する側のオブジェクトが内部的に利用するための変数です。
       例えば、提供側はこの変数に整数型をキャストして、 shape, strides, suboffsets
@@ -238,11 +238,11 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 .. todo::
    以下の2つの関数は実装が存在しない。問い合わせ中。
 
-   .. cfunction:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
+   .. c:function:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
 
       :c:data:`~Py_buffer.itemsize` の値を :c:data:`~PyBuffer.format` から返します。
 
-   .. cfunction:: int PyObject_CopyToObject(PyObject *obj, void *buf, Py_ssize_t len, char fortran)
+   .. c:function:: int PyObject_CopyToObject(PyObject *obj, void *buf, Py_ssize_t len, char fortran)
 
       Copy *len* bytes of data pointed to by the contiguous chunk of memory
       pointed to by *buf* into the buffer exported by obj.  The buffer must of
@@ -302,12 +302,12 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 構造化されたデータをネイティブのメモリ配置形式でやりとりするためにも使えます。
 
 
-.. ctype:: PyBufferObject
+.. c:type:: PyBufferObject
 
    この :c:type:`PyObject` のサブタイプはバッファオブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyBuffer_Type
+.. c:var:: PyTypeObject PyBuffer_Type
 
    .. index:: single: BufferType (in module types)
 
@@ -315,7 +315,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    ``buffer`` や ``types.BufferType`` と同じオブジェクトです。
 
 
-.. cvar:: int Py_END_OF_BUFFER
+.. c:var:: int Py_END_OF_BUFFER
 
    この定数は、 :c:func:`PyBuffer_FromObject` またはの :c:func:`PyBuffer_FromReadWriteObject`
    *size* パラメタに渡します。このパラメタを渡すと、 :c:type:`PyBufferObject` は指定された *offset*

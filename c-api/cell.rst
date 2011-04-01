@@ -12,12 +12,12 @@
 セルオブジェクトにアクセスした際に、自動的に間接参照は起こりません。上記以外の状況では、セルオブジェクトは役に立たないはずです。
 
 
-.. ctype:: PyCellObject
+.. c:type:: PyCellObject
 
    セルオブジェクトに使われる C 構造体です。
 
 
-.. cvar:: PyTypeObject PyCell_Type
+.. c:var:: PyTypeObject PyCell_Type
 
    セルオブジェクトに対応する型オブジェクトです。
 

@@ -12,13 +12,13 @@ None オブジェクト
 同じ理由から、 :c:func:`PyNone_Check` 関数はありません。
 
 
-.. cvar:: PyObject* Py_None
+.. c:var:: PyObject* Py_None
 
    Python における ``None`` オブジェクトで、値がないことを表します。このオブジェクトにはメソッドがありません。リファレンスカウントに
    ついては、このオブジェクトも他のオブジェクトと同様に扱う必要があります。
 
 
-.. cmacro:: Py_RETURN_NONE
+.. c:macro:: Py_RETURN_NONE
 
    C 関数から :c:data:`Py_None` を戻す操作を適切に行うためのマクロです。
 

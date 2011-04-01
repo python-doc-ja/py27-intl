@@ -37,7 +37,7 @@ cmpfunc, reprfunc, hashfunc
 フィールドがなければ *なりません* 。
 
 
-.. cmember:: PyObject* PyObject._ob_next
+.. c:member:: PyObject* PyObject._ob_next
              PyObject* PyObject._ob_prev
 
    これらのフィールドはマクロ  ``Py_TRACE_REFS`` が定義されている場合のみ
@@ -53,7 +53,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません。
 
 
-.. cmember:: Py_ssize_t PyObject.ob_refcnt
+.. c:member:: Py_ssize_t PyObject.ob_refcnt
 
    型オブジェクトの参照カウントで、 ``PyObject_HEAD_INIT`` はこの値を ``1``
    に初期化します。静的にメモリ確保された型オブジェクトでは、型のインスタンス
@@ -68,7 +68,7 @@ cmpfunc, reprfunc, hashfunc
       このフィールドは以前は :c:type:`int` でした。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cmember:: PyTypeObject* PyObject.ob_type
+.. c:member:: PyTypeObject* PyObject.ob_type
 
    型自体の型、別の言い方をするとメタタイプです。 ``PyObject_HEAD_INIT`` マクロで初期化され、通常は ``&PyType_Type``
    になります。しかし、(少なくとも) Windows で利用できる動的ロード可能な拡張モジュールでは、コンパイラは
@@ -85,7 +85,7 @@ cmpfunc, reprfunc, hashfunc
    Python 2.2 では、サブタイプはこのフィールドを継承しません。 2.2.1 と 2.3 以降では、サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: Py_ssize_t PyVarObject.ob_size
+.. c:member:: Py_ssize_t PyVarObject.ob_size
 
    静的にメモリ確保されている型オブジェクトの場合、このフィールドはゼロに初期化されます。動的にメモリ確保されている型オブジェクトの
    場合、このフィールドは内部使用される特殊な意味を持ちます。
@@ -93,7 +93,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません。
 
 
-.. cmember:: char* PyTypeObject.tp_name
+.. c:member:: char* PyTypeObject.tp_name
 
    型の名前が入っている NUL 終端された文字列へのポインタです。モジュールのグローバル変数としてアクセスできる型の場合、
    この文字列は完全なモジュール名、ドット、そして型の名前と続く文字列になります; 組み込み型の場合、ただの型の名前です。
@@ -115,7 +115,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません。
 
 
-.. cmember:: Py_ssize_t PyTypeObject.tp_basicsize
+.. c:member:: Py_ssize_t PyTypeObject.tp_basicsize
              Py_ssize_t PyTypeObject.tp_itemsize
 
    これらのフィールドは、型インスタンスのバイトサイズを計算できるようにします。
@@ -149,7 +149,7 @@ cmpfunc, reprfunc, hashfunc
    が ``sizeof(double)`` の個数分のサイズになるようにするのはプログラマの責任です。
 
 
-.. cmember:: destructor PyTypeObject.tp_dealloc
+.. c:member:: destructor PyTypeObject.tp_dealloc
 
    インスタンスのデストラクタ関数へのポインタです。この関数は (単量子 ``None``
    や ``Ellipsis`` の場合のように) インスタンスが決してメモリ解放されない型で
@@ -175,7 +175,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: printfunc PyTypeObject.tp_print
+.. c:member:: printfunc PyTypeObject.tp_print
 
    オプションのフィールドで、インスタンスの出力 (print) を行う関数を
    指すポインタです。
@@ -207,7 +207,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: getattrfunc PyTypeObject.tp_getattr
+.. c:member:: getattrfunc PyTypeObject.tp_getattr
 
    オプションのフィールドです。ポインタで、 get-attribute-string を行う関数を指します。
 
@@ -220,7 +220,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_getattro` を一緒に継承します。
 
 
-.. cmember:: setattrfunc PyTypeObject.tp_setattr
+.. c:member:: setattrfunc PyTypeObject.tp_setattr
 
    オプションのフィールドです。ポインタで、 set-attribute-string を行う関数を指します。
 
@@ -233,7 +233,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_setattro` を一緒に継承します。
 
 
-.. cmember:: cmpfunc PyTypeObject.tp_compare
+.. c:member:: cmpfunc PyTypeObject.tp_compare
 
    オプションのフィールドです。ポインタで、三値比較 (three-way comparison) を行う関数を指します。
 
@@ -247,7 +247,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_hash` の三つを一緒に継承します。
 
 
-.. cmember:: reprfunc PyTypeObject.tp_repr
+.. c:member:: reprfunc PyTypeObject.tp_repr
 
    .. index:: builtin: repr
 
@@ -263,7 +263,7 @@ cmpfunc, reprfunc, hashfunc
 
    サブタイプはこのフィールドを継承します。
 
-.. cmember:: PyNumberMethods* tp_as_number
+.. c:member:: PyNumberMethods* tp_as_number
 
    数値プロトコルを実装した追加の構造体を指すポインタです。
    これらのフィールドについては :ref:`number-structs` で説明されています。
@@ -272,7 +272,7 @@ cmpfunc, reprfunc, hashfunc
    個別に継承されます。
 
 
-.. cmember:: PySequenceMethods* tp_as_sequence
+.. c:member:: PySequenceMethods* tp_as_sequence
 
    シーケンスプロトコルを実装した追加の構造体を指すポインタです。
    これらのフィールドについては :ref:`sequence-structs` で説明されています。
@@ -281,7 +281,7 @@ cmpfunc, reprfunc, hashfunc
    個別に継承されます。
 
 
-.. cmember:: PyMappingMethods* tp_as_mapping
+.. c:member:: PyMappingMethods* tp_as_mapping
 
    マッピングプロトコルを実装した追加の構造体を指すポインタです。
    これらのフィールドについては :ref:`mapping-structs` で説明されています。
@@ -290,7 +290,7 @@ cmpfunc, reprfunc, hashfunc
    個別に継承されます。
 
 
-.. cmember:: hashfunc PyTypeObject.tp_hash
+.. c:member:: hashfunc PyTypeObject.tp_hash
 
    .. index:: builtin: hash
 
@@ -321,7 +321,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_hash` の三つを一緒に継承します。
 
 
-.. cmember:: ternaryfunc PyTypeObject.tp_call
+.. c:member:: ternaryfunc PyTypeObject.tp_call
 
    オプションのフィールドです。ポインタで、オブジェクトの呼び出しを実装している
    関数を指します。オブジェクトが呼び出し可能でない場合には *NULL*
@@ -330,7 +330,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: reprfunc PyTypeObject.tp_str
+.. c:member:: reprfunc PyTypeObject.tp_str
 
    オプションのフィールドです。ポインタで、組み込みの演算 :func:`str` を実装している関数を指します。(:class:`str`
    が型の一つになったため、 :func:`str` は :class:`str` のコンストラクタを呼び出す
@@ -346,7 +346,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: getattrofunc PyTypeObject.tp_getattro
+.. c:member:: getattrofunc PyTypeObject.tp_getattro
 
    オプションのフィールドです。ポインタで、 get-attribute を実装している関数を指します。
 
@@ -358,7 +358,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_getattro` を一緒に継承します。
 
 
-.. cmember:: setattrofunc PyTypeObject.tp_setattro
+.. c:member:: setattrofunc PyTypeObject.tp_setattro
 
    オプションのフィールドです。ポインタで、 set-attribute を行う関数を指します。
 
@@ -370,7 +370,7 @@ cmpfunc, reprfunc, hashfunc
    :attr:`tp_setattro` を一緒に継承します。
 
 
-.. cmember:: PyBufferProcs* PyTypeObject.tp_as_buffer
+.. c:member:: PyBufferProcs* PyTypeObject.tp_as_buffer
 
    バッファインタフェースを実装しているオブジェクトにのみ関連する、
    一連のフィールド群が入った別の構造体を指すポインタです。
@@ -380,7 +380,7 @@ cmpfunc, reprfunc, hashfunc
    フィールド内に入っているフィールドは個別に継承されます。
 
 
-.. cmember:: long PyTypeObject.tp_flags
+.. c:member:: long PyTypeObject.tp_flags
 
    このフィールドは様々なフラグからなるビットマスクです。いくつかのフラグは、
    特定の状況において変則的なセマンティクスが適用されることを示します;
@@ -519,7 +519,7 @@ cmpfunc, reprfunc, hashfunc
       :const:`Py_TPFLAGS_HAVE_CLASS` が入っています。
 
 
-.. cmember:: char* PyTypeObject.tp_doc
+.. c:member:: char* PyTypeObject.tp_doc
 
    オプションのフィールドです。ポインタで、この型オブジェクトの docstring を与える NUL 終端された C の文字列を指します。
    この値は型オブジェクトと型のインスタンスにおける :attr:`__doc__` 属性として公開されます。
@@ -529,7 +529,7 @@ cmpfunc, reprfunc, hashfunc
 以下の三つのフィールドは、 :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合にのみ存在します。
 
 
-.. cmember:: traverseproc PyTypeObject.tp_traverse
+.. c:member:: traverseproc PyTypeObject.tp_traverse
 
    オプションのフィールドです。ポインタで、ガベージコレクタのためのトラバーサル関数 (traversal function)
    を指します。 :const:`Py_TPFLAGS_HAVE_GC` がセットされている
@@ -562,7 +562,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
-.. cmember:: inquiry PyTypeObject.tp_clear
+.. c:member:: inquiry PyTypeObject.tp_clear
 
    オプションのフィールドです。ポインタで、ガベージコレクタにおける消去関数 (clear function) を指します。
    :const:`Py_TPFLAGS_HAVE_GC` がセットされている場合にのみ使われます。
@@ -606,7 +606,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプで :const:`Py_TPFLAGS_HAVE_RICHCOMPARE`  フラグビットがセットされている場合に、基底タイプから値を継承します。
 
 
-.. cmember:: richcmpfunc PyTypeObject.tp_richcompare
+.. c:member:: richcmpfunc PyTypeObject.tp_richcompare
 
    オプションのフィールドで、拡張比較関数 (rich comparison function)
    を指すポインタです。拡張比較関数のシグネチャは
@@ -649,7 +649,7 @@ cmpfunc, reprfunc, hashfunc
 次のフィールドは、 :const:`Py_TPFLAGS_HAVE_WEAKREFS` フラグビットがセットされている場合にのみ存在します。
 
 
-.. cmember:: long PyTypeObject.tp_weaklistoffset
+.. c:member:: long PyTypeObject.tp_weaklistoffset
 
    型のインスタンスが弱参照可能な場合、このフィールドはゼロよりも大きな数になり、
    インスタンス構造体における弱参照リストの先頭を示すオフセットが入ります (GC
@@ -678,7 +678,7 @@ cmpfunc, reprfunc, hashfunc
 次の二つのフィールドは、 :const:`Py_TPFLAGS_HAVE_ITER` フラグビットがセットされている場合にのみ存在します。
 
 
-.. cmember:: getiterfunc PyTypeObject.tp_iter
+.. c:member:: getiterfunc PyTypeObject.tp_iter
 
    オプションの変数で、そのオブジェクトのイテレータを返す関数へのポインタです。
    この値が存在することは、通常この型のインスタンスがイテレート可能であることを
@@ -691,7 +691,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: iternextfunc PyTypeObject.tp_iternext
+.. c:member:: iternextfunc PyTypeObject.tp_iternext
 
    オプションのフィールドで、イテレータにおいて次の要素を返す関数への
    ポインタです。
@@ -713,7 +713,7 @@ cmpfunc, reprfunc, hashfunc
 フラグビットがセットされている場合にのみ存在します。
 
 
-.. cmember:: struct PyMethodDef* PyTypeObject.tp_methods
+.. c:member:: struct PyMethodDef* PyTypeObject.tp_methods
 
    オプションのフィールドです。ポインタで、この型の正規 (regular) のメソッドを宣言している :c:type:`PyMethodDef`
    構造体からなる、 *NULL* で終端された静的な配列を指します。
@@ -723,7 +723,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません (メソッドは別個のメカニズムで継承されています)。
 
 
-.. cmember:: struct PyMemberDef* PyTypeObject.tp_members
+.. c:member:: struct PyMemberDef* PyTypeObject.tp_members
 
    オプションのフィールドです。ポインタで、型の正規 (regular) のデータメンバ (フィールドおよびスロット) を
    宣言している :c:type:`PyMemberDef` 構造体からなる、 *NULL* で終端された静的な配列を指します。
@@ -733,7 +733,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません (メンバは別個のメカニズムで継承されています)。
 
 
-.. cmember:: struct PyGetSetDef* PyTypeObject.tp_getset
+.. c:member:: struct PyGetSetDef* PyTypeObject.tp_getset
 
    オプションのフィールドです。ポインタで、インスタンスの算出属性 (computed attribute) を
    宣言している :c:type:`PyGetSetDef` 構造体からなる、 *NULL* で終端された静的な配列を指します。
@@ -756,7 +756,7 @@ cmpfunc, reprfunc, hashfunc
       } PyGetSetDef;
 
 
-.. cmember:: PyTypeObject* PyTypeObject.tp_base
+.. c:member:: PyTypeObject* PyTypeObject.tp_base
 
    オプションのフィールドです。ポインタで、型に関するプロパティを継承する基底タイプへのポインタです。このフィールドのレベルでは、単継承 (single
    inheritance) だけがサポートされています; 多重継承はメタタイプの呼び出しによる動的な型オブジェクトの生成を必要とします。
@@ -765,7 +765,7 @@ cmpfunc, reprfunc, hashfunc
    プログラマは :class:`object` 型として知っている) ``&PyBaseObject_Type`` になります。 .
 
 
-.. cmember:: PyObject* PyTypeObject.tp_dict
+.. c:member:: PyObject* PyTypeObject.tp_dict
 
    型の辞書は :c:func:`PyType_Ready` によってこのフィールドに収められます。
 
@@ -776,7 +776,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承しません (が、この辞書内で定義されている属性は異なるメカニズムで継承されます)。
 
 
-.. cmember:: descrgetfunc PyTypeObject.tp_descr_get
+.. c:member:: descrgetfunc PyTypeObject.tp_descr_get
 
    オプションのフィールドです。ポインタで、 "デスクリプタ get" 関数を指します。
 
@@ -789,7 +789,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: descrsetfunc PyTypeObject.tp_descr_set
+.. c:member:: descrsetfunc PyTypeObject.tp_descr_set
 
    オプションのフィールドです。ポインタで、 "デスクリプタ set" 関数を指します。
 
@@ -802,7 +802,7 @@ cmpfunc, reprfunc, hashfunc
    XXX blah, blah.
 
 
-.. cmember:: long PyTypeObject.tp_dictoffset
+.. c:member:: long PyTypeObject.tp_dictoffset
 
    型のインスタンスにインスタンス変数の入った辞書がある場合、このフィールドは非ゼロの値になり、型のインスタンスデータ構造体
    におけるインスタンス変数辞書へのオフセットが入ります; このオフセット値は :c:func:`PyObject_GenericGetAttr` が使います。
@@ -854,7 +854,7 @@ cmpfunc, reprfunc, hashfunc
    とはいえ、これは将来 :attr:`__weakref__` のように追加されるはずです。)
 
 
-.. cmember:: initproc PyTypeObject.tp_init
+.. c:member:: initproc PyTypeObject.tp_init
 
    オプションのフィールドです。ポインタで、インスタンス初期化関数を指します。
 
@@ -880,7 +880,7 @@ cmpfunc, reprfunc, hashfunc
    サブタイプはこのフィールドを継承します。
 
 
-.. cmember:: allocfunc PyTypeObject.tp_alloc
+.. c:member:: allocfunc PyTypeObject.tp_alloc
 
    オプションのフィールドです。ポインタで、インスタンスのメモリ確保関数を指します。
 
@@ -905,7 +905,7 @@ cmpfunc, reprfunc, hashfunc
    静的に定義する型の場合でも、 :c:func:`PyType_GenericAlloc` を推奨します。
 
 
-.. cmember:: newfunc PyTypeObject.tp_new
+.. c:member:: newfunc PyTypeObject.tp_new
 
    オプションのフィールドです。ポインタで、インスタンス生成関数を指します。
 
@@ -932,7 +932,7 @@ cmpfunc, reprfunc, hashfunc
    でリンクされたときに呼び出し可能オブジェクトにならないようにするための予防措置です。
 
 
-.. cmember:: destructor PyTypeObject.tp_free
+.. c:member:: destructor PyTypeObject.tp_free
 
    オプションのフィールドです。ポインタで、インスタンスのメモリ解放関数を指します。
 
@@ -954,7 +954,7 @@ cmpfunc, reprfunc, hashfunc
    フラグビットの値に対応させるのにふさわしいメモリ解放関数がセットされます。
 
 
-.. cmember:: inquiry PyTypeObject.tp_is_gc
+.. c:member:: inquiry PyTypeObject.tp_is_gc
 
    オプションのフィールドです。ポインタで、ガベージコレクタから呼び出される関数を指します。
 
@@ -975,7 +975,7 @@ cmpfunc, reprfunc, hashfunc
    以降のバージョンから継承されるようになりました。)
 
 
-.. cmember:: PyObject* PyTypeObject.tp_bases
+.. c:member:: PyObject* PyTypeObject.tp_bases
 
    基底型からなるタプルです。
 
@@ -985,7 +985,7 @@ cmpfunc, reprfunc, hashfunc
    このフィールドは継承されません。
 
 
-.. cmember:: PyObject* PyTypeObject.tp_mro
+.. c:member:: PyObject* PyTypeObject.tp_mro
 
    基底クラス群を展開した集合が入っているタプルです。集合は該当する型自体からはじまり、 :class:`object` で終わります。メソッド解決順
    (Method Resolution Order) の順に並んでいます。
@@ -993,17 +993,17 @@ cmpfunc, reprfunc, hashfunc
    このフィールドは継承されません; フィールドの値は :c:func:`PyType_Ready` で毎回計算されます。
 
 
-.. cmember:: PyObject* PyTypeObject.tp_cache
+.. c:member:: PyObject* PyTypeObject.tp_cache
 
    使用されていません。継承されません。内部で使用するためだけのものです。
 
 
-.. cmember:: PyObject* PyTypeObject.tp_subclasses
+.. c:member:: PyObject* PyTypeObject.tp_subclasses
 
    サブクラスへの弱参照からなるリストです。継承されません。内部で使用するためだけのものです。
 
 
-.. cmember:: PyObject* PyTypeObject.tp_weaklist
+.. c:member:: PyObject* PyTypeObject.tp_weaklist
 
    この型オブジェクトに対する弱参照からなるリストの先頭です。
 
@@ -1011,22 +1011,22 @@ cmpfunc, reprfunc, hashfunc
 これらのフィールドについて記述するのは単に完全性のためです。サブタイプはこれらのフィールドを継承しません。
 
 
-.. cmember:: Py_ssize_t PyTypeObject.tp_allocs
+.. c:member:: Py_ssize_t PyTypeObject.tp_allocs
 
    メモリ確保の回数です。
 
 
-.. cmember:: Py_ssize_t PyTypeObject.tp_frees
+.. c:member:: Py_ssize_t PyTypeObject.tp_frees
 
    メモリ解放の回数です。
 
 
-.. cmember:: Py_ssize_t PyTypeObject.tp_maxalloc
+.. c:member:: Py_ssize_t PyTypeObject.tp_maxalloc
 
    同時にメモリ確保できる最大オブジェクト数です。
 
 
-.. cmember:: PyTypeObject* PyTypeObject.tp_next
+.. c:member:: PyTypeObject* PyTypeObject.tp_next
 
    :attr:`tp_allocs` フィールドが非ゼロの、(リンクリストの) 次の型オブジェクトを指すポインタです。
 
@@ -1045,7 +1045,7 @@ cmpfunc, reprfunc, hashfunc
 
 .. sectionauthor:: Amaury Forgeot d'Arc
 
-.. ctype:: PyNumberMethods
+.. c:type:: PyNumberMethods
 
    拡張型で数値型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
    以下のほとんどすべての関数は :ref:`number` で解説されている似た名前の関数から利用されます。
@@ -1108,7 +1108,7 @@ cmpfunc, reprfunc, hashfunc
   オブジェクトの型であることが保証されます。呼び出し側は :attr:`nb_coerce`
   メンバで指定されている型強制メソッドを呼び出して引数を変換する責任があります。
 
-  .. cmember:: coercion PyNumberMethods.nb_coerce
+  .. c:member:: coercion PyNumberMethods.nb_coerce
 
      この関数は :c:func:`PyNumber_CoerceEx` から利用され、同じシグネチャを持ちます。
      最初の引数は定義された型のオブジェクトを指すポインタでなければなりません。
@@ -1134,25 +1134,25 @@ cmpfunc, reprfunc, hashfunc
 
 .. sectionauthor:: Amaury Forgeot d'Arc
 
-.. ctype:: PyMappingMethods
+.. c:type:: PyMappingMethods
 
    拡張型でマップ型プロトコルを実装するために使われる関数群へのポインタを保持するために使われる構造体です。
    以下の3つのメンバを持っています。
 
-.. cmember:: lenfunc PyMappingMethods.mp_length
+.. c:member:: lenfunc PyMappingMethods.mp_length
 
    この関数は :c:func:`PyMapping_Length` や :c:func:`PyObject_Size`
    から利用され、それらと同じシグネチャを持っています。
    オブジェクトが定義された長さを持たない場合は、このスロットは
    *NULL* に設定されることがあります。
 
-.. cmember:: binaryfunc PyMappingMethods.mp_subscript
+.. c:member:: binaryfunc PyMappingMethods.mp_subscript
 
    この関数は :c:func:`PyObject_GetItem` から利用され、同じシグネチャを持っています。
    このスロットは :c:func:`PyMapping_Check` が ``1`` を返すためには
    必要で、そうでなければ *NULL* の場合があります。
 
-.. cmember:: objobjargproc PyMappingMethods.mp_ass_subscript
+.. c:member:: objobjargproc PyMappingMethods.mp_ass_subscript
 
    この関数は :c:func:`PyObject_SetItem` から利用され、同じシグネチャを持っています。
    もしこのスロットが *NULL* なら、このオブジェクトはアイテムの代入をサポートしません。
@@ -1165,31 +1165,31 @@ cmpfunc, reprfunc, hashfunc
 
 .. sectionauthor:: Amaury Forgeot d'Arc
 
-.. ctype:: PySequenceMethods
+.. c:type:: PySequenceMethods
 
    拡張型でシーケンス型プロトコルを実装するために使われる関数群への
    ポインタを保持するために使われる構造体です。
 
-.. cmember:: lenfunc PySequenceMethods.sq_length
+.. c:member:: lenfunc PySequenceMethods.sq_length
 
    この関数は :c:func:`PySequence_Size` や :c:func:`PyObject_Size`
    から利用され、それらと同じシグネチャを持っています。
 
-.. cmember:: binaryfunc PySequenceMethods.sq_concat
+.. c:member:: binaryfunc PySequenceMethods.sq_concat
 
    この関数は :c:func:`PySequence_Concat`
    から利用され、同じシグネチャを持っています。
    また、 ``+`` 演算からも、 :attr:`tp_as_number.nb_add` スロットによる
    数値加算を試したあとに利用されます。
 
-.. cmember:: ssizeargfunc PySequenceMethods.sq_repeat
+.. c:member:: ssizeargfunc PySequenceMethods.sq_repeat
 
    この関数は :c:func:`PySequence_Repeat`
    から利用され、同じシグネチャを持っています。
    また、 ``*`` 演算からも、 :attr:`tp_as_number.nb_mul` スロットによる
    数値乗算を試したあとに利用されます。
 
-.. cmember:: ssizeargfunc PySequenceMethods.sq_item
+.. c:member:: ssizeargfunc PySequenceMethods.sq_item
 
    この関数は :c:func:`PySequence_GetItem`
    から利用され、同じシグネチャを持っています。
@@ -1201,27 +1201,27 @@ cmpfunc, reprfunc, hashfunc
    計算し、 :attr:`sq_item` に渡します。 :attr:`sq_length` が *NULL*
    の場合は、インデックスはそのままこの関数に渡されます。
 
-.. cmember:: ssizeobjargproc PySequenceMethods.sq_ass_item
+.. c:member:: ssizeobjargproc PySequenceMethods.sq_ass_item
 
    この関数は :c:func:`PySequence_SetItem`
    から利用され、同じシグネチャを持っています。
    このスロットはオブジェクトが要素の代入をサポートしていない場合は
    *NULL* かもしれません。
 
-.. cmember:: objobjproc PySequenceMethods.sq_contains
+.. c:member:: objobjproc PySequenceMethods.sq_contains
 
    この関数は :c:func:`PySequence_Contains`
    から利用され、同じシグネチャを持っています。
    このスロットは *NULL* の場合があり、その時 :c:func:`PySequence_Contains`
    はシンプルにマッチするオブジェクトを見つけるまでシーケンスを巡回します。
 
-.. cmember:: binaryfunc PySequenceMethods.sq_inplace_concat
+.. c:member:: binaryfunc PySequenceMethods.sq_inplace_concat
 
    この関数は :c:func:`PySequence_InPlaceConcat`
    から利用され、同じシグネチャを持っています。
    この関数は最初のオペランドを修正してそれを返すべきです。
 
-.. cmember:: ssizeargfunc PySequenceMethods.sq_inplace_repeat
+.. c:member:: ssizeargfunc PySequenceMethods.sq_inplace_repeat
 
    この関数は :c:func:`PySequence_InPlaceRepeat`
    から利用され、同じシグネチャを持っています。
@@ -1256,7 +1256,7 @@ cmpfunc, reprfunc, hashfunc
    インタプリタは、このメンバがあるかどうかテストしてから使えるようにする必要があるのです。
 
 
-.. ctype:: PyBufferProcs
+.. c:type:: PyBufferProcs
 
    バッファプロトコルの実装を定義している関数群へのポインタを保持するのに使われる構造体です。
 
@@ -1296,7 +1296,7 @@ cmpfunc, reprfunc, hashfunc
    *NULL* でないことを示すわけではありません。
 
 
-.. ctype:: Py_ssize_t (*getreadbufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
+.. c:type:: Py_ssize_t (*getreadbufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
 
    ``*ptrptr`` の中の読み出し可能なバッファセグメントへのポインタを返します。この関数は例外を送出してもよく、送出する場合には ``-1``
    を返さねばなりません。 *segment* に渡す値はゼロまたは正の値で、 :attr:`bf_getsegcount`
@@ -1304,7 +1304,7 @@ cmpfunc, reprfunc, hashfunc
    そのセグメントを指すポインタ値にセットします。
 
 
-.. ctype:: Py_ssize_t (*getwritebufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
+.. c:type:: Py_ssize_t (*getwritebufferproc) (PyObject *self, Py_ssize_t segment, void **ptrptr)
 
    読み出し可能なバッファセグメントへのポインタを ``*ptrptr`` に返し、セグメントの長さを関数の戻り値として返します。エラーによる例外の場合には
    ``-1`` を ``-1`` を返さねばなりません。オブジェクトが呼び出し専用バッファしかサポートしていない場合には :exc:`TypeError`
@@ -1316,13 +1316,13 @@ cmpfunc, reprfunc, hashfunc
    .. % code.
 
 
-.. ctype:: Py_ssize_t (*getsegcountproc) (PyObject *self, Py_ssize_t *lenp)
+.. c:type:: Py_ssize_t (*getsegcountproc) (PyObject *self, Py_ssize_t *lenp)
 
    バッファを構成するメモリセグメントの数を返します。 *lenp* が *NULL* でない場合、この関数の実装は全てのセグメントのサイズ (バイト単位)
    の合計値を ``*lenp`` を介して報告しなければなりません。この関数呼び出しは失敗させられません。
 
 
-.. ctype:: Py_ssize_t (*getcharbufferproc) (PyObject *self, Py_ssize_t segment, const char **ptrptr)
+.. c:type:: Py_ssize_t (*getcharbufferproc) (PyObject *self, Py_ssize_t segment, const char **ptrptr)
 
    セグメント *segment* のメモリバッファを *ptrptr* に入れ、そのサイズを返します。エラーのときに ``-1`` を返します。
 

@@ -18,7 +18,7 @@ C 構造体としての複素数
 API 全体を通して一貫しています。
 
 
-.. ctype:: Py_complex
+.. c:type:: Py_complex
 
    Python 複素数オブジェクトの値の部分に対応する C の構造体です。複素数オブジェクトを扱うほとんどの関数は、この型の構造体を
    場合に応じて入力や出力として使います。構造体は以下のように定義されています::
@@ -63,12 +63,12 @@ Python オブジェクトとしての複素数型
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. ctype:: PyComplexObject
+.. c:type:: PyComplexObject
 
    この :c:type:`PyObject` のサブタイプは Python の複素数オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyComplex_Type
+.. c:var:: PyTypeObject PyComplex_Type
 
    この :c:type:`PyTypeObject` のインスタンスは Python の複素数型を表現します。
    Pythonの ``complex`` や ``types.ComplexType`` と同じオブジェクトです。

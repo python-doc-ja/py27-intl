@@ -8,12 +8,12 @@
 .. index:: object: type
 
 
-.. ctype:: PyTypeObject
+.. c:type:: PyTypeObject
 
    組み込み型を記述する際に用いられる、オブジェクトを表す C 構造体です。
 
 
-.. cvar:: PyObject* PyType_Type
+.. c:var:: PyObject* PyType_Type
 
    .. index:: single: TypeType (in module types)
 

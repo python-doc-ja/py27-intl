@@ -24,7 +24,7 @@
 :c:func:`PyNumber_InPlaceOr`, :c:func:`PyNumber_InPlaceXor` を含む) を使って利用できます。
 
 
-.. ctype:: PySetObject
+.. c:type:: PySetObject
 
    この :c:type:`PyObject` を継承した型は、 :class:`set` と :class:`frozenset` 両方の
    内部データを保存するのに用いられます。 :c:type:`PyDictObject`
@@ -33,12 +33,12 @@
    すべてのアクセスは、構造体の中の値を直接操作するのではなく、ドキュメントされた APIを用いて行うべきです。
 
 
-.. cvar:: PyTypeObject PySet_Type
+.. c:var:: PyTypeObject PySet_Type
 
    この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`set` 型を表します。
 
 
-.. cvar:: PyTypeObject PyFrozenSet_Type
+.. c:var:: PyTypeObject PyFrozenSet_Type
 
    この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`frozenset` 型を表します。
 

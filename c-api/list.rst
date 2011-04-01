@@ -8,12 +8,12 @@ List Objects
 .. index:: object: list
 
 
-.. ctype:: PyListObject
+.. c:type:: PyListObject
 
    この :c:type:`PyObject` のサブタイプは Python のリストオブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyList_Type
+.. c:var:: PyTypeObject PyList_Type
 
    この :c:type:`PyTypeObject` のインスタンスは Python のタプル型を表現します。
    これは Python レイヤにおける ``list`` と同じオブジェクトです。

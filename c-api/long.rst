@@ -8,12 +8,12 @@
 .. index:: object: long integer
 
 
-.. ctype:: PyLongObject
+.. c:type:: PyLongObject
 
    この :c:type:`PyObject` のサブタイプは長整数型を表現します。
 
 
-.. cvar:: PyTypeObject PyLong_Type
+.. c:var:: PyTypeObject PyLong_Type
 
    .. index:: single: LongType (in modules types)
 

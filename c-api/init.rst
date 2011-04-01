@@ -516,7 +516,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
 :c:func:`PyOS_AfterFork` は必要なロックのリセットを試みますが、いつでも
 それが可能とは限りません。
 
-.. ctype:: PyInterpreterState
+.. c:type:: PyInterpreterState
 
    このデータ構造体は、協調動作する多数のスレッド間で共有されている状態 (state) を表現します。同じインタプリタに属するスレッドは
    モジュール管理情報やその他いくつかの内部的な情報を共有しています。この構造体には公開 (public) のメンバはありません。
@@ -526,7 +526,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    すべてのスレッドで共有されています。
 
 
-.. ctype:: PyThreadState
+.. c:type:: PyThreadState
 
    単一のスレッドの状態を表現する表現するデータ構造体です。データメンバ :c:type:`PyInterpreterState \*` :attr:`interp`
    だけが公開されていて、スレッドのインタプリタ状態を指すポインタになっています。
@@ -622,27 +622,27 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
 以下のマクロは、通常末尾にセミコロンを付けずに使います; Python ソース配布物内の使用例を見てください。
 
 
-.. cmacro:: Py_BEGIN_ALLOW_THREADS
+.. c:macro:: Py_BEGIN_ALLOW_THREADS
 
    このマクロを展開すると ``{ PyThreadState *_save; _save = PyEval_SaveThread();`` になります。
    マクロに開き波括弧が入っていることに注意してください; この波括弧は後で :c:macro:`Py_END_ALLOW_THREADS`
    マクロと対応させなければなりません。マクロについての詳しい議論は上記を参照してください。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
-.. cmacro:: Py_END_ALLOW_THREADS
+.. c:macro:: Py_END_ALLOW_THREADS
 
    このマクロを展開すると ``PyEval_RestoreThread(_save); }`` になります。
    マクロに開き波括弧が入っていることに注意してください; この波括弧は事前の :c:macro:`Py_BEGIN_ALLOW_THREADS` マクロと対応して
    いなければなりません。マクロについての詳しい議論は上記を参照してください。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
-.. cmacro:: Py_BLOCK_THREADS
+.. c:macro:: Py_BLOCK_THREADS
 
    このマクロを展開すると ``PyEval_RestoreThread(_save);`` になります:
    閉じ波括弧のない :c:macro:`Py_END_ALLOW_THREADS` と同じです。コンパイル時にスレッドサポートが無効化されていると何も行いません。
 
 
-.. cmacro:: Py_UNBLOCK_THREADS
+.. c:macro:: Py_UNBLOCK_THREADS
 
    このマクロを展開すると ``_save = PyEval_SaveThread();`` になります:
    閉じ波括弧のない :c:macro:`Py_BEGIN_ALLOW_THREADS` と同じです。
@@ -782,7 +782,7 @@ Python 2.2 になってから、この機能の実装は実質的に作り直さ
 Python レベルのトレース関数で報告されていたものと同じです。
 
 
-.. ctype:: int (*Py_tracefunc)(PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
+.. c:type:: int (*Py_tracefunc)(PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 
    :c:func:`PyEval_SetProfile` および :c:func:`PyEval_SetTrace`
    を使って登録できるトレース関数の形式です。最初のパラメタはオブジェクトで、登録関数に *obj* として渡されます。 *frame*
@@ -810,14 +810,14 @@ Python レベルのトレース関数で報告されていたものと同じで�
    +------------------------------+-------------------------------------------+
 
 
-.. cvar:: int PyTrace_CALL
+.. c:var:: int PyTrace_CALL
 
    関数やメソッドが新たに呼び出されたり、ジェネレータが新たなエントリの処理に入ったことを報告する際の、 :c:type:`Py_tracefunc` の *what*
    の値です。イテレータやジェネレータ関数の生成は、対応するフレーム内の Python バイトコードに制御の委譲 (control transfer)
    が起こらないため報告されないので注意してください。
 
 
-.. cvar:: int PyTrace_EXCEPTION
+.. c:var:: int PyTrace_EXCEPTION
 
    例外が送出された際の :c:type:`Py_tracefunc` の *what* の値です。現在実行されているフレームで例外がセットされ、何らかのバイトコードが
    処理された後に、 *what* にこの値がセットされた状態でコールバック関数が呼び出されます。
@@ -826,27 +826,27 @@ Python レベルのトレース関数で報告されていたものと同じで�
    トレース関数だけがこれらのイベントを受け取ります; プロファイラはこの種のイベントを必要としません。
 
 
-.. cvar:: int PyTrace_LINE
+.. c:var:: int PyTrace_LINE
 
    行番号イベントを報告するときに (プロファイル関数ではなく) トレース関数の *what* パラメタとして渡す値です。
 
 
-.. cvar:: int PyTrace_RETURN
+.. c:var:: int PyTrace_RETURN
 
    関数呼び出しが例外の伝播なしに返るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
-.. cvar:: int PyTrace_C_CALL
+.. c:var:: int PyTrace_C_CALL
 
    C関数を呼び出す直前に :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
-.. cvar:: int PyTrace_C_EXCEPTION
+.. c:var:: int PyTrace_C_EXCEPTION
 
    C関数が例外を送出したときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
-.. cvar:: int PyTrace_C_RETURN
+.. c:var:: int PyTrace_C_RETURN
 
    C関数から戻るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 

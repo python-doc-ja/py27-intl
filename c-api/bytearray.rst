@@ -10,12 +10,12 @@ bytearray オブジェクト
 .. versionadded:: 2.6
 
 
-.. ctype:: PyByteArrayObject
+.. c:type:: PyByteArrayObject
 
    Python の bytearray オブジェクトを示す :c:type:`PyObject` のサブタイプ
 
 
-.. cvar:: PyTypeObject PyByteArray_Type
+.. c:var:: PyTypeObject PyByteArray_Type
 
    この :c:type:`PyTypeObject` のインスタンスは、 Python bytearray 型を示します。
    Python レイヤでの ``bytearray`` と同じオブジェクトです。

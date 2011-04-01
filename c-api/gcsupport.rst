@@ -95,7 +95,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 :attr:`tp_traverse` ハンドラは以下の型を持つ関数を引数の一つとしてとります:
 
 
-.. ctype:: int (*visitproc)(PyObject *object, void *arg)
+.. c:type:: int (*visitproc)(PyObject *object, void *arg)
 
    :attr:`tp_traverse` ハンドラに渡すビジタ関数 (visitor function)  の型です。この関数は追跡すべきオブジェクトを
    *object* に、 :attr:`tp_traverse` ハンドラの第三引数を *arg* にして呼び出されます。Python
@@ -104,7 +104,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 :attr:`tp_traverse` ハンドラは以下の型でなければなりません:
 
 
-.. ctype:: int (*traverseproc)(PyObject *self, visitproc visit, void *arg)
+.. c:type:: int (*traverseproc)(PyObject *self, visitproc visit, void *arg)
 
    コンテナオブジェクトのためのトラバーサル関数 (traversal function) です。実装では、 *self*
    に直接入っている各オブジェクトに対して *visit*  関数を呼び出さねばなりません。このとき、 *visit* へのパラメタは
@@ -135,7 +135,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 にしなければなりません。 *NULL* if the object is immutable.
 
 
-.. ctype:: int (*inquiry)(PyObject *self)
+.. c:type:: int (*inquiry)(PyObject *self)
 
    循環参照を形成しているとおぼしき参照群を放棄します。変更不可能なオブジェクトは循環参照を直接形成することが決してない
    ので、この関数を定義する必要はありません。このメソッドを呼び出した後でもオブジェクトは有効なままでなければならないので注意してください (参照に対して

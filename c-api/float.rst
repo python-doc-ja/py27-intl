@@ -8,12 +8,12 @@
 .. index:: object: floating point
 
 
-.. ctype:: PyFloatObject
+.. c:type:: PyFloatObject
 
    この :c:type:`PyObject` のサブタイプは Python 浮動小数点型オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyFloat_Type
+.. c:var:: PyTypeObject PyFloat_Type
 
    .. index:: single: FloatType (in modules types)
 

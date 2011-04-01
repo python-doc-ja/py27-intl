@@ -10,7 +10,7 @@
 モジュールオブジェクト固有の関数は数個しかありません。
 
 
-.. cvar:: PyTypeObject PyModule_Type
+.. c:var:: PyTypeObject PyModule_Type
 
    .. index:: single: ModuleType (in module types)
 

@@ -8,12 +8,12 @@
 .. index:: object: dictionary
 
 
-.. ctype:: PyDictObject
+.. c:type:: PyDictObject
 
    この :c:type:`PyObject` のサブタイプは Python の辞書オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyDict_Type
+.. c:var:: PyTypeObject PyDict_Type
 
    .. index::
       single: DictType (in module types)

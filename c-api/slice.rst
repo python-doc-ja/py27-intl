@@ -6,7 +6,7 @@
 -----------------------------------
 
 
-.. cvar:: PyTypeObject PySlice_Type
+.. c:var:: PyTypeObject PySlice_Type
 
    .. index:: single: SliceType (in module types)
 

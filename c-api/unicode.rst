@@ -16,7 +16,7 @@ Unicode type
 以下は Python の Unicode 実装に用いられている基本 Unicode  オブジェクト型です:
 
 
-.. ctype:: Py_UNICODE
+.. c:type:: Py_UNICODE
 
    この型はUnicode序数(Unicode ordinal)を保持するための基礎単位として、 Pythonが内部的に使います。
    Pythonのデフォルトのビルドでは、 :c:type:`Py_UNICODE` として16-bit型を利用し、 Unicodeの値を内部ではUCS-2で保持します。
@@ -31,12 +31,12 @@ Unicode type
 UCS2とUCS4のPythonビルドの間にはバイナリ互換性がないことに注意してください。拡張やインタフェースを書くときには、このことを覚えておいてください。
 
 
-.. ctype:: PyUnicodeObject
+.. c:type:: PyUnicodeObject
 
    この :c:type:`PyObject` のサブタイプは Unicode オブジェクトを表現します。
 
 
-.. cvar:: PyTypeObject PyUnicode_Type
+.. c:var:: PyTypeObject PyUnicode_Type
 
    この :c:type:`PyTypeObject` のインスタンスは Python の Unicode 型を表現します。
    Pythonレイヤにおける ``unicode`` や ``types.UnicodeType`` と同じオブジェクトです。
