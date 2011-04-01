@@ -6,7 +6,7 @@
 ===================
 
 
-.. cfunction:: PyObject* PyImport_ImportModule(const char *name)
+.. c:function:: PyObject* PyImport_ImportModule(const char *name)
 
    .. index::
       single: __all__ (package variable)
@@ -31,7 +31,7 @@
       常に絶対 import を使うようになりました。
 
 
-.. cfunction:: PyObject* PyImport_ImportModuleNoBlock(const char *name)
+.. c:function:: PyObject* PyImport_ImportModuleNoBlock(const char *name)
 
    このバージョンの :c:func:`PyImport_ImportModule` はブロックしません。
    関数を実行するために他のモジュールをインポートするC関数から使われることを意図しています。
@@ -43,7 +43,7 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: PyObject* PyImport_ImportModuleEx(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist)
+.. c:function:: PyObject* PyImport_ImportModuleEx(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist)
 
    .. index:: builtin: __import__
 
@@ -62,7 +62,7 @@
       level には相対インポートを意味する -1 が渡されます。
 
 
-.. cfunction:: PyObject* PyImport_ImportModuleLevel(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist, int level)
+.. c:function:: PyObject* PyImport_ImportModuleLevel(char *name, PyObject *globals, PyObject *locals, PyObject *fromlist, int level)
 
    モジュールをインポートします。このモジュールの動作については、Python ビルトイン関数の
    :func:`__import__` でよく説明されています。 :func:`__import__` は直接この関数を実行します。
@@ -75,7 +75,7 @@
    .. versionadded:: 2.5
 
 
-.. cfunction:: PyObject* PyImport_Import(PyObject *name)
+.. c:function:: PyObject* PyImport_Import(PyObject *name)
 
    .. index::
       module: rexec
@@ -89,7 +89,7 @@
       常に絶対importを使うようになりました。
 
 
-.. cfunction:: PyObject* PyImport_ReloadModule(PyObject *m)
+.. c:function:: PyObject* PyImport_ReloadModule(PyObject *m)
 
    .. index:: builtin: reload
 
@@ -99,7 +99,7 @@
    (その場合でも、モジュールは生成されている場合があります)
 
 
-.. cfunction:: PyObject* PyImport_AddModule(const char *name)
+.. c:function:: PyObject* PyImport_AddModule(const char *name)
 
    モジュール名に対応するモジュールオブジェクトを返します。 *name* 引数は ``package.module`` の形式でもかまいません。
    まずモジュール辞書に該当するモジュールがあるかどうか調べ、なければ新たなモジュールを生成してモジュール辞書に挿入します。失敗した場合には例外をセットして
@@ -112,7 +112,7 @@
       指定した *name* が存在しない場合、パッケージ構造は作成されません。
 
 
-.. cfunction:: PyObject* PyImport_ExecCodeModule(char *name, PyObject *co)
+.. c:function:: PyObject* PyImport_ExecCodeModule(char *name, PyObject *co)
 
    .. index:: builtin: compile
 
@@ -135,7 +135,7 @@
       エラーが発生した場合に *name* を :attr:``sys.modules`` から除去するようになりました.
 
 
-.. cfunction:: PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)
+.. c:function:: PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)
 
    Like :c:func:`PyImport_ExecCodeModule`, but the :attr:`__file__` attribute of
    the module object is set to *pathname* if it is non-``NULL``.
@@ -143,18 +143,18 @@
    モジュールオブジェクトの :attr:`__file__` 属性に設定します。
 
 
-.. cfunction:: long PyImport_GetMagicNumber()
+.. c:function:: long PyImport_GetMagicNumber()
 
    Python バイトコードファイル (いわゆる :file:`.pyc` および :file:`.pyo` ファイル)
    のマジックナンバを返します。マジックナンバはバイトコードファイルの先頭 4 バイトにリトルエンディアン整列で配置されています。
 
 
-.. cfunction:: PyObject* PyImport_GetModuleDict()
+.. c:function:: PyObject* PyImport_GetModuleDict()
 
    モジュール管理のための辞書 (いわゆる ``sys.modules`` )を返します。この辞書はインタプリタごとに一つだけある変数なので注意してください。
 
 
-.. cfunction:: PyObject* PyImport_GetImporter(PyObject *path)
+.. c:function:: PyObject* PyImport_GetImporter(PyObject *path)
 
    :data:`sys.path`/:attr:`pkg.__path__` の要素 *path* の、 importer オブジェクトを返します。
    可能なら、 :data:`sys.path_importer_cache` からフェッチします。
@@ -168,32 +168,32 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: void _PyImport_Init()
+.. c:function:: void _PyImport_Init()
 
    import 機構を初期化します。内部使用だけのための関数です。
 
 
-.. cfunction:: void PyImport_Cleanup()
+.. c:function:: void PyImport_Cleanup()
 
    モジュールテーブルを空にします。内部使用だけのための関数です。
 
 
-.. cfunction:: void _PyImport_Fini()
+.. c:function:: void _PyImport_Fini()
 
    import 機構を終了処理します。内部使用だけのための関数です。
 
 
-.. cfunction:: PyObject* _PyImport_FindExtension(char *, char *)
+.. c:function:: PyObject* _PyImport_FindExtension(char *, char *)
 
    内部使用だけのための関数です。
 
 
-.. cfunction:: PyObject* _PyImport_FixupExtension(char *, char *)
+.. c:function:: PyObject* _PyImport_FixupExtension(char *, char *)
 
    内部使用だけのための関数です。
 
 
-.. cfunction:: int PyImport_ImportFrozenModule(char *name)
+.. c:function:: int PyImport_ImportFrozenModule(char *name)
 
    *name* という名前のフリーズ (freeze) されたモジュールをロードします。成功すると ``1`` を、モジュールが見つからなかった場合には
    ``0`` を、初期化が失敗した場合には例外をセットして ``-1`` を返します。ロードに成功したモジュールにアクセスするには
@@ -223,7 +223,7 @@
    このポインタに仕掛けを講じて、動的に生成されたフリーズ化モジュールの集合を提供するようにできます。
 
 
-.. cfunction:: int PyImport_AppendInittab(char *name, void (*initfunc)(void))
+.. c:function:: int PyImport_AppendInittab(char *name, void (*initfunc)(void))
 
    既存の組み込みモジュールテーブルに単一のモジュールを追加します。この関数は利便性を目的とした :c:func:`PyImport_ExtendInittab`
    のラッパ関数で、テーブルが拡張できないときには ``-1`` を返します。新たなモジュールは *name* で import でき、最初に import を
@@ -243,7 +243,7 @@
       };
 
 
-.. cfunction:: int PyImport_ExtendInittab(struct _inittab *newtab)
+.. c:function:: int PyImport_ExtendInittab(struct _inittab *newtab)
 
    組み込みモジュールのテーブルに一群のモジュールを追加します。配列 *newtab* は :attr:`name` フィールドが *NULL* になっている
    センチネル (sentinel) エントリで終端されていなければなりません; センチネル値を与えられなかった場合にはメモリ違反になるかもしれません。成功すると

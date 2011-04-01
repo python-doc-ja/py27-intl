@@ -12,7 +12,7 @@ Python の Bool 型は整数のサブクラスとして実装されています�
 .. % Boolean Objects
 
 
-.. cfunction:: int PyBool_Check(PyObject *o)
+.. c:function:: int PyBool_Check(PyObject *o)
 
    *o* が :c:data:`PyBool_Type` の場合に真を返します。
 
@@ -45,7 +45,7 @@ Python の Bool 型は整数のサブクラスとして実装されています�
    .. versionadded:: 2.4
 
 
-.. cfunction:: int PyBool_FromLong(long v)
+.. c:function:: int PyBool_FromLong(long v)
 
    *v* の値に応じて :const:`Py_True` または :const:`Py_False` への新しい参照を返します。
 

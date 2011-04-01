@@ -18,14 +18,14 @@ Python では二種類のイテレータオブジェクトを提供していま�
    .. versionadded:: 2.2
 
 
-.. cfunction:: int PySeqIter_Check(op)
+.. c:function:: int PySeqIter_Check(op)
 
    :c:data:`PySeqIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PySeqIter_New(PyObject *seq)
+.. c:function:: PyObject* PySeqIter_New(PyObject *seq)
 
    一般的なシーケンスオブジェクト *seq* を扱うイテレータを返します。反復処理は、シーケンスが添字指定操作の際に :exc:`IndexError` を
    返したときに終了します。
@@ -41,14 +41,14 @@ Python では二種類のイテレータオブジェクトを提供していま�
    .. versionadded:: 2.2
 
 
-.. cfunction:: int PyCallIter_Check(op)
+.. c:function:: int PyCallIter_Check(op)
 
    :c:data:`PyCallIter_Type` の型が *op* のときに真を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyCallIter_New(PyObject *callable, PyObject *sentinel)
+.. c:function:: PyObject* PyCallIter_New(PyObject *callable, PyObject *sentinel)
 
    新たなイテレータを返します。最初のパラメタ *callable* は引数なしで呼び出せる Python の呼び出し可能オブジェクトならなんでもかまいません;
    *callable* は、呼び出されるたびに次の反復処理対象オブジェクトを返さなければなりません。生成されたイテレータは、 *callable* が

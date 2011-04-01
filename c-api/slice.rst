@@ -13,19 +13,19 @@
    スライスオブジェクトの型オブジェクトです。 ``slice`` や ``types.SliceType`` と同じです。
 
 
-.. cfunction:: int PySlice_Check(PyObject *ob)
+.. c:function:: int PySlice_Check(PyObject *ob)
 
    *ob* がスライスオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
 
-.. cfunction:: PyObject* PySlice_New(PyObject *start, PyObject *stop, PyObject *step)
+.. c:function:: PyObject* PySlice_New(PyObject *start, PyObject *stop, PyObject *step)
 
    指定した値から新たなスライスオブジェクトを返します。パラメタ *start*, *stop*, および *step* はスライスオブジェクトに
    おける同名の属性として用いられます。これらの値はいずれも *NULL* にでき、対応する値には ``None`` が使われます。新たな
    オブジェクトをアロケーションできない場合には *NULL* を返します。
 
 
-.. cfunction:: int PySlice_GetIndices(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step)
+.. c:function:: int PySlice_GetIndices(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step)
 
    スライスオブジェクト *slice* における *start*, *stop*,  および *step* のインデクス値を取得します。このときシーケンスの
    長さを *length* と仮定します。 *length* よりも大きなインデクスになるとエラーとして扱います。
@@ -41,7 +41,7 @@
       の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: int PySlice_GetIndicesEx(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step, Py_ssize_t *slicelength)
+.. c:function:: int PySlice_GetIndicesEx(PySliceObject *slice, Py_ssize_t length, Py_ssize_t *start, Py_ssize_t *stop, Py_ssize_t *step, Py_ssize_t *slicelength)
 
    :c:func:`PySlice_GetIndices` の置き換えとして使える関数です。
 

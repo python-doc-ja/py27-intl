@@ -129,13 +129,13 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 ========================
 
 
-.. cfunction:: int PyObject_CheckBuffer(PyObject *obj)
+.. c:function:: int PyObject_CheckBuffer(PyObject *obj)
 
    *obj* がバッファインタフェースをサポートしている場合に 1 を、
    それ以外の場合に 0 を返します。
 
 
-.. cfunction:: int PyObject_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
+.. c:function:: int PyObject_GetBuffer(PyObject *obj, Py_buffer *view, int flags)
 
       *obj* を :c:type:`Py_buffer` *view* へエクスポートします。
       これらの引数は *NULL* であってはなりません。
@@ -230,7 +230,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       +-----------------------------------+--------------------------------------------------------------+
 
 
-.. cfunction:: void PyBuffer_Release(Py_buffer *view)
+.. c:function:: void PyBuffer_Release(Py_buffer *view)
 
    *view* バッファを開放します。
    バッファが利用されなくなったときに、そのメモリを開放できるようにこの関数を呼び出すべきです。
@@ -256,7 +256,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       matter and the copy will be made in whatever way is more efficient.
 
 
-.. cfunction:: int PyBuffer_IsContiguous(Py_buffer *view, char fortran)
+.. c:function:: int PyBuffer_IsContiguous(Py_buffer *view, char fortran)
 
    *view* で定義されているメモリが、(*fortran* == ``'C'`` のとき) C-styleか、
    (*fortran* == ``'F'`` のとき) Fortran-style か、 (*fortran* == ``'A'``
@@ -264,14 +264,14 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    それ以外の場合は 0 を返します。
 
 
-.. cfunction:: void PyBuffer_FillContiguousStrides(int ndim, Py_ssize_t *shape, Py_ssize_t *strides, Py_ssize_t itemsize, char fortran)
+.. c:function:: void PyBuffer_FillContiguousStrides(int ndim, Py_ssize_t *shape, Py_ssize_t *strides, Py_ssize_t itemsize, char fortran)
 
    *strides* 配列を、 *itemsize* の大きさの要素がバイト単位で連続した、
    *shape* の形をした (*fortran* が ``'C'`` なら C-style, *fortran* が ``'F'``
    なら Fortran-style の) 多次元配列として埋める。
 
 
-.. cfunction:: int PyBuffer_FillInfo(Py_buffer *view, PyObject *obj, void *buf, Py_ssize_t len, int readonly, int infoflags)
+.. c:function:: int PyBuffer_FillInfo(Py_buffer *view, PyObject *obj, void *buf, Py_ssize_t len, int readonly, int infoflags)
 
    Fill in a buffer-info structure, *view*, correctly for an exporter that can
    only share a contiguous chunk of memory of "unsigned bytes" of the given
@@ -323,12 +323,12 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    のサイズを調べる必要がなくなります。
 
 
-.. cfunction:: int PyBuffer_Check(PyObject *p)
+.. c:function:: int PyBuffer_Check(PyObject *p)
 
    引数が :c:data:`PyBuffer_Type` 型のときに真を返します。
 
 
-.. cfunction:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
+.. c:function:: PyObject* PyBuffer_FromObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
    新たな読み出し専用バッファオブジェクトを返します。 *base* が読み出し専用バッファに必要なバッファプロトコルをサポートしていない
    場合や、厳密に一つのバッファセグメントを提供していない場合には :exc:`TypeError` を送出し、 *offset* がゼロ以下の場合には
@@ -341,7 +341,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       この関数は以前は *offset*, *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: PyObject* PyBuffer_FromReadWriteObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
+.. c:function:: PyObject* PyBuffer_FromReadWriteObject(PyObject *base, Py_ssize_t offset, Py_ssize_t size)
 
    新たな書き込み可能バッファオブジェクトを返します。パラメタおよび例外は :c:func:`PyBuffer_FromObject` と同じです。 *base*
    オブジェクトが書き込み可能バッファに必要なバッファプロトコルを公開していない場合、 :exc:`TypeError` を送出します。
@@ -351,7 +351,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
-.. cfunction:: PyObject* PyBuffer_FromMemory(void *ptr, Py_ssize_t size)
+.. c:function:: PyObject* PyBuffer_FromMemory(void *ptr, Py_ssize_t size)
 
    メモリ上の指定された場所から指定されたサイズのデータを読み出せる、新たな読み出し専用バッファオブジェクトを返します。
    この関数が返すバッファオブジェクトが存続する間、 *ptr* で与えられたメモリバッファがデアロケートされないようにするのは呼び出し側の責任です。 *size*
@@ -363,7 +363,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
-.. cfunction:: PyObject* PyBuffer_FromReadWriteMemory(void *ptr, Py_ssize_t size)
+.. c:function:: PyObject* PyBuffer_FromReadWriteMemory(void *ptr, Py_ssize_t size)
 
    :c:func:`PyBuffer_FromMemory` に似ていますが、書き込み可能なバッファを返します。
 
@@ -371,7 +371,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: PyObject* PyBuffer_New(Py_ssize_t size)
+.. c:function:: PyObject* PyBuffer_New(Py_ssize_t size)
 
    *size* バイトのメモリバッファを独自に維持する新たな書き込み可能バッファオブジェクトを返します。 *size*
    がゼロまたは正の値でない場合、 :exc:`ValueError` を送出します。(:c:func:`PyObject_AsWriteBuffer`

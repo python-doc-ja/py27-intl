@@ -25,14 +25,14 @@ Python 3 では削除されることに注意してください。
    Python レイヤーの、 ``types.ClassType`` と同じオブジェクト。
 
 
-.. cfunction:: int PyClass_Check(PyObject *o)
+.. c:function:: int PyClass_Check(PyObject *o)
 
    *o* が、標準のクラスオブジェクトから派生した type のインスタンスだった場合を含めて、
    クラスオブジェクトだった場合に真を返します。
    それ以外の場合は偽を返します。
 
 
-.. cfunction:: int PyClass_IsSubclass(PyObject *klass, PyObject *base)
+.. c:function:: int PyClass_IsSubclass(PyObject *klass, PyObject *base)
 
    *klass* が *base* のサブクラスだった場合に真を返します。
    それ以外の場合は偽を返します。
@@ -47,18 +47,18 @@ Python 3 では削除されることに注意してください。
    クラスインスタンスの型オブジェクトです。
 
 
-.. cfunction:: int PyInstance_Check(PyObject *obj)
+.. c:function:: int PyInstance_Check(PyObject *obj)
 
    *obj* がインスタンスの場合に真を返します。
 
 
-.. cfunction:: PyObject* PyInstance_New(PyObject *class, PyObject *arg, PyObject *kw)
+.. c:function:: PyObject* PyInstance_New(PyObject *class, PyObject *arg, PyObject *kw)
 
    特定クラスの新たなインスタンスを生成します。パラメタ *arg*  および *kw* はそれぞれオブジェクトのコンストラクタに渡す
    実引数およびキーワードパラメタとして使われます。
 
 
-.. cfunction:: PyObject* PyInstance_NewRaw(PyObject *class, PyObject *dict)
+.. c:function:: PyObject* PyInstance_NewRaw(PyObject *class, PyObject *dict)
 
    特定クラスの新たなインスタンスを、コンストラクタを呼ばずに生成します。 *class* は新たに作成するオブジェクトのクラスです。 *dict* パラメタは
    オブジェクトの :attr:`__dict__` に使われます; *dict* が *NULL* なら、インスタンス用に新たな辞書が作成されます。

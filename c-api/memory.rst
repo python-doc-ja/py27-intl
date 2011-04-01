@@ -77,7 +77,7 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 従ってモデル化されていますが、0 バイトの領域を要求した際の動作についても定義しています:
 
 
-.. cfunction:: void* PyMem_Malloc(size_t n)
+.. c:function:: void* PyMem_Malloc(size_t n)
 
    *n* バイトをメモリ確保し、確保されたメモリを指す :c:type:`void\*`  型のポインタを返します。確保要求に失敗した場合には *NULL* を
    返します。 0 バイトをリクエストすると、可能ならば独立した非 *NULL* のポインタを返します。このポインタは
@@ -85,7 +85,7 @@ Python ヒープに対してメモリを確保したり解放したりするた�
    確保されたメモリ領域はいかなる初期化も行われていません。
 
 
-.. cfunction:: void* PyMem_Realloc(void *p, size_t n)
+.. c:function:: void* PyMem_Realloc(void *p, size_t n)
 
    *p* が指しているメモリブロックを *n* バイトにサイズ変更します。メモリの内容のうち、新旧のサイズのうち小さい方までの領域は変更されません。 *p* が
    *NULL* ならば、この関数は :c:func:`PyMem_Malloc(n)` と等価になります;  それ以外の場合で、 *n* がゼロに等しければ、
@@ -93,7 +93,7 @@ Python ヒープに対してメモリを確保したり解放したりするた�
    :c:func:`PyMem_Malloc` や  :c:func:`PyMem_Realloc` の返した値でなければなりません。
 
 
-.. cfunction:: void PyMem_Free(void *p)
+.. c:function:: void PyMem_Free(void *p)
 
    *p* が指すメモリブロックを解放します。 *p* は以前呼び出した :c:func:`PyMem_Malloc` や
    :c:func:`PyMem_Realloc` の返した値でなければなりません。それ以外の場合や、すでに :c:func:`PyMem_Free(p)` を
@@ -102,13 +102,13 @@ Python ヒープに対してメモリを確保したり解放したりするた�
 以下に挙げる型対象のマクロは利便性のために提供されているものです。 *TYPE* は任意の C の型を表します。
 
 
-.. cfunction:: TYPE* PyMem_New(TYPE, size_t n)
+.. c:function:: TYPE* PyMem_New(TYPE, size_t n)
 
    :c:func:`PyMem_Malloc` と同じですが、 ``(n * sizeof(TYPE))`` バイトのメモリを確保します。
    :c:type:`TYPE\*` に型キャストされたポインタを返します。メモリには何の初期化も行われていません。
 
 
-.. cfunction:: TYPE* PyMem_Resize(void *p, TYPE, size_t n)
+.. c:function:: TYPE* PyMem_Resize(void *p, TYPE, size_t n)
 
    :c:func:`PyMem_Realloc` と同じですが、 ``(n * sizeof(TYPE))``
    バイトにサイズ変更されたメモリを確保します。
@@ -119,7 +119,7 @@ Python ヒープに対してメモリを確保したり解放したりするた�
    p の元の値を保存しておいてください。
 
 
-.. cfunction:: void PyMem_Del(void *p)
+.. c:function:: void PyMem_Del(void *p)
 
    :c:func:`PyMem_Free` と同じです。
 

@@ -18,7 +18,7 @@
    プログラムには ``types.ModuleType``  として公開されています。
 
 
-.. cfunction:: int PyModule_Check(PyObject *p)
+.. c:function:: int PyModule_Check(PyObject *p)
 
    *o* がモジュールオブジェクトかモジュールオブジェクトのサブタイプであるときに真を返します。
 
@@ -26,14 +26,14 @@
       サブタイプを引数にとれるようになりました.
 
 
-.. cfunction:: int PyModule_CheckExact(PyObject *p)
+.. c:function:: int PyModule_CheckExact(PyObject *p)
 
    *o* がモジュールオブジェクトで、かつモジュールオブジェクトのサブタイプでないときに真を返します。  :c:data:`PyModule_Type`.
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyModule_New(const char *name)
+.. c:function:: PyObject* PyModule_New(const char *name)
 
    .. index::
       single: __name__ (module attribute)
@@ -44,7 +44,7 @@
    および :attr:`__name__` 属性だけに値が入っています; :attr:`__file__` 属性に値を入れるのは呼び出し側の責任です。
 
 
-.. cfunction:: PyObject* PyModule_GetDict(PyObject *module)
+.. c:function:: PyObject* PyModule_GetDict(PyObject *module)
 
    .. index:: single: __dict__ (module attribute)
 
@@ -53,7 +53,7 @@
    を直接いじるより、他の :c:func:`PyModule_\*` および :c:func:`PyObject_\*` 関数を使うよう勧めます。
 
 
-.. cfunction:: char* PyModule_GetName(PyObject *module)
+.. c:function:: char* PyModule_GetName(PyObject *module)
 
    .. index::
       single: __name__ (module attribute)
@@ -63,7 +63,7 @@
    :exc:`SystemError` を送出して *NULL* を返します。
 
 
-.. cfunction:: char* PyModule_GetFilename(PyObject *module)
+.. c:function:: char* PyModule_GetFilename(PyObject *module)
 
    .. index::
       single: __file__ (module attribute)
@@ -74,7 +74,7 @@
    *NULL* を返します。
 
 
-.. cfunction:: int PyModule_AddObject(PyObject *module, const char *name, PyObject *value)
+.. c:function:: int PyModule_AddObject(PyObject *module, const char *name, PyObject *value)
 
    *module* にオブジェクトを *name* として追加します。この関数はモジュールの初期化関数から利用される便宜関数です。エラーのときには ``-1``
    を、成功したときには ``0`` を返します。
@@ -82,7 +82,7 @@
    .. versionadded:: 2.0
 
 
-.. cfunction:: int PyModule_AddIntConstant(PyObject *module, const char *name, long value)
+.. c:function:: int PyModule_AddIntConstant(PyObject *module, const char *name, long value)
 
    *module* に整数定数を *name* として追加します。この便宜関数はモジュールの初期化関数から利用されています。エラーのときには ``-1``
    を、成功したときには ``0`` を返します。
@@ -90,7 +90,7 @@
    .. versionadded:: 2.0
 
 
-.. cfunction:: int PyModule_AddStringConstant(PyObject *module, const char *name, char *value)
+.. c:function:: int PyModule_AddStringConstant(PyObject *module, const char *name, char *value)
 
    *module* に文字列定数を *name* として追加します。この便宜関数はモジュールの初期化関数から利用されています。文字列 *value* は
    null 終端されていなければなりません。エラーのときには ``-1`` を、成功したときには ``0`` を返します。
@@ -98,7 +98,7 @@
    .. versionadded:: 2.0
 
 
-.. cfunction:: int PyModule_AddIntMacro(PyObject *module, macro)
+.. c:function:: int PyModule_AddIntMacro(PyObject *module, macro)
 
    *module* に int 定数を追加します。名前と値は *macro* から取得されます。
    例えば、 ``PyModule_AddConstant(module, AF_INTE)`` とすると、 *AF_INET*
@@ -107,7 +107,7 @@
 
    .. versionadded:: 2.6
 
-.. cfunction:: int PyModule_AddStringMacro(PyObject *module, macro)
+.. c:function:: int PyModule_AddStringMacro(PyObject *module, macro)
 
    文字列定数を *module* に追加します。
 

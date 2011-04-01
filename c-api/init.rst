@@ -8,7 +8,7 @@
 **********************************************************
 
 
-.. cfunction:: void Py_Initialize()
+.. c:function:: void Py_Initialize()
 
    .. index::
       single: Py_SetProgramName()
@@ -38,7 +38,7 @@
    戻り値はありません; 初期化が失敗すれば、それは致命的なエラーです。
 
 
-.. cfunction:: void Py_InitializeEx(int initsigs)
+.. c:function:: void Py_InitializeEx(int initsigs)
 
    *initsigs* に1を指定すれば :c:func:`Py_Initialize` と同じ処理を実
    行しますが、Python埋め込みアプリケーションでは *initsigs* を0として
@@ -47,13 +47,13 @@
    .. versionadded:: 2.4
 
 
-.. cfunction:: int Py_IsInitialized()
+.. c:function:: int Py_IsInitialized()
 
    Python インタプリタがすでに初期化済みの場合に真 (非ゼロ) を返し、そうでない場合には偽 (ゼロ)
    を返します。 :c:func:`Py_Finalize` を呼び出すと、次に :c:func:`Py_Initialize` を呼び出すまでこの関数は偽を返します。
 
 
-.. cfunction:: void Py_Finalize()
+.. c:function:: void Py_Finalize()
 
    :c:func:`Py_Initialize` とそれ以後の Python/C API 関数で行った全ての初期化処理を取り消し、最後の
    :c:func:`Py_Initialize`  呼び出し以後に Python インタプリタが生成した全てのサブインタプリタ  (sub-interpreter,
@@ -75,7 +75,7 @@
    を 2 度以上呼び出すと起こり得ます。
 
 
-.. cfunction:: PyThreadState* Py_NewInterpreter()
+.. c:function:: PyThreadState* Py_NewInterpreter()
 
    .. index::
       module: __builtin__
@@ -128,7 +128,7 @@
    シンプルなことなら上手くいくかもしれませんが、いつ混乱させる動作をするかわかりません。
 
 
-.. cfunction:: void Py_EndInterpreter(PyThreadState *tstate)
+.. c:function:: void Py_EndInterpreter(PyThreadState *tstate)
 
    .. index:: single: Py_Finalize()
 
@@ -139,7 +139,7 @@
    明示的に抹消されていない全てのサブインタプリタを抹消します。
 
 
-.. cfunction:: void Py_SetProgramName(char *name)
+.. c:function:: void Py_SetProgramName(char *name)
 
    .. index::
       single: Py_Initialize()
@@ -153,7 +153,7 @@
    その内容はプログラムの実行中に変更してはなりません。 Python インタプリタ内のコードで、この記憶領域の内容を変更するものは一切ありません。
 
 
-.. cfunction:: char* Py_GetProgramName()
+.. c:function:: char* Py_GetProgramName()
 
    .. index:: single: Py_SetProgramName()
 
@@ -161,7 +161,7 @@
    関数が返す文字列ポインタは静的な記憶領域を返します; 関数の呼び出し側はこの値を変更できません。
 
 
-.. cfunction:: char* Py_GetPrefix()
+.. c:function:: char* Py_GetPrefix()
 
    プラットフォーム非依存のファイル群がインストールされている場所である *prefix* を返します。この値は
    :c:func:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
@@ -172,7 +172,7 @@
    でも有用です。次に説明する関数も参照してください。
 
 
-.. cfunction:: char* Py_GetExecPrefix()
+.. c:function:: char* Py_GetExecPrefix()
 
    プラットフォーム *依存* のファイルがインストールされている場所である *exec-prefix* を返します。
    この値は :c:func:`Py_SetProgramName` でセットされたプログラム名やいくつかの環境変数をもとに、数々の複雑な規則から導出されます;
@@ -199,7 +199,7 @@
    :file:`/usr/local` を共有するための設定方法を知っているはずです。
 
 
-.. cfunction:: char* Py_GetProgramFullPath()
+.. c:function:: char* Py_GetProgramFullPath()
 
    .. index::
       single: Py_SetProgramName()
@@ -211,7 +211,7 @@
    ``sys.executable`` として利用できます。 Unixのみで有用です。
 
 
-.. cfunction:: char* Py_GetPath()
+.. c:function:: char* Py_GetPath()
 
    .. index::
       triple: module; search; path
@@ -231,7 +231,7 @@
    .. XXX should give the exact rules
 
 
-.. cfunction:: const char* Py_GetVersion()
+.. c:function:: const char* Py_GetVersion()
 
    Python インタプリタのバージョンを返します。バージョンは、 ::
 
@@ -246,7 +246,7 @@
    コードからは ``sys.version`` として利用できます。
 
 
-.. cfunction:: const char* Py_GetPlatform()
+.. c:function:: const char* Py_GetPlatform()
 
    .. index:: single: platform (in module sys)
 
@@ -257,7 +257,7 @@
    コードからは ``sys.platform`` として利用できます。
 
 
-.. cfunction:: const char* Py_GetCopyright()
+.. c:function:: const char* Py_GetCopyright()
 
    .. index:: single: copyright (in module sys)
 
@@ -266,7 +266,7 @@
    関数の呼び出し側はこの値を変更できません。この値は Python コードからは ``sys.copyright`` として利用できます。
 
 
-.. cfunction:: const char* Py_GetCompiler()
+.. c:function:: const char* Py_GetCompiler()
 
    現在使っているバージョンの Python をビルドする際に用いたコンパイラを示す文字列を、各括弧で囲った文字列を返します。例えば::
 
@@ -280,7 +280,7 @@
    コードからは ``sys.version`` の一部として取り出せます。
 
 
-.. cfunction:: const char* Py_GetBuildInfo()
+.. c:function:: const char* Py_GetBuildInfo()
 
    現在使っている Python インタプリタインスタンスの、シーケンス番号とビルド日時に関する情報を返します。例えば ::
 
@@ -294,7 +294,7 @@
    コードからは ``sys.version`` の一部として取り出せます。
 
 
-.. cfunction:: void PySys_SetArgvEx(int argc, char **argv, int updatepath)
+.. c:function:: void PySys_SetArgvEx(int argc, char **argv, int updatepath)
 
    .. index::
       single: main()
@@ -342,12 +342,12 @@
 
 .. % XXX Other PySys thingies (doesn't really belong in this chapter)
 
-.. cfunction:: void PySys_SetArgv(int argc, char **argv)
+.. c:function:: void PySys_SetArgv(int argc, char **argv)
 
    :c:func:`PySys_SetArgv` の *updatepath* に 1 を設定したのと同じように動作します。
 
 
-.. cfunction:: void Py_SetPythonHome(char *home)
+.. c:function:: void Py_SetPythonHome(char *home)
 
    Python の標準ライブラリがある、デフォルトの "home" ディレクトリを設定します。
    *home* の文字列の意味については、 :envvar:`PYTHONHOME` を参照してください。
@@ -355,7 +355,7 @@
    ゼロ終端の文字列であるべきです。
    Python インタプリタはこのストレージの内容を変更しません。
 
-.. cfunction:: char* Py_GetPythonHome()
+.. c:function:: char* Py_GetPythonHome()
 
    前回の :c:func:`Py_SetPythonHome` 呼び出しで設定されたデフォルトの "home" か、
    :envvar:`PYTHONHOME` 環境変数が設定されていればその値を返します。
@@ -532,7 +532,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    だけが公開されていて、スレッドのインタプリタ状態を指すポインタになっています。
 
 
-.. cfunction:: void PyEval_InitThreads()
+.. c:function:: void PyEval_InitThreads()
 
    .. index::
       single: PyEval_ReleaseLock()
@@ -567,7 +567,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
 
 
-.. cfunction:: int PyEval_ThreadsInitialized()
+.. c:function:: int PyEval_ThreadsInitialized()
 
    :c:func:`PyEval_InitThreads` をすでに呼び出している場合は真 (非ゼロ)
    を返します。この関数は、GILを獲得せずに呼び出すことができますので、
@@ -578,26 +578,26 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    .. versionadded:: 2.4
 
 
-.. cfunction:: void PyEval_AcquireLock()
+.. c:function:: void PyEval_AcquireLock()
 
    グローバルインタプリタロックを獲得します。ロックは前もって作成されていなければなりません。この関数を呼び出したスレッドがすでにロックを獲得している場合、
    デッドロックに陥ります。この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
 
 
-.. cfunction:: void PyEval_ReleaseLock()
+.. c:function:: void PyEval_ReleaseLock()
 
    グローバルインタプリタロックを解放します。ロックは前もって作成されていなければなりません。
    この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
 
 
-.. cfunction:: void PyEval_AcquireThread(PyThreadState *tstate)
+.. c:function:: void PyEval_AcquireThread(PyThreadState *tstate)
 
    グローバルインタプリタロックを獲得し、現在のスレッド状態を *tstate* に設定します。 *tstate* は *NULL* であっては
    なりません。ロックはあらかじめ作成されていなければなりません。この関数を呼び出したスレッドがすでにロックを獲得している場合、デッドロックに陥ります。
    この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
 
 
-.. cfunction:: void PyEval_ReleaseThread(PyThreadState *tstate)
+.. c:function:: void PyEval_ReleaseThread(PyThreadState *tstate)
 
    現在のスレッド状態をリセットして *NULL* にし、グローバルインタプリタロックを解放します。ロックはあらかじめ作成されていなければならず、
    かつ現在のスレッドが保持していなければなりません。 *tstate* は *NULL* であってはなりませんが、その値が現在のスレッド状態を
@@ -605,14 +605,14 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    この関数はコンパイル時にスレッドサポートを無効化すると利用できません。
 
 
-.. cfunction:: PyThreadState* PyEval_SaveThread()
+.. c:function:: PyThreadState* PyEval_SaveThread()
 
    (インタプリタロックが生成されていて、スレッドサポートが有効の場合)
    グローバルインタプリタロックを解放して、スレッド状態を *NULL* にし、以前のスレッド状態
    (*NULL* にはなりません) を返します。ロックがすでに生成されている場合、現在のスレッドがロックを獲得していなければなりません。
 
 
-.. cfunction:: void PyEval_RestoreThread(PyThreadState *tstate)
+.. c:function:: void PyEval_RestoreThread(PyThreadState *tstate)
 
    (インタプリタロックが生成されていて、スレッドサポートが有効の場合)
    グローバルインタプリタロックを獲得して、現在のスレッド状態を *tstate*
@@ -653,61 +653,61 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
 場合だけにしなくてはなりません。
 
 
-.. cfunction:: PyInterpreterState* PyInterpreterState_New()
+.. c:function:: PyInterpreterState* PyInterpreterState_New()
 
    新しいインタプリタ状態オブジェクトを生成します。
    グローバルインタプリタロックを保持しておく必要はありませんが、この関数を次々に
    呼び出す必要がある場合には保持しておいたほうがよいでしょう。
 
 
-.. cfunction:: void PyInterpreterState_Clear(PyInterpreterState *interp)
+.. c:function:: void PyInterpreterState_Clear(PyInterpreterState *interp)
 
    インタプリタ状態オブジェクト内の全ての情報をリセットします。
    グローバルインタプリタロックを保持していなければなりません。
 
 
-.. cfunction:: void PyInterpreterState_Delete(PyInterpreterState *interp)
+.. c:function:: void PyInterpreterState_Delete(PyInterpreterState *interp)
 
    インタプリタ状態オブジェクトを破壊します。
    グローバルインタプリタロックを保持しておく必要はありません。
    インタプリタ状態は :c:func:`PyInterpreterState_Clear` であらかじめリセットしておかなければなりません。
 
 
-.. cfunction:: PyThreadState* PyThreadState_New(PyInterpreterState *interp)
+.. c:function:: PyThreadState* PyThreadState_New(PyInterpreterState *interp)
 
    指定したインタプリタオブジェクトに属する新たなスレッド状態オブジェクトを生成します。
    グローバルインタプリタロックを保持しておく必要はありませんが、この関数を次々に
    呼び出す必要がある場合には保持しておいたほうがよいでしょう。
 
 
-.. cfunction:: void PyThreadState_Clear(PyThreadState *tstate)
+.. c:function:: void PyThreadState_Clear(PyThreadState *tstate)
 
    スレッド状態オブジェクト内の全ての情報をリセットします。
    グローバルインタプリタロックを保持していなければなりません。
 
 
-.. cfunction:: void PyThreadState_Delete(PyThreadState *tstate)
+.. c:function:: void PyThreadState_Delete(PyThreadState *tstate)
 
    スレッド状態オブジェクトを破壊します。
    グローバルインタプリタロックを保持していなければなりません。
    スレッド状態は :c:func:`PyThreadState_Clear` であらかじめリセットしておかなければなりません。
 
 
-.. cfunction:: PyThreadState* PyThreadState_Get()
+.. c:function:: PyThreadState* PyThreadState_Get()
 
    現在のスレッド状態を返します。グローバルインタプリタロックを保持していなければなりません。
    現在のスレッド状態が *NULL* なら、(呼び出し側が *NULL* チェックをしなくてすむように)
    この関数は致命的エラーを起こすようになっています。
 
 
-.. cfunction:: PyThreadState* PyThreadState_Swap(PyThreadState *tstate)
+.. c:function:: PyThreadState* PyThreadState_Swap(PyThreadState *tstate)
 
    現在のスレッド状態を *tstate* に指定したスレッド状態と入れ変えます。
    *tstate* は *NULL* であってはなりません。
    グローバルインタプリタロックを保持していなければなりません。
 
 
-.. cfunction:: PyObject* PyThreadState_GetDict()
+.. c:function:: PyObject* PyThreadState_GetDict()
 
    拡張モジュールがスレッド固有の状態情報を保存できるような辞書を返します。各々の拡張モジュールが辞書に状態情報を保存するためには唯一のキーを
    使わねばなりません。現在のスレッド状態がない時にこの関数を呼び出してもかまいません。この関数が
@@ -717,7 +717,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
       以前は、現在のスレッドがアクティブなときのみ呼び出せるようになっており、 *NULL* は例外が送出されたことを意味していました.
 
 
-.. cfunction:: int PyThreadState_SetAsyncExc(long id, PyObject *exc)
+.. c:function:: int PyThreadState_SetAsyncExc(long id, PyObject *exc)
 
    スレッド内で非同期的に例外を送出します。 *id* 引数はターゲットとなるスレッドのスレッド id です; *exc* は送出する例外オブジェクトです。
    この関数は *exc* に対する参照を一切盗み取りません。素朴な間違いを防ぐため、この関数を呼び出すには独自に C 拡張モジュールを書かねばなりません。
@@ -729,7 +729,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    .. versionadded:: 2.3
 
 
-.. cfunction:: PyGILState_STATE PyGILState_Ensure()
+.. c:function:: PyGILState_STATE PyGILState_Ensure()
 
    Pythonの状態やGILに関わらず、実行中スレッドでPython C APIの呼
    び出しが可能となるようにします。この関数はスレッド内で何度でも呼び出すことができますが、必ず全ての呼び出しに対応して
@@ -752,7 +752,7 @@ Python と同じことを実現するには、 :c:func:`posix_atfork` のよう�
    .. versionadded:: 2.3
 
 
-.. cfunction:: void PyGILState_Release(PyGILState_STATE)
+.. c:function:: void PyGILState_Release(PyGILState_STATE)
 
    獲得したすべてのリソースを開放します。この関数を呼び出すと、Pythonの状態
    は対応する :c:func:`PyGILState_Ensure` を呼び出す前と同じとなります。(通
@@ -851,7 +851,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
    C関数から戻るときに :c:type:`Py_tracefunc` 関数の *what* パラメタとして渡す値です。
 
 
-.. cfunction:: void PyEval_SetProfile(Py_tracefunc func, PyObject *obj)
+.. c:function:: void PyEval_SetProfile(Py_tracefunc func, PyObject *obj)
 
    プロファイル関数を *func* に設定します。 *obj* パラメタは関数の第一パラメタとして渡され、何らかの Python オブジェクトかまたは
    *NULL* になります。プロファイル関数がスレッド状態を維持する必要があるなら、各々のスレッドに異なる *obj* を使うことで、状態を
@@ -859,7 +859,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
    イベントに対して呼び出されます。
 
 
-.. cfunction:: void PyEval_SetTrace(Py_tracefunc func, PyObject *obj)
+.. c:function:: void PyEval_SetTrace(Py_tracefunc func, PyObject *obj)
 
    トレース関数を *func* にセットします。 :c:func:`PyEval_SetProfile` に似ていますが、トレース関数は
    行番号イベントを受け取る点が違います。
@@ -876,21 +876,21 @@ Python レベルのトレース関数で報告されていたものと同じで�
 以下の関数は高度なデバッグツールでの使用のためだけのものです。
 
 
-.. cfunction:: PyInterpreterState* PyInterpreterState_Head()
+.. c:function:: PyInterpreterState* PyInterpreterState_Head()
 
    インタプリタ状態オブジェクトからなるリストのうち、先頭にあるものを返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyInterpreterState* PyInterpreterState_Next(PyInterpreterState *interp)
+.. c:function:: PyInterpreterState* PyInterpreterState_Next(PyInterpreterState *interp)
 
    インタプリタ状態オブジェクトからなるリストのうち、 *interp* の次にあるものを返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyThreadState * PyInterpreterState_ThreadHead(PyInterpreterState *interp)
+.. c:function:: PyThreadState * PyInterpreterState_ThreadHead(PyInterpreterState *interp)
 
    インタプリタ *interp* に関連付けられているスレッドからなるリストのうち、先頭にある :c:type:`PyThreadState`
    オブジェクトを返します。
@@ -898,7 +898,7 @@ Python レベルのトレース関数で報告されていたものと同じで�
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyThreadState* PyThreadState_Next(PyThreadState *tstate)
+.. c:function:: PyThreadState* PyThreadState_Next(PyThreadState *tstate)
 
    *tstate* と同じ :c:type:`PyInterpreterState` オブジェクトに属しているスレッド状態オブジェクトのうち、 *tstate*
    の次にあるものを返します。

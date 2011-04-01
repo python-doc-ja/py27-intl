@@ -21,7 +21,7 @@
    ``long`` や ``types.LongType`` と同じオブジェクトです。
 
 
-.. cfunction:: int PyLong_Check(PyObject *p)
+.. c:function:: int PyLong_Check(PyObject *p)
 
    引数が :c:type:`PyLongObject` か :c:type:`PyLongObject` のサブタイプのときに真を返します。
 
@@ -29,25 +29,25 @@
       サブタイプを引数にとれるようになりました.
 
 
-.. cfunction:: int PyLong_CheckExact(PyObject *p)
+.. c:function:: int PyLong_CheckExact(PyObject *p)
 
    引数が :c:type:`PyLongObject` 型で、かつ :c:type:`PyLongObject` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyLong_FromLong(long v)
+.. c:function:: PyObject* PyLong_FromLong(long v)
 
    *v* から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。失敗のときには *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyLong_FromUnsignedLong(unsigned long v)
+.. c:function:: PyObject* PyLong_FromUnsignedLong(unsigned long v)
 
    C の :c:type:`unsigned long` 型から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。
    失敗のときには *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
+.. c:function:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
 
    C の :c:type:`Py_ssize_t` 型から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。
    失敗のときには *NULL* を返します。
@@ -55,7 +55,7 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: PyObject* PyLong_FromSize_t(size_t v)
+.. c:function:: PyObject* PyLong_FromSize_t(size_t v)
 
    C の :c:type:`size_t` 型から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。
    失敗のときには *NULL* を返します。
@@ -63,24 +63,24 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
+.. c:function:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
 
    C の :c:type:`long long` 型から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。失敗のときには
    *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyLong_FromUnsignedLongLong(unsigned PY_LONG_LONG v)
+.. c:function:: PyObject* PyLong_FromUnsignedLongLong(unsigned PY_LONG_LONG v)
 
    C の :c:type:`unsigned long long` 型から新たな :c:type:`PyLongObject`
    オブジェクトを生成して返します。失敗のときには *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyLong_FromDouble(double v)
+.. c:function:: PyObject* PyLong_FromDouble(double v)
 
    *v* の整数部から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。失敗のときには *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyLong_FromString(char *str, char **pend, int base)
+.. c:function:: PyObject* PyLong_FromString(char *str, char **pend, int base)
 
    *str* の文字列値に基づいて、新たな :c:type:`PyLongObject` を返します。このとき *base* を基数として文字列を解釈します。
    *pend* が *NULL* でなければ、 ``*pend`` は *str* 中で数が表現されている部分以後の先頭の文字のアドレスを指しています。
@@ -90,7 +90,7 @@
    無視されます。数字が全くない場合、 :exc:`ValueError` が送出されます。
 
 
-.. cfunction:: PyObject* PyLong_FromUnicode(Py_UNICODE *u, Py_ssize_t length, int base)
+.. c:function:: PyObject* PyLong_FromUnicode(Py_UNICODE *u, Py_ssize_t length, int base)
 
    Unicode の数字配列を Python の長整数型に変換します。最初のパラメタ *u* は、 Unicode 文字列の最初の文字を指し、 *length*
    には文字数を指定し、 *base* には変換時の基数を指定します。基数は範囲 [2, 36] になければなりません; 範囲外の基数を指定すると、
@@ -102,7 +102,7 @@
       この関数は以前は *length* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: PyObject* PyLong_FromVoidPtr(void *p)
+.. c:function:: PyObject* PyLong_FromVoidPtr(void *p)
 
    Python 整数型または長整数型をポインタ *p* から生成します。ポインタに入れる値は :c:func:`PyLong_AsVoidPtr` を使って
    得られるような値です。
@@ -113,7 +113,7 @@
       整数値がLONG_MAXより大きい場合は、正の長整数を返します.
 
 
-.. cfunction:: long PyLong_AsLong(PyObject *pylong)
+.. c:function:: long PyLong_AsLong(PyObject *pylong)
 
    .. index::
       single: LONG_MAX
@@ -123,7 +123,7 @@
    大きい場合、 :exc:`OverflowError` を送出し、 ``-1`` を返します。
 
 
-.. cfunction:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
+.. c:function:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
 
    .. index::
       single: PY_SSIZE_T_MAX
@@ -136,7 +136,7 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
+.. c:function:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
 
    .. index::
       single: ULONG_MAX
@@ -146,7 +146,7 @@
    :const:`ULONG_MAX` よりも大きい場合、 :exc:`OverflowError` を送出します。
 
 
-.. cfunction:: PY_LONG_LONG PyLong_AsLongLong(PyObject *pylong)
+.. c:function:: PY_LONG_LONG PyLong_AsLongLong(PyObject *pylong)
 
    *pylong* の指す長整数値を、 C の :c:type:`long long` 型表現で返します。 *pylong* が :c:type:`long
    long` で表せない場合、 :exc:`OverflowError` を送出します。
@@ -154,7 +154,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLong(PyObject *pylong)
+.. c:function:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLong(PyObject *pylong)
 
    *pylong* の指す値を、 C の :c:type:`unsigned long long` 型表現で返します。 *pylong* が
    :c:type:`unsigned long long` で表せない場合、正の値なら :exc:`OverflowError` を、負の値なら
@@ -163,27 +163,27 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: unsigned long PyLong_AsUnsignedLongMask(PyObject *io)
+.. c:function:: unsigned long PyLong_AsUnsignedLongMask(PyObject *io)
 
    Python 長整数値を、オーバフローチェックを行わずに C の :c:type:`unsigned long` 型表現で返します。
 
    .. versionadded:: 2.3
 
 
-.. cfunction:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLongMask(PyObject *io)
+.. c:function:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLongMask(PyObject *io)
 
    Python 長整数値を、オーバフローチェックを行わずに C の :c:type:`unsigned long long` 型表現で返します。
 
    .. versionadded:: 2.3
 
 
-.. cfunction:: double PyLong_AsDouble(PyObject *pylong)
+.. c:function:: double PyLong_AsDouble(PyObject *pylong)
 
    *pylong* の指す値を、 C の :c:type:`double` 型表現で返します。 *pylong* が :c:type:`double`
    を使って近似表現できない場合、 :exc:`OverflowError` 例外を送出して ``-1.0`` を返します。
 
 
-.. cfunction:: void* PyLong_AsVoidPtr(PyObject *pylong)
+.. c:function:: void* PyLong_AsVoidPtr(PyObject *pylong)
 
    Python の整数型か長整数型を指す *pylong* を、 C の :c:type:`void` ポインタに変換します。 *pylong* を変換できなければ、
    :exc:`OverflowError` を送出します。この関数は :c:func:`PyLong_FromVoidPtr` で値を生成するときに使うような

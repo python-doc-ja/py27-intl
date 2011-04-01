@@ -27,7 +27,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    プログラムで公開されています。
 
 
-.. cfunction:: int PyFile_Check(PyObject *p)
+.. c:function:: int PyFile_Check(PyObject *p)
 
    引数が :c:type:`PyFileObject` か :c:type:`PyFileObject` のサブタイプのときに
    真を返します。
@@ -36,7 +36,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
       サブタイプを引数にとれるようになりました.
 
 
-.. cfunction:: int PyFile_CheckExact(PyObject *p)
+.. c:function:: int PyFile_CheckExact(PyObject *p)
 
    引数が :c:type:`PyFileObject` 型で、かつ :c:type:`PyFileObject` 型の
    サブタイプでないときに真を返します。
@@ -44,7 +44,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyFile_FromString(char *filename, char *mode)
+.. c:function:: PyObject* PyFile_FromString(char *filename, char *mode)
 
    .. index:: single: fopen()
 
@@ -54,7 +54,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    失敗すると *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
+.. c:function:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
 
    すでに開かれている標準 C ファイルポインタ *fp* から新たな
    :c:type:`PyFileObject` を生成します。この関数で生成したファイルオブジェクト
@@ -62,7 +62,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    *NULL* を返します。
 
 
-.. cfunction:: FILE* PyFile_AsFile(PyObject *p)
+.. c:function:: FILE* PyFile_AsFile(PyObject *p)
 
    *p* に関連付けられたファイルオブジェクトを :c:type:`FILE\*` で返します。
 
@@ -71,7 +71,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    と :c:func:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
 
 
-.. cfunction:: void PyFile_IncUseCount(PyFileObject \*p)
+.. c:function:: void PyFile_IncUseCount(PyFileObject \*p)
 
    PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す使用数カウント
    をインクリメントします。
@@ -89,7 +89,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    .. versionadded:: 2.6
 
 
-.. cfunction:: void PyFile_DecUseCount(PyFileObject \*p)
+.. c:function:: void PyFile_DecUseCount(PyFileObject \*p)
 
    PyFileObject 内部の、 :c:type:`FILE\*` が使用中であることを示す unlocked_count
    メンバーをデクリメントして、呼び出し元が :c:type:`FILE\*` を使い終わった
@@ -101,7 +101,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    .. versionadded:: 2.6
 
-.. cfunction:: PyObject* PyFile_GetLine(PyObject *p, int n)
+.. c:function:: PyObject* PyFile_GetLine(PyObject *p, int n)
 
    .. index:: single: EOFError (built-in exception)
 
@@ -117,12 +117,12 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    を送出します。
 
 
-.. cfunction:: PyObject* PyFile_Name(PyObject *p)
+.. c:function:: PyObject* PyFile_Name(PyObject *p)
 
    *p* に指定したファイルの名前を文字列オブジェクトで返します。
 
 
-.. cfunction:: void PyFile_SetBufSize(PyFileObject *p, int n)
+.. c:function:: void PyFile_SetBufSize(PyFileObject *p, int n)
 
    .. index:: single: setvbuf()
 
@@ -130,7 +130,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    この関数を呼び出してよいのはファイルオブジェクトの生成直後のみです。
 
 
-.. cfunction:: int PyFile_SetEncoding(PyFileObject *p, const char *enc)
+.. c:function:: int PyFile_SetEncoding(PyFileObject *p, const char *enc)
 
    Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
    にします。成功すると ``1`` を、失敗すると ``0`` を返します。
@@ -138,7 +138,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    .. versionadded:: 2.3
 
 
-.. cfunction:: int PyFile_SetEncodingAndErrors(PyFileObject *p, const char *enc, *errors)
+.. c:function:: int PyFile_SetEncodingAndErrors(PyFileObject *p, const char *enc, *errors)
 
    Unicode オブジェクトをファイルに出力するときにのエンコーディングを *enc*
    に設定し、そのエラーモードを *err* に設定します。
@@ -146,7 +146,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    .. versionadded:: 2.6
 
 
-.. cfunction:: int PyFile_SoftSpace(PyObject *p, int newflag)
+.. c:function:: int PyFile_SoftSpace(PyObject *p, int newflag)
 
    .. index:: single: softspace (file attribute)
 
@@ -161,7 +161,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    この関数からはエラーを検出できませんが、そもそもそういう必要はありません。
 
 
-.. cfunction:: int PyFile_WriteObject(PyObject *obj, PyObject *p, int flags)
+.. c:function:: int PyFile_WriteObject(PyObject *obj, PyObject *p, int flags)
 
    .. index:: single: Py_PRINT_RAW
 
@@ -173,7 +173,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
    セットします。
 
 
-.. cfunction:: int PyFile_WriteString(const char *s, PyObject *p)
+.. c:function:: int PyFile_WriteString(const char *s, PyObject *p)
 
    文字列 *s* をファイルオブジェクト *p* に書き出します。成功した場合には
    ``0`` を返し、失敗すると ``-1`` を返して適切な例外をセットします。

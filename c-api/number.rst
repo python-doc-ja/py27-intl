@@ -6,39 +6,39 @@
 ==================================
 
 
-.. cfunction:: int PyNumber_Check(PyObject *o)
+.. c:function:: int PyNumber_Check(PyObject *o)
 
    オブジェクト *o* が数値型プロトコルを提供している場合に ``1`` を返し、そうでないときには偽を返します。この関数呼び出しは常に成功します。
 
 
-.. cfunction:: PyObject* PyNumber_Add(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Add(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* を加算した結果を返し、失敗すると *NULL* を返します。 Python の式 ``o1 + o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Subtract(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Subtract(PyObject *o1, PyObject *o2)
 
    成功すると *o1* から *o2* を減算した結果を返し、失敗すると *NULL* を返します。 Python の式 ``o1 - o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Multiply(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Multiply(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* を乗算した結果を返し、失敗すると *NULL* を返します。 Python の式 ``o1 * o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Divide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Divide(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した結果を返し, 失敗すると *NULL* を返します。  Python の式 ``o1 / o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_FloorDivide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_FloorDivide(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した切捨て値を返し、失敗すると *NULL* を返します。  "旧仕様の" 整数間での除算と同じです。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyNumber_TrueDivide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_TrueDivide(PyObject *o1, PyObject *o2)
 
    成功すると、数学的な *o1* の *o2* による除算値に対する妥当な近似 (reasonable approximation) を返し、失敗すると
    *NULL* を返します。全ての実数を 2 を基数として表現するのは不可能なため、二進の浮動小数点数は "近似値"
@@ -47,12 +47,12 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyNumber_Remainder(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Remainder(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した剰余を返し、失敗すると *NULL* を返します。 Python の式 ``o1 % o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Divmod(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Divmod(PyObject *o1, PyObject *o2)
 
    .. index:: builtin: divmod
 
@@ -60,7 +60,7 @@
    o2)`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Power(PyObject *o1, PyObject *o2, PyObject *o3)
+.. c:function:: PyObject* PyNumber_Power(PyObject *o1, PyObject *o2, PyObject *o3)
 
    .. index:: builtin: pow
 
@@ -70,84 +70,84 @@
    に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
 
 
-.. cfunction:: PyObject* PyNumber_Negative(PyObject *o)
+.. c:function:: PyObject* PyNumber_Negative(PyObject *o)
 
    成功すると *o* の符号反転を返し、失敗すると *NULL* を返します。 Python の式 ``-o`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Positive(PyObject *o)
+.. c:function:: PyObject* PyNumber_Positive(PyObject *o)
 
    成功すると *o* を返し、失敗すると *NULL* を返します。 Python の式 ``+o`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Absolute(PyObject *o)
+.. c:function:: PyObject* PyNumber_Absolute(PyObject *o)
 
    .. index:: builtin: abs
 
    成功すると *o* の絶対値を返し、失敗すると *NULL* を返します。 Python の式 ``abs(o)`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Invert(PyObject *o)
+.. c:function:: PyObject* PyNumber_Invert(PyObject *o)
 
    成功すると *o* のビット単位反転 (bitwise negation) を返し、失敗すると *NULL* を返します。Python の式 ``~o``
    と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Lshift(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Lshift(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* だけ左シフトした結果を返し、失敗すると *NULL* を返します。 Python の式 ``o1 << o2``
    と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Rshift(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Rshift(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* だけ右シフトした結果を返し、失敗すると *NULL* を返します。 Python の式 ``o1 >> o2``
    と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_And(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_And(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の "ビット単位論理積 (bitwise and)" を返し、失敗すると *NULL* を返します。 Python の式
    ``o1 & o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Xor(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Xor(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の  "ビット単位排他的論理和 (bitwise exclusive or)" を返し、失敗すると *NULL*
    を返します。 Python の式 ``o1 ^ o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Or(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_Or(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の "ビット単位論理和 (bitwise or)" を返し失敗すると *NULL* を返します。 Python の式
    ``o1 | o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceAdd(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceAdd(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* を加算した結果を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 += o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceSubtract(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceSubtract(PyObject *o1, PyObject *o2)
 
    成功すると *o1* から *o2* を減算した結果を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 -= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceMultiply(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceMultiply(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* を乗算した結果を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 *= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceDivide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceDivide(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した結果を返し, 失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 /= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceFloorDivide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceFloorDivide(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した切捨て値を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 //= o2`` と同じです。
@@ -155,7 +155,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceTrueDivide(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceTrueDivide(PyObject *o1, PyObject *o2)
 
    成功すると、数学的な *o1* の *o2* による除算値に対する妥当な近似 (reasonable approximation) を返し、失敗すると
    *NULL* を返します。全ての実数を 2 を基数として表現するのは不可能なため、二進の浮動小数点数は "近似値"
@@ -165,13 +165,13 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceRemainder(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceRemainder(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* で除算した剰余を返し、 , 失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 %= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlacePower(PyObject *o1, PyObject *o2, PyObject *o3)
+.. c:function:: PyObject* PyNumber_InPlacePower(PyObject *o1, PyObject *o2, PyObject *o3)
 
    .. index:: builtin: pow
 
@@ -181,39 +181,39 @@
    :c:data:`Py_None` を入れてください (*o3* に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceLshift(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceLshift(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* だけ左シフトした結果を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 <<= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceRshift(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceRshift(PyObject *o1, PyObject *o2)
 
    成功すると *o1* を *o2* だけ右シフトした結果を返し、失敗すると *NULL* を返します。 *o1* が *in-place*
    演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 >>= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceAnd(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceAnd(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の "ビット単位論理積 (bitwise and)" を返し、失敗すると *NULL* を返します。  *o1* が
    *in-place* 演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 &= o2`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceXor(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceXor(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の "ビット単位排他的論理和  (bitwise exclusive or)" を返し、失敗すると *NULL*
    を返します。  *o1* が *in-place* 演算をサポートする場合、in-place 演算を行います。 Python の文 ``o1 ^= o2``
    と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_InPlaceOr(PyObject *o1, PyObject *o2)
+.. c:function:: PyObject* PyNumber_InPlaceOr(PyObject *o1, PyObject *o2)
 
    成功すると *o1* と *o2* の "ビット単位論理和 (bitwise or)" を返し失敗すると *NULL* を返します。
    *o1* が *in-place* 演算をサポートする場合、in-place 演算を行います。
    Python の文 ``o1 |= o2`` と同じです。
 
 
-.. cfunction:: int PyNumber_Coerce(PyObject **p1, PyObject **p2)
+.. c:function:: int PyNumber_Coerce(PyObject **p1, PyObject **p2)
 
    .. index:: builtin: coerce
 
@@ -224,7 +224,7 @@
    ``PyNumber_Coerce(&o1, &o2)`` の呼び出しは Python 文 ``o1, o2 = coerce(o1, o2)`` と同じです。
 
 
-.. cfunction:: int PyNumber_CoerceEx(PyObject **p1, PyObject **p2)
+.. c:function:: int PyNumber_CoerceEx(PyObject **p1, PyObject **p2)
 
    This function is similar to :c:func:`PyNumber_Coerce`, except that it returns
    ``1`` when the conversion is not possible and when no error is raised.
@@ -234,7 +234,7 @@
    この場合、参照カウントはインクリメントされません。
 
 
-.. cfunction:: PyObject* PyNumber_Int(PyObject *o)
+.. c:function:: PyObject* PyNumber_Int(PyObject *o)
 
    .. index:: builtin: int
 
@@ -243,7 +243,7 @@
    の式 ``int(o)`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Long(PyObject *o)
+.. c:function:: PyObject* PyNumber_Long(PyObject *o)
 
    .. index:: builtin: long
 
@@ -251,7 +251,7 @@
    Python の式 ``long(o)`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Float(PyObject *o)
+.. c:function:: PyObject* PyNumber_Float(PyObject *o)
 
    .. index:: builtin: float
 
@@ -259,7 +259,7 @@
    Python の式 ``float(o)`` と同じです。
 
 
-.. cfunction:: PyObject* PyNumber_Index(PyObject *o)
+.. c:function:: PyObject* PyNumber_Index(PyObject *o)
 
    *o* をPythonのintもしくはlong型に変換し、成功したらその値を返します。
    失敗したら *NULL* が返され、 :exc:`TypeError` 例外が送出されます。
@@ -267,7 +267,7 @@
    .. versionadded:: 2.5
 
 
-.. cfunction:: PyObject* PyNumber_ToBase(PyObject *n, int base)
+.. c:function:: PyObject* PyNumber_ToBase(PyObject *n, int base)
 
    整数 *n* を、 *base* 進数の文字列に変換し、適切であれば ``'0b'``, ``'0o'``,
    ``'0x'`` の基数マーカーをつけます。
@@ -279,7 +279,7 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: Py_ssize_t PyNumber_AsSsize_t(PyObject *o, PyObject *exc)
+.. c:function:: Py_ssize_t PyNumber_AsSsize_t(PyObject *o, PyObject *exc)
 
    *o* を整数として解釈可能だった場合、Py_ssize_t型の値に変換して返します。
    もし *o* がPythonのintもしくはlongに変換できたのに、Py_ssize_tへの変換が
@@ -291,7 +291,7 @@
    .. versionadded:: 2.5
 
 
-.. cfunction:: int PyIndex_Check(PyObject *o)
+.. c:function:: int PyIndex_Check(PyObject *o)
 
    *o* がインデックス整数であるときにTrueを返します。 (tp_as_number構造体のnb_indexスロットが埋まっている場合)
 

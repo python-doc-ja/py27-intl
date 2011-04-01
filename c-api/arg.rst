@@ -262,29 +262,29 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 失敗した書式化単位に対応するアドレスとそれ以降のアドレスの内容は変更されません。
 
 
-.. cfunction:: int PyArg_ParseTuple(PyObject *args, const char *format, ...)
+.. c:function:: int PyArg_ParseTuple(PyObject *args, const char *format, ...)
 
    固定引数のみを引数にとる関数のパラメタを解釈して、ローカルな変数に変換します。
    成功すると真を返します;失敗すると偽を返し、適切な例外を送出します。
 
 
-.. cfunction:: int PyArg_VaParse(PyObject *args, const char *format, va_list vargs)
+.. c:function:: int PyArg_VaParse(PyObject *args, const char *format, va_list vargs)
 
    :c:func:`PyArg_ParseTuple` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
-.. cfunction:: int PyArg_ParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], ...)
+.. c:function:: int PyArg_ParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], ...)
 
    固定引数およびキーワード引数をとる関数のパラメタを解釈して、ローカルな変数に変換します。
    成功すると真を返します;失敗すると偽を返し、適切な例外を送出します。
 
 
-.. cfunction:: int PyArg_VaParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], va_list vargs)
+.. c:function:: int PyArg_VaParseTupleAndKeywords(PyObject *args, PyObject *kw, const char *format, char *keywords[], va_list vargs)
 
    :c:func:`PyArg_ParseTupleAndKeywords` と同じですが、可変長の引数ではなく *va_list* を引数にとります。
 
 
-.. cfunction:: int PyArg_Parse(PyObject *args, const char *format, ...)
+.. c:function:: int PyArg_Parse(PyObject *args, const char *format, ...)
 
    "旧スタイル" の関数における引数リストを分析するために使われる関数です --- 旧スタイルの関数は、引数解釈手法に
    :const:`METH_OLDARGS` を使います。新たに書かれるコードでのパラメタ解釈にはこの関数の使用は奨められず、
@@ -292,7 +292,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    この関数を残しているのは、この関数が依然として引数以外のタプルを分析する上で便利だからですが、この目的においては将来も使われつづけるかもしれません。
 
 
-.. cfunction:: int PyArg_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssize_t max, ...)
+.. c:function:: int PyArg_UnpackTuple(PyObject *args, const char *name, Py_ssize_t min, Py_ssize_t max, ...)
 
    パラメータ取得を簡単にした形式で、引数の型を指定する書式化文字列を使いません。パラメタの取得にこの手法を使う関数は、関数宣言テーブル、またはメソッド
    宣言テーブル内で :const:`METH_VARARGS` として宣言しなくてはなりません。実引数の入ったタプルは *args* に渡します;
@@ -329,7 +329,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
       この関数は *min* と *max* に :c:type:`int` を利用していました。
       この変更により、64bitシステムを正しくサポートするためには修正が必要になるでしょう。
 
-.. cfunction:: PyObject* Py_BuildValue(const char *format, ...)
+.. c:function:: PyObject* Py_BuildValue(const char *format, ...)
 
    :c:func:`PyArg_Parse\*` ファミリの関数が受け取るのと似た形式の書式化文字列および値列に基づいて、新たな値を生成します。
    生成した値を返します。エラーの場合には *NULL* を返します; *NULL* を返す場合、例外を送出するでしょう。
@@ -449,7 +449,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
    書式化文字列に関するエラーが生じると、 :exc:`SystemError` 例外をセットして *NULL* を返します。
 
-.. cfunction:: PyObject* Py_VaBuildValue(const char *format, va_list vargs)
+.. c:function:: PyObject* Py_VaBuildValue(const char *format, va_list vargs)
 
    :c:func:`Py_BuildValue` と同じですが、可変長引数の代わりに va_list を受け取ります。
 

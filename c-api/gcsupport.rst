@@ -32,13 +32,13 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
    なりません。
 
 
-.. cfunction:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
+.. c:function:: TYPE* PyObject_GC_New(TYPE, PyTypeObject *type)
 
    :c:func:`PyObject_New` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
    のセットされたコンテナオブジェクト用です。
 
 
-.. cfunction:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
+.. c:function:: TYPE* PyObject_GC_NewVar(TYPE, PyTypeObject *type, Py_ssize_t size)
 
    :c:func:`PyObject_NewVar` に似ていますが、 :const:`Py_TPFLAGS_HAVE_GC`
    のセットされたコンテナオブジェクト用です。
@@ -47,7 +47,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
+.. c:function:: TYPE* PyObject_GC_Resize(TYPE, PyVarObject *op, Py_ssize_t newsize)
 
    :c:func:`PyObject_NewVar` が確保したオブジェクトのメモリをリサイズします。
    リサイズされたオブジェクトを返します。失敗すると *NULL* を返します。
@@ -56,7 +56,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
       この関数は以前は *newsize* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: void PyObject_GC_Track(PyObject *op)
+.. c:function:: void PyObject_GC_Track(PyObject *op)
 
    ガベージコレクタが追跡しているコンテナオブジェクトの集合にオブジェクト *op* を追加します。ガベージコレクタの動作する
    回数は予測不能なので、追加対象にするオブジェクトは追跡されている間ずっと有効なオブジェクトでなければなりません。
@@ -64,7 +64,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
    なりません。
 
 
-.. cfunction:: void _PyObject_GC_TRACK(PyObject *op)
+.. c:function:: void _PyObject_GC_TRACK(PyObject *op)
 
    :c:func:`PyObject_GC_Track` のマクロ版です。拡張モジュールに使ってはなりません。
 
@@ -75,12 +75,12 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 #. オブジェクトのメモリは :c:func:`PyObject_GC_Del` で解放しなければなりません。
 
 
-.. cfunction:: void PyObject_GC_Del(void *op)
+.. c:function:: void PyObject_GC_Del(void *op)
 
    :c:func:`PyObject_GC_New` や :c:func:`PyObject_GC_NewVar` を使って確保されたメモリを解放します。
 
 
-.. cfunction:: void PyObject_GC_UnTrack(void *op)
+.. c:function:: void PyObject_GC_UnTrack(void *op)
 
    ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。 :c:func:`PyObject_GC_Track`
    を呼び出して、除去したオブジェクトを再度追跡対象セットに追加できるので注意してください。メモリ解放関数 (deallocator,
@@ -88,7 +88,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
    以前にオブジェクトに対して呼び出されていなければなりません。
 
 
-.. cfunction:: void _PyObject_GC_UNTRACK(PyObject *op)
+.. c:function:: void _PyObject_GC_UNTRACK(PyObject *op)
 
    :c:func:`PyObject_GC_UnTrack` のマクロ版です。拡張モジュールに使ってはなりません。
 
@@ -116,7 +116,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 という名前にしておかねばなりません:
 
 
-.. cfunction:: void Py_VISIT(PyObject *o)
+.. c:function:: void Py_VISIT(PyObject *o)
 
    引数 *o* および *arg* を使って *visit* コールバックを呼び出します。 *visit* が非ゼロの値を返した場合、その値をそのまま返します。
    このマクロを使えば、 :attr:`tp_traverse` ハンドラは以下のようになります::

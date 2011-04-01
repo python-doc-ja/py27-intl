@@ -46,44 +46,44 @@
 同様に、コンストラクタはすべてのイテレート可能なPythonオブジェクトに対して動作します。
 
 
-.. cfunction:: int PySet_Check(PyObject *p)
+.. c:function:: int PySet_Check(PyObject *p)
 
    *p* が :class:`set` かそのサブタイプのオブジェクトであるときに真を返します。
 
    .. versionadded:: 2.6
 
-.. cfunction:: int PyFrozenSet_Check(PyObject *p)
+.. c:function:: int PyFrozenSet_Check(PyObject *p)
 
    *p* が :class:`frozenset` かそのサブタイプのオブジェクトであるときに
    真を返します。
 
    .. versionadded:: 2.6
 
-.. cfunction:: int PyAnySet_Check(PyObject *p)
+.. c:function:: int PyAnySet_Check(PyObject *p)
 
    *p* が :class:`set` か :class:`frozenset` 、あるいはそのサブタイプの
    オブジェクトであれば、trueを返します。
 
 
-.. cfunction:: int PyAnySet_CheckExact(PyObject *p)
+.. c:function:: int PyAnySet_CheckExact(PyObject *p)
 
    *p* が :class:`set` か :class:`frozenset` のどちらかのオブジェクトであるときに true を返します。
    サブタイプのオブジェクトは含みません。
 
 
-.. cfunction:: int PyFrozenSet_CheckExact(PyObject *p)
+.. c:function:: int PyFrozenSet_CheckExact(PyObject *p)
 
    *p* が :class:`frozenset` のオブジェクトであるときに true を返します。サブタイプのオブジェクトは含みません。
 
 
-.. cfunction:: PyObject* PySet_New(PyObject *iterable)
+.. c:function:: PyObject* PySet_New(PyObject *iterable)
 
    *iterable* が返すオブジェクトを含む新しい :class:`set` を返します。 *iterable* が *NULL*
    のときは、空のsetを返します。成功したら新しいsetを、失敗したら *NULL* を返します。 *iterable* がイテレート可能で無い場合は、
    :exc:`TypeError` を送出します。このコンストラクタは set をコピーするときにも使えます。 (``c=set(s)``)
 
 
-.. cfunction:: PyObject* PyFrozenSet_New(PyObject *iterable)
+.. c:function:: PyObject* PyFrozenSet_New(PyObject *iterable)
 
    *iterable* が返すオブジェクトを含む新しい :class:`frozenset` を返します。 *iterable* が *NULL*
    のときは、空のfrozensetを返します。 *iterable* がイテレート可能で無い場合は、 :exc:`TypeError` を送出します。
@@ -96,7 +96,7 @@
 以降の関数やマクロは、 :class:`set` と :class:`frozenset` とそのサブタイプのインスタンスに対して利用できます。
 
 
-.. cfunction:: Py_ssize_t PySet_Size(PyObject *anyset)
+.. c:function:: Py_ssize_t PySet_Size(PyObject *anyset)
 
    .. index:: builtin: len
 
@@ -108,12 +108,12 @@
       これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: Py_ssize_t PySet_GET_SIZE(PyObject *anyset)
+.. c:function:: Py_ssize_t PySet_GET_SIZE(PyObject *anyset)
 
    エラーチェックを行わない、 :c:func:`PySet_Size` のマクロ形式。
 
 
-.. cfunction:: int PySet_Contains(PyObject *anyset, PyObject *key)
+.. c:function:: int PySet_Contains(PyObject *anyset, PyObject *key)
 
    見つかったら１を、見つからなかったら0を、エラーが発生したときは-1を返します。 Pythonの :meth:`__contains__`
    メソッドと違って、この関数は非ハッシュsetを一時frozensetに自動で変換しません。
@@ -121,7 +121,7 @@
    :class:`frozenset` 及びそのサブタイプのオブジェクトで無い場合は :exc:`PyExc_SystemError` を送出します。
 
 
-.. cfunction:: int PySet_Add(PyObject *set, PyObject *key)
+.. c:function:: int PySet_Add(PyObject *set, PyObject *key)
 
    :class:`set` のインスタンスに *key* を追加します。 :class:`frozenset` のインスタンスに使わないで下さい。
    成功したら0を、失敗したら-1を返します。 *key* がハッシュ可能でないなら、 :exc:`TypeError` を送出します。
@@ -137,7 +137,7 @@
 以降の関数は、 :class:`set` とそのサブタイプに対して利用可能です。
 :class:`frozenset` とそのサブタイプには利用できません。
 
-.. cfunction:: int PySet_Discard(PyObject *set, PyObject *key)
+.. c:function:: int PySet_Discard(PyObject *set, PyObject *key)
 
    見つかって削除したら1を返します。見つからなかったら何もせずに0を返します。エラーが発生したら-1を返します。
    keyが無くても :exc:`KeyError` を送出しません。 *key* がハッシュ不可能であれば :exc:`TypeError` を送出します。
@@ -145,14 +145,14 @@
    *set* が :class:`set` とそのサブタイプのインスタンスで無いときは、 :exc:`PyExc_SystemError` を送出します。
 
 
-.. cfunction:: PyObject* PySet_Pop(PyObject *set)
+.. c:function:: PyObject* PySet_Pop(PyObject *set)
 
    *set* の中の要素のどれかに対する新しい参照を返し、そのオブジェクトを *set* から削除します。失敗したら *NULL* を返します。
    setが空の場合には :exc:`KeyError` を送出します。 *set* が :class:`set` とそのサブタイプのインスタンスで無い場合は、
    :exc:`SystemError` を送出します。
 
 
-.. cfunction:: int PySet_Clear(PyObject *set)
+.. c:function:: int PySet_Clear(PyObject *set)
 
    setを空にします。
 

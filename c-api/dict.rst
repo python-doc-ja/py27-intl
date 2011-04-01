@@ -23,24 +23,24 @@
    ``dict`` および ``types.DictType`` として公開されています。
 
 
-.. cfunction:: int PyDict_Check(PyObject *p)
+.. c:function:: int PyDict_Check(PyObject *p)
 
    引数が :c:type:`PyDictObject` のときに真を返します。
 
 
-.. cfunction:: int PyDict_CheckExact(PyObject *p)
+.. c:function:: int PyDict_CheckExact(PyObject *p)
 
    *p* が辞書型オブジェクトであり、かつ辞書型のサブクラスのインスタンスでない場合に真を返します。
 
    .. versionadded:: 2.4
 
 
-.. cfunction:: PyObject* PyDict_New()
+.. c:function:: PyObject* PyDict_New()
 
    *p* が辞書型オブジェクトで、かつ辞書型のサブタイプのインスタンスでない場合に真を返します。
 
 
-.. cfunction:: PyObject* PyDictProxy_New(PyObject *dict)
+.. c:function:: PyObject* PyDictProxy_New(PyObject *dict)
 
    あるマップ型オブジェクトに対して、読み出し専用に制限されたプロキシオブジェクト (proxy object) を返します。通常、この関数は動的でないクラス型
    (non-dynamic class type) のクラス辞書を変更させないためにプロキシを作成するために使われます。
@@ -48,12 +48,12 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: void PyDict_Clear(PyObject *p)
+.. c:function:: void PyDict_Clear(PyObject *p)
 
    現在辞書に入っている全てのキーと値のペアを除去して空にします。
 
 
-.. cfunction:: int PyDict_Contains(PyObject *p, PyObject *key)
+.. c:function:: int PyDict_Contains(PyObject *p, PyObject *key)
 
    辞書 *p* に *key* が入っているか判定します。 *p* の要素が *key* に一致した場合は ``1`` を返し、それ以外の場合には ``0``
    を返します。エラーの場合 ``-1`` を返します。この関数は Python の式 ``key in p`` と等価です。
@@ -61,21 +61,21 @@
    .. versionadded:: 2.4
 
 
-.. cfunction:: PyObject* PyDict_Copy(PyObject *p)
+.. c:function:: PyObject* PyDict_Copy(PyObject *p)
 
    *p* と同じキーと値のペアが入った新たな辞書を返します。
 
    .. versionadded:: 1.6
 
 
-.. cfunction:: int PyDict_SetItem(PyObject *p, PyObject *key, PyObject *val)
+.. c:function:: int PyDict_SetItem(PyObject *p, PyObject *key, PyObject *val)
 
    辞書 *p* に、 *key* をキーとして値 *value* を挿入します。
    *key* はハッシュ可能(:term:`hashable`)でなければなりません; ハッシュ可能でない場合、
    :exc:`TypeError` を送出します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
-.. cfunction:: int PyDict_SetItemString(PyObject *p, const char *key, PyObject *val)
+.. c:function:: int PyDict_SetItemString(PyObject *p, const char *key, PyObject *val)
 
    .. index:: single: PyString_FromString()
 
@@ -84,51 +84,51 @@
    を返します。
 
 
-.. cfunction:: int PyDict_DelItem(PyObject *p, PyObject *key)
+.. c:function:: int PyDict_DelItem(PyObject *p, PyObject *key)
 
    辞書 *p* から *key* をキーとするエントリを除去します。 *key* はハッシュ可能でなければなりません;  ハッシュ可能でない場合、
    :exc:`TypeError` を送出します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
-.. cfunction:: int PyDict_DelItemString(PyObject *p, char *key)
+.. c:function:: int PyDict_DelItemString(PyObject *p, char *key)
 
    辞書 *p* から文字列 *key* をキーとするエントリを除去します。成功した場合には ``0`` を、失敗した場合には ``-1`` を返します。
 
 
-.. cfunction:: PyObject* PyDict_GetItem(PyObject *p, PyObject *key)
+.. c:function:: PyObject* PyDict_GetItem(PyObject *p, PyObject *key)
 
    辞書 *p* 内で *key* をキーとするオブジェクトを返します。キー *key* が存在しない場合には *NULL* を返しますが、例外をセット
    *しません* 。
 
 
-.. cfunction:: PyObject* PyDict_GetItemString(PyObject *p, const char *key)
+.. c:function:: PyObject* PyDict_GetItemString(PyObject *p, const char *key)
 
    :c:func:`PyDict_GetItem` と同じですが、 *key* は :c:type:`PyObject\*` ではなく :c:type:`char\*`
    で指定します。
 
 
-.. cfunction:: PyObject* PyDict_Items(PyObject *p)
+.. c:function:: PyObject* PyDict_Items(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`item` のように、辞書内の全ての要素対が入った :c:type:`PyListObject` を返します。
    (:meth:`items` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
 
-.. cfunction:: PyObject* PyDict_Keys(PyObject *p)
+.. c:function:: PyObject* PyDict_Keys(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`keys` のように、辞書内の全てのキーが入った :c:type:`PyListObject` を返します。
    (:meth:`keys` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
 
-.. cfunction:: PyObject* PyDict_Values(PyObject *p)
+.. c:function:: PyObject* PyDict_Values(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`values` のように、辞書内の全ての値が入った :c:type:`PyListObject` を返します。
    (:meth:`values` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
    参照してください。)
 
 
-.. cfunction:: Py_ssize_t PyDict_Size(PyObject *p)
+.. c:function:: Py_ssize_t PyDict_Size(PyObject *p)
 
    .. index:: builtin: len
 
@@ -138,7 +138,7 @@
       この関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: int PyDict_Next(PyObject *p, Py_ssize_t *ppos, PyObject **pkey, PyObject **pvalue)
+.. c:function:: int PyDict_Next(PyObject *p, Py_ssize_t *ppos, PyObject **pkey, PyObject **pvalue)
 
    辞書 *p* 内の全てのキー/値のペアにわたる反復処理を行います。
    *ppos* が参照している :c:type:`Py_ssize_t` 型は、この関数で反復処理を開始する際に、
@@ -185,7 +185,7 @@
       この関数は以前は *ppos* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. cfunction:: int PyDict_Merge(PyObject *a, PyObject *b, int override)
+.. c:function:: int PyDict_Merge(PyObject *a, PyObject *b, int override)
 
    マップ型オブジェクト *b* の全ての要素にわたって、反復的にキー/値のペアを辞書 *a* に追加します。 *b*
    は辞書か、 :func:`PyMapping_Keys` または :func:`PyObject_GetItem` をサポートする何らかのオブジェクト
@@ -195,7 +195,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: int PyDict_Update(PyObject *a, PyObject *b)
+.. c:function:: int PyDict_Update(PyObject *a, PyObject *b)
 
    C で表せば ``PyDict_Merge(a, b, 1)`` と同じ、 Python で表せば ``a.update(b)`` と同じです。成功した場合には
    ``0`` を返し、例外が送出された場合には ``-1`` を返します。
@@ -203,7 +203,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: int PyDict_MergeFromSeq2(PyObject *a, PyObject *seq2, int override)
+.. c:function:: int PyDict_MergeFromSeq2(PyObject *a, PyObject *seq2, int override)
 
    *seq2* 内のキー/値ペアを使って、辞書 *a* の内容を更新したり統合したりします。 *seq2* は、キー/値のペアとみなせる長さ 2 の
    反復可能オブジェクト(iterable object) を生成する反復可能オブジェクトでなければなりません。重複するキーが存在する場合、 *override*

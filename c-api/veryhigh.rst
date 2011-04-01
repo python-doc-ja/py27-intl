@@ -20,7 +20,7 @@
 使っているライブラリと同じライブラリによって作成されたことが確かならば、単にこれらの関数へ渡すだけということに注意すべきです。
 
 
-.. cfunction:: int Py_Main(int argc, char **argv)
+.. c:function:: int Py_Main(int argc, char **argv)
 
    標準インタプリタのためのメインプログラム。Pythonを組み込むプログラムのためにこれを利用できるようにしています。
    *argc* と *argv* 引数をCプログラムの :c:func:`main` 関数へ渡されるものとまったく同じに作成すべきです。
@@ -31,23 +31,23 @@
    ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemError` 例外が発生すると、
    この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
-.. cfunction:: int PyRun_AnyFile(FILE *fp, const char *filename)
+.. c:function:: int PyRun_AnyFile(FILE *fp, const char *filename)
 
    下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` に、 *flags* を
    *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_AnyFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
+.. c:function:: int PyRun_AnyFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
    下記の :c:func:`PyRun_AnyFileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_AnyFileEx(FILE *fp, const char *filename, int closeit)
+.. c:function:: int PyRun_AnyFileEx(FILE *fp, const char *filename, int closeit)
 
    下記の :c:func:`PyRun_AnyFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_AnyFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
+.. c:function:: int PyRun_AnyFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
    *fp* が対話的デバイス(コンソールや端末入力あるいはUnix仮想端末)と関連づけられたファイルを参照しているならば、
    :c:func:`PyRun_InteractiveLoop` の値を返します。それ以外の場合は、
@@ -55,13 +55,13 @@
    *NULL* ならば、この関数はファイル名として ``"???"`` を使います。
 
 
-.. cfunction:: int PyRun_SimpleString(const char *command)
+.. c:function:: int PyRun_SimpleString(const char *command)
 
    下記の :c:func:`PyRun_SimpleStringFlags` の *PyCompilerFlags\** を
    *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_SimpleStringFlags(const char *command, PyCompilerFlags *flags)
+.. c:function:: int PyRun_SimpleStringFlags(const char *command, PyCompilerFlags *flags)
 
    :mod:`__main__` モジュールの中で *flags* に従って *command* に含まれる Python ソースコードを
    実行します。 :mod:`__main__` がまだ存在しない場合は作成されます。正常終了の場合は ``0`` を返し、また例外が発生した場合は ``-1`` を
@@ -72,24 +72,24 @@
    この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
 
-.. cfunction:: int PyRun_SimpleFile(FILE *fp, const char *filename)
+.. c:function:: int PyRun_SimpleFile(FILE *fp, const char *filename)
 
    下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0`` に、 *flags* を
    *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_SimpleFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
+.. c:function:: int PyRun_SimpleFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
    下記の :c:func:`PyRun_SimpleStringFileExFlags` の *closeit* を ``0``
    にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_SimpleFileEx(FILE *fp, const char *filename, int closeit)
+.. c:function:: int PyRun_SimpleFileEx(FILE *fp, const char *filename, int closeit)
 
    下記の :c:func:`PyRun_SimpleStringFileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_SimpleFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
+.. c:function:: int PyRun_SimpleFileExFlags(FILE *fp, const char *filename, int closeit, PyCompilerFlags *flags)
 
    Similar to :c:func:`PyRun_SimpleStringFlags`, but the Python source
    :c:func:`PyRun_SimpleString` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。
@@ -97,12 +97,12 @@
    ファイルを閉じます。
 
 
-.. cfunction:: int PyRun_InteractiveOne(FILE *fp, const char *filename)
+.. c:function:: int PyRun_InteractiveOne(FILE *fp, const char *filename)
 
    下記の :c:func:`PyRun_InteractiveOneFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
+.. c:function:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
    対話的デバイスに関連付けられたファイルから文を一つ読み込み、 *flags* に従って実行します。
    *filename* が *NULL* ならば、 ``"???"`` が代わりに使われます。
@@ -113,53 +113,53 @@
    必要ならば特別にインクルードしなければならないことに注意してください。)
 
 
-.. cfunction:: int PyRun_InteractiveLoop(FILE *fp, const char *filename)
+.. c:function:: int PyRun_InteractiveLoop(FILE *fp, const char *filename)
 
    下記の :c:func:`PyRun_InteractiveLoopFlags` の *flags* を ``0`` にして単純化したインタフェースです。
 
 
-.. cfunction:: int PyRun_InteractiveLoopFlags(FILE *fp,  const char *filename, PyCompilerFlags *flags)
+.. c:function:: int PyRun_InteractiveLoopFlags(FILE *fp,  const char *filename, PyCompilerFlags *flags)
 
    対話的デバイスに関連付けられたファイルからEOF に達するまで複数の文を
    読み込み実行します。 *filename* が *NULL* ならば、 ``"???"`` が代わりに
    使われます。 ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを提示します。EOFに達すると ``0`` を返します。
 
 
-.. cfunction:: struct _node* PyParser_SimpleParseString(const char *str, int start)
+.. c:function:: struct _node* PyParser_SimpleParseString(const char *str, int start)
 
    下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
    に、 *flags* を ``0`` にして単純化したインタフェースです。
 
 
-.. cfunction:: struct _node* PyParser_SimpleParseStringFlags( const char *str, int start, int flags)
+.. c:function:: struct _node* PyParser_SimpleParseStringFlags( const char *str, int start, int flags)
 
    下記の :c:func:`PyRun_SimpleParseStringFlagsFilename` の *filename* を *NULL*
    にして単純化したインタフェースです。
 
 
-.. cfunction:: struct _node* PyParser_SimpleParseStringFlagsFilename( const char *str, const char *filename, int start, int flags)
+.. c:function:: struct _node* PyParser_SimpleParseStringFlagsFilename( const char *str, const char *filename, int start, int flags)
 
    開始トークン *start* を使って *str* に含まれる Python ソースコードを *flags* 引数に従ってパースします。効率的に評価可能なコードオブジェ
    クトを作成するためにその結果を使うことができます。コード断片を何度も評価しなければならない場合に役に立ちます。
 
 
-.. cfunction:: struct _node* PyParser_SimpleParseFile(FILE *fp, const char *filename, int start)
+.. c:function:: struct _node* PyParser_SimpleParseFile(FILE *fp, const char *filename, int start)
 
    下記の :c:func:`PyRun_SimpleParseFileFlags` の *flags* を ``0`` にして単純化したインタフェースです。
 
 
-.. cfunction:: struct _node* PyParser_SimpleParseFileFlags(FILE *fp, const char *filename, int start, int flags)
+.. c:function:: struct _node* PyParser_SimpleParseFileFlags(FILE *fp, const char *filename, int start, int flags)
 
    :c:func:`PyParser_SimpleParseStringFlagsFilename` に似ていますが、
    Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *filename* はそのファイルの名前でなけれななりません。
 
 
-.. cfunction:: PyObject* PyRun_String(const char *str, int start, PyObject *globals, PyObject *locals)
+.. c:function:: PyObject* PyRun_String(const char *str, int start, PyObject *globals, PyObject *locals)
 
    下記の :c:func:`PyRun_StringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: PyObject* PyRun_StringFlags(const char *str, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
+.. c:function:: PyObject* PyRun_StringFlags(const char *str, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
 
    辞書 *globals* と *locals* で指定されるコンテキストにおいて、 *str* に含まれるPythonソースコードをコンパイラフラグ *flags* の
    もとで実行します。パラメータ *start* はソースコードをパースするために使われるべき開始トークンを指定します。
@@ -167,35 +167,35 @@
    コードを実行した結果をPythonオブジェクトとして返します。または、例外が発生したならば *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyRun_File(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals)
+.. c:function:: PyObject* PyRun_File(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals)
 
    下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にし、 *flags*
    を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: PyObject* PyRun_FileEx(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit)
+.. c:function:: PyObject* PyRun_FileEx(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit)
 
    下記の :c:func:`PyRun_FileExFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: PyObject* PyRun_FileFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
+.. c:function:: PyObject* PyRun_FileFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, PyCompilerFlags *flags)
 
    下記の :c:func:`PyRun_FileExFlags` の *closeit* を ``0`` にして単純化したインタフェースです。
 
 
-.. cfunction:: PyObject* PyRun_FileExFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit, PyCompilerFlags *flags)
+.. c:function:: PyObject* PyRun_FileExFlags(FILE *fp, const char *filename, int start, PyObject *globals, PyObject *locals, int closeit, PyCompilerFlags *flags)
 
    :c:func:`PyRun_String` と似ていますが、Pythonソースコードをメモリ内の文字列ではなく *fp* から読み込みます。 *closeit*
    を真にすると、 :c:func:`PyRun_FileExFlags` から処理を戻す前にファイルを閉じます。
    *filename* はそのファイルの名前でなければなりません。
 
 
-.. cfunction:: PyObject* Py_CompileString(const char *str, const char *filename, int start)
+.. c:function:: PyObject* Py_CompileString(const char *str, const char *filename, int start)
 
    下記の :c:func:`Py_CompileStringFlags` の *flags* を *NULL* にして単純化したインタフェースです。
 
 
-.. cfunction:: PyObject* Py_CompileStringFlags(const char *str, const char *filename, int start, PyCompilerFlags *flags)
+.. c:function:: PyObject* Py_CompileStringFlags(const char *str, const char *filename, int start, PyCompilerFlags *flags)
 
    *str* 内のPythonソースコードをパースしてコンパイルし、作られたコードオブジェクトを返します。開始トークンは
    *start* によって与えられます。これはコンパイル可能なコードを制限するために使うことができ、 :const:`Py_eval_input` 、
@@ -205,28 +205,28 @@
    コードがパースできなかったりコンパイルできなかったりした場合に、これは *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
+.. c:function:: PyObject* PyEval_EvalCode(PyCodeObject *co, PyObject *globals, PyObject *locals)
 
    :c:func:`PyEval_EvalCodeEx` に対するシンプルなインタフェースで、
    コードオブジェクトと、グローバル・ローカル変数辞書だけを受け取ります。
    他の引数には *NULL* が渡されます。
 
 
-.. cfunction:: PyObject* PyEval_EvalCodeEx(PyCodeObject *co, PyObject *globals, PyObject *locals, PyObject **args, int argcount, PyObject **kws, int kwcount, PyObject **defs, int defcount, PyObject *closure)
+.. c:function:: PyObject* PyEval_EvalCodeEx(PyCodeObject *co, PyObject *globals, PyObject *locals, PyObject **args, int argcount, PyObject **kws, int kwcount, PyObject **defs, int defcount, PyObject *closure)
 
    与えられた特定の環境で、コンパイル済みのコードオブジェクトを評価します。
    環境はグローバルとローカルの辞書、引き数の配列、キーワードとデフォルト値、
    クロージャーのためのセルのタプルで構成されています。
 
 
-.. cfunction:: PyObject* PyEval_EvalFrame(PyFrameObject *f)
+.. c:function:: PyObject* PyEval_EvalFrame(PyFrameObject *f)
 
    実行フレームを評価します。
    これは PyEval_EvalFrameEx に対するシンプルなインタフェースで、
    後方互換性のためのものです。
 
 
-.. cfunction:: PyObject* PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
+.. c:function:: PyObject* PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
 
    Python のインタープリタの主要な、直接的な関数です。
    この関数には 2000 行ほどあります。
@@ -237,7 +237,7 @@
    メソッドで利用されます。
 
 
-.. cfunction:: int PyEval_MergeCompilerFlags(PyCompilerFlags *cf)
+.. c:function:: int PyEval_MergeCompilerFlags(PyCompilerFlags *cf)
 
    現在の評価フレームのフラグを変更します。
    成功したら true を、失敗したら false を返します。

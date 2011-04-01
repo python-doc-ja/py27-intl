@@ -6,7 +6,7 @@
 ============================================
 
 
-.. cfunction:: int Py_FdIsInteractive(FILE *fp, const char *filename)
+.. c:function:: int Py_FdIsInteractive(FILE *fp, const char *filename)
 
    *filename* という名前の標準 I/O ファイル *fp* が対話的 (interactive) であると考えられる場合に真 (非ゼロ) を返します。
    これは ``isatty(fileno(fp))`` が真になるファイルの場合です。グローバルなフラグ :c:data:`Py_InteractiveFlag`
@@ -14,33 +14,33 @@
    のいずれかに等しい場合にも真を返します。
 
 
-.. cfunction:: long PyOS_GetLastModificationTime(char *filename)
+.. c:function:: long PyOS_GetLastModificationTime(char *filename)
 
    ファイル *filename* の最終更新時刻を返します。結果は標準 C ライブラリ関数 :c:func:`time` が返すタイムスタンプと
    同じ様式で符号化されています。
 
 
-.. cfunction:: void PyOS_AfterFork()
+.. c:function:: void PyOS_AfterFork()
 
    プロセスが fork した後の内部状態を更新するための関数です; fork 後 Python インタプリタを使い続ける場合、新たなプロセス内で
    この関数を呼び出さねばなりません。新たなプロセスに新たな実行可能物をロードする場合、この関数を呼び出す必要はありません。
 
 
-.. cfunction:: int PyOS_CheckStack()
+.. c:function:: int PyOS_CheckStack()
 
    インタプリタがスタック空間を使い尽くしたときに真を返します。このチェック関数には信頼性がありますが、 :const:`USE_STACKCHECK`
    が定義されている場合 (現状では Microsoft Visual C++ コンパイラでビルドした Windows 版) にしか利用できません .
    :const:`USE_CHECKSTACK` は自動的に定義されます; 自前のコードでこの定義を変更してはなりません。
 
 
-.. cfunction:: PyOS_sighandler_t PyOS_getsig(int i)
+.. c:function:: PyOS_sighandler_t PyOS_getsig(int i)
 
    シグナル *i* に対する現在のシグナルハンドラを返します。この関数は :c:func:`sigaction` または :c:func:`signal`
    のいずれかに対する薄いラッパです。 :c:func:`sigaction` や :c:func:`signal` を直接呼び出してはなりません!
    :c:type:`PyOS_sighandler_t` は :c:type:`void (\*)(int)` の typedef  による別名です。
 
 
-.. cfunction:: PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
+.. c:function:: PyOS_sighandler_t PyOS_setsig(int i, PyOS_sighandler_t h)
 
    シグナル *i* に対する現在のシグナルハンドラを *h* に設定します; 以前のシグナルハンドラを返します。この関数は
    :c:func:`sigaction` または :c:func:`signal` のいずれかに対する薄いラッパです。 :c:func:`sigaction` や
@@ -57,37 +57,37 @@
 すべての関数は現在のインタプリタスレッドの :mod:`sys` モジュールの辞書に対して動作します。
 この辞書は内部のスレッド状態構造体に格納されています。
 
-.. cfunction:: PyObject *PySys_GetObject(char *name)
+.. c:function:: PyObject *PySys_GetObject(char *name)
 
    :mod:`sys` モジュールの *name* オブジェクトを返すか、存在しなければ
    例外を設定せずに *NULL* を返します。
 
-.. cfunction:: FILE *PySys_GetFile(char *name, FILE *def)
+.. c:function:: FILE *PySys_GetFile(char *name, FILE *def)
 
    :mod:`sys` モジュールの *name* に関連付けられた :c:type:`FILE*` を返します。
    *name* がなかった場合や :c:type:`FILE*` に関連付けられていなかった場合は *def* を返します。
 
-.. cfunction:: int PySys_SetObject(char *name, PyObject *v)
+.. c:function:: int PySys_SetObject(char *name, PyObject *v)
 
    *v* が *NULL* で無い場合、 :mod:`sys` モジュールの *name* に *v* を設定します。
    *v* が *NULL* なら、 sys モジュールから *name* を削除します。
    成功したら ``0`` を、エラー時は ``-1`` を返します。
 
-.. cfunction:: void PySys_ResetWarnOptions()
+.. c:function:: void PySys_ResetWarnOptions()
 
    :data:`sys.warnoptions` を、空リストにリセットします。
 
-.. cfunction:: void PySys_AddWarnOption(char *s)
+.. c:function:: void PySys_AddWarnOption(char *s)
 
    :data:`sys.warnoptions` に *s* を追加します。
 
-.. cfunction:: void PySys_SetPath(char *path)
+.. c:function:: void PySys_SetPath(char *path)
 
    :data:`sys.path` を *path* に含まれるパスの、リストオブジェクトに設定します。
    *path* はプラットフォームの検索パスデリミタ(Unixでは ``:``, Windows では ``;``)
    で区切られたパスのリストでなければなりません。
 
-.. cfunction:: void PySys_WriteStdout(const char *format, ...)
+.. c:function:: void PySys_WriteStdout(const char *format, ...)
 
    *format* で指定された出力文字列を :data:`sys.stdout` に出力します。
    切り詰めが起こった場合を含め、例外は一切発生しません。(後述)
@@ -103,7 +103,7 @@
    問題が発生したり、 :data:`sys.stdout` が設定されていなかった場合、
    フォーマット後のメッセージは本物の(Cレベルの) *stdout* に出力されます。
 
-.. cfunction:: void PySys_WriteStderr(const char *format, ...)
+.. c:function:: void PySys_WriteStderr(const char *format, ...)
 
    上と同じですが、 :data:`sys.stderr` か *stderr* に出力します。
 
@@ -113,7 +113,7 @@
 ============
 
 
-.. cfunction:: void Py_FatalError(const char *message)
+.. c:function:: void Py_FatalError(const char *message)
 
    .. index:: single: abort()
 
@@ -123,7 +123,7 @@
    :c:func:`abort` を呼び出して :file:`core` を生成しようと試みます。
 
 
-.. cfunction:: void Py_Exit(int status)
+.. c:function:: void Py_Exit(int status)
 
    .. index::
       single: Py_Finalize()
@@ -133,7 +133,7 @@
    ``exit(status)`` を呼び出します。
 
 
-.. cfunction:: int Py_AtExit(void (*func) ())
+.. c:function:: int Py_AtExit(void (*func) ())
 
    .. index::
       single: Py_Finalize()

@@ -22,17 +22,17 @@
    ジェネレータオブジェクトに対応する型オブジェクトです。
 
 
-.. cfunction:: int PyGen_Check(ob)
+.. c:function:: int PyGen_Check(ob)
 
    *ob* がジェネレータオブジェクトの場合に真を返します。 *ob* が *NULL* であってはなりません。
 
 
-.. cfunction:: int PyGen_CheckExact(ob)
+.. c:function:: int PyGen_CheckExact(ob)
 
    *ob* の型が *PyGen_Type* の場合に真を返します。 *ob* が *NULL* であってはなりません。
 
 
-.. cfunction:: PyObject* PyGen_New(PyFrameObject *frame)
+.. c:function:: PyObject* PyGen_New(PyFrameObject *frame)
 
    *frame* オブジェクトに基づいて新たなジェネレータオブジェクトを生成して返します。この関数は *frame* への参照を盗みます。パラメタが
    *NULL* であってはなりません。

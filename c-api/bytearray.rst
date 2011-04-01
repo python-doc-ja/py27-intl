@@ -23,12 +23,12 @@ bytearray オブジェクト
 型チェックマクロ
 ^^^^^^^^^^^^^^^^^
 
-.. cfunction:: int PyByteArray_Check(PyObject *o)
+.. c:function:: int PyByteArray_Check(PyObject *o)
 
    *o* が bytearray かそのサブタイプのインスタンスだった場合に真を返します。
 
 
-.. cfunction:: int PyByteArray_CheckExact(PyObject *o)
+.. c:function:: int PyByteArray_CheckExact(PyObject *o)
 
    *o* が bytearray オブジェクトで、そのサブタイプのインスタンスでは無いときに、
    真を返します。
@@ -37,7 +37,7 @@ bytearray オブジェクト
 ダイレクト API 関数
 ^^^^^^^^^^^^^^^^^^^^
 
-.. cfunction:: PyObject* PyByteArray_FromObject(PyObject *o)
+.. c:function:: PyObject* PyByteArray_FromObject(PyObject *o)
 
    バッファプロトコルを実装している任意のオブジェクト *o* から、
    新しい bytearray オブジェクトを作成し返します。
@@ -45,28 +45,28 @@ bytearray オブジェクト
    .. XXX expand about the buffer protocol, at least somewhere
 
 
-.. cfunction:: PyObject* PyByteArray_FromStringAndSize(const char *string, Py_ssize_t len)
+.. c:function:: PyObject* PyByteArray_FromStringAndSize(const char *string, Py_ssize_t len)
 
    *string* とその長さ *len* から新しい bytearray オブジェクトを返します。
    失敗した場合は *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyByteArray_Concat(PyObject *a, PyObject *b)
+.. c:function:: PyObject* PyByteArray_Concat(PyObject *a, PyObject *b)
 
    bytearray *a* と *b* を連結した結果を新しい bytearray として返します。
 
 
-.. cfunction:: Py_ssize_t PyByteArray_Size(PyObject *bytearray)
+.. c:function:: Py_ssize_t PyByteArray_Size(PyObject *bytearray)
 
    *NULL* ポインタチェックの後に *bytearray* のサイズを返します。
 
 
-.. cfunction:: char* PyByteArray_AsString(PyObject *bytearray)
+.. c:function:: char* PyByteArray_AsString(PyObject *bytearray)
 
    *NULL* ポインタチェックの後に *bytearray* の内容を char 配列として返します。
 
 
-.. cfunction:: int PyByteArray_Resize(PyObject *bytearray, Py_ssize_t len)
+.. c:function:: int PyByteArray_Resize(PyObject *bytearray, Py_ssize_t len)
 
    *bytearray* の内部バッファを *len* へリサイズします。
 
@@ -76,11 +76,11 @@ bytearray オブジェクト
 以下のマクロは、ポインタのチェックをしないことにより安全性を犠牲にして
 スピードを優先しています。
 
-.. cfunction:: char* PyByteArray_AS_STRING(PyObject *bytearray)
+.. c:function:: char* PyByteArray_AS_STRING(PyObject *bytearray)
 
    :c:func:`PyByteArray_AsString` のマクロバージョン。
 
 
-.. cfunction:: Py_ssize_t PyByteArray_GET_SIZE(PyObject *bytearray)
+.. c:function:: Py_ssize_t PyByteArray_GET_SIZE(PyObject *bytearray)
 
    :c:func:`PyByteArray_Size` のマクロバージョン。

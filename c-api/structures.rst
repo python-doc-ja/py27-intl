@@ -256,7 +256,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    :c:macro:`T_OBJECT` and :c:macro:`T_OBJECT_EX` メンバだけが del 可能です。
    (*NULL* が代入されます).
 
-.. cfunction:: PyObject* Py_FindMethod(PyMethodDef table[], PyObject *ob, char *name)
+.. c:function:: PyObject* Py_FindMethod(PyMethodDef table[], PyObject *ob, char *name)
 
    C で実装された拡張型の束縛メソッドオブジェクトを返します。 :c:func:`PyObject_GenericGetAttr` 関数を使わない
    :attr:`tp_getattro` や :attr:`tp_getattr` ハンドラを実装する際に便利です。

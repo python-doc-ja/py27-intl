@@ -33,7 +33,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    Either alphabetical or some kind of structure.
 
 
-.. cfunction:: void PyErr_PrintEx(int set_sys_last_vars)
+.. c:function:: void PyErr_PrintEx(int set_sys_last_vars)
 
    ``sys.stderr`` へ標準トレースバックをプリントし、エラーインジケータをクリアします。エラーインジケータが設定されているときにだけ、この関数を
    呼び出してください。(それ以外の場合、致命的なエラーを引き起こすでしょう!)
@@ -43,12 +43,12 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    反映されます。
 
 
-.. cfunction:: void PyErr_Print()
+.. c:function:: void PyErr_Print()
 
    ``PyErr_PrintEx(1)`` のエイリアス.
 
 
-.. cfunction:: PyObject* PyErr_Occurred()
+.. c:function:: PyObject* PyErr_Occurred()
 
    エラーインジケータが設定されているかテストします。設定されている場合は、例外の *型* (:c:func:`PyErr_Set\*` 関数の一つあるいは
    :c:func:`PyErr_Restore` への最も新しい呼び出しに対する第一引数)を返します。
@@ -61,13 +61,13 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
       サブクラスかもしれないからです。)
 
 
-.. cfunction:: int PyErr_ExceptionMatches(PyObject *exc)
+.. c:function:: int PyErr_ExceptionMatches(PyObject *exc)
 
    ``PyErr_GivenExceptionMatches(PyErr_Occurred(), exc)`` と同じ。
    例外が実際に設定されたときにだけ、これを呼び出だすべきです。例外が発生していないならば、メモリアクセス違反が起きるでしょう。
 
 
-.. cfunction:: int PyErr_GivenExceptionMatches(PyObject *given, PyObject *exc)
+.. c:function:: int PyErr_GivenExceptionMatches(PyObject *given, PyObject *exc)
 
    *given* 例外が *exc* の例外と一致するなら真を返します。これは *exc* が\
    クラスオブジェクトである場合も真を返します。これは *given* がサブクラスの\
@@ -75,19 +75,19 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    (と再帰的にサブタプル内)のすべての例外が一致するか調べられます。
 
 
-.. cfunction:: void PyErr_NormalizeException(PyObject**exc, PyObject**val, PyObject**tb)
+.. c:function:: void PyErr_NormalizeException(PyObject**exc, PyObject**val, PyObject**tb)
 
    ある状況では、以下の :c:func:`PyErr_Fetch` が返す値は "正規化されていない"可能性があります。つまり、 ``*exc`` は
    クラスオブジェクトだが ``*val`` は同じクラスのインスタンスではないという意味です。この関数はそのような場合にそのクラスをインスタンス化
    するために使われます。その値がすでに正規化されている場合は何も起きません。遅延正規化はパフォーマンスを改善するために実装されています。
 
 
-.. cfunction:: void PyErr_Clear()
+.. c:function:: void PyErr_Clear()
 
    エラーインジケータをクリアします。エラーインジケータが設定されていないならば、効果はありません。
 
 
-.. cfunction:: void PyErr_Fetch(PyObject **ptype, PyObject **pvalue, PyObject **ptraceback)
+.. c:function:: void PyErr_Fetch(PyObject **ptype, PyObject **pvalue, PyObject **ptraceback)
 
    エラーインジケータをアドレスを渡す三つの変数の中へ取り出します。エラーインジケータが設定されていない場合は、三つすべての変数を *NULL* に
    設定します。エラーインジケータが設定されている場合はクリアされ、あなたは取り出されたそれぞれのオブジェクトへの参照を持つことになります。
@@ -98,7 +98,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
       通常、この関数は例外を扱う必要のあるコードあるいはエラーインジケータを一時的に保存して元に戻す必要のあるコードによってのみ使用されます。
 
 
-.. cfunction:: void PyErr_Restore(PyObject *type, PyObject *value, PyObject *traceback)
+.. c:function:: void PyErr_Restore(PyObject *type, PyObject *value, PyObject *traceback)
 
    三つのオブジェクトからエラーインジケータを設定します。エラーインジケータがすでに設定されている場合は、最初にクリアされます。オブジェクトが *NULL* ならば、
    エラーインジケータがクリアされます。 *NULL* のtypeと非 *NULL* のvalueあるいは
@@ -113,20 +113,20 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
       :c:func:`PyErr_Fetch` を使ってください。
 
 
-.. cfunction:: void PyErr_SetString(PyObject *type, const char *message)
+.. c:function:: void PyErr_SetString(PyObject *type, const char *message)
 
    これはエラーインジケータを設定するための最も一般的な方法です。第一引数は
    例外の型を指定します。通常は標準例外の一つ、例えば :c:data:`PyExc_RuntimeError` です。
    その参照カウントを増加させる必要はありません。第二引数はエラーメッセージで、文字列オブジェクトへ変換されます。
 
 
-.. cfunction:: void PyErr_SetObject(PyObject *type, PyObject *value)
+.. c:function:: void PyErr_SetObject(PyObject *type, PyObject *value)
 
    この関数は :c:func:`PyErr_SetString` に似ていますが、
    例外の"値(value)"として任意のPythonオブジェクトを指定することができます。
 
 
-.. cfunction:: PyObject* PyErr_Format(PyObject *exception, const char *format, ...)
+.. c:function:: PyObject* PyErr_Format(PyObject *exception, const char *format, ...)
 
    この関数はエラーインジケータを設定し *NULL* を返します。 *exception* はPython例外(インスタンスではなくクラス)であるべきです。
    *format* は文字列であるべきであり、 :c:func:`printf` に似た
@@ -180,24 +180,24 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    認識できない書式化文字があると書式化文字列の残りすべてがそのまま結果の文字列へコピーされ、余分の引数はどれも捨てられます。
 
 
-.. cfunction:: void PyErr_SetNone(PyObject *type)
+.. c:function:: void PyErr_SetNone(PyObject *type)
 
    これは ``PyErr_SetObject(type, Py_None)`` を省略したものです。
 
 
-.. cfunction:: int PyErr_BadArgument()
+.. c:function:: int PyErr_BadArgument()
 
    これは ``PyErr_SetString(PyExc_TypeError, message)`` を省略したもので、
    ここで *message* は組み込み操作が不正な引数で呼び出されたということを表しています。主に内部で使用するためのものです。
 
 
-.. cfunction:: PyObject* PyErr_NoMemory()
+.. c:function:: PyObject* PyErr_NoMemory()
 
    これは ``PyErr_SetNone(PyExc_MemoryError)`` を省略したもので、 *NULL* を返します。したがって、メモリ不足になったとき、
    オブジェクト割り当て関数は ``return PyErr_NoMemory();`` と書くことができます。
 
 
-.. cfunction:: PyObject* PyErr_SetFromErrno(PyObject *type)
+.. c:function:: PyObject* PyErr_SetFromErrno(PyObject *type)
 
    .. index:: single: strerror()
 
@@ -210,7 +210,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    ラッパー関数は ``return PyErr_SetFromErrno(type);`` と書くことができます。
 
 
-.. cfunction:: PyObject* PyErr_SetFromErrnoWithFilename(PyObject *type, const char *filename)
+.. c:function:: PyObject* PyErr_SetFromErrnoWithFilename(PyObject *type, const char *filename)
 
    :c:func:`PyErr_SetFromErrno` に似ていて、 *filename* が *NULL* でない場合に、
    それが *type* のコンストラクタに第三引数として渡されるというふるまいが追加
@@ -218,7 +218,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    これが例外インスタンスの :attr:`filename` 属性を定義するために使われます。
 
 
-.. cfunction:: PyObject* PyErr_SetFromWindowsErr(int ierr)
+.. c:function:: PyObject* PyErr_SetFromWindowsErr(int ierr)
 
    これは :exc:`WindowsError` を発生させるために便利な関数です。
    :c:data:`0` の *ierr* とともに呼び出された場合、 :c:func:`GetLastError` が
@@ -229,7 +229,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    object)`` を呼び出します。この関数は常に *NULL* を返します。利用可能範囲: Windows。
 
 
-.. cfunction:: PyObject* PyErr_SetExcFromWindowsErr(PyObject *type, int ierr)
+.. c:function:: PyObject* PyErr_SetExcFromWindowsErr(PyObject *type, int ierr)
 
    :c:func:`PyErr_SetFromWindowsErr` に似ていて、送出する例外の型を指定する引数が追加されています。利用可能範囲:
    Windows。
@@ -237,13 +237,13 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    .. versionadded:: 2.3
 
 
-.. cfunction:: PyObject* PyErr_SetFromWindowsErrWithFilename(int ierr, const char *filename)
+.. c:function:: PyObject* PyErr_SetFromWindowsErrWithFilename(int ierr, const char *filename)
 
    :c:func:`PyErr_SetFromWindowsErr` に似ていて、 *filename* が *NULL* でない場合には
    :exc:`WindowsError` のコンストラクタへ第三引数として渡されるという振る舞いが追加されています。利用可能範囲: Windows。
 
 
-.. cfunction:: PyObject* PyErr_SetExcFromWindowsErrWithFilename(PyObject *type, int ierr, char *filename)
+.. c:function:: PyObject* PyErr_SetExcFromWindowsErrWithFilename(PyObject *type, int ierr, char *filename)
 
    :c:func:`PyErr_SetFromWindowsErrWithFilename` に似ていて、発生させる例外の型を指定する引数が追加されています。
    利用可能範囲: Windows。
@@ -251,14 +251,14 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    .. versionadded:: 2.3
 
 
-.. cfunction:: void PyErr_BadInternalCall()
+.. c:function:: void PyErr_BadInternalCall()
 
    ``PyErr_SetString(PyExc_TypeError, message)`` を省略したものです。
    ここで *message* は内部操作(例えば、Python/C API関数)が不正な引数と
    ともに呼び出されたということを示しています。主に内部で使用するためのものです。
 
 
-.. cfunction:: int PyErr_WarnEx(PyObject *category, char *message, int stacklevel)
+.. c:function:: int PyErr_WarnEx(PyObject *category, char *message, int stacklevel)
 
    警告メッセージを出します。 *category* 引数は警告カテゴリ(以下を参照)
    かまたは *NULL* で、 *message* 引数はメッセージ文字列です。 *stacklevel* はフレームの数を示す正の整数です;
@@ -286,7 +286,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    :option:`-W` オプションを参照してください。警告コントロールのためのC APIはありません。
 
 
-.. cfunction:: int PyErr_Warn(PyObject *category, char *message)
+.. c:function:: int PyErr_Warn(PyObject *category, char *message)
 
    警告メッセージを出します。 *category* 引数は警告カテゴリ(以下を参照) かまたは *NULL* で、 *message* 引数はメッセージ文字列です。警告は
    、 :c:func:`PyErr_WarnEx` を *stacklevel* に 1 を指定した時と同じく、 :c:func:`PyErr_Warn`
@@ -295,7 +295,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    非推奨; :c:func:`PyErr_WarnEx` を使って下さい。
 
 
-.. cfunction:: int PyErr_WarnExplicit(PyObject *category, const char *message, const char *filename, int lineno, const char *module, PyObject *registry)
+.. c:function:: int PyErr_WarnExplicit(PyObject *category, const char *message, const char *filename, int lineno, const char *module, PyObject *registry)
 
    すべての警告の属性を明示的に制御した警告メッセージを出します。
    これはPython関数 :func:`warnings.warn_explicit` の直接的なラッパで、
@@ -303,7 +303,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    効果を得るために、 *module* と *registry* 引数は *NULL* に設定することができます。
 
 
-.. cfunction:: int PyErr_WarnPy3k(char *message, int stacklevel)
+.. c:function:: int PyErr_WarnPy3k(char *message, int stacklevel)
 
    Issue a :exc:`DeprecationWarning` with the given *message* and *stacklevel*
    if the :c:data:`Py_Py3kWarningFlag` flag is enabled.
@@ -313,7 +313,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    .. versionadded:: 2.6
 
 
-.. cfunction:: int PyErr_CheckSignals()
+.. c:function:: int PyErr_CheckSignals()
 
    .. index::
       module: signal
@@ -327,7 +327,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    そうでなければ、関数は ``0`` を返します。エラーインジケータが以前に設定されている場合は、それがクリアされるかどうかわからない。
 
 
-.. cfunction:: void PyErr_SetInterrupt()
+.. c:function:: void PyErr_SetInterrupt()
 
    .. index::
       single: SIGINT
@@ -338,7 +338,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    :exc:`KeyboardInterrupt` は送出されるでしょう。インタプリタロックを保持することなく呼び出すことができます。
 
 
-.. cfunction:: int PySignal_SetWakeupFd(int fd)
+.. c:function:: int PySignal_SetWakeupFd(int fd)
 
    このユーティリティ関数は、シグナルを受信したときに ``'\0'`` バイトを書き込む
    ファイルディスクリプタを指定します。戻り値は、それまで設定されていたファイル
@@ -350,7 +350,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    この関数の呼び出しはメインスレッドのみから行われるべきです。
 
 
-.. cfunction:: PyObject* PyErr_NewException(char *name, PyObject *base, PyObject *dict)
+.. c:function:: PyObject* PyErr_NewException(char *name, PyObject *base, PyObject *dict)
 
    このユーティリティ関数は新しい例外オブジェクトを作成して返します。 *name* 引数は新しい例外の名前、 ``module.class`` 形式の
    C文字列でなければならない。 *base* と *dict* 引数は通常 *NULL* です。
@@ -362,7 +362,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    クラスのタプルでも構いません。 *dict* 引数はクラス変数とメソッドの辞書を指定するために使えます。
 
 
-.. cfunction:: void PyErr_WriteUnraisable(PyObject *obj)
+.. c:function:: void PyErr_WriteUnraisable(PyObject *obj)
 
    例外が設定されているがインタプリタが実際に例外を発生させることができないときに、
    このユーティリティ関数は警告メッセージを ``sys.stderr`` へプリントします。

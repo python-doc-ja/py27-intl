@@ -6,39 +6,39 @@
 ========================================
 
 
-.. cfunction:: int PyObject_Print(PyObject *o, FILE *fp, int flags)
+.. c:function:: int PyObject_Print(PyObject *o, FILE *fp, int flags)
 
    オブジェクト *o* をファイル *fp* に出力します。失敗すると ``-1`` を返します。 *flags*
    引数は何らかの出力オプションを有効にする際に使います。現在サポートされている唯一のオプションは :const:`Py_PRINT_RAW` です;
    このオプションを指定すると、 :func:`repr` の代わりに :func:`str` を使ってオブジェクトを書き込みます。
 
 
-.. cfunction:: int PyObject_HasAttr(PyObject *o, PyObject *attr_name)
+.. c:function:: int PyObject_HasAttr(PyObject *o, PyObject *attr_name)
 
    *o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。
    この関数は Python の式
    ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。
 
-.. cfunction:: int PyObject_HasAttrString(PyObject *o, const char *attr_name)
+.. c:function:: int PyObject_HasAttrString(PyObject *o, const char *attr_name)
 
    *o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。この関数は Python の式
    ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。
 
 
-.. cfunction:: PyObject* PyObject_GetAttr(PyObject *o, PyObject *attr_name)
+.. c:function:: PyObject* PyObject_GetAttr(PyObject *o, PyObject *attr_name)
 
    オブジェクト *o* から、名前 *attr_name* の属性を取得します。
    成功すると属性値を返し失敗すると *NULL* を返します。この関数は
    Python の式 ``o.attr_name`` と同じです。
 
 
-.. cfunction:: PyObject* PyObject_GetAttrString(PyObject *o, const char *attr_name)
+.. c:function:: PyObject* PyObject_GetAttrString(PyObject *o, const char *attr_name)
 
    オブジェクト *o* から、名前 *attr_name* の属性を取得します。成功すると属性値を返し失敗すると *NULL* を返します。この関数は
    Python の式 ``o.attr_name`` と同じです。
 
 
-.. cfunction:: PyObject* PyObject_GenericGetAttr(PyObject *o, PyObject *name)
+.. c:function:: PyObject* PyObject_GenericGetAttr(PyObject *o, PyObject *name)
 
    汎用の属性取得関数で、 type オブジェクトの ``tp_getattro`` スロットに
    置かれることを意図されています。
@@ -49,19 +49,19 @@
    見つからなかった場合は :exc:`AttributeError` を発生させます。
 
 
-.. cfunction:: int PyObject_SetAttr(PyObject *o, PyObject *attr_name, PyObject *v)
+.. c:function:: int PyObject_SetAttr(PyObject *o, PyObject *attr_name, PyObject *v)
 
    オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
    の式 ``o.attr_name = v`` と同じです。
 
 
-.. cfunction:: int PyObject_SetAttrString(PyObject *o, const char *attr_name, PyObject *v)
+.. c:function:: int PyObject_SetAttrString(PyObject *o, const char *attr_name, PyObject *v)
 
    オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python
    の式 ``o.attr_name = v`` と同じです。
 
 
-.. cfunction:: int PyObject_GenericSetAttr(PyObject *o, PyObject *name, PyObject *value)
+.. c:function:: int PyObject_GenericSetAttr(PyObject *o, PyObject *name, PyObject *value)
 
    汎用の属性設定関数で、typeオブジェクトの ``tp_setattro`` スロットに
    置かれることを意図しています。
@@ -71,19 +71,19 @@
    失敗した場合、 :exc:`AttributeError` を発生させて ``-1`` を返します。
 
 
-.. cfunction:: int PyObject_DelAttr(PyObject *o, PyObject *attr_name)
+.. c:function:: int PyObject_DelAttr(PyObject *o, PyObject *attr_name)
 
    オブジェクト *o* の *attr_name* という名の属性を削除します。失敗すると ``-1`` を返します。この関数は Python の文 ``del
    o.attr_name`` と同じです。
 
 
-.. cfunction:: int PyObject_DelAttrString(PyObject *o, const char *attr_name)
+.. c:function:: int PyObject_DelAttrString(PyObject *o, const char *attr_name)
 
    オブジェクト *o* の *attr_name* という名の属性を削除します。失敗すると ``-1`` を返します。この関数は Python の文 ``del
    o.attr_name`` と同じです。
 
 
-.. cfunction:: PyObject* PyObject_RichCompare(PyObject *o1, PyObject *o2, int opid)
+.. c:function:: PyObject* PyObject_RichCompare(PyObject *o1, PyObject *o2, int opid)
 
    *o1* と *o2* を *opid* に指定した演算によって比較します。 *opid* は :const:`Py_LT`, :const:`Py_LE`,
    :const:`Py_EQ`, :const:`Py_NE`, :const:`Py_GT`, または :const:`Py_GE`,
@@ -92,7 +92,7 @@
    成功すると比較結果の値を返し失敗すると *NULL* を返します。
 
 
-.. cfunction:: int PyObject_RichCompareBool(PyObject *o1, PyObject *o2, int opid)
+.. c:function:: int PyObject_RichCompareBool(PyObject *o1, PyObject *o2, int opid)
 
    *o1* と *o2* を *opid* に指定した演算によって比較します。 *opid* は :const:`Py_LT`, :const:`Py_LE`,
    :const:`Py_EQ`, :const:`Py_NE`, :const:`Py_GT`, または :const:`Py_GE`,
@@ -101,7 +101,7 @@
    o2 `` と同じで、 `` op`` が *opid* に対応する演算子です。
 
 
-.. cfunction:: int PyObject_Cmp(PyObject *o1, PyObject *o2, int *result)
+.. c:function:: int PyObject_Cmp(PyObject *o1, PyObject *o2, int *result)
 
    .. index:: builtin: cmp
 
@@ -109,7 +109,7 @@
    *result* に返されます。失敗すると ``-1`` を返します。 Python 文 ``result = cmp(o1, o2)`` と同じです。
 
 
-.. cfunction:: int PyObject_Compare(PyObject *o1, PyObject *o2)
+.. c:function:: int PyObject_Compare(PyObject *o1, PyObject *o2)
 
    .. index::
       builtin: cmp
@@ -121,7 +121,7 @@
    行って下さい。Python 式 ``cmp(o1,  o2)`` と同じです。
 
 
-.. cfunction:: PyObject* PyObject_Repr(PyObject *o)
+.. c:function:: PyObject* PyObject_Repr(PyObject *o)
 
    .. index:: builtin: repr
 
@@ -129,7 +129,7 @@
    と同じです。この関数は組み込み関数 :func:`repr` や逆クオート表記の処理で呼び出されます。
 
 
-.. cfunction:: PyObject* PyObject_Str(PyObject *o)
+.. c:function:: PyObject* PyObject_Str(PyObject *o)
 
    .. index:: builtin: str
 
@@ -137,7 +137,7 @@
    と同じです。この関数は組み込み関数 :func:`str` や :keyword:`print` 文の処理で呼び出されます。
 
 
-.. cfunction:: PyObject* PyObject_Bytes(PyObject *o)
+.. c:function:: PyObject* PyObject_Bytes(PyObject *o)
 
    .. index:: builtin: bytes
 
@@ -145,7 +145,7 @@
    2.x では、単に :c:func:`PyObject_Str` のエイリアスです。
 
 
-.. cfunction:: PyObject* PyObject_Unicode(PyObject *o)
+.. c:function:: PyObject* PyObject_Unicode(PyObject *o)
 
    .. index:: builtin: unicode
 
@@ -153,7 +153,7 @@
    式 ``unicode(o)`` と同じです。この関数は組み込み関数 :func:`unicode` の処理で呼び出されます。
 
 
-.. cfunction:: int PyObject_IsInstance(PyObject *inst, PyObject *cls)
+.. c:function:: int PyObject_IsInstance(PyObject *inst, PyObject *cls)
 
    *inst* が *cls* のインスタンスか、 *cls* のサブクラスのインスタンスの場合に ``-1`` を返し、そうでなければ ``0`` を
    返します。エラーの時には ``-1`` を返し、例外をセットします。 *cls* がクラスオブジェクトではなく型オブジェクトの場合、
@@ -177,7 +177,7 @@
 オブジェクトに :attr:`__bases__` があるだけで、この決定法を適用する条件を満たしているとみなされます。
 
 
-.. cfunction:: int PyObject_IsSubclass(PyObject *derived, PyObject *cls)
+.. c:function:: int PyObject_IsSubclass(PyObject *derived, PyObject *cls)
 
    クラス *derived* が *cls* と同じクラスか、 *cls* の導出クラスの場合に ``1`` を返し、それ以外の場合には ``0`` を
    返します。エラーが生じると ``-1`` を返します。  *cls* をタプルで指定した場合、 *cls* に指定した全てのエントリについてチェックを行います。
@@ -190,13 +190,13 @@
       以前の Python のバージョンは、二つ目の引数にタプルをサポートしていませんでした.
 
 
-.. cfunction:: int PyCallable_Check(PyObject *o)
+.. c:function:: int PyCallable_Check(PyObject *o)
 
    オブジェクト *o* が呼び出し可能オブジェクトかどうか調べます。オブジェクトが呼び出し可能であるときに ``1`` を返し、そうでないときには ``0``
    を返します。この関数呼び出しは常に成功します。
 
 
-.. cfunction:: PyObject* PyObject_Call(PyObject *callable_object, PyObject *args, PyObject *kw)
+.. c:function:: PyObject* PyObject_Call(PyObject *callable_object, PyObject *args, PyObject *kw)
 
    .. index:: builtin: apply
 
@@ -210,7 +210,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyObject_CallObject(PyObject *callable_object, PyObject *args)
+.. c:function:: PyObject* PyObject_CallObject(PyObject *callable_object, PyObject *args)
 
    .. index:: builtin: apply
 
@@ -220,7 +220,7 @@
    ``callable_object(*args)`` と同じです。
 
 
-.. cfunction:: PyObject* PyObject_CallFunction(PyObject *callable, char *format, ...)
+.. c:function:: PyObject* PyObject_CallFunction(PyObject *callable, char *format, ...)
 
    .. index:: builtin: apply
 
@@ -232,7 +232,7 @@
    がより速い方法であることを覚えておいてください。
 
 
-.. cfunction:: PyObject* PyObject_CallMethod(PyObject *o, char *method, char *format, ...)
+.. c:function:: PyObject* PyObject_CallMethod(PyObject *o, char *method, char *format, ...)
 
    オブジェクト *o* の *method* という名前のメソッドを、可変数個の C 引数とともに呼び出します。C 引数はタプルを生成するような
    :c:func:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format*
@@ -241,7 +241,7 @@
    だけを引数に渡す場合は、 :c:func:`PyObject_CallMethodObjArgs` がより速い方法であることを覚えておいてください。
 
 
-.. cfunction:: PyObject* PyObject_CallFunctionObjArgs(PyObject *callable, ..., NULL)
+.. c:function:: PyObject* PyObject_CallFunctionObjArgs(PyObject *callable, ..., NULL)
 
    呼び出し可能な Python オブジェクト *callable_object* を可変数個の :c:type:`PyObject\*`
    引数とともに呼び出します。引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
@@ -250,7 +250,7 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyObject_CallMethodObjArgs(PyObject *o, PyObject *name, ..., NULL)
+.. c:function:: PyObject* PyObject_CallMethodObjArgs(PyObject *o, PyObject *name, ..., NULL)
 
    オブジェクト *o* のメソッドを呼び出します、メソッド名は Python 文字列オブジェクト *name* で与えます。可変数個の
    :c:type:`PyObject\*` 引数と共に呼び出されます. 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。
@@ -259,14 +259,14 @@
    .. versionadded:: 2.2
 
 
-.. cfunction:: long PyObject_Hash(PyObject *o)
+.. c:function:: long PyObject_Hash(PyObject *o)
 
    .. index:: builtin: hash
 
    オブジェクト *o* のハッシュ値を計算して返します。失敗すると ``-1`` を返します。 Python の式 ``hash(o)`` と同じです。
 
 
-.. cfunction:: long PyObject_HashNotImplemented(PyObject *o)
+.. c:function:: long PyObject_HashNotImplemented(PyObject *o)
 
    ``type(o)`` がハッシュ不可能であることを示す :exc:`TypeError` を設定し、
    ``-1`` を返します。
@@ -276,19 +276,19 @@
    .. versionadded:: 2.6
 
 
-.. cfunction:: int PyObject_IsTrue(PyObject *o)
+.. c:function:: int PyObject_IsTrue(PyObject *o)
 
    *o* が真を表すとみなせる場合には ``1`` を、そうでないときには ``0`` を返します。   Python の式 ``not not o``
    と同じです。失敗すると ``-1`` を返します。
 
 
-.. cfunction:: int PyObject_Not(PyObject *o)
+.. c:function:: int PyObject_Not(PyObject *o)
 
    *o* が真を表すとみなせる場合には ``0`` を、そうでないときには ``1`` を返します。   Python の式 ``not o`` と同じです。
    失敗すると ``-1`` を返します。
 
 
-.. cfunction:: PyObject* PyObject_Type(PyObject *o)
+.. c:function:: PyObject* PyObject_Type(PyObject *o)
 
    .. index:: builtin: type
 
@@ -298,14 +298,14 @@
    ``o->ob_type`` の代わりに使う理由は全くありません。
 
 
-.. cfunction:: int PyObject_TypeCheck(PyObject *o, PyTypeObject *type)
+.. c:function:: int PyObject_TypeCheck(PyObject *o, PyTypeObject *type)
 
    オブジェクト *o* が、 *type* か *type* のサブタイプであるときに真を返します。どちらのパラメタも *NULL* であってはなりません。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: Py_ssize_t PyObject_Length(PyObject *o)
+.. c:function:: Py_ssize_t PyObject_Length(PyObject *o)
                Py_ssize_t PyObject_Size(PyObject *o)
 
    .. index:: builtin: len
@@ -317,31 +317,31 @@
       これらの関数は以前は :c:type:`int` 型を返していました。
       この変更により、 64bit システムを適切にサポートするためにはコードの修正が必要になります。
 
-.. cfunction:: PyObject* PyObject_GetItem(PyObject *o, PyObject *key)
+.. c:function:: PyObject* PyObject_GetItem(PyObject *o, PyObject *key)
 
    成功するとオブジェクト *key* に対応する *o* の要素を返し、失敗すると *NULL* を返します。  Python の式 ``o[key]``
    と同じです。
 
 
-.. cfunction:: int PyObject_SetItem(PyObject *o, PyObject *key, PyObject *v)
+.. c:function:: int PyObject_SetItem(PyObject *o, PyObject *key, PyObject *v)
 
    オブジェクト *key* を値 *v* に対応付けます。失敗すると ``-1`` を返します。 Python の文 ``o[key] = v`` と同じです。
 
 
-.. cfunction:: int PyObject_DelItem(PyObject *o, PyObject *key)
+.. c:function:: int PyObject_DelItem(PyObject *o, PyObject *key)
 
    オブジェクト *o* から *key* に対する対応付けを削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[key]``
    と同じです。
 
 
-.. cfunction:: int PyObject_AsFileDescriptor(PyObject *o)
+.. c:function:: int PyObject_AsFileDescriptor(PyObject *o)
 
    Python オブジェクトからファイル記述子を取り出します。オブジェクトが整数か長整数なら、その値を返します。 (長)整数でない場合、オブジェクトに
    :meth:`fileno` メソッドがあれば呼び出します; この場合、 :meth:`fileno` メソッドは
    整数または長整数をファイル記述子の値として返さなければなりません。失敗すると ``-1`` を返します。
 
 
-.. cfunction:: PyObject* PyObject_Dir(PyObject *o)
+.. c:function:: PyObject* PyObject_Dir(PyObject *o)
 
    この関数は Python の式 ``dir(o)`` と同じで、オブジェクトの変数名に割り当てている文字列からなるリスト (空の場合もあります)
    を返します。エラーの場合には *NULL* を返します。引数を *NULL* にすると、Python における ``dir()``
@@ -349,7 +349,7 @@
    :c:func:`PyErr_Occurred` は偽を返します。
 
 
-.. cfunction:: PyObject* PyObject_GetIter(PyObject *o)
+.. c:function:: PyObject* PyObject_GetIter(PyObject *o)
 
    Python の式 ``iter(o)`` と同じです。引数にとったオブジェクトに対する新たなイテレータか、
    オブジェクトがすでにイテレータの場合にはオブジェクト自身を返します。オブジェクトが反復処理不可能であった場合には :exc:`TypeError` を送出して

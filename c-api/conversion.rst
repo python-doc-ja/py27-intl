@@ -8,14 +8,14 @@
 数値変換と、書式化文字列出力のための関数群
 
 
-.. cfunction:: int PyOS_snprintf(char *str, size_t size,  const char *format, ...)
+.. c:function:: int PyOS_snprintf(char *str, size_t size,  const char *format, ...)
 
    書式化文字列 *format* と追加の引数から、 *size* バイトを超えない文字列を
    *str* に出力します。
    Unix man page の :manpage:`snprintf(2)` を参照してください。
 
 
-.. cfunction:: int PyOS_vsnprintf(char *str, size_t size, const char *format, va_list va)
+.. c:function:: int PyOS_vsnprintf(char *str, size_t size, const char *format, va_list va)
 
    書式化文字列 *format* と可変長引数リスト *va* から、 *size* バイトを超えない文字列を
    *str* に出力します。
@@ -51,7 +51,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
 以下の関数は locale 非依存な文字列から数値への変換を行ないます。
 
 
-.. cfunction:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
+.. c:function:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
 
    文字列を :c:type:`double` へ変換します。
    この関数は、C locale におけるC標準の :c:func:`strtod` と同じように動作します。
@@ -65,7 +65,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
    詳細は Unix man page の :manpage:`strtod(2)` を参照してください。
 
 
-.. cfunction:: char * PyOS_ascii_formatd(char *buffer, size_t buf_len, const char *format, double d)
+.. c:function:: char * PyOS_ascii_formatd(char *buffer, size_t buf_len, const char *format, double d)
 
    :c:type:`double` を ``'.'`` を小数点記号に利用して文字列に変換します。
    *format* は数値のフォーマットを指定する :c:func:`printf` スタイルの文字列です。
@@ -76,7 +76,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
    .. versionadded:: 2.4
 
 
-.. cfunction:: double PyOS_ascii_atof(const char *nptr)
+.. c:function:: double PyOS_ascii_atof(const char *nptr)
 
    文字列を、 locale 非依存な方法で :c:type:`double` へ変換します。
 
@@ -85,7 +85,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
    詳細は Unix man page の :manpage:`atof(2)` を参照してください。
 
 
-.. cfunction:: char * PyOS_stricmp(char *s1, char *s2)
+.. c:function:: char * PyOS_stricmp(char *s1, char *s2)
 
    大文字/小文字を区別しない文字列比較。
    大文字/小文字を無視する以外は、 :c:func:`strcmp` と同じ動作をします。
@@ -93,7 +93,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
    .. versionadded:: 2.6
 
 
-.. cfunction:: char * PyOS_strnicmp(char *s1, char *s2, Py_ssize_t  size)
+.. c:function:: char * PyOS_strnicmp(char *s1, char *s2, Py_ssize_t  size)
 
    大文字/小文字を区別しない文字列比較。
    大文字/小文字を無視する以外は、 :c:func:`strncmp` と同じ動作をします。

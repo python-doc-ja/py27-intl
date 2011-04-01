@@ -22,34 +22,34 @@
    セルオブジェクトに対応する型オブジェクトです。
 
 
-.. cfunction:: int PyCell_Check(ob)
+.. c:function:: int PyCell_Check(ob)
 
    *ob* がセルオブジェクトの場合に真を返します; *ob* は *NULL* であってはなりません。
 
 
-.. cfunction:: PyObject* PyCell_New(PyObject *ob)
+.. c:function:: PyObject* PyCell_New(PyObject *ob)
 
    値 *ob* の入った新たなセルオブジェクトを生成して返します。引数を *NULL* にしてもかまいません。
 
 
-.. cfunction:: PyObject* PyCell_Get(PyObject *cell)
+.. c:function:: PyObject* PyCell_Get(PyObject *cell)
 
    *cell* の内容を返します。
 
 
-.. cfunction:: PyObject* PyCell_GET(PyObject *cell)
+.. c:function:: PyObject* PyCell_GET(PyObject *cell)
 
    *cell* の内容を返しますが、 *cell* が非 *NULL* でかつセルオブジェクトであるかどうかチェックしません。
 
 
-.. cfunction:: int PyCell_Set(PyObject *cell, PyObject *value)
+.. c:function:: int PyCell_Set(PyObject *cell, PyObject *value)
 
    セルオブジェクト *cell* の内容を *value* に設定します。この関数は現在のセルの全ての内容に対する参照を解放します。 *value* は
    *NULL* でもかまいません。 *cell* は非 *NULL* でなければなりません; もし *cell* がセルオブジェクトでない場合、 ``-1``
    を返します。成功すると ``0`` を返します。
 
 
-.. cfunction:: void PyCell_SET(PyObject *cell, PyObject *value)
+.. c:function:: void PyCell_SET(PyObject *cell, PyObject *value)
 
    セルオブジェクト *cell* の値を *value* に設定します。参照カウントに対する変更はなく、安全のためのチェックは何も行いません; *cell*
    は非 *NULL* でなければならず、かつセルオブジェクトでなければなりません。

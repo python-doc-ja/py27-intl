@@ -21,7 +21,7 @@
    ``int`` や ``types.IntType`` と同じオブジェクトです。
 
 
-.. cfunction:: int PyInt_Check(PyObject *o)
+.. c:function:: int PyInt_Check(PyObject *o)
 
    *o* が :c:data:`PyInt_Type` 型か :c:data:`PyInt_Type` 型のサブタイプであるときに真を返します。
 
@@ -29,14 +29,14 @@
       サブタイプを引数にとれるようになりました.
 
 
-.. cfunction:: int PyInt_CheckExact(PyObject *o)
+.. c:function:: int PyInt_CheckExact(PyObject *o)
 
    *o* が :c:data:`PyInt_Type` 型で、かつ :c:data:`PyInt_Type` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyInt_FromString(char *str, char **pend, int base)
+.. c:function:: PyObject* PyInt_FromString(char *str, char **pend, int base)
 
    *str* の文字列値に基づいて、新たな :c:type:`PyIntObject` または :c:type:`PyLongObject` を返します。このとき
    *base* を基数として文字列を解釈します。 *pend* が *NULL* でなければ、 ``*pend`` は *str* 中で
@@ -48,7 +48,7 @@
    :c:type:`PyLongObject` を返します。オーバフロー警告が抑制されていなければ、 *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyInt_FromLong(long ival)
+.. c:function:: PyObject* PyInt_FromLong(long ival)
 
    *ival* の値を使って新たな整数オブジェクトを生成します。
 
@@ -57,7 +57,7 @@
    値を変えることすら可能です。変えてしまった場合の Python の挙動は未定義です :-)
 
 
-.. cfunction:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
+.. c:function:: PyObject* PyInt_FromSsize_t(Py_ssize_t ival)
 
    *ival* の値を使って新たな整数オブジェクトを生成します。
    値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
@@ -65,7 +65,7 @@
    .. versionadded:: 2.5
 
 
-.. cfunction:: PyObject* PyInt_FromSize_t(size_t ival)
+.. c:function:: PyObject* PyInt_FromSize_t(size_t ival)
 
    *ival* の値を使って新たな整数オブジェクトを生成します。
    値が ``LONG_MAX`` を超えている場合、長整数オブジェクトを返します。
@@ -73,19 +73,19 @@
    .. versionadded:: 2.5
 
 
-.. cfunction:: long PyInt_AsLong(PyObject *io)
+.. c:function:: long PyInt_AsLong(PyObject *io)
 
    オブジェクトがまだ :c:type:`PyIntObject` でなければまず型キャストを試み、次にその値を返します。
    エラーが発生した場合、 ``-1`` が返されます。その時呼び出し側は、 ``PyErr_Occurred()`` を使って、エラーが発生したのか、
    単に値が-1だったのかを判断するべきです。
 
 
-.. cfunction:: long PyInt_AS_LONG(PyObject *io)
+.. c:function:: long PyInt_AS_LONG(PyObject *io)
 
    オブジェクト *io* の値を返します。エラーチェックを行いません。
 
 
-.. cfunction:: unsigned long PyInt_AsUnsignedLongMask(PyObject *io)
+.. c:function:: unsigned long PyInt_AsUnsignedLongMask(PyObject *io)
 
    オブジェクトがまだ :c:type:`PyIntObject` または :c:type:`PyLongObject` で
    なければまず型キャストを試み、次にその値を :c:type:`unsigned long` 型で返します。この関数はオーバフローをチェックしません。
@@ -93,7 +93,7 @@
    .. versionadded:: 2.3
 
 
-.. cfunction:: unsigned PY_LONG_LONG PyInt_AsUnsignedLongLongMask(PyObject *io)
+.. c:function:: unsigned PY_LONG_LONG PyInt_AsUnsignedLongLongMask(PyObject *io)
 
    オブジェクトがまだ :c:type:`PyIntObject` または :c:type:`PyLongObject` で
    なければまず型キャストを試み、次にその値を :c:type:`unsigned long long` 型で返します。オーバフローをチェックしません。
@@ -101,20 +101,20 @@
    .. versionadded:: 2.3
 
 
-.. cfunction:: Py_ssize_t PyInt_AsSsize_t(PyObject *io)
+.. c:function:: Py_ssize_t PyInt_AsSsize_t(PyObject *io)
 
    オブジェクトがまだ :c:type:`PyIntObject` でなければまず型キャストを試み、次にその値を :c:type:`Py_ssize_t` 型で返します。
 
    .. versionadded:: 2.5
 
 
-.. cfunction:: long PyInt_GetMax()
+.. c:function:: long PyInt_GetMax()
 
    .. index:: single: LONG_MAX
 
    システムの知識に基づく、扱える最大の整数値 (システムのヘッダファイルに定義されている :const:`LONG_MAX`) を返します。
 
-.. cfunction:: int PyInt_ClearFreeList()
+.. c:function:: int PyInt_ClearFreeList()
 
    整数の free list をクリアします。
    開放できなかった要素の数を返します。

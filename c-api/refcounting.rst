@@ -10,18 +10,18 @@
 この節のマクロはPythonオブジェクトの参照カウントを管理するために使われます。
 
 
-.. cfunction:: void Py_INCREF(PyObject *o)
+.. c:function:: void Py_INCREF(PyObject *o)
 
    オブジェクト *o* に対する参照カウントを一つ増やします。オブジェクトが *NULL* であってはいけません。それが *NULL* ではないと確信が持てないならば、
    :c:func:`Py_XINCREF` を使ってください。
 
 
-.. cfunction:: void Py_XINCREF(PyObject *o)
+.. c:function:: void Py_XINCREF(PyObject *o)
 
    オブジェクト *o* に対する参照カウントを一つ増やします。オブジェクトが *NULL* であってもよく、その場合マクロは何の影響も与えません。
 
 
-.. cfunction:: void Py_DECREF(PyObject *o)
+.. c:function:: void Py_DECREF(PyObject *o)
 
    オブジェクト *o* に対する参照カウントを一つ減らします。オブジェクトが *NULL* であってはいけません。それが *NULL* ではないと確信が持てないならば、
    :c:func:`Py_XDECREF` を使ってください。参照カウントがゼロになったら、
@@ -36,13 +36,13 @@
       への参照を一時変数にコピーし、リストデータ構造を更新し、それから一時変数に対して :c:func:`Py_DECREF` を呼び出すべきです。
 
 
-.. cfunction:: void Py_XDECREF(PyObject *o)
+.. c:function:: void Py_XDECREF(PyObject *o)
 
    オブジェクト *o* への参照カウントを一つ減らします。オブジェクトは *NULL* でもかまいませんが、その場合マクロは何の影響も与えません。それ以外の
    場合、結果は :c:func:`Py_DECREF` と同じです。また、注意すべきことも同じです。
 
 
-.. cfunction:: void Py_CLEAR(PyObject *o)
+.. c:function:: void Py_CLEAR(PyObject *o)
 
    *o* の参照カウントを減らします．オブジェクトは *NULL* でもよく，その場合このマクロは何も行いません．オブジェクトが *NULL* でなければ，引数を
    *NULL* にした :c:func:`Py_DECREF` と同じ効果をもたらします．このマクロは一時変数を使って，参照カウントをデクリメントする前に引数を

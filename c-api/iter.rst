@@ -10,12 +10,12 @@
 イテレータを扱うための固有の関数は二つしかありません。
 
 
-.. cfunction:: int PyIter_Check(PyObject *o)
+.. c:function:: int PyIter_Check(PyObject *o)
 
    *o* がイテレータプロトコルをサポートする場合に真を返します。
 
 
-.. cfunction:: PyObject* PyIter_Next(PyObject *o)
+.. c:function:: PyObject* PyIter_Next(PyObject *o)
 
    反復処理 *o* における次の値を返します。オブジェクトがイテレータの場合、この関数は反復処理における次の値を取り出します。
    要素が何も残っていない場合には例外がセットされていない状態で *NULL* を返します。オブジェクトがイテレータでない場合には

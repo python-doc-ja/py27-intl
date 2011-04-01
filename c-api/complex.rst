@@ -29,32 +29,32 @@ API 全体を通して一貫しています。
       } Py_complex;
 
 
-.. cfunction:: Py_complex _Py_c_sum(Py_complex left, Py_complex right)
+.. c:function:: Py_complex _Py_c_sum(Py_complex left, Py_complex right)
 
    二つの複素数の和を C の :c:type:`Py_complex` 型で返します。
 
 
-.. cfunction:: Py_complex _Py_c_diff(Py_complex left, Py_complex right)
+.. c:function:: Py_complex _Py_c_diff(Py_complex left, Py_complex right)
 
    二つの複素数の差を C の :c:type:`Py_complex` 型で返します。
 
 
-.. cfunction:: Py_complex _Py_c_neg(Py_complex complex)
+.. c:function:: Py_complex _Py_c_neg(Py_complex complex)
 
    複素数 *complex* の符号反転 C の :c:type:`Py_complex` 型で返します。
 
 
-.. cfunction:: Py_complex _Py_c_prod(Py_complex left, Py_complex right)
+.. c:function:: Py_complex _Py_c_prod(Py_complex left, Py_complex right)
 
    二つの複素数の積を C の :c:type:`Py_complex` 型で返します。
 
 
-.. cfunction:: Py_complex _Py_c_quot(Py_complex dividend, Py_complex divisor)
+.. c:function:: Py_complex _Py_c_quot(Py_complex dividend, Py_complex divisor)
 
    二つの複素数の商を C の :c:type:`Py_complex` 型で返します。
 
 
-.. cfunction:: Py_complex _Py_c_pow(Py_complex num, Py_complex exp)
+.. c:function:: Py_complex _Py_c_pow(Py_complex num, Py_complex exp)
 
    指数 *exp* の *num* 乗を C の :c:type:`Py_complex` 型で返します。
 
@@ -74,7 +74,7 @@ Python オブジェクトとしての複素数型
    Pythonの ``complex`` や ``types.ComplexType`` と同じオブジェクトです。
 
 
-.. cfunction:: int PyComplex_Check(PyObject *p)
+.. c:function:: int PyComplex_Check(PyObject *p)
 
    引数が :c:type:`PyComplexObject` 型か :c:type:`PyComplexObject` 型のサブタイプのときに真を返します。
 
@@ -82,34 +82,34 @@ Python オブジェクトとしての複素数型
       サブタイプを引数にとれるようになりました.
 
 
-.. cfunction:: int PyComplex_CheckExact(PyObject *p)
+.. c:function:: int PyComplex_CheckExact(PyObject *p)
 
    引数が :c:type:`PyComplexObject` 型で、かつ :c:type:`PyComplexObject` 型のサブタイプでないときに真を返します。
 
    .. versionadded:: 2.2
 
 
-.. cfunction:: PyObject* PyComplex_FromCComplex(Py_complex v)
+.. c:function:: PyObject* PyComplex_FromCComplex(Py_complex v)
 
    C の :c:type:`Py_complex` 型から Python の複素数値を生成します。
 
 
-.. cfunction:: PyObject* PyComplex_FromDoubles(double real, double imag)
+.. c:function:: PyObject* PyComplex_FromDoubles(double real, double imag)
 
    新たな :c:type:`PyComplexObject` オブジェクトを *real* と *imag* から生成します。
 
 
-.. cfunction:: double PyComplex_RealAsDouble(PyObject *op)
+.. c:function:: double PyComplex_RealAsDouble(PyObject *op)
 
    *op* の実数部分を C の :c:type:`double` 型で返します。
 
 
-.. cfunction:: double PyComplex_ImagAsDouble(PyObject *op)
+.. c:function:: double PyComplex_ImagAsDouble(PyObject *op)
 
    *op* の虚数部分を C の :c:type:`double` 型で返します。
 
 
-.. cfunction:: Py_complex PyComplex_AsCComplex(PyObject *op)
+.. c:function:: Py_complex PyComplex_AsCComplex(PyObject *op)
 
    複素数値 *op* から :c:type:`Py_complex` 型を生成します。
 

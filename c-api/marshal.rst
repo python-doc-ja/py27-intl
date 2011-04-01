@@ -18,7 +18,7 @@
 *PY_MARSHAL_VERSION* は現在のバージョン (バージョン 2) を示します。
 
 
-.. cfunction:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
+.. c:function:: void PyMarshal_WriteLongToFile(long value, FILE *file, int version)
 
    :c:type:`long` 型の整数値 *value* を *file* へ整列化します。この関数は *value* の下桁 32 ビットを書き込むだけです;
    ネイティブの :c:type:`long` 型サイズには関知しません。
@@ -27,7 +27,7 @@
       ファイル形式を示す *version* が追加されました.
 
 
-.. cfunction:: void PyMarshal_WriteObjectToFile(PyObject *value, FILE *file, int version)
+.. c:function:: void PyMarshal_WriteObjectToFile(PyObject *value, FILE *file, int version)
 
    Python オブジェクト *value* を *file* へ整列化します。
 
@@ -35,7 +35,7 @@
       ファイル形式を示す *version* が追加されました.
 
 
-.. cfunction:: PyObject* PyMarshal_WriteObjectToString(PyObject *value, int version)
+.. c:function:: PyObject* PyMarshal_WriteObjectToString(PyObject *value, int version)
 
    *value* の整列化表現が入った文字列オブジェクトを返します。
 
@@ -50,25 +50,25 @@
 .. handled properly when there's no error.  What's the right way to tell?
 .. Should only non-negative values be written using these routines?
 
-.. cfunction:: long PyMarshal_ReadLongFromFile(FILE *file)
+.. c:function:: long PyMarshal_ReadLongFromFile(FILE *file)
 
    読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`long` 型データを読み出して返します。
    この関数は、ネイティブの :c:type:`long` のサイズに関係なく、 32 ビットの値だけを読み出せます。
 
 
-.. cfunction:: int PyMarshal_ReadShortFromFile(FILE *file)
+.. c:function:: int PyMarshal_ReadShortFromFile(FILE *file)
 
    読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 C の :c:type:`short` 型データを読み出して返します。
    この関数は、ネイティブの :c:type:`short` のサイズに関係なく、 16 ビットの値だけを読み出せます。
 
 
-.. cfunction:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
+.. c:function:: PyObject* PyMarshal_ReadObjectFromFile(FILE *file)
 
    読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
    エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
+.. c:function:: PyObject* PyMarshal_ReadLastObjectFromFile(FILE *file)
 
    読み出し用に開かれた :c:type:`FILE\*` 内のデータストリームから、 Python オブジェクトを読み出して返します。
    :c:func:`PyMarshal_ReadObjectFromFile` と違い、この関数はファイル中に後続のオブジェクトが存在しないと仮定し、ファイルから
@@ -77,7 +77,7 @@
    (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。
 
 
-.. cfunction:: PyObject* PyMarshal_ReadObjectFromString(char *string, Py_ssize_t len)
+.. c:function:: PyObject* PyMarshal_ReadObjectFromString(char *string, Py_ssize_t len)
 
    *string* が指している *len* バイトの文字列バッファに納められたデータストリームから Python オブジェクトを読み出して返します。
    エラーが生じた場合、適切な例外 (:exc:`EOFError` または :exc:`TypeError`) を送出して *NULL* を返します。

@@ -19,34 +19,34 @@ Extension Module," を参照してください。
    関数ポインタを別のモジュールでも利用できるようにするためによく使われます。
 
 
-.. cfunction:: int PyCObject_Check(PyObject *p)
+.. c:function:: int PyCObject_Check(PyObject *p)
 
    引数が :c:type:`PyCObject` の場合に真を返します。
 
 
-.. cfunction:: PyObject* PyCObject_FromVoidPtr(void* cobj, void (*destr)(void *))
+.. c:function:: PyObject* PyCObject_FromVoidPtr(void* cobj, void (*destr)(void *))
 
    ``void*`` *cobj* から :c:type:`PyCObject` を生成します。関数 *destr* が *NULL*
    でない場合、オブジェクトを再利用する際に呼び出します。
 
 
-.. cfunction:: PyObject* PyCObject_FromVoidPtrAndDesc(void* cobj, void* desc, void (*destr)(void *, void *))
+.. c:function:: PyObject* PyCObject_FromVoidPtrAndDesc(void* cobj, void* desc, void (*destr)(void *, void *))
 
    ``void*`` *cobj* から :c:type:`PyCObject` を生成します。関数 *destr* が *NULL*
    でない場合、オブジェクトを再利用する際に呼び出します。引数 *desc* を使って、デストラクタ関数に追加のコールバックデータを渡せます。
 
 
-.. cfunction:: void* PyCObject_AsVoidPtr(PyObject* self)
+.. c:function:: void* PyCObject_AsVoidPtr(PyObject* self)
 
    :c:type:`PyCObject` オブジェクト *self* を生成するのに用いたオブジェクト :c:type:`void \*` を返します。
 
 
-.. cfunction:: void* PyCObject_GetDesc(PyObject* self)
+.. c:function:: void* PyCObject_GetDesc(PyObject* self)
 
    :c:type:`PyCObject` オブジェクト *self* を生成するのに用いたコールバックデータ :c:type:`void \*` を返します。
 
 
-.. cfunction:: int PyCObject_SetVoidPtr(PyObject* self, void* cobj)
+.. c:function:: int PyCObject_SetVoidPtr(PyObject* self, void* cobj)
 
    *self* 内の void ポインタ *cobj* に設定します。 :c:type:`PyCObject` にデストラクタが関連づけられていてはなりません。
    成功すると真値を返し、失敗すると偽値を返します。
