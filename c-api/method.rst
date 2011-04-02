@@ -62,7 +62,7 @@ C API にはメソッドオブジェクトを扱うのに便利な関数があ�
    :c:func:`PyMethod_Self` のマクロ版で、エラーチェックを行いません。
 
 
-.. c:function:: int PyMethod_ClearFreeList(void)
+.. c:function:: int PyMethod_ClearFreeList()
 
    free list をクリアします。
    解放された要素数を返します。
