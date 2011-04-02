@@ -1,4 +1,3 @@
-
 :mod:`copy` --- 浅いコピーおよび深いコピー操作
 ==============================================
 
@@ -6,20 +5,21 @@
    :synopsis: 浅いコピーおよび深いコピー操作。
 
 
-.. index::
-   single: copy() (in copy)
-   single: deepcopy() (in copy)
-
 このモジュールでは汎用の (浅い／深い) コピー操作を提供しています。
 
-以下にインタフェースをまとめます::
+以下にインタフェースをまとめます:
 
-   import copy
+.. function:: copy(x)
+   *x* の浅い (shallow) コピーを返します。
 
-   x = copy.copy(y)        # make a shallow copy of y
-   x = copy.deepcopy(y)    # make a deep copy of y
 
-このモジュール固有のエラーに対しては、 :exc:`copy.error`  が送出されます。
+.. function:: deepcopy(x)
+   *x* の深い (deep) コピーを返します。
+
+
+.. exception:: error
+
+   モジュール特有のエラーを送出します。
 
 
 浅い (shallow) コピーと深い (deep) コピーの違いが関係するのは、複合オブジェクト (リストやクラスインスタンスのような他のオブジェクトを
