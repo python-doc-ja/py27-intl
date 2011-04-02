@@ -1,4 +1,3 @@
-
 :mod:`readline` --- GNU readline のインタフェース
 =================================================
 
@@ -12,6 +11,13 @@
 するためのいくつかの関数を定義しています。このモジュールは直接使うことも :mod:`rlcompleter` モジュールを介して使うこともできます。
 このモジュールで利用される設定はインタプリタの対話プロンプトの振舞い、
 組み込みの :func:`raw_input` と :func:`input` 関数の振舞いに影響します。
+
+.. notes:
+
+  MacOS X では :mod:`readline` モジュールは GNU readline の代わりに ``libedit`` ライブラリを使って実装されています。
+
+  ``libedit`` の設定ファイルは GNU readline と異なります。プログラム上から設定文字列を読む場合、
+  :const:`readline.__doc__` の "libedit" テキストで GNU readline と libedit の違いをチェックできます。
 
 :mod:`readline` モジュールでは以下の関数を定義しています:
 
@@ -178,7 +184,6 @@
 
    1 行をヒストリバッファに追加し、最後に打ち込まれた行のようにします。
 
-
 .. seealso::
 
    Module :mod:`rlcompleter`
@@ -214,7 +219,7 @@
    class HistoryConsole(code.InteractiveConsole):
        def __init__(self, locals=None, filename="<console>",
                     histfile=os.path.expanduser("~/.console-history")):
-           code.InteractiveConsole.__init__(self)
+           code.InteractiveConsole.__init__(self, locals, filename)
            self.init_history(histfile)
 
        def init_history(self, histfile):
