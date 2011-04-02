@@ -73,7 +73,7 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
    引数は *module* 名なので、拡張子 (``.py``) を含めてはいけません。
    ``module-name`` は有効な Python のモジュール名であるべきですが、実装がそれを
-   矯正しているとは限りません。 (例えば、ハイフンを名前に含める事を許可するかも
+   強制しているとは限りません。 (例えば、ハイフンを名前に含める事を許可するかも
    しれません。)
 
    .. note::
@@ -88,8 +88,9 @@ Python を起動するとき、以下のうち任意のオプションを指定�
    :option:`-c` オプションのように、カレントディレクトリが :data:`sys.path`
    の先頭に追加されます。
 
-   Many standard library modules contain code that is invoked on their execution
-   as a script.  An example is the :mod:`timeit` module::
+   .. Many standard library modules contain code that is invoked on their execution
+      as a script.  An example is the :mod:`timeit` module::
+
    多くの標準ライブラリモジュールが、スクリプトとして実行された時のコードを持っています。
    例えば、 :mod:`timeit` モジュールは次のように実行可能です。 ::
 

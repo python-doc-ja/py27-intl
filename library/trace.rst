@@ -1,8 +1,3 @@
---- Python-Docs-2.4/./lib/libtrace.tex  1970-01-01 09:00:00.000000000 +0900 +++
-Python-Docs-2.5/./lib/libtrace.tex      2006-05-03 11:04:40.000000000 +0900 @@
--0,1 +1,1 @@
-
-
 :mod:`trace` --- Python ステートメント実行のトレースと追跡
 ==========================================================
 
@@ -10,9 +5,10 @@ Python-Docs-2.5/./lib/libtrace.tex      2006-05-03 11:04:40.000000000 +0900 @@
    :synopsis: Python ステートメント実行のトレースと追跡
 
 
-:mod:`trace` モジュールはプログラム実行のトレースを可能にし, generate
-ステートメントのカバレッジリストを注釈付きで生成して、呼び出し元/呼び出し先の関連やプログラム実行中に実行された関数のリストを出力します。これは別個の
-プログラム中またはコマンドラインから利用することができます。
+:mod:`trace` モジュールはプログラム実行のトレースを可能にし、
+generate ステートメントのカバレッジリストを注釈付きで生成して、
+呼び出し元/呼び出し先の関連やプログラム実行中に実行された関数のリストを出力します。
+これは別個のプログラム中またはコマンドラインから利用することができます。
 
 
 .. _trace-cli:
@@ -20,53 +16,88 @@ Python-Docs-2.5/./lib/libtrace.tex      2006-05-03 11:04:40.000000000 +0900 @@
 コマンドラインからの利用
 ------------------------
 
-:mod:`trace` モジュールはコマンドラインから起動することができます。これは次のように単純です。 ::
+:mod:`trace` モジュールはコマンドラインから起動することができます。
+これは次のように単純です。 ::
 
-   python -m trace --count somefile.py ...
+   python -m trace --count -C . somefile.py ...
 
-これで、 :file:`somefile.py` の実行中に import された Python モジュールの注釈付きリストが生成されます。
+これで、 :file:`somefile.py` の実行中に import された Python 
+モジュールの注釈付きリストがカレントディレクトリに生成されます。
 
-以下のコマンドライン引数がサポートされています：
+メタオプション
+^^^^^^^^^^^^^^
 
-:option:`--trace`, :option:`-t`
+``--help``
+
+   使い方を表示して終了します。
+
+``--version``
+
+   モジュールのバージョンを表示して終了します。
+
+主要なオプション
+^^^^^^^^^^^^^^^^
+
+``--listfuncs`` オプションは ``--trace`` および ``--count`` オプションと
+互いに排他的です。つまり ``--listfuncs`` オプションを指定した場合 ``--trace``
+や ``--count`` は指定できず、逆も然りです。
+
+``--count, -c``
+   プログラム完了時に、それぞれのステートメントが何回実行されたかを示す
+   注釈付きリストのファイルを生成します。
+   下記 ``--coverdir``, ``--file``, ``--no-report`` も参照。
+
+``--trace, -t``
    実行されるままに行を表示します。
 
-:option:`--count`, :option:`-c`
-   プログラム完了時に、それぞれのステートメントが何回実行されたかを示す注釈付きリストのファイルを生成します。
+``--listfuncs, -l``
+   プログラム実行の際に実行された関数を表示します。
 
-:option:`--report`, :option:`-r`
-   :option:`--count` と :option:`--file` 引数を使った、過去のプログラム実行結果から注釈付きリストのファイルを生成します。
+``--report, -r``
+   ``--count`` と ``--file`` 引数を使った、過去のプログラム実行結果から
+   注釈付きリストのファイルを生成します。コードを実行するわけではありません。
 
-:option:`--no-report`, :option:`-R`
-   注釈付きリストを生成しません。これは :option:`--count` を何度か走らせてから最後に単一の注釈付きリストを生成するような場合に便利です。
+``--trackcalls, -T``
+   プログラム実行によって明らかになった呼び出しの関連を表示します。
 
-:option:`--listfuncs`, :option:`-l`
-   プログラム実行の際に実行された関数を列挙します。
+修飾的オプション
+^^^^^^^^^^^^^^^^
 
-:option:`--trackcalls`, :option:`-T`
-   プログラム実行によって明らかになった呼び出しの関連を生成します。
+``--file=<file>, -f``
+   複数回にわたるトレース実行についてカウント(count)を蓄積するファイルに名前をつけます。
+   ``--count`` オプションと一緒に使って下さい。
 
-:option:`--file`, :option:`-f`
-   カウント(count) を含む（べき）ファイルに名前をつけます。
+``--coverdir=<dir>, -C``
+   中にレポートファイルを保存するディレクトリを指定します。
+   ``package.module`` についてのカバレッジレポートは
+   ``dir/package/module.cover`` に書き込まれます。
 
-:option:`--coverdir`, :option:`-C`
-   中に注釈付きリストのファイルを保存するディレクトリを指定します。
-
-:option:`--missing`, :option:`-m`
+``--missing, -m``
    注釈付きリストの生成時に、実行されなかった行に '``>>>>>>``' の印を付けます。
 
-:option:`--summary`, :option:`-s`
-   :option:`--count` または :option:`--report` の利用時に、
+``--summary, -s``
+   ``--count`` または ``--report`` の利用時に、
    処理されたファイルそれぞれの簡潔なサマリを標準出力(stdout)に書き出します。
 
-:option:`--ignore-module`
-   カンマ区切りのモジュール名リストを受け取ります。
-   指定されたモジュールと（パッケージだった場合は）そのサブモジュールを無視します。複数回指定できます。
+``--no-report, -R``
+   注釈付きリストを生成しません。これは ``--count`` を何度か走らせてから
+   最後に単一の注釈付きリストを生成するような場合に便利です。
 
-:option:`--ignore-dir`
+``--timing, -g``
+   各行の先頭にプログラム開始からの時間を付けます。トレース中にだけ使われます。
+
+フィルターオプション
+^^^^^^^^^^^^^^^^^^^^
+
+これらのオプションは複数回指定できます。
+
+``--ignore-module=<mod>``
+   カンマ区切りのモジュール名リストを受け取ります。
+   指定されたモジュールと（パッケージだった場合は）そのサブモジュールを無視します。
+
+``--ignore-dir=<dir>``
    指定されたディレクトリとサブディレクトリ中のモジュールとパッケージを全て無視します。
    (複数のディレクトリを指定する場合は os.pathsep で区切ります)
-   複数回指定できます。
 
 
 .. _trace-api:
@@ -75,36 +106,70 @@ Python-Docs-2.5/./lib/libtrace.tex      2006-05-03 11:04:40.000000000 +0900 @@
 ------------------------------
 
 
-.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])
+.. class:: Trace(count=1, trace=1, countfuncs=0, countcallers=0, ignoremods=(), ignoredirs=(), infile=None, outfile=None, timing=False)
 
-   文(statement)や式(expression)の実行をトレースするオブジェクトを作成します。全てのパラメタがオプションです。
+   文(statement)や式(expression)の実行をトレースするオブジェクトを作成します。
+   全てのパラメタがオプションです。
    *count* は行数を数えます。
    *trace* は行実行のトレースを行います。
    *countfuncs* は実行中に呼ばれた関数を列挙します。
    *countcallers* は呼び出しの関連の追跡を行います。
    *ignoremods* は無視するモジュールやパッケージのリストです。
    *ignoredirs* は無視するパッケージやモジュールを含むディレクトリのリストです。
-   *infile* は保存された集計(count)情報を読むファイルです。
-   *outfile* は更新された集計(count)情報を書き出すファイルです。
+   *infile* は保存された集計(count)情報を読むファイルの名前です。
+   *outfile* は更新された集計(count)情報を書き出すファイルの名前です。
    *timing* は、タイムスタンプをトレース開始時点からの相対秒数で表示します。
 
 
 .. method:: Trace.run(cmd)
 
-   *cmd* を、Trace オブジェクトのコントロール下で現在のトレースパラメタのもとに実行します。
+   *cmd* を、 :class:`Trace` オブジェクトのコントロール下で
+   現在のトレースパラメタのもとに実行します。
+   *cmd* は文字列かコードオブジェクトで、 :keyword:`exec` に渡せる
+   ようなものでなければなりません。
+
+   .. (メモ) :func:`exec` とあったが exec が関数になったのは 3.x
+      だけなので、ここでは :keyword:`exec` にしておいた。
 
 
-.. method:: Trace.runctx(cmd[, globals=None[, locals=None]])
+.. method:: Trace.runctx(cmd, globals=None, locals=None)
 
-   *cmd* を、Trace オブジェクトのコントロール下で現在のトレースパラメタのもと、定義されたグローバルおよびローカル環境で
-   実行します。定義しない場合、 *globals* と *locals* はデフォルトで空の辞書となります。
+   *cmd* を、 :class:`Trace` オブジェクトのコントロール下で
+   現在のトレースパラメタのもと、定義されたグローバルおよびローカル環境で実行します。
+   定義しない場合、 *globals* と *locals* はデフォルトで空の辞書となります。
 
 
 .. method:: Trace.runfunc(func, *args, **kwds)
 
-   与えられた引数の *func* を、Trace オブジェクトのコントロール下で現在のトレースパラメタのもとに呼び出します。
+   与えられた引数の *func* を、 :class:`Trace` オブジェクトのコントロール下で
+   現在のトレースパラメタのもとに呼び出します。
 
-これはこのモジュールの使い方を示す簡単な例です： ::
+.. method:: Trace.results()
+
+   与えられた :class:`Trace` インスタンスの ``run``, ``runctx``, ``runfunc``
+   の以前の呼び出しについて集計した結果を納めた :class:`CoverageResults`
+   オブジェクトを返します。蓄積されたトレース結果はリセットしません。
+
+.. class:: CoverageResults
+
+   カバレッジ結果のコンテナで、 :meth:`Trace.results` で生成されるものです。
+   ユーザーが直接生成するものではありません。
+
+.. method:: CoverageResults.update(other)
+
+   別の :class:`CoverageResults` オブジェクトのデータを統合します。
+
+.. method:: CoverageResults.write_results(show_missing=True, summary=False, coverdir=None)
+
+   カバレッジ結果を書き出します。
+   ヒットしなかった行も出力するには *show_missing* を指定します。
+   モジュールごとのサマリーを出力に含めるには *summary* を指定します。
+   *coverdir* に指定するのは結果ファイルを出力するディレクトリです。
+   ``None`` の場合は各ソースファイルごとの結果がそれぞれのディレクトリに置かれます。
+
+..
+
+簡単な例でプログラミングインターフェースの使い方を見てみましょう ::
 
    import sys
    import trace
