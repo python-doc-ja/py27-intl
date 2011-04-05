@@ -1,45 +1,55 @@
+.. todo
+
+   訳語の統一 codec & コーデック, など
+      Unicode: Unicode
+      codec: 編集すべき数からいって codec にするか? どっちが親切なんだろう?
+   書式の統一 和文英文の間は 1 つ空白空ける.
+   句読点
+   訳文の質上げる
+
+
 .. highlightlang:: c
 
 .. _unicodeobjects:
 
 Unicode オブジェクトと codec
------------------------------
+----------------------------
 
 .. sectionauthor:: Marc-Andre Lemburg <mal@lemburg.com>
 
 Unicode オブジェクト
-^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
-Unicode type
-"""""""""""""
+Unicode 型
+""""""""""
 
-以下は Python の Unicode 実装に用いられている基本 Unicode  オブジェクト型です:
+以下は Python の Unicode 実装に用いられている基本 Unicode オブジェクト型です:
 
 
 .. c:type:: Py_UNICODE
 
-   この型はUnicode序数(Unicode ordinal)を保持するための基礎単位として、 Pythonが内部的に使います。
-   Pythonのデフォルトのビルドでは、 :c:type:`Py_UNICODE` として16-bit型を利用し、 Unicodeの値を内部ではUCS-2で保持します。
-   UCS4版のPythonをビルドすることもできます。(最近の多くのLinuxディストリビューションでは UCS4版のPythonがついてきます)
-   UCS4版ビルドでは :c:type:`Py_UNICODE` に32-bit型を利用し、内部ではUnicode データをUCS4で保持します。
-   :c:type:`wchar_t` が利用できて、PythonのUnicodeに関するビルドオプションと
-   一致するときは、 :c:type:`Py_UNICODE` は :c:type:`wchar_t` をtypedefでエイリアス
+   この型は Unicode 序数 (Unicode ordinal) を保持するための基礎単位として、 Python が内部的に使います。
+   Python のデフォルトのビルドでは、 :c:type:`Py_UNICODE` として 16-bit 型を利用し、 Unicode の値を内部では UCS-2 で保持します。
+   UCS4 版の Python をビルドすることもできます。(最近の多くの Linux ディストリビューションでは UCS4 版の Python がついてきます)
+   UCS4 版ビルドでは :c:type:`Py_UNICODE` に 32-bit 型を利用し、内部では Unicode データを UCS4 で保持します。
+   :c:type:`wchar_t` が利用できて、 Python の Unicode に関するビルドオプションと
+   一致するときは、 :c:type:`Py_UNICODE` は :c:type:`wchar_t` を typedef でエイリアス
    され、ネイティブプラットフォームに対する互換性を高めます。それ以外のすべてのプラットフォームでは、 :c:type:`Py_UNICODE` は
    :c:type:`unsigned short` (UCS2) か :c:type:`unsigned long` (UCS4) の
-   typedefによるエイリアスになります。
+   typedef によるエイリアスになります。
 
-UCS2とUCS4のPythonビルドの間にはバイナリ互換性がないことに注意してください。拡張やインタフェースを書くときには、このことを覚えておいてください。
+UCS2 と UCS4 の Python ビルドの間にはバイナリ互換性がないことに注意してください。拡張やインタフェースを書くときには、このことを覚えておいてください。
 
 
 .. c:type:: PyUnicodeObject
 
-   この :c:type:`PyObject` のサブタイプは Unicode オブジェクトを表現します。
+   この :c:type:`PyObject` のサブタイプは Unicode オブジェクトを表します。
 
 
 .. c:var:: PyTypeObject PyUnicode_Type
 
-   この :c:type:`PyTypeObject` のインスタンスは Python の Unicode 型を表現します。
-   Pythonレイヤにおける ``unicode`` や ``types.UnicodeType`` と同じオブジェクトです。
+   この :c:type:`PyTypeObject` のインスタンスは Python の Unicode 型を表します。
+   Python レイヤにおける ``unicode`` や ``types.UnicodeType`` と同じオブジェクトです。
 
 以下の API は実際には C マクロで、Unicode オブジェクト内部の読み出し専用データに対するチェックやアクセスを高速に行います:
 
@@ -226,7 +236,7 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
 
    その他のUnicodeオブジェクトを含むオブジェクトは :exc:`TypeError` 例外を引き起こします。
 
-   この API は、エラーが生じたときには *NULL* を返します。呼び出し側は返されたオブジェクトを decref する責任があります。
+   この API は、エラーが生じたときには *NULL* を返します。呼び出し側は返されたオブジェクトに対し参照カウンタを 1 つ減らす (decref) する責任があります。
 
 
 .. c:function:: PyObject* PyUnicode_FromObject(PyObject *obj)
@@ -235,8 +245,8 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
    への型強制が必要な際に常にこの関数を使います。
 
 プラットフォームで :c:type:`wchar_t` がサポートされていて、かつ wchar.h が提供されている場合、Python は以下の関数を使って
-:c:type:`wchar_t` に対するインタフェースを確立することがあります。このサポートは、Python 自体の :c:type:`Py_UNICODE`
-型がシステムの :c:type:`wchar_t` と同一の場合に最適化をもたらします。
+:c:type:`wchar_t` に対して直接アクセスすることができます。このアクセスは、Python 自体の :c:type:`Py_UNICODE`
+型がシステムの :c:type:`wchar_t` と同一の場合に最適化されます。
 
 wchar_t サポート
 """""""""""""""""
@@ -257,10 +267,10 @@ wchar_t をサポートするプラットフォームでの wchar_t サポート
    Unicode オブジェクトの内容を :c:type:`wchar_t` バッファ *w* にコピーします。最大で *size* 個の
    :c:type:`wchar_t` 文字を (末尾の 0-終端文字を除いて) コピーします。コピーした :c:type:`wchar_t`
    文字の個数を返します。エラーの時には -1 を返します。 :c:type:`wchar_t` 文字列は 0-終端されている場合も、されていない場合も
-   あります。関数の呼び出し手の責任で、アプリケーションの必要に応じて :c:type:`wchar_t` 文字列を 0-終端してください。
+   あります。関数の呼び出し側の責任で、アプリケーションの必要に応じて :c:type:`wchar_t` 文字列を 0-終端してください。
 
    .. versionchanged:: 2.5
-      この関数は以前は :c:type:`int` を返していました。
+      この関数は以前は :c:type:`int` を返し、 *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -269,7 +279,7 @@ wchar_t をサポートするプラットフォームでの wchar_t サポート
 組み込み codec (built-in codec)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Python では、処理速度を高めるために C で書かれた一そろいの codec を提供しています。
+Python では、処理速度を高めるために C で書かれた一揃いの codec を提供しています。
 これらの codec は全て以下の関数を介して直接利用できます。
 
 以下の API の多くが、 *encoding* と *errors* という二つの引数をとります。これらのパラメタは、組み込みの Unicode
@@ -388,7 +398,7 @@ UTF-32 Codecs
 
    narrow build の場合、BMP外のコードポイントはサロゲートペアとしてデコードされます。
 
-   *byteorder* が *NULL* のとき、コーデックは native order モードで開始します。
+   *byteorder* が *NULL* のとき、 codec は native order モードで開始します。
 
    codec が例外を発生させたときは *NULL* を返します。
 
@@ -422,7 +432,7 @@ UTF-32 Codecs
    *Py_UNICODE_WIDE* が定義されていないとき、サロゲートペアを1つのコードポイントとして
    出力します。
 
-   コーデックが例外を発生させた場合、 *NULL* を返します。
+   codec が例外を発生させた場合、 *NULL* を返します。
 
    .. versionadded:: 2.6
 
@@ -433,7 +443,7 @@ UTF-32 Codecs
    返します。
    文字列は常に BOM マークで始まります。
    エラーハンドラは "strict" です。
-   コーデックが例外を発生させたときは *NULL* を返します。
+   codec が例外を発生させたときは *NULL* を返します。
 
    .. versionadded:: 2.6
 
@@ -462,8 +472,7 @@ UTF-16 Codecs
    ``*byteorder`` が ``-1`` か ``1`` だった場合、すべてのBOMは出力へコピーされます。
    (出力では ``\ufeff`` か ``\ufffe`` のどちらかになるでしょう)
 
-   デコードを完結した後、*\*byteorder* は入力データの終点現在に
-   おけるバイトオーダーに設定されます。
+   デコードを完了した後、入力データの終端に来た時点でのバイトオーダーを *\*byteorder* にセットします。
 
    *byteorder* が *NULL* の場合、 codec はネイティブバイト整列のモードで開始します。
 
@@ -484,7 +493,7 @@ UTF-16 Codecs
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.5
-      この関数は以前は *size* の型に :c:type:`int` を利用していました。
+      この関数は以前は *size* の型に :c:type:`int` を利用し、 *consumed* の型に :c:type:`int *` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
@@ -517,16 +526,16 @@ UTF-16 Codecs
 
 UTF-7 Codecs
 """"""""""""
-以下は UTF-7 コーデックのAPIです。
+以下は UTF-7 codec のAPIです。
 
 .. c:function:: PyObject* PyUnicode_DecodeUTF7(const char *s, Py_ssize_t size, const char *errors)
 
    UTF-7 でエンコードされた *size* バイトの文字列 *s* をデコードして
    Unicode オブジェクトを作成します。
-   コーデックが例外を発生させたときは *NULL* を返します。
+   codec が例外を発生させたときは *NULL* を返します。
 
 
-.. c:function:: PyObject* PyUnicode_DecodeUTF8Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)
+.. c:function:: PyObject* PyUnicode_DecodeUTF7Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)
 
    *consumed* が *NULL* のとき、 :c:func:`PyUnicode_DecodeUTF7` と同じように動作します。
    *consumed* が非 *NULL* のとき、末尾の不完全な UTF-7 base-64 部分をエラーとしません。
@@ -537,16 +546,12 @@ UTF-7 Codecs
 
    与えられたサイズの :c:type:`Py_UNICODE` バッファを UTF-7 でエンコードして、
    Python の bytes オブジェクトとして返します。
-   コーデックが例外を発生させたときは *NULL* を返します。
+   codec が例外を発生させたときは *NULL* を返します。
 
-   If *base64SetO* is nonzero, "Set O" (punctuation that has no otherwise
-   special meaning) will be encoded in base-64.  If *base64WhiteSpace* is
-   nonzero, whitespace will be encoded in base-64.  Both are set to zero for the
-   Python "utf-7" codec.
    *base64SetO* が非ゼロのとき、 "Set O" 文字
    (他の場合には何も特別な意味を持たない句読点) を base-64 エンコードします。
    *base64WhiteSpace* が非ゼロのとき、空白文字を base-64 エンコードします。
-   Python の "utf-7" コーデックでは、両方ともゼロに設定されています。
+   Python の "utf-7" codec では、両方ともゼロに設定されています。
 
 
 Unicode-Escape Codecs
@@ -611,6 +616,7 @@ Raw-Unicode-Escape Codecs
 
    Raw-Unicode-Escape で Unicode オブジェクトをエンコードし、結果を  Python 文字列オブジェクトとして返します。エラー処理は
    "strict" です。 codec が例外を送出した場合には *NULL* を返します。
+
 
 Latin-1 Codecs
 """"""""""""""
@@ -708,7 +714,7 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
    か、ルックアップテーブルとして扱われるunicode文字列です。
 
    文字列(訳注: mappingがunicode文字列として渡された場合)の長さより大きい byte値や、(訳注: mappingにしたがって変換した結果が)
-   U+FFFE "characters" になる Byte値は、"undefined mapping" として扱われます。
+   U+FFFE "characters" になる Byte値は、"定義されていない対応付け(undefined mapping)" として扱われます。
 
    .. versionchanged:: 2.4
       mapping引数としてunicodeが使えるようになりました.
@@ -736,7 +742,7 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
 
 .. c:function:: PyObject* PyUnicode_TranslateCharmap(const Py_UNICODE *s, Py_ssize_t size, PyObject *table, const char *errors)
 
-   *で* 指定された長さを持つ :c:type:`Py_UNICODE` バッファを、文字変換マップ *table* を適用して変換し、変換結果を Unicode
+   指定された長さを持つ :c:type:`Py_UNICODE` バッファを、文字変換マップ *table* を適用して変換し、変換結果を Unicode
    オブジェクトで返します。codec が例外を発行した場合には *NULL* を返します。
 
    対応付けを行う *table* は、 Unicode 序数を表す整数を Unicode 序数を表す整数または ``None`` に対応付けます。
@@ -750,13 +756,14 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-MBCS codecs for Windows
-"""""""""""""""""""""""
-
 以下は MBCS codec の API です。この codec は現在のところ、 Windows 上だけで利用でき、変換の実装には Win32 MBCS
 変換機構 (Win32 MBCS converter) を使っています。 MBCS (または DBCS) はエンコード方式の種類 (class)
 を表す言葉で、単一のエンコード方式を表すわけでなないので注意してください。利用されるエンコード方式 (target encoding) は、 codec
 を動作させているマシン上のユーザ設定で定義されています。
+
+
+MBCS codecs for Windows
+"""""""""""""""""""""""
 
 
 .. c:function:: PyObject* PyUnicode_DecodeMBCS(const char *s, Py_ssize_t size, const char *errors)
