@@ -96,7 +96,7 @@
            raise ValueError("n must be >= 0")
        if math.floor(n) != n:
            raise ValueError("n must be exact integer")
-       if n+1 == n:  # catch a value like 1e300
+       if n+1 == n:  # 1e300 のような値を捕らえる
            raise OverflowError("n too large")
        result = 1
        factor = 2
@@ -317,20 +317,36 @@ doctest のもう一つの簡単な用途は、テキストファイル中にあ
 例えば、 :file:`example.txt` には以下のような内容が入っているとします。
 
 
+   .. The ``example`` module
+   .. ======================
+   .. 
+   .. Using ``factorial``
+   .. -------------------
+   .. 
+   .. This is an example text file in reStructuredText format.  First import
+   .. ``factorial`` from the ``example`` module:
+   .. 
+   ..     >>> from example import factorial
+   .. 
+   .. Now use it:
+   .. 
+   ..     >>> factorial(6)
+   ..     120
+
 ::
 
-   The ``example`` module
+   ``example`` モジュール
    ======================
 
-   Using ``factorial``
-   -------------------
+   ``factorial`` の使い方
+   ----------------------
 
-   This is an example text file in reStructuredText format.  First import
-   ``factorial`` from the ``example`` module:
+   これは reStructuredText 形式で書かれたテキストファイルの例です。
+   最初に ``factorial`` を ``example`` モジュールからインポートします。
 
        >>> from example import factorial
 
-   Now use it:
+   そして、インポートした ``factorial`` を使います:
 
        >>> factorial(6)
        120
@@ -490,7 +506,7 @@ docstring 内の実行例をどのように認識するのか?
 
 ::
 
-   >>> # comments are ignored
+   >>> # コメントは無視されます
    >>> x = 12
    >>> x
    12
@@ -1315,10 +1331,10 @@ doctest がどのように判断するかを制御します。
 
 ::
 
-   >>> id(1.0) # certain to fail some of the time
+   >>> id(1.0) # いつか確実に失敗する
    7948648
    >>> class C: pass
-   >>> C()   # the default repr() for instances embeds an address
+   >>> C()   # インスタンスに対するデフォルトの repr() にはアドレスが埋め込まれる
    <__main__.C instance at 0x00AC18F0>
 
 
@@ -1344,11 +1360,11 @@ doctest がどのように判断するかを制御します。
 
 ::
 
-   >>> 1./7  # risky
+   >>> 1./7  # 危険
    0.14285714285714285
-   >>> print 1./7 # safer
+   >>> print 1./7 # 多少は安全
    0.142857142857
-   >>> print round(1./7, 6) # much safer
+   >>> print round(1./7, 6) # より安全
    0.142857
 
 
@@ -1361,7 +1377,7 @@ doctest がどのように判断するかを制御します。
 
 ::
 
-   >>> 3./4  # utterly safe
+   >>> 3./4  # 絶対に安全
    0.75
 
 
