@@ -1,4 +1,3 @@
-
 :mod:`warnings` --- 警告の制御
 ==============================
 
@@ -221,27 +220,27 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 
 
 .. * *message* is a string containing a regular expression that the warning message
-..   must match (the match is compiled to always be  case-insensitive)
+..   must match (the match is compiled to always be case-insensitive).
 
 * *message* は正規表現を含む文字列で、メッセージはこのパタンに一致しなければなりません (照合時には常に大小文字の区別を
   しないようにコンパイルされます)。
 
 
 .. * *category* is a class (a subclass of :exc:`Warning`) of which the warning
-..   category must be a subclass in order to match
+..   category must be a subclass in order to match.
 
 * *category* はクラス (:exc:`Warning` のサブクラス) です。警告クラスはこのクラスのサブクラスに一致しなければなりません。
 
 
 .. * *module* is a string containing a regular expression that the module name must
-..   match (the match is compiled to be case-sensitive)
+..   match (the match is compiled to be case-sensitive).
 
 * *module* は正規表現を含む文字列で、モジュール名はこのパタンに一致しなければなりません (照合時には常に大小文字の区別を
   しないようにコンパイルされます)。
 
 
 .. * *lineno* is an integer that the line number where the warning occurred must
-..   match, or ``0`` to match all line numbers
+..   match, or ``0`` to match all line numbers.
 
 * *lineno* 整数で、警告が発生した場所の行番号に一致しなければなりません、すべての行に一致する場合には ``0`` になります。
 
@@ -311,11 +310,16 @@ warningを表示したくないのであれば、 :class:`catch_warnings` コン
 .. While within the context manager all warnings will simply be ignored. This
 .. allows you to use known-deprecated code without having to see the warning while
 .. not suppressing the warning for other code that might not be aware of its use
-.. of deprecated code.
+.. of deprecated code.  Note: this can only be guaranteed in a single-threaded
+.. application. If two or more threads use the :class:`catch_warnings` context
+.. manager at the same time, the behavior is undefined.
 
 このサンプルのコンテキストマネージャーの中では、全てのwarningが無視されています。
 これで、他の廃止予定のコードを含まない(つもりの)部分までwarningを抑止せずに、
 廃止予定だと分かっているコードだけwarningを表示させないようにすることができます。
+注意: これが保証できるのはシングルスレッドのアプリケーションだけです。
+2つ以上のスレッドが同時に :class:`catch_warnings` コンテキストマネージャを使用した場合、
+動作は未定義です。
 
 
 .. _warning-testing:
@@ -348,7 +352,7 @@ warning のテスト
         fxn()
         # Verify some things
         assert len(w) == 1
-        assert isinstance(w[-1].category, DeprecationWarning)
+        assert issubclass(w[-1].category, DeprecationWarning)
         assert "deprecated" in str(w[-1].message)
 
 
@@ -368,12 +372,17 @@ warning のテスト
 .. when the context was entered. This prevents tests from changing the warnings
 .. filter in unexpected ways between tests and leading to indeterminate test
 .. results. The :func:`showwarning` function in the module is also restored to
-.. its original value.
+.. its original value.  Note: this can only be guaranteed in a single-threaded
+.. application. If two or more threads use the :class:`catch_warnings` context
+.. manager at the same time, the behavior is undefined.
 
 コンテキストマネージャーが終了したら、warningフィルターはコンテキストマネージャーに\
 入る前のものに戻されます。これは、テスト中に予期しない方法でwarningフィルターが変更され、
 テスト結果が中途半端になる事を予防します。
 このモジュールの :func:`showwarning` 関数も元の値に戻されます。
+注意: これが保証できるのはシングルスレッドのアプリケーションだけです。
+2つ以上のスレッドが同時に :class:`catch_warnings` コンテキストマネージャを使用した場合、
+動作は未定義です。
 
 
 .. When testing multiple operations that raise the same kind of warning, it
@@ -476,6 +485,9 @@ warningリストを各操作の前に毎回クリアする事ができます。)
    :func:`warnpy3k` は :exc:`DeprecationWarning` をデフォルトのwarningクラスとして利用しています。
 
 
+   .. versionadded:: 2.6
+
+
 .. function:: showwarning(message, category, filename, lineno[, file[, line]])
 
    .. Write a warning to a file.  The default implementation calls
@@ -506,10 +518,11 @@ warningリストを各操作の前に毎回クリアする事ができます。)
 
 .. function:: formatwarning(message, category, filename, lineno[, line])
 
-   .. Format a warning the standard way.  This returns a string  which may contain
-   .. embedded newlines and ends in a newline.  *line* is
-   .. a line of source code to be included in the warning message; if *line* is not supplied,
-   .. :func:`formatwarning` will try to read the line specified by *filename* and *lineno*.
+   .. Format a warning the standard way.  This returns a string which may contain
+   .. embedded newlines and ends in a newline.  *line* is a line of source code to
+   .. be included in the warning message; if *line* is not supplied,
+   .. :func:`formatwarning` will try to read the line specified by *filename* and
+   .. *lineno*.
 
    警告を通常の方法で書式化します。返される文字列内には改行が埋め込まれている可能性があり、かつ文字列は改行で終端されています。
    *line* はwarningメッセージに含まれるソースコードの1行です。
@@ -526,15 +539,16 @@ warningリストを各操作の前に毎回クリアする事ができます。)
 
 .. function:: filterwarnings(action[, message[, category[, module[, lineno[, append]]]]])
 
-   .. Insert an entry into the list of warnings filters.  The entry is inserted at the
-   .. front by default; if *append* is true, it is inserted at the end. This checks
-   .. the types of the arguments, compiles the message and module regular expressions,
-   .. and inserts them as a tuple in the  list of warnings filters.  Entries closer to
+   .. Insert an entry into the list of :ref:`warnings filter specifications
+   .. <warning-filter>`.  The entry is inserted at the front by default; if
+   .. *append* is true, it is inserted at the end.  This checks the types of the
+   .. arguments, compiles the *message* and *module* regular expressions, and
+   .. inserts them as a tuple in the list of warnings filters.  Entries closer to
    .. the front of the list override entries later in the list, if both match a
    .. particular warning.  Omitted arguments default to a value that matches
    .. everything.
 
-   警告フィルタのリストにエントリを一つ挿入します。標準ではエントリは先頭に挿入されます; *append* が真ならば、末尾に挿入されます。
+   :ref:`警告フィルタ仕様 <warning-filter>` のリストにエントリを一つ挿入します。標準ではエントリは先頭に挿入されます; *append* が真ならば、末尾に挿入されます。
    この関数は引数の型をチェックし、 *message* および *module* の正規表現をコンパイルしてから、これらをタプルにして警告フィルタ
    のリストに挿入します。二つのエントリが特定の警告に合致した場合、リストの先頭に近い方のエントリが後方にあるエントリに優先します。
    引数が省略されると、標準では全てにマッチする値に設定されます。
@@ -542,12 +556,13 @@ warningリストを各操作の前に毎回クリアする事ができます。)
 
 .. function:: simplefilter(action[, category[, lineno[, append]]])
 
-   .. Insert a simple entry into the list of warnings filters. The meaning of the
-   .. function parameters is as for :func:`filterwarnings`, but regular expressions
-   .. are not needed as the filter inserted always matches any message in any module
-   .. as long as the category and line number match.
+   .. Insert a simple entry into the list of :ref:`warnings filter specifications
+   .. <warning-filter>`.  The meaning of the function parameters is as for
+   .. :func:`filterwarnings`, but regular expressions are not needed as the filter
+   .. inserted always matches any message in any module as long as the category and
+   .. line number match.
 
-   単純なエントリを警告フィルタのリストに挿入します。引数の意味は :func:`filterwarnings` と同じですが、この関数により挿入されるフィ
+   単純なエントリを :ref:`警告フィルタ仕様 <warning-filter>` のリストに挿入します。引数の意味は :func:`filterwarnings` と同じですが、この関数により挿入されるフィ
    ルタはカテゴリと行番号が一致していれば全てのモジュールの全てのメッセージに合致しますので、正規表現は必要ありません。
 
 
@@ -594,6 +609,20 @@ warningリストを各操作の前に毎回クリアする事ができます。)
    *module* 引数は :mod:`warnings` を import して得られるオブジェクトの代わりに利用されます。
    このモジュールのフィルターは保護されます。
    この引数は、主に :mod:`warnings` モジュール自体をテストする目的で追加されました。
+
+   .. note::
+
+      .. The :class:`catch_warnings` manager works by replacing and
+      .. then later restoring the module's
+      .. :func:`showwarning` function and internal list of filter
+      .. specifications.  This means the context manager is modifying
+      .. global state and therefore is not thread-safe.
+
+      :class:`catch_warnings` マネージャは、モジュールの :func:`showwarning`
+      関数と内部のフィルタ仕様のリストを置き換え、その後復元することによって
+      動作しています。これは、コンテキストマネージャがグローバルな状態を変更
+      していることを意味していて、したがってスレッドセーフではありません。
+
 
    .. note::
 
