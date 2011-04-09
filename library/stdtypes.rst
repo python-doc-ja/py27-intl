@@ -128,7 +128,16 @@
 比較
 ====
 
-.. index:: pair: chaining; comparisons
+.. index::
+   pair: chaining; comparisons
+   operator: ==
+   operator: <
+   operator: <=
+   operator: >
+   operator: >=
+   operator: !=
+   operator: is
+   operator: is not
 
 比較演算は全てのオブジェクトでサポートされています。比較演算子は全て
 同じ演算優先度を持っています (ブール演算より高い演算優先度です)。
@@ -159,17 +168,6 @@
 | ``is not`` | 同一のオブジェクトでない |      |
 +------------+--------------------------+------+
 
-.. index::
-   pair: operator; comparison
-   operator: ==
-   operator: <
-   operator: <=
-   operator: >
-   operator: >=
-   operator: !=
-   operator: is
-   operator: is not
-
 注釈:
 
 (1)
@@ -199,9 +197,11 @@
 このメソッドを使ってオブジェクトの比較方法に影響を及ぼすための情報につ
 いては :ref:`customization` を参照してください。
 
-**実装に関する注釈:** 数値型を除き、異なる型のオブジェクトは型の名前で
-順番付けされます; 適当な比較をサポートしていないある型のオブジェクトは
-アドレスによって順番付けされます。
+.. impl-detail::
+
+   数値型を除き、異なる型のオブジェクトは型の名前で
+   順番付けされます; 適当な比較をサポートしていないある型のオブジェクトは
+   アドレスによって順番付けされます。
 
 .. index::
    operator: in
@@ -266,6 +266,13 @@
    builtin: long
    builtin: float
    builtin: complex
+   operator: +
+   operator: -
+   operator: *
+   operator: /
+   operator: //
+   operator: %
+   operator: **
 
 Python は型混合の演算を完全にサポートします: ある 2 項演算子が互いに異
 なる数値型の被演算子を持つ場合、より "制限された" 型の被演算子は他方の
@@ -396,7 +403,15 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
 整数型におけるビット列演算
 --------------------------
 
-.. _bit-string-operations:
+.. index::
+   triple: operations on; integer; types
+   pair: bit-string; operations
+   pair: shifting; operations
+   pair: masking; operations
+   operator: ^
+   operator: &
+   operator: <<
+   operator: >>
 
 通常および長整数型ではさらに、ビット列に対してのみ意味のある演算をサポー
 トしています。負の数はその値の 2 の補数の値として扱われます (長整数の
@@ -425,12 +440,6 @@ Python は型混合の演算を完全にサポートします: ある 2 項演�
 +------------+------------------------------------------+----------+
 | ``~x``     | *x* のビット反転                         |          |
 +------------+------------------------------------------+----------+
-
-.. index::
-   triple: operations on; integer; types
-   pair: bit-string; operations
-   pair: shifting; operations
-   pair: masking; operations
 
 注釈:
 
@@ -581,12 +590,18 @@ Python では、いくつかのイテレータオブジェクトを定義して�
 あるとみなされます (この制限は Python 2.3 で追加されました; Python 2.2
 では、この規則に従うと多くのイテレータが変則となります)。
 
+.. _generator-types:
+
+ジェネレータ型
+--------------
+
 Python における :term:`generator` (ジェネレータ) は、イテレータプロト
 コルを実装する簡便な方法を提供します。コンテナオブジェクトの
 :meth:`__iter__` メソッドがジェネレータとして実装されていれば、メソッ
 ドは :meth:`__iter__` および :meth:`next` メソッドを提供するイテレータ
 オブジェクト (技術的にはジェネレータオブジェクト) を自動的に返します。
-
+:ref:`the documentation for the yield expression <yieldexpr>` に
+より多くの情報があります。
 
 .. _typesseq:
 
@@ -749,12 +764,16 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
    ``None`` だった場合、 ``1`` として扱われます。
 
 (6)
-   *s* と *t* の両者が文字列であるとき、 CPython のような実装では、
-   ``s=s+t`` や ``s+=t`` という書式で代入をするのに in-place
-   optimization が働きます。このような時、最適化は二乗の実行時間の低減
-   をもたらします。この最適化はバージョンや実装に依存します。実行効率
-   が必要なコードでは、バージョンと実装が変わっても、直線的な連結の実
-   行効率を保証する :meth:`str.join` を使うのがより望ましいでしょう。
+   .. impl-detail::
+
+      *s* と *t* の両者が文字列であるとき、
+      CPython のような実装では、 ``s=s+t`` や ``s+=t`` という書式で
+      代入をするのに in-place optimization が働きます。
+      このような時、最適化は二乗の実行時間の低減をもたらします。
+      この最適化はバージョンや実装に依存します。
+      実行効率が必要なコードでは、バージョンと実装が変わっても、
+      直線的な連結の実行効率を保証する :meth:`str.join` を使うのが
+      より望ましいでしょう。
 
    .. versionchanged:: 2.4
       以前、文字列の連結はin-placeで再帰されませんでした.
@@ -779,7 +798,7 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. method:: str.capitalize()
 
-   最初の文字を大文字にした文字列のコピーを返します。
+   最初の文字のみを大文字にした文字列のコピーを返します。
 
    8ビット文字列では、メソッドはロケール依存になります。
 
@@ -859,19 +878,19 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. method:: str.find(sub[, start[, end]])
 
-   文字列中の領域 [*start*, *end*] に *sub* が含まれる場合、その最小の
+   文字列のスライス ``s[start, end]`` に *sub* が含まれる場合、その最小の
    インデクスを返します。オプション引数 *start* および *end* はスライ
    ス表記と同様に解釈されます。 *sub* が見つからなかった場合 ``-1``
    を返します。
 
 
-.. method:: str.format(format_string, *args, **kwargs)
+.. method:: str.format(*args, **kwargs)
 
-   文字列の書式設定を行います。引数、 *format_string* は通常の文字、ま
-   たは、 ``{}`` で区切られた置換フィールドを含みます。それぞれの置換
-   フィールドは位置引数のインデックスナンバー、または、キーワード引数
-   の名前を含みます。返り値は、引数に応じて置換されたあとの、
-   *format_string* のコピーです。
+   文字列の書式操作を行います。このメソッドを呼び出す文字列は通常の文字、
+   または、 ``{}`` で区切られた置換フィールドを含みます。
+   それぞれの置換フィールドは位置引数のインデックスナンバー、
+   または、キーワード引数の名前を含みます。
+   返り値は、引数に応じて置換されたあとの文字列のコピーです。
 
       >>> "The sum of 1 + 2 is {0}".format(1+2)
       'The sum of 1 + 2 is 3'
@@ -949,9 +968,9 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
    8 ビット文字列では、メソッドはロケール依存になります。
 
 
-.. method:: str.join(seq)
+.. method:: str.join(iterable)
 
-   シーケンス *seq* 中の文字列を結合した文字列を返します。文字列を結合
+   :term:`iterable` *iterable* 中の文字列を結合した文字列を返します。文字列を結合
    するときの区切り文字は、このメソッドを適用する対象の文字列になりま
    す。
 
@@ -1008,10 +1027,10 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. method:: str.rfind(sub [,start [,end]])
 
-   文字列中の領域 s[start, end] に *sub* が含まれる場合、その最大のイ
-   ンデクスを返します。オプション引数 *start* および *end* はスライス
-   表記と同様に解釈されます。 *sub* が見つからなかった場合 ``-1``  を
-   返します。
+   文字列中の領域 ``s[start, end]`` に *sub* が含まれる場合、
+   その最大のインデクスを返します。
+   オプション引数 *start* および *end* はスライス表記と同様に解釈されます。
+   *sub* が見つからなかった場合 ``-1``  を返します。
 
 
 .. method:: str.rindex(sub[, start[, end]])
@@ -1141,8 +1160,30 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. method:: str.title()
 
-   文字列をタイトルケースにして返します: 単語ごとに、大文字から始まり
-   残りの文字のうち大小文字の区別があるものは全て小文字にします。
+   文字列を、単語ごとに大文字から始まり、
+   残りの文字のうち大小文字の区別があるものは全て小文字にする、
+   タイトルケースにして返します。
+
+   このアルゴリズムは単語の定義として連続した文字列の集まり
+   という単純な言語によってはうまくいかない定義を使います。
+   この定義は多くの状況ではうまく機能しますが、
+   短縮形や所有格のアポストロフィは単語の境界を形成してしまうため、
+   望みの結果を得られない場合があります。
+
+        >>> "they're bill's friends from the UK".title()
+        "They'Re Bill'S Friends From The Uk"
+
+   正規表現を使うことでアポストロフィに対応することができます。
+
+        >>> import re
+        >>> def titlecase(s):
+                return re.sub(r"[A-Za-z]+('[A-Za-z]+)?",
+                              lambda mo: mo.group(0)[0].upper() +
+                                         mo.group(0)[1:].lower(),
+                              s)
+
+        >>> titlecase("they're bill's friends.")
+        "They're Bill's Friends."
 
    8 ビット文字列では、メソッドはロケール依存になります。
 
@@ -1155,7 +1196,7 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
    なりません。
 
    トランスレーションテーブル作成のために、 :mod:`string` モジュールの
-   :func:`maketrans` 補助関数を使うこともできます。
+   :func:`~string.maketrans` 補助関数を使うこともできます。
    文字列型オブジェクトに対しては、 *table* 引数に ``None`` を与えるこ
    とで、文字の削除だけを実施します。:
 
@@ -1334,10 +1375,10 @@ Python では必要ないため無視されます。 -- つまり、例えば ``
 +---------+-----------------------------------------------------------+------+
 | ``'c'`` | 文字一文字 (整数または一文字からなる文字列を受理します)。 |      |
 +---------+-----------------------------------------------------------+------+
-| ``'r'`` | 文字列 (python オブジェクトを                             | \(5) |
+| ``'r'`` | 文字列 (Python オブジェクトを                             | \(5) |
 |         | :func:`repr` で変換します)。                              |      |
 +---------+-----------------------------------------------------------+------+
-| ``'s'`` | 文字列 (python オブジェクトを :func:`str`                 | \(6) |
+| ``'s'`` | 文字列 (Python オブジェクトを :func:`str`                 | \(6) |
 |         | で変換します)。                                           |      |
 +---------+-----------------------------------------------------------+------+
 | ``'%'`` | 引数を変換せず、返される文字列中では文字 ``'%'``          |      |
@@ -1566,10 +1607,12 @@ Notes:
    トして、それを給与の等級）でソートを行なうのに役立ちます。
 
 (10)
-   リストが並べ替えられている間は、リストの変更はもとより、その値の閲
-   覧すらその結果は未定義です。 Python 2.3 以降の C 実装では、この間
-   リストは空に見えるようになり、並べ替え中にリストが変更されたことが
-   検出されると :exc:`ValueError` が送出されます。
+   .. impl-detail::
+
+      リストが並べ替えられている間は、リストの変更はもとより、その値の閲
+      覧すらその結果は未定義です。 Python 2.3 以降の C 実装では、この間
+      リストは空に見えるようになり、並べ替え中にリストが変更されたことが
+      検出されると :exc:`ValueError` が送出されます。
 
 
 .. _types-set:
@@ -1737,7 +1780,7 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
    .. method:: update(other, ...)
                set |= other | ...
 
-      *other* の要素を追加し、 set を更新します。
+      全ての other の要素を追加し、 set を更新します。
 
       .. versionchanged:: 2.6
          複数の入力イテラブルを受け付けるようになりました。
@@ -1745,7 +1788,7 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
    .. method:: intersection_update(other, ...)
                set &= other & ...
 
-      元の set と *other* に共通する要素だけを残して set を更新します。
+      元の set と 全ての other に共通する要素だけを残して set を更新します。
 
       .. versionchanged:: 2.6
          複数の入力イテラブルを受け付けるようになりました。
@@ -1960,28 +2003,28 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
 
       辞書のコピーを ``(key, value)`` の対のリストとして返します。
 
-      .. note::
+      .. impl-detail::
 
          キーと値のリストは任意の順序で返されますが、ランダムではなく、
          Python の実装と、辞書への挿入、および、削除操作の来歴によって
-         決まります。もし、 :meth:`items`, :meth:`keys`,
-         :meth:`values`, :meth:`iteritems`, :meth:`iterkeys`, および
-         :meth:`itervalues` が辞書を変更することなく呼び出されたら、リ
-         ストは一致するでしょう。これにより、 ``(value, key)`` の対を
-         :func:`zip` または ``pairs = zip(d.values(), d.keys())`` を使っ
-         て生成するとができます。
-         同じ関係が、 :meth:`iterkeys` および :meth:`itervalues` メソッ
-         ドにもあてはまります : ``pairs = zip(d.itervalues(),
-         d.iterkeys())`` は ``pairs`` と同じ値を返します。 ``pairs =
-         [(v, k) for (k, v) in d.iteritems()]`` も同様です。
+         決まります。
+
+      もし、 :meth:`items`, :meth:`keys`, :meth:`values`,
+      :meth:`iteritems`, :meth:`iterkeys` および :meth:`itervalues` が
+      辞書を変更することなく呼び出されたら、リストは一致するでしょう。
+      これにより、 ``(value, key)`` の対を :func:`zip`
+      または ``pairs = zip(d.values(), d.keys())`` を使って生成するとができます。
+      同じ関係が、 :meth:`iterkeys` および :meth:`itervalues` メソッドにもあてはまります :
+      ``pairs = zip(d.itervalues(), d.iterkeys())`` は ``pairs`` と同じ値を返します。
+      ``pairs = [(v, k) for (k, v) in d.iteritems()]`` も同様です。
 
    .. method:: iteritems()
 
       辞書の ``(key, value)`` の対をイテレータで返します。
       :meth:`dict.items` の Note も参照下さい。
 
-      :meth:`iteritems` を使った辞書の項目の追加や削除は
-      :exc:`RuntimeError` を送出します。
+      :meth:`iteritems` を辞書の項目の追加や削除と同時に行うと、
+      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
 
       .. versionadded:: 2.2
 
@@ -1990,8 +2033,8 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
       辞書のキーをイテレータで返します。 :meth:`dict.items` の Note も
       参照下さい。
 
-      :meth:`iterkeys` を使った辞書の項目の追加や削除は
-      :exc:`RuntimeError` を送出します。
+      :meth:`iterkeys` を辞書の項目の追加や削除と同時に行うと、
+      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
 
       .. versionadded:: 2.2
 
@@ -2000,8 +2043,8 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
       辞書の値をイテレータで返します。 :meth:`dict.items` の Note も参
       照下さい。
 
-      :meth:`itervalues` を使った辞書の項目の追加や削除は
-      :exc:`RuntimeError` を送出します。
+      :meth:`itervalues` を辞書の項目の追加や削除と同時に行うと、
+      :exc:`RuntimeError` を送出されるか全ての項目に対する反復に失敗することになります。
 
       .. versionadded:: 2.2
 
@@ -2117,8 +2160,12 @@ set を代表する set,内部 set は :class:`frozenset` オブジェクトで�
 .. method:: file.flush()
 
    ``stdio`` の :c:func:`fflush` のように、内部バッファをフラッシュし
-   ます。ファイル類似のオブジェクトによっては、この操作は何も行いませ
-   ん。
+   ます。ファイル類似のオブジェクトによっては、この操作は何も行いません。
+
+   .. note::
+
+      :meth:`flush` は必ずしもファイルのデータをディスクに書き込むとは限りません。
+      そのような挙動を保証するには :meth:`flush` の後に `:func:os.fsync` を使って下さい。
 
 
 .. method:: file.fileno()
@@ -2445,9 +2492,9 @@ Python は幾つかのコンテキストマネージャを、易しいスレッ�
 ん。例については :mod:`contextlib` モジュールを参照下さい。
 
 Python のジェネレータ (:term:`generator`) と
-``contextlib.contextfactory`` デコレータ (:term:`decorator`) はこの
+``contextlib.contextmanager`` デコレータ (:term:`decorator`) はこの
 プロトコルの簡便な実装方法を提供します。ジェネレータ関数を
-``contextlib.contextfactory`` でデコレートすると、デコレートしなければ
+``contextlib.contextmanager`` でデコレートすると、デコレートしなければ
 返されるイテレータを返す代わりに、必要な :meth:`__enter__` および
 :meth:`__exit__` メソッドを実装したコンテキストマネージャを返すように
 なります。
@@ -2693,8 +2740,7 @@ arg-n)`` の呼び出しと完全に等価です。
 
 .. attribute:: class.__bases__
 
-   クラスオブジェクトの基底クラスからなるタプルです。基底クラスを持た
-   ない場合、空のタプルになります。
+   クラスオブジェクトの基底クラスからなるタプルです。
 
 
  .. attribute:: class.__name__
