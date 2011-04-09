@@ -170,7 +170,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 ディレクティブは以下の通りです。
 
-.. describe:: cfunction
+.. describe:: c:function
 
    Cの関数を説明します。シグネチャはC言語のまま付けてください。例::
 
@@ -194,7 +194,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 ..    Note that you don't have to backslash-escape asterisks in the signature,
 ..    as it is not parsed by the reST inliner.
 
-.. describe:: cmember
+.. describe:: c:member
 
    Cの構造体メンバを説明します。シグネチャの例::
 
@@ -204,20 +204,20 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
    ついて記述するべきです。テキストの中で構造体のメンバを参照するときには ``member`` role を
    利用するべきです。
 
-.. describe:: cmacro
+.. describe:: c:macro
 
    "シンプル"な C言語のマクロについて説明します。シンプルなマクロとは、引数を取らず、
    関数として解説されないものです。このディレクティブは単純な定数の定義には利用しません。
-   Python ドキュメントの中でこのディレクティブが使われている例には、 :cmacro:`PyObject_HEAD` と
-   :cmacro:`Py_BEGIN_ALLOW_THREADS` があります。
+   Python ドキュメントの中でこのディレクティブが使われている例には、 :c:macro:`PyObject_HEAD` と
+   :c:macro:`Py_BEGIN_ALLOW_THREADS` があります。
 
-.. describe:: ctype
+.. describe:: c:type
 
    C の型を説明します。シグネチャは単に型の名前であるべきです。
 
 ..    Describes a C type. The signature should just be the type name.
 
-.. describe:: cvar
+.. describe:: c:var
 
    C のグローバル変数を説明します。シグネチャは、次の例のように、型を含めるべき
    です::
