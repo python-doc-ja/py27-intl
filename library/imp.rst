@@ -48,25 +48,28 @@
 
 .. function:: find_module(name[, path])
 
-   .. Try to find the module *name* on the search path *path*.  If *path* is a list
-   .. of directory names, each directory is searched for files with any of the
-   .. suffixes returned by :func:`get_suffixes` above.  Invalid names in the list
-   .. are silently ignored (but all list items must be strings).  If *path* is
-   .. omitted or ``None``, the list of directory names given by ``sys.path`` is
-   .. searched, but first it searches a few special places: it tries to find a
-   .. built-in module with the given name (:const:`C_BUILTIN`), then a frozen
-   .. module (:const:`PY_FROZEN`), and on some systems some other places are looked
-   .. in as well (on Windows, it looks in the registry which may point to a
-   .. specific file).
+   .. Try to find the module *name*.  If *path* is omitted or ``None``, the list of
+   .. directory names given by ``sys.path`` is searched, but first a few special
+   .. places are searched: the function tries to find a built-in module with the
+   .. given name (:const:`C_BUILTIN`), then a frozen module (:const:`PY_FROZEN`),
+   .. and on some systems some other places are looked in as well (on Windows, it
+   .. looks in the registry which may point to a specific file).
 
-   検索パス *path* 上でモジュール *name* を見つけようとします。
-   *path* がディレクトリ名のリストならば、上の :func:`get_suffixes` が返す拡張子のいずれかを伴ったファイルを各ディレクトリの中で検索します。
-   リスト内の有効でない名前は黙って無視されます(しかし、すべてのリスト項目は文字列でなければならない)。
-   *path* が省略されるか ``None`` ならば、 ``sys.path`` のディレクトリ名のリストが検索されます。
+   モジュール *name* を見つけようとします。
+   *path* が省略されるか ``None`` ならば、 ``sys.path`` によって与えられるディレクトリ名のリストが検索されます。
    しかし、最初にいくつか特別な場所を検索します。
-   所定の名前(:const:`C_BUILTIN`)をもつ組み込みモジュールを見つけようとします。
-   それから、フリーズされたモジュール(:const:`PY_FROZEN`)、同様にいくつかのシステムと他の場所がみられます
+   まず、所定の名前をもつ組み込みモジュール(:const:`C_BUILTIN`)を見つけようとします。
+   それから、フリーズされたモジュール(:const:`PY_FROZEN`)、そしていくつかのシステムでは他の場所が同様に検索されます
    (Windowsでは、特定のファイルを指すレジストリの中を見ます)。
+
+   .. Otherwise, *path* must be a list of directory names; each directory is
+   .. searched for files with any of the suffixes returned by :func:`get_suffixes`
+   .. above.  Invalid names in the list are silently ignored (but all list items
+   .. must be strings).
+
+   それ以外の場合、 *path* はディレクトリ名のリストでなければなりません。
+   上の :func:`get_suffixes` が返す拡張子のいずれかを伴ったファイルを各ディレクトリの中で検索します。
+   リスト内の有効でない名前は黙って無視されます(しかし、すべてのリスト項目は文字列でなければなりません)。
 
 
    .. If search is successful, the return value is a 3-element tuple ``(file,
