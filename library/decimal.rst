@@ -89,10 +89,10 @@
 :const:`NaN` といった特殊な値も定義されています。
 標準仕様では :const:`-0` と :const:`+0` も区別しています。
 
-算術コンテキストとは、精度や値丸めの規則、指数部の制限を決めている\
-環境です。この環境では、演算結果を表すためのフラグや、演算上発生した\
-特定のシグナルを例外として扱うかどうかを決めるトラップイネーブラも\
-定義しています。丸め規則には:const:`ROUND_CEILING`,
+算術コンテキストとは、精度や値丸めの規則、指数部の制限を決めている
+環境です。この環境では、演算結果を表すためのフラグや、演算上発生した
+特定のシグナルを例外として扱うかどうかを決めるトラップイネーブラも
+定義しています。丸め規則には :const:`ROUND_CEILING`,
 :const:`ROUND_DOWN`, :const:`ROUND_FLOOR`, :const:`ROUND_HALF_DOWN`,
 :const:`ROUND_HALF_EVEN`, :const:`ROUND_HALF_UP`, :const:`ROUND_UP`,
 および :const:`ROUND_05UP` があります。
@@ -116,7 +116,7 @@
 .. seealso::
 
    * IBM による汎用10進演算仕様、 `The General Decimal Arithmetic Specification
-     <http://www2.hursley.ibm.com/decimal/decarith.html>`_ 。
+     <http://speleotrove.com/decimal/>`_ 。
 
    * IEEE 標準化仕様 854-1987, `IEEE 854 に関する非公式のテキスト
      <http://754r.ucbtest.org/standards/854.pdf>`_ 。
@@ -341,8 +341,13 @@ Decimal オブジェクト
       numeric-value  ::=  decimal-part [exponent-part] | infinity
       numeric-string ::=  [sign] numeric-value | [sign] nan
 
+   *value* をユニコード文字列にした場合、他のユニコード数字も上の ``digit``
+   の場所に使うことができます。つまり各書記体系における(アラビア-インド系や
+   デーヴァナーガリーなど)の数字や、全角数字０(``u'\uff10'``)から
+   ９(``u'\uff19'``)までなどです。
+
    *value* を :class:`tuple` にする場合、タプルは三つの要素を持ち、
-   それぞれ符号 (正なら :const:`0` 、負なら :const:`1`)、仮数部を\
+   それぞれ符号 (正なら :const:`0` 、負なら :const:`1`)、仮数部を
    表す数字のタプル、そして指数を表す整数でなければなりません。
    例えば、 ``Decimal((0, (1, 4, 1, 4), -3))`` は
    ``Decimal('1.414')`` を返します。
@@ -533,9 +538,12 @@ Decimal オブジェクト
 
    .. method:: is_normal()
 
-      引数が正規(normal)の有限数値ならば :const:`True` を返します。
+      引数が *正規(normal)* のゼロでない有限数値で調整された指数が *Emin*
+      以上ならば :const:`True` を返します。
       引数がゼロ、非正規(subnormal)、無限大または NaN であれば :const:`False`
       を返します。
+      ここでの *正規* という用語は標準的な(canonical)値を作り出すために使われる
+      :meth:`normalize` メソッドにおける意味合いとは異なりますので注意して下さい。
 
       .. versionadded:: 2.6
 
@@ -563,7 +571,8 @@ Decimal オブジェクト
    .. method:: is_subnormal()
 
       引数が非正規数(subnormal)であれば :const:`True` を、そうでなければ
-      :const:`False` を返します。
+      :const:`False` を返します。非正規な数値とは、ゼロでなく、有限で、
+      調整された指数が *Emin* 未満のものを指します。
 
       .. versionadded:: 2.6
 
@@ -606,12 +615,10 @@ Decimal オブジェクト
 
    .. method:: logical_invert([context])
 
-      :meth:`logical_invert` は論理演算です。引数は *論理引数*
-      (:ref:`logical_operands_label` 参照)でなければなりません。
+      :meth:`logical_invert` は論理演算です。
       結果は引数の数字ごとの反転です。
 
       .. versionadded:: 2.6
-      .. issue6376
 
    .. method:: logical_or(other[, context])
 
@@ -636,7 +643,7 @@ Decimal オブジェクト
 
    .. method:: max_mag(other[, context])
 
-      :meth:`max` メソッドに似ていますが、比較は絶対値で行われます。
+      :meth:`.max` メソッドに似ていますが、比較は絶対値で行われます。
 
       .. versionadded:: 2.6
 
@@ -650,7 +657,7 @@ Decimal オブジェクト
 
    .. method:: min_mag(other[, context])
 
-      :meth:`min` メソッドに似ていますが、比較は絶対値で行われます。
+      :meth:`.min` メソッドに似ていますが、比較は絶対値で行われます。
 
       .. versionadded:: 2.6
 
@@ -916,9 +923,9 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
 
 .. class:: DefaultContext
 
-   :class:`Context` コンストラクタが新たなコンテキストを作成するさいに\
+   :class:`Context` コンストラクタが新たなコンテキストを作成するさいに
    雛形にするコンテキストです。このコンテキストのフィールド (精度の設定など)
-   を変更すると、 :class:`Context` コンストラクタが生成する新たなコンテキストに\
+   を変更すると、 :class:`Context` コンストラクタが生成する新たなコンテキストに
    影響を及ぼします。
 
    このコンテキストは、主に多重スレッド環境で便利です。スレッドを開始する\
@@ -1251,9 +1258,10 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
          - ``x`` と ``y`` の少なくともどちらかはゼロでない
          - ``modulo`` は非零で大きくても 'precision' 桁
 
-      ``Context.power(x, y, modulo)`` の結果は ``(x**y) % modulo``
-      を精度無制限で計算して得られるものと同一ですが、より効率的に計算されます。
-      これは常に正確です。
+      ``Context.power(x, y, modulo)`` で得られる値は ``(x**y) % modulo``
+      を精度無制限で計算して得られるものと同じ値ですが、より効率的に計算されます。
+      結果の指数は ``x``, ``y``, ``modulo`` の指数に関係なくゼロです。
+      この計算は常に正確です。
 
       .. versionchanged:: 2.6
          ``x**y`` 形式で ``y`` が非整数で構わないことになった。
@@ -1806,7 +1814,7 @@ A. :meth:`quantize` メソッドで固定した桁に丸められます。
    >>> Decimal('3.214').quantize(TWOPLACES, context=Context(traps=[Inexact]))
    Traceback (most recent call last):
       ...
-   Inexact
+   Inexact: None
 
 Q. 正当な2桁の入力が得られたとして、その正当性をアプリケーション実行中も\
 変わらず保ち続けるにはどうすればいいでしょうか?
