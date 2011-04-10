@@ -37,8 +37,8 @@
    .. :const:`PY_SOURCE`, :const:`PY_COMPILED`, or :const:`C_EXTENSION`, described
    .. below.
 
-   三つ組みのリストを返します。それぞれはモジュールの特定の型を説明しています。
-   各三つ組みは形式 ``(suffix, mode, type)`` を持ちます。
+   3要素のタプルのリストを返します。それぞれのタプルは特定の種類のモジュールを説明しています。
+   各タプルは ``(suffix, mode, type)`` という形式です。
    ここで、 *suffix* は探すファイル名を作るためにモジュール名に追加する文字列です。
    そのファイルをオープンするために、 *mode* は組み込み :func:`open` 関数へ渡されるモード文字列です
    (これはテキストファイル対しては ``'r'`` 、バイナリファイルに対しては ``'rb'`` となります)。
@@ -75,7 +75,7 @@
    .. If search is successful, the return value is a 3-element tuple ``(file,
    .. pathname, description)``:
 
-   検索が成功すれば、戻り値は三要素のタプル ``(file, pathname, description)`` です:
+   検索が成功すれば、戻り値は3要素のタプル ``(file, pathname, description)`` です:
 
 
    .. *file* is an open file object positioned at the beginning, *pathname* is the
@@ -83,8 +83,8 @@
    .. contained in the list returned by :func:`get_suffixes` describing the kind of
    .. module found.
 
-   *file* は先頭に位置を合わされたオープンファイルオブジェクトで、 *pathname* は見つかったファイルのパス名です。
-   そして、 *description* は :func:`get_suffixes` が返すリストに含まれているような三つ組みで、
+   *file* は先頭に位置合わせされたオープンファイルオブジェクトで、 *pathname* は見つかったファイルのパス名です。
+   そして、 *description* は :func:`get_suffixes` が返すリストに含まれているような3要素のタプルで、
    見つかったモジュールの種類を説明しています。
 
 
@@ -156,8 +156,8 @@
    .. it was not ``None``, even when an exception is raised.  This is best done
    .. using a :keyword:`try` ... :keyword:`finally` statement.
 
-   **重要:** *file* 引数が ``None`` でなければ、例外が発生した時でさえ呼び出し側にはそれを閉じる責任があります。
-   これを行うには、 :keyword:`try` ... :keyword:`finally` 文をつかうことが最も良いです。
+   **重要:** *file* 引数が ``None`` でなければ、例外が発生した場合でも呼び出し側にはそれを閉じる責任があります。
+   これを行うには、 :keyword:`try` ... :keyword:`finally` 文を使うことが最も良いです。
 
 
 .. function:: new_module(name)
@@ -282,9 +282,9 @@
 .. available through :func:`find_module` or :func:`load_module`. They are kept
 .. around for backward compatibility:
 
-次の定数と関数は旧式のものです。
-それらの機能は :func:`find_module` や :func:`load_module` を使って利用できます。
-後方互換性のために残されています:
+以下の定数と関数は旧バージョンのものです。
+:func:`find_module` や :func:`load_module` を使えば同様の機能を利用できます。
+これらは後方互換性のために残されています:
 
 
 .. data:: SEARCH_ERROR
@@ -303,9 +303,9 @@
    .. ``sys.modules``.  If there is no built-in module called *name*, ``None`` is
    .. returned.
 
-   *name* という名前の組み込みモジュールを初期化し、そのモジュールオブジェクトを ``sys.modules`` に格納しておいて返します。
+   *name* という名前の組み込みモジュールを初期化し、そのモジュールオブジェクトを ``sys.modules`` に格納した上で返します。
    モジュールが既に初期化されている場合は、 *再度* 初期化されます。
-   再初期化はビルトインモジュールの ``__dict__`` を ``sys.modules`` のエントリーに結びつけられたキャッシュモジュールからコピーする過程を含みます。
+   再初期化は組み込みモジュールの ``__dict__`` を ``sys.modules`` のエントリーに結びつけられたキャッシュモジュールからコピーする過程を含みます。
    *name* という名前の組み込みモジュールがない場合は、 ``None`` を返します。
 
 
@@ -322,7 +322,7 @@
    モジュールが既に初期化されている場合は、 *再度* 初期化されます。
    *name* という名前のフリーズされたモジュールがない場合は、 ``None`` を返します。
    (フリーズされたモジュールは Python で書かれたモジュールで、そのコンパイルされたバイトコードオブジェクトが
-   Python の :program:`freeze` ユーティリティを使ってカスタムビルト Python インタープリタへ組み込まれています。
+   Python の :program:`freeze` ユーティリティを使ってカスタムビルド版の Python インタープリタへ組み込まれています。
    差し当たり、 :file:`Tools/freeze/` を参照してください。)
 
 
@@ -333,8 +333,8 @@
    .. which cannot be initialized again (see :func:`init_builtin`).  Return ``0`` if
    .. there is no built-in module called *name*.
 
-   *name* という名前の再度初期化できる組み込みモジュールがある場合は、 ``1`` を返します。
-   *name* という名前の再度初期化できない組み込みモジュールがある場合は、 ``-1`` を返します
+   *name* という名前の再初期化できる組み込みモジュールがある場合は、 ``1`` を返します。
+   *name* という名前の再初期化できない組み込みモジュールがある場合は、 ``-1`` を返します
    (:func:`init_builtin` を参照してください)。 *name* という名前の組み込みモジュールがない場合は、 ``0`` を返します。
 
 
@@ -384,13 +384,13 @@
    動的ロード可能な共有ライブラリとして実装されているモジュールをロードして初期化します。
    モジュールが既に初期化されている場合は、 *再度* 初期化します。
    再初期化はモジュールのキャッシュされたインスタンスの ``__dict__`` 属性を
-   ``sys.modules`` にキャッシュされたモジュールの中で使われた値の上にコピーする過程を含みます。
+   ``sys.modules`` にキャッシュされたモジュールの中で使われた値に上書きコピーする過程を含みます。
    *pathname* 引数は共有ライブラリを指していなければなりません。
    *name* 引数は初期化関数の名前を作るために使われます。
    共有ライブラリの ``initname()`` という名前の外部C関数が呼び出されます。
    オプションの *file* 引数は無視されます。
    (注意: 共有ライブラリはシステムに大きく依存します。
-   また、すべてのシステムがそれをサポートしているわけではありません。)
+   また、すべてのシステムがサポートしているわけではありません。)
 
 
 .. function:: load_source(name, pathname[, file])
