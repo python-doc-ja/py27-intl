@@ -97,7 +97,7 @@ subprocess モジュールを使う
    通常これはバッファがすべて有効となります。 *bufsize* のデフォルト値は :const:`0` (バッファされない) です。
 
    .. note::
-      パフォーマンス上の問題がある場合、*bufsize* を -1 か十分大きな
+      パフォーマンス上の問題がある場合、 *bufsize* を -1 か十分大きな
       正の値 (例えば 4096) に設定し、バッファを有効にすることを勧めます。
 
    *executable* 引数には実行するプログラムを指定します。これはほとんど必要ありません: ふつう、実行するプログラムは *args*
@@ -298,12 +298,12 @@ Popen オブジェクト
 .. method:: Popen.terminate()
 
    .. Stop the child. On Posix OSs the method sends SIGTERM to the
-      child. On Windows the Win32 API function :cfunc:`TerminateProcess` is called
+      child. On Windows the Win32 API function :c:func:`TerminateProcess` is called
       to stop the child.
 
    子プロセスを止めます。
    Posix OSでは、このメソッドは SIGTERM シグナルを子プロセスに送ります。
-   Windows では、 Win32 API の :cfunc:`TerminateProcess` 関数を利用して子プロセスを止めます。
+   Windows では、 Win32 API の :c:func:`TerminateProcess` 関数を利用して子プロセスを止めます。
 
    .. versionadded:: 2.6
 

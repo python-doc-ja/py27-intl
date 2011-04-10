@@ -418,7 +418,7 @@
    .. method:: terminate()
 
       プロセスを終了します。Unix 環境では ``SIGTERM`` シグナルを、
-      Windows 環境では :cfunc:`TerminateProcess` を使用して終了させます。
+      Windows 環境では :c:func:`TerminateProcess` を使用して終了させます。
       終了ハンドラや finally 節などは、実行されないことに注意してください。
 
       このメソッドにより終了するプロセスの子孫プロセスは、終了 *しません* 。
@@ -1513,7 +1513,7 @@ Proxy オブジェクト
    .. method:: apply(func[, args[, kwds]])
 
       :func:`apply` 組み込み関数と同じです。その結果を返せるようになるまでブロックします。
-      これらのブロックが与えられる場合、:meth:`apply_async` の方が
+      これらのブロックが与えられる場合、 :meth:`apply_async` の方が
       うまく並列実行を処理します。
       さらに関数はプールの中の一つのワーカーにのみ渡されます。
 
@@ -2049,12 +2049,14 @@ sys.stdin をファイル形式のオブジェクトへ置き換えることに�
     中で無条件に
 
     ::
+
         os.close(sys.stdin.fileno())
 
     を呼び出していました --- これはプロセス間で問題が起こしてしまいます。
     そこで、これは以下のように変更されました。
     
     ::
+
         sys.stdin.close()
         sys.stdin = open(os.devnull)
 

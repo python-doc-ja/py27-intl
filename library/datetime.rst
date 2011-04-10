@@ -347,7 +347,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    :func:`time.time` が返すような POSIX タイムスタンプに対応する、ロー
    カルな日付を返します。タイムスタンプがプラットフォームにおける C 関
-   数 :cfunc:`localtime` でサポートされている範囲を超えている場合には
+   数 :c:func:`localtime` でサポートされている範囲を超えている場合には
    :exc:`ValueError` を送出します。
    この値はよく 1970 年から 2038 年に制限されていることがあります。う
    るう秒がタイムスタンプの概念に含まれている非 POSIX システムでは、
@@ -410,7 +410,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 | ``timedelta = date1 - date2`` | \(3)                                                        |
 +-------------------------------+-------------------------------------------------------------+
 | ``date1 < date2``             | *date1* が時刻として *date2* よりも前を表す場合に、 *date1* |
-|                               | は*date2* よりも小さいと見なされます。 (4)                  |
+|                               | は *date2* よりも小さいと見なされます。 (4)                 |
 +-------------------------------+-------------------------------------------------------------+
 
 注釈:
@@ -529,7 +529,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: date.ctime()
 
    日付を表す文字列を、例えば ``date(2002, 12, 4).ctime() == 'Wed Dec
-   4 00:00:00 2002'`` のようにして返します。ネイティブの C 関数 :cfunc:`ctime`
+   4 00:00:00 2002'`` のようにして返します。ネイティブの C 関数 :c:func:`ctime`
    (:func:`time.ctime` はこの関数を呼び出しますが、 :meth:`date.ctime`
    は呼び出しません) が C 標準に準拠しているプラットフォームでは、
    ``d.ctime()`` は ``time.ctime(time.mktime(d.timetuple()))`` と等価
@@ -641,10 +641,10 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    ``None`` であるか指定されていない場合、このメソッドは
    :meth:`today` と同様ですが、可能ならば :func:`time.time` タイムスタ
    ンプを通じて得ることができる、より高い精度で時刻を提供します (例え
-   ば、プラットフォームが C  関数 :cfunc:`gettimeofday` をサポートする
+   ば、プラットフォームが C  関数 :c:func:`gettimeofday` をサポートする
    場合には可能なことがあります)。
 
-   そうでない場合、*tz* はクラス :class:`tzinfo` のサブクラスのインス
+   そうでない場合、 *tz* はクラス :class:`tzinfo` のサブクラスのインス
    タンスでなければならず、現在の日付および時刻は *tz* のタイムゾーン
    に変換されます。この場合、結果は
    ``tz.fromutc(datetime.utcnow().replace(tzinfo=tz))`` と等価になりま
@@ -673,8 +673,8 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    ``tz.fromutc(datetime.utcfromtimestamp(timestamp).replace(tzinfo=tz))``
    と等価になります。
 
-   タイムスタンプがプラットフォームの C 関数 :cfunc:`localtime` や
-   :cfunc:`gmtime` でサポートされている範囲を超えた場合、
+   タイムスタンプがプラットフォームの C 関数 :c:func:`localtime` や
+   :c:func:`gmtime` でサポートされている範囲を超えた場合、
    :meth:`fromtimestamp` は :exc:`ValueError` を送出することがあります。
    この範囲はよく 1970 年から 2038 年に制限されています。うるう秒がタ
    イムスタンプの概念に含まれている非 POSIX システムでは、
@@ -688,7 +688,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    :func:`time.time` が返すような POSIX タイムスタンプに対応する、 UTC
    での :class:`datetime` オブジェクトを返します。タイムスタンプがプラッ
-   トフォームにおける C 関数 :cfunc:`localtime` でサポートされている範
+   トフォームにおける C 関数 :c:func:`localtime` でサポートされている範
    囲を超えている場合には :exc:`ValueError` を送出します。この値はよ
    く 1970 年から 2038 年に制限されていることがあります。
    :meth:`fromtimestamp` も参照してください。
@@ -976,7 +976,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    返されるタプルの :attr:`tm_isdst` フラグは :meth:`dst` メソッドに従って設定されます:  :attr:`tzinfo` が
    ``None`` か :meth:`dst` が ``None`` を返す場合、 :attr:`tm_isdst` は ``-1`` に設定されます;
    そうでない場合、 :meth:`dst` がゼロでない値を返すと, :attr:`tm_isdst` は ``1`` となります; それ以外の場合には
-   ``tm_isdst`` は``0`` に設定されます。
+   ``tm_isdst`` は ``0`` に設定されます。
 
 
 .. method:: datetime.utctimetuple()
@@ -985,7 +985,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
    と同じであり、 ``d.dst()`` の返す内容にかかわらず :attr:`tm_isdst` が 0 に強制される点だけが異なります。 DST が UTC
    時刻に影響を及ぼすことは決してありません。
 
-   *d* が aware の場合、*d* から ``d.utcoffset()`` が差し引かれて UTC 時刻に正規化され、正規化された時刻の
+   *d* が aware の場合、 *d* から ``d.utcoffset()`` が差し引かれて UTC 時刻に正規化され、正規化された時刻の
    :class:`time.struct_time` を返します。 :attr:`tm_isdst` は 0 に強制されます。 *d*.year が
    ``MINYEAR`` や ``MAXUEAR`` で、UTC への修正の結果表現可能な年の境界を越えた場合には、戻り値の :attr:`tm_year`
    メンバは :const:`MINYEAR`\ -1 または :const:`MAXYEAR`\ +1 になることがあります。
@@ -1040,7 +1040,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.ctime()
 
    日付を表す文字列を、例えば ``datetime(2002, 12, 4, 20, 30, 40).ctime() == 'Wed Dec  4
-   20:30:40 2002'`` のようにして返します。ネイティブの C 関数 :cfunc:`ctime`  (:func:`time.ctime`
+   20:30:40 2002'`` のようにして返します。ネイティブの C 関数 :c:func:`ctime`  (:func:`time.ctime`
    はこの関数を呼び出しますが、 :meth:`datetime.ctime` は呼び出しません) が C 標準に準拠しているプラットフォームでは、
    ``d.ctime()`` は ``time.ctime(time.mktime(d.timetuple()))`` と等価です。
 
@@ -1225,7 +1225,7 @@ datetime を tzinfo と組み合わせて使う:
 
 以下にサポートされている操作を示します:
 
-* :class:`time` と :class:`time` の比較では、*a* が時刻として *b* よりも前を表す場合に *a* は *b*
+* :class:`time` と :class:`time` の比較では、 *a* が時刻として *b* よりも前を表す場合に *a* は *b*
   よりも小さいと見なされます。被演算子の片方が naive でもう一方が aware の場合、 :exc:`TypeError`
   が送出されます。両方の被演算子が aware で、同じ :attr:`tzinfo` メンバを持つ場合、共通の :attr:`tzinfo`
   メンバは無視され、基本の datetime 間の比較が行われます。両方の被演算子が aware で異なる :attr:`tzinfo` メンバを持つ

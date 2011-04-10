@@ -63,7 +63,7 @@ codec(エンコーダとデコーダ)の基底クラスを定義し、 codec お
    できます。
 
    *streamreader* と *streamwriter*: これらの引数は、次のようなインタ
-    フェースを持つファクトリ関数でなければなりません:
+   フェースを持つファクトリ関数でなければなりません:
 
       ``factory(stream, errors='strict')``
 
@@ -664,7 +664,7 @@ StreamReader オブジェクト
          引数 *chars* が追加されました。
 
       .. versionchanged:: 2.4.2
-         引数*firstline* が追加されました。
+         引数 *firstline* が追加されました。
 
 
    .. method:: readline([size[, keepends]])
