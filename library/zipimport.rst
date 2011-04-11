@@ -28,17 +28,19 @@ ZIP アーカイブ内にはどんなファイルを置いてもかまいませ�
 ZIP アーカイブからロードしたモジュールに対して組み込み関数 :func:`reload` を呼び出すと失敗します; :func:`reload` が\
 必要になるということは、実行時に ZIP ファイルが置き換えられてしまうことになり、あまり起こりそうにない状況だからです。
 
+アーカイブコメント付きの ZIP アーカイブは現在のところ未サポートです。
+
 .. seealso::
 
    `PKZIP Application Note <http://www.pkware.com/documents/casestudies/APPNOTE.TXT>`_
       ZIP ファイル形式の作者であり、ZIP で使われているアルゴリズムの作者でもある
       Phil Katz による、ZIP ファイル形式についてのドキュメントです。
 
-   :pep:`0273` - Import Modules from Zip Archives
+   :pep:`273` - Import Modules from Zip Archives
       このモジュールの実装も行った、James C. Ahlstrom による PEP です。 Python 2.3 は PEP 273 の仕様に従っていますが、
       Just van Rossum の書いた import フックによる実装を使っています。 import フックは PEP 302 で解説されています。
 
-   :pep:`0302` - New Import Hooks
+   :pep:`302` - New Import Hooks
       このモジュールを動作させる助けになっている import フックの追加を提案している PEP です。
 
 
