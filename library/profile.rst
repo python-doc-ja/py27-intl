@@ -34,6 +34,7 @@ DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
 WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
 OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+
 .. _profiler-introduction:
 
 プロファイラとは
@@ -52,15 +53,15 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 .. provides a series of report generation tools to allow users to rapidly
 .. examine the results of a profile operation.
 
-:dfn:`プロファイラ` とは、プログラム実行時の様々な状態を得ることにより、その実行効率を調べるためのプログラムです。
-ここで解説するのは、 :mod:`cProfile`, :mod:`profile`, :mod:`pstats` モジュールが提供するプロファイラ機能についてです。
-このプロファイラはどの Python プログラムに対しても :dfn:`決定論的プロファイリング` をおこないます。
-また、プロファイルの結果検証をす早くおこなえるよう、レポート生成用のツールも提供されています。
+:dfn:`プロファイラ` とは、様々な統計値を算出してプログラムの実行効率を調べるためのプログラムです。
+この文書では、 :mod:`cProfile`, :mod:`profile`, :mod:`pstats` モジュールが提供するプロファイラ機能について解説します。
+このプロファイラは Python プログラムに対する :dfn:`決定論的プロファイリング` を行います。
+また、プロファイル結果の検証を素早く行えるように、レポート生成用のツールも提供されています。
 
 
 .. The Python standard library provides three different profilers:
 
-Python 標準ライブラリは3つの異なるプロファイラを提供します。
+Python 標準ライブラリは3つの異なるプロファイラを提供しています。
 
 
 .. #. :mod:`cProfile` is recommended for most users; it's a C extension
@@ -70,8 +71,8 @@ Python 標準ライブラリは3つの異なるプロファイラを提供しま
 ..    contributed by Brett Rosen and Ted Czotter.
 
 1. :mod:`cProfile` はほとんどのユーザーに推奨されるモジュールです。
-   C言語で書かれた拡張モジュールで、少ないオーバーヘッドにより長く実行されるプログラムのプロファイルに向きます。
-   Brett Rosen と Ted Czotter が提供した :mod:`lsprof` に基づいています。
+   C言語で書かれた拡張モジュールで、オーバーヘッドが少ないため長時間実行されるプログラムのプロファイルに適しています。
+   Brett Rosen と Ted Czotter によって提供された :mod:`lsprof` に基づいています。
 
 
    .. versionadded:: 2.5
@@ -93,7 +94,7 @@ Python 標準ライブラリは3つの異なるプロファイラを提供しま
    ..    Now also reports the time spent in calls to built-in functions and methods.
 
    .. versionchanged:: 2.4
-      ビルトイン関数やメソッドで使われた時間も報告するようになりました。
+      組み込みの関数やメソッドで消費された時間も報告するようになりました。
 
 
 .. #. :mod:`hotshot` was an experimental C module that focused on minimizing
@@ -101,8 +102,8 @@ Python 標準ライブラリは3つの異なるプロファイラを提供しま
 ..    post-processing times.  It is no longer maintained and may be
 ..    dropped in a future version of Python.
 
-3. :mod:`hotshot` は実験的な C モジュールで、後処理時間を長くする代わりにプロファイル中のオーバーヘッドを極力小さくしていました。
-   このモジュールはもうメンテナンスされておらず、将来のバージョンのPythonからは外されるかもしれません。
+3. :mod:`hotshot` は、後処理時間の長さと引き換えにプロファイル中のオーバーヘッドを小さくすることに主眼を置いた実験的な C モジュールでした。
+   このモジュールはもう保守されておらず、将来のバージョンのPythonからは外されるかもしれません。
 
 
    .. .. versionchanged:: 2.5
@@ -128,20 +129,20 @@ Python 標準ライブラリは3つの異なるプロファイラを提供しま
 
 .. _profile-instant:
 
-インスタント・ユーザ・マニュアル
+かんたんユーザマニュアル
 ================================
 
 .. This section is provided for users that "don't want to read the manual." It
 .. provides a very brief overview, and allows a user to rapidly perform profiling
 .. on an existing application.
 
-この節は "マニュアルなんか読みたくない人"のために書かれています。ここではきわめて簡単な概要説明とアプリケーションのプロファイリングを手っとり早くおこなう方法だけを解説します。
+この節は "マニュアルなんか読みたくない人"のために書かれています。ここではきわめて簡単な概要説明とアプリケーションのプロファイリングを手っ取り早く行う方法だけを解説します。
 
 
 .. To profile an application with a main entry point of :func:`foo`, you would add
 .. the following to your module:
 
-main エントリにある関数 :func:`foo` をプロファイルしたいとき、モジュールに次の内容を追加します。
+エントリポイント :func:`foo` を持つアプリケーションをプロファイルしたいとき、モジュールに次の内容を追加します。
 
 
 ::
@@ -163,8 +164,8 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. second argument to the :func:`run` function:
 
 このように書くことで :func:`foo` を実行すると同時に一連の情報 (プロファイル) が表示されます。
-この方法はインタプリタ上で作業をしている場合、最も便利なやり方です。
-プロファイルの結果をファイルに残し、後で検証したいときは、 :func:`run` の2番目の引数にファイル名を指定します。
+この方法は、インタプリタ上で作業をしている場合、最も便利なやり方です。
+プロファイルの結果をファイルに残し、後で検証したいときは、 :func:`run` の第2引数にファイル名を指定します。
 
 
 ::
@@ -186,7 +187,7 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 
 .. :file:`cProfile.py` accepts two optional arguments on the command line:
 
-:file:`cProfile.py` はオプションとしてコマンドライン引数を2つ受け取ります。
+:file:`cProfile.py` はコマンドラインから2つのオプション引数を受け取ります。
 
 
 ::
@@ -197,8 +198,8 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. ``-s`` only applies to standard output (``-o`` is not supplied).
 .. Look in the :class:`Stats` documentation for valid sort values.
 
-``-s`` は標準出力 (つまり、 ``-o`` が与えられなかった場合) にのみ有効です。利用可能なソートの値は、
-:class:`Stats` のドキュメントをご覧ください。
+``-s`` は標準出力にのみ適用されます (つまり、 ``-o`` が与えられなかった場合)。
+利用可能なソートの値は、 :class:`Stats` のドキュメントをご覧ください。
 
 
 .. When you wish to review the profile, you should use the methods in the
@@ -219,8 +220,8 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. the result of three method calls:
 
 :class:`Stats` クラス (上記コードはこのクラスのインスタンスを生成するだけの内容です) は
-``p`` に読み込まれたデータを操作したり、表示するための各種メソッドを備えています。
-先に :func:`cProfile.run` を実行したとき表示された内容と同じものは、3つのメソッド・コールにより実現できます。
+``p`` に読み込まれたデータを操作したり、表示したりするための各種メソッドを備えています。
+先に :func:`cProfile.run` を実行したとき表示された内容と同じものは、3つのメソッド呼び出しにより実現できます。
 
 
 ::
@@ -234,8 +235,8 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. might try the following sort calls:
 
 最初のメソッドはモジュール名からファイル名の前に付いているパス部分を取り除きます。
-2番目のメソッドはエントリをモジュール名/行番号/名前にもとづいてソートします。
-3番目のメソッドで全ての統計情報を出力します。次のようなソート・メソッドも使えます。
+2番目のメソッドはエントリをモジュール名/行番号/名前に基づいてソートします。
+3番目のメソッドですべての統計情報を出力します。次のようなソートメソッドも使えます。
 
 
 .. (this is to comply with the semantics of the old profiler).
@@ -253,7 +254,7 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. will print out the statistics.  The following are some interesting calls to
 .. experiment with:
 
-最初の行ではリストを関数名でソートしています。2号目で情報を出力しています。さらに次の内容も試してください。
+最初の行ではリストを関数名でソートしています。2行目で情報を出力しています。さらに次の内容も試してください。
 
 
 ::
@@ -265,7 +266,7 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. the ten most significant lines.  If you want to understand what algorithms are
 .. taking time, the above line is what you would use.
 
-このようにすると、関数が消費した累計時間でソートされ、さらにその上位10件だけを表示します。
+このようにすると、関数が消費した累計時間でソートして、さらにその上位10件だけを表示します。
 どのアルゴリズムが時間を多く消費しているのか知りたいときは、この方法が役に立つはずです。
 
 
@@ -283,7 +284,7 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. to sort according to time spent within each function, and then print the
 .. statistics for the top ten functions.
 
-上記は関数の実行で消費した時間でソートされ、上位10個の関数の情報が表示されます。
+上記はそれぞれの関数で消費された時間でソートして、上位10件の関数の情報が表示されます。
 
 
 .. You might also try:
@@ -313,8 +314,8 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. list is first culled down to 50% (re: ``.5``) of its original size, then only
 .. lines containing ``init`` are maintained, and that sub-sub-list is printed.
 
-上記は情報を時間 (time) をプライマリ・キー、累計時間 (cumulative time) をセカンダリ・キーにしてソートした後でさらに条件を絞って統計情報を出力します。
-``.5`` は上位 50% だけの選択を意味し、さらにその中から文字列 ``init`` を含むものだけが表示されます。
+上記は時間 (time) をプライマリキー、累計時間 (cumulative time) をセカンダリキーにしてソートした後でさらに条件を絞って統計情報を出力します。
+``.5`` は上位 50% だけを選択することを意味し、さらにその中から文字列 ``init`` を含むものだけが表示されます。
 
 
 .. If you wondered what functions called the above functions, you could now (``p``
@@ -330,7 +331,7 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 
 .. and you would get a list of callers for each of the listed functions.
 
-このようにすると、各関数ごとの呼出し側関数の一覧が得られます。
+このようにすると、関数ごとの呼び出し側関数の一覧が得られます。
 
 
 .. If you want more functionality, you're going to have to read the manual, or
@@ -367,11 +368,11 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. less overhead (as the code does not need to be instrumented), but provides only
 .. relative indications of where time is being spent.
 
-:dfn:`決定論的プロファイリング` とは、すべての *関数呼出し*, *関数からのリターン*, *例外発生* をモニターし、
-正確なタイミングを記録することで、イベント間の時間、つまりどの時間にユーザ・コードが実行されているのかを計測するやり方です。
-もう一方の :dfn:`統計学的プロファイリング` (このモジュールでこの方法は採用していません) とは、
-有効なインストラクション・ポインタからランダムにサンプリングをおこない、プログラムのどこで時間が使われているかを推定する方法です。
-後者の方法は、オーバヘッドが少いものの、プログラムのどこで多くの時間が使われているか、その相対的な示唆に留まります。
+:dfn:`決定論的プロファイリング` とは、すべての *関数呼び出し*, *関数からのリターン*, *例外発生* をモニターし、
+正確なタイミングを記録することで、イベント間の時間、つまりどの時間にユーザコードが実行されているのかを計測するやり方です。
+もう一方の :dfn:`統計的プロファイリング` (このモジュールでこの方法は採用していません) とは、
+有効なインストラクションポインタからランダムにサンプリングを行い、プログラムのどこで時間が使われているかを推定する方法です。
+後者の方法は、オーバヘッドが少ないものの、プログラムのどこで多くの時間が使われているか、その相対的な示唆に留まります。
 
 
 .. In Python, since there is an interpreter active during execution, the presence
@@ -383,12 +384,12 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
 .. not that expensive, yet provides extensive run time statistics about the
 .. execution of a Python program.
 
-Python の場合、実行中必ずインタプリタが動作するため、決定論的プロファイリングをおこなうにあたり、
-計測用のコードは必須ではありません。
-Python は自動的に各イベントに :dfn:`フック` (オプションとしてコールバック) を提供します。
-Python インタプリタの特性として、大きなオーバーヘッドを伴う傾向がありますが、
-一般的なアプリケーションに決定論的プロファイリングを用いると、プロセスのオーバーヘッドは少くて済む傾向があります。
-結果的に決定論的プロファイリングは少ないコストで、Python プログラムの実行時間に関する統計を得られる方法となっているのです。
+Python の場合、実行中は必ずインタプリタが動作しているため、決定論的プロファイリングを行うにあたり、
+計測用にコードを追加する必要はありません。
+Python は自動的に各イベントに :dfn:`フック` (オプションのコールバック) を提供します。
+加えて Python のインタプリタという性質によって、実行時に大きなオーバーヘッドを伴う傾向がありますが、
+それに比べると一般的なアプリケーションでは決定論的プロファイリングで追加される処理のオーバーヘッドは少ない傾向にあります。
+結果的に、決定論的プロファイリングは少ないコストで Python プログラムの実行時間に関する詳細な統計を得られる方法となっているのです。
 
 
 .. Call count statistics can be used to identify bugs in code (surprising counts),
@@ -400,15 +401,15 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. implementations of algorithms to be directly compared to iterative
 .. implementations.
 
-呼出し回数はコード中のバグ発見にも使用できます (とんでもない数の呼出しがおこなわれている部分)。
-インライン拡張の対象とすべき部分を見つけるためにも使えます (呼出し頻度の高い部分)。
-内部時間の統計は、注意深く最適化すべき"ホット・ループ"の発見にも役立ちます。
+呼び出し回数はコード中のバグ発見にも使用できます (とんでもない数の呼び出しが行われている部分)。
+インライン拡張の対象とすべき部分を見つけるためにも使えます (呼び出し頻度の高い部分)。
+内部時間の統計は、注意深く最適化すべき"ホットループ"の発見にも役立ちます。
 累積時間の統計は、アルゴリズム選択に関連した高レベルのエラー検知に役立ちます。
 なお、このプロファイラは再帰的なアルゴリズム実装の累計時間を計ることが可能で、
 通常のループを使った実装と直接比較することもできるようになっています。
 
 
-リファレンス・マニュアル -- :mod:`profile` と :mod:`cProfile`
+リファレンスマニュアル -- :mod:`profile` と :mod:`cProfile`
 =============================================================
 
 .. module:: cProfile
@@ -424,9 +425,9 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. discussion of how to derive "better" profilers from the classes presented, or
 .. reading the source code for these modules.
 
-プロファイラのプライマリ・エントリ・ポイントはグローバル関数 :func:`profile.run` (または :func:`cProfile.run`) です。
-通常、プロファイル情報の作成に使われます。
-情報は :class:`pstats.Stats` クラスのメソッドを使って整形や出力をおこないます。
+プロファイラの主要なエントリポイントはグローバル関数 :func:`profile.run` (または :func:`cProfile.run`) です。
+この関数は、通常プロファイル情報の作成に使われます。
+:class:`pstats.Stats` クラスのメソッドを使ってプロファイル情報を整形出力します。
 以下はすべての標準エントリポイントと関数の解説です。
 さらにいくつかのコードの詳細を知りたければ、「プロファイラの拡張」を読んでください。
 派生クラスを使ってプロファイラを"改善"する方法やモジュールのソースコードの読み方が述べられています。
@@ -444,7 +445,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 
    この関数はオプション引数として :keyword:`exec` 文に渡すファイル名を指定できます。
    このルーチンは必ず最初の引数の :keyword:`exec` を試み、実行結果からプロファイル情報を収集しようとします。
-   ファイル名が指定されていないときは、各行の標準名 (standard name) 文字列 (ファイル名/行数/関数名) でソートされた、
+   ファイル名が指定されていないときは、各行の標準名文字列 (ファイル名/行数/関数名) でソートされた
    簡単なレポートが表示されます。以下はその出力例です。
 
 
@@ -466,8 +467,8 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. that the text string in the far right column was used to sort the output. The
    .. column headings include:
 
-   最初の行は2706回の関数呼出しがあったことを示しています。このうち2004回は :dfn:`プリミティブ` なものです。
-   :dfn:`プリミティブ` な呼び出しとは、再帰によるものではない関数呼出しを指します。
+   最初の行は2706回の関数呼び出しがあったことを示しています。このうち2004回は :dfn:`プリミティブ` なものです。
+   :dfn:`プリミティブ` な呼び出しとは、再帰によるものではない関数呼び出しを指します。
    次の行 ``Ordered by: standard name`` は、一番右側の欄の文字列を使ってソートされたことを意味します。
    各カラムの見出しの意味は次の通りです。
 
@@ -476,7 +477,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    ..    for the number of calls,
 
    ncalls
-      呼出し回数
+      呼び出し回数
 
 
    .. tottime
@@ -484,7 +485,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    ..    to sub-functions),
 
    tottime
-      この関数が消費した時間の合計 (サブ関数呼出しの時間は除く)
+      この関数が消費した時間の合計 (下位の関数呼び出しの時間は除く)
 
 
    .. percall
@@ -499,7 +500,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    ..    exit). This figure is accurate *even* for recursive functions.
 
    cumtime
-      サブ関数を含む関数の (実行開始から終了までの) 消費時間の合計。
+      下位の関数を含むこの関数の (実行開始から終了までの) 消費時間の合計。
       この項目は再帰的な関数においても正確に計測されます。
 
 
@@ -522,7 +523,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. calls.  Note that when the function does not recurse, these two values are the
    .. same, and only the single figure is printed.
 
-   (``43/3`` など) 最初の欄に2つの数字が表示されている場合、最初の値は呼出し回数、
+   (``43/3`` など) 最初の欄に2つの数字が表示されている場合、最初の値は呼び出し回数、
    2番目はプリミティブな呼び出しの回数を表しています。
    関数が再帰していない場合はどちらの回数も同じになるため、1つの数値しか表示されません。
 
@@ -532,12 +533,12 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. This function is similar to :func:`run`, with added arguments to supply the
    .. globals and locals dictionaries for the *command* string.
 
-   この関数は :func:`run` に似ていますが、 *command* 文字列用にグローバル辞書とローカル辞書の引数を追加しています。
+   この関数は :func:`run` に似ていますが、 *command* 文字列に対するグローバル辞書とローカル辞書の引数が追加されています。
 
 
 .. Analysis of the profiler data is done using the :class:`Stats` class.
 
-プロファイラ・データの分析は :class:`Stats` クラスを使っておこないます。
+プロファイラデータの分析は :class:`Stats` クラスを使って行います。
 
 
 .. note::
@@ -564,7 +565,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    このコンストラクタは *filename* で指定した (単一または複数の) ファイルから
    "統計情報オブジェクト"のインスタンスを生成します。
    :class:`Stats` オブジェクトはレポートを出力するメソッドを通じて操作します。
-   また別の出力ストリームをキーワード引数 ``stream`` で指定できます。
+   また、他の出力ストリームをキーワード引数 ``stream`` で指定できます。
 
 
    .. The file selected by the above constructor must have been created by the
@@ -620,7 +621,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. the same function name), then the statistics for these two entries are
    .. accumulated into a single entry.
 
-   このメソッドは :class:`Stats` にファイル名の前に付いているすべてのパス情報を取り除かせるためのものです。
+   :class:`Stats` クラスのこのメソッドは、ファイル名の前に付いているすべてのパス情報を取り除くためのものです。
    出力の幅を80文字以内に収めたいときに重宝します。このメソッドはオブジェクトを変更するため、取り除いたパス情報は失われます。
    パス情報除去の操作後、オブジェクトが保持するデータエントリは、オブジェクトの初期化、ロード直後と同じように"ランダムに"並んでいます。
    :meth:`strip_dirs` を実行した結果、2つの関数名が区別できない (両者が同じファイルの同じ行番号で同じ関数名となった) 場合、
@@ -635,7 +636,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. :func:`cProfile.run`. Statistics for identically named (re: file, line, name)
    .. functions are automatically accumulated into single function statistics.
 
-   :class:`Stats` クラスのこのメソッドは、既存のプロファイリング・オブジェクトに情報を追加します。
+   :class:`Stats` クラスのこのメソッドは、既存のプロファイリングオブジェクトに情報を追加します。
    引数は対応するバージョンの :func:`profile.run` または :func:`cProfile.run` によって生成されたファイルの名前でなくてはなりません。
    関数の名前が区別できない (ファイル名、行番号、関数名が同じ) 場合、一つの関数の統計情報として合算されます。
 
@@ -648,7 +649,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. :class:`profile.Profile` and :class:`cProfile.Profile` classes.
 
    :class:`Stats` オブジェクトに読み込まれたデータを、ファイル名 *filename* のファイルに保存します。
-   ファイルが存在しない場合新たに作成され、すでに存在する場合には上書きされます。
+   ファイルが存在しない場合は新たに作成され、すでに存在する場合には上書きされます。
    このメソッドは :class:`profile.Profile` クラスおよび :class:`cProfile.Profile` クラスの同名のメソッドと等価です。
 
 
@@ -662,7 +663,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. a sort (example: ``'time'`` or ``'name'``).
 
    このメソッドは :class:`Stats` オブジェクトを指定した基準に従ってソートします。
-   引数には通常ソートのキーにしたい項目を示す文字列を指定します (例: ``'time'`` や ``'name'`` など)。
+   典型的には引数にソートのキーにしたい項目を示す文字列を指定します (例: ``'time'`` や ``'name'`` など)。
 
 
    .. When more than one key is provided, then additional keys are used as secondary
@@ -671,16 +672,16 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. function name, and resolve all ties (identical function names) by sorting by
    .. file name.
 
-   2つ以上のキーが指定された場合、2つ目以降のキーは、それ以前のキーで同等となったデータエントリの再ソートに使われます。
+   2つ以上のキーが指定された場合、2つ目以降のキーは、それ以前のキーで等価となったデータエントリの再ソートに使われます。
    たとえば ``sort_stats('name', 'file')`` とした場合、まずすべてのエントリが関数名でソートされた後、
-   同じ関数名で複数のエントリがあればファイル名でソートされるのです。
+   同じ関数名で複数のエントリがあればファイル名でソートされます。
 
 
    .. Abbreviations can be used for any key names, as long as the abbreviation is
    .. unambiguous.  The following are the keys currently defined:
 
    キー名には他のキーと判別可能である限り綴りを省略して名前を指定できます。
-   現バージョンで定義されているキー名は以下の通りです。
+   現在のバージョンで定義されているキー名は以下の通りです。
 
 
    .. +------------------+----------------------+
@@ -718,7 +719,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    +------------------+------------------------------+
    | ``'module'``     | モジュール名                 |
    +------------------+------------------------------+
-   | ``'pcalls'``     | プリミティブな呼び出しの回数 |
+   | ``'pcalls'``     | プリミティブな呼び出し回数   |
    +------------------+------------------------------+
    | ``'line'``       | 行番号                       |
    +------------------+------------------------------+
@@ -744,11 +745,11 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 
    すべての統計情報のソート結果は降順 (最も多く時間を消費したものが一番上に来る) となることに注意してください。
    ただし、関数名、ファイル名、行数に関しては昇順 (アルファベット順) になります。
-   ``'nfl'`` と ``'stdname'`` はやや異なる点があります。
-   標準名 (standard name) とは表示欄の名前なのですが、埋め込まれた行番号の文字コード順でソートされます。
-   たとえば、 (ファイル名が同じで) 3、20、40という行番号のエントリがあった場合、20、30、40 の順に表示されます。
-   一方 ``'nfl'``は行番号を数値として比較します。
-   結果的に、 ``sort_stats('nfl')`` は ``sort_stats('name', 'file', 'line')`` と指定した場合と同じになります。
+   ``'nfl'`` と  ``'stdname'`` には微妙な違いがあります。
+   標準名 (standard name) とは表示された名前によるソートで、埋め込まれた行番号のソート順が特殊です。
+   たとえば、 (ファイル名が同じで) 3、20、40という行番号のエントリがあった場合、20、3、40 の順に表示されます。
+   一方 ``'nfl'`` は行番号を数値として比較します。
+   要するに、 ``sort_stats('nfl')`` は ``sort_stats('name', 'file', 'line')`` と指定した場合と同じになります。
 
 
    .. For backward-compatibility reasons, the numeric arguments ``-1``, ``0``, ``1``,
@@ -793,8 +794,8 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. The order of the printing is based on the last :meth:`sort_stats` operation done
    .. on the object (subject to caveats in :meth:`add` and :meth:`strip_dirs`).
 
-   出力するデータの順序はオブジェクトに対し最後におこなった :meth:`sort_stats` による操作にもとづいたものになります
-   (:meth:`add`と :meth:`strip_dirs` による制限にも支配されます)。
+   出力するデータの順序はオブジェクトに対し最後に行った :meth:`sort_stats` による操作に基づきます
+   (:meth:`add` と :meth:`strip_dirs` による制限にも支配されます)。
 
 
    .. The arguments provided (if any) can be used to limit the list down to the
@@ -806,12 +807,12 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. expression syntax defined by the :mod:`re` module).  If several restrictions are
    .. provided, then they are applied sequentially.  For example:
 
-   引数は一覧に大きな制限を加えることになります。
+   引数は (もし与えられると) リストを重要なエントリのみに制限するために使われます。
    初期段階でリストはプロファイルした関数の完全な情報を持っています。
-   制限の指定は (行数を指定する) 整数、 (行のパーセンテージを指定する) 0.0 から 1.0 までの割合を指定する小数、
-   (出力する standard name にマッチする) 正規表現のいずれかを使っておこないます。
+   制限の指定は、 (行数を指定する) 整数、 (行のパーセンテージを指定する) 0.0 から 1.0 までの割合を指定する小数、
+   (出力する standard name にマッチする) 正規表現のいずれかを使って行います。
    正規表現は Python 1.5b1 で導入された :mod:`re` モジュールで使える Perl スタイルのものです。
-   複数の制限は指定された場合、それは指定の順に適用されます。たとえば次のようになります。
+   複数の制限が指定された場合、指定の順に適用されます。たとえば次のようになります。
 
 
    ::
@@ -847,9 +848,9 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. argument is also identical.  Each caller is reported on its own line.  The
    .. format differs slightly depending on the profiler that produced the stats:
 
-   :class:`Stats` クラスのこのメソッドは、プロファイルのデータベースの中から何らかの関数呼び出しをおこなった関数すべてを出力します。
+   :class:`Stats` クラスのこのメソッドは、プロファイルのデータベースの中から何らかの関数呼び出しを行った関数をすべて出力します。
    出力の順序は :meth:`print_stats` によって与えられるものと同じです。出力を制限する引数も同じです。
-   各呼出し側関数についてそれぞれ一行ずつ表示されます。
+   各呼び出し側関数についてそれぞれ一行ずつ表示されます。
    フォーマットは統計を作り出したプロファイラごとに微妙に異なります。
 
 
@@ -858,16 +859,16 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    ..   non-parenthesized number repeats the cumulative time spent in the function
    ..   at the right.
 
-   * :mod:`profile` を使った場合、呼出し側関数の後にパーレンで囲まれて表示される数値は呼出しが何回おこなわれたかを示すものです。
-     続いてパーレンなしで表示される数値は、便宜上右側の関数が消費した累積時間を繰り返したものです。
+   * :mod:`profile` の場合、呼び出し側関数の後に括弧で囲まれて表示される数値はその呼び出しが何回行われたかを示しています。
+     利便性のため、 2番目の括弧なしで表示される数値によって、関数が消費した累積時間を表しています。
 
 
    .. * With :mod:`cProfile`, each caller is preceded by three numbers: the number of
    ..   times this specific call was made, and the total and cumulative times spent in
    ..   the current function while it was invoked by this specific caller.
 
-   * :mod:`cProfile` を使った場合、各呼出し側関数は3つの数字の後に来ます。
-     その3つとは、呼出しが何回おこなわれたか、呼出しの結果現在の関数内で費やされた合計時間および累積時間です。
+   * :mod:`cProfile` の場合、各呼び出し側関数の後に3つの数字が付きます。
+     呼び出しが何回行われたかと、この呼び出し側関数からの呼び出しによって現在の関数内で消費された合計時間および累積時間です。
 
 
 .. method:: Stats.print_callees([restriction, ...])
@@ -877,8 +878,8 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. calls (re: called vs was called by), the arguments and ordering are identical to
    .. the :meth:`print_callers` method.
 
-   :class:`Stats` クラスのこのメソッドは指定した関数から呼出された関数のリストを出力します。
-   呼出し側、呼出される側の方向は逆ですが、引数と出力の順序に関しては :meth:`print_callers` と同じです。
+   :class:`Stats` クラスのこのメソッドは、指定した関数から呼び出された関数のリストを出力します。
+   呼び出し側、呼び出される側の方向は逆ですが、引数と出力の順序に関しては :meth:`print_callers` と同じです。
 
 
 .. _profile-limits:
@@ -894,10 +895,10 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. will tend to average out. Unfortunately, removing this first error induces a
 .. second source of error.
 
-制限はタイミング情報の正確さに関するものです。決定論的プロファイラの正確さに関する根本的問題です。
+一つの制限はタイミング情報の正確さに関するものです。決定論的プロファイラには正確さに関する根本的問題があります。
 最も明白な制限は、 (一般に) "クロック"は .001 秒の精度しかないということです。これ以上の精度で計測することはできません。
-仮に充分な精度が得られたとしても、"エラー"が計測の平均値に影響を及ぼすことがあります。
-最初のエラーを取り除いたとしても、それがまた別のエラーを引き起こす原因となります。
+仮に充分な精度が得られたとしても、"誤差"が計測の平均値に影響を及ぼすことがあります。
+この最初の誤差を取り除いたとしても、それがまた別の誤差を引き起こす原因となります。
 
 
 .. The second problem is that it "takes a while" from when an event is dispatched
@@ -910,12 +911,12 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. the accuracy of the clock (less than one clock tick), but it *can* accumulate
 .. and become very significant.
 
-もうひとつの問題として、イベントを検知してからプロファイラがその時刻を実際に *取得* するまでに "いくらかの時間がかかる" ことです。
-プロファイラが時刻を取得する (そしてその値を保存する) までの間に、
-ユーザコードがもう一度処理を実行したときにも、同様の遅延が発生します。
-結果的に多く呼び出される関数または多数の関数から呼び出される関数の情報にはこの種のエラーが蓄積する傾向にあります。
-この種のエラーによる遅延の蓄積は一般にクロックの精度を越える (1クロック以下のタイミング) ところで起きていますが、
-一方でこの時間を累計 *可能* ということが大きな意味を持っています。
+もう一つの問題として、イベントを検知してからプロファイラがその時刻を実際に *取得* するまでに "いくらかの時間がかかる" ことです。
+同様に、イベントハンドラが終了する時にも、時刻を取得して (そしてその値を保存して) から、
+ユーザコードが処理を再開するまでの間に遅延が発生します。
+結果的に多く呼び出される関数または多数の関数から呼び出される関数の情報にはこの種の誤差が蓄積する傾向にあります。
+このようにして蓄積される誤差は、典型的にはクロックの精度を下回ります (1クロック以下) が、
+一方でこの時間が累計して非常に大きな値になることも *あり得ます* 。
 
 
 .. The problem is more important with :mod:`profile` than with the lower-overhead
@@ -929,11 +930,11 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. and the results are actually better than without calibration.
 
 この問題はオーバーヘッドの小さい :mod:`cProfile` よりも :mod:`profile` においてより重要です。
-そのため、 :mod:`profile` はプラットフォームごとに (平均値から) 予想されるエラーによる遅延を補正する機能を備えています。
-プロファイラに補正を施すと (少くとも形式的には) 正確さが増しますが、ときには数値が負の値になってしまうこともあります
-(呼出し回数が少く、確率の神があなたに意地悪をしたとき :-) )。
+そのため、 :mod:`profile` は誤差が確率的に (平均値で) 減少するようにプラットフォームごとに補正する機能を備えています。
+プロファイラに補正を施すと (最小二乗の意味で) 正確さが増しますが、ときには数値が負の値になってしまうこともあります
+(呼び出し回数が極めて少なく、確率の神があなたに意地悪をしたとき :-) )。
 プロファイルの結果に負の値が出力されても *驚かないでください* 。
-これは補正をおこなった場合にのみ現れることで、実際の計測結果は補正をおこなわない場合より、より正確なはずだからです。
+これは補正を行った場合にのみ生じることで、補正を行わない場合に比べて計測結果は実際にはより正確になっているはずだからです。
 
 
 .. _profile-calibration:
@@ -947,9 +948,9 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. procedure can be used to obtain a better constant for a given platform (see
 .. discussion in section Limitations above).
 
-:mod:`profile` のプロファイラは time 関数呼出しおよびその値を保存するためのオーバーヘッドを補正するために、
-各イベントハンドリング時間から定数を引きます。デフォルトでこの定数の値は 0 です。
-以下の手順で、プラットフォームに合った、より適切な定数が得られます (前節「制限事項」の説明を参照)。
+:mod:`profile` のプロファイラは time 関数呼び出しおよびその値を保存するためのオーバーヘッドを補正するために、
+各イベントの処理時間から定数を引きます。
+デフォルトでこの定数の値は 0 です。以下の手順で、プラットフォームに合った、より適切な定数が得られます (前節「制限事項」の説明を参照)。
 
 
 ::
@@ -966,10 +967,10 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. on an 800 MHz Pentium running Windows 2000, and using Python's time.clock() as
 .. the timer, the magical number is about 12.5e-6.
 
-メソッドは引数として与えられた数だけ Python の呼出しをおこないます。
-呼出しは直接、プロファイラを使って呼出しの両方が実施され、それぞれの時間が計測されます。
+calibrate メソッドは引数として与えられた数だけ Python の呼び出しを行います。
+直接呼び出す場合と、プロファイラを使って呼び出す場合の両方が実施され、それぞれの時間が計測されます。
 その結果、プロファイラのイベントに隠されたオーバーヘッドが計算され、その値は浮動小数として返されます。
-たとえば、 800 MHz の Pentium で Windows 2000 を使用、Python の time.clock() をタイマとして使った場合、
+たとえば、 800 MHz の Pentium で Windows 2000 を使用、 Python の time.clock() をタイマとして使った場合、
 値はおよそ 12.5e-6 となります。
 
 
@@ -1006,8 +1007,8 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. If you have a choice, you are better off choosing a smaller constant, and then
 .. your results will "less often" show up as negative in profile statistics.
 
-方法を選択したら、補正値は小さめに設定した方が良いでしょう。
-プロファイルの結果に負の値が表われる"確率が少なく"なるはずです。
+選択肢がある場合は、補正値は小さめに設定した方が良いでしょう。
+プロファイルの結果に負の値が表われる"頻度が低く"なるはずです。
 
 
 .. _profiler extensions:
@@ -1022,16 +1023,16 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
 .. the source code of the module carefully if you want to pursue this.
 
 :mod:`profile` モジュールおよび :mod:`cProfile` モジュールの :class:`Profile` クラスは、
-プロファイラの機能を拡張するため、派生クラスの作成を前提に書かれています。
+プロファイラの機能を拡張するために派生クラスを作成することを前提に書かれています。
 しかしその方法を説明するには、 :class:`Profile` の内部動作について詳細な解説が必要となるため、ここでは述べません。
-もし拡張をおこないたいのであれば、使用するモジュールのソースを注意深く読む必要があります。
+もし拡張を行いたいのであれば、使用するモジュールのソースを注意深く読む必要があります。
 
 
 .. If all you want to do is change how current time is determined (for example, to
 .. force use of wall-clock time or elapsed process time), pass the timing function
 .. you want to the :class:`Profile` class constructor:
 
-プロファイラが時刻を取得する方法を変更したいだけなら (たとえば、通常の時間(wall-clock)を使いたいとか、プロセスの経過時間を使いたい場合)、
+プロファイラが時刻を取得する方法を変更したいだけなら (たとえば、実測時間やプロセスの経過時間を使いたい場合)、
 時刻取得用の関数を :class:`Profile` クラスのコンストラクタに指定することができます。
 
 
@@ -1051,10 +1052,10 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. returns a single time number, or the list of returned numbers has length 2, then
    .. you will get an especially fast version of the dispatch routine.
 
-   :func:`your_time_func` は単一の数値、あるいはその合計が (:func:`os.times` と同じように)
-   累計時間を示すリストを返すようになっていなければなりません。
+   :func:`your_time_func` は単一の数値、あるいは (:func:`os.times` と同じように)
+   その合計が累計時間を示すリストを返すようになっていなければなりません。
    関数が1つの数値、あるいは長さ2の数値のリストを返すようになっていれば、
-   非常に高速に処理が可能になります。
+   ディスパッチルーチンには特別な高速化バージョンが使われます。
 
 
    .. Be warned that you should calibrate the profiler class for the timer function
@@ -1066,9 +1067,9 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. timer call, along with the appropriate calibration constant.
 
    選択する時刻取得関数によって、プロファイラクラスを補正する必要があることに注意してください。
-   多くのマシンにおいて、プロファイル時のオーバヘッドを少なくする方法として、タイマはロング整数を返すのが最善です。
+   多くのマシンにおいて、プロファイル時のオーバヘッドを少なくする方法として、タイマは長整数を返すのが最善です
    (:func:`os.times` は浮動小数のタプルを返すので *おすすめできません*)。
-   タイマをより正確なものに置き換えたいならば、派生クラスでそのディスパッチ・メソッドを適切なタイマ呼出しと適切な補正をおこなうように書き直す必要があります。
+   タイマをより正確なものに置き換えたいならば、派生クラスでそのディスパッチメソッドを適切なタイマ呼び出しと適切な補正を行うように書き直す必要があります。
 
 
 :class:`cProfile.Profile`
@@ -1079,7 +1080,7 @@ Python インタプリタの特性として、大きなオーバーヘッドを�
    .. you would constuct the :class:`Profile` instance as follows:
 
    :func:`your_time_func` は単一の数値を返さなければなりません。
-   もしこれが整数を返す関数ならば、2番目の引数に時間単位当たりの実際の持続時間を指定して
+   もしこれが整数を返す関数ならば、2番目の引数に単位時間当たりの実際の持続時間を指定して
    クラスのコンスタラクタを呼び出すことができます。
    たとえば、 :func:`your_integer_time_func` が1000分の1秒単位で計測した時間を返すとすると、
    :class:`Profile` インスタンスを次のように生成することができます。
