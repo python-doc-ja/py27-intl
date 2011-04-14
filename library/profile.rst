@@ -7,6 +7,8 @@ Python プロファイラ
 
 .. sectionauthor:: James Roskind
 
+.. module:: profile
+   :synopsis: Python source profiler.
 
 .. index:: single: InfoSeek Corporation
 
@@ -195,10 +197,10 @@ main エントリにある関数 :func:`foo` をプロファイルしたいと�
    cProfile.py [-o output_file] [-s sort_order]
 
 
-.. :option:`-s` only applies to standard output (:option:`-o` is not supplied).
+.. ``-s`` only applies to standard output (``-o`` is not supplied).
 .. Look in the :class:`Stats` documentation for valid sort values.
 
-:option:`-s` は標準出力(つまり、 :option:`-o` が与えられなかった場合)にのみ有効です。利用可能なソートの値は、
+``-s`` は標準出力(つまり、 ``-o`` が与えられなかった場合)にのみ有効です。利用可能なソートの値は、
 :class:`Stats` のドキュメントをご覧ください。
 
 
