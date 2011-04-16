@@ -230,7 +230,10 @@ Python 2.2以降では、 :func:`int` や :func:`str` のような
    この型は、標準の変換関数を利用するような、Cのシンプルなデータメンバで利用されます。
    :class:`property` 型と同じ目的を持った型ですが、こちらは拡張モジュールで定義された型の\
    ためのものです。
-   Pythonの他の実装では、この型は ``GetSetDescriptorType`` と同一かもしれません。
+
+   .. impl-detail::
+
+      Pythonの他の実装では、この型は ``GetSetDescriptorType`` と同一かもしれません。
 
    .. versionadded:: 2.5
 
