@@ -20,7 +20,7 @@ Distutilsを使うためにインストールする必要がある唯一のモ�
 
 .. function:: setup(arguments)
 
-   全てを実行する基本的な関数で、Distutilsでできるほとんどのことを実行します。 XXXXを参照してください。
+   全てを実行する基本的な関数で、Distutilsでできるほとんどのことを実行します。
 
    setup関数はたくさんの引数をとります。以下のテーブルにまとめます。
 
@@ -730,9 +730,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    アーカイブ中の全ファイルおよびディレクトリの前につくディレクトリ名です。 *root_dir* と
    *base_dir* はともにカレントディレクトリがデフォルト値です。アーカイブファイル名を返します。
 
-   .. warning::
-
-      この関数はbz2ファイルを扱えるように変更されるべきです
+   .. XXX この関数はbz2ファイルを扱えるように変更されるべきです。
 
 
 .. function:: make_tarball(base_name, base_dir[, compress='gzip', verbose=0, dry_run=0])
@@ -744,9 +742,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    :file:`base_dir.tar` という名前になり、圧縮によって拡張子がつきます(:file:`.gz`, :file:`.bz2` または
    :file:`.Z`)。出力ファイル名が返ります。
 
-   .. warning::
-
-      これは :mod:`tarfile` モジュールの呼び出しに置換されるべきです。
+   .. XXX これは :mod:`tarfile` モジュールの呼び出しに置換されるべきです。
 
 
 .. function:: make_zipfile(base_name, base_dir[, verbose=0, dry_run=0])
@@ -837,11 +833,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    再帰的に *directory* とその下の全ファイルを削除します。エラーは無視
    されます(*verbose* が真の時は ``sys.stdout`` に出力されます)
 
-.. todo::
-
-   次の行をコメントインする
-
-.. **\*\*** Some of this could be replaced with the shutil module? **\*\***
+.. XXX これらの内いくつかは shutil モジュールで置き換えられる?
 
 
 :mod:`distutils.file_util` --- 1ファイルの操作
@@ -933,7 +925,9 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    32bit ユニバーサルバイナリではアーキテクチャは ``fat`` で、
    64bit ユニバーサルバイナリではアーキテクチャは ``fat64`` で、
    4-way ユニバーサルバイナリではアーキテクチャは ``universal`` になります。
-
+   Python 2.7 と Python 3.2 から 3-way ユニバーサルバイナリ (ppc, i386, x86_64) には
+   ``fat3`` が i386 と x86_64 ユニバーサルバイナリには ``intel`` が使われるようになりました。
+   
    Mac OS X で返される値の例::
 
    * ``macosx-10.3-ppc``
@@ -941,6 +935,10 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    * ``macosx-10.3-fat``
 
    * ``macosx-10.5-universal``
+
+   * ``macosx-10.6-intel``
+
+   .. % XXX isn't this also provided by some other non-distutils module?
 
 
 .. function:: convert_path(pathname)
@@ -1112,12 +1110,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 * 真偽値をとるオプションは "負のエイリアス" を持ちます。--- たとえば :option:`--quiet` の "負のエイリアス" が
   :option:`--verbose` の場合、コマンドラインで :option:`--quiet` を指定すると *verbose* は偽になります。
 
-.. todo::
-
-   コメントイン
-
-.. **\*\*** Should be replaced with :mod:`optik` (which is also now known as
-.. :mod:`optparse` in Python 2.3 and later). **\*\***
+.. XXX :mod:`optparse` に置き換えられるべきです。
 
 
 .. function:: fancy_getopt(options, negative_opt, object, args)
@@ -1133,9 +1126,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 
    *text* を *width* 以下の幅で折り返します。
 
-   .. warning::
-
-      :mod:`textwrap` で置き換えられるべき ( Python 2.3 以降で利用可能)。
+   .. XXX :mod:`textwrap` で置き換えられるべき (Python 2.3 以降で利用可能)。
 
 
 .. class:: FancyGetopt([option_table=None])
@@ -1193,13 +1184,8 @@ distutilsのモジュールで使用される例外を提供します。 distuti
    :synopsis: シンプルな282スタイルのロギングメカニズム
 
 
-.. warning::
+   .. XXX 標準の :mod:`logging` モジュールに置き換えられるべき
 
-   標準の :mod:`logging` モジュールに置き換えられるべき
-
-.. % \subsubsection{\module{} --- }
-.. % \declaremodule{standard}{distutils.magic}
-.. % \modulesynopsis{ }
 
 
 :mod:`distutils.spawn` --- サブプロセスの生成
