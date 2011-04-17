@@ -1,4 +1,3 @@
-
 :mod:`traceback` --- スタックトレースの表示や取り出し
 =====================================================
 
@@ -18,11 +17,11 @@
 .. index:: object: traceback
 
 .. The module uses traceback objects --- this is the object type that is stored in
-.. the variables ``sys.exc_traceback`` (deprecated) and ``sys.last_traceback`` and
+.. the variables :data:`sys.exc_traceback` (deprecated) and :data:`sys.last_traceback` and
 .. returned as the third item from :func:`sys.exc_info`.
 
-モジュールはtracebackオブジェクトを使います --- これは変数 ``sys.exc_traceback`` \
-(非推奨)と ``sys.last_traceback`` に保存され、 :func:`sys.exc_info` から三番目の項目として返されるオブジェクト型です。
+モジュールはtracebackオブジェクトを使います --- これは変数 :data:`sys.exc_traceback` \
+(非推奨)と :data:`sys.last_traceback` に保存され、 :func:`sys.exc_info` から三番目の項目として返されるオブジェクト型です。
 
 
 .. The module defines the following functions:
@@ -81,10 +80,12 @@
 .. function:: print_last([limit[, file]])
 
    .. This is a shorthand for ``print_exception(sys.last_type, sys.last_value,
-   .. sys.last_traceback, limit, file)``.
+   .. sys.last_traceback, limit, file)``.  In general it will work only after
+   .. an exception has reached an interactive prompt (see :data:`sys.last_type`).
 
    これは ``print_exception(sys.last_type, sys.last_value, sys.last_traceback, limit, file)``
    の省略表現です。
+   一般に、例外が対話的なプロンプトに達した後にだけ機能します (:data:`sys.last_type` 参照)。
 
 
 .. function:: print_stack([f[, limit[, file]]])
@@ -236,12 +237,12 @@ printループを実装います。それは標準的なPythonの対話インタ
 
    try:
        lumberjack()
-   except:
-       exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
+   except IndexError:
+       exc_type, exc_value, exc_traceback = sys.exc_info()
        print "*** print_tb:"
-       traceback.print_tb(exceptionTraceback, limit=1, file=sys.stdout)
+       traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
        print "*** print_exception:"
-       traceback.print_exception(exceptionType, exceptionValue, exceptionTraceback,
+       traceback.print_exception(exc_type, exc_value, exc_traceback,
                                  limit=2, file=sys.stdout)
        print "*** print_exc:"
        traceback.print_exc()
@@ -250,15 +251,13 @@ printループを実装います。それは標準的なPythonの対話インタ
        print formatted_lines[0]
        print formatted_lines[-1]
        print "*** format_exception:"
-       print repr(traceback.format_exception(exceptionType, exceptionValue,
-                                             exceptionTraceback))
+       print repr(traceback.format_exception(exc_type, exc_value,
+                                             exc_traceback))
        print "*** extract_tb:"
-       print repr(traceback.extract_tb(exceptionTraceback))
+       print repr(traceback.extract_tb(exc_traceback))
        print "*** format_tb:"
-       print repr(traceback.format_tb(exceptionTraceback))
-       print "*** tb_lineno:", traceback.tb_lineno(exceptionTraceback)
-   print "*** print_last:"
-   traceback.print_last()
+       print repr(traceback.format_tb(exc_traceback))
+       print "*** tb_lineno:", exc_traceback.tb_lineno
 
 
 .. The output for the example would look similar to this:
@@ -269,20 +268,20 @@ printループを実装います。それは標準的なPythonの対話インタ
 ::
 
    *** print_tb:
-     File "<doctest>", line 9, in <module>
+     File "<doctest...>", line 10, in <module>
        lumberjack()
    *** print_exception:
    Traceback (most recent call last):
-     File "<doctest>", line 9, in <module>
+     File "<doctest...>", line 10, in <module>
        lumberjack()
-     File "<doctest>", line 3, in lumberjack
+     File "<doctest...>", line 4, in lumberjack
        bright_side_of_death()
    IndexError: tuple index out of range
    *** print_exc:
    Traceback (most recent call last):
-     File "<doctest>", line 9, in <module>
+     File "<doctest...>", line 10, in <module>
        lumberjack()
-     File "<doctest>", line 3, in lumberjack
+     File "<doctest...>", line 4, in lumberjack
        bright_side_of_death()
    IndexError: tuple index out of range
    *** format_exc, first and last line:
@@ -290,26 +289,19 @@ printループを実装います。それは標準的なPythonの対話インタ
    IndexError: tuple index out of range
    *** format_exception:
    ['Traceback (most recent call last):\n',
-    '  File "<doctest>", line 9, in <module>\n    lumberjack()\n',
-    '  File "<doctest>", line 3, in lumberjack\n    bright_side_of_death()\n',
-    '  File "<doctest>", line 6, in bright_side_of_death\n    return tuple()[0]\n',
+    '  File "<doctest...>", line 10, in <module>\n    lumberjack()\n',
+    '  File "<doctest...>", line 4, in lumberjack\n    bright_side_of_death()\n',
+    '  File "<doctest...>", line 7, in bright_side_of_death\n    return tuple()[0]\n',
     'IndexError: tuple index out of range\n']
    *** extract_tb:
-   [('<doctest>', 9, '<module>', 'lumberjack()'),
-    ('<doctest>', 3, 'lumberjack', 'bright_side_of_death()'),
-    ('<doctest>', 6, 'bright_side_of_death', 'return tuple()[0]')]
+   [('<doctest...>', 10, '<module>', 'lumberjack()'),
+    ('<doctest...>', 4, 'lumberjack', 'bright_side_of_death()'),
+    ('<doctest...>', 7, 'bright_side_of_death', 'return tuple()[0]')]
    *** format_tb:
-   ['  File "<doctest>", line 9, in <module>\n    lumberjack()\n',
-    '  File "<doctest>", line 3, in lumberjack\n    bright_side_of_death()\n',
-    '  File "<doctest>", line 6, in bright_side_of_death\n    return tuple()[0]\n']
-   *** tb_lineno: 2
-   *** print_last:
-   Traceback (most recent call last):
-     File "<doctest>", line 9, in <module>
-       lumberjack()
-     File "<doctest>", line 3, in lumberjack
-       bright_side_of_death()
-   IndexError: tuple index out of range
+   ['  File "<doctest...>", line 10, in <module>\n    lumberjack()\n',
+    '  File "<doctest...>", line 4, in lumberjack\n    bright_side_of_death()\n',
+    '  File "<doctest...>", line 7, in bright_side_of_death\n    return tuple()[0]\n']
+   *** tb_lineno: 10
 
 
 .. The following example shows the different ways to print and format the stack:
@@ -348,13 +340,14 @@ printループを実装います。それは標準的なPythonの対話インタ
 最後の例は、残りの幾つかの関数のデモをします。
 
 
-::
+.. doctest::
+   :options: +NORMALIZE_WHITESPACE
 
    >>> import traceback
-   >>> format_list([('spam.py', 3, '<module>', 'spam.eggs()'),
-   ...              ('eggs.py', 42, 'eggs', 'return "bacon"')])
+   >>> traceback.format_list([('spam.py', 3, '<module>', 'spam.eggs()'),
+   ...                        ('eggs.py', 42, 'eggs', 'return "bacon"')])
    ['  File "spam.py", line 3, in <module>\n    spam.eggs()\n',
     '  File "eggs.py", line 42, in eggs\n    return "bacon"\n']
-   >>> theError = IndexError('tuple indx out of range')
-   >>> traceback.format_exception_only(type(theError), theError)
+   >>> an_error = IndexError('tuple index out of range')
+   >>> traceback.format_exception_only(type(an_error), an_error)
    ['IndexError: tuple index out of range\n']
