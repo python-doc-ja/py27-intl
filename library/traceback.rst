@@ -1,8 +1,8 @@
-:mod:`traceback` --- スタックトレースの表示や取り出し
+:mod:`traceback` --- スタックトレースの表示または取得
 =====================================================
 
 .. module:: traceback
-   :synopsis: スタックトレースの表示や取り出し。
+   :synopsis: スタックトレースを表示または取得する。
 
 
 .. This module provides a standard interface to extract, format and print stack
@@ -39,10 +39,10 @@
    .. output goes to ``sys.stderr``; otherwise it should be an open file or file-like
    .. object to receive the output.
 
-   *traceback* から *limit* までスタックトレース項目を出力します。
+   *traceback* から *limit* までのスタックトレース項目を出力します。
    *limit* が省略されるか ``None`` の場合は、すべての項目が表示されます。
    *file* が省略されるか ``None`` の場合は、 ``sys.stderr`` へ出力されます。
-   それ以外の場合は、出力を受けるためのオープンしたファイルまたはファイルに類似したオブジェクトであるべきです。
+   それ以外の場合は、出力を受けるためのオープンされたファイルまたはファイル風 (file-like) オブジェクトでなければなりません。
 
 
 .. function:: print_exception(type, value, traceback[, limit[, file]])
@@ -55,8 +55,8 @@
    .. format, it prints the line where the syntax error occurred with a caret
    .. indicating the approximate position of the error.
 
-   例外情報と *traceback* から *limit* までスタックトレース項目を *file* へ出力します。
-   これは次のようにすることで :func:`print_tb` とは異なります:
+   例外情報と *traceback* から *limit* までのスタックトレース項目を *file* へ出力します。
+   これは以下のような点で :func:`print_tb` とは異なります:
    (1) *traceback* が ``None`` でない場合は、ヘッダ ``Traceback (most recent call last):`` を出力します。
    (2) スタックトレースの後に例外 *type* と *value* を出力します。
    (3) *type* が :exc:`SyntaxError` であり、 *value* が適切な形式の場合は、
@@ -70,7 +70,7 @@
    .. retrieve the same information in a thread-safe way instead of using the
    .. deprecated variables.)
 
-   これは ``print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, limit, file)`` のための省略表現です。
+   これは ``print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, limit, file)`` の省略表現です。
    (非推奨の変数を使う代わりにスレッドセーフな方法で同じ情報を引き出すために、
    実際には :func:`sys.exc_info` を使います。)
 
@@ -80,7 +80,7 @@
    .. This is like ``print_exc(limit)`` but returns a string instead of printing to a
    .. file.
 
-   これは、 ``print_exc(limit)`` に似ていますが、ファイルに出力するかわりに文字列を返します。
+   これは、 ``print_exc(limit)`` に似ていますが、ファイルに出力する代わりに文字列を返します。
 
 
    .. versionadded:: 2.4
@@ -105,7 +105,7 @@
 
    この関数は呼び出された時点からのスタックトレースを出力します。
    オプションの *f* 引数は代わりの最初のスタックフレームを指定するために使えます。
-   :func:`print_exception` に付いて言えば、オプションの *limit* と *file* 引数は同じ意味を持ちます。
+   オプションの *limit* と *file* 引数は :func:`print_exception` と同じ意味を持ちます。
 
 
 .. function:: extract_tb(traceback[, limit])
@@ -121,9 +121,9 @@
    トレースバックオブジェクト *traceback* から *limit* まで取り出された"前処理済み"スタックトレース項目のリストを返します。
    スタックトレースの代わりの書式設定を行うために役に立ちます。
    *limit* が省略されるか ``None`` の場合は、すべての項目が取り出されます。
-   "前処理済み"スタックトレース項目とは四つの部分からなる (*filename*, *line number*, *function name*, *text*) で、
+   "前処理済み"スタックトレース項目とは4要素のタプル (*filename*, *line number*, *function name*, *text*) で、
    スタックトレースに対して通常出力される情報を表しています。
-   *text* は前と後ろに付いている空白を取り除いた文字列です。ソースが使えない場合は ``None`` です。
+   *text* は前後の空白を取り除いた文字列です。ソースが利用できない場合は ``None`` です。
 
 
 .. function:: extract_stack([f[, limit]])
@@ -133,7 +133,7 @@
    .. arguments have the same meaning as for :func:`print_stack`.
 
    現在のスタックフレームから生のトレースバックを取り出します。戻り値は :func:`extract_tb` と同じ形式です。
-   :func:`print_stack` について言えば、オプションの *f* と *limit* 引数は同じ意味を持ちます。
+   オプションの *f* と *limit* 引数は :func:`print_stack` と同じ意味を持ちます。
 
 
 .. function:: format_list(list)
@@ -147,7 +147,7 @@
    :func:`extract_tb` または :func:`extract_stack` が返すタプルのリストが与えられると、
    出力の準備を整えた文字列のリストを返します。結果として生じるリストの中の各文字列は、
    引数リストの中の同じインデックスの要素に対応します。各文字列は末尾に改行が付いています。
-   その上、ソーステキスト行が ``None`` でないそれらの要素に対しては、
+   さらに、ソーステキスト行が ``None`` でないそれらの要素に対しては、
    文字列は内部に改行を含んでいるかもしれません。
 
 
@@ -161,7 +161,7 @@
    .. where the syntax error occurred.  The message indicating which exception
    .. occurred is the always last string in the list.
 
-   トレースバックの例外部分の書式を設定します。引数は ``sys.last_type`` と ``sys.last_value``
+   トレースバックの例外部分を書式化します。引数は ``sys.last_type`` と ``sys.last_value``
    のような例外の型と値です。戻り値はそれぞれが改行で終わっている文字列のリストです。
    通常、リストは一つの文字列を含んでいます。しかし、 :exc:`SyntaxError` 例外に対しては、
    (出力されるときに) 構文エラーが起きた場所についての詳細な情報を示す行をいくつか含んでいます。
@@ -176,7 +176,7 @@
    .. internal newlines.  When these lines are concatenated and printed, exactly the
    .. same text is printed as does :func:`print_exception`.
 
-   スタックトレースと例外情報の書式を設定します。
+   スタックトレースと例外情報を書式化します。
    引数は :func:`print_exception` の対応する引数と同じ意味を持ちます。
    戻り値は文字列のリストで、それぞれの文字列は改行で終わり、そのいくつかは内部に改行を含みます。
    これらの行が連結されて出力される場合は、厳密に :func:`print_exception` と同じテキストが出力されます。
@@ -203,10 +203,10 @@
    .. :option:`-O` flag was passed to Python the ``tb.tb_lineno`` was not updated
    .. correctly.  This function has no use in versions past 2.3.
 
-   この関数はトレースバックオブジェクトに設定された現在の行番号をかえします。
-   この関数は必要でした。なぜなら、 :option:`-O` フラグが Python へ渡されたとき、
-   Python の2.3より前のバージョンでは ``tb.tb_lineno`` が正しく更新されなかったからです。
-   この関数は2.3以降のバージョンでは役に立ちません。
+   トレースバックオブジェクトに設定された現在の行番号を返します。
+   Python 2.3より前のバージョンでは、 :option:`-O` フラグが渡されたときに
+   ``tb.tb_lineno`` が正しく更新されなかったため、この関数は必要でした。
+   2.3以降のバージョンでは不要です。
 
 
 .. _traceback-example:
@@ -219,8 +219,8 @@
 .. complete implementation of the interpreter loop, refer to the :mod:`code`
 .. module.
 
-この簡単な例では基本的な read-eval-print ループを実装います。
-それは標準的な Python の対話インタープリタループに似ていますが、 Python のものより便利ではありません。
+この簡単な例では基本的な read-eval-print ループを実装しています。
+標準的な Python の対話インタープリタループに似ていますが、 Python のものより便利ではありません。
 インタープリタループのより完全な実装については、 :mod:`code` モジュールを参照してください。
 
 
