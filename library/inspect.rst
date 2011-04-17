@@ -138,7 +138,7 @@
 .. | frame     | f_back          | next outer frame object   |       |
 .. |           |                 | (this frame's caller)     |       |
 .. +-----------+-----------------+---------------------------+-------+
-.. |           | f_builtins      | built-in namespace seen   |       |
+.. |           | f_builtins      | builtins namespace seen   |       |
 .. |           |                 | by this frame             |       |
 .. +-----------+-----------------+---------------------------+-------+
 .. |           | f_code          | code object being         |       |
@@ -578,12 +578,14 @@ Note:
    オブジェクトがgetsetデスクリプタの場合に真を返します。
 
 
-   .. getsets are attributes defined in extension modules via ``PyGetSetDef``
-   .. structures.  For Python implementations without such types, this method will
-   .. always return ``False``.
+   .. impl-detail::
 
-   getsetとは ``PyGetSetDef`` 構造体を用いて拡張モジュールで定義されてい
-   る属性のことです。Pythonの実装の場合はそのような型はないので、このメソッドは常に ``False`` を返します。
+      .. getsets are attributes defined in extension modules via
+      .. :ctype:`PyGetSetDef` structures.  For Python implementations without such
+      .. types, this method will always return ``False``.
+
+      getsetとは :ctype:`PyGetSetDef` 構造体を用いて拡張モジュールで定義されてい
+      る属性のことです。Pythonの実装の場合はそのような型はないので、このメソッドは常に ``False`` を返します。
 
 
    .. versionadded:: 2.5
@@ -596,12 +598,14 @@ Note:
    オブジェクトがメンバデスクリプタの場合に真を返します。
 
 
-   .. Member descriptors are attributes defined in extension modules via
-   .. ``PyMemberDef`` structures.  For Python implementations without such types,
-   .. this method will always return ``False``.
+   .. impl-detail::
 
-   メンバデスクリプタとは ``PyMemberDef`` 構造体を用いて拡張モジュールで定義されている属性のことです。Pythonの実装の場合はそのような型はないの
-   で、このメソッドは常に ``False`` を返します。
+      .. Member descriptors are attributes defined in extension modules via
+      .. :ctype:`PyMemberDef` structures.  For Python implementations without such
+      .. types, this method will always return ``False``.
+
+      メンバデスクリプタとは :ctype:`PyMemberDef` 構造体を用いて拡張モジュールで定義されている属性のことです。Pythonの実装の場合はそのような型はないの
+      で、このメソッドは常に ``False`` を返します。
 
 
    .. versionadded:: 2.5
@@ -717,14 +721,14 @@ Note:
 
 .. function:: getargspec(func)
 
-   .. Get the names and default values of a function's arguments. A tuple of four
+   .. Get the names and default values of a Python function's arguments. A tuple of four
    .. things is returned: ``(args, varargs, varkw, defaults)``. *args* is a list of
    .. the argument names (it may contain nested lists). *varargs* and *varkw* are the
    .. names of the ``*`` and ``**`` arguments or ``None``. *defaults* is a tuple of
    .. default argument values or None if there are no default arguments; if this tuple
    .. has *n* elements, they correspond to the last *n* elements listed in *args*.
 
-   関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の値を返します:``(args, varargs, varkw, defaults)`` 。
+   Python 関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の値を返します:``(args, varargs, varkw, defaults)`` 。
    *args* は引数名のリストです（ネストしたリストが格納される場合があります）
    *varargs* と *varkw* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
    *defaults* は引数のデフォルト値のタプルか、デフォルト値がない場合は ``None`` です。
@@ -805,7 +809,7 @@ Note:
 ブジェクト・ファイル名・実行中の行番号・関数名・コンテキストのソース行のリスト・ソース行リストの実行中行のインデックス。
 
 
-.. warning::
+.. note::
 
    .. Keeping references to frame objects, as found in the first element of the frame
    .. records these functions return, can cause your program to create reference
@@ -895,6 +899,18 @@ Note:
    呼び出し元のフレームオブジェクトを返します。
 
 
+   .. impl-detail::
+
+      .. This function relies on Python stack frame support in the interpreter,
+      .. which isn't guaranteed to exist in all implementations of Python.  If
+      .. running in an implementation without Python stack frame support this
+      .. function returns ``None``.
+
+      この関数はインタプリタの Python スタックフレームサポートに依存します。
+      これは Python のすべての実装に存在している保証はありません。
+      Python スタックフレームサポートのない実装で動作している場合、この関数は ``None`` を返します。
+
+ 
 .. function:: stack([context])
 
    .. Return a list of frame records for the caller's stack.  The first entry in the
