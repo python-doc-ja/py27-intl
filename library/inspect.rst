@@ -18,16 +18,18 @@
 .. and format the argument list for a function, or get all the information you need
 .. to display a detailed traceback.
 
-:mod:`inspect` は、モジュール・クラス・メソッド・関数・トレースバック・フレームオブジェクト・コードオブジェクトなどのオブジェクトから情報を取得
-する関数を定義しており、クラスの内容を調べる、メソッドのソースコードを取得する、関数の引数リストを取得して整形する、トレースバックから必要な情報
-だけを取得して表示する、などの処理を行う場合に利用します。
+:mod:`inspect` は、モジュール・クラス・メソッド・関数・トレースバック・
+フレームオブジェクト・コードオブジェクトなどのオブジェクトから情報を取得する関数を定義しており、
+クラスの内容を調べる、メソッドのソースコードを取得する、関数の引数リストを取得して整形する、
+トレースバックから必要な情報だけを取得して表示する、などの処理を行う場合に利用します。
 
 
 .. There are four main kinds of services provided by this module: type checking,
 .. getting source code, inspecting classes and functions, and examining the
 .. interpreter stack.
 
-このモジュールの機能は、型チェック・ソースコードの取得・クラス／関数から情報を取得・インタープリタのスタック情報の調査、の4種類に分類する事ができます。
+このモジュールの機能は、型チェック・ソースコードの取得・クラス／関数から情報を取得・
+インタープリタのスタック情報の調査、の4種類に分類する事ができます。
 
 
 .. _inspect-types:
@@ -41,8 +43,9 @@
 .. They also help you determine when you can expect to find the following special
 .. attributes:
 
-:func:`getmembers` は、クラスやモジュールなどのオブジェクトからメンバを取得します。名前が"is"で始まる 16
-個の関数は、 :func:`getmembers` の2番目の引数として利用する事ができますし、以下のような特殊属性を参照できるかどうか調べる時にも使えます。
+:func:`getmembers` は、クラスやモジュールなどのオブジェクトからメンバを取得します。
+名前が"is"で始まる16個の関数は、 :func:`getmembers` の2番目の引数として利用する事ができますし、
+以下のような特殊属性を参照できるかどうか調べる時にも使えます。
 
 
 .. +-----------+-----------------+---------------------------+-------+
@@ -228,7 +231,7 @@
 +===========+=================+=====================================================+=======+
 | module    | __doc__         | ドキュメント文字列                                  |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | __file__        | ファイル名(組み込みモジュールには存在しない         |       |
+|           | __file__        | ファイル名 (組み込みモジュールには存在しない)       |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 | class     | __doc__         | ドキュメント文字列                                  |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
@@ -250,7 +253,7 @@
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | __name__        | 関数が定義された時の名前                            |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | func_code       | 関数をコンパイルしたバイトコード(:term:`bytecode`)  |       |
+|           | func_code       | 関数をコンパイルしたバイトコード (:term:`bytecode`) |       |
 |           |                 | を格納するコードオブジェクト                        |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | func_defaults   | 引数のデフォルト値のタプル                          |       |
@@ -283,26 +286,26 @@
 +-----------+-----------------+-----------------------------------------------------+-------+
 | traceback | tb_frame        | このレベルのフレームオブジェクト                    |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | tb_lasti        | 最後に実行しようとしたバイトコード中のインストラク  |       |
-|           |                 | ションを示すインデックス。                          |       |
+|           | tb_lasti        | 最後に実行しようとしたバイトコード中の              |       |
+|           |                 | インストラクションを示すインデックス。              |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | tb_lineno       | 現在のPythonソースコードの行番号                    |       |
+|           | tb_lineno       | 現在の Python ソースコードの行番号                  |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | tb_next         | このオブジェクトの内側(このレベルから呼び出された)  |       |
+|           | tb_next         | このオブジェクトの内側 (このレベルから呼び出された) |       |
 |           |                 | のトレースバックオブジェクト                        |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-| frame     | f_back          | 外側 (このフレームを呼び出した)のフレームオブジ     |       |
-|           |                 | ェクト                                              |       |
+| frame     | f_back          | 外側 (このフレームを呼び出した) の                  |       |
+|           |                 | フレームオブジェクト                                |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_builtins      | このフレームで参照している組み込み名前空間          |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_code          | このフレームで実行しているコードオブジェクト        |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | f_exc_traceback | このフレームで例外が発生した場合にはトレー          |       |
-|           |                 | スバックオブジェクト。それ以外なら ``None``         |       |
+|           | f_exc_traceback | このフレームで例外が発生した場合には                |       |
+|           |                 | トレースバックオブジェクト。それ以外なら ``None``   |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | f_exc_type      | このフレームで例外が発生した場合には例外型。それ    |       |
-|           |                 | 以外なら ``None``                                   |       |
+|           | f_exc_type      | このフレームで例外が発生した場合には例外型。        |       |
+|           |                 | それ以外なら ``None``                               |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_exc_value     | このフレームで例外が発生した場合には例外の値。      |       |
 |           |                 | それ以外なら ``None``                               |       |
@@ -311,7 +314,7 @@
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_lasti         | 最後に実行しようとしたバイトコードのインデックス。  |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | f_lineno        | 現在のPythonソースコードの行番号                    |       |
+|           | f_lineno        | 現在の Python ソースコードの行番号                  |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_locals        | このフレームで参照しているローカル名前空間          |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
@@ -319,7 +322,7 @@
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | f_trace         | このフレームのトレース関数、または ``None``         |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-| code      | co_argcount     | 引数の数(\*、\*\*引数は含まない)                    |       |
+| code      | co_argcount     | 引数の数 (\*、\*\*引数は含まない)                   |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | co_code         | コンパイルされたバイトコードそのままの文字列        |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
@@ -327,7 +330,7 @@
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | co_filename     | コードオブジェクトを生成したファイルのファイル名    |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
-|           | co_firstlineno  | Pythonソースコードの先頭行                          |       |
+|           | co_firstlineno  | Python ソースコードの先頭行                         |       |
 +-----------+-----------------+-----------------------------------------------------+-------+
 |           | co_flags        | 以下の値の組み合わせ: 1=optimized                   |       |
 |           |                 | ``|`` 2=newlocals  ``|``                            |       |
@@ -371,8 +374,8 @@ Note:
    .. name.  If the optional *predicate* argument is supplied, only members for which
    .. the predicate returns a true value are included.
 
-   オブジェクトの全メンバを、(名前, 値)の組み合わせのリストで返します。リストはメンバ名でソートされています。 *predicate* が指定されている場
-   合、predicateの戻り値が真となる値のみを返します。
+   オブジェクトの全メンバを、 (名前, 値) の組み合わせのリストで返します。リストはメンバ名でソートされています。
+   *predicate* が指定されている場合、 predicate の戻り値が真となる値のみを返します。
 
 
    .. note::
@@ -397,11 +400,12 @@ Note:
    .. defined in the :mod:`imp` module; see the documentation for that module for
    .. more information on module types.
 
-   *path* で指定したファイルがモジュールであればそのモジュールがPython でどのように解釈されるかを示す``(name, suffix, mode,
-   mtype)``のタプルを返し、モジュールでなければ `` None``を返します。 *name* はパッケージ名を含まないモジュール
-   名、 *suffix* はファイル名からモジュール名を除いた残りの部分(ドットによる拡張子とは限らない)、 *mode* は :func:`open` で指定されるフ
-   ァイルモード(``'r'`` または ``'rb'``)、 *mtype* は :mod:`imp` で定義している整定数のいずれかが指定されます。モジュール
-   タイプに付いては :mod:`imp` を参照してください。
+   *path* で指定したファイルがモジュールであればそのモジュールが Python でどのように解釈されるかを示す
+   ``(name, suffix, mode, mtype)`` のタプルを返し、モジュールでなければ ``None`` を返します。
+   *name* はパッケージ名を含まないモジュール名、 *suffix* はファイル名からモジュール名を除いた残りの部分 (ドットによる拡張子とは限らない)、
+   *mode* は :func:`open` で指定されるファイルモード (``'r'`` または ``'rb'``)、
+   *mtype* は :mod:`imp` で定義している整定数のいずれかが指定されます。
+   モジュールタイプに付いては :mod:`imp` を参照してください。
 
 
    .. .. versionchanged:: 2.6
@@ -409,8 +413,7 @@ Note:
    ..    module_type)``.
 
    .. versionchanged:: 2.6
-      名前付きタプル(:term:`named tuple`) の ``ModuleInfo(name, suffix, mode, module_type)``
-      を返します。
+      名前付きタプル (:term:`named tuple`) の ``ModuleInfo(name, suffix, mode, module_type)`` を返します。
 
 
 .. function:: getmodulename(path)
@@ -420,8 +423,9 @@ Note:
    .. uses when searching for modules.  If the name cannot be matched according to the
    .. interpreter's rules, ``None`` is returned.
 
-   *path* で指定したファイルの、パッケージ名を含まないモジュール名を返します。この処理は、インタープリタがモジュールを検索する時と同じアルゴ
-   リズムで行われます。ファイルがこのアルゴリズムで見つからない場合には ``None`` が返ります。
+   *path* で指定したファイルの、パッケージ名を含まないモジュール名を返します。
+   この処理は、インタープリタがモジュールを検索する時と同じアルゴリズムで行われます。
+   ファイルがこのアルゴリズムで見つからない場合には ``None`` が返ります。
 
 
 .. function:: ismodule(object)
@@ -449,14 +453,14 @@ Note:
 
    .. Return true if the object is a Python function or unnamed (:term:`lambda`) function.
 
-   オブジェクトがPythonの関数、または無名関数(:term:`lambda`)の場合は真を返します。
+   オブジェクトが Python の関数、または無名関数 (:term:`lambda`) の場合は真を返します。
 
 
 .. function:: isgeneratorfunction(object)
 
    .. Return true if the object is a Python generator function.
 
-   *object* がPythonのジェネレータ関数であるときに真を返します。
+   *object* が Python のジェネレータ関数であるときに真を返します。
 
 
    .. versionadded:: 2.6
@@ -511,7 +515,7 @@ Note:
 
    .. Return true if the object is an abstract base class.
 
-   *object* が抽象規定型(ABC)であるときに真を返します。
+   *object* が抽象規定型 (ABC) であるときに真を返します。
 
    .. versionadded:: 2.6
 
@@ -521,8 +525,8 @@ Note:
    .. Return true if the object is a method descriptor, but not if :func:`ismethod`
    .. or :func:`isclass` or :func:`isfunction` are true.
 
-   オブジェクトがメソッドデスクリプタの場合に真を返しますが、 :func:`ismethod`, :func:`isclass` または :func:`isfunction`
-   が真の場合には真を返しません。
+   オブジェクトがメソッドデスクリプタの場合に真を返しますが、
+   :func:`ismethod`, :func:`isclass` または :func:`isfunction` が真の場合には真を返しません。
 
 
    .. This is new as of Python 2.2, and, for example, is true of
@@ -530,8 +534,8 @@ Note:
    .. but not a :attr:`__set__` attribute, but beyond that the set of attributes
    .. varies.  :attr:`__name__` is usually sensible, and :attr:`__doc__` often is.
 
-   この機能は Python 2.2 から新たに追加されたもので、例えば ``int.__add__`` は真になります。このテストをパスするオブジェクトは
-   :attr:`__get__` 属性を持ちますが :attr:`__set__` 属性を持ちません。
+   この機能は Python 2.2 から新たに追加されたもので、例えば ``int.__add__`` は真になります。
+   このテストをパスするオブジェクトは :attr:`__get__` 属性を持ちますが :attr:`__set__` 属性を持ちません。
    それ以外の属性を持っているかもしれません。
    通常 :attr:`__name__` を持っていますし、しばしば :attr:`__doc__` も持っています。
 
@@ -541,8 +545,8 @@ Note:
    .. other tests promise more -- you can, e.g., count on having the
    .. :attr:`im_func` attribute (etc) when an object passes :func:`ismethod`.
 
-   デスクリプタを使って実装されたメソッドで、上記のいずれかのテストもパスしているものは、 :func:`ismethoddescriptor`
-   では偽を返します。これは単に他のテストの方がもっと確実だからです --
+   デスクリプタを使って実装されたメソッドで、上記のいずれかのテストもパスしているものは、
+   :func:`ismethoddescriptor` では偽を返します。これは単に他のテストの方がもっと確実だからです --
    例えば、 :func:`ismethod` をパスしたオブジェクトは :attr:`im_func` 属性などを持っていると期待できます。
 
 
@@ -563,9 +567,10 @@ Note:
 
    データデスクリプタは :attr:`__get__` および :attr:`__set__` 属性の両方を持ちます。
    データデスクリプタの例は (Python 上で定義された) プロパティや getset やメンバです。
-   後者のふたつは C で定義されており、個々の型に特有のテストも行います。そのため、Python の実装よりもより確実です。
-   通常、データデスクリプタは :attr:`__name__` や :attr:`__doc__`  属性を持ちます (プロパティ、 getset
-   、メンバは両方の属性を持っています) が、保証されているわけではありません。
+   後者のふたつは C で定義されており、個々の型に特有のテストも行います。
+   そのため、Python の実装よりもより確実です。
+   通常、データデスクリプタは :attr:`__name__` や :attr:`__doc__`  属性を持ちます
+   (プロパティ、 getset 、メンバは両方の属性を持っています) が、保証されているわけではありません。
 
 
    .. versionadded:: 2.3
@@ -575,7 +580,7 @@ Note:
 
    .. Return true if the object is a getset descriptor.
 
-   オブジェクトがgetsetデスクリプタの場合に真を返します。
+   オブジェクトが getset デスクリプタの場合に真を返します。
 
 
    .. impl-detail::
@@ -584,8 +589,8 @@ Note:
       .. :ctype:`PyGetSetDef` structures.  For Python implementations without such
       .. types, this method will always return ``False``.
 
-      getsetとは :ctype:`PyGetSetDef` 構造体を用いて拡張モジュールで定義されてい
-      る属性のことです。Pythonの実装の場合はそのような型はないので、このメソッドは常に ``False`` を返します。
+      getsetとは :ctype:`PyGetSetDef` 構造体を用いて拡張モジュールで定義されている属性のことです。
+      Python の実装の場合はそのような型はないので、このメソッドは常に ``False`` を返します。
 
 
    .. versionadded:: 2.5
@@ -604,8 +609,8 @@ Note:
       .. :ctype:`PyMemberDef` structures.  For Python implementations without such
       .. types, this method will always return ``False``.
 
-      メンバデスクリプタとは :ctype:`PyMemberDef` 構造体を用いて拡張モジュールで定義されている属性のことです。Pythonの実装の場合はそのような型はないの
-      で、このメソッドは常に ``False`` を返します。
+      メンバデスクリプタとは :ctype:`PyMemberDef` 構造体を用いて拡張モジュールで定義されている属性のことです。
+      Python の実装の場合はそのような型はないので、このメソッドは常に ``False`` を返します。
 
 
    .. versionadded:: 2.5
@@ -629,8 +634,9 @@ Note:
    .. object's source code (for a class, function, or method), or at the top of the
    .. Python source file (if the object is a module).
 
-   オブジェクトがクラス・関数・メソッドの何れかの場合は、オブジェクトのソースコードの直後にあるコメント行（複数行）を、単一の文字列として返し
-   ます。オブジェクトがモジュールの場合、ソースファイルの先頭にあるコメントを返します。
+   オブジェクトがクラス・関数・メソッドの何れかの場合は、
+   オブジェクトのソースコードの直後にあるコメント行 (複数行) を、単一の文字列として返します。
+   オブジェクトがモジュールの場合、ソースファイルの先頭にあるコメントを返します。
 
 
 .. function:: getfile(object)
@@ -639,8 +645,8 @@ Note:
    .. This will fail with a :exc:`TypeError` if the object is a built-in module,
    .. class, or function.
 
-   オブジェクトを定義している（テキストまたはバイナリの）ファイルの名前を返します。オブジェクトが組み込みモジュール・クラス・関数の場合は
-   :exc:`TypeError` 例外が発生します。
+   オブジェクトを定義している (テキストまたはバイナリの) ファイルの名前を返します。
+   オブジェクトが組み込みモジュール・クラス・関数の場合は :exc:`TypeError` 例外が発生します。
 
 
 .. function:: getmodule(object)
@@ -656,8 +662,8 @@ Note:
    .. will fail with a :exc:`TypeError` if the object is a built-in module, class, or
    .. function.
 
-   オブジェクトを定義しているPythonソースファイルの名前を返します。オブジェクトが組み込みのモジュール、クラス、関数の場合には、
-   :exc:`TypeError` 例外が発生します。
+   オブジェクトを定義している Python ソースファイルの名前を返します。
+   オブジェクトが組み込みのモジュール、クラス、関数の場合には、 :exc:`TypeError` 例外が発生します。
 
 
 .. function:: getsourcelines(object)
@@ -669,9 +675,10 @@ Note:
    .. line of code was found.  An :exc:`IOError` is raised if the source code cannot
    .. be retrieved.
 
-   オブジェクトのソース行のリストと開始行番号を返します。引数にはモジュール・クラス・メソッド・関数・トレースバック・フレーム・コードオブジェク
-   トを指定する事ができます。戻り値は指定したオブジェクトに対応するソースコードのソース行リストと元のソースファイル上での開始行となります。ソー
-   スコードを取得できない場合は :exc:`IOError` が発生します。
+   オブジェクトのソース行のリストと開始行番号を返します。
+   引数にはモジュール・クラス・メソッド・関数・トレースバック・フレーム・コードオブジェクトを指定する事ができます。
+   戻り値は指定したオブジェクトに対応するソースコードのソース行リストと元のソースファイル上での開始行となります。
+   ソースコードを取得できない場合は :exc:`IOError` が発生します。
 
 
 .. function:: getsource(object)
@@ -681,8 +688,9 @@ Note:
    .. returned as a single string.  An :exc:`IOError` is raised if the source code
    .. cannot be retrieved.
 
-   オブジェクトのソースコードを返します。引数にはモジュール・クラス・メソッド・関数・トレースバック・フレーム・コードオブジェクトを指定する事が
-   できます。ソースコードは単一の文字列で返します。ソースコードを取得できない場合は :exc:`IOError` が発生します。
+   オブジェクトのソースコードを返します。
+   引数にはモジュール・クラス・メソッド・関数・トレースバック・フレーム・コードオブジェクトを指定する事ができます。
+   ソースコードは単一の文字列で返します。ソースコードを取得できない場合は :exc:`IOError` が発生します。
 
 
 .. function:: cleandoc(doc)
@@ -692,8 +700,7 @@ Note:
    .. onwards is removed.  Also, all tabs are expanded to spaces.
 
    インデントされた docstring から、コードブロックまでのインデントを削除します。
-   ２行目以降では行頭の空白は一様に削除されます。
-   全てのタブはスペースに展開されます。
+   ２行目以降では行頭の空白は一様に削除されます。全てのタブはスペースに展開されます。
 
 
    .. versionadded:: 2.6
@@ -714,9 +721,11 @@ Note:
    .. classes using multiple inheritance and their descendants will appear multiple
    .. times.
 
-   リストで指定したクラスの継承関係から、ネストしたリストを作成します。ネストしたリストには、直前の要素から派生したクラスが格納されます。各要素
-   は長さ2のタプルで、クラスと基底クラスのタプルを格納しています。 *unique* が真の場合、各クラスは戻り値のリスト内に一つだけしか格納
-   されません。真でなければ、多重継承を利用したクラスとその派生クラスは複数回格納される場合があります。
+   リストで指定したクラスの継承関係から、ネストしたリストを作成します。
+   ネストしたリストには、直前の要素から派生したクラスが格納されます。
+   各要素は長さ2のタプルで、クラスと基底クラスのタプルを格納しています。
+   *unique* が真の場合、各クラスは戻り値のリスト内に一つだけしか格納されません。
+   真でなければ、多重継承を利用したクラスとその派生クラスは複数回格納される場合があります。
 
 
 .. function:: getargspec(func)
@@ -728,8 +737,8 @@ Note:
    .. default argument values or None if there are no default arguments; if this tuple
    .. has *n* elements, they correspond to the last *n* elements listed in *args*.
 
-   Python 関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の値を返します:``(args, varargs, varkw, defaults)`` 。
-   *args* は引数名のリストです（ネストしたリストが格納される場合があります）
+   Python 関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の値を返します: ``(args, varargs, varkw, defaults)`` 。
+   *args* は引数名のリストです (ネストしたリストが格納される場合があります)。
    *varargs* と *varkw* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
    *defaults* は引数のデフォルト値のタプルか、デフォルト値がない場合は ``None`` です。
    このタプルに *n* 個の要素があれば、各要素は *args* の後ろから *n* 個分の引数のデフォルト値となります。
@@ -740,7 +749,7 @@ Note:
    ..    defaults)``.
 
    .. versionchanged:: 2.6
-      ``ArgSpec(args, varargs, keywords, defaults)`` 形式の名前付きタプル(:term:`named tuple`)を返します。
+      ``ArgSpec(args, varargs, keywords, defaults)`` 形式の名前付きタプル (:term:`named tuple`) を返します。
 
 
 .. function:: getargvalues(frame)
@@ -751,9 +760,10 @@ Note:
    .. names of the ``*`` and ``**`` arguments or ``None``. *locals* is the locals
    .. dictionary of the given frame.
 
-   指定したフレームに渡された引数の情報を取得します。戻り値は長さ4のタプルで、次の値を返します:``(args, varargs, varkw,
-   locals)``。 *args* は引数名のリストです（ネストしたリストが格納される場合があります）。 *varargs* と *varkw* は``*``引数と
-   ``**`` 引数の名前で、引数がなければ ``None`` となります。 * locals*は指定したフレームのローカル変数の辞書です。
+   指定したフレームに渡された引数の情報を取得します。戻り値は長さ4のタプルで、次の値を返します: ``(args, varargs, varkw, locals)`` 。
+   *args* は引数名のリストです (ネストしたリストが格納される場合があります)。
+   *varargs* と *varkw* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
+   *locals* は指定したフレームのローカル変数の辞書です。
 
 
    .. .. versionchanged:: 2.6
@@ -761,7 +771,7 @@ Note:
    ..    locals)``.
 
    .. versionchanged:: 2.6
-      ``ArgInfo(args, varargs, keywords, locals)`` 形式の名前付きタプル(:term:`named tuple`)を返します。
+      ``ArgInfo(args, varargs, keywords, locals)`` 形式の名前付きタプル (:term:`named tuple`) を返します。
 
 
 .. function:: formatargspec(args[, varargs, varkw, defaults, formatarg, formatvarargs, formatvarkw, formatvalue, join])
@@ -770,8 +780,8 @@ Note:
    .. :func:`getargspec`.  The format\* arguments are the corresponding optional
    .. formatting functions that are called to turn names and values into strings.
 
-   :func:`getargspec` で取得した4つの値を読みやすく整形します。 format\*
-   引数はオプションで、名前と値を文字列に変換する整形関数を指定する事ができます。
+   :func:`getargspec` で取得した4つの値を読みやすく整形します。
+   format\* 引数はオプションで、名前と値を文字列に変換する整形関数を指定する事ができます。
 
 
 .. function:: formatargvalues(args[, varargs, varkw, locals, formatarg, formatvarargs, formatvarkw, formatvalue, join])
@@ -780,8 +790,8 @@ Note:
    .. :func:`getargvalues`.  The format\* arguments are the corresponding optional
    .. formatting functions that are called to turn names and values into strings.
 
-   :func:`getargvalues` で取得した4つの値を読みやすく整形します。 format\*
-   引数はオプションで、名前と値を文字列に変換する整形関数を指定する事ができます。
+   :func:`getargvalues` で取得した4つの値を読みやすく整形します。
+   format\* 引数はオプションで、名前と値を文字列に変換する整形関数を指定する事ができます。
 
 
 .. function:: getmro(cls)
@@ -791,8 +801,9 @@ Note:
    .. resolution order depends on cls's type.  Unless a very peculiar user-defined
    .. metatype is in use, cls will be the first element of the tuple.
 
-   *cls* クラスの基底クラス（ *cls* 自身も含む）を、メソッドの優先順位順に並べたタプルを返します。結果のリスト内で各クラスは一度だけ格納さ
-   れます。メソッドの優先順位はクラスの型によって異なります。非常に特殊なユーザ定義のメタクラスを使用していない限り、 *cls* が戻り値の先頭要素となります。
+   *cls* クラスの基底クラス (*cls* 自身も含む) を、メソッドの優先順位順に並べたタプルを返します。
+   結果のリスト内で各クラスは一度だけ格納されます。メソッドの優先順位はクラスの型によって異なります。
+   非常に特殊なユーザ定義のメタクラスを使用していない限り、 *cls* が戻り値の先頭要素となります。
 
 
 .. _inspect-stack:
@@ -805,8 +816,9 @@ Note:
 .. the function name, a list of lines of context from the source code, and the
 .. index of the current line within that list.
 
-以下の関数には、戻り値として"フレームレコード"を返す関数があります。" フレームレコード"は長さ6のタプルで、以下の値を格納しています:フレームオ
-ブジェクト・ファイル名・実行中の行番号・関数名・コンテキストのソース行のリスト・ソース行リストの実行中行のインデックス。
+以下の関数には、戻り値として"フレームレコード"を返す関数があります。
+"フレームレコード"は長さ6のタプルで、以下の値を格納しています:
+フレームオブジェクト・ファイル名・実行中の行番号・関数名・コンテキストのソース行のリスト・ソース行リストの実行中行のインデックス。
 
 
 .. note::
@@ -819,9 +831,9 @@ Note:
    .. be created, it is important to ensure they are explicitly broken to avoid the
    .. delayed destruction of objects and increased memory consumption which occurs.
 
-   フレームレコードの最初の要素などのフレームオブジェクトへの参照を保存すると、循環参照になってしまう場合があります。循環参照ができると、Pythonの循
-   環参照検出機能を有効にしていたとしても関連するオブジェクトが参照しているすべてのオブジェクトが解放されにくくなり、明示的に参照を削除しないとメモ
-   リ消費量が増大する恐れがあります。
+   フレームレコードの最初の要素などのフレームオブジェクトへの参照を保存すると、循環参照になってしまう場合があります。
+   循環参照ができると、 Python の循環参照検出機能を有効にしていたとしても関連するオブジェクトが参照しているすべてのオブジェクトが解放されにくくなり、
+   明示的に参照を削除しないとメモリ消費量が増大する恐れがあります。
 
 
    .. Though the cycle detector will catch these, destruction of the frames (and local
@@ -829,9 +841,8 @@ Note:
    .. :keyword:`finally` clause.  This is also important if the cycle detector was
    .. disabled when Python was compiled or using :func:`gc.disable`.  For example:
 
-   参照の削除をPythonの循環参照検出機能にまかせる事もできますが、 :keyword:`finally` 節で循環参照を解除すれば確実にフレーム（とそのローカル
-   変数）は削除されます。また、循環参照検出機能はPythonのコンパイルオプションや :func:`gc. disable` で無効とされている場合があります
-   ので注意が必要です。例：
+   参照の削除を Python の循環参照検出機能にまかせる事もできますが、 :keyword:`finally` 節で循環参照を解除すれば確実にフレーム (とそのローカル変数) は削除されます。
+   また、循環参照検出機能は Python のコンパイルオプションや :func:`gc. disable` で無効とされている場合がありますので注意が必要です。例：
 
 
    ::
@@ -848,8 +859,8 @@ Note:
 .. the number of lines of context to return, which are centered around the current
 .. line.
 
-以下の関数でオプション引数 *context* には、戻り値のソース行リストに何行分のソースを含めるかを指定します。ソース行リストには、実行中の行を中心
-として指定された行数分のリストを返します。
+以下の関数でオプション引数 *context* には、戻り値のソース行リストに何行分のソースを含めるかを指定します。
+ソース行リストには、実行中の行を中心として指定された行数分のリストを返します。
 
 
 .. function:: getframeinfo(frame[, context])
@@ -857,7 +868,8 @@ Note:
    .. Get information about a frame or traceback object.  A 5-tuple is returned, the
    .. last five elements of the frame's frame record.
 
-   フレーム又はトレースバックオブジェクトの情報を取得します。フレームレコードの先頭要素を除いた、長さ5のタプルを返します。
+   フレーム又はトレースバックオブジェクトの情報を取得します。
+   フレームレコードの先頭要素を除いた、長さ5のタプルを返します。
 
 
    .. .. versionchanged:: 2.6
@@ -866,7 +878,7 @@ Note:
 
    .. versionchanged:: 2.6
       ``Traceback(filename, lineno, function, code_context, index)``
-      形式の名前付きタプル(:term:`named tuple`)を返します。
+      形式の名前付きタプル (:term:`named tuple`) を返します。
 
 
 .. function:: getouterframes(frame[, context])
@@ -876,9 +888,10 @@ Note:
    .. returned list represents *frame*; the last entry represents the outermost call
    .. on *frame*'s stack.
 
-   指定したフレームと、その外側の全フレームのフレームレコードを返します。外側のフレームとは *frame* が生成されるまでのすべての関数呼び出しを
-   示します。戻り値のリストの先頭は *frame* のフレームレコードで、末尾の要素は *frame* のスタックにあるもっとも外側のフレームのフレームレ
-   コードとなります。
+   指定したフレームと、その外側の全フレームのフレームレコードを返します。
+   外側のフレームとは *frame* が生成されるまでのすべての関数呼び出しを示します。
+   戻り値のリストの先頭は *frame* のフレームレコードで、
+   末尾の要素は *frame* のスタックにあるもっとも外側のフレームのフレームレコードとなります。
 
 
 .. function:: getinnerframes(traceback[, context])
@@ -888,8 +901,9 @@ Note:
    .. list represents *traceback*; the last entry represents where the exception was
    .. raised.
 
-   指定したフレームと、その内側の全フレームのフレームレコードを返します。内のフレームとは *frame* から続く一連の関数呼び出しを示します。戻り
-   値のリストの先頭は *traceback* のフレームレコードで、末尾の要素は例外が発生した位置を示します。
+   指定したフレームと、その内側の全フレームのフレームレコードを返します。
+   内のフレームとは *frame* から続く一連の関数呼び出しを示します。
+   戻り値のリストの先頭は *traceback* のフレームレコードで、末尾の要素は例外が発生した位置を示します。
 
 
 .. function:: currentframe()
@@ -917,8 +931,8 @@ Note:
    .. returned list represents the caller; the last entry represents the outermost
    .. call on the stack.
 
-   呼び出し元スタックのフレームレコードのリストを返します。最初の要素は呼び出し元のフレームレコードで、末尾の要素はスタックにあるもっとも外側の
-   フレームのフレームレコードとなります。
+   呼び出し元スタックのフレームレコードのリストを返します。
+   最初の要素は呼び出し元のフレームレコードで、末尾の要素はスタックにあるもっとも外側のフレームのフレームレコードとなります。
 
 
 .. function:: trace([context])
@@ -928,6 +942,6 @@ Note:
    .. entry in the list represents the caller; the last entry represents where the
    .. exception was raised.
 
-   実行中のフレームと処理中の例外が発生したフレームの間のフレームレコードのリストを返します。最初の要素は呼び出し元のフレームレコードで、末尾の
-   要素は例外が発生した位置を示します。
+   実行中のフレームと処理中の例外が発生したフレームの間のフレームレコードのリストを返します。
+   最初の要素は呼び出し元のフレームレコードで、末尾の要素は例外が発生した位置を示します。
 
