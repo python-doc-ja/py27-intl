@@ -26,8 +26,8 @@
    戻り値はタプル ``(bits, linkage)`` で、アーキテクチャのビット数と実行可能ファイルのリンク形式を示します。どちらの値も文字列で返ります。
 
    値が不明な場合は、パラメータで指定した値が返ります。 *bits* を
-   ``''`` と指定した場合、ビット数として :cfunc:`sizeof(pointer)` が返
-   ります。（Pythonのバージョンが1.5.2以下の場合は、サポートされているポインタサイズとして :cfunc:`sizeof(long)` を使用します。）
+   ``''`` と指定した場合、ビット数として :c:func:`sizeof(pointer)` が返
+   ります。（Pythonのバージョンが1.5.2以下の場合は、サポートされているポインタサイズとして :c:func:`sizeof(long)` を使用します。）
 
    この関数は、システムの :file:`file` コマンドを使用します。 :file:`file` はほ
    とんどのUnixプラットフォームと一部の非Unixプラットフォームで利用
@@ -157,8 +157,8 @@ Java プラットフォーム
    Jython用のバージョンインターフェースです。
    
    タプル ``(release, vendor, vminfo, osinfo)`` を返します。 *vminfo* は
-   タプル ``(vm_name, vm_release, vm_vendor)`` 、 *osinfo* はタプル``(os_name, os_version,
-   os_arch)``です。不明な項目は引数で指定した値(デフォルトは ``''``) となります。
+   タプル ``(vm_name, vm_release, vm_vendor)`` 、 *osinfo* はタプル ``(os_name, os_version,
+   os_arch)`` です。不明な項目は引数で指定した値(デフォルトは ``''``) となります。
 
 
 Windows プラットフォーム
@@ -207,7 +207,7 @@ Mac OS プラットフォーム
 
    不明な項目は ``''`` となります。タプルの要素は全て文字列です。
 
-   この関数で使用している :cfunc:`gestalt` API については、
+   この関数で使用している :c:func:`gestalt` API については、
    http://www.rgaros.nl/gestalt/ を参照してください。
 
 

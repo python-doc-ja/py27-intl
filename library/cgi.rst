@@ -136,7 +136,7 @@ cgi モジュールを使う
    field will be set to the value -1.
 
 アップロードされたファイルの内容を取得している間にエラーが発生した場合
-(例えば、ユーザーがバックやキャンセルボタンでsubmitを中断した場合)、
+(例えば、ユーザーがバックやキャンセルボタンで submit を中断した場合)、
 そのフィールドのオブジェクトの :attr:`done` 属性には -1 が設定されます。
 
 現在ドラフトとなっているファイルアップロードの標準仕様では、一つのフィールドから (再帰的な :mimetype:`multipart/\*`
@@ -145,13 +145,13 @@ cgi モジュールを使う
 :mimetype:`multipart/form-data` (または :mimetype:`multipart/\*` にマッチする他の MIME 型)
 になっているかどうかを調べれば判別できます。この場合、トップレベルのフォームオブジェクトと同様にして再帰的に個別処理できます。
 
-フォームが「古い」形式で入力された場合 (クエリ文字列または単一の:mimetype:`application/x-www-form-
-urlencoded` データで入力された場合)、データ要素の実体は :class:`MiniFieldStorage` クラスの
+フォームが「古い」形式で入力された場合 (クエリ文字列または単一の :mimetype:`application/x-www-form-urlencoded`
+データで入力された場合)、データ要素の実体は :class:`MiniFieldStorage` クラスの
 インスタンスになります。この場合、 :attr:`!list` 、 :attr:`!file` 、および :attr:`filename` 属性は常に ``None``
 になります。
 
 .. A form submitted via POST that also has a query string will contain both
-   :class:`FieldStorage` and :class:`MiniFieldStorage` items.
+.. :class:`FieldStorage` and :class:`MiniFieldStorage` items.
 
 フォームがPOSTによって送信され、クエリー文字列も持っていた場合、
 :class:`FieldStorage` と :class:`MiniFieldStorage` の両方が含まれます。
@@ -307,7 +307,7 @@ urlencoded` データで入力された場合)、データ要素の実体は :cl
 
 .. function:: print_directory()
 
-   現在のディレクトリを HTML に書式化して出力します。 Format the current directory in HTML.
+   現在のディレクトリを HTML に書式化して出力します。
 
 
 .. function:: print_environ_usage()

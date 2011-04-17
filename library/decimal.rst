@@ -1102,6 +1102,7 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    .. method:: divmod(x, y)
 
       二つの数値間の除算を行い、結果の整数部を返します。
+
       .. FIXME: this isn't a correct description
 
    .. method:: exp(x)

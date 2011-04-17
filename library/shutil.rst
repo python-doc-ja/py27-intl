@@ -180,10 +180,11 @@
    3番目のパラメータ *excinfo* は :func:`sys.exc_info` で返されるよ
    うな例外情報になるでしょう。 *onerror* が引き起こす例外はキャッチできません。
 
-   .. versionchanged:: 2.6
-      .. Explicitly check for *path* being a symbolic link and raise :exc:`OSError`
+   .. .. versionchanged:: 2.6
+   ..    Explicitly check for *path* being a symbolic link and raise :exc:`OSError`
          in that case.
 
+   .. versionchanged:: 2.6
       *path* を明示的にチェックして、シンボリックリンクだった場合は :exc:`OSError`
       を返すようになりました。
 

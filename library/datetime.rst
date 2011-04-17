@@ -1164,7 +1164,7 @@ datetime を tzinfo と組み合わせて使う:
 
 .. class:: time(hour[, minute[, second[, microsecond[, tzinfo]]]])
 
-   全ての引数はオプションです。*tzinfo* は ``None`` または :class:`tzinfo` クラスのサブクラスのインスタンス
+   全ての引数はオプションです。 *tzinfo* は ``None`` または :class:`tzinfo` クラスのサブクラスのインスタンス
    にすることができます。残りの引数は整数または長整数で、以下のような範囲に入ります:
 
    * ``0 <= hour < 24``

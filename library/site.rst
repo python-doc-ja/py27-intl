@@ -25,8 +25,9 @@ Macintosh)を使います。
 パス設定ファイルは :file:`package.pth` という形式の名前をもつファイルで、上の4つのディレクトリのひとつにあります。その内容は ``sys.path`` に追加される追加項目(一行に一つ)です。存在しない項目は ``sys.path`` へは決して追加されませんが、項目が(ファイルではなく)ディレクトリを参照しているかどうかはチェックされません。項目が ``sys.path`` へ二回以上追加されることはありません。空行と ``#`` で始まる行は読み飛ばされます。 ``import`` で始まる(そしてその後ろにスペースかタブが続く)行は実行されます。
 
 .. versionchanged:: 2.6
-   .. A space or tab is now required after the import keyword.
    import キーワードの後ろにスペースかタブが必要になりました。
+
+   .. A space or tab is now required after the import keyword.
 
 .. index::
    single: package

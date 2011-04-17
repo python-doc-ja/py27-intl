@@ -125,9 +125,10 @@
       (最初の行の先頭の空白は残ります)
 
       .. versionadded:: 2.6
+         過去のバージョンでは、空白は常に削除されていました。
+
          .. Whitespace was always dropped in earlier versions.
 
-         過去のバージョンでは、空白は常に削除されていました。
 
    .. attribute:: initial_indent
 

@@ -43,12 +43,12 @@
    全ての終了ハンドラに動作するチャンスを与えた後に、最後に送出された例外を再送出します。
 
    .. versionchanged:: 2.6
-      .. This function now returns *func* which makes it possible to use it as a
-         decorator without binding the original name to ``None``.
       この関数をデコレータとして利用できるように、 *func* を返すようになりました。
       以前は ``None`` を返していたので、デコレータとして利用しようとすると、関数名の変数に
       ``None`` が代入されてしまっていました。
 
+      .. This function now returns *func* which makes it possible to use it as a
+         decorator without binding the original name to ``None``.
 
 .. seealso::
 

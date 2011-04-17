@@ -34,7 +34,7 @@
 
 このモジュールはオプションです。 Windows, Linux, SGI IRIX, Solaris 2.x、
 そして同じようなPOSIXスレッド (別名 "pthread" ) 実装のシステム上でサポー
-トされます。 :mod:`thread`を使用することのできないシステムでは、
+トされます。 :mod:`thread` を使用することのできないシステムでは、
 :mod:`dummy_thread` が用意されています。 :mod:`dummy_thread` はこのモ
 ジュールと同じインターフェースを持ち、置き換えて使用することができます。
 
@@ -83,7 +83,7 @@
 
    全てのスレッドを終了させ、整数の引き数 *status* をプログラム全体の
    終了コードとして返します。
-   ** 警告 :** このスレッド、および、他のスレッドの :keyword:`finally`
+   ** 警告:** このスレッド、および、他のスレッドの :keyword:`finally`
    節の、未実行のプログラムは実行されません。
 
 
@@ -162,7 +162,7 @@
    with a_lock:
        print "a_lock is locked while this executes"
 
-** 警告: **
+**警告:**
 
   .. index:: module: signal
 
