@@ -148,7 +148,7 @@ ARM および Intel Itanium はエンディアンを切り替えられる機能�
 
 (3) 特定の型によるアラインメント要求に従うように構造体の末端をそろえるには、
     繰り返し回数をゼロにした特定の型でフォーマットを終端します。
-    :ref:`struct-example` を参照して下さい。
+    :ref:`struct-examples` を参照して下さい。
 
 
 .. _format-characters:
