@@ -15,7 +15,7 @@ Distutilsは様々な方法で拡張できます。ほとんどの拡張は存�
 張子を :file:`.py` の他に、いくつか追加するものです。
 
 ほとんどのdistutilsのコマンド実装は :mod:`distutils.cmd` の
-:class:`Command` クラスのサブクラスとして実装されています。
+:class:`distutils.cmd.Command` クラスのサブクラスとして実装されています。
 新しいコマンドは :class:`Command` を直接継承し、置換するコマンドでは
 置換対象のコマンドのサブクラスにすることで :class:`Command` を間接的に
 継承します。

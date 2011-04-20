@@ -250,6 +250,8 @@
    +------------------------------+------------------------------------------+
    | :const:`dont_write_bytecode` | -B                                       |
    +------------------------------+------------------------------------------+
+   | :const:`no_user_site`        | -s                                       |
+   +------------------------------+------------------------------------------+
    | :const:`no_site`             | -S                                       |
    +------------------------------+------------------------------------------+
    | :const:`ignore_environment`  | -E                                       |
@@ -260,51 +262,64 @@
    +------------------------------+------------------------------------------+
    | :const:`unicode`             | -U                                       |
    +------------------------------+------------------------------------------+
+   | :const:`bytes_warning`       | -b                                       |
+   +------------------------------+------------------------------------------+
 
    .. versionadded:: 2.6
 
 
 .. data:: float_info
 
-   .. A structseq holding information about the float type. It contains low level
-      information about the precision and internal representation. Please study
-      your system's :file:`float.h` for more information.
-
    属性とシーケンスを利用して、 float 型に関する情報を提供します。
    精度と内部表現に関する情報を含みます。
-   詳細については、システムの :file:`float.h` を調べてください。
+   プログラミング言語 'C' の標準ヘッダファイル :file:`float.h` に定義された
+   様々な浮動小数点定数に対応する値の詳細については、1999 ISO/IEC C standard
+   [C99]_ の 4.2.4.2.2 章を参照して下さい。
 
-   +---------------------+------------------------------------------------------------+
-   | 属性                |  説明                                                      |
-   +=====================+============================================================+
-   | :const:`epsilon`    | 1と、その次の表現可能なfloat値の差                         |
-   +---------------------+------------------------------------------------------------+
-   | :const:`dig`        | digits (:file:`float.h` を参照)                            |
-   +---------------------+------------------------------------------------------------+
-   | :const:`mant_dig`   | mantissa digits (:file:`float.h` を参照)                   |
-   +---------------------+------------------------------------------------------------+
-   | :const:`max`        | floatが表せる最大の(infiniteではない)値                    |
-   +---------------------+------------------------------------------------------------+
-   | :const:`max_exp`    | floatが radix**(e-1) を表現可能な、最大の整数 e            |
-   +---------------------+------------------------------------------------------------+
-   | :const:`max_10_exp` | floatが 10**e を表現可能な、最大の整数 e                   |
-   +---------------------+------------------------------------------------------------+
-   | :const:`min`        | floatが表現可能な最小の正の値                              |
-   +---------------------+------------------------------------------------------------+
-   | :const:`min_exp`    | radix**(e-1) が正規化floatであるような最小の整数 e         |
-   +---------------------+------------------------------------------------------------+
-   | :const:`min_10_exp` | 10**e が正規化floatであるような最小の整数 e                |
-   +---------------------+------------------------------------------------------------+
-   | :const:`radix`      | radix of exponent                                          |
-   +---------------------+------------------------------------------------------------+
-   | :const:`rounds`     | addition rounds (file:`float.h` を参照)                    |
-   +---------------------+------------------------------------------------------------+
+   +---------------------+------------------+-----------------------------------------------------------+
+   | 属性                | float.h のマクロ | 説明                                                      |
+   +=====================+==============================================================================+
+   | :const:`epsilon`    | DBL_EPSILON      | 1と、その次の表現可能なfloat値の差                        |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`dig`        | DBL_DIG          | 浮動小数点数で正確に表示できる最大の10進数桁; 以下参照    |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`mant_dig`   | DBL_MANT_DIG     | 浮動小数点精度: 浮動小数点数の主要部の桁 base-``radix``   |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`max`        | DBL_MAX          | floatが表せる最大の(infiniteではない)値                   |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`max_exp`    | DBL_MAX_EXP      | floatが ``radix**(e-1)`` で表現可能な、最大の整数 e       |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`max_10_exp` | DBL_MAX_10_EXP   | floatが ``10**e`` で表現可能な、最大の整数 e              |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`min`        | DBL_MIN          | floatが表現可能な最小の正の値                             |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`min_exp`    | DBL_MIN_EXP      | ``radix**(e-1)`` が正規化floatであるような最小の整数 e    |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`min_10_exp` | DBL_MIN_10_EXP   | 10**e が正規化floatであるような最小の整数 e               |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`radix`      | FLT_RADIX        | 指数部の基数                                              |
+   +---------------------+------------------+-----------------------------------------------------------+
+   | :const:`rounds`     | FLT_ROUNDS       | 算術演算で利用される丸めモードを表す定数                  |
+   +---------------------+------------------+-----------------------------------------------------------+
 
-   .. note::
+   :attr:`sys.float_info.dig` に対してはさらに説明が必要です。
+   もし、文字列 ``s`` が表す 10進数の有効桁数がたかだか :attr:`sys.float_info.dig` のときには、
+   ``s`` を浮動小数点数に変換して戻すと同じ10進数
 
-      .. The information in the table is simplified.
+      >>> import sys
+      >>> sys.float_info.dig
+      15
+      >>> s = '3.14159265358979'    # decimal string with 15 significant digits
+      >>> format(float(s), '.15g')  # convert to float and back -> same value
+      '3.14159265358979'
 
-      このテーブルの情報は簡易的なものです。
+   
+    ただ、文字列が有効桁数 :attr:`sys.float_info.dig` より多い場合には、
+    常に復元されるとは限りません::
+
+       >>> s = '9876543211234567'    # 16 significant digits is too many!
+       >>> format(float(s), '.16g')  # conversion changes value
+      '9876543211234568'
 
    .. versionadded:: 2.6
 
@@ -326,7 +341,7 @@
 
 .. function:: getdlopenflags()
 
-   :cfunc:`dlopen` で指定されるフラグを返します。
+   :c:func:`dlopen` で指定されるフラグを返します。
    このフラグは :mod:`dl` と :mod:`DLFCN` で定義されています。
 
    利用可能: Unix.
@@ -339,9 +354,7 @@
    Unicode ファイル名をシステムのファイル名に変換する際に使用するエンコード名を返します。
    システムのデフォルトエンコーディングを使用する場合には ``None`` を返します。
 
-   * Windows 9x では、エンコーディングは "mbcs" となります。
-
-   * OS X では、エンコーディングは "utf-8" となります。
+   * Mac OS X では、エンコーディングは ``utf-8`` となります。
 
    * Unix では、エンコーディングは ``nl_langinfo(CODESET)`` が返すユーザの設定となります。
      ``nl_langinfo(CODESET)`` が失敗すると :const:`None` を返します。
@@ -349,6 +362,8 @@
    * Windows NT+ では、 Unicode をファイル名として使用できるので変換の必要はありません。
      :func:`getfilesystemencoding` は ``'mbcs'`` を返しますが、これはある Unicode
      文字列をバイト文字列に明示的に変換して、ファイル名として使うと同じファイルを指すようにしたい場合に、アプリケーションが使わねばならないエンコーディングです。
+
+   * Windows 9x では、エンコーディングは "mbcs" となります。
 
    .. versionadded:: 2.3
 
@@ -379,18 +394,19 @@
    全てのビルトイン型は正しい値を返します。
    サードパーティー製の型については実装依存になります。
 
-   .. The *default* argument allows to define a value which will be returned
-      if the object type does not provide means to retrieve the size and would
-      cause a `TypeError`.
+   .. If given, *default* will be returned if the object does not provide means to
+      retrieve the size.  Otherwise a :exc:`TypeError` will be raised.
 
-   *default* 引数は、オブジェクトの型がサイズの情報を提供していない場合に、
-   `TypeError` 例外を発生させる代わりに返す値です。
+   *default* 引数が与えられると、
+   オブジェクト型がサイズを取得する手段を提供していない場合に返されます。
+   与えられてない場合には ``TypeError`` 例外が発生します。
 
-   .. func:`getsizeof` calls the object's __sizeof__ method and adds an additional
-      garbage collector overhead if the object is managed by the garbage collector.
+   .. :func:`getsizeof` calls the object's ``__sizeof__`` method and adds an
+      additional garbage collector overhead if the object is managed by the garbage
+      collector.
 
    :func:`getsizeof` は *object* の ``__sizeof__`` メソッドを呼び出し、
-   そのオブジェクトがガベージコレクタに管理されていた場合はガベージコレクタの\
+   そのオブジェクトがガベージコレクタに管理されていた場合はガベージコレクタの
    オーバーヘッドを増やします。
 
    .. versionadded:: 2.6
@@ -404,7 +420,9 @@
    *depth* がコールスタックよりも深ければ、 :exc:`ValueError` が発生します。
    *depth* のデフォルト値は 0 で、この場合はコールスタックのトップのフレームを返します。
 
-   この関数は、内部的な、特殊な用途にのみ利用することができます。
+   .. impl-detail::
+      この関数は、内部的な、特殊な用途にのみ利用することができます。
+      この関数の存在は全ての Python 実装で保証されるものではありません。
 
 
 .. function:: getprofile()
@@ -430,10 +448,10 @@
 
    :func:`settrace` 関数などで設定した trace 関数を取得します。
 
-   .. note::
+   .. impl-detail::
 
       .. The :func:`gettrace` function is intended only for implementing debuggers,
-         profilers, coverage tools and the like. Its behavior is part of the
+         profilers, coverage tools and the like.  Its behavior is part of the
          implementation platform, rather than part of the language definition,
          and thus may not be available in all Python implementations.
 
@@ -724,7 +742,7 @@
 
 .. function:: setdlopenflags(n)
 
-   インタープリタが拡張モジュールをロードする時、 :cfunc:`dlopen` で使用するフラグを設定します。
+   インタープリタが拡張モジュールをロードする時、 :c:func:`dlopen` で使用するフラグを設定します。
    ``sys.setdlopenflags(0)`` とすれば、モジュールインポート時にシンボルの遅延解決を行う事ができます。
    シンボルを拡張モジュール間で共有する場合には、
    ``sys.setdlopenflags(dl.RTLD_NOW | dl.RTLD_GLOBAL)`` と指定します。
@@ -867,7 +885,7 @@
 
    code と frame オブジェクトについては、 :ref:`types` を参照してください。
 
-   .. note::
+   .. impl-detail::
 
       :func:`settrace` 関数は、デバッガ、プロファイラ、カバレッジツール等で使うためだけのものです。
       この関数の挙動は言語定義よりも実装プラットフォームの分野の問題で、全ての Python 実装で利用できるとは限りません。
@@ -882,6 +900,10 @@
 
    .. versionadded:: 2.4
 
+   .. impl-detail::
+
+      この関数は CPython の実装の詳細に密接に結びついています、
+      そのため他の Python 実装では実装されていないでしょう。
 
 .. data:: stdin
           stdout
@@ -930,12 +952,9 @@
 
 .. data:: version
 
-   Pythonインタープリタのバージョンとビルド番号・使用コンパイラなどの情報を示す文字列で、
-   ``'バージョン(#ビルド番号, ビルド日付, ビルド時間)[コンパイラ]'`` となります。先頭の三文字は、バージョンごとのインストール先ディレクトリ内を識別するために使用されます。例::
-
-      >>> import sys
-      >>> sys.version
-      '1.5.2 (#0 Apr 13 1999, 10:51:12) [MSC 32 bit (Intel)]'
+   Pythonインタープリタのバージョンとビルド番号・使用コンパイラなどの情報を示す文字列です。
+   この文字列は Python 対話インタプリタが起動したときに表示されます。
+   バージョン情報はここから抜き出さずに :mod:`platform` が提供する :data:`version_info` を使って下さい。
 
 
 .. data:: api_version
@@ -969,3 +988,7 @@
    通常、この値は :const:`version` の先頭三文字となります。
    この値は参照専用で、別の値を設定しても Python が使用するレジストリキーを変更することはできません。
    利用可能: Windows.
+
+.. rubric:: Citations
+
+.. [C99] ISO/IEC 9899:1999.  "Programming languages -- C."  A public draft of this standard is available at http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf .

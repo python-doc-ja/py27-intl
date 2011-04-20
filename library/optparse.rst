@@ -87,7 +87,7 @@
 ^^^^^^^^
 
 引数 (argument)
-   コマンドラインでユーザが入力するテキストの塊で、シェルが :cfunc:`execl` や :cfunc:`execv` に引き渡すものです。Python
+   コマンドラインでユーザが入力するテキストの塊で、シェルが :c:func:`execl` や :c:func:`execv` に引き渡すものです。Python
    では、引数は ``sys.argv[1:]`` の要素となります。(``sys.argv[0]``
    は実行しようとしているプログラムの名前です。引数解析に関しては、この要素はあまり重要ではありません。) Unix シェルでは、「語 (word)」と
    いう用語も使います。
@@ -882,76 +882,76 @@ meth:``OptionParser.add_option()`` を使う方法です。
 
    (デフォルト: ``"store"``)
 
-  このオプションがコマンドラインにあった場合に :mod:`optparse` に何を
-  させるかを決めます。
-  取りうるオプションについては
-  :ref:`こちら <optparse-standard-option-actions>` を参照してください。
+   このオプションがコマンドラインにあった場合に :mod:`optparse` に何を
+   させるかを決めます。
+   取りうるオプションについては
+   :ref:`こちら <optparse-standard-option-actions>` を参照してください。
 
 .. attribute:: Option.type
 
    (デフォルト: ``"string"``)
 
-  このオプションに与えられる引数の型 (たとえば ``"string"`` や ``"int"``)
-  です。
-  取りうるオプションについては
-  :ref:`こちら <optparse-standard-option-types>` を参照してください。
+   このオプションに与えられる引数の型 (たとえば ``"string"`` や ``"int"``)
+   です。
+   取りうるオプションについては
+   :ref:`こちら <optparse-standard-option-types>` を参照してください。
 
 .. attribute:: Option.dest
 
    (デフォルト: オプション文字列を使う)
 
-  このオプションのアクションがある値をどこかに書いたり書き換えたりを意味する
-  場合、これは :mod:`optparse` にその書く場所を教えます。詳しく言えば
-  :attr:`~Option.dest` には :mod:`optparse` がコマンドラインを解析しながら
-  組み立てる ``options`` オブジェクトの属性の名前を指定します。
+   このオプションのアクションがある値をどこかに書いたり書き換えたりを意味する
+   場合、これは :mod:`optparse` にその書く場所を教えます。詳しく言えば
+   :attr:`~Option.dest` には :mod:`optparse` がコマンドラインを解析しながら
+   組み立てる ``options`` オブジェクトの属性の名前を指定します。
 
 .. attribute:: Option.default
 
-  コマンドラインに指定がなかったときにこのオプションの対象に使われる値です。
-  :meth:`OptionParser.set_defaults` も参照してください。
+   コマンドラインに指定がなかったときにこのオプションの対象に使われる値です。
+   :meth:`OptionParser.set_defaults` も参照してください。
 
 .. attribute:: Option.nargs
 
    (デフォルト: 1)
 
-  このオプションがあったときに幾つの :attr:`~Option.type` 型の引数が
-  消費されるべきかを指定します。 1 より大きい場合、 :mod:`optparse` は
-  :attr:`~Option.dest` に値のタプルを格納します。
+   このオプションがあったときに幾つの :attr:`~Option.type` 型の引数が
+   消費されるべきかを指定します。 1 より大きい場合、 :mod:`optparse` は
+   :attr:`~Option.dest` に値のタプルを格納します。
 
 .. attribute:: Option.const
 
-  定数を格納する動作のための、その定数です。
+   定数を格納する動作のための、その定数です。
 
 .. attribute:: Option.choices
 
-  ``"choice"`` 型オプションに対してユーザが選べる選択肢となる文字列の
-  リストです。
+   ``"choice"`` 型オプションに対してユーザが選べる選択肢となる文字列の
+   リストです。
 
 .. attribute:: Option.callback
 
-  アクションが ``"callback"`` であるオプションに対し、このオプションがあった
-  ときに呼ばれる呼び出し可能オブジェクトです。呼び出し時に渡される引数の
-  詳細については、 :ref:`optparse-option-callbacks` を参照してください。
+   アクションが ``"callback"`` であるオプションに対し、このオプションがあった
+   ときに呼ばれる呼び出し可能オブジェクトです。呼び出し時に渡される引数の
+   詳細については、 :ref:`optparse-option-callbacks` を参照してください。
 
 .. attribute:: Option.callback_args
                Option.callback_kwargs
 
-  ``callback`` に渡される標準的な4つのコールバック引数の後ろに追加する、
-  位置指定引数とキーワード引数。
+   ``callback`` に渡される標準的な4つのコールバック引数の後ろに追加する、
+   位置指定引数とキーワード引数。
 
 .. attribute:: Option.help
 
-  ユーザが :attr:`~Option.help` オプション(``"--help"`` のような)を指定
-  したときに表示される、使用可能な全オプションのリストの中のこのオプションに
-  関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
-  オプションを隠すには特殊な値 :data:`optparse.SUPPRESS_HELP` を使います。
+   ユーザが :attr:`~Option.help` オプション(``"--help"`` のような)を指定
+   したときに表示される、使用可能な全オプションのリストの中のこのオプションに
+   関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
+   オプションを隠すには特殊な値 :data:`optparse.SUPPRESS_HELP` を使います。
 
 .. attribute:: Option.metavar
 
    (デフォルト: オプション文字列から)
 
-  説明文を表示する際にオプションの引数の身代わりになるものです。
-  例は :ref:`optparse-tutorial` 節を参照してください。
+   説明文を表示する際にオプションの引数の身代わりになるものです。
+   例は :ref:`optparse-tutorial` 節を参照してください。
 
 
 .. _optparse-standard-option-actions:
@@ -1379,7 +1379,7 @@ OptionParser を作成してオプションを追加していく上で大事な�
 
 OptionParser インスタンスはいくつかの循環参照を抱えています。
 このことは Python のガーベジコレクタにとって問題になるわけではありませんが、
-使い終わった OptionParser に対して :meth:``~OptionParser.destroy``
+使い終わった OptionParser に対して :meth:`~OptionParser.destroy`
 を呼び出すことでこの循環参照を意図的に断ち切るという方法を選ぶこともできます。
 この方法は特に長時間実行するアプリケーションで OptionParser から大きな
 オブジェクトグラフが到達可能になっているような場合に有用です。

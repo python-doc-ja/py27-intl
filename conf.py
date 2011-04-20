@@ -85,6 +85,8 @@ exclude_trees = [
 
 exclude_dirnames = ['diff', 'orig', 'tools']
 
+trim_doctest_flags = False
+
 
 # Options for HTML output
 # -----------------------

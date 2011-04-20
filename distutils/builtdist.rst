@@ -121,7 +121,8 @@ RPM とソース RPM の両方を生成できます。 :command:`bdist` サブ�
 ダム形式のビルド済み配布物を作成する
 ====================================
 
-**\*\*** 絶対パスと相対パスのパッケージについて述べる必要があるんだけど、その前に実装しなくちゃね！ **\*\***
+.. XXX 絶対パスと相対パスのパッケージについて述べる必要があるんだけど、
+       その前に実装しなくちゃね！
 
 
 .. _creating-rpms:
@@ -147,7 +148,7 @@ Linux ディストリビューション間の違いにもよりますが、他�
 それぞれの形式について各コマンドごとにオプション付きで :command:`bdist_\*` コマンドを並べます::
 
    python setup.py bdist_rpm --packager="John Doe <jdoe@example.org>" \
-                   bdist_wininst --target_version="2.0"
+                   bdist_wininst --target-version="2.0"
 
 Distutils が setup スクリプトで制御されているのとほとんど同じく、 RPM パッケージの作成は、 :file:`.spec`
 で制御されています。 RPM の作成を簡便に解決するため、 :command:`bdist_rpm` コマンドでは通常、 setup
@@ -274,7 +275,7 @@ Mac OS X でも作成できます。
 :option:`--no-target-compile` かつ/または :option:`--no-target-optimize`
 オプション付きで実行します。
 
-デフォルトでは、インストーラは実行時にクールな "Python Powered"  ロゴを表示しますが、自作のビットマップ画像も指定できます。画像は
+デフォルトでは、インストーラは実行時にクールな "Python Powered"  ロゴを表示しますが、自作の152x161ビットマップ画像も指定できます。画像は
 Windows の :file:`.bmp` ファイル形式でなくてはならず、 :option:`--bitmap` オプションで指定します。
 
 インストーラを起動すると、デスクトップの背景ウィンドウ上にでっかいタイトルも表示します。タイトルは配布物の名前とバージョン番号から
@@ -370,15 +371,8 @@ Windows インストーラでは、インストールスクリプトは埋め込
    該当するフォルダを取得できなかった場合、 :exc:`OSError` が送出されます。
 
    どの種類のフォルダを取得できるかは、特定の Windows のバージョンごとに異なります。また、おそらく設定によっても異なるでしょう。詳細については、
-   :cfunc:`SHGetSpecialFolderPath` 関数に関する Microsoft のドキュメントを参照してください。
+   :c:func:`SHGetSpecialFolderPath` 関数に関する Microsoft のドキュメントを参照してください。
 
-Vista User Access Control (UAC)
-===============================
-
-Python 2.6 から、 bdist_wininst は :option:`--user-access-control` オプションをサポートしています。
-デフォルトは 'none' (UAC制御をしないことを意味します) で、それ以外の有効な値は
-'auto' (Python が全ユーザー用にインストールされていれば UAC 昇格を行う)、
-'force' (常に昇格を行う) です。
 
 
 .. function:: create_shortcut(target, description, filename[, arguments[, workdir[, iconpath[, iconindex]]]])
@@ -389,3 +383,11 @@ Python 2.6 から、 bdist_wininst は :option:`--user-access-control` オプシ
    *iconindex* はファイル *iconpath* 中のアイコンへのインデクスです。これについても、詳しくは :class:`IShellLink`
    インタフェースに関する Microsoft のドキュメントを参照してください。
 
+
+Vista User Access Control (UAC)
+===============================
+
+Python 2.6 から、 bdist_wininst は :option:`--user-access-control` オプションをサポートしています。
+デフォルトは 'none' (UAC制御をしないことを意味します) で、それ以外の有効な値は
+'auto' (Python が全ユーザー用にインストールされていれば UAC 昇格を行う)、
+'force' (常に昇格を行う) です。

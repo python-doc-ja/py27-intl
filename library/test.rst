@@ -279,7 +279,7 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
    *resource* が利用できなければ、 :exc:`ResourceDenied` を送出します。
    その場合、 *msg* は :exc:`ResourceDenied` の引数になります。
-    *__name__* が ``"__main__"`` である関数にから呼び出された場合には
+   *__name__* が ``"__main__"`` である関数にから呼び出された場合には
    常に真を返します。テストを :mod:`test.regrtest` から実行するときに使われます。
 
 

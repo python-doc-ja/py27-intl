@@ -29,9 +29,9 @@ Python でこのオブジェクトを作る方法は C とは少し違ってい�
 ライブラリに保持された'現在のフォーム'に新しい FORMS オブジェクトを加える
 のではなく、フォームに FORMS オブジェクトを加えるには、
 フォームを示す Python オブジェクトのメソッドで全て行います。
-したがって、C の関数の :cfunc:`fl_addto_form` と :cfunc:`fl_end_form`
+したがって、C の関数の :c:func:`fl_addto_form` と :c:func:`fl_end_form`
 に相当するものは Python にはありませんし、
-:cfunc:`fl_bgn_form` に相当するものとしては :func:`fl.make_form` を呼び出します。
+:c:func:`fl_bgn_form` に相当するものとしては :func:`fl.make_form` を呼び出します。
 
 用語のちょっとした混乱に注意してください：
 FORMS ではフォームの中に置くことができるボタン、スライダーなどに
@@ -47,8 +47,8 @@ Python でオブジェクトクラスを書いて加える簡単な方法もあ�
 しかし、GL イベントハンドルへの FORMS インターフェースが利用可能で、
 純粋な GL ウィンドウに FORMS を組み合わせることができます。
 
-** 注意：**  :mod:`fl` をインポートすると、GL の関数 :cfunc:`foreground` と
-FORMS のルーチン :cfunc:`fl_init` を呼び出します。
+**注意：**  :mod:`fl` をインポートすると、GL の関数 :c:func:`foreground` と
+FORMS のルーチン :c:func:`fl_init` を呼び出します。
 
 
 .. _fl-functions:
@@ -94,7 +94,7 @@ FORMS のルーチン :cfunc:`fl_init` を呼び出します。
 .. function:: get_rgbmode()
 
    現在の RGB モードを返します。
-   これは C のグローバル変数 :cdata:`fl_rgbmode` の値です。
+   これは C のグローバル変数 :c:data:`fl_rgbmode` の値です。
 
 
 .. function:: show_message(str1, str2, str3)
@@ -161,8 +161,8 @@ FORMS のルーチン :cfunc:`fl_init` を呼び出します。
               mapcolor()
               getmcolor()
 
-   FORMS ドキュメントにある :cfunc:`fl_color` 、 :cfunc:`fl_mapcolor` 、
-   :cfunc:`fl_getmcolor` の記述を参照してください。
+   FORMS ドキュメントにある :c:func:`fl_color` 、 :c:func:`fl_mapcolor` 、
+   :c:func:`fl_getmcolor` の記述を参照してください。
 
 
 .. _form-objects:

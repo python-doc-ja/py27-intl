@@ -63,8 +63,8 @@
   例えば、ほとんどの Unix システムで、クロックの一刹那 (ticks) の精度は 1 秒の 50 から 100 分の 1 に過ぎません。
 
 * 反対に、 :func:`time` および :func:`sleep` は Unix の同等の関数よりましな精度を持っています: 時刻は浮動小数点で表され、
-  :func:`time` は可能なかぎり最も正確な時刻を (Unix の :cfunc:`gettimeofday` があればそれを使って) 返します。また
-  :func:`sleep` にはゼロでない端数を与えることができます (Unix の :cfunc:`select` があれば、それを使って実装しています)。
+  :func:`time` は可能なかぎり最も正確な時刻を (Unix の :c:func:`gettimeofday` があればそれを使って) 返します。また
+  :func:`sleep` にはゼロでない端数を与えることができます (Unix の :c:func:`select` があれば、それを使って実装しています)。
 
 * :func:`gmtime` 、 :func:`localtime` 、 :func:`strptime` が返す時刻値、および
   :func:`asctime` 、 :func:`mktime` 、 :func:`strftime` に与える時刻値はどちらも 9 つの整数からなる
@@ -140,7 +140,7 @@
 
 .. function:: asctime([t])
 
-   :func:`gmtime` や :func:`localtime` が返す時刻を表現するタプル又は :class:`struct_time` を、``'Sun
+   :func:`gmtime` や :func:`localtime` が返す時刻を表現するタプル又は :class:`struct_time` を、 ``'Sun
    Jun 20 23:21:05 1993'``  といった書式の 24 文字の文字列に変換します。 *t* が与えられていない場合には、
    :func:`localtime` が返す現在の時刻が使われます。 :func:`asctime` はロケール情報を使いません。
 
@@ -163,7 +163,7 @@
    名前の C 関数に依存します。いずれにせよ、この関数は Python のベンチマークや計時アルゴリズムに使われています。
 
    Windows では、最初にこの関数が呼び出されてからの経過時間を wall-clock 秒で返します。この関数は Win32 関数
-   :cfunc:`QueryPerformanceCounter` に基づいていて、その精度は通常 1 マイクロ秒以下です。
+   :c:func:`QueryPerformanceCounter` に基づいていて、その精度は通常 1 マイクロ秒以下です。
 
 
 .. function:: ctime([secs])

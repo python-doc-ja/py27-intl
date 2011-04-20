@@ -7,7 +7,7 @@
 
 
 メッセージオブジェクト構造体をつくるには 2つの方法があります。
-ひとつはまったくのスクラッチから :class:`Message` を生成して、これを
+ひとつはまったくのスクラッチから :class:`~email.message.Message` を生成して、これを
 :meth:`attach` と :meth:`set_payload` 呼び出しを介してつなげていく方法で、
 もうひとつは電子メールメッセージのフラットなテキスト表現を\
 解析 (parse、パーズ) する方法です。
@@ -15,7 +15,7 @@
 :mod:`email` パッケージでは、MIME 文書をふくむ、
 ほとんどの電子メールの文書構造に対応できる標準的なパーザ (解析器) を提供しています。
 このパーザに文字列あるいはファイルオブジェクトを渡せば、パーザは\
-そのオブジェクト構造の基底となる (root の) :class:`Message`
+そのオブジェクト構造の基底となる (root の) :class:`~email.message.Message`
 インスタンスを返します。
 簡単な非MIMEメッセージであれば、この基底オブジェクトのペイロードは\
 たんにメッセージのテキストを格納する文字列になるでしょう。
@@ -37,7 +37,7 @@ MIMEメッセージであれば、基底オブジェクトはその :meth:`is_mu
 
 このパーザは、ある制限された方法で拡張できます。
 また、もちろん自分でご自分のパーザを完全に無から実装することもできます。 :mod:`email`
-パッケージについているパーザと :class:`Message` クラスの間に\
+パッケージについているパーザと :class:`~email.message.Message` クラスの間に\
 隠された秘密の関係はなにもありませんので、ご自分で実装されたパーザも、
 それが必要とするやりかたでメッセージオブジェクトツリーを作成することができます。
 
@@ -115,7 +115,7 @@ Parser クラス API
    これは呼び出し可能なオブジェクト (関数やクラス) でなければならず、
    メッセージ内コンポーネント (sub-message object) が作成されるときは\
    常にそのファクトリクラスとして使用されます。
-   デフォルトではこれは :class:`Message` になっています
+   デフォルトではこれは :class:`~email.message.Message` になっています
    (:mod:`email.message` 参照)。このファクトリクラスは引数なしで呼び出されます。
 
    オプション引数 *strict* は無視されます。
@@ -217,7 +217,7 @@ Parser クラス API
   コンポーネント (sub-message object) のリストとして解析されます。
   外側のコンテナメッセージオブジェクトは :meth:`is_multipart` に対して ``True``
   を返し、このオブジェクトに対する :meth:`get_payload` メソッドは
-  :class:`Message` subpart のリストを返します。
+  :class:`~email.message.Message` subpart のリストを返します。
 
 * :mimetype:`message/\*` の Content-Type をもつほとんどのメッセージ (例:
   :mimetype:`message/delivery-status` や :mimetype:`message/rfc822` など) も

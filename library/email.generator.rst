@@ -80,7 +80,7 @@
       .. versionadded:: 2.2.2
 
 
-   .. method:: clone(fp)
+  .. method:: clone(fp)
 
       この :class:`Generator` インスタンスの独立したクローンを生成し返します。
       オプションはすべて同一になっています。
@@ -88,7 +88,7 @@
       .. versionadded:: 2.2.2
 
 
-   .. method:: write(s)
+  .. method:: write(s)
 
       文字列 *s* を既定のファイルに出力します。
       ここでいう出力先は :class:`Generator` コンストラクタに渡した *outfp*

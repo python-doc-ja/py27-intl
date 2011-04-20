@@ -212,6 +212,7 @@ SMTP オブジェクト
 
    :exc:`SMTPHeloError`
       サーバーが ``HELO`` に正しく返事しなかった.
+
       .. The server didn't reply properly to the ``HELO`` greeting.
 
    .. versionadded:: 2.6

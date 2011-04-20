@@ -59,29 +59,10 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    AF_NETLINK ソケットが ``pid, groups`` のペアで表現されます.
 
 .. versionadded:: 2.6
-   .. Linux-only support for TIPC is also available using the :const:`AF_TIPC`
-      address family. TIPC is an open, non-IP based networked protocol designed
-      for use in clustered computer environments.  Addresses are represented by a
-      tuple, and the fields depend on the address type. The general tuple form is
-      ``(addr_type, v1, v2, v3 [, scope])``, where:
-
    Linuxのみ、 :const:`AF_TIPC` アドレスファミリを使って TIPC を利用することができます。
    TIPCはオープンで、IPベースではないクラスターコンピューター環境向けのネットワークプロトコルです。
    アドレスはタプルで表現され、その中身はアドレスタイプに依存します。
    一般的なタプルの形は ``(addr_type, v1, v2, v3 [, scope])`` で、
-
-   ..   - *addr_type* is one of TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, or
-          TIPC_ADDR_ID.
-        - *scope* is one of TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, and
-          TIPC_NODE_SCOPE.
-        - If *addr_type* is TIPC_ADDR_NAME, then *v1* is the server type, *v2* is
-          the port identifier, and *v3* should be 0.
-
-          If *addr_type* is TIPC_ADDR_NAMESEQ, then *v1* is the server type, *v2*
-          is the lower port number, and *v3* is the upper port number.
-
-          If *addr_type* is TIPC_ADDR_ID, then *v1* is the node, *v2* is the
-          reference, and *v3* should be set to 0.
 
    - *addr_type* は TIPC_ADDR_NAMESEQ, TIPC_ADDR_NAME, TIPC_ADDR_ID のうちのどれかです。
    - *scope* は TIPC_ZONE_SCOPE, TIPC_CLUSTER_SCOPE, TIPC_NODE_SCOPE のうちのどれかです。
@@ -490,8 +471,8 @@ socket オブジェクト
 
 .. method:: socket.accept()
 
-   接続を受け付けます。ソケットはアドレスにbind済みで、listen中である必要があります。戻り値は``(conn,
-   address)``のペアで、 *conn* は接続を通じてデータの送受信を行うための *新しい* ソケットオブジェク
+   接続を受け付けます。ソケットはアドレスにbind済みで、listen中である必要があります。戻り値は ``(conn,
+   address)`` のペアで、 *conn* は接続を通じてデータの送受信を行うための *新しい* ソケットオブジェク
    ト、 *address* は接続先でソケットにbindしているアドレスを示します。
 
 

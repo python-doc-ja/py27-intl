@@ -20,7 +20,7 @@ Distutilsを使うためにインストールする必要がある唯一のモ�
 
 .. function:: setup(arguments)
 
-   全てを実行する基本的な関数で、Distutilsでできるほとんどのことを実行します。 XXXXを参照してください。
+   全てを実行する基本的な関数で、Distutilsでできるほとんどのことを実行します。
 
    setup関数はたくさんの引数をとります。以下のテーブルにまとめます。
 
@@ -147,7 +147,7 @@ Distutilsを使うためにインストールする必要がある唯一のモ�
    |                        | スト(プラットフォーム独立のため Unix 形式で記述する)                             |                          |
    +------------------------+----------------------------------------------------------------------------------+--------------------------+
    | *define_macros*        | 定義するマクロのリスト; それぞれのマクロは2要素のタプル ``(name, value)``        | (文字列, 文字列) または  |
-   |                        | で定義されます。*value* には定義しようとしている文字列、                         | (文字列, ``None``) の    |
+   |                        | で定義されます。 *value* には定義しようとしている文字列、                        | (文字列, ``None``) の    |
    |                        | または内容なしで定義する場合は ``None``                                          | タプル                   |
    |                        | (ソースコード中で ``#define FOO`` と書く、または Unix                            |                          |
    |                        | Cコンパイラのコマンドラインで :option:`-DFOO`                                    |                          |
@@ -438,9 +438,9 @@ Distutilsを使うためにインストールする必要がある唯一のモ�
       :file:`foo/bar.c` は通常コンパイルされて :file:`foo/bar.o` になります (Unix実装の場合)が、もし *output_dir* が
       *build* であれば、 :file:`build/foo/bar.o` になります。
 
-      *macros* は(もし指定されていれば)マクロ定義のリストである必要があります。マクロ定義は``(name,
-      value)``という形式の2要素のタプル、または ``(name,)``という形式の1要素のタプルのどちらかです。前者はマクロを定
-      義します。もしvalueが ``None`` であれば、マクロは特定の値をもたないで定義されます。1要素のタプルはマクロ定義を削除します。後で実行された定
+      *macros* は(もし指定されていれば)マクロ定義のリストである必要があります。マクロ定義は ``(name,
+      value)`` という形式の2要素のタプル、または ``(name,)`` という形式の1要素のタプルのどちらかです。前者はマクロを定
+      義します。もし value が ``None`` であれば、マクロは特定の値をもたないで定義されます。1要素のタプルはマクロ定義を削除します。後で実行された定
       義/再定義/削除が優先されます。
 
       *include_dirs* は(もし指定されていれば)文字列のリストである必要があります。このコンパイルだけで有効な、デフォルトのインクルードファイル
@@ -730,9 +730,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    アーカイブ中の全ファイルおよびディレクトリの前につくディレクトリ名です。 *root_dir* と
    *base_dir* はともにカレントディレクトリがデフォルト値です。アーカイブファイル名を返します。
 
-   .. warning::
-
-      この関数はbz2ファイルを扱えるように変更されるべきです
+   .. XXX この関数はbz2ファイルを扱えるように変更されるべきです。
 
 
 .. function:: make_tarball(base_name, base_dir[, compress='gzip', verbose=0, dry_run=0])
@@ -744,9 +742,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    :file:`base_dir.tar` という名前になり、圧縮によって拡張子がつきます(:file:`.gz`, :file:`.bz2` または
    :file:`.Z`)。出力ファイル名が返ります。
 
-   .. warning::
-
-      これは :mod:`tarfile` モジュールの呼び出しに置換されるべきです。
+   .. XXX これは :mod:`tarfile` モジュールの呼び出しに置換されるべきです。
 
 
 .. function:: make_zipfile(base_name, base_dir[, verbose=0, dry_run=0])
@@ -837,11 +833,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    再帰的に *directory* とその下の全ファイルを削除します。エラーは無視
    されます(*verbose* が真の時は ``sys.stdout`` に出力されます)
 
-.. todo::
-
-   次の行をコメントインする
-
-.. **\*\*** Some of this could be replaced with the shutil module? **\*\***
+.. XXX これらの内いくつかは shutil モジュールで置き換えられる?
 
 
 :mod:`distutils.file_util` --- 1ファイルの操作
@@ -910,7 +902,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
 .. function:: get_platform()
 
    現在のプラットフォームを示す文字列を返します。これはプラットフォーム依存のビルドディレクトリやプラットフォーム依存の配布物を区別するために使われます。
-   典型的には、('os.uname()'のように)OSの名前とバージョン、アーキテクチャを含みますが、厳密にはOSに依存します。たとえば
+   典型的には、('os.uname()' のように) OSの名前とバージョン、アーキテクチャを含みますが、厳密にはOSに依存します。たとえば
    IRIXではアーキテクチャはそれほど重要ではありません(IRIXはSGIのハードウェアだけで動作する)が、
    Linuxではカーネルのバージョンはそれほど重要ではありません。
 
@@ -933,14 +925,20 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
    32bit ユニバーサルバイナリではアーキテクチャは ``fat`` で、
    64bit ユニバーサルバイナリではアーキテクチャは ``fat64`` で、
    4-way ユニバーサルバイナリではアーキテクチャは ``universal`` になります。
-
-   Mac OS X で返される値の例::
+   Python 2.7 と Python 3.2 から 3-way ユニバーサルバイナリ (ppc, i386, x86_64) には
+   ``fat3`` が i386 と x86_64 ユニバーサルバイナリには ``intel`` が使われるようになりました。
+   
+   Mac OS X で返される値の例:
 
    * ``macosx-10.3-ppc``
 
    * ``macosx-10.3-fat``
 
    * ``macosx-10.5-universal``
+
+   * ``macosx-10.6-intel``
+
+   .. % XXX isn't this also provided by some other non-distutils module?
 
 
 .. function:: convert_path(pathname)
@@ -1112,17 +1110,12 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 * 真偽値をとるオプションは "負のエイリアス" を持ちます。--- たとえば :option:`--quiet` の "負のエイリアス" が
   :option:`--verbose` の場合、コマンドラインで :option:`--quiet` を指定すると *verbose* は偽になります。
 
-.. todo::
-
-   コメントイン
-
-.. **\*\*** Should be replaced with :mod:`optik` (which is also now known as
-.. :mod:`optparse` in Python 2.3 and later). **\*\***
+.. XXX :mod:`optparse` に置き換えられるべきです。
 
 
 .. function:: fancy_getopt(options, negative_opt, object, args)
 
-   ラッパ関数。 *options* は :class:`FancyGetopt` のコンストラクタで説明されている``(long_option,
+   ラッパ関数。 *options* は :class:`FancyGetopt` のコンストラクタで説明されている ``(long_option,
    short_option, help_string)`` の3要素タプルのリストです。 *negative_opt*
    はオプション名からオプション名のマッピングになっている辞書で、キー、値のどちらも *options* リストに含まれている必要があります。
    *object* は値を保存するオブジェクト(:class:`FancyGetopt` クラスの :meth:`getopt` メソッドを参照してください)です。
@@ -1133,9 +1126,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 
    *text* を *width* 以下の幅で折り返します。
 
-   .. warning::
-
-      :mod:`textwrap` で置き換えられるべき ( Python 2.3 以降で利用可能)。
+   .. XXX :mod:`textwrap` で置き換えられるべき (Python 2.3 以降で利用可能)。
 
 
 .. class:: FancyGetopt([option_table=None])
@@ -1192,14 +1183,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 .. module:: distutils.log
    :synopsis: シンプルな282スタイルのロギングメカニズム
 
-
-.. warning::
-
-   標準の :mod:`logging` モジュールに置き換えられるべき
-
-.. % \subsubsection{\module{} --- }
-.. % \declaremodule{standard}{distutils.magic}
-.. % \modulesynopsis{ }
+.. XXX 標準の :mod:`logging` モジュールに置き換えられるべき
 
 
 :mod:`distutils.spawn` --- サブプロセスの生成
@@ -1366,7 +1350,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
    |                  | N行の連続した行がバックスラッシュで終わる場合、N+1                     |              |
    |                  | 行の物理行が1行の論理行として扱われます。                              |              |
    +------------------+------------------------------------------------------------------------+--------------+
-   | *collapse_join*  | 前の行と接続するとき、行頭の空白文字を削除します。``(join_lines        | false        |
+   | *collapse_join*  | 前の行と接続するとき、行頭の空白文字を削除します。 ``(join_lines       | false        |
    |                  | and not lstrip_ws)``                                                   |              |
    |                  | の時だけ意味をもちます。                                               |              |
    +------------------+------------------------------------------------------------------------+--------------+
@@ -1713,7 +1697,7 @@ distutilsのモジュールで使用される例外を提供します。 distuti
    端末への出力とファイルシステムとのやりとりは全て :meth:`run` が行います。
 
 *sub_commands* はコマンドの"ファミリー"を定式化したものです。たとえば ``install`` はサブコマンド
-``install_lib `` ``install_headers`` などの親です。コマンドファミリーの親は
+``install_lib`` ``install_headers`` などの親です。コマンドファミリーの親は
 *sub_commands* をクラス属性として持ちます。 2要素のタプル ``(command_name, predicate)`` のリストで、
 *command_name* には文字列、 *predicate* には親コマンドのメソッドで、
 現在の状況がコマンド実行にふさわしいかどうか判断するものを指定します。 (例えば ``install_headers`` はインストールするべき

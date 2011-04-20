@@ -67,8 +67,8 @@
 
 * :option:`ext_modules` や :option:`libraries` オプションに記載された C ソースファイル
 
-  **\*\*** (C ライブラリソースの取得機構は現状ではうまく動きません -- :file:`build_clib.py` には、
-  :meth:`get_source_files` メソッドがありません!) **\*\***
+  .. XXX C ライブラリソースの取得機構は現状ではうまく動きません -- :file:`build_clib.py` には、
+    :meth:`get_source_files` メソッドがありません!
 
 * :option:`scripts` オプションで指定されたスクリプト
 
@@ -167,17 +167,10 @@ setup スクリプトと同様、マニフェストテンプレート中のデ�
 上の動作は二種類のオプションを使って修正できます。まず、標準の "include" および "exclude" セットを無効化するには
 :option:`--no-defaults` および :option:`--no-prune`  を使います
 
-第二に、マニフェストファイルの再生成を強制できます --- 例えば、現在マニフェストテンプレート内に指定しているパターンにマッチする
-ファイルやディレクトリを追加したり削除したりすると、マニフェストを再生成しなくてはなりません::
-
-   python setup.py sdist --force-manifest
-
-また、単にマニフェストを (再) 生成したいだけで、ソース配布物は作成したくない場合があるかもしれません::
+第2に、単にマニフェストを (再) 生成したいだけで、ソース配布物は作成したくない場合があるかもしれません::
 
    python setup.py sdist --manifest-only
 
-:option:`--manifest-only` を行うと、 :option:`--force-manifest` を呼び出します。 :option:`-o`
-は :option:`--manifest-only` のショートカット、 :option:`-f` は :option:`--force-manifest`
-のショートカットです。
+:option:`-o` は :option:`--manifest-only` のショートカットです。
 
 

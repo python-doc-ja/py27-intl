@@ -130,8 +130,6 @@
 .. attribute:: scheduler.queue
 
    読み込み専用の属性で、これからのイベントが実行される順序で格納されたリストを返します。
-   各イベントは、次の属性を持った名前付きタプル(:term:`named tuple`)の形式になります。
+   各イベントは、次の属性 time, priority, action, argument を持った名前付きタプル (:term:`named tuple`) の形式になります。
 
-     time, priority, action, argument
-
-  .. versionadded:: 2.6
+   .. versionadded:: 2.6

@@ -218,7 +218,9 @@ writer を作成するためのインタフェースは、インスタンス化�
 
 .. method:: writer.new_spacing(spacing)
 
-   割り付けスタイル (spacing style) を *spacing* に設定します。 Set the spacing style to *spacing*.
+   割り付けスタイル (spacing style) を *spacing* に設定します。
+
+   .. Set the spacing style to *spacing*.
 
 
 .. method:: writer.new_styles(styles)

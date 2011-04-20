@@ -179,8 +179,8 @@
 
 .. data:: DEBUG_LEAK
 
-   プログラムのメモリリークをデバッグするときに指定します。（``DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE |
-   DEBUG_INSTANCES |  DEBUG_OBJECTS | DEBUG_SAVEALL``と同じ。）
+   プログラムのメモリリークをデバッグするときに指定します。（ ``DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE |
+   DEBUG_INSTANCES |  DEBUG_OBJECTS | DEBUG_SAVEALL`` と同じ。）
 
 .. rubric:: Footnotes
 

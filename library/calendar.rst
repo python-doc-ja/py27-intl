@@ -201,8 +201,8 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
 
    週の最初の曜日(``0`` は月曜日, ``6`` は日曜日)を設定します。
    定数 :const:`MONDAY`, :const:`TUESDAY`,
-   :const:`WEDNESDAY`,:const:`THURSDAY`, :const:`FRIDAY`,
-   :const:`SATURDAY` 及び:const:`SUNDAY` は便宜上提供されています。
+   :const:`WEDNESDAY`, :const:`THURSDAY`, :const:`FRIDAY`,
+   :const:`SATURDAY` 及び :const:`SUNDAY` は便宜上提供されています。
    例えば、日曜日を週の開始日に設定するときは::
 
       import calendar
@@ -220,7 +220,7 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
 
 .. function:: isleap(year)
 
-   *year* が閏年なら:const:`True` を、そうでなければ:const:`False` を返します。
+   *year* が閏年なら :const:`True` を、そうでなければ :const:`False` を返します。
 
 
 .. function:: leapdays(y1, y2)

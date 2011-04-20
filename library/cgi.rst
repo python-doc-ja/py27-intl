@@ -77,9 +77,10 @@ cgi モジュールを使う
 1 度だけ行います。これにより、標準入力または環境変数からフォームの内容を読み出します (どちらから読み出すかは、複数の環境変数の値が CGI 標準に従って
 どう設定されているかで決まります)。インスタンスが標準入力を使うかもしれないので、インスタンス生成を行うのは一度だけにしなければなりません。
 
-:class:`FieldStorage` のインスタンスは Python の辞書のようにインデクスを使って参照でき、標準の辞書に対するメソッド
-:meth:`has_key` と :meth:`keys` をサポートしています。組み込みの関数 :func:`len`
-もサポートしています。空の文字列を含むフォームのフィールドは無視され、辞書には入りません; そういった値を保持するには、
+:class:`FieldStorage` のインスタンスは Python の辞書のようにインデクスを使って参照できます。
+:keyword:`in` 演算子を使って包含検査でき、
+辞書の標準メソッド :meth:`keys` や組み込み関数 :func:`len` もサポートしています。
+空の文字列を含むフォームのフィールドは無視され、辞書には入りません; そういった値を保持するには、
 :class:`FieldStorage` のインスタンスを生成する時にオプションの  *keep_blank_values* キーワード引数を true
 に設定してください。
 
@@ -87,7 +88,7 @@ cgi モジュールを使う
 ``addr``  フィールドが両方とも空の文字列に設定されていないか調べます::
 
    form = cgi.FieldStorage()
-   if not (form.has_key("name") and form.has_key("addr")):
+   if "name" not in form or "addr" not in form:
        print "<H1>Error</H1>"
        print "Please fill in the name and addr fields."
        return
@@ -117,8 +118,8 @@ cgi モジュールを使う
 
 フィールドがアップロードされたファイルを表している場合、 :attr:`value` 属性や :func:`getvalue`
 メソッドを使ってフィールドの値にアクセスすると、ファイルの内容を全て文字列としてメモリ上に読み込んでしまいます。
-これは望ましくない機能かもしれません。アップロードされたファイルがあるかどうかは :attr:`filename` 属性および :attr:`file`
-属性のいずれかで調べられます。その後、以下のようにして :attr:`file` 属性から落ち着いてデータを読み出せます::
+これは望ましくない機能かもしれません。アップロードされたファイルがあるかどうかは :attr:`filename` 属性および :attr:`!file`
+属性のいずれかで調べられます。その後、以下のようにして :attr:`!file` 属性から落ち着いてデータを読み出せます::
 
    fileitem = form["userfile"]
    if fileitem.file:
@@ -135,22 +136,22 @@ cgi モジュールを使う
    field will be set to the value -1.
 
 アップロードされたファイルの内容を取得している間にエラーが発生した場合
-(例えば、ユーザーがバックやキャンセルボタンでsubmitを中断した場合)、
+(例えば、ユーザーがバックやキャンセルボタンで submit を中断した場合)、
 そのフィールドのオブジェクトの :attr:`done` 属性には -1 が設定されます。
 
 現在ドラフトとなっているファイルアップロードの標準仕様では、一つのフィールドから (再帰的な :mimetype:`multipart/\*`
 エンコーディングを使って) 複数のファイルがアップロードされる可能性を受け入れています。この場合、アイテムは辞書形式の
-:class:`FieldStorage` アイテムとなります。複数ファイルかどうかは :attr:`type` 属性が
+:class:`FieldStorage` アイテムとなります。複数ファイルかどうかは :attr:`!type` 属性が
 :mimetype:`multipart/form-data` (または :mimetype:`multipart/\*` にマッチする他の MIME 型)
 になっているかどうかを調べれば判別できます。この場合、トップレベルのフォームオブジェクトと同様にして再帰的に個別処理できます。
 
-フォームが「古い」形式で入力された場合 (クエリ文字列または単一の:mimetype:`application/x-www-form-
-urlencoded` データで入力された場合)、データ要素の実体は :class:`MiniFieldStorage` クラスの
-インスタンスになります。この場合、 :attr:`list` 、 :attr:`file` 、および :attr:`filename` 属性は常に ``None``
+フォームが「古い」形式で入力された場合 (クエリ文字列または単一の :mimetype:`application/x-www-form-urlencoded`
+データで入力された場合)、データ要素の実体は :class:`MiniFieldStorage` クラスの
+インスタンスになります。この場合、 :attr:`!list` 、 :attr:`!file` 、および :attr:`filename` 属性は常に ``None``
 になります。
 
 .. A form submitted via POST that also has a query string will contain both
-   :class:`FieldStorage` and :class:`MiniFieldStorage` items.
+.. :class:`FieldStorage` and :class:`MiniFieldStorage` items.
 
 フォームがPOSTによって送信され、クエリー文字列も持っていた場合、
 :class:`FieldStorage` と :class:`MiniFieldStorage` の両方が含まれます。
@@ -189,7 +190,7 @@ urlencoded` データで入力された場合)、データ要素の実体は :cl
 
 このコードの問題点は、クライアント側がスクリプトにとって常に有効な入力を提供するとは期待できないところにあります。例えば、もし好奇心旺盛なユーザがもう一つの
 ``user=foo`` ペアをクエリ文字列に追加したら、 ``getvalue('user')`` メソッドは
-文字列ではなくリストを返すため、このスクリプトはクラッシュするでしょう。リストに対して :meth:`upper` メソッドを呼び出すと、引数が
+文字列ではなくリストを返すため、このスクリプトはクラッシュするでしょう。リストに対して :meth:`~str.upper` メソッドを呼び出すと、引数が
 有効でない (リスト型はその名前のメソッドを持っていない) ため、例外 :exc:`AttributeError` を送出します。
 
 従って、フォームデータの値を読み出しには、得られた値が単一の値なのか値のリストなのかを常に調べるコードを使うのが適切
@@ -306,7 +307,7 @@ urlencoded` データで入力された場合)、データ要素の実体は :cl
 
 .. function:: print_directory()
 
-   現在のディレクトリを HTML に書式化して出力します。 Format the current directory in HTML.
+   現在のディレクトリを HTML に書式化して出力します。
 
 
 .. function:: print_environ_usage()
@@ -318,8 +319,11 @@ urlencoded` データで入力された場合)、データ要素の実体は :cl
 
    文字列 *s* 中の文字 ``'&'`` 、 ``'<'`` 、および  ``'>'`` を HTML で正しく表示できる文字列に変換します。
    それらの文字が中に入っているかもしれないようなテキストを出力する必要があるときに使ってください。オプションの引数 *quote*
-   の値が真であれば、二重引用符文字 (``'"'``) も変換します; この機能は、例えば  ``<A HREF="...">`` といったような HTML
-   の属性値を出力に含めるのに役立ちます。クオートされる値が単引用符か二重引用符、またはその両方を含む可能性がある場合は、代りに
+   の値が真であれば、二重引用符文字 (``"``) も変換します; この機能は ``<a href="...">`` のように二重引用符で区切られた
+   HTML の属性値を出力に含めるのに役立ちます。
+   単引用符は変換されないことに注意して下さい。
+
+   クオートされる値が単引用符か二重引用符、またはその両方を含む可能性がある場合は、代りに
    :mod:`xml.sax.saxutils` の :func:`quoteattr` 関数を検討してください。
 
 
