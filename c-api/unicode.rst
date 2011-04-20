@@ -1,14 +1,3 @@
-.. todo
-
-   訳語の統一 codec & コーデック, など
-      Unicode: Unicode
-      byte order: バイトオーダー
-      専門用語の訳で迷う (codec, endian) など
-   書式の統一 和文英文の間は 1 つ空白空ける.
-   句読点
-   訳文の質上げる
-
-
 .. highlightlang:: c
 
 .. _unicodeobjects:
