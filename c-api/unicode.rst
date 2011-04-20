@@ -2,7 +2,8 @@
 
    訳語の統一 codec & コーデック, など
       Unicode: Unicode
-      codec: 編集すべき数からいって codec にするか? どっちが親切なんだろう?
+      byte order: バイトオーダー
+      専門用語の訳で迷う (codec, endian) など
    書式の統一 和文英文の間は 1 つ空白空ける.
    句読点
    訳文の質上げる
@@ -279,13 +280,13 @@ wchar_t をサポートするプラットフォームでの wchar_t サポート
 組み込み codec (built-in codec)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Python では、処理速度を高めるために C で書かれた一揃いの codec を提供しています。
-これらの codec は全て以下の関数を介して直接利用できます。
+Python には、処理速度を高めるために C で書かれた codec が揃えてあります。
+これら全ての codec は以下の関数を介して直接利用できます。
 
-以下の API の多くが、 *encoding* と *errors* という二つの引数をとります。これらのパラメタは、組み込みの Unicode
-オブジェクトコンストラクタである :func:`unicode` における同名のパラメタと同じセマンティクスになっています。
+以下の API の多くが、 *encoding* と *errors* という二つの引数をとります。これらのパラメータは、組み込みの Unicode
+オブジェクトコンストラクタである :func:`unicode` における同名のパラメータと同じ意味を持ちます。
 
-*encoding* を *NULL* にすると、デフォルトエンコーディングである ASCIIを使います。ファイルシステムに関する関数の呼び出し
+*encoding* を *NULL* にすると、デフォルトエンコーディングである ASCII を使います。ファイルシステムに関する関数の呼び出し
 では、ファイル名に対するエンコーディングとして :c:data:`Py_FileSystemDefaultEncoding` を使わねばなりません。
 この変数は読み出し専用の変数として扱わねばなりません: この変数は、あるシステムによっては静的な文字列に対するポインタで
 あったり、また別のシステムでは、(アプリケーションが setlocale を読んだときなどに) 変わったりもします。
@@ -297,15 +298,15 @@ Python では、処理速度を高めるために C で書かれた一揃いの 
 違いだけを説明しています。
 
 
-Generic Codecs
-""""""""""""""
+汎用 codec
+""""""""""
 
 以下は汎用 codec の API です:
 
 .. c:function:: PyObject* PyUnicode_Decode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
 
    何らかのエンコード方式でエンコードされた、 *size* バイトの文字列 *s* をデコードして Unicode オブジェクトを生成します。
-   *encoding* と *errors* は、組み込み関数 unicode() の同名のパラメタと同じ意味を持ちます。使用する codec の検索は、
+   *encoding* と *errors* は、組み込み関数 unicode() の同名のパラメータと同じ意味を持ちます。使用する codec の検索は、
    Python の codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
    .. versionchanged:: 2.5
@@ -315,7 +316,7 @@ Generic Codecs
 .. c:function:: PyObject* PyUnicode_Encode(const Py_UNICODE *s, Py_ssize_t size, const char *encoding, const char *errors)
 
    *size* で指定されたサイズの :c:type:`Py_UNICODE` バッファをエンコードした Python 文字列オブジェクトを返します。
-   *encoding* および *errors* は Unicode 型の :meth:`encode` メソッドに与える同名のパラメタと
+   *encoding* および *errors* は Unicode 型の :meth:`encode` メソッドに与える同名のパラメータと
    同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec が例外を送出した場合には
    *NULL* を返します。
 
@@ -326,7 +327,7 @@ Generic Codecs
 .. c:function:: PyObject* PyUnicode_AsEncodedString(PyObject *unicode, const char *encoding, const char *errors)
 
    Unicode オブジェクトをエンコードし、その結果を Python 文字列オブジェクトとして返します。 *encoding* および *errors* は
-   Unicode 型の :meth:`encode` メソッドに与える同名のパラメタと同じ意味を持ちます。使用する codec の検索は、 Python の
+   Unicode 型の :meth:`encode` メソッドに与える同名のパラメータと同じ意味を持ちます。使用する codec の検索は、 Python の
    codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
 
@@ -380,23 +381,23 @@ UTF-32 Codecs
 
 .. c:function:: PyObject* PyUnicode_DecodeUTF32(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
 
-   UTF-32 でエンコードされたバッファ文字列から *length* バイトをデコードし、
+   UTF-32 でエンコードされたバッファ文字列から *size* バイトをデコードし、
    Unicodeオブジェクトとして返します。
-   *errors* は(非 *NULL* なら)エラーハンドラを指定します。デフォルトは "strict" です。
+   *errors* は (*NULL* でないなら) エラーハンドラを指定します。デフォルトは "strict" です。
 
-   *byteorder* が非 *NULL* の時、デコーダは与えられたオーダーでデコードを開始します。 ::
+   *byteorder* が *NULL* でない時、デコーダは与えられたバイトオーダーでデコードを開始します。 ::
 
       *byteorder == -1: little endian
       *byteorder == 0:  native order
       *byteorder == 1:  big endian
 
-   ``*byteorder`` が 0 で入力データの最初の4バイトがバイトオーダーマーク(BOM)だった場合、
-   デコーダーはBOMによってバイトオーダーを切り替え、BOMは結果の unicode 文字列には含まれません。
-   ``*byteorder`` が ``-1`` か ``1`` だった場合、すべてのBOMは出力へコピーされます。
+   ``*byteorder`` が 0 で入力データの最初の 4 バイトがバイトオーダーマーク (BOM) だった場合、
+   デコーダーは BOM のバイトオーダーに切り替え、 BOM は結果の unicode 文字列には含まれません。
+   ``*byteorder`` が ``-1`` か ``1`` だった場合、すべての BOM は出力へコピーされます。
 
    デコードが完了した後、入力データの終端に来た時点でのバイトオーダーを *\*byteorder* にセットします。
 
-   narrow build の場合、BMP外のコードポイントはサロゲートペアとしてデコードされます。
+   narrow build の場合、BMP 外のコードポイントはサロゲートペアとしてデコードされます。
 
    *byteorder* が *NULL* のとき、 codec は native order モードで開始します。
 
@@ -408,9 +409,9 @@ UTF-32 Codecs
 .. c:function:: PyObject* PyUnicode_DecodeUTF32Stateful(const char *s, Py_ssize_t size, const char *errors, int *byteorder, Py_ssize_t *consumed)
 
    *consumed* が *NULL* のとき、 :c:func:`PyUnicode_DecodeUTF32` と同じように振る舞います。
-   *consumed* が非 *NULL* のとき、 :c:func:`PyUnicode_DecodeUTF32Stateful` は末尾の
-   不完全な(4で割り切れない数などの)UTF-32バイト列をエラーとして扱いません。
-   末尾の不完全なバイト列はデコードされず、デコードされたバイトすが *consumed*
+   *consumed* が *NULL* でないとき、 :c:func:`PyUnicode_DecodeUTF32Stateful` は末尾の
+   不完全な (4 で割り切れない長さのバイト列などの) UTF-32 バイト列をエラーとして扱いません。
+   末尾の不完全なバイト列はデコードされず、デコードされたバイト数が *consumed*
    に格納されます。
 
    .. versionadded:: 2.6
@@ -418,18 +419,18 @@ UTF-32 Codecs
 
 .. c:function:: PyObject* PyUnicode_EncodeUTF32(const Py_UNICODE *s, Py_ssize_t size, const char *errors, int byteorder)
 
-   *s* の Unicode データを UTF-32 にエンコードした値を格納した Python の bytes
-   オブジェクトを返します。
+   *s* の Unicode データを UTF-32 にエンコードし、その値を Python の bytes
+   オブジェクトに格納して返します。
    出力は以下のバイトオーダーで従って書かれます。 ::
 
       byteorder == -1: little endian
-      byteorder == 0:  native byte order (writes a BOM mark)
+      byteorder == 0:  native byte order (BOM マークあり)
       byteorder == 1:  big endian
 
-   byteorder が ``0`` のとき、出力文字列は常にUnicode BOMマーク(U+FEFF)で始まります。
-   それ以外の2つのモードでは、先頭にBOMマークは出力されません。
+   byteorder が ``0`` のとき、出力文字列は常に Unicode BOM マーク (U+FEFF) で始まります。
+   それ以外の2つのモードでは、先頭に BOM マークは出力されません。
 
-   *Py_UNICODE_WIDE* が定義されていないとき、サロゲートペアを1つのコードポイントとして
+   *Py_UNICODE_WIDE* が定義されていない場合は、サロゲートペアを 1 つのコードポイントとして
    出力します。
 
    codec が例外を発生させた場合、 *NULL* を返します。
@@ -439,7 +440,7 @@ UTF-32 Codecs
 
 .. c:function:: PyObject* PyUnicode_AsUTF32String(PyObject *unicode)
 
-   ネイティブバイトオーダーで UTF-32 エンコーディングを使って Python 文字列を
+   ネイティブバイトオーダーで UTF-32 エンコーディングされた Python 文字列を
    返します。
    文字列は常に BOM マークで始まります。
    エラーハンドラは "strict" です。
@@ -456,15 +457,15 @@ UTF-16 Codecs
 
 .. c:function:: PyObject* PyUnicode_DecodeUTF16(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
 
-   UTF-16 でエンコードされたバッファ *s* から *size* バイトデコードして、結果を Unicode オブジェクトで返します。 *errors*
+   UTF-16 でエンコードされたバッファ *s* から *size* バイトだけデコードして、結果を Unicode オブジェクトで返します。 *errors*
    は (*NULL* でない場合) エラー処理方法を定義します。デフォルト値は "strict" です。
 
    *byteorder* が *NULL* でない場合、デコード機構は以下のように指定されたバイト整列 (byte order) に従ってデコードを開始
    します::
 
-      *byteorder == -1: リトルエンディアン
-      *byteorder == 0:  ネイティブ
-      *byteorder == 1:  ビッグエンディアン
+      *byteorder == -1: little endian
+      *byteorder == 0:  native order
+      *byteorder == 1:  bit endian
 
    ``*byteorder`` が 0 で、入力データの先頭2バイトがバイトオーダーマーク (BOM)
    だった場合、デコーダは BOM が示すバイトオーダーに切り替え、そのBOMを結果の Unicode
@@ -502,12 +503,12 @@ UTF-16 Codecs
    *s* 中の Unicode データを UTF-16 でエンコードした結果が入っている Python 文字列オブジェクトを返します。
    出力は以下のバイトオーダーに従って書き出されます::
 
-      byteorder == -1: リトルエンディアン
-      byteorder == 0:  ネイティブ (BOM マーカを書き出します)
-      byteorder == 1:  ビッグエンディアン
+      byteorder == -1: little endian
+      byteorder == 0:  native byte order (BOM マークあり)
+      byteorder == 1:  big endian
 
-   byteorder が ``0`` の場合、出力結果となる文字列は常に Unicode BOM マーカ
-   (U+FEFF) で始まります。それ以外のモードでは、 BOM マーカを頭につけません。
+   byteorder が ``0`` の場合、出力結果となる文字列は常に Unicode BOM マーク
+   (U+FEFF) で始まります。それ以外のモードでは、 BOM マークを頭につけません。
 
    *Py_UNICODE_WIDE* が定義されている場合、単一の :c:type:`Py_UNICODE` 値はサロゲートペアとして表現されることがあります。
    *Py_UNICODE_WIDE* が定義されていなければ、各 :c:type:`Py_UNICODE` 値は UCS-2 文字として表現されます。
@@ -520,13 +521,13 @@ UTF-16 Codecs
 
 .. c:function:: PyObject* PyUnicode_AsUTF16String(PyObject *unicode)
 
-   ネイティブバイトオーダの UTF-16 でエンコードされた Python 文字列を返します。文字列は常に BOM マーカから始まります。エラー処理は
+   ネイティブバイトオーダの UTF-16 でエンコードされた Python 文字列を返します。文字列は常に BOM マークから始まります。エラー処理は
    "strict" です。 codec が例外を送出した場合には *NULL* を返します。
 
 
 UTF-7 Codecs
 """"""""""""
-以下は UTF-7 codec のAPIです。
+以下は UTF-7 codec の API です。
 
 .. c:function:: PyObject* PyUnicode_DecodeUTF7(const char *s, Py_ssize_t size, const char *errors)
 
@@ -538,7 +539,7 @@ UTF-7 Codecs
 .. c:function:: PyObject* PyUnicode_DecodeUTF7Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)
 
    *consumed* が *NULL* のとき、 :c:func:`PyUnicode_DecodeUTF7` と同じように動作します。
-   *consumed* が非 *NULL* のとき、末尾の不完全な UTF-7 base-64 部分をエラーとしません。
+   *consumed* が *NULL* でないとき、末尾の不完全な UTF-7 base-64 部分をエラーとしません。
    不完全な部分のバイト列はデコードせずに、デコードしたバイト数を *consumed* に格納します。
 
 
@@ -548,16 +549,16 @@ UTF-7 Codecs
    Python の bytes オブジェクトとして返します。
    codec が例外を発生させたときは *NULL* を返します。
 
-   *base64SetO* が非ゼロのとき、 "Set O" 文字
+   *base64SetO* がゼロでないとき、 "Set O" 文字
    (他の場合には何も特別な意味を持たない句読点) を base-64 エンコードします。
-   *base64WhiteSpace* が非ゼロのとき、空白文字を base-64 エンコードします。
+   *base64WhiteSpace* がゼロでないとき、空白文字を base-64 エンコードします。
    Python の "utf-7" codec では、両方ともゼロに設定されています。
 
 
 Unicode-Escape Codecs
 """""""""""""""""""""""
 
-以下は "Unicode Escape" codec の APIです:
+以下は "Unicode Escape" codec の API です:
 
 
 .. c:function:: PyObject* PyUnicode_DecodeUnicodeEscape(const char *s, Py_ssize_t size, const char *errors)
@@ -653,7 +654,7 @@ Latin-1 Codecs
 ASCII Codecs
 """"""""""""
 
-以下は ASCII codec の APIです: 7 ビットの ASCII データだけを受理します。その他のコードはエラーになります。
+以下は ASCII codec の APIです。 7 ビットの ASCII データだけを受理します。その他のコードはエラーになります。
 
 
 .. c:function:: PyObject* PyUnicode_DecodeASCII(const char *s, Py_ssize_t size, const char *errors)
@@ -692,10 +693,10 @@ Character Map Codecs
 (mapping) を使います。
 
 デコード用のマップ型は、文字列型の字列一組みを、 Unicode 型の字列一組、整数 (Unicode 序数として解釈されます) または ``None``
-("定義されていない対応付け(undefined mapping)" を意味し、エラーを引き起こします) のいずれかに対応付けなければなりません。
+("定義されていない対応付け (undefined mapping)" を意味し、エラーを引き起こします) のいずれかに対応付けなければなりません。
 
-デコード用のマップ型は、Unicode 型の字列一組みを、 string 型の字列一組、整数 (Latin-1 序数として解釈されます) または
-``None`` ("定義されていない対応付け(undefined mapping)" を意味し、エラーを引き起こします) の
+エンコード用のマップ型は、Unicode 型の字列一組みを、 string 型の字列一組、整数 (Latin-1 序数として解釈されます) または
+``None`` ("定義されていない対応付け (undefined mapping)" を意味し、エラーを引き起こします) の
 いずれかに対応付けなければなりません。
 
 マップ型オブジェクトは、 :meth:`__getitem__` マップ型インタフェースをサポートしなければなりません。
@@ -709,12 +710,12 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
 
    エンコードされた *size* バイトの文字列 *s* から  *mapping* に指定されたオブジェクトを使って Unicode オブジェクトを
    生成します。codec が例外を送出した場合には *NULL* を返します。
-   もし、 *mapping* が *NULL* だった場合、latin-1でデコーディングされます。それ以外の場合では、 *mapping* はbyteに対する辞書マップ
-   (訳注: sに含まれる文字のunsignedな値をint型でキーとして、値として変換対象の Unicode文字を表すUnicode文字列になっているような辞書)
-   か、ルックアップテーブルとして扱われるunicode文字列です。
+   もし、 *mapping* が *NULL* だった場合、latin-1 でデコードされます。それ以外の場合では、 *mapping* は byte に対する辞書マップ
+   (訳注: s に含まれる文字の unsigned な値を int 型でキーとして、値として変換対象の Unicode 文字を表す Unicode 文字列になっているような辞書)
+   か、ルックアップテーブルとして扱われる Unicode 文字列です。
 
-   文字列(訳注: mappingがunicode文字列として渡された場合)の長さより大きい byte値や、(訳注: mappingにしたがって変換した結果が)
-   U+FFFE "characters" になる Byte値は、"定義されていない対応付け(undefined mapping)" として扱われます。
+   文字列 (訳注: mapping が Unicode 文字列として渡された場合) の長さより大きい byte 値や、(訳注: mappingにしたがって変換した結果が)
+   U+FFFE "characters" になる Byte値は、"定義されていない対応付け (undefined mapping)" として扱われます。
 
    .. versionchanged:: 2.4
       mapping引数としてunicodeが使えるようになりました.
@@ -858,8 +859,8 @@ Methods & Slots
 
 .. c:function:: int PyUnicode_Tailmatch(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
 
-   *substr* が指定された末尾条件 (*direction* == -1 は前方一致、 *direction* ==1 は後方一致) で
-   *str*[*start*:*end*] とマッチする場合に 1 を返し、それ以外の場合には 0 を返します。エラーが発生した時は ``-1``
+   *substr* が *str*[*start*:*end*] の末端 (*direction* == -1 は先頭一致、 *direction* == 1 は末尾一致) で
+   とマッチする場合に 1 を返し、それ以外の場合には 0 を返します。エラーが発生した時は ``-1``
    を返します。
 
    .. versionchanged:: 2.5
@@ -899,7 +900,7 @@ Methods & Slots
 
 .. c:function:: int PyUnicode_Compare(PyObject *left, PyObject *right)
 
-   二つの文字列を比較して、左引数が右引数より小さい場合、左右引数が等価の場合、左引数が右引数より大きい場合、について、それぞれ -1, 0, 1 を返します。
+   二つの文字列を比較して、左引数が右引数より小さい場合、左右引数が等価の場合、左引数が右引数より大きい場合に対して、それぞれ -1, 0, 1 を返します。
 
 
 .. c:function:: int PyUnicode_RichCompare(PyObject *left,  PyObject *right,  int op)
@@ -908,7 +909,7 @@ Methods & Slots
 
    * ``NULL`` を、例外が発生したときに返します。
    * :const:`Py_True` もしくは :const:`Py_False` を、正しく比較できた時に返します。
-   * :const:`Py_NotImplemented` を、leftとrightがのどちらかに対する
+   * :const:`Py_NotImplemented` を、 *left* と *right* のどちらかに対する
      :c:func:`PyUnicode_FromObject` が失敗したときに返します。(原文: in case the type combination is
      unknown)
 
