@@ -687,7 +687,7 @@ Templateの使い方の例を以下に示します:
    >>> Template('$who likes $what').safe_substitute(d)
    'tim likes $what'
 
-さらに進んだ使い方: :class:`Template` のサブクラスを導出して、プレース
+さらに進んだ使い方: :class:`Template` のサブクラスを派生して、プレース
 ホルダの書式、区切り文字、テンプレート文字列の解釈に使われている正規表
 現全体をカスタマイズできます。こうした作業には、以下のクラス属性をオー
 バライドします:

@@ -66,7 +66,7 @@
 
 .. exception:: NNTPError
 
-   標準の例外 :exc:`Exception` から導出されており、 :mod:`nntplib` モジュールが送出する全ての例外の基底クラスです。
+   標準の例外 :exc:`Exception` から派生しており、 :mod:`nntplib` モジュールが送出する全ての例外の基底クラスです。
 
 
 .. exception:: NNTPReplyError

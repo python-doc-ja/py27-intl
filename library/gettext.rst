@@ -210,7 +210,7 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
 .. class:: NullTranslations([fp])
 
    オプションのファイルオブジェクト *fp* を取ります。この引数は基底クラスでは無視されます。このメソッドは  "保護された (protected)"
-   インスタンス変数 *_info* および  *_charset* を初期化します。これらの変数の値は導出クラスで設定することができます。同様に
+   インスタンス変数 *_info* および  *_charset* を初期化します。これらの変数の値は派生クラスで設定することができます。同様に
    *_fallback* も初期化しますが、この値は :meth:`add_fallback` で設定されます。その後、 *fp* が ``None``
    でない場合 ``self._parse(fp)`` を呼び出します。
 
@@ -231,13 +231,13 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
    .. method:: gettext(message)
 
       代替オブジェクトが設定されている場合、 :meth:`gettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      導出クラスで上書きするメソッドです。
+      派生クラスで上書きするメソッドです。
 
 
    .. method:: lgettext(message)
 
       代替オブジェクトが設定されている場合、 :meth:`lgettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      導出クラスで上書きするメソッドです。
+      派生クラスで上書きするメソッドです。
 
       .. versionadded:: 2.4
 
@@ -245,21 +245,20 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
    .. method:: ugettext(message)
 
       代替オブジェクトが設定されている場合、 :meth:`gettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを Unicode
-      文字列で返します。導出クラスで上書きするメソッドです。
+      文字列で返します。派生クラスで上書きするメソッドです。
 
 
    .. method:: ngettext(singular, plural, n)
 
       代替オブジェクトが設定されている場合、 :meth:`ngettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      導出クラスで上書きするメソッドです。
-
+      派生クラスで上書きするメソッドです。
       .. versionadded:: 2.3
 
 
    .. method:: lngettext(singular, plural, n)
 
       代替オブジェクトが設定されている場合、 :meth:`lngettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを返します。
-      導出クラスで上書きするメソッドです。
+      派生クラスで上書きするメソッドです。
 
       .. versionadded:: 2.4
 
@@ -267,7 +266,7 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
    .. method:: ungettext(singular, plural, n)
 
       代替オブジェクトが設定されている場合、 :meth:`ungettext` を代替オブジェクトに転送します。そうでない場合、翻訳されたメッセージを
-      Unicode 文字列で返します。導出クラスで上書きするメソッドです。
+      Unicode 文字列で返します。派生クラスで上書きするメソッドです。
 
       .. versionadded:: 2.3
 
@@ -327,7 +326,7 @@ GNU :program:`gettext` では :func:`dcgettext` も定義していますが、
 :class:`GNUTranslations` クラス
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`gettext` モジュールでは :class:`NullTranslations` から導出されたもう一つのクラス:
+:mod:`gettext` モジュールでは :class:`NullTranslations` から派生したもう一つのクラス:
 :class:`GNUTranslations` を提供しています。このクラスはビッグエンディアン、およびリトルエンディアン両方のバイナリ形式の GNU
 :program:`gettext` :file:`.mo` ファイルを読み出せるように :meth:`_parse` を上書きしています。
 また、このクラスはメッセージ id とメッセージ文字列の両方を Unicode に型強制します。
