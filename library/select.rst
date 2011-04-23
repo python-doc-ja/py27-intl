@@ -6,16 +6,31 @@
    :synopsis: 複数のストリームに対してI/O 処理の完了を待機します。
 
 
+.. This module provides access to the :cfunc:`select` and :cfunc:`poll` functions
+.. available in most operating systems, :cfunc:`epoll` available on Linux 2.5+ and
+.. :cfunc:`kqueue` available on most BSD.
+.. Note that on Windows, it only works for sockets; on other operating systems,
+.. it also works for other file types (in particular, on Unix, it works on pipes).
+.. It cannot be used on regular files to determine whether a file has grown since
+.. it was last read.
+
 このモジュールでは、ほとんどのオペレーティングシステムで利用可能な :cfunc:`select` および :cfunc:`poll` 関数、
 Linux 2.5+ で利用可能な :cfunc:`epoll`, 多くのBSDで利用可能な :cfunc:`kqueue` 関数に対するアクセスを提供しています。
 Windows の上ではソケットに対してしか動作しないので注意してください; その他のオペレーティングシステムでは、他のファイル形式でも
 (特に Unixではパイプにも) 動作します。通常のファイルに対して適用し、最後にファイルを読み出した時から内容が増えているかを
 決定するために使うことはできません。
 
+
+.. The module defines the following:
+
 このモジュールでは以下の内容を定義しています:
 
 
 .. exception:: error
+
+   .. The exception raised when an error occurs.  The accompanying value is a pair
+   .. containing the numeric error code from :cdata:`errno` and the corresponding
+   .. string, as would be printed by the C function :cfunc:`perror`.
 
    エラーが発生したときに送出される例外です。エラーに付属する値は、 :cdata:`errno` からとったエラーコードを表す数値とその
    エラーコードに対応する文字列からなるペアで、C 関数の :cfunc:`perror` が出力するものと同様です。
@@ -24,18 +39,24 @@ Windows の上ではソケットに対してしか動作しないので注意し
 .. function:: epoll([sizehint=-1])
 
    .. (Only supported on Linux 2.5.44 and newer.)  Returns an edge polling object,
-      which can be used as Edge or Level Triggered interface for I/O events; see
-      section :ref:`epoll-objects` below for the methods supported by epolling
-      objects.
+   .. which can be used as Edge or Level Triggered interface for I/O events; see
+   .. section :ref:`epoll-objects` below for the methods supported by epolling
+   .. objects.
 
    (Linux 2.5.44 以降でのみサポート) エッジポーリング(edge polling)オブジェクトを返します。
    このオブジェクトは、 I/O イベントのエッジトリガもしくはレベルトリガインタフェースとして使うことができます。
    エッジポーリングオブジェクトのメソッドについては、 :ref:`epoll-objects` 節を参照してください。
 
+
    .. versionadded:: 2.6
 
 
 .. function:: poll()
+
+   .. (Not supported by all operating systems.)  Returns a polling object, which
+   .. supports registering and unregistering file descriptors, and then polling them
+   .. for I/O events; see section :ref:`poll-objects` below for the methods supported
+   .. by polling objects.
 
    (全てのオペレーティングシステムでサポートされているわけではありません。) ポーリングオブジェクトを返します。このオブジェクトは
    ファイル記述子を登録したり登録解除したりすることができ、ファイル記述子に対する I/O イベント発生をポーリングすることができます;
@@ -45,11 +66,12 @@ Windows の上ではソケットに対してしか動作しないので注意し
 .. function:: kqueue()
 
    .. (Only supported on BSD.)  Returns a kernel queue object object; see section
-      :ref:`kqueue-objects` below for the methods supported by kqueue objects.
+   .. :ref:`kqueue-objects` below for the methods supported by kqueue objects.
 
    (BSD でのみサポート) カーネルキュー(kernel queue)オブジェクトを返します。
    カーネルキューオブジェクトがサポートしているメソッドについては、下の
    :ref:`kqueue-objects` 節を参照してください。
+
 
    .. versionadded:: 2.6
 
@@ -57,25 +79,45 @@ Windows の上ではソケットに対してしか動作しないので注意し
 .. function:: kevent(ident, filter=KQ_FILTER_READ, flags=KQ_ADD, fflags=0, data=0, udata=0)
 
    .. (Only supported on BSD.)  Returns a kernel event object object; see section
-      :ref:`kevent-objects` below for the methods supported by kqueue objects.
+   .. :ref:`kevent-objects` below for the methods supported by kqueue objects.
 
    (BSD でのみサポート) カーネルイベント(kernel event)オブジェクトを返します。
    このオブジェクトのメソッドについては、下の :ref:`kevent-objects` 節を参照してください。
+
 
    .. versionadded:: 2.6
 
 
 .. function:: select(rlist, wlist, xlist[, timeout])
 
+   .. This is a straightforward interface to the Unix :cfunc:`select` system call.
+   .. The first three arguments are sequences of 'waitable objects': either
+   .. integers representing file descriptors or objects with a parameterless method
+   .. named :meth:`fileno` returning such an integer:
+
    Unix の :cfunc:`select` システムコールに対する直接的なインタフェースです。
    最初の 3 つの引数は '待機可能なオブジェクト'
    からなるシーケンスです: ファイル記述子を表す整数値、または引数を持たず、整数を返すメソッド :meth:`fileno` を持つ
    オブジェクトです。
 
+
+   .. * *rlist*: wait until ready for reading
+   .. * *wlist*: wait until ready for writing
+   .. * *xlist*: wait for an "exceptional condition" (see the manual page for what
+   ..   your system considers such a condition)
+
    * *rlist*: 読み込み可能になるまで待つ
    * *wlist*: 書き込み可能になるまで待つ
    * *xlist*: "例外状態 (exceptional condition)" になるまで待つ("例外状態" については、
      システムのmanual pageを参照してください)
+
+
+   .. Empty sequences are allowed, but acceptance of three empty sequences is
+   .. platform-dependent. (It is known to work on Unix but not on Windows.)  The
+   .. optional *timeout* argument specifies a time-out as a floating point number
+   .. in seconds.  When the *timeout* argument is omitted the function blocks until
+   .. at least one file descriptor is ready.  A time-out value of zero specifies a
+   .. poll and never blocks.
 
    いずれかに空のシーケンスを指定してもかまいませんが、3 つ全てを空のシーケンスにしてもよいかどうかはプラットフォームに依存します (Unix では動作し、Windows では
    動作しないことが知られています)。
@@ -83,21 +125,41 @@ Windows の上ではソケットに対してしか動作しないので注意し
    引数が省略された場合、関数は少なくとも一つのファイル記述子が何らかの準備完了状態になるまでブロックします。
    *timeout* に 0 を指定した場合は、ポーリングを行いブロックしないことを示します。
 
+
+   .. The return value is a triple of lists of objects that are ready: subsets of the
+   .. first three arguments.  When the time-out is reached without a file descriptor
+   .. becoming ready, three empty lists are returned.
+
    戻り値は準備完了状態のオブジェクトからなる 3 つのリストです: 従ってこのリストはそれぞれ関数の最初の 3 つの引数のサブセットに
    なります。ファイル記述子のいずれも準備完了にならないままタイムアウトした場合、3 つの空のリストが返されます。
+
 
    .. index::
       single: socket() (in module socket)
       single: popen() (in module os)
+
+
+   .. Among the acceptable object types in the sequences are Python file objects (e.g.
+   .. ``sys.stdin``, or objects returned by :func:`open` or :func:`os.popen`), socket
+   .. objects returned by :func:`socket.socket`.  You may also define a :dfn:`wrapper`
+   .. class yourself, as long as it has an appropriate :meth:`fileno` method (that
+   .. really returns a file descriptor, not just a random integer).
 
    シーケンスの中に含めることのできるオブジェクトは Python ファイルオブジェクト (すなわち ``sys.stdin``, あるいは
    :func:`open` や :func:`os.popen` が返すオブジェクト)、 :func:`socket.socket` が返すソケットオブジェクト
    です。 :dfn:`wrapper` クラスを自分で定義することもできます。この場合、適切な
    (単なる乱数ではなく本当のファイル記述子を返す) :meth:`fileno`  メソッドを持つ必要があります
 
+
    .. note::
 
       .. index:: single: WinSock
+
+
+      .. File objects on Windows are not acceptable, but sockets are.  On Windows,
+      .. the underlying :cfunc:`select` function is provided by the WinSock
+      .. library, and does not handle file descriptors that don't originate from
+      .. WinSock.
 
       :func:`select` はWindows のファイルオブジェクトを受理しませんが、ソケットは受理します。
       Windows では、背後の :cfunc:`select` 関数は WinSock ライブラリで提供されており、
@@ -114,6 +176,36 @@ Windows の上ではソケットに対してしか動作しないので注意し
    http://linux.die.net/man/4/epoll
 
    *eventmask*
+
+   .. +-----------------------+-----------------------------------------------+
+   .. | Constant              | Meaning                                       |
+   .. +=======================+===============================================+
+   .. | :const:`EPOLLIN`      | Available for read                            |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLOUT`     | Available for write                           |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLPRI`     | Urgent data for read                          |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLERR`     | Error condition happened on the assoc. fd     |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLHUP`     | Hang up happened on the assoc. fd             |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLET`      | Set Edge Trigger behavior, the default is     |
+   .. |                       | Level Trigger behavior                        |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLONESHOT` | Set one-shot behavior. After one event is     |
+   .. |                       | pulled out, the fd is internally disabled     |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLRDNORM`  | ???                                           |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLRDBAND`  | ???                                           |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLWRNORM`  | ???                                           |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLWRBAND`  | ???                                           |
+   .. +-----------------------+-----------------------------------------------+
+   .. | :const:`EPOLLMSG`     | ???                                           |
+   .. +-----------------------+-----------------------------------------------+
 
    +-----------------------+-----------------------------------------------+
    | 定数i                 | 意味                                          |
@@ -200,6 +292,14 @@ Windows の上ではソケットに対してしか動作しないので注意し
 ポーリングオブジェクト
 ----------------------
 
+.. The :cfunc:`poll` system call, supported on most Unix systems, provides better
+.. scalability for network servers that service many, many clients at the same
+.. time. :cfunc:`poll` scales better because the system call only requires listing
+.. the file descriptors of interest, while :cfunc:`select` builds a bitmap, turns
+.. on bits for the fds of interest, and then afterward the whole bitmap has to be
+.. linearly scanned again. :cfunc:`select` is O(highest file descriptor), while
+.. :cfunc:`poll` is O(number of file descriptors).
+
 :cfunc:`poll` システムコールはほとんどの Unix システムでサポートされており、非常に多数のクライアントに同時にサービスを提供するような
 ネットワークサーバが高い拡張性を持てるようにしています。 :cfunc:`poll` に高い拡張性があるのは、 :cfunc:`select` が
 ビット対応表を構築し、対象ファイルの記述子に対応するビットを立て、その後全ての対応表の全てのビットを線形探索するのに対し、 :cfunc:`poll`
@@ -209,13 +309,42 @@ Windows の上ではソケットに対してしか動作しないので注意し
 
 .. method:: poll.register(fd[, eventmask])
 
+   .. Register a file descriptor with the polling object.  Future calls to the
+   .. :meth:`poll` method will then check whether the file descriptor has any pending
+   .. I/O events.  *fd* can be either an integer, or an object with a :meth:`fileno`
+   .. method that returns an integer.  File objects implement :meth:`fileno`, so they
+   .. can also be used as the argument.
+
    ファイル記述子をポーリングオブジェクトに登録します。これ以降の :meth:`poll` メソッド呼び出しでは、そのファイル記述子に処理待ち中の I/O
    イベントがあるかどうかを監視します。 *fd* は整数か、整数値を返す :meth:`fileno` メソッドを持つオブジェクトを取ります。
    ファイルオブジェクトも通常 :meth:`fileno` を実装しているので、引数として使うことができます。
 
+
+   .. *eventmask* is an optional bitmask describing the type of events you want to
+   .. check for, and can be a combination of the constants :const:`POLLIN`,
+   .. :const:`POLLPRI`, and :const:`POLLOUT`, described in the table below.  If not
+   .. specified, the default value used will check for all 3 types of events.
+
    *eventmask* はオプションのビットマスクで、どのタイプの I/O イベントを監視したいかを記述します。この値は以下の表で述べる定数
    :const:`POLLIN` 、 :const:`POLLPRI` 、および :const:`POLLOUT` の組み合わせにすることが
    できます。ビットマスクを指定しない場合、標準の値が使われ、 3 種のイベント全てに対して監視が行われます。
+
+
+   .. +-------------------+------------------------------------------+
+   .. | Constant          | Meaning                                  |
+   .. +===================+==========================================+
+   .. | :const:`POLLIN`   | There is data to read                    |
+   .. +-------------------+------------------------------------------+
+   .. | :const:`POLLPRI`  | There is urgent data to read             |
+   .. +-------------------+------------------------------------------+
+   .. | :const:`POLLOUT`  | Ready for output: writing will not block |
+   .. +-------------------+------------------------------------------+
+   .. | :const:`POLLERR`  | Error condition of some sort             |
+   .. +-------------------+------------------------------------------+
+   .. | :const:`POLLHUP`  | Hung up                                  |
+   .. +-------------------+------------------------------------------+
+   .. | :const:`POLLNVAL` | Invalid request: descriptor not open     |
+   .. +-------------------+------------------------------------------+
 
    +-------------------+----------------------------------------------------------+
    | 定数              | 意味                                                     |
@@ -233,33 +362,57 @@ Windows の上ではソケットに対してしか動作しないので注意し
    | :const:`POLLNVAL` | 無効な要求: 記述子が開かれていない                       |
    +-------------------+----------------------------------------------------------+
 
+
+   .. Registering a file descriptor that's already registered is not an error, and has
+   .. the same effect as registering the descriptor exactly once.
+
    すでに登録済みのファイル記述子を登録してもエラーにはならず、一度だけ登録した場合と同じ効果になります。
 
 
 .. method:: poll.modify(fd, eventmask)
 
    .. Modifies an already registered fd. This has the same effect as
-      :meth:`register(fd, eventmask)`.  Attempting to modify a file descriptor
-      that was never registered causes an :exc:`IOError` exception with errno
-      :const:`ENOENT` to be raised.
+   .. :meth:`register(fd, eventmask)`.  Attempting to modify a file descriptor
+   .. that was never registered causes an :exc:`IOError` exception with errno
+   .. :const:`ENOENT` to be raised.
 
    登録されているファイルディスクリプタ *fd* を変更する。
    これは、 :meth:`register(fd, eventmask)` と同じ効果を持つ。
    登録されていないファイルディスクリプタに対してこのメソッドを呼びだすと、
    errno が :const:`ENOENT` の :exc:`IOError` 例外が送出します。
 
+
    .. versionadded:: 2.6
 
 
 .. method:: poll.unregister(fd)
 
+   .. Remove a file descriptor being tracked by a polling object.  Just like the
+   .. :meth:`register` method, *fd* can be an integer or an object with a
+   .. :meth:`fileno` method that returns an integer.
+
    ポーリングオブジェクトによって追跡中のファイル記述子を登録解除します。 :meth:`register` メソッドと同様に、 *fd* は整数か、整数値を返す
    :meth:`fileno` メソッドを持つオブジェクトを取ります。
+
+
+   .. Attempting to remove a file descriptor that was never registered causes a
+   .. :exc:`KeyError` exception to be raised.
 
    登録されていないファイル記述子を登録解除しようとすると :exc:`KeyError` 例外が送出されます。
 
 
 .. method:: poll.poll([timeout])
+
+   .. Polls the set of registered file descriptors, and returns a possibly-empty list
+   .. containing ``(fd, event)`` 2-tuples for the descriptors that have events or
+   .. errors to report. *fd* is the file descriptor, and *event* is a bitmask with
+   .. bits set for the reported events for that descriptor --- :const:`POLLIN` for
+   .. waiting input, :const:`POLLOUT` to indicate that the descriptor can be written
+   .. to, and so forth. An empty list indicates that the call timed out and no file
+   .. descriptors had any events to report. If *timeout* is given, it specifies the
+   .. length of time in milliseconds which the system will wait for events before
+   .. returning. If *timeout* is omitted, negative, or :const:`None`, the call will
+   .. block until there is an event for this poll object.
 
    登録されたファイル記述子に対してポーリングを行い、報告すべき I/O イベントまたはエラーの発生したファイル記述子に毎に 2 要素のタプル ``(fd,
    event)`` からなるリストを返します。リストは空になることもあります。 *fd* はファイル記述子で、 *event* は該当するファイル記述子
@@ -302,9 +455,10 @@ kqueue オブジェクト
 
    kevent に対する低レベルのインタフェース
 
+
    .. - changelist must be an iterable of kevent object or None
-      - max_events must be 0 or a positive integer
-      - timeout in seconds (floats possible)
+   .. - max_events must be 0 or a positive integer
+   .. - timeout in seconds (floats possible)
 
    - *changelist* は kevent オブジェクトのイテレータブルか、 ``None``
    - *max_events* は 0 か正の整数
@@ -323,9 +477,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 .. attribute:: kevent.ident
 
    .. Value used to identify the event. The interpretation depends on the filter
-      but it's usually the file descriptor. In the constructor ident can either
-      be an int or an object with a fileno() function. kevent stores the integer
-      internally.
+   .. but it's usually the file descriptor. In the constructor ident can either
+   .. be an int or an object with a fileno() function. kevent stores the integer
+   .. internally.
 
    イベントを特定するための値。この値は filter にもよりますが、大抵の場合はファイルディスクリプタです。
    コンストラクタでは、 ident として、整数値か fileno() メソッドを持ったオブジェクトを渡せます。
@@ -337,6 +491,32 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    .. Name of the kernel filter
 
    kernel filter の名前
+
+
+   .. +---------------------------+---------------------------------------------+
+   .. | Constant                  | Meaning                                     |
+   .. +===========================+=============================================+
+   .. | :const:`KQ_FILTER_READ`   | Takes a descriptor and returns whenever     |
+   .. |                           | there is data available to read             |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_WRITE`  | Takes a descriptor and returns whenever     |
+   .. |                           | there is data available to read             |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_AIO`    | AIO requests                                |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_VNODE`  | Returns when one or more of the requested   |
+   .. |                           | events watched in *fflag* occurs            |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_PROC`   | Watch for events on a process id            |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_NETDEV` | Watch for events on a network device        |
+   .. |                           | [not available on Mac OS X]                 |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_SIGNAL` | Returns whenever the watched signal is      |
+   .. |                           | delivered to the process                    |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_FILTER_TIMER`  | Establishes an arbitrary timer              |
+   .. +---------------------------+---------------------------------------------+
 
    +---------------------------+--------------------------------------------------------------------------+
    | 定数                      | 意味                                                                     |
@@ -358,11 +538,37 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    | :const:`KQ_FILTER_TIMER`  | 任意のタイマを設定します                                                 |
    +---------------------------+--------------------------------------------------------------------------+
 
+
 .. attribute:: kevent.flags
 
    .. Filter action
 
    フィルタ・アクション
+
+
+   .. +---------------------------+---------------------------------------------+
+   .. | Constant                  | Meaning                                     |
+   .. +===========================+=============================================+
+   .. | :const:`KQ_EV_ADD`        | Adds or modifies an event                   |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_DELETE`     | Removes an event from the queue             |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_ENABLE`     | Permitscontrol() to returns the event       |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_DISABLE`    | Disablesevent                               |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_ONESHOT`    | Removes event after first occurrence        |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_CLEAR`      | Reset the state after an event is retrieved |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_SYSFLAGS`   | internal event                              |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_FLAG1`      | internal event                              |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_EOF`        | Filter specific EOF condition               |
+   .. +---------------------------+---------------------------------------------+
+   .. | :const:`KQ_EV_ERROR`      | See return values                           |
+   .. +---------------------------+---------------------------------------------+
 
    +---------------------------+---------------------------------------------+
    | 定数                      | 意味                                        |
@@ -396,7 +602,16 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    フィルタ依存のフラグ
 
 
+   .. :const:`KQ_FILTER_READ` and  :const:`KQ_FILTER_WRITE` filter flags
+
    :const:`KQ_FILTER_READ` と :const:`KQ_FILTER_WRITE` フィルタのフラグ
+
+
+   .. +----------------------------+--------------------------------------------+
+   .. | Constant                   | Meaning                                    |
+   .. +============================+============================================+
+   .. | :const:`KQ_NOTE_LOWAT`     | low water mark of a socket buffer          |
+   .. +----------------------------+--------------------------------------------+
 
    +----------------------------+--------------------------------------------+
    | 定数                       | 意味                                       |
@@ -405,7 +620,28 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    +----------------------------+--------------------------------------------+
 
 
+   .. :const:`KQ_FILTER_VNODE` filter flags
+
    :const:`KQ_FILTER_VNODE` フィルタのフラグ
+
+
+   .. +----------------------------+--------------------------------------------+
+   .. | Constant                   | Meaning                                    |
+   .. +============================+============================================+
+   .. | :const:`KQ_NOTE_DELETE`    | *unlink()* was called                      |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_WRITE`     | a write occurred                           |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_EXTEND`    | the file was extended                      |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_ATTRIB`    | an attribute was changed                   |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_LINK`      | the link count has changed                 |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_RENAME`    | the file was renamed                       |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_REVOKE`    | access to the file was revoked             |
+   .. +----------------------------+--------------------------------------------+
 
    +----------------------------+--------------------------------------------+
    | 定数                       | 意味                                       |
@@ -426,7 +662,31 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    +----------------------------+--------------------------------------------+
 
 
+   .. :const:`KQ_FILTER_PROC` filter flags
+
    :const:`KQ_FILTER_PROC` フィルタフラグ
+
+
+   .. +----------------------------+--------------------------------------------+
+   .. | Constant                   | Meaning                                    |
+   .. +============================+============================================+
+   .. | :const:`KQ_NOTE_EXIT`      | the process has exited                     |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_FORK`      | the process has called *fork()*            |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_EXEC`      | the process has executed a new process     |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_PCTRLMASK` | internal filter flag                       |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_PDATAMASK` | internal filter flag                       |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_TRACK`     | follow a process across *fork()*           |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_CHILD`     | returned on the child process for          |
+   .. |                            | *NOTE_TRACK*                               |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_TRACKERR`  | unable to attach to a child                |
+   .. +----------------------------+--------------------------------------------+
 
    +----------------------------+---------------------------------------------------+
    | 定数                       | 意味                                              |
@@ -448,7 +708,21 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    | :const:`KQ_NOTE_TRACKERR`  | 子プロセスにアタッチできなかった                  |
    +----------------------------+---------------------------------------------------+
 
+
+   .. :const:`KQ_FILTER_NETDEV` filter flags [not available on Mac OS X]
+
    :const:`KQ_FILTER_NETDEV` フィルタフラグ [Mac OS X では利用不可]
+
+
+   .. +----------------------------+--------------------------------------------+
+   .. | Constant                   | Meaning                                    |
+   .. +============================+============================================+
+   .. | :const:`KQ_NOTE_LINKUP`    | link is up                                 |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_LINKDOWN`  | link is down                               |
+   .. +----------------------------+--------------------------------------------+
+   .. | :const:`KQ_NOTE_LINKINV`   | link state is invalid                      |
+   .. +----------------------------+--------------------------------------------+
 
    +----------------------------+--------------------------------------------+
    | 定数                       | 意味                                       |
