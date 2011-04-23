@@ -65,7 +65,7 @@ Windows の上ではソケットに対してしか動作しないので注意し
 
 .. function:: kqueue()
 
-   .. (Only supported on BSD.)  Returns a kernel queue object object; see section
+   .. (Only supported on BSD.)  Returns a kernel queue object; see section
    .. :ref:`kqueue-objects` below for the methods supported by kqueue objects.
 
    (BSD でのみサポート) カーネルキュー(kernel queue)オブジェクトを返します。
@@ -76,10 +76,10 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. versionadded:: 2.6
 
 
-.. function:: kevent(ident, filter=KQ_FILTER_READ, flags=KQ_ADD, fflags=0, data=0, udata=0)
+.. function:: kevent(ident, filter=KQ_FILTER_READ, flags=KQ_EV_ADD, fflags=0, data=0, udata=0)
 
-   .. (Only supported on BSD.)  Returns a kernel event object object; see section
-   .. :ref:`kevent-objects` below for the methods supported by kqueue objects.
+   .. (Only supported on BSD.)  Returns a kernel event object; see section
+   .. :ref:`kevent-objects` below for the methods supported by kevent objects.
 
    (BSD でのみサポート) カーネルイベント(kernel event)オブジェクトを返します。
    このオブジェクトのメソッドについては、下の :ref:`kevent-objects` 節を参照してください。
@@ -266,6 +266,15 @@ Windows の上ではソケットに対してしか動作しないので注意し
    epoll オブジェクトにファイルディスクリプタ *fd* を登録する
 
 
+   .. note::
+
+     .. Registering a file descriptor that's already registered raises an
+     .. IOError -- contrary to :ref:`poll-objects`'s register.
+
+     :ref:`poll-objects` の register とは異なり、
+     登録済みのファイルディスクリプタを登録しようとすると IOError が発生します。
+
+ 
 .. method:: epoll.modify(fd, eventmask)
 
    .. Modify a register file descriptor.
@@ -488,9 +497,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 
 .. attribute:: kevent.filter
 
-   .. Name of the kernel filter
+   .. Name of the kernel filter.
 
-   kernel filter の名前
+   kernel filter の名前。
 
 
    .. +---------------------------+---------------------------------------------+
@@ -500,7 +509,7 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    .. |                           | there is data available to read             |
    .. +---------------------------+---------------------------------------------+
    .. | :const:`KQ_FILTER_WRITE`  | Takes a descriptor and returns whenever     |
-   .. |                           | there is data available to read             |
+   .. |                           | there is data available to write            |
    .. +---------------------------+---------------------------------------------+
    .. | :const:`KQ_FILTER_AIO`    | AIO requests                                |
    .. +---------------------------+---------------------------------------------+
@@ -541,9 +550,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 
 .. attribute:: kevent.flags
 
-   .. Filter action
+   .. Filter action.
 
-   フィルタ・アクション
+   フィルタ・アクション。
 
 
    .. +---------------------------+---------------------------------------------+
@@ -597,14 +606,14 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 
 .. attribute:: kevent.fflags
 
-   .. Filter specific flags
+   .. Filter specific flags.
 
-   フィルタ依存のフラグ
+   フィルタ依存のフラグ。
 
 
-   .. :const:`KQ_FILTER_READ` and  :const:`KQ_FILTER_WRITE` filter flags
+   .. :const:`KQ_FILTER_READ` and  :const:`KQ_FILTER_WRITE` filter flags:
 
-   :const:`KQ_FILTER_READ` と :const:`KQ_FILTER_WRITE` フィルタのフラグ
+   :const:`KQ_FILTER_READ` と :const:`KQ_FILTER_WRITE` フィルタのフラグ:
 
 
    .. +----------------------------+--------------------------------------------+
@@ -620,9 +629,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    +----------------------------+--------------------------------------------+
 
 
-   .. :const:`KQ_FILTER_VNODE` filter flags
+   .. :const:`KQ_FILTER_VNODE` filter flags:
 
-   :const:`KQ_FILTER_VNODE` フィルタのフラグ
+   :const:`KQ_FILTER_VNODE` フィルタのフラグ:
 
 
    .. +----------------------------+--------------------------------------------+
@@ -662,9 +671,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    +----------------------------+--------------------------------------------+
 
 
-   .. :const:`KQ_FILTER_PROC` filter flags
+   .. :const:`KQ_FILTER_PROC` filter flags:
 
-   :const:`KQ_FILTER_PROC` フィルタフラグ
+   :const:`KQ_FILTER_PROC` フィルタフラグ:
 
 
    .. +----------------------------+--------------------------------------------+
@@ -709,9 +718,9 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
    +----------------------------+---------------------------------------------------+
 
 
-   .. :const:`KQ_FILTER_NETDEV` filter flags [not available on Mac OS X]
+   .. :const:`KQ_FILTER_NETDEV` filter flags (not available on Mac OS X):
 
-   :const:`KQ_FILTER_NETDEV` フィルタフラグ [Mac OS X では利用不可]
+   :const:`KQ_FILTER_NETDEV` フィルタフラグ (Mac OS X では利用不可):
 
 
    .. +----------------------------+--------------------------------------------+
@@ -737,13 +746,13 @@ http://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 
 .. attribute:: kevent.data
 
-   .. Filter specific data
+   .. Filter specific data.
 
-   フィルタ固有のデータ
+   フィルタ固有のデータ。
 
 
 .. attribute:: kevent.udata
 
-   .. User defined value
+   .. User defined value.
 
-   ユーザー定義値
+   ユーザー定義値。
