@@ -166,10 +166,14 @@
 
 .. exception:: ItimerError
 
-   Raised to signal an error from the underlying :func:`setitimer` or
-   :func:`getitimer` implementation. Expect this error if an invalid
-   interval timer or a negative time is passed to :func:`setitimer`.
-   This error is a subtype of :exc:`IOError`.
+   .. Raised to signal an error from the underlying :func:`setitimer` or
+   .. :func:`getitimer` implementation. Expect this error if an invalid
+   .. interval timer or a negative time is passed to :func:`setitimer`.
+   .. This error is a subtype of :exc:`IOError`.
+
+   背後の :func:`setitimer` または :func:`getitimer` 実装からエラーを通知するために送出されます。
+   無効なインタバルタイマーや負の時間が :func:`setitimer` に渡された場合、このエラーを予期してください。
+   このエラーは :exc:`IOError` の特殊型です。
 
 
 .. The :mod:`signal` module defines the following functions:
@@ -318,7 +322,8 @@
    .. value for the given signal.
 
    :func:`signal` を使ってシグナルハンドラを設定したときに、暗黙のうちに :cfunc:`siginterrupt` を
-   *flag* に true を指定して実行され、
+   *flag* に true を指定して実行されるため、
+   中断に対するリスタートの動作がリセットされることに注意してください。
 
 
    .. versionadded:: 2.6
