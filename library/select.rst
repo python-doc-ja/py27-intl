@@ -3,7 +3,7 @@
 ==========================================
 
 .. module:: select
-   :synopsis: 複数のストリームに対してI/O 処理の完了を待機します。
+   :synopsis: 複数のストリームに対して I/O 処理の完了を待機します。
 
 
 .. This module provides access to the :cfunc:`select` and :cfunc:`poll` functions
@@ -58,8 +58,8 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. for I/O events; see section :ref:`poll-objects` below for the methods supported
    .. by polling objects.
 
-   (全てのオペレーティングシステムでサポートされているわけではありません。) ポーリングオブジェクトを返します。このオブジェクトは
-   ファイル記述子を登録したり登録解除したりすることができ、ファイル記述子に対する I/O イベント発生をポーリングすることができます;
+   (全てのオペレーティングシステムでサポートされているわけではありません。) ポーリングオブジェクトを返します。
+   このオブジェクトはファイル記述子を登録したり登録解除したりすることができ、ファイル記述子に対する I/O イベント発生をポーリングすることができます;
    ポーリングオブジェクトが提供しているメソッドについては下記の  :ref:`poll-objects` 節を参照してください。
 
 
@@ -69,8 +69,7 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. :ref:`kqueue-objects` below for the methods supported by kqueue objects.
 
    (BSD でのみサポート) カーネルキュー(kernel queue)オブジェクトを返します。
-   カーネルキューオブジェクトがサポートしているメソッドについては、下の
-   :ref:`kqueue-objects` 節を参照してください。
+   カーネルキューオブジェクトがサポートしているメソッドについては、下の :ref:`kqueue-objects` 節を参照してください。
 
 
    .. versionadded:: 2.6
@@ -96,9 +95,8 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. named :meth:`fileno` returning such an integer:
 
    Unix の :cfunc:`select` システムコールに対する直接的なインタフェースです。
-   最初の 3 つの引数は '待機可能なオブジェクト'
-   からなるシーケンスです: ファイル記述子を表す整数値、または引数を持たず、整数を返すメソッド :meth:`fileno` を持つ
-   オブジェクトです。
+   最初の 3 つの引数は '待機可能なオブジェクト' からなるシーケンスです:
+   ファイル記述子を表す整数値、または引数を持たず、整数を返すメソッド :meth:`fileno` を持つオブジェクトです。
 
 
    .. * *rlist*: wait until ready for reading
@@ -108,8 +106,8 @@ Windows の上ではソケットに対してしか動作しないので注意し
 
    * *rlist*: 読み込み可能になるまで待つ
    * *wlist*: 書き込み可能になるまで待つ
-   * *xlist*: "例外状態 (exceptional condition)" になるまで待つ("例外状態" については、
-     システムのmanual pageを参照してください)
+   * *xlist*: "例外状態 (exceptional condition)" になるまで待つ
+     ("例外状態" については、システムの manual page を参照してください)
 
 
    .. Empty sequences are allowed, but acceptance of three empty sequences is
@@ -119,10 +117,10 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. at least one file descriptor is ready.  A time-out value of zero specifies a
    .. poll and never blocks.
 
-   いずれかに空のシーケンスを指定してもかまいませんが、3 つ全てを空のシーケンスにしてもよいかどうかはプラットフォームに依存します (Unix では動作し、Windows では
-   動作しないことが知られています)。
-   オプションの *timeout* 引数にはタイムアウトまでの秒数を浮動小数点数型で指定します。 *timeout*
-   引数が省略された場合、関数は少なくとも一つのファイル記述子が何らかの準備完了状態になるまでブロックします。
+   いずれかに空のシーケンスを指定してもかまいませんが、3 つ全てを空のシーケンスにしてもよいかどうかはプラットフォームに依存します
+   (Unix では動作し、Windows では動作しないことが知られています)。
+   オプションの *timeout* 引数にはタイムアウトまでの秒数を浮動小数点数型で指定します。
+   *timeout* 引数が省略された場合、関数は少なくとも一つのファイル記述子が何らかの準備完了状態になるまでブロックします。
    *timeout* に 0 を指定した場合は、ポーリングを行いブロックしないことを示します。
 
 
@@ -145,10 +143,11 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. class yourself, as long as it has an appropriate :meth:`fileno` method (that
    .. really returns a file descriptor, not just a random integer).
 
-   シーケンスの中に含めることのできるオブジェクトは Python ファイルオブジェクト (すなわち ``sys.stdin``, あるいは
-   :func:`open` や :func:`os.popen` が返すオブジェクト)、 :func:`socket.socket` が返すソケットオブジェクト
-   です。 :dfn:`wrapper` クラスを自分で定義することもできます。この場合、適切な
-   (単なる乱数ではなく本当のファイル記述子を返す) :meth:`fileno`  メソッドを持つ必要があります
+   シーケンスの中に含めることのできるオブジェクトは Python ファイルオブジェクト
+   (すなわち ``sys.stdin``, あるいは :func:`open` や :func:`os.popen` が返すオブジェクト)、
+   :func:`socket.socket` が返すソケットオブジェクトです。
+   :dfn:`wrapper` クラスを自分で定義することもできます。
+   この場合、適切な (単なる乱数ではなく本当のファイル記述子を返す) :meth:`fileno`  メソッドを持つ必要があります
 
 
    .. note::
@@ -161,7 +160,7 @@ Windows の上ではソケットに対してしか動作しないので注意し
       .. library, and does not handle file descriptors that don't originate from
       .. WinSock.
 
-      :func:`select` はWindows のファイルオブジェクトを受理しませんが、ソケットは受理します。
+      :func:`select` は Windows のファイルオブジェクトを受理しませんが、ソケットは受理します。
       Windows では、背後の :cfunc:`select` 関数は WinSock ライブラリで提供されており、
       WinSock によって生成されたものではないファイル記述子を扱うことができないのです。
 
@@ -309,11 +308,11 @@ Windows の上ではソケットに対してしか動作しないので注意し
 .. linearly scanned again. :cfunc:`select` is O(highest file descriptor), while
 .. :cfunc:`poll` is O(number of file descriptors).
 
-:cfunc:`poll` システムコールはほとんどの Unix システムでサポートされており、非常に多数のクライアントに同時にサービスを提供するような
-ネットワークサーバが高い拡張性を持てるようにしています。 :cfunc:`poll` に高い拡張性があるのは、 :cfunc:`select` が
-ビット対応表を構築し、対象ファイルの記述子に対応するビットを立て、その後全ての対応表の全てのビットを線形探索するのに対し、 :cfunc:`poll`
-は対象のファイル記述子を列挙するだけでよいからです。 :cfunc:`select` は O(最大のファイル記述子番号) なのに対し、
-:cfunc:`poll` は O(対象とするファイル記述子の数) で済みます。
+:cfunc:`poll` システムコールはほとんどの Unix システムでサポートされており、
+非常に多数のクライアントに同時にサービスを提供するようなネットワークサーバが高い拡張性を持てるようにしています。
+:cfunc:`poll` に高い拡張性があるのは、 :cfunc:`select` がビット対応表を構築し、対象ファイルの記述子に対応するビットを立て、その後全ての対応表の全てのビットを線形探索するのに対し、
+:cfunc:`poll` は対象のファイル記述子を列挙するだけでよいからです。
+:cfunc:`select` は O(最大のファイル記述子番号) なのに対し、 :cfunc:`poll` は O(対象とするファイル記述子の数) で済みます。
 
 
 .. method:: poll.register(fd[, eventmask])
@@ -324,8 +323,9 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. method that returns an integer.  File objects implement :meth:`fileno`, so they
    .. can also be used as the argument.
 
-   ファイル記述子をポーリングオブジェクトに登録します。これ以降の :meth:`poll` メソッド呼び出しでは、そのファイル記述子に処理待ち中の I/O
-   イベントがあるかどうかを監視します。 *fd* は整数か、整数値を返す :meth:`fileno` メソッドを持つオブジェクトを取ります。
+   ファイル記述子をポーリングオブジェクトに登録します。
+   これ以降の :meth:`poll` メソッド呼び出しでは、そのファイル記述子に処理待ち中の I/O イベントがあるかどうかを監視します。
+   *fd* は整数か、整数値を返す :meth:`fileno` メソッドを持つオブジェクトを取ります。
    ファイルオブジェクトも通常 :meth:`fileno` を実装しているので、引数として使うことができます。
 
 
@@ -334,9 +334,9 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. :const:`POLLPRI`, and :const:`POLLOUT`, described in the table below.  If not
    .. specified, the default value used will check for all 3 types of events.
 
-   *eventmask* はオプションのビットマスクで、どのタイプの I/O イベントを監視したいかを記述します。この値は以下の表で述べる定数
-   :const:`POLLIN` 、 :const:`POLLPRI` 、および :const:`POLLOUT` の組み合わせにすることが
-   できます。ビットマスクを指定しない場合、標準の値が使われ、 3 種のイベント全てに対して監視が行われます。
+   *eventmask* はオプションのビットマスクで、どのタイプの I/O イベントを監視したいかを記述します。
+   この値は以下の表で述べる定数 :const:`POLLIN` 、 :const:`POLLPRI` 、および :const:`POLLOUT` の組み合わせにすることができます。
+   ビットマスクを指定しない場合、標準の値が使われ、 3 種のイベント全てに対して監視が行われます。
 
 
    .. +-------------------+------------------------------------------+
@@ -400,8 +400,8 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. :meth:`register` method, *fd* can be an integer or an object with a
    .. :meth:`fileno` method that returns an integer.
 
-   ポーリングオブジェクトによって追跡中のファイル記述子を登録解除します。 :meth:`register` メソッドと同様に、 *fd* は整数か、整数値を返す
-   :meth:`fileno` メソッドを持つオブジェクトを取ります。
+   ポーリングオブジェクトによって追跡中のファイル記述子を登録解除します。
+   :meth:`register` メソッドと同様に、 *fd* は整数か、整数値を返す :meth:`fileno` メソッドを持つオブジェクトを取ります。
 
 
    .. Attempting to remove a file descriptor that was never registered causes a
@@ -423,13 +423,14 @@ Windows の上ではソケットに対してしか動作しないので注意し
    .. returning. If *timeout* is omitted, negative, or :const:`None`, the call will
    .. block until there is an event for this poll object.
 
-   登録されたファイル記述子に対してポーリングを行い、報告すべき I/O イベントまたはエラーの発生したファイル記述子に毎に 2 要素のタプル ``(fd,
-   event)`` からなるリストを返します。リストは空になることもあります。 *fd* はファイル記述子で、 *event* は該当するファイル記述子
-   について報告されたイベントを表すビットマスクです --- 例えば :const:`POLLIN` は入力待ちを示し、 :const:`POLLOUT`
-   はファイル記述子に対する書き込みが可能を示す、などです。空のリストは呼び出しがタイムアウトしたか、報告すべきイベントが
-   どのファイル記述子でも発生しなかったことを示します。 *timeout* が与えられた場合、処理を戻すまで待機する時間の長さを
-   ミリ秒単位で指定します。 *timeout* が省略されたり、負の値であったり、あるいは :const:`None`
-   の場合、そのポーリングオブジェクトが監視している何らかのイベントが発生するまでブロックします。
+   登録されたファイル記述子に対してポーリングを行い、報告すべき I/O イベントまたはエラーの発生したファイル記述子に毎に
+   2 要素のタプル ``(fd, event)`` からなるリストを返します。リストは空になることもあります。
+   *fd* はファイル記述子で、 *event* は該当するファイル記述子について報告されたイベントを表すビットマスクです
+   --- 例えば :const:`POLLIN` は入力待ちを示し、 :const:`POLLOUT` はファイル記述子に対する書き込みが可能を示す、などです。
+   空のリストは呼び出しがタイムアウトしたか、報告すべきイベントがどのファイル記述子でも発生しなかったことを示します。
+   *timeout* が与えられた場合、処理を戻すまで待機する時間の長さをミリ秒単位で指定します。
+   *timeout* が省略されたり、負の値であったり、あるいは :const:`None` の場合、
+   そのポーリングオブジェクトが監視している何らかのイベントが発生するまでブロックします。
 
 
 .. _kqueue-objects:
