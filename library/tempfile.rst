@@ -42,13 +42,13 @@
    *dir* 、 *prefix* および *suffix* パラメタは :func:`mkstemp` に渡されます。
 
    .. The returned object is a true file object on POSIX platforms.  On other
-      platforms, it is a file-like object whose :attr:`file` attribute is the
+      platforms, it is a file-like object whose :attr:`!file` attribute is the
       underlying true file object. This file-like object can be used in a
       :keyword:`with` statement, just like a normal file.
 
    返されるオブジェクトは、POSIXプラットフォームでは本物のfileオブジェクトです。
    それ以外のプラットフォームではファイルライクオブジェクトが返され、
-   :attr:`file` 属性に本物のfileオブジェクトがあります。
+   :attr:`!file` 属性に本物のfileオブジェクトがあります。
    このファイルライクオブジェクトは、通常のファイルと同じように :keyword:`with`
    文で利用することができます。
 
@@ -60,12 +60,12 @@
    (Unixでは可能でしたが、Windows NT以降では開く事ができません。)
    *delete* がtrue(デフォルト)の場合、ファイルは閉じられるとすぐに削除されます。
 
-   .. The returned object is always a file-like object whose :attr:`file`
+   .. The returned object is always a file-like object whose :attr:`!file`
       attribute is the underlying true file object. This file-like object can
       be used in a :keyword:`with` statement, just like a normal file.
 
    返されるオブジェクトは、常にファイルライクオブジェクトです。
-   このオブジェクトの :attr:`file` 属性が本物のfileオブジェクトになります。
+   このオブジェクトの :attr:`!file` 属性が本物のfileオブジェクトになります。
    このファイルライクオブジェクトは、通常のファイルと同じように :keyword:`with`
    文を利用することができます。
 
