@@ -24,7 +24,7 @@
 .. * There is no way to "block" signals temporarily from critical sections (since
 ..   this is not supported by all Unix flavors).
 
-* クリティカルセクションから一時的にシグナルを"ブロック"することはできません。この機能をサポートしないUnix系システムも存在するためです。
+* クリティカルセクションから一時的にシグナルを"ブロック"することはできません。この機能をサポートしない Unix 系システムも存在するためです。
 
 
 .. * Although Python signal handlers are called asynchronously as far as the Python
@@ -34,7 +34,7 @@
 ..   text) may be delayed for an arbitrary amount of time.
 
 * Python のシグナルハンドラは Python のユーザが望む限り非同期で呼び出されますが、呼び出されるのは Python インタプリタの  "原子的な
-  (atomic)" 命令実行単位の間です。従って、 (巨大なサイズのテキストに対する正規表現の一致検索のような)  純粋に C
+  (atomic)" 命令実行単位の間です。したがって、 (巨大なサイズのテキストに対する正規表現の一致検索のような)  純粋に C
   言語のレベルで実現されている時間のかかる処理中に到着したシグナルは、不定期間遅延する可能性があります。
 
 
@@ -59,8 +59,8 @@
 ..   Python exceptions) and :const:`SIGINT` is translated into a
 ..   :exc:`KeyboardInterrupt` exception.  All of these can be overridden.
 
-* Python は標準でごく小数のシグナルハンドラをインストールしています: :const:`SIGPIPE` は無視されます
-  (従って、パイプやソケットに対する書き込みで生じたエラーは通常の Python 例外として報告されます) :const:`SIGINT` は
+* Python は標準でごく少数のシグナルハンドラをインストールしています: :const:`SIGPIPE` は無視されます
+  (したがって、パイプやソケットに対する書き込みで生じたエラーは通常の Python 例外として報告されます) :const:`SIGINT` は
   :exc:`KeyboardInterrupt` 例外に変換されます。これらはどれも上書きすることができます。
 
 
@@ -76,12 +76,12 @@
 ..   inter-thread communication.  Use locks instead.
 
 * シグナルとスレッドの両方を同じプログラムで使用する場合にはいくつか注意が必要です。
-  シグナルとスレッドを同時に利用する上で基本的に注意すべきことは、常に :func:`signal`
-  命令は主スレッド (main thread)の処理中で実行するということです。
-  どのスレッドも :func:`alarm`, :func:`getsignal`, :func:`pause`, :func:`setitimer`, :func:`getitimer` を実行することができます。
-  しかし、主スレッドだけが新たなシグナルハンドラを設定することができ、従ってシグナルを受け取ることができるのは主スレッドだけです
-  (これは、背後のスレッド実装が個々のスレッドに対するシグナル送信をサポートしているかに関わらず、Python :mod:`signal`
-  モジュールが強制している仕様です)。従って、シグナルをスレッド間通信の手段として使うことはできません。代わりにロック機構を使ってください。
+  シグナルとスレッドを同時に利用する上で基本的に注意すべきことは、 :func:`signal`
+  命令は常に主スレッド (main thread) の処理中で実行するということです。
+  どのスレッドも :func:`alarm`\ 、 :func:`getsignal`\ 、 :func:`pause`\ 、 :func:`setitimer`\ 、 :func:`getitimer` を実行することができます。
+  しかし、主スレッドだけが新たなシグナルハンドラを設定することができ、したがってシグナルを受け取ることができるのは主スレッドだけです
+  (これは、背後のスレッド実装が個々のスレッドに対するシグナル送信をサポートしているかに関わらず、 Python :mod:`signal`
+  モジュールが強制している仕様です)。したがって、シグナルをスレッド間通信の手段として使うことはできません。代わりにロック機構を使ってください。
 
 
 .. The variables defined in the :mod:`signal` module are:
@@ -96,7 +96,7 @@
    .. default action for :const:`SIGQUIT` is to dump core and exit, while the
    .. default action for :const:`SIGCHLD` is to simply ignore it.
 
-   二つある標準シグナル処理オプションのうちの一つです; 単にシグナルに対する標準の関数を実行します。例えば、ほとんどのシステムでは、
+   二つある標準シグナル処理オプションのうちの一つです; 単純にシグナルに対する標準の関数を実行します。例えば、ほとんどのシステムでは、
    :const:`SIGQUIT` に対する標準の動作はコアダンプと終了で、 :const:`SIGCHLD` に対する標準の動作は単にシグナルの無視です。
 
 
@@ -105,7 +105,7 @@
    .. This is another standard signal handler, which will simply ignore the given
    .. signal.
 
-   もう一つの標準シグナル処理オプションで、単に受け取ったシグナルを無視します。
+   もう一つの標準シグナル処理オプションで、受け取ったシグナルを単に無視します。
 
 
 .. data:: SIG*
@@ -196,7 +196,7 @@
    されたアラームシグナルが通知されるまであと何秒だったかを示す値です。 *time* がゼロの場合、アラームは一切スケジュールされず、現在
    スケジュールされているアラームがキャンセルされます。
    戻り値がゼロの場合、現在アラームがスケジュールされていないことを示します。(Unix マニュアルページ :manpage:`alarm(2)`
-   を参照してください)。利用可能: Unix。
+   を参照してください)。利用できる環境: Unix。
 
 
 .. function:: getsignal(signalnum)
@@ -210,7 +210,7 @@
    .. installed from Python.
 
    シグナル *signalnum* に対する現在のシグナルハンドラを返します。戻り値は呼び出し可能な Python
-   オブジェクトか、 :const:`signal.SIG_IGN` 、 :const:`signal.SIG_DFL` 、および :const:`None`
+   オブジェクトか、 :const:`signal.SIG_IGN`\ 、 :const:`signal.SIG_DFL`\ 、および :const:`None`
    といった特殊な値のいずれかです。ここで :const:`signal.SIG_IGN` は以前そのシグナルが
    無視されていたことを示し、 :const:`signal.SIG_DFL` は以前そのシグナルの標準の処理方法が使われていたことを示し、 ``None``
    はシグナルハンドラがまだ Python によってインストールされていないことを示します。
@@ -234,9 +234,9 @@
    .. :func:`alarm`) and after that every *interval* seconds. The interval
    .. timer specified by *which* can be cleared by setting seconds to zero.
 
-   *which* で指定されたタイマー(:const:`signal.ITIMER_REAL`, :const:`signal.ITIMER_VIRTUAL`,
-   :const:`signal.ITIMER_PROF` のどれか)を、 *seconds* (:func:`alarm` と異なり、floatを指定できます)
-   秒後と、それから *interval* 秒間隔で起動するように設定します。
+   *which* で指定されたタイマー (:const:`signal.ITIMER_REAL`, :const:`signal.ITIMER_VIRTUAL`,
+   :const:`signal.ITIMER_PROF` のどれか) を、 *seconds* 秒後と (:func:`alarm` と異なり、floatを指定できます)、
+   それから *interval* 秒間隔で起動するように設定します。
    *seconds* に0を指定すると、そのタイマーをクリアすることができます。
 
 
@@ -255,13 +255,13 @@
 
    .. The old values are returned as a tuple: (delay, interval).
 
-   戻り値は古い値が (delay, interval) のタプルです。
+   以前の値が (delay, interval) のタプルとして返されます。
 
 
    .. Attempting to pass an invalid interval timer will cause an
    .. :exc:`ItimerError`.  Availability: Unix.
 
-   無効なインターバルタイマーを渡すと :exc:`ItimerError` 例外を発生させます。
+   無効なインターバルタイマーを渡すと :exc:`ItimerError` 例外が発生します。
    利用できる環境: Unix
 
 
@@ -317,15 +317,15 @@
    システムコールのリスタートの動作を変更します。
    *flag* が :const:`False` の場合、 *signalnum* シグナルに中断されたシステムコールは再実行されます。
    それ以外の場合、システムコールは中断されます。戻り値はありません。
-   利用できる環境: Unix (詳しい情報についてはman page :manpage:`siginterrupt(3)` を参照してください)
+   利用できる環境: Unix (詳しい情報についてはマニュアルページ :manpage:`siginterrupt(3)` を参照してください)
 
 
    .. Note that installing a signal handler with :func:`signal` will reset the
    .. restart behaviour to interruptible by implicitly calling
    .. :cfunc:`siginterrupt` with a true *flag* value for the given signal.
 
-   :func:`signal` を使ってシグナルハンドラを設定したときに、暗黙のうちに :cfunc:`siginterrupt` を
-   *flag* に true を指定して実行されるため、
+   :func:`signal` を使ってシグナルハンドラを設定したときに、暗黙のうちに
+   *flag* に true を指定して :cfunc:`siginterrupt` が実行されるため、
    中断に対するリスタートの動作がリセットされることに注意してください。
 
 
@@ -341,7 +341,7 @@
    .. above).  (See the Unix man page :manpage:`signal(2)`.)
 
    シグナル *signalnum* に対するハンドラを関数 *handler* にします。 *handler* は二つの引数 (下記参照) を取る呼び出し可能な
-   Python  オブジェクトにするか、 :const:`signal.SIG_IGN` あるいは :const:`signal.SIG_DFL`
+   Python オブジェクトか、 :const:`signal.SIG_IGN` あるいは :const:`signal.SIG_DFL`
    といった特殊な値にすることができます。以前に使われていたシグナルハンドラが返されます (上記の :func:`getsignal`
    の記述を参照してください)。 (Unix マニュアルページ :manpage:`signal(2)` を参照してください。)
 
@@ -351,7 +351,7 @@
    .. exception to be raised.
 
    複数スレッドの使用が有効な場合、この関数は主スレッドからのみ呼び出すことができます; 主スレッド以外のスレッドで呼び出そうとすると、例外
-   :exc:`ValueError` が送出されます。
+   :exc:`ValueError` が発生します。
 
 
    .. The *handler* is called with two arguments: the signal number and the current
@@ -359,8 +359,8 @@
    .. see the :ref:`description in the type hierarchy <frame-objects>` or see the
    .. attribute descriptions in the :mod:`inspect` module).
 
-   *handler* は二つの引数: シグナル番号、および現在のスタックフレーム (``None`` またはフレームオブジェクト; フレームオブジェクトに
-   ついての記述は :ref:`標準型の階層における説明 <frame-objects>` か、 :mod:`inspect` モジュールの属性の説明を参照してください)、とともに呼び出されます。
+   *handler* は二つの引数とともに呼び出されます: シグナル番号、および現在のスタックフレーム (``None`` またはフレームオブジェクト; フレームオブジェクトに
+   ついての記述は :ref:`標準型の階層における説明 <frame-objects>` か、 :mod:`inspect` モジュールの属性の説明を参照してください)。
 
 
 .. _signal-example:
@@ -375,9 +375,10 @@
 .. before opening the file; if the operation takes too long, the alarm signal will
 .. be sent, and the handler raises an exception.
 
-以下は最小限のプログラム例です。この例では :func:`alarm` を使って、ファイルを開く処理を待つのに費やす時間を制限します;
-これはそのファイルが電源の入れられていないシリアルデバイスを表している場合に有効で、通常こうした場合には :func:`os.open`
-は未定義の期間ハングアップしてしまいます。ここではファイルを開くまで 5 秒間のアラームを設定することで解決しています; ファイルを
+以下は最小限のプログラム例です。この例では :func:`alarm` を使ってファイルを開く処理を待つのに費やす時間を制限します;
+例えば、電源の入っていないシリアルデバイスを開こうとすると、通常 :func:`os.open` は未定義の期間ハングアップしてしまいますが、
+この方法はそうした場合に便利です。
+ここではファイルを開くまで 5 秒間のアラームを設定することで解決しています; ファイルを
 開く処理が長くかかりすぎると、アラームシグナルが送信され、ハンドラが例外を送出するようになっています。
 
 
