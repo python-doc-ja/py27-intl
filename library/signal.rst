@@ -258,10 +258,11 @@
    戻り値は古い値が (delay, interval) のタプルです。
 
 
-   .. Attempting to pass an invalid interval timer will cause a
-   .. :exc:`ItimerError`.
+   .. Attempting to pass an invalid interval timer will cause an
+   .. :exc:`ItimerError`.  Availability: Unix.
 
    無効なインターバルタイマーを渡すと :exc:`ItimerError` 例外を発生させます。
+   利用できる環境: Unix
 
 
    .. versionadded:: 2.6
@@ -270,8 +271,10 @@
 .. function:: getitimer(which)
 
    .. Returns current value of a given interval timer specified by *which*.
+   .. Availability: Unix.
 
    *which* で指定されたインターバルタイマーの現在の値を返します。
+   利用できる環境: Unix
 
 
    .. versionadded:: 2.6
@@ -306,10 +309,10 @@
 
 .. function:: siginterrupt(signalnum, flag)
 
-   .. Change system call restart behaviour: if *flag* is :const:`False`, system calls
-   .. will be restarted when interrupted by signal *signalnum*, otherwise system calls will
-   .. be interrupted. Returns nothing. Availability: Unix (see the man page
-   .. :manpage:`siginterrupt(3)` for further information).
+   .. Change system call restart behaviour: if *flag* is :const:`False`, system
+   .. calls will be restarted when interrupted by signal *signalnum*, otherwise
+   .. system calls will be interrupted.  Returns nothing.  Availability: Unix (see
+   .. the man page :manpage:`siginterrupt(3)` for further information).
 
    システムコールのリスタートの動作を変更します。
    *flag* が :const:`False` の場合、 *signalnum* シグナルに中断されたシステムコールは再実行されます。
@@ -317,9 +320,9 @@
    利用できる環境: Unix (詳しい情報についてはman page :manpage:`siginterrupt(3)` を参照してください)
 
 
-   .. Note that installing a signal handler with :func:`signal` will reset the restart
-   .. behaviour to interruptible by implicitly calling :cfunc:`siginterrupt` with a true *flag*
-   .. value for the given signal.
+   .. Note that installing a signal handler with :func:`signal` will reset the
+   .. restart behaviour to interruptible by implicitly calling
+   .. :cfunc:`siginterrupt` with a true *flag* value for the given signal.
 
    :func:`signal` を使ってシグナルハンドラを設定したときに、暗黙のうちに :cfunc:`siginterrupt` を
    *flag* に true を指定して実行されるため、
@@ -352,12 +355,12 @@
 
 
    .. The *handler* is called with two arguments: the signal number and the current
-   .. stack frame (``None`` or a frame object; for a description of frame objects, see
-   .. the reference manual section on the standard type hierarchy or see the attribute
-   .. descriptions in the :mod:`inspect` module).
+   .. stack frame (``None`` or a frame object; for a description of frame objects,
+   .. see the :ref:`description in the type hierarchy <frame-objects>` or see the
+   .. attribute descriptions in the :mod:`inspect` module).
 
    *handler* は二つの引数: シグナル番号、および現在のスタックフレーム (``None`` またはフレームオブジェクト; フレームオブジェクトに
-   ついての記述はリファレンスマニュアルの標準型の階層か、 :mod:`inspect` モジュールの属性の説明を参照してください)、とともに呼び出されます。
+   ついての記述は :ref:`標準型の階層における説明 <frame-objects>` か、 :mod:`inspect` モジュールの属性の説明を参照してください)、とともに呼び出されます。
 
 
 .. _signal-example:
@@ -384,7 +387,7 @@
 
    def handler(signum, frame):
        print 'Signal handler called with signal', signum
-       raise IOError, "Couldn't open device!"
+       raise IOError("Couldn't open device!")
 
    # Set the signal handler and a 5-second alarm
    signal.signal(signal.SIGALRM, handler)
