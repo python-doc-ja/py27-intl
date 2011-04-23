@@ -10,7 +10,7 @@
 .. versionadded:: 2.6
 
 .. The :mod:`io` module provides the Python interfaces to stream handling.  The
-.. builtin :func:`open` function is defined in this module.
+.. built-in :func:`open` function is defined in this module.
 
 :mod:`io` モジュールはストリーム処理をする Python インタフェースを提供します。
 組み込み関数 :func:`open` はこのモジュールで定義されています。
@@ -18,7 +18,7 @@
 
 .. At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
 .. defines the basic interface to a stream.  Note, however, that there is no
-.. seperation between reading and writing to streams; implementations are allowed
+.. separation between reading and writing to streams; implementations are allowed
 .. to throw an :exc:`IOError` if they do not support a given operation.
 
 I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があります。
@@ -62,10 +62,10 @@ I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があり�
 
 
 .. Argument names are not part of the specification, and only the arguments of
-.. :func:`open` are intended to be used as keyword arguments.
+.. :func:`.open` are intended to be used as keyword arguments.
 
 引数名は規約に含まれていません。
-また :func:`open` の引数はキーワード引数として用いられることが意図されています。
+また :func:`.open` の引数はキーワード引数として用いられることが意図されています。
 
 
 モジュールインタフェース
@@ -74,11 +74,11 @@ I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があり�
 .. data:: DEFAULT_BUFFER_SIZE
 
    .. An int containing the default buffer size used by the module's buffered I/O
-   .. classes.  :func:`open` uses the file's blksize (as obtained by
+   .. classes.  :func:`.open` uses the file's blksize (as obtained by
    .. :func:`os.stat`) if possible.
 
    モジュールのバッファ I/O クラスに使用されるデフォルトのバッファサイズを指定する整数値です。
-   :func:`open` は可能であればファイル全体のサイズを使用します。（ファイル全体のサイズは :func:`os.stat` で取得されます)
+   :func:`.open` は可能であればファイル全体のサイズを使用します。（ファイル全体のサイズは :func:`os.stat` で取得されます)
 
 
 .. function:: open(file[, mode[, buffering[, encoding[, errors[, newline[, closefd=True]]]]]])
@@ -168,15 +168,36 @@ I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があり�
    テキストモード(デフォルトか *mode* 引数に ``'t'`` が含まれている場合)ではファイルの中身は文字列として返され、バイト列はプラットフォーム依存のエンコーディングをされるか、 *encoding* が指定された場合は指定されたエンコーディングを行います。
 
 
-   .. *buffering* is an optional integer used to set the buffering policy.  By
-   .. default full buffering is on.  Pass 0 to switch buffering off (only allowed
-   .. in binary mode), 1 to set line buffering, and an integer > 1 for full
-   .. buffering.
+   .. *buffering* is an optional integer used to set the buffering policy.
+   .. Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
+   .. line buffering (only usable in text mode), and an integer > 1 to indicate
+   .. the size of a fixed-size chunk buffer.  When no *buffering* argument is
+   .. given, the default buffering policy works as follows:
 
    オプションである *buffering* はバッファ用の設定を行う整数値です。
-   デフォルトではフルバッファがオンに設定されています。
    0を設定することでバッファがオフになります。(バイナリモードでのみ有効です)
-   1の場合は１行ごとのバッファリングを行い、1より大きい場合はフルバッファが行われます。
+   1の場合は１行ごとのバッファリングを行い (テキストモードでのみ利用可能です)、
+   1より大きい場合は固定サイズチャンクバッファのサイズを表します。
+   *buffering* 引数が与えられなければ、デフォルトのバッファリングポリシーは以下のように働きます:
+
+
+   .. * Binary files are buffered in fixed-size chunks; the size of the buffer
+   ..   is chosen using a heuristic trying to determine the underlying device's
+   ..   "block size" and falling back on :attr:`DEFAULT_BUFFER_SIZE`.
+   ..   On many systems, the buffer will typically be 4096 or 8192 bytes long.
+
+   * バイナリファイルは固定サイズのチャンクでバッファリングされます。
+     バッファサイズは、背後のデバイスの「ブロックサイズ」を決定するヒューリスティックを用いて選択され、
+     それが不可能な場合は代わりに :attr:`DEFAULT_BUFFER_SIZE` が使われます。
+     多くのシステムでは、典型的なバッファサイズは 4096 か 8192 バイト長になるでしょう。
+
+
+   .. * "Interactive" text files (files for which :meth:`isatty` returns True)
+   ..   use line buffering.  Other text files use the policy described above
+   ..   for binary files.
+
+   * 「対話的な」テキストファイル (:meth:`isatty` が True を返すファイル) は行バッファリングを使用します。
+     その他のテキストファイルは、上で説明されたバイナリファイルのためのポリシーを使用します。
 
 
    .. *encoding* is the name of the encoding used to decode or encode the file.
@@ -252,8 +273,8 @@ I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があり�
    もしファイル名が与えられていた場合は、 *closefd* は関係ありません。しかし ``True`` でなければいけません。(デフォルト値)
 
 
-   .. The type of file object returned by the :func:`open` function depends
-   .. on the mode.  When :func:`open` is used to open a file in a text mode
+   .. The type of file object returned by the :func:`.open` function depends
+   .. on the mode.  When :func:`.open` is used to open a file in a text mode
    .. (``'w'``, ``'r'``, ``'wt'``, ``'rt'``, etc.), it returns a
    .. :class:`TextIOWrapper`. When used to open a file in a binary mode,
    .. the returned class varies: in read binary mode, it returns a
@@ -261,7 +282,7 @@ I/O 階層の最上位には抽象基底クラスの :class:`IOBase` があり�
    .. returns a :class:`BufferedWriter`, and in read/write mode, it returns
    .. a :class:`BufferedRandom`.
 
-   :func:`open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`open` がテキストモードでファイルを開くときに使われた場合( ``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など)、 :class:`TextIOWrapper` が返されます。
+   :func:`.open` によって返されるファイルオブジェクトのタイプの話をすると、 :func:`.open` がテキストモードでファイルを開くときに使われた場合( ``'w'``, ``'r'``, ``'wt'``, ``'rt'`` など)、 :class:`TextIOWrapper` が返されます。
    バイナリモードでファイルを開くときに使われた場合、返される値は変わってきます。もし読み取り専用のバイナリモードだった場合は :class:`BufferedReader` が返されます。
    書き込み専用のバイナリモードだった場合は :class:`BufferedWriter` が返されます。
    読み書き可能なバイナリモードの場合は :class:`BufferedRandom` が返されます。
@@ -391,11 +412,18 @@ I/O ベースクラス
 
       .. Flush and close this stream. This method has no effect if the file is
       .. already closed. Once the file is closed, any operation on the file
-      .. (e.g. reading or writing) will raise an :exc:`IOError`. The internal
-      .. file descriptor isn't closed if *closefd* was False.
+      .. (e.g. reading or writing) will raise an :exc:`ValueError`.
 
       このストリームをフラッシュして閉じます。このメソッドはファイルが既に閉じられていた場合
       特になにも影響を与えません。
+      いったんファイルが閉じられると、すべてのファイルに対する操作 (例えば読み込みや書き込み) で :exc:`ValueError` が発生します。
+
+
+      .. As a convenience, it is allowed to call this method more than once;
+      .. only the first call, however, will have an effect.
+
+      利便性のために、このメソッドを複数回呼ぶことは許可されています。
+      しかし、効果があるのは最初の1回だけです。
 
 
    .. attribute:: closed
@@ -452,11 +480,11 @@ I/O ベースクラス
 
 
       .. The line terminator is always ``b'\n'`` for binary files; for text files,
-      .. the *newlines* argument to :func:`open` can be used to select the line
+      .. the *newlines* argument to :func:`.open` can be used to select the line
       .. terminator(s) recognized.
 
       バイナリファイルでは行末文字は常に ``b'\n'`` となります。テキストファイルでは
-      :func:`open` への *newlines* 引数は行末文字が認識されたときに使われます。
+      :func:`.open` への *newlines* 引数は行末文字が認識されたときに使われます。
 
 
    .. method:: readlines([hint])
@@ -514,11 +542,19 @@ I/O ベースクラス
 
    .. method:: truncate([size])
 
-      .. Truncate the file to at most *size* bytes.  *size* defaults to the current
-      .. file position, as returned by :meth:`tell`.
+      .. Resize the stream to the given *size* in bytes (or the current position
+      .. if *size* is not specified).  The current stream position isn't changed.
+      .. This resizing can extend or reduce the current file size.  In case of
+      .. extension, the contents of the new file area depend on the platform
+      .. (on most systems, additional bytes are zero-filled, on Windows they're
+      .. undetermined).  The new file size is returned.
 
-      高々 *size* バイトまでファイルを切り詰めます。
-      *size* のデフォルト値は現在のファイルの位置で、 :meth:`tell` が返す値と同値です。
+      指定された *size* バイト (または *size* が指定されなければ現在の位置) にストリームをリサイズします。
+      現在のストリーム位置は変更されません。
+      このリサイズは、現在のファイルサイズを拡大または縮小させることができます。
+      拡大の場合には、新しいファイル領域の内容はプラットホームに依存します
+      (ほとんどのシステムでは、追加のバイトがゼロで埋められます。 Windowsでは不定です)。
+      新しいファイルサイズが返されます。
 
 
    .. method:: writable()
@@ -596,100 +632,6 @@ I/O ベースクラス
       (決して ``len(b)`` よりも小さくなることはありません。
       なぜならはもし書き込みに失敗した場合は :exc:`IOError` が発生するからです)
 
-
-生ファイルI/O
---------------
-
-.. class:: FileIO(name[, mode])
-
-   .. :class:`FileIO` represents a file containing bytes data.  It implements
-   .. the :class:`RawIOBase` interface (and therefore the :class:`IOBase`
-   .. interface, too).
-
-   :class:`FileIO` はバイトデータを含むファイルを表します。
-   :class:`RawIOBase` インタフェースを (そしてしたがって
-   :class:`IOBase` インタフェースも) 実装しています。
-
-
-   .. The *mode* can be ``'r'``, ``'w'`` or ``'a'`` for reading (default), writing,
-   .. or appending.  The file will be created if it doesn't exist when opened for
-   .. writing or appending; it will be truncated when opened for writing.  Add a
-   .. ``'+'`` to the mode to allow simultaneous reading and writing.
-
-   *mode* はそれぞれ読み込み(デフォルト)、書き込み、追記を表す
-   ``'r'``, ``'w'``, ``'a'`` にすることができます。
-   ファイルは書き込みまたは追記モードで開かれたときに存在しなければ作成されます。
-   書き込みモードでは存在したファイル内容は消されます。
-   読み込みと書き込みを同時に行いたければ ``'+'`` をモードに加えて下さい。
-
-
-   .. In addition to the attributes and methods from :class:`IOBase` and
-   .. :class:`RawIOBase`, :class:`FileIO` provides the following data
-   .. attributes and methods:
-
-   :class:`IOBase` および :class:`RawIOBase` から継承した属性とメソッドに加えて、
-   :class:`FileIO` は以下のデータ属性とメソッドを提供しています:
-
-
-   .. attribute:: mode
-
-      .. The mode as given in the constructor.
-
-      コンストラクタに渡されたモードです。
-
-
-   .. attribute:: name
-
-      .. The file name.  This is the file descriptor of the file when no name is
-      .. given in the constructor.
-
-      ファイル名。
-      コンストラクタに名前が渡されなかったときはファイルディスクリプタになります。
-
-
-   .. method:: read([n])
-
-      .. Read and return at most *n* bytes.  Only one system call is made, so it is
-      .. possible that less data than was requested is returned.  Use :func:`len`
-      .. on the returned bytes object to see how many bytes were actually returned.
-      .. (In non-blocking mode, ``None`` is returned when no data is available.)
-
-      最大で *n* バイト読み込み、返します。
-      システムコールを一度呼び出すだけなので、要求されたより少ないデータが返されることもあります。
-      実際に返されたバイト数を得たければ :func:`len` を返されたバイトオブジェクトに対して使って下さい。
-      (非ブロッキングモードでは、データが取れなければ ``None`` が返されます。)
-
-
-   .. method:: readall()
-
-      .. Read and return the entire file's contents in a single bytes object.  As
-      .. much as immediately available is returned in non-blocking mode.  If the
-      .. EOF has been reached, ``b''`` is returned.
-
-      ファイルの全内容を読み込み、単一のバイトオブジェクトに入れて返します。
-      非ブロッキングモードでは直ちに取得できる限りのものが返されます。
-      EOF に到達すると、 ``b''`` が返されます。
-
-
-   .. method:: write(b)
-
-      .. Write the bytes or bytearray object, *b*, to the file, and return
-      .. the number actually written. Only one system call is made, so it
-      .. is possible that only some of the data is written.
-
-      与えられたバイトあるいはバイト列オブジェクト *b* をファイルに書き込み、
-      実際に書き込まれた(バイト)数を返します。
-      システムコールを一度呼び出すだけなので、データの一部だけが書き込まれることもあり得ます。
-
-
-   .. Note that the inherited ``readinto()`` method should not be used on
-   .. :class:`FileIO` objects.
-
-   :class:`FileIO` オブジェクトでは継承された ``readinto()`` メソッドを使うべきではないということを忘れないで下さい。
-
-
-バッファ付きストリーム
-----------------------
 
 .. class:: BufferedIOBase
 
@@ -808,6 +750,100 @@ I/O ベースクラス
       :exc:`BlockingIOError` が送出されます。
 
 
+生ファイルI/O
+--------------
+
+.. class:: FileIO(name[, mode])
+
+   .. :class:`FileIO` represents a file containing bytes data.  It implements
+   .. the :class:`RawIOBase` interface (and therefore the :class:`IOBase`
+   .. interface, too).
+
+   :class:`FileIO` はバイトデータを含むファイルを表します。
+   :class:`RawIOBase` インタフェースを (そしてしたがって
+   :class:`IOBase` インタフェースも) 実装しています。
+
+
+   .. The *mode* can be ``'r'``, ``'w'`` or ``'a'`` for reading (default), writing,
+   .. or appending.  The file will be created if it doesn't exist when opened for
+   .. writing or appending; it will be truncated when opened for writing.  Add a
+   .. ``'+'`` to the mode to allow simultaneous reading and writing.
+
+   *mode* はそれぞれ読み込み(デフォルト)、書き込み、追記を表す
+   ``'r'``, ``'w'``, ``'a'`` にすることができます。
+   ファイルは書き込みまたは追記モードで開かれたときに存在しなければ作成されます。
+   書き込みモードでは存在したファイル内容は消されます。
+   読み込みと書き込みを同時に行いたければ ``'+'`` をモードに加えて下さい。
+
+
+   .. In addition to the attributes and methods from :class:`IOBase` and
+   .. :class:`RawIOBase`, :class:`FileIO` provides the following data
+   .. attributes and methods:
+
+   :class:`IOBase` および :class:`RawIOBase` から継承した属性とメソッドに加えて、
+   :class:`FileIO` は以下のデータ属性とメソッドを提供しています:
+
+
+   .. attribute:: mode
+
+      .. The mode as given in the constructor.
+
+      コンストラクタに渡されたモードです。
+
+
+   .. attribute:: name
+
+      .. The file name.  This is the file descriptor of the file when no name is
+      .. given in the constructor.
+
+      ファイル名。
+      コンストラクタに名前が渡されなかったときはファイルディスクリプタになります。
+
+
+   .. method:: read([n])
+
+      .. Read and return at most *n* bytes.  Only one system call is made, so it is
+      .. possible that less data than was requested is returned.  Use :func:`len`
+      .. on the returned bytes object to see how many bytes were actually returned.
+      .. (In non-blocking mode, ``None`` is returned when no data is available.)
+
+      最大で *n* バイト読み込み、返します。
+      システムコールを一度呼び出すだけなので、要求されたより少ないデータが返されることもあります。
+      実際に返されたバイト数を得たければ :func:`len` を返されたバイトオブジェクトに対して使って下さい。
+      (非ブロッキングモードでは、データが取れなければ ``None`` が返されます。)
+
+
+   .. method:: readall()
+
+      .. Read and return the entire file's contents in a single bytes object.  As
+      .. much as immediately available is returned in non-blocking mode.  If the
+      .. EOF has been reached, ``b''`` is returned.
+
+      ファイルの全内容を読み込み、単一のバイトオブジェクトに入れて返します。
+      非ブロッキングモードでは直ちに取得できる限りのものが返されます。
+      EOF に到達すると、 ``b''`` が返されます。
+
+
+   .. method:: write(b)
+
+      .. Write the bytes or bytearray object, *b*, to the file, and return
+      .. the number actually written. Only one system call is made, so it
+      .. is possible that only some of the data is written.
+
+      与えられたバイトあるいはバイト列オブジェクト *b* をファイルに書き込み、
+      実際に書き込まれた(バイト)数を返します。
+      システムコールを一度呼び出すだけなので、データの一部だけが書き込まれることもあり得ます。
+
+
+   .. Note that the inherited ``readinto()`` method should not be used on
+   .. :class:`FileIO` objects.
+
+   :class:`FileIO` オブジェクトでは継承された ``readinto()`` メソッドを使うべきではないということを忘れないで下さい。
+
+
+バッファ付きストリーム
+----------------------
+
 .. class:: BytesIO([initial_bytes])
 
    .. A stream implementation using an in-memory bytes buffer.  It inherits
@@ -841,15 +877,6 @@ I/O ベースクラス
       .. In :class:`BytesIO`, this is the same as :meth:`read`.
 
       :class:`BytesIO` においては、このメソッドは :meth:`read` と同じです。
-
-
-   .. method:: truncate([size])
-
-      .. Truncate the buffer to at most *size* bytes.  *size* defaults to the
-      .. current stream position, as returned by :meth:`tell`.
-
-      高々 *size* バイトまでバッファを切り詰めます。
-      *size* のデフォルトは :meth:`tell` で返される現在のストリーム位置です。
 
 
 .. class:: BufferedReader(raw[, buffer_size])
@@ -1128,7 +1155,7 @@ I/O ベースクラス
    .. is enabled.  With this enabled, on input, the lines endings ``'\n'``,
    .. ``'\r'``, or ``'\r\n'`` are translated to ``'\n'`` before being returned to
    .. the caller.  Conversely, on output, ``'\n'`` is translated to the system
-   .. default line seperator, :data:`os.linesep`.  If *newline* is any other of its
+   .. default line separator, :data:`os.linesep`.  If *newline* is any other of its
    .. legal values, that newline becomes the newline when the file is read and it
    .. is returned untranslated.  On output, ``'\n'`` is converted to the *newline*.
 
@@ -1174,7 +1201,7 @@ I/O ベースクラス
 
 .. class:: StringIO([initial_value[, encoding[, errors[, newline]]]])
 
-   .. An in-memory stream for text.  It in inherits :class:`TextIOWrapper`.
+   .. An in-memory stream for text.  It inherits :class:`TextIOWrapper`.
 
    テキストのためのインメモリストリーム。
    :class:`TextIOWrapper` を継承します。
