@@ -3,7 +3,7 @@
 ===========================================================
 
 .. module:: marshal
-   :synopsis: Python オブジェクトをバイト列に変換したり、その逆を (異なる拘束条件下で) 行います。
+   :synopsis: Python オブジェクトをバイト列に変換したり、その逆を (異なる制約条件下で) 行います。
 
 .. This module contains functions that can read and write Python values in a binary
 .. format.  The format is specific to Python, but independent of machine
@@ -15,7 +15,7 @@
 このモジュールには Python 値をバイナリ形式で読み書きできるような関数が含まれています。
 このバイナリ形式は Python 特有のものですが、マシンアーキテクチャ非依存のものです
 (つまり、Python の値を PC 上でファイルに書き込み、Sun に転送し、そこで読み戻すことができます)。
-バイナリ形式の詳細がドキュメントされていないのは故意によるものです;
+バイナリ形式の詳細は意図的にドキュメント化されていません;
 この形式は (稀にしかないことですが) Python のバージョン間で変更される可能性があるからです。 [#]_
 
 
@@ -36,13 +36,13 @@
 .. supports a substantially wider range of objects than marshal.
 
 このモジュールは汎用の "永続化 (persistence)" モジュールではありません。
-汎用的な永続化や、RPC 呼び出しを通じたPython オブジェクトの転送については、
+汎用的な永続化や、RPC 呼び出しを通じた Python オブジェクトの転送については、
 モジュール :mod:`pickle` および :mod:`shelve` を参照してください。
 :mod:`marshal` モジュールは主に、 "擬似コンパイルされた (pseudo-compiled)" コードの
 :file:`.pyc` ファイルへの読み書きをサポートするために存在します。
-従って、 Python のメンテナは、必要が生じれば marshal 形式を後方互換性のないものに変更する権利を有しています。
-Python オブジェクトを直列化および非直列化したい場合には、 :mod:`pickle` モジュールを使ってください。
-:mod:`pickle` は速度は同等で、バージョン間の互換性が保証されていて、marshalより広い範囲のオブジェクトをサポートしています。
+したがって、 Python のメンテナは、必要が生じれば marshal 形式を後方互換性のないものに変更する権利を有しています。
+Python オブジェクトを直列化 (シリアライズ) および非直列化 (デシリアライズ) したい場合には、 :mod:`pickle` モジュールを使ってください。
+:mod:`pickle` は速度は同等で、バージョン間の互換性が保証されていて、 marshal より広範囲のオブジェクトをサポートしています。
 
 
 .. warning::
@@ -52,7 +52,7 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. untrusted or unauthenticated source.
 
    :mod:`marshal` モジュールは、誤ったデータや悪意を持って作成されたデータに対する安全性を考慮していません。
-   信頼できない、もしくは認証されていない出所からのデータを非直列化してはなりません。
+   信頼できない、もしくは認証されていない出所からのデータを非整列化してはなりません。
 
 
 .. Not all Python object types are supported; in general, only objects whose value
@@ -64,12 +64,12 @@ Python オブジェクトを直列化および非直列化したい場合には�
 .. themselves supported; and recursive lists and dictionaries should not be written
 .. (they will cause infinite loops).
 
-全ての Python オブジェクト型がサポートされているわけではありません;
-一般的には、どの起動中の Python 上に存在するかに依存しないオブジェクトだけがこのモジュールで読み書きできます。
-以下の型: 真偽値、整数、長整数、浮動小数点数、複素数、文字列、Unicode オブジェクト、
-タプル、リスト、集合、 frozenset 、辞書、コードオブジェクト、がサポートされています。
-ただし、タプル、リスト、集合、 frozenset 、辞書は、それらに含まれた値がサポートされている型である限りサポートされると解釈しなければなりません;
-また、再帰的なリストおよび辞書は書き込んではなりません (無限ループを引き起こしてしまいます)。
+すべての Python オブジェクト型がサポートされているわけではありません;
+一般的には、 Python の特定の実行に依存しないオブジェクトだけがこのモジュールで読み書きできます。
+以下の型: 真偽値、整数、長整数、浮動小数点数、複素数、文字列、 Unicode オブジェクト、
+タプル、リスト、 set 、 frozenset 、辞書、コードオブジェクト、がサポートされています。
+ただし、タプル、リスト、 set 、 frozenset 、辞書は、それらに含まれた値がサポートされている型である限りサポートされると解釈しなければなりません;
+また、再帰的なリストおよび辞書は書き込んではなりません (無限ループを引き起こします)。
 シングルトンである :const:`None`\ 、 :const:`Ellipsis`\ 、 :exc:`StopIteration` も整列化可能です。
 
 
@@ -84,12 +84,12 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. least-significant 32 bits of the value were lost, and a warning message was
    .. printed.)
 
-   C言語の ``long int`` が (DEC Alpha のように) 32 ビットよりも長いビット長を持つ場合、
-   32 ビットよりも長い Python  整数を作成することが可能です。
+   (DEC Alpha のように) C言語の ``long int`` が 32 ビットよりも長いビット長を持つ場合、
+   32 ビットよりも長い Python 整数を作成することが可能です。
    そのような整数が整列化された後、 C 言語の ``long int`` のビット長が 32 ビットしかないマシン上で読み戻された場合、
    通常整数の代わりに Python 長整数が返されます。型は異なりますが、数値は同じです。
    (この動作は Python 2.2 で新たに追加されたものです。それ以前のバージョンでは、
-   値のうち最小桁から 32 ビット以外の情報は失われ、警告メッセージが出力されます。)
+   値のうち最小桁から 32 ビット以外の情報は失われ、警告メッセージが出力されていました。)
 
 
 .. There are functions that read/write files as well as functions operating on
@@ -119,16 +119,16 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. :exc:`ValueError` exception is raised --- but garbage data will also be written
    .. to the file.  The object will not be properly read back by :func:`load`.
 
-   値 (または値のオブジェクトに含まれるオブジェクト) がサポートされていない型の場合、
-   :exc:`ValueError` 例外が送出されます --- が、同時にごみのデータがファイルに書き込まれます。
-   このオブジェクトは :func:`load` で適切に読み出されることはないはずです。
+   値 (または値に含まれるオブジェクト) がサポートされていない型の場合、
+   :exc:`ValueError` 例外が送出されます --- しかし、同時にごみのデータがファイルに書き込まれます。
+   このオブジェクトは :func:`load` で適切に読み出されることはありません。
 
    .. .. versionadded:: 2.4
    ..    The *version* argument indicates the data format that ``dump`` should use
    ..    (see below).
 
    .. versionadded:: 2.4
-      ``dump`` が利用するデータフォーマットを表す *version* 引数 (下を参照).
+      *version* 引数は ``dump`` が利用するデータフォーマットを表します (下記参照)。
 
 
 .. function:: load(file)
@@ -140,16 +140,16 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. ``'r+b'``).
 
    開かれたファイルから値を一つ読んで返します。
-   (例えば、別のバージョンのPythonの、互換性のないmarshalフォーマットだったために)
-   有効な値が読み出せなかった場合、:exc:`EOFError` 、 :exc:`ValueError` 、または :exc:`TypeError` を送出します。
-   ファイルはバイナリモード (``'rb'`` または ``'r+b'``) で開かれたファイルオブジェクトでなければなりません.
+   (異なるバージョンの Python の互換性のない marshal フォーマットだったなどの理由で)
+   有効な値が読み出せなかった場合、 :exc:`EOFError`\ 、 :exc:`ValueError`\ 、または :exc:`TypeError` を送出します。
+   file はバイナリモード (``'rb'`` または ``'r+b'``) で開かれたファイルオブジェクトでなければなりません.
 
    .. note::
 
       .. If an object containing an unsupported type was marshalled with :func:`dump`,
       .. :func:`load` will substitute ``None`` for the unmarshallable type.
 
-      サポートされない型を含むオブジェクトが :func:`dump` で整列化されている場合、 :func:`load` は整列化不能な値を ``None`` で置き換えます。
+      サポートされていない型を含むオブジェクトが :func:`dump` で整列化されている場合、 :func:`load` は整列化不能な値を ``None`` で置き換えます。
 
 
 .. function:: dumps(value[, version])
@@ -159,7 +159,7 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. has (or contains an object that has) an unsupported type.
 
    ``dump(value, file)`` でファイルに書き込まれるような文字列を返します。値はサポートされている型でなければなりません。
-   値がサポートされていない型 (またはサポートされていない型のオブジェクトを含むような) オブジェクトの場合、
+   値がサポートされていない型のオブジェクト (またはサポートされていない型のオブジェクトを含むようなオブジェクト) の場合、
    :exc:`ValueError` 例外が送出されます。
 
    .. .. versionadded:: 2.4
@@ -167,10 +167,7 @@ Python オブジェクトを直列化および非直列化したい場合には�
    ..    (see below).
 
    .. versionadded:: 2.4
-      ``dump`` するデータフォーマットを表す *version* 引数(下を参照).
-
-      .. 訳者note: ``dumps`` should は、 dumps が利用するべき（フォーマット）という意味だけど、
-         訳からは should の部分を省略
+      *version* 引数は ``dumps`` が利用するデータフォーマットを表します (下記参照)。
 
 
 .. function:: loads(string)
@@ -180,8 +177,8 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. string are ignored.
 
    データ文字列を値に変換します。
-   有効な値が見つからなかった場合、 :exc:`EOFError` 、 :exc:`ValueError` 、または :exc:`TypeError` が送出されます。
-   文字列中の他の文字は無視されます。
+   有効な値が見つからなかった場合、 :exc:`EOFError`\ 、 :exc:`ValueError`\ 、または :exc:`TypeError` が送出されます。
+   文字列中の余分な文字は無視されます。
 
 
 .. In addition, the following constants are defined:
@@ -196,9 +193,9 @@ Python オブジェクトを直列化および非直列化したい場合には�
    .. Python 2.5) uses a binary format for floating point numbers. The current version
    .. is 2.
 
-   モジュールが利用するバージョンを表します。バージョン0 は歴史的なフォーマットです。
-   バージョン1 (Python 2.4で追加されました) は文字列の再利用をします。
-   バージョン2 (Python 2.5で追加されました) は浮動小数点数にバイナリフォーマットを使用します。
+   このモジュールが利用するバージョンを表します。バージョン0 は歴史的なフォーマットです。
+   バージョン1 は文字列の再利用をします (Python 2.4で追加されました)。
+   バージョン2 は浮動小数点数にバイナリフォーマットを使用します (Python 2.5で追加されました)。
    現在のバージョンは2です。
 
 
