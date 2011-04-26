@@ -62,13 +62,13 @@
 .. (they will cause infinite loops).
 
 全ての Python オブジェクト型がサポートされているわけではありません; 一般的には、どの起動中の Python 上に存在するかに依存しないオブジェクト
-だけがこのモジュールで読み書きできます。以下の型: ``None`` 、整数、長整数、浮動小数点数、文字列、Unicode オブジェクト、
-タプル、リスト、集合、辞書、タプルとして解釈されるコードオブジェクト、がサポートされています。リストと辞書は含まれている要素もサポート
-されている型であるもののみサポートされています; 再帰的なリストおよび辞書は書き込んではなりません (無限ループを引き起こしてしまいます)。
+だけがこのモジュールで読み書きできます。以下の型: 真偽値、整数、長整数、浮動小数点数、複素数、文字列、Unicode オブジェクト、
+タプル、リスト、集合、 frozenset 、辞書、コードオブジェクト、がサポートされています。ただし、タプル、リスト、集合、 frozenset 、辞書は、
+それらに含まれた値がサポートされている型である限りサポートされると解釈しなければなりません; また、再帰的なリストおよび辞書は書き込んではなりません (無限ループを引き起こしてしまいます)。
+シングルトンである :const:`None`\ 、 :const:`Ellipsis`\ 、 :exc:`StopIteration` も整列化可能です。
 
 
 .. warning::
-
    .. On machines where C's ``long int`` type has more than 32 bits (such as the
    .. DEC Alpha), it is possible to create plain Python integers that are longer
    .. than 32 bits. If such an integer is marshaled and read back in on a machine
@@ -136,7 +136,7 @@
    :exc:`TypeError` を送出します。ファイルはバイナリモード (``'rb'`` または ``'r+b'``)
    で開かれたファイルオブジェクトでなければなりません.
 
-   .. warning::
+   .. note::
 
       .. If an object containing an unsupported type was marshalled with :func:`dump`,
       .. :func:`load` will substitute ``None`` for the unmarshallable type.
