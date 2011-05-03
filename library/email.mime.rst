@@ -9,13 +9,13 @@
 テキストをパーザに通すことで得られます。パーザは与えられた\
 テキストを解析し、基底となる root のメッセージオブジェクトを返します。\
 しかし、完全なメッセージオブジェクト構造を何もないところから作成することも\
-また可能です。個別の :class:`Message` を手で作成することさえできます。\
+また可能です。個別の :class:`~email.message.Message` を手で作成することさえできます。\
 実際には、すでに存在するメッセージオブジェクト構造をとってきて、\
-そこに新たな :class:`Message` オブジェクトを追加したり、あるものを\
+そこに新たな :class:`~email.message.Message` オブジェクトを追加したり、あるものを\
 別のところへ移動させたりできます。これは MIME メッセージを\
 切ったりおろしたりするために非常に便利なインターフェイスを提供します。
 
-新しいメッセージオブジェクト構造は :class:`Message` インスタンスを\
+新しいメッセージオブジェクト構造は :class:`~email.message.Message` インスタンスを\
 作成することにより作れます。ここに添付ファイルやその他適切なものを\
 すべて手で加えてやればよいのです。MIME メッセージの場合、
 :mod:`email` パッケージはこれらを簡単におこなえるようにするために\
@@ -29,7 +29,7 @@
 
    Module: :mod:`email.mime.base`
 
-   これはすべての MIME 用サブクラスの基底となるクラスです。\
+   これはすべての :class:`~email.message.Message` の MIME 用サブクラスの基底となるクラスです。\
    とくに :class:`MIMEBase` のインスタンスを直接作成することは
    (可能ではありますが) ふつうはしないでしょう。
    :class:`MIMEBase` は単により特化された MIME
@@ -54,11 +54,11 @@
 
    Module: :mod:`email.mime.nonmultipart`
 
-   :class:`MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式でない MIME
+   :class:`~email.mime.base.MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式でない MIME
    メッセージのための中間的な基底クラスです。このクラスのおもな目的は、
    通常 :mimetype:`multipart` 形式のメッセージに対してのみ意味をなす
    :meth:`attach` メソッドの使用をふせぐことです。もし :meth:`attach` メソッドが\
-   呼ばれた場合、これは :exc:`MultipartConversionError` 例外を発生します。
+   呼ばれた場合、これは :exc:`~email.errors.MultipartConversionError` 例外を発生します。
 
    .. versionadded:: 2.2.2
 
@@ -69,7 +69,7 @@
 
    Module: :mod:`email.mime.multipart`
 
-   :class:`MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式の MIME
+   :class:`~email.mime.base.MIMEBase` のサブクラスで、これは :mimetype:`multipart` 形式の MIME
    メッセージのための中間的な基底クラスです。オプション引数 *_subtype* は\
    デフォルトでは :mimetype:`mixed` になっていますが、そのメッセージの副形式
    (subtype) を指定するのに使うことができます。メッセージオブジェクトには
@@ -77,7 +77,8 @@
    :mailheader:`MIME-Version` ヘッダが追加されるでしょう。
 
    オプション引数 *boundary* は multipart の境界文字列です。
-   これが ``None`` の場合 (デフォルト)、境界は必要に応じて計算されます。
+   これが ``None`` の場合 (デフォルト)、境界は必要に応じて計算されます
+   （例えばメッセージがシリアライズされるときなど）。
 
    *_subparts* はそのペイロードの subpart の初期値からなるシーケンスです。
    このシーケンスはリストに変換できるようになっている必要があります。
@@ -97,7 +98,7 @@
 
    Module: :mod:`email.mime.application`
 
-   :class:`MIMENonMultipart` のサブクラスである :class:`MIMEApplication`
+   :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスである :class:`MIMEApplication`
    クラスは MIME メッセージオブジェクトのメジャータイプ :mimetype:`application`
    を表します。
    *_data* は生のバイト列が入った文字列です。オプション引数 *_subtype* は
@@ -126,7 +127,7 @@
 
    Module: :mod:`email.mime.audio`
 
-   :class:`MIMEAudio` クラスは :class:`MIMENonMultipart` のサブクラスで、
+   :class:`MIMEAudio` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
    主形式 (maintype) が :mimetype:`audio` の MIME オブジェクトを作成\
    するのに使われます。 *_audiodata* は実際の音声データを格納した文字列です。
    もしこのデータが標準の Python モジュール :mod:`sndhdr` によって\
@@ -155,7 +156,7 @@
 
    Module: :mod:`email.mime.image`
 
-   :class:`MIMEImage` クラスは :class:`MIMENonMultipart` のサブクラスで、
+   :class:`MIMEImage` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart.MIMENonMultipart` のサブクラスで、
    主形式 (maintype) が :mimetype:`image` の MIME オブジェクトを作成\
    するのに使われます。 *_imagedata* は実際の画像データを格納した文字列です。
    もしこのデータが標準の Python モジュール :mod:`imghdr` によって\
@@ -176,7 +177,7 @@
    デフォルトのエンコーディングは base64 です。組み込みのエンコーダの詳細については
    :mod:`email.encoders` を参照してください。
 
-   *_params* は :class:`MIMEBase` コンストラクタに直接渡されます。
+   *_params* は :class:`~email.mime.base.MIMEBase` コンストラクタに直接渡されます。
 
 
 .. currentmodule:: email.mime.message
@@ -185,10 +186,10 @@
 
    Module: :mod:`email.mime.message`
 
-   :class:`MIMEMessage` クラスは :class:`MIMENonMultipart` のサブクラスで、
+   :class:`MIMEMessage` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
    主形式 (maintype) が :mimetype:`message` の MIME オブジェクトを作成\
    するのに使われます。ペイロードとして使われるメッセージは *_msg*
-   になります。これは :class:`Message` クラス (あるいはそのサブクラス) の\
+   になります。これは :class:`~email.message.Message` クラス (あるいはそのサブクラス) の\
    インスタンスでなければいけません。そうでない場合、この関数は
    :exc:`TypeError` を発生します。
 
@@ -202,16 +203,17 @@
 
    Module: :mod:`email.mime.text`
 
-   :class:`MIMEText` クラスは :class:`MIMENonMultipart` のサブクラスで、
+   :class:`MIMEText` クラスは :class:`~email.mime.nonmultipart.MIMENonMultipart` のサブクラスで、
    主形式 (maintype) が :mimetype:`text` の MIME オブジェクトを作成\
    するのに使われます。ペイロードの文字列は *_text* になります。
    *_subtype* には副形式 (subtype) を指定し、デフォルトは :mimetype:`plain` です。
    *_charset* はテキストの文字セットで、
-   :class:`MIMENonMultipart` コンストラクタに引数として渡されます。
+   :class:`~email.mime.nonmultipart.MIMENonMultipart` コンストラクタに引数として渡されます。
    デフォルトではこの値は ``us-ascii`` になっています。
-   テキストデータに対しては文字コードの推定やエンコードはまったく行われません。
-
+   *_text* が unicode の場合には *_charset* の *output_charset* でエンコードされ、
+   それ以外の場合にはそのまま使われます。
+   
    .. versionchanged:: 2.4
       以前、推奨されない引数であった *_encoding* は撤去されました。
-      エンコーディングは *_charset* 引数をもとにして暗黙のうちに決定されます。
+      *_charset* 引数を基にして Content Transfer Encodnig が暗黙に決定されます。
 
