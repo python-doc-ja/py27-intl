@@ -363,7 +363,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. Raised when an operation runs out of memory but the situation may still be
    .. rescued (by deleting some objects).  The associated value is a string indicating
    .. what kind of (internal) operation ran out of memory. Note that because of the
-   .. underlying memory management architecture (C's :cfunc:`malloc` function), the
+   .. underlying memory management architecture (C's :c:func:`malloc` function), the
    .. interpreter may not always be able to completely recover from this situation; it
    .. nevertheless raises an exception so that a stack traceback can be printed, in
    .. case a run-away program was the cause.
@@ -372,7 +372,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    消去することで) まだ復旧可能かもしれない場合に送出されます。例外の
    関連値は、どんな種類の (内部) 操作がメモリ不足になっているか
    を示す文字列です。背後にあるメモリ管理アーキテクチャ (C の
-   :cfunc:`malloc` 関数) によっては、インタプリタが常にその状況を完璧
+   :c:func:`malloc` 関数) によっては、インタプリタが常にその状況を完璧
    に復旧できるとはかぎらないので注意してください; プログラムの暴走が
    原因の場合にも、やはり実行スタックの追跡結果を出力できるようにする
    ために例外が送出されます。
@@ -410,7 +410,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. function returns a system-related error (not for illegal argument types or
    .. other incidental errors).  The :attr:`errno` attribute is a numeric error
    .. code from :c:data:`errno`, and the :attr:`strerror` attribute is the
-   .. corresponding string, as would be printed by the C function :cfunc:`perror`.
+   .. corresponding string, as would be printed by the C function :c:func:`perror`.
    .. See the module :mod:`errno`, which contains names for the error codes defined
    .. by the underlying operating system.
 
@@ -418,7 +418,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    関数がシステムに関連したエラーを返した場合に送出されます
    (引数の型が間違っている場合や、他の偶発的なエラーは除きます)。
    :attr:`errno` 属性は :c:data:`errno` に基づく数字のエラーコードで、
-   :attr:`strerror` 属性は C の :cfunc:`perror` 関数で表示されるような
+   :attr:`strerror` 属性は C の :c:func:`perror` 関数で表示されるような
    文字列です。
    オペレーティングシステムに依存したエラーコードの定義と名前については、
    :mod:`errno` モジュールを参照して下さい。
@@ -553,14 +553,14 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. This exception is raised by the :func:`sys.exit` function.  When it is not
    .. handled, the Python interpreter exits; no stack traceback is printed.  If the
    .. associated value is a plain integer, it specifies the system exit status (passed
-   .. to C's :cfunc:`exit` function); if it is ``None``, the exit status is zero; if
+   .. to C's :c:func:`exit` function); if it is ``None``, the exit status is zero; if
    .. it has another type (such as a string), the object's value is printed and the
    .. exit status is one.
 
    この例外は :func:`sys.exit` 関数によって送出されます。この例外が
    処理されなかった場合、スタックのトレースバックを全く表示することなく
    Python インタプリタは終了します。関連値が通常の整数であれば、
-   システム終了ステータスを表します (:cfunc:`exit` 関数に渡されます)。
+   システム終了ステータスを表します (:c:func:`exit` 関数に渡されます)。
    値が ``None`` の場合、終了ステータスは 0 です。 (文字列のような) 他の
    型の場合、そのオブジェクトの値が表示され、終了ステータスは 1 になります。
 
@@ -696,14 +696,14 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. Raised when a Windows-specific error occurs or when the error number does not
    .. correspond to an :c:data:`errno` value.  The :attr:`winerror` and
    .. :attr:`strerror` values are created from the return values of the
-   .. :cfunc:`GetLastError` and :cfunc:`FormatMessage` functions from the Windows
+   .. :c:func:`GetLastError` and :c:func:`FormatMessage` functions from the Windows
    .. Platform API. The :attr:`errno` value maps the :attr:`winerror` value to
    .. corresponding ``errno.h`` values. This is a subclass of :exc:`OSError`.
 
    Windows 特有のエラーか、エラー番号が :c:data:`errno` 値に対応しない
    場合に送出されます。 :attr:`winerrno` および :attr:`strerror` の値は
-   Windows プラットフォーム API の関数 :cfunc:`GetLastError` と
-   :cfunc:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の
+   Windows プラットフォーム API の関数 :c:func:`GetLastError` と
+   :c:func:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の
    値は :attr:`winerror` の値を対応する ``errno.h`` の値にマップしたものです。
    :exc:`OSError` のサブクラスです。
 
@@ -711,10 +711,10 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. versionadded:: 2.0
 
    .. .. versionchanged:: 2.5
-   ..    .. Previous versions put the :cfunc:`GetLastError` codes into :attr:`errno`.
+   ..    .. Previous versions put the :c:func:`GetLastError` codes into :attr:`errno`.
 
    .. versionchanged:: 2.5
-      以前のバージョンは :cfunc:`GetLastError` のコードを
+      以前のバージョンは :c:func:`GetLastError` のコードを
       :attr:`errno` に入れていました。
 
 

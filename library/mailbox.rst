@@ -472,7 +472,7 @@
                unlock()
 
       3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :cfunc:`flock` と :cfunc:`lockf` システムコールです。
+      :c:func:`flock` と :c:func:`lockf` システムコールです。
 
 
 .. seealso::
@@ -585,7 +585,7 @@
                unlock()
 
       3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :cfunc:`flock` と :cfunc:`lockf` システムコールです。
+      :c:func:`flock` と :c:func:`lockf` システムコールです。
       MH メールボックスに対するロックとは :file:`.mh_sequences` のロックと、
       それが影響を与える操作中だけの個々のメッセージファイルに対するロックを意味します。
 
@@ -678,7 +678,7 @@
                unlock()
 
       3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :cfunc:`flock` と :cfunc:`lockf` システムコールです。
+      :c:func:`flock` と :c:func:`lockf` システムコールです。
 
 
 .. seealso::
@@ -728,7 +728,7 @@
                unlock()
 
       3種類のロック機構が使われます --- ドットロッキングと、もし使用可能ならば
-      :cfunc:`flock` と :cfunc:`lockf` システムコールです。
+      :c:func:`flock` と :c:func:`lockf` システムコールです。
 
 
 .. seealso::
