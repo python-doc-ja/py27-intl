@@ -226,7 +226,8 @@ Unix プラットフォーム
 
 .. function:: linux_distribution(distname='', version='', id='', supported_dists=('SuSE','debian','redhat','mandrake',...), full_distribution_name=1)
 
-   Tries to determine the name of the Linux OS distribution name.
+   .. Tries to determine the name of the Linux OS distribution name.
+
    OSディストリビューション名の取得を試みます。
 
    .. ``supported_dists`` may be given to define the set of Linux distributions to
