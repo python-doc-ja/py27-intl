@@ -8,9 +8,9 @@
 
 http://www.python.jp/mailman/listinfo/python-doc-jp
 
-または、プロジェクトのバグ管理ページ
+または、Google Project Hosting 上の Issue Tracker
 
-http://sourceforge.jp/tracker/?atid=116&group_id=11&func=browse
+`<http://code.google.com/p/python-doc-ja/issues/list>`_
 
 までご報告ください。
 
