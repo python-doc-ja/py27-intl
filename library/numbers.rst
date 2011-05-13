@@ -26,19 +26,19 @@
    演算を含みます。それらは: :class:`complex` および :class:`bool` への変換、
    :attr:`.real`, :attr:`.imag`, ``+``, ``-``, ``*``, ``/``, :func:`abs`,
    :meth:`conjugate`, ``==``, ``!=`` です。 ``-`` と ``!=`` 以外の
-   全てのものは抽象的です。
+   全てのものは抽象メソッドや抽象プロパティです。
 
    .. attribute:: real
 
-      抽象的。この複素数の実数部分を取り出します。
+      抽象プロパティ。この複素数の実数部分を取り出します。
 
    .. attribute:: imag
 
-      抽象的。この複素数の虚数部分を取り出します。
+      抽象プロパティ。この複素数の虚数部分を取り出します。
 
    .. method:: conjugate()
 
-      抽象的。複素共役を返します。たとえば、 ``(1+3j).conjugate()
+      抽象プロパティ。複素共役を返します。たとえば、 ``(1+3j).conjugate()
       == (1-3j)`` です。
 
 .. class:: Real
@@ -63,11 +63,11 @@
 
    .. attribute:: numerator
 
-      抽象的。
+      抽象プロパティ。
 
    .. attribute:: denominator
 
-      抽象的。
+      抽象プロパティ。
 
 
 .. class:: Integral

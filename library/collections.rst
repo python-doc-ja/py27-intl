@@ -34,12 +34,12 @@ in-memory もしくは file を使った、文字列をキーとする順序付�
 :meth:`bsddb.btopen` メソッドで提供しています。
 
 コンテナ型に加えて、 collections モジュールは幾つかの ABC (abstract base
-classes = 抽象基本型) を提供しています。
+classes = 抽象基底クラス) を提供しています。
 ABC はクラスが特定のインタフェース(例えばhashable や mapping)を
 持っているかどうかをテストするのに利用します。
 
 .. versionchanged:: 2.6
-   Added abstract base classes.
+   抽象基底クラス (abstract base class) の追加
 
 ABCs - abstract base classes
 ----------------------------

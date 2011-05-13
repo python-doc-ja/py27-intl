@@ -196,7 +196,7 @@
 .. function:: mktemp([suffix=''[, prefix='tmp'[, dir=None]]])
 
    .. deprecated:: 2.3
-      Use :func:`mkstemp` instead.
+      代わりに :func:`mkstemp` を使って下さい.
 
    一時ファイルの絶対パス名を返します。このパス名は少なくともこの関数が呼び出された時点ではファイルシステム中に存在しなかったパス名です。
    *prefix* 、 *prefix* 、 *suffix* 、および *dir* 引数は :func:`mkstemp` のものと同じです。

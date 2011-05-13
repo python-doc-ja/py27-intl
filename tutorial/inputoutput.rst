@@ -142,7 +142,7 @@
    >>> print 'We are the {0} who say "{1}!"'.format('knights', 'Ni')
    We are the knights who say "Ni!"
 
-括弧とその中の文字(これをフォーマットフィールドと呼びます)は、:meth:`~str.format` メソッドに
+括弧とその中の文字(これをフォーマットフィールドと呼びます)は、 :meth:`~str.format` メソッドに
 渡されたオブジェクトに置換されます。
 括弧の中の数字は :meth:`~str.format` メソッドに渡されたオブジェクトの位置を表します。 ::
 

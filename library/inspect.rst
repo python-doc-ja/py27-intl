@@ -844,7 +844,7 @@ Note:
    .. disabled when Python was compiled or using :func:`gc.disable`.  For example:
 
    参照の削除を Python の循環参照検出機能にまかせることもできますが、 :keyword:`finally` 節で循環参照を解除すれば確実にフレーム (とそのローカル変数) は削除されます。
-   また、循環参照検出機能は Python のコンパイルオプションや :func:`gc. disable` で無効とされている場合がありますので注意が必要です。例：
+   また、循環参照検出機能は Python のコンパイルオプションや :func:`gc.disable` で無効とされている場合がありますので注意が必要です。例：
 
 
    ::
