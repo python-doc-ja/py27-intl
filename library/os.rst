@@ -834,7 +834,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       この関数は低レベルの I/O のためのもので、 :func:`os.open` や :func:`pipe`
       が返すファイル記述子に対して適用しなければなりません。
       組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す
-      "ファイルオブジェクト"、あるいは data:`sys.stdout`, :data:`sys.stderr`
+      "ファイルオブジェクト"、あるいは :data:`sys.stdout`, :data:`sys.stderr`
       に書き込むには、オブジェクトの :meth:`~file.write`
       メソッドを使ってください。
 
