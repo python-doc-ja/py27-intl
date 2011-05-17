@@ -1651,11 +1651,11 @@ k < N`` なる整数 *k* か、あるいは要素の範囲を表すスライス�
    :func:`reversed` ビルトイン関数が逆方向イテレーションを実装するために、(存在すれば)呼び出します。
    コンテナ内の全要素を逆順にイテレートする、新しいイテレータを返すべきです。
 
-   If the :meth:`__reversed__` method is not provided, the
-   :func:`reversed` builtin will fall back to using the sequence protocol
-   (:meth:`__len__` and :meth:`__getitem__`).  Objects should normally
-   only provide :meth:`__reversed__` if they do not support the sequence
-   protocol and an efficient implementation of reverse iteration is possible.
+..    If the :meth:`__reversed__` method is not provided, the
+..    :func:`reversed` builtin will fall back to using the sequence protocol
+..    (:meth:`__len__` and :meth:`__getitem__`).  Objects should normally
+..    only provide :meth:`__reversed__` if they do not support the sequence
+..    protocol and an efficient implementation of reverse iteration is possible.
 
    :meth:`__reversed__` メソッドが提供されない場合、 :func:`reversed`
    ビルトイン関数はシーケンスプロトコル (:meth:`__len__` と :meth:`__getitem__`)
@@ -2063,9 +2063,9 @@ with文とコンテキストマネージャ
 これは、メソッドが ``x.__getitem__(i)`` のように明示的に検索された時も、
 ``x[i]`` のように暗黙的に検索された時も同じです。
 
-This behaviour means that special methods may exhibit different behaviour
-for different instances of a single old-style class if the appropriate
-special attributes are set differently:
+.. This behaviour means that special methods may exhibit different behaviour
+.. for different instances of a single old-style class if the appropriate
+.. special attributes are set differently:
 
 これにより、1つの旧スタイルクラスの異なるインスタンスが、それぞれ
 別の適切な特殊属性を持っている場合、異なる動作をすることになります。 ::
