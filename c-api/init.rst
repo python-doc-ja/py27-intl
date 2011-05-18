@@ -309,12 +309,9 @@
    かまいません。この関数が :data:`sys.argv` の初期化に失敗した場合、致命的エラー
    条件を :c:func:`Py_FatalError` でシグナルします。
 
-   If *updatepath* is zero, this is all the function does.  If *updatepath*
-   is non-zero, the function also modifies :data:`sys.path` according to the
-   following algorithm:
-   *updatepath* が 0 のとき、これがこの関数がすることの全てです。
-   *updatepath* が 0 でないとき、この関数は :data:`sys.path` を以下の
-   アルゴリズムに基づいて修正します。
+   *updatepath* が 0 の場合、ここまでの動作がこの関数がすることの全てです。
+   *updatepath* が 0 でない場合、この関数は :data:`sys.path` を以下の
+   アルゴリズムに基づいて修正します:
 
    - 存在するスクリプトの名前が ``argv[0]`` に渡された場合、そのスクリプトが
      ある場所の絶対パスを :data:`sys.path` の先頭に追加します。
@@ -350,7 +347,7 @@
 .. c:function:: void Py_SetPythonHome(char *home)
 
    Python の標準ライブラリがある、デフォルトの "home" ディレクトリを設定します。
-   *home* の文字列の意味については、 :envvar:`PYTHONHOME` を参照してください。
+   ライブラリは :file:`{home}/lib/python{version}` と :file:`{home}/lib/python{version}` から検索されます。
    引数は静的なストレージに置かれてプログラム実行中に書き換えられないような
    ゼロ終端の文字列であるべきです。
    Python インタプリタはこのストレージの内容を変更しません。
