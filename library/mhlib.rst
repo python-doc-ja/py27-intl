@@ -31,7 +31,7 @@
 .. class:: Message(folder, number[, name])
 
    :class:`Message` オブジェクトはフォルダ内の個々のメッセージを表現します。
-   メッセージクラスは :class:`mimetools.Message` から導出されています。
+   メッセージクラスは :class:`mimetools.Message` から派生しています。
 
 
 .. _mh-objects:

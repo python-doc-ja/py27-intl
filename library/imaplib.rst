@@ -54,7 +54,7 @@
 
 .. class:: IMAP4_SSL([host[, port[, keyfile[, certfile]]]])
 
-   :class:`IMAP4` から導出されたサブクラスで、SSL 暗号化ソケットを介して接続を行います (このクラスを利用するためには SSL サポート付きで
+   :class:`IMAP4` から派生したサブクラスで、SSL 暗号化ソケットを介して接続を行います (このクラスを利用するためには SSL サポート付きで
    コンパイルされた socket モジュールが必要です) 。 *host* が指定されていない場合、 ``''`` (ローカルホスト) が用いられます。
    *port* が省略された場合、標準の IMAP4-over-SSL ポート番号 (993)  が用いられます。 *keyfile* および
    *certfile* もオプションです - これらは SSL 接続のための PEM 形式の秘密鍵 (private key) と認証チェイン
@@ -65,7 +65,7 @@
 
 .. class:: IMAP4_stream(command)
 
-   :class:`IMAP4` から導出されたサブクラスで、 *command* を ``os.popen2()`` に渡して作成される
+   :class:`IMAP4` から派生したサブクラスで、 *command* を ``os.popen2()`` に渡して作成される
    ``stdin/stdout`` ディスクリプタと接続します。
 
    .. versionadded:: 2.3

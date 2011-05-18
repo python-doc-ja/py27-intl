@@ -250,7 +250,7 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 .. Since the :exc:`Warning` class is derived from the built-in :exc:`Exception`
 .. class, to turn a warning into an error we simply raise ``category(message)``.
 
-:exc:`Warning` クラスは組み込みの :exc:`Exception` クラスから導出されているので、警告をエラーに変換するには単に
+:exc:`Warning` クラスは組み込みの :exc:`Exception` クラスから派生しているので、警告をエラーに変換するには単に
 ``category(message)`` を ``raise`` します。
 
 

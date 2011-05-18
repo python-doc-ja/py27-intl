@@ -112,7 +112,7 @@
 
    .. versionchanged:: 2.4
       以前はファクトリでしたが、サブクラス化可能な型になりました。
-      :class:`object` 型から導出されています.
+      :class:`object` 型から派生しています.
 
 
 .. function:: proxy(object[, callback])

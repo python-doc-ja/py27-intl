@@ -29,8 +29,8 @@
 .. equivalent, even if they have the same name.
 
 :keyword:`try` 文の中で、 :keyword:`except` 節を使って特定の例外クラス
-について記述した場合、その節は指定した例外クラスから導出されたクラスも
-扱います (指定した例外クラスを導出した元のクラスは含みません)。
+について記述した場合、その節は指定した例外クラスから派生したクラスも
+扱います (指定した例外クラスの派生元のクラスは含みません)。
 サブクラス化の関係にない 2 つの例外クラスは、それらが同じ名前だったとしても
 等しくなることはありません。
 
@@ -51,7 +51,7 @@
 る、 "関連値 (associated value)" を持ちます。この値は文字列または複数
 の情報 (例えばエラーコードや、エラーコードを説明する文字列) を含むタプ
 ルです。この関連値は :keyword:`raise` 文の 2 番目の引数です。
-例外が標準のルートクラスである :exc:`BaseException` から導出された場合、
+例外が標準のルートクラスである :exc:`BaseException` の派生クラスであれば、
 関連値は例外インスタンスの :attr:`args` 属性中に置かれます。
 
 
@@ -74,8 +74,8 @@
 .. :ref:`tut-userexceptions`.
 
 組み込み例外クラスは新たな例外を定義するためにサブクラス化することができます。
-新しい例外は、少なくとも :exc:`Exception` クラスから導出することをお勧めします。
-:exc:`BaseException` からは導出しないで下さい。例外を定義する上での詳しい情報は、
+新しい例外は、少なくとも :exc:`Exception` クラスから派生することをお勧めします。
+:exc:`BaseException` からは派生しないで下さい。例外を定義する上での詳しい情報は、
 Python チュートリアルの :ref:`tut-userexceptions` の項目にあります。
 
 
@@ -93,8 +93,8 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. string when there were no arguments.  All arguments are  stored in :attr:`args`
    .. as a tuple.
 
-   全ての組み込み例外のルートクラスです。ユーザ定義例外を直接このクラ
-   スから導出することは意図していません (そうした場合は
+   全ての組み込み例外のルートクラスです。ユーザ定義例外が直接このクラ
+   スを継承することは意図していません (そうした場合は
    :exc:`Exception` を使ってください)。このクラスに対して :func:`str`
    や :func:`unicode` が呼ばれた場合、引数の文字列表現かまたは引数が無
    い時には空文字列が返されます。
@@ -110,7 +110,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. user-defined exceptions should also be derived from this class.
 
    全ての組み込み例外のうち、システム終了でないものはこのクラスから導
-   出されています。全てのユーザ定義例外はこのクラスから導出されるべき
+   出されています。全てのユーザ定義例外はこのクラスの派生クラスであるべき
    です。
 
 
@@ -118,7 +118,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    ..    .. Changed to inherit from :exc:`BaseException`.
 
    .. versionchanged:: 2.5
-      :exc:`BaseException` から導出するように変更されました.
+      :exc:`BaseException` を継承するように変更されました.
 
 
 .. exception:: StandardError
@@ -129,7 +129,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 
    :exc:`StopIteration`, :exc:`SystemExit`, :exc:`KeyboardInterrupt`,
    :exc:`SystemExit` 以外の、全ての組み込み例外の基底クラスです。
-   :exc:`StandardError` 自体は :exc:`Exception` から導出されています。
+   :exc:`StandardError` 自体は :exc:`Exception` の派生クラスです。
 
 
 .. exception:: ArithmeticError
@@ -259,8 +259,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 
    ジェネレータ (:term:`generator`) の :meth:`close` メソッドが呼び出
    されたときに送出されます。この例外は厳密にはエラーではないので、
-   :exc:`StandardError` ではなく :exc:`BaseException` から導出されてい
-   ます。
+   :exc:`StandardError` ではなく :exc:`BaseException` を直接継承しています。
 
 
    .. versionadded:: 2.5
@@ -269,7 +268,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    ..    .. Changed to inherit from :exc:`BaseException`.
 
    .. versionchanged:: 2.6
-      :exc:`BaseException` から継承するように変更されました。
+      :exc:`BaseException` を継承するように変更されました。
 
 
 .. exception:: IOError
@@ -287,7 +286,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. This class is derived from :exc:`EnvironmentError`.  See the discussion above
    .. for more information on exception instance attributes.
 
-   このクラスは :exc:`EnvironmentError` から導出されています。この例外
+   このクラスは :exc:`EnvironmentError` の派生クラスです。この例外
    クラスのインスタンス属性に関する情報は上記の
    :exc:`EnvironmentError` に関する議論を参照してください。
 
@@ -349,14 +348,14 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    :func:`raw_input` がユーザの入力を待っている間に割り込みキーを押しても
    この例外が送出されます。この例外は :exc:`Exception` を処理するコードに
    誤って捕捉されてインタプリタの終了が阻害されないように :exc:`BaseException`
-   から導出されています。
+   を継承しています。
 
 
    .. .. versionchanged:: 2.5
    ..    .. Changed to inherit from :exc:`BaseException`.
 
    .. versionchanged:: 2.5
-      :exc:`BaseException` から導出されるように変更されました.
+      :exc:`BaseException` を継承するように変更されました.
 
 
 .. exception:: MemoryError
@@ -364,7 +363,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. Raised when an operation runs out of memory but the situation may still be
    .. rescued (by deleting some objects).  The associated value is a string indicating
    .. what kind of (internal) operation ran out of memory. Note that because of the
-   .. underlying memory management architecture (C's :cfunc:`malloc` function), the
+   .. underlying memory management architecture (C's :c:func:`malloc` function), the
    .. interpreter may not always be able to completely recover from this situation; it
    .. nevertheless raises an exception so that a stack traceback can be printed, in
    .. case a run-away program was the cause.
@@ -373,7 +372,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    消去することで) まだ復旧可能かもしれない場合に送出されます。例外の
    関連値は、どんな種類の (内部) 操作がメモリ不足になっているか
    を示す文字列です。背後にあるメモリ管理アーキテクチャ (C の
-   :cfunc:`malloc` 関数) によっては、インタプリタが常にその状況を完璧
+   :c:func:`malloc` 関数) によっては、インタプリタが常にその状況を完璧
    に復旧できるとはかぎらないので注意してください; プログラムの暴走が
    原因の場合にも、やはり実行スタックの追跡結果を出力できるようにする
    ために例外が送出されます。
@@ -396,8 +395,8 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. classes, abstract methods should raise this exception when they require derived
    .. classes to override the method.
 
-   この例外は :exc:`RuntimeError` から導出されています。ユーザ定義の基底
-   クラスにおいて、抽象メソッドが導出クラスでオーバライドされることを
+   この例外は :exc:`RuntimeError` から派生しています。ユーザ定義の基底
+   クラスにおいて、抽象メソッドが派生クラスでオーバライドされることを
    要求する場合、この例外を送出しなくてはなりません。
 
    .. versionadded:: 1.5.2
@@ -411,15 +410,15 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. function returns a system-related error (not for illegal argument types or
    .. other incidental errors).  The :attr:`errno` attribute is a numeric error
    .. code from :c:data:`errno`, and the :attr:`strerror` attribute is the
-   .. corresponding string, as would be printed by the C function :cfunc:`perror`.
+   .. corresponding string, as would be printed by the C function :c:func:`perror`.
    .. See the module :mod:`errno`, which contains names for the error codes defined
    .. by the underlying operating system.
 
-   このクラスは :exc:`EnvironmentError` から導出されています。
+   このクラスは :exc:`EnvironmentError` から派生しています。
    関数がシステムに関連したエラーを返した場合に送出されます
    (引数の型が間違っている場合や、他の偶発的なエラーは除きます)。
    :attr:`errno` 属性は :c:data:`errno` に基づく数字のエラーコードで、
-   :attr:`strerror` 属性は C の :cfunc:`perror` 関数で表示されるような
+   :attr:`strerror` 属性は C の :c:func:`perror` 関数で表示されるような
    文字列です。
    オペレーティングシステムに依存したエラーコードの定義と名前については、
    :mod:`errno` モジュールを参照して下さい。
@@ -496,7 +495,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    イテレータ (:term:`iterator`) の :meth:`~iterator.next` メソッドにより、それ
    以上要素がないことを知らせるために送出されます。
    この例外は、通常の利用方法ではエラーとはみなされないため、
-   :exc:`StandardError` ではなく :exc:`Exception` から導出されています。
+   :exc:`StandardError` ではなく :exc:`Exception` から派生しています。
 
    .. versionadded:: 2.2
 
@@ -554,14 +553,14 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. This exception is raised by the :func:`sys.exit` function.  When it is not
    .. handled, the Python interpreter exits; no stack traceback is printed.  If the
    .. associated value is a plain integer, it specifies the system exit status (passed
-   .. to C's :cfunc:`exit` function); if it is ``None``, the exit status is zero; if
+   .. to C's :c:func:`exit` function); if it is ``None``, the exit status is zero; if
    .. it has another type (such as a string), the object's value is printed and the
    .. exit status is one.
 
    この例外は :func:`sys.exit` 関数によって送出されます。この例外が
    処理されなかった場合、スタックのトレースバックを全く表示することなく
    Python インタプリタは終了します。関連値が通常の整数であれば、
-   システム終了ステータスを表します (:cfunc:`exit` 関数に渡されます)。
+   システム終了ステータスを表します (:c:func:`exit` 関数に渡されます)。
    値が ``None`` の場合、終了ステータスは 0 です。 (文字列のような) 他の
    型の場合、そのオブジェクトの値が表示され、終了ステータスは 1 になります。
 
@@ -573,7 +572,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    この例外のインスタンスは属性 :attr:`code` を持ちます。この値は終了
    ステータスまたはエラーメッセージ (標準では ``None``) に設定されます。
    また、この例外は厳密にはエラーではないため、 :exc:`StandardError`
-   ではなく :exc:`BaseException` から導出されています。
+   ではなく :exc:`BaseException` から派生しています。
 
 
    .. A call to :func:`sys.exit` is translated into an exception so that clean-up
@@ -598,7 +597,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 
    この例外は :exc:`Exception` を捕まえるコードに間違って捕まえられな
    いように、 :exc:`StandardError` や :exc:`Exception` からではなく
-   :exc:`BaseException` から導出されています。これにより、この例外は着
+   :exc:`BaseException` を継承しています。これにより、この例外は着
    実に呼出し元の方に伝わっていってインタプリタを終了させます。
 
 
@@ -606,7 +605,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    ..    .. Changed to inherit from :exc:`BaseException`.
 
    .. versionchanged:: 2.5
-      :exc:`BaseException` から導出されるように変更されました。
+      :exc:`BaseException` を継承するように変更されました。
 
 
 .. exception:: TypeError
@@ -697,14 +696,14 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. Raised when a Windows-specific error occurs or when the error number does not
    .. correspond to an :c:data:`errno` value.  The :attr:`winerror` and
    .. :attr:`strerror` values are created from the return values of the
-   .. :cfunc:`GetLastError` and :cfunc:`FormatMessage` functions from the Windows
+   .. :c:func:`GetLastError` and :c:func:`FormatMessage` functions from the Windows
    .. Platform API. The :attr:`errno` value maps the :attr:`winerror` value to
    .. corresponding ``errno.h`` values. This is a subclass of :exc:`OSError`.
 
    Windows 特有のエラーか、エラー番号が :c:data:`errno` 値に対応しない
    場合に送出されます。 :attr:`winerrno` および :attr:`strerror` の値は
-   Windows プラットフォーム API の関数 :cfunc:`GetLastError` と
-   :cfunc:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の
+   Windows プラットフォーム API の関数 :c:func:`GetLastError` と
+   :c:func:`FormatMessage` の戻り値から生成されます。 :attr:`errno` の
    値は :attr:`winerror` の値を対応する ``errno.h`` の値にマップしたものです。
    :exc:`OSError` のサブクラスです。
 
@@ -712,10 +711,10 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    .. versionadded:: 2.0
 
    .. .. versionchanged:: 2.5
-   ..    .. Previous versions put the :cfunc:`GetLastError` codes into :attr:`errno`.
+   ..    .. Previous versions put the :c:func:`GetLastError` codes into :attr:`errno`.
 
    .. versionchanged:: 2.5
-      以前のバージョンは :cfunc:`GetLastError` のコードを
+      以前のバージョンは :c:func:`GetLastError` のコードを
       :attr:`errno` に入れていました。
 
 

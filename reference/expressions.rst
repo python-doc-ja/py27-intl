@@ -157,6 +157,7 @@ Python では、文字列リテラルと、様々な数値リテラルをサポ�
     list_comprehension: `expression` `list_for`
     list_for: "for" `target_list` "in" `old_expression_list` [`list_iter`]
     old_expression_list: `old_expression` [("," `old_expression`)+ [","]]
+    old_expression: `or_test` | `old_lambda_form`
     list_iter: `list_for` | `list_if`
     list_if: "if" `old_expression` [`list_iter`]
 
@@ -568,12 +569,13 @@ Yield 式
 デフォルト値が指定されていない、値の埋められていないスロットが残っている場合 :exc:`TypeError` 例外が送出されます。
 そうでない場合、値の埋められたスロットからなるリストが呼び出しの引数として使われます。
 
-.. note::
-    実際の実装では、名前を持たない固定引数を受け取る組み込み関数を提供するかもしれません。
-    そういった組み込み関数がドキュメント化の目的で '名前' を設けていたとしても、
-    実際には持っていないのでキーワードによって提供されません。
-    CPython では、C 言語で実装された関数の名前を持たない固定引数を解析するために
-    :cfunc:`PyArg_ParseTuple` を使用します。
+.. impl-detail::
+
+   実際の実装では、名前を持たない固定引数を受け取る組み込み関数を提供するかもしれません。
+   そういった組み込み関数がドキュメント化の目的で '名前' を設けていたとしても、
+   実際には持っていないのでキーワードによって提供されません。
+   CPython では、C 言語で実装された関数の名前を持たない固定引数を解析するために
+   :cfunc:`PyArg_ParseTuple` を使用します。
 
 仮引数スロットの数よりも多くの固定引数がある場合、構文  ``*identifier`` を使って指定された仮引数がないかぎり、
 :exc:`TypeError` 例外が送出されます;  仮引数 ``*identifier`` がある場合、この仮引数は余分な固定引数が入ったタプル
@@ -911,6 +913,8 @@ C 言語と違って、Python における比較演算子は同じ優先順位�
 * その他のほとんどの組み込み型のオブジェクト比較では、同じオブジェクトでないかぎり等価にはなりません；あるオブジェクトの他のオブジェクトに対する
   大小関係は任意に決定され、一つのプログラムの実行中は一貫したものとなります。
 
+.. _membership-test-details:
+
 演算子 :keyword:`in` および :keyword:`not in` は、コレクション型の要素であるかどうか (メンバシップ、membership)
 を調べます。 ``x in s`` は、 *x* がコレクション型 *s* のメンバである場合には真となり、それ以外の場合には偽となります。 ``x not in s``
 は ``x in s`` の否定 (negation) を返します。コレクション型のメンバシップテストは、伝統的にはシーケンス型に限定されてきました;
@@ -932,10 +936,16 @@ Unicode 文字列または文字列型については、 ``x in y``  は *x* が
 :meth:`__contains__` メソッドの定義されたユーザ定義クラスでは、 ``x in y`` が真となるのは
 ``y.__contains__(x)`` が真となるとき、かつそのときに限ります。
 
-:meth:`__contains__` は定義していないが :meth:`__getitem__` は定義しているようなユーザ定義クラスでは、 ``x in
-y``  は ``x == y[i]`` となるような非負の整数インデクス *i* が存在するとき、かつそのときにかぎり真となります。インデクス *i*
-が負である場合に :exc:`IndexError` 例外が送出されることはありません。 (別の何らかの例外が送出された場合、例外は
-:keyword:`in` から送出されたかのようになります)。
+:meth:`__contains__` を定義していないが :meth:`__iter__` は定義しているユーザ定義クラスでは、
+``x in y`` は ``x == z`` となるようなある値 `z` が ``y`` 内にわたる反復で生成された場合、
+true となります。
+もし、反復の間に例外が発生すれば、 :keyword:`in` が例外を発生させたようにみえます。
+
+最終的には、旧式の反復プロトコルの実行を試みます、もし
+:meth:`__getitem__` を定義しているようなユーザ定義クラスでは、 ``x in y``  は
+``x == y[i]`` となるような非負の整数インデクス *i* が存在するとき、かつそのときにかぎり真となります。
+インデクス *i* が負である場合に :exc:`IndexError` 例外が送出されることはありません。
+(別の何らかの例外が送出された場合、例外は :keyword:`in` から送出されたかのようになります)。
 
 .. index::
    operator: in
@@ -966,12 +976,7 @@ y``  は ``x == y[i]`` となるような非負の整数インデクス *i* が�
    pair: Conditional; expression
    pair: Boolean; operation
 
-ブール演算は、全ての Python 演算子の中で、最も低い優先順位になっています:
-
 .. productionlist::
-   expression: `conditional_expression` | `lambda_form`
-   old_expression: `or_test` | `old_lambda_form`
-   conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
    or_test: `and_test` | `or_test` "or" `and_test`
    and_test: `not_test` | `and_test` "and" `not_test`
    not_test: `comparison` | "not" `not_test`
@@ -984,11 +989,6 @@ y``  は ``x == y[i]`` となるような非負の整数インデクス *i* が�
 .. index:: operator: not
 
 演算子 :keyword:`not` は、引数が偽である場合には ``1`` を、それ以外の場合には ``0`` になります。
-
-式 ``x if C else y`` はまず *C* を評価 (*x* では *ない* です)します；もし *C* が true な場合、*x*
-が評価されてその値が返されます；そうでなければ *y* が評価されてその値が返されます。
-
-.. versionadded:: 2.5
 
 .. index:: operator: and
 
@@ -1007,7 +1007,28 @@ y``  は ``x == y[i]`` となるような非負の整数インデクス *i* が�
 'foo'`` は、 ``''`` ではなく ``0`` になります)
 
 
-.. _lambdas:
+条件演算 (Conditional Expressions)
+==================================
+ 
+.. versionadded:: 2.5
+ 
+.. index::
+   pair: conditional; expression
+   pair: ternary; operator
+ 
+.. productionlist::
+   conditional_expression: `or_test` ["if" `or_test` "else" `expression`]
+   expression: `conditional_expression` | `lambda_form`
+ 
+条件演算式 (しばしば、"三項演算子" と呼ばれます) は最も優先度が低いPython の操作です。
+ 
+``x if C else y`` という式は最初に条件 *C* (*x* では *ありません*) を評価します;
+*C* が true の場合 *x* が評価され値が返されます; それ以外の場合には *y* が評価され返されます。
+ 
+条件演算に関してより詳しくは :pep:`308` を参照してください。
+    
+
+.. _lambda:
 
 ラムダ (lambda)
 ===============
@@ -1032,8 +1053,6 @@ y``  は ``x == y[i]`` となるような非負の整数インデクス *i* が�
 
 引数リストの構文法については :ref:`function` 節を参照してください。ラムダ形式で作成された関数は、実行文 (statement)
 を含むことができないので注意してください。
-
-.. _lambda:
 
 
 .. _exprlists:
@@ -1092,6 +1111,8 @@ Python は、式を左から右へと順に評価してゆきます。ただし�
 +===============================================+================================+
 | :keyword:`lambda`                             | ラムダ式                       |
 +-----------------------------------------------+--------------------------------+
+| :keyword:`if` -- :keyword:`else`              | 条件演算                       |
++-----------------------------------------------+--------------------------------+
 | :keyword:`or`                                 | ブール演算 OR                  |
 +-----------------------------------------------+--------------------------------+
 | :keyword:`and`                                | ブール演算 AND                 |
@@ -1145,7 +1166,7 @@ Python は、式を左から右へと順に評価してゆきます。ただし�
 
 .. [#] ユニコード文字列間の比較はバイトレベルでは当然とはいえ、ユーザにとっては直感的ではないかもしれません。
    例えば、文字列 ``u"\u00C7"`` と ``u"\u0043\u0327"`` の比較は、
-   両方の文字列が同じユニコード文字(LATIN CAPTITAL LETTER C WITH CEDILLA)で表されたとしても違います。
+   両方の文字列が同じユニコード文字(LATIN CAPITAL LETTER C WITH CEDILLA)で表されたとしても違います。
    人間が分かり易い方法で文字列を比較するために :func:`unicodedata.normalize` を使用して比較してください。
 
 .. [#] 実装では、この演算をリストを構築したりソートしたりすることなく効率的に行います。

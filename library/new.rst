@@ -38,7 +38,7 @@
 
 .. function:: code(argcount, nlocals, stacksize, flags, codestring, constants, names, varnames, filename, name, firstlineno, lnotab)
 
-   この関数は :cfunc:`PyCode_New` というC関数へのインターフェイスです。
+   この関数は :c:func:`PyCode_New` というC関数へのインターフェイスです。
 
    .. XXX This is still undocumented!
 
@@ -51,5 +51,5 @@
 
 .. function:: classobj(name, baseclasses, dict)
 
-   この関数は新しいクラスオブジェクトを返します。そのクラスオブジェクトは(クラスのタプルであるべき)*baseclasses* から派生し、名前空間 *dict* を持ち、 *name* という名前です。
+   この関数は新しいクラスオブジェクトを返します。そのクラスオブジェクトは(クラスのタプルであるべき) *baseclasses* から派生し、名前空間 *dict* を持ち、 *name* という名前です。
 

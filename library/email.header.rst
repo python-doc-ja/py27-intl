@@ -24,7 +24,7 @@
 ご自分の電子メールヘッダ、たとえば :mailheader:`Subject` や :mailheader:`To`
 などのフィールドに非ASCII文字を入れたい場合、
 :class:`Header` クラスを使う必要があります。
-:class:`Message` オブジェクトの該当フィールドに文字列ではなく、
+:class:`~email.message.Message` オブジェクトの該当フィールドに文字列ではなく、
 :class:`Header` インスタンスを使うのです。
 :class:`Header` クラスは :mod:`email.header` モジュールから\
 インポートしてください。たとえば::
@@ -42,7 +42,7 @@
 :mailheader:`Subject` フィールドに非ASCII文字をふくめていることに\
 注目してください。ここでは、含めたいバイト列がエンコードされている\
 文字セットを指定して :class:`Header` インスタンスを作成することによって\
-実現しています。のちにこの :class:`Message` インスタンスから\
+実現しています。のちにこの :class:`~email.message.Message` インスタンスから\
 フラットなテキストを生成するさいに、この :mailheader:`Subject` フィールドは :rfc:`2047`
 準拠の適切な形式にエンコードされます。MIME 機能のついている\
 メーラなら、このヘッダに埋めこまれた ISO-8859-1 文字をただしく表示するでしょう。
@@ -90,8 +90,8 @@
       この MIME ヘッダに文字列 *s* を追加します。
 
       オプション引数 *charset* がもし与えられた場合、これは
-      :class:`Charset` インスタンス (:mod:`email.charset` を参照) か、
-      あるいは文字セットの名前でなければなりません。この場合は :class:`Charset`
+      :class:`~email.charset.Charset` インスタンス (:mod:`email.charset` を参照) か、
+      あるいは文字セットの名前でなければなりません。この場合は :class:`~email.charset.Charset`
       インスタンスに変換されます。この値が ``None`` の場合 (デフォルト)、
       コンストラクタで与えられた *charset* が使われます。
 

@@ -667,8 +667,8 @@ Window オブジェクト
 
 .. method:: window.derwin([nlines, ncols,] begin_y, begin_x)
 
-   "derive window (ウィンドウを導出する)" の短縮形です。 :meth:`derwin` は :meth:`subwin` と同じですが、
-   *begin_y* および *begin+x* はスクリーン全体の原点ではなく、ウィンドウの原点からの相対位置です。導出されたウィンドウオブジェクト
+   "derive window (ウィンドウを派生する)" の短縮形です。 :meth:`derwin` は :meth:`subwin` と同じですが、
+   *begin_y* および *begin+x* はスクリーン全体の原点ではなく、ウィンドウの原点からの相対位置です。派生したウィンドウオブジェクト
    が返されます。
 
 

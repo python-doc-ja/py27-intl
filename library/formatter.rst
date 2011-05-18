@@ -271,7 +271,7 @@ writer 実装
 -----------
 
 このモジュールでは、3 種類の writer オブジェクトインタフェース実装を提供しています。ほとんどのアプリケーションでは、
-:class:`NullWriter` から新しい writer クラスを導出する必要があるでしょう。
+:class:`NullWriter` から新しい writer クラスを派生する必要があるでしょう。
 
 
 .. class:: NullWriter()

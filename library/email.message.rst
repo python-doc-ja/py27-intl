@@ -45,10 +45,18 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       メッセージ全体をフラットな文字列として返します。オプション *unixfrom* が
       ``True`` の場合、返される文字列にはエンベロープヘッダも含まれます。
       *unixfrom* のデフォルトは ``False`` です。
+      もし、文字列への変換を完全に行うためにデフォルト値を埋める必要がある場合、
+      メッセージのフラット化は :class:`Message` の変更を引き起こす可能性があります
+      (例えば、MIME の境界が生成される、変更される等)。
+
+       Flattening the message may trigger
+       changes to the :class:`Message` if defaults need to be filled in to
+       complete the transformation to a string (for example, MIME boundaries may
+       be generated or modified).
 
       このメソッドは手軽に利用する事ができますが、必ずしも期待通りにメッセージを\
       フォーマットするとは限りません。たとえば、これはデフォルトでは ``From`` で\
-      始まる行を変更してしまいます。以下の例のように :class:`Generator`
+      始まる行を変更してしまいます。以下の例のように :class:`~email.generator.Generator`
       のインスタンスを生成して :meth:`flatten` メソッドを直接呼び出せば\
       より柔軟な処理を行う事ができます。 ::
 
@@ -139,18 +147,18 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
    .. method:: set_charset(charset)
 
       ペイロードの文字セットを *charset* に変更します。
-      ここには :class:`Charset` インスタンス (:mod:`email.charset` 参照)、
+      ここには :class:`~email.charset.Charset` インスタンス (:mod:`email.charset` 参照)、
       文字セット名をあらわす文字列、あるいは ``None`` のいずれかが指定できます。
-      文字列を指定した場合、これは :class:`Charset` インスタンスに変換されます。
+      文字列を指定した場合、これは :class:`~email.charset.Charset` インスタンスに変換されます。
       *charset* が ``None`` の場合、 ``charset`` パラメータは
       :mailheader:`Content-Type` ヘッダから除去されます。
       これ以外のものを文字セットとして指定した場合、 :exc:`TypeError`
       が発生します。
 
-      ここでいうメッセージとは、 *charset.input_charset* でエンコードされた
-      :mimetype:`text/\*` 形式のものを仮定しています。これは、もし必要とあらば\
+      ここでいうメッセージとは、unicode 文字列か *charset.input_charset* でエンコードされた
+      ペイロードを持つ :mimetype:`text/\*` 形式のものを仮定しています。これは、もし必要とあらば\
       プレーンテキスト形式を変換するさいに *charset.output_charset* の
-      エンコードに変換されます。MIME ヘッダ (:mailheader:`MIME-Version`,
+      トランスファーエンコードに変換されます。MIME ヘッダ (:mailheader:`MIME-Version`,
       :mailheader:`Content-Type`,
       :mailheader:`Content-Transfer-Encoding`) は必要に応じて追加されます。
 
@@ -159,7 +167,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
    .. method:: get_charset()
 
-      そのメッセージ中のペイロードの :class:`Charset` インスタンスを返します。
+      そのメッセージ中のペイロードの :class:`~email.charset.Charset` インスタンスを返します。
 
       .. versionadded:: 2.2.2
 
@@ -519,7 +527,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       注意: これは :meth:`get_charset` メソッドとは異なります。
       こちらのほうは文字列のかわりに、そのメッセージボディのデフォルト\
-      エンコーディングの :class:`Charset` インスタンスを返します。
+      エンコーディングの :class:`~email.charset.Charset` インスタンスを返します。
 
       .. versionadded:: 2.2.2
 
@@ -579,7 +587,7 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       対応していないメールソフトで見る場合、このテキストは目に見えることになります。
 
       *preamble* 属性は MIME ドキュメントに加えるこの最初の MIME
-      範囲外テキストを含んでいます。 :class:`Parser`
+      範囲外テキストを含んでいます。 :class:`~email.parser.Parser`
       があるテキストをヘッダ以降に発見したが、それはまだ最初の MIME
       境界文字列が現れる前だった場合、パーザはそのテキストをメッセージの *preamble*
       属性に格納します。 :class:`Generator` がある MIME メッセージから\

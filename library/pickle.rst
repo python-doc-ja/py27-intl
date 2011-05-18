@@ -711,7 +711,7 @@ Unpickler をサブクラス化する
 は :mod:`pickle`  と :mod:`cPickle` のどちらを使うかで異なります  [#]_ 。
 
 
-:mod:`pickle` モジュールでは、 :class:`Unpickler` からサブクラスを導出
+:mod:`pickle` モジュールでは、 :class:`Unpickler` からサブクラスを派生
 し、 :meth:`load_global` メソッドを上書きする必要があります。
 :meth:`load_global` は pickle データ列から最初の 2 行を読まなければな
 らず、ここで最初の行はそのクラスを含むモジュールの名前、2 行目はその
@@ -886,7 +886,7 @@ import のやり直しです。そしてそのクラスのインスタンスが 
 も最大で 1000 倍高速です。第二に、 :mod:`cPickle` モジュール内では、呼
 び出し可能オブジェクト :func:`Pickler` および :func:`Unpickler` は関数
 で、クラスではありません。つまり、pickle 化や unpickle 化を行うカスタ
-ムのサブクラスを導出することができないということです。多くのアプリケー
+ムのサブクラスを派生することができないということです。多くのアプリケー
 ションではこの機能は不要なので、 :mod:`cPickle` モジュールによる大きな
 パフォーマンス向上の恩恵を受けられるはずです。 :mod:`pickle` と
 :mod:`cPickle` で作られた pickle データ列は同じなので、既存の pickle
