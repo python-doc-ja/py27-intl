@@ -1265,13 +1265,9 @@ Python モジュールの中で設定しています。
    .. :class:`LogRecord` attribute dictionary, sent over a socket, and reconstituting
    .. it as a :class:`LogRecord` instance at the receiving end.
 
-   属性が *attrdict* で定義された、新たな :class:`LogRecord`  インスタンスを生成して返します。この関数は pickle 化された
-   :class:`LogRecord` 属性の辞書を作成し、ソケットを介して送信し、受信端で :class:`LogRecord`
-   インスタンスとして再構成する際に便利です。
-
-   *attrdict* で属性を定義した、新しい :class:`LogRecord` インスタンスを返します。この関数は、逆 pickle 化された
-   :class:`LogRecord` 属性辞書を  socket 越しに受け取り、受信端で :class:`LogRecord` インスタンスに再構築す
-   る場合に有用です。
+   属性が *attrdict* で定義された、新しい :class:`LogRecord` インスタンスを生成して返します。
+   この関数は、 pickle された :class:`LogRecord` 属性の辞書をソケットを介して送信し、
+   受信端で :class:`LogRecord` インスタンスとして再構成する場合に便利です。
 
 
 .. function:: basicConfig([**kwargs])
