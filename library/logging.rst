@@ -17,7 +17,7 @@
 .. This module defines functions and classes which implement a flexible error
 .. logging system for applications.
 
-このモジュールでは、アプリケーションのための柔軟なエラーログ記録 (logging) システムを実装するための関数やクラスを定義しています。
+このモジュールでは、アプリケーションのための柔軟なエラーログ記録 (logging) システムを実装するための関数やクラスが定義されています。
 
 
 .. Logging is performed by calling methods on instances of the :class:`Logger`
@@ -27,11 +27,11 @@
 .. "scan.text", "scan.html" and "scan.pdf". Logger names can be anything you want,
 .. and indicate the area of an application in which a logged message originates.
 
-ログ記録は :class:`Logger` クラスのインスタンス (以降 :dfn:`ロガー` :logger) におけるメソッドを呼び出すことで行われます。
+ログ記録は :class:`Logger` クラスのインスタンス (以降 :dfn:`ロガー` :logger) のメソッドを呼び出すことで行われます。
 各インスタンスは名前をもち、ドット (ピリオド) を区切り文字として表記することで、
 概念的には名前空間中の階層構造に配置されることになります。
-例えば、"scan" と名づけられたロガーは "scan.text"、"scan.html"、および "scan.pdf" ロガーの親ロガーとなります。
-ロガー名には何をつけてもよく、ログに記録されるメッセージの生成元となるアプリケーション中の特定の領域を示すことになります。
+例えば、 "scan" と名づけられたロガーは "scan.text", "scan.html", "scan.pdf" ロガーの親ロガーとなります。
+ロガーにはどんな名前を付けてもよく、ロガー名はログに記録されるメッセージの生成元となるアプリケーション中の特定の領域を示すことになります。
 
 
 .. Logged messages also have levels of importance associated with them. The default
@@ -44,13 +44,13 @@
 .. :class:`Logger` method, :meth:`log`, which takes an explicit level argument.
 
 ログ記録されたメッセージにはまた、重要度レベル (level of importance) が関連付けられています。
-デフォルトのレベルとして提供されているものは :const:`DEBUG` 、 :const:`INFO` 、
-:const:`WARNING` 、 :const:`ERROR` および :const:`CRITICAL` です。
+デフォルトのレベルとして提供されているものは :const:`DEBUG`, :const:`INFO`,
+:const:`WARNING`, :const:`ERROR`, :const:`CRITICAL` です。
 簡便性のために、 :class:`Logger` の適切なメソッド群を呼ぶことで、
 ログに記録されたメッセージの重要性を指定することができます。
-それらのメソッドとは、デフォルトのレベルを反映する形で、
-:meth:`debug` 、 :meth:`info` 、 :meth:`warning` 、 :meth:`error` および :meth:`critical` となっています。
-これらのレベルを指定するにあたって制限はありません: :class:`Logger` のより汎用的なメソッドで、
+そのようなメソッド群としては、デフォルトのレベルを反映して、
+:meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`, :meth:`critical` があります。
+また、これらのレベルを使用することに制限されるわけではありません: :class:`Logger` のより汎用的なメソッドで、
 明示的なレベル指定のための引数を持つ :meth:`log` を使って自分自身でレベルを定義したり使用したりできます。
 
 
@@ -61,8 +61,8 @@
 .. is that all Python modules can participate in logging, so your application log
 .. can include messages from third-party modules.
 
-標準ライブラリモジュールが提供するログ記録 API があることの御利益は、
-全ての Python モジュールがログ記録に参加できることであり、
+標準ライブラリモジュールとしてログ記録 API が提供される利点は、
+すべての Python モジュールがログ記録に参加できることであり、
 これによってあなたが書くアプリケーションのログにサードパーティーのモジュールが出力するメッセージを含ませることができます。
 
 
@@ -73,11 +73,11 @@
 .. own log destination class if you have special requirements not met by any of the
 .. built-in classes.
 
-もちろん、複数のメッセージをそれぞれ別々の冗舌性レベルで別々の出力先にログ記録することができます。
-ログメッセージをファイルへ、HTTP GET/POST 先へ、SMTP 経由で電子メールへ、汎用のソケットへ、
-もしくは OS ごとのログ記録機構へ書き込むことを全て標準モジュールでサポートします。
-これら組み込まれたクラスが特別な要求仕様に合わないような場合には、
-独自のログ記録先クラスを作り出すこともできます。
+もちろん、複数のメッセージをそれぞれ別々の冗長性レベルで別々の出力先にログ記録することができます。
+ログメッセージをファイルへ、 HTTP GET/POST 先へ、 SMTP 経由で電子メールへ、汎用のソケットへ、
+もしくは OS 毎のログ記録機構へ書き込むことは、すべて標準モジュールでサポートしています。
+これら組み込みのクラスが特別な要求仕様に合わないような場合には、
+独自のログ出力先クラスを作り出すこともできます。
 
 
 単純な例
@@ -128,8 +128,8 @@
 .. yourself, though, it is simpler to use a :class:`RotatingFileHandler`:
 
 スクリプトを繰り返し実行すると、さらなるログメッセージがファイルに追記されていきます。
-毎回新しいファイルの方が良ければ、 :func:`basicConfig` に渡す *filemode* 引数を ``'w'`` にします。
-ファイルサイズを自分で管理する代わりに、もっと簡単に :class:`RotatingFileHandler` を使う手があります。
+毎回新しいファイルが作られた方が良ければ、 :func:`basicConfig` に渡す *filemode* 引数を ``'w'`` にします。
+ファイルサイズを自分で管理する代わりに、 :class:`RotatingFileHandler` を使うともっと簡単になります。
 
 
 ::
@@ -164,7 +164,7 @@
 .. The result should be 6 separate files, each with part of the log history for the
 .. application:
 
-結果は分割された 6 ファイルになっているはずで、
+結果は分割された 6 つのファイルになっているはずで、
 それぞれがアプリケーションのログ記録の一部になっています。
 
 
@@ -192,8 +192,8 @@
 .. Obviously this example sets the log length much much too small as an extreme
 .. example.  You would want to set *maxBytes* to an appropriate value.
 
-見て判るようにここでは例示のためにファイルの大きさをとんでもなく小さな値に設定しています。
-実際に使うときは *maxBytes* を適切な値に設定して下さい。
+明らかに、ここでは例示のためにファイルの大きさをとんでもなく小さな値に設定しています。
+実際に使うときは *maxBytes* を適切な値に設定してください。
 
 
 .. Another useful feature of the logging API is the ability to produce different
@@ -202,9 +202,9 @@
 .. messages are not written for your production system.  The default levels are
 .. ``NOTSET``, ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR`` and ``CRITICAL``.
 
-ログ記録 API のもう一つの有用な仕組みが異なるメッセージを異なるログレベルで生成する能力です。
+ログ記録 API のもう一つの便利な機能が、異なるメッセージを異なるログレベルで生成する能力です。
 これを使えば、たとえばコードの中にデバッグメッセージを埋め込みつつ、
-出荷段階でログ記録レベルを落としてこれが記録されないようにするといったことができます。
+出荷段階でログ記録レベルを落としてデバッグメッセージが記録されないようにするといったことができます。
 デフォルトで設定されているレベルは
 ``NOTSET``, ``DEBUG``, ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL`` です。
 
@@ -215,10 +215,11 @@
 .. is set to ``ERROR``, the message is emitted.  If a message is a ``WARNING``, and
 .. the logger is set to produce only ``ERROR``\s, the message is not emitted:
 
-ロガー、ハンドラ、メッセージをログ記録する関数呼び出しは、どれもレベルを指定します。
-ログメッセージはハンドラとロガーがそのレベル以下を吐き出す設定の時だけ吐き出されます。
-たとえば、メッセージが ``CRITICAL`` でロガーが ``ERROR`` の設定ならばメッセージは吐き出されます。
-一方、メッセージが ``WARNING`` でロガーが ``ERROR`` だけ生成するならば、メッセージは吐き出されません。
+ロガー、ハンドラ、ログメッセージ呼び出しは、どれもレベルを指定します。
+ログメッセージはハンドラとロガーがそのレベル以下を出力する設定の時だけ出力されます。
+たとえば、メッセージが ``CRITICAL`` でロガーが ``ERROR`` の設定ならば、メッセージは出力されます。
+一方、メッセージが ``WARNING`` でロガーが ``ERROR`` だけ生成するように設定されているならば、
+メッセージは出力されません。
 
 
 ::
@@ -247,8 +248,8 @@
 .. Run the script with an argument like 'debug' or 'warning' to see which messages
 .. show up at different levels:
 
-スクリプトを 'debug' とか 'warning' といった引数で実行して、
-レベルの違いによってどのメッセージが現れるようになるか見てみましょう。
+スクリプトを 'debug' や 'warning' といった引数で実行して、
+レベルの違いによってどのメッセージが現れるか見てみましょう。
 
 
 ::
@@ -277,15 +278,15 @@
 .. example of how to log from different modules so it is easy to trace the source
 .. of the message:
 
-気付いたかもしれませんが、全てのログメッセージに ``root`` が埋め込まれています。
-ログ記録モジュールは異なる名前のロガーの階層をサポートしているのです。
+すべてのログメッセージに ``root`` が埋め込まれていることに気付いたかもしれません。
+:mod:`logging` モジュールは異なる名前のロガーの階層をサポートしているのです。
 ログメッセージがどこから発生しているかを教える簡単な方法は、
 プログラムのモジュールごとに別々のロガーオブジェクトを利用することです。
 それぞれの新しいロガーはその親の設定を「継承」していて、
 あるロガーに送られたログメッセージはそのロガーの名前を含みます。
 場合によっては、ロガーをそれぞれ異なるように設定して、
 それぞれのモジュールからのメッセージを異なったやり方で扱うこともできます。
-では、単純な例でメッセージの出所が簡単に追跡できるように別々のモジュールからログ記録を行う方法を見てみましょう。
+では、単純な例でメッセージの発信源が簡単に追跡できるように別々のモジュールからログ記録を行う方法を見てみましょう。
 
 
 ::
@@ -321,9 +322,9 @@
 
 他にもオプションはもっといろいろあります。
 ログ記録方法の設定、たとえばログメッセージフォーマットを変えるオプション、
-メッセージを複数の送り先に配送するようなもの、
-ソケットインターフェイスを通して長く走り続けるアプリケーションの設定を途中で変更するものなどです。
-全てのオプションはライブラリモジュールの文書の中でもっと細かく説明してあります。
+メッセージを複数の出力先に配送するようなもの、
+ソケットインターフェイスを通して長時間実行されるアプリケーションの設定を途中で変更するものなどです。
+すべてのオプションはライブラリモジュールの文書の中でもっと細かく説明してあります。
 
 
 ロガー
@@ -336,11 +337,11 @@
 .. determining which log records to send on to a handler.  Formatters specify the
 .. layout of the resultant log record.
 
-logging ライブラリはモジュラー・アプローチを取ってコンポーネントのカテゴリーをいくつかに分けています:
-ロガー、ハンドラ、フィルタ、フォーマッタ。
+logging ライブラリはモジュラー・アプローチを取っていて、
+コンポーネントのカテゴリーをいくつかに分けています: ロガー、ハンドラ、フィルタ、フォーマッタです。
 ロガーはアプリケーションのコードが直接使うインターフェイスを外部に公開しています。
-ハンドラはログ記録を適切な行き先に送ります。
-フィルタはどのログ記録をハンドラにおくるかを決めるさらにきめ細かい機構を提供します。
+ハンドラはログ記録を適切な出力先に送ります。
+フィルタはどのログ記録をハンドラに送るかを決めるさらにきめ細かい機構を提供します。
 フォーマッタは最終的なログ記録のレイアウトを指定します。
 
 
@@ -351,17 +352,17 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 .. objects pass along relevant log messages to all interested log handlers.
 
 :class:`Logger` オブジェクトの仕事は大きく三つに分かれます。
-一つめは、アプリケーションが実行中にメッセージを記録できるように、
+一つ目は、アプリケーションが実行中にメッセージを記録できるように、
 いくつかのメソッドをアプリケーションから呼べるようにしています。
-二つめに、ロガーオブジェクトはどのメッセージに対して作用するかを、
-深刻さ(デフォルトのフィルター機構)またはフィルターオブジェクトに基づいて決定します。
-三つめに、ロガーオブジェクトはログハンドラがそれぞれ持っている興味に関連するログメッセージを回送します。
+二つ目に、ロガーオブジェクトはどのメッセージに対して作用するかを、
+深刻度 (デフォルトのフィルタ機構) またはフィルタオブジェクトに基づいて決定します。
+三つ目に、ロガーオブジェクトは関心を持っているすべてのログハンドラに関連するログメッセージを回送します。
 
 
 .. The most widely used methods on logger objects fall into two categories:
 .. configuration and message sending.
 
-ロガーオブジェクトのとりわけ広く使われるメソッドは二つのカテゴリーに分類できます:
+とりわけ広く使われるロガーオブジェクトのメソッドは、二つのカテゴリーに分類できます:
 設定とメッセージ送信です。
 
 
@@ -371,23 +372,22 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 ..   the logger will handle only info, warning, error, and critical messages and
 ..   will ignore debug messages.
 
-* :meth:`Logger.setLevel` ロガーが扱うログメッセージの最も低い深刻さを指定します。
-  ここで組み込まれた深刻さは debug が一番低く、 critical が一番高くなります。
-  たとえば、深刻さが info と設定されたロガーは info, warning, error, critical
+* :meth:`Logger.setLevel` はロガーが扱うログメッセージの最も低い深刻度を指定します。
+  組み込みの深刻度の中では debug が一番低く、 critical が一番高くなります。
+  たとえば、深刻度が info と設定されたロガーは info, warning, error, critical
   のメッセージしか扱わず debug メッセージは無視します。
 
 
 .. * :meth:`Logger.addFilter` and :meth:`Logger.removeFilter` add and remove filter
 ..   objects from the logger object.  This tutorial does not address filters.
 
-* :meth:`Logger.addFilter` と :meth:`Logger.removeFilter`
-  はロガーオブジェクトにフィルターを追加したり削除したりします。
-  このチュートリアルではフィルターは説明しません。
+* :meth:`Logger.addFilter` と :meth:`Logger.removeFilter` はロガーオブジェクトにフィルタを追加または削除します。
+  このチュートリアルではフィルタは説明しません。
 
 
 .. With the logger object configured, the following methods create log messages:
 
-設定されたロガーオブジェクトを使えば、以下のメソッドはログメッセージを作り出します:
+設定されたロガーオブジェクトを使い、以下のメソッドはログメッセージを作り出します:
 
 
 .. * :meth:`Logger.debug`, :meth:`Logger.info`, :meth:`Logger.warning`,
@@ -401,10 +401,10 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 ..   determine whether to log exception information.
 
 * :meth:`Logger.debug`, :meth:`Logger.info`, :meth:`Logger.warning`,
-  :meth:`Logger.error`, :meth:`Logger.critical` は全て、
+  :meth:`Logger.error`, :meth:`Logger.critical` はすべて、
   メッセージとメソッド名に対応したレベルでログ記録を作り出します。
   メッセージは実際にはフォーマット文字列であり、通常の文字列代入に使う
-  :const:`%s`, :const:`%d`, :const:`%f` などを含み得ます。
+  :const:`%s`, :const:`%d`, :const:`%f` などを含むことができます。
   残りの引数はメッセージの代入される位置に対応するオブジェクトのリストです。
   :const:`**kwargs` については、ログ記録メソッドが気にするキーワードは
   :const:`exc_info` だけで、例外の情報をログに記録するかを決定するのに使います。
@@ -415,17 +415,17 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 ..   stack trace along with it.  Call this method only from an exception handler.
 
 * :meth:`Logger.exception` は :meth:`Logger.error` と似たログメッセージを作成します。
-  違いは :meth:`Logger.exception` がスタックトレースを一緒に吐き出すことです。
-  例外ハンドラでだけ使うようにして下さい。
+  違いは :meth:`Logger.exception` がスタックトレースを一緒にダンプすることです。
+  例外ハンドラでだけ使うようにしてください。
 
 
 .. * :meth:`Logger.log` takes a log level as an explicit argument.  This is a
 ..   little more verbose for logging messages than using the log level convenience
 ..   methods listed above, but this is how to log at custom log levels.
 
-* :meth:`Logger.log` はログレベルを陽に引き渡される引数として取ります。
-  これは上に挙げた便宜的なログレベルごとのメソッドを使うより少しコード量が多くなりますが、
-  独自のログレベルを使うにはこのようにするものなのです。
+* :meth:`Logger.log` はログレベルを明示的な引数として受け取ります。
+  これは上に挙げた便宜的なログレベル毎のメソッドを使うより少しコード量が多くなりますが、
+  独自のログレベルを使うことができます。
 
 
 .. :func:`getLogger` returns a reference to a logger instance with the specified
@@ -440,14 +440,14 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 .. handlers for all the loggers an application uses. It is sufficient to
 .. configure handlers for a top-level logger and create child loggers as needed.
 
-:func:`getLogger` は指定されればその特定の名前の、そうでなければ ``root`` のロガーインスタンスへの参照を返します。
+:func:`getLogger` は、指定されればその特定の名前の、そうでなければ ``root`` のロガーインスタンスへの参照を返します。
 ロガーの名前はピリオド区切りの階層構造を表します。
 同じ名前で :func:`getLogger` を複数回呼び出した場合、同一のロガーオブジェクトへの参照が返されます。
 階層リストを下ったロガーはリスト上位のロガーの子です。
 たとえば、名前が ``foo`` であるロガーがあったとして、
-``foo.bar``, ``foo.bar.baz``, ``foo.bam`` といった名前のロガーは全て ``foo`` の子孫になります。
+``foo.bar``, ``foo.bar.baz``, ``foo.bam`` といった名前のロガーはすべて ``foo`` の子孫になります。
 子ロガーはメッセージを親ロガーのハンドラに伝えます。
-このため、アプリケーションが使っている全てのロガーのためのハンドラを定義して設定する必要はありません。
+このため、アプリケーションが使っているすべてのロガーのためのハンドラを定義して設定する必要はありません。
 トップレベルのロガーのためのハンドラだけ設定しておいて必要に応じて子ロガーを作成すれば十分です。
 
 
@@ -464,19 +464,19 @@ logging ライブラリはモジュラー・アプローチを取ってコンポ
 .. messages of a specific severity to a specific location.
 
 :class:`Handler` オブジェクトは適切なログメッセージを
-(ログメッセージの深刻さに基づいて) ハンドラの指定された宛先に振り分けることに責任を持ちます。
-ロガーオブジェクトには :func:`addHandler` メソッドで0個以上のハンドラを追加することができます。
-有り得るシナリオとして、あるアプリケーションが全てのログメッセージをログファイルに、
-error 以上の全てのログメッセージを標準出力に、
-critical のメッセージは全てメールアドレスに、
-送りたいとします。
-この場合、三つの個別のハンドラがそれぞれの深刻さと宛先に応じて必要になります。
+(ログメッセージの深刻度に基づいて) ハンドラの指定された出力先に振り分けることに責任を持ちます。
+ロガーオブジェクトには :func:`addHandler` メソッドで 0 個以上のハンドラを追加することができます。
+例として、あるアプリケーションがすべてのログメッセージをログファイルに、
+error 以上のすべてのログメッセージを標準出力に、
+critical のメッセージはすべてメールアドレスに、
+それぞれ送りたいとします。
+この場合、 3 つの個別のハンドラがそれぞれの深刻度と宛先に応じて必要になります。
 
 
 .. The standard library includes quite a few handler types; this tutorial uses only
 .. :class:`StreamHandler` and :class:`FileHandler` in its examples.
 
-このライブラリには多数のハンドラを用意してありますが、
+このライブラリには多くのハンドラが用意されていますが、
 このチュートリアルでは :class:`StreamHandler` と :class:`FileHandler` だけを例に取り上げます。
 
 
@@ -486,8 +486,8 @@ critical のメッセージは全てメールアドレスに、
 .. custom handlers) are the following configuration methods:
 
 アプリケーション開発者にとってハンドラを扱う上で気にするべきメソッドは極々限られています。
-備え付けのハンドラオブジェクトを使う (つまり自作ハンドラを作らない)
-開発者に関係あるハンドラのメソッドは次の設定用のメソッドだけでしょう:
+組み込みのハンドラオブジェクトを使う (つまり自作ハンドラを作らない)
+開発者に関係あるハンドラのメソッドは、次の設定用のメソッドだけでしょう:
 
 
 .. * The :meth:`Handler.setLevel` method, just as in logger objects, specifies the
@@ -497,10 +497,10 @@ critical のメッセージは全てメールアドレスに、
 ..   set in each handler determines which messages that handler will send on.
 
 * :meth:`Handler.setLevel` メソッドは、ロガーオブジェクトの場合と同様に、
-  適切な宛先に振り分けられるべき最も低い深刻さを指定します。
-  なぜ二つも :func:`setLevel` メソッドがあるのでしょう?
-  ロガーでセットされるレベルはメッセージのどの深刻さを付随するハンドラに渡すか決めます。
-  ハンドラでセットされるレベルはハンドラがどのメッセージを送るべきか決めます。
+  適切な出力先に振り分けられるべき最も低い深刻度を指定します。
+  なぜ 2 つも :func:`setLevel` メソッドがあるのでしょうか?
+  ロガーで設定されるレベルは、付随するハンドラにどんな深刻度のメッセージを渡すか決めます。
+  ハンドラで設定されるレベルは、ハンドラがどのメッセージを送るべきか決めます。
 
 
 .. * :func:`setFormatter` selects a Formatter object for this handler to use.
@@ -511,7 +511,7 @@ critical のメッセージは全てメールアドレスに、
 .. * :func:`addFilter` and :func:`removeFilter` respectively configure and
 ..   deconfigure filter objects on handlers.
 
-* :func:`addFilter` および :func:`removeFilter` はそれぞれハンドラへのフィルタオブジェクトの設定、設定解除を行います。
+* :func:`addFilter` および :func:`removeFilter` はそれぞれハンドラへのフィルタオブジェクトの設定と解除を行います。
 
 
 .. Application code should not directly instantiate and use instances of
@@ -520,8 +520,8 @@ critical のメッセージは全てメールアドレスに、
 .. default behavior that child classes can use (or override).
 
 アプリケーションのコード中では :class:`Handler` のインスタンスを直接インスタンス化して使ってはなりません。
-そうではなく、 :class:`Handler` クラスは全てのハンドラが持つべきインターフェイスを定義し、
-子クラスが使える (もしくはオーバライドできる) いくつかのデフォルトの振る舞いを確立します。
+代わりに、 :class:`Handler` クラスはすべてのハンドラが持つべきインターフェイスを定義し、
+子クラスが使える (もしくはオーバライドできる) いくつかのデフォルトの振る舞いを規定します。
 
 
 フォーマッタ
@@ -536,12 +536,12 @@ critical のメッセージは全てメールアドレスに、
 .. date format string, the default date format is:
 
 フォーマッタオブジェクトは最終的なログメッセージの順序、構造および内容を設定します。
-基底クラスの :class:`logging.Handler` とは違って、
-アプリケーションのコードはフォーマッタクラスをインスタンス化して構いませんが、
+基底クラスである :class:`logging.Handler` とは違って、
+アプリケーションのコードはフォーマッタクラスをインスタンス化しても構いません。
 特別な振る舞いをさせたいアプリケーションではフォーマッタのサブクラスを使う可能性もあります。
 コンストラクタは二つのオプション引数を取ります: メッセージのフォーマット文字列と日付のフォーマット文字列です。
 メッセージのフォーマット文字列がなければ、デフォルトではメッセージをそのまま使います。
-日付のフォーマット文字列がなければデフォルトは
+日付のフォーマット文字列がなければ、デフォルトは
 
 
 ::
@@ -565,8 +565,8 @@ critical のメッセージは全てメールアドレスに、
 .. format, the severity of the message, and the contents of the message, in that
 .. order:
 
-下のメッセージのフォーマット文字列は、人が読みやすい形式の時刻、メッセージの深刻さ、
-メッセージの内容をその順番に出力します。
+次のメッセージフォーマット文字列は、人が読みやすい形式の時刻、メッセージの深刻度、
+およびメッセージの内容を、順番に出力します。
 
 
 ::
@@ -583,10 +583,9 @@ critical のメッセージは全てメールアドレスに、
 .. code is an example of configuring a very simple logger, a console handler, and a
 .. simple formatter in a Python module:
 
-プログラマはログ記録方法を設定できます。
-一つの方法は中心となるモジュールで上で述べたような設定メソッドで
-(Python コードを使って) ロガー、ハンドラ、フォーマッタを自ら手を下して作成することです。
-もう一つの方法は、ログ記録設定ファイルを作ることです。
+ログ記録方法を設定するには、上述のような設定メソッドで (Python コードを使って)
+main モジュールの中でロガー、ハンドラ、フォーマッタを明示的に作成するか、
+ログ記録設定ファイルを作ります。
 以下のコードは、例としてごく単純なロガー、コンソールハンドラ、そして単純なフォーマッタを
 Python モジュールの中で設定しています。
 
@@ -730,12 +729,12 @@ Python モジュールの中で設定しています。
 .. developer who is not aware of logging by the library.
 
 ログ記録を行うライブラリを開発するときには、いくつかその設定について考えておくべきことがあります。
-ライブラリを使うアプリケーションが logging を使っていないときに、
-ライブラリが logging を呼び出すと "No handlers could be found for logger X.Y.Z"
+ライブラリを使うアプリケーションがログ記録を使っていないときに、
+ライブラリがログ記録を呼び出すと "No handlers could be found for logger X.Y.Z"
 (「ロガー X.Y.Z に対するハンドラが見つかりません」)
 というメッセージがコンソールに一度だけ流れます。
-このメッセージは logging の設定ミスを捕らえるためのものですが、
-ライブラリが logging を使っているとアプリケーション開発者が知らない場合混乱につながりかねません。
+このメッセージはログ記録の設定ミスを捕らえるためのものですが、
+ライブラリがログ記録を使っているとアプリケーション開発者が知らない場合混乱につながりかねません。
 
 
 .. In addition to documenting how a library uses logging, a good way to configure
@@ -746,17 +745,17 @@ Python モジュールの中で設定しています。
 .. some handlers, and if levels are suitably configured then logging calls made
 .. in library code will send output to those handlers, as normal.
 
-ライブラリが logging をどのように使っているかを文書に書くだけでなく、
+ライブラリがログ記録をどのように使っているのかを文書化しておくだけでなく、
 意図しないメッセージを出さないために何もしないハンドラを加えるように設定しておくのが良い方法です。
-こうすればメッセージが出力されるのを(ハンドラが見つかるので)防げるので、何も出力しないようになります。
-ライブラリを使ってアプリケーションを書くユーザーが logging の設定をするならば、
+こうすれば (ハンドラが見つかるので) メッセージが出力されるのを防ぐことができ、何も出力されないようになります。
+ライブラリを使ってアプリケーションを書くユーザーがログ記録の設定をするならば、
 おそらくその設定で何かハンドラを追加することでしょう。
-その中でレベルが適切に設定されていればライブラリコード中の logging 呼び出しはそのハンドラに(普段通りに)出力を送ります。
+その中でレベルが適切に設定されていればライブラリコード中のログ記録呼び出しはそのハンドラに (普段通りに) 出力を送ります。
 
 
 .. A do-nothing handler can be simply defined as follows:
 
-何もしないハンドラは以下のよう簡単に定義できます。
+何もしないハンドラは以下のように簡単に定義できます。
 
 
 ::
@@ -773,7 +772,7 @@ Python モジュールの中で設定しています。
 .. done using loggers with names matching "foo.x.y", then the code:
 
 このハンドラのインスタンスがライブラリで使われるログ記録の名前空間の最上位ロガーに追加されなければなりません。
-ライブラリ *foo* のログ記録が全て "foo.x.y" にマッチする名前のロガーで行われるならば、
+ライブラリ *foo* のログ記録がすべて "foo.x.y" にマッチする名前のロガーで行われるならば、
 次のコードで望むような効果を得られます。
 
 
@@ -790,7 +789,7 @@ Python モジュールの中で設定しています。
 .. just "foo".
 
 組織がいくつものライブラリを世に出しているならば、
-指定されるロガーの名前は単なる "foo" ではなく "orgname.foo" かもしれませんね。
+指定されるロガーの名前は単なる "foo" ではなく "orgname.foo" かもしれません。
 
 
 ログレベル
@@ -804,7 +803,7 @@ Python モジュールの中で設定しています。
 
 ログレベルの数値は以下の表のように与えられています。
 これらは基本的に自分でレベルを定義したい人のためのもので、
-定義するレベルを既存のレベルの間に位置づけるために具体的な値が必要になります。
+定義するレベルを既存のレベルの間に位置づけるためには具体的な値が必要になります。
 もし数値が他のレベルと同じだったら、既存の値は上書きされその名前は失われます。
 
 
@@ -848,7 +847,7 @@ Python モジュールの中で設定しています。
 .. logging message is actually generated. This is the basic mechanism controlling
 .. the verbosity of logging output.
 
-レベルもロガーに関連付けることができ、デベロッパが設定することも、保存されたログ記録設定を読み込む際に設定することもできます。
+レベルはロガーに関連付けることもでき、開発者が設定することも、保存されたログ記録設定を読み込む際に設定することもできます。
 ロガーに対してログ記録メソッドが呼び出されると、ロガーは自らのレベルとメソッド呼び出しに関連付けられたレベルを比較します。
 ロガーのレベルがメソッド呼び出しのレベルよりも高い場合、実際のログメッセージは生成されません。
 これはログ出力の冗長性を制御するための基本的なメカニズムです。
@@ -858,7 +857,7 @@ Python モジュールの中で設定しています。
 .. a logger decides to actually log an event, a :class:`LogRecord` instance is
 .. created from the logging message.
 
-ログ記録されるメッセージは :class:`LogRecord` クラスのインスタンスとしてコード化されます。
+ログ記録されるメッセージは :class:`LogRecord` クラスのインスタンスとしてエンコードされます。
 ロガーがあるイベントを実際にログ出力すると決定した場合、
 ログメッセージから :class:`LogRecord` インスタンスが生成されます。
 
@@ -877,14 +876,16 @@ Python モジュールの中で設定しています。
 .. for a logger is set to a false value, at which point the passing to ancestor
 .. handlers stops).
 
-ログ記録されるメッセージは、ハンドラ (:dfn:`handlers`) を通して、処理機構 (dispatch mechanism) にかけられます。
+ログ記録されるメッセージは、ハンドラ (:dfn:`handlers`) を通してディスパッチ機構にかけられます。
 ハンドラは :class:`Handler` クラスのサブクラスのインスタンスで、
-ログ記録された (:class:`LogRecord` 形式の) メッセージが、そのメッセージの伝達対象となる相手 (エンドユーザ、サポートデスクのスタッフ、システム管理者、開発者) に行き着くようにする役割を持ちます。
-ハンドラには特定の行き先に方向付けられた :class:`LogRecord` インスタンスが渡されます。
-各ロガーはゼロ個、単一またはそれ以上のハンドラを (:class:`Logger` の :meth:`addHandler` メソッド) で関連付けることができます。
-ロガーに直接関連付けられたハンドラに加えて、 *ロガーの上位にあるロガー全てに関連付けられたハンドラ* がメッセージを処理する際に呼び出されます。
-(ただしロガーの *propagate* フラグが false 値にセットされている場合を除く。
-その場合は、祖先ハンドラへの通過は止まります。)
+ログ記録された (:class:`LogRecord` 形式の) メッセージが、
+そのメッセージの伝達対象となる相手 (エンドユーザ、サポートデスクのスタッフ、
+システム管理者、開発者) に行き着くようにする役割を持ちます。
+ハンドラには特定の出力先を意図された :class:`LogRecord` インスタンスが渡されます。
+各ロガーは 0 個以上のハンドラを (:class:`Logger` の :meth:`addHandler` メソッド) で関連付けることができます。
+ロガーに直接関連付けられたハンドラに加えて、\ *ロガーの上位にあるロガーすべてに関連付けられたハンドラ* がメッセージを処理する際に呼び出されます。
+(ただしロガーの *propagate* フラグが false 値にセットされている場合を除きます。
+その場合は、祖先ハンドラへの伝搬はそこで止まります。)
 
 
 .. Just as for loggers, handlers can have levels associated with them. A handler's
@@ -896,7 +897,7 @@ Python モジュールの中で設定しています。
 ロガーと同様に、ハンドラは関連付けられたレベルを持つことができます。
 ハンドラのレベルはロガーのレベルと同じ方法で、フィルタとして働きます。
 ハンドラがあるイベントを実際に処理すると決定した場合、
-:meth:`emit` メソッドが使われ、メッセージを発送先に送信します。
+:meth:`emit` メソッドが使われ、メッセージを出力先に送信します。
 ほとんどのユーザ定義の :class:`Handler` のサブクラスで、
 この :meth:`emit` をオーバライドする必要があるでしょう。
 
@@ -913,12 +914,12 @@ Python モジュールの中で設定しています。
 .. #. :ref:`stream-handler` instances send error messages to streams (file-like
 ..    objects).
 
-1. :ref:`stream-handler` のインスタンスはストリーム (ファイル様オブジェクト) にエラーメッセージを送信します。
+1. :ref:`stream-handler` のインスタンスは、ストリーム (file-like オブジェクト) にエラーメッセージを送信します。
 
 
 .. #. :ref:`file-handler` instances send error messages to disk files.
 
-2. :ref:`file-handler` のインスタンスはディスク上のファイルにエラーメッセージを送信します。
+2. :ref:`file-handler` のインスタンスは、ディスク上のファイルにエラーメッセージを送信します。
 
 
 .. #. :class:`BaseRotatingHandler` is the base class for handlers that
@@ -926,7 +927,7 @@ Python モジュールの中で設定しています。
 ..    directly. Instead, use :ref:`rotating-file-handler` or
 ..    :ref:`timed-rotating-file-handler`.
 
-3. :class:`BaseRotatingHandler` はログファイルをある時点で交替させるハンドラの基底クラスです。
+3. :class:`BaseRotatingHandler` は、ログファイルをある時点でローテーションさせるハンドラの基底クラスです。
    直接インスタンス化するためのクラスではありません。
    :ref:`rotating-file-handler` や :ref:`timed-rotating-file-handler` を使うようにしてください。
 
@@ -934,66 +935,67 @@ Python モジュールの中で設定しています。
 .. #. :ref:`rotating-file-handler` instances send error messages to disk
 ..    files, with support for maximum log file sizes and log file rotation.
 
-4. :ref:`rotating-file-handler` のインスタンスは最大ログファイルのサイズ指定とログファイルの交替機能をサポートしながら、
-   ディスク上のファイルにエラーメッセージを送信します。
+4. :ref:`rotating-file-handler` のインスタンスは、ディスク上のファイルにエラーメッセージを送信します。
+   最大ログファイルのサイズ指定とログファイルのローテーション機能をサポートしています。
 
 
 .. #. :ref:`timed-rotating-file-handler` instances send error messages to
 ..    disk files, rotating the log file at certain timed intervals.
 
-5. :ref:`timed-rotating-file-handler` のインスタンスは、ログファイルを一定時間間隔ごとに交替しながら、
-   ディスク上のファイルにエラーメッセージを送信します。
+5. :ref:`timed-rotating-file-handler` のインスタンスは、ディスク上のファイルにエラーメッセージを送信します。
+   ログファイルを一定時間間隔ごとにローテーションします。
 
 
 .. #. :class:`handlers.SocketHandler` instances send error messages to TCP/IP sockets.
 
-6. :class:`handlers.SocketHandler` のインスタンスは TCP/IP ソケットにエラーメッセージを送信します。
+6. :class:`handlers.SocketHandler` のインスタンスは、 TCP/IP ソケットにエラーメッセージを送信します。
 
 
 .. #. :ref:`datagram-handler` instances send error messages to UDP
 ..    sockets.
 
-7. :ref:`datagram-handler` のインスタンスは UDP ソケットにエラーメッセージを送信します。
+7. :ref:`datagram-handler` のインスタンスは、 UDP ソケットにエラーメッセージを送信します。
 
 
 .. #. :ref:`smtp-handler` instances send error messages to a designated
 ..    email address.
 
-8. :ref:`smtp-handler` のインスタンスは指定された電子メールアドレスにエラーメッセージを送信します。
+8. :ref:`smtp-handler` のインスタンスは、指定された電子メールアドレスにエラーメッセージを送信します。
 
 
 .. #. :ref:`syslog-handler` instances send error messages to a Unix
 ..    syslog daemon, possibly on a remote machine.
 
-9. :ref:`syslog-handler` のインスタンスは遠隔を含むマシン上の syslog デーモンにエラーメッセージを送信します。
+9. :ref:`syslog-handler` のインスタンスは、 Unix syslog デーモンにエラーメッセージを送信します。
+   遠隔マシン上の syslog デーモンに送信することもできます。
 
 
 .. #. :ref:`nt-eventlog-handler` instances send error messages to a
 ..    Windows NT/2000/XP event log.
 
-10. :ref:`nt-eventlog-handler` のインスタンスは Windows NT/2000/XP イベントログにエラーメッセージを送信します。
+10. :ref:`nt-eventlog-handler` のインスタンスは、 Windows NT/2000/XP イベントログにエラーメッセージを送信します。
 
 
 .. #. :ref:`memory-handler` instances send error messages to a buffer
 ..    in memory, which is flushed whenever specific criteria are met.
 
-11. :ref:`memory-handler` のインスタンスはメモリ上のバッファにエラーメッセージを送信し、
+11. :ref:`memory-handler` のインスタンスは、メモリ上のバッファにエラーメッセージを送信し、
     指定された条件でフラッシュされるようにします。
 
 
 .. #. :ref:`http-handler` instances send error messages to an HTTP
 ..    server using either ``GET`` or ``POST`` semantics.
 
-12. :ref:`http-handler` のインスタンスは ``GET`` か ``POST`` セマンティクスを使って
-     HTTP サーバにエラーメッセージを送信します。
+12. :ref:`http-handler` のインスタンスは、 ``GET`` または ``POST`` セマンティクスを使って
+    HTTP サーバにエラーメッセージを送信します。
 
 .. #. :ref:`watched-file-handler` instances watch the file they are
 ..    logging to. If the file changes, it is closed and reopened using the file
 ..    name. This handler is only useful on Unix-like systems; Windows does not
 ..    support the underlying mechanism used.
 
-13. :ref:`watched-file-handler` のインスタンスはログ記録を行うファイルを監視します。
-    もしファイルが変われば、一旦ファイルを閉じた後ファイル名を使って再度開きます。
+13. :ref:`watched-file-handler` のインスタンスは、ログ記録を行うファイルを監視します。
+    もしファイルが変更されれば、一旦ファイルを閉じた後ファイル名を使って再度開きます。
     このハンドラは Unix ライクなシステムでだけ有用です。
     Windows では元にしている機構がサポートされていません。
 
@@ -1003,8 +1005,8 @@ Python モジュールの中で設定しています。
 .. defined in a sub- module, :mod:`logging.handlers`. (There is also another
 .. sub-module, :mod:`logging.config`, for configuration functionality.)
 
-:class:`StreamHandler` および :class:`FileHandler` クラスは、中核となるログ化機構パッケージ内で定義されています。
-他のハンドラはサブモジュール、 :mod:`logging.handlers` で定義されています。
+:class:`StreamHandler` および :class:`FileHandler` クラスは、コア logging パッケージ内で定義されています。
+他のハンドラはサブモジュール :mod:`logging.handlers` で定義されています。
 (サブモジュールにはもうひとつ :mod:`logging.config` があり、これは環境設定機能のためのものです。)
 
 
@@ -1035,10 +1037,10 @@ Python モジュールの中で設定しています。
 .. is not processed further.
 
 ロガーレベル、ハンドラレベルの両方または片方に基づいたフィルタリングが十分でない場合、
-:class:`Logger` および :class:`Handler` インスタンスに :class:`Filter` のインスタンスを
-(:meth:`addFilter` メソッドを介して) 追加することができます。
-メッセージの処理を進める前に、ロガーとハンドラはともに、全てのフィルタでメッセージの処理が許可されているか調べます。
-いずれかのフィルタが偽となる値を返した場合、メッセージの処理は行われません。
+(:meth:`addFilter` メソッドを介して) :class:`Logger` および :class:`Handler` インスタンスに
+:class:`Filter` のインスタンスを追加することができます。
+メッセージの処理を進める前に、ロガーとハンドラはともに、すべてのフィルタでメッセージの処理が許可されているか調べます。
+いずれかのフィルタが false 値を返した場合、メッセージの処理は行われません。
 
 
 .. The basic :class:`Filter` functionality allows filtering by specific logger
@@ -1067,7 +1069,7 @@ Python モジュールの中で設定しています。
    .. Choice of these names is entirely up to the developer who is using logging.
 
    指定された名前のロガーを返します。名前が指定されていない場合、ロガー階層のルート (root) にあるロガーを返します。
-   *name* を指定する場合には、通常は *"a"*, *"a.b"*,  あるいは *"a.b.c.d"* といったようなドット区切りの階層的な名前にします。
+   *name* を指定する場合には、通常は *"a"*, *"a.b"*, *"a.b.c.d"* といったドット区切りの階層的な名前にします。
    名前の付け方はログ機能を使う開発者次第です。
 
 
@@ -1076,7 +1078,7 @@ Python モジュールの中で設定しています。
    .. of an application.
 
    与えられた名前に対して、この関数はどの呼び出しでも同じロガーインスタンスを返します。
-   従って、ロガーインスタンスをアプリケーションの各部でやりとりする必要はなくなります。
+   したがって、ロガーインスタンスをアプリケーションの各部でやりとりする必要はありません。
 
 
 .. function:: getLoggerClass()
@@ -1087,8 +1089,8 @@ Python モジュールの中で設定しています。
    .. not undo customisations already applied by other code. For example:
 
    標準の :class:`Logger` クラスか、最後に :func:`setLoggerClass` に渡したクラスを返します。
-   この関数は、新たに定義するクラス内で呼び出し、カスタマイズした :class:`Logger` クラスのインストールを行うときに
-   既に他のコードで適用したカスタマイズを取り消そうとしていないか確かめるのに使います。
+   この関数は、新たなクラス定義の中で呼び出して、カスタマイズした :class:`Logger` クラスのインストールが
+   既に他のコードで適用したカスタマイズを取り消さないことを保証するために使われることがあります。
    例えば以下のようにします:
 
 
@@ -1107,7 +1109,7 @@ Python モジュールの中で設定しています。
 
    レベル :const:`DEBUG` のメッセージをルートロガーで記録します。
    *msg* はメッセージの書式化文字列で、 *args* は *msg* に文字列書式化演算子を使って取り込むための引数です。
-   (これは、書式化文字列でキーワードを使い引数に辞書を渡すことができる、ということを意味します。)
+   (これは、書式化文字列の中でキーワードを使い、引数として単一の辞書を渡すことができる、ということを意味します。)
 
 
    .. There are two keyword arguments in *kwargs* which are inspected: *exc_info*
@@ -1116,10 +1118,10 @@ Python モジュールの中で設定しています。
    .. :func:`sys.exc_info`) is provided, it is used; otherwise, :func:`sys.exc_info`
    .. is called to get the exception information.
 
-   キーワード引数 *kwargs* からは二つのキーワードが調べられます。
-   一つめは *exc_info* で、この値の評価値が偽でない場合、例外情報をログメッセージに追加します。
+   キーワード引数 *kwargs* からは 2 つのキーワードが調べられます。
+   一つ目は *exc_info* で、この値の評価値が false でない場合、例外情報をログメッセージに追加します。
    (:func:`sys.exc_info` の返す形式の) 例外情報を表すタプルが与えられていれば、それをメッセージに使います。
-   それ以外の場合には、 :func:`sys.exc_info`  を呼び出して例外情報を取得します。
+   それ以外の場合には、 :func:`sys.exc_info` を呼び出して例外情報を取得します。
 
 
    .. The other optional keyword argument is *extra* which can be used to pass a
@@ -1128,8 +1130,8 @@ Python モジュールの中で設定しています。
    .. be used as you like. For example, they could be incorporated into logged
    .. messages. For example:
 
-   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られた
-   LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに用いられます。
+   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られる
+   LogRecoed の __dict__ にユーザー定義属性を加えるのに使われる辞書を渡すために用いられます。
    これらの属性は好きなように使えます。たとえば、ログメッセージの一部にすることもできます。
    以下の例を見てください。
 
@@ -1156,7 +1158,7 @@ Python モジュールの中で設定しています。
    .. by the logging system. (See the :class:`Formatter` documentation for more
    .. information on which keys are used by the logging system.)
 
-   *extra* で渡される辞書のキーはロギングシステムで使われているものとぶつからないようにしなければなりません。
+   *extra* で渡される辞書のキーはロギングシステムで使われているものと衝突しないようにしなければなりません。
    (どのキーがロギングシステムで使われているかについての詳細は :class:`Formatter` のドキュメントを参照してください。)
 
 
@@ -1168,10 +1170,10 @@ Python モジュールの中で設定しています。
    .. always need to pass the *extra* dictionary with these keys.
 
    これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
-   上の例では、'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
-   :class:`Formatter` はセットアップされています。
-   これらの属性が欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
-   したがってこの場合、常にこれらのキーがある *extra* 辞書を渡す必要があります。
+   上の例では、 'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
+   :class:`Formatter` がセットアップされています。
+   もしこれらが欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
+   したがってこの場合、常にこれらのキーを含む *extra* 辞書を渡す必要があります。
 
 
    .. While this might be annoying, this feature is intended for use in specialized
@@ -1192,7 +1194,7 @@ Python モジュールの中で設定しています。
    ..    *extra* was added.
 
    .. versionchanged:: 2.5
-      *extra* が追加されました.
+      *extra* が追加されました。
 
 
 .. function:: info(msg[, *args[, **kwargs]])
@@ -1239,7 +1241,7 @@ Python モジュールの中で設定しています。
 
    レベル :const:`ERROR` のメッセージをルートロガーで記録します。
    引数は :func:`debug` と同じように解釈されます。
-   例外情報はログメッセージに追加されます。
+   例外情報がログメッセージに追加されます。
    このメソッドは例外ハンドラからのみ呼び出されます。
 
 
@@ -1262,8 +1264,8 @@ Python モジュールの中で設定しています。
    .. discarded, whereas those of severity WARNING and above would be processed
    .. according to the logger's effective level.
 
-   全てのロガーに対して、ロガー自体のレベルに優先するような上書きレベル *lvl* を与えます。
-   アプリケーション全体にわたって一時的にログ出力の頻度を押し下げる必要が生じた場合にはこの関数が有効です。
+   すべてのロガーに対して、ロガー自体のレベルに優先するような上書きレベル *lvl* を与えます。
+   アプリケーション全体にわたって一時的にログ出力を抑制する必要が生じた場合にはこの関数が有効です。
    その効果は、深刻度 *lvl* 以下のすべてのログ呼び出しを無効にすることです。
    そのためこの関数を値 INFO を伴って呼び出した場合、すべての INFO と DEBUG イベントは捨てられ、
    ロガーの実効レベルに従って優先度 WARNING 以上のものは処理されるでしょう。
@@ -1279,12 +1281,12 @@ Python モジュールの中で設定しています。
    .. registered using this function, levels should be positive integers and they
    .. should increase in increasing order of severity.
 
-   内部辞書内でレベル *lvl* をテキスト *levelName* に関連付けます。
+   内部的な辞書の中でレベル *lvl* をテキスト *levelName* に関連付けます。
    これは例えば :class:`Formatter` でメッセージを書式化する際のように、
    数字のレベルをテキスト表現に対応付ける際に用いられます。
    この関数は自作のレベルを定義するために使うこともできます。
-   使われるレベル対する唯一の制限は、レベルは正の整数でなくてはならず、
-   メッセージの深刻さが上がるに従ってレベルの数も上がらなくてはならないということです。
+   使われるレベルに対する唯一の制限は、レベルは正の整数でなくてはならず、
+   メッセージの深刻度が上がるに従ってレベルの数も上がらなくてはならないということです。
 
 
 .. function:: getLevelName(lvl)
@@ -1297,9 +1299,9 @@ Python モジュールの中で設定しています。
    .. of the defined levels is passed in, the corresponding string representation is
    .. returned. Otherwise, the string "Level %s" % lvl is returned.
 
-   ログ記録レベル *lvl* のテキスト表現を返します。レベルが定義済みのレベル :const:`CRITICAL` 、 :const:`ERROR` 、
-   :const:`WARNING` 、 :const:`INFO` 、あるいは :const:`DEBUG` のいずれかである場合、対応する文字列が返されます。
-   :func:`addLevelName` を使ってレベルに名前を関連づけていた場合、 *lvl* に関連付けられていた名前が返されます。
+   ログ記録レベル *lvl* のテキスト表現を返します。レベルが定義済みのレベル :const:`CRITICAL`, :const:`ERROR`,
+   :const:`WARNING`, :const:`INFO`, :const:`DEBUG` のいずれかである場合、対応する文字列が返されます。
+   :func:`addLevelName` を使ってレベルに名前を関連付けていた場合、 *lvl* に関連付けられた名前が返されます。
    定義済みのレベルに対応する数値を指定した場合、レベルに対応した文字列表現を返します。
    そうでない場合、文字列 "Level %s" % lvl を返します。
 
@@ -1325,8 +1327,8 @@ Python モジュールの中で設定しています。
    .. if no handlers are defined for the root logger.
 
    デフォルトの :class:`Formatter` を持つ :class:`StreamHandler` を生成してルートロガーに追加し、
-   ログ記録システムの基本的な環境設定を行います。
-   関数 :func:`debug`, :func:`info`, :func:`warning`, :func:`error`, および :func:`critical` は、
+   ロギングシステムの基本的な環境設定を行います。
+   関数 :func:`debug`, :func:`info`, :func:`warning`, :func:`error`, :func:`critical` は、
    ルートロガーにハンドラが定義されていない場合に自動的に :func:`basicConfig` を呼び出します。
 
 
@@ -1340,7 +1342,7 @@ Python モジュールの中で設定しています。
    ..    Formerly, :func:`basicConfig` did not take any keyword arguments.
 
    .. versionchanged:: 2.4
-      以前は :func:`basicConfig` はキーワード引数をとりませんでした.
+      以前は :func:`basicConfig` はキーワード引数を取りませんでした。
 
 
    .. The following keyword arguments are supported.
@@ -1400,10 +1402,10 @@ Python モジュールの中で設定しています。
    .. closing all handlers. This should be called at application exit and no
    .. further use of the logging system should be made after this call.
 
-   ログ記録システムに対して、バッファのフラッシュを行い、
-   全てのハンドラを閉じることで順次シャットダウンを行うように告知します。
-   この関数はアプリケーションの exit 時に呼ばれるべきであり、
-   また呼びだし以降はそれ以上ログ記録システムを使ってはなりません。
+   ロギングシステムに対して、バッファのフラッシュを行い、
+   すべてのハンドラを閉じることで順次シャットダウンを行うように告知します。
+   この関数はアプリケーションの終了時に呼ばれるべきであり、
+   また呼び出し以降はそれ以上ロギングシステムを使ってはなりません。
 
 
 .. function:: setLoggerClass(klass)
@@ -1414,7 +1416,7 @@ Python モジュールの中で設定しています。
    .. function is typically called before any loggers are instantiated by applications
    .. which need to use custom logger behavior.
 
-   ログ記録システムに対して、ロガーをインスタンス化する際にクラス *klass* を使うように指示します。
+   ロギングシステムに対して、ロガーをインスタンス化する際にクラス *klass* を使うように指示します。
    指定するクラスは引数として名前だけをとるようなメソッド :meth:`__init__` を定義していなければならず、
    :meth:`__init__` では :meth:`Logger.__init__` を呼び出さなければなりません。
    典型的な利用法として、この関数は自作のロガーを必要とするようなアプリケーションにおいて、
@@ -1439,7 +1441,7 @@ Python モジュールの中で設定しています。
 
    `この logging パッケージのオリジナル <http://www.red-dove.com/python_logging.html>`_
       オリジナルの :mod:`logging` パッケージ。このサイトにあるバージョンのパッケージは、
-      標準で :mod:`logging` パッケージを含まないPython 1.5.2 と 2.1.x、2.2.xでも使用できます
+      標準で :mod:`logging` パッケージを含まない Python 1.5.2, 2.1.x, 2.2.x でも使用できます。
 
 
 .. _logger:
@@ -1451,8 +1453,8 @@ Logger オブジェクト
 .. instantiated directly, but always through the module-level function
 .. ``logging.getLogger(name)``.
 
-ロガーは以下の属性とメソッドを持ちます。ロガーを直接インスタンス化することはできず、
-常にモジュール関数 ``logging.getLogger(name)`` を介してインスタンス化するので注意してください。
+ロガーには以下のような属性とメソッドがあります。ロガーを直接インスタンス化することはできず、
+常にモジュール関数 ``logging.getLogger(name)`` を介してインスタンス化することに注意してください。
 
 
 .. attribute:: Logger.propagate
@@ -1461,7 +1463,7 @@ Logger オブジェクト
    .. its child loggers to the handlers of higher level (ancestor) loggers. The
    .. constructor sets this attribute to 1.
 
-   この値の評価結果が偽になる場合、ログ記録しようとするメッセージはこのロガーに渡されず、
+   この値の評価結果が false になる場合、ログ記録しようとするメッセージはこのロガーに渡されず、
    また子ロガーから上位の (親の) ロガーのハンドラに渡されません。
    コンストラクタはこの属性を 1 に設定します。
 
@@ -1476,8 +1478,8 @@ Logger オブジェクト
 
    このロガーの閾値を *lvl* に設定します。
    ログ記録しようとするメッセージで、 *lvl* よりも深刻でないものは無視されます。
-   ロガーが生成された際、レベルは :const:`NOTSET` (これにより全てのメッセージについて、
-   ロガーがルートロガーであれば処理される、そうでなくてロガーが非ルートロガーの場合には親ロガーに代行させる) に設定されます。
+   ロガーが生成された際、レベルは :const:`NOTSET` (これによりすべてのメッセージについて、
+   ロガーがルートロガーであれば処理される、そうでなくてロガーが非ルートロガーの場合には親ロガーに委譲させる) に設定されます。
    ルートロガーは :const:`WARNING` レベルで生成されることに注意してください。
 
 
@@ -1485,7 +1487,7 @@ Logger オブジェクト
    .. NOTSET, its chain of ancestor loggers is traversed until either an ancestor with
    .. a level other than NOTSET is found, or the root is reached.
 
-   「親ロガーに代行させる」という用語の意味は、もしロガーのレベルが NOTEST ならば、
+   「親ロガーに委譲」という用語の意味は、もしロガーのレベルが NOTEST ならば、
    祖先ロガーの系列の中を NOTEST 以外のレベルの祖先を見つけるかルートに到達するまで辿っていく、ということです。
 
 
@@ -1493,14 +1495,14 @@ Logger オブジェクト
    .. level is treated as the effective level of the logger where the ancestor search
    .. began, and is used to determine how a logging event is handled.
 
-   もし NOTEST 以外のレベルの祖先が見つかったなら、その祖先のレベルが祖先の探索を開始したロガーの実効レベルとして取り扱われ、
+   もし NOTEST 以外のレベルの祖先が見つかったなら、その祖先のレベルが探索を開始したロガーの実効レベルとして扱われ、
    ログイベントがどのように処理されるかを決めるのに使われます。
 
 
    .. If the root is reached, and it has a level of NOTSET, then all messages will be
    .. processed. Otherwise, the root's level will be used as the effective level.
 
-   ルートに到達した場合、ルートのレベルが NOTEST ならば全てのメッセージは処理されます。
+   ルートに到達した場合、ルートのレベルが NOTEST ならばすべてのメッセージは処理されます。
    そうでなければルートのレベルが実効レベルとして使われます。
 
 
@@ -1511,8 +1513,8 @@ Logger オブジェクト
    .. ``logging.disable(lvl)`` and then the logger's effective level as determined
    .. by :meth:`getEffectiveLevel`.
 
-   深刻さが *lvl* のメッセージが、このロガーで処理されることになっているかどうかを示します。
-   このメソッドはまず、 ``logging.disable(lvl)`` で設定されるモジュールレベルの深刻さレベルを調べ、
+   深刻度が *lvl* のメッセージが、このロガーで処理されることになっているかどうかを示します。
+   このメソッドはまず、 ``logging.disable(lvl)`` で設定されるモジュールレベルの深刻度レベルを調べ、
    次にロガーの実効レベルを :meth:`getEffectiveLevel` で調べます。
 
 
@@ -1537,7 +1539,7 @@ Logger オブジェクト
 
    レベル :const:`DEBUG` のメッセージをこのロガーで記録します。
    *msg* はメッセージの書式化文字列で、 *args* は *msg* に文字列書式化演算子を使って取り込むための引数です。
-   (これは、書式化文字列でキーワードを使い引数に辞書を渡すことができる、ということを意味します。)
+   (これは、書式化文字列の中でキーワードを使い、引数として単一の辞書を渡すことができる、ということを意味します。)
 
 
    .. There are two keyword arguments in *kwargs* which are inspected: *exc_info*
@@ -1546,10 +1548,10 @@ Logger オブジェクト
    .. :func:`sys.exc_info`) is provided, it is used; otherwise, :func:`sys.exc_info`
    .. is called to get the exception information.
 
-   キーワード引数 *kwargs* からは二つのキーワードが調べられます。
-   一つめは *exc_info* で、この値の評価値が偽でない場合、例外情報をログメッセージに追加します。
+   キーワード引数 *kwargs* からは 2 つのキーワードが調べられます。
+   一つ目は *exc_info* で、この値の評価値が false でない場合、例外情報をログメッセージに追加します。
    (:func:`sys.exc_info` の返す形式の) 例外情報を表すタプルが与えられていれば、それをメッセージに使います。
-   それ以外の場合には、 :func:`sys.exc_info`  を呼び出して例外情報を取得します。
+   それ以外の場合には、 :func:`sys.exc_info` を呼び出して例外情報を取得します。
 
 
    .. The other optional keyword argument is *extra* which can be used to pass a
@@ -1558,8 +1560,8 @@ Logger オブジェクト
    .. be used as you like. For example, they could be incorporated into logged
    .. messages. For example:
 
-   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られた
-   LogRecoed の __dict__ にユーザー定義属性を増やすのに使われる辞書を渡すのに用いられます。
+   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られる
+   LogRecoed の __dict__ にユーザー定義属性を加えるのに使われる辞書を渡すために用いられます。
    これらの属性は好きなように使えます。たとえば、ログメッセージの一部にすることもできます。
    以下の例を見てください。
 
@@ -1587,7 +1589,7 @@ Logger オブジェクト
    .. by the logging system. (See the :class:`Formatter` documentation for more
    .. information on which keys are used by the logging system.)
 
-   *extra* で渡される辞書のキーはロギングシステムで使われているものとぶつからないようにしなければなりません。
+   *extra* で渡される辞書のキーはロギングシステムで使われているものと衝突しないようにしなければなりません。
    (どのキーがロギングシステムで使われているかについての詳細は :class:`Formatter` のドキュメントを参照してください。)
 
 
@@ -1599,10 +1601,10 @@ Logger オブジェクト
    .. always need to pass the *extra* dictionary with these keys.
 
    これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
-   上の例では、'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
-   :class:`Formatter` はセットアップされています。
-   これらの属性が欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
-   したがってこの場合、常にこれらのキーがある *extra* 辞書を渡す必要があります。
+   上の例では、 'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
+   :class:`Formatter` がセットアップされています。
+   もしこれらが欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
+   したがってこの場合、常にこれらのキーを含む *extra* 辞書を渡す必要があります。
 
 
    .. While this might be annoying, this feature is intended for use in specialized
@@ -1623,7 +1625,7 @@ Logger オブジェクト
    ..    *extra* was added.
 
    .. versionchanged:: 2.5
-      *extra* が追加されました.
+      *extra* が追加されました。
 
 
 .. method:: Logger.info(msg[, *args[, **kwargs]])
@@ -1679,7 +1681,7 @@ Logger オブジェクト
 
    レベル :const:`ERROR` のメッセージをこのロガーで記録します。
    引数は :meth:`debug` と同じように解釈されます。
-   例外情報はログメッセージに追加されます。
+   例外情報がログメッセージに追加されます。
    このメソッドは例外ハンドラからのみ呼び出されます。
 
 
@@ -1694,7 +1696,7 @@ Logger オブジェクト
 
    .. Removes the specified filter *filt* from this logger.
 
-   指定されたフィルタ *filt* をこのロガーから除去します。
+   指定されたフィルタ *filt* をこのロガーから取り除きます。
 
 
 .. method:: Logger.filter(record)
@@ -1703,7 +1705,7 @@ Logger オブジェクト
    .. record is to be processed.
 
    このロガーのフィルタをレコード (record) に適用し、
-   レコードがフィルタを透過して処理されることになる場合には真を返します。
+   レコードがフィルタを透過して処理されることになる場合には true を返します。
 
 
 .. method:: Logger.addHandler(hdlr)
@@ -1717,7 +1719,7 @@ Logger オブジェクト
 
    .. Removes the specified handler *hdlr* from this logger.
 
-   指定されたハンドラ *hdlr* をこのロガーから除去します。
+   指定されたハンドラ *hdlr* をこのロガーから取り除きます。
 
 
 .. method:: Logger.findCaller()
@@ -1745,10 +1747,10 @@ Logger オブジェクト
    .. for unpickled records received from a socket, as well as those created locally.
    .. Logger-level filtering is applied using :meth:`~Logger.filter`.
 
-   レコードをこのロガーおよびその上位ロガーに (*propagate* の値が偽になるまで) さかのぼった
-   関連付けられている全てのハンドラに渡して処理します。
-   このメソッドはソケットから受信した逆 pickle 化されたレコードに対しても
-   レコードがローカルで生成された場合と同様に用いられます。
+   レコードを、このロガーおよびその上位ロガー (ただし *propagate* の値が false になったところまで)
+   に関連付けられているすべてのハンドラに渡して処理します。
+   このメソッドは、ローカルで生成されたレコードだけでなく、
+   ソケットから受信した unpickle されたレコードに対しても同様に用いられます。
    :meth:`~Logger.filter` によって、ロガーレベルでのフィルタが適用されます。
 
 
@@ -1765,7 +1767,7 @@ Logger オブジェクト
    ..    *func* and *extra* were added.
 
    .. versionchanged:: 2.5
-      *func* と *extra* が追加されました.
+      *func* と *extra* が追加されました。
 
 
 .. _minimal-example:
@@ -1777,7 +1779,7 @@ Logger オブジェクト
 ..    formerly :func:`basicConfig` did not take any keyword arguments.
 
 .. versionchanged:: 2.4
-   以前は :func:`basicConfig` はキーワード引数をとりませんでした.
+   以前は :func:`basicConfig` はキーワード引数を取りませんでした。
 
 
 .. The :mod:`logging` package provides a lot of flexibility, and its configuration
@@ -1870,7 +1872,7 @@ Logger オブジェクト
 .. documentation.
 
 出力の書式化には、通常の Python 文字列に対する初期化を使います - :ref:`string-formatting` 節を参照してください。
-書式化文字列は、以下の指定子 (specifier) を常にとります。
+書式化文字列は、以下の指定子 (specifier) を常に取ります。
 指定子の完全なリストについては :class:`Formatter` のドキュメントを参照してください。
 
 
@@ -1912,7 +1914,7 @@ Logger オブジェクト
 .. To change the date/time format, you can pass an additional keyword parameter,
 .. *datefmt*, as in the following:
 
-以下のように、追加のキーワードパラメタ *datefmt* を渡すと日付や時刻の書式を変更できます。
+以下のように、追加のキーワードパラメータ *datefmt* を渡すと日付や時刻の書式を変更できます。
 
 
 ::
@@ -1944,7 +1946,7 @@ Logger オブジェクト
 .. The date format string follows the requirements of :func:`strftime` - see the
 .. documentation for the :mod:`time` module.
 
-日付を書式化する文字列は、 :func:`strftime` の要求に従います -  :mod:`time` モジュールを参照してください。
+日付を書式化する文字列は :func:`strftime` の要求に従います -  :mod:`time` モジュールを参照してください。
 
 
 .. If, instead of sending logging output to the console or a file, you'd rather use
@@ -1953,7 +1955,7 @@ Logger オブジェクト
 .. *stream* and *filename* keyword arguments are passed, the *stream* argument is
 .. ignored.
 
-コンソールやファイルではなく、別個に作成しておいたファイル類似オブジェクトにログを出力したい場合には、
+コンソールやファイルではなく、別個に作成しておいたファイル風 (file-like) オブジェクトにログを出力したい場合には、
 :func:`basicConfig` に *stream* キーワード引数で渡します。
 *stream* と *filename*  の両方の引数を指定した場合、 *stream* は無視されるので注意してください。
 
@@ -2071,13 +2073,13 @@ INFO 以上のレベルのメッセージはコンソールに出力したいと
 .. As you can see, the DEBUG message only shows up in the file. The other messages
 .. are sent to both destinations.
 
-ご覧のように、 DEBUG メッセージはファイルだけに出力され、その他のメッセージは両方に出力されます。
+これを見て分かる通り、 DEBUG メッセージはファイルだけに出力され、その他のメッセージは両方に出力されます。
 
 
 .. This example uses console and file handlers, but you can use any number and
 .. combination of handlers you choose.
 
-この例題では、コンソールとファイルのハンドラだけを使っていますが、
+この例ではコンソールとファイルのハンドラだけを使っていますが、
 実際には任意の数のハンドラや組み合わせを使えます。
 
 
@@ -2146,14 +2148,14 @@ logging パッケージは、ログを生成している間に起こる例外を
 
 時にはログ記録出力にログ関数の呼び出し時に渡されたパラメータに加えて文脈情報を含めたいこともあるでしょう。
 たとえば、ネットワークアプリケーションで、クライアント固有の情報
-(例: リモートクライアントの名前、IP アドレス) もログ記録に残しておきたいと思ったとしましょう。
+(例: リモートクライアントの名前、 IP アドレス) もログ記録に残しておきたいと思ったとしましょう。
 *extra* パラメータをこの目的に使うこともできますが、
 いつでもこの方法で情報を渡すのが便利なやり方とも限りません。
 また接続ごとに :class:`Logger` インスタンスを生成する誘惑に駆られるかもしれませんが、
-インスタンスがガーベジコレクションで回収されず良いアイデアとは言えません。
-現実的な問題ではないかもしれませんが、
-:class:`Logger` インスタンスの個数がアプリケーションの中でログ記録を行いたい粒度のレベルに依存する場合、
-:class:`Logger` インスタンスの個数がきちんと押さえられないと管理が難しくなってしまいます。
+生成した :class:`Logger` インスタンスはガーベジコレクションで回収されないので、これは良いアイデアとは言えません。
+この例は現実的な問題ではないかもしれませんが、
+:class:`Logger` インスタンスの個数がアプリケーションの中でログ記録が行われるレベルの粒度に依存する場合、
+:class:`Logger` インスタンスの個数が事実上無制限にならないと、管理が難しくなります。
 
 
 .. An easy way in which you can pass contextual information to be output along
@@ -2166,10 +2168,10 @@ logging パッケージは、ログを生成している間に起こる例外を
 
 ログ記録イベントの情報と一緒に出力される文脈情報を渡す簡単な方法は、
 :class:`LoggerAdapter` を使うことです。
-このクラスは :class:`Logger` のように見えるようにデザインされていて、
+このクラスは :class:`Logger` のように見えるように設計されていて、
 :meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`,
 :meth:`exception`, :meth:`critical`, :meth:`log` の各メソッドを呼び出せるようになっています。
-これらのメソッドは対応する :class:`Logger` のメソッドと同じ引数を取りますので、
+これらのメソッドは対応する :class:`Logger` のメソッドと同じ引数を取るので、
 二つの型を取り替えて使うことができます。
 
 
@@ -2182,7 +2184,7 @@ logging パッケージは、ログを生成している間に起こる例外を
 .. :class:`LoggerAdapter`:
 
 :class:`LoggerAdapter` のインスタンスを生成する際には、
-:class:`Logger` インスタンスと文脈情報を収めた辞書風のオブジェクトを渡します。
+:class:`Logger` インスタンスと文脈情報を収めた辞書風 (dict-like) のオブジェクトを渡します。
 :class:`LoggerAdapter` のログ記録メソッドを呼び出すと、
 呼び出しをコンストラクタに渡された配下の :class:`Logger` インスタンスに委譲し、
 その際文脈情報をその委譲された呼び出しに埋め込みます。
@@ -2211,7 +2213,7 @@ logging パッケージは、ログを生成している間に起こる例外を
 
 :class:`LoggerAdapter` の :meth:`process` メソッドが文脈情報をログ出力に加える舞台です。
 そこではログ記録呼び出しのメッセージとキーワード引数が渡され、
-加工された(はずの)それらの情報を配下のロガーへの呼び出しに渡し直します。
+加工された (可能性のある) それらの情報を配下のロガーへの呼び出しに渡し直します。
 このメソッドのデフォルト実装ではメッセージは元のままですが、
 キーワード引数にはコンストラクタに渡された辞書風オブジェクトを値として "extra" キーが挿入されます。
 もちろん、呼び出し時に "extra" キーワードを使った場合には何事もなかったかのように上書きされます。
@@ -2231,7 +2233,7 @@ logging パッケージは、ログを生成している間に起こる例外を
 辞書風オブジェクトのキーを知っている :class:`Formatter` を用意して文字列をカスタマイズするようにできることです。
 それ以外のメソッドが必要なとき、たとえば文脈情報をメッセージの前や後ろにつなげたい場合には、
 :class:`LoggerAdapter` から :meth:`process` を望むようにオーバライドしたサブクラスを作ることが必要なだけです。
-次に挙げるのはこのクラスを使った例で、どの辞書風の振る舞いがコンストラクタで使われる「辞書風」オブジェクトに必要なのかも見せます。
+次に挙げるのはこのクラスを使った例で、コンストラクタで使われる「辞書風」オブジェクトにどの振る舞いが必要なのかも示しています。
 
 
 ::
@@ -2337,8 +2339,8 @@ logging パッケージは、ログを生成している間に起こる例外を
 すべてのプロセスが :class:`SocketHandler` に対してログ記録を行い、
 独立したプロセスとしてソケットサーバを動かすことです。
 ソケットサーバはソケットから読み取ってファイルにログを書き出します。
-(この機能を実行するために、既存のプロセスの1つのスレッドを割り当てることもできます)
-以下のセクションでは、このアプローチをさらに詳細に文書化しています。
+(この機能を実行するために、既存のプロセスの 1 つのスレッドを割り当てることもできます)
+以下の節では、このアプローチをさらに詳細に文書化しています。
 動作するソケット受信プログラムが含まれているので、
 アプリケーションに組み込むための出発点として使用できるでしょう。
 
@@ -2353,8 +2355,8 @@ logging パッケージは、ログを生成している間に起こる例外を
 .. http://bugs.python.org/issue3770).
 
 :mod:`multiprocessing` モジュールを含む最近のバージョンの Python を使用しているなら、
-複数のプロセスからファイルへのアクセスを直列化するのにこのモジュールの
-:class:`Lock` クラスを使って独自のハンドラを書くことができます。
+複数のプロセスからファイルへのアクセスを直列化するために
+:mod:`multiprocessing` モジュールの :class:`Lock` クラスを使って独自のハンドラを書くことができます。
 既存の :class:`FileHandler` とそのサブクラスは現在のところ :mod:`multiprocessing` を利用していませんが、
 将来は利用するようになるかもしれません。
 現在のところ :mod:`multiprocessing` モジュールが提供するロック機能は
@@ -2519,7 +2521,7 @@ logging パッケージは、ログを生成している間に起こる例外を
 .. the :meth:`makePickle` method and implementing your alternative there, as
 .. well as adapting the above script to use your alternative serialization.
 
-特定のシナリオでは pickle にはいくつかのセキュリティ問題があることに注意してください。
+特定のシナリオでは pickle にはいくつかのセキュリティ上の問題があることに注意してください。
 これが問題になる場合、 :meth:`makePickle` メソッドをオーバーライドして代替手段を実装することで
 異なるシリアライズ手法を使用できます。
 代替シリアライズ手法を使うように上記のスクリプトを修正することもできます。
@@ -2537,12 +2539,12 @@ logging パッケージは、ログを生成している間に起こる例外を
 .. :class:`SocketHandler` emits an event by pickling it and sending it over the
 .. wire.
 
-前のセクションとそこで挙げた例では、イベントを記録するときに渡されたメッセージが
+前の節とそこで挙げた例では、イベントを記録するときに渡されたメッセージが
 文字列であると仮定していました。しかし、これは唯一の可能性ではありません。
 メッセージとして任意のオブジェクトを渡すことができます。
-そして、ログ記録システムがそのオブジェクトを文字列表現に変換する必要があるとき、
-:meth:`__str__` メソッドを呼び出します。
-実際、そうしたければ、文字列表現を計算することを完全に避けることができます --
+そして、ロギングシステムがそのオブジェクトを文字列表現に変換する必要があるとき、
+オブジェクトの :meth:`__str__` メソッドが呼び出されます。
+実際、そうしたければ、文字列表現を計算することを完全に避けることができます -
 例えば、 :class:`SocketHandler` は、イベントを pickle してネットワーク上で送信することでログ出力します。
 
 
@@ -2556,9 +2558,9 @@ logging パッケージは、ログを生成している間に起こる例外を
 .. method which takes a level argument and returns true if the event would be
 .. created by the Logger for that level of call. You can write code like this:
 
-message 引数の整形は、それが避けられなくなるまで延期されます。
-しかしながら、 logging メソッドに渡す引数を計算するのもまた高価である場合があります。
-ロガーが単にイベントを捨てるなら、それを避けたいと考えるかもしれません。
+message 引数の整形は、必要になるまで延期されます。
+しかしながら、ログ記録メソッドに渡す引数を計算するだけでもコストがかかる場合があります。
+ロガーが単にイベントを捨てるなら、その計算を避けたいと考えるかもしれません。
 どうするかを決定するために :meth:`isEnabledFor` メソッドを呼ぶことができます。
 このメソッドは引数にレベルを取って、そのレベルの呼び出しに対して Logger がイベントを生成するなら true を返します。
 このようにコードを書くことができます:
@@ -2583,8 +2585,8 @@ message 引数の整形は、それが避けられなくなるまで延期され
 .. list of things you can do to avoid processing during logging which you don't
 .. need:
 
-どんなログ情報が集められるかについてより正確なコントロールを必要とする、
-特定のアプリケーションのためにできる他の最適化があります。
+これ以外にも、どんなログ情報が集められるかについてより正確なコントロールを必要とする、
+特定のアプリケーションでできる最適化があります。
 これは、ログ記録の間の不要な処理を避けるためにできることのリストです:
 
 
@@ -2642,7 +2644,7 @@ Handler オブジェクト
    .. serializing access to an I/O mechanism.
 
    レベルを設定して、 :class:`Handler` インスタンスを初期化します。
-   空のリストを使ってフィルタを設定し、I/O 機構へのアクセスを直列化するために
+   空のリストを使ってフィルタを設定し、 I/O 機構へのアクセスを直列化するために
    (:meth:`createLock` を使って) ロックを生成します。
 
 
@@ -2651,7 +2653,7 @@ Handler オブジェクト
    .. Initializes a thread lock which can be used to serialize access to underlying
    .. I/O functionality which may not be threadsafe.
 
-   スレッド安全でない根底の I/O 機能に対するアクセスを直列化するために用いられる
+   スレッドセーフでない背後の I/O 機能に対するアクセスを直列化するために用いられる
    スレッドロック (thread lock) を初期化します。
 
 
@@ -2677,7 +2679,7 @@ Handler オブジェクト
 
    このハンドラに対する閾値を *lvl* に設定します。
    ログ記録しようとするメッセージで、 *lvl* よりも深刻でないものは無視されます。
-   ハンドラが生成された際、レベルは :const:`NOTSET`  (全てのメッセージが処理される) に設定されます。
+   ハンドラが生成された際、レベルは :const:`NOTSET` (すべてのメッセージが処理される) に設定されます。
 
 
 .. method:: Handler.setFormatter(form)
@@ -2706,7 +2708,7 @@ Handler オブジェクト
    .. Applies this handler's filters to the record and returns a true value if the
    .. record is to be processed.
 
-   このハンドラのフィルタをレコードに適用し、レコードがフィルタを透過して処理されることになる場合には真を返します。
+   このハンドラのフィルタをレコードに適用し、レコードがフィルタを透過して処理されることになる場合には true 値を返します。
 
 
 .. method:: Handler.flush()
@@ -2714,7 +2716,7 @@ Handler オブジェクト
    .. Ensure all logging output has been flushed. This version does nothing and is
    .. intended to be implemented by subclasses.
 
-   全てのログ出力がフラッシュされるようにします。
+   すべてのログ出力がフラッシュされるようにします。
    このクラスのバージョンではなにも行わず、サブクラスで実装するためのものです。
 
 
@@ -2725,9 +2727,9 @@ Handler オブジェクト
    .. :func:`shutdown` is called. Subclasses should ensure that this gets called
    .. from overridden :meth:`close` methods.
 
-   ハンドラで使われている全てのリソースを始末します。
-   このバージョンでは何も出力しませんが、内部リストから :func:`shutdown` が呼ばれたときに閉じられるハンドラを削除します。
-   サブクラスではオーバライドされた :meth:`close` メソッドからこのメソッドが必ず呼ばれるようにして下さい。
+   ハンドラで使われているすべてのリソースの後始末を行います。
+   このバージョンでは何も出力せず、 :func:`shutdown` が呼ばれたときに閉じられたハンドラを内部リストから削除します。
+   サブクラスではオーバライドされた :meth:`close` メソッドからこのメソッドが必ず呼ばれるようにしてください。
 
 
 .. method:: Handler.handle(record)
@@ -2736,8 +2738,8 @@ Handler オブジェクト
    .. have been added to the handler. Wraps the actual emission of the record with
    .. acquisition/release of the I/O thread lock.
 
-   ハンドラに追加されたフィルタの条件に応じて、指定されたログレコードを発信します。
-   このメソッドは I/O スレッドロックの獲得/開放を伴う実際のログ発信をラップします。
+   ハンドラに追加されたフィルタの条件に応じて、指定されたログレコードを出力します。
+   このメソッドは I/O スレッドロックの獲得/解放を伴う実際のログ出力をラップします。
 
 
 .. method:: Handler.handleError(record)
@@ -2752,10 +2754,10 @@ Handler オブジェクト
 
    このメソッドは :meth:`emit` の呼び出し中に例外に遭遇した際にハンドラから呼び出されます。
    デフォルトではこのメソッドは何も行いません。すなわち、例外は暗黙のまま無視されます。
-   ほとんどのログ記録システムでは、これがほぼ望ましい機能です -
-   というのは、ほとんどのユーザはログ記録システム自体のエラーは気にせず、
+   ほとんどの場合、これがロギングシステムの望ましい動作です -
+   というのは、ほとんどのユーザはロギングシステム自体のエラーは気にせず、
    むしろアプリケーションのエラーに興味があるからです。
-   しかしながら、望むならこのメソッドを自作のハンドラと置き換えることはできます。
+   しかしながら、望むならこのメソッドを自作のハンドラと置き換えることもできます。
    *record* には、例外発生時に処理されていたレコードが入ります。
 
 
@@ -2774,9 +2776,9 @@ Handler オブジェクト
    .. is intended to be implemented by subclasses and so raises a
    .. :exc:`NotImplementedError`.
 
-   指定されたログ記録レコードを実際にログ記録する際の全ての処理を行います。
-   このメソッドのこのクラスのバージョンはサブクラスで実装するためのものなので、
-   :exc:`NotImplementedError` を送出します。
+   指定されたログ記録レコードを実際にログ記録する際のすべての処理を行います。
+   このメソッドはサブクラスで実装されることを意図しており、
+   そのためこのクラスのバージョンは :exc:`NotImplementedError` を送出します。
 
 
 .. _stream-handler:
@@ -2789,9 +2791,9 @@ StreamHandler
 .. file-like object (or, more precisely, any object which supports :meth:`write`
 .. and :meth:`flush` methods).
 
-:class:`StreamHandler` クラスは、 :mod:`logging` パッケージのコアにありますが、
-ログ出力を *sys.stdout*, *sys.stderr* あるいは何らかのファイル類似オブジェクト
-(あるいは、もっと正確にいえば、 :meth:`write` および :meth:`flush` メソッドをサポートする何らかのオブジェクト)
+:mod:`logging` コアパッケージに含まれる :class:`StreamHandler` クラスは、
+ログ出力を *sys.stdout*, *sys.stderr* あるいは何らかのファイル風 (file-like) オブジェクト
+(あるいは、より正確に言えば :meth:`write` および :meth:`flush` メソッドをサポートする何らかのオブジェクト)
 といったストリームに送信します。
 
 
@@ -2828,8 +2830,8 @@ StreamHandler
       .. no output, so an explicit :meth:`flush` call may be needed at times.
 
       ストリームの :meth:`flush` メソッドを呼び出してバッファをフラッシュします。
-      :meth:`close` メソッドは :class:`Handler` から継承しているため何も行わないので、
-      :meth:`flush` 呼び出しを明示的に行う必要があります。
+      :meth:`close` メソッドは :class:`Handler` から継承しているため何も出力を行わないので、
+      :meth:`flush` 呼び出しを明示的に行う必要があるかもしれません。
 
 
 .. _file-handler:
@@ -2841,7 +2843,7 @@ FileHandler
 .. sends logging output to a disk file.  It inherits the output functionality from
 .. :class:`StreamHandler`.
 
-:class:`FileHandler` クラスは、 :mod:`logging` パッケージのコアにありますが、
+:mod:`logging` コアパッケージに含まれる :class:`FileHandler` クラスは、
 ログ出力をディスク上のファイルに送信します。
 このクラスは出力機能を :class:`StreamHandler` から継承しています。
 
@@ -2858,7 +2860,7 @@ FileHandler
    指定されたファイルが開かれ、ログ記録のためのストリームとして使われます。
    *mode* が指定されなかった場合、 :const:`'a'` が使われます。
    *encoding* が *None* でない場合、その値はファイルを開くときのエンコーディングとして使われます。
-   *delay* が真であるならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
+   *delay* が true ならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
    デフォルトでは、ファイルは無制限に大きくなりつづけます。
 
 
@@ -2888,7 +2890,7 @@ FileHandler
 .. See :ref:`library-config` for more information on how to use
 .. :class:`NullHandler`.
 
-:class:`NullHandler` の使い方について詳しくは :ref:`library-config` を参照して下さい。
+:class:`NullHandler` の使い方について詳しくは :ref:`library-config` を参照してください。
 
 
 .. _watched-file-handler:
@@ -2903,9 +2905,9 @@ WatchedFileHandler
 .. module, is a :class:`FileHandler` which watches the file it is logging to. If
 .. the file changes, it is closed and reopened using the file name.
 
-:class:`WatchedFileHandler` クラスは、 :mod:`logging.handlers` モジュールにあり、
+:mod:`logging.handlers` モジュールに含まれる :class:`WatchedFileHandler` クラスは、
 ログ記録先のファイルを監視する :class:`FileHandler` の一種です。
-ファイルが変わった場合、ファイルを閉じてからファイル名を使って開き直します。
+ファイルが変更された場合、ファイルを閉じてからファイル名を使って開き直します。
 
 
 .. A file change can happen because of usage of programs such as *newsyslog* and
@@ -2916,9 +2918,9 @@ WatchedFileHandler
 .. new stream.
 
 ファイルはログファイルをローテーションさせる *newsyslog* や
-*logrotate* のようなプログラムを使うことで変わることがあります。
-このハンドラは、Unix/Linux で使われることを意図していますが、
-ファイルが最後にログを emit してから変わったかどうかを監視します。
+*logrotate* のようなプログラムを使うことで変更されることがあります。
+このハンドラは、 Unix/Linux で使われることを意図していますが、
+ファイルが最後にログを出力してから変わったかどうかを監視します。
 (ファイルはデバイスや inode が変わることで変わったと判断します。)
 ファイルが変わったら古いファイルのストリームは閉じて、
 現在のファイルを新しいストリームを取得するために開きます。
@@ -2931,10 +2933,9 @@ WatchedFileHandler
 .. this value.
 
 このハンドラを Windows で使うことは適切ではありません。
-というのも Windows では開いているログファイルを動かしたり削除したりできないからです -
-logging はファイルを排他的ロックを掛けて開きます -
-そしてそれゆえにこうしたハンドラは必要ないのです。
-さらに、Windows では *ST_INO* がサポートされていません
+というのも Windows では開いているログファイルを移動したり削除したりできないからです -
+logging はファイルを排他的ロックを掛けて開きます - そのためこうしたハンドラは必要ないのです。
+さらに、 Windows では *ST_INO* がサポートされていません
 (:func:`stat` はこの値として常に 0 を返します)。
 
 
@@ -2950,7 +2951,7 @@ logging はファイルを排他的ロックを掛けて開きます -
    指定されたファイルが開かれ、ログ記録のためのストリームとして使われます。
    *mode* が指定されなかった場合、 :const:`"a"` が使われます。
    *encoding* が *None* でない場合、その値はファイルを開くときのエンコーディングとして使われます。
-   *delay* が真であるならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
+   *delay* が true ならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
    デフォルトでは、ファイルは無制限に大きくなりつづけます。
 
 
@@ -2967,8 +2968,8 @@ logging はファイルを排他的ロックを掛けて開きます -
       .. changed.  If it has, the existing stream is flushed and closed and the
       .. file opened again, before outputting the record to the file.
 
-      レコードをファイルに出力しますが、その前にファイルが変わっていないかチェックします。
-      もし変わっていれば、レコードをファイルに出力する前に、
+      レコードをファイルに出力しますが、その前にファイルが変更されていないかチェックします。
+      もし変更されていれば、レコードをファイルに出力する前に、
       既存のストリームはフラッシュして閉じられ、ファイルが再度開かれます。
 
 
@@ -2980,7 +2981,7 @@ RotatingFileHandler
 .. The :class:`RotatingFileHandler` class, located in the :mod:`logging.handlers`
 .. module, supports rotation of disk log files.
 
-:class:`RotatingFileHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
+:mod:`logging.handlers` モジュールに含まれる :class:`RotatingFileHandler` クラスは、
 ディスク上のログファイルに対するローテーション処理をサポートします。
 
 
@@ -2996,7 +2997,7 @@ RotatingFileHandler
    指定されたファイルが開かれ、ログ記録のためのストリームとして使われます。
    *mode* が指定されなかった場合、 :const:`"a"` が使われます。
    *encoding* が *None* でない場合、その値はファイルを開くときのエンコーディングとして使われます。
-   *delay* が真であるならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
+   *delay* が true ならば、ファイルを開くのは最初の :meth:`emit` 呼び出しまで遅らせられます。
    デフォルトでは、ファイルは無制限に大きくなりつづけます。
 
 
@@ -3013,17 +3014,17 @@ RotatingFileHandler
    .. :file:`app.log.1`, :file:`app.log.2`, etc.  exist, then they are renamed to
    .. :file:`app.log.2`, :file:`app.log.3` etc.  respectively.
 
-   あらかじめ決められたサイズでファイルをロールオーバ (:dfn:`rollover`) させられるように、
-   *maxBytes* および *backupCount* 値を指定することができます。
+   *maxBytes* および *backupCount* 値を指定することで、
+   あらかじめ決められたサイズでファイルをロールオーバ (:dfn:`rollover`) させることができます。
    指定サイズを超えそうになると、ファイルは閉じられ、暗黙のうちに新たなファイルが開かれます。
    ロールオーバは現在のログファイルの長さが *maxBytes* に近くなると常に起きます。
    *backupCount* が非ゼロの場合、システムは古いログファイルをファイル名に ".1", ".2" といった拡張子を追加して保存します。
-   例えば、 *backupCount* が 5 で、基本のファイル名が :file:`app.log` なら、 :file:`app.log` 、
-   :file:`app.log.1` 、 :file:`app.log.2` 、 ... と続き、 :file:`app.log.5` までを得ることになります。
+   例えば、 *backupCount* が 5 で、基本のファイル名が :file:`app.log` なら、 :file:`app.log`,
+   :file:`app.log.1`, :file:`app.log.2` ... と続き、 :file:`app.log.5` までを得ることになります。
    ログの書き込み対象になるファイルは常に :file:`app.log` です。
-   このファイルが満杯になると、ファイルは閉じられ、 :file:`app.log.1` に名称変更されます。
-   :file:`app.log.1` 、 :file:`app.log.2` などが存在する場合、
-   それらのファイルはそれぞれ :file:`app.log.2` 、 :file:`app.log.3` といった具合に名前変更されます。
+   このファイルが満杯になると、ファイルは閉じられ、 :file:`app.log.1` に名前が変更されます。
+   :file:`app.log.1`, :file:`app.log.2` などが存在する場合、
+   それらのファイルはそれぞれ :file:`app.log.2`, :file:`app.log.3` といった具合に名前が変更されます。
 
 
    .. .. versionchanged:: 2.6
@@ -3057,8 +3058,8 @@ TimedRotatingFileHandler
 .. :mod:`logging.handlers` module, supports rotation of disk log files at certain
 .. timed intervals.
 
-:class:`TimedRotatingFileHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
-特定の時間間隔でのログ交替をサポートしています。
+:mod:`logging.handlers` モジュールに含まれる :class:`TimedRotatingFileHandler` クラスは、
+特定の時間間隔でのログローテーションをサポートしています。
 
 
 .. class:: TimedRotatingFileHandler(filename [,when [,interval [,backupCount[, encoding[, delay[, utc]]]]]])
@@ -3070,8 +3071,8 @@ TimedRotatingFileHandler
 
    :class:`TimedRotatingFileHandler` クラスの新たなインスタンスを返します。
    *filename* に指定したファイルを開き、ログ出力先のストリームとして使います。
-   ログファイルの交替時には、ファイル名に拡張子 (suffix) をつけます。
-   ログファイルの交替は *when* および *interval* の積に基づいて行います。
+   ログファイルのローテーション時には、ファイル名に拡張子 (suffix) をつけます。
+   ログファイルのローテーションは *when* および *interval* の積に基づいて行います。
 
 
    .. You can use the *when* to specify the type of *interval*. The list of possible
@@ -3120,7 +3121,7 @@ TimedRotatingFileHandler
    .. rollover interval.
 
    古いログファイルを保存する際にロギングシステムは拡張子を付けます。
-   拡張子は日付と時間に基づいて、 strftime の ``%Y-%m-%d_%H-%M-%S`` 形式かその前の方の一部分を、
+   拡張子は日付と時間に基づいて、 strftime の ``%Y-%m-%d_%H-%M-%S`` 形式かその前方の一部を、
    ロールオーバ間隔に依存した形で使います。
 
 
@@ -3136,7 +3137,7 @@ TimedRotatingFileHandler
    .. If the *utc* argument is true, times in UTC will be used; otherwise
    .. local time is used.
 
-   *utc* 引数が真の場合時刻は UTC になり、それ以外では現地時間が使われます。
+   *utc* 引数が true の場合時刻は UTC になり、それ以外では現地時間が使われます。
 
 
    .. If *backupCount* is nonzero, at most *backupCount* files
@@ -3146,7 +3147,7 @@ TimedRotatingFileHandler
 
    *backupCount* がゼロでない場合、保存されるファイル数は高々 *backupCount* 個で、
    それ以上のファイルがロールオーバされる時に作られるならば、一番古いものが削除されます。
-   削除するロジックは interval で決まるファイルを削除しますので、
+   削除のロジックは interval で決まるファイルを削除するので、
    interval を変えると古いファイルが残ったままになることもあります。
 
 
@@ -3167,14 +3168,14 @@ TimedRotatingFileHandler
 
       .. Does a rollover, as described above.
 
-      上記の方法でロールオーバを行います。
+      上述の方法でロールオーバを行います。
 
 
    .. method:: emit(record)
 
       .. Outputs the record to the file, catering for rollover as described above.
 
-      :meth:`setRollover` で解説した方法でロールオーバを行いながら、レコードをファイルに出力します。
+      :meth:`setRollover` で説明した方法でロールオーバを行いながら、レコードをファイルに出力します。
 
 
 .. _socket-handler:
@@ -3185,7 +3186,7 @@ SocketHandler
 .. The :class:`SocketHandler` class, located in the :mod:`logging.handlers` module,
 .. sends logging output to a network socket. The base class uses a TCP socket.
 
-:class:`SocketHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
+:mod:`logging.handlers` モジュールに含まれる :class:`SocketHandler` クラスは、
 ログ出力をネットワークソケットに送信します。基底クラスでは TCP ソケットを用います。
 
 
@@ -3213,10 +3214,10 @@ SocketHandler
       .. connection. To unpickle the record at the receiving end into a
       .. :class:`LogRecord`, use the :func:`makeLogRecord` function.
 
-      レコードの属性辞書を pickle 化し、バイナリ形式でソケットに書き込みます。
+      レコードの属性辞書を pickle して、バイナリ形式でソケットに書き込みます。
       ソケット操作でエラーが生じた場合、暗黙のうちにパケットは捨てられます。
-      前もって接続が失われていた場合、接続を再度確立します。
-      受信端でレコードを逆 pickle 化して :class:`LogRecord` にするには、
+      事前に接続が失われていた場合、接続を再度確立します。
+      受信端でレコードを unpickle して :class:`LogRecord` にするには、
       :func:`makeLogRecord` 関数を使ってください。
 
 
@@ -3228,7 +3229,7 @@ SocketHandler
 
       :meth:`emit` の処理中に発生したエラーを処理します。
       よくある原因は接続の消失です。
-      次のイベント発生時に再度接続確立を試みることができるようにソケットを閉じます。
+      次のイベント発生時に再試行できるようにソケットを閉じます。
 
 
    .. method:: makeSocket()
@@ -3238,7 +3239,7 @@ SocketHandler
       .. (:const:`socket.SOCK_STREAM`).
 
       サブクラスで必要なソケット形式を詳細に定義できるようにするためのファクトリメソッドです。
-      デフォルトの実装では、TCP ソケット (:const:`socket.SOCK_STREAM`) を生成します。
+      デフォルトの実装では、 TCP ソケット (:const:`socket.SOCK_STREAM`) を生成します。
 
 
    .. method:: makePickle(record)
@@ -3246,7 +3247,7 @@ SocketHandler
       .. Pickles the record's attribute dictionary in binary format with a length
       .. prefix, and returns it ready for transmission across the socket.
 
-      レコードの属性辞書を pickle 化して、長さを指定プレフィクス付きのバイナリにし、
+      レコードの属性辞書を pickle してから先頭に長さ情報を付けてバイナリ形式にして、
       ソケットを介して送信できるようにして返します。
 
 
@@ -3267,8 +3268,8 @@ SocketHandler
       .. Send a pickled string *packet* to the socket. This function allows for
       .. partial sends which can happen when the network is busy.
 
-      pickle 化された文字列 *packet* をソケットに送信します。
-      この関数はネットワークが処理待ち状態の時に発生しうる部分的送信を行えます。
+      pickle された文字列 *packet* をソケットに送信します。
+      この関数はネットワークがビジーの時に発生する部分的送信に対応しています。
 
 
 .. _datagram-handler:
@@ -3280,8 +3281,8 @@ DatagramHandler
 .. module, inherits from :class:`SocketHandler` to support sending logging messages
 .. over UDP sockets.
 
-:class:`DatagramHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
-:class:`SocketHandler` を継承しており、ログ記録メッセージを UDP ソケットを介して送れるようサポートしています。
+:mod:`logging.handlers` モジュールに含まれる :class:`DatagramHandler` クラスは、
+:class:`SocketHandler` を継承しており、 UDP ソケットを介したログ記録メッセージの送信をサポートしています。
 
 
 .. class:: DatagramHandler(host, port)
@@ -3300,10 +3301,10 @@ DatagramHandler
       .. packet. To unpickle the record at the receiving end into a
       .. :class:`LogRecord`, use the :func:`makeLogRecord` function.
 
-      レコードの属性辞書を pickle 化し、バイナリ形式でソケットに書き込みます。
+      レコードの属性辞書を pickle して、バイナリ形式でソケットに書き込みます。
       ソケット操作でエラーが生じた場合、暗黙のうちにパケットは捨てられます。
-      前もって接続が失われていた場合、接続を再度確立します。
-      受信端でレコードを逆 pickle 化して :class:`LogRecord` にするには、
+      事前に接続が失われていた場合、接続を再度確立します。
+      受信端でレコードを unpickle して :class:`LogRecord` にするには、
       :func:`makeLogRecord` 関数を使ってください。
 
 
@@ -3312,7 +3313,7 @@ DatagramHandler
       .. The factory method of :class:`SocketHandler` is here overridden to create
       .. a UDP socket (:const:`socket.SOCK_DGRAM`).
 
-      ここで :class:`SocketHandler` のファクトリメソッドをオーバライドして
+      ここで :class:`SocketHandler` のファクトリメソッドをオーバライドして、
       UDP ソケット (:const:`socket.SOCK_DGRAM`) を生成しています。
 
 
@@ -3320,7 +3321,7 @@ DatagramHandler
 
       .. Send a pickled string to a socket.
 
-      pickle 化された文字列をソケットに送信します。
+      pickle された文字列をソケットに送信します。
 
 
 .. _syslog-handler:
@@ -3331,7 +3332,7 @@ SysLogHandler
 .. The :class:`SysLogHandler` class, located in the :mod:`logging.handlers` module,
 .. supports sending logging messages to a remote or local Unix syslog.
 
-:class:`SysLogHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
+:mod:`logging.handlers` モジュールに含まれる :class:`SysLogHandler` クラスは、
 ログ記録メッセージを遠隔またはローカルの Unix syslog に送信する機能をサポートしています。
 
 
@@ -3346,12 +3347,12 @@ SysLogHandler
    .. send the message to the syslog. If *facility* is not specified,
    .. :const:`LOG_USER` is used.
 
-   遠隔のUnix マシンと通信するための、 :class:`SysLogHandler` クラスの新たなインスタンスを返します。
+   遠隔の Unix マシンと通信するための、 :class:`SysLogHandler` クラスの新たなインスタンスを返します。
    マシンのアドレスは ``(host, port)`` のタプル形式をとる *address* で与えられます。
    *address* が指定されない場合、 ``('localhost', 514)`` が使われます。
    アドレスは UDP ソケットを使って開かれます。
    ``(host, port)`` のタプル形式の代わりに文字列で "/dev/log" のように与えることもできます。
-   この場合、Unix ドメインソケットが syslog にメッセージを送るのに使われます。
+   この場合、 Unix ドメインソケットが syslog にメッセージを送るのに使われます。
    *facility* が指定されない場合、 :const:`LOG_USER` が使われます。
 
 
@@ -3359,7 +3360,7 @@ SysLogHandler
 
       .. Closes the socket to the remote host.
 
-      遠隔ホストのソケットを閉じます。
+      遠隔ホストへのソケットを閉じます。
 
 
    .. method:: emit(record)
@@ -3367,7 +3368,7 @@ SysLogHandler
       .. The record is formatted, and then sent to the syslog server. If exception
       .. information is present, it is *not* sent to the server.
 
-      レコードは書式化された後、syslog サーバに送信されます。
+      レコードは書式化された後、 syslog サーバに送信されます。
       例外情報が存在しても、サーバには *送信されません* 。
 
 
@@ -3377,7 +3378,7 @@ SysLogHandler
       .. or integers - if strings are passed, internal mapping dictionaries are
       .. used to convert them to integers.
 
-      便宜レベル (facility) および優先度を整数に符号化します。
+      ファシリティおよび優先度を整数に符号化します。
       値は文字列でも整数でも渡すことができます。
       文字列が渡された場合、内部の対応付け辞書が使われ、整数に変換されます。
 
@@ -3389,11 +3390,10 @@ SysLogHandler
       これは ``sys/syslog.h`` ヘッダーファイルで定義された値を反映しています。
 
 
-
-      **Priorities**
+      **優先度**
 
       +--------------------------+---------------+
-      | Name (string)            | Symbolic value|
+      | 名前 (文字列)            | シンボル値    |
       +==========================+===============+
       | ``alert``                | LOG_ALERT     |
       +--------------------------+---------------+
@@ -3413,10 +3413,10 @@ SysLogHandler
       +--------------------------+---------------+
 
 
-      **Facilities**
+      **ファシリティ**
 
       +---------------+---------------+
-      | Name (string) | Symbolic value|
+      | 名前 (文字列) | シンボル値    |
       +===============+===============+
       | ``auth``      | LOG_AUTH      |
       +---------------+---------------+
@@ -3469,13 +3469,13 @@ SysLogHandler
       .. ``CRITICAL`` to the equivalent syslog names, and all other level
       .. names to "warning".
 
-      ログレベル名を syslog 優先度名に写像します。
+      ログレベル名を syslog 優先度名に対応付けます。
       カスタムレベルを使用している場合や、
       デフォルトアルゴリズムがニーズに適していない場合には、
       このメソッドをオーバーライドする必要があるかもしれません。
-      デフォルトアルゴリズムは、 ``DEBUG`` 、 ``INFO`` 、 ``WARNING`` 、
-      ``ERROR`` 、 ``CRITICAL`` を等価な syslog 名に写像して、
-      他のすべてのレベル名を "warning" に写像します。
+      デフォルトアルゴリズムは、 ``DEBUG``, ``INFO``, ``WARNING``,
+      ``ERROR``, ``CRITICAL`` を等価な syslog 名に、
+      他のすべてのレベル名を "warning" に対応付けます。
 
 
 .. _nt-eventlog-handler:
@@ -3488,8 +3488,8 @@ NTEventLogHandler
 .. Windows XP event log. Before you can use it, you need Mark Hammond's Win32
 .. extensions for Python installed.
 
-:class:`NTEventLogHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
-ログ記録メッセージをローカルな Windows NT、Windows 2000 、または Windows XP のイベントログ (event log) に送信する機能をサポートします。
+:mod:`logging.handlers` モジュールに含まれる :class:`NTEventLogHandler` クラスは、
+ログ記録メッセージをローカルな Windows NT, Windows 2000, または Windows XP のイベントログに送信する機能をサポートします。
 この機能を使えるようにするには、 Mark Hammond による Python 用 Win32 拡張パッケージをインストールする必要があります。
 
 
@@ -3511,12 +3511,12 @@ NTEventLogHandler
    :class:`NTEventLogHandler` クラスの新たなインスタンスを返します。
    *appname* はイベントログに表示する際のアプリケーション名を定義するために使われます。
    この名前を使って適切なレジストリエントリが生成されます。
-   *dllname* はログに保存するメッセージ定義の入った .dll または .exe  ファイルへの完全に限定的な (fully qualified) パス名を与えなければなりません
+   *dllname* はログに保存するメッセージ定義の入った .dll または .exe  ファイルへの完全修飾パス名を与えなければなりません
    (指定されない場合、 :const:`'win32service.pyd'` が使われます -
    このライブラリは Win32 拡張とともにインストールされ、いくつかのプレースホルダとなるメッセージ定義を含んでいます)。
    これらのプレースホルダを利用すると、メッセージの発信源全体がログに記録されるため、
    イベントログは巨大になるので注意してください。
-   *logtype* は :const:`'Application'` 、 :const:`'System'`  または :const:`'Security'` のいずれかであるか、
+   *logtype* は :const:`'Application'`, :const:`'System'`, :const:`'Security'` のいずれかであるか、
    デフォルトの :const:`'Application'` でなければなりません。
 
 
@@ -3528,8 +3528,8 @@ NTEventLogHandler
       .. able to access the registry to get the .dll name. The current version does
       .. not do this.
 
-      現時点では、イベントログエントリの発信源としてのアプリケーション名をレジストリから除去することができます。
-      しかしこれを行うと、イベントログビューアで意図したログをみることができなくなるでしょう -
+      現時点では、イベントログエントリの発信源としてのアプリケーション名をレジストリから除去することはできます。
+      しかしこれを行うと、イベントログビューアで意図した通りにログが見えなくなるでしょう -
       これはイベントログが .dll 名を取得するためにレジストリにアクセスできなければならないからです。
       現在のバージョンではこの操作を行いません。
 
@@ -3539,7 +3539,7 @@ NTEventLogHandler
       .. Determines the message ID, event category and event type, and then logs
       .. the message in the NT event log.
 
-      メッセージ ID、イベントカテゴリおよびイベント型を決定し、メッセージを NT イベントログに記録します。
+      メッセージ ID\ 、イベントカテゴリ、イベント型を決定し、メッセージを NT イベントログに記録します。
 
 
    .. method:: getEventCategory(record)
@@ -3566,7 +3566,7 @@ NTEventLogHandler
       自作の型を指定したい場合、このメソッドをオーバライドしてください。
       このクラスのバージョンのメソッドは、ハンドラの *typemap* 属性を使って対応付けを行います。
       この属性は :meth:`__init__` で初期化され、 :const:`DEBUG`, :const:`INFO`, :const:`WARNING`,
-      :const:`ERROR`, および :const:`CRITICAL` が入っています。
+      :const:`ERROR`, :const:`CRITICAL` が入っています。
       自作のレベルを使っているのなら、このメソッドをオーバライドするか、
       ハンドラの *typemap* 属性に適切な辞書を配置する必要があるでしょう。
 
@@ -3583,7 +3583,7 @@ NTEventLogHandler
       自作のメッセージを使っているのなら、ロガーに渡される *msg* を書式化文字列ではなく ID にします。
       その上で、辞書参照を行ってメッセージ ID を得ます。
       このクラスのバージョンでは 1 を返します。
-      この値は :file:`win32service.pyd` における基本となるメッセージ ID です。
+      この値は :file:`win32service.pyd` における基本メッセージ ID です。
 
 
 .. _smtp-handler:
@@ -3594,7 +3594,7 @@ SMTPHandler
 .. The :class:`SMTPHandler` class, located in the :mod:`logging.handlers` module,
 .. supports sending logging messages to an email address via SMTP.
 
-:class:`SMTPHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
+:mod:`logging.handlers` モジュールに含まれる :class:`SMTPHandler` クラスは、
 SMTP を介したログ記録メッセージの送信機能をサポートします。
 
 
@@ -3648,11 +3648,11 @@ MemoryHandler
 .. :dfn:`target` handler. Flushing occurs whenever the buffer is full, or when an
 .. event of a certain severity or greater is seen.
 
-:class:`MemoryHandler` は、 :mod:`logging.handlers` モジュールの中にありますが、
-ログ記録するレコードをメモリ上にバッファし、
+:mod:`logging.handlers` モジュールに含まれる :class:`MemoryHandler` は、
+ログ記録するレコードをメモリ上にバッファリングし、
 定期的にその内容をターゲット (:dfn:`target`) となるハンドラにフラッシュする機能をサポートしています。
 フラッシュ処理はバッファが一杯になるか、
-ある深刻さかそれ以上のレベルをもったイベントが観測された際に行われます。
+ある深刻度かそれ以上のレベルを持つイベントが観測された際に行われます。
 
 
 .. :class:`MemoryHandler` is a subclass of the more general
@@ -3662,7 +3662,7 @@ MemoryHandler
 .. should, then :meth:`flush` is expected to do the needful.
 
 :class:`MemoryHandler` はより一般的な抽象クラス、 :class:`BufferingHandler` のサブクラスです。
-この抽象クラスでは、ログ記録するレコードをメモリ上にバッファします。
+この抽象クラスでは、ログ記録するレコードをメモリ上にバッファリングします。
 各レコードがバッファに追加される毎に、 :meth:`shouldFlush` を呼び出してバッファをフラッシュすべきかどうか調べます。
 フラッシュする必要がある場合、 :meth:`flush` が必要にして十分な処理を行うものと想定しています。
 
@@ -3680,7 +3680,7 @@ MemoryHandler
       .. calls :meth:`flush` to process the buffer.
 
       レコードをバッファに追加します。
-      :meth:`shouldFlush` が真を返す場合、バッファを処理するために :meth:`flush` を呼び出します。
+      :meth:`shouldFlush` が true を返す場合、バッファを処理するために :meth:`flush` を呼び出します。
 
 
    .. method:: flush()
@@ -3697,7 +3697,7 @@ MemoryHandler
       .. Returns true if the buffer is up to capacity. This method can be
       .. overridden to implement custom flushing strategies.
 
-      バッファが許容量に達している場合に真を返します。
+      バッファが許容量に達している場合に true を返します。
       このメソッドは自作のフラッシュ処理方針を実装するためにオーバライドすることができます。
 
 
@@ -3711,7 +3711,7 @@ MemoryHandler
    :class:`MemoryHandler` クラスの新たなインスタンスを返します。
    インスタンスはサイズ *capacity* のバッファとともに初期化されます。
    *flushLevel* が指定されていない場合、 :const:`ERROR` が使われます。
-   *target* が指定されていない場合、ハンドラが何らかの有意義な処理を行う前に
+   *target* が指定されていない場合、ハンドラが何らかの意味のある処理を行う前に
    :meth:`setTarget` でターゲットを指定する必要があります。
 
 
@@ -3730,7 +3730,7 @@ MemoryHandler
       .. behavior.
 
       :class:`MemoryHandler` の場合、フラッシュ処理は単に、バッファされたレコードをターゲットがあれば送信することを意味します。
-      違った動作を行いたい場合、オーバライドしてください。
+      これと異なる動作を行いたい場合、オーバライドしてください。
 
 
    .. method:: setTarget(target)
@@ -3744,7 +3744,7 @@ MemoryHandler
 
       .. Checks for buffer full or a record at the *flushLevel* or higher.
 
-      バッファが満杯になっているか、 *flushLevel* またはそれ以上のレコードでないかを調べます。
+      バッファが一杯になっているか、 *flushLevel* またはそれ以上のレコードでないかを調べます。
 
 
 .. _http-handler:
@@ -3756,7 +3756,7 @@ HTTPHandler
 .. supports sending logging messages to a Web server, using either ``GET`` or
 .. ``POST`` semantics.
 
-:class:`HTTPHandler` クラスは、 :mod:`logging.handlers` モジュールの中にありますが、
+:mod:`logging.handlers` モジュールに含まれる :class:`HTTPHandler` クラスは、
 ログ記録メッセージを ``GET`` または ``POST`` セマンティクスを使って Web サーバに送信する機能をサポートしています。
 
 
@@ -3768,7 +3768,7 @@ HTTPHandler
    .. *method* is specified, ``GET`` is used.
 
    :class:`HTTPHandler` クラスの新たなインスタンスを返します。
-   インスタンスはホストアドレス、URL および HTTP メソッドとともに初期化されます。
+   インスタンスはホストアドレス、 URL および HTTP メソッドとともに初期化されます。
    *host* は特別なポートを使うことが必要な場合には、 ``host:port`` の形式で使うこともできます。
    *method* が指定されなかった場合 ``GET`` が使われます。
 
@@ -3807,10 +3807,10 @@ Formatter オブジェクト
 .. standard Python %-style mapping keys. See section :ref:`string-formatting`
 .. for more information on string formatting.
 
-Formatter は書式化文字列とともに初期化され、 :class:`LogRecord` 属性に入っている知識を利用できるようにします -
-上で触れたデフォルトの値では、ユーザによるメッセージと引数はあらかじめ書式化されて、
-:class:`LogRecord` の *message* 属性に入っていることを利用しているようにです。
-この書式化文字列は、Python 標準の % を使った変換文字列で構成されます。
+Formatter は :class:`LogRecord` 属性の知識を利用できるような書式化文字列を用いて初期化することができます。
+例えば、上で言及したデフォルト値では、ユーザによるメッセージと引数はあらかじめ書式化されて、
+:class:`LogRecord` の *message* 属性に入っていることを利用しています。
+この書式化文字列は、 Python 標準の % を使った変換文字列で構成されます。
 文字列整形に関する詳細は :ref:`string-formatting` を参照してください。
 
 
@@ -3918,7 +3918,7 @@ Formatter は書式化文字列とともに初期化され、 :class:`LogRecord`
 ..    *funcName* was added.
 
 .. versionchanged:: 2.5
-   *funcName* が追加されました.
+   *funcName* が追加されました。
 
 
 .. class:: Formatter([fmt[, datefmt]])
@@ -3933,7 +3933,7 @@ Formatter は書式化文字列とともに初期化され、 :class:`LogRecord`
    インスタンスは全体としてのメッセージに対する書式化文字列と、
    メッセージの日付/時刻部分のための書式化文字列を伴って初期化されます。
    *fmt*  が指定されない場合、 ``'%(message)s'`` が使われます。
-   *datefmt* が指定されない場合、ISO8601 日付書式が使われます。
+   *datefmt* が指定されない場合、 ISO8601 日付書式が使われます。
 
 
    .. method:: format(record)
@@ -3981,7 +3981,7 @@ Formatter は書式化文字列とともに初期化され、 :class:`LogRecord`
       このメソッドは特定の要求を提供するためにフォーマッタで上書きすることができますが、
       基本的な振る舞いは以下のようになります: *datefmt* (文字列) が指定された場合、
       レコードが生成された時刻を書式化するために :func:`time.strftime` で使われます。
-      そうでない場合、ISO8601 書式が使われます。結果の文字列が返されます。
+      そうでない場合、 ISO8601 書式が使われます。結果の文字列が返されます。
 
 
    .. method:: formatException(exc_info)
@@ -4011,9 +4011,9 @@ Filter オブジェクト
 フィルタは :class:`Handler` と :class:`Logger` によって利用され、
 レベルによる制御よりも洗練されたフィルタ処理を提供します。
 基底のフィルタクラスでは、ロガーの階層構造のある点よりも下層にあるイベントだけを通過させます。
-例えば、"A.B" で初期化されたフィルタはロガー "A.B"、 "A.B.C"、 "A.B.C.D"、 "A.B.D"
-などでログ記録されたイベントを通過させます。しかし、 "A.BB"、"B.A.B" などは通過させません。
-空の文字列で初期化された場合、全てのイベントを通過させます。
+例えば、 "A.B" で初期化されたフィルタはロガー "A.B", "A.B.C", "A.B.C.D", "A.B.D"
+などでログ記録されたイベントを通過させます。しかし、 "A.BB", "B.A.B" などは通過させません。
+空の文字列で初期化された場合、すべてのイベントを通過させます。
 
 
 .. class:: Filter([name])
@@ -4025,7 +4025,7 @@ Filter オブジェクト
    :class:`Filter` クラスのインスタンスを返します。
    *name* が指定されていれば、 *name* はロガーの名前を表します。
    指定されたロガーとその子ロガーのイベントがフィルタを通過できるようになります。
-   *name* が指定されなければ、全てのイベントを通過させます。
+   *name* が指定されなければ、すべてのイベントを通過させます。
 
 
    .. method:: filter(record)
@@ -4052,7 +4052,7 @@ LogRecord オブジェクト
 .. made, and any exception information to be logged.
 
 何かをログ記録する際には常に :class:`LogRecord` インスタンスが生成されます。
-インスタンスにはログ記録されることになっているイベントに関係する全ての情報が入っています。
+インスタンスにはログ記録されることになっているイベントに関係するすべての情報が入っています。
 インスタンスに渡される主要な情報は  *msg* および *args* で、
 これらは msg % args を使って組み合わせられ、レコードのメッセージフィールドを生成します。
 レコードはまた、レコードがいつ生成されたか、ログ記録がソースコード行のどこで呼び出されたか、
@@ -4112,7 +4112,7 @@ LoggerAdapter オブジェクト
 .. `adding contextual information to your logging output`__.
 
 :class:`LoggerAdapter` インスタンスは文脈情報をログ記録呼び出しに渡すのを簡単にするために使われます。
-使い方の例は `文脈情報をログ記録出力に付加する`__ を参照して下さい。
+使い方の例は `文脈情報をログ記録出力に付加する`__ を参照してください。
 
 
 __ context-info_
@@ -4123,7 +4123,7 @@ __ context-info_
    .. Returns an instance of :class:`LoggerAdapter` initialized with an
    .. underlying :class:`Logger` instance and a dict-like object.
 
-   内部で使う :class:`Logger` インスタンスと辞書風オブジェクトで初期化した
+   内部で使う :class:`Logger` インスタンスと辞書風 (dict-like) オブジェクトで初期化した
    :class:`LoggerAdapter` のインスタンスを返します。
 
 
@@ -4138,8 +4138,7 @@ __ context-info_
       文脈情報を挿入するために、ログ記録呼び出しに渡されたメッセージおよび/またはキーワード引数に変更を加えます。
       ここでの実装は *extra* としてコンストラクタに渡されたオブジェクトを取り、
       'extra' キーを使って *kwargs* に加えます。
-      返値は (*msg*, *kwargs*) というタプルで、
-      (変更されているはずの) 渡された引数を含みます。
+      返り値は (*msg*, *kwargs*) というタプルで、 (変更されているはずの) 渡された引数を含みます。
 
 
 .. In addition to the above, :class:`LoggerAdapter` supports all the logging
@@ -4148,25 +4147,25 @@ __ context-info_
 .. methods have the same signatures as their counterparts in :class:`Logger`, so
 .. you can use the two types of instances interchangeably.
 
-上のメソッドに加えて、 :class:`LoggerAdapter` は :class:`Logger` にある全てのログ記録メソッド、
+上のメソッドに加えて、 :class:`LoggerAdapter` は :class:`Logger` にあるすべてのログ記録メソッド、
 すなわち :meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`, :meth:`exception`,
 :meth:`critical`, :meth:`log` をサポートします。
 これらのメソッドは対応する :class:`Logger` のメソッドと同じ引数を取りますので、
 二つの型を取り替えて使うことができます。
 
 
-スレッド安全性
---------------
+スレッドセーフ性
+----------------
 
 .. The logging module is intended to be thread-safe without any special work
 .. needing to be done by its clients. It achieves this though using threading
 .. locks; there is one lock to serialize access to the module's shared data, and
 .. each handler also creates a lock to serialize access to its underlying I/O.
 
-*logging* モジュールは、クライアントで特殊な作業を必要としないかぎりスレッド安全 (thread-safe) なようになっています。
-このスレッド安全性はスレッドロックによって達成されています;
+logging モジュールは、クライアントで特殊な作業を必要としない限りスレッドセーフになっています。
+このスレッドセーフ性はスレッドロックによって達成されています;
 モジュールの共有データへのアクセスを直列化するためのロックが一つ存在し、
-各ハンドラでも根底にある I/O へのアクセスを直列化するためにロックを生成します。
+各ハンドラでも背後にある I/O へのアクセスを直列化するためにロックを生成します。
 
 
 .. If you are implementing asynchronous signal handlers using the :mod:`signal`
@@ -4194,7 +4193,7 @@ __ context-info_
 .. in :mod:`logging` itself) and defining handlers which are declared either in
 .. :mod:`logging` or :mod:`logging.handlers`.
 
-以下の関数で :mod:`logging` モジュールの環境設定をします。
+以下の関数で logging モジュールの環境設定をします。
 これらの関数は、 :mod:`logging.config` にあります。
 これらの関数の使用はオプションです ---
 :mod:`logging` モジュールはこれらの関数を使うか、 (:mod:`logging` 自体で定義されている) 主要な API を呼び出し、
@@ -4213,7 +4212,7 @@ __ context-info_
    ログ記録の環境設定をファイル名 *fname* の ConfigParser 形式ファイルから読み出します。
    この関数はアプリケーションから何度も呼び出すことができ、これによって、
    (設定の選択と、選択された設定を読み出す機構をデベロッパが提供していれば)
-   複数のお仕着せの設定からエンドユーザが選択するようにできます。
+   複数の準備済みの設定からエンドユーザが選択するようにできます。
    ConfigParser に渡すためのデフォルト値は *defaults* 引数で指定できます。
 
 
@@ -4227,7 +4226,7 @@ __ context-info_
    .. server, and which you can :meth:`join` when appropriate. To stop the server,
    .. call :func:`stopListening`.
 
-   指定されたポートでソケットサーバを開始し、新たな設定を待ち受け (listen) ます。
+   指定されたポートでソケットサーバを開始し、新たな設定を待ち受けます。
    ポートが指定されなければ、モジュールのデフォルト設定である :const:`DEFAULT_LOGGING_CONFIG_PORT` が使われます。
    ログ記録の環境設定は :func:`fileConfig` で処理できるようなファイルとして送信されます。
    :class:`Thread` インスタンスを返し、サーバを開始するために :meth:`start` を呼び、
@@ -4239,7 +4238,7 @@ __ context-info_
    .. send it to the socket as a string of bytes preceded by a four-byte length
    .. string packed in binary using ``struct.pack('>L', n)``.
 
-   設定を送るには、まず設定ファイルを読み、それを4バイトからなる長さを
+   設定を送るには、まず設定ファイルを読み、それを 4 バイトからなる長さを
    ``struct.pack('>L', n)`` を使ってバイナリにパックしたものを前に付けたバイト列としてソケットに送ります。
 
 
@@ -4272,7 +4271,7 @@ __ context-info_
 .. configuration must be specified in a section called ``[logger_root]``.
 
 :func:`fileConfig` が解釈できる環境設定ファイルの形式は、 :mod:`ConfigParser` の機能に基づいています。
-ファイルには、 ``[loggers]`` 、 ``[handlers]`` 、および ``[formatters]`` といったセクションが入っていなければならず、
+ファイルには、 ``[loggers]``, ``[handlers]``, ``[formatters]`` といったセクションが入っていなければならず、
 各セクションではファイル中で定義されている各タイプのエンティティを名前で指定しています。こうしたエンティティの各々について、
 そのエンティティをどう設定するかを示した個別のセクションがあります。
 すなわち、 ``log01`` という名前の ``[loggers]`` セクションにあるロガーに対しては、
@@ -4320,7 +4319,7 @@ __ context-info_
 .. package's namespace.
 
 ``level`` エントリは ``DEBUG, INFO, WARNING, ERROR, CRITICAL`` のうちの一つか、 ``NOTSET`` になります。
-ルートロガーの場合にのみ、 ``NOTSET`` は全てのメッセージがログ記録されることを意味します。
+ルートロガーの場合にのみ、 ``NOTSET`` はすべてのメッセージがログ記録されることを意味します。
 レベル値は ``logging`` パッケージの名前空間のコンテキストにおいて :func:`eval` されます。
 
 
@@ -4360,7 +4359,7 @@ __ context-info_
 
 ``level`` および ``handlers`` エントリはルートロガーのエントリと同様に解釈されますが、
 非ルートロガーのレベルが ``NOTSET`` に指定された場合、
-ログ記録システムはロガー階層のより上位のロガーにロガーの実効レベルを問い合わせるところが違います。
+ロギングシステムはロガー階層のより上位のロガーにロガーの実効レベルを問い合わせるところが違います。
 ``propagate`` エントリは、メッセージをロガー階層におけるこのロガーの上位のハンドラに伝播させることを示す 1 に設定されるか、
 メッセージを階層の上位に伝播 **しない** ことを示す 0 に設定されます。
 ``qualname`` エントリはロガーのチャネル名を階層的に表したもの、
@@ -4386,7 +4385,7 @@ __ context-info_
 .. loggers, and ``NOTSET`` is taken to mean "log everything".
 
 ``class`` エントリはハンドラのクラス (``logging`` パッケージの名前空間において :func:`eval` で決定されます) を示します。
-``level`` はロガーの場合と同じように解釈され、 ``NOTSET``  は "全てを記録する (log everything)" と解釈されます。
+``level`` はロガーの場合と同じように解釈され、 ``NOTSET``  は "すべてを記録する (log everything)" と解釈されます。
 
 
 .. .. versionchanged:: 2.6
@@ -4592,8 +4591,8 @@ ISO8601 形式の時刻の例は ``2003-01-23 00:29:50,411`` です。
 .. previous simple module-based configuration example:
 
 ロガーは通常の Python オブジェクトです。
-:func:`addHandler` メソッドには追加されるハンドラの個数について最少数も最多数も定めていません。
-時にアプリケーションが全ての深刻さの全てのメッセージをテキストファイルに記録しつつ、
+:func:`addHandler` メソッドには追加されるハンドラの個数について最小値も最大値も定めていません。
+時にアプリケーションがすべての深刻度のすべてのメッセージをテキストファイルに記録しつつ、
 同時にエラーやそれ以上のものをコンソールに出力することが役に立ちます。
 これを実現する方法は、単に適切なハンドラを設定するだけです。
 アプリケーションコードの中のログ記録の呼び出しは変更されずに残ります。
@@ -4631,8 +4630,8 @@ ISO8601 形式の時刻の例は ``2003-01-23 00:29:50,411`` です。
 .. Notice that the "application" code does not care about multiple handlers.  All
 .. that changed was the addition and configuration of a new handler named *fh*.
 
-「アプリケーション」のコードは複数のハンドラについて何も気にしていないことに注目して下さい。
-変更した箇所は新しい *fh* という名のハンドラを追加して設定したところが全てです。
+「アプリケーション」のコードは複数のハンドラについて何も気にしていないことに注目してください。
+変更した箇所は新しい *fh* という名のハンドラを追加して設定したところがすべてです。
 
 
 .. The ability to create new handlers with higher- or lower-severity filters can be
@@ -4643,12 +4642,12 @@ ISO8601 形式の時刻の例は ``2003-01-23 00:29:50,411`` です。
 .. need them again.  At that time, the only change that needs to happen is to
 .. modify the severity level of the logger and/or handler to debug.
 
-新しいハンドラを高い(もしくは低い)深刻さに対するフィルタを具えて生成できることは、
+新しいハンドラを高い (もしくは低い) 深刻度に対するフィルタと共に生成できることは、
 アプリケーションを書いてテストを行うときとても助けになります。
 デバッグ用にたくさんの ``print`` 文を使う代わりに ``logger.debug`` を使いましょう。
 あとで消したりコメントアウトしたりしなければならない print 文と違って、
 logger.debug 命令はソースコードの中にそのまま残しておいて再び必要になるまで休眠させておけます。
-その時必要になるのはただロガーおよび/またはハンドラの深刻さの設定をいじることだけです。
+その時必要になるのはただロガーおよび/またはハンドラの深刻度の設定をいじることだけです。
 
 
 複数のモジュールで logging を使う
@@ -4664,11 +4663,11 @@ logger.debug 命令はソースコードの中にそのまま残しておいて�
 .. the parent.  Here is a main module:
 
 上で述べたように ``logging.getLogger('someLogger')`` の複数回の呼び出しは同じロガーへの参照を返します。
-これは一つのモジュールの中からに限らず、同じ Python インタプリタプロセス乗で動いている限りはモジュールをまたいでも正しいのです。
+これは一つのモジュールの中からに限らず、同じ Python インタプリタプロセス上で動いている限りはモジュールをまたいでも当てはまります。
 同じオブジェクトへの参照という点でも正しいです。
 さらに、一つのモジュールの中で親ロガーを定義して設定し、
-別のモジュールで子ロガーを定義する(ただし設定はしない)ことが可能で、
-全ての子ロガーへの呼び出しは親にまで渡されます。
+別のモジュールで子ロガーを定義する (ただし設定はしない) ことが可能で、
+すべての子ロガーへの呼び出しは親にまで渡されます。
 まずはメインのモジュールです:
 
 
@@ -4707,7 +4706,7 @@ logger.debug 命令はソースコードの中にそのまま残しておいて�
 
 .. Here is the auxiliary module:
 
-そして補助モジュール(auxiliary_module)がこちらです:
+そして補助モジュール (auxiliary_module) がこちらです:
 
 
 ::
