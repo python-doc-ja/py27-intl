@@ -12,8 +12,8 @@
 ElementTreeパッケージはシンプルで効率的で、かつ非常に評判の良い、PythonからXMLを操作するためのライブラリです。
 
 :mod:`xml.etree`パッケージはElementTree APIから最も一般的なコンポーネントを移植しています。現在のリリースでは、
-ElementTreeのディストリビューションに含まれるモジュールの内、 :mod:`ElementTree`、
-:mod:`ElementPath`、:mod:`ElementInclude`の各モジュールを含んでいます。
+ElementTreeのディストリビューションに含まれるモジュールの内、 :mod:`ElementTree` 、
+:mod:`ElementPath` 、 :mod:`ElementInclude` の各モジュールを含んでいます。
 
 .. % XXX To be continued!
 

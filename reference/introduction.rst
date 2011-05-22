@@ -46,7 +46,7 @@ Python for .NET
    この実装は内部ではCPythonを使用していますが、 .NETアプリケーションによって管理されているので、
    .NETライブラリを参照することが可能です。
    この実装はBrian Lloydによって作成されました。
-   さならる情報については、`Python for .NET home page <http://pythonnet.sourceforge.net>`_
+   さならる情報については、 `Python for .NET home page <http://pythonnet.sourceforge.net>`_
    を参照してください。
 
 IronPython

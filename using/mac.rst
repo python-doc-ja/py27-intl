@@ -150,7 +150,7 @@ GUI でスクリプトを実行
 .. anything that has a GUI) need to be run in a special way. Use :program:`pythonw`
 .. instead of :program:`python` to start such scripts.
 
-Python 2.5 では、:program:`python` も :program:`pythonw` も使えます。
+Python 2.5 では、 :program:`python` も :program:`pythonw` も使えます。
 
 .. With Python 2.5, you can use either :program:`python` or :program:`pythonw`.
 
