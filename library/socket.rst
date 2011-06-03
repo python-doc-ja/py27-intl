@@ -404,8 +404,9 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
 
 .. function:: inet_pton(address_family, ip_string)
 
-   IPアドレスを、アドレスファミリ固有の文字列からパックしたバイナリ形式に変換します。 :func:`inet_pton` は、 :c:type:`struct
-   in_addr`型 (:func:`inet_aton` と同様)や :c:type:`struct in6_addr` を使用するライブ
+   IPアドレスを、アドレスファミリ固有の文字列からパックしたバイナリ形式に変換します。
+   :func:`inet_pton` は、 :c:type:`struct in_addr` 型
+   (:func:`inet_aton` と同様)や :c:type:`struct in6_addr` を使用するライブ
    ラリやネットワークプロトコルを呼び出す際に使用することができます。
 
    現在サポートされている *address_family* は、 :const:`AF_INET` と

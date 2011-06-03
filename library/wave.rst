@@ -88,8 +88,9 @@ Wave_read オブジェクト
 
 .. method:: Wave_read.getparams()
 
-   :meth:`get\*` メソッドが返すのと同じ``(nchannels,  sampwidth, framerate, nframes, comptype,
-   compname)``のタプルを返します。
+   :meth:`get\*` メソッドが返すのと同じ
+   ``(nchannels,  sampwidth, framerate, nframes, comptype, compname)``
+   のタプルを返します。
 
 
 .. method:: Wave_read.readframes(n)

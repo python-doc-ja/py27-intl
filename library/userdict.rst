@@ -143,7 +143,7 @@
    .. deprecated:: 2.6
       :class:`MutableString` クラスは Python 3.0 では削除されます。
 
-文字列とユニコードオブジェクトのメソッドと演算(節:ref:`string-methods` を参照)に加えて、 :class:`UserString` インスタンスは次の属性を提供します:
+文字列とユニコードオブジェクトのメソッドと演算(節 :ref:`string-methods` を参照)に加えて、 :class:`UserString` インスタンスは次の属性を提供します:
 
 
 .. attribute:: MutableString.data

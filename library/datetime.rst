@@ -52,7 +52,7 @@
 .. data:: MAXYEAR
 
    :class:`date` や :class:`datetime` オブジェクトで許されている、年を
-   表現する最大の数字です。:const:`MAXYEAR` は ``9999`` です。
+   表現する最大の数字です。 :const:`MAXYEAR` は ``9999`` です。
 
 
 .. seealso::

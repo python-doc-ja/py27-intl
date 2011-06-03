@@ -9,7 +9,7 @@
 
 
 .. deprecated:: 2.6
-   このモジュールは時代遅れです。:mod:`subprocess` モジュールを利用してください。
+   このモジュールは時代遅れです。 :mod:`subprocess` モジュールを利用してください。
    特に :ref:`subprocess-replacements` 節を参照してください。
 
 このモジュールにより、Unix および Windows でプロセスを起動し、その入力／出力／エラー出力パイプに接続し、そのリターンコード
