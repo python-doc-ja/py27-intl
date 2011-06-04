@@ -8,7 +8,7 @@ None オブジェクト
 .. index:: object: None
 
 ``None`` に対する :c:type:`PyTypeObject` は、 Python/C API では直接公開されていないので注意してください。
-``None `` は単量子 (singleton) なので、オブジェクトのアイデンティティテスト (C では `` ==``) を使うだけで十分だからです。
+``None`` は単量子 (singleton) なので、オブジェクトのアイデンティティテスト (C では ``==``) を使うだけで十分だからです。
 同じ理由から、 :c:func:`PyNone_Check` 関数はありません。
 
 

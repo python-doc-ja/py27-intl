@@ -97,8 +97,8 @@
    *o1* と *o2* を *opid* に指定した演算によって比較します。 *opid* は :const:`Py_LT`, :const:`Py_LE`,
    :const:`Py_EQ`, :const:`Py_NE`, :const:`Py_GT`, または :const:`Py_GE`,
    のいずれかでなければならず、それぞれ ``<``, ``<=``, ``==``, ``!=``, ``>``, および ``>=`` に対応します。
-   比較結果が真ならば ``1`` を、偽ならば ``0`` を、エラーが発生すると ``-1`` を返します。この関数は Python の式 ``o1 op
-   o2 `` と同じで、 `` op`` が *opid* に対応する演算子です。
+   比較結果が真ならば ``1`` を、偽ならば ``0`` を、エラーが発生すると ``-1`` を返します。この関数は Python の式
+   ``o1 op o2`` と同じで、 ``op`` が *opid* に対応する演算子です。
 
 
 .. c:function:: int PyObject_Cmp(PyObject *o1, PyObject *o2, int *result)
