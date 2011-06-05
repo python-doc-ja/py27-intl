@@ -588,7 +588,7 @@ store アクション
 :mod:`optparse` を使う場合に気を付けねばならないエラーには、大きく分けてプログラマ側のエラーとユーザ側のエラーという二つの種類があります。
 プログラマ側のエラーの多くは、例えば不正なオプション文字列や定義されていないオプション属性の指定、あるいはオプション属性を指定し忘れるといった、
 誤った ``OptionParser.add_option()`` 呼び出しによるものです。
-こうした誤りは通常通りに処理されます。すなわち、例外(:exc:``optparse.OptionError`` や :exc:``TypeError``)
+こうした誤りは通常通りに処理されます。すなわち、例外(:exc:`optparse.OptionError` や :exc:`TypeError`)
 を送出して、プログラムをクラッシュさせます。
 
 もっと重要なのはユーザ側のエラーの処理です。というのも、ユーザの操作エラーという\
@@ -596,7 +596,7 @@ store アクション
 :option:`-n` に対して ``"-n4x"`` と指定してしまうなど) や、引数を指定し忘れた場合 (:option:`-n`
 が何らかの引数をとるオプションであるのに、 ``"-n"`` が引数の末尾に来ている場合) といった、ユーザによるエラーを自動的に\
 検出します。また、アプリケーション側で定義されたエラー条件が起きた場合、
-:func:``OptionParser.error()`` を呼び出してエラーを通知できます::
+:func:`OptionParser.error` を呼び出してエラーを通知できます::
 
    (options, args) = parser.parse_args()
    [...]
@@ -621,7 +621,7 @@ store アクション
    foo: error: -n option requires an argument
 
 :mod:`optparse` は、常にエラーを引き起こしたオプションについて説明の入ったエラーメッセージを生成するよう気を配ります;
-従って、 :func:``OptionParser.error()`` をアプリケーションコードから呼び出す場合にも、同じようなメッセージになるようにしてください。
+従って、 :func:`OptionParser.error` をアプリケーションコードから呼び出す場合にも、同じようなメッセージになるようにしてください。
 
 :mod:`optparse` のデフォルトのエラー処理動作が気に入らないのなら、 :class:`OptionParser`
 をサブクラス化して、 :meth:`~OptionParser.exit` かつ/または
@@ -682,7 +682,7 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
       プログラムが間違った方法で実行されるかまたはヘルプオプションを付けて実行された場合に表示される使用法です。 :mod:`optparse` は使用法の文\
       字列を表示する際に ``%prog`` を ``os.path.basename(sys.argv[0])`` (または ``prog``
       キーワード引数が指定されていればその値) に展開します。使用法メッセージを抑制するためには特別な
-      :data:``optparse.SUPPRESS_USAGE`` という値を指定します。
+      :data:`optparse.SUPPRESS_USAGE` という値を指定します。
 
    ``option_list`` (デフォルト: ``[]``)
       パーザに追加する Option オブジェクトのリストです。 ``option_list`` の中のオプションは ``standard_option_list``

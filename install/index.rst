@@ -223,7 +223,7 @@ Python モジュールおよび拡張モジュール) が入ります。
 されているディレクトリと、実行時にライブラリを探しにいく場所を表します。これらのディレクトリは、Windows では常に同じで、 Unixと Mac OS X
 でもほぼ常に同じです。自分の Python がどんな :file:`{prefix}` や :file:`{exec-prefix}`
 を使っているかは、Python を対話モードで起動して、単純なコマンドをいくつか入力すればわかります。 Windows
-では、:menuselection:`スタート --> (すべての) プログラム -->  Python X.Y --> Python
+では、 :menuselection:`スタート --> (すべての) プログラム -->  Python X.Y --> Python
 (command line)` を選びます。 Mac OS 9 では、 :file:`PythonInterpreter` を起動します。
 インタプリタを起動すると、プロンプトに Python コードを入力できます。例えば、作者の使っている Linux システムで、三つの Python
 文を以下のように入力すると、出力から作者のシステムの :file:`{prefix}` と :file:`{exec-prefix}` を得られます::

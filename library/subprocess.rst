@@ -51,7 +51,7 @@ subprocess モジュールを使う
 
    .. note::
 
-      *args* を正しくトークン化するには、:meth:`shlex.split` が便利です。
+      *args* を正しくトークン化するには、 :meth:`shlex.split` が便利です。
       このメソッドは特に複雑な状況で活躍します。
 
       ::

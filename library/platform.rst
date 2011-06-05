@@ -140,8 +140,9 @@
 
 .. function:: uname()
 
-   非常に可搬性の高い uname インターフェースで、実行中プラットフォームを示す情報を、文字列のタプル``(system, node, release,
-   version, machine, processor)`` で返します。
+   非常に可搬性の高い uname インターフェースで、実行中プラットフォームを示す情報を、
+   文字列のタプル ``(system, node, release, version, machine, processor)``
+   で返します。
 
    :func:`os.uname` と異なり、複数のプロセッサ名が候補としてタプルに追加される場合があります。
 

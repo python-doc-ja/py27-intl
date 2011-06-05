@@ -283,7 +283,7 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
 
 .. function:: timegm(tuple)
 
-   関連はありませんが便利な関数で、:mod:`time` モジュールの :func:`gmtime`
+   関連はありませんが便利な関数で、 :mod:`time` モジュールの :func:`gmtime`
    関数の戻値のような時間のタプルを受け取り、
    1970年を起点とし、POSIX規格のエンコードによるUnixのタイムスタンプに相当する
    値を返します。実際、 :func:`time.gmtime` と :func:`timegm` は反対の動作をします。

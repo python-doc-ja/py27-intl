@@ -527,7 +527,7 @@
       「ころばぬ先の杖」 (look before you leap) の略です。
       このコーディングスタイルでは、呼び出しや検索を行う前に、明示的に前提条件
       (pre-condition) 判定を行います。
-      *EAFP* アプローチと対照的で、:keyword:`if` 文がたくさん使われるのが特徴的です。
+      *EAFP* アプローチと対照的で、 :keyword:`if` 文がたくさん使われるのが特徴的です。
 
       .. Look before you leap.  This coding style explicitly tests for
          pre-conditions before making calls or lookups.  This style contrasts with

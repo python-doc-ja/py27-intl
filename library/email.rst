@@ -182,10 +182,10 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
   :class:`Message` インスタンスを直接返すようになっていたのです。
 
   この構造はパッケージ中のほかの部分と整合がとれていなかったため、
-  :mimetype:`message/rfc822` 形式のオブジェクト表現形式が\
-  変更されました。:mod:`email` バージョン 2 では、コンテナは
+  :mimetype:`message/rfc822` 形式のオブジェクト表現形式が
+  変更されました。 :mod:`email` バージョン 2 では、コンテナは
   :meth:`is_multipart` に *True を返し* ます。また
-  :meth:`get_payload` はひとつの :class:`Message` インスタンスを\
+  :meth:`get_payload` はひとつの :class:`Message` インスタンスを
   要素とするリストを返すようになりました。
 
   注意: ここは下位互換が完全には成りたたなくなっている部分のひとつです。

@@ -52,7 +52,7 @@
 .. data:: MAXYEAR
 
    :class:`date` や :class:`datetime` オブジェクトで許されている、年を
-   表現する最大の数字です。:const:`MAXYEAR` は ``9999`` です。
+   表現する最大の数字です。 :const:`MAXYEAR` は ``9999`` です。
 
 
 .. seealso::
@@ -1005,7 +1005,7 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 .. method:: datetime.isoweekday()
 
    月曜日を 1、日曜日を 7 として、曜日を整数で返します。 ``self.date().isoweekday()`` と等価です。
-   :meth:`weekday`、 :meth:`isocalendar` も参照してください。
+   :meth:`weekday` 、 :meth:`isocalendar` も参照してください。
 
 
 .. method:: datetime.isocalendar()

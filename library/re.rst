@@ -643,6 +643,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
    :class:`RegexObject` クラスは以下のメソッドと属性をサポートします:
 
    .. method:: RegexObject.search(string[, pos[, endpos]])
+
       .. Scan through *string* looking for a location where this regular expression
          produces a match, and return a corresponding :class:`MatchObject` instance.
          Return ``None`` if no position in the string matches the pattern; note that this
@@ -891,7 +892,7 @@ MatchObject オブジェクト
       *group* は、デフォルトでは(マッチした部分文字列全体を意味する）ゼロです。
       *group* が存在してもマッチに寄与しなかった場合は、 ``-1`` を返します。
       マッチオブジェクト *m* および、マッチに寄与しなかったグループ *g* があって、
-      グループ *g* とマッチしたサブ文字列 ( ``m.group(g)`` と同じ意味ですが ) は、
+      グループ *g* とマッチしたサブ文字列 ( ``m.group(g)`` と同じ意味ですが ) は::
 
          m.string[m.start(g):m.end(g)]
 

@@ -104,7 +104,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
 .. describe:: moduleauthor
 
-   ``moduleauthor`` ディレクティブは、``sectionauthor`` と同じで、作者の名前になります。
+   ``moduleauthor`` ディレクティブは、 ``sectionauthor`` と同じで、作者の名前になります。
    このディレクティブは、作者の人数だけ繰り返して利用できます。
    現在、このディレクティブは出力に利用されていません。
 

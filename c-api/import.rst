@@ -119,9 +119,9 @@
    モジュール名 (``package.module`` 形式でもかまいません) および Python のバイトコードファイルや組み込み関数
    :func:`compile`  で得られたコードオブジェクトを元にモジュールをロードします。モジュールオブジェクトへの新たな参照を返します。失敗した
    場合には例外をセットし、 *NULL* を返します。Python 2.4 以前では、失敗した場合でもモジュールは生成されていることがありました。 Python
-   2.4 以降では、たとえ :c:func:`PyImport_ExecCodeModule` の処理に入った時に *name* が :attr:``sys.modules``
-   に入っていたとしても、 import に失敗したモジュールは :attr:``sys.modules`` に残りません。初期化の不完全なモジュールを
-   :attr:``sys.modules`` に残すのは危険であり、そのようなモジュールを import するコードにとっては、モジュールの状態がわからない
+   2.4 以降では、たとえ :c:func:`PyImport_ExecCodeModule` の処理に入った時に *name* が :attr:`sys.modules`
+   に入っていたとしても、 import に失敗したモジュールは :attr:`sys.modules` に残りません。初期化の不完全なモジュールを
+   :attr:`sys.modules` に残すのは危険であり、そのようなモジュールを import するコードにとっては、モジュールの状態がわからない
    (モジュール作者の意図から外れた壊れた状態かもしれない) からです。
 
    モジュールの :attr:`__file__` 属性が、コードオブジェクトの :c:member:`co_filename` に設定されます。
@@ -132,7 +132,7 @@
    *name* が ``package.module`` 形式のドット名表記であった場合、まだ作成されていないパッケージ構造はその作成されないままになります。
 
    .. versionchanged:: 2.4
-      エラーが発生した場合に *name* を :attr:``sys.modules`` から除去するようになりました.
+      エラーが発生した場合に *name* を :attr:`sys.modules` から除去するようになりました.
 
 
 .. c:function:: PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)

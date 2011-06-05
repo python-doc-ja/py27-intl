@@ -82,7 +82,7 @@ test runner (テストランナー)
 
    `Nose <http://code.google.com/p/python-nose/>`_ と `py.test <http://pytest.org>`_
       サードパーティのユニットテストフレームワークで軽量な文法でテストを書くことができます。
-      例えば、``assert func(10) == 42``  のように書きます。
+      例えば、 ``assert func(10) == 42``  のように書きます。
 
    `python-mock <http://python-mock.sourceforge.net/>`_ と `minimock <http://blog.ianbicking.org/minimock.html>`_
       テスト用のモックオブジェクトを作成するツールです (モックオブジェクトは外部リソースをシミュレートします)。

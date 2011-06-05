@@ -34,7 +34,7 @@ Macintosh)を使います。
    triple: path; configuration; file
 
 例えば、 ``sys.prefix`` と ``sys.exec_prefix`` が :file:`/usr/local` に設定されていると仮定します。そのときPython X.Y
-ライブラリは :file:`/usr/local/lib/python{X.Y}` にインストールされています(ここで、 ``sys.version`` の最初の三文字だけがインストールパス名を作るために使われます)。ここにはサブディレクトリ:file:`/usr/local/lib/python{X.Y}|/site-packages`
+ライブラリは :file:`/usr/local/lib/python{X.Y}` にインストールされています(ここで、 ``sys.version`` の最初の三文字だけがインストールパス名を作るために使われます)。ここにはサブディレクトリ :file:`/usr/local/lib/python{X.Y}|/site-packages`
 があり、その中に三つのサブディレクトリ :file:`foo`, :file:`bar` および :file:`spam` と二つのパス設定ファイル :file:`foo.pth` と :file:`bar.pth` をもつと仮定します。 :file:`foo.pth` には以下のものが記載されていると想定してください::
 
    # foo package configuration

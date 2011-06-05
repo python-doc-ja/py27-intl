@@ -197,7 +197,7 @@ Serverオブジェクト
       desired.  If :meth:`handle_request` receives no incoming requests within the
       timeout period, the :meth:`handle_timeout` method is called.
 
-   タイムアウト時間(秒)、もしくは、タイムアウトを望まない場合に :const:``None`` 。
+   タイムアウト時間(秒)、もしくは、タイムアウトを望まない場合に :const:`None` 。
    :meth:`handle_request` がこの時間内にリクエストを受信しない場合、 :meth:`handle_timeout`
    メソッドが呼ばれます。
 

@@ -176,8 +176,8 @@
    .. index:: builtin: pow
 
    組み込み関数 :func:`pow` を参照してください。失敗すると *NULL* を返します。 *o1* が *in-place*
-   演算をサポートする場合、in-place 演算を行います。この関数は *o3* が :c:data:`Py_None` の場合は Python 文 ``o1
-   **= o2 `` と同じで、それ以外の場合は `` pow(o1, o2, o3)`` の in-place 版です。 *o3* を無視させたいなら、
+   演算をサポートする場合、in-place 演算を行います。この関数は *o3* が :c:data:`Py_None` の場合は Python 文 
+   ``o1 **= o2`` と同じで、それ以外の場合は ``pow(o1, o2, o3)`` の in-place 版です。 *o3* を無視させたいなら、
    :c:data:`Py_None` を入れてください (*o3* に *NULL* を渡すと、不正なメモリアクセスを引き起こすことがあります)。
 
 

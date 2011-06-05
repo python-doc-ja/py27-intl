@@ -56,7 +56,7 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
 
 .. function:: wrap_socket (sock, keyfile=None, certfile=None, server_side=False, cert_reqs=CERT_NONE, ssl_version={see docs}, ca_certs=None, do_handshake_on_connect=True, suppress_ragged_eofs=True)
 
-   :class:`socket.socket` のインスタンス ``sock`` を受け取り、 :class:`socket.socket`` のサブタイプである
+   :class:`socket.socket` のインスタンス ``sock`` を受け取り、 :class:`socket.socket` のサブタイプである
    :class:`ssl.SSLSocket` のインスタンスを返します。 :class:`ssl.SSLSocket` は低レイヤの
    ソケットをSSLコンテキストでラップします。
    クライアントサイドソケットにおいて、コンテキストの生成は遅延されます。
@@ -133,7 +133,7 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
    :meth:`SSLSocket.do_handshake` を明示的に呼びだすことで、ハンドシェイクによる
    ソケットI/Oのブロッキング動作を制御できます。
 
-   ``suppress_ragged_eofs`` 引数は、 :meth:`SSLSocket.read`` メソッドが、接続先から
+   ``suppress_ragged_eofs`` 引数は、 :meth:`SSLSocket.read` メソッドが、接続先から
    予期しないEOFを受け取った時に通知する方法を指定します。
    :const:`True` (デフォルト) の場合、下位のソケットレイヤーから予期せぬEOFエラーが来た場合、
    通常のEOFを返します。 :const:`False` の場合、呼び出し元に例外を投げて通知します。
