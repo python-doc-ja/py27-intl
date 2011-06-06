@@ -1,3 +1,8 @@
+.. todo
+
+   Unicode string がそのまま. Unicode 文字列でいいんじゃないか?
+   ``?`` がある行以外での「〜型」の型を削除
+
 .. highlightlang:: c
 
 .. _arg-parsing:
@@ -21,7 +26,7 @@
 以下の説明では、引用符のついた形式は書式化単位です;
 (丸)括弧で囲った部分は書式化単位に対応する Python のオブジェクト型です; [角] 括弧は値をアドレス渡しする際に使う C の変数型です。
 
-``s`` (文字列 または Unicode) [const char \*]
+``s`` (文字列型または Unicode 型) [const char \*]
    Python の文字列または Unicode オブジェクトを、キャラクタ文字列を指す C のポインタに変換します。
    変換先の文字列自体の記憶領域を提供する必要はありません; キャラクタ型ポインタ変数のアドレスを渡すと、すでに存在している
    文字列へのポインタをその変数に記録します。C 文字列は NUL で終端されています。Python の文字列型は、NUL バイトが途中に埋め込まれて
@@ -39,7 +44,7 @@
    もしこのマクロが定義されていた場合、長さは int ではなく :c:type:`Py_ssize_t`
    になります。
 
-``s*`` (文字列、Unicode、または任意のバッファー互換オブジェクト) [Py_buffer]
+``s*`` (文字列型、Unicode 型、または任意のバッファー互換オブジェクト) [Py_buffer]
    ``s#`` と似ていますが、呼び出し元から渡された Py_buffer 構造体に書き込みます。
    バッファーはロックされるので、呼び出し元はそのバッファーを ``Py_BEGIN_ALLOW_THREADS``
    したブロック内でさえも利用することができます。その代わり、呼び出し元には、
@@ -47,7 +52,7 @@
 
    .. versionadded:: 2.6
 
-``z`` (文字列型、Unicode型 または ``None``) [const char \*]
+``z`` (文字列型、Unicode 型 または ``None``) [const char \*]
    ``s`` に似ていますが、Python オブジェクトは ``None`` でもよく、
    その場合には C のポインタは *NULL* にセットされます。
 
@@ -155,7 +160,7 @@
 
    .. versionadded:: 2.3
 
-``n`` (integer) [Py_ssize_t]
+``n`` (整数型) [Py_ssize_t]
    Python の整数型もしくは長整数型をCの :c:type:`Py_ssize_t` 型に変換します。
 
    .. versionadded:: 2.5
@@ -327,7 +332,7 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
 
    .. versionchanged:: 2.5
       この関数は *min* と *max* に :c:type:`int` を利用していました。
-      この変更により、64bitシステムを正しくサポートするためには修正が必要になるでしょう。
+      この変更により、64 bitシステムを正しくサポートするためには修正が必要になるでしょう。
 
 .. c:function:: PyObject* Py_BuildValue(const char *format, ...)
 
@@ -355,10 +360,10 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    ``s#`` (文字列型) [char \*, int]
       C 文字列とその長さから Python オブジェクトに変換します。 C 文字列ポインタが *NULL* の場合、長さは無視され ``None`` になります。
 
-   ``z`` (string or ``None``) [char \*]
+   ``z`` (文字列型または ``None``) [char \*]
       ``s`` と同じです。
 
-   ``z#`` (string or ``None``) [char \*, int]
+   ``z#`` (文字列型または ``None``) [char \*, int]
       ``s#`` と同じです。
 
    ``u`` (Unicode string) [Py_UNICODE \*]
@@ -381,34 +386,34 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    ``l`` (整数型) [long int]
       C の :c:type:`long int` を Python の整数オブジェクトに変換します。
 
-   ``B`` (integer) [unsigned char]
+   ``B`` (整数型) [unsigned char]
       C の :c:type:`unsigned char` を Python の整数オブジェクトに変換します。
 
-   ``H`` (integer) [unsigned short int]
+   ``H`` (整数型) [unsigned short int]
       C の :c:type:`unsigned short int` を Python の整数オブジェクトに変換します。
 
-   ``I`` (integer/long) [unsigned int]
+   ``I`` (整数型/長整数型) [unsigned int]
       C の :c:type:`unsigned int` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
       より大きければ長整数オブジェクトに変換します。
 
-   ``k`` (integer/long) [unsigned long]
+   ``k`` (整数型/長整数型) [unsigned long]
       C の :c:type:`unsigned long` を Python の整数オブジェクト、あるいは、値が ``sys.maxint``
       より大きければ長整数オブジェクトに変換します。
 
-   ``L`` (long) [PY_LONG_LONG]
+   ``L`` (長整数型) [PY_LONG_LONG]
       C の :c:type:`long long` を Python の長整数オブジェクトに変換します。 :c:type:`long long`
       をサポートしているプラットフォームでのみ利用可能です。
 
-   ``K`` (long) [unsigned PY_LONG_LONG]
+   ``K`` (長整数型) [unsigned PY_LONG_LONG]
       C の :c:type:`unsigned long long` を Python の長整数オブジェクトに変換します。 :c:type:`long long`
       をサポートしているプラットフォームでのみ利用可能です。
 
-   ``n`` (int) [Py_ssize_t]
+   ``n`` (長整数型) [Py_ssize_t]
       C の :c:type:`unsigned long` を Python の整数オブジェクト、あるいは長整数オブジェクトに変換します。
 
       .. versionadded:: 2.5
 
-   ``c`` (string of length 1) [char]
+   ``c`` (長さ 1 の文字列型) [char]
       文字を表す通常の C の :c:type:`int` を、長さ 1 の Python の文字列オブジェクトに変換します。
 
    ``d`` (浮動小数点型) [double]
