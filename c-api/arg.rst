@@ -1,6 +1,5 @@
 .. todo
 
-   Unicode string がそのまま. Unicode 文字列でいいんじゃないか?
    ``?`` がある行以外での「〜型」の型を削除
 
 .. highlightlang:: c
@@ -118,50 +117,50 @@
    パラメタに渡したエンコードを使っているものと仮定します。
 
 ``b`` (整数型) [unsigned char]
-   Python の非負の整数型を、 C の :c:type:`unsigned char` 型の小さな符号無し整数に変換します。
+   Python の非負の整数を、 C の :c:type:`unsigned char` 型の小さな符号無し整数に変換します。
 
 ``B`` (整数型) [unsigned char]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned char` 型の小さな整数に変換します。
+   Python の整数を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned char` 型の小さな整数に変換します。
 
    .. versionadded:: 2.3
 
 ``h`` (整数型) [short int]
-   Python の整数型を、 C の :c:type:`short int` 型に変換します。
+   Python の整数を、 C の :c:type:`short int` 型に変換します。
 
 ``H`` (整数型) [unsigned short int]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned short int` 型に変換します。
+   Python の整数を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned short int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``i`` (整数型) [int]
-   Python の整数型を、 C の :c:type:`int` 型に変換します。
+   Python の整数を、 C の :c:type:`int` 型に変換します。
 
 ``I`` (整数型) [unsigned int]
-   Python の整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned int` 型に変換します。
+   Python の整数を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``l`` (整数型) [long int]
-   Python の整数型を、 C の :c:type:`long int` 型に変換します。
+   Python の整数を、 C の :c:type:`long int` 型に変換します。
 
 ``k`` (整数型) [unsigned long]
-   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long int` 型に変換します。
+   Python の整数もしくは長整数を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long int` 型に変換します。
 
    .. versionadded:: 2.3
 
 ``L`` (整数型) [PY_LONG_LONG]
-   Python の整数型を、 C の :c:type:`long long` 型に変換します。この書式化単位は、 :c:type:`long long` 型 (または
+   Python の整数を、 C の :c:type:`long long` 型に変換します。この書式化単位は、 :c:type:`long long` 型 (または
    Windows の  :c:type:`_int64` 型) がサポートされているプラットフォームでのみ利用できます。
 
 ``K`` (整数型) [unsigned PY_LONG_LONG]
-   Python の整数型もしくは長整数型を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long long` 型に変換します。
+   Python の整数もしくは長整数を、オーバフローチェックを行わずに、 C の  :c:type:`unsigned long long` 型に変換します。
    この書式化単位は、 :c:type:`unsigned long long` 型 (または Windows の  :c:type:`unsigned _int64`
    型) がサポートされているプラットフォームでのみ利用できます。
 
    .. versionadded:: 2.3
 
 ``n`` (整数型) [Py_ssize_t]
-   Python の整数型もしくは長整数型をCの :c:type:`Py_ssize_t` 型に変換します。
+   Python の整数もしくは長整数をCの :c:type:`Py_ssize_t` 型に変換します。
 
    .. versionadded:: 2.5
 
@@ -366,11 +365,11 @@ Python 整数型を要求している場所に Python 長整数型を渡すの�
    ``z#`` (文字列型または ``None``) [char \*, int]
       ``s#`` と同じです。
 
-   ``u`` (Unicode string) [Py_UNICODE \*]
+   ``u`` (Unicode 型) [Py_UNICODE \*]
       null 終端された Unicode (UCS-2 または UCS-4) データのバッファから Python オブジェクトに変換します。 Unicode
       バッファポインタが *NULL* の場合、 ``None`` になります。
 
-   ``u#`` (Unicode string) [Py_UNICODE \*, int]
+   ``u#`` (Unicode 型) [Py_UNICODE \*, int]
       null 終端された Unicode (UCS-2 または UCS-4) データのバッファとその長さから Python オブジェクトに変換します。
       Unicode バッファポインタが *NULL* の場合、長さは無視され ``None`` になります。
 
