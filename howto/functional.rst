@@ -457,7 +457,7 @@ Python の :term:`bytecode` コンパイラがこれを検出して、特別な�
 
     >>> gen = generate_ints(3)
     >>> gen
-    <generator object at ...>
+    <generator object generate_ints at ...>
     >>> gen.next()
     0
     >>> gen.next()
