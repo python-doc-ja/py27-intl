@@ -4,15 +4,18 @@
 .. module:: bdb
    :synopsis: デバッガーフレームワーク
 
+
 .. The :mod:`bdb` module handles basic debugger functions, like setting breakpoints
    or managing execution via the debugger.
 
 :mod:`bdb` モジュールは、ブレークポイントを設定したり、デバッガー経由で実行を管理するような、
 基本的なデバッガー機能を提供します
 
+
 .. The following exception is defined:
 
 以下の例外が定義されています。
+
 
 .. exception:: BdbQuit
 
@@ -25,6 +28,7 @@
 
 :mod:`bdb` モジュールは2つのクラスを定義しています。
 
+
 .. class:: Breakpoint(self, file, line[, temporary=0[, cond=None [, funcname=None]]])
 
    .. This class implements temporary breakpoints, ignore counts, disabling and
@@ -32,6 +36,7 @@
 
    このクラスはテンポラリブレークポイント、無視するカウント、無効化と再有効化、条件付き
    ブレークポイントを実装しています。
+
 
    .. Breakpoints are indexed by number through a list called :attr:`bpbynumber`
       and by ``(file, line)`` pairs through :attr:`bplist`.  The former points to a
@@ -44,6 +49,7 @@
    一方 :attr:`bplist` は、同じ行に複数のブレークポイントが設定される場合があるので、
    インスタンスのリストを指しています。
 
+
    .. When creating a breakpoint, its associated filename should be in canonical
       form.  If a *funcname* is defined, a breakpoint hit will be counted when the
       first line of that function is executed.  A conditional breakpoint always
@@ -54,9 +60,11 @@
    ヒットカウントにカウントされます。
    条件付ブレークポイントは毎回カウントされます。
 
+
    .. :class:`Breakpoint` instances have the following methods:
 
    :class:`Breakpoint` インスタンスは以下のメソッドを持ちます。
+
 
    .. method:: deleteMe()
 
@@ -68,11 +76,13 @@
       このブレークポイントがその行に設定された最後のブレークポイントだった場合、
       そのファイル/行に対するエントリ自体を削除します。
 
+
    .. method:: enable()
 
       .. Mark the breakpoint as enabled.
 
       このブレークポイントを有効にします。
+
 
    .. method:: disable()
 
@@ -80,11 +90,13 @@
 
       このブレークポイントを無効にします。
 
+
    .. method:: pprint([out])
 
       .. Print all the information about the breakpoint:
 
       このブレークポイントに関するすべての情報を表示します。
+
 
       .. * The breakpoint number.
          * If it is temporary or not.
@@ -107,6 +119,7 @@
 
    :class:`Bdb` クラスは一般的なPythonデバッガーの基本クラスとして振舞います。
 
+
    .. This class takes care of the details of the trace facility; a derived class
       should implement user interaction.  The standard debugger class
       (:class:`pdb.Pdb`) is an example.
@@ -114,6 +127,7 @@
    このクラスはトレース機能の詳細を扱います。ユーザーとのインタラクションは、
    派生クラスが実装するべきです。標準ライブラリのデバッガクラス (:class:`pdb.Pdb`)
    がその利用例です。
+
 
    .. The *skip* argument, if given, must be an iterable of glob-style
       module name patterns.  The debugger will not step into frames that
@@ -132,9 +146,11 @@
    .. versionadded:: 2.7
       *skip* 引数
  
+
    .. The following methods of :class:`Bdb` normally don't need to be overridden.
 
    以下の :class:`Bdb` のメソッドは、通常オーバーライドする必要はありません。
+
 
    .. method:: canonic(filename)
 
@@ -147,6 +163,7 @@
       絶対パスにしたものです。ファイル名が "<" と ">" で囲まれていた場合はそれを
       取り除いたものです。
 
+
    .. method:: reset()
 
       .. Set the :attr:`botframe`, :attr:`stopframe`, :attr:`returnframe` and
@@ -154,6 +171,7 @@
 
       :attr:`botframe`, :attr:`stopframe`, :attr:`returnframe`, :attr:`quitting`
       属性を、デバッグを始められる状態に設定します。
+
 
    .. method:: trace_dispatch(frame, event, arg)
 
@@ -163,6 +181,7 @@
       この関数は、デバッグされているフレームのトレース関数としてインストールされます。
       戻り値は新しいトレース関数(殆どの場合はこの関数自身)です。
 
+
       .. The default implementation decides how to dispatch a frame, depending on
          the type of event (passed as a string) that is about to be executed.
          *event* can be one of the following:
@@ -170,6 +189,7 @@
       デフォルトの実装は、実行しようとしている *event* (文字列として渡されます) の種類に基づいて
       フレームのディスパッチ方法を決定します。
       *event* は次のうちのどれかです。
+
 
       .. * ``"line"``: A new line of code is going to be executed.
          * ``"call"``: A function is about to be called, or another code block
@@ -188,14 +208,17 @@
       * ``"c_return"``: C関数からreturnしました。
       * ``"c_exception"``: C関数が例外を投げました。
 
+
       .. For the Python events, specialized functions (see below) are called.  For
          the C events, no action is taken.
 
       Pythonのイベントに対しては、以下の専用の関数群が呼ばれます。Cのイベントに対しては何もしません。
 
+
       .. The *arg* parameter depends on the previous event.
 
       *arg* 引数は以前のイベントに依存します。
+
 
       .. See the documentation for :func:`sys.settrace` for more information on the
          trace function.  For more information on code and frame objects, refer to
@@ -205,6 +228,7 @@
       ドキュメントを参照してください。
       コードとフレームオブジェクトについてのより詳しい情報は、 :ref:`types`
       を参照してください。
+
 
    .. method:: dispatch_line(frame)
 
@@ -221,6 +245,7 @@
       このスコープのこれからのトレースのために、 :meth:`trace_dispatch` メソッドの
       参照を返します。
 
+
    .. method:: dispatch_call(frame, arg)
 
       .. If the debugger should stop on this function call, invoke the
@@ -235,6 +260,7 @@
       :exc:`BdbQuit` 例外を発生させます。
       このスコープのこれからのトレースのために、 :meth:`trace_dispatch` メソッドの
       参照を返します。
+
 
    .. method:: dispatch_return(frame, arg)
 
@@ -251,6 +277,7 @@
       このスコープのこれからのトレースのために、 :meth:`trace_dispatch` メソッドの
       参照を返します。
 
+
    .. method:: dispatch_exception(frame, arg)
 
       .. If the debugger should stop at this exception, invokes the
@@ -266,12 +293,14 @@
       このスコープのこれからのトレースのために、 :meth:`trace_dispatch` メソッドの
       参照を返します。
 
+
    .. Normally derived classes don't override the following methods, but they may
       if they want to redefine the definition of stopping and breakpoints.
 
    通常、継承クラスは以下のメソッド群をオーバーライドしません。
    しかし、停止やブレークポイント機能を再定義したい場合には、オーバーライドする
    こともあります。
+
 
    .. method:: stop_here(frame)
 
@@ -280,6 +309,7 @@
 
       このメソッドは *frame* がコールスタック中で :attr:`botframe` よりも下にあるかチェックします。
       :attr:`botframe` はデバッグを開始したフレームです。
+
 
    .. method:: break_here(frame)
 
@@ -292,6 +322,7 @@
       ブレークポイントがテンポラリブレークポイントだった場合、このメソッドはその
       ブレークポイントを削除します。
 
+
    .. method:: break_anywhere(frame)
 
       .. This method checks if there is a breakpoint in the filename of the current
@@ -299,10 +330,12 @@
 
       このメソッドは、現在のフレームのファイル名の中にブレークポイントが存在するかどうかをチェックします。
 
+
    .. Derived classes should override these methods to gain control over debugger
       operation.
 
    継承クラスはデバッガー操作をするために以下のメソッド群をオーバーライドするべきです。
+
 
    .. method:: user_call(frame, argument_list)
 
@@ -313,6 +346,7 @@
       このメソッドは、呼ばれた関数の中でブレークする必要がある可能性がある場合に、
       :meth:`dispatch_call` から呼び出されます。
 
+
    .. method:: user_line(frame)
 
       .. This method is called from :meth:`dispatch_line` when either
@@ -320,6 +354,7 @@
 
       このメソッドは、 :meth:`stop_here` か :meth:`break_here` が True を返したときに、
       :meth:`dispatch_line` から呼び出されます。
+
 
    .. method:: user_return(frame, return_value)
 
@@ -329,6 +364,7 @@
       このメソッドは、 :meth:`stop_here` が True を返したときに、 :meth:`dispatch_return`
       から呼び出されます。
 
+
    .. method:: user_exception(frame, exc_info)
 
       .. This method is called from :meth:`dispatch_exception` when
@@ -337,11 +373,13 @@
       このメソッドは、 :meth:`stop_here` が True を返したときに、 :meth:`dispatch_exception`
       から呼び出されます。
 
+
    .. method:: do_clear(arg)
 
       .. Handle how a breakpoint must be removed when it is a temporary one.
 
       ブレークポイントがテンポラリブレークポイントだったときに、それをどう削除するかを決定します。
+
 
       .. This method must be implemented by derived classes.
 
@@ -353,11 +391,13 @@
 
    継承クラスとクライアントは、ステップ状態に影響を及ぼすために以下のメソッドを呼び出すことができます。
 
+
    .. method:: set_step()
 
       .. Stop after one line of code.
 
       コードの次の行でストップします。
+
 
    .. method:: set_next(frame)
 
@@ -371,6 +411,7 @@
       .. Stop when returning from the given frame.
 
       指定されたフレームから抜けるときにストップします。
+
 
    .. method:: set_until(frame)
 
@@ -389,6 +430,7 @@
       *frame* からデバッグを開始します。 *frame* が指定されなかった場合、
       デバッグは呼び出し元のフレームから開始します。
 
+
    .. method:: set_continue()
 
       .. Stop only at breakpoints or when finished.  If there are no breakpoints,
@@ -397,6 +439,7 @@
       ブレークポイントに到達するか終了したときにストップします。
       もしブレークポイントが1つも無い場合、システムのトレース関数を None
       に設定します。
+
 
    .. method:: set_quit()
 
@@ -416,6 +459,7 @@
    これらのメソッドは、何か悪いことがあればエラーメッセージを含む文字列を返し、
    すべてが順調であれば ``None`` を返します。
 
+
    .. method:: set_break(filename, lineno[, temporary=0[, cond[, funcname]]])
 
       .. Set a new breakpoint.  If the *lineno* line doesn't exist for the
@@ -427,6 +471,7 @@
       *filename* は、 :meth:`canonic` メソッドで説明されているような、標準形である
       必要があります。
 
+
    .. method:: clear_break(filename, lineno)
 
       .. Delete the breakpoints in *filename* and *lineno*.  If none were set, an
@@ -434,6 +479,7 @@
 
       *filename* の *lineno* 行にあるブレークポイントを削除します。
       もしブレークポイントが無かった場合、エラーメッセージを返します。
+
 
    .. method:: clear_bpbynumber(arg)
 
@@ -445,6 +491,7 @@
       削除します。
       *arg* が数値でないか範囲外の場合、エラーメッセージを返します。
 
+
    .. method:: clear_all_file_breaks(filename)
 
       .. Delete all breakpoints in *filename*.  If none were set, an error message
@@ -453,17 +500,20 @@
       *filename* に含まれるすべてのブレークポイントを削除します。
       もしブレークポイントが無い場合、エラーメッセージを返します。
 
+
    .. method:: clear_all_breaks()
 
       .. Delete all existing breakpoints.
 
       すべてのブレークポイントを削除します。
 
+
    .. method:: get_break(filename, lineno)
 
       .. Check if there is a breakpoint for *lineno* of *filename*.
 
       *filename* の *lineno* にブレークポイントが存在するかどうかをチェックします。
+
 
    .. method:: get_breaks(filename, lineno)
 
@@ -473,12 +523,14 @@
       *filename* の *lineno* にあるすべてのブレークポイントを返します。
       ブレークポイントが存在しない場合は空のリストを返します。
 
+
    .. method:: get_file_breaks(filename)
 
       .. Return all breakpoints in *filename*, or an empty list if none are set.
 
       *filename* の中のすべてのブレークポイントを返します。
       ブレークポイントが存在しない場合は空のリストを返します。
+
 
    .. method:: get_all_breaks()
 
@@ -493,6 +545,7 @@
    継承クラスとクライアントは以下のメソッドを呼んでスタックトレースを表現する
    データ構造を取得することができます。
 
+
    .. method:: get_stack(f, t)
 
       .. Get a list of records for a frame and all higher (calling) and lower
@@ -501,6 +554,7 @@
       与えられたフレームおよび上位(呼び出し側)と下位のすべてのフレームに対するレコードのリストと、
       上位フレームのサイズを得ます。
 
+
    .. method:: format_stack_entry(frame_lineno, [lprefix=': '])
 
       .. Return a string with information about a stack entry, identified by a
@@ -508,6 +562,7 @@
 
       ``(frame, lineno)`` で指定されたスタックエントリに関する次のような情報を持つ
       文字列を返します。
+
 
       .. * The canonical form of the filename which contains the frame.
          * The function name, or ``"<lambda>"``.
@@ -521,11 +576,13 @@
       * 戻り値
       * (あれば)その行のコード
 
+
    .. The following two methods can be called by clients to use a debugger to debug
       a :term:`statement`, given as a string.
 
    以下の2つのメソッドは、文字列として渡された文(:term:`statement`)をデバッグするもので、
    クライアントから利用されます。
+
 
    .. method:: run(cmd, [globals, [locals]])
 
@@ -536,6 +593,7 @@
       *globals* はデフォルトでは :attr:`__main__.__dict__` で、 *locals* はデフォルトでは
       *globals* です。
 
+
    .. method:: runeval(expr, [globals, [locals]])
 
       .. Debug an expression executed via the :func:`eval` function.  *globals* and
@@ -544,11 +602,13 @@
       :func:`eval` 関数を利用して式を実行しデバッグします。
       *globals* と *locals* は :meth:`run` と同じ意味です。
 
+
    .. method:: runctx(cmd, globals, locals)
 
       .. For backwards compatibility.  Calls the :meth:`run` method.
 
       後方互換性のためのメソッドです。 :meth:`run` を使ってください。
+
 
    .. method:: runcall(func, *args, **kwds)
 
@@ -561,6 +621,7 @@
 
 最後に、このモジュールは以下の関数を提供しています。
 
+
 .. function:: checkfuncname(b, frame)
 
    .. Check whether we should break here, depending on the way the breakpoint *b*
@@ -568,6 +629,7 @@
 
    この場所でブレークする必要があるかどうかを、ブレークポイント *b* が設定された
    方法に依存する方法でチェックします。
+
 
    .. If it was set via line number, it checks if ``b.line`` is the same as the one
       in the frame also passed as argument.  If the breakpoint was set via function
@@ -579,6 +641,7 @@
    ブレークポイントが関数名で設定されていた場合、この関数は *frame* が指定された関数の
    ものであるかどうかと、その関数の最初の行であるかどうかをチェックします。
 
+
 .. function:: effective(file, line, frame)
 
    .. Determine if there is an effective (active) breakpoint at this line of code.
@@ -588,6 +651,7 @@
       アクティブなブレークポイントがこのコードの行にあるかどうかをチェックします。
       ブレークポイントがあればその番号を、なければ 0 を返します。
 
+
    .. Called only if we know there is a breakpoint at this location.  Returns the
       breakpoint that was triggered and a flag that indicates if it is ok to delete
       a temporary breakpoint.
@@ -596,6 +660,7 @@
    発動中のブレークポイントと、(そのブレークポイントが
    テンポラリブレークポイントだったときに)削除しても良いかどうかを示すフラグを
    返します。
+
 
    (訳注: (breakpoint, 0 or 1) のタプルを返します。タプルの2つ目の要素が1のとき、かつ、
    breakpoint がテンポラリな場合に、そのブレークポイントを削除できるという意味です)
