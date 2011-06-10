@@ -7,7 +7,7 @@
 .. The :mod:`bdb` module handles basic debugger functions, like setting breakpoints
    or managing execution via the debugger.
 
-:mod:`bdb` モジュールは、テンポラリブレークポイントを設定したり、デバッガー経由で実行を管理するような、
+:mod:`bdb` モジュールは、ブレークポイントを設定したり、デバッガー経由で実行を管理するような、
 基本的なデバッガー機能を提供します
 
 .. The following exception is defined:
@@ -153,7 +153,7 @@
          :attr:`quitting` attributes with values ready to start debugging.
 
       :attr:`botframe`, :attr:`stopframe`, :attr:`returnframe`, :attr:`quitting`
-      属性を、デバッグを始める準備ができている状態に設定します。
+      属性を、デバッグを始められる状態に設定します。
 
    .. method:: trace_dispatch(frame, event, arg)
 
@@ -167,8 +167,8 @@
          the type of event (passed as a string) that is about to be executed.
          *event* can be one of the following:
 
-      デフォルトの実装は、実行しようとしている *event* (文字列として渡されます)に基づいて
-      フレームにどうディスパッチするかを決定します。
+      デフォルトの実装は、実行しようとしている *event* (文字列として渡されます) の種類に基づいて
+      フレームのディスパッチ方法を決定します。
       *event* は次のうちのどれかです。
 
       .. * ``"line"``: A new line of code is going to be executed.
@@ -180,18 +180,18 @@
          * ``"c_return"``: A C function has returned.
          * ``"c_exception"``: A C function has thrown an exception.
 
-      * ``"line"``: 新しい行を実行しようとしています
+      * ``"line"``: 新しい行を実行しようとしています。
       * ``"call"``: 関数が呼び出されているか、別のコードブロックに入ります。
-      * ``"return"``: 関数か別のコードブロックからreturnします。
+      * ``"return"``: 関数か別のコードブロックからreturnしようとしています。
       * ``"exception"``: 例外が発生しました。
       * ``"c_call"``: C関数を呼び出そうとしています。
-      * ``"c_return"``: C関数から戻りました。
+      * ``"c_return"``: C関数からreturnしました。
       * ``"c_exception"``: C関数が例外を投げました。
 
       .. For the Python events, specialized functions (see below) are called.  For
          the C events, no action is taken.
 
-      Pythonのイベントについては、以下の専用の関数群が呼ばれます。Cのイベントについては何もしません。
+      Pythonのイベントに対しては、以下の専用の関数群が呼ばれます。Cのイベントに対しては何もしません。
 
       .. The *arg* parameter depends on the previous event.
 
@@ -269,9 +269,9 @@
    .. Normally derived classes don't override the following methods, but they may
       if they want to redefine the definition of stopping and breakpoints.
 
-      通常、継承クラスは以下のメソッド群をオーバーライドしません。
-      しかし、停止やブレークポイント機能を再定義したい場合には、オーバーライドする
-      こともあります。
+   通常、継承クラスは以下のメソッド群をオーバーライドしません。
+   しかし、停止やブレークポイント機能を再定義したい場合には、オーバーライドする
+   こともあります。
 
    .. method:: stop_here(frame)
 
@@ -351,13 +351,13 @@
    .. Derived classes and clients can call the following methods to affect the
       stepping state.
 
-   継承クラスとクライアントは、ステップ状態に関する以下のメソッドを呼び出すことができます。
+   継承クラスとクライアントは、ステップ状態に影響を及ぼすために以下のメソッドを呼び出すことができます。
 
    .. method:: set_step()
 
       .. Stop after one line of code.
 
-      1行後ろでストップします。
+      コードの次の行でストップします。
 
    .. method:: set_next(frame)
 
@@ -387,7 +387,7 @@
          starts from caller's frame.
 
       *frame* からデバッグを開始します。 *frame* が指定されなかった場合、
-      デバッグは呼び出しもとのフレームから開始します。
+      デバッグは呼び出し元のフレームから開始します。
 
    .. method:: set_continue()
 
@@ -471,7 +471,7 @@
          none are set.
 
       *filename* の *lineno* にあるすべてのブレークポイントを返します。
-      ブレークポイントが存在しない場合空のリストを返します。
+      ブレークポイントが存在しない場合は空のリストを返します。
 
    .. method:: get_file_breaks(filename)
 
@@ -498,21 +498,22 @@
       .. Get a list of records for a frame and all higher (calling) and lower
          frames, and the size of the higher part.
 
-      .. TODO: コードを読んでから翻訳する.
+      与えられたフレームおよび上位(呼び出し側)と下位のすべてのフレームに対するレコードのリストと、
+      上位フレームのサイズを得ます。
 
    .. method:: format_stack_entry(frame_lineno, [lprefix=': '])
 
       .. Return a string with information about a stack entry, identified by a
          ``(frame, lineno)`` tuple:
 
+      ``(frame, lineno)`` で指定されたスタックエントリに関する次のような情報を持つ
+      文字列を返します。
+
       .. * The canonical form of the filename which contains the frame.
          * The function name, or ``"<lambda>"``.
          * The input arguments.
          * The return value.
          * The line of code (if it exists).
-
-      ``(frame, lineno)`` で指定されたスタックエントリに関する次のような情報を持つ
-      文字列を返します。
 
       * そのフレームを含むファイル名の標準形
       * 関数名、もしくは ``"<lambda>"``
@@ -565,8 +566,8 @@
    .. Check whether we should break here, depending on the way the breakpoint *b*
       was set.
 
-      この場所でブレークする必要があるかどうかを、ブレークポイント *b* が設定された
-      方法に依存する方法でチェックします。
+   この場所でブレークする必要があるかどうかを、ブレークポイント *b* が設定された
+   方法に依存する方法でチェックします。
 
    .. If it was set via line number, it checks if ``b.line`` is the same as the one
       in the frame also passed as argument.  If the breakpoint was set via function
@@ -583,15 +584,16 @@
    .. Determine if there is an effective (active) breakpoint at this line of code.
       Return breakpoint number or 0 if none.
 
-   アクティブなブレークポイントがこのコードの行にあるかどうかをチェックします。
-   ブレークポイントがあればその番号を、なければ (None, None) を返します。
+   .. (訳注: この段落の説明は間違っているので訳さない)
+      アクティブなブレークポイントがこのコードの行にあるかどうかをチェックします。
+      ブレークポイントがあればその番号を、なければ 0 を返します。
 
    .. Called only if we know there is a breakpoint at this location.  Returns the
       breakpoint that was triggered and a flag that indicates if it is ok to delete
       a temporary breakpoint.
 
    その場所にブレークポイントがあると判っている場合にだけ呼び出されます。
-   アクティブな(triggerdな)ブレークポイントと、(そのブレークポイントが
+   発動中のブレークポイントと、(そのブレークポイントが
    テンポラリブレークポイントだったときに)削除しても良いかどうかを示すフラグを
    返します。
 
@@ -603,4 +605,4 @@
 
    .. Starts debugging with a :class:`Bdb` instance from caller's frame.
 
-   :class:`Bdb` クラスのインスタンスを使って、呼び出しもとのフレームからデバッグを開始します。
+   :class:`Bdb` クラスのインスタンスを使って、呼び出し元のフレームからデバッグを開始します。
