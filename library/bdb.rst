@@ -101,11 +101,11 @@
       * ヒットカウント
 
 
-.. class:: Bdb()
+.. class:: Bdb(skip=None)
 
-   .. The :class:`Bdb` acts as a generic Python debugger base class.
+   .. The :class:`Bdb` class acts as a generic Python debugger base class.
 
-   :class:`Bdb` は一般的なPythonデバッガーの基本クラスとして振舞います。
+   :class:`Bdb` クラスは一般的なPythonデバッガーの基本クラスとして振舞います。
 
    .. This class takes care of the details of the trace facility; a derived class
       should implement user interaction.  The standard debugger class
@@ -115,6 +115,23 @@
    派生クラスが実装するべきです。標準ライブラリのデバッガクラス (:class:`pdb.Pdb`)
    がその利用例です。
 
+   .. The *skip* argument, if given, must be an iterable of glob-style
+      module name patterns.  The debugger will not step into frames that
+      originate in a module that matches one of these patterns. Whether a
+      frame is considered to originate in a certain module is determined
+      by the ``__name__`` in the frame globals.
+
+   *skip* 引数は、もし与えられたならグロブ形式のモジュール名パターンの iterable でなければなりません。
+   デバッガはこれらのパターンのどれかにマッチするモジュールで発生したフレームにステップインしなくなります。
+   フレームが特定のモジュールで発生したかどうかは、フレームのグローバル変数の ``__name__`` によって決定されます。
+
+
+   .. .. versionadded:: 2.7
+   ..    The *skip* argument.
+
+   .. versionadded:: 2.7
+      *skip* 引数
+ 
    .. The following methods of :class:`Bdb` normally don't need to be overridden.
 
    以下の :class:`Bdb` のメソッドは、通常オーバーライドする必要はありません。
@@ -180,8 +197,7 @@
 
       *arg* 引数は以前のイベントに依存します。
 
-      ..
-         See the documentation for :func:`sys.settrace` for more information on the
+      .. See the documentation for :func:`sys.settrace` for more information on the
          trace function.  For more information on code and frame objects, refer to
          :ref:`types`.
 
