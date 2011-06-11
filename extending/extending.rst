@@ -16,6 +16,11 @@ C プログラムの書き方を知っているなら、Python に新たな組�
 
 拡張モジュールのコンパイル方法は、モジュールの用途やシステムの設定方法に依存します; 詳細は後の章で説明します。
 
+もし C ライブラリ関数やシステムコールを呼び出すような使い方を考えているなら、
+C のコードをいちいち書く前に :mod:`ctypes` モジュールの使用を検討してください。
+:mod:`ctypes` モジュールを使うと C のコードを扱う Python のコードが書けるようになるだけでなく、
+拡張モジュールを書きコンパイルして CPython に縛られてしまうよりも Python の実装間での互換性を高めることができます。
+
 
 .. _extending-simpleexample:
 
@@ -37,9 +42,12 @@ C プログラムの書き方を知っているなら、Python に新たな組�
 
    #include <Python.h>
 
-これで、Python API を取り込みます (必要なら、モジュールの用途に関する説明や、著作権表示を追加します)。 Python
-は、システムによっては標準ヘッダの定義に影響するようなプリプロセッサ定義を行っているので、 :file:`Python.h` は
-いずれの標準ヘッダよりも前にインクルードせねばなりません。
+これで、Python API を取り込みます (必要なら、モジュールの用途に関する説明や、著作権表示を追加します)。 
+
+.. note::
+
+   Python は、システムによっては標準ヘッダの定義に影響するようなプリプロセッサ定義を行っているので、 :file:`Python.h` を
+   いずれの標準ヘッダよりも前にインクルード *せねばなりません* 。
 
 :file:`Python.h` で定義されているユーザから可視のシンボルは、全て接頭辞 ``Py`` または ``PY`` が付いています。ただし、
 標準ヘッダファイル内の定義は除きます。簡単のためと、Python 内で広範に使うことになるという理由から、 ``"Python.h"``
@@ -174,8 +182,25 @@ Python レベルでの例外オブジェクトの名前は :exc:`spam.error` に
 もし :c:data:`SpamError` がぶら下がりポインタになってしまうと、 C コードが例外を送出しようとしたときにコアダンプや意図しない副作用を
 引き起こすことがあります。
 
-この例にある、関数の戻り値型に PyMODINIT_FUNC の使う方法については後で議論します。
+この例にある、関数の戻り値型に ``PyMODINIT_FUNC`` を使う方法については後で議論します。
 
+:cfunc:`PyErr_SetString` を次のように呼び出すと、拡張モジュールで例外 :exc:`spam.error` を送出することができます::
+ 
+   static PyObject *
+   spam_system(PyObject *self, PyObject *args)
+   {
+       const char *command;
+       int sts;
+ 
+       if (!PyArg_ParseTuple(args, "s", &command))
+           return NULL;
+       sts = system(command);
+       if (sts < 0) {
+           PyErr_SetString(SpamError, "System command failed");
+           return NULL;
+       }
+       return PyLong_FromLong(sts);
+   }
 
 .. _backtoexample:
 
@@ -1032,16 +1057,23 @@ C API のポインタ配列を初期化するよう手配しなければなり�
    static int
    import_spam(void)
    {
-       PyObject *module = PyImport_ImportModule("spam");
+       PyObject *c_api_object;
+       PyObject *module;
 
-       if (module != NULL) {
-           PyObject *c_api_object = PyObject_GetAttrString(module, "_C_API");
-           if (c_api_object == NULL)
-               return -1;
-           if (PyCObject_Check(c_api_object))
-               PySpam_API = (void **)PyCObject_AsVoidPtr(c_api_object);
-           Py_DECREF(c_api_object);
+       module = PyImport_ImportModule("spam");
+       if (module == NULL)
+           return -1;
+
+       c_api_object = PyObject_GetAttrString(module, "_C_API");
+       if (c_api_object == NULL) {
+           Py_DECREF(module);
+           return -1;
        }
+       if (PyCObject_Check(c_api_object))
+           PySpam_API = (void **)PyCObject_AsVoidPtr(c_api_object);
+
+       Py_DECREF(c_api_object);
+       Py_DECREF(module);
        return 0;
    }
 
