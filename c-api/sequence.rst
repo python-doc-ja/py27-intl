@@ -12,7 +12,7 @@
 
 
 .. c:function:: Py_ssize_t PySequence_Size(PyObject *o)
-               Py_ssize_t PySequence_Length(PyObject *o)
+                Py_ssize_t PySequence_Length(PyObject *o)
 
    .. index:: builtin: len
 
@@ -22,10 +22,6 @@
    .. versionchanged:: 2.5
       これらの関数は以前は :c:type:`int` を返していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
-
-.. c:function:: Py_ssize_t PySequence_Length(PyObject *o)
-
-   :c:func:`PySequence_Size` の別名です。
 
 
 .. c:function:: PyObject* PySequence_Concat(PyObject *o1, PyObject *o2)
@@ -38,6 +34,10 @@
 
    成功するとオブジェクト *o* の *count* 回繰り返しを返し、失敗すると *NULL* を返します。
    Python の式 ``o * count`` と同じです。
+
+   .. versionchanged:: 2.5
+      この関数は以前は *count* の型に :c:type:`int` を利用していました。
+      この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
 
 .. c:function:: PyObject* PySequence_InPlaceConcat(PyObject *o1, PyObject *o2)
@@ -75,7 +75,7 @@
       この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. c:function:: int PySequence_SetItem(PyObject *o, int Py_ssize_t, PyObject *v)
+.. c:function:: int PySequence_SetItem(PyObject *o, int Py_ssize_t i, PyObject *v)
 
    *o* の *i* 番目の要素に *v* を代入します。失敗すると ``-1`` を返します。 Python の文 ``o[i] = v`` と同じです。
    この関数は *v* への参照を盗み取り *ません* 。
@@ -100,7 +100,7 @@
       この関数は以前は *i1*, *i2* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
-.. c:function:: int PySequence_DelSlice(PyObject *o, int Py_ssize_t, int Py_ssize_t)
+.. c:function:: int PySequence_DelSlice(PyObject *o, Py_ssize_t i1, Py_ssize_t i2)
 
    シーケンスオブジェクト *o* の *i1* から *i2* までの間のスライスを削除します。失敗すると ``-1`` を返します。 Python の文
    ``del o[i1:i2]`` と同じです。
@@ -171,14 +171,14 @@
 
    リストのサイズが変更されるとき、メモリ再確保が要素の配列を再配置するかもしれない
    ことに注意してください。そのため、シーケンスの変更が発生しないコンテキストでのみ
-   背後にあるポインターを使ってください。
+   背後にあるポインタを使ってください。
 
    .. versionadded:: 2.4
 
 
 .. c:function:: PyObject* PySequence_ITEM(PyObject *o, Py_ssize_t i)
 
-   成功すると the *i* th element of *o* を返し、失敗すると *NULL* を返します。
+   成功すると *o* の *i* 番目の要素を返し、失敗すると *NULL* を返します。
    :c:func:`PySequence_GetItem` ですが、 :c:func:`PySequence_Check(o)` が真になるかチェックせず、
    負のインデクスに対する調整を行いません。
 
