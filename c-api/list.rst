@@ -58,8 +58,8 @@ List Objects
 
 .. c:function:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
 
-   *p* の指すリストオブジェクト内の、位置 *pos* にあるオブジェクトを返します。位置は正である必要があり、リスとの終端からのインデックスは
-   サポートされていません。 *pos* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
+   *list* の指すリストオブジェクト内の、位置 *index* にあるオブジェクトを返します。位置は正である必要があり、リスとの終端からのインデックスは
+   サポートされていません。 *index* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
 
    .. versionchanged:: 2.5
       この関数は以前は *index* の型に :c:type:`int` を利用していました。
@@ -155,6 +155,6 @@ List Objects
 
    .. index:: builtin: tuple
 
-   *list* の内容が入った新たなタプルオブジェクトを返します; ``tuple(list)``. と同じです。
+   *list* の内容が入った新たなタプルオブジェクトを返します; ``tuple(list)`` と同じです。
 
 
