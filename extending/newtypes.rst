@@ -29,7 +29,7 @@
 
 .. note::
 
-   Python 2.2 から、新しい型を定義する方法がかなり変わって (よくなって) います。この文書は Python 2.2 およびそれ以降で
+   Python 2.2 から、新しい型を定義する方法がかなり変わって (良くなって) います。この文書は Python 2.2 およびそれ以降で
    新しい型をどうやって定義するかについて述べています。古いバージョンの Python をサポートする必要がある場合は、 `この文書の古い版
    <http://www.python.org/doc/versions/>`_ を参照してください。
 
@@ -80,26 +80,26 @@ Python ランタイムでは、すべての Python オブジェクトは :ctype:
 
    static PyTypeObject noddy_NoddyType = {
        PyObject_HEAD_INIT(NULL)
-       0,                         / *ob_size* /
-       "noddy.Noddy",             / *tp_name* /
-       sizeof(noddy_NoddyObject), / *tp_basicsize* /
-       0,                         / *tp_itemsize* /
-       0,                         / *tp_dealloc* /
-       0,                         / *tp_print* /
-       0,                         / *tp_getattr* /
-       0,                         / *tp_setattr* /
-       0,                         / *tp_compare* /
-       0,                         / *tp_repr* /
-       0,                         / *tp_as_number* /
-       0,                         / *tp_as_sequence* /
-       0,                         / *tp_as_mapping* /
+       0,                         /*ob_size*/
+       "noddy.Noddy",             /*tp_name*/
+       sizeof(noddy_NoddyObject), /*tp_basicsize*/
+       0,                         /*tp_itemsize*/
+       0,                         /*tp_dealloc*/
+       0,                         /*tp_print*/
+       0,                         /*tp_getattr*/
+       0,                         /*tp_setattr*/
+       0,                         /*tp_compare*/
+       0,                         /*tp_repr*/
+       0,                         /*tp_as_number*/
+       0,                         /*tp_as_sequence*/
+       0,                         /*tp_as_mapping*/
        0,                         /*tp_hash */
-       0,                         / *tp_call* /
-       0,                         / *tp_str* /
-       0,                         / *tp_getattro* /
-       0,                         / *tp_setattro* /
-       0,                         / *tp_as_buffer* /
-       Py_TPFLAGS_DEFAULT,        / *tp_flags* /
+       0,                         /*tp_call*/
+       0,                         /*tp_str*/
+       0,                         /*tp_getattro*/
+       0,                         /*tp_setattro*/
+       0,                         /*tp_as_buffer*/
+       Py_TPFLAGS_DEFAULT,        /*tp_flags*/
        "Noddy objects",           /* tp_doc */
    };
 
@@ -161,7 +161,7 @@ Python 用にコンパイルされた拡張モジュールとのバイナリ上�
 このあとのいくつかのメソッドは使わないのでとばして、クラスのフラグ (flags) には :const:`Py_TPFLAGS_DEFAULT` を入れます。
 ::
 
-   Py_TPFLAGS_DEFAULT,        / *tp_flags* /
+   Py_TPFLAGS_DEFAULT,        /*tp_flags*/
 
 すべての型はフラグにこの定数を含めておく必要があります。これは現在のバージョンの Python で定義されているすべてのメンバを許可します。
 
@@ -384,9 +384,9 @@ Python では、 :attr:`tp_init` メンバは :meth:`__init__` メソッドと�
 
 * その参照カウントが 1 より大きいと確信できる場合。
 
-* そのオブジェクトの解放があなたのタイプのコードにコールバックするようなことが決してない場合 [#]_。
+* そのオブジェクトの解放があなたのタイプのコードにコールバックするようなことが決してない場合 [#]_ 。
 
-* ガベージコレクションがサポートされていない場合に :attr:`tp_dealloc` ハンドラで参照カウントを減らすとき [#]_。
+* ガベージコレクションがサポートされていない場合に :attr:`tp_dealloc` ハンドラで参照カウントを減らすとき [#]_ 。
 
 ここではインスタンス変数を属性として見えるようにしたいのですが、これにはいくつもの方法があります。
 もっとも簡単な方法は、メンバの定義を与えることです::
@@ -627,7 +627,7 @@ Python は循環ガベージコレクション機能をもっており、これ�
 ゼロにはなりません。嬉しいことに Python には循環ガベージコレクション機能がありますから、最終的にはこのリストが不要であることを検出し、解放できます。
 
 :class:`Noddy` クラスの 2番目の例では、 :attr:`first` 属性と :attr:`last`
-属性にどんなオブジェクトでも格納できるようになっていました。  [#]_。つまり、 :class:`Noddy` オブジェクトの参照は循環しうるのです::
+属性にどんなオブジェクトでも格納できるようになっていました。  [#]_ 。つまり、 :class:`Noddy` オブジェクトの参照は循環しうるのです::
 
    >>> import noddy2
    >>> n = noddy2.Noddy()
