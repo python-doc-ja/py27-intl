@@ -20,15 +20,15 @@
    トップレベルパッケージではなく名前つきモジュール (named module) になるようにします。 (残念ながらこのやり方には、 *name*
    が実際にはサブモジュールでなくサブパッケージを指定している場合、パッケージの  ``__all__``   変数に指定されている
    サブモジュールがロードされてしまうという副作用があります。) import されたモジュールへの新たな参照を返します。失敗した
-   場合には例外をセットし、 *NULL* を返します。 Python 2.4 以前では、失敗した場合でもモジュールは生成されていることがあります ---
+   場合には例外をセットし、 *NULL* を返します。 Python 2.4 より前のバージョンでは、失敗した場合でもモジュールは生成されていることがあります ---
    ``sys.modules``  を使って調べてください。 Python 2.4 以降では、 import に失敗したモジュールは
    ``sys.modules`` に残りません。
 
    .. versionchanged:: 2.4
-      import に失敗した場合、不完全なモジュールを除去するようになりました.
+      import に失敗した場合、不完全なモジュールを除去するようになりました。
 
    .. versionchanged:: 2.6
-      常に絶対 import を使うようになりました。
+      常に、絶対 import を使うようになりました。
 
 
 .. c:function:: PyObject* PyImport_ImportModuleNoBlock(const char *name)
@@ -55,7 +55,7 @@
    と同じく、パッケージに対してサブモジュールを要求した場合の戻り値は通常、空でない *fromlist* を指定しない限りトップレベルパッケージになります。
 
    .. versionchanged:: 2.4
-      import に失敗した場合、不完全なモジュールを除去するようになりました.
+      import に失敗した場合、不完全なモジュールを除去するようになりました。
 
    .. versionchanged:: 2.6
       この関数は :c:func:`PyImport_ImportModuleLevel` のエイリアスです。
@@ -86,7 +86,7 @@
    :mod:`rexec` や :mod:`ihooks` を使って import を行います。
 
    .. versionchanged:: 2.6
-      常に絶対importを使うようになりました。
+      常に、絶対importを使うようになりました。
 
 
 .. c:function:: PyObject* PyImport_ReloadModule(PyObject *m)
@@ -132,13 +132,11 @@
    *name* が ``package.module`` 形式のドット名表記であった場合、まだ作成されていないパッケージ構造はその作成されないままになります。
 
    .. versionchanged:: 2.4
-      エラーが発生した場合に *name* を :attr:`sys.modules` から除去するようになりました.
+      エラーが発生した場合に *name* を :attr:`sys.modules` から除去するようになりました。
 
 
 .. c:function:: PyObject* PyImport_ExecCodeModuleEx(char *name, PyObject *co, char *pathname)
 
-   Like :c:func:`PyImport_ExecCodeModule`, but the :attr:`__file__` attribute of
-   the module object is set to *pathname* if it is non-``NULL``.
    :c:func:`PyImport_ExecCodeModule` に似ていますが、 *pathname* が ``NULL`` で無い場合、
    モジュールオブジェクトの :attr:`__file__` 属性に設定します。
 
