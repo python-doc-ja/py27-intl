@@ -12,7 +12,7 @@
 
 
 .. c:function:: Py_ssize_t PyMapping_Size(PyObject *o)
-               Py_ssize_t PyMapping_Length(PyObject *o)
+                Py_ssize_t PyMapping_Length(PyObject *o)
 
    .. index:: builtin: len
 
