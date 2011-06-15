@@ -26,7 +26,7 @@
    .. index:: single: StringType (in module types)
 
    この :c:type:`PyTypeObject` のインスタンスは Python の文字列型を表現します; このオブジェクトは Python レイヤにおける
-   ``str`` や ``types.TypeType`` と同じです。 .
+   ``str`` や ``types.StringType`` と同じです。 .
 
 
 .. c:function:: int PyString_Check(PyObject *o)
@@ -208,6 +208,7 @@
    この関数では、関数の呼び出し後にオブジェクトに対して参照の所有権を持てるのは、関数を呼び出す前にすでに所有権を持っていた場合に限ります。)
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. c:function:: PyObject* PyString_InternFromString(const char *v)
@@ -216,6 +217,7 @@
    隔離済みの新たな文字列オブジェクトを返すか、同じ値を持つすでに隔離済みの文字列オブジェクトに対する新たな ("所有権を得た") 参照を返します。
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. c:function:: PyObject* PyString_Decode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
@@ -226,6 +228,7 @@
    が例外を送出した場合には *NULL* を返します。
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
    .. versionchanged:: 2.5
@@ -240,6 +243,7 @@
    Python の codec レジストリを使って行います。codec が例外を送出した場合には *NULL* を返します。
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
 .. c:function:: PyObject* PyString_Encode(const char *s, Py_ssize_t size, const char *encoding, const char *errors)
@@ -250,6 +254,7 @@
    が例外を送出した場合には *NULL* を返します。
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
 
    .. versionchanged:: 2.5
@@ -264,4 +269,5 @@
    *NULL* を返します。
 
    .. note::
+
       この関数は 3.x では利用できず、 PyBytes エイリアスもありません。
