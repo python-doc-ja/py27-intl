@@ -78,7 +78,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    このマクロは次のように展開されます。 ::
 
       _PyObject_EXTRA_INIT
-      1, type, size,+}}}
+      1, type, size,
 
 
 .. c:type:: PyCFunction
@@ -192,10 +192,8 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
 
 .. c:type:: PyMemberDef
 
-   Structure which describes an attribute of a type which corresponds to a C
-   struct member.  Its fields are:
-   type の構造体に C 言語のメンバとして格納されている、 type の属性を表す構造体です。
-   この構造体のフィールドは以下のとおりです。
+   type の C 構造体のメンバとして格納されている、ある型の属性を表す構造体です。
+   この構造体のフィールドは以下のとおりです:
 
 
    +------------------+-------------+-------------------------------+
@@ -243,7 +241,7 @@ Python では、オブジェクト型を定義する上で数多くの構造体�
    T_PYSSIZET      Py_ssize_t
    =============== ==================
 
-   :c:macro:`T_OBJECT` と :c:macro:`T_OBJECT_EX` は、
+   :c:macro:`T_OBJECT` と :c:macro:`T_OBJECT_EX` については、
    :c:macro:`T_OBJECT` がメンバが *NULL* だったときに ``None`` を返すのに対し、
    :c:macro:`T_OBJECT_EX` は :exc:`AttributeError` を発生させる点が異なります。
    :c:macro:`T_OBJECT_EX` は属性に対する :keyword:`del` 文をより正しくあつかうので、
