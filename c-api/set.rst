@@ -14,7 +14,7 @@
 
 .. versionadded:: 2.5
 
-このセクションでは :class:`set` と :class:`frozenset` の公開APIについて詳しく述べます。
+このセクションでは :class:`set` と :class:`frozenset` の公開 API について詳しく述べます。
 以降で説明していない機能は、抽象オブジェクトプロトコル ( :c:func:`PyObject_CallMethod`,
 :c:func:`PyObject_RichCompareBool`, :c:func:`PyObject_Hash`,
 :c:func:`PyObject_Repr`, :c:func:`PyObject_IsTrue`, :c:func:`PyObject_Print`,
@@ -30,20 +30,20 @@
    内部データを保存するのに用いられます。 :c:type:`PyDictObject`
    と同じように、小さい集合(set)に対しては(タプルのように)固定サイズであり、
    そうでない集合に対しては(リストと同じように)可変長のメモリブロックを用います。この構造体のどのフィールドも、非公開で変更される可能性があると考えて下さい。
-   すべてのアクセスは、構造体の中の値を直接操作するのではなく、ドキュメントされた APIを用いて行うべきです。
+   すべてのアクセスは、構造体の中の値を直接操作するのではなく、ドキュメントされた API を用いて行うべきです。
 
 
 .. c:var:: PyTypeObject PySet_Type
 
-   この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`set` 型を表します。
+   この :c:type:`PyTypeObject` のインスタンスは、Python の :class:`set` 型を表します。
 
 
 .. c:var:: PyTypeObject PyFrozenSet_Type
 
-   この :c:type:`PyTypeObject` のインスタンスは、Pythonの :class:`frozenset` 型を表します。
+   この :c:type:`PyTypeObject` のインスタンスは、Python の :class:`frozenset` 型を表します。
 
-以降の型チェックマクロはすべてのPythonオブジェクトに対するポインタに対して動作します。
-同様に、コンストラクタはすべてのイテレート可能なPythonオブジェクトに対して動作します。
+以降の型チェックマクロはすべての Python オブジェクトに対するポインタに対して動作します。
+同様に、コンストラクタはすべてのイテレート可能な Python オブジェクトに対して動作します。
 
 
 .. c:function:: int PySet_Check(PyObject *p)
@@ -62,7 +62,7 @@
 .. c:function:: int PyAnySet_Check(PyObject *p)
 
    *p* が :class:`set` か :class:`frozenset` 、あるいはそのサブタイプの
-   オブジェクトであれば、trueを返します。
+   オブジェクトであれば、true を返します。
 
 
 .. c:function:: int PyAnySet_CheckExact(PyObject *p)
@@ -79,14 +79,14 @@
 .. c:function:: PyObject* PySet_New(PyObject *iterable)
 
    *iterable* が返すオブジェクトを含む新しい :class:`set` を返します。 *iterable* が *NULL*
-   のときは、空のsetを返します。成功したら新しいsetを、失敗したら *NULL* を返します。 *iterable* がイテレート可能で無い場合は、
+   のときは、空の set を返します。成功したら新しい set を、失敗したら *NULL* を返します。 *iterable* がイテレート可能で無い場合は、
    :exc:`TypeError` を送出します。このコンストラクタは set をコピーするときにも使えます。 (``c=set(s)``)
 
 
 .. c:function:: PyObject* PyFrozenSet_New(PyObject *iterable)
 
    *iterable* が返すオブジェクトを含む新しい :class:`frozenset` を返します。 *iterable* が *NULL*
-   のときは、空のfrozensetを返します。 *iterable* がイテレート可能で無い場合は、 :exc:`TypeError` を送出します。
+   のときは、空の frozenset を返します。 *iterable* がイテレート可能で無い場合は、 :exc:`TypeError` を送出します。
 
    .. versionchanged:: 2.6
       完全に新しい :class:`frozenset` オブジェクトを返すことが保証されるように
@@ -115,8 +115,8 @@
 
 .. c:function:: int PySet_Contains(PyObject *anyset, PyObject *key)
 
-   見つかったら１を、見つからなかったら0を、エラーが発生したときは-1を返します。 Pythonの :meth:`__contains__`
-   メソッドと違って、この関数は非ハッシュsetを一時frozensetに自動で変換しません。
+   見つかったら 1 を、見つからなかったら 0 を、エラーが発生したときは -1 を返します。 Python の :meth:`__contains__`
+   メソッドと違って、この関数は非ハッシュ set を一時 frozenset に自動で変換しません。
    *key* がハッシュ可能で無い場合、 :exc:`TypeError` を送出します。 *anyset* が :class:`set`,
    :class:`frozenset` 及びそのサブタイプのオブジェクトで無い場合は :exc:`PyExc_SystemError` を送出します。
 
@@ -124,8 +124,8 @@
 .. c:function:: int PySet_Add(PyObject *set, PyObject *key)
 
    :class:`set` のインスタンスに *key* を追加します。 :class:`frozenset` のインスタンスに使わないで下さい。
-   成功したら0を、失敗したら-1を返します。 *key* がハッシュ可能でないなら、 :exc:`TypeError` を送出します。
-   setを大きくする余裕が無い場合は、 :exc:`MemoryError` を送出します。
+   成功したら 0 を、失敗したら -1 を返します。 *key* がハッシュ可能でないなら、 :exc:`TypeError` を送出します。
+   set を大きくする余裕が無い場合は、 :exc:`MemoryError` を送出します。
    *set* が :class:`set` とそのサブタイプのインスタンスで無い場合は、 :exc:`SystemError` を送出します。
 
    .. versionchanged:: 2.6
@@ -139,20 +139,20 @@
 
 .. c:function:: int PySet_Discard(PyObject *set, PyObject *key)
 
-   見つかって削除したら1を返します。見つからなかったら何もせずに0を返します。エラーが発生したら-1を返します。
-   keyが無くても :exc:`KeyError` を送出しません。 *key* がハッシュ不可能であれば :exc:`TypeError` を送出します。
-   Pythonの :meth:`discard` メソッドと違って、この関数は非ハッシュsetsを一時frozensetに変換しません。
+   見つかって削除したら 1 を返します。見つからなかったら何もせずに 0 を返します。エラーが発生したら -1 を返します。
+   key が無くても :exc:`KeyError` を送出しません。 *key* がハッシュ不可能であれば :exc:`TypeError` を送出します。
+   Python の :meth:`discard` メソッドと違って、この関数は非ハッシュ set を一時 frozenset に変換しません。
    *set* が :class:`set` とそのサブタイプのインスタンスで無いときは、 :exc:`PyExc_SystemError` を送出します。
 
 
 .. c:function:: PyObject* PySet_Pop(PyObject *set)
 
    *set* の中の要素のどれかに対する新しい参照を返し、そのオブジェクトを *set* から削除します。失敗したら *NULL* を返します。
-   setが空の場合には :exc:`KeyError` を送出します。 *set* が :class:`set` とそのサブタイプのインスタンスで無い場合は、
+   set が空の場合には :exc:`KeyError` を送出します。 *set* が :class:`set` とそのサブタイプのインスタンスで無い場合は、
    :exc:`SystemError` を送出します。
 
 
 .. c:function:: int PySet_Clear(PyObject *set)
 
-   setを空にします。
+   set を空にします。
 
