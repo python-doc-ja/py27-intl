@@ -82,8 +82,8 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
 
 .. c:function:: void PyObject_GC_UnTrack(void *op)
 
-   ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。 :c:func:`PyObject_GC_Track`
-   を呼び出して、除去したオブジェクトを再度追跡対象セットに追加できるので注意してください。メモリ解放関数 (deallocator,
+   ガベージコレクタが追跡しているコンテナオブジェクトの集合からオブジェクト *op* を除去します。再度 :c:func:`PyObject_GC_Track`
+   を呼び出して、除去したオブジェクトを追跡対象セットに追加できることに注意してください。メモリ解放関数 (deallocator,
    :attr:`tp_dealloc` ハンドラ) は、 :attr:`tp_traverse` ハンドラが使用しているフィールドのいずれかが無効化されるよりも
    以前にオブジェクトに対して呼び出されていなければなりません。
 
@@ -132,7 +132,7 @@ Python が循環参照を含むガベージの検出とコレクションをサ�
    .. versionadded:: 2.4
 
 :attr:`tp_clear` ハンドラは :c:type:`inquiry` 型にするか、オブジェクトが変更不能の場合には *NULL*
-にしなければなりません。 *NULL* if the object is immutable.
+にしなければなりません。
 
 
 .. c:type:: int (*inquiry)(PyObject *self)
