@@ -34,11 +34,6 @@
    *data* は標準的な :mimetype:`application/x-www-form-urlencoded` 形式のバッファでなくてはなりません。
    :func:`urllib.urlencode` 関数はマップ型か2タプルのシーケンスを取り、この形式の文字列を返します。
 
-   .. The optional *timeout* parameter specifies a timeout in seconds for blocking
-      operations like the connection attempt (if not specified, the global default
-      timeout setting will be used).  This actually only works for HTTP, HTTPS,
-      FTP and FTPS connections.
-
    オプションの *timeout* 引数は、接続開始などのブロックする操作におけるタイムアウト時間を秒数で指定します。
    (指定されなかった場合、グローバルのデフォルトタイムアウト時間が利用されます)
    この引数は、 HTTP, HTTPS, FTP, FTPS 接続でのみ有効です。
@@ -48,7 +43,7 @@
    * :meth:`geturl` --- 取得されたリソースの URL を返します。
      主に、リダイレクトが発生したかどうかを確認するために利用します。
 
-   * :meth:`info` --- 取得されたページのヘッダーなどのメタ情報を、 ``httplib.HTTPMessage``
+   * :meth:`info` --- 取得されたページのヘッダーなどのメタ情報を、 :class:`mimetools.Message`
      インスタンスとして返します。
      (`Quick Reference to HTTP Headers <http://www.cs.tut.fi/~jkorpela/http.html>`_ を参照してください)
 
@@ -57,6 +52,8 @@
    どのハンドラもリクエストを処理しなかった場合には ``None`` を返すことがあるので注意してください (デフォルトでインストールされる
    グローバルハンドラの :class:`OpenerDirector` は、 :class:`UnknownHandler`
    を使って上記の問題が起きないようにしています)。
+
+   さらに、デフォルトでインストールされる :class:`ProxyHandler` 
 
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました。
@@ -105,10 +102,6 @@
    この機能は、例えばサーバからの認証リクエストのように、変わった HTTP エラーを処理するのに役立ちます。
 
    .. attribute:: code
-
-      .. An HTTP status code as defined in `RFC 2616 <http://www.faqs.org/rfcs/rfc2616.html>`_.
-         This numeric value corresponds to a value found in the dictionary of
-         codes as found in :attr:`BaseHTTPServer.BaseHTTPRequestHandler.responses`.
 
       `RFC 2616 <http://www.faqs.org/rfcs/rfc2616.html>`_ に定義されているHTTPステータスコード。
       この数値型の値は、 :attr:`BaseHTTPServer.BaseHTTPRequestHandler.responses`
