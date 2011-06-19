@@ -296,7 +296,7 @@ Unixの「ホーム」ディレクトリの概念からとりました。とい�
 
 
 .. versionchanged:: 2.4
-   :option:`--home` は Unixでしかサポートされていませんでした.
+   :option:`--home` は Unixでしかサポートされていませんでした。
 
 
 .. _inst-alt-install-home:
@@ -356,7 +356,7 @@ Unixの「ホーム」ディレクトリの概念からとりました。とい�
 
 ちなみに、prefix スキームが重要な本当の理由は、単に標準の Unix  インストールが prefix スキームを使っているからです。ただし、
 そのときには、 :option:`--prefix` や :option:`--exec-prefix`  は Python 自体が
-``sys.prefix `` や `` sys.exec_prefix`` を使って決めます。というわけで、読者は prefix スキームを決して使うことは
+``sys.prefix`` や ``sys.exec_prefix`` を使って決めます。というわけで、読者は prefix スキームを決して使うことは
 あるまいと思っているかもしれませんが、 ``python setup.py install``  をオプションを何もつけずに実行していれば、常に prefix
 スキームを使っていることになるのです。
 
@@ -626,6 +626,7 @@ Windows では設定ファイルは以下のようになります:
 (2)
    Unixでは、環境変数 :envvar:`HOME` が定義されていない場合、標準モジュール :mod:`pwd`
    の :func:`getpwuid` 関数を使ってユーザのホームディレクトリを決定します。
+   このとき同時に Distutils によって :func:`os.path.expanduser` が実行されます。
 
 (3)
    現在のディレクトリ (通常は setup スクリプトがある場所) です。
@@ -639,8 +640,9 @@ Windows では設定ファイルは以下のようになります:
    Files\\Python\\distutils\\distutils.cfg` になります。
 
 (5)
-   Windows では、環境変数 :envvar:`HOME` が設定されていない場合、個人用の設定ファイルはどこにもなく、使われることもありません。
-   (言い換えれば、 Windows での Distutils はホームディレクトリがどこにあるか一切推測しようとしないということです。)
+   Windows では、環境変数 :envvar:`HOME` が設定されていない場合、
+   :envvar:`USERPROFILE` 、 :envvar:`HOMEDRIVE` 、 :envvar:`HOMEPATH` を順々に試します。
+   このとき同時に Distutils によって :func:`os.path.expanduser` が実行されます。
 
 
 .. _inst-config-syntax:
@@ -816,7 +818,7 @@ Python のライブラリ :file:`python25.lib`  を Borland の形式に変換�
 さて、 Distutils は異なる名前を持つこれらのライブラリをどのように扱うのでしょうか? 拡張モジュールで (例えば :file:`foo`
 という名の) ライブラリが必要な場合、 Distutils はまず :file:`_bcpp` が後ろに付いたライブラリ (例えば
 :file:`foo_bcpp.lib`) が見つかるかどうか調べ、あればそのライブラリを使います。該当するライブラリがなければ、デフォルトの名前
-(:file:`foo.lib`) を使います [#]_。
+(:file:`foo.lib`) を使います [#]_ 。
 
 Borland C++ を使って Distutils に拡張モジュールをコンパイルさせるには、以下のように入力します::
 
@@ -847,7 +849,7 @@ Distutils はまったく問題なく動作します。
 上記のコンパイラは、いくつかの特殊なライブラリを必要とします。この作業は Borland の C++ よりもやや複雑です。というのは、
 ライブラリを変換するためのプログラムが存在しないからです。  まず、 Python DLL が公開している全てのシンボルからなるリストを
 作成しなければなりません。 (この作業むけの良いプログラムは、
-http://www.emmestech.com/software/cygwin/pexports-0.43/download_pexports.html
+http://www.emmestech.com/software/pexports-0.43/download_pexports.html
 から入手できます。)
 
 ::
