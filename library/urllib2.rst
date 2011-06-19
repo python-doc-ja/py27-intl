@@ -1,17 +1,16 @@
 :mod:`urllib2` --- URL を開くための拡張可能なライブラリ
 =======================================================
 
+.. memo (@cocoatomo)
+
+   HTTPErrorProcessor, AbstractHTTPHandler が文書化されてないことについて
+   問い合わせ (2011.06.19)
+
 .. module:: urllib2
    :synopsis: URLを開く次世代ライブラリ
 .. moduleauthor:: Jeremy Hylton <jhylton@users.sourceforge.net>
 .. sectionauthor:: Moshe Zadka <moshez@users.sourceforge.net>
 
-
-.. .. note::
-   The :mod:`urllib2` module has been split across several modules in
-   Python 3.0 named :mod:`urllib.request` and :mod:`urllib.error`.
-   The :term:`2to3` tool will automatically adapt imports when converting
-   your sources to 3.0.
 
 .. note::
    :mod:`urllib2` モジュールは、Python 3.0で :mod:`urllib.request`, :mod:`urllib.error`
@@ -53,7 +52,7 @@
    グローバルハンドラの :class:`OpenerDirector` は、 :class:`UnknownHandler`
    を使って上記の問題が起きないようにしています)。
 
-   さらに、デフォルトでインストールされる :class:`ProxyHandler` 
+   さらに、プロキシが設定されているときは、デフォルトでインストールされる :class:`ProxyHandler` がリクエストを処理するようになっています。
 
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました。
@@ -172,9 +171,15 @@
 .. class:: ProxyHandler([proxies])
 
    このクラスはプロキシを通過してリクエストを送らせます。引数 *proxies* を与える場合、プロトコル名からプロキシの URL
-   へ対応付ける辞書でなくてはなりません。標準では、プロキシのリストを環境変数 *<protocol>_proxy*  から読み出します。
-   自動検出されたproxyを無効にするには、空の辞書を渡してください。
+   へ対応付ける辞書でなくてはなりません。標準では、プロキシのリストを環境変数 :envvar:`<protocol>_proxy`  から読み出します。
 
+   プロキシ環境変数が設定されていない場合は、 Windows 環境では、
+   レジストリのインターネット設定セクションからプロキシ設定を手に入れ、
+   Mac OS X 環境では、 OS X システム設定フレームワーク
+   (System Configuration Framework) からプロキシ情報を取得します。
+   
+   自動検出されたproxyを無効にするには、空の辞書を渡してください。
+   
 
 .. class:: HTTPPasswordMgr()
 
@@ -413,8 +418,8 @@ OpenerDirector オブジェクトは、以下の 3 つのステージに分け�
    形式のメソッドを試します。メソッドが全て :const:`None` を返すと、さらに同じアルゴリズムを繰り返して :meth:`unknown_open`
    を呼び出します。
 
-   これらのメソッドの実装には、親となる :class:`OpenerDirector` インスタンスの :meth:`OpenDirector.open`
-   や :meth:`OpenDirector.error` といったメソッド呼び出しが入る場合があるので注意してください。
+   これらのメソッドの実装には、親となる :class:`OpenerDirector` インスタンスの :meth:`~OpenDirector.open`
+   や :meth:`~OpenDirector.error` といったメソッド呼び出しが入る場合があるので注意してください。
 
 #. :samp:`{protocol}_response` 形式のメソッドを持つ全てのハンドラに対してそのメソッドを呼び出し、リクエストの
    ポストプロセスを行います。
@@ -856,10 +861,10 @@ HTTPErrorProcessor オブジェクト
 :class:`ProxyBasicAuthHandler` でプロキシ認証サポートを追加します。 ::
 
    proxy_handler = urllib2.ProxyHandler({'http': 'http://www.example.com:3128/'})
-   proxy_auth_handler = urllib2.HTTPBasicAuthHandler()
+   proxy_auth_handler = urllib2.ProxyBasicAuthHandler()
    proxy_auth_handler.add_password('realm', 'host', 'username', 'password')
 
-   opener = build_opener(proxy_handler, proxy_auth_handler)
+   opener = urllib2.build_opener(proxy_handler, proxy_auth_handler)
    # 今回は OpenerDirector をインストールするのではなく直接使います:
    opener.open('http://www.example.com/login.html')
 
