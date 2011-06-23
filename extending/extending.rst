@@ -184,7 +184,7 @@ Python レベルでの例外オブジェクトの名前は :exc:`spam.error` に
 
 この例にある、関数の戻り値型に ``PyMODINIT_FUNC`` を使う方法については後で議論します。
 
-:cfunc:`PyErr_SetString` を次のように呼び出すと、拡張モジュールで例外 :exc:`spam.error` を送出することができます::
+:c:func:`PyErr_SetString` を次のように呼び出すと、拡張モジュールで例外 :exc:`spam.error` を送出することができます::
  
    static PyObject *
    spam_system(PyObject *self, PyObject *args)

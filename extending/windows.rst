@@ -84,9 +84,9 @@ VC++を使わなければならないことに注意しましょう。ここで�
 
 #. **自分用にプロジェクトを作成する** ---  プロジェクト用のディレクトリを適当な名前で作成してください。自作の C
    ソースコードをディレクトリ内にコピーします。モジュールのソースコードファイル名は必ずしもモジュール名と
-   一致している必要はありませんが、初期化関数の名前はモジュール名と一致していなければなりません --- 初期化関数の名前が :cfunc:`initspam`
-   なら、モジュールは :mod:`spam` という名前でしか import できません。 :cfunc:`initspam` は第一引数を ``"spam"``
-   にして、 :cfunc:`Py_InitModule` を呼び出します (このディレクトリにある、最小限の内容が書かれている :file:`example.c`
+   一致している必要はありませんが、初期化関数の名前はモジュール名と一致していなければなりません --- 初期化関数の名前が :c:func:`initspam`
+   なら、モジュールは :mod:`spam` という名前でしか import できません。 :c:func:`initspam` は第一引数を ``"spam"``
+   にして、 :c:func:`Py_InitModule` を呼び出します (このディレクトリにある、最小限の内容が書かれている :file:`example.c`
    を手がかりにするとよいでしょう)。ならわしとして、ファイルは :file:`spam.c` または :file:`spammodule.c`
    という名前にしておきます。
    出力ファイル名はリリースモードでは :file:`spam.pyd` 、
@@ -227,7 +227,7 @@ ni (spam の中には C 関数が入っているとします) をビルドする
    cl /LD /I/python/include ni.c spam.lib ../libs/pythonXY.lib
 
 最初のコマンドで、三つのファイル: :file:`spam.obj` 、 :file:`spam.dll`  および :file:`spam.lib` ができます。
-:file:`Spam.dll` には (:cfunc:`PyArg_ParseTuple` のような) Python 関数は全く入って
+:file:`Spam.dll` には (:c:func:`PyArg_ParseTuple` のような) Python 関数は全く入って
 いませんが、 :file:`pythonXY.lib` のおかげで Python コードを見つけることはできます。
 
 二つ目のコマンドでは、 :file:`ni.dll` (および :file:`.obj` と :file:`.lib`) ができ、このライブラリは spam と
