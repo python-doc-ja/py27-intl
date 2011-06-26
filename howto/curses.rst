@@ -619,7 +619,7 @@ curses ライブラリはカラー機能を提供している端末でのカラ�
   British spelling, you'll have to resign yourself to misspelling it for the sake
   of these functions.)
 
-カラーを利用するには、 func:`:initscr` を呼び出したすぐ後に
+カラーを利用するには、 :func:`initscr` を呼び出したすぐ後に
 :func:`start_color` 関数を呼びし、デフォルトカラーセット
 を初期化しなければいけません
 (:func:`curses.wrapper.wrapper` 関数はこれを自動的に行ないます)。

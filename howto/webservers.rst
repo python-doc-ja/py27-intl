@@ -1298,6 +1298,7 @@ ORM は制限が多い代わり使いやすいもの、複雑だが強力なも�
 テンプレートエンジンにも同様のことがいえます。
 TurboGears の強力な点は、構成要素が他のプロジェクトでも TurboGears への依存無しに
 簡単に利用できるということです、例えば TurboGears を支えている web サーバ CherryPy もそうです。
+
 ..
   The documentation can be found in the `TurboGears wiki
   <http://docs.turbogears.org/>`_, where links to screencasts can be found.
