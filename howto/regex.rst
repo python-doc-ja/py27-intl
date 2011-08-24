@@ -2449,10 +2449,10 @@ match() 対 search()
 そのような作業をする場合には HTML や XML パーサを利用しましょう。)
 
 ..
-  NOT USING RE.VERBOSE
+  NOT USING re.VERBOSE
   --------------------
 
-RE.VERBOSE を利用しない場合
+re.VERBOSE を利用しない場合
 ---------------------------
 
 ..
