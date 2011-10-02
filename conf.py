@@ -39,7 +39,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # and replace the values accordingly.
 #import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.6', '2.6.2'
+version, release = '2.6', '2.6ja2'
 
 language = 'ja'
 
@@ -70,17 +70,7 @@ add_module_names = True
 # directory paths to ignore
 exclude_trees = [
 	'refs',
-	'maclib',
         'tools',
-        # todo: translate later
-        #'c-api', 
-        #'distutils',
-        #'extending',
-        #'howto',
-        #'install',
-        #'reference',
-        #'using',
-        #'whatsnew',
 ]
 
 exclude_dirnames = ['diff', 'orig', 'tools']
