@@ -15,10 +15,12 @@ Python ライブラリリファレンスよりも詳細な文書を作ってい�
    advocacy.rst
    cporting.rst
    curses.rst
+   descriptor.rst
    doanddont.rst
    functional.rst
    regex.rst
    sockets.rst
+   sorting.rst
    unicode.rst
    urllib2.rst
    webservers.rst
