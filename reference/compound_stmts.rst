@@ -462,10 +462,11 @@
 クラス変数は、インスタンス変数のデフォルト値として使えますが、変更可能な値をそこに使うと予期せぬ結果につながります。
 新スタイルクラス(:term:`new-style class`)では、デスクリプタを使ってインスタンス変数の振舞いを変更できます。
 
-Class definitions, like function definitions, may be wrapped by one or more
-:term:`decorator` expressions.  The evaluation rules for the decorator
-expressions are the same as for functions.  The result must be a class object,
-which is then bound to the class name.
+.. Class definitions, like function definitions, may be wrapped by one or more
+   :term:`decorator` expressions.  The evaluation rules for the decorator
+   expressions are the same as for functions.  The result must be a class object,
+   which is then bound to the class name.
+
 クラス定義は、関数定義と同じように、1つ以上のデコレータ(:term:`decorator`)式でラップすることができます。
 デコレータ式の評価は関数と同じです。結果はクラスオブジェクトでなければならず、
 それがクラス名に束縛されます。
