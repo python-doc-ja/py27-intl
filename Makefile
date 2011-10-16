@@ -40,7 +40,7 @@ help:
 checkout:
 	@if [ ! -d tools/sphinx ]; then \
 	  echo "Checking out Sphinx..."; \
-	  hg clone https://code.google.com/p/python-doc-ja.sphinx-ja/ tools/sphinx; \
+	  hg clone https://bitbucket.org/birkenfeld/sphinx -r1.1 tools/sphinx; \
 	fi
 	@if [ ! -d tools/docutils ]; then \
 	  echo "Checking out Docutils..."; \
