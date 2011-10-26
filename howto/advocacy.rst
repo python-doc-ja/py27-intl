@@ -1,356 +1,407 @@
 *******************************
-  Python Advocacy HOWTO (英語)
+Pythonの支援活動 HOWTO
 *******************************
+
 
 :Author: A.M. Kuchling
 :Release: 0.03
 
 
-.. topic:: Abstract
-
-   It's usually difficult to get your management to accept open source software,
-   and Python is no exception to this rule.  This document discusses reasons to use
-   Python, strategies for winning acceptance, facts and arguments you can use, and
-   cases where you *shouldn't* try to use Python.
 
 
-Reasons to Use Python
+.. topic:: 概要
+
+   一般的に、あなたの上司にオープンソースのソフトウェアの利用の許可をもらうことは難しく、
+   Pythonでも例外ではありません。この文書は、なぜPythonを使うのか、利用の許可をもらう戦略、
+   利用できる事実や議題、そしてPythonを使おうとする*べきではない*場合について議論します。
+
+
+Pythonを使う理由
 =====================
 
-There are several reasons to incorporate a scripting language into your
-development process, and this section will discuss them, and why Python has some
-properties that make it a particularly good choice.
+あなたの開発プロセスにスクリプト言語を組み込む理由はいくつかあります。そして、
+なぜPythonがとりわけ良い選択となるのかについて議論します。
 
 
-Programmability
+書きやすさ
 ---------------
 
-Programs are often organized in a modular fashion.  Lower-level operations are
-grouped together, and called by higher-level functions, which may in turn be
-used as basic operations by still further upper levels.
 
-For example, the lowest level might define a very low-level set of functions for
-accessing a hash table.  The next level might use hash tables to store the
-headers of a mail message, mapping a header name like ``Date`` to a value such
-as ``Tue, 13 May 1997 20:00:54 -0400``.  A yet higher level may operate on
-message objects, without knowing or caring that message headers are stored in a
-hash table, and so forth.
+プログラムはしばしば機能を組み合わせるように作成されます。下位レベルの命令はグループ化され、
+そして上位レベルの関数から呼ばれます。そしてその関数はさらに上位レベルの関数にとって基本的な
+命令として利用されます。
 
-Often, the lowest levels do very simple things; they implement a data structure
-such as a binary tree or hash table, or they perform some simple computation,
-such as converting a date string to a number.  The higher levels then contain
-logic connecting these primitive operations.  Using the approach, the primitives
-can be seen as basic building blocks which are then glued together to produce
-the complete product.
+たとえば、ハッシュテーブルにアクセスするような非常に下位のレベルの関数セットは
+最下位レベルで定義されます。次のレベルではメールのヘッダ情報を保持する用途や、
+メールのヘッダ情報のうち\ ``date``\ のような属性を\ ``Tue, 13 May 1997 20:00:54 -0400``\ のような値に
+マッピングする用途に利用されます。メッセージオブジェクトに対するさらに上位レベルの操作では、
+ハッシュテーブルに保存されたメッセージのヘッダが含まれていること自体を知らずに処理しています。
+さらに上位のレベルも然りです。
 
-Why is this design approach relevant to Python?  Because Python is well suited
-to functioning as such a glue language.  A common approach is to write a Python
-module that implements the lower level operations; for the sake of speed, the
-implementation might be in C, Java, or even Fortran.  Once the primitives are
-available to Python programs, the logic underlying higher level operations is
-written in the form of Python code.  The high-level logic is then more
-understandable, and easier to modify.
+よく、下位レベルでは単純なことをします。二分木やハッシュテーブルのデータ構造の実装や、
+文字列データを数値に変換するといった単純な処理です。そのため上位のレベルでは、
+それらの基本的な処理を組み合わせて利用します。この方法においては、
+これら基本的な処理は組立式の基本部品のように扱えます。そして、完成品を生み出すために
+組み立てて利用されるのです。
 
-John Ousterhout wrote a paper that explains this idea at greater length,
-entitled "Scripting: Higher Level Programming for the 21st Century".  I
-recommend that you read this paper; see the references for the URL.  Ousterhout
-is the inventor of the Tcl language, and therefore argues that Tcl should be
-used for this purpose; he only briefly refers to other languages such as Python,
-Perl, and Lisp/Scheme, but in reality, Ousterhout's argument applies to
-scripting languages in general, since you could equally write extensions for any
-of the languages mentioned above.
+なぜこの設計手法がPythonのと関係するのでしょうか。それは、Pythonが糊言語として
+最適だからです。Pythonモジュールを書く際によくやる方法として、命令を低水準言語で実装することです。
+実行速度のため、CやJava、Fortranのでさえもその候補としてあり得ます。それら基本的な処理が
+Pythonのプログラムから利用可能になってからは、基本的な上位レベルの命令はPythonコードの形で書かれています。
+そのため上位レベルのロジックは理解しやすく、また編集しやすいものとなっています。
 
 
-Prototyping
------------
-
-In *The Mythical Man-Month*, Fredrick Brooks suggests the following rule when
-planning software projects: "Plan to throw one away; you will anyway."  Brooks
-is saying that the first attempt at a software design often turns out to be
-wrong; unless the problem is very simple or you're an extremely good designer,
-you'll find that new requirements and features become apparent once development
-has actually started.  If these new requirements can't be cleanly incorporated
-into the program's structure, you're presented with two unpleasant choices:
-hammer the new features into the program somehow, or scrap everything and write
-a new version of the program, taking the new features into account from the
-beginning.
-
-Python provides you with a good environment for quickly developing an initial
-prototype.  That lets you get the overall program structure and logic right, and
-you can fine-tune small details in the fast development cycle that Python
-provides.  Once you're satisfied with the GUI interface or program output, you
-can translate the Python code into C++, Fortran, Java, or some other compiled
-language.
-
-Prototyping means you have to be careful not to use too many Python features
-that are hard to implement in your other language.  Using ``eval()``, or regular
-expressions, or the :mod:`pickle` module, means that you're going to need C or
-Java libraries for formula evaluation, regular expressions, and serialization,
-for example.  But it's not hard to avoid such tricky code, and in the end the
-translation usually isn't very difficult.  The resulting code can be rapidly
-debugged, because any serious logical errors will have been removed from the
-prototype, leaving only more minor slip-ups in the translation to track down.
-
-This strategy builds on the earlier discussion of programmability. Using Python
-as glue to connect lower-level components has obvious relevance for constructing
-prototype systems.  In this way Python can help you with development, even if
-end users never come in contact with Python code at all.  If the performance of
-the Python version is adequate and corporate politics allow it, you may not need
-to do a translation into C or Java, but it can still be faster to develop a
-prototype and then translate it, instead of attempting to produce the final
-version immediately.
-
-One example of this development strategy is Microsoft Merchant Server. Version
-1.0 was written in pure Python, by a company that subsequently was purchased by
-Microsoft.  Version 2.0 began to translate the code into C++, shipping with some
-C++code and some Python code.  Version 3.0 didn't contain any Python at all; all
-the code had been translated into C++.  Even though the product doesn't contain
-a Python interpreter, the Python language has still served a useful purpose by
-speeding up development.
-
-This is a very common use for Python.  Past conference papers have also
-described this approach for developing high-level numerical algorithms; see
-David M. Beazley and Peter S. Lomdahl's paper "Feeding a Large-scale Physics
-Application to Python" in the references for a good example.  If an algorithm's
-basic operations are things like "Take the inverse of this 4000x4000 matrix",
-and are implemented in some lower-level language, then Python has almost no
-additional performance cost; the extra time required for Python to evaluate an
-expression like ``m.invert()`` is dwarfed by the cost of the actual computation.
-It's particularly good for applications where seemingly endless tweaking is
-required to get things right. GUI interfaces and Web sites are prime examples.
-
-The Python code is also shorter and faster to write (once you're familiar with
-Python), so it's easier to throw it away if you decide your approach was wrong;
-if you'd spent two weeks working on it instead of just two hours, you might
-waste time trying to patch up what you've got out of a natural reluctance to
-admit that those two weeks were wasted.  Truthfully, those two weeks haven't
-been wasted, since you've learnt something about the problem and the technology
-you're using to solve it, but it's human nature to view this as a failure of
-some sort.
+ジョン・オースタウトはタイトル："スクリプティング：21世紀の高水準プログラミング言語"という論文を書き、
+非常に長きにわたってこのアイデアを説明しています。この論文を読むことをおすすめします。
+URLは参考文献に記載しています。オースタウトはTclの言語の発明者で、論文の議題はTclでのためで
+あることには違いありません;かれはPython,Perl,Lisp/Schemeなど他の言語については軽く触れただけですが、
+実際のところオースタウトの議論は、先に述べた一般的などのスクリプト言語向けに誰でも拡張機能を作成できる
+ことから、どのスクリプト言語に対しても適用できます。
 
 
-Simplicity and Ease of Understanding
+プロトタイプ
+------------
+
+
+\ *人月の神話*\ でフリードリッヒ・ブロックスは、次のことを提言しています：
+"捨てるつもりで作りなさい。どうせそうなるのだから"。つまりブロックスは、
+ソフトウェアの最初の設計は間違いであることが多いと言っています。プログラムがとても単純か、
+もしくはあなたがとても優秀な設計者でない限りは、開発が実際に進むにつれて新たな要件や
+機能が明確になってくることに気づくでしょう。もしそれらの新しい要件をプログラムの設計に
+きれいに組み込めなければ、うれしくない二つの選択を迫られます：何とかして新しい機能を
+プログラムに叩き込むか、最初から作り直して組み込むかの二択です。
+
+
+Pythonは、迅速な初期のプロトタイプ開発のために良い環境を提供してくれます。
+その環境よってプログラム全体の構造と処理の流れの正しさがわかり、
+また、Pythonが提供する高速な開発サイクルを通して細部を微調整することができます。
+いったんGUIインタフェースやプログラムの出力に満足すれば、
+C++、Fortran、Javaといったコンパイルを伴う言語にPythonを書き直せばよいのです。
+
+
+プロトタイピングでは、多くのPythonの機能を使用しすぎないように注意する必要があります。
+でないと他の言語で書き直す作業が困難になります。
+たとえば\ ``eval()``\ 、正規表現、\ :mod:`pickle`\ モジュール、これらを使用すると、
+式の評価、正規表現、直列化のためにCやJavaライブラリが必要になります。
+しかし、これら巧妙なコードを避けることは難しいことではありません。
+その上、最後に書き直す場合も通常はそんなに困難な作業にはなりません。また書き直したコードは
+迅速なデバッグが可能です。なぜならプロトタイプの段階で重大なエラーはあらかじめ取り除かれており、
+あったとしても書き直しの際に取り込まれた軽微な不具合くらいだからです。
+
+
+この戦略は、前述の書きやすさに関する議論に基づいています。
+これらのことから下位レベルの処理を接続するための糊言語としてPythonを利用しプロトタイプを
+構築ことの妥当性は明らかです。このようにPythonは開発の助けになります。
+エンドユーザーがPythonコードで実装された機能に触れることがなくともです。
+利用するPythonのバージョンが処理速度の面で妥当で、かつ企業の規定が許すならば、
+CやJavaへの書き直し作業が必要がない場合があります。
+そうでなくても、すぐに最終出力用の言語で書き始めるよりは、プロトタイプを作成してから書き直す場合のほうがまだ早くできます。
+
+
+
+この開発戦略の一例に、Microsoft Merchant Serverがあります。
+バージョン1.0は純粋なPythonで書かれています。リリース後にMicrosoftによって会社ごと買収されました。
+バージョン2.0では、いくらかのコードがC++に書き直されはじめました。結果、C++のコードといくつかの
+Pythonコードでリリースされました。バージョン3.0ではまったくPythonを含んでいませんでした。
+すべてのコー​​ドはC++に変換されたのです。製品にPythonインタプリタがまったく含まれていないにもかかわらず、
+Pythonは開発のスピードアップする目的で有用な役割を果たしています。
+
+
+
+これはPythonにとって非常に一般的な使い方です。過去に開かれたカンファレンスで発表された論文でも
+ハイレベルな数値計算アルゴリズムを開発するためのアプローチとして説明されています。
+デビッド.M.ビーズリーとピーター.S.ロムダヒさんの論文"Pythonで実現する大規模物理計算アプリケーション"に
+良い例がありますので参照してください。
+
+もし、あるアルゴリズムにおける基本的な操作が、"この4000x4000行列の逆行列を出力する"ようなものである場合、
+またその処理がいずれかの低水準言語で実装されている時、Pythonによるその他の処理のコストはほとんどかかりません。
+\ ``m.invert（）``\ のような行を処理する場合に、Pythonを利用するがために必要になる余分な
+処理コストは非常に小さいです。
+特に、正しい処理結果を得るために途方もない微調整が必要なアプリケーションにとって良い特徴です。
+GUIのインタフェースやWebサイトが主な例です。
+
+
+（あなたがPythonに精通していれば)Pythonのコードは短く、速く書けます。
+そのため、あなたのアプローチが間違っていたと判断した場合、気兼ねなくそれを捨てることができます。
+もしあなたが費やした時間がわずか2時間ではなく二週間だったら、
+その2週間を無駄に過ごしたと認めたくない気持ちから、何とかして作ったものを取り繕おうとさらに無駄な時間を費やすでしょう。
+正確に言えば、それらの二週間は無駄になった訳ではありません。
+あなたは問題を解決するために何かを学んだはずですが、
+人間の本質としてそれはある種の失敗として考えてしまいます。
+
+
+
+
+
+シンプルさと理解のしやすさ
 ------------------------------------
 
-Python is definitely *not* a toy language that's only usable for small tasks.
-The language features are general and powerful enough to enable it to be used
-for many different purposes.  It's useful at the small end, for 10- or 20-line
-scripts, but it also scales up to larger systems that contain thousands of lines
-of code.
 
-However, this expressiveness doesn't come at the cost of an obscure or tricky
-syntax.  While Python has some dark corners that can lead to obscure code, there
-are relatively few such corners, and proper design can isolate their use to only
-a few classes or modules.  It's certainly possible to write confusing code by
-using too many features with too little concern for clarity, but most Python
-code can look a lot like a slightly-formalized version of human-understandable
-pseudocode.
+Pythonは小さなタスクにのみ使用可能なおもちゃ言語では断じて*ない*です。
+Pythonは汎用的であり、たくさんの異なった目的に使用できるほど十分強力です。
+10行から20行程度の小さなものから、
+何千行もの大規模システムにスケールアップされたものにまでも有用です。
 
-In *The New Hacker's Dictionary*, Eric S. Raymond gives the following definition
-for "compact":
+
+
+しかも、この表現力はあいまいさや巧妙さを要求するような言語の構文によるものではありません。
+Pythonはあいまいなコードにつながる記述を許す部分はあるものの、
+それは比較的少数であって、適切な設計によってその使用を少数のクラスやモジュールに分離することができます。
+たくさんの機能を、明解さを考慮せずに利用すれば、もちろん多くの誤解を生むコードになってしまいます。
+
+しかし、ほとんどのPythonのコードは人間が理解可能なように書式化された擬似コードように見えます。
+
+
+
+エリック.S.レイモンドは、\ *The New Hacker's Dictionary*\ に、以下の定義を追加しました。
+
+コンパクトとは：
+
 
 .. epigraph::
 
-   Compact *adj.*  Of a design, describes the valuable property that it can all be
-   apprehended at once in one's head. This generally means the thing created from
-   the design can be used with greater facility and fewer errors than an equivalent
-   tool that is not compact. Compactness does not imply triviality or lack of
-   power; for example, C is compact and FORTRAN is not, but C is more powerful than
-   FORTRAN. Designs become non-compact through accreting features and cruft that
-   don't merge cleanly into the overall design scheme (thus, some fans of Classic C
-   maintain that ANSI C is no longer compact).
+   デザインにおけるコンパクト\ *(形)*\ とは、人が一度に理解できるように重要なプロ​​パティについて説明されているものである。
+   一般的に、あるデザインを元に作られたものを考えた場合に、コンパクトなものはコンパクトではない同等のツールとくらべてより大きなプロジェクトに利用でき、不具合をより少なく抑えられることを意味する。
 
-   (From http://www.catb.org/~esr/jargon/html/C/compact.html)
-
-In this sense of the word, Python is quite compact, because the language has
-just a few ideas, which are used in lots of places.  Take namespaces, for
-example.  Import a module with ``import math``, and you create a new namespace
-called ``math``.  Classes are also namespaces that share many of the properties
-of modules, and have a few of their own; for example, you can create instances
-of a class. Instances?  They're yet another namespace.  Namespaces are currently
-implemented as Python dictionaries, so they have the same methods as the
-standard dictionary data type: .keys() returns all the keys, and so forth.
-
-This simplicity arises from Python's development history.  The language syntax
-derives from different sources; ABC, a relatively obscure teaching language, is
-one primary influence, and Modula-3 is another.  (For more information about ABC
-and Modula-3, consult their respective Web sites at http://www.cwi.nl/~steven/abc/
-and http://www.m3.org.)  Other features have come from C, Icon,
-Algol-68, and even Perl.  Python hasn't really innovated very much, but instead
-has tried to keep the language small and easy to learn, building on ideas that
-have been tried in other languages and found useful.
-
-Simplicity is a virtue that should not be underestimated.  It lets you learn the
-language more quickly, and then rapidly write code -- code that often works the
-first time you run it.
+コンパクトさとは単に単純な構造であるとか、力の欠如を意味するものではありません。
+例えば、C言語はコンパクトでありFORTRANはそうではありませんが、CはFORTRANより強力です。
+デザインは、機能の増大やそれら機能を全体のデザインを鑑みずに、雑に組み上げられることを通してコンパクトさを失ってしまいます。
+（そのため、一部のファンによって保守され続けているクラシックなANSI Cはもはやコンパクトではありません。)
 
 
-Java Integration
+
+(http://www.catb.org/~esr/jargon/html/C/compact.html)より
+
+
+Pythonはこの意味で、非常にコンパクトです。なぜならPythonは
+すこしのアイデアだけを元に設計されており、それが多くの場面で使用されているためです。名前空間を例に見てみましょう。
+\ ``import math`` 文では、\ ``math``\ という新しい名前空間を作成します。
+一方、クラス自体も多くのプロパティを共有する名前空間です。クラスにはモジュールや自分自身のクラスも含まれます。
+たとえば、クラスからはインスタンスを作成できます。
+インスタンス・・・？実はこれらもまた別の名前空間なのです。名前空間は、現在のところ
+Pythonの辞書として実装されているため、標準の辞書型と同じメソッドを持っています。
+: .keys（）\ はすべてのキーを返します。他の辞書型のメソッドも同様です。
+
+
+このシンプルさは、Pythonの開発の歴史的なものから来ています。Pythonの構文は
+さまざまなソースから派生しています。比較的無名の教育用言語ABCや、
+Modula-3から主な影響を受けています。（ABCやModula-3の詳細については
+それぞれのWebサイトを参照してください。　<http://www.cwi.nl/~steven/abc/> , <http://www.m3.org>
+その他の機能は、C言語、Icon、Algol-68、そしてPerlを参考にしています。
+Pythonは本来革新な言語ではありません。
+その替わりに、小さく学習しやすいものに維持しようとしてきました。
+また、他の言語で試され有用だと認められたさまざまなアイデアをもとに設計されました。
+
+
+シンプルさは美徳であり過小評価すべきではありません。シンプルであればよりすばやく学ぶことができ、
+そしてその後すぐにコードを記述し始められます。多くの場合、最初に書いたコードがきちんと動作します。
+
+
+
+
+
+Javaでの実装
 ----------------
 
-If you're working with Java, Jython (http://www.jython.org/) is definitely worth
-your attention.  Jython is a re-implementation of Python in Java that compiles
-Python code into Java bytecodes.  The resulting environment has very tight,
-almost seamless, integration with Java.  It's trivial to access Java classes
-from Python, and you can write Python classes that subclass Java classes.
-Jython can be used for prototyping Java applications in much the same way
-CPython is used, and it can also be used for test suites for Java code, or
-embedded in a Java application to add scripting capabilities.
+
+あなたがJavaを使用している場合は、Jython（http://www.jython.org/）に注意を払うことは確実に有用です。
+JythonはJavaでのPythonの再実装で、PythonコードをJavaのバイトコードにコンパイルしてくれます。
+結果として得られる環境は非常にしっくりきており、
+Javaとほぼシームレスに統合しています。PythonからJavaクラスにアクセスするのはとても簡単で、
+JavaクラスのサブクラスとしてPythonのクラスを書くことができます。
+JythonはCPythonとほぼ同じ方法でJavaアプリケーションのプロトタイプ作成に使用できます。
+またJythonは、Javaコードのテストスイートの用途にも使えます。また、
+Javaアプリケーションにスクリプト機能を埋め込むこともできます。
 
 
-Arguments and Rebuttals
+
+
+議論と反論
 =======================
 
-Let's say that you've decided upon Python as the best choice for your
-application.  How can you convince your management, or your fellow developers,
-to use Python?  This section lists some common arguments against using Python,
-and provides some possible rebuttals.
 
-**Python is freely available software that doesn't cost anything. How good can
-it be?**
-
-Very good, indeed.  These days Linux and Apache, two other pieces of open source
-software, are becoming more respected as alternatives to commercial software,
-but Python hasn't had all the publicity.
-
-Python has been around for several years, with many users and developers.
-Accordingly, the interpreter has been used by many people, and has gotten most
-of the bugs shaken out of it.  While bugs are still discovered at intervals,
-they're usually either quite obscure (they'd have to be, for no one to have run
-into them before) or they involve interfaces to external libraries.  The
-internals of the language itself are quite stable.
-
-Having the source code should be viewed as making the software available for
-peer review; people can examine the code, suggest (and implement) improvements,
-and track down bugs.  To find out more about the idea of open source code, along
-with arguments and case studies supporting it, go to http://www.opensource.org.
-
-**Who's going to support it?**
-
-Python has a sizable community of developers, and the number is still growing.
-The Internet community surrounding the language is an active one, and is worth
-being considered another one of Python's advantages. Most questions posted to
-the comp.lang.python newsgroup are quickly answered by someone.
-
-Should you need to dig into the source code, you'll find it's clear and
-well-organized, so it's not very difficult to write extensions and track down
-bugs yourself.  If you'd prefer to pay for support, there are companies and
-individuals who offer commercial support for Python.
-
-**Who uses Python for serious work?**
-
-Lots of people; one interesting thing about Python is the surprising diversity
-of applications that it's been used for.  People are using Python to:
-
-* Run Web sites
-
-* Write GUI interfaces
-
-* Control number-crunching code on supercomputers
-
-* Make a commercial application scriptable by embedding the Python interpreter
-  inside it
-
-* Process large XML data sets
-
-* Build test suites for C or Java code
-
-Whatever your application domain is, there's probably someone who's used Python
-for something similar.  Yet, despite being useable for such high-end
-applications, Python's still simple enough to use for little jobs.
-
-See http://wiki.python.org/moin/OrganizationsUsingPython for a list of some of
-the  organizations that use Python.
-
-**What are the restrictions on Python's use?**
-
-They're practically nonexistent.  Consult the :file:`Misc/COPYRIGHT` file in the
-source distribution, or the section :ref:`history-and-license` for the full
-language, but it boils down to three conditions:
-
-* You have to leave the copyright notice on the software; if you don't include
-  the source code in a product, you have to put the copyright notice in the
-  supporting documentation.
-
-* Don't claim that the institutions that have developed Python endorse your
-  product in any way.
-
-* If something goes wrong, you can't sue for damages.  Practically all software
-  licenses contain this condition.
-
-Notice that you don't have to provide source code for anything that contains
-Python or is built with it.  Also, the Python interpreter and accompanying
-documentation can be modified and redistributed in any way you like, and you
-don't have to pay anyone any licensing fees at all.
-
-**Why should we use an obscure language like Python instead of well-known
-language X?**
-
-I hope this HOWTO, and the documents listed in the final section, will help
-convince you that Python isn't obscure, and has a healthily growing user base.
-One word of advice: always present Python's positive advantages, instead of
-concentrating on language X's failings.  People want to know why a solution is
-good, rather than why all the other solutions are bad.  So instead of attacking
-a competing solution on various grounds, simply show how Python's virtues can
-help.
+あなたのアプリケーション用にはPythonが最良の選択だと決定したとしましょう。
+Pythonを利用することをあなたの管理者、または仲間の開発者をどのように説得しましょうか。
+この節では、Pythonを使うことに対していくつかの一般的な議論と反論を示します。
 
 
-Useful Resources
+
+**Pythonは無料で自由に利用できるソフトウェアです。どれほど良いことでしょうか。**
+
+
+
+非常に良いはずです。最近ではLinuxやApache、二つのオープンソースソフトウエアが
+商用ソフトウェアの代替品として支持されるようになってきています。
+しかし、Pythonはまだ公な支持は得られていません。
+
+
+Pythonは数年前から出回っており、多くのユーザと開発者に支持されてきました。
+結果的に、Pythonは多くの人々によって使用されて、ほとんどのバグがふるい落とされてきました。
+バグはまだ一定の間隔で報告されていますが、
+ほとんどは本当に目立たないもの（いままで誰も実行する必要がない、もしくは実行したことがないようなもの）か、
+外部ライブラリへのインタフェースに起因するものです。
+言語自体の内部は非常に安定しています。
+
+
+Pythonでは、ピアレビューを実施しながらソフトウエアを作るためにソースコードを閲覧可能にしています。
+だれでもコードを調べたり、改善を提案(実装を含む）し、バグを追跡することができます。
+オープンソースコードの考え方についての詳細を調べるには
+<http://www.opensource.org>をご覧ください。オープンソースに関連した議論と、ケーススタディなどがあります。
+
+
+**だれがPythonをサポートするのか？**
+
+
+Pythonには、かなり多くの開発者のコミュニティがあり、数はまだ増え続けています。
+Pythonに関するインターネット上のコミュニティは活動的です。
+これは、Pythonを利用する上での別の利点の一つと考えられています。comp.lang.pythonのニュースグループに投稿されたほとんどの質問は
+メンバのうち誰かによって素早く返答されます。
+
+
+あなたがソースコードを読み進める必要がある場合、明解でうまく組み立てられたものであることが分かるでしょう。
+そのためあなた自身の手で拡張機能を記述してバグ追跡するのは難しいことではありません。
+Pythonの金銭的なサポートしている企業や個人もいます。
+
+
+
+**誰がPythonを大々的に利用していますか？**
+
+
+Pythonの興味深い点は、多くの人が驚くべき多様なアプリケーションに利用していることです。
+Pythonは以下のアプリケーションに利用されています:
+
+
+* Webサイトを運用する
+
+
+* GUIインターフェースを書く
+
+
+* スーパーコンピュータ上で複雑な計算をコントロールする
+
+
+* Pythonインタプリタを埋め込むことによって、商用アプリケーションでスクリプティングを可能にする
+
+
+
+* 大規模なXMLデータセットを処理する
+
+
+* CまたはJavaのコードに対するテストスイートを構築する
+
+
+あなたのアプリケーションドメインが何であれ、きっと誰かが同じようにPythonを使っているはずです。
+しかし、そのようなハイエンドなアプリケーションに使用可能であるにもかかわらず、
+小さなタスクに使用できるほどに簡単です。
+
+その他の組織的なPythonの使用例については <http://wiki.python.org/moin/OrganizationsUsingPython> を参照してください。
+
+
+
+**Pythonの使用に関しての制限は何ですか？**
+
+
+制限は事実上存在しません。\ :file:`Misc/COPYRIGHT`\ ソースの配布、
+または\ ：ref：`history-and-license`\ 言語全体の節を参照してください。
+しかし結局のところ下記の三つの条件に要約できます：
+
+
+* 作成したソフトウェアに著作権表示を残す必要があります。もし製品にPythonのソースコードが含まれていない場合、
+  説明書に著作権表示を入れる必要があります。
+
+
+
+* あなたの製品はPythonを開発している機関から支持されていると主張しないでください。
+  あらゆる方法においてです。
+
+
+* 何か問題が発生した場合でも、損害賠償訴訟を起こすことはできません。実質的にすべてのソフトウェアライセンスは、この条件が含まれています。
+
+
+ただし、Pythonを含んだり、ともにビルドされるソースコードすべてを公開する必要がないことに注意してください。
+また、Pythonインタプリタとそれに付随する
+ドキュメントは、好きな方法で変更を加えたり再配布することができます。
+誰かにライセンス料誰を支払う必要はありません。
+
+
+**なぜ我々は、明解な言語Xの替わりに不明瞭なPythonを使用する必要がありますか？**
+
+
+
+私はこのHOWTOと、最後の節に記載されている資料が、
+Pythonは不明瞭ではなく、また健やかに成長しているユーザー基盤を持っていることを納得させる助けになることを願います。
+アドバイス：常にPythonの肯定的な利点を提示するのではなく、
+言語Xの欠点にも注目してください。人々はなぜ他のすべての解決策が悪いのかの理由よりもむしろ、
+なぜその解決策が良いのかを知りたがります。そのため
+様々な理由で競合する解決策を攻撃するよりかは、単にどのようにPythonが解決できるかを示すほうが良いです。
+
+
+
+
+有用な資料
 ================
 
+
 http://www.pythonology.com/success
-   The Python Success Stories are a collection of stories from successful users of
-   Python, with the emphasis on business and corporate users.
+「Pythonサクセスストーリー」は、Pythonの利用に成功したユーザーのからの成功例のコレクションです。
+ビジネスと企業ユーザーを重視したものになっています。
+
 
 .. http://www.fsbassociates.com/books/pythonchpt1.htm
-   The first chapter of \emph{Internet Programming with Python} also
-   examines some of the reasons for using Python.  The book is well worth
-   buying, but the publishers have made the first chapter available on
-   the Web.
+   また、 \emph{Internet Programming with Python}の最初の章は
+   Pythonを使用する理由のいくつかを分析しています。この本は買う価値がありますが、
+   出版社は最初の章のみWebサイト上で利用できるようにしています。
+
+
 
 http://home.pacbell.net/ouster/scripting.html
-   John Ousterhout's white paper on scripting is a good argument for the utility of
-   scripting languages, though naturally enough, he emphasizes Tcl, the language he
-   developed.  Most of the arguments would apply to any scripting language.
+ジョン・オースタウトはスクリプト言語の有用性について議論しています。
+自然な流れとしてスクリプト言語としては彼が開発したTclを取り上げています。
+しかし、議論のほとんどは、その他のスクリプト言語に適用できます。
+
 
 http://www.python.org/workshops/1997-10/proceedings/beazley.html
-   The authors, David M. Beazley and Peter S. Lomdahl,  describe their use of
-   Python at Los Alamos National Laboratory. It's another good example of how
-   Python can help get real work done. This quotation from the paper has been
-   echoed by many people:
+作者のデイビット.M.ビーズリーとピーター.S.ラムダヒは、
+ロスアラモス国立研究所でのPythonの利用について述べています。
+これは、Pythonは実際の作業に役立つことができる良い例となっています。下記の論文からの引用文は
+多くの人々によって繰り返し引用されています：
 
-   .. epigraph::
 
-      Originally developed as a large monolithic application for massively parallel
-      processing systems, we have used Python to transform our application into a
-      flexible, highly modular, and extremely powerful system for performing
-      simulation, data analysis, and visualization. In addition, we describe how
-      Python has solved a number of important problems related to the development,
-      debugging, deployment, and maintenance of scientific software.
+.. epigraph::
+
+   もともとは超並列処理システムのための大規模なモノリシックアプリケーションとして開発として
+   開発を始めました。私たちはアプリケーションをより柔軟、再利用可能、そしてより強力なもの、
+   そしてシミュレーション、データ解析、可視化ができるものに進化させるためにPythonを使用してきました。
+
+加えて、Pythonは開発に関連する重要ないくつもの問題を解決してきました。
+それは、学術ソフトウエアの、デバッグ、導入、そしてメンテナンスを含みます。
+
 
 http://pythonjournal.cognizor.com/pyj1/Everitt-Feit_interview98-V1.html
-   This interview with Andy Feit, discussing Infoseek's use of Python, can be used
-   to show that choosing Python didn't introduce any difficulties into a company's
-   development process, and provided some substantial benefits.
+アンディ・フェイトとのインタビューです。infoseekでのPythonの利用に関する議論では、
+Pythonを選択すると、社内での開発プロセスに大して余計な問題を持ち込まないことを示していおり、
+さらにいくつかの重要な利点を提供できることを示しています。
+
 
 .. http://www.python.org/psa/Commercial.html
-   Robin Friedrich wrote this document on how to support Python's use in
-   commercial projects.
+   ロビン・フリードリッヒは商用のプロジェクトでPythonを使用する場合のサポート方法について記述しました。
+
+
 
 http://www.python.org/workshops/1997-10/proceedings/stein.ps
-   For the 6th Python conference, Greg Stein presented a paper that traced Python's
-   adoption and usage at a startup called eShop, and later at Microsoft.
+第6回目のPythonカンファレンスでグレッグ・ステイン氏は、
+Microsoftで、Pythonを利用したeShopと呼ばれるサイトの立ち上げとのその後について 追跡した論文を発表しました。
+
 
 http://www.opensource.org
-   Management may be doubtful of the reliability and usefulness of software that
-   wasn't written commercially.  This site presents arguments that show how open
-   source software can have considerable advantages over closed-source software.
+管理者は、有料でないソフトウェアの信頼性と有用性について疑問の念を持っているかもしれません。
+このサイトでは、オープンソースソフトのほうがクローズソースソフトと比較して
+かなりの利点を持つことについての議論を提示しています。
+
 
 http://www.faqs.org/docs/Linux-mini/Advocacy.html
-   The Linux Advocacy mini-HOWTO was the inspiration for this document, and is also
-   well worth reading for general suggestions on winning acceptance for a new
-   technology, such as Linux or Python.  In general, you won't make much progress
-   by simply attacking existing systems and complaining about their inadequacies;
-   this often ends up looking like unfocused whining.  It's much better to point
-   out some of the many areas where Python is an improvement over other systems.
+Linuxでの支援活動 mini-HOWTOは、この文書の着想であり読んでおく価値があります。
+LinuxやPythonのような、新しい技術を管理者に受け入れてもらうことについて、一般的な推奨事項について記載されています。
+一般的に、これは多くの場合、負け犬の遠吠えを言っているだけのように見られてしまいます。
+そうではなく、Pythonは他の多くの分野のシステムの改良版であるという点を指摘するほうがよいでしょう。
 
