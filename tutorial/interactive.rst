@@ -143,10 +143,7 @@ import されたモジュールのうち、 :mod:`os` のようなインタプ�
    # bound to the Esc key by default (you can change it - see readline docs).
    #
    # Store the file in ~/.pystartup, and set an environment variable to point
-   # to it, e.g. "export PYTHONSTARTUP=/home/user/.pystartup" in bash.
-   #
-   # Note that PYTHONSTARTUP does *not* expand "~", so you have to put in the
-   # full path to your home directory.
+   # to it:  "export PYTHONSTARTUP=~/.pystartup" in bash.
 
    import atexit
    import os
