@@ -364,16 +364,9 @@ except 節では、例外名 (または例外名タプル) の後に変数を指
    NameError: HiThere
 
 
-.. The argument to :keyword:`raise` is an exception class or instance to be
-   raised.  There is a deprecated alternate syntax that separates class and
-   constructor arguments; the above could be written as ``raise NameError,
-   'HiThere'``.  Since it once was the only one available, the latter form is
-   prevalent in older code.
-
-:keyword:`raise` の引数は、送出したい例外クラスまたはインスタンスです。
-推奨されない古い構文として、クラスとコンストラクタへの引数を別々に指定する方法があります。
-上記の例は ``raise NameError, 'HiThere'`` と書くことができます。
-以前は一通りの形式しかなかったので、古いコードでは後者の形式が一般的です。
+:keyword:`raise` は送出したい例外を引数として取ります。
+これは例外クラス(:class:`Exception` を継承したクラス)か、
+例外クラスのインスタンスです。
 
 .. If you need to determine whether an exception was raised but don't intend to
    handle it, a simpler form of the :keyword:`raise` statement allows you to
