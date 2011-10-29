@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/nntplib.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -18,35 +18,35 @@</span>
+ Here are two small examples of how it can be used.  To list some statistics
+ about a newsgroup and print the subjects of the last 10 articles::
+ 
+<span class="gd">-   &gt;&gt;&gt; s = NNTP(&#39;news.cwi.nl&#39;)</span>
+<span class="gd">-   &gt;&gt;&gt; resp, count, first, last, name = s.group(&#39;comp.lang.python&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; s = NNTP(&#39;news.gmane.org&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; resp, count, first, last, name = s.group(&#39;gmane.comp.python.committers&#39;)</span>
+    &gt;&gt;&gt; print &#39;Group&#39;, name, &#39;has&#39;, count, &#39;articles, range&#39;, first, &#39;to&#39;, last
+<span class="gd">-   Group comp.lang.python has 59 articles, range 3742 to 3803</span>
+<span class="gi">+   Group gmane.comp.python.committers has 1071 articles, range 1 to 1071</span>
+    &gt;&gt;&gt; resp, subs = s.xhdr(&#39;subject&#39;, first + &#39;-&#39; + last)
+    &gt;&gt;&gt; for id, sub in subs[-10:]: print id, sub
+    ...
+<span class="gd">-   3792 Re: Removing elements from a list while iterating...</span>
+<span class="gd">-   3793 Re: Who likes Info files?</span>
+<span class="gd">-   3794 Emacs and doc strings</span>
+<span class="gd">-   3795 a few questions about the Mac implementation</span>
+<span class="gd">-   3796 Re: executable python scripts</span>
+<span class="gd">-   3797 Re: executable python scripts</span>
+<span class="gd">-   3798 Re: a few questions about the Mac implementation</span>
+<span class="gd">-   3799 Re: PROPOSAL: A Generic Python Object Interface for Python C Modules</span>
+<span class="gd">-   3802 Re: executable python scripts</span>
+<span class="gd">-   3803 Re: \POSIX{} wait and SIGCHLD</span>
+<span class="gi">+   1062 Re: Mercurial Status?</span>
+<span class="gi">+   1063 Re: [python-committers]  (Windows) buildbots on 3.x</span>
+<span class="gi">+   1064 Re: Mercurial Status?</span>
+<span class="gi">+   1065 Re: Mercurial Status?</span>
+<span class="gi">+   1066 Python 2.6.6 status</span>
+<span class="gi">+   1067 Commit Privileges for Ask Solem</span>
+<span class="gi">+   1068 Re: Commit Privileges for Ask Solem</span>
+<span class="gi">+   1069 Re: Commit Privileges for Ask Solem</span>
+<span class="gi">+   1070 Re: Commit Privileges for Ask Solem</span>
+<span class="gi">+   1071 2.6.6 rc 2</span>
+    &gt;&gt;&gt; s.quit()
+<span class="gd">-   &#39;205 news.cwi.nl closing connection.  Goodbye.&#39;</span>
+<span class="gi">+   &#39;205 Bye!&#39;</span>
+ 
+ To post an article from a file (this assumes that the article has valid
+<span class="gd">-headers)::</span>
+<span class="gi">+headers, and that you have right to post on the particular newsgroup)::</span>
+ 
+<span class="gd">-   &gt;&gt;&gt; s = NNTP(&#39;news.cwi.nl&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; s = NNTP(&#39;news.gmane.org&#39;)</span>
+    &gt;&gt;&gt; f = open(&#39;/tmp/article&#39;)
+    &gt;&gt;&gt; s.post(f)
+    &#39;240 Article posted successfully.&#39;
+    &gt;&gt;&gt; s.quit()
+<span class="gd">-   &#39;205 news.cwi.nl closing connection.  Goodbye.&#39;</span>
+<span class="gi">+   &#39;205 Bye!&#39;</span>
+ 
+ The module itself defines the following items:
+ 
+</pre></div>
+
+</body>
+</html>

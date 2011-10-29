@@ -1,0 +1,407 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>c-api/unicode.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -208,7 +208,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_FromUnicode(const Py_UNICODE *u, Py_ssize_t size)
+ 
+<span class="gd">-   Create a Unicode Object from the Py_UNICODE buffer *u* of the given size. *u*</span>
+<span class="gi">+   Create a Unicode object from the Py_UNICODE buffer *u* of the given size. *u*</span>
+    may be *NULL* which causes the contents to be undefined. It is the user&#39;s
+    responsibility to fill in the needed data.  The buffer is copied into the new
+    object. If the buffer is not *NULL*, the return value might be a shared object.
+<span class="gu">@@ -220,6 +220,111 @@</span>
+       changes in your code for properly supporting 64-bit systems.
+ 
+ 
+<span class="gi">+.. cfunction:: PyObject* PyUnicode_FromStringAndSize(const char *u, Py_ssize_t size)</span>
+<span class="gi">+</span>
+<span class="gi">+   Create a Unicode object from the char buffer *u*.  The bytes will be interpreted</span>
+<span class="gi">+   as being UTF-8 encoded.  *u* may also be *NULL* which</span>
+<span class="gi">+   causes the contents to be undefined. It is the user&#39;s responsibility to fill in</span>
+<span class="gi">+   the needed data.  The buffer is copied into the new object. If the buffer is not</span>
+<span class="gi">+   *NULL*, the return value might be a shared object. Therefore, modification of</span>
+<span class="gi">+   the resulting Unicode object is only allowed when *u* is *NULL*.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. cfunction:: PyObject *PyUnicode_FromString(const char *u)</span>
+<span class="gi">+</span>
+<span class="gi">+   Create a Unicode object from an UTF-8 encoded null-terminated char buffer</span>
+<span class="gi">+   *u*.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. cfunction:: PyObject* PyUnicode_FromFormat(const char *format, ...)</span>
+<span class="gi">+</span>
+<span class="gi">+   Take a C :cfunc:`printf`\ -style *format* string and a variable number of</span>
+<span class="gi">+   arguments, calculate the size of the resulting Python unicode string and return</span>
+<span class="gi">+   a string with the values formatted into it.  The variable arguments must be C</span>
+<span class="gi">+   types and must correspond exactly to the format characters in the *format*</span>
+<span class="gi">+   string.  The following format characters are allowed:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. % The descriptions for %zd and %zu are wrong, but the truth is complicated</span>
+<span class="gi">+   .. % because not all compilers support the %z width modifier -- we fake it</span>
+<span class="gi">+   .. % when necessary via interpolating PY_FORMAT_SIZE_T.</span>
+<span class="gi">+</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | Format Characters | Type                | Comment                        |</span>
+<span class="gi">+   +===================+=====================+================================+</span>
+<span class="gi">+   | :attr:`%%`        | *n/a*               | The literal % character.       |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%c`        | int                 | A single character,            |</span>
+<span class="gi">+   |                   |                     | represented as an C int.       |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%d`        | int                 | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%d&quot;)``.              |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%u`        | unsigned int        | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%u&quot;)``.              |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%ld`       | long                | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%ld&quot;)``.             |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%lu`       | unsigned long       | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%lu&quot;)``.             |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%zd`       | Py_ssize_t          | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%zd&quot;)``.             |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%zu`       | size_t              | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%zu&quot;)``.             |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%i`        | int                 | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%i&quot;)``.              |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%x`        | int                 | Exactly equivalent to          |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%x&quot;)``.              |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%s`        | char\*              | A null-terminated C character  |</span>
+<span class="gi">+   |                   |                     | array.                         |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%p`        | void\*              | The hex representation of a C  |</span>
+<span class="gi">+   |                   |                     | pointer. Mostly equivalent to  |</span>
+<span class="gi">+   |                   |                     | ``printf(&quot;%p&quot;)`` except that   |</span>
+<span class="gi">+   |                   |                     | it is guaranteed to start with |</span>
+<span class="gi">+   |                   |                     | the literal ``0x`` regardless  |</span>
+<span class="gi">+   |                   |                     | of what the platform&#39;s         |</span>
+<span class="gi">+   |                   |                     | ``printf`` yields.             |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%U`        | PyObject\*          | A unicode object.              |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%V`        | PyObject\*, char \* | A unicode object (which may be |</span>
+<span class="gi">+   |                   |                     | *NULL*) and a null-terminated  |</span>
+<span class="gi">+   |                   |                     | C character array as a second  |</span>
+<span class="gi">+   |                   |                     | parameter (which will be used, |</span>
+<span class="gi">+   |                   |                     | if the first parameter is      |</span>
+<span class="gi">+   |                   |                     | *NULL*).                       |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%S`        | PyObject\*          | The result of calling          |</span>
+<span class="gi">+   |                   |                     | :func:`PyObject_Unicode`.      |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+   | :attr:`%R`        | PyObject\*          | The result of calling          |</span>
+<span class="gi">+   |                   |                     | :func:`PyObject_Repr`.         |</span>
+<span class="gi">+   +-------------------+---------------------+--------------------------------+</span>
+<span class="gi">+</span>
+<span class="gi">+   An unrecognized format character causes all the rest of the format string to be</span>
+<span class="gi">+   copied as-is to the result string, and any extra arguments discarded.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. cfunction:: PyObject* PyUnicode_FromFormatV(const char *format, va_list vargs)</span>
+<span class="gi">+</span>
+<span class="gi">+   Identical to :func:`PyUnicode_FromFormat` except that it takes exactly two</span>
+<span class="gi">+   arguments.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. cfunction:: Py_UNICODE* PyUnicode_AsUnicode(PyObject *unicode)
+ 
+    Return a read-only pointer to the Unicode object&#39;s internal :ctype:`Py_UNICODE`
+<span class="gu">@@ -266,11 +371,11 @@</span>
+ wchar_t Support
+ &quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;
+ 
+<span class="gd">-wchar_t support for platforms which support it:</span>
+<span class="gi">+:ctype:`wchar_t` support for platforms which support it:</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
+ 
+<span class="gd">-   Create a Unicode object from the :ctype:`wchar_t` buffer *w* of the given size.</span>
+<span class="gi">+   Create a Unicode object from the :ctype:`wchar_t` buffer *w* of the given *size*.</span>
+    Return *NULL* on failure.
+ 
+    .. versionchanged:: 2.5
+<span class="gu">@@ -302,13 +407,13 @@</span>
+ Python provides a set of built-in codecs which are written in C for speed. All of
+ these codecs are directly usable via the following functions.
+ 
+<span class="gd">-Many of the following APIs take two arguments encoding and errors. These</span>
+<span class="gd">-parameters encoding and errors have the same semantics as the ones of the</span>
+<span class="gd">-built-in :func:`unicode` Unicode object constructor.</span>
+<span class="gi">+Many of the following APIs take two arguments encoding and errors, and they</span>
+<span class="gi">+have the same semantics as the ones of the built-in :func:`unicode` Unicode</span>
+<span class="gi">+object constructor.</span>
+ 
+ Setting encoding to *NULL* causes the default encoding to be used which is
+ ASCII.  The file system calls should use :cdata:`Py_FileSystemDefaultEncoding`
+<span class="gd">-as the encoding for file names. This variable should be treated as read-only: On</span>
+<span class="gi">+as the encoding for file names. This variable should be treated as read-only: on</span>
+ some systems, it will be a pointer to a static string, on others, it will change
+ at run-time (such as when the application invokes setlocale).
+ 
+<span class="gu">@@ -341,7 +446,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_Encode(const Py_UNICODE *s, Py_ssize_t size, const char *encoding, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size and return a Python</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer *s* of the given *size* and return a Python</span>
+    string object.  *encoding* and *errors* have the same meaning as the parameters
+    of the same name in the Unicode :meth:`encode` method.  The codec to be used is
+    looked up using the Python codec registry.  Return *NULL* if an exception was
+<span class="gu">@@ -393,7 +498,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeUTF8(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using UTF-8 and return a</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer *s* of the given *size* using UTF-8 and return a</span>
+    Python string object.  Return *NULL* if an exception was raised by the codec.
+ 
+    .. versionchanged:: 2.5
+<span class="gu">@@ -416,7 +521,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_DecodeUTF32(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
+ 
+<span class="gd">-   Decode *length* bytes from a UTF-32 encoded buffer string and return the</span>
+<span class="gi">+   Decode *size* bytes from a UTF-32 encoded buffer string and return the</span>
+    corresponding Unicode object.  *errors* (if non-*NULL*) defines the error
+    handling. It defaults to &quot;strict&quot;.
+ 
+<span class="gu">@@ -492,7 +597,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_DecodeUTF16(const char *s, Py_ssize_t size, const char *errors, int *byteorder)
+ 
+<span class="gd">-   Decode *length* bytes from a UTF-16 encoded buffer string and return the</span>
+<span class="gi">+   Decode *size* bytes from a UTF-16 encoded buffer string and return the</span>
+    corresponding Unicode object.  *errors* (if non-*NULL*) defines the error
+    handling. It defaults to &quot;strict&quot;.
+ 
+<span class="gu">@@ -579,7 +684,7 @@</span>
+    *s*.  Return *NULL* if an exception was raised by the codec.
+ 
+ 
+<span class="gd">-.. cfunction:: PyObject* PyUnicode_DecodeUTF8Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)</span>
+<span class="gi">+.. cfunction:: PyObject* PyUnicode_DecodeUTF7Stateful(const char *s, Py_ssize_t size, const char *errors, Py_ssize_t *consumed)</span>
+ 
+    If *consumed* is *NULL*, behave like :cfunc:`PyUnicode_DecodeUTF7`.  If
+    *consumed* is not *NULL*, trailing incomplete UTF-7 base-64 sections will not
+<span class="gu">@@ -617,7 +722,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeUnicodeEscape(const Py_UNICODE *s, Py_ssize_t size)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using Unicode-Escape and</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using Unicode-Escape and</span>
+    return a Python string object.  Return *NULL* if an exception was raised by the
+    codec.
+ 
+<span class="gu">@@ -651,7 +756,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeRawUnicodeEscape(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using Raw-Unicode-Escape</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using Raw-Unicode-Escape</span>
+    and return a Python string object.  Return *NULL* if an exception was raised by
+    the codec.
+ 
+<span class="gu">@@ -686,7 +791,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeLatin1(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using Latin-1 and return</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using Latin-1 and return</span>
+    a Python string object.  Return *NULL* if an exception was raised by the codec.
+ 
+    .. versionchanged:: 2.5
+<span class="gu">@@ -720,7 +825,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeASCII(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using ASCII and return a</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using ASCII and return a</span>
+    Python string object.  Return *NULL* if an exception was raised by the codec.
+ 
+    .. versionchanged:: 2.5
+<span class="gu">@@ -738,8 +843,6 @@</span>
+ Character Map Codecs
+ &quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;
+ 
+<span class="gd">-These are the mapping codec APIs:</span>
+<span class="gd">-</span>
+ This codec is special in that it can be used to implement many different codecs
+ (and this is in fact what was done to obtain most of the standard codecs
+ included in the :mod:`encodings` package). The codec uses mapping to encode and
+<span class="gu">@@ -761,6 +864,7 @@</span>
+ resp. Because of this, mappings only need to contain those mappings which map
+ characters to different code points.
+ 
+<span class="gi">+These are the mapping codec APIs:</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_DecodeCharmap(const char *s, Py_ssize_t size, PyObject *mapping, const char *errors)
+ 
+<span class="gu">@@ -781,7 +885,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeCharmap(const Py_UNICODE *s, Py_ssize_t size, PyObject *mapping, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using the given</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using the given</span>
+    *mapping* object and return a Python string object. Return *NULL* if an
+    exception was raised by the codec.
+ 
+<span class="gu">@@ -801,7 +905,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_TranslateCharmap(const Py_UNICODE *s, Py_ssize_t size, PyObject *table, const char *errors)
+ 
+<span class="gd">-   Translate a :ctype:`Py_UNICODE` buffer of the given length by applying a</span>
+<span class="gi">+   Translate a :ctype:`Py_UNICODE` buffer of the given *size* by applying a</span>
+    character mapping *table* to it and return the resulting Unicode object.  Return
+    *NULL* when an exception was raised by the codec.
+ 
+<span class="gu">@@ -816,16 +920,16 @@</span>
+       This function used an :ctype:`int` type for *size*. This might require
+       changes in your code for properly supporting 64-bit systems.
+ 
+<span class="gi">+</span>
+<span class="gi">+MBCS codecs for Windows</span>
+<span class="gi">+&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="gi">+</span>
+ These are the MBCS codec APIs. They are currently only available on Windows and
+ use the Win32 MBCS converters to implement the conversions.  Note that MBCS (or
+ DBCS) is a class of encodings, not just one.  The target encoding is defined by
+ the user settings on the machine running the codec.
+ 
+ 
+<span class="gd">-MBCS codecs for Windows</span>
+<span class="gd">-&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+ .. cfunction:: PyObject* PyUnicode_DecodeMBCS(const char *s, Py_ssize_t size, const char *errors)
+ 
+    Create a Unicode object by decoding *size* bytes of the MBCS encoded string *s*.
+<span class="gu">@@ -848,7 +952,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_EncodeMBCS(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
+ 
+<span class="gd">-   Encode the :ctype:`Py_UNICODE` buffer of the given size using MBCS and return a</span>
+<span class="gi">+   Encode the :ctype:`Py_UNICODE` buffer of the given *size* using MBCS and return a</span>
+    Python string object.  Return *NULL* if an exception was raised by the codec.
+ 
+    .. versionchanged:: 2.5
+<span class="gu">@@ -885,7 +989,7 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_Split(PyObject *s, PyObject *sep, Py_ssize_t maxsplit)
+ 
+<span class="gd">-   Split a string giving a list of Unicode strings.  If sep is *NULL*, splitting</span>
+<span class="gi">+   Split a string giving a list of Unicode strings.  If *sep* is *NULL*, splitting</span>
+    will be done at all whitespace substrings.  Otherwise, splits occur at the given
+    separator.  At most *maxsplit* splits will be done.  If negative, no limit is
+    set.  Separators are not included in the resulting list.
+<span class="gu">@@ -920,13 +1024,13 @@</span>
+ 
+ .. cfunction:: PyObject* PyUnicode_Join(PyObject *separator, PyObject *seq)
+ 
+<span class="gd">-   Join a sequence of strings using the given separator and return the resulting</span>
+<span class="gi">+   Join a sequence of strings using the given *separator* and return the resulting</span>
+    Unicode string.
+ 
+ 
+ .. cfunction:: int PyUnicode_Tailmatch(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
+ 
+<span class="gd">-   Return 1 if *substr* matches *str*[*start*:*end*] at the given tail end</span>
+<span class="gi">+   Return 1 if *substr* matches ``str[start:end]`` at the given tail end</span>
+    (*direction* == -1 means to do a prefix match, *direction* == 1 a suffix match),
+    0 otherwise. Return ``-1`` if an error occurred.
+ 
+<span class="gu">@@ -938,7 +1042,7 @@</span>
+ 
+ .. cfunction:: Py_ssize_t PyUnicode_Find(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
+ 
+<span class="gd">-   Return the first position of *substr* in *str*[*start*:*end*] using the given</span>
+<span class="gi">+   Return the first position of *substr* in ``str[start:end]`` using the given</span>
+    *direction* (*direction* == 1 means to do a forward search, *direction* == -1 a
+    backward search).  The return value is the index of the first match; a value of
+    ``-1`` indicates that no match was found, and ``-2`` indicates that an error
+</pre></div>
+
+</body>
+</html>

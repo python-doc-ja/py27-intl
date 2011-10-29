@@ -1,0 +1,291 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/pkgutil.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -3,62 +3,187 @@</span>
+ ============================================
+ 
+ .. module:: pkgutil
+<span class="gd">-   :synopsis: Utilities to support extension of packages.</span>
+<span class="gi">+   :synopsis: Utilities for the import system.</span>
+ 
+<span class="gi">+This module provides utilities for the import system, in particular package</span>
+<span class="gi">+support.</span>
+ 
+ .. versionadded:: 2.3
+ 
+<span class="gd">-This module provides functions to manipulate packages:</span>
+<span class="gd">-</span>
+ 
+ .. function:: extend_path(path, name)
+ 
+<span class="gd">-   Extend the search path for the modules which comprise a package. Intended use is</span>
+<span class="gd">-   to place the following code in a package&#39;s :file:`__init__.py`::</span>
+<span class="gi">+   Extend the search path for the modules which comprise a package.  Intended</span>
+<span class="gi">+   use is to place the following code in a package&#39;s :file:`__init__.py`::</span>
+ 
+       from pkgutil import extend_path
+       __path__ = extend_path(__path__, __name__)
+ 
+<span class="gd">-   This will add to the package&#39;s ``__path__`` all subdirectories of directories on</span>
+<span class="gd">-   ``sys.path`` named after the package.  This is useful if one wants to distribute</span>
+<span class="gd">-   different parts of a single logical package as multiple directories.</span>
+<span class="gi">+   This will add to the package&#39;s ``__path__`` all subdirectories of directories</span>
+<span class="gi">+   on ``sys.path`` named after the package.  This is useful if one wants to</span>
+<span class="gi">+   distribute different parts of a single logical package as multiple</span>
+<span class="gi">+   directories.</span>
+ 
+<span class="gd">-   It also looks for :file:`\*.pkg` files beginning where ``*`` matches the *name*</span>
+<span class="gd">-   argument.  This feature is similar to :file:`\*.pth` files (see the :mod:`site`</span>
+<span class="gd">-   module for more information), except that it doesn&#39;t special-case lines starting</span>
+<span class="gd">-   with ``import``.  A :file:`\*.pkg` file is trusted at face value: apart from</span>
+<span class="gd">-   checking for duplicates, all entries found in a :file:`\*.pkg` file are added to</span>
+<span class="gd">-   the path, regardless of whether they exist on the filesystem.  (This is a</span>
+<span class="gd">-   feature.)</span>
+<span class="gi">+   It also looks for :file:`\*.pkg` files beginning where ``*`` matches the</span>
+<span class="gi">+   *name* argument.  This feature is similar to :file:`\*.pth` files (see the</span>
+<span class="gi">+   :mod:`site` module for more information), except that it doesn&#39;t special-case</span>
+<span class="gi">+   lines starting with ``import``.  A :file:`\*.pkg` file is trusted at face</span>
+<span class="gi">+   value: apart from checking for duplicates, all entries found in a</span>
+<span class="gi">+   :file:`\*.pkg` file are added to the path, regardless of whether they exist</span>
+<span class="gi">+   on the filesystem.  (This is a feature.)</span>
+ 
+    If the input path is not a list (as is the case for frozen packages) it is
+    returned unchanged.  The input path is not modified; an extended copy is
+    returned.  Items are only appended to the copy at the end.
+ 
+<span class="gd">-   It is assumed that ``sys.path`` is a sequence.  Items of ``sys.path`` that are</span>
+<span class="gd">-   not (Unicode or 8-bit) strings referring to existing directories are ignored.</span>
+<span class="gd">-   Unicode items on ``sys.path`` that cause errors when used as filenames may cause</span>
+<span class="gd">-   this function to raise an exception (in line with :func:`os.path.isdir`</span>
+<span class="gd">-   behavior).</span>
+<span class="gi">+   It is assumed that :data:`sys.path` is a sequence.  Items of :data:`sys.path`</span>
+<span class="gi">+   that are not (Unicode or 8-bit) strings referring to existing directories are</span>
+<span class="gi">+   ignored.  Unicode items on :data:`sys.path` that cause errors when used as</span>
+<span class="gi">+   filenames may cause this function to raise an exception (in line with</span>
+<span class="gi">+   :func:`os.path.isdir` behavior).</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: ImpImporter(dirname=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   :pep:`302` Importer that wraps Python&#39;s &quot;classic&quot; import algorithm.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *dirname* is a string, a :pep:`302` importer is created that searches that</span>
+<span class="gi">+   directory.  If *dirname* is ``None``, a :pep:`302` importer is created that</span>
+<span class="gi">+   searches the current :data:`sys.path`, plus any modules that are frozen or</span>
+<span class="gi">+   built-in.</span>
+<span class="gi">+</span>
+<span class="gi">+   Note that :class:`ImpImporter` does not currently support being used by</span>
+<span class="gi">+   placement on :data:`sys.meta_path`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: ImpLoader(fullname, file, filename, etc)</span>
+<span class="gi">+</span>
+<span class="gi">+   :pep:`302` Loader that wraps Python&#39;s &quot;classic&quot; import algorithm.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: find_loader(fullname)</span>
+<span class="gi">+</span>
+<span class="gi">+   Find a :pep:`302` &quot;loader&quot; object for *fullname*.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *fullname* contains dots, path must be the containing package&#39;s</span>
+<span class="gi">+   ``__path__``.  Returns ``None`` if the module cannot be found or imported.</span>
+<span class="gi">+   This function uses :func:`iter_importers`, and is thus subject to the same</span>
+<span class="gi">+   limitations regarding platform-specific special import locations such as the</span>
+<span class="gi">+   Windows registry.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: get_importer(path_item)</span>
+<span class="gi">+</span>
+<span class="gi">+   Retrieve a :pep:`302` importer for the given *path_item*.</span>
+<span class="gi">+</span>
+<span class="gi">+   The returned importer is cached in :data:`sys.path_importer_cache` if it was</span>
+<span class="gi">+   newly created by a path hook.</span>
+<span class="gi">+</span>
+<span class="gi">+   If there is no importer, a wrapper around the basic import machinery is</span>
+<span class="gi">+   returned.  This wrapper is never inserted into the importer cache (``None``</span>
+<span class="gi">+   is inserted instead).</span>
+<span class="gi">+</span>
+<span class="gi">+   The cache (or part of it) can be cleared manually if a rescan of</span>
+<span class="gi">+   :data:`sys.path_hooks` is necessary.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: get_loader(module_or_name)</span>
+<span class="gi">+</span>
+<span class="gi">+   Get a :pep:`302` &quot;loader&quot; object for *module_or_name*.</span>
+<span class="gi">+</span>
+<span class="gi">+   If the module or package is accessible via the normal import mechanism, a</span>
+<span class="gi">+   wrapper around the relevant part of that machinery is returned.  Returns</span>
+<span class="gi">+   ``None`` if the module cannot be found or imported.  If the named module is</span>
+<span class="gi">+   not already imported, its containing package (if any) is imported, in order</span>
+<span class="gi">+   to establish the package ``__path__``.</span>
+<span class="gi">+</span>
+<span class="gi">+   This function uses :func:`iter_importers`, and is thus subject to the same</span>
+<span class="gi">+   limitations regarding platform-specific special import locations such as the</span>
+<span class="gi">+   Windows registry.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: iter_importers(fullname=&#39;&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+   Yield :pep:`302` importers for the given module name.</span>
+<span class="gi">+</span>
+<span class="gi">+   If fullname contains a &#39;.&#39;, the importers will be for the package containing</span>
+<span class="gi">+   fullname, otherwise they will be importers for :data:`sys.meta_path`,</span>
+<span class="gi">+   :data:`sys.path`, and Python&#39;s &quot;classic&quot; import machinery, in that order.  If</span>
+<span class="gi">+   the named module is in a package, that package is imported as a side effect</span>
+<span class="gi">+   of invoking this function.</span>
+<span class="gi">+</span>
+<span class="gi">+   Non-:pep:`302` mechanisms (e.g. the Windows registry) used by the standard</span>
+<span class="gi">+   import machinery to find files in alternative locations are partially</span>
+<span class="gi">+   supported, but are searched *after* :data:`sys.path`.  Normally, these</span>
+<span class="gi">+   locations are searched *before* :data:`sys.path`, preventing :data:`sys.path`</span>
+<span class="gi">+   entries from shadowing them.</span>
+<span class="gi">+</span>
+<span class="gi">+   For this to cause a visible difference in behaviour, there must be a module</span>
+<span class="gi">+   or package name that is accessible via both :data:`sys.path` and one of the</span>
+<span class="gi">+   non-:pep:`302` file system mechanisms.  In this case, the emulation will find</span>
+<span class="gi">+   the former version, while the builtin import mechanism will find the latter.</span>
+<span class="gi">+</span>
+<span class="gi">+   Items of the following types can be affected by this discrepancy:</span>
+<span class="gi">+   ``imp.C_EXTENSION``, ``imp.PY_SOURCE``, ``imp.PY_COMPILED``,</span>
+<span class="gi">+   ``imp.PKG_DIRECTORY``.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: iter_modules(path=None, prefix=&#39;&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+   Yields ``(module_loader, name, ispkg)`` for all submodules on *path*, or, if</span>
+<span class="gi">+   path is ``None``, all top-level modules on ``sys.path``.</span>
+<span class="gi">+</span>
+<span class="gi">+   *path* should be either ``None`` or a list of paths to look for modules in.</span>
+<span class="gi">+</span>
+<span class="gi">+   *prefix* is a string to output on the front of every module name on output.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: walk_packages(path=None, prefix=&#39;&#39;, onerror=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   Yields ``(module_loader, name, ispkg)`` for all modules recursively on</span>
+<span class="gi">+   *path*, or, if path is ``None``, all accessible modules.</span>
+<span class="gi">+</span>
+<span class="gi">+   *path* should be either ``None`` or a list of paths to look for modules in.</span>
+<span class="gi">+</span>
+<span class="gi">+   *prefix* is a string to output on the front of every module name on output.</span>
+<span class="gi">+</span>
+<span class="gi">+   Note that this function must import all *packages* (*not* all modules!) on</span>
+<span class="gi">+   the given *path*, in order to access the ``__path__`` attribute to find</span>
+<span class="gi">+   submodules.</span>
+<span class="gi">+</span>
+<span class="gi">+   *onerror* is a function which gets called with one argument (the name of the</span>
+<span class="gi">+   package which was being imported) if any exception occurs while trying to</span>
+<span class="gi">+   import a package.  If no *onerror* function is supplied, :exc:`ImportError`\s</span>
+<span class="gi">+   are caught and ignored, while all other exceptions are propagated,</span>
+<span class="gi">+   terminating the search.</span>
+<span class="gi">+</span>
+<span class="gi">+   Examples::</span>
+<span class="gi">+</span>
+<span class="gi">+      # list all modules python can access</span>
+<span class="gi">+      walk_packages()</span>
+<span class="gi">+</span>
+<span class="gi">+      # list all submodules of ctypes</span>
+<span class="gi">+      walk_packages(ctypes.__path__, ctypes.__name__ + &#39;.&#39;)</span>
+<span class="gi">+</span>
+ 
+ .. function:: get_data(package, resource)
+ 
+    Get a resource from a package.
+ 
+<span class="gd">-   This is a wrapper for the :pep:`302` loader :func:`get_data` API. The package</span>
+<span class="gd">-   argument should be the name of a package, in standard module format</span>
+<span class="gd">-   (foo.bar). The resource argument should be in the form of a relative</span>
+<span class="gd">-   filename, using ``/`` as the path separator. The parent directory name</span>
+<span class="gi">+   This is a wrapper for the :pep:`302` loader :func:`get_data` API.  The</span>
+<span class="gi">+   *package* argument should be the name of a package, in standard module format</span>
+<span class="gi">+   (``foo.bar``).  The *resource* argument should be in the form of a relative</span>
+<span class="gi">+   filename, using ``/`` as the path separator.  The parent directory name</span>
+    ``..`` is not allowed, and nor is a rooted name (starting with a ``/``).
+ 
+<span class="gd">-   The function returns a binary string that is the contents of the</span>
+<span class="gd">-   specified resource.</span>
+<span class="gi">+   The function returns a binary string that is the contents of the specified</span>
+<span class="gi">+   resource.</span>
+ 
+    For packages located in the filesystem, which have already been imported,
+    this is the rough equivalent of::
+ 
+<span class="gd">-       d = os.path.dirname(sys.modules[package].__file__)</span>
+<span class="gd">-       data = open(os.path.join(d, resource), &#39;rb&#39;).read()</span>
+<span class="gi">+      d = os.path.dirname(sys.modules[package].__file__)</span>
+<span class="gi">+      data = open(os.path.join(d, resource), &#39;rb&#39;).read()</span>
+ 
+    If the package cannot be located or loaded, or it uses a :pep:`302` loader
+<span class="gd">-   which does not support :func:`get_data`, then None is returned.</span>
+<span class="gi">+   which does not support :func:`get_data`, then ``None`` is returned.</span>
+</pre></div>
+
+</body>
+</html>

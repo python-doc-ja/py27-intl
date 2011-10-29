@@ -1,0 +1,2378 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/unittest.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,4 +1,3 @@</span>
+<span class="gd">-</span>
+ :mod:`unittest` --- Unit testing framework
+ ==========================================
+ 
+<span class="gu">@@ -9,9 +8,11 @@</span>
+ .. sectionauthor:: Fred L. Drake, Jr. &lt;fdrake@acm.org&gt;
+ .. sectionauthor:: Raymond Hettinger &lt;python@rcn.com&gt;
+ 
+<span class="gd">-</span>
+ .. versionadded:: 2.1
+ 
+<span class="gi">+(If you are already familiar with the basic concepts of testing, you might want</span>
+<span class="gi">+to skip to :ref:`the list of assert methods &lt;assert-methods&gt;`.)</span>
+<span class="gi">+</span>
+ The Python unit testing framework, sometimes referred to as &quot;PyUnit,&quot; is a
+ Python language version of JUnit, by Kent Beck and Erich Gamma. JUnit is, in
+ turn, a Java version of Kent&#39;s Smalltalk testing framework.  Each is the de
+<span class="gu">@@ -49,26 +50,27 @@</span>
+ :class:`TestCase` and :class:`FunctionTestCase` classes; the former should be
+ used when creating new tests, and the latter can be used when integrating
+ existing test code with a :mod:`unittest`\ -driven framework. When building test
+<span class="gd">-fixtures using :class:`TestCase`, the :meth:`setUp` and :meth:`tearDown` methods</span>
+<span class="gd">-can be overridden to provide initialization and cleanup for the fixture.  With</span>
+<span class="gd">-:class:`FunctionTestCase`, existing functions can be passed to the constructor</span>
+<span class="gd">-for these purposes.  When the test is run, the fixture initialization is run</span>
+<span class="gd">-first; if it succeeds, the cleanup method is run after the test has been</span>
+<span class="gd">-executed, regardless of the outcome of the test.  Each instance of the</span>
+<span class="gd">-:class:`TestCase` will only be used to run a single test method, so a new</span>
+<span class="gd">-fixture is created for each test.</span>
+<span class="gi">+fixtures using :class:`TestCase`, the :meth:`~TestCase.setUp` and</span>
+<span class="gi">+:meth:`~TestCase.tearDown` methods can be overridden to provide initialization</span>
+<span class="gi">+and cleanup for the fixture.  With :class:`FunctionTestCase`, existing functions</span>
+<span class="gi">+can be passed to the constructor for these purposes.  When the test is run, the</span>
+<span class="gi">+fixture initialization is run first; if it succeeds, the cleanup method is run</span>
+<span class="gi">+after the test has been executed, regardless of the outcome of the test.  Each</span>
+<span class="gi">+instance of the :class:`TestCase` will only be used to run a single test method,</span>
+<span class="gi">+so a new fixture is created for each test.</span>
+ 
+ Test suites are implemented by the :class:`TestSuite` class.  This class allows
+ individual tests and test suites to be aggregated; when the suite is executed,
+ all tests added directly to the suite and in &quot;child&quot; test suites are run.
+ 
+<span class="gd">-A test runner is an object that provides a single method, :meth:`run`, which</span>
+<span class="gd">-accepts a :class:`TestCase` or :class:`TestSuite` object as a parameter, and</span>
+<span class="gd">-returns a result object.  The class :class:`TestResult` is provided for use as</span>
+<span class="gd">-the result object. :mod:`unittest` provides the :class:`TextTestRunner` as an</span>
+<span class="gd">-example test runner which reports test results on the standard error stream by</span>
+<span class="gd">-default.  Alternate runners can be implemented for other environments (such as</span>
+<span class="gd">-graphical environments) without any need to derive from a specific class.</span>
+<span class="gi">+A test runner is an object that provides a single method,</span>
+<span class="gi">+:meth:`~TestRunner.run`, which accepts a :class:`TestCase` or :class:`TestSuite`</span>
+<span class="gi">+object as a parameter, and returns a result object.  The class</span>
+<span class="gi">+:class:`TestResult` is provided for use as the result object. :mod:`unittest`</span>
+<span class="gi">+provides the :class:`TextTestRunner` as an example test runner which reports</span>
+<span class="gi">+test results on the standard error stream by default.  Alternate runners can be</span>
+<span class="gi">+implemented for other environments (such as graphical environments) without any</span>
+<span class="gi">+need to derive from a specific class.</span>
+ 
+ 
+ .. seealso::
+<span class="gu">@@ -76,16 +78,27 @@</span>
+    Module :mod:`doctest`
+       Another test-support module with a very different flavor.
+ 
+<span class="gi">+   `unittest2: A backport of new unittest features for Python 2.4-2.6 &lt;http://pypi.python.org/pypi/unittest2&gt;`_</span>
+<span class="gi">+      Many new features were added to unittest in Python 2.7, including test</span>
+<span class="gi">+      discovery. unittest2 allows you to use these features with earlier</span>
+<span class="gi">+      versions of Python.</span>
+<span class="gi">+</span>
+    `Simple Smalltalk Testing: With Patterns &lt;http://www.XProgramming.com/testfram.htm&gt;`_
+<span class="gd">-      Kent Beck&#39;s original paper on testing frameworks using the pattern shared by</span>
+<span class="gd">-      :mod:`unittest`.</span>
+<span class="gi">+      Kent Beck&#39;s original paper on testing frameworks using the pattern shared</span>
+<span class="gi">+      by :mod:`unittest`.</span>
+ 
+    `Nose &lt;http://code.google.com/p/python-nose/&gt;`_ and `py.test &lt;http://pytest.org&gt;`_
+<span class="gd">-      Third-party unittest frameworks with a lighter-weight syntax</span>
+<span class="gd">-      for writing tests.  For example, ``assert func(10) == 42``.</span>
+<span class="gd">-</span>
+<span class="gd">-   `python-mock &lt;http://python-mock.sourceforge.net/&gt;`_ and `minimock &lt;http://blog.ianbicking.org/minimock.html&gt;`_</span>
+<span class="gd">-      Tools for creating mock test objects (objects simulating external resources).</span>
+<span class="gi">+      Third-party unittest frameworks with a lighter-weight syntax for writing</span>
+<span class="gi">+      tests.  For example, ``assert func(10) == 42``.</span>
+<span class="gi">+</span>
+<span class="gi">+   `The Python Testing Tools Taxonomy &lt;http://pycheesecake.org/wiki/PythonTestingToolsTaxonomy&gt;`_</span>
+<span class="gi">+      An extensive list of Python testing tools including functional testing</span>
+<span class="gi">+      frameworks and mock object libraries.</span>
+<span class="gi">+</span>
+<span class="gi">+   `Testing in Python Mailing List &lt;http://lists.idyll.org/listinfo/testing-in-python&gt;`_</span>
+<span class="gi">+      A special-interest-group for discussion of testing, and testing tools,</span>
+<span class="gi">+      in Python.</span>
+<span class="gi">+</span>
+ 
+ .. _unittest-minimal-example:
+ 
+<span class="gu">@@ -112,36 +125,41 @@</span>
+            self.seq.sort()
+            self.assertEqual(self.seq, range(10))
+ 
+<span class="gi">+           # should raise an exception for an immutable sequence</span>
+<span class="gi">+           self.assertRaises(TypeError, random.shuffle, (1,2,3))</span>
+<span class="gi">+</span>
+        def test_choice(self):
+            element = random.choice(self.seq)
+            self.assertTrue(element in self.seq)
+ 
+        def test_sample(self):
+<span class="gd">-           self.assertRaises(ValueError, random.sample, self.seq, 20)</span>
+<span class="gi">+           with self.assertRaises(ValueError):</span>
+<span class="gi">+               random.sample(self.seq, 20)</span>
+            for element in random.sample(self.seq, 5):
+                self.assertTrue(element in self.seq)
+ 
+    if __name__ == &#39;__main__&#39;:
+        unittest.main()
+ 
+<span class="gd">-A testcase is created by subclassing :class:`unittest.TestCase`. The three</span>
+<span class="gi">+A testcase is created by subclassing :class:`unittest.TestCase`.  The three</span>
+ individual tests are defined with methods whose names start with the letters
+ ``test``.  This naming convention informs the test runner about which methods
+ represent tests.
+ 
+<span class="gd">-The crux of each test is a call to :meth:`assertEqual` to check for an expected</span>
+<span class="gd">-result; :meth:`assert_` to verify a condition; or :meth:`assertRaises` to verify</span>
+<span class="gd">-that an expected exception gets raised.  These methods are used instead of the</span>
+<span class="gd">-:keyword:`assert` statement so the test runner can accumulate all test results</span>
+<span class="gd">-and produce a report.</span>
+<span class="gd">-</span>
+<span class="gd">-When a :meth:`setUp` method is defined, the test runner will run that method</span>
+<span class="gd">-prior to each test.  Likewise, if a :meth:`tearDown` method is defined, the test</span>
+<span class="gd">-runner will invoke that method after each test.  In the example, :meth:`setUp`</span>
+<span class="gd">-was used to create a fresh sequence for each test.</span>
+<span class="gi">+The crux of each test is a call to :meth:`~TestCase.assertEqual` to check for an</span>
+<span class="gi">+expected result; :meth:`~TestCase.assertTrue` to verify a condition; or</span>
+<span class="gi">+:meth:`~TestCase.assertRaises` to verify that an expected exception gets raised.</span>
+<span class="gi">+These methods are used instead of the :keyword:`assert` statement so the test</span>
+<span class="gi">+runner can accumulate all test results and produce a report.</span>
+<span class="gi">+</span>
+<span class="gi">+When a :meth:`~TestCase.setUp` method is defined, the test runner will run that</span>
+<span class="gi">+method prior to each test.  Likewise, if a :meth:`~TestCase.tearDown` method is</span>
+<span class="gi">+defined, the test runner will invoke that method after each test.  In the</span>
+<span class="gi">+example, :meth:`~TestCase.setUp` was used to create a fresh sequence for each</span>
+<span class="gi">+test.</span>
+ 
+ The final block shows a simple way to run the tests. :func:`unittest.main`
+<span class="gd">-provides a command line interface to the test script.  When run from the command</span>
+<span class="gi">+provides a command-line interface to the test script.  When run from the command</span>
+ line, the above script produces an output that looks like this::
+ 
+    ...
+<span class="gu">@@ -174,6 +192,137 @@</span>
+ documentation explores the full feature set from first principles.
+ 
+ 
+<span class="gi">+.. _unittest-command-line-interface:</span>
+<span class="gi">+</span>
+<span class="gi">+Command-Line Interface</span>
+<span class="gi">+----------------------</span>
+<span class="gi">+</span>
+<span class="gi">+The unittest module can be used from the command line to run tests from</span>
+<span class="gi">+modules, classes or even individual test methods::</span>
+<span class="gi">+</span>
+<span class="gi">+   python -m unittest test_module1 test_module2</span>
+<span class="gi">+   python -m unittest test_module.TestClass</span>
+<span class="gi">+   python -m unittest test_module.TestClass.test_method</span>
+<span class="gi">+</span>
+<span class="gi">+You can pass in a list with any combination of module names, and fully</span>
+<span class="gi">+qualified class or method names.</span>
+<span class="gi">+</span>
+<span class="gi">+You can run tests with more detail (higher verbosity) by passing in the -v flag::</span>
+<span class="gi">+</span>
+<span class="gi">+   python -m unittest -v test_module</span>
+<span class="gi">+</span>
+<span class="gi">+For a list of all the command-line options::</span>
+<span class="gi">+</span>
+<span class="gi">+   python -m unittest -h</span>
+<span class="gi">+</span>
+<span class="gi">+..  versionchanged:: 2.7</span>
+<span class="gi">+   In earlier versions it was only possible to run individual test methods and</span>
+<span class="gi">+   not modules or classes.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Command-line options</span>
+<span class="gi">+~~~~~~~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+:program:`unittest` supports these command-line options:</span>
+<span class="gi">+</span>
+<span class="gi">+.. program:: unittest</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -b, --buffer</span>
+<span class="gi">+</span>
+<span class="gi">+   The standard output and standard error streams are buffered during the test</span>
+<span class="gi">+   run. Output during a passing test is discarded. Output is echoed normally</span>
+<span class="gi">+   on test fail or error and is added to the failure messages.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -c, --catch</span>
+<span class="gi">+</span>
+<span class="gi">+   Control-C during the test run waits for the current test to end and then</span>
+<span class="gi">+   reports all the results so far. A second control-C raises the normal</span>
+<span class="gi">+   :exc:`KeyboardInterrupt` exception.</span>
+<span class="gi">+</span>
+<span class="gi">+   See `Signal Handling`_ for the functions that provide this functionality.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -f, --failfast</span>
+<span class="gi">+</span>
+<span class="gi">+   Stop the test run on the first error or failure.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+   The command-line options ``-b``, ``-c`` and ``-f`` were added.</span>
+<span class="gi">+</span>
+<span class="gi">+The command line can also be used for test discovery, for running all of the</span>
+<span class="gi">+tests in a project or just a subset.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _unittest-test-discovery:</span>
+<span class="gi">+</span>
+<span class="gi">+Test Discovery</span>
+<span class="gi">+--------------</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+Unittest supports simple test discovery. In order to be compatible with test</span>
+<span class="gi">+discovery, all of the test files must be :ref:`modules &lt;tut-modules&gt;` or</span>
+<span class="gi">+:ref:`packages &lt;tut-packages&gt;` importable from the top-level directory of</span>
+<span class="gi">+the project (this means that their filenames must be valid</span>
+<span class="gi">+:ref:`identifiers &lt;identifiers&gt;`).</span>
+<span class="gi">+</span>
+<span class="gi">+Test discovery is implemented in :meth:`TestLoader.discover`, but can also be</span>
+<span class="gi">+used from the command line. The basic command-line usage is::</span>
+<span class="gi">+</span>
+<span class="gi">+   cd project_directory</span>
+<span class="gi">+   python -m unittest discover</span>
+<span class="gi">+</span>
+<span class="gi">+The ``discover`` sub-command has the following options:</span>
+<span class="gi">+</span>
+<span class="gi">+.. program:: unittest discover</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -v, --verbose</span>
+<span class="gi">+</span>
+<span class="gi">+   Verbose output</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -s directory</span>
+<span class="gi">+</span>
+<span class="gi">+   Directory to start discovery (&#39;.&#39; default)</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -p pattern</span>
+<span class="gi">+</span>
+<span class="gi">+   Pattern to match test files (&#39;test*.py&#39; default)</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -t directory</span>
+<span class="gi">+</span>
+<span class="gi">+   Top level directory of project (defaults to start directory)</span>
+<span class="gi">+</span>
+<span class="gi">+The :option:`-s`, :option:`-p`, and :option:`-t` options can be passed in</span>
+<span class="gi">+as positional arguments in that order. The following two command lines</span>
+<span class="gi">+are equivalent::</span>
+<span class="gi">+</span>
+<span class="gi">+   python -m unittest discover -s project_directory -p &#39;*_test.py&#39;</span>
+<span class="gi">+   python -m unittest discover project_directory &#39;*_test.py&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+As well as being a path it is possible to pass a package name, for example</span>
+<span class="gi">+``myproject.subpackage.test``, as the start directory. The package name you</span>
+<span class="gi">+supply will then be imported and its location on the filesystem will be used</span>
+<span class="gi">+as the start directory.</span>
+<span class="gi">+</span>
+<span class="gi">+.. caution::</span>
+<span class="gi">+</span>
+<span class="gi">+    Test discovery loads tests by importing them. Once test discovery has</span>
+<span class="gi">+    found all the test files from the start directory you specify it turns the</span>
+<span class="gi">+    paths into package names to import. For example `foo/bar/baz.py` will be</span>
+<span class="gi">+    imported as ``foo.bar.baz``.</span>
+<span class="gi">+</span>
+<span class="gi">+    If you have a package installed globally and attempt test discovery on</span>
+<span class="gi">+    a different copy of the package then the import *could* happen from the</span>
+<span class="gi">+    wrong place. If this happens test discovery will warn you and exit.</span>
+<span class="gi">+</span>
+<span class="gi">+    If you supply the start directory as a package name rather than a</span>
+<span class="gi">+    path to a directory then discover assumes that whichever location it</span>
+<span class="gi">+    imports from is the location you intended, so you will not get the</span>
+<span class="gi">+    warning.</span>
+<span class="gi">+</span>
+<span class="gi">+Test modules and packages can customize test loading and discovery by through</span>
+<span class="gi">+the `load_tests protocol`_.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. _organizing-tests:
+ 
+ Organizing test code
+<span class="gu">@@ -193,8 +342,8 @@</span>
+ contained, such that it can be run either in isolation or in arbitrary
+ combination with any number of other test cases.
+ 
+<span class="gd">-The simplest :class:`TestCase` subclass will simply override the :meth:`runTest`</span>
+<span class="gd">-method in order to perform specific testing code::</span>
+<span class="gi">+The simplest :class:`TestCase` subclass will simply override the</span>
+<span class="gi">+:meth:`~TestCase.runTest` method in order to perform specific testing code::</span>
+ 
+    import unittest
+ 
+<span class="gu">@@ -203,14 +352,13 @@</span>
+            widget = Widget(&#39;The widget&#39;)
+            self.assertEqual(widget.size(), (50, 50), &#39;incorrect default size&#39;)
+ 
+<span class="gd">-Note that in order to test something, we use the one of the :meth:`assert\*` or</span>
+<span class="gd">-:meth:`fail\*` methods provided by the :class:`TestCase` base class.  If the</span>
+<span class="gd">-test fails, an exception will be raised, and :mod:`unittest` will identify the</span>
+<span class="gd">-test case as a :dfn:`failure`.  Any other exceptions will be treated as</span>
+<span class="gd">-:dfn:`errors`. This helps you identify where the problem is: :dfn:`failures` are</span>
+<span class="gd">-caused by incorrect results - a 5 where you expected a 6. :dfn:`Errors` are</span>
+<span class="gd">-caused by incorrect code - e.g., a :exc:`TypeError` caused by an incorrect</span>
+<span class="gd">-function call.</span>
+<span class="gi">+Note that in order to test something, we use the one of the :meth:`assert\*`</span>
+<span class="gi">+methods provided by the :class:`TestCase` base class.  If the test fails, an</span>
+<span class="gi">+exception will be raised, and :mod:`unittest` will identify the test case as a</span>
+<span class="gi">+:dfn:`failure`.  Any other exceptions will be treated as :dfn:`errors`. This</span>
+<span class="gi">+helps you identify where the problem is: :dfn:`failures` are caused by incorrect</span>
+<span class="gi">+results - a 5 where you expected a 6. :dfn:`Errors` are caused by incorrect</span>
+<span class="gi">+code - e.g., a :exc:`TypeError` caused by an incorrect function call.</span>
+ 
+ The way to run a test case will be described later.  For now, note that to
+ construct an instance of such a test case, we call its constructor without
+<span class="gu">@@ -223,8 +371,8 @@</span>
+ subclasses would mean unsightly duplication.
+ 
+ Luckily, we can factor out such set-up code by implementing a method called
+<span class="gd">-:meth:`setUp`, which the testing framework will automatically call for us when</span>
+<span class="gd">-we run the test::</span>
+<span class="gi">+:meth:`~TestCase.setUp`, which the testing framework will automatically call for</span>
+<span class="gi">+us when we run the test::</span>
+ 
+    import unittest
+ 
+<span class="gu">@@ -243,12 +391,12 @@</span>
+            self.assertEqual(self.widget.size(), (100,150),
+                             &#39;wrong size after resize&#39;)
+ 
+<span class="gd">-If the :meth:`setUp` method raises an exception while the test is running, the</span>
+<span class="gd">-framework will consider the test to have suffered an error, and the</span>
+<span class="gd">-:meth:`runTest` method will not be executed.</span>
+<span class="gd">-</span>
+<span class="gd">-Similarly, we can provide a :meth:`tearDown` method that tidies up after the</span>
+<span class="gd">-:meth:`runTest` method has been run::</span>
+<span class="gi">+If the :meth:`~TestCase.setUp` method raises an exception while the test is</span>
+<span class="gi">+running, the framework will consider the test to have suffered an error, and the</span>
+<span class="gi">+:meth:`~TestCase.runTest` method will not be executed.</span>
+<span class="gi">+</span>
+<span class="gi">+Similarly, we can provide a :meth:`~TestCase.tearDown` method that tidies up</span>
+<span class="gi">+after the :meth:`~TestCase.runTest` method has been run::</span>
+ 
+    import unittest
+ 
+<span class="gu">@@ -260,8 +408,8 @@</span>
+            self.widget.dispose()
+            self.widget = None
+ 
+<span class="gd">-If :meth:`setUp` succeeded, the :meth:`tearDown` method will be run whether</span>
+<span class="gd">-:meth:`runTest` succeeded or not.</span>
+<span class="gi">+If :meth:`~TestCase.setUp` succeeded, the :meth:`~TestCase.tearDown` method will</span>
+<span class="gi">+be run whether :meth:`~TestCase.runTest` succeeded or not.</span>
+ 
+ Such a working environment for the testing code is called a :dfn:`fixture`.
+ 
+<span class="gu">@@ -336,8 +484,9 @@</span>
+ ``WidgetTestCase.test_resize``. :class:`TestLoader` uses the ``&#39;test&#39;`` method
+ name prefix to identify test methods automatically.
+ 
+<span class="gd">-Note that the order in which the various test cases will be run is determined by</span>
+<span class="gd">-sorting the test function names with the built-in :func:`cmp` function.</span>
+<span class="gi">+Note that the order in which the various test cases will be run is</span>
+<span class="gi">+determined by sorting the test function names with respect to the</span>
+<span class="gi">+built-in ordering for strings.</span>
+ 
+ Often it is desirable to group suites of test cases together, so as to run tests
+ for the whole system at once.  This is easy, since :class:`TestSuite` instances
+<span class="gu">@@ -409,10 +558,110 @@</span>
+ 
+ .. note::
+ 
+<span class="gd">-   Even though :class:`FunctionTestCase` can be used to quickly convert an existing</span>
+<span class="gd">-   test base over to a :mod:`unittest`\ -based system, this approach is not</span>
+<span class="gd">-   recommended.  Taking the time to set up proper :class:`TestCase` subclasses will</span>
+<span class="gd">-   make future test refactorings infinitely easier.</span>
+<span class="gi">+   Even though :class:`FunctionTestCase` can be used to quickly convert an</span>
+<span class="gi">+   existing test base over to a :mod:`unittest`\ -based system, this approach is</span>
+<span class="gi">+   not recommended.  Taking the time to set up proper :class:`TestCase`</span>
+<span class="gi">+   subclasses will make future test refactorings infinitely easier.</span>
+<span class="gi">+</span>
+<span class="gi">+In some cases, the existing tests may have been written using the :mod:`doctest`</span>
+<span class="gi">+module.  If so, :mod:`doctest` provides a :class:`DocTestSuite` class that can</span>
+<span class="gi">+automatically build :class:`unittest.TestSuite` instances from the existing</span>
+<span class="gi">+:mod:`doctest`\ -based tests.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _unittest-skipping:</span>
+<span class="gi">+</span>
+<span class="gi">+Skipping tests and expected failures</span>
+<span class="gi">+------------------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+Unittest supports skipping individual test methods and even whole classes of</span>
+<span class="gi">+tests.  In addition, it supports marking a test as a &quot;expected failure,&quot; a test</span>
+<span class="gi">+that is broken and will fail, but shouldn&#39;t be counted as a failure on a</span>
+<span class="gi">+:class:`TestResult`.</span>
+<span class="gi">+</span>
+<span class="gi">+Skipping a test is simply a matter of using the :func:`skip` :term:`decorator`</span>
+<span class="gi">+or one of its conditional variants.</span>
+<span class="gi">+</span>
+<span class="gi">+Basic skipping looks like this: ::</span>
+<span class="gi">+</span>
+<span class="gi">+   class MyTestCase(unittest.TestCase):</span>
+<span class="gi">+</span>
+<span class="gi">+       @unittest.skip(&quot;demonstrating skipping&quot;)</span>
+<span class="gi">+       def test_nothing(self):</span>
+<span class="gi">+           self.fail(&quot;shouldn&#39;t happen&quot;)</span>
+<span class="gi">+</span>
+<span class="gi">+       @unittest.skipIf(mylib.__version__ &lt; (1, 3),</span>
+<span class="gi">+                        &quot;not supported in this library version&quot;)</span>
+<span class="gi">+       def test_format(self):</span>
+<span class="gi">+           # Tests that work for only a certain version of the library.</span>
+<span class="gi">+           pass</span>
+<span class="gi">+</span>
+<span class="gi">+       @unittest.skipUnless(sys.platform.startswith(&quot;win&quot;), &quot;requires Windows&quot;)</span>
+<span class="gi">+       def test_windows_support(self):</span>
+<span class="gi">+           # windows specific testing code</span>
+<span class="gi">+           pass</span>
+<span class="gi">+</span>
+<span class="gi">+This is the output of running the example above in verbose mode: ::</span>
+<span class="gi">+</span>
+<span class="gi">+   test_format (__main__.MyTestCase) ... skipped &#39;not supported in this library version&#39;</span>
+<span class="gi">+   test_nothing (__main__.MyTestCase) ... skipped &#39;demonstrating skipping&#39;</span>
+<span class="gi">+   test_windows_support (__main__.MyTestCase) ... skipped &#39;requires Windows&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+   ----------------------------------------------------------------------</span>
+<span class="gi">+   Ran 3 tests in 0.005s</span>
+<span class="gi">+</span>
+<span class="gi">+   OK (skipped=3)</span>
+<span class="gi">+</span>
+<span class="gi">+Classes can be skipped just like methods: ::</span>
+<span class="gi">+</span>
+<span class="gi">+   @skip(&quot;showing class skipping&quot;)</span>
+<span class="gi">+   class MySkippedTestCase(unittest.TestCase):</span>
+<span class="gi">+       def test_not_run(self):</span>
+<span class="gi">+           pass</span>
+<span class="gi">+</span>
+<span class="gi">+:meth:`TestCase.setUp` can also skip the test.  This is useful when a resource</span>
+<span class="gi">+that needs to be set up is not available.</span>
+<span class="gi">+</span>
+<span class="gi">+Expected failures use the :func:`expectedFailure` decorator. ::</span>
+<span class="gi">+</span>
+<span class="gi">+   class ExpectedFailureTestCase(unittest.TestCase):</span>
+<span class="gi">+       @unittest.expectedFailure</span>
+<span class="gi">+       def test_fail(self):</span>
+<span class="gi">+           self.assertEqual(1, 0, &quot;broken&quot;)</span>
+<span class="gi">+</span>
+<span class="gi">+It&#39;s easy to roll your own skipping decorators by making a decorator that calls</span>
+<span class="gi">+:func:`skip` on the test when it wants it to be skipped.  This decorator skips</span>
+<span class="gi">+the test unless the passed object has a certain attribute: ::</span>
+<span class="gi">+</span>
+<span class="gi">+   def skipUnlessHasattr(obj, attr):</span>
+<span class="gi">+       if hasattr(obj, attr):</span>
+<span class="gi">+           return lambda func: func</span>
+<span class="gi">+       return unittest.skip(&quot;{0!r} doesn&#39;t have {1!r}&quot;.format(obj, attr))</span>
+<span class="gi">+</span>
+<span class="gi">+The following decorators implement test skipping and expected failures:</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: skip(reason)</span>
+<span class="gi">+</span>
+<span class="gi">+   Unconditionally skip the decorated test.  *reason* should describe why the</span>
+<span class="gi">+   test is being skipped.</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: skipIf(condition, reason)</span>
+<span class="gi">+</span>
+<span class="gi">+   Skip the decorated test if *condition* is true.</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: skipUnless(condition, reason)</span>
+<span class="gi">+</span>
+<span class="gi">+   Skip the decorated test unless *condition* is true.</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: expectedFailure</span>
+<span class="gi">+</span>
+<span class="gi">+   Mark the test as an expected failure.  If the test fails when run, the test</span>
+<span class="gi">+   is not counted as a failure.</span>
+<span class="gi">+</span>
+<span class="gi">+Skipped tests will not have :meth:`setUp` or :meth:`tearDown` run around them.</span>
+<span class="gi">+Skipped classes will not have :meth:`setUpClass` or :meth:`tearDownClass` run.</span>
+ 
+ 
+ .. _unittest-contents:
+<span class="gu">@@ -420,8 +669,15 @@</span>
+ Classes and functions
+ ---------------------
+ 
+<span class="gd">-</span>
+<span class="gd">-.. class:: TestCase([methodName])</span>
+<span class="gi">+This section describes in depth the API of :mod:`unittest`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _testcase-objects:</span>
+<span class="gi">+</span>
+<span class="gi">+Test cases</span>
+<span class="gi">+~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: TestCase(methodName=&#39;runTest&#39;)</span>
+ 
+    Instances of the :class:`TestCase` class represent the smallest testable units
+    in the :mod:`unittest` universe.  This class is intended to be used as a base
+<span class="gu">@@ -443,19 +699,654 @@</span>
+    Here, we create two instances of :class:`WidgetTestCase`, each of which runs a
+    single test.
+ 
+<span class="gd">-   *methodName* defaults to ``&#39;runTest&#39;``.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. class:: FunctionTestCase(testFunc[, setUp[, tearDown[, description]]])</span>
+<span class="gi">+   *methodName* defaults to :meth:`runTest`.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`TestCase` instances provide three groups of methods: one group used</span>
+<span class="gi">+   to run the test, another used by the test implementation to check conditions</span>
+<span class="gi">+   and report failures, and some inquiry methods allowing information about the</span>
+<span class="gi">+   test itself to be gathered.</span>
+<span class="gi">+</span>
+<span class="gi">+   Methods in the first group (running the test) are:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: setUp()</span>
+<span class="gi">+</span>
+<span class="gi">+      Method called to prepare the test fixture.  This is called immediately</span>
+<span class="gi">+      before calling the test method; any exception raised by this method will</span>
+<span class="gi">+      be considered an error rather than a test failure. The default</span>
+<span class="gi">+      implementation does nothing.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: tearDown()</span>
+<span class="gi">+</span>
+<span class="gi">+      Method called immediately after the test method has been called and the</span>
+<span class="gi">+      result recorded.  This is called even if the test method raised an</span>
+<span class="gi">+      exception, so the implementation in subclasses may need to be particularly</span>
+<span class="gi">+      careful about checking internal state.  Any exception raised by this</span>
+<span class="gi">+      method will be considered an error rather than a test failure.  This</span>
+<span class="gi">+      method will only be called if the :meth:`setUp` succeeds, regardless of</span>
+<span class="gi">+      the outcome of the test method. The default implementation does nothing.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: setUpClass()</span>
+<span class="gi">+</span>
+<span class="gi">+      A class method called before tests in an individual class run.</span>
+<span class="gi">+      ``setUpClass`` is called with the class as the only argument</span>
+<span class="gi">+      and must be decorated as a :func:`classmethod`::</span>
+<span class="gi">+</span>
+<span class="gi">+        @classmethod</span>
+<span class="gi">+        def setUpClass(cls):</span>
+<span class="gi">+            ...</span>
+<span class="gi">+</span>
+<span class="gi">+      See `Class and Module Fixtures`_ for more details.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: tearDownClass()</span>
+<span class="gi">+</span>
+<span class="gi">+      A class method called after tests in an individual class have run.</span>
+<span class="gi">+      ``tearDownClass`` is called with the class as the only argument</span>
+<span class="gi">+      and must be decorated as a :meth:`classmethod`::</span>
+<span class="gi">+</span>
+<span class="gi">+        @classmethod</span>
+<span class="gi">+        def tearDownClass(cls):</span>
+<span class="gi">+            ...</span>
+<span class="gi">+</span>
+<span class="gi">+      See `Class and Module Fixtures`_ for more details.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: run(result=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Run the test, collecting the result into the test result object passed as</span>
+<span class="gi">+      *result*.  If *result* is omitted or ``None``, a temporary result</span>
+<span class="gi">+      object is created (by calling the :meth:`defaultTestResult` method) and</span>
+<span class="gi">+      used. The result object is not returned to :meth:`run`&#39;s caller.</span>
+<span class="gi">+</span>
+<span class="gi">+      The same effect may be had by simply calling the :class:`TestCase`</span>
+<span class="gi">+      instance.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: skipTest(reason)</span>
+<span class="gi">+</span>
+<span class="gi">+      Calling this during a test method or :meth:`setUp` skips the current</span>
+<span class="gi">+      test.  See :ref:`unittest-skipping` for more information.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: debug()</span>
+<span class="gi">+</span>
+<span class="gi">+      Run the test without collecting the result.  This allows exceptions raised</span>
+<span class="gi">+      by the test to be propagated to the caller, and can be used to support</span>
+<span class="gi">+      running tests under a debugger.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. _assert-methods:</span>
+<span class="gi">+</span>
+<span class="gi">+   The :class:`TestCase` class provides a number of methods to check for and</span>
+<span class="gi">+   report failures, such as:</span>
+<span class="gi">+</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | Method                                  | Checks that                 | New in        |</span>
+<span class="gi">+   +=========================================+=============================+===============+</span>
+<span class="gi">+   | :meth:`assertEqual(a, b)                | ``a == b``                  |               |</span>
+<span class="gi">+   | &lt;TestCase.assertEqual&gt;`                 |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertNotEqual(a, b)             | ``a != b``                  |               |</span>
+<span class="gi">+   | &lt;TestCase.assertNotEqual&gt;`              |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertTrue(x)                    | ``bool(x) is True``         |               |</span>
+<span class="gi">+   | &lt;TestCase.assertTrue&gt;`                  |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertFalse(x)                   | ``bool(x) is False``        |               |</span>
+<span class="gi">+   | &lt;TestCase.assertFalse&gt;`                 |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIs(a, b)                   | ``a is b``                  | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIs&gt;`                    |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIsNot(a, b)                | ``a is not b``              | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIsNot&gt;`                 |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIsNone(x)                  | ``x is None``               | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIsNone&gt;`                |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIsNotNone(x)               | ``x is not None``           | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIsNotNone&gt;`             |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIn(a, b)                   | ``a in b``                  | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIn&gt;`                    |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertNotIn(a, b)                | ``a not in b``              | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertNotIn&gt;`                 |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertIsInstance(a, b)           | ``isinstance(a, b)``        | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertIsInstance&gt;`            |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+   | :meth:`assertNotIsInstance(a, b)        | ``not isinstance(a, b)``    | 2.7           |</span>
+<span class="gi">+   | &lt;TestCase.assertNotIsInstance&gt;`         |                             |               |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+---------------+</span>
+<span class="gi">+</span>
+<span class="gi">+   All the assert methods (except :meth:`assertRaises`,</span>
+<span class="gi">+   :meth:`assertRaisesRegexp`)</span>
+<span class="gi">+   accept a *msg* argument that, if specified, is used as the error message on</span>
+<span class="gi">+   failure (see also :data:`longMessage`).</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertEqual(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* and *second* are equal.  If the values do not compare</span>
+<span class="gi">+      equal, the test will fail.</span>
+<span class="gi">+</span>
+<span class="gi">+      In addition, if *first* and *second* are the exact same type and one of</span>
+<span class="gi">+      list, tuple, dict, set, frozenset or unicode or any type that a subclass</span>
+<span class="gi">+      registers with :meth:`addTypeEqualityFunc` the type specific equality</span>
+<span class="gi">+      function will be called in order to generate a more useful default</span>
+<span class="gi">+      error message (see also the :ref:`list of type-specific methods</span>
+<span class="gi">+      &lt;type-specific-methods&gt;`).</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         Added the automatic calling of type specific equality function.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertNotEqual(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* and *second* are not equal.  If the values do compare</span>
+<span class="gi">+      equal, the test will fail.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertTrue(expr, msg=None)</span>
+<span class="gi">+               assertFalse(expr, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *expr* is true (or false).</span>
+<span class="gi">+</span>
+<span class="gi">+      Note that this is equivalent to ``bool(expr) is True`` and not to ``expr</span>
+<span class="gi">+      is True`` (use ``assertIs(expr, True)`` for the latter).  This method</span>
+<span class="gi">+      should also be avoided when more specific methods are available (e.g.</span>
+<span class="gi">+      ``assertEqual(a, b)`` instead of ``assertTrue(a == b)``), because they</span>
+<span class="gi">+      provide a better error message in case of failure.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertIs(first, second, msg=None)</span>
+<span class="gi">+               assertIsNot(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* and *second* evaluate (or don&#39;t evaluate) to the same object.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertIsNone(expr, msg=None)</span>
+<span class="gi">+               assertIsNotNone(expr, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *expr* is (or is not) None.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertIn(first, second, msg=None)</span>
+<span class="gi">+               assertNotIn(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* is (or is not) in *second*.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertIsInstance(obj, cls, msg=None)</span>
+<span class="gi">+               assertNotIsInstance(obj, cls, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *obj* is (or is not) an instance of *cls* (which can be a</span>
+<span class="gi">+      class or a tuple of classes, as supported by :func:`isinstance`).</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   It is also possible to check that exceptions and warnings are raised using</span>
+<span class="gi">+   the following methods:</span>
+<span class="gi">+</span>
+<span class="gi">+   +---------------------------------------------------------+--------------------------------------+------------+</span>
+<span class="gi">+   | Method                                                  | Checks that                          | New in     |</span>
+<span class="gi">+   +=========================================================+======================================+============+</span>
+<span class="gi">+   | :meth:`assertRaises(exc, fun, *args, **kwds)            | ``fun(*args, **kwds)`` raises `exc`  |            |</span>
+<span class="gi">+   | &lt;TestCase.assertRaises&gt;`                                |                                      |            |</span>
+<span class="gi">+   +---------------------------------------------------------+--------------------------------------+------------+</span>
+<span class="gi">+   | :meth:`assertRaisesRegexp(exc, re, fun, *args, **kwds)  | ``fun(*args, **kwds)`` raises `exc`  | 2.7        |</span>
+<span class="gi">+   | &lt;TestCase.assertRaisesRegexp&gt;`                          | and the message matches `re`         |            |</span>
+<span class="gi">+   +---------------------------------------------------------+--------------------------------------+------------+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertRaises(exception, callable, *args, **kwds)</span>
+<span class="gi">+               assertRaises(exception)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that an exception is raised when *callable* is called with any</span>
+<span class="gi">+      positional or keyword arguments that are also passed to</span>
+<span class="gi">+      :meth:`assertRaises`.  The test passes if *exception* is raised, is an</span>
+<span class="gi">+      error if another exception is raised, or fails if no exception is raised.</span>
+<span class="gi">+      To catch any of a group of exceptions, a tuple containing the exception</span>
+<span class="gi">+      classes may be passed as *exception*.</span>
+<span class="gi">+</span>
+<span class="gi">+      If only the *exception* argument is given, returns a context manager so</span>
+<span class="gi">+      that the code under test can be written inline rather than as a function::</span>
+<span class="gi">+</span>
+<span class="gi">+         with self.assertRaises(SomeException):</span>
+<span class="gi">+             do_something()</span>
+<span class="gi">+</span>
+<span class="gi">+      The context manager will store the caught exception object in its</span>
+<span class="gi">+      :attr:`exception` attribute.  This can be useful if the intention</span>
+<span class="gi">+      is to perform additional checks on the exception raised::</span>
+<span class="gi">+</span>
+<span class="gi">+        with self.assertRaises(SomeException) as cm:</span>
+<span class="gi">+            do_something()</span>
+<span class="gi">+</span>
+<span class="gi">+        the_exception = cm.exception</span>
+<span class="gi">+        self.assertEqual(the_exception.error_code, 3)</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         Added the ability to use :meth:`assertRaises` as a context manager.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertRaisesRegexp(exception, regexp, callable, *args, **kwds)</span>
+<span class="gi">+               assertRaisesRegexp(exception, regexp)</span>
+<span class="gi">+</span>
+<span class="gi">+      Like :meth:`assertRaises` but also tests that *regexp* matches</span>
+<span class="gi">+      on the string representation of the raised exception.  *regexp* may be</span>
+<span class="gi">+      a regular expression object or a string containing a regular expression</span>
+<span class="gi">+      suitable for use by :func:`re.search`.  Examples::</span>
+<span class="gi">+</span>
+<span class="gi">+         self.assertRaisesRegexp(ValueError, &#39;invalid literal for.*XYZ$&#39;,</span>
+<span class="gi">+                                 int, &#39;XYZ&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+      or::</span>
+<span class="gi">+</span>
+<span class="gi">+         with self.assertRaisesRegexp(ValueError, &#39;literal&#39;):</span>
+<span class="gi">+            int(&#39;XYZ&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   There are also other methods used to perform more specific checks, such as:</span>
+<span class="gi">+</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | Method                                | Checks that                    | New in       |</span>
+<span class="gi">+   +=======================================+================================+==============+</span>
+<span class="gi">+   | :meth:`assertAlmostEqual(a, b)        | ``round(a-b, 7) == 0``         |              |</span>
+<span class="gi">+   | &lt;TestCase.assertAlmostEqual&gt;`         |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertNotAlmostEqual(a, b)     | ``round(a-b, 7) != 0``         |              |</span>
+<span class="gi">+   | &lt;TestCase.assertNotAlmostEqual&gt;`      |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertGreater(a, b)            | ``a &gt; b``                      | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertGreater&gt;`             |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertGreaterEqual(a, b)       | ``a &gt;= b``                     | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertGreaterEqual&gt;`        |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertLess(a, b)               | ``a &lt; b``                      | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertLess&gt;`                |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertLessEqual(a, b)          | ``a &lt;= b``                     | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertLessEqual&gt;`           |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertRegexpMatches(s, re)     | ``regex.search(s)``            | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertRegexpMatches&gt;`       |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertNotRegexpMatches(s, re)  | ``not regex.search(s)``        | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertNotRegexpMatches&gt;`    |                                |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertItemsEqual(a, b)         | sorted(a) == sorted(b) and     | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertItemsEqual&gt;`          | works with unhashable objs     |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertDictContainsSubset(a, b) | all the key/value pairs        | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertDictContainsSubset&gt;`  | in `a` exist in `b`            |              |</span>
+<span class="gi">+   +---------------------------------------+--------------------------------+--------------+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertAlmostEqual(first, second, places=7, msg=None, delta=None)</span>
+<span class="gi">+               assertNotAlmostEqual(first, second, places=7, msg=None, delta=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* and *second* are approximately (or not approximately)</span>
+<span class="gi">+      equal by computing the difference, rounding to the given number of</span>
+<span class="gi">+      decimal *places* (default 7), and comparing to zero.  Note that these</span>
+<span class="gi">+      methods round the values to the given number of *decimal places* (i.e.</span>
+<span class="gi">+      like the :func:`round` function) and not *significant digits*.</span>
+<span class="gi">+</span>
+<span class="gi">+      If *delta* is supplied instead of *places* then the difference</span>
+<span class="gi">+      between *first* and *second* must be less (or more) than *delta*.</span>
+<span class="gi">+</span>
+<span class="gi">+      Supplying both *delta* and *places* raises a ``TypeError``.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         :meth:`assertAlmostEqual` automatically considers almost equal objects</span>
+<span class="gi">+         that compare equal.  :meth:`assertNotAlmostEqual` automatically fails</span>
+<span class="gi">+         if the objects compare equal.  Added the *delta* keyword argument.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertGreater(first, second, msg=None)</span>
+<span class="gi">+               assertGreaterEqual(first, second, msg=None)</span>
+<span class="gi">+               assertLess(first, second, msg=None)</span>
+<span class="gi">+               assertLessEqual(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that *first* is respectively &gt;, &gt;=, &lt; or &lt;= than *second* depending</span>
+<span class="gi">+      on the method name.  If not, the test will fail::</span>
+<span class="gi">+</span>
+<span class="gi">+         &gt;&gt;&gt; self.assertGreaterEqual(3, 4)</span>
+<span class="gi">+         AssertionError: &quot;3&quot; unexpectedly not greater than or equal to &quot;4&quot;</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertRegexpMatches(text, regexp, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that a *regexp* search matches *text*.  In case</span>
+<span class="gi">+      of failure, the error message will include the pattern and the *text* (or</span>
+<span class="gi">+      the pattern and the part of *text* that unexpectedly matched).  *regexp*</span>
+<span class="gi">+      may be a regular expression object or a string containing a regular</span>
+<span class="gi">+      expression suitable for use by :func:`re.search`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertNotRegexpMatches(text, regexp, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Verifies that a *regexp* search does not match *text*.  Fails with an error</span>
+<span class="gi">+      message including the pattern and the part of *text* that matches.  *regexp*</span>
+<span class="gi">+      may be a regular expression object or a string containing a regular</span>
+<span class="gi">+      expression suitable for use by :func:`re.search`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertItemsEqual(actual, expected, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that sequence *expected* contains the same elements as *actual*,</span>
+<span class="gi">+      regardless of their order. When they don&#39;t, an error message listing the</span>
+<span class="gi">+      differences between the sequences will be generated.</span>
+<span class="gi">+</span>
+<span class="gi">+      Duplicate elements are *not* ignored when comparing *actual* and</span>
+<span class="gi">+      *expected*. It verifies if each element has the same count in both</span>
+<span class="gi">+      sequences. It is the equivalent of ``assertEqual(sorted(expected),</span>
+<span class="gi">+      sorted(actual))`` but it works with sequences of unhashable objects as</span>
+<span class="gi">+      well.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertDictContainsSubset(expected, actual, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Tests whether the key/value pairs in dictionary *actual* are a</span>
+<span class="gi">+      superset of those in *expected*.  If not, an error message listing</span>
+<span class="gi">+      the missing keys and mismatched values is generated.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+      .. deprecated:: 3.2</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. _type-specific-methods:</span>
+<span class="gi">+</span>
+<span class="gi">+   The :meth:`assertEqual` method dispatches the equality check for objects of</span>
+<span class="gi">+   the same type to different type-specific methods.  These methods are already</span>
+<span class="gi">+   implemented for most of the built-in types, but it&#39;s also possible to</span>
+<span class="gi">+   register new methods using :meth:`addTypeEqualityFunc`:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addTypeEqualityFunc(typeobj, function)</span>
+<span class="gi">+</span>
+<span class="gi">+      Registers a type-specific method called by :meth:`assertEqual` to check</span>
+<span class="gi">+      if two objects of exactly the same *typeobj* (not subclasses) compare</span>
+<span class="gi">+      equal.  *function* must take two positional arguments and a third msg=None</span>
+<span class="gi">+      keyword argument just as :meth:`assertEqual` does.  It must raise</span>
+<span class="gi">+      :data:`self.failureException(msg) &lt;failureException&gt;` when inequality</span>
+<span class="gi">+      between the first two parameters is detected -- possibly providing useful</span>
+<span class="gi">+      information and explaining the inequalities in details in the error</span>
+<span class="gi">+      message.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   The list of type-specific methods automatically used by</span>
+<span class="gi">+   :meth:`~TestCase.assertEqual` are summarized in the following table.  Note</span>
+<span class="gi">+   that it&#39;s usually not necessary to invoke these methods directly.</span>
+<span class="gi">+</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | Method                                  | Used to compare             | New in       |</span>
+<span class="gi">+   +=========================================+=============================+==============+</span>
+<span class="gi">+   | :meth:`assertMultiLineEqual(a, b)       | strings                     | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertMultiLineEqual&gt;`        |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertSequenceEqual(a, b)        | sequences                   | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertSequenceEqual&gt;`         |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertListEqual(a, b)            | lists                       | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertListEqual&gt;`             |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertTupleEqual(a, b)           | tuples                      | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertTupleEqual&gt;`            |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertSetEqual(a, b)             | sets or frozensets          | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertSetEqual&gt;`              |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+   | :meth:`assertDictEqual(a, b)            | dicts                       | 2.7          |</span>
+<span class="gi">+   | &lt;TestCase.assertDictEqual&gt;`             |                             |              |</span>
+<span class="gi">+   +-----------------------------------------+-----------------------------+--------------+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertMultiLineEqual(first, second, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that the multiline string *first* is equal to the string *second*.</span>
+<span class="gi">+      When not equal a diff of the two strings highlighting the differences</span>
+<span class="gi">+      will be included in the error message. This method is used by default</span>
+<span class="gi">+      when comparing strings with :meth:`assertEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertSequenceEqual(seq1, seq2, msg=None, seq_type=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Tests that two sequences are equal.  If a *seq_type* is supplied, both</span>
+<span class="gi">+      *seq1* and *seq2* must be instances of *seq_type* or a failure will</span>
+<span class="gi">+      be raised.  If the sequences are different an error message is</span>
+<span class="gi">+      constructed that shows the difference between the two.</span>
+<span class="gi">+</span>
+<span class="gi">+      This method is not called directly by :meth:`assertEqual`, but</span>
+<span class="gi">+      it&#39;s used to implement :meth:`assertListEqual` and</span>
+<span class="gi">+      :meth:`assertTupleEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertListEqual(list1, list2, msg=None)</span>
+<span class="gi">+               assertTupleEqual(tuple1, tuple2, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Tests that two lists or tuples are equal.  If not an error message is</span>
+<span class="gi">+      constructed that shows only the differences between the two.  An error</span>
+<span class="gi">+      is also raised if either of the parameters are of the wrong type.</span>
+<span class="gi">+      These methods are used by default when comparing lists or tuples with</span>
+<span class="gi">+      :meth:`assertEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertSetEqual(set1, set2, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Tests that two sets are equal.  If not, an error message is constructed</span>
+<span class="gi">+      that lists the differences between the sets.  This method is used by</span>
+<span class="gi">+      default when comparing sets or frozensets with :meth:`assertEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      Fails if either of *set1* or *set2* does not have a :meth:`set.difference`</span>
+<span class="gi">+      method.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: assertDictEqual(expected, actual, msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Test that two dictionaries are equal.  If not, an error message is</span>
+<span class="gi">+      constructed that shows the differences in the dictionaries. This</span>
+<span class="gi">+      method will be used by default to compare dictionaries in</span>
+<span class="gi">+      calls to :meth:`assertEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. _other-methods-and-attrs:</span>
+<span class="gi">+</span>
+<span class="gi">+   Finally the :class:`TestCase` provides the following methods and attributes:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: fail(msg=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Signals a test failure unconditionally, with *msg* or ``None`` for</span>
+<span class="gi">+      the error message.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: failureException</span>
+<span class="gi">+</span>
+<span class="gi">+      This class attribute gives the exception raised by the test method.  If a</span>
+<span class="gi">+      test framework needs to use a specialized exception, possibly to carry</span>
+<span class="gi">+      additional information, it must subclass this exception in order to &quot;play</span>
+<span class="gi">+      fair&quot; with the framework.  The initial value of this attribute is</span>
+<span class="gi">+      :exc:`AssertionError`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: longMessage</span>
+<span class="gi">+</span>
+<span class="gi">+      If set to ``True`` then any explicit failure message you pass in to the</span>
+<span class="gi">+      :ref:`assert methods &lt;assert-methods&gt;` will be appended to the end of the</span>
+<span class="gi">+      normal failure message.  The normal messages contain useful information</span>
+<span class="gi">+      about the objects involved, for example the message from assertEqual</span>
+<span class="gi">+      shows you the repr of the two unequal objects. Setting this attribute</span>
+<span class="gi">+      to ``True`` allows you to have a custom error message in addition to the</span>
+<span class="gi">+      normal one.</span>
+<span class="gi">+</span>
+<span class="gi">+      This attribute defaults to ``False``, meaning that a custom message passed</span>
+<span class="gi">+      to an assert method will silence the normal message.</span>
+<span class="gi">+</span>
+<span class="gi">+      The class setting can be overridden in individual tests by assigning an</span>
+<span class="gi">+      instance attribute to ``True`` or ``False`` before calling the assert methods.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: maxDiff</span>
+<span class="gi">+</span>
+<span class="gi">+      This attribute controls the maximum length of diffs output by assert</span>
+<span class="gi">+      methods that report diffs on failure. It defaults to 80*8 characters.</span>
+<span class="gi">+      Assert methods affected by this attribute are</span>
+<span class="gi">+      :meth:`assertSequenceEqual` (including all the sequence comparison</span>
+<span class="gi">+      methods that delegate to it), :meth:`assertDictEqual` and</span>
+<span class="gi">+      :meth:`assertMultiLineEqual`.</span>
+<span class="gi">+</span>
+<span class="gi">+      Setting ``maxDiff`` to None means that there is no maximum length of</span>
+<span class="gi">+      diffs.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   Testing frameworks can use the following methods to collect information on</span>
+<span class="gi">+   the test:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: countTestCases()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return the number of tests represented by this test object.  For</span>
+<span class="gi">+      :class:`TestCase` instances, this will always be ``1``.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: defaultTestResult()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return an instance of the test result class that should be used for this</span>
+<span class="gi">+      test case class (if no other result instance is provided to the</span>
+<span class="gi">+      :meth:`run` method).</span>
+<span class="gi">+</span>
+<span class="gi">+      For :class:`TestCase` instances, this will always be an instance of</span>
+<span class="gi">+      :class:`TestResult`; subclasses of :class:`TestCase` should override this</span>
+<span class="gi">+      as necessary.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: id()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a string identifying the specific test case.  This is usually the</span>
+<span class="gi">+      full name of the test method, including the module and class name.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: shortDescription()</span>
+<span class="gi">+</span>
+<span class="gi">+      Returns a description of the test, or ``None`` if no description</span>
+<span class="gi">+      has been provided.  The default implementation of this method</span>
+<span class="gi">+      returns the first line of the test method&#39;s docstring, if available,</span>
+<span class="gi">+      or :const:`None`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addCleanup(function, *args, **kwargs)</span>
+<span class="gi">+</span>
+<span class="gi">+      Add a function to be called after :meth:`tearDown` to cleanup resources</span>
+<span class="gi">+      used during the test. Functions will be called in reverse order to the</span>
+<span class="gi">+      order they are added (LIFO). They are called with any arguments and</span>
+<span class="gi">+      keyword arguments passed into :meth:`addCleanup` when they are</span>
+<span class="gi">+      added.</span>
+<span class="gi">+</span>
+<span class="gi">+      If :meth:`setUp` fails, meaning that :meth:`tearDown` is not called,</span>
+<span class="gi">+      then any cleanup functions added will still be called.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: doCleanups()</span>
+<span class="gi">+</span>
+<span class="gi">+      This method is called unconditionally after :meth:`tearDown`, or</span>
+<span class="gi">+      after :meth:`setUp` if :meth:`setUp` raises an exception.</span>
+<span class="gi">+</span>
+<span class="gi">+      It is responsible for calling all the cleanup functions added by</span>
+<span class="gi">+      :meth:`addCleanup`. If you need cleanup functions to be called</span>
+<span class="gi">+      *prior* to :meth:`tearDown` then you can call :meth:`doCleanups`</span>
+<span class="gi">+      yourself.</span>
+<span class="gi">+</span>
+<span class="gi">+      :meth:`doCleanups` pops methods off the stack of cleanup</span>
+<span class="gi">+      functions one at a time, so it can be called at any time.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: FunctionTestCase(testFunc, setUp=None, tearDown=None, description=None)</span>
+ 
+    This class implements the portion of the :class:`TestCase` interface which
+<span class="gd">-   allows the test runner to drive the test, but does not provide the methods which</span>
+<span class="gd">-   test code can use to check and report errors. This is used to create test cases</span>
+<span class="gd">-   using legacy test code, allowing it to be integrated into a :mod:`unittest`\</span>
+<span class="gd">-   -based test framework.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. class:: TestSuite([tests])</span>
+<span class="gi">+   allows the test runner to drive the test, but does not provide the methods</span>
+<span class="gi">+   which test code can use to check and report errors.  This is used to create</span>
+<span class="gi">+   test cases using legacy test code, allowing it to be integrated into a</span>
+<span class="gi">+   :mod:`unittest`-based test framework.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Deprecated aliases</span>
+<span class="gi">+##################</span>
+<span class="gi">+</span>
+<span class="gi">+For historical reasons, some of the :class:`TestCase` methods had one or more</span>
+<span class="gi">+aliases that are now deprecated.  The following table lists the correct names</span>
+<span class="gi">+along with their deprecated aliases:</span>
+<span class="gi">+</span>
+<span class="gi">+   ==============================  ===============================</span>
+<span class="gi">+    Method Name                     Deprecated alias(es)</span>
+<span class="gi">+   ==============================  ===============================</span>
+<span class="gi">+    :meth:`.assertEqual`            failUnlessEqual, assertEquals</span>
+<span class="gi">+    :meth:`.assertNotEqual`         failIfEqual</span>
+<span class="gi">+    :meth:`.assertTrue`             failUnless, assert\_</span>
+<span class="gi">+    :meth:`.assertFalse`            failIf</span>
+<span class="gi">+    :meth:`.assertRaises`           failUnlessRaises</span>
+<span class="gi">+    :meth:`.assertAlmostEqual`      failUnlessAlmostEqual</span>
+<span class="gi">+    :meth:`.assertNotAlmostEqual`   failIfAlmostEqual</span>
+<span class="gi">+   ==============================  ===============================</span>
+<span class="gi">+</span>
+<span class="gi">+   .. deprecated:: 2.7</span>
+<span class="gi">+         the aliases listed in the second column</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _testsuite-objects:</span>
+<span class="gi">+</span>
+<span class="gi">+Grouping tests</span>
+<span class="gi">+~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: TestSuite(tests=())</span>
+ 
+    This class represents an aggregation of individual tests cases and test suites.
+    The class presents the interface needed by the test runner to allow it to be run
+<span class="gu">@@ -466,19 +1357,404 @@</span>
+    test suites that will be used to build the suite initially. Additional methods
+    are provided to add test cases and suites to the collection later on.
+ 
+<span class="gi">+   :class:`TestSuite` objects behave much like :class:`TestCase` objects, except</span>
+<span class="gi">+   they do not actually implement a test.  Instead, they are used to aggregate</span>
+<span class="gi">+   tests into groups of tests that should be run together. Some additional</span>
+<span class="gi">+   methods are available to add tests to :class:`TestSuite` instances:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: TestSuite.addTest(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Add a :class:`TestCase` or :class:`TestSuite` to the suite.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: TestSuite.addTests(tests)</span>
+<span class="gi">+</span>
+<span class="gi">+      Add all the tests from an iterable of :class:`TestCase` and :class:`TestSuite`</span>
+<span class="gi">+      instances to this test suite.</span>
+<span class="gi">+</span>
+<span class="gi">+      This is equivalent to iterating over *tests*, calling :meth:`addTest` for</span>
+<span class="gi">+      each element.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`TestSuite` shares the following methods with :class:`TestCase`:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: run(result)</span>
+<span class="gi">+</span>
+<span class="gi">+      Run the tests associated with this suite, collecting the result into the</span>
+<span class="gi">+      test result object passed as *result*.  Note that unlike</span>
+<span class="gi">+      :meth:`TestCase.run`, :meth:`TestSuite.run` requires the result object to</span>
+<span class="gi">+      be passed in.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: debug()</span>
+<span class="gi">+</span>
+<span class="gi">+      Run the tests associated with this suite without collecting the</span>
+<span class="gi">+      result. This allows exceptions raised by the test to be propagated to the</span>
+<span class="gi">+      caller and can be used to support running tests under a debugger.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: countTestCases()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return the number of tests represented by this test object, including all</span>
+<span class="gi">+      individual tests and sub-suites.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: __iter__()</span>
+<span class="gi">+</span>
+<span class="gi">+      Tests grouped by a :class:`TestSuite` are always accessed by iteration.</span>
+<span class="gi">+      Subclasses can lazily provide tests by overriding :meth:`__iter__`. Note</span>
+<span class="gi">+      that this method maybe called several times on a single suite</span>
+<span class="gi">+      (for example when counting tests or comparing for equality)</span>
+<span class="gi">+      so the tests returned must be the same for repeated iterations.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         In earlier versions the :class:`TestSuite` accessed tests directly rather</span>
+<span class="gi">+         than through iteration, so overriding :meth:`__iter__` wasn&#39;t sufficient</span>
+<span class="gi">+         for providing tests.</span>
+<span class="gi">+</span>
+<span class="gi">+   In the typical usage of a :class:`TestSuite` object, the :meth:`run` method</span>
+<span class="gi">+   is invoked by a :class:`TestRunner` rather than by the end-user test harness.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Loading and running tests</span>
+<span class="gi">+~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+ 
+ .. class:: TestLoader()
+ 
+<span class="gd">-   This class is responsible for loading tests according to various criteria and</span>
+<span class="gd">-   returning them wrapped in a :class:`TestSuite`. It can load all tests within a</span>
+<span class="gd">-   given module or :class:`TestCase` subclass.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. class:: TestResult()</span>
+<span class="gd">-</span>
+<span class="gd">-   This class is used to compile information about which tests have succeeded and</span>
+<span class="gd">-   which have failed.</span>
+<span class="gd">-</span>
+<span class="gi">+   The :class:`TestLoader` class is used to create test suites from classes and</span>
+<span class="gi">+   modules.  Normally, there is no need to create an instance of this class; the</span>
+<span class="gi">+   :mod:`unittest` module provides an instance that can be shared as</span>
+<span class="gi">+   ``unittest.defaultTestLoader``. Using a subclass or instance, however, allows</span>
+<span class="gi">+   customization of some configurable properties.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`TestLoader` objects have the following methods:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: loadTestsFromTestCase(testCaseClass)</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a suite of all tests cases contained in the :class:`TestCase`\ -derived</span>
+<span class="gi">+      :class:`testCaseClass`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: loadTestsFromModule(module)</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a suite of all tests cases contained in the given module. This</span>
+<span class="gi">+      method searches *module* for classes derived from :class:`TestCase` and</span>
+<span class="gi">+      creates an instance of the class for each test method defined for the</span>
+<span class="gi">+      class.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. note::</span>
+<span class="gi">+</span>
+<span class="gi">+         While using a hierarchy of :class:`TestCase`\ -derived classes can be</span>
+<span class="gi">+         convenient in sharing fixtures and helper functions, defining test</span>
+<span class="gi">+         methods on base classes that are not intended to be instantiated</span>
+<span class="gi">+         directly does not play well with this method.  Doing so, however, can</span>
+<span class="gi">+         be useful when the fixtures are different and defined in subclasses.</span>
+<span class="gi">+</span>
+<span class="gi">+      If a module provides a ``load_tests`` function it will be called to</span>
+<span class="gi">+      load the tests. This allows modules to customize test loading.</span>
+<span class="gi">+      This is the `load_tests protocol`_.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         Support for ``load_tests`` added.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: loadTestsFromName(name, module=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a suite of all tests cases given a string specifier.</span>
+<span class="gi">+</span>
+<span class="gi">+      The specifier *name* is a &quot;dotted name&quot; that may resolve either to a</span>
+<span class="gi">+      module, a test case class, a test method within a test case class, a</span>
+<span class="gi">+      :class:`TestSuite` instance, or a callable object which returns a</span>
+<span class="gi">+      :class:`TestCase` or :class:`TestSuite` instance.  These checks are</span>
+<span class="gi">+      applied in the order listed here; that is, a method on a possible test</span>
+<span class="gi">+      case class will be picked up as &quot;a test method within a test case class&quot;,</span>
+<span class="gi">+      rather than &quot;a callable object&quot;.</span>
+<span class="gi">+</span>
+<span class="gi">+      For example, if you have a module :mod:`SampleTests` containing a</span>
+<span class="gi">+      :class:`TestCase`\ -derived class :class:`SampleTestCase` with three test</span>
+<span class="gi">+      methods (:meth:`test_one`, :meth:`test_two`, and :meth:`test_three`), the</span>
+<span class="gi">+      specifier ``&#39;SampleTests.SampleTestCase&#39;`` would cause this method to</span>
+<span class="gi">+      return a suite which will run all three test methods. Using the specifier</span>
+<span class="gi">+      ``&#39;SampleTests.SampleTestCase.test_two&#39;`` would cause it to return a test</span>
+<span class="gi">+      suite which will run only the :meth:`test_two` test method. The specifier</span>
+<span class="gi">+      can refer to modules and packages which have not been imported; they will</span>
+<span class="gi">+      be imported as a side-effect.</span>
+<span class="gi">+</span>
+<span class="gi">+      The method optionally resolves *name* relative to the given *module*.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: loadTestsFromNames(names, module=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Similar to :meth:`loadTestsFromName`, but takes a sequence of names rather</span>
+<span class="gi">+      than a single name.  The return value is a test suite which supports all</span>
+<span class="gi">+      the tests defined for each name.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: getTestCaseNames(testCaseClass)</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a sorted sequence of method names found within *testCaseClass*;</span>
+<span class="gi">+      this should be a subclass of :class:`TestCase`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: discover(start_dir, pattern=&#39;test*.py&#39;, top_level_dir=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Find and return all test modules from the specified start directory,</span>
+<span class="gi">+      recursing into subdirectories to find them. Only test files that match</span>
+<span class="gi">+      *pattern* will be loaded. (Using shell style pattern matching.) Only</span>
+<span class="gi">+      module names that are importable (i.e. are valid Python identifiers) will</span>
+<span class="gi">+      be loaded.</span>
+<span class="gi">+</span>
+<span class="gi">+      All test modules must be importable from the top level of the project. If</span>
+<span class="gi">+      the start directory is not the top level directory then the top level</span>
+<span class="gi">+      directory must be specified separately.</span>
+<span class="gi">+</span>
+<span class="gi">+      If importing a module fails, for example due to a syntax error, then this</span>
+<span class="gi">+      will be recorded as a single error and discovery will continue.</span>
+<span class="gi">+</span>
+<span class="gi">+      If a test package name (directory with :file:`__init__.py`) matches the</span>
+<span class="gi">+      pattern then the package will be checked for a ``load_tests``</span>
+<span class="gi">+      function. If this exists then it will be called with *loader*, *tests*,</span>
+<span class="gi">+      *pattern*.</span>
+<span class="gi">+</span>
+<span class="gi">+      If load_tests exists then discovery does *not* recurse into the package,</span>
+<span class="gi">+      ``load_tests`` is responsible for loading all tests in the package.</span>
+<span class="gi">+</span>
+<span class="gi">+      The pattern is deliberately not stored as a loader attribute so that</span>
+<span class="gi">+      packages can continue discovery themselves. *top_level_dir* is stored so</span>
+<span class="gi">+      ``load_tests`` does not need to pass this argument in to</span>
+<span class="gi">+      ``loader.discover()``.</span>
+<span class="gi">+</span>
+<span class="gi">+      *start_dir* can be a dotted module name as well as a directory.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   The following attributes of a :class:`TestLoader` can be configured either by</span>
+<span class="gi">+   subclassing or assignment on an instance:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: testMethodPrefix</span>
+<span class="gi">+</span>
+<span class="gi">+      String giving the prefix of method names which will be interpreted as test</span>
+<span class="gi">+      methods.  The default value is ``&#39;test&#39;``.</span>
+<span class="gi">+</span>
+<span class="gi">+      This affects :meth:`getTestCaseNames` and all the :meth:`loadTestsFrom\*`</span>
+<span class="gi">+      methods.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: sortTestMethodsUsing</span>
+<span class="gi">+</span>
+<span class="gi">+      Function to be used to compare method names when sorting them in</span>
+<span class="gi">+      :meth:`getTestCaseNames` and all the :meth:`loadTestsFrom\*` methods. The</span>
+<span class="gi">+      default value is the built-in :func:`cmp` function; the attribute can also</span>
+<span class="gi">+      be set to :const:`None` to disable the sort.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: suiteClass</span>
+<span class="gi">+</span>
+<span class="gi">+      Callable object that constructs a test suite from a list of tests. No</span>
+<span class="gi">+      methods on the resulting object are needed.  The default value is the</span>
+<span class="gi">+      :class:`TestSuite` class.</span>
+<span class="gi">+</span>
+<span class="gi">+      This affects all the :meth:`loadTestsFrom\*` methods.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: TestResult</span>
+<span class="gi">+</span>
+<span class="gi">+   This class is used to compile information about which tests have succeeded</span>
+<span class="gi">+   and which have failed.</span>
+<span class="gi">+</span>
+<span class="gi">+   A :class:`TestResult` object stores the results of a set of tests.  The</span>
+<span class="gi">+   :class:`TestCase` and :class:`TestSuite` classes ensure that results are</span>
+<span class="gi">+   properly recorded; test authors do not need to worry about recording the</span>
+<span class="gi">+   outcome of tests.</span>
+<span class="gi">+</span>
+<span class="gi">+   Testing frameworks built on top of :mod:`unittest` may want access to the</span>
+<span class="gi">+   :class:`TestResult` object generated by running a set of tests for reporting</span>
+<span class="gi">+   purposes; a :class:`TestResult` instance is returned by the</span>
+<span class="gi">+   :meth:`TestRunner.run` method for this purpose.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`TestResult` instances have the following attributes that will be of</span>
+<span class="gi">+   interest when inspecting the results of running a set of tests:</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: errors</span>
+<span class="gi">+</span>
+<span class="gi">+      A list containing 2-tuples of :class:`TestCase` instances and strings</span>
+<span class="gi">+      holding formatted tracebacks. Each tuple represents a test which raised an</span>
+<span class="gi">+      unexpected exception.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.2</span>
+<span class="gi">+         Contains formatted tracebacks instead of :func:`sys.exc_info` results.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: failures</span>
+<span class="gi">+</span>
+<span class="gi">+      A list containing 2-tuples of :class:`TestCase` instances and strings</span>
+<span class="gi">+      holding formatted tracebacks. Each tuple represents a test where a failure</span>
+<span class="gi">+      was explicitly signalled using the :meth:`TestCase.fail\*` or</span>
+<span class="gi">+      :meth:`TestCase.assert\*` methods.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.2</span>
+<span class="gi">+         Contains formatted tracebacks instead of :func:`sys.exc_info` results.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: skipped</span>
+<span class="gi">+</span>
+<span class="gi">+      A list containing 2-tuples of :class:`TestCase` instances and strings</span>
+<span class="gi">+      holding the reason for skipping the test.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: expectedFailures</span>
+<span class="gi">+</span>
+<span class="gi">+      A list containing 2-tuples of :class:`TestCase` instances and strings</span>
+<span class="gi">+      holding formatted tracebacks.  Each tuple represents an expected failure</span>
+<span class="gi">+      of the test case.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: unexpectedSuccesses</span>
+<span class="gi">+</span>
+<span class="gi">+      A list containing :class:`TestCase` instances that were marked as expected</span>
+<span class="gi">+      failures, but succeeded.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: shouldStop</span>
+<span class="gi">+</span>
+<span class="gi">+      Set to ``True`` when the execution of tests should stop by :meth:`stop`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: testsRun</span>
+<span class="gi">+</span>
+<span class="gi">+      The total number of tests run so far.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: buffer</span>
+<span class="gi">+</span>
+<span class="gi">+      If set to true, ``sys.stdout`` and ``sys.stderr`` will be buffered in between</span>
+<span class="gi">+      :meth:`startTest` and :meth:`stopTest` being called. Collected output will</span>
+<span class="gi">+      only be echoed onto the real ``sys.stdout`` and ``sys.stderr`` if the test</span>
+<span class="gi">+      fails or errors. Any output is also attached to the failure / error message.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: failfast</span>
+<span class="gi">+</span>
+<span class="gi">+      If set to true :meth:`stop` will be called on the first failure or error,</span>
+<span class="gi">+      halting the test run.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: wasSuccessful()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return ``True`` if all tests run so far have passed, otherwise returns</span>
+<span class="gi">+      ``False``.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: stop()</span>
+<span class="gi">+</span>
+<span class="gi">+      This method can be called to signal that the set of tests being run should</span>
+<span class="gi">+      be aborted by setting the :attr:`shouldStop` attribute to ``True``.</span>
+<span class="gi">+      :class:`TestRunner` objects should respect this flag and return without</span>
+<span class="gi">+      running any additional tests.</span>
+<span class="gi">+</span>
+<span class="gi">+      For example, this feature is used by the :class:`TextTestRunner` class to</span>
+<span class="gi">+      stop the test framework when the user signals an interrupt from the</span>
+<span class="gi">+      keyboard.  Interactive tools which provide :class:`TestRunner`</span>
+<span class="gi">+      implementations can use this in a similar manner.</span>
+<span class="gi">+</span>
+<span class="gi">+   The following methods of the :class:`TestResult` class are used to maintain</span>
+<span class="gi">+   the internal data structures, and may be extended in subclasses to support</span>
+<span class="gi">+   additional reporting requirements.  This is particularly useful in building</span>
+<span class="gi">+   tools which support interactive reporting while tests are being run.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: startTest(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* is about to be run.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: stopTest(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called after the test case *test* has been executed, regardless of the</span>
+<span class="gi">+      outcome.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: startTestRun(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called once before any tests are executed.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: stopTestRun(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called once after all tests are executed.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addError(test, err)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* raises an unexpected exception *err* is a</span>
+<span class="gi">+      tuple of the form returned by :func:`sys.exc_info`: ``(type, value,</span>
+<span class="gi">+      traceback)``.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation appends a tuple ``(test, formatted_err)`` to</span>
+<span class="gi">+      the instance&#39;s :attr:`errors` attribute, where *formatted_err* is a</span>
+<span class="gi">+      formatted traceback derived from *err*.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addFailure(test, err)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* signals a failure. *err* is a tuple of</span>
+<span class="gi">+      the form returned by :func:`sys.exc_info`: ``(type, value, traceback)``.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation appends a tuple ``(test, formatted_err)`` to</span>
+<span class="gi">+      the instance&#39;s :attr:`failures` attribute, where *formatted_err* is a</span>
+<span class="gi">+      formatted traceback derived from *err*.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addSuccess(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* succeeds.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation does nothing.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addSkip(test, reason)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* is skipped.  *reason* is the reason the</span>
+<span class="gi">+      test gave for skipping.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation appends a tuple ``(test, reason)`` to the</span>
+<span class="gi">+      instance&#39;s :attr:`skipped` attribute.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addExpectedFailure(test, err)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* fails, but was marked with the</span>
+<span class="gi">+      :func:`expectedFailure` decorator.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation appends a tuple ``(test, formatted_err)`` to</span>
+<span class="gi">+      the instance&#39;s :attr:`expectedFailures` attribute, where *formatted_err*</span>
+<span class="gi">+      is a formatted traceback derived from *err*.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: addUnexpectedSuccess(test)</span>
+<span class="gi">+</span>
+<span class="gi">+      Called when the test case *test* was marked with the</span>
+<span class="gi">+      :func:`expectedFailure` decorator, but succeeded.</span>
+<span class="gi">+</span>
+<span class="gi">+      The default implementation appends the test to the instance&#39;s</span>
+<span class="gi">+      :attr:`unexpectedSuccesses` attribute.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: TextTestResult(stream, descriptions, verbosity)</span>
+<span class="gi">+</span>
+<span class="gi">+    A concrete implementation of :class:`TestResult` used by the</span>
+<span class="gi">+    :class:`TextTestRunner`.</span>
+<span class="gi">+</span>
+<span class="gi">+    .. versionadded:: 2.7</span>
+<span class="gi">+        This class was previously named ``_TextTestResult``. The old name still</span>
+<span class="gi">+        exists as an alias but is deprecated.</span>
+ 
+ .. data:: defaultTestLoader
+ 
+<span class="gu">@@ -487,14 +1763,27 @@</span>
+    instead of repeatedly creating new instances.
+ 
+ 
+<span class="gd">-.. class:: TextTestRunner([stream[, descriptions[, verbosity]]])</span>
+<span class="gi">+.. class:: TextTestRunner(stream=sys.stderr, descriptions=True, verbosity=1)</span>
+ 
+    A basic test runner implementation which prints results on standard error.  It
+    has a few configurable parameters, but is essentially very simple.  Graphical
+    applications which run test suites should provide alternate implementations.
+ 
+<span class="gd">-</span>
+<span class="gd">-.. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader]]]]])</span>
+<span class="gi">+   .. method:: _makeResult()</span>
+<span class="gi">+</span>
+<span class="gi">+      This method returns the instance of ``TestResult`` used by :meth:`run`.</span>
+<span class="gi">+      It is not intended to be called directly, but can be overridden in</span>
+<span class="gi">+      subclasses to provide a custom ``TestResult``.</span>
+<span class="gi">+</span>
+<span class="gi">+      ``_makeResult()`` instantiates the class or callable passed in the</span>
+<span class="gi">+      ``TextTestRunner`` constructor as the ``resultclass`` argument. It</span>
+<span class="gi">+      defaults to :class:`TextTestResult` if no ``resultclass`` is provided.</span>
+<span class="gi">+      The result class is instantiated with the following arguments::</span>
+<span class="gi">+</span>
+<span class="gi">+            stream, descriptions, verbosity</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader[, exit[, verbosity[, failfast[, catchbreak[,buffer]]]]]]]]]])</span>
+ 
+    A command-line program that runs a set of tests; this is primarily for making
+    test modules conveniently executable.  The simplest use for this function is to
+<span class="gu">@@ -503,446 +1792,241 @@</span>
+       if __name__ == &#39;__main__&#39;:
+           unittest.main()
+ 
+<span class="gi">+   You can run tests with more detailed information by passing in the verbosity</span>
+<span class="gi">+   argument::</span>
+<span class="gi">+</span>
+<span class="gi">+      if __name__ == &#39;__main__&#39;:</span>
+<span class="gi">+          unittest.main(verbosity=2)</span>
+<span class="gi">+</span>
+    The *testRunner* argument can either be a test runner class or an already
+<span class="gd">-   created instance of it.</span>
+<span class="gd">-</span>
+<span class="gd">-In some cases, the existing tests may have been written using the :mod:`doctest`</span>
+<span class="gd">-module.  If so, that module provides a  :class:`DocTestSuite` class that can</span>
+<span class="gd">-automatically build :class:`unittest.TestSuite` instances from the existing</span>
+<span class="gd">-:mod:`doctest`\ -based tests.</span>
+<span class="gd">-</span>
+<span class="gd">-.. versionadded:: 2.3</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. _testcase-objects:</span>
+<span class="gd">-</span>
+<span class="gd">-TestCase Objects</span>
+<span class="gd">-----------------</span>
+<span class="gd">-</span>
+<span class="gd">-Each :class:`TestCase` instance represents a single test, but each concrete</span>
+<span class="gd">-subclass may be used to define multiple tests --- the concrete class represents</span>
+<span class="gd">-a single test fixture.  The fixture is created and cleaned up for each test</span>
+<span class="gd">-case.</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`TestCase` instances provide three groups of methods: one group used to</span>
+<span class="gd">-run the test, another used by the test implementation to check conditions and</span>
+<span class="gd">-report failures, and some inquiry methods allowing information about the test</span>
+<span class="gd">-itself to be gathered.</span>
+<span class="gd">-</span>
+<span class="gd">-Methods in the first group (running the test) are:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.setUp()</span>
+<span class="gd">-</span>
+<span class="gd">-   Method called to prepare the test fixture.  This is called immediately before</span>
+<span class="gd">-   calling the test method; any exception raised by this method will be considered</span>
+<span class="gd">-   an error rather than a test failure. The default implementation does nothing.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.tearDown()</span>
+<span class="gd">-</span>
+<span class="gd">-   Method called immediately after the test method has been called and the result</span>
+<span class="gd">-   recorded.  This is called even if the test method raised an exception, so the</span>
+<span class="gd">-   implementation in subclasses may need to be particularly careful about checking</span>
+<span class="gd">-   internal state.  Any exception raised by this method will be considered an error</span>
+<span class="gd">-   rather than a test failure.  This method will only be called if the</span>
+<span class="gd">-   :meth:`setUp` succeeds, regardless of the outcome of the test method. The</span>
+<span class="gd">-   default implementation does nothing.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.run([result])</span>
+<span class="gd">-</span>
+<span class="gd">-   Run the test, collecting the result into the test result object passed as</span>
+<span class="gd">-   *result*.  If *result* is omitted or :const:`None`, a temporary result object is</span>
+<span class="gd">-   created (by calling the :meth:`defaultTestCase` method) and used; this result</span>
+<span class="gd">-   object is not returned to :meth:`run`&#39;s caller.</span>
+<span class="gd">-</span>
+<span class="gd">-   The same effect may be had by simply calling the :class:`TestCase` instance.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.debug()</span>
+<span class="gd">-</span>
+<span class="gd">-   Run the test without collecting the result.  This allows exceptions raised by</span>
+<span class="gd">-   the test to be propagated to the caller, and can be used to support running</span>
+<span class="gd">-   tests under a debugger.</span>
+<span class="gd">-</span>
+<span class="gd">-The test code can use any of the following methods to check for and report</span>
+<span class="gd">-failures.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assert_(expr[, msg])</span>
+<span class="gd">-            TestCase.failUnless(expr[, msg])</span>
+<span class="gd">-            TestCase.assertTrue(expr[, msg])</span>
+<span class="gd">-</span>
+<span class="gd">-   Signal a test failure if *expr* is false; the explanation for the error will be</span>
+<span class="gd">-   *msg* if given, otherwise it will be :const:`None`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assertEqual(first, second[, msg])</span>
+<span class="gd">-            TestCase.failUnlessEqual(first, second[, msg])</span>
+<span class="gd">-</span>
+<span class="gd">-   Test that *first* and *second* are equal.  If the values do not compare equal,</span>
+<span class="gd">-   the test will fail with the explanation given by *msg*, or :const:`None`.  Note</span>
+<span class="gd">-   that using :meth:`failUnlessEqual` improves upon doing the comparison as the</span>
+<span class="gd">-   first parameter to :meth:`failUnless`:  the default value for *msg* can be</span>
+<span class="gd">-   computed to include representations of both *first* and *second*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assertNotEqual(first, second[, msg])</span>
+<span class="gd">-            TestCase.failIfEqual(first, second[, msg])</span>
+<span class="gd">-</span>
+<span class="gd">-   Test that *first* and *second* are not equal.  If the values do compare equal,</span>
+<span class="gd">-   the test will fail with the explanation given by *msg*, or :const:`None`.  Note</span>
+<span class="gd">-   that using :meth:`failIfEqual` improves upon doing the comparison as the first</span>
+<span class="gd">-   parameter to :meth:`failUnless` is that the default value for *msg* can be</span>
+<span class="gd">-   computed to include representations of both *first* and *second*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assertAlmostEqual(first, second[, places[, msg]])</span>
+<span class="gd">-            TestCase.failUnlessAlmostEqual(first, second[, places[, msg]])</span>
+<span class="gd">-</span>
+<span class="gd">-   Test that *first* and *second* are approximately equal by computing the</span>
+<span class="gd">-   difference, rounding to the given number of decimal *places* (default 7),</span>
+<span class="gd">-   and comparing to zero.</span>
+<span class="gd">-   Note that comparing a given number of decimal places is not the same as</span>
+<span class="gd">-   comparing a given number of significant digits. If the values do not compare</span>
+<span class="gd">-   equal, the test will fail with the explanation given by *msg*, or :const:`None`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assertNotAlmostEqual(first, second[, places[, msg]])</span>
+<span class="gd">-            TestCase.failIfAlmostEqual(first, second[, places[, msg]])</span>
+<span class="gd">-</span>
+<span class="gd">-   Test that *first* and *second* are not approximately equal by computing the</span>
+<span class="gd">-   difference, rounding to the given number of decimal *places* (default 7),</span>
+<span class="gd">-   and comparing to zero.</span>
+<span class="gd">-   Note that comparing a given number of decimal places is not the same as</span>
+<span class="gd">-   comparing a given number of significant digits. If the values do not compare</span>
+<span class="gd">-   equal, the test will fail with the explanation given by *msg*, or :const:`None`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.assertRaises(exception, callable, ...)</span>
+<span class="gd">-            TestCase.failUnlessRaises(exception, callable, ...)</span>
+<span class="gd">-</span>
+<span class="gd">-   Test that an exception is raised when *callable* is called with any positional</span>
+<span class="gd">-   or keyword arguments that are also passed to :meth:`assertRaises`.  The test</span>
+<span class="gd">-   passes if *exception* is raised, is an error if another exception is raised, or</span>
+<span class="gd">-   fails if no exception is raised.  To catch any of a group of exceptions, a tuple</span>
+<span class="gd">-   containing the exception classes may be passed as *exception*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.failIf(expr[, msg])</span>
+<span class="gd">-            TestCase.assertFalse(expr[, msg])</span>
+<span class="gd">-</span>
+<span class="gd">-   The inverse of the :meth:`failUnless` method is the :meth:`failIf` method.  This</span>
+<span class="gd">-   signals a test failure if *expr* is true, with *msg* or :const:`None` for the</span>
+<span class="gd">-   error message.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.fail([msg])</span>
+<span class="gd">-</span>
+<span class="gd">-   Signals a test failure unconditionally, with *msg* or :const:`None` for the</span>
+<span class="gd">-   error message.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestCase.failureException</span>
+<span class="gd">-</span>
+<span class="gd">-   This class attribute gives the exception raised by the :meth:`test` method.  If</span>
+<span class="gd">-   a test framework needs to use a specialized exception, possibly to carry</span>
+<span class="gd">-   additional information, it must subclass this exception in order to &quot;play fair&quot;</span>
+<span class="gd">-   with the framework.  The initial value of this attribute is</span>
+<span class="gd">-   :exc:`AssertionError`.</span>
+<span class="gd">-</span>
+<span class="gd">-Testing frameworks can use the following methods to collect information on the</span>
+<span class="gd">-test:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.countTestCases()</span>
+<span class="gd">-</span>
+<span class="gd">-   Return the number of tests represented by this test object.  For</span>
+<span class="gd">-   :class:`TestCase` instances, this will always be ``1``.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.defaultTestResult()</span>
+<span class="gd">-</span>
+<span class="gd">-   Return an instance of the test result class that should be used for this test</span>
+<span class="gd">-   case class (if no other result instance is provided to the :meth:`run` method).</span>
+<span class="gd">-</span>
+<span class="gd">-   For :class:`TestCase` instances, this will always be an instance of</span>
+<span class="gd">-   :class:`TestResult`;  subclasses of :class:`TestCase` should override this as</span>
+<span class="gd">-   necessary.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.id()</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a string identifying the specific test case.  This is usually the full</span>
+<span class="gd">-   name of the test method, including the module and class name.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestCase.shortDescription()</span>
+<span class="gd">-</span>
+<span class="gd">-   Returns a one-line description of the test, or :const:`None` if no description</span>
+<span class="gd">-   has been provided.  The default implementation of this method returns the first</span>
+<span class="gd">-   line of the test method&#39;s docstring, if available, or :const:`None`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. _testsuite-objects:</span>
+<span class="gd">-</span>
+<span class="gd">-TestSuite Objects</span>
+<span class="gd">------------------</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`TestSuite` objects behave much like :class:`TestCase` objects, except</span>
+<span class="gd">-they do not actually implement a test.  Instead, they are used to aggregate</span>
+<span class="gd">-tests into groups of tests that should be run together. Some additional methods</span>
+<span class="gd">-are available to add tests to :class:`TestSuite` instances:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestSuite.addTest(test)</span>
+<span class="gd">-</span>
+<span class="gd">-   Add a :class:`TestCase` or :class:`TestSuite` to the suite.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestSuite.addTests(tests)</span>
+<span class="gd">-</span>
+<span class="gd">-   Add all the tests from an iterable of :class:`TestCase` and :class:`TestSuite`</span>
+<span class="gd">-   instances to this test suite.</span>
+<span class="gd">-</span>
+<span class="gd">-   This is equivalent to iterating over *tests*, calling :meth:`addTest` for each</span>
+<span class="gd">-   element.</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`TestSuite` shares the following methods with :class:`TestCase`:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestSuite.run(result)</span>
+<span class="gd">-</span>
+<span class="gd">-   Run the tests associated with this suite, collecting the result into the test</span>
+<span class="gd">-   result object passed as *result*.  Note that unlike :meth:`TestCase.run`,</span>
+<span class="gd">-   :meth:`TestSuite.run` requires the result object to be passed in.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestSuite.debug()</span>
+<span class="gd">-</span>
+<span class="gd">-   Run the tests associated with this suite without collecting the result. This</span>
+<span class="gd">-   allows exceptions raised by the test to be propagated to the caller and can be</span>
+<span class="gd">-   used to support running tests under a debugger.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestSuite.countTestCases()</span>
+<span class="gd">-</span>
+<span class="gd">-   Return the number of tests represented by this test object, including all</span>
+<span class="gd">-   individual tests and sub-suites.</span>
+<span class="gd">-</span>
+<span class="gd">-In the typical usage of a :class:`TestSuite` object, the :meth:`run` method is</span>
+<span class="gd">-invoked by a :class:`TestRunner` rather than by the end-user test harness.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. _testresult-objects:</span>
+<span class="gd">-</span>
+<span class="gd">-TestResult Objects</span>
+<span class="gd">-------------------</span>
+<span class="gd">-</span>
+<span class="gd">-A :class:`TestResult` object stores the results of a set of tests.  The</span>
+<span class="gd">-:class:`TestCase` and :class:`TestSuite` classes ensure that results are</span>
+<span class="gd">-properly recorded; test authors do not need to worry about recording the outcome</span>
+<span class="gd">-of tests.</span>
+<span class="gd">-</span>
+<span class="gd">-Testing frameworks built on top of :mod:`unittest` may want access to the</span>
+<span class="gd">-:class:`TestResult` object generated by running a set of tests for reporting</span>
+<span class="gd">-purposes; a :class:`TestResult` instance is returned by the</span>
+<span class="gd">-:meth:`TestRunner.run` method for this purpose.</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`TestResult` instances have the following attributes that will be of</span>
+<span class="gd">-interest when inspecting the results of running a set of tests:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestResult.errors</span>
+<span class="gd">-</span>
+<span class="gd">-   A list containing 2-tuples of :class:`TestCase` instances and strings holding</span>
+<span class="gd">-   formatted tracebacks. Each tuple represents a test which raised an unexpected</span>
+<span class="gd">-   exception.</span>
+<span class="gd">-</span>
+<span class="gd">-   .. versionchanged:: 2.2</span>
+<span class="gd">-      Contains formatted tracebacks instead of :func:`sys.exc_info` results.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestResult.failures</span>
+<span class="gd">-</span>
+<span class="gd">-   A list containing 2-tuples of :class:`TestCase` instances and strings holding</span>
+<span class="gd">-   formatted tracebacks. Each tuple represents a test where a failure was</span>
+<span class="gd">-   explicitly signalled using the :meth:`TestCase.fail\*` or</span>
+<span class="gd">-   :meth:`TestCase.assert\*` methods.</span>
+<span class="gd">-</span>
+<span class="gd">-   .. versionchanged:: 2.2</span>
+<span class="gd">-      Contains formatted tracebacks instead of :func:`sys.exc_info` results.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestResult.testsRun</span>
+<span class="gd">-</span>
+<span class="gd">-   The total number of tests run so far.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.wasSuccessful()</span>
+<span class="gd">-</span>
+<span class="gd">-   Returns :const:`True` if all tests run so far have passed, otherwise returns</span>
+<span class="gd">-   :const:`False`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.stop()</span>
+<span class="gd">-</span>
+<span class="gd">-   This method can be called to signal that the set of tests being run should be</span>
+<span class="gd">-   aborted by setting the :class:`TestResult`&#39;s ``shouldStop`` attribute to</span>
+<span class="gd">-   :const:`True`.  :class:`TestRunner` objects should respect this flag and return</span>
+<span class="gd">-   without running any additional tests.</span>
+<span class="gd">-</span>
+<span class="gd">-   For example, this feature is used by the :class:`TextTestRunner` class to stop</span>
+<span class="gd">-   the test framework when the user signals an interrupt from the keyboard.</span>
+<span class="gd">-   Interactive tools which provide :class:`TestRunner` implementations can use this</span>
+<span class="gd">-   in a similar manner.</span>
+<span class="gd">-</span>
+<span class="gd">-The following methods of the :class:`TestResult` class are used to maintain the</span>
+<span class="gd">-internal data structures, and may be extended in subclasses to support</span>
+<span class="gd">-additional reporting requirements.  This is particularly useful in building</span>
+<span class="gd">-tools which support interactive reporting while tests are being run.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.startTest(test)</span>
+<span class="gd">-</span>
+<span class="gd">-   Called when the test case *test* is about to be run.</span>
+<span class="gd">-</span>
+<span class="gd">-   The default implementation simply increments the instance&#39;s ``testsRun``</span>
+<span class="gd">-   counter.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.stopTest(test)</span>
+<span class="gd">-</span>
+<span class="gd">-   Called after the test case *test* has been executed, regardless of the outcome.</span>
+<span class="gd">-</span>
+<span class="gd">-   The default implementation does nothing.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.addError(test, err)</span>
+<span class="gd">-</span>
+<span class="gd">-   Called when the test case *test* raises an unexpected exception *err* is a tuple</span>
+<span class="gd">-   of the form returned by :func:`sys.exc_info`: ``(type, value, traceback)``.</span>
+<span class="gd">-</span>
+<span class="gd">-   The default implementation appends a tuple ``(test, formatted_err)`` to the</span>
+<span class="gd">-   instance&#39;s ``errors`` attribute, where *formatted_err* is a formatted</span>
+<span class="gd">-   traceback derived from *err*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.addFailure(test, err)</span>
+<span class="gd">-</span>
+<span class="gd">-   Called when the test case *test* signals a failure. *err* is a tuple of the form</span>
+<span class="gd">-   returned by :func:`sys.exc_info`:  ``(type, value, traceback)``.</span>
+<span class="gd">-</span>
+<span class="gd">-   The default implementation appends a tuple ``(test, formatted_err)`` to the</span>
+<span class="gd">-   instance&#39;s ``failures`` attribute, where *formatted_err* is a formatted</span>
+<span class="gd">-   traceback derived from *err*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestResult.addSuccess(test)</span>
+<span class="gd">-</span>
+<span class="gd">-   Called when the test case *test* succeeds.</span>
+<span class="gd">-</span>
+<span class="gd">-   The default implementation does nothing.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. _testloader-objects:</span>
+<span class="gd">-</span>
+<span class="gd">-TestLoader Objects</span>
+<span class="gd">-------------------</span>
+<span class="gd">-</span>
+<span class="gd">-The :class:`TestLoader` class is used to create test suites from classes and</span>
+<span class="gd">-modules.  Normally, there is no need to create an instance of this class; the</span>
+<span class="gd">-:mod:`unittest` module provides an instance that can be shared as</span>
+<span class="gd">-``unittest.defaultTestLoader``. Using a subclass or instance, however, allows</span>
+<span class="gd">-customization of some configurable properties.</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`TestLoader` objects have the following methods:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestLoader.loadTestsFromTestCase(testCaseClass)</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a suite of all tests cases contained in the :class:`TestCase`\ -derived</span>
+<span class="gd">-   :class:`testCaseClass`.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestLoader.loadTestsFromModule(module)</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a suite of all tests cases contained in the given module. This method</span>
+<span class="gd">-   searches *module* for classes derived from :class:`TestCase` and creates an</span>
+<span class="gd">-   instance of the class for each test method defined for the class.</span>
+<span class="gd">-</span>
+<span class="gd">-   .. warning::</span>
+<span class="gd">-</span>
+<span class="gd">-      While using a hierarchy of :class:`TestCase`\ -derived classes can be convenient</span>
+<span class="gd">-      in sharing fixtures and helper functions, defining test methods on base classes</span>
+<span class="gd">-      that are not intended to be instantiated directly does not play well with this</span>
+<span class="gd">-      method.  Doing so, however, can be useful when the fixtures are different and</span>
+<span class="gd">-      defined in subclasses.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestLoader.loadTestsFromName(name[, module])</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a suite of all tests cases given a string specifier.</span>
+<span class="gd">-</span>
+<span class="gd">-   The specifier *name* is a &quot;dotted name&quot; that may resolve either to a module, a</span>
+<span class="gd">-   test case class, a test method within a test case class, a :class:`TestSuite`</span>
+<span class="gd">-   instance, or a callable object which returns a :class:`TestCase` or</span>
+<span class="gd">-   :class:`TestSuite` instance.  These checks are applied in the order listed here;</span>
+<span class="gd">-   that is, a method on a possible test case class will be picked up as &quot;a test</span>
+<span class="gd">-   method within a test case class&quot;, rather than &quot;a callable object&quot;.</span>
+<span class="gd">-</span>
+<span class="gd">-   For example, if you have a module :mod:`SampleTests` containing a</span>
+<span class="gd">-   :class:`TestCase`\ -derived class :class:`SampleTestCase` with three test</span>
+<span class="gd">-   methods (:meth:`test_one`, :meth:`test_two`, and :meth:`test_three`), the</span>
+<span class="gd">-   specifier ``&#39;SampleTests.SampleTestCase&#39;`` would cause this method to return a</span>
+<span class="gd">-   suite which will run all three test methods.  Using the specifier</span>
+<span class="gd">-   ``&#39;SampleTests.SampleTestCase.test_two&#39;`` would cause it to return a test suite</span>
+<span class="gd">-   which will run only the :meth:`test_two` test method.  The specifier can refer</span>
+<span class="gd">-   to modules and packages which have not been imported; they will be imported as a</span>
+<span class="gd">-   side-effect.</span>
+<span class="gd">-</span>
+<span class="gd">-   The method optionally resolves *name* relative to the given *module*.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestLoader.loadTestsFromNames(names[, module])</span>
+<span class="gd">-</span>
+<span class="gd">-   Similar to :meth:`loadTestsFromName`, but takes a sequence of names rather than</span>
+<span class="gd">-   a single name.  The return value is a test suite which supports all the tests</span>
+<span class="gd">-   defined for each name.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: TestLoader.getTestCaseNames(testCaseClass)</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a sorted sequence of method names found within *testCaseClass*; this</span>
+<span class="gd">-   should be a subclass of :class:`TestCase`.</span>
+<span class="gd">-</span>
+<span class="gd">-The following attributes of a :class:`TestLoader` can be configured either by</span>
+<span class="gd">-subclassing or assignment on an instance:</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestLoader.testMethodPrefix</span>
+<span class="gd">-</span>
+<span class="gd">-   String giving the prefix of method names which will be interpreted as test</span>
+<span class="gd">-   methods.  The default value is ``&#39;test&#39;``.</span>
+<span class="gd">-</span>
+<span class="gd">-   This affects :meth:`getTestCaseNames` and all the :meth:`loadTestsFrom\*`</span>
+<span class="gd">-   methods.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestLoader.sortTestMethodsUsing</span>
+<span class="gd">-</span>
+<span class="gd">-   Function to be used to compare method names when sorting them in</span>
+<span class="gd">-   :meth:`getTestCaseNames` and all the :meth:`loadTestsFrom\*` methods. The</span>
+<span class="gd">-   default value is the built-in :func:`cmp` function; the attribute can also be</span>
+<span class="gd">-   set to :const:`None` to disable the sort.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-.. attribute:: TestLoader.suiteClass</span>
+<span class="gd">-</span>
+<span class="gd">-   Callable object that constructs a test suite from a list of tests. No methods on</span>
+<span class="gd">-   the resulting object are needed.  The default value is the :class:`TestSuite`</span>
+<span class="gd">-   class.</span>
+<span class="gd">-</span>
+<span class="gd">-   This affects all the :meth:`loadTestsFrom\*` methods.</span>
+<span class="gd">-</span>
+<span class="gi">+   created instance of it. By default ``main`` calls :func:`sys.exit` with</span>
+<span class="gi">+   an exit code indicating success or failure of the tests run.</span>
+<span class="gi">+</span>
+<span class="gi">+   ``main`` supports being used from the interactive interpreter by passing in the</span>
+<span class="gi">+   argument ``exit=False``. This displays the result on standard output without</span>
+<span class="gi">+   calling :func:`sys.exit`::</span>
+<span class="gi">+</span>
+<span class="gi">+      &gt;&gt;&gt; from unittest import main</span>
+<span class="gi">+      &gt;&gt;&gt; main(module=&#39;test_module&#39;, exit=False)</span>
+<span class="gi">+</span>
+<span class="gi">+   The ``failfast``, ``catchbreak`` and ``buffer`` parameters have the same</span>
+<span class="gi">+   effect as the same-name `command-line options`_.</span>
+<span class="gi">+</span>
+<span class="gi">+   Calling ``main`` actually returns an instance of the ``TestProgram`` class.</span>
+<span class="gi">+   This stores the result of the tests run as the ``result`` attribute.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The ``exit``, ``verbosity``, ``failfast``, ``catchbreak`` and ``buffer``</span>
+<span class="gi">+      parameters were added.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+load_tests Protocol</span>
+<span class="gi">+###################</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+Modules or packages can customize how tests are loaded from them during normal</span>
+<span class="gi">+test runs or test discovery by implementing a function called ``load_tests``.</span>
+<span class="gi">+</span>
+<span class="gi">+If a test module defines ``load_tests`` it will be called by</span>
+<span class="gi">+:meth:`TestLoader.loadTestsFromModule` with the following arguments::</span>
+<span class="gi">+</span>
+<span class="gi">+    load_tests(loader, standard_tests, None)</span>
+<span class="gi">+</span>
+<span class="gi">+It should return a :class:`TestSuite`.</span>
+<span class="gi">+</span>
+<span class="gi">+*loader* is the instance of :class:`TestLoader` doing the loading.</span>
+<span class="gi">+*standard_tests* are the tests that would be loaded by default from the</span>
+<span class="gi">+module. It is common for test modules to only want to add or remove tests</span>
+<span class="gi">+from the standard set of tests.</span>
+<span class="gi">+The third argument is used when loading packages as part of test discovery.</span>
+<span class="gi">+</span>
+<span class="gi">+A typical ``load_tests`` function that loads tests from a specific set of</span>
+<span class="gi">+:class:`TestCase` classes may look like::</span>
+<span class="gi">+</span>
+<span class="gi">+    test_cases = (TestCase1, TestCase2, TestCase3)</span>
+<span class="gi">+</span>
+<span class="gi">+    def load_tests(loader, tests, pattern):</span>
+<span class="gi">+        suite = TestSuite()</span>
+<span class="gi">+        for test_class in test_cases:</span>
+<span class="gi">+            tests = loader.loadTestsFromTestCase(test_class)</span>
+<span class="gi">+            suite.addTests(tests)</span>
+<span class="gi">+        return suite</span>
+<span class="gi">+</span>
+<span class="gi">+If discovery is started, either from the command line or by calling</span>
+<span class="gi">+:meth:`TestLoader.discover`, with a pattern that matches a package</span>
+<span class="gi">+name then the package :file:`__init__.py` will be checked for ``load_tests``.</span>
+<span class="gi">+</span>
+<span class="gi">+.. note::</span>
+<span class="gi">+</span>
+<span class="gi">+   The default pattern is &#39;test*.py&#39;. This matches all Python files</span>
+<span class="gi">+   that start with &#39;test&#39; but *won&#39;t* match any test directories.</span>
+<span class="gi">+</span>
+<span class="gi">+   A pattern like &#39;test*&#39; will match test packages as well as</span>
+<span class="gi">+   modules.</span>
+<span class="gi">+</span>
+<span class="gi">+If the package :file:`__init__.py` defines ``load_tests`` then it will be</span>
+<span class="gi">+called and discovery not continued into the package. ``load_tests``</span>
+<span class="gi">+is called with the following arguments::</span>
+<span class="gi">+</span>
+<span class="gi">+    load_tests(loader, standard_tests, pattern)</span>
+<span class="gi">+</span>
+<span class="gi">+This should return a :class:`TestSuite` representing all the tests</span>
+<span class="gi">+from the package. (``standard_tests`` will only contain tests</span>
+<span class="gi">+collected from :file:`__init__.py`.)</span>
+<span class="gi">+</span>
+<span class="gi">+Because the pattern is passed into ``load_tests`` the package is free to</span>
+<span class="gi">+continue (and potentially modify) test discovery. A &#39;do nothing&#39;</span>
+<span class="gi">+``load_tests`` function for a test package would look like::</span>
+<span class="gi">+</span>
+<span class="gi">+    def load_tests(loader, standard_tests, pattern):</span>
+<span class="gi">+        # top level directory cached on loader instance</span>
+<span class="gi">+        this_dir = os.path.dirname(__file__)</span>
+<span class="gi">+        package_tests = loader.discover(start_dir=this_dir, pattern=pattern)</span>
+<span class="gi">+        standard_tests.addTests(package_tests)</span>
+<span class="gi">+        return standard_tests</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Class and Module Fixtures</span>
+<span class="gi">+-------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+Class and module level fixtures are implemented in :class:`TestSuite`. When</span>
+<span class="gi">+the test suite encounters a test from a new class then :meth:`tearDownClass`</span>
+<span class="gi">+from the previous class (if there is one) is called, followed by</span>
+<span class="gi">+:meth:`setUpClass` from the new class.</span>
+<span class="gi">+</span>
+<span class="gi">+Similarly if a test is from a different module from the previous test then</span>
+<span class="gi">+``tearDownModule`` from the previous module is run, followed by</span>
+<span class="gi">+``setUpModule`` from the new module.</span>
+<span class="gi">+</span>
+<span class="gi">+After all the tests have run the final ``tearDownClass`` and</span>
+<span class="gi">+``tearDownModule`` are run.</span>
+<span class="gi">+</span>
+<span class="gi">+Note that shared fixtures do not play well with [potential] features like test</span>
+<span class="gi">+parallelization and they break test isolation. They should be used with care.</span>
+<span class="gi">+</span>
+<span class="gi">+The default ordering of tests created by the unittest test loaders is to group</span>
+<span class="gi">+all tests from the same modules and classes together. This will lead to</span>
+<span class="gi">+``setUpClass`` / ``setUpModule`` (etc) being called exactly once per class and</span>
+<span class="gi">+module. If you randomize the order, so that tests from different modules and</span>
+<span class="gi">+classes are adjacent to each other, then these shared fixture functions may be</span>
+<span class="gi">+called multiple times in a single test run.</span>
+<span class="gi">+</span>
+<span class="gi">+Shared fixtures are not intended to work with suites with non-standard</span>
+<span class="gi">+ordering. A ``BaseTestSuite`` still exists for frameworks that don&#39;t want to</span>
+<span class="gi">+support shared fixtures.</span>
+<span class="gi">+</span>
+<span class="gi">+If there are any exceptions raised during one of the shared fixture functions</span>
+<span class="gi">+the test is reported as an error. Because there is no corresponding test</span>
+<span class="gi">+instance an ``_ErrorHolder`` object (that has the same interface as a</span>
+<span class="gi">+:class:`TestCase`) is created to represent the error. If you are just using</span>
+<span class="gi">+the standard unittest test runner then this detail doesn&#39;t matter, but if you</span>
+<span class="gi">+are a framework author it may be relevant.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+setUpClass and tearDownClass</span>
+<span class="gi">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+These must be implemented as class methods::</span>
+<span class="gi">+</span>
+<span class="gi">+    import unittest</span>
+<span class="gi">+</span>
+<span class="gi">+    class Test(unittest.TestCase):</span>
+<span class="gi">+        @classmethod</span>
+<span class="gi">+        def setUpClass(cls):</span>
+<span class="gi">+            cls._connection = createExpensiveConnectionObject()</span>
+<span class="gi">+</span>
+<span class="gi">+        @classmethod</span>
+<span class="gi">+        def tearDownClass(cls):</span>
+<span class="gi">+            cls._connection.destroy()</span>
+<span class="gi">+</span>
+<span class="gi">+If you want the ``setUpClass`` and ``tearDownClass`` on base classes called</span>
+<span class="gi">+then you must call up to them yourself. The implementations in</span>
+<span class="gi">+:class:`TestCase` are empty.</span>
+<span class="gi">+</span>
+<span class="gi">+If an exception is raised during a ``setUpClass`` then the tests in the class</span>
+<span class="gi">+are not run and the ``tearDownClass`` is not run. Skipped classes will not</span>
+<span class="gi">+have ``setUpClass`` or ``tearDownClass`` run. If the exception is a</span>
+<span class="gi">+``SkipTest`` exception then the class will be reported as having been skipped</span>
+<span class="gi">+instead of as an error.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+setUpModule and tearDownModule</span>
+<span class="gi">+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+These should be implemented as functions::</span>
+<span class="gi">+</span>
+<span class="gi">+    def setUpModule():</span>
+<span class="gi">+        createConnection()</span>
+<span class="gi">+</span>
+<span class="gi">+    def tearDownModule():</span>
+<span class="gi">+        closeConnection()</span>
+<span class="gi">+</span>
+<span class="gi">+If an exception is raised in a ``setUpModule`` then none of the tests in the</span>
+<span class="gi">+module will be run and the ``tearDownModule`` will not be run. If the exception is a</span>
+<span class="gi">+``SkipTest`` exception then the module will be reported as having been skipped</span>
+<span class="gi">+instead of as an error.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Signal Handling</span>
+<span class="gi">+---------------</span>
+<span class="gi">+</span>
+<span class="gi">+The :option:`-c/--catch &lt;unittest -c&gt;` command-line option to unittest,</span>
+<span class="gi">+along with the ``catchbreak`` parameter to :func:`unittest.main()`, provide</span>
+<span class="gi">+more friendly handling of control-C during a test run. With catch break</span>
+<span class="gi">+behavior enabled control-C will allow the currently running test to complete,</span>
+<span class="gi">+and the test run will then end and report all the results so far. A second</span>
+<span class="gi">+control-c will raise a :exc:`KeyboardInterrupt` in the usual way.</span>
+<span class="gi">+</span>
+<span class="gi">+The control-c handling signal handler attempts to remain compatible with code or</span>
+<span class="gi">+tests that install their own :const:`signal.SIGINT` handler. If the ``unittest``</span>
+<span class="gi">+handler is called but *isn&#39;t* the installed :const:`signal.SIGINT` handler,</span>
+<span class="gi">+i.e. it has been replaced by the system under test and delegated to, then it</span>
+<span class="gi">+calls the default handler. This will normally be the expected behavior by code</span>
+<span class="gi">+that replaces an installed handler and delegates to it. For individual tests</span>
+<span class="gi">+that need ``unittest`` control-c handling disabled the :func:`removeHandler`</span>
+<span class="gi">+decorator can be used.</span>
+<span class="gi">+</span>
+<span class="gi">+There are a few utility functions for framework authors to enable control-c</span>
+<span class="gi">+handling functionality within test frameworks.</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: installHandler()</span>
+<span class="gi">+</span>
+<span class="gi">+   Install the control-c handler. When a :const:`signal.SIGINT` is received</span>
+<span class="gi">+   (usually in response to the user pressing control-c) all registered results</span>
+<span class="gi">+   have :meth:`~TestResult.stop` called.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: registerResult(result)</span>
+<span class="gi">+</span>
+<span class="gi">+   Register a :class:`TestResult` object for control-c handling. Registering a</span>
+<span class="gi">+   result stores a weak reference to it, so it doesn&#39;t prevent the result from</span>
+<span class="gi">+   being garbage collected.</span>
+<span class="gi">+</span>
+<span class="gi">+   Registering a :class:`TestResult` object has no side-effects if control-c</span>
+<span class="gi">+   handling is not enabled, so test frameworks can unconditionally register</span>
+<span class="gi">+   all results they create independently of whether or not handling is enabled.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: removeResult(result)</span>
+<span class="gi">+</span>
+<span class="gi">+   Remove a registered result. Once a result has been removed then</span>
+<span class="gi">+   :meth:`~TestResult.stop` will no longer be called on that result object in</span>
+<span class="gi">+   response to a control-c.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: removeHandler(function=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   When called without arguments this function removes the control-c handler</span>
+<span class="gi">+   if it has been installed. This function can also be used as a test decorator</span>
+<span class="gi">+   to temporarily remove the handler whilst the test is being executed::</span>
+<span class="gi">+</span>
+<span class="gi">+      @unittest.removeHandler</span>
+<span class="gi">+      def test_signal_handling(self):</span>
+<span class="gi">+          ...</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

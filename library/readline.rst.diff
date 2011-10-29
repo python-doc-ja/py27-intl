@@ -1,0 +1,19 @@
+@@ -20,7 +20,7 @@
+   the ``libedit`` library instead of GNU readline.
+ 
+   The configuration file for ``libedit`` is different from that
+-  of GNU readline. If you programmaticly load configuration strings
++  of GNU readline. If you programmatically load configuration strings
+   you can check for the text "libedit" in :const:`readline.__doc__`
+   to differentiate between GNU readline and libedit.
+ 
+@@ -210,7 +210,8 @@
+ :envvar:`PYTHONSTARTUP` file. ::
+ 
+    import os
+-   histfile = os.path.join(os.environ["HOME"], ".pyhist")
++   import readline
++   histfile = os.path.join(os.path.expanduser("~"), ".pyhist")
+    try:
+        readline.read_history_file(histfile)
+    except IOError:

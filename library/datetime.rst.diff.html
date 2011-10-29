@@ -1,0 +1,134 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/datetime.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -284,12 +284,28 @@</span>
+ efficient pickling, and in Boolean contexts, a :class:`timedelta` object is
+ considered to be true if and only if it isn&#39;t equal to ``timedelta(0)``.
+ 
+<span class="gi">+Instance methods:</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: timedelta.total_seconds()</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the total number of seconds contained in the duration.</span>
+<span class="gi">+   Equivalent to ``(td.microseconds + (td.seconds + td.days * 24 *</span>
+<span class="gi">+   3600) * 10**6) / 10**6`` computed with true division enabled.</span>
+<span class="gi">+</span>
+<span class="gi">+   Note that for very large time intervals (greater than 270 years on</span>
+<span class="gi">+   most platforms) this method will lose microsecond accuracy.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ Example usage:
+ 
+     &gt;&gt;&gt; from datetime import timedelta
+     &gt;&gt;&gt; year = timedelta(days=365)
+     &gt;&gt;&gt; another_year = timedelta(weeks=40, days=84, hours=23,
+     ...                          minutes=50, seconds=600)  # adds up to 365 days
+<span class="gi">+    &gt;&gt;&gt; year.total_seconds()</span>
+<span class="gi">+    31536000.0</span>
+     &gt;&gt;&gt; year == another_year
+     True
+     &gt;&gt;&gt; ten_years = 10 * year
+<span class="gu">@@ -457,7 +473,9 @@</span>
+    Return a :class:`time.struct_time` such as returned by :func:`time.localtime`.
+    The hours, minutes and seconds are 0, and the DST flag is -1. ``d.timetuple()``
+    is equivalent to ``time.struct_time((d.year, d.month, d.day, 0, 0, 0,
+<span class="gd">-   d.weekday(), d.toordinal() - date(d.year, 1, 1).toordinal() + 1, -1))``</span>
+<span class="gi">+   d.weekday(), yday, -1))``, where ``yday = d.toordinal() - date(d.year, 1,</span>
+<span class="gi">+   1).toordinal() + 1`` is the day number within the current year starting with</span>
+<span class="gi">+   ``1`` for January 1st.</span>
+ 
+ 
+ .. method:: date.toordinal()
+<span class="gu">@@ -922,12 +940,13 @@</span>
+ 
+    Return a :class:`time.struct_time` such as returned by :func:`time.localtime`.
+    ``d.timetuple()`` is equivalent to ``time.struct_time((d.year, d.month, d.day,
+<span class="gd">-   d.hour, d.minute, d.second, d.weekday(), d.toordinal() - date(d.year, 1,</span>
+<span class="gd">-   1).toordinal() + 1, dst))`` The :attr:`tm_isdst` flag of the result is set</span>
+<span class="gd">-   according to the :meth:`dst` method:  :attr:`tzinfo` is ``None`` or :meth:`dst`</span>
+<span class="gd">-   returns ``None``, :attr:`tm_isdst` is set to  ``-1``; else if :meth:`dst`</span>
+<span class="gd">-   returns a non-zero value, :attr:`tm_isdst` is set to ``1``; else ``tm_isdst`` is</span>
+<span class="gd">-   set to ``0``.</span>
+<span class="gi">+   d.hour, d.minute, d.second, d.weekday(), yday, dst))``, where ``yday =</span>
+<span class="gi">+   d.toordinal() - date(d.year, 1, 1).toordinal() + 1`` is the day number within</span>
+<span class="gi">+   the current year starting with ``1`` for January 1st. The :attr:`tm_isdst` flag</span>
+<span class="gi">+   of the result is set according to the :meth:`dst` method: :attr:`tzinfo` is</span>
+<span class="gi">+   ``None`` or :meth:`dst` returns ``None``, :attr:`tm_isdst` is set to ``-1``;</span>
+<span class="gi">+   else if :meth:`dst` returns a non-zero value, :attr:`tm_isdst` is set to ``1``;</span>
+<span class="gi">+   else :attr:`tm_isdst` is set to ``0``.</span>
+ 
+ 
+ .. method:: datetime.utctimetuple()
+</pre></div>
+
+</body>
+</html>

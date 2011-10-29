@@ -1,0 +1,28 @@
+@@ -257,6 +257,10 @@
+     background-color: #eef;    
+ }
+ 
++table.docutils td p.last, table.docutils th p.last {
++    margin-bottom: 0;
++}
++
+ table.field-list td, table.field-list th {
+     border: 0 !important;
+ }
+@@ -342,7 +346,7 @@
+ }
+ 
+ .footnote:target  {
+-    background-color: #ffa
++    background-color: #ffa;
+ }
+ 
+ .impl-detail {
+@@ -364,6 +368,7 @@
+ 
+ pre {
+     overflow: auto;
++    overflow-y: hidden;
+ }
+ 
+ td.linenos pre {

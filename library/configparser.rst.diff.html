@@ -1,0 +1,216 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/configparser.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -32,6 +32,16 @@</span>
+    This library does *not* interpret or write the value-type prefixes used in
+    the Windows Registry extended version of INI syntax.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Module :mod:`shlex`</span>
+<span class="gi">+      Support for a creating Unix shell-like mini-languages which can be used</span>
+<span class="gi">+      as an alternate format for application configuration files.</span>
+<span class="gi">+</span>
+<span class="gi">+   Module :mod:`json`</span>
+<span class="gi">+      The json module implements a subset of JavaScript syntax which can also</span>
+<span class="gi">+      be used for this purpose.</span>
+<span class="gi">+</span>
+ The configuration file consists of sections, led by a ``[section]`` header and
+ followed by ``name: value`` entries, with continuations in the style of
+ :rfc:`822` (see section 3.1.1, &quot;LONG HEADER FIELDS&quot;); ``name=value`` is also
+<span class="gu">@@ -43,7 +53,7 @@</span>
+ 
+ Configuration files may include comments, prefixed by specific characters (``#``
+ and ``;``).  Comments may appear on their own in an otherwise empty line, or may
+<span class="gd">-be entered in lines holding values or spection names.  In the latter case, they</span>
+<span class="gi">+be entered in lines holding values or section names.  In the latter case, they</span>
+ need to be preceded by a whitespace character to be recognized as a comment.
+ (For backwards compatibility, only ``;`` starts an inline comment, while ``#``
+ does not.)
+<span class="gu">@@ -74,21 +84,32 @@</span>
+ write-back, as will be the keys within each section.
+ 
+ 
+<span class="gd">-.. class:: RawConfigParser([defaults[, dict_type]])</span>
+<span class="gi">+.. class:: RawConfigParser([defaults[, dict_type[, allow_no_value]]])</span>
+ 
+    The basic configuration object.  When *defaults* is given, it is initialized
+    into the dictionary of intrinsic defaults.  When *dict_type* is given, it will
+    be used to create the dictionary objects for the list of sections, for the
+<span class="gd">-   options within a section, and for the default values. This class does not</span>
+<span class="gi">+   options within a section, and for the default values.  When *allow_no_value*</span>
+<span class="gi">+   is true (default: ``False``), options without values are accepted; the value</span>
+<span class="gi">+   presented for these is ``None``.</span>
+<span class="gi">+</span>
+<span class="gi">+   This class does not</span>
+    support the magical interpolation behavior.
+ 
+<span class="gi">+   All option names are passed through the :meth:`optionxform` method.  Its</span>
+<span class="gi">+   default implementation converts option names to lower case.</span>
+<span class="gi">+</span>
+    .. versionadded:: 2.3
+ 
+    .. versionchanged:: 2.6
+       *dict_type* was added.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The default *dict_type* is :class:`collections.OrderedDict`.</span>
+<span class="gi">+      *allow_no_value* was added.</span>
+ 
+<span class="gd">-.. class:: ConfigParser([defaults[, dict_type]])</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: ConfigParser([defaults[, dict_type[, allow_no_value]]])</span>
+ 
+    Derived class of :class:`RawConfigParser` that implements the magical
+    interpolation feature and adds optional arguments to the :meth:`get` and
+<span class="gu">@@ -98,13 +119,21 @@</span>
+    *defaults*.
+ 
+    All option names used in interpolation will be passed through the
+<span class="gd">-   :meth:`optionxform` method just like any other option name reference.  For</span>
+<span class="gd">-   example, using the default implementation of :meth:`optionxform` (which converts</span>
+<span class="gd">-   option names to lower case), the values ``foo %(bar)s`` and ``foo %(BAR)s`` are</span>
+<span class="gd">-   equivalent.</span>
+<span class="gi">+   :meth:`optionxform` method just like any other option name reference.  Using</span>
+<span class="gi">+   the default implementation of :meth:`optionxform`, the values ``foo %(bar)s``</span>
+<span class="gi">+   and ``foo %(BAR)s`` are equivalent.</span>
+ 
+<span class="gi">+   .. versionadded:: 2.3</span>
+ 
+<span class="gd">-.. class:: SafeConfigParser([defaults[, dict_type]])</span>
+<span class="gi">+   .. versionchanged:: 2.6</span>
+<span class="gi">+      *dict_type* was added.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The default *dict_type* is :class:`collections.OrderedDict`.</span>
+<span class="gi">+      *allow_no_value* was added.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: SafeConfigParser([defaults[, dict_type[, allow_no_value]]])</span>
+ 
+    Derived class of :class:`ConfigParser` that implements a more-sane variant of
+    the magical interpolation feature.  This implementation is more predictable as
+<span class="gu">@@ -115,6 +144,13 @@</span>
+ 
+    .. versionadded:: 2.3
+ 
+<span class="gi">+   .. versionchanged:: 2.6</span>
+<span class="gi">+      *dict_type* was added.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The default *dict_type* is :class:`collections.OrderedDict`.</span>
+<span class="gi">+      *allow_no_value* was added.</span>
+<span class="gi">+</span>
+ 
+ .. exception:: Error
+ 
+<span class="gu">@@ -486,3 +522,38 @@</span>
+            opt_move(config, section1, section2, option)
+        else:
+            config.remove_option(section1, option)
+<span class="gi">+</span>
+<span class="gi">+Some configuration files are known to include settings without values, but which</span>
+<span class="gi">+otherwise conform to the syntax supported by :mod:`ConfigParser`.  The</span>
+<span class="gi">+*allow_no_value* parameter to the constructor can be used to indicate that such</span>
+<span class="gi">+values should be accepted:</span>
+<span class="gi">+</span>
+<span class="gi">+.. doctest::</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; import ConfigParser</span>
+<span class="gi">+   &gt;&gt;&gt; import io</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; sample_config = &quot;&quot;&quot;</span>
+<span class="gi">+   ... [mysqld]</span>
+<span class="gi">+   ... user = mysql</span>
+<span class="gi">+   ... pid-file = /var/run/mysqld/mysqld.pid</span>
+<span class="gi">+   ... skip-external-locking</span>
+<span class="gi">+   ... old_passwords = 1</span>
+<span class="gi">+   ... skip-bdb</span>
+<span class="gi">+   ... skip-innodb</span>
+<span class="gi">+   ... &quot;&quot;&quot;</span>
+<span class="gi">+   &gt;&gt;&gt; config = ConfigParser.RawConfigParser(allow_no_value=True)</span>
+<span class="gi">+   &gt;&gt;&gt; config.readfp(io.BytesIO(sample_config))</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # Settings with values are treated as before:</span>
+<span class="gi">+   &gt;&gt;&gt; config.get(&quot;mysqld&quot;, &quot;user&quot;)</span>
+<span class="gi">+   &#39;mysql&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # Settings without values provide None:</span>
+<span class="gi">+   &gt;&gt;&gt; config.get(&quot;mysqld&quot;, &quot;skip-bdb&quot;)</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # Settings which aren&#39;t specified still raise an error:</span>
+<span class="gi">+   &gt;&gt;&gt; config.get(&quot;mysqld&quot;, &quot;does-not-exist&quot;)</span>
+<span class="gi">+   Traceback (most recent call last):</span>
+<span class="gi">+     ...</span>
+<span class="gi">+   ConfigParser.NoOptionError: No option &#39;does-not-exist&#39; in section: &#39;mysqld&#39;</span>
+</pre></div>
+
+</body>
+</html>

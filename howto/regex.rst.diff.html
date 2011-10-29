@@ -1,0 +1,198 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>howto/regex.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -5,7 +5,6 @@</span>
+ ****************************
+ 
+ :Author: A.M. Kuchling &lt;amk@amk.ca&gt;
+<span class="gd">-:Release: 0.05</span>
+ 
+ .. TODO:
+    Document lookbehind assertions
+<span class="gu">@@ -82,7 +81,7 @@</span>
+ Here&#39;s a complete list of the metacharacters; their meanings will be discussed
+ in the rest of this HOWTO. ::
+ 
+<span class="gd">-   . ^ $ * + ? { [ ] \ | ( )</span>
+<span class="gi">+   . ^ $ * + ? { } [ ] \ | ( )</span>
+ 
+ The first metacharacters we&#39;ll look at are ``[`` and ``]``. They&#39;re used for
+ specifying a character class, which is a set of characters that you wish to
+<span class="gu">@@ -113,7 +112,10 @@</span>
+ Some of the special sequences beginning with ``&#39;\&#39;`` represent predefined sets
+ of characters that are often useful, such as the set of digits, the set of
+ letters, or the set of anything that isn&#39;t whitespace.  The following predefined
+<span class="gd">-special sequences are available:</span>
+<span class="gi">+special sequences are a subset of those available. The equivalent classes are</span>
+<span class="gi">+for byte string patterns. For a complete list of sequences and expanded class</span>
+<span class="gi">+definitions for Unicode string patterns, see the last part of</span>
+<span class="gi">+:ref:`Regular Expression Syntax &lt;re-syntax&gt;`.</span>
+ 
+ ``\d``
+    Matches any decimal digit; this is equivalent to the class ``[0-9]``.
+<span class="gu">@@ -264,7 +266,7 @@</span>
+    &gt;&gt;&gt; import re
+    &gt;&gt;&gt; p = re.compile(&#39;ab*&#39;)
+    &gt;&gt;&gt; print p
+<span class="gd">-   &lt;_sre.SRE_Pattern object at 80b4150&gt;</span>
+<span class="gi">+   &lt;_sre.SRE_Pattern object at 0x...&gt;</span>
+ 
+ :func:`re.compile` also accepts an optional *flags* argument, used to enable
+ various special features and syntax variations.  We&#39;ll go over the available
+<span class="gu">@@ -377,7 +379,7 @@</span>
+    &gt;&gt;&gt; import re
+    &gt;&gt;&gt; p = re.compile(&#39;[a-z]+&#39;)
+    &gt;&gt;&gt; p
+<span class="gd">-   &lt;_sre.SRE_Pattern object at 80c3c28&gt;</span>
+<span class="gi">+   &lt;_sre.SRE_Pattern object at 0x...&gt;</span>
+ 
+ Now, you can try matching various strings against the RE ``[a-z]+``.  An empty
+ string shouldn&#39;t match at all, since ``+`` means &#39;one or more repetitions&#39;.
+<span class="gu">@@ -395,7 +397,7 @@</span>
+ 
+    &gt;&gt;&gt; m = p.match(&#39;tempo&#39;)
+    &gt;&gt;&gt; print m
+<span class="gd">-   &lt;_sre.SRE_Match object at 80c4f68&gt;</span>
+<span class="gi">+   &lt;_sre.SRE_Match object at 0x...&gt;</span>
+ 
+ Now you can query the :class:`MatchObject` for information about the matching
+ string.   :class:`MatchObject` instances also have several methods and
+<span class="gu">@@ -434,7 +436,7 @@</span>
+    &gt;&gt;&gt; print p.match(&#39;::: message&#39;)
+    None
+    &gt;&gt;&gt; m = p.search(&#39;::: message&#39;) ; print m
+<span class="gd">-   &lt;re.MatchObject instance at 80c9650&gt;</span>
+<span class="gi">+   &lt;_sre.SRE_Match object at 0x...&gt;</span>
+    &gt;&gt;&gt; m.group()
+    &#39;message&#39;
+    &gt;&gt;&gt; m.span()
+<span class="gu">@@ -485,7 +487,7 @@</span>
+    &gt;&gt;&gt; print re.match(r&#39;From\s+&#39;, &#39;Fromage amk&#39;)
+    None
+    &gt;&gt;&gt; re.match(r&#39;From\s+&#39;, &#39;From amk Thu May 14 19:12:10 1998&#39;)
+<span class="gd">-   &lt;re.MatchObject instance at 80c5978&gt;</span>
+<span class="gi">+   &lt;_sre.SRE_Match object at 0x...&gt;</span>
+ 
+ Under the hood, these functions simply create a pattern object for you
+ and call the appropriate method on it.  They also store the compiled object in a
+<span class="gu">@@ -686,7 +688,7 @@</span>
+    line, the RE to use is ``^From``. ::
+ 
+       &gt;&gt;&gt; print re.search(&#39;^From&#39;, &#39;From Here to Eternity&#39;)
+<span class="gd">-      &lt;re.MatchObject instance at 80c1520&gt;</span>
+<span class="gi">+      &lt;_sre.SRE_Match object at 0x...&gt;</span>
+       &gt;&gt;&gt; print re.search(&#39;^From&#39;, &#39;Reciting From Memory&#39;)
+       None
+ 
+<span class="gu">@@ -698,11 +700,11 @@</span>
+    or any location followed by a newline character.     ::
+ 
+       &gt;&gt;&gt; print re.search(&#39;}$&#39;, &#39;{block}&#39;)
+<span class="gd">-      &lt;re.MatchObject instance at 80adfa8&gt;</span>
+<span class="gi">+      &lt;_sre.SRE_Match object at 0x...&gt;</span>
+       &gt;&gt;&gt; print re.search(&#39;}$&#39;, &#39;{block} &#39;)
+       None
+       &gt;&gt;&gt; print re.search(&#39;}$&#39;, &#39;{block}\n&#39;)
+<span class="gd">-      &lt;re.MatchObject instance at 80adfa8&gt;</span>
+<span class="gi">+      &lt;_sre.SRE_Match object at 0x...&gt;</span>
+ 
+    To match a literal ``&#39;$&#39;``, use ``\$`` or enclose it inside a character class,
+    as in  ``[$]``.
+<span class="gu">@@ -727,7 +729,7 @@</span>
+ 
+       &gt;&gt;&gt; p = re.compile(r&#39;\bclass\b&#39;)
+       &gt;&gt;&gt; print p.search(&#39;no class at all&#39;)
+<span class="gd">-      &lt;re.MatchObject instance at 80c8f28&gt;</span>
+<span class="gi">+      &lt;_sre.SRE_Match object at 0x...&gt;</span>
+       &gt;&gt;&gt; print p.search(&#39;the declassified algorithm&#39;)
+       None
+       &gt;&gt;&gt; print p.search(&#39;one subclass is&#39;)
+<span class="gu">@@ -745,7 +747,7 @@</span>
+       &gt;&gt;&gt; print p.search(&#39;no class at all&#39;)
+       None
+       &gt;&gt;&gt; print p.search(&#39;\b&#39; + &#39;class&#39; + &#39;\b&#39;)
+<span class="gd">-      &lt;re.MatchObject instance at 80c3ee0&gt;</span>
+<span class="gi">+      &lt;_sre.SRE_Match object at 0x...&gt;</span>
+ 
+    Second, inside a character class, where there&#39;s no use for this assertion,
+    ``\b`` represents the backspace character, for compatibility with Python&#39;s
+<span class="gu">@@ -1315,7 +1317,7 @@</span>
+ be *very* complicated.  Use an HTML or XML parser module for such tasks.)
+ 
+ 
+<span class="gd">-Not Using re.VERBOSE</span>
+<span class="gi">+Using re.VERBOSE</span>
+ --------------------
+ 
+ By now you&#39;ve probably noticed that regular expressions are a very compact
+</pre></div>
+
+</body>
+</html>

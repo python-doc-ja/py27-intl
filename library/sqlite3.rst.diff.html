@@ -1,0 +1,183 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/sqlite3.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -83,7 +83,7 @@</span>
+    &gt;&gt;&gt; for row in c:
+    ...    print row
+    ...
+<span class="gd">-   (u&#39;2006-01-05&#39;, u&#39;BUY&#39;, u&#39;RHAT&#39;, 100, 35.140000000000001)</span>
+<span class="gi">+   (u&#39;2006-01-05&#39;, u&#39;BUY&#39;, u&#39;RHAT&#39;, 100, 35.14)</span>
+    (u&#39;2006-03-28&#39;, u&#39;BUY&#39;, u&#39;IBM&#39;, 1000, 45.0)
+    (u&#39;2006-04-06&#39;, u&#39;SELL&#39;, u&#39;IBM&#39;, 500, 53.0)
+    (u&#39;2006-04-05&#39;, u&#39;BUY&#39;, u&#39;MSOFT&#39;, 1000, 72.0)
+<span class="gu">@@ -138,7 +138,7 @@</span>
+    first blank for the column name: the column name would simply be &quot;x&quot;.
+ 
+ 
+<span class="gd">-.. function:: connect(database[, timeout, isolation_level, detect_types, factory])</span>
+<span class="gi">+.. function:: connect(database[, timeout, detect_types, isolation_level, check_same_thread, factory, cached_statements])</span>
+ 
+    Opens a connection to the SQLite database file *database*. You can use
+    ``&quot;:memory:&quot;`` to open a database connection to a database that resides in RAM
+<span class="gu">@@ -258,22 +258,21 @@</span>
+ .. method:: Connection.execute(sql, [parameters])
+ 
+    This is a nonstandard shortcut that creates an intermediate cursor object by
+<span class="gd">-   calling the cursor method, then calls the cursor&#39;s</span>
+<span class="gd">-   :meth:`execute&lt;Cursor.execute&gt;` method with the parameters given.</span>
+<span class="gi">+   calling the cursor method, then calls the cursor&#39;s :meth:`execute</span>
+<span class="gi">+   &lt;Cursor.execute&gt;` method with the parameters given.</span>
+ 
+ 
+ .. method:: Connection.executemany(sql, [parameters])
+ 
+    This is a nonstandard shortcut that creates an intermediate cursor object by
+<span class="gd">-   calling the cursor method, then calls the cursor&#39;s</span>
+<span class="gd">-   :meth:`executemany&lt;Cursor.executemany&gt;` method with the parameters given.</span>
+<span class="gi">+   calling the cursor method, then calls the cursor&#39;s :meth:`executemany</span>
+<span class="gi">+   &lt;Cursor.executemany&gt;` method with the parameters given.</span>
+ 
+ .. method:: Connection.executescript(sql_script)
+ 
+    This is a nonstandard shortcut that creates an intermediate cursor object by
+<span class="gd">-   calling the cursor method, then calls the cursor&#39;s</span>
+<span class="gd">-   :meth:`executescript&lt;Cursor.executescript&gt;` method with the parameters</span>
+<span class="gd">-   given.</span>
+<span class="gi">+   calling the cursor method, then calls the cursor&#39;s :meth:`executescript</span>
+<span class="gi">+   &lt;Cursor.executescript&gt;` method with the parameters given.</span>
+ 
+ 
+ .. method:: Connection.create_function(name, num_params, func)
+<span class="gu">@@ -368,6 +367,25 @@</span>
+    method with :const:`None` for *handler*.
+ 
+ 
+<span class="gi">+.. method:: Connection.enable_load_extension(enabled)</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   This routine allows/disallows the SQLite engine to load SQLite extensions</span>
+<span class="gi">+   from shared libraries.  SQLite extensions can define new functions,</span>
+<span class="gi">+   aggregates or whole new virtual table implementations.  One well-known</span>
+<span class="gi">+   extension is the fulltext-search extension distributed with SQLite.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. literalinclude:: ../includes/sqlite3/load_extension.py</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: Connection.load_extension(path)</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   This routine loads a SQLite extension from a shared library.  You have to</span>
+<span class="gi">+   enable extension loading with :meth:`enable_load_extension` before you can</span>
+<span class="gi">+   use this routine.</span>
+<span class="gi">+</span>
+ .. attribute:: Connection.row_factory
+ 
+    You can change this attribute to a callable that accepts the cursor and the
+<span class="gu">@@ -441,7 +459,7 @@</span>
+ 
+ .. class:: Cursor
+ 
+<span class="gd">-   A SQLite database cursor has the following attributes and methods:</span>
+<span class="gi">+   A :class:`Cursor` instance has the following attributes and methods.</span>
+ 
+ .. method:: Cursor.execute(sql, [parameters])
+ 
+<span class="gu">@@ -602,7 +620,7 @@</span>
+     &gt;&gt;&gt; type(r)
+     &lt;type &#39;sqlite3.Row&#39;&gt;
+     &gt;&gt;&gt; r
+<span class="gd">-    (u&#39;2006-01-05&#39;, u&#39;BUY&#39;, u&#39;RHAT&#39;, 100.0, 35.140000000000001)</span>
+<span class="gi">+    (u&#39;2006-01-05&#39;, u&#39;BUY&#39;, u&#39;RHAT&#39;, 100.0, 35.14)</span>
+     &gt;&gt;&gt; len(r)
+     5
+     &gt;&gt;&gt; r[2]
+<span class="gu">@@ -861,3 +879,17 @@</span>
+ committed:
+ 
+ .. literalinclude:: ../includes/sqlite3/ctx_manager.py
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Common issues</span>
+<span class="gi">+-------------</span>
+<span class="gi">+</span>
+<span class="gi">+Multithreading</span>
+<span class="gi">+^^^^^^^^^^^^^^</span>
+<span class="gi">+</span>
+<span class="gi">+Older SQLite versions had issues with sharing connections between threads.</span>
+<span class="gi">+That&#39;s why the Python module disallows sharing connections and cursors between</span>
+<span class="gi">+threads. If you still try to do so, you will get an exception at runtime.</span>
+<span class="gi">+</span>
+<span class="gi">+The only exception is calling the :meth:`~Connection.interrupt` method, which</span>
+<span class="gi">+only makes sense to call from a different thread.</span>
+</pre></div>
+
+</body>
+</html>

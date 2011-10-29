@@ -1,0 +1,891 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/io.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -6,16 +6,30 @@</span>
+ .. moduleauthor:: Guido van Rossum &lt;guido@python.org&gt;
+ .. moduleauthor:: Mike Verdone &lt;mike.verdone@gmail.com&gt;
+ .. moduleauthor:: Mark Russell &lt;mark.russell@zen.co.uk&gt;
+<span class="gi">+.. moduleauthor:: Antoine Pitrou &lt;solipsis@pitrou.net&gt;</span>
+<span class="gi">+.. moduleauthor:: Amaury Forgeot d&#39;Arc &lt;amauryfa@gmail.com&gt;</span>
+<span class="gi">+.. moduleauthor:: Benjamin Peterson &lt;benjamin@python.org&gt;</span>
+ .. sectionauthor:: Benjamin Peterson &lt;benjamin@python.org&gt;
+<span class="gi">+</span>
+ .. versionadded:: 2.6
+ 
+<span class="gd">-The :mod:`io` module provides the Python interfaces to stream handling.  The</span>
+<span class="gd">-built-in :func:`open` function is defined in this module.</span>
+<span class="gi">+The :mod:`io` module provides the Python interfaces to stream handling.</span>
+<span class="gi">+Under Python 2.x, this is proposed as an alternative to the built-in</span>
+<span class="gi">+:class:`file` object, but in Python 3.x it is the default interface to</span>
+<span class="gi">+access files and streams.</span>
+<span class="gi">+</span>
+<span class="gi">+.. note::</span>
+<span class="gi">+</span>
+<span class="gi">+   Since this module has been designed primarily for Python 3.x, you have to</span>
+<span class="gi">+   be aware that all uses of &quot;bytes&quot; in this document refer to the</span>
+<span class="gi">+   :class:`str` type (of which :class:`bytes` is an alias), and all uses</span>
+<span class="gi">+   of &quot;text&quot; refer to the :class:`unicode` type.  Furthermore, those two</span>
+<span class="gi">+   types are not interchangeable in the :mod:`io` APIs.</span>
+ 
+ At the top of the I/O hierarchy is the abstract base class :class:`IOBase`.  It
+ defines the basic interface to a stream.  Note, however, that there is no
+ separation between reading and writing to streams; implementations are allowed
+<span class="gd">-to throw an :exc:`IOError` if they do not support a given operation.</span>
+<span class="gi">+to raise an :exc:`IOError` if they do not support a given operation.</span>
+ 
+ Extending :class:`IOBase` is :class:`RawIOBase` which deals simply with the
+ reading and writing of raw bytes to a stream.  :class:`FileIO` subclasses
+<span class="gu">@@ -31,10 +45,10 @@</span>
+ 
+ Another :class:`IOBase` subclass, :class:`TextIOBase`, deals with
+ streams whose bytes represent text, and handles encoding and decoding
+<span class="gd">-from and to strings. :class:`TextIOWrapper`, which extends it, is a</span>
+<span class="gd">-buffered text interface to a buffered raw stream</span>
+<span class="gi">+from and to :class:`unicode` strings.  :class:`TextIOWrapper`, which extends</span>
+<span class="gi">+it, is a buffered text interface to a buffered raw stream</span>
+ (:class:`BufferedIOBase`). Finally, :class:`StringIO` is an in-memory
+<span class="gd">-stream for text.</span>
+<span class="gi">+stream for unicode text.</span>
+ 
+ Argument names are not part of the specification, and only the arguments of
+ :func:`.open` are intended to be used as keyword arguments.
+<span class="gu">@@ -49,16 +63,16 @@</span>
+    classes.  :func:`.open` uses the file&#39;s blksize (as obtained by
+    :func:`os.stat`) if possible.
+ 
+<span class="gd">-.. function:: open(file[, mode[, buffering[, encoding[, errors[, newline[, closefd=True]]]]]])</span>
+<span class="gi">+.. function:: open(file, mode=&#39;r&#39;, buffering=-1, encoding=None, errors=None, newline=None, closefd=True)</span>
+ 
+<span class="gd">-   Open *file* and return a stream.  If the file cannot be opened, an</span>
+<span class="gd">-   :exc:`IOError` is raised.</span>
+<span class="gi">+   Open *file* and return a corresponding stream.  If the file cannot be opened,</span>
+<span class="gi">+   an :exc:`IOError` is raised.</span>
+ 
+<span class="gd">-   *file* is either a string giving the name (and the path if the file isn&#39;t in</span>
+<span class="gd">-   the current working directory) of the file to be opened or a file</span>
+<span class="gd">-   descriptor of the file to be opened.  (If a file descriptor is given,</span>
+<span class="gd">-   for example, from :func:`os.fdopen`, it is closed when the returned</span>
+<span class="gd">-   I/O object is closed, unless *closefd* is set to ``False``.)</span>
+<span class="gi">+   *file* is either a string giving the pathname (absolute or</span>
+<span class="gi">+   relative to the current working directory) of the file to be opened or</span>
+<span class="gi">+   an integer file descriptor of the file to be wrapped.  (If a file descriptor</span>
+<span class="gi">+   is given, it is closed when the returned I/O object is closed, unless</span>
+<span class="gi">+   *closefd* is set to ``False``.)</span>
+ 
+    *mode* is an optional string that specifies the mode in which the file is
+    opened.  It defaults to ``&#39;r&#39;`` which means open for reading in text mode.
+<span class="gu">@@ -88,11 +102,11 @@</span>
+ 
+    Python distinguishes between files opened in binary and text modes, even when
+    the underlying operating system doesn&#39;t.  Files opened in binary mode
+<span class="gd">-   (including ``&#39;b&#39;`` in the *mode* argument) return contents as ``bytes``</span>
+<span class="gi">+   (including ``&#39;b&#39;`` in the *mode* argument) return contents as :class:`bytes`</span>
+    objects without any decoding.  In text mode (the default, or when ``&#39;t&#39;`` is
+    included in the *mode* argument), the contents of the file are returned as
+<span class="gd">-   strings, the bytes having been first decoded using a platform-dependent</span>
+<span class="gd">-   encoding or using the specified *encoding* if given.</span>
+<span class="gi">+   :class:`unicode` strings, the bytes having been first decoded using a</span>
+<span class="gi">+   platform-dependent encoding or using the specified *encoding* if given.</span>
+ 
+    *buffering* is an optional integer used to set the buffering policy.
+    Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
+<span class="gu">@@ -111,19 +125,21 @@</span>
+ 
+    *encoding* is the name of the encoding used to decode or encode the file.
+    This should only be used in text mode.  The default encoding is platform
+<span class="gd">-   dependent, but any encoding supported by Python can be used.  See the</span>
+<span class="gd">-   :mod:`codecs` module for the list of supported encodings.</span>
+<span class="gi">+   dependent (whatever :func:`locale.getpreferredencoding` returns), but any</span>
+<span class="gi">+   encoding supported by Python can be used.  See the :mod:`codecs` module for</span>
+<span class="gi">+   the list of supported encodings.</span>
+ 
+    *errors* is an optional string that specifies how encoding and decoding
+<span class="gd">-   errors are to be handled.  Pass ``&#39;strict&#39;`` to raise a :exc:`ValueError`</span>
+<span class="gd">-   exception if there is an encoding error (the default of ``None`` has the same</span>
+<span class="gd">-   effect), or pass ``&#39;ignore&#39;`` to ignore errors.  (Note that ignoring encoding</span>
+<span class="gd">-   errors can lead to data loss.)  ``&#39;replace&#39;`` causes a replacement marker</span>
+<span class="gd">-   (such as ``&#39;?&#39;``) to be inserted where there is malformed data.  When</span>
+<span class="gd">-   writing, ``&#39;xmlcharrefreplace&#39;`` (replace with the appropriate XML character</span>
+<span class="gd">-   reference) or ``&#39;backslashreplace&#39;`` (replace with backslashed escape</span>
+<span class="gd">-   sequences) can be used.  Any other error handling name that has been</span>
+<span class="gd">-   registered with :func:`codecs.register_error` is also valid.</span>
+<span class="gi">+   errors are to be handled--this cannot be used in binary mode.  Pass</span>
+<span class="gi">+   ``&#39;strict&#39;`` to raise a :exc:`ValueError` exception if there is an encoding</span>
+<span class="gi">+   error (the default of ``None`` has the same effect), or pass ``&#39;ignore&#39;`` to</span>
+<span class="gi">+   ignore errors.  (Note that ignoring encoding errors can lead to data loss.)</span>
+<span class="gi">+   ``&#39;replace&#39;`` causes a replacement marker (such as ``&#39;?&#39;``) to be inserted</span>
+<span class="gi">+   where there is malformed data.  When writing, ``&#39;xmlcharrefreplace&#39;``</span>
+<span class="gi">+   (replace with the appropriate XML character reference) or</span>
+<span class="gi">+   ``&#39;backslashreplace&#39;`` (replace with backslashed escape sequences) can be</span>
+<span class="gi">+   used.  Any other error handling name that has been registered with</span>
+<span class="gi">+   :func:`codecs.register_error` is also valid.</span>
+ 
+    *newline* controls how universal newlines works (it only applies to text
+    mode).  It can be ``None``, ``&#39;&#39;``, ``&#39;\n&#39;``, ``&#39;\r&#39;``, and ``&#39;\r\n&#39;``.  It
+<span class="gu">@@ -143,23 +159,26 @@</span>
+      the other legal values, any ``&#39;\n&#39;`` characters written are translated to
+      the given string.
+ 
+<span class="gd">-   If *closefd* is ``False`` and a file descriptor rather than a</span>
+<span class="gd">-   filename was given, the underlying file descriptor will be kept open</span>
+<span class="gd">-   when the file is closed.  If a filename is given *closefd* has no</span>
+<span class="gd">-   effect but must be ``True`` (the default).</span>
+<span class="gi">+   If *closefd* is ``False`` and a file descriptor rather than a filename was</span>
+<span class="gi">+   given, the underlying file descriptor will be kept open when the file is</span>
+<span class="gi">+   closed.  If a filename is given *closefd* has no effect and must be ``True``</span>
+<span class="gi">+   (the default).</span>
+ 
+<span class="gd">-   The type of file object returned by the :func:`.open` function depends</span>
+<span class="gd">-   on the mode.  When :func:`.open` is used to open a file in a text mode</span>
+<span class="gd">-   (``&#39;w&#39;``, ``&#39;r&#39;``, ``&#39;wt&#39;``, ``&#39;rt&#39;``, etc.), it returns a</span>
+<span class="gd">-   :class:`TextIOWrapper`. When used to open a file in a binary mode,</span>
+<span class="gd">-   the returned class varies: in read binary mode, it returns a</span>
+<span class="gd">-   :class:`BufferedReader`; in write binary and append binary modes, it</span>
+<span class="gd">-   returns a :class:`BufferedWriter`, and in read/write mode, it returns</span>
+<span class="gd">-   a :class:`BufferedRandom`.</span>
+<span class="gi">+   The type of file object returned by the :func:`.open` function depends on the</span>
+<span class="gi">+   mode.  When :func:`.open` is used to open a file in a text mode (``&#39;w&#39;``,</span>
+<span class="gi">+   ``&#39;r&#39;``, ``&#39;wt&#39;``, ``&#39;rt&#39;``, etc.), it returns a subclass of</span>
+<span class="gi">+   :class:`TextIOBase` (specifically :class:`TextIOWrapper`).  When used to open</span>
+<span class="gi">+   a file in a binary mode with buffering, the returned class is a subclass of</span>
+<span class="gi">+   :class:`BufferedIOBase`.  The exact class varies: in read binary mode, it</span>
+<span class="gi">+   returns a :class:`BufferedReader`; in write binary and append binary modes,</span>
+<span class="gi">+   it returns a :class:`BufferedWriter`, and in read/write mode, it returns a</span>
+<span class="gi">+   :class:`BufferedRandom`.  When buffering is disabled, the raw stream, a</span>
+<span class="gi">+   subclass of :class:`RawIOBase`, :class:`FileIO`, is returned.</span>
+ 
+<span class="gd">-   It is also possible to use a string or bytearray as a file for both reading</span>
+<span class="gd">-   and writing.  For strings :class:`StringIO` can be used like a file opened in</span>
+<span class="gd">-   a text mode, and for bytearrays a :class:`BytesIO` can be used like a</span>
+<span class="gi">+   It is also possible to use an :class:`unicode` or :class:`bytes` string</span>
+<span class="gi">+   as a file for both reading and writing.  For :class:`unicode` strings</span>
+<span class="gi">+   :class:`StringIO` can be used like a file opened in text mode,</span>
+<span class="gi">+   and for :class:`bytes` a :class:`BytesIO` can be used like a</span>
+    file opened in a binary mode.
+ 
+ 
+<span class="gu">@@ -203,22 +222,25 @@</span>
+    support are called.
+ 
+    The basic type used for binary data read from or written to a file is
+<span class="gd">-   :class:`bytes`.  :class:`bytearray`\s are accepted too, and in some cases</span>
+<span class="gd">-   (such as :class:`readinto`) required.  Text I/O classes work with</span>
+<span class="gd">-   :class:`str` data.</span>
+<span class="gi">+   :class:`bytes` (also known as :class:`str`).  :class:`bytearray`\s are</span>
+<span class="gi">+   accepted too, and in some cases (such as :class:`readinto`) required.</span>
+<span class="gi">+   Text I/O classes work with :class:`unicode` data.</span>
+ 
+    Note that calling any method (even inquiries) on a closed stream is
+    undefined.  Implementations may raise :exc:`IOError` in this case.
+ 
+    IOBase (and its subclasses) support the iterator protocol, meaning that an
+    :class:`IOBase` object can be iterated over yielding the lines in a stream.
+<span class="gi">+   Lines are defined slightly differently depending on whether the stream is</span>
+<span class="gi">+   a binary stream (yielding :class:`bytes`), or a text stream (yielding</span>
+<span class="gi">+   :class:`unicode` strings).  See :meth:`readline` below.</span>
+ 
+    IOBase is also a context manager and therefore supports the
+    :keyword:`with` statement.  In this example, *file* is closed after the
+    :keyword:`with` statement&#39;s suite is finished---even if an exception occurs::
+ 
+<span class="gd">-      with open(&#39;spam.txt&#39;, &#39;w&#39;) as file:</span>
+<span class="gd">-          file.write(&#39;Spam and eggs!&#39;)</span>
+<span class="gi">+      with io.open(&#39;spam.txt&#39;, &#39;w&#39;) as file:</span>
+<span class="gi">+          file.write(u&#39;Spam and eggs!&#39;)</span>
+ 
+    :class:`IOBase` provides these data attributes and methods:
+ 
+<span class="gu">@@ -226,7 +248,7 @@</span>
+ 
+       Flush and close this stream. This method has no effect if the file is
+       already closed. Once the file is closed, any operation on the file
+<span class="gd">-      (e.g. reading or writing) will raise an :exc:`ValueError`.</span>
+<span class="gi">+      (e.g. reading or writing) will raise a :exc:`ValueError`.</span>
+ 
+       As a convenience, it is allowed to call this method more than once;
+       only the first call, however, will have an effect.
+<span class="gu">@@ -256,7 +278,7 @@</span>
+       Return ``True`` if the stream can be read from.  If False, :meth:`read`
+       will raise :exc:`IOError`.
+ 
+<span class="gd">-   .. method:: readline([limit])</span>
+<span class="gi">+   .. method:: readline(limit=-1)</span>
+ 
+       Read and return one line from the stream.  If *limit* is specified, at
+       most *limit* bytes will be read.
+<span class="gu">@@ -265,24 +287,30 @@</span>
+       the *newlines* argument to :func:`.open` can be used to select the line
+       terminator(s) recognized.
+ 
+<span class="gd">-   .. method:: readlines([hint])</span>
+<span class="gi">+   .. method:: readlines(hint=-1)</span>
+ 
+       Read and return a list of lines from the stream.  *hint* can be specified
+       to control the number of lines read: no more lines will be read if the
+       total size (in bytes/characters) of all lines so far exceeds *hint*.
+ 
+<span class="gd">-   .. method:: seek(offset[, whence])</span>
+<span class="gi">+   .. method:: seek(offset, whence=SEEK_SET)</span>
+ 
+       Change the stream position to the given byte *offset*.  *offset* is
+       interpreted relative to the position indicated by *whence*.  Values for
+       *whence* are:
+ 
+<span class="gd">-      * ``0`` -- start of the stream (the default); *offset* should be zero or positive</span>
+<span class="gd">-      * ``1`` -- current stream position; *offset* may be negative</span>
+<span class="gd">-      * ``2`` -- end of the stream; *offset* is usually negative</span>
+<span class="gi">+      * :data:`SEEK_SET` or ``0`` -- start of the stream (the default);</span>
+<span class="gi">+        *offset* should be zero or positive</span>
+<span class="gi">+      * :data:`SEEK_CUR` or ``1`` -- current stream position; *offset* may</span>
+<span class="gi">+        be negative</span>
+<span class="gi">+      * :data:`SEEK_END` or ``2`` -- end of the stream; *offset* is usually</span>
+<span class="gi">+        negative</span>
+ 
+       Return the new absolute position.
+ 
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+         The ``SEEK_*`` constants</span>
+<span class="gi">+</span>
+    .. method:: seekable()
+ 
+       Return ``True`` if the stream supports random access.  If ``False``,
+<span class="gu">@@ -292,7 +320,7 @@</span>
+ 
+       Return the current stream position.
+ 
+<span class="gd">-   .. method:: truncate([size])</span>
+<span class="gi">+   .. method:: truncate(size=None)</span>
+ 
+       Resize the stream to the given *size* in bytes (or the current position
+       if *size* is not specified).  The current stream position isn&#39;t changed.
+<span class="gu">@@ -318,15 +346,23 @@</span>
+    Base class for raw binary I/O.  It inherits :class:`IOBase`.  There is no
+    public constructor.
+ 
+<span class="gi">+   Raw binary I/O typically provides low-level access to an underlying OS</span>
+<span class="gi">+   device or API, and does not try to encapsulate it in high-level primitives</span>
+<span class="gi">+   (this is left to Buffered I/O and Text I/O, described later in this page).</span>
+<span class="gi">+</span>
+    In addition to the attributes and methods from :class:`IOBase`,
+    RawIOBase provides the following methods:
+ 
+<span class="gd">-   .. method:: read([n])</span>
+<span class="gi">+   .. method:: read(n=-1)</span>
+ 
+<span class="gd">-      Read and return all the bytes from the stream until EOF, or if *n* is</span>
+<span class="gd">-      specified, up to *n* bytes.  Only one system call is ever made.  An empty</span>
+<span class="gd">-      bytes object is returned on EOF; ``None`` is returned if the object is set</span>
+<span class="gd">-      not to block and has no data to read.</span>
+<span class="gi">+      Read up to *n* bytes from the object and return them.  As a convenience,</span>
+<span class="gi">+      if *n* is unspecified or -1, :meth:`readall` is called.  Otherwise,</span>
+<span class="gi">+      only one system call is ever made.  Fewer than *n* bytes may be</span>
+<span class="gi">+      returned if the operating system call returns fewer than *n* bytes.</span>
+<span class="gi">+</span>
+<span class="gi">+      If 0 bytes are returned, and *n* was not 0, this indicates end of file.</span>
+<span class="gi">+      If the object is in non-blocking mode and no bytes are available,</span>
+<span class="gi">+      ``None`` is returned.</span>
+ 
+    .. method:: readall()
+ 
+<span class="gu">@@ -335,38 +371,65 @@</span>
+ 
+    .. method:: readinto(b)
+ 
+<span class="gd">-      Read up to len(b) bytes into bytearray *b* and return the number of bytes</span>
+<span class="gd">-      read.</span>
+<span class="gi">+      Read up to len(b) bytes into bytearray *b* and return the number</span>
+<span class="gi">+      of bytes read.  If the object is in non-blocking mode and no</span>
+<span class="gi">+      bytes are available, ``None`` is returned.</span>
+ 
+    .. method:: write(b)
+ 
+       Write the given bytes or bytearray object, *b*, to the underlying raw
+<span class="gd">-      stream and return the number of bytes written (This is never less than</span>
+<span class="gd">-      ``len(b)``, since if the write fails, an :exc:`IOError` will be raised).</span>
+<span class="gi">+      stream and return the number of bytes written.  This can be less than</span>
+<span class="gi">+      ``len(b)``, depending on specifics of the underlying raw stream, and</span>
+<span class="gi">+      especially if it is in non-blocking mode.  ``None`` is returned if the</span>
+<span class="gi">+      raw stream is set not to block and no single byte could be readily</span>
+<span class="gi">+      written to it.</span>
+ 
+ 
+ .. class:: BufferedIOBase
+ 
+<span class="gd">-   Base class for streams that support buffering.  It inherits :class:`IOBase`.</span>
+<span class="gd">-   There is no public constructor.</span>
+<span class="gi">+   Base class for binary streams that support some kind of buffering.</span>
+<span class="gi">+   It inherits :class:`IOBase`. There is no public constructor.</span>
+ 
+<span class="gd">-   The main difference with :class:`RawIOBase` is that the :meth:`read` method</span>
+<span class="gd">-   supports omitting the *size* argument, and does not have a default</span>
+<span class="gi">+   The main difference with :class:`RawIOBase` is that methods :meth:`read`,</span>
+<span class="gi">+   :meth:`readinto` and :meth:`write` will try (respectively) to read as much</span>
+<span class="gi">+   input as requested or to consume all given output, at the expense of</span>
+<span class="gi">+   making perhaps more than one system call.</span>
+<span class="gi">+</span>
+<span class="gi">+   In addition, those methods can raise :exc:`BlockingIOError` if the</span>
+<span class="gi">+   underlying raw stream is in non-blocking mode and cannot take or give</span>
+<span class="gi">+   enough data; unlike their :class:`RawIOBase` counterparts, they will</span>
+<span class="gi">+   never return ``None``.</span>
+<span class="gi">+</span>
+<span class="gi">+   Besides, the :meth:`read` method does not have a default</span>
+    implementation that defers to :meth:`readinto`.
+ 
+<span class="gd">-   In addition, :meth:`read`, :meth:`readinto`, and :meth:`write` may raise</span>
+<span class="gd">-   :exc:`BlockingIOError` if the underlying raw stream is in non-blocking mode</span>
+<span class="gd">-   and not ready; unlike their raw counterparts, they will never return</span>
+<span class="gd">-   ``None``.</span>
+<span class="gi">+   A typical :class:`BufferedIOBase` implementation should not inherit from a</span>
+<span class="gi">+   :class:`RawIOBase` implementation, but wrap one, like</span>
+<span class="gi">+   :class:`BufferedWriter` and :class:`BufferedReader` do.</span>
+ 
+<span class="gd">-   A typical implementation should not inherit from a :class:`RawIOBase`</span>
+<span class="gd">-   implementation, but wrap one like :class:`BufferedWriter` and</span>
+<span class="gd">-   :class:`BufferedReader`.</span>
+<span class="gd">-</span>
+<span class="gd">-   :class:`BufferedIOBase` provides or overrides these methods in addition to</span>
+<span class="gi">+   :class:`BufferedIOBase` provides or overrides these members in addition to</span>
+    those from :class:`IOBase`:
+ 
+<span class="gd">-   .. method:: read([n])</span>
+<span class="gi">+   .. attribute:: raw</span>
+<span class="gi">+</span>
+<span class="gi">+      The underlying raw stream (a :class:`RawIOBase` instance) that</span>
+<span class="gi">+      :class:`BufferedIOBase` deals with.  This is not part of the</span>
+<span class="gi">+      :class:`BufferedIOBase` API and may not exist on some implementations.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: detach()</span>
+<span class="gi">+</span>
+<span class="gi">+      Separate the underlying raw stream from the buffer and return it.</span>
+<span class="gi">+</span>
+<span class="gi">+      After the raw stream has been detached, the buffer is in an unusable</span>
+<span class="gi">+      state.</span>
+<span class="gi">+</span>
+<span class="gi">+      Some buffers, like :class:`BytesIO`, do not have the concept of a single</span>
+<span class="gi">+      raw stream to return from this method.  They raise</span>
+<span class="gi">+      :exc:`UnsupportedOperation`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: read(n=-1)</span>
+ 
+       Read and return up to *n* bytes.  If the argument is omitted, ``None``, or
+       negative, data is read and returned until EOF is reached.  An empty bytes
+<span class="gu">@@ -378,8 +441,15 @@</span>
+       one raw read will be issued, and a short result does not imply that EOF is
+       imminent.
+ 
+<span class="gd">-      A :exc:`BlockingIOError` is raised if the underlying raw stream has no</span>
+<span class="gd">-      data at the moment.</span>
+<span class="gi">+      A :exc:`BlockingIOError` is raised if the underlying raw stream is in</span>
+<span class="gi">+      non blocking-mode, and has no data available at the moment.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: read1(n=-1)</span>
+<span class="gi">+</span>
+<span class="gi">+      Read and return up to *n* bytes, with at most one call to the underlying</span>
+<span class="gi">+      raw stream&#39;s :meth:`~RawIOBase.read` method.  This can be useful if you</span>
+<span class="gi">+      are implementing your own buffering on top of a :class:`BufferedIOBase`</span>
+<span class="gi">+      object.</span>
+ 
+    .. method:: readinto(b)
+ 
+<span class="gu">@@ -387,35 +457,47 @@</span>
+       read.
+ 
+       Like :meth:`read`, multiple reads may be issued to the underlying raw
+<span class="gd">-      stream, unless the latter is &#39;interactive.&#39;</span>
+<span class="gi">+      stream, unless the latter is &#39;interactive&#39;.</span>
+ 
+<span class="gd">-      A :exc:`BlockingIOError` is raised if the underlying raw stream has no</span>
+<span class="gd">-      data at the moment.</span>
+<span class="gi">+      A :exc:`BlockingIOError` is raised if the underlying raw stream is in</span>
+<span class="gi">+      non blocking-mode, and has no data available at the moment.</span>
+ 
+    .. method:: write(b)
+ 
+<span class="gd">-      Write the given bytes or bytearray object, *b*, to the underlying raw</span>
+<span class="gd">-      stream and return the number of bytes written (never less than ``len(b)``,</span>
+<span class="gd">-      since if the write fails an :exc:`IOError` will be raised).</span>
+<span class="gi">+      Write the given bytes or bytearray object, *b* and return the number</span>
+<span class="gi">+      of bytes written (never less than ``len(b)``, since if the write fails</span>
+<span class="gi">+      an :exc:`IOError` will be raised).  Depending on the actual</span>
+<span class="gi">+      implementation, these bytes may be readily written to the underlying</span>
+<span class="gi">+      stream, or held in a buffer for performance and latency reasons.</span>
+ 
+<span class="gd">-      A :exc:`BlockingIOError` is raised if the buffer is full, and the</span>
+<span class="gd">-      underlying raw stream cannot accept more data at the moment.</span>
+<span class="gi">+      When in non-blocking mode, a :exc:`BlockingIOError` is raised if the</span>
+<span class="gi">+      data needed to be written to the raw stream but it couldn&#39;t accept</span>
+<span class="gi">+      all the data without blocking.</span>
+ 
+ 
+ Raw File I/O
+ ------------
+ 
+<span class="gd">-.. class:: FileIO(name[, mode])</span>
+<span class="gi">+.. class:: FileIO(name, mode=&#39;r&#39;, closefd=True)</span>
+ 
+<span class="gd">-   :class:`FileIO` represents a file containing bytes data.  It implements</span>
+<span class="gd">-   the :class:`RawIOBase` interface (and therefore the :class:`IOBase`</span>
+<span class="gd">-   interface, too).</span>
+<span class="gi">+   :class:`FileIO` represents an OS-level file containing bytes data.</span>
+<span class="gi">+   It implements the :class:`RawIOBase` interface (and therefore the</span>
+<span class="gi">+   :class:`IOBase` interface, too).</span>
+<span class="gi">+</span>
+<span class="gi">+   The *name* can be one of two things:</span>
+<span class="gi">+</span>
+<span class="gi">+   * a string representing the path to the file which will be opened;</span>
+<span class="gi">+   * an integer representing the number of an existing OS-level file descriptor</span>
+<span class="gi">+     to which the resulting :class:`FileIO` object will give access.</span>
+ 
+    The *mode* can be ``&#39;r&#39;``, ``&#39;w&#39;`` or ``&#39;a&#39;`` for reading (default), writing,
+    or appending.  The file will be created if it doesn&#39;t exist when opened for
+    writing or appending; it will be truncated when opened for writing.  Add a
+    ``&#39;+&#39;`` to the mode to allow simultaneous reading and writing.
+ 
+<span class="gi">+   The :meth:`read` (when called with a positive argument), :meth:`readinto`</span>
+<span class="gi">+   and :meth:`write` methods on this class will only make one system call.</span>
+<span class="gi">+</span>
+    In addition to the attributes and methods from :class:`IOBase` and
+    :class:`RawIOBase`, :class:`FileIO` provides the following data
+    attributes and methods:
+<span class="gu">@@ -429,38 +511,19 @@</span>
+       The file name.  This is the file descriptor of the file when no name is
+       given in the constructor.
+ 
+<span class="gd">-   .. method:: read([n])</span>
+<span class="gd">-</span>
+<span class="gd">-      Read and return at most *n* bytes.  Only one system call is made, so it is</span>
+<span class="gd">-      possible that less data than was requested is returned.  Use :func:`len`</span>
+<span class="gd">-      on the returned bytes object to see how many bytes were actually returned.</span>
+<span class="gd">-      (In non-blocking mode, ``None`` is returned when no data is available.)</span>
+<span class="gd">-</span>
+<span class="gd">-   .. method:: readall()</span>
+<span class="gd">-</span>
+<span class="gd">-      Read and return the entire file&#39;s contents in a single bytes object.  As</span>
+<span class="gd">-      much as immediately available is returned in non-blocking mode.  If the</span>
+<span class="gd">-      EOF has been reached, ``b&#39;&#39;`` is returned.</span>
+<span class="gd">-</span>
+<span class="gd">-   .. method:: write(b)</span>
+<span class="gd">-</span>
+<span class="gd">-      Write the bytes or bytearray object, *b*, to the file, and return</span>
+<span class="gd">-      the number actually written. Only one system call is made, so it</span>
+<span class="gd">-      is possible that only some of the data is written.</span>
+<span class="gd">-</span>
+<span class="gd">-   Note that the inherited ``readinto()`` method should not be used on</span>
+<span class="gd">-   :class:`FileIO` objects.</span>
+<span class="gd">-</span>
+ 
+ Buffered Streams
+ ----------------
+ 
+<span class="gi">+Buffered I/O streams provide a higher-level interface to an I/O device</span>
+<span class="gi">+than raw I/O does.</span>
+<span class="gi">+</span>
+ .. class:: BytesIO([initial_bytes])
+ 
+    A stream implementation using an in-memory bytes buffer.  It inherits
+    :class:`BufferedIOBase`.
+ 
+<span class="gd">-   The argument *initial_bytes* is an optional initial bytearray.</span>
+<span class="gi">+   The argument *initial_bytes* is an optional initial :class:`bytes`.</span>
+ 
+    :class:`BytesIO` provides or overrides these methods in addition to those
+    from :class:`BufferedIOBase` and :class:`IOBase`:
+<span class="gu">@@ -474,10 +537,13 @@</span>
+       In :class:`BytesIO`, this is the same as :meth:`read`.
+ 
+ 
+<span class="gd">-.. class:: BufferedReader(raw[, buffer_size])</span>
+<span class="gi">+.. class:: BufferedReader(raw, buffer_size=DEFAULT_BUFFER_SIZE)</span>
+ 
+<span class="gd">-   A buffer for a readable, sequential :class:`RawIOBase` object.  It inherits</span>
+<span class="gd">-   :class:`BufferedIOBase`.</span>
+<span class="gi">+   A buffer providing higher-level access to a readable, sequential</span>
+<span class="gi">+   :class:`RawIOBase` object.  It inherits :class:`BufferedIOBase`.</span>
+<span class="gi">+   When reading data from this object, a larger amount of data may be</span>
+<span class="gi">+   requested from the underlying raw stream, and kept in an internal buffer.</span>
+<span class="gi">+   The buffered data can then be returned directly on subsequent reads.</span>
+ 
+    The constructor creates a :class:`BufferedReader` for the given readable
+    *raw* stream and *buffer_size*.  If *buffer_size* is omitted,
+<span class="gu">@@ -488,11 +554,9 @@</span>
+ 
+    .. method:: peek([n])
+ 
+<span class="gd">-      Return 1 (or *n* if specified) bytes from a buffer without advancing the</span>
+<span class="gd">-      position.  Only a single read on the raw stream is done to satisfy the</span>
+<span class="gd">-      call. The number of bytes returned may be less than requested since at</span>
+<span class="gd">-      most all the buffer&#39;s bytes from the current position to the end are</span>
+<span class="gd">-      returned.</span>
+<span class="gi">+      Return bytes from the stream without advancing the position.  At most one</span>
+<span class="gi">+      single read on the raw stream is done to satisfy the call. The number of</span>
+<span class="gi">+      bytes returned may be less or more than requested.</span>
+ 
+    .. method:: read([n])
+ 
+<span class="gu">@@ -506,15 +570,24 @@</span>
+       Otherwise, one raw stream read call is made.
+ 
+ 
+<span class="gd">-.. class:: BufferedWriter(raw[, buffer_size[, max_buffer_size]])</span>
+<span class="gi">+.. class:: BufferedWriter(raw, buffer_size=DEFAULT_BUFFER_SIZE)</span>
+ 
+<span class="gd">-   A buffer for a writeable sequential RawIO object.  It inherits</span>
+<span class="gd">-   :class:`BufferedIOBase`.</span>
+<span class="gi">+   A buffer providing higher-level access to a writeable, sequential</span>
+<span class="gi">+   :class:`RawIOBase` object.  It inherits :class:`BufferedIOBase`.</span>
+<span class="gi">+   When writing to this object, data is normally held into an internal</span>
+<span class="gi">+   buffer.  The buffer will be written out to the underlying :class:`RawIOBase`</span>
+<span class="gi">+   object under various conditions, including:</span>
+<span class="gi">+</span>
+<span class="gi">+   * when the buffer gets too small for all pending data;</span>
+<span class="gi">+   * when :meth:`flush()` is called;</span>
+<span class="gi">+   * when a :meth:`seek()` is requested (for :class:`BufferedRandom` objects);</span>
+<span class="gi">+   * when the :class:`BufferedWriter` object is closed or destroyed.</span>
+ 
+    The constructor creates a :class:`BufferedWriter` for the given writeable
+    *raw* stream.  If the *buffer_size* is not given, it defaults to
+<span class="gd">-   :data:`DEAFULT_BUFFER_SIZE`.  If *max_buffer_size* is omitted, it defaults to</span>
+<span class="gd">-   twice the buffer size.</span>
+<span class="gi">+   :data:`DEFAULT_BUFFER_SIZE`.</span>
+<span class="gi">+</span>
+<span class="gi">+   A third argument, *max_buffer_size*, is supported, but unused and deprecated.</span>
+ 
+    :class:`BufferedWriter` provides or overrides these methods in addition to
+    those from :class:`BufferedIOBase` and :class:`IOBase`:
+<span class="gu">@@ -526,35 +599,41 @@</span>
+ 
+    .. method:: write(b)
+ 
+<span class="gd">-      Write the bytes or bytearray object, *b*, onto the raw stream and return</span>
+<span class="gd">-      the number of bytes written.  A :exc:`BlockingIOError` is raised when the</span>
+<span class="gd">-      raw stream blocks.</span>
+<span class="gi">+      Write the bytes or bytearray object, *b* and return the number of bytes</span>
+<span class="gi">+      written.  When in non-blocking mode, a :exc:`BlockingIOError` is raised</span>
+<span class="gi">+      if the buffer needs to be written out but the raw stream blocks.</span>
+ 
+ 
+<span class="gd">-.. class:: BufferedRWPair(reader, writer[, buffer_size[, max_buffer_size]])</span>
+<span class="gi">+.. class:: BufferedRWPair(reader, writer, buffer_size=DEFAULT_BUFFER_SIZE)</span>
+ 
+<span class="gd">-   A combined buffered writer and reader object for a raw stream that can be</span>
+<span class="gd">-   written to and read from.  It has and supports both :meth:`read`, :meth:`write`,</span>
+<span class="gd">-   and their variants.  This is useful for sockets and two-way pipes.</span>
+<span class="gd">-   It inherits :class:`BufferedIOBase`.</span>
+<span class="gi">+   A buffered I/O object giving a combined, higher-level access to two</span>
+<span class="gi">+   sequential :class:`RawIOBase` objects: one readable, the other writeable.</span>
+<span class="gi">+   It is useful for pairs of unidirectional communication channels</span>
+<span class="gi">+   (pipes, for instance).  It inherits :class:`BufferedIOBase`.</span>
+ 
+    *reader* and *writer* are :class:`RawIOBase` objects that are readable and
+    writeable respectively.  If the *buffer_size* is omitted it defaults to
+<span class="gd">-   :data:`DEFAULT_BUFFER_SIZE`.  The *max_buffer_size* (for the buffered writer)</span>
+<span class="gd">-   defaults to twice the buffer size.</span>
+<span class="gi">+   :data:`DEFAULT_BUFFER_SIZE`.</span>
+ 
+<span class="gd">-   :class:`BufferedRWPair` implements all of :class:`BufferedIOBase`\&#39;s methods.</span>
+<span class="gi">+   A fourth argument, *max_buffer_size*, is supported, but unused and</span>
+<span class="gi">+   deprecated.</span>
+ 
+<span class="gi">+   :class:`BufferedRWPair` implements all of :class:`BufferedIOBase`\&#39;s methods</span>
+<span class="gi">+   except for :meth:`~BufferedIOBase.detach`, which raises</span>
+<span class="gi">+   :exc:`UnsupportedOperation`.</span>
+ 
+<span class="gd">-.. class:: BufferedRandom(raw[, buffer_size[, max_buffer_size]])</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: BufferedRandom(raw, buffer_size=DEFAULT_BUFFER_SIZE)</span>
+ 
+    A buffered interface to random access streams.  It inherits
+<span class="gd">-   :class:`BufferedReader` and :class:`BufferedWriter`.</span>
+<span class="gi">+   :class:`BufferedReader` and :class:`BufferedWriter`, and further supports</span>
+<span class="gi">+   :meth:`seek` and :meth:`tell` functionality.</span>
+ 
+    The constructor creates a reader and writer for a seekable raw stream, given
+    in the first argument.  If the *buffer_size* is omitted it defaults to
+<span class="gd">-   :data:`DEFAULT_BUFFER_SIZE`.  The *max_buffer_size* (for the buffered writer)</span>
+<span class="gd">-   defaults to twice the buffer size.</span>
+<span class="gi">+   :data:`DEFAULT_BUFFER_SIZE`.</span>
+<span class="gi">+</span>
+<span class="gi">+   A third argument, *max_buffer_size*, is supported, but unused and deprecated.</span>
+ 
+    :class:`BufferedRandom` is capable of anything :class:`BufferedReader` or
+    :class:`BufferedWriter` can do.
+<span class="gu">@@ -565,10 +644,10 @@</span>
+ 
+ .. class:: TextIOBase
+ 
+<span class="gd">-   Base class for text streams.  This class provides a character and line based</span>
+<span class="gd">-   interface to stream I/O.  There is no :meth:`readinto` method because</span>
+<span class="gd">-   Python&#39;s character strings are immutable.  It inherits :class:`IOBase`.</span>
+<span class="gd">-   There is no public constructor.</span>
+<span class="gi">+   Base class for text streams.  This class provides an unicode character</span>
+<span class="gi">+   and line based interface to stream I/O.  There is no :meth:`readinto`</span>
+<span class="gi">+   method because Python&#39;s :class:`unicode` strings are immutable.</span>
+<span class="gi">+   It inherits :class:`IOBase`.  There is no public constructor.</span>
+ 
+    :class:`TextIOBase` provides or overrides these data attributes and
+    methods in addition to those from :class:`IOBase`:
+<span class="gu">@@ -578,30 +657,55 @@</span>
+       The name of the encoding used to decode the stream&#39;s bytes into
+       strings, and to encode strings into bytes.
+ 
+<span class="gi">+   .. attribute:: errors</span>
+<span class="gi">+</span>
+<span class="gi">+      The error setting of the decoder or encoder.</span>
+<span class="gi">+</span>
+    .. attribute:: newlines
+ 
+       A string, a tuple of strings, or ``None``, indicating the newlines
+<span class="gd">-      translated so far.</span>
+<span class="gi">+      translated so far.  Depending on the implementation and the initial</span>
+<span class="gi">+      constructor flags, this may not be available.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: buffer</span>
+<span class="gi">+</span>
+<span class="gi">+      The underlying binary buffer (a :class:`BufferedIOBase` instance) that</span>
+<span class="gi">+      :class:`TextIOBase` deals with.  This is not part of the</span>
+<span class="gi">+      :class:`TextIOBase` API and may not exist on some implementations.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: detach()</span>
+<span class="gi">+</span>
+<span class="gi">+      Separate the underlying binary buffer from the :class:`TextIOBase` and</span>
+<span class="gi">+      return it.</span>
+<span class="gi">+</span>
+<span class="gi">+      After the underlying buffer has been detached, the :class:`TextIOBase` is</span>
+<span class="gi">+      in an unusable state.</span>
+<span class="gi">+</span>
+<span class="gi">+      Some :class:`TextIOBase` implementations, like :class:`StringIO`, may not</span>
+<span class="gi">+      have the concept of an underlying buffer and calling this method will</span>
+<span class="gi">+      raise :exc:`UnsupportedOperation`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+ 
+    .. method:: read(n)
+ 
+       Read and return at most *n* characters from the stream as a single
+<span class="gd">-      :class:`str`.  If *n* is negative or ``None``, reads to EOF.</span>
+<span class="gi">+      :class:`unicode`.  If *n* is negative or ``None``, reads until EOF.</span>
+ 
+    .. method:: readline()
+ 
+<span class="gd">-      Read until newline or EOF and return a single ``str``.  If the stream is</span>
+<span class="gd">-      already at EOF, an empty string is returned.</span>
+<span class="gi">+      Read until newline or EOF and return a single ``unicode``.  If the</span>
+<span class="gi">+      stream is already at EOF, an empty string is returned.</span>
+ 
+    .. method:: write(s)
+ 
+<span class="gd">-      Write the string *s* to the stream and return the number of characters</span>
+<span class="gd">-      written.</span>
+<span class="gi">+      Write the :class:`unicode` string *s* to the stream and return the</span>
+<span class="gi">+      number of characters written.</span>
+ 
+ 
+<span class="gd">-.. class:: TextIOWrapper(buffer[, encoding[, errors[, newline[, line_buffering]]]])</span>
+<span class="gi">+.. class:: TextIOWrapper(buffer, encoding=None, errors=None, newline=None, line_buffering=False)</span>
+ 
+<span class="gd">-   A buffered text stream over a :class:`BufferedIOBase` raw stream, *buffer*.</span>
+<span class="gi">+   A buffered text stream over a :class:`BufferedIOBase` binary stream.</span>
+    It inherits :class:`TextIOBase`.
+ 
+    *encoding* gives the name of the encoding that the stream will be decoded or
+<span class="gu">@@ -630,32 +734,47 @@</span>
+    If *line_buffering* is ``True``, :meth:`flush` is implied when a call to
+    write contains a newline character.
+ 
+<span class="gd">-   :class:`TextIOWrapper` provides these data attributes in addition to those of</span>
+<span class="gi">+   :class:`TextIOWrapper` provides one attribute in addition to those of</span>
+    :class:`TextIOBase` and its parents:
+ 
+<span class="gd">-   .. attribute:: errors</span>
+<span class="gd">-</span>
+<span class="gd">-      The encoding and decoding error setting.</span>
+<span class="gd">-</span>
+    .. attribute:: line_buffering
+ 
+       Whether line buffering is enabled.
+ 
+ 
+<span class="gd">-.. class:: StringIO([initial_value[, encoding[, errors[, newline]]]])</span>
+<span class="gi">+.. class:: StringIO(initial_value=u&#39;&#39;, newline=None)</span>
+ 
+<span class="gd">-   An in-memory stream for text.  It inherits :class:`TextIOWrapper`.</span>
+<span class="gi">+   An in-memory stream for unicode text.  It inherits :class:`TextIOWrapper`.</span>
+ 
+<span class="gd">-   Create a new StringIO stream with an inital value, encoding, error handling,</span>
+<span class="gd">-   and newline setting.  See :class:`TextIOWrapper`\&#39;s constructor for more</span>
+<span class="gd">-   information.</span>
+<span class="gi">+   The initial value of the buffer (an empty unicode string by default) can</span>
+<span class="gi">+   be set by providing *initial_value*.  The *newline* argument works like</span>
+<span class="gi">+   that of :class:`TextIOWrapper`.  The default is to do no newline</span>
+<span class="gi">+   translation.</span>
+ 
+    :class:`StringIO` provides this method in addition to those from
+    :class:`TextIOWrapper` and its parents:
+ 
+    .. method:: getvalue()
+ 
+<span class="gd">-      Return a ``str`` containing the entire contents of the buffer.</span>
+<span class="gi">+      Return a ``unicode`` containing the entire contents of the buffer at any</span>
+<span class="gi">+      time before the :class:`StringIO` object&#39;s :meth:`close` method is</span>
+<span class="gi">+      called.</span>
+<span class="gi">+</span>
+<span class="gi">+   Example usage::</span>
+<span class="gi">+</span>
+<span class="gi">+      import io</span>
+<span class="gi">+</span>
+<span class="gi">+      output = io.StringIO()</span>
+<span class="gi">+      output.write(u&#39;First line.\n&#39;)</span>
+<span class="gi">+      output.write(u&#39;Second line.\n&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+      # Retrieve file contents -- this will be</span>
+<span class="gi">+      # u&#39;First line.\nSecond line.\n&#39;</span>
+<span class="gi">+      contents = output.getvalue()</span>
+<span class="gi">+</span>
+<span class="gi">+      # Close object and discard memory buffer --</span>
+<span class="gi">+      # .getvalue() will now raise an exception.</span>
+<span class="gi">+      output.close()</span>
+ 
+ 
+ .. class:: IncrementalNewlineDecoder
+<span class="gu">@@ -663,3 +782,68 @@</span>
+    A helper codec that decodes newlines for universal newlines mode.  It
+    inherits :class:`codecs.IncrementalDecoder`.
+ 
+<span class="gi">+</span>
+<span class="gi">+Advanced topics</span>
+<span class="gi">+---------------</span>
+<span class="gi">+</span>
+<span class="gi">+Here we will discuss several advanced topics pertaining to the concrete</span>
+<span class="gi">+I/O implementations described above.</span>
+<span class="gi">+</span>
+<span class="gi">+Performance</span>
+<span class="gi">+^^^^^^^^^^^</span>
+<span class="gi">+</span>
+<span class="gi">+Binary I/O</span>
+<span class="gi">+&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="gi">+</span>
+<span class="gi">+By reading and writing only large chunks of data even when the user asks</span>
+<span class="gi">+for a single byte, buffered I/O is designed to hide any inefficiency in</span>
+<span class="gi">+calling and executing the operating system&#39;s unbuffered I/O routines.  The</span>
+<span class="gi">+gain will vary very much depending on the OS and the kind of I/O which is</span>
+<span class="gi">+performed (for example, on some contemporary OSes such as Linux, unbuffered</span>
+<span class="gi">+disk I/O can be as fast as buffered I/O).  The bottom line, however, is</span>
+<span class="gi">+that buffered I/O will offer you predictable performance regardless of the</span>
+<span class="gi">+platform and the backing device.  Therefore, it is most always preferable to</span>
+<span class="gi">+use buffered I/O rather than unbuffered I/O.</span>
+<span class="gi">+</span>
+<span class="gi">+Text I/O</span>
+<span class="gi">+&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="gi">+</span>
+<span class="gi">+Text I/O over a binary storage (such as a file) is significantly slower than</span>
+<span class="gi">+binary I/O over the same storage, because it implies conversions from</span>
+<span class="gi">+unicode to binary data using a character codec.  This can become noticeable</span>
+<span class="gi">+if you handle huge amounts of text data (for example very large log files).</span>
+<span class="gi">+Also, :meth:`TextIOWrapper.tell` and :meth:`TextIOWrapper.seek` are both</span>
+<span class="gi">+quite slow due to the reconstruction algorithm used.</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`StringIO`, however, is a native in-memory unicode container and will</span>
+<span class="gi">+exhibit similar speed to :class:`BytesIO`.</span>
+<span class="gi">+</span>
+<span class="gi">+Multi-threading</span>
+<span class="gi">+^^^^^^^^^^^^^^^</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`FileIO` objects are thread-safe to the extent that the operating</span>
+<span class="gi">+system calls (such as ``read(2)`` under Unix) they are wrapping are thread-safe</span>
+<span class="gi">+too.</span>
+<span class="gi">+</span>
+<span class="gi">+Binary buffered objects (instances of :class:`BufferedReader`,</span>
+<span class="gi">+:class:`BufferedWriter`, :class:`BufferedRandom` and :class:`BufferedRWPair`)</span>
+<span class="gi">+protect their internal structures using a lock; it is therefore safe to call</span>
+<span class="gi">+them from multiple threads at once.</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`TextIOWrapper` objects are not thread-safe.</span>
+<span class="gi">+</span>
+<span class="gi">+Reentrancy</span>
+<span class="gi">+^^^^^^^^^^</span>
+<span class="gi">+</span>
+<span class="gi">+Binary buffered objects (instances of :class:`BufferedReader`,</span>
+<span class="gi">+:class:`BufferedWriter`, :class:`BufferedRandom` and :class:`BufferedRWPair`)</span>
+<span class="gi">+are not reentrant.  While reentrant calls will not happen in normal situations,</span>
+<span class="gi">+they can arise if you are doing I/O in a :mod:`signal` handler.  If it is</span>
+<span class="gi">+attempted to enter a buffered object again while already being accessed</span>
+<span class="gi">+*from the same thread*, then a :exc:`RuntimeError` is raised.</span>
+<span class="gi">+</span>
+<span class="gi">+The above implicitly extends to text files, since the :func:`open()`</span>
+<span class="gi">+function will wrap a buffered object inside a :class:`TextIOWrapper`.  This</span>
+<span class="gi">+includes standard streams and therefore affects the built-in function</span>
+<span class="gi">+:func:`print()` as well.</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

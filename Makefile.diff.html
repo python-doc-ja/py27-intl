@@ -1,0 +1,164 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Makefile</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -34,12 +34,13 @@</span>
+ 	@echo &quot;  dist       to create a \&quot;dist\&quot; directory with archived docs for download&quot;
+ 	@echo &quot;  suspicious to check for suspicious markup in output text&quot;
+ 	@echo &quot;  check      to run a check for frequent markup errors&quot;
+<span class="gi">+	@echo &quot;  serve      to serve the documentation on the localhost (8000)&quot;</span>
+ 
+ # Note: if you update versions here, do the same in make.bat and README.txt
+ checkout:
+ 	@if [ ! -d tools/sphinx ]; then \
+ 	  echo &quot;Checking out Sphinx...&quot;; \
+<span class="gd">-	  svn checkout $(SVNROOT)/external/Sphinx-0.6.5/sphinx tools/sphinx; \</span>
+<span class="gi">+	  svn checkout $(SVNROOT)/external/Sphinx-0.6.7/sphinx tools/sphinx; \</span>
+ 	fi
+ 	@if [ ! -d tools/docutils ]; then \
+ 	  echo &quot;Checking out Docutils...&quot;; \
+<span class="gu">@@ -86,13 +87,14 @@</span>
+ 
+ linkcheck: BUILDER = linkcheck
+ linkcheck: build
+<span class="gd">-	@echo &quot;Link check complete; look for any errors in the above output &quot; \</span>
+<span class="gi">+	@echo &quot;Link check complete; look for any errors in the above output&quot; \</span>
+ 	      &quot;or in build/$(BUILDER)/output.txt&quot;
+ 
+ suspicious: BUILDER = suspicious
+ suspicious: build
+<span class="gd">-	@echo &quot;Suspicious check complete; look for any errors in the above output &quot; \</span>
+<span class="gd">-	      &quot;or in build/$(BUILDER)/suspicious.txt&quot;</span>
+<span class="gi">+	@echo &quot;Suspicious check complete; look for any errors in the above output&quot; \</span>
+<span class="gi">+	      &quot;or in build/$(BUILDER)/suspicious.csv.  If all issues are false&quot; \</span>
+<span class="gi">+	      &quot;positives, append that file to tools/sphinxext/susp-ignored.csv.&quot;</span>
+ 
+ coverage: BUILDER = coverage
+ coverage: build
+<span class="gu">@@ -100,13 +102,13 @@</span>
+ 
+ doctest: BUILDER = doctest
+ doctest: build
+<span class="gd">-	@echo &quot;Testing of doctests in the sources finished, look at the &quot; \</span>
+<span class="gi">+	@echo &quot;Testing of doctests in the sources finished, look at the&quot; \</span>
+ 	      &quot;results in build/doctest/output.txt&quot;
+ 
+ pydoc-topics: BUILDER = pydoc-topics
+ pydoc-topics: build
+<span class="gd">-	@echo &quot;Building finished; now copy build/pydoc-topics/pydoc_topics.py &quot; \</span>
+<span class="gd">-	      &quot;into the Lib/ directory&quot;</span>
+<span class="gi">+	@echo &quot;Building finished; now copy build/pydoc-topics/topics.py&quot; \</span>
+<span class="gi">+	      &quot;to Lib/pydoc_data/topics.py&quot;</span>
+ 
+ htmlview: html
+ 	 $(PYTHON) -c &quot;import webbrowser; webbrowser.open(&#39;build/html/index.html&#39;)&quot;
+<span class="gu">@@ -119,7 +121,7 @@</span>
+ 	-rm -rf tools/docutils
+ 
+ dist:
+<span class="gd">-	-rm -rf dist</span>
+<span class="gi">+	rm -rf dist</span>
+ 	mkdir -p dist
+ 
+ 	# archive the HTML
+<span class="gu">@@ -139,9 +141,9 @@</span>
+ 	(cd dist; zip -q -r -9 python-$(DISTVERSION)-docs-text.zip python-$(DISTVERSION)-docs-text)
+ 	rm -r dist/python-$(DISTVERSION)-docs-text
+ 	rm dist/python-$(DISTVERSION)-docs-text.tar
+<span class="gd">-	</span>
+<span class="gi">+</span>
+ 	# archive the A4 latex
+<span class="gd">-	-rm -r build/latex</span>
+<span class="gi">+	rm -rf build/latex</span>
+ 	make latex PAPER=a4
+ 	-sed -i &#39;s/makeindex/makeindex -q/&#39; build/latex/Makefile
+ 	(cd build/latex; make clean &amp;&amp; make all-pdf &amp;&amp; make FMT=pdf zip bz2)
+<span class="gu">@@ -149,7 +151,7 @@</span>
+ 	cp build/latex/docs-pdf.tar.bz2 dist/python-$(DISTVERSION)-docs-pdf-a4.tar.bz2
+ 
+ 	# archive the letter latex
+<span class="gd">-	rm -r build/latex</span>
+<span class="gi">+	rm -rf build/latex</span>
+ 	make latex PAPER=letter
+ 	-sed -i &#39;s/makeindex/makeindex -q/&#39; build/latex/Makefile
+ 	(cd build/latex; make clean &amp;&amp; make all-pdf &amp;&amp; make FMT=pdf zip bz2)
+<span class="gu">@@ -159,6 +161,9 @@</span>
+ check:
+ 	$(PYTHON) tools/rstlint.py -i tools
+ 
+<span class="gi">+serve:</span>
+<span class="gi">+	../Tools/scripts/serve.py build/html</span>
+<span class="gi">+</span>
+ # Targets for daily automated doc build
+ 
+ # for development releases: always build
+</pre></div>
+
+</body>
+</html>

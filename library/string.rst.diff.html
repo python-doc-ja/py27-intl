@@ -1,0 +1,323 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/string.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -17,6 +17,11 @@</span>
+ :ref:`string-formatting` section. Also, see the :mod:`re` module for
+ string functions based on regular expressions.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `string module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/string.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ 
+ String constants
+ ----------------
+<span class="gu">@@ -118,7 +123,7 @@</span>
+ 
+    The :class:`Formatter` class has the following public methods:
+ 
+<span class="gd">-   .. method:: format(format_string, *args, *kwargs)</span>
+<span class="gi">+   .. method:: format(format_string, *args, **kwargs)</span>
+ 
+       :meth:`format` is the primary API method.  It takes a format template
+       string, and an arbitrary set of positional and keyword argument.
+<span class="gu">@@ -141,7 +146,7 @@</span>
+ 
+       Loop over the format_string and return an iterable of tuples
+       (*literal_text*, *field_name*, *format_spec*, *conversion*).  This is used
+<span class="gd">-      by :meth:`vformat` to break the string in to either literal text, or</span>
+<span class="gi">+      by :meth:`vformat` to break the string into either literal text, or</span>
+       replacement fields.
+ 
+       The values in the tuple conceptually represent a span of literal text
+<span class="gu">@@ -190,7 +195,7 @@</span>
+       the format string (integers for positional arguments, and strings for
+       named arguments), and a reference to the *args* and *kwargs* that was
+       passed to vformat.  The set of unused args can be calculated from these
+<span class="gd">-      parameters.  :meth:`check_unused_args` is assumed to throw an exception if</span>
+<span class="gi">+      parameters.  :meth:`check_unused_args` is assumed to raise an exception if</span>
+       the check fails.
+ 
+    .. method:: format_field(value, format_spec)
+<span class="gu">@@ -222,32 +227,43 @@</span>
+ The grammar for a replacement field is as follows:
+ 
+    .. productionlist:: sf
+<span class="gd">-      replacement_field: &quot;{&quot; `field_name` [&quot;!&quot; `conversion`] [&quot;:&quot; `format_spec`] &quot;}&quot;</span>
+<span class="gd">-      field_name: (`identifier` | `integer`) (&quot;.&quot; `attribute_name` | &quot;[&quot; `element_index` &quot;]&quot;)*</span>
+<span class="gi">+      replacement_field: &quot;{&quot; [`field_name`] [&quot;!&quot; `conversion`] [&quot;:&quot; `format_spec`] &quot;}&quot;</span>
+<span class="gi">+      field_name: arg_name (&quot;.&quot; `attribute_name` | &quot;[&quot; `element_index` &quot;]&quot;)*</span>
+<span class="gi">+      arg_name: [`identifier` | `integer`]</span>
+       attribute_name: `identifier`
+       element_index: `integer` | `index_string`
+       index_string: &lt;any source character except &quot;]&quot;&gt; +
+       conversion: &quot;r&quot; | &quot;s&quot;
+       format_spec: &lt;described in the next section&gt;
+ 
+<span class="gd">-In less formal terms, the replacement field starts with a *field_name*, which</span>
+<span class="gd">-can either be a number (for a positional argument), or an identifier (for</span>
+<span class="gd">-keyword arguments).  Following this is an optional *conversion* field, which is</span>
+<span class="gi">+In less formal terms, the replacement field can start with a *field_name* that specifies</span>
+<span class="gi">+the object whose value is to be formatted and inserted</span>
+<span class="gi">+into the output instead of the replacement field.</span>
+<span class="gi">+The *field_name* is optionally followed by a  *conversion* field, which is</span>
+ preceded by an exclamation point ``&#39;!&#39;``, and a *format_spec*, which is preceded
+<span class="gd">-by a colon ``&#39;:&#39;``.</span>
+<span class="gi">+by a colon ``&#39;:&#39;``.  These specify a non-default format for the replacement value.</span>
+ 
+ See also the :ref:`formatspec` section.
+ 
+<span class="gd">-The *field_name* itself begins with either a number or a keyword.  If it&#39;s a</span>
+<span class="gd">-number, it refers to a positional argument, and if it&#39;s a keyword it refers to a</span>
+<span class="gd">-named keyword argument.  This can be followed by any number of index or</span>
+<span class="gi">+The *field_name* itself begins with an *arg_name* that is either either a number or a</span>
+<span class="gi">+keyword.  If it&#39;s a number, it refers to a positional argument, and if it&#39;s a keyword,</span>
+<span class="gi">+it refers to a named keyword argument.  If the numerical arg_names in a format string</span>
+<span class="gi">+are 0, 1, 2, ... in sequence, they can all be omitted (not just some)</span>
+<span class="gi">+and the numbers 0, 1, 2, ... will be automatically inserted in that order.</span>
+<span class="gi">+The *arg_name* can be followed by any number of index or</span>
+ attribute expressions. An expression of the form ``&#39;.name&#39;`` selects the named
+ attribute using :func:`getattr`, while an expression of the form ``&#39;[index]&#39;``
+ does an index lookup using :func:`__getitem__`.
+ 
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   The positional argument specifiers can be omitted, so ``&#39;{} {}&#39;`` is</span>
+<span class="gi">+   equivalent to ``&#39;{0} {1}&#39;``.</span>
+<span class="gi">+</span>
+ Some simple format string examples::
+ 
+    &quot;First, thou shalt count to {0}&quot; # References first positional argument
+<span class="gi">+   &quot;Bring me a {}&quot;                  # Implicitly references the first positional argument</span>
+<span class="gi">+   &quot;From {} to {}&quot;                  # Same as &quot;From {0} to {1}&quot;</span>
+    &quot;My quest is {name}&quot;             # References keyword argument &#39;name&#39;
+    &quot;Weight in tons {0.weight}&quot;      # &#39;weight&#39; attribute of first positional arg
+    &quot;Units destroyed: {players[0]}&quot;  # First element of keyword argument &#39;players&#39;.
+<span class="gu">@@ -305,7 +321,7 @@</span>
+ The general form of a *standard format specifier* is:
+ 
+ .. productionlist:: sf
+<span class="gd">-   format_spec: [[`fill`]`align`][`sign`][#][0][`width`][.`precision`][`type`]</span>
+<span class="gi">+   format_spec: [[`fill`]`align`][`sign`][#][0][`width`][,][.`precision`][`type`]</span>
+    fill: &lt;a character other than &#39;}&#39;&gt;
+    align: &quot;&lt;&quot; | &quot;&gt;&quot; | &quot;=&quot; | &quot;^&quot;
+    sign: &quot;+&quot; | &quot;-&quot; | &quot; &quot;
+<span class="gu">@@ -313,11 +329,11 @@</span>
+    precision: `integer`
+    type: &quot;b&quot; | &quot;c&quot; | &quot;d&quot; | &quot;e&quot; | &quot;E&quot; | &quot;f&quot; | &quot;F&quot; | &quot;g&quot; | &quot;G&quot; | &quot;n&quot; | &quot;o&quot; | &quot;s&quot; | &quot;x&quot; | &quot;X&quot; | &quot;%&quot;
+ 
+<span class="gd">-The *fill* character can be any character other than &#39;}&#39; (which signifies the</span>
+<span class="gd">-end of the field).  The presence of a fill character is signaled by the *next*</span>
+<span class="gd">-character, which must be one of the alignment options. If the second character</span>
+<span class="gd">-of *format_spec* is not a valid alignment option, then it is assumed that both</span>
+<span class="gd">-the fill character and the alignment option are absent.</span>
+<span class="gi">+The *fill* character can be any character other than &#39;{&#39; or &#39;}&#39;.  The presence</span>
+<span class="gi">+of a fill character is signaled by the character following it, which must be</span>
+<span class="gi">+one of the alignment options.  If the second character of *format_spec* is not</span>
+<span class="gi">+a valid alignment option, then it is assumed that both the fill character and</span>
+<span class="gi">+the alignment option are absent.</span>
+ 
+ The meaning of the various alignment options is as follows:
+ 
+<span class="gu">@@ -325,10 +341,10 @@</span>
+    | Option  | Meaning                                                  |
+    +=========+==========================================================+
+    | ``&#39;&lt;&#39;`` | Forces the field to be left-aligned within the available |
+<span class="gd">-   |         | space (this is the default).                             |</span>
+<span class="gi">+   |         | space (this is the default for most objects).            |</span>
+    +---------+----------------------------------------------------------+
+    | ``&#39;&gt;&#39;`` | Forces the field to be right-aligned within the          |
+<span class="gd">-   |         | available space.                                         |</span>
+<span class="gi">+   |         | available space (this is the default for numbers).       |</span>
+    +---------+----------------------------------------------------------+
+    | ``&#39;=&#39;`` | Forces the padding to be placed after the sign (if any)  |
+    |         | but before the digits.  This is used for printing fields |
+<span class="gu">@@ -363,6 +379,13 @@</span>
+ hexadecimal output.  If present, it specifies that the output will be prefixed
+ by ``&#39;0b&#39;``, ``&#39;0o&#39;``, or ``&#39;0x&#39;``, respectively.
+ 
+<span class="gi">+The ``&#39;,&#39;`` option signals the use of a comma for a thousands separator.</span>
+<span class="gi">+For a locale aware separator, use the ``&#39;n&#39;`` integer presentation type</span>
+<span class="gi">+instead.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   Added the ``&#39;,&#39;`` option (see also :pep:`378`).</span>
+<span class="gi">+</span>
+ *width* is a decimal integer defining the minimum field width.  If not
+ specified, then the field width will be determined by the content.
+ 
+<span class="gu">@@ -454,7 +477,7 @@</span>
+    |         | from the significand, and the decimal point is also      |
+    |         | removed if there are no remaining digits following it.   |
+    |         |                                                          |
+<span class="gd">-   |         | Postive and negative infinity, positive and negative     |</span>
+<span class="gi">+   |         | Positive and negative infinity, positive and negative    |</span>
+    |         | zero, and nans, are formatted as ``inf``, ``-inf``,      |
+    |         | ``0``, ``-0`` and ``nan`` respectively, regardless of    |
+    |         | the precision.                                           |
+<span class="gu">@@ -488,7 +511,7 @@</span>
+ 
+ In most of the cases the syntax is similar to the old ``%``-formatting, with the
+ addition of the ``{}`` and with ``:`` used instead of ``%``.
+<span class="gd">-For example, ``&#39;%03.2f&#39;`` can be translated to ``&#39;{0:03.2f}&#39;``.</span>
+<span class="gi">+For example, ``&#39;%03.2f&#39;`` can be translated to ``&#39;{:03.2f}&#39;``.</span>
+ 
+ The new format syntax also supports new and different options, shown in the
+ follow examples.
+<span class="gu">@@ -497,6 +520,8 @@</span>
+ 
+    &gt;&gt;&gt; &#39;{0}, {1}, {2}&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+    &#39;a, b, c&#39;
+<span class="gi">+   &gt;&gt;&gt; &#39;{}, {}, {}&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)  # 2.7+ only</span>
+<span class="gi">+   &#39;a, b, c&#39;</span>
+    &gt;&gt;&gt; &#39;{2}, {1}, {0}&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
+    &#39;c, b, a&#39;
+    &gt;&gt;&gt; &#39;{2}, {1}, {0}&#39;.format(*&#39;abc&#39;)      # unpacking argument sequence
+<span class="gu">@@ -536,27 +561,27 @@</span>
+ 
+ Replacing ``%s`` and ``%r``::
+ 
+<span class="gd">-   &gt;&gt;&gt; &quot;repr() shows quotes: {0!r}; str() doesn&#39;t: {1!s}&quot;.format(&#39;test1&#39;, &#39;test2&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; &quot;repr() shows quotes: {!r}; str() doesn&#39;t: {!s}&quot;.format(&#39;test1&#39;, &#39;test2&#39;)</span>
+    &quot;repr() shows quotes: &#39;test1&#39;; str() doesn&#39;t: test2&quot;
+ 
+ Aligning the text and specifying a width::
+ 
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:&lt;30}&#39;.format(&#39;left aligned&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:&lt;30}&#39;.format(&#39;left aligned&#39;)</span>
+    &#39;left aligned                  &#39;
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:&gt;30}&#39;.format(&#39;right aligned&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:&gt;30}&#39;.format(&#39;right aligned&#39;)</span>
+    &#39;                 right aligned&#39;
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:^30}&#39;.format(&#39;centered&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:^30}&#39;.format(&#39;centered&#39;)</span>
+    &#39;           centered           &#39;
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:*^30}&#39;.format(&#39;centered&#39;)  # use &#39;*&#39; as a fill char</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:*^30}&#39;.format(&#39;centered&#39;)  # use &#39;*&#39; as a fill char</span>
+    &#39;***********centered***********&#39;
+ 
+ Replacing ``%+f``, ``%-f``, and ``% f`` and specifying a sign::
+ 
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:+f}; {0:+f}&#39;.format(3.14, -3.14)  # show it always</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:+f}; {:+f}&#39;.format(3.14, -3.14)  # show it always</span>
+    &#39;+3.140000; -3.140000&#39;
+<span class="gd">-   &gt;&gt;&gt; &#39;{0: f}; {0: f}&#39;.format(3.14, -3.14)  # show a space for positive numbers</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{: f}; {: f}&#39;.format(3.14, -3.14)  # show a space for positive numbers</span>
+    &#39; 3.140000; -3.140000&#39;
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:-f}; {0:-f}&#39;.format(3.14, -3.14)  # show only the minus -- same as &#39;{0:f}; {0:f}&#39;</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:-f}; {:-f}&#39;.format(3.14, -3.14)  # show only the minus -- same as &#39;{:f}; {:f}&#39;</span>
+    &#39;3.140000; -3.140000&#39;
+ 
+ Replacing ``%x`` and ``%o`` and converting the value to different bases::
+<span class="gu">@@ -568,31 +593,36 @@</span>
+    &gt;&gt;&gt; &quot;int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}&quot;.format(42)
+    &#39;int: 42;  hex: 0x2a;  oct: 0o52;  bin: 0b101010&#39;
+ 
+<span class="gi">+Using the comma as a thousands separator::</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:,}&#39;.format(1234567890)</span>
+<span class="gi">+   &#39;1,234,567,890&#39;</span>
+<span class="gi">+</span>
+ Expressing a percentage::
+ 
+    &gt;&gt;&gt; points = 19.5
+    &gt;&gt;&gt; total = 22
+<span class="gd">-   &gt;&gt;&gt; &#39;Correct answers: {0:.2%}.&#39;.format(points/total)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;Correct answers: {:.2%}.&#39;.format(points/total)</span>
+    &#39;Correct answers: 88.64%&#39;
+ 
+ Using type-specific formatting::
+ 
+    &gt;&gt;&gt; import datetime
+    &gt;&gt;&gt; d = datetime.datetime(2010, 7, 4, 12, 15, 58)
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:%Y-%m-%d %H:%M:%S}&#39;.format(d)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:%Y-%m-%d %H:%M:%S}&#39;.format(d)</span>
+    &#39;2010-07-04 12:15:58&#39;
+ 
+ Nesting arguments and more complex examples::
+ 
+    &gt;&gt;&gt; for align, text in zip(&#39;&lt;^&gt;&#39;, [&#39;left&#39;, &#39;center&#39;, &#39;right&#39;]):
+<span class="gd">-   ...     &#39;{0:{align}{fill}16}&#39;.format(text, fill=align, align=align)</span>
+<span class="gi">+   ...     &#39;{0:{fill}{align}16}&#39;.format(text, fill=align, align=align)</span>
+    ...
+    &#39;left&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&#39;
+    &#39;^^^^^center^^^^^&#39;
+    &#39;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;right&#39;
+    &gt;&gt;&gt;
+    &gt;&gt;&gt; octets = [192, 168, 0, 1]
+<span class="gd">-   &gt;&gt;&gt; &#39;{0:02X}{1:02X}{2:02X}{3:02X}&#39;.format(*octets)</span>
+<span class="gi">+   &gt;&gt;&gt; &#39;{:02X}{:02X}{:02X}{:02X}&#39;.format(*octets)</span>
+    &#39;C0A80001&#39;
+    &gt;&gt;&gt; int(_, 16)
+    3232235521
+</pre></div>
+
+</body>
+</html>

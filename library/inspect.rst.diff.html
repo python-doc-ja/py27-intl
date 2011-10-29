@@ -1,0 +1,234 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/inspect.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -234,14 +234,14 @@</span>
+ 
+    Return a tuple of values that describe how Python will interpret the file
+    identified by *path* if it is a module, or ``None`` if it would not be
+<span class="gd">-   identified as a module.  The return tuple is ``(name, suffix, mode, mtype)``,</span>
+<span class="gd">-   where *name* is the name of the module without the name of any enclosing</span>
+<span class="gd">-   package, *suffix* is the trailing part of the file name (which may not be a</span>
+<span class="gd">-   dot-delimited extension), *mode* is the :func:`open` mode that would be used</span>
+<span class="gd">-   (``&#39;r&#39;`` or ``&#39;rb&#39;``), and *mtype* is an integer giving the type of the</span>
+<span class="gd">-   module.  *mtype* will have a value which can be compared to the constants</span>
+<span class="gd">-   defined in the :mod:`imp` module; see the documentation for that module for</span>
+<span class="gd">-   more information on module types.</span>
+<span class="gi">+   identified as a module.  The return tuple is ``(name, suffix, mode,</span>
+<span class="gi">+   module_type)``, where *name* is the name of the module without the name of</span>
+<span class="gi">+   any enclosing package, *suffix* is the trailing part of the file name (which</span>
+<span class="gi">+   may not be a dot-delimited extension), *mode* is the :func:`open` mode that</span>
+<span class="gi">+   would be used (``&#39;r&#39;`` or ``&#39;rb&#39;``), and *module_type* is an integer giving</span>
+<span class="gi">+   the type of the module.  *module_type* will have a value which can be</span>
+<span class="gi">+   compared to the constants defined in the :mod:`imp` module; see the</span>
+<span class="gi">+   documentation for that module for more information on module types.</span>
+ 
+    .. versionchanged:: 2.6
+       Returns a :term:`named tuple` ``ModuleInfo(name, suffix, mode,
+<span class="gu">@@ -263,17 +263,20 @@</span>
+ 
+ .. function:: isclass(object)
+ 
+<span class="gd">-   Return true if the object is a class.</span>
+<span class="gi">+   Return true if the object is a class, whether built-in or created in Python</span>
+<span class="gi">+   code.</span>
+ 
+ 
+ .. function:: ismethod(object)
+ 
+<span class="gd">-   Return true if the object is a method.</span>
+<span class="gi">+   Return true if the object is a bound method written in Python.</span>
+ 
+ 
+ .. function:: isfunction(object)
+ 
+<span class="gd">-   Return true if the object is a Python function or unnamed (:term:`lambda`) function.</span>
+<span class="gi">+   Return true if the object is a Python function, which includes functions</span>
+<span class="gi">+   created by a :term:`lambda` expression.</span>
+<span class="gi">+</span>
+ 
+ .. function:: isgeneratorfunction(object)
+ 
+<span class="gu">@@ -281,12 +284,14 @@</span>
+ 
+    .. versionadded:: 2.6
+ 
+<span class="gi">+</span>
+ .. function:: isgenerator(object)
+ 
+    Return true if the object is a generator.
+ 
+    .. versionadded:: 2.6
+ 
+<span class="gi">+</span>
+ .. function:: istraceback(object)
+ 
+    Return true if the object is a traceback.
+<span class="gu">@@ -304,13 +309,14 @@</span>
+ 
+ .. function:: isbuiltin(object)
+ 
+<span class="gd">-   Return true if the object is a built-in function.</span>
+<span class="gi">+   Return true if the object is a built-in function or a bound built-in method.</span>
+ 
+ 
+ .. function:: isroutine(object)
+ 
+    Return true if the object is a user-defined or built-in function or method.
+ 
+<span class="gi">+</span>
+ .. function:: isabstract(object)
+ 
+    Return true if the object is an abstract base class.
+<span class="gu">@@ -320,8 +326,9 @@</span>
+ 
+ .. function:: ismethoddescriptor(object)
+ 
+<span class="gd">-   Return true if the object is a method descriptor, but not if :func:`ismethod`</span>
+<span class="gd">-   or :func:`isclass` or :func:`isfunction` are true.</span>
+<span class="gi">+   Return true if the object is a method descriptor, but not if</span>
+<span class="gi">+   :func:`ismethod`, :func:`isclass`, :func:`isfunction` or :func:`isbuiltin`</span>
+<span class="gi">+   are true.</span>
+ 
+    This is new as of Python 2.2, and, for example, is true of
+    ``int.__add__``. An object passing this test has a :attr:`__get__` attribute
+<span class="gu">@@ -457,12 +464,13 @@</span>
+ 
+ .. function:: getargspec(func)
+ 
+<span class="gd">-   Get the names and default values of a Python function&#39;s arguments. A tuple of four</span>
+<span class="gd">-   things is returned: ``(args, varargs, varkw, defaults)``. *args* is a list of</span>
+<span class="gd">-   the argument names (it may contain nested lists). *varargs* and *varkw* are the</span>
+<span class="gd">-   names of the ``*`` and ``**`` arguments or ``None``. *defaults* is a tuple of</span>
+<span class="gd">-   default argument values or None if there are no default arguments; if this tuple</span>
+<span class="gd">-   has *n* elements, they correspond to the last *n* elements listed in *args*.</span>
+<span class="gi">+   Get the names and default values of a Python function&#39;s arguments. A tuple of</span>
+<span class="gi">+   four things is returned: ``(args, varargs, keywords, defaults)``. *args* is a</span>
+<span class="gi">+   list of the argument names (it may contain nested lists). *varargs* and</span>
+<span class="gi">+   *keywords* are the names of the ``*`` and ``**`` arguments or</span>
+<span class="gi">+   ``None``. *defaults* is a tuple of default argument values or None if there</span>
+<span class="gi">+   are no default arguments; if this tuple has *n* elements, they correspond to</span>
+<span class="gi">+   the last *n* elements listed in *args*.</span>
+ 
+    .. versionchanged:: 2.6
+       Returns a :term:`named tuple` ``ArgSpec(args, varargs, keywords,
+<span class="gu">@@ -471,11 +479,11 @@</span>
+ 
+ .. function:: getargvalues(frame)
+ 
+<span class="gd">-   Get information about arguments passed into a particular frame. A tuple of four</span>
+<span class="gd">-   things is returned: ``(args, varargs, varkw, locals)``. *args* is a list of the</span>
+<span class="gd">-   argument names (it may contain nested lists). *varargs* and *varkw* are the</span>
+<span class="gd">-   names of the ``*`` and ``**`` arguments or ``None``. *locals* is the locals</span>
+<span class="gd">-   dictionary of the given frame.</span>
+<span class="gi">+   Get information about arguments passed into a particular frame. A tuple of</span>
+<span class="gi">+   four things is returned: ``(args, varargs, keywords, locals)``. *args* is a</span>
+<span class="gi">+   list of the argument names (it may contain nested lists). *varargs* and</span>
+<span class="gi">+   *keywords* are the names of the ``*`` and ``**`` arguments or ``None``.</span>
+<span class="gi">+   *locals* is the locals dictionary of the given frame.</span>
+ 
+    .. versionchanged:: 2.6
+       Returns a :term:`named tuple` ``ArgInfo(args, varargs, keywords,
+<span class="gu">@@ -504,6 +512,32 @@</span>
+    metatype is in use, cls will be the first element of the tuple.
+ 
+ 
+<span class="gi">+.. function:: getcallargs(func[, *args][, **kwds])</span>
+<span class="gi">+</span>
+<span class="gi">+   Bind the *args* and *kwds* to the argument names of the Python function or</span>
+<span class="gi">+   method *func*, as if it was called with them. For bound methods, bind also the</span>
+<span class="gi">+   first argument (typically named ``self``) to the associated instance. A dict</span>
+<span class="gi">+   is returned, mapping the argument names (including the names of the ``*`` and</span>
+<span class="gi">+   ``**`` arguments, if any) to their values from *args* and *kwds*. In case of</span>
+<span class="gi">+   invoking *func* incorrectly, i.e. whenever ``func(*args, **kwds)`` would raise</span>
+<span class="gi">+   an exception because of incompatible signature, an exception of the same type</span>
+<span class="gi">+   and the same or similar message is raised. For example::</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; from inspect import getcallargs</span>
+<span class="gi">+    &gt;&gt;&gt; def f(a, b=1, *pos, **named):</span>
+<span class="gi">+    ...     pass</span>
+<span class="gi">+    &gt;&gt;&gt; getcallargs(f, 1, 2, 3)</span>
+<span class="gi">+    {&#39;a&#39;: 1, &#39;named&#39;: {}, &#39;b&#39;: 2, &#39;pos&#39;: (3,)}</span>
+<span class="gi">+    &gt;&gt;&gt; getcallargs(f, a=2, x=4)</span>
+<span class="gi">+    {&#39;a&#39;: 2, &#39;named&#39;: {&#39;x&#39;: 4}, &#39;b&#39;: 1, &#39;pos&#39;: ()}</span>
+<span class="gi">+    &gt;&gt;&gt; getcallargs(f)</span>
+<span class="gi">+    Traceback (most recent call last):</span>
+<span class="gi">+    ...</span>
+<span class="gi">+    TypeError: f() takes at least 1 argument (0 given)</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. _inspect-stack:
+ 
+ The interpreter stack
+</pre></div>
+
+</body>
+</html>

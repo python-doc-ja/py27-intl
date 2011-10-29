@@ -1,0 +1,451 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/test.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -97,17 +97,17 @@</span>
+ guidelines to be followed:
+ 
+ * The testing suite should exercise all classes, functions, and constants. This
+<span class="gd">-  includes not just the external API that is to be presented to the outside world</span>
+<span class="gd">-  but also &quot;private&quot; code.</span>
+<span class="gi">+  includes not just the external API that is to be presented to the outside</span>
+<span class="gi">+  world but also &quot;private&quot; code.</span>
+ 
+ * Whitebox testing (examining the code being tested when the tests are being
+   written) is preferred. Blackbox testing (testing only the published user
+<span class="gd">-  interface) is not complete enough to make sure all boundary and edge cases are</span>
+<span class="gd">-  tested.</span>
+<span class="gi">+  interface) is not complete enough to make sure all boundary and edge cases</span>
+<span class="gi">+  are tested.</span>
+ 
+ * Make sure all possible values are tested including invalid ones. This makes
+<span class="gd">-  sure that not only all valid values are acceptable but also that improper values</span>
+<span class="gd">-  are handled correctly.</span>
+<span class="gi">+  sure that not only all valid values are acceptable but also that improper</span>
+<span class="gi">+  values are handled correctly.</span>
+ 
+ * Exhaust as many code paths as possible. Test where branching occurs and thus
+   tailor input to make sure as many different paths through the code are taken.
+<span class="gu">@@ -127,8 +127,8 @@</span>
+   behavior from side-effects of importing a module.
+ 
+ * Try to maximize code reuse. On occasion, tests will vary by something as small
+<span class="gd">-  as what type of input is used. Minimize code duplication by subclassing a basic</span>
+<span class="gd">-  test class with a class that specifies the input::</span>
+<span class="gi">+  as what type of input is used. Minimize code duplication by subclassing a</span>
+<span class="gi">+  basic test class with a class that specifies the input::</span>
+ 
+      class TestFuncAcceptsSequences(unittest.TestCase):
+ 
+<span class="gu">@@ -138,13 +138,13 @@</span>
+              self.func(self.arg)
+ 
+      class AcceptLists(TestFuncAcceptsSequences):
+<span class="gd">-         arg = [1,2,3]</span>
+<span class="gi">+         arg = [1, 2, 3]</span>
+ 
+      class AcceptStrings(TestFuncAcceptsSequences):
+          arg = &#39;abc&#39;
+ 
+      class AcceptTuples(TestFuncAcceptsSequences):
+<span class="gd">-         arg = (1,2,3)</span>
+<span class="gi">+         arg = (1, 2, 3)</span>
+ 
+ 
+ .. seealso::
+<span class="gu">@@ -155,33 +155,33 @@</span>
+ 
+ .. _regrtest:
+ 
+<span class="gd">-Running tests using :mod:`test.regrtest`</span>
+<span class="gd">-----------------------------------------</span>
+<span class="gi">+Running tests using the command-line interface</span>
+<span class="gi">+----------------------------------------------</span>
+ 
+<span class="gd">-:mod:`test.regrtest` can be used as a script to drive Python&#39;s regression test</span>
+<span class="gd">-suite. Running the script by itself automatically starts running all regression</span>
+<span class="gi">+The :mod:`test.regrtest` module can be run as a script to drive Python&#39;s regression</span>
+<span class="gi">+test suite, thanks to the :option:`-m` option: :program:`python -m test.regrtest`.</span>
+<span class="gi">+Running the script by itself automatically starts running all regression</span>
+ tests in the :mod:`test` package. It does this by finding all modules in the
+ package whose name starts with ``test_``, importing them, and executing the
+<span class="gd">-function :func:`test_main` if present. The names of tests to execute may also be</span>
+<span class="gd">-passed to the script. Specifying a single regression test (:program:`python</span>
+<span class="gd">-regrtest.py` :option:`test_spam.py`) will minimize output and only print whether</span>
+<span class="gi">+function :func:`test_main` if present. The names of tests to execute may also</span>
+<span class="gi">+be passed to the script. Specifying a single regression test (:program:`python</span>
+<span class="gi">+-m test.regrtest test_spam`) will minimize output and only print whether</span>
+ the test passed or failed and thus minimize output.
+ 
+ Running :mod:`test.regrtest` directly allows what resources are available for
+ tests to use to be set. You do this by using the :option:`-u` command-line
+<span class="gd">-option. Run :program:`python regrtest.py` :option:`-uall` to turn on all</span>
+<span class="gd">-resources; specifying :option:`all` as an option for :option:`-u` enables all</span>
+<span class="gi">+option. Run :program:`python -m test.regrtest -uall` to turn on all</span>
+<span class="gi">+resources; specifying ``all`` as an option for ``-u`` enables all</span>
+ possible resources. If all but one resource is desired (a more common case), a
+ comma-separated list of resources that are not desired may be listed after
+<span class="gd">-:option:`all`. The command :program:`python regrtest.py`</span>
+<span class="gd">-:option:`-uall,-audio,-largefile` will run :mod:`test.regrtest` with all</span>
+<span class="gd">-resources except the :option:`audio` and :option:`largefile` resources. For a</span>
+<span class="gd">-list of all resources and more command-line options, run :program:`python</span>
+<span class="gd">-regrtest.py` :option:`-h`.</span>
+<span class="gi">+``all``. The command :program:`python -m test.regrtest -uall,-audio,-largefile`</span>
+<span class="gi">+will run :mod:`test.regrtest` with all resources except the ``audio`` and</span>
+<span class="gi">+``largefile`` resources. For a list of all resources and more command-line</span>
+<span class="gi">+options, run :program:`python -m test.regrtest -h`.</span>
+ 
+ Some other ways to execute the regression tests depend on what platform the
+<span class="gd">-tests are being executed on. On Unix, you can run :program:`make` :option:`test`</span>
+<span class="gd">-at the top-level directory where Python was built. On Windows, executing</span>
+<span class="gi">+tests are being executed on. On Unix, you can run :program:`make test` at the</span>
+<span class="gi">+top-level directory where Python was built. On Windows, executing</span>
+ :program:`rt.bat` from your :file:`PCBuild` directory will run all regression
+ tests.
+ 
+<span class="gu">@@ -210,17 +210,11 @@</span>
+    methods.
+ 
+ 
+<span class="gd">-.. exception:: TestSkipped</span>
+<span class="gd">-</span>
+<span class="gd">-   Subclass of :exc:`TestFailed`. Raised when a test is skipped. This occurs when a</span>
+<span class="gd">-   needed resource (such as a network connection) is not available at the time of</span>
+<span class="gd">-   testing.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+ .. exception:: ResourceDenied
+ 
+<span class="gd">-   Subclass of :exc:`TestSkipped`. Raised when a resource (such as a network</span>
+<span class="gd">-   connection) is not available. Raised by the :func:`requires` function.</span>
+<span class="gi">+   Subclass of :exc:`unittest.SkipTest`. Raised when a resource (such as a</span>
+<span class="gi">+   network connection) is not available. Raised by the :func:`requires`</span>
+<span class="gi">+   function.</span>
+ 
+ The :mod:`test.test_support` module defines the following constants:
+ 
+<span class="gu">@@ -244,44 +238,45 @@</span>
+ 
+ .. data:: TESTFN
+ 
+<span class="gd">-   Set to the path that a temporary file may be created at. Any temporary that is</span>
+<span class="gd">-   created should be closed and unlinked (removed).</span>
+<span class="gi">+   Set to a name that is safe to use as the name of a temporary file.  Any</span>
+<span class="gi">+   temporary file that is created should be closed and unlinked (removed).</span>
+ 
+ The :mod:`test.test_support` module defines the following functions:
+ 
+ 
+ .. function:: forget(module_name)
+ 
+<span class="gd">-   Removes the module named *module_name* from ``sys.modules`` and deletes any</span>
+<span class="gi">+   Remove the module named *module_name* from ``sys.modules`` and delete any</span>
+    byte-compiled files of the module.
+ 
+ 
+ .. function:: is_resource_enabled(resource)
+ 
+<span class="gd">-   Returns :const:`True` if *resource* is enabled and available. The list of</span>
+<span class="gi">+   Return :const:`True` if *resource* is enabled and available. The list of</span>
+    available resources is only set when :mod:`test.regrtest` is executing the
+    tests.
+ 
+ 
+ .. function:: requires(resource[, msg])
+ 
+<span class="gd">-   Raises :exc:`ResourceDenied` if *resource* is not available. *msg* is the</span>
+<span class="gd">-   argument to :exc:`ResourceDenied` if it is raised. Always returns true if called</span>
+<span class="gd">-   by a function whose ``__name__`` is ``&#39;__main__&#39;``. Used when tests are executed</span>
+<span class="gd">-   by :mod:`test.regrtest`.</span>
+<span class="gi">+   Raise :exc:`ResourceDenied` if *resource* is not available. *msg* is the</span>
+<span class="gi">+   argument to :exc:`ResourceDenied` if it is raised. Always returns</span>
+<span class="gi">+   :const:`True` if called by a function whose ``__name__`` is ``&#39;__main__&#39;``.</span>
+<span class="gi">+   Used when tests are executed by :mod:`test.regrtest`.</span>
+ 
+ 
+ .. function:: findfile(filename)
+ 
+<span class="gd">-   Return the path to the file named *filename*. If no match is found *filename* is</span>
+<span class="gd">-   returned. This does not equal a failure since it could be the path to the file.</span>
+<span class="gi">+   Return the path to the file named *filename*. If no match is found</span>
+<span class="gi">+   *filename* is returned. This does not equal a failure since it could be the</span>
+<span class="gi">+   path to the file.</span>
+ 
+ 
+ .. function:: run_unittest(*classes)
+ 
+    Execute :class:`unittest.TestCase` subclasses passed to the function. The
+<span class="gd">-   function scans the classes for methods starting with the prefix ``test_`` and</span>
+<span class="gd">-   executes the tests individually.</span>
+<span class="gi">+   function scans the classes for methods starting with the prefix ``test_``</span>
+<span class="gi">+   and executes the tests individually.</span>
+ 
+    It is also legal to pass strings as parameters; these should be keys in
+    ``sys.modules``. Each associated module will be scanned by
+<span class="gu">@@ -294,37 +289,85 @@</span>
+    This will run all tests defined in the named module.
+ 
+ 
+<span class="gd">-.. function:: check_warnings()</span>
+<span class="gi">+.. function:: check_warnings(*filters, quiet=True)</span>
+ 
+<span class="gd">-   A convenience wrapper for ``warnings.catch_warnings()`` that makes</span>
+<span class="gd">-   it easier to test that a warning was correctly raised with a single</span>
+<span class="gd">-   assertion. It is approximately equivalent to calling</span>
+<span class="gd">-   ``warnings.catch_warnings(record=True)``.</span>
+<span class="gi">+   A convenience wrapper for :func:`warnings.catch_warnings()` that makes it</span>
+<span class="gi">+   easier to test that a warning was correctly raised.  It is approximately</span>
+<span class="gi">+   equivalent to calling ``warnings.catch_warnings(record=True)`` with</span>
+<span class="gi">+   :meth:`warnings.simplefilter` set to ``always`` and with the option to</span>
+<span class="gi">+   automatically validate the results that are recorded.</span>
+ 
+<span class="gd">-   The main difference is that on entry to the context manager, a</span>
+<span class="gd">-   :class:`WarningRecorder` instance is returned instead of a simple list.</span>
+<span class="gd">-   The underlying warnings list is available via the recorder object&#39;s</span>
+<span class="gd">-   :attr:`warnings` attribute, while the attributes of the last raised</span>
+<span class="gd">-   warning are also accessible directly on the object. If no warning has</span>
+<span class="gd">-   been raised, then the latter attributes will all be :const:`None`.</span>
+<span class="gi">+   ``check_warnings`` accepts 2-tuples of the form ``(&quot;message regexp&quot;,</span>
+<span class="gi">+   WarningCategory)`` as positional arguments. If one or more *filters* are</span>
+<span class="gi">+   provided, or if the optional keyword argument *quiet* is :const:`False`,</span>
+<span class="gi">+   it checks to make sure the warnings are as expected:  each specified filter</span>
+<span class="gi">+   must match at least one of the warnings raised by the enclosed code or the</span>
+<span class="gi">+   test fails, and if any warnings are raised that do not match any of the</span>
+<span class="gi">+   specified filters the test fails.  To disable the first of these checks,</span>
+<span class="gi">+   set *quiet* to :const:`True`.</span>
+ 
+<span class="gd">-   A :meth:`reset` method is also provided on the recorder object. This</span>
+<span class="gd">-   method simply clears the warning list.</span>
+<span class="gi">+   If no arguments are specified, it defaults to::</span>
+ 
+<span class="gd">-   The context manager is used like this::</span>
+<span class="gi">+      check_warnings((&quot;&quot;, Warning), quiet=True)</span>
+ 
+<span class="gd">-      with check_warnings() as w:</span>
+<span class="gd">-          warnings.simplefilter(&quot;always&quot;)</span>
+<span class="gi">+   In this case all warnings are caught and no errors are raised.</span>
+<span class="gi">+</span>
+<span class="gi">+   On entry to the context manager, a :class:`WarningRecorder` instance is</span>
+<span class="gi">+   returned. The underlying warnings list from</span>
+<span class="gi">+   :func:`~warnings.catch_warnings` is available via the recorder object&#39;s</span>
+<span class="gi">+   :attr:`warnings` attribute.  As a convenience, the attributes of the object</span>
+<span class="gi">+   representing the most recent warning can also be accessed directly through</span>
+<span class="gi">+   the recorder object (see example below).  If no warning has been raised,</span>
+<span class="gi">+   then any of the attributes that would otherwise be expected on an object</span>
+<span class="gi">+   representing a warning will return :const:`None`.</span>
+<span class="gi">+</span>
+<span class="gi">+   The recorder object also has a :meth:`reset` method, which clears the</span>
+<span class="gi">+   warnings list.</span>
+<span class="gi">+</span>
+<span class="gi">+   The context manager is designed to be used like this::</span>
+<span class="gi">+</span>
+<span class="gi">+      with check_warnings((&quot;assertion is always true&quot;, SyntaxWarning),</span>
+<span class="gi">+                          (&quot;&quot;, UserWarning)):</span>
+<span class="gi">+          exec(&#39;assert(False, &quot;Hey!&quot;)&#39;)</span>
+<span class="gi">+          warnings.warn(UserWarning(&quot;Hide me!&quot;))</span>
+<span class="gi">+</span>
+<span class="gi">+   In this case if either warning was not raised, or some other warning was</span>
+<span class="gi">+   raised, :func:`check_warnings` would raise an error.</span>
+<span class="gi">+</span>
+<span class="gi">+   When a test needs to look more deeply into the warnings, rather than</span>
+<span class="gi">+   just checking whether or not they occurred, code like this can be used::</span>
+<span class="gi">+</span>
+<span class="gi">+      with check_warnings(quiet=True) as w:</span>
+           warnings.warn(&quot;foo&quot;)
+<span class="gd">-          assert str(w.message) == &quot;foo&quot;</span>
+<span class="gi">+          assert str(w.args[0]) == &quot;foo&quot;</span>
+           warnings.warn(&quot;bar&quot;)
+<span class="gd">-          assert str(w.message) == &quot;bar&quot;</span>
+<span class="gd">-          assert str(w.warnings[0].message) == &quot;foo&quot;</span>
+<span class="gd">-          assert str(w.warnings[1].message) == &quot;bar&quot;</span>
+<span class="gi">+          assert str(w.args[0]) == &quot;bar&quot;</span>
+<span class="gi">+          assert str(w.warnings[0].args[0]) == &quot;foo&quot;</span>
+<span class="gi">+          assert str(w.warnings[1].args[0]) == &quot;bar&quot;</span>
+           w.reset()
+           assert len(w.warnings) == 0
+ 
+<span class="gi">+   Here all warnings will be caught, and the test code tests the captured</span>
+<span class="gi">+   warnings directly.</span>
+<span class="gi">+</span>
+    .. versionadded:: 2.6
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      New optional arguments *filters* and *quiet*.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: check_py3k_warnings(*filters, quiet=False)</span>
+<span class="gi">+</span>
+<span class="gi">+   Similar to :func:`check_warnings`, but for Python 3 compatibility warnings.</span>
+<span class="gi">+   If ``sys.py3kwarning == 1``, it checks if the warning is effectively raised.</span>
+<span class="gi">+   If ``sys.py3kwarning == 0``, it checks that no warning is raised.  It</span>
+<span class="gi">+   accepts 2-tuples of the form ``(&quot;message regexp&quot;, WarningCategory)`` as</span>
+<span class="gi">+   positional arguments.  When the optional keyword argument *quiet* is</span>
+<span class="gi">+   :const:`True`, it does not fail if a filter catches nothing.  Without</span>
+<span class="gi">+   arguments, it defaults to::</span>
+<span class="gi">+</span>
+<span class="gi">+      check_py3k_warnings((&quot;&quot;, DeprecationWarning), quiet=False)</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+ 
+ 
+ .. function:: captured_stdout()
+<span class="gu">@@ -342,6 +385,54 @@</span>
+    .. versionadded:: 2.6
+ 
+ 
+<span class="gi">+.. function:: import_module(name, deprecated=False)</span>
+<span class="gi">+</span>
+<span class="gi">+   This function imports and returns the named module. Unlike a normal</span>
+<span class="gi">+   import, this function raises :exc:`unittest.SkipTest` if the module</span>
+<span class="gi">+   cannot be imported.</span>
+<span class="gi">+</span>
+<span class="gi">+   Module and package deprecation messages are suppressed during this import</span>
+<span class="gi">+   if *deprecated* is :const:`True`.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: import_fresh_module(name, fresh=(), blocked=(), deprecated=False)</span>
+<span class="gi">+</span>
+<span class="gi">+   This function imports and returns a fresh copy of the named Python module</span>
+<span class="gi">+   by removing the named module from ``sys.modules`` before doing the import.</span>
+<span class="gi">+   Note that unlike :func:`reload`, the original module is not affected by</span>
+<span class="gi">+   this operation.</span>
+<span class="gi">+</span>
+<span class="gi">+   *fresh* is an iterable of additional module names that are also removed</span>
+<span class="gi">+   from the ``sys.modules`` cache before doing the import.</span>
+<span class="gi">+</span>
+<span class="gi">+   *blocked* is an iterable of module names that are replaced with :const:`0`</span>
+<span class="gi">+   in the module cache during the import to ensure that attempts to import</span>
+<span class="gi">+   them raise :exc:`ImportError`.</span>
+<span class="gi">+</span>
+<span class="gi">+   The named module and any modules named in the *fresh* and *blocked*</span>
+<span class="gi">+   parameters are saved before starting the import and then reinserted into</span>
+<span class="gi">+   ``sys.modules`` when the fresh import is complete.</span>
+<span class="gi">+</span>
+<span class="gi">+   Module and package deprecation messages are suppressed during this import</span>
+<span class="gi">+   if *deprecated* is :const:`True`.</span>
+<span class="gi">+</span>
+<span class="gi">+   This function will raise :exc:`unittest.SkipTest` is the named module</span>
+<span class="gi">+   cannot be imported.</span>
+<span class="gi">+</span>
+<span class="gi">+   Example use::</span>
+<span class="gi">+</span>
+<span class="gi">+      # Get copies of the warnings module for testing without</span>
+<span class="gi">+      # affecting the version being used by the rest of the test suite</span>
+<span class="gi">+      # One copy uses the C implementation, the other is forced to use</span>
+<span class="gi">+      # the pure Python fallback implementation</span>
+<span class="gi">+      py_warnings = import_fresh_module(&#39;warnings&#39;, blocked=[&#39;_warnings&#39;])</span>
+<span class="gi">+      c_warnings = import_fresh_module(&#39;warnings&#39;, fresh=[&#39;_warnings&#39;])</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ The :mod:`test.test_support` module defines the following classes:
+ 
+ .. class:: TransientResource(exc[, **kwargs])
+<span class="gu">@@ -355,25 +446,31 @@</span>
+    .. versionadded:: 2.6
+ .. class:: EnvironmentVarGuard()
+ 
+<span class="gd">-   Class used to temporarily set or unset environment variables.  Instances can be</span>
+<span class="gd">-   used as a context manager.</span>
+<span class="gi">+   Class used to temporarily set or unset environment variables.  Instances can</span>
+<span class="gi">+   be used as a context manager and have a complete dictionary interface for</span>
+<span class="gi">+   querying/modifying the underlying ``os.environ``. After exit from the</span>
+<span class="gi">+   context manager all changes to environment variables done through this</span>
+<span class="gi">+   instance will be rolled back.</span>
+ 
+    .. versionadded:: 2.6
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added dictionary interface.</span>
+ 
+ 
+ .. method:: EnvironmentVarGuard.set(envvar, value)
+ 
+<span class="gd">-   Temporarily set the environment variable ``envvar`` to the value of ``value``.</span>
+<span class="gi">+   Temporarily set the environment variable ``envvar`` to the value of</span>
+<span class="gi">+   ``value``.</span>
+ 
+ 
+ .. method:: EnvironmentVarGuard.unset(envvar)
+ 
+    Temporarily unset the environment variable ``envvar``.
+ 
+<span class="gi">+</span>
+ .. class:: WarningsRecorder()
+ 
+    Class used to record warnings for unit tests. See documentation of
+    :func:`check_warnings` above for more details.
+ 
+    .. versionadded:: 2.6
+<span class="gd">-</span>
+</pre></div>
+
+</body>
+</html>

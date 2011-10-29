@@ -1,0 +1,208 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/json.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -7,7 +7,7 @@</span>
+ .. sectionauthor:: Bob Ippolito &lt;bob@redivi.com&gt;
+ .. versionadded:: 2.6
+ 
+<span class="gd">-JSON (JavaScript Object Notation) &lt;http://json.org&gt; is a subset of JavaScript</span>
+<span class="gi">+`JSON (JavaScript Object Notation) &lt;http://json.org&gt;`_ is a subset of JavaScript</span>
+ syntax (ECMA-262 3rd edition) used as a lightweight data interchange format.
+ 
+ :mod:`json` exposes an API familiar to users of the standard library
+<span class="gu">@@ -139,9 +139,9 @@</span>
+    using the JavaScript equivalents (``NaN``, ``Infinity``, ``-Infinity``).
+ 
+    If *indent* is a non-negative integer, then JSON array elements and object
+<span class="gd">-   members will be pretty-printed with that indent level.  An indent level of 0</span>
+<span class="gd">-   will only insert newlines.  ``None`` (the default) selects the most compact</span>
+<span class="gd">-   representation.</span>
+<span class="gi">+   members will be pretty-printed with that indent level.  An indent level of 0,</span>
+<span class="gi">+   or negative, will only insert newlines.  ``None`` (the default) selects the</span>
+<span class="gi">+   most compact representation.</span>
+ 
+    If *separators* is an ``(item_separator, dict_separator)`` tuple, then it
+    will be used instead of the default ``(&#39;, &#39;, &#39;: &#39;)`` separators.  ``(&#39;,&#39;,
+<span class="gu">@@ -154,8 +154,13 @@</span>
+ 
+    To use a custom :class:`JSONEncoder` subclass (e.g. one that overrides the
+    :meth:`default` method to serialize additional types), specify it with the
+<span class="gd">-   *cls* kwarg.</span>
+<span class="gi">+   *cls* kwarg; otherwise :class:`JSONEncoder` is used.</span>
+ 
+<span class="gi">+   .. note::</span>
+<span class="gi">+</span>
+<span class="gi">+      Unlike :mod:`pickle` and :mod:`marshal`, JSON is not a framed protocol so</span>
+<span class="gi">+      trying to serialize more objects with repeated calls to :func:`dump` and</span>
+<span class="gi">+      the same *fp* will result in an invalid JSON file.</span>
+ 
+ .. function:: dumps(obj[, skipkeys[, ensure_ascii[, check_circular[, allow_nan[, cls[, indent[, separators[, encoding[, default[, **kw]]]]]]]]]])
+ 
+<span class="gu">@@ -166,7 +171,7 @@</span>
+    :func:`dump`.
+ 
+ 
+<span class="gd">-.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])</span>
+<span class="gi">+.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])</span>
+ 
+    Deserialize *fp* (a ``.read()``-supporting file-like object containing a JSON
+    document) to a Python object.
+<span class="gu">@@ -182,6 +187,17 @@</span>
+    *object_hook* will be used instead of the :class:`dict`.  This feature can be used
+    to implement custom decoders (e.g. JSON-RPC class hinting).
+ 
+<span class="gi">+   *object_pairs_hook* is an optional function that will be called with the</span>
+<span class="gi">+   result of any object literal decoded with an ordered list of pairs.  The</span>
+<span class="gi">+   return value of *object_pairs_hook* will be used instead of the</span>
+<span class="gi">+   :class:`dict`.  This feature can be used to implement custom decoders that</span>
+<span class="gi">+   rely on the order that the key and value pairs are decoded (for example,</span>
+<span class="gi">+   :func:`collections.OrderedDict` will remember the order of insertion). If</span>
+<span class="gi">+   *object_hook* is also defined, the *object_pairs_hook* takes priority.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added support for *object_pairs_hook*.</span>
+<span class="gi">+</span>
+    *parse_float*, if specified, will be called with the string of every JSON
+    float to be decoded.  By default, this is equivalent to ``float(num_str)``.
+    This can be used to use another datatype or parser for JSON floats
+<span class="gu">@@ -198,11 +214,11 @@</span>
+    are encountered.
+ 
+    To use a custom :class:`JSONDecoder` subclass, specify it with the ``cls``
+<span class="gd">-   kwarg.  Additional keyword arguments will be passed to the constructor of the</span>
+<span class="gd">-   class.</span>
+<span class="gi">+   kwarg; otherwise :class:`JSONDecoder` is used.  Additional keyword arguments</span>
+<span class="gi">+   will be passed to the constructor of the class.</span>
+ 
+ 
+<span class="gd">-.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])</span>
+<span class="gi">+.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])</span>
+ 
+    Deserialize *s* (a :class:`str` or :class:`unicode` instance containing a JSON
+    document) to a Python object.
+<span class="gu">@@ -212,13 +228,13 @@</span>
+    specified.  Encodings that are not ASCII based (such as UCS-2) are not
+    allowed and should be decoded to :class:`unicode` first.
+ 
+<span class="gd">-   The other arguments have the same meaning as in :func:`dump`.</span>
+<span class="gi">+   The other arguments have the same meaning as in :func:`load`.</span>
+ 
+ 
+ Encoders and decoders
+ ---------------------
+ 
+<span class="gd">-.. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict]]]]]])</span>
+<span class="gi">+.. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict[, object_pairs_hook]]]]]]])</span>
+ 
+    Simple JSON decoder.
+ 
+<span class="gu">@@ -259,6 +275,17 @@</span>
+    :class:`dict`.  This can be used to provide custom deserializations (e.g. to
+    support JSON-RPC class hinting).
+ 
+<span class="gi">+   *object_pairs_hook*, if specified will be called with the result of every</span>
+<span class="gi">+   JSON object decoded with an ordered list of pairs.  The return value of</span>
+<span class="gi">+   *object_pairs_hook* will be used instead of the :class:`dict`.  This</span>
+<span class="gi">+   feature can be used to implement custom decoders that rely on the order</span>
+<span class="gi">+   that the key and value pairs are decoded (for example,</span>
+<span class="gi">+   :func:`collections.OrderedDict` will remember the order of insertion). If</span>
+<span class="gi">+   *object_hook* is also defined, the *object_pairs_hook* takes priority.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added support for *object_pairs_hook*.</span>
+<span class="gi">+</span>
+    *parse_float*, if specified, will be called with the string of every JSON
+    float to be decoded.  By default, this is equivalent to ``float(num_str)``.
+    This can be used to use another datatype or parser for JSON floats
+<span class="gu">@@ -274,6 +301,11 @@</span>
+    ``&#39;false&#39;``.  This can be used to raise an exception if invalid JSON numbers
+    are encountered.
+ 
+<span class="gi">+   If *strict* is ``False`` (``True`` is the default), then control characters</span>
+<span class="gi">+   will be allowed inside strings.  Control characters in this context are</span>
+<span class="gi">+   those with character codes in the 0-31 range, including ``&#39;\t&#39;`` (tab),</span>
+<span class="gi">+   ``&#39;\n&#39;``, ``&#39;\r&#39;`` and ``&#39;\0&#39;``.</span>
+<span class="gi">+</span>
+ 
+    .. method:: decode(s)
+ 
+<span class="gu">@@ -338,7 +370,7 @@</span>
+    encoders and decoders.  Otherwise, it will be a :exc:`ValueError` to encode
+    such floats.
+ 
+<span class="gd">-   If *sort_keys* is ``True`` (the default), then the output of dictionaries</span>
+<span class="gi">+   If *sort_keys* is ``True`` (default ``False``), then the output of dictionaries</span>
+    will be sorted by key; this is useful for regression tests to ensure that
+    JSON serializations can be compared on a day-to-day basis.
+ 
+</pre></div>
+
+</body>
+</html>

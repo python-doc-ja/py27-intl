@@ -1,0 +1,207 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/shutil.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -16,6 +16,11 @@</span>
+ copying and removal. For operations on individual files, see also the
+ :mod:`os` module.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `shutil module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/shutil.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ .. warning::
+ 
+    Even the higher-level file copying functions (:func:`copy`, :func:`copy2`)
+<span class="gu">@@ -28,6 +33,9 @@</span>
+    are not copied.
+ 
+ 
+<span class="gi">+Directory and files operations</span>
+<span class="gi">+------------------------------</span>
+<span class="gi">+</span>
+ .. function:: copyfileobj(fsrc, fdst[, length])
+ 
+    Copy the contents of the file-like object *fsrc* to the file-like object *fdst*.
+<span class="gu">@@ -169,11 +177,10 @@</span>
+ 
+    .. versionadded:: 2.3
+ 
+<span class="gd">-</span>
+ .. _shutil-example:
+ 
+<span class="gd">-Example</span>
+<span class="gd">--------</span>
+<span class="gi">+copytree example</span>
+<span class="gi">+::::::::::::::::</span>
+ 
+ This example is the implementation of the :func:`copytree` function, described
+ above, with the docstring omitted.  It demonstrates many of the other functions
+<span class="gu">@@ -238,3 +245,96 @@</span>
+ 
+    copytree(source, destination, ignore=_logpath)
+ 
+<span class="gi">+</span>
+<span class="gi">+Archives operations</span>
+<span class="gi">+-------------------</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: make_archive(base_name, format, [root_dir, [base_dir, [verbose, [dry_run, [owner, [group, [logger]]]]]]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Create an archive file (eg. zip or tar) and returns its name.</span>
+<span class="gi">+</span>
+<span class="gi">+   *base_name* is the name of the file to create, including the path, minus</span>
+<span class="gi">+   any format-specific extension. *format* is the archive format: one of</span>
+<span class="gi">+   &quot;zip&quot;, &quot;tar&quot;, &quot;bztar&quot; or &quot;gztar&quot;.</span>
+<span class="gi">+</span>
+<span class="gi">+   *root_dir* is a directory that will be the root directory of the</span>
+<span class="gi">+   archive; ie. we typically chdir into *root_dir* before creating the</span>
+<span class="gi">+   archive.</span>
+<span class="gi">+</span>
+<span class="gi">+   *base_dir* is the directory where we start archiving from;</span>
+<span class="gi">+   ie. *base_dir* will be the common prefix of all files and</span>
+<span class="gi">+   directories in the archive.</span>
+<span class="gi">+</span>
+<span class="gi">+   *root_dir* and *base_dir* both default to the current directory.</span>
+<span class="gi">+</span>
+<span class="gi">+   *owner* and *group* are used when creating a tar archive. By default,</span>
+<span class="gi">+   uses the current owner and group.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: get_archive_formats()</span>
+<span class="gi">+</span>
+<span class="gi">+   Returns a list of supported formats for archiving.</span>
+<span class="gi">+   Each element of the returned sequence is a tuple ``(name, description)``</span>
+<span class="gi">+</span>
+<span class="gi">+   By default :mod:`shutil` provides these formats:</span>
+<span class="gi">+</span>
+<span class="gi">+   - *gztar*: gzip&#39;ed tar-file</span>
+<span class="gi">+   - *bztar*: bzip2&#39;ed tar-file</span>
+<span class="gi">+   - *tar*: uncompressed tar file</span>
+<span class="gi">+   - *zip*: ZIP file</span>
+<span class="gi">+</span>
+<span class="gi">+   You can register new formats or provide your own archiver for any existing</span>
+<span class="gi">+   formats, by using :func:`register_archive_format`.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: register_archive_format(name, function, [extra_args, [description]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Registers an archiver for the format *name*. *function* is a callable that</span>
+<span class="gi">+   will be used to invoke the archiver.</span>
+<span class="gi">+</span>
+<span class="gi">+   If given, *extra_args* is a sequence of ``(name, value)`` that will be</span>
+<span class="gi">+   used as extra keywords arguments when the archiver callable is used.</span>
+<span class="gi">+</span>
+<span class="gi">+   *description* is used by :func:`get_archive_formats` which returns the</span>
+<span class="gi">+   list of archivers. Defaults to an empty list.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function::  unregister_archive_format(name)</span>
+<span class="gi">+</span>
+<span class="gi">+   Remove the archive format *name* from the list of supported formats.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Archiving example</span>
+<span class="gi">+:::::::::::::::::</span>
+<span class="gi">+</span>
+<span class="gi">+In this example, we create a gzip&#39;ed tar-file archive containing all files</span>
+<span class="gi">+found in the :file:`.ssh` directory of the user::</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; from shutil import make_archive</span>
+<span class="gi">+    &gt;&gt;&gt; import os</span>
+<span class="gi">+    &gt;&gt;&gt; archive_name = os.path.expanduser(os.path.join(&#39;~&#39;, &#39;myarchive&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; root_dir = os.path.expanduser(os.path.join(&#39;~&#39;, &#39;.ssh&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; make_archive(archive_name, &#39;gztar&#39;, root_dir)</span>
+<span class="gi">+    &#39;/Users/tarek/myarchive.tar.gz&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+The resulting archive contains::</span>
+<span class="gi">+</span>
+<span class="gi">+    $ tar -tzvf /Users/tarek/myarchive.tar.gz</span>
+<span class="gi">+    drwx------ tarek/staff       0 2010-02-01 16:23:40 ./</span>
+<span class="gi">+    -rw-r--r-- tarek/staff     609 2008-06-09 13:26:54 ./authorized_keys</span>
+<span class="gi">+    -rwxr-xr-x tarek/staff      65 2008-06-09 13:26:54 ./config</span>
+<span class="gi">+    -rwx------ tarek/staff     668 2008-06-09 13:26:54 ./id_dsa</span>
+<span class="gi">+    -rwxr-xr-x tarek/staff     609 2008-06-09 13:26:54 ./id_dsa.pub</span>
+<span class="gi">+    -rw------- tarek/staff    1675 2008-06-09 13:26:54 ./id_rsa</span>
+<span class="gi">+    -rw-r--r-- tarek/staff     397 2008-06-09 13:26:54 ./id_rsa.pub</span>
+<span class="gi">+    -rw-r--r-- tarek/staff   37192 2010-02-06 18:23:10 ./known_hosts</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

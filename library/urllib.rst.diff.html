@@ -1,0 +1,135 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/urllib.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -23,6 +23,10 @@</span>
+ instead of filenames.  Some restrictions apply --- it can only open URLs for
+ reading, and no seek operations are available.
+ 
+<span class="gi">+.. warning:: When opening HTTPS URLs, it is not attempted to validate the</span>
+<span class="gi">+   server certificate.  Use at your own risk!</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ High-level interface
+ --------------------
+ 
+<span class="gu">@@ -163,15 +167,15 @@</span>
+       the  download is interrupted.
+ 
+       The *Content-Length* is treated as a lower bound: if there&#39;s more data  to read,
+<span class="gd">-      urlretrieve reads more data, but if less data is available,  it raises the</span>
+<span class="gd">-      exception.</span>
+<span class="gi">+      :func:`urlretrieve` reads more data, but if less data is available,  it raises</span>
+<span class="gi">+      the exception.</span>
+ 
+       You can still retrieve the downloaded data in this case, it is stored  in the
+       :attr:`content` attribute of the exception instance.
+ 
+<span class="gd">-      If no *Content-Length* header was supplied, urlretrieve can not check the size</span>
+<span class="gd">-      of the data it has downloaded, and just returns it.  In this case you just have</span>
+<span class="gd">-      to assume that the download was successful.</span>
+<span class="gi">+      If no *Content-Length* header was supplied, :func:`urlretrieve` can not check</span>
+<span class="gi">+      the size of the data it has downloaded, and just returns it.  In this case you</span>
+<span class="gi">+      just have to assume that the download was successful.</span>
+ 
+ 
+ .. data:: _urlopener
+<span class="gu">@@ -236,8 +240,8 @@</span>
+ 
+ .. function:: urlencode(query[, doseq])
+ 
+<span class="gd">-   Convert a mapping object or a sequence of two-element tuples  to a</span>
+<span class="gd">-   &quot;url-encoded&quot; string, suitable to pass to :func:`urlopen` above as the</span>
+<span class="gi">+   Convert a mapping object or a sequence of two-element tuples to a</span>
+<span class="gi">+   &quot;percent-encoded&quot; string, suitable to pass to :func:`urlopen` above as the</span>
+    optional *data* argument.  This is useful to pass a dictionary of form
+    fields to a ``POST`` request.  The resulting string is a series of
+    ``key=value`` pairs separated by ``&#39;&amp;&#39;`` characters, where both *key* and
+<span class="gu">@@ -262,7 +266,7 @@</span>
+ 
+ .. function:: url2pathname(path)
+ 
+<span class="gd">-   Convert the path component *path* from an encoded URL to the local syntax for a</span>
+<span class="gi">+   Convert the path component *path* from an percent-encoded URL to the local syntax for a</span>
+    path.  This does not accept a complete URL.  This function uses :func:`unquote`
+    to decode *path*.
+ 
+<span class="gu">@@ -447,7 +451,7 @@</span>
+   you try to fetch a file whose read permissions make it inaccessible; the FTP
+   code will try to read it, fail with a 550 error, and then perform a directory
+   listing for the unreadable file. If fine-grained control is needed, consider
+<span class="gd">-  using the :mod:`ftplib` module, subclassing :class:`FancyURLOpener`, or changing</span>
+<span class="gi">+  using the :mod:`ftplib` module, subclassing :class:`FancyURLopener`, or changing</span>
+   *_urlopener* to meet your needs.
+ 
+ * This module does not support the use of proxies which require authentication.
+</pre></div>
+
+</body>
+</html>

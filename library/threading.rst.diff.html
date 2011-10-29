@@ -1,0 +1,220 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/threading.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -26,6 +26,21 @@</span>
+    Starting with Python 2.5, several Thread methods raise :exc:`RuntimeError`
+    instead of :exc:`AssertionError` if called erroneously.
+ 
+<span class="gi">+.. impl-detail::</span>
+<span class="gi">+</span>
+<span class="gi">+   Due to the :term:`Global Interpreter Lock`, in CPython only one thread</span>
+<span class="gi">+   can execute Python code at once (even though certain performance-oriented</span>
+<span class="gi">+   libraries might overcome this limitation).</span>
+<span class="gi">+   If you want your application to make better of use of the computational</span>
+<span class="gi">+   resources of multi-core machines, you are advised to use</span>
+<span class="gi">+   :mod:`multiprocessing`. However, threading is still an appropriate model</span>
+<span class="gi">+   if you want to run multiple I/O-bound tasks simultaneously.</span>
+<span class="gi">+</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `threading module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/threading.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ 
+ This module defines the following functions and objects:
+ 
+<span class="gu">@@ -43,6 +58,8 @@</span>
+    variable allows one or more threads to wait until they are notified by another
+    thread.
+ 
+<span class="gi">+   See :ref:`condition-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: current_thread()
+               currentThread()
+<span class="gu">@@ -69,6 +86,8 @@</span>
+    with the :meth:`clear` method.  The :meth:`wait` method blocks until the flag
+    is true.
+ 
+<span class="gi">+   See :ref:`event-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. class:: local
+ 
+<span class="gu">@@ -93,6 +112,8 @@</span>
+    acquired it, subsequent attempts to acquire it block, until it is released; any
+    thread may release it.
+ 
+<span class="gi">+   See :ref:`lock-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: RLock()
+ 
+<span class="gu">@@ -101,6 +122,8 @@</span>
+    reentrant lock, the same thread may acquire it again without blocking; the
+    thread must release it once for each time it has acquired it.
+ 
+<span class="gi">+   See :ref:`rlock-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: Semaphore([value])
+    :noindex:
+<span class="gu">@@ -111,6 +134,8 @@</span>
+    if necessary until it can return without making the counter negative.  If not
+    given, *value* defaults to 1.
+ 
+<span class="gi">+   See :ref:`semaphore-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: BoundedSemaphore([value])
+ 
+<span class="gu">@@ -122,15 +147,21 @@</span>
+ 
+ 
+ .. class:: Thread
+<span class="gi">+   :noindex:</span>
+ 
+    A class that represents a thread of control.  This class can be safely
+    subclassed in a limited fashion.
+ 
+<span class="gi">+   See :ref:`thread-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. class:: Timer
+<span class="gi">+   :noindex:</span>
+ 
+    A thread that executes a function after a specified interval has passed.
+ 
+<span class="gi">+   See :ref:`timer-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: settrace(func)
+ 
+<span class="gu">@@ -259,7 +290,7 @@</span>
+       It must be called at most once per thread object.  It arranges for the
+       object&#39;s :meth:`run` method to be invoked in a separate thread of control.
+ 
+<span class="gd">-      This method will raise a :exc:`RuntimeException` if called more than once</span>
+<span class="gi">+      This method will raise a :exc:`RuntimeError` if called more than once</span>
+       on the same thread object.
+ 
+    .. method:: run()
+<span class="gu">@@ -368,7 +399,7 @@</span>
+ All methods are executed atomically.
+ 
+ 
+<span class="gd">-.. method:: Lock.acquire([blocking=1])</span>
+<span class="gi">+.. method:: Lock.acquire([blocking])</span>
+ 
+    Acquire a lock, blocking or non-blocking.
+ 
+<span class="gu">@@ -624,9 +655,9 @@</span>
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ Semaphores are often used to guard resources with limited capacity, for example,
+<span class="gd">-a database server.  In any situation where the size of the resource size is</span>
+<span class="gd">-fixed, you should use a bounded semaphore.  Before spawning any worker threads,</span>
+<span class="gd">-your main thread would initialize the semaphore::</span>
+<span class="gi">+a database server.  In any situation where the size of the resource is fixed,</span>
+<span class="gi">+you should use a bounded semaphore.  Before spawning any worker threads, your</span>
+<span class="gi">+main thread would initialize the semaphore::</span>
+ 
+    maxconnections = 5
+    ...
+<span class="gu">@@ -693,7 +724,11 @@</span>
+       floating point number specifying a timeout for the operation in seconds
+       (or fractions thereof).
+ 
+<span class="gd">-      This method always returns ``None``.</span>
+<span class="gi">+      This method returns the internal flag on exit, so it will always return</span>
+<span class="gi">+      ``True`` except if a timeout is given and the operation times out.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         Previously, the method always returned ``None``.</span>
+ 
+ 
+ .. _timer-objects:
+<span class="gu">@@ -757,9 +792,9 @@</span>
+ Importing in threaded code
+ --------------------------
+ 
+<span class="gd">-While the import machinery is thread safe, there are two key</span>
+<span class="gd">-restrictions on threaded imports due to inherent limitations in the way</span>
+<span class="gd">-that thread safety is provided:</span>
+<span class="gi">+While the import machinery is thread-safe, there are two key restrictions on</span>
+<span class="gi">+threaded imports due to inherent limitations in the way that thread-safety is</span>
+<span class="gi">+provided:</span>
+ 
+ * Firstly, other than in the main module, an import should not have the
+   side effect of spawning a new thread and then waiting for that thread in
+</pre></div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+@@ -61,6 +61,11 @@
+    reading. Instances support iteration in the same way as normal :class:`file`
+    instances.
+ 
++   :class:`BZ2File` supports the :keyword:`with` statement.
++
++   .. versionchanged:: 2.7
++      Support for the :keyword:`with` statement was added.
++
+ 
+    .. method:: close()
+ 

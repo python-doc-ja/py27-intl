@@ -1,0 +1,160 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/difflib.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -37,11 +37,16 @@</span>
+    complicated way on how many elements the sequences have in common; best case
+    time is linear.
+ 
+<span class="gd">-   **Heuristic:** To speed-up matching, items that appear more than 1% of the</span>
+<span class="gd">-   time in sequences of at least 200 items are treated as junk.  This has the</span>
+<span class="gd">-   unfortunate side-effect of giving bad results for sequences constructed from</span>
+<span class="gd">-   a small set of items.  An option to turn off the heuristic will be added to a</span>
+<span class="gd">-   future version.</span>
+<span class="gi">+   **Automatic junk heuristic:** :class:`SequenceMatcher` supports a heuristic that</span>
+<span class="gi">+   automatically treats certain sequence items as junk. The heuristic counts how many</span>
+<span class="gi">+   times each individual item appears in the sequence. If an item&#39;s duplicates (after</span>
+<span class="gi">+   the first one) account for more than 1% of the sequence and the sequence is at least</span>
+<span class="gi">+   200 items long, this item is marked as &quot;popular&quot; and is treated as junk for</span>
+<span class="gi">+   the purpose of sequence matching. This heuristic can be turned off by setting</span>
+<span class="gi">+   the ``autojunk`` argument to ``False`` when creating the :class:`SequenceMatcher`.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7.1</span>
+<span class="gi">+      The *autojunk* parameter.</span>
+ 
+ .. class:: Differ
+ 
+<span class="gu">@@ -151,8 +156,8 @@</span>
+ 
+    The context diff format normally has a header for filenames and modification
+    times.  Any or all of these may be specified using strings for *fromfile*,
+<span class="gd">-   *tofile*, *fromfiledate*, and *tofiledate*. The modification times are normally</span>
+<span class="gd">-   expressed in the format returned by :func:`time.ctime`.  If not specified, the</span>
+<span class="gi">+   *tofile*, *fromfiledate*, and *tofiledate*.  The modification times are normally</span>
+<span class="gi">+   expressed in the ISO 8601 format. If not specified, the</span>
+    strings default to blanks.
+ 
+       &gt;&gt;&gt; s1 = [&#39;bacon\n&#39;, &#39;eggs\n&#39;, &#39;ham\n&#39;, &#39;guido\n&#39;]
+<span class="gu">@@ -286,8 +291,8 @@</span>
+ 
+    The context diff format normally has a header for filenames and modification
+    times.  Any or all of these may be specified using strings for *fromfile*,
+<span class="gd">-   *tofile*, *fromfiledate*, and *tofiledate*. The modification times are normally</span>
+<span class="gd">-   expressed in the format returned by :func:`time.ctime`.  If not specified, the</span>
+<span class="gi">+   *tofile*, *fromfiledate*, and *tofiledate*.  The modification times are normally</span>
+<span class="gi">+   expressed in the ISO 8601 format. If not specified, the</span>
+    strings default to blanks.
+ 
+       &gt;&gt;&gt; s1 = [&#39;bacon\n&#39;, &#39;eggs\n&#39;, &#39;ham\n&#39;, &#39;guido\n&#39;]
+<span class="gu">@@ -339,7 +344,7 @@</span>
+ The :class:`SequenceMatcher` class has this constructor:
+ 
+ 
+<span class="gd">-.. class:: SequenceMatcher([isjunk[, a[, b]]])</span>
+<span class="gi">+.. class:: SequenceMatcher([isjunk[, a[, b[, autojunk=True]]]])</span>
+ 
+    Optional argument *isjunk* must be ``None`` (the default) or a one-argument
+    function that takes a sequence element and returns true if and only if the
+<span class="gu">@@ -355,9 +360,14 @@</span>
+    The optional arguments *a* and *b* are sequences to be compared; both default to
+    empty strings.  The elements of both sequences must be :term:`hashable`.
+ 
+<span class="gi">+   The optional argument *autojunk* can be used to disable the automatic junk</span>
+<span class="gi">+   heuristic.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7.1</span>
+<span class="gi">+      The *autojunk* parameter.</span>
+<span class="gi">+</span>
+    :class:`SequenceMatcher` objects have the following methods:
+ 
+<span class="gd">-</span>
+    .. method:: set_seqs(a, b)
+ 
+       Set the two sequences to be compared.
+<span class="gu">@@ -517,16 +527,11 @@</span>
+ 
+       Return an upper bound on :meth:`ratio` relatively quickly.
+ 
+<span class="gd">-      This isn&#39;t defined beyond that it is an upper bound on :meth:`ratio`, and</span>
+<span class="gd">-      is faster to compute.</span>
+<span class="gd">-</span>
+ 
+    .. method:: real_quick_ratio()
+ 
+       Return an upper bound on :meth:`ratio` very quickly.
+ 
+<span class="gd">-      This isn&#39;t defined beyond that it is an upper bound on :meth:`ratio`, and</span>
+<span class="gd">-      is faster to compute than either :meth:`ratio` or :meth:`quick_ratio`.</span>
+ 
+ The three methods that return the ratio of matching to total characters can give
+ different results due to differing levels of approximation, although
+</pre></div>
+
+</body>
+</html>

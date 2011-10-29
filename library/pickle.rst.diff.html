@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/pickle.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -25,6 +25,12 @@</span>
+ This documentation describes both the :mod:`pickle` module and the
+ :mod:`cPickle` module.
+ 
+<span class="gi">+.. warning::</span>
+<span class="gi">+</span>
+<span class="gi">+   The :mod:`pickle` module is not intended to be secure against erroneous or</span>
+<span class="gi">+   maliciously constructed data.  Never unpickle data received from an untrusted</span>
+<span class="gi">+   or unauthenticated source.</span>
+<span class="gi">+</span>
+ 
+ Relationship to other Python modules
+ ------------------------------------
+<span class="gu">@@ -47,7 +53,7 @@</span>
+ objects.  :mod:`marshal` exists primarily to support Python&#39;s :file:`.pyc`
+ files.
+ 
+<span class="gd">-The :mod:`pickle` module differs from :mod:`marshal` several significant ways:</span>
+<span class="gi">+The :mod:`pickle` module differs from :mod:`marshal` in several significant ways:</span>
+ 
+ * The :mod:`pickle` module keeps track of the objects it has already serialized,
+   so that later references to the same object won&#39;t be serialized again.
+<span class="gu">@@ -74,12 +80,6 @@</span>
+   The :mod:`pickle` serialization format is guaranteed to be backwards compatible
+   across Python releases.
+ 
+<span class="gd">-.. warning::</span>
+<span class="gd">-</span>
+<span class="gd">-   The :mod:`pickle` module is not intended to be secure against erroneous or</span>
+<span class="gd">-   maliciously constructed data.  Never unpickle data received from an untrusted</span>
+<span class="gd">-   or unauthenticated source.</span>
+<span class="gd">-</span>
+ Note that serialization is a more primitive notion than persistence; although
+ :mod:`pickle` reads and writes file objects, it does not handle the issue of
+ naming persistent objects, nor the (even more complicated) issue of concurrent
+<span class="gu">@@ -444,7 +444,7 @@</span>
+    instance&#39;s dictionary.  If there is no :meth:`__getstate__` method, the
+    instance&#39;s :attr:`__dict__` is pickled.
+ 
+<span class="gd">-.. method:: object.__setstate__()</span>
+<span class="gi">+.. method:: object.__setstate__(state)</span>
+ 
+    Upon unpickling, if the class also defines the method :meth:`__setstate__`,
+    it is called with the unpickled state. [#]_ If there is no
+</pre></div>
+
+</body>
+</html>

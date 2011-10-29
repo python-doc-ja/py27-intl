@@ -1,0 +1,9 @@
+@@ -17,7 +17,7 @@
+ 
+ .. exception:: MessageParseError()
+ 
+-   This is the base class for exceptions thrown by the :class:`~email.parser.Parser`
++   This is the base class for exceptions raised by the :class:`~email.parser.Parser`
+    class.  It is derived from :exc:`MessageError`.
+ 
+ 

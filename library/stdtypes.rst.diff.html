@@ -1,0 +1,717 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/stdtypes.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -224,18 +224,20 @@</span>
+    pair: C; language
+ 
+ There are four distinct numeric types: :dfn:`plain integers`, :dfn:`long
+<span class="gd">-integers`,  :dfn:`floating point numbers`, and :dfn:`complex numbers`. In</span>
+<span class="gi">+integers`, :dfn:`floating point numbers`, and :dfn:`complex numbers`. In</span>
+ addition, Booleans are a subtype of plain integers. Plain integers (also just
+ called :dfn:`integers`) are implemented using :ctype:`long` in C, which gives
+ them at least 32 bits of precision (``sys.maxint`` is always set to the maximum
+ plain integer value for the current platform, the minimum value is
+<span class="gd">-``-sys.maxint - 1``).  Long integers have unlimited precision. Floating point</span>
+<span class="gd">-numbers are implemented using :ctype:`double` in C. All bets on their precision</span>
+<span class="gd">-are off unless you happen to know the machine you are working with.</span>
+<span class="gd">-</span>
+<span class="gd">-Complex numbers have a real and imaginary part, which are each implemented using</span>
+<span class="gd">-:ctype:`double` in C.  To extract these parts from a complex number *z*, use</span>
+<span class="gd">-``z.real`` and ``z.imag``.</span>
+<span class="gi">+``-sys.maxint - 1``).  Long integers have unlimited precision.  Floating point</span>
+<span class="gi">+numbers are usually implemented using :ctype:`double` in C; information about</span>
+<span class="gi">+the precision and internal representation of floating point numbers for the</span>
+<span class="gi">+machine on which your program is running is available in</span>
+<span class="gi">+:data:`sys.float_info`.  Complex numbers have a real and imaginary part, which</span>
+<span class="gi">+are each a floating point number.  To extract these parts from a complex number</span>
+<span class="gi">+*z*, use ``z.real`` and ``z.imag``. (The standard library includes additional</span>
+<span class="gi">+numeric types, :mod:`fractions` that hold rationals, and :mod:`decimal` that</span>
+<span class="gi">+hold floating-point numbers with user-definable precision.)</span>
+ 
+ .. index::
+    pair: numeric; literals
+<span class="gu">@@ -358,10 +360,10 @@</span>
+    See :ref:`built-in-funcs` for a full description.
+ 
+ (4)
+<span class="gd">-   Complex floor division operator, modulo operator, and :func:`divmod`.</span>
+<span class="gd">-</span>
+    .. deprecated:: 2.3
+<span class="gd">-      Instead convert to float using :func:`abs` if appropriate.</span>
+<span class="gi">+      The floor division operator, the modulo operator, and the :func:`divmod`</span>
+<span class="gi">+      function are no longer defined for complex numbers.  Instead, convert to</span>
+<span class="gi">+      a floating point number using the :func:`abs` function if appropriate.</span>
+ 
+ (5)
+    Also referred to as integer division.  The resultant value is a whole integer,
+<span class="gu">@@ -455,19 +457,66 @@</span>
+    A right shift by *n* bits is equivalent to division by ``pow(2, n)``.
+ 
+ 
+<span class="gi">+Additional Methods on Integer Types</span>
+<span class="gi">+-----------------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+The integer types implement the :class:`numbers.Integral` :term:`abstract base</span>
+<span class="gi">+class`. In addition, they provide one more method:</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: int.bit_length()</span>
+<span class="gi">+.. method:: long.bit_length()</span>
+<span class="gi">+</span>
+<span class="gi">+    Return the number of bits necessary to represent an integer in binary,</span>
+<span class="gi">+    excluding the sign and leading zeros::</span>
+<span class="gi">+</span>
+<span class="gi">+        &gt;&gt;&gt; n = -37</span>
+<span class="gi">+        &gt;&gt;&gt; bin(n)</span>
+<span class="gi">+        &#39;-0b100101&#39;</span>
+<span class="gi">+        &gt;&gt;&gt; n.bit_length()</span>
+<span class="gi">+        6</span>
+<span class="gi">+</span>
+<span class="gi">+    More precisely, if ``x`` is nonzero, then ``x.bit_length()`` is the</span>
+<span class="gi">+    unique positive integer ``k`` such that ``2**(k-1) &lt;= abs(x) &lt; 2**k``.</span>
+<span class="gi">+    Equivalently, when ``abs(x)`` is small enough to have a correctly</span>
+<span class="gi">+    rounded logarithm, then ``k = 1 + int(log(abs(x), 2))``.</span>
+<span class="gi">+    If ``x`` is zero, then ``x.bit_length()`` returns ``0``.</span>
+<span class="gi">+</span>
+<span class="gi">+    Equivalent to::</span>
+<span class="gi">+</span>
+<span class="gi">+        def bit_length(self):</span>
+<span class="gi">+            s = bin(self)       # binary representation:  bin(-37) --&gt; &#39;-0b100101&#39;</span>
+<span class="gi">+            s = s.lstrip(&#39;-0b&#39;) # remove leading zeros and minus sign</span>
+<span class="gi">+            return len(s)       # len(&#39;100101&#39;) --&gt; 6</span>
+<span class="gi">+</span>
+<span class="gi">+    .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ Additional Methods on Float
+ ---------------------------
+ 
+<span class="gd">-The float type has some additional methods.</span>
+<span class="gi">+The float type implements the :class:`numbers.Real` :term:`abstract base</span>
+<span class="gi">+class`. float also has the following additional methods.</span>
+ 
+ .. method:: float.as_integer_ratio()
+ 
+<span class="gd">-    Return a pair of integers whose ratio is exactly equal to the</span>
+<span class="gd">-    original float and with a positive denominator.  Raises</span>
+<span class="gd">-    :exc:`OverflowError` on infinities and a :exc:`ValueError` on</span>
+<span class="gd">-    NaNs.</span>
+<span class="gd">-</span>
+<span class="gd">-    .. versionadded:: 2.6</span>
+<span class="gi">+   Return a pair of integers whose ratio is exactly equal to the</span>
+<span class="gi">+   original float and with a positive denominator.  Raises</span>
+<span class="gi">+   :exc:`OverflowError` on infinities and a :exc:`ValueError` on</span>
+<span class="gi">+   NaNs.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: float.is_integer()</span>
+<span class="gi">+</span>
+<span class="gi">+   Return ``True`` if the float instance is finite with integral</span>
+<span class="gi">+   value, and ``False`` otherwise::</span>
+<span class="gi">+</span>
+<span class="gi">+      &gt;&gt;&gt; (-2.0).is_integer()</span>
+<span class="gi">+      True</span>
+<span class="gi">+      &gt;&gt;&gt; (3.2).is_integer()</span>
+<span class="gi">+      False</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.6</span>
+ 
+ Two methods support conversion to
+ and from hexadecimal strings.  Since Python&#39;s floats are stored
+<span class="gu">@@ -614,11 +663,11 @@</span>
+ 
+ .. _typesseq:
+ 
+<span class="gd">-Sequence Types --- :class:`str`, :class:`unicode`, :class:`list`, :class:`tuple`, :class:`buffer`, :class:`xrange`</span>
+<span class="gd">-==================================================================================================================</span>
+<span class="gd">-</span>
+<span class="gd">-There are six sequence types: strings, Unicode strings, lists, tuples, buffers,</span>
+<span class="gd">-and xrange objects.</span>
+<span class="gi">+Sequence Types --- :class:`str`, :class:`unicode`, :class:`list`, :class:`tuple`, :class:`bytearray`, :class:`buffer`, :class:`xrange`</span>
+<span class="gi">+======================================================================================================================================</span>
+<span class="gi">+</span>
+<span class="gi">+There are seven sequence types: strings, Unicode strings, lists, tuples,</span>
+<span class="gi">+bytearrays, buffers, and xrange objects.</span>
+ 
+ For other containers see the built in :class:`dict` and :class:`set` classes,
+ and the :mod:`collections` module.
+<span class="gu">@@ -630,6 +679,7 @@</span>
+    object: Unicode
+    object: tuple
+    object: list
+<span class="gi">+   object: bytearray</span>
+    object: buffer
+    object: xrange
+ 
+<span class="gu">@@ -645,6 +695,8 @@</span>
+ must have the enclosing parentheses, such as ``a, b, c`` or ``()``.  A
+ single item tuple must have a trailing comma, such as ``(d,)``.
+ 
+<span class="gi">+Bytearray objects are created with the built-in function :func:`bytearray`.</span>
+<span class="gi">+</span>
+ Buffer objects are not directly supported by Python syntax, but can be created
+ by calling the built-in function :func:`buffer`.  They don&#39;t support
+ concatenation or repetition.
+<span class="gu">@@ -691,6 +743,12 @@</span>
+ +------------------+--------------------------------+----------+
+ | ``max(s)``       | largest item of *s*            |          |
+ +------------------+--------------------------------+----------+
+<span class="gi">+| ``s.index(i)``   | index of the first occurence   |          |</span>
+<span class="gi">+|                  | of *i* in *s*                  |          |</span>
+<span class="gi">++------------------+--------------------------------+----------+</span>
+<span class="gi">+| ``s.count(i)``   | total number of occurences of  |          |</span>
+<span class="gi">+|                  | *i* in *s*                     |          |</span>
+<span class="gi">++------------------+--------------------------------+----------+</span>
+ 
+ Sequence types also support comparisons. In particular, tuples and lists
+ are compared lexicographically by comparing corresponding
+<span class="gu">@@ -788,8 +846,9 @@</span>
+ 
+ .. index:: pair: string; methods
+ 
+<span class="gd">-Below are listed the string methods which both 8-bit strings and Unicode objects</span>
+<span class="gd">-support. Note that none of these methods take keyword arguments.</span>
+<span class="gi">+Below are listed the string methods which both 8-bit strings and</span>
+<span class="gi">+Unicode objects support.  Some of them are also available on :class:`bytearray`</span>
+<span class="gi">+objects.</span>
+ 
+ In addition, Python&#39;s strings support the sequence type methods
+ described in the :ref:`typesseq` section. To output formatted strings
+<span class="gu">@@ -835,6 +894,8 @@</span>
+    .. versionchanged:: 2.3
+       Support for other error handling schemes added.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Support for keyword arguments added.</span>
+ 
+ .. method:: str.encode([encoding[,errors]])
+ 
+<span class="gu">@@ -853,6 +914,8 @@</span>
+       Support for ``&#39;xmlcharrefreplace&#39;`` and ``&#39;backslashreplace&#39;`` and other error
+       handling schemes added.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Support for keyword arguments added.</span>
+ 
+ .. method:: str.endswith(suffix[, start[, end]])
+ 
+<span class="gu">@@ -881,6 +944,15 @@</span>
+    *start* and *end* are interpreted as in slice notation.  Return ``-1`` if
+    *sub* is not found.
+ 
+<span class="gi">+   .. note::</span>
+<span class="gi">+</span>
+<span class="gi">+      The :meth:`~str.find` method should be used only if you need to know the</span>
+<span class="gi">+      position of *sub*.  To check if *sub* is a substring or not, use the</span>
+<span class="gi">+      :keyword:`in` operator::</span>
+<span class="gi">+</span>
+<span class="gi">+         &gt;&gt;&gt; &#39;Py&#39; in &#39;Python&#39;</span>
+<span class="gi">+         True</span>
+<span class="gi">+</span>
+ 
+ .. method:: str.format(*args, **kwargs)
+ 
+<span class="gu">@@ -1297,8 +1369,8 @@</span>
+ dictionary inserted immediately after the ``&#39;%&#39;`` character. The mapping key
+ selects the value to be formatted from the mapping.  For example:
+ 
+<span class="gd">-   &gt;&gt;&gt; print &#39;%(language)s has %(#)03d quote types.&#39; % \</span>
+<span class="gd">-   ...       {&#39;language&#39;: &quot;Python&quot;, &quot;#&quot;: 2}</span>
+<span class="gi">+   &gt;&gt;&gt; print &#39;%(language)s has %(number)03d quote types.&#39; % \</span>
+<span class="gi">+   ...       {&quot;language&quot;: &quot;Python&quot;, &quot;number&quot;: 2}</span>
+    Python has 002 quote types.
+ 
+ In this case no ``*`` specifiers may occur in a format (since they require a
+<span class="gu">@@ -1419,9 +1491,9 @@</span>
+ 
+ .. XXX Examples?
+ 
+<span class="gd">-For safety reasons, floating point precisions are clipped to 50; ``%f``</span>
+<span class="gd">-conversions for numbers whose absolute value is over 1e50 are replaced by ``%g``</span>
+<span class="gd">-conversions. [#]_  All other errors raise exceptions.</span>
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   ``%f`` conversions for numbers whose absolute value is over 1e50 are no</span>
+<span class="gi">+   longer replaced by ``%g`` conversions.</span>
+ 
+ .. index::
+    module: string
+<span class="gu">@@ -1456,11 +1528,29 @@</span>
+    triple: mutable; sequence; types
+    object: list
+ 
+<span class="gd">-List objects support additional operations that allow in-place modification of</span>
+<span class="gd">-the object. Other mutable sequence types (when added to the language) should</span>
+<span class="gd">-also support these operations. Strings and tuples are immutable sequence types:</span>
+<span class="gd">-such objects cannot be modified once created. The following operations are</span>
+<span class="gd">-defined on mutable sequence types (where *x* is an arbitrary object):</span>
+<span class="gi">+List and :class:`bytearray` objects support additional operations that allow</span>
+<span class="gi">+in-place modification of the object. Other mutable sequence types (when added</span>
+<span class="gi">+to the language) should also support these operations. Strings and tuples</span>
+<span class="gi">+are immutable sequence types: such objects cannot be modified once created.</span>
+<span class="gi">+The following operations are defined on mutable sequence types (where *x* is</span>
+<span class="gi">+an arbitrary object):</span>
+<span class="gi">+</span>
+<span class="gi">+.. index::</span>
+<span class="gi">+   triple: operations on; sequence; types</span>
+<span class="gi">+   triple: operations on; list; type</span>
+<span class="gi">+   pair: subscript; assignment</span>
+<span class="gi">+   pair: slice; assignment</span>
+<span class="gi">+   pair: extended slice; assignment</span>
+<span class="gi">+   statement: del</span>
+<span class="gi">+   single: append() (list method)</span>
+<span class="gi">+   single: extend() (list method)</span>
+<span class="gi">+   single: count() (list method)</span>
+<span class="gi">+   single: index() (list method)</span>
+<span class="gi">+   single: insert() (list method)</span>
+<span class="gi">+   single: pop() (list method)</span>
+<span class="gi">+   single: remove() (list method)</span>
+<span class="gi">+   single: reverse() (list method)</span>
+<span class="gi">+   single: sort() (list method)</span>
+ 
+ +------------------------------+--------------------------------+---------------------+
+ | Operation                    | Result                         | Notes               |
+<span class="gu">@@ -1507,23 +1597,6 @@</span>
+ | reverse]]])``                |                                |                     |
+ +------------------------------+--------------------------------+---------------------+
+ 
+<span class="gd">-.. index::</span>
+<span class="gd">-   triple: operations on; sequence; types</span>
+<span class="gd">-   triple: operations on; list; type</span>
+<span class="gd">-   pair: subscript; assignment</span>
+<span class="gd">-   pair: slice; assignment</span>
+<span class="gd">-   pair: extended slice; assignment</span>
+<span class="gd">-   statement: del</span>
+<span class="gd">-   single: append() (list method)</span>
+<span class="gd">-   single: extend() (list method)</span>
+<span class="gd">-   single: count() (list method)</span>
+<span class="gd">-   single: index() (list method)</span>
+<span class="gd">-   single: insert() (list method)</span>
+<span class="gd">-   single: pop() (list method)</span>
+<span class="gd">-   single: remove() (list method)</span>
+<span class="gd">-   single: reverse() (list method)</span>
+<span class="gd">-   single: sort() (list method)</span>
+<span class="gd">-</span>
+ Notes:
+ 
+ (1)
+<span class="gu">@@ -1584,7 +1657,8 @@</span>
+    In general, the *key* and *reverse* conversion processes are much faster than
+    specifying an equivalent *cmp* function.  This is because *cmp* is called
+    multiple times for each list element while *key* and *reverse* touch each
+<span class="gd">-   element only once.</span>
+<span class="gi">+   element only once.  Use :func:`functools.cmp_to_key` to convert an</span>
+<span class="gi">+   old-style *cmp* function to a *key* function.</span>
+ 
+    .. versionchanged:: 2.3
+       Support for ``None`` as an equivalent to omitting *cmp* was added.
+<span class="gu">@@ -1634,9 +1708,13 @@</span>
+ The :class:`set` type is mutable --- the contents can be changed using methods
+ like :meth:`add` and :meth:`remove`.  Since it is mutable, it has no hash value
+ and cannot be used as either a dictionary key or as an element of another set.
+<span class="gd">-The :class:`frozenset` type is immutable and :term:`hashable` --- its contents cannot be</span>
+<span class="gd">-altered after it is created; it can therefore be used as a dictionary key or as</span>
+<span class="gd">-an element of another set.</span>
+<span class="gi">+The :class:`frozenset` type is immutable and :term:`hashable` --- its contents</span>
+<span class="gi">+cannot be altered after it is created; it can therefore be used as a dictionary</span>
+<span class="gi">+key or as an element of another set.</span>
+<span class="gi">+</span>
+<span class="gi">+As of Python 2.7, non-empty sets (not frozensets) can be created by placing a</span>
+<span class="gi">+comma-separated list of elements within braces, for example: ``{&#39;jack&#39;,</span>
+<span class="gi">+&#39;sjoerd&#39;}``, in addition to the :class:`set` constructor.</span>
+ 
+ The constructors for both classes work the same:
+ 
+<span class="gu">@@ -1879,15 +1957,12 @@</span>
+    values are added as items to the dictionary. If a key is specified both in the
+    positional argument and as a keyword argument, the value associated with the
+    keyword is retained in the dictionary. For example, these all return a
+<span class="gd">-   dictionary equal to ``{&quot;one&quot;: 2, &quot;two&quot;: 3}``:</span>
+<span class="gd">-</span>
+<span class="gd">-   * ``dict(one=2, two=3)``</span>
+<span class="gd">-</span>
+<span class="gd">-   * ``dict({&#39;one&#39;: 2, &#39;two&#39;: 3})``</span>
+<span class="gd">-</span>
+<span class="gd">-   * ``dict(zip((&#39;one&#39;, &#39;two&#39;), (2, 3)))``</span>
+<span class="gd">-</span>
+<span class="gd">-   * ``dict([[&#39;two&#39;, 3], [&#39;one&#39;, 2]])``</span>
+<span class="gi">+   dictionary equal to ``{&quot;one&quot;: 1, &quot;two&quot;: 2}``:</span>
+<span class="gi">+</span>
+<span class="gi">+   * ``dict(one=1, two=2)``</span>
+<span class="gi">+   * ``dict({&#39;one&#39;: 1, &#39;two&#39;: 2})``</span>
+<span class="gi">+   * ``dict(zip((&#39;one&#39;, &#39;two&#39;), (1, 2)))``</span>
+<span class="gi">+   * ``dict([[&#39;two&#39;, 2], [&#39;one&#39;, 1]])``</span>
+ 
+    The first example only works for keys that are valid Python
+    identifiers; the others work with any valid keys.
+<span class="gu">@@ -2059,7 +2134,7 @@</span>
+       existing keys.  Return ``None``.
+ 
+       :func:`update` accepts either another dictionary object or an iterable of
+<span class="gd">-      key/value pairs (as a tuple or other iterable of length two).  If keyword</span>
+<span class="gi">+      key/value pairs (as tuples or other iterables of length two).  If keyword</span>
+       arguments are specified, the dictionary is then updated with those
+       key/value pairs: ``d.update(red=1, blue=2)``.
+ 
+<span class="gu">@@ -2072,6 +2147,121 @@</span>
+       Return a copy of the dictionary&#39;s list of values.  See the note for
+       :meth:`dict.items`.
+ 
+<span class="gi">+   .. method:: viewitems()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a new view of the dictionary&#39;s items (``(key, value)`` pairs).  See</span>
+<span class="gi">+      below for documentation of view objects.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: viewkeys()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a new view of the dictionary&#39;s keys.  See below for documentation of</span>
+<span class="gi">+      view objects.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: viewvalues()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a new view of the dictionary&#39;s values.  See below for documentation of</span>
+<span class="gi">+      view objects.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _dict-views:</span>
+<span class="gi">+</span>
+<span class="gi">+Dictionary view objects</span>
+<span class="gi">+-----------------------</span>
+<span class="gi">+</span>
+<span class="gi">+The objects returned by :meth:`dict.viewkeys`, :meth:`dict.viewvalues` and</span>
+<span class="gi">+:meth:`dict.viewitems` are *view objects*.  They provide a dynamic view on the</span>
+<span class="gi">+dictionary&#39;s entries, which means that when the dictionary changes, the view</span>
+<span class="gi">+reflects these changes.</span>
+<span class="gi">+</span>
+<span class="gi">+Dictionary views can be iterated over to yield their respective data, and</span>
+<span class="gi">+support membership tests:</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: len(dictview)</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the number of entries in the dictionary.</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: iter(dictview)</span>
+<span class="gi">+</span>
+<span class="gi">+   Return an iterator over the keys, values or items (represented as tuples of</span>
+<span class="gi">+   ``(key, value)``) in the dictionary.</span>
+<span class="gi">+</span>
+<span class="gi">+   Keys and values are iterated over in an arbitrary order which is non-random,</span>
+<span class="gi">+   varies across Python implementations, and depends on the dictionary&#39;s history</span>
+<span class="gi">+   of insertions and deletions. If keys, values and items views are iterated</span>
+<span class="gi">+   over with no intervening modifications to the dictionary, the order of items</span>
+<span class="gi">+   will directly correspond.  This allows the creation of ``(value, key)`` pairs</span>
+<span class="gi">+   using :func:`zip`: ``pairs = zip(d.values(), d.keys())``.  Another way to</span>
+<span class="gi">+   create the same list is ``pairs = [(v, k) for (k, v) in d.items()]``.</span>
+<span class="gi">+</span>
+<span class="gi">+   Iterating views while adding or deleting entries in the dictionary may raise</span>
+<span class="gi">+   a :exc:`RuntimeError` or fail to iterate over all entries.</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: x in dictview</span>
+<span class="gi">+</span>
+<span class="gi">+   Return ``True`` if *x* is in the underlying dictionary&#39;s keys, values or</span>
+<span class="gi">+   items (in the latter case, *x* should be a ``(key, value)`` tuple).</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Keys views are set-like since their entries are unique and hashable.  If all</span>
+<span class="gi">+values are hashable, so that (key, value) pairs are unique and hashable, then</span>
+<span class="gi">+the items view is also set-like.  (Values views are not treated as set-like</span>
+<span class="gi">+since the entries are generally not unique.)  Then these set operations are</span>
+<span class="gi">+available (&quot;other&quot; refers either to another view or a set):</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: dictview &amp; other</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the intersection of the dictview and the other object as a new set.</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: dictview | other</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the union of the dictview and the other object as a new set.</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: dictview - other</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the difference between the dictview and the other object (all elements</span>
+<span class="gi">+   in *dictview* that aren&#39;t in *other*) as a new set.</span>
+<span class="gi">+</span>
+<span class="gi">+.. describe:: dictview ^ other</span>
+<span class="gi">+</span>
+<span class="gi">+   Return the symmetric difference (all elements either in *dictview* or</span>
+<span class="gi">+   *other*, but not in both) of the dictview and the other object as a new set.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+An example of dictionary view usage::</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; dishes = {&#39;eggs&#39;: 2, &#39;sausage&#39;: 1, &#39;bacon&#39;: 1, &#39;spam&#39;: 500}</span>
+<span class="gi">+   &gt;&gt;&gt; keys = dishes.viewkeys()</span>
+<span class="gi">+   &gt;&gt;&gt; values = dishes.viewvalues()</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # iteration</span>
+<span class="gi">+   &gt;&gt;&gt; n = 0</span>
+<span class="gi">+   &gt;&gt;&gt; for val in values:</span>
+<span class="gi">+   ...     n += val</span>
+<span class="gi">+   &gt;&gt;&gt; print(n)</span>
+<span class="gi">+   504</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # keys and values are iterated over in the same order</span>
+<span class="gi">+   &gt;&gt;&gt; list(keys)</span>
+<span class="gi">+   [&#39;eggs&#39;, &#39;bacon&#39;, &#39;sausage&#39;, &#39;spam&#39;]</span>
+<span class="gi">+   &gt;&gt;&gt; list(values)</span>
+<span class="gi">+   [2, 1, 1, 500]</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # view objects are dynamic and reflect dict changes</span>
+<span class="gi">+   &gt;&gt;&gt; del dishes[&#39;eggs&#39;]</span>
+<span class="gi">+   &gt;&gt;&gt; del dishes[&#39;sausage&#39;]</span>
+<span class="gi">+   &gt;&gt;&gt; list(keys)</span>
+<span class="gi">+   [&#39;spam&#39;, &#39;bacon&#39;]</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; # set operations</span>
+<span class="gi">+   &gt;&gt;&gt; keys &amp; {&#39;eggs&#39;, &#39;bacon&#39;, &#39;salad&#39;}</span>
+<span class="gi">+   {&#39;bacon&#39;}</span>
+<span class="gi">+</span>
+ 
+ .. _bltin-file-objects:
+ 
+<span class="gu">@@ -2211,11 +2401,12 @@</span>
+ 
+ .. method:: file.readline([size])
+ 
+<span class="gd">-   Read one entire line from the file.  A trailing newline character is kept in the</span>
+<span class="gd">-   string (but may be absent when a file ends with an incomplete line). [#]_  If</span>
+<span class="gd">-   the *size* argument is present and non-negative, it is a maximum byte count</span>
+<span class="gd">-   (including the trailing newline) and an incomplete line may be returned. An</span>
+<span class="gd">-   empty string is returned *only* when EOF is encountered immediately.</span>
+<span class="gi">+   Read one entire line from the file.  A trailing newline character is kept in</span>
+<span class="gi">+   the string (but may be absent when a file ends with an incomplete line). [#]_</span>
+<span class="gi">+   If the *size* argument is present and non-negative, it is a maximum byte</span>
+<span class="gi">+   count (including the trailing newline) and an incomplete line may be</span>
+<span class="gi">+   returned. When *size* is not 0, an empty string is returned *only* when EOF</span>
+<span class="gi">+   is encountered immediately.</span>
+ 
+    .. note::
+ 
+<span class="gu">@@ -2357,14 +2548,14 @@</span>
+ 
+ .. attribute:: file.newlines
+ 
+<span class="gd">-   If Python was built with the :option:`--with-universal-newlines` option to</span>
+<span class="gd">-   :program:`configure` (the default) this read-only attribute exists, and for</span>
+<span class="gd">-   files opened in universal newline read mode it keeps track of the types of</span>
+<span class="gd">-   newlines encountered while reading the file. The values it can take are</span>
+<span class="gd">-   ``&#39;\r&#39;``, ``&#39;\n&#39;``, ``&#39;\r\n&#39;``, ``None`` (unknown, no newlines read yet) or a</span>
+<span class="gd">-   tuple containing all the newline types seen, to indicate that multiple newline</span>
+<span class="gd">-   conventions were encountered. For files not opened in universal newline read</span>
+<span class="gd">-   mode the value of this attribute will be ``None``.</span>
+<span class="gi">+   If Python was built with universal newlines enabled (the default) this</span>
+<span class="gi">+   read-only attribute exists, and for files opened in universal newline read</span>
+<span class="gi">+   mode it keeps track of the types of newlines encountered while reading the</span>
+<span class="gi">+   file. The values it can take are ``&#39;\r&#39;``, ``&#39;\n&#39;``, ``&#39;\r\n&#39;``, ``None``</span>
+<span class="gi">+   (unknown, no newlines read yet) or a tuple containing all the newline types</span>
+<span class="gi">+   seen, to indicate that multiple newline conventions were encountered. For</span>
+<span class="gi">+   files not opened in universal newline read mode the value of this attribute</span>
+<span class="gi">+   will be ``None``.</span>
+ 
+ 
+ .. attribute:: file.softspace
+<span class="gu">@@ -2384,6 +2575,117 @@</span>
+       state.
+ 
+ 
+<span class="gi">+.. _typememoryview:</span>
+<span class="gi">+</span>
+<span class="gi">+memoryview type</span>
+<span class="gi">+===============</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`memoryview` objects allow Python code to access the internal data</span>
+<span class="gi">+of an object that supports the buffer protocol without copying.  Memory</span>
+<span class="gi">+is generally interpreted as simple bytes.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: memoryview(obj)</span>
+<span class="gi">+</span>
+<span class="gi">+   Create a :class:`memoryview` that references *obj*.  *obj* must support the</span>
+<span class="gi">+   buffer protocol.  Built-in objects that support the buffer protocol include</span>
+<span class="gi">+   :class:`str` and :class:`bytearray` (but not :class:`unicode`).</span>
+<span class="gi">+</span>
+<span class="gi">+   A :class:`memoryview` has the notion of an *element*, which is the</span>
+<span class="gi">+   atomic memory unit handled by the originating object *obj*.  For many</span>
+<span class="gi">+   simple types such as :class:`str` and :class:`bytearray`, an element</span>
+<span class="gi">+   is a single byte, but other third-party types may expose larger elements.</span>
+<span class="gi">+</span>
+<span class="gi">+   ``len(view)`` returns the total number of elements in the memoryview,</span>
+<span class="gi">+   *view*.  The :class:`~memoryview.itemsize` attribute will give you the</span>
+<span class="gi">+   number of bytes in a single element.</span>
+<span class="gi">+</span>
+<span class="gi">+   A :class:`memoryview` supports slicing to expose its data.  Taking a single</span>
+<span class="gi">+   index will return a single element as a :class:`str` object.  Full</span>
+<span class="gi">+   slicing will result in a subview::</span>
+<span class="gi">+</span>
+<span class="gi">+      &gt;&gt;&gt; v = memoryview(&#39;abcefg&#39;)</span>
+<span class="gi">+      &gt;&gt;&gt; v[1]</span>
+<span class="gi">+      &#39;b&#39;</span>
+<span class="gi">+      &gt;&gt;&gt; v[-1]</span>
+<span class="gi">+      &#39;g&#39;</span>
+<span class="gi">+      &gt;&gt;&gt; v[1:4]</span>
+<span class="gi">+      &lt;memory at 0x77ab28&gt;</span>
+<span class="gi">+      &gt;&gt;&gt; v[1:4].tobytes()</span>
+<span class="gi">+      &#39;bce&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+   If the object the memoryview is over supports changing its data, the</span>
+<span class="gi">+   memoryview supports slice assignment::</span>
+<span class="gi">+</span>
+<span class="gi">+      &gt;&gt;&gt; data = bytearray(&#39;abcefg&#39;)</span>
+<span class="gi">+      &gt;&gt;&gt; v = memoryview(data)</span>
+<span class="gi">+      &gt;&gt;&gt; v.readonly</span>
+<span class="gi">+      False</span>
+<span class="gi">+      &gt;&gt;&gt; v[0] = &#39;z&#39;</span>
+<span class="gi">+      &gt;&gt;&gt; data</span>
+<span class="gi">+      bytearray(b&#39;zbcefg&#39;)</span>
+<span class="gi">+      &gt;&gt;&gt; v[1:4] = &#39;123&#39;</span>
+<span class="gi">+      &gt;&gt;&gt; data</span>
+<span class="gi">+      bytearray(b&#39;z123fg&#39;)</span>
+<span class="gi">+      &gt;&gt;&gt; v[2] = &#39;spam&#39;</span>
+<span class="gi">+      Traceback (most recent call last):</span>
+<span class="gi">+        File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span>
+<span class="gi">+      ValueError: cannot modify size of memoryview object</span>
+<span class="gi">+</span>
+<span class="gi">+   Notice how the size of the memoryview object cannot be changed.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`memoryview` has two methods:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: tobytes()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return the data in the buffer as a bytestring (an object of class</span>
+<span class="gi">+      :class:`str`). ::</span>
+<span class="gi">+</span>
+<span class="gi">+         &gt;&gt;&gt; m = memoryview(&quot;abc&quot;)</span>
+<span class="gi">+         &gt;&gt;&gt; m.tobytes()</span>
+<span class="gi">+         &#39;abc&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: tolist()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return the data in the buffer as a list of integers. ::</span>
+<span class="gi">+</span>
+<span class="gi">+         &gt;&gt;&gt; memoryview(&quot;abc&quot;).tolist()</span>
+<span class="gi">+         [97, 98, 99]</span>
+<span class="gi">+</span>
+<span class="gi">+   There are also several readonly attributes available:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: format</span>
+<span class="gi">+</span>
+<span class="gi">+      A string containing the format (in :mod:`struct` module style) for each</span>
+<span class="gi">+      element in the view.  This defaults to ``&#39;B&#39;``, a simple bytestring.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: itemsize</span>
+<span class="gi">+</span>
+<span class="gi">+      The size in bytes of each element of the memoryview.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: shape</span>
+<span class="gi">+</span>
+<span class="gi">+      A tuple of integers the length of :attr:`ndim` giving the shape of the</span>
+<span class="gi">+      memory as a N-dimensional array.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: ndim</span>
+<span class="gi">+</span>
+<span class="gi">+      An integer indicating how many dimensions of a multi-dimensional array the</span>
+<span class="gi">+      memory represents.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: strides</span>
+<span class="gi">+</span>
+<span class="gi">+      A tuple of integers the length of :attr:`ndim` giving the size in bytes to</span>
+<span class="gi">+      access each element for each dimension of the array.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: readonly</span>
+<span class="gi">+</span>
+<span class="gi">+      A bool indicating whether the memory is read only.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. memoryview.suboffsets isn&#39;t documented because it only seems useful for C</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. _typecontextmanager:
+ 
+ Context Manager Types
+<span class="gu">@@ -2742,10 +3044,6 @@</span>
+ .. [#] To format only a tuple you should therefore provide a singleton tuple whose only
+    element is the tuple to be formatted.
+ 
+<span class="gd">-.. [#] These numbers are fairly arbitrary.  They are intended to avoid printing endless</span>
+<span class="gd">-   strings of meaningless digits without hampering correct use and without having</span>
+<span class="gd">-   to know the exact precision of floating point values on a particular machine.</span>
+<span class="gd">-</span>
+ .. [#] The advantage of leaving the newline on is that returning an empty string is
+    then an unambiguous EOF indication.  It is also possible (in cases where it
+    might matter, for example, if you want to make an exact copy of a file while
+</pre></div>
+
+</body>
+</html>

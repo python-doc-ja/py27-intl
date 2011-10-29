@@ -1,0 +1,347 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>license.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -100,9 +100,9 @@</span>
+ +----------------+--------------+-----------+------------+-----------------+
+ | 2.6.3          | 2.6.2        | 2009      | PSF        | yes             |
+ +----------------+--------------+-----------+------------+-----------------+
+<span class="gd">-| 2.6.4          | 2.6.3        | 2009      | PSF        | yes             |</span>
+<span class="gi">+| 2.6.4          | 2.6.3        | 2010      | PSF        | yes             |</span>
+ +----------------+--------------+-----------+------------+-----------------+
+<span class="gd">-| 2.6.5          | 2.6.4        | 2010      | PSF        | yes             |</span>
+<span class="gi">+| 2.7            | 2.6          | 2010      | PSF        | yes             |</span>
+ +----------------+--------------+-----------+------------+-----------------+
+ 
+ .. note::
+<span class="gu">@@ -716,3 +716,260 @@</span>
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+strtod and dtoa</span>
+<span class="gi">+---------------</span>
+<span class="gi">+</span>
+<span class="gi">+The file :file:`Python/dtoa.c`, which supplies C functions dtoa and</span>
+<span class="gi">+strtod for conversion of C doubles to and from strings, is derived</span>
+<span class="gi">+from the file of the same name by David M. Gay, currently available</span>
+<span class="gi">+from http://www.netlib.org/fp/.  The original file, as retrieved on</span>
+<span class="gi">+March 16, 2009, contains the following copyright and licensing</span>
+<span class="gi">+notice::</span>
+<span class="gi">+</span>
+<span class="gi">+   /****************************************************************</span>
+<span class="gi">+    *</span>
+<span class="gi">+    * The author of this software is David M. Gay.</span>
+<span class="gi">+    *</span>
+<span class="gi">+    * Copyright (c) 1991, 2000, 2001 by Lucent Technologies.</span>
+<span class="gi">+    *</span>
+<span class="gi">+    * Permission to use, copy, modify, and distribute this software for any</span>
+<span class="gi">+    * purpose without fee is hereby granted, provided that this entire notice</span>
+<span class="gi">+    * is included in all copies of any software which is or includes a copy</span>
+<span class="gi">+    * or modification of this software and in all copies of the supporting</span>
+<span class="gi">+    * documentation for such software.</span>
+<span class="gi">+    *</span>
+<span class="gi">+    * THIS SOFTWARE IS BEING PROVIDED &quot;AS IS&quot;, WITHOUT ANY EXPRESS OR IMPLIED</span>
+<span class="gi">+    * WARRANTY.  IN PARTICULAR, NEITHER THE AUTHOR NOR LUCENT MAKES ANY</span>
+<span class="gi">+    * REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY</span>
+<span class="gi">+    * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.</span>
+<span class="gi">+    *</span>
+<span class="gi">+    ***************************************************************/</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+OpenSSL</span>
+<span class="gi">+-------</span>
+<span class="gi">+</span>
+<span class="gi">+The modules :mod:`hashlib`, :mod:`posix`, :mod:`ssl`, :mod:`crypt` use</span>
+<span class="gi">+the OpenSSL library for added performance if made available by the</span>
+<span class="gi">+operating system. Additionally, the Windows installers for Python</span>
+<span class="gi">+include a copy of the OpenSSL libraries, so we include a copy of the</span>
+<span class="gi">+OpenSSL license here::</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+  LICENSE ISSUES</span>
+<span class="gi">+  ==============</span>
+<span class="gi">+</span>
+<span class="gi">+  The OpenSSL toolkit stays under a dual license, i.e. both the conditions of</span>
+<span class="gi">+  the OpenSSL License and the original SSLeay license apply to the toolkit.</span>
+<span class="gi">+  See below for the actual license texts. Actually both licenses are BSD-style</span>
+<span class="gi">+  Open Source licenses. In case of any license issues related to OpenSSL</span>
+<span class="gi">+  please contact openssl-core@openssl.org.</span>
+<span class="gi">+</span>
+<span class="gi">+  OpenSSL License</span>
+<span class="gi">+  ---------------</span>
+<span class="gi">+</span>
+<span class="gi">+    /* ====================================================================</span>
+<span class="gi">+     * Copyright (c) 1998-2008 The OpenSSL Project.  All rights reserved.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * Redistribution and use in source and binary forms, with or without</span>
+<span class="gi">+     * modification, are permitted provided that the following conditions</span>
+<span class="gi">+     * are met:</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 1. Redistributions of source code must retain the above copyright</span>
+<span class="gi">+     *    notice, this list of conditions and the following disclaimer.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 2. Redistributions in binary form must reproduce the above copyright</span>
+<span class="gi">+     *    notice, this list of conditions and the following disclaimer in</span>
+<span class="gi">+     *    the documentation and/or other materials provided with the</span>
+<span class="gi">+     *    distribution.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 3. All advertising materials mentioning features or use of this</span>
+<span class="gi">+     *    software must display the following acknowledgment:</span>
+<span class="gi">+     *    &quot;This product includes software developed by the OpenSSL Project</span>
+<span class="gi">+     *    for use in the OpenSSL Toolkit. (http://www.openssl.org/)&quot;</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 4. The names &quot;OpenSSL Toolkit&quot; and &quot;OpenSSL Project&quot; must not be used to</span>
+<span class="gi">+     *    endorse or promote products derived from this software without</span>
+<span class="gi">+     *    prior written permission. For written permission, please contact</span>
+<span class="gi">+     *    openssl-core@openssl.org.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 5. Products derived from this software may not be called &quot;OpenSSL&quot;</span>
+<span class="gi">+     *    nor may &quot;OpenSSL&quot; appear in their names without prior written</span>
+<span class="gi">+     *    permission of the OpenSSL Project.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * 6. Redistributions of any form whatsoever must retain the following</span>
+<span class="gi">+     *    acknowledgment:</span>
+<span class="gi">+     *    &quot;This product includes software developed by the OpenSSL Project</span>
+<span class="gi">+     *    for use in the OpenSSL Toolkit (http://www.openssl.org/)&quot;</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS&#39;&#39; AND ANY</span>
+<span class="gi">+     * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="gi">+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR</span>
+<span class="gi">+     * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR</span>
+<span class="gi">+     * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class="gi">+     * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT</span>
+<span class="gi">+     * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="gi">+     * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="gi">+     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,</span>
+<span class="gi">+     * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="gi">+     * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<span class="gi">+     * OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="gi">+     * ====================================================================</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * This product includes cryptographic software written by Eric Young</span>
+<span class="gi">+     * (eay@cryptsoft.com).  This product includes software written by Tim</span>
+<span class="gi">+     * Hudson (tjh@cryptsoft.com).</span>
+<span class="gi">+     *</span>
+<span class="gi">+     */</span>
+<span class="gi">+</span>
+<span class="gi">+ Original SSLeay License</span>
+<span class="gi">+ -----------------------</span>
+<span class="gi">+</span>
+<span class="gi">+    /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)</span>
+<span class="gi">+     * All rights reserved.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * This package is an SSL implementation written</span>
+<span class="gi">+     * by Eric Young (eay@cryptsoft.com).</span>
+<span class="gi">+     * The implementation was written so as to conform with Netscapes SSL.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * This library is free for commercial and non-commercial use as long as</span>
+<span class="gi">+     * the following conditions are aheared to.  The following conditions</span>
+<span class="gi">+     * apply to all code found in this distribution, be it the RC4, RSA,</span>
+<span class="gi">+     * lhash, DES, etc., code; not just the SSL code.  The SSL documentation</span>
+<span class="gi">+     * included with this distribution is covered by the same copyright terms</span>
+<span class="gi">+     * except that the holder is Tim Hudson (tjh@cryptsoft.com).</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * Copyright remains Eric Young&#39;s, and as such any Copyright notices in</span>
+<span class="gi">+     * the code are not to be removed.</span>
+<span class="gi">+     * If this package is used in a product, Eric Young should be given attribution</span>
+<span class="gi">+     * as the author of the parts of the library used.</span>
+<span class="gi">+     * This can be in the form of a textual message at program startup or</span>
+<span class="gi">+     * in documentation (online or textual) provided with the package.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * Redistribution and use in source and binary forms, with or without</span>
+<span class="gi">+     * modification, are permitted provided that the following conditions</span>
+<span class="gi">+     * are met:</span>
+<span class="gi">+     * 1. Redistributions of source code must retain the copyright</span>
+<span class="gi">+     *    notice, this list of conditions and the following disclaimer.</span>
+<span class="gi">+     * 2. Redistributions in binary form must reproduce the above copyright</span>
+<span class="gi">+     *    notice, this list of conditions and the following disclaimer in the</span>
+<span class="gi">+     *    documentation and/or other materials provided with the distribution.</span>
+<span class="gi">+     * 3. All advertising materials mentioning features or use of this software</span>
+<span class="gi">+     *    must display the following acknowledgement:</span>
+<span class="gi">+     *    &quot;This product includes cryptographic software written by</span>
+<span class="gi">+     *     Eric Young (eay@cryptsoft.com)&quot;</span>
+<span class="gi">+     *    The word &#39;cryptographic&#39; can be left out if the rouines from the library</span>
+<span class="gi">+     *    being used are not cryptographic related :-).</span>
+<span class="gi">+     * 4. If you include any Windows specific code (or a derivative thereof) from</span>
+<span class="gi">+     *    the apps directory (application code) you must include an acknowledgement:</span>
+<span class="gi">+     *    &quot;This product includes software written by Tim Hudson (tjh@cryptsoft.com)&quot;</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS&#39;&#39; AND</span>
+<span class="gi">+     * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="gi">+     * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="gi">+     * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE</span>
+<span class="gi">+     * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+<span class="gi">+     * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+<span class="gi">+     * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+<span class="gi">+     * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</span>
+<span class="gi">+     * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY</span>
+<span class="gi">+     * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF</span>
+<span class="gi">+     * SUCH DAMAGE.</span>
+<span class="gi">+     *</span>
+<span class="gi">+     * The licence and distribution terms for any publically available version or</span>
+<span class="gi">+     * derivative of this code cannot be changed.  i.e. this code cannot simply be</span>
+<span class="gi">+     * copied and put under another distribution licence</span>
+<span class="gi">+     * [including the GNU Public Licence.]</span>
+<span class="gi">+     */</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+expat</span>
+<span class="gi">+-----</span>
+<span class="gi">+</span>
+<span class="gi">+The :mod:`pyexpat` extension is built using an included copy of the expat</span>
+<span class="gi">+sources unless the build is configured :option:`--with-system-expat`::</span>
+<span class="gi">+</span>
+<span class="gi">+  Copyright (c) 1998, 1999, 2000 Thai Open Source Software Center Ltd</span>
+<span class="gi">+                                 and Clark Cooper</span>
+<span class="gi">+</span>
+<span class="gi">+  Permission is hereby granted, free of charge, to any person obtaining</span>
+<span class="gi">+  a copy of this software and associated documentation files (the</span>
+<span class="gi">+  &quot;Software&quot;), to deal in the Software without restriction, including</span>
+<span class="gi">+  without limitation the rights to use, copy, modify, merge, publish,</span>
+<span class="gi">+  distribute, sublicense, and/or sell copies of the Software, and to</span>
+<span class="gi">+  permit persons to whom the Software is furnished to do so, subject to</span>
+<span class="gi">+  the following conditions:</span>
+<span class="gi">+</span>
+<span class="gi">+  The above copyright notice and this permission notice shall be included</span>
+<span class="gi">+  in all copies or substantial portions of the Software.</span>
+<span class="gi">+</span>
+<span class="gi">+  THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span>
+<span class="gi">+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span>
+<span class="gi">+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span>
+<span class="gi">+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY</span>
+<span class="gi">+  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span>
+<span class="gi">+  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
+<span class="gi">+  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+libffi</span>
+<span class="gi">+------</span>
+<span class="gi">+</span>
+<span class="gi">+The :mod:`_ctypes` extension is built using an included copy of the libffi</span>
+<span class="gi">+sources unless the build is configured :option:`--with-system-libffi`::</span>
+<span class="gi">+</span>
+<span class="gi">+   Copyright (c) 1996-2008  Red Hat, Inc and others.</span>
+<span class="gi">+</span>
+<span class="gi">+   Permission is hereby granted, free of charge, to any person obtaining</span>
+<span class="gi">+   a copy of this software and associated documentation files (the</span>
+<span class="gi">+   ``Software&#39;&#39;), to deal in the Software without restriction, including</span>
+<span class="gi">+   without limitation the rights to use, copy, modify, merge, publish,</span>
+<span class="gi">+   distribute, sublicense, and/or sell copies of the Software, and to</span>
+<span class="gi">+   permit persons to whom the Software is furnished to do so, subject to</span>
+<span class="gi">+   the following conditions:</span>
+<span class="gi">+</span>
+<span class="gi">+   The above copyright notice and this permission notice shall be included</span>
+<span class="gi">+   in all copies or substantial portions of the Software.</span>
+<span class="gi">+</span>
+<span class="gi">+   THE SOFTWARE IS PROVIDED ``AS IS&#39;&#39;, WITHOUT WARRANTY OF ANY KIND,</span>
+<span class="gi">+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span>
+<span class="gi">+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND</span>
+<span class="gi">+   NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT</span>
+<span class="gi">+   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,</span>
+<span class="gi">+   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="gi">+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER</span>
+<span class="gi">+   DEALINGS IN THE SOFTWARE.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+zlib</span>
+<span class="gi">+----</span>
+<span class="gi">+</span>
+<span class="gi">+The :mod:`zlib` extension is built using an included copy of the zlib</span>
+<span class="gi">+sources unless the zlib version found on the system is too old to be</span>
+<span class="gi">+used for the build::</span>
+<span class="gi">+</span>
+<span class="gi">+  Copyright (C) 1995-2010 Jean-loup Gailly and Mark Adler</span>
+<span class="gi">+</span>
+<span class="gi">+  This software is provided &#39;as-is&#39;, without any express or implied</span>
+<span class="gi">+  warranty.  In no event will the authors be held liable for any damages</span>
+<span class="gi">+  arising from the use of this software.</span>
+<span class="gi">+</span>
+<span class="gi">+  Permission is granted to anyone to use this software for any purpose,</span>
+<span class="gi">+  including commercial applications, and to alter it and redistribute it</span>
+<span class="gi">+  freely, subject to the following restrictions:</span>
+<span class="gi">+</span>
+<span class="gi">+  1. The origin of this software must not be misrepresented; you must not</span>
+<span class="gi">+     claim that you wrote the original software. If you use this software</span>
+<span class="gi">+     in a product, an acknowledgment in the product documentation would be</span>
+<span class="gi">+     appreciated but is not required.</span>
+<span class="gi">+</span>
+<span class="gi">+  2. Altered source versions must be plainly marked as such, and must not be</span>
+<span class="gi">+     misrepresented as being the original software.</span>
+<span class="gi">+</span>
+<span class="gi">+  3. This notice may not be removed or altered from any source distribution.</span>
+<span class="gi">+</span>
+<span class="gi">+  Jean-loup Gailly        Mark Adler</span>
+<span class="gi">+  jloup@gzip.org          madler@alumni.caltech.edu</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

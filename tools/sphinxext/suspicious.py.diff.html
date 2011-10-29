@@ -1,0 +1,217 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>tools/sphinxext/suspicious.py</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -41,16 +41,13 @@</span>
+ 
+ &quot;&quot;&quot;
+ 
+<span class="gd">-import os, sys</span>
+<span class="gi">+import os</span>
+<span class="gi">+import re</span>
+ import csv
+<span class="gd">-import re</span>
+<span class="gi">+import sys</span>
+<span class="gi">+</span>
+ from docutils import nodes
+<span class="gd">-</span>
+<span class="gd">-try:</span>
+<span class="gd">-    from sphinx.builders import Builder</span>
+<span class="gd">-except ImportError:</span>
+<span class="gd">-    from sphinx.builder import Builder</span>
+<span class="gd">-</span>
+<span class="gi">+from sphinx.builders import Builder</span>
+ 
+ detect_all = re.compile(ur&#39;&#39;&#39;
+     ::(?=[^=])|            # two :: (but NOT ::=)
+<span class="gu">@@ -59,9 +56,10 @@</span>
+     (?&lt;!\.)\.\.[ \t]*\w+:  # .. foo: (but NOT ... else:)
+     &#39;&#39;&#39;, re.UNICODE | re.VERBOSE).finditer
+ 
+<span class="gi">+</span>
+ class Rule:
+     def __init__(self, docname, lineno, issue, line):
+<span class="gd">-        &quot;A rule for ignoring issues&quot;</span>
+<span class="gi">+        &quot;&quot;&quot;A rule for ignoring issues&quot;&quot;&quot;</span>
+         self.docname = docname # document to which this rule applies
+         self.lineno = lineno   # line number in the original source;
+                                # this rule matches only near that.
+<span class="gu">@@ -70,9 +68,15 @@</span>
+         self.line = line       # text of the container element (single line only)
+ 
+ 
+<span class="gi">+</span>
+<span class="gi">+class dialect(csv.excel):</span>
+<span class="gi">+    &quot;&quot;&quot;Our dialect: uses only linefeed as newline.&quot;&quot;&quot;</span>
+<span class="gi">+    lineterminator = &#39;\n&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ class CheckSuspiciousMarkupBuilder(Builder):
+     &quot;&quot;&quot;
+<span class="gd">-    Checks for possibly invalid markup that may leak into the output</span>
+<span class="gi">+    Checks for possibly invalid markup that may leak into the output.</span>
+     &quot;&quot;&quot;
+     name = &#39;suspicious&#39;
+ 
+<span class="gu">@@ -81,7 +85,8 @@</span>
+         self.log_file_name = os.path.join(self.outdir, &#39;suspicious.csv&#39;)
+         open(self.log_file_name, &#39;w&#39;).close()
+         # load database of previously ignored issues
+<span class="gd">-        self.load_rules(os.path.join(os.path.dirname(__file__), &#39;susp-ignored.csv&#39;))</span>
+<span class="gi">+        self.load_rules(os.path.join(os.path.dirname(__file__),</span>
+<span class="gi">+                                     &#39;susp-ignored.csv&#39;))</span>
+ 
+     def get_outdated_docs(self):
+         return self.env.found_docs
+<span class="gu">@@ -90,14 +95,11 @@</span>
+         return &#39;&#39;
+ 
+     def prepare_writing(self, docnames):
+<span class="gd">-        ### PYTHON PROJECT SPECIFIC ###</span>
+<span class="gd">-        for name in set(docnames):</span>
+<span class="gd">-            if name.split(&#39;/&#39;, 1)[0] == &#39;documenting&#39;:</span>
+<span class="gd">-                docnames.remove(name)</span>
+<span class="gd">-        ### PYTHON PROJECT SPECIFIC ###</span>
+<span class="gi">+        pass</span>
+ 
+     def write_doc(self, docname, doctree):
+<span class="gd">-        self.any_issue = False # set when any issue is encountered in this document</span>
+<span class="gi">+        # set when any issue is encountered in this document</span>
+<span class="gi">+        self.any_issue = False</span>
+         self.docname = docname
+         visitor = SuspiciousVisitor(doctree, self)
+         doctree.walk(visitor)
+<span class="gu">@@ -110,8 +112,7 @@</span>
+             self.report_issue(line, lineno, issue)
+ 
+     def is_ignored(self, line, lineno, issue):
+<span class="gd">-        &quot;&quot;&quot;Determine whether this issue should be ignored.</span>
+<span class="gd">-        &quot;&quot;&quot;</span>
+<span class="gi">+        &quot;&quot;&quot;Determine whether this issue should be ignored.&quot;&quot;&quot;</span>
+         docname = self.docname
+         for rule in self.rules:
+             if rule.docname != docname: continue
+<span class="gu">@@ -144,12 +145,11 @@</span>
+ 
+     def write_log_entry(self, lineno, issue, text):
+         f = open(self.log_file_name, &#39;ab&#39;)
+<span class="gd">-        writer = csv.writer(f)</span>
+<span class="gi">+        writer = csv.writer(f, dialect)</span>
+         writer.writerow([self.docname.encode(&#39;utf-8&#39;),
+<span class="gd">-                lineno,</span>
+<span class="gd">-                issue.encode(&#39;utf-8&#39;),</span>
+<span class="gd">-                text.strip().encode(&#39;utf-8&#39;)])</span>
+<span class="gd">-        del writer</span>
+<span class="gi">+                         lineno,</span>
+<span class="gi">+                         issue.encode(&#39;utf-8&#39;),</span>
+<span class="gi">+                         text.strip().encode(&#39;utf-8&#39;)])</span>
+         f.close()
+ 
+     def load_rules(self, filename):
+<span class="gu">@@ -164,7 +164,8 @@</span>
+         except IOError: return
+         for i, row in enumerate(csv.reader(f)):
+             if len(row) != 4:
+<span class="gd">-                raise ValueError(&quot;wrong format in %s, line %d: %s&quot; % (filename, i+1, row))</span>
+<span class="gi">+                raise ValueError(</span>
+<span class="gi">+                    &quot;wrong format in %s, line %d: %s&quot; % (filename, i+1, row))</span>
+             docname, lineno, issue, text = row
+             docname = docname.decode(&#39;utf-8&#39;)
+             if lineno: lineno = int(lineno)
+<span class="gu">@@ -178,7 +179,7 @@</span>
+ 
+ 
+ def get_lineno(node):
+<span class="gd">-    &quot;Obtain line number information for a node&quot;</span>
+<span class="gi">+    &quot;&quot;&quot;Obtain line number information for a node.&quot;&quot;&quot;</span>
+     lineno = None
+     while lineno is None and node:
+         node = node.parent
+<span class="gu">@@ -203,7 +204,8 @@</span>
+     &quot;&quot;&quot;
+     p = text.rfind(&#39;\n&#39;, 0, index) + 1
+     q = text.find(&#39;\n&#39;, index)
+<span class="gd">-    if q&lt;0: q = len(text)</span>
+<span class="gi">+    if q &lt; 0:</span>
+<span class="gi">+        q = len(text)</span>
+     return text[p:q]
+ 
+ 
+<span class="gu">@@ -222,7 +224,6 @@</span>
+             self.lastlineno = lineno = max(get_lineno(node) or 0, self.lastlineno)
+             seen = set() # don&#39;t report the same issue more than only once per line
+             for match in detect_all(text):
+<span class="gd">-                #import pdb; pdb.set_trace()</span>
+                 issue = match.group()
+                 line = extract_line(text, match.start())
+                 if (issue, line) not in seen:
+</pre></div>
+
+</body>
+</html>

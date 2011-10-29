@@ -1,0 +1,169 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/warnings.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -59,7 +59,7 @@</span>
+ | :exc:`UserWarning`               | The default category for :func:`warn`.        |
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`DeprecationWarning`        | Base category for warnings about deprecated   |
+<span class="gd">-|                                  | features.                                     |</span>
+<span class="gi">+|                                  | features (ignored by default).                |</span>
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`SyntaxWarning`             | Base category for warnings about dubious      |
+ |                                  | syntactic features.                           |
+<span class="gu">@@ -89,6 +89,9 @@</span>
+ standard warning categories.  A warning category must always be a subclass of
+ the :exc:`Warning` class.
+ 
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   :exc:`DeprecationWarning` is ignored by default.</span>
+<span class="gi">+</span>
+ 
+ .. _warning-filter:
+ 
+<span class="gu">@@ -148,13 +151,19 @@</span>
+ :mod:`warnings` module parses these when it is first imported (invalid options
+ are ignored, after printing a message to ``sys.stderr``).
+ 
+<span class="gd">-The warnings that are ignored by default may be enabled by passing :option:`-Wd`</span>
+<span class="gd">-to the interpreter. This enables default handling for all warnings, including</span>
+<span class="gd">-those that are normally ignored by default. This is particular useful for</span>
+<span class="gd">-enabling ImportWarning when debugging problems importing a developed package.</span>
+<span class="gd">-ImportWarning can also be enabled explicitly in Python code using::</span>
+ 
+<span class="gd">-   warnings.simplefilter(&#39;default&#39;, ImportWarning)</span>
+<span class="gi">+Default Warning Filters</span>
+<span class="gi">+~~~~~~~~~~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+By default, Python installs several warning filters, which can be overridden by</span>
+<span class="gi">+the command-line options passed to :option:`-W` and calls to</span>
+<span class="gi">+:func:`filterwarnings`.</span>
+<span class="gi">+</span>
+<span class="gi">+* :exc:`PendingDeprecationWarning`, and :exc:`ImportWarning` are ignored.</span>
+<span class="gi">+</span>
+<span class="gi">+* :exc:`BytesWarning` is ignored unless the :option:`-b` option is given once or</span>
+<span class="gi">+  twice; in this case this warning is either printed (``-b``) or turned into an</span>
+<span class="gi">+  exception (``-bb``).</span>
+ 
+ 
+ .. _warning-suppress:
+<span class="gu">@@ -231,6 +240,37 @@</span>
+ entries from the warnings list before each new operation).
+ 
+ 
+<span class="gi">+Updating Code For New Versions of Python</span>
+<span class="gi">+----------------------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+Warnings that are only of interest to the developer are ignored by default. As</span>
+<span class="gi">+such you should make sure to test your code with typically ignored warnings</span>
+<span class="gi">+made visible. You can do this from the command-line by passing :option:`-Wd`</span>
+<span class="gi">+to the interpreter (this is shorthand for :option:`-W default`).  This enables</span>
+<span class="gi">+default handling for all warnings, including those that are ignored by default.</span>
+<span class="gi">+To change what action is taken for encountered warnings you simply change what</span>
+<span class="gi">+argument is passed to :option:`-W`, e.g. :option:`-W error`. See the</span>
+<span class="gi">+:option:`-W` flag for more details on what is possible.</span>
+<span class="gi">+</span>
+<span class="gi">+To programmatically do the same as :option:`-Wd`, use::</span>
+<span class="gi">+</span>
+<span class="gi">+  warnings.simplefilter(&#39;default&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+Make sure to execute this code as soon as possible. This prevents the</span>
+<span class="gi">+registering of what warnings have been raised from unexpectedly influencing how</span>
+<span class="gi">+future warnings are treated.</span>
+<span class="gi">+</span>
+<span class="gi">+Having certain warnings ignored by default is done to prevent a user from</span>
+<span class="gi">+seeing warnings that are only of interest to the developer. As you do not</span>
+<span class="gi">+necessarily have control over what interpreter a user uses to run their code,</span>
+<span class="gi">+it is possible that a new version of Python will be released between your</span>
+<span class="gi">+release cycles.  The new interpreter release could trigger new warnings in your</span>
+<span class="gi">+code that were not there in an older interpreter, e.g.</span>
+<span class="gi">+:exc:`DeprecationWarning` for a module that you are using. While you as a</span>
+<span class="gi">+developer want to be notified that your code is using a deprecated module, to a</span>
+<span class="gi">+user this information is essentially noise and provides no benefit to them.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. _warning-functions:
+ 
+ Available Functions
+<span class="gu">@@ -297,9 +337,8 @@</span>
+    message; if *line* is not supplied, :func:`showwarning` will
+    try to read the line specified by *filename* and *lineno*.
+ 
+<span class="gd">-   .. versionchanged:: 2.6</span>
+<span class="gd">-      Added the *line* argument. Implementations that lack the new argument</span>
+<span class="gd">-      will trigger a :exc:`DeprecationWarning`.</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The *line* argument is required to be supported.</span>
+ 
+ 
+ .. function:: formatwarning(message, category, filename, lineno[, line])
+</pre></div>
+
+</body>
+</html>

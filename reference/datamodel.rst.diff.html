@@ -1,0 +1,226 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>reference/datamodel.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -66,6 +66,8 @@</span>
+    containing circular references.  See the documentation of the :mod:`gc`
+    module for information on controlling the collection of cyclic garbage.
+    Other implementations act differently and CPython may change.
+<span class="gi">+   Do not depend on immediate finalization of objects when they become</span>
+<span class="gi">+   unreachable (ex: always close files).</span>
+ 
+ Note that the use of the implementation&#39;s tracing or debugging facilities may
+ keep objects alive that would normally be collectable. Also note that catching
+<span class="gu">@@ -689,7 +691,7 @@</span>
+       an object passed to the C function as an implicit extra argument.  An example of
+       a built-in method is ``alist.append()``, assuming *alist* is a list object. In
+       this case, the special read-only attribute :attr:`__self__` is set to the object
+<span class="gd">-      denoted by *list*.</span>
+<span class="gi">+      denoted by *alist*.</span>
+ 
+    Class Types
+       Class types, or &quot;new-style classes,&quot; are callable.  These objects normally act
+<span class="gu">@@ -739,6 +741,13 @@</span>
+    Special read-only attribute: :attr:`__dict__` is the module&#39;s namespace as a
+    dictionary object.
+ 
+<span class="gi">+   .. impl-detail::</span>
+<span class="gi">+</span>
+<span class="gi">+      Because of the way CPython clears module dictionaries, the module</span>
+<span class="gi">+      dictionary will be cleared when the module falls out of scope even if the</span>
+<span class="gi">+      dictionary still has live references.  To avoid this, copy the dictionary</span>
+<span class="gi">+      or keep the module around while using its dictionary directly.</span>
+<span class="gi">+</span>
+    .. index::
+       single: __name__ (module attribute)
+       single: __doc__ (module attribute)
+<span class="gu">@@ -908,6 +917,22 @@</span>
+       objects, code objects are immutable and contain no references (directly or
+       indirectly) to mutable objects.
+ 
+<span class="gi">+      .. index::</span>
+<span class="gi">+         single: co_argcount (code object attribute)</span>
+<span class="gi">+         single: co_code (code object attribute)</span>
+<span class="gi">+         single: co_consts (code object attribute)</span>
+<span class="gi">+         single: co_filename (code object attribute)</span>
+<span class="gi">+         single: co_firstlineno (code object attribute)</span>
+<span class="gi">+         single: co_flags (code object attribute)</span>
+<span class="gi">+         single: co_lnotab (code object attribute)</span>
+<span class="gi">+         single: co_name (code object attribute)</span>
+<span class="gi">+         single: co_names (code object attribute)</span>
+<span class="gi">+         single: co_nlocals (code object attribute)</span>
+<span class="gi">+         single: co_stacksize (code object attribute)</span>
+<span class="gi">+         single: co_varnames (code object attribute)</span>
+<span class="gi">+         single: co_cellvars (code object attribute)</span>
+<span class="gi">+         single: co_freevars (code object attribute)</span>
+<span class="gi">+</span>
+       Special read-only attributes: :attr:`co_name` gives the function name;
+       :attr:`co_argcount` is the number of positional arguments (including arguments
+       with default values); :attr:`co_nlocals` is the number of local variables used
+<span class="gu">@@ -925,22 +950,6 @@</span>
+       :attr:`co_stacksize` is the required stack size (including local variables);
+       :attr:`co_flags` is an integer encoding a number of flags for the interpreter.
+ 
+<span class="gd">-      .. index::</span>
+<span class="gd">-         single: co_argcount (code object attribute)</span>
+<span class="gd">-         single: co_code (code object attribute)</span>
+<span class="gd">-         single: co_consts (code object attribute)</span>
+<span class="gd">-         single: co_filename (code object attribute)</span>
+<span class="gd">-         single: co_firstlineno (code object attribute)</span>
+<span class="gd">-         single: co_flags (code object attribute)</span>
+<span class="gd">-         single: co_lnotab (code object attribute)</span>
+<span class="gd">-         single: co_name (code object attribute)</span>
+<span class="gd">-         single: co_names (code object attribute)</span>
+<span class="gd">-         single: co_nlocals (code object attribute)</span>
+<span class="gd">-         single: co_stacksize (code object attribute)</span>
+<span class="gd">-         single: co_varnames (code object attribute)</span>
+<span class="gd">-         single: co_cellvars (code object attribute)</span>
+<span class="gd">-         single: co_freevars (code object attribute)</span>
+<span class="gd">-</span>
+       .. index:: object: generator
+ 
+       The following flag bits are defined for :attr:`co_flags`: bit ``0x04`` is set if
+<span class="gu">@@ -1353,8 +1362,7 @@</span>
+    Arguments to rich comparison methods are never coerced.
+ 
+    To automatically generate ordering operations from a single root operation,
+<span class="gd">-   see the `Total Ordering recipe in the ASPN cookbook</span>
+<span class="gd">-   &lt;http://code.activestate.com/recipes/576529/&gt;`_\.</span>
+<span class="gi">+   see :func:`functools.total_ordering`.</span>
+ 
+ .. method:: object.__cmp__(self, other)
+ 
+<span class="gu">@@ -1531,11 +1539,11 @@</span>
+ ^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ The following methods only apply when an instance of the class containing the
+<span class="gd">-method (a so-called *descriptor* class) appears in the class dictionary of</span>
+<span class="gd">-another new-style class, known as the *owner* class. In the examples below, &quot;the</span>
+<span class="gd">-attribute&quot; refers to the attribute whose name is the key of the property in the</span>
+<span class="gd">-owner class&#39; ``__dict__``.  Descriptors can only be implemented as new-style</span>
+<span class="gd">-classes themselves.</span>
+<span class="gi">+method (a so-called *descriptor* class) appears in an *owner* class (the</span>
+<span class="gi">+descriptor must be in either the owner&#39;s class dictionary or in the class</span>
+<span class="gi">+dictionary for one of its parents).  In the examples below, &quot;the attribute&quot;</span>
+<span class="gi">+refers to the attribute whose name is the key of the property in the owner</span>
+<span class="gi">+class&#39; :attr:`__dict__`.</span>
+ 
+ 
+ .. method:: object.__get__(self, instance, owner)
+<span class="gu">@@ -1600,7 +1608,7 @@</span>
+    If ``a`` is an instance of :class:`super`, then the binding ``super(B,
+    obj).m()`` searches ``obj.__class__.__mro__`` for the base class ``A``
+    immediately preceding ``B`` and then invokes the descriptor with the call:
+<span class="gd">-   ``A.__dict__[&#39;m&#39;].__get__(obj, A)``.</span>
+<span class="gi">+   ``A.__dict__[&#39;m&#39;].__get__(obj, obj.__class__)``.</span>
+ 
+ For instance bindings, the precedence of descriptor invocation depends on the
+ which descriptor methods are defined.  A descriptor can define any combination
+<span class="gu">@@ -1773,7 +1781,7 @@</span>
+ 
+ In particular, the metaclass :class:`abc.ABCMeta` implements these methods in
+ order to allow the addition of Abstract Base Classes (ABCs) as &quot;virtual base
+<span class="gd">-classes&quot; to any class or type (including built-in types), and including to other</span>
+<span class="gi">+classes&quot; to any class or type (including built-in types), including other</span>
+ ABCs.
+ 
+ .. method:: class.__instancecheck__(self, instance)
+<span class="gu">@@ -1792,7 +1800,7 @@</span>
+ 
+ Note that these methods are looked up on the type (metaclass) of a class.  They
+ cannot be defined as class methods in the actual class.  This is consistent with
+<span class="gd">-the lookup of special methods that are called on instances, only that in this</span>
+<span class="gi">+the lookup of special methods that are called on instances, only in this</span>
+ case the instance is itself a class.
+ 
+ .. seealso::
+<span class="gu">@@ -2313,13 +2321,15 @@</span>
+ *
+ 
+   In the current implementation, the built-in numeric types :class:`int`,
+<span class="gd">-  :class:`long` and :class:`float` do not use coercion; the type :class:`complex`</span>
+<span class="gd">-  however does use coercion for binary operators and rich comparisons, despite</span>
+<span class="gd">-  the above rules.  The difference can become apparent when subclassing these</span>
+<span class="gd">-  types.  Over time, the type :class:`complex` may be fixed to avoid coercion.</span>
+<span class="gi">+  :class:`long`, :class:`float`, and :class:`complex` do not use coercion.</span>
+   All these types implement a :meth:`__coerce__` method, for use by the built-in
+   :func:`coerce` function.
+ 
+<span class="gi">+  .. versionchanged:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+     The complex type no longer makes implicit calls to the :meth:`__coerce__`</span>
+<span class="gi">+     method for mixed-type binary arithmetic operations.</span>
+<span class="gi">+</span>
+ 
+ .. _context-managers:
+ 
+</pre></div>
+
+</body>
+</html>

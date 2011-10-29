@@ -1,0 +1,120 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/select.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -100,6 +100,15 @@</span>
+       library, and does not handle file descriptors that don&#39;t originate from
+       WinSock.
+ 
+<span class="gi">+.. attribute:: select.PIPE_BUF</span>
+<span class="gi">+</span>
+<span class="gi">+   Files reported as ready for writing by :func:`select`, :func:`poll` or</span>
+<span class="gi">+   similar interfaces in this module are guaranteed to not block on a write</span>
+<span class="gi">+   of up to :const:`PIPE_BUF` bytes.</span>
+<span class="gi">+   This value is guaranteed by POSIX to be at least 512.  Availability: Unix.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+ 
+ .. _epoll-objects:
+ 
+<span class="gu">@@ -129,15 +138,15 @@</span>
+    | :const:`EPOLLONESHOT` | Set one-shot behavior. After one event is     |
+    |                       | pulled out, the fd is internally disabled     |
+    +-----------------------+-----------------------------------------------+
+<span class="gd">-   | :const:`EPOLLRDNORM`  | ???                                           |</span>
+<span class="gi">+   | :const:`EPOLLRDNORM`  | Equivalent to :const:`EPOLLIN`                |</span>
+    +-----------------------+-----------------------------------------------+
+<span class="gd">-   | :const:`EPOLLRDBAND`  | ???                                           |</span>
+<span class="gi">+   | :const:`EPOLLRDBAND`  | Priority data band can be read.               |</span>
+    +-----------------------+-----------------------------------------------+
+<span class="gd">-   | :const:`EPOLLWRNORM`  | ???                                           |</span>
+<span class="gi">+   | :const:`EPOLLWRNORM`  | Equivalent to :const:`EPOLLOUT`               |</span>
+    +-----------------------+-----------------------------------------------+
+<span class="gd">-   | :const:`EPOLLWRBAND`  | ???                                           |</span>
+<span class="gi">+   | :const:`EPOLLWRBAND`  | Priority data may be written.                 |</span>
+    +-----------------------+-----------------------------------------------+
+<span class="gd">-   | :const:`EPOLLMSG`     | ???                                           |</span>
+<span class="gi">+   | :const:`EPOLLMSG`     | Ignored.                                      |</span>
+    +-----------------------+-----------------------------------------------+
+ 
+ 
+<span class="gu">@@ -231,7 +240,7 @@</span>
+ .. method:: poll.modify(fd, eventmask)
+ 
+    Modifies an already registered fd. This has the same effect as
+<span class="gd">-   :meth:`register(fd, eventmask)`.  Attempting to modify a file descriptor</span>
+<span class="gi">+   ``register(fd, eventmask)``.  Attempting to modify a file descriptor</span>
+    that was never registered causes an :exc:`IOError` exception with errno
+    :const:`ENOENT` to be raised.
+ 
+</pre></div>
+
+</body>
+</html>

@@ -1,0 +1,880 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/collections.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -15,144 +15,206 @@</span>
+    import itertools
+    __name__ = &#39;&lt;doctest&gt;&#39;
+ 
+<span class="gd">-This module implements high-performance container datatypes.  Currently,</span>
+<span class="gd">-there are two datatypes, :class:`deque` and :class:`defaultdict`, and</span>
+<span class="gd">-one datatype factory function, :func:`namedtuple`.</span>
+<span class="gi">+This module implements specialized container datatypes providing alternatives to</span>
+<span class="gi">+Python&#39;s general purpose built-in containers, :class:`dict`, :class:`list`,</span>
+<span class="gi">+:class:`set`, and :class:`tuple`.</span>
+ 
+<span class="gd">-.. versionchanged:: 2.5</span>
+<span class="gd">-   Added :class:`defaultdict`.</span>
+<span class="gi">+=====================   ====================================================================  ===========================</span>
+<span class="gi">+:func:`namedtuple`      factory function for creating tuple subclasses with named fields      .. versionadded:: 2.6</span>
+<span class="gi">+:class:`deque`          list-like container with fast appends and pops on either end          .. versionadded:: 2.4</span>
+<span class="gi">+:class:`Counter`        dict subclass for counting hashable objects                           .. versionadded:: 2.7</span>
+<span class="gi">+:class:`OrderedDict`    dict subclass that remembers the order entries were added             .. versionadded:: 2.7</span>
+<span class="gi">+:class:`defaultdict`    dict subclass that calls a factory function to supply missing values  .. versionadded:: 2.5</span>
+<span class="gi">+=====================   ====================================================================  ===========================</span>
+ 
+<span class="gd">-.. versionchanged:: 2.6</span>
+<span class="gd">-   Added :func:`namedtuple`.</span>
+<span class="gd">-</span>
+<span class="gd">-The specialized containers provided in this module provide alternatives</span>
+<span class="gd">-to Python&#39;s general purpose built-in containers, :class:`dict`,</span>
+<span class="gd">-:class:`list`, :class:`set`, and :class:`tuple`.</span>
+<span class="gd">-</span>
+<span class="gd">-Besides the containers provided here, the optional :mod:`bsddb`</span>
+<span class="gd">-module offers the ability to create in-memory or file based ordered</span>
+<span class="gd">-dictionaries with string keys using the :meth:`bsddb.btopen` method.</span>
+<span class="gd">-</span>
+<span class="gd">-In addition to containers, the collections module provides some ABCs</span>
+<span class="gd">-(abstract base classes) that can be used to test whether a class</span>
+<span class="gd">-provides a particular interface, for example, is it hashable or</span>
+<span class="gd">-a mapping.</span>
+<span class="gd">-</span>
+<span class="gd">-.. versionchanged:: 2.6</span>
+<span class="gd">-   Added abstract base classes.</span>
+<span class="gd">-</span>
+<span class="gd">-ABCs - abstract base classes</span>
+<span class="gd">-----------------------------</span>
+<span class="gd">-</span>
+<span class="gd">-The collections module offers the following ABCs:</span>
+<span class="gd">-</span>
+<span class="gd">-=========================  =====================  ======================  ====================================================</span>
+<span class="gd">-ABC                        Inherits               Abstract Methods        Mixin Methods</span>
+<span class="gd">-=========================  =====================  ======================  ====================================================</span>
+<span class="gd">-:class:`Container`                                ``__contains__``</span>
+<span class="gd">-:class:`Hashable`                                 ``__hash__``</span>
+<span class="gd">-:class:`Iterable`                                 ``__iter__``</span>
+<span class="gd">-:class:`Iterator`          :class:`Iterable`      ``next``                ``__iter__``</span>
+<span class="gd">-:class:`Sized`                                    ``__len__``</span>
+<span class="gd">-:class:`Callable`                                 ``__call__``</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.</span>
+<span class="gd">-                           :class:`Iterable`,                             ``index``, and ``count``</span>
+<span class="gd">-                           :class:`Container`</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`MutableSequence`   :class:`Sequence`      ``__setitem__``         Inherited Sequence methods and</span>
+<span class="gd">-                                                  ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,</span>
+<span class="gd">-                                                  and ``insert``          ``remove``, and ``__iadd__``</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,</span>
+<span class="gd">-                           :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``</span>
+<span class="gd">-                           :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`MutableSet`        :class:`Set`           ``add`` and             Inherited Set methods and</span>
+<span class="gd">-                                                  ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,</span>
+<span class="gd">-                                                                          ``__iand__``, ``__ixor__``, and ``__isub__``</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,</span>
+<span class="gd">-                           :class:`Iterable`,                             ``get``, ``__eq__``, and ``__ne__``</span>
+<span class="gd">-                           :class:`Container`</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`MutableMapping`    :class:`Mapping`       ``__setitem__`` and     Inherited Mapping methods and</span>
+<span class="gd">-                                                  ``__delitem__``         ``pop``, ``popitem``, ``clear``, ``update``,</span>
+<span class="gd">-                                                                          and ``setdefault``</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+<span class="gd">-:class:`MappingView`       :class:`Sized`                                 ``__len__``</span>
+<span class="gd">-:class:`KeysView`          :class:`MappingView`,                          ``__contains__``,</span>
+<span class="gd">-                           :class:`Set`                                   ``__iter__``</span>
+<span class="gd">-:class:`ItemsView`         :class:`MappingView`,                          ``__contains__``,</span>
+<span class="gd">-                           :class:`Set`                                   ``__iter__``</span>
+<span class="gd">-:class:`ValuesView`        :class:`MappingView`                           ``__contains__``, ``__iter__``</span>
+<span class="gd">-=========================  =====================  ======================  ====================================================</span>
+<span class="gd">-</span>
+<span class="gd">-These ABCs allow us to ask classes or instances if they provide</span>
+<span class="gd">-particular functionality, for example::</span>
+<span class="gd">-</span>
+<span class="gd">-    size = None</span>
+<span class="gd">-    if isinstance(myvar, collections.Sized):</span>
+<span class="gd">-        size = len(myvar)</span>
+<span class="gd">-</span>
+<span class="gd">-Several of the ABCs are also useful as mixins that make it easier to develop</span>
+<span class="gd">-classes supporting container APIs.  For example, to write a class supporting</span>
+<span class="gd">-the full :class:`Set` API, it only necessary to supply the three underlying</span>
+<span class="gd">-abstract methods: :meth:`__contains__`, :meth:`__iter__`, and :meth:`__len__`.</span>
+<span class="gd">-The ABC supplies the remaining methods such as :meth:`__and__` and</span>
+<span class="gd">-:meth:`isdisjoint` ::</span>
+<span class="gd">-</span>
+<span class="gd">-    class ListBasedSet(collections.Set):</span>
+<span class="gd">-         &#39;&#39;&#39; Alternate set implementation favoring space over speed</span>
+<span class="gd">-             and not requiring the set elements to be hashable. &#39;&#39;&#39;</span>
+<span class="gd">-         def __init__(self, iterable):</span>
+<span class="gd">-             self.elements = lst = []</span>
+<span class="gd">-             for value in iterable:</span>
+<span class="gd">-                 if value not in lst:</span>
+<span class="gd">-                     lst.append(value)</span>
+<span class="gd">-         def __iter__(self):</span>
+<span class="gd">-             return iter(self.elements)</span>
+<span class="gd">-         def __contains__(self, value):</span>
+<span class="gd">-             return value in self.elements</span>
+<span class="gd">-         def __len__(self):</span>
+<span class="gd">-             return len(self.elements)</span>
+<span class="gd">-</span>
+<span class="gd">-    s1 = ListBasedSet(&#39;abcdef&#39;)</span>
+<span class="gd">-    s2 = ListBasedSet(&#39;defghi&#39;)</span>
+<span class="gd">-    overlap = s1 &amp; s2            # The __and__() method is supported automatically</span>
+<span class="gd">-</span>
+<span class="gd">-Notes on using :class:`Set` and :class:`MutableSet` as a mixin:</span>
+<span class="gd">-</span>
+<span class="gd">-(1)</span>
+<span class="gd">-   Since some set operations create new sets, the default mixin methods need</span>
+<span class="gd">-   a way to create new instances from an iterable. The class constructor is</span>
+<span class="gd">-   assumed to have a signature in the form ``ClassName(iterable)``.</span>
+<span class="gd">-   That assumption is factored-out to an internal classmethod called</span>
+<span class="gd">-   :meth:`_from_iterable` which calls ``cls(iterable)`` to produce a new set.</span>
+<span class="gd">-   If the :class:`Set` mixin is being used in a class with a different</span>
+<span class="gd">-   constructor signature, you will need to override :meth:`from_iterable`</span>
+<span class="gd">-   with a classmethod that can construct new instances from</span>
+<span class="gd">-   an iterable argument.</span>
+<span class="gd">-</span>
+<span class="gd">-(2)</span>
+<span class="gd">-   To override the comparisons (presumably for speed, as the</span>
+<span class="gd">-   semantics are fixed), redefine :meth:`__le__` and</span>
+<span class="gd">-   then the other operations will automatically follow suit.</span>
+<span class="gd">-</span>
+<span class="gd">-(3)</span>
+<span class="gd">-   The :class:`Set` mixin provides a :meth:`_hash` method to compute a hash value</span>
+<span class="gd">-   for the set; however, :meth:`__hash__` is not defined because not all sets</span>
+<span class="gd">-   are hashable or immutable.  To add set hashabilty using mixins,</span>
+<span class="gd">-   inherit from both :meth:`Set` and :meth:`Hashable`, then define</span>
+<span class="gd">-   ``__hash__ = Set._hash``.</span>
+<span class="gi">+In addition to the concrete container classes, the collections module provides</span>
+<span class="gi">+:ref:`abstract-base-classes` that can be used to test whether a class provides a</span>
+<span class="gi">+particular interface, for example, whether it is hashable or a mapping.</span>
+ 
+ .. seealso::
+ 
+<span class="gd">-   * `OrderedSet recipe &lt;http://code.activestate.com/recipes/576694/&gt;`_ for an</span>
+<span class="gd">-     example built on :class:`MutableSet`.</span>
+<span class="gi">+   Latest version of the `collections module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/collections.py?view=markup&gt;`_</span>
+ 
+<span class="gd">-   * For more about ABCs, see the :mod:`abc` module and :pep:`3119`.</span>
+<span class="gi">+:class:`Counter` objects</span>
+<span class="gi">+------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+A counter tool is provided to support convenient and rapid tallies.</span>
+<span class="gi">+For example::</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # Tally occurrences of words in a list</span>
+<span class="gi">+    &gt;&gt;&gt; cnt = Counter()</span>
+<span class="gi">+    &gt;&gt;&gt; for word in [&#39;red&#39;, &#39;blue&#39;, &#39;red&#39;, &#39;green&#39;, &#39;blue&#39;, &#39;blue&#39;]:</span>
+<span class="gi">+    ...     cnt[word] += 1</span>
+<span class="gi">+    &gt;&gt;&gt; cnt</span>
+<span class="gi">+    Counter({&#39;blue&#39;: 3, &#39;red&#39;: 2, &#39;green&#39;: 1})</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # Find the ten most common words in Hamlet</span>
+<span class="gi">+    &gt;&gt;&gt; import re</span>
+<span class="gi">+    &gt;&gt;&gt; words = re.findall(&#39;\w+&#39;, open(&#39;hamlet.txt&#39;).read().lower())</span>
+<span class="gi">+    &gt;&gt;&gt; Counter(words).most_common(10)</span>
+<span class="gi">+    [(&#39;the&#39;, 1143), (&#39;and&#39;, 966), (&#39;to&#39;, 762), (&#39;of&#39;, 669), (&#39;i&#39;, 631),</span>
+<span class="gi">+     (&#39;you&#39;, 554),  (&#39;a&#39;, 546), (&#39;my&#39;, 514), (&#39;hamlet&#39;, 471), (&#39;in&#39;, 451)]</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Counter([iterable-or-mapping])</span>
+<span class="gi">+</span>
+<span class="gi">+   A :class:`Counter` is a :class:`dict` subclass for counting hashable objects.</span>
+<span class="gi">+   It is an unordered collection where elements are stored as dictionary keys</span>
+<span class="gi">+   and their counts are stored as dictionary values.  Counts are allowed to be</span>
+<span class="gi">+   any integer value including zero or negative counts.  The :class:`Counter`</span>
+<span class="gi">+   class is similar to bags or multisets in other languages.</span>
+<span class="gi">+</span>
+<span class="gi">+   Elements are counted from an *iterable* or initialized from another</span>
+<span class="gi">+   *mapping* (or counter):</span>
+<span class="gi">+</span>
+<span class="gi">+        &gt;&gt;&gt; c = Counter()                           # a new, empty counter</span>
+<span class="gi">+        &gt;&gt;&gt; c = Counter(&#39;gallahad&#39;)                 # a new counter from an iterable</span>
+<span class="gi">+        &gt;&gt;&gt; c = Counter({&#39;red&#39;: 4, &#39;blue&#39;: 2})      # a new counter from a mapping</span>
+<span class="gi">+        &gt;&gt;&gt; c = Counter(cats=4, dogs=8)             # a new counter from keyword args</span>
+<span class="gi">+</span>
+<span class="gi">+   Counter objects have a dictionary interface except that they return a zero</span>
+<span class="gi">+   count for missing items instead of raising a :exc:`KeyError`:</span>
+<span class="gi">+</span>
+<span class="gi">+        &gt;&gt;&gt; c = Counter([&#39;eggs&#39;, &#39;ham&#39;])</span>
+<span class="gi">+        &gt;&gt;&gt; c[&#39;bacon&#39;]                              # count of a missing element is zero</span>
+<span class="gi">+        0</span>
+<span class="gi">+</span>
+<span class="gi">+   Setting a count to zero does not remove an element from a counter.</span>
+<span class="gi">+   Use ``del`` to remove it entirely:</span>
+<span class="gi">+</span>
+<span class="gi">+        &gt;&gt;&gt; c[&#39;sausage&#39;] = 0                        # counter entry with a zero count</span>
+<span class="gi">+        &gt;&gt;&gt; del c[&#39;sausage&#39;]                        # del actually removes the entry</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   Counter objects support three methods beyond those available for all</span>
+<span class="gi">+   dictionaries:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: elements()</span>
+<span class="gi">+</span>
+<span class="gi">+      Return an iterator over elements repeating each as many times as its</span>
+<span class="gi">+      count.  Elements are returned in arbitrary order.  If an element&#39;s count</span>
+<span class="gi">+      is less than one, :meth:`elements` will ignore it.</span>
+<span class="gi">+</span>
+<span class="gi">+            &gt;&gt;&gt; c = Counter(a=4, b=2, c=0, d=-2)</span>
+<span class="gi">+            &gt;&gt;&gt; list(c.elements())</span>
+<span class="gi">+            [&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;b&#39;, &#39;b&#39;]</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: most_common([n])</span>
+<span class="gi">+</span>
+<span class="gi">+      Return a list of the *n* most common elements and their counts from the</span>
+<span class="gi">+      most common to the least.  If *n* is not specified, :func:`most_common`</span>
+<span class="gi">+      returns *all* elements in the counter.  Elements with equal counts are</span>
+<span class="gi">+      ordered arbitrarily:</span>
+<span class="gi">+</span>
+<span class="gi">+            &gt;&gt;&gt; Counter(&#39;abracadabra&#39;).most_common(3)</span>
+<span class="gi">+            [(&#39;a&#39;, 5), (&#39;r&#39;, 2), (&#39;b&#39;, 2)]</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: subtract([iterable-or-mapping])</span>
+<span class="gi">+</span>
+<span class="gi">+      Elements are subtracted from an *iterable* or from another *mapping*</span>
+<span class="gi">+      (or counter).  Like :meth:`dict.update` but subtracts counts instead</span>
+<span class="gi">+      of replacing them.  Both inputs and outputs may be zero or negative.</span>
+<span class="gi">+</span>
+<span class="gi">+            &gt;&gt;&gt; c = Counter(a=4, b=2, c=0, d=-2)</span>
+<span class="gi">+            &gt;&gt;&gt; d = Counter(a=1, b=2, c=3, d=4)</span>
+<span class="gi">+            &gt;&gt;&gt; c.subtract(d)</span>
+<span class="gi">+            Counter({&#39;a&#39;: 3, &#39;b&#39;: 0, &#39;c&#39;: -3, &#39;d&#39;: -6})</span>
+<span class="gi">+</span>
+<span class="gi">+   The usual dictionary methods are available for :class:`Counter` objects</span>
+<span class="gi">+   except for two which work differently for counters.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: fromkeys(iterable)</span>
+<span class="gi">+</span>
+<span class="gi">+      This class method is not implemented for :class:`Counter` objects.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: update([iterable-or-mapping])</span>
+<span class="gi">+</span>
+<span class="gi">+      Elements are counted from an *iterable* or added-in from another</span>
+<span class="gi">+      *mapping* (or counter).  Like :meth:`dict.update` but adds counts</span>
+<span class="gi">+      instead of replacing them.  Also, the *iterable* is expected to be a</span>
+<span class="gi">+      sequence of elements, not a sequence of ``(key, value)`` pairs.</span>
+<span class="gi">+</span>
+<span class="gi">+Common patterns for working with :class:`Counter` objects::</span>
+<span class="gi">+</span>
+<span class="gi">+    sum(c.values())                 # total of all counts</span>
+<span class="gi">+    c.clear()                       # reset all counts</span>
+<span class="gi">+    list(c)                         # list unique elements</span>
+<span class="gi">+    set(c)                          # convert to a set</span>
+<span class="gi">+    dict(c)                         # convert to a regular dictionary</span>
+<span class="gi">+    c.items()                       # convert to a list of (elem, cnt) pairs</span>
+<span class="gi">+    Counter(dict(list_of_pairs))    # convert from a list of (elem, cnt) pairs</span>
+<span class="gi">+    c.most_common()[:-n:-1]         # n least common elements</span>
+<span class="gi">+    c += Counter()                  # remove zero and negative counts</span>
+<span class="gi">+</span>
+<span class="gi">+Several mathematical operations are provided for combining :class:`Counter`</span>
+<span class="gi">+objects to produce multisets (counters that have counts greater than zero).</span>
+<span class="gi">+Addition and subtraction combine counters by adding or subtracting the counts</span>
+<span class="gi">+of corresponding elements.  Intersection and union return the minimum and</span>
+<span class="gi">+maximum of corresponding counts.  Each operation can accept inputs with signed</span>
+<span class="gi">+counts, but the output will exclude results with counts of zero or less.</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; c = Counter(a=3, b=1)</span>
+<span class="gi">+    &gt;&gt;&gt; d = Counter(a=1, b=2)</span>
+<span class="gi">+    &gt;&gt;&gt; c + d                       # add two counters together:  c[x] + d[x]</span>
+<span class="gi">+    Counter({&#39;a&#39;: 4, &#39;b&#39;: 3})</span>
+<span class="gi">+    &gt;&gt;&gt; c - d                       # subtract (keeping only positive counts)</span>
+<span class="gi">+    Counter({&#39;a&#39;: 2})</span>
+<span class="gi">+    &gt;&gt;&gt; c &amp; d                       # intersection:  min(c[x], d[x])</span>
+<span class="gi">+    Counter({&#39;a&#39;: 1, &#39;b&#39;: 1})</span>
+<span class="gi">+    &gt;&gt;&gt; c | d                       # union:  max(c[x], d[x])</span>
+<span class="gi">+    Counter({&#39;a&#39;: 3, &#39;b&#39;: 2})</span>
+<span class="gi">+</span>
+<span class="gi">+.. note::</span>
+<span class="gi">+</span>
+<span class="gi">+   Counters were primarily designed to work with positive integers to represent</span>
+<span class="gi">+   running counts; however, care was taken to not unnecessarily preclude use</span>
+<span class="gi">+   cases needing other types or negative values.  To help with those use cases,</span>
+<span class="gi">+   this section documents the minimum range and type restrictions.</span>
+<span class="gi">+</span>
+<span class="gi">+   * The :class:`Counter` class itself is a dictionary subclass with no</span>
+<span class="gi">+     restrictions on its keys and values.  The values are intended to be numbers</span>
+<span class="gi">+     representing counts, but you *could* store anything in the value field.</span>
+<span class="gi">+</span>
+<span class="gi">+   * The :meth:`most_common` method requires only that the values be orderable.</span>
+<span class="gi">+</span>
+<span class="gi">+   * For in-place operations such as ``c[key] += 1``, the value type need only</span>
+<span class="gi">+     support addition and subtraction.  So fractions, floats, and decimals would</span>
+<span class="gi">+     work and negative values are supported.  The same is also true for</span>
+<span class="gi">+     :meth:`update` and :meth:`subtract` which allow negative and zero values</span>
+<span class="gi">+     for both inputs and outputs.</span>
+<span class="gi">+</span>
+<span class="gi">+   * The multiset methods are designed only for use cases with positive values.</span>
+<span class="gi">+     The inputs may be negative or zero, but only outputs with positive values</span>
+<span class="gi">+     are created.  There are no type restrictions, but the value type needs to</span>
+<span class="gi">+     support support addition, subtraction, and comparison.</span>
+<span class="gi">+</span>
+<span class="gi">+   * The :meth:`elements` method requires integer counts.  It ignores zero and</span>
+<span class="gi">+     negative counts.</span>
+<span class="gi">+</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+    * `Counter class &lt;http://code.activestate.com/recipes/576611/&gt;`_</span>
+<span class="gi">+      adapted for Python 2.5 and an early `Bag recipe</span>
+<span class="gi">+      &lt;http://code.activestate.com/recipes/259174/&gt;`_ for Python 2.4.</span>
+<span class="gi">+</span>
+<span class="gi">+    * `Bag class &lt;http://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html&gt;`_</span>
+<span class="gi">+      in Smalltalk.</span>
+<span class="gi">+</span>
+<span class="gi">+    * Wikipedia entry for `Multisets &lt;http://en.wikipedia.org/wiki/Multiset&gt;`_\.</span>
+<span class="gi">+</span>
+<span class="gi">+    * `C++ multisets &lt;http://www.demo2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm&gt;`_</span>
+<span class="gi">+      tutorial with examples.</span>
+<span class="gi">+</span>
+<span class="gi">+    * For mathematical operations on multisets and their use cases, see</span>
+<span class="gi">+      *Knuth, Donald. The Art of Computer Programming Volume II,</span>
+<span class="gi">+      Section 4.6.3, Exercise 19*\.</span>
+<span class="gi">+</span>
+<span class="gi">+    * To enumerate all distinct multisets of a given size over a given set of</span>
+<span class="gi">+      elements, see :func:`itertools.combinations_with_replacement`.</span>
+<span class="gi">+</span>
+<span class="gi">+          map(Counter, combinations_with_replacement(&#39;ABC&#39;, 2)) --&gt; AA AB AC BB BC CC</span>
+ 
+ 
+ :class:`deque` objects
+<span class="gu">@@ -204,6 +266,12 @@</span>
+       Remove all elements from the deque leaving it with length 0.
+ 
+ 
+<span class="gi">+   .. method:: count(x)</span>
+<span class="gi">+</span>
+<span class="gi">+      Count the number of deque elements equal to *x*.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+    .. method:: extend(iterable)
+ 
+       Extend the right side of the deque by appending elements from the iterable
+<span class="gu">@@ -236,6 +304,11 @@</span>
+ 
+       .. versionadded:: 2.5
+ 
+<span class="gi">+   .. method:: reverse()</span>
+<span class="gi">+</span>
+<span class="gi">+      Reverse the elements of the deque in-place and then return ``None``.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+ 
+    .. method:: rotate(n)
+ 
+<span class="gu">@@ -244,6 +317,15 @@</span>
+       ``d.appendleft(d.pop())``.
+ 
+ 
+<span class="gi">+   Deque objects also provide one read-only attribute:</span>
+<span class="gi">+</span>
+<span class="gi">+   .. attribute:: maxlen</span>
+<span class="gi">+</span>
+<span class="gi">+      Maximum size of a deque or *None* if unbounded.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ In addition to the above, deques support iteration, pickling, ``len(d)``,
+ ``reversed(d)``, ``copy.copy(d)``, ``copy.deepcopy(d)``, membership testing with
+ the :keyword:`in` operator, and subscript references such as ``d[-1]``.  Indexed
+<span class="gu">@@ -475,7 +557,7 @@</span>
+ self-documenting code.  They can be used wherever regular tuples are used, and
+ they add the ability to access fields by name instead of position index.
+ 
+<span class="gd">-.. function:: namedtuple(typename, field_names, [verbose])</span>
+<span class="gi">+.. function:: namedtuple(typename, field_names, [verbose=False], [rename=False])</span>
+ 
+    Returns a new tuple subclass named *typename*.  The new subclass is used to
+    create tuple-like objects that have fields accessible by attribute lookup as
+<span class="gu">@@ -483,9 +565,9 @@</span>
+    helpful docstring (with typename and field_names) and a helpful :meth:`__repr__`
+    method which lists the tuple contents in a ``name=value`` format.
+ 
+<span class="gd">-   The *field_names* are a single string with each fieldname separated by whitespace</span>
+<span class="gd">-   and/or commas, for example ``&#39;x y&#39;`` or ``&#39;x, y&#39;``.  Alternatively, *field_names*</span>
+<span class="gd">-   can be a sequence of strings such as ``[&#39;x&#39;, &#39;y&#39;]``.</span>
+<span class="gi">+   The *field_names* are a sequence of strings such as ``[&#39;x&#39;, &#39;y&#39;]``.</span>
+<span class="gi">+   Alternatively, *field_names* can be a single string with each fieldname</span>
+<span class="gi">+   separated by whitespace and/or commas, for example ``&#39;x y&#39;`` or ``&#39;x, y&#39;``.</span>
+ 
+    Any valid Python identifier may be used for a fieldname except for names
+    starting with an underscore.  Valid identifiers consist of letters, digits,
+<span class="gu">@@ -493,6 +575,11 @@</span>
+    a :mod:`keyword` such as *class*, *for*, *return*, *global*, *pass*, *print*,
+    or *raise*.
+ 
+<span class="gi">+   If *rename* is true, invalid fieldnames are automatically replaced</span>
+<span class="gi">+   with positional names.  For example, ``[&#39;abc&#39;, &#39;def&#39;, &#39;ghi&#39;, &#39;abc&#39;]`` is</span>
+<span class="gi">+   converted to ``[&#39;abc&#39;, &#39;_1&#39;, &#39;ghi&#39;, &#39;_3&#39;]``, eliminating the keyword</span>
+<span class="gi">+   ``def`` and the duplicate fieldname ``abc``.</span>
+<span class="gi">+</span>
+    If *verbose* is true, the class definition is printed just before being built.
+ 
+    Named tuple instances do not have per-instance dictionaries, so they are
+<span class="gu">@@ -500,24 +587,15 @@</span>
+ 
+    .. versionadded:: 2.6
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      added support for *rename*.</span>
+<span class="gi">+</span>
+ Example:
+ 
+ .. doctest::
+    :options: +NORMALIZE_WHITESPACE
+ 
+<span class="gd">-   &gt;&gt;&gt; Point = namedtuple(&#39;Point&#39;, &#39;x y&#39;)</span>
+<span class="gd">-   &gt;&gt;&gt; p = Point(11, y=22)     # instantiate with positional or keyword arguments</span>
+<span class="gd">-   &gt;&gt;&gt; p[0] + p[1]             # indexable like the plain tuple (11, 22)</span>
+<span class="gd">-   33</span>
+<span class="gd">-   &gt;&gt;&gt; x, y = p                # unpack like a regular tuple</span>
+<span class="gd">-   &gt;&gt;&gt; x, y</span>
+<span class="gd">-   (11, 22)</span>
+<span class="gd">-   &gt;&gt;&gt; p.x + p.y               # fields also accessible by name</span>
+<span class="gd">-   33</span>
+<span class="gd">-   &gt;&gt;&gt; p                       # readable __repr__ with a name=value style</span>
+<span class="gd">-   Point(x=11, y=22)</span>
+<span class="gd">-</span>
+<span class="gd">-   &gt;&gt;&gt; Point = namedtuple(&#39;Point&#39;, &#39;x y&#39;, verbose=True) # show the class definition</span>
+<span class="gi">+   &gt;&gt;&gt; Point = namedtuple(&#39;Point&#39;, [&#39;x&#39;, &#39;y&#39;], verbose=True)</span>
+    class Point(tuple):
+            &#39;Point(x, y)&#39;
+    &lt;BLANKLINE&gt;
+<span class="gu">@@ -526,6 +604,7 @@</span>
+            _fields = (&#39;x&#39;, &#39;y&#39;)
+    &lt;BLANKLINE&gt;
+            def __new__(_cls, x, y):
+<span class="gi">+               &#39;Create a new instance of Point(x, y)&#39;</span>
+                return _tuple.__new__(_cls, (x, y))
+    &lt;BLANKLINE&gt;
+            @classmethod
+<span class="gu">@@ -537,11 +616,12 @@</span>
+                return result
+    &lt;BLANKLINE&gt;
+            def __repr__(self):
+<span class="gi">+               &#39;Return a nicely formatted representation string&#39;</span>
+                return &#39;Point(x=%r, y=%r)&#39; % self
+    &lt;BLANKLINE&gt;
+<span class="gd">-           def _asdict(t):</span>
+<span class="gd">-               &#39;Return a new dict which maps field names to their values&#39;</span>
+<span class="gd">-               return {&#39;x&#39;: t[0], &#39;y&#39;: t[1]}</span>
+<span class="gi">+           def _asdict(self):</span>
+<span class="gi">+               &#39;Return a new OrderedDict which maps field names to their values&#39;</span>
+<span class="gi">+               return OrderedDict(zip(self._fields, self))</span>
+    &lt;BLANKLINE&gt;
+            def _replace(_self, **kwds):
+                &#39;Return a new Point object replacing specified fields with new values&#39;
+<span class="gu">@@ -551,10 +631,22 @@</span>
+                return result
+    &lt;BLANKLINE&gt;
+            def __getnewargs__(self):
+<span class="gi">+               &#39;Return self as a plain tuple.   Used by copy and pickle.&#39;</span>
+                return tuple(self)
+    &lt;BLANKLINE&gt;
+<span class="gd">-           x = _property(_itemgetter(0))</span>
+<span class="gd">-           y = _property(_itemgetter(1))</span>
+<span class="gi">+           x = _property(_itemgetter(0), doc=&#39;Alias for field number 0&#39;)</span>
+<span class="gi">+           y = _property(_itemgetter(1), doc=&#39;Alias for field number 1&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; p = Point(11, y=22)     # instantiate with positional or keyword arguments</span>
+<span class="gi">+   &gt;&gt;&gt; p[0] + p[1]             # indexable like the plain tuple (11, 22)</span>
+<span class="gi">+   33</span>
+<span class="gi">+   &gt;&gt;&gt; x, y = p                # unpack like a regular tuple</span>
+<span class="gi">+   &gt;&gt;&gt; x, y</span>
+<span class="gi">+   (11, 22)</span>
+<span class="gi">+   &gt;&gt;&gt; p.x + p.y               # fields also accessible by name</span>
+<span class="gi">+   33</span>
+<span class="gi">+   &gt;&gt;&gt; p                       # readable __repr__ with a name=value style</span>
+<span class="gi">+   Point(x=11, y=22)</span>
+ 
+ Named tuples are especially useful for assigning field names to result tuples returned
+ by the :mod:`csv` or :mod:`sqlite3` modules::
+<span class="gu">@@ -588,10 +680,14 @@</span>
+ 
+ .. method:: somenamedtuple._asdict()
+ 
+<span class="gd">-   Return a new dict which maps field names to their corresponding values::</span>
+<span class="gi">+   Return a new :class:`OrderedDict` which maps field names to their corresponding</span>
+<span class="gi">+   values::</span>
+ 
+       &gt;&gt;&gt; p._asdict()
+<span class="gd">-      {&#39;x&#39;: 11, &#39;y&#39;: 22}</span>
+<span class="gi">+      OrderedDict([(&#39;x&#39;, 11), (&#39;y&#39;, 22)])</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Returns an :class:`OrderedDict` instead of a regular :class:`dict`.</span>
+ 
+ .. method:: somenamedtuple._replace(kwargs)
+ 
+<span class="gu">@@ -603,7 +699,7 @@</span>
+       Point(x=33, y=22)
+ 
+       &gt;&gt;&gt; for partnum, record in inventory.items():
+<span class="gd">-      ...     inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())</span>
+<span class="gi">+              inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())</span>
+ 
+ .. attribute:: somenamedtuple._fields
+ 
+<span class="gu">@@ -638,15 +734,15 @@</span>
+ a fixed-width print format:
+ 
+     &gt;&gt;&gt; class Point(namedtuple(&#39;Point&#39;, &#39;x y&#39;)):
+<span class="gd">-    ...     __slots__ = ()</span>
+<span class="gd">-    ...     @property</span>
+<span class="gd">-    ...     def hypot(self):</span>
+<span class="gd">-    ...         return (self.x ** 2 + self.y ** 2) ** 0.5</span>
+<span class="gd">-    ...     def __str__(self):</span>
+<span class="gd">-    ...         return &#39;Point: x=%6.3f  y=%6.3f  hypot=%6.3f&#39; % (self.x, self.y, self.hypot)</span>
+<span class="gi">+            __slots__ = ()</span>
+<span class="gi">+            @property</span>
+<span class="gi">+            def hypot(self):</span>
+<span class="gi">+                return (self.x ** 2 + self.y ** 2) ** 0.5</span>
+<span class="gi">+            def __str__(self):</span>
+<span class="gi">+                return &#39;Point: x=%6.3f  y=%6.3f  hypot=%6.3f&#39; % (self.x, self.y, self.hypot)</span>
+ 
+     &gt;&gt;&gt; for p in Point(3, 4), Point(14, 5/7.):
+<span class="gd">-    ...     print p</span>
+<span class="gi">+            print p</span>
+     Point: x= 3.000  y= 4.000  hypot= 5.000
+     Point: x=14.000  y= 0.714  hypot=14.018
+ 
+<span class="gu">@@ -672,9 +768,263 @@</span>
+     &gt;&gt;&gt; Status.open, Status.pending, Status.closed
+     (0, 1, 2)
+     &gt;&gt;&gt; class Status:
+<span class="gd">-    ...     open, pending, closed = range(3)</span>
+<span class="gi">+            open, pending, closed = range(3)</span>
+ 
+ .. seealso::
+ 
+    `Named tuple recipe &lt;http://code.activestate.com/recipes/500261/&gt;`_
+    adapted for Python 2.4.
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`OrderedDict` objects</span>
+<span class="gi">+----------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+Ordered dictionaries are just like regular dictionaries but they remember the</span>
+<span class="gi">+order that items were inserted.  When iterating over an ordered dictionary,</span>
+<span class="gi">+the items are returned in the order their keys were first added.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: OrderedDict([items])</span>
+<span class="gi">+</span>
+<span class="gi">+   Return an instance of a dict subclass, supporting the usual :class:`dict`</span>
+<span class="gi">+   methods.  An *OrderedDict* is a dict that remembers the order that keys</span>
+<span class="gi">+   were first inserted. If a new entry overwrites an existing entry, the</span>
+<span class="gi">+   original insertion position is left unchanged.  Deleting an entry and</span>
+<span class="gi">+   reinserting it will move it to the end.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: OrderedDict.popitem(last=True)</span>
+<span class="gi">+</span>
+<span class="gi">+   The :meth:`popitem` method for ordered dictionaries returns and removes</span>
+<span class="gi">+   a (key, value) pair.  The pairs are returned in LIFO order if *last* is</span>
+<span class="gi">+   true or FIFO order if false.</span>
+<span class="gi">+</span>
+<span class="gi">+In addition to the usual mapping methods, ordered dictionaries also support</span>
+<span class="gi">+reverse iteration using :func:`reversed`.</span>
+<span class="gi">+</span>
+<span class="gi">+Equality tests between :class:`OrderedDict` objects are order-sensitive</span>
+<span class="gi">+and are implemented as ``list(od1.items())==list(od2.items())``.</span>
+<span class="gi">+Equality tests between :class:`OrderedDict` objects and other</span>
+<span class="gi">+:class:`Mapping` objects are order-insensitive like regular dictionaries.</span>
+<span class="gi">+This allows :class:`OrderedDict` objects to be substituted anywhere a</span>
+<span class="gi">+regular dictionary is used.</span>
+<span class="gi">+</span>
+<span class="gi">+The :class:`OrderedDict` constructor and :meth:`update` method both accept</span>
+<span class="gi">+keyword arguments, but their order is lost because Python&#39;s function call</span>
+<span class="gi">+semantics pass-in keyword arguments using a regular unordered dictionary.</span>
+<span class="gi">+</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   `Equivalent OrderedDict recipe &lt;http://code.activestate.com/recipes/576693/&gt;`_</span>
+<span class="gi">+   that runs on Python 2.4 or later.</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`OrderedDict` Examples and Recipes</span>
+<span class="gi">+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+<span class="gi">+</span>
+<span class="gi">+Since an ordered dictionary remembers its insertion order, it can be used</span>
+<span class="gi">+in conjuction with sorting to make a sorted dictionary::</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # regular unsorted dictionary</span>
+<span class="gi">+    &gt;&gt;&gt; d = {&#39;banana&#39;: 3, &#39;apple&#39;:4, &#39;pear&#39;: 1, &#39;orange&#39;: 2}</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # dictionary sorted by key</span>
+<span class="gi">+    &gt;&gt;&gt; OrderedDict(sorted(d.items(), key=lambda t: t[0]))</span>
+<span class="gi">+    OrderedDict([(&#39;apple&#39;, 4), (&#39;banana&#39;, 3), (&#39;orange&#39;, 2), (&#39;pear&#39;, 1)])</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # dictionary sorted by value</span>
+<span class="gi">+    &gt;&gt;&gt; OrderedDict(sorted(d.items(), key=lambda t: t[1]))</span>
+<span class="gi">+    OrderedDict([(&#39;pear&#39;, 1), (&#39;orange&#39;, 2), (&#39;banana&#39;, 3), (&#39;apple&#39;, 4)])</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; # dictionary sorted by length of the key string</span>
+<span class="gi">+    &gt;&gt;&gt; OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))</span>
+<span class="gi">+    OrderedDict([(&#39;pear&#39;, 1), (&#39;apple&#39;, 4), (&#39;orange&#39;, 2), (&#39;banana&#39;, 3)])</span>
+<span class="gi">+</span>
+<span class="gi">+The new sorted dictionaries maintain their sort order when entries</span>
+<span class="gi">+are deleted.  But when new keys are added, the keys are appended</span>
+<span class="gi">+to the end and the sort is not maintained.</span>
+<span class="gi">+</span>
+<span class="gi">+It is also straight-forward to create an ordered dictionary variant</span>
+<span class="gi">+that the remembers the order the keys were *last* inserted.</span>
+<span class="gi">+If a new entry overwrites an existing entry, the</span>
+<span class="gi">+original insertion position is changed and moved to the end::</span>
+<span class="gi">+</span>
+<span class="gi">+    class LastUpdatedOrderedDict(OrderedDict):</span>
+<span class="gi">+</span>
+<span class="gi">+        &#39;Store items in the order the keys were last added&#39;</span>
+<span class="gi">+        def __setitem__(self, key, value):</span>
+<span class="gi">+            if key in self:</span>
+<span class="gi">+                del self[key]</span>
+<span class="gi">+            OrderedDict.__setitem__(self, key, value)</span>
+<span class="gi">+</span>
+<span class="gi">+An ordered dictionary can combined with the :class:`Counter` class</span>
+<span class="gi">+so that the counter remembers the order elements are first encountered::</span>
+<span class="gi">+</span>
+<span class="gi">+   class OrderedCounter(Counter, OrderedDict):</span>
+<span class="gi">+        &#39;Counter that remembers the order elements are first encountered&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+        def __repr__(self):</span>
+<span class="gi">+            return &#39;%s(%r)&#39; % (self.__class__.__name__, OrderedDict(self))</span>
+<span class="gi">+</span>
+<span class="gi">+        def __reduce__(self):</span>
+<span class="gi">+            return self.__class__, (OrderedDict(self),)</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. _abstract-base-classes:</span>
+<span class="gi">+</span>
+<span class="gi">+ABCs - abstract base classes</span>
+<span class="gi">+----------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+The collections module offers the following :term:`ABCs &lt;abstract base class&gt;`:</span>
+<span class="gi">+</span>
+<span class="gi">+=========================  =====================  ======================  ====================================================</span>
+<span class="gi">+ABC                        Inherits from          Abstract Methods        Mixin Methods</span>
+<span class="gi">+=========================  =====================  ======================  ====================================================</span>
+<span class="gi">+:class:`Container`                                ``__contains__``</span>
+<span class="gi">+:class:`Hashable`                                 ``__hash__``</span>
+<span class="gi">+:class:`Iterable`                                 ``__iter__``</span>
+<span class="gi">+:class:`Iterator`          :class:`Iterable`      ``next``                ``__iter__``</span>
+<span class="gi">+:class:`Sized`                                    ``__len__``</span>
+<span class="gi">+:class:`Callable`                                 ``__call__``</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``,</span>
+<span class="gi">+                           :class:`Iterable`,                             ``index``, and ``count``</span>
+<span class="gi">+                           :class:`Container`</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`MutableSequence`   :class:`Sequence`      ``__setitem__``,        Inherited :class:`Sequence` methods and</span>
+<span class="gi">+                                                  ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,</span>
+<span class="gi">+                                                  ``insert``              ``remove``, and ``__iadd__``</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,</span>
+<span class="gi">+                           :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``,</span>
+<span class="gi">+                           :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`MutableSet`        :class:`Set`           ``add``,                Inherited :class:`Set` methods and</span>
+<span class="gi">+                                                  ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,</span>
+<span class="gi">+                                                                          ``__iand__``, ``__ixor__``, and ``__isub__``</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,</span>
+<span class="gi">+                           :class:`Iterable`,                             ``get``, ``__eq__``, and ``__ne__``</span>
+<span class="gi">+                           :class:`Container`</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`MutableMapping`    :class:`Mapping`       ``__setitem__``,        Inherited :class:`Mapping` methods and</span>
+<span class="gi">+                                                  ``__delitem__``         ``pop``, ``popitem``, ``clear``, ``update``,</span>
+<span class="gi">+                                                                          and ``setdefault``</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`MappingView`       :class:`Sized`                                 ``__len__``</span>
+<span class="gi">+:class:`ItemsView`         :class:`MappingView`,                          ``__contains__``,</span>
+<span class="gi">+                           :class:`Set`                                   ``__iter__``</span>
+<span class="gi">+:class:`KeysView`          :class:`MappingView`,                          ``__contains__``,</span>
+<span class="gi">+                           :class:`Set`                                   ``__iter__``</span>
+<span class="gi">+:class:`ValuesView`        :class:`MappingView`                           ``__contains__``, ``__iter__``</span>
+<span class="gi">+=========================  =====================  ======================  ====================================================</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Container</span>
+<span class="gi">+           Hashable</span>
+<span class="gi">+           Sized</span>
+<span class="gi">+           Callable</span>
+<span class="gi">+</span>
+<span class="gi">+   ABCs for classes that provide respectively the methods :meth:`__contains__`,</span>
+<span class="gi">+   :meth:`__hash__`, :meth:`__len__`, and :meth:`__call__`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Iterable</span>
+<span class="gi">+</span>
+<span class="gi">+   ABC for classes that provide the :meth:`__iter__` method.</span>
+<span class="gi">+   See also the definition of :term:`iterable`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Iterator</span>
+<span class="gi">+</span>
+<span class="gi">+   ABC for classes that provide the :meth:`__iter__` and :meth:`next` methods.</span>
+<span class="gi">+   See also the definition of :term:`iterator`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Sequence</span>
+<span class="gi">+           MutableSequence</span>
+<span class="gi">+</span>
+<span class="gi">+   ABCs for read-only and mutable :term:`sequences &lt;sequence&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Set</span>
+<span class="gi">+           MutableSet</span>
+<span class="gi">+</span>
+<span class="gi">+   ABCs for read-only and mutable sets.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: Mapping</span>
+<span class="gi">+           MutableMapping</span>
+<span class="gi">+</span>
+<span class="gi">+   ABCs for read-only and mutable :term:`mappings &lt;mapping&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: MappingView</span>
+<span class="gi">+           ItemsView</span>
+<span class="gi">+           KeysView</span>
+<span class="gi">+           ValuesView</span>
+<span class="gi">+</span>
+<span class="gi">+   ABCs for mapping, items, keys, and values :term:`views &lt;view&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+These ABCs allow us to ask classes or instances if they provide</span>
+<span class="gi">+particular functionality, for example::</span>
+<span class="gi">+</span>
+<span class="gi">+    size = None</span>
+<span class="gi">+    if isinstance(myvar, collections.Sized):</span>
+<span class="gi">+        size = len(myvar)</span>
+<span class="gi">+</span>
+<span class="gi">+Several of the ABCs are also useful as mixins that make it easier to develop</span>
+<span class="gi">+classes supporting container APIs.  For example, to write a class supporting</span>
+<span class="gi">+the full :class:`Set` API, it only necessary to supply the three underlying</span>
+<span class="gi">+abstract methods: :meth:`__contains__`, :meth:`__iter__`, and :meth:`__len__`.</span>
+<span class="gi">+The ABC supplies the remaining methods such as :meth:`__and__` and</span>
+<span class="gi">+:meth:`isdisjoint` ::</span>
+<span class="gi">+</span>
+<span class="gi">+    class ListBasedSet(collections.Set):</span>
+<span class="gi">+         &#39;&#39;&#39; Alternate set implementation favoring space over speed</span>
+<span class="gi">+             and not requiring the set elements to be hashable. &#39;&#39;&#39;</span>
+<span class="gi">+         def __init__(self, iterable):</span>
+<span class="gi">+             self.elements = lst = []</span>
+<span class="gi">+             for value in iterable:</span>
+<span class="gi">+                 if value not in lst:</span>
+<span class="gi">+                     lst.append(value)</span>
+<span class="gi">+         def __iter__(self):</span>
+<span class="gi">+             return iter(self.elements)</span>
+<span class="gi">+         def __contains__(self, value):</span>
+<span class="gi">+             return value in self.elements</span>
+<span class="gi">+         def __len__(self):</span>
+<span class="gi">+             return len(self.elements)</span>
+<span class="gi">+</span>
+<span class="gi">+    s1 = ListBasedSet(&#39;abcdef&#39;)</span>
+<span class="gi">+    s2 = ListBasedSet(&#39;defghi&#39;)</span>
+<span class="gi">+    overlap = s1 &amp; s2            # The __and__() method is supported automatically</span>
+<span class="gi">+</span>
+<span class="gi">+Notes on using :class:`Set` and :class:`MutableSet` as a mixin:</span>
+<span class="gi">+</span>
+<span class="gi">+(1)</span>
+<span class="gi">+   Since some set operations create new sets, the default mixin methods need</span>
+<span class="gi">+   a way to create new instances from an iterable. The class constructor is</span>
+<span class="gi">+   assumed to have a signature in the form ``ClassName(iterable)``.</span>
+<span class="gi">+   That assumption is factored-out to an internal classmethod called</span>
+<span class="gi">+   :meth:`_from_iterable` which calls ``cls(iterable)`` to produce a new set.</span>
+<span class="gi">+   If the :class:`Set` mixin is being used in a class with a different</span>
+<span class="gi">+   constructor signature, you will need to override :meth:`_from_iterable`</span>
+<span class="gi">+   with a classmethod that can construct new instances from</span>
+<span class="gi">+   an iterable argument.</span>
+<span class="gi">+</span>
+<span class="gi">+(2)</span>
+<span class="gi">+   To override the comparisons (presumably for speed, as the</span>
+<span class="gi">+   semantics are fixed), redefine :meth:`__le__` and</span>
+<span class="gi">+   then the other operations will automatically follow suit.</span>
+<span class="gi">+</span>
+<span class="gi">+(3)</span>
+<span class="gi">+   The :class:`Set` mixin provides a :meth:`_hash` method to compute a hash value</span>
+<span class="gi">+   for the set; however, :meth:`__hash__` is not defined because not all sets</span>
+<span class="gi">+   are hashable or immutable.  To add set hashabilty using mixins,</span>
+<span class="gi">+   inherit from both :meth:`Set` and :meth:`Hashable`, then define</span>
+<span class="gi">+   ``__hash__ = Set._hash``.</span>
+<span class="gi">+</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   * Latest version of the `Python source code for the collections abstract base classes</span>
+<span class="gi">+     &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/_abcoll.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+<span class="gi">+   * `OrderedSet recipe &lt;http://code.activestate.com/recipes/576694/&gt;`_ for an</span>
+<span class="gi">+     example built on :class:`MutableSet`.</span>
+<span class="gi">+</span>
+<span class="gi">+   * For more about ABCs, see the :mod:`abc` module and :pep:`3119`.</span>
+</pre></div>
+
+</body>
+</html>

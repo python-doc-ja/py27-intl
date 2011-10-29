@@ -1,0 +1,298 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>glossary.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -19,7 +19,7 @@</span>
+ 
+    2to3
+       A tool that tries to convert Python 2.x code to Python 3.x code by
+<span class="gd">-      handling most of the incompatibilites which can be detected by parsing the</span>
+<span class="gi">+      handling most of the incompatibilities which can be detected by parsing the</span>
+       source and traversing the parse tree.
+ 
+       2to3 is available in the standard library as :mod:`lib2to3`; a standalone
+<span class="gu">@@ -27,7 +27,7 @@</span>
+       :ref:`2to3-reference`.
+ 
+    abstract base class
+<span class="gd">-      Abstract Base Classes (abbreviated ABCs) complement :term:`duck-typing` by</span>
+<span class="gi">+      :ref:`abstract-base-classes` complement :term:`duck-typing` by</span>
+       providing a way to define interfaces when other techniques like
+       :func:`hasattr` would be clumsy. Python comes with many built-in ABCs for
+       data structures (in the :mod:`collections` module), numbers (in the
+<span class="gu">@@ -63,6 +63,9 @@</span>
+       &quot;intermediate language&quot; is said to run on a :term:`virtual machine`
+       that executes the machine code corresponding to each bytecode.
+ 
+<span class="gi">+      A list of bytecode instructions can be found in the documentation for</span>
+<span class="gi">+      :ref:`the dis module &lt;bytecodes&gt;`.</span>
+<span class="gi">+</span>
+    class
+       A template for creating user-defined objects. Class definitions
+       normally contain method definitions which operate on instances of the
+<span class="gu">@@ -103,9 +106,10 @@</span>
+       See :pep:`343`.
+ 
+    CPython
+<span class="gd">-      The canonical implementation of the Python programming language.  The</span>
+<span class="gd">-      term &quot;CPython&quot; is used in contexts when necessary to distinguish this</span>
+<span class="gd">-      implementation from others such as Jython or IronPython.</span>
+<span class="gi">+      The canonical implementation of the Python programming language, as</span>
+<span class="gi">+      distributed on `python.org &lt;http://python.org&gt;`_.  The term &quot;CPython&quot;</span>
+<span class="gi">+      is used when necessary to distinguish this implementation from others</span>
+<span class="gi">+      such as Jython or IronPython.</span>
+ 
+    decorator
+       A function returning another function, usually applied as a function
+<span class="gu">@@ -140,10 +144,9 @@</span>
+       For more information about descriptors&#39; methods, see :ref:`descriptors`.
+ 
+    dictionary
+<span class="gd">-      An associative array, where arbitrary keys are mapped to values.  The use</span>
+<span class="gd">-      of :class:`dict` closely resembles that for :class:`list`, but the keys can</span>
+<span class="gd">-      be any object with a :meth:`__hash__` function, not just integers.</span>
+<span class="gd">-      Called a hash in Perl.</span>
+<span class="gi">+      An associative array, where arbitrary keys are mapped to values.  The keys</span>
+<span class="gi">+      can be any object with :meth:`__hash__` function and :meth:`__eq__`</span>
+<span class="gi">+      methods. Called a hash in Perl.</span>
+ 
+    docstring
+       A string literal which appears as the first expression in a class,
+<span class="gu">@@ -154,9 +157,9 @@</span>
+       object.
+ 
+    duck-typing
+<span class="gd">-      A pythonic programming style which determines an object&#39;s type by inspection</span>
+<span class="gd">-      of its method or attribute signature rather than by explicit relationship</span>
+<span class="gd">-      to some type object (&quot;If it looks like a duck and quacks like a duck, it</span>
+<span class="gi">+      A programming style which does not look at an object&#39;s type to determine</span>
+<span class="gi">+      if it has the right interface; instead, the method or attribute is simply</span>
+<span class="gi">+      called or used (&quot;If it looks like a duck and quacks like a duck, it</span>
+       must be a duck.&quot;)  By emphasizing interfaces rather than specific types,
+       well-designed code improves its flexibility by allowing polymorphic
+       substitution.  Duck-typing avoids tests using :func:`type` or
+<span class="gu">@@ -182,21 +185,28 @@</span>
+       not expressions.
+ 
+    extension module
+<span class="gd">-      A module written in C or C++, using Python&#39;s C API to interact with the core and</span>
+<span class="gd">-      with user code.</span>
+<span class="gi">+      A module written in C or C++, using Python&#39;s C API to interact with the</span>
+<span class="gi">+      core and with user code.</span>
+ 
+    finder
+       An object that tries to find the :term:`loader` for a module. It must
+       implement a method named :meth:`find_module`. See :pep:`302` for
+       details.
+ 
+<span class="gi">+   floor division</span>
+<span class="gi">+      Mathematical division that rounds down to nearest integer.  The floor</span>
+<span class="gi">+      division operator is ``//``.  For example, the expression ``11 // 4``</span>
+<span class="gi">+      evaluates to ``2`` in contrast to the ``2.75`` returned by float true</span>
+<span class="gi">+      division.  Note that ``(-11) // 4`` is ``-3`` because that is ``-2.75``</span>
+<span class="gi">+      rounded *downward*. See :pep:`238`.</span>
+<span class="gi">+</span>
+    function
+       A series of statements which returns some value to a caller. It can also
+       be passed zero or more arguments which may be used in the execution of
+       the body. See also :term:`argument` and :term:`method`.
+ 
+    __future__
+<span class="gd">-      A pseudo module which programmers can use to enable new language features</span>
+<span class="gi">+      A pseudo-module which programmers can use to enable new language features</span>
+       which are not compatible with the current interpreter.  For example, the
+       expression ``11/4`` currently evaluates to ``2``. If the module in which
+       it is executed had enabled *true division* by executing::
+<span class="gu">@@ -221,13 +231,13 @@</span>
+ 
+    generator
+       A function which returns an iterator.  It looks like a normal function
+<span class="gd">-      except that values are returned to the caller using a :keyword:`yield`</span>
+<span class="gd">-      statement instead of a :keyword:`return` statement.  Generator functions</span>
+<span class="gd">-      often contain one or more :keyword:`for` or :keyword:`while` loops which</span>
+<span class="gd">-      :keyword:`yield` elements back to the caller.  The function execution is</span>
+<span class="gd">-      stopped at the :keyword:`yield` keyword (returning the result) and is</span>
+<span class="gd">-      resumed there when the next element is requested by calling the</span>
+<span class="gd">-      :meth:`next` method of the returned iterator.</span>
+<span class="gi">+      except that it contains :keyword:`yield` statements for producing a series</span>
+<span class="gi">+      a values usable in a for-loop or that can be retrieved one at a time with</span>
+<span class="gi">+      the :func:`next` function. Each :keyword:`yield` temporarily suspends</span>
+<span class="gi">+      processing, remembering the location execution state (including local</span>
+<span class="gi">+      variables and pending try-statements).  When the generator resumes, it</span>
+<span class="gi">+      picks-up where it left-off (in contrast to functions which start fresh on</span>
+<span class="gi">+      every invocation).</span>
+ 
+       .. index:: single: generator expression
+ 
+<span class="gu">@@ -244,16 +254,25 @@</span>
+       See :term:`global interpreter lock`.
+ 
+    global interpreter lock
+<span class="gd">-      The lock used by Python threads to assure that only one thread</span>
+<span class="gd">-      executes in the :term:`CPython` :term:`virtual machine` at a time.</span>
+<span class="gd">-      This simplifies the CPython implementation by assuring that no two</span>
+<span class="gd">-      processes can access the same memory at the same time.  Locking the</span>
+<span class="gd">-      entire interpreter makes it easier for the interpreter to be</span>
+<span class="gd">-      multi-threaded, at the expense of much of the parallelism afforded by</span>
+<span class="gd">-      multi-processor machines.  Efforts have been made in the past to</span>
+<span class="gd">-      create a &quot;free-threaded&quot; interpreter (one which locks shared data at a</span>
+<span class="gd">-      much finer granularity), but so far none have been successful because</span>
+<span class="gd">-      performance suffered in the common single-processor case.</span>
+<span class="gi">+      The mechanism used by the :term:`CPython` interpreter to assure that</span>
+<span class="gi">+      only one thread executes Python :term:`bytecode` at a time.</span>
+<span class="gi">+      This simplifies the CPython implementation by making the object model</span>
+<span class="gi">+      (including critical built-in types such as :class:`dict`) implicitly</span>
+<span class="gi">+      safe against concurrent access.  Locking the entire interpreter</span>
+<span class="gi">+      makes it easier for the interpreter to be multi-threaded, at the</span>
+<span class="gi">+      expense of much of the parallelism afforded by multi-processor</span>
+<span class="gi">+      machines.</span>
+<span class="gi">+</span>
+<span class="gi">+      However, some extension modules, either standard or third-party,</span>
+<span class="gi">+      are designed so as to release the GIL when doing computationally-intensive</span>
+<span class="gi">+      tasks such as compression or hashing.  Also, the GIL is always released</span>
+<span class="gi">+      when doing I/O.</span>
+<span class="gi">+</span>
+<span class="gi">+      Past efforts to create a &quot;free-threaded&quot; interpreter (one which locks</span>
+<span class="gi">+      shared data at a much finer granularity) have not been successful</span>
+<span class="gi">+      because performance suffered in the common single-processor case. It</span>
+<span class="gi">+      is believed that overcoming this performance issue would make the</span>
+<span class="gi">+      implementation much more complicated and therefore costlier to maintain.</span>
+ 
+    hashable
+       An object is *hashable* if it has a hash value which never changes during
+<span class="gu">@@ -272,9 +291,7 @@</span>
+    IDLE
+       An Integrated Development Environment for Python.  IDLE is a basic editor
+       and interpreter environment which ships with the standard distribution of
+<span class="gd">-      Python.  Good for beginners, it also serves as clear example code for</span>
+<span class="gd">-      those wanting to implement a moderately sophisticated, multi-platform GUI</span>
+<span class="gd">-      application.</span>
+<span class="gi">+      Python.</span>
+ 
+    immutable
+       An object with a fixed value.  Immutable objects include numbers, strings and
+<span class="gu">@@ -349,6 +366,26 @@</span>
+ 
+       More information can be found in :ref:`typeiter`.
+ 
+<span class="gi">+   key function</span>
+<span class="gi">+      A key function or collation function is a callable that returns a value</span>
+<span class="gi">+      used for sorting or ordering.  For example, :func:`locale.strxfrm` is</span>
+<span class="gi">+      used to produce a sort key that is aware of locale specific sort</span>
+<span class="gi">+      conventions.</span>
+<span class="gi">+</span>
+<span class="gi">+      A number of tools in Python accept key functions to control how elements</span>
+<span class="gi">+      are ordered or grouped.  They include :func:`min`, :func:`max`,</span>
+<span class="gi">+      :func:`sorted`, :meth:`list.sort`, :func:`heapq.nsmallest`,</span>
+<span class="gi">+      :func:`heapq.nlargest`, and :func:`itertools.groupby`.</span>
+<span class="gi">+</span>
+<span class="gi">+      There are several ways to create a key function.  For example. the</span>
+<span class="gi">+      :meth:`str.lower` method can serve as a key function for case insensitive</span>
+<span class="gi">+      sorts.  Alternatively, an ad-hoc key function can be built from a</span>
+<span class="gi">+      :keyword:`lambda` expression such as ``lambda r: (r[0], r[2])``.  Also,</span>
+<span class="gi">+      the :mod:`operator` module provides three key function constuctors:</span>
+<span class="gi">+      :func:`~operator.attrgetter`, :func:`~operator.itemgetter`, and</span>
+<span class="gi">+      :func:`~operator.methodcaller`.  See the :ref:`Sorting HOW TO</span>
+<span class="gi">+      &lt;sortinghowto&gt;` for examples of how to create and use key functions.</span>
+<span class="gi">+</span>
+    keyword argument
+       Arguments which are preceded with a ``variable_name=`` in the call.
+       The variable name designates the local name in the function to which the
+<span class="gu">@@ -385,8 +422,11 @@</span>
+       :term:`finder`. See :pep:`302` for details.
+ 
+    mapping
+<span class="gd">-      A container object (such as :class:`dict`) which supports arbitrary key</span>
+<span class="gd">-      lookups using the special method :meth:`__getitem__`.</span>
+<span class="gi">+      A container object that supports arbitrary key lookups and implements the</span>
+<span class="gi">+      methods specified in the :class:`Mapping` or :class:`MutableMapping`</span>
+<span class="gi">+      :ref:`abstract base classes &lt;abstract-base-classes&gt;`. Examples include</span>
+<span class="gi">+      :class:`dict`, :class:`collections.defaultdict`,</span>
+<span class="gi">+      :class:`collections.OrderedDict` and :class:`collections.Counter`.</span>
+ 
+    metaclass
+       The class of a class.  Class definitions create a class name, a class
+<span class="gu">@@ -542,6 +582,13 @@</span>
+       object has a type.  An object&#39;s type is accessible as its
+       :attr:`__class__` attribute or can be retrieved with ``type(obj)``.
+ 
+<span class="gi">+   view</span>
+<span class="gi">+      The objects returned from :meth:`dict.viewkeys`, :meth:`dict.viewvalues`,</span>
+<span class="gi">+      and :meth:`dict.viewitems` are called dictionary views.  They are lazy</span>
+<span class="gi">+      sequences that will see changes in the underlying dictionary.  To force</span>
+<span class="gi">+      the dictionary view to become a full list use ``list(dictview)``.  See</span>
+<span class="gi">+      :ref:`dict-views`.</span>
+<span class="gi">+</span>
+    virtual machine
+       A computer defined entirely in software.  Python&#39;s virtual machine
+       executes the :term:`bytecode` emitted by the bytecode compiler.
+</pre></div>
+
+</body>
+</html>
