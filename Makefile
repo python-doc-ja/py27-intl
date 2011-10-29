@@ -92,17 +92,18 @@ changes: build
 
 linkcheck: BUILDER = linkcheck
 linkcheck: build
-	@echo "Link check complete; look for any errors in the above output " \
+	@echo "Link check complete; look for any errors in the above output" \
 	      "or in build/$(BUILDER)/output.txt"
 
 suspicious: BUILDER = suspicious
 suspicious: build
-	@echo "Suspicious check complete; look for any errors in the above output " \
-	      "or in build/$(BUILDER)/suspicious.txt"
+	@echo "Suspicious check complete; look for any errors in the above output" \
+	      "or in build/$(BUILDER)/suspicious.csv.  If all issues are false" \
+	      "positives, append that file to tools/sphinxext/susp-ignored.csv."
 
 coverage: BUILDER = coverage
 coverage: build
-	@echo "Coverage finished; see c.txt and python.txt in build/coverage"
+	@echo "Testing of doctests in the sources finished, look at the" \
 
 doctest: BUILDER = doctest
 doctest: build
@@ -111,7 +112,7 @@ doctest: build
 
 pydoc-topics: BUILDER = pydoc-topics
 pydoc-topics: build
-	@echo "Building finished; now copy build/pydoc-topics/topics.py " \
+	@echo "Building finished; now copy build/pydoc-topics/topics.py" \
 	      "to Lib/pydoc_data/topics.py"
 
 htmlview: html
@@ -125,7 +126,7 @@ clean:
 	-rm -rf tools/docutils
 
 dist:
-	-rm -rf dist
+	rm -rf dist
 	mkdir -p dist
 
 	# archive the HTML
@@ -147,14 +148,13 @@ dist:
 	rm dist/python-$(DISTVERSION)-docs-text.tar
 
 	# archive the A4 latex
-	-rm -r build/latex
 	make latex PAPER=a4
 	(cd build/latex; make clean && make all-pdf && make FMT=pdf zip bz2)
 	cp build/latex/docs-pdf.zip dist/python-$(DISTVERSION)-docs-pdf-a4.zip
 	cp build/latex/docs-pdf.tar.bz2 dist/python-$(DISTVERSION)-docs-pdf-a4.tar.bz2
 
 	# archive the letter latex
-	rm -r build/latex
+	rm -rf build/latex
 	make latex PAPER=letter
 	(cd build/latex; make clean && make all-pdf && make FMT=pdf zip bz2)
 	cp build/latex/docs-pdf.zip dist/python-$(DISTVERSION)-docs-pdf-letter.zip
