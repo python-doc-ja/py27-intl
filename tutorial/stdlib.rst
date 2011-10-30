@@ -16,11 +16,11 @@ OSへのインタフェース
 ::
 
    >>> import os
-   >>> os.system('time 0:02')
-   0
    >>> os.getcwd()      # 現在の作業ディレクトリを返す
    'C:\\Python26'
-   >>> os.chdir('/server/accesslogs')
+   >>> os.chdir('/server/accesslogs')   # 作業ディレクトリを変更する.
+   >>> os.system('mkdir today')   # システムのシェルで mkdir コマンドを実行する
+   0
 
 ``from os import *`` ではなく、 ``import os`` 形式を使うようにしてください。
 そうすることで、動作が大きく異なる組み込み関数 :func:`open` が :func:`os.open`
@@ -84,7 +84,7 @@ OSへのインタフェース
 
 :mod:`getopt` モジュールは、 *sys.argv* を Unix の :func:`getopt` 関数の慣習に
 従って処理します。より強力で柔軟性のあるコマンドライン処理機能は、
-:mod:`optparse` モジュールで提供されています。
+:mod:`argparse` モジュールで提供されています。
 
 
 .. _tut-stderr:
