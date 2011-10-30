@@ -20,9 +20,6 @@
 標準出力を表すファイルは ``sys.stdout`` で参照できます。
 詳細はライブラリリファレンスを参照してください。)
 
-
-.. index:: module: string
-
 出力を書式化する際に、単に値をスペースで区切って出力するよりももっときめ細かな
 制御をしたいと思うことがあるでしょう。
 出力を書式化するには二つの方法があります。
@@ -33,8 +30,8 @@
 メソッドを提供しています。これらのメソッドについてはすぐ後で簡単に説明します。
 もうひとつの方法は :meth:`str.format` メソッドを利用することです。
 
-.. 原文では string モジュールに言及しているが、このドキュメントでは文字列メソッドを
-   使っている. http://bugs.python.org/issue11405
+:mod:`string` モジュールの :class:`~string.Template` クラスは文字列中の値を
+置換する別の方法を提供しています。
 
 もちろん、一つ問題があります。値をどうやって文字列に変換したらいいのでしょうか？
 幸運なことに、Python には値を文字列に変換する方法があります。
@@ -58,10 +55,10 @@
    'Hello, world.'
    >>> repr(s)
    "'Hello, world.'"
-   >>> str(0.1)
-   '0.1'
-   >>> repr(0.1)
-   '0.10000000000000001'
+   >>> str(1.0/7.0)
+   '0.142857142857'
+   >>> repr(1.0/7.0)
+   '0.14285714285714285'
    >>> x = 10 * 3.25
    >>> y = 200 * 200
    >>> s = 'The value of x is ' + repr(x) + ', and y is ' + repr(y) + '...'
@@ -114,10 +111,10 @@
 追加されていることに注意してください。
 :keyword:`print` は引数間に常に空白を追加します。)
 
-この例では、文字列の :meth:`rjust` メソッドの使い方を示しています。
-:meth:`rjust` は文字列を指定された幅のフィールド内に右詰めで入るように、
+この例では、文字列の :meth:`str.rjust` メソッドの使い方を示しています。
+:meth:`str.rjust` は文字列を指定された幅のフィールド内に右詰めで入るように、
 左に空白を追加します。
-同様のメソッドとして、 :meth:`ljust` と :meth:`center` があります。
+同様のメソッドとして、 :meth:`str.ljust` と :meth:`str.center` があります。
 これらのメソッドは何か出力を行うわけではなく、ただ新しい文字列を返します。
 入力文字列が長すぎる場合、文字列を切り詰めることはせず、ただ値をそのまま
 返します。
@@ -125,7 +122,7 @@
 嘘の値が代わりに書き出されるよりはましです。(本当に切り詰めを行いたいのなら、
 全てのカラムに ``x.ljust(n)[:n]`` のようにスライス表記を加えることもできます。)
 
-もう一つのメソッド、 :func:`zfill` は、数値文字列の左側をゼロ詰めします。
+もう一つのメソッド、 :meth:`str.zfill` は、数値文字列の左側をゼロ詰めします。
 このメソッドは正と負の符号を正しく扱います。
 
 ::
@@ -139,20 +136,21 @@
 
 :meth:`str.format` メソッドの基本的な使い方は次のようなものです。 ::
 
-   >>> print 'We are the {0} who say "{1}!"'.format('knights', 'Ni')
+   >>> print 'We are the {} who say "{}!"'.format('knights', 'Ni')
    We are the knights who say "Ni!"
 
-括弧とその中の文字(これをフォーマットフィールドと呼びます)は、 :meth:`~str.format` メソッドに
-渡されたオブジェクトに置換されます。
-括弧の中の数字は :meth:`~str.format` メソッドに渡されたオブジェクトの位置を表します。 ::
+括弧とその中の文字(これをフォーマットフィールドと呼びます)は、
+:meth:`str.format` メソッドに渡されたオブジェクトに置換されます。
+括弧の中の数字は :meth:`str.format` メソッドに渡されたオブジェクトの位置を
+表します。 ::
 
    >>> print '{0} and {1}'.format('spam', 'eggs')
    spam and eggs
    >>> print '{1} and {0}'.format('spam', 'eggs')
    eggs and spam
 
-:meth:`~str.format` メソッドにキーワード引数が渡された場合、その値はキーワード引数の名前に
-よって参照されます。 ::
+:meth:`str.format` メソッドにキーワード引数が渡された場合、その値はキーワード
+引数の名前によって参照されます。 ::
 
    >>> print 'This {food} is {adjective}.'.format(
    ...       food='spam', adjective='absolutely horrible')
@@ -168,14 +166,14 @@
 値をフォーマットする前に変換することができます。 ::
 
    >>> import math
-   >>> print 'The value of PI is approximately {0}.'.format(math.pi)
+   >>> print 'The value of PI is approximately {}.'.format(math.pi)
    The value of PI is approximately 3.14159265359.
-   >>> print 'The value of PI is approximately {0!r}.'.format(math.pi)
+   >>> print 'The value of PI is approximately {!r}.'.format(math.pi)
    The value of PI is approximately 3.141592653589793.
 
 オプションの ``':'`` とフォーマット指定子を、フィールド名の後ろに付けることができます。
 フォーマット指定子によって値がどうフォーマットされるかを制御することができます。
-次の例では、円周率πを、小数点以下3桁でフォーマットしています。
+次の例では、円周率πを、小数点以下3桁でまるめてフォーマットしています。
 
    >>> import math
    >>> print 'The value of PI is approximately {0:.3f}.'.format(math.pi)
@@ -214,7 +212,7 @@ table を '**' 記法を使ってキーワード引数として渡す方法も�
    Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 
 
-全てのローカルな変数が入った辞書を返す、新たに紹介する組み込み関数 :func:`vars`
+全てのローカルな変数が入った辞書を返す組み込み関数 :func:`vars`
 と組み合わせると特に便利です。
 
 :meth:`str.format` による文字列フォーマットの完全な解説は、 :ref:`formatstrings`
