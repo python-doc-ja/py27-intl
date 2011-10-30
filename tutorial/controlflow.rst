@@ -451,11 +451,12 @@ Python の :keyword:`for` 文は、読者が C 言語や Pascal 言語で使い�
    def cheeseshop(kind, *arguments, **keywords):
        print "-- Do you have any", kind, "?"
        print "-- I'm sorry, we're all out of", kind
-       for arg in arguments: print arg
+       for arg in arguments:
+           print arg
        print "-" * 40
-       keys = keywords.keys()
-       keys.sort()
-       for kw in keys: print kw, ":", keywords[kw]
+       keys = sorted(keywords.keys())
+       for kw in keys:
+           print kw, ":", keywords[kw]
 
 呼び出しは以下のようになり、
 
@@ -480,8 +481,8 @@ Python の :keyword:`for` 文は、読者が C 言語や Pascal 言語で使い�
    shopkeeper : Michael Palin
    sketch : Cheese Shop Sketch
 
-キーワード引数名のリストに対して :meth:`sort` を呼び出した後に ``keywords``
-辞書の内容を出力していることに注意してください。
+キーワード引数名のリストを、キーワード辞書の ``keys()`` メソッドの結果を
+ソートして作成していることに注目してください。
 :meth:`sort` が呼び出されていないと、引数が出力される順番は不確定となります。
 
 
