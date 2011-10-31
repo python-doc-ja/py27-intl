@@ -13,8 +13,12 @@
 このため、このモジュールはスクリーン上で表示する際の色付け機能 (colorizers) を含む
 "清書出力器 (pretty-printer)" を実装する上で便利です。
 
-第一のエントリポイントはジェネレータ(:term:`generator`)です:
+.. seealso::
 
+   最新バージョンの `tokenize module Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/tokenize.py?view=markup>`_
+
+第一のエントリポイントはジェネレータ(:term:`generator`)です:
 
 .. function:: generate_tokens(readline)
 

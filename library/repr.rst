@@ -12,6 +12,11 @@
 
 :mod:`repr` モジュールは結果の文字列の大きさを制限したオブジェクト表現を作り出すための方法を提供します。これはPythonデバッガで使われていますが、他の状況でも同じように役に立つかもしれません。
 
+.. seealso::
+
+   最新バージョンの `repr module Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/repr.py?view=markup>`_
+
 このモジュールはクラスとインスタンス、それに関数を提供します:
 
 

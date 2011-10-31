@@ -40,6 +40,11 @@
 *openhook* パラメータで設定します。このフックは、ふたつの引数 *filename* と *mode*
 をとる関数でなければなりません。そしてその関数の返り値はオープンしたファイルオブジェクトとなります。このモジュールには、便利なフックが既に用意されています。
 
+.. seealso::
+
+   最新バージョンの `fileinput Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/fileinput.py?view=markup>`_
+
 以下の関数がこのモジュールの基本的なインタフェースです。
 
 
