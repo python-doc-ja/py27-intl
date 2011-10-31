@@ -18,6 +18,10 @@ quoted-printable エンコーディングは比較的印字不可能な文字の
 場合には、 :mod:`base64` モジュールで利用できる base64 エンコーディングのほうがより\
 コンパクトになります。
 
+.. seealso::
+
+   最新バージョンの `quopri モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/quopri.py?view=markup>`_
 
 .. function:: decode(input, output[,header])
 
