@@ -6,23 +6,34 @@
    :synopsis: サイト固有のモジュールを参照する標準の方法。
 
 
-**このモジュールは初期化中に自動的にインポートされます。** 自動インポートはインタプリタの :option:`-S` オプションで禁止できます。
-
-このモジュールをインポートすることで、サイト固有のパスをモジュール検索パスへ付け加えます。
+**このモジュールは初期化中に自動的にインポートされます。**
+自動インポートはインタプリタの :option:`-S` オプションで禁止できます。
 
 .. index:: triple: module; search; path
+
+このモジュールをインポートすることで、サイト固有のパスをモジュール検索パスへ付け加えます。
 
 .. index::
    pair: site-python; directory
    pair: site-packages; directory
 
-前部と後部からなる最大で四つまでのディレクトリを作成することから始めます。前部には、 ``sys.prefix`` と ``sys.exec_prefix`` を使用します。空の前部は省略されます。
-後部には、まず空文字列を使い、次に :file:`lib/site-packages` \ (Windows) または
-:file:`lib/python|version|/site-packages` 、そして :file:`lib/site-python` (Unix と
+サイト固有のパスは、前部と後部から構築される最大で四つまでのディレクトリから始めます。
+前部には、 ``sys.prefix`` と ``sys.exec_prefix`` を使用します。空の前部は省略されます。
+後部には、まず空文字列を使い、次に :file:`lib/site-packages` (Windows) または
+:file:`lib/python|version|/site-packages`, そして :file:`lib/site-python` (Unix と
 Macintosh)を使います。
-別個の前部-後部の組み合わせのそれぞれに対して、それが存在するディレクトリを参照しているかどうかを調べ、もしそうならば ``sys.path`` へ追加します。そして、設定ファイルを新しく追加されたパスからも検索します。
+前部-後部の組み合わせのそれぞれに対して、それが存在するディレクトリを
+参照しているかどうかを調べ、もしそうならば ``sys.path`` へ追加します。そして、
+パス設定ファイルを新しく追加されたパスからも検索します。
 
-パス設定ファイルは :file:`package.pth` という形式の名前をもつファイルで、上の4つのディレクトリのひとつにあります。その内容は ``sys.path`` に追加される追加項目(一行に一つ)です。存在しない項目は ``sys.path`` へは決して追加されませんが、項目が(ファイルではなく)ディレクトリを参照しているかどうかはチェックされません。項目が ``sys.path`` へ二回以上追加されることはありません。空行と ``#`` で始まる行は読み飛ばされます。 ``import`` で始まる(そしてその後ろにスペースかタブが続く)行は実行されます。
+パス設定ファイルは :file:`package.pth` という形式の名前をもつファイルで、
+上の4つのディレクトリのひとつにあります。
+その内容は ``sys.path`` に追加される追加項目(一行に一つ)です。
+存在しない項目は ``sys.path`` へは決して追加されませんが、項目が(ファイルではなく)
+ディレクトリを参照しているかどうかはチェックされません。
+項目が ``sys.path`` へ二回以上追加されることはありません。
+空行と ``#`` で始まる行は読み飛ばされます。
+``import`` で始まる(そしてその後ろにスペースかタブが続く)行は実行されます。
 
 .. versionchanged:: 2.6
    import キーワードの後ろにスペースかタブが必要になりました。
@@ -123,6 +134,40 @@ Macintosh)を使います。
 
    ディレクトリを sys.path に追加して、その中の pth ファイルも処理する。
 
+.. function:: getsitepackages()
+
+   全てのグローバルの site-packages (site-python が含まれる場合もある)
+   ディレクトリを含むリストを返します。
+
+   .. versionadded:: 2.7
+
+.. function:: getuserbase()
+
+   .. Returns the "user base" directory path.
+
+   "ユーザーベース" ディレクトリのパスを返します。
+
+   .. The "user base" directory can be used to store data. If the global
+      variable ``USER_BASE`` is not initialized yet, this function will also set
+      it.
+
+   "ユーザーベース" ディレクトリをデータを保存するために使うことができます。
+   グローバル変数 ``USER_BASE`` がまだ初期化されていない場合、その初期化を行います。
+
+   .. versionadded:: 2.7
+
+.. function:: getusersitepackages()
+
+   .. Returns the user-specific site-packages directory path.
+
+   ユーザー専用の site-packages ディレクトリパスを返します。
+
+   .. If the global variable ``USER_SITE`` is not initialized yet, this
+      function will also set it.
+
+   グローバル変数 ``USER_SITE`` が初期化されていない場合、初期化します。
+
+   .. versionadded:: 2.7
 
 .. XXX Update documentation
 .. XXX document python -m site --user-base --user-site
