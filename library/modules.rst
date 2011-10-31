@@ -1,4 +1,3 @@
-
 .. _modules:
 
 **********************
@@ -14,6 +13,7 @@
 .. toctree::
 
    imp.rst
+   importlib.rst
    imputil.rst
    zipimport.rst
    pkgutil.rst
