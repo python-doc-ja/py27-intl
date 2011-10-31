@@ -68,7 +68,12 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -6,17 +6,24 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,31 +1,38 @@</span>
+ :mod:`heapq` --- Heap queue algorithm
+ =====================================
+ 
+ .. module:: heapq
+    :synopsis: Heap queue algorithm (a.k.a. priority queue).
  .. moduleauthor:: Kevin O&#39;Connor
  .. sectionauthor:: Guido van Rossum &lt;guido@python.org&gt;
  .. sectionauthor:: François Pinard
@@ -98,7 +103,25 @@
  
  The API below differs from textbook heap algorithms in two aspects: (a) We use
  zero-based indexing.  This makes the relationship between the index for a node
-<span class="gu">@@ -62,45 +69,16 @@</span>
+ and the indexes for its children slightly less obvious, but is more suitable
+ since Python uses zero-based indexing. (b) Our pop method returns the smallest
+ item, not the largest (called a &quot;min heap&quot; in textbooks; a &quot;max heap&quot; is more
+ common in texts because of its suitability for in-place sorting).
+ 
+ These two make it possible to view the heap as a regular Python list without
+ surprises: ``heap[0]`` is the smallest item, and ``heap.sort()`` maintains the
+ heap invariant!
+ 
+<span class="gu">@@ -53,63 +60,34 @@</span>
+ 
+    .. versionadded:: 2.6
+ 
+ .. function:: heapify(x)
+ 
+    Transform list *x* into a heap, in-place, in linear time.
+ 
+ 
+ .. function:: heapreplace(heap, item)
  
     Pop and return the smallest item from the *heap*, and also push the new *item*.
     The heap size doesn&#39;t change. If the heap is empty, :exc:`IndexError` is raised.
@@ -152,7 +175,25 @@
  
  
  The module also offers three general purpose functions based on heaps.
-<span class="gu">@@ -151,12 +129,100 @@</span>
+ 
+ 
+ .. function:: merge(*iterables)
+ 
+    Merge multiple sorted inputs into a single sorted output (for example, merge
+    timestamped entries from multiple log files).  Returns an :term:`iterator`
+    over the sorted values.
+ 
+    Similar to ``sorted(itertools.chain(*iterables))`` but returns an iterable, does
+<span class="gu">@@ -142,30 +120,118 @@</span>
+ 
+    .. versionadded:: 2.4
+ 
+    .. versionchanged:: 2.5
+       Added the optional *key* argument.
+ 
+ The latter two functions perform best for smaller values of *n*.  For larger
+ values, it is more efficient to use the :func:`sorted` function.  Also, when
+ ``n==1``, it is more efficient to use the built-in :func:`min` and :func:`max`
  functions.
  
  
@@ -256,6 +297,15 @@
  Heaps are arrays for which ``a[k] &lt;= a[2*k+1]`` and ``a[k] &lt;= a[2*k+2]`` for all
  *k*, counting elements from 0.  For the sake of comparison, non-existing
  elements are considered to be infinite.  The interesting property of a heap is
+ that ``a[0]`` is always its smallest element.
+ 
+ The strange invariant above is meant to be an efficient memory representation
+ for a tournament.  The numbers below are *k*, not ``a[k]``::
+ 
+                                   0
+ 
+                  1                                 2
+ 
 </pre></div>
 
 </body>

@@ -68,7 +68,13 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -7,7 +7,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,22 +1,22 @@</span>
+ :mod:`json` --- JSON encoder and decoder
+ ========================================
+ 
+ .. module:: json
+    :synopsis: Encode and decode the JSON format.
+ .. moduleauthor:: Bob Ippolito &lt;bob@redivi.com&gt;
  .. sectionauthor:: Bob Ippolito &lt;bob@redivi.com&gt;
  .. versionadded:: 2.6
  
@@ -77,7 +83,25 @@
  syntax (ECMA-262 3rd edition) used as a lightweight data interchange format.
  
  :mod:`json` exposes an API familiar to users of the standard library
-<span class="gu">@@ -139,9 +139,9 @@</span>
+ :mod:`marshal` and :mod:`pickle` modules.
+ 
+ Encoding basic Python object hierarchies::
+ 
+     &gt;&gt;&gt; import json
+     &gt;&gt;&gt; json.dumps([&#39;foo&#39;, {&#39;bar&#39;: (&#39;baz&#39;, None, 1.0, 2)}])
+     &#39;[&quot;foo&quot;, {&quot;bar&quot;: [&quot;baz&quot;, null, 1.0, 2]}]&#39;
+     &gt;&gt;&gt; print json.dumps(&quot;\&quot;foo\bar&quot;)
+     &quot;\&quot;foo\bar&quot;
+<span class="gu">@@ -130,104 +130,120 @@</span>
+    is likely to cause an error.
+ 
+    If *check_circular* is ``False`` (default: ``True``), then the circular
+    reference check for container types will be skipped and a circular reference
+    will result in an :exc:`OverflowError` (or worse).
+ 
+    If *allow_nan* is ``False`` (default: ``True``), then it will be a
+    :exc:`ValueError` to serialize out of range :class:`float` values (``nan``,
+    ``inf``, ``-inf``) in strict compliance of the JSON specification, instead of
     using the JavaScript equivalents (``NaN``, ``Infinity``, ``-Infinity``).
  
     If *indent* is a non-negative integer, then JSON array elements and object
@@ -90,7 +114,12 @@
  
     If *separators* is an ``(item_separator, dict_separator)`` tuple, then it
     will be used instead of the default ``(&#39;, &#39;, &#39;: &#39;)`` separators.  ``(&#39;,&#39;,
-<span class="gu">@@ -154,8 +154,13 @@</span>
+    &#39;:&#39;)`` is the most compact JSON representation.
+ 
+    *encoding* is the character encoding for str instances, default is UTF-8.
+ 
+    *default(obj)* is a function that should return a serializable version of
+    *obj* or raise :exc:`TypeError`.  The default simply raises :exc:`TypeError`.
  
     To use a custom :class:`JSONEncoder` subclass (e.g. one that overrides the
     :meth:`default` method to serialize additional types), specify it with the
@@ -105,7 +134,10 @@
  
  .. function:: dumps(obj[, skipkeys[, ensure_ascii[, check_circular[, allow_nan[, cls[, indent[, separators[, encoding[, default[, **kw]]]]]]]]]])
  
-<span class="gu">@@ -166,7 +171,7 @@</span>
+    Serialize *obj* to a JSON formatted :class:`str`.
+ 
+    If *ensure_ascii* is ``False``, then the return value will be a
+    :class:`unicode` instance.  The other arguments have the same meaning as in
     :func:`dump`.
  
  
@@ -114,7 +146,15 @@
  
     Deserialize *fp* (a ``.read()``-supporting file-like object containing a JSON
     document) to a Python object.
-<span class="gu">@@ -182,6 +187,17 @@</span>
+ 
+    If the contents of *fp* are encoded with an ASCII based encoding other than
+    UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be specified.
+    Encodings that are not ASCII based (such as UCS-2) are not allowed, and
+    should be wrapped with ``codecs.getreader(encoding)(fp)``, or simply decoded
+    to a :class:`unicode` object and passed to :func:`loads`.
+ 
+    *object_hook* is an optional function that will be called with the result of
+    any object literal decoded (a :class:`dict`).  The return value of
     *object_hook* will be used instead of the :class:`dict`.  This feature can be used
     to implement custom decoders (e.g. JSON-RPC class hinting).
  
@@ -132,7 +172,16 @@
     *parse_float*, if specified, will be called with the string of every JSON
     float to be decoded.  By default, this is equivalent to ``float(num_str)``.
     This can be used to use another datatype or parser for JSON floats
-<span class="gu">@@ -198,11 +214,11 @@</span>
+    (e.g. :class:`decimal.Decimal`).
+ 
+    *parse_int*, if specified, will be called with the string of every JSON int
+    to be decoded.  By default, this is equivalent to ``int(num_str)``.  This can
+    be used to use another datatype or parser for JSON integers
+    (e.g. :class:`float`).
+ 
+    *parse_constant*, if specified, will be called with one of the following
+    strings: ``&#39;-Infinity&#39;``, ``&#39;Infinity&#39;``, ``&#39;NaN&#39;``, ``&#39;null&#39;``, ``&#39;true&#39;``,
+    ``&#39;false&#39;``.  This can be used to raise an exception if invalid JSON numbers
     are encountered.
  
     To use a custom :class:`JSONDecoder` subclass, specify it with the ``cls``
@@ -147,7 +196,9 @@
  
     Deserialize *s* (a :class:`str` or :class:`unicode` instance containing a JSON
     document) to a Python object.
-<span class="gu">@@ -212,13 +228,13 @@</span>
+ 
+    If *s* is a :class:`str` instance and is encoded with an ASCII based encoding
+    other than UTF-8 (e.g. latin-1), then an appropriate *encoding* name must be
     specified.  Encodings that are not ASCII based (such as UCS-2) are not
     allowed and should be decoded to :class:`unicode` first.
  
@@ -163,7 +214,25 @@
  
     Simple JSON decoder.
  
-<span class="gu">@@ -259,6 +275,17 @@</span>
+    Performs the following translations in decoding by default:
+ 
+    +---------------+-------------------+
+    | JSON          | Python            |
+    +===============+===================+
+    | object        | dict              |
+    +---------------+-------------------+
+    | array         | list              |
+    +---------------+-------------------+
+<span class="gu">@@ -250,39 +266,55 @@</span>
+    *encoding* determines the encoding used to interpret any :class:`str` objects
+    decoded by this instance (UTF-8 by default).  It has no effect when decoding
+    :class:`unicode` objects.
+ 
+    Note that currently only encodings that are a superset of ASCII work, strings
+    of other encodings should be passed in as :class:`unicode`.
+ 
+    *object_hook*, if specified, will be called with the result of every JSON
+    object decoded and its return value will be used in place of the given
     :class:`dict`.  This can be used to provide custom deserializations (e.g. to
     support JSON-RPC class hinting).
  
@@ -181,7 +250,15 @@
     *parse_float*, if specified, will be called with the string of every JSON
     float to be decoded.  By default, this is equivalent to ``float(num_str)``.
     This can be used to use another datatype or parser for JSON floats
-<span class="gu">@@ -274,6 +301,11 @@</span>
+    (e.g. :class:`decimal.Decimal`).
+ 
+    *parse_int*, if specified, will be called with the string of every JSON int
+    to be decoded.  By default, this is equivalent to ``int(num_str)``.  This can
+    be used to use another datatype or parser for JSON integers
+    (e.g. :class:`float`).
+ 
+    *parse_constant*, if specified, will be called with one of the following
+    strings: ``&#39;-Infinity&#39;``, ``&#39;Infinity&#39;``, ``&#39;NaN&#39;``, ``&#39;null&#39;``, ``&#39;true&#39;``,
     ``&#39;false&#39;``.  This can be used to raise an exception if invalid JSON numbers
     are encountered.
  
@@ -193,7 +270,25 @@
  
     .. method:: decode(s)
  
-<span class="gu">@@ -338,7 +370,7 @@</span>
+       Return the Python representation of *s* (a :class:`str` or
+       :class:`unicode` instance containing a JSON document)
+ 
+    .. method:: raw_decode(s)
+ 
+       Decode a JSON document from *s* (a :class:`str` or :class:`unicode`
+       beginning with a JSON document) and return a 2-tuple of the Python
+       representation and the index in *s* where the document ended.
+ 
+<span class="gu">@@ -329,25 +361,25 @@</span>
+ 
+    If *check_circular* is ``True`` (the default), then lists, dicts, and custom
+    encoded objects will be checked for circular references during encoding to
+    prevent an infinite recursion (which would cause an :exc:`OverflowError`).
+    Otherwise, no such check takes place.
+ 
+    If *allow_nan* is ``True`` (the default), then ``NaN``, ``Infinity``, and
+    ``-Infinity`` will be encoded as such.  This behavior is not JSON
+    specification compliant, but is consistent with most JavaScript based
     encoders and decoders.  Otherwise, it will be a :exc:`ValueError` to encode
     such floats.
  
@@ -201,6 +296,15 @@
 <span class="gi">+   If *sort_keys* is ``True`` (default ``False``), then the output of dictionaries</span>
     will be sorted by key; this is useful for regression tests to ensure that
     JSON serializations can be compared on a day-to-day basis.
+ 
+    If *indent* is a non-negative integer (it is ``None`` by default), then JSON
+    array elements and object members will be pretty-printed with that indent
+    level.  An indent level of 0 will only insert newlines.  ``None`` is the most
+    compact representation.
+ 
+    If specified, *separators* should be an ``(item_separator, key_separator)``
+    tuple.  The default is ``(&#39;, &#39;, &#39;: &#39;)``.  To get the most compact JSON
+    representation, you should specify ``(&#39;,&#39;, &#39;:&#39;)`` to eliminate whitespace.
  
 </pre></div>
 

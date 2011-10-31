@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -63,7 +63,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -54,52 +54,62 @@</span>
+ .. cfunction:: PyObject* PyFile_FromFile(FILE *fp, char *name, char *mode, int (*close)(FILE*))
+ 
+    Create a new :ctype:`PyFileObject` from the already-open standard C file
+    pointer, *fp*.  The function *close* will be called when the file should be
+    closed.  Return *NULL* on failure.
+ 
+ 
+ .. cfunction:: FILE* PyFile_AsFile(PyObject \*p)
+ 
     Return the file object associated with *p* as a :ctype:`FILE\*`.
  
     If the caller will ever use the returned :ctype:`FILE\*` object while
@@ -77,7 +86,12 @@
     :cfunc:`PyFile_DecUseCount` functions described below as appropriate.
  
  
-<span class="gu">@@ -76,10 +76,19 @@</span>
+ .. cfunction:: void PyFile_IncUseCount(PyFileObject \*p)
+ 
+    Increments the PyFileObject&#39;s internal use count to indicate
+    that the underlying :ctype:`FILE\*` is being used.
+    This prevents Python from calling f_close() on it from another thread.
+    Callers of this must call :cfunc:`PyFile_DecUseCount` when they are
     finished with the :ctype:`FILE\*`.  Otherwise the file object will
     never be closed by Python.
  
@@ -100,7 +114,10 @@
  
     .. versionadded:: 2.6
  
-<span class="gu">@@ -90,7 +99,8 @@</span>
+ 
+ .. cfunction:: void PyFile_DecUseCount(PyFileObject \*p)
+ 
+    Decrements the PyFileObject&#39;s internal unlocked_count member to
     indicate that the caller is done with its own use of the :ctype:`FILE\*`.
     This may only be called to undo a prior call to :cfunc:`PyFile_IncUseCount`.
  
@@ -110,6 +127,15 @@
  
     .. versionadded:: 2.6
  
+ 
+ .. cfunction:: PyObject* PyFile_GetLine(PyObject *p, int n)
+ 
+    .. index:: single: EOFError (built-in exception)
+ 
+    Equivalent to ``p.readline([n])``, this function reads one line from the
+    object *p*.  *p* may be a file object or any object with a :meth:`readline`
+    method.  If *n* is ``0``, exactly one line is read, regardless of the length of
+    the line.  If *n* is greater than ``0``, no more than *n* bytes will be read
 </pre></div>
 
 </body>

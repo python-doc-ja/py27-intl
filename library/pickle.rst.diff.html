@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -25,6 +25,12 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -16,47 +16,53 @@</span>
+ 
+ The :mod:`pickle` module implements a fundamental, but powerful algorithm for
+ serializing and de-serializing a Python object structure.  &quot;Pickling&quot; is the
+ process whereby a Python object hierarchy is converted into a byte stream, and
+ &quot;unpickling&quot; is the inverse operation, whereby a byte stream is converted back
+ into an object hierarchy.  Pickling (and unpickling) is alternatively known as
+ &quot;serialization&quot;, &quot;marshalling,&quot; [#]_ or &quot;flattening&quot;, however, to avoid
+ confusion, the terms used here are &quot;pickling&quot; and &quot;unpickling&quot;.
+ 
  This documentation describes both the :mod:`pickle` module and the
  :mod:`cPickle` module.
  
@@ -81,7 +90,22 @@
  
  Relationship to other Python modules
  ------------------------------------
-<span class="gu">@@ -47,7 +53,7 @@</span>
+ 
+ The :mod:`pickle` module has an optimized cousin called the :mod:`cPickle`
+ module.  As its name implies, :mod:`cPickle` is written in C, so it can be up to
+ 1000 times faster than :mod:`pickle`.  However it does not support subclassing
+ of the :func:`Pickler` and :func:`Unpickler` classes, because in :mod:`cPickle`
+ these are functions, not classes.  Most applications have no need for this
+ functionality, and can benefit from the improved performance of :mod:`cPickle`.
+ Other than that, the interfaces of the two modules are nearly identical; the
+ common interface is described in this manual and differences are pointed out
+ where necessary.  In the following discussions, we use the term &quot;pickle&quot; to
+ collectively describe the :mod:`pickle` and :mod:`cPickle` modules.
+ 
+ The data streams the two modules produce are guaranteed to be interchangeable.
+ 
+ Python has a more primitive serialization module called :mod:`marshal`, but in
+ general :mod:`pickle` should always be the preferred way to serialize Python
  objects.  :mod:`marshal` exists primarily to support Python&#39;s :file:`.pyc`
  files.
  
@@ -90,7 +114,25 @@
  
  * The :mod:`pickle` module keeps track of the objects it has already serialized,
    so that later references to the same object won&#39;t be serialized again.
-<span class="gu">@@ -74,12 +80,6 @@</span>
+   :mod:`marshal` doesn&#39;t do this.
+ 
+   This has implications both for recursive objects and object sharing.  Recursive
+   objects are objects that contain references to themselves.  These are not
+   handled by marshal, and in fact, attempting to marshal recursive objects will
+   crash your Python interpreter.  Object sharing happens when there are multiple
+   references to the same object in different places in the object hierarchy being
+   serialized.  :mod:`pickle` stores such objects only once, and ensures that all
+   other references point to the master copy.  Shared objects remain shared, which
+<span class="gu">@@ -65,30 +71,24 @@</span>
+ * :mod:`marshal` cannot be used to serialize user-defined classes and their
+   instances.  :mod:`pickle` can save and restore class instances transparently,
+   however the class definition must be importable and live in the same module as
+   when the object was stored.
+ 
+ * The :mod:`marshal` serialization format is not guaranteed to be portable
+   across Python versions.  Because its primary job in life is to support
+   :file:`.pyc` files, the Python implementers reserve the right to change the
+   serialization format in non-backwards compatible ways should the need arise.
    The :mod:`pickle` serialization format is guaranteed to be backwards compatible
    across Python releases.
  
@@ -103,7 +145,25 @@
  Note that serialization is a more primitive notion than persistence; although
  :mod:`pickle` reads and writes file objects, it does not handle the issue of
  naming persistent objects, nor the (even more complicated) issue of concurrent
-<span class="gu">@@ -444,7 +444,7 @@</span>
+ access to persistent objects.  The :mod:`pickle` module can transform a complex
+ object into a byte stream and it can transform the byte stream into an object
+ with the same internal structure.  Perhaps the most obvious thing to do with
+ these byte streams is to write them onto a file, but it is also conceivable to
+ send them across a network or store them in a database.  The module
+ :mod:`shelve` provides a simple interface to pickle and unpickle objects on
+ DBM-style database files.
+ 
+ 
+<span class="gu">@@ -435,25 +435,25 @@</span>
+ 
+    where *args* is the result of calling :meth:`__getnewargs__` on the original
+    object; if there is no :meth:`__getnewargs__`, an empty tuple is assumed.
+ 
+ .. method:: object.__getstate__()
+ 
+    Classes can further influence how their instances are pickled; if the class
+    defines the method :meth:`__getstate__`, it is called and the return state is
+    pickled as the contents for the instance, instead of the contents of the
     instance&#39;s dictionary.  If there is no :meth:`__getstate__` method, the
     instance&#39;s :attr:`__dict__` is pickled.
  
@@ -112,6 +172,15 @@
  
     Upon unpickling, if the class also defines the method :meth:`__setstate__`,
     it is called with the unpickled state. [#]_ If there is no
+    :meth:`__setstate__` method, the pickled state must be a dictionary and its
+    items are assigned to the new instance&#39;s dictionary.  If a class defines both
+    :meth:`__getstate__` and :meth:`__setstate__`, the state object needn&#39;t be a
+    dictionary and these methods can do what they want. [#]_
+ 
+    .. note::
+ 
+       For :term:`new-style class`\es, if :meth:`__getstate__` returns a false
+       value, the :meth:`__setstate__` method will not be called.
 </pre></div>
 
 </body>

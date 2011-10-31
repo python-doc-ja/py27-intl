@@ -1,4 +1,10 @@
-@@ -7,7 +7,7 @@
+@@ -1,22 +1,22 @@
+ .. highlightlang:: rest
+ 
+ Style Guide
+ ===========
+ 
+ The Python documentation should follow the `Apple Publications Style Guide`_
  wherever possible. This particular style guide was selected mostly because it
  seems reasonable and is easy to get online.
  
@@ -7,7 +13,25 @@
  this document.
  
  All reST files use an indentation of 3 spaces.  The maximum line length is 80
-@@ -65,6 +65,110 @@
+ characters for normal text, but tables, deeply indented code samples and long
+ links may extend beyond that.
+ 
+ Make generous use of blank lines where applicable; they help grouping things
+ together.
+ 
+ A sentence-ending period may be followed by one or two spaces; while reST
+ ignores the second space, it is customarily put in by some users, for example
+ to aid Emacs' auto-fill mode.
+@@ -56,15 +56,119 @@
+ 
+ Python
+     The name of our favorite programming language is always capitalized.
+ 
+ Unicode
+     The name of a character set and matching encoding. This is always written
+     capitalized.
+ 
+ Unix
      The name of the operating system developed at AT&T Bell Labs in the early
      1970s.
  

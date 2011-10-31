@@ -1,4 +1,13 @@
-@@ -131,6 +131,32 @@
+@@ -122,15 +122,41 @@
+    .. versionadded:: 2.6
+ 
+ 
+ .. envvar:: PYTHONUSERBASE
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. function:: addsitedir(sitedir, known_paths=None)
  
     Adds a directory to sys.path and processes its pth files.
  

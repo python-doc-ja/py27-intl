@@ -68,7 +68,12 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -6,18 +6,15 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,95 +1,97 @@</span>
+ :tocdepth: 2
+ 
+ ==========================
+ Graphic User Interface FAQ
+ ==========================
  
  .. contents::
  
@@ -89,7 +94,8 @@
  
  Standard builds of Python include an object-oriented interface to the Tcl/Tk
  widget set, called Tkinter.  This is probably the easiest to install and use.
-<span class="gu">@@ -26,22 +23,27 @@</span>
+ For more info about Tk, including pointers to the source, see the Tcl/Tk home
+ page at http://www.tcl.tk.  Tcl/Tk is fully portable to the MacOS, Windows, and
  Unix platforms.
  
  wxWidgets
@@ -128,7 +134,10 @@
  
  There are bindings available for the Qt toolkit (`PyQt
  &lt;http://www.riverbankcomputing.co.uk/software/pyqt/&gt;`_) and for KDE (`PyKDE &lt;http://www.riverbankcomputing.co.uk/software/pykde/intro&gt;`__).  If
-<span class="gu">@@ -52,13 +54,13 @@</span>
+ you&#39;re writing open source software, you don&#39;t need to pay for PyQt, but if you
+ want to write proprietary applications, you must buy a PyQt license from
+ `Riverbank Computing &lt;http://www.riverbankcomputing.co.uk&gt;`_ and (up to Qt 4.4;
+ Qt 4.5 upwards is licensed under the LGPL license) a Qt license from `Trolltech
  &lt;http://www.trolltech.com&gt;`_.
  
  Gtk+
@@ -144,7 +153,7 @@
  
  Python bindings for `the FLTK toolkit &lt;http://www.fltk.org&gt;`_, a simple yet
  powerful and mature cross-platform windowing system, are available from `the
-<span class="gu">@@ -66,7 +68,7 @@</span>
+ PyFLTK project &lt;http://pyfltk.sourceforge.net&gt;`_.
  
  
  FOX
@@ -153,7 +162,7 @@
  
  A wrapper for `the FOX toolkit &lt;http://www.fox-toolkit.org/&gt;`_ called `FXpy
  &lt;http://fxpy.sourceforge.net/&gt;`_ is available.  FOX supports both Unix variants
-<span class="gu">@@ -74,13 +76,13 @@</span>
+ and Windows.
  
  
  OpenGL
@@ -169,6 +178,15 @@
  
  `The Mac port &lt;http://python.org/download/mac&gt;`_ by Jack Jansen has a rich and
  ever-growing set of modules that support the native Mac toolbox calls.  The port
+ supports MacOS X&#39;s Carbon libraries.
+ 
+ By installing the `PyObjc Objective-C bridge
+ &lt;http://pyobjc.sourceforge.net&gt;`_, Python programs can use MacOS X&#39;s
+ Cocoa libraries. See the documentation that comes with the Mac port.
+ 
+ :ref:`Pythonwin &lt;windows-faq&gt;` by Mark Hammond includes an interface to the
+ Microsoft Foundation Classes and a Python programming environment
+ that&#39;s written mostly in Python using the MFC classes.
 </pre></div>
 
 </body>

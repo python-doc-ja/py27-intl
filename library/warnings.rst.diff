@@ -1,4 +1,13 @@
-@@ -59,7 +59,7 @@
+@@ -50,25 +50,25 @@
+ following warnings category classes are currently defined:
+ 
+ +----------------------------------+-----------------------------------------------+
+ | Class                            | Description                                   |
+ +==================================+===============================================+
+ | :exc:`Warning`                   | This is the base class of all warning         |
+ |                                  | category classes.  It is a subclass of        |
+ |                                  | :exc:`Exception`.                             |
+ +----------------------------------+-----------------------------------------------+
  | :exc:`UserWarning`               | The default category for :func:`warn`.        |
  +----------------------------------+-----------------------------------------------+
  | :exc:`DeprecationWarning`        | Base category for warnings about deprecated   |
@@ -7,7 +16,25 @@
  +----------------------------------+-----------------------------------------------+
  | :exc:`SyntaxWarning`             | Base category for warnings about dubious      |
  |                                  | syntactic features.                           |
-@@ -89,6 +89,9 @@
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`RuntimeWarning`            | Base category for warnings about dubious      |
+ |                                  | runtime features.                             |
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`FutureWarning`             | Base category for warnings about constructs   |
+ |                                  | that will change semantically in the future.  |
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`PendingDeprecationWarning` | Base category for warnings about features     |
+ |                                  | that will be deprecated in the future         |
+@@ -80,24 +80,27 @@
+ +----------------------------------+-----------------------------------------------+
+ | :exc:`UnicodeWarning`            | Base category for warnings related to         |
+ |                                  | Unicode.                                      |
+ +----------------------------------+-----------------------------------------------+
+ 
+ While these are technically built-in exceptions, they are documented here,
+ because conceptually they belong to the warnings mechanism.
+ 
+ User code can define additional warning categories by subclassing one of the
  standard warning categories.  A warning category must always be a subclass of
  the :exc:`Warning` class.
  
@@ -17,7 +44,25 @@
  
  .. _warning-filter:
  
-@@ -148,13 +151,19 @@
+ The Warnings Filter
+ -------------------
+ 
+ The warnings filter controls whether warnings are ignored, displayed, or turned
+ into errors (raising an exception).
+ 
+ Conceptually, the warnings filter maintains an ordered list of filter
+ specifications; any specific warning is matched against each filter
+ specification in the list in turn until a match is found; the match determines
+@@ -139,31 +142,37 @@
+ * *lineno* is an integer that the line number where the warning occurred must
+   match, or ``0`` to match all line numbers.
+ 
+ Since the :exc:`Warning` class is derived from the built-in :exc:`Exception`
+ class, to turn a warning into an error we simply raise ``category(message)``.
+ 
+ The warnings filter is initialized by :option:`-W` options passed to the Python
+ interpreter command line.  The interpreter saves the arguments for all
+ :option:`-W` options without interpretation in ``sys.warnoptions``; the
  :mod:`warnings` module parses these when it is first imported (invalid options
  are ignored, after printing a message to ``sys.stderr``).
  
@@ -43,7 +88,25 @@
  
  
  .. _warning-suppress:
-@@ -231,6 +240,37 @@
+ 
+ Temporarily Suppressing Warnings
+ --------------------------------
+ 
+ If you are using code that you know will raise a warning, such as a deprecated
+ function, but do not want to see the warning, then it is possible to suppress
+ the warning using the :class:`catch_warnings` context manager::
+ 
+     import warnings
+@@ -222,24 +231,55 @@
+ its original value.  Note: this can only be guaranteed in a single-threaded
+ application. If two or more threads use the :class:`catch_warnings` context
+ manager at the same time, the behavior is undefined.
+ 
+ When testing multiple operations that raise the same kind of warning, it
+ is important to test them in a manner that confirms each operation is raising
+ a new warning (e.g. set warnings to be raised as exceptions and check the
+ operations raise exceptions, check that the length of the warning list
+ continues to increase after each operation, or else delete the previous
  entries from the warnings list before each new operation).
  
  
@@ -81,7 +144,25 @@
  .. _warning-functions:
  
  Available Functions
-@@ -297,9 +337,8 @@
+ -------------------
+ 
+ 
+ .. function:: warn(message[, category[, stacklevel]])
+ 
+    Issue a warning, or maybe ignore it or raise an exception.  The *category*
+    argument, if given, must be a warning category class (see above); it defaults to
+    :exc:`UserWarning`.  Alternatively *message* can be a :exc:`Warning` instance,
+    in which case *category* will be ignored and ``message.__class__`` will be used.
+@@ -288,27 +328,26 @@
+ 
+ .. function:: showwarning(message, category, filename, lineno[, file[, line]])
+ 
+    Write a warning to a file.  The default implementation calls
+    ``formatwarning(message, category, filename, lineno, line)`` and writes the
+    resulting string to *file*, which defaults to ``sys.stderr``.  You may replace
+    this function with an alternative implementation by assigning to
+    ``warnings.showwarning``.
+    *line* is a line of source code to be included in the warning
     message; if *line* is not supplied, :func:`showwarning` will
     try to read the line specified by *filename* and *lineno*.
  
@@ -93,3 +174,12 @@
  
  
  .. function:: formatwarning(message, category, filename, lineno[, line])
+ 
+    Format a warning the standard way.  This returns a string which may contain
+    embedded newlines and ends in a newline.  *line* is a line of source code to
+    be included in the warning message; if *line* is not supplied,
+    :func:`formatwarning` will try to read the line specified by *filename* and
+    *lineno*.
+ 
+    .. versionchanged:: 2.6
+       Added the *line* argument.

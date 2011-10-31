@@ -1,4 +1,13 @@
-@@ -133,8 +133,22 @@
+@@ -124,26 +124,40 @@
+ 
+       .. versionchanged:: 2.2.2
+          *charset* argument added.
+ 
+ 
+    .. method:: set_charset(charset)
+ 
+       Set the character set of the payload to *charset*, which can either be a
+       :class:`~email.charset.Charset` instance (see :mod:`email.charset`), a
        string naming a character set, or ``None``.  If it is a string, it will
        be converted to a :class:`~email.charset.Charset` instance.  If *charset*
        is ``None``, the ``charset`` parameter will be removed from the
@@ -23,7 +32,25 @@
  
        The message will be assumed to be of type :mimetype:`text/\*`, with the
        payload either in unicode or encoded with *charset.input_charset*.
-@@ -266,7 +280,12 @@
+       It will be encoded or converted to *charset.output_charset*
+       and transfer encoded properly, if needed, when generating the plain text
+       representation of the message.  MIME headers (:mailheader:`MIME-Version`,
+       :mailheader:`Content-Type`, :mailheader:`Content-Transfer-Encoding`) will
+       be added as needed.
+ 
+       .. versionadded:: 2.2.2
+ 
+ 
+@@ -257,34 +271,48 @@
+ 
+    .. method:: add_header(_name, _value, **_params)
+ 
+       Extended header setting.  This method is similar to :meth:`__setitem__`
+       except that additional header parameters can be provided as keyword
+       arguments.  *_name* is the header field to add and *_value* is the
+       *primary* value for the header.
+ 
+       For each item in the keyword argument dictionary *_params*, the key is
        taken as the parameter name, with underscores converted to dashes (since
        dashes are illegal in Python identifiers).  Normally, the parameter will
        be added as ``key="value"`` unless the value is ``None``, in which case
@@ -37,7 +64,9 @@
  
        Here's an example::
  
-@@ -276,6 +295,15 @@
+          msg.add_header('Content-Disposition', 'attachment', filename='bud.gif')
+ 
+       This will add a header that looks like ::
  
           Content-Disposition: attachment; filename="bud.gif"
  
@@ -53,7 +82,25 @@
  
     .. method:: replace_header(_name, _value)
  
-@@ -380,7 +408,7 @@
+       Replace a header.  Replace the first header found in the message that
+       matches *_name*, retaining header order and field name case.  If no
+       matching header was found, a :exc:`KeyError` is raised.
+ 
+       .. versionadded:: 2.2.2
+ 
+ 
+    .. method:: get_content_type()
+ 
+@@ -371,25 +399,25 @@
+       Parameter keys are always compared case insensitively.  The return value
+       can either be a string, or a 3-tuple if the parameter was :rfc:`2231`
+       encoded.  When it's a 3-tuple, the elements of the value are of the form
+       ``(CHARSET, LANGUAGE, VALUE)``.  Note that both ``CHARSET`` and
+       ``LANGUAGE`` can be ``None``, in which case you should consider ``VALUE``
+       to be encoded in the ``us-ascii`` charset.  You can usually ignore
+       ``LANGUAGE``.
+ 
+       If your application doesn't care whether the parameter was encoded as in
        :rfc:`2231`, you can collapse the parameter value by calling
        :func:`email.utils.collapse_rfc2231_value`, passing in the return value
        from :meth:`get_param`.  This will return a suitably decoded Unicode
@@ -62,7 +109,25 @@
        isn't.  For example::
  
           rawparam = msg.get_param('foo')
-@@ -448,9 +476,10 @@
+          param = email.utils.collapse_rfc2231_value(rawparam)
+ 
+       In any case, the parameter value (either the returned string, or the
+       ``VALUE`` item in the 3-tuple) is always unquoted, unless *unquote* is set
+       to ``False``.
+ 
+       .. versionchanged:: 2.2.2
+          *unquote* argument added, and 3-tuple return value possible.
+ 
+@@ -439,27 +467,28 @@
+       An alternative header can be specified in the *header* argument. When the
+       :mailheader:`Content-Type` header is set a :mailheader:`MIME-Version`
+       header is also added.
+ 
+       .. versionadded:: 2.2.2
+ 
+ 
+    .. method:: get_filename([failobj])
+ 
        Return the value of the ``filename`` parameter of the
        :mailheader:`Content-Disposition` header of the message.  If the header
        does not have a ``filename`` parameter, this method falls back to looking
@@ -76,3 +141,12 @@
  
  
     .. method:: get_boundary([failobj])
+ 
+       Return the value of the ``boundary`` parameter of the
+       :mailheader:`Content-Type` header of the message, or *failobj* if either
+       the header is missing, or has no ``boundary`` parameter.  The returned
+       string will always be unquoted as per :func:`email.utils.unquote`.
+ 
+ 
+    .. method:: set_boundary(boundary)
+ 

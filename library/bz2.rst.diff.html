@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -61,6 +61,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -52,24 +52,29 @@</span>
+    exist, and truncated otherwise. If *buffering* is given, ``0`` means
+    unbuffered, and larger numbers specify the buffer size; the default is
+    ``0``. If *compresslevel* is given, it must be a number between ``1`` and
+    ``9``; the default is ``9``. Add a ``&#39;U&#39;`` to mode to open the file for input
+    with universal newline support. Any line ending in the input file will be
+    seen as a ``&#39;\n&#39;`` in Python.  Also, a file so opened gains the attribute
+    :attr:`newlines`; the value for this attribute is one of ``None`` (no newline
+    read yet), ``&#39;\r&#39;``, ``&#39;\n&#39;``, ``&#39;\r\n&#39;`` or a tuple containing all the
+    newline types seen. Universal newlines are available only when
     reading. Instances support iteration in the same way as normal :class:`file`
     instances.
  
@@ -80,6 +89,15 @@
  
     .. method:: close()
  
+       Close the file. Sets data attribute :attr:`closed` to true. A closed file
+       cannot be used for further I/O operations. :meth:`close` may be called
+       more than once without error.
+ 
+ 
+    .. method:: read([size])
+ 
+       Read at most *size* uncompressed bytes, returned as a string. If the
+       *size* argument is negative or omitted, read until EOF is reached.
 </pre></div>
 
 </body>

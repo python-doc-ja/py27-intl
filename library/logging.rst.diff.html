@@ -68,7 +68,8 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -2,7 +2,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,609 +1,664 @@</span>
+ :mod:`logging` --- Logging facility for Python
  ==============================================
  
  .. module:: logging
@@ -77,7 +78,8 @@
  
  
  .. moduleauthor:: Vinay Sajip &lt;vinay_sajip@red-dove.com&gt;
-<span class="gu">@@ -11,590 +11,645 @@</span>
+ .. sectionauthor:: Vinay Sajip &lt;vinay_sajip@red-dove.com&gt;
+ 
  
  .. index:: pair: Errors; logging
  
@@ -1268,7 +1270,25 @@
  
  Module-Level Functions
  ----------------------
-<span class="gu">@@ -650,7 +705,7 @@</span>
+ 
+ In addition to the classes described above, there are a number of module- level
+ functions.
+ 
+ 
+ .. function:: getLogger([name])
+ 
+    Return a logger with the specified name or, if no name is specified, return a
+    logger which is the root logger of the hierarchy. If specified, the name is
+<span class="gu">@@ -641,25 +696,25 @@</span>
+ 
+    The other optional keyword argument is *extra* which can be used to pass a
+    dictionary which is used to populate the __dict__ of the LogRecord created for
+    the logging event with user-defined attributes. These custom attributes can then
+    be used as you like. For example, they could be incorporated into logged
+    messages. For example::
+ 
+       FORMAT = &quot;%(asctime)-15s %(clientip)s %(user)-8s %(message)s&quot;
+       logging.basicConfig(format=FORMAT)
        d = {&#39;clientip&#39;: &#39;192.168.0.1&#39;, &#39;user&#39;: &#39;fbloggs&#39;}
        logging.warning(&quot;Protocol problem: %s&quot;, &quot;connection reset&quot;, extra=d)
  
@@ -1277,7 +1297,25 @@
  
        2006-02-08 22:20:02,165 192.168.0.1 fbloggs  Protocol problem: connection reset
  
-<span class="gu">@@ -712,6 +767,14 @@</span>
+    The keys in the dictionary passed in *extra* should not clash with the keys used
+    by the logging system. (See the :class:`Formatter` documentation for more
+    information on which keys are used by the logging system.)
+ 
+    If you choose to use these attributes in logged messages, you need to exercise
+    some care. In the above example, for instance, the :class:`Formatter` has been
+    set up with a format string which expects &#39;clientip&#39; and &#39;user&#39; in the attribute
+    dictionary of the LogRecord. If these are missing, the message will not be
+    logged because a string formatting exception will occur. So in this case, you
+<span class="gu">@@ -703,45 +758,55 @@</span>
+ .. function:: exception(msg[, *args])
+ 
+    Logs a message with level :const:`ERROR` on the root logger. The arguments are
+    interpreted as for :func:`debug`. Exception info is added to the logging
+    message. This function should only be called from an exception handler.
+ 
+ 
+ .. function:: log(level, msg[, *args[, **kwargs]])
+ 
     Logs a message with level *level* on the root logger. The other arguments are
     interpreted as for :func:`debug`.
  
@@ -1292,7 +1330,21 @@
  
  .. function:: disable(lvl)
  
-<span class="gu">@@ -733,6 +796,8 @@</span>
+    Provides an overriding level *lvl* for all loggers which takes precedence over
+    the logger&#39;s own level. When the need arises to temporarily throttle logging
+    output down across the whole application, this function can be useful. Its
+    effect is to disable all logging calls of severity *lvl* and below, so that
+    if you call it with a value of INFO, then all INFO and DEBUG events would be
+    discarded, whereas those of severity WARNING and above would be processed
+    according to the logger&#39;s effective level.
+ 
+ 
+ .. function:: addLevelName(lvl, levelName)
+ 
+    Associates level *lvl* with text *levelName* in an internal dictionary, which is
+    used to map numeric levels to a textual representation, for example when a
+    :class:`Formatter` formats a message. This function can also be used to define
+    your own levels. The only constraints are that all levels used must be
     registered using this function, levels should be positive integers and they
     should increase in increasing order of severity.
  
@@ -1301,7 +1353,25 @@
  
  .. function:: getLevelName(lvl)
  
-<span class="gu">@@ -767,6 +832,13 @@</span>
+    Returns the textual representation of logging level *lvl*. If the level is one
+    of the predefined levels :const:`CRITICAL`, :const:`ERROR`, :const:`WARNING`,
+    :const:`INFO` or :const:`DEBUG` then you get the corresponding string. If you
+    have associated levels with names using :func:`addLevelName` then the name you
+    have associated with *lvl* is returned. If a numeric value corresponding to one
+    of the defined levels is passed in, the corresponding string representation is
+    returned. Otherwise, the string &quot;Level %s&quot; % lvl is returned.
+ 
+ 
+<span class="gu">@@ -758,24 +823,31 @@</span>
+    Does basic configuration for the logging system by creating a
+    :class:`StreamHandler` with a default :class:`Formatter` and adding it to the
+    root logger. The functions :func:`debug`, :func:`info`, :func:`warning`,
+    :func:`error` and :func:`critical` will call :func:`basicConfig` automatically
+    if no handlers are defined for the root logger.
+ 
+    This function does nothing if the root logger already has handlers
+    configured for it.
+ 
     .. versionchanged:: 2.4
        Formerly, :func:`basicConfig` did not take any keyword arguments.
  
@@ -1315,7 +1385,25 @@
     The following keyword arguments are supported.
  
     +--------------+---------------------------------------------+
-<span class="gu">@@ -811,8 +883,36 @@</span>
+    | Format       | Description                                 |
+    +==============+=============================================+
+    | ``filename`` | Specifies that a FileHandler be created,    |
+    |              | using the specified filename, rather than a |
+    |              | StreamHandler.                              |
+    +--------------+---------------------------------------------+
+    | ``filemode`` | Specifies the mode to open the file, if     |
+    |              | filename is specified (if filemode is       |
+    |              | unspecified, it defaults to &#39;a&#39;).           |
+<span class="gu">@@ -802,2130 +874,52 @@</span>
+    further use of the logging system should be made after this call.
+ 
+ 
+ .. function:: setLoggerClass(klass)
+ 
+    Tells the logging system to use the class *klass* when instantiating a logger.
+    The class should define :meth:`__init__` such that only a name argument is
+    required, and the :meth:`__init__` should call :meth:`Logger.__init__`. This
+    function is typically called before any loggers are instantiated by applications
     which need to use custom logger behavior.
  
  
@@ -1352,7 +1440,10 @@
     :pep:`282` - A Logging System
        The proposal which described this feature for inclusion in the Python standard
        library.
-<span class="gu">@@ -823,2109 +923,3 @@</span>
+ 
+    `Original Python logging package &lt;http://www.red-dove.com/python_logging.html&gt;`_
+       This is the original source for the :mod:`logging` package.  The version of the
+       package available from this site is suitable for use with Python 1.5.2, 2.1.x
        and 2.2.x, which do not include the :mod:`logging` package in the standard
        library.
  

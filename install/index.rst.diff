@@ -1,4 +1,13 @@
-@@ -241,7 +241,7 @@
+@@ -232,25 +232,25 @@
+ location for third-party Python modules.  This location varies by platform and
+ by how you built/installed Python itself.  On Unix (and Mac OS X, which is also
+ Unix-based), it also depends on whether the module distribution being installed
+ is pure Python or contains extensions ("non-pure"):
+ 
+ +-----------------+-----------------------------------------------------+--------------------------------------------------+-------+
+ | Platform        | Standard installation location                      | Default value                                    | Notes |
+ +=================+=====================================================+==================================================+=======+
+ | Unix (pure)     | :file:`{prefix}/lib/python{X.Y}/site-packages`      | :file:`/usr/local/lib/python{X.Y}/site-packages` | \(1)  |
  +-----------------+-----------------------------------------------------+--------------------------------------------------+-------+
  | Unix (non-pure) | :file:`{exec-prefix}/lib/python{X.Y}/site-packages` | :file:`/usr/local/lib/python{X.Y}/site-packages` | \(1)  |
  +-----------------+-----------------------------------------------------+--------------------------------------------------+-------+
@@ -7,7 +16,25 @@
  +-----------------+-----------------------------------------------------+--------------------------------------------------+-------+
  
  Notes:
-@@ -694,6 +694,9 @@
+ 
+ (1)
+    Most Linux distributions include Python as a standard part of the system, so
+    :file:`{prefix}` and :file:`{exec-prefix}` are usually both :file:`/usr` on
+    Linux.  If you build Python yourself on Linux (or any Unix-like system), the
+    default :file:`{prefix}` and :file:`{exec-prefix}` are :file:`/usr/local`.
+ 
+ (2)
+    The default installation directory on Windows was :file:`C:\\Program
+@@ -685,24 +685,27 @@
+ And on Windows, the configuration files are:
+ 
+ +--------------+-------------------------------------------------+-------+
+ | Type of file | Location and filename                           | Notes |
+ +==============+=================================================+=======+
+ | system       | :file:`{prefix}\\Lib\\distutils\\distutils.cfg` | \(4)  |
+ +--------------+-------------------------------------------------+-------+
+ | personal     | :file:`%HOME%\\pydistutils.cfg`                 | \(5)  |
+ +--------------+-------------------------------------------------+-------+
  | local        | :file:`setup.cfg`                               | \(3)  |
  +--------------+-------------------------------------------------+-------+
  
@@ -17,7 +44,25 @@
  Notes:
  
  (1)
-@@ -929,15 +932,34 @@
+    Strictly speaking, the system-wide configuration file lives in the directory
+    where the Distutils are installed; under Python 1.6 and later on Unix, this is
+    as shown. For Python 1.5.2, the Distutils will normally be installed to
+    :file:`{prefix}/lib/python1.5/site-packages/distutils`, so the system
+    configuration file should be put there under Python 1.5.2.
+ 
+ (2)
+    On Unix, if the :envvar:`HOME` environment variable is not defined, the user's
+    home directory will be determined with the :func:`getpwuid` function from the
+@@ -920,33 +923,52 @@
+    `C++Builder Compiler <http://www.codegear.com/downloads/free/cppbuilder>`_
+       Information about the free C++ compiler from Borland, including links to the
+       download pages.
+ 
+    `Creating Python Extensions Using Borland's Free Compiler <http://www.cyberus.ca/~g_will/pyExtenDL.shtml>`_
+       Document describing how to use Borland's free command-line C++ compiler to build
+       Python.
+ 
+ 
  GNU C / Cygwin / MinGW
  ^^^^^^^^^^^^^^^^^^^^^^
  
@@ -56,7 +101,25 @@
  for Borland's C++, because there is no program to convert the library.  First
  you have to create a list of symbols which the Python DLL exports. (You can find
  a good program for this task at
-@@ -967,18 +989,6 @@
+ http://www.emmestech.com/software/pexports-0.43/download_pexports.html).
+ 
+ .. I don't understand what the next line means. --amk
+ .. (inclusive the references on data structures.)
+ 
+ ::
+ 
+    pexports python25.dll >python25.def
+ 
+@@ -958,36 +980,24 @@
+ Then you can create from these information an import library for gcc. ::
+ 
+    /cygwin/bin/dlltool --dllname python25.dll --def python25.def --output-lib libpython25.a
+ 
+ The resulting library has to be placed in the same directory as
+ :file:`python25.lib`. (Should be the :file:`libs` directory under your Python
+ installation directory.)
+ 
+ If your extension uses other libraries (zlib,...) you might  have to convert
  them too. The converted files have to reside in the same directories as the
  normal libraries do.
  
@@ -74,4 +137,13 @@
 -
  
  .. seealso::
+ 
+    `Building Python modules on MS Windows platform with MinGW <http://www.zope.org/Members/als/tips/win32_mingw_modules>`_
+       Information about building the required libraries for the MinGW environment.
+ 
+ 
+ .. rubric:: Footnotes
+ 
+ .. [#] This also means you could replace all existing COFF-libraries with OMF-libraries
+    of the same name.
  

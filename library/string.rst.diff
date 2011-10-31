@@ -1,4 +1,13 @@
-@@ -17,6 +17,11 @@
+@@ -8,24 +8,29 @@
+ .. index:: module: re
+ 
+ The :mod:`string` module contains a number of useful constants and
+ classes, as well as some deprecated legacy functions that are also
+ available as methods on strings. In addition, Python's built-in string
+ classes support the sequence type methods described in the
+ :ref:`typesseq` section, and also the string-specific methods described
+ in the :ref:`string-methods` section. To output formatted strings use
+ template strings or the ``%`` operator described in the
  :ref:`string-formatting` section. Also, see the :mod:`re` module for
  string functions based on regular expressions.
  
@@ -10,7 +19,25 @@
  
  String constants
  ----------------
-@@ -118,7 +123,7 @@
+ 
+ The constants defined in this module are:
+ 
+ 
+ .. data:: ascii_letters
+ 
+    The concatenation of the :const:`ascii_lowercase` and :const:`ascii_uppercase`
+    constants described below.  This value is not locale-dependent.
+ 
+@@ -109,48 +114,48 @@
+ 
+ The built-in str and unicode classes provide the ability
+ to do complex variable substitutions and value formatting via the
+ :meth:`str.format` method described in :pep:`3101`.  The :class:`Formatter`
+ class in the :mod:`string` module allows you to create and customize your own
+ string formatting behaviors using the same implementation as the built-in
+ :meth:`format` method.
+ 
+ .. class:: Formatter
  
     The :class:`Formatter` class has the following public methods:
  
@@ -19,7 +46,22 @@
  
        :meth:`format` is the primary API method.  It takes a format template
        string, and an arbitrary set of positional and keyword argument.
-@@ -141,7 +146,7 @@
+       :meth:`format` is just a wrapper that calls :meth:`vformat`.
+ 
+    .. method:: vformat(format_string, args, kwargs)
+ 
+       This function does the actual work of formatting.  It is exposed as a
+       separate function for cases where you want to pass in a predefined
+       dictionary of arguments, rather than unpacking and repacking the
+       dictionary as individual arguments using the ``*args`` and ``**kwds``
+       syntax.  :meth:`vformat` does the work of breaking up the format template
+       string into character data and replacement fields.  It calls the various
+       methods described below.
+ 
+    In addition, the :class:`Formatter` defines a number of methods that are
+    intended to be replaced by subclasses:
+ 
+    .. method:: parse(format_string)
  
        Loop over the format_string and return an iterable of tuples
        (*literal_text*, *field_name*, *format_spec*, *conversion*).  This is used
@@ -28,7 +70,25 @@
        replacement fields.
  
        The values in the tuple conceptually represent a span of literal text
-@@ -190,7 +195,7 @@
+       followed by a single replacement field.  If there is no literal text
+       (which can happen if two replacement fields occur consecutively), then
+       *literal_text* will be a zero-length string.  If there is no replacement
+       field, then the values of *field_name*, *format_spec* and *conversion*
+       will be ``None``.
+ 
+    .. method:: get_field(field_name, args, kwargs)
+ 
+       Given *field_name* as returned by :meth:`parse` (see above), convert it to
+@@ -181,25 +186,25 @@
+       built-in :func:`getattr` function.
+ 
+       If the index or keyword refers to an item that does not exist, then an
+       :exc:`IndexError` or :exc:`KeyError` should be raised.
+ 
+    .. method:: check_unused_args(used_args, args, kwargs)
+ 
+       Implement checking for unused arguments if desired.  The arguments to this
+       function is the set of all argument keys that were actually referred to in
        the format string (integers for positional arguments, and strings for
        named arguments), and a reference to the *args* and *kwargs* that was
        passed to vformat.  The set of unused args can be calculated from these
@@ -37,7 +97,25 @@
        the check fails.
  
     .. method:: format_field(value, format_spec)
-@@ -222,32 +227,43 @@
+ 
+       :meth:`format_field` simply calls the global :func:`format` built-in.  The
+       method is provided so that subclasses can override it.
+ 
+    .. method:: convert_field(value, conversion)
+ 
+       Converts the value (returned by :meth:`get_field`) given a conversion type
+       (as in the tuple returned by the :meth:`parse` method).  The default
+       version understands 'r' (repr) and 's' (str) conversion types.
+@@ -213,50 +218,61 @@
+ The :meth:`str.format` method and the :class:`Formatter` class share the same
+ syntax for format strings (although in the case of :class:`Formatter`,
+ subclasses can define their own format string syntax).
+ 
+ Format strings contain "replacement fields" surrounded by curly braces ``{}``.
+ Anything that is not contained in braces is considered literal text, which is
+ copied unchanged to the output.  If you need to include a brace character in the
+ literal text, it can be escaped by doubling: ``{{`` and ``}}``.
+ 
  The grammar for a replacement field is as follows:
  
     .. productionlist:: sf
@@ -90,7 +168,25 @@
     "My quest is {name}"             # References keyword argument 'name'
     "Weight in tons {0.weight}"      # 'weight' attribute of first positional arg
     "Units destroyed: {players[0]}"  # First element of keyword argument 'players'.
-@@ -305,7 +321,7 @@
+ 
+ The *conversion* field causes a type coercion before formatting.  Normally, the
+ job of formatting a value is done by the :meth:`__format__` method of the value
+ itself.  However, in some cases it is desirable to force a type to be formatted
+ as a string, overriding its own definition of formatting.  By converting the
+ value to a string before calling :meth:`__format__`, the normal formatting logic
+ is bypassed.
+ 
+ Two conversion flags are currently supported: ``'!s'`` which calls :func:`str`
+@@ -296,48 +312,48 @@
+ specification is to be interpreted.
+ 
+ Most built-in types implement the following options for format specifications,
+ although some of the formatting options are only supported by the numeric types.
+ 
+ A general convention is that an empty format string (``""``) produces
+ the same result as if you had called :func:`str` on the value. A
+ non-empty format string typically modifies the result.
+ 
  The general form of a *standard format specifier* is:
  
  .. productionlist:: sf
@@ -99,7 +195,7 @@
     fill: <a character other than '}'>
     align: "<" | ">" | "=" | "^"
     sign: "+" | "-" | " "
-@@ -313,11 +329,11 @@
+    width: `integer`
     precision: `integer`
     type: "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
  
@@ -116,7 +212,7 @@
  
  The meaning of the various alignment options is as follows:
  
-@@ -325,10 +341,10 @@
+    +---------+----------------------------------------------------------+
     | Option  | Meaning                                                  |
     +=========+==========================================================+
     | ``'<'`` | Forces the field to be left-aligned within the available |
@@ -129,7 +225,25 @@
     +---------+----------------------------------------------------------+
     | ``'='`` | Forces the padding to be placed after the sign (if any)  |
     |         | but before the digits.  This is used for printing fields |
-@@ -363,6 +379,13 @@
+    |         | in the form '+000000120'. This alignment option is only  |
+    |         | valid for numeric types.                                 |
+    +---------+----------------------------------------------------------+
+    | ``'^'`` | Forces the field to be centered within the available     |
+    |         | space.                                                   |
+    +---------+----------------------------------------------------------+
+ 
+ Note that unless a minimum field width is defined, the field width will always
+ be the same size as the data to fill it, so that the alignment option has no
+@@ -354,24 +370,31 @@
+    +---------+----------------------------------------------------------+
+    | ``'-'`` | indicates that a sign should be used only for negative   |
+    |         | numbers (this is the default behavior).                  |
+    +---------+----------------------------------------------------------+
+    | space   | indicates that a leading space should be used on         |
+    |         | positive numbers, and a minus sign on negative numbers.  |
+    +---------+----------------------------------------------------------+
+ 
+ The ``'#'`` option is only valid for integers, and only for binary, octal, or
  hexadecimal output.  If present, it specifies that the output will be prefixed
  by ``'0b'``, ``'0o'``, or ``'0x'``, respectively.
  
@@ -143,7 +257,25 @@
  *width* is a decimal integer defining the minimum field width.  If not
  specified, then the field width will be determined by the content.
  
-@@ -454,7 +477,7 @@
+ If the *width* field is preceded by a zero (``'0'``) character, this enables
+ zero-padding.  This is equivalent to an *alignment* type of ``'='`` and a *fill*
+ character of ``'0'``.
+ 
+ The *precision* is a decimal number indicating how many digits should be
+ displayed after the decimal point for a floating point value formatted with
+ ``'f'`` and ``'F'``, or before and after the decimal point for a floating point
+ value formatted with ``'g'`` or ``'G'``.  For non-number types the field
+ indicates the maximum field size - in other words, how many characters will be
+@@ -445,25 +468,25 @@
+    |         |                                                          |
+    |         | The precise rules are as follows: suppose that the       |
+    |         | result formatted with presentation type ``'e'`` and      |
+    |         | precision ``p-1`` would have exponent ``exp``.  Then     |
+    |         | if ``-4 <= exp < p``, the number is formatted            |
+    |         | with presentation type ``'f'`` and precision             |
+    |         | ``p-1-exp``.  Otherwise, the number is formatted         |
+    |         | with presentation type ``'e'`` and precision ``p-1``.    |
+    |         | In both cases insignificant trailing zeros are removed   |
     |         | from the significand, and the decimal point is also      |
     |         | removed if there are no remaining digits following it.   |
     |         |                                                          |
@@ -152,7 +284,25 @@
     |         | zero, and nans, are formatted as ``inf``, ``-inf``,      |
     |         | ``0``, ``-0`` and ``nan`` respectively, regardless of    |
     |         | the precision.                                           |
-@@ -488,7 +511,7 @@
+    |         |                                                          |
+    |         | A precision of ``0`` is treated as equivalent to a       |
+    |         | precision of ``1``.                                      |
+    +---------+----------------------------------------------------------+
+    | ``'G'`` | General format. Same as ``'g'`` except switches to       |
+    |         | ``'E'`` if the number gets too large. The                |
+    |         | representations of infinity and NaN are uppercased, too. |
+    +---------+----------------------------------------------------------+
+    | ``'n'`` | Number. This is the same as ``'g'``, except that it uses |
+@@ -479,33 +502,35 @@
+ 
+ 
+ .. _formatexamples:
+ 
+ Format examples
+ ^^^^^^^^^^^^^^^
+ 
+ This section contains examples of the new format syntax and comparison with
+ the old ``%``-formatting.
  
  In most of the cases the syntax is similar to the old ``%``-formatting, with the
  addition of the ``{}`` and with ``:`` used instead of ``%``.
@@ -161,7 +311,8 @@
  
  The new format syntax also supports new and different options, shown in the
  follow examples.
-@@ -497,6 +520,8 @@
+ 
+ Accessing arguments by position::
  
     >>> '{0}, {1}, {2}'.format('a', 'b', 'c')
     'a, b, c'
@@ -170,7 +321,25 @@
     >>> '{2}, {1}, {0}'.format('a', 'b', 'c')
     'c, b, a'
     >>> '{2}, {1}, {0}'.format(*'abc')      # unpacking argument sequence
-@@ -536,27 +561,27 @@
+    'c, b, a'
+    >>> '{0}{1}{0}'.format('abra', 'cad')   # arguments' indices can be repeated
+    'abracadabra'
+ 
+ Accessing arguments by name::
+ 
+    >>> 'Coordinates: {latitude}, {longitude}'.format(latitude='37.24N', longitude='-115.81W')
+    'Coordinates: 37.24N, -115.81W'
+    >>> coord = {'latitude': '37.24N', 'longitude': '-115.81W'}
+@@ -527,81 +552,86 @@
+    >>> str(Point(4, 2))
+    'Point(4, 2)'
+ 
+ 
+ Accessing arguments' items::
+ 
+    >>> coord = (3, 5)
+    >>> 'X: {0[0]};  Y: {0[1]}'.format(coord)
+    'X: 3;  Y: 5'
  
  Replacing ``%s`` and ``%r``::
  
@@ -206,7 +375,11 @@
     '3.140000; -3.140000'
  
  Replacing ``%x`` and ``%o`` and converting the value to different bases::
-@@ -568,31 +593,36 @@
+ 
+    >>> # format also supports binary numbers
+    >>> "int: {0:d};  hex: {0:x};  oct: {0:o};  bin: {0:b}".format(42)
+    'int: 42;  hex: 2a;  oct: 52;  bin: 101010'
+    >>> # with 0x, 0o, or 0b as prefix:
     >>> "int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}".format(42)
     'int: 42;  hex: 0x2a;  oct: 0o52;  bin: 0b101010'
  
@@ -247,3 +420,12 @@
     'C0A80001'
     >>> int(_, 16)
     3232235521
+    >>>
+    >>> width = 5
+    >>> for num in range(5,12):
+    ...     for base in 'dXob':
+    ...         print '{0:{width}{base}}'.format(num, base=base, width=width),
+    ...     print
+    ...
+        5     5     5   101
+        6     6     6   110

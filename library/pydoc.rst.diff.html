@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -43,25 +43,25 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -34,39 +34,39 @@</span>
+ in a package.  If the argument to :program:`pydoc` looks like a path (that is,
+ it contains the path separator for your operating system, such as a slash in
+ Unix), and refers to an existing Python source file, then documentation is
+ produced for that file.
+ 
+ .. note::
+ 
+    In order to find objects and their documentation, :mod:`pydoc` imports the
+    module(s) to be documented.  Therefore, any code on module level will be
     executed on that occasion.  Use an ``if __name__ == &#39;__main__&#39;:`` guard to
     only execute code when a file is invoked as a script and not just imported.
  
@@ -99,6 +108,11 @@
 <span class="gi">+and path to locate modules.  Thus, invoking :program:`pydoc spam`</span>
  documents precisely the version of the module you would get if you started the
  Python interpreter and typed ``import spam``.
+ 
+ Module docs for core modules are assumed to reside in
+ http://docs.python.org/library/.  This can be overridden by setting the
+ :envvar:`PYTHONDOCS` environment variable to a different URL or to a local
+ directory containing the Library Reference Manual pages.
  
 </pre></div>
 

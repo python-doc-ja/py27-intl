@@ -1,4 +1,13 @@
-@@ -68,12 +68,12 @@
+@@ -59,30 +59,30 @@
+    This implementation actually uses the CPython implementation, but is a managed
+    .NET application and makes .NET libraries available.  It was created by Brian
+    Lloyd.  For more information, see the `Python for .NET home page
+    <http://pythonnet.sourceforge.net>`_.
+ 
+ IronPython
+    An alternate Python for .NET.  Unlike Python.NET, this is a complete Python
+    implementation that generates IL, and compiles Python code directly to .NET
+    assemblies.  It was created by Jim Hugunin, the original creator of Jython.  For
     more information, see `the IronPython website <http://www.ironpython.com/>`_.
  
  PyPy
@@ -17,3 +26,12 @@
  
  Each of these implementations varies in some way from the language as documented
  in this manual, or introduces specific information beyond what's covered in the
+ standard Python documentation.  Please refer to the implementation-specific
+ documentation to determine what else you need to know about the specific
+ implementation you're using.
+ 
+ 
+ .. _notation:
+ 
+ Notation
+ ========

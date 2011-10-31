@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -33,6 +33,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -24,24 +24,29 @@</span>
+ to an absolute URL given a &quot;base URL.&quot;
+ 
+ The module has been designed to match the Internet RFC on Relative Uniform
+ Resource Locators (and discovered a bug in an earlier draft!). It supports the
+ following URL schemes: ``file``, ``ftp``, ``gopher``, ``hdl``, ``http``,
+ ``https``, ``imap``, ``mailto``, ``mms``, ``news``,  ``nntp``, ``prospero``,
+ ``rsync``, ``rtsp``, ``rtspu``,  ``sftp``, ``shttp``, ``sip``, ``sips``,
+ ``snews``, ``svn``,  ``svn+ssh``, ``telnet``, ``wais``.
+ 
  .. versionadded:: 2.5
     Support for the ``sftp`` and ``sips`` schemes.
  
@@ -80,7 +89,25 @@
  The :mod:`urlparse` module defines the following functions:
  
  
-<span class="gu">@@ -58,6 +63,23 @@</span>
+ .. function:: urlparse(urlstring[, scheme[, allow_fragments]])
+ 
+    Parse a URL into six components, returning a 6-tuple.  This corresponds to the
+    general structure of a URL: ``scheme://netloc/path;parameters?query#fragment``.
+    Each tuple item is a string, possibly empty. The components are not broken up in
+    smaller parts (for example, the network location is a single string), and %
+    escapes are not expanded. The delimiters as shown above are not part of the
+    result, except for a leading slash in the *path* component, which is retained if
+    present.  For example:
+<span class="gu">@@ -49,24 +54,41 @@</span>
+       &gt;&gt;&gt; from urlparse import urlparse
+       &gt;&gt;&gt; o = urlparse(&#39;http://www.cwi.nl:80/%7Eguido/Python.html&#39;)
+       &gt;&gt;&gt; o   # doctest: +NORMALIZE_WHITESPACE
+       ParseResult(scheme=&#39;http&#39;, netloc=&#39;www.cwi.nl:80&#39;, path=&#39;/%7Eguido/Python.html&#39;,
+                   params=&#39;&#39;, query=&#39;&#39;, fragment=&#39;&#39;)
+       &gt;&gt;&gt; o.scheme
+       &#39;http&#39;
+       &gt;&gt;&gt; o.port
+       80
        &gt;&gt;&gt; o.geturl()
        &#39;http://www.cwi.nl:80/%7Eguido/Python.html&#39;
  
@@ -104,7 +131,25 @@
     If the *scheme* argument is specified, it gives the default addressing
     scheme, to be used only if the URL does not specify one.  The default value for
     this argument is the empty string.
-<span class="gu">@@ -101,6 +123,10 @@</span>
+ 
+    If the *allow_fragments* argument is false, fragment identifiers are not
+    allowed, even if the URL&#39;s addressing scheme normally does support them.  The
+    default value for this argument is :const:`True`.
+ 
+    The return value is actually an instance of a subclass of :class:`tuple`.  This
+    class has the following additional read-only convenience attributes:
+ 
+    +------------------+-------+--------------------------+----------------------+
+<span class="gu">@@ -92,56 +114,60 @@</span>
+    | :attr:`hostname` |       | Host name (lower case)   | :const:`None`        |
+    +------------------+-------+--------------------------+----------------------+
+    | :attr:`port`     |       | Port number as integer,  | :const:`None`        |
+    |                  |       | if present               |                      |
+    +------------------+-------+--------------------------+----------------------+
+ 
+    See section :ref:`urlparse-result-object` for more information on the result
+    object.
+ 
     .. versionchanged:: 2.5
        Added attributes to return value.
  
@@ -115,7 +160,8 @@
  .. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
  
     Parse a query string given as a string argument (data of type
-<span class="gu">@@ -109,7 +135,7 @@</span>
+    :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a
+    dictionary.  The dictionary keys are the unique query variable names and the
     values are lists of values for each name.
  
     The optional argument *keep_blank_values* is a flag indicating whether blank
@@ -124,7 +170,22 @@
     indicates that blanks should be retained as  blank strings.  The default false
     value indicates that blank values are to be ignored and treated as if they were
     not included.
-<span class="gu">@@ -132,7 +158,7 @@</span>
+ 
+    The optional argument *strict_parsing* is a flag indicating what to do with
+    parsing errors.  If false (the default), errors are silently ignored.  If true,
+    errors raise a :exc:`ValueError` exception.
+ 
+    Use the :func:`urllib.urlencode` function to convert such dictionaries into
+    query strings.
+ 
+    .. versionadded:: 2.6
+       Copied from the :mod:`cgi` module.
+ 
+ 
+ .. function:: parse_qsl(qs[, keep_blank_values[, strict_parsing]])
+ 
+    Parse a query string given as a string argument (data of type
+    :mimetype:`application/x-www-form-urlencoded`).  Data are returned as a list of
     name, value pairs.
  
     The optional argument *keep_blank_values* is a flag indicating whether blank
@@ -133,7 +194,25 @@
     indicates that blanks should be retained as  blank strings.  The default false
     value indicates that blank values are to be ignored and treated as if they were
     not included.
-<span class="gu">@@ -254,9 +280,12 @@</span>
+ 
+    The optional argument *strict_parsing* is a flag indicating what to do with
+    parsing errors.  If false (the default), errors are silently ignored.  If true,
+    errors raise a :exc:`ValueError` exception.
+ 
+    Use the :func:`urllib.urlencode` function to convert such lists of pairs into
+    query strings.
+ 
+    .. versionadded:: 2.6
+<span class="gu">@@ -245,27 +271,30 @@</span>
+ 
+    If *url* contains a fragment identifier, returns a modified version of *url*
+    with no fragment identifier, and the fragment identifier as a separate string.
+    If there is no fragment identifier in *url*, returns *url* unmodified and an
+    empty string.
+ 
+ 
+ .. seealso::
+ 
     :rfc:`3986` - Uniform Resource Identifiers
        This is the current standard (STD66). Any changes to urlparse module
        should conform to this. Certain deviations could be observed, which are
@@ -147,6 +226,15 @@
     :rfc:`2396` - Uniform Resource Identifiers (URI): Generic Syntax
        Document describing the generic syntactic requirements for both Uniform Resource
        Names (URNs) and Uniform Resource Locators (URLs).
+ 
+    :rfc:`2368` - The mailto URL scheme.
+       Parsing requirements for mailto url schemes.
+ 
+    :rfc:`1808` - Relative Uniform Resource Locators
+       This Request For Comments includes the rules for joining an absolute and a
+       relative URL, including a fair number of &quot;Abnormal Examples&quot; which govern the
+       treatment of border cases.
+ 
 </pre></div>
 
 </body>

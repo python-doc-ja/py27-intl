@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -19,6 +19,6 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -10,15 +10,15 @@</span>
+ # Create a text/plain message
+ msg = MIMEText(fp.read())
+ fp.close()
+ 
+ # me == the sender&#39;s email address
+ # you == the recipient&#39;s email address
+ msg[&#39;Subject&#39;] = &#39;The contents of %s&#39; % textfile
+ msg[&#39;From&#39;] = me
+ msg[&#39;To&#39;] = you
  
  # Send the message via our own SMTP server, but don&#39;t include the
  # envelope header.

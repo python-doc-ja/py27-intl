@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -16,12 +16,16 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -7,30 +7,34 @@</span>
+               program.
+ .. sectionauthor:: Drew Csillag &lt;drew_csillag@geocities.com&gt;
+ 
+ 
+ This module allows you to output calendars like the Unix :program:`cal` program,
+ and provides additional useful functions related to the calendar. By default,
+ these calendars have Monday as the first day of the week, and Sunday as the last
+ (the European convention). Use :func:`setfirstweekday` to set the first day of
+ the week to Sunday (6) or to any other weekday.  Parameters that specify dates
  are given as integers. For related
  functionality, see also the :mod:`datetime` and :mod:`time` modules.
  
@@ -86,7 +95,25 @@
  
  .. class:: Calendar([firstweekday])
  
-<span class="gu">@@ -178,9 +182,9 @@</span>
+    Creates a :class:`Calendar` object. *firstweekday* is an integer specifying the
+    first day of the week. ``0`` is Monday (the default), ``6`` is Sunday.
+ 
+    A :class:`Calendar` object provides several methods that can be used for
+    preparing the calendar data for formatting. This class doesn&#39;t do any formatting
+    itself. This is the job of subclasses.
+ 
+    .. versionadded:: 2.5
+ 
+<span class="gu">@@ -169,40 +173,47 @@</span>
+    .. method:: formatyearpage(theyear[, width[, css[, encoding]]])
+ 
+       Return a year&#39;s calendar as a complete HTML page. *width* (defaulting to
+       3) specifies the number of months per row. *css* is the name for the
+       cascading style sheet to be used. :const:`None` can be passed if no style
+       sheet should be used. *encoding* specifies the encoding to be used for the
+       output (defaulting to the system default encoding).
+ 
+ 
  .. class:: LocaleTextCalendar([firstweekday[, locale]])
  
     This subclass of :class:`TextCalendar` can be passed a locale name in the
@@ -99,7 +126,13 @@
  
     .. versionadded:: 2.5
  
-<span class="gu">@@ -194,6 +198,13 @@</span>
+ 
+ .. class:: LocaleHTMLCalendar([firstweekday[, locale]])
+ 
+    This subclass of :class:`HTMLCalendar` can be passed a locale name in the
+    constructor and will return month and weekday names in the specified
+    locale. If this locale includes an encoding all strings containing month and
+    weekday names will be returned as unicode.
  
     .. versionadded:: 2.5
  
@@ -113,6 +146,15 @@
  For simple text calendars this module provides the following functions.
  
  
+ .. function:: setfirstweekday(weekday)
+ 
+    Sets the weekday (``0`` is Monday, ``6`` is Sunday) to start each week. The
+    values :const:`MONDAY`, :const:`TUESDAY`, :const:`WEDNESDAY`, :const:`THURSDAY`,
+    :const:`FRIDAY`, :const:`SATURDAY`, and :const:`SUNDAY` are provided for
+    convenience. For example, to set the first weekday to Sunday::
+ 
+       import calendar
+       calendar.setfirstweekday(calendar.SUNDAY)
 </pre></div>
 
 </body>

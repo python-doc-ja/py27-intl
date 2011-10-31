@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -42,7 +42,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -33,25 +33,25 @@</span>
+    Return true if *p* is a list object, but not an instance of a subtype of
+    the list type.
+ 
+    .. versionadded:: 2.2
+ 
+ 
+ .. cfunction:: PyObject* PyList_New(Py_ssize_t len)
+ 
+    Return a new list of length *len* on success, or *NULL* on failure.
  
     .. note::
  
@@ -77,7 +86,25 @@
        set to ``NULL``.  Thus you cannot use abstract API functions such as
        :cfunc:`PySequence_SetItem`  or expose the object to Python code before
        setting all items to a real object with :cfunc:`PyList_SetItem`.
-<span class="gu">@@ -75,9 +75,9 @@</span>
+ 
+    .. versionchanged:: 2.5
+       This function used an :ctype:`int` for *size*. This might require
+       changes in your code for properly supporting 64-bit systems.
+ 
+ 
+ .. cfunction:: Py_ssize_t PyList_Size(PyObject *list)
+ 
+    .. index:: builtin: len
+<span class="gu">@@ -66,27 +66,27 @@</span>
+ 
+ .. cfunction:: Py_ssize_t PyList_GET_SIZE(PyObject *list)
+ 
+    Macro form of :cfunc:`PyList_Size` without error checking.
+ 
+    .. versionchanged:: 2.5
+       This macro returned an :ctype:`int`. This might require changes in your
+       code for properly supporting 64-bit systems.
+ 
  
  .. cfunction:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
  
@@ -87,6 +114,15 @@
 <span class="gd">-   supported.  If *pos* is out of bounds, return *NULL* and set an</span>
 <span class="gi">+   supported.  If *index* is out of bounds, return *NULL* and set an</span>
     :exc:`IndexError` exception.
+ 
+    .. versionchanged:: 2.5
+       This function used an :ctype:`int` for *index*. This might require
+       changes in your code for properly supporting 64-bit systems.
+ 
+ 
+ .. cfunction:: PyObject* PyList_GET_ITEM(PyObject *list, Py_ssize_t i)
+ 
+    Macro form of :cfunc:`PyList_GetItem` without error checking.
  
     .. versionchanged:: 2.5
 </pre></div>

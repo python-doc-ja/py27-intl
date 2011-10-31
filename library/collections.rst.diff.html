@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -15,144 +15,206 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -6,162 +6,224 @@</span>
+    :synopsis: High-performance datatypes
+ .. moduleauthor:: Raymond Hettinger &lt;python@rcn.com&gt;
+ .. sectionauthor:: Raymond Hettinger &lt;python@rcn.com&gt;
+ 
+ .. versionadded:: 2.4
+ 
+ .. testsetup:: *
+ 
+    from collections import *
     import itertools
     __name__ = &#39;&lt;doctest&gt;&#39;
  
@@ -407,7 +416,25 @@
  
  
  :class:`deque` objects
-<span class="gu">@@ -204,6 +266,12 @@</span>
+ ----------------------
+ 
+ .. class:: deque([iterable[, maxlen]])
+ 
+    Returns a new deque object initialized left-to-right (using :meth:`append`) with
+    data from *iterable*.  If *iterable* is not specified, the new deque is empty.
+ 
+    Deques are a generalization of stacks and queues (the name is pronounced &quot;deck&quot;
+    and is short for &quot;double-ended queue&quot;).  Deques support thread-safe, memory
+<span class="gu">@@ -195,24 +257,30 @@</span>
+ 
+ 
+    .. method:: appendleft(x)
+ 
+       Add *x* to the left side of the deque.
+ 
+ 
+    .. method:: clear()
+ 
        Remove all elements from the deque leaving it with length 0.
  
  
@@ -420,7 +447,25 @@
     .. method:: extend(iterable)
  
        Extend the right side of the deque by appending elements from the iterable
-<span class="gu">@@ -236,6 +304,11 @@</span>
+       argument.
+ 
+ 
+    .. method:: extendleft(iterable)
+ 
+       Extend the left side of the deque by appending elements from *iterable*.
+       Note, the series of left appends results in reversing the order of
+       elements in the iterable argument.
+ 
+<span class="gu">@@ -227,32 +295,46 @@</span>
+ 
+       Remove and return an element from the left side of the deque. If no
+       elements are present, raises an :exc:`IndexError`.
+ 
+ 
+    .. method:: remove(value)
+ 
+       Removed the first occurrence of *value*.  If not found, raises a
+       :exc:`ValueError`.
  
        .. versionadded:: 2.5
  
@@ -432,7 +477,8 @@
  
     .. method:: rotate(n)
  
-<span class="gu">@@ -244,6 +317,15 @@</span>
+       Rotate the deque *n* steps to the right.  If *n* is negative, rotate to
+       the left.  Rotating one step to the right is equivalent to:
        ``d.appendleft(d.pop())``.
  
  
@@ -448,7 +494,25 @@
  In addition to the above, deques support iteration, pickling, ``len(d)``,
  ``reversed(d)``, ``copy.copy(d)``, ``copy.deepcopy(d)``, membership testing with
  the :keyword:`in` operator, and subscript references such as ``d[-1]``.  Indexed
-<span class="gu">@@ -475,7 +557,7 @@</span>
+ access is O(1) at both ends but slows to O(n) in the middle.  For fast random
+ access, use lists instead.
+ 
+ Example:
+ 
+ .. doctest::
+ 
+    &gt;&gt;&gt; from collections import deque
+    &gt;&gt;&gt; d = deque(&#39;ghi&#39;)                 # make a new deque with three items
+<span class="gu">@@ -466,104 +548,114 @@</span>
+    ...
+    &gt;&gt;&gt; d.items()
+    [(&#39;blue&#39;, set([2, 4])), (&#39;red&#39;, set([1, 3]))]
+ 
+ 
+ :func:`namedtuple` Factory Function for Tuples with Named Fields
+ ----------------------------------------------------------------
+ 
+ Named tuples assign meaning to each position in a tuple and allow for more readable,
  self-documenting code.  They can be used wherever regular tuples are used, and
  they add the ability to access fields by name instead of position index.
  
@@ -457,7 +521,7 @@
  
     Returns a new tuple subclass named *typename*.  The new subclass is used to
     create tuple-like objects that have fields accessible by attribute lookup as
-<span class="gu">@@ -483,9 +565,9 @@</span>
+    well as being indexable and iterable.  Instances of the subclass also have a
     helpful docstring (with typename and field_names) and a helpful :meth:`__repr__`
     method which lists the tuple contents in a ``name=value`` format.
  
@@ -470,7 +534,7 @@
  
     Any valid Python identifier may be used for a fieldname except for names
     starting with an underscore.  Valid identifiers consist of letters, digits,
-<span class="gu">@@ -493,6 +575,11 @@</span>
+    and underscores but do not start with a digit or underscore and cannot be
     a :mod:`keyword` such as *class*, *for*, *return*, *global*, *pass*, *print*,
     or *raise*.
  
@@ -482,7 +546,7 @@
     If *verbose* is true, the class definition is printed just before being built.
  
     Named tuple instances do not have per-instance dictionaries, so they are
-<span class="gu">@@ -500,24 +587,15 @@</span>
+    lightweight and require no more memory than regular tuples.
  
     .. versionadded:: 2.6
  
@@ -511,7 +575,8 @@
     class Point(tuple):
             &#39;Point(x, y)&#39;
     &lt;BLANKLINE&gt;
-<span class="gu">@@ -526,6 +604,7 @@</span>
+            __slots__ = ()
+    &lt;BLANKLINE&gt;
             _fields = (&#39;x&#39;, &#39;y&#39;)
     &lt;BLANKLINE&gt;
             def __new__(_cls, x, y):
@@ -519,7 +584,11 @@
                 return _tuple.__new__(_cls, (x, y))
     &lt;BLANKLINE&gt;
             @classmethod
-<span class="gu">@@ -537,11 +616,12 @@</span>
+            def _make(cls, iterable, new=tuple.__new__, len=len):
+                &#39;Make a new Point object from a sequence or iterable&#39;
+                result = new(cls, iterable)
+                if len(result) != 2:
+                    raise TypeError(&#39;Expected 2 arguments, got %d&#39; % len(result))
                 return result
     &lt;BLANKLINE&gt;
             def __repr__(self):
@@ -535,7 +604,9 @@
     &lt;BLANKLINE&gt;
             def _replace(_self, **kwds):
                 &#39;Return a new Point object replacing specified fields with new values&#39;
-<span class="gu">@@ -551,10 +631,22 @@</span>
+                result = _self._make(map(kwds.pop, (&#39;x&#39;, &#39;y&#39;), _self))
+                if kwds:
+                    raise ValueError(&#39;Got unexpected field names: %r&#39; % kwds.keys())
                 return result
     &lt;BLANKLINE&gt;
             def __getnewargs__(self):
@@ -560,7 +631,25 @@
  
  Named tuples are especially useful for assigning field names to result tuples returned
  by the :mod:`csv` or :mod:`sqlite3` modules::
-<span class="gu">@@ -588,10 +680,14 @@</span>
+ 
+    EmployeeRecord = namedtuple(&#39;EmployeeRecord&#39;, &#39;name, age, title, department, paygrade&#39;)
+ 
+    import csv
+    for emp in map(EmployeeRecord._make, csv.reader(open(&quot;employees.csv&quot;, &quot;rb&quot;))):
+        print emp.name, emp.title
+ 
+    import sqlite3
+    conn = sqlite3.connect(&#39;/companydata&#39;)
+<span class="gu">@@ -579,40 +671,44 @@</span>
+ .. classmethod:: somenamedtuple._make(iterable)
+ 
+    Class method that makes a new instance from an existing sequence or iterable.
+ 
+    .. doctest::
+ 
+       &gt;&gt;&gt; t = [11, 22]
+       &gt;&gt;&gt; Point._make(t)
+       Point(x=11, y=22)
  
  .. method:: somenamedtuple._asdict()
  
@@ -577,7 +666,11 @@
  
  .. method:: somenamedtuple._replace(kwargs)
  
-<span class="gu">@@ -603,7 +699,7 @@</span>
+    Return a new instance of the named tuple replacing specified fields with new
+    values::
+ 
+       &gt;&gt;&gt; p = Point(x=11, y=22)
+       &gt;&gt;&gt; p._replace(x=33)
        Point(x=33, y=22)
  
        &gt;&gt;&gt; for partnum, record in inventory.items():
@@ -586,7 +679,25 @@
  
  .. attribute:: somenamedtuple._fields
  
-<span class="gu">@@ -638,15 +734,15 @@</span>
+    Tuple of strings listing the field names.  Useful for introspection
+    and for creating new named tuple types from existing named tuples.
+ 
+    .. doctest::
+ 
+       &gt;&gt;&gt; p._fields            # view the field names
+       (&#39;x&#39;, &#39;y&#39;)
+ 
+       &gt;&gt;&gt; Color = namedtuple(&#39;Color&#39;, &#39;red green blue&#39;)
+<span class="gu">@@ -629,33 +725,33 @@</span>
+ To convert a dictionary to a named tuple, use the double-star-operator
+ (as described in :ref:`tut-unpacking-arguments`):
+ 
+    &gt;&gt;&gt; d = {&#39;x&#39;: 11, &#39;y&#39;: 22}
+    &gt;&gt;&gt; Point(**d)
+    Point(x=11, y=22)
+ 
+ Since a named tuple is a regular Python class, it is easy to add or change
+ functionality with a subclass.  Here is how to add a calculated field and
  a fixed-width print format:
  
      &gt;&gt;&gt; class Point(namedtuple(&#39;Point&#39;, &#39;x y&#39;)):
@@ -609,7 +720,25 @@
      Point: x= 3.000  y= 4.000  hypot= 5.000
      Point: x=14.000  y= 0.714  hypot=14.018
  
-<span class="gu">@@ -672,9 +768,263 @@</span>
+ The subclass shown above sets ``__slots__`` to an empty tuple.  This helps
+ keep memory requirements low by preventing the creation of instance dictionaries.
+ 
+ Subclassing is not useful for adding new, stored fields.  Instead, simply
+ create a new named tuple type from the :attr:`_fields` attribute:
+ 
+     &gt;&gt;&gt; Point3D = namedtuple(&#39;Point3D&#39;, Point._fields + (&#39;z&#39;,))
+ 
+ Default values can be implemented by using :meth:`_replace` to
+<span class="gu">@@ -663,18 +759,272 @@</span>
+ 
+     &gt;&gt;&gt; Account = namedtuple(&#39;Account&#39;, &#39;owner balance transaction_count&#39;)
+     &gt;&gt;&gt; default_account = Account(&#39;&lt;owner name&gt;&#39;, 0.0, 0)
+     &gt;&gt;&gt; johns_account = default_account._replace(owner=&#39;John&#39;)
+ 
+ Enumerated constants can be implemented with named tuples, but it is simpler
+ and more efficient to use a simple class declaration:
+ 
+     &gt;&gt;&gt; Status = namedtuple(&#39;Status&#39;, &#39;open pending closed&#39;)._make(range(3))
      &gt;&gt;&gt; Status.open, Status.pending, Status.closed
      (0, 1, 2)
      &gt;&gt;&gt; class Status:

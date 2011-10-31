@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -41,7 +41,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -32,25 +32,25 @@</span>
+     finally:
+         f.close()
+ 
+     release = version = &#39;%s.%s&#39; % (d[&#39;PY_MAJOR_VERSION&#39;], d[&#39;PY_MINOR_VERSION&#39;])
+     micro = int(d[&#39;PY_MICRO_VERSION&#39;])
+     if micro != 0:
+         release += &#39;.&#39; + str(micro)
+ 
+     level = d[&#39;PY_RELEASE_LEVEL&#39;]
      suffixes = {
          &#39;PY_RELEASE_LEVEL_ALPHA&#39;: &#39;a&#39;,
          &#39;PY_RELEASE_LEVEL_BETA&#39;:  &#39;b&#39;,
@@ -77,6 +86,15 @@
          }
      if level != &#39;PY_RELEASE_LEVEL_FINAL&#39;:
          release += suffixes[level] + str(int(d[&#39;PY_RELEASE_SERIAL&#39;]))
+     return version, release
+ 
+ 
+ def get_sys_version_info():
+     major, minor, micro, level, serial = sys.version_info
+     release = version = &#39;%s.%s&#39; % (major, minor)
+     if micro:
+         release += &#39;.%s&#39; % micro
+     if level != &#39;final&#39;:
 </pre></div>
 
 </body>

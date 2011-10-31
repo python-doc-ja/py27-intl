@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -23,6 +23,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -14,24 +14,28 @@</span>
+ 
+ .. index::
+    single: WWW
+    single: World Wide Web
+    single: URL
+ 
+ This module provides a high-level interface for fetching data across the World
+ Wide Web.  In particular, the :func:`urlopen` function is similar to the
+ built-in function :func:`open`, but accepts Universal Resource Locators (URLs)
  instead of filenames.  Some restrictions apply --- it can only open URLs for
  reading, and no seek operations are available.
  
@@ -79,7 +88,25 @@
  High-level interface
  --------------------
  
-<span class="gu">@@ -163,15 +167,15 @@</span>
+ .. function:: urlopen(url[, data[, proxies]])
+ 
+    Open a network object denoted by a URL for reading.  If the URL does not have a
+    scheme identifier, or if it has :file:`file:` as its scheme identifier, this
+    opens a local file (without universal newlines); otherwise it opens a socket to
+    a server somewhere on the network.  If the connection cannot be made the
+    :exc:`IOError` exception is raised.  If all went well, a file-like object is
+    returned.  This supports the following methods: :meth:`read`, :meth:`readline`,
+    :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info`, :meth:`getcode` and
+<span class="gu">@@ -154,33 +158,33 @@</span>
+    argument may be given to specify a ``POST`` request (normally the request type
+    is ``GET``).  The *data* argument must in standard
+    :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+    function below.
+ 
+    .. versionchanged:: 2.5
+       :func:`urlretrieve` will raise :exc:`ContentTooShortError` when it detects that
+       the amount of data available  was less than the expected amount (which is the
+       size reported by a  *Content-Length* header). This can occur, for example, when
        the  download is interrupted.
  
        The *Content-Length* is treated as a lower bound: if there&#39;s more data  to read,
@@ -100,7 +127,25 @@
  
  
  .. data:: _urlopener
-<span class="gu">@@ -236,8 +240,8 @@</span>
+ 
+    The public functions :func:`urlopen` and :func:`urlretrieve` create an instance
+    of the :class:`FancyURLopener` class and use it to perform their requested
+    actions.  To override this functionality, programmers can create a subclass of
+    :class:`URLopener` or :class:`FancyURLopener`, then assign an instance of that
+    class to the ``urllib._urlopener`` variable before calling the desired function.
+    For example, applications may want to specify a different
+    :mailheader:`User-Agent` header than :class:`URLopener` defines.  This can be
+    accomplished with the following code::
+<span class="gu">@@ -227,51 +231,51 @@</span>
+ 
+    Example: ``unquote(&#39;/%7Econnolly/&#39;)`` yields ``&#39;/~connolly/&#39;``.
+ 
+ 
+ .. function:: unquote_plus(string)
+ 
+    Like :func:`unquote`, but also replaces plus signs by spaces, as required for
+    unquoting HTML form values.
+ 
  
  .. function:: urlencode(query[, doseq])
  
@@ -111,7 +156,24 @@
     optional *data* argument.  This is useful to pass a dictionary of form
     fields to a ``POST`` request.  The resulting string is a series of
     ``key=value`` pairs separated by ``&#39;&amp;&#39;`` characters, where both *key* and
-<span class="gu">@@ -262,7 +266,7 @@</span>
+    *value* are quoted using :func:`quote_plus` above.  When a sequence of
+    two-element tuples is used as the *query* argument, the first element of
+    each tuple is a key and the second is a value. The value element in itself
+    can be a sequence and in that case, if the optional parameter *doseq* is
+    evaluates to *True*, individual ``key=value`` pairs separated by ``&#39;&amp;&#39;`` are
+    generated for each element of the value sequence for the key.  The order of
+    parameters in the encoded string will match the order of parameter tuples in
+    the sequence. The :mod:`urlparse` module provides the functions
+    :func:`parse_qs` and :func:`parse_qsl` which are used to parse query strings
+    into Python data structures.
+ 
+ 
+ .. function:: pathname2url(path)
+ 
+    Convert the pathname *path* from the local syntax for a path to the form used in
+    the path component of a URL.  This does not produce a complete URL.  The return
+    value will already be quoted using the :func:`quote` function.
+ 
  
  .. function:: url2pathname(path)
  
@@ -120,7 +182,25 @@
     path.  This does not accept a complete URL.  This function uses :func:`unquote`
     to decode *path*.
  
-<span class="gu">@@ -447,7 +451,7 @@</span>
+ 
+ .. function:: getproxies()
+ 
+    This helper function returns a dictionary of scheme to proxy server URL
+    mappings. It scans the environment for variables named ``&lt;scheme&gt;_proxy``
+    for all operating systems first, and when it cannot find it, looks for proxy
+    information from Mac OSX System Configuration for Mac OS X and Windows
+    Systems Registry for Windows.
+ 
+<span class="gu">@@ -438,25 +442,25 @@</span>
+ 
+ * The code handling the FTP protocol cannot differentiate between a file and a
+   directory.  This can lead to unexpected behavior when attempting to read a URL
+   that points to a file that is not accessible.  If the URL ends in a ``/``, it is
+   assumed to refer to a directory and will be handled accordingly.  But if an
+   attempt to read a file leads to a 550 error (meaning the URL cannot be found or
+   is not accessible, often for permission reasons), then the path is treated as a
+   directory in order to handle the case when a directory is specified by a URL but
+   the trailing ``/`` has been left off.  This can cause misleading results when
    you try to fetch a file whose read permissions make it inaccessible; the FTP
    code will try to read it, fail with a 550 error, and then perform a directory
    listing for the unreadable file. If fine-grained control is needed, consider
@@ -129,6 +209,15 @@
    *_urlopener* to meet your needs.
  
  * This module does not support the use of proxies which require authentication.
+   This may be implemented in the future.
+ 
+   .. index:: module: urlparse
+ 
+ * Although the :mod:`urllib` module contains (undocumented) routines to parse
+   and unparse URL strings, the recommended interface for URL manipulation is in
+   module :mod:`urlparse`.
+ 
+ 
 </pre></div>
 
 </body>

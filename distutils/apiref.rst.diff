@@ -1,4 +1,13 @@
-@@ -147,11 +147,11 @@
+@@ -138,29 +138,29 @@
+    |               | been parsed (and the data stored in the     |
+    |               | :class:`Distribution` instance.)            |
+    +---------------+---------------------------------------------+
+    | *run*         | Stop after all commands have been run (the  |
+    |               | same as  if :func:`setup` had been called   |
+    |               | in the usual way). This is the default      |
+    |               | value.                                      |
+    +---------------+---------------------------------------------+
+ 
  In addition, the :mod:`distutils.core` module exposed a number of  classes that
  live elsewhere.
  
@@ -15,7 +24,25 @@
  
  A short description of each of these follows, but see the relevant module for
  the full reference.
-@@ -847,23 +847,6 @@
+ 
+ 
+ .. class:: Extension
+ 
+    The Extension class describes a single C or C++extension module in a setup
+    script. It accepts the following keyword arguments in its constructor
+ 
+    +------------------------+--------------------------------+---------------------------+
+    | argument name          | value                          | type                      |
+@@ -838,41 +838,24 @@
+ 
+ :mod:`distutils.emxccompiler` --- OS/2 EMX Compiler
+ ===================================================
+ 
+ .. module:: distutils.emxccompiler
+    :synopsis: OS/2 EMX Compiler support
+ 
+ 
+ This module provides the EMXCCompiler class, a subclass of
  :class:`UnixCCompiler` that handles the EMX port of the GNU C compiler to OS/2.
  
  
@@ -39,7 +66,25 @@
  :mod:`distutils.archive_util` ---  Archiving utilities
  ======================================================
  
-@@ -905,7 +888,7 @@
+ .. module:: distutils.archive_util
+    :synopsis: Utility functions for creating archive files (tarballs, zip files, ...)
+ 
+ 
+ This module provides a few functions for creating archive files, such as
+ tarballs or zipfiles.
+ 
+ 
+ .. function:: make_archive(base_name, format[, root_dir=None, base_dir=None, verbose=0, dry_run=0])
+@@ -896,25 +879,25 @@
+    ``'bzip2'``, or ``None``.  Both :program:`tar` and the compression utility named
+    by *compress* must be on the  default program search path, so this is probably
+    Unix-specific.  The  output tar file will be named :file:`base_dir.tar`,
+    possibly plus the appropriate compression extension (:file:`.gz`, :file:`.bz2`
+    or :file:`.Z`).  Return the output filename.
+ 
+    .. XXX This should be replaced with calls to the :mod:`tarfile` module.
+ 
+ 
  .. function:: make_zipfile(base_name, base_dir[, verbose=0, dry_run=0])
  
     Create a zip file from all files in and under *base_dir*.  The output zip file
@@ -48,7 +93,25 @@
     module (if available) or the InfoZIP :file:`zip`  utility (if installed and
     found on the default search path).  If neither  tool is available, raises
     :exc:`DistutilsExecError`.   Returns the name of the output zip file.
-@@ -1696,8 +1679,8 @@
+ 
+ 
+ :mod:`distutils.dep_util` --- Dependency checking
+ =================================================
+ 
+ .. module:: distutils.dep_util
+    :synopsis: Utility functions for simple dependency checking
+ 
+ 
+@@ -1687,289 +1670,67 @@
+ .. % todo
+ .. % \section{Distutils Commands}
+ .. %
+ .. % This part of Distutils implements the various Distutils commands, such
+ .. % as \code{build}, \code{install} \&c. Each command is implemented as a
+ .. % separate module, with the command name as the name of the module.
+ 
+ 
+ :mod:`distutils.cmd` --- Abstract base class for Distutils commands
  ===================================================================
  
  .. module:: distutils.cmd
@@ -59,7 +122,9 @@
  
  
  This module supplies the abstract base class :class:`Command`.
-@@ -1707,260 +1690,38 @@
+ 
+ 
+ .. class:: Command(dist)
  
     Abstract base class for defining command classes, the "worker bees" of the
     Distutils.  A useful analogy for command classes is to think of them as
@@ -336,7 +401,25 @@
  .. method:: Command.initialize_options()
  
     Set default values for all the options that this command supports.  Note that
-@@ -1988,16 +1749,256 @@
+    these defaults may be overridden by other commands, by the setup script, by
+    config files, or by the command-line.  Thus, this is not the place to code
+    dependencies between options; generally, :meth:`initialize_options`
+    implementations are just a bunch of ``self.foo = None`` assignments.
+ 
+ 
+ .. method:: Command.finalize_options()
+ 
+    Set final values for all the options that this command supports. This is
+@@ -1979,25 +1740,265 @@
+    set *foo* from *bar* as long as *foo* still has the same value it was
+    assigned in :meth:`initialize_options`.
+ 
+ 
+ .. method:: Command.run()
+ 
+    A command's raison d'etre: carry out the action it exists to perform, controlled
+    by the options initialized in :meth:`initialize_options`, customized by other
+    commands, the setup script, the command-line, and config files, and finalized in
     :meth:`finalize_options`.  All terminal output and filesystem interaction should
     be done by :meth:`run`.
  

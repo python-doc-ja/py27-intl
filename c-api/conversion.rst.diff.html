@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -51,6 +51,40 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -42,62 +42,140 @@</span>
+ 
+ * When ``rv &gt;= size``, the output conversion was truncated and a buffer with
+   ``rv + 1`` bytes would have been needed to succeed. *str*[*size*-1] is ``&#39;\0&#39;``
+   in this case.
+ 
+ * When ``rv &lt; 0``, &quot;something bad happened.&quot; *str*[*size*-1] is ``&#39;\0&#39;`` in
+   this case too, but the rest of *str* is undefined. The exact cause of the error
+   depends on the underlying platform.
+ 
  The following functions provide locale-independent string to number conversions.
  
  
@@ -109,7 +118,9 @@
  .. cfunction:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
  
     Convert a string to a :ctype:`double`. This function behaves like the Standard C
-<span class="gu">@@ -60,12 +94,16 @@</span>
+    function :cfunc:`strtod` does in the C locale. It does this without changing the
+    current locale, since that would not be thread-safe.
+ 
     :cfunc:`PyOS_ascii_strtod` should typically be used for reading configuration
     files or other non-user input that should be locale independent.
  
@@ -128,7 +139,10 @@
  
     Convert a :ctype:`double` to a string using the ``&#39;.&#39;`` as the decimal
     separator. *format* is a :cfunc:`printf`\ -style format string specifying the
-<span class="gu">@@ -76,18 +114,58 @@</span>
+    number format. Allowed conversion characters are ``&#39;e&#39;``, ``&#39;E&#39;``, ``&#39;f&#39;``,
+    ``&#39;F&#39;``, ``&#39;g&#39;`` and ``&#39;G&#39;``.
+ 
+    The return value is a pointer to *buffer* with the converted string or NULL if
     the conversion failed.
  
     .. versionadded:: 2.4
@@ -189,7 +203,7 @@
  
     Case insensitive comparison of strings. The function works almost
     identically to :cfunc:`strcmp` except that it ignores the case.
-<span class="gu">@@ -95,7 +173,7 @@</span>
+ 
     .. versionadded:: 2.6
  
  
@@ -198,6 +212,8 @@
  
     Case insensitive comparison of strings. The function works almost
     identically to :cfunc:`strncmp` except that it ignores the case.
+ 
+    .. versionadded:: 2.6
 </pre></div>
 
 </body>

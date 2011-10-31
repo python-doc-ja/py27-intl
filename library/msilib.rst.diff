@@ -1,4 +1,13 @@
-@@ -353,7 +353,7 @@
+@@ -344,25 +344,25 @@
+    .. method:: commit(database)
+ 
+       Generate a CAB file, add it as a stream to the MSI file, put it into the
+       ``Media`` table, and remove the generated file from the disk.
+ 
+ 
+ .. _msi-directory:
+ 
+ Directory Objects
  -----------------
  
  
@@ -7,3 +16,12 @@
  
     Create a new directory in the Directory table. There is a current component at
     each point in time for the directory, which is either explicitly created through
+    :meth:`start_component`, or implicitly when files are added for the first time.
+    Files are added into the current component, and into the cab file.  To create a
+    directory, a base directory object needs to be specified (can be ``None``), the
+    path to the physical directory, and a logical directory name.  *default*
+    specifies the DefaultDir slot in the directory table. *componentflags* specifies
+    the default flags that new components get.
+ 
+ 
+    .. method:: start_component([component[, feature[, flags[, keyfile[, uuid]]]]])

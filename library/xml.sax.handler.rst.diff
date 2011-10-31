@@ -1,4 +1,13 @@
-@@ -52,52 +52,57 @@
+@@ -43,107 +43,116 @@
+ .. class:: ErrorHandler
+ 
+    Interface used by the parser to present error and warning messages to the
+    application.  The methods of this object control whether errors are immediately
+    converted to exceptions or are handled in some other way.
+ 
+ In addition to these classes, :mod:`xml.sax.handler` provides symbolic constants
+ for the feature and property names.
+ 
  
  .. data:: feature_namespaces
  
@@ -82,7 +91,9 @@
  
  
  .. data:: all_features
-@@ -107,34 +112,38 @@
+ 
+    List of all features.
+ 
  
  .. data:: property_lexical_handler
  
@@ -137,3 +148,12 @@
  
  
  .. data:: all_properties
+ 
+    List of all known property names.
+ 
+ 
+ .. _content-handler-objects:
+ 
+ ContentHandler Objects
+ ----------------------
+ 

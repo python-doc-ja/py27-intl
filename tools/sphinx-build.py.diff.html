@@ -68,7 +68,9 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -3,11 +3,15 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,22 +1,26 @@</span>
+ # -*- coding: utf-8 -*-
+ &quot;&quot;&quot;
      Sphinx - Python documentation toolchain
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  
@@ -84,6 +86,15 @@
 <span class="gi">+warnings.filterwarnings(&#39;ignore&#39;, category=UserWarning, module=&#39;jinja2&#39;)</span>
  
  if __name__ == &#39;__main__&#39;:
+ 
+     if sys.version_info[:3] &lt; (2, 4, 0):
+         print &gt;&gt;sys.stderr, &quot;&quot;&quot;\
+ Error: Sphinx needs to be executed with Python 2.4 or newer
+ (If you run this from the Makefile, you can set the PYTHON variable
+ to the path of an alternative interpreter executable, e.g.,
+ ``make html PYTHON=python2.5``).
+ &quot;&quot;&quot;
+         sys.exit(1)
  
 </pre></div>
 

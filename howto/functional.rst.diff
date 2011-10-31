@@ -1,4 +1,8 @@
-@@ -5,9 +5,6 @@
+@@ -1,22 +1,19 @@
+ ********************************
+   Functional Programming HOWTO
+ ********************************
+ 
  :Author: A. M. Kuchling
  :Release: 0.31
  
@@ -8,3 +12,12 @@
  In this document, we'll take a tour of Python's features suitable for
  implementing programs in a functional style.  After an introduction to the
  concepts of functional programming, we'll look at language features such as
+ :term:`iterator`\s and :term:`generator`\s and relevant library modules such as
+ :mod:`itertools` and :mod:`functools`.
+ 
+ 
+ Introduction
+ ============
+ 
+ This section explains the basic concept of functional programming; if you're
+ just interested in learning about Python language features, skip to the next

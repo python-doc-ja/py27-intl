@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -296,7 +296,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -287,25 +287,25 @@</span>
+          def f(self, x):
+               return x
+ 
+     &gt;&gt;&gt; d = D()
+     &gt;&gt;&gt; D.__dict__[&#39;f&#39;] # Stored internally as a function
+     &lt;function f at 0x00C45070&gt;
+     &gt;&gt;&gt; D.f             # Get from a class becomes an unbound method
+     &lt;unbound method D.f&gt;
+     &gt;&gt;&gt; d.f             # Get from an instance becomes a bound method
      &lt;bound method D.f of &lt;__main__.D object at 0x00B18C90&gt;&gt;
  
  The output suggests that bound and unbound methods are two different types.
@@ -77,6 +86,15 @@
  :ctype:`PyMethod_Type` in
  `Objects/classobject.c &lt;http://svn.python.org/view/python/trunk/Objects/classobject.c?view=markup&gt;`_
  is a single object with two different representations depending on whether the
+ :attr:`im_self` field is set or is *NULL* (the C equivalent of *None*).
+ 
+ Likewise, the effects of calling a method object depend on the :attr:`im_self`
+ field. If set (meaning bound), the original function (stored in the
+ :attr:`im_func` field) is called as expected with the first argument set to the
+ instance.  If unbound, all of the arguments are passed unchanged to the original
+ function. The actual C implementation of :func:`instancemethod_call()` is only
+ slightly more complex in that it includes some type checking.
+ 
 </pre></div>
 
 </body>

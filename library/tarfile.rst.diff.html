@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -234,6 +234,14 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -225,24 +225,32 @@</span>
+ 
+ .. _tarfile-objects:
+ 
+ TarFile Objects
+ ---------------
+ 
+ The :class:`TarFile` object provides an interface to a tar archive. A tar
+ archive is a sequence of blocks. An archive member (a stored file) is made up of
+ a header block followed by data blocks. It is possible to store a file in a tar
  archive several times. Each archive member is represented by a :class:`TarInfo`
  object, see :ref:`tarinfo-objects` for details.
  
@@ -83,7 +92,25 @@
  
  .. class:: TarFile(name=None, mode=&#39;r&#39;, fileobj=None, format=DEFAULT_FORMAT, tarinfo=TarInfo, dereference=False, ignore_zeros=False, encoding=ENCODING, errors=None, pax_headers=None, debug=0, errorlevel=0)
  
-<span class="gu">@@ -389,7 +397,7 @@</span>
+    All following arguments are optional and can be accessed as instance attributes
+    as well.
+ 
+    *name* is the pathname of the archive. It can be omitted if *fileobj* is given.
+    In this case, the file object&#39;s :attr:`name` attribute is used if it exists.
+ 
+    *mode* is either ``&#39;r&#39;`` to read from an existing archive, ``&#39;a&#39;`` to append
+    data to an existing file or ``&#39;w&#39;`` to create a new file overwriting an existing
+    one.
+<span class="gu">@@ -380,37 +388,50 @@</span>
+    Extract a member from the archive as a file object. *member* may be a filename
+    or a :class:`TarInfo` object. If *member* is a regular file, a file-like object
+    is returned. If *member* is a link, a file-like object is constructed from the
+    link&#39;s target. If *member* is none of the above, :const:`None` is returned.
+ 
+    .. note::
+ 
+       The file-like object is read-only.  It provides the methods
+       :meth:`read`, :meth:`readline`, :meth:`readlines`, :meth:`seek`, :meth:`tell`,
        and :meth:`close`, and also supports iteration over its lines.
  
  
@@ -92,7 +119,7 @@
  
     Add the file *name* to the archive. *name* may be any type of file (directory,
     fifo, symbolic link, etc.). If given, *arcname* specifies an alternative name
-<span class="gu">@@ -397,11 +405,24 @@</span>
+    for the file in the archive. Directories are added recursively by default. This
     can be avoided by setting *recursive* to :const:`False`. If *exclude* is given
     it must be a function that takes one filename argument and returns a boolean
     value. Depending on this value the respective file is either excluded
@@ -118,7 +145,25 @@
  
  .. method:: TarFile.addfile(tarinfo, fileobj=None)
  
-<span class="gu">@@ -639,6 +660,13 @@</span>
+    Add the :class:`TarInfo` object *tarinfo* to the archive. If *fileobj* is given,
+    ``tarinfo.size`` bytes are read from it and added to the archive.  You can
+    create :class:`TarInfo` objects using :meth:`gettarinfo`.
+ 
+    .. note::
+ 
+       On Windows platforms, *fileobj* should always be opened with mode ``&#39;rb&#39;`` to
+       avoid irritation about the file size.
+ 
+<span class="gu">@@ -630,38 +651,57 @@</span>
+    tar = tarfile.open(&quot;sample.tar.gz&quot;)
+    tar.extractall(members=py_files(tar))
+    tar.close()
+ 
+ How to create an uncompressed tar archive from a list of filenames::
+ 
+    import tarfile
+    tar = tarfile.open(&quot;sample.tar&quot;, &quot;w&quot;)
+    for name in [&quot;foo&quot;, &quot;bar&quot;, &quot;quux&quot;]:
         tar.add(name)
     tar.close()
  
@@ -132,7 +177,14 @@
  How to read a gzip compressed tar archive and display some member information::
  
     import tarfile
-<span class="gu">@@ -653,6 +681,18 @@</span>
+    tar = tarfile.open(&quot;sample.tar.gz&quot;, &quot;r:gz&quot;)
+    for tarinfo in tar:
+        print tarinfo.name, &quot;is&quot;, tarinfo.size, &quot;bytes in size and is&quot;,
+        if tarinfo.isreg():
+            print &quot;a regular file.&quot;
+        elif tarinfo.isdir():
+            print &quot;a directory.&quot;
+        else:
             print &quot;something else.&quot;
     tar.close()
  
@@ -151,6 +203,15 @@
  
  .. _tar-formats:
  
+ Supported tar formats
+ ---------------------
+ 
+ There are three tar formats that can be created with the :mod:`tarfile` module:
+ 
+ * The POSIX.1-1988 ustar format (:const:`USTAR_FORMAT`). It supports filenames
+   up to a length of at best 256 characters and linknames up to 100 characters. The
+   maximum file size is 8 gigabytes. This is an old and limited but widely
+   supported format.
 </pre></div>
 
 </body>

@@ -1,4 +1,13 @@
-@@ -11,6 +11,11 @@
+@@ -2,24 +2,29 @@
+ ========================================================================
+ 
+ .. module:: contextlib
+    :synopsis: Utilities for with-statement contexts.
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ This module provides utilities for common tasks involving the :keyword:`with`
  statement. For more information see also :ref:`typecontextmanager` and
  :ref:`context-managers`.
  
@@ -10,7 +19,25 @@
  Functions provided:
  
  
-@@ -58,21 +63,18 @@
+ .. function:: contextmanager(func)
+ 
+    This function is a :term:`decorator` that can be used to define a factory
+    function for :keyword:`with` statement context managers, without needing to
+    create a class or separate :meth:`__enter__` and :meth:`__exit__` methods.
+ 
+    A simple example (this is not recommended as a real way of generating HTML!)::
+ 
+       from contextlib import contextmanager
+@@ -49,48 +54,67 @@
+    the error (if any), or ensure that some cleanup takes place. If an exception is
+    trapped merely in order to log it or to perform some action (rather than to
+    suppress it entirely), the generator must reraise that exception. Otherwise the
+    generator context manager will indicate to the :keyword:`with` statement that
+    the exception has been handled, and execution will resume with the statement
+    immediately following the :keyword:`with` statement.
+ 
+ 
+ .. function:: nested(mgr1[, mgr2[, ...]])
  
     Combine multiple context managers into a single nested context manager.
  
@@ -39,7 +66,9 @@
     Note that if the :meth:`__exit__` method of one of the nested context managers
     indicates an exception should be suppressed, no exception information will be
     passed to any remaining outer context managers. Similarly, if the
-@@ -82,6 +84,28 @@
+    :meth:`__exit__` method of one of the nested managers raises an exception, any
+    previous exception state will be lost; the new exception will be passed to the
+    :meth:`__exit__` methods of any remaining outer context managers. In general,
     :meth:`__exit__` methods should avoid raising exceptions, and in particular they
     should not re-raise a passed-in exception.
  
@@ -68,3 +97,12 @@
  
  .. function:: closing(thing)
  
+    Return a context manager that closes *thing* upon completion of the block.  This
+    is basically equivalent to::
+ 
+       from contextlib import contextmanager
+ 
+       @contextmanager
+       def closing(thing):
+           try:
+               yield thing

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -97,17 +97,17 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -88,109 +88,109 @@</span>
+                                 )
+ 
+    if __name__ == &#39;__main__&#39;:
+        test_main()
+ 
+ This boilerplate code allows the testing suite to be run by :mod:`test.regrtest`
+ as well as on its own as a script.
+ 
+ The goal for regression testing is to try to break code. This leads to a few
  guidelines to be followed:
  
  * The testing suite should exercise all classes, functions, and constants. This
@@ -92,7 +101,19 @@
  
  * Exhaust as many code paths as possible. Test where branching occurs and thus
    tailor input to make sure as many different paths through the code are taken.
-<span class="gu">@@ -127,8 +127,8 @@</span>
+ 
+ * Add an explicit test for any bugs discovered for the tested code. This will
+   make sure that the error does not crop up again if the code is changed in the
+   future.
+ 
+ * Make sure to clean up after your tests (such as close and remove all temporary
+   files).
+ 
+ * If a test is dependent on a specific condition of the operating system then
+   verify the condition already exists before attempting the test.
+ 
+ * Import as few modules as possible and do it as soon as possible. This
+   minimizes external dependencies of tests and also minimizes possible anomalous
    behavior from side-effects of importing a module.
  
  * Try to maximize code reuse. On occasion, tests will vary by something as small
@@ -103,7 +124,9 @@
  
       class TestFuncAcceptsSequences(unittest.TestCase):
  
-<span class="gu">@@ -138,13 +138,13 @@</span>
+          func = mySuperWhammyFunction
+ 
+          def test_func(self):
               self.func(self.arg)
  
       class AcceptLists(TestFuncAcceptsSequences):
@@ -119,7 +142,10 @@
  
  
  .. seealso::
-<span class="gu">@@ -155,33 +155,33 @@</span>
+ 
+    Test Driven Development
+       A book by Kent Beck on writing tests before code.
+ 
  
  .. _regrtest:
  
@@ -169,7 +195,25 @@
  :program:`rt.bat` from your :file:`PCBuild` directory will run all regression
  tests.
  
-<span class="gu">@@ -210,17 +210,11 @@</span>
+ 
+ :mod:`test.test_support` --- Utility functions for tests
+ ========================================================
+ 
+ .. module:: test.test_support
+    :synopsis: Support for Python regression tests.
+ 
+ .. note::
+ 
+<span class="gu">@@ -201,179 +201,276 @@</span>
+ tests.
+ 
+ This module defines the following exceptions:
+ 
+ 
+ .. exception:: TestFailed
+ 
+    Exception to be raised when a test fails. This is deprecated in favor of
+    :mod:`unittest`\ -based tests and :class:`unittest.TestCase`&#39;s assertion
     methods.
  
  
@@ -190,7 +234,23 @@
  
  The :mod:`test.test_support` module defines the following constants:
  
-<span class="gu">@@ -244,44 +238,45 @@</span>
+ 
+ .. data:: verbose
+ 
+    :const:`True` when verbose output is enabled. Should be checked when more
+    detailed information is desired about a running test. *verbose* is set by
+    :mod:`test.regrtest`.
+ 
+ 
+ .. data:: have_unicode
+ 
+    :const:`True` when Unicode support is available.
+ 
+ 
+ .. data:: is_jython
+ 
+    :const:`True` if the running interpreter is Jython.
+ 
  
  .. data:: TESTFN
  
@@ -248,7 +308,12 @@
  
     It is also legal to pass strings as parameters; these should be keys in
     ``sys.modules``. Each associated module will be scanned by
-<span class="gu">@@ -294,37 +289,85 @@</span>
+    ``unittest.TestLoader.loadTestsFromModule()``. This is usually seen in the
+    following :func:`test_main` function::
+ 
+       def test_main():
+           test_support.run_unittest(__name__)
+ 
     This will run all tests defined in the named module.
  
  
@@ -354,7 +419,17 @@
  
  
  .. function:: captured_stdout()
-<span class="gu">@@ -342,6 +385,54 @@</span>
+ 
+    This is a context manager that runs the :keyword:`with` statement body using
+    a :class:`StringIO.StringIO` object as sys.stdout.  That object can be
+    retrieved using the ``as`` clause of the :keyword:`with` statement.
+ 
+    Example use::
+ 
+       with captured_stdout() as s:
+           print &quot;hello&quot;
+       assert s.getvalue() == &quot;hello&quot;
+ 
     .. versionadded:: 2.6
  
  
@@ -409,7 +484,13 @@
  The :mod:`test.test_support` module defines the following classes:
  
  .. class:: TransientResource(exc[, **kwargs])
-<span class="gu">@@ -355,25 +446,31 @@</span>
+ 
+    Instances are a context manager that raises :exc:`ResourceDenied` if the
+    specified exception type is raised.  Any keyword arguments are treated as
+    attribute/value pairs to be compared against any exception raised within the
+    :keyword:`with` statement.  Only if all pairs match properly against
+    attributes on the exception is :exc:`ResourceDenied` raised.
+ 
     .. versionadded:: 2.6
  .. class:: EnvironmentVarGuard()
  

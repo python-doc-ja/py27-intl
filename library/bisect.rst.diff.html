@@ -68,7 +68,7 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -1,10 +1,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,106 +1,152 @@</span>
 <span class="gd">-</span>
  :mod:`bisect` --- Array bisection algorithm
  ===========================================
@@ -80,7 +80,9 @@
  .. example based on the PyModules FAQ entry by Aaron Watters &lt;arw@pythonpros.com&gt;
  
  This module provides support for maintaining a list in sorted order without
-<span class="gu">@@ -14,80 +14,125 @@</span>
+ having to sort the list after each insertion.  For long lists of items with
+ expensive comparison operations, this can be an improvement over the more common
+ approach.  The module is called :mod:`bisect` because it uses a basic bisection
  algorithm to do its work.  The source code may be most useful as a working
  example of the algorithm (the boundary conditions are already right!).
  
@@ -248,7 +250,16 @@
  all of the previous key lookups).
  
  Instead, it is better to search a list of precomputed keys to find the index
-<span class="gu">@@ -104,3 +149,4 @@</span>
+ of the record in question::
+ 
+     &gt;&gt;&gt; data = [(&#39;red&#39;, 5), (&#39;blue&#39;, 1), (&#39;yellow&#39;, 8), (&#39;black&#39;, 0)]
+     &gt;&gt;&gt; data.sort(key=lambda r: r[1])
+     &gt;&gt;&gt; keys = [r[1] for r in data]         # precomputed list of keys
+     &gt;&gt;&gt; data[bisect_left(keys, 0)]
+     (&#39;black&#39;, 0)
+     &gt;&gt;&gt; data[bisect_left(keys, 1)]
+     (&#39;blue&#39;, 1)
+     &gt;&gt;&gt; data[bisect_left(keys, 5)]
      (&#39;red&#39;, 5)
      &gt;&gt;&gt; data[bisect_left(keys, 8)]
      (&#39;yellow&#39;, 8)

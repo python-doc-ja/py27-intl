@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -20,3 +20,8 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -11,12 +11,17 @@</span>
+ 
+ .. function:: iskeyword(s)
+ 
+    Return true if *s* is a Python keyword.
+ 
+ 
+ .. data:: kwlist
+ 
+    Sequence containing all the keywords defined for the interpreter.  If any
     keywords are defined to only be active when particular :mod:`__future__`
     statements are in effect, these will be included as well.
  

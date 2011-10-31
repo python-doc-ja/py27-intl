@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -32,8 +32,8 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -23,26 +23,26 @@</span>
+ string ``%s``, then it is  interpreted as a literal browser command line to be
+ used with the argument URL substituted for ``%s``; if the part does not contain
+ ``%s``, it is simply interpreted as the name of the browser to launch. [1]_
+ 
+ For non-Unix platforms, or when a remote browser is available on Unix, the
+ controlling process will not wait for the user to finish with the browser, but
+ allow the remote browser to maintain its own windows on the display.  If remote
+ browsers are not available on Unix, the controlling process will launch a new
+ browser and wait.
  
  The script :program:`webbrowser` can be used as a command-line interface for the
  module. It accepts an URL as the argument. It accepts the following optional
@@ -79,7 +88,25 @@
  naturally, mutually exclusive.
  
  The following exception is defined:
-<span class="gu">@@ -68,7 +68,6 @@</span>
+ 
+ 
+ .. exception:: Error
+ 
+    Exception raised when a browser control error occurs.
+ 
+ The following functions are defined:
+ 
+ 
+<span class="gu">@@ -59,25 +59,24 @@</span>
+    may work and start the operating system&#39;s associated program.  However, this
+    is neither supported nor portable.
+ 
+    .. versionchanged:: 2.5
+       *new* can now be 2.
+ 
+ 
+ .. function:: open_new(url)
+ 
     Open *url* in a new window of the default browser, if possible, otherwise, open
     *url* in the only browser window.
  
@@ -87,6 +114,15 @@
  .. function:: open_new_tab(url)
  
     Open *url* in a new page (&quot;tab&quot;) of the default browser, if possible, otherwise
+    equivalent to :func:`open_new`.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. function:: get([name])
+ 
+    Return a controller object for the browser type *name*.  If *name* is empty,
+    return a controller for a default browser appropriate to the caller&#39;s
 </pre></div>
 
 </body>

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -16,12 +16,12 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -7,30 +7,30 @@</span>
+ .. moduleauthor:: Marc-Andre Lemburg &lt;mal@lemburg.com&gt;
+ .. sectionauthor:: Marc-Andre Lemburg &lt;mal@lemburg.com&gt;
+ .. sectionauthor:: Martin v. Löwis &lt;martin@v.loewis.de&gt;
+ 
+ 
+ .. index::
+    single: Unicode
+    single: character
+    pair: Unicode; database
  
  This module provides access to the Unicode Character Database which defines
  character properties for all Unicode characters. The data in this database is
@@ -84,6 +93,15 @@
  
  
  .. function:: lookup(name)
+ 
+    Look up character by name.  If a character with the given name is found, return
+    the corresponding Unicode character.  If not found, :exc:`KeyError` is raised.
+ 
+ 
+ .. function:: name(unichr[, default])
+ 
+    Returns the name assigned to the Unicode character *unichr* as a string. If no
+    name is defined, *default* is returned, or, if not given, :exc:`ValueError` is
 </pre></div>
 
 </body>

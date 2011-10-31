@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -257,6 +257,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -248,24 +248,28 @@</span>
+ 
+ table.docutils {
+     border: 0 solid #dce;
+     border-collapse: collapse;
+ }
+ 
+ table.docutils td, table.docutils th {
+     padding: 2px 5px 2px 5px;
+     border-left: 0;    
      background-color: #eef;    
  }
  
@@ -79,7 +88,25 @@
  table.field-list td, table.field-list th {
      border: 0 !important;
  }
-<span class="gu">@@ -342,7 +346,7 @@</span>
+ 
+ table.footnote td, table.footnote th {
+     border: 0 !important;
+ }
+ 
+ table.docutils th {
+     border-top: 1px solid #cac;    
+     background-color: #ede;
+ }
+<span class="gu">@@ -333,46 +337,47 @@</span>
+     background-color: #ffe4e4;
+     border: 1px solid #f66;
+     padding: 7px
+ }
+ 
+ .system-message {
+     background-color: #fda;
+     padding: 5px;
+     border: 3px solid red;
  }
  
  .footnote:target  {
@@ -88,7 +115,21 @@
  }
  
  .impl-detail {
-<span class="gu">@@ -364,6 +368,7 @@</span>
+     margin-top: 10px;
+     margin-bottom: 10px;
+     padding: 7px;
+     border: 1px solid #ccc;
+ }
+ 
+ .impl-detail .compound-first {
+     margin-top: 0;
+ }
+ 
+ .impl-detail .compound-last {
+     margin-bottom: 0;
+ }
+ 
+ /* -- code displays --------------------------------------------------------- */
  
  pre {
      overflow: auto;
@@ -96,6 +137,15 @@
  }
  
  td.linenos pre {
+     padding: 5px 0px;
+     border: 0;
+     background-color: transparent;
+     color: #aaa;
+ }
+ 
+ table.highlighttable {
+     margin-left: 0.5em;
+ }
 </pre></div>
 
 </body>

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -108,7 +108,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -99,25 +99,25 @@</span>
+ 
+       The default implementation decides how to dispatch a frame, depending on
+       the type of event (passed as a string) that is about to be executed.
+       *event* can be one of the following:
+ 
+       * ``&quot;line&quot;``: A new line of code is going to be executed.
+       * ``&quot;call&quot;``: A function is about to be called, or another code block
+         entered.
+       * ``&quot;return&quot;``: A function or other code block is about to return.
        * ``&quot;exception&quot;``: An exception has occurred.
        * ``&quot;c_call&quot;``: A C function is about to be called.
        * ``&quot;c_return&quot;``: A C function has returned.
@@ -77,7 +86,25 @@
  
        For the Python events, specialized functions (see below) are called.  For
        the C events, no action is taken.
-<span class="gu">@@ -342,12 +342,10 @@</span>
+ 
+       The *arg* parameter depends on the previous event.
+ 
+       See the documentation for :func:`sys.settrace` for more information on the
+       trace function.  For more information on code and frame objects, refer to
+       :ref:`types`.
+ 
+    .. method:: dispatch_line(frame)
+ 
+<span class="gu">@@ -333,21 +333,19 @@</span>
+ 
+    Check whether we should break here, depending on the way the breakpoint *b*
+    was set.
+ 
+    If it was set via line number, it checks if ``b.line`` is the same as the one
+    in the frame also passed as argument.  If the breakpoint was set via function
+    name, we have to check we are in the right frame (the right function) and if
+    we are in its first executable line.
+ 
  .. function:: effective(file, line, frame)
  
     Determine if there is an effective (active) breakpoint at this line of code.

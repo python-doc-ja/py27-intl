@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -426,6 +426,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -417,24 +417,25 @@</span>
+ String literals
+ ---------------
+ 
+ .. index:: single: string literal
+ 
+ String literals are described by the following lexical definitions:
+ 
+ .. index:: single: ASCII@ASCII
+ 
  .. productionlist::
     stringliteral: [`stringprefix`](`shortstring` | `longstring`)
     stringprefix: &quot;r&quot; | &quot;u&quot; | &quot;ur&quot; | &quot;R&quot; | &quot;U&quot; | &quot;UR&quot; | &quot;Ur&quot; | &quot;uR&quot;
@@ -76,7 +85,25 @@
     shortstring: &quot;&#39;&quot; `shortstringitem`* &quot;&#39;&quot; | &#39;&quot;&#39; `shortstringitem`* &#39;&quot;&#39;
     longstring: &quot;&#39;&#39;&#39;&quot; `longstringitem`* &quot;&#39;&#39;&#39;&quot;
               : | &#39;&quot;&quot;&quot;&#39; `longstringitem`* &#39;&quot;&quot;&quot;&#39;
-<span class="gu">@@ -458,8 +459,10 @@</span>
+    shortstringitem: `shortstringchar` | `escapeseq`
+    longstringitem: `longstringchar` | `escapeseq`
+    shortstringchar: &lt;any source character except &quot;\&quot; or newline or the quote&gt;
+    longstringchar: &lt;any source character except &quot;\&quot;&gt;
+    escapeseq: &quot;\&quot; &lt;any ASCII character&gt;
+ 
+ One syntactic restriction not indicated by these productions is that whitespace
+ is not allowed between the :token:`stringprefix` and the rest of the string
+ literal. The source character set is defined by the encoding declaration; it is
+<span class="gu">@@ -449,26 +450,28 @@</span>
+ 
+ In plain English: String literals can be enclosed in matching single quotes
+ (``&#39;``) or double quotes (``&quot;``).  They can also be enclosed in matching groups
+ of three single or double quotes (these are generally referred to as
+ *triple-quoted strings*).  The backslash (``\``) character is used to escape
+ characters that otherwise have a special meaning, such as newline, backslash
+ itself, or the quote character.  String literals may optionally be prefixed with
+ a letter ``&#39;r&#39;`` or ``&#39;R&#39;``; such strings are called :dfn:`raw strings` and use
+ different rules for interpreting backslash escape sequences.  A prefix of
  ``&#39;u&#39;`` or ``&#39;U&#39;`` makes the string a Unicode string.  Unicode strings use the
  Unicode character set as defined by the Unicode Consortium and ISO 10646.  Some
  additional escape sequences, described below, are available in Unicode strings.
@@ -89,6 +116,15 @@
  
  In triple-quoted strings, unescaped newlines and quotes are allowed (and are
  retained), except that three unescaped quotes in a row terminate the string.  (A
+ &quot;quote&quot; is the character used to open the string, i.e. either ``&#39;`` or ``&quot;``.)
+ 
+ .. index::
+    single: physical line
+    single: escape sequence
+    single: Standard C
+    single: C
+ 
+ Unless an ``&#39;r&#39;`` or ``&#39;R&#39;`` prefix is present, escape sequences in strings are
 </pre></div>
 
 </body>

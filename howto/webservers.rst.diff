@@ -1,4 +1,13 @@
-@@ -530,7 +530,7 @@
+@@ -521,25 +521,25 @@
+ Some `frameworks`_ ship their own template engine or recommend one in
+ particular.  In the absence of a reason to use a different template engine,
+ using the one provided by or recommended by the framework is a good idea.
+ 
+ Popular template engines include:
+ 
+    * `Mako <http://www.makotemplates.org/>`_
+    * `Genshi <http://genshi.edgewall.org/>`_
+    * `Jinja <http://jinja.pocoo.org/2/>`_
  
  .. seealso::
  
@@ -7,3 +16,12 @@
     pretty easy to create them in Python.  The page `Templating
     <http://wiki.python.org/moin/Templating>`_ in the wiki lists a big,
     ever-growing number of these.  The three listed above are considered "second
+    generation" template engines and are a good place to start.
+ 
+ 
+ Data persistence
+ ----------------
+ 
+ *Data persistence*, while sounding very complicated, is just about storing data.
+ This data might be the text of blog entries, the postings on a bulletin board or
+ the text of a wiki page.  There are, of course, a number of different ways to store

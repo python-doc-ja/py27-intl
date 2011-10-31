@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -15,6 +15,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -6,24 +6,29 @@</span>
+    :synopsis: Alternate repr() implementation with size limits.
+ .. sectionauthor:: Fred L. Drake, Jr. &lt;fdrake@acm.org&gt;
+ 
+ .. note::
+    The :mod:`repr` module has been renamed to :mod:`reprlib` in Python 3.0.  The
+    :term:`2to3` tool will automatically adapt imports when converting your
+    sources to 3.0.
+ 
+ The :mod:`repr` module provides a means for producing object representations
  with limits on the size of the resulting strings. This is used in the Python
  debugger and may be useful in other contexts as well.
  
@@ -79,6 +88,15 @@
 <span class="gi">+</span>
  This module provides a class, an instance, and a function:
  
+ 
+ .. class:: Repr()
+ 
+    Class which provides formatting services useful in implementing functions
+    similar to the built-in :func:`repr`; size limits for  different object types
+    are added to avoid the generation of representations which are excessively long.
+ 
+ 
+ .. data:: aRepr
  
 </pre></div>
 

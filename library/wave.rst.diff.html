@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -14,8 +14,8 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -5,64 +5,69 @@</span>
+    :synopsis: Provide an interface to the WAV sound format.
+ .. sectionauthor:: Moshe Zadka &lt;moshez@zadka.site.co.il&gt;
+ .. Documentations stolen from comments in file.
+ 
+ The :mod:`wave` module provides a convenient interface to the WAV sound format.
+ It does not support compression/decompression, but it does support mono/stereo.
+ 
+ The :mod:`wave` module defines the following function and exception:
+ 
  
  .. function:: open(file[, mode])
  
@@ -79,7 +88,10 @@
  
     ``&#39;r&#39;``, ``&#39;rb&#39;``
        Read only mode.
-<span class="gu">@@ -26,9 +26,14 @@</span>
+ 
+    ``&#39;w&#39;``, ``&#39;wb&#39;``
+       Write only mode.
+ 
     Note that it does not allow read/write WAV files.
  
     A *mode* of ``&#39;r&#39;`` or ``&#39;rb&#39;`` returns a :class:`Wave_read` object, while a
@@ -97,7 +109,23 @@
  
  
  .. function:: openfp(file, mode)
-<span class="gu">@@ -52,8 +57,8 @@</span>
+ 
+    A synonym for :func:`.open`, maintained for backwards compatibility.
+ 
+ 
+ .. exception:: Error
+ 
+    An error raised when something is impossible because it violates the WAV
+    specification or hits an implementation deficiency.
+ 
+ 
+ .. _wave-read-objects:
+ 
+ Wave_read Objects
+ -----------------
+ 
+ Wave_read objects, as returned by :func:`.open`, have the following methods:
+ 
  
  .. method:: Wave_read.close()
  
@@ -108,7 +136,25 @@
  
  
  .. method:: Wave_read.getnchannels()
-<span class="gu">@@ -139,8 +144,8 @@</span>
+ 
+    Returns number of audio channels (``1`` for mono, ``2`` for stereo).
+ 
+ 
+ .. method:: Wave_read.getsampwidth()
+ 
+    Returns sample width in bytes.
+ 
+ 
+<span class="gu">@@ -130,26 +135,26 @@</span>
+ 
+ 
+ .. _wave-write-objects:
+ 
+ Wave_write Objects
+ ------------------
+ 
+ Wave_write objects, as returned by :func:`.open`, have the following methods:
+ 
  
  .. method:: Wave_write.close()
  
@@ -119,7 +165,25 @@
  
  
  .. method:: Wave_write.setnchannels(n)
-<span class="gu">@@ -192,6 +197,7 @@</span>
+ 
+    Set the number of channels.
+ 
+ 
+ .. method:: Wave_write.setsampwidth(n)
+ 
+    Set the sample width to *n* bytes.
+ 
+ 
+<span class="gu">@@ -183,16 +188,17 @@</span>
+    :meth:`Wave_read.tell` and :meth:`Wave_read.setpos` methods.
+ 
+ 
+ .. method:: Wave_write.writeframesraw(data)
+ 
+    Write audio frames, without correcting *nframes*.
+ 
+ 
+ .. method:: Wave_write.writeframes(data)
  
     Write audio frames and make sure *nframes* is correct.
  
@@ -127,6 +191,7 @@
  Note that it is invalid to set any parameters after calling :meth:`writeframes`
  or :meth:`writeframesraw`, and any attempt to do so will raise
  :exc:`wave.Error`.
+ 
 </pre></div>
 
 </body>

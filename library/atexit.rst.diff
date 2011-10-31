@@ -1,4 +1,13 @@
-@@ -14,9 +14,14 @@
+@@ -5,27 +5,32 @@
+ .. module:: atexit
+    :synopsis: Register and execute cleanup functions.
+ .. moduleauthor:: Skip Montanaro <skip@pobox.com>
+ .. sectionauthor:: Skip Montanaro <skip@pobox.com>
+ 
+ 
+ .. versionadded:: 2.0
+ 
+ The :mod:`atexit` module defines a single function to register cleanup
  functions.  Functions thus registered are automatically executed upon normal
  interpreter termination.
  
@@ -15,3 +24,12 @@
  
  .. index:: single: exitfunc (in sys)
  
+ This is an alternate interface to the functionality provided by the
+ ``sys.exitfunc`` variable.
+ 
+ Note: This module is unlikely to work correctly when used with other code that
+ sets ``sys.exitfunc``.  In particular, other core Python modules are free to use
+ :mod:`atexit` without the programmer's knowledge.  Authors who use
+ ``sys.exitfunc`` should convert their code to use :mod:`atexit` instead.  The
+ simplest way to convert code that sets ``sys.exitfunc`` is to import
+ :mod:`atexit` and register the function that had been bound to ``sys.exitfunc``.

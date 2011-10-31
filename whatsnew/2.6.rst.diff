@@ -1,4 +1,13 @@
-@@ -2992,33 +2992,6 @@
+@@ -2983,51 +2983,24 @@
+ * Python 2.6 can be built with Microsoft Visual Studio 2008 (version
+   9.0), and this is the new default compiler.  See the
+   :file:`PCbuild` directory for the build files.  (Implemented by
+   Christian Heimes.)
+ 
+ * On Mac OS X, Python 2.6 can be compiled as a 4-way universal build.
+   The :program:`configure` script
+   can take a :option:`--with-universal-archs=[32-bit|64-bit|all]`
+   switch, controlling whether the binaries are built for 32-bit
    architectures (x86, PowerPC), 64-bit (x86-64 and PPC-64), or both.
    (Contributed by Ronald Oussoren.)
  
@@ -32,7 +41,25 @@
  * The BerkeleyDB module now has a C API object, available as
    ``bsddb.db.api``.   This object can be used by other C extensions
    that wish to use the :mod:`bsddb` module for their own purposes.
-@@ -3321,15 +3294,6 @@
+   (Contributed by Duncan Grisby.)
+ 
+ * The new buffer interface, previously described in
+   `the PEP 3118 section <#pep-3118-revised-buffer-protocol>`__,
+   adds :cfunc:`PyObject_GetBuffer` and :cfunc:`PyBuffer_Release`,
+   as well as a few other functions.
+ 
+ * Python's use of the C stdio library is now thread-safe, or at least
+   as thread-safe as the underlying library is.  A long-standing potential
+@@ -3312,33 +3285,24 @@
+   when accessed using slicing or index access; having
+   :class:`Exception` behave like a tuple is being phased out.
+ 
+ * (3.0-warning mode) inequality comparisons between two dictionaries
+   or two objects that don't implement comparison methods are reported
+   as warnings.  ``dict1 == dict2`` still works, but ``dict1 < dict2``
+   is being phased out.
+ 
+   Comparisons between cells, which are an implementation detail of Python's
    scoping rules, also cause warnings because such comparisons are forbidden
    entirely in 3.0.
  
@@ -48,3 +75,12 @@
  .. ======================================================================
  
  
+ .. _26acks:
+ 
+ Acknowledgements
+ ================
+ 
+ The author would like to thank the following people for offering
+ suggestions, corrections and assistance with various drafts of this
+ article: Georg Brandl, Steve Brown, Nick Coghlan, Ralph Corderoy,
+ Jim Jewett, Kent Johnson, Chris Lambacher,  Martin Michlmayr,

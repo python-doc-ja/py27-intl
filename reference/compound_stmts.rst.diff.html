@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -333,11 +333,15 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -324,64 +324,83 @@</span>
+ =============================
+ 
+ .. index:: statement: with
+ 
+ .. versionadded:: 2.5
+ 
+ The :keyword:`with` statement is used to wrap the execution of a block with
+ methods defined by a context manager (see section :ref:`context-managers`). This
+ allows common :keyword:`try`...\ :keyword:`except`...\ :keyword:`finally` usage
  patterns to be encapsulated for convenient reuse.
  
  .. productionlist::
@@ -87,7 +96,11 @@
  
  #. The context manager&#39;s :meth:`__enter__` method is invoked.
  
-<span class="gu">@@ -349,7 +353,7 @@</span>
+ #. If a target was included in the :keyword:`with` statement, the return value
+    from :meth:`__enter__` is assigned to it.
+ 
+    .. note::
+ 
        The :keyword:`with` statement guarantees that if the :meth:`__enter__` method
        returns without an error, then :meth:`__exit__` will always be called. Thus, if
        an error occurs during the assignment to the target list, it will be treated the
@@ -96,7 +109,17 @@
  
  #. The suite is executed.
  
-<span class="gu">@@ -367,12 +371,27 @@</span>
+ #. The context manager&#39;s :meth:`__exit__` method is invoked. If an exception
+    caused the suite to be exited, its type, value, and traceback are passed as
+    arguments to :meth:`__exit__`. Otherwise, three :const:`None` arguments are
+    supplied.
+ 
+    If the suite was exited due to an exception, and the return value from the
+    :meth:`__exit__` method was false, the exception is reraised. If the return
+    value was true, the exception is suppressed, and execution continues with the
+    statement following the :keyword:`with` statement.
+ 
+    If the suite was exited for any reason other than an exception, the return value
     from :meth:`__exit__` is ignored, and execution proceeds at the normal location
     for the kind of exit that was taken.
  
@@ -124,6 +147,15 @@
  .. seealso::
  
     :pep:`0343` - The &quot;with&quot; statement
+       The specification, background, and examples for the Python :keyword:`with`
+       statement.
+ 
+ 
+ .. _function:
+ .. _def:
+ 
+ Function definitions
+ ====================
 </pre></div>
 
 </body>

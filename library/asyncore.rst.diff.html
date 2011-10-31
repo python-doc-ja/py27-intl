@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -211,10 +211,13 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -202,78 +202,127 @@</span>
+    .. method:: bind(address)
+ 
+       Bind the socket to *address*.  The socket must not already be bound.  (The
+       format of *address* depends on the address family --- refer to the
+       :mod:`socket` documentation for more information.)  To mark
+       the socket as re-usable (setting the :const:`SO_REUSEADDR` option), call
+       the :class:`dispatcher` object&#39;s :meth:`set_reuse_addr` method.
+ 
+ 
     .. method:: accept()
  
        Accept a connection.  The socket must be bound to an address and listening
@@ -86,7 +95,9 @@
  
  
     .. method:: close()
-<span class="gu">@@ -224,6 +227,12 @@</span>
+ 
+       Close the socket.  All future operations on the socket object will fail.
+       The remote end-point will receive no more data (after queued data is
        flushed).  Sockets are automatically closed when they are
        garbage-collected.
  
@@ -99,7 +110,16 @@
  .. class:: file_dispatcher()
  
     A file_dispatcher takes a file descriptor or file object along with an
-<span class="gu">@@ -240,7 +249,7 @@</span>
+    optional map argument and wraps it for use with the :cfunc:`poll` or
+    :cfunc:`loop` functions.  If provided a file object or anything with a
+    :cfunc:`fileno` method, that method will be called and passed to the
+    :class:`file_wrapper` constructor.  Availability: UNIX.
+ 
+ .. class:: file_wrapper()
+ 
+    A file_wrapper takes an integer file descriptor and calls :func:`os.dup` to
+    duplicate the handle so that the original handle may be closed independently
+    of the file_wrapper.  This class implements sufficient methods to emulate a
     socket for use by the :class:`file_dispatcher` class.  Availability: UNIX.
  
  
@@ -108,7 +128,9 @@
  
  asyncore Example basic HTTP client
  ----------------------------------
-<span class="gu">@@ -250,7 +259,7 @@</span>
+ 
+ Here is a very basic HTTP client that uses the :class:`dispatcher` class to
+ implement its socket handling::
  
     import asyncore, socket
  
@@ -117,7 +139,23 @@
  
         def __init__(self, host, path):
             asyncore.dispatcher.__init__(self)
-<span class="gu">@@ -274,6 +283,46 @@</span>
+            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connect( (host, 80) )
+            self.buffer = &#39;GET %s HTTP/1.0\r\n\r\n&#39; % path
+ 
+        def handle_connect(self):
+            pass
+ 
+        def handle_close(self):
+            self.close()
+ 
+        def handle_read(self):
+            print self.recv(8192)
+ 
+        def writable(self):
+            return (len(self.buffer) &gt; 0)
+ 
+        def handle_write(self):
             sent = self.send(self.buffer)
             self.buffer = self.buffer[sent:]
  

@@ -1,4 +1,13 @@
-@@ -40,7 +40,7 @@
+@@ -31,25 +31,25 @@
+    If *locale* is specified, it may be a string, a tuple of the form ``(language
+    code, encoding)``, or ``None``. If it is a tuple, it is converted to a string
+    using the locale aliasing engine.  If *locale* is given and not ``None``,
+    :func:`setlocale` modifies the locale setting for the *category*.  The available
+    categories are listed in the data description below.  The value is the name of a
+    locale.  An empty string specifies the user's default settings. If the
+    modification of the locale fails, the exception :exc:`Error` is raised.  If
+    successful, the new locale setting is returned.
+ 
     If *locale* is omitted or ``None``, the current setting for *category* is
     returned.
  
@@ -7,7 +16,25 @@
     start with a call of ::
  
        import locale
-@@ -165,7 +165,7 @@
+       locale.setlocale(locale.LC_ALL, '')
+ 
+    This sets the locale for all categories to the user's default setting (typically
+    specified in the :envvar:`LANG` environment variable).  If the locale is not
+    changed thereafter, using multithreading should not cause problems.
+ 
+    .. versionchanged:: 2.0
+       Added support for tuple values of the *locale* parameter.
+ 
+@@ -156,25 +156,25 @@
+    The :func:`nl_langinfo` function accepts one of the following keys.  Most
+    descriptions are taken from the corresponding description in the GNU C
+    library.
+ 
+    .. data:: CODESET
+ 
+       Get a string with the name of the character encoding used in the
+       selected locale.
+ 
     .. data:: D_T_FMT
  
        Get a string that can be used as a format string for :func:`strftime` to
@@ -16,7 +43,25 @@
  
     .. data:: D_FMT
  
-@@ -250,12 +250,17 @@
+       Get a string that can be used as a format string for :func:`strftime` to
+       represent a date in a locale-specific way.
+ 
+    .. data:: T_FMT
+ 
+       Get a string that can be used as a format string for :func:`strftime` to
+       represent a time in a locale-specific way.
+ 
+    .. data:: T_FMT_AMPM
+@@ -241,30 +241,35 @@
+       define this value is the Japanese one.  In Japan, the traditional
+       representation of dates includes the name of the era corresponding to the
+       then-emperor's reign.
+ 
+       Normally it should not be necessary to use this value directly. Specifying
+       the ``E`` modifier in their format strings causes the :func:`strftime`
+       function to use this information.  The format of the returned string is not
+       specified, and therefore you should not assume knowledge of it on different
+       systems.
  
     .. data:: ERA_D_T_FMT
  
@@ -36,7 +81,25 @@
        locale-specific era-based way.
  
     .. data:: ALT_DIGITS
-@@ -554,7 +559,7 @@
+ 
+       Get a representation of up to 100 values used to represent the values
+       0 to 99.
+ 
+ 
+ .. function:: getdefaultlocale([envvars])
+ 
+    Tries to determine the default locale settings and returns them as a tuple of
+    the form ``(language code, encoding)``.
+@@ -545,17 +550,17 @@
+ Access to message catalogs
+ --------------------------
+ 
+ The locale module exposes the C library's gettext interface on systems that
+ provide this interface.  It consists of the functions :func:`gettext`,
+ :func:`dgettext`, :func:`dcgettext`, :func:`textdomain`, :func:`bindtextdomain`,
+ and :func:`bind_textdomain_codeset`.  These are similar to the same functions in
+ the :mod:`gettext` module, but use the C library's binary format for message
+ catalogs, and the C library's search algorithms for locating message catalogs.
  
  Python applications should normally find no need to invoke these functions, and
  should use :mod:`gettext` instead.  A known exception to this rule are
@@ -45,3 +108,4 @@
  :cfunc:`gettext` or :func:`dcgettext`.  For these applications, it may be
  necessary to bind the text domain, so that the libraries can properly locate
  their message catalogs.
+ 

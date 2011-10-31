@@ -1,4 +1,13 @@
-@@ -705,18 +705,27 @@
+@@ -696,36 +696,45 @@
+ 
+ 
+ .. _dom-attr-objects:
+ 
+ Attr Objects
+ ^^^^^^^^^^^^
+ 
+ :class:`Attr` inherits from :class:`Node`, so inherits all its attributes.
+ 
  
  .. attribute:: Attr.name
  
@@ -29,3 +38,12 @@
  
  
  .. _dom-attributelist-objects:
+ 
+ NamedNodeMap Objects
+ ^^^^^^^^^^^^^^^^^^^^
+ 
+ :class:`NamedNodeMap` does *not* inherit from :class:`Node`.
+ 
+ 
+ .. attribute:: NamedNodeMap.length
+ 

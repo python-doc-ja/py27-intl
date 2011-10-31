@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -92,3 +92,27 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -83,12 +83,36 @@</span>
+ 
+    Return the minimum normalized positive float *DBL_MIN* as C :ctype:`double`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: int PyFloat_ClearFreeList()
+ 
+    Clear the float free list. Return the number of items that could not
     be freed.
  
     .. versionadded:: 2.6

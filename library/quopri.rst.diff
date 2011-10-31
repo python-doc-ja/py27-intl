@@ -1,4 +1,13 @@
-@@ -18,6 +18,10 @@
+@@ -9,24 +9,28 @@
+ .. index::
+    pair: quoted-printable; encoding
+    single: MIME; quoted-printable encoding
+ 
+ This module performs quoted-printable transport encoding and decoding, as
+ defined in :rfc:`1521`: "MIME (Multipurpose Internet Mail Extensions) Part One:
+ Mechanisms for Specifying and Describing the Format of Internet Message Bodies".
+ The quoted-printable encoding is designed for data where there are relatively
+ few nonprintable characters; the base64 encoding scheme available via the
  :mod:`base64` module is more compact if there are many such characters, as when
  sending a graphics file.
  
@@ -8,4 +17,13 @@
 +   <http://svn.python.org/view/python/branches/release27-maint/Lib/quopri.py?view=markup>`_
  
  .. function:: decode(input, output[,header])
+ 
+    Decode the contents of the *input* file and write the resulting decoded binary
+    data to the *output* file. *input* and *output* must either be file objects or
+    objects that mimic the file object interface. *input* will be read until
+    ``input.readline()`` returns an empty string. If the optional argument *header*
+    is present and true, underscore will be decoded as space. This is used to decode
+    "Q"-encoded headers as described in :rfc:`1522`: "MIME (Multipurpose Internet
+    Mail Extensions) Part Two: Message Header Extensions for Non-ASCII Text".
+ 
  

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -234,14 +234,14 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -225,112 +225,119 @@</span>
+    the predicate returns a true value are included.
+ 
+    .. note::
+ 
+       :func:`getmembers` does not return metaclass attributes when the argument
+       is a class (this behavior is inherited from the :func:`dir` function).
+ 
+ 
+ .. function:: getmoduleinfo(path)
  
     Return a tuple of values that describe how Python will interpret the file
     identified by *path* if it is a module, or ``None`` if it would not be
@@ -91,7 +100,21 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ModuleInfo(name, suffix, mode,
-<span class="gu">@@ -263,17 +263,20 @@</span>
+       module_type)``.
+ 
+ 
+ .. function:: getmodulename(path)
+ 
+    Return the name of the module named by the file *path*, without including the
+    names of enclosing packages.  This uses the same algorithm as the interpreter
+    uses when searching for modules.  If the name cannot be matched according to the
+    interpreter&#39;s rules, ``None`` is returned.
+ 
+ 
+ .. function:: ismodule(object)
+ 
+    Return true if the object is a module.
+ 
  
  .. function:: isclass(object)
  
@@ -115,7 +138,7 @@
  
  .. function:: isgeneratorfunction(object)
  
-<span class="gu">@@ -281,12 +284,14 @@</span>
+    Return true if the object is a Python generator function.
  
     .. versionadded:: 2.6
  
@@ -130,7 +153,17 @@
  .. function:: istraceback(object)
  
     Return true if the object is a traceback.
-<span class="gu">@@ -304,13 +309,14 @@</span>
+ 
+ 
+ .. function:: isframe(object)
+ 
+    Return true if the object is a frame.
+ 
+ 
+ .. function:: iscode(object)
+ 
+    Return true if the object is a code.
+ 
  
  .. function:: isbuiltin(object)
  
@@ -146,7 +179,9 @@
  .. function:: isabstract(object)
  
     Return true if the object is an abstract base class.
-<span class="gu">@@ -320,8 +326,9 @@</span>
+ 
+    .. versionadded:: 2.6
+ 
  
  .. function:: ismethoddescriptor(object)
  
@@ -158,7 +193,25 @@
  
     This is new as of Python 2.2, and, for example, is true of
     ``int.__add__``. An object passing this test has a :attr:`__get__` attribute
-<span class="gu">@@ -457,12 +464,13 @@</span>
+    but not a :attr:`__set__` attribute, but beyond that the set of attributes
+    varies.  :attr:`__name__` is usually sensible, and :attr:`__doc__` often is.
+ 
+    Methods implemented via descriptors that also pass one of the other tests
+    return false from the :func:`ismethoddescriptor` test, simply because the
+    other tests promise more -- you can, e.g., count on having the
+    :attr:`im_func` attribute (etc) when an object passes :func:`ismethod`.
+ 
+ 
+<span class="gu">@@ -448,43 +455,44 @@</span>
+ 
+    Arrange the given list of classes into a hierarchy of nested lists. Where a
+    nested list appears, it contains classes derived from the class whose entry
+    immediately precedes the list.  Each entry is a 2-tuple containing a class and a
+    tuple of its base classes.  If the *unique* argument is true, exactly one entry
+    appears in the returned structure for each class in the given list.  Otherwise,
+    classes using multiple inheritance and their descendants will appear multiple
+    times.
+ 
  
  .. function:: getargspec(func)
  
@@ -178,7 +231,8 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ArgSpec(args, varargs, keywords,
-<span class="gu">@@ -471,11 +479,11 @@</span>
+       defaults)``.
+ 
  
  .. function:: getargvalues(frame)
  
@@ -195,7 +249,25 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ArgInfo(args, varargs, keywords,
-<span class="gu">@@ -504,6 +512,32 @@</span>
+       locals)``.
+ 
+ 
+ .. function:: formatargspec(args[, varargs, varkw, defaults, formatarg, formatvarargs, formatvarkw, formatvalue, join])
+ 
+    Format a pretty argument spec from the four values returned by
+    :func:`getargspec`.  The format\* arguments are the corresponding optional
+    formatting functions that are called to turn names and values into strings.
+ 
+<span class="gu">@@ -495,24 +503,50 @@</span>
+    :func:`getargvalues`.  The format\* arguments are the corresponding optional
+    formatting functions that are called to turn names and values into strings.
+ 
+ 
+ .. function:: getmro(cls)
+ 
+    Return a tuple of class cls&#39;s base classes, including cls, in method resolution
+    order.  No class appears more than once in this tuple. Note that the method
+    resolution order depends on cls&#39;s type.  Unless a very peculiar user-defined
     metatype is in use, cls will be the first element of the tuple.
  
  
@@ -228,6 +300,15 @@
  .. _inspect-stack:
  
  The interpreter stack
+ ---------------------
+ 
+ When the following functions return &quot;frame records,&quot; each record is a tuple of
+ six items: the frame object, the filename, the line number of the current line,
+ the function name, a list of lines of context from the source code, and the
+ index of the current line within that list.
+ 
+ .. note::
+ 
 </pre></div>
 
 </body>

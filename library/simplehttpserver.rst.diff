@@ -1,4 +1,13 @@
-@@ -82,34 +82,35 @@
+@@ -73,46 +73,47 @@
+       type is guessed by calling the :meth:`guess_type` method, which in turn
+       uses the *extensions_map* variable.
+ 
+       A ``'Content-type:'`` header with the guessed content type is output,
+       followed by a ``'Content-Length:'`` header with the file's size and a
+       ``'Last-Modified:'`` header with the file's modification time.
+ 
+       Then follows a blank line signifying the end of the headers, and then the
+       contents of the file are output. If the file's MIME type starts with
        ``text/`` the file is opened in text mode; otherwise binary mode is used.
  
        The :func:`test` function in the :mod:`SimpleHTTPServer` module is an
@@ -49,4 +58,7 @@
 +   python -m SimpleHTTPServer 8000
  
  .. seealso::
+ 
+    Module :mod:`BaseHTTPServer`
+       Base class implementation for Web server and request handler.
  

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -32,11 +32,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -23,29 +23,29 @@</span>
+ use different libraries, so care should be taken that :ctype:`FILE\*` parameters
+ are only passed to these functions if it is certain that they were created by
+ the same library that the Python runtime is using.
+ 
+ 
+ .. cfunction:: int Py_Main(int argc, char **argv)
+ 
+    The main program for the standard interpreter.  This is made available for
+    programs which embed Python.  The *argc* and *argv* parameters should be
     prepared exactly as those which are passed to a C program&#39;s :cfunc:`main`
     function.  It is important to note that the argument list may be modified (but
     the contents of the strings pointed to by the argument list are not). The return
@@ -84,7 +93,25 @@
     function will not return ``1``, but exit the process, as long as
     ``Py_InspectFlag`` is not set.
  
-<span class="gu">@@ -82,7 +82,7 @@</span>
+ 
+ .. cfunction:: int PyRun_AnyFile(FILE *fp, const char *filename)
+ 
+    This is a simplified interface to :cfunc:`PyRun_AnyFileExFlags` below, leaving
+    *closeit* set to ``0`` and *flags* set to *NULL*.
+ 
+ 
+ .. cfunction:: int PyRun_AnyFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
+ 
+<span class="gu">@@ -73,25 +73,25 @@</span>
+    This is a simplified interface to :cfunc:`PyRun_SimpleStringFlags` below,
+    leaving the *PyCompilerFlags\** argument set to NULL.
+ 
+ 
+ .. cfunction:: int PyRun_SimpleStringFlags(const char *command, PyCompilerFlags *flags)
+ 
+    Executes the Python source code from *command* in the :mod:`__main__` module
+    according to the *flags* argument. If :mod:`__main__` does not already exist, it
+    is created.  Returns ``0`` on success or ``-1`` if an exception was raised.  If
     there was an error, there is no way to get the exception information. For the
     meaning of *flags*, see below.
  
@@ -93,7 +120,25 @@
     function will not return ``-1``, but exit the process, as long as
     ``Py_InspectFlag`` is not set.
  
-<span class="gu">@@ -121,13 +121,13 @@</span>
+ 
+ .. cfunction:: int PyRun_SimpleFile(FILE *fp, const char *filename)
+ 
+    This is a simplified interface to :cfunc:`PyRun_SimpleFileExFlags` below,
+    leaving *closeit* set to ``0`` and *flags* set to *NULL*.
+ 
+ 
+ .. cfunction:: int PyRun_SimpleFileFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
+ 
+<span class="gu">@@ -112,44 +112,44 @@</span>
+    file.  If *closeit* is true, the file is closed before PyRun_SimpleFileExFlags
+    returns.
+ 
+ 
+ .. cfunction:: int PyRun_InteractiveOne(FILE *fp, const char *filename)
+ 
+    This is a simplified interface to :cfunc:`PyRun_InteractiveOneFlags` below,
+    leaving *flags* set to *NULL*.
+ 
  
  .. cfunction:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
  
@@ -114,7 +159,8 @@
  
  
  .. cfunction:: int PyRun_InteractiveLoop(FILE *fp, const char *filename)
-<span class="gu">@@ -136,11 +136,11 @@</span>
+ 
+    This is a simplified interface to :cfunc:`PyRun_InteractiveLoopFlags` below,
     leaving *flags* set to *NULL*.
  
  
@@ -129,6 +175,15 @@
  
  
  .. cfunction:: struct _node* PyParser_SimpleParseString(const char *str, int start)
+ 
+    This is a simplified interface to
+    :cfunc:`PyParser_SimpleParseStringFlagsFilename` below, leaving  *filename* set
+    to *NULL* and *flags* set to ``0``.
+ 
+ 
+ .. cfunction:: struct _node* PyParser_SimpleParseStringFlags( const char *str, int start, int flags)
+ 
+    This is a simplified interface to
 </pre></div>
 
 </body>

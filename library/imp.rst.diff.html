@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -116,8 +116,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -107,26 +107,25 @@</span>
+ 
+    On platforms with threads, a thread executing an import holds an internal lock
+    until the import is complete. This lock blocks other threads from doing an
+    import until the original import completes, which in turn prevents other threads
+    from seeing incomplete module objects constructed by the original thread while
+    in the process of completing its import (and the imports, if any, triggered by
+    that).
+ 
+ 
  .. function:: acquire_lock()
  
     Acquire the interpreter&#39;s import lock for the current thread.  This lock should
@@ -78,6 +87,15 @@
  
     Once a thread has acquired the import lock, the same thread may acquire it
     again without blocking; the thread must release it once for each time it has
+    acquired it.
+ 
+    On platforms without threads, this function does nothing.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. function:: release_lock()
+ 
 </pre></div>
 
 </body>

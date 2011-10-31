@@ -1,4 +1,13 @@
-@@ -92,3 +92,27 @@
+@@ -83,12 +83,36 @@
+ 
+    Return the minimum normalized positive float *DBL_MIN* as C :ctype:`double`.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: int PyFloat_ClearFreeList()
+ 
+    Clear the float free list. Return the number of items that could not
     be freed.
  
     .. versionadded:: 2.6

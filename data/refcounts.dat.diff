@@ -1,4 +1,13 @@
-@@ -55,6 +55,45 @@
+@@ -46,24 +46,63 @@
+ 
+ PyBuffer_FromMemory:PyObject*::+1:
+ PyBuffer_FromMemory:void*:ptr::
+ PyBuffer_FromMemory:int:size::
+ 
+ PyBuffer_FromReadWriteMemory:PyObject*::+1:
+ PyBuffer_FromReadWriteMemory:void*:ptr::
+ PyBuffer_FromReadWriteMemory:int:size::
+ 
  PyBuffer_New:PyObject*::+1:
  PyBuffer_New:int:size::
  
@@ -44,7 +53,25 @@
  PyCObject_AsVoidPtr:void*:::
  PyCObject_AsVoidPtr:PyObject*:self:0:
  
-@@ -242,6 +281,12 @@
+ PyCObject_FromVoidPtr:PyObject*::+1:
+ PyCObject_FromVoidPtr:void*:cobj::
+ PyCObject_FromVoidPtr::void (* destr)(void* )::
+ 
+ PyCObject_FromVoidPtrAndDesc:PyObject*::+1:
+ PyCObject_FromVoidPtrAndDesc:void*:cobj::
+ PyCObject_FromVoidPtrAndDesc:void*:desc::
+ PyCObject_FromVoidPtrAndDesc:void(*)(void*,void*):destr::
+ 
+@@ -233,24 +272,30 @@
+ PyErr_Fetch:PyObject**:pvalue:0:
+ PyErr_Fetch:PyObject**:ptraceback:0:
+ 
+ PyErr_GivenExceptionMatches:int:::
+ PyErr_GivenExceptionMatches:PyObject*:given:0:
+ PyErr_GivenExceptionMatches:PyObject*:exc:0:
+ 
+ PyErr_NewException:PyObject*::+1:
+ PyErr_NewException:char*:name::
  PyErr_NewException:PyObject*:base:0:
  PyErr_NewException:PyObject*:dict:0:
  
@@ -57,7 +84,25 @@
  PyErr_NoMemory:PyObject*::null:
  
  PyErr_NormalizeException:void:::
-@@ -593,6 +638,9 @@
+ PyErr_NormalizeException:PyObject**:exc::???
+ PyErr_NormalizeException:PyObject**:val::???
+ PyErr_NormalizeException:PyObject**:tb::???
+ 
+ PyErr_Occurred:PyObject*::0:
+ 
+ PyErr_Print:void:::
+ 
+ PyErr_Restore:void:::
+@@ -584,42 +629,51 @@
+ PyList_Size:int:::
+ PyList_Size:PyObject*:list:0:
+ 
+ PyList_Sort:int:::
+ PyList_Sort:PyObject*:list:0:
+ 
+ PyLong_AsDouble:double:::
+ PyLong_AsDouble:PyObject*:pylong:0:
+ 
  PyLong_AsLong:long:::
  PyLong_AsLong:PyObject*:pylong:0:
  
@@ -67,7 +112,18 @@
  PyLong_AsUnsignedLong:unsigned long:::
  PyLong_AsUnsignedLong:PyObject*:pylong:0:
  
-@@ -611,6 +659,12 @@
+ PyLong_Check:int:::
+ PyLong_Check:PyObject*:p:0:
+ 
+ PyLong_FromDouble:PyObject*::+1:
+ PyLong_FromDouble:double:v::
+ 
+ PyLong_FromLong:PyObject*::+1:
+ PyLong_FromLong:long:v::
+ 
+ PyLong_FromLongLong:PyObject*::+1:
+ PyLong_FromLongLong:long long:v::
+ 
  PyLong_FromUnsignedLongLong:PyObject*::+1:
  PyLong_FromUnsignedLongLong:unsigned long long:v::
  
@@ -80,7 +136,25 @@
  PyLong_FromString:PyObject*::+1:
  PyLong_FromString:char*:str::
  PyLong_FromString:char**:pend::
-@@ -853,9 +907,6 @@
+ PyLong_FromString:int:base::
+ 
+ PyLong_FromUnicode:PyObject*::+1:
+ PyLong_FromUnicode:Py_UNICODE:u::
+ PyLong_FromUnicode:int:length::
+ PyLong_FromUnicode:int:base::
+ 
+ PyLong_FromUnsignedLong:PyObject*::+1:
+ PyLong_FromUnsignedLong:unsignedlong:v::
+@@ -844,27 +898,24 @@
+ PyNumber_Subtract:PyObject*::+1:
+ PyNumber_Subtract:PyObject*:o1:0:
+ PyNumber_Subtract:PyObject*:o2:0:
+ 
+ PyNumber_TrueDivide:PyObject*::+1:
+ PyNumber_TrueDivide:PyObject*:v:0:
+ PyNumber_TrueDivide:PyObject*:w:0:
+ 
+ PyNumber_Xor:PyObject*::+1:
  PyNumber_Xor:PyObject*:o1:0:
  PyNumber_Xor:PyObject*:o2:0:
  
@@ -90,7 +164,25 @@
  PyObject_AsFileDescriptor:int::: 
  PyObject_AsFileDescriptor:PyObject*:o:0:
  
-@@ -1431,6 +1482,21 @@
+ PyObject_Call:PyObject*::+1:
+ PyObject_Call:PyObject*:callable_object:0:
+ PyObject_Call:PyObject*:args:0:
+ PyObject_Call:PyObject*:kw:0:
+ 
+ PyObject_CallFunction:PyObject*::+1:
+ PyObject_CallFunction:PyObject*:callable_object:0:
+ PyObject_CallFunction:char*:format::
+ PyObject_CallFunction::...::
+@@ -1422,24 +1473,39 @@
+ 
+ PyUnicode_GetSize:int:::
+ PyUnicode_GetSize:PyObject :*unicode:0:
+ 
+ PyUnicode_FromObject:PyObject*::+1:
+ PyUnicode_FromObject:PyObject*:*obj:0:
+ 
+ PyUnicode_FromEncodedObject:PyObject*::+1:
+ PyUnicode_FromEncodedObject:PyObject*:*obj:0:
  PyUnicode_FromEncodedObject:const char*:encoding::
  PyUnicode_FromEncodedObject:const char*:errors::
  
@@ -112,3 +204,12 @@
  PyUnicode_FromWideChar:PyObject*::+1:
  PyUnicode_FromWideChar:const wchar_t*:w::
  PyUnicode_FromWideChar:int:size::
+ 
+ PyUnicode_AsWideChar:int:::
+ PyUnicode_AsWideChar:PyObject*:*unicode:0:
+ PyUnicode_AsWideChar:wchar_t*:w::
+ PyUnicode_AsWideChar:int:size::
+ 
+ PyUnicode_Decode:PyObject*::+1:
+ PyUnicode_Decode:const char*:s::
+ PyUnicode_Decode:int:size::

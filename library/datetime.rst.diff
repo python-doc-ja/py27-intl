@@ -1,4 +1,13 @@
-@@ -284,12 +284,28 @@
+@@ -275,30 +275,46 @@
+ Comparisons of :class:`timedelta` objects are supported with the
+ :class:`timedelta` object representing the smaller duration considered to be the
+ smaller timedelta. In order to stop mixed-type comparisons from falling back to
+ the default comparison by object address, when a :class:`timedelta` object is
+ compared to an object of a different type, :exc:`TypeError` is raised unless the
+ comparison is ``==`` or ``!=``.  The latter cases return :const:`False` or
+ :const:`True`, respectively.
+ 
+ :class:`timedelta` objects are :term:`hashable` (usable as dictionary keys), support
  efficient pickling, and in Boolean contexts, a :class:`timedelta` object is
  considered to be true if and only if it isn't equal to ``timedelta(0)``.
  
@@ -27,7 +36,25 @@
      >>> year == another_year
      True
      >>> ten_years = 10 * year
-@@ -457,7 +473,9 @@
+     >>> ten_years, ten_years.days // 365
+     (datetime.timedelta(3650), 10)
+     >>> nine_years = ten_years - year
+     >>> nine_years, nine_years.days // 365
+     (datetime.timedelta(3285), 9)
+     >>> three_years = nine_years // 3;
+     >>> three_years, three_years.days // 365
+     (datetime.timedelta(1095), 3)
+     >>> abs(three_years - ten_years) == 2 * three_years + year
+@@ -448,25 +464,27 @@
+ .. method:: date.replace(year, month, day)
+ 
+    Return a date with the same value, except for those members given new values by
+    whichever keyword arguments are specified.  For example, if ``d == date(2002,
+    12, 31)``, then ``d.replace(day=26) == date(2002, 12, 26)``.
+ 
+ 
+ .. method:: date.timetuple()
+ 
     Return a :class:`time.struct_time` such as returned by :func:`time.localtime`.
     The hours, minutes and seconds are 0, and the DST flag is -1. ``d.timetuple()``
     is equivalent to ``time.struct_time((d.year, d.month, d.day, 0, 0, 0,
@@ -38,7 +65,25 @@
  
  
  .. method:: date.toordinal()
-@@ -922,12 +940,13 @@
+ 
+    Return the proleptic Gregorian ordinal of the date, where January 1 of year 1
+    has ordinal 1.  For any :class:`date` object *d*,
+    ``date.fromordinal(d.toordinal()) == d``.
+ 
+ 
+ .. method:: date.weekday()
+ 
+    Return the day of the week as an integer, where Monday is 0 and Sunday is 6.
+@@ -913,30 +931,31 @@
+ 
+ .. method:: datetime.tzname()
+ 
+    If :attr:`tzinfo` is ``None``, returns ``None``, else returns
+    ``self.tzinfo.tzname(self)``, raises an exception if the latter doesn't return
+    ``None`` or a string object,
+ 
+ 
+ .. method:: datetime.timetuple()
  
     Return a :class:`time.struct_time` such as returned by :func:`time.localtime`.
     ``d.timetuple()`` is equivalent to ``time.struct_time((d.year, d.month, d.day,
@@ -58,3 +103,12 @@
  
  
  .. method:: datetime.utctimetuple()
+ 
+    If :class:`datetime` instance *d* is naive, this is the same as
+    ``d.timetuple()`` except that :attr:`tm_isdst` is forced to 0 regardless of what
+    ``d.dst()`` returns.  DST is never in effect for a UTC time.
+ 
+    If *d* is aware, *d* is normalized to UTC time, by subtracting
+    ``d.utcoffset()``, and a :class:`time.struct_time` for the normalized time is
+    returned.  :attr:`tm_isdst` is forced to 0. Note that the result's
+    :attr:`tm_year` member may be :const:`MINYEAR`\ -1 or :const:`MAXYEAR`\ +1, if

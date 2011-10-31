@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -73,6 +73,34 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -64,24 +64,52 @@</span>
+ .. function:: S_IFMT(mode)
+ 
+    Return the portion of the file&#39;s mode that describes the file type (used by the
+    :func:`S_IS\*` functions above).
+ 
+ Normally, you would use the :func:`os.path.is\*` functions for testing the type
+ of a file; the functions here are useful when you are doing multiple tests of
+ the same file and wish to avoid the overhead of the :cfunc:`stat` system call
+ for each test.  These are also useful when checking for information about a file
  that isn&#39;t handled by :mod:`os.path`, like the tests for block and character
  devices.
  
@@ -103,7 +112,25 @@
  All the variables below are simply symbolic indexes into the 10-tuple returned
  by :func:`os.stat`, :func:`os.fstat` or :func:`os.lstat`.
  
-<span class="gu">@@ -262,31 +290,47 @@</span>
+ 
+ .. data:: ST_MODE
+ 
+    Inode protection mode.
+ 
+ 
+ .. data:: ST_INO
+ 
+    Inode number.
+<span class="gu">@@ -253,40 +281,56 @@</span>
+ .. data:: S_IREAD
+ 
+    Unix V7 synonym for :data:`S_IRUSR`.
+ 
+ .. data:: S_IWRITE
+ 
+    Unix V7 synonym for :data:`S_IWUSR`.
+ 
+ .. data:: S_IEXEC
  
     Unix V7 synonym for :data:`S_IXUSR`.
  

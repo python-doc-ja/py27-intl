@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -712,7 +712,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -703,25 +703,25 @@</span>
+ Examples
+ --------
+ 
+ This is a working &quot;Hello World&quot; WSGI application::
+ 
+    from wsgiref.simple_server import make_server
+ 
+    # Every WSGI application must have an application object - a callable
+    # object that accepts two arguments. For that purpose, we&#39;re going to
     # use a function (note that you&#39;re not limited to a function, you can
     # use a class for example). The first argument passed to the function
     # is a dictionary containing CGI-style envrironment variables and the
@@ -77,6 +86,15 @@
     def hello_world_app(environ, start_response):
         status = &#39;200 OK&#39; # HTTP Status
         headers = [(&#39;Content-type&#39;, &#39;text/plain&#39;)] # HTTP Headers
+        start_response(status, headers)
+ 
+        # The returned object is going to be printed
+        return [&quot;Hello World&quot;]
+ 
+    httpd = make_server(&#39;&#39;, 8000, hello_world_app)
+    print &quot;Serving on port 8000...&quot;
+ 
+    # Serve until process is killed
 </pre></div>
 
 </body>

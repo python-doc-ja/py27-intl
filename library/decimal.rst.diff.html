@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -35,9 +35,9 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -26,46 +26,47 @@</span>
+    # make sure each group gets a fresh context
+    setcontext(Context())
+ 
+ The :mod:`decimal` module provides support for decimal floating point
+ arithmetic.  It offers several advantages over the :class:`float` datatype:
+ 
+ * Decimal &quot;is based on a floating-point model which was designed with people
+   in mind, and necessarily has a paramount guiding principle -- computers must
+   provide an arithmetic that works in the same way as the arithmetic that
    people learn at school.&quot; -- excerpt from the decimal arithmetic specification.
  
  * Decimal numbers can be represented exactly.  In contrast, numbers like
@@ -81,7 +90,19 @@
  
  * The exactness carries over into arithmetic.  In decimal floating point, ``0.1
    + 0.1 + 0.1 - 0.3`` is exactly equal to zero.  In binary floating point, the result
-<span class="gu">@@ -57,6 +57,7 @@</span>
+   is :const:`5.5511151231257827e-017`.  While near to zero, the differences
+   prevent reliable equality testing and differences can accumulate. For this
+   reason, decimal is preferred in accounting applications which have strict
+   equality invariants.
+ 
+ * The decimal module incorporates a notion of significant places so that ``1.30
+   + 1.20`` is :const:`2.50`.  The trailing zero is kept to indicate significance.
+   This is the customary presentation for monetary applications. For
+   multiplication, the &quot;schoolbook&quot; approach uses all the figures in the
+   multiplicands.  For instance, ``1.3 * 1.2`` gives :const:`1.56` while ``1.30 *
+   1.20`` gives :const:`1.5600`.
+ 
+ * Unlike hardware based binary floating point, the decimal module has a user
    alterable precision (defaulting to 28 places) which can be as large as needed for
    a given problem:
  
@@ -89,7 +110,25 @@
       &gt;&gt;&gt; getcontext().prec = 6
       &gt;&gt;&gt; Decimal(1) / Decimal(7)
       Decimal(&#39;0.142857&#39;)
-<span class="gu">@@ -133,10 +134,9 @@</span>
+      &gt;&gt;&gt; getcontext().prec = 28
+      &gt;&gt;&gt; Decimal(1) / Decimal(7)
+      Decimal(&#39;0.1428571428571428571428571429&#39;)
+ 
+ * Both binary and decimal floating point are implemented in terms of published
+   standards.  While the built-in float type exposes only a modest portion of its
+   capabilities, the decimal module exposes all required parts of the standard.
+   When needed, the programmer has full control over rounding and signal handling.
+   This includes an option to enforce exact arithmetic by using exceptions
+<span class="gu">@@ -124,36 +125,37 @@</span>
+ The usual start to using decimals is importing the module, viewing the current
+ context with :func:`getcontext` and, if necessary, setting new values for
+ precision, rounding, or enabled traps::
+ 
+    &gt;&gt;&gt; from decimal import *
+    &gt;&gt;&gt; getcontext()
+    Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+            capitals=1, flags=[], traps=[Overflow, DivisionByZero,
+            InvalidOperation])
  
     &gt;&gt;&gt; getcontext().prec = 7       # Set a new precision
  
@@ -103,7 +142,8 @@
  :const:`NaN` which stands for &quot;Not a number&quot;, positive and negative
  :const:`Infinity`, and :const:`-0`.
  
-<span class="gu">@@ -145,6 +145,8 @@</span>
+    &gt;&gt;&gt; getcontext().prec = 28
+    &gt;&gt;&gt; Decimal(10)
     Decimal(&#39;10&#39;)
     &gt;&gt;&gt; Decimal(&#39;3.14&#39;)
     Decimal(&#39;3.14&#39;)
@@ -112,7 +152,25 @@
     &gt;&gt;&gt; Decimal((0, (3, 1, 4), -2))
     Decimal(&#39;3.14&#39;)
     &gt;&gt;&gt; Decimal(str(2.0 ** 0.5))
-<span class="gu">@@ -193,7 +195,7 @@</span>
+    Decimal(&#39;1.41421356237&#39;)
+    &gt;&gt;&gt; Decimal(2) ** Decimal(&#39;0.5&#39;)
+    Decimal(&#39;1.414213562373095048801688724&#39;)
+    &gt;&gt;&gt; Decimal(&#39;NaN&#39;)
+    Decimal(&#39;NaN&#39;)
+    &gt;&gt;&gt; Decimal(&#39;-Infinity&#39;)
+    Decimal(&#39;-Infinity&#39;)
+ 
+ The significance of a new Decimal is determined solely by the number of digits
+<span class="gu">@@ -184,25 +186,25 @@</span>
+    Decimal(&#39;9.25&#39;)
+    &gt;&gt;&gt; min(data)
+    Decimal(&#39;0.03&#39;)
+    &gt;&gt;&gt; sorted(data)
+    [Decimal(&#39;0.03&#39;), Decimal(&#39;1.00&#39;), Decimal(&#39;1.34&#39;), Decimal(&#39;1.87&#39;),
+     Decimal(&#39;2.35&#39;), Decimal(&#39;3.45&#39;), Decimal(&#39;9.25&#39;)]
+    &gt;&gt;&gt; sum(data)
+    Decimal(&#39;19.29&#39;)
+    &gt;&gt;&gt; a,b,c = data[:3]
     &gt;&gt;&gt; str(a)
     &#39;1.34&#39;
     &gt;&gt;&gt; float(a)
@@ -121,7 +179,25 @@
     &gt;&gt;&gt; round(a, 1)     # round() first converts to binary floating point
     1.3
     &gt;&gt;&gt; int(a)
-<span class="gu">@@ -314,7 +316,7 @@</span>
+    1
+    &gt;&gt;&gt; a * 5
+    Decimal(&#39;6.70&#39;)
+    &gt;&gt;&gt; a * b
+    Decimal(&#39;2.5058&#39;)
+    &gt;&gt;&gt; c % a
+    Decimal(&#39;0.77&#39;)
+ 
+ And some mathematical functions are also available to Decimal:
+<span class="gu">@@ -305,25 +307,25 @@</span>
+ 
+ 
+ .. _decimal-decimal:
+ 
+ Decimal objects
+ ---------------
+ 
+ 
+ .. class:: Decimal([value [, context]])
  
     Construct a new :class:`Decimal` object based from *value*.
  
@@ -130,7 +206,25 @@
     object. If no *value* is given, returns ``Decimal(&#39;0&#39;)``.  If *value* is a
     string, it should conform to the decimal numeric string syntax after leading
     and trailing whitespace characters are removed::
-<span class="gu">@@ -341,6 +343,12 @@</span>
+ 
+       sign           ::=  &#39;+&#39; | &#39;-&#39;
+       digit          ::=  &#39;0&#39; | &#39;1&#39; | &#39;2&#39; | &#39;3&#39; | &#39;4&#39; | &#39;5&#39; | &#39;6&#39; | &#39;7&#39; | &#39;8&#39; | &#39;9&#39;
+       indicator      ::=  &#39;e&#39; | &#39;E&#39;
+       digits         ::=  digit [digit]...
+       decimal-part   ::=  digits &#39;.&#39; [digits] | [&#39;.&#39;] digits
+       exponent-part  ::=  indicator [sign] digits
+       infinity       ::=  &#39;Infinity&#39; | &#39;Inf&#39;
+       nan            ::=  &#39;NaN&#39; [digits] | &#39;sNaN&#39; [digits]
+<span class="gu">@@ -332,47 +334,74 @@</span>
+ 
+    If *value* is a unicode string then other Unicode decimal digits
+    are also permitted where ``digit`` appears above.  These include
+    decimal digits from various other alphabets (for example,
+    Arabic-Indic and Devanāgarī digits) along with the fullwidth digits
+    ``u&#39;\uff10&#39;`` through ``u&#39;\uff19&#39;``.
+ 
+    If *value* is a :class:`tuple`, it should have three components, a sign
+    (:const:`0` for positive or :const:`1` for negative), a :class:`tuple` of
     digits, and an integer exponent. For example, ``Decimal((0, (1, 4, 1, 4), -3))``
     returns ``Decimal(&#39;1.414&#39;)``.
  
@@ -143,7 +237,16 @@
     The *context* precision does not affect how many digits are stored. That is
     determined exclusively by the number of digits in *value*. For example,
     ``Decimal(&#39;3.00000&#39;)`` records all five zeros even if the context precision is
-<span class="gu">@@ -357,6 +365,9 @@</span>
+    only three.
+ 
+    The purpose of the *context* argument is determining what to do if *value* is a
+    malformed string.  If the context traps :const:`InvalidOperation`, an exception
+    is raised; otherwise, the constructor returns a new Decimal with the value of
+    :const:`NaN`.
+ 
+    Once constructed, :class:`Decimal` objects are immutable.
+ 
+    .. versionchanged:: 2.6
        leading and trailing whitespace characters are permitted when
        creating a Decimal instance from a string.
  
@@ -153,7 +256,7 @@
     Decimal floating point objects share many properties with the other built-in
     numeric types such as :class:`float` and :class:`int`.  All of the usual math
     operations and special methods apply.  Likewise, decimal objects can be
-<span class="gu">@@ -364,6 +375,24 @@</span>
+    copied, pickled, printed, used as dictionary keys, used as set elements,
     compared, sorted, and coerced to another type (such as :class:`float` or
     :class:`long`).
  
@@ -178,7 +281,25 @@
     In addition to the standard numeric properties, decimal floating point
     objects also have a number of specialized methods:
  
-<span class="gu">@@ -490,6 +519,32 @@</span>
+ 
+    .. method:: adjusted()
+ 
+       Return the adjusted exponent after shifting out the coefficient&#39;s
+       rightmost digits until only the lead digit remains:
+       ``Decimal(&#39;321e+5&#39;).adjusted()`` returns seven.  Used for determining the
+       position of the most significant digit with respect to the decimal point.
+ 
+ 
+<span class="gu">@@ -481,24 +510,50 @@</span>
+ 
+       Return the value of the (natural) exponential function ``e**x`` at the
+       given number.  The result is correctly rounded using the
+       :const:`ROUND_HALF_EVEN` rounding mode.
+ 
+       &gt;&gt;&gt; Decimal(1).exp()
+       Decimal(&#39;2.718281828459045235360287471&#39;)
+       &gt;&gt;&gt; Decimal(321).exp()
+       Decimal(&#39;2.561702493119680037517373933E+139&#39;)
  
        .. versionadded:: 2.6
  
@@ -211,7 +332,25 @@
     .. method:: fma(other, third[, context])
  
        Fused multiply-add.  Return self*other+third with no rounding of the
-<span class="gu">@@ -976,8 +1031,11 @@</span>
+       intermediate product self*other.
+ 
+       &gt;&gt;&gt; Decimal(2).fma(3, 5)
+       Decimal(&#39;11&#39;)
+ 
+       .. versionadded:: 2.6
+ 
+    .. method:: is_canonical()
+ 
+<span class="gu">@@ -967,26 +1022,29 @@</span>
+ 
+    The *capitals* field is either :const:`0` or :const:`1` (the default). If set to
+    :const:`1`, exponents are printed with a capital :const:`E`; otherwise, a
+    lowercase :const:`e` is used: :const:`Decimal(&#39;6.02e+23&#39;)`.
+ 
+    .. versionchanged:: 2.6
+       The :const:`ROUND_05UP` rounding mode was added.
+ 
+    The :class:`Context` class defines several general purpose methods as well as
     a large number of methods for doing arithmetic directly in a given context.
     In addition, for each of the :class:`Decimal` methods described above (with
     the exception of the :meth:`adjusted` and :meth:`as_tuple` methods) there is
@@ -225,7 +364,25 @@
  
  
     .. method:: clear_flags()
-<span class="gu">@@ -1016,6 +1074,26 @@</span>
+ 
+       Resets all of the flags to :const:`0`.
+ 
+    .. method:: copy()
+ 
+       Return a duplicate of the context.
+ 
+    .. method:: copy_decimal(num)
+ 
+<span class="gu">@@ -1007,24 +1065,44 @@</span>
+       .. doctest:: newcontext
+ 
+          &gt;&gt;&gt; getcontext().prec = 3
+          &gt;&gt;&gt; Decimal(&#39;3.4445&#39;) + Decimal(&#39;1.0023&#39;)
+          Decimal(&#39;4.45&#39;)
+          &gt;&gt;&gt; Decimal(&#39;3.4445&#39;) + Decimal(0) + Decimal(&#39;1.0023&#39;)
+          Decimal(&#39;4.44&#39;)
+ 
+       This method implements the to-number operation of the IBM specification.
        If the argument is a string, no leading or trailing whitespace is
        permitted.
  
@@ -252,7 +409,25 @@
     .. method:: Etiny()
  
        Returns a value equal to ``Emin - prec + 1`` which is the minimum exponent
-<span class="gu">@@ -1872,49 +1950,29 @@</span>
+       value for subnormal results.  When underflow occurs, the exponent is set
+       to :const:`Etiny`.
+ 
+ 
+    .. method:: Etop()
+ 
+       Returns a value equal to ``Emax - prec + 1``.
+ 
+    The usual approach to working with decimals is to create :class:`Decimal`
+<span class="gu">@@ -1863,67 +1941,47 @@</span>
+    &gt;&gt;&gt; [v.normalize() for v in values]
+    [Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;)]
+ 
+ Q. Some decimal values always print with exponential notation.  Is there a way
+ to get a non-exponential representation?
+ 
+ A. For some values, exponential notation is the only way to express the number
+ of significant places in the coefficient.  For example, expressing
+ :const:`5.0E+3` as :const:`5000` keeps the value constant but cannot show the
  original&#39;s two-place significance.
  
  If an application does not care about tracking significance, it is easy to
@@ -316,6 +491,15 @@
 <span class="gd">-</span>
  Q. Within a complex calculation, how can I make sure that I haven&#39;t gotten a
  spurious result because of insufficient precision or rounding anomalies.
+ 
+ A. The decimal module makes it easy to test results.  A best practice is to
+ re-run calculations using greater precision and with various rounding modes.
+ Widely differing results indicate insufficient precision, rounding mode issues,
+ ill-conditioned inputs, or a numerically unstable algorithm.
+ 
+ Q. I noticed that context precision is applied to the results of operations but
+ not to the inputs.  Is there anything to watch out for when mixing values of
+ different precisions?
  
 </pre></div>
 

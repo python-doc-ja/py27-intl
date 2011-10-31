@@ -1,9 +1,14 @@
-@@ -1,3 +1,4 @@
+@@ -1,190 +1,203 @@
 +
  :mod:`trace` --- Trace or track Python statement execution
  ==========================================================
  
-@@ -10,10 +11,14 @@
+ .. module:: trace
+    :synopsis: Trace or track Python statement execution.
+ 
+ 
+ The :mod:`trace` module allows you to trace program execution, generate
+ annotated statement coverage listings, print caller/callee relationships and
  list functions executed during a program run.  It can be used in another program
  or from the command line.
  
@@ -19,7 +24,7 @@
  ------------------
  
  The :mod:`trace` module can be invoked from the command line.  It can be as
-@@ -21,82 +26,89 @@
+ simple as ::
  
     python -m trace --count -C . somefile.py ...
  
@@ -143,7 +148,7 @@
     tracing.
  
  Filters
-@@ -104,78 +116,79 @@
+ ^^^^^^^
  
  These options may be repeated multiple times.
  
@@ -271,3 +276,12 @@
  
     import sys
     import trace
+ 
+    # create a Trace object, telling it what to ignore, and whether to
+    # do tracing or line-counting or both.
+    tracer = trace.Trace(
+        ignoredirs=[sys.prefix, sys.exec_prefix],
+        trace=0,
+        count=1)
+ 
+    # run the new command using the given tracer

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -82,34 +82,35 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -73,46 +73,47 @@</span>
+       type is guessed by calling the :meth:`guess_type` method, which in turn
+       uses the *extensions_map* variable.
+ 
+       A ``&#39;Content-type:&#39;`` header with the guessed content type is output,
+       followed by a ``&#39;Content-Length:&#39;`` header with the file&#39;s size and a
+       ``&#39;Last-Modified:&#39;`` header with the file&#39;s modification time.
+ 
+       Then follows a blank line signifying the end of the headers, and then the
+       contents of the file are output. If the file&#39;s MIME type starts with
        ``text/`` the file is opened in text mode; otherwise binary mode is used.
  
        The :func:`test` function in the :mod:`SimpleHTTPServer` module is an
@@ -119,6 +128,9 @@
 <span class="gi">+   python -m SimpleHTTPServer 8000</span>
  
  .. seealso::
+ 
+    Module :mod:`BaseHTTPServer`
+       Base class implementation for Web server and request handler.
  
 </pre></div>
 

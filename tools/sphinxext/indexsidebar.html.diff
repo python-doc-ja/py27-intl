@@ -1,4 +1,5 @@
-@@ -2,9 +2,9 @@
+@@ -1,19 +1,19 @@
+             <h3>Download</h3>
              <p><a href="{{ pathto('download') }}">Download these documents</a></p>
  	    <h3>Docs for other versions</h3>
  	    <ul>
@@ -11,3 +12,12 @@
                <li><a href="http://www.python.org/doc/versions/">Old versions</a></li>
              </ul>
  
+             <h3>Other resources</h3>
+             <ul>
+               {# XXX: many of these should probably be merged in the main docs #}
+               <li><a href="http://www.python.org/doc/faq/">FAQs</a></li>
+               <li><a href="http://www.python.org/doc/essays/">Guido's Essays</a></li>
+               <li><a href="http://www.python.org/doc/newstyle/">New-style Classes</a></li>
+               <li><a href="http://www.python.org/dev/peps/">PEP Index</a></li>
+               <li><a href="http://wiki.python.org/moin/BeginnersGuide">Beginner's Guide</a></li>
+               <li><a href="http://wiki.python.org/moin/PythonBooks">Book List</a></li>

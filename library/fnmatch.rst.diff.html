@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -34,6 +34,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -25,24 +25,28 @@</span>
+ +------------+------------------------------------+
+ | ``[!seq]`` | matches any character not in *seq* |
+ +------------+------------------------------------+
+ 
+ .. index:: module: glob
+ 
+ Note that the filename separator (``&#39;/&#39;`` on Unix) is *not* special to this
+ module.  See module :mod:`glob` for pathname expansion (:mod:`glob` uses
+ :func:`fnmatch` to match pathname segments).  Similarly, filenames starting with
  a period are not special for this module, and are matched by the ``*`` and ``?``
  patterns.
  
@@ -79,7 +88,25 @@
  
  .. function:: fnmatch(filename, pattern)
  
-<span class="gu">@@ -73,6 +77,8 @@</span>
+    Test whether the *filename* string matches the *pattern* string, returning
+    :const:`True` or :const:`False`.  If the operating system is case-insensitive,
+    then both parameters will be normalized to all lower- or upper-case before
+    the comparison is performed.  :func:`fnmatchcase` can be used to perform a
+    case-sensitive comparison, regardless of whether that&#39;s standard for the
+    operating system.
+ 
+    This example will print all file names in the current directory with the
+    extension ``.txt``::
+<span class="gu">@@ -64,24 +68,26 @@</span>
+ .. function:: filter(names, pattern)
+ 
+    Return the subset of the list of *names* that match *pattern*. It is the same as
+    ``[n for n in names if fnmatch(n, pattern)]``, but implemented more efficiently.
+ 
+    .. versionadded:: 2.2
+ 
+ 
+ .. function:: translate(pattern)
  
     Return the shell-style *pattern* converted to a regular expression.
  
@@ -88,6 +115,15 @@
     Example:
  
        &gt;&gt;&gt; import fnmatch, re
+       &gt;&gt;&gt;
+       &gt;&gt;&gt; regex = fnmatch.translate(&#39;*.txt&#39;)
+       &gt;&gt;&gt; regex
+       &#39;.*\\.txt$&#39;
+       &gt;&gt;&gt; reobj = re.compile(regex)
+       &gt;&gt;&gt; reobj.match(&#39;foobar.txt&#39;)
+       &lt;_sre.SRE_Match object at 0x...&gt;
+ 
+ 
 </pre></div>
 
 </body>

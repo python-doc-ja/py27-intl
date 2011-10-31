@@ -1,4 +1,13 @@
-@@ -125,27 +125,36 @@
+@@ -116,45 +116,54 @@
+    function and run its :meth:`timeit` method with *number* executions.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ Command Line Interface
+ ----------------------
+ 
+ When called as a program from the command line, the following form is used::
  
     python -m timeit [-n N] [-r N] [-s S] [-t] [-c] [-h] [statement ...]
  
@@ -44,3 +53,12 @@
     print a short usage message and exit
  
  A multi-line statement may be given by specifying each line as a separate
+ statement argument; indented lines are possible by enclosing an argument in
+ quotes and using leading spaces.  Multiple :option:`-s` options are treated
+ similarly.
+ 
+ If :option:`-n` is not given, a suitable number of loops is calculated by trying
+ successive powers of 10 until the total time is at least 0.2 seconds.
+ 
+ The default timer function is platform dependent.  On Windows,
+ :func:`time.clock` has microsecond granularity but :func:`time.time`'s

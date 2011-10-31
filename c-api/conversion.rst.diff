@@ -1,4 +1,13 @@
-@@ -51,6 +51,40 @@
+@@ -42,62 +42,140 @@
+ 
+ * When ``rv >= size``, the output conversion was truncated and a buffer with
+   ``rv + 1`` bytes would have been needed to succeed. *str*[*size*-1] is ``'\0'``
+   in this case.
+ 
+ * When ``rv < 0``, "something bad happened." *str*[*size*-1] is ``'\0'`` in
+   this case too, but the rest of *str* is undefined. The exact cause of the error
+   depends on the underlying platform.
+ 
  The following functions provide locale-independent string to number conversions.
  
  
@@ -39,7 +48,9 @@
  .. cfunction:: double PyOS_ascii_strtod(const char *nptr, char **endptr)
  
     Convert a string to a :ctype:`double`. This function behaves like the Standard C
-@@ -60,12 +94,16 @@
+    function :cfunc:`strtod` does in the C locale. It does this without changing the
+    current locale, since that would not be thread-safe.
+ 
     :cfunc:`PyOS_ascii_strtod` should typically be used for reading configuration
     files or other non-user input that should be locale independent.
  
@@ -58,7 +69,10 @@
  
     Convert a :ctype:`double` to a string using the ``'.'`` as the decimal
     separator. *format* is a :cfunc:`printf`\ -style format string specifying the
-@@ -76,18 +114,58 @@
+    number format. Allowed conversion characters are ``'e'``, ``'E'``, ``'f'``,
+    ``'F'``, ``'g'`` and ``'G'``.
+ 
+    The return value is a pointer to *buffer* with the converted string or NULL if
     the conversion failed.
  
     .. versionadded:: 2.4
@@ -119,7 +133,7 @@
  
     Case insensitive comparison of strings. The function works almost
     identically to :cfunc:`strcmp` except that it ignores the case.
-@@ -95,7 +173,7 @@
+ 
     .. versionadded:: 2.6
  
  
@@ -128,3 +142,5 @@
  
     Case insensitive comparison of strings. The function works almost
     identically to :cfunc:`strncmp` except that it ignores the case.
+ 
+    .. versionadded:: 2.6

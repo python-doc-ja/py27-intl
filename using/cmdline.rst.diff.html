@@ -68,7 +68,7 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -1,5 +1,8 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,14 +1,17 @@</span>
  .. highlightlang:: none
  
 <span class="gi">+.. ATTENTION: You probably should update Misc/python.man, too, if you modify</span>
@@ -77,7 +77,25 @@
  .. _using-on-general:
  
  Command line and environment
-<span class="gu">@@ -78,6 +81,12 @@</span>
+ ============================
+ 
+ The CPython interpreter scans the command line and the environment for various
+ settings.
+ 
+ .. impl-detail::
+ 
+    Other implementations&#39; command line schemes may differ.  See
+    :ref:`implementations` for further resources.
+<span class="gu">@@ -69,52 +72,63 @@</span>
+ 
+ 
+ .. cmdoption:: -m &lt;module-name&gt;
+ 
+    Search :data:`sys.path` for the named module and execute its contents as
+    the :mod:`__main__` module.
+ 
+    Since the argument is a *module* name, you must not give a file extension
+    (``.py``).  The ``module-name`` should be a valid Python module name, but
     the implementation may not always enforce this (e.g. it may allow you to
     use a name that includes a hyphen).
  
@@ -90,7 +108,19 @@
     .. note::
  
        This option cannot be used with built-in modules and extension modules
-<span class="gu">@@ -97,7 +106,7 @@</span>
+       written in C, since they do not have Python module files. However, it
+       can still be used for precompiled modules, even if the original source
+       file is not available.
+ 
+    If this option is given, the first element of :data:`sys.argv` will be the
+    full path to the module file. As with the :option:`-c` option, the current
+    directory will be added to the start of :data:`sys.path`.
+ 
+    Many standard library modules contain code that is invoked on their execution
+    as a script.  An example is the :mod:`timeit` module::
+ 
+        python -mtimeit -s &#39;setup here&#39; &#39;benchmarked code here&#39;
+        python -mtimeit -h # for details
  
     .. seealso::
        :func:`runpy.run_module`
@@ -99,7 +129,8 @@
  
        :pep:`338` -- Executing modules as scripts
  
-<span class="gu">@@ -106,6 +115,11 @@</span>
+    .. versionadded:: 2.4
+ 
     .. versionchanged:: 2.5
        The named module can now be located inside a package.
  
@@ -111,7 +142,25 @@
  
  .. describe:: -
  
-<span class="gu">@@ -301,6 +315,10 @@</span>
+    Read commands from standard input (:data:`sys.stdin`).  If standard input is
+    a terminal, :option:`-i` is implied.
+ 
+    If this option is given, the first element of :data:`sys.argv` will be
+    ``&quot;-&quot;`` and the current directory will be added to the start of
+    :data:`sys.path`.
+ 
+ 
+ .. describe:: &lt;script&gt;
+<span class="gu">@@ -292,24 +306,28 @@</span>
+    form::
+ 
+        file:line: category: message
+ 
+    By default, each warning is printed once for each source line where it
+    occurs.  This option controls how often warnings are printed.
+ 
+    Multiple :option:`-W` options may be given; when a warning matches more than
+    one option, the action for the last matching option is performed.  Invalid
     :option:`-W` options are ignored (though, a warning message is printed about
     invalid options when the first warning is issued).
  
@@ -122,7 +171,25 @@
     Warnings can also be controlled from within a Python program using the
     :mod:`warnings` module.
  
-<span class="gu">@@ -331,7 +349,7 @@</span>
+    The simplest form of argument is one of the following action strings (or a
+    unique abbreviation) by themselves:
+ 
+    ``ignore``
+       Ignore all warnings.
+    ``default``
+       Explicitly request the default behavior (printing each warning once per
+       source line).
+    ``all``
+<span class="gu">@@ -322,36 +340,38 @@</span>
+       Print each warning only the first time it occurs in the program.
+    ``error``
+       Raise an exception instead of printing a warning message.
+ 
+    The full form of argument is::
+ 
+        action:message:category:module:line
+ 
+    Here, *action* is as explained above but only applies to messages that match
     the remaining fields.  Empty fields match all values; trailing empty fields
     may be omitted.  The *message* field matches the start of the warning message
     printed; this match is case-insensitive.  The *category* field matches the
@@ -131,7 +198,11 @@
     actual warning category of the message is a subclass of the specified warning
     category.  The full class name must be given.  The *module* field matches the
     (fully-qualified) module name; this match is case-sensitive.  The *line*
-<span class="gu">@@ -343,6 +361,8 @@</span>
+    field matches the line number, where zero matches all line numbers and is
+    thus equivalent to an omitted line number.
+ 
+    .. seealso::
+       :mod:`warnings` -- the warnings module
  
        :pep:`230` -- Warning framework
  
@@ -140,7 +211,25 @@
  
  .. cmdoption:: -x
  
-<span class="gu">@@ -538,6 +558,12 @@</span>
+    Skip the first line of the source, allowing use of non-Unix forms of
+    ``#!cmd``.  This is intended for a DOS specific hack only.
+ 
+    .. note:: The line numbers in error messages will be off by one.
+ 
+ .. cmdoption:: -3
+ 
+    Warn about Python 3.x incompatibilities which cannot be fixed trivially by
+    :ref:`2to3 &lt;2to3-reference&gt;`. Among these are:
+<span class="gu">@@ -529,24 +549,30 @@</span>
+ 
+    .. seealso::
+ 
+       :pep:`370` -- Per user site-packages directory
+ 
+ 
+ .. envvar:: PYTHONEXECUTABLE
+ 
+    If this environment variable is set, ``sys.argv[0]`` will be set to its
     value instead of the value got through the C runtime.  Only works on
     Mac OS X.
  
@@ -153,6 +242,15 @@
  
  Debug-mode variables
  ~~~~~~~~~~~~~~~~~~~~
+ 
+ Setting these variables only has an effect in a debug build of Python, that is,
+ if Python was configured with the :option:`--with-pydebug` build option.
+ 
+ .. envvar:: PYTHONTHREADDEBUG
+ 
+    If set, Python will print threading debug info.
+ 
+    .. versionchanged:: 2.6
 </pre></div>
 
 </body>

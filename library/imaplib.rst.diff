@@ -1,4 +1,13 @@
-@@ -84,9 +84,9 @@
+@@ -75,44 +75,48 @@
+ 
+    This is a subclass derived from :class:`IMAP4` that connects to the
+    ``stdin/stdout`` file descriptors created by passing *command* to
+    ``os.popen2()``.
+ 
+    .. versionadded:: 2.3
+ 
+ The following utility functions are defined:
+ 
  
  .. function:: Internaldate2tuple(datestr)
  
@@ -11,7 +20,14 @@
  
  .. function:: Int2AP(num)
  
-@@ -101,9 +101,13 @@
+    Converts an integer into a string representation using characters from the set
+    [``A`` .. ``P``].
+ 
+ 
+ .. function:: ParseFlags(flagstr)
+ 
+    Converts an IMAP4 ``FLAGS`` response to a tuple of individual flags.
+ 
  
  .. function:: Time2Internaldate(date_time)
  
@@ -28,7 +44,25 @@
  
  Note that IMAP4 message numbers change as the mailbox changes; in particular,
  after an ``EXPUNGE`` command performs deletions the remaining messages are
-@@ -303,9 +307,10 @@
+ renumbered. So it is highly advisable to use UIDs instead, with the UID command.
+ 
+ At the end of the module, there is a test section that contains a more extensive
+ example of usage.
+ 
+ 
+ .. seealso::
+ 
+    Documents describing the protocol, and sources and binaries  for servers
+@@ -294,27 +298,28 @@
+    Returns IMAP namespaces as defined in RFC2342.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. method:: IMAP4.noop()
+ 
+    Send ``NOOP`` to server.
+ 
  
  .. method:: IMAP4.open(host, port)
  
@@ -41,7 +75,25 @@
  
  
  .. method:: IMAP4.partial(message_num, message_part, start, length)
-@@ -401,7 +406,8 @@
+ 
+    Fetch truncated part of a message. Returned data is a tuple of message part
+    envelope and data.
+ 
+ 
+ .. method:: IMAP4.proxyauth(user)
+ 
+    Assume authentication as *user*. Allows an authorised administrator to proxy
+    into any user's mailbox.
+@@ -392,25 +397,26 @@
+ 
+ 
+ .. method:: IMAP4.setquota(root, limits)
+ 
+    Set the ``quota`` *root*'s resource *limits*. This method is part of the IMAP4
+    QUOTA extension defined in rfc2087.
+ 
+    .. versionadded:: 2.3
+ 
  
  .. method:: IMAP4.shutdown()
  
@@ -51,3 +103,12 @@
  
  
  .. method:: IMAP4.socket()
+ 
+    Returns socket instance used to connect to server.
+ 
+ 
+ .. method:: IMAP4.sort(sort_criteria, charset, search_criterion[, ...])
+ 
+    The ``sort`` command is a variant of ``search`` with sorting semantics for the
+    results.  Returned data contains a space separated list of matching message
+    numbers.

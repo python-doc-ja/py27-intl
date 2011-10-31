@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -24,7 +24,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -15,25 +15,25 @@</span>
+ data so that it looks like an ordinary file object.
+ 
+ Note that additional file formats which can be decompressed by the
+ :program:`gzip` and :program:`gunzip` programs, such  as those produced by
+ :program:`compress` and :program:`pack`, are not supported by this module.
+ 
+ For other archive formats, see the :mod:`bz2`, :mod:`zipfile`, and
+ :mod:`tarfile` modules.
+ 
  The module defines the following items:
  
  
@@ -77,7 +86,25 @@
  
     Constructor for the :class:`GzipFile` class, which simulates most of the methods
     of a file object, with the exception of the :meth:`readinto` and
-<span class="gu">@@ -52,13 +52,29 @@</span>
+    :meth:`truncate` methods.  At least one of *fileobj* and *filename* must be
+    given a non-trivial value.
+ 
+    The new class instance is based on *fileobj*, which can be a regular file, a
+    :class:`StringIO` object, or any other object which simulates a file.  It
+    defaults to ``None``, in which case *filename* is opened to provide a file
+    object.
+ 
+    When *fileobj* is not ``None``, the *filename* argument is only used to be
+<span class="gu">@@ -43,31 +43,47 @@</span>
+    original filename is not included in the header.
+ 
+    The *mode* argument can be any of ``&#39;r&#39;``, ``&#39;rb&#39;``, ``&#39;a&#39;``, ``&#39;ab&#39;``, ``&#39;w&#39;``,
+    or ``&#39;wb&#39;``, depending on whether the file will be read or written.  The default
+    is the mode of *fileobj* if discernible; otherwise, the default is ``&#39;rb&#39;``. If
+    not given, the &#39;b&#39; flag will be added to the mode to ensure the file is opened
+    in binary mode for cross-platform portability.
+ 
+    The *compresslevel* argument is an integer from ``1`` to ``9`` controlling the
     level of compression; ``1`` is fastest and produces the least compression, and
     ``9`` is slowest and produces the most compression.  The default is ``9``.
  
@@ -108,6 +135,15 @@
  
  .. function:: open(filename[, mode[, compresslevel]])
  
+    This is a shorthand for ``GzipFile(filename,`` ``mode,`` ``compresslevel)``.
+    The *filename* argument is required; *mode* defaults to ``&#39;rb&#39;`` and
+    *compresslevel* defaults to ``9``.
+ 
+ 
+ .. _gzip-usage-examples:
+ 
+ Examples of usage
+ -----------------
 </pre></div>
 
 </body>

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -38,7 +38,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -29,60 +29,62 @@</span>
+ 
+ These tools and their built-in counterparts also work well with the high-speed
+ functions in the :mod:`operator` module.  For example, the multiplication
+ operator can be mapped across two vectors to form an efficient dot-product:
+ ``sum(imap(operator.mul, vector1, vector2))``.
+ 
+ 
+ **Infinite Iterators:**
+ 
  ==================  =================       =================================================               =========================================
  Iterator            Arguments               Results                                                         Example
  ==================  =================       =================================================               =========================================
@@ -77,7 +86,10 @@
  :func:`cycle`       p                       p0, p1, ... plast, p0, p1, ...                                  ``cycle(&#39;ABCD&#39;) --&gt; A B C D A B C D ...``
  :func:`repeat`      elem [,n]               elem, elem, elem, ... endlessly or up to n times                ``repeat(10, 3) --&gt; 10 10 10``
  ==================  =================       =================================================               =========================================
-<span class="gu">@@ -49,6 +49,7 @@</span>
+ 
+ **Iterators terminating on the shortest input sequence:**
+ 
+ ====================    ============================    =================================================   =============================================================
  Iterator                Arguments                       Results                                             Example
  ====================    ============================    =================================================   =============================================================
  :func:`chain`           p, q, ...                       p0, p1, ... plast, q0, q1, ...                      ``chain(&#39;ABC&#39;, &#39;DEF&#39;) --&gt; A B C D E F``
@@ -85,7 +97,21 @@
  :func:`dropwhile`       pred, seq                       seq[n], seq[n+1], starting when pred fails          ``dropwhile(lambda x: x&lt;5, [1,4,6,4,1]) --&gt; 6 4 1``
  :func:`groupby`         iterable[, keyfunc]             sub-iterators grouped by value of keyfunc(v)
  :func:`ifilter`         pred, seq                       elements of seq where pred(elem) is True            ``ifilter(lambda x: x%2, range(10)) --&gt; 1 3 5 7 9``
-<span class="gu">@@ -70,10 +71,11 @@</span>
+ :func:`ifilterfalse`    pred, seq                       elements of seq where pred(elem) is False           ``ifilterfalse(lambda x: x%2, range(10)) --&gt; 0 2 4 6 8``
+ :func:`islice`          seq, [start,] stop [, step]     elements from seq[start:stop:step]                  ``islice(&#39;ABCDEFG&#39;, 2, None) --&gt; C D E F G``
+ :func:`imap`            func, p, q, ...                 func(p0, q0), func(p1, q1), ...                     ``imap(pow, (2,3,10), (5,2,3)) --&gt; 32 9 1000``
+ :func:`starmap`         func, seq                       func(\*seq[0]), func(\*seq[1]), ...                 ``starmap(pow, [(2,5), (3,2), (10,3)]) --&gt; 32 9 1000``
+ :func:`tee`             it, n                           it1, it2 , ... itn  splits one iterator into n
+ :func:`takewhile`       pred, seq                       seq[0], seq[1], until pred fails                    ``takewhile(lambda x: x&lt;5, [1,4,6,4,1]) --&gt; 1 4``
+ :func:`izip`            p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                     ``izip(&#39;ABCD&#39;, &#39;xy&#39;) --&gt; Ax By``
+ :func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                     ``izip_longest(&#39;ABCD&#39;, &#39;xy&#39;, fillvalue=&#39;-&#39;) --&gt; Ax By C- D-``
+ ====================    ============================    =================================================   =============================================================
+ 
+ **Combinatoric generators:**
+ 
+ ==============================================   ====================       =============================================================
+ Iterator                                         Arguments                  Results
+ ==============================================   ====================       =============================================================
  :func:`product`                                  p, q, ... [repeat=1]       cartesian product, equivalent to a nested for-loop
  :func:`permutations`                             p[, r]                     r-length tuples, all possible orderings, no repeated elements
  :func:`combinations`                             p, r                       r-length tuples, in sorted order, no repeated elements
@@ -98,7 +124,25 @@
  ==============================================   ====================       =============================================================
  
  
-<span class="gu">@@ -166,19 +168,87 @@</span>
+ .. _itertools-functions:
+ 
+ Itertool functions
+ ------------------
+ 
+ The following module functions all construct and return iterators. Some provide
+ streams of infinite length, so they should only be accessed by functions or
+ loops that truncate the stream.
+ 
+<span class="gu">@@ -157,37 +159,105 @@</span>
+         def combinations(iterable, r):
+             pool = tuple(iterable)
+             n = len(pool)
+             for indices in permutations(range(n), r):
+                 if sorted(indices) == list(indices):
+                     yield tuple(pool[i] for i in indices)
+ 
+    The number of items returned is ``n! / r! / (n-r)!`` when ``0 &lt;= r &lt;= n``
+    or zero when ``r &gt; n``.
  
     .. versionadded:: 2.6
  
@@ -193,7 +237,25 @@
  
  .. function:: cycle(iterable)
  
-<span class="gu">@@ -573,43 +643,6 @@</span>
+    Make an iterator returning elements from the iterable and saving a copy of each.
+    When the iterable is exhausted, return elements from the saved copy.  Repeats
+    indefinitely.  Equivalent to::
+ 
+       def cycle(iterable):
+           # cycle(&#39;ABCD&#39;) --&gt; A B C D A B C D A B C D ...
+           saved = []
+           for element in iterable:
+               yield element
+<span class="gu">@@ -564,61 +634,24 @@</span>
+    Once :func:`tee` has made a split, the original *iterable* should not be
+    used anywhere else; otherwise, the *iterable* could get advanced without
+    the tee objects being informed.
+ 
+    This itertool may require significant auxiliary storage (depending on how
+    much temporary data needs to be stored). In general, if one iterator uses
+    most or all of the data before another iterator starts, it is faster to use
+    :func:`list` instead of :func:`tee`.
+ 
     .. versionadded:: 2.4
  
  
@@ -237,7 +299,25 @@
  .. _itertools-recipes:
  
  Recipes
-<span class="gu">@@ -638,12 +671,12 @@</span>
+ -------
+ 
+ This section shows recipes for creating an extended toolset using the existing
+ itertools as building blocks.
+ 
+ The extended tools offer the same high performance as the underlying toolset.
+ The superior memory performance is kept by processing elements one at a time
+ rather than bringing the whole iterable into memory all at once. Code volume is
+ kept small by linking the tools together in a functional style which helps
+<span class="gu">@@ -629,30 +662,30 @@</span>
+ .. testcode::
+ 
+    def take(n, iterable):
+        &quot;Return first n items of the iterable as a list&quot;
+        return list(islice(iterable, n))
+ 
+    def tabulate(function, start=0):
+        &quot;Return function(0), function(1), ...&quot;
+        return imap(function, count(start))
  
     def consume(iterator, n):
         &quot;Advance the iterator n-steps ahead. If n is none, consume entirely.&quot;
@@ -252,7 +332,25 @@
             next(islice(iterator, n, n), None)
  
     def nth(iterable, n, default=None):
-<span class="gu">@@ -705,28 +738,6 @@</span>
+        &quot;Returns the nth item or a default value&quot;
+        return next(islice(iterable, n, None), default)
+ 
+    def quantify(iterable, pred=bool):
+        &quot;Count how many times the predicate is true&quot;
+        return sum(imap(pred, iterable))
+ 
+    def padnone(iterable):
+        &quot;&quot;&quot;Returns the sequence elements and then returns None indefinitely.
+<span class="gu">@@ -696,46 +729,24 @@</span>
+        &quot;roundrobin(&#39;ABC&#39;, &#39;D&#39;, &#39;EF&#39;) --&gt; A D E B F C&quot;
+        # Recipe credited to George Sakkis
+        pending = len(iterables)
+        nexts = cycle(iter(it).next for it in iterables)
+        while pending:
+            try:
+                for next in nexts:
+                    yield next()
+            except StopIteration:
                 pending -= 1
                 nexts = cycle(islice(nexts, pending))
  
@@ -281,6 +379,15 @@
     def powerset(iterable):
         &quot;powerset([1,2,3]) --&gt; () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)&quot;
         s = list(iterable)
+        return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+ 
+    def unique_everseen(iterable, key=None):
+        &quot;List unique elements, preserving order. Remember all elements ever seen.&quot;
+        # unique_everseen(&#39;AAAABBBCCDAABBB&#39;) --&gt; A B C D
+        # unique_everseen(&#39;ABBCcAD&#39;, str.lower) --&gt; A B C D
+        seen = set()
+        seen_add = seen.add
+        if key is None:
 </pre></div>
 
 </body>

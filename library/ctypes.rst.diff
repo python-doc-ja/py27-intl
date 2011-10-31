@@ -1,4 +1,13 @@
-@@ -220,6 +220,8 @@
+@@ -211,24 +211,26 @@
+ 
+ 
+ .. _ctypes-fundamental-data-types:
+ 
+ Fundamental data types
+ ^^^^^^^^^^^^^^^^^^^^^^
+ 
+ :mod:`ctypes` defines a number of primitive C compatible data types :
+ 
  +----------------------+----------------------------------------+----------------------------+
  | ctypes type          | C type                                 | Python type                |
  +======================+========================================+============================+
@@ -7,7 +16,25 @@
  | :class:`c_char`      | :ctype:`char`                          | 1-character string         |
  +----------------------+----------------------------------------+----------------------------+
  | :class:`c_wchar`     | :ctype:`wchar_t`                       | 1-character unicode string |
-@@ -258,6 +260,9 @@
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_byte`      | :ctype:`char`                          | int/long                   |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_ubyte`     | :ctype:`unsigned char`                 | int/long                   |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_short`     | :ctype:`short`                         | int/long                   |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_ushort`    | :ctype:`unsigned short`                | int/long                   |
+ +----------------------+----------------------------------------+----------------------------+
+@@ -249,24 +251,27 @@
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_double`    | :ctype:`double`                        | float                      |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_longdouble`| :ctype:`long double`                   | float                      |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_char_p`    | :ctype:`char *` (NUL terminated)       | string or ``None``         |
+ +----------------------+----------------------------------------+----------------------------+
+ | :class:`c_wchar_p`   | :ctype:`wchar_t *` (NUL terminated)    | unicode or ``None``        |
+ +----------------------+----------------------------------------+----------------------------+
  | :class:`c_void_p`    | :ctype:`void *`                        | int/long or ``None``       |
  +----------------------+----------------------------------------+----------------------------+
  
@@ -17,7 +44,25 @@
  All these types can be created by calling them with an optional initializer of
  the correct type and value::
  
-@@ -2248,6 +2253,13 @@
+    >>> c_int()
+    c_long(0)
+    >>> c_char_p("Hello, World")
+    c_char_p('Hello, World')
+    >>> c_ushort(-3)
+    c_ushort(65533)
+    >>>
+ 
+ Since these types are mutable, their value can also be changed afterwards::
+@@ -2239,24 +2244,31 @@
+ 
+ .. class:: c_short
+ 
+    Represents the C :ctype:`signed short` datatype.  The constructor accepts an
+    optional integer initializer; no overflow checking is done.
+ 
+ 
+ .. class:: c_size_t
+ 
     Represents the C :ctype:`size_t` datatype.
  
  
@@ -31,3 +76,12 @@
  .. class:: c_ubyte
  
     Represents the C :ctype:`unsigned char` datatype, it interprets the value as
+    small integer.  The constructor accepts an optional integer initializer; no
+    overflow checking is done.
+ 
+ 
+ .. class:: c_uint
+ 
+    Represents the C :ctype:`unsigned int` datatype.  The constructor accepts an
+    optional integer initializer; no overflow checking is done.  On platforms
+    where ``sizeof(int) == sizeof(long)`` it is an alias for :class:`c_ulong`.

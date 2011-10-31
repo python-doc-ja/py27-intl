@@ -68,12 +68,30 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -1,4 +1,3 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,13 +1,12 @@</span>
 <span class="gd">-</span>
  .. _debugger:
  
  :mod:`pdb` --- The Python Debugger
-<span class="gu">@@ -79,10 +78,10 @@</span>
+ ==================================
+ 
+ .. module:: pdb
+    :synopsis: The Python debugger for interactive interpreters.
+ 
+ 
+ .. index:: single: debugging
+ 
+ The module :mod:`pdb` defines an interactive source code debugger for Python
+<span class="gu">@@ -70,28 +69,28 @@</span>
+    Traceback (most recent call last):
+      File &quot;&lt;stdin&gt;&quot;, line 1, in ?
+      File &quot;./mymodule.py&quot;, line 4, in test
+        test2()
+      File &quot;./mymodule.py&quot;, line 3, in test2
+        print spam
+    NameError: spam
+    &gt;&gt;&gt; pdb.pm()
+    &gt; ./mymodule.py(3)test2()
     -&gt; print spam
     (Pdb)
  
@@ -85,7 +103,25 @@
  .. function:: run(statement[, globals[, locals]])
  
     Execute the *statement* (given as a string) under debugger control.  The
-<span class="gu">@@ -126,7 +125,38 @@</span>
+    debugger prompt appears before any code is executed; you can set breakpoints and
+    type ``continue``, or you can step through the statement using ``step`` or
+    ``next`` (all these commands are explained below).  The optional *globals* and
+    *locals* arguments specify the environment in which the code is executed; by
+    default the dictionary of the module :mod:`__main__` is used.  (See the
+    explanation of the :keyword:`exec` statement or the :func:`eval` built-in
+    function.)
+ 
+ 
+<span class="gu">@@ -117,25 +116,56 @@</span>
+ 
+ 
+ .. function:: post_mortem([traceback])
+ 
+    Enter post-mortem debugging of the given *traceback* object.  If no
+    *traceback* is given, it uses the one of the exception that is currently
+    being handled (an exception must be being handled if the default is to be
+    used).
+ 
  
  .. function:: pm()
  
@@ -125,7 +161,25 @@
  
  
  .. _debugger-commands:
-<span class="gu">@@ -209,7 +239,8 @@</span>
+ 
+ Debugger Commands
+ =================
+ 
+ The debugger recognizes the following commands.  Most commands can be
+ abbreviated to one or two letters; e.g. ``h(elp)`` means that either ``h`` or
+ ``help`` can be used to enter the help command (but not ``he`` or ``hel``, nor
+ ``H`` or ``Help`` or ``HELP``).  Arguments to commands must be separated by
+ whitespace (spaces or tabs).  Optional arguments are enclosed in square brackets
+<span class="gu">@@ -200,25 +230,26 @@</span>
+ 
+    If a second argument is present, it is an expression which must evaluate to true
+    before the breakpoint is honored.
+ 
+    Without argument, list all breaks, including for each breakpoint, the number of
+    times that breakpoint has been hit, the current ignore count, and the associated
+    condition if any.
+ 
+ tbreak [[*filename*:]\ *lineno* | *function*\ [, *condition*]]
     Temporary breakpoint, which is removed automatically when it is first hit.  The
     arguments are the same as break.
  
@@ -135,7 +189,25 @@
     With a space separated list of breakpoint numbers, clear those breakpoints.
     Without argument, clear all breaks (but first ask confirmation).
  
-<span class="gu">@@ -360,3 +391,9 @@</span>
+ disable [*bpnumber* [*bpnumber ...*]]
+    Disables the breakpoints given as a space separated list of breakpoint numbers.
+    Disabling a breakpoint means it cannot cause the program to stop execution, but
+    unlike clearing a breakpoint, it remains in the list of breakpoints and can be
+    (re-)enabled.
+ 
+ enable [*bpnumber* [*bpnumber ...*]]
+    Enables the breakpoints specified.
+ 
+<span class="gu">@@ -351,12 +382,18 @@</span>
+       (Pdb) global list_options; list_options = [&#39;-l&#39;]
+       (Pdb)
+ 
+ run [*args* ...]
+    Restart the debugged Python program. If an argument is supplied, it is split
+    with &quot;shlex&quot; and the result is used as the new sys.argv. History, breakpoints,
+    actions and debugger options are preserved. &quot;restart&quot; is an alias for &quot;run&quot;.
+ 
+    .. versionadded:: 2.6
  
  q(uit)
     Quit from the debugger. The program being executed is aborted.

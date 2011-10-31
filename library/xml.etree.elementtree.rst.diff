@@ -1,4 +1,12 @@
-@@ -9,9 +9,9 @@
+@@ -1,533 +1,646 @@
+ 
+ :mod:`xml.etree.ElementTree` --- The ElementTree XML API
+ ========================================================
+ 
+ .. module:: xml.etree.ElementTree
+    :synopsis: Implementation of the ElementTree API.
+ .. moduleauthor:: Fredrik Lundh <fredrik@pythonware.com>
+ 
  
  .. versionadded:: 2.5
  
@@ -11,7 +19,14 @@
  
  Each element has a number of properties associated with it:
  
-@@ -26,7 +26,8 @@
+ * a tag which is a string identifying what kind of data this element represents
+   (the element type, in other words).
+ 
+ * a number of attributes, stored in a Python dictionary.
+ 
+ * a text string.
+ 
+ * an optional tail string.
  
  * a number of child elements, stored in a Python sequence
  
@@ -21,7 +36,7 @@
  
  The :class:`ElementTree` class can be used to wrap an element structure, and
  convert it from and to XML.
-@@ -34,8 +35,14 @@
+ 
  A C implementation of this API is available as :mod:`xml.etree.cElementTree`.
  
  See http://effbot.org/zone/element-index.htm for tutorials and links to other
@@ -38,7 +53,7 @@
  
  .. _elementtree-functions:
  
-@@ -43,18 +50,19 @@
+ Functions
  ---------
  
  
@@ -65,7 +80,7 @@
  
     The exact output format is implementation dependent.  In this version, it's
     written as an ordinary XML file.
-@@ -62,37 +70,36 @@
+ 
     *elem* is an element tree or an individual element.
  
  
@@ -123,7 +138,12 @@
  
     .. note::
  
-@@ -105,198 +112,271 @@
+       :func:`iterparse` only guarantees that it has seen the ">"
+       character of a starting tag when it emits a "start" event, so the
+       attributes are defined, but the contents of the text and tail attributes
+       are undefined at that point.  The same applies to the element children;
+       they may or may not be present.
+ 
        If you need a fully populated element, look for "end" events instead.
  
  
@@ -502,7 +522,8 @@
  
  
  .. _elementtree-elementtree-objects:
-@@ -305,52 +385,51 @@
+ 
+ ElementTree Objects
  -------------------
  
  
@@ -579,7 +600,7 @@
  
  
     .. method:: getroot()
-@@ -358,19 +437,39 @@
+ 
        Returns the root element for this tree.
  
  
@@ -627,7 +648,18 @@
  
  This is the XML file that is going to be manipulated::
  
-@@ -389,13 +488,13 @@
+     <html>
+         <head>
+             <title>Example page</title>
+         </head>
+         <body>
+             <p>Moved to <a href="http://example.org/">example.org</a>
+             or <a href="http://example.com/">example.com</a>.</p>
+         </body>
+     </html>
+ 
+ Example of changing the attribute "target" of every link in first paragraph::
+ 
      >>> from xml.etree.ElementTree import ElementTree
      >>> tree = ElementTree()
      >>> tree.parse("index.xhtml")
@@ -645,7 +677,10 @@
      >>> for i in links:             # Iterates through all found links
      ...     i.attrib["target"] = "blank"
      >>> tree.write("output.xhtml")
-@@ -406,14 +505,14 @@
+ 
+ .. _elementtree-qname-objects:
+ 
+ QName Objects
  -------------
  
  
@@ -667,7 +702,8 @@
  
  
  .. _elementtree-treebuilder-objects:
-@@ -422,76 +521,91 @@
+ 
+ TreeBuilder Objects
  -------------------
  
  
@@ -789,7 +825,15 @@
      >>> class MaxDepth:                     # The target object of the parser
      ...     maxDepth = 0
      ...     depth = 0
-@@ -507,7 +621,7 @@
+     ...     def start(self, tag, attrib):   # Called for each opening tag.
+     ...         self.depth += 1
+     ...         if self.depth > self.maxDepth:
+     ...             self.maxDepth = self.depth
+     ...     def end(self, tag):             # Called for each closing tag.
+     ...         self.depth -= 1
+     ...     def data(self, data):
+     ...         pass            # We do not need to do anything with data.
+     ...     def close(self):    # Called when all data has been parsed.
      ...         return self.maxDepth
      ...
      >>> target = MaxDepth()
@@ -798,7 +842,19 @@
      >>> exampleXml = """
      ... <a>
      ...   <b>
-@@ -527,7 +641,6 @@
+     ...   </b>
+     ...   <b>
+     ...     <c>
+     ...       <d>
+     ...       </d>
+     ...     </c>
+     ...   </b>
+     ... </a>"""
+     >>> parser.feed(exampleXml)
+     >>> parser.close()
+     4
+ 
+ 
  .. rubric:: Footnotes
  
  .. [#] The encoding string included in XML output should conform to the

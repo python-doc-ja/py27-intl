@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -114,7 +114,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -105,25 +105,25 @@</span>
+    The output file should be called :file:`spam.pyd` (in Release mode) or
+    :file:`spam_d.pyd` (in Debug mode). The extension :file:`.pyd` was chosen
+    to avoid confusion with a system library :file:`spam.dll` to which your module
+    could be a Python interface.
+ 
+    .. versionchanged:: 2.5
+       Previously, file names like :file:`spam.dll` (in release mode) or
+       :file:`spam_d.dll` (in debug mode) were also recognized.
+ 
     Now your options are:
  
  #. Copy :file:`example.sln` and :file:`example.vcproj`, rename them to
@@ -77,7 +86,25 @@
  
  #. Create a brand new project; instructions are below.
  
-<span class="gu">@@ -175,16 +175,16 @@</span>
+    In either case, copy :file:`example_nt\\example.def` to :file:`spam\\spam.def`,
+    and edit the new :file:`spam.def` so its second line contains the string
+    &#39;``initspam``&#39;.  If you created a new project yourself, add the file
+    :file:`spam.def` to the project now.  (This is an annoying little file with only
+    two lines.  An alternative approach is to forget about the :file:`.def` file,
+    and add the option :option:`/export:initspam` somewhere to the Link settings, by
+    manually editing the setting in Project Properties dialog).
+ 
+ #. **Creating a brand new project** ---  Use the :menuselection:`File --&gt; New
+<span class="gu">@@ -166,34 +166,34 @@</span>
+    box.  Then click the C/C++ tab, select :guilabel:`Code Generation`, and select
+    :guilabel:`Multi-threaded Debug DLL` from the :guilabel:`Runtime library`
+    dropdown list.
+ 
+    Select :guilabel:`Release` again from the :guilabel:`Configuration` dropdown
+    list.  Select :guilabel:`Multi-threaded DLL` from the :guilabel:`Runtime
+    library` dropdown list.
+ 
+ If your module creates a new type, you may have trouble with this line::
  
     PyObject_HEAD_INIT(&amp;PyType_Type)
  
@@ -99,6 +126,15 @@
  
  
  .. _dynamic-linking:
+ 
+ Differences Between Unix and Windows
+ ====================================
+ 
+ .. sectionauthor:: Chris Phoenix &lt;cphoenix@best.com&gt;
+ 
+ 
+ Unix and Windows use completely different paradigms for run-time loading of
+ code.  Before you try to build a module that can be dynamically loaded, be aware
 </pre></div>
 
 </body>

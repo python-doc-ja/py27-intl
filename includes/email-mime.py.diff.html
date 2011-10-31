@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -26,6 +26,6 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -17,15 +17,15 @@</span>
+ msg.preamble = &#39;Our family reunion&#39;
+ 
+ # Assume we know that the image files are all in PNG format
+ for file in pngfiles:
+     # Open the files in binary mode.  Let the MIMEImage class automatically
+     # guess the specific image type.
+     fp = open(file, &#39;rb&#39;)
+     img = MIMEImage(fp.read())
+     fp.close()
      msg.attach(img)
  
  # Send the email via our own SMTP server.

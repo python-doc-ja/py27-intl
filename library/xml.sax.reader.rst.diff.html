@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -157,7 +157,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -148,25 +148,25 @@</span>
+ 
+ .. method:: XMLReader.setErrorHandler(handler)
+ 
+    Set the current error handler.  If no :class:`ErrorHandler` is set, errors will
+    be raised as exceptions, and warnings will be printed.
+ 
+ 
+ .. method:: XMLReader.setLocale(locale)
+ 
     Allow an application to set the locale for errors and warnings.
  
     SAX parsers are not required to provide localization for errors and warnings; if
@@ -76,6 +85,15 @@
 <span class="gi">+   they cannot support the requested locale, however, they must raise a SAX</span>
     exception.  Applications may request a locale change in the middle of a parse.
  
+ 
+ .. method:: XMLReader.getFeature(featurename)
+ 
+    Return the current setting for feature *featurename*.  If the feature is not
+    recognized, :exc:`SAXNotRecognizedException` is raised. The well-known
+    featurenames are listed in the module :mod:`xml.sax.handler`.
+ 
+ 
+ .. method:: XMLReader.setFeature(featurename, value)
  
 </pre></div>
 

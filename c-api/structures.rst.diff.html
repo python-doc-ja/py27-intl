@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -137,12 +137,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -128,48 +128,46 @@</span>
+ The :attr:`ml_flags` field is a bitfield which can include the following flags.
+ The individual flags indicate either a calling convention or a binding
+ convention.  Of the calling convention flags, only :const:`METH_VARARGS` and
+ :const:`METH_KEYWORDS` can be combined (but note that :const:`METH_KEYWORDS`
+ alone is equivalent to ``METH_VARARGS | METH_KEYWORDS``). Any of the calling
+ convention flags can be combined with a binding flag.
+ 
+ 
+ .. data:: METH_VARARGS
  
     This is the typical calling convention, where the methods have the type
     :ctype:`PyCFunction`. The function expects two :ctype:`PyObject\*` values.
@@ -85,7 +94,15 @@
  
  
  .. data:: METH_KEYWORDS
-<span class="gu">@@ -158,9 +156,9 @@</span>
+ 
+    Methods with these flags must be of type :ctype:`PyCFunctionWithKeywords`.
+    The function expects three parameters: *self*, *args*, and a dictionary of
+    all the keyword arguments.  The flag is typically combined with
+    :const:`METH_VARARGS`, and the parameters are typically processed using
+    :cfunc:`PyArg_ParseTupleAndKeywords`.
+ 
+ 
+ .. data:: METH_NOARGS
  
     Methods without parameters don&#39;t need to check whether arguments are given if
     they are listed with the :const:`METH_NOARGS` flag.  They need to be of type
@@ -98,6 +115,15 @@
  
  
  .. data:: METH_O
+ 
+    Methods with a single object argument can be listed with the :const:`METH_O`
+    flag, instead of invoking :cfunc:`PyArg_ParseTuple` with a ``&quot;O&quot;`` argument.
+    They have the type :ctype:`PyCFunction`, with the *self* parameter, and a
+    :ctype:`PyObject\*` parameter representing the single argument.
+ 
+ 
+ .. data:: METH_OLDARGS
+ 
 </pre></div>
 
 </body>

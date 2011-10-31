@@ -1,4 +1,4 @@
-@@ -1,10 +1,10 @@
+@@ -1,106 +1,152 @@
 -
  :mod:`bisect` --- Array bisection algorithm
  ===========================================
@@ -10,7 +10,9 @@
  .. example based on the PyModules FAQ entry by Aaron Watters <arw@pythonpros.com>
  
  This module provides support for maintaining a list in sorted order without
-@@ -14,80 +14,125 @@
+ having to sort the list after each insertion.  For long lists of items with
+ expensive comparison operations, this can be an improvement over the more common
+ approach.  The module is called :mod:`bisect` because it uses a basic bisection
  algorithm to do its work.  The source code may be most useful as a working
  example of the algorithm (the boundary conditions are already right!).
  
@@ -178,7 +180,16 @@
  all of the previous key lookups).
  
  Instead, it is better to search a list of precomputed keys to find the index
-@@ -104,3 +149,4 @@
+ of the record in question::
+ 
+     >>> data = [('red', 5), ('blue', 1), ('yellow', 8), ('black', 0)]
+     >>> data.sort(key=lambda r: r[1])
+     >>> keys = [r[1] for r in data]         # precomputed list of keys
+     >>> data[bisect_left(keys, 0)]
+     ('black', 0)
+     >>> data[bisect_left(keys, 1)]
+     ('blue', 1)
+     >>> data[bisect_left(keys, 5)]
      ('red', 5)
      >>> data[bisect_left(keys, 8)]
      ('yellow', 8)

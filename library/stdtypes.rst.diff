@@ -1,4 +1,13 @@
-@@ -224,18 +224,20 @@
+@@ -215,36 +215,38 @@
+ ===============================================================================
+ 
+ .. index::
+    object: numeric
+    object: Boolean
+    object: integer
+    object: long integer
+    object: floating point
+    object: complex number
     pair: C; language
  
  There are four distinct numeric types: :dfn:`plain integers`, :dfn:`long
@@ -27,7 +36,25 @@
  
  .. index::
     pair: numeric; literals
-@@ -358,10 +360,10 @@
+    pair: integer; literals
+    triple: long; integer; literals
+    pair: floating point; literals
+    pair: complex number; literals
+    pair: hexadecimal; literals
+    pair: octal; literals
+ 
+ Numbers are created by numeric literals or as the result of built-in functions
+ and operators.  Unadorned integer literals (including binary, hex, and octal
+@@ -349,28 +351,28 @@
+       single: trunc() (in module math)
+       pair: numeric; conversions
+ 
+    Conversion from floats using :func:`int` or :func:`long` truncates toward
+    zero like the related function, :func:`math.trunc`.  Use the function
+    :func:`math.floor` to round downward and :func:`math.ceil` to round
+    upward.
+ 
+ (3)
     See :ref:`built-in-funcs` for a full description.
  
  (4)
@@ -41,7 +68,25 @@
  
  (5)
     Also referred to as integer division.  The resultant value is a whole integer,
-@@ -455,19 +457,66 @@
+    though the result's type is not necessarily int.
+ 
+ (6)
+    float also accepts the strings "nan" and "inf" with an optional prefix "+"
+    or "-" for Not a Number (NaN) and positive or negative infinity.
+ 
+    .. versionadded:: 2.6
+ 
+ (7)
+@@ -446,37 +448,84 @@
+ 
+ (1)
+    Negative shift counts are illegal and cause a :exc:`ValueError` to be raised.
+ 
+ (2)
+    A left shift by *n* bits is equivalent to multiplication by ``pow(2, n)``.  A
+    long integer is returned if the result exceeds the range of plain integers.
+ 
+ (3)
     A right shift by *n* bits is equivalent to division by ``pow(2, n)``.
  
  
@@ -115,7 +160,25 @@
  
  Two methods support conversion to
  and from hexadecimal strings.  Since Python's floats are stored
-@@ -614,11 +663,11 @@
+ internally as binary numbers, converting a float to or from a
+ *decimal* string usually involves a small rounding error.  In
+ contrast, hexadecimal strings allow exact representation and
+ specification of floating-point numbers.  This can be useful when
+ debugging, and in numerical work.
+ 
+ 
+ .. method:: float.hex()
+ 
+@@ -605,55 +654,58 @@
+ ---------------
+ 
+ Python's :term:`generator`\s provide a convenient way to implement the iterator
+ protocol.  If a container object's :meth:`__iter__` method is implemented as a
+ generator, it will automatically return an iterator object (technically, a
+ generator object) supplying the :meth:`__iter__` and :meth:`next` methods.  More
+ information about generators can be found in :ref:`the documentation for the
+ yield expression <yieldexpr>`.
+ 
  
  .. _typesseq:
  
@@ -132,7 +195,11 @@
  
  For other containers see the built in :class:`dict` and :class:`set` classes,
  and the :mod:`collections` module.
-@@ -630,6 +679,7 @@
+ 
+ 
+ .. index::
+    object: sequence
+    object: string
     object: Unicode
     object: tuple
     object: list
@@ -140,7 +207,15 @@
     object: buffer
     object: xrange
  
-@@ -645,6 +695,8 @@
+ String literals are written in single or double quotes: ``'xyzzy'``,
+ ``"frobozz"``.  See :ref:`strings` for more about string literals.
+ Unicode strings are much like strings, but are specified in the syntax
+ using a preceding ``'u'`` character: ``u'abc'``, ``u"def"``. In addition
+ to the functionality described here, there are also string-specific
+ methods described in the :ref:`string-methods` section. Lists are
+ constructed with square brackets, separating items with commas: ``[a, b, c]``.
+ Tuples are constructed by the comma operator (not within square
+ brackets), with or without enclosing parentheses, but an empty tuple
  must have the enclosing parentheses, such as ``a, b, c`` or ``()``.  A
  single item tuple must have a trailing comma, such as ``(d,)``.
  
@@ -149,7 +224,25 @@
  Buffer objects are not directly supported by Python syntax, but can be created
  by calling the built-in function :func:`buffer`.  They don't support
  concatenation or repetition.
-@@ -691,6 +743,12 @@
+ 
+ Objects of type xrange are similar to buffers in that there is no specific syntax to
+ create them, but they are created using the :func:`xrange` function.  They don't
+ support slicing, concatenation or repetition, and using ``in``, ``not in``,
+ :func:`min` or :func:`max` on them is inefficient.
+ 
+ Most sequence types support the following operations.  The ``in`` and ``not in``
+ operations have the same priorities as the comparison operations.  The ``+`` and
+ ``*`` operations have the same priority as the corresponding numeric operations.
+@@ -682,24 +734,30 @@
+ +------------------+--------------------------------+----------+
+ | ``s[i:j]``       | slice of *s* from *i* to *j*   | (3)(4)   |
+ +------------------+--------------------------------+----------+
+ | ``s[i:j:k]``     | slice of *s* from *i* to *j*   | (3)(5)   |
+ |                  | with step *k*                  |          |
+ +------------------+--------------------------------+----------+
+ | ``len(s)``       | length of *s*                  |          |
+ +------------------+--------------------------------+----------+
+ | ``min(s)``       | smallest item of *s*           |          |
  +------------------+--------------------------------+----------+
  | ``max(s)``       | largest item of *s*            |          |
  +------------------+--------------------------------+----------+
@@ -162,7 +255,25 @@
  
  Sequence types also support comparisons. In particular, tuples and lists
  are compared lexicographically by comparing corresponding
-@@ -788,8 +846,9 @@
+ elements. This means that to compare equal, every element must compare
+ equal and the two sequences must be of the same type and have the same
+ length. (For full details see :ref:`comparisons` in the language
+ reference.)
+ 
+ .. index::
+    triple: operations on; sequence; types
+    builtin: len
+    builtin: min
+@@ -779,26 +837,27 @@
+ 
+    .. versionchanged:: 2.4
+       Formerly, string concatenation never occurred in-place.
+ 
+ 
+ .. _string-methods:
+ 
+ String Methods
+ --------------
  
  .. index:: pair: string; methods
  
@@ -174,7 +285,25 @@
  
  In addition, Python's strings support the sequence type methods
  described in the :ref:`typesseq` section. To output formatted strings
-@@ -835,6 +894,8 @@
+ use template strings or the ``%`` operator described in the
+ :ref:`string-formatting` section. Also, see the :mod:`re` module for
+ string functions based on regular expressions.
+ 
+ .. method:: str.capitalize()
+ 
+    Return a copy of the string with its first character capitalized and the
+    rest lowercased.
+ 
+@@ -826,42 +885,46 @@
+    Decodes the string using the codec registered for *encoding*. *encoding*
+    defaults to the default string encoding.  *errors* may be given to set a
+    different error handling scheme.  The default is ``'strict'``, meaning that
+    encoding errors raise :exc:`UnicodeError`.  Other possible values are
+    ``'ignore'``, ``'replace'`` and any other name registered via
+    :func:`codecs.register_error`, see section :ref:`codec-base-classes`.
+ 
+    .. versionadded:: 2.2
+ 
     .. versionchanged:: 2.3
        Support for other error handling schemes added.
  
@@ -183,7 +312,18 @@
  
  .. method:: str.encode([encoding[,errors]])
  
-@@ -853,6 +914,8 @@
+    Return an encoded version of the string.  Default encoding is the current
+    default string encoding.  *errors* may be given to set a different error
+    handling scheme.  The default for *errors* is ``'strict'``, meaning that
+    encoding errors raise a :exc:`UnicodeError`.  Other possible values are
+    ``'ignore'``, ``'replace'``, ``'xmlcharrefreplace'``, ``'backslashreplace'`` and
+    any other name registered via :func:`codecs.register_error`, see section
+    :ref:`codec-base-classes`. For a list of possible encodings, see section
+    :ref:`standard-encodings`.
+ 
+    .. versionadded:: 2.0
+ 
+    .. versionchanged:: 2.3
        Support for ``'xmlcharrefreplace'`` and ``'backslashreplace'`` and other error
        handling schemes added.
  
@@ -192,7 +332,25 @@
  
  .. method:: str.endswith(suffix[, start[, end]])
  
-@@ -881,6 +944,15 @@
+    Return ``True`` if the string ends with the specified *suffix*, otherwise return
+    ``False``.  *suffix* can also be a tuple of suffixes to look for.  With optional
+    *start*, test beginning at that position.  With optional *end*, stop comparing
+    at that position.
+ 
+    .. versionchanged:: 2.5
+       Accept tuples as *suffix*.
+ 
+ 
+@@ -872,24 +935,33 @@
+    column number is reset to zero after each newline occurring in the string.
+    If *tabsize* is not given, a tab size of ``8`` characters is assumed.  This
+    doesn't understand other non-printing characters or escape sequences.
+ 
+ 
+ .. method:: str.find(sub[, start[, end]])
+ 
+    Return the lowest index in the string where substring *sub* is found, such
+    that *sub* is contained in the slice ``s[start:end]``.  Optional arguments
     *start* and *end* are interpreted as in slice notation.  Return ``-1`` if
     *sub* is not found.
  
@@ -208,7 +366,25 @@
  
  .. method:: str.format(*args, **kwargs)
  
-@@ -1297,8 +1369,8 @@
+    Perform a string formatting operation.  The string on which this method is
+    called can contain literal text or replacement fields delimited by braces
+    ``{}``.  Each replacement field contains either the numeric index of a
+    positional argument, or the name of a keyword argument.  Returns a copy of
+    the string where each replacement field is replaced with the string value of
+    the corresponding argument.
+ 
+       >>> "The sum of 1 + 2 is {0}".format(1+2)
+       'The sum of 1 + 2 is 3'
+@@ -1288,26 +1360,26 @@
+    element of the tuple in *values*, and the value to convert comes after the
+    precision.
+ 
+ #. Length modifier (optional).
+ 
+ #. Conversion type.
+ 
+ When the right argument is a dictionary (or other mapping type), then the
+ formats in the string *must* include a parenthesised mapping key into that
  dictionary inserted immediately after the ``'%'`` character. The mapping key
  selects the value to be formatted from the mapping.  For example:
  
@@ -219,7 +395,25 @@
     Python has 002 quote types.
  
  In this case no ``*`` specifiers may occur in a format (since they require a
-@@ -1419,9 +1491,9 @@
+ sequential parameter list).
+ 
+ The conversion flag characters are:
+ 
+ +---------+---------------------------------------------------------------------+
+ | Flag    | Meaning                                                             |
+ +=========+=====================================================================+
+ | ``'#'`` | The value conversion will use the "alternate form" (where defined   |
+ |         | below).                                                             |
+@@ -1410,27 +1482,27 @@
+    string will also be :class:`unicode`.
+ 
+    The precision determines the maximal number of characters used.
+ 
+ (7)
+    See :pep:`237`.
+ 
+ Since Python strings have an explicit length, ``%s`` conversions do not assume
+ that ``'\0'`` is the end of the string.
  
  .. XXX Examples?
  
@@ -232,7 +426,25 @@
  
  .. index::
     module: string
-@@ -1456,11 +1528,29 @@
+    module: re
+ 
+ Additional string operations are defined in standard modules :mod:`string` and
+ :mod:`re`.
+ 
+ 
+ .. _typesseq-xrange:
+ 
+ XRange Type
+@@ -1447,29 +1519,47 @@
+ and the :func:`len` function.
+ 
+ 
+ .. _typesseq-mutable:
+ 
+ Mutable Sequence Types
+ ----------------------
+ 
+ .. index::
     triple: mutable; sequence; types
     object: list
  
@@ -267,7 +479,25 @@
  
  +------------------------------+--------------------------------+---------------------+
  | Operation                    | Result                         | Notes               |
-@@ -1507,23 +1597,6 @@
+ +==============================+================================+=====================+
+ | ``s[i] = x``                 | item *i* of *s* is replaced by |                     |
+ |                              | *x*                            |                     |
+ +------------------------------+--------------------------------+---------------------+
+ | ``s[i:j] = t``               | slice of *s* from *i* to *j*   |                     |
+ |                              | is replaced by the contents of |                     |
+ |                              | the iterable *t*               |                     |
+ +------------------------------+--------------------------------+---------------------+
+ | ``del s[i:j]``               | same as ``s[i:j] = []``        |                     |
+@@ -1498,41 +1588,24 @@
+ | ``s.pop([i])``               | same as ``x = s[i]; del s[i];  | \(6)                |
+ |                              | return x``                     |                     |
+ +------------------------------+--------------------------------+---------------------+
+ | ``s.remove(x)``              | same as ``del s[s.index(x)]``  | \(4)                |
+ +------------------------------+--------------------------------+---------------------+
+ | ``s.reverse()``              | reverses the items of *s* in   | \(7)                |
+ |                              | place                          |                     |
+ +------------------------------+--------------------------------+---------------------+
+ | ``s.sort([cmp[, key[,        | sort the items of *s* in place | (7)(8)(9)(10)       |
  | reverse]]])``                |                                |                     |
  +------------------------------+--------------------------------+---------------------+
  
@@ -291,7 +521,25 @@
  Notes:
  
  (1)
-@@ -1584,7 +1657,8 @@
+    *t* must have the same length as the slice it is  replacing.
+ 
+ (2)
+    The C implementation of Python has historically accepted multiple parameters and
+    implicitly joined them into a tuple; this no longer works in Python 2.0.  Use of
+    this misfeature has been deprecated since Python 1.4.
+ 
+ (3)
+    *x* can be any iterable object.
+@@ -1575,25 +1648,26 @@
+    argument: ``cmp=lambda x,y: cmp(x.lower(), y.lower())``.  The default value
+    is ``None``.
+ 
+    *key* specifies a function of one argument that is used to extract a comparison
+    key from each list element: ``key=str.lower``.  The default value is ``None``.
+ 
+    *reverse* is a boolean value.  If set to ``True``, then the list elements are
+    sorted as if each comparison were reversed.
+ 
     In general, the *key* and *reverse* conversion processes are much faster than
     specifying an equivalent *cmp* function.  This is because *cmp* is called
     multiple times for each list element while *key* and *reverse* touch each
@@ -301,7 +549,25 @@
  
     .. versionchanged:: 2.3
        Support for ``None`` as an equivalent to omitting *cmp* was added.
-@@ -1634,9 +1708,13 @@
+ 
+    .. versionchanged:: 2.4
+       Support for *key* and *reverse* was added.
+ 
+ (9)
+    Starting with Python 2.3, the :meth:`sort` method is guaranteed to be stable.  A
+    sort is stable if it guarantees not to change the relative order of elements
+    that compare equal --- this is helpful for sorting in multiple passes (for
+    example, sort by department, then by salary grade).
+@@ -1625,27 +1699,31 @@
+ 
+ .. versionadded:: 2.4
+ 
+ Like other collections, sets support ``x in set``, ``len(set)``, and ``for x in
+ set``.  Being an unordered collection, sets do not record element position or
+ order of insertion.  Accordingly, sets do not support indexing, slicing, or
+ other sequence-like behavior.
+ 
+ There are currently two built-in set types, :class:`set` and :class:`frozenset`.
  The :class:`set` type is mutable --- the contents can be changed using methods
  like :meth:`add` and :meth:`remove`.  Since it is mutable, it has no hash value
  and cannot be used as either a dictionary key or as an element of another set.
@@ -318,7 +584,25 @@
  
  The constructors for both classes work the same:
  
-@@ -1879,15 +1957,12 @@
+ .. class:: set([iterable])
+            frozenset([iterable])
+ 
+    Return a new set or frozenset object whose elements are taken from
+    *iterable*.  The elements of a set must be hashable.  To represent sets of
+    sets, the inner sets must be :class:`frozenset` objects.  If *iterable* is
+    not specified, a new empty set is returned.
+ 
+    Instances of :class:`set` and :class:`frozenset` provide the following
+@@ -1870,33 +1948,30 @@
+    dictionary mapping the same keys to the same values as does the mapping object.
+    Otherwise the positional argument must be a sequence, a container that supports
+    iteration, or an iterator object.  The elements of the argument must each also
+    be of one of those kinds, and each must in turn contain exactly two objects.
+    The first is used as a key in the new dictionary, and the second as the key's
+    value.  If a given key is seen more than once, the last value associated with it
+    is retained in the new dictionary.
+ 
+    If keyword arguments are given, the keywords themselves with their associated
     values are added as items to the dictionary. If a key is specified both in the
     positional argument and as a keyword argument, the value associated with the
     keyword is retained in the dictionary. For example, these all return a
@@ -340,7 +624,25 @@
  
     The first example only works for keys that are valid Python
     identifiers; the others work with any valid keys.
-@@ -2059,7 +2134,7 @@
+ 
+    .. versionadded:: 2.2
+ 
+    .. versionchanged:: 2.3
+       Support for building a dictionary from keyword arguments added.
+ 
+ 
+    These are the operations that dictionaries support (and therefore, custom
+    mapping types should support too):
+@@ -2050,37 +2125,152 @@
+    .. method:: setdefault(key[, default])
+ 
+       If *key* is in the dictionary, return its value.  If not, insert *key*
+       with a value of *default* and return *default*.  *default* defaults to
+       ``None``.
+ 
+    .. method:: update([other])
+ 
+       Update the dictionary with the key/value pairs from *other*, overwriting
        existing keys.  Return ``None``.
  
        :func:`update` accepts either another dictionary object or an iterable of
@@ -349,7 +651,12 @@
        arguments are specified, the dictionary is then updated with those
        key/value pairs: ``d.update(red=1, blue=2)``.
  
-@@ -2072,6 +2147,121 @@
+       .. versionchanged:: 2.4
+           Allowed the argument to be an iterable of key/value pairs and allowed
+           keyword arguments.
+ 
+    .. method:: values()
+ 
        Return a copy of the dictionary's list of values.  See the note for
        :meth:`dict.items`.
  
@@ -471,7 +778,25 @@
  
  .. _bltin-file-objects:
  
-@@ -2211,11 +2401,12 @@
+ File Objects
+ ============
+ 
+ .. index::
+    object: file
+    builtin: file
+    module: os
+    module: socket
+ 
+@@ -2202,29 +2392,30 @@
+    once in an effort to acquire as close to *size* bytes as possible. Also note
+    that when in non-blocking mode, less data than was requested may be
+    returned, even if no *size* parameter was given.
+ 
+    .. note::
+       This function is simply a wrapper for the underlying
+       :cfunc:`fread` C function, and will behave the same in corner cases,
+       such as whether the EOF value is cached.
+ 
  
  .. method:: file.readline([size])
  
@@ -489,7 +814,25 @@
  
     .. note::
  
-@@ -2357,14 +2548,14 @@
+       Unlike ``stdio``'s :cfunc:`fgets`, the returned string contains null characters
+       (``'\0'``) if they occurred in the input.
+ 
+ 
+ .. method:: file.readlines([sizehint])
+ 
+    Read until EOF using :meth:`readline` and return a list containing the lines
+    thus read.  If the optional *sizehint* argument is present, instead of
+    reading up to EOF, whole lines totalling approximately *sizehint* bytes
+@@ -2348,51 +2539,162 @@
+ 
+ 
+ .. attribute:: file.name
+ 
+    If the file object was created using :func:`open`, the name of the file.
+    Otherwise, some string that indicates the source of the file object, of the
+    form ``<...>``.  This is a read-only attribute and may not be present on all
+    file-like objects.
+ 
  
  .. attribute:: file.newlines
  
@@ -512,7 +855,19 @@
  
  
  .. attribute:: file.softspace
-@@ -2384,6 +2575,117 @@
+ 
+    Boolean that indicates whether a space character needs to be printed before
+    another value when using the :keyword:`print` statement. Classes that are trying
+    to simulate a file object should also have a writable :attr:`softspace`
+    attribute, which should be initialized to zero.  This will be automatic for most
+    classes implemented in Python (care may be needed for objects that override
+    attribute access); types implemented in C will have to provide a writable
+    :attr:`softspace` attribute.
+ 
+    .. note::
+ 
+       This attribute is not used to control the :keyword:`print` statement, but to
+       allow the implementation of :keyword:`print` to keep track of its internal
        state.
  
  
@@ -630,7 +985,25 @@
  .. _typecontextmanager:
  
  Context Manager Types
-@@ -2742,10 +3044,6 @@
+ =====================
+ 
+ .. versionadded:: 2.5
+ 
+ .. index::
+    single: context manager
+    single: context management protocol
+    single: protocol; context management
+ 
+@@ -2733,21 +3035,17 @@
+ 
+ .. [#] Additional information on these special methods may be found in the Python
+    Reference Manual (:ref:`customization`).
+ 
+ .. [#] As a consequence, the list ``[1, 2]`` is considered equal to ``[1.0, 2.0]``, and
+    similarly for tuples.
+ 
+ .. [#] They must have since the parser can't tell the type of the operands.
+ 
  .. [#] To format only a tuple you should therefore provide a singleton tuple whose only
     element is the tuple to be formatted.
  
@@ -641,3 +1014,5 @@
  .. [#] The advantage of leaving the newline on is that returning an empty string is
     then an unambiguous EOF indication.  It is also possible (in cases where it
     might matter, for example, if you want to make an exact copy of a file while
+    scanning its lines) to tell whether the last line of a file ended in a newline
+    or not (yes this happens!).

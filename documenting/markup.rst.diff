@@ -1,4 +1,13 @@
-@@ -152,7 +152,7 @@
+@@ -143,65 +143,82 @@
+ 
+ .. describe:: cvar
+ 
+    Describes a global C variable.  The signature should include the type, such
+    as::
+ 
+       .. cvar:: PyObject* PyClass_Type
+ 
+ .. describe:: data
  
     Describes global data in a module, including both variables and values used
     as "defined constants."  Class and object attributes are not documented
@@ -7,7 +16,12 @@
  
  .. describe:: exception
  
-@@ -165,7 +165,7 @@
+    Describes an exception class.  The signature can, but need not include
+    parentheses with constructor arguments.
+ 
+ .. describe:: function
+ 
+    Describes a module-level function.  The signature should include the
     parameters, enclosing optional parameters in brackets.  Default values can be
     given if it enhances clarity.  For example::
  
@@ -16,7 +30,20 @@
  
     Object methods are not documented using this directive. Bound object methods
     placed in the module namespace as part of the public interface of the module
-@@ -186,13 +186,30 @@
+    are documented using this, as they are equivalent to normal functions for
+    most purposes.
+ 
+    The description should include information about the parameters required and
+    how they are used (especially whether mutable objects passed as parameters
+    are modified), side effects, and possible exceptions.  A small example may be
+    provided.
+ 
+ .. describe:: class
+ 
+    Describes a class.  The signature can include parentheses with parameters
+    which will be shown as the constructor arguments.
+ 
+ .. describe:: attribute
  
     Describes an object data attribute.  The description should include
     information about the type of the data to be expected and whether it may be
@@ -49,7 +76,25 @@
  
  .. describe:: opcode
  
-@@ -524,10 +541,6 @@
+    Describes a Python :term:`bytecode` instruction.
+ 
+ .. describe:: cmdoption
+ 
+    Describes a Python command line option or switch.  Option argument names
+    should be enclosed in angle brackets.  Example::
+ 
+       .. cmdoption:: -m <module>
+ 
+@@ -515,28 +532,24 @@
+ .. describe:: regexp
+ 
+    A regular expression. Quotes should not be included.
+ 
+ .. describe:: samp
+ 
+    A piece of literal text, such as code.  Within the contents, you can use
+    curly braces to indicate a "variable" part, as in ``:file:``.
+ 
     If you don't need the "variable part" indication, use the standard
     ````code```` instead.
  
@@ -60,7 +105,25 @@
  
  The following roles generate external links:
  
-@@ -699,10 +712,10 @@
+ .. describe:: pep
+ 
+    A reference to a Python Enhancement Proposal.  This generates appropriate
+    index entries. The text "PEP *number*\ " is generated; in the HTML output,
+    this text is a hyperlink to an online copy of the specified PEP.
+ 
+ .. describe:: rfc
+ 
+    A reference to an Internet Request for Comments.  This generates appropriate
+@@ -690,37 +703,37 @@
+ .. describe:: toctree
+ 
+    This directive inserts a "TOC tree" at the current location, using the
+    individual TOCs (including "sub-TOC trees") of the files given in the
+    directive body.  A numeric ``maxdepth`` option may be given to indicate the
+    depth of the tree; by default, all levels are included.
+ 
+    Consider this example (taken from the library reference index)::
+ 
        .. toctree::
           :maxdepth: 2
  
@@ -75,7 +138,7 @@
           (many more files listed here)
  
     This accomplishes two things:
-@@ -710,8 +723,8 @@
+ 
     * Tables of contents from all those files are inserted, with a maximum depth
       of two, that means one nested heading.  ``toctree`` directives in those
       files are also taken into account.
@@ -85,4 +148,13 @@
 +     ``strings`` and so forth, and it knows that they are children of the
       shown file, the library index.  From this information it generates "next
       chapter", "previous chapter" and "parent chapter" links.
+ 
+    In the end, all files included in the build process must occur in one
+    ``toctree`` directive; Sphinx will emit a warning if it finds a file that is
+    not included, because that means that this file will not be reachable through
+    standard navigation.
+ 
+    The special file ``contents.rst`` at the root of the source directory is the
+    "root" of the TOC tree hierarchy; from it the "Contents" page is generated.
+ 
  

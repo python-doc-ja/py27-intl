@@ -1,4 +1,13 @@
-@@ -164,3 +164,139 @@
+@@ -155,12 +155,148 @@
+ whatsnew/2.3,,::,
+ whatsnew/2.3,,:config,
+ whatsnew/2.3,,:Critical,
+ whatsnew/2.3,,:Error,
+ whatsnew/2.3,,:Problem,
+ whatsnew/2.3,,:root,
+ whatsnew/2.3,,:Warning,
+ whatsnew/2.4,,::,
+ whatsnew/2.4,,:System,
  whatsnew/2.5,,:memory,:memory:
  whatsnew/2.5,,:step,[start:stop:step]
  whatsnew/2.5,,:stop,[start:stop:step]

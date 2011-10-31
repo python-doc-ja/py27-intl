@@ -1,4 +1,13 @@
-@@ -426,6 +426,7 @@
+@@ -417,24 +417,25 @@
+ String literals
+ ---------------
+ 
+ .. index:: single: string literal
+ 
+ String literals are described by the following lexical definitions:
+ 
+ .. index:: single: ASCII@ASCII
+ 
  .. productionlist::
     stringliteral: [`stringprefix`](`shortstring` | `longstring`)
     stringprefix: "r" | "u" | "ur" | "R" | "U" | "UR" | "Ur" | "uR"
@@ -6,7 +15,25 @@
     shortstring: "'" `shortstringitem`* "'" | '"' `shortstringitem`* '"'
     longstring: "'''" `longstringitem`* "'''"
               : | '"""' `longstringitem`* '"""'
-@@ -458,8 +459,10 @@
+    shortstringitem: `shortstringchar` | `escapeseq`
+    longstringitem: `longstringchar` | `escapeseq`
+    shortstringchar: <any source character except "\" or newline or the quote>
+    longstringchar: <any source character except "\">
+    escapeseq: "\" <any ASCII character>
+ 
+ One syntactic restriction not indicated by these productions is that whitespace
+ is not allowed between the :token:`stringprefix` and the rest of the string
+ literal. The source character set is defined by the encoding declaration; it is
+@@ -449,26 +450,28 @@
+ 
+ In plain English: String literals can be enclosed in matching single quotes
+ (``'``) or double quotes (``"``).  They can also be enclosed in matching groups
+ of three single or double quotes (these are generally referred to as
+ *triple-quoted strings*).  The backslash (``\``) character is used to escape
+ characters that otherwise have a special meaning, such as newline, backslash
+ itself, or the quote character.  String literals may optionally be prefixed with
+ a letter ``'r'`` or ``'R'``; such strings are called :dfn:`raw strings` and use
+ different rules for interpreting backslash escape sequences.  A prefix of
  ``'u'`` or ``'U'`` makes the string a Unicode string.  Unicode strings use the
  Unicode character set as defined by the Unicode Consortium and ISO 10646.  Some
  additional escape sequences, described below, are available in Unicode strings.
@@ -19,3 +46,12 @@
  
  In triple-quoted strings, unescaped newlines and quotes are allowed (and are
  retained), except that three unescaped quotes in a row terminate the string.  (A
+ "quote" is the character used to open the string, i.e. either ``'`` or ``"``.)
+ 
+ .. index::
+    single: physical line
+    single: escape sequence
+    single: Standard C
+    single: C
+ 
+ Unless an ``'r'`` or ``'R'`` prefix is present, escape sequences in strings are

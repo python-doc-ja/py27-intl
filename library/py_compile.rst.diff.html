@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -40,6 +40,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -31,24 +31,29 @@</span>
+    name of the source file in error messages instead of *file*.  If *doraise* is
+    true, a :exc:`PyCompileError` is raised when an error is encountered while
+    compiling *file*. If *doraise* is false (the default), an error string is
+    written to ``sys.stderr``, but no exception is raised.
+ 
+ 
+ .. function:: main([args])
+ 
+    Compile several source files.  The files named in *args* (or on the command
     line, if *args* is not specified) are compiled and the resulting bytecode is
     cached in the normal manner.  This function does not search a directory
     structure to locate source files; it only compiles files named explicitly.
@@ -80,6 +89,15 @@
  
  When this module is run as a script, the :func:`main` is used to compile all the
  files named on the command line.  The exit status is nonzero if one of the files
+ could not be compiled.
+ 
+ .. versionchanged:: 2.6
+    Added the nonzero exit status when module is run as a script.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`compileall`
 </pre></div>
 
 </body>

@@ -1,4 +1,4 @@
-@@ -1,8 +1,8 @@
+@@ -1,17 +1,17 @@
  .. _using-index:
  
 -################
@@ -10,3 +10,12 @@
  
  
  This part of the documentation is devoted to general information on the setup
+ of the Python environment on different platform, the invocation of the
+ interpreter and things that make working with Python easier.
+ 
+ 
+ .. toctree::
+    :numbered:
+ 
+    cmdline.rst
+    unix.rst

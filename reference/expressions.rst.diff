@@ -1,4 +1,13 @@
-@@ -65,7 +65,7 @@
+@@ -56,25 +56,25 @@
+ =====
+ 
+ .. index:: single: atom
+ 
+ Atoms are the most basic elements of expressions.  The simplest atoms are
+ identifiers or literals.  Forms enclosed in reverse quotes or in parentheses,
+ brackets or braces are also categorized syntactically as atoms.  The syntax for
+ atoms is:
+ 
  .. productionlist::
     atom: `identifier` | `literal` | `enclosure`
     enclosure: `parenth_form` | `list_display`
@@ -7,7 +16,25 @@
              : | `string_conversion` | `yield_atom`
  
  
-@@ -206,74 +206,100 @@
+ .. _atom-identifiers:
+ 
+ Identifiers (Names)
+ -------------------
+ 
+ .. index::
+    single: name
+    single: identifier
+ 
+@@ -197,100 +197,150 @@
+ A list display yields a new list object.  Its contents are specified by
+ providing either a list of expressions or a list comprehension.  When a
+ comma-separated list of expressions is supplied, its elements are evaluated from
+ left to right and placed into the list object in that order.  When a list
+ comprehension is supplied, it consists of a single expression followed by at
+ least one :keyword:`for` clause and zero or more :keyword:`for` or :keyword:`if`
+ clauses.  In this case, the elements of the new list are those that would be
+ produced by considering each of the :keyword:`for` or :keyword:`if` clauses a
+ block, nesting from left to right, and evaluating the expression to produce a
  list element each time the innermost block is reached [#]_.
  
  
@@ -143,7 +170,8 @@
  
  Restrictions on the types of the key values are listed earlier in section
  :ref:`types`.  (To summarize, the key type should be :term:`hashable`, which excludes
-@@ -282,6 +308,30 @@
+ all mutable objects.)  Clashes between duplicate keys are not detected; the last
+ datum (textually rightmost in the display) stored for a given key value
  prevails.
  
  
@@ -174,7 +202,25 @@
  .. _string-conversions:
  
  String conversions
-@@ -367,7 +417,7 @@
+ ------------------
+ 
+ .. index::
+    pair: string; conversion
+    pair: reverse; quotes
+    pair: backward; quotes
+    single: back-quotes
+ 
+ A string conversion is an expression list enclosed in reverse (a.k.a. backward)
+@@ -358,25 +408,25 @@
+ the internal evaluation stack.  When the execution is resumed by calling one of
+ the generator's methods, the function can proceed exactly as if the
+ :keyword:`yield` expression was just another external call. The value of the
+ :keyword:`yield` expression after resuming depends on the method which resumed
+ the execution.
+ 
+ .. index:: single: coroutine
+ 
+ All of this makes generator functions quite similar to coroutines; they yield
  multiple times, they have more than one entry point and their execution can be
  suspended.  The only difference is that a generator function cannot control
  where should the execution continue after it yields; the control is always
@@ -183,7 +229,25 @@
  
  .. index:: object: generator
  
-@@ -950,6 +1000,11 @@
+ The following generator's methods can be used to control the execution of a
+ generator function:
+ 
+ .. index:: exception: StopIteration
+ 
+ 
+ .. method:: generator.next()
+ 
+    Starts the execution of a generator function or resumes it at the last executed
+@@ -941,24 +991,29 @@
+    shift_expr: `a_expr` | `shift_expr` ( "<<" | ">>" ) `a_expr`
+ 
+ These operators accept plain or long integers as arguments.  The arguments are
+ converted to a common type.  They shift the first argument to the left or right
+ by the number of bits given by the second argument.
+ 
+ .. index:: exception: ValueError
+ 
+ A right shift by *n* bits is defined as division by ``pow(2, n)``.  A left shift
  by *n* bits is defined as multiplication with ``pow(2, n)``.  Negative shift
  counts raise a :exc:`ValueError` exception.
  
@@ -195,7 +259,25 @@
  
  .. _bitwise:
  
-@@ -1312,6 +1367,7 @@
+ Binary bitwise operations
+ =========================
+ 
+ .. index:: triple: binary; bitwise; operation
+ 
+ Each of the three bitwise operations has a different priority level:
+ 
+ .. productionlist::
+    and_expr: `shift_expr` | `and_expr` "&" `shift_expr`
+@@ -1303,50 +1358,51 @@
+ +-----------------------------------------------+-------------------------------------+
+ | ``|``                                         | Bitwise OR                          |
+ +-----------------------------------------------+-------------------------------------+
+ | ``^``                                         | Bitwise XOR                         |
+ +-----------------------------------------------+-------------------------------------+
+ | ``&``                                         | Bitwise AND                         |
+ +-----------------------------------------------+-------------------------------------+
+ | ``<<``, ``>>``                                | Shifts                              |
+ +-----------------------------------------------+-------------------------------------+
  | ``+``, ``-``                                  | Addition and subtraction            |
  +-----------------------------------------------+-------------------------------------+
  | ``*``, ``/``, ``//``, ``%``                   | Multiplication, division, remainder |
@@ -203,7 +285,24 @@
  +-----------------------------------------------+-------------------------------------+
  | ``+x``, ``-x``, ``~x``                        | Positive, negative, bitwise NOT     |
  +-----------------------------------------------+-------------------------------------+
-@@ -1336,8 +1392,8 @@
+ | ``**``                                        | Exponentiation [#]_                 |
+ +-----------------------------------------------+-------------------------------------+
+ | ``x[index]``, ``x[index:index]``,             | Subscription, slicing,              |
+ | ``x(arguments...)``, ``x.attribute``          | call, attribute reference           |
+ +-----------------------------------------------+-------------------------------------+
+ | ``(expressions...)``,                         | Binding or tuple display,           |
+ | ``[expressions...]``,                         | list display,                       |
+ | ``{key:datum...}``,                           | dictionary display,                 |
+ | ```expressions...```                          | string conversion                   |
+ +-----------------------------------------------+-------------------------------------+
+ 
+ .. rubric:: Footnotes
+ 
+ .. [#] In Python 2.3 and later releases, a list comprehension "leaks" the control
+    variables of each ``for`` it contains into the containing scope.  However, this
+    behavior is deprecated, and relying on it will not work in Python 3.0
+ 
+ .. [#] While ``abs(x%y) < abs(y)`` is true mathematically, for floats it may not be
     true numerically due to roundoff.  For example, and assuming a platform on which
     a Python float is an IEEE 754 double-precision number, in order that ``-1e-100 %
     1e100`` have the same sign as ``1e100``, the computed result is ``-1e-100 +
@@ -214,7 +313,25 @@
     first argument instead, and so returns ``-1e-100`` in this case. Which approach
     is more appropriate depends on the application.
  
-@@ -1367,5 +1423,8 @@
+ .. [#] If x is very close to an exact integer multiple of y, it's possible for
+    ``floor(x/y)`` to be one larger than ``(x-x%y)/y`` due to rounding.  In such
+    cases, Python returns the latter result, in order to preserve that
+    ``divmod(x,y)[0] * y + x % y`` be very close to ``x``.
+ 
+ .. [#] While comparisons between unicode strings make sense at the byte
+    level, they may be counter-intuitive to users. For example, the
+    strings ``u"\u00C7"`` and ``u"\u0043\u0327"`` compare differently,
+    even though they both represent the same unicode character (LATIN
+@@ -1358,14 +1414,17 @@
+ 
+ .. [#] Earlier versions of Python used lexicographic comparison of the sorted (key,
+    value) lists, but this was very expensive for the common case of comparing for
+    equality.  An even earlier version of Python compared dictionaries by identity
+    only, but this caused surprises because people expected to be able to test a
+    dictionary for emptiness by comparing it to ``{}``.
+ 
+ .. [#] Due to automatic garbage-collection, free lists, and the dynamic nature of
+    descriptors, you may notice seemingly unusual behaviour in certain uses of
     the :keyword:`is` operator, like those involving comparisons between instance
     methods, or constants.  Check their documentation for more info.
  

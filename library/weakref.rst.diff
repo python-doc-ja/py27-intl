@@ -1,4 +1,13 @@
-@@ -59,11 +59,14 @@
+@@ -50,29 +50,32 @@
+ benefit of advanced uses.
+ 
+ .. note::
+ 
+    Weak references to an object are cleared before the object's :meth:`__del__`
+    is called, to ensure that the weak reference callback (if any) finds the
+    object still alive.
+ 
+ Not all objects can be weakly referenced; those objects which can include class
  instances, functions written in Python (but not in C), methods (both bound and
  unbound), sets, frozensets, file objects, :term:`generator`\s, type objects,
  :class:`DBcursor` objects from the :mod:`bsddb` module, sockets, arrays, deques,
@@ -14,7 +23,25 @@
  Several built-in types such as :class:`list` and :class:`dict` do not directly
  support weak references but can add support through subclassing::
  
-@@ -206,6 +209,14 @@
+    class Dict(dict):
+        pass
+ 
+    obj = Dict(red=1, green=2, blue=3)   # this object is weak referenceable
+ 
+ .. impl-detail::
+ 
+    Other built-in types such as :class:`tuple` and :class:`long` do not support
+    weak references even when subclassed.
+@@ -197,24 +200,32 @@
+    Return an :term:`iterator` that yields the weak references to the values.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. method:: WeakValueDictionary.valuerefs()
+ 
+    Return a list of weak references to the values.
+ 
     .. versionadded:: 2.5
  
  
@@ -29,3 +56,12 @@
  .. data:: ReferenceType
  
     The type object for weak references objects.
+ 
+ 
+ .. data:: ProxyType
+ 
+    The type object for proxies of objects which are not callable.
+ 
+ 
+ .. data:: CallableProxyType
+ 

@@ -68,7 +68,15 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -9,9 +9,9 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,533 +1,646 @@</span>
+ 
+ :mod:`xml.etree.ElementTree` --- The ElementTree XML API
+ ========================================================
+ 
+ .. module:: xml.etree.ElementTree
+    :synopsis: Implementation of the ElementTree API.
+ .. moduleauthor:: Fredrik Lundh &lt;fredrik@pythonware.com&gt;
+ 
  
  .. versionadded:: 2.5
  
@@ -81,7 +89,14 @@
  
  Each element has a number of properties associated with it:
  
-<span class="gu">@@ -26,7 +26,8 @@</span>
+ * a tag which is a string identifying what kind of data this element represents
+   (the element type, in other words).
+ 
+ * a number of attributes, stored in a Python dictionary.
+ 
+ * a text string.
+ 
+ * an optional tail string.
  
  * a number of child elements, stored in a Python sequence
  
@@ -91,7 +106,7 @@
  
  The :class:`ElementTree` class can be used to wrap an element structure, and
  convert it from and to XML.
-<span class="gu">@@ -34,8 +35,14 @@</span>
+ 
  A C implementation of this API is available as :mod:`xml.etree.cElementTree`.
  
  See http://effbot.org/zone/element-index.htm for tutorials and links to other
@@ -108,7 +123,7 @@
  
  .. _elementtree-functions:
  
-<span class="gu">@@ -43,18 +50,19 @@</span>
+ Functions
  ---------
  
  
@@ -135,7 +150,7 @@
  
     The exact output format is implementation dependent.  In this version, it&#39;s
     written as an ordinary XML file.
-<span class="gu">@@ -62,37 +70,36 @@</span>
+ 
     *elem* is an element tree or an individual element.
  
  
@@ -193,7 +208,12 @@
  
     .. note::
  
-<span class="gu">@@ -105,198 +112,271 @@</span>
+       :func:`iterparse` only guarantees that it has seen the &quot;&gt;&quot;
+       character of a starting tag when it emits a &quot;start&quot; event, so the
+       attributes are defined, but the contents of the text and tail attributes
+       are undefined at that point.  The same applies to the element children;
+       they may or may not be present.
+ 
        If you need a fully populated element, look for &quot;end&quot; events instead.
  
  
@@ -572,7 +592,8 @@
  
  
  .. _elementtree-elementtree-objects:
-<span class="gu">@@ -305,52 +385,51 @@</span>
+ 
+ ElementTree Objects
  -------------------
  
  
@@ -649,7 +670,7 @@
  
  
     .. method:: getroot()
-<span class="gu">@@ -358,19 +437,39 @@</span>
+ 
        Returns the root element for this tree.
  
  
@@ -697,7 +718,18 @@
  
  This is the XML file that is going to be manipulated::
  
-<span class="gu">@@ -389,13 +488,13 @@</span>
+     &lt;html&gt;
+         &lt;head&gt;
+             &lt;title&gt;Example page&lt;/title&gt;
+         &lt;/head&gt;
+         &lt;body&gt;
+             &lt;p&gt;Moved to &lt;a href=&quot;http://example.org/&quot;&gt;example.org&lt;/a&gt;
+             or &lt;a href=&quot;http://example.com/&quot;&gt;example.com&lt;/a&gt;.&lt;/p&gt;
+         &lt;/body&gt;
+     &lt;/html&gt;
+ 
+ Example of changing the attribute &quot;target&quot; of every link in first paragraph::
+ 
      &gt;&gt;&gt; from xml.etree.ElementTree import ElementTree
      &gt;&gt;&gt; tree = ElementTree()
      &gt;&gt;&gt; tree.parse(&quot;index.xhtml&quot;)
@@ -715,7 +747,10 @@
      &gt;&gt;&gt; for i in links:             # Iterates through all found links
      ...     i.attrib[&quot;target&quot;] = &quot;blank&quot;
      &gt;&gt;&gt; tree.write(&quot;output.xhtml&quot;)
-<span class="gu">@@ -406,14 +505,14 @@</span>
+ 
+ .. _elementtree-qname-objects:
+ 
+ QName Objects
  -------------
  
  
@@ -737,7 +772,8 @@
  
  
  .. _elementtree-treebuilder-objects:
-<span class="gu">@@ -422,76 +521,91 @@</span>
+ 
+ TreeBuilder Objects
  -------------------
  
  
@@ -859,7 +895,15 @@
      &gt;&gt;&gt; class MaxDepth:                     # The target object of the parser
      ...     maxDepth = 0
      ...     depth = 0
-<span class="gu">@@ -507,7 +621,7 @@</span>
+     ...     def start(self, tag, attrib):   # Called for each opening tag.
+     ...         self.depth += 1
+     ...         if self.depth &gt; self.maxDepth:
+     ...             self.maxDepth = self.depth
+     ...     def end(self, tag):             # Called for each closing tag.
+     ...         self.depth -= 1
+     ...     def data(self, data):
+     ...         pass            # We do not need to do anything with data.
+     ...     def close(self):    # Called when all data has been parsed.
      ...         return self.maxDepth
      ...
      &gt;&gt;&gt; target = MaxDepth()
@@ -868,7 +912,19 @@
      &gt;&gt;&gt; exampleXml = &quot;&quot;&quot;
      ... &lt;a&gt;
      ...   &lt;b&gt;
-<span class="gu">@@ -527,7 +641,6 @@</span>
+     ...   &lt;/b&gt;
+     ...   &lt;b&gt;
+     ...     &lt;c&gt;
+     ...       &lt;d&gt;
+     ...       &lt;/d&gt;
+     ...     &lt;/c&gt;
+     ...   &lt;/b&gt;
+     ... &lt;/a&gt;&quot;&quot;&quot;
+     &gt;&gt;&gt; parser.feed(exampleXml)
+     &gt;&gt;&gt; parser.close()
+     4
+ 
+ 
  .. rubric:: Footnotes
  
  .. [#] The encoding string included in XML output should conform to the

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -14,7 +14,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -5,25 +5,25 @@</span>
+ .. module:: sets
+    :synopsis: Implementation of sets of unique elements.
+    :deprecated:
+ .. moduleauthor:: Greg V. Wilson &lt;gvwilson@nevex.com&gt;
+ .. moduleauthor:: Alex Martelli &lt;aleax@aleax.it&gt;
+ .. moduleauthor:: Guido van Rossum &lt;guido@python.org&gt;
+ .. sectionauthor:: Raymond D. Hettinger &lt;python@rcn.com&gt;
+ 
+ 
  .. versionadded:: 2.3
  
  .. deprecated:: 2.6
@@ -77,6 +86,15 @@
  
  The :mod:`sets` module provides classes for constructing and manipulating
  unordered collections of unique elements.  Common uses include membership
+ testing, removing duplicates from a sequence, and computing standard math
+ operations on sets such as intersection, union, difference, and symmetric
+ difference.
+ 
+ Like other collections, sets support ``x in set``, ``len(set)``, and ``for x in
+ set``.  Being an unordered collection, sets do not record element position or
+ order of insertion.  Accordingly, sets do not support indexing, slicing, or
+ other sequence-like behavior.
+ 
 </pre></div>
 
 </body>

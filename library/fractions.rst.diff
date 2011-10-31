@@ -1,4 +1,13 @@
-@@ -17,30 +17,34 @@
+@@ -8,104 +8,130 @@
+ .. sectionauthor:: Jeffrey Yasskin <jyasskin at gmail.com>
+ .. versionadded:: 2.6
+ 
+ 
+ The :mod:`fractions` module provides support for rational number arithmetic.
+ 
+ 
+ A Fraction instance can be constructed from a pair of integers, from
+ another rational number, or from a string.
  
  .. class:: Fraction(numerator=0, denominator=1)
             Fraction(other_fraction)
@@ -50,7 +59,17 @@
  
        >>> from fractions import Fraction
        >>> Fraction(16, -10)
-@@ -58,6 +62,15 @@
+       Fraction(-8, 5)
+       >>> Fraction(123)
+       Fraction(123, 1)
+       >>> Fraction()
+       Fraction(0, 1)
+       >>> Fraction('3/7')
+       Fraction(3, 7)
+       [40794 refs]
+       >>> Fraction(' -3/7 ')
+       Fraction(-3, 7)
+       >>> Fraction('1.414213 \t\n')
        Fraction(1414213, 1000000)
        >>> Fraction('-.125')
        Fraction(-1, 8)
@@ -66,7 +85,8 @@
  
  
     The :class:`Fraction` class inherits from the abstract base class
-@@ -66,6 +79,10 @@
+    :class:`numbers.Rational`, and implements all of the methods and
+    operations from that class.  :class:`Fraction` instances are hashable,
     and should be treated as immutable.  In addition,
     :class:`Fraction` has the following methods:
  
@@ -77,7 +97,7 @@
  
     .. method:: from_float(flt)
  
-@@ -73,12 +90,19 @@
+       This class method constructs a :class:`Fraction` representing the exact
        value of *flt*, which must be a :class:`float`. Beware that
        ``Fraction.from_float(0.3)`` is not the same value as ``Fraction(3, 10)``
  
@@ -97,7 +117,14 @@
  
     .. method:: limit_denominator(max_denominator=1000000)
  
-@@ -93,10 +117,12 @@
+       Finds and returns the closest :class:`Fraction` to ``self`` that has
+       denominator at most max_denominator.  This method is useful for finding
+       rational approximations to a given floating-point number:
+ 
+          >>> from fractions import Fraction
+          >>> Fraction('3.1415926535897932').limit_denominator(1000)
+          Fraction(355, 113)
+ 
        or for recovering a rational number that's represented as a float:
  
           >>> from math import pi, cos
@@ -112,3 +139,12 @@
  
  
  .. function:: gcd(a, b)
+ 
+    Return the greatest common divisor of the integers *a* and *b*.  If either
+    *a* or *b* is nonzero, then the absolute value of ``gcd(a, b)`` is the
+    largest integer that divides both *a* and *b*.  ``gcd(a,b)`` has the same
+    sign as *b* if *b* is nonzero; otherwise it takes the sign of *a*.  ``gcd(0,
+    0)`` returns ``0``.
+ 
+ 
+ .. seealso::

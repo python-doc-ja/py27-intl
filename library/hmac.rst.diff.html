@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -19,10 +19,6 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -10,28 +10,24 @@</span>
+ 
+ .. versionadded:: 2.2
+ 
+ This module implements the HMAC algorithm as described by :rfc:`2104`.
+ 
+ 
+ .. function:: new(key[, msg[, digestmod]])
+ 
+    Return a new hmac object.  If *msg* is present, the method call ``update(msg)``
     is made. *digestmod* is the digest constructor or module for the HMAC object to
     use. It defaults to  the :func:`hashlib.md5` constructor.
  
@@ -79,6 +88,15 @@
  
  An HMAC object has the following methods:
  
+ 
+ .. method:: hmac.update(msg)
+ 
+    Update the hmac object with the string *msg*.  Repeated calls are equivalent to
+    a single call with the concatenation of all the arguments: ``m.update(a);
+    m.update(b)`` is equivalent to ``m.update(a + b)``.
+ 
+ 
+ .. method:: hmac.digest()
 </pre></div>
 
 </body>

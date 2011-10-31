@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -39,6 +39,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -30,24 +30,25 @@</span>
+ .. exception:: BadZipfile
+ 
+    The error raised for bad ZIP files (old name: ``zipfile.error``).
+ 
+ 
+ .. exception:: LargeZipFile
+ 
+    The error raised when a ZIP file would require ZIP64 functionality but that has
+    not been enabled.
  
  
  .. class:: ZipFile
@@ -76,7 +85,25 @@
  
     The class for reading and writing ZIP files.  See section
     :ref:`zipfile-objects` for constructor details.
-<span class="gu">@@ -64,8 +65,10 @@</span>
+ 
+ 
+ .. class:: PyZipFile
+ 
+    Class for creating ZIP archives containing Python libraries.
+ 
+ 
+ .. class:: ZipInfo([filename[, date_time]])
+ 
+<span class="gu">@@ -55,26 +56,28 @@</span>
+    of this class are returned by the :meth:`getinfo` and :meth:`infolist`
+    methods of :class:`ZipFile` objects.  Most users of the :mod:`zipfile` module
+    will not need to create these, but only use those created by this
+    module. *filename* should be the full name of the archive member, and
+    *date_time* should be a tuple containing six fields which describe the time
+    of the last modification to the file; the fields are described in section
+    :ref:`zipinfo-objects`.
+ 
+ 
  .. function:: is_zipfile(filename)
  
     Returns ``True`` if *filename* is a valid ZIP file based on its magic number,
@@ -88,7 +115,25 @@
  
  .. data:: ZIP_STORED
  
-<span class="gu">@@ -100,28 +103,40 @@</span>
+    The numeric constant for an uncompressed archive member.
+ 
+ 
+ .. data:: ZIP_DEFLATED
+ 
+    The numeric constant for the usual ZIP compression method.  This requires the
+    zlib module.  No other compression methods are currently supported.
+ 
+ 
+<span class="gu">@@ -91,46 +94,58 @@</span>
+ 
+ .. _zipfile-objects:
+ 
+ ZipFile Objects
+ ---------------
+ 
+ 
+ .. class:: ZipFile(file[, mode[, compression[, allowZip64]]])
+ 
     Open a ZIP file, where *file* can be either a path to a file (a string) or a
     file-like object.  The *mode* parameter should be ``&#39;r&#39;`` to read an existing
     file, ``&#39;w&#39;`` to truncate and write a new file, or ``&#39;a&#39;`` to append to an
@@ -149,7 +194,25 @@
  
  
  .. method:: ZipFile.close()
-<span class="gu">@@ -161,8 +176,8 @@</span>
+ 
+    Close the archive file.  You must call :meth:`close` before exiting your program
+    or essential records will not be written.
+ 
+ 
+ .. method:: ZipFile.getinfo(name)
+ 
+    Return a :class:`ZipInfo` object with information about the archive member
+    *name*.  Calling :meth:`getinfo` for a name not currently contained in the
+<span class="gu">@@ -152,26 +167,26 @@</span>
+ .. method:: ZipFile.open(name[, mode[, pwd]])
+ 
+    Extract a member from the archive as a file-like object (ZipExtFile). *name* is
+    the name of the file in the archive, or a :class:`ZipInfo` object. The *mode*
+    parameter, if included, must be one of the following: ``&#39;r&#39;`` (the  default),
+    ``&#39;U&#39;``, or ``&#39;rU&#39;``. Choosing ``&#39;U&#39;`` or  ``&#39;rU&#39;`` will enable universal newline
+    support in the read-only object. *pwd* is the password used for encrypted files.
+    Calling  :meth:`open` on a closed ZipFile will raise a  :exc:`RuntimeError`.
+ 
     .. note::
  
        The file-like object is read-only and provides the following methods:
@@ -160,7 +223,25 @@
  
     .. note::
  
-<span class="gu">@@ -272,7 +287,7 @@</span>
+       If the ZipFile was created by passing in a file-like object as the  first
+       argument to the constructor, then the object returned by :meth:`.open` shares the
+       ZipFile&#39;s file pointer.  Under these  circumstances, the object returned by
+       :meth:`.open` should not  be used after any additional operations are performed
+       on the  ZipFile object.  If the ZipFile was created by passing in a string (the
+       filename) as the first argument to the constructor, then  :meth:`.open` will
+       create a new file object that will be held by the ZipExtFile, allowing it to
+       operate independently of the  ZipFile.
+ 
+<span class="gu">@@ -263,41 +278,48 @@</span>
+ 
+    .. note::
+ 
+       Archive names should be relative to the archive root, that is, they should not
+       start with a path separator.
+ 
+    .. note::
+ 
+       If ``arcname`` (or ``filename``, if ``arcname`` is  not given) contains a null
        byte, the name of the file in the archive will be truncated at the null byte.
  
  
@@ -169,7 +250,9 @@
  
     Write the string *bytes* to the archive; *zinfo_or_arcname* is either the file
     name it will be given in the archive, or a :class:`ZipInfo` instance.  If it&#39;s
-<span class="gu">@@ -282,13 +297,20 @@</span>
+    an instance, at least the filename, date, and time must be given.  If it&#39;s a
+    name, the date and time is set to the current date and time. The archive must be
+    opened with mode ``&#39;w&#39;`` or ``&#39;a&#39;`` -- calling  :meth:`writestr` on a ZipFile
     created with mode ``&#39;r&#39;``  will raise a :exc:`RuntimeError`.  Calling
     :meth:`writestr` on a closed ZipFile will raise a :exc:`RuntimeError`.
  
@@ -191,6 +274,15 @@
  The following data attributes are also available:
  
  
+ .. attribute:: ZipFile.debug
+ 
+    The level of debug output to use.  This may be set from ``0`` (the default, no
+    output) to ``3`` (the most output).  Debugging information is written to
+    ``sys.stdout``.
+ 
+ .. attribute:: ZipFile.comment
+ 
+    The comment text associated with the ZIP file.  If assigning a comment to a
 </pre></div>
 
 </body>

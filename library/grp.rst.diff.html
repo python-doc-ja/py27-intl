@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -31,7 +31,9 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -22,25 +22,27 @@</span>
+ | 1     | gr_passwd | the (encrypted) group password; |
+ |       |           | often empty                     |
+ +-------+-----------+---------------------------------+
+ | 2     | gr_gid    | the numerical group ID          |
+ +-------+-----------+---------------------------------+
+ | 3     | gr_mem    | all the group member&#39;s  user    |
+ |       |           | names                           |
+ +-------+-----------+---------------------------------+
+ 
  The gid is an integer, name and password are strings, and the member list is a
  list of strings. (Note that most users are not explicitly listed as members of
  the group they are in according to the password database.  Check both databases
@@ -78,6 +87,15 @@
 <span class="gi">+accessible via :func:`getgrnam` or :func:`getgrgid`.)</span>
  
  It defines the following items:
+ 
+ 
+ .. function:: getgrgid(gid)
+ 
+    Return the group database entry for the given numeric group ID. :exc:`KeyError`
+    is raised if the entry asked for cannot be found.
+ 
+ 
+ .. function:: getgrnam(name)
  
 </pre></div>
 

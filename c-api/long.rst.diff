@@ -1,4 +1,13 @@
-@@ -65,6 +65,22 @@
+@@ -56,47 +56,63 @@
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromSize_t(size_t v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`size_t`, or
+    *NULL* on failure.
+ 
     .. versionadded:: 2.6
  
  
@@ -21,7 +30,22 @@
  .. cfunction:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
  
     Return a new :ctype:`PyLongObject` object from a C :ctype:`long long`, or *NULL*
-@@ -87,7 +103,7 @@
+    on failure.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromUnsignedLongLong(unsigned PY_LONG_LONG v)
+ 
+    Return a new :ctype:`PyLongObject` object from a C :ctype:`unsigned long long`,
+    or *NULL* on failure.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromDouble(double v)
+ 
+    Return a new :ctype:`PyLongObject` object from the integer part of *v*, or
+    *NULL* on failure.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromString(char *str, char **pend, int base)
  
     Return a new :ctype:`PyLongObject` based on the string value in *str*, which is
     interpreted according to the radix in *base*.  If *pend* is non-*NULL*,
@@ -30,7 +54,25 @@
     representation of the number.  If *base* is ``0``, the radix will be determined
     based on the leading characters of *str*: if *str* starts with ``'0x'`` or
     ``'0X'``, radix 16 will be used; if *str* starts with ``'0'``, radix 8 will be
-@@ -133,6 +149,32 @@
+    used; otherwise radix 10 will be used.  If *base* is not ``0``, it must be
+    between ``2`` and ``36``, inclusive.  Leading spaces are ignored.  If there are
+    no digits, :exc:`ValueError` will be raised.
+ 
+ 
+ .. cfunction:: PyObject* PyLong_FromUnicode(Py_UNICODE *u, Py_ssize_t length, int base)
+ 
+    Convert a sequence of Unicode digits to a Python long integer value.  The first
+    parameter, *u*, points to the first character of the Unicode string, *length*
+@@ -124,65 +140,114 @@
+ 
+ .. cfunction:: long PyLong_AsLong(PyObject *pylong)
+ 
+    .. index::
+       single: LONG_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`long` representation of the contents of *pylong*.  If
+    *pylong* is greater than :const:`LONG_MAX`, an :exc:`OverflowError` is raised
     and ``-1`` will be returned.
  
  
@@ -63,7 +105,24 @@
  .. cfunction:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
  
     .. index::
-@@ -157,23 +199,46 @@
+       single: PY_SSIZE_T_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`Py_ssize_t` representation of the contents of *pylong*.  If
+    *pylong* is greater than :const:`PY_SSIZE_T_MAX`, an :exc:`OverflowError` is raised
+    and ``-1`` will be returned.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. cfunction:: unsigned long PyLong_AsUnsignedLong(PyObject *pylong)
+ 
+    .. index::
+       single: ULONG_MAX
+       single: OverflowError (built-in exception)
+ 
+    Return a C :ctype:`unsigned long` representation of the contents of *pylong*.
+    If *pylong* is greater than :const:`ULONG_MAX`, an :exc:`OverflowError` is
     raised.
  
  
@@ -116,3 +175,12 @@
  
  .. cfunction:: unsigned long PyLong_AsUnsignedLongMask(PyObject *io)
  
+    Return a C :ctype:`unsigned long` from a Python long integer, without checking
+    for overflow.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. cfunction:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLongMask(PyObject *io)
+ 
+    Return a C :ctype:`unsigned long long` from a Python long integer, without

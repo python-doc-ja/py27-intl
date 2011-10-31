@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -105,7 +105,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -96,19 +96,19 @@</span>
+             # Encode the payload using Base64
+             encoders.encode_base64(msg)
+         # Set the filename parameter
+         msg.add_header(&#39;Content-Disposition&#39;, &#39;attachment&#39;, filename=filename)
+         outer.attach(msg)
+     # Now send or store the message
+     composed = outer.as_string()
+     if opts.output:
+         fp = open(opts.output, &#39;w&#39;)
          fp.write(composed)
          fp.close()
      else:
@@ -77,6 +86,9 @@
          s.sendmail(opts.sender, opts.recipients, composed)
          s.quit()
  
+ 
+ if __name__ == &#39;__main__&#39;:
+     main()
 </pre></div>
 
 </body>

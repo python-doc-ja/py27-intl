@@ -68,12 +68,21 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -1,4 +1,4 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,13 +1,13 @@</span>
 <span class="gd">-#! /usr/bin/python</span>
 <span class="gi">+#!/usr/bin/env python</span>
  
  import smtplib
  
+ from email.mime.multipart import MIMEMultipart
+ from email.mime.text import MIMEText
+ 
+ # me == my email address
+ # you == recipient&#39;s email address
+ me = &quot;my@email.com&quot;
+ you = &quot;your@email.com&quot;
+ 
+ # Create message container - the correct MIME type is multipart/alternative.
 </pre></div>
 
 </body>

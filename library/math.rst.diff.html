@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -87,7 +87,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -78,25 +78,25 @@</span>
+    Return the mantissa and exponent of *x* as the pair ``(m, e)``.  *m* is a float
+    and *e* is an integer such that ``x == m * 2**e`` exactly. If *x* is zero,
+    returns ``(0.0, 0)``, otherwise ``0.5 &lt;= abs(m) &lt; 1``.  This is used to &quot;pick
+    apart&quot; the internal representation of a float in a portable way.
+ 
+ 
+ .. function:: fsum(iterable)
+ 
+    Return an accurate floating point sum of values in the iterable.  Avoids
     loss of precision by tracking multiple intermediate partial sums::
  
          &gt;&gt;&gt; sum([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1])
@@ -77,7 +86,25 @@
          &gt;&gt;&gt; fsum([.1, .1, .1, .1, .1, .1, .1, .1, .1, .1])
          1.0
  
-<span class="gu">@@ -159,6 +159,22 @@</span>
+    The algorithm&#39;s accuracy depends on IEEE-754 arithmetic guarantees and the
+    typical case where the rounding mode is half-even.  On some non-Windows
+    builds, the underlying C library uses extended precision addition and may
+    occasionally double-round an intermediate sum causing it to be off in its
+    least significant bit.
+ 
+    For further discussion and two alternative approaches, see the `ASPN cookbook
+    recipes for accurate floating point summation
+    &lt;http://code.activestate.com/recipes/393090/&gt;`_\.
+<span class="gu">@@ -150,24 +150,40 @@</span>
+ platform C double type), in which case any float *x* with ``abs(x) &gt;= 2**52``
+ necessarily has no fractional bits.
+ 
+ 
+ Power and logarithmic functions
+ -------------------------------
+ 
+ .. function:: exp(x)
+ 
     Return ``e**x``.
  
  
@@ -100,7 +127,25 @@
  .. function:: log(x[, base])
  
     With one argument, return the natural logarithm of *x* (to base *e*).
-<span class="gu">@@ -303,6 +319,38 @@</span>
+ 
+    With two arguments, return the logarithm of *x* to the given *base*,
+    calculated as ``log(x)/log(base)``.
+ 
+    .. versionchanged:: 2.3
+       *base* argument added.
+ 
+ 
+ .. function:: log1p(x)
+<span class="gu">@@ -294,24 +310,56 @@</span>
+ 
+ 
+ .. function:: sinh(x)
+ 
+    Return the hyperbolic sine of *x*.
+ 
+ 
+ .. function:: tanh(x)
+ 
     Return the hyperbolic tangent of *x*.
  
  
@@ -138,6 +183,15 @@
 <span class="gi">+</span>
  Constants
  ---------
+ 
+ .. data:: pi
+ 
+    The mathematical constant π = 3.141592..., to available precision.
+ 
+ 
+ .. data:: e
+ 
+    The mathematical constant e = 2.718281..., to available precision.
  
 </pre></div>
 

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -144,30 +144,44 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -135,110 +135,133 @@</span>
+    a = 1
+ 
+    # bar.py
+    import foo
+    if something():
+        foo.a = 2
+ 
+ 
+ except:
  -------
  
  Python has the ``except:`` clause, which catches all exceptions. Since *every*
@@ -124,7 +133,17 @@
  
  
  Exceptions
-<span class="gu">@@ -185,51 +199,60 @@</span>
+ ==========
+ 
+ Exceptions are a useful feature of Python. You should learn to raise them
+ whenever something unexpected occurs, and catch them only where you can do
+ something about them.
+ 
+ The following is a very popular anti-idiom ::
+ 
+    def get_status(file):
+        if not os.path.exists(file):
+            print &quot;file not found&quot;
             sys.exit(1)
         return open(file).readline()
  
@@ -208,7 +227,25 @@
  
     def get_status(file):
         with open(file) as fp:
-<span class="gu">@@ -258,23 +281,22 @@</span>
+            return fp.readline()
+ 
+ 
+ Using the Batteries
+ ===================
+ 
+ Every so often, people seem to be writing stuff in the Python library again,
+ usually poorly. While the occasional module has a poor interface, it is usually
+ much better to use the rich standard library and data types that come with
+<span class="gu">@@ -249,41 +272,40 @@</span>
+ better than whatever you come up with yourself.
+ 
+ Compare::
+ 
+    # ugh!
+    return dir+&quot;/&quot;+file
+    # better
+    return os.path.join(dir, file)
+ 
  More useful functions in :mod:`os.path`: :func:`basename`,  :func:`dirname` and
  :func:`splitext`.
  
@@ -246,6 +283,15 @@
  
  
  Using Backslash to Continue Statements
+ ======================================
+ 
+ Since Python treats a newline as a statement terminator, and since statements
+ are often more than is comfortable to put in one line, many people do::
+ 
+    if foo.bar()[&#39;first&#39;][0] == baz.quux(1, 2)[5:9] and \
+       calculate_number(10, 20) != forbulate(500, 360):
+          pass
+ 
 </pre></div>
 
 </body>

@@ -68,12 +68,17 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -1,4 +1,3 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,66 +1,102 @@</span>
 <span class="gd">-</span>
  :mod:`syslog` --- Unix syslog library routines
  ==============================================
  
-<span class="gu">@@ -11,42 +10,58 @@</span>
+ .. module:: syslog
+    :platform: Unix
+    :synopsis: An interface to the Unix syslog library routines.
+ 
+ 
+ This module provides an interface to the Unix ``syslog`` library routines.
  Refer to the Unix manual pages for a detailed description of the ``syslog``
  facility.
  
@@ -152,7 +157,17 @@
  
  The module defines the following constants:
  
-<span class="gu">@@ -64,3 +79,24 @@</span>
+ Priority levels (high to low):
+    :const:`LOG_EMERG`, :const:`LOG_ALERT`, :const:`LOG_CRIT`, :const:`LOG_ERR`,
+    :const:`LOG_WARNING`, :const:`LOG_NOTICE`, :const:`LOG_INFO`,
+    :const:`LOG_DEBUG`.
+ 
+ Facilities:
+    :const:`LOG_KERN`, :const:`LOG_USER`, :const:`LOG_MAIL`, :const:`LOG_DAEMON`,
+    :const:`LOG_AUTH`, :const:`LOG_LPR`, :const:`LOG_NEWS`, :const:`LOG_UUCP`,
+    :const:`LOG_CRON` and :const:`LOG_LOCAL0` to :const:`LOG_LOCAL7`.
+ 
+ Log options:
     :const:`LOG_PID`, :const:`LOG_CONS`, :const:`LOG_NDELAY`, :const:`LOG_NOWAIT`
     and :const:`LOG_PERROR` if defined in ``&lt;syslog.h&gt;``.
  

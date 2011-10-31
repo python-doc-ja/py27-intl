@@ -1,4 +1,13 @@
-@@ -11,6 +11,11 @@
+@@ -2,24 +2,29 @@
+ :mod:`dis` --- Disassembler for Python bytecode
+ ===============================================
+ 
+ .. module:: dis
+    :synopsis: Disassembler for Python bytecode.
+ 
+ 
+ The :mod:`dis` module supports the analysis of CPython :term:`bytecode` by
+ disassembling it. The CPython bytecode which this module takes as an
  input is defined in the file :file:`Include/opcode.h` and used by the compiler
  and the interpreter.
  
@@ -10,7 +19,25 @@
  .. impl-detail::
  
     Bytecode is an implementation detail of the CPython interpreter!  No
-@@ -70,8 +75,21 @@
+    guarantees are made that bytecode will not be added, removed, or changed
+    between versions of Python.  Use of this module should not be considered to
+    work across Python VMs or Python releases.
+ 
+ Example: Given the function :func:`myfunc`::
+ 
+    def myfunc(alist):
+        return len(alist)
+ 
+@@ -61,36 +66,49 @@
+    #. a labelled instruction, indicated with ``>>``,
+    #. the address of the instruction,
+    #. the operation code name,
+    #. operation parameters, and
+    #. interpretation of the parameters in parentheses.
+ 
+    The parameter interpretation recognizes local and global variable names,
+    constant values, branch targets, and compare operators.
+ 
  
  .. function:: disco(code[, lasti])
  
@@ -34,7 +61,9 @@
  
  
  .. data:: opname
-@@ -81,7 +99,7 @@
+ 
+    Sequence of operation names, indexable using the bytecode.
+ 
  
  .. data:: opmap
  
@@ -43,7 +72,25 @@
  
  
  .. data:: cmp_op
-@@ -469,9 +487,11 @@
+ 
+    Sequence of all compare operation names.
+ 
+ 
+ .. data:: hasconst
+ 
+    Sequence of bytecodes that have a constant parameter.
+ 
+ 
+@@ -460,27 +478,29 @@
+ 
+ .. opcode:: BREAK_LOOP ()
+ 
+    Terminates a loop due to a :keyword:`break` statement.
+ 
+ 
+ .. opcode:: CONTINUE_LOOP (target)
+ 
+    Continues a loop due to a :keyword:`continue` statement.  *target* is the
     address to jump to (which should be a ``FOR_ITER`` instruction).
  
  
@@ -57,7 +104,25 @@
  
  
  .. opcode:: LOAD_LOCALS ()
-@@ -523,6 +543,18 @@
+ 
+    Pushes a reference to the locals of the current scope on the stack. This is used
+    in the code for a class definition: After the class body is evaluated, the
+    locals are passed to the class definition.
+ 
+ 
+ .. opcode:: RETURN_VALUE ()
+ 
+    Returns with TOS to the caller of the function.
+@@ -514,24 +534,36 @@
+ 
+    Terminates a :keyword:`finally` clause.  The interpreter recalls whether the
+    exception has to be re-raised, or whether the function returns, and continues
+    with the outer-next block.
+ 
+ 
+ .. opcode:: BUILD_CLASS ()
+ 
+    Creates a new class object.  TOS is the methods dictionary, TOS1 the tuple of
     the names of the base classes, and TOS2 the class name.
  
  
@@ -76,7 +141,25 @@
  .. opcode:: WITH_CLEANUP ()
  
     Cleans up the stack when a :keyword:`with` statement block exits.  On top of
-@@ -655,16 +687,26 @@
+    the stack are 1--3 values indicating how/why the finally clause was entered:
+ 
+    * TOP = ``None``
+    * (TOP, SECOND) = (``WHY_{RETURN,CONTINUE}``), retval
+    * TOP = ``WHY_*``; no retval below it
+    * (TOP, SECOND, THIRD) = exc_info()
+ 
+    Under them is EXIT, the context manager's :meth:`__exit__` bound method.
+ 
+@@ -646,34 +678,44 @@
+ .. opcode:: IMPORT_FROM (namei)
+ 
+    Loads the attribute ``co_names[namei]`` from the module found in TOS. The
+    resulting object is pushed onto the stack, to be subsequently stored by a
+    ``STORE_FAST`` instruction.
+ 
+ 
+ .. opcode:: JUMP_FORWARD (delta)
+ 
     Increments bytecode counter by *delta*.
  
  
@@ -109,3 +192,12 @@
  
  
  .. opcode:: JUMP_ABSOLUTE (target)
+ 
+    Set bytecode counter to *target*.
+ 
+ 
+ .. opcode:: FOR_ITER (delta)
+ 
+    ``TOS`` is an :term:`iterator`.  Call its :meth:`!next` method.  If this
+    yields a new value, push it on the stack (leaving the iterator below it).  If
+    the iterator indicates it is exhausted ``TOS`` is popped, and the bytecode

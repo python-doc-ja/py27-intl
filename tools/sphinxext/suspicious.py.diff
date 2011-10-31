@@ -1,4 +1,13 @@
-@@ -41,16 +41,13 @@
+@@ -32,95 +32,96 @@
+  * problematic texts are the same
+  * line numbers are close to each other (5 lines up or down)
+  * the rule text is completely contained into the source line
+ 
+ The simplest way to create the ignored.csv file is by copying
+ undesired entries from suspicious.csv (possibly trimming the last
+ field.)
+ 
+ Copyright 2009 Gabriel A. Genellina
  
  """
  
@@ -20,7 +29,8 @@
  
  detect_all = re.compile(ur'''
      ::(?=[^=])|            # two :: (but NOT ::=)
-@@ -59,9 +56,10 @@
+     :[a-zA-Z][a-zA-Z0-9]+| # :foo
+     `|                     # ` (seldom used by itself)
      (?<!\.)\.\.[ \t]*\w+:  # .. foo: (but NOT ... else:)
      ''', re.UNICODE | re.VERBOSE).finditer
  
@@ -32,7 +42,8 @@
          self.docname = docname # document to which this rule applies
          self.lineno = lineno   # line number in the original source;
                                 # this rule matches only near that.
-@@ -70,9 +68,15 @@
+                                # None -> don't care
+         self.issue = issue     # the markup fragment that triggered this rule
          self.line = line       # text of the container element (single line only)
  
  
@@ -49,7 +60,8 @@
      """
      name = 'suspicious'
  
-@@ -81,7 +85,8 @@
+     def init(self):
+         # create output file
          self.log_file_name = os.path.join(self.outdir, 'suspicious.csv')
          open(self.log_file_name, 'w').close()
          # load database of previously ignored issues
@@ -59,7 +71,8 @@
  
      def get_outdated_docs(self):
          return self.env.found_docs
-@@ -90,14 +95,11 @@
+ 
+     def get_target_uri(self, docname, typ=None):
          return ''
  
      def prepare_writing(self, docnames):
@@ -77,7 +90,12 @@
          self.docname = docname
          visitor = SuspiciousVisitor(doctree, self)
          doctree.walk(visitor)
-@@ -110,8 +112,7 @@
+ 
+     def finish(self):
+         return
+ 
+     def check_issue(self, line, lineno, issue):
+         if not self.is_ignored(line, lineno, issue):
              self.report_issue(line, lineno, issue)
  
      def is_ignored(self, line, lineno, issue):
@@ -87,7 +105,25 @@
          docname = self.docname
          for rule in self.rules:
              if rule.docname != docname: continue
-@@ -144,12 +145,11 @@
+             if rule.issue != issue: continue
+             # Both lines must match *exactly*. This is rather strict,
+             # and probably should be improved.
+             # Doing fuzzy matches with levenshtein distance could work,
+             # but that means bringing other libraries...
+             # Ok, relax that requirement: just check if the rule fragment
+             # is contained in the document line
+             if rule.line not in line: continue
+             # Check both line numbers. If they're "near"
+@@ -135,103 +136,103 @@
+         if not self.any_issue: self.info()
+         self.any_issue = True
+         self.write_log_entry(lineno, issue, text)
+         self.warn('[%s:%d] "%s" found in "%-.120s"' % (
+                 self.docname.encode(sys.getdefaultencoding(),'replace'),
+                 lineno,
+                 issue.encode(sys.getdefaultencoding(),'replace'),
+                 text.strip().encode(sys.getdefaultencoding(),'replace')))
+         self.app.statuscode = 1
  
      def write_log_entry(self, lineno, issue, text):
          f = open(self.log_file_name, 'ab')
@@ -104,7 +140,14 @@
          f.close()
  
      def load_rules(self, filename):
-@@ -164,7 +164,8 @@
+         """Load database of previously ignored issues.
+ 
+         A csv file, with exactly the same format as suspicious.csv
+         Fields: document name (normalized), line number, issue, surrounding text
+         """
+         self.info("loading ignore rules... ", nonl=1)
+         self.rules = rules = []
+         try: f = open(filename, 'rb')
          except IOError: return
          for i, row in enumerate(csv.reader(f)):
              if len(row) != 4:
@@ -114,7 +157,13 @@
              docname, lineno, issue, text = row
              docname = docname.decode('utf-8')
              if lineno: lineno = int(lineno)
-@@ -178,7 +179,7 @@
+             else: lineno = None
+             issue = issue.decode('utf-8')
+             text = text.decode('utf-8')
+             rule = Rule(docname, lineno, issue, text)
+             rules.append(rule)
+         f.close()
+         self.info('done, %d rules loaded' % len(self.rules))
  
  
  def get_lineno(node):
@@ -123,7 +172,24 @@
      lineno = None
      while lineno is None and node:
          node = node.parent
-@@ -203,7 +204,8 @@
+         lineno = node.line
+     return lineno
+ 
+ 
+ def extract_line(text, index):
+     """text may be a multiline string; extract
+     only the line containing the given character index.
+ 
+     >>> extract_line("abc\ndefgh\ni", 6)
+     >>> 'defgh'
+     >>> for i in (0, 2, 3, 4, 10):
+     ...   print extract_line("abc\ndefgh\ni", i)
+     abc
+     abc
+     abc
+     defgh
+     defgh
+     i
      """
      p = text.rfind('\n', 0, index) + 1
      q = text.find('\n', index)
@@ -133,7 +199,18 @@
      return text[p:q]
  
  
-@@ -222,7 +224,6 @@
+ class SuspiciousVisitor(nodes.GenericNodeVisitor):
+ 
+     lastlineno = 0
+ 
+     def __init__(self, document, builder):
+         nodes.GenericNodeVisitor.__init__(self, document)
+         self.builder = builder
+ 
+     def default_visit(self, node):
+         if isinstance(node, (nodes.Text, nodes.image)): # direct text containers
+             text = node.astext()
+             # lineno seems to go backwards sometimes (?)
              self.lastlineno = lineno = max(get_lineno(node) or 0, self.lastlineno)
              seen = set() # don't report the same issue more than only once per line
              for match in detect_all(text):
@@ -141,3 +218,12 @@
                  issue = match.group()
                  line = extract_line(text, match.start())
                  if (issue, line) not in seen:
+                     self.builder.check_issue(line, lineno, issue)
+                     seen.add((issue, line))
+ 
+     unknown_visit = default_visit
+ 
+     def visit_document(self, node):
+         self.lastlineno = 0
+ 
+     def visit_comment(self, node):

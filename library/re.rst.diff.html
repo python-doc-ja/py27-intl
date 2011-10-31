@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -224,7 +224,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -215,25 +215,25 @@</span>
+    and :const:`re.X` (verbose), for the entire regular expression. (The
+    flags are described in :ref:`contents-of-module-re`.) This
+    is useful if you wish to include the flags as part of the regular
+    expression, instead of passing a *flag* argument to the
+    :func:`re.compile` function.
+ 
+    Note that the ``(?x)`` flag changes how the expression is parsed. It should be
+    used first in the expression string, or after one or more whitespace characters.
+    If there are non-whitespace characters before the flag, the results are
     undefined.
  
  ``(?:...)``
@@ -77,7 +86,25 @@
     expression is inside the parentheses, but the substring matched by the group
     *cannot* be retrieved after performing a match or referenced later in the
     pattern.
-<span class="gu">@@ -332,7 +332,8 @@</span>
+ 
+ ``(?P&lt;name&gt;...)``
+    Similar to regular parentheses, but the substring matched by the group is
+    accessible within the rest of the regular expression via the symbolic group
+    name *name*.  Group names must be valid Python identifiers, and each group
+    name must be defined only once within a regular expression.  A symbolic group
+    is also a numbered group, just as if the group were not named.  So the group
+    named ``id`` in the example below can also be referenced as the numbered group
+    ``1``.
+<span class="gu">@@ -323,25 +323,26 @@</span>
+    precise set of characters deemed to be alphanumeric depends on the values of the
+    ``UNICODE`` and ``LOCALE`` flags.  Inside a character range, ``\b`` represents
+    the backspace character, for compatibility with Python&#39;s string literals.
+ 
+ ``\B``
+    Matches the empty string, but only when it is *not* at the beginning or end of a
+    word.  This is just the opposite of ``\b``, so is also subject to the settings
+    of ``LOCALE`` and ``UNICODE``.
+ 
  ``\d``
     When the :const:`UNICODE` flag is not specified, matches any decimal digit; this
     is equivalent to the set ``[0-9]``.  With :const:`UNICODE`, it will match
@@ -87,7 +114,25 @@
  
  ``\D``
     When the :const:`UNICODE` flag is not specified, matches any non-digit
-<span class="gu">@@ -536,7 +537,7 @@</span>
+    character; this is equivalent to the set  ``[^0-9]``.  With :const:`UNICODE`, it
+    will match  anything other than character marked as digits in the Unicode
+    character  properties database.
+ 
+ ``\s``
+    When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
+    any whitespace character; this is equivalent to the set ``[ \t\n\r\f\v]``. With
+    :const:`LOCALE`, it will match this set plus whatever characters are defined as
+    space for the current locale. If :const:`UNICODE` is set, this will match the
+<span class="gu">@@ -527,59 +528,64 @@</span>
+ 
+    If zero or more characters at the beginning of *string* match the regular
+    expression *pattern*, return a corresponding :class:`MatchObject` instance.
+    Return ``None`` if the string does not match the pattern; note that this is
+    different from a zero-length match.
+ 
+    .. note::
+ 
+       If you want to locate a match anywhere in *string*, use :func:`search`
        instead.
  
  
@@ -96,7 +141,14 @@
  
     Split *string* by the occurrences of *pattern*.  If capturing parentheses are
     used in *pattern*, then the text of all groups in the pattern are also returned
-<span class="gu">@@ -551,6 +552,8 @@</span>
+    as part of the resulting list. If *maxsplit* is nonzero, at most *maxsplit*
+    splits occur, and the remainder of the string is returned as the final element
+    of the list.  (Incompatibility note: in the original Python 1.5 release,
+    *maxsplit* was ignored.  This has been fixed in later releases.)
+ 
+       &gt;&gt;&gt; re.split(&#39;\W+&#39;, &#39;Words, words, words.&#39;)
+       [&#39;Words&#39;, &#39;words&#39;, &#39;words&#39;, &#39;&#39;]
+       &gt;&gt;&gt; re.split(&#39;(\W+)&#39;, &#39;Words, words, words.&#39;)
        [&#39;Words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;.&#39;, &#39;&#39;]
        &gt;&gt;&gt; re.split(&#39;\W+&#39;, &#39;Words, words, words.&#39;, 1)
        [&#39;Words&#39;, &#39;words, words.&#39;]
@@ -105,7 +157,20 @@
  
     If there are capturing groups in the separator and it matches at the start of
     the string, the result will start with an empty string.  The same holds for
-<span class="gu">@@ -571,6 +574,9 @@</span>
+    the end of the string:
+ 
+       &gt;&gt;&gt; re.split(&#39;(\W+)&#39;, &#39;...words, words...&#39;)
+       [&#39;&#39;, &#39;...&#39;, &#39;words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;...&#39;, &#39;&#39;]
+ 
+    That way, separator components are always found at the same relative
+    indices within the result list (e.g., if there&#39;s one capturing group
+    in the separator, the 0th, the 2nd and so forth).
+ 
+    Note that *split* will never split a string on an empty pattern match.
+    For example:
+ 
+       &gt;&gt;&gt; re.split(&#39;x*&#39;, &#39;foo&#39;)
+       [&#39;foo&#39;]
        &gt;&gt;&gt; re.split(&quot;(?m)^$&quot;, &quot;foo\n\nbar\n&quot;)
        [&#39;foo\n\nbar\n&#39;]
  
@@ -115,7 +180,25 @@
  
  .. function:: findall(pattern, string[, flags])
  
-<span class="gu">@@ -601,7 +607,7 @@</span>
+    Return all non-overlapping matches of *pattern* in *string*, as a list of
+    strings.  The *string* is scanned left-to-right, and matches are returned in
+    the order found.  If one or more groups are present in the pattern, return a
+    list of groups; this will be a list of tuples if the pattern has more than
+    one group.  Empty matches are included in the result unless they touch the
+    beginning of another match.
+ 
+    .. versionadded:: 1.5.2
+ 
+<span class="gu">@@ -592,75 +598,81 @@</span>
+    Return an :term:`iterator` yielding :class:`MatchObject` instances over all
+    non-overlapping matches for the RE *pattern* in *string*.  The *string* is
+    scanned left-to-right, and matches are returned in the order found.  Empty
+    matches are included in the result unless they touch the beginning of another
+    match.
+ 
+    .. versionadded:: 2.2
+ 
+    .. versionchanged:: 2.4
        Added the optional flags argument.
  
  
@@ -124,7 +207,24 @@
  
     Return the string obtained by replacing the leftmost non-overlapping occurrences
     of *pattern* in *string* by the replacement *repl*.  If the pattern isn&#39;t found,
-<span class="gu">@@ -626,10 +632,10 @@</span>
+    *string* is returned unchanged.  *repl* can be a string or a function; if it is
+    a string, any backslash escapes in it are processed.  That is, ``\n`` is
+    converted to a single newline character, ``\r`` is converted to a linefeed, and
+    so forth.  Unknown escapes such as ``\j`` are left alone.  Backreferences, such
+    as ``\6``, are replaced with the substring matched by group 6 in the pattern.
+    For example:
+ 
+       &gt;&gt;&gt; re.sub(r&#39;def\s+([a-zA-Z_][a-zA-Z_0-9]*)\s*\(\s*\):&#39;,
+       ...        r&#39;static PyObject*\npy_\1(void)\n{&#39;,
+       ...        &#39;def myfunc():&#39;)
+       &#39;static PyObject*\npy_myfunc(void)\n{&#39;
+ 
+    If *repl* is a function, it is called for every non-overlapping occurrence of
+    *pattern*.  The function takes a single match object argument, and returns the
+    replacement string.  For example:
+ 
+       &gt;&gt;&gt; def dashrepl(matchobj):
+       ...     if matchobj.group(0) == &#39;-&#39;: return &#39; &#39;
        ...     else: return &#39;-&#39;
        &gt;&gt;&gt; re.sub(&#39;-{1,2}&#39;, dashrepl, &#39;pro----gram-files&#39;)
        &#39;pro--gram files&#39;
@@ -138,7 +238,16 @@
  
     The optional argument *count* is the maximum number of pattern occurrences to be
     replaced; *count* must be a non-negative integer.  If omitted or zero, all
-<span class="gu">@@ -646,12 +652,18 @@</span>
+    occurrences will be replaced. Empty matches for the pattern are replaced only
+    when not adjacent to a previous match, so ``sub(&#39;x*&#39;, &#39;-&#39;, &#39;abc&#39;)`` returns
+    ``&#39;-a-b-c-&#39;``.
+ 
+    In addition to character escapes and backreferences as described above,
+    ``\g&lt;name&gt;`` will use the substring matched by the group named ``name``, as
+    defined by the ``(?P&lt;name&gt;...)`` syntax. ``\g&lt;number&gt;`` uses the corresponding
+    group number; ``\g&lt;2&gt;`` is therefore equivalent to ``\2``, but isn&#39;t ambiguous
+    in a replacement such as ``\g&lt;2&gt;0``.  ``\20`` would be interpreted as a
+    reference to group 20, not a reference to group 2 followed by the literal
     character ``&#39;0&#39;``.  The backreference ``\g&lt;0&gt;`` substitutes in the entire
     substring matched by the RE.
  
@@ -157,6 +266,15 @@
 <span class="gi">+</span>
  
  .. function:: escape(string)
+ 
+    Return *string* with all non-alphanumerics backslashed; this is useful if you
+    want to match an arbitrary literal string that may have regular expression
+    metacharacters in it.
+ 
+ 
+ .. function:: purge()
+ 
+    Clear the regular expression cache.
  
 </pre></div>
 

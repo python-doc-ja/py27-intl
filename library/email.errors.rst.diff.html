@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -17,7 +17,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -8,25 +8,25 @@</span>
+ The following exception classes are defined in the :mod:`email.errors` module:
+ 
+ 
+ .. exception:: MessageError()
+ 
+    This is the base class for all exceptions that the :mod:`email` package can
+    raise.  It is derived from the standard :exc:`Exception` class and defines no
+    additional methods.
+ 
  
  .. exception:: MessageParseError()
  
@@ -77,6 +86,15 @@
     class.  It is derived from :exc:`MessageError`.
  
  
+ .. exception:: HeaderParseError()
+ 
+    Raised under some error conditions when parsing the :rfc:`2822` headers of a
+    message, this class is derived from :exc:`MessageParseError`. It can be raised
+    from the :meth:`Parser.parse` or :meth:`Parser.parsestr` methods.
+ 
+    Situations where it can be raised include finding an envelope header after the
+    first :rfc:`2822` header of the message, finding a continuation line before the
+    first :rfc:`2822` header is found, or finding a line in the headers which is
 </pre></div>
 
 </body>

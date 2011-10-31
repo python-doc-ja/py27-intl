@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -158,23 +158,48 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -149,41 +149,66 @@</span>
+ see :ref:`using-on-cmdline` documentation.
+ 
+ 
+ Finding modules
+ ---------------
+ 
+ Python usually stores its library (and thereby your site-packages folder) in the
+ installation directory.  So, if you had installed Python to
+ :file:`C:\\Python\\`, the default library would reside in
  :file:`C:\\Python\\Lib\\` and third-party modules should be stored in
  :file:`C:\\Python\\Lib\\site-packages\\`.
  
@@ -131,6 +140,15 @@
  
  
  Executing scripts
+ -----------------
+ 
+ Python scripts (files with the extension ``.py``) will be executed by
+ :program:`python.exe` by default.  This executable opens a terminal, which stays
+ open even if the program uses a GUI.  If you do not want this to happen, use the
+ extension ``.pyw`` which will cause the script to be executed by
+ :program:`pythonw.exe` by default (both executables are located in the top-level
+ of your Python installation directory).  This suppresses the terminal window on
+ startup.
 </pre></div>
 
 </body>

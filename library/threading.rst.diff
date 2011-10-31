@@ -1,4 +1,13 @@
-@@ -26,6 +26,21 @@
+@@ -17,41 +17,58 @@
+    Starting with Python 2.6, this module provides :pep:`8` compliant aliases and
+    properties to replace the ``camelCase`` names that were inspired by Java's
+    threading API. This updated API is compatible with that of the
+    :mod:`multiprocessing` module. However, no schedule has been set for the
+    deprecation of the ``camelCase`` names and they remain fully supported in
+    both Python 2.x and 3.x.
+ 
+ .. note::
+ 
     Starting with Python 2.5, several Thread methods raise :exc:`RuntimeError`
     instead of :exc:`AssertionError` if called erroneously.
  
@@ -20,7 +29,17 @@
  
  This module defines the following functions and objects:
  
-@@ -43,6 +58,8 @@
+ .. function:: active_count()
+               activeCount()
+ 
+    Return the number of :class:`Thread` objects currently alive.  The returned
+    count is equal to the length of the list returned by :func:`.enumerate`.
+ 
+ 
+ .. function:: Condition()
+    :noindex:
+ 
+    A factory function that returns a new condition variable object. A condition
     variable allows one or more threads to wait until they are notified by another
     thread.
  
@@ -29,7 +48,25 @@
  
  .. function:: current_thread()
                currentThread()
-@@ -69,6 +86,8 @@
+ 
+    Return the current :class:`Thread` object, corresponding to the caller's thread
+    of control.  If the caller's thread of control was not created through the
+    :mod:`threading` module, a dummy thread object with limited functionality is
+    returned.
+ 
+ 
+ .. function:: enumerate()
+ 
+@@ -60,86 +77,100 @@
+    :func:`current_thread`, and the main thread.  It excludes terminated threads
+    and threads that have not yet been started.
+ 
+ 
+ .. function:: Event()
+    :noindex:
+ 
+    A factory function that returns a new event object.  An event manages a flag
+    that can be set to true with the :meth:`~Event.set` method and reset to false
     with the :meth:`clear` method.  The :meth:`wait` method blocks until the flag
     is true.
  
@@ -38,7 +75,24 @@
  
  .. class:: local
  
-@@ -93,6 +112,8 @@
+    A class that represents thread-local data.  Thread-local data are data whose
+    values are thread specific.  To manage thread-local data, just create an
+    instance of :class:`local` (or a subclass) and store attributes on it::
+ 
+       mydata = threading.local()
+       mydata.x = 1
+ 
+    The instance's values will be different for separate threads.
+ 
+    For more details and extensive examples, see the documentation string of the
+    :mod:`_threading_local` module.
+ 
+    .. versionadded:: 2.4
+ 
+ 
+ .. function:: Lock()
+ 
+    A factory function that returns a new primitive lock object.  Once a thread has
     acquired it, subsequent attempts to acquire it block, until it is released; any
     thread may release it.
  
@@ -47,7 +101,8 @@
  
  .. function:: RLock()
  
-@@ -101,6 +122,8 @@
+    A factory function that returns a new reentrant lock object. A reentrant lock
+    must be released by the thread that acquired it. Once a thread has acquired a
     reentrant lock, the same thread may acquire it again without blocking; the
     thread must release it once for each time it has acquired it.
  
@@ -56,7 +111,10 @@
  
  .. function:: Semaphore([value])
     :noindex:
-@@ -111,6 +134,8 @@
+ 
+    A factory function that returns a new semaphore object.  A semaphore manages a
+    counter representing the number of :meth:`release` calls minus the number of
+    :meth:`acquire` calls, plus an initial value. The :meth:`acquire` method blocks
     if necessary until it can return without making the counter negative.  If not
     given, *value* defaults to 1.
  
@@ -65,7 +123,11 @@
  
  .. function:: BoundedSemaphore([value])
  
-@@ -122,15 +147,21 @@
+    A factory function that returns a new bounded semaphore object.  A bounded
+    semaphore checks to make sure its current value doesn't exceed its initial
+    value.  If it does, :exc:`ValueError` is raised. In most situations semaphores
+    are used to guard resources with limited capacity.  If the semaphore is released
+    too many times it's a sign of a bug.  If not given, *value* defaults to 1.
  
  
  .. class:: Thread
@@ -87,7 +149,25 @@
  
  .. function:: settrace(func)
  
-@@ -259,7 +290,7 @@
+    .. index:: single: trace function
+ 
+    Set a trace function for all threads started from the :mod:`threading` module.
+    The *func* will be passed to  :func:`sys.settrace` for each thread, before its
+    :meth:`run` method is called.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+@@ -250,25 +281,25 @@
+ 
+    If the subclass overrides the constructor, it must make sure to invoke the
+    base class constructor (``Thread.__init__()``) before doing anything else to
+    the thread.
+ 
+    .. method:: start()
+ 
+       Start the thread's activity.
+ 
        It must be called at most once per thread object.  It arranges for the
        object's :meth:`run` method to be invoked in a separate thread of control.
  
@@ -96,7 +176,25 @@
        on the same thread object.
  
     .. method:: run()
-@@ -368,7 +399,7 @@
+ 
+       Method representing the thread's activity.
+ 
+       You may override this method in a subclass.  The standard :meth:`run`
+       method invokes the callable object passed to the object's constructor as
+       the *target* argument, if any, with sequential and keyword arguments taken
+       from the *args* and *kwargs* arguments, respectively.
+ 
+    .. method:: join([timeout])
+@@ -359,25 +390,25 @@
+ :meth:`release` method should only be called in the locked state; it changes the
+ state to unlocked and returns immediately. If an attempt is made to release an
+ unlocked lock, a :exc:`RuntimeError` will be raised.
+ 
+ When more than one thread is blocked in :meth:`acquire` waiting for the state to
+ turn to unlocked, only one thread proceeds when a :meth:`release` call resets
+ the state to unlocked; which one of the waiting threads proceeds is not defined,
+ and may vary across implementations.
+ 
  All methods are executed atomically.
  
  
@@ -105,7 +203,25 @@
  
     Acquire a lock, blocking or non-blocking.
  
-@@ -624,9 +655,9 @@
+    When invoked without arguments, block until the lock is unlocked, then set it to
+    locked, and return true.
+ 
+    When invoked with the *blocking* argument set to true, do the same thing as when
+    called without arguments, and return true.
+ 
+    When invoked with the *blocking* argument set to false, do not block.  If a call
+    without an argument would block, return false immediately; otherwise, do the
+    same thing as when called without arguments, and return true.
+@@ -615,27 +646,27 @@
+ 
+       Release a semaphore, incrementing the internal counter by one.  When it
+       was zero on entry and another thread is waiting for it to become larger
+       than zero again, wake up that thread.
+ 
+ 
+ .. _semaphore-examples:
+ 
+ :class:`Semaphore` Example
  ^^^^^^^^^^^^^^^^^^^^^^^^^^
  
  Semaphores are often used to guard resources with limited capacity, for example,
@@ -118,7 +234,25 @@
  
     maxconnections = 5
     ...
-@@ -693,7 +724,11 @@
+    pool_sema = BoundedSemaphore(value=maxconnections)
+ 
+ Once spawned, worker threads call the semaphore's acquire and release methods
+ when they need to connect to the server::
+ 
+    pool_sema.acquire()
+    conn = connectdb()
+    ... use connection ...
+    conn.close()
+@@ -684,25 +715,29 @@
+ 
+    .. method:: wait([timeout])
+ 
+       Block until the internal flag is true.  If the internal flag is true on
+       entry, return immediately.  Otherwise, block until another thread calls
+       :meth:`.set` to set the flag to true, or until the optional timeout
+       occurs.
+ 
+       When the timeout argument is present and not ``None``, it should be a
        floating point number specifying a timeout for the operation in seconds
        (or fractions thereof).
  
@@ -131,7 +265,25 @@
  
  
  .. _timer-objects:
-@@ -757,9 +792,9 @@
+ 
+ Timer Objects
+ -------------
+ 
+ This class represents an action that should be run only after a certain amount
+ of time has passed --- a timer.  :class:`Timer` is a subclass of :class:`Thread`
+ and as such also functions as an example of creating custom threads.
+ 
+ Timers are started, as with threads, by calling their :meth:`start` method.  The
+@@ -748,27 +783,27 @@
+ 
+    some_rlock = threading.RLock()
+ 
+    with some_rlock:
+        print "some_rlock is locked while this executes"
+ 
+ 
+ .. _threaded-imports:
+ 
  Importing in threaded code
  --------------------------
  
@@ -144,3 +296,12 @@
  
  * Firstly, other than in the main module, an import should not have the
    side effect of spawning a new thread and then waiting for that thread in
+   any way. Failing to abide by this restriction can lead to a deadlock if
+   the spawned thread directly or indirectly attempts to import a module.
+ * Secondly, all import attempts must be completed before the interpreter
+   starts shutting itself down. This can be most easily achieved by only
+   performing imports from non-daemon threads created through the threading
+   module. Daemon threads and threads created directly with the thread
+   module will require some other form of synchronization to ensure they do
+   not attempt imports after system shutdown has commenced. Failure to
+   abide by this restriction will lead to intermittent exceptions and

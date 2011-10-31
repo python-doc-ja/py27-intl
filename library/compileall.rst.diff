@@ -1,9 +1,10 @@
-@@ -1,4 +1,3 @@
+@@ -1,62 +1,136 @@
 -
  :mod:`compileall` --- Byte-compile Python libraries
  ===================================================
  
-@@ -7,41 +6,117 @@
+ .. module:: compileall
+    :synopsis: Tools for byte-compiling all Python source files in a directory tree.
  
  
  This module provides some utility functions to support installing Python
@@ -142,7 +143,17 @@
  
  To force a recompile of all the :file:`.py` files in the :file:`Lib/`
  subdirectory and all its subdirectories::
-@@ -59,4 +134,3 @@
+ 
+    import compileall
+ 
+    compileall.compile_dir('Lib/', force=True)
+ 
+    # Perform same compilation, excluding files in .svn directories.
+    import re
+    compileall.compile_dir('Lib/', rx=re.compile('/[.]svn'), force=True)
+ 
+ 
+ .. seealso::
  
     Module :mod:`py_compile`
        Byte-compile a single source file.

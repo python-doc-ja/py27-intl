@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -47,7 +47,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -38,25 +38,25 @@</span>
+       Abstract. Retrieves the imaginary component of this number.
+ 
+    .. method:: conjugate()
+ 
+       Abstract. Returns the complex conjugate. For example, ``(1+3j).conjugate()
+       == (1-3j)``.
+ 
+ .. class:: Real
+ 
     To :class:`Complex`, :class:`Real` adds the operations that work on real
     numbers.
  
@@ -77,6 +86,15 @@
     :func:`round`, :func:`math.floor`, :func:`math.ceil`, :func:`divmod`, ``//``,
     ``%``, ``&lt;``, ``&lt;=``, ``&gt;``, and ``&gt;=``.
  
+    Real also provides defaults for :func:`complex`, :attr:`~Complex.real`,
+    :attr:`~Complex.imag`, and :meth:`~Complex.conjugate`.
+ 
+ 
+ .. class:: Rational
+ 
+    Subtypes :class:`Real` and adds
+    :attr:`~Rational.numerator` and :attr:`~Rational.denominator` properties, which
+    should be in lowest terms. With these, it provides a default for
 </pre></div>
 
 </body>

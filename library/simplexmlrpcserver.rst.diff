@@ -1,4 +1,13 @@
-@@ -133,6 +133,15 @@
+@@ -124,24 +124,33 @@
+    Registers the XML-RPC multicall function system.multicall.
+ 
+ 
+ .. attribute:: SimpleXMLRPCRequestHandler.rpc_paths
+ 
+    An attribute value that must be a tuple listing valid path portions of the URL
+    for receiving XML-RPC requests.  Requests posted to other paths will result in a
+    404 "no such page" HTTP error.  If this tuple is empty, all paths will be
+    considered valid. The default value is ``('/', '/RPC2')``.
  
     .. versionadded:: 2.5
  
@@ -14,3 +23,12 @@
  .. _simplexmlrpcserver-example:
  
  SimpleXMLRPCServer Example
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ Server code::
+ 
+    from SimpleXMLRPCServer import SimpleXMLRPCServer
+    from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
+ 
+    # Restrict to a particular path.
+    class RequestHandler(SimpleXMLRPCRequestHandler):
+        rpc_paths = ('/RPC2',)

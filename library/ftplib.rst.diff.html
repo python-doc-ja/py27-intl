@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -50,6 +50,40 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -41,51 +41,88 @@</span>
+    Return a new instance of the :class:`FTP` class.  When *host* is given, the
+    method call ``connect(host)`` is made.  When *user* is given, additionally
+    the method call ``login(user, passwd, acct)`` is made (where *passwd* and
+    *acct* default to the empty string when not given).  The optional *timeout*
+    parameter specifies a timeout in seconds for blocking operations like the
+    connection attempt (if is not specified, the global default timeout setting
+    will be used).
+ 
+    .. versionchanged:: 2.6
        *timeout* was added.
  
  
@@ -109,7 +118,7 @@
  .. exception:: error_reply
  
     Exception raised when an unexpected reply is received from the server.
-<span class="gu">@@ -57,18 +91,21 @@</span>
+ 
  
  .. exception:: error_temp
  
@@ -135,7 +144,7 @@
  
  
  .. data:: all_errors
-<span class="gu">@@ -76,7 +113,7 @@</span>
+ 
     The set of all exceptions (as a tuple) that methods of :class:`FTP`
     instances may raise as a result of problems with the FTP connection (as
     opposed to programming errors made by the caller).  This set includes the
@@ -144,7 +153,25 @@
     :exc:`IOError`.
  
  
-<span class="gu">@@ -164,9 +201,9 @@</span>
+ .. seealso::
+ 
+    Module :mod:`netrc`
+       Parser for the :file:`.netrc` file format.  The file :file:`.netrc` is
+       typically used by FTP clients to load user authentication information
+       before prompting the user.
+ 
+    .. index:: single: ftpmirror.py
+ 
+<span class="gu">@@ -155,73 +192,78 @@</span>
+ 
+    Abort a file transfer that is in progress.  Using this does not always work, but
+    it&#39;s worth a try.
+ 
+ 
+ .. method:: FTP.sendcmd(command)
+ 
+    Send a simple command string to the server and return the response string.
+ 
  
  .. method:: FTP.voidcmd(command)
  
@@ -157,7 +184,19 @@
  
  
  .. method:: FTP.retrbinary(command, callback[, maxblocksize[, rest]])
-<span class="gu">@@ -186,9 +223,11 @@</span>
+ 
+    Retrieve a file in binary transfer mode.  *command* should be an appropriate
+    ``RETR`` command: ``&#39;RETR filename&#39;``. The *callback* function is called for
+    each block of data received, with a single string argument giving the data
+    block. The optional *maxblocksize* argument specifies the maximum chunk size to
+    read on the low-level socket object created to do the actual transfer (which
+    will also be the largest size of the data blocks passed to *callback*).  A
+    reasonable default is chosen. *rest* means the same thing as in the
+    :meth:`transfercmd` method.
+ 
+ 
+ .. method:: FTP.retrlines(command[, callback])
+ 
     Retrieve a file or directory listing in ASCII transfer mode.  *command*
     should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
     command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
@@ -172,7 +211,9 @@
  
  
  .. method:: FTP.set_pasv(boolean)
-<span class="gu">@@ -198,14 +237,15 @@</span>
+ 
+    Enable &quot;passive&quot; mode if *boolean* is true, other disable passive mode.  (In
+    Python 2.0 and before, passive mode was off by default; in Python 2.1 and later,
     it is on by default.)
  
  
@@ -190,7 +231,7 @@
  
     .. versionchanged:: 2.1
        default for *blocksize* added.
-<span class="gu">@@ -213,6 +253,8 @@</span>
+ 
     .. versionchanged:: 2.6
        *callback* parameter added.
  
@@ -199,7 +240,25 @@
  
  .. method:: FTP.storlines(command, file[, callback])
  
-<span class="gu">@@ -256,10 +298,10 @@</span>
+    Store a file in ASCII transfer mode.  *command* should be an appropriate
+    ``STOR`` command (see :meth:`storbinary`).  Lines are read until EOF from the
+    open file object *file* using its :meth:`readline` method to provide the data to
+    be stored.  *callback* is an optional single parameter callable
+    that is called on each line after it is sent.
+ 
+    .. versionchanged:: 2.6
+       *callback* parameter added.
+ 
+<span class="gu">@@ -247,28 +289,28 @@</span>
+ 
+ 
+ .. method:: FTP.ntransfercmd(cmd[, rest])
+ 
+    Like :meth:`transfercmd`, but returns a tuple of the data connection and the
+    expected size of the data.  If the expected size could not be computed, ``None``
+    will be returned as the expected size.  *cmd* and *rest* means the same thing as
+    in :meth:`transfercmd`.
+ 
  
  .. method:: FTP.nlst(argument[, ...])
  
@@ -214,7 +273,25 @@
  
  
  .. method:: FTP.dir(argument[, ...])
-<span class="gu">@@ -329,3 +371,26 @@</span>
+ 
+    Produce a directory listing as returned by the ``LIST`` command, printing it to
+    standard output.  The optional *argument* is a directory to list (default is the
+    current server directory).  Multiple arguments can be used to pass non-standard
+    options to the ``LIST`` command.  If the last argument is a function, it is used
+    as a *callback* function as for :meth:`retrlines`; the default prints to
+    ``sys.stdout``.  This method returns ``None``.
+ 
+ 
+<span class="gu">@@ -320,12 +362,35 @@</span>
+    :meth:`close` method which renders the :class:`FTP` instance useless for
+    subsequent calls (see below).
+ 
+ 
+ .. method:: FTP.close()
+ 
+    Close the connection unilaterally.  This should not be applied to an already
+    closed connection such as after a successful call to :meth:`quit`.  After this
+    call the :class:`FTP` instance should not be used any more (after a call to
     :meth:`close` or :meth:`quit` you cannot reopen the connection by issuing
     another :meth:`login` method).
  

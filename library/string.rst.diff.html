@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -17,6 +17,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -8,24 +8,29 @@</span>
+ .. index:: module: re
+ 
+ The :mod:`string` module contains a number of useful constants and
+ classes, as well as some deprecated legacy functions that are also
+ available as methods on strings. In addition, Python&#39;s built-in string
+ classes support the sequence type methods described in the
+ :ref:`typesseq` section, and also the string-specific methods described
+ in the :ref:`string-methods` section. To output formatted strings use
+ template strings or the ``%`` operator described in the
  :ref:`string-formatting` section. Also, see the :mod:`re` module for
  string functions based on regular expressions.
  
@@ -80,7 +89,25 @@
  
  String constants
  ----------------
-<span class="gu">@@ -118,7 +123,7 @@</span>
+ 
+ The constants defined in this module are:
+ 
+ 
+ .. data:: ascii_letters
+ 
+    The concatenation of the :const:`ascii_lowercase` and :const:`ascii_uppercase`
+    constants described below.  This value is not locale-dependent.
+ 
+<span class="gu">@@ -109,48 +114,48 @@</span>
+ 
+ The built-in str and unicode classes provide the ability
+ to do complex variable substitutions and value formatting via the
+ :meth:`str.format` method described in :pep:`3101`.  The :class:`Formatter`
+ class in the :mod:`string` module allows you to create and customize your own
+ string formatting behaviors using the same implementation as the built-in
+ :meth:`format` method.
+ 
+ .. class:: Formatter
  
     The :class:`Formatter` class has the following public methods:
  
@@ -89,7 +116,22 @@
  
        :meth:`format` is the primary API method.  It takes a format template
        string, and an arbitrary set of positional and keyword argument.
-<span class="gu">@@ -141,7 +146,7 @@</span>
+       :meth:`format` is just a wrapper that calls :meth:`vformat`.
+ 
+    .. method:: vformat(format_string, args, kwargs)
+ 
+       This function does the actual work of formatting.  It is exposed as a
+       separate function for cases where you want to pass in a predefined
+       dictionary of arguments, rather than unpacking and repacking the
+       dictionary as individual arguments using the ``*args`` and ``**kwds``
+       syntax.  :meth:`vformat` does the work of breaking up the format template
+       string into character data and replacement fields.  It calls the various
+       methods described below.
+ 
+    In addition, the :class:`Formatter` defines a number of methods that are
+    intended to be replaced by subclasses:
+ 
+    .. method:: parse(format_string)
  
        Loop over the format_string and return an iterable of tuples
        (*literal_text*, *field_name*, *format_spec*, *conversion*).  This is used
@@ -98,7 +140,25 @@
        replacement fields.
  
        The values in the tuple conceptually represent a span of literal text
-<span class="gu">@@ -190,7 +195,7 @@</span>
+       followed by a single replacement field.  If there is no literal text
+       (which can happen if two replacement fields occur consecutively), then
+       *literal_text* will be a zero-length string.  If there is no replacement
+       field, then the values of *field_name*, *format_spec* and *conversion*
+       will be ``None``.
+ 
+    .. method:: get_field(field_name, args, kwargs)
+ 
+       Given *field_name* as returned by :meth:`parse` (see above), convert it to
+<span class="gu">@@ -181,25 +186,25 @@</span>
+       built-in :func:`getattr` function.
+ 
+       If the index or keyword refers to an item that does not exist, then an
+       :exc:`IndexError` or :exc:`KeyError` should be raised.
+ 
+    .. method:: check_unused_args(used_args, args, kwargs)
+ 
+       Implement checking for unused arguments if desired.  The arguments to this
+       function is the set of all argument keys that were actually referred to in
        the format string (integers for positional arguments, and strings for
        named arguments), and a reference to the *args* and *kwargs* that was
        passed to vformat.  The set of unused args can be calculated from these
@@ -107,7 +167,25 @@
        the check fails.
  
     .. method:: format_field(value, format_spec)
-<span class="gu">@@ -222,32 +227,43 @@</span>
+ 
+       :meth:`format_field` simply calls the global :func:`format` built-in.  The
+       method is provided so that subclasses can override it.
+ 
+    .. method:: convert_field(value, conversion)
+ 
+       Converts the value (returned by :meth:`get_field`) given a conversion type
+       (as in the tuple returned by the :meth:`parse` method).  The default
+       version understands &#39;r&#39; (repr) and &#39;s&#39; (str) conversion types.
+<span class="gu">@@ -213,50 +218,61 @@</span>
+ The :meth:`str.format` method and the :class:`Formatter` class share the same
+ syntax for format strings (although in the case of :class:`Formatter`,
+ subclasses can define their own format string syntax).
+ 
+ Format strings contain &quot;replacement fields&quot; surrounded by curly braces ``{}``.
+ Anything that is not contained in braces is considered literal text, which is
+ copied unchanged to the output.  If you need to include a brace character in the
+ literal text, it can be escaped by doubling: ``{{`` and ``}}``.
+ 
  The grammar for a replacement field is as follows:
  
     .. productionlist:: sf
@@ -160,7 +238,25 @@
     &quot;My quest is {name}&quot;             # References keyword argument &#39;name&#39;
     &quot;Weight in tons {0.weight}&quot;      # &#39;weight&#39; attribute of first positional arg
     &quot;Units destroyed: {players[0]}&quot;  # First element of keyword argument &#39;players&#39;.
-<span class="gu">@@ -305,7 +321,7 @@</span>
+ 
+ The *conversion* field causes a type coercion before formatting.  Normally, the
+ job of formatting a value is done by the :meth:`__format__` method of the value
+ itself.  However, in some cases it is desirable to force a type to be formatted
+ as a string, overriding its own definition of formatting.  By converting the
+ value to a string before calling :meth:`__format__`, the normal formatting logic
+ is bypassed.
+ 
+ Two conversion flags are currently supported: ``&#39;!s&#39;`` which calls :func:`str`
+<span class="gu">@@ -296,48 +312,48 @@</span>
+ specification is to be interpreted.
+ 
+ Most built-in types implement the following options for format specifications,
+ although some of the formatting options are only supported by the numeric types.
+ 
+ A general convention is that an empty format string (``&quot;&quot;``) produces
+ the same result as if you had called :func:`str` on the value. A
+ non-empty format string typically modifies the result.
+ 
  The general form of a *standard format specifier* is:
  
  .. productionlist:: sf
@@ -169,7 +265,7 @@
     fill: &lt;a character other than &#39;}&#39;&gt;
     align: &quot;&lt;&quot; | &quot;&gt;&quot; | &quot;=&quot; | &quot;^&quot;
     sign: &quot;+&quot; | &quot;-&quot; | &quot; &quot;
-<span class="gu">@@ -313,11 +329,11 @@</span>
+    width: `integer`
     precision: `integer`
     type: &quot;b&quot; | &quot;c&quot; | &quot;d&quot; | &quot;e&quot; | &quot;E&quot; | &quot;f&quot; | &quot;F&quot; | &quot;g&quot; | &quot;G&quot; | &quot;n&quot; | &quot;o&quot; | &quot;s&quot; | &quot;x&quot; | &quot;X&quot; | &quot;%&quot;
  
@@ -186,7 +282,7 @@
  
  The meaning of the various alignment options is as follows:
  
-<span class="gu">@@ -325,10 +341,10 @@</span>
+    +---------+----------------------------------------------------------+
     | Option  | Meaning                                                  |
     +=========+==========================================================+
     | ``&#39;&lt;&#39;`` | Forces the field to be left-aligned within the available |
@@ -199,7 +295,25 @@
     +---------+----------------------------------------------------------+
     | ``&#39;=&#39;`` | Forces the padding to be placed after the sign (if any)  |
     |         | but before the digits.  This is used for printing fields |
-<span class="gu">@@ -363,6 +379,13 @@</span>
+    |         | in the form &#39;+000000120&#39;. This alignment option is only  |
+    |         | valid for numeric types.                                 |
+    +---------+----------------------------------------------------------+
+    | ``&#39;^&#39;`` | Forces the field to be centered within the available     |
+    |         | space.                                                   |
+    +---------+----------------------------------------------------------+
+ 
+ Note that unless a minimum field width is defined, the field width will always
+ be the same size as the data to fill it, so that the alignment option has no
+<span class="gu">@@ -354,24 +370,31 @@</span>
+    +---------+----------------------------------------------------------+
+    | ``&#39;-&#39;`` | indicates that a sign should be used only for negative   |
+    |         | numbers (this is the default behavior).                  |
+    +---------+----------------------------------------------------------+
+    | space   | indicates that a leading space should be used on         |
+    |         | positive numbers, and a minus sign on negative numbers.  |
+    +---------+----------------------------------------------------------+
+ 
+ The ``&#39;#&#39;`` option is only valid for integers, and only for binary, octal, or
  hexadecimal output.  If present, it specifies that the output will be prefixed
  by ``&#39;0b&#39;``, ``&#39;0o&#39;``, or ``&#39;0x&#39;``, respectively.
  
@@ -213,7 +327,25 @@
  *width* is a decimal integer defining the minimum field width.  If not
  specified, then the field width will be determined by the content.
  
-<span class="gu">@@ -454,7 +477,7 @@</span>
+ If the *width* field is preceded by a zero (``&#39;0&#39;``) character, this enables
+ zero-padding.  This is equivalent to an *alignment* type of ``&#39;=&#39;`` and a *fill*
+ character of ``&#39;0&#39;``.
+ 
+ The *precision* is a decimal number indicating how many digits should be
+ displayed after the decimal point for a floating point value formatted with
+ ``&#39;f&#39;`` and ``&#39;F&#39;``, or before and after the decimal point for a floating point
+ value formatted with ``&#39;g&#39;`` or ``&#39;G&#39;``.  For non-number types the field
+ indicates the maximum field size - in other words, how many characters will be
+<span class="gu">@@ -445,25 +468,25 @@</span>
+    |         |                                                          |
+    |         | The precise rules are as follows: suppose that the       |
+    |         | result formatted with presentation type ``&#39;e&#39;`` and      |
+    |         | precision ``p-1`` would have exponent ``exp``.  Then     |
+    |         | if ``-4 &lt;= exp &lt; p``, the number is formatted            |
+    |         | with presentation type ``&#39;f&#39;`` and precision             |
+    |         | ``p-1-exp``.  Otherwise, the number is formatted         |
+    |         | with presentation type ``&#39;e&#39;`` and precision ``p-1``.    |
+    |         | In both cases insignificant trailing zeros are removed   |
     |         | from the significand, and the decimal point is also      |
     |         | removed if there are no remaining digits following it.   |
     |         |                                                          |
@@ -222,7 +354,25 @@
     |         | zero, and nans, are formatted as ``inf``, ``-inf``,      |
     |         | ``0``, ``-0`` and ``nan`` respectively, regardless of    |
     |         | the precision.                                           |
-<span class="gu">@@ -488,7 +511,7 @@</span>
+    |         |                                                          |
+    |         | A precision of ``0`` is treated as equivalent to a       |
+    |         | precision of ``1``.                                      |
+    +---------+----------------------------------------------------------+
+    | ``&#39;G&#39;`` | General format. Same as ``&#39;g&#39;`` except switches to       |
+    |         | ``&#39;E&#39;`` if the number gets too large. The                |
+    |         | representations of infinity and NaN are uppercased, too. |
+    +---------+----------------------------------------------------------+
+    | ``&#39;n&#39;`` | Number. This is the same as ``&#39;g&#39;``, except that it uses |
+<span class="gu">@@ -479,33 +502,35 @@</span>
+ 
+ 
+ .. _formatexamples:
+ 
+ Format examples
+ ^^^^^^^^^^^^^^^
+ 
+ This section contains examples of the new format syntax and comparison with
+ the old ``%``-formatting.
  
  In most of the cases the syntax is similar to the old ``%``-formatting, with the
  addition of the ``{}`` and with ``:`` used instead of ``%``.
@@ -231,7 +381,8 @@
  
  The new format syntax also supports new and different options, shown in the
  follow examples.
-<span class="gu">@@ -497,6 +520,8 @@</span>
+ 
+ Accessing arguments by position::
  
     &gt;&gt;&gt; &#39;{0}, {1}, {2}&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
     &#39;a, b, c&#39;
@@ -240,7 +391,25 @@
     &gt;&gt;&gt; &#39;{2}, {1}, {0}&#39;.format(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;)
     &#39;c, b, a&#39;
     &gt;&gt;&gt; &#39;{2}, {1}, {0}&#39;.format(*&#39;abc&#39;)      # unpacking argument sequence
-<span class="gu">@@ -536,27 +561,27 @@</span>
+    &#39;c, b, a&#39;
+    &gt;&gt;&gt; &#39;{0}{1}{0}&#39;.format(&#39;abra&#39;, &#39;cad&#39;)   # arguments&#39; indices can be repeated
+    &#39;abracadabra&#39;
+ 
+ Accessing arguments by name::
+ 
+    &gt;&gt;&gt; &#39;Coordinates: {latitude}, {longitude}&#39;.format(latitude=&#39;37.24N&#39;, longitude=&#39;-115.81W&#39;)
+    &#39;Coordinates: 37.24N, -115.81W&#39;
+    &gt;&gt;&gt; coord = {&#39;latitude&#39;: &#39;37.24N&#39;, &#39;longitude&#39;: &#39;-115.81W&#39;}
+<span class="gu">@@ -527,81 +552,86 @@</span>
+    &gt;&gt;&gt; str(Point(4, 2))
+    &#39;Point(4, 2)&#39;
+ 
+ 
+ Accessing arguments&#39; items::
+ 
+    &gt;&gt;&gt; coord = (3, 5)
+    &gt;&gt;&gt; &#39;X: {0[0]};  Y: {0[1]}&#39;.format(coord)
+    &#39;X: 3;  Y: 5&#39;
  
  Replacing ``%s`` and ``%r``::
  
@@ -276,7 +445,11 @@
     &#39;3.140000; -3.140000&#39;
  
  Replacing ``%x`` and ``%o`` and converting the value to different bases::
-<span class="gu">@@ -568,31 +593,36 @@</span>
+ 
+    &gt;&gt;&gt; # format also supports binary numbers
+    &gt;&gt;&gt; &quot;int: {0:d};  hex: {0:x};  oct: {0:o};  bin: {0:b}&quot;.format(42)
+    &#39;int: 42;  hex: 2a;  oct: 52;  bin: 101010&#39;
+    &gt;&gt;&gt; # with 0x, 0o, or 0b as prefix:
     &gt;&gt;&gt; &quot;int: {0:d};  hex: {0:#x};  oct: {0:#o};  bin: {0:#b}&quot;.format(42)
     &#39;int: 42;  hex: 0x2a;  oct: 0o52;  bin: 0b101010&#39;
  
@@ -317,6 +490,15 @@
     &#39;C0A80001&#39;
     &gt;&gt;&gt; int(_, 16)
     3232235521
+    &gt;&gt;&gt;
+    &gt;&gt;&gt; width = 5
+    &gt;&gt;&gt; for num in range(5,12):
+    ...     for base in &#39;dXob&#39;:
+    ...         print &#39;{0:{width}{base}}&#39;.format(num, base=base, width=width),
+    ...     print
+    ...
+        5     5     5   101
+        6     6     6   110
 </pre></div>
 
 </body>

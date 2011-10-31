@@ -1,4 +1,13 @@
-@@ -234,14 +234,14 @@
+@@ -225,112 +225,119 @@
+    the predicate returns a true value are included.
+ 
+    .. note::
+ 
+       :func:`getmembers` does not return metaclass attributes when the argument
+       is a class (this behavior is inherited from the :func:`dir` function).
+ 
+ 
+ .. function:: getmoduleinfo(path)
  
     Return a tuple of values that describe how Python will interpret the file
     identified by *path* if it is a module, or ``None`` if it would not be
@@ -21,7 +30,21 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ModuleInfo(name, suffix, mode,
-@@ -263,17 +263,20 @@
+       module_type)``.
+ 
+ 
+ .. function:: getmodulename(path)
+ 
+    Return the name of the module named by the file *path*, without including the
+    names of enclosing packages.  This uses the same algorithm as the interpreter
+    uses when searching for modules.  If the name cannot be matched according to the
+    interpreter's rules, ``None`` is returned.
+ 
+ 
+ .. function:: ismodule(object)
+ 
+    Return true if the object is a module.
+ 
  
  .. function:: isclass(object)
  
@@ -45,7 +68,7 @@
  
  .. function:: isgeneratorfunction(object)
  
-@@ -281,12 +284,14 @@
+    Return true if the object is a Python generator function.
  
     .. versionadded:: 2.6
  
@@ -60,7 +83,17 @@
  .. function:: istraceback(object)
  
     Return true if the object is a traceback.
-@@ -304,13 +309,14 @@
+ 
+ 
+ .. function:: isframe(object)
+ 
+    Return true if the object is a frame.
+ 
+ 
+ .. function:: iscode(object)
+ 
+    Return true if the object is a code.
+ 
  
  .. function:: isbuiltin(object)
  
@@ -76,7 +109,9 @@
  .. function:: isabstract(object)
  
     Return true if the object is an abstract base class.
-@@ -320,8 +326,9 @@
+ 
+    .. versionadded:: 2.6
+ 
  
  .. function:: ismethoddescriptor(object)
  
@@ -88,7 +123,25 @@
  
     This is new as of Python 2.2, and, for example, is true of
     ``int.__add__``. An object passing this test has a :attr:`__get__` attribute
-@@ -457,12 +464,13 @@
+    but not a :attr:`__set__` attribute, but beyond that the set of attributes
+    varies.  :attr:`__name__` is usually sensible, and :attr:`__doc__` often is.
+ 
+    Methods implemented via descriptors that also pass one of the other tests
+    return false from the :func:`ismethoddescriptor` test, simply because the
+    other tests promise more -- you can, e.g., count on having the
+    :attr:`im_func` attribute (etc) when an object passes :func:`ismethod`.
+ 
+ 
+@@ -448,43 +455,44 @@
+ 
+    Arrange the given list of classes into a hierarchy of nested lists. Where a
+    nested list appears, it contains classes derived from the class whose entry
+    immediately precedes the list.  Each entry is a 2-tuple containing a class and a
+    tuple of its base classes.  If the *unique* argument is true, exactly one entry
+    appears in the returned structure for each class in the given list.  Otherwise,
+    classes using multiple inheritance and their descendants will appear multiple
+    times.
+ 
  
  .. function:: getargspec(func)
  
@@ -108,7 +161,8 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ArgSpec(args, varargs, keywords,
-@@ -471,11 +479,11 @@
+       defaults)``.
+ 
  
  .. function:: getargvalues(frame)
  
@@ -125,7 +179,25 @@
  
     .. versionchanged:: 2.6
        Returns a :term:`named tuple` ``ArgInfo(args, varargs, keywords,
-@@ -504,6 +512,32 @@
+       locals)``.
+ 
+ 
+ .. function:: formatargspec(args[, varargs, varkw, defaults, formatarg, formatvarargs, formatvarkw, formatvalue, join])
+ 
+    Format a pretty argument spec from the four values returned by
+    :func:`getargspec`.  The format\* arguments are the corresponding optional
+    formatting functions that are called to turn names and values into strings.
+ 
+@@ -495,24 +503,50 @@
+    :func:`getargvalues`.  The format\* arguments are the corresponding optional
+    formatting functions that are called to turn names and values into strings.
+ 
+ 
+ .. function:: getmro(cls)
+ 
+    Return a tuple of class cls's base classes, including cls, in method resolution
+    order.  No class appears more than once in this tuple. Note that the method
+    resolution order depends on cls's type.  Unless a very peculiar user-defined
     metatype is in use, cls will be the first element of the tuple.
  
  
@@ -158,3 +230,12 @@
  .. _inspect-stack:
  
  The interpreter stack
+ ---------------------
+ 
+ When the following functions return "frame records," each record is a tuple of
+ six items: the frame object, the filename, the line number of the current line,
+ the function name, a list of lines of context from the source code, and the
+ index of the current line within that list.
+ 
+ .. note::
+ 

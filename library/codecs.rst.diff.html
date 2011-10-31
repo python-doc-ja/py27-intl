@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -760,7 +760,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -751,25 +751,25 @@</span>
+ :class:`StreamRecoder` instances define the combined interfaces of
+ :class:`StreamReader` and :class:`StreamWriter` classes. They inherit all other
+ methods and attributes from the underlying stream.
+ 
+ 
+ .. _encodings-overview:
+ 
+ Encodings and Unicode
+ ---------------------
  
  Unicode strings are stored internally as sequences of codepoints (to be precise
  as :ctype:`Py_UNICODE` arrays). Depending on the way Python is compiled (either
@@ -77,7 +86,25 @@
  former being the default) :ctype:`Py_UNICODE` is either a 16-bit or 32-bit data
  type. Once a Unicode object is used outside of CPU and memory, CPU endianness
  and how these arrays are stored as bytes become an issue.  Transforming a
-<span class="gu">@@ -908,6 +908,8 @@</span>
+ unicode object into a sequence of bytes is called encoding and recreating the
+ unicode object from the sequence of bytes is known as decoding.  There are many
+ different methods for how this transformation can be done (these methods are
+ also called encodings). The simplest method is to map the codepoints 0-255 to
+ the bytes ``0x0``-``0xff``. This means that a unicode object that contains
+ codepoints above ``U+00FF`` can&#39;t be encoded with this method (which is called
+ ``&#39;latin-1&#39;`` or ``&#39;iso-8859-1&#39;``). :func:`unicode.encode` will raise a
+ :exc:`UnicodeEncodeError` that looks like this: ``UnicodeEncodeError: &#39;latin-1&#39;
+ codec can&#39;t encode character u&#39;\u1234&#39; in position 3: ordinal not in
+<span class="gu">@@ -899,39 +899,43 @@</span>
+ +-----------------+--------------------------------+--------------------------------+
+ | big5hkscs       | big5-hkscs, hkscs              | Traditional Chinese            |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp037           | IBM037, IBM039                 | English                        |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp424           | EBCDIC-CP-HE, IBM424           | Hebrew                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp437           | 437, IBM437                    | English                        |
+ +-----------------+--------------------------------+--------------------------------+
  | cp500           | EBCDIC-CP-BE, EBCDIC-CP-CH,    | Western Europe                 |
  |                 | IBM500                         |                                |
  +-----------------+--------------------------------+--------------------------------+
@@ -86,7 +113,15 @@
  | cp737           |                                | Greek                          |
  +-----------------+--------------------------------+--------------------------------+
  | cp775           | IBM775                         | Baltic languages               |
-<span class="gu">@@ -923,6 +925,8 @@</span>
+ +-----------------+--------------------------------+--------------------------------+
+ | cp850           | 850, IBM850                    | Western Europe                 |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp852           | 852, IBM852                    | Central and Eastern Europe     |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp855           | 855, IBM855                    | Bulgarian, Byelorussian,       |
+ |                 |                                | Macedonian, Russian, Serbian   |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp856           |                                | Hebrew                         |
  +-----------------+--------------------------------+--------------------------------+
  | cp857           | 857, IBM857                    | Turkish                        |
  +-----------------+--------------------------------+--------------------------------+
@@ -95,7 +130,25 @@
  | cp860           | 860, IBM860                    | Portuguese                     |
  +-----------------+--------------------------------+--------------------------------+
  | cp861           | 861, CP-IS, IBM861             | Icelandic                      |
-<span class="gu">@@ -1197,8 +1201,12 @@</span>
+ +-----------------+--------------------------------+--------------------------------+
+ | cp862           | 862, IBM862                    | Hebrew                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp863           | 863, IBM863                    | Canadian                       |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp864           | IBM864                         | Arabic                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp865           | 865, IBM865                    | Danish, Norwegian              |
+ +-----------------+--------------------------------+--------------------------------+
+<span class="gu">@@ -1188,33 +1192,39 @@</span>
+ 
+ These RFCs together define a protocol to support non-ASCII characters in domain
+ names. A domain name containing non-ASCII characters (such as
+ ``www.Alliancefrançaise.nu``) is converted into an ASCII-compatible encoding
+ (ACE, such as ``www.xn--alliancefranaise-npb.nu``). The ACE form of the domain
+ name is then used in all places where arbitrary characters are not allowed by
+ the protocol, such as DNS queries, HTTP :mailheader:`Host` fields, and so
+ on. This conversion is carried out in the application; if possible invisible to
+ the user: The application should transparently convert Unicode domain labels to
  IDNA on the wire, and convert back ACE labels to Unicode before presenting them
  to the user.
  
@@ -110,7 +163,7 @@
  transparently converts Unicode host names to ACE, so that applications need not
  be concerned about converting host names themselves when they pass them to the
  socket module. On top of that, modules that have host names as function
-<span class="gu">@@ -1206,6 +1214,8 @@</span>
+ parameters, such as :mod:`httplib` and :mod:`ftplib`, accept Unicode host names
  (:mod:`httplib` then also transparently sends an IDNA hostname in the
  :mailheader:`Host` field if it sends that field at all).
  
@@ -119,6 +172,15 @@
  When receiving host names from the wire (such as in reverse name lookup), no
  automatic conversion to Unicode is performed: Applications wishing to present
  such host names to the user should decode them to Unicode.
+ 
+ The module :mod:`encodings.idna` also implements the nameprep procedure, which
+ performs certain normalizations on host names, to achieve case-insensitivity of
+ international domain names, and to unify similar characters. The nameprep
+ functions can be used directly if desired.
+ 
+ 
+ .. function:: nameprep(label)
+ 
 </pre></div>
 
 </body>

@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -708,7 +708,10 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -699,25 +699,28 @@</span>
+ 
+    :param fullcircle: a number
+ 
+    Set angle measurement units, i.e. set number of &quot;degrees&quot; for a full circle.
+    Default value is 360 degrees.
+ 
+    .. doctest::
+ 
+       &gt;&gt;&gt; turtle.home()
        &gt;&gt;&gt; turtle.left(90)
        &gt;&gt;&gt; turtle.heading()
        90.0
@@ -80,7 +89,25 @@
        &gt;&gt;&gt; turtle.heading()
        100.0
        &gt;&gt;&gt; turtle.degrees(360)
-<span class="gu">@@ -875,7 +878,7 @@</span>
+       &gt;&gt;&gt; turtle.heading()
+       90.0
+ 
+ 
+ .. function:: radians()
+ 
+    Set the angle measurement units to radians.  Equivalent to
+    ``degrees(2*math.pi)``.
+ 
+<span class="gu">@@ -866,25 +869,25 @@</span>
+    .. doctest::
+ 
+        &gt;&gt;&gt; colormode()
+        1.0
+        &gt;&gt;&gt; turtle.pencolor()
+        &#39;red&#39;
+        &gt;&gt;&gt; turtle.pencolor(&quot;brown&quot;)
+        &gt;&gt;&gt; turtle.pencolor()
+        &#39;brown&#39;
         &gt;&gt;&gt; tup = (0.2, 0.8, 0.55)
         &gt;&gt;&gt; turtle.pencolor(tup)
         &gt;&gt;&gt; turtle.pencolor()
@@ -89,7 +116,25 @@
         &gt;&gt;&gt; colormode(255)
         &gt;&gt;&gt; turtle.pencolor()
         (51, 204, 140)
-<span class="gu">@@ -1455,6 +1458,7 @@</span>
+        &gt;&gt;&gt; turtle.pencolor(&#39;#32c18f&#39;)
+        &gt;&gt;&gt; turtle.pencolor()
+        (50, 193, 143)
+ 
+ 
+ .. function:: fillcolor(*args)
+ 
+    Return or set the fillcolor.
+ 
+<span class="gu">@@ -1446,24 +1449,25 @@</span>
+    :hide:
+ 
+    &gt;&gt;&gt; screen = Screen()
+ 
+ Window control
+ --------------
+ 
+ .. function:: bgcolor(*args)
+ 
     :param args: a color string or three numbers in the range 0..colormode or a
                  3-tuple of such numbers
  
@@ -97,7 +142,25 @@
     Set or return background color of the TurtleScreen.
  
     .. doctest::
-<span class="gu">@@ -1835,7 +1839,7 @@</span>
+ 
+       &gt;&gt;&gt; screen.bgcolor(&quot;orange&quot;)
+       &gt;&gt;&gt; screen.bgcolor()
+       &#39;orange&#39;
+       &gt;&gt;&gt; screen.bgcolor(&quot;#800080&quot;)
+       &gt;&gt;&gt; screen.bgcolor()
+       (128, 0, 128)
+ 
+ 
+<span class="gu">@@ -1826,25 +1830,25 @@</span>
+ 
+ 
+    If the value &quot;using_IDLE&quot; in the configuration dictionary is ``False``
+    (default value), also enter mainloop.  Remark: If IDLE with the ``-n`` switch
+    (no subprocess) is used, this value should be set to ``True`` in
+    :file:`turtle.cfg`.  In this case IDLE&#39;s own mainloop is active also for the
+    client script.
+ 
+ 
  .. function:: setup(width=_CFG[&quot;width&quot;], height=_CFG[&quot;height&quot;], startx=_CFG[&quot;leftright&quot;], starty=_CFG[&quot;topbottom&quot;])
  
     Set the size and position of the main window.  Default values of arguments
@@ -106,7 +169,25 @@
     :file:`turtle.cfg` file.
  
     :param width: if an integer, a size in pixels, if a float, a fraction of the
-<span class="gu">@@ -2165,9 +2169,11 @@</span>
+                  screen; default is 50% of screen
+    :param height: if an integer, the height in pixels, if a float, a fraction of
+                   the screen; default is 75% of screen
+    :param startx: if positive, starting position in pixels from the left
+                   edge of the screen, if negative from the right edge, if None,
+                   center window horizontally
+    :param startx: if positive, starting position in pixels from the top
+                   edge of the screen, if negative from the bottom edge, if None,
+                   center window vertically
+<span class="gu">@@ -2156,27 +2160,29 @@</span>
+   standalone.
+ - There is a :file:`turtle.cfg` file in this directory, which also serves as an
+   example for how to write and use such files.
+ 
+ The demoscripts are:
+ 
+ +----------------+------------------------------+-----------------------+
+ | Name           | Description                  | Features              |
+ +----------------+------------------------------+-----------------------+
  | bytedesign     | complex classical            | :func:`tracer`, delay,|
  |                | turtlegraphics pattern       | :func:`update`        |
  +----------------+------------------------------+-----------------------+
@@ -121,6 +202,15 @@
  +----------------+------------------------------+-----------------------+
  | clock          | analog clock showing time    | turtles as clock&#39;s    |
  |                | of your computer             | hands, ontimer        |
+ +----------------+------------------------------+-----------------------+
+ | colormixer     | experiment with r, g, b      | :func:`ondrag`        |
+ +----------------+------------------------------+-----------------------+
+ | fractalcurves  | Hilbert &amp; Koch curves        | recursion             |
+ +----------------+------------------------------+-----------------------+
+ | lindenmayer    | ethnomathematics             | L-System              |
+ |                | (indian kolams)              |                       |
+ +----------------+------------------------------+-----------------------+
+ | minimal_hanoi  | Towers of Hanoi              | Rectangular Turtles   |
 </pre></div>
 
 </body>

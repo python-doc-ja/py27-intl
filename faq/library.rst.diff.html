@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -458,7 +458,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -449,25 +449,25 @@</span>
+ the name of the Unix system call for this function.
+ 
+ To remove a directory, use :func:`os.rmdir`; use :func:`os.mkdir` to create one.
+ ``os.makedirs(path)`` will create any intermediate directories in ``path`` that
+ don&#39;t exist. ``os.removedirs(path)`` will remove intermediate directories as
+ long as they&#39;re empty; if you want to delete an entire directory tree and its
+ contents, use :func:`shutil.rmtree`.
+ 
+ To rename a file, use ``os.rename(old_path, new_path)``.
  
  To truncate a file, open it using ``f = open(filename, &quot;r+&quot;)``, and use
  ``f.truncate(offset)``; offset defaults to the current seek position.  There&#39;s
@@ -77,7 +86,25 @@
  ``fd`` is the file descriptor (a small integer).
  
  The :mod:`shutil` module also contains a number of functions to work on files
-<span class="gu">@@ -672,9 +672,8 @@</span>
+ including :func:`~shutil.copyfile`, :func:`~shutil.copytree`, and
+ :func:`~shutil.rmtree`.
+ 
+ 
+ How do I copy a file?
+ ---------------------
+ 
+ The :mod:`shutil` module contains a :func:`~shutil.copyfile` function.  Note
+ that on MacOS 9 it doesn&#39;t copy the resource fork and Finder info.
+<span class="gu">@@ -663,27 +663,26 @@</span>
+    ### now generate the rest of the HTTP headers...
+    httpobj.putheader(&#39;Accept&#39;, &#39;*/*&#39;)
+    httpobj.putheader(&#39;Connection&#39;, &#39;Keep-Alive&#39;)
+    httpobj.putheader(&#39;Content-type&#39;, &#39;application/x-www-form-urlencoded&#39;)
+    httpobj.putheader(&#39;Content-length&#39;, &#39;%d&#39; % len(qs))
+    httpobj.endheaders()
+    httpobj.send(qs)
+    ### find out what the server said in response...
+    reply, msg, hdrs = httpobj.getreply()
     if reply != 200:
         sys.stdout.write(httpobj.getfile().read())
  
@@ -89,6 +116,15 @@
  
     &gt;&gt;&gt; from urllib import quote
     &gt;&gt;&gt; x = quote(&quot;Guy Steele, Jr.&quot;)
+    &gt;&gt;&gt; x
+    &#39;Guy%20Steele,%20Jr.&#39;
+    &gt;&gt;&gt; query_string = &quot;name=&quot;+x
+    &gt;&gt;&gt; query_string
+    &#39;name=Guy%20Steele,%20Jr.&#39;
+ 
+ 
+ What module should I use to help with generating HTML?
+ ------------------------------------------------------
 </pre></div>
 
 </body>

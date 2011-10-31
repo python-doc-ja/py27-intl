@@ -1,4 +1,13 @@
-@@ -205,7 +205,7 @@
+@@ -196,34 +196,41 @@
+    the TIPC documentation for more information.
+ 
+    .. versionadded:: 2.6
+ 
+ .. data:: has_ipv6
+ 
+    This constant contains a boolean value which indicates if IPv6 is supported on
+    this platform.
+ 
     .. versionadded:: 2.3
  
  
@@ -7,7 +16,7 @@
  
     Convenience function.  Connect to *address* (a 2-tuple ``(host, port)``),
     and return the socket object.  Passing the optional *timeout* parameter will
-@@ -213,8 +213,15 @@
+    set the timeout on the socket instance before attempting to connect.  If no
     *timeout* is supplied, the global default timeout setting returned by
     :func:`getdefaulttimeout` is used.
  
@@ -23,7 +32,25 @@
  
  .. function:: getaddrinfo(host, port, family=0, socktype=0, proto=0, flags=0)
  
-@@ -508,6 +515,9 @@
+    Translate the *host*/*port* argument into a sequence of 5-tuples that contain
+    all the necessary arguments for creating a socket connected to that service.
+    *host* is a domain name, a string representation of an IPv4/v6 address
+    or ``None``. *port* is a string service name such as ``'http'``, a numeric
+    port number or ``None``.  By passing ``None`` as the value of *host*
+    and *port*, you can pass ``NULL`` to the underlying C API.
+ 
+    The *family*, *socktype* and *proto* arguments can be optionally specified
+    in order to narrow the list of addresses returned.  Passing zero as a
+@@ -499,24 +506,27 @@
+ 
+ .. data:: SocketType
+ 
+    This is a Python type object that represents the socket object type. It is the
+    same as ``type(socket(...))``.
+ 
+ 
+ .. seealso::
+ 
     Module :mod:`SocketServer`
        Classes that simplify writing network servers.
  
@@ -33,7 +60,25 @@
  
  .. _socket-objects:
  
-@@ -544,6 +554,12 @@
+ Socket Objects
+ --------------
+ 
+ Socket objects have the following methods.  Except for :meth:`makefile` these
+ correspond to Unix system calls applicable to sockets.
+ 
+ 
+ .. method:: socket.accept()
+ 
+@@ -535,24 +545,30 @@
+ 
+       This method has historically accepted a pair of parameters for :const:`AF_INET`
+       addresses instead of only a tuple.  This was never intentional and is no longer
+       available in Python 2.0 and later.
+ 
+ 
+ .. method:: socket.close()
+ 
+    Close the socket.  All future operations on the socket object will fail. The
     remote end will receive no more data (after queued data is flushed). Sockets are
     automatically closed when they are garbage-collected.
  
@@ -46,7 +91,25 @@
  
  .. method:: socket.connect(address)
  
-@@ -628,8 +644,8 @@
+    Connect to a remote socket at *address*. (The format of *address* depends on the
+    address family --- see above.)
+ 
+    .. note::
+ 
+       This method has historically accepted a pair of parameters for :const:`AF_INET`
+       addresses instead of only a tuple.  This was never intentional and is no longer
+       available in Python 2.0 and later.
+ 
+@@ -619,40 +635,46 @@
+    <http://msdn.microsoft.com/en-us/library/ms741621%28VS.85%29.aspx>`_ for more
+    information.
+ 
+    On other platforms, the generic :func:`fcntl.fcntl` and :func:`fcntl.ioctl`
+    functions may be used; they accept a socket object as their first argument.
+ 
+    .. versionadded:: 2.6
+ 
+ 
  .. method:: socket.listen(backlog)
  
     Listen for connections made to the socket.  The *backlog* argument specifies the
@@ -57,7 +120,14 @@
  
  
  .. method:: socket.makefile([mode[, bufsize]])
-@@ -644,6 +660,12 @@
+ 
+    .. index:: single: I/O control; buffering
+ 
+    Return a :dfn:`file object` associated with the socket.  (File objects are
+    described in :ref:`bltin-file-objects`.) The file object
+    references a :cfunc:`dup`\ ped version of the socket file descriptor, so the
+    file object and socket object may be closed or garbage-collected independently.
+    The socket must be in blocking mode (it can not have a timeout). The optional
     *mode* and *bufsize* arguments are interpreted the same way as by the built-in
     :func:`file` function.
  
@@ -70,7 +140,25 @@
  
  .. method:: socket.recv(bufsize[, flags])
  
-@@ -733,7 +755,7 @@
+    Receive data from the socket.  The return value is a string representing the
+    data received.  The maximum amount of data to be received at once is specified
+    by *bufsize*.  See the Unix manual page :manpage:`recv(2)` for the meaning of
+    the optional argument *flags*; it defaults to zero.
+ 
+    .. note::
+ 
+       For best match with hardware and network realities, the value of  *bufsize*
+       should be a relatively small power of 2, for example, 4096.
+@@ -724,25 +746,25 @@
+    set to non-blocking, else to blocking mode.  Initially all sockets are in
+    blocking mode.  In non-blocking mode, if a :meth:`recv` call doesn't find any
+    data, or if a :meth:`send` call can't immediately dispose of the data, a
+    :exc:`error` exception is raised; in blocking mode, the calls block until they
+    can proceed. ``s.setblocking(0)`` is equivalent to ``s.settimeout(0.0)``;
+    ``s.setblocking(1)`` is equivalent to ``s.settimeout(None)``.
+ 
+ 
+ .. method:: socket.settimeout(value)
  
     Set a timeout on blocking socket operations.  The *value* argument can be a
     nonnegative float expressing seconds, or ``None``. If a float is given,
@@ -79,7 +167,25 @@
     timeout period *value* has elapsed before the operation has completed.  Setting
     a timeout of ``None`` disables timeouts on socket operations.
     ``s.settimeout(0.0)`` is equivalent to ``s.setblocking(0)``;
-@@ -791,7 +813,9 @@
+    ``s.settimeout(None)`` is equivalent to ``s.setblocking(1)``.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. method:: socket.gettimeout()
+ 
+    Return the timeout in floating seconds associated with socket operations, or
+    ``None`` if no timeout is set.  This reflects the last call to
+@@ -782,25 +804,27 @@
+    :manpage:`setsockopt(2)`).  The needed symbolic constants are defined in the
+    :mod:`socket` module (:const:`SO_\*` etc.).  The value can be an integer or a
+    string representing a buffer.  In the latter case it is up to the caller to
+    ensure that the string contains the proper bits (see the optional built-in
+    module :mod:`struct` for a way to encode C structures as strings).
+ 
+ 
+ .. method:: socket.shutdown(how)
+ 
     Shut down one or both halves of the connection.  If *how* is :const:`SHUT_RD`,
     further receives are disallowed.  If *how* is :const:`SHUT_WR`, further sends
     are disallowed.  If *how* is :const:`SHUT_RDWR`, further sends and receives are
@@ -90,3 +196,12 @@
  
  Note that there are no methods :meth:`read` or :meth:`write`; use
  :meth:`~socket.recv` and :meth:`~socket.send` without *flags* argument instead.
+ 
+ Socket objects also have these (read-only) attributes that correspond to the
+ values given to the :class:`socket` constructor.
+ 
+ 
+ .. attribute:: socket.family
+ 
+    The socket family.
+ 

@@ -1,4 +1,13 @@
-@@ -42,14 +42,17 @@
+@@ -33,32 +33,35 @@
+    (:meth:`__eq__`, :meth:`__lt__`, and friends), to indicate that the comparison
+    is not implemented with respect to the other type.
+ 
+ 
+ .. data:: Ellipsis
+ 
+    Special value used in conjunction with extended slicing syntax.
+ 
+ 
  .. data:: __debug__
  
     This constant is true if Python was not started with an :option:`-O` option.
@@ -20,3 +29,12 @@
  
  
  Constants added by the :mod:`site` module
+ -----------------------------------------
+ 
+ The :mod:`site` module (which is imported automatically during startup, except
+ if the :option:`-S` command-line option is given) adds several constants to the
+ built-in namespace.  They are useful for the interactive interpreter shell and
+ should not be used in programs.
+ 
+ .. data:: quit([code=None])
+           exit([code=None])

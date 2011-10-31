@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -22,6 +22,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -13,24 +13,29 @@</span>
+ compatibility, a string containing a pathname is also accepted, and the
+ corresponding file will be opened for reading and writing; the pathname ``&#39;-&#39;``
+ is understood to mean the standard input or output.  However, this interface is
+ deprecated; it&#39;s better for the caller to open the file itself, and be sure
+ that, when required, the mode is ``&#39;rb&#39;`` or ``&#39;wb&#39;`` on Windows.
+ 
+ .. index::
+    single: Jansen, Jack
+    single: Ellinghouse, Lance
  
  This code was contributed by Lance Ellinghouse, and modified by Jack Jansen.
  
@@ -80,6 +89,15 @@
  The :mod:`uu` module defines the following functions:
  
  
+ .. function:: encode(in_file, out_file[, name[, mode]])
+ 
+    Uuencode file *in_file* into file *out_file*.  The uuencoded file will have the
+    header specifying *name* and *mode* as the defaults for the results of decoding
+    the file. The default defaults are taken from *in_file*, or ``&#39;-&#39;`` and ``0666``
+    respectively.
+ 
+ 
+ .. function:: decode(in_file[, out_file[, mode[, quiet]]])
 </pre></div>
 
 </body>

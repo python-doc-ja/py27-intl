@@ -68,7 +68,12 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -6,16 +6,30 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,73 +1,87 @@</span>
+ :mod:`io` --- Core tools for working with streams
+ =================================================
+ 
+ .. module:: io
+    :synopsis: Core tools for working with streams.
  .. moduleauthor:: Guido van Rossum &lt;guido@python.org&gt;
  .. moduleauthor:: Mike Verdone &lt;mike.verdone@gmail.com&gt;
  .. moduleauthor:: Mark Russell &lt;mark.russell@zen.co.uk&gt;
@@ -102,7 +107,15 @@
  
  Extending :class:`IOBase` is :class:`RawIOBase` which deals simply with the
  reading and writing of raw bytes to a stream.  :class:`FileIO` subclasses
-<span class="gu">@@ -31,10 +45,10 @@</span>
+ :class:`RawIOBase` to provide an interface to files in the machine&#39;s
+ file system.
+ 
+ :class:`BufferedIOBase` deals with buffering on a raw byte stream
+ (:class:`RawIOBase`).  Its subclasses, :class:`BufferedWriter`,
+ :class:`BufferedReader`, and :class:`BufferedRWPair` buffer streams that are
+ readable, writable, and both readable and writable.
+ :class:`BufferedRandom` provides a buffered interface to random access
+ streams.  :class:`BytesIO` is a simple stream of in-memory bytes.
  
  Another :class:`IOBase` subclass, :class:`TextIOBase`, deals with
  streams whose bytes represent text, and handles encoding and decoding
@@ -116,7 +129,14 @@
  
  Argument names are not part of the specification, and only the arguments of
  :func:`.open` are intended to be used as keyword arguments.
-<span class="gu">@@ -49,16 +63,16 @@</span>
+ 
+ 
+ Module Interface
+ ----------------
+ 
+ .. data:: DEFAULT_BUFFER_SIZE
+ 
+    An int containing the default buffer size used by the module&#39;s buffered I/O
     classes.  :func:`.open` uses the file&#39;s blksize (as obtained by
     :func:`os.stat`) if possible.
  
@@ -141,7 +161,25 @@
  
     *mode* is an optional string that specifies the mode in which the file is
     opened.  It defaults to ``&#39;r&#39;`` which means open for reading in text mode.
-<span class="gu">@@ -88,11 +102,11 @@</span>
+    Other common values are ``&#39;w&#39;`` for writing (truncating the file if it
+    already exists), and ``&#39;a&#39;`` for appending (which on *some* Unix systems,
+    means that *all* writes append to the end of the file regardless of the
+    current seek position).  In text mode, if *encoding* is not specified the
+    encoding used is platform dependent. (For reading and writing raw bytes use
+    binary mode and leave *encoding* unspecified.)  The available modes are:
+ 
+    ========= ===============================================================
+    Character Meaning
+<span class="gu">@@ -79,96 +93,101 @@</span>
+    ``&#39;t&#39;``   text mode (default)
+    ``&#39;+&#39;``   open a disk file for updating (reading and writing)
+    ``&#39;U&#39;``   universal newline mode (for backwards compatibility; should
+              not be used in new code)
+    ========= ===============================================================
+ 
+    The default mode is ``&#39;rt&#39;`` (open for reading text).  For binary random
+    access, the mode ``&#39;w+b&#39;`` opens and truncates the file to 0 bytes, while
+    ``&#39;r+b&#39;`` opens the file without truncation.
  
     Python distinguishes between files opened in binary and text modes, even when
     the underlying operating system doesn&#39;t.  Files opened in binary mode
@@ -156,7 +194,18 @@
  
     *buffering* is an optional integer used to set the buffering policy.
     Pass 0 to switch buffering off (only allowed in binary mode), 1 to select
-<span class="gu">@@ -111,19 +125,21 @@</span>
+    line buffering (only usable in text mode), and an integer &gt; 1 to indicate
+    the size of a fixed-size chunk buffer.  When no *buffering* argument is
+    given, the default buffering policy works as follows:
+ 
+    * Binary files are buffered in fixed-size chunks; the size of the buffer
+      is chosen using a heuristic trying to determine the underlying device&#39;s
+      &quot;block size&quot; and falling back on :attr:`DEFAULT_BUFFER_SIZE`.
+      On many systems, the buffer will typically be 4096 or 8192 bytes long.
+ 
+    * &quot;Interactive&quot; text files (files for which :meth:`isatty` returns True)
+      use line buffering.  Other text files use the policy described above
+      for binary files.
  
     *encoding* is the name of the encoding used to decode or encode the file.
     This should only be used in text mode.  The default encoding is platform
@@ -189,7 +238,19 @@
  
     *newline* controls how universal newlines works (it only applies to text
     mode).  It can be ``None``, ``&#39;&#39;``, ``&#39;\n&#39;``, ``&#39;\r&#39;``, and ``&#39;\r\n&#39;``.  It
-<span class="gu">@@ -143,23 +159,26 @@</span>
+    works as follows:
+ 
+    * On input, if *newline* is ``None``, universal newlines mode is enabled.
+      Lines in the input can end in ``&#39;\n&#39;``, ``&#39;\r&#39;``, or ``&#39;\r\n&#39;``, and these
+      are translated into ``&#39;\n&#39;`` before being returned to the caller.  If it is
+      ``&#39;&#39;``, universal newline mode is enabled, but line endings are returned to
+      the caller untranslated.  If it has any of the other legal values, input
+      lines are only terminated by the given string, and the line ending is
+      returned to the caller untranslated.
+ 
+    * On output, if *newline* is ``None``, any ``&#39;\n&#39;`` characters written are
+      translated to the system default line separator, :data:`os.linesep`.  If
+      *newline* is ``&#39;&#39;``, no translation takes place.  If *newline* is any of
       the other legal values, any ``&#39;\n&#39;`` characters written are translated to
       the given string.
  
@@ -231,7 +292,25 @@
     file opened in a binary mode.
  
  
-<span class="gu">@@ -203,22 +222,25 @@</span>
+ .. exception:: BlockingIOError
+ 
+    Error raised when blocking would occur on a non-blocking stream.  It inherits
+    :exc:`IOError`.
+ 
+    In addition to those of :exc:`IOError`, :exc:`BlockingIOError` has one
+    attribute:
+ 
+    .. attribute:: characters_written
+<span class="gu">@@ -194,48 +213,51 @@</span>
+    This class provides empty abstract implementations for many methods
+    that derived classes can override selectively; the default
+    implementations represent a file that cannot be read, written or
+    seeked.
+ 
+    Even though :class:`IOBase` does not declare :meth:`read`, :meth:`readinto`,
+    or :meth:`write` because their signatures will vary, implementations and
+    clients should consider those methods part of the interface.  Also,
+    implementations may raise a :exc:`IOError` when operations they do not
     support are called.
  
     The basic type used for binary data read from or written to a file is
@@ -262,7 +341,7 @@
  
     :class:`IOBase` provides these data attributes and methods:
  
-<span class="gu">@@ -226,7 +248,7 @@</span>
+    .. method:: close()
  
        Flush and close this stream. This method has no effect if the file is
        already closed. Once the file is closed, any operation on the file
@@ -271,7 +350,25 @@
  
        As a convenience, it is allowed to call this method more than once;
        only the first call, however, will have an effect.
-<span class="gu">@@ -256,7 +278,7 @@</span>
+ 
+    .. attribute:: closed
+ 
+       True if the stream is closed.
+ 
+    .. method:: fileno()
+ 
+       Return the underlying file descriptor (an integer) of the stream if it
+       exists.  An :exc:`IOError` is raised if the IO object does not use a file
+<span class="gu">@@ -247,61 +269,67 @@</span>
+       for read-only and non-blocking streams.
+ 
+    .. method:: isatty()
+ 
+       Return ``True`` if the stream is interactive (i.e., connected to
+       a terminal/tty device).
+ 
+    .. method:: readable()
+ 
        Return ``True`` if the stream can be read from.  If False, :meth:`read`
        will raise :exc:`IOError`.
  
@@ -280,7 +377,8 @@
  
        Read and return one line from the stream.  If *limit* is specified, at
        most *limit* bytes will be read.
-<span class="gu">@@ -265,24 +287,30 @@</span>
+ 
+       The line terminator is always ``b&#39;\n&#39;`` for binary files; for text files,
        the *newlines* argument to :func:`.open` can be used to select the line
        terminator(s) recognized.
  
@@ -316,7 +414,9 @@
     .. method:: seekable()
  
        Return ``True`` if the stream supports random access.  If ``False``,
-<span class="gu">@@ -292,7 +320,7 @@</span>
+       :meth:`seek`, :meth:`tell` and :meth:`truncate` will raise :exc:`IOError`.
+ 
+    .. method:: tell()
  
        Return the current stream position.
  
@@ -325,7 +425,25 @@
  
        Resize the stream to the given *size* in bytes (or the current position
        if *size* is not specified).  The current stream position isn&#39;t changed.
-<span class="gu">@@ -318,15 +346,23 @@</span>
+       This resizing can extend or reduce the current file size.  In case of
+       extension, the contents of the new file area depend on the platform
+       (on most systems, additional bytes are zero-filled, on Windows they&#39;re
+       undetermined).  The new file size is returned.
+ 
+    .. method:: writable()
+ 
+       Return ``True`` if the stream supports writing.  If ``False``,
+       :meth:`write` and :meth:`truncate` will raise :exc:`IOError`.
+<span class="gu">@@ -309,308 +337,384 @@</span>
+    .. method:: writelines(lines)
+ 
+       Write a list of lines to the stream.  Line separators are not added, so it
+       is usual for each of the lines provided to have a line separator at the
+       end.
+ 
+ 
+ .. class:: RawIOBase
+ 
     Base class for raw binary I/O.  It inherits :class:`IOBase`.  There is no
     public constructor.
  
@@ -354,7 +472,8 @@
  
     .. method:: readall()
  
-<span class="gu">@@ -335,38 +371,65 @@</span>
+       Read and return all the bytes from the stream until EOF, using multiple
+       calls to the stream if necessary.
  
     .. method:: readinto(b)
  
@@ -438,7 +557,11 @@
  
        Read and return up to *n* bytes.  If the argument is omitted, ``None``, or
        negative, data is read and returned until EOF is reached.  An empty bytes
-<span class="gu">@@ -378,8 +441,15 @@</span>
+       object is returned if the stream is already at EOF.
+ 
+       If the argument is positive, and the underlying raw stream is not
+       interactive, multiple raw reads may be issued to satisfy the byte count
+       (unless EOF is reached first).  But for interactive raw streams, at most
        one raw read will be issued, and a short result does not imply that EOF is
        imminent.
  
@@ -456,7 +579,7 @@
  
     .. method:: readinto(b)
  
-<span class="gu">@@ -387,35 +457,47 @@</span>
+       Read up to len(b) bytes into bytearray *b* and return the number of bytes
        read.
  
        Like :meth:`read`, multiple reads may be issued to the underlying raw
@@ -516,7 +639,13 @@
     In addition to the attributes and methods from :class:`IOBase` and
     :class:`RawIOBase`, :class:`FileIO` provides the following data
     attributes and methods:
-<span class="gu">@@ -429,38 +511,19 @@</span>
+ 
+    .. attribute:: mode
+ 
+       The mode as given in the constructor.
+ 
+    .. attribute:: name
+ 
        The file name.  This is the file descriptor of the file when no name is
        given in the constructor.
  
@@ -559,7 +688,13 @@
  
     :class:`BytesIO` provides or overrides these methods in addition to those
     from :class:`BufferedIOBase` and :class:`IOBase`:
-<span class="gu">@@ -474,10 +537,13 @@</span>
+ 
+    .. method:: getvalue()
+ 
+       Return ``bytes`` containing the entire contents of the buffer.
+ 
+    .. method:: read1()
+ 
        In :class:`BytesIO`, this is the same as :meth:`read`.
  
  
@@ -576,7 +711,10 @@
  
     The constructor creates a :class:`BufferedReader` for the given readable
     *raw* stream and *buffer_size*.  If *buffer_size* is omitted,
-<span class="gu">@@ -488,11 +554,9 @@</span>
+    :data:`DEFAULT_BUFFER_SIZE` is used.
+ 
+    :class:`BufferedReader` provides or overrides these methods in addition to
+    those from :class:`BufferedIOBase` and :class:`IOBase`:
  
     .. method:: peek([n])
  
@@ -591,7 +729,13 @@
  
     .. method:: read([n])
  
-<span class="gu">@@ -506,15 +570,24 @@</span>
+       Read and return *n* bytes, or if *n* is not given or negative, until EOF
+       or if the read call would block in non-blocking mode.
+ 
+    .. method:: read1(n)
+ 
+       Read and return up to *n* bytes with only one call on the raw stream.  If
+       at least one byte is buffered, only buffered bytes are returned.
        Otherwise, one raw stream read call is made.
  
  
@@ -621,7 +765,11 @@
  
     :class:`BufferedWriter` provides or overrides these methods in addition to
     those from :class:`BufferedIOBase` and :class:`IOBase`:
-<span class="gu">@@ -526,35 +599,41 @@</span>
+ 
+    .. method:: flush()
+ 
+       Force bytes held in the buffer into the raw stream.  A
+       :exc:`BlockingIOError` should be raised if the raw stream blocks.
  
     .. method:: write(b)
  
@@ -678,7 +826,10 @@
  
     :class:`BufferedRandom` is capable of anything :class:`BufferedReader` or
     :class:`BufferedWriter` can do.
-<span class="gu">@@ -565,10 +644,10 @@</span>
+ 
+ 
+ Text I/O
+ --------
  
  .. class:: TextIOBase
  
@@ -693,7 +844,9 @@
  
     :class:`TextIOBase` provides or overrides these data attributes and
     methods in addition to those from :class:`IOBase`:
-<span class="gu">@@ -578,30 +657,55 @@</span>
+ 
+    .. attribute:: encoding
+ 
        The name of the encoding used to decode the stream&#39;s bytes into
        strings, and to encode strings into bytes.
  
@@ -757,7 +910,25 @@
     It inherits :class:`TextIOBase`.
  
     *encoding* gives the name of the encoding that the stream will be decoded or
-<span class="gu">@@ -630,32 +734,47 @@</span>
+    encoded with.  It defaults to :func:`locale.getpreferredencoding`.
+ 
+    *errors* is an optional string that specifies how encoding and decoding
+    errors are to be handled.  Pass ``&#39;strict&#39;`` to raise a :exc:`ValueError`
+    exception if there is an encoding error (the default of ``None`` has the same
+    effect), or pass ``&#39;ignore&#39;`` to ignore errors.  (Note that ignoring encoding
+    errors can lead to data loss.)  ``&#39;replace&#39;`` causes a replacement marker
+    (such as ``&#39;?&#39;``) to be inserted where there is malformed data.  When
+    writing, ``&#39;xmlcharrefreplace&#39;`` (replace with the appropriate XML character
+<span class="gu">@@ -621,45 +725,125 @@</span>
+    *newline* can be ``None``, ``&#39;&#39;``, ``&#39;\n&#39;``, ``&#39;\r&#39;``, or ``&#39;\r\n&#39;``.  It
+    controls the handling of line endings.  If it is ``None``, universal newlines
+    is enabled.  With this enabled, on input, the lines endings ``&#39;\n&#39;``,
+    ``&#39;\r&#39;``, or ``&#39;\r\n&#39;`` are translated to ``&#39;\n&#39;`` before being returned to
+    the caller.  Conversely, on output, ``&#39;\n&#39;`` is translated to the system
+    default line separator, :data:`os.linesep`.  If *newline* is any other of its
+    legal values, that newline becomes the newline when the file is read and it
+    is returned untranslated.  On output, ``&#39;\n&#39;`` is converted to the *newline*.
+ 
     If *line_buffering* is ``True``, :meth:`flush` is implied when a call to
     write contains a newline character.
  
@@ -816,7 +987,7 @@
  
  
  .. class:: IncrementalNewlineDecoder
-<span class="gu">@@ -663,3 +782,68 @@</span>
+ 
     A helper codec that decodes newlines for universal newlines mode.  It
     inherits :class:`codecs.IncrementalDecoder`.
  

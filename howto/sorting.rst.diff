@@ -1,10 +1,11 @@
-@@ -1,3 +1,5 @@
+@@ -1,22 +1,24 @@
 +.. _sortinghowto:
 +
  Sorting HOW TO
  **************
  
-@@ -6,8 +8,8 @@
+ :Author: Andrew Dalke and Raymond Hettinger
+ :Release: 0.1
  
  
  Python lists have a built-in :meth:`list.sort` method that modifies the list
@@ -15,3 +16,12 @@
  
  In this document, we explore the various techniques for sorting data using Python.
  
+ 
+ Sorting Basics
+ ==============
+ 
+ A simple ascending sort is very easy: just call the :func:`sorted` function. It
+ returns a new sorted list::
+ 
+     >>> sorted([5, 2, 3, 1, 4])
+     [1, 2, 3, 4, 5]

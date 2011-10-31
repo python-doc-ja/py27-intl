@@ -1,4 +1,13 @@
-@@ -11,6 +11,11 @@
+@@ -2,24 +2,29 @@
+ :mod:`filecmp` --- File and Directory Comparisons
+ =================================================
+ 
+ .. module:: filecmp
+    :synopsis: Compare files efficiently.
+ .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
+ 
+ 
+ The :mod:`filecmp` module defines functions to compare files and directories,
  with various optional time/correctness trade-offs. For comparing files,
  see also the :mod:`difflib` module.
  
@@ -10,3 +19,12 @@
  The :mod:`filecmp` module defines the following functions:
  
  
+ .. function:: cmp(f1, f2[, shallow])
+ 
+    Compare the files named *f1* and *f2*, returning ``True`` if they seem equal,
+    ``False`` otherwise.
+ 
+    Unless *shallow* is given and is false, files with identical :func:`os.stat`
+    signatures are taken to be equal.
+ 
+    Files that were compared using this function will not be compared again unless

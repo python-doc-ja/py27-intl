@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -235,8 +235,6 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -226,69 +226,68 @@</span>
+ .. _cookie-example:
+ 
+ Example
+ -------
+ 
+ The following example demonstrates how to use the :mod:`Cookie` module.
+ 
+ .. doctest::
+    :options: +NORMALIZE_WHITESPACE
  
     &gt;&gt;&gt; import Cookie
     &gt;&gt;&gt; C = Cookie.SimpleCookie()
@@ -77,7 +86,8 @@
     &gt;&gt;&gt; C[&quot;fig&quot;] = &quot;newton&quot;
     &gt;&gt;&gt; C[&quot;sugar&quot;] = &quot;wafer&quot;
     &gt;&gt;&gt; print C # generate HTTP headers
-<span class="gu">@@ -245,28 +243,27 @@</span>
+    Set-Cookie: fig=newton
+    Set-Cookie: sugar=wafer
     &gt;&gt;&gt; print C.output() # same thing
     Set-Cookie: fig=newton
     Set-Cookie: sugar=wafer
@@ -110,7 +120,13 @@
     &gt;&gt;&gt; C[&quot;twix&quot;] = &quot;none for you&quot;
     &gt;&gt;&gt; C[&quot;twix&quot;].value
     &#39;none for you&#39;
-<span class="gu">@@ -280,6 +277,8 @@</span>
+    &gt;&gt;&gt; C = Cookie.SimpleCookie()
+    &gt;&gt;&gt; C[&quot;number&quot;] = 7 # equivalent to C[&quot;number&quot;] = str(7)
+    &gt;&gt;&gt; C[&quot;string&quot;] = &quot;seven&quot;
+    &gt;&gt;&gt; C[&quot;number&quot;].value
+    &#39;7&#39;
+    &gt;&gt;&gt; C[&quot;string&quot;].value
+    &#39;seven&#39;
     &gt;&gt;&gt; print C
     Set-Cookie: number=7
     Set-Cookie: string=seven
@@ -119,6 +135,15 @@
     &gt;&gt;&gt; C = Cookie.SerialCookie()
     &gt;&gt;&gt; C[&quot;number&quot;] = 7
     &gt;&gt;&gt; C[&quot;string&quot;] = &quot;seven&quot;
+    &gt;&gt;&gt; C[&quot;number&quot;].value
+    7
+    &gt;&gt;&gt; C[&quot;string&quot;].value
+    &#39;seven&#39;
+    &gt;&gt;&gt; print C
+    Set-Cookie: number=&quot;I7\012.&quot;
+    Set-Cookie: string=&quot;S&#39;seven&#39;\012p1\012.&quot;
+    &gt;&gt;&gt; C = Cookie.SmartCookie()
+    &gt;&gt;&gt; C[&quot;number&quot;] = 7
 </pre></div>
 
 </body>

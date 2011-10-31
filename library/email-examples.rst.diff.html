@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -11,6 +11,12 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -2,24 +2,30 @@</span>
+ 
+ :mod:`email`: Examples
+ ----------------------
+ 
+ Here are a few examples of how to use the :mod:`email` package to read, write,
+ and send simple email messages, as well as more complex MIME messages.
+ 
+ First, let&#39;s see how to create and send a simple text message:
+ 
  .. literalinclude:: ../includes/email-simple.py
  
  
@@ -80,6 +89,15 @@
 <span class="gi">+</span>
  Here&#39;s an example of how to send a MIME message containing a bunch of family
  pictures that may be residing in a directory:
+ 
+ .. literalinclude:: ../includes/email-mime.py
+ 
+ 
+ Here&#39;s an example of how to send the entire contents of a directory as an email
+ message: [1]_
+ 
+ .. literalinclude:: ../includes/email-dir.py
+ 
  
 </pre></div>
 

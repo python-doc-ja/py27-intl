@@ -68,7 +68,13 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -7,6 +7,26 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,21 +1,41 @@</span>
+ 
+ .. _built-in-funcs:
+ 
+ Built-in Functions
+ ==================
+ 
  The Python interpreter has a number of functions built into it that are always
  available.  They are listed here in alphabetical order.
  
@@ -95,7 +101,25 @@
  
  .. function:: abs(x)
  
-<span class="gu">@@ -78,6 +98,32 @@</span>
+    Return the absolute value of a number.  The argument may be a plain or long
+    integer or a floating point number.  If the argument is a complex number, its
+    magnitude is returned.
+ 
+ 
+ .. function:: all(iterable)
+ 
+    Return True if all elements of the *iterable* are true (or if the iterable
+    is empty).  Equivalent to::
+<span class="gu">@@ -69,24 +89,50 @@</span>
+    :const:`True`. :class:`bool` is also a class, which is a subclass of
+    :class:`int`. Class :class:`bool` cannot be subclassed further.  Its only
+    instances are :const:`False` and :const:`True`.
+ 
+    .. index:: pair: Boolean; type
+ 
+    .. versionadded:: 2.2.1
+ 
+    .. versionchanged:: 2.3
        If no argument is given, this function returns :const:`False`.
  
  
@@ -128,7 +152,25 @@
  .. function:: callable(object)
  
     Return :const:`True` if the *object* argument appears callable,
-<span class="gu">@@ -173,11 +219,10 @@</span>
+    :const:`False` if not.  If this
+    returns true, it is still possible that a call fails, but if it is false,
+    calling *object* will never succeed.  Note that classes are callable (calling a
+    class returns a new instance); class instances are callable if they have a
+    :meth:`__call__` method.
+ 
+ 
+ .. function:: chr(i)
+ 
+<span class="gu">@@ -164,36 +210,39 @@</span>
+    to compile are ignored.
+ 
+    Future statements are specified by bits which can be bitwise ORed together to
+    specify multiple statements.  The bitfield required to specify a given feature
+    can be found as the :attr:`compiler_flag` attribute on the :class:`_Feature`
+    instance in the :mod:`__future__` module.
+ 
+    This function raises :exc:`SyntaxError` if the compiled source is invalid,
+    and :exc:`TypeError` if the source contains null bytes.
  
     .. note::
  
@@ -144,7 +186,7 @@
  
     .. versionchanged:: 2.3
        The *flags* and *dont_inherit* arguments were added.
-<span class="gu">@@ -185,6 +230,10 @@</span>
+ 
     .. versionchanged:: 2.6
        Support for compiling AST objects.
  
@@ -155,7 +197,25 @@
  
  .. function:: complex([real[, imag]])
  
-<span class="gu">@@ -344,6 +393,9 @@</span>
+    Create a complex number with the value *real* + *imag*\*j or convert a string or
+    number to a complex number.  If the first parameter is a string, it will be
+    interpreted as a complex number and the function must be called without a second
+    parameter.  The second parameter can never be a string. Each argument may be any
+    numeric type (including complex). If *imag* is omitted, it defaults to zero and
+    the function serves as a numeric conversion function like :func:`int`,
+    :func:`long` and :func:`float`.  If both arguments are omitted, returns ``0j``.
+ 
+    The complex type is described in :ref:`typesnumeric`.
+<span class="gu">@@ -335,24 +384,27 @@</span>
+ 
+    This function can also be used to execute arbitrary code objects (such as
+    those created by :func:`compile`).  In this case pass a code object instead
+    of a string.  If the code object has been compiled with ``&#39;exec&#39;`` as the
+    *mode* argument, :func:`eval`\&#39;s return value will be ``None``.
+ 
+    Hints: dynamic execution of statements is supported by the :keyword:`exec`
+    statement.  Execution of statements from a file is supported by the
+    :func:`execfile` function.  The :func:`globals` and :func:`locals` functions
     returns the current global and local dictionary, respectively, which may be
     useful to pass around for use by :func:`eval` or :func:`execfile`.
  
@@ -165,7 +225,25 @@
  
  .. function:: execfile(filename[, globals[, locals]])
  
-<span class="gu">@@ -462,7 +514,7 @@</span>
+    This function is similar to the :keyword:`exec` statement, but parses a file
+    instead of a string.  It is different from the :keyword:`import` statement in
+    that it does not use the module administration --- it reads the file
+    unconditionally and does not create a new module. [#]_
+ 
+    The arguments are a file name and two optional dictionaries.  The file is parsed
+    and evaluated as a sequence of Python statements (similarly to a module) using
+    the *globals* and *locals* dictionaries as global and local namespace. If
+    provided, *locals* can be any mapping object.
+<span class="gu">@@ -453,25 +505,25 @@</span>
+ 
+    Return a frozenset object, optionally with elements taken from *iterable*.
+    The frozenset type is described in :ref:`types-set`.
+ 
+    For other containers see the built in :class:`dict`, :class:`list`, and
+    :class:`tuple` classes, and the :mod:`collections` module.
+ 
+    .. versionadded:: 2.4
+ 
  
  .. function:: getattr(object, name[, default])
  
@@ -174,7 +252,25 @@
     If the string is the name of one of the object&#39;s attributes, the result is the
     value of that attribute.  For example, ``getattr(x, &#39;foobar&#39;)`` is equivalent to
     ``x.foobar``.  If the named attribute does not exist, *default* is returned if
-<span class="gu">@@ -689,6 +741,13 @@</span>
+    provided, otherwise :exc:`AttributeError` is raised.
+ 
+ 
+ .. function:: globals()
+ 
+    Return a dictionary representing the current global symbol table. This is always
+    the dictionary of the current module (inside a function or method, this is the
+    module where it is defined, not the module from which it is called).
+ 
+<span class="gu">@@ -680,24 +732,31 @@</span>
+    With a single argument *iterable*, return the largest item of a non-empty
+    iterable (such as a string, tuple or list).  With more than one argument, return
+    the largest of the arguments.
+ 
+    The optional *key* argument specifies a one-argument ordering function like that
+    used for :meth:`list.sort`.  The *key* argument, if supplied, must be in keyword
+    form (for example, ``max(a,b,c,key=func)``).
+ 
+    .. versionchanged:: 2.5
        Added support for the optional *key* argument.
  
  
@@ -188,7 +284,25 @@
  .. function:: min(iterable[, args...][key])
  
     With a single argument *iterable*, return the smallest item of a non-empty
-<span class="gu">@@ -1088,6 +1147,14 @@</span>
+    iterable (such as a string, tuple or list).  With more than one argument, return
+    the smallest of the arguments.
+ 
+    The optional *key* argument specifies a one-argument ordering function like that
+    used for :meth:`list.sort`.  The *key* argument, if supplied, must be in keyword
+    form (for example, ``min(a,b,c,key=func)``).
+ 
+    .. versionchanged:: 2.5
+       Added support for the optional *key* argument.
+<span class="gu">@@ -1079,24 +1138,32 @@</span>
+       Added the possibility to write a custom :meth:`__reversed__` method.
+ 
+ 
+ .. function:: round(x[, n])
+ 
+    Return the floating point value *x* rounded to *n* digits after the decimal
+    point.  If *n* is omitted, it defaults to zero. The result is a floating point
+    number.  Values are rounded to the closest multiple of 10 to the power minus
+    *n*; if two multiples are equally close, rounding is done away from 0 (so. for
     example, ``round(0.5)`` is ``1.0`` and ``round(-0.5)`` is ``-1.0``).
  
  
@@ -203,7 +317,25 @@
  .. function:: set([iterable])
     :noindex:
  
-<span class="gu">@@ -1148,9 +1215,8 @@</span>
+    Return a new set, optionally with elements taken from *iterable*.
+    The set type is described in :ref:`types-set`.
+ 
+    For other containers see the built in :class:`dict`, :class:`list`, and
+    :class:`tuple` classes, and the :mod:`collections` module.
+ 
+    .. versionadded:: 2.4
+ 
+ 
+<span class="gu">@@ -1139,27 +1206,26 @@</span>
+    value is ``None``.
+ 
+    *key* specifies a function of one argument that is used to extract a comparison
+    key from each list element: ``key=str.lower``.  The default value is ``None``
+    (compare the elements directly).
+ 
+    *reverse* is a boolean value.  If set to ``True``, then the list elements are
+    sorted as if each comparison were reversed.
+ 
     In general, the *key* and *reverse* conversion processes are much faster
     than specifying an equivalent *cmp* function.  This is because *cmp* is
     called multiple times for each list element while *key* and *reverse* touch
@@ -215,7 +347,25 @@
  
     For sorting examples and a brief sorting tutorial, see `Sorting HowTo
     &lt;http://wiki.python.org/moin/HowTo/Sorting/&gt;`_\.
-<span class="gu">@@ -1207,10 +1273,13 @@</span>
+ 
+    .. versionadded:: 2.4
+ 
+ 
+ .. function:: staticmethod(function)
+ 
+    Return a static method for *function*.
+ 
+    A static method does not receive an implicit first argument. To declare a static
+<span class="gu">@@ -1198,28 +1264,31 @@</span>
+    For more information on strings see :ref:`typesseq` which describes sequence
+    functionality (strings are sequences), and also the string-specific methods
+    described in the :ref:`string-methods` section. To output formatted strings
+    use template strings or the ``%`` operator described in the
+    :ref:`string-formatting` section. In addition see the :ref:`stringservices`
+    section. See also :func:`unicode`.
+ 
+ 
+ .. function:: sum(iterable[, start])
  
     Sums *start* and the items of an *iterable* from left to right and returns the
     total.  *start* defaults to ``0``. The *iterable*&#39;s items are normally numbers,
@@ -233,7 +383,25 @@
  
     .. versionadded:: 2.3
  
-<span class="gu">@@ -1394,8 +1463,8 @@</span>
+ 
+ .. function:: super(type[, object-or-type])
+ 
+    Return a proxy object that delegates method calls to a parent or sibling
+    class of *type*.  This is useful for accessing inherited methods that have
+    been overridden in a class. The search order is same as that used by
+    :func:`getattr` except that the *type* itself is skipped.
+ 
+    The :attr:`__mro__` attribute of the *type* lists the method resolution
+<span class="gu">@@ -1385,26 +1454,26 @@</span>
+    :func:`xrange` still has to create the values when asked for them) except when a
+    very large range is used on a memory-starved machine or when all of the range&#39;s
+    elements are never used (such as when the loop is usually terminated with
+    :keyword:`break`).
+ 
+    .. impl-detail::
+ 
+       :func:`xrange` is intended to be simple and fast.  Implementations may
+       impose restrictions to achieve this.  The C implementation of Python
        restricts all arguments to native C longs (&quot;short&quot; Python integers), and
        also requires that the number of elements fit in a native C long.  If a
        larger range is needed, an alternate version can be crafted using the
@@ -244,6 +412,15 @@
  
  
  .. function:: zip([iterable, ...])
+ 
+    This function returns a list of tuples, where the *i*-th tuple contains the
+    *i*-th element from each of the argument sequences or iterables. The returned
+    list is truncated in length to the length of the shortest argument sequence.
+    When there are multiple arguments which are all of the same length, :func:`zip`
+    is similar to :func:`map` with an initial argument of ``None``. With a single
+    sequence argument, it returns a list of 1-tuples. With no arguments, it returns
+    an empty list.
+ 
 </pre></div>
 
 </body>

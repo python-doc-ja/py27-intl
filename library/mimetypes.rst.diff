@@ -1,4 +1,13 @@
-@@ -77,9 +77,13 @@
+@@ -68,27 +68,31 @@
+    returned.
+ 
+    Optional *strict* has the same meaning as with the :func:`guess_type` function.
+ 
+ Some additional functions and data items are available for controlling the
+ behavior of the module.
+ 
+ 
+ .. function:: init([files])
  
     Initialize the internal data structures.  If given, *files* must be a sequence
     of file names which should be used to augment the default type map.  If omitted,
@@ -15,7 +24,25 @@
  
  
  .. function:: read_mime_types(filename)
-@@ -213,6 +217,12 @@
+ 
+    Load the type map given in the file *filename*, if it exists.  The  type map is
+    returned as a dictionary mapping filename extensions, including the leading dot
+    (``'.'``), to strings of the form ``'type/subtype'``.  If the file *filename*
+    does not exist or cannot be read, ``None`` is returned.
+ 
+ 
+ .. function:: add_type(type, ext[, strict])
+ 
+@@ -204,29 +208,41 @@
+ 
+    Dictionary mapping filename extensions to non-standard, but commonly found MIME
+    types.  This is initially a copy of the global ``common_types`` defined in the
+    module.
+ 
+ 
+ .. method:: MimeTypes.guess_extension(type[, strict])
+ 
+    Similar to the :func:`guess_extension` function, using the tables stored as part
     of the object.
  
  
@@ -28,7 +55,17 @@
  .. method:: MimeTypes.guess_type(url[, strict])
  
     Similar to the :func:`guess_type` function, using the tables stored as part of
-@@ -230,3 +240,9 @@
+    the object.
+ 
+ 
+ .. method:: MimeTypes.read(path)
+ 
+    Load MIME information from a file named *path*.  This uses :meth:`readfp` to
+    parse the file.
+ 
+ 
+ .. method:: MimeTypes.readfp(file)
+ 
     Load MIME type information from an open file.  The file must have the format of
     the standard :file:`mime.types` files.
  

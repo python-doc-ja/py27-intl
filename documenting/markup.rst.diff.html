@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -152,7 +152,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -143,65 +143,82 @@</span>
+ 
+ .. describe:: cvar
+ 
+    Describes a global C variable.  The signature should include the type, such
+    as::
+ 
+       .. cvar:: PyObject* PyClass_Type
+ 
+ .. describe:: data
  
     Describes global data in a module, including both variables and values used
     as &quot;defined constants.&quot;  Class and object attributes are not documented
@@ -77,7 +86,12 @@
  
  .. describe:: exception
  
-<span class="gu">@@ -165,7 +165,7 @@</span>
+    Describes an exception class.  The signature can, but need not include
+    parentheses with constructor arguments.
+ 
+ .. describe:: function
+ 
+    Describes a module-level function.  The signature should include the
     parameters, enclosing optional parameters in brackets.  Default values can be
     given if it enhances clarity.  For example::
  
@@ -86,7 +100,20 @@
  
     Object methods are not documented using this directive. Bound object methods
     placed in the module namespace as part of the public interface of the module
-<span class="gu">@@ -186,13 +186,30 @@</span>
+    are documented using this, as they are equivalent to normal functions for
+    most purposes.
+ 
+    The description should include information about the parameters required and
+    how they are used (especially whether mutable objects passed as parameters
+    are modified), side effects, and possible exceptions.  A small example may be
+    provided.
+ 
+ .. describe:: class
+ 
+    Describes a class.  The signature can include parentheses with parameters
+    which will be shown as the constructor arguments.
+ 
+ .. describe:: attribute
  
     Describes an object data attribute.  The description should include
     information about the type of the data to be expected and whether it may be
@@ -119,7 +146,25 @@
  
  .. describe:: opcode
  
-<span class="gu">@@ -524,10 +541,6 @@</span>
+    Describes a Python :term:`bytecode` instruction.
+ 
+ .. describe:: cmdoption
+ 
+    Describes a Python command line option or switch.  Option argument names
+    should be enclosed in angle brackets.  Example::
+ 
+       .. cmdoption:: -m &lt;module&gt;
+ 
+<span class="gu">@@ -515,28 +532,24 @@</span>
+ .. describe:: regexp
+ 
+    A regular expression. Quotes should not be included.
+ 
+ .. describe:: samp
+ 
+    A piece of literal text, such as code.  Within the contents, you can use
+    curly braces to indicate a &quot;variable&quot; part, as in ``:file:``.
+ 
     If you don&#39;t need the &quot;variable part&quot; indication, use the standard
     ````code```` instead.
  
@@ -130,7 +175,25 @@
  
  The following roles generate external links:
  
-<span class="gu">@@ -699,10 +712,10 @@</span>
+ .. describe:: pep
+ 
+    A reference to a Python Enhancement Proposal.  This generates appropriate
+    index entries. The text &quot;PEP *number*\ &quot; is generated; in the HTML output,
+    this text is a hyperlink to an online copy of the specified PEP.
+ 
+ .. describe:: rfc
+ 
+    A reference to an Internet Request for Comments.  This generates appropriate
+<span class="gu">@@ -690,37 +703,37 @@</span>
+ .. describe:: toctree
+ 
+    This directive inserts a &quot;TOC tree&quot; at the current location, using the
+    individual TOCs (including &quot;sub-TOC trees&quot;) of the files given in the
+    directive body.  A numeric ``maxdepth`` option may be given to indicate the
+    depth of the tree; by default, all levels are included.
+ 
+    Consider this example (taken from the library reference index)::
+ 
        .. toctree::
           :maxdepth: 2
  
@@ -145,7 +208,7 @@
           (many more files listed here)
  
     This accomplishes two things:
-<span class="gu">@@ -710,8 +723,8 @@</span>
+ 
     * Tables of contents from all those files are inserted, with a maximum depth
       of two, that means one nested heading.  ``toctree`` directives in those
       files are also taken into account.
@@ -155,6 +218,15 @@
 <span class="gi">+     ``strings`` and so forth, and it knows that they are children of the</span>
       shown file, the library index.  From this information it generates &quot;next
       chapter&quot;, &quot;previous chapter&quot; and &quot;parent chapter&quot; links.
+ 
+    In the end, all files included in the build process must occur in one
+    ``toctree`` directive; Sphinx will emit a warning if it finds a file that is
+    not included, because that means that this file will not be reachable through
+    standard navigation.
+ 
+    The special file ``contents.rst`` at the root of the source directory is the
+    &quot;root&quot; of the TOC tree hierarchy; from it the &quot;Contents&quot; page is generated.
+ 
  
 </pre></div>
 

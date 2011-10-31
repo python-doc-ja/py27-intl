@@ -68,7 +68,8 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -2,10 +2,11 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -1,20 +1,21 @@</span>
+ .. highlightlang:: c
  
  .. _bufferobjects:
  
@@ -82,7 +83,25 @@
  
  
  .. index::
-<span class="gu">@@ -265,20 +266,6 @@</span>
+    object: buffer
+    single: buffer interface
+ 
+ Python objects implemented in C can export a group of functions called the
+ &quot;buffer interface.&quot;  These functions can be used by an object to expose its
+ data in a raw, byte-oriented format. Clients of the object can use the buffer
+ interface to access the object data directly, without needing to copy it
+ first.
+ 
+<span class="gu">@@ -256,65 +257,95 @@</span>
+ .. cfunction:: void PyBuffer_Release(Py_buffer *view)
+ 
+    Release the buffer *view*.  This should be called when the buffer
+    is no longer being used as it may free memory from it.
+ 
+ 
+ .. cfunction:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
+ 
+    Return the implied :cdata:`~Py_buffer.itemsize` from the struct-stype
     :cdata:`~Py_buffer.format`.
  
  
@@ -103,7 +122,10 @@
  .. cfunction:: int PyBuffer_IsContiguous(Py_buffer *view, char fortran)
  
     Return 1 if the memory defined by the *view* is C-style (*fortran* is
-<span class="gu">@@ -289,7 +276,7 @@</span>
+    ``&#39;C&#39;``) or Fortran-style (*fortran* is ``&#39;F&#39;``) contiguous or either one
+    (*fortran* is ``&#39;A&#39;``).  Return 0 otherwise.
+ 
+ 
  .. cfunction:: void PyBuffer_FillContiguousStrides(int ndim, Py_ssize_t *shape, Py_ssize_t *strides, Py_ssize_t itemsize, char fortran)
  
     Fill the *strides* array with byte-strides of a contiguous (C-style if
@@ -112,7 +134,10 @@
     given shape with the given number of bytes per element.
  
  
-<span class="gu">@@ -300,12 +287,56 @@</span>
+ .. cfunction:: int PyBuffer_FillInfo(Py_buffer *view, PyObject *obj, void *buf, Py_ssize_t len, int readonly, int infoflags)
+ 
+    Fill in a buffer-info structure, *view*, correctly for an exporter that can
+    only share a contiguous chunk of memory of &quot;unsigned bytes&quot; of the given
     length.  Return 0 on success and -1 (with raising an error) on error.
  
  
@@ -170,6 +195,15 @@
  :ref:`buffer-structs`, under the description for :ctype:`PyBufferProcs`.
  
  A &quot;buffer object&quot; is defined in the :file:`bufferobject.h` header (included by
+ :file:`Python.h`). These objects look very similar to string objects at the
+ Python programming level: they support slicing, indexing, concatenation, and
+ some other standard string operations. However, their data can come from one
+ of two sources: from a block of memory, or from another object which exports
+ the buffer interface.
+ 
+ Buffer objects are useful as a way to expose the data from another object&#39;s
+ buffer interface to the Python programmer. They can also be used as a
+ zero-copy slicing mechanism. Using their ability to reference a block of
 </pre></div>
 
 </body>

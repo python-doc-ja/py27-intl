@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -107,7 +107,7 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -98,24 +98,24 @@</span>
+ 
+ .. cfunction:: int PyModule_AddStringConstant(PyObject *module, const char *name, const char *value)
+ 
+    Add a string constant to *module* as *name*.  This convenience function can be
+    used from the module&#39;s initialization function.  The string *value* must be
+    null-terminated.  Return ``-1`` on error, ``0`` on success.
+ 
+    .. versionadded:: 2.0
+ 
  .. cfunction:: int PyModule_AddIntMacro(PyObject *module, macro)
  
     Add an int constant to *module*. The name and the value are taken from
@@ -76,6 +85,14 @@
 <span class="gi">+   *macro*. For example ``PyModule_AddIntMacro(module, AF_INET)`` adds the int</span>
     constant *AF_INET* with the value of *AF_INET* to *module*.
     Return ``-1`` on error, ``0`` on success.
+ 
+    .. versionadded:: 2.6
+ 
+ .. cfunction:: int PyModule_AddStringMacro(PyObject *module, macro)
+ 
+    Add a string constant to *module*.
+ 
+   .. versionadded:: 2.6
  
 </pre></div>
 

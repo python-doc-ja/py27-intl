@@ -68,7 +68,16 @@
 </style>
 </head>
 <body>
-<div class="highlight"><pre><span class="gu">@@ -48,9 +48,9 @@</span>
+<div class="highlight"><pre><span class="gu">@@ -39,27 +39,27 @@</span>
+ 
+ str/unicode Unification
+ -----------------------
+ 
+ 
+ Python 3.0&#39;s :func:`str` (``PyString_*`` functions in C) type is equivalent to
+ 2.x&#39;s :func:`unicode` (``PyUnicode_*``).  The old 8-bit string type has become
+ :func:`bytes`.  Python 2.6 and later provide a compatibility header,
+ :file:`bytesobject.h`, mapping ``PyBytes`` names to ``PyString`` ones.  For best
  compatibility with 3.0, :ctype:`PyUnicode` should be used for textual data and
  :ctype:`PyBytes` for binary data.  It&#39;s also important to remember that
  :ctype:`PyBytes` and :ctype:`PyUnicode` in 3.0 are not interchangeable like
@@ -81,6 +90,15 @@
  
     #include &quot;stdlib.h&quot;
     #include &quot;Python.h&quot;
+    #include &quot;bytesobject.h&quot;
+ 
+    /* text example */
+    static PyObject *
+    say_hello(PyObject *self, PyObject *args) {
+        PyObject *name, *result;
+ 
+        if (!PyArg_ParseTuple(args, &quot;U:say_hello&quot;, &amp;name))
+            return NULL;
 </pre></div>
 
 </body>
