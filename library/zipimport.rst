@@ -93,6 +93,15 @@ zipimporter オブジェクト
       該当するファイルが見つからなかった場合には :exc:`IOError` を送出します。
 
 
+   .. method:: get_filename(fullname)
+
+      指定されたモジュールが import さた場合、そのモジュールに設定した
+      ``__file__`` の値を返します。
+      モジュールが見つからなかった場合は :exc:`ZipImportError` 例外を発生させます。
+
+      .. versionadded:: 2.7
+
+
    .. method:: get_source(fullname)
 
       *fullname* に指定したモジュールのソースコードを返します。

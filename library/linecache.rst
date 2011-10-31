@@ -12,6 +12,10 @@
 :mod:`traceback` モジュールは、整形されたトレースバックにソースコードを含めるためにこの
 モジュールを利用しています。
 
+.. seealso::
+
+   最新バージョンの `linecache module Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/linecache.py?view=markup>`_
 
 :mod:`linecache` モジュールでは次の関数が定義されています:
 
@@ -19,7 +23,7 @@
 .. function:: getline(filename, lineno[, module_globals])
 
    *filename* という名前のファイルから *lineno* 行目を取得します。
-   この関数は決して例外を投げません --- エラーの際には ``''``
+   この関数は決して例外を発生させません --- エラーの際には ``''``
    を返します。 (行末の改行文字は、見つかった行に含まれます。)
 
    .. index:: triple: module; search; path

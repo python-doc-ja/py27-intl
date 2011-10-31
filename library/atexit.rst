@@ -13,10 +13,16 @@
 :mod:`atexit` モジュールでは、後始末関数を登録するための関数を一つだけ定義しています。この関数を使って登録した後始末関数は、インタプリタが
 終了するときに自動的に実行されます。
 
+.. seealso::
+
+   最新バージョンの `atexit Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/atexit.py?view=markup>`_
+
 .. note::
 
-   プログラムがシグナルで停止させられたとき、Python の致命的な内部エラーが検出されたとき、あるいは :func:`os._exit` が呼び出された
-   ときには、このモジュールを通して登録した関数は呼び出されません。
+   プログラムが Python で処理されないシグナルで停止させられたとき、Python の致命的な内部エラーが
+   検出されたとき、あるいは :func:`os._exit` が呼び出されたときには、このモジュールを通して
+   登録した関数は呼び出されません。
 
 .. index:: single: exitfunc (in sys)
 
