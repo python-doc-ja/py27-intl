@@ -318,7 +318,7 @@ CAB オブジェクト
 ------------------------
 
 
-.. class:: Directory(database, cab, basedir, physical,  logical, default, component, [componentflags])
+.. class:: Directory(database, cab, basedir, physical,  logical, default, [componentflags])
 
    新しいディレクトリを Directory テーブルに作成します。ディレクトリには各時点で現在のコンポーネントがあり、それは
    :meth:`start_component` を使って明ら様に作成されたかまたは最初にファイルが追加された際に暗黙裡に作成されたものです。
