@@ -22,6 +22,11 @@
 このコードはLance Ellinghouseによって提供され、Jack Jansenによって更新さ\
 れました。
 
+.. seealso::
+
+   最新バージョンの `uu module Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/uu.py?view=markup>`_
+
 :mod:`uu` モジュールでは以下の関数を定義しています。
 
 

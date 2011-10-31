@@ -122,6 +122,15 @@ SimpleXMLRPCServer オブジェクト
 
    .. versionadded:: 2.5
 
+.. attribute:: SimpleXMLRPCRequestHandler.encode_threshold
+
+   この属性が ``None`` でない場合、クライアントが受け付けるのであれば、
+   この値よりも大きいサイズのレスポンスを *gzip* transfer encoding
+   を利用して圧縮されます、
+   デフォルト値は、だいたいTCPの1パケットに収まるように ``1400`` です。
+
+   .. versionadded:: 2.7
+
 .. _simplexmlrpcserver-example:
 
 SimpleXMLRPCServer の例
