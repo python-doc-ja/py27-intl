@@ -616,7 +616,8 @@ Attr オブジェクト
 
 .. attribute:: Attr.name
 
-   要素型名です。名前空間使用の文書では、要素型名中にコロンがあるかもしれません。
+   要素型名です。
+   名前空間使用の文書では、要素型名中にコロンが含まれるかもしれません。
 
 
 .. attribute:: Attr.localName
@@ -628,6 +629,14 @@ Attr オブジェクト
 
    名前にコロンがあればコロン以前の部分に、なければ空文字列になります。
 
+
+.. attribute:: Attr.value
+
+   .. The text value of the attribute.  This is a synonym for the
+      :attr:`nodeValue` attribute.
+
+   その要素の text value.
+   これは :attr:`nodeValue` 属性の別名です。
 
 .. _dom-attributelist-objects:
 
