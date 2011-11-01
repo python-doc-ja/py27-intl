@@ -31,6 +31,10 @@
 :mod:`glob` モジュールを参照してください (:mod:`glob` はパス名の部分にマッチさせるのに :func:`fnmatch` を使っ
 ています)。同様に、ピリオドで始まるファイル名はこのモジュールに固有ではなくて、 ``*`` と ``?`` のパターンでマッチします。
 
+.. seealso::
+
+   最新バージョンの `fnmatch の Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/fnmatch.py?view=markup>`_
 
 .. function:: fnmatch(filename, pattern)
 
@@ -66,9 +70,9 @@
 
 .. function:: translate(pattern)
 
-   .. Return the shell-style *pattern* converted to a regular expression.
-
    シェルスタイルの *pattern* を、正規表現に変換して返します。
+
+   メタ文字をクォートする方法が無いことに気を付けてください。
 
    例:
 
