@@ -26,6 +26,11 @@ LIFOキューでは、最後に追加されたエントリが最初に取り出�
 優先順位付きキュー(priority queue)では、エントリは(:mod:`heapq` モジュールを利用して)ソートされ、
 最も低い値のエントリが最初に取り出されます。
 
+.. seealso::
+
+   最新バージョンの `queue モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/Queue.py?view=markup>`_.
+
 :mod:`Queue` モジュールは以下のクラスと例外を定義します:
 
 .. class:: Queue(maxsize=0)
@@ -197,7 +202,7 @@ LIFOキューでは、最後に追加されたエントリが最初に取り出�
    q = Queue()
    for i in range(num_worker_threads):
         t = Thread(target=worker)
-        t.setDaemon(True)
+        t.daemon = True
         t.start()
 
    for item in source():
