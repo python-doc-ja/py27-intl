@@ -14,6 +14,11 @@
 このモジュールは :keyword:`with` 構文に関わる一般的なタスクのためのユーティリティを提供します。
 詳しい情報は、 :ref:`typecontextmanager` と :ref:`context-managers` を参照してください。
 
+.. seealso::
+
+   最新バージョンの `contextlib Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/contextlib.py?view=markup>`_
+
 
 .. Functions provided:
 
@@ -90,46 +95,16 @@
 
 .. function:: nested(mgr1[, mgr2[, ...]])
 
-   .. Combine multiple context managers into a single nested context manager.
-
    複数のコンテキストマネージャを一つのネストされたコンテキストマネージャへ結合します。
 
+   この関数は、 :keyword:`with` 文にマルチマネージャー形式ができたために非推奨になりました。
 
-   .. Code like this:
+   この関数の :keyword:`with` 文のマルチマネージャー形式に対する唯一の利点は、
+   引数のアンパックによって、次の例のように可変数個のコンテキストマネージャーを
+   扱えることです。 ::
 
-   このようなコードは
-
-
-   ::
-
-      from contextlib import nested
-
-      with nested(A(), B(), C()) as (X, Y, Z):
+      with nested(*managers):
           do_something()
-
-
-   .. is equivalent to this:
-
-   これと同等です:
-
-
-   ::
-
-      m1, m2, m3 = A(), B(), C()
-      with m1 as X:
-          with m2 as Y:
-              with m3 as Z:
-                  do_something()
-
-
-   .. Note that if the :meth:`__exit__` method of one of the nested context managers
-   .. indicates an exception should be suppressed, no exception information will be
-   .. passed to any remaining outer context managers. Similarly, if the
-   .. :meth:`__exit__` method of one of the nested managers raises an exception, any
-   .. previous exception state will be lost; the new exception will be passed to the
-   .. :meth:`__exit__` methods of any remaining outer context managers. In general,
-   .. :meth:`__exit__` methods should avoid raising exceptions, and in particular they
-   .. should not re-raise a passed-in exception.
 
    ネストされたコンテキストマネージャのうちのいずれかの :meth:`__exit__` メソッドが
    例外を抑制すべきと判断した場合、外側にある残りのすべてのコンテキストマネージャに
@@ -140,6 +115,26 @@
    一般的に :meth:`__exit__` メソッドが例外を送出することは避けるべきであり、
    特に渡された例外を再送出すべきではありません。
 
+   この関数が非推奨になった理由に、2つの大きな問題があります。
+   1つ目は、全てのコンテキストマネージャーが関数が呼び出される前に構築されることです。
+   内側のコンテキストマネージャーの :meth:`__new__` と :meth:`__init__` メソッドは
+   外側のコンテキストマネージャーの内側に入っていません。
+   つまり、例えば :func:`nested` を2つのファイルを開くために利用した場合、
+   2つめのファイルを開くのに失敗すると1つめのファイルが正しく close されないという
+   プログラムエラーになります。
+
+   2つ目の問題は、内側のコンテキストマネージャーの1つの :meth:`__enter__` メソッドが
+   例外を発生させたときに、外側のコンテキストマネージャーの :meth:`__exit__`
+   メソッドがその例外を捕まえて抑制させてしまうことで、この場合に :keyword:`with`
+   の body 部分の実行がスキップされるのではなく :exc:`RuntimeError` が発生する恐れがあります。
+
+   可変数個のコンテキストマネージャーのネストをサポートしなければならない場合、
+   :mod:`warnings` モジュールを利用してこの関数が発生させる DeprecationWarning
+   を抑制するか、この関数を参考にしてアプリケーション独自の実装をすることができます。
+
+   .. deprecated:: 2.7
+      with 文がこの関数の機能を(この関数と違って奇妙なエラーを発生させることなしに)
+      直接サポートしました。
 
 .. function:: closing(thing)
 
