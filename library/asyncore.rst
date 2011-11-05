@@ -184,10 +184,14 @@ CPUが一つしかない場合、プログラムが"二つのことを同時に"
 
    .. method:: accept()
 
-   接続を受け入れます。ソケットはアドレスにバインド済みであり、 :meth:`listen`
-   で接続待ち状態でなければなりません。
-   戻り値は ``(conn, address)`` のペアで、 *conn* はデータの送受信を行うソケットオブジェクト、
-   *address* は接続先ソケットがバインドされているアドレスです。
+      接続を受け入れます。
+      ソケットはアドレスにバインド済みであり、 :meth:`listen`
+      で接続待ち状態でなければなりません。
+      戻り値は ``None`` か ``(conn, address)`` のペアで、
+      *conn* はデータの送受信を行う **新しい** ソケットオブジェクト、
+      *address* は接続先ソケットがバインドされているアドレスです。
+      ``None`` が返された場合、接続が起こらなかったことを意味します。
+      その場合、サーバーはこのイベントを無視して後続の接続を待ち続けるべきです。
 
 
    .. method:: close()
@@ -197,6 +201,12 @@ CPUが一つしかない場合、プログラムが"二つのことを同時に"
       リモート端点では、キューに溜まったデータ以外、これ以降のデータ受信は行えません。
       ソケットはガベージコレクト時に自動的にクローズされます。
 
+
+.. class:: dispatcher_with_send()
+
+   :class:`dispatcher` のサブクラスで、シンプルなバッファされた出力を持ちます。
+   シンプルなクライアントプログラムに適しています。
+   もっと高レベルな場合には :class:`asynchat.async_chat` を利用してください。
 
 .. class:: file_dispatcher()
 
@@ -217,7 +227,7 @@ CPUが一つしかない場合、プログラムが"二つのことを同時に"
    利用できるプラットフォーム: UNIX
 
 
-.. _asyncore-example:
+.. _asyncore-example-1:
 
 asyncoreの例：簡単なHTTPクライアント
 ------------------------------------
@@ -227,7 +237,7 @@ asyncoreの例：簡単なHTTPクライアント
 
    import asyncore, socket
 
-   class http_client(asyncore.dispatcher):
+   class HTTPClient(asyncore.dispatcher):
 
        def __init__(self, host, path):
            asyncore.dispatcher.__init__(self)
@@ -251,6 +261,45 @@ asyncoreの例：簡単なHTTPクライアント
            sent = self.send(self.buffer)
            self.buffer = self.buffer[sent:]
 
-   c = http_client('www.python.org', '/')
-
+   client = HTTPClient('www.python.org', '/')
    asyncore.loop()
+
+.. _asyncore-example-2:
+
+基本的な echo サーバーの例
+----------------------------------
+
+この例の基本的な echoサーバーは、 :class:`dispatcher` を利用して接続を受けつけ、
+接続をハンドラーにディスパッチします。 ::
+
+    import asyncore
+    import socket
+
+    class EchoHandler(asyncore.dispatcher_with_send):
+
+        def handle_read(self):
+            data = self.recv(8192)
+            if data:
+                self.send(data)
+
+    class EchoServer(asyncore.dispatcher):
+
+        def __init__(self, host, port):
+            asyncore.dispatcher.__init__(self)
+            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.set_reuse_addr()
+            self.bind((host, port))
+            self.listen(5)
+
+        def handle_accept(self):
+            pair = self.accept()
+            if pair is None:
+                pass
+            else:
+                sock, addr = pair
+                print 'Incoming connection from %s' % repr(addr)
+                handler = EchoHandler(sock)
+
+    server = EchoServer('localhost', 8080)
+    asyncore.loop()
+
