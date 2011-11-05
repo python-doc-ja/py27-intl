@@ -33,6 +33,16 @@
    とんどのUnixプラットフォームと一部の非Unixプラットフォームで利用
    可能ですが、 :file:`file` コマンドが利用できず、かつ *executable* が Pythonインタープリタでない場合には適切なデフォルト値が返ります。
 
+   .. note::
+
+      Mac OS X (とひょっとすると他のプラットフォーム) では、実行可能ファイルは
+      複数のアーキテクチャを含んだユニバーサル形式かもしれません。
+
+      現在のインタプリタが "64-bit" であるかどうかを調べるには、 :attr:`sys.maxsize`
+      の方が信頼できます。 ::
+
+         is_64bits = sys.maxsize > 2**32
+
 
 .. function:: machine()
 
@@ -89,7 +99,7 @@
       are: 'CPython', 'IronPython', 'Jython'
 
    Python実装を指定する文字列を返します。
-   戻り値は: `CPython`, `IronPython`, `Jython` のいずれかです。
+   戻り値は: 'CPython', 'IronPython', 'Jython', 'PyPy' のいずれかです。
 
    .. versionadded:: 2.6
 
@@ -178,13 +188,10 @@ Windows プラットフォーム
 
    .. note::
 
-      この関数は、Mark Hammondの :mod:`win32all` がインストールされた環境で\
+      この関数は、Mark Hammondの :mod:`win32all` がインストールされた環境で
       良く動作しますが、Python 2.3 以上なら一応動作します。(Python 2.6から
       サポートされました)
       もちろん、この関数が使えるのはWin32互換プラットフォームのみです。
-
-   .. todo::
-      このnoteの意味があっているかどうか確認
 
 
 Win95/98 固有

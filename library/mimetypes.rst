@@ -64,11 +64,15 @@ MIME 型へと、 MIME 型からファイル名拡張子への変換が提供さ
 
 .. function:: init([files])
 
-   内部のデータ構造を初期化します。もし  *files* が与えられていれば、これはデフォールトの型のマップを
-   増やすために使われる、一連のファイル名でなければなりません。もし省略されていれば、使われるファイル名は :const:`knownfiles` から
-   取られます。 *file* あるいは :const:`knownfiles` 内の各ファイル名は、それ以前に現れる名前より優先されます。繰り返し
-   :func:`init` を呼び出すことは許されています。
+   内部のデータ構造を初期化します。もし  *files* が与えられていれば、
+   これはデフォールトの type map を増やすために使われる、一連のファイル名でなければなりません。
+   もし省略されていれば、使われるファイル名は :const:`knownfiles` から
+   取られます。 Windows であれば、現在のレジストリの設定が読み込まれます。
+   *file* あるいは :const:`knownfiles` 内の各ファイル名は、それ以前に現れる
+   名前より優先されます。繰り返し :func:`init` を呼び出すことは許されています。
 
+   .. versionchanged:: 2.7
+      前のバージョンでは、 Windows のレジストリの設定は無視されていました。
 
 .. function:: read_mime_types(filename)
 
@@ -183,20 +187,32 @@ Mime型オブジェクト
 
 .. method:: MimeTypes.guess_extension(type[, strict])
 
-   :func:`guess_extension` 関数と同様に、オブジェクトの一部として保存されたテーブルを使用します。
+   :func:`guess_extension` 関数と同様ですが、オブジェクトに保存されたテーブルを使用します。
+
+
+.. method:: MimeTypes.guess_all_extensions(type[, strict])
+
+   :func:`guess_all_extensions` と同様ですが、オブジェクトに保存されたテーブルを参照します。
 
 
 .. method:: MimeTypes.guess_type(url[, strict])
 
-   :func:`guess_type` 関数と同様に、オブジェクトの一部として保存されたテーブルを使用します。
+   :func:`guess_type` 関数と同様ですが、オブジェクトに保存されたテーブルを使用します。
 
 
 .. method:: MimeTypes.read(path)
 
-   MIME情報を、 *path* という名のファイルからロードします。これはファイルを解析するのに :meth:`readfp` を使用します。
+   MIME情報を、 *path* という名のファイルからロードします。
+   これはファイルを解析するのに :meth:`readfp` を使用します。
 
 
 .. method:: MimeTypes.readfp(file)
 
    MIME型情報を、オープンしたファイルからロードします。ファイルは、標準の :file:`mime.types` ファイルの形式でなければなりません。
 
+
+.. method:: MimeTypes.read_windows_registry()
+
+   MIME type 情報を Windows のレジストリから読み込みます。 Windows でのみ利用できます。
+
+   .. versionadded:: 2.7

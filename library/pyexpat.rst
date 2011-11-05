@@ -148,6 +148,13 @@ XMLParser Objects
    :attr:`ordered_attributes`, :attr:`returns_unicode`, :attr:`specified_attributes`
    が現在のパーザの値に設定されて生成されます。
 
+.. method:: xmlparser.SetParamEntityParsing(flag)
+
+   パラメーターエンティティ (外部DTDサブセットを含む) の解析を制御します。
+   *flag* の有効な値は、 :const:`XML_PARAM_ENTITY_PARSING_NEVER`,
+   :const:`XML_PARAM_ENTITY_PARSING_UNLESS_STANDALONE`,
+   :const:`XML_PARAM_ENTITY_PARSING_ALWAYS` です。
+   flag の設定をしたら true を返します。
 
 .. method:: xmlparser.UseForeignDTD([flag])
 
@@ -409,9 +416,11 @@ XMLParser Objects
 
 .. method:: xmlparser.NotStandaloneHandler()
 
-   XML 文書がスタンドアロンの文書として宣言されていない場合に呼び出されます。外部サブセットやパラメタエンティティへの参照が存在するが、XML 宣言が XML
-   宣言中で standalone 変数を ``yes`` に設定していない場合に起きます。このハンドラが ``0`` を返すと、パーザは
-   :const:`XML_ERROR_NOT_STANDALONE` を送出します。このハンドラが設定されていなければ、パーザは前述の事態で
+   XML 文書がスタンドアロンの文書として宣言されていない場合に呼び出されます。
+   外部サブセットやパラメタエンティティへの参照が存在するが、XML 宣言が XML
+   宣言中で standalone 変数を ``yes`` に設定していない場合に起きます。
+   このハンドラが ``0`` を返すと、パーザは :const:`XML_ERROR_NOT_STANDALONE`
+   を発生させます。このハンドラが設定されていなければ、パーザは前述の事態で
    例外を送出しません。
 
 
