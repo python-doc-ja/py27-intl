@@ -42,7 +42,7 @@
 
 このモジュールでは以下の項目を定義しています:
 
-.. class:: GzipFile([filename[, mode[, compresslevel[, fileobj]]]])
+.. class:: GzipFile([filename[, mode[, compresslevel[, fileobj[, mtime]]]]])
 
    :class:`GzipFile` クラスのコンストラクタです。
    :class:`GzipFile` オブジェクトは :meth:`readinto` と
@@ -76,6 +76,14 @@
    ``1`` は最も高速で最小限の圧縮しか行いません。
    ``9`` は最も低速ですが、最大限の圧縮を行います。デフォルトの値は ``9`` です。
 
+   *mtime* 引数はオプションで、圧縮時にストリームに書かれる数値型のタイムスタンプです。
+   :program:`gzip` で圧縮された全てのストリームはタイムスタンプを必要とします。
+   省略された場合や ``None`` が渡された場合は、現在の時刻が利用されます。
+   このモジュールは伸長時にはタイムスタンプを無視しますが、 :program:`gunzip`
+   などのいくつかのプログラムはタイムスタンプを利用します。
+   タイムスタンプのフォーマットは ``time.time()`` の戻り値や、 ``os.stat()``
+   の戻り値となるオブジェクトの ``st_mtime`` メンバと同じです。
+
    圧縮したデータの後ろにさらに何か追記したい場合もあるので、
    :class:`GzipFile` オブジェクトの :meth:`close` メソッド呼び出しは
    *fileobj* をクローズしません。
@@ -84,7 +92,14 @@
    :class:`StringIO` オブジェクトの :meth:`getvalue` メソッドを使って
    書き込んだデータの入っているメモリバッファを取得することができます。
 
-   :class:`GzipFile` はイテレーションをサポートします。
+   :class:`GzipFile` はイテレーションと :keyword:`with` 文をサポートします。
+
+   .. versionchanged:: 2.7
+      :keyword:`with` 構文のサポートが追加されました。
+
+   .. versionchanged:: 2.7
+      zero-pad されたファイルのサポートが追加されました。
+
 
 .. function:: open(filename[, mode[, compresslevel]])
 

@@ -224,8 +224,6 @@ Morselオブジェクト
 
    >>> import Cookie
    >>> C = Cookie.SimpleCookie()
-   >>> C = Cookie.SerialCookie()
-   >>> C = Cookie.SmartCookie()
    >>> C["fig"] = "newton"
    >>> C["sugar"] = "wafer"
    >>> print C # generate HTTP headers
@@ -234,28 +232,27 @@ Morselオブジェクト
    >>> print C.output() # same thing
    Set-Cookie: fig=newton
    Set-Cookie: sugar=wafer
-   >>> C = Cookie.SmartCookie()
+   >>> C = Cookie.SimpleCookie()
    >>> C["rocky"] = "road"
    >>> C["rocky"]["path"] = "/cookie"
    >>> print C.output(header="Cookie:")
    Cookie: rocky=road; Path=/cookie
    >>> print C.output(attrs=[], header="Cookie:")
    Cookie: rocky=road
-   >>> C = Cookie.SmartCookie()
+   >>> C = Cookie.SimpleCookie()
    >>> C.load("chips=ahoy; vienna=finger") # load from a string (HTTP header)
    >>> print C
    Set-Cookie: chips=ahoy
    Set-Cookie: vienna=finger
-   >>> C = Cookie.SmartCookie()
+   >>> C = Cookie.SimpleCookie()
    >>> C.load('keebler="E=everybody; L=\\"Loves\\"; fudge=\\012;";')
    >>> print C
    Set-Cookie: keebler="E=everybody; L=\"Loves\"; fudge=\012;"
-   >>> C = Cookie.SmartCookie()
+   >>> C = Cookie.SimpleCookie()
    >>> C["oreo"] = "doublestuff"
    >>> C["oreo"]["path"] = "/"
    >>> print C
    Set-Cookie: oreo=doublestuff; Path=/
-   >>> C = Cookie.SmartCookie()
    >>> C["twix"] = "none for you"
    >>> C["twix"].value
    'none for you'
@@ -269,6 +266,8 @@ Morselオブジェクト
    >>> print C
    Set-Cookie: number=7
    Set-Cookie: string=seven
+   >>> # SerialCookie と SmartCookie は非推奨です。
+   >>> # これらを使うとセキュリティーホールができることがあります。
    >>> C = Cookie.SerialCookie()
    >>> C["number"] = 7
    >>> C["string"] = "seven"
