@@ -12,7 +12,7 @@
 Python ディストリビューションのファイル :file:`Grammar/Grammar` を参照してください。
 名前がマップする特定の数値は Python のバージョン間で変わります。
 
-このモジュールは一つのデータオブジェクトといくつかの関数も提供します。
+このモジュールは、数値コードから名前へのマッピングと、いくつかの関数も提供しています。
 関数は Python の C ヘッダファイルの定義を反映します。
 
 
@@ -37,10 +37,68 @@ Python ディストリビューションのファイル :file:`Grammar/Grammar` 
    *x* が入力の終わりを示すマーカーならば、真を返します。
 
 
+token の定数一覧:
+
+.. data:: ENDMARKER
+          NAME
+          NUMBER
+          STRING
+          NEWLINE
+          INDENT
+          DEDENT
+          LPAR
+          RPAR
+          LSQB
+          RSQB
+          COLON
+          COMMA
+          SEMI
+          PLUS
+          MINUS
+          STAR
+          SLASH
+          VBAR
+          AMPER
+          LESS
+          GREATER
+          EQUAL
+          DOT
+          PERCENT
+          BACKQUOTE
+          LBRACE
+          RBRACE
+          EQEQUAL
+          NOTEQUAL
+          LESSEQUAL
+          GREATEREQUAL
+          TILDE
+          CIRCUMFLEX
+          LEFTSHIFT
+          RIGHTSHIFT
+          DOUBLESTAR
+          PLUSEQUAL
+          MINEQUAL
+          STAREQUAL
+          SLASHEQUAL
+          PERCENTEQUAL
+          AMPEREQUAL
+          VBAREQUAL
+          CIRCUMFLEXEQUAL
+          LEFTSHIFTEQUAL
+          RIGHTSHIFTEQUAL
+          DOUBLESTAREQUAL
+          DOUBLESLASH
+          DOUBLESLASHEQUAL
+          AT
+          OP
+          ERRORTOKEN
+          N_TOKENS
+          NT_OFFSET
+
+
 .. seealso::
 
    :mod:`parser` モジュール
       :mod:`parser` モジュールの二番目の例で、
       :mod:`symbol` モジュールの使い方を示しています。
 
-   .. TODO: ここは「symbol モジュール」で正しいのだろうか?

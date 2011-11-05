@@ -125,6 +125,26 @@
    注意してください; このモジュールでは、システムで定義されているシグナル名だけを定義しています。
 
 
+.. data:: CTRL_C_EVENT
+
+   CTRL+C キーストロークに該当するシグナル。このシグナルは :func:`os.kill`
+   でだけ利用できます。
+
+   利用可能な環境: Windows
+
+   .. versionadded:: 2.7
+
+
+.. data:: CTRL_BREAK_EVENT
+
+   CTRL+BREAK キーストロークに該当するシグナル。このシグナルは :func:`os.kill`
+   でだけ利用できます。
+
+   利用可能な環境: Windows
+
+   .. versionadded:: 2.7
+
+
 .. data:: NSIG
 
    .. One more than the number of the highest signal number.
@@ -306,6 +326,7 @@
    スレッドが有効な場合、この関数はメインスレッドからしか実行できません。
    それ以外のスレッドからこの関数を実行しようとすると :exc:`ValueError` 例外が発生します。
 
+   .. versionadded:: 2.6
 
 .. function:: siginterrupt(signalnum, flag)
 
@@ -361,6 +382,10 @@
 
    *handler* は二つの引数とともに呼び出されます: シグナル番号、および現在のスタックフレーム (``None`` またはフレームオブジェクト; フレームオブジェクトに
    ついての記述は :ref:`標準型の階層における説明 <frame-objects>` か、 :mod:`inspect` モジュールの属性の説明を参照してください)。
+
+   Windows では、 :func:`signal` は :const:`SIGABRT`, :const:`SIGFPE`, const:`SIGILL`,
+   :const:`SIGINT`, :const:`SIGSEGV`, :const:`SIGTERM` でのみ利用できます。
+   それ以外の場合は :exc:`ValueError` を発生させます。
 
 
 .. _signal-example:
