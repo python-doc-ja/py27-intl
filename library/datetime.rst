@@ -289,12 +289,28 @@ naive なオブジェクトと aware なオブジェクトの区別は :class:`t
 また、ブール演算コンテキストでは、 :class:`timedelta` オブジェクトは
 ``timedelta(0)`` に等しくない場合かつそのときに限り真となります。
 
+インスタンスメソッド:
+
+.. method:: timedelta.total_seconds()
+
+   この期間に含まれるトータルの秒数を返します。
+   true division が有効な場合の、 ``(td.microseconds + (td.seconds + 
+   td.days * 24 * 3600) * 10**6) / 10**6`` と同じです。
+
+   非常に長い期間 (多くのプラットフォームでは270年以上) については、
+   このメソッドはマイクロ秒の精度を失うことがあることに注意してください。
+
+   .. versionadded:: 2.7
+
+
 使用例:
 
     >>> from datetime import timedelta
     >>> year = timedelta(days=365)
     >>> another_year = timedelta(weeks=40, days=84, hours=23,
     ...                          minutes=50, seconds=600)  # 365日になるように足し算
+    >>> year.total_seconds()
+    31536000.0
     >>> year == another_year
     True
     >>> ten_years = 10 * year
@@ -467,9 +483,10 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
    :func:`time.localtime` が返す形式の :class:`time.struct_time` を返
    します。時間、分、および秒は 0 で、DST フラグは -1 になります。
-   ``d.timetuple()`` は ``time.struct_time((d.year, d.month, d.day, 0,
-   0, 0, d.weekday(), d.toordinal() - date(d.year, 1, 1).toordinal() +
-   1, -1))`` と等価です。
+   ``d.timetuple()`` は次の値と同値です:
+   ``time.struct_time((d.year, d.month, d.day, 0, 0, 0, d.weekday(), yday, -1))``
+   ただし ``yday = d.toordinal() - date(d.year, 1, 1).toordinal() + 1``
+   が 1月1日 に 1 で始まる現在の年の日を表す
 
 
 .. method:: date.toordinal()
@@ -970,9 +987,13 @@ Calculations における"予期的グレゴリオ (proleptic Gregorian)" 暦の
 
 .. method:: datetime.timetuple()
 
-   :func:`time.localtime` が返す形式の :class:`time.struct_time` を返します。 ``d.timetuple()``
-   は ``time.struct_time((d.year, d.month, d.day, d.hour, d.minute, d.second,
-   d.weekday(), d.toordinal() - date(d.year, 1, 1).toordinal() + 1, dst))`` と等価です。
+   :func:`time.localtime` が返す形式の :class:`time.struct_time` を返します。
+   ``d.timetuple()`` は次の値と等価です:
+   ``time.struct_time((d.year, d.month, d.day,
+   d.hour, d.minute, d.second, d.weekday(), yday, dst))``, ただし ``yday =
+   d.toordinal() - date(d.year, 1, 1).toordinal() + 1`` は 1月1日が ``1``
+   で始まるその年の中の日の数.
+
    返されるタプルの :attr:`tm_isdst` フラグは :meth:`dst` メソッドに従って設定されます:  :attr:`tzinfo` が
    ``None`` か :meth:`dst` が ``None`` を返す場合、 :attr:`tm_isdst` は ``-1`` に設定されます;
    そうでない場合、 :meth:`dst` がゼロでない値を返すと, :attr:`tm_isdst` は ``1`` となります; それ以外の場合には
