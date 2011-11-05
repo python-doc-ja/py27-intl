@@ -63,6 +63,33 @@
    戻り値は開かれたキーのハンドルです。この関数が失敗した場合、 :exc:`WindowsError` 例外が送出されます。
 
 
+.. function:: CreateKeyEx(key, sub_key[, res[, sam]])
+
+   指定された key を作成するか開いて、 :ref:`ハンドルオブジェクト <handle-object>`
+   を返します。
+
+   *key* はすでに開かれた key か、定義済みの :ref:`HKEY_* 定数 <hkey-constants>` です。
+
+   *sub_key* はこのメソッドが開くまたは作成するキーの名前を表す文字列です。
+
+   *res* は予約された整数で、 0 でなくてはなりません。デフォルト値は 0 です。
+
+   *sam* は、 key に対して想定するセキュリティアクセスを示すアクセスマスクを
+   指定します。デフォルトは :const:`KEY_ALL_ACCESS` です。
+   利用可能な値については :ref:`アクセス権 <access-rights>` を参照してください。
+
+
+   *key* が定義済みのキーのどれかの場合、 *sub_key* には ``None`` も指定できます。
+   この場合、戻り値のハンドルはこの関数に渡されたキーのハンドルと同じです。
+
+   key がすでに存在する場合は、この関数はそのキーを開きます。
+
+   戻り値は開いた key のハンドルです。失敗した場合、 :exc:`WindowsError`
+   例外を発生させます。
+
+.. versionadded:: 2.7
+
+
 .. function:: DeleteKey(key, sub_key)
 
    特定のキーを削除します。
@@ -77,6 +104,40 @@
 
    このメソッドの実行が成功すると、キー全体が、その値すべてを含めて削除されます。このメソッドが失敗した場合、 :exc:`WindowsError`
    例外が送出されます。
+
+
+.. function:: DeleteKeyEx(key, sub_key[, sam[, res]])
+
+   指定された key を削除します。
+
+   .. note::
+      :func:`DeleteKeyEx` 関数は RegDeleteKeyEx Windows API 関数を使って実装
+      されています。このAPIは 64bit 版Windowsにしかありません。
+      `RegDeleteKeyEx のドキュメント
+      <http://msdn.microsoft.com/en-us/library/ms724847%28VS.85%29.aspx>`__
+      を参照してください。
+
+   *key* は開いたキーか、定義済みの :ref:`HKEY_* 定数 <hkey-constants>` のどれかです。
+
+   *sub_key* は *key* 引数によって指定された key の subkey でなければなりません。
+   この値は ``None`` であってはなりません。また、 key は subkey を持たないかもしれません。
+
+   *res* は予約済みの整数で、 0 でなければなりません。デフォルトは 0 です。
+
+   *sam* は、 key に対して想定するセキュリティアクセスを示すアクセスマスクを
+   指定します。デフォルトは :const:`KEY_WOW64_64KEY` です。
+   利用可能な値については :ref:`アクセス権 <access-rights>` を参照してください。
+
+
+   *このメソッドはサブキーをもつキーを削除することはできません。*
+
+   このメソッドの実行が成功すると、キー全体が、その値すべてを含めて削除されます。
+   このメソッドが失敗した場合、 :exc:`WindowsError` 例外を発生させます。
+
+   サポートされていない Windows バージョンでは、 :exc:`NotImplementedError` 例外を
+   発生させます。
+
+.. versionadded:: 2.7
 
 
 .. function:: DeleteValue(key, value)
@@ -175,7 +236,7 @@
    この関数を呼び出しているプロセスが :const:`SE_RESTORE_PRIVILEGE` 特権を
    持たない場合には :func:`LoadKey` は失敗します。
    この特権はファイル許可とは違うので注意してください - 詳細は `RegLoadKey documentation
-   <http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx>`_
+   <http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx>`__
    を参照してください。
 
    *key* が :func:`ConnectRegistry` によって返されたハンドルの場合、 *fileName*
