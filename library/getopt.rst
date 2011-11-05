@@ -1,10 +1,17 @@
 
-:mod:`getopt` --- コマンドラインオプションのパーザ
-==================================================
+:mod:`getopt` --- C言語スタイルのコマンドラインオプションパーサ
+===============================================================
 
 .. module:: getopt
-   :synopsis: ポータブルなコマンドラインオプションのパーザ。長短の両方の形式をサポートします。
+   :synopsis: ポータブルなコマンドラインオプションのパーサ。
+              長短の両方の形式をサポートします。
 
+.. note::
+   :mod:`getopt` モジュールは、 C言語の :cfunc:`getopt` 関数に慣れ親しんだ人の
+   ためにデザインされたAPIを持つコマンドラインパーサです。
+   C言語の :cfunc:`getopt` に慣れ親しんでいない人や、コードを少なくしたい場合、
+   より良いヘルプメッセージとエラーメッセージが欲しい場合は、代わりに :mod:`argparse`
+   モジュールの利用を検討してください。
 
 このモジュールは ``sys.argv`` に入っているコマンドラインオプションの構文解析を支援します。 '``-``' や '``--``'
 の特別扱いも含めて、 Unixの :cfunc:`getopt` と同じ記法をサポートしています。 3番目の引数(省略可能)を設定することで、
@@ -32,32 +39,23 @@ GNUのソフトウェアでサポートされているような長形式のオ�
       近いものです。
 
    *long_options* は長形式のオプションの名前を示す文字列のリストです。
-   名前には、先頭の ``'-``\ ``-'`` は含めません。引数が必要な場合には名前の
+   名前には、先頭の ``'--'`` は含めません。引数が必要な場合には名前の
    最後に等号(``'='``)を入れます。オプション引数はサポートしていません。
    長形式のオプションだけを受けつけるためには、 *options* は空文字列である
    必要があります。
    長形式のオプションは、該当するオプションを一意に決定できる長さまで入力されて
    いれば認識されます。たとえば、 *long_options* が ``['foo', 'frob']`` の場合、
-   :option:`--fo` は :option:`--foo` に該当しますが、 :option:`--f` では一意に
+   ``--fo`` は ``--foo`` にマッチしますが、 ``--f`` では一意に
    決定できないので、 :exc:`GetoptError` が発生します。
 
-   返り値は2つの要素から成っています: 最初は ``(option, value)`` のタプルのリスト、2つ目はオプションリス
-   トを取り除いたあとに残ったプログラムの引数リストです(*args* の末尾部分のスライスになります)。
-   それぞれの引数と値のタプルの最初の要素は、短形式の時はハイフン 1つで始まる文字列(例: ``'-x'``)、長形式の時はハイフン2つで始まる文字列(例:
-   ``'-`` \ ``-long-option'``)となり、引数が2番目の要素になります。引数をとらない場合には空文字列が入ります。オプションは見つかった順
-   に並んでいて、複数回同じオプションを指定することができます。長形式と短形式のオプションは混在させることができます。
-
-   .. % The return value consists of two elements: the first is a list of
-   .. % \code{(\var{option}, \var{value})} pairs; the second is the list of
-   .. % program arguments left after the option list was stripped (this is a
-   .. % trailing slice of \var{args}).  Each option-and-value pair returned
-   .. % has the option as its first element, prefixed with a hyphen for short
-   .. % options (e.g., \code{'-x'}) or two hyphens for long options (e.g.,
-   .. % \code{'-}\code{-long-option'}), and the option argument as its second
-   .. % element, or an empty string if the option has no argument.  The
-   .. % options occur in the list in the same order in which they were found,
-   .. % thus allowing multiple occurrences.  Long and short options may be
-   .. % mixed.
+   返り値は2つの要素から成っています: 最初は ``(option, value)`` のタプルのリスト、
+   2つ目はオプションリストを取り除いたあとに残ったプログラムの引数リストです
+   (*args* の末尾部分のスライスになります)。
+   それぞれの引数と値のタプルの最初の要素は、短形式の時はハイフン 1つで始まる文字列
+   (例: ``'-x'``)、長形式の時はハイフン2つで始まる文字列(例: ``'--long-option'``)
+   となり、引数が2番目の要素になります。引数をとらない場合には空文字列が入ります。
+   オプションは見つかった順に並んでいて、複数回同じオプションを指定することができます。
+   長形式と短形式のオプションは混在させることができます。
 
 
 .. function:: gnu_getopt(args, options[, long_options])
@@ -65,18 +63,9 @@ GNUのソフトウェアでサポートされているような長形式のオ�
    この関数はデフォルトでGNUスタイルのスキャンモードを使う以外は :func:`getopt` と同じように動作します。つまり、オプションと
    オプションでない引数とを混在させることができます。 :func:`getopt` 関数はオプションでない引数を見つけると解析をやめてしまいます。
 
-   .. % This function works like \function{getopt()}, except that GNU style
-   .. % scanning mode is used by default. This means that option and
-   .. % non-option arguments may be intermixed. The \function{getopt()}
-   .. % function stops processing options as soon as a non-option argument is
-   .. % encountered.
-
-   オプション文字列の最初の文字が '+'にするか、環境変数 :envvar:`POSIXLY_CORRECT` を設定することで、
+   オプション文字列の最初の文字を ``'+'`` にするか、環境変数
+   :envvar:`POSIXLY_CORRECT` を設定することで、
    オプションでない引数を見つけると解析をやめるように振舞いを変えることができます。
-
-   .. % If the first character of the option string is `+', or if the
-   .. % environment variable POSIXLY_CORRECT is set, then option processing
-   .. % stops as soon as a non-option argument is encountered.
 
    .. versionadded:: 2.3
 
@@ -159,9 +148,21 @@ Unixスタイルのオプションを使った例です:
    if __name__ == "__main__":
        main()
 
+:mod:`argparse` モジュールを使えば、より良いヘルプメッセージとエラーメッセージを
+持った同じコマンドラインインタフェースをより少ないコードで実現できます。 ::
+
+   import argparse
+
+   if __name__ == '__main__':
+       parser = argparse.ArgumentParser()
+       parser.add_argument('-o', '--output')
+       parser.add_argument('-v', dest='verbose', action='store_true')
+       args = parser.parse_args()
+       # ... do something with args.output ...
+       # ... do something with args.verbose ..
 
 .. seealso::
 
-   Module :mod:`optparse`
-      よりオブジェクト指向的なコマンドラインオプションのパーズを提供します。
+   Module :mod:`argparse`
+      別のコマンドラインオプションと引数の解析ライブラリ.
 
