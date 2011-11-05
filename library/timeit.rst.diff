@@ -29,10 +29,10 @@
 --s S/:option:`--setup=S`
 -   statement to be executed once initially (default ``'pass'``)
 +.. cmdoption:: -s S, --setup=S
++
++   statement to be executed once initially (default ``pass``)
  
 --t/:option:`--time`
-+   statement to be executed once initially (default ``pass``)
-+
 +.. cmdoption:: -t, --time
 +
     use :func:`time.time` (default on all platforms but Windows)

@@ -125,25 +125,34 @@ Python 2.6 から、このモジュールに2つの便利関数が追加され�
 
 以下のオプションが使用できます。
 
--n N/ :option:`--number` =N
+.. program:: timeit
+
+.. cmdoption:: -n N, --number=N
+
    'statement' を何回実行するか
 
--r N/ :option:`--repeat` =N
+.. cmdoption:: -r N, --repeat=N
+
    タイマを何回リピートするか(デフォルトは 3)
 
--s S/ :option:`--setup` =S
-   最初に1回だけ実行する文 (デフォルトは ``'pass'``)
+.. cmdoption:: -s S, --setup=S
 
--t/ :option:`--time`
+   最初に1回だけ実行する文 (デフォルトは ``pass``)
+
+.. cmdoption:: -t, --time
+
    :func:`time.time` を使用する (Windows を除くすべてのプラットフォームのデフォルト)
 
--c/ :option:`--clock`
+.. cmdoption:: -c, --clock
+
    :func:`time.clock` を使用する(Windows のデフォルト)
 
--v/ :option:`--verbose`
+.. cmdoption:: -v, --verbose
+
    時間計測の結果をそのまま詳細な数値でくり返し表示する
 
--h/ :option:`--help`
+.. cmdoption:: -h, --help
+
    簡単な使い方を表示して終了する
 
 文は複数行指定することもできます。
