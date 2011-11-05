@@ -402,6 +402,15 @@ writer オブジェクトには以下の公開属性があります:
 
    writer で使われる表現形式の読み取り専用の記述です。
 
+DictWriter のオブジェクトは以下の public メソッドを持っています。
+
+.. method:: DictWriter.writeheader()
+
+   (コンストラクタで指定された)フィールド名の行を出力します。
+
+   .. versionadded:: 2.7
+
+
 
 .. _csv-examples:
 
@@ -411,41 +420,44 @@ writer オブジェクトには以下の公開属性があります:
 最も簡単な CSV ファイル読み込みの例です::
 
    import csv
-   reader = csv.reader(file("some.csv", "rb"))
-   for row in reader:
-       print row
+   with open('some.csv', 'rb') as f:
+       reader = csv.reader(f)
+       for row in reader:
+           print row
 
 別の書式での読み込み::
 
    import csv
-   reader = csv.reader(open("passwd", "rb"), delimiter=':', quoting=csv.QUOTE_NONE)
-   for row in reader:
-       print row
+   with open('passwd', 'rb') as f:
+       reader = csv.reader(f, delimiter=':', quoting=csv.QUOTE_NONE)
+       for row in reader:
+           print row
 
 上に対して、単純な書き込みのプログラム例は以下のようになります。 ::
 
    import csv
-   writer = csv.writer(file("some.csv", "wb"))
-   writer.writerows(someiterable)
+   with open('some.csv', 'wb') as f:
+       writer = csv.writer(f)
+       writer.writerows(someiterable)
 
 新しい表現形式の登録::
 
    import csv
-
    csv.register_dialect('unixpwd', delimiter=':', quoting=csv.QUOTE_NONE)
-
-   reader = csv.reader(open("passwd", "rb"), 'unixpwd')
+   with open('passwd', 'rb') as f:
+       reader = csv.reader(f, 'unixpwd')
 
 もう少し手の込んだ reader の使い方 --- エラーを捉えてレポートします。 ::
 
    import csv, sys
-   filename = "some.csv"
-   reader = csv.reader(open(filename, "rb"))
-   try:
-       for row in reader:
-           print row
-   except csv.Error, e:
-       sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
+   filename = 'some.csv'
+   with open(filename, 'rb') as f:
+       reader = csv.reader(f)
+       try:
+           for row in reader:
+               print row
+       except csv.Error, e:
+           sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
 このモジュールは文字列の解析は直接サポートしませんが、簡単にできます。 ::
 
