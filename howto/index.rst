@@ -18,6 +18,8 @@ Python ライブラリリファレンスよりも詳細な文書を作ってい�
    descriptor.rst
    doanddont.rst
    functional.rst
+   logging.rst
+   logging-cookbook.rst
    regex.rst
    sockets.rst
    sorting.rst

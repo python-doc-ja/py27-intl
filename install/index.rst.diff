@@ -74,7 +74,6 @@
  that was built with Cygwin, everything should work without any of these
  following steps.
  
--These compilers require some special libraries. This task is more complex than
 +Not all extensions can be built with MinGW or Cygwin, but many can.  Extensions
 +most likely to not work are those that use C++ or depend on Microsoft Visual C
 +extensions.
@@ -97,6 +96,7 @@
 +inferior to 2.4.1 with a MinGW inferior to 3.0.0 (with
 +binutils-2.13.90-20030111-1).
 +
+-These compilers require some special libraries. This task is more complex than
 +These compilers require some special libraries.  This task is more complex than
  for Borland's C++, because there is no program to convert the library.  First
  you have to create a list of symbols which the Python DLL exports. (You can find
