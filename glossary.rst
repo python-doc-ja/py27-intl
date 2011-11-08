@@ -40,7 +40,7 @@
       として提供されています。 :ref:`2to3-reference` を参照してください。
 
    abstract base class
-      (抽象基底クラス) Abstract Base Classes (ABCs と略されます)は :term:`duck-typing`
+      (抽象基底クラス) :ref:`abstract-base-classes` は :term:`duck-typing`
       を補完するもので、 :func:`hasattr` などの別のテクニックでは不恰好になる場合に
       インタフェースを定義する方法を提供します。
       Pythonは沢山のビルトインABCsを、(:mod:`collections` モジュールで)データ構造、
@@ -91,12 +91,8 @@
       このバイトコードは、各々のバイトコードに対応するサブルーチンを呼び出すような
       "仮想計算機(:term:`virtual machine`)" で動作する "中間言語 (intermediate language)" といえます。
 
-      .. Python source code is compiled into bytecode, the internal representation
-         of a Python program in the interpreter.  The bytecode is also cached in
-         ``.pyc`` and ``.pyo`` files so that executing the same file is faster the
-         second time (recompilation from source to bytecode can be avoided).  This
-         "intermediate language" is said to run on a :term:`virtual machine`
-         that executes the machine code corresponding to each bytecode.
+      バイトコードの命令一覧は :ref:`dis モジュール <bytecodes>`
+      にあります。
 
    class
       (クラス)
@@ -146,9 +142,10 @@
       :pep:`343` を参照。
 
    CPython
-      Pythonプログラミング言語の基準となる実装。
-      CPython という単語は、この実装を Jython や IronPython といった他の実装と
-      区別する必要が有る文脈で利用されます。
+      `python.org <http://python.org>`_ で配布されている、Python
+      プログラミング言語の基準となる実装。
+      "CPython" という単語は、この実装を Jython や IronPython といった他の実装と
+      区別する必要が有る場合に利用されます。
 
    decorator
       (デコレータ)
@@ -203,14 +200,9 @@
    dictionary
       (辞書)
       任意のキーを値に対応付ける連想配列です。
-      :class:`dict` の使い方は :class:`list` に似ていますが、ゼロから始まる整数に限らず、
-      :meth:`__hash__` 関数を実装している全てのオブジェクトをキーにできます。
-      Perl ではハッシュ (hash) と呼ばれています。
-
-      .. An associative array, where arbitrary keys are mapped to values.  The use
-         of :class:`dict` closely resembles that for :class:`list`, but the keys can
-         be any object with a :meth:`__hash__` function, not just integers.
-         Called a hash in Perl.
+      :meth:`__hash__` メソッドと :meth:`__eq__` メソッドを実装した
+      任意のオブジェクトをキーにできます。
+      Perl ではハッシュ(hash)と呼ばれています。
 
    docstring
       クラス、関数、モジュールの最初の式となっている文字列リテラルです。
@@ -223,9 +215,10 @@
          ドキュメンテーション文字列？？　統一した訳語を定義する。
 
    duck-typing
-      Python 的なプログラムスタイルではオブジェクトの型を（型オブジェクトとの関係ではなく）
-      メソッドや属性といったシグネチャを見ることで判断します。
-      （「もしそれがガチョウのようにみえて、ガチョウのように鳴けば、それはガチョウである」）
+      あるオブジェクトが正しいインタフェースを持っているかどうかを確かめるのに
+      オブジェクトの型をチェックしないプログラミングスタイル。
+      代わりに、シンプルにオブジェクトのメソッドが呼ばれたり属性が使われたりします。
+      （「もしそれがアヒルのようにみえて、ガチョウのように鳴けば、それはアヒルである」）
       インタフェースを型より重視することで、上手くデザインされたコードは
       (polymorphicな置換を許可することによって)柔軟性を増すことができます。
       duck-typing は :func:`type` や :func:`isinstance` を避けます。
@@ -268,6 +261,13 @@
       :meth:`find_module` という名前のメソッドを実装していなければなりません。
       詳細については :pep:`302` を参照してください。
 
+   floor division
+      一番近い小さい整数に丸める数学除算。floor division 演算子は ``//`` です。
+      例えば、 ``11 // 4`` は ``2`` になり、 float の true division の結果
+      ``2.75`` と異なります。
+      ``(-11) // 4`` は ``-2.75`` を *小さい方に* 丸めるので ``-3``
+      になることに注意してください。 :pep:`238` を参照してください。
+
    function
       (関数)
       呼び出し側に値を返す、一連の文。
@@ -300,23 +300,14 @@
 
    generator
       (ジェネレータ)
-      イテレータを返す関数です。 :keyword:`return` 文の代わりに :keyword:`yield`
-      文を使って呼び出し側に要素を返す他は、通常の関数と同じに見えます。
-
-      よくあるジェネレータ関数は一つまたはそれ以上の :keyword:`for` ループや :keyword:`while` ループ
-      を含んでおり、ループの呼び出し側に要素を返す(:keyword:`yield`)ようになっています。
-      ジェネレータが返すイテレータを使って関数を実行すると、関数は
-      :keyword:`yield` キーワードで (値を返して) 一旦停止し、 :meth:`next`
-      を呼んで次の要素を要求するたびに実行を再開します。
-
-      .. A function which returns an iterator.  It looks like a normal function
-         except that values are returned to the caller using a :keyword:`yield`
-         statement instead of a :keyword:`return` statement.  Generator functions
-         often contain one or more :keyword:`for` or :keyword:`while` loops which
-         :keyword:`yield` elements back to the caller.  The function execution is
-         stopped at the :keyword:`yield` keyword (returning the result) and is
-         resumed there when the next element is requested by calling the
-         :meth:`next` method of the returned iterator.
+      イテレータを返す関数です。
+      通常の関数に似ていますが、 :keyword:`return` 文を使わず、代わりに
+      for ループで使ったり :func:`next` 関数で1つずつ取り出せる値の列を
+      生成するために :keyword:`yield` 文を使います。
+      :keyword:`yield` 文に到達するたびに関数の実行は実行状態(ローカル
+      変数や実行中の try 文などを含む)を保存して中断されます。
+      ジェネレータが再開されるとき、(通常の関数が実行の度に初期状態から
+      開始するのに対して)中断した状態から実行を開始します。
 
       .. index:: single: generator expression
 
@@ -335,25 +326,22 @@
 
    global interpreter lock
       (グローバルインタプリタロック)
-      :term:`CPython` のVM(:term:`virtual machine`)の中で一度に1つのスレッドだけが
-      動作することを保証するために使われているロックです。
-      このロックによって、同時に同じメモリにアクセスする2つのプロセスは存在しないと保証されているので、
-      CPython を単純な構造にできるのです。
-      インタプリタ全体にロックをかけると、多重プロセサ計算機における並列性の恩恵と引き換えにインタプリタの
-      多重スレッド化を簡単に行えます。かつて "スレッド自由な (free-threaded)"
-      インタプリタを作ろうと努力したことがありましたが、広く使われている単一プロセッサの場合には
-      パフォーマンスが低下するという事態に悩まされました。
+      :term:`CPython` インタプリタが利用している、同時に複数のスレッドが Python
+      のバイトコード(:term:`bytecode`) を実行しないようにする仕組み。
+      これによりオブジェクトモデル(:class:`dict` などの重要な組み込み型を含む)が
+      暗黙的に並列アクセスに対して安全になるので、 CPython の実装をシンプルにできます。
+      インタプリタ全体をロックすることで、マルチプロセッサマシンが生じる
+      並列化のコストに対して、楽にインタプリタをマルチスレッド化できます。
 
-      .. The lock used by Python threads to assure that only one thread
-         executes in the :term:`CPython` :term:`virtual machine` at a time.
-         This simplifies the CPython implementation by assuring that no two
-         processes can access the same memory at the same time.  Locking the
-         entire interpreter makes it easier for the interpreter to be
-         multi-threaded, at the expense of much of the parallelism afforded by
-         multi-processor machines.  Efforts have been made in the past to
-         create a "free-threaded" interpreter (one which locks shared data at a
-         much finer granularity), but so far none have been successful because
-         performance suffered in the common single-processor case.
+      ただし、標準あるいは外部のいくつかの拡張モジュールは、圧縮やハッシュ計算などの
+      計算の重い処理をしているときにGILを解放するように設計されています。
+      また、I/O処理をするときもGILは解放されます。
+
+      過去に "自由なマルチスレッド化" したインタプリタ (供用されるデータを
+      細かい粒度でロックする) が開発されましたが、一般的なシングルプロセッサの場合の
+      パフォーマンスが悪かったので成功しませんでした。
+      このパフォーマンスの問題を克服しようとすると、実装がより複雑になり
+      保守コストが増加すると考えられています。
 
    hashable
       (ハッシュ可能)
@@ -374,14 +362,6 @@
    IDLE
       Python の組み込み開発環境 (Integrated DeveLopment Environment) です。
       IDLE は Pythonの標準的な配布物についてくる基本的な機能のエディタとインタプリタ環境です。
-      初心者に向いている点として、 IDLEはよく洗練され、複数プラットフォームで動作する GUI
-      アプリケーションを実装したい人むけの明解なコード例にもなっています。
-
-      .. An Integrated Development Environment for Python.  IDLE is a basic editor
-         and interpreter environment which ships with the standard distribution of
-         Python.  Good for beginners, it also serves as clear example code for
-         those wanting to implement a moderately sophisticated, multi-platform GUI
-         application.
 
    immutable
       (不変オブジェクト)
@@ -493,21 +473,31 @@
 
       より詳細な情報は :ref:`typeiter` にあります。
 
-      .. An object representing a stream of data.  Repeated calls to the iterator's
-         :meth:`next` method return successive items in the stream.  When no more
-         data are available a :exc:`StopIteration` exception is raised instead.  At
-         this point, the iterator object is exhausted and any further calls to its
-         :meth:`next` method just raise :exc:`StopIteration` again.  Iterators are
-         required to have an :meth:`__iter__` method that returns the iterator
-         object itself so every iterator is also iterable and may be used in most
-         places where other iterables are accepted.  One notable exception is code
-         which attempts multiple iteration passes.  A container object (such as a
-         :class:`list`) produces a fresh new iterator each time you pass it to the
-         :func:`iter` function or use it in a :keyword:`for` loop.  Attempting this
-         with an iterator will just return the same exhausted iterator object used
-         in the previous iteration pass, making it appear like an empty container.
+   key function
+      (キー関数)
+      キー関数、あるいは照合関数とは、ソートや順序比較のための値を返す呼び出し
+      可能オブジェクト(callable)です。
+      例えば、 :func:`locale.strxfrm` をキー関数に使えば、ロケール依存のソートの
+      慣習にのっとったソートキーを返します。
 
-         More information can be found in :ref:`typeiter`.
+      Python には要素がどのように順序付けられたりグループ化されたりするかを
+      制御するためにキー関数を受け付けるいくつかのツールがあります。
+      例えば、 :func:`min`, :func:`max`, :func:`sorted`, :meth:`list.sort`,
+      :func:`heapq.nsmallest`, :func:`heapq.nlargest`, :func:`itertools.groupby`
+      です。
+
+      キー関数を作る方法がいくつかあります。例えば、 :meth:`str.lower` メソッドを
+      キー関数として使って大文字小文字を区別しないソートができます。
+      (訳注: インスタンスメソッドはクラス経由でアクセスすると関数にもなります。
+      この例では、 ``'FOO'.lower()`` と ``str.lower('FOO')`` が同じになる事を利用しています。)
+
+      他には、アドホックにキー関数を作るために ``lambda r: (r[0], r[2])``
+      のように :keyword:`lambda` 式を使うことができます。
+      また、 :mod:`operator` モジュールは :func:`~operator.attrgetter`,
+      :func:`~operator.itemgetter`, :func:`~operator.methodcaller` という
+      キー関数コンストラクタを提供いしています。
+      キー関数の作り方、使い方に関する例は、 :ref:`Sorting HOW TO <sortinghowto>`
+      を参照してください。
 
    keyword argument
       (キーワード引数)
@@ -562,12 +552,11 @@
       詳細は :pep:`302` を参照してください。
 
    mapping
-      (マップ)
-      特殊メソッド :meth:`__getitem__` を使って、任意のキーに対する検索をサポートする
-      (:class:`dict` のような)コンテナオブジェクトです。
-
-      .. A container object (such as :class:`dict`) which supports arbitrary key
-         lookups using the special method :meth:`__getitem__`.
+      (マップ、マッピング)
+      任意のキーに対する検索をサポートしていて、 :class:`Mapping` か :class:`MutableMapping`
+      の :ref:`抽象基底クラス <abstract-base-classes>` を実装しているコンテナオブジェクト。
+      例えば、 :class:`dict`, :class:`collections.defaultdict`, :class:`collections.OrderedDict`,
+      :class:`collections.Counter` はマップ型です。
 
    metaclass
       (メタクラス)
@@ -783,6 +772,14 @@
       全てのオブジェクトは型を持っています。
       オブジェクトの型は、 :attr:`__class__` 属性からアクセスしたり、
       ``type(obj)`` で取得することができます。
+
+   view
+      (ビュー)
+      :meth:`dict.viewkeys`, :meth:`dict.viewvalues`, :meth:`dict.viewitems`
+      が返すオブジェクトのことを辞書ビュー(dictionary view)と呼びます。
+      これらはベースとなる辞書の変更を反映する、遅延シーケンスです。
+      辞書ビューを完全なリストにするには ``list(dictview)`` としてください。
+      :ref:`dict-views` を参照してください。
 
    virtual machine
       (仮想マシン)
