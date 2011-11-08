@@ -161,7 +161,50 @@ Python は通常そのライブラリ(と site-packages フォルダ)をイン�
 サードパーティーのモジュールは :file:`C:\\Python\\Lib\\site-packages\\`
 に格納されます。
 
-.. `` this fixes syntax highlighting errors in some editors due to the \\ hackery
+.. `` エディタのシンタックスハイライトの問題回避用コメント
+
+以下は、 Windows で :data:`sys.path` が構築される方法です。 
+
+* 最初に空のエントリが追加されます。これはカレントディレクトリを指しています。
+
+* その次に、 :envvar:`PYTHONPATH` 環境変数が存在するとき、 :ref:`using-on-envvars` で
+  解説されているように追加されます。 Windows ではドライブ識別子 (``C:\`` など)と
+  区別するために、この環境変数に含まれるパスの区切り文字はセミコロンでなければ
+  ならない事に注意してください。
+
+* 追加で "アプリケーションのパス" を ``HKEY_CURRENT_USER`` か ``HKEY_LOCAL_MACHINE``
+  の中の :samp:`\\SOFTWARE\\Python\\PythonCore\\{version}\\PythonPath` の
+  サブキーとして登録することができます。
+  サブキーはデフォルト値としてセミコロンで区切られたパス文字列を持つことができ、
+  書くパスが :data:`sys.path` に追加されます。
+  (既存のインストーラーは全て HKLM しか利用しないので、 HKCU は通常空です)
+
+* :envvar:`PYTHONHOME` が設定されている場合、それは "Python Home" として扱われます。
+  それ以外の場合、 "Python Home" を推定するために Python の実行ファイルのパスから
+  "目標ファイル" (``Lib\os.py``) が探されます。 Python home が見つかった場合、
+  そこからいくつかのサブディレクトリ (``Lib``, ``plat-win``, など) が :data:`sys.path`
+  に追加されます。見つからなかった場合、 core Python path はレジストリに登録された
+  PythonPath から構築されます。
+
+* Python Home が見つからず、環境変数 :envvar:`PYTHONPATH` が指定されず、
+  レジストリエントリが見つからなかった場合、関連するデフォルトのパスが利用されます。
+  (例: ``.\Lib;.\plat-win`` など)
+
+結果としてこうなります:
+
+* :file:`python.exe` かそれ以外の Python ディレクトリにある .exe ファイルを
+  実行したとき (インストールされている場合でも PCbuild から直接実行されている場合でも)
+  core path が利用され、レジストリ内の core path は無視されます。
+  それ以外のレジストリの "application paths" は常に読み込まれます。
+
+* Python が他の .exe ファイル (他のディレクトリに存在する場合や、COM経由で組み込まれる場合など)
+  にホストされている場合は、 "Python Home" は推定されず、レジストリにある core path
+  が利用されます。
+  それ以外のレジストリの "application paths" は常に読み込まれます。
+
+* Python が Python home ディレクトリを見つけられずレジストリも存在しない場合
+  (例: freeze された .exe, いくつかのとても奇妙なインストール構成)、
+  デフォルトの、ただし相対パスが利用されます。
 
 追加のフォルダを Python の import 機構の検索対象に含めることもできます。
 :envvar:`PYTHONPATH` を :ref:`using-on-envvars` で解説されているように利用し、

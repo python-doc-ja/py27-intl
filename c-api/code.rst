@@ -1,9 +1,8 @@
 .. highlightlang:: c
-
 .. _codeobjects:
 
-Code Objects
-------------
+コードオブジェクト
+-------------------
 
 .. sectionauthor:: Jeffrey Yasskin <jyasskin@gmail.com>
 
@@ -11,40 +10,38 @@ Code Objects
 .. index::
    object: code
 
-Code objects are a low-level detail of the CPython implementation.
-Each one represents a chunk of executable code that hasn't yet been
-bound into a function.
+コードオブジェクト(Code objects)は CPython 実装の低レベルな詳細部分です。
+各オブジェクトは関数に束縛されていない実行可能コードの塊を表現しています。
 
 .. ctype:: PyCodeObject
 
-   The C structure of the objects used to describe code objects.  The
-   fields of this type are subject to change at any time.
+   コードオブジェクトを表現するために利用されるC構造体。
+   この型のフィールドは何時でも変更され得ます。
 
 
 .. cvar:: PyTypeObject PyCode_Type
 
-   This is an instance of :ctype:`PyTypeObject` representing the Python
-   :class:`code` type.
+   Python の :class:`code` 型を表現する :ctype:`PyTypeObject` のインスタンス
 
 
 .. cfunction:: int PyCode_Check(PyObject *co)
 
-   Return true if *co* is a :class:`code` object
+   *co* が :class:`code` オブジェクトのときに真を返します。
 
 .. cfunction:: int PyCode_GetNumFree(PyObject *co)
 
-   Return the number of free variables in *co*.
+   *co* 内の自由変数(free variables)の数を返します。
 
 .. cfunction:: PyCodeObject *PyCode_New(int argcount, int nlocals, int stacksize, int flags, PyObject *code, PyObject *consts, PyObject *names, PyObject *varnames, PyObject *freevars, PyObject *cellvars, PyObject *filename, PyObject *name, int firstlineno, PyObject *lnotab)
 
-   Return a new code object.  If you need a dummy code object to
-   create a frame, use :cfunc:`PyCode_NewEmpty` instead.  Calling
-   :cfunc:`PyCode_New` directly can bind you to a precise Python
-   version since the definition of the bytecode changes often.
+   新しいコードオブジェクトを返します。
+   フレームを作成するためにダミーのコードオブジェクトが必要な場合は、代わりに
+   :cfunc:`PyCode_NewEmpty` を利用してください。
+   バイトコードは頻繁に変更されるため、 :cfunc:`PyCode_New` を直接呼び出すと、
+   Python の詳細バージョンに依存してしまうことがあります。
 
 
 .. cfunction:: int PyCode_NewEmpty(const char *filename, const char *funcname, int firstlineno)
 
-   Return a new empty code object with the specified filename,
-   function name, and first line number.  It is illegal to
-   :keyword:`exec` or :func:`eval` the resulting code object.
+   新しい空のコードオブジェクトを、指定されたファイル名、関数名、開始行番号で作成します。
+   返されたコードオブジェクトに対しての :keyword:`exec` や :func:`eval` は許されていません。
