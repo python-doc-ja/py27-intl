@@ -6,6 +6,27 @@
 Python インタプリタは数多くの組み込み関数を持っていて、いつでも利用す
 ることができます。それらの関数をアルファベット順に挙げます。
 
+===================  =================  ==================  =================  ====================
+..                   ..                 Built-in Functions  ..                 ..
+===================  =================  ==================  =================  ====================
+:func:`abs`          :func:`divmod`     :func:`input`       :func:`open`       :func:`staticmethod`
+:func:`all`          :func:`enumerate`  :func:`int`         :func:`ord`        :func:`str`
+:func:`any`          :func:`eval`       :func:`isinstance`  :func:`pow`        :func:`sum`
+:func:`basestring`   :func:`execfile`   :func:`issubclass`  :func:`print`      :func:`super`
+:func:`bin`          :func:`file`       :func:`iter`        :func:`property`   :func:`tuple`
+:func:`bool`         :func:`filter`     :func:`len`         :func:`range`      :func:`type`
+:func:`bytearray`    :func:`float`      :func:`list`        :func:`raw_input`  :func:`unichr`
+:func:`callable`     :func:`format`     :func:`locals`      :func:`reduce`     :func:`unicode`
+:func:`chr`          :func:`frozenset`  :func:`long`        :func:`reload`     :func:`vars`
+:func:`classmethod`  :func:`getattr`    :func:`map`         :func:`repr`       :func:`xrange`
+:func:`cmp`          :func:`globals`    :func:`max`         :func:`reversed`   :func:`zip`
+:func:`compile`      :func:`hasattr`    :func:`memoryview`  :func:`round`      :func:`__import__`
+:func:`complex`      :func:`hash`       :func:`min`         :func:`set`        :func:`apply`
+:func:`delattr`      :func:`help`       :func:`next`        :func:`setattr`    :func:`buffer`
+:func:`dict`         :func:`hex`        :func:`object`      :func:`slice`      :func:`coerce`
+:func:`dir`          :func:`id`         :func:`oct`         :func:`sorted`     :func:`intern`
+===================  =================  ==================  =================  ====================
+ 
 
 .. function:: abs(x)
 
@@ -80,6 +101,33 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
    .. versionchanged:: 2.3
       引数が与えられなかった場合、この関数は :const:`False` を返します。
+
+
+.. function:: bytearray([source[, encoding[, errors]]])
+
+   新しいバイトの配列を返します。:class:`bytearray` 型は範囲 0 <= x < 256 の
+   整数のミュータブルなシーケンスです。これは、:ref:`typesseq-mutable` で
+   書かれているような、ミュータブルなシーケンスの通常のメソッドのほとんどを
+   持ちますし、:ref:`string-methods` にあるような、:class:`str` 型が持つ
+   メソッドのほとんども持っています。
+
+   オプションの *source* パラメタは、配列をいくつかの異なる方法で
+   初期化するのに使われます。
+
+   * これが *文字列* なら、*encoding* (と、オプションの *errors*) パラメタも
+     与えなければなりません。このとき :func:`bytearray` は文字列を
+     :meth:`str.encode` でバイト列に変換して返します。
+
+   * これが *整数* なら、配列はそのサイズになり、null バイトで
+     初期化されます。
+
+   * これが *バッファ* インタフェースに適合するオブジェクトなら、
+     そのオブジェクトの読み込み専用バッファがバイト配列の初期化に使われます。
+
+   * これが *イテラブル* なら、それは範囲 ``0 <= x < 256`` 内の整数の
+     イテラブルであることが必要で、それらが配列の初期の内容になります。
+
+   引数がなければ、長さ 0 の配列が生成されます。
 
 
 .. function:: callable(object)
@@ -185,17 +233,20 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
    .. note::
 
-      複数行にわたるコードをコンパイルする場合、
-      行末を単一の改行文字 (``'\n'``) で表現しなければいけません、
-      さらに入力は少なくとも一つの改行文字で終端していなければいけません。
-      もし行末が ``'\r\n'`` で表現されていれば、
-      :meth:`str.replace` を使って ``'\n'`` に置き換えて下さい。
+      複数行に渡るコードの文字列を ``'single'`` や ``'eval'`` モードで
+      コンパイルするとき、入力は少なくともひとつの改行文字で
+      終端されなければなりません。これは :mod:`code` モジュールで、文が
+      不完全か完全かをわかりやすくするためです。
 
    .. versionadded:: 2.3
       *flags* と *dont_inherit* 引数が追加されました。
 
    .. versionadded:: 2.6
       AST オブジェクトのコンパイルをサポートしました。
+
+   .. versionchanged:: 2.7
+      Windows や Mac の改行文字を使えるようになりました。また、``'exec'`` 
+      モードで改行文字は必要なくなりました。*optimize* パラメタを追加しました。
 
 
 .. function:: complex([real[, imag]])
@@ -293,7 +344,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: divmod(a, b)
 
-   2 つの (複素数でない) 数値を引数として取り、長除法を行ってその商と
+   2 つの (複素数でない) 数値を引数として取り、整数の除法を行ったときの商と
    剰余からなるペアを返します。被演算子が型混合である場合、 2 進算術演
    算子での規則が適用されます。通常の整数と長整数の場合、結果は  ``(a
    // b, a % b)`` と同じです。浮動小数点数の場合、結果は ``(q, a %
@@ -368,6 +419,9 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    す。関数 :func:`globals` および :func:`locals` は、それぞれ現在のグ
    ローバルおよびローカルな辞書を返すので、 :func:`eval` や
    :func:`execfile` で使うことができます。
+
+   リテラルだけを含む式の文字列を安全に評価できる関数、
+   :func:`ast.literal_eval` も参照してください。
 
 
 .. function:: execfile(filename[, globals[, locals]])
@@ -622,7 +676,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: issubclass(class, classinfo)
 
    *class* が *classinfo* の (直接または間接的な) サブクラスである場合
-   に真を返します。クラスはそのクラス自体のサブクラスと *clasinfo* は
+   に真を返します。クラスはそれ自身のサブクラスとみなされます。 *clasinfo* は
    クラスオブジェクトからなるタプルでもよく、この場合には *classinfo*
    のすべてのエントリが調べられます。その他の場合では、例外
    :exc:`TypeError` が送出されます。
@@ -731,6 +785,13 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
    .. versionchanged:: 2.5
       オプションの *key* 引数が追加されました.
+
+
+.. function:: memoryview(obj)
+   :noindex:
+
+   与えられたオブジェクトから作られた "メモリビュー" オブジェクトを返します。
+   詳しくは :ref:`typememoryview` を参照してください。
 
 
 .. function:: min(iterable[, args...][key])
@@ -932,8 +993,8 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
               del self._x
           x = property(getx, setx, delx, "I'm the 'x' property.")
 
-   もし *c* が *C* のインスタンスならば、 ``c.x`` は getter を呼び出します、
-   ``c.x = value`` は setter と ``del c.x`` を呼び出します。
+   もし *c* が *C* のインスタンスならば、 ``c.x`` は getter を呼び出し、
+   ``c.x = value`` は setter を、``del c.x`` は deleter を呼び出します。 
 
    *doc* がもし与えられたならばそれがプロパティ属性のドキュメント文字
    列になります。与えられない場合、プロパティは *fget* のドキュメント
@@ -1156,6 +1217,13 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    ``round(0.5)`` は ``1.0`` になり、 ``round(-0.5)`` は ``-1.0`` に
    なります)。
 
+   .. note::
+
+      浮動小数点数に対する :func:`round` の振る舞いは意外なものかもしれません:
+      例えば、``round(2.675, 2)'' は予想通りの ``2.68`` ではなく
+      ``2.67`` を与えます。これはバグではありません: これはほとんどの
+      少数が浮動小数点数で正確に表せないことの結果です。詳しくは
+      :ref:`tut-fp-issues` を参照してください。
 
 .. function:: set([iterable])
    :noindex:
@@ -1225,9 +1293,9 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
    一般的に、 *key* および *reverse* の変換プロセスは同等の *cmp* 関数
    を指定するより早く動作します。これは *key* および *reverse* がそれ
    ぞれの要素に一度だけ触れる間に、 *cmp* はリストのそれぞれの要素に対
-   して複数回呼ばれることによるものです。旧式の *cmp* 関数を、 *key*
-   関数に変換する方法は、 `CmpToKey recipe in the ASPN cookbook
-   <http://code.activestate.com/recipes/576653/>`_ を参照下さい。
+   して複数回呼ばれることによるものです。
+   旧式の *cmp* 関数を *key* 関数に変換するには :func:`functools.cmp_to_key` 
+   を使用してください。
 
    並ベ替えの例と簡潔なチュートリアルとして、 `Sorting HowTo
    <http://wiki.python.org/moin/HowTo/Sorting/>`_ を参照して下さい。
@@ -1285,50 +1353,47 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
 .. function:: sum(iterable[, start])
 
-   *start* と *iterable* の要素を左から右へ加算してゆき、総和を返しま
+   *start* と *iterable* の要素を左から右へ合計し、総和を返しま
    す。 *start* はデフォルトで ``0`` です。 *iterable* の要素は通常は
-   数値で、文字列であってはなりません。文字列からなるシーケンスを結合
-   する高速かつ正しい方法は ``''.join(sequence)`` です。
-   ``sum(range(n), m)`` は ``reduce(operator.add, range(n), m)`` と同
-   等です。浮動小数点数を拡張精度で加算するには、 :func:`math.fsum` を
-   参照下さい。
+   数値で、start の値は文字列であってはなりません。
 
-   .. versionadded:: 2.3
+   使う場面によっては、:func:`sum` よりもいい選択肢があります。
+   文字列からなるシーケンスを結合する高速かつ望ましい方法は
+   ``''.join(sequence)`` を呼ぶことです。浮動小数点数値を
+   拡張された精度で加算するには、
+   :func:`math.fsum` を参照下さい。一連のイテラブルを
+   連結するには、:func:`itertools.chain` の使用を考えてください。
 
+.. function:: super([type[, object-or-type]])
 
-.. function:: super(type[, object-or-type])
+   メソッドの呼び出しを *type* の親または兄弟クラスに委譲する、プロキシオ
+   ブジェクトを返します。これはクラスの中でオーバーライドされた継承メ
+   ソッドにアクセスするのに便利です。探索の順序は、 *type* 自身が飛ば
+   されるのをのぞいて :func:`getattr` と同じです。
 
-   メソッド呼び出しを *type* クラスの親か兄弟クラスに移譲する、プロキシ
-   オブジェクトを返します。これはクラスの中から、オーバーライドされた
-   継承メソッドにアクセスするのに便利です。探索の順序は、 *type* 自身が
-   飛ばされるのを除いて、 :func:`getattr` と同じです。
+   *type* の :attr:`__mro__` 属性は、:func:`getattr` と :func:`super` の
+   両方で使われる、メソッド解決の探索順序を列記します。
+   この属性は動的で、継承の階層構造が更新されれば、随時変化します。
 
-   *type* の :attr:`__mro__` 属性は、 :func:`getattr` と :func:`super`
-   の両方で使われるメソッド探索順序を格納しています。
-   この属性は動的で、継承の階層構造が更新されれば随時変化します。
+   第 2 引数が省かれたなら、返されるスーパーオブジェクトは
+   束縛されません。第 2 引数がオブジェクトであれば、
+   ``isinstance(obj, type)`` は真でなければなりません。第 2 引数が型であれば、
+   ``issubclass(type2, type)`` は真でなければなりません
+   (これはクラスメソッドに役に立つでしょう)。
 
-   2つめの引数が省略されているとき、返されるスーパーオブジェクトは未束縛です。
-   2つめの引数がオブジェクトであれば、 ``isinstance(obj, type)`` は真に
-   なります。2つめの引数が型であれば、 ``issubclass(type2, type)`` は真に
-   なります。(これはクラスメソッドにとって役に立つでしょう)。
+   *super* の典型的な用途は 2 つあります。単一の継承をしている
+   クラス階層構造では、*super* は名前を明示することなく親クラスを参照するのに
+   使え、これでコードはメンテナンスしやすくなります。この用途の
+   *super* は他のプログラミング言語で見られるものと近い方向性です。
 
-   .. note::
-      :func:`super` は、新スタイルクラス(:term:`new-style class`)でのみ
-      機能します。
-
-   *super* の典型的なユースケースは2種類あります。
-   クラスが単一継承である場合、 *super* は親クラスを、名前を明示することなく
-   参照することができます。
-   これはコードのメンテナンス性を向上します。この用途の *super* は他の
-   プログラミング言語で見られるものと同じです。
-
-   2つめの典型的なユースケースは、動的な実行環境下で協調的な多重継承をサポート
-   するためのものです。この用途は Python 特有のもので、単一の継承しかサポート
-   しない言語や、静的なコンパイルが必要となる言語では見られないものです。
-   これは "diamond diagrams" において、複数の基底クラスが同じメソッドを実装する
-   ことを可能とします。良い設計は、すべてのこのメソッドが同じ呼び出し規約を持つ
-   ことを要求します(呼び出しが実行時に決定されることや、クラスの階層の変更に
-   対応させることや、実行時に優先される未知の兄弟クラスに対応することのためです)。
+   2 つ目の用途は、動的な実行環境下での複数の継承の共同をサポートする
+   ことです。この用途は Python 特有で、静的にコンパイルされる
+   言語や、単一の継承しかサポートしない言語では見られないものです。
+   これは複数の基底クラスが同じメソッドを実装する "diamond diagram"
+   を実装できるようにします。良い設計のために、このメソッドがすべての
+   場合に同じ形式で呼び出せるべきです (呼び出しの順序が実行時に
+   決定されることや、順序がクラスの階層の変更に対応することや、
+   その順序には実行時まで未知の兄弟クラスが含まれえることが理由です)。
 
    両方のケースにおいて、典型的なスーパークラスの呼び出しはこのように
    なるでしょう。 ::
@@ -1487,7 +1552,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       の "short" 整数型) に制限しており、要素数がネイティブの C long
       型の範囲内に収まるよう要求しています。もし大きな範囲が必要ならば、
       別の実装である :mod:`itertools` モジュールの、
-      ``takewhile(lambda x: x<stop, (start+i*step for i in count()))``
+      ``islice(count(start, step), (stop-start+step-1+2*(step<0))//step)``
       を使うのが巧い方法かも知れません。
 
 

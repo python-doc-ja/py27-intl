@@ -1,53 +1,57 @@
-=============================================
-"Why is Python Installed on my Computer?" FAQ
-=============================================
+======================================================================
+"なぜ Python が私のコンピュータにインストールされているのですか？" FAQ
+======================================================================
 
-What is Python?
----------------
+Python とは何ですか？
+---------------------
 
-Python is a programming language.  It's used for many different applications.
-It's used in some high schools and colleges as an introductory programming
-language because Python is easy to learn, but it's also used by professional
-software developers at places such as Google, NASA, and Lucasfilm Ltd.
+Python はプログラミング言語の一つです。Python は様々なアプリケーションに
+使われています。Python は習得しやすいので、一部の高校や大学で入門用の
+プログラミング言語として使われています。一方で、Google、NASA、Lucasfilm Ltd.
+のような組織でプロフェッショナルなソフトウェア開発者にも使われています。
 
-If you wish to learn more about Python, start with the `Beginner's Guide to
-Python <http://wiki.python.org/moin/BeginnersGuide>`_.
-
-
-Why is Python installed on my machine?
---------------------------------------
-
-If you find Python installed on your system but don't remember installing it,
-there are several possible ways it could have gotten there.
-
-* Perhaps another user on the computer wanted to learn programming and installed
-  it; you'll have to figure out who's been using the machine and might have
-  installed it.
-* A third-party application installed on the machine might have been written in
-  Python and included a Python installation.  For a home computer, the most
-  common such application is `PySol <http://pysolfc.sourceforge.net/>`_, a
-  solitaire game that includes over 1000 different games and variations.
-* Some Windows machines also have Python installed.  At this writing we're aware
-  of computers from Hewlett-Packard and Compaq that include Python.  Apparently
-  some of HP/Compaq's administrative tools are written in Python.
-* All Apple computers running Mac OS X have Python installed; it's included in
-  the base installation.
+Python についてもっと詳しく知りたいなら、\ `Beginner's Guide to Python
+<http://wiki.python.org/moin/BeginnersGuide>`_ から始めましょう。
 
 
-Can I delete Python?
---------------------
+なぜ Python が私のマシンにインストールされているのですか？
+----------------------------------------------------------
 
-That depends on where Python came from.
+インストールした覚えがないのに Python があなたのシステムに
+インストールされているとしたら、その理由にはいくつかの可能性があります。
 
-If someone installed it deliberately, you can remove it without hurting
-anything.  On Windows, use the Add/Remove Programs icon in the Control Panel.
+* もしかしたら、コンピュータの他のユーザがプログラミングを学ぶために
+  インストールしたのかもしれません。誰がそのマシンを使っていて Python を
+  インストールしたか知る必要があります。
+* マシンにインストールされているサードパーティのアプリケーションが、
+  Python で書かれていて Python のインストールを含んでいるかもしれません。
+  家庭用のコンピュータでは、そのようなアプリケーションで一番有名なものは、
+  1000 種類以上のゲームやバリエーションを含むソリティアゲーム、\ 
+  `PySol <http://pysolfc.sourceforge.net/>`_ です。
+* Windows マシンにも Python がインストールされたものがあります。
+  この執筆時点で Hewlett-Packard や Compaq が Python を
+  組み込んでいることを確認しています。
+  HP/Compaq の管理ツールの中には、Python で書かれたものもあるようです。
+* Mac OS X を動かすすべての Apple コンピュータには、Python がインストール
+  されています。標準インストールに Python が含まれているのです。
 
-If Python was installed by a third-party application, you can also remove it,
-but that application will no longer work.  You should use that application's
-uninstaller rather than removing Python directly.
 
-If Python came with your operating system, removing it is not recommended.  If
-you remove it, whatever tools were written in Python will no longer run, and
-some of them might be important to you.  Reinstalling the whole system would
-then be required to fix things again.
+Python を削除してもいいですか？
+------------------------------
+
+Python をどこから手に入れたかによります。
+
+誰かが Python を意図してダウンロードしたのであれば、何の問題もなく
+削除することができます。Windows では、コントロールパネルのプログラムの
+追加と削除を使ってください。
+
+Python がサードパーティのアプリケーションによってインストールされたなら、
+同様に削除できますが、そのアプリケーションは動作しなくなります。
+Python のディレクトリを削除するのではなく、
+そのアプリケーションのアンインストーラーを使うべきです。
+
+Python がオペレーティングシステムに含まれて来たなら、削除はお勧めできません。
+削除してしまうと、Python で書かれたプログラムは全く動かなくなり、
+その中には重要なものが含まれているかもしれません。
+その場合、修復にはシステム全体の再インストールが必要になるでしょう。
 
