@@ -18,7 +18,5 @@
    arg.rst
    conversion.rst
    reflection.rst
-
-
-
+   codec.rst
 
