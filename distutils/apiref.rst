@@ -115,11 +115,11 @@ Distutilsを使うためにインストールする必要がある唯一のモ�
 
 これに加えて、 :mod:`distutils.core` モジュールは他のモジュールにあるいくつかのクラスを公開しています。
 
-* :class:`Extension` は :mod:`distutils.extension` から。
+* :class:`~distutils.extension.Extension` は :mod:`distutils.extension` から。
 
-* :class:`Command` は :mod:`distutils.cmd` から。
+* :class:`~distutils.cmd.Command` は :mod:`distutils.cmd` から。
 
-* :class:`Distribution` は :mod:`distutils.dist` から。
+* :class:`~distutils.dist.Distribution` は :mod:`distutils.dist` から。
 
 それぞれの簡単な説明を以下に記します。完全な説明についてはそれぞれのモジュールをごらんください。
 
@@ -695,22 +695,6 @@ Cygwinに移植されたWindows用の GNU C コンパイラ向けです。さら
 コンパイラの  OS/2 向け EMX ポートを扱います。
 
 
-:mod:`distutils.mwerkscompiler` --- Metrowerks CodeWarrior サポート
-===================================================================
-
-.. module:: distutils.mwerkscompiler
-   :synopsis: Metrowerks CodeWarrior support
-
-
-:class:`MWerksCompiler` クラスを提供します。抽象クラス :class:`CCompiler` の具象クラスで Mac OS X 以前の
-Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWをサポートするには作業が必要です。
-
-.. % \subsection{Utility modules}
-.. %
-.. % The following modules all provide general utility functions. They haven't
-.. % all been documented yet.
-
-
 :mod:`distutils.archive_util` ---  アーカイブユーティリティ
 ===========================================================
 
@@ -747,7 +731,7 @@ Macintosh の MetroWerks CodeWarrior向けです。 WindowsやMac OS XのCWを�
 
 .. function:: make_zipfile(base_name, base_dir[, verbose=0, dry_run=0])
 
-   *base_dir* 以下の全ファイルから、zipファイルを作成します。出力されるzipファイルは *base_dir* +
+   *base_dir* 以下の全ファイルから、zipファイルを作成します。出力されるzipファイルは *base_name* +
    :file:`.zip` という名前になります。 :mod:`zipfile` \ Pythonモジュール(利用可能なら)またはInfoZIP
    :file:`zip` ユーティリティ(インストールされていてパスが通っているなら)を使います。
    もしどちらも利用できなければ、 :exc:`DistutilsExecError` が起きます。出力zipファイル名が返ります。
@@ -1417,8 +1401,8 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 =======================================================
 
 .. module:: distutils.cmd
-   :synopsis: このモジュールは Command 抽象ベースクラスを提供します。このクラスは distutils.commandサブパッケージ中のモジュールでサブクラス
-              を作るために利用されます。
+   :synopsis: このモジュールは Command 抽象ベースクラスを提供します。このクラスは
+              distutils.command サブパッケージ中のモジュールでサブクラスを作るために利用されます。
 
 
 このモジュールは抽象ベースクラス :class:`Command` を提供します。
@@ -1435,6 +1419,62 @@ distutilsのモジュールで使用される例外を提供します。 distuti
    :meth:`run` メソッドで、これも全てのコマンドクラスで実装される必要があります。
 
    クラスのコンストラクタは :class:`Distribution` のインスタンスである単一の引数 *dist* をとります。
+
+
+.. Creating a new Distutils command
+
+新しいDistutilsコマンドの作成
+=============================
+
+このセクションではDistutilsの新しいコマンドを作成する手順の概要をしめします。
+
+新しいコマンドは :mod:`distutils.command` パッケージ中のモジュールに
+作られます。 :file:`command_template` というディレクトリにサンプルのテン
+プレートがあります。このファイルを実装しようとしているコマンドと同名の新しいモジュールにコピーしてください。
+このモジュールはモジュール(とコマンド)と同じ名前のクラスを実装する必要があります。そのため、 ``peel_banana`` コマンド(ユーザは
+``setup.py peel_banana`` と実行できます)を実装する際には、 :file:`command_template` を
+:file:`distutils/command/peel_banana.py` にコピーし、
+:class:`distutils.cmd.Command` のサブクラス :class:`peel_banana`
+クラスを実装するように編集してください。
+
+:class:`Command` のサブクラスは以下のメソッドを実装する必要があります。
+
+.. method:: Command.initialize_options()
+
+   このコマンドがサポートする全てのオプションのデフォルト値を設定します。これらのデフォルトは他のコマンドやセットアップスクリプト、設定ファイル
+   、コマンドラインによって上書きされるかもしれません。そのためオプション間の依存関係を記述するには適切な場所ではありません。
+   一般的に :meth:`initialize_options` は単に ``self.foo = None`` のような定義だけを行います。
+
+
+.. method:: Command.finalize_options()
+
+   このコマンドがサポートする全てのオプションの最終的な値を設定します。これは可能な限り遅く呼び出されます。つまりコマンドラインや他のコマンド
+   によるオプションの代入のあとに呼び出されます。そのため、オプション間の依存関係を記述するのに適した場所です。もし *foo* が *bar*
+   に依存しており、かつまだ *foo* が :meth:`initialize_options` で定義された値のままなら、 *foo*
+   を *bar* から代入しても安全です。
+
+
+.. method:: Command.run()
+
+   コマンドの本体です。実行するべきアクションを実装しています。 :meth:`initialize_options` で初期化され、他のコマンド
+   され、セットアップスクリプト、コマンドライン、設定ファイルでカスタマイ
+   ズされ、 :meth:`finalize_options` で設定されたオプションがアクションを制御します。
+   端末への出力とファイルシステムとのやりとりは全て :meth:`run` が行います。
+
+.. attribute:: Command.sub_commands
+
+   *sub_commands* はコマンドの"ファミリー"を定式化したものです。たとえば ``install`` はサブコマンド
+   ``install_lib`` ``install_headers`` などの親です。コマンドファミリーの親は
+   *sub_commands* をクラス属性として持ちます。
+   *sub_commands* は2要素のタプル ``(command_name, predicate)`` のリストで、
+   *command_name* は文字列、 *predicate* は関数か文字列か ``None`` です。
+   *predicate* はには親コマンドのメソッドで、
+   現在の状況がコマンド実行にふさわしいかどうか判断するものを指定します。 (例えば ``install_headers`` はインストールするべき
+   Cヘッダファイルがある時だけ有効です。) もし *predicate* が None なら、そのコマンドは常に有効になります。
+
+   *sub_commands* は通常クラスの *最後* で定義されます。  これは predicate は
+   bound されていないメソッドになるので、全て先に定義されている必要があるためです。
+   標準的な例は :command:`install` コマンドです。
 
 
 :mod:`distutils.command` ---  Distutils 各コマンド
@@ -1657,54 +1697,15 @@ distutilsのモジュールで使用される例外を提供します。 distuti
 .. % todo
 
 
-新しいDistutilsコマンドの作成
-=============================
+:mod:`distutils.command.check` --- パッケージのメタデータをチェックする
+============================================================================
 
-このセクションではDistutilsの新しいコマンドを作成する手順の概要をしめします。
-
-新しいコマンドは :mod:`distutils.command` パッケージ中のモジュールに
-作られます。 :file:`command_template` というディレクトリにサンプルのテン
-プレートがあります。このファイルを実装しようとしているコマンドと同名の新しいモジュールにコピーしてください。
-このモジュールはモジュール(とコマンド)と同じ名前のクラスを実装する必要があります。そのため、 ``peel_banana`` コマンド(ユーザは
-``setup.py peel_banana`` と実行できます)を実装する際には、 :file:`command_template` を
-:file:`distutils/command/peel_banana.py` にコピーし、
-:class:`distutils.cmd.Command` のサブクラス :class:`peel_banana`
-クラスを実装するように編集してください。
-
-:class:`Command` のサブクラスは以下のメソッドを実装する必要があります。
+.. module:: distutils.command.check
+   :synopsis: パッケージのメタデータをチェックする
 
 
-.. method:: Command.initialize_options()
+``check`` コマンドはパッケージのメタデータに対していくつかのテストをします。
+例えば、要求される全てのメタデータが :func:`setup` 関数の引数に渡されているかを
+検証します。
 
-   このコマンドがサポートする全てのオプションのデフォルト値を設定します。これらのデフォルトは他のコマンドやセットアップスクリプト、設定ファイル
-   、コマンドラインによって上書きされるかもしれません。そのためオプション間の依存関係を記述するには適切な場所ではありません。
-   一般的に :meth:`initialize_options` は単に ``self.foo = None`` のような定義だけを行います。
-
-
-.. method:: Command.finalize_options()
-
-   このコマンドがサポートする全てのオプションの最終的な値を設定します。これは可能な限り遅く呼び出されます。つまりコマンドラインや他のコマンド
-   によるオプションの代入のあとに呼び出されます。そのため、オプション間の依存関係を記述するのに適した場所です。もし *foo* が *bar*
-   に依存しており、かつまだ *foo* が :meth:`initialize_options` で定義された値のままなら、 *foo*
-   を *bar* から代入しても安全です。
-
-
-.. method:: Command.run()
-
-   コマンドの本体です。実行するべきアクションを実装しています。 :meth:`initialize_options` で初期化され、他のコマンド
-   され、セットアップスクリプト、コマンドライン、設定ファイルでカスタマイ
-   ズされ、 :meth:`finalize_options` で設定されたオプションがアクションを制御します。
-   端末への出力とファイルシステムとのやりとりは全て :meth:`run` が行います。
-
-*sub_commands* はコマンドの"ファミリー"を定式化したものです。たとえば ``install`` はサブコマンド
-``install_lib`` ``install_headers`` などの親です。コマンドファミリーの親は
-*sub_commands* をクラス属性として持ちます。 2要素のタプル ``(command_name, predicate)`` のリストで、
-*command_name* には文字列、 *predicate* には親コマンドのメソッドで、
-現在の状況がコマンド実行にふさわしいかどうか判断するものを指定します。 (例えば ``install_headers`` はインストールするべき
-Cヘッダファイルがある時だけ有効です。) もし *predicate* が None なら、そのコマンドは常に有効になります。
-
-*sub_commands* は通常クラスの最後で定義されます。  これはpredicate は
-boundされていないメソッドになるので、全て先に定義されている必要があるためです。
-
-標準的な例は :command:`install` コマンドです。
-
+.. % todo
