@@ -1,234 +1,231 @@
 :tocdepth: 2
 
-===============
-Programming FAQ
-===============
+===================
+プログラミング FAQ
+===================
 
 .. contents::
 
-General Questions
-=================
+一般的な質問
+============
 
-Is there a source code level debugger with breakpoints, single-stepping, etc.?
-------------------------------------------------------------------------------
+ブレークポイントやシングルステップ実行などを備えたソースコードレベルデバッガはありますか？
+------------------------------------------------------------------------------------------
 
-Yes.
+はい。
 
-The pdb module is a simple but adequate console-mode debugger for Python. It is
-part of the standard Python library, and is :mod:`documented in the Library
-Reference Manual <pdb>`. You can also write your own debugger by using the code
-for pdb as an example.
+pdb モジュールは簡素にして十分な Python のコンソールモードデバッガです。
+これは Python の標準ライブラリに含まれているもので、
+:mod:`ライブラリリファレンスマニュアルにドキュメントがあります <pdb>`\ 。
+pdb のコードを手本にして自分用のデバッガを書くこともできます。
 
-The IDLE interactive development environment, which is part of the standard
-Python distribution (normally available as Tools/scripts/idle), includes a
-graphical debugger.  There is documentation for the IDLE debugger at
-http://www.python.org/idle/doc/idle2.html#Debugger.
+Python に同梱されている統合開発環境の IDLE は 通常の Python の
+配布形態の一部 (普通は Tools/scripts/idle から利用可能) であり、
+グラフィカルなデバッガを含んでいます。IDLE デバッガのドキュメントは
+http://www.python.org/idle/doc/idle2.html#Debugger にあります。
 
-PythonWin is a Python IDE that includes a GUI debugger based on pdb.  The
-Pythonwin debugger colors breakpoints and has quite a few cool features such as
-debugging non-Pythonwin programs.  Pythonwin is available as part of the `Python
-for Windows Extensions <http://sourceforge.net/projects/pywin32/>`__ project and
-as a part of the ActivePython distribution (see
-http://www.activestate.com/Products/ActivePython/index.html).
+PythonWin は、pdb をベースとした GUI デバッガを含む Python IDE です。
+Pythonwin デバッガは、ブレークポイントの色付けや非 Pythonwin プログラムの
+デバッグなどのたくさんの素敵な機能を持っています。Pythonwin は `Python
+for Windows Extensions <http://sourceforge.net/projects/pywin32/>`__
+プロジェクトの一部、あるいは ActivePython ディストリビューション
+(http://www.activestate.com/Products/ActivePython/index.html を参照) の
+一部として利用可能です。
 
-`Boa Constructor <http://boa-constructor.sourceforge.net/>`_ is an IDE and GUI
-builder that uses wxWidgets.  It offers visual frame creation and manipulation,
-an object inspector, many views on the source like object browsers, inheritance
-hierarchies, doc string generated html documentation, an advanced debugger,
-integrated help, and Zope support.
+`Boa Constructor <http://boa-constructor.sourceforge.net/>`_ は、
+wxWidgets を使った IDE と GUI ビルダーです。これは視覚フレームの作成と操作、
+オブジェクト検査、オブジェクトブラウザのような多くのビュー、継承構造、
+doc string から生成される html ドキュメント、高度なデバッガ、総合ヘルプ、
+Zope のサポートを提供します。
 
-`Eric <http://www.die-offenbachs.de/eric/index.html>`_ is an IDE built on PyQt
-and the Scintilla editing component.
+`Eric <http://www.die-offenbachs.de/eric/index.html>`_ は
+PyQt や Scintilla editing component をもとにした IDE です。
 
-Pydb is a version of the standard Python debugger pdb, modified for use with DDD
-(Data Display Debugger), a popular graphical debugger front end.  Pydb can be
-found at http://bashdb.sourceforge.net/pydb/ and DDD can be found at
-http://www.gnu.org/software/ddd.
+Pydb は標準のデバッガである pdb を人気のグラフィカルデバッガ
+フロントエンドである DDD (Data Display Debugger) とともに使うために
+改変したものです。Pydb は http://bashdb.sourceforge.net/pydb/ に、
+DDD は http://www.gnu.org/software/ddd にあります。
 
-There are a number of commercial Python IDEs that include graphical debuggers.
-They include:
+商業のグラフィカルデバッガ付き Python IDE もあります。例えば:
 
 * Wing IDE (http://wingware.com/)
 * Komodo IDE (http://www.activestate.com/Products/Komodo)
 
 
-Is there a tool to help find bugs or perform static analysis?
--------------------------------------------------------------
+バグの発見や静的分析に役立つツールはありますか？
+------------------------------------------------
 
-Yes.
+はい。
 
-PyChecker is a static analysis tool that finds bugs in Python source code and
-warns about code complexity and style.  You can get PyChecker from
-http://pychecker.sf.net.
+PyChecker は Python ソースコードのバグを発見しコードの複雑さと
+スタイルについて警告する静的解析ツールです。PyChecker は
+http://pychecker.sf.net から手に入ります。
 
-`Pylint <http://www.logilab.org/projects/pylint>`_ is another tool that checks
-if a module satisfies a coding standard, and also makes it possible to write
-plug-ins to add a custom feature.  In addition to the bug checking that
-PyChecker performs, Pylint offers some additional features such as checking line
-length, whether variable names are well-formed according to your coding
-standard, whether declared interfaces are fully implemented, and more.
-http://www.logilab.org/card/pylint_manual provides a full list of Pylint's
-features.
+`Pylint <http://www.logilab.org/projects/pylint>`_ は、モジュールが
+コーディング標準を満たすかを調べ、プラグインを書いてカスタム機能を
+加えられるようにするツールです。PyChecker が行うバグチェックに加え、
+Pylint は行の長さ、変数名が一貫しているか、宣言されたインタフェースが完全に
+実装されているか、などを確かめる追加の機能を提供します。
+http://www.logilab.org/card/pylint_manual から Pylint の機能の一覧を
+見られます。
 
 
-How can I create a stand-alone binary from a Python script?
------------------------------------------------------------
+どうしたら Python スクリプトからスタンドアロンバイナリを作れますか？
+--------------------------------------------------------------------
 
-You don't need the ability to compile Python to C code if all you want is a
-stand-alone program that users can download and run without having to install
-the Python distribution first.  There are a number of tools that determine the
-set of modules required by a program and bind these modules together with a
-Python binary to produce a single executable.
+ユーザがダウンロードや起動のために Python ディストリビューションを
+インストールしなくてもよいスタンドアロンプログラムのためだけなら、
+Python を C コードにコンパイルできる必要はありません。プログラムに対して
+必要なモジュールを選び、そのモジュールを Python バイナリに束縛して
+一つの実行可能ファイルにまとめる多くのツールがあります。
 
-One is to use the freeze tool, which is included in the Python source tree as
-``Tools/freeze``. It converts Python byte code to C arrays; a C compiler you can
-embed all your modules into a new program, which is then linked with the
-standard Python modules.
+一つは freeze ツールで、Python ソースツリーに ``Tools/freeze`` として
+含まれています。これは Python バイトコードを C 配列に変換します。
+すべてのモジュールを標準 Python モジュールにリンクされる新しいプログラムに
+埋め込む C コンパイラです。
 
-It works by scanning your source recursively for import statements (in both
-forms) and looking for the modules in the standard Python path as well as in the
-source directory (for built-in modules).  It then turns the bytecode for modules
-written in Python into C code (array initializers that can be turned into code
-objects using the marshal module) and creates a custom-made config file that
-only contains those built-in modules which are actually used in the program.  It
-then compiles the generated C code and links it with the rest of the Python
-interpreter to form a self-contained binary which acts exactly like your script.
+これはあなたのソースの (両方の形式の) import 文を再帰的にスキャンして、
+import されたモジュールを標準の Python パスと (組み込みモジュールのある)
+ソースディレクトリから探します。そして Python で書かれたモジュールの
+バイトコードを C コード (marshal モジュールでコードオブジェクトに
+変換できる配列) に変換し、実際にそのプログラム内で使われている
+組み込みモジュールだけが含まれたカスタムメイドの設定ファイルを作成します。
+そして生成された C コードをコンパイルして Python インタプリタの残りとリンクし、
+元のスクリプトと全く同じように動作する自己充足的なバイナリを形成します。
 
-Obviously, freeze requires a C compiler.  There are several other utilities
-which don't. One is Thomas Heller's py2exe (Windows only) at
+もちろん、凍結には C コンパイラが必要です。C コンパイラを必要としない
+選択肢もあります。その一つは、Thomas Heller の py2exe (Windows 専用) です。
 
     http://www.py2exe.org/
 
-Another is Christian Tismer's `SQFREEZE <http://starship.python.net/crew/pirx>`_
-which appends the byte code to a specially-prepared Python interpreter that can
-find the byte code in the executable.
+他に、 Christian Tismer の `SQFREEZE <http://starship.python.net/crew/pirx>`_
+は、実行可能ファイルのバイトコードを探すことができる特別な Python
+インタプリタにバイトコードを加えます。
 
-Other tools include Fredrik Lundh's `Squeeze
-<http://www.pythonware.com/products/python/squeeze>`_ and Anthony Tuininga's
-`cx_Freeze <http://starship.python.net/crew/atuining/cx_Freeze/index.html>`_.
-
-
-Are there coding standards or a style guide for Python programs?
-----------------------------------------------------------------
-
-Yes.  The coding style required for standard library modules is documented as
-:pep:`8`.
+その他のツールには、Fredrik Lundh の `Squeeze
+<http://www.pythonware.com/products/python/squeeze>`_ や Anthony Tuininga の
+`cx_Freeze <http://starship.python.net/crew/atuining/cx_Freeze/index.html>`_
+などがあります。
 
 
-My program is too slow. How do I speed it up?
----------------------------------------------
+Python プログラムのためのコーディングスタンダードやスタイルガイドはありますか？
+-------------------------------------------------------------------------------
 
-That's a tough one, in general.  There are many tricks to speed up Python code;
-consider rewriting parts in C as a last resort.
+はい。標準ライブラリモジュールに求められるコーディングスタイルは :pep:`8`
+として文書化されています。
 
-In some cases it's possible to automatically translate Python to C or x86
-assembly language, meaning that you don't have to modify your code to gain
-increased speed.
+
+プログラムが遅すぎます。どうしたら速くなりますか？
+--------------------------------------------------
+
+一般に、それは難しい質問です。Python コードを速くするためには、いろいろな
+手法があります。最終手段として一部を C で書き直す事も考えてください。
+
+Python を自動的に C や x86 アセンブリ言語に変換できる場合もあります。
+この場合、速度を上げるためにコードを変更する必要はありません。
 
 .. XXX seems to have overlap with other questions!
 
-`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_ can compile a
-slightly modified version of Python code into a C extension, and can be used on
-many different platforms.
+`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_ は
+Python コードの少し変化した版を C 拡張にコンパイルでき、
+多様なプラットフォームで使えます。
 
-`Psyco <http://psyco.sourceforge.net>`_ is a just-in-time compiler that
-translates Python code into x86 assembly language.  If you can use it, Psyco can
-provide dramatic speedups for critical functions.
+`Psyco <http://psyco.sourceforge.net>`_ は Python コードを x86 アセンブリ言語に
+変換する実行時コンパイラです。これを使うことが出来れば、
+重要な関数を劇的にスピードアップできます。
 
-The rest of this answer will discuss various tricks for squeezing a bit more
-speed out of Python code.  *Never* apply any optimization tricks unless you know
-you need them, after profiling has indicated that a particular function is the
-heavily executed hot spot in the code.  Optimizations almost always make the
-code less clear, and you shouldn't pay the costs of reduced clarity (increased
-development time, greater likelihood of bugs) unless the resulting performance
-benefit is worth it.
+あとは、Python コードからもう少し速度を搾り出すための様々な手法について
+議論することになります。コード中の特定の関数が処理が集中するホットスポットで、
+最適化が必要であると認められない限り、\ *決して* いかなる最適化の手法も
+使わないでください。最適化はたいていコードを分かりづらくするので、
+分かりづらさのコスト (開発時間の延長とバグの可能性の増大) がそれに
+見合ったパフォーマンスの向上につながらないのであれば元が取れません。
 
-There is a page on the wiki devoted to `performance tips
-<http://wiki.python.org/moin/PythonSpeed/PerformanceTips>`_.
+`performance tips <http://wiki.python.org/moin/PythonSpeed/PerformanceTips>`_
+に関するページが wiki にあります。
 
-Guido van Rossum has written up an anecdote related to optimization at
-http://www.python.org/doc/essays/list2str.html.
+Guido van Rossum は http://www.python.org/doc/essays/list2str.html で
+最適化に関する逸話を詳述しています。
 
-One thing to notice is that function and (especially) method calls are rather
-expensive; if you have designed a purely OO interface with lots of tiny
-functions that don't do much more than get or set an instance variable or call
-another method, you might consider using a more direct way such as directly
-accessing instance variables.  Also see the standard module :mod:`profile` which
-makes it possible to find out where your program is spending most of its time
-(if you have some patience -- the profiling itself can slow your program down by
-an order of magnitude).
+なお、関数や(特に)メソッドの呼び出しはかなり高価です。インスタンス変数を
+get や set したり他のメソッドを呼び出す程度の小さな関数がたくさんある
+純粋 OO インタフェースをデザインしているなら、インスタンス変数に
+直接アクセスするようなもっと直接的な方法も考えてみてください。また、
+どのプログラムが実行時間の大部分を占めているかを見つける標準モジュール
+:mod:`profile` も参照してください (ちょっと忍耐できればの話ですが -
+プロファイリングはそれ自体がプログラムを一桁ほど遅くしてしまいます)。
 
-Remember that many standard optimization heuristics you may know from other
-programming experience may well apply to Python.  For example it may be faster
-to send output to output devices using larger writes rather than smaller ones in
-order to reduce the overhead of kernel system calls.  Thus CGI scripts that
-write all output in "one shot" may be faster than those that write lots of small
-pieces of output.
+もちろん、他のプログラミングの経験から得られた多くの標準的な最適化の
+発見的手法は Python にもよく当てはまることが多いです。たとえば、出力装置に
+出力を送るときに、一度に少なく書くよりもむしろ多く書いたほうが、カーネルの
+システムコールのオーバーヘッドを減らすことができて、速くなるでしょう。
+したがって、CGI スクリプトは "一発" ですべて書き出すもののほうが小さな
+たくさんの出力に分けて書き出すものよりも速くなるでしょう。
 
-Also, be sure to use Python's core features where appropriate.  For example,
-slicing allows programs to chop up lists and other sequence objects in a single
-tick of the interpreter's mainloop using highly optimized C implementations.
-Thus to get the same effect as::
+また、必ず Python のコアな機能を適切に使ってください。例えば、
+スライシングなら、リストや他のシーケンスオブジェクトを、高度に最適化された
+C 実装で、インタプリタのメインループの一刻みで細切れにできます。
+こうして効果を得ることができる例は::
 
    L2 = []
    for i in range[3]:
        L2.append(L1[i])
 
-it is much shorter and far faster to use ::
+こう使えばずっと短く、ずっと速くできます::
 
    L2 = list(L1[:3])  # "list" is redundant if L1 is a list.
 
-Note that the functionally-oriented built-in functions such as :func:`map`,
-:func:`zip`, and friends can be a convenient accelerator for loops that
-perform a single task.  For example to pair the elements of two lists
-together::
+関数指向組み込み関数 :func:`map` や :func:`zip` なども一つのタスクを
+実行するためのループを加速するのに便利であることに注意してください。
+例えば、二つのリストの要素を組み合わせるためには::
 
    >>> zip([1, 2, 3], [4, 5, 6])
    [(1, 4), (2, 5), (3, 6)]
 
-or to compute a number of sines::
+また、正弦を一度に計算するには::
 
    >>> map(math.sin, (1, 2, 3, 4))
    [0.841470984808, 0.909297426826, 0.14112000806, -0.756802495308]
 
-The operation completes very quickly in such cases.
+このような場合には素早く演算が完了します。
 
-Other examples include the ``join()`` and ``split()`` :ref:`methods
-of string objects <string-methods>`.
-For example if s1..s7 are large (10K+) strings then
-``"".join([s1,s2,s3,s4,s5,s6,s7])`` may be far faster than the more obvious
-``s1+s2+s3+s4+s5+s6+s7``, since the "summation" will compute many
-subexpressions, whereas ``join()`` does all the copying in one pass.  For
-manipulating strings, use the ``replace()`` and the ``format()`` :ref:`methods
-on string objects <string-methods>`.  Use regular expressions only when you're
-not dealing with constant string patterns.  You may still use :ref:`the old %
-operations <string-formatting>` ``string % tuple`` and ``string % dictionary``.
+その他の例には、\ :ref:`文字列オブジェクトのメソッド <string-methods>`
+``join()`` 、\ ``split()`` などが挙げられます。
 
-Be sure to use the :meth:`list.sort` built-in method to do sorting, and see the
-`sorting mini-HOWTO <http://wiki.python.org/moin/HowTo/Sorting>`_ for examples
-of moderately advanced usage.  :meth:`list.sort` beats other techniques for
-sorting in all but the most extreme circumstances.
+例えば s1..s7 が大きな (10K+) 文字列の時、\ ``"".join([s1,s2,s3,s4,s5,s6,s7])``
+は単純に ``s1+s2+s3+s4+s5+s6+s7`` とするよりもはるかに速くなるでしょう。
+なぜなら、\ ``join()`` はすべてのコピーを一括して行うのに対し、
+「足し算」が多くの副演算を行うからです。文字列を扱うには、
+:ref:`文字列オブジェクトのメソッド <string-methods>` ``replace()``\ 、
+``format()``  を使ってください。正規表現を使うのは、
+決まった文字列のパターンを使わない時だけにしてください。
+:ref:`旧式の % 演算 <string-formatting>` ``string % tuple`` と
+``string % dictionary`` も使えます。
 
-Another common trick is to "push loops into functions or methods."  For example
-suppose you have a program that runs slowly and you use the profiler to
-determine that a Python function ``ff()`` is being called lots of times.  If you
-notice that ``ff()``::
+ソートには必ずビルトインオブジェクトの :meth:`list.sort` を使ってください。
+また、\ `sorting mini-HOWTO <http://wiki.python.org/moin/HowTo/Sorting>`_ の
+少し高度な使い方の例を参照してください。\ :meth:`list.sort` は、
+よほど極端な状況でない限り、他のソートの技術に勝ります。
+
+「ループを関数やメソッドの中に入れ込む」というのも一般的な手法です。例えば、
+遅いプログラムがあって、Python の ``ff()`` 関数が何度も呼ばれていることが
+プロファイラで分かったとします。もし、\ ``ff()``::
 
    def ff(x):
        ... # do something with x computing result...
        return result
 
-tends to be called in loops like::
+が::
 
    list = map(ff, oldlist)
 
-or::
+または::
 
    for x in sequence:
        value = ff(x)
        ... # do something with value...
 
-then you can often eliminate function call overhead by rewriting ``ff()`` to::
+のようにループの中で呼ばれていることが多いなら、\ ``ff()`` を::
 
    def ffseq(seq):
        resultseq = []
@@ -237,56 +234,55 @@ then you can often eliminate function call overhead by rewriting ``ff()`` to::
            resultseq.append(result)
        return resultseq
 
-and rewrite the two examples to ``list = ffseq(oldlist)`` and to::
+のように、また、上の二つの例を、\ ``list = ffseq(oldlist)`` と::
 
    for value in ffseq(sequence):
        ... # do something with value...
 
-Single calls to ``ff(x)`` translate to ``ffseq([x])[0]`` with little penalty.
-Of course this technique is not always appropriate and there are other variants
-which you can figure out.
+のように書き換えることによって、関数を呼ぶためのオーバーヘッドを省けることが多いです。
 
-You can gain some performance by explicitly storing the results of a function or
-method lookup into a local variable.  A loop like::
+``ff(x)`` を一回だけ呼ぶ場合、 ``ffseq([x])[0]`` に直してしまうとちょっと
+不利になります。 もちろん、このテクニックがいつでも適切であるわけでは
+ありませんし、解決のための他の方法もあります。
+
+関数やメソッドの探索の結果をローカル変数に明示的に保存すると少し
+パフォーマンスが良くなります。次のようなループ::
 
    for key in token:
        dict[key] = dict.get(key, 0) + 1
 
-resolves ``dict.get`` every iteration.  If the method isn't going to change, a
-slightly faster implementation is::
+は、繰り返しのたびに ``dict.get`` を求めています。 このメソッドが
+変わることがないのなら、少し速い実装は::
 
    dict_get = dict.get  # look up the method once
    for key in token:
        dict[key] = dict_get(key, 0) + 1
 
-Default arguments can be used to determine values once, at compile time instead
-of at run time.  This can only be done for functions or objects which will not
-be changed during program execution, such as replacing ::
+デフォルト引数は、実行時でなく、コンパイル時に値を一回で決めてしまうのに
+使えます。これは、プログラムの実行中に変化しない関数やオブジェクト、例えば::
 
    def degree_sin(deg):
        return math.sin(deg * math.pi / 180.0)
 
-with ::
+を、次のように置き換えるときにのみ行えます::
 
    def degree_sin(deg, factor=math.pi/180.0, sin=math.sin):
        return sin(deg * factor)
 
-Because this trick uses default arguments for terms which should not be changed,
-it should only be used when you are not concerned with presenting a possibly
-confusing API to your users.
+この手法はデフォルト引数が変えられないことを前提に使うので、
+ユーザーが API で混乱するおそれがないときのみ使えます。
 
 
-Core Language
-=============
+コア言語
+========
 
-Why am I getting an UnboundLocalError when the variable has a value?
---------------------------------------------------------------------
+なぜ変数に値があるのに UnboundLocalError が出るのですか？
+---------------------------------------------------------
 
-It can be a surprise to get the UnboundLocalError in previously working
-code when it is modified by adding an assignment statement somewhere in
-the body of a function.
+もともと動いていたコードが、関数の本体のどこかに代入文を加えるという
+変更をしたら UnboundLocalError を出すのには驚くかもしれません。
 
-This code:
+このコード::
 
    >>> x = 10
    >>> def bar():
@@ -294,29 +290,27 @@ This code:
    >>> bar()
    10
 
-works, but this code:
+は動きますが、このコード::
 
    >>> x = 10
    >>> def foo():
    ...     print x
    ...     x += 1
 
-results in an UnboundLocalError:
+は UnboundLocalError になります::
 
    >>> foo()
    Traceback (most recent call last):
      ...
    UnboundLocalError: local variable 'x' referenced before assignment
 
-This is because when you make an assignment to a variable in a scope, that
-variable becomes local to that scope and shadows any similarly named variable
-in the outer scope.  Since the last statement in foo assigns a new value to
-``x``, the compiler recognizes it as a local variable.  Consequently when the
-earlier ``print x`` attempts to print the uninitialized local variable and
-an error results.
+これは、あるスコープの中で変数に代入を行うとき、その変数はそのスコープに
+対してローカルになり、外のスコープにある同じ名前の変数を隠すからです。
+foo の最後の文が ``x`` に新しい値を代入しているので、コンパイラはこれを
+ローカル変数であると認識します。その結果、先の ``print x`` が
+初期化されていないローカル変数を表示しようとして結果はエラーとなります。
 
-In the example above you can access the outer scope variable by declaring it
-global:
+上の例では、グローバルであると宣言することで外のスコープにアクセスできます::
 
    >>> x = 10
    >>> def foobar():
@@ -326,40 +320,39 @@ global:
    >>> foobar()
    10
 
-This explicit declaration is required in order to remind you that (unlike the
-superficially analogous situation with class and instance variables) you are
-actually modifying the value of the variable in the outer scope:
+この明示的な宣言は (表面的には似ているクラスとインスタンス変数の例とは違って)
+あなたは実際は他のスコープの変数の値を変えようとしているのだ、
+ということを知らせるのに必要です::
 
    >>> print x
    11
 
 
-What are the rules for local and global variables in Python?
-------------------------------------------------------------
+Python のローカルとグローバル変数のルールは何ですか？
+-----------------------------------------------------
 
-In Python, variables that are only referenced inside a function are implicitly
-global.  If a variable is assigned a new value anywhere within the function's
-body, it's assumed to be a local.  If a variable is ever assigned a new value
-inside the function, the variable is implicitly local, and you need to
-explicitly declare it as 'global'.
+Python では、関数の中で参照のみされる変数は暗黙のうちにグローバルになります。
+関数の本体のどこかで新しい値が変数に代入されたなら、それはローカルであると
+みなされます。関数の中で新しい値が一度でも代入されたらその変数は
+暗黙のうちにローカルであり、'global' は明示的に宣言しなければなりません。
 
-Though a bit surprising at first, a moment's consideration explains this.  On
-one hand, requiring :keyword:`global` for assigned variables provides a bar
-against unintended side-effects.  On the other hand, if ``global`` was required
-for all global references, you'd be using ``global`` all the time.  You'd have
-to declare as global every reference to a built-in function or to a component of
-an imported module.  This clutter would defeat the usefulness of the ``global``
-declaration for identifying side-effects.
+最初はちょっと驚くでしょうが、少し考えると納得できます。一方では、
+代入された変数に :keyword:`global` を要求することで、意図しない副作用を
+防げます。他方では、グローバルな参照の度に ``global`` が要求されてしまうと、
+``global`` を使ってばかりになってしまいます。ビルトイン関数やインポートされた
+モジュールの内容を参照するたびにグローバル宣言をしなければならないのです。
+その乱雑さは副作用を特定するための ``global`` 宣言の便利さよりも重大です。
 
 
-How do I share global variables across modules?
-------------------------------------------------
+グローバル変数をモジュール間で共有するにはどうしたらいいですか？
+----------------------------------------------------------------
 
-The canonical way to share information across modules within a single program is
-to create a special module (often called config or cfg).  Just import the config
-module in all modules of your application; the module then becomes available as
-a global name.  Because there is only one instance of each module, any changes
-made to the module object get reflected everywhere.  For example:
+一つのプログラムのモジュール間で情報を共有する正準な方法は、
+特別なモジュール (しばしば config や cfg と呼ばれる) を作ることです。
+単に設定モジュールをアプリケーションのすべてのモジュールに
+インポートしてください。このモジュールはグローバルな名前として使えます。
+それぞれのモジュールのただ一つのインスタンスがあるので、
+設定モジュールオブジェクトに対するいかなる変更も全体に反映されます。例えば:
 
 config.py::
 
@@ -376,82 +369,85 @@ main.py::
    import mod
    print config.x
 
-Note that using a module is also the basis for implementing the Singleton design
-pattern, for the same reason.
+なお、同じ理由から、モジュールを使うということは、
+シングルトンデザインパターンを実装することの基礎でもあります。
 
 
-What are the "best practices" for using import in a module?
------------------------------------------------------------
+モジュールで import を使う際の「ベストプラクティス」は何ですか？
+----------------------------------------------------------------
 
-In general, don't use ``from modulename import *``.  Doing so clutters the
-importer's namespace.  Some people avoid this idiom even with the few modules
-that were designed to be imported in this manner.  Modules designed in this
-manner include :mod:`Tkinter`, and :mod:`threading`.
+一般に、\ ``from modulename import *`` を使わないでください。使うとインポータの
+名前空間を混乱させてしまいます。この書式でインポートされるように設計された
+数少ないモジュールにすらこの構文を使わないようにする人もいます。
+そのように設計されたモジュールには :mod:`Tkinter` や :mod:`threading` などが
+あります。
 
-Import modules at the top of a file.  Doing so makes it clear what other modules
-your code requires and avoids questions of whether the module name is in scope.
-Using one import per line makes it easy to add and delete module imports, but
-using multiple imports per line uses less screen space.
+モジュールはファイルの先頭でインポートしてください。これによってコードが
+必要とする他のモジュールが明確になり、モジュール名がスコープに
+含まれるかどうかに迷わなくなります。行に一つのインポートにすると、
+モジュールのインポートの追加と削除が容易になりますが、行に複数の
+インポートにすると画面の領域が少なく済みます。
 
-It's good practice if you import modules in the following order:
+次の手順でモジュールをインポートするのが、良いプラクティスになります:
 
-1. standard library modules -- e.g. ``sys``, ``os``, ``getopt``, ``re``
-2. third-party library modules (anything installed in Python's site-packages
-   directory) -- e.g. mx.DateTime, ZODB, PIL.Image, etc.
-3. locally-developed modules
+1. 標準ライブラリモジュール -- 例 ``sys``\ 、\ ``os``\ 、\ ``getopt``\ 、\ ``re``
+2. サードパーティのライブラリモジュール (Python の site-packages
+   ディレクトリにあるもの) -- 例 mx.DateTime、ZODB、PIL.Image、など
+3. 内部で開発したモジュール
 
-Never use relative package imports.  If you're writing code that's in the
-``package.sub.m1`` module and want to import ``package.sub.m2``, do not just
-write ``import m2``, even though it's legal.  Write ``from package.sub import
-m2`` instead.  Relative imports can lead to a module being initialized twice,
-leading to confusing bugs.  See :pep:`328` for details.
+相対インポートは決して使わないでください。\ ``package.sub.m1`` モジュールの
+コードを書いていて、\ ``package.sub.m2`` をインポートしようとするとき、
+``from . import m2`` とだけ書くのは、違反ではありませんがやらないでください。
+代わりに ``from package.sub import m2`` と書いてください。
+詳細は :pep:`328` を参照してください。
 
-It is sometimes necessary to move imports to a function or class to avoid
-problems with circular imports.  Gordon McMillan says:
+循環参照の問題を避けるために、インポートを関数やクラスに移すことが
+必要なときもあります。Gordon McMillan によれば:
 
-   Circular imports are fine where both modules use the "import <module>" form
-   of import.  They fail when the 2nd module wants to grab a name out of the
-   first ("from module import name") and the import is at the top level.  That's
-   because names in the 1st are not yet available, because the first module is
-   busy importing the 2nd.
+   循環参照は両方のモジュールが "import <module>" 形式のインポートを
+   使っていれば大丈夫です。二つ目のモジュールが最初のモジュールから名前を
+   確保しようとして ("from module import name")、そのインポートがトップレベルに
+   あると駄目です。最初のモジュールが二つ目のモジュールをインポートするのに
+   忙しくて、最初のモジュールの名前が利用可能になっていないからです。
 
-In this case, if the second module is only used in one function, then the import
-can easily be moved into that function.  By the time the import is called, the
-first module will have finished initializing, and the second module can do its
-import.
+この状況では、二つ目のモジュールが一つの関数の中でのみ使われているならば、
+そのインポートは簡単に関数の中に移せます。インポートが呼ばれたとき、
+最初のモジュールは初期化を完了していて、二つ目のモジュールは自分の
+インポートをできます。
 
-It may also be necessary to move imports out of the top level of code if some of
-the modules are platform-specific.  In that case, it may not even be possible to
-import all of the modules at the top of the file.  In this case, importing the
-correct modules in the corresponding platform-specific code is a good option.
+プラットフォーム依存のモジュールがあるときには、インポートをトップレベルの
+外に動かすことも必要です。この場合、ファイルの先頭ではすべてのモジュールを
+インポートすることさえできないかもしれません。この場合は、対応する
+プラットフォームに合わせたコードで正しいモジュールをインポートすることを
+選ぶと良いです。
 
-Only move imports into a local scope, such as inside a function definition, if
-it's necessary to solve a problem such as avoiding a circular import or are
-trying to reduce the initialization time of a module.  This technique is
-especially helpful if many of the imports are unnecessary depending on how the
-program executes.  You may also want to move imports into a function if the
-modules are only ever used in that function.  Note that loading a module the
-first time may be expensive because of the one time initialization of the
-module, but loading a module multiple times is virtually free, costing only a
-couple of dictionary lookups.  Even if the module name has gone out of scope,
-the module is probably available in :data:`sys.modules`.
+循環参照の問題を避けたりモジュールの初期化にかかる時間を減らしたりしたいなら、
+単にインポートを関数定義の中などのローカルなスコープに移してください。
+この手法は多くのインポートがプログラムがどのように実行されるかに依存しなくて
+よいときに特に有効です。ある関数の中でのみモジュールが使われるのなら、
+インポートをその関数の中に移すことを考えてもいいでしょう。なお、モジュールを
+読み込む最初の回はモジュールの初期化の時間のために高価になりえますが、
+複数回目にモジュールを読み込むのは事実上無料、辞書探索の数回のコストだけで
+済みます。モジュール名がスコープから外れてさえ、そのモジュールはおそらく
+:data:`sys.modules` から利用できるでしょう。
 
-If only instances of a specific class use a module, then it is reasonable to
-import the module in the class's ``__init__`` method and then assign the module
-to an instance variable so that the module is always available (via that
-instance variable) during the life of the object.  Note that to delay an import
-until the class is instantiated, the import must be inside a method.  Putting
-the import inside the class but outside of any method still causes the import to
-occur when the module is initialized.
+特定のクラスのインスタンスのみがあるモジュールを使っているなら、
+そのクラスの ``__init__`` メソッドでそのモジュールをインポートし、
+そこでインスタンス変数にそのモジュールを代入して、オブジェクトがある間
+そのモジュールがいつでも (インスタンス変数を経由して) 利用できるように
+するのが合理的です。なお、インポートをクラスが初期化される時まで
+先送りにするためには、インポートはメソッドの中にないといけません。
+インポートをクラスの中に入れてもメソッドの外に出してしまうと、
+そのインポートはモジュールの初期化の時になされてしまいます。
 
 
-How can I pass optional or keyword parameters from one function to another?
----------------------------------------------------------------------------
+オプションパラメタやキーワードパラメタを関数から関数へ渡すにはどうしたらいいですか？
+------------------------------------------------------------------------------------
 
-Collect the arguments using the ``*`` and ``**`` specifiers in the function's
-parameter list; this gives you the positional arguments as a tuple and the
-keyword arguments as a dictionary.  You can then pass these arguments when
-calling another function by using ``*`` and ``**``::
+関数のパラメタリストに引数を ``*`` と ``**`` 指定子 (specifier) で
+集めてください。そうすれば、固定引数をタプルとして、キーワード引数を
+辞書として得られます。これで、他の関数を呼び出すときに ``*`` と ``**`` を
+使ってそれらの引数を渡せます::
 
    def f(x, *args, **kwargs):
        ...
@@ -459,8 +455,8 @@ calling another function by using ``*`` and ``**``::
        ...
        g(x, *args, **kwargs)
 
-In the unlikely case that you care about Python versions older than 2.0, use
-:func:`apply`::
+あまりありませんが、Python の 2.0 以前のバージョンを考慮するときは、
+代わりに :func:`apply` を使ってください::
 
    def f(x, *args, **kwargs):
        ...
@@ -469,15 +465,15 @@ In the unlikely case that you care about Python versions older than 2.0, use
        apply(g, (x,)+args, kwargs)
 
 
-How do I write a function with output parameters (call by reference)?
----------------------------------------------------------------------
+パラメタを出力する関数 (参照渡し) はどのように書きますか？
+----------------------------------------------------------
 
-Remember that arguments are passed by assignment in Python.  Since assignment
-just creates references to objects, there's no alias between an argument name in
-the caller and callee, and so no call-by-reference per se.  You can achieve the
-desired effect in a number of ways.
+前提として、Python では引数は代入によって渡されます。代入はオブジェクトへの
+参照を作るだけなので、呼び出し元と呼び出し先にある引数名の間にエイリアスは
+ありませんし、参照渡しそれ自体はありません。望む効果を得るためには幾つかの
+方法があります。
 
-1) By returning a tuple of the results::
+1) 結果のタプルを返すことによって::
 
       def func2(a, b):
           a = 'new-value'        # a and b are local names
@@ -488,11 +484,11 @@ desired effect in a number of ways.
       x, y = func2(x, y)
       print x, y                 # output: new-value 100
 
-   This is almost always the clearest solution.
+   これはたいてい一番明確な方法です。
 
-2) By using global variables.  This isn't thread-safe, and is not recommended.
+2) グローバル変数を使って。これはスレッドセーフでないので、推奨されません。
 
-3) By passing a mutable (changeable in-place) object::
+3) ミュータブルな (インプレースに変更可能な) オブジェクトを渡すことによって::
 
       def func1(a):
           a[0] = 'new-value'     # 'a' references a mutable list
@@ -502,7 +498,7 @@ desired effect in a number of ways.
       func1(args)
       print args[0], args[1]     # output: new-value 100
 
-4) By passing in a dictionary that gets mutated::
+4) 変更される辞書に渡すことによって::
 
       def func3(args):
           args['a'] = 'new-value'     # args is a mutable dictionary
@@ -512,7 +508,7 @@ desired effect in a number of ways.
       func3(args)
       print args['a'], args['b']
 
-5) Or bundle up values in a class instance::
+5) クラスインスタンスに値を同梱することによって::
 
       class callByRef:
           def __init__(self, **args):
@@ -528,24 +524,25 @@ desired effect in a number of ways.
       print args.a, args.b
 
 
-   There's almost never a good reason to get this complicated.
+   このような複雑なことをする理由はめったに無いでしょう。
 
-Your best choice is to return a tuple containing the multiple results.
+一番の選択は、複数の結果を含むタプルを返すことです。
 
 
-How do you make a higher order function in Python?
---------------------------------------------------
+Python で高次関数はどのようにつくりますか？
+-------------------------------------------
 
-You have two choices: you can use nested scopes or you can use callable objects.
-For example, suppose you wanted to define ``linear(a,b)`` which returns a
-function ``f(x)`` that computes the value ``a*x+b``.  Using nested scopes::
+二つの方法があります: ネストされたスコープを使う方法と、
+呼び出し可能オブジェクトを使う方法です。例えば、\ ``a*x+b`` の値を計算する
+``f(x)`` 関数を返す ``linear(a,b)`` を定義したいとします。
+ネストされたスコープを使うと::
 
    def linear(a, b):
        def result(x):
            return a * x + b
        return result
 
-Or using a callable object::
+また、呼び出し可能オブジェクトを使うと::
 
    class linear:
 
@@ -555,22 +552,23 @@ Or using a callable object::
        def __call__(self, x):
            return self.a * x + self.b
 
-In both cases, ::
+どちらの場合でも::
 
    taxes = linear(0.3, 2)
 
-gives a callable object where ``taxes(10e6) == 0.3 * 10e6 + 2``.
+とすれば、\ ``taxes(10e6) == 0.3 * 10e6 + 2`` となるような
+呼び出し可能オブジェクトを得られます。
 
-The callable object approach has the disadvantage that it is a bit slower and
-results in slightly longer code.  However, note that a collection of callables
-can share their signature via inheritance::
+呼び出し可能オブジェクトを使う方法は、少し遅くなり、わずかにコードが
+長くなるという短所があります。ですが、継承を使ってコーラブル同士で
+記号を共有することもできます::
 
    class exponential(linear):
        # __init__ inherited
        def __call__(self, x):
            return self.a * (x ** self.b)
 
-Object can encapsulate state for several methods::
+オブジェクトはいくつかのメソッドに状態をカプセル化できます::
 
    class counter:
 
@@ -588,41 +586,40 @@ Object can encapsulate state for several methods::
    count = counter()
    inc, dec, reset = count.up, count.down, count.set
 
-Here ``inc()``, ``dec()`` and ``reset()`` act like functions which share the
-same counting variable.
+ここで、\ ``inc()``\ 、\ ``dec()`` 、\ ``reset()`` は同じカウント変数を
+共有する関数のようにふるまいます。
 
 
-How do I copy an object in Python?
-----------------------------------
+Python のオブジェクトはどのようにコピーしますか？
+-------------------------------------------------
 
-In general, try :func:`copy.copy` or :func:`copy.deepcopy` for the general case.
-Not all objects can be copied, but most can.
+一般的に、普通は :func:`copy.copy` や :func:`copy.deepcopy` を試してください。
+何でもコピーできるとは限りませんが、たいていはできます。
 
-Some objects can be copied more easily.  Dictionaries have a :meth:`~dict.copy`
-method::
+もっと簡単にコピーできるオブジェクトもあります。辞書には :meth:`~dict.copy`
+メソッドがあります::
 
    newdict = olddict.copy()
 
-Sequences can be copied by slicing::
+シーケンスはスライシングでコピーできます::
 
    new_l = l[:]
 
 
-How can I find the methods or attributes of an object?
+オブジェクトのメソッドや属性はどのように見つけますか？
 ------------------------------------------------------
 
-For an instance x of a user-defined class, ``dir(x)`` returns an alphabetized
-list of the names containing the instance attributes and methods and attributes
-defined by its class.
+ユーザー定義クラスのインスタンス x で、\ ``dir(x)`` はインスタンス属性と
+そのクラスで定義されたメソッドや属性を含む名前のアルファベット順リストを
+返します。
 
 
-How can my code discover the name of an object?
------------------------------------------------
+コードはどのようにオブジェクトの名前を見つけるのですか？
+--------------------------------------------------------
 
-Generally speaking, it can't, because objects don't really have names.
-Essentially, assignment always binds a name to a value; The same is true of
-``def`` and ``class`` statements, but in that case the value is a
-callable. Consider the following code::
+概して、オブジェクトは本当は名前を持たないので、見つけることはできません。
+本質的には、代入とはいつも値に名前を束縛することです。\ ``def`` と ``class`` 文も
+同じですが、この場合は値はコーラブルです。以下のコードを考えてみましょう::
 
    class A:
        pass
@@ -636,53 +633,52 @@ callable. Consider the following code::
    print a
    <__main__.A instance at 0x16D07CC>
 
-Arguably the class has a name: even though it is bound to two names and invoked
-through the name B the created instance is still reported as an instance of
-class A.  However, it is impossible to say whether the instance's name is a or
-b, since both names are bound to the same value.
+おそらく、このクラスには名前があります。このクラスは二つの名前に縛られて、
+名前 B を通して呼び出されますが、それでもクラス A のインスタンスとして
+報告されるのです。しかし、両方の名前が同じ値に束縛されている以上、
+このインスタンスの名前が a か b か決めることはできないのです。
 
-Generally speaking it should not be necessary for your code to "know the names"
-of particular values. Unless you are deliberately writing introspective
-programs, this is usually an indication that a change of approach might be
-beneficial.
+概して、コードにとってある値の「名前を知っている」事は重要ではありません。
+あなたがわざと内省的なコードを書いているのでない限り、
+方針を変えた方がいいかもしれないということになるでしょう。
 
-In comp.lang.python, Fredrik Lundh once gave an excellent analogy in answer to
-this question:
+comp.lang.python で、Fredrik Lundh はこの問題の答えとして素晴らしい喩えを
+してくれました:
 
-   The same way as you get the name of that cat you found on your porch: the cat
-   (object) itself cannot tell you its name, and it doesn't really care -- so
-   the only way to find out what it's called is to ask all your neighbours
-   (namespaces) if it's their cat (object)...
+   玄関にいた猫の名前を知るのと同じ方法です: その猫 (オブジェクト) 自体は
+   その名前を言うことができないし、それは実は問題ではありません --
+   その猫が何と呼ばれているかを知る唯一の方法は、すべての隣人 (名前空間) に
+   その猫(オブジェクト)が何と呼ばれているかを聞くことです。
 
-   ....and don't be surprised if you'll find that it's known by many names, or
-   no name at all!
+   ……そして、その猫が沢山の名前で知られていたり、
+   逆に全く名前が全く無かったりしても驚かないでください！
 
 
-What's up with the comma operator's precedence?
------------------------------------------------
+カンマ演算子はなぜ優先されるのですか？
+--------------------------------------
 
-Comma is not an operator in Python.  Consider this session::
+カンマは Python では演算子ではありません。このセッションを考えてください::
 
     >>> "a" in "b", "a"
     (False, 'a')
 
-Since the comma is not an operator, but a separator between expressions the
-above is evaluated as if you had entered::
+カンマは演算子ではなく、式の分離子なので、上の式は次の式と同じように
+評価されます::
 
     >>> ("a" in "b"), "a"
 
-not::
+次のようには評価されません::
 
     >>> "a" in ("b", "a")
 
-The same is true of the various assignment operators (``=``, ``+=`` etc).  They
-are not truly operators but syntactic delimiters in assignment statements.
+他のさまざまな演算子(``=``\ 、\ ``+=`` など)も同じです。これらは真の演算子では
+ありませんが、代入文の構文上のデリミタです。
 
 
 Is there an equivalent of C's "?:" ternary operator?
 ----------------------------------------------------
 
-Yes, this feature was added in Python 2.5. The syntax would be as follows::
+はい、この機能は Python 2.5 で追加されました。構文は以下のようになります::
 
    [on_true] if [expression] else [on_false]
 
@@ -690,25 +686,24 @@ Yes, this feature was added in Python 2.5. The syntax would be as follows::
 
    small = x if x < y else y
 
-For versions previous to 2.5 the answer would be 'No'.
+2.5 以前のバージョンに関しては、答えは「いいえ」です。
 
 .. XXX remove rest?
 
-In many cases you can mimic ``a ? b : c`` with ``a and b or c``, but there's a
-flaw: if *b* is zero (or empty, or ``None`` -- anything that tests false) then
-*c* will be selected instead.  In many cases you can prove by looking at the
-code that this can't happen (e.g. because *b* is a constant or has a type that
-can never be false), but in general this can be a problem.
+多くのケースでは ``a and b or c`` で ``a ? b : c`` の代わりをできますが、
+これでは漏れがあります。\ *b* が 0 (あるいは空、または ``None`` -- 偽と
+なるものすべて) のとき、\ *c* が代わりに選ばれてしまいます。多くの場合には
+コードからこれが起こらないと解ります( 例えば、\ *b* が定数だったり、
+決して偽にならない型だったりするので) が、これは大体問題になり得ます。
 
-Tim Peters (who wishes it was Steve Majewski) suggested the following solution:
-``(a and [b] or [c])[0]``.  Because ``[b]`` is a singleton list it is never
-false, so the wrong path is never taken; then applying ``[0]`` to the whole
-thing gets the *b* or *c* that you really wanted.  Ugly, but it gets you there
-in the rare cases where it is really inconvenient to rewrite your code using
-'if'.
+Tim Peters (who wishes it was Steve Majewski) は次の解決策を提案しました。
+``(a and [b] or [c])[0]``\ 。\ ``[b]`` は一つの要素を持つリストであり、決して偽と
+ならないので、間違った経路を通りません。だから ``[0]`` を全体に適用すれば、
+本当に欲しかった *b* または *c* が得られます。醜いですが、'if' を使って
+書き換えるのがどうしても不便な特殊な場合には、これで目的が達成できます。
 
-The best course is usually to write a simple ``if...else`` statement.  Another
-solution is to implement the ``?:`` operator as a function::
+一番の方法はたいてい、単純に ``if...else`` 文を書くことです。あるいは、
+``?:`` 演算子を関数として実装する方法もあります::
 
    def q(cond, on_true, on_false):
        if cond:
@@ -722,28 +717,28 @@ solution is to implement the ``?:`` operator as a function::
            else:
                return on_false()
 
-In most cases you'll pass b and c directly: ``q(a, b, c)``.  To avoid evaluating
-b or c when they shouldn't be, encapsulate them within a lambda function, e.g.:
-``q(a, lambda: b, lambda: c)``.
+たいてい、b と c は ``q(a, b, c)`` のように直接渡すことになります。
+b や c が評価されるべきでないとき、評価を避けるには、
+``q(a, lambda: b, lambda: c)`` のようにラムダ関数に包んでください。
 
-It has been asked *why* Python has no if-then-else expression.  There are
-several answers: many languages do just fine without one; it can easily lead to
-less readable code; no sufficiently "Pythonic" syntax has been discovered; a
-search of the standard library found remarkably few places where using an
-if-then-else expression would make the code more understandable.
+*なぜ* Python に if-then-else 式が無いのかは問われていました。答えはいくつか
+あります。多くの言語はそれ無しで十分なこと、読みにくいコードになりやすいこと、
+十分「Pythonic」な構文が見当たらないこと、標準ライブラリには if-then-else 式で
+表すとコードが分かりやすくなるような箇所がほとんどないことです。
 
-In 2002, :pep:`308` was written proposing several possible syntaxes and the
-community was asked to vote on the issue.  The vote was inconclusive.  Most
-people liked one of the syntaxes, but also hated other syntaxes; many votes
-implied that people preferred no ternary operator rather than having a syntax
-they hated.
+2002年、いくつかの構文の選択肢を提案する :pep:`308` が書かれ、コミュニティは
+この論点について投票を行いました。多くの人はそれぞれある構文を好み、
+また他の構文を嫌いました。投票者の多くが、自分の嫌いな構文を
+取り入れるくらいなら、三項演算子を取り入れないほうがいいと考えました。
 
 
-Is it possible to write obfuscated one-liners in Python?
---------------------------------------------------------
+Python で解し難いワンライナーを書くことはできますか？
+-----------------------------------------------------
 
-Yes.  Usually this is done by nesting :keyword:`lambda` within
-:keyword:`lambda`.  See the following three examples, due to Ulf Bartelt::
+はい。そういうものはたいてい、\ :keyword:`lambda` の中に :keyword:`lambda` が
+ネストされています。Ulf Bartelt による下の３つの例を見てください::
+
+   from functools import reduce
 
    # Primes < 1000
    print filter(None,map(lambda y:y*reduce(lambda x,y:x*y!=0,
@@ -767,26 +762,26 @@ Yes.  Usually this is done by nesting :keyword:`lambda` within
    #        |          |_________________ range on y axis
    #        |____________________________ range on x axis
 
-Don't try this at home, kids!
+よい子はまねしないでね！
 
 
-Numbers and strings
-===================
+数と文字列
+==========
 
-How do I specify hexadecimal and octal integers?
-------------------------------------------------
+十六進数や八進数を指定するにはどうしたらいいですか？
+----------------------------------------------------
 
-To specify an octal digit, precede the octal value with a zero, and then a lower
-or uppercase "o".  For example, to set the variable "a" to the octal value "10"
-(8 in decimal), type::
+八進数を指定するには、八進数での値の先頭に 0 と "o" (小文字または大文字) を
+加えてください。たとえば、変数 "a" に八進数での "10" (十進数での"8") を
+代入するには、こう打ってください::
 
    >>> a = 0o10
    >>> a
    8
 
-Hexadecimal is just as easy.  Simply precede the hexadecimal number with a zero,
-and then a lower or uppercase "x".  Hexadecimal digits can be specified in lower
-or uppercase.  For example, in the Python interpreter::
+十六進数も簡単です。ただ十六進数での値の先頭に 0 と "x" (小文字または大文字)
+を加えてください。十六進数は小文字でも大文字でも指定できます。
+たとえば、Python インタプリタで::
 
    >>> a = 0xa5
    >>> a
@@ -796,73 +791,73 @@ or uppercase.  For example, in the Python interpreter::
    178
 
 
-Why does -22 // 10 return -3?
------------------------------
+なぜ -22 // 10 は -3 を返すのですか？
+-------------------------------------
 
-It's primarily driven by the desire that ``i % j`` have the same sign as ``j``.
-If you want that, and also want::
+``i % j`` が ``j`` と同じ符号であってほしいことに基づいています。
+それに加えて以下のようにもしたいとすると::
 
     i == (i // j) * j + (i % j)
 
-then integer division has to return the floor.  C also requires that identity to
-hold, and then compilers that truncate ``i // j`` need to make ``i % j`` have
-the same sign as ``i``.
+整数除算は床を返すことになります。C にも C の一貫性があって、\ ``i % j`` が
+``i`` と同じ符号を持つように ``i // j`` を丸めています。
 
-There are few real use cases for ``i % j`` when ``j`` is negative.  When ``j``
-is positive, there are many, and in virtually all of them it's more useful for
-``i % j`` to be ``>= 0``.  If the clock says 10 now, what did it say 200 hours
-ago?  ``-190 % 12 == 2`` is useful; ``-190 % 12 == -10`` is a bug waiting to
-bite.
+``i % j`` は、\ ``j`` が負の時には実際にはほとんど使いません。\ ``j`` が正なら、
+たくさん使います。その事実上すべての場合、\ ``i % j`` は ``>= 0`` となる方が
+便利です。時計が 10 時を指している時、その 200 時間前は何時でしょうか。
+``-190 % 12 == 2`` となるのが便利です。\ ``-190 % 12 == -10`` は
+噛み付きかねないバグです。
 
 .. note::
 
-   On Python 2, ``a / b`` returns the same as ``a // b`` if
-   ``__future__.division`` is not in effect.  This is also known as "classic"
-   division.
+   Python 2 では、  ``__future__.division`` が有効でなければ、
+   ``a / b`` は ``a // b`` と同じ結果を返します。
+   これは "古典的な (classic)" 除算とも呼ばれます。
 
 
-How do I convert a string to a number?
---------------------------------------
+文字列を数に変換するにはどうしたらいいですか？
+----------------------------------------------
 
-For integers, use the built-in :func:`int` type constructor, e.g. ``int('144')
-== 144``.  Similarly, :func:`float` converts to floating-point,
-e.g. ``float('144') == 144.0``.
+整数に変換するには、組み込みの :func:`int` 型コンストラクタを使ってください。
+例えば、\ ``int('144') == 144`` です。同様に、\ :func:`float` は浮動小数点に
+変換します。例えば、\ ``float('144') == 144.0`` です。
 
-By default, these interpret the number as decimal, so that ``int('0144') ==
-144`` and ``int('0x144')`` raises :exc:`ValueError`. ``int(string, base)`` takes
-the base to convert from as a second optional argument, so ``int('0x144', 16) ==
-324``.  If the base is specified as 0, the number is interpreted using Python's
-rules: a leading '0' indicates octal, and '0x' indicates a hex number.
+デフォルトでは、これらは数を十進数として解釈するので、\ ``int('0o144')`` や
+``int('0x144')`` は :exc:`ValueError` を送出します。\ ``int(string, base)`` は
+オプションの第二引数をとって変換元の基数にします。つまり ``int('0x144', 16)
+== 324`` です。基数が 0 と指定された場合、その数は Python の基準によって
+解釈されます。先頭が '0o' なら 八進数で、'0x' なら十六進数を表します。
 
-Do not use the built-in function :func:`eval` if all you need is to convert
-strings to numbers.  :func:`eval` will be significantly slower and it presents a
-security risk: someone could pass you a Python expression that might have
-unwanted side effects.  For example, someone could pass
-``__import__('os').system("rm -rf $HOME")`` which would erase your home
-directory.
+文字列を数に変換するだけのために ':func:`eval` を使わないでください。
+:func:`eval` は特に遅いですし、セキュリティ上のリスクもあります。
+求められない副作用を持つような Python の式を渡そうとする人がいるかも
+知れません。例えば、あなたのホームディレクトリを消去する
+``__import__('os').system("rm -rf $HOME")`` を渡そうとする人が
+いるかも知れません。
 
-:func:`eval` also has the effect of interpreting numbers as Python expressions,
-so that e.g. ``eval('09')`` gives a syntax error because Python regards numbers
-starting with '0' as octal (base 8).
-
-
-How do I convert a number to a string?
---------------------------------------
-
-To convert, e.g., the number 144 to the string '144', use the built-in type
-constructor :func:`str`.  If you want a hexadecimal or octal representation, use
-the built-in functions :func:`hex` or :func:`oct`.  For fancy formatting, see
-the :ref:`formatstrings` section, e.g. ``"{:04d}".format(144)`` yields
-``'0144'`` and ``"{:.3f}".format(1/3)`` yields ``'0.333'``.  You may also use
-:ref:`the % operator <string-formatting>` on strings.  See the library reference
-manual for details.
+':func:`eval` にも数を Python の式として解釈する機能があります。
+だから例えば、\ ``eval('09')`` は構文エラー起こします。Python は '0' で
+始まる数を八進数 (基数 8) とみなすからです。
 
 
-How do I modify a string in place?
-----------------------------------
+数を文字列に変換するにはどうしたらいいですか？
+----------------------------------------------
 
-You can't, because strings are immutable.  If you need an object with this
-ability, try converting the string to a list or use the array module::
+例えば、144 という数を '144' という文字列に変換したいなら、組み込みの
+型コンストラクタ :func:`str` を使ってください。十六進数や八進数にしたければ、
+組み込み関数の :func:`hex` や :func:`oct` を使ってください。装飾された形式に
+するには、\ :ref:`formatstrings` の項を参照してください。例えば、
+``"{:04d}".format(144)`` は ``'0144'`` になり、\ ``"{:.3f}".format(1/3)`` は
+``'0.333'`` になります。
+文字列に:ref:`% 演算子 <string-formatting>` を使うこともできます。
+詳細はライブラリリファレンスの解説を参照してください。
+
+文字列をインプレースに変更するにはどうしたらいいですか？
+--------------------------------------------------------
+
+文字列はイミュータブルなので、変更することはできません。それができる
+オブジェクトを作るには、その文字列をリストに変換してみるか、array モジュールを
+使ってください::
 
    >>> s = "Hello, world"
    >>> a = list(s)
@@ -882,15 +877,14 @@ ability, try converting the string to a list or use the array module::
    'yello, world'
 
 
-How do I use strings to call functions/methods?
------------------------------------------------
+関数やメソッドを呼ぶのに文字列を使うにはどうしたらいいですか？
+--------------------------------------------------------------
 
-There are various techniques.
+様々なテクニックがあります。
 
-* The best is to use a dictionary that maps strings to functions.  The primary
-  advantage of this technique is that the strings do not need to match the names
-  of the functions.  This is also the primary technique used to emulate a case
-  construct::
+* 一番いいのは、文字列を関数に対応させる辞書を使うことです。このテクニックの
+  一番の利点は、文字列が関数の名前と同じ必要がないことです。この方法は
+  case 構造をエミュレートするための一番のテクニックでもあります::
 
      def a():
          pass
@@ -902,15 +896,15 @@ There are various techniques.
 
      dispatch[get_input()]()  # Note trailing parens to call function
 
-* Use the built-in function :func:`getattr`::
+* 組み込み関数の :func:`getattr` を使う方法::
 
      import foo
      getattr(foo, 'bar')()
 
-  Note that :func:`getattr` works on any object, including classes, class
-  instances, modules, and so on.
+  なお、\ :func:`getattr` はクラス、クラスインスタンス、モジュールなど、
+  どんなオブジェクトにも使えます。
 
-  This is used in several places in the standard library, like this::
+  これは標準ライブラリでも何箇所か使われています。このように::
 
      class Foo:
          def do_foo(self):
@@ -923,10 +917,10 @@ There are various techniques.
      f()
 
 
-* Use :func:`locals` or :func:`eval` to resolve the function name::
+* :func:`locals` や :func:`eval` を使って関数名を決める方法::
 
      def myFunc():
-         print "hello"
+         print("hello")
 
      fname = "myFunc"
 
@@ -936,18 +930,17 @@ There are various techniques.
      f = eval(fname)
      f()
 
-  Note: Using :func:`eval` is slow and dangerous.  If you don't have absolute
-  control over the contents of the string, someone could pass a string that
-  resulted in an arbitrary function being executed.
+  ノート: :func:`eval` の使用は遅いし危険です。もしあなたが文字列の内容を
+  絶対的に支配できなければ、任意の関数を実行されるようにする文字列を渡す人が
+  いるかも知れません。
 
-Is there an equivalent to Perl's chomp() for removing trailing newlines from strings?
--------------------------------------------------------------------------------------
+文字列から後端の改行を取り除く Perl の chomp() に相当するものはありますか？
+---------------------------------------------------------------------------
 
-Starting with Python 2.2, you can use ``S.rstrip("\r\n")`` to remove all
-occurences of any line terminator from the end of the string ``S`` without
-removing other trailing whitespace.  If the string ``S`` represents more than
-one line, with several empty lines at the end, the line terminators for all the
-blank lines will be removed::
+Python 2.2 から、\ ``S.rstrip("\r\n")`` を使って文字列 ``S`` の終端から他の
+空白文字を取り除くことなくすべての行末記号を取り除くことができるように
+なりました。文字列 ``S`` が複数行を表し、終端に空行があるとき、
+そのすべての空行も取り除かれます::
 
    >>> lines = ("line 1 \r\n"
    ...          "\r\n"
@@ -955,56 +948,56 @@ blank lines will be removed::
    >>> lines.rstrip("\n\r")
    'line 1 '
 
-Since this is typically only desired when reading text one line at a time, using
-``S.rstrip()`` this way works well.
+これは典型的に一度に一行ずつテキストを読みたい時にのみ使われるので、
+``S.rstrip()`` をこの方法で使うとうまくいきます。
 
-For older versions of Python, there are two partial substitutes:
+古いバージョンの Python では、部分的な代用品が二つあります:
 
-- If you want to remove all trailing whitespace, use the ``rstrip()`` method of
-  string objects.  This removes all trailing whitespace, not just a single
-  newline.
+- すべての終端の空白文字を取り除きたいなら、文字列オブジェクトの ``rstrip()``
+  メソッドを使ってください。これは改行記号一つだけでなく、すべての終端の
+  空白文字を取り除きます。
 
-- Otherwise, if there is only one line in the string ``S``, use
-  ``S.splitlines()[0]``.
-
-
-Is there a scanf() or sscanf() equivalent?
-------------------------------------------
-
-Not as such.
-
-For simple input parsing, the easiest approach is usually to split the line into
-whitespace-delimited words using the :meth:`~str.split` method of string objects
-and then convert decimal strings to numeric values using :func:`int` or
-:func:`float`.  ``split()`` supports an optional "sep" parameter which is useful
-if the line uses something other than whitespace as a separator.
-
-For more complicated input parsing, regular expressions more powerful than C's
-:cfunc:`sscanf` and better suited for the task.
+- そうでなく、文字列 ``S`` に一行しか無いなら、\ ``S.splitlines()[0]`` を
+  使ってください。
 
 
-What does 'UnicodeError: ASCII [decoding,encoding] error: ordinal not in range(128)' mean?
-------------------------------------------------------------------------------------------
+scanf() や sscanf() と同等なものはありますか？
+----------------------------------------------
 
-This error indicates that your Python installation can handle only 7-bit ASCII
-strings.  There are a couple ways to fix or work around the problem.
+そのようなものはありません。
 
-If your programs must handle data in arbitrary character set encodings, the
-environment the application runs in will generally identify the encoding of the
-data it is handing you.  You need to convert the input to Unicode data using
-that encoding.  For example, a program that handles email or web input will
-typically find character set encoding information in Content-Type headers.  This
-can then be used to properly convert input data to Unicode. Assuming the string
-referred to by ``value`` is encoded as UTF-8::
+簡単な入力解析で、多くの場合に一番簡単な方法は、文字列オブジェクトの
+:meth:`~str.split` メソッドで行を空白文字で区切られた単語に分け、十進数の
+文字列を :func:`int` や :func:`float` で数値に変換することです。
+``split()`` にはオプションの "sep" 変数があり、行に空白文字以外の区切りを
+使っているときに便利です。
+
+もっと複雑な入力解析をしたいなら、C の :c:func:`sscanf` よりも正規表現の方が
+便利ですし、この処理に向いています。
+
+
+'UnicodeError: ASCII [decoding,encoding] error: ordinal not in range(128)' とはどういう意味ですか？
+---------------------------------------------------------------------------------------------------
+
+このエラーは、あなたの Python インストールが 7-bit ASCII 文字列しか
+扱えないことを表します。この問題を扱うには二つの方法があります。
+
+あなたのプログラムが、任意の文字セットエンコーディングのデータを扱わなければ
+ならないなら、一般に、アプリケーションが起動する環境によってデータの
+エンコーディングが特定されます。
+例えば、email や web 入力を扱うプログラムは、概して文字セットエンコーディング
+情報を Content-Type ヘッダから見つけます。これに使うことで、入力データを
+Unicode に正しく変換できます。 ``value`` によって参照される文字列が
+UTF-8 でエンコードされているとすれば::
 
    value = unicode(value, "utf-8")
 
-will return a Unicode object.  If the data is not correctly encoded as UTF-8,
-the above call will raise a :exc:`UnicodeError` exception.
+は Unicode オブジェクトを返します。データが UTF-8 に正しく変換されないなら、
+上記の呼び出しは :exc:`UnicodeError` 例外を送出します。
 
-If you only want strings converted to Unicode which have non-ASCII data, you can
-try converting them first assuming an ASCII encoding, and then generate Unicode
-objects if that fails::
+非 ASCII データを持つ文字列だけを Unicode に変換すればいいなら、
+まず ASCII エンコーディングを仮定して変換し、失敗したら Unicode オブジェクトを
+生成すればいいです::
 
    try:
        x = unicode(value, "ascii")
@@ -1014,75 +1007,75 @@ objects if that fails::
        # value was valid ASCII data
        pass
 
-It's possible to set a default encoding in a file called ``sitecustomize.py``
-that's part of the Python library.  However, this isn't recommended because
-changing the Python-wide default encoding may cause third-party extension
-modules to fail.
+デフォルトのエンコーディングは、Python ライブラリの一部である
+``sitecustomize.py`` と呼ばれるファイルで設定できます。しかし、Python 全体に
+おけるデフォルトのエンコーディングを変えてしまうことは、サードパーティ
+拡張モジュールの失敗につながるのでお勧めできません。
 
-Note that on Windows, there is an encoding known as "mbcs", which uses an
-encoding specific to your current locale.  In many cases, and particularly when
-working with COM, this may be an appropriate default encoding to use.
-
-
-Sequences (Tuples/Lists)
-========================
-
-How do I convert between tuples and lists?
-------------------------------------------
-
-The type constructor ``tuple(seq)`` converts any sequence (actually, any
-iterable) into a tuple with the same items in the same order.
-
-For example, ``tuple([1, 2, 3])`` yields ``(1, 2, 3)`` and ``tuple('abc')``
-yields ``('a', 'b', 'c')``.  If the argument is a tuple, it does not make a copy
-but returns the same object, so it is cheap to call :func:`tuple` when you
-aren't sure that an object is already a tuple.
-
-The type constructor ``list(seq)`` converts any sequence or iterable into a list
-with the same items in the same order.  For example, ``list((1, 2, 3))`` yields
-``[1, 2, 3]`` and ``list('abc')`` yields ``['a', 'b', 'c']``.  If the argument
-is a list, it makes a copy just like ``seq[:]`` would.
+なお、Windows には、 "mbcs" として知られるエンコーディングがあり、
+これはあなたのロケールに依存するエンコーディイングを使います。
+多くの場合、特に COM で作業をするとき、これが使うのに適したデフォルトの
+エンコーディングです。
 
 
-What's a negative index?
-------------------------
+シーケンス(タプル/リスト)
+=========================
 
-Python sequences are indexed with positive numbers and negative numbers.  For
-positive numbers 0 is the first index 1 is the second index and so forth.  For
-negative indices -1 is the last index and -2 is the penultimate (next to last)
-index and so forth.  Think of ``seq[-n]`` as the same as ``seq[len(seq)-n]``.
+タプル、リスト間の変更はどのようにするのですか？
+------------------------------------------------
 
-Using negative indices can be very convenient.  For example ``S[:-1]`` is all of
-the string except for its last character, which is useful for removing the
-trailing newline from a string.
+型コンストラクタ ``tuple(seq)`` はすべてのシーケンス (実際には、すべての
+イテラブル) を同じ要素、同じ順序のタプルに変換します。
+
+例えば、 ``tuple([1, 2, 3])`` は ``(1, 2, 3)`` を与え、\ ``tuple('abc')`` は
+``('a', 'b', 'c')`` を与えます。引数がタプルなら、コピーを作らずに引数の
+オブジェクトそのものを返すので、あるオブジェクトが既にタプルになっているか
+確信が持てないのなら、\ :func:`tuple` を呼ぶのが手軽です。
+
+型コンストラクタ ``list(seq)`` はすべてのシーケンスあるいはイテラブルを
+同じ要素、同じ順序のリストに変換します。例えば、\ ``list(''''(1, 2, 3))`` は
+``[1, 2, 3]`` を与え、 ``list('abc')`` は ``['a', 'b', 'c']`` を与えます。
+引数がリストなら、\ ``seq[:]`` と同様にコピーを作ります。
 
 
-How do I iterate over a sequence in reverse order?
---------------------------------------------------
+インデクスが負の場合はどうなりますか？
+--------------------------------------
 
-Use the :func:`reversed` built-in function, which is new in Python 2.4::
+Python のシーケンスは正の数と負の数でインデクスされます。正の数では、
+0 が最初のインデクス、 1 が 2 番目のインデクス、以下も同様です。
+負のインデクスでは、-1 が最後のインデクス、 -2 が最後から 2 番目のインデクス、
+以下も同様です。\ ``seq[-n]`` は ``seq[len(seq)-n]`` と同じだと考えてください。
+
+負のインデクスを使うと便利なことがあります。例えば、\ ``S[:-1]`` は文字列の
+最後以外のすべての文字を表すので、文字列の末尾の改行を取り除くときに便利です。
+
+
+シーケンスを逆順にイテレートするにはどうしたらいいですか？
+----------------------------------------------------------
+
+Python 2.4 で追加された :func:`reversed` を使ってください::
 
    for x in reversed(sequence):
        ... # do something with x...
 
-This won't touch your original sequence, but build a new copy with reversed
-order to iterate over.
+これは元のシーケンスをいじるのではなく、逆順の新しいコピーを作って
+イテレートさせます。
 
-With Python 2.3, you can use an extended slice syntax::
+Python 2.3 では、拡張スライス構文を使います::
 
    for x in sequence[::-1]:
        ... # do something with x...
 
 
-How do you remove duplicates from a list?
------------------------------------------
+リストから重複を取り除くにはどうしますか？
+------------------------------------------
 
-See the Python Cookbook for a long discussion of many ways to do this:
+Python Cookbook の長い議論に多くの方法があるので参照してください:
 
     http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52560
 
-If you don't mind reordering the list, sort it and then scan from the end of the
-list, deleting duplicates as you go::
+リストを並び替えて構わないのなら、ソートした上でリストの最初から最後までを
+調べ、次のように重複を削除してください::
 
    if mylist:
        mylist.sort()
@@ -1093,95 +1086,95 @@ list, deleting duplicates as you go::
            else:
                last = mylist[i]
 
-If all elements of the list may be used as dictionary keys (i.e. they are all
-hashable) this is often faster ::
+リストのすべての要素が辞書のキーとして使える (つまり、すべての要素が
+ハッシュ可能) なら、おそらくこのほうが速いです::
 
    d = {}
    for x in mylist:
        d[x] = 1
    mylist = list(d.keys())
 
-In Python 2.5 and later, the following is possible instead::
+Python 2.5 以降なら、代わりに次のようにできます::
 
    mylist = list(set(mylist))
 
-This converts the list into a set, thereby removing duplicates, and then back
-into a list.
+リストを集合に変換するときに重複は取り除かれるので、
+それをリストに戻せばいいのです。
 
 
-How do you make an array in Python?
------------------------------------
+Python で配列を作るにはどうしますか？
+-------------------------------------
 
-Use a list::
+リストを使ってください::
 
    ["this", 1, "is", "an", "array"]
 
-Lists are equivalent to C or Pascal arrays in their time complexity; the primary
-difference is that a Python list can contain objects of many different types.
+リストの時間計算量は C や Pascal の配列と同じです。大きな違いは、
+Python のリストは多くの異なる型のオブジェクトを含めることです。
 
-The ``array`` module also provides methods for creating arrays of fixed types
-with compact representations, but they are slower to index than lists.  Also
-note that the Numeric extensions and others define array-like structures with
-various characteristics as well.
+``array`` モジュールにも固定された型を簡潔に表現する配列を作るための
+メソッドがありますが、リストよりもインデクスが遅いです。また、
+Numeric 拡張その他でも、様々な特徴をもつ配列的な構造体が定義されています。
 
-To get Lisp-style linked lists, you can emulate cons cells using tuples::
+Lisp 方式の連結リストを得るのに、タプルを使ってコンスセルを
+エミュレートできます::
 
    lisp_list = ("like",  ("this",  ("example", None) ) )
 
-If mutability is desired, you could use lists instead of tuples.  Here the
-analogue of lisp car is ``lisp_list[0]`` and the analogue of cdr is
-``lisp_list[1]``.  Only do this if you're sure you really need to, because it's
-usually a lot slower than using Python lists.
+ミュータブルな必要があるなら、タプルではなくリストを使いましょう。lisp の
+car にあたるものが ``lisp_list[0]`` で、cdr にあたるものが ``lisp_list[1]``
+です。本当に必要だと確信できるとき以外はこれはしないでください。たいてい、
+これは Python のリストを使うよりも非常に遅いですから。
 
 
-How do I create a multidimensional list?
-----------------------------------------
+多次元のリストを作るにはどうしますか？
+--------------------------------------
 
-You probably tried to make a multidimensional array like this::
+このようにして多次元の配列を作ろうとしてしまったことがあるでしょう::
 
    A = [[None] * 2] * 3
 
-This looks correct if you print it::
+これを表示したときには問題なさそうに見えます::
 
    >>> A
    [[None, None], [None, None], [None, None]]
 
-But when you assign a value, it shows up in multiple places:
+しかし値を代入すると、その値が複数の場所に現れてしまいます::
 
   >>> A[0][0] = 5
   >>> A
   [[5, None], [5, None], [5, None]]
 
-The reason is that replicating a list with ``*`` doesn't create copies, it only
-creates references to the existing objects.  The ``*3`` creates a list
-containing 3 references to the same list of length two.  Changes to one row will
-show in all rows, which is almost certainly not what you want.
+これは、\ ``*`` を使ったリストの複製がコピーを作らず、存在するオブジェクトへの
+参照を作るだけだからです。この ``*3`` は長さ 2 の同じリストへの参照を
+含むリストを作ります。一つの列に対する変更はすべての列に現れますが、
+これが望んだ結果であることはまずないでしょう。
 
-The suggested approach is to create a list of the desired length first and then
-fill in each element with a newly created list::
+おすすめの方法は、最初に望んだ長さのリストを作り、それから新しく作ったリストで
+それぞれの要素を埋めていくことです::
 
    A = [None] * 3
    for i in range(3):
        A[i] = [None] * 2
 
-This generates a list containing 3 different lists of length two.  You can also
-use a list comprehension::
+これは長さ 2 の異なるリスト 3 つを含むリストを生成します。
+リスト内包表記も使えます::
 
    w, h = 2, 3
    A = [[None] * w for i in range(h)]
 
-Or, you can use an extension that provides a matrix datatype; `Numeric Python
-<http://numpy.scipy.org/>`_ is the best known.
+また、行列データ型を提供している拡張も使えます。\ `Numeric Python
+<http://numpy.scipy.org/>`_ が特に有名です。
 
 
-How do I apply a method to a sequence of objects?
--------------------------------------------------
+オブジェクトのシーケンスにメソッドを適用するにはどうしますか？
+--------------------------------------------------------------
 
-Use a list comprehension::
+リスト内包表記を使ってください::
 
    result = [obj.method() for obj in mylist]
 
-More generically, you can try the following function::
+より一般的には、以下の関数を試すことができます::
 
    def method_map(objects, method, arguments):
        """method_map([a,b], "meth", (1,2)) gives [a.meth(1,2), b.meth(1,2)]"""
@@ -1190,23 +1183,22 @@ More generically, you can try the following function::
        return map(apply, methods, [arguments]*nobjects)
 
 
-Dictionaries
-============
+辞書
+====
 
-How can I get a dictionary to display its keys in a consistent order?
----------------------------------------------------------------------
+キーを安定した順序で表示する辞書を作るにはどうしたらいいですか？
+----------------------------------------------------------------
 
-You can't.  Dictionaries store their keys in an unpredictable order, so the
-display order of a dictionary's elements will be similarly unpredictable.
+できません。辞書はキーを予測できない順序で保存しているので、
+辞書の要素が表示される順序もまた予測できないのです。
 
-This can be frustrating if you want to save a printable version to a file, make
-some changes and then compare it with some other printed dictionary.  In this
-case, use the ``pprint`` module to pretty-print the dictionary; the items will
-be presented in order sorted by the key.
+ファイルに印字可能なバージョンを保存し、変更を加えてから他の印字された辞書と
+比較したい時に苛立たしいかもしれません。この場合は、\ ``pprint`` モジュールで
+辞書を整形して表示してください。要素がキーでソートされて表されます。
 
-A more complicated solution is to subclass ``dict`` to create a
-``SortedDict`` class that prints itself in a predictable order.  Here's one
-simpleminded implementation of such a class::
+もっと複雑な解決策は、\ ``dict`` のサブクラスとして ``SortedDict`` クラスを作り、
+それに予測可能な順序で自身を表示させることです。そのようなクラスの単純な実装の
+一つは::
 
    class SortedDict(dict):
        def __repr__(self):
@@ -1216,38 +1208,38 @@ simpleminded implementation of such a class::
 
        __str__ = __repr__
 
-This will work for many common situations you might encounter, though it's far
-from a perfect solution. The largest flaw is that if some values in the
-dictionary are also dictionaries, their values won't be presented in any
-particular order.
+これは完璧な解法とは程遠いですが、多くの状況でうまく働くでしょう。
+最大の欠点は、辞書のある値がまた辞書であった場合に、それらの値はどんな特定の
+順序でも表示されないことです。
 
 
-I want to do a complicated sort: can you do a Schwartzian Transform in Python?
-------------------------------------------------------------------------------
+複雑なソートがしたいのですが、Python でシュワルツ変換はできますか？
+-------------------------------------------------------------------
 
-The technique, attributed to Randal Schwartz of the Perl community, sorts the
-elements of a list by a metric which maps each element to its "sort value". In
-Python, just use the ``key`` argument for the ``sort()`` method::
+Perl コミュニティの Randal Schwartz の作とされるこのテクニックは、
+リストの要素を、それぞれの要素をその「ソート値」に対応付けるメトリックによって
+ソートします。Python では、単に ``sort()`` メソッドに ``key`` 引数を
+使ってください::
 
    Isorted = L[:]
    Isorted.sort(key=lambda s: int(s[10:15]))
 
-The ``key`` argument is new in Python 2.4, for older versions this kind of
-sorting is quite simple to do with list comprehensions.  To sort a list of
-strings by their uppercase values::
+``key`` 引数はPython 2.4 で追加されたもので、古いバージョンでこのようなソートを
+するにはリスト内包表記でやればすごく簡単です。文字列のリストをその大文字の値で
+ソートするには::
 
   tmp1 = [(x.upper(), x) for x in L]  # Schwartzian transform
   tmp1.sort()
   Usorted = [x[1] for x in tmp1]
 
-To sort by the integer value of a subfield extending from positions 10-15 in
-each string::
+それぞれの文字列の 10-15 の場所から展開されたサブフィールドの整数値によって
+ソートするには::
 
   tmp2 = [(int(s[10:15]), s) for s in L]  # Schwartzian transform
   tmp2.sort()
   Isorted = [x[1] for x in tmp2]
 
-Note that Isorted may also be computed by ::
+なお、Isorted はこのようにしても計算されます::
 
    def intfield(s):
        return int(s[10:15])
@@ -1258,96 +1250,95 @@ Note that Isorted may also be computed by ::
    Isorted = L[:]
    Isorted.sort(Icmp)
 
-but since this method calls ``intfield()`` many times for each element of L, it
-is slower than the Schwartzian Transform.
+しかし、このメソッドは ``intfield()`` を L の要素ごとに何度も呼び出すので、
+シュワルツ変換よりも遅いです。
 
 
-How can I sort one list by values from another list?
-----------------------------------------------------
+リストを別のリストの値によってソートするにはどうしますか？
+----------------------------------------------------------
 
-Merge them into a single list of tuples, sort the resulting list, and then pick
-out the element you want. ::
+二つのリストを混ぜあわせてタプルのイテレータにしてから、必要な要素を
+選んでください::
 
    >>> list1 = ["what", "I'm", "sorting", "by"]
    >>> list2 = ["something", "else", "to", "sort"]
    >>> pairs = zip(list1, list2)
+   >>> pairs = sorted(pairs)
    >>> pairs
-   [('what', 'something'), ("I'm", 'else'), ('sorting', 'to'), ('by', 'sort')]
-   >>> pairs.sort()
-   >>> result = [ x[1] for x in pairs ]
+   [("I'm", 'else'), ('by', 'sort'), ('sorting', 'to'), ('what', 'something')]
+   >>> result = [x[1] for x in pairs]
    >>> result
    ['else', 'sort', 'to', 'something']
 
-An alternative for the last step is::
+最後の段階の別のやり方は::
 
    >>> result = []
    >>> for p in pairs: result.append(p[1])
 
-If you find this more legible, you might prefer to use this instead of the final
-list comprehension.  However, it is almost twice as slow for long lists.  Why?
-First, the ``append()`` operation has to reallocate memory, and while it uses
-some tricks to avoid doing that each time, it still has to do it occasionally,
-and that costs quite a bit.  Second, the expression "result.append" requires an
-extra attribute lookup, and third, there's a speed reduction from having to make
-all those function calls.
+これのほうが読みやすいと、最後のリスト内包表記ではなくこれを
+使いたくなるかもしれません。しかし、これは長いリストではほぼ二倍の時間が
+かかります。なぜでしょうか。まず、\ ``append()`` 演算はメモリを割り当て直す必要が
+あり、それを避けるために毎回ちょっと工夫していますが、それでも避けられない
+ことがあるので、少し時間がかかるのです。二つ目に、"result.append" には
+属性探索が余計に必要で、三つ目に、これらすべての関数を呼ぶ必要があることで
+速度が落ちてしまいます。
 
 
-Objects
-=======
+オブジェクト
+============
 
-What is a class?
-----------------
+クラスとは何ですか？
+--------------------
 
-A class is the particular object type created by executing a class statement.
-Class objects are used as templates to create instance objects, which embody
-both the data (attributes) and code (methods) specific to a datatype.
+クラスは、class 文の実行で生成される特殊なオブジェクトです。
+クラスオブジェクトはインスタンスオブジェクトを生成するためのテンプレートとして
+使われ、あるデータ型に特有のデータ (attribute/属性) とコード (メソッド) の
+両方を内蔵しています。
 
-A class can be based on one or more other classes, called its base class(es). It
-then inherits the attributes and methods of its base classes. This allows an
-object model to be successively refined by inheritance.  You might have a
-generic ``Mailbox`` class that provides basic accessor methods for a mailbox,
-and subclasses such as ``MboxMailbox``, ``MaildirMailbox``, ``OutlookMailbox``
-that handle various specific mailbox formats.
+新しいクラスを一つ以上の他のクラス (新しいクラスの基底クラスと呼ばれます) に
+基づいて作ることもできます。この新しいクラスは、基底クラスから属性とメソッドを
+継承します。これにより、オブジェクトモデルを継承で連続的に洗練できます。
+メールボックスへの基本的なアクセサを提供する一般的な ``Mailbox`` クラスを
+作って、それからいろいろな特定のメールボックスの形式を扱う ``MboxMailbox``\ 、
+``MaildirMailbox``\ 、\ ``OutlookMailbox`` のようなサブクラスを作れるのです。
 
 
-What is a method?
------------------
+メソッドとは何ですか？
+----------------------
 
-A method is a function on some object ``x`` that you normally call as
-``x.name(arguments...)``.  Methods are defined as functions inside the class
-definition::
+メソッドは、オブジェクト ``x`` が持つ関数で、通常 ``x.name(arguments...)``
+として呼び出されるものです。メソッドはクラス定義の中で関数として定義されます::
 
    class C:
        def meth (self, arg):
            return arg * 2 + self.attribute
 
 
-What is self?
--------------
+self とは何ですか？
+-------------------
 
-Self is merely a conventional name for the first argument of a method.  A method
-defined as ``meth(self, a, b, c)`` should be called as ``x.meth(a, b, c)`` for
-some instance ``x`` of the class in which the definition occurs; the called
-method will think it is called as ``meth(x, a, b, c)``.
+self はメソッドの第一引数に慣習的につけられる名前にすぎません。
+``meth(self, a, b, c)`` として定義されたメソッドは、その定義がなされたクラスの
+インスタンス ``x`` に対して ``x.meth(a, b, c)`` として呼び出されます。
+呼び出されたメソッドは、\ ``meth(x, a, b, c)`` が呼ばれたものと考えます。
 
-See also :ref:`why-self`.
+:ref:`why-self` も参照してください。
 
 
-How do I check if an object is an instance of a given class or of a subclass of it?
------------------------------------------------------------------------------------
+あるオブジェクトが、与えられたクラスやそのサブクラスのインスタンスであるかを調べるにはどうしますか？
+----------------------------------------------------------------------------------------------------
 
-Use the built-in function ``isinstance(obj, cls)``.  You can check if an object
-is an instance of any of a number of classes by providing a tuple instead of a
-single class, e.g. ``isinstance(obj, (class1, class2, ...))``, and can also
-check whether an object is one of Python's built-in types, e.g.
-``isinstance(obj, str)`` or ``isinstance(obj, (int, long, float, complex))``.
+ビルトイン関数 ``isinstance(obj, cls)`` を使ってください。クラスのタプルを
+与えて ``isinstance(obj, (class1, class2, ...))`` のようにすれば、
+あるオブジェクトが任意の数のクラスのオブジェクトであるかを調べられますし、
+``isinstance(obj, str)`` や ``isinstance(obj, (int, long, float, complex))`` の
+ようにすれば、Python のビルトイン型のオブジェクトであるかも調べられます。
 
-Note that most programs do not use :func:`isinstance` on user-defined classes
-very often.  If you are developing the classes yourself, a more proper
-object-oriented style is to define methods on the classes that encapsulate a
-particular behaviour, instead of checking the object's class and doing a
-different thing based on what class it is.  For example, if you have a function
-that does something::
+なお、大部分のプログラムでは、\ :func:`isinstance` をユーザー定義のクラスに
+何度も使うべきではありません。クラスを自分で開発するときに、適切な
+オブジェクト指向スタイルは、特定の振る舞いをカプセル化するクラスのメソッドを
+定義するものであって、オブジェクトのクラスを調べてそのクラスに応じて違うことを
+するものではありません。例えば、何かをする関数があったとして::
 
    def search(obj):
        if isinstance(obj, Mailbox):
@@ -1356,8 +1347,8 @@ that does something::
            # ... code to search a document
        elif ...
 
-A better approach is to define a ``search()`` method on all the classes and just
-call it::
+よりよいアプローチは、\ ``search()`` メソッドをすべてのクラスに定義して、
+それをただ呼び出すことです::
 
    class Mailbox:
        def search(self):
@@ -1370,18 +1361,18 @@ call it::
    obj.search()
 
 
-What is delegation?
--------------------
+委譲とは何ですか？
+------------------
 
-Delegation is an object oriented technique (also called a design pattern).
-Let's say you have an object ``x`` and want to change the behaviour of just one
-of its methods.  You can create a new class that provides a new implementation
-of the method you're interested in changing and delegates all other methods to
-the corresponding method of ``x``.
+委譲 (delegation) とは、オブジェクト指向のテクニック (デザインパターンとも
+呼ばれる) の一つです。オブジェクト ``x`` があって、そのメソッドのうち
+ただ一つの振る舞いを変えたいとしましょう。新しいクラスを作成し、
+変えたいメソッドだけを新しく実装し、他のすべてのメソッドを ``x`` の対応する
+メソッドに委譲する新しいクラスを作れます。
 
-Python programmers can easily implement delegation.  For example, the following
-class implements a class that behaves like a file but converts all written data
-to uppercase::
+Python プログラマは簡単に委譲を実装できます。例えば、以下のクラスは、
+ファイルのように振る舞いながらすべての文字を大文字に変換する
+クラスを実装します::
 
    class UpperOut:
 
@@ -1394,17 +1385,17 @@ to uppercase::
        def __getattr__(self, name):
            return getattr(self._outfile, name)
 
-Here the ``UpperOut`` class redefines the ``write()`` method to convert the
-argument string to uppercase before calling the underlying
-``self.__outfile.write()`` method.  All other methods are delegated to the
-underlying ``self.__outfile`` object.  The delegation is accomplished via the
-``__getattr__`` method; consult :ref:`the language reference <attribute-access>`
-for more information about controlling attribute access.
+ここで ``UpperOut`` クラスは ``write()`` メソッドを定義しなおして、
+引数の文字列を大文字に変換してから基礎となる ``self._outfile.write()``
+メソッドを呼び出すようにします。その他すべてのメソッドは基礎となる
+``self._outfile`` オブジェクトに移譲されます。この委譲は ``__getattr__``
+メソッドを通してなされます。属性の制御の詳細は :ref:`言語リファレンス
+<attribute-access>` を参照してください。
 
-Note that for more general cases delegation can get trickier. When attributes
-must be set as well as retrieved, the class must define a :meth:`__setattr__`
-method too, and it must do so carefully.  The basic implementation of
-:meth:`__setattr__` is roughly equivalent to the following::
+なお、一般的に委譲はトリッキーになりがちです。属性が設定される時には
+読み出される時と同様に、そのクラスに :meth:`__setattr__` メソッドを定義する
+必要があり、それには細心の注意が必要です。 :meth:`__setattr__` の
+基本的な実装はおおよそ以下のようになります::
 
    class X:
        ...
@@ -1412,34 +1403,35 @@ method too, and it must do so carefully.  The basic implementation of
            self.__dict__[name] = value
        ...
 
-Most :meth:`__setattr__` implementations must modify ``self.__dict__`` to store
-local state for self without causing an infinite recursion.
+たいてい、\ :meth:`__setattr__` 実装は ``self.__dict__`` を変更して、
+無限再帰を起こすことなくローカルな状態を保存するようにしなければなりません。
 
 
-How do I call a method defined in a base class from a derived class that overrides it?
---------------------------------------------------------------------------------------
+基底クラスで定義されたメソッドを、そのクラスをオーバーライドした派生クラスから呼び出すにはどうしますか？
+--------------------------------------------------------------------------------------------------------
 
-If you're using new-style classes, use the built-in :func:`super` function::
+組み込みの :func:`super` 関数を使ってください::
 
    class Derived(Base):
        def meth (self):
            super(Derived, self).meth()
 
-If you're using classic classes: For a class definition such as ``class
-Derived(Base): ...`` you can call method ``meth()`` defined in ``Base`` (or one
-of ``Base``'s base classes) as ``Base.meth(self, arguments...)``.  Here,
-``Base.meth`` is an unbound method, so you need to provide the ``self``
-argument.
+旧スタイルクラスを使っているなら:
+``class Derived(Base): ...`` のようなクラス定義で、
+``Base.meth(self, arguments...)`` とすれば、\ ``Base`` (または ``Base`` の
+基底クラス) で定義された ``meth()`` メソッドを呼び出せます。ここで、
+``Base.meth`` は束縛されていないメソッドなので、\ ``self`` 引数を渡す
+必要があります。
 
 
-How can I organize my code to make it easier to change the base class?
-----------------------------------------------------------------------
+基底クラスの名前を変えやすいコードを書くにはどうしますか？
+----------------------------------------------------------
 
-You could define an alias for the base class, assign the real base class to it
-before your class definition, and use the alias throughout your class.  Then all
-you have to change is the value assigned to the alias.  Incidentally, this trick
-is also handy if you want to decide dynamically (e.g. depending on availability
-of resources) which base class to use.  Example::
+基底クラスのエイリアス (alias) を定義し、先にそれに本当の基底クラスを
+代入しておいてから、クラス定義の中でそのエイリアスを使うといいかもしれません。
+そうすればエイリアスに代入する値を変変えるだけで済みます。ちなみに、この手法は
+使用する基底クラスを動的に選びたいとき (使えるリソースに依るとき等) にも
+便利です。例::
 
    BaseAlias = <real base class>
 
@@ -1449,14 +1441,14 @@ of resources) which base class to use.  Example::
            ...
 
 
-How do I create static class data and static class methods?
------------------------------------------------------------
+静的なクラスデータや静的なクラスメソッドを作るにはどうしますか？
+----------------------------------------------------------------
 
-Both static data and static methods (in the sense of C++ or Java) are supported
-in Python.
+(C++ や Java の意味で) 静的なデータも静的なメソッドも Python で
+サポートされています。
 
-For static data, simply define a class attribute.  To assign a new value to the
-attribute, you have to explicitly use the class name in the assignment::
+静的なデータを作るには、単純にクラス属性を定義してください。
+その属性に新しい値を代入するには、代入するクラス名を明示する必要があります::
 
    class C:
        count = 0   # number of times C.__init__ called
@@ -1467,18 +1459,18 @@ attribute, you have to explicitly use the class name in the assignment::
        def getcount(self):
            return C.count  # or return self.count
 
-``c.count`` also refers to ``C.count`` for any ``c`` such that ``isinstance(c,
-C)`` holds, unless overridden by ``c`` itself or by some class on the base-class
-search path from ``c.__class__`` back to ``C``.
+``c`` そのものや ``c.__class__`` から ``C`` にいたるパス探索経路上の
+クラスによってオーバーライドされない限り、\ ``c.count`` も ``isinstance(c, C)``
+であるすべての ``c`` に対する ``C.count`` を参照します。
 
-Caution: within a method of C, an assignment like ``self.count = 42`` creates a
-new and unrelated instance named "count" in ``self``'s own dict.  Rebinding of a
-class-static data name must always specify the class whether inside a method or
-not::
+注意: C のメソッド内では、 ``self.count = 42`` のような代入は ``self`` 自身の
+辞書に "count" という名前の新しくて関係ないインスタンスを作ります。
+クラスの静的なデータの再束縛には、メソッド内であるか否かにかかわらず、
+いつもクラスを指定しなければなりません::
 
    C.count = 314
 
-Static methods are possible since Python 2.2::
+静的メソッドは Python 2.2 以降で使えます::
 
    class C:
        def static(arg1, arg2, arg3):
@@ -1486,7 +1478,7 @@ Static methods are possible since Python 2.2::
            ...
        static = staticmethod(static)
 
-With Python 2.4's decorators, this can also be written as ::
+Python 2.4 のデコレータを使って、以下のようにも書けます::
 
    class C:
        @staticmethod
@@ -1494,23 +1486,24 @@ With Python 2.4's decorators, this can also be written as ::
            # No 'self' parameter!
            ...
 
-However, a far more straightforward way to get the effect of a static method is
-via a simple module-level function::
+しかし、静的メソッドの効果を得るもっと簡単な方法は、
+単にモジュールレベル関数を使うことです::
 
    def getcount():
        return C.count
 
-If your code is structured so as to define one class (or tightly related class
-hierarchy) per module, this supplies the desired encapsulation.
+モジュールあたりに一つのクラスを定義するように (あるいはクラス組織を厳密に
+関連させるように) コードが構成されているなら、
+これで必要なカプセル化ができます。
 
 
-How can I overload constructors (or methods) in Python?
--------------------------------------------------------
+Python でコンストラクタ(やメソッド)をオーバーロードするにはどうしたらいいですか？
+---------------------------------------------------------------------------------
 
-This answer actually applies to all methods, but the question usually comes up
-first in the context of constructors.
+この質問の答えはすべてのメソッドについて言えることですが、
+この質問はだいたい以下の構造の文脈から出てきます。
 
-In C++ you'd write
+C++ では、このように書けます:
 
 .. code-block:: c
 
@@ -1519,8 +1512,8 @@ In C++ you'd write
         C(int i) { cout << "Argument is " << i << "\n"; }
     }
 
-In Python you have to write a single constructor that catches all cases using
-default arguments.  For example::
+Python では、一つのコンストラクタでデフォルトの引数を使ってすべての場合に
+対応するように書かなければなりません。例えば::
 
    class C:
        def __init__(self, i=None):
@@ -1529,133 +1522,132 @@ default arguments.  For example::
            else:
                print "Argument is", i
 
-This is not entirely equivalent, but close enough in practice.
+これで完全に等価とは言えませんが、実用上は十分に近いです。
 
-You could also try a variable-length argument list, e.g. ::
+長さが変えられる引数のリストを試すには、例えば::
 
    def __init__(self, *args):
        ...
 
-The same approach works for all method definitions.
+これと同じやり方がすべてのメソッド定義で使えます。
 
 
-I try to use __spam and I get an error about _SomeClassName__spam.
-------------------------------------------------------------------
+__spam を使おうとしたら _SomeClassName__spam からエラーがでました。
+-------------------------------------------------------------------
 
-Variable names with double leading underscores are "mangled" to provide a simple
-but effective way to define class private variables.  Any identifier of the form
-``__spam`` (at least two leading underscores, at most one trailing underscore)
-is textually replaced with ``_classname__spam``, where ``classname`` is the
-current class name with any leading underscores stripped.
+先頭にアンダースコアが二つ付いた変数名は、クラスのプライベートな変数を、
+"マングル化"という単純かつ効率のいい方法で定義します。\ ``__spam`` のような
+形式 (先頭に二つ以上、末尾にもしあっても一つのアンダースコアがある) のすべての
+識別子は、\ ``classname`` が先頭のアンダースコアをすべて削除した現在のクラス名と
+すれば、\ ``_classname__spam`` のように文字上で置換えられます。
 
-This doesn't guarantee privacy: an outside user can still deliberately access
-the "_classname__spam" attribute, and private values are visible in the object's
-``__dict__``.  Many Python programmers never bother to use private variable
-names at all.
-
-
-My class defines __del__ but it is not called when I delete the object.
------------------------------------------------------------------------
-
-There are several possible reasons for this.
-
-The del statement does not necessarily call :meth:`__del__` -- it simply
-decrements the object's reference count, and if this reaches zero
-:meth:`__del__` is called.
-
-If your data structures contain circular links (e.g. a tree where each child has
-a parent reference and each parent has a list of children) the reference counts
-will never go back to zero.  Once in a while Python runs an algorithm to detect
-such cycles, but the garbage collector might run some time after the last
-reference to your data structure vanishes, so your :meth:`__del__` method may be
-called at an inconvenient and random time. This is inconvenient if you're trying
-to reproduce a problem. Worse, the order in which object's :meth:`__del__`
-methods are executed is arbitrary.  You can run :func:`gc.collect` to force a
-collection, but there *are* pathological cases where objects will never be
-collected.
-
-Despite the cycle collector, it's still a good idea to define an explicit
-``close()`` method on objects to be called whenever you're done with them.  The
-``close()`` method can then remove attributes that refer to subobjecs.  Don't
-call :meth:`__del__` directly -- :meth:`__del__` should call ``close()`` and
-``close()`` should make sure that it can be called more than once for the same
-object.
-
-Another way to avoid cyclical references is to use the :mod:`weakref` module,
-which allows you to point to objects without incrementing their reference count.
-Tree data structures, for instance, should use weak references for their parent
-and sibling references (if they need them!).
-
-If the object has ever been a local variable in a function that caught an
-expression in an except clause, chances are that a reference to the object still
-exists in that function's stack frame as contained in the stack trace.
-Normally, calling :func:`sys.exc_clear` will take care of this by clearing the
-last recorded exception.
-
-Finally, if your :meth:`__del__` method raises an exception, a warning message
-is printed to :data:`sys.stderr`.
+これはプライベートであることを保証するものではありません。これでも外部の
+ユーザが "_classname__spam" 属性に直接アクセスできますし、プライベートな
+変数はオブジェクトの ``__dict__`` から見えます。多くの Python プログラマは
+わざわざプライベートな変数名を使おうとなど考えません。
 
 
-How do I get a list of all instances of a given class?
-------------------------------------------------------
+クラスに __del__ メソッドを定義しているのですが、オブジェクトを削除したときに呼ばれません。
+-------------------------------------------------------------------------------------------
 
-Python does not keep track of all instances of a class (or of a built-in type).
-You can program the class's constructor to keep track of all instances by
-keeping a list of weak references to each instance.
+いくつかの可能性があります。
+
+del 文は必ずしも :meth:`__del__` を呼び出すとは限りません -- これは単純に
+オブジェクトの参照カウントを減らすもので、カウントがゼロになったときに
+:meth:`__del__` が呼び出されます。
+
+データ構造が循環リンク (子のそれぞれが親の参照を持ち、親のそれぞれが子の
+リストを持つツリーなど) を含む場合、その参照カウントは決して 0 にはなりません。
+時々、Python はこのようなサイクルを検出するアルゴリズムを実行しますが、
+データ構造への参照がなくなってからこのガベージコレクタが実行されるまで
+いくらか時間が掛かるかもしれないので、 :meth:`__del__` メソッドは不便な
+予測できないときに呼び出されるかもしれません。これは問題を再生しようと
+するときに不便です。さらに悪いことに、オブジェクトの :meth:`__del__` メソッドが
+実行される順序は任意です。 :func:`gc.collect` を起動して収集を強制することが
+できますが、オブジェクトが決して回収されないような本当に病的な場合も
+*あります*\ 。
+
+周期的なコレクタにかかわらず、オブジェクトに ``close()`` メソッドを明示的に
+定義し、使い終わったらいつでも呼び出せるようにするのはいいことです。
+そうすれば ``close()`` メソッドはサブオブジェクトへの参照をする属性を
+取り除いてくれます。\ :meth:`__del__` を直接呼び出さないでください --
+:meth:`__del__` は ``close()`` を呼び出すでしょうし、\ ``close()`` なら
+同じオブジェクトに対して複数回呼ばれてもいいことが保証されているでしょう。
+
+循環参照を避ける他の方法は、 :mod:`weakref` モジュールを使って、参照カウントを
+増やすことなくオブジェクトを示すことです。例えばツリー構造は、親と
+(必要なら！) 兄弟に弱参照を使うべきです。
+
+except 節で例外を捕まえた関数内でオブジェクトがローカル変数であったたなら、
+そのオブジェクトへの参照が関数のスタックフレーム内でスタックトレース内に
+含まれることで存在する可能性があります。
+通常、:func:`sys.exc_clear` を呼び出せば、最後に記録された例外を消去することで
+対処してくれます。
+
+最後に、\ :meth:`__del__` メソッドが例外を発生させた場合、警告のメッセージが
+:data:`sys.stderr` に書きこまれます。
 
 
-Modules
-=======
+与えられたクラスのすべてのインスタンスのリストを得るにはどうしますか？
+----------------------------------------------------------------------
 
-How do I create a .pyc file?
-----------------------------
+Python はクラス (やビルトイン型) のすべてのインスタンスをたどりません。
+クラスのコンストラクタにそれぞれのインスタンスへの弱参照のリストを
+作らせることですべてのインスタンスをたどらせられます。
 
-When a module is imported for the first time (or when the source is more recent
-than the current compiled file) a ``.pyc`` file containing the compiled code
-should be created in the same directory as the ``.py`` file.
 
-One reason that a ``.pyc`` file may not be created is permissions problems with
-the directory. This can happen, for example, if you develop as one user but run
-as another, such as if you are testing with a web server.  Creation of a .pyc
-file is automatic if you're importing a module and Python has the ability
-(permissions, free space, etc...) to write the compiled module back to the
-directory.
+モジュール
+==========
 
-Running Python on a top level script is not considered an import and no ``.pyc``
-will be created.  For example, if you have a top-level module ``abc.py`` that
-imports another module ``xyz.py``, when you run abc, ``xyz.pyc`` will be created
-since xyz is imported, but no ``abc.pyc`` file will be created since ``abc.py``
-isn't being imported.
+.pyc ファイルを作るにはどうしますか？
+-------------------------------------
 
-If you need to create abc.pyc -- that is, to create a .pyc file for a module
-that is not imported -- you can, using the :mod:`py_compile` and
-:mod:`compileall` modules.
+モジュールが最初にインポートされるとき (またはソースが現在コンパイルされている
+ファイルよりも新しいとき)、コンパイルされたコードを含む ``.pyc`` ファイルが
+``.py`` ファイルと同じディレクトリに作られるでしょう。
 
-The :mod:`py_compile` module can manually compile any module.  One way is to use
-the ``compile()`` function in that module interactively::
+``.pyc`` ファイルが作られないとしたら、ディレクトリの許可の問題が
+あるかもしれません。たとえばこれは、web サーバなどでテストするときのように、
+開発のときと違うユーザとして起動するときなどに起こりえます。モジュールを
+インポートしたときに Python がコンパイルされたモジュールをディレクトリに
+書き込むための条件 (許可、容量の空き、etc...) が揃っていれば、.pyc ファイルの
+生成は自動的に行われます。
+
+トップレベルのスクリプトで Python を起動するときにはインポートは考慮されず、
+``.pyc`` は生成されません。例えば、トップレベルモジュール ``abc.py`` があって、
+他のモジュール ``xyz.py`` をインポートするようになっているとき、abc を
+起動すると、xyz のインポート時に ``xyz.pyc`` が生成されますが、\ ``abc.py`` は
+インポートされないので ``abc.pyc`` ファイルは生成されません。
+
+abc.pyc が必要なら -- つまり、インポートされないモジュールの .pic ファイルを
+生成するためには -- :mod:`py_compile` や :mod:`compileall` モジュールが
+利用できます。
+
+:mod:`py_compile` モジュールは手動で任意のモジュールをコンパイルできます。
+やり方の一つは、このモジュールの ``compile()`` 関数を
+インタラクティブに実行することです::
 
    >>> import py_compile
    >>> py_compile.compile('abc.py')
 
-This will write the ``.pyc`` to the same location as ``abc.py`` (or you can
-override that with the optional parameter ``cfile``).
+これで ``abc.py`` と同じロケーション(オプション変数の ``cfile`` で
+変更することもできます)に ``.pyc`` ファイルが書き込まれます。
 
-You can also automatically compile all files in a directory or directories using
-the :mod:`compileall` module.  You can do it from the shell prompt by running
-``compileall.py`` and providing the path of a directory containing Python files
-to compile::
+:mod:`compileall` モジュールを使えば自動的に一つや複数のディレクトリの
+すべてのファイルをコンパイルできます。シェルプロンプトから ``compileall.py`` を
+起動して、コンパイルしたいファイルを含むディレクトリのパスを指定してください::
 
        python -m compileall .
 
 
-How do I find the current module name?
---------------------------------------
+現在のモジュール名を知るにはどうしますか？
+------------------------------------------
 
-A module can find out its own module name by looking at the predefined global
-variable ``__name__``.  If this has the value ``'__main__'``, the program is
-running as a script.  Many modules that are usually used by importing them also
-provide a command-line interface or a self-test, and only execute this code
-after checking ``__name__``::
+モジュールは前もって定義されたグローバル変数 ``__name__`` を検索することで
+自身の名前を決定できます。この値が ``'__main__'`` であるとき、そのプログラムは
+スクリプトとして実行されています。インポートされることによって使われる大抵の
+モジュールはコマンドラインインタフェースや自己テストも提供していて、
+``__name__`` をチェックしてからそのコードだけを実行します::
 
    def main():
        print 'Running test...'
@@ -1665,10 +1657,10 @@ after checking ``__name__``::
        main()
 
 
-How can I have modules that mutually import each other?
--------------------------------------------------------
+相互にインポートしあうモジュールを作るにはどうしたらいいですか？
+----------------------------------------------------------------
 
-Suppose you have the following modules:
+以下のモジュールがあったとしましょう:
 
 foo.py::
 
@@ -1680,85 +1672,83 @@ bar.py::
    from foo import foo_var
    bar_var = 2
 
-The problem is that the interpreter will perform the following steps:
+問題はインタプリタが以下の段階を実行することです:
 
-* main imports foo
-* Empty globals for foo are created
-* foo is compiled and starts executing
-* foo imports bar
-* Empty globals for bar are created
-* bar is compiled and starts executing
-* bar imports foo (which is a no-op since there already is a module named foo)
+* main が foo をインポートする
+* foo の空のグローバルが生成される
+* foo がコンパイルされ実行を始める
+* foo が bar をインポートする
+* bar の空のグローバルが生成される
+* bar がコンパイルされ実行を始める
+* bar  が foo をインポートする(すでに foo という名前のモジュールがあるので no-op となる)
 * bar.foo_var = foo.foo_var
 
-The last step fails, because Python isn't done with interpreting ``foo`` yet and
-the global symbol dictionary for ``foo`` is still empty.
+この最後の段階は失敗します。Python が ``foo`` を解釈し終わっていなくて、
+``foo`` のグローバルなシンボルの辞書はまだ空ですから。
 
-The same thing happens when you use ``import foo``, and then try to access
-``foo.foo_var`` in global code.
+``import foo`` を使って、グローバルコードの ``foo.foo_var`` に
+アクセスしようとしたときにも、これと同じことが起こります。
 
-There are (at least) three possible workarounds for this problem.
+この問題には (少なくとも) 三つの解決策があります。
 
-Guido van Rossum recommends avoiding all uses of ``from <module> import ...``,
-and placing all code inside functions.  Initializations of global variables and
-class variables should use constants or built-in functions only.  This means
-everything from an imported module is referenced as ``<module>.<name>``.
+Guido van Rossum は ``from <module> import ...`` を全く使わないで、すべての
+コードを関数の中に入れることを勧めています。グローバル変数とクラス変数の
+初期化は定数とビルトイン関数のみで行われるべきです。これでインポートされた
+すべてのモジュールは ``<module>.<name>`` として参照されることになります。
 
-Jim Roskind suggests performing steps in the following order in each module:
+Jim Roskind はそれぞれのモジュールに対して以下の順に進めることを提案しています:
 
-* exports (globals, functions, and classes that don't need imported base
-  classes)
-* ``import`` statements
-* active code (including globals that are initialized from imported values).
+* エクスポート (インポートされた基底クラスを必要としないグローバル、関数、クラス)
+* ``import`` 文
+* アクティブなコード (インポートされた値によって初期化されるグローバルを含む)
 
-van Rossum doesn't like this approach much because the imports appear in a
-strange place, but it does work.
+インポートが奇妙な場所に現れることから van Rossum はこの方法を
+それほど好みませんが、これは有効です。
 
-Matthias Urlichs recommends restructuring your code so that the recursive import
-is not necessary in the first place.
+Matthias Urlichs は第一に再帰インポートが必要ないように
+コードを構築しなおすことを推奨しています。
 
-These solutions are not mutually exclusive.
+これらの解決策はそれぞれ両立させることもできます。
 
 
-__import__('x.y.z') returns <module 'x'>; how do I get z?
----------------------------------------------------------
+__import__('x.y.z') は <module 'x'> を返しますが、z を得るためにはどうしますか？
+--------------------------------------------------------------------------------
 
-Try::
+こうしてみてください::
 
    __import__('x.y.z').y.z
 
-For more realistic situations, you may have to do something like ::
+もっと現実的には、こうするべきかもしれません::
 
    m = __import__(s)
    for i in s.split(".")[1:]:
        m = getattr(m, i)
 
-See :mod:`importlib` for a convenience function called
-:func:`~importlib.import_module`.
+:func:`~importlib.import_module` という便利な関数があるので、
+:mod:`importlib` を参照してください。
 
 
 
-When I edit an imported module and reimport it, the changes don't show up.  Why does this happen?
--------------------------------------------------------------------------------------------------
+インポートされたモジュールを編集してから再インポートしましたが、変化が現れません。なぜですか？
+----------------------------------------------------------------------------------------------
 
-For reasons of efficiency as well as consistency, Python only reads the module
-file on the first time a module is imported.  If it didn't, in a program
-consisting of many modules where each one imports the same basic module, the
-basic module would be parsed and re-parsed many times.  To force rereading of a
-changed module, do this::
+効率と一貫性上の理由から、Python はモジュールが最初にインポートされた時にのみ
+モジュールファイルを読み込みます。そうしないと、たくさんのモジュールで
+できていて、それぞれが同じ基本モジュールをインポートしているような
+プログラムでは、その基本モジュールの解析と再解析が繰り返されることになります。
+変更されさたモジュールの再読込を強制するには、こうしてください::
 
    import modname
    reload(modname)
 
-Warning: this technique is not 100% fool-proof.  In particular, modules
-containing statements like ::
+注意:この手法は 100%安全とは言えません。とりわけ::
 
    from modname import some_objects
 
-will continue to work with the old version of the imported objects.  If the
-module contains class definitions, existing class instances will *not* be
-updated to use the new class definition.  This can result in the following
-paradoxical behaviour:
+のような文を含むモジュールは、インポートされたオブジェクトの古いバージョンを
+使い続けます。そのモジュールにクラス定義が含まれていたら、存在する
+クラスインスタンスは新しいクラス定義を使うようにアップデート *されません*\ 。
+これによって以下の矛盾した振舞いがなされえます::
 
    >>> import cls
    >>> c = cls.C()                # Create an instance of C
@@ -1767,7 +1757,8 @@ paradoxical behaviour:
    >>> isinstance(c, cls.C)       # isinstance is false?!?
    False
 
-The nature of the problem is made clear if you print out the class objects:
+この問題の性質は、クラスオブジェクトを印字することで
+明らかになります::
 
    >>> c.__class__
    <class cls.C at 0x7352a0>

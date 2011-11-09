@@ -2,89 +2,86 @@
 
 .. _windows-faq:
 
-=====================
-Python on Windows FAQ
-=====================
+=======================
+Windows 上の Python FAQ
+=======================
 
 .. contents::
 
-How do I run a Python program under Windows?
---------------------------------------------
+Python プログラムを Windows で動かすにはどうしますか？
+------------------------------------------------------
 
-This is not necessarily a straightforward question. If you are already familiar
-with running programs from the Windows command line then everything will seem
-obvious; otherwise, you might need a little more guidance.  There are also
-differences between Windows 95, 98, NT, ME, 2000 and XP which can add to the
-confusion.
+これは単純な問題ではないかもしれません。あなたがすでに
+Windows コマンドラインからプログラムを作動させることに慣れているなら、
+すぐに全て分かりますが、そうでなければ少し案内が必要です。Windows 95、98、NT、
+ME、2000、XP の間にも差があり、混乱のもとになっています。
 
 .. sidebar:: |Python Development on XP|_
    :subtitle: `Python Development on XP`_
 
-   This series of screencasts aims to get you up and running with Python on
-   Windows XP.  The knowledge is distilled into 1.5 hours and will get you up
-   and running with the right Python distribution, coding in your choice of IDE,
-   and debugging and writing solid code with unit-tests.
+   このスクリーンキャストのシリーズは、あなたが Windows XP で Python を
+   扱えるようにすることを目標としています。知識は 90 分に凝縮され、
+   あなたが正しい Python ディストリビューションを、あなたが選んだ IDE で
+   コーディングし、ユニットテストでデバッグをして堅実なコードを
+   書いていけるようにします。
 
 .. |Python Development on XP| image:: python-video-icon.png
 .. _`Python Development on XP`:
    http://www.showmedo.com/videos/series?name=pythonOzsvaldPyNewbieSeries
 
-Unless you use some sort of integrated development environment, you will end up
-*typing* Windows commands into what is variously referred to as a "DOS window"
-or "Command prompt window".  Usually you can create such a window from your
-Start menu; under Windows 2000 the menu selection is :menuselection:`Start -->
-Programs --> Accessories --> Command Prompt`.  You should be able to recognize
-when you have started such a window because you will see a Windows "command
-prompt", which usually looks like this::
+あなたがある種の統合開発環境を使っているのでない限り、結局は Windows コマンドを
+"DOS ウィンドウ" や "コマンドプロンプトウィンドウ" と様々に呼ばれるものに
+*タイプする* ことになります。通常、このようなウィンドウはスタートメニューから
+出すことができます。Windows 2000 では選ぶメニューは :menuselection:`Start -->
+Programs --> Accessories --> Command Prompt` です。そのようなウィンドウが
+開いたことは、通常このような Windows "コマンドプロンプト" が見られることから
+わかるでしょう::
 
    C:\>
 
-The letter may be different, and there might be other things after it, so you
-might just as easily see something like::
+この文字は異なっていたり、続きがあったりするので、コンピュータの設定や、
+あなたが最近何をしたかに依って、このようになっていることもあるでしょう::
 
    D:\Steve\Projects\Python>
 
-depending on how your computer has been set up and what else you have recently
-done with it.  Once you have started such a window, you are well on the way to
-running Python programs.
+このようなウィンドウさえ開けば、Python プログラムを動かす手順は順調に進みます。
 
-You need to realize that your Python scripts have to be processed by another
-program called the Python interpreter.  The interpreter reads your script,
-compiles it into bytecodes, and then executes the bytecodes to run your
-program. So, how do you arrange for the interpreter to handle your Python?
+前提として、Python スクリプトは、Python インタプリタという別のプログラムに
+よって加工されなければなりません。インタプリタはスクリプトを読み込み、
+バイトコードにコンパイルし、そのバイトコードを実行してプログラムを動かします。
+では、インタプリタに Python を扱わせるにはどうするのでしょうか？
 
-First, you need to make sure that your command window recognises the word
-"python" as an instruction to start the interpreter.  If you have opened a
-command window, you should try entering the command ``python`` and hitting
-return.  You should then see something like::
+最初に、コマンドウィンドウが "python" という文字列をインタプリタを
+開始するための導入として認識していることを確かめる必要があります。
+コマンドウィンドウが開いたなら、コマンド ``python`` を入力してリターンキーを
+打ってみましょう。するとこのようなものが現れます::
 
    Python 2.2 (#28, Dec 21 2001, 12:21:22) [MSC 32 bit (Intel)] on win32
    Type "help", "copyright", "credits" or "license" for more information.
    >>>
 
-You have started the interpreter in "interactive mode". That means you can enter
-Python statements or expressions interactively and have them executed or
-evaluated while you wait.  This is one of Python's strongest features.  Check it
-by entering a few expressions of your choice and seeing the results::
+インタプリタの"対話モード"が始まりました。これで Python の文や式を対話的に
+入力して、待っている間に実行や評価させることができます。これが Python の
+最強の機能のひとつです。いくつかの式を選んで入力し、結果を見て確かめて
+みましょう::
 
-    >>> print "Hello"
+    >>> print("Hello")
     Hello
     >>> "Hello" * 3
     HelloHelloHello
 
-Many people use the interactive mode as a convenient yet highly programmable
-calculator.  When you want to end your interactive Python session, hold the Ctrl
-key down while you enter a Z, then hit the "Enter" key to get back to your
-Windows command prompt.
+多くの人が対話モードを便利で高度なプログラム可能計算機として使っています。
+対話式 Python セッションを終わらせたいなら、Ctrl キーを押しながら Z を入力し、
+"Enter" キーを打って Windows コマンドプロンプトに戻ってください。
 
-You may also find that you have a Start-menu entry such as :menuselection:`Start
---> Programs --> Python 2.2 --> Python (command line)` that results in you
-seeing the ``>>>`` prompt in a new window.  If so, the window will disappear
-after you enter the Ctrl-Z character; Windows is running a single "python"
-command in the window, and closes it when you terminate the interpreter.
+また、スタートメニューには :menuselection:`Start --> Programs --> Python 2.2
+--> Python (command line)` という項目があり、そこから新しいウィンドウで
+``>>>`` というプロンプトが現れます。その場合は、Ctrl-Z の文字を入力すると
+ウィンドウは消えます。Windows はウィンドウで "python" コマンドだけを
+実行していて、そのウィンドウはインタプリタを終了すると閉じられるのです。
 
-If the ``python`` command, instead of displaying the interpreter prompt ``>>>``,
-gives you a message like::
+``python`` コマンドで、インタプリタプロンプト ``>>>`` ではなく
+次のようなメッセージ::
 
    'python' is not recognized as an internal or external command,
    operable program or batch file.
@@ -92,240 +89,239 @@ gives you a message like::
 .. sidebar:: |Adding Python to DOS Path|_
    :subtitle: `Adding Python to DOS Path`_
 
-   Python is not added to the DOS path by default.  This screencast will walk
-   you through the steps to add the correct entry to the `System Path`, allowing
-   Python to be executed from the command-line by all users.
+   Python はデフォルトでは DOS パスに加えられていません。この
+   スクリーンキャストでは、すべてのユーザーがコマンドラインから Python を
+   実行できるようにして、 `システムパス` に適切な entry を加えられるように
+   します。
 
 .. |Adding Python to DOS Path| image:: python-video-icon.png
 .. _`Adding Python to DOS Path`:
    http://showmedo.com/videos/video?name=960000&fromSeriesID=96
 
 
-or::
+や::
 
    Bad command or filename
 
-then you need to make sure that your computer knows where to find the Python
-interpreter.  To do this you will have to modify a setting called PATH, which is
-a list of directories where Windows will look for programs.
+が現れたなら、コンピュータが Python インタプリタの場所を認識しているか
+確かめなければなりません。そのためには、Windows がプログラムを探す
+ディレクトリのリストである PATH という設定を変更しなければなりません。
 
-You should arrange for Python's installation directory to be added to the PATH
-of every command window as it starts.  If you installed Python fairly recently
-then the command ::
+コマンドウィンドウが始まるごとに Python がインストールされたディレクトリが
+PATH 加えられるように設定するといいでしょう。あなたが Python を
+インストールしたのが結構最近なら、コマンド::
 
    dir C:\py*
 
-will probably tell you where it is installed; the usual location is something
-like ``C:\Python23``.  Otherwise you will be reduced to a search of your whole
-disk ... use :menuselection:`Tools --> Find` or hit the :guilabel:`Search`
-button and look for "python.exe".  Supposing you discover that Python is
-installed in the ``C:\Python23`` directory (the default at the time of writing),
-you should make sure that entering the command ::
+で、どこにインストールされているかわかるでしょう。通常の場所は
+``C:\Python23`` のようになっています。そうでなければ、ディスク全体を
+検索することになるでしょう ... :menuselection:`Tools --> Find` を使うか
+:guilabel:`Search` ボタンを押して "python.exe" を探してください。
+Python が ``C:\Python23`` ディレクトリ (執筆時点でのデフォルト) に
+インストールされていたとしたら、次のコマンドを入力すれば上と同じような
+インタプリタが開始されることがわかるでしょう (もちろん、終了に
+"CTRL-Z" と "Enter" が必要です)::
 
    c:\Python23\python
 
-starts up the interpreter as above (and don't forget you'll need a "CTRL-Z" and
-an "Enter" to get out of it). Once you have verified the directory, you need to
-add it to the start-up routines your computer goes through.  For older versions
-of Windows the easiest way to do this is to edit the ``C:\AUTOEXEC.BAT``
-file. You would want to add a line like the following to ``AUTOEXEC.BAT``::
+一旦ディレクトリを変更したら、コンピュータが行うスタートアップルーチンに
+加える必要があります。古いバージョンの Windows では、一番簡単な方法は
+``C:\AUTOEXEC.BAT`` ファイルを編集することです。\ ``AUTOEXEC.BAT`` に
+以下の行を追加しましょう::
 
    PATH C:\Python23;%PATH%
 
-For Windows NT, 2000 and (I assume) XP, you will need to add a string such as ::
+Windows NT、2000、(おそらく) XP では、このような文字列::
 
    ;C:\Python23
 
-to the current setting for the PATH environment variable, which you will find in
-the properties window of "My Computer" under the "Advanced" tab.  Note that if
-you have sufficient privilege you might get a choice of installing the settings
-either for the Current User or for System.  The latter is preferred if you want
-everybody to be able to run Python on the machine.
+を "マイコンピュータ" のプロパティウィンドウの "詳細" タブにある、
+PATH 環境変数の現在の設定に加えましょう。なお、十分な権限があれば、
+現在のユーザに設定するかシステムに設定するかを選べます。すべてのユーザーが
+Python をコンピュータで実行したいのであれば後者を選ぶのがいいです。
 
-If you aren't confident doing any of these manipulations yourself, ask for help!
-At this stage you may want to reboot your system to make absolutely sure the new
-setting has taken effect.  You probably won't need to reboot for Windows NT, XP
-or 2000.  You can also avoid it in earlier versions by editing the file
-``C:\WINDOWS\COMMAND\CMDINIT.BAT`` instead of ``AUTOEXEC.BAT``.
+この中に自信のない操作があれば、助けを求めてください！　ここでは、
+新しい設定が効いたことを絶対確実にするために、システムを再起動しましょう。
+Windows NT、XP、2000 では、おそらく再起動の必要はないでしょう。
+それ以前のバージョンでも、\ ``AUTOEXEC.BAT`` の代わりに
+``C:\WINDOWS\COMMAND\CMDINIT.BAT`` を編集すれば再起動しなくて済みます。
 
-You should now be able to start a new command window, enter ``python`` at the
-``C:\>`` (or whatever) prompt, and see the ``>>>`` prompt that indicates the
-Python interpreter is reading interactive commands.
+これで新しいコマンドウィンドウが開き、\ ``C:\>`` (等) のプロンプトに
+``python`` を入力すれば、Python インタプリタが対話式コマンドを受け付けることを
+示す ``>>>`` が現れるでしょう。
 
-Let's suppose you have a program called ``pytest.py`` in directory
-``C:\Steve\Projects\Python``.  A session to run that program might look like
-this::
+それでは、\ ``pytest.py`` というプログラムが ``C:\Steve\Projects\Python``
+ディレクトリにあったとしましょう。このプログラムを実行するためのセッションは
+このようになるでしょう::
 
    C:\> cd \Steve\Projects\Python
    C:\Steve\Projects\Python> python pytest.py
 
-Because you added a file name to the command to start the interpreter, when it
-starts up it reads the Python script in the named file, compiles it, executes
-it, and terminates, so you see another ``C:\>`` prompt.  You might also have
-entered ::
+インタプリタを開始するためのコマンドにファイル名を加えたので、インタプリタは
+開始時にその名前の Python スクリプトを読み込み、コンパイルし、実行し、終了し、
+それから再び ``C:\>`` プロンプトが現れます。カレントディレクトリを
+変更したくないなら、このように入力しても良いです::
 
    C:\> python \Steve\Projects\Python\pytest.py
 
-if you hadn't wanted to change your current directory.
+NT、2000、XP では、インストール過程ですでにコマンド ``pytest.py`` (または、
+カレントディレクトリになければ ``C:\Steve\Projects\Python\pytest.py``) が
+".py" 拡張子を認識してその名前のファイルで Python を実行するように準備して
+あるかもしれません。この機能を使うと便利ですが、Windows の *いくつかの*
+バージョンでは、この形式がインタプリタを明示的に使うのと正確には同じに
+ならないというバグがありますので、ご注意ください。
 
-Under NT, 2000 and XP you may well find that the installation process has also
-arranged that the command ``pytest.py`` (or, if the file isn't in the current
-directory, ``C:\Steve\Projects\Python\pytest.py``) will automatically recognize
-the ".py" extension and run the Python interpreter on the named file. Using this
-feature is fine, but *some* versions of Windows have bugs which mean that this
-form isn't exactly equivalent to using the interpreter explicitly, so be
-careful.
+憶えておくべき重要なポイントは:
 
-The important things to remember are:
-
-1. Start Python from the Start Menu, or make sure the PATH is set correctly so
-   Windows can find the Python interpreter. ::
+1. Python をスタートメニューから開始する、または PATH を正しく設定して
+   Windows が Python インタプリタを見つけられるようにします::
 
       python
 
-   should give you a '>>>' prompt from the Python interpreter. Don't forget the
-   CTRL-Z and ENTER to terminate the interpreter (and, if you started the window
-   from the Start Menu, make the window disappear).
+   で Python インタプリタから '>>>' プロンプトが与えられます。もちろん、
+   CTRL-Z と ENTER でインタプリタが終了します(そして、スタートメニューから
+   そのウィンドウを開始したのなら、そのウィンドウは消えます)。
 
-2. Once this works, you run programs with commands::
+2. それができたら、このコマンドでプログラムを実行してください::
 
       python {program-file}
 
-3. When you know the commands to use you can build Windows shortcuts to run the
-   Python interpreter on any of your scripts, naming particular working
-   directories, and adding them to your menus.  Take a look at ::
+3. 使うべきコマンドを知れば、特定の作業ディレクトリを指定して、
+   どのスクリプト上でも Python インタプリタを実行する Windows ショートカットを
+   構成できます。複雑なことがしたいなら::
 
       python --help
 
-   if your needs are complex.
+   を見てください。
 
-4. Interactive mode (where you see the ``>>>`` prompt) is best used for checking
-   that individual statements and expressions do what you think they will, and
-   for developing code by experiment.
+4. 対話モード (``>>>`` プロンプトが現れるところ) は、単一の文や式が
+   思ったとおりに動くか確かめたり、実験的にコードを開発するときに使うと
+   最高です。
 
 
-How do I make Python scripts executable?
-----------------------------------------
+Python スクリプトを実行可能にするにはどうしますか？
+---------------------------------------------------
 
-On Windows 2000, the standard Python installer already associates the .py
-extension with a file type (Python.File) and gives that file type an open
-command that runs the interpreter (``D:\Program Files\Python\python.exe "%1"
-%*``).  This is enough to make scripts executable from the command prompt as
-'foo.py'.  If you'd rather be able to execute the script by simple typing 'foo'
-with no extension you need to add .py to the PATHEXT environment variable.
+Windows 2000 では、標準の Python インストーラはすでに .py 拡張子を
+あるファイル型 (Python.File) に関連付け、そのファイル型にインタプリタを実行する
+オープンコマンド (``D:\Program Files\Python\python.exe "%1" %*``) を与えます。
+コマンドプロンプトから 'foo.py' としてスクリプトを実行可能にするには
+これで十分です。スクリプトを拡張子なしで 'foo' とだけタイプして
+実行したいのなら、PATHEXT 環境変数に .py を加えてください。
 
-On Windows NT, the steps taken by the installer as described above allow you to
-run a script with 'foo.py', but a longtime bug in the NT command processor
-prevents you from redirecting the input or output of any script executed in this
-way.  This is often important.
+Windows NT では、インストーラによって行われる上記のような段階により、
+スクリプトを 'foo.py' で実行できるようになりますが、長年のバグにより、
+NT コマンドプロセッサで入力や出力のリダイレクトをすることは、この方法では
+できません。これがしばしば重要になります。
 
-The incantation for making a Python script executable under WinNT is to give the
-file an extension of .cmd and add the following as the first line::
+Python スクリプトを WinNT で実行できるようにするおまじないは、
+ファイルに .cmd 拡張子をつけ、最初の行に以下の文を加えることです::
 
    @setlocal enableextensions & python -x %~f0 %* & goto :EOF
 
 
-Why does Python sometimes take so long to start?
-------------------------------------------------
+Python の起動に時間がかかることがあるのはなぜですか？
+-----------------------------------------------------
 
-Usually Python starts very quickly on Windows, but occasionally there are bug
-reports that Python suddenly begins to take a long time to start up.  This is
-made even more puzzling because Python will work fine on other Windows systems
-which appear to be configured identically.
+通常 Python は Windows でとても早く起動しますが、ときどき Python が急に
+スタートアップに時間がかかるようになったというバグレポートがあります。
+更に複雑なことに、Python は同様に設定された他の Windows システムでは
+きちんと動くのです。
 
-The problem may be caused by a misconfiguration of virus checking software on
-the problem machine.  Some virus scanners have been known to introduce startup
-overhead of two orders of magnitude when the scanner is configured to monitor
-all reads from the filesystem.  Try checking the configuration of virus scanning
-software on your systems to ensure that they are indeed configured identically.
-McAfee, when configured to scan all file system read activity, is a particular
-offender.
-
-
-Where is Freeze for Windows?
-----------------------------
-
-"Freeze" is a program that allows you to ship a Python program as a single
-stand-alone executable file.  It is *not* a compiler; your programs don't run
-any faster, but they are more easily distributable, at least to platforms with
-the same OS and CPU.  Read the README file of the freeze program for more
-disclaimers.
-
-You can use freeze on Windows, but you must download the source tree (see
-http://www.python.org/download/source).  The freeze program is in the
-``Tools\freeze`` subdirectory of the source tree.
-
-You need the Microsoft VC++ compiler, and you probably need to build Python.
-The required project files are in the PCbuild directory.
+この問題はそのマシンのウイルス対策ソフトウェアの設定ミスによって
+起こされることがあります。ウイルススキャナの中には、ファイルシステムからの
+全ての読み込みを監視するように設定した場合に、二桁の
+スタートアップオーバーヘッドを引き起すことが知られているものがあります。
+あなたのシステムのウイルススキャンソフトウェアの設定を確かめて、
+本当に同様に設定されていることを確実にしてください。
 
 
-Is a ``*.pyd`` file the same as a DLL?
---------------------------------------
+Windows 用の Freeze はどこにありますか？
+----------------------------------------
+
+"Freeze" は Python プログラムをひとつのスタンドアロンな実行可能なファイルに
+まとめて送れるようにするプログラムです。これはコンパイラ *ではありません*\ 。
+プログラムの実行が速くなるわけでも、配布が簡単になるわけでもありません、
+少なくとも OS や CPU が同じならば。
+
+Windows で freeze を使用できますが、ソースツリーをダウンロードする
+必要があります (http://www.python.org/download/source を参照してください)。
+freeze プログラムはソースツリーの ``Tools\freeze`` サブディレクトリにあります。
+
+Microsoft VC++ コンパイラが必要で、Python をビルドすることも
+必要になるでしょう。要求されるプロジェクトファイルは PCbuild ディレクトリに
+あります。
+
+
+``*.pyd`` ファイルは DLL と同じですか？
+---------------------------------------
 
 .. XXX update for py3k (PyInit_foo)
 
-Yes, .pyd files are dll's, but there are a few differences.  If you have a DLL
-named ``foo.pyd``, then it must have a function ``initfoo()``.  You can then
-write Python "import foo", and Python will search for foo.pyd (as well as
-foo.py, foo.pyc) and if it finds it, will attempt to call ``initfoo()`` to
-initialize it.  You do not link your .exe with foo.lib, as that would cause
-Windows to require the DLL to be present.
+はい、.pyd ファイルは dll と同じようなものですが、少し違いがあります。
+``foo.pyd`` という名前の DLL があったとしたら、それには関数 ``initfoo()`` が
+含まれていなければなりません。そうすれば Python で "import foo" を書けて、
+Python は foo.pyd (や foo.py、foo.pyc) を探して、あれば、\ ``initfoo()`` を
+呼び出して初期化しようとします。Windows が DLL の存在を必要とするのと違い、
+.exe ファイルを foo.lib にリンクするわけではありません。
 
-Note that the search path for foo.pyd is PYTHONPATH, not the same as the path
-that Windows uses to search for foo.dll.  Also, foo.pyd need not be present to
-run your program, whereas if you linked your program with a dll, the dll is
-required.  Of course, foo.pyd is required if you want to say ``import foo``.  In
-a DLL, linkage is declared in the source code with ``__declspec(dllexport)``.
-In a .pyd, linkage is defined in a list of available functions.
+なお、foo.pyd を検索するパスは PYTHONPATH であり、Windows が foo.dll を
+検索するパスと同じではありません。また、プログラムを dll にリンクしたときは
+プログラムの実行に dll が必要ですが、foo.pyd は実行には必要はありません。
+もちろん、\ ``import foo`` したいなら foo.pyd は 必要です。DLL では、リンクは
+ソースコード内で ``__declspec(dllexport)`` によって宣言されます。.pyd では、
+リンクは使える関数のリストで定義されます。
 
 
-How can I embed Python into a Windows application?
---------------------------------------------------
+Python を Windows アプリケーションに埋め込むにはどうしたらいいですか？
+----------------------------------------------------------------------
 
-Embedding the Python interpreter in a Windows app can be summarized as follows:
+Python インタプリタを Windows app に埋め込む方法は、次のように要約できます:
 
-1. Do _not_ build Python into your .exe file directly.  On Windows, Python must
-   be a DLL to handle importing modules that are themselves DLL's.  (This is the
-   first key undocumented fact.) Instead, link to :file:`python{NN}.dll`; it is
-   typically installed in ``C:\Windows\System``.  NN is the Python version, a
-   number such as "23" for Python 2.3.
+1. Python を .exe ファイルディレクトリに組み込 _まないでください_ 。Windows
+   では、Python は (それ自体 DLL である) モジュールをインポートして扱う
+   DLL でなくてはなりません (ドキュメント化されていない重大な事実の一つ目
+   です)。組み込む代わりに、\ :file:`python{NN}.dll` にリンクしてください。
+   通常は ``C:\Windows\System`` にインストールされています。\ *NN* は Python の
+   バージョンで、Python 2.3 なら "23" のようになります。
 
-   You can link to Python statically or dynamically.  Linking statically means
-   linking against :file:`python{NN}.lib`, while dynamically linking means
-   linking against :file:`python{NN}.dll`.  The drawback to dynamic linking is
-   that your app won't run if :file:`python{NN}.dll` does not exist on your
-   system.  (General note: :file:`python{NN}.lib` is the so-called "import lib"
-   corresponding to :file:`python.dll`.  It merely defines symbols for the
-   linker.)
+   Python をリンクするには二種類の方法があります。起動時 (Load-time) リンクは、
+   :file:`python{NN}.lib` に対してリンクするもので、実行時 (Run-time) リンクは
+   :file:`python{NN}.dll` に対してリンクするものです。(一般的な注意:
+   :file:`python{NN}.lib` は :file:`python{NN}.dll` に対するいわゆる
+   "インポートライブラリ" です。これは単にリンカに対するシンボルを定義します。)
 
-   Linking dynamically greatly simplifies link options; everything happens at
-   run time.  Your code must load :file:`python{NN}.dll` using the Windows
-   ``LoadLibraryEx()`` routine.  The code must also use access routines and data
-   in :file:`python{NN}.dll` (that is, Python's C API's) using pointers obtained
-   by the Windows ``GetProcAddress()`` routine.  Macros can make using these
-   pointers transparent to any C code that calls routines in Python's C API.
+   実行時リンクは、リンクの選択を大いに単純化します。
+   全ては実行時に行われます。コードは Windows の
+   ``LoadLibraryEx()`` ルーチンで :file:`python{NN}.dll` をロード
+   しなければなりません。コードはまた、Windows の ``GetProcAddress()``
+   ルーチンで得られるポインタで、\ :file:`python{NN}.dll` (すなわち、Python の
+   C API)のルーチンとデータへアクセスしていなければなりません。マクロによって、
+   このポインタを Python の C API のルーチンを呼び出す任意の C コードに通して
+   使えます。
 
-   Borland note: convert :file:`python{NN}.lib` to OMF format using Coff2Omf.exe
-   first.
+   Borland note: まず :file:`python{NN}.lib` を Coff2Omf.exe で OMF
+   フォーマットに変換してください。
 
-2. If you use SWIG, it is easy to create a Python "extension module" that will
-   make the app's data and methods available to Python.  SWIG will handle just
-   about all the grungy details for you.  The result is C code that you link
-   *into* your .exe file (!)  You do _not_ have to create a DLL file, and this
-   also simplifies linking.
+   .. XXX what about static linking?
 
-3. SWIG will create an init function (a C function) whose name depends on the
-   name of the extension module.  For example, if the name of the module is leo,
-   the init function will be called initleo().  If you use SWIG shadow classes,
-   as you should, the init function will be called initleoc().  This initializes
-   a mostly hidden helper class used by the shadow class.
+2. SWIG を使えば、app のデータとメソッドを Python で使えるようにする Python
+   "拡張モジュール"を簡単に作れます。SWIG は雑用を殆どやってくれるでしょう。
+   結果として、.exe ファイル *の中に* リンクする C コードができます(！)。
+    DLL を作 _らなくてもよく_\ 、リンクも簡潔になります。
 
-   The reason you can link the C code in step 2 into your .exe file is that
-   calling the initialization function is equivalent to importing the module
-   into Python! (This is the second key undocumented fact.)
+3. SWIG は拡張の名前に依る名前の init 関数 (C 関数) を作ります。例えば、
+   モジュールの名前が leo なら、init 関数の名前は initleo() になります。
+   SWIG shadow クラスを使ったほうがよく、そうすると init 関数の名前は
+   initleoc() になります。これは shadow クラスが使うほとんど隠れた helper
+   クラスを初期化します。
 
-4. In short, you can use the following code to initialize the Python interpreter
-   with your extension module.
+   ステップ 2 の C コードを .exe ファイルにリンクできるのは、初期化関数の
+   呼び出しと Python へのモジュールのインポートが同等だからです！
+   (ドキュメント化されていない重大な事実の二つ目です)
+
+4. 要するに、以下のコードを使って Python インタプリタを拡張モジュール込みで
+   初期化することができます。
 
    .. code-block:: c
 
@@ -335,16 +331,14 @@ Embedding the Python interpreter in a Windows app can be summarized as follows:
       initmyAppc();  // Initialize (import) the helper class.
       PyRun_SimpleString("import myApp") ;  // Import the shadow class.
 
-5. There are two problems with Python's C API which will become apparent if you
-   use a compiler other than MSVC, the compiler used to build pythonNN.dll.
+5. Python の C API には、pythonNN.dll をビルドするのに使われたコンパイラ
+   MSVC 以外のコンパイラを使うと現れる二つの問題があります。
 
-   Problem 1: The so-called "Very High Level" functions that take FILE *
-   arguments will not work in a multi-compiler environment because each
-   compiler's notion of a struct FILE will be different.  From an implementation
-   standpoint these are very _low_ level functions.
+   問題 1: コンパイラによって struct FILE に対する概念が異なるため、FILE *
+   引数を取るいわゆる "超高水準" 関数は、多コンパイラ環境で働きません。
+   実装の観点から、これらは超 _低_ 水準関数になっています。
 
-   Problem 2: SWIG generates the following code when generating wrappers to void
-   functions:
+   問題 2: SWIG は void 関数へのラッパを生成するときに以下のコードを生成します:
 
    .. code-block:: c
 
@@ -352,96 +346,98 @@ Embedding the Python interpreter in a Windows app can be summarized as follows:
       _resultobj = Py_None;
       return _resultobj;
 
-   Alas, Py_None is a macro that expands to a reference to a complex data
-   structure called _Py_NoneStruct inside pythonNN.dll.  Again, this code will
-   fail in a mult-compiler environment.  Replace such code by:
+   ああ、Py_none は pythonNN.dll 内の _Py_NoneStruct という複雑なデータ構造に
+   展開するマクロです。また、このコードは他コンパイラ環境では失敗します。
+   このコードを次のように置き換えてください:
 
    .. code-block:: c
 
       return Py_BuildValue("");
 
-   It may be possible to use SWIG's ``%typemap`` command to make the change
-   automatically, though I have not been able to get this to work (I'm a
-   complete SWIG newbie).
+   これで、SWIG をまだ仕事に使えない (私は SWIG の完全な初心者です) 私でも、
+   SWIG の ``%typemap`` コマンドを使って自動的に変更できるようになります。
 
-6. Using a Python shell script to put up a Python interpreter window from inside
-   your Windows app is not a good idea; the resulting window will be independent
-   of your app's windowing system.  Rather, you (or the wxPythonWindow class)
-   should create a "native" interpreter window.  It is easy to connect that
-   window to the Python interpreter.  You can redirect Python's i/o to _any_
-   object that supports read and write, so all you need is a Python object
-   (defined in your extension module) that contains read() and write() methods.
+6. Python シェルスクリプトを使って Windows app 内から Python
+   インタプリタウィンドウを掲示するのはいい方法ではありません。そのように
+   表示されるウィンドウは app のウィンドウシステムとは関係ありません。むしろ
+   "ネイティブな" インタプリタウィンドウを (wxPythonWindow を使ったりして)
+   作るべきです。そのウィンドウを Python インタプリタにつなぐのは簡単です。
+   Python の i/o は読み書きをサポートする _どんな_ オブジェクトにも
+   リダイレクトできるので、read() と write() メソッドを含む (拡張モジュールで
+   定義された) Python オブジェクトさえあればいいのです。
 
 
-How do I use Python for CGI?
-----------------------------
+Python を CGI に使うにはどうしますか？
+--------------------------------------
 
-On the Microsoft IIS server or on the Win95 MS Personal Web Server you set up
-Python in the same way that you would set up any other scripting engine.
+Microsoft IIS server と Win95 MS Personal Web Server では、
+Python を他のどんなスクリプトエンジンとも同じように設定します。
 
-Run regedt32 and go to::
+regedt32 を起動し::
 
     HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W3SVC\Parameters\ScriptMap
 
-and enter the following line (making any specific changes that your system may
-need)::
+に移動し、以下の行を入力してください。(システムによって変わることがあります)::
 
     .py :REG_SZ: c:\<path to python>\python.exe -u %s %s
 
-This line will allow you to call your script with a simple reference like:
-``http://yourserver/scripts/yourscript.py`` provided "scripts" is an
-"executable" directory for your server (which it usually is by default).  The
-:option:`-u` flag specifies unbuffered and binary mode for stdin - needed when
-working with binary data.
+この一行によって、スクリプトを ``http://yourserver/scripts/yourscript.py`` の
+ように簡単な参照で呼び出せるようになります。ここで "scripts" は
+(通常はデフォルトの) "executable" ディレクトリです。\ :option:`-u` フラグは
+バッファリングを無効にしたバイナリモードを stdin に使うことを指定するフラグで、
+バイナリデータを扱うときに必要です。
 
-In addition, it is recommended that using ".py" may not be a good idea for the
-file extensions when used in this context (you might want to reserve ``*.py``
-for support modules and use ``*.cgi`` or ``*.cgp`` for "main program" scripts).
+さらに、この状況で使われるファイル拡張子には ".py" を使うのを避けることを
+勧めます (サポートモジュールに ``*.py`` を、"メインプログラム" スクリプトに
+``*.cgi`` や ``*.cgp`` を残しておきたいでしょう)。
 
-In order to set up Internet Information Services 5 to use Python for CGI
-processing, please see the following links:
+Python を CGI 加工に使うために Internet Information Services 5 を
+設定するには、以下のリンクを参照してください:
 
    http://www.e-coli.net/pyiis_server.html (for Win2k Server)
    http://www.e-coli.net/pyiis.html (for Win2k pro)
 
-Configuring Apache is much simpler.  In the Apache configuration file
-``httpd.conf``, add the following line at the end of the file::
+Apache の設定はもっと単純です。Apache の設定ファイル ``httpd.conf`` で、
+ファイルの終わりに以下の行を加えてください::
 
     ScriptInterpreterSource Registry
 
-Then, give your Python CGI-scripts the extension .py and put them in the cgi-bin
-directory.
+そして、Python CGI スクリプトに拡張子 .py をつけて、それらを
+cgi-bin ディレクトリに置いてください。
 
 
-How do I keep editors from inserting tabs into my Python source?
-----------------------------------------------------------------
+エディタが Python ソースにタブを勝手に挿入しないようにするにはどうしますか？
+----------------------------------------------------------------------------
 
-The FAQ does not recommend using tabs, and the Python style guide, :pep:`8`,
-recommends 4 spaces for distributed Python code; this is also the Emacs
-python-mode default.
+この FAQ ではタブを使うことを勧めません。Python スタイルガイド :pep:`8` では、
+配布される Python コードにはスペース 4 つを使うことを推奨しています。
+これは Emacs の python-mode のデフォルトでも同じです。
 
-Under any editor, mixing tabs and spaces is a bad idea.  MSVC is no different in
-this respect, and is easily configured to use spaces: Take :menuselection:`Tools
---> Options --> Tabs`, and for file type "Default" set "Tab size" and "Indent
-size" to 4, and select the "Insert spaces" radio button.
+いかなるエディタでも、タブとスペースを混ぜるのは良くないです。
+MSVC も全く同じ立場であり、スペースを使うようにする設定が簡単にできます。
+:menuselection:`Tools --> Options --> Tabs` を選択し、ファイルタイプの
+"デフォルト" の "タブ幅" と "インデント幅" に 4 を設定して、
+"スペースを挿入する" のラジオボタンを選択してください。
 
-If you suspect mixed tabs and spaces are causing problems in leading whitespace,
-run Python with the :option:`-t` switch or run ``Tools/Scripts/tabnanny.py`` to
-check a directory tree in batch mode.
-
-
-How do I check for a keypress without blocking?
------------------------------------------------
-
-Use the msvcrt module.  This is a standard Windows-specific extension module.
-It defines a function ``kbhit()`` which checks whether a keyboard hit is
-present, and ``getch()`` which gets one character without echoing it.
+タブとスペースが混ざっていることで先頭の空白に問題が出ている可能性があるなら、
+Python を :option:`-t` スイッチをつけて起動するか、
+``Tools/Scripts/tabnanny.py`` を起動してディレクトリツリーをバッチモードで
+確認してください。
 
 
-How do I emulate os.kill() in Windows?
---------------------------------------
+ブロックすることなく押鍵を検出するにはどうしますか？
+----------------------------------------------------
 
-To terminate a process, you can use ctypes::
+msvcrt モジュールを使ってください。これは標準の Windows 専用拡張モジュール
+です。これはキーボードが打たれているかを調べる関数 ``kbhit()`` と、
+反響することなく一文字を得る ``getch()`` を定義します。
+
+
+os.kill() を Windows で模倣するにはどうしますか？
+-------------------------------------------------
+
+Python 2.7 および 3.2 以前では、プロセスを終了するために、\ :mod:`ctypes` が
+使えます::
 
    import ctypes
 
@@ -451,12 +447,15 @@ To terminate a process, you can use ctypes::
        handle = kernel32.OpenProcess(1, 0, pid)
        return (0 != kernel32.TerminateProcess(handle, 0))
 
+2.7 および 3.2 では、上の関数と同様な :func:`os.kill` が実装されていて、
+追加の機能として、CTRL+C や CTRL+BREAK をそれらのシグナルを扱うように設計された
+コンソールのサブプロセスに送ることができます。
 
-Why does os.path.isdir() fail on NT shared directories?
--------------------------------------------------------
 
-The solution appears to be always append the "\\" on the end of shared
-drives.
+os.path.isdir() が NT で共有されたディレクトリで失敗するのはなぜですか？
+------------------------------------------------------------------------
+
+共有されたドライブの最後にいつも "\\" を加えることで、解決が見えます::
 
    >>> import os
    >>> os.path.isdir( '\\\\rorschach\\public')
@@ -464,14 +463,14 @@ drives.
    >>> os.path.isdir( '\\\\rorschach\\public\\')
    1
 
-It helps to think of share points as being like drive letters.  Example::
+共有店をドライブ文字と同じようなものと考えるとわかりやすいです。例::
 
    k: is not a directory
    k:\ is a directory
    k:\media is a directory
    k:\media\ is not a directory
 
-The same rules apply if you substitute "k:" with "\\conky\foo"::
+"k:" を "\\conky\foo" に置き換えても同じことが言えます::
 
    \\conky\foo  is not a directory
    \\conky\foo\ is a directory
@@ -479,131 +478,132 @@ The same rules apply if you substitute "k:" with "\\conky\foo"::
    \\conky\foo\media\ is not a directory
 
 
-cgi.py (or other CGI programming) doesn't work sometimes on NT or win95!
-------------------------------------------------------------------------
+cgi.py (その他の CGI プログラミング) が NT や win95 で動かないことがあります！
+------------------------------------------------------------------------------
 
-Be sure you have the latest python.exe, that you are using python.exe rather
-than a GUI version of Python and that you have configured the server to execute
-::
+最新の python.exe であること、Python の GUI バージョンではなく
+python.exe を使っていること、それからサーバが CGI 拡張に::
 
    "...\python.exe -u ..."
 
-for the CGI execution.  The :option:`-u` (unbuffered) option on NT and Win95
-prevents the interpreter from altering newlines in the standard input and
-output.  Without it post/multipart requests will seem to have the wrong length
-and binary (e.g. GIF) responses may get garbled (resulting in broken images, PDF
-files, and other binary downloads failing).
+を実行するように設定してあることを確認してください。\ :option:`-u` (unbuffered)
+オプションは NT や Win95 でインタプリタが標準入出力で改行を変換することを
+防ぎます。これがないとリクエストの post/multipart は誤った長さを持つと
+見なされ、バイナリ (例えば GIF) の応答がでっち上げられる(そして壊れた画像、
+PDF ファイル、その他のバイナリのダウンロード失敗につながる)でしょう。
 
 
-Why doesn't os.popen() work in PythonWin on NT?
------------------------------------------------
+os.popen() が NT 上の PythonWin で動かないのはなぜですか？
+----------------------------------------------------------
 
-The reason that os.popen() doesn't work from within PythonWin is due to a bug in
-Microsoft's C Runtime Library (CRT). The CRT assumes you have a Win32 console
-attached to the process.
+os.popen() が PythonWin の内部から動かないのは、Microsoft の C Runtime Library
+(CRT) のバグによるものです。CRT はプロセスに Win32 コンソールが結び付けられて
+いると決めてかかります。
 
-You should use the win32pipe module's popen() instead which doesn't depend on
-having an attached Win32 console.
+その代わりに、Win32 コンソールが結び付けられているかに依らない win32pipe
+モジュールの popen() を使うべきです。
 
-Example::
+例::
 
    import win32pipe
    f = win32pipe.popen('dir /c c:\\')
-   print f.readlines()
+   print(f.readlines())
    f.close()
 
 
-Why doesn't os.popen()/win32pipe.popen() work on Win9x?
--------------------------------------------------------
+os.popen()/win32pipe.popen() が Win9x で動かないのはなぜですか？
+----------------------------------------------------------------
 
-There is a bug in Win9x that prevents os.popen/win32pipe.popen* from
-working. The good news is there is a way to work around this problem.  The
-Microsoft Knowledge Base article that you need to lookup is: Q150956. You will
-find links to the knowledge base at: http://support.microsoft.com/.
-
-
-PyRun_SimpleFile() crashes on Windows but not on Unix; why?
------------------------------------------------------------
-
-This is very sensitive to the compiler vendor, version and (perhaps) even
-options.  If the FILE* structure in your embedding program isn't the same as is
-assumed by the Python interpreter it won't work.
-
-The Python 1.5.* DLLs (``python15.dll``) are all compiled with MS VC++ 5.0 and
-with multithreading-DLL options (``/MD``).
-
-If you can't change compilers or flags, try using :cfunc:`Py_RunSimpleString`.
-A trick to get it to run an arbitrary file is to construct a call to
-:func:`execfile` with the name of your file as argument.
-
-Also note that you can not mix-and-match Debug and Release versions.  If you
-wish to use the Debug Multithreaded DLL, then your module *must* have an "_d"
-appended to the base name.
+Win9x にはバグがあって、os.popen/win32pipe.popen* が働きません。嬉しいことに、
+この問題に対処する方法があります。Microsoft Knowledge Base のこの記事を
+調べてください: Q150956。この knowledge base へのリンクはここで見つかります:
+http://support.microsoft.com/\ 。
 
 
-Importing _tkinter fails on Windows 95/98: why?
-------------------------------------------------
+PyRun_SimpleFile() は Windows 上ではクラッシュしますが、Unix 上ではしません。なぜですか？
+-----------------------------------------------------------------------------------------
 
-Sometimes, the import of _tkinter fails on Windows 95 or 98, complaining with a
-message like the following::
+コンパイラのベンダ、バージョン、(もしかすると) オプションに関しても微妙です。
+埋め込みシステムの FILE* 構造体が Python インタプリタの想定と異なると、
+うまく行きません。
+
+Python 1.5.* DLLs (``python15.dll``) は全て MS VC++ 5.0 にて
+マルチスレッディング DLL オプション (``/MD``) をつけてコンパイルされています。
+
+コンパイラやフラグを変更できないなら、\ :c:func:`Py_RunSimpleString` を
+使ってみてください。これで任意のファイルを起動するための技は、\ :func:`exec` や
+:func:`open` をファイル名を引数として呼ぶことです。
+
+また、Debug と Release 版は継ぎ合わせられません。Debug マルチスレッド DLL を
+使いたいなら、そのモジュールは ``_d`` がファイル名に
+加えられ *ていなくてはなりません*\ 。
+
+
+Windows 95/98 上で _tkinter のインポートに失敗します。なぜですか？
+------------------------------------------------------------------
+
+たまに、\ _tkinter のインポートが Windows 95 や 98 で失敗し、その時に
+以下のようなメッセージを訴えます::
 
    ImportError: DLL load failed: One of the library files needed
    to run this application cannot be found.
 
-It could be that you haven't installed Tcl/Tk, but if you did install Tcl/Tk,
-and the Wish application works correctly, the problem may be that its installer
-didn't manage to edit the autoexec.bat file correctly.  It tries to add a
-statement that changes the PATH environment variable to include the Tcl/Tk 'bin'
-subdirectory, but sometimes this edit doesn't quite work.  Opening it with
-notepad usually reveals what the problem is.
+このとき Tcl/Tk がインストールされていないのかもしれませんが、Tcl/Tk が
+インストールされていて、Wish アプリケーションが正しく動いているなら、
+インストーラが autoexec.bat を適切に編集していないという問題かもしれません。
+インストーラは PATH 環境変数に Tcl/Tk 'bin' サブディレクトリを含めるように
+変える文を追加しようとしますが、この編集が機能していないことがあります。通常、
+このファイルをノートパッドで開くことで、問題が何か解ります。
 
-(One additional hint, noted by David Szafranski: you can't use long filenames
-here; e.g. use ``C:\PROGRA~1\Tcl\bin`` instead of ``C:\Program Files\Tcl\bin``.)
+(David Szafranski による追加のヒント: ここで長いファイル名を使っては
+いけません。例えば、\ ``C:\Program Files\Tcl\bin`` の代わりに
+``C:\PROGRA~1\Tcl\bin`` を使ってください。)
 
 
-How do I extract the downloaded documentation on Windows?
+ダウンロードされたドキュメントを Windows 上で展開するにはどうしますか？
+-----------------------------------------------------------------------
+
+たまに、web ブラウザで Windows マシンにドキュメントパッケージを
+ダウンロードするとき、その保存されたファイルの拡張子が .EXE になっていることが
+あります。これは間違いです。本来の拡張子は .TGZ です。
+
+単純に、ダウンロードしたファイルを名付け直して拡張子を .TGZ にしてください。
+そうすれば WinZip で扱えます。(手元の WinZip でできなかったら、
+http://www.winzip.com から新しいのをもらいましょう)
+
+
+cw3215mt.dll がありません(または cw3215.dll がありません)
 ---------------------------------------------------------
 
-Sometimes, when you download the documentation package to a Windows machine
-using a web browser, the file extension of the saved file ends up being .EXE.
-This is a mistake; the extension should be .TGZ.
+たまに、Tkinter を Windows で使っているとき、 cw3215mt.dll や cw3215.dll が
+見つからないというエラーが出ます。
 
-Simply rename the downloaded file to have the .TGZ extension, and WinZip will be
-able to handle it.  (If your copy of WinZip doesn't, get a newer one from
-http://www.winzip.com.)
-
-
-Missing cw3215mt.dll (or missing cw3215.dll)
---------------------------------------------
-
-Sometimes, when using Tkinter on Windows, you get an error that cw3215mt.dll or
-cw3215.dll is missing.
-
-Cause: you have an old Tcl/Tk DLL built with cygwin in your path (probably
-``C:\Windows``).  You must use the Tcl/Tk DLLs from the standard Tcl/Tk
-installation (Python 1.5.2 comes with one).
+原因: パス (おそらく ``C:\Windows``) にある Tcl/Tk DLL が cygwin でビルドされた
+古いものです。標準の Tcl/Tk インストール (Python 1.5.2 に付属しています) による
+Tcl/Tk を使わなければなりません。
 
 
-Warning about CTL3D32 version from installer
---------------------------------------------
+インストーラからのCTL3D32 version に関する警告
+----------------------------------------------
 
-The Python installer issues a warning like this::
+Python インストーラはこのような警告をします::
 
-   This version uses ``CTL3D32.DLL`` which is not the correct version.
+   This version uses CTL3D32.DLL which is not the correct version.
    This version is used for windows NT applications only.
 
-Tim Peters:
+Tim Peters いわく:
 
-   This is a Microsoft DLL, and a notorious source of problems.  The message
-   means what it says: you have the wrong version of this DLL for your operating
-   system.  The Python installation did not cause this -- something else you
-   installed previous to this overwrote the DLL that came with your OS (probably
-   older shareware of some sort, but there's no way to tell now).  If you search
-   for "CTL3D32" using any search engine (AltaVista, for example), you'll find
-   hundreds and hundreds of web pages complaining about the same problem with
-   all sorts of installation programs.  They'll point you to ways to get the
-   correct version reinstalled on your system (since Python doesn't cause this,
-   we can't fix it).
+   これは DLL の、そして悪名高きソースの問題です。このメッセージが伝えるものは
+   こうです: この DLL のバージョンがオペレーティングシステムに合いません。
+   Python のインストールが原因ではありません - それ以前にインストールした
+   何かが OS に付属していた DLL を上書きしたのです (おそらく何かの古いソフト
+   でしょうが、もうそれは判断できません)。検索エンジン (例えば Altavista) で
+   "CTL3D32" を探せば、あらゆる種類のインストールプログラムでの同様の問題を
+   訴えるウェブページが何百も何百も現れるでしょう。それらのページにシステムに
+   あった正しいバージョンをダウンロードする方法が指摘されていることでしょう
+   (Python によって起こされたものではないので、我々には直しようがないのです)。
 
-David A Burton has written a little program to fix this.  Go to
-http://www.burtonsys.com/downloads.html and click on "ctl3dfix.zip".
+David A Burton はこれを直すための小さなプログラムを書きました。
+http://www.burtonsys.com/downloads.html に行って "ctl3dfix.zip" を
+クリックしてください。
+
