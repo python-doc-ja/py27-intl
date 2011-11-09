@@ -188,7 +188,7 @@
 .. c:function:: int PyDict_Merge(PyObject *a, PyObject *b, int override)
 
    マップ型オブジェクト *b* の全ての要素にわたって、反復的にキー/値のペアを辞書 *a* に追加します。 *b*
-   は辞書か、 :func:`PyMapping_Keys` または :func:`PyObject_GetItem` をサポートする何らかのオブジェクト
+   は辞書か、 :c:func:`PyMapping_Keys` または :c:func:`PyObject_GetItem` をサポートする何らかのオブジェクト
    にできます。 *override* が真ならば、 *a* のキーと一致するキーが *b* にある際に、既存のペアを置き換えます。それ以外の場合は、 *b*
    のキーに一致するキーが *a* にないときのみ追加を行います。成功した場合には ``0`` を返し、例外が送出された場合には ``-1`` を返します。
 
