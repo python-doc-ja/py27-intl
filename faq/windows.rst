@@ -285,13 +285,15 @@ Python インタプリタを Windows app に埋め込む方法は、次のよう
    通常は ``C:\Windows\System`` にインストールされています。\ *NN* は Python の
    バージョンで、Python 2.3 なら "23" のようになります。
 
-   Python をリンクするには二種類の方法があります。起動時 (Load-time) リンクは、
-   :file:`python{NN}.lib` に対してリンクするもので、実行時 (Run-time) リンクは
-   :file:`python{NN}.dll` に対してリンクするものです。(一般的な注意:
+   Python には、静的に、または動的にリンクできます。静的なリンクは、
+   :file:`python{NN}.lib` に対してリンクするもので、動的なリンクは
+   :file:`python{NN}.dll` に対してリンクするものです。動的なリンクの欠点は、
+   :file:`python{NN}.dll` がシステムに存在しないとアプリケーションが起動しない
+   ことです。(一般的な注意:
    :file:`python{NN}.lib` は :file:`python{NN}.dll` に対するいわゆる
    "インポートライブラリ" です。これは単にリンカに対するシンボルを定義します。)
 
-   実行時リンクは、リンクの選択を大いに単純化します。
+   動的なリンクは、リンクの選択を大いに単純化します。
    全ては実行時に行われます。コードは Windows の
    ``LoadLibraryEx()`` ルーチンで :file:`python{NN}.dll` をロード
    しなければなりません。コードはまた、Windows の ``GetProcAddress()``
