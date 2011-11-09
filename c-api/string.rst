@@ -65,13 +65,6 @@
    値とする Python 文字列にして返します。可変個の引数部は C のデータ型でなくてはならず、かつ *format* 文字列内の書式指定文字 (format
    character) に一致する型でなくてはなりません。利用できる書式化文字は以下の通りです:
 
-   .. % This should be exactly the same as the table in PyErr_Format.
-   .. % One should just refer to the other.
-   .. % The descriptions for %zd and %zu are wrong, but the truth is complicated
-   .. % because not all compilers support the %z width modifier -- we fake it
-   .. % when necessary via interpolating PY_FORMAT_SIZE_T.
-   .. % %u, %lu, %zu should have "new in Python 2.5" blurbs.
-
    +--------------+---------------+----------------------------------------------+
    | 書式指定文字 | 型            | コメント                                     |
    +==============+===============+==============================================+
@@ -86,6 +79,11 @@
    | :attr:`%ld`  | long          | C の ``printf("%ld")`` と全く同じ。          |
    +--------------+---------------+----------------------------------------------+
    | :attr:`%lu`  | unsigned long | C の ``printf("%lu")`` と全く同じ。          |
+   +--------------+---------------+----------------------------------------------+
+   | :attr:`%lld` | long long     | C の ``printf("%lld")`` と全く同じ。         |
+   +--------------+---------------+----------------------------------------------+
+   | :attr:`%llu` | unsigned      | C の ``printf("%llu")`` と全く同じ。         |
+   |              | long long     |                                              |
    +--------------+---------------+----------------------------------------------+
    | :attr:`%zd`  | Py_ssize_t    | C の ``printf("%zd")`` と全く同じ。          |
    +--------------+---------------+----------------------------------------------+
@@ -105,6 +103,14 @@
    +--------------+---------------+----------------------------------------------+
 
    識別できない書式指定文字があった場合、残りの書式文字列はそのまま出力文字列にコピーされ、残りの引数は無視されます。
+
+   .. note::
+
+      `"%lld"` と `"%llu"` 書式指定文字は :const:`HAVE_LONG_LONG`
+      が定義されている時だけ利用できます。
+
+   .. versionchanged:: 2.7
+      `"%lld"` と `"%llu"` のサポートが追加されました。
 
 
 .. c:function:: PyObject* PyString_FromFormatV(const char *format, va_list vargs)
