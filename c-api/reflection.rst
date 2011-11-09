@@ -29,6 +29,11 @@
    現在実行中のフレームがなければ *NULL* を返します。
 
 
+.. cfunction:: int PyFrame_GetLineNumber(PyFrameObject *frame)
+
+   *frame* が現在実行している行番号を返します。
+
+
 .. c:function:: int PyEval_GetRestricted()
 
    現在のフレームがありそれが制限モードで実行していた場合、真を返します。
