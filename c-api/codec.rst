@@ -1,14 +1,18 @@
 .. _codec-registry:
 
-Codec registry and support functions
+.. Codec registry and support functions
+
+codec レジストリとサポート関数
 ====================================
 
 .. cfunction:: int PyCodec_Register(PyObject *search_function)
 
-   Register a new codec search function.
+   新しい codec 検索関数を登録します。
 
    As side effect, this tries to load the :mod:`encodings` package, if not yet
    done, to make sure that it is always first in the list of search functions.
+   副作用として、この関数は :mod:`encodings` パッケージのロードを試行します。
+   もしまだロードされていない場合、
 
 .. cfunction:: int PyCodec_KnownEncoding(const char *encoding)
 

@@ -7,8 +7,9 @@ Cオブジェクト (CObject)
 
 .. index:: object: CObject
 
-このオブジェクトの使用法に関する情報は、 *Python インタプリタの拡張と埋め込み* 1.12 節、 "Providing a C API for an
-Extension Module," を参照してください。
+.. warning::
+
+   CObject API は Python 2.7 から非推奨になりました。新しい :ref:`capsule` APIへ移行してください。
 
 
 .. c:type:: PyCObject

@@ -100,6 +100,10 @@
    比較結果が真ならば ``1`` を、偽ならば ``0`` を、エラーが発生すると ``-1`` を返します。この関数は Python の式
    ``o1 op o2`` と同じで、 ``op`` が *opid* に対応する演算子です。
 
+.. note::
+   *o1* と *o2* が同一のオブジェクトである場合、 :c:func:`PyObject_RichCompareBool`
+   は :const:`Py_EQ` に対して常に ``1`` を返し、 :const:`Py_NE` に対して常に ``0``
+   を返します。
 
 .. c:function:: int PyObject_Cmp(PyObject *o1, PyObject *o2, int *result)
 
