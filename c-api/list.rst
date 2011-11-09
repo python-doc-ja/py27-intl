@@ -58,8 +58,9 @@ List Objects
 
 .. c:function:: PyObject* PyList_GetItem(PyObject *list, Py_ssize_t index)
 
-   *list* の指すリストオブジェクト内の、位置 *index* にあるオブジェクトを返します。位置は正である必要があり、リスとの終端からのインデックスは
-   サポートされていません。 *index* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
+   *list* の指すリストオブジェクト内の、位置 *index* にあるオブジェクトを返します。
+   位置は正である必要があり、リスト終端からのインデックスはサポートされていません。
+   *index* が範囲を超えている場合、 *NULL* を返して :exc:`IndexError` 例外をセットします。
 
    .. versionchanged:: 2.5
       この関数は以前は *index* の型に :c:type:`int` を利用していました。
