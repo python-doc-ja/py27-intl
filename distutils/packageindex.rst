@@ -8,17 +8,17 @@ Python パッケージインデクス (Python Package Index, PyPI) は、 distut
 でパッケージ化された配布物に関するメタデータを保持しています。配布物のメタデータをインデクスに提出するには、  Distutils のコマンド
 :command:`register` を使います。 :command:`register` は以下のように起動します::
 
-   python setup.py register
+    python setup.py register
 
 Distutils は以下のようなプロンプトを出します::
 
-   running register
-   We need to know who you are, so please choose either:
-    1. use your existing login,
-    2. register as a new user,
-    3. have the server generate a new password for you (and email it to you), or
-    4. quit
-   Your selection [default 1]:
+    running register
+    We need to know who you are, so please choose either:
+        1. use your existing login,
+        2. register as a new user,
+        3. have the server generate a new password for you (and email it to you), or
+        4. quit
+    Your selection [default 1]:
 
 注意: ユーザ名とパスワードをローカルの計算機に保存しておくと、このメニューは表示されません。
 
@@ -42,45 +42,51 @@ PyPI は提出された配布物の (名前、バージョン) の各組み合�
 
 .. _pypirc:
 
-.pypircファイル (The .pypirc file)
-==================================
+.pypirc ファイル
+==================
 
 :file:`.pypirc` ファイルのフォーマットを示します。 ::
 
-   [distutils]
-   index-servers =
-     pypi
+    [distutils]
+    index-servers =
+        pypi
 
-   [pypi]
-   repository: <repository-url>
-   username: <username>
-   password: <password>
+    [pypi]
+    repository: <repository-url>
+    username: <username>
+    password: <password>
 
-*repository* は省略可能で、デフォルトでは ``http://www.python.org/pypi`` になります。
+*distutils* セクションは、 *index-servers* でリポジトリを設定する全てのセクション名の
+リストを定義しています。
 
-別のサーバーを定義した場合は、新しいセクションを作成します。 ::
+リポジトリを表す各セクションは3つの変数を定義します:
 
-   [distutils]
-   index-servers =
-     pypi
-     other
+- *repository* は PyPI サーバーの URL を定義します。
+    デフォルトでは ``http://www.python.org/pypi`` になります。
+- *username* は PyPI サーバーに登録されたユーザー名です。
+- *password* は認証に使われます。省略された場合、必要なときに入力を求められます。
 
-   [pypi]
-   repository: <repository-url>
-   username: <username>
-   password: <password>
+別のサーバーを定義した場合は、新しいセクションを作成し、 *index-servers* に追加します。 ::
 
-   [other]
-   repository: http://example.com/pypi
-   username: <username>
-   password: <password>
+    [distutils]
+    index-servers =
+      pypi
+      other
 
-そうすると、 register コマンドに -r オプションをつけて実行できます。 ::
+    [pypi]
+    repository: <repository-url>
+    username: <username>
+    password: <password>
 
-   python setup.py register -r http://example.com/pypi
+    [other]
+    repository: http://example.com/pypi
+    username: <username>
+    password: <password>
 
-もしくは、セクション名を使うこともできます。 ::
+:command:`register` は -r オプションで対象となるリポジトリを指定して実行することができます。 ::
 
-   python setup.py register -r other
+    python setup.py register -r http://example.com/pypi
 
+使いやすくするために、セクション名を使ってリポジトリを指定することもできます。 ::
 
+    python setup.py register -r other

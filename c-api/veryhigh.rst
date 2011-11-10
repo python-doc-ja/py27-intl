@@ -24,11 +24,13 @@
 
    標準インタプリタのためのメインプログラム。Pythonを組み込むプログラムのためにこれを利用できるようにしています。
    *argc* と *argv* 引数をCプログラムの :c:func:`main` 関数へ渡されるものとまったく同じに作成すべきです。
-   引数リストが変更される可能性があるという点に注意することは重要です。 (しかし、引数リストが指している文字列の内容は変更されません)。
-   戻り値は :func:`sys.exit` 関数へ渡される整数でしょう。例外が原因でインタプリタが終了した場合は ``1`` 、あるいは、
-   引数リストが有効なPythonコマンドラインになっていない場合は ``2`` です。
+   引数リストが変更される可能性があるという点に注意することは重要です。
+   (しかし、引数リストが指している文字列の内容は変更されません)。
+   戻り値はインタプリタが(例外などではなく)普通に終了した時は ``0`` に、
+   例外で終了したときには ``1`` に、引数リストが正しい Python コマンドラインが
+   渡されなかったときは ``2`` になります。
 
-   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemError` 例外が発生すると、
+   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemExit` 例外が発生すると、
    この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
 .. c:function:: int PyRun_AnyFile(FILE *fp, const char *filename)
@@ -68,7 +70,7 @@
    返します。エラーがあっても、例外情報を得る方法はありません。
    *flags* の意味については、後述します。
 
-   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemError` 例外が発生すると、
+   ``Py_InspectFlag`` が設定されていない場合、未処理の :exc:`SystemExit` 例外が発生すると、
    この関数は ``1`` を返すのではなくプロセスを exit することに気をつけてください。
 
 
@@ -105,8 +107,8 @@
 .. c:function:: int PyRun_InteractiveOneFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
    対話的デバイスに関連付けられたファイルから文を一つ読み込み、 *flags* に従って実行します。
-   *filename* が *NULL* ならば、 ``"???"`` が代わりに使われます。
-   ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを提示します。入力が正常に実行されたときは ``0`` を返します。例外が発生した場合は
+   ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを表示します。
+   入力が正常に実行されたときは ``0`` を返します。例外が発生した場合は
    ``-1`` を返します。パースエラーの場合はPythonの一部として配布されている
    :file:`errcode.h` インクルードファイルにあるエラーコードを返します。
    (:file:`Python.h` は :file:`errcode.h` をインクルードしません。したがって、
@@ -118,11 +120,12 @@
    下記の :c:func:`PyRun_InteractiveLoopFlags` の *flags* を ``0`` にして単純化したインタフェースです。
 
 
-.. c:function:: int PyRun_InteractiveLoopFlags(FILE *fp,  const char *filename, PyCompilerFlags *flags)
+.. c:function:: int PyRun_InteractiveLoopFlags(FILE *fp, const char *filename, PyCompilerFlags *flags)
 
    対話的デバイスに関連付けられたファイルからEOF に達するまで複数の文を
-   読み込み実行します。 *filename* が *NULL* ならば、 ``"???"`` が代わりに
-   使われます。 ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを提示します。EOFに達すると ``0`` を返します。
+   読み込み実行します。
+   使われます。 ``sys.ps1`` と ``sys.ps2`` を使って、ユーザにプロンプトを表示します。
+   EOFに達すると ``0`` を返します。
 
 
 .. c:function:: struct _node* PyParser_SimpleParseString(const char *str, int start)

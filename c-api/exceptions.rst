@@ -128,56 +128,10 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 
 .. c:function:: PyObject* PyErr_Format(PyObject *exception, const char *format, ...)
 
-   この関数はエラーインジケータを設定し *NULL* を返します。 *exception* はPython例外(インスタンスではなくクラス)であるべきです。
-   *format* は文字列であるべきであり、 :c:func:`printf` に似た
-   書式化コードを含んでいます。書式化コードの前の ``幅.精度(width.precision)`` は解析されますが、幅の部分は無視されます。
-
-   .. % \begin{tableii}{c|l}{character}{文字}{意味}
-   .. % \lineii{c}{文字、\ctype{int}引数として}
-   .. % \lineii{d}{10進数、\ctype{int}引数として}
-   .. % \lineii{x}{16進数、\ctype{int}引数として}
-   .. % \lineii{s}{文字列、\ctype{char *}引数として}
-   .. % \lineii{p}{16進法のポインタ、\ctype{void *}引数として}
-   .. % \end{tableii}
-   .. % This should be exactly the same as the table in PyString_FromFormat.
-   .. % One should just refer to the other.
-   .. % The descriptions for %zd and %zu are wrong, but the truth is complicated
-   .. % because not all compilers support the %z width modifier -- we fake it
-   .. % when necessary via interpolating PY_FORMAT_SIZE_T.
-   .. % %u, %lu, %zu should have "new in Python 2.5" blurbs.
-
-   +-------------+---------------+------------------------------------------------+
-   | 書式文字    | 型            | コメント                                       |
-   +=============+===============+================================================+
-   | :attr:`%%`  | *n/a*         | リテラルの % 文字。                            |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%c`  | int           | 一文字. Cのintで表現される。                   |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%d`  | int           | ``printf("%d")`` と完全に同じ。                |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%u`  | unsigned int  | ``printf("%u")`` と完全に同じ。                |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%ld` | long          | ``printf("%ld")`` と完全に同じ。               |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%lu` | unsigned long | ``printf("%lu")`` と完全に同じ。               |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%zd` | Py_ssize_t    | ``printf("%zd")`` と完全に同じ。               |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%zu` | size_t        | ``printf("%zu")`` と完全に同じ.                |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%i`  | int           | ``printf("%i")`` と完全に同じ。                |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%x`  | int           | ``printf("%x")`` と完全に同じ。                |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%s`  | char\*        | NULL終端の C の文字配列。                      |
-   +-------------+---------------+------------------------------------------------+
-   | :attr:`%p`  | void\*        | C ポインタの16進表現。                         |
-   |             |               | プラットフォームのprintfによらず、必ずリテラル |
-   |             |               | ``0x`` が頭につくことが保証される              |
-   |             |               | という以外、 ``printf("%p")`` とほぼ同じ。     |
-   +-------------+---------------+------------------------------------------------+
-
-   認識できない書式化文字があると書式化文字列の残りすべてがそのまま結果の文字列へコピーされ、余分の引数はどれも捨てられます。
+   この関数はエラーインジケータを設定し *NULL* を返します。
+   *exception* はPython例外クラスであるべきです。
+   *format* と以降の引数はエラーメッセージを作るためのもので,
+   :c:func:`PyString_FromFormat` の引数と同じ意味を持っています。
 
 
 .. c:function:: void PyErr_SetNone(PyObject *type)
@@ -349,6 +303,8 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    *fd* は有効なファイルディスクリプタであるべきです。
    この関数の呼び出しはメインスレッドのみから行われるべきです。
 
+   .. versionadded:: 2.6
+
 
 .. c:function:: PyObject* PyErr_NewException(char *name, PyObject *base, PyObject *dict)
 
@@ -362,6 +318,15 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    クラスのタプルでも構いません。 *dict* 引数はクラス変数とメソッドの辞書を指定するために使えます。
 
 
+.. cfunction:: PyObject* PyErr_NewExceptionWithDoc(char *name, char *doc, PyObject *base, PyObject *dict)
+
+   :c:func:`PyErr_NewException` とほぼ同じですが、新しい例外クラスに簡単に docstring
+   を設定できます。
+   *doc* が *NULL* で無い場合、それが例外クラスの docstring になります。
+
+   .. versionadded:: 2.7
+
+
 .. c:function:: void PyErr_WriteUnraisable(PyObject *obj)
 
    例外が設定されているがインタプリタが実際に例外を発生させることができないときに、
@@ -370,6 +335,85 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
 
    発生させられない例外が生じたコンテキストを特定するための一つの引数 *obj* とともに
    関数が呼び出されます。 *obj* のreprが警告メッセージにプリントされるでしょう。
+
+
+.. _unicodeexceptions:
+
+.. Unicode Exception Objects
+
+Unicode 例外オブジェクト
+=========================
+
+以下の関数は C言語から Unicode 例外を作ったり修正したりするために利用します。
+
+.. cfunction:: PyObject* PyUnicodeDecodeError_Create(const char *encoding, const char *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+
+   *encoding*, *object*, *length*, *start*, *end*, *reason* 属性をもった
+   :class:`UnicodeDecodeError` オブジェクトを作成します。
+
+.. cfunction:: PyObject* PyUnicodeEncodeError_Create(const char *encoding, const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+
+   *encoding*, *object*, *length*, *start*, *end*, *reason* 属性を持った
+   :class:`UnicodeEncodeError` オブジェクトを作成します。
+
+.. cfunction:: PyObject* PyUnicodeTranslateError_Create(const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+
+   *object*, *length*, *start*, *end*, *reason* 属性を持った
+   :class:`UnicodeTranslateError` オブジェクトを作成します。
+
+.. cfunction:: PyObject* PyUnicodeDecodeError_GetEncoding(PyObject *exc)
+               PyObject* PyUnicodeEncodeError_GetEncoding(PyObject *exc)
+
+   与えられた例外オブジェクトの *encoding* 属性を返します。
+
+.. cfunction:: PyObject* PyUnicodeDecodeError_GetObject(PyObject *exc)
+               PyObject* PyUnicodeEncodeError_GetObject(PyObject *exc)
+               PyObject* PyUnicodeTranslateError_GetObject(PyObject *exc)
+
+   与えられた例外オブジェクトの *object* 属性を返します。
+
+.. cfunction:: int PyUnicodeDecodeError_GetStart(PyObject *exc, Py_ssize_t *start)
+               int PyUnicodeEncodeError_GetStart(PyObject *exc, Py_ssize_t *start)
+               int PyUnicodeTranslateError_GetStart(PyObject *exc, Py_ssize_t *start)
+
+   渡された例外オブジェクトから *start* 属性を取得して *\*start* に格納します。
+   *start* は *NULL* であってはなりません。
+   成功したら ``0`` を、失敗したら ``-1`` を返します。
+
+.. cfunction:: int PyUnicodeDecodeError_SetStart(PyObject *exc, Py_ssize_t start)
+               int PyUnicodeEncodeError_SetStart(PyObject *exc, Py_ssize_t start)
+               int PyUnicodeTranslateError_SetStart(PyObject *exc, Py_ssize_t start)
+
+   渡された例外オブジェクトの *start* 属性を *start* に設定します。
+   成功したら ``0`` を、失敗したら ``-1`` を返します。
+
+.. cfunction:: int PyUnicodeDecodeError_GetEnd(PyObject *exc, Py_ssize_t *end)
+               int PyUnicodeEncodeError_GetEnd(PyObject *exc, Py_ssize_t *end)
+               int PyUnicodeTranslateError_GetEnd(PyObject *exc, Py_ssize_t *end)
+
+   渡された例外オブジェクトから *end* 属性を取得して *\*end* に格納します。
+   *end* は *NULL* であってはなりません。
+   成功したら ``0`` を、失敗したら ``-1`` を返します。
+
+.. cfunction:: int PyUnicodeDecodeError_SetEnd(PyObject *exc, Py_ssize_t end)
+               int PyUnicodeEncodeError_SetEnd(PyObject *exc, Py_ssize_t end)
+               int PyUnicodeTranslateError_SetEnd(PyObject *exc, Py_ssize_t end)
+
+   渡された例外オブジェクトの *end* 属性を *end* に設定します。
+   成功したら ``0`` を、失敗したら ``-1`` を返します。
+
+.. cfunction:: PyObject* PyUnicodeDecodeError_GetReason(PyObject *exc)
+               PyObject* PyUnicodeEncodeError_GetReason(PyObject *exc)
+               PyObject* PyUnicodeTranslateError_GetReason(PyObject *exc)
+
+   渡された例外オブジェクトの *reason* 属性を返します。
+
+.. cfunction:: int PyUnicodeDecodeError_SetReason(PyObject *exc, const char *reason)
+               int PyUnicodeEncodeError_SetReason(PyObject *exc, const char *reason)
+               int PyUnicodeTranslateError_SetReason(PyObject *exc, const char *reason)
+
+   渡された例外オブジェクトの *reason* 属性を *reason* に設定します。
+   成功したら ``0`` を、失敗したら ``-1`` を返します。
 
 
 
@@ -521,12 +565,13 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    .. versionadded:: 2.5
 
 
-文字列例外の廃止
+.. String Exceptions
+
+文字列の例外
 ================
 
-.. index:: single: BaseException (built-in exception)
-
-Pythonへ組み込まれるすべての例外あるいは標準ライブラリに提供されている例外は、 :exc:`BaseException` から導出されています。
-
-インタプリタで既存のコードが変更なしで動作するように、文字列例外は今でもサポートされています。しかし、これも将来のリリースで変更されるでしょう。
-
+.. versionchanged:: 2.6
+   All exceptions to be raised or caught must be derived from :exc:`BaseException`.
+   Trying to raise a string exception now raises :exc:`TypeError`.
+   発生したりキャッチされる全ての例外は :exc:`BaseException` を継承しなければなりません。
+   文字列例外を発生させようとすると :exc:`TypeError` が発生されます。

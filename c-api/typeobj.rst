@@ -742,7 +742,7 @@ cmpfunc, reprfunc, hashfunc
 
    サブタイプはこのフィールドを継承しません (算出属性は別個のメカニズムで継承されています)。
 
-   Docs for PyGetSetDef (XXX belong elsewhere)::
+   PyGetSetDef のドキュメント::
 
       typedef PyObject *(* getter)(PyObject *, void *);
       typedef int (*setter)(PyObject *, PyObject *, void *);
@@ -784,8 +784,6 @@ cmpfunc, reprfunc, hashfunc
 
       PyObject * tp_descr_get(PyObject *self, PyObject *obj, PyObject *type);
 
-   XXX blah, blah.
-
    サブタイプはこのフィールドを継承します。
 
 
@@ -798,8 +796,6 @@ cmpfunc, reprfunc, hashfunc
       int tp_descr_set(PyObject *self, PyObject *obj, PyObject *value);
 
    サブタイプはこのフィールドを継承します。
-
-   XXX blah, blah.
 
 
 .. c:member:: long PyTypeObject.tp_dictoffset

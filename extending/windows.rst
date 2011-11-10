@@ -101,7 +101,7 @@ VC++を使わなければならないことに注意しましょう。ここで�
 
    さて、やり方は二通りあります:
 
-#. :file:`example.dsw` と :file:`example.vcproj` をコピーし、 :file:`spam.\*`
+#. :file:`example.sln` と :file:`example.vcproj` をコピーし、 :file:`spam.\*`
    に名前を変えて、手作業で編集する
 
 #. 新しくプロジェクトを作成する; 説明は下にあります。
@@ -154,16 +154,17 @@ VC++を使わなければならないことに注意しましょう。ここで�
 
    PyObject_HEAD_INIT(&PyType_Type)
 
-がうまくいかないはずです。そこで::
+がうまくいかないはずです。
+拡張モジュール内での静的な型オブジェクトの初期化は "initializer not a constant"
+というようなエラーメッセージで失敗することがあります。
+これは DLL を MSVC でビルドするときに表示されます。そこで::
 
    PyObject_HEAD_INIT(NULL)
 
 に変更してください。また、以下の行をモジュール初期化関数に加えます::
 
-   MyObject_Type.ob_type = &PyType_Type;
-
-この操作を行う詳しい理由は、 `Python FAQ <http://www.python.org/doc/faq>`_ の第 3
-節を参照してください。
+   if (PyType_Ready(&MyObject_Type) < 0)
+        return NULL;
 
 
 .. _dynamic-linking:

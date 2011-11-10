@@ -2,10 +2,11 @@
 
 .. _bufferobjects:
 
-バッファーオブジェクト
-----------------------
+buffer オブジェクトと memoryview オブジェクト
+----------------------------------------------
 
 .. sectionauthor:: Greg Stein <gstein@lyra.org>
+.. sectionauthor:: Benjamin Peterson
 
 
 .. index::
@@ -235,25 +236,9 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    *view* バッファを開放します。
    バッファが利用されなくなったときに、そのメモリを開放できるようにこの関数を呼び出すべきです。
 
-.. todo::
-   以下の2つの関数は実装が存在しない。問い合わせ中。
+.. c:function:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
 
-   .. c:function:: Py_ssize_t PyBuffer_SizeFromFormat(const char *)
-
-      :c:data:`~Py_buffer.itemsize` の値を :c:data:`~PyBuffer.format` から計算して返します。
-
-   .. c:function:: int PyObject_CopyToObject(PyObject *obj, void *buf, Py_ssize_t len, char fortran)
-
-      Copy *len* bytes of data pointed to by the contiguous chunk of memory
-      pointed to by *buf* into the buffer exported by obj.  The buffer must of
-      course be writable.  Return 0 on success and return -1 and raise an error
-      on failure.  If the object does not have a writable buffer, then an error
-      is raised.  If *fortran* is ``'F'``, then if the object is
-      multi-dimensional, then the data will be copied into the array in
-      Fortran-style (first dimension varies the fastest).  If *fortran* is
-      ``'C'``, then the data will be copied into the array in C-style (last
-      dimension varies the fastest).  If *fortran* is ``'A'``, then it does not
-      matter and the copy will be made in whatever way is more efficient.
+   :c:data:`~Py_buffer.itemsize` の値を :c:data:`~PyBuffer.format` から計算して返します。
 
 
 .. c:function:: int PyBuffer_IsContiguous(Py_buffer *view, char fortran)
@@ -267,7 +252,7 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
 .. c:function:: void PyBuffer_FillContiguousStrides(int ndim, Py_ssize_t *shape, Py_ssize_t *strides, Py_ssize_t itemsize, char fortran)
 
    *strides* 配列を、 *itemsize* の大きさの要素がバイト単位で連続した、
-   *shape* の形をした (*fortran* が ``'C'`` なら C-style, *fortran* が ``'F'``
+   *shape* の形をした (*fortran* が ``'C'`` なら C-style, ``'F'``
    なら Fortran-style の) 多次元配列として埋める。
 
 
@@ -278,12 +263,59 @@ Python 3.0 では公式に削除され、新しい C 言語レベルのバッフ
    成功したら 0 を、エラー時には (例外を発生させつつ) -1 を返す。
 
 
+.. MemoryView objects
+
+memoryview オブジェクト
+========================
+
+.. versionadded:: 2.7
+
+:class:`memoryview` オブジェクトは、新しい、他のオブジェクトと同じように扱える
+Python オブジェクトの形をした C言語レベルのバッファへのインタフェースです。
+
+.. cfunction:: PyObject *PyMemoryView_FromObject(PyObject *obj)
+
+   新しいバッファインタフェースを定義しているオブジェクトから memoryview
+   オブジェクトを作ります。
+
+
+.. cfunction:: PyObject *PyMemoryView_FromBuffer(Py_buffer *view)
+
+   buffer-info 構造体 *view* をラップする memoryview オブジェクトを作ります。
+   作られた memoryview オブジェクトはバッファを所有することになるので、
+   *view* を開放してはいけません。このバッファは memoryview オブジェクトが削除されるときに
+   解放されます。
+
+
+.. cfunction:: PyObject *PyMemoryView_GetContiguous(PyObject *obj, int buffertype, char order)
+
+   buffer インタフェースを定義しているオブジェクトから ('C' か 'F'ortran の *order* で)
+   連続したメモリチャンクへの memoryview オブジェクトを作ります。
+   メモリが連続している場合、 memoryview オブジェクトは元のメモリを参照します。
+   それ以外の場合、メモリはコピーされて、 memoryview オブジェクトは新しい bytes
+   オブジェクトを参照します。
+
+
+.. cfunction:: int PyMemoryView_Check(PyObject *obj)
+
+   *obj* が memoryview オブジェクトの場合に真を返します。
+   現在のところ、 :class:`memoryview` のサブクラスの作成は許可されていません。
+
+
+.. cfunction:: Py_buffer *PyMemoryView_GET_BUFFER(PyObject *obj)
+
+   与えられたオブジェクトにラップされた buffer-info 構造体へのポインタを返します。
+   オブジェクトは memoryview インスタンスで **なければなりません** 。
+   このマクロはオブジェクトの型をチェックしないので、呼び出し側で保証しなければ
+   クラッシュする可能性があります。
+
+
 旧スタイルバッファオブジェクト
 =================================
 
 .. index:: single: PyBufferProcs
 
-バッファインタフェースに関するより詳しい情報は、 "バッファオブジェクト構造体" 節 ( :ref:`buffer-structs` 節) の、
+古いバッファインタフェースに関するより詳しい情報は、 "バッファオブジェクト構造体" 節 ( :ref:`buffer-structs` 節) の、
 :c:type:`PyBufferProcs` の説明のところにあります。
 
 "バッファオブジェクト" はヘッダファイル :file:`bufferobject.h`  の中で定義されています (このファイルは

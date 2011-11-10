@@ -1,8 +1,8 @@
 .. _package-upload:
 
-***************************************
-Uploading Packages to the Package Index
-***************************************
+**********************************************
+パッケージを Package Index にアップロードする
+**********************************************
 
 .. versionadded:: 2.5
 
@@ -11,7 +11,7 @@ distutils の :command:`upload` コマンドは配布物をPyPIにアップロ�
 
 このコマンドは一つ以上の配布物ファイルをビルドした直後に呼び出されます。例えば、次のコマンド ::
 
-   python setup.py sdist bdist_wininst upload
+    python setup.py sdist bdist_wininst upload
 
 は、ソース配布物とWindowsのインストーラをPyPIにアップロードします。以前に :file:`setup.py`
 を実行してビルドした配布物もアップロード対象になるけれども、アップロードされるのは :command:`upload` コマンドと同時に
@@ -19,10 +19,14 @@ distutils の :command:`upload` コマンドは配布物をPyPIにアップロ�
 
 :command:`upload` コマンドは、 :file:`$HOME/.pypirc` ファイル (詳しくは :ref:`pypirc` セクションを
 ご覧下さい) の、ユーザー名、パスワードとリポジトリURLを利用します。
+同じコマンド内で :command:`register` コマンドが呼ばれていて、そこでプロンプトから
+パスワードを入力した場合、 :command:`upload` は入力されたパスワードを再利用します。
+:file:`$HOME/.pypirc` ファイルにプレインテキストでパスワードを保存したくない場合は
+この方法を利用できます。
 
 :option:`--repository=*url*` オプションを使って別のPyPIサーバーを指定することができます。 ::
 
-   python setup.py sdist bdist_wininst upload -r http://example.com/pypi
+    python setup.py sdist bdist_wininst upload -r http://example.com/pypi
 
 複数のサーバーを定義することについて、より詳しい情報は :ref:`pypirc` を参照してください。
 
@@ -35,3 +39,35 @@ distutils の :command:`upload` コマンドは配布物をPyPIにアップロ�
 のセクション名), :option:`--show-response`
 (アップロードの問題をデバッグするために、PyPI サーバーからの全てのレスポンスを表示する)があります。
 
+.. PyPI package display
+
+PyPI パッケージ表示
+====================
+
+``long_description`` フィールドは PyPI において特別な役目を持ちます。
+サーバーは登録されたパッケージのホームページを表示するためにこれを利用します。
+
+このフィールドに `reStructuredText <http://docutils.sourceforge.net/rst.html>`_
+記法を利用した場合、 PyPI はこれをパースして、パッケージのホームページにHTML
+出力を表示します。
+
+``long_description`` フィールドにパッケージ内のファイルの内容を利用することもできます。 ::
+
+    from distutils.core import setup
+
+    with open('README.txt') as file:
+        long_description = file.read()
+
+    setup(name='Distutils',
+          long_description=long_description)
+
+この例では、 :file:`README.txt` は通常の reStructuredText テキストファイルで、
+:file:`setup.py` と同じパッケージのルートディレクトリに置かれています。
+
+壊れた reStructuredText を登録してしまうのを防ぐために、コマンドラインから
+:mod:`docutils` パッケージが提供している :program:`rst2html` プログラムを
+利用して ``long_description`` をチェックすることができます。 ::
+
+    $ python setup.py --long-description | rst2html.py > output.html
+
+文法に問題がある場合は、 :mod:`docutils` は警告を表示するはずです。
