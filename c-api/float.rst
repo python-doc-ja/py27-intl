@@ -84,3 +84,25 @@
    開放できなかったアイテム数を返します。
 
    .. versionadded:: 2.6
+
+
+.. cfunction:: void PyFloat_AsString(char *buf, PyFloatObject *v)
+
+   :func:`str` と同じルールで *v* を文字列に変換します。
+   *buf* の長さは 100 以上でなければなりません。
+
+   この関数は長さを知らないバッファに書きこむので安全ではありません。
+
+   .. deprecated:: 2.7
+      代わりに func:`PyObject_Str` か :func:`PyOS_double_to_string` を利用してください。
+
+
+.. cfunction:: void PyFloat_AsReprString(char *buf, PyFloatObject *v)
+
+   PyFloat_AsString とほとんど同じですが、 :func:`repr` とおなじルールを使います。
+   *buf* の長さは 100 以上でなければなりません。
+
+   この関数は長さを知らないバッファに書きこむので安全ではありません。
+
+   .. deprecated:: 2.7
+      代わりに :func:`PyObject_Repr` か :func:`PyOS_double_to_string` を利用してください。
