@@ -51,112 +51,106 @@
    This saves the maintainer some effort going through the SVN logs
    when researching a change.
 
-This article explains the new features in Python 2.7.  Python 2.7 was released
-on July 3, 2010.
+この文書は Python 2.7 の新機能について解説します。
+Python 2.7 は 2010 年 7 月 3 日にリリースされました。
 
-Numeric handling has been improved in many ways, for both
-floating-point numbers and for the :class:`~decimal.Decimal` class.
-There are some useful additions to the standard library, such as a
-greatly enhanced :mod:`unittest` module, the :mod:`argparse` module
-for parsing command-line options, convenient :class:`~collections.OrderedDict`
-and :class:`~collections.Counter` classes in the :mod:`collections` module,
-and many other improvements.
+数値周りの扱いが、浮動小数点数でも :class:`~decimal.Decimal` クラスでも
+いろいろな点で改良されました、
+標準ライブラリにいくつかの有用な追加が行われました。 :mod:`unittest`
+モジュールが大幅に改良され、コマンドラインオプション解析の :mod:`argpase`
+モジュールが追加され、 :mod:`collections` モジュールに便利な
+:class:`~collections.OrderedDict` と :class:`~collections.Counter`
+が追加され、他にもたくさんの改良が行われています。
 
-Python 2.7 is planned to be the last of the 2.x releases, so we worked
-on making it a good release for the long term.  To help with porting
-to Python 3, several new features from the Python 3.x series have been
-included in 2.7.
+Python 2.7 は 2.x の最終リリースになることが予定されているので、
+私たちはこのリリースを長期にわたって良いものになるように努力してきました。
+Python 3 への移植を助けるため、いくつかの新機能が Python 3.x から
+Python 2.7 に取り込まれています。
 
-This article doesn't attempt to provide a complete specification of
-the new features, but instead provides a convenient overview.  For
-full details, you should refer to the documentation for Python 2.7 at
-http://docs.python.org. If you want to understand the rationale for
-the design and implementation, refer to the PEP for a particular new
-feature or the issue on http://bugs.python.org in which a change was
-discussed.  Whenever possible, "What's New in Python" links to the
-bug/patch item for each change.
+このドキュメントは新機能の完全な詳細を提供するのではなくて、
+簡易な概要を提供することを目的にしています。
+完全な詳細が知りたければ、 http://docs.python.org の Python 2.7 の
+ドキュメントを参照してください。設計と実装の根拠を理解したい場合は、
+新機能に関する PEP を参照するか、 http://bugs.python.org に議論したい
+機能について登録してください。
+可能な限り、 "What's New in Python" は各変更の bug や patch に対して
+リンクしています。
+
 
 .. _whatsnew27-python31:
 
-The Future for Python 2.x
+.. The Future for Python 2.x
+
+Python 2.x の今後
 =========================
 
-Python 2.7 is intended to be the last major release in the 2.x series.
-The Python maintainers are planning to focus their future efforts on
-the Python 3.x series.
+Python 2.7 は 2.x シリーズの最後のメジャーリリースになります。
+Python のメンテナは今後は Python 3.x シリーズの開発に集中する予定です。
 
-This means that 2.7 will remain in place for a long time, running
-production systems that have not been ported to Python 3.x.
-Two consequences of the long-term significance of 2.7 are:
+これは、 2.7 が長期間残り続け、 Python 3.x への対応がされないプロダクション
+サービスを動かし続けることを意味します。
+2.7 が長期的に重要なリリースになるので、2つの結論があります:
 
-* It's very likely the 2.7 release will have a longer period of
-  maintenance compared to earlier 2.x versions.  Python 2.7 will
-  continue to be maintained while the transition to 3.x continues, and
-  the developers are planning to support Python 2.7 with bug-fix
-  releases beyond the typical two years.
+* これまでの 2.x バージョンに比べて長期間のメンテナンスが行われます。
+  Python 2.7 は 3.x への移行が行われている間はメンテナンスされ続けます。
+  Python 開発者はさらにそこから2年のバグフィックスリリースをする予定です。
 
-* A policy decision was made to silence warnings only of interest to
-  developers.  :exc:`DeprecationWarning` and its
-  descendants are now ignored unless otherwise requested, preventing
-  users from seeing warnings triggered by an application.  This change
-  was also made in the branch that will become Python 3.2. (Discussed
-  on stdlib-sig and carried out in :issue:`7319`.)
+* 開発者向けの警告を抑止するポリシーが取られました。
+  :exc:`DeprecationWarning` とそれを継承した警告は、指定されない限りは
+  無視され、アプリケーションのユーザーがその警告を見ないですむように
+  なりました。この変更は Python 3.2 ブランチにも適用されています。
+  (stdlib-sig で討議され、 :issue:`7319` になりました)
 
-  In previous releases, :exc:`DeprecationWarning` messages were
-  enabled by default, providing Python developers with a clear
-  indication of where their code may break in a future major version
-  of Python.
+  以前のリリースでは、 :exc:`DeprecationWarning` メッセージはデフォルトで
+  有効になっており、 Python 開発者に、将来のバージョンの Python で
+  そのコードのどこが動かなくなるかを明確に知らせていました。
 
-  However, there are increasingly many users of Python-based
-  applications who are not directly involved in the development of
-  those applications.  :exc:`DeprecationWarning` messages are
-  irrelevant to such users, making them worry about an application
-  that's actually working correctly and burdening application developers
-  with responding to these concerns.
+  しかし、 Python で開発されたアプリケーションの利用者であって開発には
+  携わっていない人がどんどん増えてきました。 :exc:`DeprecationWarning`
+  メッセージはそれらのユーザーには無関係で、彼らをアプリケーションが
+  本当に正しく動いているのか不安にさせ、ユーザーの質問に応えるための
+  開発者の負担も増やしていました。
 
-  You can re-enable display of :exc:`DeprecationWarning` messages by
-  running Python with the :option:`-Wdefault <-W>` (short form:
-  :option:`-Wd <-W>`) switch, or by setting the :envvar:`PYTHONWARNINGS`
-  environment variable to ``"default"`` (or ``"d"``) before running
-  Python.  Python code can also re-enable them
-  by calling ``warnings.simplefilter('default')``.
+  :exc:`DeprecationWarning` メッセージの表示を有効にするには、
+  :option:`-Wdefault <-W>` (短い形式: :option:`-Wd <-W>`) スイッチか、
+  Python を実行する前に :envvar:`PYTHONWARNINGS` 環境変数を ``"default"``
+  (か、 ``"d"``)に設定します。 Python コードから有効にする場合は
+  ``warnings.simplefilter('default')`` とします。
 
 
-Python 3.1 Features
+.. Python 3.1 Features
+
+Python 3.1 の機能
 =======================
 
-Much as Python 2.6 incorporated features from Python 3.0,
-version 2.7 incorporates some of the new features
-in Python 3.1.  The 2.x series continues to provide tools
-for migrating to the 3.x series.
+Python 2.6 は Python 3.0 から多くの機能を取り込み、 Python 2.7
+は Python 3.1 の新しい機能のいくつかを取り込みました。
+2.x シリーズは 3.x シリーズへの移行のためのツールを提供し続けています。
 
-A partial list of 3.1 features that were backported to 2.7:
+Python 2.7 に取り込まれた 3.1 の機能の不完全なリスト:
 
-* The syntax for set literals (``{1,2,3}`` is a mutable set).
-* Dictionary and set comprehensions (``{i: i*2 for i in range(3)}``).
-* Multiple context managers in a single :keyword:`with` statement.
-* A new version of the :mod:`io` library, rewritten in C for performance.
-* The ordered-dictionary type described in :ref:`pep-0372`.
-* The new ``","`` format specifier described in :ref:`pep-0378`.
-* The :class:`memoryview` object.
-* A small subset of the :mod:`importlib` module,
-  `described below <#importlib-section>`__.
-* The :func:`repr` of a float ``x`` is shorter in many cases: it's now
-  based on the shortest decimal string that's guaranteed to round back
-  to ``x``.  As in previous versions of Python, it's guaranteed that
-  ``float(repr(x))`` recovers ``x``.
-* Float-to-string and string-to-float conversions are correctly rounded.
-  The :func:`round` function is also now correctly rounded.
-* The :ctype:`PyCapsule` type, used to provide a C API for extension modules.
-* The :cfunc:`PyLong_AsLongAndOverflow` C API function.
+* 集合のリテラル文法 (``{1,2,3}`` は mutable set になります)
+* 辞書と集合の内包表記 (``{i: i*2 for i in range(3)}``).
+* 1つの :keyword:`with` 文で複数のコンテキストマネージャを扱えるように。
+* :mod:`io` ライブラリの新バージョン。パフォーマンスのためにC言語で描き直されています。
+* :ref:`pep-0372` で解説されている順序付き辞書
+* :ref:`pep-0378` で解説されている新しい ``","`` フォーマット指定子
+* :class:`memoryview` オブジェクト
+* :mod:`importlib` モジュールの小さいサブセット。 `下に説明があります <#importlib-section>`__
+* float ``x`` の :func:`repr` が多くの場合に短くなりました。これは
+  ``x`` に戻せることが保証される最小の10進文字列です。以前のバージョンの
+  Python では、 ``float(repr(x))`` が ``x`` になることだけが保証されていました。
+* float から文字列、文字列から float への変換が正しく丸められるようになりました。
+  :func:`round` 関数も正しく丸めるようになりました。
+* 拡張モジュールが C API を提供するための、 :c:type:`PyCapsule` 型
+* :c:func:`PyLong_AsLongAndOverflow` C API 関数
 
-Other new Python3-mode warnings include:
+新しい Python3 モード Warning:
 
-* :func:`operator.isCallable` and :func:`operator.sequenceIncludes`,
-  which are not supported in 3.x, now trigger warnings.
-* The :option:`-3` switch now automatically
-  enables the :option:`-Qwarn <-Q>` switch that causes warnings
-  about using classic division with integers and long integers.
+* :func:`operator.isCallable` と :func:`operator.sequenceIncludes`
+  は 3.x ではサポートされず、 warning になります。
+* :option:`-3` オプションは自動的に :option:`-Qwarn <-Q>` スイッチを有効にして、
+  整数や長整数に対する古い形式の除算が警告を出すようになります。
 
 
 
@@ -166,18 +160,19 @@ Other new Python3-mode warnings include:
 
 .. _pep-0372:
 
-PEP 372: Adding an Ordered Dictionary to collections
+.. PEP 372: Adding an Ordered Dictionary to collections
+
+PEP 372: collections に順序付き辞書を追加
 ====================================================
 
-Regular Python dictionaries iterate over key/value pairs in arbitrary order.
-Over the years, a number of authors have written alternative implementations
-that remember the order that the keys were originally inserted.  Based on
-the experiences from those implementations, 2.7 introduces a new
-:class:`~collections.OrderedDict` class in the :mod:`collections` module.
+通常の Python 辞書は、 key/value ペアを不定の順序でイテレートします。
+何年にもわたり、いろいろな人が key の挿入順を保存する辞書の別実装を書いてきました。
+その経験に基づき、 2.7 は :mod:`collections` モジュールに新しい
+:class:`~collections.OrderedDict` クラスを追加しました。
 
-The :class:`~collections.OrderedDict` API provides the same interface as regular
-dictionaries but iterates over keys and values in a guaranteed order
-depending on when a key was first inserted::
+
+:class:`~collections.OrderedDict` API は通常の辞書と同じインタフェースを提供していますが、
+key/value をイテレートするときに key が最初に挿入された順番になることが保証されています。 ::
 
     >>> from collections import OrderedDict
     >>> d = OrderedDict([('first', 1),
@@ -186,24 +181,23 @@ depending on when a key was first inserted::
     >>> d.items()
     [('first', 1), ('second', 2), ('third', 3)]
 
-If a new entry overwrites an existing entry, the original insertion
-position is left unchanged::
+新しいエントリが既存のエントリを上書きした場合は、元の挿入順序が保持されます。 ::
 
     >>> d['second'] = 4
     >>> d.items()
     [('first', 1), ('second', 4), ('third', 3)]
 
-Deleting an entry and reinserting it will move it to the end::
+エントリを削除して再挿入すると、順序は一番最後に移動します。 ::
 
     >>> del d['second']
     >>> d['second'] = 5
     >>> d.items()
     [('first', 1), ('third', 3), ('second', 5)]
 
-The :meth:`~collections.OrderedDict.popitem` method has an optional *last*
-argument that defaults to True.  If *last* is True, the most recently
-added key is returned and removed; if it's False, the
-oldest key is selected::
+:meth:`~collections.OrderedDict.popitem` メソッドは、オプションの *last*
+引数を持ち、でフォルトで True になっています。
+*last* が True の場合、一番最近に追加された key が返され、削除されます。
+False の場合、最も古い key が選ばれます。 ::
 
     >>> od = OrderedDict([(x,0) for x in range(20)])
     >>> od.popitem()
@@ -215,8 +209,8 @@ oldest key is selected::
     >>> od.popitem(last=False)
     (1, 0)
 
-Comparing two ordered dictionaries checks both the keys and values,
-and requires that the insertion order was the same::
+2つの順序付き辞書を比較するときは、 key/value だけでなく、挿入順も
+比較されます。 ::
 
     >>> od1 = OrderedDict([('first', 1),
     ...                    ('second', 2),
@@ -231,31 +225,26 @@ and requires that the insertion order was the same::
     >>> od1 == od2
     True
 
-Comparing an :class:`~collections.OrderedDict` with a regular dictionary
-ignores the insertion order and just compares the keys and values.
+:class:`~collections.OrderedDict` を通常の辞書と比較すると、
+挿入順は無視されて単に key/value だけが比較されます。
 
-How does the :class:`~collections.OrderedDict` work?  It maintains a
-doubly-linked list of keys, appending new keys to the list as they're inserted.
-A secondary dictionary maps keys to their corresponding list node, so
-deletion doesn't have to traverse the entire linked list and therefore
-remains O(1).
+:class:`~collections.OrderedDict` の実装はこうなっています。
+key の2重リンクリストを管理し、新しい key が挿入されるときにリストに新しい
+key を追加します。2つ目の辞書が key を対応するリストノードにマップします。
+なので、削除時にリンクリストを操作する必要はなく、コストは O(1) に保たれています。
 
-The standard library now supports use of ordered dictionaries in several
-modules.
+標準ライブラリのいくつかのモジュールで、順序付き辞書の利用がサポートされています。
 
-* The :mod:`ConfigParser` module uses them by default, meaning that
-  configuration files can now be read, modified, and then written back
-  in their original order.
+* :mod:`ConfigParser` モジュールはデフォルトで順序付き辞書を使います。
+  設定ファイルを読み込み、編集した後、元の順序で書きなおすことができます。
 
-* The :meth:`~collections.somenamedtuple._asdict()` method for
-  :func:`collections.namedtuple` now returns an ordered dictionary with the
-  values appearing in the same order as the underlying tuple indices.
+* :func:`collections.namedtuple` の :meth:`~collections.somenamedtuple._asdict()`
+  メソッドは、タプルの順序と同じ順序の順序付き辞書を返すようになりました。
 
-* The :mod:`json` module's :class:`~json.JSONDecoder` class
-  constructor was extended with an *object_pairs_hook* parameter to
-  allow :class:`OrderedDict` instances to be built by the decoder.
-  Support was also added for third-party tools like
-  `PyYAML <http://pyyaml.org/>`_.
+* :mod:`json` モジュールのデコーダーが :class:`OrderedDict` をビルド
+  するのをサポートするために、 :class:`~json.JSONDecoder` クラスの
+  コンストラクタに *object_pairs_hook* 引数が追加されました。
+  `PyYAML <http://pyyaml.org/>`_ などの外部のライブラリでもサポートされています。
 
 .. seealso::
 
