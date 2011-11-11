@@ -254,65 +254,65 @@ key を追加します。2つ目の辞書が key を対応するリストノー�
 
 .. _pep-0378:
 
-PEP 378: Format Specifier for Thousands Separator
-=================================================
+.. PEP 378: Format Specifier for Thousands Separator
 
-To make program output more readable, it can be useful to add
-separators to large numbers, rendering them as
-18,446,744,073,709,551,616 instead of 18446744073709551616.
+PEP 378: 1000区切りのための書式指定子
+=======================================
 
-The fully general solution for doing this is the :mod:`locale` module,
-which can use different separators ("," in North America, "." in
-Europe) and different grouping sizes, but :mod:`locale` is complicated
-to use and unsuitable for multi-threaded applications where different
-threads are producing output for different locales.
+大きい数値に区切り文字を追加して、 18446744073709551616 の代わりに
+18,446,744,073,709,551,616 と出力すると、プログラムの出力を読みやすくできます。
 
-Therefore, a simple comma-grouping mechanism has been added to the
-mini-language used by the :meth:`str.format` method.  When
-formatting a floating-point number, simply include a comma between the
-width and the precision::
+これを行う一般的な方法は :mod:`locale` モジュールを使うことで、
+複数の区切り文字 (北米では "," で、ヨーロッパでは ".")
+を使ったり、複数のグループの大きさを使うことができます。
+しかし、 :mod:`locale` の利用方法は複雑ですし、スレッドごとに異なるロケールの
+出力を行うプログラムでは利用することができません。
+
+そのため、シンプルなカンマによるグループ化機構が :meth:`str.format`
+メソッドのミニ言語に追加されました。浮動小数点数をフォーマットする場合、
+シンプルにカンマを幅と精度の間に置きます。
 
    >>> '{:20,.2f}'.format(18446744073709551616.0)
    '18,446,744,073,709,551,616.00'
 
-When formatting an integer, include the comma after the width:
+整数をフォーマットする場合は、幅の後にカンマを追加します。
 
    >>> '{:20,d}'.format(18446744073709551616)
    '18,446,744,073,709,551,616'
 
-This mechanism is not adaptable at all; commas are always used as the
-separator and the grouping is always into three-digit groups.  The
-comma-formatting mechanism isn't as general as the :mod:`locale`
-module, but it's easier to use.
+この機構は全く柔軟性を持っていません。区切り文字は常にカンマですし、
+グループは常に数字3つになります。
+カンマ書式機構は :mod:`locale` ほど汎用ではありませんが、手軽に使うことができます。
 
 .. seealso::
 
    :pep:`378` - Format Specifier for Thousands Separator
      PEP written by Raymond Hettinger; implemented by Eric Smith.
 
-PEP 389: The argparse Module for Parsing Command Lines
-======================================================
 
-The :mod:`argparse` module for parsing command-line arguments was
-added as a more powerful replacement for the
-:mod:`optparse` module.
+.. PEP 389: The argparse Module for Parsing Command Lines
 
-This means Python now supports three different modules for parsing
-command-line arguments: :mod:`getopt`, :mod:`optparse`, and
-:mod:`argparse`.  The :mod:`getopt` module closely resembles the C
-library's :cfunc:`getopt` function, so it remains useful if you're writing a
-Python prototype that will eventually be rewritten in C.
-:mod:`optparse` becomes redundant, but there are no plans to remove it
-because there are many scripts still using it, and there's no
-automated way to update these scripts.  (Making the :mod:`argparse`
-API consistent with :mod:`optparse`'s interface was discussed but
-rejected as too messy and difficult.)
+PEP 389: コマンドライン解析のための argparse モジュール
+========================================================
 
-In short, if you're writing a new script and don't need to worry
-about compatibility with earlier versions of Python, use
-:mod:`argparse` instead of :mod:`optparse`.
+コマンドライン引数の解析のための :mod:`argparse` モジュールが、
+:mod:`optparse` モジュールのより協力な代替として追加されました。
 
-Here's an example::
+これにより、 Python はコマンドライン引数の解析のために3つの異なる
+モジュール、 :mod:`getopt`, :mod:`optparse`, :mod:`argparse` を
+持つことになります。
+:mod:`getopt` モジュールは C言語用ライブラリの :c:func:`getopt` 関数に似せてあるので、
+あとで C 言語で書き直すかもしれないプログラムのプロトタイプを Python で書く場合に
+役に立ちます。
+:mod:`optparse` は冗長になってしまいましたが、まだたくさんのスクリプトが利用していて、
+それらのスクリプトを自動的に更新する手段が無いので、削除される予定はありません。
+(:mod:`argparse` API を :mod:`optparse` のインタフェースに適合させる方法も
+検討されましたが、多くの複雑さと難点のために却下されました)
+
+古いバージョンの Python との互換性を気にすること無く新しいスクリプトを書く時は、
+:mod:`optparse` の代わりに :mod:`argparse` を使ってください。
+
+例::
 
     import argparse
 
@@ -335,8 +335,8 @@ Here's an example::
     args = parser.parse_args()
     print args.__dict__
 
-Unless you override it, :option:`-h` and :option:`--help` switches
-are automatically added, and produce neatly formatted output::
+オーバーライドしない限り、 :option:`-h` と :option:`--help` スイッチが
+自動的に追加され、綺麗にフォーマットした出力を生成します。 ::
 
     -> ./python.exe argparse-example.py --help
     usage: argparse-example.py [-h] [-v] [-o FILE] [-C NUM] [inputs [inputs ...]]
@@ -352,8 +352,8 @@ are automatically added, and produce neatly formatted output::
       -o FILE     direct output to FILE instead of stdout
       -C NUM      display NUM lines of added context
 
-As with :mod:`optparse`, the command-line switches and arguments
-are returned as an object with attributes named by the *dest* parameters::
+:mod:`optparse` と同じく、コマンドラインスイッチと引数は、 *dest* 引数の
+名前の属性をもったオブジェクトとして返されます。 ::
 
     -> ./python.exe argparse-example.py -v
     {'output': None,
@@ -377,19 +377,29 @@ specify an argument's type as :class:`~argparse.FileType`, which will
 automatically open files for you and understands that ``'-'`` means
 standard input or output.
 
+:mod:`argparse` は :mod:`optparse` よりも多くの便利なバリデーションを持っています。
+引数の正確な数を整数で指定したり、 ``'*'`` で0以上の数を指定したり、
+``'+'`` で1以上の数を指定したり、 ``'?'`` でオプションにしたりできます。
+トップレベルのパーサーはサブパーサーを持つことができ、 ``svn commit``,
+``svn update`` のように異なるオプションを持ったサブコマンドを定義できます。
+引数のタイプに :class:`~argparse.FileType` を指定することで、
+自動でファイルを開き、 ``'-'`` が指定されたときに標準入出力だと判断することができます。
+
 .. seealso::
 
-   :mod:`argparse` documentation
-     The documentation page of the argparse module.
+   :mod:`argparse` のドキュメント
+     argparse モジュールのドキュメント
 
    :ref:`argparse-from-optparse`
-     Part of the Python documentation, describing how to convert
-     code that uses :mod:`optparse`.
+     :mod:`optparse` を使うコードを変換する方法を説明した Python のドキュメントの一部
 
    :pep:`389` - argparse - New Command Line Parsing Module
      PEP written and implemented by Steven Bethard.
 
-PEP 391: Dictionary-Based Configuration For Logging
+
+.. PEP 391: Dictionary-Based Configuration For Logging
+
+PEP 391: logging の辞書ベースの設定
 ====================================================
 
 The :mod:`logging` module is very flexible; applications can define
