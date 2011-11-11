@@ -367,16 +367,6 @@ PEP 389: コマンドライン解析のための argparse モジュール
      'context': 4,
      'inputs': ['file1', 'file2']}
 
-:mod:`argparse` has much fancier validation than :mod:`optparse`; you
-can specify an exact number of arguments as an integer, 0 or more
-arguments by passing ``'*'``, 1 or more by passing ``'+'``, or an
-optional argument with ``'?'``.  A top-level parser can contain
-sub-parsers to define subcommands that have different sets of
-switches, as in ``svn commit``, ``svn checkout``, etc.  You can
-specify an argument's type as :class:`~argparse.FileType`, which will
-automatically open files for you and understands that ``'-'`` means
-standard input or output.
-
 :mod:`argparse` は :mod:`optparse` よりも多くの便利なバリデーションを持っています。
 引数の正確な数を整数で指定したり、 ``'*'`` で0以上の数を指定したり、
 ``'+'`` で1以上の数を指定したり、 ``'?'`` でオプションにしたりできます。
@@ -402,10 +392,10 @@ standard input or output.
 PEP 391: logging の辞書ベースの設定
 ====================================================
 
-The :mod:`logging` module is very flexible; applications can define
-a tree of logging subsystems, and each logger in this tree can filter
-out certain messages, format them differently, and direct messages to
-a varying number of handlers.
+:mod:`logging` モジュールは非常に柔軟です。アプリケーションは logging
+のサブシステムのツリーを定義できます。このツリーの各ロガーはいくつかの
+メッセージをフィルターし、異なるフォーマットを行い、メッセージを
+沢山の種類のハンドラーに渡します。
 
 All this flexibility can require a lot of configuration.  You can
 write Python statements to create objects and set their properties,
