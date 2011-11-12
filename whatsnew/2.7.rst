@@ -397,24 +397,23 @@ PEP 391: logging の辞書ベースの設定
 メッセージをフィルターし、異なるフォーマットを行い、メッセージを
 沢山の種類のハンドラーに渡します。
 
-All this flexibility can require a lot of configuration.  You can
-write Python statements to create objects and set their properties,
-but a complex set-up requires verbose but boring code.
-:mod:`logging` also supports a :func:`~logging.fileConfig`
-function that parses a file, but the file format doesn't support
-configuring filters, and it's messier to generate programmatically.
+この柔軟性は、多くの設定を必要とします。
+オブジェクトを生成してプロパティを設定する Python コードを書くこともできますが、
+複雑なセットアップをしようとすると退屈なコードを書かないといけなくなります。
+:mod:`logging` は設定ファイルのパースを行う :func:`~logging.fileConfig`
+関数を提供していますが、このファイルフォーマットはフィルターの設定をサポート
+していませんし、プログラムで生成するのはさらに面倒になります。
 
-Python 2.7 adds a :func:`~logging.dictConfig` function that
-uses a dictionary to configure logging.  There are many ways to
-produce a dictionary from different sources: construct one with code;
-parse a file containing JSON; or use a YAML parsing library if one is
-installed.  For more information see :ref:`logging-config-api`.
+Python 2.7 は logging の設定のために辞書を使う :func:`~logging.dictConfig`
+関数を追加しました。いろいろな入力から辞書を作成する方法があります。
+コードで作ったり、 JSON ファイルをパースしたり、YAMLのパーサーを
+インストールしてあればそれを使うことができます。
+詳しい情報は :ref:`logging-config-api` を参照してください。
 
-The following example configures two loggers, the root logger and a
-logger named "network".  Messages sent to the root logger will be
-sent to the system log using the syslog protocol, and messages
-to the "network" logger will be written to a :file:`network.log` file
-that will be rotated once the log reaches 1MB.
+次の例は2つのロガー、 root logger と "network" という名前の logger
+root logger に送られたメッセージは syslog プロトコルを利用してシステムに
+送られ、 "network" logger に送られたメッセージは1MBごとにローテートされる
+:file:`network.log` ファイルに書きこまれます。
 
 ::
 
@@ -460,27 +459,25 @@ that will be rotated once the log reaches 1MB.
     netlogger = logging.getLogger('network')
     netlogger.error('Connection failed')
 
-Three smaller enhancements to the :mod:`logging` module, all
-implemented by Vinay Sajip, are:
+他にも、 :mod:`logging` モジュールには Vinary Sajip によって実装された
+3 つの改良があります。
 
 .. rev79293
 
-* The :class:`~logging.handlers.SysLogHandler` class now supports
-  syslogging over TCP.  The constructor has a *socktype* parameter
-  giving the type of socket to use, either :const:`socket.SOCK_DGRAM`
-  for UDP or :const:`socket.SOCK_STREAM` for TCP.  The default
-  protocol remains UDP.
+* :class:`~logging.handlers.SysLogHandler` クラスは TCP 経由の syslog
+  をサポートします。コンストラクタの *socktype* 引数は使用するソケットの
+  種類として、 UDP を使う :const:`socket.SOCK_DGRAM` と TCP を使う
+  :const:`socket.SOCK_STREAM` のどちらかを取ります。デフォルトはUDPのままです。
 
-* :class:`~logging.Logger` instances gained a :meth:`~logging.Logger.getChild`
-  method that retrieves a descendant logger using a relative path.
-  For example, once you retrieve a logger by doing ``log = getLogger('app')``,
-  calling ``log.getChild('network.listen')`` is equivalent to
-  ``getLogger('app.network.listen')``.
+* :class:`~logging.Logger` インスタンスに :meth:`~logging.Logger.getChild`
+  メソッドが追加されました。これは、相対パスで下位の logger を返します。
+  例えば、 ``log = getLogger('app')`` として logger を取得した後、
+  ``log.getChild('network.listen')`` は ``getLogger('app.network.listen')``
+  と同じになります。
 
-* The :class:`~logging.LoggerAdapter` class gained a
-  :meth:`~logging.LoggerAdapter.isEnabledFor` method that takes a
-  *level* and returns whether the underlying logger would
-  process a message of that level of importance.
+* :class:`~logging.LoggerAdapter` クラスに :meth:`~logging.LoggerAdapter.isEnabledFor`
+  メソッドが追加されました。 *level* を引数に取り、ベースの logger がその重要度
+  レベルのメッセージを処理するかどうかを返します。
 
 .. XXX: Logger objects don't have a class declaration so the link don't work
 
