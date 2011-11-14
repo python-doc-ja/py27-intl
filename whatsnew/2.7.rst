@@ -486,18 +486,21 @@ root logger に送られたメッセージは syslog プロトコルを利用し
    :pep:`391` - Dictionary-Based Configuration For Logging
      PEP written and implemented by Vinay Sajip.
 
-PEP 3106: Dictionary Views
+.. PEP 3106: Dictionary Views
+
+PEP 3106: 辞書 View
 ====================================================
 
-The dictionary methods :meth:`~dict.keys`, :meth:`~dict.values`, and
-:meth:`~dict.items` are different in Python 3.x.  They return an object
-called a :dfn:`view` instead of a fully materialized list.
+辞書の :meth:`~dict.keys`, :meth:`~dict.values`, :meth:`~dict.items`
+メソッドは Python 3.x では動作が代わり、完全に実体化されたリストの代わりに、
+:dfn:`view` と呼ばれるオブジェクトを返すようになりました。
 
-It's not possible to change the return values of :meth:`~dict.keys`,
-:meth:`~dict.values`, and :meth:`~dict.items` in Python 2.7 because
-too much code would break.  Instead the 3.x versions were added
-under the new names :meth:`~dict.viewkeys`, :meth:`~dict.viewvalues`,
-and :meth:`~dict.viewitems`.
+Python 2.7 では、 :meth:`~dict.keys`, :meth:`~dict.values`, :meth:`~dict.items`
+の動作を変えてしまうと、既存の大量のコードが動かなくなってしまうので、
+Python 3.x と同じ動作に合わせることはできません。
+なので、 Python 3.x のメソッドと同じ動作をするメソッドを、別の
+:meth:`~dict.viewkeys`, :meth:`~dict.viewvalues`, :meth:`~dict.viewitems`
+という名前で追加しました。
 
 ::
 
@@ -507,9 +510,10 @@ and :meth:`~dict.viewitems`.
     >>> d.viewkeys()
     dict_keys([0, 130, 10, 140, 20, 150, 30, ..., 250])
 
-Views can be iterated over, but the key and item views also behave
-like sets.  The ``&`` operator performs intersection, and ``|``
-performs a union::
+View はイテレートするだけでなく、 set と似た利用をすることもできます。
+``&`` 演算子で共通部分集合を、 ``|`` 演算子で話集合を取ることができます。
+
+::
 
     >>> d1 = dict((i*10, chr(65+i)) for i in range(26))
     >>> d2 = dict((i**.5, i) for i in range(1000))
@@ -518,8 +522,7 @@ performs a union::
     >>> d1.viewkeys() | range(0, 30)
     set([0, 1, 130, 3, 4, 5, 6, ..., 120, 250])
 
-The view keeps track of the dictionary and its contents change as the
-dictionary is modified::
+view は辞書とその辞書の変化に追随しています。 ::
 
     >>> vk = d.viewkeys()
     >>> vk
@@ -528,8 +531,8 @@ dictionary is modified::
     >>> vk
     dict_keys([0, 130, 260, 10, ..., 250])
 
-However, note that you can't add or remove keys while you're iterating
-over the view::
+ただし、 view をイテレートしている間に key の追加や削除ができないことに
+気を付けてください。 ::
 
     >>> for k in vk:
     ...     d[k*2] = k
@@ -538,9 +541,9 @@ over the view::
       File "<stdin>", line 1, in <module>
     RuntimeError: dictionary changed size during iteration
 
-You can use the view methods in Python 2.x code, and the 2to3
-converter will change them to the standard :meth:`~dict.keys`,
-:meth:`~dict.values`, and :meth:`~dict.items` methods.
+Python 2.x で view メソッドを利用すると、 2to3 が自動的にそれを
+通常の :meth:`~dict.keys`, :meth:`~dict.values`, :meth:`~dict.items`
+メソッドに書き換えてくれます。
 
 .. seealso::
 
@@ -549,11 +552,13 @@ converter will change them to the standard :meth:`~dict.keys`,
      Backported to 2.7 by Alexandre Vassalotti; :issue:`1967`.
 
 
-PEP 3137: The memoryview Object
+.. PEP 3137: The memoryview Object
+
+PEP 3137: memoryview オブジェクト
 ====================================================
 
-The :class:`memoryview` object provides a view of another object's
-memory content that matches the :class:`bytes` type's interface.
+:class:`memoryview` オブジェクトは、他のオブジェクトのメモリの内容に対する
+:class:`bytes` 型のインタフェースに合わせた view を提供します。
 
     >>> import string
     >>> m = memoryview(string.letters)
@@ -567,8 +572,7 @@ memory content that matches the :class:`bytes` type's interface.
     >>> m2
     <memory at 0x37f080>
 
-The content of the view can be converted to a string of bytes or
-a list of integers:
+view の内容は bytes 型の文字列か整数のリストに変換することができます。
 
     >>> m2.tobytes()
     'abcdefghijklmnopqrstuvwxyz'
@@ -576,8 +580,8 @@ a list of integers:
     [97, 98, 99, 100, 101, 102, 103, ... 121, 122]
     >>>
 
-:class:`memoryview` objects allow modifying the underlying object if
-it's a mutable object.
+:class:`memoryview` オブジェクトは、対象となる背後のオブジェクトが変更可能
+(mutable) な場合は、その変更を許可しています。
 
     >>> m2[0] = 75
     Traceback (most recent call last):
@@ -599,19 +603,19 @@ it's a mutable object.
      Implemented by Travis Oliphant, Antoine Pitrou and others.
      Backported to 2.7 by Antoine Pitrou; :issue:`2396`.
 
+.. x* magic code for vim highlighting.
 
+.. Other Language Changes
 
-Other Language Changes
+その他の言語の変更
 ======================
 
-Some smaller changes made to the core Python language are:
+Python 言語コアにいくつかの小さな変更が加えられました。
 
-* The syntax for set literals has been backported from Python 3.x.
-  Curly brackets are used to surround the contents of the resulting
-  mutable set; set literals are
-  distinguished from dictionaries by not containing colons and values.
-  ``{}`` continues to represent an empty dictionary; use
-  ``set()`` for an empty set.
+* set リテラルのためのシンタックスが Python 3.x からバックポートされました。
+  内容を波括弧で囲うと mutable set になります。 dict リテラルとの区別は、
+  コロンと value が存在しないことで行われます。なので、 ``{}`` は引き続き
+  空の dict になります。空の set を作るときには ``set()`` を使ってください。
 
     >>> {1, 2, 3, 4, 5}
     set([1, 2, 3, 4, 5])
@@ -622,74 +626,66 @@ Some smaller changes made to the core Python language are:
 
   Backported by Alexandre Vassalotti; :issue:`2335`.
 
-* Dictionary and set comprehensions are another feature backported from
-  3.x, generalizing list/generator comprehensions to use
-  the literal syntax for sets and dictionaries.
+* dict と set の内包表記も Python 3.x からバックポートされました。
+  list と generator の内包表記を set と dict にも使えるように一般化させています。
 
     >>> {x: x*x for x in range(6)}
     {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}
     >>> {('a'*x) for x in range(6)}
     set(['', 'a', 'aa', 'aaa', 'aaaa', 'aaaaa'])
 
+.. x* magic code for vim highlighting.
+
   Backported by Alexandre Vassalotti; :issue:`2333`.
 
-* The :keyword:`with` statement can now use multiple context managers
-  in one statement.  Context managers are processed from left to right
-  and each one is treated as beginning a new :keyword:`with` statement.
-  This means that::
+* :keyword:`with` 文が1つの文で複数のコンテキストマネージャーを使えるようになりました。
+  コンテキストマネージャーは左から右へ処理され、それぞれが新しい :keyword:`with`
+  文の開始となるように扱われます。つまり::
 
    with A() as a, B() as b:
        ... suite of statements ...
 
-  is equivalent to::
+  このコードは、次のコードと等しくなります::
 
    with A() as a:
        with B() as b:
            ... suite of statements ...
 
-  The :func:`contextlib.nested` function provides a very similar
-  function, so it's no longer necessary and has been deprecated.
+  :func:`contextlib.nested` 関数は非常に似た機能を提供していたので、
+  もう必要なくなり廃止予定となりました。
 
   (Proposed in http://codereview.appspot.com/53094; implemented by
   Georg Brandl.)
 
-* Conversions between floating-point numbers and strings are
-  now correctly rounded on most platforms.  These conversions occur
-  in many different places: :func:`str` on
-  floats and complex numbers; the :class:`float` and :class:`complex`
-  constructors;
-  numeric formatting; serializing and
-  deserializing floats and complex numbers using the
-  :mod:`marshal`, :mod:`pickle`
-  and :mod:`json` modules;
-  parsing of float and imaginary literals in Python code;
-  and :class:`~decimal.Decimal`-to-float conversion.
+* 浮動小数点数と文字列の間の変換がほとんどのプラットフォームで正しく丸め
+  られるようになりました。この変換はいろいろな場面で発生します:
+  float 型や complex 型に対する :func:`str` 関数の適用、
+  数値フォーマット、 :mod:`marshal`, :mod:`pickle`, :mod:`json`
+  モジュールを使ってのシリアライズとデシリアライズ、
+  Python コード中の float や imaginary リテラルの解析、
+  :class:`~decimal.Decimal` から float への変換などです。
 
-  Related to this, the :func:`repr` of a floating-point number *x*
-  now returns a result based on the shortest decimal string that's
-  guaranteed to round back to *x* under correct rounding (with
-  round-half-to-even rounding mode).  Previously it gave a string
-  based on rounding x to 17 decimal digits.
+  これに関連して、 浮動小数点数 *x* の :func:`repr` は、 (round-half-to-even
+  丸めモードで)正しく丸め処理をした場合に元の *x* に戻せる最小の
+  10進文字列になりました。以前は *x* を17桁の10進文字列に丸めていました。
 
   .. maybe add an example?
 
-  The rounding library responsible for this improvement works on
-  Windows and on Unix platforms using the gcc, icc, or suncc
-  compilers.  There may be a small number of platforms where correct
-  operation of this code cannot be guaranteed, so the code is not
-  used on such systems.  You can find out which code is being used
-  by checking :data:`sys.float_repr_style`,  which will be ``short``
-  if the new code is in use and ``legacy`` if it isn't.
+  丸めライブラリが、この改善が Windows や gcc, icc, suncc を使った
+  Unix 環境で動かす役目をおっています。このライブラリの正確な動作が
+  保証できない少しの環境があるので、そういったシステムではこのライブラリは
+  利用されません。 :data:`sys.float_repr_style` が ``short``
+  なら新しいコードが利用されていて、 ``legacy`` なら利用されていません。
 
   Implemented by Eric Smith and Mark Dickinson, using David Gay's
   :file:`dtoa.c` library; :issue:`7117`.
 
-* Conversions from long integers and regular integers to floating
-  point now round differently, returning the floating-point number
-  closest to the number.  This doesn't matter for small integers that
-  can be converted exactly, but for large numbers that will
-  unavoidably lose precision, Python 2.7 now approximates more
-  closely.  For example, Python 2.6 computed the following::
+* 多倍長整数や通常の整数から浮動小数点への変換でも丸め処理が変更され、
+  元の数に一番近い浮動小数点値が返されるようになりました。
+  これは浮動小数点へ完全に変換できる小さい整数では問題になりませんが、
+  桁数に対して精度がどうしても足りない場合に関係します。
+  Python 2.7 はより正確に近似するようになりました。例えば、 Python 2.6
+  では次のように計算されていました::
 
     >>> n = 295147905179352891391
     >>> float(n)
@@ -697,8 +693,8 @@ Some smaller changes made to the core Python language are:
     >>> n - long(float(n))
     65535L
 
-  Python 2.7's floating-point result is larger, but much closer to the
-  true value::
+  Python 2.7 の浮動小数点への変換結果は元の数値より大きくなりますが、
+  元の値により近くなっています::
 
     >>> n = 295147905179352891391
     >>> float(n)
@@ -708,28 +704,29 @@ Some smaller changes made to the core Python language are:
 
   (Implemented by Mark Dickinson; :issue:`3166`.)
 
-  Integer division is also more accurate in its rounding behaviours.  (Also
-  implemented by Mark Dickinson; :issue:`1811`.)
+  この丸めの動作により、整数同士の true division (``from __future__ import division``)
+  の結果もより正確になりました。
+  (Also implemented by Mark Dickinson; :issue:`1811`.)
 
-* Implicit coercion for complex numbers has been removed; the interpreter
-  will no longer ever attempt to call a :meth:`__coerce__` method on complex
-  objects.  (Removed by Meador Inge and Mark Dickinson; :issue:`5211`.)
+* 複素数に対する暗黙の型強制は削除されました。インタプリタは complex オブジェクトに対して
+  :meth:`__coerce__` メソッドを呼び出そうとしません。
+  (Removed by Meador Inge and Mark Dickinson; :issue:`5211`.)
 
-* The :meth:`str.format` method now supports automatic numbering of the replacement
-  fields.  This makes using :meth:`str.format` more closely resemble using
-  ``%s`` formatting::
+* :meth:`str.format` メソッドは置換フィールドに対する自動ナンバリングをサポートするようになりました。
+  これにより :meth:`str.format` をより ``%s`` と同じように使えるようになりました。 ::
 
     >>> '{}:{}:{}'.format(2009, 04, 'Sunday')
     '2009:4:Sunday'
     >>> '{}:{}:{day}'.format(2009, 4, day='Sunday')
     '2009:4:Sunday'
 
-  The auto-numbering takes the fields from left to right, so the first ``{...}``
-  specifier will use the first argument to :meth:`str.format`, the next
-  specifier will use the next argument, and so on.  You can't mix auto-numbering
-  and explicit numbering -- either number all of your specifier fields or none
-  of them -- but you can mix auto-numbering and named fields, as in the second
-  example above.  (Contributed by Eric Smith; :issue:`5237`.)
+  自動ナンバリングは左のフィールドから右のフィールドへと行われるので、
+  最初の ``{...}`` 指定は :meth:`str.format` メソッドの最初の引数を利用し、
+  次の指定は次の引数を利用します。
+  自動ナンバリングと明示的なナンバリングを混ぜて使うことはできず、全ての置換指定に
+  手動でナンバリングするか、全てを自動ナンバリングに任せなければなりません。
+  ただし、上の例の2つめのように、自動ナンバリングと名前フィールドを混ぜて使うことは可能です。
+  (Contributed by Eric Smith; :issue:`5237`.)
 
   Complex numbers now correctly support usage with :func:`format`,
   and default to being right-aligned.
