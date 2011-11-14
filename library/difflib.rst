@@ -15,11 +15,6 @@
 
 .. versionadded:: 2.1
 
-.. This module provides classes and functions for comparing sequences. It
-.. can be used for example, for comparing files, and can produce difference
-.. information in various formats, including HTML and context and unified
-.. diffs. For comparing directories and files, see also, the :mod:`filecmp` module.
-
 このモジュールは、シーケンスを比較するためのクラスや関数を提供しています。
 例えば、ファイルの差分を計算して、それを HTML や context diff, unified diff
 などいろいろなフォーマットで出力するために、このモジュールを利用することができます。
@@ -45,11 +40,17 @@
    シーケンス中に共通に現れる要素数に非常にややこしく依存しています。
    最良の場合は線形時間になります。
 
-   **ヒューリスティック:** マッチングの速度を向上させるために、1% 以上の時間を費やす
-   少なくとも 200 アイテムは junk として扱います。
-   少数のアイテムから構成された列に対しては、
-   残念ながらこの仕様により酷い結果を与えることになってしまいます。
-   将来のバージョンではこのヒューリスティックを使わなくするオプションを加える予定です。
+   **自動 junk ヒューリスティック:** :class:`SequenceMatcher` は、シーケンスの
+   特定の要素を自動的に junk として扱うヒューリスティックをサポートしています。
+   このヒューリスティックは、各個要素がシーケンス内に何回現れるかを数えます。
+   ある要素の重複数が (最初のものは除いて) 合計でシーケンスの 1% 以上になり、
+   そのシーケンスが 200 要素以上なら、その要素は "popular" であるものとして
+   マークされ、シーケンスのマッチングの目的からは junk として扱われます。
+   このヒューリスティックは、:class:`SequenceMatcher` の作成時に ``autojunk``
+   パラメタを ``False`` に設定することで無効化できます。
+
+   .. versionadded:: 2.7.1
+      *autojunk* パラメタ。
 
 .. class:: Differ
 
@@ -153,8 +154,7 @@
 
    コンテクスト形式は、通常、ヘッダにファイル名と変更時刻を持っています。この情報は、文字列
    *fromfile*, *tofile*, *fromfiledate*, *tofiledate* で指定できます。
-   変更時刻の書式は、通常、
-   :func:`time.ctime` の戻り値と同じものを使います。
+   変更時刻の書式は、通常、ISO 8601 フォーマットで表されます。
    指定しなかった場合のデフォルト値は、空文字列です。
 
       >>> s1 = ['bacon\n', 'eggs\n', 'ham\n', 'guido\n']
@@ -292,9 +292,9 @@
    *lineterm* 引数を ``""`` にセットしてください
 
    ユニファイド形式は、通常、ヘッダにファイル名と変更時刻を持っています。
-   この情報は、文字列 *fromfile*, *tofile*, *fromfiledate*, *tofiledate* 
-   で指定できます。変更時刻の書式は、通常、 :func:`time.ctime`
-   の戻り値と同じものを使います。指定しなかった場合のデフォルト値は、空文字列です。
+   この情報は、文字列 *fromfile*, *tofile*, *fromfiledate*, *tofiledate*
+   で指定できます。変更時刻の書式は、通常、ISO 8601 フォーマットで表されます。
+   指定しなかった場合のデフォルト値は、空文字列です。
 
       >>> s1 = ['bacon\n', 'eggs\n', 'ham\n', 'guido\n']
       >>> s2 = ['python\n', 'eggy\n', 'hamster\n', 'guido\n']
@@ -348,7 +348,7 @@ SequenceMatcherオブジェクト
 :class:`SequenceMatcher` クラスには、以下のようなコンストラクタがあります。
 
 
-.. class:: SequenceMatcher([isjunk[, a[, b]]])
+.. class:: SequenceMatcher([isjunk[, a[, b[, autojunk=True]]]])
 
    オプションの引数 *isjunk* は、 ``None`` (デフォルトの値です) にするか、
    単一の引数をとる関数にせねばなりません。後者の場合、関数は
@@ -361,6 +361,12 @@ SequenceMatcherオブジェクト
 
    オプションの引数 *a* と *b* は、比較される文字列で、デフォルトでは空の文字列です。
    両方のシーケンスの要素は、ハッシュ化可能(:term:`hashable`)である必要があります。
+
+   オプションの引数 *autojunk* は、自動 junk ヒューリスティックを
+   無効にするために使えます。
+
+   .. versionadded:: 2.7.1
+      *autojunk* パラメタ。
 
    :class:`SequenceMatcher` オブジェクトは以下のメソッドを持ちます。
 
@@ -505,17 +511,9 @@ SequenceMatcherオブジェクト
 
       :meth:`ratio` の上界を、より高速に計算します。
 
-      この関数は、 :meth:`ratio` の値の上界（これ以上になることはないという値）を、
-      :meth:`ratio` より高速に計算します。
-      この関数の計算方法について、詳細な定義はありません。
-
    .. method:: real_quick_ratio()
 
       :meth:`ratio` の上界を、非常に高速に計算します。
-
-      この関数は、 :meth:`ratio` の値の上界（これ以上になることはないという値）を、
-      :meth:`ratio` や :meth:`quick_ratio` より高速に計算します。
-      この関数の計算方法について、詳細な定義はありません。
 
 この文字列全体のマッチ率を返す3つのメソッドは、精度の異なる近似値を返します。
 :meth:`quick_ratio` と :meth:`real_quick_ratio` は、常に :meth:`ratio`
