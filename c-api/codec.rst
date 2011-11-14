@@ -9,114 +9,112 @@ codec レジストリとサポート関数
 
    新しい codec 検索関数を登録します。
 
-   As side effect, this tries to load the :mod:`encodings` package, if not yet
-   done, to make sure that it is always first in the list of search functions.
-   副作用として、この関数は :mod:`encodings` パッケージのロードを試行します。
-   もしまだロードされていない場合、
+   副作用として、この関数は :mod:`encodings` パッケージが常に検索関数の先頭に来るように、
+   まだロードされていない場合はロードします。
 
 .. cfunction:: int PyCodec_KnownEncoding(const char *encoding)
 
-   Return ``1`` or ``0`` depending on whether there is a registered codec for
-   the given *encoding*.
+   *encoding* のための登録された codec が存在するかどうかに応じて ``1`` か ``0`` を返します。
 
 .. cfunction:: PyObject* PyCodec_Encode(PyObject *object, const char *encoding, const char *errors)
 
-   Generic codec based encoding API.
+   汎用の codec ベースの encode API.
 
-   *object* is passed through the encoder function found for the given
-   *encoding* using the error handling method defined by *errors*.  *errors* may
-   be *NULL* to use the default method defined for the codec.  Raises a
-   :exc:`LookupError` if no encoder can be found.
+   *encoding* に応じて見つかったエンコーダ関数に対して *object* を渡します。
+   エラーハンドリングメソッドは *errors* で指定します。
+   *errors* は *NULL* でもよく、その場合はその codec のデフォルトのメソッドが利用されます。
+   エンコーダが見つからなかった場合は :exc:`LookupError` を発生させます。
 
 .. cfunction:: PyObject* PyCodec_Decode(PyObject *object, const char *encoding, const char *errors)
 
-   Generic codec based decoding API.
+   汎用の codec ベースの dencode API.
 
-   *object* is passed through the decoder function found for the given
-   *encoding* using the error handling method defined by *errors*.  *errors* may
-   be *NULL* to use the default method defined for the codec.  Raises a
-   :exc:`LookupError` if no encoder can be found.
+   *encoding* に応じて見つかったデコーダ関数に対して *object* を渡します。
+   エラーハンドリングメソッドは *errors* で指定します。
+   *errors* は *NULL* でもよく、その場合はその codec のデフォルトのメソッドが利用されます。
+   デコーダが見つからなかった場合は :exc:`LookupError` を発生させます。
 
 
-Codec lookup API
-----------------
+.. Codec lookup API
 
-In the following functions, the *encoding* string is looked up converted to all
-lower-case characters, which makes encodings looked up through this mechanism
-effectively case-insensitive.  If no codec is found, a :exc:`KeyError` is set
-and *NULL* returned.
+コーデック検索API
+------------------
+
+以下の関数では、文字列 *encoding* は全て小文字に変換することで、効率的に、大文字小文字を
+無視した検索をします。
+コーデックが見つからない場合、 :exc:`KeyError` を設定して *NULL* を返します。
 
 .. cfunction:: PyObject* PyCodec_Encoder(const char *encoding)
 
-   Get an encoder function for the given *encoding*.
+   *encoding* のエンコーダ関数を返します。
 
 .. cfunction:: PyObject* PyCodec_Decoder(const char *encoding)
 
-   Get a decoder function for the given *encoding*.
+   *encoding* のデコーダ関数を返します。
 
 .. cfunction:: PyObject* PyCodec_IncrementalEncoder(const char *encoding, const char *errors)
 
-   Get an :class:`IncrementalEncoder` object for the given *encoding*.
+   *encoding* の :class:`IncrementalEncoder` オブジェクトを返します。
 
 .. cfunction:: PyObject* PyCodec_IncrementalDecoder(const char *encoding, const char *errors)
 
-   Get an :class:`IncrementalDecoder` object for the given *encoding*.
+   *encoding* の :class:`IncrementalDecoder` オブジェクトを返します。
 
 .. cfunction:: PyObject* PyCodec_StreamReader(const char *encoding, PyObject *stream, const char *errors)
 
-   Get a :class:`StreamReader` factory function for the given *encoding*.
+   *encoding* の :class:`StreamReader` ファクトリ関数を返します。
 
 .. cfunction:: PyObject* PyCodec_StreamWriter(const char *encoding, PyObject *stream, const char *errors)
 
-   Get a :class:`StreamWriter` factory function for the given *encoding*.
+   *encoding* の :class:`StreamWriter` ファクトリ関数を返します。
 
 
-Registry API for Unicode encoding error handlers
+.. Registry API for Unicode encoding error handlers
+
+Unicode エラーハンドラ用レジストリ API
 ------------------------------------------------
 
 .. cfunction:: int PyCodec_RegisterError(const char *name, PyObject *error)
 
-   Register the error handling callback function *error* under the given *name*.
-   This callback function will be called by a codec when it encounters
-   unencodable characters/undecodable bytes and *name* is specified as the error
-   parameter in the call to the encode/decode function.
+   エラーハンドルのためのコールバック関数 *error* を *name* で登録します。
+   このコールバック関数は、コーデックがエンコードできない文字/デコードできないバイトに
+   遭遇した時に、そのエンコード/デコード関数の呼び出しで *name* が指定されていたら
+   呼び出されます。
 
-   The callback gets a single argument, an instance of
-   :exc:`UnicodeEncodeError`, :exc:`UnicodeDecodeError` or
-   :exc:`UnicodeTranslateError` that holds information about the problematic
-   sequence of characters or bytes and their offset in the original string (see
-   :ref:`unicodeexceptions` for functions to extract this information).  The
-   callback must either raise the given exception, or return a two-item tuple
-   containing the replacement for the problematic sequence, and an integer
-   giving the offset in the original string at which encoding/decoding should be
-   resumed.
+   コールバックは1つの引数として、 :exc:`UnicodeEncodeError`, :exc:`UnicodeDecodeError`,
+   :exc:`UnicodeTranslateError` のどれかのインスタンスを受け取ります。
+   このインスタンスは問題のある文字列やバイト列に関する情報と、その元の文字列中の
+   オフセットを持っています。(その情報を取得するための関数については
+   :ref:`unicodeexceptions` を参照してください。)
+   コールバックは渡された例外を発生させるか、2要素のタプルに問題のシーケンスの代替と、
+   encode/decode を再開する元の文字列中のオフセットとなる整数を格納して返します。
 
-   Return ``0`` on success, ``-1`` on error.
+   成功したら ``0`` を、エラー時は ``-1`` を返します。
 
 .. cfunction:: PyObject* PyCodec_LookupError(const char *name)
 
-   Lookup the error handling callback function registered under *name*.  As a
-   special case *NULL* can be passed, in which case the error handling callback
-   for "strict" will be returned.
+   *name* で登録されたエラーハンドリングコールバック関数を検索します。
+   特別な場合として、 *NULL* が渡された場合、 "strict" のエラーハンドリングコールバック
+   関数を返します。
 
 .. cfunction:: PyObject* PyCodec_StrictErrors(PyObject *exc)
 
-   Raise *exc* as an exception.
+   *exc* を例外として発生させます。
 
 .. cfunction:: PyObject* PyCodec_IgnoreErrors(PyObject *exc)
 
-   Ignore the unicode error, skipping the faulty input.
+   unicode エラーを無視し、問題の入力をスキップします。
 
 .. cfunction:: PyObject* PyCodec_ReplaceErrors(PyObject *exc)
 
-   Replace the unicode encode error with ``?`` or ``U+FFFD``.
+   unicode エラーを ``?`` か ``U+FFFD`` で置き換えます。
 
 .. cfunction:: PyObject* PyCodec_XMLCharRefReplaceErrors(PyObject *exc)
 
-   Replace the unicode encode error with XML character references.
+   unicode encode エラーを XML文字参照で置き換えます。
 
 .. cfunction:: PyObject* PyCodec_BackslashReplaceErrors(PyObject *exc)
 
-   Replace the unicode encode error with backslash escapes (``\x``, ``\u`` and
-   ``\U``).
+   unicode encode エラーをバックスラッシュエスケープ (``\x``, ``\u``, ``\U``)
+   で置き換えます。
 

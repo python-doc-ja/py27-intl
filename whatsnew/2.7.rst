@@ -51,112 +51,106 @@
    This saves the maintainer some effort going through the SVN logs
    when researching a change.
 
-This article explains the new features in Python 2.7.  Python 2.7 was released
-on July 3, 2010.
+この文書は Python 2.7 の新機能について解説します。
+Python 2.7 は 2010 年 7 月 3 日にリリースされました。
 
-Numeric handling has been improved in many ways, for both
-floating-point numbers and for the :class:`~decimal.Decimal` class.
-There are some useful additions to the standard library, such as a
-greatly enhanced :mod:`unittest` module, the :mod:`argparse` module
-for parsing command-line options, convenient :class:`~collections.OrderedDict`
-and :class:`~collections.Counter` classes in the :mod:`collections` module,
-and many other improvements.
+数値周りの扱いが、浮動小数点数でも :class:`~decimal.Decimal` クラスでも
+いろいろな点で改良されました、
+標準ライブラリにいくつかの有用な追加が行われました。 :mod:`unittest`
+モジュールが大幅に改良され、コマンドラインオプション解析の :mod:`argpase`
+モジュールが追加され、 :mod:`collections` モジュールに便利な
+:class:`~collections.OrderedDict` と :class:`~collections.Counter`
+が追加され、他にもたくさんの改良が行われています。
 
-Python 2.7 is planned to be the last of the 2.x releases, so we worked
-on making it a good release for the long term.  To help with porting
-to Python 3, several new features from the Python 3.x series have been
-included in 2.7.
+Python 2.7 は 2.x の最終リリースになることが予定されているので、
+私たちはこのリリースを長期にわたって良いものになるように努力してきました。
+Python 3 への移植を助けるため、いくつかの新機能が Python 3.x から
+Python 2.7 に取り込まれています。
 
-This article doesn't attempt to provide a complete specification of
-the new features, but instead provides a convenient overview.  For
-full details, you should refer to the documentation for Python 2.7 at
-http://docs.python.org. If you want to understand the rationale for
-the design and implementation, refer to the PEP for a particular new
-feature or the issue on http://bugs.python.org in which a change was
-discussed.  Whenever possible, "What's New in Python" links to the
-bug/patch item for each change.
+このドキュメントは新機能の完全な詳細を提供するのではなくて、
+簡易な概要を提供することを目的にしています。
+完全な詳細が知りたければ、 http://docs.python.org の Python 2.7 の
+ドキュメントを参照してください。設計と実装の根拠を理解したい場合は、
+新機能に関する PEP を参照するか、 http://bugs.python.org に議論したい
+機能について登録してください。
+可能な限り、 "What's New in Python" は各変更の bug や patch に対して
+リンクしています。
+
 
 .. _whatsnew27-python31:
 
-The Future for Python 2.x
+.. The Future for Python 2.x
+
+Python 2.x の今後
 =========================
 
-Python 2.7 is intended to be the last major release in the 2.x series.
-The Python maintainers are planning to focus their future efforts on
-the Python 3.x series.
+Python 2.7 は 2.x シリーズの最後のメジャーリリースになります。
+Python のメンテナは今後は Python 3.x シリーズの開発に集中する予定です。
 
-This means that 2.7 will remain in place for a long time, running
-production systems that have not been ported to Python 3.x.
-Two consequences of the long-term significance of 2.7 are:
+これは、 2.7 が長期間残り続け、 Python 3.x への対応がされないプロダクション
+サービスを動かし続けることを意味します。
+2.7 が長期的に重要なリリースになるので、2つの結論があります:
 
-* It's very likely the 2.7 release will have a longer period of
-  maintenance compared to earlier 2.x versions.  Python 2.7 will
-  continue to be maintained while the transition to 3.x continues, and
-  the developers are planning to support Python 2.7 with bug-fix
-  releases beyond the typical two years.
+* これまでの 2.x バージョンに比べて長期間のメンテナンスが行われます。
+  Python 2.7 は 3.x への移行が行われている間はメンテナンスされ続けます。
+  Python 開発者はさらにそこから2年のバグフィックスリリースをする予定です。
 
-* A policy decision was made to silence warnings only of interest to
-  developers.  :exc:`DeprecationWarning` and its
-  descendants are now ignored unless otherwise requested, preventing
-  users from seeing warnings triggered by an application.  This change
-  was also made in the branch that will become Python 3.2. (Discussed
-  on stdlib-sig and carried out in :issue:`7319`.)
+* 開発者向けの警告を抑止するポリシーが取られました。
+  :exc:`DeprecationWarning` とそれを継承した警告は、指定されない限りは
+  無視され、アプリケーションのユーザーがその警告を見ないですむように
+  なりました。この変更は Python 3.2 ブランチにも適用されています。
+  (stdlib-sig で討議され、 :issue:`7319` になりました)
 
-  In previous releases, :exc:`DeprecationWarning` messages were
-  enabled by default, providing Python developers with a clear
-  indication of where their code may break in a future major version
-  of Python.
+  以前のリリースでは、 :exc:`DeprecationWarning` メッセージはデフォルトで
+  有効になっており、 Python 開発者に、将来のバージョンの Python で
+  そのコードのどこが動かなくなるかを明確に知らせていました。
 
-  However, there are increasingly many users of Python-based
-  applications who are not directly involved in the development of
-  those applications.  :exc:`DeprecationWarning` messages are
-  irrelevant to such users, making them worry about an application
-  that's actually working correctly and burdening application developers
-  with responding to these concerns.
+  しかし、 Python で開発されたアプリケーションの利用者であって開発には
+  携わっていない人がどんどん増えてきました。 :exc:`DeprecationWarning`
+  メッセージはそれらのユーザーには無関係で、彼らをアプリケーションが
+  本当に正しく動いているのか不安にさせ、ユーザーの質問に応えるための
+  開発者の負担も増やしていました。
 
-  You can re-enable display of :exc:`DeprecationWarning` messages by
-  running Python with the :option:`-Wdefault <-W>` (short form:
-  :option:`-Wd <-W>`) switch, or by setting the :envvar:`PYTHONWARNINGS`
-  environment variable to ``"default"`` (or ``"d"``) before running
-  Python.  Python code can also re-enable them
-  by calling ``warnings.simplefilter('default')``.
+  :exc:`DeprecationWarning` メッセージの表示を有効にするには、
+  :option:`-Wdefault <-W>` (短い形式: :option:`-Wd <-W>`) スイッチか、
+  Python を実行する前に :envvar:`PYTHONWARNINGS` 環境変数を ``"default"``
+  (か、 ``"d"``)に設定します。 Python コードから有効にする場合は
+  ``warnings.simplefilter('default')`` とします。
 
 
-Python 3.1 Features
+.. Python 3.1 Features
+
+Python 3.1 の機能
 =======================
 
-Much as Python 2.6 incorporated features from Python 3.0,
-version 2.7 incorporates some of the new features
-in Python 3.1.  The 2.x series continues to provide tools
-for migrating to the 3.x series.
+Python 2.6 は Python 3.0 から多くの機能を取り込み、 Python 2.7
+は Python 3.1 の新しい機能のいくつかを取り込みました。
+2.x シリーズは 3.x シリーズへの移行のためのツールを提供し続けています。
 
-A partial list of 3.1 features that were backported to 2.7:
+Python 2.7 に取り込まれた 3.1 の機能の不完全なリスト:
 
-* The syntax for set literals (``{1,2,3}`` is a mutable set).
-* Dictionary and set comprehensions (``{i: i*2 for i in range(3)}``).
-* Multiple context managers in a single :keyword:`with` statement.
-* A new version of the :mod:`io` library, rewritten in C for performance.
-* The ordered-dictionary type described in :ref:`pep-0372`.
-* The new ``","`` format specifier described in :ref:`pep-0378`.
-* The :class:`memoryview` object.
-* A small subset of the :mod:`importlib` module,
-  `described below <#importlib-section>`__.
-* The :func:`repr` of a float ``x`` is shorter in many cases: it's now
-  based on the shortest decimal string that's guaranteed to round back
-  to ``x``.  As in previous versions of Python, it's guaranteed that
-  ``float(repr(x))`` recovers ``x``.
-* Float-to-string and string-to-float conversions are correctly rounded.
-  The :func:`round` function is also now correctly rounded.
-* The :ctype:`PyCapsule` type, used to provide a C API for extension modules.
-* The :cfunc:`PyLong_AsLongAndOverflow` C API function.
+* 集合のリテラル文法 (``{1,2,3}`` は mutable set になります)
+* 辞書と集合の内包表記 (``{i: i*2 for i in range(3)}``).
+* 1つの :keyword:`with` 文で複数のコンテキストマネージャを扱えるように。
+* :mod:`io` ライブラリの新バージョン。パフォーマンスのためにC言語で描き直されています。
+* :ref:`pep-0372` で解説されている順序付き辞書
+* :ref:`pep-0378` で解説されている新しい ``","`` フォーマット指定子
+* :class:`memoryview` オブジェクト
+* :mod:`importlib` モジュールの小さいサブセット。 `下に説明があります <#importlib-section>`__
+* float ``x`` の :func:`repr` が多くの場合に短くなりました。これは
+  ``x`` に戻せることが保証される最小の10進文字列です。以前のバージョンの
+  Python では、 ``float(repr(x))`` が ``x`` になることだけが保証されていました。
+* float から文字列、文字列から float への変換が正しく丸められるようになりました。
+  :func:`round` 関数も正しく丸めるようになりました。
+* 拡張モジュールが C API を提供するための、 :c:type:`PyCapsule` 型
+* :c:func:`PyLong_AsLongAndOverflow` C API 関数
 
-Other new Python3-mode warnings include:
+新しい Python3 モード Warning:
 
-* :func:`operator.isCallable` and :func:`operator.sequenceIncludes`,
-  which are not supported in 3.x, now trigger warnings.
-* The :option:`-3` switch now automatically
-  enables the :option:`-Qwarn <-Q>` switch that causes warnings
-  about using classic division with integers and long integers.
+* :func:`operator.isCallable` と :func:`operator.sequenceIncludes`
+  は 3.x ではサポートされず、 warning になります。
+* :option:`-3` オプションは自動的に :option:`-Qwarn <-Q>` スイッチを有効にして、
+  整数や長整数に対する古い形式の除算が警告を出すようになります。
 
 
 
@@ -166,18 +160,19 @@ Other new Python3-mode warnings include:
 
 .. _pep-0372:
 
-PEP 372: Adding an Ordered Dictionary to collections
+.. PEP 372: Adding an Ordered Dictionary to collections
+
+PEP 372: collections に順序付き辞書を追加
 ====================================================
 
-Regular Python dictionaries iterate over key/value pairs in arbitrary order.
-Over the years, a number of authors have written alternative implementations
-that remember the order that the keys were originally inserted.  Based on
-the experiences from those implementations, 2.7 introduces a new
-:class:`~collections.OrderedDict` class in the :mod:`collections` module.
+通常の Python 辞書は、 key/value ペアを不定の順序でイテレートします。
+何年にもわたり、いろいろな人が key の挿入順を保存する辞書の別実装を書いてきました。
+その経験に基づき、 2.7 は :mod:`collections` モジュールに新しい
+:class:`~collections.OrderedDict` クラスを追加しました。
 
-The :class:`~collections.OrderedDict` API provides the same interface as regular
-dictionaries but iterates over keys and values in a guaranteed order
-depending on when a key was first inserted::
+
+:class:`~collections.OrderedDict` API は通常の辞書と同じインタフェースを提供していますが、
+key/value をイテレートするときに key が最初に挿入された順番になることが保証されています。 ::
 
     >>> from collections import OrderedDict
     >>> d = OrderedDict([('first', 1),
@@ -186,24 +181,23 @@ depending on when a key was first inserted::
     >>> d.items()
     [('first', 1), ('second', 2), ('third', 3)]
 
-If a new entry overwrites an existing entry, the original insertion
-position is left unchanged::
+新しいエントリが既存のエントリを上書きした場合は、元の挿入順序が保持されます。 ::
 
     >>> d['second'] = 4
     >>> d.items()
     [('first', 1), ('second', 4), ('third', 3)]
 
-Deleting an entry and reinserting it will move it to the end::
+エントリを削除して再挿入すると、順序は一番最後に移動します。 ::
 
     >>> del d['second']
     >>> d['second'] = 5
     >>> d.items()
     [('first', 1), ('third', 3), ('second', 5)]
 
-The :meth:`~collections.OrderedDict.popitem` method has an optional *last*
-argument that defaults to True.  If *last* is True, the most recently
-added key is returned and removed; if it's False, the
-oldest key is selected::
+:meth:`~collections.OrderedDict.popitem` メソッドは、オプションの *last*
+引数を持ち、でフォルトで True になっています。
+*last* が True の場合、一番最近に追加された key が返され、削除されます。
+False の場合、最も古い key が選ばれます。 ::
 
     >>> od = OrderedDict([(x,0) for x in range(20)])
     >>> od.popitem()
@@ -215,8 +209,8 @@ oldest key is selected::
     >>> od.popitem(last=False)
     (1, 0)
 
-Comparing two ordered dictionaries checks both the keys and values,
-and requires that the insertion order was the same::
+2つの順序付き辞書を比較するときは、 key/value だけでなく、挿入順も
+比較されます。 ::
 
     >>> od1 = OrderedDict([('first', 1),
     ...                    ('second', 2),
@@ -231,31 +225,26 @@ and requires that the insertion order was the same::
     >>> od1 == od2
     True
 
-Comparing an :class:`~collections.OrderedDict` with a regular dictionary
-ignores the insertion order and just compares the keys and values.
+:class:`~collections.OrderedDict` を通常の辞書と比較すると、
+挿入順は無視されて単に key/value だけが比較されます。
 
-How does the :class:`~collections.OrderedDict` work?  It maintains a
-doubly-linked list of keys, appending new keys to the list as they're inserted.
-A secondary dictionary maps keys to their corresponding list node, so
-deletion doesn't have to traverse the entire linked list and therefore
-remains O(1).
+:class:`~collections.OrderedDict` の実装はこうなっています。
+key の2重リンクリストを管理し、新しい key が挿入されるときにリストに新しい
+key を追加します。2つ目の辞書が key を対応するリストノードにマップします。
+なので、削除時にリンクリストを操作する必要はなく、コストは O(1) に保たれています。
 
-The standard library now supports use of ordered dictionaries in several
-modules.
+標準ライブラリのいくつかのモジュールで、順序付き辞書の利用がサポートされています。
 
-* The :mod:`ConfigParser` module uses them by default, meaning that
-  configuration files can now be read, modified, and then written back
-  in their original order.
+* :mod:`ConfigParser` モジュールはデフォルトで順序付き辞書を使います。
+  設定ファイルを読み込み、編集した後、元の順序で書きなおすことができます。
 
-* The :meth:`~collections.somenamedtuple._asdict()` method for
-  :func:`collections.namedtuple` now returns an ordered dictionary with the
-  values appearing in the same order as the underlying tuple indices.
+* :func:`collections.namedtuple` の :meth:`~collections.somenamedtuple._asdict()`
+  メソッドは、タプルの順序と同じ順序の順序付き辞書を返すようになりました。
 
-* The :mod:`json` module's :class:`~json.JSONDecoder` class
-  constructor was extended with an *object_pairs_hook* parameter to
-  allow :class:`OrderedDict` instances to be built by the decoder.
-  Support was also added for third-party tools like
-  `PyYAML <http://pyyaml.org/>`_.
+* :mod:`json` モジュールのデコーダーが :class:`OrderedDict` をビルド
+  するのをサポートするために、 :class:`~json.JSONDecoder` クラスの
+  コンストラクタに *object_pairs_hook* 引数が追加されました。
+  `PyYAML <http://pyyaml.org/>`_ などの外部のライブラリでもサポートされています。
 
 .. seealso::
 
@@ -265,65 +254,65 @@ modules.
 
 .. _pep-0378:
 
-PEP 378: Format Specifier for Thousands Separator
-=================================================
+.. PEP 378: Format Specifier for Thousands Separator
 
-To make program output more readable, it can be useful to add
-separators to large numbers, rendering them as
-18,446,744,073,709,551,616 instead of 18446744073709551616.
+PEP 378: 1000区切りのための書式指定子
+=======================================
 
-The fully general solution for doing this is the :mod:`locale` module,
-which can use different separators ("," in North America, "." in
-Europe) and different grouping sizes, but :mod:`locale` is complicated
-to use and unsuitable for multi-threaded applications where different
-threads are producing output for different locales.
+大きい数値に区切り文字を追加して、 18446744073709551616 の代わりに
+18,446,744,073,709,551,616 と出力すると、プログラムの出力を読みやすくできます。
 
-Therefore, a simple comma-grouping mechanism has been added to the
-mini-language used by the :meth:`str.format` method.  When
-formatting a floating-point number, simply include a comma between the
-width and the precision::
+これを行う一般的な方法は :mod:`locale` モジュールを使うことで、
+複数の区切り文字 (北米では "," で、ヨーロッパでは ".")
+を使ったり、複数のグループの大きさを使うことができます。
+しかし、 :mod:`locale` の利用方法は複雑ですし、スレッドごとに異なるロケールの
+出力を行うプログラムでは利用することができません。
+
+そのため、シンプルなカンマによるグループ化機構が :meth:`str.format`
+メソッドのミニ言語に追加されました。浮動小数点数をフォーマットする場合、
+シンプルにカンマを幅と精度の間に置きます。
 
    >>> '{:20,.2f}'.format(18446744073709551616.0)
    '18,446,744,073,709,551,616.00'
 
-When formatting an integer, include the comma after the width:
+整数をフォーマットする場合は、幅の後にカンマを追加します。
 
    >>> '{:20,d}'.format(18446744073709551616)
    '18,446,744,073,709,551,616'
 
-This mechanism is not adaptable at all; commas are always used as the
-separator and the grouping is always into three-digit groups.  The
-comma-formatting mechanism isn't as general as the :mod:`locale`
-module, but it's easier to use.
+この機構は全く柔軟性を持っていません。区切り文字は常にカンマですし、
+グループは常に数字3つになります。
+カンマ書式機構は :mod:`locale` ほど汎用ではありませんが、手軽に使うことができます。
 
 .. seealso::
 
    :pep:`378` - Format Specifier for Thousands Separator
      PEP written by Raymond Hettinger; implemented by Eric Smith.
 
-PEP 389: The argparse Module for Parsing Command Lines
-======================================================
 
-The :mod:`argparse` module for parsing command-line arguments was
-added as a more powerful replacement for the
-:mod:`optparse` module.
+.. PEP 389: The argparse Module for Parsing Command Lines
 
-This means Python now supports three different modules for parsing
-command-line arguments: :mod:`getopt`, :mod:`optparse`, and
-:mod:`argparse`.  The :mod:`getopt` module closely resembles the C
-library's :cfunc:`getopt` function, so it remains useful if you're writing a
-Python prototype that will eventually be rewritten in C.
-:mod:`optparse` becomes redundant, but there are no plans to remove it
-because there are many scripts still using it, and there's no
-automated way to update these scripts.  (Making the :mod:`argparse`
-API consistent with :mod:`optparse`'s interface was discussed but
-rejected as too messy and difficult.)
+PEP 389: コマンドライン解析のための argparse モジュール
+========================================================
 
-In short, if you're writing a new script and don't need to worry
-about compatibility with earlier versions of Python, use
-:mod:`argparse` instead of :mod:`optparse`.
+コマンドライン引数の解析のための :mod:`argparse` モジュールが、
+:mod:`optparse` モジュールのより協力な代替として追加されました。
 
-Here's an example::
+これにより、 Python はコマンドライン引数の解析のために3つの異なる
+モジュール、 :mod:`getopt`, :mod:`optparse`, :mod:`argparse` を
+持つことになります。
+:mod:`getopt` モジュールは C言語用ライブラリの :c:func:`getopt` 関数に似せてあるので、
+あとで C 言語で書き直すかもしれないプログラムのプロトタイプを Python で書く場合に
+役に立ちます。
+:mod:`optparse` は冗長になってしまいましたが、まだたくさんのスクリプトが利用していて、
+それらのスクリプトを自動的に更新する手段が無いので、削除される予定はありません。
+(:mod:`argparse` API を :mod:`optparse` のインタフェースに適合させる方法も
+検討されましたが、多くの複雑さと難点のために却下されました)
+
+古いバージョンの Python との互換性を気にすること無く新しいスクリプトを書く時は、
+:mod:`optparse` の代わりに :mod:`argparse` を使ってください。
+
+例::
 
     import argparse
 
@@ -346,8 +335,8 @@ Here's an example::
     args = parser.parse_args()
     print args.__dict__
 
-Unless you override it, :option:`-h` and :option:`--help` switches
-are automatically added, and produce neatly formatted output::
+オーバーライドしない限り、 :option:`-h` と :option:`--help` スイッチが
+自動的に追加され、綺麗にフォーマットした出力を生成します。 ::
 
     -> ./python.exe argparse-example.py --help
     usage: argparse-example.py [-h] [-v] [-o FILE] [-C NUM] [inputs [inputs ...]]
@@ -363,8 +352,8 @@ are automatically added, and produce neatly formatted output::
       -o FILE     direct output to FILE instead of stdout
       -C NUM      display NUM lines of added context
 
-As with :mod:`optparse`, the command-line switches and arguments
-are returned as an object with attributes named by the *dest* parameters::
+:mod:`optparse` と同じく、コマンドラインスイッチと引数は、 *dest* 引数の
+名前の属性をもったオブジェクトとして返されます。 ::
 
     -> ./python.exe argparse-example.py -v
     {'output': None,
@@ -378,54 +367,53 @@ are returned as an object with attributes named by the *dest* parameters::
      'context': 4,
      'inputs': ['file1', 'file2']}
 
-:mod:`argparse` has much fancier validation than :mod:`optparse`; you
-can specify an exact number of arguments as an integer, 0 or more
-arguments by passing ``'*'``, 1 or more by passing ``'+'``, or an
-optional argument with ``'?'``.  A top-level parser can contain
-sub-parsers to define subcommands that have different sets of
-switches, as in ``svn commit``, ``svn checkout``, etc.  You can
-specify an argument's type as :class:`~argparse.FileType`, which will
-automatically open files for you and understands that ``'-'`` means
-standard input or output.
+:mod:`argparse` は :mod:`optparse` よりも多くの便利なバリデーションを持っています。
+引数の正確な数を整数で指定したり、 ``'*'`` で0以上の数を指定したり、
+``'+'`` で1以上の数を指定したり、 ``'?'`` でオプションにしたりできます。
+トップレベルのパーサーはサブパーサーを持つことができ、 ``svn commit``,
+``svn update`` のように異なるオプションを持ったサブコマンドを定義できます。
+引数のタイプに :class:`~argparse.FileType` を指定することで、
+自動でファイルを開き、 ``'-'`` が指定されたときに標準入出力だと判断することができます。
 
 .. seealso::
 
-   :mod:`argparse` documentation
-     The documentation page of the argparse module.
+   :mod:`argparse` のドキュメント
+     argparse モジュールのドキュメント
 
    :ref:`argparse-from-optparse`
-     Part of the Python documentation, describing how to convert
-     code that uses :mod:`optparse`.
+     :mod:`optparse` を使うコードを変換する方法を説明した Python のドキュメントの一部
 
    :pep:`389` - argparse - New Command Line Parsing Module
      PEP written and implemented by Steven Bethard.
 
-PEP 391: Dictionary-Based Configuration For Logging
+
+.. PEP 391: Dictionary-Based Configuration For Logging
+
+PEP 391: logging の辞書ベースの設定
 ====================================================
 
-The :mod:`logging` module is very flexible; applications can define
-a tree of logging subsystems, and each logger in this tree can filter
-out certain messages, format them differently, and direct messages to
-a varying number of handlers.
+:mod:`logging` モジュールは非常に柔軟です。アプリケーションは logging
+のサブシステムのツリーを定義できます。このツリーの各ロガーはいくつかの
+メッセージをフィルターし、異なるフォーマットを行い、メッセージを
+沢山の種類のハンドラーに渡します。
 
-All this flexibility can require a lot of configuration.  You can
-write Python statements to create objects and set their properties,
-but a complex set-up requires verbose but boring code.
-:mod:`logging` also supports a :func:`~logging.fileConfig`
-function that parses a file, but the file format doesn't support
-configuring filters, and it's messier to generate programmatically.
+この柔軟性は、多くの設定を必要とします。
+オブジェクトを生成してプロパティを設定する Python コードを書くこともできますが、
+複雑なセットアップをしようとすると退屈なコードを書かないといけなくなります。
+:mod:`logging` は設定ファイルのパースを行う :func:`~logging.fileConfig`
+関数を提供していますが、このファイルフォーマットはフィルターの設定をサポート
+していませんし、プログラムで生成するのはさらに面倒になります。
 
-Python 2.7 adds a :func:`~logging.dictConfig` function that
-uses a dictionary to configure logging.  There are many ways to
-produce a dictionary from different sources: construct one with code;
-parse a file containing JSON; or use a YAML parsing library if one is
-installed.  For more information see :ref:`logging-config-api`.
+Python 2.7 は logging の設定のために辞書を使う :func:`~logging.dictConfig`
+関数を追加しました。いろいろな入力から辞書を作成する方法があります。
+コードで作ったり、 JSON ファイルをパースしたり、YAMLのパーサーを
+インストールしてあればそれを使うことができます。
+詳しい情報は :ref:`logging-config-api` を参照してください。
 
-The following example configures two loggers, the root logger and a
-logger named "network".  Messages sent to the root logger will be
-sent to the system log using the syslog protocol, and messages
-to the "network" logger will be written to a :file:`network.log` file
-that will be rotated once the log reaches 1MB.
+次の例は2つのロガー、 root logger と "network" という名前の logger
+root logger に送られたメッセージは syslog プロトコルを利用してシステムに
+送られ、 "network" logger に送られたメッセージは1MBごとにローテートされる
+:file:`network.log` ファイルに書きこまれます。
 
 ::
 
@@ -471,27 +459,25 @@ that will be rotated once the log reaches 1MB.
     netlogger = logging.getLogger('network')
     netlogger.error('Connection failed')
 
-Three smaller enhancements to the :mod:`logging` module, all
-implemented by Vinay Sajip, are:
+他にも、 :mod:`logging` モジュールには Vinary Sajip によって実装された
+3 つの改良があります。
 
 .. rev79293
 
-* The :class:`~logging.handlers.SysLogHandler` class now supports
-  syslogging over TCP.  The constructor has a *socktype* parameter
-  giving the type of socket to use, either :const:`socket.SOCK_DGRAM`
-  for UDP or :const:`socket.SOCK_STREAM` for TCP.  The default
-  protocol remains UDP.
+* :class:`~logging.handlers.SysLogHandler` クラスは TCP 経由の syslog
+  をサポートします。コンストラクタの *socktype* 引数は使用するソケットの
+  種類として、 UDP を使う :const:`socket.SOCK_DGRAM` と TCP を使う
+  :const:`socket.SOCK_STREAM` のどちらかを取ります。デフォルトはUDPのままです。
 
-* :class:`~logging.Logger` instances gained a :meth:`~logging.Logger.getChild`
-  method that retrieves a descendant logger using a relative path.
-  For example, once you retrieve a logger by doing ``log = getLogger('app')``,
-  calling ``log.getChild('network.listen')`` is equivalent to
-  ``getLogger('app.network.listen')``.
+* :class:`~logging.Logger` インスタンスに :meth:`~logging.Logger.getChild`
+  メソッドが追加されました。これは、相対パスで下位の logger を返します。
+  例えば、 ``log = getLogger('app')`` として logger を取得した後、
+  ``log.getChild('network.listen')`` は ``getLogger('app.network.listen')``
+  と同じになります。
 
-* The :class:`~logging.LoggerAdapter` class gained a
-  :meth:`~logging.LoggerAdapter.isEnabledFor` method that takes a
-  *level* and returns whether the underlying logger would
-  process a message of that level of importance.
+* :class:`~logging.LoggerAdapter` クラスに :meth:`~logging.LoggerAdapter.isEnabledFor`
+  メソッドが追加されました。 *level* を引数に取り、ベースの logger がその重要度
+  レベルのメッセージを処理するかどうかを返します。
 
 .. XXX: Logger objects don't have a class declaration so the link don't work
 

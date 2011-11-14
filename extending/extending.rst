@@ -73,9 +73,8 @@ C のコードをいちいち書く前に :mod:`ctypes` モジュールの使用
 ここでは、Python の引数リスト (例えば、単一の式 ``"ls -l"``)  から C 関数に渡す引数にそのまま変換しています。 C
 関数は常に二つの引数を持ち、便宜的に *self* および *args* と呼ばれます。
 
-*self* 引数は C 関数が Python の関数ではなく組み込みメソッドを実装している場合にのみ使われます。この例ではメソッドではなく
-関数を定義しているので、 *self* は常に *NULL* ポインタになります。 (これは、インタプリタが二つの異なる形式の C 関数を理解しなくてもよく
-するためです。)
+*self* 引数には、モジュールレベルの関数であればモジュールが、メソッドには
+オブジェクトインスタンスが渡されます。
 
 *args* 引数は、引数の入った Python タプルオブジェクトへのポインタになります。タプル内の各要素は、呼び出しの際の引数リストに
 おける各引数に対応します。引数は Python オブジェクトです ---  C 関数で引数を使って何かを行うには、オブジェクトから C の値に
@@ -323,11 +322,7 @@ Python ソース配布物中の :file:`Demo/embed/demo.c` ファイル内に例�
    :file:`.so` 、Windows では :file:`.dll`) から読み出された場合にはモジュールファイルを再読み込みしないので注意してください。
 
 より実質的なモジュール例は、Python ソース配布物に :file:`Modules/xxmodule.c` という名前で入っています。
-このファイルはテンプレートとしても利用できますし、単に例としても読めます。ソース配布物や Windows にインストールされた Python に入っている
-:program:`modulator.py` では、拡張モジュールで実装しなければならない
-関数やオブジェクトを宣言し、実装部分を埋めて作成するためのテンプレートを生成できるような、簡単なグラフィカルユーザインタフェースを提供しています。
-このスクリプトは :file:`Tools/modulator/` ディレクトリにあります; 詳しくはディレクトリ内の :file:`README`
-ファイルを参照してください。
+このファイルはテンプレートとしても利用できますし、単に例としても読めます。
 
 
 .. _compilation:
@@ -915,7 +910,7 @@ C++でも拡張モジュールは作成できます。ただしいくつか制�
 {...}`` が行われるように、ヘッダファイル内にすでに書かれているからです。
 
 
-.. _using-cobjects:
+.. _using-capsules:
 
 拡張モジュールに C API を提供する
 =================================
@@ -940,18 +935,36 @@ C++でも拡張モジュールは作成できます。ただしいくつか制�
 と宣言せねばなりません。例外はモジュールの初期化関数で、これは (:ref:`methodtable` で述べたように) 他の拡張モジュールとの間で
 名前が衝突するのを避けるためです。また、他の拡張モジュールからアクセスを *受けるべきではない*  シンボルは別のやり方で公開せねばなりません。
 
-Python はある拡張モジュールの C レベルの情報 (ポインタ) を別のモジュールに渡すための特殊な機構: CObject を提供しています。
-CObject はポインタ (:c:type:`void\*`) を記憶する Python のデータ型です。 CObject は C API
-を介してのみ生成したりアクセスしたりできますが、他の Python オブジェクトと同じように受け渡しできます。とりわけ、CObject
-は拡張モジュールの名前空間内にある名前に代入できます。他の拡張モジュールはこのモジュールを import でき、次に名前を取得し、最後にCObject
+Python はある拡張モジュールの C レベルの情報 (ポインタ) を別のモジュールに渡すための
+特殊な機構: Capsule (カプセル)を提供しています。
+Capsule はポインタ (:c:type:`void\*`) を記憶する Python のデータ型です。 Capsule は C API
+を介してのみ生成したりアクセスしたりできますが、他の Python オブジェクトと同じように受け渡しできます。
+とりわけ、Capsule は拡張モジュールの名前空間内にある名前に代入できます。
+他の拡張モジュールはこのモジュールを import でき、次に名前を取得し、最後にCapsule
 へのポインタを取得します。
 
-拡張モジュールの C API を公開するために、様々な方法で CObject が使われます。エクスポートされているそれぞれの名前を使うと、CObject
-自体や、CObject が公表しているアドレスで示される配列内に収められた全ての C API ポインタを得られます。
-そして、ポインタに対する保存や取得といった様々な作業は、コードを提供しているモジュールとクライアントモジュールとの間では異なる方法で分散できます。
+拡張モジュールの C API を公開するために、様々な方法で Capsule が使われます。
+各関数を1つのオブジェクトに入れたり、全ての C API のポインタ配列を Capsule に入れることができます。
+そして、ポインタに対する保存や取得といった様々な作業は、コードを提供している
+モジュールとクライアントモジュールとの間では異なる方法で分散できます。
+
+どの方法を選ぶにしても、 Capsule の name を正しく設定することは重要です。
+:c:func:`PyCapsule_New` は name 引数 (:c:type:`const char \*`) を取ります。
+*NULL* を name に渡すことも許可されていますが、 name を設定することを強く推奨します。
+正しく名前を付けられた Capsule はある程度の実行時型安全性を持ちます。
+名前を付けられていない Capsule を他の Capsule と区別する現実的な方法はありません。
+
+特に、 C API を公開するための Capsule には次のルールに従った名前を付けるべきです::
+
+    modulename.attributename
+
+:c:func:`PyCapsule_Import` という便利関数は、 Capsule の名前がこのルールに一致しているときにのみ、
+簡単に Capsule 経由で公開されている C API をロードすることができます。
+この挙動により、 C API のユーザーが、確実に正しい C API を格納している Capsule を
+ロードできたことを確かめることができます。
 
 以下の例では、名前を公開するモジュールの作者にほとんどの負荷が掛かりますが、よく使われるライブラリを作る際に適切なアプローチを実演します。
-このアプローチでは、全ての C API ポインタ (例中では一つだけですが!) を、 CObject の値となる :c:type:`void`
+このアプローチでは、全ての C API ポインタ (例中では一つだけですが!) を、 Capsule の値となる :c:type:`void`
 ポインタの配列に保存します。拡張モジュールに対応するヘッダファイルは、モジュールの import  と C API
 ポインタを取得するよう手配するマクロを提供します; クライアントモジュールは、C API にアクセスする前にこのマクロを呼ぶだけです。
 
@@ -1011,8 +1024,8 @@ C API のポインタ配列を初期化するよう手配しなければなり�
        /* C API ポインタ配列を初期化する */
        PySpam_API[PySpam_System_NUM] = (void *)PySpam_System;
 
-       /* API ポインタ配列のアドレスが入った CObject を生成する */
-       c_api_object = PyCObject_FromVoidPtr((void *)PySpam_API, NULL);
+       /* API ポインタ配列のアドレスが入った Capsule を生成する */
+       c_api_object = PyCapsule_New((void *)PySpam_API, "spam._C_API", NULL);
 
        if (c_api_object != NULL)
            PyModule_AddObject(m, "_C_API", c_api_object);
@@ -1053,28 +1066,14 @@ C API のポインタ配列を初期化するよう手配しなければなり�
    #define PySpam_System \
     (*(PySpam_System_RETURN (*)PySpam_System_PROTO) PySpam_API[PySpam_System_NUM])
 
-   /* エラーによる例外の場合には -1 を、成功すると 0 を返す */
+   /* エラーによる例外の場合には -1 を、成功すると 0 を返す
+    * エラーがあれば PyCapsule_Import が例外を設定する。
+    */
    static int
    import_spam(void)
    {
-       PyObject *c_api_object;
-       PyObject *module;
-
-       module = PyImport_ImportModule("spam");
-       if (module == NULL)
-           return -1;
-
-       c_api_object = PyObject_GetAttrString(module, "_C_API");
-       if (c_api_object == NULL) {
-           Py_DECREF(module);
-           return -1;
-       }
-       if (PyCObject_Check(c_api_object))
-           PySpam_API = (void **)PyCObject_AsVoidPtr(c_api_object);
-
-       Py_DECREF(c_api_object);
-       Py_DECREF(module);
-       return 0;
+       PySpam_API = (void **)PyCapsule_Import("spam._C_API", 0);
+       return (PySpam_API != NULL) ? 0 : -1;
    }
 
    #endif
@@ -1104,10 +1103,10 @@ C API のポインタ配列を初期化するよう手配しなければなり�
 このアプローチの主要な欠点は、 :file:`spammodule.h` がやや難解になるということです。とはいえ、各関数の基本的な構成は公開される
 ものと同じなので、書き方を一度だけ学べばすみます。
 
-最後に、CObject は、自身に保存されているポインタをメモリ確保したり解放したりする際に特に便利な、もう一つの機能を提供しているという
+最後に、Capsule は、自身に保存されているポインタをメモリ確保したり解放したりする際に特に便利な、もう一つの機能を提供しているという
 ことに触れておかねばなりません。詳細は Python/C API リファレンスマニュアルの
-:ref:`cobjects` 、および CObjects の実装部分 (Python
-ソースコード配布物中のファイル  :file:`Include/cobject.h` および :file:`Objects/cobject.c`
+:ref:`capsules`, および Capsule の実装部分 (Python
+ソースコード配布物中のファイル  :file:`Include/pycapsule.h` および :file:`Objects/pycapsule.c`
 に述べられています。
 
 .. rubric:: 脚注

@@ -39,7 +39,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # and replace the values accordingly.
 #import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.6', '2.6ja2'
+version, release = '2.7', '2.7ja1-dev'
 
 language = 'ja'
 
@@ -85,7 +85,7 @@ html_theme = 'sphinxdoc'
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%Y-%m-%d'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
