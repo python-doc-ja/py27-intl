@@ -14,141 +14,208 @@
    import itertools
    __name__ = '<doctest>'
 
-このモジュールでは高性能なコンテナ・データ型を実装しています。現在のところ、
-:class:`deque` と :class:`defaultdict` という２つのデータ型と、
-:func:`namedtuple` というデータ型ファクトリ関数があります。
+このモジュールは、汎用の Python 組み込みコンテナ :class:`dict`, :class:`list`,
+:class:`set`, および :class:`tuple` に代わる、
+特殊なコンテナデータ型を実装しています。
 
+=====================   ================================================================== ===========================
+:func:`namedtuple`      名前付きフィールドを持つタプルのサブクラスを作成するファクトリ関数 .. versionadded:: 2.6      
+:class:`deque`          両端における append や pop を高速に行えるリスト風のコンテナ        .. versionadded:: 2.4      
+:class:`Counter`        ハッシュ可能なオブジェクトを数え上げる辞書のサブクラス             .. versionadded:: 2.7      
+:class:`OrderedDict`    項目が追加された順序を記憶する辞書のサブクラス                     .. versionadded:: 2.7      
+:class:`defaultdict`    ファクトリ関数を呼び出して存在しない値を供給する辞書のサブクラス   .. versionadded:: 2.5      
+=====================   ================================================================== ===========================
 
-.. versionchanged:: 2.5
-   :class:`defaultdict` の追加.
-
-.. versionchanged:: 2.6
-   :func:`namedtuple` の追加.
-
-このモジュールが提供する特殊なコンテナは、 Python の汎用的なコンテナ、
-:class:`dict`, :class:`list`, :class:`set`, :class:`tuple` の代わりに
-なります。
-
-ここで提供されるコンテナと別に、オプションとして :mod:`bsddb` モジュールが
-in-memory もしくは file を使った、文字列をキーとする順序付き辞書を、
-:meth:`bsddb.btopen` メソッドで提供しています。
-
-コンテナ型に加えて、 collections モジュールは幾つかの ABC (abstract base
+コンテナ型の作成に加えて、 collections モジュールは幾つかの ABC (abstract base
 classes = 抽象基底クラス) を提供しています。
-ABC はクラスが特定のインタフェース(例えばhashable や mapping)を
-持っているかどうかをテストするのに利用します。
-
-.. versionchanged:: 2.6
-   抽象基底クラス (abstract base class) の追加
-
-ABCs - abstract base classes
-----------------------------
-
-collections モジュールは以下の ABC を提供します。
-
-=========================  =====================  ======================  ====================================================
-ABC                        継承しているクラス     Abstract Methods        Mixin Methods
-=========================  =====================  ======================  ====================================================
-:class:`Container`                                ``__contains__``
-:class:`Hashable`                                 ``__hash__``
-:class:`Iterable`                                 ``__iter__``
-:class:`Iterator`          :class:`Iterable`      ``next``                ``__iter__``
-:class:`Sized`                                    ``__len__``
-:class:`Callable`                                 ``__call__``
-
-:class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.
-                           :class:`Iterable`,                             ``index``, ``count``
-                           :class:`Container`
-
-:class:`MutableSequnce`    :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
-                                                  ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,
-                                                  ``insert``,             ``remove``, ``__iadd__``
-
-:class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,
-                           :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``
-                           :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``
-
-:class:`MutableSet`        :class:`Set`           ``add``,                Set から継承したメソッドと、
-                                                  ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,
-                                                                          ``__iand__``, ``__ixor__``, ``__isub__``
-
-:class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,
-                           :class:`Iterable`,                             ``get``, ``__eq__``, ``__ne__``
-                           :class:`Container`
-
-:class:`MutableMapping`    :class:`Mapping`       ``__setitem__``         Mapping から継承したメソッドと、
-                                                  ``__detitem__``,        ``pop``, ``popitem``, ``clear``, ``update``,
-                                                                          ``setdefault``
-
-:class:`MappingView`       :class:`Sized`                                 ``__len__``
-:class:`KeysView`          :class:`MappingView`,                          ``__contains__``,
-                           :class:`Set`                                   ``__iter__``
-:class:`ItemsView`         :class:`MappingView`,                          ``__contains__``,
-                           :class:`Set`                                   ``__iter__``
-:class:`ValuesView`        :class:`MappingView`                           ``__contains__``, ``__iter__``
-=========================  =====================  ======================  ====================================================
-
-これらの ABC はクラスやインスタンスが特定の機能を提供しているかどうかを
-テストするのに使えます。例えば::
-
-    size = None
-    if isinstance(myvar, collections.Sized):
-       size = len(myvar)
-
-幾つかの ABC はコンテナ型APIを提供するクラスを開発するのを助ける mixin型としても
-使えます。例えば、 :class:`Set` API を提供するクラスを作る場合、3つの基本になる
-抽象メソッド :meth:`__contains__`, :meth:`__iter__`, :meth:`__len__` だけが
-必要です。 ABC が残りの :meth:`__and__` や :meth:`isdisjoint` といったメソッドを
-提供します。 ::
-
-    class ListBasedSet(collections.Set):
-         ''' 速度よりもメモリ使用量を重視して、 hashable も提供しない
-             set の別の実装 '''
-         def __init__(self, iterable):
-             self.elements = lst = []
-             for value in iterable:
-                 if value not in lst:
-                     lst.append(value)
-         def __iter__(self):
-             return iter(self.elements)
-         def __contains__(self, value):
-             return value in self.elements
-         def __len__(self):
-             return len(self.elements)
-
-    s1 = ListBasedSet('abcdef')
-    s2 = ListBasedSet('defghi')
-    overlap = s1 & s2            # __and__() は ABC により自動的に提供される
-
-:class:`Set` と :class:`MutableSet` を mixin型として利用するときの注意点:
-
-(1)
-   幾つかの set の操作は新しい set を作るので、デフォルトの mixin メソッドは
-   iterable から新しいインスタンスを作成する方法を必要とします。クラスの
-   コンストラクタは ``ClassName(iterable)`` の形のシグネチャを持つと仮定されます。
-   内部の :meth:`_from_iterable` というクラスメソッドが ``cls(iterable)``
-   を呼び出して新しい set を作る部分でこの仮定が使われています。
-   コンストラクタのシグネチャが異なるクラスで :class:`Set` を使う場合は、
-   iterable 引数から新しいインスタンスを生成するように :meth:`_from_iterable`
-   をオーバーライドする必要があります。
-
-(2)
-   (たぶん意味はそのままに速度を向上する目的で)比較をオーバーライドする場合、
-   :meth:`__le__` だけを再定義すれば、その他の演算は自動的に追随します。
-
-(3)
-   :class:`Set` mixin型は set のハッシュ値を計算する :meth:`_hash` メソッドを
-   提供しますが、すべての set が hashable や immutable とは限らないので、
-   :meth:`__hash__` は提供しません。 mixin を使って hashable な set を作る場合は、
-   :class:`Set` と :class:`Hashable` の両方を継承して、 ``__hash__ = Set._hash``
-   と定義してください。
+ABC はクラスが特定のインタフェース持っているかどうか、たとえばハッシュ可能で
+あるかやマッピングであるかを判定するのに利用します。
 
 .. seealso::
 
-   * :class:`MutableSet` を使った例として
-     `OrderedSet recipe <http://code.activestate.com/recipes/576694/>`_
+   Latest version of the `collections module Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/collections.py?view=markup>`_
 
-   * ABCs についての詳細は、 :mod:`abc` モジュールと :pep:`3119` を参照してください。
+:class:`Counter` オブジェクト
+-----------------------------
+
+便利で迅速な検数をサポートするカウンタツールが提供されています。
+例えば::
+
+    >>> # リストに現れる単語の検数
+    >>> cnt = Counter()
+    >>> for word in ['red', 'blue', 'red', 'green', 'blue', 'blue']:
+    ...     cnt[word] += 1
+    >>> cnt
+    Counter({'blue': 3, 'red': 2, 'green': 1})
+
+    >>> # Hamlet で最も多い 10 単語の発見
+    >>> import re
+    >>> words = re.findall('\w+', open('hamlet.txt').read().lower())
+    >>> Counter(words).most_common(10)
+    [('the', 1143), ('and', 966), ('to', 762), ('of', 669), ('i', 631),
+     ('you', 554),  ('a', 546), ('my', 514), ('hamlet', 471), ('in', 451)]
+
+.. class:: Counter([iterable-or-mapping])
+
+   :class:`Counter` はハッシュ可能なオブジェクトをカウントする :class:`dict` の
+   サブクラスです。これは、要素を辞書のキーとして保存し、そのカウントを
+   辞書の値として保存する、順序付けされていないコレクションです。
+   カウントは、0 や負のカウントを含む整数値をとれます。
+   :class:`Counter` クラスは、他の言語のバッグや多重集合のようなものです。
+
+   要素は、*iterable* から数え上げられたり、他の *mapping* (やカウンタ)
+   から初期化されます:
+
+        >>> c = Counter()                           # 新しい空のカウンタ
+        >>> c = Counter('gallahad')                 # イテラブルからの新しいカウンタ
+        >>> c = Counter({'red': 4, 'blue': 2})      # マッピングからの新しいカウンタ
+        >>> c = Counter(cats=4, dogs=8)             # キーワード引数からの新しいカウンタ
+
+   カウンタオブジェクトは辞書のインタフェースを持ちますが、存在しない要素に
+   対して :exc:`KeyError` を送出する代わりに 0 を返すという違いがあります:
+
+        >>> c = Counter(['eggs', 'ham'])
+        >>> c['bacon']                              # 存在しない要素のカウントは 0
+        0
+
+   カウントを 0 に設定しても、要素はカウンタから取り除かれません。
+   完全に取り除くには、 ``del`` を使ってください:
+
+        >>> c['sausage'] = 0                        # カウントが 0 のカウンタの項目
+        >>> del c['sausage']                        # del は項目を実際に取り除く
+
+   .. versionadded:: 2.7
+
+
+   カウンタオブジェクトは、すべての辞書に利用できるものに加え、
+   3 つのメソッドをサポートしています:
+
+   .. method:: elements()
+
+      それぞれの要素を、そのカウント分の回数だけ繰り返すイテレータを返します。
+      要素は任意の順序で返されます。ある要素のカウントが 1 未満なら、
+      :meth:`elements` はそれを無視します。
+
+            >>> c = Counter(a=4, b=2, c=0, d=-2)
+            >>> list(c.elements())
+            ['a', 'a', 'a', 'a', 'b', 'b']
+
+   .. method:: most_common([n])
+
+      最も多い *n* 要素を、カウントが多いものから少ないものまで順に並べた
+      リストを返します。 *n* が指定されなければ、 :func:`most_common` は
+      カウンタの *すべての* 要素を返します。等しいカウントの要素は任意に
+      並べられます:
+
+            >>> Counter('abracadabra').most_common(3)
+            [('a', 5), ('r', 2), ('b', 2)]
+
+   .. method:: subtract([iterable-or-mapping])
+
+      要素から *iterable* の要素または *mapping* の要素が引かれます。
+      :meth:`dict.update` に似ていますが、カウントを
+      置き換えるのではなく引きます。入力も出力も、 0 や負になりえます。
+
+            >>> c = Counter(a=4, b=2, c=0, d=-2)
+            >>> d = Counter(a=1, b=2, c=3, d=4)
+            >>> c.subtract(d)
+            Counter({'a': 3, 'b': 0, 'c': -3, 'd': -6})
+
+   普通の辞書のメソッドは、以下の 2 つのメソッドがカウンタに対して異なる
+   振る舞いをするのを除き、 :class:`Counter` オブジェクトにも利用できます。
+
+   .. method:: fromkeys(iterable)
+
+      このクラスメソッドは :class:`Counter` オブジェクトには実装されていません。
+
+   .. method:: update([iterable-or-mapping])
+
+      要素が *iterable* からカウントされるか、別の *mapping* (やカウンタ)
+      が追加されます。 :meth:`dict.update` に似ていますが、カウントを
+      置き換えるのではなく追加します。また、 *iterable* には ``(key, value)``
+      対のシーケンスではなく、要素のシーケンスが求められます。
+
+:class:`Counter` オブジェクトを使ったよくあるパターン::
+
+    sum(c.values())                 # すべてのカウントの合計
+    c.clear()                       # すべてのカウントをリセット
+    list(c)                         # 単一の要素として列挙
+    set(c)                          # 集合に変換
+    dict(c)                         # 普通の辞書に変換
+    c.items()                       # (elem, cnt) 対のリストに変換
+    Counter(dict(list_of_pairs))    # (elem, cnt) 対のリストから変換
+    c.most_common()[:-n:-1]         # 最も少ない n 要素
+    c += Counter()                  # 0 と負の要素を取り除く
+
+:class:`Counter` オブジェクトを組み合わせて多重集合 (1 以上のカウントをもつ
+カウンタ) を作るために、いくつかの数学演算が提供されています。
+足し算と引き算は、対応する要素を足したり引いたりすることによってカウンタを
+組み合わせます。共通部分と合併集合は、対応するカウントの最大値と最小値を
+返します。それぞれの演算はカウントに符号がついた入力を受け付けますが、
+カウントが 0 以下である結果は出力から除かれます。
+
+
+    >>> c = Counter(a=3, b=1)
+    >>> d = Counter(a=1, b=2)
+    >>> c + d                       # 2 つのカウンタを足し合わせる:  c[x] + d[x]
+    Counter({'a': 4, 'b': 3})
+    >>> c - d                       # 引く (正のカウンタだけを残す)
+    Counter({'a': 2})
+    >>> c & d                       # 共通部分:  min(c[x], d[x])
+    Counter({'a': 1, 'b': 1})
+    >>> c | d                       # 合併集合:  max(c[x], d[x])
+    Counter({'a': 3, 'b': 2})
+
+.. note::
+
+   カウンタはもともと、推移するカウントを正の整数で表すために設計されました。
+   しかし、他の型や負の値を必要とするユースケースを不必要に排除することが
+   ないように配慮されています。このようなユースケースの助けになるように、
+   この節で最低限の範囲と型の制限について記述します。
+
+   * :class:`Counter` クラス自体は辞書のサブクラスで、キーと値に制限は
+     ありません。値はカウントを表す数であることを意図していますが、
+     値フィールドに任意のものを保存 *できます*\ 。
+
+   * :meth:`most_common` メソッドが要求するのは、値が順序付け可能なことだけです。
+
+   * ``c[key] += 1`` のようなインプレース演算では、値の型に必要なのは
+     足し算と引き算ができることだけです。よって分数、浮動小数点数、
+     小数も使え、負の値がサポートされています。これと同じことが、
+     負や 0 の値を入力と出力に許す :meth:`update` と :meth:`subtract` メソッド
+     にも言えます。
+
+   * 多重集合メソッドは正の値を扱うユースケースに対してのみ設計されています。
+     入力は負や 0 に出来ますが、正の値の出力のみが生成されます。
+     型の制限はありませんが、値の型は足し算、引き算、比較をサポートしている
+     必要があります。
+
+   * :meth:`elements` メソッドは整数のカウントを要求します。
+     これは 0 と負のカウントを無視します。
+
+.. seealso::
+
+    * Python 2.5 に適応する `Counter class <http://code.activestate.com/recipes/576611/>`_
+      と Python 2.4 のための早期の `Bag recipe
+      <http://code.activestate.com/recipes/259174/>`_\ 。
+
+    * Smalltalk の `Bag class <http://www.gnu.org/software/smalltalk/manual-base/html_node/Bag.html>`_
+
+    * Wikipedia の `Multisets <http://en.wikipedia.org/wiki/Multiset>`_ の項目。
+
+    * `C++ multisets <http://www.demo2s.com/Tutorial/Cpp/0380__set-multiset/Catalog0380__set-multiset.htm>`_
+      の例を交えたチュートリアル。
+
+    * 数学的な多重集合の演算とそのユースケースは、
+      *Knuth, Donald. The Art of Computer Programming Volume II,
+      Section 4.6.3, Exercise 19* を参照してください。
+
+    * 与えられた要素の集まりから与えられた大きさの別個の多重集合をすべて
+      数え上げるには、 :func:`itertools.combinations_with_replacement`
+      を参照してください。
+
+          map(Counter, combinations_with_replacement('ABC', 2)) --> AA AB AC BB BC CC
 
 
 :class:`deque` オブジェクト
@@ -199,6 +266,12 @@ ABC                        継承しているクラス     Abstract Methods     
       deque からすべての要素を削除し、長さを 0 にします。
 
 
+   .. method:: count(x)
+
+      *x* に等しい deque の要素を数え上げます。
+
+      .. versionadded:: 2.7
+
    .. method:: extend(iterable)
 
       イテレータ化可能な引数 iterable から得られる要素を deque の右側に追加し拡張します。
@@ -226,12 +299,27 @@ ABC                        継承しているクラス     Abstract Methods     
 
       .. versionadded:: 2.5
 
+   .. method:: reverse()
+
+      deque の要素をインプレースに逆転し、 ``None`` を返します。
+
+      .. versionadded:: 2.7
 
    .. method:: rotate(n)
 
       deque の要素を全体で *n* ステップだけ右にローテートします。
       *n* が負の値の場合は、左にローテートします。Deque を
       ひとつ右にローテートすることは ``d.appendleft(d.pop())`` と同じです。
+
+
+   deque オブジェクトは読み取り専用属性も 1 つ提供しています。
+
+   .. attribute:: maxlen
+
+      deque の最大長で、制限されていなければ *None* です。
+
+      .. versionadded:: 2.7
+
 
 上記の操作のほかにも、deque は次のような操作をサポートしています: イテレータ化、pickle、 ``len(d)``, ``reversed(d)``,
 ``copy.copy(d)``, ``copy.deepcopy(d)``, :keyword:`in` 演算子による包含検査、そして ``d[-1]``
@@ -439,14 +527,14 @@ multisetのように)要素の数え上げに便利に使うことができま�
    >>> d.items()
    [('blue', set([2, 4])), ('red', set([1, 3]))]
 
-:func:`namedtuple` 名前付きフィールドを持ったタプルのファクトリ関数
---------------------------------------------------------------------
+:func:`namedtuple` 名前付きフィールドを持つタプルのファクトリ関数
+------------------------------------------------------------------
 
 名前付きタプルはタプルの中の場所に意味を割り当てて、より読みやすく自己解説的な
 コードを書けるようにします。通常のタプルが利用されていた場所で利用でき、
 場所に対するインデックスの代わりに名前を使ってフィールドにアクセスできます。
 
-.. function:: namedtuple(typename, field_names, [verbose])
+.. function:: namedtuple(typename, field_names, [verbose=False], [rename=False])
 
    *typename* という名前の tuple の新しいサブクラスを返します。新しいサブクラスは、
    tuple に似ているけれどもインデックスやイテレータだけでなく属性名によるアクセスも
@@ -454,15 +542,20 @@ multisetのように)要素の数え上げに便利に使うことができま�
    docstring (型名と属性名が入っています) や、 tuple の内容を ``name=value`` という
    形のリストで返す使いやすい :meth:`__repr__` も持っています。
 
-   *field_names* は各属性名を空白文字 (whitespace) と/あるいはカンマ (,) で区切った
-   文字列です。例えば、 ``'x y'`` か ``'x, y'`` です。代わりに *field_names* に
-   ``['x', 'y']`` のような文字列のシーケンスを渡すこともできます。
+   *field_names* は ``['x', 'y']`` のような文字列のシーケンスです。
+   *field_names* には、代わりに各属性名を空白文字 (whitespace) および/または
+   カンマ (,) で区切った文字列を渡すこともできます。例えば、 ``'x y'`` や ``'x, y'`` です。
 
    アンダースコア (_) で始まる名前を除いて、 Python の正しい識別子 (identifier)
    ならなんでも属性名として使うことができます。正しい識別子とはアルファベット(letters),
    数字(digits), アンダースコア(_) を含みますが、数字やアンダースコアで始まる名前や、
    *class*, *for*, *return*, *global*, *pass*, *print*, *raise* などといった
    :mod:`keyword` は使えません。
+
+   *rename* が真なら、不適切なフィールド名は自動的に位置引数に置き換えられます。
+   例えば ``['abc', 'def', 'ghi', 'abc']`` は、予約語 ``def`` と
+   重複しているフィールド名 ``abc`` が除去され、 ``['abc', '_1', 'ghi', '_3']``
+   に変換されます。
 
    *verbose* が真なら、クラスを作る直前にクラス定義が表示されます。
 
@@ -471,10 +564,55 @@ multisetのように)要素の数え上げに便利に使うことができま�
 
    .. versionadded:: 2.6
 
-Example:
+   .. versionchanged:: 2.7
+      *rename* のサポートを追加しました。
+
+例:
 
 .. doctest::
    :options: +NORMALIZE_WHITESPACE
+
+   >>> Point = namedtuple('Point', ['x', 'y'], verbose=True)
+   class Point(tuple):
+           'Point(x, y)'
+   <BLANKLINE>
+           __slots__ = ()
+   <BLANKLINE>
+           _fields = ('x', 'y')
+   <BLANKLINE>
+           def __new__(_cls, x, y):
+               'Create a new instance of Point(x, y)'
+               return _tuple.__new__(cls, (x, y))
+   <BLANKLINE>
+           @classmethod
+           def _make(cls, iterable, new=tuple.__new__, len=len):
+               'Make a new Point object from a sequence or iterable'
+               result = new(cls, iterable)
+               if len(result) != 2:
+                   raise TypeError('Expected 2 arguments, got %d' % len(result))
+               return result
+   <BLANKLINE>
+           def __repr__(self):
+               'Return a nicely formatted representation string'
+               return 'Point(x=%r, y=%r)' % self
+   <BLANKLINE>
+           def _asdict(self):
+               'Return a new OrderedDict which maps field names to their values'
+               return OrderedDict(zip(self._fields, self))
+   <BLANKLINE>
+           def _replace(_self, **kwds):
+               'Return a new Point object replacing specified fields with new values'
+               result = _self._make(map(kwds.pop, ('x', 'y'), _self))
+               if kwds:
+                   raise ValueError('Got unexpected field names: %r' % kwds.keys())
+               return result
+   <BLANKLINE>
+           def __getnewargs__(self):
+               'Return self as a plain tuple.   Used by copy and pickle.'
+               return tuple(self)
+   <BLANKLINE>
+           x = _property(_itemgetter(0), doc='Alias for field number 0')
+           y = _property(_itemgetter(1), doc='Alias for field number 1')
 
    >>> Point = namedtuple('Point', 'x y')
    >>> p = Point(11, y=22)     # 順序による引数やキーワード引数を使ってインスタンス化
@@ -487,46 +625,6 @@ Example:
    33
    >>> p                       # name=value スタイルの読みやすい __repr__
    Point(x=11, y=22)
-
-   >>> Point = namedtuple('Point', 'x y', verbose=True) # クラス定義を表示
-   class Point(tuple):
-           'Point(x, y)'
-   <BLANKLINE>
-           __slots__ = ()
-   <BLANKLINE>
-           _fields = ('x', 'y')
-   <BLANKLINE>
-           def __new__(_cls, x, y):
-               return _tuple.__new__(cls, (x, y))
-   <BLANKLINE>
-           @classmethod
-           def _make(cls, iterable, new=tuple.__new__, len=len):
-               'Make a new Point object from a sequence or iterable'
-               result = new(cls, iterable)
-               if len(result) != 2:
-                   raise TypeError('Expected 2 arguments, got %d' % len(result))
-               return result
-   <BLANKLINE>
-           def __repr__(self):
-               return 'Point(x=%r, y=%r)' % self
-   <BLANKLINE>
-           def _asdict(t):
-               'Return a new dict which maps field names to their values'
-               return {'x': t[0], 'y': t[1]}
-   <BLANKLINE>
-           def _replace(_self, **kwds):
-               'Return a new Point object replacing specified fields with new values'
-               result = _self._make(map(kwds.pop, ('x', 'y'), _self))
-               if kwds:
-                   raise ValueError('Got unexpected field names: %r' % kwds.keys())
-               return result
-   <BLANKLINE>
-           def __getnewargs__(self):
-               return tuple(self)
-   <BLANKLINE>
-           x = property(itemgetter(0))
-           y = property(itemgetter(1))
-
 
 名前付きタプルは :mod:`csv` や :mod:`sqlite3` モジュールが返すタプルのフィールドに名前を
 付けるときにとても便利です::
@@ -560,10 +658,14 @@ Example:
 
 .. method:: somenamedtuple._asdict()
 
-   フィールド名とその値をもとに新しい辞書(dict)を作って返します::
+   フィールド名を対応する値にマッピングする新しい順序付き辞書
+   (:class:`OrderedDict`) を返します::
 
       >>> p._asdict()
-      {'x': 11, 'y': 22}
+      OrderedDict([('x', 11), ('y', 22)])
+
+   .. versionchanged:: 2.7
+      通常の :class:`dict` の代わりに :class:`OrderedDict` を返すようになりました。
 
 .. method:: somenamedtuple._replace(kwargs)
 
@@ -574,7 +676,7 @@ Example:
       Point(x=33, y=22)
 
       >>> for partnum, record in inventory.items():
-      ...     inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())
+              inventory[partnum] = record._replace(price=newprices[partnum], timestamp=time.now())
 
 .. attribute:: somenamedtuple._fields
 
@@ -605,18 +707,18 @@ Example:
    Point(x=11, y=22)
 
 名前付きタプルは通常の Python クラスなので、継承して機能を追加したり変更するのは
-容易です。次の例では計算済みフィールドと固定幅の print format を追加しています。
+容易です。次の例では計算済みフィールドと固定幅の print format を追加しています:
 
     >>> class Point(namedtuple('Point', 'x y')):
-    ...     __slots__ = ()
-    ...     @property
-    ...     def hypot(self):
-    ...         return (self.x ** 2 + self.y ** 2) ** 0.5
-    ...     def __str__(self):
-    ...         return 'Point: x=%6.3f  y=%6.3f  hypot=%6.3f' % (self.x, self.y, self.hypot)
+            __slots__ = ()
+            @property
+            def hypot(self):
+                return (self.x ** 2 + self.y ** 2) ** 0.5
+            def __str__(self):
+                return 'Point: x=%6.3f  y=%6.3f  hypot=%6.3f' % (self.x, self.y, self.hypot)
 
     >>> for p in Point(3, 4), Point(14, 5/7.):
-    ...     print p
+            print p
     Point: x= 3.000  y= 4.000  hypot= 5.000
     Point: x=14.000  y= 0.714  hypot=14.018
 
@@ -636,15 +738,264 @@ Example:
    >>> johns_account = default_account._replace(owner='John')
 
 列挙型定数は名前付きタプルでも実装できますが、クラス定義を利用した方がシンプルで
-効率的です。
+効率的です:
 
     >>> Status = namedtuple('Status', 'open pending closed')._make(range(3))
     >>> Status.open, Status.pending, Status.closed
     (0, 1, 2)
     >>> class Status:
-    ...     open, pending, closed = range(3)
+            open, pending, closed = range(3)
 
 .. seealso::
 
    `Named tuple recipe <http://code.activestate.com/recipes/500261/>`_
    は Python 2.4 で使えます。
+
+
+:class:`OrderedDict` オブジェクト
+---------------------------------
+
+順序付き辞書 (ordered dictionary) は、ちょうど普通の辞書と同じようなものですが、
+項目が挿入された順序を記憶します。順序付き辞書に渡ってイテレートするとき、
+項目はそのキーが最初に追加された順序で返されます。
+
+.. class:: OrderedDict([items])
+
+   通常の :class:`dict` メソッドをサポートする、辞書のサブクラスの
+   インスタンスを返します。 *OrderedDict* は、キーが最初に追加された順序を
+   記憶します。新しい項目が既存の項目を上書きしても、元の挿入位置は
+   変わらないままです。項目を削除して再挿入するとそれが最後に移動します。
+
+   .. versionadded:: 2.7
+
+.. method:: OrderedDict.popitem(last=True)
+
+   順序付き辞書の :meth:`popitem` メソッドは、(key, value) 対を返して
+   消去します。この対は *last* が真なら後入先出で、偽なら先入先出で
+   返されます。
+
+通常のマッピングのメソッドに加え、順序付き辞書は :func:`reversed` による
+逆順の反復もサポートしています。
+
+:class:`OrderedDict` 間の等価判定は順序に影響され、
+``list(od1.items())==list(od2.items())`` として実装されます。
+:class:`OrderedDict` オブジェクトと他のマッピング (:class:`Mapping`)
+オブジェクトの等価判定は、順序に影響されず、通常の辞書と同様です。
+これによって、 :class:`OrderedDict` オブジェクトは通常の辞書が使われるところ
+ならどこでも代用できます。
+
+:class:`OrderedDict` コンストラクタと :meth:`update` メソッドは、どちらも
+キーワード引数を受け付けますが、その順序は失われます。これは、Python の
+関数呼び出しの意味づけにおいて、キーワード引数は順序付けされていない辞書を
+用いて渡されるからです。
+
+.. seealso::
+
+   `Equivalent OrderedDict recipe <http://code.activestate.com/recipes/576693/>`_
+   that runs on Python 2.4 or later.
+
+:class:`OrderedDict` の例とレシピ
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+順序付き辞書は挿入順序を記憶するので、ソートと組み合わせて使うことで、
+ソートされた辞書を作れます::
+
+    >>> # regular unsorted dictionary
+    >>> d = {'banana': 3, 'apple':4, 'pear': 1, 'orange': 2}
+
+    >>> # dictionary sorted by key
+    >>> OrderedDict(sorted(d.items(), key=lambda t: t[0]))
+    OrderedDict([('apple', 4), ('banana', 3), ('orange', 2), ('pear', 1)])
+
+    >>> # dictionary sorted by value
+    >>> OrderedDict(sorted(d.items(), key=lambda t: t[1]))
+    OrderedDict([('pear', 1), ('orange', 2), ('banana', 3), ('apple', 4)])
+
+    >>> # dictionary sorted by length of the key string
+    >>> OrderedDict(sorted(d.items(), key=lambda t: len(t[0])))
+    OrderedDict([('pear', 1), ('apple', 4), ('orange', 2), ('banana', 3)])
+
+この新しい順序付き辞書は、項目が削除されてもソートされた順序を保持します。
+しかし、キーが追加されるとき、そのキーは最後に追加され、ソートは
+保持されません。
+
+キーが *最後に* 挿入された順序を記憶するような、順序付き辞書の変種を
+作るのも簡単です。新しい項目が既存の項目を上書きしたら、元の挿入位置は
+最後に移動します::
+
+    class LastUpdatedOrderedDict(OrderedDict):
+
+        'Store items in the order the keys were last added'
+        def __setitem__(self, key, value):
+            if key in self:
+                del self[key]
+            OrderedDict.__setitem__(self, key, value)
+
+順序付き辞書は、 :class:`Counter` クラスと組み合わせて
+カウンタに要素が最初に現れた順序を記憶させられます::
+
+   class OrderedCounter(Counter, OrderedDict):
+        'Counter that remembers the order elements are first encountered'
+
+        def __repr__(self):
+            return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))
+
+        def __reduce__(self):
+            return self.__class__, (OrderedDict(self),)
+
+
+.. _abstract-base-classes:
+
+ABCs - abstract base classes
+----------------------------
+
+collections モジュールは以下の :term:`ABC (抽象基底クラス)
+<abstract base class>` を提供します:
+
+=========================  =====================  ======================  ====================================================
+ABC                        継承しているクラス     抽象メソッド            mixin メソッド
+=========================  =====================  ======================  ====================================================
+:class:`Container`                                ``__contains__``
+:class:`Hashable`                                 ``__hash__``
+:class:`Iterable`                                 ``__iter__``
+:class:`Iterator`          :class:`Iterable`      ``next``                ``__iter__``
+:class:`Sized`                                    ``__len__``
+:class:`Callable`                                 ``__call__``
+
+:class:`Sequence`          :class:`Sized`,        ``__getitem__``         ``__contains__``. ``__iter__``, ``__reversed__``.
+                           :class:`Iterable`,                             ``index``, ``count``
+                           :class:`Container`
+
+:class:`MutableSequnce`    :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
+                                                  ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,
+                                                  ``insert``,             ``remove``, ``__iadd__``
+
+:class:`Set`               :class:`Sized`,                                ``__le__``, ``__lt__``, ``__eq__``, ``__ne__``,
+                           :class:`Iterable`,                             ``__gt__``, ``__ge__``, ``__and__``, ``__or__``
+                           :class:`Container`                             ``__sub__``, ``__xor__``, and ``isdisjoint``
+
+:class:`MutableSet`        :class:`Set`           ``add``,                Set から継承したメソッドと、
+                                                  ``discard``             ``clear``, ``pop``, ``remove``, ``__ior__``,
+                                                                          ``__iand__``, ``__ixor__``, ``__isub__``
+
+:class:`Mapping`           :class:`Sized`,        ``__getitem__``         ``__contains__``, ``keys``, ``items``, ``values``,
+                           :class:`Iterable`,                             ``get``, ``__eq__``, ``__ne__``
+                           :class:`Container`
+
+:class:`MutableMapping`    :class:`Mapping`       ``__setitem__``         Mapping から継承したメソッドと、
+                                                  ``__detitem__``,        ``pop``, ``popitem``, ``clear``, ``update``,
+                                                                          ``setdefault``
+
+:class:`MappingView`       :class:`Sized`                                 ``__len__``
+:class:`KeysView`          :class:`MappingView`,                          ``__contains__``,
+                           :class:`Set`                                   ``__iter__``
+:class:`ItemsView`         :class:`MappingView`,                          ``__contains__``,
+                           :class:`Set`                                   ``__iter__``
+:class:`ValuesView`        :class:`MappingView`                           ``__contains__``, ``__iter__``
+=========================  =====================  ======================  ====================================================
+
+
+.. class:: Container
+           Hashable
+           Sized
+           Callable
+
+   それぞれメソッド :meth:`__contains__`, :meth:`__hash__`,
+   :meth:`__len__`, and :meth:`__call__` を提供するクラスの ABC です。
+
+.. class:: Iterable
+
+   :meth:`__iter__` メソッドを提供するクラスの ABC です。
+   :term:`iterable` の定義も参照してください。
+
+.. class:: Iterator
+
+   :meth:`__iter__` および :meth:`next` メソッドを提供するクラスの ABC です。
+   :term:`iterator` の定義も参照してください。
+
+.. class:: Sequence
+           MutableSequence
+
+   読み込み専用と、ミュータブルな :term:`シーケンス <sequence>` の ABC です。
+
+.. class:: Set
+           MutableSet
+
+   読み込み専用と、ミュータブルな集合の ABC です。
+
+.. class:: Mapping
+           MutableMapping
+
+   読み込み専用と、ミュータブルな :term:`マッピング <mapping>` の ABC です。
+
+.. class:: MappingView
+           ItemsView
+           KeysView
+           ValuesView
+
+   マッピング、要素、キー、値の :term:`view <view>` の ABC です。
+
+これらの ABC はクラスやインスタンスが特定の機能を提供しているかどうかを
+調べるのに使えます。例えば::
+
+    size = None
+    if isinstance(myvar, collections.Sized):
+       size = len(myvar)
+
+幾つかの ABC はコンテナ型 API を提供するクラスを開発するのを助ける mixin 型としても
+使えます。例えば、 :class:`Set` API を提供するクラスを作る場合、3つの基本になる
+抽象メソッド :meth:`__contains__`, :meth:`__iter__`, :meth:`__len__` だけが
+必要です。 ABC が残りの :meth:`__and__` や :meth:`isdisjoint` といったメソッドを
+提供します::
+
+    class ListBasedSet(collections.Set):
+         ''' 速度よりもメモリ使用量を重視して、 hashable も提供しない
+             set の別の実装 '''
+         def __init__(self, iterable):
+             self.elements = lst = []
+             for value in iterable:
+                 if value not in lst:
+                     lst.append(value)
+         def __iter__(self):
+             return iter(self.elements)
+         def __contains__(self, value):
+             return value in self.elements
+         def __len__(self):
+             return len(self.elements)
+
+    s1 = ListBasedSet('abcdef')
+    s2 = ListBasedSet('defghi')
+    overlap = s1 & s2            # __and__() は ABC により自動的に提供される
+
+:class:`Set` と :class:`MutableSet` を mixin型として利用するときの注意点:
+
+(1)
+   幾つかの set の操作は新しい set を作るので、デフォルトの mixin メソッドは
+   iterable から新しいインスタンスを作成する方法を必要とします。クラスの
+   コンストラクタは ``ClassName(iterable)`` の形のシグネチャを持つと仮定されます。
+   内部の :meth:`_from_iterable` というクラスメソッドが ``cls(iterable)``
+   を呼び出して新しい set を作る部分でこの仮定が使われています。
+   コンストラクタのシグネチャが異なるクラスで :class:`Set` を使う場合は、
+   iterable 引数から新しいインスタンスを生成するように :meth:`_from_iterable`
+   をオーバーライドする必要があります。
+
+(2)
+   (たぶん意味はそのままに速度を向上する目的で)比較をオーバーライドする場合、
+   :meth:`__le__` だけを再定義すれば、その他の演算は自動的に追随します。
+
+(3)
+   :class:`Set` mixin型は set のハッシュ値を計算する :meth:`_hash` メソッドを
+   提供しますが、すべての set が hashable や immutable とは限らないので、
+   :meth:`__hash__` は提供しません。 mixin を使って hashable な set を作る場合は、
+   :class:`Set` と :class:`Hashable` の両方を継承して、 ``__hash__ = Set._hash``
+   と定義してください。
+
+.. seealso::
+
+   * Latest version of the `Python source code for the collections abstract base classes
+     <http://svn.python.org/view/python/branches/release27-maint/Lib/_abcoll.py?view=markup>`_
+
+   * :class:`MutableSet` を使った例として
+     `OrderedSet recipe <http://code.activestate.com/recipes/576694/>`_
+
+   * ABCs についての詳細は、 :mod:`abc` モジュールと :pep:`3119` を参照してください。
