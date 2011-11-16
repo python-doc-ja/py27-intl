@@ -26,6 +26,10 @@
 特に、関数 :func:`urlopen` は組み込み関数 :func:`open` と同様に動作し、ファイル名の代わりにファイルユニバーサルリソースロケータ (URL)
 を指定することができます。いくつかの制限はあります --- URL は読み出し専用でしか開けませんし、seek 操作を行うことはできません。
 
+.. warning:: HTTPS URL を開くときに、サーバ証明書を検証しようとはしません。
+   自己責任でお使い下さい。
+
+
 .. High-level interface
 
 高レベルインタフェース
@@ -37,7 +41,7 @@
    である場合、ローカルシステムのファイルが (広範囲の改行サポートなしで) 開かれます。それ以外の場合は
    ネットワーク上のどこかにあるサーバへのソケットを開きます。接続を作ることができない場合、例外 :exc:`IOError`
    が送出されます。全ての処理がうまくいけば、ファイル類似のオブジェクトが返されます。このオブジェクトは以下のメソッド: :meth:`read`,
-   :meth:`readline`, :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info` :meth:`getcode`, :meth:`geturl`
+   :meth:`readline`, :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info`, :meth:`getcode`, :meth:`geturl`
    をサポートします。また、イテレータ(:term:`iterator`)プロトコルも正しくサポートしています。注意:
    :meth:`read` の引数を省略または負の値を指定しても、データストリームの最後まで読みこむ訳ではありません。ソケットからすべてのストリーム
    を読み込んだことを決定する一般的な方法は存在しません。
@@ -127,15 +131,17 @@
       *proxies* のサポートを追加しました。
 
    .. versionchanged:: 2.6
-      .. Added :meth:`getcode` to returned object and support for the
-         :envvar:`no_proxy` environment variable.
       結果オブジェクトに :meth:`getcode` を追加し、 :envvar:`no_proxy` 環境変数に対応しました。
 
+      .. Added :meth:`getcode` to returned object and support for the
+         :envvar:`no_proxy` environment variable.
+
    .. deprecated:: 2.6
-      .. The :func:`urlopen` function has been removed in Python 3.0 in favor
-         of :func:`urllib2.urlopen`.
       :func:`urlopen` 関数は、Python 3.0では :func:`urllib2.urlopen` に取って変わられるため、
       廃止予定(deprecated)になりました。
+
+      .. The :func:`urlopen` function has been removed in Python 3.0 in favor
+         of :func:`urllib2.urlopen`.
 
 
 .. function:: urlretrieve(url[, filename[, reporthook[, data]]])
@@ -158,17 +164,19 @@
    :func:`urlencode` 関数を参照してください。
 
    .. versionchanged:: 2.5
-      :func:`'urlretrieve()'` は、予想 (これは *Content-Length* ヘッダにより通知されるサイズです)
+      :func:`urlretrieve` は、予想 (これは *Content-Length* ヘッダにより通知されるサイズです)
       よりも取得できるデータ量が少ないことを検知した場合、 :exc:`ContentTooShortError` を発生します。これは、例えば、ダウンロードが
       中断された場合などに発生します。
 
-      *Content-Length* は下限として扱われます: より多いデータがある場合、 urlretrieve
-      はそのデータを読みますが、より少ないデータしか取得できない場合、これは exception を発生します。
+      *Content-Length* は下限として扱われます: より多いデータがある場合、
+      :func:`urlretrieve` はそのデータを読みますが、
+      より少ないデータしか取得できない場合、これは exception を発生します。
 
-      このような場合にもダウンロードされたデータを取得することは可能で、これは  exception インスタンスの :attr:`content`
+      このような場合にもダウンロードされたデータを取得することは可能で、
+      これは exception インスタンスの :attr:`content`
       属性に保存されています。
 
-      *Content-Length* ヘッダが無い場合、urlretrieve はダウンロードされた
+      *Content-Length* ヘッダが無い場合、 :func:`urlretrieve` はダウンロードされた
       データのサイズをチェックできず、単にそれを返します。この場合は、ダウンロードは成功したと見なす必要があります。
 
 
@@ -237,7 +245,7 @@
 .. function:: urlencode(query[, doseq])
 
    マップ型オブジェクト、または 2要素のタプルからなるシーケンスを、
-   "URL エンコードされた (url-encoded)" 文字列に変換して、上述の
+   "パーセントエンコードされた (percent-encoded)" 文字列に変換して、上述の
    :func:`urlopen` のオプション引数 *data* に適した形式にします。
    この関数はフォームのフィールド値でできた辞書を ``POST`` 型のリクエストに
    渡すときに便利です。返される文字列は ``key=value`` のペアを ``'&'``
@@ -262,7 +270,8 @@
 
 .. function:: url2pathname(path)
 
-   URL のパスの部分 *path* をエンコードされた URL の形式からローカルシステムにおけるパス記法に変換します。この関数は *path* をデコード
+   URL のパスの部分 *path* をパーセントエンコードされた URL の形式から
+   ローカルシステムにおけるパス記法に変換します。この関数は *path* をデコード
    するために :func:`unquote` を使います。
 
 
@@ -421,7 +430,7 @@ URL Opener オブジェクト
   主にパーミッションの理由でアクセスできない) になった場合、 URL がディレクトリを指していて、末尾の ``/`` を忘れたケース
   を処理するため、パスをディレクトリとして扱います。このために、パーミッションのためにアクセスできないファイルを fetch しようとすると、FTP
   コードはそのファイルを開こうとして 550  エラーに陥り、次にディレクトリ一覧を表示しようとするため、誤解を生むような結果を引き起こす可能性があるのです。
-  よく調整された制御が必要なら、 :mod:`ftplib` モジュールを使うか、 :class:`FancyURLOpener` をサブクラス化するか、
+  よく調整された制御が必要なら、 :mod:`ftplib` モジュールを使うか、 :class:`FancyURLopener` をサブクラス化するか、
   *_urlopener* を変更して目的に合わせるよう検討してください。
 
 * このモジュールは認証を必要とするプロキシをサポートしません。将来実装されるかもしれません。
