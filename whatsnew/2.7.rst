@@ -728,30 +728,28 @@ Python 言語コアにいくつかの小さな変更が加えられました。
   ただし、上の例の2つめのように、自動ナンバリングと名前フィールドを混ぜて使うことは可能です。
   (Contributed by Eric Smith; :issue:`5237`.)
 
-  Complex numbers now correctly support usage with :func:`format`,
-  and default to being right-aligned.
-  Specifying a precision or comma-separation applies to both the real
-  and imaginary parts of the number, but a specified field width and
-  alignment is applied to the whole of the resulting ``1.5+3j``
-  output.  (Contributed by Eric Smith; :issue:`1588` and :issue:`7988`.)
+  複素数が :func:`format` をサポートするようになりました。デフォルトでは右寄せになります。
+  精度やカンマ区切りの指定は、実部と虚部のそれぞれに対して適用されます。
+  アラインの指定は ``1.5+3j`` のような複素数全体に対して適用されます。
+  (Contributed by Eric Smith; :issue:`1588` and :issue:`7988`.)
 
-  The 'F' format code now always formats its output using uppercase characters,
-  so it will now produce 'INF' and 'NAN'.
+  'F' 書式符号は常に大文字を使って出力するようになり、
+  'INF' や 'NAN' が出力されるようになりました。
   (Contributed by Eric Smith; :issue:`3382`.)
 
-  A low-level change: the :meth:`object.__format__` method now triggers
-  a :exc:`PendingDeprecationWarning` if it's passed a format string,
-  because the :meth:`__format__` method for :class:`object` converts
-  the object to a string representation and formats that.  Previously
-  the method silently applied the format string to the string
-  representation, but that could hide mistakes in Python code.  If
-  you're supplying formatting information such as an alignment or
-  precision, presumably you're expecting the formatting to be applied
-  in some object-specific way.  (Fixed by Eric Smith; :issue:`7994`.)
+  低レベルな変更: :meth:`object.__format__` メソッドは :exc:`PendingDeprecationWarning`
+  を発生させるようになりました。 :class:`object` に対する :meth:`__format__`
+  メソッドはオブジェクトを文字列表現に変換してそれをフォーマットするからです。
+  以前は、このメソッドは書式文字列を受け取り文字列表現を返していましたが、
+  この仕様は Python コードのミスを隠してしまう可能性がありました。
+  アライメントや精度のようなフォーマット指定情報を渡した時、
+  そのなにかそのオブジェクトに合ったフォーマットがあることを期待している
+  はずなのに、 :meth:`object.__format__` メソッドはそれを無視します。
+  (Fixed by Eric Smith; :issue:`7994`.)
 
-* The :func:`int` and :func:`long` types gained a ``bit_length``
-  method that returns the number of bits necessary to represent
-  its argument in binary::
+
+* :func:`int` と :func:`long` 型に ``bit_length`` メソッドが追加されました。
+  このメソッドはその値を2進数で表現したときに何ビット必要になるかを返します::
 
       >>> n = 37
       >>> bin(n)
@@ -766,80 +764,80 @@ Python 言語コアにいくつかの小さな変更が加えられました。
 
   (Contributed by Fredrik Johansson and Victor Stinner; :issue:`3439`.)
 
-* The :keyword:`import` statement will no longer try a relative import
-  if an absolute import (e.g. ``from .os import sep``) fails.  This
-  fixes a bug, but could possibly break certain :keyword:`import`
-  statements that were only working by accident.  (Fixed by Meador Inge;
+* :keyword:`import` 文が、絶対インポート (例: ``from .os import sep``) が
+  失敗したときに相対インポートを試さなくなりました。
+  これはバグ修正ですが、いままでたまたま動いていただけの :keyword:`import`
+  文を動かなくしてしまう可能性があります。(Fixed by Meador Inge;
   :issue:`7902`.)
 
-* It's now possible for a subclass of the built-in :class:`unicode` type
-  to override the :meth:`__unicode__` method.  (Implemented by
+* ビルトインの :class:`unicode` 型のサブクラスが :meth:`__unicode__` メソッドを
+  オーバーライドできるようになりました。(Implemented by
   Victor Stinner; :issue:`1583863`.)
 
-* The :class:`bytearray` type's :meth:`~bytearray.translate` method now accepts
-  ``None`` as its first argument.  (Fixed by Georg Brandl;
+* :class:`bytearray` 型の :meth:`~bytearray.translate` メソッドが第一引数に
+  ``None`` を受け入れるようになりました。 (Fixed by Georg Brandl;
   :issue:`4759`.)
 
   .. XXX bytearray doesn't seem to be documented
 
-* When using ``@classmethod`` and ``@staticmethod`` to wrap
-  methods as class or static methods, the wrapper object now
-  exposes the wrapped function as their :attr:`__func__` attribute.
-  (Contributed by Amaury Forgeot d'Arc, after a suggestion by
+* ``@classmethod`` や ``@staticmethod`` を使ってクラスメソッドや
+  スタティックメソッドを作成した時、そのラッパーオブジェクトが
+  ラップ対象となる関数を :attr:`__func__` 属性で公開するように
+  なりました。(Contributed by Amaury Forgeot d'Arc, after a suggestion by
   George Sakkis; :issue:`5982`.)
 
-* When a restricted set of attributes were set using ``__slots__``,
-  deleting an unset attribute would not raise :exc:`AttributeError`
-  as you would expect.  Fixed by Benjamin Peterson; :issue:`7604`.)
+* ``__slots__`` を利用して属性を制限した場合に、設定されていない属性を
+  del したときに :exc:`AttributeError` にならなかったのを修正しました。
+  (Fixed by Benjamin Peterson; :issue:`7604`.)
 
-* Two new encodings are now supported: "cp720", used primarily for
-  Arabic text; and "cp858", a variant of CP 850 that adds the euro
-  symbol.  (CP720 contributed by Alexander Belchenko and Amaury
+* 2つの新しいエンコーディングが追加されました: "cp720" は主にアラビア文字に
+  使われます。 "cp858" は cp850 の一種ですが、ユーロ記号を追加しています。
+  (CP720 contributed by Alexander Belchenko and Amaury
   Forgeot d'Arc in :issue:`1616979`; CP858 contributed by Tim Hatch in
   :issue:`8016`.)
 
-* The :class:`file` object will now set the :attr:`filename` attribute
-  on the :exc:`IOError` exception when trying to open a directory
-  on POSIX platforms (noted by Jan Kaliszewski; :issue:`4764`), and
-  now explicitly checks for and forbids writing to read-only file objects
-  instead of trusting the C library to catch and report the error
+* :class:`file` オブジェクトは、POSIX環境に置いてディレクトリを開こうとした
+  時に発生する :exc:`IOError` 例外に :attr:`filename` 属性を設定するようになりました。
+  (noted by Jan Kaliszewski; :issue:`4764`)
+  また、読み取りのみのファイルに対する書き込みを、Cライブラリ側のエラー
+  検出・報告に頼るのではなく、明示的にチェックするようになりました。
   (fixed by Stefan Krah; :issue:`5677`).
 
-* The Python tokenizer now translates line endings itself, so the
-  :func:`compile` built-in function now accepts code using any
-  line-ending convention.  Additionally, it no longer requires that the
-  code end in a newline.
+* Python の字句解析機は改行をそれ自身に変換するようになりました。
+  それにより、組み込みの :func:`compile` 関数がどの改行コードを利用した
+  コードでも受け付けるようになりました。また、コードの終端の改行も
+  不要になりました。
 
-* Extra parentheses in function definitions are illegal in Python 3.x,
-  meaning that you get a syntax error from ``def f((x)): pass``.  In
-  Python3-warning mode, Python 2.7 will now warn about this odd usage.
+* 関数宣言中の余分な丸括弧は Python 3.x では不正になりました。
+  つまり、 ``def f((x)): pass`` はsyntax errorになります。
+  Python3 警告モードでは、 Python 2.7 はこの利用方法について警告を出すようになりました。
   (Noted by James Lingard; :issue:`7362`.)
 
-* It's now possible to create weak references to old-style class
-  objects.  New-style classes were always weak-referenceable.  (Fixed
+* 古いスタイルのクラスのオブジェクトに対して弱参照を作れるようになりました。
+  新スタイルクラスには以前から弱参照を利用できます。(Fixed
   by Antoine Pitrou; :issue:`8268`.)
 
-* When a module object is garbage-collected, the module's dictionary is
-  now only cleared if no one else is holding a reference to the
-  dictionary (:issue:`7140`).
+* モジュールオブジェクトがGCされたとき、モジュールの辞書は、他にその辞書への
+  参照を持っているものがない場合にのみクリアされるようになりました。(:issue:`7140`).
 
 .. ======================================================================
 
 .. _new-27-interpreter:
 
-Interpreter Changes
+.. Interpreter Changes
+
+インタプリタの変更
 -------------------------------
 
-A new environment variable, :envvar:`PYTHONWARNINGS`,
-allows controlling warnings.  It should be set to a string
-containing warning settings, equivalent to those
-used with the :option:`-W` switch, separated by commas.
+新しい環境変数 :envvar:`PYTHONWARNINGS` を使って警告を制御できるようになりました。
+この環境変数には、 :option:`-W` スイッチに使われる渓谷の設定を、カンマ区切りの
+文字列として指定します。
 (Contributed by Brian Curtin; :issue:`7301`.)
 
-For example, the following setting will print warnings every time
-they occur, but turn warnings from the :mod:`Cookie` module into an
-error.  (The exact syntax for setting an environment variable varies
-across operating systems and shells.)
+
+例えば、以下の設定は警告が発生するたびにそれを表示しますが、
+:mod:`Cookie` モジュールからの警告はエラーにします。
+(環境変数を設定するための文法はOSとシェルに依存します)
 
 ::
 
@@ -848,7 +846,9 @@ across operating systems and shells.)
 .. ======================================================================
 
 
-Optimizations
+.. Optimizations
+
+最適化
 -------------
 
 Several performance enhancements have been added:
