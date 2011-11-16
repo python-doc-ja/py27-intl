@@ -7,17 +7,25 @@
 .. moduleauthor:: Kevin O'Connor
 .. sectionauthor:: Guido van Rossum <guido@python.org>
 .. sectionauthor:: François Pinard
+.. sectionauthor:: Raymond Hettinger
 
 .. versionadded:: 2.3
 
 このモジュールではヒープキューアルゴリズムの一実装を提供しています。
 優先度キューアルゴリズムとしても知られています。
 
-ヒープとは、全ての *k* に対して、ゼロから要素を数えていった際に、
+.. seealso::
+
+   Latest version of the `heapq Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/heapq.py?view=markup>`_
+
+ヒープとは、全ての親ノードの値が、その全ての子の値以下であるような
+バイナリツリーです。
+この実装は、全ての *k* に対して、ゼロから要素を数えていった際に、
 ``heap[k] <= heap[2*k+1]`` かつ ``heap[k] <= heap[2*k+2]``
-となる配列です。
-比較のために、存在しない要素は無限大として扱われます。
-ヒープの興味深い属性は ``heap[0]`` が常に最小の要素になることです。
+となる配列を使っています。
+比較のために、存在しない要素は無限大として扱われます。ヒープの興味深い性質は、
+最小の要素が常にルート、つまり ``heap[0]`` になることです。
 
 以下の API は教科書におけるヒープアルゴリズムとは 2 つの側面で異なっています:
 (a) ゼロベースのインデクス化を行っています。
@@ -65,44 +73,15 @@ Python リストとして見ることができます: ``heap[0]`` が最小の�
 .. function:: heapreplace(heap, item)
 
    *heap* から最小の要素を pop して返し、新たに *item* を push します。ヒープのサイズは変更されません。ヒープが空の場合、
-   :exc:`IndexError` が送出されます。この関数は :func:`heappop` に次いで :func:`heappush`
-   を送出するよりも効率的で、固定サイズのヒープを用いている場合にはより適しています。返される値は *item* よりも大きくなるかも
-   しれないので気をつけてください! これにより、このルーチンの合理的な利用法は条件つき置換の一部として使われることに制限されています。  ::
+   :exc:`IndexError` が送出されます。この一息の演算は :func:`heappop` に次いで :func:`heappush`
+   を送出するよりも効率的で、固定サイズのヒープを用いている場合にはより適しています。
+   pop/push の組み合わせは必ずヒープから要素を一つ返し、それを *item* と
+   置き換えます。
 
-      if item > heap[0]:
-          item = heapreplace(heap, item)
-
-使用例を以下に示します:
-
-   >>> from heapq import heappush, heappop
-   >>> heap = []
-   >>> data = [1, 3, 5, 7, 9, 2, 4, 6, 8, 0]
-   >>> for item in data:
-   ...     heappush(heap, item)
-   ...
-   >>> ordered = []
-   >>> while heap:
-   ...     ordered.append(heappop(heap))
-   ...
-   >>> print ordered
-   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-   >>> data.sort()
-   >>> print data == ordered
-   True
-
-ヒープを使ってアイテムを優先度キューの正しい位置に挿入します:
-
-   >>> heap = []
-   >>> data = [(1, 'J'), (4, 'N'), (3, 'H'), (2, 'O')]
-   >>> for item in data:
-   ...     heappush(heap, item)
-   ...
-   >>> while heap:
-   ...     print heappop(heap)[1]
-   J
-   O
-   H
-   N
+   返される値は加えられた *item* よりも大きくなるかもしれません。
+   それを望まないなら、代わりに :func:`heappushpop` を使うことを
+   考えてください。この push/pop の組み合わせは二つの値の小さい方を返し、
+   大きい方の値をヒープに残します。
 
 
 このモジュールではさらに3つのヒープに基く汎用関数を提供します。
@@ -150,10 +129,98 @@ Python リストとして見ることができます: ``heap[0]`` が最小の�
 さらに、 ``n==1`` の時には :func:`min` および :func:`max` 関数の方が効率的です。
 
 
+基本的な例
+----------
+
+`ヒープソート <http://ja.wikipedia.org/wiki/ヒープソート>`_ は、
+すべての値をヒープに push し、それから最小の値を一つづつ pop することで
+実装できます::
+
+   >>> def heapsort(iterable):
+   ...     'Equivalent to sorted(iterable)'
+   ...     h = []
+   ...     for value in iterable:
+   ...         heappush(h, value)
+   ...     return [heappop(h) for i in range(len(h))]
+   ...
+   >>> heapsort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0])
+   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+ヒープの要素はタプルに出来ます。これは、追跡される主レコードとは別に
+(タスクの優先度のような) 比較値を指定するときに便利です::
+
+    >>> h = []
+    >>> heappush(h, (5, 'write code'))
+    >>> heappush(h, (7, 'release product'))
+    >>> heappush(h, (1, 'write spec'))
+    >>> heappush(h, (3, 'create tests'))
+    >>> heappop(h)
+    (1, 'write spec')
+
+
+優先度キュー実装の注釈
+----------------------
+
+`優先度つきキュー <http://en.wikipedia.org/wiki/優先度つきキュー>`_ は、
+ヒープの一般的な使い方で、実装にはいくつか困難な点があります:
+
+* ソート安定性: 優先度が等しい二つのタスクが、もともと追加された順序で
+  返されるためにはどうしたらいいでしょうか？
+
+* 将来の Python 3 では、優先度が等しくてタスクにデフォルトの比較順序がないと、
+  タプルの比較は (priority, task) 対に分けられます。
+
+* あるタスクの優先度が変化したら、どうやってそれをヒープの新しい位置に
+  移動させるのでしょうか？
+
+* 未解決のタスクが削除される必要があるとき、どのようにそれをキューから
+  探して削除するのでしょうか？
+
+最初の二つの困難の解決策は、項目を優先度、項目番号、そしてタスクを含む
+3 要素のリストとして保存することです。この項目番号は、同じ優先度の二つの
+タスクが、追加された順序で返されるようにするための同点決勝戦として働きます。
+そして二つの項目番号が等しくなることはありませんので、タプルの比較が
+二つのタスクを直接比べようとすることはありえません。
+
+残りの困難は主に、未解決のタスクを探して、その優先度を変更したり、
+完全に削除することです。タスクを探すことは、キュー内の項目を指し示す
+辞書によってなされます。
+
+項目を削除したり、優先度を変更することは、ヒープ構造の不変関係を壊すことに
+なるので、もっと難しいです。ですから、可能な解決策は、その項目が無効である
+ものとしてマークし、必要なら変更された優先度の項目を加えることです::
+
+    pq = []                         # 優先度キューリスト
+    counter = itertools.count(1)    # ユニークなシーケンス番号
+    task_finder = {}                # タスクから項目へのマッピング
+    INVALID = 0                     # 項目が削除されたものとしてマークする
+
+    def add_task(priority, task, count=None):
+        if count is None:
+            count = next(counter)
+        entry = [priority, count, task]
+        task_finder[task] = entry
+        heappush(pq, entry)
+
+    def get_top_priority():
+        while True:
+            priority, count, task = heappop(pq)
+            del task_finder[task]
+            if count is not INVALID:
+                return task
+
+    def delete_task(task):
+        entry = task_finder[task]
+        entry[1] = INVALID
+
+    def reprioritize(priority, task):
+        entry = task_finder[task]
+        add_task(priority, task, entry[1])
+        entry[1] = INVALID
+
+
 理論
 ----
-
-(説明は François Pinard によるものです。このモジュールの Python コードは Kevin O'Connor の貢献によるものです。)
 
 ヒープとは、全ての *k* について、要素を 0 から数えたときに、 ``a[k] <= a[2*k+1]`` かつ  ``a[k] <= a[2*k+2]``
 となる配列です。比較のために、存在しない要素を無限大と考えます。ヒープの興味深い属性は ``heap[0]`` が常に最小の要素になることです。
