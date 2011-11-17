@@ -232,7 +232,7 @@ C 言語で実装された関数セットを提供します。例えば、
    *a* でインデクスが *b* から *c-1* のスライス要素を削除します。
 
    .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+      この関数は Python 3.x で削除されます。
       :func:`delitem` をスライスインデクスで使って下さい。
 
 .. function:: getitem(a, b)
@@ -247,7 +247,7 @@ C 言語で実装された関数セットを提供します。例えば、
    *a* でインデクスが *b* から *c-1* のスライス要素を返します。
 
    .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+      この関数は Python 3.x で削除されます。
       :func:`getitem` をスライスインデクスで使って下さい。
 
 .. function:: indexOf(a, b)
@@ -258,8 +258,7 @@ C 言語で実装された関数セットを提供します。例えば、
 .. function:: repeat(a, b)
               __repeat__(a, b)
 
-   .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+   .. deprecated:: 2.7
       代わりに :func:`__mul__` を使って下さい。
 
    シーケンス *a* と整数 *b* について ``a * b`` を返します。
@@ -285,7 +284,7 @@ C 言語で実装された関数セットを提供します。例えば、
    *a* でインデクスが *b* から *c-1* のスライス要素の値をシーケンス *v* に設定します。
 
    .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+      この関数は Python 3.x で削除されます。
       :func:`setitem` をスライスインデクスで使って下さい。
 
 operator の関数を使う例を挙げます::
@@ -389,8 +388,7 @@ operator の関数を使う例を挙げます::
 .. function:: irepeat(a, b)
               __irepeat__(a, b)
 
-   .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+   .. deprecated:: 2.7
       代わりに :func:`__imul__` を使って下さい。
 
    ``a = irepeat(a, b)`` は *a* がシーケンスで *b* が整数であるとき ``a *= b`` と等価です。
@@ -447,8 +445,7 @@ operator の関数を使う例を挙げます::
 
 .. function:: isMappingType(obj)
 
-   .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+   .. deprecated:: 2.7
       代わりに ``isinstance(x, collections.Mapping)`` を使って下さい。
 
    オブジェクト *obj* がマップ型インタフェースをサポートする場合に真を返します。
@@ -457,8 +454,7 @@ operator の関数を使う例を挙げます::
 
 .. function:: isNumberType(obj)
 
-   .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+   .. deprecated:: 2.7
       代わりに ``isinstance(x, numbers.Number)`` を使って下さい。
 
    オブジェクト *obj* が数値を表現している場合に真を返します。
@@ -466,8 +462,7 @@ operator の関数を使う例を挙げます::
 
 .. function:: isSequenceType(obj)
 
-   .. deprecated:: 2.6
-      この関数は Python 3.0 で削除されます。
+   .. deprecated:: 2.7
       代わりに ``isinstance(x, collections.Sequence)`` を使って下さい。
 
    *obj* がシーケンス型プロトコルをサポートする場合に真を返します。
@@ -485,6 +480,23 @@ operator の関数を使う例を挙げます::
    ``f = attrgetter('name')`` とした後で、 ``f(b)`` を呼び出すと ``b.name`` を返します。
    ``f = attrgetter('name', 'date')`` とした後で、 ``f(b)`` を呼び出すと ``(b.name, b.date)``
    を返します。
+   以下と等価です::
+
+      def attrgetter(*items):
+          if len(items) == 1:
+              attr = items[0]
+              def g(obj):
+                  return resolve_attr(obj, attr)
+          else:
+              def g(obj):
+                  return tuple(resolve_att(obj, attr) for attr in items)
+          return g
+
+      def resolve_attr(obj, attr):
+          for name in attr.split("."):
+              obj = getattr(obj, name)
+          return obj
+
 
    アトリビュート名にドットを含んでも構いません。
    ``f = attrgetter('date.month')`` とした後で、 ``f(b)`` を呼び出すと ``b.date.month`` を返します。
@@ -505,15 +517,15 @@ operator の関数を使う例を挙げます::
    二つ以上のアイテムを要求された場合には、アイテムのタプルを返します。
    以下のコードと等価です::
 
-        def itemgetter(*items):
-            if len(items) == 1:
-                item = items[0]
-                def g(obj):
-                    return obj[item]
-            else:
-                def g(obj):
-                    return tuple(obj[item] for item in items)
-            return g
+      def itemgetter(*items):
+          if len(items) == 1:
+              item = items[0]
+              def g(obj):
+                  return obj[item]
+          else:
+              def g(obj):
+                  return tuple(obj[item] for item in items)
+          return g
 
    アイテムは演算対象の :meth:`__getitem__` メソッドが受け付けるどんな型でも構いません。
    辞書ならば任意のハッシュ可能な値を受け付けますし、
@@ -533,12 +545,12 @@ operator の関数を使う例を挙げます::
 
    :func:`itemgetter` を使って特定のフィールドをタプルから取り出す例:
 
-       >>> inventory = [('apple', 3), ('banana', 2), ('pear', 5), ('orange', 1)]
-       >>> getcount = itemgetter(1)
-       >>> map(getcount, inventory)
-       [3, 2, 5, 1]
-       >>> sorted(inventory, key=getcount)
-       [('orange', 1), ('banana', 2), ('apple', 3), ('pear', 5)]
+      >>> inventory = [('apple', 3), ('banana', 2), ('pear', 5), ('orange', 1)]
+      >>> getcount = itemgetter(1)
+      >>> map(getcount, inventory)
+      [3, 2, 5, 1]
+      >>> sorted(inventory, key=getcount)
+      [('orange', 1), ('banana', 2), ('apple', 3), ('pear', 5)]
 
 
 .. function:: methodcaller(name[, args...])
@@ -548,6 +560,12 @@ operator の関数を使う例を挙げます::
    これらもそのメソッドに引き渡されます。
    ``f = methodcaller('name')`` とした後で、 ``f(b)`` を呼び出すと ``b.name()`` を返します。
    ``f = methodcaller('name', 'foo', bar=1)`` とした後で、 ``f(b)`` を呼び出すと ``b.name('foo', bar=1)`` を返します。
+   以下と等価です::
+
+      def methodcaller(name, *args, **kwargs):
+          def caller(obj):
+              return getattr(obj, name)(*args, **kwargs)
+          return caller
 
 
 .. _operator-map:
