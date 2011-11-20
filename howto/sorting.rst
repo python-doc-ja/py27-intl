@@ -1,4 +1,6 @@
-Sorting HOW TO (未翻訳)
+.. _sortinghowto:
+
+Sorting HOW TO (英語)
 ***********************
 
 :Author: Andrew Dalke and Raymond Hettinger
@@ -6,8 +8,8 @@ Sorting HOW TO (未翻訳)
 
 
 Python lists have a built-in :meth:`list.sort` method that modifies the list
-in-place and a :func:`sorted` built-in function that builds a new sorted list
-from an iterable.
+in-place.  There is also a :func:`sorted` built-in function that builds a new
+sorted list from an iterable.
 
 In this document, we explore the various techniques for sorting data using Python.
 
