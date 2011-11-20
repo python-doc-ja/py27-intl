@@ -27,28 +27,20 @@
 クラスは、Microsoft Windows の INI ファイルに見られるような構造をもつ、基礎的な設定ファイルを実装しています。
 このモジュールを使って、エンドユーザーが簡単にカスタマイズできるような Python プログラムを書くことができます。
 
-.. % The \class{ConfigParser} class implements a basic configuration file
-.. % parser language which provides a structure similar to what you would
-.. % find on Microsoft Windows INI files.  You can use this to write Python
-.. % programs which can be customized by end users easily.
-
-.. % \begin{notice}[warning]
-.. % This library does \emph{not} interpret or write the value-type
-.. % prefixes used in the Windows Registry extended version of INI syntax.
-.. % \end{notice}
-
 .. note::
 
    このライブラリでは、Windowsのレジストリ用に拡張された INI 文法はサポート *していません* 。
 
-.. The configuration file consists of sections, led by a ``[section]`` header and
-   followed by ``name: value`` entries, with continuations in the style of
-   :rfc:`822` (see section 3.1.1, "LONG HEADER FIELDS"); ``name=value`` is also
-   accepted.  Note that leading whitespace is removed from values. The optional
-   values can contain format strings which refer to other values in the same
-   section, or values in a special ``DEFAULT`` section.  Additional defaults can be
-   provided on initialization and retrieval.  Lines beginning with ``'#'`` or
-   ``';'`` are ignored and may be used to provide comments.
+.. seealso::
+
+   モジュール :mod:`shlex`
+      アプリケーション用の設定ファイルフォーマットとして使える、
+      Unix シェルライクなミニ言語の作成を支援します。
+
+   モジュール :mod:`json`
+      jsom モジュールは、同じ目的に利用できる JavaScript の文法のサブセットを
+      実装しています。
+
 
 設定ファイルは 1 つ以上のセクションからなり、セクションは ``[section]`` ヘッダとそれに続く
 :rfc:`822` 形式の ``name: value`` エントリからなっています。(section 3.1.1 "LONG HEADER FIELDS" を参照)
@@ -96,69 +88,69 @@
 セクションはソートされます。
 
 
-.. class:: RawConfigParser([defaults[, dict_type]])
+.. class:: RawConfigParser([defaults[, dict_type[, allow_no_value]]])
 
-   .. The basic configuration object.  When *defaults* is given, it is initialized
-      into the dictionary of intrinsic defaults.  When *dict_type* is given, it will
-      be used to create the dictionary objects for the list of sections, for the
-      options within a section, and for the default values. This class does not
-      support the magical interpolation behavior.
+   基本的な設定オブジェクトです。 *defaults* が与えられた場合、オブジェクトに
+   固有のデフォルト値がその値で初期化されます。
+   *dict_type* が与えられた場合、それが、セクションのリストの格納、
+   セクション内のオプションの格納、デフォルト値のために利用されます。
 
-   基本的な設定オブジェクトです。 *defaults* が与えられた場合、オブジェクトに固有のデフォルト値がその値で初期化されます。
-   *dict_type* が与えられた場合、それが、セクションのリストの格納、セクション内のオプションの格納、
-   デフォルト値のために利用されます。
+   *allow_no_value* (デフォルト: ``False``) が真の時、値のないオプションが
+   許可されます。この場合の値は ``None`` になります。
+
    このクラスは値の置換をサポートしません。
+
+   全てのオプション名が :meth:`optionxform` メソッドに渡されます。
+   このメソッドのデフォルトの実装では、オプション名を小文字に変換します。
 
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.6
       *dict_type* が追加されました。
 
+   .. versionchanged:: 2.7
+      デフォルトの *dict_type* は :class:`collections.OrderedDict` です。
+      *allow_no_value* が追加されました。
 
-.. class:: ConfigParser([defaults[, dict_type]])
+
+.. class:: ConfigParser([defaults[, dict_type[, allow_no_value]]])
 
    :class:`RawConfigParser` の派生クラスで値の置換を実装しており、
    :meth:`get` メソッドと :meth:`items` メソッドに省略可能な引数を追加しています。
    *defaults* に含まれる値は ``%()s`` による値の置換に適当なものである必要があります。
    *__name__* は組み込みのデフォルト値で、セクション名が含まれるので *defaults* で設定してもオーバーライドされます。
 
-   .. % Derived class of \class{RawConfigParser} that implements the magical
-   .. % interpolation feature and adds optional arguments the \method{get()}
-   .. % and \method{items()} methods.  The values in \var{defaults} must be
-   .. % appropriate for the \samp{\%()s} string interpolation.  Note that
-   .. % \var{__name__} is an intrinsic default; its value is the section name,
-   .. % and will override any value provided in \var{defaults}.
-   .. %
-   .. % All option names used in interpolation will be passed through the
-   .. % \method{optionxform()} method just like any other option name
-   .. % reference.  For example, using the default implementation of
-   .. % \method{optionxform()} (which converts option names to lower case),
-   .. % the values \samp{foo \%(bar)s} and \samp{foo \%(BAR)s} are
-   .. % equivalent.
-
-   置換で使われるすべてのオプション名は、ほかのオプション名への参照と同様に :meth:`optionxform` メソッドを介して渡されます。たとえば、
-   :meth:`optionxform` のデフォルト実装 (これはオプション名を小文字に変換します) を使うと、値 ``foo %(bar)s`` および
+   置換で使われるすべてのオプション名は、ほかのオプション名への参照と同様に
+   :meth:`optionxform` メソッドを介して渡されます。
+   :meth:`optionxform` のデフォルト実装を使うと、値 ``foo %(bar)s`` および
    ``foo %(BAR)s`` は同一になります。
-
-
-.. class:: SafeConfigParser([defaults[, dict_type]])
-
-   .. % Derived class of \class{ConfigParser} that implements a more-sane
-   .. % variant of the magical interpolation feature.  This implementation is
-   .. % more predictable as well.
-   .. % % XXX Need to explain what's safer/more predictable about it.
-   .. % New applications should prefer this version if they don't need to be
-   .. % compatible with older versions of Python.
-
-   :class:`ConfigParser` の派生クラスでより安全な値の置換を実装しています。この実装のはより予測可能性が高くなっています。
-   新規に書くアプリケーションでは、古いバージョンのPythonと互換性を持たせる必要がない限り、このバージョンを利用することが望ましいです。
-
-   .. XXX 何がどう安全で予測可能性なのか書くこと。
 
    .. versionadded:: 2.3
 
+   .. versionchanged:: 2.6
+      *dict_type* が追加されました。
 
-.. memo configparser は :mod: の付け忘れか?
+   .. versionchanged:: 2.7
+      デフォルトの *dict_type* は :class:`collections.OrderedDict` です。
+      *allow_no_value* が追加されました。
+
+
+.. class:: SafeConfigParser([defaults[, dict_type[, allow_no_value]]])
+
+   :class:`ConfigParser` の派生クラスでより安全な値の置換を実装しています。
+   この実装はより予測可能性が高くなっています。
+   新規に書くアプリケーションでは、古いバージョンのPythonと互換性を持たせる必要がない限り、このバージョンを利用することが望ましいです。
+
+   .. versionadded:: 2.3
+
+   .. versionchanged:: 2.6
+      *dict_type* が追加されました。
+
+   .. versionchanged:: 2.7
+      デフォルトの *dict_type* は :class:`collections.OrderedDict` です。
+      *allow_no_value* が追加されました。
+
+
 .. exception:: Error
 
    他の全ての configparser の例外の基底クラスです。
@@ -637,3 +629,37 @@ configurationファイルを読み込む例::
            opt_move(config, section1, section2, option)
        else:
            config.remove_option(section1, option)
+
+いくつかの設定ファイルでは、値のない設定項目がある以外は :mod:`ConfigParser` の
+文法と同じ文法になっています。
+コンストラクタの *allow_no_value* 引数で、そのような値を許可することができます。
+
+.. doctest::
+
+   >>> import ConfigParser
+   >>> import io
+
+   >>> sample_config = """
+   ... [mysqld]
+   ... user = mysql
+   ... pid-file = /var/run/mysqld/mysqld.pid
+   ... skip-external-locking
+   ... old_passwords = 1
+   ... skip-bdb
+   ... skip-innodb
+   ... """
+   >>> config = ConfigParser.RawConfigParser(allow_no_value=True)
+   >>> config.readfp(io.BytesIO(sample_config))
+
+   >>> # Settings with values are treated as before:
+   >>> config.get("mysqld", "user")
+   'mysql'
+
+   >>> # Settings without values provide None:
+   >>> config.get("mysqld", "skip-bdb")
+
+   >>> # Settings which aren't specified still raise an error:
+   >>> config.get("mysqld", "does-not-exist")
+   Traceback (most recent call last):
+     ...
+   ConfigParser.NoOptionError: No option 'does-not-exist' in section: 'mysqld'
