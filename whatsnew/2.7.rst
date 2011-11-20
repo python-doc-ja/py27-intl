@@ -942,43 +942,45 @@ Python 言語コアにいくつかの小さな変更が加えられました。
 
 .. New and Improved Modules
 
-新しいモジュールと機能が追加されたモジュール
-=============================================
+新しいモジュールと改良されたモジュール
+========================================
 
-As in every release, Python's standard library received a number of
-enhancements and bug fixes.  Here's a partial list of the most notable
-changes, sorted alphabetically by module name. Consult the
-:file:`Misc/NEWS` file in the source tree for a more complete list of
-changes, or look through the Subversion logs for all the details.
+全てのリリースに置いて、 Python の標準ライブラリはたくさんの改良とバグ修正が
+されてきました。ここでは一部の注目に値する変更を、
+モジュール名で辞書順ソートしてリストアップしています。
+可燃な変更が見たければ、ソースツリー内の :file:`Misc/NEWS` ファイルか、
+全ての完全な詳細が入っている Subversion のログを参照してください。
 
-* The :mod:`bdb` module's base debugging class :class:`~bdb.Bdb`
-  gained a feature for skipping modules.  The constructor
-  now takes an iterable containing glob-style patterns such as
-  ``django.*``; the debugger will not step into stack frames
-  from a module that matches one of these patterns.
+* :mod:`bdb` モジュールの基底デバッガクラス :class:`~bdb.Bdb` に、
+  モジュールをスキップする機能が追加されました。コンストラクタは
+  ``django.*`` のような glob スタイルのパターンをもった iterable を
+  引数として受け取ります。デバッガはパターンのどれかにマッチする
+  スタックフレームにステップインしません。
   (Contributed by Maru Newby after a suggestion by
   Senthil Kumaran; :issue:`5142`.)
 
-* The :mod:`binascii` module now supports the buffer API, so it can be
-  used with :class:`memoryview` instances and other similar buffer objects.
+* :mod:`binascii` モジュールが buffer API をサポートするようになり、
+  :class:`memoryview` インスタンスやその他のバッファオブジェクトともに
+  利用できるようになりました。
   (Backported from 3.x by Florent Xicluna; :issue:`7703`.)
 
-* Updated module: the :mod:`bsddb` module has been updated from 4.7.2devel9
-  to version 4.8.4 of
-  `the pybsddb package <http://www.jcea.es/programacion/pybsddb.htm>`__.
-  The new version features better Python 3.x compatibility, various bug fixes,
-  and adds several new BerkeleyDB flags and methods.
+* :mod:`bsddb` モジュールが
+  `the pybsddb package <http://www.jcea.es/programacion/pybsddb.htm>`__
+  の 4.7.2devel9 から 4.8.4 に更新されました。
+  新しいバージョンはより Python 3.x との互換性がよくなり、いくつかのバグ修正と、
+  いくつかの新しい BerkeleyDB のフラグとメソッドが追加されています。
   (Updated by Jesús Cea Avión; :issue:`8156`.  The pybsddb
   changelog can be read at http://hg.jcea.es/pybsddb/file/tip/ChangeLog.)
 
-* The :mod:`bz2` module's :class:`~bz2.BZ2File` now supports the context
-  management protocol, so you can write ``with bz2.BZ2File(...) as f:``.
+* :mod:`bz2` モジュールの :class:`~bz2.BZ2File` がコンテキストマネージャー
+  プロトコルをサポートするようになりました。これにより、
+  ``with bz2.BZ2File(...) as f:`` といった書き方ができます。
   (Contributed by Hagen Fürstenau; :issue:`3860`.)
 
-* New class: the :class:`~collections.Counter` class in the :mod:`collections`
-  module is useful for tallying data.  :class:`~collections.Counter` instances
-  behave mostly like dictionaries but return zero for missing keys instead of
-  raising a :exc:`KeyError`:
+* :mod:`collections` モジュールの新しい :class:`~collections.Counter` クラスは、
+  データの数え上げをするときに便利です。
+  :class:`~collections.Counter` インスタンスは辞書のように振る舞いますが、
+  キーが存在しなかったときに :exc:`KeyError` 例外を発生させる代わりに 0 を返します。
 
   .. doctest::
      :options: +NORMALIZE_WHITESPACE
@@ -997,15 +999,16 @@ changes, or look through the Subversion logs for all the details.
      >>> c['z']
      0
 
-  There are three additional :class:`~collections.Counter` methods.
-  :meth:`~collections.Counter.most_common` returns the N most common
-  elements and their counts.  :meth:`~collections.Counter.elements`
-  returns an iterator over the contained elements, repeating each
-  element as many times as its count.
-  :meth:`~collections.Counter.subtract` takes an iterable and
-  subtracts one for each element instead of adding; if the argument is
-  a dictionary or another :class:`Counter`, the counts are
-  subtracted. ::
+.. xxx
+
+  :class:`~collections.Counter` には追加の3つのメソッドがあります。
+  :meth:`~collections.Counter.most_common` はカウントが最も多い N
+  要素とそのカウントを返します。 :meth:`~collections.Counter.elements`
+  はカウントしている要素を、そのカウント数だけ繰り返すイテレータを
+  返します。
+  :meth:`~collections.Counter.subtract` はイテレート可能型を受け取り、
+  その各要素を足すのではなく引いて行きます。引数が他の辞書か Counter
+  だった場合は、そのカウントが引かれます。 ::
 
     >>> c.most_common(5)
     [(' ', 6), ('e', 5), ('s', 3), ('a', 2), ('i', 2)]
@@ -1024,22 +1027,20 @@ changes, or look through the Subversion logs for all the details.
 
   .. revision 79660
 
-  New class: :class:`~collections.OrderedDict` is described in the earlier
-  section :ref:`pep-0372`.
+  新しいクラス :class:`~collections.OrderedDict` はすでに :ref:`pep-0372`
+  で紹介しました。
 
-  New method: The :class:`~collections.deque` data type now has a
-  :meth:`~collections.deque.count` method that returns the number of
-  contained elements equal to the supplied argument *x*, and a
-  :meth:`~collections.deque.reverse` method that reverses the elements
-  of the deque in-place.  :class:`~collections.deque` also exposes its maximum
-  length as the read-only :attr:`~collections.deque.maxlen` attribute.
+  メソッドが追加されました。引数で指定された *x* と等しい要素が何個入っているかを
+  返します。
+  :meth:`~collections.deque.reverses` メソッドは deque 内の要素をインプレースで
+  逆順にします。 :class:`~collections.deque` はまた、最大長を返す読み込み専用の
+  属性 :attr:`~collections.deque.maxlen` を持ちます。
   (Both features added by Raymond Hettinger.)
 
-  The :class:`~collections.namedtuple` class now has an optional *rename* parameter.
-  If *rename* is true, field names that are invalid because they've
-  been repeated or aren't legal Python identifiers will be
-  renamed to legal names that are derived from the field's
-  position within the list of fields:
+  :class:`~collections.namedtuple` クラスにオプションの *rename* 引数が追加されました。
+  *rename* が真のとき、複数回現れたり Python の識別子として許可されないために無効な
+  フィールド名があったとき、フィールドのリスト内での場所に基づく有効なフィールド名に
+  置き換えられます。 ::
 
      >>> from collections import namedtuple
      >>> T = namedtuple('T', ['field1', '$illegal', 'for', 'field2'], rename=True)
@@ -1048,14 +1049,13 @@ changes, or look through the Subversion logs for all the details.
 
   (Added by Raymond Hettinger; :issue:`1818`.)
 
-  Finally, the :class:`~collections.Mapping` abstract base class now
-  returns :const:`NotImplemented` if a mapping is compared to
-  another type that isn't a :class:`Mapping`.
+  :class:`~collections.Mapping` 抽象基底クラスが、他の :class:`Mapping`
+  でない型と比較されたときに :const:`NotImplemented` を返すようになりました。
   (Fixed by Daniel Stutzbach; :issue:`8729`.)
 
-* Constructors for the parsing classes in the :mod:`ConfigParser` module now
-  take a *allow_no_value* parameter, defaulting to false; if true,
-  options without values will be allowed.  For example::
+* :mod:`ConfigParser` モジュールのパーサークラスのコンストラクタが
+  *allow_no_value* 引数を受け取るようになりました。これはデフォルトでは False です。
+  真の場合、値のないオプションが利用できるようになります。例えば::
 
     >>> import ConfigParser, StringIO
     >>> sample_config = """
@@ -1077,102 +1077,97 @@ changes, or look through the Subversion logs for all the details.
 
   (Contributed by Mats Kindahl; :issue:`7005`.)
 
-* Deprecated function: :func:`contextlib.nested`, which allows
-  handling more than one context manager with a single :keyword:`with`
-  statement, has been deprecated, because the :keyword:`with` statement
-  now supports multiple context managers.
+* :func:`contextlib.nested` 関数が廃止予定になりました。これは1つの :keyword:`with`
+  文で1つ以上のコンテキストマネージャーを扱うためのものでしたが、 :keyword:`with`
+  文が複数のコンテキストマネージャーをサポートするようになりました。
 
-* The :mod:`cookielib` module now ignores cookies that have an invalid
-  version field, one that doesn't contain an integer value.  (Fixed by
+* :mod:`cookielib` モジュールが不正な、値が整数値ではないバージョンフィールドを
+  持つ cookie を無視するようになりました。(Fixed by
   John J. Lee; :issue:`3924`.)
 
-* The :mod:`copy` module's :func:`~copy.deepcopy` function will now
-  correctly copy bound instance methods.  (Implemented by
+* :mod:`copy` モジュールの :func:`~copy.deepcopy` 関数が、束縛ずみ
+  インスタンスメソッドを正しくコピーするようになりました。(Implemented by
   Robert Collins; :issue:`1515`.)
 
-* The :mod:`ctypes` module now always converts ``None`` to a C NULL
-  pointer for arguments declared as pointers.  (Changed by Thomas
-  Heller; :issue:`4606`.)  The underlying `libffi library
-  <http://sourceware.org/libffi/>`__ has been updated to version
-  3.0.9, containing various fixes for different platforms.  (Updated
+* :mod:`ctypes` モジュールが、ポインタとして宣言された引数に対して ``None``
+  が渡された場合常に C の NULL ポインタに変換するようになりました。(Changed by Thomas
+  Heller; :issue:`4606`.) 基盤となっている `libffi ライブラリ
+  <http://sourceware.org/libffi/>`__ が 3.0.9 にアップデートされ、いくつかの
+  プラットフォームにおけるいろいろな問題が修正されました。(Updated
   by Matthias Klose; :issue:`8142`.)
 
-* New method: the :mod:`datetime` module's :class:`~datetime.timedelta` class
-  gained a :meth:`~datetime.timedelta.total_seconds` method that returns the
-  number of seconds in the duration.  (Contributed by Brian Quinlan; :issue:`5788`.)
+* 新しいメソッド: :mod:`datetime` モジュールの :class:`~datetime.timedelta` クラスに
+  :meth:`~datetime.timedelta.total_seconds` メソッドが追加されました。
+  これはその期間の秒数を返します。(Contributed by Brian Quinlan; :issue:`5788`.)
 
-* New method: the :class:`~decimal.Decimal` class gained a
-  :meth:`~decimal.Decimal.from_float` class method that performs an exact
-  conversion of a floating-point number to a :class:`~decimal.Decimal`.
-  This exact conversion strives for the
-  closest decimal approximation to the floating-point representation's value;
-  the resulting decimal value will therefore still include the inaccuracy,
-  if any.
-  For example, ``Decimal.from_float(0.1)`` returns
-  ``Decimal('0.1000000000000000055511151231257827021181583404541015625')``.
+* 新しいメソッド: :class:`~decimal.Decimal` クラスに、浮動小数点数から
+  :class:`~decimal.Decimal` への正確な変換を行う :meth:`~decimal.Decimal.from_float`
+  クラスメソッドが追加されました。
+  この正確な変換は、浮動小数点数が示す値に一番近い近似となる10進数を求めます。
+  なので、このメソッドを使ったとしてもある程度の誤差は残ります。
+  例えば、 ``Decimal.from_float(0.1)`` は
+  ``Decimal('0.1000000000000000055511151231257827021181583404541015625')``
+  を返します。
   (Implemented by Raymond Hettinger; :issue:`4796`.)
 
-  Comparing instances of :class:`~decimal.Decimal` with floating-point
-  numbers now produces sensible results based on the numeric values
-  of the operands.  Previously such comparisons would fall back to
-  Python's default rules for comparing objects, which produced arbitrary
-  results based on their type.  Note that you still cannot combine
-  :class:`Decimal` and floating-point in other operations such as addition,
-  since you should be explicitly choosing how to convert between float and
-  :class:`~decimal.Decimal`.  (Fixed by Mark Dickinson; :issue:`2531`.)
+  :class:`~decimal.Decimal` のインスタンスと浮動小数点数の比較は、
+  オペランドの値に応じた賢い結果を返すようになりました。
+  以前はこの比較は Python のデフォルトのオブジェクト比較にフォールバックし、
+  オペランドの型に応じて不定な結果が返されていました。
+  ただし、 :class:`Decimal` と浮動小数点数を加算などの他の演算で組み合わせることは
+  いまでも許可されていません。浮動小数点数と :class:`~decimal.Decimal` の間の
+  変換方法を明示的に指定するべきです。(Fixed by Mark Dickinson; :issue:`2531`.)
 
-  The constructor for :class:`~decimal.Decimal` now accepts
-  floating-point numbers (added by Raymond Hettinger; :issue:`8257`)
-  and non-European Unicode characters such as Arabic-Indic digits
+  :class:`~decimal.Decimal` のコンストラクタが浮動小数点数を受け入れるようになりました。
+  (added by Raymond Hettinger; :issue:`8257`)
+  また、アラビア・インド数字などの、ヨーロッパ以外の Unicode 文字も受け入れるようになりました。
   (contributed by Mark Dickinson; :issue:`6595`).
 
-  Most of the methods of the :class:`~decimal.Context` class now accept integers
-  as well as :class:`~decimal.Decimal` instances; the only exceptions are the
-  :meth:`~decimal.Context.canonical` and :meth:`~decimal.Context.is_canonical`
-  methods.  (Patch by Juan José Conti; :issue:`7633`.)
+  :class:`~decimal.Context` クラスのほとんどのメソッドが :class:`~decimal.Decimal`
+  インスタンスと同じく整数を受け入れるようになりました。
+  例外は :meth:`~decimal.Context.caonical` と :meth:`~decimal.Context.is_canonical`
+  メソッドだけです。 (Patch by Juan José Conti; :issue:`7633`.)
 
-  When using :class:`~decimal.Decimal` instances with a string's
-  :meth:`~str.format` method, the default alignment was previously
-  left-alignment.  This has been changed to right-alignment, which is
-  more sensible for numeric types.  (Changed by Mark Dickinson; :issue:`6857`.)
+  :class:`~decimal.Decimal` インスタンスを文字列の :meth:`~str.format`
+  メソッドで利用した場合、デフォルトのアライメントが左揃えから、数値型に
+  適した右揃えに変更されました。  (Changed by Mark Dickinson; :issue:`6857`.)
 
-  Comparisons involving a signaling NaN value (or ``sNAN``) now signal
-  :const:`InvalidOperation` instead of silently returning a true or
-  false value depending on the comparison operator.  Quiet NaN values
-  (or ``NaN``) are now hashable.  (Fixed by Mark Dickinson;
-  :issue:`7279`.)
+  signaling NaN (あるいは ``sNAN``) との比較は、暗黙に比較演算に応じて
+  真偽値を返すのではなく、 :const:`InvalidOperation` 例外を発生させる
+  ようになりました。 Quiet NaN (あるいは ``NAN``) はハッシュ可能になりました。
+  (Fixed by Mark Dickinson; :issue:`7279`.)
 
-* The :mod:`difflib` module now produces output that is more
-  compatible with modern :command:`diff`/:command:`patch` tools
-  through one small change, using a tab character instead of spaces as
-  a separator in the header giving the filename.  (Fixed by Anatoly
+* :mod:`difflib` モジュールの出力が、ファイル名を含むヘッダのセパレータに
+  スペースではなくタブ文字を使うようになり、最近の :command:`diff`/:command:`patch`
+  ツールとの互換性が高くなりました。(Fixed by Anatoly
   Techtonik; :issue:`7585`.)
 
-* The Distutils ``sdist`` command now always regenerates the
-  :file:`MANIFEST` file, since even if the :file:`MANIFEST.in` or
-  :file:`setup.py` files haven't been modified, the user might have
-  created some new files that should be included.
+* Distutils ``sdist`` コマンドが、 :file:`MANIFEST.in` や :file:`setup.py`
+  ファイルが変更されていなくても、ユーザーが作成したかもしれない新しい
+  ファイルが含まれるようにするために、毎回 :file:`MANIFEST` ファイルを再生成
+  するようになりました。
   (Fixed by Tarek Ziadé; :issue:`8688`.)
 
-* The :mod:`doctest` module's :const:`IGNORE_EXCEPTION_DETAIL` flag
-  will now ignore the name of the module containing the exception
-  being tested.  (Patch by Lennart Regebro; :issue:`7490`.)
+* :mod:`doctest` モジュールの :const:`IGNORE_EXCEPTION_DETAIL` フラグが、
+  テストされている例外を含むモジュールの名前を無視するようになりました。
+  (Patch by Lennart Regebro; :issue:`7490`.)
 
-* The :mod:`email` module's :class:`~email.message.Message` class will
-  now accept a Unicode-valued payload, automatically converting the
-  payload to the encoding specified by :attr:`output_charset`.
+* :mod:`email` モジュールの :class:`~email.message.Message` クラスが
+  Uniode値のペイロードを受け入れるようになり、自動的に :attr:`output_charset`
+  で指定されたエンコーディングに変換するようになりました。
   (Added by R. David Murray; :issue:`1368247`.)
 
-* The :class:`~fractions.Fraction` class now accepts a single float or
-  :class:`~decimal.Decimal` instance, or two rational numbers, as
-  arguments to its constructor.  (Implemented by Mark Dickinson;
+* :class:`~fractions.Fraction` クラスが、コンストラクタの引数として、
+  1つの float 値、 :class:`~decimal.Decimal` インスタンス、
+  2つの有理数を受け入れるようになりました。(Implemented by Mark Dickinson;
   rationals added in :issue:`5812`, and float/decimal in
   :issue:`8294`.)
 
-  Ordering comparisons (``<``, ``<=``, ``>``, ``>=``) between
-  fractions and complex numbers now raise a :exc:`TypeError`.
-  This fixes an oversight, making the :class:`~fractions.Fraction`
-  match the other numeric types.
+  fraction と complex 数の間の順序比較演算 (``<``, ``<=``, ``>``, ``>=``)
+  が :exc:`TypeError` 例外を発生させるようになりました。
+  これは過失を修正し、 :class:`~fractions.Fraction` を他の数値型と
+  マッチさせます。
+
 
   .. revision 79455
 
