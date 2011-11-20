@@ -1,8 +1,8 @@
-:mod:`logging.config` --- Logging configuration
-===============================================
+:mod:`logging.config` --- ロギングの環境設定
+============================================
 
 .. module:: logging.config
-   :synopsis: Configuration of the logging module.
+   :synopsis: logging モジュールの環境設定
 
 
 .. moduleauthor:: Vinay Sajip <vinay_sajip@red-dove.com>
@@ -10,185 +10,177 @@
 
 .. sidebar:: Important
 
-   This page contains only reference information. For tutorials,
-   please see
+   このページには、リファレンス情報だけが含まれています。
+   チュートリアルは、以下のページを参照してください
 
-   * :ref:`Basic Tutorial <logging-basic-tutorial>`
-   * :ref:`Advanced Tutorial <logging-advanced-tutorial>`
-   * :ref:`Logging Cookbook <logging-cookbook>`
+   * :ref:`基本チュートリアル <logging-basic-tutorial>`
+   * :ref:`上級チュートリアル <logging-advanced-tutorial>`
+   * :ref:`ロギングクックブック <logging-cookbook>`
 
-This section describes the API for configuring the logging module.
+この節は、 logging モジュールを設定するための API を解説します。
 
 .. _logging-config-api:
 
-Configuration functions
-^^^^^^^^^^^^^^^^^^^^^^^
+環境設定のための関数
+^^^^^^^^^^^^^^^^^^^^
 
-The following functions configure the logging module. They are located in the
-:mod:`logging.config` module.  Their use is optional --- you can configure the
-logging module using these functions or by making calls to the main API (defined
-in :mod:`logging` itself) and defining handlers which are declared either in
-:mod:`logging` or :mod:`logging.handlers`.
+以下の関数は logging モジュールの環境設定をします。
+これらの関数は、 :mod:`logging.config` にあります。
+これらの関数の使用はオプションです ---
+:mod:`logging` モジュールはこれらの関数を使うか、 (:mod:`logging` 自体で
+定義されている) 主要な API を呼び出し、:mod:`logging` か
+:mod:`logging.handlers` で宣言されているハンドラを定義することで設定できます。
 
 .. function:: dictConfig(config)
 
-    Takes the logging configuration from a dictionary.  The contents of
-    this dictionary are described in :ref:`logging-config-dictschema`
-    below.
+    辞書からロギング環境設定を取得します。この辞書の内容は、以下の
+    :ref:`logging-config-dictschema` で記述されています。
 
-    If an error is encountered during configuration, this function will
-    raise a :exc:`ValueError`, :exc:`TypeError`, :exc:`AttributeError`
-    or :exc:`ImportError` with a suitably descriptive message.  The
-    following is a (possibly incomplete) list of conditions which will
-    raise an error:
+    環境設定中にエラーに遭遇すると、この関数は適宜メッセージを記述しつつ
+    :exc:`ValueError`, :exc:`TypeError`, :exc:`AttributeError` または
+    :exc:`ImportError` を送出します。例外を送出する条件を (不完全かも
+    しれませんが) 以下に列挙します:
 
-    * A ``level`` which is not a string or which is a string not
-      corresponding to an actual logging level.
-    * A ``propagate`` value which is not a boolean.
-    * An id which does not have a corresponding destination.
-    * A non-existent handler id found during an incremental call.
-    * An invalid logger name.
-    * Inability to resolve to an internal or external object.
+    * 文字列でなかったり、実際のロギングレベルと関係ない文字列であったりする
+      ``level``
+    * ブール値でない ``propagate`` の値
+    * 対応する行き先を持たない id
+    * インクリメンタルな呼び出しの中で見つかった存在しないハンドラ id
+    * 無効なロガー名
+    * 内部や外部のオブジェクトに関わる不可能性
 
-    Parsing is performed by the :class:`DictConfigurator` class, whose
-    constructor is passed the dictionary used for configuration, and
-    has a :meth:`configure` method.  The :mod:`logging.config` module
-    has a callable attribute :attr:`dictConfigClass`
-    which is initially set to :class:`DictConfigurator`.
-    You can replace the value of :attr:`dictConfigClass` with a
-    suitable implementation of your own.
+    解析は :class:`DictConfigurator` クラスによって行われます。このクラスの
+    コンストラクタは環境設定に使われる辞書に渡され、このクラスは
+    :meth:`configure` メソッドを持ちます。 :mod:`logging.config` モジュールは、
+    呼び出し可能属性 :attr:`dictConfigClass` を持ち、これはまず
+    :class:`DictConfigurator` に設定されます。 :attr:`dictConfigClass` の値は
+    適切な独自の実装で置き換えられます。
 
-    :func:`dictConfig` calls :attr:`dictConfigClass` passing
-    the specified dictionary, and then calls the :meth:`configure` method on
-    the returned object to put the configuration into effect::
+    :func:`dictConfig` は :attr:`dictConfigClass` を、指定された辞書を渡して
+    呼び出し、それから返されたオブジェクトの :meth:`configure` メソッドを
+    呼び出して、環境設定を作用させます::
 
           def dictConfig(config):
               dictConfigClass(config).configure()
 
-    For example, a subclass of :class:`DictConfigurator` could call
-    ``DictConfigurator.__init__()`` in its own :meth:`__init__()`, then
-    set up custom prefixes which would be usable in the subsequent
-    :meth:`configure` call. :attr:`dictConfigClass` would be bound to
-    this new subclass, and then :func:`dictConfig` could be called exactly as
-    in the default, uncustomized state.
+    例えば、 :class:`DictConfigurator` のサブクラスは、自身の
+    :meth:`__init__()` で ``DictConfigurator.__init__()`` を呼び出し、それから
+    続く :meth:`configure` の呼び出しに使えるカスタムの接頭辞を設定できます。
+    :attr:`dictConfigClass` は、この新しいサブクラスに束縛され、そして
+    :func:`dictConfig` はちょうどデフォルトの、カスタマイズされていない状態の
+    ように呼び出せます。
 
    .. versionadded:: 2.7
 
 .. function:: fileConfig(fname, defaults=None, disable_existing_loggers=True)
 
-   Reads the logging configuration from a :mod:`configparser`\-format file
-   named *fname*. This function can be called several times from an
-   application, allowing an end user to select from various pre-canned
-   configurations (if the developer provides a mechanism to present the choices
-   and load the chosen configuration).
+   ログ記録の環境設定をファイル名 *fname* の :mod:`configparser` 形式ファイルから読み出します。
+   この関数はアプリケーションから何度も呼び出すことができ、これによって、
+   (設定を選択し、選択された設定を読み出す機構をデベロッパが提供していれば)
+   複数の準備済みの設定からエンドユーザが選択するようにできます。
+   
+   :param defaults: ConfigParser に渡すためのデフォルト値はこの引数で指定できます。
 
-   :param defaults: Defaults to be passed to the ConfigParser can be specified
-                    in this argument.
-
-   :param disable_existing_loggers: If specified as ``False``, loggers which
-                                    exist when this call is made are left
-                                    alone. The default is ``True`` because this
-                                    enables old behaviour in a backward-
-                                    compatible way. This behaviour is to
-                                    disable any existing loggers unless they or
-                                    their ancestors are explicitly named in the
-                                    logging configuration.
+   :param disable_existing_loggers: ``False`` に指定されると、この呼び出しが
+                                    なされたときに存在するロガーはそのままに
+                                    しておかれます。後方互換性を保って
+                                    古い動作を行えるように、
+                                    デフォルトは ``True`` です。
+                                    この動作は、すべての既存のロガーを、
+                                    ロギング環境設定でそれ自身かその祖先を
+                                    明示的に指名されない限り、無効にします。
 
    .. versionchanged:: 2.6
-      The ``disable_existing_loggers`` keyword argument was added. Previously,
-      existing loggers were *always* disabled.
+      ``disable_existing_loggers`` キーワード引数が追加されました。
+      以前は、既存のロガーは *必ず* 無効にされていました。
 
 .. function:: listen(port=DEFAULT_LOGGING_CONFIG_PORT)
 
-   Starts up a socket server on the specified port, and listens for new
-   configurations. If no port is specified, the module's default
-   :const:`DEFAULT_LOGGING_CONFIG_PORT` is used. Logging configurations will be
-   sent as a file suitable for processing by :func:`fileConfig`. Returns a
-   :class:`Thread` instance on which you can call :meth:`start` to start the
-   server, and which you can :meth:`join` when appropriate. To stop the server,
-   call :func:`stopListening`.
+   指定されたポートでソケットサーバを開始し、新たな設定を待ち受けます。
+   ポートが指定されなければ、モジュールのデフォルトの
+   :const:`DEFAULT_LOGGING_CONFIG_PORT` が使われます。
+   ログ記録の環境設定は :func:`fileConfig` で処理できるようなファイルとして送信されます。
+   :class:`Thread` インスタンスを返し、サーバを開始するために :meth:`start` を呼び、
+   適切な状況で :meth:`join` を呼び出すことができます。
+   サーバを停止するには :func:`stopListening` を呼んでください。
 
-   To send a configuration to the socket, read in the configuration file and
-   send it to the socket as a string of bytes preceded by a four-byte length
-   string packed in binary using ``struct.pack('>L', n)``.
+   ソケットに設定を送るには、まず設定ファイルを読み、それを
+   ``struct.pack('>L', n)`` を使って長さ 4 バイトのバイナリにパックしたものを
+   前に付けたバイト列としてソケットに送ります。
 
 
 .. function:: stopListening()
 
-   Stops the listening server which was created with a call to :func:`listen`.
-   This is typically called before calling :meth:`join` on the return value from
-   :func:`listen`.
+   :func:`listen` を呼び出して作成された、待ち受け中のサーバを停止します。
+   通常 :func:`listen` の戻り値に対して :meth:`join` が呼ばれる前に呼び出します。
 
 
 .. _logging-config-dictschema:
 
-Configuration dictionary schema
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+環境設定辞書スキーマ
+^^^^^^^^^^^^^^^^^^^^
 
-Describing a logging configuration requires listing the various
-objects to create and the connections between them; for example, you
-may create a handler named 'console' and then say that the logger
-named 'startup' will send its messages to the 'console' handler.
-These objects aren't limited to those provided by the :mod:`logging`
-module because you might write your own formatter or handler class.
-The parameters to these classes may also need to include external
-objects such as ``sys.stderr``.  The syntax for describing these
-objects and connections is defined in :ref:`logging-config-dict-connections`
-below.
+ロギング設定を記述するには、生成するさまざまなオブジェクトと、それらの
+つながりを列挙しなければなりません。例えば、 'console' という名前の
+ハンドラを生成し、'startup' という名前のロガーがメッセージを
+'console' ハンドラに送るというようなことを記述します。
+これらのオブジェクトは、 :mod:`logging` モジュールによって提供されるものに
+限らず、独自のフォーマッタやハンドラクラスを書くことも出来ます。
+このクラスへのパラメタは、 ``sys.stderr`` のような外部オブジェクトを
+必要とすることもあります。これらのオブジェクトとつながりを記述する構文は、
+以下の :ref:`logging-config-dict-connections` で定義されています。
 
-Dictionary Schema Details
-"""""""""""""""""""""""""
+辞書スキーマの詳細
+""""""""""""""""""
 
-The dictionary passed to :func:`dictConfig` must contain the following
-keys:
+:func:`dictConfig` に渡される辞書は、以下のキーを含んでいなければなりません:
 
-* *version* - to be set to an integer value representing the schema
-  version.  The only valid value at present is 1, but having this key
-  allows the schema to evolve while still preserving backwards
-  compatibility.
+* *version* - スキーマのバージョンを表す整数値に設定されます。
+  現在有効な値は 1 だけですが、このキーがあることで、
+  このスキーマは後方互換性を保ちながら発展できます。
 
-All other keys are optional, but if present they will be interpreted
-as described below.  In all cases below where a 'configuring dict' is
-mentioned, it will be checked for the special ``'()'`` key to see if a
-custom instantiation is required.  If so, the mechanism described in
-:ref:`logging-config-dict-userdef` below is used to create an instance;
-otherwise, the context is used to determine what to instantiate.
+その他すべてのキーは省略可能ですが、与えられたなら以下に記述するように
+解釈されます。以下のすべての場合において、
+'環境設定辞書' と記載されている所では、
+その辞書に特殊な ``'()'`` キーがあるかを調べることで、
+カスタムのインスタント化が必要であるか判断されます。
+その場合は、以下の :ref:`logging-config-dict-userdef` で記述されている
+機構がインスタンス生成に使われます。そうでなければ、インスタンス化する
+べきものを決定するのにコンテキストが使われます。
 
-* *formatters* - the corresponding value will be a dict in which each
-  key is a formatter id and each value is a dict describing how to
-  configure the corresponding Formatter instance.
 
-  The configuring dict is searched for keys ``format`` and ``datefmt``
-  (with defaults of ``None``) and these are used to construct a
-  :class:`logging.Formatter` instance.
+* *formatters* - 対応する値は辞書で、そのそれぞれのキーが
+  フォーマッタ id になり、それぞれの値が対応する Formatter インスタンスを
+  どのように環境設定するかを記述する辞書になります。
 
-* *filters* - the corresponding value will be a dict in which each key
-  is a filter id and each value is a dict describing how to configure
-  the corresponding Filter instance.
+  環境設定辞書は、(デフォルトが ``None`` の) キー ``format`` と ``datefmt`` を
+  検索され、それらが :class:`logging.Formatter` インスタンスを構成するのに
+  使われます。
 
-  The configuring dict is searched for the key ``name`` (defaulting to the
-  empty string) and this is used to construct a :class:`logging.Filter`
-  instance.
+* *filters* - 対応する値は辞書で、そのそれぞれのキーが
+  フィルタ id になり、それぞれの値が対応する Filter インスタンスを
+  どのように環境設定するかを記述する辞書になります。
 
-* *handlers* - the corresponding value will be a dict in which each
-  key is a handler id and each value is a dict describing how to
-  configure the corresponding Handler instance.
+  環境設定辞書は、(デフォルトが空文字列の) キー ``name`` を
+  検索され、それらが :class:`logging.Formatter` インスタンスを構成するのに
+  使われます。
 
-  The configuring dict is searched for the following keys:
+* *handlers* - 対応する値は辞書で、そのそれぞれのキーが
+  ハンドラ id になり、それぞれの値が対応する Handler インスタンスを
+  どのように環境設定するかを記述する辞書になります。
 
-  * ``class`` (mandatory).  This is the fully qualified name of the
-    handler class.
+  環境設定辞書は、以下のキーを検索されます。
 
-  * ``level`` (optional).  The level of the handler.
+  * ``class`` (必須)。これはハンドラクラスの完全に修飾された名前です。
 
-  * ``formatter`` (optional).  The id of the formatter for this
-    handler.
+  * ``level`` (任意)。ハンドラのレベルです。
 
-  * ``filters`` (optional).  A list of ids of the filters for this
-    handler.
+  * ``formatter`` (任意)。このハンドラへのフォーマッタの id です。
 
-  All *other* keys are passed through as keyword arguments to the
-  handler's constructor.  For example, given the snippet::
+  * ``filters`` (任意)。このハンドラへのフィルタの id のリストです。
+
+  その他の *すべての* キーは、ハンドラのコンストラクタにキーワード引数として
+  渡されます。例えば、以下のコード片が与えられたら::
 
       handlers:
         console:
@@ -204,100 +196,91 @@ otherwise, the context is used to determine what to instantiate.
           maxBytes: 1024
           backupCount: 3
 
-  the handler with id ``console`` is instantiated as a
-  :class:`logging.StreamHandler`, using ``sys.stdout`` as the underlying
-  stream.  The handler with id ``file`` is instantiated as a
-  :class:`logging.handlers.RotatingFileHandler` with the keyword arguments
-  ``filename='logconfig.log', maxBytes=1024, backupCount=3``.
+  id が ``console`` であるハンドラが、 ``sys.stdout`` を根底の
+  ストリームにして、 :class:`logging.StreamHandler` としてインスタンス化
+  されます。id が ``file`` であるハンドラが、
+  ``filename='logconfig.log', maxBytes=1024, backupCount=3``
+  をキーワード引数にして、 :class:`logging.handlers.RotatingFileHandler`
+  としてインスタンス化されます。
 
-* *loggers* - the corresponding value will be a dict in which each key
-  is a logger name and each value is a dict describing how to
-  configure the corresponding Logger instance.
+* *loggers* - 対応する値は辞書で、そのそれぞれのキーが
+  ロガー名になり、それぞれの値が対応する Logger インスタンスを
+  どのように環境設定するかを記述する辞書になります。
 
-  The configuring dict is searched for the following keys:
+  環境設定辞書は、以下のキーを検索されます。
 
-  * ``level`` (optional).  The level of the logger.
+  * ``level`` (任意)。ロガーのレベルです。
 
-  * ``propagate`` (optional).  The propagation setting of the logger.
+  * ``propagate`` (任意)。ロガーの伝播の設定です。
 
-  * ``filters`` (optional).  A list of ids of the filters for this
-    logger.
+  * ``filters`` (任意)。このロガーへのフィルタの id のリストです。
 
-  * ``handlers`` (optional).  A list of ids of the handlers for this
-    logger.
+  * ``filters`` (任意)。このロガーへのハンドラの id のリストです。
 
-  The specified loggers will be configured according to the level,
-  propagation, filters and handlers specified.
+  指定されたロガーは、指定されたレベル、伝播、ハンドラに従って環境設定されます。
 
-* *root* - this will be the configuration for the root logger.
-  Processing of the configuration will be as for any logger, except
-  that the ``propagate`` setting will not be applicable.
+* *root* - これは、ルートロガーへの設定になります。
+  この環境設定の進行は、 ``propagate`` 設定が適用されないことを除き、
+  他のロガーと同じです。
 
-* *incremental* - whether the configuration is to be interpreted as
-  incremental to the existing configuration.  This value defaults to
-  ``False``, which means that the specified configuration replaces the
-  existing configuration with the same semantics as used by the
-  existing :func:`fileConfig` API.
+* *incremental* - この環境設定が既存の環境設定に対する増分として
+  解釈されるかどうかです。この値のデフォルトは ``False`` で、
+  指定された環境設定は、既存の :func:`fileConfig` API
+  によって使われているのと同じ意味上で、既存の環境設定を置き換えます。
 
-  If the specified value is ``True``, the configuration is processed
-  as described in the section on :ref:`logging-config-dict-incremental`.
+  指定された値が ``True`` なら、環境設定は 
+  :ref:`logging-config-dict-incremental` の節で記述されているように進行します。
 
-* *disable_existing_loggers* - whether any existing loggers are to be
-  disabled. This setting mirrors the parameter of the same name in
-  :func:`fileConfig`. If absent, this parameter defaults to ``True``.
-  This value is ignored if *incremental* is ``True``.
+  *disable_existing_loggers* - 既存のロガーをすべて無効にするべきかどうかです。
+  この設定は、 :func:`fileConfig` における同じ名前のパラメタと同じです。
+  設定されていなければ、このパラメタのデフォルトは ``True`` です。
+  この値は、 *incremental* が ``True`` なら無視されます。
 
 .. _logging-config-dict-incremental:
 
-Incremental Configuration
-"""""""""""""""""""""""""
+増分設定
+""""""""
 
-It is difficult to provide complete flexibility for incremental
-configuration.  For example, because objects such as filters
-and formatters are anonymous, once a configuration is set up, it is
-not possible to refer to such anonymous objects when augmenting a
-configuration.
+増分設定に完全な柔軟性を提供するのは難しいです。例えば、フィルタや
+フォーマッタのようなオブジェクトは匿名なので、一旦環境設定がなされると、
+設定を拡張するときにそのような匿名オブジェクトを参照することができません。
 
-Furthermore, there is not a compelling case for arbitrarily altering
-the object graph of loggers, handlers, filters, formatters at
-run-time, once a configuration is set up; the verbosity of loggers and
-handlers can be controlled just by setting levels (and, in the case of
-loggers, propagation flags).  Changing the object graph arbitrarily in
-a safe way is problematic in a multi-threaded environment; while not
-impossible, the benefits are not worth the complexity it adds to the
-implementation.
+さらに、一旦環境設定がなされた後、実行時にロガー、ハンドラ、フィルタ、
+フォーマッタのオブジェクトグラフを任意に変えなければならない例もありません。
+ロガーとハンドラの冗長性は、レベル (または、ロガーの場合には、伝播フラグ) を
+設定することによってのみ制御できます。安全な方法でオブジェクトグラフを
+任意に変えることは、マルチスレッド環境で問題となります。
+不可能ではないですが、その効用は実装に加えられる複雑さに見合いません。
 
-Thus, when the ``incremental`` key of a configuration dict is present
-and is ``True``, the system will completely ignore any ``formatters`` and
-``filters`` entries, and process only the ``level``
-settings in the ``handlers`` entries, and the ``level`` and
-``propagate`` settings in the ``loggers`` and ``root`` entries.
+従って、環境設定辞書の ``incremental`` キーが与えられ、これが ``True``
+であるとき、システムは ``formatters`` と ``filters`` の項目を完全に無視し、
+``handlers`` の項目の ``level`` 設定と、 ``loggers`` と ``root`` の項目の
+``level`` と ``propagate`` 設定のみを処理します。
 
-Using a value in the configuration dict lets configurations to be sent
-over the wire as pickled dicts to a socket listener. Thus, the logging
-verbosity of a long-running application can be altered over time with
-no need to stop and restart the application.
+環境設定辞書の値を使うことで、設定は pickle 化された辞書としてソケットリスナ
+にワイヤを通して送ることができます。従って、時間のかかるアプリケーションの
+ロギングの冗長性は、アプリケーションを止めて再起動する必要がない時間に
+変えることができます。
 
 .. _logging-config-dict-connections:
 
-Object connections
+オブジェクトの接続
 """"""""""""""""""
 
-The schema describes a set of logging objects - loggers,
-handlers, formatters, filters - which are connected to each other in
-an object graph.  Thus, the schema needs to represent connections
-between the objects.  For example, say that, once configured, a
-particular logger has attached to it a particular handler.  For the
-purposes of this discussion, we can say that the logger represents the
-source, and the handler the destination, of a connection between the
-two.  Of course in the configured objects this is represented by the
-logger holding a reference to the handler.  In the configuration dict,
-this is done by giving each destination object an id which identifies
-it unambiguously, and then using the id in the source object's
-configuration to indicate that a connection exists between the source
-and the destination object with that id.
+このスキーマは、ロギングオブジェクトの一揃い - ロガー、ハンドラ、フォーマッタ、
+フィルタ - について記述します。
+これらは、オブジェクトグラフ上でお互い接続されます。
+従って、このスキーマは、オブジェクト間の接続を表現しなければなりません。
+例えば、環境設定で、特定のロガーが特定のハンドラに
+取り付けられたとします。この議論では、ロガーとハンドラが、これら 2 つの接続の
+それぞれ送信元と送信先であるといえます。
+もちろん、この設定オブジェクト中では、これはハンドラへの参照を保持している
+ロガーで表されます。設定辞書中で、これは次のようになされます。
+まず、送信先オブジェクトを曖昧さなく指定する id を与えます。そして、
+その id を送信元オブジェクトの環境設定で使い、送信元とその id をもつ
+送信先が接続されていることを示します。
 
-So, for example, consider the following YAML snippet::
+ですから、例えば、以下の YAML のコード片を例にとると::
 
     formatters:
       brief:
@@ -316,45 +299,42 @@ So, for example, consider the following YAML snippet::
         # other configuration for logger 'foo.bar.baz'
         handlers: [h1, h2]
 
-(Note: YAML used here because it's a little more readable than the
-equivalent Python source form for the dictionary.)
+(注釈: YAML がここで使われているのは、辞書の等価な Python 形式よりも
+こちらのほうが少し読みやすいからです。)
 
-The ids for loggers are the logger names which would be used
-programmatically to obtain a reference to those loggers, e.g.
-``foo.bar.baz``.  The ids for Formatters and Filters can be any string
-value (such as ``brief``, ``precise`` above) and they are transient,
-in that they are only meaningful for processing the configuration
-dictionary and used to determine connections between objects, and are
-not persisted anywhere when the configuration call is complete.
+ロガーの id は、プログラム上でロガーへの参照を得るために使われるロガー名で、
+たとえば ``foo.bar.baz`` です。フォーマッタとフィルタの id は、
+(上の ``brief``, ``precise`` のような) 任意の文字列値にできます。
+これらは一時的なもので、環境設定辞書の処理にのみ意味があり、
+オブジェクト間の接続を決定するのに使われます。
+また、これらは設定の呼び出しが完了したとき、どこにも残りません。
 
-The above snippet indicates that logger named ``foo.bar.baz`` should
-have two handlers attached to it, which are described by the handler
-ids ``h1`` and ``h2``. The formatter for ``h1`` is that described by id
-``brief``, and the formatter for ``h2`` is that described by id
-``precise``.
+上記のコード片は、 ``foo.bar.baz``  というの名ロガーに、ハンドラ id ``h1`` と
+``h2`` で表される 2 つのハンドラを接続することを示します。
+``h1`` のフォーマッタは id ``brief`` で記述されるもので、
+``h2`` のフォーマッタは id ``precise`` で記述されるものです。
 
 
 .. _logging-config-dict-userdef:
 
-User-defined objects
-""""""""""""""""""""
+ユーザ定義オブジェクト
+""""""""""""""""""""""
 
-The schema supports user-defined objects for handlers, filters and
-formatters.  (Loggers do not need to have different types for
-different instances, so there is no support in this configuration
-schema for user-defined logger classes.)
+このスキーマは、ハンドラ、フィルタ、フォーマッタのための、
+ユーザ定義オブジェクトをサポートします。
+(ロガーは、異なるインスタンスに対して異なる型を持つ必要はないので、
+この環境設定スキーマは、ユーザ定義ロガークラスをサポートしていません。)
 
-Objects to be configured are described by dictionaries
-which detail their configuration.  In some places, the logging system
-will be able to infer from the context how an object is to be
-instantiated, but when a user-defined object is to be instantiated,
-the system will not know how to do this.  In order to provide complete
-flexibility for user-defined object instantiation, the user needs
-to provide a 'factory' - a callable which is called with a
-configuration dictionary and which returns the instantiated object.
-This is signalled by an absolute import path to the factory being
-made available under the special key ``'()'``.  Here's a concrete
-example::
+設定されるオブジェクトは、それらの設定を詳述する辞書によって記述されます。
+場所によっては、あるオブジェクトがどのようにインスタンス化されるかという
+コンテキストを、ロギングシステムが推測できます。しかし、ユーザ定義オブジェクトが
+インスタンス化されるとき、システムはどのようにこれを行うかを知りません。
+ユーザ定義オブジェクトのインスタンス化を完全に柔軟なものにするため、
+ユーザは 'ファクトリ' - 設定辞書を引数として呼ばれ、インスタンス化された
+オブジェクトを返す呼び出し可能オブジェクト - を提供する必要があります。
+これは特殊キー ``'()'`` で利用できる、
+ファクトリへの絶対インポートパスによって合図されます。
+ここに具体的な例を挙げます::
 
     formatters:
       brief:
@@ -368,30 +348,29 @@ example::
           spam: 99.9
           answer: 42
 
-The above YAML snippet defines three formatters.  The first, with id
-``brief``, is a standard :class:`logging.Formatter` instance with the
-specified format string.  The second, with id ``default``, has a
-longer format and also defines the time format explicitly, and will
-result in a :class:`logging.Formatter` initialized with those two format
-strings.  Shown in Python source form, the ``brief`` and ``default``
-formatters have configuration sub-dictionaries::
+上記の YAML コード片は 3 つのフォーマッタを定義します。
+1 つ目は、id が ``brief`` で、指定されたフォーマット文字列をもつ、
+標準 :class:`logging.Formatter` インスタンスです。
+2 つ目は、id が ``default`` で、長いフォーマットを持ち、時間フォーマットも
+定義していて、結果はその 2 つのフォーマット文字列で初期化された
+:class:`logging.Formatter` になります。Python ソース形式で見ると、
+``brief`` と ``default`` フォーマッタは、それぞれ設定の部分辞書::
 
     {
       'format' : '%(message)s'
     }
 
-and::
+と::
 
     {
       'format' : '%(asctime)s %(levelname)-8s %(name)-15s %(message)s',
       'datefmt' : '%Y-%m-%d %H:%M:%S'
     }
 
-respectively, and as these dictionaries do not contain the special key
-``'()'``, the instantiation is inferred from the context: as a result,
-standard :class:`logging.Formatter` instances are created.  The
-configuration sub-dictionary for the third formatter, with id
-``custom``, is::
+を持ち、これらの辞書が特殊キー ``'()'`` を持たないので、インスタンス化は
+コンテキストから推測され、結果として標準の :class:`logging.Formatter`
+インスタンスが生成されます。id が ``custom`` である、3 つ目の
+フォーマッタの設定をする部分辞書は::
 
   {
     '()' : 'my.package.customFormatterFactory',
@@ -400,75 +379,69 @@ configuration sub-dictionary for the third formatter, with id
     'answer' : 42
   }
 
-and this contains the special key ``'()'``, which means that
-user-defined instantiation is wanted.  In this case, the specified
-factory callable will be used. If it is an actual callable it will be
-used directly - otherwise, if you specify a string (as in the example)
-the actual callable will be located using normal import mechanisms.
-The callable will be called with the **remaining** items in the
-configuration sub-dictionary as keyword arguments.  In the above
-example, the formatter with id ``custom`` will be assumed to be
-returned by the call::
+で、ユーザ定義のインスタンス化が望まれることを示す特殊キー ``'()'`` を
+含みます。この場合、指定された呼び出し可能ファクトリオブジェクトが使われます。
+これが実際の呼び出し可能オブジェクトであれば、それが直接使われます -
+そうではなく、(この例でのように) 文字列を指定したなら、実際の
+呼び出し可能オブジェクトは、通常のインポート機構を使って検索されます。
+その呼び出し可能オブジェクトは、環境設定の部分辞書の、 **残りの** 要素を
+キーワード引数として呼ばれます。上記の例では、id が ``custom`` のフォーマッタ
+は、以下の呼び出しによって返されるものとみなされます::
 
     my.package.customFormatterFactory(bar='baz', spam=99.9, answer=42)
 
-The key ``'()'`` has been used as the special key because it is not a
-valid keyword parameter name, and so will not clash with the names of
-the keyword arguments used in the call.  The ``'()'`` also serves as a
-mnemonic that the corresponding value is a callable.
+キー ``'()'`` が特殊キーとして使われるのは、キーワードパラメタ名として不正で、
+呼び出しに使われるキーワード引数と衝突し得ないからです。
+``'()'`` はまた、対応する値が呼び出し可能オブジェクトであると覚えやすくします。
 
 
 .. _logging-config-dict-externalobj:
 
-Access to external objects
-""""""""""""""""""""""""""
+外部オブジェクトへのアクセス
+""""""""""""""""""""""""""""
 
-There are times where a configuration needs to refer to objects
-external to the configuration, for example ``sys.stderr``.  If the
-configuration dict is constructed using Python code, this is
-straightforward, but a problem arises when the configuration is
-provided via a text file (e.g. JSON, YAML).  In a text file, there is
-no standard way to distinguish ``sys.stderr`` from the literal string
-``'sys.stderr'``.  To facilitate this distinction, the configuration
-system looks for certain special prefixes in string values and
-treat them specially.  For example, if the literal string
-``'ext://sys.stderr'`` is provided as a value in the configuration,
-then the ``ext://`` will be stripped off and the remainder of the
-value processed using normal import mechanisms.
+環境設定が、例えば ``sys.stderr`` のような、設定の外部のオブジェクトへの
+参照を必要とすることがあります。
+設定辞書が Python コードで構成されていれば話は簡単ですが、
+これがテキストファイル (JSON, YAML 等) を通して提供されていると問題となります。
+テキストファイルでは、 ``sys.stderr`` をリテラル文字列 ``'sys.stderr'`` と
+区別する標準の方法がありません。この区別を容易にするため、環境設定システムは、
+文字列中の特定の特殊接頭辞を見つけ、それらを特殊に扱います。
+例えば、リテラル文字列 ``'ext://sys.stderr'`` が設定中の値として与えられたら、
+この ``ext://`` は剥ぎ取られ、この値の残りが普通のインポート機構で処理されます。
 
-The handling of such prefixes is done in a way analogous to protocol
-handling: there is a generic mechanism to look for prefixes which
-match the regular expression ``^(?P<prefix>[a-z]+)://(?P<suffix>.*)$``
-whereby, if the ``prefix`` is recognised, the ``suffix`` is processed
-in a prefix-dependent manner and the result of the processing replaces
-the string value.  If the prefix is not recognised, then the string
-value will be left as-is.
+このような接頭辞の処理は、プロトコルの処理と同じようになされます。
+どちらの機構も、正規表現 ``^(?P<prefix>[a-z]+)://(?P<suffix>.*)$`` に
+マッチする接頭辞を検索し、それによって ``prefix`` が認識されたなら、
+接頭辞に応じたやり方で ``suffix`` が処理され、その処理の結果によって
+文字列値が置き換えられます。接頭辞が認識されなければ、その文字列値は
+そのまま残されます。
 
 
 .. _logging-config-dict-internalobj:
 
-Access to internal objects
-""""""""""""""""""""""""""
+内部オブジェクトへのアクセス
+""""""""""""""""""""""""""""
 
-As well as external objects, there is sometimes also a need to refer
-to objects in the configuration.  This will be done implicitly by the
-configuration system for things that it knows about.  For example, the
-string value ``'DEBUG'`` for a ``level`` in a logger or handler will
-automatically be converted to the value ``logging.DEBUG``, and the
-``handlers``, ``filters`` and ``formatter`` entries will take an
-object id and resolve to the appropriate destination object.
+外部オブジェクトと同様、環境設定内部のオブジェクトへのアクセスを
+必要とすることもあります。これは、その各オブジェクトを司る環境設定システムに
+よって暗黙に行われます。
+例えば、ロガーやハンドラの ``level`` に対する文字列値 ``'DEBUG'`` は、
+自動的に値 ``logging.DEBUG`` に変換されますし、
+``handlers``, ``filters`` および ``formatter`` の項目は、
+オブジェクト id を取って、適切な送信先オブジェクトを決定します。
 
-However, a more generic mechanism is needed for user-defined
-objects which are not known to the :mod:`logging` module.  For
-example, consider :class:`logging.handlers.MemoryHandler`, which takes
-a ``target`` argument which is another handler to delegate to. Since
-the system already knows about this class, then in the configuration,
-the given ``target`` just needs to be the object id of the relevant
-target handler, and the system will resolve to the handler from the
-id.  If, however, a user defines a ``my.package.MyHandler`` which has
-an ``alternate`` handler, the configuration system would not know that
-the ``alternate`` referred to a handler.  To cater for this, a generic
-resolution system allows the user to specify::
+しかし、ユーザ定義モジュールには、 :mod:`logging` モジュールには
+分からないような、より一般的な機構が必要です。
+例えば、 :class:`logging.handlers.MemoryHandler` があって、
+委譲する先の別のハンドラである ``target`` 引数を取るとします。
+システムはこのクラスをすでに知っていますから、設定中で、
+与えられた ``target`` は関連するターゲットハンドラのオブジェクト id でさえ
+あればよく、システムはその id からハンドラを決定します。
+しかし、ユーザが ``my.package.MyHandler`` を定義して、それが ``alternate``
+ハンドラを持つなら、設定システムは ``alternate`` がハンドラを参照していることを
+知りません。これを知らせるのに、一般的な解析システムで、ユーザはこのように
+指定できます::
 
     handlers:
       file:
@@ -478,11 +451,12 @@ resolution system allows the user to specify::
         (): my.package.MyHandler
         alternate: cfg://handlers.file
 
-The literal string ``'cfg://handlers.file'`` will be resolved in an
-analogous way to strings with the ``ext://`` prefix, but looking
-in the configuration itself rather than the import namespace.  The
-mechanism allows access by dot or by index, in a similar way to
-that provided by ``str.format``.  Thus, given the following snippet::
+リテラル文字列 ``'cfg://handlers.file'`` は、 ``ext://`` 接頭辞が
+付いた文字列と同じように分析されますが、インポート名前空間ではなく、
+環境設定自体が検索されます。この機構は ``str.format`` でできるのと同じように
+ドットやインデクスのアクセスができます。従って、環境設定において
+以下のコード片が与えられれば::
+
 
     handlers:
       email:
@@ -494,47 +468,42 @@ that provided by ``str.format``.  Thus, given the following snippet::
           - dev_team@domain.tld
         subject: Houston, we have a problem.
 
-in the configuration, the string ``'cfg://handlers'`` would resolve to
-the dict with key ``handlers``, the string ``'cfg://handlers.email``
-would resolve to the dict with key ``email`` in the ``handlers`` dict,
-and so on.  The string ``'cfg://handlers.email.toaddrs[1]`` would
-resolve to ``'dev_team.domain.tld'`` and the string
-``'cfg://handlers.email.toaddrs[0]'`` would resolve to the value
-``'support_team@domain.tld'``. The ``subject`` value could be accessed
-using either ``'cfg://handlers.email.subject'`` or, equivalently,
-``'cfg://handlers.email[subject]'``.  The latter form only needs to be
-used if the key contains spaces or non-alphanumeric characters.  If an
-index value consists only of decimal digits, access will be attempted
-using the corresponding integer value, falling back to the string
-value if needed.
+文字列 ``'cfg://handlers'`` は、キー ``handlers`` をもつ辞書であると
+分析され、文字列 ``'cfg://handlers.email'`` は、 ``handlers`` 辞書内の、
+``email`` キーをもつ辞書であると分析されます。文字列 
+``'cfg://handlers.email.toaddrs[1]`` は、 ``'dev_team@domain.tld'`` と
+分析され、 ``'cfg://handlers.email.toaddrs[0]'`` は値
+``'support_team@domain.tld'`` と分析されます。 ``subject`` の値には、
+``'cfg://handlers.email.subject'`` または等価な
+``'cfg://handlers.email[subject]'`` でアクセスできます。
+後者が必要なのは、キーがスペースや非アルファベット文字を含むときのみです。
+インデクス値が十進数時のみで成り立っているなら、まず対応する整数値を使って
+アクセスが試みられ、必要なら文字列値で代替します。
 
-Given a string ``cfg://handlers.myhandler.mykey.123``, this will
-resolve to ``config_dict['handlers']['myhandler']['mykey']['123']``.
-If the string is specified as ``cfg://handlers.myhandler.mykey[123]``,
-the system will attempt to retrieve the value from
-``config_dict['handlers']['myhandler']['mykey'][123]``, and fall back
-to ``config_dict['handlers']['myhandler']['mykey']['123']`` if that
-fails.
+文字列 ``cfg://handlers.myhandler.mykey.123`` が与えられると、これは
+``config_dict['handlers']['myhandler']['mykey']['123']`` と分析されます。
+文字列が ``cfg://handlers.myhandler.mykey[123]`` と指定されたら、
+システムは ``config_dict['handlers']['myhandler']['mykey'][123]`` から
+値を引き出そうとし、失敗したら
+``config_dict['handlers']['myhandler']['mykey']['123']`` で代替します。
 
 .. _logging-config-fileformat:
 
-Configuration file format
-^^^^^^^^^^^^^^^^^^^^^^^^^
+環境設定ファイルの書式
+^^^^^^^^^^^^^^^^^^^^^^
 
-The configuration file format understood by :func:`fileConfig` is based on
-:mod:`configparser` functionality. The file must contain sections called
-``[loggers]``, ``[handlers]`` and ``[formatters]`` which identify by name the
-entities of each type which are defined in the file. For each such entity, there
-is a separate section which identifies how that entity is configured.  Thus, for
-a logger named ``log01`` in the ``[loggers]`` section, the relevant
-configuration details are held in a section ``[logger_log01]``. Similarly, a
-handler called ``hand01`` in the ``[handlers]`` section will have its
-configuration held in a section called ``[handler_hand01]``, while a formatter
-called ``form01`` in the ``[formatters]`` section will have its configuration
-specified in a section called ``[formatter_form01]``. The root logger
-configuration must be specified in a section called ``[logger_root]``.
+:func:`fileConfig` が解釈できる環境設定ファイルの形式は、 :mod:`ConfigParser` の機能に基づいています。
+ファイルには、 ``[loggers]``, ``[handlers]``, ``[formatters]`` といったセクションが入っていなければならず、
+各セクションではファイル中で定義されている各タイプのエンティティを名前で指定しています。こうしたエンティティの各々について、
+そのエンティティをどう設定するかを示した個別のセクションがあります。
+すなわち、 ``log01`` という名前の ``[loggers]`` セクションにあるロガーに対しては、
+対応する詳細設定がセクション ``[logger_log01]`` に収められています。
+同様に、 ``hand01`` という名前の ``[handlers]`` セクションにあるハンドラは
+``[handler_hand01]`` と呼ばれるセクションに設定をもつことになり、
+``[formatters]``  セクションにある ``form01`` は ``[formatter_form01]`` というセクションで設定が指定されています。
+ルートロガーの設定は ``[logger_root]`` と呼ばれるセクションで指定されていなければなりません。
 
-Examples of these sections in the file are given below. ::
+ファイルにおけるこれらのセクションの例を以下に示します::
 
    [loggers]
    keys=root,log02,log03,log04,log05,log06,log07
@@ -545,25 +514,22 @@ Examples of these sections in the file are given below. ::
    [formatters]
    keys=form01,form02,form03,form04,form05,form06,form07,form08,form09
 
-The root logger must specify a level and a list of handlers. An example of a
-root logger section is given below. ::
+ルートロガーでは、レベルとハンドラのリストを指定しなければなりません。
+ルートロガーのセクションの例を以下に示します::
 
    [logger_root]
    level=NOTSET
    handlers=hand01
 
-The ``level`` entry can be one of ``DEBUG, INFO, WARNING, ERROR, CRITICAL`` or
-``NOTSET``. For the root logger only, ``NOTSET`` means that all messages will be
-logged. Level values are :func:`eval`\ uated in the context of the ``logging``
-package's namespace.
+``level`` エントリは ``DEBUG, INFO, WARNING, ERROR, CRITICAL`` のうちの一つか、 ``NOTSET`` になります。
+ルートロガーの場合にのみ、 ``NOTSET`` はすべてのメッセージがログ記録されることを意味します。
+レベル値は ``logging`` パッケージの名前空間のコンテキストにおいて :func:`eval` されます。
 
-The ``handlers`` entry is a comma-separated list of handler names, which must
-appear in the ``[handlers]`` section. These names must appear in the
-``[handlers]`` section and have corresponding sections in the configuration
-file.
+``handlers`` エントリはコンマで区切られたハンドラ名からなるリストで、 ``[handlers]`` セクションになくてはなりません。
+また、これらの各ハンドラの名前に対応するセクションが設定ファイルに存在しなければなりません。
 
-For loggers other than the root logger, some additional information is required.
-This is illustrated by the following example. ::
+ルートロガー以外のロガーでは、いくつか追加の情報が必要になります。
+これは以下の例のように表されます::
 
    [logger_parser]
    level=DEBUG
@@ -571,17 +537,15 @@ This is illustrated by the following example. ::
    propagate=1
    qualname=compiler.parser
 
-The ``level`` and ``handlers`` entries are interpreted as for the root logger,
-except that if a non-root logger's level is specified as ``NOTSET``, the system
-consults loggers higher up the hierarchy to determine the effective level of the
-logger. The ``propagate`` entry is set to 1 to indicate that messages must
-propagate to handlers higher up the logger hierarchy from this logger, or 0 to
-indicate that messages are **not** propagated to handlers up the hierarchy. The
-``qualname`` entry is the hierarchical channel name of the logger, that is to
-say the name used by the application to get the logger.
+``level`` および ``handlers`` エントリはルートロガーのエントリと同様に解釈されますが、
+非ルートロガーのレベルが ``NOTSET`` に指定された場合、
+ロギングシステムはロガー階層のより上位のロガーにロガーの実効レベルを問い合わせるところが違います。
+``propagate`` エントリは、メッセージをロガー階層におけるこのロガーの上位のハンドラに伝播させることを示す 1 に設定されるか、
+メッセージを階層の上位に伝播 **しない** ことを示す 0 に設定されます。
+``qualname`` エントリはロガーのチャネル名を階層的に表したもの、
+すなわちアプリケーションがこのロガーを取得する際に使う名前になります。
 
-Sections which specify handler configuration are exemplified by the following.
-::
+ハンドラの環境設定を指定しているセクションは以下の例のようになります::
 
    [handler_hand01]
    class=StreamHandler
@@ -589,23 +553,21 @@ Sections which specify handler configuration are exemplified by the following.
    formatter=form01
    args=(sys.stdout,)
 
-The ``class`` entry indicates the handler's class (as determined by :func:`eval`
-in the ``logging`` package's namespace). The ``level`` is interpreted as for
-loggers, and ``NOTSET`` is taken to mean 'log everything'.
+``class`` エントリはハンドラのクラス (``logging`` パッケージの名前空間において :func:`eval` で決定されます) を示します。
+``level`` はロガーの場合と同じように解釈され、 ``NOTSET``  は "すべてを記録する (log everything)" と解釈されます。
 
 .. versionchanged:: 2.6
-   Added support for resolving the handler’s class as a dotted module and
-   class name.
+   ハンドラクラスのドット区切りモジュールおよびクラス名としての解決のサポートが追加された。
 
-The ``formatter`` entry indicates the key name of the formatter for this
-handler. If blank, a default formatter (``logging._defaultFormatter``) is used.
-If a name is specified, it must appear in the ``[formatters]`` section and have
-a corresponding section in the configuration file.
+``formatter`` エントリはこのハンドラのフォーマッタに対するキー名を表します。
+空文字列の場合、デフォルトのフォーマッタ (``logging._defaultFormatter``) が使われます。
+名前が指定されている場合、その名前は ``[formatters]`` セクションになくてはならず、
+対応するセクションが設定ファイル中になければなりません。
 
-The ``args`` entry, when :func:`eval`\ uated in the context of the ``logging``
-package's namespace, is the list of arguments to the constructor for the handler
-class. Refer to the constructors for the relevant handlers, or to the examples
-below, to see how typical entries are constructed. ::
+``args`` エントリは、 ``logging`` パッケージの名前空間のコンテキストで :func:`eval` される際、
+ハンドラクラスのコンストラクタに対する引数からなるリストになります。
+典型的なエントリがどうやって作成されるかについては、
+対応するハンドラのコンストラクタか、以下の例を参照してください::
 
    [handler_hand02]
    class=FileHandler
@@ -656,32 +618,30 @@ below, to see how typical entries are constructed. ::
    formatter=form09
    args=('localhost:9022', '/log', 'GET')
 
-Sections which specify formatter configuration are typified by the following. ::
+フォーマッタの環境設定を指定しているセクションは以下のような形式です::
 
    [formatter_form01]
    format=F1 %(asctime)s %(levelname)s %(message)s
    datefmt=
    class=logging.Formatter
 
-The ``format`` entry is the overall format string, and the ``datefmt`` entry is
-the :func:`strftime`\ -compatible date/time format string.  If empty, the
-package substitutes ISO8601 format date/times, which is almost equivalent to
-specifying the date format string ``'%Y-%m-%d %H:%M:%S'``.  The ISO8601 format
-also specifies milliseconds, which are appended to the result of using the above
-format string, with a comma separator.  An example time in ISO8601 format is
-``2003-01-23 00:29:50,411``.
+``format`` エントリは全体を書式化する文字列で、 ``datefmt`` エントリは :func:`strftime` 互換の日付/時刻書式化文字列です。
+空文字列の場合、パッケージによって ISO8601 形式の日付/時刻に置き換えられ、
+日付書式化文字列 ``"%Y-%m-%d %H:%M:%S"`` を指定した場合とほとんど同じになります。
+ISO8601 形式ではミリ秒も指定しており、上の書式化文字列の結果にカンマで区切って追加されます。
+ISO8601 形式の時刻の例は ``2003-01-23 00:29:50,411`` です。
 
-The ``class`` entry is optional.  It indicates the name of the formatter's class
-(as a dotted module and class name.)  This option is useful for instantiating a
-:class:`Formatter` subclass.  Subclasses of :class:`Formatter` can present
-exception tracebacks in an expanded or condensed format.
+``class`` エントリはオプションです。
+``class`` はフォーマッタのクラス名 (ドット区切りのモジュールとクラス名として) を示します。
+このオプションは :class:`Formatter` のサブクラスをインスタンス化するのに有用です。
+:class:`Formatter` のサブクラスは例外トレースバックを展開された形式または圧縮された形式で表現することができます。
 
 .. seealso::
 
-   Module :mod:`logging`
-      API reference for the logging module.
+   モジュール :mod:`logging`
+      logging モジュールの API リファレンス。
 
    Module :mod:`logging.handlers`
-      Useful handlers included with the logging module.
+      logging モジュールに含まれる便利なハンドラ。
 
 
