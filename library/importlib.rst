@@ -1,4 +1,4 @@
-:mod:`importlib` -- Convenience wrappers for :func:`__import__`
+:mod:`importlib` -- :func:`__import__` の便利なラッパー
 ===============================================================
 
 .. module:: importlib
@@ -9,19 +9,17 @@
 
 .. versionadded:: 2.7
 
-This module is a minor subset of what is available in the more full-featured
-package of the same name from Python 3.1 that provides a complete
-implementation of :keyword:`import`. What is here has been provided to
-help ease in transitioning from 2.7 to 3.1.
+このモジュールは、 Python 3.1 にある :keyword:`import` の完全な実装を提供している
+同じ名前のパッケージの小さなサブセットです。
+このモジュールが提供しているものは、 2.7 から 3.1 への移行をしやすくするための
+ものです。
 
 
 .. function:: import_module(name, package=None)
 
-    Import a module. The *name* argument specifies what module to
-    import in absolute or relative terms
-    (e.g. either ``pkg.mod`` or ``..mod``). If the name is
-    specified in relative terms, then the *package* argument must be
-    specified to the package which is to act as the anchor for resolving the
-    package name (e.g. ``import_module('..mod', 'pkg.subpkg')`` will import
-    ``pkg.mod``).  The specified module will be inserted into
-    :data:`sys.modules` and returned.
+    モジュールをインポートします。 *name* 引数は、インポートするモジュールを
+    指定する絶対形式もしくは相対形式の名前です。 (例: ``pkg.mod`` か ``..mod``)
+    name が相対形式で与えられた場合、 *package* 引数にパッケージ名を解決する
+    基準点となるパッケージを指定しなければなりません。
+    (例: ``import_module('..mod', 'pkg.subpkg')`` は ``pkg.mod`` をインポートします)
+    指定されたモジュールは :data:`sys.modules` に追加され、返されます。
