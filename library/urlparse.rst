@@ -34,6 +34,11 @@
 .. versionadded:: 2.5
    ``sftp`` および ``sips`` スキームのサポートが追加されました.
 
+.. seealso::
+
+   最新バージョンの `urlparse module Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/urlparse.py?view=markup>`_
+
 :mod:`urlparse` モジュールには以下の関数が定義されています。
 
 
@@ -56,6 +61,22 @@
       80
       >>> o.geturl()
       'http://www.cwi.nl:80/%7Eguido/Python.html'
+
+
+   :rfc:`1808` にある文法仕様に基づき、 urlparse は '//' で始まる場合にのみ
+   netloc を認識します。それ以外の場合は、入力は相対URLであると推定され、
+   path 部分で始まることになります。
+
+       >>> from urlparse import urlparse
+       >>> urlparse('//www.cwi.nl:80/%7Eguido/Python.html')
+       ParseResult(scheme='', netloc='www.cwi.nl:80', path='/%7Eguido/Python.html',
+                  params='', query='', fragment='')
+       >>> urlparse('www.cwi.nl:80/%7Eguido/Python.html')
+       ParseResult(scheme='', netloc='', path='www.cwi.nl:80/%7Eguido/Python.html',
+                  params='', query='', fragment='')
+       >>> urlparse('help/Python.html')
+       ParseResult(scheme='', netloc='', path='help/Python.html', params='',
+                  query='', fragment='')
 
    *scheme* 引数が指定されている場合、標準のアドレススキームを表し、アドレススキームを指定していない URL に対してのみ
    使われます。この引数の標準の値は空文字列です。
@@ -94,6 +115,10 @@
    .. versionchanged:: 2.5
       戻り値に属性が追加されました.
 
+   .. versionchanged:: 2.7
+      IPv6 の URL パースに対応しました。
+
+
 
 .. function:: parse_qs(qs[, keep_blank_values[, strict_parsing]])
 
@@ -101,8 +126,9 @@
    を解釈します。解釈されたデータを辞書として返します。
    辞書のキーは一意なクエリ変数名で、値は各変数名に対する値からなるリストです。
 
-   オプションの引数 *keep_blank_values* は、 URL エンコードされたクエリ中で値の入っていないものを空文字列と見なすかどうか
-   を示すフラグです。値が真であれば、値の入っていないフィールドは空文字列のままになります。標準では偽で、値の入っていない
+   オプションの引数 *keep_blank_values* は、パーセントエンコードされたクエリの中の
+   値が入っていないクエリの値を空白文字列と見なすかどうかを示すフラグです。
+   値が真であれば、値の入っていないフィールドは空文字列のままになります。標準では偽で、値の入っていない
    フィールドを無視し、そのフィールドはクエリに含まれていないものとして扱います。
 
    オプションの引数 *strict_pasing* はパース時のエラーをどう扱うかを決めるフラグです。値が偽なら (標準の設定です)、
@@ -119,7 +145,7 @@
    文字列引数として渡されたクエリ文字列  (:mimetype:`application/x-www-form-urlencoded` 型のデータ) を
    解釈します。解釈されたデータは名前と値のペアからなるリストです。
 
-   オプションの引数 *keep_blank_values* は、 URL エンコードされたクエリ中で値の入っていないものを空文字列と見なすかどうか
+   オプションの引数 *keep_blank_values* は、パーセントエンコードされたクエリ中で値の入っていないものを空文字列と見なすかどうか
    を示すフラグです。値が真であれば、値の入っていないフィールドは空文字列のままになります。標準では偽で、値の入っていない
    フィールドを無視し、そのフィールドはクエリに含まれていないものとして扱います。
 
@@ -235,6 +261,9 @@
       この規格を確認しなければなりません。
       後方互換性のため、あるいは、メジャーなブラウザに見られる事実上標準となった
       URL 解析への要求のために、この規格から外れている部分があります。
+
+   :rfc:`2732` - Format for Literal IPv6 Addresses in URL's.
+      この規格は IPv6 の URL を解析するときの要求事項を記述しています。
 
    :rfc:`2396` - Uniform Resource Identifiers (URI): Generic Syntax
       この RFC では Uniform Resource Name (URN) と Uniform Resource Locator (URL)
