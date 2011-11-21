@@ -9,39 +9,22 @@
 .. sectionauthor:: Edward Loper <edloper@users.sourceforge.net>
 
 
-.. The :mod:`doctest` module searches for pieces of text that look like interactive
-.. Python sessions, and then executes those sessions to verify that they work
-.. exactly as shown.  There are several common ways to use doctest:
-
 :mod:`doctest` モジュールは、対話的 Python セッションのように見えるテキストを探し出し、
 セッションの内容を実行して、そこに書かれている通りに振舞うかを調べます。
 :mod:`doctest` は以下のような用途によく使われています。
 
 
-.. * To check that a module's docstrings are up-to-date by verifying that all
-..   interactive examples still work as documented.
-
 * モジュールの docstring (ドキュメンテーション文字列) 中にある対話実行例のすべてが書かれている通りに動作するか検証することで、
   docstring の内容が最新かどうかチェックする。
 
-
-.. * To perform regression testing by verifying that interactive examples from a
-..   test file or a test object work as expected.
 
 * テストファイルやテストオブジェクト中の対話実行例が期待通りに動作するかを検証することで、
   回帰テストを実現します。
 
 
-.. * To write tutorial documentation for a package, liberally illustrated with
-..   input-output examples.  Depending on whether the examples or the expository text
-..   are emphasized, this has the flavor of "literate testing" or "executable
-..   documentation".
-
 * 入出力例を豊富に使ったパッケージのチュートリアルドキュメントが書けます。
   入出力例と解説文のどちらに注目するかによって、ドキュメントは「読めるテスト」にも「実行できるドキュメント」にもなります。
 
-
-.. Here's a complete but small example module:
 
 以下に完全かつ短い実行例を示します。
 
@@ -111,9 +94,6 @@
        doctest.testmod()
 
 
-.. If you run :file:`example.py` directly from the command line, :mod:`doctest`
-.. works its magic:
-
 :file:`example.py` をコマンドラインから直接実行すると、 :mod:`doctest` はその魔法を働かせます。
 
 
@@ -123,12 +103,8 @@
    $
 
 
-.. There's no output!  That's normal, and it means all the examples worked.  Pass
-.. :option:`-v` to the script, and :mod:`doctest` prints a detailed log of what
-.. it's trying, and prints a summary at the end:
-
 出力は何もありません！ しかしこれが正常で、すべての実行例が正しく動作することを意味しています。
-スクリプトに :option:`-v` を与えると、 :mod:`doctest` は何を行おうとしているのかを記録した詳細なログを出力し、
+スクリプトに ``-v`` を与えると、 :mod:`doctest` は何を行おうとしているのかを記録した詳細なログを出力し、
 最後にまとめを出力します。
 
 
@@ -152,8 +128,6 @@
    ok
 
 
-.. And so on, eventually ending with:
-
 といった具合で、最後には
 
 
@@ -175,12 +149,6 @@
    $
 
 
-.. That's all you need to know to start making productive use of :mod:`doctest`!
-.. Jump in.  The following sections provide full details.  Note that there are many
-.. examples of doctests in the standard Python test suite and libraries.
-.. Especially useful examples can be found in the standard test file
-.. :file:`Lib/test/test_doctest.py`.
-
 :mod:`doctest` の生産的な利用を始めるために知る必要があるのはこれだけです！
 さあやってみましょう。詳細な事柄は後続の各節ですべて説明しています。
 doctest の例は、標準の Python テストスイートやライブラリ中に沢山あります。
@@ -191,9 +159,6 @@ doctest の例は、標準の Python テストスイートやライブラリ中�
 
 簡単な利用法: docstring 中の実行例をチェックする
 ------------------------------------------------
-
-.. The simplest way to start using doctest (but not necessarily the way you'll
-.. continue to do it) is to end each module :mod:`M` with:
 
 doctest を試す簡単な方法 (とはいえ、いつもそうする必要はないのですが) は、
 各モジュール :mod:`M` の最後を、以下のようにして締めくくることです。
@@ -206,13 +171,8 @@ doctest を試す簡単な方法 (とはいえ、いつもそうする必要は�
        doctest.testmod()
 
 
-.. :mod:`doctest` then examines docstrings in module :mod:`M`.
-
 こうすると、 :mod:`doctest` は :mod:`M` 中の docstring を検査します。
 
-
-.. Running the module as a script causes the examples in the docstrings to get
-.. executed and verified:
 
 モジュールをスクリプトとして実行すると、docstring 中の実行例が実行され、検証されます。
 
@@ -222,19 +182,12 @@ doctest を試す簡単な方法 (とはいえ、いつもそうする必要は�
    python M.py
 
 
-.. This won't display anything unless an example fails, in which case the failing
-.. example(s) and the cause(s) of the failure(s) are printed to stdout, and the
-.. final line of output is ``***Test Failed*** N failures.``, where *N* is the
-.. number of examples that failed.
-
 docstring に書かれた実行例の実行が失敗しない限り、何も表示されません。
 失敗すると、失敗した実行例と、その原因が (場合によっては複数) 標準出力に印字され、
 最後に ``***Test Failed*** N failures.`` という行を出力します。ここで、 *N* は失敗した実行例の数です。
 
 
-.. Run it with the :option:`-v` switch instead:
-
-一方、 :option:`-v` スイッチをつけて走らせると
+一方、 ``-v`` スイッチをつけて走らせると
 
 
 ::
@@ -242,26 +195,13 @@ docstring に書かれた実行例の実行が失敗しない限り、何も表�
    python M.py -v
 
 
-.. and a detailed report of all examples tried is printed to standard output, along
-.. with assorted summaries at the end.
-
 実行を試みたすべての実行例について詳細に報告し、最後に各種まとめを行った内容が標準出力に印字されます。
 
 
-.. You can force verbose mode by passing ``verbose=True`` to :func:`testmod`, or
-.. prohibit it by passing ``verbose=False``.  In either of those cases,
-.. ``sys.argv`` is not examined by :func:`testmod` (so passing :option:`-v` or not
-.. has no effect).
-
 ``verbose=True`` を :func:`testmod` に渡せば、詳細報告 (verbose) モードを強制できます。また、
 ``verbose=False`` にすれば禁止できます。どちらの場合にも、 :func:`testmod` は ``sys.argv`` 上のスイッチ
-を調べません。(したがって、 :option:`-v` をつけても効果はありません)。
+を調べません。(したがって、 ``-v`` をつけても効果はありません)。
 
-
-.. Since Python 2.6, there is also a command line shortcut for running
-.. :func:`testmod`.  You can instruct the Python interpreter to run the doctest
-.. module directly from the standard library and pass the module name(s) on the
-.. command line:
 
 Python 2.6 からは :func:`testmod` を実行するコマンドラインショートカットがあります。
 Python インタプリタに doctest モジュールを標準ライブラリから直接実行して、テストする
@@ -273,17 +213,11 @@ Python インタプリタに doctest モジュールを標準ライブラリか�
    python -m doctest -v example.py
 
 
-.. This will import :file:`example.py` as a standalone module and run
-.. :func:`testmod` on it.  Note that this may not work correctly if the file is
-.. part of a package and imports other submodules from that package.
-
 こうすると :file:`example.py` を単体モジュールとしてインポートして、
 それに対して :func:`testmod` を実行します。
 このファイルがパッケージの一部で他のサブモジュールをそのパッケージからインポートしている場合は
 うまく動かないことに注意してください。
 
-
-.. For more information on :func:`testmod`, see section :ref:`doctest-basic-api`.
 
 :func:`testmod` の詳しい情報は :ref:`doctest-basic-api` 節を参照してください。
 
@@ -292,9 +226,6 @@ Python インタプリタに doctest モジュールを標準ライブラリか�
 
 簡単な利用法: テキストファイル中の実行例をチェックする
 ------------------------------------------------------
-
-.. Another simple application of doctest is testing interactive examples in a text
-.. file.  This can be done with the :func:`testfile` function:
 
 doctest のもう一つの簡単な用途は、テキストファイル中にある対話実行例に対するテストです。
 これには :func:`testfile` 関数を使います。
@@ -305,11 +236,6 @@ doctest のもう一つの簡単な用途は、テキストファイル中にあ
    import doctest
    doctest.testfile("example.txt")
 
-
-.. That short script executes and verifies any interactive Python examples
-.. contained in the file :file:`example.txt`.  The file content is treated as if it
-.. were a single giant docstring; the file doesn't need to contain a Python
-.. program!   For example, perhaps :file:`example.txt` contains this:
 
 この短いスクリプトは、 :file:`example.txt` というファイルの中に入っている対話モードの Python
 操作例すべてを実行して、その内容を検証します。
@@ -352,9 +278,6 @@ doctest のもう一つの簡単な用途は、テキストファイル中にあ
        120
 
 
-.. Running ``doctest.testfile("example.txt")`` then finds the error in this
-.. documentation:
-
 ``doctest.testfile("example.txt")`` を実行すると、このドキュメント内のエラーを見つけ出します。
 
 
@@ -369,19 +292,10 @@ doctest のもう一つの簡単な用途は、テキストファイル中にあ
        720
 
 
-.. As with :func:`testmod`, :func:`testfile` won't display anything unless an
-.. example fails.  If an example does fail, then the failing example(s) and the
-.. cause(s) of the failure(s) are printed to stdout, using the same format as
-.. :func:`testmod`.
-
 :func:`testmod` と同じく、 :func:`testfile` は実行例が失敗しない限り何も表示しません。
 実行例が失敗すると、失敗した実行例とその原因が (場合によっては複数) :func:`testmod`
 と同じ書式で標準出力に書き出されます。
 
-
-.. By default, :func:`testfile` looks for files in the calling module's directory.
-.. See section :ref:`doctest-basic-api` for a description of the optional arguments
-.. that can be used to tell it to look for files in other locations.
 
 デフォルトでは、 :func:`testfile` は自分自身を呼び出したモジュールのあるディレクトリを探します。
 その他の場所にあるファイルを見に行くように :func:`testfile`
@@ -389,18 +303,9 @@ doctest のもう一つの簡単な用途は、テキストファイル中にあ
 節を参照してください。
 
 
-.. Like :func:`testmod`, :func:`testfile`'s verbosity can be set with the
-.. :option:`-v` command-line switch or with the optional keyword argument
-.. *verbose*.
-
 :func:`testmod` と同様に :func:`testfile` の冗長性 (verbosity) はコマンドラインスイッチ
-:option:`-v` またはオプションのキーワード引数 *verbose* によって指定できます。
+``-v`` またはオプションのキーワード引数 *verbose* によって指定できます。
 
-
-.. Since Python 2.6, there is also a command line shortcut for running
-.. :func:`testfile`.  You can instruct the Python interpreter to run the doctest
-.. module directly from the standard library and pass the file name(s) on the
-.. command line:
 
 Python 2.6 からは :func:`testfile` を実行するコマンドラインショートカットがあります。
 Python インタプリタに doctest モジュールを標準ライブラリから直接実行して、テストする
@@ -412,14 +317,9 @@ Python インタプリタに doctest モジュールを標準ライブラリか�
    python -m doctest -v example.txt
 
 
-.. Because the file name does not end with :file:`.py`, :mod:`doctest` infers that
-.. it must be run with :func:`testfile`, not :func:`testmod`.
-
 ファイル名が :file:`.py` で終っていないので、 :mod:`doctest` は :func:`testmod` ではなく
 :func:`testfile` を使って実行するのだと判断します。
 
-
-.. For more information on :func:`testfile`, see section :ref:`doctest-basic-api`.
 
 :func:`testfile` の詳細は :ref:`doctest-basic-api` 節を参照してください。
 
@@ -428,13 +328,6 @@ Python インタプリタに doctest モジュールを標準ライブラリか�
 
 doctest のからくり
 ------------------
-
-.. This section examines in detail how doctest works: which docstrings it looks at,
-.. how it finds interactive examples, what execution context it uses, how it
-.. handles exceptions, and how option flags can be used to control its behavior.
-.. This is the information that you need to know to write doctest examples; for
-.. information about actually running doctest on these examples, see the following
-.. sections.
 
 この節では、doctest のからくり: どの docstring を見に行くのか、
 どのように対話実行例を見つけ出すのか、どんな実行コンテキストを使うのか、
@@ -448,18 +341,9 @@ doctest のからくり
 どの docstring が検証されるのか?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. The module docstring, and all function, class and method docstrings are
-.. searched.  Objects imported into the module are not searched.
-
 モジュールの docstring と、すべての関数、クラスおよびメソッドの docstring が検索されます。
 モジュールに import されたオブジェクトは検索されません。
 
-
-.. In addition, if ``M.__test__`` exists and "is true", it must be a dict, and each
-.. entry maps a (string) name to a function object, class object, or string.
-.. Function and class object docstrings found from ``M.__test__`` are searched, and
-.. strings are treated as if they were docstrings.  In output, a key ``K`` in
-.. ``M.__test__`` appears with name :
 
 加えて、 ``M.__test__`` が存在し、 "真の値を持つ" 場合、この値は辞書でなければならず、辞書の各エントリは (文字列の) 名前を
 関数オブジェクト、クラスオブジェクト、または文字列へとマップします。
@@ -477,16 +361,10 @@ doctest のからくり
 のように表示されます。
 
 
-.. Any classes found are recursively searched similarly, to test docstrings in
-.. their contained methods and nested classes.
-
 検索中に見つかったクラスも同様に再帰的に検索が行われ、
 クラスに含まれているメソッドおよびネストされたクラスについて
 docstring のテストが行われます。
 
-
-.. .. versionchanged:: 2.4
-..    A "private name" concept is deprecated and no longer documented.
 
 .. versionchanged:: 2.4
    "プライベート名" の概念は廃止されたため、ドキュメント化されなくなりました。
@@ -496,9 +374,6 @@ docstring のテストが行われます。
 
 docstring 内の実行例をどのように認識するのか?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. In most cases a copy-and-paste of an interactive console session works fine,
-.. but doctest isn't trying to do an exact emulation of any specific Python shell.
 
 ほとんどの場合、対話コンソールセッション上でのコピー／ペーストはうまく動作します。
 とはいえ、 :mod:`doctest` は特定の Python シェルの振る舞いを正確にエミュレーションしようとするわけではありません。
@@ -523,47 +398,21 @@ docstring 内の実行例をどのように認識するのか?
    >>>
 
 
-.. Any expected output must immediately follow the final ``'>>> '`` or ``'... '``
-.. line containing the code, and the expected output (if any) extends to the next
-.. ``'>>> '`` or all-whitespace line.
-
 コードを含む最後の ``'>>> '`` または ``'... '`` 行の直下に期待する出力結果が置かれます。
 (出力結果がもしあれば) それは次の ``'>>> '`` 行か、すべて空白文字の行まで続きます。
 
 
-.. The fine print:
-
 詳細事項:
 
-
-.. * Expected output cannot contain an all-whitespace line, since such a line is
-..   taken to signal the end of expected output.  If expected output does contain a
-..   blank line, put ``<BLANKLINE>`` in your doctest example each place a blank line
-..   is expected.
 
 * 期待する出力結果には、空白だけの行が入っていてはなりません。
   そのような行は期待する出力結果の終了を表すと見なされるからです。
   もし期待する出力結果の内容に空白行が入っている場合には、空白行が入るべき場所すべてに ``<BLANKLINE>`` を入れてください。
 
 
-  .. .. versionchanged:: 2.4
-  ..    ``<BLANKLINE>`` was added; there was no way to use expected output containing
-  ..    empty lines in previous versions.
-
-  .. versionchanged:: 2.4
+  .. versionadded:: 2.4
      ``<BLANKLINE>`` が追加されました; 以前のバージョンでは、空白行を含む出力結果を扱う方法がありませんでした。
 
-
-.. * All hard tab characters are expanded to spaces, using 8-column tab stops.
-..   Tabs in output generated by the tested code are not modified.  Because any
-..   hard tabs in the sample output *are* expanded, this means that if the code
-..   output includes hard tabs, the only way the doctest can pass is if the
-..   :const:`NORMALIZE_WHITESPACE` option or directive is in effect.
-..   Alternatively, the test can be rewritten to capture the output and compare it
-..   to an expected value as part of the test.  This handling of tabs in the
-..   source was arrived at through trial and error, and has proven to be the least
-..   error prone way of handling them.  It is possible to use a different
-..   algorithm for handling tabs by writing a custom :class:`DocTestParser` class.
 
 * ハードタブはすべて 8 カラムのタブストップを使ってスペースに展開されます。
   テストコードによって生成された出力におけるタブは変更されていません。
@@ -575,24 +424,13 @@ docstring 内の実行例をどのように認識するのか?
   カスタムな :class:`DocTestParser` クラスを書くことによって、タブを扱うのに異なるアルゴリズムを使うことができます。
 
 
-  .. .. versionchanged:: 2.4
-  ..    Expanding tabs to spaces is new; previous versions tried to preserve hard tabs,
-  ..    with confusing results.
-
   .. versionchanged:: 2.4
      新たにタブをスペースに展開するようになりました; 以前のバージョンはハードタブを保存しようとしていたので、
      混乱させるようなテスト結果になってしまっていました。
 
 
-.. * Output to stdout is captured, but not output to stderr (exception tracebacks
-..   are captured via a different means).
-
 * 標準出力への出力は取り込まれますが、標準エラーは取り込まれません (例外発生時のトレースバックは別の方法で取り込まれます)。
 
-
-.. * If you continue a line via backslashing in an interactive session, or for any
-..   other reason use a backslash, you should use a raw docstring, which will
-..   preserve your backslashes exactly as you type them:
 
 * 対話セッションにおいて、バックスラッシュを用いて次の行に続ける場合や、
   その他の理由でバックスラッシュを用いる場合、raw docstring を使って
@@ -607,10 +445,6 @@ docstring 内の実行例をどのように認識するのか?
      Backslashes in a raw docstring: m\n
 
 
-  .. Otherwise, the backslash will be interpreted as part of the string. For example,
-  .. the "\\" above would be interpreted as a newline character.  Alternatively, you
-  .. can double each backslash in the doctest version (and not use a raw string):
-
   こうしなければ、バックスラッシュは文字列の一部として解釈されてしまいます。
   例えば、上の例の "\\n" は改行文字として認識されてしまうでしょう。
   こうする代わりに、(raw docstring を使わずに) doctest 版の中ではバックスラッシュをすべて二重にしてもかまいません。
@@ -624,8 +458,6 @@ docstring 内の実行例をどのように認識するのか?
      Backslashes in a raw docstring: m\n
 
 
-.. * The starting column doesn't matter:
-
 * 開始カラムはどこでもかまいません。
 
 
@@ -637,9 +469,6 @@ docstring 内の実行例をどのように認識するのか?
                1.0
 
 
-  .. and as many leading whitespace characters are stripped from the expected output
-  .. as appeared in the initial ``'>>> '`` line that started the example.
-
   期待する出力結果の先頭部にある空白文字列は、実行例の開始部分にあたる ``'>>> '`` 行の先頭にある空白文字列と同じだけ取り除かれます。
 
 
@@ -647,14 +476,6 @@ docstring 内の実行例をどのように認識するのか?
 
 実行コンテキストとは何か?
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. By default, each time :mod:`doctest` finds a docstring to test, it uses a
-.. *shallow copy* of :mod:`M`'s globals, so that running tests doesn't change the
-.. module's real globals, and so that one test in :mod:`M` can't leave behind
-.. crumbs that accidentally allow another test to work.  This means examples can
-.. freely use any names defined at top-level in :mod:`M`, and names defined earlier
-.. in the docstring being run. Examples cannot see names defined in other
-.. docstrings.
 
 デフォルトでは、 :mod:`doctest` はテストを行うべき docstring を見つけるたびに
 :mod:`M` のグローバル名前空間の *浅いコピー* を使い、
@@ -665,9 +486,6 @@ docstring が動作する以前に定義された名前を自由に使えます�
 個々の実行例は他の docstring 中で定義された名前を参照できません。
 
 
-.. You can force use of your own dict as the execution context by passing
-.. ``globs=your_dict`` to :func:`testmod` or :func:`testfile` instead.
-
 :func:`testmod` や :func:`testfile` に ``globs=your_dict`` を渡し、
 自前の辞書を実行コンテキストとして使うこともできます。
 
@@ -677,19 +495,11 @@ docstring が動作する以前に定義された名前を自由に使えます�
 例外はどう扱えばよいか?
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. No problem, provided that the traceback is the only output produced by the
-.. example:  just paste in the traceback. [#]_ Since tracebacks contain details
-.. that are likely to change rapidly (for example, exact file paths and line
-.. numbers), this is one case where doctest works hard to be flexible in what it
-.. accepts.
-
 トレースバックが実行例によって生成される唯一の出力なら問題ありません。
 単にトレースバックを貼り付けてください。 [#]_
 トレースバックには、頻繁に変更されがちな情報 (例えばファイルパスや行番号など) が入っているものなので、
 これは受け入れるテスト結果に柔軟性を持たせようと doctest が苦労している部分の一つです。
 
-
-.. Simple example:
 
 簡単な例を示しましょう。
 
@@ -702,15 +512,8 @@ docstring が動作する以前に定義された名前を自由に使えます�
    ValueError: list.remove(x): x not in list
 
 
-.. That doctest succeeds if :exc:`ValueError` is raised, with the ``list.remove(x):
-.. x not in list`` detail as shown.
-
 この doctest は、 :exc:`ValueError` が送出され、その詳細情報が ``list.remove(x): x not in list`` である場合に成功します。
 
-
-.. The expected output for an exception must start with a traceback header, which
-.. may be either of the following two lines, indented the same as the first line of
-.. the example:
 
 例外が発生したときの期待する出力はトレースバックヘッダから始まっていなければなりません。
 トレースバックの形式は以下の二通りの行のいずれかで、
@@ -723,19 +526,10 @@ docstring が動作する以前に定義された名前を自由に使えます�
    Traceback (innermost last):
 
 
-.. The traceback header is followed by an optional traceback stack, whose contents
-.. are ignored by doctest.  The traceback stack is typically omitted, or copied
-.. verbatim from an interactive session.
-
 トレースバックヘッダの後ろにトレースバックスタックが続いてもかまいませんが、
 doctest はその内容を無視します。
 普通はトレースバックスタックを省略するか、対話セッションからそのままコピーしてきます。
 
-
-.. The traceback stack is followed by the most interesting part: the line(s)
-.. containing the exception type and detail.  This is usually the last line of a
-.. traceback, but can extend across multiple lines if the exception has a
-.. multi-line detail:
 
 トレースバックスタックの後ろにはもっとも有意義な部分、例外の型と詳細情報の入った行があります。
 これは通常トレースバックの最後の行ですが、例外が複数行の詳細情報を持っている場合、
@@ -752,15 +546,12 @@ doctest はその内容を無視します。
    detail
 
 
-.. The last three lines (starting with :exc:`ValueError`) are compared against the
-.. exception's type and detail, and the rest are ignored.
-
 上の例では、最後の 3 行 (:exc:`ValueError` から始まる行) における例外の型と詳細情報だけが比較され、
 それ以外の部分は無視されます。
 
+.. versionchanged:: 2.4
+   以前のバージョンでは、複数行にわたる例外の詳細を扱えませんでした。
 
-.. Best practice is to omit the traceback stack, unless it adds significant
-.. documentation value to the example.  So the last example is probably better as:
 
 例外を扱うコツは、実行例をドキュメントとして読む上で明らかに価値のある情報でない限り、
 トレースバックスタックは省略する、ということです。したがって、先ほどの例は以下のように書くべきでしょう。
@@ -776,12 +567,6 @@ doctest はその内容を無視します。
    detail
 
 
-.. Note that tracebacks are treated very specially.  In particular, in the
-.. rewritten example, the use of ``...`` is independent of doctest's
-.. :const:`ELLIPSIS` option.  The ellipsis in that example could be left out, or
-.. could just as well be three (or three hundred) commas or digits, or an indented
-.. transcript of a Monty Python skit.
-
 トレースバックの扱いは非常に特殊なので注意してください。
 特に、上の書き直した実行例では、 ``...`` の扱いは doctest の
 :const:`ELLIPSIS` オプションとは独立しています。
@@ -790,17 +575,8 @@ doctest はその内容を無視します。
 Monty Python のスキットをインデントして書き写したものかもしれません。
 
 
-.. Some details you should read once, but won't need to remember:
-
 以下の詳細はずっと覚えておく必要はないのですが、一度目を通しておいてください。
 
-
-.. * Doctest can't guess whether your expected output came from an exception
-..   traceback or from ordinary printing.  So, e.g., an example that expects
-..   ``ValueError: 42 is prime`` will pass whether :exc:`ValueError` is actually
-..   raised or if the example merely prints that traceback text.  In practice,
-..   ordinary output rarely begins with a traceback header line, so this doesn't
-..   create real problems.
 
 * doctest は期待する出力の出所が print 文なのか例外なのかを推測できません。
   したがって、例えば期待する出力が ``ValueError: 42 is prime`` であるような実行例は、
@@ -810,12 +586,6 @@ Monty Python のスキットをインデントして書き写したものかも�
   実際に問題になることはないでしょう。
 
 
-.. * Each line of the traceback stack (if present) must be indented further than
-..   the first line of the example, *or* start with a non-alphanumeric character.
-..   The first line following the traceback header indented the same and starting
-..   with an alphanumeric is taken to be the start of the exception detail.  Of
-..   course this does the right thing for genuine tracebacks.
-
 * トレースバックスタック (がある場合) の各行は、実行例の最初の行よりも深くインデントされているか、
   *または* 英数文字以外で始まっていなければなりません。
   トレースバックヘッダ以後に現れる行のうち、インデントが等しく英数文字で始まる最初の行は
@@ -823,18 +593,10 @@ Monty Python のスキットをインデントして書き写したものかも�
   もちろん、本物のトレースバックでは正しく動作します。
 
 
-.. * When the :const:`IGNORE_EXCEPTION_DETAIL` doctest option is is specified,
-..   everything following the leftmost colon is ignored.
-
 * doctest のオプション :const:`IGNORE_EXCEPTION_DETAIL` を指定した場合、
-  最も左端のコロン以後の内容が無視されます。
+  最も左端のコロン以後の全ての内容と、例外名の中の全てのモジュール情報が
+  無視されます。
 
-
-.. * The interactive shell omits the traceback header line for some
-..   :exc:`SyntaxError`\ s.  But doctest uses the traceback header line to
-..   distinguish exceptions from non-exceptions.  So in the rare case where you need
-..   to test a :exc:`SyntaxError` that omits the traceback header, you will need to
-..   manually add the traceback header line to your test example.
 
 * 対話シェルでは、 :exc:`SyntaxError` の場合にトレースバックヘッダが省略されることがあります。
   しかし doctest にとっては、例外を例外でないものと区別するためにトレースバックヘッダが必要です。
@@ -842,9 +604,6 @@ Monty Python のスキットをインデントして書き写したものかも�
   をテストする必要があるというごく稀なケースでは、
   実行例にトレースバックヘッダを手作業で追加する必要があるでしょう。
 
-
-.. * For some :exc:`SyntaxError`\ s, Python displays the character position of the
-..   syntax error, using a ``^`` marker:
 
 * :exc:`SyntaxError` の場合、 Python は構文エラーの起きた場所を ``^`` マーカで表示します。
 
@@ -857,10 +616,6 @@ Monty Python のスキットをインデントして書き写したものかも�
            ^
      SyntaxError: invalid syntax
 
-
-  .. Since the lines showing the position of the error come before the exception type
-  .. and detail, they are not checked by doctest.  For example, the following test
-  .. would pass, even though it puts the ``^`` marker in the wrong location:
 
   例外の型と詳細情報の前にエラー位置を示す行がくるため、 doctest はこの行を調べません。
   例えば、以下の例では、間違った場所に ``^`` マーカを入れても成功してしまいます。
@@ -876,45 +631,21 @@ Monty Python のスキットをインデントして書き写したものかも�
      SyntaxError: invalid syntax
 
 
-.. .. versionchanged:: 2.4
-..    The ability to handle a multi-line exception detail, and the
-..    :const:`IGNORE_EXCEPTION_DETAIL` doctest option, were added.
-
-.. versionchanged:: 2.4
-   複数行からなる例外の詳細情報が扱えるようになり、 doctest オプション :const:`IGNORE_EXCEPTION_DETAIL` が追加されました.
-
-
 .. _doctest-options:
 
 オプションフラグとディレクティブ
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. A number of option flags control various aspects of doctest's behavior.
-.. Symbolic names for the flags are supplied as module constants, which can be
-.. or'ed together and passed to various functions.  The names can also be used in
-.. doctest directives (see below).
 
 doctest では、その挙動の様々な側面をたくさんのオプションフラグで制御しています。各フラグのシンボル名はモジュールの定数として提供されて
 おり、論理和で組み合わせて様々な関数に渡せるようになっています。シンボル名は doctest のディレクティブ (directive, 下記参照) としても
 使えます。
 
 
-.. The first group of options define test semantics, controlling aspects of how
-.. doctest decides whether actual output matches an example's expected output:
-
 最初に説明するオプション群は、テストのセマンティクスを決めます。すなわち、実際にテストを実行したときの出力と実行例中の期待する出力とが一致しているかどうかを
 doctest がどのように判断するかを制御します。
 
 
 .. data:: DONT_ACCEPT_TRUE_FOR_1
-
-   .. By default, if an expected output block contains just ``1``, an actual output
-   .. block containing just ``1`` or just ``True`` is considered to be a match, and
-   .. similarly for ``0`` versus ``False``.  When :const:`DONT_ACCEPT_TRUE_FOR_1` is
-   .. specified, neither substitution is allowed.  The default behavior caters to that
-   .. Python changed the return type of many functions from integer to boolean;
-   .. doctests expecting "little integer" output still work in these cases.  This
-   .. option will probably go away, but not for several years.
 
    デフォルトでは、期待する出力ブロックに単に ``1`` だけが入っており、実際の出力ブロックに ``1`` または ``True``
    だけが入っていた場合、これらの出力は一致しているとみなされます。
@@ -927,12 +658,6 @@ doctest がどのように判断するかを制御します。
 
 .. data:: DONT_ACCEPT_BLANKLINE
 
-   .. By default, if an expected output block contains a line containing only the
-   .. string ``<BLANKLINE>``, then that line will match a blank line in the actual
-   .. output.  Because a genuinely blank line delimits the expected output, this is
-   .. the only way to communicate that a blank line is expected.  When
-   .. :const:`DONT_ACCEPT_BLANKLINE` is specified, this substitution is not allowed.
-
    デフォルトでは、期待する出力ブロックに ``<BLANKLINE>`` だけの入った行がある場合、
    その行は実際の出力における空行に一致するようになります。
    完全な空行を入れてしまうと期待する出力がそこで終わっているとみなされてしまうため、
@@ -942,13 +667,6 @@ doctest がどのように判断するかを制御します。
 
 .. data:: NORMALIZE_WHITESPACE
 
-   .. When specified, all sequences of whitespace (blanks and newlines) are treated as
-   .. equal.  Any sequence of whitespace within the expected output will match any
-   .. sequence of whitespace within the actual output. By default, whitespace must
-   .. match exactly. :const:`NORMALIZE_WHITESPACE` is especially useful when a line of
-   .. expected output is very long, and you want to wrap it across multiple lines in
-   .. your source.
-
    このフラグを指定すると、連続する空白 (空白と改行文字) は互いに等価であるとみなします。
    期待する出力における任意の空白列は実際の出力における任意の空白と一致します。
    デフォルトでは、空白は厳密に一致しなければなりません。
@@ -957,12 +675,6 @@ doctest がどのように判断するかを制御します。
 
 
 .. data:: ELLIPSIS
-
-   .. When specified, an ellipsis marker (``...``) in the expected output can match
-   .. any substring in the actual output.  This includes substrings that span line
-   .. boundaries, and empty substrings, so it's best to keep usage of this simple.
-   .. Complicated uses can lead to the same kinds of "oops, it matched too much!"
-   .. surprises that ``.*`` is prone to in regular expressions.
 
    このフラグを指定すると、期待する出力中の省略記号マーカ (``...``)
    が実際の出力中の任意の部分文字列と一致するようになります。
@@ -974,12 +686,6 @@ doctest がどのように判断するかを制御します。
 
 .. data:: IGNORE_EXCEPTION_DETAIL
 
-   .. When specified, an example that expects an exception passes if an exception of
-   .. the expected type is raised, even if the exception detail does not match.  For
-   .. example, an example expecting ``ValueError: 42`` will pass if the actual
-   .. exception raised is ``ValueError: 3*14``, but will fail, e.g., if
-   .. :exc:`TypeError` is raised.
-
    このフラグを指定すると、期待する実行結果に例外が入るような実行例で、
    期待通りの型の例外が送出された場合に、例外の詳細情報が一致していなくてもテストが成功します。
    例えば、期待する出力が ``ValueError: 42`` であるような実行例は、
@@ -987,21 +693,28 @@ doctest がどのように判断するかを制御します。
    :exc:`TypeError` が送出されるといった場合には成功しません。
 
 
-   .. Note that a similar effect can be obtained using :const:`ELLIPSIS`, and
-   .. :const:`IGNORE_EXCEPTION_DETAIL` may go away when Python releases prior to 2.4
-   .. become uninteresting.  Until then, :const:`IGNORE_EXCEPTION_DETAIL` is the only
-   .. clear way to write a doctest that doesn't care about the exception detail yet
-   .. continues to pass under Python releases prior to 2.4 (doctest directives appear
-   .. to be comments to them).  For example,
+   これは Python 3 doctest レポートにおいて使われるモジュール名も無視します。
+   従って、以下の 2 つのテストは、Python 2.7 と Python 3.2 (またはそれ以降) の
+   どちらでも同じように動作します:
 
-   :const:`ELLIPSIS` を使っても同様のことができ、 :const:`IGNORE_EXCEPTION_DETAIL` はリリース 2.4 以前の Python を使う人がほとんどいなくなった時期を見計らって
-   廃止するかもしれないので気をつけてください。
-   それまでは、 :const:`IGNORE_EXCEPTION_DETAIL` は 2.4 以前の Python で
-   例外の詳細については気にせずテストを成功させるように
-   doctest を書くための唯一の明確な方法です。例えば、
+      >>> raise CustomError('message') #doctest: +IGNORE_EXCEPTION_DETAIL
+      Traceback (most recent call last):
+      CustomError: message
 
+      >>> raise CustomError('message') #doctest: +IGNORE_EXCEPTION_DETAIL
+      Traceback (most recent call last):
+      my_module.CustomError: message
 
-   ::
+   なお、 :const:`ELLIPSIS` を使っても例外メッセージの詳細を無視することが
+   できますが、モジュールの詳細が例外名の一部として表示されるかどうかに
+   依存するようなテストは、やはり失敗します。
+   また、 :const:`IGNORE_EXCEPTION_DETAIL` と Python 2.3 の詳細情報を
+   使うことが、例外の詳細に影響されず、なおかつ Python 2.3 以前 の Python
+   (これらのリリースは doctest ディレクティブをサポートせず、
+   これらを無関係なコメントとして無視します) で
+   成功する doctest を書くための、唯一の明確な方法です。
+   例えば、例外の詳細情報は 2.4 で変更され、 "doesn't" の代わりに
+   "does not" と書くようになりましたが::
 
       >>> (1, 2)[3] = 'moo' #doctest: +IGNORE_EXCEPTION_DETAIL
       Traceback (most recent call last):
@@ -1009,20 +722,14 @@ doctest がどのように判断するかを制御します。
       TypeError: object doesn't support item assignment
 
 
-   .. passes under Python 2.4 and Python 2.3.  The detail changed in 2.4, to say "does
-   .. not" instead of "doesn't".
+   とすると、 Python 2.3 以降の Python バージョンでテストを成功させることができます。
 
-   とすると、 Python 2.4 と Python 2.3 の両方でテストを成功させることができます。
-   というのは、例外の詳細情報は 2.4 で変更され、 "doesn't" から "does not" と書くようになったからです。
+   .. versionchanged:: 2.7
+      :const:`IGNORE_EXCEPTION_DETAIL` は、テストにおいて例外を含むモジュールに
+      関する情報も無視するようになりました。
 
 
 .. data:: SKIP
-
-   .. When specified, do not run the example at all.  This can be useful in contexts
-   .. where doctest examples serve as both documentation and test cases, and an
-   .. example should be included for documentation purposes, but should not be
-   .. checked.  E.g., the example's output might be random; or the example might
-   .. depend on resources which would be unavailable to the test driver.
 
    このフラグを指定すると、実行例は一切実行されません。
    こうした機能は doctest の実行例がドキュメントとテストを兼ねていて、
@@ -1032,46 +739,29 @@ doctest がどのように判断するかを制御します。
    テストドライバーには利用できないリソースに依存している場合などです。
 
 
-   .. The SKIP flag can also be used for temporarily "commenting out" examples.
-
    SKIP フラグは一時的に実行例を"コメントアウト"するのにも使えます。
 
+.. versionadded:: 2.5
 
 .. data:: COMPARISON_FLAGS
 
-   .. A bitmask or'ing together all the comparison flags above.
-
    上記の比較フラグすべての論理和をとったビットマスクです。
 
-
-.. The second group of options controls how test failures are reported:
 
 二つ目のオプション群は、テストの失敗を報告する方法を制御します。
 
 
 .. data:: REPORT_UDIFF
 
-   .. When specified, failures that involve multi-line expected and actual outputs are
-   .. displayed using a unified diff.
-
    このオプションを指定すると、期待する出力および実際の出力が複数行になるときにテストの失敗結果を unified diff 形式を使って表示します。
 
 
 .. data:: REPORT_CDIFF
 
-   .. When specified, failures that involve multi-line expected and actual outputs
-   .. will be displayed using a context diff.
-
    このオプションを指定すると、期待する出力および実際の出力が複数行になるときにテストの失敗結果を context diff 形式を使って表示します。
 
 
 .. data:: REPORT_NDIFF
-
-   .. When specified, differences are computed by ``difflib.Differ``, using the same
-   .. algorithm as the popular :file:`ndiff.py` utility. This is the only method that
-   .. marks differences within lines as well as across lines.  For example, if a line
-   .. of expected output contains digit ``1`` where actual output contains letter
-   .. ``l``, a line is inserted with a caret marking the mismatching column positions.
 
    このオプションを指定すると、期待する出力と実際の出力との間の差分を ``difflib.Differ`` を使って算出します。
    使われているアルゴリズムは有名な :file:`ndiff.py` ユーティリティと同じです。
@@ -1081,14 +771,6 @@ doctest がどのように判断するかを制御します。
 
 
 .. data:: REPORT_ONLY_FIRST_FAILURE
-
-   .. When specified, display the first failing example in each doctest, but suppress
-   .. output for all remaining examples.  This will prevent doctest from reporting
-   .. correct examples that break because of earlier failures; but it might also hide
-   .. incorrect examples that fail independently of the first failure.  When
-   .. :const:`REPORT_ONLY_FIRST_FAILURE` is specified, the remaining examples are
-   .. still run, and still count towards the total number of failures reported; only
-   .. the output is suppressed.
 
    このオプションを指定すると、各 doctest で最初にエラーの起きた実行例だけを表示し、
    それ以後の実行例の出力を抑制します。これにより、正しく書かれた実行例が、
@@ -1101,14 +783,8 @@ doctest がどのように判断するかを制御します。
 
 .. data:: REPORTING_FLAGS
 
-   .. A bitmask or'ing together all the reporting flags above.
-
    上記のエラー報告に関するフラグすべての論理和をとったビットマスクです。
 
-
-.. "Doctest directives" may be used to modify the option flags for individual
-.. examples.  Doctest directives are expressed as a special Python comment
-.. following an example's source code:
 
 「doctest ディレクティブ」を使うと、個々の実行例に対してオプションフラグの設定を変更できます。 doctest ディレクティブは特殊な Python
 コメント文として表現され、実行例のソースコードの後に続けます。
@@ -1122,22 +798,13 @@ doctest がどのように判断するかを制御します。
    directive_option_name: "DONT_ACCEPT_BLANKLINE" \| "NORMALIZE_WHITESPACE" \| ...
 
 
-.. Whitespace is not allowed between the ``+`` or ``-`` and the directive option
-.. name.  The directive option name can be any of the option flag names explained
-.. above.
-
 ``+`` や ``-`` とディレクティブオプション名の間に空白を入れてはなりません。
 ディレクティブオプション名は上で説明したオプションフラグ名のいずれかです。
 
 
-.. An example's doctest directives modify doctest's behavior for that single
-.. example.  Use ``+`` to enable the named behavior, or ``-`` to disable it.
-
 ある実行例の doctest ディレクティブは、その実行例だけの doctest の振る舞いを変えます。
 ある特定の挙動を有効にしたければ ``+`` を、無効にしたければ ``-`` を使います。
 
-
-.. For example, this test passes:
 
 例えば、以下のテストは成功します。
 
@@ -1148,11 +815,6 @@ doctest がどのように判断するかを制御します。
    [0,   1,  2,  3,  4,  5,  6,  7,  8,  9,
    10,  11, 12, 13, 14, 15, 16, 17, 18, 19]
 
-
-.. Without the directive it would fail, both because the actual output doesn't have
-.. two blanks before the single-digit list elements, and because the actual output
-.. is on a single line.  This test also passes, and also requires a directive to do
-.. so:
 
 ディレクティブがない場合、実際の出力には一桁の数字の間に二つスペースが入っていないこと、
 実際の出力は 1 行になることから、テストは成功しないはずです。
@@ -1165,8 +827,6 @@ doctest がどのように判断するかを制御します。
    [0, 1, ..., 18, 19]
 
 
-.. Multiple directives can be used on a single physical line, separated by commas:
-
 複数のディレクティブは、一つの物理行の中にコンマで区切って指定できます。
 
 
@@ -1175,9 +835,6 @@ doctest がどのように判断するかを制御します。
    >>> print range(20) # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
    [0,    1, ...,   18,    19]
 
-
-.. If multiple directive comments are used for a single example, then they are
-.. combined:
 
 一つの実行例中で複数のディレクティブコメントを使った場合、それらは組み合わされます。
 
@@ -1188,10 +845,6 @@ doctest がどのように判断するかを制御します。
    ...                 # doctest: +NORMALIZE_WHITESPACE
    [0,    1, ...,   18,    19]
 
-
-.. As the previous example shows, you can add ``...`` lines to your example
-.. containing only directives.  This can be useful when an example is too long for
-.. a directive to comfortably fit on the same line:
 
 この実行例で分かるように、実行例にはディレクティブだけを含む ``...`` 行を追加することができます。
 この書きかたは、実行例が長すぎるためにディレクティブを同じ行に入れると収まりが悪い場合に便利です。
@@ -1204,56 +857,25 @@ doctest がどのように判断するかを制御します。
    [0, ..., 4, 10, ..., 19, 30, ..., 39, 50, ..., 59]
 
 
-.. Note that since all options are disabled by default, and directives apply only
-.. to the example they appear in, enabling options (via ``+`` in a directive) is
-.. usually the only meaningful choice.  However, option flags can also be passed to
-.. functions that run doctests, establishing different defaults.  In such cases,
-.. disabling an option via ``-`` in a directive can be useful.
-
-デフォルトではすべてのオプションが無効になっており、ディレクティブは特定の実行例だけに影響を及ぼすので、
+フォルトではすべてのオプションが無効になっており、ディレクティブは特定の実行例だけに影響を及ぼすので、
 通常意味があるのは有効にするためのオプション (``+`` のついたディレクティブ) だけです。
 とはいえ、 doctest を実行する関数はオプションフラグを指定してデフォルトとは異なった挙動を実現できるので、
 そのような場合には ``-`` を使った無効化オプションも意味を持ちます。
 
 
-.. .. versionchanged:: 2.4
-..    Constants :const:`DONT_ACCEPT_BLANKLINE`, :const:`NORMALIZE_WHITESPACE`,
-..    :const:`ELLIPSIS`, :const:`IGNORE_EXCEPTION_DETAIL`, :const:`REPORT_UDIFF`,
-..    :const:`REPORT_CDIFF`, :const:`REPORT_NDIFF`,
-..    :const:`REPORT_ONLY_FIRST_FAILURE`, :const:`COMPARISON_FLAGS` and
-..    :const:`REPORTING_FLAGS` were added; by default ``<BLANKLINE>`` in expected
-..    output matches an empty line in actual output; and doctest directives were
-..    added.
-
-.. versionchanged:: 2.4
-   定数 :const:`DONT_ACCEPT_BLANKLINE`, :const:`NORMALIZE_WHITESPACE`,
+.. versionadded:: 2.4
+   doctest ディレクティブおよび関連する定数
+   :const:`DONT_ACCEPT_BLANKLINE`, :const:`NORMALIZE_WHITESPACE`,
    :const:`ELLIPSIS`, :const:`IGNORE_EXCEPTION_DETAIL`, :const:`REPORT_UDIFF`,
    :const:`REPORT_CDIFF`, :const:`REPORT_NDIFF`,
-   :const:`REPORT_ONLY_FIRST_FAILURE`, :const:`COMPARISON_FLAGS`,
-   :const:`REPORTING_FLAGS` が追加されました。期待する出力中の ``<BLANKLINE>`` がデフォルトで
-   実際の出力中の空行にマッチするようになりました。また、 doctest ディレクティブが追加されました。
+   :const:`REPORT_ONLY_FIRST_FAILURE`, :const:`COMPARISON_FLAGS`, および
+   :const:`REPORTING_FLAGS` が追加されました。
 
-
-.. .. versionchanged:: 2.5
-..    Constant :const:`SKIP` was added.
-
-.. versionchanged:: 2.5
-   定数 :const:`SKIP` が追加されました。
-
-
-.. There's also a way to register new option flag names, although this isn't useful
-.. unless you intend to extend :mod:`doctest` internals via subclassing:
 
 新たなオプションフラグ名を登録する方法もありますが、 :mod:`doctest` の内部をサブクラスで拡張しない限り、意味はないでしょう。
 
 
 .. function:: register_optionflag(name)
-
-   .. Create a new option flag with a given name, and return the new flag's integer
-   .. value.  :func:`register_optionflag` can be used when subclassing
-   .. :class:`OutputChecker` or :class:`DocTestRunner` to create new options that are
-   .. supported by your subclasses.  :func:`register_optionflag` should always be
-   .. called using the following idiom:
 
    名前 *name* の新たなオプションフラグを作成し、作成されたフラグの整数値を返します。
    :func:`register_optionflag` は :class:`OutputChecker` や  :class:`DocTestRunner` をサブクラス化して、
@@ -1273,13 +895,6 @@ doctest がどのように判断するかを制御します。
 注意
 ^^^^
 
-.. :mod:`doctest` is serious about requiring exact matches in expected output.  If
-.. even a single character doesn't match, the test fails.  This will probably
-.. surprise you a few times, as you learn exactly what Python does and doesn't
-.. guarantee about output.  For example, when printing a dict, Python doesn't
-.. guarantee that the key-value pairs will be printed in any particular order, so a
-.. test like :
-
 :mod:`doctest` では、期待する出力に対する完全一致を厳格に求めます。
 一致しない文字が一文字でもあると、テストは失敗してしまいます。
 このため、 Python が出力に関して何を保証していて、何を保証していないかを正確に知っていないと度々混乱させられることでしょう。
@@ -1292,8 +907,6 @@ doctest がどのように判断するかを制御します。
    {"Hermione": "hippogryph", "Harry": "broomstick"}
 
 
-.. is vulnerable!  One workaround is to do :
-
 は失敗するかもしれないのです! 回避するには
 
 
@@ -1302,8 +915,6 @@ doctest がどのように判断するかを制御します。
    >>> foo() == {"Hermione": "hippogryph", "Harry": "broomstick"}
    True
 
-
-.. instead.  Another is to do :
 
 とするのが一つのやり方です。別のやり方は、
 
@@ -1319,12 +930,8 @@ doctest がどのように判断するかを制御します。
 です。
 
 
-.. There are others, but you get the idea.
-
 他のやり方もありますが、あとは自分で考えてみてください。
 
-
-.. Another bad idea is to print things that embed an object address, like :
 
 以下のように、オブジェクトアドレスを埋め込むような結果を print するのもよくありません。
 
@@ -1338,8 +945,6 @@ doctest がどのように判断するかを制御します。
    <__main__.C instance at 0x00AC18F0>
 
 
-.. The :const:`ELLIPSIS` directive gives a nice approach for the last example:
-
 :const:`ELLIPSIS` ディレクティブを使うと、上のような例をうまく解決できます。
 
 
@@ -1348,10 +953,6 @@ doctest がどのように判断するかを制御します。
    >>> C() #doctest: +ELLIPSIS
    <__main__.C instance at 0x...>
 
-
-.. Floating-point numbers are also subject to small output variations across
-.. platforms, because Python defers to the platform C library for float formatting,
-.. and C libraries vary widely in quality here.
 
 浮動小数点数もまた、プラットフォーム間での微妙な出力の違いの原因となります。
 というのも、Python は浮動小数点の書式化をプラットフォームの C ライブラリに委ねており、
@@ -1368,9 +969,6 @@ doctest がどのように判断するかを制御します。
    0.142857
 
 
-.. Numbers of the form ``I/2.**J`` are safe across all platforms, and I often
-.. contrive doctest examples to produce numbers of that form:
-
 ``I/2.**J`` の形式になる数値はどのプラットフォームでもうまく動作するので、
 私はこの形式の数値を生成するように doctest の実行例を工夫しています。
 
@@ -1381,9 +979,6 @@ doctest がどのように判断するかを制御します。
    0.75
 
 
-.. Simple fractions are also easier for people to understand, and that makes for
-.. better documentation.
-
 単純な分数は人間にとっても理解しやすく、良いドキュメントを書くために役に立ちます。
 
 
@@ -1392,42 +987,21 @@ doctest がどのように判断するかを制御します。
 基本 API
 --------
 
-.. The functions :func:`testmod` and :func:`testfile` provide a simple interface to
-.. doctest that should be sufficient for most basic uses.  For a less formal
-.. introduction to these two functions, see sections :ref:`doctest-simple-testmod`
-.. and :ref:`doctest-simple-testfile`.
-
-関数 :func:`testmod` と :func:`testfile` は、ほとんどの基本的な用途に十分な doctest
+数 :func:`testmod` と :func:`testfile` は、ほとんどの基本的な用途に十分な doctest
 インタフェースを提供しています。これら二つの関数についてあまり形式的でない入門が読みたければ、
 :ref:`doctest-simple-testmod` 節や :ref:`doctest-simple-testfile` 節を参照してください。
 
 
 .. function:: testfile(filename[, module_relative][, name][, package][, globs][, verbose][, report][, optionflags][, extraglobs][, raise_on_error][, parser][, encoding])
 
-   .. All arguments except *filename* are optional, and should be specified in keyword
-   .. form.
-
    *filename* 以外の引数はすべてオプションで、キーワード引数形式で指定しなければなりません。
 
-
-   .. Test examples in the file named *filename*.  Return ``(failure_count,
-   .. test_count)``.
 
    *filename* に指定したファイル内にある実行例をテストします。 ``(failure_count, test_count)`` を返します。
 
 
-   .. Optional argument *module_relative* specifies how the filename should be
-   .. interpreted:
-
    オプション引数の *module_relative* は、ファイル名をどのように解釈するかを指定します。
 
-
-   .. * If *module_relative* is ``True`` (the default), then *filename* specifies an
-   ..   OS-independent module-relative path.  By default, this path is relative to the
-   ..   calling module's directory; but if the *package* argument is specified, then it
-   ..   is relative to that package.  To ensure OS-independence, *filename* should use
-   ..   ``/`` characters to separate path segments, and may not be an absolute path
-   ..   (i.e., it may not begin with ``/``).
 
    * *module_relative* が ``True`` (デフォルト) の場合、 *filename* は OS
      に依存しないモジュールの相対パスになります。デフォルトでは、このパスは関数 :func:`testfile` を呼び出して
@@ -1436,26 +1010,13 @@ doctest がどのように判断するかを制御します。
      絶対パスにしてはなりません (パス文字列を ``/`` で始めてはなりません)。
 
 
-   .. * If *module_relative* is ``False``, then *filename* specifies an OS-specific
-   ..   path.  The path may be absolute or relative; relative paths are resolved with
-   ..   respect to the current working directory.
-
    * *module_relative* が ``False`` の場合、 *filename* は OS 依存のパスを示します。
      パスは絶対パスでも相対パスでもかまいません; 相対パスにした場合、現在の作業ディレクトリを基準に解決します。
 
 
-   .. Optional argument *name* gives the name of the test; by default, or if ``None``,
-   .. ``os.path.basename(filename)`` is used.
-
    オプション引数 *name* には、テストの名前を指定します; デフォルトの場合や ``None`` を指定した場合、
    ``os.path.basename(filename)`` になります。
 
-
-   .. Optional argument *package* is a Python package or the name of a Python package
-   .. whose directory should be used as the base directory for a module-relative
-   .. filename.  If no package is specified, then the calling module's directory is
-   .. used as the base directory for module-relative filenames.  It is an error to
-   .. specify *package* if *module_relative* is ``False``.
 
    オプション引数 *package* には、 Python パッケージを指定するか、モジュール相対のファイル名の場合には
    相対の基準ディレクトリとなる Python パッケージの名前を指定します。
@@ -1463,24 +1024,10 @@ doctest がどのように判断するかを制御します。
    *module_relative* を ``False`` に指定している場合、 *package* を指定するとエラーになります。
 
 
-   .. Optional argument *globs* gives a dict to be used as the globals when executing
-   .. examples.  A new shallow copy of this dict is created for the doctest, so its
-   .. examples start with a clean slate. By default, or if ``None``, a new empty dict
-   .. is used.
-
    オプション引数 *globs* には辞書を指定します。この辞書は、実行例を実行する際のグローバル変数として用いられます。
    doctest はこの辞書の浅いコピーを生成するので、実行例は白紙の状態からスタートします。
    デフォルトの場合や ``None`` を指定した場合、新たな空の辞書になります。
 
-
-   .. Optional argument *extraglobs* gives a dict merged into the globals used to
-   .. execute examples.  This works like :meth:`dict.update`:  if *globs* and
-   .. *extraglobs* have a common key, the associated value in *extraglobs* appears in
-   .. the combined dict.  By default, or if ``None``, no extra globals are used.  This
-   .. is an advanced feature that allows parameterization of doctests.  For example, a
-   .. doctest can be written for a base class, using a generic name for the class,
-   .. then reused to test any number of subclasses by passing an *extraglobs* dict
-   .. mapping the generic name to the subclass to be tested.
 
    オプション引数 *extraglobs* には辞書を指定します。この辞書は、実行例を実行する際にグローバル変数にマージされます。
    マージは :meth:`dict.update` のように振舞います: *globs* と *extraglobs* との間に同じキー値がある場合、両者を合わせた
@@ -1490,17 +1037,9 @@ doctest がどのように判断するかを制御します。
    様々なサブクラスをテストできます。
 
 
-   .. Optional argument *verbose* prints lots of stuff if true, and prints only
-   .. failures if false; by default, or if ``None``, it's true if and only if ``'-v'``
-   .. is in ``sys.argv``.
-
    オプション引数 *verbose* が真の場合、様々な情報を出力します。偽の場合にはテストの失敗だけを報告します。
    デフォルトの場合や ``None`` を指定した場合、 ``sys.argv`` に ``-v`` を指定しない限りこの値は真になりません。
 
-
-   .. Optional argument *report* prints a summary at the end when true, else prints
-   .. nothing at the end.  In verbose mode, the summary is detailed, else the summary
-   .. is very brief (in fact, empty if all tests passed).
 
    オプション引数 *report* が真の場合、テストの最後にサマリを出力します。
    それ以外の場合には何も出力しません。
@@ -1508,17 +1047,9 @@ doctest がどのように判断するかを制御します。
    そうでない場合にはサマリはとても簡潔になります (実際には、すべてのテストが成功した場合には何も出力しません)。
 
 
-   .. Optional argument *optionflags* or's together option flags.  See section
-   .. :ref:`doctest-options`.
-
    オプション引数 *optionflags* は、各オプションフラグの論理和をとった値を指定します。 :ref:`doctest-options`
    節を参照してください。
 
-
-   .. Optional argument *raise_on_error* defaults to false.  If true, an exception is
-   .. raised upon the first failure or unexpected exception in an example.  This
-   .. allows failures to be post-mortem debugged. Default behavior is to continue
-   .. running examples.
 
    オプション引数 *raise_on_error* の値はデフォルトでは偽です。
    真にすると、最初のテスト失敗や予期しない例外が起きたときに例外を送出します。
@@ -1526,16 +1057,9 @@ doctest がどのように判断するかを制御します。
    デフォルトの動作では、実行例の実行を継続します。
 
 
-   .. Optional argument *parser* specifies a :class:`DocTestParser` (or subclass) that
-   .. should be used to extract tests from the files.  It defaults to a normal parser
-   .. (i.e., ``DocTestParser()``).
-
    オプション引数 *parser* には、 :class:`DocTestParser` (またはそのサブクラス) を指定します。
    このクラスはファイルから実行例を抽出するために使われます。デフォルトでは通常のパーザ (``DocTestParser()``) です。
 
-
-   .. Optional argument *encoding* specifies an encoding that should be used to
-   .. convert the file to unicode.
 
    オプション引数 *encoding* にはファイルをユニコードに変換する際に使われるエンコーディングを指定します。
 
@@ -1543,33 +1067,18 @@ doctest がどのように判断するかを制御します。
    .. versionadded:: 2.4
 
 
-   .. .. versionchanged:: 2.5
-   ..    The parameter *encoding* was added.
-
    .. versionchanged:: 2.5
       *encoding* パラメータが追加されました。
 
 
 .. function:: testmod([m][, name][, globs][, verbose][, report][, optionflags][, extraglobs][, raise_on_error][, exclude_empty])
 
-   .. All arguments are optional, and all except for *m* should be specified in
-   .. keyword form.
-
    引数はすべてオプションで、 *m* 以外の引数はキーワード引数として指定しなければなりません。
 
-
-   .. Test examples in docstrings in functions and classes reachable from module *m*
-   .. (or module :mod:`__main__` if *m* is not supplied or is ``None``), starting with
-   .. ``m.__doc__``.
 
    モジュール *m* (*m* を指定しないか ``None`` にした場合には :mod:`__main__`) から到達可能な関数およびクラスの
    docstring 内にある実行例をテストします。 ``m.__doc__`` 内の実行例からテストを開始します。
 
-
-   .. Also test examples reachable from dict ``m.__test__``, if it exists and is not
-   .. ``None``.  ``m.__test__`` maps names (strings) to functions, classes and
-   .. strings; function and class docstrings are searched for examples; strings are
-   .. searched directly, as if they were docstrings.
 
    また、辞書 ``m.__test__`` が存在し、 ``None`` でない場合、この辞書から到達できる実行例もテストします。
    ``m.__test__`` は、(文字列の) 名前から関数、クラスおよび文字列への対応付けを行っています。
@@ -1577,29 +1086,15 @@ doctest がどのように判断するかを制御します。
    文字列の場合には、docstring と同じようにして実行例の検索を直接実行します。
 
 
-   .. Only docstrings attached to objects belonging to module *m* are searched.
-
    モジュール *m* に属するオブジェクトにつけられた docstring のみを検索します。
 
-
-   .. Return ``(failure_count, test_count)``.
 
    ``(failure_count, test_count)`` を返します。
 
 
-   .. Optional argument *name* gives the name of the module; by default, or if
-   .. ``None``, ``m.__name__`` is used.
-
    オプション引数 *name* には、モジュールの名前を指定します。デフォルトの場合や ``None`` を指定した場合には、
    ``m.__name__`` を使います。
 
-
-   .. Optional argument *exclude_empty* defaults to false.  If true, objects for which
-   .. no doctests are found are excluded from consideration. The default is a backward
-   .. compatibility hack, so that code still using :meth:`doctest.master.summarize` in
-   .. conjunction with :func:`testmod` continues to get output for objects with no
-   .. tests. The *exclude_empty* argument to the newer :class:`DocTestFinder`
-   .. constructor defaults to true.
 
    オプション引数 *exclude_empty* はデフォルトでは偽になっています。
    この値を真にすると、doctest を持たないオブジェクトを考慮から外します。
@@ -1609,39 +1104,22 @@ doctest がどのように判断するかを制御します。
    新たに追加された :class:`DocTestFinder` のコンストラクタの *exclude_empty* はデフォルトで真になります。
 
 
-   .. Optional arguments *extraglobs*, *verbose*, *report*, *optionflags*,
-   .. *raise_on_error*, and *globs* are the same as for function :func:`testfile`
-   .. above, except that *globs* defaults to ``m.__dict__``.
-
    オプション引数 *extraglobs*, *verbose*, *report*, *optionflags*, *raise_on_error*, および
    *globs* は上で説明した :func:`testfile` の引数と同じです。ただし、 *globs* のデフォルト値は ``m.__dict__``
    になります。
 
 
-   .. .. versionchanged:: 2.3
-   ..    The parameter *optionflags* was added.
-
    .. versionchanged:: 2.3
       *optionflags* パラメータが追加されました。
 
-
-   .. .. versionchanged:: 2.4
-   ..    The parameters *extraglobs*, *raise_on_error* and *exclude_empty* were added.
 
    .. versionchanged:: 2.4
       *extraglobs*, *raise_on_error* および *exclude_empty* パラメータが追加されました。
 
 
-   .. .. versionchanged:: 2.5
-   ..    The optional argument *isprivate*, deprecated in 2.4, was removed.
-
    .. versionchanged:: 2.5
       オプション引数 *isprivate* は、2.4 では非推奨でしたが、廃止されました。
 
-
-.. There's also a function to run the doctests associated with a single object.
-.. This function is provided for backward compatibility.  There are no plans to
-.. deprecate it, but it's rarely useful:
 
 単一のオブジェクトに関連付けられた doctest を実行するための関数もあります。
 この関数は以前のバージョンとの互換性のために提供されています。
@@ -1650,39 +1128,22 @@ doctest がどのように判断するかを制御します。
 
 .. function:: run_docstring_examples(f, globs[, verbose][, name][, compileflags][, optionflags])
 
-   .. Test examples associated with object *f*; for example, *f* may be a module,
-   .. function, or class object.
-
    オブジェクト *f* に関連付けられた実行例をテストします。 *f* はモジュール、関数、またはクラスオブジェクトです。
 
-
-   .. A shallow copy of dictionary argument *globs* is used for the execution context.
 
    引数 *globs* に辞書を指定すると、その浅いコピーを実行コンテキストに使います。
 
 
-   .. Optional argument *name* is used in failure messages, and defaults to
-   .. ``"NoName"``.
-
    オプション引数 *name* はテスト失敗時のメッセージに使われます。デフォルトの値は ``NoName`` です。
 
-
-   .. If optional argument *verbose* is true, output is generated even if there are no
-   .. failures.  By default, output is generated only in case of an example failure.
 
    オプション引数 *verbose* の値を真にすると、テストが失敗しなくても出力を生成します。
    デフォルトでは、実行例のテストに失敗したときのみ出力を生成します。
 
 
-   .. Optional argument *compileflags* gives the set of flags that should be used by
-   .. the Python compiler when running the examples.  By default, or if ``None``,
-   .. flags are deduced corresponding to the set of future features found in *globs*.
-
    オプション引数 *compileflags* には、実行例を実行するときに Python バイトコードコンパイラが使うフラグを指定します。
    デフォルトの場合や ``None`` を指定した場合、フラグは *globs* 内にある future 機能セットに対応したものになります。
 
-
-   .. Optional argument *optionflags* works as for function :func:`testfile` above.
 
    オプション引数 *optionflags* は、上で述べた :func:`testfile` と同様の働きをします。
 
@@ -1691,17 +1152,6 @@ doctest がどのように判断するかを制御します。
 
 単体テスト API
 --------------
-
-.. As your collection of doctest'ed modules grows, you'll want a way to run all
-.. their doctests systematically.  Prior to Python 2.4, :mod:`doctest` had a barely
-.. documented :class:`Tester` class that supplied a rudimentary way to combine
-.. doctests from multiple modules. :class:`Tester` was feeble, and in practice most
-.. serious Python testing frameworks build on the :mod:`unittest` module, which
-.. supplies many flexible ways to combine tests from multiple sources.  So, in
-.. Python 2.4, :mod:`doctest`'s :class:`Tester` class is deprecated, and
-.. :mod:`doctest` provides two functions that can be used to create :mod:`unittest`
-.. test suites from modules and text files containing doctests.  These test suites
-.. can then be run using :mod:`unittest` test runners:
 
 doctest 化したモジュールのコレクションが増えるにつれ、すべての doctest
 をシステマティックに実行したいと思うようになるはずです。
@@ -1714,24 +1164,20 @@ Python 2.4 以前の :mod:`doctest` には :class:`Tester`
 そこで Python 2.4 では :mod:`doctest` の :class:`Tester` クラスを廃止し、
 モジュールや doctest の入ったテキストファイルから :mod:`unittest`
 テストスイートを作成できるような二つの関数を :mod:`doctest` 側で提供するようにしました。
-こうしたテストスイートは、 :mod:`unittest` のテストランナーを使って実行できます。
+:mod:`unittest` によるテスト発見と統合するには、
+テストモジュールに :func:`load_tests` 関数を含めてください。
 
 
 ::
 
    import unittest
    import doctest
-   import my_module_with_doctests, and_another
+   import my_module_with_doctests
 
-   suite = unittest.TestSuite()
-   for mod in my_module_with_doctests, and_another:
-       suite.addTest(doctest.DocTestSuite(mod))
-   runner = unittest.TextTestRunner()
-   runner.run(suite)
+   def load_tests(loader, tests, ignore):
+       tests.addTests(doctest.DocTestSuite(my_module_with_doctests))
+       return tests
 
-
-.. There are two main functions for creating :class:`unittest.TestSuite` instances
-.. from text files and modules with doctests:
 
 doctest の入ったテキストファイルやモジュールから :class:`unittest.TestSuite` インスタンスを生成するための
 主な関数は二つあります。
@@ -1739,18 +1185,9 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 
 .. function:: DocFileSuite(*paths, [module_relative][, package][, setUp][, tearDown][, globs][, optionflags][, parser][, encoding])
 
-   .. Convert doctest tests from one or more text files to a
-   .. :class:`unittest.TestSuite`.
-
    単一または複数のテキストファイルに入っている doctest 形式のテストを、 :class:`unittest.TestSuite`
    インスタンスに変換します。
 
-
-   .. The returned :class:`unittest.TestSuite` is to be run by the unittest framework
-   .. and runs the interactive examples in each file.  If an example in any file
-   .. fails, then the synthesized unit test fails, and a :exc:`failureException`
-   .. exception is raised showing the name of the file containing the test and a
-   .. (sometimes approximate) line number.
 
    この関数の返す :class:`unittest.TestSuite` インスタンスは、 unittest
    フレームワークで動作させ、各ファイルの実行例を対話的に実行するためのものです。
@@ -1759,29 +1196,14 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    例外を送出します。
 
 
-   .. Pass one or more paths (as strings) to text files to be examined.
-
    関数には、テストを行いたい一つまたは複数のファイルへのパスを (文字列で) 渡します。
 
-
-   .. Options may be provided as keyword arguments:
 
    :func:`DocFileSuite` には、キーワード引数でオプションを指定できます。
 
 
-   .. Optional argument *module_relative* specifies how the filenames in *paths*
-   .. should be interpreted:
-
    オプション引数 *module_relative* は *paths* に指定したファイル名をどのように解釈するかを指定します。
 
-
-   .. * If *module_relative* is ``True`` (the default), then each filename in
-   ..   *paths* specifies an OS-independent module-relative path.  By default, this
-   ..   path is relative to the calling module's directory; but if the *package*
-   ..   argument is specified, then it is relative to that package.  To ensure
-   ..   OS-independence, each filename should use ``/`` characters to separate path
-   ..   segments, and may not be an absolute path (i.e., it may not begin with
-   ..   ``/``).
 
    * *module_relative* が ``True`` (デフォルト) の場合、 *filename* は OS
      に依存しないモジュールの相対パスになります。デフォルトでは、このパスは関数 :func:`testfile` を呼び出して
@@ -1790,20 +1212,9 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
      ``/`` を使わなければならず、絶対パスにしてはなりません (パス文字列を ``/`` で始めてはなりません)。
 
 
-   .. * If *module_relative* is ``False``, then each filename in *paths* specifies
-   ..   an OS-specific path.  The path may be absolute or relative; relative paths
-   ..   are resolved with respect to the current working directory.
-
    * *module_relative* が ``False`` の場合、 *filename* は OS 依存のパスを示します。パスは絶対パスでも相対パスでも
      かまいません; 相対パスにした場合、現在の作業ディレクトリを基準に解決します。
 
-
-   .. Optional argument *package* is a Python package or the name of a Python
-   .. package whose directory should be used as the base directory for
-   .. module-relative filenames in *paths*.  If no package is specified, then the
-   .. calling module's directory is used as the base directory for module-relative
-   .. filenames.  It is an error to specify *package* if *module_relative* is
-   .. ``False``.
 
    オプション引数 *package* には、 Python パッケージを指定するか、
    モジュール相対のファイル名の場合には相対の基準ディレクトリとなる Python パッケージの名前を指定します。
@@ -1811,21 +1222,11 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    *module_relative* を ``False`` に指定している場合、 *package* を指定するとエラーになります。
 
 
-   .. Optional argument *setUp* specifies a set-up function for the test suite.
-   .. This is called before running the tests in each file.  The *setUp* function
-   .. will be passed a :class:`DocTest` object.  The setUp function can access the
-   .. test globals as the *globs* attribute of the test passed.
-
    オプション引数 *setUp* には、テストスイートのセットアップに使う関数を指定します。
    この関数は、各ファイルのテストを実行する前に呼び出されます。
    *setUp* 関数は :class:`DocTest` オブジェクトに引き渡されます。
    *setUp* は *globs* 属性を介してテストのグローバル変数にアクセスできます。
 
-
-   .. Optional argument *tearDown* specifies a tear-down function for the test
-   .. suite.  This is called after running the tests in each file.  The *tearDown*
-   .. function will be passed a :class:`DocTest` object.  The setUp function can
-   .. access the test globals as the *globs* attribute of the test passed.
 
    オプション引数 *tearDown* には、テストを解体 (tear-down) するための関数を指定します。
    この関数は、各ファイルのテストの実行を終了するたびに呼び出されます。
@@ -1833,19 +1234,10 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    *tearDown* は *globs* 属性を介してテストのグローバル変数にアクセスできます。
 
 
-   .. Optional argument *globs* is a dictionary containing the initial global
-   .. variables for the tests.  A new copy of this dictionary is created for each
-   .. test.  By default, *globs* is a new empty dictionary.
-
    オプション引数 *globs* は辞書で、テストのグローバル変数の初期値が入ります。
    この辞書は各テストごとに新たにコピーして使われます。
    デフォルトでは *globs* は空の新たな辞書です。
 
-
-   .. Optional argument *optionflags* specifies the default doctest options for the
-   .. tests, created by or-ing together individual option flags.  See section
-   .. :ref:`doctest-options`. See function :func:`set_unittest_reportflags` below
-   .. for a better way to set reporting options.
 
    オプション引数 *optionflags* には、テストを実行する際にデフォルトで適用される
    doctest オプションを OR で結合して指定します。
@@ -1854,16 +1246,9 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    の説明を参照してください。
 
 
-   .. Optional argument *parser* specifies a :class:`DocTestParser` (or subclass)
-   .. that should be used to extract tests from the files.  It defaults to a normal
-   .. parser (i.e., ``DocTestParser()``).
-
    オプション引数 *parser* には、ファイルからテストを抽出するために使う :class:`DocTestParser` (またはサブクラス)
    を指定します。デフォルトは通常のパーザ (``DocTestParser()``) です。
 
-
-   .. Optional argument *encoding* specifies an encoding that should be used to
-   .. convert the file to unicode.
 
    オプション引数 *encoding* にはファイルをユニコードに変換する際に使われるエンコーディングを指定します。
 
@@ -1871,17 +1256,10 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    .. versionadded:: 2.4
 
 
-   .. .. versionchanged:: 2.5
-   ..    The global ``__file__`` was added to the globals provided to doctests
-   ..    loaded from a text file using :func:`DocFileSuite`.
-
    .. versionchanged:: 2.5
       グローバル変数 ``__file__`` が追加され :func:`DocFileSuite` を使ってテキストファイルから読み込まれた doctest
       に提供されます。
 
-
-   .. .. versionchanged:: 2.5
-   ..    The parameter *encoding* was added.
 
    .. versionchanged:: 2.5
       *encoding* パラメータが追加されました。
@@ -1889,16 +1267,8 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 
 .. function:: DocTestSuite([module][, globs][, extraglobs][, test_finder][, setUp][, tearDown][, checker])
 
-   .. Convert doctest tests for a module to a :class:`unittest.TestSuite`.
-
    doctest のテストを :class:`unittest.TestSuite` に変換します。
 
-
-   .. The returned :class:`unittest.TestSuite` is to be run by the unittest framework
-   .. and runs each doctest in the module.  If any of the doctests fail, then the
-   .. synthesized unit test fails, and a :exc:`failureException` exception is raised
-   .. showing the name of the file containing the test and a (sometimes approximate)
-   .. line number.
 
    この関数の返す :class:`unittest.TestSuite` インスタンスは、 unittest フレームワークで動作させ、モジュール内の各
    doctest を実行するためのものです。何らかの doctest の実行に失敗すると、この関数で
@@ -1906,38 +1276,21 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    例外を送出します。
 
 
-   .. Optional argument *module* provides the module to be tested.  It can be a module
-   .. object or a (possibly dotted) module name.  If not specified, the module calling
-   .. this function is used.
-
    オプション引数 *module* には、テストしたいモジュールの名前を指定します。 *module* にはモジュールオブジェクトまたは (ドット表記の)
    モジュール名を指定できます。 *module* を指定しない場合、この関数を呼び出しているモジュールになります。
 
-
-   .. Optional argument *globs* is a dictionary containing the initial global
-   .. variables for the tests.  A new copy of this dictionary is created for each
-   .. test.  By default, *globs* is a new empty dictionary.
 
    オプション引数 *globs* は辞書で、テストのグローバル変数の初期値が入ります。この辞書は各テストごとに新たにコピーして使われ
    ます。デフォルトでは *glob* は空の新たな辞書です。
 
 
-   .. Optional argument *extraglobs* specifies an extra set of global variables, which
-   .. is merged into *globs*.  By default, no extra globals are used.
-
    オプション引数 *extraglobs* には追加のグローバル変数セットを指定します。この変数セットは *globs* に統合されます。
    デフォルトでは、追加のグローバル変数はありません。
 
 
-   .. Optional argument *test_finder* is the :class:`DocTestFinder` object (or a
-   .. drop-in replacement) that is used to extract doctests from the module.
-
    オプション引数 *test_finder* は、モジュールから doctest を抽出するための :class:`DocTestFinder` オブジェクト
    (またはその代替となるオブジェクト) です。
 
-
-   .. Optional arguments *setUp*, *tearDown*, and *optionflags* are the same as for
-   .. function :func:`DocFileSuite` above.
 
    オプション引数 *setUp* 、 *tearDown* 、および *optionflags* は上の :func:`DocFileSuite` と同じです。
 
@@ -1945,21 +1298,10 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    .. versionadded:: 2.3
 
 
-   .. .. versionchanged:: 2.4
-   ..    The parameters *globs*, *extraglobs*, *test_finder*, *setUp*, *tearDown*, and
-   ..    *optionflags* were added; this function now uses the same search technique as
-   ..    :func:`testmod`.
-
    .. versionchanged:: 2.4
       *globs*, *extraglobs*, *test_finder*, *setUp*, *tearDown*, および *optionflags*
       パラメータが追加されました。また、この関数は doctest の検索に :func:`testmod` と同じテクニックを使うようになりました。
 
-
-.. Under the covers, :func:`DocTestSuite` creates a :class:`unittest.TestSuite` out
-.. of :class:`doctest.DocTestCase` instances, and :class:`DocTestCase` is a
-.. subclass of :class:`unittest.TestCase`. :class:`DocTestCase` isn't documented
-.. here (it's an internal detail), but studying its code can answer questions about
-.. the exact details of :mod:`unittest` integration.
 
 裏側では :func:`DocTestSuite` は :class:`doctest.DocTestCase`
 インスタンスから :class:`unittest.TestSuite` を作成しており、 :class:`DocTestCase`
@@ -1967,24 +1309,10 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 (これは内部実装上の詳細だからです) が、そのコードを調べてみれば、 :mod:`unittest` の組み込みの詳細に関する疑問を解決できるはずです。
 
 
-.. Similarly, :func:`DocFileSuite` creates a :class:`unittest.TestSuite` out of
-.. :class:`doctest.DocFileCase` instances, and :class:`DocFileCase` is a subclass
-.. of :class:`DocTestCase`.
-
 同様に、 :func:`DocFileSuite` は :class:`doctest.DocFileCase`
 インスタンスから :class:`unittest.TestSuite` を作成し、 :class:`DocFileCase` は
 :class:`DocTestCase` のサブクラスになっています。
 
-
-.. So both ways of creating a :class:`unittest.TestSuite` run instances of
-.. :class:`DocTestCase`.  This is important for a subtle reason: when you run
-.. :mod:`doctest` functions yourself, you can control the :mod:`doctest` options in
-.. use directly, by passing option flags to :mod:`doctest` functions.  However, if
-.. you're writing a :mod:`unittest` framework, :mod:`unittest` ultimately controls
-.. when and how tests get run.  The framework author typically wants to control
-.. :mod:`doctest` reporting options (perhaps, e.g., specified by command line
-.. options), but there's no way to pass options through :mod:`unittest` to
-.. :mod:`doctest` test runners.
 
 そのため、 :class:`unittest.TestSuite` クラスを生成するどちらの方法も :class:`DocTestCase` のインスタンスを実行します。
 これは次のような微妙な理由で重要です: :mod:`doctest`
@@ -1995,36 +1323,18 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 のテストランナーにオプションを渡す方法は存在しないのです。
 
 
-.. For this reason, :mod:`doctest` also supports a notion of :mod:`doctest`
-.. reporting flags specific to :mod:`unittest` support, via this function:
-
 このため、 :mod:`doctest` では、以下の関数を使って、 :mod:`unittest` サポート
 に特化したレポートフラグ表記方法もサポートしています。
 
 
 .. function:: set_unittest_reportflags(flags)
 
-   .. Set the :mod:`doctest` reporting flags to use.
-
    :mod:`doctest` のレポートフラグをセットします。
 
-
-   .. Argument *flags* or's together option flags.  See section
-   .. :ref:`doctest-options`.  Only "reporting flags" can be used.
 
    引数 *flags* にはオプションフラグを OR で結合して渡します。
    :ref:`doctest-options` 節を参照してください。「レポートフラグ」しか使えません。
 
-
-   .. This is a module-global setting, and affects all future doctests run by module
-   .. :mod:`unittest`:  the :meth:`runTest` method of :class:`DocTestCase` looks at
-   .. the option flags specified for the test case when the :class:`DocTestCase`
-   .. instance was constructed.  If no reporting flags were specified (which is the
-   .. typical and expected case), :mod:`doctest`'s :mod:`unittest` reporting flags are
-   .. or'ed into the option flags, and the option flags so augmented are passed to the
-   .. :class:`DocTestRunner` instance created to run the doctest.  If any reporting
-   .. flags were specified when the :class:`DocTestCase` instance was constructed,
-   .. :mod:`doctest`'s :mod:`unittest` reporting flags are ignored.
 
    この関数で設定した内容はモジュール全体にわたるものであり、関数呼び出し以後に :mod:`unittest` モジュールから実行されるすべての doctest
    に影響します: :class:`DocTestCase` の :meth:`runTest` メソッドは、 :class:`DocTestCase`
@@ -2034,9 +1344,6 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
    インスタンスを構築する際に何らかのレポートフラグが指定されていた場合、 :mod:`doctest` の :mod:`unittest`
    レポートフラグは無視されます。
 
-
-   .. The value of the :mod:`unittest` reporting flags in effect before the function
-   .. was called is returned by the function.
 
    この関数は、関数を呼び出す前に有効になっていた :mod:`unittest`  レポートフラグの値を返します。
 
@@ -2049,69 +1356,36 @@ doctest の入ったテキストファイルやモジュールから :class:`uni
 拡張 API
 --------
 
-.. The basic API is a simple wrapper that's intended to make doctest easy to use.
-.. It is fairly flexible, and should meet most users' needs; however, if you
-.. require more fine-grained control over testing, or wish to extend doctest's
-.. capabilities, then you should use the advanced API.
-
 基本 API は、 doctest を使いやすくするための簡単なラッパであり、柔軟性があってほとんどのユーザの必要を満たしています; とはいえ、
 もっとテストをきめ細かに制御したい場合や、 doctest の機能を拡張したい場合、拡張 API (advanced API) を使わなければなりません。
 
 
-.. The advanced API revolves around two container classes, which are used to store
-.. the interactive examples extracted from doctest cases:
-
 拡張 API は、doctest ケースから抽出した対話モードでの実行例を記憶するための二つのコンテナクラスを中心に構成されています。
 
-
-.. * :class:`Example`: A single Python :term:`statement`, paired with its expected
-..   output.
 
 * :class:`Example`: 1つの Python 文 (:term:`statement`) と、その期待する出力をペアにしたもの。
 
 
-.. * :class:`DocTest`: A collection of :class:`Example`\ s, typically extracted
-..   from a single docstring or text file.
-
 * :class:`DocTest`: :class:`Example` の集まり。通常一つの docstring やテキストファイルから抽出されます。
 
 
-.. Additional processing classes are defined to find, parse, and run, and check
-.. doctest examples:
-
 その他に、 doctest の実行例を検索、構文解析、実行、チェックするための処理クラスが以下のように定義されています。
 
-
-.. * :class:`DocTestFinder`: Finds all docstrings in a given module, and uses a
-..   :class:`DocTestParser` to create a :class:`DocTest` from every docstring that
-..   contains interactive examples.
 
 * :class:`DocTestFinder`: 与えられたモジュールからすべての docstring を検索し、 :class:`DocTestParser` を使って
   対話モードでの実行例が入ったすべての docstring から :class:`DocTest` を生成します。
 
 
-.. * :class:`DocTestParser`: Creates a :class:`DocTest` object from a string (such
-..   as an object's docstring).
-
 * :class:`DocTestParser`: (オブジェクトの docstring 等の) 文字列から :class:`DocTest`
   オブジェクトを生成します。
 
-
-.. * :class:`DocTestRunner`: Executes the examples in a :class:`DocTest`, and uses
-..   an :class:`OutputChecker` to verify their output.
 
 * :class:`DocTestRunner`: :class:`DocTest` 内の実行例を実行し、 :class:`OutputChecker`
   を使って出力を検証します。
 
 
-.. * :class:`OutputChecker`: Compares the actual output from a doctest example with
-..   the expected output, and decides whether they match.
-
 * :class:`OutputChecker`: doctest 実行例から実際に出力された結果を期待する出力と比較し、両者が一致するか判別します。
 
-
-.. The relationships among these processing classes are summarized in the following
-.. diagram:
 
 これらの処理クラスの関係を図にまとめると、以下のようになります。
 
@@ -2136,10 +1410,6 @@ DocTest オブジェクト
 
 .. class:: DocTest(examples, globs, name, filename, lineno, docstring)
 
-   .. A collection of doctest examples that should be run in a single namespace.  The
-   .. constructor arguments are used to initialize the member variables of the same
-   .. names.
-
    単一の名前空間内で実行される doctest 実行例の集まりです。コンストラクタの引数は :class:`DocTest` インスタンス中の同名の
    メンバ変数の初期化に使われます。
 
@@ -2147,27 +1417,16 @@ DocTest オブジェクト
    .. versionadded:: 2.4
 
 
-   .. :class:`DocTest` defines the following member variables.  They are initialized by
-   .. the constructor, and should not be modified directly.
-
    :class:`DocTest` では、以下のメンバ変数を定義しています。
    これらの変数はコンストラクタで初期化されます。直接変更してはなりません。
 
 
    .. attribute:: examples
 
-      .. A list of :class:`Example` objects encoding the individual interactive Python
-      .. examples that should be run by this test.
-
       対話モードにおける実行例それぞれをエンコードしていて、テストで実行される、 :class:`Example` オブジェクトからなるリストです。
 
 
    .. attribute:: globs
-
-      .. The namespace (aka globals) that the examples should be run in. This is a
-      .. dictionary mapping names to values.  Any changes to the namespace made by the
-      .. examples (such as binding new variables) will be reflected in :attr:`globs`
-      .. after the test is run.
 
       実行例を実行する名前空間 (いわゆるグローバル変数) です。このメンバは、名前から値への対応付けを行っている辞書です。実行例が名前空間に対して
       (新たな変数を束縛するなど) 何らかの変更を行った場合、 :attr:`globs` への反映はテストの実行後に起こります。
@@ -2175,17 +1434,10 @@ DocTest オブジェクト
 
    .. attribute:: name
 
-      .. A string name identifying the :class:`DocTest`.  Typically, this is the name
-      .. of the object or file that the test was extracted from.
-
       :class:`DocTest` を識別する名前の文字列です。通常、この値はテストを取り出したオブジェクトかファイルの名前になります。
 
 
    .. attribute:: filename
-
-      .. The name of the file that this :class:`DocTest` was extracted from; or
-      .. ``None`` if the filename is unknown, or if the :class:`DocTest` was not
-      .. extracted from a file.
 
       :class:`DocTest` を取り出したファイルの名前です; ファイル名が未知の場合や :class:`DocTest` をファイルから取り出したので
       ない場合には ``None`` になります。
@@ -2193,18 +1445,11 @@ DocTest オブジェクト
 
    .. attribute:: lineno
 
-      .. The line number within :attr:`filename` where this :class:`DocTest` begins, or
-      .. ``None`` if the line number is unavailable.  This line number is zero-based
-      .. with respect to the beginning of the file.
-
       :attr:`filename` 中で :class:`DocTest` のテスト実行例が始まっている行の
       行番号です。行番号は、ファイルの先頭を 0 として数えます。
 
 
    .. attribute:: docstring
-
-      .. The string that the test was extracted from, or 'None' if the string is
-      .. unavailable, or if the test was not extracted from a string.
 
       テストを取り出した docstring 自体を現す文字列です。 docstring 文字列を得られない場合や、文字列からテスト実行例を取り出したのでない場合には
       ``None`` になります。
@@ -2218,10 +1463,6 @@ Example オブジェクト
 
 .. class:: Example(source, want[, exc_msg][, lineno][, indent][, options])
 
-   .. A single interactive example, consisting of a Python statement and its expected
-   .. output.  The constructor arguments are used to initialize the member variables
-   .. of the same names.
-
    ひとつの Python 文と、それに対する期待する出力からなる、単一の対話的モードの実行例です。コンストラクタの引数は :class:`Example`
    インスタンス中の同名のメンバ変数の初期化に使われます。
 
@@ -2229,39 +1470,21 @@ Example オブジェクト
    .. versionadded:: 2.4
 
 
-   .. :class:`Example` defines the following member variables.  They are initialized by
-   .. the constructor, and should not be modified directly.
-
    :class:`Example` では、以下のメンバ変数を定義しています。これらの変数はコンストラクタで初期化されます。直接変更してはなりません。
 
 
    .. attribute:: source
-
-      .. A string containing the example's source code.  This source code consists of a
-      .. single Python statement, and always ends with a newline; the constructor adds
-      .. a newline when necessary.
 
       実行例のソースコードが入った文字列です。ソースコードは単一の Python で、末尾は常に改行です。コンストラクタは必要に応じて改行を追加します。
 
 
    .. attribute:: want
 
-      .. The expected output from running the example's source code (either from
-      .. stdout, or a traceback in case of exception).  :attr:`want` ends with a
-      .. newline unless no output is expected, in which case it's an empty string.  The
-      .. constructor adds a newline when necessary.
-
       実行例のソースコードを実行した際の期待する出力 (標準出力と、例外が生じた場合にはトレースバック) です。 :attr:`want` の末尾は、期待する出力がまったく
       ない場合を除いて常に改行になります。期待する出力がない場合には空文字列になります。コンストラクタは必要に応じて改行を追加します。
 
 
    .. attribute:: exc_msg
-
-      .. The exception message generated by the example, if the example is expected to
-      .. generate an exception; or ``None`` if it is not expected to generate an
-      .. exception.  This exception message is compared against the return value of
-      .. :func:`traceback.format_exception_only`.  :attr:`exc_msg` ends with a newline
-      .. unless it's ``None``.  The constructor adds a newline if needed.
 
       実行例が例外を生成すると期待される場合の例外メッセージです。例外を送出しない場合には ``None`` です。
       この例外メッセージは、 :func:`traceback.format_exception_only` の戻り値と比較されます。値が ``None``
@@ -2270,27 +1493,15 @@ Example オブジェクト
 
    .. attribute:: lineno
 
-      .. The line number within the string containing this example where the example
-      .. begins.  This line number is zero-based with respect to the beginning of the
-      .. containing string.
-
       この実行例を含む文字列における実行例が始まる行番号です。行番号は文字列の先頭を 0 として数えます。
 
 
    .. attribute:: indent
 
-      .. The example's indentation in the containing string, i.e., the number of space
-      .. characters that precede the example's first prompt.
-
       実行例の入っている文字列のインデント、すなわち実行例の最初のプロンプトより前にある空白文字の数です。
 
 
    .. attribute:: options
-
-      .. A dictionary mapping from option flags to ``True`` or ``False``, which is used
-      .. to override default options for this example.  Any option flags not contained
-      .. in this dictionary are left at their default value (as specified by the
-      .. :class:`DocTestRunner`'s :attr:`optionflags`). By default, no options are set.
 
       オプションフラグを ``True`` または ``False`` に対応付けている辞書です。実行例に対するデフォルトオプションを上書きするために
       用いられます。この辞書に入っていないオプションフラグはデフォルトの状態 (:class:`DocTestrunner` の
@@ -2305,39 +1516,21 @@ DocTestFinder オブジェクト
 
 .. class:: DocTestFinder([verbose][, parser][, recurse][, exclude_empty])
 
-   .. A processing class used to extract the :class:`DocTest`\ s that are relevant to
-   .. a given object, from its docstring and the docstrings of its contained objects.
-   .. :class:`DocTest`\ s can currently be extracted from the following object types:
-   .. modules, functions, classes, methods, staticmethods, classmethods, and
-   .. properties.
-
    与えられたオブジェクトについて、そのオブジェクト自身の docstring か、そのオブジェクトに含まれるオブジェクトの docstring
    から :class:`DocTest` を抽出する処理クラスです。現在のところ、モジュール、関数、クラス、メソッド、静的メソッド、
    クラスメソッド、プロパティから :class:`DocTest` を抽出できます。
 
 
-   .. The optional argument *verbose* can be used to display the objects searched by
-   .. the finder.  It defaults to ``False`` (no output).
-
    オプション引数 *verbose* を使うと、抽出処理の対象となるオブジェクトを表示できます。デフォルトは ``False`` (出力を行わない) です。
 
-
-   .. The optional argument *parser* specifies the :class:`DocTestParser` object (or a
-   .. drop-in replacement) that is used to extract doctests from docstrings.
 
    オプション引数 *parser* には、 docstring から :class:`DocTest` を
    抽出するのに使う :class:`DocTestParser` オブジェクト (またはその代替となるオブジェクト) を指定します。
 
 
-   .. If the optional argument *recurse* is false, then :meth:`DocTestFinder.find`
-   .. will only examine the given object, and not any contained objects.
-
    オプション引数 *recurse* が偽の場合、 :meth:`DocTestFinder.find`
    は与えられたオブジェクトだけを調べ、そのオブジェクトに含まれる他のオブジェクトを調べません。
 
-
-   .. If the optional argument *exclude_empty* is false, then
-   .. :meth:`DocTestFinder.find` will include tests for objects with empty docstrings.
 
    オプション引数 *exclude_empty* が偽の場合、 :meth:`DocTestFinder.find` は空の docstring
    を持つオブジェクトもテスト対象に含めます。
@@ -2346,32 +1539,19 @@ DocTestFinder オブジェクト
    .. versionadded:: 2.4
 
 
-   .. :class:`DocTestFinder` defines the following method:
-
    :class:`DocTestFinder` では以下のメソッドを定義しています。
 
 
    .. method:: find(obj[, name][, module][, globs][, extraglobs])
 
-      .. Return a list of the :class:`DocTest`\ s that are defined by *obj*'s
-      .. docstring, or by any of its contained objects' docstrings.
-
       *obj* または *obj* 内に入っているオブジェクトの docstring 中で定義されている
       :class:`DocTest` のリストを返します。
 
-
-      .. The optional argument *name* specifies the object's name; this name will be
-      .. used to construct names for the returned :class:`DocTest`\ s.  If *name* is
-      .. not specified, then ``obj.__name__`` is used.
 
       オプション引数 *name* には、オブジェクトの名前を指定します。
       この名前は、関数が返す :class:`DocTest` の名前になります。
       *name* を指定しない場合、 ``obj.__name__`` を使います。
 
-
-      .. The optional parameter *module* is the module that contains the given object.
-      .. If the module is not specified or is None, then the test finder will attempt
-      .. to automatically determine the correct module.  The object's module is used:
 
       オプションのパラメータ *module* は、指定したオブジェクトを収めているモジュールを指定します。
       *module* を指定しないか、 :const:`None` を指定した場合には、
@@ -2379,34 +1559,18 @@ DocTestFinder オブジェクト
       オブジェクトのモジュールは以下のような役割を果たします。
 
 
-      .. * As a default namespace, if *globs* is not specified.
-
       * *globs* を指定していない場合、オブジェクトのモジュールはデフォルトの名前空間になります。
 
-
-      .. * To prevent the DocTestFinder from extracting DocTests from objects that are
-      ..   imported from other modules.  (Contained objects with modules other than
-      ..   *module* are ignored.)
 
       * 他のモジュールから import されたオブジェクトに対して :class:`DocTestFinder` が :class:`DocTest`
         を抽出するのを避けるために使います (*module* 由来でないオブジェクトを無視します)。
 
 
-      .. * To find the name of the file containing the object.
-
       * オブジェクトの入っているファイル名を調べるために使います。
 
 
-      .. * To help find the line number of the object within its file.
-
       * オブジェクトがファイル内の何行目にあるかを調べる手助けにします。
 
-
-      .. If *module* is ``False``, no attempt to find the module will be made.  This is
-      .. obscure, of use mostly in testing doctest itself: if *module* is ``False``, or
-      .. is ``None`` but cannot be found automatically, then all objects are considered
-      .. to belong to the (non-existent) module, so all contained objects will
-      .. (recursively) be searched for doctests.
 
       *module* が ``False`` の場合には、モジュールの検索を試みません。
       これは正確さを欠くような使い方で、通常 doctest 自体のテストにしか使いません。
@@ -2415,13 +1579,6 @@ DocTestFinder オブジェクト
       モジュールに属するとみなされ、そのオブジェクト内のすべてのオブジェクトに対して
       (再帰的に) doctest の検索を行います。
 
-
-      .. The globals for each :class:`DocTest` is formed by combining *globs* and
-      .. *extraglobs* (bindings in *extraglobs* override bindings in *globs*).  A new
-      .. shallow copy of the globals dictionary is created for each :class:`DocTest`.
-      .. If *globs* is not specified, then it defaults to the module's *__dict__*, if
-      .. specified, or ``{}`` otherwise.  If *extraglobs* is not specified, then it
-      .. defaults to ``{}``.
 
       各 :class:`DocTest` のグローバル変数は、 *globs* と *extraglobs* を合わせたもの (*extraglobs*
       内の束縛が *globs* 内の束縛を上書きする) になります。
@@ -2439,41 +1596,25 @@ DocTestParser オブジェクト
 
 .. class:: DocTestParser()
 
-   .. A processing class used to extract interactive examples from a string, and use
-   .. them to create a :class:`DocTest` object.
-
    対話モードの実行例を文字列から抽出し、それを使って :class:`DocTest` オブジェクトを生成するために使われる処理クラスです。
 
 
    .. versionadded:: 2.4
 
 
-   .. :class:`DocTestParser` defines the following methods:
-
    :class:`DocTestParser` では以下のメソッドを定義しています。
 
 
    .. method:: get_doctest(string, globs, name, filename, lineno)
 
-      .. Extract all doctest examples from the given string, and collect them into a
-      .. :class:`DocTest` object.
-
       指定した文字列からすべての doctest 実行例を抽出し、 :class:`DocTest` オブジェクト内に集めます。
 
-
-      .. *globs*, *name*, *filename*, and *lineno* are attributes for the new
-      .. :class:`DocTest` object.  See the documentation for :class:`DocTest` for more
-      .. information.
 
       *globs*, *name*, *filename*, および *lineno* は新たに作成される :class:`DocTest`
       オブジェクトの属性になります。詳しくは :class:`DocTest` のドキュメントを参照してください。
 
 
    .. method:: get_examples(string[, name])
-
-      .. Extract all doctest examples from the given string, and return them as a list
-      .. of :class:`Example` objects.  Line numbers are 0-based.  The optional argument
-      .. *name* is a name identifying this string, and is only used for error messages.
 
       指定した文字列からすべての doctest 実行例を抽出し、 :class:`Example`
       オブジェクトからなるリストにして返します。
@@ -2482,11 +1623,6 @@ DocTestParser オブジェクト
 
 
    .. method:: parse(string[, name])
-
-      .. Divide the given string into examples and intervening text, and return them as
-      .. a list of alternating :class:`Example`\ s and strings. Line numbers for the
-      .. :class:`Example`\ s are 0-based.  The optional argument *name* is a name
-      .. identifying this string, and is only used for error messages.
 
       指定した文字列を、実行例とその間のテキストに分割し、
       実行例を :class:`Example` オブジェクトに変換し、
@@ -2503,17 +1639,8 @@ DocTestRunner オブジェクト
 
 .. class:: DocTestRunner([checker][, verbose][, optionflags])
 
-   .. A processing class used to execute and verify the interactive examples in a
-   .. :class:`DocTest`.
-
    :class:`DocTest` 内の対話モード実行例を実行し、検証する際に用いられる処理クラスです。
 
-
-   .. The comparison between expected outputs and actual outputs is done by an
-   .. :class:`OutputChecker`.  This comparison may be customized with a number of
-   .. option flags; see section :ref:`doctest-options` for more information.  If the
-   .. option flags are insufficient, then the comparison may also be customized by
-   .. passing a subclass of :class:`OutputChecker` to the constructor.
 
    期待する出力と実際の出力との比較は :class:`OutputChecker` で行います。
    比較は様々なオプションフラグを使ってカスタマイズできます;
@@ -2521,14 +1648,6 @@ DocTestRunner オブジェクト
    オプションフラグでは不十分な場合、コンストラクタに
    :class:`OutputChecker` のサブクラスを渡して比較方法をカスタマイズできます。
 
-
-   .. The test runner's display output can be controlled in two ways. First, an output
-   .. function can be passed to :meth:`TestRunner.run`; this function will be called
-   .. with strings that should be displayed.  It defaults to ``sys.stdout.write``.  If
-   .. capturing the output is not sufficient, then the display output can be also
-   .. customized by subclassing DocTestRunner, and overriding the methods
-   .. :meth:`report_start`, :meth:`report_success`,
-   .. :meth:`report_unexpected_exception`, and :meth:`report_failure`.
 
    テストランナーの表示出力の制御には二つの方法があります。
    一つ目は、 :meth:`TestRunner.run` に出力用の関数を渡すというものです。
@@ -2539,30 +1658,16 @@ DocTestRunner オブジェクト
    :meth:`report_failure` をオーバライドすればカスタマイズできます。
 
 
-   .. The optional keyword argument *checker* specifies the :class:`OutputChecker`
-   .. object (or drop-in replacement) that should be used to compare the expected
-   .. outputs to the actual outputs of doctest examples.
-
    オプションのキーワード引数 *checker* には、 :class:`OutputChecker` オブジェクト (またはその代替となるオブジェクト)
    を指定します。このオブジェクトは doctest 実行例の期待する出力と実際の出力との比較を行う際に使われます。
 
-
-   .. The optional keyword argument *verbose* controls the :class:`DocTestRunner`'s
-   .. verbosity.  If *verbose* is ``True``, then information is printed about each
-   .. example, as it is run.  If *verbose* is ``False``, then only failures are
-   .. printed.  If *verbose* is unspecified, or ``None``, then verbose output is used
-   .. iff the command-line switch :option:`-v` is used.
 
    オプションのキーワード引数 *verbose* は、 :class:`DocTestRunner` の出すメッセージの冗長性を制御します。
    *verbose* が ``True`` の場合、各実行例を実行する都度、その実行例についての情報を出力します。
    *verbose* が ``False`` の場合、テストの失敗だけを出力します。
    *verbose* を指定しない場合や ``None`` を指定した場合、コマンドラインスイッチ
-   :option:`-v` を使った場合にのみ *verbose* 出力を適用します。
+   ``-v`` を使った場合にのみ *verbose* 出力を適用します。
 
-
-   .. The optional keyword argument *optionflags* can be used to control how the test
-   .. runner compares expected output to actual output, and how it displays failures.
-   .. For more information, see section :ref:`doctest-options`.
 
    オプションのキーワード引数  *optionflags* を使うと、
    テストランナーが期待される出力と実際の出力を比較する方法や、
@@ -2573,25 +1678,15 @@ DocTestRunner オブジェクト
    .. versionadded:: 2.4
 
 
-   .. :class:`DocTestParser` defines the following methods:
-
    :class:`DocTestRunner` では、以下のメソッドを定義しています。
 
 
    .. method:: report_start(out, test, example)
 
-      .. Report that the test runner is about to process the given example. This method
-      .. is provided to allow subclasses of :class:`DocTestRunner` to customize their
-      .. output; it should not be called directly.
-
       テストランナーが実行例を処理しようとしているときにレポートを出力します。
       :class:`DocTestRunner` の出力をサブクラスでカスタマイズできるように
       するためのメソッドです。直接呼び出してはなりません。
 
-
-      .. *example* is the example about to be processed.  *test* is the test
-      .. *containing example*.  *out* is the output function that was passed to
-      .. :meth:`DocTestRunner.run`.
 
       *example* は処理する実行例です。 *test* は *example* の入っているテストです。
       *out* は出力用の関数で、 :meth:`DocTestRunner.run` に渡されます。
@@ -2599,18 +1694,10 @@ DocTestRunner オブジェクト
 
    .. method:: report_success(out, test, example, got)
 
-      .. Report that the given example ran successfully.  This method is provided to
-      .. allow subclasses of :class:`DocTestRunner` to customize their output; it
-      .. should not be called directly.
-
       与えられた実行例が正しく動作したことを報告します。
       このメソッドは :class:`DocTestRunner` のサブクラスで出力を
       カスタマイズできるようにするために提供されています; 直接呼び出してはなりません。
 
-
-      .. *example* is the example about to be processed.  *got* is the actual output
-      .. from the example.  *test* is the test containing *example*.  *out* is the
-      .. output function that was passed to :meth:`DocTestRunner.run`.
 
       *example* は処理する実行例です。 *got* は実行例から実際に得られた出力です。
       *test* は *example* の入っているテストです。
@@ -2619,18 +1706,10 @@ DocTestRunner オブジェクト
 
    .. method:: report_failure(out, test, example, got)
 
-      .. Report that the given example failed.  This method is provided to allow
-      .. subclasses of :class:`DocTestRunner` to customize their output; it should not
-      .. be called directly.
-
       与えられた実行例が正しく動作しなかったことを報告します。
       このメソッドは :class:`DocTestRunner` のサブクラスで出力を
       カスタマイズできるようにするために提供されています; 直接呼び出してはなりません。
 
-
-      .. *example* is the example about to be processed.  *got* is the actual output
-      .. from the example.  *test* is the test containing *example*.  *out* is the
-      .. output function that was passed to :meth:`DocTestRunner.run`.
 
       *example* は処理する実行例です。 *got* は実行例から実際に得られた出力です。
       *test* は *example* の入っているテストです。
@@ -2639,19 +1718,10 @@ DocTestRunner オブジェクト
 
    .. method:: report_unexpected_exception(out, test, example, exc_info)
 
-      .. Report that the given example raised an unexpected exception. This method is
-      .. provided to allow subclasses of :class:`DocTestRunner` to customize their
-      .. output; it should not be called directly.
-
       与えられた実行例が期待とは違う例外を送出したことを報告します。
       このメソッドは :class:`DocTestRunner` のサブクラスで出力をカスタマイズ
       できるようにするために提供されています; 直接呼び出してはなりません。
 
-
-      .. *example* is the example about to be processed. *exc_info* is a tuple
-      .. containing information about the unexpected exception (as returned by
-      .. :func:`sys.exc_info`). *test* is the test containing *example*.  *out* is the
-      .. output function that was passed to :meth:`DocTestRunner.run`.
 
       *example* は処理する実行例です。 *exc_info* には予期せず送出された
       例外の情報を入れたタプル (:func:`sys.exc_info` の返す内容) になります。
@@ -2661,17 +1731,9 @@ DocTestRunner オブジェクト
 
    .. method:: run(test[, compileflags][, out][, clear_globs])
 
-      .. Run the examples in *test* (a :class:`DocTest` object), and display the
-      .. results using the writer function *out*.
-
       *test* 内の実行例 (:class:`DocTest` オブジェクト) を実行し、
       その結果を出力用の関数 *out* を使って表示します。
 
-
-      .. The examples are run in the namespace ``test.globs``.  If *clear_globs* is
-      .. true (the default), then this namespace will be cleared after the test runs,
-      .. to help with garbage collection. If you would like to examine the namespace
-      .. after the test completes, then use *clear_globs=False*.
 
       実行例は名前空間 ``test.globs`` の下で実行されます。
       *clear_globs* が真 (デフォルト) の場合、名前空間はテストの実行後に消去され、
@@ -2680,18 +1742,10 @@ DocTestRunner オブジェクト
       :const:`False` にしてください。
 
 
-      .. *compileflags* gives the set of flags that should be used by the Python
-      .. compiler when running the examples.  If not specified, then it will default to
-      .. the set of future-import flags that apply to *globs*.
-
       *compileflags* には、実行例を実行する際に Python コンパイラに適用するフラグセットを指定します。
       *compileflags* を指定しない場合、デフォルト値は *globs* で適用されている
       future-import フラグセットになります。
 
-
-      .. The output of each example is checked using the :class:`DocTestRunner`'s
-      .. output checker, and the results are formatted by the
-      .. :meth:`DocTestRunner.report_\*` methods.
 
       各実行例の出力は :class:`DocTestRunner` の出力チェッカで検査され、その結果は
       :meth:`DocTestRunner.report_\*` メソッドで書式化されます。
@@ -2699,23 +1753,13 @@ DocTestRunner オブジェクト
 
    .. method:: summarize([verbose])
 
-      .. Print a summary of all the test cases that have been run by this DocTestRunner,
-      .. and return a :term:`named tuple` ``TestResults(failed, attempted)``.
-
       この DocTestRunner が実行したすべてのテストケースのサマリを出力し、
       名前付きタプル (:term:`named tuple`) ``TestResults(failed, attempted)`` を返します。
 
 
-      .. The optional *verbose* argument controls how detailed the summary is.  If the
-      .. verbosity is not specified, then the :class:`DocTestRunner`'s verbosity is
-      .. used.
-
       オプションの *verbose* 引数を使うと、どのくらいサマリを詳しくするかを制御できます。
       冗長度を指定しない場合、 :class:`DocTestRunner` 自体の冗長度を使います。
 
-
-      .. .. versionchanged:: 2.6
-      ..    Use a named tuple.
 
       .. versionchanged:: 2.6
          名前付きタプル (named tuple) を使うようになりました。
@@ -2729,12 +1773,6 @@ OutputChecker オブジェクト
 
 .. class:: OutputChecker()
 
-   .. A class used to check the whether the actual output from a doctest example
-   .. matches the expected output.  :class:`OutputChecker` defines two methods:
-   .. :meth:`check_output`, which compares a given pair of outputs, and returns true
-   .. if they match; and :meth:`output_difference`, which returns a string describing
-   .. the differences between two outputs.
-
    doctest 実行例を実際に実行したときの出力が期待する出力と一致するかどうかを
    チェックするために使われるクラスです。
    :class:`OutputChecker` では、与えられた二つの出力を比較して、
@@ -2746,18 +1784,10 @@ OutputChecker オブジェクト
    .. versionadded:: 2.4
 
 
-   .. :class:`OutputChecker` defines the following methods:
-
    :class:`OutputChecker` では以下のメソッドを定義しています。
 
 
    .. method:: check_output(want, got, optionflags)
-
-      .. Return ``True`` iff the actual output from an example (*got*) matches the
-      .. expected output (*want*).  These strings are always considered to match if
-      .. they are identical; but depending on what option flags the test runner is
-      .. using, several non-exact match types are also possible.  See section
-      .. :ref:`doctest-options` for more information about option flags.
 
       実行例から実際に得られた出力 (*got*) と、期待する出力 (*want*)
       が一致する場合にのみ ``True`` を返します。
@@ -2768,10 +1798,6 @@ OutputChecker オブジェクト
 
 
    .. method:: output_difference(example, got, optionflags)
-
-      .. Return a string describing the differences between the expected output for a
-      .. given example (*example*) and the actual output (*got*).  *optionflags* is the
-      .. set of option flags used to compare *want* and *got*.
 
       与えられた実行例の期待する出力 (*want*)と、実際に得られた出力 (*got*)
       の間の差異を解説している文字列を返します。
@@ -2784,39 +1810,21 @@ OutputChecker オブジェクト
 デバッグ
 --------
 
-.. Doctest provides several mechanisms for debugging doctest examples:
-
 :mod:`doctest` では、doctest 実行例をデバッグするメカニズムをいくつか提供しています。
 
-
-.. * Several functions convert doctests to executable Python programs, which can be
-..   run under the Python debugger, :mod:`pdb`.
 
 * doctest を実行可能な Python プログラムに変換し、 Python デバッガ :mod:`pdb`
   で実行できるようにするための関数がいくつかあります。
 
-
-.. * The :class:`DebugRunner` class is a subclass of :class:`DocTestRunner` that
-..   raises an exception for the first failing example, containing information about
-..   that example. This information can be used to perform post-mortem debugging on
-..   the example.
 
 * :class:`DocTestRunner` のサブクラス :class:`DebugRunner` クラスが
   あります。このクラスは、最初に失敗した実行例に対して例外を送出します。
   例外には実行例に関する情報が入っています。この情報は実行例の検死デバッグに利用できます。
 
 
-.. * The :mod:`unittest` cases generated by :func:`DocTestSuite` support the
-..   :meth:`debug` method defined by :class:`unittest.TestCase`.
-
 * :func:`DocTestSuite` の生成する :mod:`unittest` テストケースは、 :meth:`debug`
   メソッドをサポートしています。 :meth:`debug` は :class:`unittest.TestCase` で定義されています。
 
-
-.. * You can add a call to :func:`pdb.set_trace` in a doctest example, and you'll
-..   drop into the Python debugger when that line is executed.  Then you can inspect
-..   current values of variables, and so on.  For example, suppose :file:`a.py`
-..   contains just this module docstring:
 
 * :func:`pdb.set_trace` を doctest 実行例の中で呼び出しておけば、その行が実行されたときに Python
   デバッガが組み込まれます。
@@ -2837,8 +1845,6 @@ OutputChecker オブジェクト
      9
      """
 
-
-  .. Then an interactive Python session may look like this:
 
   対話セッションは以下のようになるでしょう。
 
@@ -2876,30 +1882,17 @@ OutputChecker オブジェクト
      >>>
 
 
-  .. .. versionchanged:: 2.4
-  ..    The ability to use :func:`pdb.set_trace` usefully inside doctests was added.
-
   .. versionchanged:: 2.4
      :func:`pdb.set_trace` を doctest の中で有効に使えるようになりました。
 
-
-.. Functions that convert doctests to Python code, and possibly run the synthesized
-.. code under the debugger:
 
 以下は、doctest を Python コードに変換して、できたコードをデバッガ下で実行できるようにするための関数です。
 
 
 .. function:: script_from_examples(s)
 
-   .. Convert text with examples to a script.
-
    実行例の入ったテキストをスクリプトに変換します。
 
-
-   .. Argument *s* is a string containing doctest examples.  The string is converted
-   .. to a Python script, where doctest examples in *s* are converted to regular code,
-   .. and everything else is converted to Python comments.  The generated script is
-   .. returned as a string. For example,
 
    引数 *s* は doctest 実行例の入った文字列です。
    この文字列は Python スクリプトに変換され、その中では *s* の doctest 実行例が
@@ -2939,10 +1932,6 @@ OutputChecker オブジェクト
    になります。
 
 
-   .. This function is used internally by other functions (see below), but can also be
-   .. useful when you want to transform an interactive Python session into a Python
-   .. script.
-
    この関数は内部的に他の関数から使われていますが (下記参照) 、対話セッションを
    Python スクリプトに変換したいような場合にも便利でしょう。
 
@@ -2952,17 +1941,8 @@ OutputChecker オブジェクト
 
 .. function:: testsource(module, name)
 
-   .. Convert the doctest for an object to a script.
-
    あるオブジェクトの doctest をスクリプトに変換します。
 
-
-   .. Argument *module* is a module object, or dotted name of a module, containing the
-   .. object whose doctests are of interest.  Argument *name* is the name (within the
-   .. module) of the object with the doctests of interest.  The result is a string,
-   .. containing the object's docstring converted to a Python script, as described for
-   .. :func:`script_from_examples` above.  For example, if module :file:`a.py`
-   .. contains a top-level function :func:`f`, then
 
    引数 *module* はモジュールオブジェクトか、対象の doctest を持つ
    オブジェクトの入ったモジュールのドット表記名です。
@@ -2978,9 +1958,6 @@ OutputChecker オブジェクト
       print doctest.testsource(a, "a.f")
 
 
-   .. prints a script version of function :func:`f`'s docstring, with doctests
-   .. converted to code, and the rest placed in comments.
-
    を実行すると、 :func:`f` の docstring から doctest をコードに変換し、
    それ以外をコメントにしたスクリプトを出力します。
 
@@ -2990,34 +1967,16 @@ OutputChecker オブジェクト
 
 .. function:: debug(module, name[, pm])
 
-   .. Debug the doctests for an object.
-
    オブジェクトの持つ doctest をデバッグします。
 
-
-   .. The *module* and *name* arguments are the same as for function
-   .. :func:`testsource` above.  The synthesized Python script for the named object's
-   .. docstring is written to a temporary file, and then that file is run under the
-   .. control of the Python debugger, :mod:`pdb`.
 
    *module* および *name* 引数は上の :func:`testsource` と同じです。
    指定したオブジェクトの docstring から合成された Python
    スクリプトは一時ファイルに書き出され、その後 Python デバッガ :mod:`pdb` の制御下で実行されます。
 
 
-   .. A shallow copy of ``module.__dict__`` is used for both local and global
-   .. execution context.
-
    ローカルおよびグローバルの実行コンテキストには、 ``module.__dict__`` の浅いコピーが使われます。
 
-
-   .. Optional argument *pm* controls whether post-mortem debugging is used.  If *pm*
-   .. has a true value, the script file is run directly, and the debugger gets
-   .. involved only if the script terminates via raising an unhandled exception.  If
-   .. it does, then post-mortem debugging is invoked, via :func:`pdb.post_mortem`,
-   .. passing the traceback object from the unhandled exception.  If *pm* is not
-   .. specified, or is false, the script is run under the debugger from the start, via
-   .. passing an appropriate :func:`execfile` call to :func:`pdb.run`.
 
    オプション引数 *pm* は、検死デバッグを行うかどうかを指定します。
    *pm* が真の場合、スクリプトファイルは直接実行され、
@@ -3031,34 +1990,20 @@ OutputChecker オブジェクト
    .. versionadded:: 2.3
 
 
-   .. .. versionchanged:: 2.4
-   ..    The *pm* argument was added.
-
    .. versionchanged:: 2.4
       引数 *pm* が追加されました。
 
 
 .. function:: debug_src(src[, pm][, globs])
 
-   .. Debug the doctests in a string.
-
    文字列中の doctest をデバッグします。
 
-
-   .. This is like function :func:`debug` above, except that a string containing
-   .. doctest examples is specified directly, via the *src* argument.
 
    上の :func:`debug` に似ていますが、doctest の入った文字列は *src* 引数で直接指定します。
 
 
-   .. Optional argument *pm* has the same meaning as in function :func:`debug` above.
-
    オプション引数 *pm* は上の :func:`debug` と同じ意味です。
 
-
-   .. Optional argument *globs* gives a dictionary to use as both local and global
-   .. execution context.  If not specified, or ``None``, an empty dictionary is used.
-   .. If specified, a shallow copy of the dictionary is used.
 
    オプション引数 *globs* には、ローカルおよびグローバルな実行コンテキストの
    両方に使われる辞書を指定します。
@@ -3069,11 +2014,6 @@ OutputChecker オブジェクト
    .. versionadded:: 2.4
 
 
-.. The :class:`DebugRunner` class, and the special exceptions it may raise, are of
-.. most interest to testing framework authors, and will only be sketched here.  See
-.. the source code, and especially :class:`DebugRunner`'s docstring (which is a
-.. doctest!) for more details:
-
 :class:`DebugRunner` クラス自体や :class:`DebugRunner` クラスが送出する特殊な例外は、
 テストフレームワークの作者にとって非常に興味のあるところですが、
 ここでは概要しか述べられません。
@@ -3082,13 +2022,6 @@ OutputChecker オブジェクト
 
 
 .. class:: DebugRunner([checker][, verbose][, optionflags])
-
-   .. A subclass of :class:`DocTestRunner` that raises an exception as soon as a
-   .. failure is encountered.  If an unexpected exception occurs, an
-   .. :exc:`UnexpectedException` exception is raised, containing the test, the
-   .. example, and the original exception.  If the output doesn't match, then a
-   .. :exc:`DocTestFailure` exception is raised, containing the test, the example, and
-   .. the actual output.
 
    テストの失敗に遭遇するとすぐに例外を送出するようになっている
    :class:`DocTestRunner` のサブクラスです。予期しない例外が生じると、
@@ -3099,88 +2032,58 @@ OutputChecker オブジェクト
    この例外には、テスト、実行例、実際の出力が入っています。
 
 
-   .. For information about the constructor parameters and methods, see the
-   .. documentation for :class:`DocTestRunner` in section :ref:`doctest-advanced-api`.
-
    コンストラクタのパラメータやメソッドについては、 :ref:`doctest-advanced-api` 節の
    :class:`DocTestRunner` のドキュメントを参照してください。
 
-
-.. There are two exceptions that may be raised by :class:`DebugRunner` instances:
 
 :class:`DebugRunner` インスタンスの送出する例外には以下の二つがあります。
 
 
 .. exception:: DocTestFailure(test, example, got)
 
-   .. An exception thrown by :class:`DocTestRunner` to signal that a doctest example's
-   .. actual output did not match its expected output. The constructor arguments are
-   .. used to initialize the member variables of the same names.
-
    doctest 実行例の実際の出力が期待する出力と一致しなかったことを示すために
    :class:`DocTestRunner` が送出する例外です。
    コンストラクタの引数は、インスタンスの同名のメンバ変数を初期化するために使われます。
 
-
-.. :exc:`DocTestFailure` defines the following member variables:
 
 :exc:`DocTestFailure` では以下のメンバ変数を定義しています。
 
 
 .. attribute:: DocTestFailure.test
 
-   .. The :class:`DocTest` object that was being run when the example failed.
-
    実行例が失敗した時に実行されていた :class:`DocTest` オブジェクトです。
 
 
 .. attribute:: DocTestFailure.example
-
-   .. The :class:`Example` that failed.
 
    失敗した :class:`Example` オブジェクトです。
 
 
 .. attribute:: DocTestFailure.got
 
-   .. The example's actual output.
-
    実行例の実際の出力です。
 
 
 .. exception:: UnexpectedException(test, example, exc_info)
 
-   .. An exception thrown by :class:`DocTestRunner` to signal that a doctest example
-   .. raised an unexpected exception.  The constructor arguments are used to
-   .. initialize the member variables of the same names.
-
    doctest 実行例が予期しない例外を送出したことを示すために :class:`DocTestRunner` が送出する例外です。
    コンストラクタの引数は、インスタンスの同名のメンバ変数を初期化するために使われます。
 
-
-.. :exc:`UnexpectedException` defines the following member variables:
 
 :exc:`UnexpectedException` では以下のメンバ変数を定義しています。
 
 
 .. attribute:: UnexpectedException.test
 
-   .. The :class:`DocTest` object that was being run when the example failed.
-
    実行例が失敗した時に実行されていた :class:`DocTest` オブジェクトです。
 
 
 .. attribute:: UnexpectedException.example
 
-   .. The :class:`Example` that failed.
-
    失敗した :class:`Example` オブジェクトです。
 
 
 .. attribute:: UnexpectedException.exc_info
-
-   .. A tuple containing information about the unexpected exception, as returned by
-   .. :func:`sys.exc_info`.
 
    予期しない例外についての情報の入ったタプルで、 :func:`sys.exc_info`  が返すのと同じものです。
 
@@ -3190,17 +2093,8 @@ OutputChecker オブジェクト
 アドバイス
 ----------
 
-.. As mentioned in the introduction, :mod:`doctest` has grown to have three primary
-.. uses:
-
 冒頭でも触れたように、 :mod:`doctest` は、
 
-
-.. #. Checking examples in docstrings.
-
-.. #. Regression testing.
-
-.. #. Executable documentation / literate testing.
 
 #. docstring 内の実行例をチェックする
 
@@ -3212,21 +2106,9 @@ OutputChecker オブジェクト
 という三つの主な用途を持つようになりました。
 
 
-.. These uses have different requirements, and it is important to distinguish them.
-.. In particular, filling your docstrings with obscure test cases makes for bad
-.. documentation.
-
 これらの用途にはそれぞれ違った要求があるので、区別して考えるのが重要です。
 特に、 docstring を曖昧なテストケースに埋もれさせてしまうとドキュメントとしては最悪です。
 
-
-.. When writing a docstring, choose docstring examples with care. There's an art to
-.. this that needs to be learned---it may not be natural at first.  Examples should
-.. add genuine value to the documentation.  A good example can often be worth many
-.. words. If done with care, the examples will be invaluable for your users, and
-.. will pay back the time it takes to collect them many times over as the years go
-.. by and things change.  I'm still amazed at how often one of my :mod:`doctest`
-.. examples stops working after a "harmless" change.
 
 docstring の例は注意深く作成してください。
 doctest の作成にはコツがあり、きちんと学ぶ必要があります --- 最初はすんなりできないでしょう。
@@ -3238,24 +2120,6 @@ doctest の作成にはコツがあり、きちんと学ぶ必要があります
 私は今でも、自分の :mod:`doctest` 実行例が "無害な"
 変更を行った際にうまく動作しなくなることに驚いています。
 
-
-.. Doctest also makes an excellent tool for regression testing, especially if you
-.. don't skimp on explanatory text.  By interleaving prose and examples, it becomes
-.. much easier to keep track of what's actually being tested, and why.  When a test
-.. fails, good prose can make it much easier to figure out what the problem is, and
-.. how it should be fixed.  It's true that you could write extensive comments in
-.. code-based testing, but few programmers do. Many have found that using doctest
-.. approaches instead leads to much clearer tests.  Perhaps this is simply because
-.. doctest makes writing prose a little easier than writing code, while writing
-.. comments in code is a little harder.  I think it goes deeper than just that:
-.. the natural attitude when writing a doctest-based test is that you want to
-.. explain the fine points of your software, and illustrate them with examples.
-.. This in turn naturally leads to test files that start with the simplest
-.. features, and logically progress to complications and edge cases.  A coherent
-.. narrative is the result, instead of a collection of isolated functions that test
-.. isolated bits of functionality seemingly at random.  It's a different attitude,
-.. and produces different results, blurring the distinction between testing and
-.. explaining.
 
 説明テキストの作成をけちらなければ、 :mod:`doctest` は回帰テストの優れたツールにもなり得ます。
 説明文と実行例を交互に記述していけば、
@@ -3276,17 +2140,9 @@ doctest ベースのテストを書くときの自然な態度は、
 テストと説明の区別をなくして、まったく違う結果を生み出すのです。
 
 
-.. Regression testing is best confined to dedicated objects or files.  There are
-.. several options for organizing tests:
-
 回帰テストは特定のオブジェクトやファイルにまとめておくのがよいでしょう。
 回帰テストの組み方にはいくつか選択肢があります。
 
-
-.. * Write text files containing test cases as interactive examples, and test the
-..   files using :func:`testfile` or :func:`DocFileSuite`.  This is recommended,
-..   although is easiest to do for new projects, designed from the start to use
-..   doctest.
 
 * テストケースを対話モードの実行例にして入れたテキストファイルを書き、
   :func:`testifle` や :func:`DocFileSuite` を使ってそのファイルをテストします。
@@ -3294,27 +2150,16 @@ doctest ベースのテストを書くときの自然な態度は、
   最初から doctest を使うようにしている新たなプロジェクトでは、この方法が一番簡単です。
 
 
-.. * Define functions named ``_regrtest_topic`` that consist of single docstrings,
-..   containing test cases for the named topics.  These functions can be included in
-..   the same file as the module, or separated out into a separate test file.
-
 * ``_regrtest_topic`` という名前の関数を定義します。
   この関数には、あるトピックに対応するテストケースの入った docstring が一つだけ入っています。
   この関数はモジュールと同じファイルの中にも置けますし、別のテストファイルに分けてもかまいません。
 
-
-.. * Define a ``__test__`` dictionary mapping from regression test topics to
-..   docstrings containing test cases.
 
 * 回帰テストのトピックをテストケースの入った docstring
   に対応付けた辞書 ``__test__`` 辞書を定義します。
 
 
 .. rubric:: Footnotes
-
-.. .. [#] Examples containing both expected output and an exception are not supported.
-..    Trying to guess where one ends and the other begins is too error-prone, and that
-..    also makes for a confusing test.
 
 .. [#] 期待する出力結果と例外の両方を含んだ例はサポートされていません。
    一方の終わりと他方の始まりを見分けようとするのはエラーの元になりがちですし、
