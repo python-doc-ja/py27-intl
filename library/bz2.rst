@@ -65,6 +65,11 @@ bz2 モジュールが提供している機能を以下にまとめます。
    :class:`BZ2File` が生成するインスタンスは通常のファイルインスタンスと同様の
    イテレーション操作をサポートしています。
 
+   :class:`BZ2File` は :keyword:`with` 構文をサポートしています。
+
+   .. versionchanged:: 2.7
+      :keyword:`with` 構文のサポートが追加されました。
+
 
    .. method:: close()
 

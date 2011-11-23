@@ -105,6 +105,10 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
    *offset* のデフォルトは 0 です。
    *offset* は PAGESIZE または ALLOCATIONGRANULARITY の倍数でなければなりません。
 
+   Mac OS X と OpenVMS において、作成された memory mapping の正当性を確実にするために
+   *fileno* で指定されたファイルディスクリプタは内部で自動的に物理的な
+   ストレージ (physical backing store) と同期されます。
+
    以下の例は :class:`mmap` の簡単な使い方です::
 
       import mmap
@@ -180,7 +184,7 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
 
       オフセット *src* から始まる *count* バイトをインデックス *dest*
       の位置へコピーします。もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      :exc:`TypeError` 例外を送出します。
+      :exc:`TypeError` 例外を発生させます。
 
 
    .. method:: read(num)
@@ -203,7 +207,7 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
 
       マップと元ファイル(がもしあれば)のサイズを変更します。
       もし mmap が :const:`ACCESS_READ` または :const:`ACCESS_COPY`
-      で作成されたならば、マップサイズの変更は :exc:`TypeError` 例外を送出します。
+      で作成されたならば、マップサイズの変更は :exc:`TypeError` 例外を発生させます。
 
 
    .. method:: rfind(string[, start[, end]])
@@ -237,7 +241,7 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
       メモリ内のファイル・ポインタの現在位置に *string* のバイト列を書き込みます。
       ファイル位置はバイト列が書き込まれた後の位置へ更新されます。
       もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      書き込み時に :exc:`TypeError` 例外が送出されるでしょう。
+      書き込み時に :exc:`TypeError` 例外を発生させるでしょう。
 
 
    .. method:: write_byte(byte)
@@ -245,4 +249,4 @@ Unix バージョンと Windows バージョンのどちらのコンストラク
       メモリ内のファイル・ポインタの現在位置に単一文字の文字列 *byte* を書き込みます。
       ファイル位置は ``1`` だけ進みます。
       もし mmap が :const:`ACCESS_READ` で作成されていた場合、
-      書き込み時に :exc:`TypeError` 例外が送出されるでしょう。
+      書き込み時に :exc:`TypeError` 例外を発生させるでしょう。

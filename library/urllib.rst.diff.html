@@ -1,0 +1,224 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/urllib.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -14,24 +14,28 @@</span>
+ 
+ .. index::
+    single: WWW
+    single: World Wide Web
+    single: URL
+ 
+ This module provides a high-level interface for fetching data across the World
+ Wide Web.  In particular, the :func:`urlopen` function is similar to the
+ built-in function :func:`open`, but accepts Universal Resource Locators (URLs)
+ instead of filenames.  Some restrictions apply --- it can only open URLs for
+ reading, and no seek operations are available.
+ 
+<span class="gi">+.. warning:: When opening HTTPS URLs, it is not attempted to validate the</span>
+<span class="gi">+   server certificate.  Use at your own risk!</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ High-level interface
+ --------------------
+ 
+ .. function:: urlopen(url[, data[, proxies]])
+ 
+    Open a network object denoted by a URL for reading.  If the URL does not have a
+    scheme identifier, or if it has :file:`file:` as its scheme identifier, this
+    opens a local file (without universal newlines); otherwise it opens a socket to
+    a server somewhere on the network.  If the connection cannot be made the
+    :exc:`IOError` exception is raised.  If all went well, a file-like object is
+    returned.  This supports the following methods: :meth:`read`, :meth:`readline`,
+    :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info`, :meth:`getcode` and
+<span class="gu">@@ -154,33 +158,33 @@</span>
+    argument may be given to specify a ``POST`` request (normally the request type
+    is ``GET``).  The *data* argument must in standard
+    :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+    function below.
+ 
+    .. versionchanged:: 2.5
+       :func:`urlretrieve` will raise :exc:`ContentTooShortError` when it detects that
+       the amount of data available  was less than the expected amount (which is the
+       size reported by a  *Content-Length* header). This can occur, for example, when
+       the  download is interrupted.
+ 
+       The *Content-Length* is treated as a lower bound: if there&#39;s more data  to read,
+<span class="gd">-      urlretrieve reads more data, but if less data is available,  it raises the</span>
+<span class="gd">-      exception.</span>
+<span class="gi">+      :func:`urlretrieve` reads more data, but if less data is available,  it raises</span>
+<span class="gi">+      the exception.</span>
+ 
+       You can still retrieve the downloaded data in this case, it is stored  in the
+       :attr:`content` attribute of the exception instance.
+ 
+<span class="gd">-      If no *Content-Length* header was supplied, urlretrieve can not check the size</span>
+<span class="gd">-      of the data it has downloaded, and just returns it.  In this case you just have</span>
+<span class="gd">-      to assume that the download was successful.</span>
+<span class="gi">+      If no *Content-Length* header was supplied, :func:`urlretrieve` can not check</span>
+<span class="gi">+      the size of the data it has downloaded, and just returns it.  In this case you</span>
+<span class="gi">+      just have to assume that the download was successful.</span>
+ 
+ 
+ .. data:: _urlopener
+ 
+    The public functions :func:`urlopen` and :func:`urlretrieve` create an instance
+    of the :class:`FancyURLopener` class and use it to perform their requested
+    actions.  To override this functionality, programmers can create a subclass of
+    :class:`URLopener` or :class:`FancyURLopener`, then assign an instance of that
+    class to the ``urllib._urlopener`` variable before calling the desired function.
+    For example, applications may want to specify a different
+    :mailheader:`User-Agent` header than :class:`URLopener` defines.  This can be
+    accomplished with the following code::
+<span class="gu">@@ -227,51 +231,51 @@</span>
+ 
+    Example: ``unquote(&#39;/%7Econnolly/&#39;)`` yields ``&#39;/~connolly/&#39;``.
+ 
+ 
+ .. function:: unquote_plus(string)
+ 
+    Like :func:`unquote`, but also replaces plus signs by spaces, as required for
+    unquoting HTML form values.
+ 
+ 
+ .. function:: urlencode(query[, doseq])
+ 
+<span class="gd">-   Convert a mapping object or a sequence of two-element tuples  to a</span>
+<span class="gd">-   &quot;url-encoded&quot; string, suitable to pass to :func:`urlopen` above as the</span>
+<span class="gi">+   Convert a mapping object or a sequence of two-element tuples to a</span>
+<span class="gi">+   &quot;percent-encoded&quot; string, suitable to pass to :func:`urlopen` above as the</span>
+    optional *data* argument.  This is useful to pass a dictionary of form
+    fields to a ``POST`` request.  The resulting string is a series of
+    ``key=value`` pairs separated by ``&#39;&amp;&#39;`` characters, where both *key* and
+    *value* are quoted using :func:`quote_plus` above.  When a sequence of
+    two-element tuples is used as the *query* argument, the first element of
+    each tuple is a key and the second is a value. The value element in itself
+    can be a sequence and in that case, if the optional parameter *doseq* is
+    evaluates to *True*, individual ``key=value`` pairs separated by ``&#39;&amp;&#39;`` are
+    generated for each element of the value sequence for the key.  The order of
+    parameters in the encoded string will match the order of parameter tuples in
+    the sequence. The :mod:`urlparse` module provides the functions
+    :func:`parse_qs` and :func:`parse_qsl` which are used to parse query strings
+    into Python data structures.
+ 
+ 
+ .. function:: pathname2url(path)
+ 
+    Convert the pathname *path* from the local syntax for a path to the form used in
+    the path component of a URL.  This does not produce a complete URL.  The return
+    value will already be quoted using the :func:`quote` function.
+ 
+ 
+ .. function:: url2pathname(path)
+ 
+<span class="gd">-   Convert the path component *path* from an encoded URL to the local syntax for a</span>
+<span class="gi">+   Convert the path component *path* from an percent-encoded URL to the local syntax for a</span>
+    path.  This does not accept a complete URL.  This function uses :func:`unquote`
+    to decode *path*.
+ 
+ 
+ .. function:: getproxies()
+ 
+    This helper function returns a dictionary of scheme to proxy server URL
+    mappings. It scans the environment for variables named ``&lt;scheme&gt;_proxy``
+    for all operating systems first, and when it cannot find it, looks for proxy
+    information from Mac OSX System Configuration for Mac OS X and Windows
+    Systems Registry for Windows.
+ 
+<span class="gu">@@ -438,25 +442,25 @@</span>
+ 
+ * The code handling the FTP protocol cannot differentiate between a file and a
+   directory.  This can lead to unexpected behavior when attempting to read a URL
+   that points to a file that is not accessible.  If the URL ends in a ``/``, it is
+   assumed to refer to a directory and will be handled accordingly.  But if an
+   attempt to read a file leads to a 550 error (meaning the URL cannot be found or
+   is not accessible, often for permission reasons), then the path is treated as a
+   directory in order to handle the case when a directory is specified by a URL but
+   the trailing ``/`` has been left off.  This can cause misleading results when
+   you try to fetch a file whose read permissions make it inaccessible; the FTP
+   code will try to read it, fail with a 550 error, and then perform a directory
+   listing for the unreadable file. If fine-grained control is needed, consider
+<span class="gd">-  using the :mod:`ftplib` module, subclassing :class:`FancyURLOpener`, or changing</span>
+<span class="gi">+  using the :mod:`ftplib` module, subclassing :class:`FancyURLopener`, or changing</span>
+   *_urlopener* to meet your needs.
+ 
+ * This module does not support the use of proxies which require authentication.
+   This may be implemented in the future.
+ 
+   .. index:: module: urlparse
+ 
+ * Although the :mod:`urllib` module contains (undocumented) routines to parse
+   and unparse URL strings, the recommended interface for URL manipulation is in
+   module :mod:`urlparse`.
+ 
+ 
+</pre></div>
+
+</body>
+</html>

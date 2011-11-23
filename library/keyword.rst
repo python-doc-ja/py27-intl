@@ -20,3 +20,8 @@
    特定の :mod:`__future__` 宣言がなければ有効ではないキーワードでもこのリストに\
    は含まれます。
 
+
+.. seealso::
+
+   最新のバージョンの `keyword モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/keyword.py?view=markup>`_

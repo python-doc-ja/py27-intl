@@ -75,8 +75,9 @@
 
 .. function:: Internaldate2tuple(datestr)
 
-   IMAP4 INTERNALDATE 文字列を標準世界時 (Coordinated Universal Time) に変換します。 :mod:`time`
-   モジュール形式のタプルを返します。
+   IMAP4 の ``INTERNALDATE`` 文字列を解析してそれに相当するローカルタイムを返します。
+   戻り値は :class:`time.struct_time` のインスタンスか、文字列のフォーマットが不正な
+   場合は None です。
 
 
 .. function:: Int2AP(num)
@@ -91,8 +92,13 @@
 
 .. function:: Time2Internaldate(date_time)
 
-   :mod:`time` モジュールタプルを IMAP4 ``INTERNALDATE`` 表現形式に変換します。文字列形式:  ``"DD-Mmm-YYYY
-   HH:MM:SS +HHMM"`` (二重引用符含む) を返します。
+   *date_time* を IMAP4 の ``INTERNALDATE`` 表現形式に変換します。
+   戻り値は ``"DD-Mmm-YYYY HH:MM:SS +HHMM"`` (ダブルクォートを含む) の形をした
+   文字列です。
+   *date_time* 引数は (:func:`time.time` が返す) epoch からの経過秒数を表す数値
+   (int か float) か、(:func:`time.localtime` が返す) ローカルタイムを表現する
+   9要素タプルか、ダブルクォートされた文字列です。文字列だった場合、それがすでに
+   正しいフォーマットになっていると仮定されます。
 
 IMAP4 メッセージ番号は、メールボックスに対する変更が行われた後には変化します; 特に、 ``EXPUNGE`` 命令はメッセージの削除を
 行いますが、残ったメッセージには再度番号を振りなおします。従って、メッセージ番号ではなく、 UID 命令を使い、その UID を利用するよう強く勧めます。
@@ -274,8 +280,11 @@ IMAP4 オブジェクト
 
 .. method:: IMAP4.open(host, port)
 
-   *host* 上の *port* に対するソケットを開きます。このメソッドで確立された接続オブジェクトは ``read`` 、
-   ``readline`` 、 ``send`` 、および ``shutdown`` メソッドで使われます。このメソッドはオーバライドすることができます。
+   *host* 上の *port* に対するソケットを開きます。
+   このメソッドは :class:`IMAP4` のコンストラクタから暗黙的に呼び出されます。
+   このメソッドで確立された接続オブジェクトは ``read``,
+   ``readline``, ``send``, ``shutdown`` メソッドで使われます。
+   このメソッドはオーバライドすることができます。
 
 
 .. method:: IMAP4.partial(message_num, message_part, start, length)
@@ -364,7 +373,9 @@ IMAP4 オブジェクト
 
 .. method:: IMAP4.shutdown()
 
-   ``open`` で確立された接続を閉じます。このメソッドはオーバライドすることができます。
+   ``open`` で確立された接続を閉じます。
+   :meth:`IMAP4.logout` は暗黙的にこのメソッドを呼び出します。
+   このメソッドはオーバライドすることができます。
 
 
 .. method:: IMAP4.socket()

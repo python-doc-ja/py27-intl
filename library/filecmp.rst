@@ -10,6 +10,11 @@
 備えた関数を定義しています。
 ファイルの比較については、 :mod:`differ` モジュールも参照してください。
 
+.. seealso::
+
+   最新バージョンの `filecmp Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/filecmp.py?view=markup>`_
+
 :mod:`filecmp` モジュールでは以下の関数を定義しています:
 
 

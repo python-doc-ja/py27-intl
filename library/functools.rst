@@ -12,11 +12,59 @@
 
 .. versionadded:: 2.5
 
-モジュール :mod:`functools` は高階関数、つまり関数に対する関数、あるいは他の関数を返す関数、のためのものです。
+:mod:`functools` モジュールは高階関数、つまり関数に対する関数、あるいは他の関数を返す関数、のためのものです。
 一般に、どんな呼び出し可能オブジェクトでもこのモジュールの目的には関数として扱えます。
+
+.. seealso::
+
+   最新バージョンの `functools の Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/functools.py?view=markup>`_
 
 モジュール :mod:`functools` では以下の関数を定義します。
 
+..  function:: cmp_to_key(func)
+
+   古いスタイルの比較関数を key 関数に変換します。
+   key 関数を受け取る関数 (:func:`sorted`, :func:`min`, :func:`max`, :func:`heapq.nlargest`,
+   :func:`heapq.nsmallest`, :func:`itertools.groupby` など) と共に使用します。
+   この関数は、主に比較関数をサポートしていない Python 3.x への移行のためのツールとして
+   用意されています。
+
+   比較関数は2つの引数を受け取り、それらを比較し、"より小さい" (less-than)の場合は負の値を、
+   同値の場合には 0 を、 "より大きい" (greater-than) 場合には正の値を返します。
+   key 関数は1つの引数を受け取り、ある順序で並べた時の位置に相当する値を返します。
+
+   例::
+
+       sorted(iterable, key=cmp_to_key(locale.strcoll))  # ロケールに準拠したソート順
+
+   .. versionadded:: 2.7
+
+.. function:: total_ordering(cls)
+
+   1つ以上のリッチ順序比較メソッドを定義したクラスを受け取り、残りを実装する
+   クラスデコレータ。
+   このデコレータは全てのリッチ順序比較演算をサポートするための労力を軽減します。
+
+   The class must define one of :meth:`__lt__`, :meth:`__le__`,
+   :meth:`__gt__`, or :meth:`__ge__`.
+   In addition, the class should supply an :meth:`__eq__` method.
+
+   引数のクラスは、 :meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, :meth:`__ge__`
+   の中からどれか1つと、 :meth:`__eq__` メソッドを定義する必要があります。
+
+   例::
+
+       @total_ordering
+       class Student:
+           def __eq__(self, other):
+               return ((self.lastname.lower(), self.firstname.lower()) ==
+                       (other.lastname.lower(), other.firstname.lower()))
+           def __lt__(self, other):
+               return ((self.lastname.lower(), self.firstname.lower()) <
+                       (other.lastname.lower(), other.firstname.lower()))
+
+   .. versionadded:: 2.7
 
 .. function:: reduce(function, iterable[, initializer])
 

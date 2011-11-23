@@ -1,0 +1,29 @@
+@@ -189,26 +189,26 @@
+    (:class:`re.RegexObject` instances) or uncompiled (strings). The optional second
+    argument is a timeout, in seconds; the default is to block indefinitely.
+ 
+    Return a tuple of three items: the index in the list of the first regular
+    expression that matches; the match object returned; and the text read up till
+    and including the match.
+ 
+    If end of file is found and no text was read, raise :exc:`EOFError`.  Otherwise,
+    when nothing matches, return ``(-1, None, text)`` where *text* is the text
+    received so far (may be the empty string if a timeout happened).
+ 
+    If a regular expression ends with a greedy match (such as ``.*``) or if more
+-   than one expression can match the same input, the results are indeterministic,
+-   and may depend on the I/O timing.
++   than one expression can match the same input, the results are
++   non-deterministic, and may depend on the I/O timing.
+ 
+ 
+ .. method:: Telnet.set_option_negotiation_callback(callback)
+ 
+    Each time a telnet option is read on the input flow, this *callback* (if set) is
+    called with the following parameters : callback(telnet socket, command
+    (DO/DONT/WILL/WONT), option).  No other action is done afterwards by telnetlib.
+ 
+ 
+ .. _telnet-example:
+ 
+ Telnet Example

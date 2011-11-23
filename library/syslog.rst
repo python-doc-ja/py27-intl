@@ -10,6 +10,10 @@
 このモジュールでは Unix ``syslog`` ライブラリルーチン群へのインタフェースを提供します。
 ``syslog`` の便宜レベルに関する詳細な記述は Unix マニュアルページを参照してください。
 
+このモジュールはシステムの ``syslog`` ファミリのルーチンをラップしています。
+syslog サーバーと通信できる pure Python のライブラリが、
+:mod:`logging.handlers` モジュールの :class:`SysLogHandler` にあります。
+
 このモジュールでは以下の関数を定義しています:
 
 
@@ -23,24 +27,34 @@
    *priority* 中に、便宜レベルが  (``LOG_INFO | LOG_USER`` のように)
    論理和を使ってコード化されていない場合、 :func:`openlog` を呼び出した際の値が使われます。
 
+   :func:`syslog` が呼び出される前に :func:`openlog` が呼び出されなかった場合、
+   ``openlog()`` が引数なしで呼び出されます。
 
-.. function:: openlog(ident[, logopt[, facility]])
+.. function:: openlog([ident[, logopt[, facility]]])
 
-   標準以外のログオプションは、 :func:`syslog` の呼び出しに先立って :func:`openlog`
-   でログファイルを開く際、明示的に設定することができます。
-   標準の値は (通常) *indent* = ``'syslog'`` 、 *logopt* =
-   ``0`` 、 *facility* = :const:`LOG_USER` です。
-   *ident* 引数は全てのメッセージの先頭に付加する文字列です。
-   オプションの *logopt* 引数はビットフィールドの値になります - とりうる組み合わせ\
-   値については以下を参照してください。オプションの *facility* 引数は、
-   便宜レベルコードの設定が明示的になされていないメッセージに対する、
-   標準の便宜レベルを設定します。
+   :func:`openlog` 関数を呼び出すことで以降の :func:`syslog` の呼び出しに対する
+   ログオプションを設定することができます。
+   ログがまだ開かれていない状態で :func:`syslog` を呼び出すと :func:`openlog`
+   が引数なしで呼び出されます。
+
+   オプションの *ident* キーワード引数は全てのメッセージの先頭に付く文字列で、
+   デフォルトでは ``sys.argv[0]`` から前方のパス部分を取り除いたものです。
+
+   オプションの *logopt* キーワード引数 (デフォルトは 0) はビットフィールドです。
+   組み合わせられる値については下記を参照してください。
+
+   オプションの *facility* キーワード引数 (デフォルトは :const:`LOG_USER`) は
+   明示的に facility が encode されていないメッセージに設定される facility です。
 
 
 .. function:: closelog()
 
-   ログファイルを閉じます。
+   syslog モジュールの値をリセットし、システムライブラリの ``closelog()`` を呼び出します。
 
+   この関数を呼ぶと、モジュールが最初に import されたときと同じようにふるまいます。
+   例えば、(:func:`openlog` を呼び出さないで) :func:`syslog` を最初に呼び出したときに、
+   :func:`openlog` が呼び出され、 *ident* やその他の :func:`openlog` の引数は
+   デフォルト値にリセットされます。
 
 .. function:: setlogmask(maskpri)
 
@@ -67,3 +81,22 @@
    ``<syslog.h>`` で定義されている場合、 :const:`LOG_PID` 、 :const:`LOG_CONS` 、
    :const:`LOG_NDELAY` 、 :const:`LOG_NOWAIT` 、および :const:`LOG_PERROR` 。
 
+例
+--------
+
+シンプルな例
+~~~~~~~~~~~~~~
+
+1つ目のシンプルな例::
+
+   import syslog
+
+   syslog.syslog('Processing started')
+   if error:
+       syslog.syslog(syslog.LOG_ERR, 'Processing started')
+
+いくつかのログオプションを設定する例。ログメッセージにプロセスIDを含み、
+メッセージをメールのログ用の facility にメッセージを書きます。 ::
+
+   syslog.openlog(logopt=syslog.LOG_PID, facility=syslog.LOG_MAIL)
+   syslog.syslog('E-mail processing initiated...')

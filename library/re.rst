@@ -209,7 +209,7 @@
    もしこのフラグの前に非空白文字があると、その結果は未定義です。
 
 ``(?:...)``
-   正規表現の丸括弧の非グループ化バージョンです。
+   正規表現の丸括弧の取り込まないバージョンです。
    どのような正規表現が丸括弧内にあってもマッチしますが、グループによってマッチされたサブ文字列は、
    マッチを実行したあと検索されることも、あるいは後でパターンで参照されることも *できません* 。
 
@@ -316,7 +316,7 @@
 ``\d``
    :const:`UNICODE` フラグが指定されていない場合、任意の十進数とマッチします；これは集合
    ``[0-9]`` と同じ意味です。
-   :const:`UNICODE` がある場合、Unicode 文字特性データベースで数字と分類されているものに
+   :const:`UNICODE` がある場合、Unicode 文字特性データベースで十進数字と分類されているものに
    マッチします。
 
 ``\D``
@@ -506,7 +506,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       :func:`search` を使って下さい。
 
 
-.. function:: split(pattern, string[, maxsplit=0])
+.. function:: split(pattern, string[, maxsplit=0, flags=0])
 
    *string* を、 *pattern* があるたびに分割します。もし括弧のキャプチャが *pattern* で使われていれば、
    パターン内のすべてのグループのテキストも結果のリストの一部として返されます。 *maxsplit* がゼロでなければ、
@@ -520,6 +520,8 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       ['Words', ', ', 'words', ', ', 'words', '.', '']
       >>> re.split('\W+', 'Words, words, words.', 1)
       ['Words', 'words, words.']
+      >>> re.split('[a-f]+', '0a3B9', flags=re.IGNORECASE)
+      ['0', '3', '9']
 
    もし、捕捉するグループが分割パターンに含まれ、それが文字列の先頭にあるならば、
    分割結果は、空文字列から始まります。文字列最後においても同様です。
@@ -537,6 +539,9 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       ['foo']
       >>> re.split("(?m)^$", "foo\n\nbar\n")
       ['foo\n\nbar\n']
+
+   .. versionchanged:: 2.7
+      オプションの flags 引数が追加されました。
 
 
 .. function:: findall(pattern, string[, flags])
@@ -567,7 +572,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       Added the optional flags argument.
 
 
-.. function:: sub(pattern, repl, string[, count])
+.. function:: sub(pattern, repl, string[, count, flags])
 
    *string* 内で、 *pattern* と重複しないマッチの内、一番左にあるものを置換 *repl* で置換して
    得られた文字列を返します。もしパターンが見つからなければ、 *string* を変更せずに返します。 *repl*
@@ -591,10 +596,10 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       ...     else: return '-'
       >>> re.sub('-{1,2}', dashrepl, 'pro----gram-files')
       'pro--gram files'
+      >>> re.sub(r'\sAND\s', ' & ', 'Baked Beans And Spam', flags=re.IGNORECASE)
+      'Baked Beans & Spam'
 
-   パターンは、文字列でも RE でも構いません；もし正規表現フラグを指定する必要があれば、 RE オブジェクトを
-   使うか、パターンに埋込み修飾子を使わなければなりません；たとえば、
-   ``sub("(?i)b+", "x", "bbbb BBBB")`` は ``'x x'`` を返します。
+   パターンは、文字列でも RE オブジェクトでも構いません。
 
    省略可能な引数 *count* は、置換されるパターンの出現回数の最大値です； *count* は非負の整数で
    なければなりません。
@@ -608,12 +613,18 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
    への参照として解釈されますが、グループ 2 にリテラル文字 ``'0'`` が続いたものへの参照としては解釈されません。後方参照  ``\g<0>`` は、
    RE とマッチするサブ文字列全体を置き換えます。
 
+   .. versionchanged:: 2.7
+      オプションの flags 引数が追加されました。
 
-.. function:: subn(pattern, repl, string[, count])
+   
+.. function:: subn(pattern, repl, string[, count, flags])
 
    :func:`sub` と同じ操作を行いますが、タプル ``(new_string、 number_of_subs_made)`` を返します。
 
+   .. versionchanged:: 2.7
+      オプションの flags 引数が追加されました。
 
+   
 .. function:: escape(string)
 
    バックスラッシュにすべての非英数字をつけた *string* を返します；これはもし、その中に正規表現のメタ文字を持つかもしれない任意のリテラル文字列と
@@ -644,33 +655,15 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 
    .. method:: RegexObject.search(string[, pos[, endpos]])
 
-      .. Scan through *string* looking for a location where this regular expression
-         produces a match, and return a corresponding :class:`MatchObject` instance.
-         Return ``None`` if no position in the string matches the pattern; note that this
-         is different from finding a zero-length match at some point in the string.
-
       *string* を走査して、この正規表現がマッチする場所を探し、対応する
       :class:`MatchObject` インスタンスを返します。
       string のどこにもマッチしない場合は ``None`` を返します。これは、 string
       内のどこかで長さ0でマッチした場合と異なることに注意してください。
 
-      .. The optional second parameter *pos* gives an index in the string where the
-         search is to start; it defaults to ``0``.  This is not completely equivalent to
-         slicing the string; the ``'^'`` pattern character matches at the real beginning
-         of the string and at positions just after a newline, but not necessarily at the
-         index where the search is to start.
-
       省略可能な、2つ目の引数 *pos* は、 string のどこから探し始めるかを指定する
       index で、デフォルトでは 0 です。これは、文字列をスライスしてから検索するのと、
       完全には同じではありません。パターン文字 ``'^'`` は本当の文字列の先頭と、
       改行の直後にマッチしますが、検索を開始する index がマッチするとは限りません。
-
-      .. The optional parameter *endpos* limits how far the string will be searched; it
-         will be as if the string is *endpos* characters long, so only the characters
-         from *pos* to ``endpos - 1`` will be searched for a match.  If *endpos* is less
-         than *pos*, no match will be found, otherwise, if *rx* is a compiled regular
-         expression object, ``rx.search(string, 0, 50)`` is equivalent to
-         ``rx.search(string[:50], 0)``.
 
       省略可能な引数 *endpos* は string のどこまでを検索するかを制限します。
       これは string の長さが *endpos* 文字だった場合と同じように動作します。
@@ -685,11 +678,6 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       >>> pattern.search("dog", 1)  # No match; search doesn't include the "d"
 
    .. method:: RegexObject.match(string[, pos[, endpos]])
-
-      .. If zero or more characters at the *beginning* of *string* match this regular
-         expression, return a corresponding :class:`MatchObject` instance.  Return
-         ``None`` if the string does not match the pattern; note that this is different
-         from a zero-length match.
 
       もし *string* の **先頭の** 0 個以上の文字がこの正規表現とマッチすれば、
       対応する :class:`MatchObject` インスタンスを返します。

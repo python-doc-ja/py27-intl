@@ -1,0 +1,277 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/dis.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -2,24 +2,29 @@</span>
+ :mod:`dis` --- Disassembler for Python bytecode
+ ===============================================
+ 
+ .. module:: dis
+    :synopsis: Disassembler for Python bytecode.
+ 
+ 
+ The :mod:`dis` module supports the analysis of CPython :term:`bytecode` by
+ disassembling it. The CPython bytecode which this module takes as an
+ input is defined in the file :file:`Include/opcode.h` and used by the compiler
+ and the interpreter.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `dis module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/dis.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ .. impl-detail::
+ 
+    Bytecode is an implementation detail of the CPython interpreter!  No
+    guarantees are made that bytecode will not be added, removed, or changed
+    between versions of Python.  Use of this module should not be considered to
+    work across Python VMs or Python releases.
+ 
+ Example: Given the function :func:`myfunc`::
+ 
+    def myfunc(alist):
+        return len(alist)
+ 
+<span class="gu">@@ -61,36 +66,49 @@</span>
+    #. a labelled instruction, indicated with ``&gt;&gt;``,
+    #. the address of the instruction,
+    #. the operation code name,
+    #. operation parameters, and
+    #. interpretation of the parameters in parentheses.
+ 
+    The parameter interpretation recognizes local and global variable names,
+    constant values, branch targets, and compare operators.
+ 
+ 
+ .. function:: disco(code[, lasti])
+ 
+<span class="gd">-   A synonym for disassemble.  It is more convenient to type, and kept for</span>
+<span class="gd">-   compatibility with earlier Python releases.</span>
+<span class="gi">+   A synonym for :func:`disassemble`.  It is more convenient to type, and kept</span>
+<span class="gi">+   for compatibility with earlier Python releases.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: findlinestarts(code)</span>
+<span class="gi">+</span>
+<span class="gi">+   This generator function uses the ``co_firstlineno`` and ``co_lnotab``</span>
+<span class="gi">+   attributes of the code object *code* to find the offsets which are starts of</span>
+<span class="gi">+   lines in the source code.  They are generated as ``(offset, lineno)`` pairs.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: findlabels(code)</span>
+<span class="gi">+</span>
+<span class="gi">+   Detect all offsets in the code object *code* which are jump targets, and</span>
+<span class="gi">+   return a list of these offsets.</span>
+ 
+ 
+ .. data:: opname
+ 
+    Sequence of operation names, indexable using the bytecode.
+ 
+ 
+ .. data:: opmap
+ 
+<span class="gd">-   Dictionary mapping bytecodes to operation names.</span>
+<span class="gi">+   Dictionary mapping operation names to bytecodes.</span>
+ 
+ 
+ .. data:: cmp_op
+ 
+    Sequence of all compare operation names.
+ 
+ 
+ .. data:: hasconst
+ 
+    Sequence of bytecodes that have a constant parameter.
+ 
+ 
+<span class="gu">@@ -460,27 +478,29 @@</span>
+ 
+ .. opcode:: BREAK_LOOP ()
+ 
+    Terminates a loop due to a :keyword:`break` statement.
+ 
+ 
+ .. opcode:: CONTINUE_LOOP (target)
+ 
+    Continues a loop due to a :keyword:`continue` statement.  *target* is the
+    address to jump to (which should be a ``FOR_ITER`` instruction).
+ 
+ 
+<span class="gd">-.. opcode:: LIST_APPEND ()</span>
+<span class="gi">+.. opcode:: LIST_APPEND (i)</span>
+ 
+<span class="gd">-   Calls ``list.append(TOS1, TOS)``.  Used to implement list comprehensions.</span>
+<span class="gi">+   Calls ``list.append(TOS[-i], TOS)``.  Used to implement list comprehensions.</span>
+<span class="gi">+   While the appended value is popped off, the list object remains on the</span>
+<span class="gi">+   stack so that it is available for further iterations of the loop.</span>
+ 
+ 
+ .. opcode:: LOAD_LOCALS ()
+ 
+    Pushes a reference to the locals of the current scope on the stack. This is used
+    in the code for a class definition: After the class body is evaluated, the
+    locals are passed to the class definition.
+ 
+ 
+ .. opcode:: RETURN_VALUE ()
+ 
+    Returns with TOS to the caller of the function.
+<span class="gu">@@ -514,24 +534,36 @@</span>
+ 
+    Terminates a :keyword:`finally` clause.  The interpreter recalls whether the
+    exception has to be re-raised, or whether the function returns, and continues
+    with the outer-next block.
+ 
+ 
+ .. opcode:: BUILD_CLASS ()
+ 
+    Creates a new class object.  TOS is the methods dictionary, TOS1 the tuple of
+    the names of the base classes, and TOS2 the class name.
+ 
+ 
+<span class="gi">+.. opcode:: SETUP_WITH (delta)</span>
+<span class="gi">+</span>
+<span class="gi">+   This opcode performs several operations before a with block starts.  First,</span>
+<span class="gi">+   it loads :meth:`~object.__exit__` from the context manager and pushes it onto</span>
+<span class="gi">+   the stack for later use by :opcode:`WITH_CLEANUP`.  Then,</span>
+<span class="gi">+   :meth:`~object.__enter__` is called, and a finally block pointing to *delta*</span>
+<span class="gi">+   is pushed.  Finally, the result of calling the enter method is pushed onto</span>
+<span class="gi">+   the stack.  The next opcode will either ignore it (:opcode:`POP_TOP`), or</span>
+<span class="gi">+   store it in (a) variable(s) (:opcode:`STORE_FAST`, :opcode:`STORE_NAME`, or</span>
+<span class="gi">+   :opcode:`UNPACK_SEQUENCE`).</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. opcode:: WITH_CLEANUP ()
+ 
+    Cleans up the stack when a :keyword:`with` statement block exits.  On top of
+    the stack are 1--3 values indicating how/why the finally clause was entered:
+ 
+    * TOP = ``None``
+    * (TOP, SECOND) = (``WHY_{RETURN,CONTINUE}``), retval
+    * TOP = ``WHY_*``; no retval below it
+    * (TOP, SECOND, THIRD) = exc_info()
+ 
+    Under them is EXIT, the context manager&#39;s :meth:`__exit__` bound method.
+ 
+<span class="gu">@@ -646,34 +678,44 @@</span>
+ .. opcode:: IMPORT_FROM (namei)
+ 
+    Loads the attribute ``co_names[namei]`` from the module found in TOS. The
+    resulting object is pushed onto the stack, to be subsequently stored by a
+    ``STORE_FAST`` instruction.
+ 
+ 
+ .. opcode:: JUMP_FORWARD (delta)
+ 
+    Increments bytecode counter by *delta*.
+ 
+ 
+<span class="gd">-.. opcode:: JUMP_IF_TRUE (delta)</span>
+<span class="gi">+.. opcode:: POP_JUMP_IF_TRUE (target)</span>
+ 
+<span class="gd">-   If TOS is true, increment the bytecode counter by *delta*.  TOS is left on the</span>
+<span class="gd">-   stack.</span>
+<span class="gi">+   If TOS is true, sets the bytecode counter to *target*.  TOS is popped.</span>
+ 
+ 
+<span class="gd">-.. opcode:: JUMP_IF_FALSE (delta)</span>
+<span class="gi">+.. opcode:: POP_JUMP_IF_FALSE (target)</span>
+ 
+<span class="gd">-   If TOS is false, increment the bytecode counter by *delta*.  TOS is not</span>
+<span class="gd">-   changed.</span>
+<span class="gi">+   If TOS is false, sets the bytecode counter to *target*.  TOS is popped.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. opcode:: JUMP_IF_TRUE_OR_POP (target)</span>
+<span class="gi">+</span>
+<span class="gi">+   If TOS is true, sets the bytecode counter to *target* and leaves TOS</span>
+<span class="gi">+   on the stack.  Otherwise (TOS is false), TOS is popped.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. opcode:: JUMP_IF_FALSE_OR_POP (target)</span>
+<span class="gi">+</span>
+<span class="gi">+   If TOS is false, sets the bytecode counter to *target* and leaves</span>
+<span class="gi">+   TOS on the stack.  Otherwise (TOS is true), TOS is popped.</span>
+ 
+ 
+ .. opcode:: JUMP_ABSOLUTE (target)
+ 
+    Set bytecode counter to *target*.
+ 
+ 
+ .. opcode:: FOR_ITER (delta)
+ 
+    ``TOS`` is an :term:`iterator`.  Call its :meth:`!next` method.  If this
+    yields a new value, push it on the stack (leaving the iterator below it).  If
+    the iterator indicates it is exhausted ``TOS`` is popped, and the bytecode
+</pre></div>
+
+</body>
+</html>

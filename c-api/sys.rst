@@ -14,12 +14,6 @@
    のいずれかに等しい場合にも真を返します。
 
 
-.. c:function:: long PyOS_GetLastModificationTime(char *filename)
-
-   ファイル *filename* の最終更新時刻を返します。結果は標準 C ライブラリ関数 :c:func:`time` が返すタイムスタンプと
-   同じ様式で符号化されています。
-
-
 .. c:function:: void PyOS_AfterFork()
 
    プロセスが fork した後の内部状態を更新するための関数です; fork 後 Python インタプリタを使い続ける場合、新たなプロセス内で

@@ -67,19 +67,17 @@
    .. It cannot be reassigned.  See also the :keyword:`assert` statement.
 
    この定数は Python が :option:`-O` オプションを有効にして開始されていないときに真となります。
-   :const:`__debug__` に対して再代入はできません。
    :keyword:`assert` 文も参照して下さい。
 
 
 .. note::
 
-   .. The name :data:`None` cannot be reassigned (assignments to it, even as an
-   .. attribute name, raise :exc:`SyntaxError`), so it can be considered a "true"
-   .. constant.
+   :data:`None` と :data:`__debug__` という名前は再代入できないので
+   (これらに対する代入は、たとえ属性名としてであっても :exc:`SyntaxError` が送出されます)、
+   これらは「真の」定数であると考えることができます。
 
-   :data:`None` という名前は再代入できないので (``None`` に対する代入は、たとえ属性名としてであっても
-   :exc:`SyntaxError` が送出されます)、 ``None`` は「真の」定数であると考えることができます。
-
+   .. versionchanged:: 2.7
+      属性名としての ``__debug__`` への代入が禁止されました。
 
 .. Constants added by the :mod:`site` module
 

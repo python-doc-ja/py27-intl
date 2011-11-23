@@ -1,0 +1,149 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/functools.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -6,26 +6,74 @@</span>
+ .. moduleauthor:: Peter Harris &lt;scav@blueyonder.co.uk&gt;
+ .. moduleauthor:: Raymond Hettinger &lt;python@rcn.com&gt;
+ .. moduleauthor:: Nick Coghlan &lt;ncoghlan@gmail.com&gt;
+ .. sectionauthor:: Peter Harris &lt;scav@blueyonder.co.uk&gt;
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ The :mod:`functools` module is for higher-order functions: functions that act on
+ or return other functions. In general, any callable object can be treated as a
+ function for the purposes of this module.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `functools Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/functools.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ The :mod:`functools` module defines the following functions:
+ 
+<span class="gi">+..  function:: cmp_to_key(func)</span>
+<span class="gi">+</span>
+<span class="gi">+   Transform an old-style comparison function to a key-function.  Used with</span>
+<span class="gi">+   tools that accept key functions (such as :func:`sorted`, :func:`min`,</span>
+<span class="gi">+   :func:`max`, :func:`heapq.nlargest`, :func:`heapq.nsmallest`,</span>
+<span class="gi">+   :func:`itertools.groupby`).  This function is primarily used as a transition</span>
+<span class="gi">+   tool for programs being converted to Py3.x where comparison functions are no</span>
+<span class="gi">+   longer supported.</span>
+<span class="gi">+</span>
+<span class="gi">+   A compare function is any callable that accept two arguments, compares them,</span>
+<span class="gi">+   and returns a negative number for less-than, zero for equality, or a positive</span>
+<span class="gi">+   number for greater-than.  A key function is a callable that accepts one</span>
+<span class="gi">+   argument and returns another value that indicates the position in the desired</span>
+<span class="gi">+   collation sequence.</span>
+<span class="gi">+</span>
+<span class="gi">+   Example::</span>
+<span class="gi">+</span>
+<span class="gi">+       sorted(iterable, key=cmp_to_key(locale.strcoll))  # locale-aware sort order</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: total_ordering(cls)</span>
+<span class="gi">+</span>
+<span class="gi">+   Given a class defining one or more rich comparison ordering methods, this</span>
+<span class="gi">+   class decorator supplies the rest.  This simplifies the effort involved</span>
+<span class="gi">+   in specifying all of the possible rich comparison operations:</span>
+<span class="gi">+</span>
+<span class="gi">+   The class must define one of :meth:`__lt__`, :meth:`__le__`,</span>
+<span class="gi">+   :meth:`__gt__`, or :meth:`__ge__`.</span>
+<span class="gi">+   In addition, the class should supply an :meth:`__eq__` method.</span>
+<span class="gi">+</span>
+<span class="gi">+   For example::</span>
+<span class="gi">+</span>
+<span class="gi">+       @total_ordering</span>
+<span class="gi">+       class Student:</span>
+<span class="gi">+           def __eq__(self, other):</span>
+<span class="gi">+               return ((self.lastname.lower(), self.firstname.lower()) ==</span>
+<span class="gi">+                       (other.lastname.lower(), other.firstname.lower()))</span>
+<span class="gi">+           def __lt__(self, other):</span>
+<span class="gi">+               return ((self.lastname.lower(), self.firstname.lower()) &lt;</span>
+<span class="gi">+                       (other.lastname.lower(), other.firstname.lower()))</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+ 
+ .. function:: reduce(function, iterable[, initializer])
+ 
+    This is the same function as :func:`reduce`.  It is made available in this module
+    to allow writing code more forward-compatible with Python 3.
+ 
+    .. versionadded:: 2.6
+ 
+ 
+ .. function:: partial(func[,*args][, **keywords])
+ 
+    Return a new :class:`partial` object which when called will behave like *func*
+</pre></div>
+
+</body>
+</html>

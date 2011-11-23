@@ -221,7 +221,7 @@
    このポインタに仕掛けを講じて、動的に生成されたフリーズ化モジュールの集合を提供するようにできます。
 
 
-.. c:function:: int PyImport_AppendInittab(char *name, void (*initfunc)(void))
+.. c:function:: int PyImport_AppendInittab(const char *name, void (*initfunc)(void))
 
    既存の組み込みモジュールテーブルに単一のモジュールを追加します。この関数は利便性を目的とした :c:func:`PyImport_ExtendInittab`
    のラッパ関数で、テーブルが拡張できないときには ``-1`` を返します。新たなモジュールは *name* で import でき、最初に import を

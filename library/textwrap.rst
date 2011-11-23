@@ -15,6 +15,10 @@
 を提供しています。単に一つや二つのテキスト文字列の折り返しまたは詰め込みを行っているならば、簡易関数で十分間に合います。そうでなければ、
 効率のために :class:`TextWrapper` のインスタンスを使った方が良いでしょう。
 
+.. seealso::
+
+   最新バージョンの `textwrap モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/textwrap.py?view=markup>`_
 
 .. function:: wrap(text[, width[, ...]])
 
@@ -114,6 +118,13 @@
 
          :attr:`expand_tabs` が偽で :attr:`replace_whitespace` が真ならば、\
          各タブ文字は1つの空白に置き換えられます。それはタブ展開と同じでは *ありません* 。
+
+      .. note::
+
+         :attr:`replace_whitespace` が偽の場合、改行が行の途中で現れることで
+         出力がおかしくなることがあります。
+         このため、テキストを(:meth:`str.splitlines` などを使って)段落ごとに
+         分けて別々に wrap する必要があります。
 
    .. attribute:: drop_whitespace
 

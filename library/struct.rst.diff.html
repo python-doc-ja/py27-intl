@@ -1,0 +1,250 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/struct.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -160,110 +160,126 @@</span>
+ refers to the size of the packed value in bytes when using standard size; that
+ is, when the format string starts with one of ``&#39;&lt;&#39;``, ``&#39;&gt;&#39;``, ``&#39;!&#39;`` or
+ ``&#39;=&#39;``.  When using native size, the size of the packed value is
+ platform-dependent.
+ 
+ +--------+-------------------------+--------------------+----------------+------------+
+ | Format | C Type                  | Python type        | Standard size  | Notes      |
+ +========+=========================+====================+================+============+
+ | ``x``  | pad byte                | no value           |                |            |
+ +--------+-------------------------+--------------------+----------------+------------+
+ | ``c``  | :ctype:`char`           | string of length 1 | 1              |            |
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``b``  | :ctype:`signed char`    | integer            | 1              |            |</span>
+<span class="gi">+| ``b``  | :ctype:`signed char`    | integer            | 1              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``B``  | :ctype:`unsigned char`  | integer            | 1              |            |</span>
+<span class="gi">+| ``B``  | :ctype:`unsigned char`  | integer            | 1              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+ | ``?``  | :ctype:`_Bool`          | bool               | 1              | \(1)       |
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``h``  | :ctype:`short`          | integer            | 2              |            |</span>
+<span class="gi">+| ``h``  | :ctype:`short`          | integer            | 2              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``H``  | :ctype:`unsigned short` | integer            | 2              |            |</span>
+<span class="gi">+| ``H``  | :ctype:`unsigned short` | integer            | 2              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``i``  | :ctype:`int`            | integer            | 4              |            |</span>
+<span class="gi">+| ``i``  | :ctype:`int`            | integer            | 4              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``I``  | :ctype:`unsigned int`   | integer            | 4              |            |</span>
+<span class="gi">+| ``I``  | :ctype:`unsigned int`   | integer            | 4              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``l``  | :ctype:`long`           | integer            | 4              |            |</span>
+<span class="gi">+| ``l``  | :ctype:`long`           | integer            | 4              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``L``  | :ctype:`unsigned long`  | integer            | 4              |            |</span>
+<span class="gi">+| ``L``  | :ctype:`unsigned long`  | integer            | 4              | \(3)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``q``  | :ctype:`long long`      | integer            | 8              | \(2)       |</span>
+<span class="gi">+| ``q``  | :ctype:`long long`      | integer            | 8              | \(2), \(3) |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``Q``  | :ctype:`unsigned long   | integer            | 8              | \(2)       |</span>
+<span class="gi">+| ``Q``  | :ctype:`unsigned long   | integer            | 8              | \(2), \(3) |</span>
+ |        | long`                   |                    |                |            |
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``f``  | :ctype:`float`          | float              | 4              | \(3)       |</span>
+<span class="gi">+| ``f``  | :ctype:`float`          | float              | 4              | \(4)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``d``  | :ctype:`double`         | float              | 8              | \(3)       |</span>
+<span class="gi">+| ``d``  | :ctype:`double`         | float              | 8              | \(4)       |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+ | ``s``  | :ctype:`char[]`         | string             |                |            |
+ +--------+-------------------------+--------------------+----------------+------------+
+ | ``p``  | :ctype:`char[]`         | string             |                |            |
+ +--------+-------------------------+--------------------+----------------+------------+
+<span class="gd">-| ``P``  | :ctype:`void \*`        | integer            |                | \(4)       |</span>
+<span class="gi">+| ``P``  | :ctype:`void \*`        | integer            |                | \(5), \(3) |</span>
+ +--------+-------------------------+--------------------+----------------+------------+
+ 
+ Notes:
+ 
+ (1)
+    The ``&#39;?&#39;`` conversion code corresponds to the :ctype:`_Bool` type defined by
+    C99. If this type is not available, it is simulated using a :ctype:`char`. In
+    standard mode, it is always represented by one byte.
+ 
+    .. versionadded:: 2.6
+ 
+ (2)
+    The ``&#39;q&#39;`` and ``&#39;Q&#39;`` conversion codes are available in native mode only if
+    the platform C compiler supports C :ctype:`long long`, or, on Windows,
+    :ctype:`__int64`.  They are always available in standard modes.
+ 
+    .. versionadded:: 2.2
+ 
+ (3)
+<span class="gi">+   When attempting to pack a non-integer using any of the integer conversion</span>
+<span class="gi">+   codes, if the non-integer has a :meth:`__index__` method then that method is</span>
+<span class="gi">+   called to convert the argument to an integer before packing.  If no</span>
+<span class="gi">+   :meth:`__index__` method exists, or the call to :meth:`__index__` raises</span>
+<span class="gi">+   :exc:`TypeError`, then the :meth:`__int__` method is tried.  However, the use</span>
+<span class="gi">+   of :meth:`__int__` is deprecated, and will raise :exc:`DeprecationWarning`.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Use of the :meth:`__index__` method for non-integers is new in 2.7.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Prior to version 2.7, not all integer conversion codes would use the</span>
+<span class="gi">+      :meth:`__int__` method to convert, and :exc:`DeprecationWarning` was</span>
+<span class="gi">+      raised only for float arguments.</span>
+<span class="gi">+</span>
+<span class="gi">+(4)</span>
+    For the ``&#39;f&#39;`` and ``&#39;d&#39;`` conversion codes, the packed representation uses
+    the IEEE 754 binary32 (for ``&#39;f&#39;``) or binary64 (for ``&#39;d&#39;``) format,
+    regardless of the floating-point format used by the platform.
+ 
+<span class="gd">-(4)</span>
+<span class="gi">+(5)</span>
+    The ``&#39;P&#39;`` format character is only available for the native byte ordering
+    (selected as the default or with the ``&#39;@&#39;`` byte order character). The byte
+    order character ``&#39;=&#39;`` chooses to use little- or big-endian ordering based
+    on the host system. The struct module does not interpret this as native
+    ordering, so the ``&#39;P&#39;`` format is not available.
+ 
+ 
+ A format character may be preceded by an integral repeat count.  For example,
+ the format string ``&#39;4h&#39;`` means exactly the same as ``&#39;hhhh&#39;``.
+ 
+ Whitespace characters between formats are ignored; a count and its format must
+ not contain whitespace though.
+ 
+ For the ``&#39;s&#39;`` format character, the count is interpreted as the size of the
+ string, not a repeat count like for the other format characters; for example,
+ ``&#39;10s&#39;`` means a single 10-byte string, while ``&#39;10c&#39;`` means 10 characters.
+ For packing, the string is truncated or padded with null bytes as appropriate to
+ make it fit. For unpacking, the resulting string always has exactly the
+ specified number of bytes.  As a special case, ``&#39;0s&#39;`` means a single, empty
+ string (while ``&#39;0c&#39;`` means 0 characters).
+ 
+ The ``&#39;p&#39;`` format character encodes a &quot;Pascal string&quot;, meaning a short
+<span class="gd">-variable-length string stored in a fixed number of bytes. The count is the total</span>
+<span class="gd">-number of bytes stored.  The first byte stored is the length of the string, or</span>
+<span class="gd">-255, whichever is smaller.  The bytes of the string follow.  If the string</span>
+<span class="gd">-passed in to :func:`pack` is too long (longer than the count minus 1), only the</span>
+<span class="gd">-leading count-1 bytes of the string are stored.  If the string is shorter than</span>
+<span class="gd">-count-1, it is padded with null bytes so that exactly count bytes in all are</span>
+<span class="gd">-used.  Note that for :func:`unpack`, the ``&#39;p&#39;`` format character consumes count</span>
+<span class="gd">-bytes, but that the string returned can never contain more than 255 characters.</span>
+<span class="gi">+variable-length string stored in a *fixed number of bytes*, given by the count.</span>
+<span class="gi">+The first byte stored is the length of the string, or 255, whichever is smaller.</span>
+<span class="gi">+The bytes of the string follow.  If the string passed in to :func:`pack` is too</span>
+<span class="gi">+long (longer than the count minus 1), only the leading ``count-1`` bytes of the</span>
+<span class="gi">+string are stored.  If the string is shorter than ``count-1``, it is padded with</span>
+<span class="gi">+null bytes so that exactly count bytes in all are used.  Note that for</span>
+<span class="gi">+:func:`unpack`, the ``&#39;p&#39;`` format character consumes count bytes, but that the</span>
+<span class="gi">+string returned can never contain more than 255 characters.</span>
+ 
+ For the ``&#39;P&#39;`` format character, the return value is a Python integer or long
+ integer, depending on the size needed to hold a pointer when it has been cast to
+ an integer type.  A *NULL* pointer will always be returned as the Python integer
+ ``0``. When packing pointer-sized values, Python integer or long integer objects
+ may be used.  For example, the Alpha and Merced processors use 64-bit pointer
+ values, meaning a Python long integer will be used to hold the pointer; other
+ platforms use 32-bit pointers and will use a Python integer.
+ 
+ For the ``&#39;?&#39;`` format character, the return value is either :const:`True` or
+ :const:`False`. When packing, the truth value of the argument object is used.
+ Either 0 or 1 in the native or standard bool representation will be packed, and
+<span class="gu">@@ -289,25 +305,25 @@</span>
+    (1, 2, 3)
+    &gt;&gt;&gt; calcsize(&#39;hhl&#39;)
+    8
+ 
+ Unpacked fields can be named by assigning them to variables or by wrapping
+ the result in a named tuple::
+ 
+     &gt;&gt;&gt; record = &#39;raymond   \x32\x12\x08\x01\x08&#39;
+     &gt;&gt;&gt; name, serialnum, school, gradelevel = unpack(&#39;&lt;10sHHb&#39;, record)
+ 
+     &gt;&gt;&gt; from collections import namedtuple
+     &gt;&gt;&gt; Student = namedtuple(&#39;Student&#39;, &#39;name serialnum school gradelevel&#39;)
+<span class="gd">-    &gt;&gt;&gt; Student._make(unpack(&#39;&lt;10sHHb&#39;, s))</span>
+<span class="gi">+    &gt;&gt;&gt; Student._make(unpack(&#39;&lt;10sHHb&#39;, record))</span>
+     Student(name=&#39;raymond   &#39;, serialnum=4658, school=264, gradelevel=8)
+ 
+ The ordering of format characters may have an impact on size since the padding
+ needed to satisfy alignment requirements is different::
+ 
+     &gt;&gt;&gt; pack(&#39;ci&#39;, &#39;*&#39;, 0x12131415)
+     &#39;*\x00\x00\x00\x12\x13\x14\x15&#39;
+     &gt;&gt;&gt; pack(&#39;ic&#39;, 0x12131415, &#39;*&#39;)
+     &#39;\x12\x13\x14\x15*&#39;
+     &gt;&gt;&gt; calcsize(&#39;ci&#39;)
+     8
+     &gt;&gt;&gt; calcsize(&#39;ic&#39;)
+</pre></div>
+
+</body>
+</html>

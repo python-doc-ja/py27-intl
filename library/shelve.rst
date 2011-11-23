@@ -12,6 +12,10 @@
 できるということです。これにはほとんどのクラスインスタンス、再帰的なデータ型、沢山の共有されたサブオブジェクト
 を含むオブジェクトが含まれます。キーは通常の文字列です。
 
+.. seealso::
+
+   最新バージョンの `shelve モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/shelve.py?view=markup>`_
 
 .. function:: open(filename[, flag='c'[, protocol=None[, writeback=False]]])
 
@@ -38,7 +42,17 @@
    (アクセスされたエントリが可変であるか、
    あるいは実際に変更されたかを決定する方法は存在しないのです)
    ために、ファイルを閉じる操作を非常に低速にしてしまいます。
-   
+
+.. warning::
+
+   Because the :mod:`shelve` module is backed by :mod:`pickle`, it is insecure
+   to load a shelf from an untrusted source.  Like with pickle, loading a shelf
+   can execute arbitrary code.
+
+   :mod:`shelve` モジュールは裏で :mod:`pickle` を使っているので、信頼できない
+   ソースから shelf を読み込むのは危険です。
+   pickle と同じく、 shelf の読み込みでも任意のコードを実行できるからです。
+
 シェルフオブジェクトは辞書がサポートする全てのメソッドをサポートしています。
 これにより、辞書ベースのスクリプトから永続的な記憶媒体を必要とする
 スクリプトに容易に移行できるようになります。

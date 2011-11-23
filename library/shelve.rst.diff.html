@@ -1,0 +1,133 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/shelve.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -4,24 +4,28 @@</span>
+ .. module:: shelve
+    :synopsis: Python object persistence.
+ 
+ 
+ .. index:: module: pickle
+ 
+ A &quot;shelf&quot; is a persistent, dictionary-like object.  The difference with &quot;dbm&quot;
+ databases is that the values (not the keys!) in a shelf can be essentially
+ arbitrary Python objects --- anything that the :mod:`pickle` module can handle.
+ This includes most class instances, recursive data types, and objects containing
+ lots of shared  sub-objects.  The keys are ordinary strings.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `shelve module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/shelve.py?view=markup&gt;`_</span>
+ 
+ .. function:: open(filename[, flag=&#39;c&#39;[, protocol=None[, writeback=False]]])
+ 
+    Open a persistent dictionary.  The filename specified is the base filename for
+    the underlying database.  As a side-effect, an extension may be added to the
+    filename and more than one file may be created.  By default, the underlying
+    database file is opened for reading and writing.  The optional *flag* parameter
+    has the same interpretation as the *flag* parameter of :func:`anydbm.open`.
+ 
+    By default, version 0 pickles are used to serialize values.  The version of the
+    pickle protocol can be specified with the *protocol* parameter.
+ 
+<span class="gu">@@ -37,24 +41,29 @@</span>
+    the persistent dictionary, but, if many entries are accessed, it can consume
+    vast amounts of memory for the cache, and it can make the close operation
+    very slow since all accessed entries are written back (there is no way to
+    determine which accessed entries are mutable, nor which ones were actually
+    mutated).
+ 
+    .. note::
+ 
+       Do not rely on the shelf being closed automatically; always call
+       :meth:`close` explicitly when you don&#39;t need it any more, or use a
+       :keyword:`with` statement with :func:`contextlib.closing`.
+ 
+<span class="gi">+.. warning::</span>
+<span class="gi">+</span>
+<span class="gi">+   Because the :mod:`shelve` module is backed by :mod:`pickle`, it is insecure</span>
+<span class="gi">+   to load a shelf from an untrusted source.  Like with pickle, loading a shelf</span>
+<span class="gi">+   can execute arbitrary code.</span>
+ 
+ Shelf objects support all methods supported by dictionaries.  This eases the
+ transition from dictionary based scripts to those requiring persistent storage.
+ 
+ Two additional methods are supported:
+ 
+ .. method:: Shelf.sync()
+ 
+    Write back all entries in the cache if the shelf was opened with *writeback*
+    set to :const:`True`.  Also empty the cache and synchronize the persistent
+    dictionary on disk, if feasible.  This is called automatically when the shelf
+    is closed with :meth:`close`.
+</pre></div>
+
+</body>
+</html>

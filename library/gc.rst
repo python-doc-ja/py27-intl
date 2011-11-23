@@ -123,6 +123,41 @@
 
    .. versionadded:: 2.3
 
+.. function:: is_tracked(obj)
+
+   Returns True if the object is currently tracked by the garbage collector,
+   False otherwise.  As a general rule, instances of atomic types aren't
+   tracked and instances of non-atomic types (containers, user-defined
+   objects...) are.  However, some type-specific optimizations can be present
+   in order to suppress the garbage collector footprint of simple instances
+   (e.g. dicts containing only atomic keys and values):
+
+   ``obj`` がGCに管理されていたら True を返し、それ以外の場合は False を返します。
+   一般的なルールとして、アトミックな(訳注:他のオブジェクトを参照しないで単一で
+   値を表す型。 int や str など)型のインスタンスは管理されず、それ以外の型
+   (コンテナ型、ユーザー定義型など) のインスタンスは管理されます。
+   しかし、いくつかの型では専用の最適化を行い、シンプルなインスタンスの場合に
+   GCのオーバーヘッドを減らしています。 (例: 全ての key と value がアトミック型の
+   値である dict)
+
+   ::
+
+      >>> gc.is_tracked(0)
+      False
+      >>> gc.is_tracked("a")
+      False
+      >>> gc.is_tracked([])
+      True
+      >>> gc.is_tracked({})
+      False
+      >>> gc.is_tracked({"a": 1})
+      False
+      >>> gc.is_tracked({"a": []})
+      True
+
+   .. versionadded:: 2.7
+
+
 以下の変数は読み込み専用です。(変更することはできますが、再バインドする事はできません。）
 
 

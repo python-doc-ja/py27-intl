@@ -12,9 +12,9 @@ Tkを用いたグラフィカルユーザインターフェイス
    single: Tk
 
 Tk/Tcl は長きにわたり Python の不可欠な一部でありつづけています。
-Tk/Tcl は頑健でプラットホームに依存しないウィンドウ構築\
-ツールキットであり、 Python プログラマは :mod:`Tkinter` モジュールや\
-その拡張の :mod:`Tix` モジュールを使って利用できます。
+Tk/Tcl は頑健でプラットホームに依存しないウィンドウ構築ツールキットであり、
+Python プログラマは :mod:`Tkinter` モジュールやその拡張の :mod:`Tix`,
+:mod:`ttk` モジュールを使って利用できます。
 
 :mod:`Tkinter` モジュールは、 Tcl/Tk 上に作られた軽量な\
 オブジェクト指向のレイヤです。 :mod:`Tkinter` を使うために
@@ -37,6 +37,7 @@ Tcl コードを書く必要はありませんが、Tk のドキュメントや�
 .. toctree::
 
    tkinter.rst
+   ttk.rst
    tix.rst
    scrolledtext.rst
    turtle.rst

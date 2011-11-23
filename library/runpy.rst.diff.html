@@ -1,0 +1,248 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/runpy.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,69 +1,137 @@</span>
+ :mod:`runpy` --- Locating and executing Python modules
+ ======================================================
+ 
+ .. module:: runpy
+    :synopsis: Locate and run Python modules without importing them first.
+ .. moduleauthor:: Nick Coghlan &lt;ncoghlan@gmail.com&gt;
+ 
+ 
+ .. versionadded:: 2.5
+ 
+ The :mod:`runpy` module is used to locate and run Python modules without
+<span class="gd">-importing them first. Its main use is to implement the :option:`-m` command line</span>
+<span class="gd">-switch that allows scripts to be located using the Python module namespace</span>
+<span class="gd">-rather than the filesystem.</span>
+<span class="gi">+importing them first. Its main use is to implement the :option:`-m` command</span>
+<span class="gi">+line switch that allows scripts to be located using the Python module</span>
+<span class="gi">+namespace rather than the filesystem.</span>
+ 
+<span class="gd">-When executed as a script, the module effectively operates as follows::</span>
+<span class="gi">+The :mod:`runpy` module provides two functions:</span>
+ 
+<span class="gd">-   del sys.argv[0]  # Remove the runpy module from the arguments</span>
+<span class="gd">-   run_module(sys.argv[0], run_name=&quot;__main__&quot;, alter_sys=True)</span>
+ 
+<span class="gd">-The :mod:`runpy` module provides a single function:</span>
+<span class="gi">+.. function:: run_module(mod_name, init_globals=None, run_name=None, alter_sys=False)</span>
+ 
+<span class="gi">+   Execute the code of the specified module and return the resulting module</span>
+<span class="gi">+   globals dictionary. The module&#39;s code is first located using the standard</span>
+<span class="gi">+   import mechanism (refer to :pep:`302` for details) and then executed in a</span>
+<span class="gi">+   fresh module namespace.</span>
+ 
+<span class="gd">-.. function:: run_module(mod_name[, init_globals] [, run_name][, alter_sys])</span>
+<span class="gi">+   If the supplied module name refers to a package rather than a normal</span>
+<span class="gi">+   module, then that package is imported and the ``__main__`` submodule within</span>
+<span class="gi">+   that package is then executed and the resulting module globals dictionary</span>
+<span class="gi">+   returned.</span>
+ 
+<span class="gd">-   Execute the code of the specified module and return the resulting module globals</span>
+<span class="gd">-   dictionary. The module&#39;s code is first located using the standard import</span>
+<span class="gd">-   mechanism (refer to :pep:`302` for details) and then executed in a fresh module</span>
+<span class="gd">-   namespace.</span>
+<span class="gi">+   The optional dictionary argument *init_globals* may be used to pre-populate</span>
+<span class="gi">+   the module&#39;s globals dictionary before the code is executed. The supplied</span>
+<span class="gi">+   dictionary will not be modified. If any of the special global variables</span>
+<span class="gi">+   below are defined in the supplied dictionary, those definitions are</span>
+<span class="gi">+   overridden by :func:`run_module`.</span>
+ 
+<span class="gd">-   The optional dictionary argument *init_globals* may be used to pre-populate the</span>
+<span class="gd">-   globals dictionary before the code is executed. The supplied dictionary will not</span>
+<span class="gd">-   be modified. If any of the special global variables below are defined in the</span>
+<span class="gd">-   supplied dictionary, those definitions are overridden by the ``run_module``</span>
+<span class="gd">-   function.</span>
+<span class="gi">+   The special global variables ``__name__``, ``__file__``, ``__loader__``</span>
+<span class="gi">+   and ``__package__`` are set in the globals dictionary before the module</span>
+<span class="gi">+   code is executed (Note that this is a minimal set of variables - other</span>
+<span class="gi">+   variables may be set implicitly as an interpreter implementation detail).</span>
+ 
+<span class="gd">-   The special global variables ``__name__``, ``__file__``, ``__loader__`` and</span>
+<span class="gd">-   ``__builtins__`` are set in the globals dictionary before the module code is</span>
+<span class="gd">-   executed.</span>
+<span class="gi">+   ``__name__`` is set to *run_name* if this optional argument is not</span>
+<span class="gi">+   :const:`None`, to ``mod_name + &#39;.__main__&#39;`` if the named module is a</span>
+<span class="gi">+   package and to the *mod_name* argument otherwise.</span>
+ 
+<span class="gd">-   ``__name__`` is set to *run_name* if this optional argument is supplied, and the</span>
+<span class="gd">-   *mod_name* argument otherwise.</span>
+<span class="gi">+   ``__file__`` is set to the name provided by the module loader. If the</span>
+<span class="gi">+   loader does not make filename information available, this variable is set</span>
+<span class="gi">+   to :const:`None`.</span>
+ 
+<span class="gd">-   ``__loader__`` is set to the :pep:`302` module loader used to retrieve the code for</span>
+<span class="gd">-   the module (This loader may be a wrapper around the standard import mechanism).</span>
+<span class="gi">+   ``__loader__`` is set to the :pep:`302` module loader used to retrieve the</span>
+<span class="gi">+   code for the module (This loader may be a wrapper around the standard</span>
+<span class="gi">+   import mechanism).</span>
+ 
+<span class="gd">-   ``__file__`` is set to the name provided by the module loader. If the loader</span>
+<span class="gd">-   does not make filename information available, this variable is set to ``None``.</span>
+<span class="gi">+   ``__package__`` is set to *mod_name* if the named module is a package and</span>
+<span class="gi">+   to ``mod_name.rpartition(&#39;.&#39;)[0]`` otherwise.</span>
+ 
+<span class="gd">-   ``__builtins__`` is automatically initialised with a reference to the top level</span>
+<span class="gd">-   namespace of the :mod:`__builtin__` module.</span>
+<span class="gd">-</span>
+<span class="gd">-   If the argument *alter_sys* is supplied and evaluates to ``True``, then</span>
+<span class="gd">-   ``sys.argv[0]`` is updated with the value of ``__file__`` and</span>
+<span class="gi">+   If the argument *alter_sys* is supplied and evaluates to :const:`True`,</span>
+<span class="gi">+   then ``sys.argv[0]`` is updated with the value of ``__file__`` and</span>
+    ``sys.modules[__name__]`` is updated with a temporary module object for the
+    module being executed. Both ``sys.argv[0]`` and ``sys.modules[__name__]``
+    are restored to their original values before the function returns.
+ 
+<span class="gd">-   Note that this manipulation of :mod:`sys` is not thread-safe. Other threads may</span>
+<span class="gd">-   see the partially initialised module, as well as the altered list of arguments.</span>
+<span class="gd">-   It is recommended that the :mod:`sys` module be left alone when invoking this</span>
+<span class="gd">-   function from threaded code.</span>
+<span class="gi">+   Note that this manipulation of :mod:`sys` is not thread-safe. Other threads</span>
+<span class="gi">+   may see the partially initialised module, as well as the altered list of</span>
+<span class="gi">+   arguments. It is recommended that the :mod:`sys` module be left alone when</span>
+<span class="gi">+   invoking this function from threaded code.</span>
+ 
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+         Added ability to execute packages by looking for a ``__main__``</span>
+<span class="gi">+         submodule</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: run_path(file_path, init_globals=None, run_name=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   Execute the code at the named filesystem location and return the resulting</span>
+<span class="gi">+   module globals dictionary. As with a script name supplied to the CPython</span>
+<span class="gi">+   command line, the supplied path may refer to a Python source file, a</span>
+<span class="gi">+   compiled bytecode file or a valid sys.path entry containing a ``__main__``</span>
+<span class="gi">+   module (e.g. a zipfile containing a top-level ``__main__.py`` file).</span>
+<span class="gi">+</span>
+<span class="gi">+   For a simple script, the specified code is simply executed in a fresh</span>
+<span class="gi">+   module namespace. For a valid sys.path entry (typically a zipfile or</span>
+<span class="gi">+   directory), the entry is first added to the beginning of ``sys.path``. The</span>
+<span class="gi">+   function then looks for and executes a :mod:`__main__` module using the</span>
+<span class="gi">+   updated path. Note that there is no special protection against invoking</span>
+<span class="gi">+   an existing :mod:`__main__` entry located elsewhere on ``sys.path`` if</span>
+<span class="gi">+   there is no such module at the specified location.</span>
+<span class="gi">+</span>
+<span class="gi">+   The optional dictionary argument *init_globals* may be used to pre-populate</span>
+<span class="gi">+   the module&#39;s globals dictionary before the code is executed. The supplied</span>
+<span class="gi">+   dictionary will not be modified. If any of the special global variables</span>
+<span class="gi">+   below are defined in the supplied dictionary, those definitions are</span>
+<span class="gi">+   overridden by :func:`run_path`.</span>
+<span class="gi">+</span>
+<span class="gi">+   The special global variables ``__name__``, ``__file__``, ``__loader__``</span>
+<span class="gi">+   and ``__package__`` are set in the globals dictionary before the module</span>
+<span class="gi">+   code is executed (Note that this is a minimal set of variables - other</span>
+<span class="gi">+   variables may be set implicitly as an interpreter implementation detail).</span>
+<span class="gi">+</span>
+<span class="gi">+   ``__name__`` is set to *run_name* if this optional argument is not</span>
+<span class="gi">+   :const:`None` and to ``&#39;&lt;run_path&gt;&#39;`` otherwise.</span>
+<span class="gi">+</span>
+<span class="gi">+   ``__file__`` is set to the name provided by the module loader. If the</span>
+<span class="gi">+   loader does not make filename information available, this variable is set</span>
+<span class="gi">+   to :const:`None`. For a simple script, this will be set to ``file_path``.</span>
+<span class="gi">+</span>
+<span class="gi">+   ``__loader__`` is set to the :pep:`302` module loader used to retrieve the</span>
+<span class="gi">+   code for the module (This loader may be a wrapper around the standard</span>
+<span class="gi">+   import mechanism). For a simple script, this will be set to :const:`None`.</span>
+<span class="gi">+</span>
+<span class="gi">+   ``__package__`` is set to ``__name__.rpartition(&#39;.&#39;)[0]``.</span>
+<span class="gi">+</span>
+<span class="gi">+   A number of alterations are also made to the :mod:`sys` module. Firstly,</span>
+<span class="gi">+   ``sys.path`` may be altered as described above. ``sys.argv[0]`` is updated</span>
+<span class="gi">+   with the value of ``file_path`` and ``sys.modules[__name__]`` is updated</span>
+<span class="gi">+   with a temporary module object for the module being executed. All</span>
+<span class="gi">+   modifications to items in :mod:`sys` are reverted before the function</span>
+<span class="gi">+   returns.</span>
+<span class="gi">+</span>
+<span class="gi">+   Note that, unlike :func:`run_module`, the alterations made to :mod:`sys`</span>
+<span class="gi">+   are not optional in this function as these adjustments are essential to</span>
+<span class="gi">+   allowing the execution of sys.path entries. As the thread-safety</span>
+<span class="gi">+   limitations still apply, use of this function in threaded code should be</span>
+<span class="gi">+   either serialised with the import lock or delegated to a separate process.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+ .. seealso::
+ 
+    :pep:`338` - Executing modules as scripts
+<span class="gd">-      PEP written and  implemented by Nick Coghlan.</span>
+<span class="gi">+      PEP written and implemented by Nick Coghlan.</span>
+ 
+<span class="gi">+   :pep:`366` - Main module explicit relative imports</span>
+<span class="gi">+      PEP written and implemented by Nick Coghlan.</span>
+<span class="gi">+</span>
+<span class="gi">+   :ref:`using-on-general` - CPython command line details</span>
+</pre></div>
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/ftplib.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -41,51 +41,88 @@</span>
+    Return a new instance of the :class:`FTP` class.  When *host* is given, the
+    method call ``connect(host)`` is made.  When *user* is given, additionally
+    the method call ``login(user, passwd, acct)`` is made (where *passwd* and
+    *acct* default to the empty string when not given).  The optional *timeout*
+    parameter specifies a timeout in seconds for blocking operations like the
+    connection attempt (if is not specified, the global default timeout setting
+    will be used).
+ 
+    .. versionchanged:: 2.6
+       *timeout* was added.
+ 
+ 
+<span class="gi">+.. class:: FTP_TLS([host[, user[, passwd[, acct[, keyfile[, certfile[, timeout]]]]]]])</span>
+<span class="gi">+</span>
+<span class="gi">+   A :class:`FTP` subclass which adds TLS support to FTP as described in</span>
+<span class="gi">+   :rfc:`4217`.</span>
+<span class="gi">+   Connect as usual to port 21 implicitly securing the FTP control connection</span>
+<span class="gi">+   before authenticating. Securing the data connection requires the user to</span>
+<span class="gi">+   explicitly ask for it by calling the :meth:`prot_p` method.</span>
+<span class="gi">+   *keyfile* and *certfile* are optional -- they can contain a PEM formatted</span>
+<span class="gi">+   private key and certificate chain file name for the SSL connection.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+   Here&#39;s a sample session using the :class:`FTP_TLS` class:</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; from ftplib import FTP_TLS</span>
+<span class="gi">+   &gt;&gt;&gt; ftps = FTP_TLS(&#39;ftp.python.org&#39;)</span>
+<span class="gi">+   &gt;&gt;&gt; ftps.login()           # login anonymously before securing control channel</span>
+<span class="gi">+   &gt;&gt;&gt; ftps.prot_p()          # switch to secure data connection</span>
+<span class="gi">+   &gt;&gt;&gt; ftps.retrlines(&#39;LIST&#39;) # list directory content securely</span>
+<span class="gi">+   total 9</span>
+<span class="gi">+   drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 .</span>
+<span class="gi">+   drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 ..</span>
+<span class="gi">+   drwxr-xr-x   2 root     wheel        1024 Jan  3  1994 bin</span>
+<span class="gi">+   drwxr-xr-x   2 root     wheel        1024 Jan  3  1994 etc</span>
+<span class="gi">+   d-wxrwxr-x   2 ftp      wheel        1024 Sep  5 13:43 incoming</span>
+<span class="gi">+   drwxr-xr-x   2 root     wheel        1024 Nov 17  1993 lib</span>
+<span class="gi">+   drwxr-xr-x   6 1094     wheel        1024 Sep 13 19:07 pub</span>
+<span class="gi">+   drwxr-xr-x   3 root     wheel        1024 Jan  3  1994 usr</span>
+<span class="gi">+   -rw-r--r--   1 root     root          312 Aug  1  1994 welcome.msg</span>
+<span class="gi">+   &#39;226 Transfer complete.&#39;</span>
+<span class="gi">+   &gt;&gt;&gt; ftps.quit()</span>
+<span class="gi">+   &gt;&gt;&gt;</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. exception:: error_reply
+ 
+    Exception raised when an unexpected reply is received from the server.
+ 
+ 
+ .. exception:: error_temp
+ 
+<span class="gd">-   Exception raised when an error code in the range 400--499 is received.</span>
+<span class="gi">+   Exception raised when an error code signifying a temporary error (response</span>
+<span class="gi">+   codes in the range 400--499) is received.</span>
+ 
+ 
+ .. exception:: error_perm
+ 
+<span class="gd">-   Exception raised when an error code in the range 500--599 is received.</span>
+<span class="gi">+   Exception raised when an error code signifying a permanent error (response</span>
+<span class="gi">+   codes in the range 500--599) is received.</span>
+ 
+ 
+ .. exception:: error_proto
+ 
+<span class="gd">-   Exception raised when a reply is received from the server that does not</span>
+<span class="gd">-   begin with a digit in the range 1--5.</span>
+<span class="gi">+   Exception raised when a reply is received from the server that does not fit</span>
+<span class="gi">+   the response specifications of the File Transfer Protocol, i.e. begin with a</span>
+<span class="gi">+   digit in the range 1--5.</span>
+ 
+ 
+ .. data:: all_errors
+ 
+    The set of all exceptions (as a tuple) that methods of :class:`FTP`
+    instances may raise as a result of problems with the FTP connection (as
+    opposed to programming errors made by the caller).  This set includes the
+<span class="gd">-   four exceptions listed below as well as :exc:`socket.error` and</span>
+<span class="gi">+   four exceptions listed above as well as :exc:`socket.error` and</span>
+    :exc:`IOError`.
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`netrc`
+       Parser for the :file:`.netrc` file format.  The file :file:`.netrc` is
+       typically used by FTP clients to load user authentication information
+       before prompting the user.
+ 
+    .. index:: single: ftpmirror.py
+ 
+<span class="gu">@@ -155,73 +192,78 @@</span>
+ 
+    Abort a file transfer that is in progress.  Using this does not always work, but
+    it&#39;s worth a try.
+ 
+ 
+ .. method:: FTP.sendcmd(command)
+ 
+    Send a simple command string to the server and return the response string.
+ 
+ 
+ .. method:: FTP.voidcmd(command)
+ 
+<span class="gd">-   Send a simple command string to the server and handle the response. Return</span>
+<span class="gd">-   nothing if a response code in the range 200--299 is received. Raise an exception</span>
+<span class="gd">-   otherwise.</span>
+<span class="gi">+   Send a simple command string to the server and handle the response.  Return</span>
+<span class="gi">+   nothing if a response code corresponding to success (codes in the range</span>
+<span class="gi">+   200--299) is received.  Raise :exc:`error_reply` otherwise.</span>
+ 
+ 
+ .. method:: FTP.retrbinary(command, callback[, maxblocksize[, rest]])
+ 
+    Retrieve a file in binary transfer mode.  *command* should be an appropriate
+    ``RETR`` command: ``&#39;RETR filename&#39;``. The *callback* function is called for
+    each block of data received, with a single string argument giving the data
+    block. The optional *maxblocksize* argument specifies the maximum chunk size to
+    read on the low-level socket object created to do the actual transfer (which
+    will also be the largest size of the data blocks passed to *callback*).  A
+    reasonable default is chosen. *rest* means the same thing as in the
+    :meth:`transfercmd` method.
+ 
+ 
+ .. method:: FTP.retrlines(command[, callback])
+ 
+    Retrieve a file or directory listing in ASCII transfer mode.  *command*
+    should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
+    command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
+<span class="gd">-   ``&#39;LIST&#39;``).  The *callback* function is called for each line with a</span>
+<span class="gd">-   string argument containing the line with the trailing CRLF stripped.</span>
+<span class="gd">-   The default *callback* prints the line to ``sys.stdout``.</span>
+<span class="gi">+   ``&#39;LIST&#39;``).  ``LIST`` retrieves a list of files and information about those files.</span>
+<span class="gi">+   ``NLST`` retrieves a list of file names.  On some servers, ``MLSD`` retrieves</span>
+<span class="gi">+   a machine readable list of files and information about those files.  The *callback*</span>
+<span class="gi">+   function is called for each line with a string argument containing the line with</span>
+<span class="gi">+   the trailing CRLF stripped.  The default *callback* prints the line to ``sys.stdout``.</span>
+ 
+ 
+ .. method:: FTP.set_pasv(boolean)
+ 
+    Enable &quot;passive&quot; mode if *boolean* is true, other disable passive mode.  (In
+    Python 2.0 and before, passive mode was off by default; in Python 2.1 and later,
+    it is on by default.)
+ 
+ 
+<span class="gd">-.. method:: FTP.storbinary(command, file[, blocksize, callback])</span>
+<span class="gi">+.. method:: FTP.storbinary(command, file[, blocksize, callback, rest])</span>
+ 
+    Store a file in binary transfer mode.  *command* should be an appropriate
+    ``STOR`` command: ``&quot;STOR filename&quot;``. *file* is an open file object which is
+    read until EOF using its :meth:`read` method in blocks of size *blocksize* to
+    provide the data to be stored.  The *blocksize* argument defaults to 8192.
+    *callback* is an optional single parameter callable that is called
+<span class="gd">-   on each block of data after it is sent.</span>
+<span class="gi">+   on each block of data after it is sent. *rest* means the same thing as in</span>
+<span class="gi">+   the :meth:`transfercmd` method.</span>
+ 
+    .. versionchanged:: 2.1
+       default for *blocksize* added.
+ 
+    .. versionchanged:: 2.6
+       *callback* parameter added.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      *rest* parameter added.</span>
+ 
+ .. method:: FTP.storlines(command, file[, callback])
+ 
+    Store a file in ASCII transfer mode.  *command* should be an appropriate
+    ``STOR`` command (see :meth:`storbinary`).  Lines are read until EOF from the
+    open file object *file* using its :meth:`readline` method to provide the data to
+    be stored.  *callback* is an optional single parameter callable
+    that is called on each line after it is sent.
+ 
+    .. versionchanged:: 2.6
+       *callback* parameter added.
+ 
+<span class="gu">@@ -247,28 +289,28 @@</span>
+ 
+ 
+ .. method:: FTP.ntransfercmd(cmd[, rest])
+ 
+    Like :meth:`transfercmd`, but returns a tuple of the data connection and the
+    expected size of the data.  If the expected size could not be computed, ``None``
+    will be returned as the expected size.  *cmd* and *rest* means the same thing as
+    in :meth:`transfercmd`.
+ 
+ 
+ .. method:: FTP.nlst(argument[, ...])
+ 
+<span class="gd">-   Return a list of files as returned by the ``NLST`` command.  The optional</span>
+<span class="gd">-   *argument* is a directory to list (default is the current server directory).</span>
+<span class="gd">-   Multiple arguments can be used to pass non-standard options to the ``NLST``</span>
+<span class="gd">-   command.</span>
+<span class="gi">+   Return a list of file names as returned by the ``NLST`` command.  The</span>
+<span class="gi">+   optional *argument* is a directory to list (default is the current server</span>
+<span class="gi">+   directory).  Multiple arguments can be used to pass non-standard options to</span>
+<span class="gi">+   the ``NLST`` command.</span>
+ 
+ 
+ .. method:: FTP.dir(argument[, ...])
+ 
+    Produce a directory listing as returned by the ``LIST`` command, printing it to
+    standard output.  The optional *argument* is a directory to list (default is the
+    current server directory).  Multiple arguments can be used to pass non-standard
+    options to the ``LIST`` command.  If the last argument is a function, it is used
+    as a *callback* function as for :meth:`retrlines`; the default prints to
+    ``sys.stdout``.  This method returns ``None``.
+ 
+ 
+<span class="gu">@@ -320,12 +362,35 @@</span>
+    :meth:`close` method which renders the :class:`FTP` instance useless for
+    subsequent calls (see below).
+ 
+ 
+ .. method:: FTP.close()
+ 
+    Close the connection unilaterally.  This should not be applied to an already
+    closed connection such as after a successful call to :meth:`quit`.  After this
+    call the :class:`FTP` instance should not be used any more (after a call to
+    :meth:`close` or :meth:`quit` you cannot reopen the connection by issuing
+    another :meth:`login` method).
+ 
+<span class="gi">+</span>
+<span class="gi">+FTP_TLS Objects</span>
+<span class="gi">+---------------</span>
+<span class="gi">+</span>
+<span class="gi">+:class:`FTP_TLS` class inherits from :class:`FTP`, defining these additional objects:</span>
+<span class="gi">+</span>
+<span class="gi">+.. attribute:: FTP_TLS.ssl_version</span>
+<span class="gi">+</span>
+<span class="gi">+   The SSL version to use (defaults to *TLSv1*).</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: FTP_TLS.auth()</span>
+<span class="gi">+</span>
+<span class="gi">+   Set up secure control connection by using TLS or SSL, depending on what specified in :meth:`ssl_version` attribute.</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: FTP_TLS.prot_p()</span>
+<span class="gi">+</span>
+<span class="gi">+   Set up secure data connection.</span>
+<span class="gi">+</span>
+<span class="gi">+.. method:: FTP_TLS.prot_c()</span>
+<span class="gi">+</span>
+<span class="gi">+   Set up clear text data connection.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

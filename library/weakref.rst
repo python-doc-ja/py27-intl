@@ -60,10 +60,13 @@
 メソッド、 :class:`set` と :class:`frozenset` 型、ファイルオブジェクト、
 ジェネレータ(:term:`generator`)、 type オブジェクト、 :mod:`bsddb` モジュールの
 :class:`DBcursor` 型、ソケット型、 :class:`array` 型、 :class:`deque` 型、
-正規表現パターンオブジェクトです。
+正規表現パターンオブジェクト, code オブジェクトです。
 
 .. versionchanged:: 2.4
    ファイル、ソケット、 :class:`array` 、および正規表現パターンのサポートを追加しました.
+
+.. versionchanged:: 2.7
+   thread.lock, threading.Lock, code オブジェクトのサポートを追加しました。
 
 :class:`list` や :class:`dict` など、いくつかの組み込み型は弱参照を
 直接サポートしませんが、以下のようにサブクラス化を行えばサポートを追加できます::
@@ -217,6 +220,14 @@
    値への弱参照のリストを返します。
 
    .. versionadded:: 2.5
+
+
+.. class:: WeakSet([elements])
+
+   要素への弱参照を持つ集合型。
+   要素への強参照が無くなったときに、その要素は削除されます。
+
+   .. versionadded:: 2.7
 
 
 .. data:: ReferenceType

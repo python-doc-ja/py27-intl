@@ -14,6 +14,11 @@
 :class:`dict` の導入以前に、 :class:`UserDict` クラスは辞書風のサブクラスをオーバライドや新メソッドの
 定義によって作成するために使われていました。
 
+.. seealso::
+
+   最新バージョンの `UserDict Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/UserDict.py?view=markup>`_
+
 :mod:`UserDict` モジュールは :class:`UserDict` クラスと :class:`DictMixin` を定義しています:
 
 

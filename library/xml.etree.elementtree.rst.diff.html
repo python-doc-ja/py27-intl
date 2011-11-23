@@ -1,0 +1,940 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/xml.etree.elementtree.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,533 +1,646 @@</span>
+ 
+ :mod:`xml.etree.ElementTree` --- The ElementTree XML API
+ ========================================================
+ 
+ .. module:: xml.etree.ElementTree
+    :synopsis: Implementation of the ElementTree API.
+ .. moduleauthor:: Fredrik Lundh &lt;fredrik@pythonware.com&gt;
+ 
+ 
+ .. versionadded:: 2.5
+ 
+<span class="gd">-The Element type is a flexible container object, designed to store hierarchical</span>
+<span class="gd">-data structures in memory. The type can be described as a cross between a list</span>
+<span class="gd">-and a dictionary.</span>
+<span class="gi">+The :class:`Element` type is a flexible container object, designed to store</span>
+<span class="gi">+hierarchical data structures in memory.  The type can be described as a cross</span>
+<span class="gi">+between a list and a dictionary.</span>
+ 
+ Each element has a number of properties associated with it:
+ 
+ * a tag which is a string identifying what kind of data this element represents
+   (the element type, in other words).
+ 
+ * a number of attributes, stored in a Python dictionary.
+ 
+ * a text string.
+ 
+ * an optional tail string.
+ 
+ * a number of child elements, stored in a Python sequence
+ 
+<span class="gd">-To create an element instance, use the Element or SubElement factory functions.</span>
+<span class="gi">+To create an element instance, use the :class:`Element` constructor or the</span>
+<span class="gi">+:func:`SubElement` factory function.</span>
+ 
+ The :class:`ElementTree` class can be used to wrap an element structure, and
+ convert it from and to XML.
+ 
+ A C implementation of this API is available as :mod:`xml.etree.cElementTree`.
+ 
+ See http://effbot.org/zone/element-index.htm for tutorials and links to other
+<span class="gd">-docs. Fredrik Lundh&#39;s page is also the location of the development version of the</span>
+<span class="gd">-xml.etree.ElementTree.</span>
+<span class="gi">+docs.  Fredrik Lundh&#39;s page is also the location of the development version of</span>
+<span class="gi">+the xml.etree.ElementTree.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   The ElementTree API is updated to 1.3.  For more information, see</span>
+<span class="gi">+   `Introducing ElementTree 1.3</span>
+<span class="gi">+   &lt;http://effbot.org/zone/elementtree-13-intro.htm&gt;`_.</span>
+<span class="gi">+</span>
+ 
+ .. _elementtree-functions:
+ 
+ Functions
+ ---------
+ 
+ 
+<span class="gd">-.. function:: Comment([text])</span>
+<span class="gi">+.. function:: Comment(text=None)</span>
+ 
+<span class="gd">-   Comment element factory.  This factory function creates a special element that</span>
+<span class="gd">-   will be serialized as an XML comment. The comment string can be either an 8-bit</span>
+<span class="gd">-   ASCII string or a Unicode string. *text* is a string containing the comment</span>
+<span class="gd">-   string. Returns an element instance representing a comment.</span>
+<span class="gi">+   Comment element factory.  This factory function creates a special element</span>
+<span class="gi">+   that will be serialized as an XML comment by the standard serializer.  The</span>
+<span class="gi">+   comment string can be either a bytestring or a Unicode string.  *text* is a</span>
+<span class="gi">+   string containing the comment string.  Returns an element instance</span>
+<span class="gi">+   representing a comment.</span>
+ 
+ 
+ .. function:: dump(elem)
+ 
+<span class="gd">-   Writes an element tree or element structure to sys.stdout.  This function should</span>
+<span class="gd">-   be used for debugging only.</span>
+<span class="gi">+   Writes an element tree or element structure to sys.stdout.  This function</span>
+<span class="gi">+   should be used for debugging only.</span>
+ 
+    The exact output format is implementation dependent.  In this version, it&#39;s
+    written as an ordinary XML file.
+ 
+    *elem* is an element tree or an individual element.
+ 
+ 
+<span class="gd">-.. function:: Element(tag[, attrib][, **extra])</span>
+<span class="gd">-</span>
+<span class="gd">-   Element factory.  This function returns an object implementing the standard</span>
+<span class="gd">-   Element interface.  The exact class or type of that object is implementation</span>
+<span class="gd">-   dependent, but it will always be compatible with the _ElementInterface class in</span>
+<span class="gd">-   this module.</span>
+<span class="gd">-</span>
+<span class="gd">-   The element name, attribute names, and attribute values can be either 8-bit</span>
+<span class="gd">-   ASCII strings or Unicode strings. *tag* is the element name. *attrib* is an</span>
+<span class="gd">-   optional dictionary, containing element attributes. *extra* contains additional</span>
+<span class="gd">-   attributes, given as keyword arguments. Returns an element instance.</span>
+<span class="gd">-</span>
+<span class="gd">-</span>
+ .. function:: fromstring(text)
+ 
+<span class="gd">-   Parses an XML section from a string constant.  Same as XML. *text* is a string</span>
+<span class="gd">-   containing XML data. Returns an Element instance.</span>
+<span class="gi">+   Parses an XML section from a string constant.  Same as :func:`XML`.  *text*</span>
+<span class="gi">+   is a string containing XML data.  Returns an :class:`Element` instance.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: fromstringlist(sequence, parser=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   Parses an XML document from a sequence of string fragments.  *sequence* is a</span>
+<span class="gi">+   list or other sequence containing XML data fragments.  *parser* is an</span>
+<span class="gi">+   optional parser instance.  If not given, the standard :class:`XMLParser`</span>
+<span class="gi">+   parser is used.  Returns an :class:`Element` instance.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+ 
+ 
+ .. function:: iselement(element)
+ 
+<span class="gd">-   Checks if an object appears to be a valid element object. *element* is an</span>
+<span class="gd">-   element instance. Returns a true value if this is an element object.</span>
+<span class="gi">+   Checks if an object appears to be a valid element object.  *element* is an</span>
+<span class="gi">+   element instance.  Returns a true value if this is an element object.</span>
+ 
+ 
+<span class="gd">-.. function:: iterparse(source[, events])</span>
+<span class="gi">+.. function:: iterparse(source, events=None, parser=None)</span>
+ 
+    Parses an XML section into an element tree incrementally, and reports what&#39;s
+<span class="gd">-   going on to the user. *source* is a filename or file object containing XML data.</span>
+<span class="gd">-   *events* is a list of events to report back.  If omitted, only &quot;end&quot; events are</span>
+<span class="gd">-   reported. Returns an :term:`iterator` providing ``(event, elem)`` pairs.</span>
+<span class="gi">+   going on to the user.  *source* is a filename or file object containing XML</span>
+<span class="gi">+   data.  *events* is a list of events to report back.  If omitted, only &quot;end&quot;</span>
+<span class="gi">+   events are reported.  *parser* is an optional parser instance.  If not</span>
+<span class="gi">+   given, the standard :class:`XMLParser` parser is used.  Returns an</span>
+<span class="gi">+   :term:`iterator` providing ``(event, elem)`` pairs.</span>
+ 
+    .. note::
+ 
+       :func:`iterparse` only guarantees that it has seen the &quot;&gt;&quot;
+       character of a starting tag when it emits a &quot;start&quot; event, so the
+       attributes are defined, but the contents of the text and tail attributes
+       are undefined at that point.  The same applies to the element children;
+       they may or may not be present.
+ 
+       If you need a fully populated element, look for &quot;end&quot; events instead.
+ 
+ 
+<span class="gd">-.. function:: parse(source[, parser])</span>
+<span class="gi">+.. function:: parse(source, parser=None)</span>
+ 
+<span class="gd">-   Parses an XML section into an element tree. *source* is a filename or file</span>
+<span class="gd">-   object containing XML data. *parser* is an optional parser instance.  If not</span>
+<span class="gd">-   given, the standard XMLTreeBuilder parser is used. Returns an ElementTree</span>
+<span class="gd">-   instance.</span>
+<span class="gi">+   Parses an XML section into an element tree.  *source* is a filename or file</span>
+<span class="gi">+   object containing XML data.  *parser* is an optional parser instance.  If</span>
+<span class="gi">+   not given, the standard :class:`XMLParser` parser is used.  Returns an</span>
+<span class="gi">+   :class:`ElementTree` instance.</span>
+ 
+ 
+<span class="gd">-.. function:: ProcessingInstruction(target[, text])</span>
+<span class="gi">+.. function:: ProcessingInstruction(target, text=None)</span>
+ 
+<span class="gd">-   PI element factory.  This factory function creates a special element that will</span>
+<span class="gd">-   be serialized as an XML processing instruction. *target* is a string containing</span>
+<span class="gd">-   the PI target. *text* is a string containing the PI contents, if given. Returns</span>
+<span class="gd">-   an element instance, representing a processing instruction.</span>
+<span class="gi">+   PI element factory.  This factory function creates a special element that</span>
+<span class="gi">+   will be serialized as an XML processing instruction.  *target* is a string</span>
+<span class="gi">+   containing the PI target.  *text* is a string containing the PI contents, if</span>
+<span class="gi">+   given.  Returns an element instance, representing a processing instruction.</span>
+ 
+ 
+<span class="gd">-.. function:: SubElement(parent, tag[, attrib[,  **extra]])</span>
+<span class="gi">+.. function:: register_namespace(prefix, uri)</span>
+ 
+<span class="gd">-   Subelement factory.  This function creates an element instance, and appends it</span>
+<span class="gd">-   to an existing element.</span>
+<span class="gi">+   Registers a namespace prefix.  The registry is global, and any existing</span>
+<span class="gi">+   mapping for either the given prefix or the namespace URI will be removed.</span>
+<span class="gi">+   *prefix* is a namespace prefix.  *uri* is a namespace uri.  Tags and</span>
+<span class="gi">+   attributes in this namespace will be serialized with the given prefix, if at</span>
+<span class="gi">+   all possible.</span>
+ 
+<span class="gd">-   The element name, attribute names, and attribute values can be either 8-bit</span>
+<span class="gd">-   ASCII strings or Unicode strings. *parent* is the parent element. *tag* is the</span>
+<span class="gd">-   subelement name. *attrib* is an optional dictionary, containing element</span>
+<span class="gd">-   attributes. *extra* contains additional attributes, given as keyword arguments.</span>
+<span class="gd">-   Returns an element instance.</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+ 
+ 
+<span class="gd">-.. function:: tostring(element[, encoding])</span>
+<span class="gi">+.. function:: SubElement(parent, tag, attrib={}, **extra)</span>
+ 
+<span class="gd">-   Generates a string representation of an XML element, including all subelements.</span>
+<span class="gd">-   *element* is an Element instance. *encoding* is the output encoding (default is</span>
+<span class="gd">-   US-ASCII). Returns an encoded string containing the XML data.</span>
+<span class="gi">+   Subelement factory.  This function creates an element instance, and appends</span>
+<span class="gi">+   it to an existing element.</span>
+ 
+<span class="gi">+   The element name, attribute names, and attribute values can be either</span>
+<span class="gi">+   bytestrings or Unicode strings.  *parent* is the parent element.  *tag* is</span>
+<span class="gi">+   the subelement name.  *attrib* is an optional dictionary, containing element</span>
+<span class="gi">+   attributes.  *extra* contains additional attributes, given as keyword</span>
+<span class="gi">+   arguments.  Returns an element instance.</span>
+ 
+<span class="gd">-.. function:: XML(text)</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: tostring(element, encoding=&quot;us-ascii&quot;, method=&quot;xml&quot;)</span>
+<span class="gi">+</span>
+<span class="gi">+   Generates a string representation of an XML element, including all</span>
+<span class="gi">+   subelements.  *element* is an :class:`Element` instance.  *encoding* [1]_ is</span>
+<span class="gi">+   the output encoding (default is US-ASCII).  *method* is either ``&quot;xml&quot;``,</span>
+<span class="gi">+   ``&quot;html&quot;`` or ``&quot;text&quot;`` (default is ``&quot;xml&quot;``).  Returns an encoded string</span>
+<span class="gi">+   containing the XML data.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: tostringlist(element, encoding=&quot;us-ascii&quot;, method=&quot;xml&quot;)</span>
+<span class="gi">+</span>
+<span class="gi">+   Generates a string representation of an XML element, including all</span>
+<span class="gi">+   subelements.  *element* is an :class:`Element` instance.  *encoding* [1]_ is</span>
+<span class="gi">+   the output encoding (default is US-ASCII).   *method* is either ``&quot;xml&quot;``,</span>
+<span class="gi">+   ``&quot;html&quot;`` or ``&quot;text&quot;`` (default is ``&quot;xml&quot;``).  Returns a list of encoded</span>
+<span class="gi">+   strings containing the XML data.  It does not guarantee any specific</span>
+<span class="gi">+   sequence, except that ``&quot;&quot;.join(tostringlist(element)) ==</span>
+<span class="gi">+   tostring(element)``.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: XML(text, parser=None)</span>
+ 
+    Parses an XML section from a string constant.  This function can be used to
+<span class="gd">-   embed &quot;XML literals&quot; in Python code. *text* is a string containing XML data.</span>
+<span class="gd">-   Returns an Element instance.</span>
+<span class="gi">+   embed &quot;XML literals&quot; in Python code.  *text* is a string containing XML</span>
+<span class="gi">+   data.  *parser* is an optional parser instance.  If not given, the standard</span>
+<span class="gi">+   :class:`XMLParser` parser is used.  Returns an :class:`Element` instance.</span>
+ 
+ 
+<span class="gd">-.. function:: XMLID(text)</span>
+<span class="gi">+.. function:: XMLID(text, parser=None)</span>
+ 
+    Parses an XML section from a string constant, and also returns a dictionary
+<span class="gd">-   which maps from element id:s to elements. *text* is a string containing XML</span>
+<span class="gd">-   data. Returns a tuple containing an Element instance and a dictionary.</span>
+<span class="gi">+   which maps from element id:s to elements.  *text* is a string containing XML</span>
+<span class="gi">+   data.  *parser* is an optional parser instance.  If not given, the standard</span>
+<span class="gi">+   :class:`XMLParser` parser is used.  Returns a tuple containing an</span>
+<span class="gi">+   :class:`Element` instance and a dictionary.</span>
+ 
+ 
+<span class="gd">-.. _elementtree-element-interface:</span>
+<span class="gi">+.. _elementtree-element-objects:</span>
+ 
+<span class="gd">-The Element Interface</span>
+<span class="gd">----------------------</span>
+<span class="gi">+Element Objects</span>
+<span class="gi">+---------------</span>
+ 
+<span class="gd">-Element objects returned by Element or SubElement have the  following methods</span>
+<span class="gd">-and attributes.</span>
+ 
+<span class="gi">+.. class:: Element(tag, attrib={}, **extra)</span>
+ 
+<span class="gd">-.. attribute:: Element.tag</span>
+<span class="gi">+   Element class.  This class defines the Element interface, and provides a</span>
+<span class="gi">+   reference implementation of this interface.</span>
+ 
+<span class="gd">-   A string identifying what kind of data this element represents (the element</span>
+<span class="gd">-   type, in other words).</span>
+<span class="gi">+   The element name, attribute names, and attribute values can be either</span>
+<span class="gi">+   bytestrings or Unicode strings.  *tag* is the element name.  *attrib* is</span>
+<span class="gi">+   an optional dictionary, containing element attributes.  *extra* contains</span>
+<span class="gi">+   additional attributes, given as keyword arguments.</span>
+ 
+ 
+<span class="gd">-.. attribute:: Element.text</span>
+<span class="gi">+   .. attribute:: tag</span>
+ 
+<span class="gd">-   The *text* attribute can be used to hold additional data associated with the</span>
+<span class="gd">-   element. As the name implies this attribute is usually a string but may be any</span>
+<span class="gd">-   application-specific object. If the element is created from an XML file the</span>
+<span class="gd">-   attribute will contain any text found between the element tags.</span>
+<span class="gi">+      A string identifying what kind of data this element represents (the</span>
+<span class="gi">+      element type, in other words).</span>
+ 
+ 
+<span class="gd">-.. attribute:: Element.tail</span>
+<span class="gi">+   .. attribute:: text</span>
+ 
+<span class="gd">-   The *tail* attribute can be used to hold additional data associated with the</span>
+<span class="gd">-   element. This attribute is usually a string but may be any application-specific</span>
+<span class="gd">-   object. If the element is created from an XML file the attribute will contain</span>
+<span class="gd">-   any text found after the element&#39;s end tag and before the next tag.</span>
+<span class="gi">+      The *text* attribute can be used to hold additional data associated with</span>
+<span class="gi">+      the element.  As the name implies this attribute is usually a string but</span>
+<span class="gi">+      may be any application-specific object.  If the element is created from</span>
+<span class="gi">+      an XML file the attribute will contain any text found between the element</span>
+<span class="gi">+      tags.</span>
+ 
+ 
+<span class="gd">-.. attribute:: Element.attrib</span>
+<span class="gi">+   .. attribute:: tail</span>
+ 
+<span class="gd">-   A dictionary containing the element&#39;s attributes. Note that while the *attrib*</span>
+<span class="gd">-   value is always a real mutable Python dictionary, an ElementTree implementation</span>
+<span class="gd">-   may choose to use another internal representation, and create the dictionary</span>
+<span class="gd">-   only if someone asks for it. To take advantage of such implementations, use the</span>
+<span class="gd">-   dictionary methods below whenever possible.</span>
+<span class="gi">+      The *tail* attribute can be used to hold additional data associated with</span>
+<span class="gi">+      the element.  This attribute is usually a string but may be any</span>
+<span class="gi">+      application-specific object.  If the element is created from an XML file</span>
+<span class="gi">+      the attribute will contain any text found after the element&#39;s end tag and</span>
+<span class="gi">+      before the next tag.</span>
+ 
+<span class="gd">-The following dictionary-like methods work on the element attributes.</span>
+ 
+<span class="gi">+   .. attribute:: attrib</span>
+ 
+<span class="gd">-.. method:: Element.clear()</span>
+<span class="gi">+      A dictionary containing the element&#39;s attributes.  Note that while the</span>
+<span class="gi">+      *attrib* value is always a real mutable Python dictionary, an ElementTree</span>
+<span class="gi">+      implementation may choose to use another internal representation, and</span>
+<span class="gi">+      create the dictionary only if someone asks for it.  To take advantage of</span>
+<span class="gi">+      such implementations, use the dictionary methods below whenever possible.</span>
+ 
+<span class="gd">-   Resets an element.  This function removes all subelements, clears all</span>
+<span class="gd">-   attributes, and sets the text and tail attributes to None.</span>
+<span class="gi">+   The following dictionary-like methods work on the element attributes.</span>
+ 
+ 
+<span class="gd">-.. method:: Element.get(key[, default=None])</span>
+<span class="gi">+   .. method:: clear()</span>
+ 
+<span class="gd">-   Gets the element attribute named *key*.</span>
+<span class="gi">+      Resets an element.  This function removes all subelements, clears all</span>
+<span class="gi">+      attributes, and sets the text and tail attributes to None.</span>
+ 
+<span class="gd">-   Returns the attribute value, or *default* if the attribute was not found.</span>
+ 
+<span class="gi">+   .. method:: get(key, default=None)</span>
+ 
+<span class="gd">-.. method:: Element.items()</span>
+<span class="gi">+      Gets the element attribute named *key*.</span>
+ 
+<span class="gd">-   Returns the element attributes as a sequence of (name, value) pairs. The</span>
+<span class="gd">-   attributes are returned in an arbitrary order.</span>
+<span class="gi">+      Returns the attribute value, or *default* if the attribute was not found.</span>
+ 
+ 
+<span class="gd">-.. method:: Element.keys()</span>
+<span class="gi">+   .. method:: items()</span>
+ 
+<span class="gd">-   Returns the elements attribute names as a list. The names are returned in an</span>
+<span class="gd">-   arbitrary order.</span>
+<span class="gi">+      Returns the element attributes as a sequence of (name, value) pairs.  The</span>
+<span class="gi">+      attributes are returned in an arbitrary order.</span>
+ 
+ 
+<span class="gd">-.. method:: Element.set(key, value)</span>
+<span class="gi">+   .. method:: keys()</span>
+ 
+<span class="gd">-   Set the attribute *key* on the element to *value*.</span>
+<span class="gi">+      Returns the elements attribute names as a list.  The names are returned</span>
+<span class="gi">+      in an arbitrary order.</span>
+ 
+<span class="gd">-The following methods work on the element&#39;s children (subelements).</span>
+ 
+<span class="gi">+   .. method:: set(key, value)</span>
+ 
+<span class="gd">-.. method:: Element.append(subelement)</span>
+<span class="gi">+      Set the attribute *key* on the element to *value*.</span>
+ 
+<span class="gd">-   Adds the element *subelement* to the end of this elements internal list of</span>
+<span class="gd">-   subelements.</span>
+<span class="gi">+   The following methods work on the element&#39;s children (subelements).</span>
+ 
+ 
+<span class="gd">-.. method:: Element.find(match)</span>
+<span class="gi">+   .. method:: append(subelement)</span>
+ 
+<span class="gd">-   Finds the first subelement matching *match*.  *match* may be a tag name or path.</span>
+<span class="gd">-   Returns an element instance or ``None``.</span>
+<span class="gi">+      Adds the element *subelement* to the end of this elements internal list</span>
+<span class="gi">+      of subelements.</span>
+ 
+ 
+<span class="gd">-.. method:: Element.findall(match)</span>
+<span class="gi">+   .. method:: extend(subelements)</span>
+ 
+<span class="gd">-   Finds all subelements matching *match*.  *match* may be a tag name or path.</span>
+<span class="gd">-   Returns an iterable yielding all matching elements in document order.</span>
+<span class="gi">+      Appends *subelements* from a sequence object with zero or more elements.</span>
+<span class="gi">+      Raises :exc:`AssertionError` if a subelement is not a valid object.</span>
+ 
+<span class="gi">+      .. versionadded:: 2.7</span>
+ 
+<span class="gd">-.. method:: Element.findtext(condition[, default=None])</span>
+ 
+<span class="gd">-   Finds text for the first subelement matching *condition*.  *condition* may be a</span>
+<span class="gd">-   tag name or path. Returns the text content of the first matching element, or</span>
+<span class="gd">-   *default* if no element was found.  Note that if the matching element has no</span>
+<span class="gd">-   text content an empty string is returned.</span>
+<span class="gi">+   .. method:: find(match)</span>
+ 
+<span class="gi">+      Finds the first subelement matching *match*.  *match* may be a tag name</span>
+<span class="gi">+      or path.  Returns an element instance or ``None``.</span>
+ 
+<span class="gd">-.. method:: Element.getchildren()</span>
+ 
+<span class="gd">-   Returns all subelements.  The elements are returned in document order.</span>
+<span class="gi">+   .. method:: findall(match)</span>
+ 
+<span class="gi">+      Finds all matching subelements, by tag name or path.  Returns a list</span>
+<span class="gi">+      containing all matching elements in document order.</span>
+ 
+<span class="gd">-.. method:: Element.getiterator([tag=None])</span>
+ 
+<span class="gd">-   Creates a tree iterator with the current element as the root.   The iterator</span>
+<span class="gd">-   iterates over this element and all elements below it, in document (depth first)</span>
+<span class="gd">-   order.  If *tag* is not ``None`` or ``&#39;*&#39;``, only elements whose tag equals</span>
+<span class="gd">-   *tag* are returned from the iterator.</span>
+<span class="gi">+   .. method:: findtext(match, default=None)</span>
+ 
+<span class="gi">+      Finds text for the first subelement matching *match*.  *match* may be</span>
+<span class="gi">+      a tag name or path.  Returns the text content of the first matching</span>
+<span class="gi">+      element, or *default* if no element was found.  Note that if the matching</span>
+<span class="gi">+      element has no text content an empty string is returned.</span>
+ 
+<span class="gd">-.. method:: Element.insert(index, element)</span>
+ 
+<span class="gd">-   Inserts a subelement at the given position in this element.</span>
+<span class="gi">+   .. method:: getchildren()</span>
+ 
+<span class="gi">+      .. deprecated:: 2.7</span>
+<span class="gi">+         Use ``list(elem)`` or iteration.</span>
+ 
+<span class="gd">-.. method:: Element.makeelement(tag, attrib)</span>
+ 
+<span class="gd">-   Creates a new element object of the same type as this element. Do not call this</span>
+<span class="gd">-   method, use the SubElement factory function instead.</span>
+<span class="gi">+   .. method:: getiterator(tag=None)</span>
+ 
+<span class="gi">+      .. deprecated:: 2.7</span>
+<span class="gi">+         Use method :meth:`Element.iter` instead.</span>
+ 
+<span class="gd">-.. method:: Element.remove(subelement)</span>
+ 
+<span class="gd">-   Removes *subelement* from the element.   Unlike the findXYZ methods this method</span>
+<span class="gd">-   compares elements based on  the instance identity, not on tag value or contents.</span>
+<span class="gi">+   .. method:: insert(index, element)</span>
+ 
+<span class="gd">-Element objects also support the following sequence type methods for working</span>
+<span class="gd">-with subelements: :meth:`__delitem__`, :meth:`__getitem__`, :meth:`__setitem__`,</span>
+<span class="gd">-:meth:`__len__`.</span>
+<span class="gi">+      Inserts a subelement at the given position in this element.</span>
+ 
+<span class="gd">-Caution: Because Element objects do not define a :meth:`__nonzero__` method,</span>
+<span class="gd">-elements with no subelements will test as ``False``. ::</span>
+ 
+<span class="gd">-   element = root.find(&#39;foo&#39;)</span>
+<span class="gi">+   .. method:: iter(tag=None)</span>
+ 
+<span class="gd">-   if not element: # careful!</span>
+<span class="gd">-       print &quot;element not found, or element has no subelements&quot;</span>
+<span class="gi">+      Creates a tree :term:`iterator` with the current element as the root.</span>
+<span class="gi">+      The iterator iterates over this element and all elements below it, in</span>
+<span class="gi">+      document (depth first) order.  If *tag* is not ``None`` or ``&#39;*&#39;``, only</span>
+<span class="gi">+      elements whose tag equals *tag* are returned from the iterator.  If the</span>
+<span class="gi">+      tree structure is modified during iteration, the result is undefined.</span>
+ 
+<span class="gd">-   if element is None:</span>
+<span class="gd">-       print &quot;element not found&quot;</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: iterfind(match)</span>
+<span class="gi">+</span>
+<span class="gi">+      Finds all matching subelements, by tag name or path.  Returns an iterable</span>
+<span class="gi">+      yielding all matching elements in document order.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: itertext()</span>
+<span class="gi">+</span>
+<span class="gi">+      Creates a text iterator.  The iterator loops over this element and all</span>
+<span class="gi">+      subelements, in document order, and returns all inner text.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: makeelement(tag, attrib)</span>
+<span class="gi">+</span>
+<span class="gi">+      Creates a new element object of the same type as this element.  Do not</span>
+<span class="gi">+      call this method, use the :func:`SubElement` factory function instead.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: remove(subelement)</span>
+<span class="gi">+</span>
+<span class="gi">+      Removes *subelement* from the element.  Unlike the find\* methods this</span>
+<span class="gi">+      method compares elements based on the instance identity, not on tag value</span>
+<span class="gi">+      or contents.</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`Element` objects also support the following sequence type methods</span>
+<span class="gi">+   for working with subelements: :meth:`__delitem__`, :meth:`__getitem__`,</span>
+<span class="gi">+   :meth:`__setitem__`, :meth:`__len__`.</span>
+<span class="gi">+</span>
+<span class="gi">+   Caution: Elements with no subelements will test as ``False``.  This behavior</span>
+<span class="gi">+   will change in future versions.  Use specific ``len(elem)`` or ``elem is</span>
+<span class="gi">+   None`` test instead. ::</span>
+<span class="gi">+</span>
+<span class="gi">+     element = root.find(&#39;foo&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+     if not element:  # careful!</span>
+<span class="gi">+         print &quot;element not found, or element has no subelements&quot;</span>
+<span class="gi">+</span>
+<span class="gi">+     if element is None:</span>
+<span class="gi">+         print &quot;element not found&quot;</span>
+ 
+ 
+ .. _elementtree-elementtree-objects:
+ 
+ ElementTree Objects
+ -------------------
+ 
+ 
+<span class="gd">-.. class:: ElementTree([element,] [file])</span>
+<span class="gi">+.. class:: ElementTree(element=None, file=None)</span>
+ 
+<span class="gd">-   ElementTree wrapper class.  This class represents an entire element hierarchy,</span>
+<span class="gd">-   and adds some extra support for serialization to and from standard XML.</span>
+<span class="gi">+   ElementTree wrapper class.  This class represents an entire element</span>
+<span class="gi">+   hierarchy, and adds some extra support for serialization to and from</span>
+<span class="gi">+   standard XML.</span>
+ 
+<span class="gd">-   *element* is the root element. The tree is initialized with the contents of the</span>
+<span class="gd">-   XML *file* if given.</span>
+<span class="gi">+   *element* is the root element.  The tree is initialized with the contents</span>
+<span class="gi">+   of the XML *file* if given.</span>
+ 
+ 
+    .. method:: _setroot(element)
+ 
+       Replaces the root element for this tree.  This discards the current
+       contents of the tree, and replaces it with the given element.  Use with
+<span class="gd">-      care. *element* is an element instance.</span>
+<span class="gi">+      care.  *element* is an element instance.</span>
+ 
+ 
+<span class="gd">-   .. method:: find(path)</span>
+<span class="gi">+   .. method:: find(match)</span>
+ 
+<span class="gd">-      Finds the first toplevel element with given tag. Same as</span>
+<span class="gd">-      getroot().find(path).  *path* is the element to look for. Returns the</span>
+<span class="gd">-      first matching element, or ``None`` if no element was found.</span>
+<span class="gi">+      Finds the first toplevel element matching *match*.  *match* may be a tag</span>
+<span class="gi">+      name or path.  Same as getroot().find(match).  Returns the first matching</span>
+<span class="gi">+      element, or ``None`` if no element was found.</span>
+ 
+ 
+<span class="gd">-   .. method:: findall(path)</span>
+<span class="gi">+   .. method:: findall(match)</span>
+ 
+<span class="gd">-      Finds all toplevel elements with the given tag. Same as</span>
+<span class="gd">-      getroot().findall(path).  *path* is the element to look for. Returns a</span>
+<span class="gd">-      list or :term:`iterator` containing all matching elements, in document</span>
+<span class="gd">-      order.</span>
+<span class="gi">+      Finds all matching subelements, by tag name or path.  Same as</span>
+<span class="gi">+      getroot().findall(match).  *match* may be a tag name or path.  Returns a</span>
+<span class="gi">+      list containing all matching elements, in document order.</span>
+ 
+ 
+<span class="gd">-   .. method:: findtext(path[, default])</span>
+<span class="gi">+   .. method:: findtext(match, default=None)</span>
+ 
+       Finds the element text for the first toplevel element with given tag.
+<span class="gd">-      Same as getroot().findtext(path). *path* is the toplevel element to look</span>
+<span class="gd">-      for. *default* is the value to return if the element was not</span>
+<span class="gd">-      found. Returns the text content of the first matching element, or the</span>
+<span class="gd">-      default value no element was found.  Note that if the element has is</span>
+<span class="gd">-      found, but has no text content, this method returns an empty string.</span>
+<span class="gi">+      Same as getroot().findtext(match).  *match* may be a tag name or path.</span>
+<span class="gi">+      *default* is the value to return if the element was not found.  Returns</span>
+<span class="gi">+      the text content of the first matching element, or the default value no</span>
+<span class="gi">+      element was found.  Note that if the element is found, but has no text</span>
+<span class="gi">+      content, this method returns an empty string.</span>
+ 
+ 
+<span class="gd">-   .. method:: getiterator([tag])</span>
+<span class="gi">+   .. method:: getiterator(tag=None)</span>
+ 
+<span class="gd">-      Creates and returns a tree iterator for the root element.  The iterator</span>
+<span class="gd">-      loops over all elements in this tree, in section order. *tag* is the tag</span>
+<span class="gd">-      to look for (default is to return all elements)</span>
+<span class="gi">+      .. deprecated:: 2.7</span>
+<span class="gi">+         Use method :meth:`ElementTree.iter` instead.</span>
+ 
+ 
+    .. method:: getroot()
+ 
+       Returns the root element for this tree.
+ 
+ 
+<span class="gd">-   .. method:: parse(source[, parser])</span>
+<span class="gi">+   .. method:: iter(tag=None)</span>
+ 
+<span class="gd">-      Loads an external XML section into this element tree. *source* is a file</span>
+<span class="gd">-      name or file object. *parser* is an optional parser instance.  If not</span>
+<span class="gd">-      given, the standard XMLTreeBuilder parser is used. Returns the section</span>
+<span class="gi">+      Creates and returns a tree iterator for the root element.  The iterator</span>
+<span class="gi">+      loops over all elements in this tree, in section order.  *tag* is the tag</span>
+<span class="gi">+      to look for (default is to return all elements)</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: iterfind(match)</span>
+<span class="gi">+</span>
+<span class="gi">+      Finds all matching subelements, by tag name or path.  Same as</span>
+<span class="gi">+      getroot().iterfind(match). Returns an iterable yielding all matching</span>
+<span class="gi">+      elements in document order.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   .. method:: parse(source, parser=None)</span>
+<span class="gi">+</span>
+<span class="gi">+      Loads an external XML section into this element tree.  *source* is a file</span>
+<span class="gi">+      name or file object.  *parser* is an optional parser instance.  If not</span>
+<span class="gi">+      given, the standard XMLParser parser is used.  Returns the section</span>
+       root element.
+ 
+ 
+<span class="gd">-   .. method:: write(file[, encoding])</span>
+<span class="gi">+   .. method:: write(file, encoding=&quot;us-ascii&quot;, xml_declaration=None, method=&quot;xml&quot;)</span>
+ 
+<span class="gd">-      Writes the element tree to a file, as XML. *file* is a file name, or a</span>
+<span class="gd">-      file object opened for writing. *encoding* [1]_ is the output encoding</span>
+<span class="gd">-      (default is US-ASCII).</span>
+<span class="gi">+      Writes the element tree to a file, as XML.  *file* is a file name, or a</span>
+<span class="gi">+      file object opened for writing.  *encoding* [1]_ is the output encoding</span>
+<span class="gi">+      (default is US-ASCII).  *xml_declaration* controls if an XML declaration</span>
+<span class="gi">+      should be added to the file.  Use False for never, True for always, None</span>
+<span class="gi">+      for only if not US-ASCII or UTF-8 (default is None).  *method* is either</span>
+<span class="gi">+      ``&quot;xml&quot;``, ``&quot;html&quot;`` or ``&quot;text&quot;`` (default is ``&quot;xml&quot;``).  Returns an</span>
+<span class="gi">+      encoded string.</span>
+ 
+ This is the XML file that is going to be manipulated::
+ 
+     &lt;html&gt;
+         &lt;head&gt;
+             &lt;title&gt;Example page&lt;/title&gt;
+         &lt;/head&gt;
+         &lt;body&gt;
+             &lt;p&gt;Moved to &lt;a href=&quot;http://example.org/&quot;&gt;example.org&lt;/a&gt;
+             or &lt;a href=&quot;http://example.com/&quot;&gt;example.com&lt;/a&gt;.&lt;/p&gt;
+         &lt;/body&gt;
+     &lt;/html&gt;
+ 
+ Example of changing the attribute &quot;target&quot; of every link in first paragraph::
+ 
+     &gt;&gt;&gt; from xml.etree.ElementTree import ElementTree
+     &gt;&gt;&gt; tree = ElementTree()
+     &gt;&gt;&gt; tree.parse(&quot;index.xhtml&quot;)
+<span class="gd">-    &lt;Element html at b7d3f1ec&gt;</span>
+<span class="gi">+    &lt;Element &#39;html&#39; at 0xb77e6fac&gt;</span>
+     &gt;&gt;&gt; p = tree.find(&quot;body/p&quot;)     # Finds first occurrence of tag p in body
+     &gt;&gt;&gt; p
+<span class="gd">-    &lt;Element p at 8416e0c&gt;</span>
+<span class="gd">-    &gt;&gt;&gt; links = p.getiterator(&quot;a&quot;)  # Returns list of all links</span>
+<span class="gi">+    &lt;Element &#39;p&#39; at 0xb77ec26c&gt;</span>
+<span class="gi">+    &gt;&gt;&gt; links = list(p.iter(&quot;a&quot;))   # Returns list of all links</span>
+     &gt;&gt;&gt; links
+<span class="gd">-    [&lt;Element a at b7d4f9ec&gt;, &lt;Element a at b7d4fb0c&gt;]</span>
+<span class="gi">+    [&lt;Element &#39;a&#39; at 0xb77ec2ac&gt;, &lt;Element &#39;a&#39; at 0xb77ec1cc&gt;]</span>
+     &gt;&gt;&gt; for i in links:             # Iterates through all found links
+     ...     i.attrib[&quot;target&quot;] = &quot;blank&quot;
+     &gt;&gt;&gt; tree.write(&quot;output.xhtml&quot;)
+ 
+ .. _elementtree-qname-objects:
+ 
+ QName Objects
+ -------------
+ 
+ 
+<span class="gd">-.. class:: QName(text_or_uri[, tag])</span>
+<span class="gi">+.. class:: QName(text_or_uri, tag=None)</span>
+ 
+<span class="gd">-   QName wrapper.  This can be used to wrap a QName attribute value, in order to</span>
+<span class="gd">-   get proper namespace handling on output. *text_or_uri* is a string containing</span>
+<span class="gd">-   the QName value, in the form {uri}local, or, if the tag argument is given, the</span>
+<span class="gd">-   URI part of a QName. If *tag* is given, the first argument is interpreted as an</span>
+<span class="gd">-   URI, and this argument is interpreted as a local name. :class:`QName` instances</span>
+<span class="gd">-   are opaque.</span>
+<span class="gi">+   QName wrapper.  This can be used to wrap a QName attribute value, in order</span>
+<span class="gi">+   to get proper namespace handling on output.  *text_or_uri* is a string</span>
+<span class="gi">+   containing the QName value, in the form {uri}local, or, if the tag argument</span>
+<span class="gi">+   is given, the URI part of a QName.  If *tag* is given, the first argument is</span>
+<span class="gi">+   interpreted as an URI, and this argument is interpreted as a local name.</span>
+<span class="gi">+   :class:`QName` instances are opaque.</span>
+ 
+ 
+ .. _elementtree-treebuilder-objects:
+ 
+ TreeBuilder Objects
+ -------------------
+ 
+ 
+<span class="gd">-.. class:: TreeBuilder([element_factory])</span>
+<span class="gi">+.. class:: TreeBuilder(element_factory=None)</span>
+ 
+<span class="gd">-   Generic element structure builder.  This builder converts a sequence of start,</span>
+<span class="gd">-   data, and end method calls to a well-formed element structure. You can use this</span>
+<span class="gd">-   class to build an element structure using a custom XML parser, or a parser for</span>
+<span class="gd">-   some other XML-like format. The *element_factory* is called to create new</span>
+<span class="gd">-   Element instances when given.</span>
+<span class="gi">+   Generic element structure builder.  This builder converts a sequence of</span>
+<span class="gi">+   start, data, and end method calls to a well-formed element structure.  You</span>
+<span class="gi">+   can use this class to build an element structure using a custom XML parser,</span>
+<span class="gi">+   or a parser for some other XML-like format.  The *element_factory* is called</span>
+<span class="gi">+   to create new :class:`Element` instances when given.</span>
+ 
+ 
+    .. method:: close()
+ 
+<span class="gd">-      Flushes the parser buffers, and returns the toplevel document</span>
+<span class="gd">-      element. Returns an Element instance.</span>
+<span class="gi">+      Flushes the builder buffers, and returns the toplevel document</span>
+<span class="gi">+      element.  Returns an :class:`Element` instance.</span>
+ 
+ 
+    .. method:: data(data)
+ 
+<span class="gd">-      Adds text to the current element. *data* is a string.  This should be</span>
+<span class="gd">-      either an 8-bit string containing ASCII text, or a Unicode string.</span>
+<span class="gi">+      Adds text to the current element.  *data* is a string.  This should be</span>
+<span class="gi">+      either a bytestring, or a Unicode string.</span>
+ 
+ 
+    .. method:: end(tag)
+ 
+<span class="gd">-      Closes the current element. *tag* is the element name. Returns the closed</span>
+<span class="gd">-      element.</span>
+<span class="gi">+      Closes the current element.  *tag* is the element name.  Returns the</span>
+<span class="gi">+      closed element.</span>
+ 
+ 
+    .. method:: start(tag, attrs)
+ 
+<span class="gd">-      Opens a new element. *tag* is the element name. *attrs* is a dictionary</span>
+<span class="gd">-      containing element attributes. Returns the opened element.</span>
+<span class="gi">+      Opens a new element.  *tag* is the element name.  *attrs* is a dictionary</span>
+<span class="gi">+      containing element attributes.  Returns the opened element.</span>
+ 
+ 
+<span class="gd">-.. _elementtree-xmltreebuilder-objects:</span>
+<span class="gi">+   In addition, a custom :class:`TreeBuilder` object can provide the</span>
+<span class="gi">+   following method:</span>
+ 
+<span class="gd">-XMLTreeBuilder Objects</span>
+<span class="gd">-----------------------</span>
+<span class="gi">+   .. method:: doctype(name, pubid, system)</span>
+ 
+<span class="gi">+      Handles a doctype declaration.  *name* is the doctype name.  *pubid* is</span>
+<span class="gi">+      the public identifier.  *system* is the system identifier.  This method</span>
+<span class="gi">+      does not exist on the default :class:`TreeBuilder` class.</span>
+ 
+<span class="gd">-.. class:: XMLTreeBuilder([html,] [target])</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+ 
+<span class="gd">-   Element structure builder for XML source data, based on the expat parser. *html*</span>
+<span class="gd">-   are predefined HTML entities.  This flag is not supported by the current</span>
+<span class="gd">-   implementation. *target* is the target object.  If omitted, the builder uses an</span>
+<span class="gd">-   instance of the standard TreeBuilder class.</span>
+<span class="gi">+</span>
+<span class="gi">+.. _elementtree-xmlparser-objects:</span>
+<span class="gi">+</span>
+<span class="gi">+XMLParser Objects</span>
+<span class="gi">+-----------------</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. class:: XMLParser(html=0, target=None, encoding=None)</span>
+<span class="gi">+</span>
+<span class="gi">+   :class:`Element` structure builder for XML source data, based on the expat</span>
+<span class="gi">+   parser.  *html* are predefined HTML entities.  This flag is not supported by</span>
+<span class="gi">+   the current implementation.  *target* is the target object.  If omitted, the</span>
+<span class="gi">+   builder uses an instance of the standard TreeBuilder class.  *encoding* [1]_</span>
+<span class="gi">+   is optional.  If given, the value overrides the encoding specified in the</span>
+<span class="gi">+   XML file.</span>
+ 
+ 
+    .. method:: close()
+ 
+<span class="gd">-      Finishes feeding data to the parser. Returns an element structure.</span>
+<span class="gi">+      Finishes feeding data to the parser.  Returns an element structure.</span>
+ 
+ 
+    .. method:: doctype(name, pubid, system)
+ 
+<span class="gd">-      Handles a doctype declaration. *name* is the doctype name. *pubid* is the</span>
+<span class="gd">-      public identifier. *system* is the system identifier.</span>
+<span class="gi">+      .. deprecated:: 2.7</span>
+<span class="gi">+         Define the :meth:`TreeBuilder.doctype` method on a custom TreeBuilder</span>
+<span class="gi">+         target.</span>
+ 
+ 
+    .. method:: feed(data)
+ 
+<span class="gd">-      Feeds data to the parser. *data* is encoded data.</span>
+<span class="gi">+      Feeds data to the parser.  *data* is encoded data.</span>
+ 
+<span class="gd">-:meth:`XMLTreeBuilder.feed` calls *target*\&#39;s :meth:`start` method</span>
+<span class="gi">+:meth:`XMLParser.feed` calls *target*\&#39;s :meth:`start` method</span>
+ for each opening tag, its :meth:`end` method for each closing tag,
+<span class="gd">-and data is processed by method :meth:`data`. :meth:`XMLTreeBuilder.close`</span>
+<span class="gi">+and data is processed by method :meth:`data`.  :meth:`XMLParser.close`</span>
+ calls *target*\&#39;s method :meth:`close`.
+<span class="gd">-:class:`XMLTreeBuilder` can be used not only for building a tree structure.</span>
+<span class="gi">+:class:`XMLParser` can be used not only for building a tree structure.</span>
+ This is an example of counting the maximum depth of an XML file::
+ 
+<span class="gd">-    &gt;&gt;&gt; from xml.etree.ElementTree import XMLTreeBuilder</span>
+<span class="gi">+    &gt;&gt;&gt; from xml.etree.ElementTree import XMLParser</span>
+     &gt;&gt;&gt; class MaxDepth:                     # The target object of the parser
+     ...     maxDepth = 0
+     ...     depth = 0
+     ...     def start(self, tag, attrib):   # Called for each opening tag.
+     ...         self.depth += 1
+     ...         if self.depth &gt; self.maxDepth:
+     ...             self.maxDepth = self.depth
+     ...     def end(self, tag):             # Called for each closing tag.
+     ...         self.depth -= 1
+     ...     def data(self, data):
+     ...         pass            # We do not need to do anything with data.
+     ...     def close(self):    # Called when all data has been parsed.
+     ...         return self.maxDepth
+     ...
+     &gt;&gt;&gt; target = MaxDepth()
+<span class="gd">-    &gt;&gt;&gt; parser = XMLTreeBuilder(target=target)</span>
+<span class="gi">+    &gt;&gt;&gt; parser = XMLParser(target=target)</span>
+     &gt;&gt;&gt; exampleXml = &quot;&quot;&quot;
+     ... &lt;a&gt;
+     ...   &lt;b&gt;
+     ...   &lt;/b&gt;
+     ...   &lt;b&gt;
+     ...     &lt;c&gt;
+     ...       &lt;d&gt;
+     ...       &lt;/d&gt;
+     ...     &lt;/c&gt;
+     ...   &lt;/b&gt;
+     ... &lt;/a&gt;&quot;&quot;&quot;
+     &gt;&gt;&gt; parser.feed(exampleXml)
+     &gt;&gt;&gt; parser.close()
+     4
+ 
+ 
+ .. rubric:: Footnotes
+ 
+ .. [#] The encoding string included in XML output should conform to the
+<span class="gd">-   appropriate standards. For example, &quot;UTF-8&quot; is valid, but &quot;UTF8&quot; is</span>
+<span class="gd">-   not. See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl</span>
+<span class="gi">+   appropriate standards.  For example, &quot;UTF-8&quot; is valid, but &quot;UTF8&quot; is</span>
+<span class="gi">+   not.  See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl</span>
+    and http://www.iana.org/assignments/character-sets.
+<span class="gd">-</span>
+</pre></div>
+
+</body>
+</html>

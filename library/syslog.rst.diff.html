@@ -1,0 +1,198 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/syslog.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,66 +1,102 @@</span>
+<span class="gd">-</span>
+ :mod:`syslog` --- Unix syslog library routines
+ ==============================================
+ 
+ .. module:: syslog
+    :platform: Unix
+    :synopsis: An interface to the Unix syslog library routines.
+ 
+ 
+ This module provides an interface to the Unix ``syslog`` library routines.
+ Refer to the Unix manual pages for a detailed description of the ``syslog``
+ facility.
+ 
+<span class="gi">+This module wraps the system ``syslog`` family of routines.  A pure Python</span>
+<span class="gi">+library that can speak to a syslog server is available in the</span>
+<span class="gi">+:mod:`logging.handlers` module as :class:`SysLogHandler`.</span>
+<span class="gi">+</span>
+ The module defines the following functions:
+ 
+ 
+ .. function:: syslog([priority,] message)
+ 
+<span class="gd">-   Send the string *message* to the system logger.  A trailing newline is added if</span>
+<span class="gd">-   necessary.  Each message is tagged with a priority composed of a *facility* and</span>
+<span class="gd">-   a *level*.  The optional *priority* argument, which defaults to</span>
+<span class="gd">-   :const:`LOG_INFO`, determines the message priority.  If the facility is not</span>
+<span class="gd">-   encoded in *priority* using logical-or (``LOG_INFO | LOG_USER``), the value</span>
+<span class="gd">-   given in the :func:`openlog` call is used.</span>
+<span class="gi">+   Send the string *message* to the system logger.  A trailing newline is added</span>
+<span class="gi">+   if necessary.  Each message is tagged with a priority composed of a</span>
+<span class="gi">+   *facility* and a *level*.  The optional *priority* argument, which defaults</span>
+<span class="gi">+   to :const:`LOG_INFO`, determines the message priority.  If the facility is</span>
+<span class="gi">+   not encoded in *priority* using logical-or (``LOG_INFO | LOG_USER``), the</span>
+<span class="gi">+   value given in the :func:`openlog` call is used.</span>
+ 
+<span class="gi">+   If :func:`openlog` has not been called prior to the call to :func:`syslog`,</span>
+<span class="gi">+   ``openlog()`` will be called with no arguments.</span>
+ 
+<span class="gd">-.. function:: openlog(ident[, logopt[, facility]])</span>
+ 
+<span class="gd">-   Logging options other than the defaults can be set by explicitly opening the log</span>
+<span class="gd">-   file with :func:`openlog` prior to calling :func:`syslog`.  The defaults are</span>
+<span class="gd">-   (usually) *ident* = ``&#39;syslog&#39;``, *logopt* = ``0``, *facility* =</span>
+<span class="gd">-   :const:`LOG_USER`.  The *ident* argument is a string which is prepended to every</span>
+<span class="gd">-   message.  The optional *logopt* argument is a bit field - see below for possible</span>
+<span class="gd">-   values to combine.  The optional *facility* argument sets the default facility</span>
+<span class="gd">-   for messages which do not have a facility explicitly encoded.</span>
+<span class="gi">+.. function:: openlog([ident[, logopt[, facility]]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Logging options of subsequent :func:`syslog` calls can be set by calling</span>
+<span class="gi">+   :func:`openlog`.  :func:`syslog` will call :func:`openlog` with no arguments</span>
+<span class="gi">+   if the log is not currently open.</span>
+<span class="gi">+</span>
+<span class="gi">+   The optional *ident* keyword argument is a string which is prepended to every</span>
+<span class="gi">+   message, and defaults to ``sys.argv[0]`` with leading path components</span>
+<span class="gi">+   stripped.  The optional *logopt* keyword argument (default is 0) is a bit</span>
+<span class="gi">+   field -- see below for possible values to combine.  The optional *facility*</span>
+<span class="gi">+   keyword argument (default is :const:`LOG_USER`) sets the default facility for</span>
+<span class="gi">+   messages which do not have a facility explicitly encoded.</span>
+ 
+ 
+ .. function:: closelog()
+ 
+<span class="gd">-   Close the log file.</span>
+<span class="gi">+   Reset the syslog module values and call the system library ``closelog()``.</span>
+<span class="gi">+</span>
+<span class="gi">+   This causes the module to behave as it does when initially imported.  For</span>
+<span class="gi">+   example, :func:`openlog` will be called on the first :func:`syslog` call (if</span>
+<span class="gi">+   :func:`openlog` hasn&#39;t already been called), and *ident* and other</span>
+<span class="gi">+   :func:`openlog` parameters are reset to defaults.</span>
+ 
+ 
+ .. function:: setlogmask(maskpri)
+ 
+<span class="gd">-   Set the priority mask to *maskpri* and return the previous mask value.  Calls to</span>
+<span class="gd">-   :func:`syslog` with a priority level not set in *maskpri* are ignored.  The</span>
+<span class="gd">-   default is to log all priorities.  The function ``LOG_MASK(pri)`` calculates the</span>
+<span class="gd">-   mask for the individual priority *pri*.  The function ``LOG_UPTO(pri)``</span>
+<span class="gd">-   calculates the mask for all priorities up to and including *pri*.</span>
+<span class="gi">+   Set the priority mask to *maskpri* and return the previous mask value.  Calls</span>
+<span class="gi">+   to :func:`syslog` with a priority level not set in *maskpri* are ignored.</span>
+<span class="gi">+   The default is to log all priorities.  The function ``LOG_MASK(pri)``</span>
+<span class="gi">+   calculates the mask for the individual priority *pri*.  The function</span>
+<span class="gi">+   ``LOG_UPTO(pri)`` calculates the mask for all priorities up to and including</span>
+<span class="gi">+   *pri*.</span>
+ 
+ The module defines the following constants:
+ 
+ Priority levels (high to low):
+    :const:`LOG_EMERG`, :const:`LOG_ALERT`, :const:`LOG_CRIT`, :const:`LOG_ERR`,
+    :const:`LOG_WARNING`, :const:`LOG_NOTICE`, :const:`LOG_INFO`,
+    :const:`LOG_DEBUG`.
+ 
+ Facilities:
+    :const:`LOG_KERN`, :const:`LOG_USER`, :const:`LOG_MAIL`, :const:`LOG_DAEMON`,
+    :const:`LOG_AUTH`, :const:`LOG_LPR`, :const:`LOG_NEWS`, :const:`LOG_UUCP`,
+    :const:`LOG_CRON` and :const:`LOG_LOCAL0` to :const:`LOG_LOCAL7`.
+ 
+ Log options:
+    :const:`LOG_PID`, :const:`LOG_CONS`, :const:`LOG_NDELAY`, :const:`LOG_NOWAIT`
+    and :const:`LOG_PERROR` if defined in ``&lt;syslog.h&gt;``.
+ 
+<span class="gi">+</span>
+<span class="gi">+Examples</span>
+<span class="gi">+--------</span>
+<span class="gi">+</span>
+<span class="gi">+Simple example</span>
+<span class="gi">+~~~~~~~~~~~~~~</span>
+<span class="gi">+</span>
+<span class="gi">+A simple set of examples::</span>
+<span class="gi">+</span>
+<span class="gi">+   import syslog</span>
+<span class="gi">+</span>
+<span class="gi">+   syslog.syslog(&#39;Processing started&#39;)</span>
+<span class="gi">+   if error:</span>
+<span class="gi">+       syslog.syslog(syslog.LOG_ERR, &#39;Processing started&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+An example of setting some log options, these would include the process ID in</span>
+<span class="gi">+logged messages, and write the messages to the destination facility used for</span>
+<span class="gi">+mail logging::</span>
+<span class="gi">+</span>
+<span class="gi">+   syslog.openlog(logopt=syslog.LOG_PID, facility=syslog.LOG_MAIL)</span>
+<span class="gi">+   syslog.syslog(&#39;E-mail processing initiated...&#39;)</span>
+</pre></div>
+
+</body>
+</html>

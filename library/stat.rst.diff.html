@@ -1,0 +1,206 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/stat.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -64,24 +64,52 @@</span>
+ .. function:: S_IFMT(mode)
+ 
+    Return the portion of the file&#39;s mode that describes the file type (used by the
+    :func:`S_IS\*` functions above).
+ 
+ Normally, you would use the :func:`os.path.is\*` functions for testing the type
+ of a file; the functions here are useful when you are doing multiple tests of
+ the same file and wish to avoid the overhead of the :cfunc:`stat` system call
+ for each test.  These are also useful when checking for information about a file
+ that isn&#39;t handled by :mod:`os.path`, like the tests for block and character
+ devices.
+ 
+<span class="gi">+Example::</span>
+<span class="gi">+</span>
+<span class="gi">+   import os, sys</span>
+<span class="gi">+   from stat import *</span>
+<span class="gi">+</span>
+<span class="gi">+   def walktree(top, callback):</span>
+<span class="gi">+       &#39;&#39;&#39;recursively descend the directory tree rooted at top,</span>
+<span class="gi">+          calling the callback function for each regular file&#39;&#39;&#39;</span>
+<span class="gi">+</span>
+<span class="gi">+       for f in os.listdir(top):</span>
+<span class="gi">+           pathname = os.path.join(top, f)</span>
+<span class="gi">+           mode = os.stat(pathname)[ST_MODE]</span>
+<span class="gi">+           if S_ISDIR(mode):</span>
+<span class="gi">+               # It&#39;s a directory, recurse into it</span>
+<span class="gi">+               walktree(pathname, callback)</span>
+<span class="gi">+           elif S_ISREG(mode):</span>
+<span class="gi">+               # It&#39;s a file, call the callback function</span>
+<span class="gi">+               callback(pathname)</span>
+<span class="gi">+           else:</span>
+<span class="gi">+               # Unknown file type, print a message</span>
+<span class="gi">+               print &#39;Skipping %s&#39; % pathname</span>
+<span class="gi">+</span>
+<span class="gi">+   def visitfile(file):</span>
+<span class="gi">+       print &#39;visiting&#39;, file</span>
+<span class="gi">+</span>
+<span class="gi">+   if __name__ == &#39;__main__&#39;:</span>
+<span class="gi">+       walktree(sys.argv[1], visitfile)</span>
+<span class="gi">+</span>
+ All the variables below are simply symbolic indexes into the 10-tuple returned
+ by :func:`os.stat`, :func:`os.fstat` or :func:`os.lstat`.
+ 
+ 
+ .. data:: ST_MODE
+ 
+    Inode protection mode.
+ 
+ 
+ .. data:: ST_INO
+ 
+    Inode number.
+<span class="gu">@@ -253,40 +281,56 @@</span>
+ .. data:: S_IREAD
+ 
+    Unix V7 synonym for :data:`S_IRUSR`.
+ 
+ .. data:: S_IWRITE
+ 
+    Unix V7 synonym for :data:`S_IWUSR`.
+ 
+ .. data:: S_IEXEC
+ 
+    Unix V7 synonym for :data:`S_IXUSR`.
+ 
+<span class="gd">-Example::</span>
+<span class="gi">+The following flags can be used in the *flags* argument of :func:`os.chflags`:</span>
+ 
+<span class="gd">-   import os, sys</span>
+<span class="gd">-   from stat import *</span>
+<span class="gi">+.. data:: UF_NODUMP</span>
+ 
+<span class="gd">-   def walktree(top, callback):</span>
+<span class="gd">-       &#39;&#39;&#39;recursively descend the directory tree rooted at top,</span>
+<span class="gd">-          calling the callback function for each regular file&#39;&#39;&#39;</span>
+<span class="gi">+   Do not dump the file.</span>
+ 
+<span class="gd">-       for f in os.listdir(top):</span>
+<span class="gd">-           pathname = os.path.join(top, f)</span>
+<span class="gd">-           mode = os.stat(pathname)[ST_MODE]</span>
+<span class="gd">-           if S_ISDIR(mode):</span>
+<span class="gd">-               # It&#39;s a directory, recurse into it</span>
+<span class="gd">-               walktree(pathname, callback)</span>
+<span class="gd">-           elif S_ISREG(mode):</span>
+<span class="gd">-               # It&#39;s a file, call the callback function</span>
+<span class="gd">-               callback(pathname)</span>
+<span class="gd">-           else:</span>
+<span class="gd">-               # Unknown file type, print a message</span>
+<span class="gd">-               print &#39;Skipping %s&#39; % pathname</span>
+<span class="gi">+.. data:: UF_IMMUTABLE</span>
+ 
+<span class="gd">-   def visitfile(file):</span>
+<span class="gd">-       print &#39;visiting&#39;, file</span>
+<span class="gi">+   The file may not be changed.</span>
+ 
+<span class="gd">-   if __name__ == &#39;__main__&#39;:</span>
+<span class="gd">-       walktree(sys.argv[1], visitfile)</span>
+<span class="gi">+.. data:: UF_APPEND</span>
+ 
+<span class="gi">+   The file may only be appended to.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: UF_OPAQUE</span>
+<span class="gi">+</span>
+<span class="gi">+   The file may not be renamed or deleted.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: UF_NOUNLINK</span>
+<span class="gi">+</span>
+<span class="gi">+   The directory is opaque when viewed through a union stack.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: SF_ARCHIVED</span>
+<span class="gi">+</span>
+<span class="gi">+   The file may be archived.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: SF_IMMUTABLE</span>
+<span class="gi">+</span>
+<span class="gi">+   The file may not be changed.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: SF_APPEND</span>
+<span class="gi">+</span>
+<span class="gi">+   The file may only be appended to.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: SF_NOUNLINK</span>
+<span class="gi">+</span>
+<span class="gi">+   The file may not be renamed or deleted.</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: SF_SNAPSHOT</span>
+<span class="gi">+</span>
+<span class="gi">+   The file is a snapshot file.</span>
+<span class="gi">+</span>
+<span class="gi">+See the \*BSD or Mac OS systems man page :manpage:`chflags(2)` for more information.</span>
+<span class="gi">+</span>
+</pre></div>
+
+</body>
+</html>

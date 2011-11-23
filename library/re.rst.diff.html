@@ -1,0 +1,282 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/re.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -215,25 +215,25 @@</span>
+    and :const:`re.X` (verbose), for the entire regular expression. (The
+    flags are described in :ref:`contents-of-module-re`.) This
+    is useful if you wish to include the flags as part of the regular
+    expression, instead of passing a *flag* argument to the
+    :func:`re.compile` function.
+ 
+    Note that the ``(?x)`` flag changes how the expression is parsed. It should be
+    used first in the expression string, or after one or more whitespace characters.
+    If there are non-whitespace characters before the flag, the results are
+    undefined.
+ 
+ ``(?:...)``
+<span class="gd">-   A non-grouping version of regular parentheses. Matches whatever regular</span>
+<span class="gi">+   A non-capturing version of regular parentheses.  Matches whatever regular</span>
+    expression is inside the parentheses, but the substring matched by the group
+    *cannot* be retrieved after performing a match or referenced later in the
+    pattern.
+ 
+ ``(?P&lt;name&gt;...)``
+    Similar to regular parentheses, but the substring matched by the group is
+    accessible within the rest of the regular expression via the symbolic group
+    name *name*.  Group names must be valid Python identifiers, and each group
+    name must be defined only once within a regular expression.  A symbolic group
+    is also a numbered group, just as if the group were not named.  So the group
+    named ``id`` in the example below can also be referenced as the numbered group
+    ``1``.
+<span class="gu">@@ -323,25 +323,26 @@</span>
+    precise set of characters deemed to be alphanumeric depends on the values of the
+    ``UNICODE`` and ``LOCALE`` flags.  Inside a character range, ``\b`` represents
+    the backspace character, for compatibility with Python&#39;s string literals.
+ 
+ ``\B``
+    Matches the empty string, but only when it is *not* at the beginning or end of a
+    word.  This is just the opposite of ``\b``, so is also subject to the settings
+    of ``LOCALE`` and ``UNICODE``.
+ 
+ ``\d``
+    When the :const:`UNICODE` flag is not specified, matches any decimal digit; this
+    is equivalent to the set ``[0-9]``.  With :const:`UNICODE`, it will match
+<span class="gd">-   whatever is classified as a digit in the Unicode character properties database.</span>
+<span class="gi">+   whatever is classified as a decimal digit in the Unicode character properties</span>
+<span class="gi">+   database.</span>
+ 
+ ``\D``
+    When the :const:`UNICODE` flag is not specified, matches any non-digit
+    character; this is equivalent to the set  ``[^0-9]``.  With :const:`UNICODE`, it
+    will match  anything other than character marked as digits in the Unicode
+    character  properties database.
+ 
+ ``\s``
+    When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
+    any whitespace character; this is equivalent to the set ``[ \t\n\r\f\v]``. With
+    :const:`LOCALE`, it will match this set plus whatever characters are defined as
+    space for the current locale. If :const:`UNICODE` is set, this will match the
+<span class="gu">@@ -527,59 +528,64 @@</span>
+ 
+    If zero or more characters at the beginning of *string* match the regular
+    expression *pattern*, return a corresponding :class:`MatchObject` instance.
+    Return ``None`` if the string does not match the pattern; note that this is
+    different from a zero-length match.
+ 
+    .. note::
+ 
+       If you want to locate a match anywhere in *string*, use :func:`search`
+       instead.
+ 
+ 
+<span class="gd">-.. function:: split(pattern, string[, maxsplit=0])</span>
+<span class="gi">+.. function:: split(pattern, string[, maxsplit=0, flags=0])</span>
+ 
+    Split *string* by the occurrences of *pattern*.  If capturing parentheses are
+    used in *pattern*, then the text of all groups in the pattern are also returned
+    as part of the resulting list. If *maxsplit* is nonzero, at most *maxsplit*
+    splits occur, and the remainder of the string is returned as the final element
+    of the list.  (Incompatibility note: in the original Python 1.5 release,
+    *maxsplit* was ignored.  This has been fixed in later releases.)
+ 
+       &gt;&gt;&gt; re.split(&#39;\W+&#39;, &#39;Words, words, words.&#39;)
+       [&#39;Words&#39;, &#39;words&#39;, &#39;words&#39;, &#39;&#39;]
+       &gt;&gt;&gt; re.split(&#39;(\W+)&#39;, &#39;Words, words, words.&#39;)
+       [&#39;Words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;.&#39;, &#39;&#39;]
+       &gt;&gt;&gt; re.split(&#39;\W+&#39;, &#39;Words, words, words.&#39;, 1)
+       [&#39;Words&#39;, &#39;words, words.&#39;]
+<span class="gi">+      &gt;&gt;&gt; re.split(&#39;[a-f]+&#39;, &#39;0a3B9&#39;, flags=re.IGNORECASE)</span>
+<span class="gi">+      [&#39;0&#39;, &#39;3&#39;, &#39;9&#39;]</span>
+ 
+    If there are capturing groups in the separator and it matches at the start of
+    the string, the result will start with an empty string.  The same holds for
+    the end of the string:
+ 
+       &gt;&gt;&gt; re.split(&#39;(\W+)&#39;, &#39;...words, words...&#39;)
+       [&#39;&#39;, &#39;...&#39;, &#39;words&#39;, &#39;, &#39;, &#39;words&#39;, &#39;...&#39;, &#39;&#39;]
+ 
+    That way, separator components are always found at the same relative
+    indices within the result list (e.g., if there&#39;s one capturing group
+    in the separator, the 0th, the 2nd and so forth).
+ 
+    Note that *split* will never split a string on an empty pattern match.
+    For example:
+ 
+       &gt;&gt;&gt; re.split(&#39;x*&#39;, &#39;foo&#39;)
+       [&#39;foo&#39;]
+       &gt;&gt;&gt; re.split(&quot;(?m)^$&quot;, &quot;foo\n\nbar\n&quot;)
+       [&#39;foo\n\nbar\n&#39;]
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added the optional flags argument.</span>
+<span class="gi">+</span>
+ 
+ .. function:: findall(pattern, string[, flags])
+ 
+    Return all non-overlapping matches of *pattern* in *string*, as a list of
+    strings.  The *string* is scanned left-to-right, and matches are returned in
+    the order found.  If one or more groups are present in the pattern, return a
+    list of groups; this will be a list of tuples if the pattern has more than
+    one group.  Empty matches are included in the result unless they touch the
+    beginning of another match.
+ 
+    .. versionadded:: 1.5.2
+ 
+<span class="gu">@@ -592,75 +598,81 @@</span>
+    Return an :term:`iterator` yielding :class:`MatchObject` instances over all
+    non-overlapping matches for the RE *pattern* in *string*.  The *string* is
+    scanned left-to-right, and matches are returned in the order found.  Empty
+    matches are included in the result unless they touch the beginning of another
+    match.
+ 
+    .. versionadded:: 2.2
+ 
+    .. versionchanged:: 2.4
+       Added the optional flags argument.
+ 
+ 
+<span class="gd">-.. function:: sub(pattern, repl, string[, count])</span>
+<span class="gi">+.. function:: sub(pattern, repl, string[, count, flags])</span>
+ 
+    Return the string obtained by replacing the leftmost non-overlapping occurrences
+    of *pattern* in *string* by the replacement *repl*.  If the pattern isn&#39;t found,
+    *string* is returned unchanged.  *repl* can be a string or a function; if it is
+    a string, any backslash escapes in it are processed.  That is, ``\n`` is
+    converted to a single newline character, ``\r`` is converted to a linefeed, and
+    so forth.  Unknown escapes such as ``\j`` are left alone.  Backreferences, such
+    as ``\6``, are replaced with the substring matched by group 6 in the pattern.
+    For example:
+ 
+       &gt;&gt;&gt; re.sub(r&#39;def\s+([a-zA-Z_][a-zA-Z_0-9]*)\s*\(\s*\):&#39;,
+       ...        r&#39;static PyObject*\npy_\1(void)\n{&#39;,
+       ...        &#39;def myfunc():&#39;)
+       &#39;static PyObject*\npy_myfunc(void)\n{&#39;
+ 
+    If *repl* is a function, it is called for every non-overlapping occurrence of
+    *pattern*.  The function takes a single match object argument, and returns the
+    replacement string.  For example:
+ 
+       &gt;&gt;&gt; def dashrepl(matchobj):
+       ...     if matchobj.group(0) == &#39;-&#39;: return &#39; &#39;
+       ...     else: return &#39;-&#39;
+       &gt;&gt;&gt; re.sub(&#39;-{1,2}&#39;, dashrepl, &#39;pro----gram-files&#39;)
+       &#39;pro--gram files&#39;
+<span class="gi">+      &gt;&gt;&gt; re.sub(r&#39;\sAND\s&#39;, &#39; &amp; &#39;, &#39;Baked Beans And Spam&#39;, flags=re.IGNORECASE)</span>
+<span class="gi">+      &#39;Baked Beans &amp; Spam&#39;</span>
+ 
+<span class="gd">-   The pattern may be a string or an RE object; if you need to specify regular</span>
+<span class="gd">-   expression flags, you must use a RE object, or use embedded modifiers in a</span>
+<span class="gd">-   pattern; for example, ``sub(&quot;(?i)b+&quot;, &quot;x&quot;, &quot;bbbb BBBB&quot;)`` returns ``&#39;x x&#39;``.</span>
+<span class="gi">+   The pattern may be a string or an RE object.</span>
+ 
+    The optional argument *count* is the maximum number of pattern occurrences to be
+    replaced; *count* must be a non-negative integer.  If omitted or zero, all
+    occurrences will be replaced. Empty matches for the pattern are replaced only
+    when not adjacent to a previous match, so ``sub(&#39;x*&#39;, &#39;-&#39;, &#39;abc&#39;)`` returns
+    ``&#39;-a-b-c-&#39;``.
+ 
+    In addition to character escapes and backreferences as described above,
+    ``\g&lt;name&gt;`` will use the substring matched by the group named ``name``, as
+    defined by the ``(?P&lt;name&gt;...)`` syntax. ``\g&lt;number&gt;`` uses the corresponding
+    group number; ``\g&lt;2&gt;`` is therefore equivalent to ``\2``, but isn&#39;t ambiguous
+    in a replacement such as ``\g&lt;2&gt;0``.  ``\20`` would be interpreted as a
+    reference to group 20, not a reference to group 2 followed by the literal
+    character ``&#39;0&#39;``.  The backreference ``\g&lt;0&gt;`` substitutes in the entire
+    substring matched by the RE.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added the optional flags argument.</span>
+ 
+<span class="gd">-.. function:: subn(pattern, repl, string[, count])</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: subn(pattern, repl, string[, count, flags])</span>
+ 
+    Perform the same operation as :func:`sub`, but return a tuple ``(new_string,
+    number_of_subs_made)``.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Added the optional flags argument.</span>
+<span class="gi">+</span>
+ 
+ .. function:: escape(string)
+ 
+    Return *string* with all non-alphanumerics backslashed; this is useful if you
+    want to match an arbitrary literal string that may have regular expression
+    metacharacters in it.
+ 
+ 
+ .. function:: purge()
+ 
+    Clear the regular expression cache.
+ 
+</pre></div>
+
+</body>
+</html>

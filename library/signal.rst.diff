@@ -1,0 +1,101 @@
+@@ -66,24 +66,44 @@
+ 
+ .. data:: SIG*
+ 
+    All the signal numbers are defined symbolically.  For example, the hangup signal
+    is defined as :const:`signal.SIGHUP`; the variable names are identical to the
+    names used in C programs, as found in ``<signal.h>``. The Unix man page for
+    ':cfunc:`signal`' lists the existing signals (on some systems this is
+    :manpage:`signal(2)`, on others the list is in :manpage:`signal(7)`). Note that
+    not all systems define the same set of signal names; only those names defined by
+    the system are defined by this module.
+ 
+ 
++.. data:: CTRL_C_EVENT
++
++   The signal corresponding to the CTRL+C keystroke event. This signal can
++   only be used with :func:`os.kill`.
++
++   Availability: Windows.
++
++   .. versionadded:: 2.7
++
++
++.. data:: CTRL_BREAK_EVENT
++
++   The signal corresponding to the CTRL+BREAK keystroke event. This signal can
++   only be used with :func:`os.kill`.
++
++   Availability: Windows.
++
++   .. versionadded:: 2.7
++
++
+ .. data:: NSIG
+ 
+    One more than the number of the highest signal number.
+ 
+ 
+ .. data:: ITIMER_REAL
+ 
+    Decrements interval timer in real time, and delivers :const:`SIGALRM` upon expiration.
+ 
+ 
+ .. data:: ITIMER_VIRTUAL
+ 
+@@ -175,24 +195,26 @@
+ 
+    Set the wakeup fd to *fd*.  When a signal is received, a ``'\0'`` byte is
+    written to the fd.  This can be used by a library to wakeup a poll or select
+    call, allowing the signal to be fully processed.
+ 
+    The old wakeup fd is returned.  *fd* must be non-blocking.  It is up to the
+    library to remove any bytes before calling poll or select again.
+ 
+    When threads are enabled, this function can only be called from the main thread;
+    attempting to call it from other threads will cause a :exc:`ValueError`
+    exception to be raised.
+ 
++   .. versionadded:: 2.6
++
+ 
+ .. function:: siginterrupt(signalnum, flag)
+ 
+    Change system call restart behaviour: if *flag* is :const:`False`, system
+    calls will be restarted when interrupted by signal *signalnum*, otherwise
+    system calls will be interrupted.  Returns nothing.  Availability: Unix (see
+    the man page :manpage:`siginterrupt(3)` for further information).
+ 
+    Note that installing a signal handler with :func:`signal` will reset the
+    restart behaviour to interruptible by implicitly calling
+    :cfunc:`siginterrupt` with a true *flag* value for the given signal.
+ 
+@@ -207,24 +229,28 @@
+    signal handler will be returned (see the description of :func:`getsignal`
+    above).  (See the Unix man page :manpage:`signal(2)`.)
+ 
+    When threads are enabled, this function can only be called from the main thread;
+    attempting to call it from other threads will cause a :exc:`ValueError`
+    exception to be raised.
+ 
+    The *handler* is called with two arguments: the signal number and the current
+    stack frame (``None`` or a frame object; for a description of frame objects,
+    see the :ref:`description in the type hierarchy <frame-objects>` or see the
+    attribute descriptions in the :mod:`inspect` module).
+ 
++   On Windows, :func:`signal` can only be called with :const:`SIGABRT`,
++   :const:`SIGFPE`, :const:`SIGILL`, :const:`SIGINT`, :const:`SIGSEGV`, or
++   :const:`SIGTERM`. A :exc:`ValueError` will be raised in any other case.
++
+ 
+ .. _signal-example:
+ 
+ Example
+ -------
+ 
+ Here is a minimal example program. It uses the :func:`alarm` function to limit
+ the time spent waiting to open a file; this is useful if the file is for a
+ serial device that may not be turned on, which would normally cause the
+ :func:`os.open` to hang indefinitely.  The solution is to set a 5-second alarm
+ before opening the file; if the operation takes too long, the alarm signal will
+ be sent, and the handler raises an exception. ::

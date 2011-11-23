@@ -1,0 +1,381 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/threading.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -17,41 +17,58 @@</span>
+    Starting with Python 2.6, this module provides :pep:`8` compliant aliases and
+    properties to replace the ``camelCase`` names that were inspired by Java&#39;s
+    threading API. This updated API is compatible with that of the
+    :mod:`multiprocessing` module. However, no schedule has been set for the
+    deprecation of the ``camelCase`` names and they remain fully supported in
+    both Python 2.x and 3.x.
+ 
+ .. note::
+ 
+    Starting with Python 2.5, several Thread methods raise :exc:`RuntimeError`
+    instead of :exc:`AssertionError` if called erroneously.
+ 
+<span class="gi">+.. impl-detail::</span>
+<span class="gi">+</span>
+<span class="gi">+   Due to the :term:`Global Interpreter Lock`, in CPython only one thread</span>
+<span class="gi">+   can execute Python code at once (even though certain performance-oriented</span>
+<span class="gi">+   libraries might overcome this limitation).</span>
+<span class="gi">+   If you want your application to make better of use of the computational</span>
+<span class="gi">+   resources of multi-core machines, you are advised to use</span>
+<span class="gi">+   :mod:`multiprocessing`. However, threading is still an appropriate model</span>
+<span class="gi">+   if you want to run multiple I/O-bound tasks simultaneously.</span>
+<span class="gi">+</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `threading module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/threading.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+ 
+ This module defines the following functions and objects:
+ 
+ .. function:: active_count()
+               activeCount()
+ 
+    Return the number of :class:`Thread` objects currently alive.  The returned
+    count is equal to the length of the list returned by :func:`.enumerate`.
+ 
+ 
+ .. function:: Condition()
+    :noindex:
+ 
+    A factory function that returns a new condition variable object. A condition
+    variable allows one or more threads to wait until they are notified by another
+    thread.
+ 
+<span class="gi">+   See :ref:`condition-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: current_thread()
+               currentThread()
+ 
+    Return the current :class:`Thread` object, corresponding to the caller&#39;s thread
+    of control.  If the caller&#39;s thread of control was not created through the
+    :mod:`threading` module, a dummy thread object with limited functionality is
+    returned.
+ 
+ 
+ .. function:: enumerate()
+ 
+<span class="gu">@@ -60,86 +77,100 @@</span>
+    :func:`current_thread`, and the main thread.  It excludes terminated threads
+    and threads that have not yet been started.
+ 
+ 
+ .. function:: Event()
+    :noindex:
+ 
+    A factory function that returns a new event object.  An event manages a flag
+    that can be set to true with the :meth:`~Event.set` method and reset to false
+    with the :meth:`clear` method.  The :meth:`wait` method blocks until the flag
+    is true.
+ 
+<span class="gi">+   See :ref:`event-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. class:: local
+ 
+    A class that represents thread-local data.  Thread-local data are data whose
+    values are thread specific.  To manage thread-local data, just create an
+    instance of :class:`local` (or a subclass) and store attributes on it::
+ 
+       mydata = threading.local()
+       mydata.x = 1
+ 
+    The instance&#39;s values will be different for separate threads.
+ 
+    For more details and extensive examples, see the documentation string of the
+    :mod:`_threading_local` module.
+ 
+    .. versionadded:: 2.4
+ 
+ 
+ .. function:: Lock()
+ 
+    A factory function that returns a new primitive lock object.  Once a thread has
+    acquired it, subsequent attempts to acquire it block, until it is released; any
+    thread may release it.
+ 
+<span class="gi">+   See :ref:`lock-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: RLock()
+ 
+    A factory function that returns a new reentrant lock object. A reentrant lock
+    must be released by the thread that acquired it. Once a thread has acquired a
+    reentrant lock, the same thread may acquire it again without blocking; the
+    thread must release it once for each time it has acquired it.
+ 
+<span class="gi">+   See :ref:`rlock-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: Semaphore([value])
+    :noindex:
+ 
+    A factory function that returns a new semaphore object.  A semaphore manages a
+    counter representing the number of :meth:`release` calls minus the number of
+    :meth:`acquire` calls, plus an initial value. The :meth:`acquire` method blocks
+    if necessary until it can return without making the counter negative.  If not
+    given, *value* defaults to 1.
+ 
+<span class="gi">+   See :ref:`semaphore-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: BoundedSemaphore([value])
+ 
+    A factory function that returns a new bounded semaphore object.  A bounded
+    semaphore checks to make sure its current value doesn&#39;t exceed its initial
+    value.  If it does, :exc:`ValueError` is raised. In most situations semaphores
+    are used to guard resources with limited capacity.  If the semaphore is released
+    too many times it&#39;s a sign of a bug.  If not given, *value* defaults to 1.
+ 
+ 
+ .. class:: Thread
+<span class="gi">+   :noindex:</span>
+ 
+    A class that represents a thread of control.  This class can be safely
+    subclassed in a limited fashion.
+ 
+<span class="gi">+   See :ref:`thread-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. class:: Timer
+<span class="gi">+   :noindex:</span>
+ 
+    A thread that executes a function after a specified interval has passed.
+ 
+<span class="gi">+   See :ref:`timer-objects`.</span>
+<span class="gi">+</span>
+ 
+ .. function:: settrace(func)
+ 
+    .. index:: single: trace function
+ 
+    Set a trace function for all threads started from the :mod:`threading` module.
+    The *func* will be passed to  :func:`sys.settrace` for each thread, before its
+    :meth:`run` method is called.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+<span class="gu">@@ -250,25 +281,25 @@</span>
+ 
+    If the subclass overrides the constructor, it must make sure to invoke the
+    base class constructor (``Thread.__init__()``) before doing anything else to
+    the thread.
+ 
+    .. method:: start()
+ 
+       Start the thread&#39;s activity.
+ 
+       It must be called at most once per thread object.  It arranges for the
+       object&#39;s :meth:`run` method to be invoked in a separate thread of control.
+ 
+<span class="gd">-      This method will raise a :exc:`RuntimeException` if called more than once</span>
+<span class="gi">+      This method will raise a :exc:`RuntimeError` if called more than once</span>
+       on the same thread object.
+ 
+    .. method:: run()
+ 
+       Method representing the thread&#39;s activity.
+ 
+       You may override this method in a subclass.  The standard :meth:`run`
+       method invokes the callable object passed to the object&#39;s constructor as
+       the *target* argument, if any, with sequential and keyword arguments taken
+       from the *args* and *kwargs* arguments, respectively.
+ 
+    .. method:: join([timeout])
+<span class="gu">@@ -359,25 +390,25 @@</span>
+ :meth:`release` method should only be called in the locked state; it changes the
+ state to unlocked and returns immediately. If an attempt is made to release an
+ unlocked lock, a :exc:`RuntimeError` will be raised.
+ 
+ When more than one thread is blocked in :meth:`acquire` waiting for the state to
+ turn to unlocked, only one thread proceeds when a :meth:`release` call resets
+ the state to unlocked; which one of the waiting threads proceeds is not defined,
+ and may vary across implementations.
+ 
+ All methods are executed atomically.
+ 
+ 
+<span class="gd">-.. method:: Lock.acquire([blocking=1])</span>
+<span class="gi">+.. method:: Lock.acquire([blocking])</span>
+ 
+    Acquire a lock, blocking or non-blocking.
+ 
+    When invoked without arguments, block until the lock is unlocked, then set it to
+    locked, and return true.
+ 
+    When invoked with the *blocking* argument set to true, do the same thing as when
+    called without arguments, and return true.
+ 
+    When invoked with the *blocking* argument set to false, do not block.  If a call
+    without an argument would block, return false immediately; otherwise, do the
+    same thing as when called without arguments, and return true.
+<span class="gu">@@ -615,27 +646,27 @@</span>
+ 
+       Release a semaphore, incrementing the internal counter by one.  When it
+       was zero on entry and another thread is waiting for it to become larger
+       than zero again, wake up that thread.
+ 
+ 
+ .. _semaphore-examples:
+ 
+ :class:`Semaphore` Example
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+ Semaphores are often used to guard resources with limited capacity, for example,
+<span class="gd">-a database server.  In any situation where the size of the resource size is</span>
+<span class="gd">-fixed, you should use a bounded semaphore.  Before spawning any worker threads,</span>
+<span class="gd">-your main thread would initialize the semaphore::</span>
+<span class="gi">+a database server.  In any situation where the size of the resource is fixed,</span>
+<span class="gi">+you should use a bounded semaphore.  Before spawning any worker threads, your</span>
+<span class="gi">+main thread would initialize the semaphore::</span>
+ 
+    maxconnections = 5
+    ...
+    pool_sema = BoundedSemaphore(value=maxconnections)
+ 
+ Once spawned, worker threads call the semaphore&#39;s acquire and release methods
+ when they need to connect to the server::
+ 
+    pool_sema.acquire()
+    conn = connectdb()
+    ... use connection ...
+    conn.close()
+<span class="gu">@@ -684,25 +715,29 @@</span>
+ 
+    .. method:: wait([timeout])
+ 
+       Block until the internal flag is true.  If the internal flag is true on
+       entry, return immediately.  Otherwise, block until another thread calls
+       :meth:`.set` to set the flag to true, or until the optional timeout
+       occurs.
+ 
+       When the timeout argument is present and not ``None``, it should be a
+       floating point number specifying a timeout for the operation in seconds
+       (or fractions thereof).
+ 
+<span class="gd">-      This method always returns ``None``.</span>
+<span class="gi">+      This method returns the internal flag on exit, so it will always return</span>
+<span class="gi">+      ``True`` except if a timeout is given and the operation times out.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionchanged:: 2.7</span>
+<span class="gi">+         Previously, the method always returned ``None``.</span>
+ 
+ 
+ .. _timer-objects:
+ 
+ Timer Objects
+ -------------
+ 
+ This class represents an action that should be run only after a certain amount
+ of time has passed --- a timer.  :class:`Timer` is a subclass of :class:`Thread`
+ and as such also functions as an example of creating custom threads.
+ 
+ Timers are started, as with threads, by calling their :meth:`start` method.  The
+<span class="gu">@@ -748,27 +783,27 @@</span>
+ 
+    some_rlock = threading.RLock()
+ 
+    with some_rlock:
+        print &quot;some_rlock is locked while this executes&quot;
+ 
+ 
+ .. _threaded-imports:
+ 
+ Importing in threaded code
+ --------------------------
+ 
+<span class="gd">-While the import machinery is thread safe, there are two key</span>
+<span class="gd">-restrictions on threaded imports due to inherent limitations in the way</span>
+<span class="gd">-that thread safety is provided:</span>
+<span class="gi">+While the import machinery is thread-safe, there are two key restrictions on</span>
+<span class="gi">+threaded imports due to inherent limitations in the way that thread-safety is</span>
+<span class="gi">+provided:</span>
+ 
+ * Firstly, other than in the main module, an import should not have the
+   side effect of spawning a new thread and then waiting for that thread in
+   any way. Failing to abide by this restriction can lead to a deadlock if
+   the spawned thread directly or indirectly attempts to import a module.
+ * Secondly, all import attempts must be completed before the interpreter
+   starts shutting itself down. This can be most easily achieved by only
+   performing imports from non-daemon threads created through the threading
+   module. Daemon threads and threads created directly with the thread
+   module will require some other form of synchronization to ensure they do
+   not attempt imports after system shutdown has commenced. Failure to
+   abide by this restriction will lead to intermittent exceptions and
+</pre></div>
+
+</body>
+</html>

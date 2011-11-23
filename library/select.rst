@@ -164,6 +164,16 @@ Windows 上ではソケットに対してしか動作しないので注意して
       Windows では、背後の :cfunc:`select` 関数は WinSock ライブラリで提供されており、
       WinSock によって生成されたものではないファイル記述子を扱うことができないのです。
 
+.. attribute:: select.PIPE_BUF
+
+   :func:`select` や :func:`poll` などのインタフェースにより書き込み可能になったと
+   報告されたファイルは、 :const:`PIPE_BUF` バイトまではブロックしないで書き込み
+   できることが保証されます。
+   この値は POSIX では最低でも 512 であることが保証されています。
+
+   利用可能な環境: Unix
+
+   .. versionadded:: 2.7
 
 .. Edge and Level Trigger Polling (epoll) Objects
 
@@ -175,36 +185,6 @@ Windows 上ではソケットに対してしか動作しないので注意して
    http://linux.die.net/man/4/epoll
 
    *eventmask*
-
-   .. +-----------------------+-----------------------------------------------+
-   .. | Constant              | Meaning                                       |
-   .. +=======================+===============================================+
-   .. | :const:`EPOLLIN`      | Available for read                            |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLOUT`     | Available for write                           |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLPRI`     | Urgent data for read                          |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLERR`     | Error condition happened on the assoc. fd     |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLHUP`     | Hang up happened on the assoc. fd             |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLET`      | Set Edge Trigger behavior, the default is     |
-   .. |                       | Level Trigger behavior                        |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLONESHOT` | Set one-shot behavior. After one event is     |
-   .. |                       | pulled out, the fd is internally disabled     |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLRDNORM`  | ???                                           |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLRDBAND`  | ???                                           |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLWRNORM`  | ???                                           |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLWRBAND`  | ???                                           |
-   .. +-----------------------+-----------------------------------------------+
-   .. | :const:`EPOLLMSG`     | ???                                           |
-   .. +-----------------------+-----------------------------------------------+
 
    +-----------------------+-----------------------------------------------+
    | 定数                  | 意味                                          |
@@ -225,15 +205,15 @@ Windows 上ではソケットに対してしか動作しないので注意して
    | :const:`EPOLLONESHOT` | 1ショット動作に設定する。1回イベントが取り出  |
    |                       | されたら、その fd が内部で無効になる。        |
    +-----------------------+-----------------------------------------------+
-   | :const:`EPOLLRDNORM`  | ???                                           |
+   | :const:`EPOLLRDNORM`  | :const:`EPOLLIN` と同じ                       |
    +-----------------------+-----------------------------------------------+
-   | :const:`EPOLLRDBAND`  | ???                                           |
+   | :const:`EPOLLRDBAND`  | priority data band を読み込める               |
    +-----------------------+-----------------------------------------------+
-   | :const:`EPOLLWRNORM`  | ???                                           |
+   | :const:`EPOLLWRNORM`  | :const:`EPOLLOUT` と同じ                      |
    +-----------------------+-----------------------------------------------+
-   | :const:`EPOLLWRBAND`  | ???                                           |
+   | :const:`EPOLLWRBAND`  | priority data に書き込みできる                |
    +-----------------------+-----------------------------------------------+
-   | :const:`EPOLLMSG`     | ???                                           |
+   | :const:`EPOLLMSG`     | 無視される                                    |
    +-----------------------+-----------------------------------------------+
 
 
@@ -380,13 +360,8 @@ Windows 上ではソケットに対してしか動作しないので注意して
 
 .. method:: poll.modify(fd, eventmask)
 
-   .. Modifies an already registered fd. This has the same effect as
-   .. :meth:`register(fd, eventmask)`.  Attempting to modify a file descriptor
-   .. that was never registered causes an :exc:`IOError` exception with errno
-   .. :const:`ENOENT` to be raised.
-
    登録されているファイル記述子 *fd* を変更する。
-   これは、 :meth:`register(fd, eventmask)` と同じ効果を持ちます。
+   これは、 ``register(fd, eventmask)`` と同じ効果を持ちます。
    登録されていないファイル記述子に対してこのメソッドを呼び出すと、
    errno :const:`ENOENT` で :exc:`IOError` 例外が発生します。
 

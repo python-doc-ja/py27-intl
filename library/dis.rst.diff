@@ -1,0 +1,203 @@
+@@ -2,24 +2,29 @@
+ :mod:`dis` --- Disassembler for Python bytecode
+ ===============================================
+ 
+ .. module:: dis
+    :synopsis: Disassembler for Python bytecode.
+ 
+ 
+ The :mod:`dis` module supports the analysis of CPython :term:`bytecode` by
+ disassembling it. The CPython bytecode which this module takes as an
+ input is defined in the file :file:`Include/opcode.h` and used by the compiler
+ and the interpreter.
+ 
++.. seealso::
++
++   Latest version of the `dis module Python source code
++   <http://svn.python.org/view/python/branches/release27-maint/Lib/dis.py?view=markup>`_
++
+ .. impl-detail::
+ 
+    Bytecode is an implementation detail of the CPython interpreter!  No
+    guarantees are made that bytecode will not be added, removed, or changed
+    between versions of Python.  Use of this module should not be considered to
+    work across Python VMs or Python releases.
+ 
+ Example: Given the function :func:`myfunc`::
+ 
+    def myfunc(alist):
+        return len(alist)
+ 
+@@ -61,36 +66,49 @@
+    #. a labelled instruction, indicated with ``>>``,
+    #. the address of the instruction,
+    #. the operation code name,
+    #. operation parameters, and
+    #. interpretation of the parameters in parentheses.
+ 
+    The parameter interpretation recognizes local and global variable names,
+    constant values, branch targets, and compare operators.
+ 
+ 
+ .. function:: disco(code[, lasti])
+ 
+-   A synonym for disassemble.  It is more convenient to type, and kept for
+-   compatibility with earlier Python releases.
++   A synonym for :func:`disassemble`.  It is more convenient to type, and kept
++   for compatibility with earlier Python releases.
++
++
++.. function:: findlinestarts(code)
++
++   This generator function uses the ``co_firstlineno`` and ``co_lnotab``
++   attributes of the code object *code* to find the offsets which are starts of
++   lines in the source code.  They are generated as ``(offset, lineno)`` pairs.
++
++
++.. function:: findlabels(code)
++
++   Detect all offsets in the code object *code* which are jump targets, and
++   return a list of these offsets.
+ 
+ 
+ .. data:: opname
+ 
+    Sequence of operation names, indexable using the bytecode.
+ 
+ 
+ .. data:: opmap
+ 
+-   Dictionary mapping bytecodes to operation names.
++   Dictionary mapping operation names to bytecodes.
+ 
+ 
+ .. data:: cmp_op
+ 
+    Sequence of all compare operation names.
+ 
+ 
+ .. data:: hasconst
+ 
+    Sequence of bytecodes that have a constant parameter.
+ 
+ 
+@@ -460,27 +478,29 @@
+ 
+ .. opcode:: BREAK_LOOP ()
+ 
+    Terminates a loop due to a :keyword:`break` statement.
+ 
+ 
+ .. opcode:: CONTINUE_LOOP (target)
+ 
+    Continues a loop due to a :keyword:`continue` statement.  *target* is the
+    address to jump to (which should be a ``FOR_ITER`` instruction).
+ 
+ 
+-.. opcode:: LIST_APPEND ()
++.. opcode:: LIST_APPEND (i)
+ 
+-   Calls ``list.append(TOS1, TOS)``.  Used to implement list comprehensions.
++   Calls ``list.append(TOS[-i], TOS)``.  Used to implement list comprehensions.
++   While the appended value is popped off, the list object remains on the
++   stack so that it is available for further iterations of the loop.
+ 
+ 
+ .. opcode:: LOAD_LOCALS ()
+ 
+    Pushes a reference to the locals of the current scope on the stack. This is used
+    in the code for a class definition: After the class body is evaluated, the
+    locals are passed to the class definition.
+ 
+ 
+ .. opcode:: RETURN_VALUE ()
+ 
+    Returns with TOS to the caller of the function.
+@@ -514,24 +534,36 @@
+ 
+    Terminates a :keyword:`finally` clause.  The interpreter recalls whether the
+    exception has to be re-raised, or whether the function returns, and continues
+    with the outer-next block.
+ 
+ 
+ .. opcode:: BUILD_CLASS ()
+ 
+    Creates a new class object.  TOS is the methods dictionary, TOS1 the tuple of
+    the names of the base classes, and TOS2 the class name.
+ 
+ 
++.. opcode:: SETUP_WITH (delta)
++
++   This opcode performs several operations before a with block starts.  First,
++   it loads :meth:`~object.__exit__` from the context manager and pushes it onto
++   the stack for later use by :opcode:`WITH_CLEANUP`.  Then,
++   :meth:`~object.__enter__` is called, and a finally block pointing to *delta*
++   is pushed.  Finally, the result of calling the enter method is pushed onto
++   the stack.  The next opcode will either ignore it (:opcode:`POP_TOP`), or
++   store it in (a) variable(s) (:opcode:`STORE_FAST`, :opcode:`STORE_NAME`, or
++   :opcode:`UNPACK_SEQUENCE`).
++
++
+ .. opcode:: WITH_CLEANUP ()
+ 
+    Cleans up the stack when a :keyword:`with` statement block exits.  On top of
+    the stack are 1--3 values indicating how/why the finally clause was entered:
+ 
+    * TOP = ``None``
+    * (TOP, SECOND) = (``WHY_{RETURN,CONTINUE}``), retval
+    * TOP = ``WHY_*``; no retval below it
+    * (TOP, SECOND, THIRD) = exc_info()
+ 
+    Under them is EXIT, the context manager's :meth:`__exit__` bound method.
+ 
+@@ -646,34 +678,44 @@
+ .. opcode:: IMPORT_FROM (namei)
+ 
+    Loads the attribute ``co_names[namei]`` from the module found in TOS. The
+    resulting object is pushed onto the stack, to be subsequently stored by a
+    ``STORE_FAST`` instruction.
+ 
+ 
+ .. opcode:: JUMP_FORWARD (delta)
+ 
+    Increments bytecode counter by *delta*.
+ 
+ 
+-.. opcode:: JUMP_IF_TRUE (delta)
++.. opcode:: POP_JUMP_IF_TRUE (target)
+ 
+-   If TOS is true, increment the bytecode counter by *delta*.  TOS is left on the
+-   stack.
++   If TOS is true, sets the bytecode counter to *target*.  TOS is popped.
+ 
+ 
+-.. opcode:: JUMP_IF_FALSE (delta)
++.. opcode:: POP_JUMP_IF_FALSE (target)
+ 
+-   If TOS is false, increment the bytecode counter by *delta*.  TOS is not
+-   changed.
++   If TOS is false, sets the bytecode counter to *target*.  TOS is popped.
++
++
++.. opcode:: JUMP_IF_TRUE_OR_POP (target)
++
++   If TOS is true, sets the bytecode counter to *target* and leaves TOS
++   on the stack.  Otherwise (TOS is false), TOS is popped.
++
++
++.. opcode:: JUMP_IF_FALSE_OR_POP (target)
++
++   If TOS is false, sets the bytecode counter to *target* and leaves
++   TOS on the stack.  Otherwise (TOS is true), TOS is popped.
+ 
+ 
+ .. opcode:: JUMP_ABSOLUTE (target)
+ 
+    Set bytecode counter to *target*.
+ 
+ 
+ .. opcode:: FOR_ITER (delta)
+ 
+    ``TOS`` is an :term:`iterator`.  Call its :meth:`!next` method.  If this
+    yields a new value, push it on the stack (leaving the iterator below it).  If
+    the iterator indicates it is exhausted ``TOS`` is popped, and the bytecode

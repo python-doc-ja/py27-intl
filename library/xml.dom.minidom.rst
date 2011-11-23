@@ -105,11 +105,14 @@ Python の DOM API 定義は :mod:`xml.dom` モジュールドキュメント
    よいのですが、あるノードの子ノードを放棄するために子ノードに対して呼び出してもかまいません。
 
 
-.. method:: Node.writexml(writer[, indent=""[, addindent=""[, newl=""[, encoding=""]]]])
+.. method:: Node.writexml(writer[, indent=""[, addindent=""[, newl=""]]])
 
    XML を *writer* オブジェクトに書き込みます。 *writer* は、ファイルオブジェクトインタフェースの :meth:`write` に該当する
    メソッドを持たなければなりません。 *indent* パラメタには現在のノードのインデントを指定します。 *addindent*
    パラメタには現在のノードの下にサブノードを追加する際のインデント増分を指定します。 *newl* には、改行時に行末を終端する文字列を指定します。
+
+   :class:`Document` ノードでは、追加のキーワード引数 *encoding* を使って XML ヘッダの
+   encoding フィールドを指定することができます。
 
    .. versionchanged:: 2.1
       美しい出力をサポートするため、新たなキーワード引数 *indent* 、 *addindent* 、および *newl* が追加されました.

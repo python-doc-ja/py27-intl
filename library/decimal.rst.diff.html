@@ -1,0 +1,507 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/decimal.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -26,46 +26,47 @@</span>
+    # make sure each group gets a fresh context
+    setcontext(Context())
+ 
+ The :mod:`decimal` module provides support for decimal floating point
+ arithmetic.  It offers several advantages over the :class:`float` datatype:
+ 
+ * Decimal &quot;is based on a floating-point model which was designed with people
+   in mind, and necessarily has a paramount guiding principle -- computers must
+   provide an arithmetic that works in the same way as the arithmetic that
+   people learn at school.&quot; -- excerpt from the decimal arithmetic specification.
+ 
+ * Decimal numbers can be represented exactly.  In contrast, numbers like
+<span class="gd">-  :const:`1.1` do not have an exact representation in binary floating point. End</span>
+<span class="gd">-  users typically would not expect :const:`1.1` to display as</span>
+<span class="gd">-  :const:`1.1000000000000001` as it does with binary floating point.</span>
+<span class="gi">+  :const:`1.1` and :const:`2.2` do not have an exact representations in binary</span>
+<span class="gi">+  floating point.  End users typically would not expect ``1.1 + 2.2`` to display</span>
+<span class="gi">+  as :const:`3.3000000000000003` as it does with binary floating point.</span>
+ 
+ * The exactness carries over into arithmetic.  In decimal floating point, ``0.1
+   + 0.1 + 0.1 - 0.3`` is exactly equal to zero.  In binary floating point, the result
+   is :const:`5.5511151231257827e-017`.  While near to zero, the differences
+   prevent reliable equality testing and differences can accumulate. For this
+   reason, decimal is preferred in accounting applications which have strict
+   equality invariants.
+ 
+ * The decimal module incorporates a notion of significant places so that ``1.30
+   + 1.20`` is :const:`2.50`.  The trailing zero is kept to indicate significance.
+   This is the customary presentation for monetary applications. For
+   multiplication, the &quot;schoolbook&quot; approach uses all the figures in the
+   multiplicands.  For instance, ``1.3 * 1.2`` gives :const:`1.56` while ``1.30 *
+   1.20`` gives :const:`1.5600`.
+ 
+ * Unlike hardware based binary floating point, the decimal module has a user
+   alterable precision (defaulting to 28 places) which can be as large as needed for
+   a given problem:
+ 
+<span class="gi">+     &gt;&gt;&gt; from decimal import *</span>
+      &gt;&gt;&gt; getcontext().prec = 6
+      &gt;&gt;&gt; Decimal(1) / Decimal(7)
+      Decimal(&#39;0.142857&#39;)
+      &gt;&gt;&gt; getcontext().prec = 28
+      &gt;&gt;&gt; Decimal(1) / Decimal(7)
+      Decimal(&#39;0.1428571428571428571428571429&#39;)
+ 
+ * Both binary and decimal floating point are implemented in terms of published
+   standards.  While the built-in float type exposes only a modest portion of its
+   capabilities, the decimal module exposes all required parts of the standard.
+   When needed, the programmer has full control over rounding and signal handling.
+   This includes an option to enforce exact arithmetic by using exceptions
+<span class="gu">@@ -124,36 +125,37 @@</span>
+ The usual start to using decimals is importing the module, viewing the current
+ context with :func:`getcontext` and, if necessary, setting new values for
+ precision, rounding, or enabled traps::
+ 
+    &gt;&gt;&gt; from decimal import *
+    &gt;&gt;&gt; getcontext()
+    Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+            capitals=1, flags=[], traps=[Overflow, DivisionByZero,
+            InvalidOperation])
+ 
+    &gt;&gt;&gt; getcontext().prec = 7       # Set a new precision
+ 
+<span class="gd">-Decimal instances can be constructed from integers, strings, or tuples.  To</span>
+<span class="gd">-create a Decimal from a :class:`float`, first convert it to a string.  This</span>
+<span class="gd">-serves as an explicit reminder of the details of the conversion (including</span>
+<span class="gd">-representation error).  Decimal numbers include special values such as</span>
+<span class="gi">+Decimal instances can be constructed from integers, strings, floats, or tuples.</span>
+<span class="gi">+Construction from an integer or a float performs an exact conversion of the</span>
+<span class="gi">+value of that integer or float.  Decimal numbers include special values such as</span>
+ :const:`NaN` which stands for &quot;Not a number&quot;, positive and negative
+ :const:`Infinity`, and :const:`-0`.
+ 
+    &gt;&gt;&gt; getcontext().prec = 28
+    &gt;&gt;&gt; Decimal(10)
+    Decimal(&#39;10&#39;)
+    &gt;&gt;&gt; Decimal(&#39;3.14&#39;)
+    Decimal(&#39;3.14&#39;)
+<span class="gi">+   &gt;&gt;&gt; Decimal(3.14)</span>
+<span class="gi">+   Decimal(&#39;3.140000000000000124344978758017532527446746826171875&#39;)</span>
+    &gt;&gt;&gt; Decimal((0, (3, 1, 4), -2))
+    Decimal(&#39;3.14&#39;)
+    &gt;&gt;&gt; Decimal(str(2.0 ** 0.5))
+    Decimal(&#39;1.41421356237&#39;)
+    &gt;&gt;&gt; Decimal(2) ** Decimal(&#39;0.5&#39;)
+    Decimal(&#39;1.414213562373095048801688724&#39;)
+    &gt;&gt;&gt; Decimal(&#39;NaN&#39;)
+    Decimal(&#39;NaN&#39;)
+    &gt;&gt;&gt; Decimal(&#39;-Infinity&#39;)
+    Decimal(&#39;-Infinity&#39;)
+ 
+ The significance of a new Decimal is determined solely by the number of digits
+<span class="gu">@@ -184,25 +186,25 @@</span>
+    Decimal(&#39;9.25&#39;)
+    &gt;&gt;&gt; min(data)
+    Decimal(&#39;0.03&#39;)
+    &gt;&gt;&gt; sorted(data)
+    [Decimal(&#39;0.03&#39;), Decimal(&#39;1.00&#39;), Decimal(&#39;1.34&#39;), Decimal(&#39;1.87&#39;),
+     Decimal(&#39;2.35&#39;), Decimal(&#39;3.45&#39;), Decimal(&#39;9.25&#39;)]
+    &gt;&gt;&gt; sum(data)
+    Decimal(&#39;19.29&#39;)
+    &gt;&gt;&gt; a,b,c = data[:3]
+    &gt;&gt;&gt; str(a)
+    &#39;1.34&#39;
+    &gt;&gt;&gt; float(a)
+<span class="gd">-   1.3400000000000001</span>
+<span class="gi">+   1.34</span>
+    &gt;&gt;&gt; round(a, 1)     # round() first converts to binary floating point
+    1.3
+    &gt;&gt;&gt; int(a)
+    1
+    &gt;&gt;&gt; a * 5
+    Decimal(&#39;6.70&#39;)
+    &gt;&gt;&gt; a * b
+    Decimal(&#39;2.5058&#39;)
+    &gt;&gt;&gt; c % a
+    Decimal(&#39;0.77&#39;)
+ 
+ And some mathematical functions are also available to Decimal:
+<span class="gu">@@ -305,25 +307,25 @@</span>
+ 
+ 
+ .. _decimal-decimal:
+ 
+ Decimal objects
+ ---------------
+ 
+ 
+ .. class:: Decimal([value [, context]])
+ 
+    Construct a new :class:`Decimal` object based from *value*.
+ 
+<span class="gd">-   *value* can be an integer, string, tuple, or another :class:`Decimal`</span>
+<span class="gi">+   *value* can be an integer, string, tuple, :class:`float`, or another :class:`Decimal`</span>
+    object. If no *value* is given, returns ``Decimal(&#39;0&#39;)``.  If *value* is a
+    string, it should conform to the decimal numeric string syntax after leading
+    and trailing whitespace characters are removed::
+ 
+       sign           ::=  &#39;+&#39; | &#39;-&#39;
+       digit          ::=  &#39;0&#39; | &#39;1&#39; | &#39;2&#39; | &#39;3&#39; | &#39;4&#39; | &#39;5&#39; | &#39;6&#39; | &#39;7&#39; | &#39;8&#39; | &#39;9&#39;
+       indicator      ::=  &#39;e&#39; | &#39;E&#39;
+       digits         ::=  digit [digit]...
+       decimal-part   ::=  digits &#39;.&#39; [digits] | [&#39;.&#39;] digits
+       exponent-part  ::=  indicator [sign] digits
+       infinity       ::=  &#39;Infinity&#39; | &#39;Inf&#39;
+       nan            ::=  &#39;NaN&#39; [digits] | &#39;sNaN&#39; [digits]
+<span class="gu">@@ -332,47 +334,74 @@</span>
+ 
+    If *value* is a unicode string then other Unicode decimal digits
+    are also permitted where ``digit`` appears above.  These include
+    decimal digits from various other alphabets (for example,
+    Arabic-Indic and Devanāgarī digits) along with the fullwidth digits
+    ``u&#39;\uff10&#39;`` through ``u&#39;\uff19&#39;``.
+ 
+    If *value* is a :class:`tuple`, it should have three components, a sign
+    (:const:`0` for positive or :const:`1` for negative), a :class:`tuple` of
+    digits, and an integer exponent. For example, ``Decimal((0, (1, 4, 1, 4), -3))``
+    returns ``Decimal(&#39;1.414&#39;)``.
+ 
+<span class="gi">+   If *value* is a :class:`float`, the binary floating point value is losslessly</span>
+<span class="gi">+   converted to its exact decimal equivalent.  This conversion can often require</span>
+<span class="gi">+   53 or more digits of precision.  For example, ``Decimal(float(&#39;1.1&#39;))``</span>
+<span class="gi">+   converts to</span>
+<span class="gi">+   ``Decimal(&#39;1.100000000000000088817841970012523233890533447265625&#39;)``.</span>
+<span class="gi">+</span>
+    The *context* precision does not affect how many digits are stored. That is
+    determined exclusively by the number of digits in *value*. For example,
+    ``Decimal(&#39;3.00000&#39;)`` records all five zeros even if the context precision is
+    only three.
+ 
+    The purpose of the *context* argument is determining what to do if *value* is a
+    malformed string.  If the context traps :const:`InvalidOperation`, an exception
+    is raised; otherwise, the constructor returns a new Decimal with the value of
+    :const:`NaN`.
+ 
+    Once constructed, :class:`Decimal` objects are immutable.
+ 
+    .. versionchanged:: 2.6
+       leading and trailing whitespace characters are permitted when
+       creating a Decimal instance from a string.
+ 
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      The argument to the constructor is now permitted to be a :class:`float` instance.</span>
+<span class="gi">+</span>
+    Decimal floating point objects share many properties with the other built-in
+    numeric types such as :class:`float` and :class:`int`.  All of the usual math
+    operations and special methods apply.  Likewise, decimal objects can be
+    copied, pickled, printed, used as dictionary keys, used as set elements,
+    compared, sorted, and coerced to another type (such as :class:`float` or
+    :class:`long`).
+ 
+<span class="gi">+   Decimal objects cannot generally be combined with floats in</span>
+<span class="gi">+   arithmetic operations: an attempt to add a :class:`Decimal` to a</span>
+<span class="gi">+   :class:`float`, for example, will raise a :exc:`TypeError`.</span>
+<span class="gi">+   There&#39;s one exception to this rule: it&#39;s possible to use Python&#39;s</span>
+<span class="gi">+   comparison operators to compare a :class:`float` instance ``x``</span>
+<span class="gi">+   with a :class:`Decimal` instance ``y``.  Without this exception,</span>
+<span class="gi">+   comparisons between :class:`Decimal` and :class:`float` instances</span>
+<span class="gi">+   would follow the general rules for comparing objects of different</span>
+<span class="gi">+   types described in the :ref:`expressions` section of the reference</span>
+<span class="gi">+   manual, leading to confusing results.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      A comparison between a :class:`float` instance ``x`` and a</span>
+<span class="gi">+      :class:`Decimal` instance ``y`` now returns a result based on</span>
+<span class="gi">+      the values of ``x`` and ``y``.  In earlier versions ``x &lt; y``</span>
+<span class="gi">+      returned the same (arbitrary) result for any :class:`Decimal`</span>
+<span class="gi">+      instance ``x`` and any :class:`float` instance ``y``.</span>
+<span class="gi">+</span>
+    In addition to the standard numeric properties, decimal floating point
+    objects also have a number of specialized methods:
+ 
+ 
+    .. method:: adjusted()
+ 
+       Return the adjusted exponent after shifting out the coefficient&#39;s
+       rightmost digits until only the lead digit remains:
+       ``Decimal(&#39;321e+5&#39;).adjusted()`` returns seven.  Used for determining the
+       position of the most significant digit with respect to the decimal point.
+ 
+ 
+<span class="gu">@@ -481,24 +510,50 @@</span>
+ 
+       Return the value of the (natural) exponential function ``e**x`` at the
+       given number.  The result is correctly rounded using the
+       :const:`ROUND_HALF_EVEN` rounding mode.
+ 
+       &gt;&gt;&gt; Decimal(1).exp()
+       Decimal(&#39;2.718281828459045235360287471&#39;)
+       &gt;&gt;&gt; Decimal(321).exp()
+       Decimal(&#39;2.561702493119680037517373933E+139&#39;)
+ 
+       .. versionadded:: 2.6
+ 
+<span class="gi">+   .. method:: from_float(f)</span>
+<span class="gi">+</span>
+<span class="gi">+      Classmethod that converts a float to a decimal number, exactly.</span>
+<span class="gi">+</span>
+<span class="gi">+      Note `Decimal.from_float(0.1)` is not the same as `Decimal(&#39;0.1&#39;)`.</span>
+<span class="gi">+      Since 0.1 is not exactly representable in binary floating point, the</span>
+<span class="gi">+      value is stored as the nearest representable value which is</span>
+<span class="gi">+      `0x1.999999999999ap-4`.  That equivalent value in decimal is</span>
+<span class="gi">+      `0.1000000000000000055511151231257827021181583404541015625`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. note:: From Python 2.7 onwards, a :class:`Decimal` instance</span>
+<span class="gi">+         can also be constructed directly from a :class:`float`.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. doctest::</span>
+<span class="gi">+</span>
+<span class="gi">+          &gt;&gt;&gt; Decimal.from_float(0.1)</span>
+<span class="gi">+          Decimal(&#39;0.1000000000000000055511151231257827021181583404541015625&#39;)</span>
+<span class="gi">+          &gt;&gt;&gt; Decimal.from_float(float(&#39;nan&#39;))</span>
+<span class="gi">+          Decimal(&#39;NaN&#39;)</span>
+<span class="gi">+          &gt;&gt;&gt; Decimal.from_float(float(&#39;inf&#39;))</span>
+<span class="gi">+          Decimal(&#39;Infinity&#39;)</span>
+<span class="gi">+          &gt;&gt;&gt; Decimal.from_float(float(&#39;-inf&#39;))</span>
+<span class="gi">+          Decimal(&#39;-Infinity&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+    .. method:: fma(other, third[, context])
+ 
+       Fused multiply-add.  Return self*other+third with no rounding of the
+       intermediate product self*other.
+ 
+       &gt;&gt;&gt; Decimal(2).fma(3, 5)
+       Decimal(&#39;11&#39;)
+ 
+       .. versionadded:: 2.6
+ 
+    .. method:: is_canonical()
+ 
+<span class="gu">@@ -967,26 +1022,29 @@</span>
+ 
+    The *capitals* field is either :const:`0` or :const:`1` (the default). If set to
+    :const:`1`, exponents are printed with a capital :const:`E`; otherwise, a
+    lowercase :const:`e` is used: :const:`Decimal(&#39;6.02e+23&#39;)`.
+ 
+    .. versionchanged:: 2.6
+       The :const:`ROUND_05UP` rounding mode was added.
+ 
+    The :class:`Context` class defines several general purpose methods as well as
+    a large number of methods for doing arithmetic directly in a given context.
+    In addition, for each of the :class:`Decimal` methods described above (with
+    the exception of the :meth:`adjusted` and :meth:`as_tuple` methods) there is
+<span class="gd">-   a corresponding :class:`Context` method.  For example, ``C.exp(x)`` is</span>
+<span class="gd">-   equivalent to ``x.exp(context=C)``.</span>
+<span class="gi">+   a corresponding :class:`Context` method.  For example, for a :class:`Context`</span>
+<span class="gi">+   instance ``C`` and :class:`Decimal` instance ``x``, ``C.exp(x)`` is</span>
+<span class="gi">+   equivalent to ``x.exp(context=C)``.  Each :class:`Context` method accepts a</span>
+<span class="gi">+   Python integer (an instance of :class:`int` or :class:`long`) anywhere that a</span>
+<span class="gi">+   Decimal instance is accepted.</span>
+ 
+ 
+    .. method:: clear_flags()
+ 
+       Resets all of the flags to :const:`0`.
+ 
+    .. method:: copy()
+ 
+       Return a duplicate of the context.
+ 
+    .. method:: copy_decimal(num)
+ 
+<span class="gu">@@ -1007,24 +1065,44 @@</span>
+       .. doctest:: newcontext
+ 
+          &gt;&gt;&gt; getcontext().prec = 3
+          &gt;&gt;&gt; Decimal(&#39;3.4445&#39;) + Decimal(&#39;1.0023&#39;)
+          Decimal(&#39;4.45&#39;)
+          &gt;&gt;&gt; Decimal(&#39;3.4445&#39;) + Decimal(0) + Decimal(&#39;1.0023&#39;)
+          Decimal(&#39;4.44&#39;)
+ 
+       This method implements the to-number operation of the IBM specification.
+       If the argument is a string, no leading or trailing whitespace is
+       permitted.
+ 
+<span class="gi">+   .. method:: create_decimal_from_float(f)</span>
+<span class="gi">+</span>
+<span class="gi">+      Creates a new Decimal instance from a float *f* but rounding using *self*</span>
+<span class="gi">+      as the context.  Unlike the :meth:`Decimal.from_float` class method,</span>
+<span class="gi">+      the context precision, rounding method, flags, and traps are applied to</span>
+<span class="gi">+      the conversion.</span>
+<span class="gi">+</span>
+<span class="gi">+      .. doctest::</span>
+<span class="gi">+</span>
+<span class="gi">+         &gt;&gt;&gt; context = Context(prec=5, rounding=ROUND_DOWN)</span>
+<span class="gi">+         &gt;&gt;&gt; context.create_decimal_from_float(math.pi)</span>
+<span class="gi">+         Decimal(&#39;3.1415&#39;)</span>
+<span class="gi">+         &gt;&gt;&gt; context = Context(prec=5, traps=[Inexact])</span>
+<span class="gi">+         &gt;&gt;&gt; context.create_decimal_from_float(math.pi)</span>
+<span class="gi">+         Traceback (most recent call last):</span>
+<span class="gi">+             ...</span>
+<span class="gi">+         Inexact: None</span>
+<span class="gi">+</span>
+<span class="gi">+      .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+    .. method:: Etiny()
+ 
+       Returns a value equal to ``Emin - prec + 1`` which is the minimum exponent
+       value for subnormal results.  When underflow occurs, the exponent is set
+       to :const:`Etiny`.
+ 
+ 
+    .. method:: Etop()
+ 
+       Returns a value equal to ``Emax - prec + 1``.
+ 
+    The usual approach to working with decimals is to create :class:`Decimal`
+<span class="gu">@@ -1863,67 +1941,47 @@</span>
+    &gt;&gt;&gt; [v.normalize() for v in values]
+    [Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;), Decimal(&#39;2E+2&#39;)]
+ 
+ Q. Some decimal values always print with exponential notation.  Is there a way
+ to get a non-exponential representation?
+ 
+ A. For some values, exponential notation is the only way to express the number
+ of significant places in the coefficient.  For example, expressing
+ :const:`5.0E+3` as :const:`5000` keeps the value constant but cannot show the
+ original&#39;s two-place significance.
+ 
+ If an application does not care about tracking significance, it is easy to
+<span class="gd">-remove the exponent and trailing zeroes, losing significance, but keeping the</span>
+<span class="gd">-value unchanged:</span>
+<span class="gd">-</span>
+<span class="gd">-    &gt;&gt;&gt; def remove_exponent(d):</span>
+<span class="gd">-    ...     return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()</span>
+<span class="gd">-</span>
+<span class="gd">-    &gt;&gt;&gt; remove_exponent(Decimal(&#39;5E+3&#39;))</span>
+<span class="gd">-    Decimal(&#39;5000&#39;)</span>
+<span class="gi">+remove the exponent and trailing zeros, losing significance, but keeping the</span>
+<span class="gi">+value unchanged::</span>
+<span class="gi">+</span>
+<span class="gi">+    def remove_exponent(d):</span>
+<span class="gi">+        &#39;&#39;&#39;Remove exponent and trailing zeros.</span>
+<span class="gi">+</span>
+<span class="gi">+        &gt;&gt;&gt; remove_exponent(Decimal(&#39;5E+3&#39;))</span>
+<span class="gi">+        Decimal(&#39;5000&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+        &#39;&#39;&#39;</span>
+<span class="gi">+        return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()</span>
+ 
+ Q. Is there a way to convert a regular float to a :class:`Decimal`?
+ 
+<span class="gd">-A. Yes, all binary floating point numbers can be exactly expressed as a</span>
+<span class="gd">-Decimal.  An exact conversion may take more precision than intuition would</span>
+<span class="gd">-suggest, so we trap :const:`Inexact` to signal a need for more precision:</span>
+<span class="gd">-</span>
+<span class="gd">-.. testcode::</span>
+<span class="gd">-</span>
+<span class="gd">-    def float_to_decimal(f):</span>
+<span class="gd">-        &quot;Convert a floating point number to a Decimal with no loss of information&quot;</span>
+<span class="gd">-        n, d = f.as_integer_ratio()</span>
+<span class="gd">-        numerator, denominator = Decimal(n), Decimal(d)</span>
+<span class="gd">-        ctx = Context(prec=60)</span>
+<span class="gd">-        result = ctx.divide(numerator, denominator)</span>
+<span class="gd">-        while ctx.flags[Inexact]:</span>
+<span class="gd">-            ctx.flags[Inexact] = False</span>
+<span class="gd">-            ctx.prec *= 2</span>
+<span class="gd">-            result = ctx.divide(numerator, denominator)</span>
+<span class="gd">-        return result</span>
+<span class="gi">+A. Yes, any binary floating point number can be exactly expressed as a</span>
+<span class="gi">+Decimal though an exact conversion may take more precision than intuition would</span>
+<span class="gi">+suggest:</span>
+ 
+ .. doctest::
+ 
+<span class="gd">-    &gt;&gt;&gt; float_to_decimal(math.pi)</span>
+<span class="gi">+    &gt;&gt;&gt; Decimal(math.pi)</span>
+     Decimal(&#39;3.141592653589793115997963468544185161590576171875&#39;)
+ 
+<span class="gd">-Q. Why isn&#39;t the :func:`float_to_decimal` routine included in the module?</span>
+<span class="gd">-</span>
+<span class="gd">-A. There is some question about whether it is advisable to mix binary and</span>
+<span class="gd">-decimal floating point.  Also, its use requires some care to avoid the</span>
+<span class="gd">-representation issues associated with binary floating point:</span>
+<span class="gd">-</span>
+<span class="gd">-   &gt;&gt;&gt; float_to_decimal(1.1)</span>
+<span class="gd">-   Decimal(&#39;1.100000000000000088817841970012523233890533447265625&#39;)</span>
+<span class="gd">-</span>
+ Q. Within a complex calculation, how can I make sure that I haven&#39;t gotten a
+ spurious result because of insufficient precision or rounding anomalies.
+ 
+ A. The decimal module makes it easy to test results.  A best practice is to
+ re-run calculations using greater precision and with various rounding modes.
+ Widely differing results indicate insufficient precision, rounding mode issues,
+ ill-conditioned inputs, or a numerically unstable algorithm.
+ 
+ Q. I noticed that context precision is applied to the results of operations but
+ not to the inputs.  Is there anything to watch out for when mixing values of
+ different precisions?
+ 
+</pre></div>
+
+</body>
+</html>

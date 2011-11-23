@@ -12,6 +12,12 @@
 .. literalinclude:: ../includes/email-simple.py
 
 
+Parser() クラスの parse(filename) か parsestr(message_as_string) メソッドを
+使って簡単に RFC822 ヘッダの解析ができます。
+
+.. literalinclude:: ../includes/email-headers.py
+
+
 つぎに、あるディレクトリ内にある何枚かの家族写真をひとつの MIME
 メッセージに収めて送信する例です:
 

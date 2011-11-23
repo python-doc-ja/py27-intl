@@ -21,6 +21,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Pehr Anderson
    * Oliver Andrich
    * Jesús Cea Avión
+   * Manuel Balsera
    * Daniel Barclay
    * Chris Barker
    * Don Bashford
@@ -111,6 +112,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Andrew M. Kuchling
    * Dave Kuhlman
    * Erno Kuusela
+   * Ross Lagerwall
    * Thomas Lamb
    * Detlef Lannert
    * Piers Lauder
@@ -128,6 +130,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Andrew MacIntyre
    * Vladimir Marangozov
    * Vincent Marchetti
+   * Westley Martínez
    * Laura Matson
    * Daniel May
    * Rebecca McCreary
@@ -138,6 +141,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Ross Moore
    * Sjoerd Mullender
    * Dale Nagata
+   * Michal Nowikowski 
    * Ng Pheng Siong
    * Koray Oner
    * Tomas Oppelstrup
@@ -157,6 +161,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Paul Prescod
    * Eric S. Raymond
    * Edward K. Ream
+   * Terry J. Reedy
    * Sean Reifschneider
    * Bernhard Reiter
    * Armin Rigo
@@ -206,6 +211,7 @@ docs@python.org にメールで教えてください。私たちは喜んでそ�
    * Mats Wichmann
    * Gerry Wiener
    * Timothy Wild
+   * Paul Winkler
    * Collin Winter
    * Blake Winton
    * Dan Wolfe

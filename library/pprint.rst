@@ -23,6 +23,11 @@ Pythonの定数として表現できない多くの組み込みオブジェク�
 .. versionchanged:: 2.6
    :class:`set` と :class:`frozenset` がサポートされました。
 
+.. seealso::
+
+   最新バージョンの `pprint module Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/pprint.py?view=markup>`_
+
 :mod:`pprint` モジュールには1つのクラスが定義されています：
 
 .. First the implementation class:

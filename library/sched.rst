@@ -9,6 +9,10 @@
 
 :mod:`sched` モジュールは一般的な目的のためのイベントスケジューラを実装するクラスを定義します:
 
+.. seealso::
+
+   最新バージョンの `sched モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/sched.py?view=markup>`_
 
 .. class:: scheduler(timefunc, delayfunc)
 

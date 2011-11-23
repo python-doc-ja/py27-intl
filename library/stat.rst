@@ -69,6 +69,34 @@
 これらはまた、ブロック型およびキャラクタ型デバイスに対するテストのように、 :mod:`os.path` で扱うことのできないファイルの
 情報を調べる際にも便利です。
 
+例::
+
+   import os, sys
+   from stat import *
+
+   def walktree(top, callback):
+       '''recursively descend the directory tree rooted at top,
+          calling the callback function for each regular file'''
+
+       for f in os.listdir(top):
+           pathname = os.path.join(top, f)
+           mode = os.stat(pathname)[ST_MODE]
+           if S_ISDIR(mode):
+               # It's a directory, recurse into it
+               walktree(pathname, callback)
+           elif S_ISREG(mode):
+               # It's a file, call the callback function
+               callback(pathname)
+           else:
+               # Unknown file type, print a message
+               print 'Skipping %s' % pathname
+
+   def visitfile(file):
+       print 'visiting', file
+
+   if __name__ == '__main__':
+       walktree(sys.argv[1], visitfile)
+
 以下の全ての変数は、 :func:`os.stat` 、 :func:`os.fstat` 、または :func:`os.lstat` が返す 10
 要素のタプルにおけるインデクスを単にシンボル定数化したものです。
 
@@ -325,31 +353,46 @@
 
    :data:`S_IXUSR` の、 Unix V7 のシノニム
 
-例を以下に示します::
+以下のフラグを :func:`os.chflags` の *flags* 引数として利用できます:
 
-   import os, sys
-   from stat import *
+.. data:: UF_NODUMP
 
-   def walktree(top, callback):
-       '''recursively descend the directory tree rooted at top,
-          calling the callback function for each regular file'''
+   ファイルをダンプしない
 
-       for f in os.listdir(top):
-           pathname = os.path.join(top, f)
-           mode = os.stat(pathname)[ST_MODE]
-           if S_ISDIR(mode):
-               # It's a directory, recurse into it
-               walktree(pathname, callback)
-           elif S_ISREG(mode):
-               # It's a file, call the callback function
-               callback(pathname)
-           else:
-               # Unknown file type, print a message
-               print 'Skipping %s' % pathname
+.. data:: UF_IMMUTABLE
 
-   def visitfile(file):
-       print 'visiting', file
+   ファイルは変更されない
 
-   if __name__ == '__main__':
-       walktree(sys.argv[1], visitfile)
+.. data:: UF_APPEND
 
+   ファイルは追記しかされない。
+
+.. data:: UF_OPAQUE
+
+   ユニオンファイルシステムのスタックを通したとき、このディレクトリは不透明です。
+
+.. data:: UF_NOUNLINK
+
+   ファイルはリネームや削除されない。
+
+.. data:: SF_ARCHIVED
+
+   ファイルはアーカイブされているかもしれません。
+
+.. data:: SF_IMMUTABLE
+
+   ファイルは変更されないかもしれません。
+
+.. data:: SF_APPEND
+
+   ファイルは追記しかされないかもしれません。
+
+.. data:: SF_NOUNLINK
+
+   ファイルはリネームされたり削除されたりしないかもしれません。
+
+.. data:: SF_SNAPSHOT
+
+   このファイルはスナップショットファイルです。
+
+詳しい情報は \*BSD か Mac OS システムの man page :manpage:`chflags(2)` を参照してください。

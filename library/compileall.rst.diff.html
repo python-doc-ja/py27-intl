@@ -1,0 +1,234 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/compileall.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,62 +1,136 @@</span>
+<span class="gd">-</span>
+ :mod:`compileall` --- Byte-compile Python libraries
+ ===================================================
+ 
+ .. module:: compileall
+    :synopsis: Tools for byte-compiling all Python source files in a directory tree.
+ 
+ 
+ This module provides some utility functions to support installing Python
+<span class="gd">-libraries.  These functions compile Python source files in a directory tree,</span>
+<span class="gd">-allowing users without permission to write to the libraries to take advantage of</span>
+<span class="gd">-cached byte-code files.</span>
+<span class="gi">+libraries.  These functions compile Python source files in a directory tree.</span>
+<span class="gi">+This module can be used to create the cached byte-code files at library</span>
+<span class="gi">+installation time, which makes them available for use even by users who don&#39;t</span>
+<span class="gi">+have write permission to the library directories.</span>
+ 
+<span class="gd">-This module may also be used as a script (using the :option:`-m` Python flag) to</span>
+<span class="gd">-compile Python sources.  Directories to recursively traverse (passing</span>
+<span class="gd">-:option:`-l` stops the recursive behavior) for sources are listed on the command</span>
+<span class="gd">-line.  If no arguments are given, the invocation is equivalent to ``-l</span>
+<span class="gd">-sys.path``.  Printing lists of the files compiled can be disabled with the</span>
+<span class="gd">-:option:`-q` flag.  In addition, the :option:`-x` option takes a regular</span>
+<span class="gd">-expression argument.  All files that match the expression will be skipped.</span>
+ 
+<span class="gi">+Command-line use</span>
+<span class="gi">+----------------</span>
+ 
+<span class="gd">-.. function:: compile_dir(dir[, maxlevels[, ddir[, force[,  rx[, quiet]]]]])</span>
+<span class="gi">+This module can work as a script (using :program:`python -m compileall`) to</span>
+<span class="gi">+compile Python sources.</span>
+<span class="gi">+</span>
+<span class="gi">+.. program:: compileall</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: [directory|file]...</span>
+<span class="gi">+</span>
+<span class="gi">+   Positional arguments are files to compile or directories that contain</span>
+<span class="gi">+   source files, traversed recursively.  If no argument is given, behave as if</span>
+<span class="gi">+   the command line was ``-l &lt;directories from sys.path&gt;``.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -l</span>
+<span class="gi">+</span>
+<span class="gi">+   Do not recurse into subdirectories, only compile source code files directly</span>
+<span class="gi">+   contained in the named or implied directories.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -f</span>
+<span class="gi">+</span>
+<span class="gi">+   Force rebuild even if timestamps are up-to-date.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -q</span>
+<span class="gi">+</span>
+<span class="gi">+   Do not print the list of files compiled, print only error messages.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -d destdir</span>
+<span class="gi">+</span>
+<span class="gi">+   Directory prepended to the path to each file being compiled.  This will</span>
+<span class="gi">+   appear in compilation time tracebacks, and is also compiled in to the</span>
+<span class="gi">+   byte-code file, where it will be used in tracebacks and other messages in</span>
+<span class="gi">+   cases where the source file does not exist at the time the byte-code file is</span>
+<span class="gi">+   executed.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -x regex</span>
+<span class="gi">+</span>
+<span class="gi">+   regex is used to search the full path to each file considered for</span>
+<span class="gi">+   compilation, and if the regex produces a match, the file is skipped.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -i list</span>
+<span class="gi">+</span>
+<span class="gi">+   Read the file ``list`` and add each line that it contains to the list of</span>
+<span class="gi">+   files and directories to compile.  If ``list`` is ``-``, read lines from</span>
+<span class="gi">+   ``stdin``.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   Added the ``-i``  option.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Public functions</span>
+<span class="gi">+----------------</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: compile_dir(dir[, maxlevels[, ddir[, force[, rx[, quiet]]]]])</span>
+ 
+    Recursively descend the directory tree named by *dir*, compiling all :file:`.py`
+<span class="gd">-   files along the way.  The *maxlevels* parameter is used to limit the depth of</span>
+<span class="gd">-   the recursion; it defaults to ``10``.  If *ddir* is given, it is used as the</span>
+<span class="gd">-   base path from  which the filenames used in error messages will be generated.</span>
+<span class="gi">+   files along the way.</span>
+<span class="gi">+</span>
+<span class="gi">+   The *maxlevels* parameter is used to limit the depth of the recursion; it</span>
+<span class="gi">+   defaults to ``10``.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *ddir* is given, it is prepended to the path to each file being compiled</span>
+<span class="gi">+   for use in compilation time tracebacks, and is also compiled in to the</span>
+<span class="gi">+   byte-code file, where it will be used in tracebacks and other messages in</span>
+<span class="gi">+   cases where the source file does not exist at the time the byte-code file is</span>
+<span class="gi">+   executed.</span>
+<span class="gi">+</span>
+    If *force* is true, modules are re-compiled even if the timestamps are up to
+    date.
+ 
+<span class="gd">-   If *rx* is given, it specifies a regular expression of file names to exclude</span>
+<span class="gd">-   from the search; that expression is searched for in the full path.</span>
+<span class="gi">+   If *rx* is given, its search method is called on the complete path to each</span>
+<span class="gi">+   file considered for compilation, and if it returns a true value, the file</span>
+<span class="gi">+   is skipped.</span>
+ 
+<span class="gd">-   If *quiet* is true, nothing is printed to the standard output in normal</span>
+<span class="gd">-   operation.</span>
+<span class="gi">+   If *quiet* is true, nothing is printed to the standard output unless errors</span>
+<span class="gi">+   occur.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. function:: compile_file(fullname[, ddir[, force[, rx[, quiet]]]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Compile the file with path *fullname*.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *ddir* is given, it is prepended to the path to the file being compiled</span>
+<span class="gi">+   for use in compilation time tracebacks, and is also compiled in to the</span>
+<span class="gi">+   byte-code file, where it will be used in tracebacks and other messages in</span>
+<span class="gi">+   cases where the source file does not exist at the time the byte-code file is</span>
+<span class="gi">+   executed.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *rx* is given, its search method is passed the full path name to the</span>
+<span class="gi">+   file being compiled, and if it returns a true value, the file is not</span>
+<span class="gi">+   compiled and ``True`` is returned.</span>
+<span class="gi">+</span>
+<span class="gi">+   If *quiet* is true, nothing is printed to the standard output unless errors</span>
+<span class="gi">+   occur.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+ 
+ 
+ .. function:: compile_path([skip_curdir[, maxlevels[, force]]])
+ 
+    Byte-compile all the :file:`.py` files found along ``sys.path``. If
+<span class="gd">-   *skip_curdir* is true (the default), the current directory is not included in</span>
+<span class="gd">-   the search.  The *maxlevels* and *force* parameters default to ``0`` and are</span>
+<span class="gd">-   passed to the :func:`compile_dir` function.</span>
+<span class="gi">+   *skip_curdir* is true (the default), the current directory is not included</span>
+<span class="gi">+   in the search.  All other parameters are passed to the :func:`compile_dir`</span>
+<span class="gi">+   function.  Note that unlike the other compile functions, ``maxlevels``</span>
+<span class="gi">+   defaults to ``0``.</span>
+ 
+ To force a recompile of all the :file:`.py` files in the :file:`Lib/`
+ subdirectory and all its subdirectories::
+ 
+    import compileall
+ 
+    compileall.compile_dir(&#39;Lib/&#39;, force=True)
+ 
+    # Perform same compilation, excluding files in .svn directories.
+    import re
+    compileall.compile_dir(&#39;Lib/&#39;, rx=re.compile(&#39;/[.]svn&#39;), force=True)
+ 
+ 
+ .. seealso::
+ 
+    Module :mod:`py_compile`
+       Byte-compile a single source file.
+<span class="gd">-</span>
+</pre></div>
+
+</body>
+</html>

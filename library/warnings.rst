@@ -81,39 +81,6 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 クラスが定義されています:
 
 
-.. +----------------------------------+-----------------------------------------------+
-.. | Class                            | Description                                   |
-.. +==================================+===============================================+
-.. | :exc:`Warning`                   | This is the base class of all warning         |
-.. |                                  | category classes.  It is a subclass of        |
-.. |                                  | :exc:`Exception`.                             |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`UserWarning`               | The default category for :func:`warn`.        |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`DeprecationWarning`        | Base category for warnings about deprecated   |
-.. |                                  | features.                                     |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`SyntaxWarning`             | Base category for warnings about dubious      |
-.. |                                  | syntactic features.                           |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`RuntimeWarning`            | Base category for warnings about dubious      |
-.. |                                  | runtime features.                             |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`FutureWarning`             | Base category for warnings about constructs   |
-.. |                                  | that will change semantically in the future.  |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`PendingDeprecationWarning` | Base category for warnings about features     |
-.. |                                  | that will be deprecated in the future         |
-.. |                                  | (ignored by default).                         |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`ImportWarning`             | Base category for warnings triggered during   |
-.. |                                  | the process of importing a module (ignored by |
-.. |                                  | default).                                     |
-.. +----------------------------------+-----------------------------------------------+
-.. | :exc:`UnicodeWarning`            | Base category for warnings related to         |
-.. |                                  | Unicode.                                      |
-.. +----------------------------------+-----------------------------------------------+
-
 +----------------------------------+---------------------------------------------------------------------------------------+
 | クラス                           | 記述                                                                                  |
 +==================================+=======================================================================================+
@@ -123,6 +90,7 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 | :exc:`UserWarning`               | :func:`warn` の標準のカテゴリです。                                                   |
 +----------------------------------+---------------------------------------------------------------------------------------+
 | :exc:`DeprecationWarning`        | その機能が廃止されていることを示す警告カテゴリの基底クラスです。                      |
+|                                  | (デフォルトでは無視されます)                                                          |
 +----------------------------------+---------------------------------------------------------------------------------------+
 | :exc:`SyntaxWarning`             | その文法機能があいまいであることを示す警告カテゴリの基底クラスです。                  |
 +----------------------------------+---------------------------------------------------------------------------------------+
@@ -152,6 +120,9 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 
 標準の警告カテゴリをユーザの作成したコード上でサブクラス化することで、さらに別の警告カテゴリを定義することができます。警告カテゴリは常に
 :exc:`Warning` クラスのサブクラスでなければなりません。
+
+.. versionchanged:: 2.7
+   :exc:`DeprecationWarning` はデフォルトでは無視されます。
 
 
 .. _warning-filter:
@@ -266,21 +237,19 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 無視されます)。
 
 
-.. The warnings that are ignored by default may be enabled by passing :option:`-Wd`
-.. to the interpreter. This enables default handling for all warnings, including
-.. those that are normally ignored by default. This is particular useful for
-.. enabling ImportWarning when debugging problems importing a developed package.
-.. ImportWarning can also be enabled explicitly in Python code using:
+.. Default Warning Filters
 
-インタプリタに :option:`-Wd` を渡すことで、デフォルトでは無視される警告を有効にすることができます。このオプションは通常はデフォルトで無視さ
-れるようなものを含むすべての警告のデフォルトでの扱いを有効化します。このような振る舞いは開発中のパッケージをインポートする際の問題をデバッグする時
-にImportWarning を有効化するために使えます。次のような Python
-コードを使って ImportWarning を明示的に有効化することもできます。
+デフォルトの警告フィルタ
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+デフォルトで、 Python はいくつかの警告フィルタをインストールします。
+これはコマンドラインオプション :option:`-W` か :func:`filterwarnings`
+関数でオーバーライドできます。
 
-::
+* :exc:`PendingDeprecationWarning`, :exc:`ImportWarning` は無視されます。
 
-   warnings.simplefilter('default', ImportWarning)
+* :option:`-b` オプションが1度か2度指定されない限り、 :exc:`BytesWarning` は無視されます。
+  ``-b`` の時は警告が表示され、 ``-bb`` の時は例外になります。
 
 
 .. _warning-suppress:
@@ -401,6 +370,40 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 警告リストを各操作の前に毎回クリアする事ができます。)
 
 
+.. Updating Code For New Versions of Python
+
+コードを新しいバージョンの Python のために更新する
+---------------------------------------------------
+
+開発者にしか興味の無い警告はデフォルトでは無視されるようになりました。
+なので、通常、コードをテストするときには無視されている例外を表示するように
+するべきです。これは :option:`-Wd` コマンドライン引数 (:option:`-W default` の省略形)
+をインタプリタに指定することで可能です。これはデフォルトでは無視されているものも
+含めた全ての警告に対して、デフォルトの動作を有効にします。
+この動作を変更するためには、 :option:`-W` への引数を変更します。
+例えば、 :option:`-W error` のようにします。
+何が可能かについての詳細は、 :option:`-W` フラグを参照してください。
+
+
+プログラムから :option:`-Wd` と同じ事をするには、次のようにします::
+
+  warnings.simplefilter('default')
+
+このコードは可能な限り早く実行してください。そうすることで、どの警告を
+発生させるかの登録が、将来の警告がどう扱われるかについて思わぬ影響を与える
+ことを避けることができます。
+
+
+いくつかの警告がデフォルトで無視されているのは、開発者向けの警告をユーザーに
+見せることを避けるためです。ユーザーがどのインタプリタを使ってコードを実行するのかを
+必ずしも制御できるわけではないので、自分のコードのリリースサイクルの間に
+新しいバージョンの Python がリリースされるかもしれません。
+新しいインタプリタは、古いインタプリタが出さなかった新しい警告を発生させるかもしれません。
+例えば、利用しているモジュールに対して :exc:`DeprecationWarning` が発生されることがあります。
+開発者としては、廃止予定のモジュールを利用していることに対する通知は有益ですが、
+一般ユーザーにとってはこの情報はノイズでしか無く、何の役にも立ちません。
+
+
 .. _warning-functions:
 
 利用可能な関数
@@ -492,15 +495,6 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
 
 .. function:: showwarning(message, category, filename, lineno[, file[, line]])
 
-   .. Write a warning to a file.  The default implementation calls
-   .. ``formatwarning(message, category, filename, lineno, line)`` and writes the
-   .. resulting string to *file*, which defaults to ``sys.stderr``.  You may replace
-   .. this function with an alternative implementation by assigning to
-   .. ``warnings.showwarning``.
-   .. *line* is a line of source code to be included in the warning
-   .. message; if *line* is not supplied, :func:`showwarning` will
-   .. try to read the line specified by *filename* and *lineno*.
-
    警告をファイルに書き込みます。標準の実装では、 ``formatwarning(message, category, filename, lineno, line)``
    を呼び出し、返された文字列を *file* に書き込みます。 *file* は標準では ``sys.stderr`` です。この関数は
    ``warnings.showwarning`` に別の実装を代入して置き換えることができます。
@@ -508,23 +502,11 @@ rule)と動作からなるシーケンスです。 :func:`filterwarnings` を呼
    *line* が与えられない場合、 :func:`showwarning` は *filename* と *lineno*
    から行を取得することを試みます。
 
-
-   .. .. versionchanged:: 2.6
-   ..    Added the *line* argument. Implementations that lack the new argument
-   ..    will trigger a :exc:`DeprecationWarning`.
-
-   .. versionchanged:: 2.6
-      *line* 引数が追加されました。
-      新しい引数を使わない ``showwarning`` の実装は :exc:`DeprecationWarning` を発生させます。
+   .. versionchanged:: 2.7
+      *line* 引数のサポートが必須になりました。
 
 
 .. function:: formatwarning(message, category, filename, lineno[, line])
-
-   .. Format a warning the standard way.  This returns a string which may contain
-   .. embedded newlines and ends in a newline.  *line* is a line of source code to
-   .. be included in the warning message; if *line* is not supplied,
-   .. :func:`formatwarning` will try to read the line specified by *filename* and
-   .. *lineno*.
 
    警告を通常の方法で書式化します。返される文字列内には改行が埋め込まれている可能性があり、かつ文字列は改行で終端されています。
    *line* は警告メッセージに含まれるソースコードの1行です。

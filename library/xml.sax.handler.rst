@@ -45,45 +45,52 @@ SAX API はコンテント・ハンドラ、DTD ハンドラ、エラー・ハ�
 
 .. data:: feature_namespaces
 
-   値: ``"http://xml.org/sax/features/namespaces"`` ---  true: 名前空間の処理を有効にする。 ---
-   false: オプションで名前空間の処理を無効にする (暗黙に namespace-prefixes も無効にする - デフォルト )。 ---  アクセス:
-   (パース時) リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/features/namespaces"``
+   | true: 名前空間の処理を有効にする。
+   | false: オプションで名前空間の処理を無効にする (暗黙に namespace-prefixes も無効にする - デフォルト )。
+   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: feature_namespace_prefixes
 
-   値: ``"http://xml.org/sax/features/namespace-prefixes"`` ---  true:
-   名前空間宣言で用いられているオリジナルのプリフィックス名と属性を通知する。 ---  false: 名前空間宣言で用いられている属性を通知しない。
-   オプションでオリジナルのプリフィックス名も通知しない(デフォルト)。 ---  アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/features/namespace-prefixes"``
+   | true: 名前空間宣言で用いられているオリジナルのプリフィックス名と属性を通知する。
+   | false: 名前空間宣言で用いられている属性を通知しない。
+     オプションでオリジナルのプリフィックス名も通知しない(デフォルト)。
+   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: feature_string_interning
 
-   値: ``"http://xml.org/sax/features/string-interning"`` ---  true:
-   すべての要素名、プリフィックス、属性、名前、名前空間、URI、ローカル名を組込みの intern 関数を使ってシンボルに登録する。 ---  false:
-   名前のすべてを必ずしもシンボルに登録しない(デフォルト)。 ---  アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/features/string-interning"``
+   | true: すべての要素名、プリフィックス、属性、名前、名前空間、URI、ローカル名を組込みの intern 関数を使ってシンボルに登録する。
+   | false: 名前のすべてを必ずしもシンボルに登録しない(デフォルト)。
+   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: feature_validation
 
-   値: ``"http://xml.org/sax/features/validation"`` ---  true:
-   すべての妥当性検査エラーを通知する(external-general-entities  とexternal-parameter-entities
-   が暗黙の前提になっている)。 ---  false: 妥当性検査エラーを通知しない。 ---  アクセス: (パース時) リードオンリー; (パース時以外)
-   読み書き可
+   | 値: ``"http://xml.org/sax/features/validation"``
+   | true: すべての妥当性検査エラーを通知する(external-general-entities  とexternal-parameter-entities
+     が暗黙の前提になっている)。
+   | false: 妥当性検査エラーを通知しない。
+   | アクセス: (パース時) リードオンリー; (パース時以外)読み書き可
 
 
 .. data:: feature_external_ges
 
-   値: ``"http://xml.org/sax/features/external-general-entities"`` ---  true:
-   外部一般(テキスト)エンティティの取り込みをおこなう。 ---  false: 外部一般エンティティを取り込まない。 ---  アクセス: (パース時)
-   リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/features/external-general-entities"``
+   | true: 外部一般(テキスト)エンティティの取り込みをおこなう。
+   | false: 外部一般エンティティを取り込まない。
+   | アクセス: (パース時)リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: feature_external_pes
 
-   値: ``"http://xml.org/sax/features/external-parameter-entities"`` ---  true: 外部
-   DTD サブセットを含むすべての外部パラメータ・エンティティの取り込みをおこなう。 ---  false: 外部パラーメタ・エンティティおよび外部 DTD
-   サブセットを取り込まない。 ---  アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/features/external-parameter-entities"``
+   | true: 外部 DTD サブセットを含むすべての外部パラメータ・エンティティの取り込みをおこなう。
+   | false: 外部パラーメタ・エンティティおよび外部 DTD サブセットを取り込まない。
+   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: all_features
@@ -93,29 +100,34 @@ SAX API はコンテント・ハンドラ、DTD ハンドラ、エラー・ハ�
 
 .. data:: property_lexical_handler
 
-   値: ``"http://xml.org/sax/properties/lexical-handler"`` ---  data type:
-   xml.sax.sax2lib.LexicalHandler (Python 2 では未サポート) ---  description:
-   コメントなど字句解析イベント用のオプション拡張ハンドラ。 ---  アクセス: 読み書き可
+   | 値: ``"http://xml.org/sax/properties/lexical-handler"``
+   | データ型: xml.sax.sax2lib.LexicalHandler (Python 2 では未サポート)
+   | 説明: コメントなど字句解析イベント用のオプション拡張ハンドラ。
+   | アクセス: 読み書き可
 
 
 .. data:: property_declaration_handler
 
-   Value: ``"http://xml.org/sax/properties/declaration-handler"`` ---  data type:
-   xml.sax.sax2lib.DeclHandler (Python 2 では未サポート) ---  description:
-   ノーテーションや未解析エンティティをのぞく DTD 関連イベント用のオプション拡張ハンドラ。 --- アクセス: 読み書き可
+   | 値: ``"http://xml.org/sax/properties/declaration-handler"``
+   | データ型: xml.sax.sax2lib.DeclHandler (Python 2 では未サポート)
+   | 説明: ノーテーションや未解析エンティティをのぞく DTD 関連イベント用のオプション拡張ハンドラ。
+   | アクセス: 読み書き可
 
 
 .. data:: property_dom_node
 
-   Value: ``"http://xml.org/sax/properties/dom-node"`` ---  data type:
-   org.w3c.dom.Node (Python 2 では未サポート)  ---  description: パース時は DOM イテレータにおけるカレント
-   DOM ノード、非パース時はルート DOM ノードを指す。 ---  アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | 値: ``"http://xml.org/sax/properties/dom-node"``
+   | データ型: org.w3c.dom.Node (Python 2 では未サポート) 
+   | 説明: パース時は DOM イテレータにおけるカレントDOM ノード、非パース時はルート DOM ノードを指す。
+   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
 
 
 .. data:: property_xml_string
 
-   値: ``"http://xml.org/sax/properties/xml-string"`` ---  データ型: 文字列 ---  説明:
-   カレント・イベントの元になったリテラル文字列 ---  アクセス: リードオンリー
+   | 値: ``"http://xml.org/sax/properties/xml-string"``
+   | データ型: 文字列
+   | 説明: カレント・イベントの元になったリテラル文字列
+   | アクセス: リードオンリー
 
 
 .. data:: all_properties

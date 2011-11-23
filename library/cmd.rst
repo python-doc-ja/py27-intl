@@ -16,6 +16,10 @@
 テストハーネスや管理ツール、そして、後により洗練されたインターフェイスでラップするプロトタイプとして、
 こうしたインタープリタはよく役に立ちます。
 
+.. seealso::
+
+   最新バージョンの `cmd モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/cmd.py?view=markup>`_
 
 .. class:: Cmd([completekey[, stdin[, stdout]]])
 

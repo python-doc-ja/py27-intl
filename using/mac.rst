@@ -180,11 +180,8 @@ IDE
 =======
 
 MacPython には標準の IDLE 開発環境が付いてきます。
-http://hkn.eecs.berkeley.edu/~dyoo/python/idle_intro/index.html に IDLE を使うための良い入門があります。
-
-.. MacPython ships with the standard IDLE development environment. A good
-.. introduction to using IDLE can be found at http://hkn.eecs.berkeley.edu/
-.. dyoo/python/idle_intro/index.html.
+http://hkn.eecs.berkeley.edu/~dyoo/python/idle_intro/index.html
+に IDLE を使うための良い入門があります。
 
 
 .. _mac-package-manager:

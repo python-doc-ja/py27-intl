@@ -1,0 +1,361 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/trace.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,190 +1,203 @@</span>
+<span class="gi">+</span>
+ :mod:`trace` --- Trace or track Python statement execution
+ ==========================================================
+ 
+ .. module:: trace
+    :synopsis: Trace or track Python statement execution.
+ 
+ 
+ The :mod:`trace` module allows you to trace program execution, generate
+ annotated statement coverage listings, print caller/callee relationships and
+ list functions executed during a program run.  It can be used in another program
+ or from the command line.
+ 
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `trace module Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/trace.py?view=markup&gt;`_</span>
+ 
+ .. _trace-cli:
+ 
+<span class="gd">-Command Line Usage</span>
+<span class="gi">+Command-Line Usage</span>
+ ------------------
+ 
+ The :mod:`trace` module can be invoked from the command line.  It can be as
+ simple as ::
+ 
+    python -m trace --count -C . somefile.py ...
+ 
+<span class="gd">-The above will execute :file:`somefile.py` and generate annotated listings of all</span>
+<span class="gd">-Python modules imported during the execution into the current directory.</span>
+<span class="gi">+The above will execute :file:`somefile.py` and generate annotated listings of</span>
+<span class="gi">+all Python modules imported during the execution into the current directory.</span>
+ 
+<span class="gd">-Meta-options</span>
+<span class="gd">-^^^^^^^^^^^^</span>
+<span class="gi">+.. program:: trace</span>
+ 
+<span class="gd">-``--help``</span>
+<span class="gi">+.. cmdoption:: --help</span>
+ 
+    Display usage and exit.
+ 
+<span class="gd">-``--version``</span>
+<span class="gi">+.. cmdoption:: --version</span>
+ 
+    Display the version of the module and exit.
+ 
+ Main options
+ ^^^^^^^^^^^^
+ 
+<span class="gd">-The ``--listfuncs`` option is mutually exclusive with the ``--trace`` and</span>
+<span class="gd">-``--count`` options . When ``--listfuncs`` is provided, neither ``--counts``</span>
+<span class="gd">-nor ``--trace`` are accepted, and vice versa.</span>
+<span class="gi">+At least one of the following options must be specified when invoking</span>
+<span class="gi">+:mod:`trace`.  The :option:`--listfuncs &lt;-l&gt;` option is mutually exclusive with</span>
+<span class="gi">+the :option:`--trace &lt;-t&gt;` and :option:`--counts &lt;-c&gt;` options . When</span>
+<span class="gi">+:option:`--listfuncs &lt;-l&gt;` is provided, neither :option:`--counts &lt;-c&gt;` nor</span>
+<span class="gi">+:option:`--trace &lt;-t&gt;` are accepted, and vice versa.</span>
+ 
+<span class="gd">-``--count, -c``</span>
+<span class="gi">+.. program:: trace</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -c, --count</span>
+ 
+    Produce a set of annotated listing files upon program completion that shows
+<span class="gd">-   how many times each statement was executed.</span>
+<span class="gd">-   See also ``--coverdir``, ``--file``, ``--no-report`` below.</span>
+<span class="gi">+   how many times each statement was executed.  See also</span>
+<span class="gi">+   :option:`--coverdir &lt;-C&gt;`, :option:`--file &lt;-f&gt;` and</span>
+<span class="gi">+   :option:`--no-report &lt;-R&gt;` below.</span>
+ 
+<span class="gd">-``--trace, -t``</span>
+<span class="gi">+.. cmdoption:: -t, --trace</span>
+ 
+    Display lines as they are executed.
+ 
+<span class="gd">-``--listfuncs, -l``</span>
+<span class="gi">+.. cmdoption:: -l, --listfuncs</span>
+ 
+    Display the functions executed by running the program.
+ 
+<span class="gd">-``--report, -r``</span>
+<span class="gi">+.. cmdoption:: -r, --report</span>
+ 
+<span class="gd">-   Produce an annotated list from an earlier program run that used the ``--count``</span>
+<span class="gd">-   and ``--file`` option. Do not execute any code.</span>
+<span class="gi">+   Produce an annotated list from an earlier program run that used the</span>
+<span class="gi">+   :option:`--count &lt;-c&gt;` and :option:`--file &lt;-f&gt;` option.  This does not</span>
+<span class="gi">+   execute any code.</span>
+ 
+<span class="gd">-``--trackcalls, -T``</span>
+<span class="gi">+.. cmdoption:: -T, --trackcalls</span>
+ 
+    Display the calling relationships exposed by running the program.
+ 
+ Modifiers
+ ^^^^^^^^^
+ 
+<span class="gd">-``--file=&lt;file&gt;, -f``</span>
+<span class="gi">+.. program:: trace</span>
+ 
+<span class="gd">-   Name of a file to accumulate counts over several tracing runs. Should be used</span>
+<span class="gd">-   with the ``--count`` option.</span>
+<span class="gi">+.. cmdoption:: -f, --file=&lt;file&gt;</span>
+ 
+<span class="gd">-``--coverdir=&lt;dir&gt;, -C``</span>
+<span class="gi">+   Name of a file to accumulate counts over several tracing runs.  Should be</span>
+<span class="gi">+   used with the :option:`--count &lt;-c&gt;` option.</span>
+ 
+<span class="gd">-   Directory where the report files go. The coverage report for</span>
+<span class="gd">-   ``package.module`` is written to file ``dir/package/module.cover``.</span>
+<span class="gi">+.. cmdoption:: -C, --coverdir=&lt;dir&gt;</span>
+ 
+<span class="gd">-``--missing, -m``</span>
+<span class="gi">+   Directory where the report files go.  The coverage report for</span>
+<span class="gi">+   ``package.module`` is written to file :file:`{dir}/{package}/{module}.cover`.</span>
+<span class="gi">+</span>
+<span class="gi">+.. cmdoption:: -m, --missing</span>
+ 
+    When generating annotated listings, mark lines which were not executed with
+<span class="gd">-   &#39;``&gt;&gt;&gt;&gt;&gt;&gt;``&#39;.</span>
+<span class="gi">+   ``&gt;&gt;&gt;&gt;&gt;&gt;``.</span>
+ 
+<span class="gd">-``--summary, -s``</span>
+<span class="gi">+.. cmdoption:: -s, --summary</span>
+ 
+<span class="gd">-   When using ``--count`` or ``--report``, write a brief summary to</span>
+<span class="gd">-   stdout for each file processed.</span>
+<span class="gi">+   When using :option:`--count &lt;-c&gt;` or :option:`--report &lt;-r&gt;`, write a brief</span>
+<span class="gi">+   summary to stdout for each file processed.</span>
+ 
+<span class="gd">-``--no-report, -R``</span>
+<span class="gi">+.. cmdoption:: -R, --no-report</span>
+ 
+    Do not generate annotated listings.  This is useful if you intend to make
+<span class="gd">-   several runs with ``--count`` then produce a single set of annotated</span>
+<span class="gd">-   listings at the end.</span>
+<span class="gi">+   several runs with :option:`--count &lt;-c&gt;`, and then produce a single set of</span>
+<span class="gi">+   annotated listings at the end.</span>
+ 
+<span class="gd">-``--timing, -g``</span>
+<span class="gi">+.. cmdoption:: -g, --timing</span>
+ 
+<span class="gd">-   Prefix each line with the time since the program started. Only used while</span>
+<span class="gi">+   Prefix each line with the time since the program started.  Only used while</span>
+    tracing.
+ 
+ Filters
+ ^^^^^^^
+ 
+ These options may be repeated multiple times.
+ 
+<span class="gd">-``--ignore-module=&lt;mod&gt;``</span>
+<span class="gi">+.. program:: trace</span>
+ 
+<span class="gd">-   Accepts comma separated list of module names. Ignore each of the named</span>
+<span class="gd">-   modules and its submodules (if it is a package).</span>
+<span class="gi">+.. cmdoption:: --ignore-module=&lt;mod&gt;</span>
+ 
+<span class="gd">-``--ignore-dir=&lt;dir&gt;``</span>
+<span class="gi">+   Ignore each of the given module names and its submodules (if it is a</span>
+<span class="gi">+   package).  The argument can be a list of names separated by a comma.</span>
+ 
+<span class="gd">-   Ignore all modules and packages in the named directory and subdirectories</span>
+<span class="gd">-   (multiple directories can be joined by ``os.pathsep``).</span>
+<span class="gi">+.. cmdoption:: --ignore-dir=&lt;dir&gt;</span>
+<span class="gi">+</span>
+<span class="gi">+   Ignore all modules and packages in the named directory and subdirectories.</span>
+<span class="gi">+   The argument can be a list of directories separated by :data:`os.pathsep`.</span>
+ 
+ .. _trace-api:
+ 
+<span class="gd">-Programming Interface</span>
+<span class="gd">----------------------</span>
+<span class="gi">+Programmatic Interface</span>
+<span class="gi">+----------------------</span>
+ 
+<span class="gi">+.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])</span>
+ 
+<span class="gd">-.. class:: Trace(count=1, trace=1, countfuncs=0, countcallers=0, ignoremods=(), ignoredirs=(), infile=None, outfile=None, timing=False)</span>
+<span class="gi">+   Create an object to trace execution of a single statement or expression.  All</span>
+<span class="gi">+   parameters are optional.  *count* enables counting of line numbers.  *trace*</span>
+<span class="gi">+   enables line execution tracing.  *countfuncs* enables listing of the</span>
+<span class="gi">+   functions called during the run.  *countcallers* enables call relationship</span>
+<span class="gi">+   tracking.  *ignoremods* is a list of modules or packages to ignore.</span>
+<span class="gi">+   *ignoredirs* is a list of directories whose modules or packages should be</span>
+<span class="gi">+   ignored.  *infile* is the name of the file from which to read stored count</span>
+<span class="gi">+   information.  *outfile* is the name of the file in which to write updated</span>
+<span class="gi">+   count information.  *timing* enables a timestamp relative to when tracing was</span>
+<span class="gi">+   started to be displayed.</span>
+ 
+<span class="gd">-   Create an object to trace execution of a single statement or expression. All</span>
+<span class="gd">-   parameters are optional.  *count* enables counting of line numbers. *trace*</span>
+<span class="gd">-   enables line execution tracing.  *countfuncs* enables listing of the functions</span>
+<span class="gd">-   called during the run.  *countcallers* enables call relationship tracking.</span>
+<span class="gd">-   *ignoremods* is a list of modules or packages to ignore.  *ignoredirs* is a list</span>
+<span class="gd">-   of directories whose modules or packages should be ignored.  *infile* is the</span>
+<span class="gd">-   name of the file from which to read stored count information.  *outfile* is</span>
+<span class="gd">-   the name of the file in which to write updated count information. *timing*</span>
+<span class="gd">-   enables a timestamp relative to when tracing was started to be displayed.</span>
+<span class="gi">+    .. method:: run(cmd)</span>
+ 
+<span class="gi">+       Execute the command and gather statistics from the execution with</span>
+<span class="gi">+       the current tracing parameters.  *cmd* must be a string or code object,</span>
+<span class="gi">+       suitable for passing into :func:`exec`.</span>
+ 
+<span class="gd">-.. method:: Trace.run(cmd)</span>
+<span class="gi">+    .. method:: runctx(cmd[, globals=None[, locals=None]])</span>
+ 
+<span class="gd">-   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters.</span>
+<span class="gd">-   *cmd* must be a string or code object, suitable for passing into :func:`exec`.</span>
+<span class="gi">+       Execute the command and gather statistics from the execution with the</span>
+<span class="gi">+       current tracing parameters, in the defined global and local</span>
+<span class="gi">+       environments.  If not defined, *globals* and *locals* default to empty</span>
+<span class="gi">+       dictionaries.</span>
+ 
+<span class="gi">+    .. method:: runfunc(func, *args, **kwds)</span>
+ 
+<span class="gd">-.. method:: Trace.runctx(cmd, globals=None, locals=None)</span>
+<span class="gi">+       Call *func* with the given arguments under control of the :class:`Trace`</span>
+<span class="gi">+       object with the current tracing parameters.</span>
+ 
+<span class="gd">-   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters</span>
+<span class="gd">-   in the defined global and local environments.  If not defined, *globals* and</span>
+<span class="gd">-   *locals* default to empty dictionaries.</span>
+<span class="gi">+    .. method:: results()</span>
+ 
+<span class="gd">-</span>
+<span class="gd">-.. method:: Trace.runfunc(func, *args, **kwds)</span>
+<span class="gd">-</span>
+<span class="gd">-   Call *func* with the given arguments under control of the :class:`Trace` object</span>
+<span class="gd">-   with the current tracing parameters.</span>
+<span class="gd">-</span>
+<span class="gd">-.. method:: Trace.results()</span>
+<span class="gd">-</span>
+<span class="gd">-   Return a :class:`CoverageResults` object that contains the cumulative results</span>
+<span class="gd">-   of all previous calls to ``run``, ``runctx`` and ``runfunc`` for the given</span>
+<span class="gd">-   :class:`Trace` instance. Does not reset the accumulated trace results.</span>
+<span class="gi">+       Return a :class:`CoverageResults` object that contains the cumulative</span>
+<span class="gi">+       results of all previous calls to ``run``, ``runctx`` and ``runfunc``</span>
+<span class="gi">+       for the given :class:`Trace` instance.  Does not reset the accumulated</span>
+<span class="gi">+       trace results.</span>
+ 
+ .. class:: CoverageResults
+ 
+<span class="gd">-   A container for coverage results, created by :meth:`Trace.results`. Should not</span>
+<span class="gd">-   be created directly by the user.</span>
+<span class="gi">+   A container for coverage results, created by :meth:`Trace.results`.  Should</span>
+<span class="gi">+   not be created directly by the user.</span>
+ 
+<span class="gd">-.. method:: CoverageResults.update(other)</span>
+<span class="gi">+    .. method:: update(other)</span>
+ 
+<span class="gd">-   Merge in data from another :class:`CoverageResults` object.</span>
+<span class="gi">+       Merge in data from another :class:`CoverageResults` object.</span>
+ 
+<span class="gd">-.. method:: CoverageResults.write_results(show_missing=True, summary=False, coverdir=None)</span>
+<span class="gi">+    .. method:: write_results([show_missing=True[, summary=False[, coverdir=None]]])</span>
+ 
+<span class="gd">-   Write coverage results. Set *show_missing* to show lines that had no hits.</span>
+<span class="gd">-   Set *summary* to include in the output the coverage summary per module. *coverdir*</span>
+<span class="gd">-   specifies the directory into which the coverage result files will be output.</span>
+<span class="gd">-   If ``None``, the results for each source file are placed in its directory.</span>
+<span class="gi">+       Write coverage results.  Set *show_missing* to show lines that had no</span>
+<span class="gi">+       hits.  Set *summary* to include in the output the coverage summary per</span>
+<span class="gi">+       module.  *coverdir* specifies the directory into which the coverage</span>
+<span class="gi">+       result files will be output.  If ``None``, the results for each source</span>
+<span class="gi">+       file are placed in its directory.</span>
+ 
+<span class="gd">-..</span>
+<span class="gd">-</span>
+<span class="gd">-A simple example demonstrating the use of the programming interface::</span>
+<span class="gi">+A simple example demonstrating the use of the programmatic interface::</span>
+ 
+    import sys
+    import trace
+ 
+    # create a Trace object, telling it what to ignore, and whether to
+    # do tracing or line-counting or both.
+    tracer = trace.Trace(
+        ignoredirs=[sys.prefix, sys.exec_prefix],
+        trace=0,
+        count=1)
+ 
+    # run the new command using the given tracer
+</pre></div>
+
+</body>
+</html>

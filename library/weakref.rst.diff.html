@@ -1,0 +1,141 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/weakref.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -50,29 +50,32 @@</span>
+ benefit of advanced uses.
+ 
+ .. note::
+ 
+    Weak references to an object are cleared before the object&#39;s :meth:`__del__`
+    is called, to ensure that the weak reference callback (if any) finds the
+    object still alive.
+ 
+ Not all objects can be weakly referenced; those objects which can include class
+ instances, functions written in Python (but not in C), methods (both bound and
+ unbound), sets, frozensets, file objects, :term:`generator`\s, type objects,
+ :class:`DBcursor` objects from the :mod:`bsddb` module, sockets, arrays, deques,
+<span class="gd">-and regular expression pattern objects.</span>
+<span class="gi">+regular expression pattern objects, and code objects.</span>
+ 
+ .. versionchanged:: 2.4
+    Added support for files, sockets, arrays, and patterns.
+ 
+<span class="gi">+.. versionchanged:: 2.7</span>
+<span class="gi">+   Added support for thread.lock, threading.Lock, and code objects.</span>
+<span class="gi">+</span>
+ Several built-in types such as :class:`list` and :class:`dict` do not directly
+ support weak references but can add support through subclassing::
+ 
+    class Dict(dict):
+        pass
+ 
+    obj = Dict(red=1, green=2, blue=3)   # this object is weak referenceable
+ 
+ .. impl-detail::
+ 
+    Other built-in types such as :class:`tuple` and :class:`long` do not support
+    weak references even when subclassed.
+<span class="gu">@@ -197,24 +200,32 @@</span>
+    Return an :term:`iterator` that yields the weak references to the values.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+ .. method:: WeakValueDictionary.valuerefs()
+ 
+    Return a list of weak references to the values.
+ 
+    .. versionadded:: 2.5
+ 
+ 
+<span class="gi">+.. class:: WeakSet([elements])</span>
+<span class="gi">+</span>
+<span class="gi">+   Set class that keeps weak references to its elements.  An element will be</span>
+<span class="gi">+   discarded when no strong reference to it exists any more.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. data:: ReferenceType
+ 
+    The type object for weak references objects.
+ 
+ 
+ .. data:: ProxyType
+ 
+    The type object for proxies of objects which are not callable.
+ 
+ 
+ .. data:: CallableProxyType
+ 
+</pre></div>
+
+</body>
+</html>

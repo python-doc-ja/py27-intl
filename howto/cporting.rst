@@ -45,8 +45,9 @@ Python 3.0 の :func:`str` (C では ``PyString_*`` 関数) タイプは 2.x の
 :func:`bytes` です。Python 2.6 以降には互換性ヘッダ :file:`bytesobject.h`
 が用意されており、 ``PyBytes`` 系の名前を ``PyString`` 系にマップしています。
 3.0 との互換性を最大限確保するには、 :ctype:`PyUnicode` は文字データに、
-:ctype:`PyBytes` はバイナリデータにだけ使うべきです。ほかにも、3.0 の
-:ctype:`PyBytes` と :ctype:`PyUnicode` は 2.x の :ctype:`PyString` や
+:ctype:`PyBytes` はバイナリデータにだけ使うべきです。
+ほかにも、3.0 の
+:ctype:`PyBytes` と :ctype:`PyUnicode` は 2.x の :ctype:`PyString` と
 :ctype:`PyUnicode` とは違って交換不可能だということも重要です。以下の例では
 :ctype:`PyUnicode`, :ctype:`PyString`, :ctype:`PyBytes` に関する
 ベストプラクティスを見ることができます。 ::

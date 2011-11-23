@@ -1,0 +1,27 @@
+@@ -80,25 +80,25 @@
+ 
+ 2to3 can also refactor doctests.  To enable this mode, use the :option:`-d`
+ flag.  Note that *only* doctests will be refactored.  This also doesn't require
+ the module to be valid Python.  For example, doctest like examples in a reST
+ document could also be refactored with this option.
+ 
+ The :option:`-v` option enables output of more information on the translation
+ process.
+ 
+ Since some print statements can be parsed as function calls or statements, 2to3
+ cannot always read files containing the print function.  When 2to3 detects the
+ presence of the ``from __future__ import print_function`` compiler directive, it
+-modifies its internal grammar to interpert :func:`print` as a function.  This
++modifies its internal grammar to interpret :func:`print` as a function.  This
+ change can also be enabled manually with the :option:`-p` flag.  Use
+ :option:`-p` to run fixers on code that already has had its print statements
+ converted.
+ 
+ 
+ .. _2to3-fixers:
+ 
+ Fixers
+ ------
+ 
+ Each step of transforming code is encapsulated in a fixer.  The command ``2to3
+ -l`` lists them.  As :ref:`documented above <2to3-using>`, each can be turned on

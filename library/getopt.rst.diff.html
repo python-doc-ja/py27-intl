@@ -1,0 +1,194 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/getopt.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,20 +1,26 @@</span>
+ 
+<span class="gd">-:mod:`getopt` --- Parser for command line options</span>
+<span class="gd">-=================================================</span>
+<span class="gi">+:mod:`getopt` --- C-style parser for command line options</span>
+<span class="gi">+=========================================================</span>
+ 
+ .. module:: getopt
+    :synopsis: Portable parser for command line options; support both short and long option
+               names.
+ 
+<span class="gi">+.. note::</span>
+<span class="gi">+   The :mod:`getopt` module is a parser for command line options whose API is</span>
+<span class="gi">+   designed to be familiar to users of the C :cfunc:`getopt` function. Users who</span>
+<span class="gi">+   are unfamiliar with the C :cfunc:`getopt` function or who would like to write</span>
+<span class="gi">+   less code and get better help and error messages should consider using the</span>
+<span class="gi">+   :mod:`argparse` module instead.</span>
+ 
+ This module helps scripts to parse the command line arguments in ``sys.argv``.
+ It supports the same conventions as the Unix :cfunc:`getopt` function (including
+ the special meanings of arguments of the form &#39;``-``&#39; and &#39;``--``&#39;).  Long
+ options similar to those supported by GNU software may be used as well via an
+ optional third argument.
+ 
+ A more convenient, flexible, and powerful alternative is the
+ :mod:`optparse` module.
+ 
+ This module provides two functions and an
+ exception:
+<span class="gu">@@ -26,53 +32,53 @@</span>
+    be parsed, without the leading reference to the running program. Typically, this
+    means ``sys.argv[1:]``. *options* is the string of option letters that the
+    script wants to recognize, with options that require an argument followed by a
+    colon (``&#39;:&#39;``; i.e., the same format that Unix :cfunc:`getopt` uses).
+ 
+    .. note::
+ 
+       Unlike GNU :cfunc:`getopt`, after a non-option argument, all further
+       arguments are considered also non-options. This is similar to the way
+       non-GNU Unix systems work.
+ 
+    *long_options*, if specified, must be a list of strings with the names of the
+<span class="gd">-   long options which should be supported.  The leading ``&#39;-``\ ``-&#39;``</span>
+<span class="gi">+   long options which should be supported.  The leading ``&#39;--&#39;``</span>
+    characters should not be included in the option name.  Long options which
+    require an argument should be followed by an equal sign (``&#39;=&#39;``).  Optional
+    arguments are not supported.  To accept only long options, *options* should
+    be an empty string.  Long options on the command line can be recognized so
+    long as they provide a prefix of the option name that matches exactly one of
+    the accepted options.  For example, if *long_options* is ``[&#39;foo&#39;, &#39;frob&#39;]``,
+<span class="gd">-   the option :option:`--fo` will match as :option:`--foo`, but :option:`--f`</span>
+<span class="gi">+   the option ``--fo`` will match as ``--foo``, but ``--f``</span>
+    will not match uniquely, so :exc:`GetoptError` will be raised.
+ 
+    The return value consists of two elements: the first is a list of ``(option,
+    value)`` pairs; the second is the list of program arguments left after the
+    option list was stripped (this is a trailing slice of *args*).  Each
+    option-and-value pair returned has the option as its first element, prefixed
+    with a hyphen for short options (e.g., ``&#39;-x&#39;``) or two hyphens for long
+<span class="gd">-   options (e.g., ``&#39;-``\ ``-long-option&#39;``), and the option argument as its</span>
+<span class="gi">+   options (e.g., ``&#39;--long-option&#39;``), and the option argument as its</span>
+    second element, or an empty string if the option has no argument.  The
+    options occur in the list in the same order in which they were found, thus
+    allowing multiple occurrences.  Long and short options may be mixed.
+ 
+ 
+ .. function:: gnu_getopt(args, options[, long_options])
+ 
+    This function works like :func:`getopt`, except that GNU style scanning mode is
+    used by default. This means that option and non-option arguments may be
+    intermixed. The :func:`getopt` function stops processing options as soon as a
+    non-option argument is encountered.
+ 
+<span class="gd">-   If the first character of the option string is &#39;+&#39;, or if the environment</span>
+<span class="gi">+   If the first character of the option string is ``&#39;+&#39;``, or if the environment</span>
+    variable :envvar:`POSIXLY_CORRECT` is set, then option processing stops as
+    soon as a non-option argument is encountered.
+ 
+    .. versionadded:: 2.3
+ 
+ 
+ .. exception:: GetoptError
+ 
+    This is raised when an unrecognized option is found in the argument list or when
+    an option requiring an argument is given none. The argument to the exception is
+    a string indicating the cause of the error.  For long options, an argument given
+    to an option which does not require one will also cause this exception to be
+<span class="gu">@@ -133,18 +139,30 @@</span>
+            elif o in (&quot;-h&quot;, &quot;--help&quot;):
+                usage()
+                sys.exit()
+            elif o in (&quot;-o&quot;, &quot;--output&quot;):
+                output = a
+            else:
+                assert False, &quot;unhandled option&quot;
+        # ...
+ 
+    if __name__ == &quot;__main__&quot;:
+        main()
+ 
+<span class="gi">+Note that an equivalent command line interface could be produced with less code</span>
+<span class="gi">+and more informative help and error messages by using the :mod:`argparse` module::</span>
+<span class="gi">+</span>
+<span class="gi">+   import argparse</span>
+<span class="gi">+</span>
+<span class="gi">+   if __name__ == &#39;__main__&#39;:</span>
+<span class="gi">+       parser = argparse.ArgumentParser()</span>
+<span class="gi">+       parser.add_argument(&#39;-o&#39;, &#39;--output&#39;)</span>
+<span class="gi">+       parser.add_argument(&#39;-v&#39;, dest=&#39;verbose&#39;, action=&#39;store_true&#39;)</span>
+<span class="gi">+       args = parser.parse_args()</span>
+<span class="gi">+       # ... do something with args.output ...</span>
+<span class="gi">+       # ... do something with args.verbose ..</span>
+ 
+ .. seealso::
+ 
+<span class="gd">-   Module :mod:`optparse`</span>
+<span class="gd">-      More object-oriented command line option parsing.</span>
+<span class="gi">+   Module :mod:`argparse`</span>
+<span class="gi">+      Alternative command line option and argument parsing library.</span>
+ 
+</pre></div>
+
+</body>
+</html>

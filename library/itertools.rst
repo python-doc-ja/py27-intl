@@ -18,16 +18,16 @@
 Python に適した形に修正されています。
 
 このモジュールは、高速でメモリ効率に優れ、
-単独でも組み合わせても使用することのできるツールを標準化したものです。
+単独でも組合せても使用することのできるツールを標準化したものです。
 同時に、このツール群は "イテレータの代数" を構成していて、 pure Python
 で簡潔かつ効率的なツールを作れるようにしています。
 
 例えば、SML の作表ツール ``tabulate(f)`` は ``f(0), f(1), ...``
 のシーケンスを作成します。
-同じことを Python では :func:`imap` と :func:`count` を組み合わせて
+同じことを Python では :func:`imap` と :func:`count` を組合せて
 ``imap(f, count())`` という形で実現できます。
 
-これらのツールと、対をなすビルトインの組み合わせは、 :mod:`operator` モジュール\
+これらのツールと、対をなすビルトインの組合せは、 :mod:`operator` モジュール\
 にある高速な関数を使うことでうまく実現できます。
 例えば、乗算演算子を二つのベクタにmapすることで効率的なドット積ができます:
 ``sum(imap(operator.mul, vector1, vector2))``
@@ -37,7 +37,7 @@ Python に適した形に修正されています。
 ==================  =================       =================================================               =========================================
 イテレータ          引数                    結果                                                            例
 ==================  =================       =================================================               =========================================
-:func:`count`       start                   start, start+1, start+2, ...                                    ``count(10) --> 10 11 12 13 14 ...``
+:func:`count`       start, [step]           start, start+step, start+2*step, ...                            ``count(10) --> 10 11 12 13 14 ...``
 :func:`cycle`       p                       p0, p1, ... plast, p0, p1, ...                                  ``cycle('ABCD') --> A B C D A B C D ...``
 :func:`repeat`      elem [,n]               elem, elem, elem, ... 無限もしくは n 回                         ``repeat(10, 3) --> 10 10 10``
 ==================  =================       =================================================               =========================================
@@ -48,6 +48,7 @@ Python に適した形に修正されています。
 イテレータ              引数                            結果                                                  例
 ====================    ============================    ===================================================   =============================================================
 :func:`chain`           p, q, ...                       p0, p1, ... plast, q0, q1, ...                        ``chain('ABC', 'DEF') --> A B C D E F``
+:func:`compress`        data, selectors                 (d[0] if s[0]), (d[1] if s[1]), ...                   ``compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F``
 :func:`dropwhile`       pred, seq                       seq[n], seq[n+1], pred が偽の場所から始まる           ``dropwhile(lambda x: x<5, [1,4,6,4,1]) --> 6 4 1``
 :func:`groupby`         iterable[, keyfunc]             keyfunc(v) の値でグループ化したサブイテレータ
 :func:`ifilter`         pred, seq                       pred(elem) が真になるseqの要素                        ``ifilter(lambda x: x%2, range(10)) --> 1 3 5 7 9``
@@ -61,18 +62,19 @@ Python に適した形に修正されています。
 :func:`izip_longest`    p, q, ...                       (p[0], q[0]), (p[1], q[1]), ...                       ``izip_longest('ABCD', 'xy', fillvalue='-') --> Ax By C- D-``
 ====================    ============================    ===================================================   =============================================================
 
-**組み合わせジェネレータ:**
+**組合せジェネレータ:**
 
 ==============================================   ====================       =============================================================
 イテレータ                                       引数                       結果
 ==============================================   ====================       =============================================================
 :func:`product`                                  p, q, ... [repeat=1]       デカルト積、ネストしたforループと等価
-:func:`permutations`                             p[, r]                     長さrのタプル列, 全ての順列.
-:func:`combinations`                             p, r                       長さrのタプル列, 全ての組み合わせ.
-|
+:func:`permutations`                             p[, r]                     長さrのタプル列, 繰り返しを許さない順列
+:func:`combinations`                             p, r                       長さrのタプル列, 繰り返しを許さない組合せ
+:func:`combinations_with_replacement`            p, r                       長さrのタプル列, 繰り返しを許した組合せ
 ``product('ABCD', repeat=2)``                                               ``AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD``
 ``permutations('ABCD', 2)``                                                 ``AB AC AD BA BC BD CA CB CD DA DB DC``
 ``combinations('ABCD', 2)``                                                 ``AB AC AD BC BD CD``
+``combinations_with_replacement('ABCD', 2)``                                ``AA AB AC AD BB BC BD CC CD DD``
 ==============================================   ====================       =============================================================
 
 
@@ -119,12 +121,12 @@ Itertool関数
 
    入力 *iterable* の要素からなる長さ *r* の部分列を返します。
 
-   組み合わせ(combination)は辞書式順序で出力されます。
+   組合せ(combination)は辞書式順序で出力されます。
    したがって、入力 *iterable* がソートされていれば、
-   組み合わせのタプルは整列された形で生成されます。
+   組合せのタプルは整列された形で生成されます。
 
    各要素は場所に基づいて一意に取り扱われ、値には依りません。
-   入力された要素がバラバラならば、各組み合わせの中に重複した値は現れません。
+   入力された要素がバラバラならば、各組合せの中に重複した値は現れません。
 
    この関数は以下のコードと等価です： ::
 
@@ -164,20 +166,85 @@ Itertool関数
 
    .. versionadded:: 2.6
 
-.. function:: count([n])
+.. function:: combinations_with_replacement(iterable, r)
 
-   *n* で始まる、連続した整数を返すイテレータを作成します。
-   *n* を指定しなかった場合、デフォルト値はゼロです。
-   :func:`imap` で連続したデータを生成する場合や
-   :func:`izip` でシーケンスに番号を追加する場合などに引数として使用することができます。
-   この関数は以下のスクリプトと同等です： ::
+   入力 *iterable* から、それぞれの要素が複数回現れることを許して、
+   長さ *r* の要素の部分列を返します。
 
-      def count(n=0):
-          # count(10) --> 10 11 12 13 14 ...
+   組合せは、辞書的に並べられた順序で出力されます。
+   ですから、入力 *iterable* がソートされていれば、組合せのタプルは
+   ソートされた順に生成されます。
+
+   要素は、値ではなく位置に基づいて一意に扱われます。ですから、入力の要素が
+   一意であれば、生成された組合せも一意になります。
+
+   以下と等価です::
+
+        def combinations_with_replacement(iterable, r):
+            # combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC
+            pool = tuple(iterable)
+            n = len(pool)
+            if not n and r:
+                return
+            indices = [0] * r
+            yield tuple(pool[i] for i in indices)
+            while True:
+                for i in reversed(range(r)):
+                    if indices[i] != n - 1:
+                        break
+                else:
+                    return
+                indices[i:] = [indices[i] + 1] * (r - i)
+                yield tuple(pool[i] for i in indices)
+
+   :func:`combinations_with_replacement` のコードは、 :func:`product` の
+   部分列から、要素が (入力プールの位置に従って) ソートされた順に
+   なっていない項目をフィルタリングしたものとしても表せます::
+
+        def combinations_with_replacement(iterable, r):
+            pool = tuple(iterable)
+            n = len(pool)
+            for indices in product(range(n), repeat=r):
+                if sorted(indices) == list(indices):
+                    yield tuple(pool[i] for i in indices)
+
+   返される要素の数は、 ``n > 0`` のとき ``(n+r-1)! / r! / (n-1)!`` です。
+
+   .. versionadded:: 2.7
+
+.. function:: compress(data, selectors)
+
+   *data* の要素から、 *selectors* の対応する要素が ``True`` と評価される
+   ものだけを返す、フィルタリングしたイテレータを作ります。
+   *data* と *selectors* のどちらかが尽きたときに止まります。
+   以下と等価です::
+
+       def compress(data, selectors):
+           # compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F
+           return (d for d, s in izip(data, selectors) if s)
+
+   .. versionadded:: 2.7
+
+
+.. function:: count(start=0, step=1)
+
+   *n* で始まる、等間隔の値を返すイテレータを作成します。
+   :func:`imap` で連続したデータの生成によく使われます。
+   また、 :func:`izip` にシーケンス番号を追加するのにも使われます。
+   この関数は以下のスクリプトと同等です::
+
+      def count(start=0, step=1):
+          # count(2.5, 0.5) -> 2.5 3.0 3.5 ...
+          n = start
           while True:
               yield n
-              n += 1
+              n += step
 
+   浮動小数点数で数えるときは、 ``(start + step * i for i in count())``
+   のように、掛け算を使ったコードに置き換えたほうが正確にできることがあります。
+
+   .. versionchanged:: 2.7
+      *step* 引数を追加し、非整数の引数を取れるようになりました。
 
 .. function:: cycle(iterable)
 
@@ -596,42 +663,6 @@ Itertool関数
    .. versionadded:: 2.4
 
 
-.. _itertools-example:
-
-例
---
-
-以下に各ツールの一般的な使い方と、ツールの組み合わせの例を示します。
-
-.. doctest::
-
-   >>> # Show a dictionary sorted and grouped by value
-   >>> from operator import itemgetter
-   >>> d = dict(a=1, b=2, c=1, d=2, e=1, f=2, g=3)
-   >>> di = sorted(d.iteritems(), key=itemgetter(1))
-   >>> for k, g in groupby(di, key=itemgetter(1)):
-   ...     print k, map(itemgetter(0), g)
-   ...
-   1 ['a', 'c', 'e']
-   2 ['b', 'd', 'f']
-   3 ['g']
-
-   >>> # Find runs of consecutive numbers using groupby.  The key to the solution
-   >>> # is differencing with a range so that consecutive numbers all appear in
-   >>> # same group.
-   >>> data = [ 1,  4,5,6, 10, 15,16,17,18, 22, 25,26,27,28]
-   >>> for k, g in groupby(enumerate(data), lambda (i,x):i-x):
-   ...     print map(itemgetter(1), g)
-   ...
-   [1]
-   [4, 5, 6]
-   [10]
-   [15, 16, 17, 18]
-   [22]
-   [25, 26, 27, 28]
-
-
-
 .. _itertools-recipes:
 
 レシピ
@@ -658,12 +689,12 @@ iterable 全体を一度にメモリ上に置くよりも、
 
    def consume(iterator, n):
        "Advance the iterator n-steps ahead. If n is none, consume entirely."
-       # The technique uses objects that consume iterators at C speed.
+       # Use functions that consume iterators at C speed.
        if n is None:
            # feed the entire iterator into a zero-length deque
            collections.deque(iterator, maxlen=0)
        else:
-           # advance to the emtpy slice starting at position n
+           # advance to the empty slice starting at position n
            next(islice(iterator, n, n), None)
 
    def nth(iterable, n, default=None):
@@ -724,28 +755,6 @@ iterable 全体を一度にメモリ上に置くよりも、
            except StopIteration:
                pending -= 1
                nexts = cycle(islice(nexts, pending))
-
-   def compress(data, selectors):
-       "compress('ABCDEF', [1,0,1,0,1,1]) --> A C E F"
-       return (d for d, s in izip(data, selectors) if s)
-
-   def combinations_with_replacement(iterable, r):
-       "combinations_with_replacement('ABC', 2) --> AA AB AC BB BC CC"
-       # number items returned:  (n+r-1)! / r! / (n-1)!
-       pool = tuple(iterable)
-       n = len(pool)
-       if not n and r:
-           return
-       indices = [0] * r
-       yield tuple(pool[i] for i in indices)
-       while True:
-           for i in reversed(range(r)):
-               if indices[i] != n - 1:
-                   break
-           else:
-               return
-           indices[i:] = [indices[i] + 1] * (r - i)
-           yield tuple(pool[i] for i in indices)
 
    def powerset(iterable):
        "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"

@@ -324,7 +324,7 @@ cgi モジュールを使う
    単引用符は変換されないことに注意して下さい。
 
    クオートされる値が単引用符か二重引用符、またはその両方を含む可能性がある場合は、代りに
-   :mod:`xml.sax.saxutils` の :func:`quoteattr` 関数を検討してください。
+   :mod:`xml.sax.saxutils` の :func:`~xml.sax.saxutils.quoteattr` 関数を検討してください。
 
 
 .. _cgi-security:

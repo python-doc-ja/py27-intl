@@ -1,0 +1,79 @@
+@@ -9,43 +9,48 @@
+ 
+ .. note::
+    The :mod:`urllib2` module has been split across several modules in
+    Python 3.0 named :mod:`urllib.request` and :mod:`urllib.error`.
+    The :term:`2to3` tool will automatically adapt imports when converting
+    your sources to 3.0.
+ 
+ 
+ The :mod:`urllib2` module defines functions and classes which help in opening
+ URLs (mostly HTTP) in a complex world --- basic and digest authentication,
+ redirections, cookies and more.
+ 
++
+ The :mod:`urllib2` module defines the following functions:
+ 
+ 
+ .. function:: urlopen(url[, data][, timeout])
+ 
+    Open the URL *url*, which can be either a string or a :class:`Request` object.
+ 
++   .. warning::
++      HTTPS requests do not do any verification of the server's certificate.
++
+    *data* may be a string specifying additional data to send to the server, or
+    ``None`` if no such data is needed.  Currently HTTP requests are the only ones
+    that use *data*; the HTTP request will be a POST instead of a GET when the
+    *data* parameter is provided.  *data* should be a buffer in the standard
+    :mimetype:`application/x-www-form-urlencoded` format.  The
+    :func:`urllib.urlencode` function takes a mapping or sequence of 2-tuples and
+-   returns a string in this format.
++   returns a string in this format. urllib2 module sends HTTP/1.1 requests with
++   `Connection:close` header included.
+ 
+    The optional *timeout* parameter specifies a timeout in seconds for blocking
+    operations like the connection attempt (if not specified, the global default
+-   timeout setting will be used).  This actually only works for HTTP, HTTPS,
+-   FTP and FTPS connections.
++   timeout setting will be used).  This actually only works for HTTP, HTTPS and
++   FTP connections.
+ 
+    This function returns a file-like object with two additional methods:
+ 
+    * :meth:`geturl` --- return the URL of the resource retrieved, commonly used to
+      determine if a redirect was followed
+ 
+    * :meth:`info` --- return the meta-information of the page, such as headers,
+      in the form of an :class:`mimetools.Message` instance
+      (see `Quick Reference to HTTP Headers <http://www.cs.tut.fi/~jkorpela/http.html>`_)
+ 
+    Raises :exc:`URLError` on errors.
+ 
+@@ -419,25 +424,25 @@
+      post-process *protocol* responses.
+ 
+ 
+ .. method:: OpenerDirector.open(url[, data][, timeout])
+ 
+    Open the given *url* (which can be a request object or a string), optionally
+    passing the given *data*. Arguments, return values and exceptions raised are
+    the same as those of :func:`urlopen` (which simply calls the :meth:`open`
+    method on the currently installed global :class:`OpenerDirector`).  The
+    optional *timeout* parameter specifies a timeout in seconds for blocking
+    operations like the connection attempt (if not specified, the global default
+    timeout setting will be used). The timeout feature actually works only for
+-   HTTP, HTTPS, FTP and FTPS connections).
++   HTTP, HTTPS and FTP connections).
+ 
+    .. versionchanged:: 2.6
+       *timeout* was added.
+ 
+ 
+ .. method:: OpenerDirector.error(proto[, arg[, ...]])
+ 
+    Handle an error of the given protocol.  This will call the registered error
+    handlers for the given protocol with the given arguments (which are protocol
+    specific).  The HTTP protocol is a special case which uses the HTTP response
+    code to determine the specific error handler; refer to the :meth:`http_error_\*`
+    methods of the handler classes.

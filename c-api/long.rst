@@ -63,6 +63,22 @@
    .. versionadded:: 2.6
 
 
+.. c:function:: PyObject* PyLong_FromSsize_t(Py_ssize_t v)
+
+   *v* から新しい :c:type:`PyLongObject` オブジェクトを返します。
+   失敗したら *NULL* を返します。
+
+   .. versionadded:: 2.6
+
+
+.. c:function:: PyObject* PyLong_FromSize_t(size_t v)
+
+   *v* から新しい :c:type:`PyLongObject` オブジェクトを返します。
+   失敗したら *NULL* を返します。
+
+   .. versionadded:: 2.6
+
+
 .. c:function:: PyObject* PyLong_FromLongLong(PY_LONG_LONG v)
 
    C の :c:type:`long long` 型から新たな :c:type:`PyLongObject` オブジェクトを生成して返します。失敗のときには
@@ -83,7 +99,7 @@
 .. c:function:: PyObject* PyLong_FromString(char *str, char **pend, int base)
 
    *str* の文字列値に基づいて、新たな :c:type:`PyLongObject` を返します。このとき *base* を基数として文字列を解釈します。
-   *pend* が *NULL* でなければ、 ``*pend`` は *str* 中で数が表現されている部分以後の先頭の文字のアドレスを指しています。
+   *pend* が *NULL* でなければ、 *\*pend* は *str* 中で数が表現されている部分以後の先頭の文字のアドレスを指しています。
    *base* が ``0`` ならば、 *str* の先頭の文字列に基づいて基数を決定します: もし *str* が ``'0x'`` または ``'0X'``
    で始まっていれば、基数に 16 を使います; *str* が ``'0'`` で始まっていれば、基数に 8 を使います; その他の場合には基数に 10 を
    使います。 *base* が ``0`` でなければ、 *base* は ``2`` 以上 ``36`` 以下の数でなければなりません。先頭に空白がある場合は
@@ -123,6 +139,30 @@
    大きい場合、 :exc:`OverflowError` を送出し、 ``-1`` を返します。
 
 
+.. c:function:: long PyLong_AsLongAndOverflow(PyObject *pylong, int *overflow)
+
+   *pylong* の値を :c:type:`long` で返す。
+   *pylong* が :const:`LONG_MAX` より大きかったり :const:`LONG_MIN` より小さい場合、
+   *\*overflow* に ``1`` か ``-1`` を設定して ``-1`` を返します。
+   それ以外の場合は *\*overflow* に ``0`` を設定します。
+   なにか例外が発生した場合は(TypeError や MemoryErrorなど)、 *\*overflow* は
+   0 で戻り値が ``-1`` になります。
+
+   .. versionadded:: 2.7
+
+
+.. c:function:: PY_LONG_LONG PyLong_AsLongLongAndOverflow(PyObject *pylong, int *overflow)
+
+   *pylong* の値を :c:type:`long long` で返す。
+   *pylong* が :const:`PY_LLONG_MAX` より大きかったり :const:`PY_LLONG_MIN` より小さい場合、
+   *\*overflow* に ``1`` か ``-1`` を設定して ``-1`` を返します。
+   それ以外の場合は *\*overflow* に ``0`` を設定します。
+   なにか例外が発生した場合は(TypeError や MemoryErrorなど)、 *\*overflow* は
+   0 で戻り値が ``-1`` になります。
+
+   .. versionadded:: 2.7
+
+
 .. c:function:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
 
    .. index::
@@ -146,21 +186,41 @@
    :const:`ULONG_MAX` よりも大きい場合、 :exc:`OverflowError` を送出します。
 
 
+.. c:function:: Py_ssize_t PyLong_AsSsize_t(PyObject *pylong)
+
+   .. index::
+      single: PY_SSIZE_T_MAX
+
+   *pylong* の指す長整数値を、 C の :c:type:`Py_ssize_t` 型表現で返します。 *pylong* が
+   :const:`PY_SSIZE_T_MAX` より大きい場合、  :exc:`OverflowError` を発生させます。
+
+   .. versionadded:: 2.6
+
+
 .. c:function:: PY_LONG_LONG PyLong_AsLongLong(PyObject *pylong)
 
-   *pylong* の指す長整数値を、 C の :c:type:`long long` 型表現で返します。 *pylong* が :c:type:`long
-   long` で表せない場合、 :exc:`OverflowError` を送出します。
+   .. index::
+      single: OverflowError (built-in exception)
+
+   *pylong* の指す長整数値を、 C の :c:type:`long long` 型表現で返します。
+   *pylong* が :c:type:`long long` で表せない場合、 :exc:`OverflowError` を送出し ``-1`` を返します。
 
    .. versionadded:: 2.2
 
 
 .. c:function:: unsigned PY_LONG_LONG PyLong_AsUnsignedLongLong(PyObject *pylong)
 
+   .. index::
+      single: OverflowError (built-in exception)
+
    *pylong* の指す値を、 C の :c:type:`unsigned long long` 型表現で返します。 *pylong* が
-   :c:type:`unsigned long long` で表せない場合、正の値なら :exc:`OverflowError` を、負の値なら
-   :exc:`TypeError` を送出します。
+   :c:type:`unsigned long long` で表せない場合、 :exc:`OverflowError` を発生させて、
+   ``(unsigned long long)-1`` を返します。
 
    .. versionadded:: 2.2
+
+   .. versionchanged:: 2.7
+      負の *pylong* が :exc:`TypeError` ではなく :exc:`OverflowError` を発生させるようになりました。
 
 
 .. c:function:: unsigned long PyLong_AsUnsignedLongMask(PyObject *io)

@@ -1,0 +1,413 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/multiprocessing.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -19,25 +19,25 @@</span>
+ Windows.
+ 
+ .. warning::
+ 
+     Some of this package&#39;s functionality requires a functioning shared semaphore
+     implementation on the host operating system. Without one, the
+     :mod:`multiprocessing.synchronize` module will be disabled, and attempts to
+     import it will result in an :exc:`ImportError`. See
+     :issue:`3770` for additional information.
+ 
+ .. note::
+ 
+<span class="gd">-    Functionality within this package requires that the ``__main__`` method be</span>
+<span class="gi">+    Functionality within this package requires that the ``__main__`` module be</span>
+     importable by the children. This is covered in :ref:`multiprocessing-programming`
+     however it is worth pointing out here. This means that some examples, such
+     as the :class:`multiprocessing.Pool` examples will not work in the
+     interactive interpreter. For example::
+ 
+         &gt;&gt;&gt; from multiprocessing import Pool
+         &gt;&gt;&gt; p = Pool(5)
+         &gt;&gt;&gt; def f(x):
+         ...     return x*x
+         ...
+         &gt;&gt;&gt; p.map(f, [1,2,3])
+         Process PoolWorker-1:
+<span class="gu">@@ -207,25 +207,25 @@</span>
+ 
+           print num.value
+           print arr[:]
+ 
+    will print ::
+ 
+       3.1415927
+       [0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
+ 
+    The ``&#39;d&#39;`` and ``&#39;i&#39;`` arguments used when creating ``num`` and ``arr`` are
+    typecodes of the kind used by the :mod:`array` module: ``&#39;d&#39;`` indicates a
+    double precision float and ``&#39;i&#39;`` indicates a signed integer.  These shared
+<span class="gd">-   objects will be process and thread safe.</span>
+<span class="gi">+   objects will be process and thread-safe.</span>
+ 
+    For more flexibility in using shared memory one can use the
+    :mod:`multiprocessing.sharedctypes` module which supports the creation of
+    arbitrary ctypes objects allocated from shared memory.
+ 
+ **Server process**
+ 
+    A manager object returned by :func:`Manager` controls a server process which
+    holds Python objects and allows other processes to manipulate them using
+    proxies.
+ 
+    A manager returned by :func:`Manager` will support types :class:`list`,
+<span class="gu">@@ -367,25 +367,25 @@</span>
+       The process&#39;s daemon flag, a Boolean value.  This must be set before
+       :meth:`start` is called.
+ 
+       The initial value is inherited from the creating process.
+ 
+       When a process exits, it attempts to terminate all of its daemonic child
+       processes.
+ 
+       Note that a daemonic process is not allowed to create child processes.
+       Otherwise a daemonic process would leave its children orphaned if it gets
+       terminated when its parent process exits. Additionally, these are **not**
+       Unix daemons or services, they are normal processes that will be
+<span class="gd">-      terminated (and not joined) if non-dameonic processes have exited.</span>
+<span class="gi">+      terminated (and not joined) if non-daemonic processes have exited.</span>
+ 
+    In addition to the  :class:`Threading.Thread` API, :class:`Process` objects
+    also support the following attributes and methods:
+ 
+    .. attribute:: pid
+ 
+       Return the process ID.  Before the process is spawned, this will be
+       ``None``.
+ 
+    .. attribute:: exitcode
+ 
+       The child&#39;s exit code.  This will be ``None`` if the process has not yet
+<span class="gu">@@ -712,25 +712,26 @@</span>
+ strings.  They can be thought of as message oriented connected sockets.
+ 
+ Connection objects usually created using :func:`Pipe` -- see also
+ :ref:`multiprocessing-listeners-clients`.
+ 
+ .. class:: Connection
+ 
+    .. method:: send(obj)
+ 
+       Send an object to the other end of the connection which should be read
+       using :meth:`recv`.
+ 
+<span class="gd">-      The object must be picklable.</span>
+<span class="gi">+      The object must be picklable.  Very large pickles (approximately 32 MB+,</span>
+<span class="gi">+      though it depends on the OS) may raise a ValueError exception.</span>
+ 
+    .. method:: recv()
+ 
+       Return an object sent from the other end of the connection using
+       :meth:`send`.  Raises :exc:`EOFError` if there is nothing left to receive
+       and the other end was closed.
+ 
+    .. method:: fileno()
+ 
+       Returns the file descriptor or handle used by the connection.
+ 
+    .. method:: close()
+<span class="gu">@@ -744,25 +745,27 @@</span>
+       Return whether there is any data available to be read.
+ 
+       If *timeout* is not specified then it will return immediately.  If
+       *timeout* is a number then this specifies the maximum time in seconds to
+       block.  If *timeout* is ``None`` then an infinite timeout is used.
+ 
+    .. method:: send_bytes(buffer[, offset[, size]])
+ 
+       Send byte data from an object supporting the buffer interface as a
+       complete message.
+ 
+       If *offset* is given then data is read from that position in *buffer*.  If
+<span class="gd">-      *size* is given then that many bytes will be read from buffer.</span>
+<span class="gi">+      *size* is given then that many bytes will be read from buffer.  Very large</span>
+<span class="gi">+      buffers (approximately 32 MB+, though it depends on the OS) may raise a</span>
+<span class="gi">+      ValueError exception</span>
+ 
+    .. method:: recv_bytes([maxlength])
+ 
+       Return a complete message of byte data sent from the other end of the
+       connection as a string.  Raises :exc:`EOFError` if there is nothing left
+       to receive and the other end has closed.
+ 
+       If *maxlength* is specified and the message is longer than *maxlength*
+       then :exc:`IOError` is raised and the connection will no longer be
+       readable.
+ 
+    .. method:: recv_bytes_into(buffer[, offset])
+<span class="gu">@@ -840,36 +843,42 @@</span>
+    ``sem_getvalue()`` is not implemented on that platform).
+ 
+ .. class:: Condition([lock])
+ 
+    A condition variable: a clone of :class:`threading.Condition`.
+ 
+    If *lock* is specified then it should be a :class:`Lock` or :class:`RLock`
+    object from :mod:`multiprocessing`.
+ 
+ .. class:: Event()
+ 
+    A clone of :class:`threading.Event`.
+<span class="gi">+   This method returns the state of the internal semaphore on exit, so it</span>
+<span class="gi">+   will always return ``True`` except if a timeout is given and the operation</span>
+<span class="gi">+   times out.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionchanged:: 2.7</span>
+<span class="gi">+      Previously, the method always returned ``None``.</span>
+ 
+ .. class:: Lock()
+ 
+    A non-recursive lock object: a clone of :class:`threading.Lock`.
+ 
+ .. class:: RLock()
+ 
+    A recursive lock object: a clone of :class:`threading.RLock`.
+ 
+ .. class:: Semaphore([value])
+ 
+<span class="gd">-   A bounded semaphore object: a clone of :class:`threading.Semaphore`.</span>
+<span class="gi">+   A semaphore object: a clone of :class:`threading.Semaphore`.</span>
+ 
+ .. note::
+ 
+    The :meth:`acquire` method of :class:`BoundedSemaphore`, :class:`Lock`,
+    :class:`RLock` and :class:`Semaphore` has a timeout parameter not supported
+    by the equivalents in :mod:`threading`.  The signature is
+    ``acquire(block=True, timeout=None)`` with keyword parameters being
+    acceptable.  If *block* is ``True`` and *timeout* is not ``None`` then it
+    specifies a timeout in seconds.  If *block* is ``False`` then *timeout* is
+    ignored.
+ 
+    On Mac OS X, ``sem_timedwait`` is unsupported, so calling ``acquire()`` with
+<span class="gu">@@ -1125,27 +1134,28 @@</span>
+ 
+    Once created one should call :meth:`start` or ``get_server().serve_forever()`` to ensure
+    that the manager object refers to a started manager process.
+ 
+    *address* is the address on which the manager process listens for new
+    connections.  If *address* is ``None`` then an arbitrary one is chosen.
+ 
+    *authkey* is the authentication key which will be used to check the validity
+    of incoming connections to the server process.  If *authkey* is ``None`` then
+    ``current_process().authkey``.  Otherwise *authkey* is used and it
+    must be a string.
+ 
+<span class="gd">-   .. method:: start()</span>
+<span class="gd">-</span>
+<span class="gd">-      Start a subprocess to start the manager.</span>
+<span class="gi">+   .. method:: start([initializer[, initargs]])</span>
+<span class="gi">+</span>
+<span class="gi">+      Start a subprocess to start the manager.  If *initializer* is not ``None``</span>
+<span class="gi">+      then the subprocess will call ``initializer(*initargs)`` when it starts.</span>
+ 
+    .. method:: get_server()
+ 
+       Returns a :class:`Server` object which represents the actual server under
+       the control of the Manager. The :class:`Server` object supports the
+       :meth:`serve_forever` method::
+ 
+       &gt;&gt;&gt; from multiprocessing.managers import BaseManager
+       &gt;&gt;&gt; manager = BaseManager(address=(&#39;&#39;, 50000), authkey=&#39;abc&#39;)
+       &gt;&gt;&gt; server = manager.get_server()
+       &gt;&gt;&gt; server.serve_forever()
+ 
+<span class="gu">@@ -1267,24 +1277,42 @@</span>
+ 
+    .. method:: dict()
+                dict(mapping)
+                dict(sequence)
+ 
+       Create a shared ``dict`` object and return a proxy for it.
+ 
+    .. method:: list()
+                list(sequence)
+ 
+       Create a shared ``list`` object and return a proxy for it.
+ 
+<span class="gi">+   .. note::</span>
+<span class="gi">+</span>
+<span class="gi">+      Modifications to mutable values or items in dict and list proxies will not</span>
+<span class="gi">+      be propagated through the manager, because the proxy has no way of knowing</span>
+<span class="gi">+      when its values or items are modified.  To modify such an item, you can</span>
+<span class="gi">+      re-assign the modified object to the container proxy::</span>
+<span class="gi">+</span>
+<span class="gi">+         # create a list proxy and append a mutable object (a dictionary)</span>
+<span class="gi">+         lproxy = manager.list()</span>
+<span class="gi">+         lproxy.append({})</span>
+<span class="gi">+         # now mutate the dictionary</span>
+<span class="gi">+         d = lproxy[0]</span>
+<span class="gi">+         d[&#39;a&#39;] = 1</span>
+<span class="gi">+         d[&#39;b&#39;] = 2</span>
+<span class="gi">+         # at this point, the changes to d are not yet synced, but by</span>
+<span class="gi">+         # reassigning the dictionary, the proxy is notified of the change</span>
+<span class="gi">+         lproxy[0] = d</span>
+<span class="gi">+</span>
+ 
+ Namespace objects
+ &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+ 
+ A namespace object has no public methods, but does have writable attributes.
+ Its representation shows the values of its attributes.
+ 
+ However, when using a proxy for a namespace object, an attribute beginning with
+ ``&#39;_&#39;`` will be an attribute of the proxy and not an attribute of the referent:
+ 
+ .. doctest::
+ 
+<span class="gu">@@ -1513,35 +1541,51 @@</span>
+ any proxies referring to it.
+ 
+ 
+ Process Pools
+ ~~~~~~~~~~~~~
+ 
+ .. module:: multiprocessing.pool
+    :synopsis: Create pools of processes.
+ 
+ One can create a pool of processes which will carry out tasks submitted to it
+ with the :class:`Pool` class.
+ 
+<span class="gd">-.. class:: multiprocessing.Pool([processes[, initializer[, initargs]]])</span>
+<span class="gi">+.. class:: multiprocessing.Pool([processes[, initializer[, initargs[, maxtasksperchild]]]])</span>
+ 
+    A process pool object which controls a pool of worker processes to which jobs
+    can be submitted.  It supports asynchronous results with timeouts and
+    callbacks and has a parallel map implementation.
+ 
+    *processes* is the number of worker processes to use.  If *processes* is
+    ``None`` then the number returned by :func:`cpu_count` is used.  If
+    *initializer* is not ``None`` then each worker process will call
+    ``initializer(*initargs)`` when it starts.
+ 
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+      *maxtasksperchild* is the number of tasks a worker process can complete</span>
+<span class="gi">+      before it will exit and be replaced with a fresh worker process, to enable</span>
+<span class="gi">+      unused resources to be freed. The default *maxtasksperchild* is None, which</span>
+<span class="gi">+      means worker processes will live as long as the pool.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. note::</span>
+<span class="gi">+</span>
+<span class="gi">+      Worker processes within a :class:`Pool` typically live for the complete</span>
+<span class="gi">+      duration of the Pool&#39;s work queue. A frequent pattern found in other</span>
+<span class="gi">+      systems (such as Apache, mod_wsgi, etc) to free resources held by</span>
+<span class="gi">+      workers is to allow a worker within a pool to complete only a set</span>
+<span class="gi">+      amount of work before being exiting, being cleaned up and a new</span>
+<span class="gi">+      process spawned to replace the old one. The *maxtasksperchild*</span>
+<span class="gi">+      argument to the :class:`Pool` exposes this ability to the end user.</span>
+<span class="gi">+</span>
+    .. method:: apply(func[, args[, kwds]])
+ 
+       Equivalent of the :func:`apply` built-in function.  It blocks till the
+       result is ready.  Given this blocks, :meth:`apply_async` is better suited
+       for performing work in parallel. Additionally, the passed
+       in function is only executed in one of the workers of the pool.
+ 
+    .. method:: apply_async(func[, args[, kwds[, callback]]])
+ 
+       A variant of the :meth:`apply` method which returns a result object.
+ 
+       If *callback* is specified then it should be a callable which accepts a
+<span class="gu">@@ -2189,26 +2233,26 @@</span>
+ 
+ 
+ Using :class:`Pool`:
+ 
+ .. literalinclude:: ../includes/mp_pool.py
+ 
+ 
+ Synchronization types like locks, conditions and queues:
+ 
+ .. literalinclude:: ../includes/mp_synchronize.py
+ 
+ 
+<span class="gd">-An showing how to use queues to feed tasks to a collection of worker process and</span>
+<span class="gd">-collect the results:</span>
+<span class="gi">+An example showing how to use queues to feed tasks to a collection of worker</span>
+<span class="gi">+process and collect the results:</span>
+ 
+ .. literalinclude:: ../includes/mp_workers.py
+ 
+ 
+ An example of how a pool of worker processes can each run a
+ :class:`SimpleHTTPServer.HttpServer` instance while sharing a single listening
+ socket.
+ 
+ .. literalinclude:: ../includes/mp_webserver.py
+ 
+ 
+ Some simple benchmarks comparing :mod:`multiprocessing` with :mod:`threading`:
+</pre></div>
+
+</body>
+</html>

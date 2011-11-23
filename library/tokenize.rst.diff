@@ -1,0 +1,30 @@
+@@ -4,24 +4,29 @@
+ 
+ .. module:: tokenize
+    :synopsis: Lexical scanner for Python source code.
+ .. moduleauthor:: Ka Ping Yee
+ .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+ 
+ 
+ The :mod:`tokenize` module provides a lexical scanner for Python source code,
+ implemented in Python.  The scanner in this module returns comments as tokens as
+ well, making it useful for implementing "pretty-printers," including colorizers
+ for on-screen displays.
+ 
++.. seealso::
++
++   Latest version of the `tokenize module Python source code
++   <http://svn.python.org/view/python/branches/release27-maint/Lib/tokenize.py?view=markup>`_
++
+ The primary entry point is a :term:`generator`:
+ 
+ .. function:: generate_tokens(readline)
+ 
+    The :func:`generate_tokens` generator requires one argument, *readline*,
+    which must be a callable object which provides the same interface as the
+    :meth:`readline` method of built-in file objects (see section
+    :ref:`bltin-file-objects`).  Each call to the function should return one line
+    of input as a string.
+ 
+    The generator produces 5-tuples with these members: the token type; the token
+    string; a 2-tuple ``(srow, scol)`` of ints specifying the row and column

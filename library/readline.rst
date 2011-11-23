@@ -200,7 +200,8 @@
 以下のソースコードは通常、対話セッションの中で :envvar:`PYTHONSTARTUP` ファイルから読み込まれ自動的に実行されることになります。 ::
 
    import os
-   histfile = os.path.join(os.environ["HOME"], ".pyhist")
+   import readline
+   histfile = os.path.join(os.path.expanduser("~"), ".pyhist")
    try:
        readline.read_history_file(histfile)
    except IOError:

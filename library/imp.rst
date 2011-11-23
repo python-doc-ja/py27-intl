@@ -198,8 +198,8 @@
    .. platforms without threads, this function does nothing.
 
    実行中のスレッドでインタープリタのインポートロックを取得します。
-   スレッドセーフなインポートフックでは、インポート時にこのロックを取得します。
-
+   インポートフックは、スレッドセーフのためにこのロックを取得しなければ
+   なりません。
 
    .. Once a thread has acquired the import lock, the same thread may acquire it
    .. again without blocking; the thread must release it once for each time it has

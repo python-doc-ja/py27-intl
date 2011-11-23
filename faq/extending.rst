@@ -1,131 +1,132 @@
-=======================
-Extending/Embedding FAQ
-=======================
+==================
+拡張と埋め込み FAQ
+==================
 
 .. contents::
 
 .. highlight:: c
 
 
-Can I create my own functions in C?
------------------------------------
+C で独自の関数を作ることはできますか？
+--------------------------------------
 
-Yes, you can create built-in modules containing functions, variables, exceptions
-and even new types in C.  This is explained in the document
-:ref:`extending-index`.
+はい。関数、変数、例外、そして新しいタイプまで含んだビルトインモジュールを
+C で作れます。これはドキュメント :ref:`extending-index` で説明されています。
 
-Most intermediate or advanced Python books will also cover this topic.
+ほとんどの中級から上級の Python 本もこの話題を扱っています。
 
 
-Can I create my own functions in C++?
--------------------------------------
+C++ で独自の関数を作ることはできますか？
+----------------------------------------
 
-Yes, using the C compatibility features found in C++.  Place ``extern "C" {
-... }`` around the Python include files and put ``extern "C"`` before each
-function that is going to be called by the Python interpreter.  Global or static
-C++ objects with constructors are probably not a good idea.
+はい。C++ 内にある C 互換機能を使ってできます。\ ``extern "C" { ... }`` で
+Python のインクルードファイルを囲み、\ ``extern "C"`` を
+Python インタプリタから呼ぶ各関数の前に置いてください。
+グローバルや静的な C++ オブジェクトの構造体を持つものは良くないでしょう。
 
 
 .. _c-wrapper-software:
 
-Writing C is hard; are there any alternatives?
+C を書くのは大変です。他の方法はありませんか？
 ----------------------------------------------
 
-There are a number of alternatives to writing your own C extensions, depending
-on what you're trying to do.
+独自の C 拡張を書くための別のやり方は、目的によっていくつかあります。
 
 .. XXX make sure these all work; mention Cython
 
-If you need more speed, `Psyco <http://psyco.sourceforge.net/>`_ generates x86
-assembly code from Python bytecode.  You can use Psyco to compile the most
-time-critical functions in your code, and gain a significant improvement with
-very little effort, as long as you're running on a machine with an
-x86-compatible processor.
+速度が必要なら、\ `Psyco <http://psyco.sourceforge.net/>`_ は
+Python バイトコードから x86 アセンブリコードを生成します。
+Psyco でコードの最も時間制約が厳しい関数群をコンパイルすれば、
+x-86 互換のプロセッサ上で動かす限り、わずかな手間で著しい改善ができます。
 
-`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_ is a compiler
-that accepts a slightly modified form of Python and generates the corresponding
-C code.  Pyrex makes it possible to write an extension without having to learn
-Python's C API.
+`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_ は、
+わずかに変形した Python を受け取り、対応する C コードを生成します。
+Cython や Pyrex を使えば Python の C API を習得することなく拡張を書けます。
 
-If you need to interface to some C or C++ library for which no Python extension
-currently exists, you can try wrapping the library's data types and functions
-with a tool such as `SWIG <http://www.swig.org>`_.  `SIP
-<http://www.riverbankcomputing.co.uk/software/sip/>`__, `CXX
-<http://cxx.sourceforge.net/>`_ `Boost
-<http://www.boost.org/libs/python/doc/index.html>`_, or `Weave
-<http://www.scipy.org/Weave>`_ are also alternatives for wrapping
-C++ libraries.
+今のところ Python 拡張が存在しないような C や C++ ライブラリへの
+インタフェースが必要なら、\ `SWIG <http://www.swig.org>`_ のようなツールで、
+そのライブラリのデータ型のラッピングを図れます。
+`SIP <http://www.riverbankcomputing.co.uk/software/sip/>`_\ 、
+`CXX <http://cxx.sourceforge.net/>`_\ 、
+`Boost <http://www.boost.org/libs/python/doc/index.html>`_\ 、
+`Weave <http://www.scipy.org/Weave>`_
+でも C++ ライブラリをラッピングできます。
 
 
-How can I execute arbitrary Python statements from C?
------------------------------------------------------
+C から任意の Python 文を実行するにはどうしますか？
+--------------------------------------------------
 
-The highest-level function to do this is :cfunc:`PyRun_SimpleString` which takes
-a single string argument to be executed in the context of the module
-``__main__`` and returns 0 for success and -1 when an exception occurred
-(including ``SyntaxError``).  If you want more control, use
-:cfunc:`PyRun_String`; see the source for :cfunc:`PyRun_SimpleString` in
-``Python/pythonrun.c``.
-
-
-How can I evaluate an arbitrary Python expression from C?
----------------------------------------------------------
-
-Call the function :cfunc:`PyRun_String` from the previous question with the
-start symbol :cdata:`Py_eval_input`; it parses an expression, evaluates it and
-returns its value.
+これを行う最高水準の関数は :c:func:`PyRun_SimpleString` で、
+一つの文字列引数を取り、モジュール ``__main__`` のコンテキストでそれを実行し、
+成功なら 0、例外 (``SyntaxError`` を含む) が発生したら -1 を返します。
+更に制御したければ、\ :c:func:`PyRun_String`  を使ってください。
+ソースは ``Python/pythonrun.c`` の ':c:func:`PyRun_SimpleString` を
+参照してください。
 
 
-How do I extract C values from a Python object?
------------------------------------------------
+C から任意の Python 式を評価するにはどうしますか？
+--------------------------------------------------
 
-That depends on the object's type.  If it's a tuple, :cfunc:`PyTuple_Size`
-returns its length and :cfunc:`PyTuple_GetItem` returns the item at a specified
-index.  Lists have similar functions, :cfunc:`PyListSize` and
-:cfunc:`PyList_GetItem`.
-
-For strings, :cfunc:`PyString_Size` returns its length and
-:cfunc:`PyString_AsString` a pointer to its value.  Note that Python strings may
-contain null bytes so C's :cfunc:`strlen` should not be used.
-
-To test the type of an object, first make sure it isn't *NULL*, and then use
-:cfunc:`PyString_Check`, :cfunc:`PyTuple_Check`, :cfunc:`PyList_Check`, etc.
-
-There is also a high-level API to Python objects which is provided by the
-so-called 'abstract' interface -- read ``Include/abstract.h`` for further
-details.  It allows interfacing with any kind of Python sequence using calls
-like :cfunc:`PySequence_Length`, :cfunc:`PySequence_GetItem`, etc.)  as well as
-many other useful protocols.
+先の質問の :c:func:`PyRun_String` を、スタートシンボル
+:c:data:`Py_eval_input` を渡して呼び出してください。これは式を解析し、
+評価してその値を返します。
 
 
-How do I use Py_BuildValue() to create a tuple of arbitrary length?
--------------------------------------------------------------------
+Python オブジェクトから C の値を展開するにはどうしますか？
+----------------------------------------------------------
 
-You can't.  Use ``t = PyTuple_New(n)`` instead, and fill it with objects using
-``PyTuple_SetItem(t, i, o)`` -- note that this "eats" a reference count of
-``o``, so you have to :cfunc:`Py_INCREF` it.  Lists have similar functions
-``PyList_New(n)`` and ``PyList_SetItem(l, i, o)``.  Note that you *must* set all
-the tuple items to some value before you pass the tuple to Python code --
-``PyTuple_New(n)`` initializes them to NULL, which isn't a valid Python value.
+オブジェクトの型に依ります。タプルなら、\ :c:func:`PyTuple_Size` が長さを返し、
+:c:func:`PyTuple_GetItem` が指定されたインデックスの要素を返します。
+リストにも同様の関数 :c:func:`PyList_Size` と :c:func:`PyList_GetItem` があります。
+
+文字列なら、\ :c:func:`PyString_Size` が長さを、
+:c:func:`PyString_AsString` がその値への
+ポインタを返します。なお、Python の文字列には null バイトが含まれている
+可能性があるので、C の :c:func:`strlen` は使うべきではありません。
+
+オブジェクトの型を確かめるには、まず *NULL*  ではないことを確かめてから、
+:c:func:`PyString_Check`\ 、\ :c:func:`PyTuple_Check`\ 、\ :c:func:`PyList_Check` などを
+使ってください。
+
+Python オブジェクトへの高レベルな API には、
+いわゆる 'abstract' インタフェースが提供するものもあります。
+機能の詳細は ``Include/abstract.h`` を読んでください。これで、
+:c:func:`PySequence_Length` や :c:func:`PySequence_GetItem` などの
+呼び出しであらゆるタイプの Python シーケンスのインタフェースができますし、
+その他多くの役立つプロトコルもできます。
 
 
-How do I call an object's method from C?
-----------------------------------------
+Py_BuildValue() で任意長のタプルを作るにはどうしますか？
+--------------------------------------------------------
 
-The :cfunc:`PyObject_CallMethod` function can be used to call an arbitrary
-method of an object.  The parameters are the object, the name of the method to
-call, a format string like that used with :cfunc:`Py_BuildValue`, and the
-argument values::
+できません。代わりに ``t = PyTuple_New(n)`` を使い、
+``PyTuple_SetItem(t, i, o)`` でオブジェクトを埋めてください --
+なお、これは ``o`` のリファレンスカウントを"食う"ので、
+:c:func:`Py_INCREF` しなければなりません。リストにも同様の
+関数 ``PyList_New(n)`` と ``PyList_SetItem(l, i, o)`` があります。
+なお、タプルは Python コードに渡される前に *必ず* すべての値が
+設定されていなければなリません -- ``PyTuple_New(n)`` は各要素を
+初期化して NULL にしますが、これは Python の適切な値ではありません。
+
+
+C からオブジェクトのメソッドを呼び出すにはどうしますか？
+--------------------------------------------------------
+
+:c:func:`PyObject_CallMethod` 関数でオブジェクトの任意のメソッドを呼び出せます。
+パラメタは、オブジェクト、呼び出すメソッドの名前、
+:c:func:`Py_BuildValue` で
+使われるようなフォーマット文字列、そして引数です::
 
    PyObject *
    PyObject_CallMethod(PyObject *object, char *method_name,
                        char *arg_format, ...);
 
-This works for any object that has methods -- whether built-in or user-defined.
-You are responsible for eventually :cfunc:`Py_DECREF`\ 'ing the return value.
+これはメソッドを持ついかなるオブジェクトにも有効で、組み込みかユーザ定義かは
+関係ありません。返り値に対して :c:func:`Py_DECREF` する必要が
+あることもあります。
 
-To call, e.g., a file object's "seek" method with arguments 10, 0 (assuming the
-file object pointer is "f")::
+例えば、あるファイルオブジェクトの "seek" メソッドを
+10, 0 を引数として呼ぶとき (ファイルオブジェクトのポインタを "f" とします)::
 
    res = PyObject_CallMethod(f, "seek", "(ii)", 10, 0);
    if (res == NULL) {
@@ -135,23 +136,23 @@ file object pointer is "f")::
            Py_DECREF(res);
    }
 
-Note that since :cfunc:`PyObject_CallObject` *always* wants a tuple for the
-argument list, to call a function without arguments, pass "()" for the format,
-and to call a function with one argument, surround the argument in parentheses,
-e.g. "(i)".
+なお、\ :c:func:`PyObject_CallObject` の引数リストには *常に* タプルが必要です。
+関数を引数なしで呼び出すには、フォーマットに "()" を渡し、
+関数を一つの引数で呼び出すには、関数を括弧でくくって例えば
+"(i)" としてください。
 
 
-How do I catch the output from PyErr_Print() (or anything that prints to stdout/stderr)?
-----------------------------------------------------------------------------------------
+PyErr_Print() (その他 stdout/stderr に印字するもの) からの出力を受け取るにはどうしますか？
+----------------------------------------------------------------------------------------------
 
-In Python code, define an object that supports the ``write()`` method.  Assign
-this object to :data:`sys.stdout` and :data:`sys.stderr`.  Call print_error, or
-just allow the standard traceback mechanism to work. Then, the output will go
-wherever your ``write()`` method sends it.
+Python コード内で、\ ``write()`` メソッドをサポートするオブジェクトを
+定義してください。そのオブジェクトを :data:`sys.stdout` と :data:`sys.stderr`
+に代入してください。print_error を呼び出すか、単に標準のトレースバック機構を
+作動させてください。そうすれば、出力は ``write()`` が送る任意の所に行きます。
 
-The easiest way to do this is to use the StringIO class in the standard library.
+最も簡単な方法は、標準ライブラリの StringIO クラスを使うことです。
 
-Sample code and use for catching stdout:
+サンプルコードと出力の受け取り例:
 
    >>> class StdoutCatcher:
    ...     def __init__(self):
@@ -168,59 +169,60 @@ Sample code and use for catching stdout:
    hello world!
 
 
-How do I access a module written in Python from C?
---------------------------------------------------
+C から Python で書かれたモジュールにアクセスするにはどうしますか？
+------------------------------------------------------------------
 
-You can get a pointer to the module object as follows::
+以下のようにモジュールオブジェクトへのポインタを得られます::
 
    module = PyImport_ImportModule("<modulename>");
 
-If the module hasn't been imported yet (i.e. it is not yet present in
-:data:`sys.modules`), this initializes the module; otherwise it simply returns
-the value of ``sys.modules["<modulename>"]``.  Note that it doesn't enter the
-module into any namespace -- it only ensures it has been initialized and is
-stored in :data:`sys.modules`.
+そのモジュールがまだインポートされていない (つまり、まだ
+:data:`sys.modules` に現れていない) なら、これはモジュールを初期化します。
+そうでなければ、単純に ``sys.modules["<modulename>"]``  の値を返します。
+なお、これはモジュールをいかなる名前空間にも代入しません。
+これはモジュールが初期化されて ':data:`sys.modules` に保管されていることを
+保証するだけです。
 
-You can then access the module's attributes (i.e. any name defined in the
-module) as follows::
+これで、モジュールの属性 (つまり、モジュールで定義された任意の名前) に
+以下のようにアクセスできるようになります::
 
    attr = PyObject_GetAttrString(module, "<attrname>");
 
-Calling :cfunc:`PyObject_SetAttrString` to assign to variables in the module
-also works.
+:c:func:`PyObject_SetAttrString` を呼んでモジュールの変数に
+代入することもできます。
 
 
-How do I interface to C++ objects from Python?
-----------------------------------------------
+Python から C++ へインタフェースするにはどうしますか？
+------------------------------------------------------
 
-Depending on your requirements, there are many approaches.  To do this manually,
-begin by reading :ref:`the "Extending and Embedding" document
-<extending-index>`.  Realize that for the Python run-time system, there isn't a
-whole lot of difference between C and C++ -- so the strategy of building a new
-Python type around a C structure (pointer) type will also work for C++ objects.
+やりたいことに応じて、いろいろな方法があります。手動でやるなら、
+:ref:`"拡張と埋め込み" ドキュメント <extending-index>` を
+読むことから始めてください。なお、Python ランタイムシステムにとっては、
+C と C++ はあまり変わりません。だから、C 構造体 (ポインタ )型に基づいて
+新しい Python の型を構築する方針は C++ オブジェクトに対しても有効です。
 
-For C++ libraries, see :ref:`c-wrapper-software`.
-
-
-I added a module using the Setup file and the make fails; why?
---------------------------------------------------------------
-
-Setup must end in a newline, if there is no newline there, the build process
-fails.  (Fixing this requires some ugly shell script hackery, and this bug is so
-minor that it doesn't seem worth the effort.)
+C++ ライブラリに関しては、\ :ref:`c-wrapper-software` を参照してください。
 
 
-How do I debug an extension?
-----------------------------
+セットアップファイルでモジュールを追加しようとしたらメイクに失敗しました。なぜですか？
+--------------------------------------------------------------------------------------
 
-When using GDB with dynamically loaded extensions, you can't set a breakpoint in
-your extension until your extension is loaded.
+セットアップは改行で終わらなければならなくて、改行がないと、
+ビルド工程は失敗します。(これを直すには、ある種の醜いシェルスクリプトハックが
+必要ですが、このバグは小さいものですから努力に見合う価値はないでしょう。)
 
-In your ``.gdbinit`` file (or interactively), add the command::
+
+拡張をデバッグするにはどうしますか？
+------------------------------------
+
+動的にロードされた拡張に GDB を使うとき、拡張がロードされるまで
+ブレークポイントを設定してはいけません。
+
+``.gdbinit`` ファイルに(または対話的に)、このコマンドを加えてください::
 
    br _PyImport_LoadDynamicModule
 
-Then, when you run GDB::
+そして、GDB を起動するときに::
 
    $ gdb /local/bin/python
    gdb) run myscript.py
@@ -229,56 +231,57 @@ Then, when you run GDB::
    gdb) br myfunction.c:50
    gdb) continue
 
-I want to compile a Python module on my Linux system, but some files are missing. Why?
---------------------------------------------------------------------------------------
+Linux システムで Python モジュールをコンパイルしたいのですが、見つからないファイルがあります。なぜですか？
+----------------------------------------------------------------------------------------------------------
 
-Most packaged versions of Python don't include the
-:file:`/usr/lib/python2.{x}/config/` directory, which contains various files
-required for compiling Python extensions.
+Python の多くのパッケージバージョンには、Python 拡張をコンパイルするのに必要な
+様々なファイルを含む :file:`/usr/lib/python2.{x}/config/` ディレクトリが
+含まれていません。
 
-For Red Hat, install the python-devel RPM to get the necessary files.
+Red Hat では、Python RPM をインストールして必要なファイルを得てください。
 
-For Debian, run ``apt-get install python-dev``.
+Debian では、\ ``apt-get install python-dev`` を実行してください。
 
 
-What does "SystemError: _PyImport_FixupExtension: module yourmodule not loaded" mean?
--------------------------------------------------------------------------------------
+"SystemError: _PyImport_FixupExtension: module yourmodule not loaded" とはどういう意味ですか？
+----------------------------------------------------------------------------------------------
 
-This means that you have created an extension module named "yourmodule", but
-your module init function does not initialize with that name.
+これは、"yourmodule" という名前の拡張モジュールが生成されたけれど、
+モジュールの init 関数がその名前で初期化しないという意味です。
 
-Every module init function will have a line similar to::
+全てのモジュールの init 関数には次のような行があるでしょう::
 
    module = Py_InitModule("yourmodule", yourmodule_functions);
 
-If the string passed to this function is not the same name as your extension
-module, the :exc:`SystemError` exception will be raised.
+この関数に渡された文字列が拡張モジュールと同じ名前でない場合、
+:exc:`SystemError` 例外が発生します。
 
 
-How do I tell "incomplete input" from "invalid input"?
-------------------------------------------------------
+"不完全 (incomplete) な入力" を "不適切 (invalid) な入力" から区別するにはどうしますか？
+----------------------------------------------------------------------------------------
 
-Sometimes you want to emulate the Python interactive interpreter's behavior,
-where it gives you a continuation prompt when the input is incomplete (e.g. you
-typed the start of an "if" statement or you didn't close your parentheses or
-triple string quotes), but it gives you a syntax error message immediately when
-the input is invalid.
+Python インタラクティブインタプリタでは、入力が不完全なとき (例えば、
+"if" 文の始まりをタイプした時や、カッコや三重文字列引用符を閉じていない時など)
+には継続プロンプトを与えられますが、入力が不適切であるときには
+即座に構文エラーメッセージが与えられます。このようなふるまいを
+模倣したいことがあります。
 
-In Python you can use the :mod:`codeop` module, which approximates the parser's
-behavior sufficiently.  IDLE uses this, for example.
+Python では構文解析器のふるまいに十分に近い :mod:`codeop` モジュールが
+使えます。例えば IDLE がこれを使っています。
 
-The easiest way to do it in C is to call :cfunc:`PyRun_InteractiveLoop` (perhaps
-in a separate thread) and let the Python interpreter handle the input for
-you. You can also set the :cfunc:`PyOS_ReadlineFunctionPointer` to point at your
-custom input function. See ``Modules/readline.c`` and ``Parser/myreadline.c``
-for more hints.
+これを C で行う最も簡単な方法は、\ :c:func:`PyRun_InteractiveLoop` を
+(必要ならば別のスレッドで) 呼び出し、Python インタプリタにあなたの
+入力を扱わせることです。独自の入力関数を指定するのに
+:c:func:`PyOS_ReadlineFunctionPointer` を設定することもできます。
+詳しいヒントは、\ ``Modules/readline.c`` や ``Parser/myreadline.c`` を
+参照してください。
 
-However sometimes you have to run the embedded Python interpreter in the same
-thread as your rest application and you can't allow the
-:cfunc:`PyRun_InteractiveLoop` to stop while waiting for user input.  The one
-solution then is to call :cfunc:`PyParser_ParseString` and test for ``e.error``
-equal to ``E_EOF``, which means the input is incomplete).  Here's a sample code
-fragment, untested, inspired by code from Alex Farber::
+しかし、組み込みの Python インタプリタを他のアプリケーションと
+同じスレッドで実行することが必要で、\ :c:func:`PyRun_InteractiveLoop` で
+ユーザの入力を待っている間止められないこともあります。
+このような場合の解決策の一つは、\ :c:func:`PyParser_ParseString` を呼んで
+``e.error`` と ``E_EOF`` が等しいこと、つまり入力が不完全であることを
+確かめることです。これは、Alex Farber のコードを参考にした、コード片の例です::
 
    #include <Python.h>
    #include <node.h>
@@ -306,14 +309,16 @@ fragment, untested, inspired by code from Alex Farber::
      return 1;
    }
 
-Another solution is trying to compile the received string with
-:cfunc:`Py_CompileString`. If it compiles without errors, try to execute the
-returned code object by calling :cfunc:`PyEval_EvalCode`. Otherwise save the
-input for later. If the compilation fails, find out if it's an error or just
-more input is required - by extracting the message string from the exception
-tuple and comparing it to the string "unexpected EOF while parsing".  Here is a
-complete example using the GNU readline library (you may want to ignore
-**SIGINT** while calling readline())::
+別の解決策は、受け取られた文字列を :c:func:`Py_CompileString` で
+コンパイルすることを試みることです。エラー無くコンパイルされたら、
+返されたコードオブジェクトを :c:func:`PyEval_EvalCode` を呼んで
+実行することを試みてください。そうでなければ、
+入力を後のために保存してください。コンパイルが失敗したなら、
+それがエラーなのか入力の続きが求められているだけなのか調べてください。
+そのためには、例外タプルからメッセージ文字列を展開し、それを文字列
+"unexpected EOF while parsing" と比較します。ここに GNU readline library を
+使った完全な例があります (readline() を読んでいる間は **SIGINT** を
+無視したいかもしれません)::
 
    #include <stdio.h>
    #include <readline.h>
@@ -426,45 +431,46 @@ complete example using the GNU readline library (you may want to ignore
    }
 
 
-How do I find undefined g++ symbols __builtin_new or __pure_virtual?
---------------------------------------------------------------------
+未定義の g++ シンボル __builtin_new や __pure_virtual を見つけるにはどうしますか？
+----------------------------------------------------------------------------------
 
-To dynamically load g++ extension modules, you must recompile Python, relink it
-using g++ (change LINKCC in the Python Modules Makefile), and link your
-extension module using g++ (e.g., ``g++ -shared -o mymodule.so mymodule.o``).
+g++ モジュールを動的にロードするには、Python を再コンパイルし、
+それを g++ で再リンク (Python Modules Makefile 内の LINKCC を変更) し、
+拡張を g++ でリンク (例えば ``g++ -shared -o mymodule.so mymodule.o``)
+しなければなりません。
 
 
-Can I create an object class with some methods implemented in C and others in Python (e.g. through inheritance)?
-----------------------------------------------------------------------------------------------------------------
+メソッドのいくつかは C で、その他は Python で実装されたオブジェクトクラスを (継承などで) 作ることはできますか？
+---------------------------------------------------------------------------------------------------------------
 
-In Python 2.2, you can inherit from built-in classes such as :class:`int`,
-:class:`list`, :class:`dict`, etc.
+Python 2.2 では、\ :class:`int`\ 、\ :class:`list`\ 、\ :class:`dict` などの
+ビルトインクラスから継承できます。
 
 The Boost Python Library (BPL, http://www.boost.org/libs/python/doc/index.html)
-provides a way of doing this from C++ (i.e. you can inherit from an extension
-class written in C++ using the BPL).
+を使えば、これを C++ からできます。
+(すなわち、BPL を使って C++ で書かれた拡張クラスを継承できます).
 
 
-When importing module X, why do I get "undefined symbol: PyUnicodeUCS2*"?
--------------------------------------------------------------------------
+モジュール X をインポートした時に "undefined symbol: PyUnicodeUCS2*" と言われるのはなぜですか？
+-----------------------------------------------------------------------------------------------
 
-You are using a version of Python that uses a 4-byte representation for Unicode
-characters, but some C extension module you are importing was compiled using a
-Python that uses a 2-byte representation for Unicode characters (the default).
+あなたは Unicode 文字に 4 バイト表現を使う Python のバージョンを
+使っていますが、インポートされた C 拡張モジュールに Unicode 文字に
+(デフォルトの) 2 バイト表現を使う Python でコンパイルされたものがあります。
 
-If instead the name of the undefined symbol starts with ``PyUnicodeUCS4``, the
-problem is the reverse: Python was built using 2-byte Unicode characters, and
-the extension module was compiled using a Python with 4-byte Unicode characters.
+未定義のシンボルの名前が ``PyUnicodeUCS4`` で始まるのなら、
+逆の問題です: Python は 2 バイト Unicode 文字でビルトされていて、
+拡張モジュールは 4 バイト Unicode 文字の Python でコンパイルされています。
 
-This can easily occur when using pre-built extension packages.  RedHat Linux
-7.x, in particular, provided a "python2" binary that is compiled with 4-byte
-Unicode.  This only causes the link failure if the extension uses any of the
-``PyUnicode_*()`` functions.  It is also a problem if an extension uses any of
-the Unicode-related format specifiers for :cfunc:`Py_BuildValue` (or similar) or
-parameter specifications for :cfunc:`PyArg_ParseTuple`.
+これはあらかじめビルドされた拡張パッケージを使っているときに起こりやすいです。
+とりわけ、RedHat Linux 7.x は 4 バイトユニコードでコンパイルされた
+"python2" バイナリを提供しました。これは拡張が ``PyUnicode_*()`` 関数の
+どれかを使っているとリンクの失敗を起こすだけです。拡張が Unicode に関連する
+:c:func:`Py_BuildValue` (等)へのフォーマット指定や :c:func:`PyArg_ParseTuple`
+へのパラメタ指定を何かしら含んでいても問題になります。
 
-You can check the size of the Unicode character a Python interpreter is using by
-checking the value of sys.maxunicode:
+Python インタプリタが使っている Unicode 文字のサイズは、
+sys.maxunicode の値を調べることで確かめられます:
 
    >>> import sys
    >>> if sys.maxunicode > 65535:
@@ -472,8 +478,7 @@ checking the value of sys.maxunicode:
    ... else:
    ...     print 'UCS2 build'
 
-The only way to solve this problem is to use extension modules compiled with a
-Python binary built using the same size for Unicode characters.
-
+この問題を解決する唯一の方法は、Unicode 文字に同じサイズを使ってビルドされた
+Python バイナリでコンパイルされた拡張モジュールを使うことです。
 
 

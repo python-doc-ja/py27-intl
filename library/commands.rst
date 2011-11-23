@@ -5,6 +5,12 @@
 .. module:: commands
    :platform: Unix
    :synopsis: 外部コマンドを実行するためのユーティリティです。
+   :deprecated:
+
+.. deprecated:: 2.6
+   :mod:`commands` モジュールは Python 3.0 で削除されました。
+   代わりに :mod:`subprocess` モジュールを使ってください。
+
 .. sectionauthor:: Sue Williams <sbw@provis.com>
 
 

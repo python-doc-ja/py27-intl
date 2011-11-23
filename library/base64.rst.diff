@@ -1,0 +1,14 @@
+@@ -1,13 +1,12 @@
+-
+ :mod:`base64` --- RFC 3548: Base16, Base32, Base64 Data Encodings
+ =================================================================
+ 
+ .. module:: base64
+    :synopsis: RFC 3548: Base16, Base32, Base64 Data Encodings
+ 
+ 
+ .. index::
+    pair: base64; encoding
+    single: MIME; base64 encoding
+ 
+ This module provides data encoding and decoding as specified in :rfc:`3548`.

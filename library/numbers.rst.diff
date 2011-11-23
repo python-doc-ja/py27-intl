@@ -1,0 +1,27 @@
+@@ -38,25 +38,25 @@
+       Abstract. Retrieves the imaginary component of this number.
+ 
+    .. method:: conjugate()
+ 
+       Abstract. Returns the complex conjugate. For example, ``(1+3j).conjugate()
+       == (1-3j)``.
+ 
+ .. class:: Real
+ 
+    To :class:`Complex`, :class:`Real` adds the operations that work on real
+    numbers.
+ 
+-   In short, those are: a conversion to :class:`float`, :func:`trunc`,
++   In short, those are: a conversion to :class:`float`, :func:`math.trunc`,
+    :func:`round`, :func:`math.floor`, :func:`math.ceil`, :func:`divmod`, ``//``,
+    ``%``, ``<``, ``<=``, ``>``, and ``>=``.
+ 
+    Real also provides defaults for :func:`complex`, :attr:`~Complex.real`,
+    :attr:`~Complex.imag`, and :meth:`~Complex.conjugate`.
+ 
+ 
+ .. class:: Rational
+ 
+    Subtypes :class:`Real` and adds
+    :attr:`~Rational.numerator` and :attr:`~Rational.denominator` properties, which
+    should be in lowest terms. With these, it provides a default for

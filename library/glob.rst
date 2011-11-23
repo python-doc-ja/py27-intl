@@ -14,6 +14,10 @@
 せん。(チルダ展開とシェル変数展開を利用したければ、 :func:`os.path.expanduser`
 と :func:`os.path.expandvars` を使ってください。)
 
+.. seealso::
+
+   最新バージョンの `glob モジュールの Python ソースコード
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/glob.py?view=markup>`_
 
 .. function:: glob(pathname)
 

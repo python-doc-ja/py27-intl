@@ -34,9 +34,9 @@
   必然的に最も重要な指針があります -- コンピュータは人々が学校で習った\
   算術と同じように動作する算術を提供しなければならない」 -- 10進数演算仕様より
 
-* 10進数を正確に表現できます。 :const:`1.1` のような数は、2 進数の\
+* 10進数を正確に表現できます。 :const:`1.1` や:const:`2.2` のような数は、2 進数の\
   浮動小数点型では正しく表現できません。エンドユーザは普通、 2
-  進数における :const:`1.1` の近似値が :const:`1.1000000000000001`
+  進数における ``1.1 + 2.2`` の近似値が :const:`3.3000000000000003`
   だからといって、そのように表示してほしいとは考えないものです。
 
 * 値の正確さは算術にも及びます。10進の浮動小数点による計算では、
@@ -59,6 +59,7 @@
   モジュールでは計算精度をユーザが変更できます(デフォルトでは 28
   桁です)。この桁数はほとんどの問題解決に十分な大きさです::
 
+     >>> from decimal import *
      >>> getcontext().prec = 6
      >>> Decimal(1) / Decimal(7)
      Decimal('0.142857')
@@ -141,10 +142,9 @@ Quick-start Tutorial
 
    >>> getcontext().prec = 7       # 新たな精度を設定
 
-:class:`Decimal` のインスタンスは、整数、文字列またはタプルから生成\
-できます。 :class:`Decimal` を :class:`float` から生成したければ、まず\
-文字列型に変換せねばなりません。そうすることで、変換方法の詳細を (representation
-error も含めて) 明示的に残せます。 :class:`Decimal` は
+:class:`Decimal` のインスタンスは、整数、文字列、浮動小数点数、またはタプルから構成
+できます。整数や浮動小数点数からの構成は、整数や浮動小数点数の値を正確に
+変換します。 :class:`Decimal` は
 "数値ではない (Not a Number)" を表す :const:`NaN` や正負の
 :const:`Infinity` (無限大)、 :const:`-0` といった特殊な値も表現できます。
 
@@ -153,6 +153,8 @@ error も含めて) 明示的に残せます。 :class:`Decimal` は
    Decimal('10')
    >>> Decimal('3.14')
    Decimal('3.14')
+   >>> Decimal(3.14)
+   Decimal('3.140000000000000124344978758017532527446746826171875')
    >>> Decimal((0, (3, 1, 4), -2))
    Decimal('3.14')
    >>> Decimal(str(2.0 ** 0.5))
@@ -201,7 +203,7 @@ error も含めて) 明示的に残せます。 :class:`Decimal` は
    >>> str(a)
    '1.34'
    >>> float(a)
-   1.3400000000000001
+   1.34
    >>> round(a, 1)     # round() は値をまず二進の浮動小数点数に変換します
    1.3
    >>> int(a)
@@ -324,7 +326,7 @@ Decimal オブジェクト
 
    *value* に基づいて新たな :class:`Decimal` オブジェクトを構築します。
 
-   *value* は整数、文字列、タプル、および他の :class:`Decimal`
+   *value* は整数、文字列、タプル、 :class:`float` および他の :class:`Decimal`
    オブジェクトにできます。
    *value* を指定しない場合、 ``Decimal("0")`` を返します。
    *value* が文字列の場合、先頭と末尾の空白を取り除いた後には以下の
@@ -352,6 +354,12 @@ Decimal オブジェクト
    例えば、 ``Decimal((0, (1, 4, 1, 4), -3))`` は
    ``Decimal('1.414')`` を返します。
 
+   *value* を :class:`float` にする場合、2進浮動小数点数値が損失なく
+   正確に等価な Decimal に変換されます。この変換はしばしば 53 桁以上の精度を
+   要求します。例えば、 ``Decimal(float('1.1'))`` は
+   ``Decimal('1.100000000000000088817841970012523233890533447265625')``
+   に変換されます。
+
    *context* に指定した精度 (precision) は、オブジェクトが記憶する\
    桁数には影響しません。桁数は *value* に指定した桁数だけから\
    決定されます。例えば、演算コンテキストに指定された精度が 3 桁しかなくても、\
@@ -370,12 +378,31 @@ Decimal オブジェクト
       文字列から Decimal インスタンスを生成する際に先頭と末尾の空白が許\
       されることになりました。
 
+   .. versionchanged:: 2.7
+      このコンストラクタの引数は、 :class:`float` インスタンスにもできるようになりました。
+
    10進浮動小数点オブジェクトは、 :class:`float` や :class:`int` のような\
    他の組み込み型と多くの点で似ています。通常の数学演算や特殊メソッドを\
    適用できます。また、 :class:`Decimal` オブジェクトは\
    コピーでき、pickle 化でき、print で出力でき、辞書のキーにでき、
    集合の要素にでき、比較、保存、他の型 (:class:`float`
    や :class:`long`) への型強制を行えます。
+
+   Decimal オブジェクトは一般に、算術演算で浮動小数点数と組み合わせることが
+   できません。例えば、 :class:`Decimal` に :class:`float` を足そうとすると、
+   :exc:`TypeError` が送出されます。ただしこの規則には例外があります。
+   :class:`float` インスタンス ``x`` と :class:`Decimal` インスタンス ``y``
+   を比較する比較演算子です。この例外がなかったとすると、 :class:`Decimal` と
+   :class:`float` インスタンスの比較は、リファレンスマニュアルの
+   :ref:`expressions` 節で記述されている、異なる型のオブジェクトを
+   比較するときの一般の規則に従うことになり、紛らわしい結果につながります。
+
+   .. versionchanged:: 2.7
+      :class:`float` インスタンス ``x`` と :class:`Decimal` インスタンス ``y``
+      の比較は、 ``x`` と ``y`` の値に基づく結果を返すようになりました。
+      以前のバージョンでは、どんな :class:`float` インスタンス ``x`` と
+      どんな :class:`Decimal` インスタンス ``y`` に対しても、
+      ``x < y`` は同じ(任意の) 結果を返していました。
 
    こうした標準的な数値型の特性の他に、10進浮動小数点オブジェクトには\
    様々な特殊メソッドがあります:
@@ -496,6 +523,31 @@ Decimal オブジェクト
       Decimal('2.561702493119680037517373933E+139')
 
       .. versionadded:: 2.6
+
+   .. method:: from_float(f)
+
+      浮動小数点数を正確に小数に変換するクラスメソッドです。
+
+      なお、 `Decimal.from_float(0.1)` は `Decimal('0.1')` と同じではありません。
+      0.1 は二進浮動小数点数で正確に表せないので、その値は表現できる最も近い
+      値、 `0x1.999999999999ap-4` として記憶されます。浮動小数点数での等価な値は
+      `0.1000000000000000055511151231257827021181583404541015625` です。
+
+      .. note:: Python 2.7 以降では、 :class:`Decimal` インスタンスは
+         :class:`float` から直接構成することも出来ます。
+
+      .. doctest::
+
+          >>> Decimal.from_float(0.1)
+          Decimal('0.1000000000000000055511151231257827021181583404541015625')
+          >>> Decimal.from_float(float('nan'))
+          Decimal('NaN')
+          >>> Decimal.from_float(float('inf'))
+          Decimal('Infinity')
+          >>> Decimal.from_float(float('-inf'))
+          Decimal('-Infinity')
+
+      .. versionadded:: 2.7
 
    .. method:: fma(other, third[, context])
 
@@ -987,8 +1039,12 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
    コンテキストで算術演算を直接行うためのメソッドを数多く定義しています。
    加えて、 :class:`Decimal` の各メソッドについて(:meth:`adjusted` および
    :meth:`as_tuple` メソッドを例外として)対応する :class:`Context`
-   のメソッドが存在します。たとえば、  ``C.exp(x)`` は ``x.exp(context=C)``
-   と等価です。
+   のメソッドが存在します。たとえば、 :class:`Context` インスタンス  ``C``
+   と :class:`Decimal` インスタンス ``x`` に対して、 ``C.exp(x)`` は
+   ``x.exp(context=C)`` と等価です。
+   それぞれの :class:`Context` メソッドは、Decimal インスタンスが受け付けられる
+   ところならどこでも、Python の整数 (:class:`int` または:class:`long` の
+   インスタンス) を受け付けます。
 
    .. method:: clear_flags()
 
@@ -1028,6 +1084,26 @@ Python 2.5 から、 :keyword:`with` 文と :func:`localcontext` 関数を使っ
 
       このメソッドは IBM 仕様の to-number 演算を実装したものです。
       引数が文字列の場合、前や後ろに余計な空白を付けることは許されません。
+
+   .. method:: create_decimal_from_float(f)
+
+      浮動小数点数 *f* から新しい Decimal インスタンスを生成しますが、
+      *self* をコンテキストとして丸めます。 :meth:`Decimal.from_float`
+      クラスメソッドとは違い、変換にコンテキストの精度、丸めメソッド、
+      フラグ、そしてトラップが適用されます。
+
+      .. doctest::
+
+         >>> context = Context(prec=5, rounding=ROUND_DOWN)
+         >>> context.create_decimal_from_float(math.pi)
+         Decimal('3.1415')
+         >>> context = Context(prec=5, traps=[Inexact])
+         >>> context.create_decimal_from_float(math.pi)
+         Traceback (most recent call last):
+             ...
+         Inexact: None
+
+      .. versionadded:: 2.7
 
    .. method:: Etiny()
 
@@ -1869,49 +1945,26 @@ A. 値によっては、指数表記だけが有効桁数を表せる表記法�
 値は変わりませんが元々の2桁という有効数字が反映されません。
 
 もしアプリケーションが有効数字の追跡を等閑視するならば、
-指数部や末尾のゼロを取り除き、有効数字を忘れ、しかし値を変えずにおくことは容易です :
+指数部や末尾のゼロを取り除き、有効数字を忘れ、しかし値を変えずにおくことは容易です::
 
-    >>> def remove_exponent(d):
-    ...     return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
+    def remove_exponent(d):
+        '''Remove exponent and trailing zeros.
 
-    >>> remove_exponent(Decimal('5E+3'))
-    Decimal('5000')
+        >>> remove_exponent(Decimal('5E+3'))
+        Decimal('5000')
+
+        '''
+        return d.quantize(Decimal(1)) if d == d.to_integral() else d.normalize()
 
 Q. 普通の float を :class:`Decimal` に変換できますか?
 
 A. はい。どんな 2 進浮動小数点数も Decimal として正確に表現できます。
-正確な変換は直感的に考えたよりも多い桁になることもありますので、
-:const:`Inexact` をトラップしたとすればそれはもっと精度を上げる\
-必要性があることを示しています。 :
-
-.. testcode::
-
-    def float_to_decimal(f):
-        "浮動小数点数を情報の欠落無く Decimal に変換します"
-
-        n, d = f.as_integer_ratio()
-        numerator, denominator = Decimal(n), Decimal(d)
-        ctx = Context(prec=60)
-        result = ctx.divide(numerator, denominator)
-        while ctx.flags[Inexact]:
-            ctx.flags[Inexact] = False
-            ctx.prec *= 2
-            result = ctx.divide(numerator, denominator)
-        return result
+ただし、正確な変換は直感的に考えたよりも多い桁になることがあります。
 
 .. doctest::
 
-    >>> float_to_decimal(math.pi)
+    >>> Decimal(math.pi)
     Decimal('3.141592653589793115997963468544185161590576171875')
-
-Q. 上の :func:`float_to_decimal` はなぜモジュールに入っていないのですか?
-
-A. 2進と10進の浮動小数点数を混ぜるようにアドバイスするべきかどうか疑問が\
-あります。また、これを使うときには2進浮動小数点数の表示の問題を避けるように\
-注意しなければなりません。 :
-
-   >>> float_to_decimal(1.1)
-   Decimal('1.100000000000000088817841970012523233890533447265625')
 
 Q. 複雑な計算の中で、精度不足や丸めの異常で間違った結果になっていない\
 ことをどうやって保証すれば良いでしょうか?

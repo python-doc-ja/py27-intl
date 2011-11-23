@@ -1,164 +1,172 @@
 :tocdepth: 2
 
-==========================
-Graphic User Interface FAQ
-==========================
+====================================
+グラフィックユーザインタフェース FAQ
+====================================
 
 .. contents::
 
-General GUI Questions
-=====================
+Python のプラットフォーム非依存の GUI ツールキットには何がありますか？
+======================================================================
 
-What platform-independent GUI toolkits exist for Python?
---------------------------------------------------------
-
-Depending on what platform(s) you are aiming at, there are several.
+目的のプラットフォーム (群) が何かによって、いくつかあります。
+この中にはまだ Python 3 に移植されていないものもあります。
+少なくとも `Tkinter`_ と `Qt`_ は Python 3 互換であることを確認しています。
 
 .. XXX check links
 
 Tkinter
-'''''''
+-------
 
-Standard builds of Python include an object-oriented interface to the Tcl/Tk
-widget set, called Tkinter.  This is probably the easiest to install and use.
-For more info about Tk, including pointers to the source, see the Tcl/Tk home
-page at http://www.tcl.tk.  Tcl/Tk is fully portable to the MacOS, Windows, and
-Unix platforms.
+Python の標準的なビルドには、tkinter という
+Tcl/Tk ウィジェットセットのオブジェクト指向インタフェースが含まれています。
+これは最も簡単にインストールして使えるでしょう。ソースへのポインタなど、
+Tk に関する詳しい情報は、http://www.tcl.tk の Tcl/Tk ホームページを
+参照してください。Tcl/Tk は、MacOS、Windows、Unix プラットフォームに
+完全にポータブルです。
 
 wxWidgets
-'''''''''
+---------
 
-wxWidgets is a GUI class library written in C++ that's a portable
-interface to various platform-specific libraries, and that has a
-Python interface called `wxPython <http://www.wxpython.org>`__.
+wxWidgets (http://www.wxwidgets.org) は、C++ で書かれたフリーでポータブルな
+GUI クラスライブラリで、各プラットフォームのネイティブなルックアンドフィールを
+提供します。現在、Windows、MacOS X、GTK、X11 はすべて安定した対象です。
+言語バインディングは Python、Perl、Ruby などの言語で利用できます。
 
-wxWidgets preserves the look and feel of the
-underlying graphics toolkit, and has a large set of widgets and
-collection of GDI classes.  See `the wxWidgets page
-<http://www.wxwidgets.org>`_ for more details.
+wxPython (http://www.wxpython.org) が wxWidgets の Python バインディングです。
+これはたいてい公式の wxWidgets より少し遅れますが、他の言語バインディングでは
+利用できない機能も pure Python 拡張経由でいくつか提供しています。
+wxPython ユーザと開発者の活発なコミュニティがあります。
 
-wxWidgets supports Windows and MacOS; on Unix variants,
-it supports both GTk+ and Motif toolkits.
+wxWidgets も wxPython も、フリーなオープンソースソフトウェアであり、寛大な
+ライセンスでフリーウェアやシェアウェアと同様に商業利用も許可されています。
 
 Qt
-'''
+---
 
-There are bindings available for the Qt toolkit (`PyQt
-<http://www.riverbankcomputing.co.uk/software/pyqt/>`_) and for KDE (`PyKDE <http://www.riverbankcomputing.co.uk/software/pykde/intro>`__).  If
-you're writing open source software, you don't need to pay for PyQt, but if you
-want to write proprietary applications, you must buy a PyQt license from
-`Riverbank Computing <http://www.riverbankcomputing.co.uk>`_ and (up to Qt 4.4;
-Qt 4.5 upwards is licensed under the LGPL license) a Qt license from `Trolltech
-<http://www.trolltech.com>`_.
+Qt ツールキットのバインディング
+(`PyQt <http://www.riverbankcomputing.co.uk/software/pyqt/>`_)
+や KDE へのバインディング
+(`PyKDE <http://www.riverbankcomputing.co.uk/software/pykde/intro>`_)
+があります。オープンソースソフトウェアを書くには、PyQt に支払いをする
+必要はありませんが、
+プロプライエタリなアプリケーションを書くためには `Riverbank Computing
+<http://www.riverbankcomputing.co.uk/software/pyqt/license>`_ から
+PyQt ライセンスを、(Qt 4.4 までは) `Trolltech <http://www.trolltech.com>` _
+から Qt ライセンスを購入しなければなりません。
+Qt 4.5 以降は LGPL ライセンスが適用されています。
 
 Gtk+
-''''
+----
 
-PyGtk bindings for the `Gtk+ toolkit <http://www.gtk.org>`_ have been
-implemented by James Henstridge; see <http://www.pygtk.org>.
+`Gtk+ toolkit <http://www.gtk.org>`_ 用の PyGtk バインディングが
+James Henstridge によって実装されています。<http://www.pygtk.org> を
+参照してください。
 
 FLTK
-''''
+----
 
-Python bindings for `the FLTK toolkit <http://www.fltk.org>`_, a simple yet
-powerful and mature cross-platform windowing system, are available from `the
-PyFLTK project <http://pyfltk.sourceforge.net>`_.
+簡潔かつ強力で成熟したクロスプラットフォームウィンドウシステム
+`the FLTK toolkit <http://www.fltk.org>`_ の Python バインディングが
+`the PyFLTK project <http://pyfltk.sourceforge.net/>`_ から利用できます。
 
 
 FOX
-'''
+---
 
-A wrapper for `the FOX toolkit <http://www.fox-toolkit.org/>`_ called `FXpy
-<http://fxpy.sourceforge.net/>`_ is available.  FOX supports both Unix variants
-and Windows.
+`the FOX toolkit <http://www.fox-toolkit.org/>`_ のラッパ `FXpy
+<http://fxpy.sourceforge.net/>`_ が利用できます。FOX は Unix バリアントと
+Windows の両方をサポートします。
 
 
 OpenGL
-''''''
+------
 
-For OpenGL bindings, see `PyOpenGL <http://pyopengl.sourceforge.net>`_.
-
-
-What platform-specific GUI toolkits exist for Python?
------------------------------------------------------
-
-`The Mac port <http://python.org/download/mac>`_ by Jack Jansen has a rich and
-ever-growing set of modules that support the native Mac toolbox calls.  The port
-supports MacOS X's Carbon libraries.
-
-By installing the `PyObjc Objective-C bridge
-<http://pyobjc.sourceforge.net>`_, Python programs can use MacOS X's
-Cocoa libraries. See the documentation that comes with the Mac port.
-
-:ref:`Pythonwin <windows-faq>` by Mark Hammond includes an interface to the
-Microsoft Foundation Classes and a Python programming environment
-that's written mostly in Python using the MFC classes.
+OpenGL のバインディングは、\ `PyOpenGL <http://pyopengl.sourceforge.net>`_
+を参照してください。
 
 
-Tkinter questions
-=================
+Python のプラットフォーム固有の GUI ツールキットには何がありますか？
+====================================================================
 
-How do I freeze Tkinter applications?
--------------------------------------
+Jack Jansen による `The Mac port <http://python.org/download/mac>`_ には、
+ネイティブ Mac ツールボックスコールをサポートする豊富で発展中のモジュール群が
+あります。このポートは MacOS X の Carbon ライブラリをサポートしています。
 
-Freeze is a tool to create stand-alone applications.  When freezing Tkinter
-applications, the applications will not be truly stand-alone, as the application
-will still need the Tcl and Tk libraries.
+`PyObjc Objective-C bridge <http://pyobjc.sourceforge.net>`_ を
+インストールすることによって、Python プログラマは MacOS X の
+Cocoa ライブラリを使うことができます。Mac port に付属するドキュメントを
+参照してください。
 
-One solution is to ship the application with the Tcl and Tk libraries, and point
-to them at run-time using the :envvar:`TCL_LIBRARY` and :envvar:`TK_LIBRARY`
-environment variables.
-
-To get truly stand-alone applications, the Tcl scripts that form the library
-have to be integrated into the application as well. One tool supporting that is
-SAM (stand-alone modules), which is part of the Tix distribution
-(http://tix.sourceforge.net/).
-
-Build Tix with SAM enabled, perform the appropriate call to
-:cfunc:`Tclsam_init`, etc. inside Python's
-:file:`Modules/tkappinit.c`, and link with libtclsam and libtksam (you
-might include the Tix libraries as well).
+Mark Hammond による :ref:`Pythonwin <windows-faq>` には
+Microsoft Foundation Class のインタフェースと Python プログラミング環境が
+含まれています。これは MFC クラスを用いて主に Python で書かれています。
 
 
-Can I have Tk events handled while waiting for I/O?
----------------------------------------------------
+Tkinter の質問
+==============
 
-Yes, and you don't even need threads!  But you'll have to restructure your I/O
-code a bit.  Tk has the equivalent of Xt's :cfunc:`XtAddInput()` call, which allows you
-to register a callback function which will be called from the Tk mainloop when
-I/O is possible on a file descriptor.  Here's what you need::
+Tkinter アプリケーションを凍結するにはどうしますか？
+----------------------------------------------------
+
+Freeze はスタンドアロンアプリケーションを生成するツールです。
+Tkinter アプリケーションを凍結するとき、それは Tcl と Tk ライブラリを
+必要とするので、真のスタンドアロンにはなりません。
+
+一つの解決策は、アプリケーションに Tcl と Tk ライブラリを同梱し、
+環境変数 :envvar:`TCL_LIBRARY` と :envvar:`TK_LIBRARY` でランタイムに
+指定することです。
+
+真にスタンドアロンなアプリケーションにするためには、ライブラリを成す
+Tcl スクリプトもアプリケーションに統合されていなければなりません。
+それをサポートするツールの一つは SAM (stand-alone modules) で、
+Tix ディストリビューション (http://tix.sourceforge.net/) の一部です。
+
+SAM を有効にするように Tix をビルドして、Python の :file:`Modules/tkappinit.c`
+内部の :c:func:`Tclsam_init` 等への適切なコールを実行し、libtclsam と
+libtksam にリンクしてください (Tix ライブラリを含んでも良いです)。
+
+
+I/O を待つ間に扱われる Tk イベントを作れますか？
+------------------------------------------------
+
+はい、スレッドさえ必要ありません！  ただし、I/O コードを少し
+再構成しなければなりません。Tk には Xt の :cfunc:`XtAddInput()` コールと
+同等なものがあるので、ファイルディスクリプタ上で I/O が可能なときに
+Tk メインループから呼ばれるコールバック関数を登録できます。
+このようにすればいいです::
 
    from Tkinter import tkinter
    tkinter.createfilehandler(file, mask, callback)
 
-The file may be a Python file or socket object (actually, anything with a
-fileno() method), or an integer file descriptor.  The mask is one of the
-constants tkinter.READABLE or tkinter.WRITABLE.  The callback is called as
-follows::
+file には Python ファイルかソケットオブジェクト(実際には、fileno() メソッドを
+持った何か)、または整数のファイルディスクリプタを指定できます。
+mask は定数 tkinter.READABLE または tkinter.WRITABLE のどちらかです。
+callback は以下のように呼び出されます::
 
    callback(file, mask)
 
-You must unregister the callback when you're done, using ::
+callback が完了したら、次のように登録を解除しなければなりません::
 
    tkinter.deletefilehandler(file)
 
-Note: since you don't know *how many bytes* are available for reading, you can't
-use the Python file object's read or readline methods, since these will insist
-on reading a predefined number of bytes.  For sockets, the :meth:`recv` or
-:meth:`recvfrom` methods will work fine; for other files, use
-``os.read(file.fileno(), maxbytecount)``.
+ノート: 読み込みに使える *バイト数* がわからないので、指定されたバイト数を
+読み込む Python のファイルオブジェクトの read や readline メソッドを
+使うことはできません。ソケットには、\ :meth:`recv` や :meth:`recvfrom` メソッドを
+使うといいです。その他のファイルには、\ ``os.read(file.fileno(), maxbytecount)``
+を使ってください。
 
 
-I can't get key bindings to work in Tkinter: why?
--------------------------------------------------
+Tkinter で働くキーバインディングが得られません。なぜですか？
+------------------------------------------------------------
 
-An often-heard complaint is that event handlers bound to events with the
-:meth:`bind` method don't get handled even when the appropriate key is pressed.
+:meth:`bind` メソッドでイベントに結び付けられたイベントハンドラが、
+適切なキーが押されたときにさえハンドルされないという苦情がよく聞かれます。
 
-The most common cause is that the widget to which the binding applies doesn't
-have "keyboard focus".  Check out the Tk documentation for the focus command.
-Usually a widget is given the keyboard focus by clicking in it (but not for
-labels; see the takefocus option).
-
+最も一般的な原因は、バインディングが適用されるウィジェットが
+"キーボードフォーカス" を持たないことです。Tk ドキュメントで
+フォーカスコマンドを確認してください。通常はウィジェットの中を
+クリックすることでキーボードフォーカスを与えられます (ただしラベルには
+与えられません。takefocus オプションを参照してください)。
 
 

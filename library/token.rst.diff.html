@@ -1,0 +1,180 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/token.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -4,44 +4,103 @@</span>
+ 
+ .. module:: token
+    :synopsis: Constants representing terminal nodes of the parse tree.
+ .. sectionauthor:: Fred L. Drake, Jr. &lt;fdrake@acm.org&gt;
+ 
+ 
+ This module provides constants which represent the numeric values of leaf nodes
+ of the parse tree (terminal tokens).  Refer to the file :file:`Grammar/Grammar`
+ in the Python distribution for the definitions of the names in the context of
+ the language grammar.  The specific numeric values which the names map to may
+ change between Python versions.
+ 
+<span class="gd">-This module also provides one data object and some functions.  The functions</span>
+<span class="gd">-mirror definitions in the Python C header files.</span>
+<span class="gi">+The module also provides a mapping from numeric codes to names and some</span>
+<span class="gi">+functions.  The functions mirror definitions in the Python C header files.</span>
+ 
+ 
+ .. data:: tok_name
+ 
+    Dictionary mapping the numeric values of the constants defined in this module
+    back to name strings, allowing more human-readable representation of parse trees
+    to be generated.
+ 
+ 
+ .. function:: ISTERMINAL(x)
+ 
+    Return true for terminal token values.
+ 
+ 
+ .. function:: ISNONTERMINAL(x)
+ 
+    Return true for non-terminal token values.
+ 
+ 
+ .. function:: ISEOF(x)
+ 
+    Return true if *x* is the marker indicating the end of input.
+ 
+ 
+<span class="gi">+The token constants are:</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: ENDMARKER</span>
+<span class="gi">+          NAME</span>
+<span class="gi">+          NUMBER</span>
+<span class="gi">+          STRING</span>
+<span class="gi">+          NEWLINE</span>
+<span class="gi">+          INDENT</span>
+<span class="gi">+          DEDENT</span>
+<span class="gi">+          LPAR</span>
+<span class="gi">+          RPAR</span>
+<span class="gi">+          LSQB</span>
+<span class="gi">+          RSQB</span>
+<span class="gi">+          COLON</span>
+<span class="gi">+          COMMA</span>
+<span class="gi">+          SEMI</span>
+<span class="gi">+          PLUS</span>
+<span class="gi">+          MINUS</span>
+<span class="gi">+          STAR</span>
+<span class="gi">+          SLASH</span>
+<span class="gi">+          VBAR</span>
+<span class="gi">+          AMPER</span>
+<span class="gi">+          LESS</span>
+<span class="gi">+          GREATER</span>
+<span class="gi">+          EQUAL</span>
+<span class="gi">+          DOT</span>
+<span class="gi">+          PERCENT</span>
+<span class="gi">+          BACKQUOTE</span>
+<span class="gi">+          LBRACE</span>
+<span class="gi">+          RBRACE</span>
+<span class="gi">+          EQEQUAL</span>
+<span class="gi">+          NOTEQUAL</span>
+<span class="gi">+          LESSEQUAL</span>
+<span class="gi">+          GREATEREQUAL</span>
+<span class="gi">+          TILDE</span>
+<span class="gi">+          CIRCUMFLEX</span>
+<span class="gi">+          LEFTSHIFT</span>
+<span class="gi">+          RIGHTSHIFT</span>
+<span class="gi">+          DOUBLESTAR</span>
+<span class="gi">+          PLUSEQUAL</span>
+<span class="gi">+          MINEQUAL</span>
+<span class="gi">+          STAREQUAL</span>
+<span class="gi">+          SLASHEQUAL</span>
+<span class="gi">+          PERCENTEQUAL</span>
+<span class="gi">+          AMPEREQUAL</span>
+<span class="gi">+          VBAREQUAL</span>
+<span class="gi">+          CIRCUMFLEXEQUAL</span>
+<span class="gi">+          LEFTSHIFTEQUAL</span>
+<span class="gi">+          RIGHTSHIFTEQUAL</span>
+<span class="gi">+          DOUBLESTAREQUAL</span>
+<span class="gi">+          DOUBLESLASH</span>
+<span class="gi">+          DOUBLESLASHEQUAL</span>
+<span class="gi">+          AT</span>
+<span class="gi">+          OP</span>
+<span class="gi">+          ERRORTOKEN</span>
+<span class="gi">+          N_TOKENS</span>
+<span class="gi">+          NT_OFFSET</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. seealso::
+ 
+    Module :mod:`parser`
+       The second example for the :mod:`parser` module shows how to use the
+       :mod:`symbol` module.
+ 
+</pre></div>
+
+</body>
+</html>

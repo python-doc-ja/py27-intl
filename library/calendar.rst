@@ -23,6 +23,11 @@
 proleptic Gregorian 暦に一致しており、同書では全ての計算の基礎となる暦としています。
 [#]_
 
+.. seealso::
+
+   最新バージョンの `calendar module Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/calendar.py?view=markup>`_
+
 .. class:: Calendar([firstweekday])
 
    :class:`Calendar` オブジェクトを作ります。
@@ -193,6 +198,13 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
    ユニコードとして返されます。
 
    .. versionadded:: 2.5
+
+.. note::
+
+   これら2つのクラスの :meth:`formatweekday` と :meth:`formatmonthname` メソッドは、
+   一時的に現在の locale を指定された *locale* に変更します。
+   現在の locale はプロセス全体に影響するので、これらはスレッドセーフではありません。
+
 
 単純なテキストのカレンダーに関して、このモジュールには以下のような関数が提供されています。
 

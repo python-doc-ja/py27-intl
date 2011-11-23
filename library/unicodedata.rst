@@ -16,10 +16,10 @@
 
 このモジュールは、全ての Unicode 文字の属性を定義している Unicode
 文字データベースへのアクセスを提供します。このデータベース内のデータは、ftp://ftp.unicode.org/ で公開されている
-:file:`UnicodeData.txt` ファイルのバージョン 5.1.0 に基づいています。
+:file:`UnicodeData.txt` ファイルのバージョン 5.2.0 に基づいています。
 
-このモジュールは、UnicodeData ファイルフォーマット 5.1.0
-(http://www.unicode.org/Public/4.1.0/ucd/UCD.html を参照
+このモジュールは、UnicodeData ファイルフォーマット 5.2.0
+(http://www.unicode.org/reports/tr44/tr44-4.html を参照)
 で定義されているものと、同じ名前と記号を使います。
 このモジュールで定義されている関数は、以下のとおりです。
 

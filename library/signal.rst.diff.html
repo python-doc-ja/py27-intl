@@ -1,0 +1,175 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/signal.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -66,24 +66,44 @@</span>
+ 
+ .. data:: SIG*
+ 
+    All the signal numbers are defined symbolically.  For example, the hangup signal
+    is defined as :const:`signal.SIGHUP`; the variable names are identical to the
+    names used in C programs, as found in ``&lt;signal.h&gt;``. The Unix man page for
+    &#39;:cfunc:`signal`&#39; lists the existing signals (on some systems this is
+    :manpage:`signal(2)`, on others the list is in :manpage:`signal(7)`). Note that
+    not all systems define the same set of signal names; only those names defined by
+    the system are defined by this module.
+ 
+ 
+<span class="gi">+.. data:: CTRL_C_EVENT</span>
+<span class="gi">+</span>
+<span class="gi">+   The signal corresponding to the CTRL+C keystroke event. This signal can</span>
+<span class="gi">+   only be used with :func:`os.kill`.</span>
+<span class="gi">+</span>
+<span class="gi">+   Availability: Windows.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+.. data:: CTRL_BREAK_EVENT</span>
+<span class="gi">+</span>
+<span class="gi">+   The signal corresponding to the CTRL+BREAK keystroke event. This signal can</span>
+<span class="gi">+   only be used with :func:`os.kill`.</span>
+<span class="gi">+</span>
+<span class="gi">+   Availability: Windows.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. data:: NSIG
+ 
+    One more than the number of the highest signal number.
+ 
+ 
+ .. data:: ITIMER_REAL
+ 
+    Decrements interval timer in real time, and delivers :const:`SIGALRM` upon expiration.
+ 
+ 
+ .. data:: ITIMER_VIRTUAL
+ 
+<span class="gu">@@ -175,24 +195,26 @@</span>
+ 
+    Set the wakeup fd to *fd*.  When a signal is received, a ``&#39;\0&#39;`` byte is
+    written to the fd.  This can be used by a library to wakeup a poll or select
+    call, allowing the signal to be fully processed.
+ 
+    The old wakeup fd is returned.  *fd* must be non-blocking.  It is up to the
+    library to remove any bytes before calling poll or select again.
+ 
+    When threads are enabled, this function can only be called from the main thread;
+    attempting to call it from other threads will cause a :exc:`ValueError`
+    exception to be raised.
+ 
+<span class="gi">+   .. versionadded:: 2.6</span>
+<span class="gi">+</span>
+ 
+ .. function:: siginterrupt(signalnum, flag)
+ 
+    Change system call restart behaviour: if *flag* is :const:`False`, system
+    calls will be restarted when interrupted by signal *signalnum*, otherwise
+    system calls will be interrupted.  Returns nothing.  Availability: Unix (see
+    the man page :manpage:`siginterrupt(3)` for further information).
+ 
+    Note that installing a signal handler with :func:`signal` will reset the
+    restart behaviour to interruptible by implicitly calling
+    :cfunc:`siginterrupt` with a true *flag* value for the given signal.
+ 
+<span class="gu">@@ -207,24 +229,28 @@</span>
+    signal handler will be returned (see the description of :func:`getsignal`
+    above).  (See the Unix man page :manpage:`signal(2)`.)
+ 
+    When threads are enabled, this function can only be called from the main thread;
+    attempting to call it from other threads will cause a :exc:`ValueError`
+    exception to be raised.
+ 
+    The *handler* is called with two arguments: the signal number and the current
+    stack frame (``None`` or a frame object; for a description of frame objects,
+    see the :ref:`description in the type hierarchy &lt;frame-objects&gt;` or see the
+    attribute descriptions in the :mod:`inspect` module).
+ 
+<span class="gi">+   On Windows, :func:`signal` can only be called with :const:`SIGABRT`,</span>
+<span class="gi">+   :const:`SIGFPE`, :const:`SIGILL`, :const:`SIGINT`, :const:`SIGSEGV`, or</span>
+<span class="gi">+   :const:`SIGTERM`. A :exc:`ValueError` will be raised in any other case.</span>
+<span class="gi">+</span>
+ 
+ .. _signal-example:
+ 
+ Example
+ -------
+ 
+ Here is a minimal example program. It uses the :func:`alarm` function to limit
+ the time spent waiting to open a file; this is useful if the file is for a
+ serial device that may not be turned on, which would normally cause the
+ :func:`os.open` to hang indefinitely.  The solution is to set a 5-second alarm
+ before opening the file; if the operation takes too long, the alarm signal will
+ be sent, and the handler raises an exception. ::
+</pre></div>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+@@ -15,24 +15,29 @@
+ exchanged safely between multiple threads.  The :class:`Queue` class in this
+ module implements all the required locking semantics.  It depends on the
+ availability of thread support in Python; see the :mod:`threading`
+ module.
+ 
+ Implements three types of queue whose only difference is the order that
+ the entries are retrieved.  In a FIFO queue, the first tasks added are
+ the first retrieved. In a LIFO queue, the most recently added entry is
+ the first retrieved (operating like a stack).  With a priority queue,
+ the entries are kept sorted (using the :mod:`heapq` module) and the
+ lowest valued entry is retrieved first.
+ 
++.. seealso::
++
++   Latest version of the `queue module Python source code
++   <http://svn.python.org/view/python/branches/release27-maint/Lib/Queue.py?view=markup>`_.
++
+ The :mod:`Queue` module defines the following classes and exceptions:
+ 
+ .. class:: Queue(maxsize=0)
+ 
+    Constructor for a FIFO queue.  *maxsize* is an integer that sets the upperbound
+    limit on the number of items that can be placed in the queue.  Insertion will
+    block once this size has been reached, until queue items are consumed.  If
+    *maxsize* is less than or equal to zero, the queue size is infinite.
+ 
+ .. class:: LifoQueue(maxsize=0)
+ 
+    Constructor for a LIFO queue.  *maxsize* is an integer that sets the upperbound
+@@ -174,20 +179,20 @@
+ 
+ Example of how to wait for enqueued tasks to be completed::
+ 
+    def worker():
+        while True:
+            item = q.get()
+            do_work(item)
+            q.task_done()
+ 
+    q = Queue()
+    for i in range(num_worker_threads):
+         t = Thread(target=worker)
+-        t.setDaemon(True)
++        t.daemon = True
+         t.start()
+ 
+    for item in source():
+        q.put(item)
+ 
+    q.join()       # block until all tasks are done
+ 

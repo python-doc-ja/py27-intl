@@ -26,6 +26,10 @@
 特に、関数 :func:`urlopen` は組み込み関数 :func:`open` と同様に動作し、ファイル名の代わりにファイルユニバーサルリソースロケータ (URL)
 を指定することができます。いくつかの制限はあります --- URL は読み出し専用でしか開けませんし、seek 操作を行うことはできません。
 
+.. warning:: HTTPS URL を開くときに、サーバ証明書を検証しようとはしません。
+   自己責任でお使い下さい。
+
+
 .. High-level interface
 
 高レベルインタフェース
@@ -37,7 +41,7 @@
    である場合、ローカルシステムのファイルが (広範囲の改行サポートなしで) 開かれます。それ以外の場合は
    ネットワーク上のどこかにあるサーバへのソケットを開きます。接続を作ることができない場合、例外 :exc:`IOError`
    が送出されます。全ての処理がうまくいけば、ファイル類似のオブジェクトが返されます。このオブジェクトは以下のメソッド: :meth:`read`,
-   :meth:`readline`, :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info` :meth:`getcode`, :meth:`geturl`
+   :meth:`readline`, :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info`, :meth:`getcode`, :meth:`geturl`
    をサポートします。また、イテレータ(:term:`iterator`)プロトコルも正しくサポートしています。注意:
    :meth:`read` の引数を省略または負の値を指定しても、データストリームの最後まで読みこむ訳ではありません。ソケットからすべてのストリーム
    を読み込んだことを決定する一般的な方法は存在しません。
@@ -48,8 +52,8 @@
 
    .. index:: module: mimetools
 
-   :meth:`info` メソッドは開いた URL に関連付けられたメタ情報を含む :class:`httplib.HTTPMessage`
-   クラスのインスタンスを返します。
+   :meth:`info` メソッドは開いた URL に関連付けられたメタ情報を含む
+   :class:`mimetools.Message` クラスのインスタンスを返します。
    URL へのアクセスメソッドが HTTP である場合、メタ情報中のヘッダ情報はサーバが HTML
    ページを返すときに先頭に付加するヘッダ情報です (Content-Length および Content-Type を含みます)。
    アクセスメソッドが FTP
@@ -102,7 +106,11 @@
 
    .. index:: single: Internet Config
 
-   Macintosh 環境では、 :func:`urlopen` は「インターネットの設定」 (Internet Config) からプロキシ情報を取得します。
+   Mac OS X では、 :func:`urlopen` はプロキシの情報をシステム設定フレームワーク
+   (Mac OS X System Configuration Framework) から取得します。
+   これはネットワークシステム設定パネルから設定できます。
+
+   .. todo:: Mac OS X ユーザーに日本語を教えてもらう.
 
    別の方法として、オプション引数 *proxies* を使って明示的にプロキシを設定することができます。この引数はスキーム名をプロキシの URL にマップする
    辞書型のオブジェクトでなくてはなりません。空の辞書を指定するとプロキシを使いません。 ``None`` (デフォルトの値です) を指定すると、上で述べた
@@ -123,15 +131,17 @@
       *proxies* のサポートを追加しました。
 
    .. versionchanged:: 2.6
-      .. Added :meth:`getcode` to returned object and support for the
-         :envvar:`no_proxy` environment variable.
       結果オブジェクトに :meth:`getcode` を追加し、 :envvar:`no_proxy` 環境変数に対応しました。
 
+      .. Added :meth:`getcode` to returned object and support for the
+         :envvar:`no_proxy` environment variable.
+
    .. deprecated:: 2.6
-      .. The :func:`urlopen` function has been removed in Python 3.0 in favor
-         of :func:`urllib2.urlopen`.
       :func:`urlopen` 関数は、Python 3.0では :func:`urllib2.urlopen` に取って変わられるため、
       廃止予定(deprecated)になりました。
+
+      .. The :func:`urlopen` function has been removed in Python 3.0 in favor
+         of :func:`urllib2.urlopen`.
 
 
 .. function:: urlretrieve(url[, filename[, reporthook[, data]]])
@@ -154,17 +164,19 @@
    :func:`urlencode` 関数を参照してください。
 
    .. versionchanged:: 2.5
-      :func:`'urlretrieve()'` は、予想 (これは *Content-Length* ヘッダにより通知されるサイズです)
+      :func:`urlretrieve` は、予想 (これは *Content-Length* ヘッダにより通知されるサイズです)
       よりも取得できるデータ量が少ないことを検知した場合、 :exc:`ContentTooShortError` を発生します。これは、例えば、ダウンロードが
       中断された場合などに発生します。
 
-      *Content-Length* は下限として扱われます: より多いデータがある場合、 urlretrieve
-      はそのデータを読みますが、より少ないデータしか取得できない場合、これは exception を発生します。
+      *Content-Length* は下限として扱われます: より多いデータがある場合、
+      :func:`urlretrieve` はそのデータを読みますが、
+      より少ないデータしか取得できない場合、これは exception を発生します。
 
-      このような場合にもダウンロードされたデータを取得することは可能で、これは  exception インスタンスの :attr:`content`
+      このような場合にもダウンロードされたデータを取得することは可能で、
+      これは exception インスタンスの :attr:`content`
       属性に保存されています。
 
-      *Content-Length* ヘッダが無い場合、urlretrieve はダウンロードされた
+      *Content-Length* ヘッダが無い場合、 :func:`urlretrieve` はダウンロードされた
       データのサイズをチェックできず、単にそれを返します。この場合は、ダウンロードは成功したと見なす必要があります。
 
 
@@ -197,18 +209,24 @@
 
 .. function:: quote(string[, safe])
 
-   *string* に含まれる特殊文字を ``%xx`` エスケープで置換（quote）します。アルファベット、数字、および文字 ``'_.-'`` は
-   quote 処理を行いません。オプションのパラメタ *safe* は quote 処理しない追加の文字を指定します --- デフォルトの値は ``'/'``
-   です。
+   *string* に含まれる特殊文字を ``%xx`` エスケープで置換（quote）します。
+   アルファベット、数字、および文字 ``'_.-'`` はに対しては quote 処理を
+   行いません。
+   この関数はデフォルトでは URL の path セクションに対するクォートを
+   想定しています。
+   オプションのパラメタ *safe* は quote 処理しない追加の文字を指定します ---
+   デフォルトの値は ``'/'`` です。
 
    例: ``quote('/~connolly/')`` は ``'/%7econnolly/'`` になります。
 
 
 .. function:: quote_plus(string[, safe])
 
-   :func:`quote` と似ていますが、加えて空白文字をプラス記号 ("+") に置き換えます。これは HTML フォームの値を quote 処理する際に
-   必要な機能です。もとの文字列におけるプラス記号は *safe* に含まれていない限りエスケープ置換されます。上と同様に、 *safe* のデフォルトの値は
-   ``'/'`` です。
+   :func:`quote` と似ていますが、加えて空白文字をプラス記号 ("+")
+   に置き換えます。
+   これは HTML フォームの値をURLに付加するクエリ文字列にする際に必要な機能です。
+   もとの文字列におけるプラス記号は *safe* に含まれていない限りエスケープ
+   置換されます。上と同様に、 *safe* のデフォルトの値は ``'/'`` です。
 
 
 .. function:: unquote(string)
@@ -226,15 +244,22 @@
 
 .. function:: urlencode(query[, doseq])
 
-   マップ型オブジェクト、または 2 つの要素をもったタプルからなるシーケンスを、 "URL にエンコードされた (url-encoded)" に変換して、
-   上述の :func:`urlopen` のオプション引数 *data* に適した形式にします。この関数はフォームのフィールド値でできた辞書を ``POST``
-   型のリクエストに渡すときに便利です。返される文字列は ``key=value`` のペアを ``'&'`` で区切ったシーケンスで、 *key* と
-   *value* の双方は上の :func:`quote_plus` で quote 処理されます。オプションのパラメタ *doseq*
-   が与えられていて、その評価結果が真であった場合、シーケンス *doseq* の個々の要素について ``key=value`` のペアが生成されます。 2
-   つの要素をもったタプルからなるシーケンスが引数 *query* として使われた場合、各タプルの最初の値が key で、2 番目の値が value になります。
-   このときエンコードされた文字列中のパラメタの順番はシーケンス中のタプルの順番と同じになります。 :mod:`urlparse` モジュールでは、関数
-   :func:`parse_qs` および :func:`parse_qsl` を提供しており、クエリ文字列を解析して Python
-   のデータ構造にするのに利用できます。
+   マップ型オブジェクト、または 2要素のタプルからなるシーケンスを、
+   "パーセントエンコードされた (percent-encoded)" 文字列に変換して、上述の
+   :func:`urlopen` のオプション引数 *data* に適した形式にします。
+   この関数はフォームのフィールド値でできた辞書を ``POST`` 型のリクエストに
+   渡すときに便利です。返される文字列は ``key=value`` のペアを ``'&'``
+   で区切ったシーケンスで、 *key* と *value* の双方は上の :func:`quote_plus` で
+   クォートされます。
+   2つの要素をもったタプルからなるシーケンスが引数 *query* として使われた場合、
+   各タプルの最初の値が key で、2 番目の値が value になります。
+   どちらのケースでも *value* にはシーケンスを入れることができ、その場合
+   オプションのパラメタ *doseq* の評価結果が真であったなら、その *key* の各々の
+   *value* に対して ``'&'`` で区切られた ``key=value`` のペアが生成されます。
+   このときエンコードされた文字列中のパラメタの順番はシーケンス中のタプルの
+   順番と同じになります。 :mod:`urlparse` モジュールでは、関数
+   :func:`parse_qs` および :func:`parse_qsl` を提供しており、
+   クエリ文字列を解析して Python のデータ構造にするのに利用できます。
 
 
 .. function:: pathname2url(path)
@@ -245,8 +270,18 @@
 
 .. function:: url2pathname(path)
 
-   URL のパスの部分 *path* をエンコードされた URL の形式からローカルシステムにおけるパス記法に変換します。この関数は *path* をデコード
+   URL のパスの部分 *path* をパーセントエンコードされた URL の形式から
+   ローカルシステムにおけるパス記法に変換します。この関数は *path* をデコード
    するために :func:`unquote` を使います。
+
+
+.. function:: getproxies()
+
+   このヘルパ関数はスキーマからプロキシサーバーのURLへのマッピングを行う
+   辞書を返します。
+   この関数はまず、どのOSでも最初に ``<scheme>_proxy`` という名前の環境変数を
+   スキャンします。そこで見つからなかった場合、 Max OS X の場合は Mac OSX
+   システム設定を、 Windows の場合はシステムレジストリを参照します。
 
 
 .. URL Opener objects
@@ -395,7 +430,7 @@ URL Opener オブジェクト
   主にパーミッションの理由でアクセスできない) になった場合、 URL がディレクトリを指していて、末尾の ``/`` を忘れたケース
   を処理するため、パスをディレクトリとして扱います。このために、パーミッションのためにアクセスできないファイルを fetch しようとすると、FTP
   コードはそのファイルを開こうとして 550  エラーに陥り、次にディレクトリ一覧を表示しようとするため、誤解を生むような結果を引き起こす可能性があるのです。
-  よく調整された制御が必要なら、 :mod:`ftplib` モジュールを使うか、 :class:`FancyURLOpener` をサブクラス化するか、
+  よく調整された制御が必要なら、 :mod:`ftplib` モジュールを使うか、 :class:`FancyURLopener` をサブクラス化するか、
   *_urlopener* を変更して目的に合わせるよう検討してください。
 
 * このモジュールは認証を必要とするプロキシをサポートしません。将来実装されるかもしれません。

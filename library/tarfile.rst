@@ -379,10 +379,19 @@ TarFile オブジェクト
 .. object, see :ref:`tarinfo-objects` for details.
 
 :class:`TarFile` オブジェクトは、tar アーカイブへのインターフェースを提供します。 tar
-アーカイブは一連のブロックです。アーカイブメンバー(保存されたファイル)は、ヘッダーブロックとそれに続くデータブロックから構成されています。ある tar
+アーカイブは一連のブロックです。アーカイブメンバー(保存されたファイル)は、
+ヘッダーブロックとそれに続くデータブロックから構成されています。ある tar
 アーカイブにファイルを何回も保存することができます。各アーカイブメンバーは、 :class:`TarInfo`
 オブジェクトによって表わされます、詳細については :ref:`tarinfo-objects` を参照してください。
 
+:class:`TarFile` オブジェクトは :keyword:`with` 文によりコンテキストマネージャーとして
+利用できます。 with ブロックが終了したときにオブジェクトは close されます。
+例外が発生した時、内部で利用されているファイルオブジェクトのみが close され、
+開かれたアーカイブは終了されないことに注意してください。
+:ref:`tar-examples` セクションにあるユースケースを参照してください。
+
+.. versionadded:: 2.7
+   コンテキストマネージャープロトコルがサポートされました。
 
 .. class:: TarFile(name=None, mode='r', fileobj=None, format=DEFAULT_FORMAT, tarinfo=TarInfo, dereference=False, ignore_zeros=False, encoding=ENCODING, errors=None, pax_headers=None, debug=0, errorlevel=0)
 
@@ -652,28 +661,33 @@ TarFile オブジェクト
       行に対するイテレーションをサポートします。
 
 
-.. method:: TarFile.add(name, arcname=None, recursive=True, exclude=None)
+.. method:: TarFile.add(name, arcname=None, recursive=True, exclude=None, filter=None)
 
-   .. Add the file *name* to the archive. *name* may be any type of file (directory,
-   .. fifo, symbolic link, etc.). If given, *arcname* specifies an alternative name
-   .. for the file in the archive. Directories are added recursively by default. This
-   .. can be avoided by setting *recursive* to :const:`False`. If *exclude* is given
-   .. it must be a function that takes one filename argument and returns a boolean
-   .. value. Depending on this value the respective file is either excluded
-   .. (:const:`True`) or added (:const:`False`).
-
-   ファイル *name* をアーカイブに追加します。 *name* は、任意のファイルタイプ (ディレクトリ、fifo、シンボリックリンク等)です。
-   もし *arcname* が与えられていれば、それはアーカイブ内のファイルの代替名を指定します。デフォルトではディレクトリは再帰的に追加されます。
+   ファイル *name* をアーカイブに追加します。
+   *name* は、任意のファイルタイプ (ディレクトリ、fifo、シンボリックリンク等)です。
+   もし *arcname* が与えられていれば、それはアーカイブ内のファイルの代替名を指定します。
+   デフォルトではディレクトリは再帰的に追加されます。
    これは、 *recursive* を :const:`False` に設定することで避けることができます。
-   *exclude* を指定する場合、それは1つのファイル名を引数にとってブール値を返す関数である必要があります。
-   この関数の戻り値が :const:`True` の場合、そのファイルが除外されます。 :const:`False` の場合、そのファイルは追加されます。
-
-
-   .. .. versionchanged:: 2.6
-   ..    Added the *exclude* parameter.
+   *exclude* を指定する場合、それは1つのファイル名を引数にとってブール値を返す
+   関数である必要があります。
+   この関数の戻り値が :const:`True` の場合、そのファイルが除外されます。
+   :const:`False` の場合、そのファイルは追加されます。
+   *filter* を指定する場合、それは :class:`TarInfo` オブジェクトを引数として受け取り、
+   操作した :class:`TarInfo` オブジェクトを返す関数でなければなりません。
+   代わりに :const:`None` を返した場合、 :class:`TarInfo` オブジェクトは
+   アーカイブから除外されます。
+   :ref:`tar-examples` にある例を参照してください。
 
    .. versionchanged:: 2.6
       *exclude* 引数が追加されました。
+
+   .. versionchanged:: 2.7
+      *filter* 引数が追加されました。
+
+   .. deprecated:: 2.7
+      *exclude* 引数は廃止予定です。代わりに *filter* 引数を利用してください。
+      将来 *exclude* 引数が削除されたときに互換性を保つため、
+      *filter* は位置引数ではなくてキーワード引数として利用するべきです。
 
 
 .. method:: TarFile.addfile(tarinfo, fileobj=None)
@@ -1035,6 +1049,12 @@ tarアーカイブの一部を、リストの代わりにジェネレータ関�
        tar.add(name)
    tar.close()
 
+:keyword:`with` 文を利用した同じ例::
+
+    import tarfile
+    with tarfile.open("sample.tar", "w") as tar:
+        for name in ["foo", "bar", "quux"]:
+            tar.add(name)
 
 .. How to read a gzip compressed tar archive and display some member information:
 
@@ -1054,6 +1074,19 @@ gzip 圧縮 tar アーカイブを作成してメンバー情報のいくつか�
        else:
            print "ファイル・ディレクトリ以外のものです。"
    tar.close()
+
+
+:meth:`TarFile.add` 関数の *filter* 引数を利用してユーザー情報をリセット
+しながらアーカイブを作成する例::
+
+    import tarfile
+    def reset(tarinfo):
+        tarinfo.uid = tarinfo.gid = 0
+        tarinfo.uname = tarinfo.gname = "root"
+        return tarinfo
+    tar = tarfile.open("sample.tar.gz", "w:gz")
+    tar.add("foo", filter=reset)
+    tar.close()
 
 
 .. _tar-formats:

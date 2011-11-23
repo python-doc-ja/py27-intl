@@ -13,28 +13,27 @@
 特にファイルのコピーや削除のための関数が用意されています。
 個別のファイルに対する操作については、 :mod:`os` モジュールを参照してください。
 
+.. seealso::
+
+   Latest version of the `shutil module Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/shutil.py?view=markup>`_
+
 .. index::
    single: file; copying
    single: copying files
 
 .. warning::
-   .. Even the higher-level file copying functions (:func:`copy`, :func:`copy2`)
-      can't copy all file metadata.
-
    高レベルなファイルコピー関数(:func:`copy`, :func:`copy2`)でも、全てのファイルの
    メタデータをコピーできるわけではありません。
-
-   .. On POSIX platforms, this means that file owner and group are lost as well
-      as ACLs.  On Mac OS, the resource fork and other metadata are not used.
-      This means that resources will be lost and file type and creator codes will
-      not be correct. On Windows, file owners, ACLs and alternate data streams
-      are not copied.
 
    POSIXプラットフォームでは、これはACLやファイルのオーナー、グループが失われることを意味しています。
    Mac OSでは、リソースフォーク(resource fork)やその他のメタデータが利用されません。
    これは、リソースが失われ、ファイルタイプや生成者コード(creator code)が正しくなくなることを意味しています。
    Windowsでは、ファイルオーナー、ACL、代替データストリームがコピーされません。
 
+
+ディレクトリとファイルの操作
+----------------------------
 
 .. function:: copyfileobj(fsrc, fdst[, length])
 
@@ -45,15 +44,6 @@
 
 
 .. function:: copyfile(src, dst)
-
-   .. Copy the contents (no metadata) of the file named *src* to a file named *dst*.
-      *dst* must be the complete target file name; look at :func:`copy` for a copy that
-      accepts a target directory path.  If *src* and *dst* are the same files,
-      :exc:`Error` is raised.
-      The destination location must be writable; otherwise,  an :exc:`IOError` exception
-      will be raised. If *dst* already exists, it will be replaced.   Special files
-      such as character or block devices and pipes cannot be copied with this
-      function.  *src* and *dst* are path names given as strings.
 
    *src* で指定されたファイルの内容を *dst* で指定されたファイルへとコピーします。(メタデータはコピーされません)
    *dst* は完全なターゲットファイル名である必要があります。
@@ -94,11 +84,6 @@
 
 .. function:: ignore_patterns(\*patterns)
 
-   ..
-      This factory function creates a function that can be used as a callable for
-      :func:`copytree` \'s *ignore* argument, ignoring files and directories that
-      match one of the glob-style *patterns* provided.  See the example below.
-
    このファクトリ関数は、 :func:`copytree` 関数の *ignore* 引数に渡すための呼び出し可能
    オブジェクトを作成します。
    glob形式の *patterns* にマッチするファイルやディレクトリが無視されます。
@@ -109,34 +94,14 @@
 
 .. function:: copytree(src, dst[, symlinks])
 
-   .. Recursively copy an entire directory tree rooted at *src*.  The destination
-      directory, named by *dst*, must not already exist; it will be created as well
-      as missing parent directories.  Permissions and times of directories are
-      copied with :func:`copystat`, individual files are copied using
-      :func:`copy2`.
-
    *src* を起点としたディレクトリツリーをコピーします。
    *dst* で指定されたターゲットディレクトリは、既存のもので無い必要があります。
    存在しない親ディレクトリも含めて作成されます。パーミッションと時刻は
    :func:`copystat` 関数でコピーされます。個々のファイルは :func:`copy2` によってコピーされます。
 
-   .. If *symlinks* is true, symbolic links in the source tree are represented as
-      symbolic links in the new tree; if false or omitted, the contents of the
-      linked files are copied to the new tree.
-
    *symlinks* が真であれば、元のディレクトリ内のシンボリックリンクはコピー先のディレクトリ内へシンボリックリンクとして
    コピーされます。偽が与えられたり省略された場合は元のディレクトリ内のリンクの対象となっているファイルがコピー先のディレクトリ内へコピーされま
    す。
-
-   .. If *ignore* is given, it must be a callable that will receive as its
-      arguments the directory being visited by :func:`copytree`, and a list of its
-      contents, as returned by :func:`os.listdir`.  Since :func:`copytree` is
-      called recursively, the *ignore* callable will be called once for each
-      directory that is copied.  The callable must return a sequence of directory
-      and file names relative to the current directory (i.e. a subset of the items
-      in its second argument); these names will then be ignored in the copy
-      process.  :func:`ignore_patterns` can be used to create such a callable that
-      ignores names based on glob-style patterns.
 
    *ignore* 引数を利用する場合、その呼び出し可能オブジェクトは、引数として、
    :func:`copytree` が走査するディレクトリと、 :func:`os.listdir` が返すそのディレクトリの内容を
@@ -209,8 +174,8 @@
 
 .. _shutil-example:
 
-使用例
-------
+copytree の例
+:::::::::::::
 
 以下は前述の :func:`copytree` 関数のドキュメント文字列を省略した実装例です。本モジュールで提供される他の関数の使い方を示しています。 ::
 
@@ -272,4 +237,99 @@
        return []   # nothing will be ignored
 
    copytree(source, destination, ignore=_logpath)
+
+
+アーカイブの操作
+----------------
+
+.. function:: make_archive(base_name, format, [root_dir, [base_dir, [verbose, [dry_run, [owner, [group, [logger]]]]]]])
+
+   アーカイブファイル (zip や tar など) を作成し、その名前を返します。
+
+   *base_name* は作成するファイルの名前で、パスを含み、フォーマット特有の
+   拡張子はすべて除きます。 *format* はアーカイブフォーマットで、
+   "zip", "tar", "bztar" または "gztar" のいずれかです。
+
+   *root_dir* は、アーカイブのルートディレクトリとなるディレクトリです。
+   すなわち、一般的には、アーカイブを作成する前に *root_dir* を
+   カレントディレクトリにします。
+
+   *base_dir* は、アーカイブを開始するディレクトリです。
+   すなわち、 *base_dir* は、アーカイブのすべてのファイルとディレクトリに
+   共通する接頭辞になります。
+
+   *root_dir* と *base_dir* のどちらも、デフォルトはカレントディレクトリです。
+
+   *owner* と *group* は、tar アーカイブを作成するときに使われます。
+   デフォルトでは、カレントのオーナとグループを使います。
+
+   .. versionadded:: 2.7
+
+
+.. function:: get_archive_formats()
+
+   アーカイブ化をサポートしているフォーマットのリストを返します。
+   返されるシーケンスのそれぞれの要素は、タプル ``(name, description)`` です。
+
+   デフォルトでは、 :mod:`shutil` はこれらのフォーマットを提供しています:
+
+   - *gztar*: gzip された tar ファイル
+   - *bztar*: bzip2 された tar ファイル
+   - *tar*: 圧縮されていない tar ファイル
+   - *zip*: ZIP ファイル
+
+   :func:`register_archive_format` を使って、新しいフォーマットを登録したり、
+   既存のフォーマットに独自のアーカイバを提供したりできます。
+
+   .. versionadded:: 2.7
+
+
+.. function:: register_archive_format(name, function, [extra_args, [description]])
+
+   フォーマット *name* のアーカイバを登録します。 *function* は、アーカイバを
+   呼び出すのに使われる呼び出し可能オブジェクトです。
+
+   *extra_args* は、与えられるなら ``(name, value)`` のシーケンスで、
+   アーカイバ呼び出し可能オブジェクトが使われるときの追加キーワード引数に
+   使われます。
+
+   *description* は、アーカイバのリストを返す :func:`get_archive_formats` 
+   で使われます。デフォルトでは、空のリストです。
+
+   .. versionadded:: 2.7
+
+
+.. function::  unregister_archive_format(name)
+
+   アーカイブフォーマット *name* を、サポートされているフォーマットの
+   リストから取り除きます。
+
+   .. versionadded:: 2.7
+
+
+アーカイブ化の例
+::::::::::::::::
+
+この例では、ユーザの :file:`.ssh` ディレクトリにあるすべてのファイルを含む、
+gzip された tar ファイルアーカイブを作成します::
+
+    >>> from shutil import make_archive
+    >>> import os
+    >>> archive_name = os.path.expanduser(os.path.join('~', 'myarchive'))
+    >>> root_dir = os.path.expanduser(os.path.join('~', '.ssh'))
+    >>> make_archive(archive_name, 'gztar', root_dir)
+    '/Users/tarek/myarchive.tar.gz'
+
+結果のアーカイブは、以下のものを含みます::
+
+    $ tar -tzvf /Users/tarek/myarchive.tar.gz
+    drwx------ tarek/staff       0 2010-02-01 16:23:40 ./
+    -rw-r--r-- tarek/staff     609 2008-06-09 13:26:54 ./authorized_keys
+    -rwxr-xr-x tarek/staff      65 2008-06-09 13:26:54 ./config
+    -rwx------ tarek/staff     668 2008-06-09 13:26:54 ./id_dsa
+    -rwxr-xr-x tarek/staff     609 2008-06-09 13:26:54 ./id_dsa.pub
+    -rw------- tarek/staff    1675 2008-06-09 13:26:54 ./id_rsa
+    -rw-r--r-- tarek/staff     397 2008-06-09 13:26:54 ./id_rsa.pub
+    -rw-r--r-- tarek/staff   37192 2010-02-06 18:23:10 ./known_hosts
+
 

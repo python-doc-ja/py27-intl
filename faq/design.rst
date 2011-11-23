@@ -1,89 +1,86 @@
-======================
-Design and History FAQ
-======================
+==================
+デザインと歴史 FAQ
+==================
 
-Why does Python use indentation for grouping of statements?
------------------------------------------------------------
+Python はなぜ文のグループ化にインデンテーションを使うのですか？
+---------------------------------------------------------------
 
-Guido van Rossum believes that using indentation for grouping is extremely
-elegant and contributes a lot to the clarity of the average Python program.
-Most people learn to love this feature after a while.
+Guido van Rossum の信じるところによれば、インデントによるグループ化は
+非常にエレガントで、平均的な Python プログラムを大いに読みやすくします。
+しばらくすればほとんどの人はこの特徴を気に入るようになります。
 
-Since there are no begin/end brackets there cannot be a disagreement between
-grouping perceived by the parser and the human reader.  Occasionally C
-programmers will encounter a fragment of code like this::
+begin/end の括りがないので、構文解析器と人間の読者の間にグループ化の
+解釈の違いは起こりえません。時折、C のプログラマはこのようなコード片に
+出くわします::
 
    if (x <= y)
            x++;
            y--;
    z++;
 
-Only the ``x++`` statement is executed if the condition is true, but the
-indentation leads you to believe otherwise.  Even experienced C programmers will
-sometimes stare at it a long time wondering why ``y`` is being decremented even
-for ``x > y``.
+この条件文が真の時のみ実行されるのは ``x++`` 文だけですが、
+このインデンテーションでは誤解を招きます。経験を積んだ C プログラマでさえ、
+``y`` が ``x > y`` の時にもデクリメントされるのはなぜか分からず
+長いこと立ち止まることがあるでしょう。
 
-Because there are no begin/end brackets, Python is much less prone to
-coding-style conflicts.  In C there are many different ways to place the braces.
-If you're used to reading and writing code that uses one style, you will feel at
-least slightly uneasy when reading (or being required to write) another style.
+begin/end の括りがないので、Python はコーディングスタイルの対立が非常に
+起こりにくくなります。C では多様なカッコの置き方があります。
+一つのスタイルでのコードの読み書きに慣れてしまうと、他のスタイルを
+読むとき (あるいは書かなくてはならないとき) にむずむずするでしょう。
 
-Many coding styles place begin/end brackets on a line by themself.  This makes
-programs considerably longer and wastes valuable screen space, making it harder
-to get a good overview of a program.  Ideally, a function should fit on one
-screen (say, 20-30 lines).  20 lines of Python can do a lot more work than 20
-lines of C.  This is not solely due to the lack of begin/end brackets -- the
-lack of declarations and the high-level data types are also responsible -- but
-the indentation-based syntax certainly helps.
-
-
-Why am I getting strange results with simple arithmetic operations?
--------------------------------------------------------------------
-
-See the next question.
+多くのコーディングスタイルは begin/end の括りにそれぞれ一行を使います。
+これではプログラムは冗長になって画面を浪費し、プログラムの見通しが
+悪くなります。一つの関数は一画面 (例えば 20 - 30 行) に収めるのが理想です。
+20 行の Python は20行の C よりもはるかに多くのことができます。
+これは begin/end の括りがないからだけではありません -- 宣言が
+不要なことや高レベルなデータ型もその理由です -- が、
+インデンテーションに基づく構文は確かに役に立っています。
 
 
-Why are floating point calculations so inaccurate?
---------------------------------------------------
+なぜ単純な算術演算が奇妙な結果になるのですか？
+----------------------------------------------
 
-People are often very surprised by results like this::
+次の質問を参照してください。
+
+
+なぜ浮動小数点演算はこれほど不正確なのですか？
+----------------------------------------------
+
+このような結果は、よく驚かれたり Python のバグであると考えられたりします::
 
    >>> 1.2 - 1.0
    0.199999999999999996
 
-and think it is a bug in Python. It's not.  This has nothing to do with Python,
-but with how the underlying C platform handles floating point numbers, and
-ultimately with the inaccuracies introduced when writing down numbers as a
-string of a fixed number of digits.
+でもこれはバグではありません。これは Python ではなく、その基底にある C の
+プラットフォームによる浮動小数点数の扱い方の問題で、
+究極には数を固定長の桁に書き下す際に生じたものです。
 
-The internal representation of floating point numbers uses a fixed number of
-binary digits to represent a decimal number.  Some decimal numbers can't be
-represented exactly in binary, resulting in small roundoff errors.
+浮動小数点数の内部表現では一定数の二進数で十進数を示します。
+二進数では正確に表せない十進数もあり、僅かな丸め誤差を生じます。
 
-In decimal math, there are many numbers that can't be represented with a fixed
-number of decimal digits, e.g.  1/3 = 0.3333333333.......
+十進数演算では、1/3 = 0.3333333333....... など、固定長の十進数では
+表せない数がたくさんあります。
 
-In base 2, 1/2 = 0.1, 1/4 = 0.01, 1/8 = 0.001, etc.  .2 equals 2/10 equals 1/5,
-resulting in the binary fractional number 0.001100110011001...
+基数が 2 のとき、1/2 = 0.1、1/4 = 0.01、1/8 = 0.001、などになります。
+.2 は 2/10 と等しく、1/5 と等しいので、二進数の分数で
+0.001100110011001... になります。
 
-Floating point numbers only have 32 or 64 bits of precision, so the digits are
-cut off at some point, and the resulting number is 0.199999999999999996 in
-decimal, not 0.2.
+浮動小数点数には 32 か 64 ビットの精度しかないので、ある桁で
+切り捨てられ、十進数表示で 0.2 ではなく 0.199999999999999996 となります。
 
-A floating point number's ``repr()`` function prints as many digits are
-necessary to make ``eval(repr(f)) == f`` true for any float f.  The ``str()``
-function prints fewer digits and this often results in the more sensible number
-that was probably intended::
+浮動小数点数の ``repr()`` 関数はすべての浮動小数点数 f に対して
+``eval(repr(f)) == f`` が真となるのに必要なだけの桁を表示します。
+``str()`` 関数はそれより少ない桁を表示するので、より意図を汲んだ
+感覚的な数を得やすいです::
 
-   >>> 0.2
-   0.20000000000000001
-   >>> print 0.2
+   >>> 1.1 - 0.9
+   0.20000000000000007
+   >>> print 1.1 - 0.9
    0.2
 
-One of the consequences of this is that it is error-prone to compare the result
-of some computation to a float with ``==``. Tiny inaccuracies may mean that
-``==`` fails.  Instead, you have to check that the difference between the two
-numbers is less than a certain threshold::
+その結果、\ ``==`` による浮動小数点の演算結果の比較は間違いやすいです。
+僅かな不正確さだけで ``==`` が間違うこともあります。その代わりに、
+二つの数間の差があるしきい値よりも小さいことを調べなくてはなりません::
 
    epsilon = 0.0000000000001  # Tiny allowed error
    expected_result = 0.4
@@ -91,71 +88,69 @@ numbers is less than a certain threshold::
    if expected_result-epsilon <= computation() <= expected_result+epsilon:
        ...
 
-Please see the chapter on :ref:`floating point arithmetic <tut-fp-issues>` in
-the Python tutorial for more information.
+詳しくは、Python チュートリアルの :ref:`floating point arithmetic
+<tut-fp-issues>` の章を参照してください。
 
 
-Why are Python strings immutable?
----------------------------------
+なぜ Python の文字列はイミュータブルなのですか？
+------------------------------------------------
 
-There are several advantages.
+これにはいくつかの利点があります。
 
-One is performance: knowing that a string is immutable means we can allocate
-space for it at creation time, and the storage requirements are fixed and
-unchanging.  This is also one of the reasons for the distinction between tuples
-and lists.
+一つはパフォーマンスです。文字列がイミュータブルなら、
+生成時に領域を割り当てることができるので、必要な記憶域は固定されて、
+変更されません。これはタプルとリストを区別する理由の一つでもあります。
 
-Another advantage is that strings in Python are considered as "elemental" as
-numbers.  No amount of activity will change the value 8 to anything else, and in
-Python, no amount of activity will change the string "eight" to anything else.
+別の利点は、Python で文字列が数と同じくらい "基本的" なものと
+考えられることです。8 という値を他の何かに変える手段が無いように、
+文字列 "eight" を他の何かに変える手段も無いのです。
 
 
 .. _why-self:
 
-Why must 'self' be used explicitly in method definitions and calls?
--------------------------------------------------------------------
+なぜメソッドの定義や呼び出しにおいて 'self' を明示しなければならないのですか？
+------------------------------------------------------------------------------
 
-The idea was borrowed from Modula-3.  It turns out to be very useful, for a
-variety of reasons.
+このアイデアは Modula-3 から取り入れられました。
+これは様々な理由からとても便利だと言えます。
 
-First, it's more obvious that you are using a method or instance attribute
-instead of a local variable.  Reading ``self.x`` or ``self.meth()`` makes it
-absolutely clear that an instance variable or method is used even if you don't
-know the class definition by heart.  In C++, you can sort of tell by the lack of
-a local variable declaration (assuming globals are rare or easily recognizable)
--- but in Python, there are no local variable declarations, so you'd have to
-look up the class definition to be sure.  Some C++ and Java coding standards
-call for instance attributes to have an ``m_`` prefix, so this explicitness is
-still useful in those languages, too.
+まず、扱っているのがローカル変数ではなく、メソッドやインスタンス属性なのだと
+分かりやすいです。\ ``self.x`` や ``self.meth()`` と書いてあれば、
+そのクラスの定義を憶えていなくても、それがインスタンス変数や
+メソッドであることは明白です。C++ では、(グローバルは滅多にないし、
+簡単に判別できるので) ローカル変数宣言されていないことから
+ある程度わかるでしょう。-- しかし Python にはローカル変数宣言がないので、
+クラス定義を調べて確かめなくてはなりません。C++ や Java の
+コーディングスタンダードに、インスタンス属性に
+``m_`` 接頭辞をつけるものがあるように、この明示性は
+それらの言語でも役に立ちます。
 
-Second, it means that no special syntax is necessary if you want to explicitly
-reference or call the method from a particular class.  In C++, if you want to
-use a method from a base class which is overridden in a derived class, you have
-to use the ``::`` operator -- in Python you can write
-``baseclass.methodname(self, <argument list>)``.  This is particularly useful
-for :meth:`__init__` methods, and in general in cases where a derived class
-method wants to extend the base class method of the same name and thus has to
-call the base class method somehow.
+第二に、特定のクラスからメソッドを明示的に参照や呼び出ししたい時に、
+特別な構文が必要なくなります。C++ では、派生クラスでオーバーライドされた
+基底クラスからメソッドを使うには、\ ``::`` 演算子を使わなければなりません。
+-- Python では、\ ``baseclass.methodname(self, <argument list>)`` と書けます。
+これは特に、\ :meth:`__init__` メソッドに便利ですし、派生クラスのメソッドが、
+基底クラスにある同じ名前のメソッドを拡張するために、
+基底クラスのメソッドをどうにかして呼び出したい時にも便利です。
 
-Finally, for instance variables it solves a syntactic problem with assignment:
-since local variables in Python are (by definition!) those variables to which a
-value is assigned in a function body (and that aren't explicitly declared
-global), there has to be some way to tell the interpreter that an assignment was
-meant to assign to an instance variable instead of to a local variable, and it
-should preferably be syntactic (for efficiency reasons).  C++ does this through
-declarations, but Python doesn't have declarations and it would be a pity having
-to introduce them just for this purpose.  Using the explicit ``self.var`` solves
-this nicely.  Similarly, for using instance variables, having to write
-``self.var`` means that references to unqualified names inside a method don't
-have to search the instance's directories.  To put it another way, local
-variables and instance variables live in two different namespaces, and you need
-to tell Python which namespace to use.
+最後に、インスタンス変数の、代入の構文の問題を解決できます。
+Python のローカル変数は、関数の中で (global が明示的に宣言されることなく)
+値が代入された変数 (と定義されています！) なので、インタプリタには、代入が
+ローカル変数にではなくインスタンス変数にされたのだと判断する方法が
+必要で、構文を見るだけで分かる方が (効率が) 良いのです。
+C++ ではその区別を宣言時に行いますが、Python では宣言がないので、
+この方法でしか区別できなかったら残念です。\ ``self.var`` を明示すれば
+しっくりきます。同様に、インスタンス変数を使うためにも ``self.var`` と
+書かなければならないので、メソッドの中の self が付いていない名前への参照は、
+そのインスタンスのディレクトリを検索するまでもなくローカル変数とわかります。
+別の言い方をすれば、ローカル変数とインスタンス変数は二つの異なる名前空間に
+存在し、Python にどちらの名前空間を使うかを伝えなくてはならないのです。
 
 
-Why can't I use an assignment in an expression?
------------------------------------------------
+式中で代入ができないのはなぜですか？
+------------------------------------
 
-Many people used to C or Perl complain that they want to use this C idiom:
+C や Perl に慣れた多くの人は、C のこの慣用句を使いたいと訴えます:
 
 .. code-block:: c
 
@@ -163,7 +158,7 @@ Many people used to C or Perl complain that they want to use this C idiom:
        // do something with line
    }
 
-where in Python you're forced to write this::
+Python ではこう書かなくてはなりません::
 
    while True:
        line = f.readline()
@@ -171,8 +166,8 @@ where in Python you're forced to write this::
            break
        ... # do something with line
 
-The reason for not allowing assignment in Python expressions is a common,
-hard-to-find bug in those other languages, caused by this construct:
+Python の式中での代入を許さない理由は、この構造によって起こる
+他の言語ではありがちで見つけづらいバグです:
 
 .. code-block:: c
 
@@ -183,122 +178,116 @@ hard-to-find bug in those other languages, caused by this construct:
         // code that only works for nonzero x
     }
 
-The error is a simple typo: ``x = 0``, which assigns 0 to the variable ``x``,
-was written while the comparison ``x == 0`` is certainly what was intended.
+このエラーは単純なタイプミスで、 本当にやりたかったのは ``x == 0`` の
+比較ですが、\ ``x = 0`` と書いてしまい、変数 ``x`` に 0 を代入しています。
 
-Many alternatives have been proposed.  Most are hacks that save some typing but
-use arbitrary or cryptic syntax or keywords, and fail the simple criterion for
-language change proposals: it should intuitively suggest the proper meaning to a
-human reader who has not yet been introduced to the construct.
+提案された代替案はたくさんあります。多くの案はタイプ数を少し節約しますが、
+勝手だったり意味不明だったりする構文や予約語を使い、言語変更の提案の
+簡潔さの基準を満たしていません。構造の説明をされていない人間の
+読者に、正しい意味を直感的に示す物であるべきです。
 
-An interesting phenomenon is that most experienced Python programmers recognize
-the ``while True`` idiom and don't seem to be missing the assignment in
-expression construct much; it's only newcomers who express a strong desire to
-add this to the language.
+面白いことに、熟練した Python プログラマは ``while True`` というイディオムを
+受け入れていて、式構造中の代入がなくてもそれほど苦労しないようです。
+Python にそれを強く求めるのは新人だけです。
 
-There's an alternative way of spelling this that seems attractive but is
-generally less robust than the "while True" solution::
+以下の方法でもこれを綴ることができて、魅力的そうですが、
+堅牢さでは "while True" を使う方法に劣ることが多いです::
 
    line = f.readline()
    while line:
        ... # do something with line...
        line = f.readline()
 
-The problem with this is that if you change your mind about exactly how you get
-the next line (e.g. you want to change it into ``sys.stdin.readline()``) you
-have to remember to change two places in your program -- the second occurrence
-is hidden at the bottom of the loop.
+この方法の問題は、次の行を取得する方法を変えたくなったとき
+(``sys.stdin.readline()`` に変更したい時など) にプログラムの
+二箇所を変えなくてはならないことです --
+二つ目の場所はループの最後に隠れています。
 
-The best approach is to use iterators, making it possible to loop through
-objects using the ``for`` statement.  For example, in the current version of
-Python file objects support the iterator protocol, so you can now write simply::
+一番いいのはイテレータを使って、\ ``for`` 文でオブジェクトを通して
+ループさせることです。例えば、
+:term:`ファイルオブジェクト <file object>` はイテレータプロトコルを
+サポートしているので、単純にこう書けます::
 
    for line in f:
        ... # do something with line...
 
 
 
-Why does Python use methods for some functionality (e.g. list.index()) but functions for other (e.g. len(list))?
-----------------------------------------------------------------------------------------------------------------
+Python にメソッドを使う機能 (list.index()等) と関数を使う機能 (list.index()等) があるのはなぜですか？
+-----------------------------------------------------------------------------------------------------
 
-The major reason is history. Functions were used for those operations that were
-generic for a group of types and which were intended to work even for objects
-that didn't have methods at all (e.g. tuples).  It is also convenient to have a
-function that can readily be applied to an amorphous collection of objects when
-you use the functional features of Python (``map()``, ``apply()`` et al).
+歴史上の経緯が主な理由です。関数は型のグループに共通で、
+メソッドを持たないオブジェクト(タプル等)にも適用できるようにした操作に
+使われていました。オブジェクトの無定形な集合に容易に適用できる関数が
+あることは、Python の関数的機能 (``map()``\ 、\ ``apply()`` 等) を
+使うときにも便利です。
 
-In fact, implementing ``len()``, ``max()``, ``min()`` as a built-in function is
-actually less code than implementing them as methods for each type.  One can
-quibble about individual cases but it's a part of Python, and it's too late to
-make such fundamental changes now. The functions have to remain to avoid massive
-code breakage.
+実際、\ ``len()``\ 、\ ``max()``\ 、\ ``min()`` を組み込み関数として実装することで、
+それぞれの型のメソッドとして実装するより少ないコードで済みます。
+個々のケースについては粗探しのしようがありますが、Python の一部であるし、
+根本的な変更をするには遅すぎます。これらの関数は、
+大規模なコードの破壊を避けるために残す必要があります。
 
 .. XXX talk about protocols?
 
 .. note::
 
-   For string operations, Python has moved from external functions (the
-   ``string`` module) to methods.  However, ``len()`` is still a function.
+   Python の文字列演算は、外部の関数からメソッド (``string`` モジュール)
+   に移行しました。しかし、\ ``len()`` は関数のままです。
 
 
-Why is join() a string method instead of a list or tuple method?
-----------------------------------------------------------------
+join() がリストやタプルのメソッドではなく文字列のメソッドなのはなぜですか？
+---------------------------------------------------------------------------
 
-Strings became much more like other standard types starting in Python 1.6, when
-methods were added which give the same functionality that has always been
-available using the functions of the string module.  Most of these new methods
-have been widely accepted, but the one which appears to make some programmers
-feel uncomfortable is::
+文字列は Python 1.6 からメソッドが追加され、他の標準型と同じような
+機能が string モジュールの関数でいつでも使えるようになったことで、
+他の標準型に大きく近づきました。その新しいメソッドの多くは
+広く受け入れられましたが、一部のプログラマに不快を
+感じさせていると思われるものがこれで::
 
    ", ".join(['1', '2', '4', '8', '16'])
 
-which gives the result::
+結果はこうなります::
 
    "1, 2, 4, 8, 16"
 
-There are two common arguments against this usage.
+この使い方には二つの議論があります。
 
-The first runs along the lines of: "It looks really ugly using a method of a
-string literal (string constant)", to which the answer is that it might, but a
-string literal is just a fixed value. If the methods are to be allowed on names
-bound to strings there is no logical reason to make them unavailable on
-literals.
+一つ目は、「文字列リテラル (文字列定数) のメソッドを使うのは醜すぎる」と
+いうようなものです。確かにそうかも知れませんが、文字列リテラルは
+単なる固定された値に過ぎないというのが答えです。文字列に束縛された名前に
+メソッドが許されるなら、リテラルに使えないようにする理由はないでしょう。
 
-The second objection is typically cast as: "I am really telling a sequence to
-join its members together with a string constant".  Sadly, you aren't.  For some
-reason there seems to be much less difficulty with having :meth:`~str.split` as
-a string method, since in that case it is easy to see that ::
+二つ目の反対理由は、典型的には「シーケンスを文字列定数で結合させようと
+しているのだ」というものです。残念ながら、そうではないのです。
+いくつかの理由から :meth:`~str.split` を
+文字列のメソッドとしておいた方がはるかに簡単です。
+これを見ると分かりやすいでしょう::
 
    "1, 2, 4, 8, 16".split(", ")
 
-is an instruction to a string literal to return the substrings delimited by the
-given separator (or, by default, arbitrary runs of white space).  In this case a
-Unicode string returns a list of Unicode strings, an ASCII string returns a list
-of ASCII strings, and everyone is happy.
+これは文字列リテラルに与えられた分離子 (デフォルトでは空白文字) によって
+区切られた部分文字列を返すように指示しています。
+このとき、Unicode 文字列は Unicode 文字列のリストを返し、ASCII 文字列は
+ASCII 文字列のリストを返すから、みんな幸せです。
 
-:meth:`~str.join` is a string method because in using it you are telling the
-separator string to iterate over a sequence of strings and insert itself between
-adjacent elements.  This method can be used with any argument which obeys the
-rules for sequence objects, including any new classes you might define yourself.
+:meth:`~str.join` は、セパレータ文字列に、文字列のシーケンスを
+イテレートして隣り合う要素の間に自身を挿入するように指示しているので、
+文字列のメソッドです。このメソッドは、
+独自に定義された新しいクラスを含め、シーケンスの規則を
+満たすいかなる引数にも使えます。
 
-Because this is a string method it can work for Unicode strings as well as plain
-ASCII strings.  If ``join()`` were a method of the sequence types then the
-sequence types would have to decide which type of string to return depending on
-the type of the separator.
-
-.. XXX remove next paragraph eventually
-
-If none of these arguments persuade you, then for the moment you can continue to
-use the ``join()`` function from the string module, which allows you to write ::
-
-   string.join(['1', '2', '4', '8', '16'], ", ")
+これは文字列メソッドなので、Unicode 文字列にも 通常の ASCII 文字列にも
+使えます。``join()`` がシーケンス型のモジュールだったとしたら、
+そのシーケンス型はどちらの型の文字列を返すか、セパレータの型によって
+決めなければなりません。
 
 
-How fast are exceptions?
-------------------------
+例外はどれくらい速いのですか？
+------------------------------
 
-A try/except block is extremely efficient.  Actually catching an exception is
-expensive.  In versions of Python prior to 2.0 it was common to use this idiom::
+try/except ブロックは極端に効率がいいです。実際に例外を補足するのは高価です。
+Python 2.0 より前のバージョンでは、このイディオムが一般的でした::
 
    try:
        value = mydict[key]
@@ -306,8 +295,8 @@ expensive.  In versions of Python prior to 2.0 it was common to use this idiom::
        mydict[key] = getvalue(key)
        value = mydict[key]
 
-This only made sense when you expected the dict to have the key almost all the
-time.  If that wasn't the case, you coded it like this::
+これは、辞書がほとんどの場合にキーを持っていると予想できるときにのみ
+意味をなします。そうでなければ、このように書きます::
 
    if mydict.has_key(key):
        value = mydict[key]
@@ -317,21 +306,20 @@ time.  If that wasn't the case, you coded it like this::
 
 .. note::
 
-   In Python 2.0 and higher, you can code this as ``value =
-   mydict.setdefault(key, getvalue(key))``.
+   Python 2.0 以降では、\ ``value = mydict.setdefault(key, getvalue(key))``
+   のように書くことができます。
 
 
-Why isn't there a switch or case statement in Python?
------------------------------------------------------
+Python に switch や case 文がないのはなぜですか？
+-------------------------------------------------
 
-You can do this easily enough with a sequence of ``if... elif... elif... else``.
-There have been some proposals for switch statement syntax, but there is no
-consensus (yet) on whether and how to do range tests.  See :pep:`275` for
-complete details and the current status.
+``if... elif... elif... else`` の繰り返しで簡単に同じことができます。
+switch 文の構文に関する提案が幾つかありましたが、範囲検定をするべきか、
+あるいはどのようにするべきかについての合意は (まだ) 得られていません。
+現在の状況の完全な詳細は :pep:`275` を参照してください。
 
-For cases where you need to choose from a very large number of possibilities,
-you can create a dictionary mapping case values to functions to call.  For
-example::
+非常に大きな数の選択肢から選ぶとき、値を呼び出す関数に対応づける辞書を
+作れます。例えば::
 
    def function_1(...):
        ...
@@ -343,8 +331,8 @@ example::
    func = functions[value]
    func()
 
-For calling methods on objects, you can simplify yet further by using the
-:func:`getattr` built-in to retrieve methods with a particular name::
+オブジェクトのメソッドを呼び出すには、さらに単純に
+:func:`getattr` 組み込み関数で特定の名前のメソッドを検索することが出来ます::
 
    def visit_a(self, ...):
        ...
@@ -355,275 +343,283 @@ For calling methods on objects, you can simplify yet further by using the
        method = getattr(self, method_name)
        method()
 
-It's suggested that you use a prefix for the method names, such as ``visit_`` in
-this example.  Without such a prefix, if values are coming from an untrusted
-source, an attacker would be able to call any method on your object.
+メソッドの名前にこの例の `visit_`` のような接頭辞を使うことを勧めます。
+このような接頭辞がないと、信頼できないソースから値が与えられたときに、
+オブジェクトの任意のメソッドを呼び出す攻撃をされる可能性があります。
 
 
-Can't you emulate threads in the interpreter instead of relying on an OS-specific thread implementation?
---------------------------------------------------------------------------------------------------------
+OS 特有のスレッド実装に依らずにインタプリタでスレッドをエミュレートすることはできないのですか？
+-----------------------------------------------------------------------------------------------
 
-Answer 1: Unfortunately, the interpreter pushes at least one C stack frame for
-each Python stack frame.  Also, extensions can call back into Python at almost
-random moments.  Therefore, a complete threads implementation requires thread
-support for C.
+答 1: 残念なことに、インタプリタは Python のスタックフレームごとに
+少なくとも一つの C のスタックフレームを push します。同様に、
+拡張もほとんどランダムなときに Python にコールバックすることがあります。
+よって、完全なスレッド実装には C のスレッドサポートが必要です。
 
-Answer 2: Fortunately, there is `Stackless Python <http://www.stackless.com>`_,
-which has a completely redesigned interpreter loop that avoids the C stack.
-It's still experimental but looks very promising.  Although it is binary
-compatible with standard Python, it's still unclear whether Stackless will make
-it into the core -- maybe it's just too revolutionary.
-
-
-Why can't lambda forms contain statements?
-------------------------------------------
-
-Python lambda forms cannot contain statements because Python's syntactic
-framework can't handle statements nested inside expressions.  However, in
-Python, this is not a serious problem.  Unlike lambda forms in other languages,
-where they add functionality, Python lambdas are only a shorthand notation if
-you're too lazy to define a function.
-
-Functions are already first class objects in Python, and can be declared in a
-local scope.  Therefore the only advantage of using a lambda form instead of a
-locally-defined function is that you don't need to invent a name for the
-function -- but that's just a local variable to which the function object (which
-is exactly the same type of object that a lambda form yields) is assigned!
+答 2: 幸運なことに、完全に C スタックを使わないように再設計された
+インタプリタ `Stackless Python <http://www.stackless.com>`_ があります。
+まだ実験的なものですが、将来性がありそうです。これは標準の
+Python とバイナリ互換ですが、スタックレスの中核となるかどうかは
+まだわかりません -- これはあまりに革命的すぎるかもしれません。
 
 
-Can Python be compiled to machine code, C or some other language?
------------------------------------------------------------------
+ラムダ式が文を含めないのはなぜですか？
+--------------------------------------
 
-Not easily.  Python's high level data types, dynamic typing of objects and
-run-time invocation of the interpreter (using :func:`eval` or :keyword:`exec`)
-together mean that a "compiled" Python program would probably consist mostly of
-calls into the Python run-time system, even for seemingly simple operations like
-``x+1``.
+Python の構文的な枠組みでは式の中にネストされた文を扱えないため、
+Python のラムダ式は文を含めません。しかし、Python ではこれは深刻な
+問題ではありません。他の言語でのラムダ式が機能性を追加するものであるのと
+違い、Python でのラムダは関数を定義するのが面倒なときの
+速記法に過ぎません。
 
-Several projects described in the Python newsgroup or at past `Python
-conferences <http://python.org/community/workshops/>`_ have shown that this
-approach is feasible, although the speedups reached so far are only modest
-(e.g. 2x).  Jython uses the same strategy for compiling to Java bytecode.  (Jim
-Hugunin has demonstrated that in combination with whole-program analysis,
-speedups of 1000x are feasible for small demo programs.  See the proceedings
-from the `1997 Python conference
-<http://python.org/workshops/1997-10/proceedings/>`_ for more information.)
+Python では関数はもとからファーストクラスオブジェクトであり、
+ローカルなスコープで宣言できます。よって、ローカルに宣言される
+関数ではなくラムダ式を使う利点はただ一つ、関数の名前を
+考えなくてもいいことです - でもその関数オブジェクトが代入されるのは
+(ラムダ式が名前を空けたのとまさに同じ型のオブジェクトである)
+ローカル変数です！
 
-Internally, Python source code is always translated into a bytecode
-representation, and this bytecode is then executed by the Python virtual
-machine.  In order to avoid the overhead of repeatedly parsing and translating
-modules that rarely change, this byte code is written into a file whose name
-ends in ".pyc" whenever a module is parsed.  When the corresponding .py file is
-changed, it is parsed and translated again and the .pyc file is rewritten.
 
-There is no performance difference once the .pyc file has been loaded, as the
-bytecode read from the .pyc file is exactly the same as the bytecode created by
-direct translation.  The only difference is that loading code from a .pyc file
-is faster than parsing and translating a .py file, so the presence of
-precompiled .pyc files improves the start-up time of Python scripts.  If
-desired, the Lib/compileall.py module can be used to create valid .pyc files for
-a given set of modules.
+Python は C やその他の言語のように機械語にコンパイルできますか？
+----------------------------------------------------------------
 
-Note that the main script executed by Python, even if its filename ends in .py,
-is not compiled to a .pyc file.  It is compiled to bytecode, but the bytecode is
-not saved to a file.  Usually main scripts are quite short, so this doesn't cost
-much speed.
+簡単にはできません。Python の高水準データ型、動的な型付け、(:func:`eval` や
+:func:`exec` を使った) インタプリタの実行時呼び出しがあるということは、
+「コンパイルされた」Python のプログラムのほとんどが、\ ``x+1`` のような
+一見簡単な演算でさえ、Python のランタイムシステムへの呼び出しで
+成り立っているであろうことを意味します。
+
+Python ニュースグループや過去の
+`Python conferences <http://python.org/community/workshops/>`_ で
+説明されたいくつかのプロジェクトを見ると、現在の速度の向上は
+緩やかでしかない (たとえば 2 倍) ですが、このやり方はうまくいきそうです。
+Jython は Java バイトコードにコンパイルするという同様の方法を使っています。
+(Jim Hugunin の論証によれば、プログラム全体の解析と組み合わせることで、
+小さなデモプログラムでは 1000 倍の速度向上が見込めます。詳しくは
+`1997 Python conference <http://python.org/workshops/1997-10/proceedings/>`_
+の議事録を参照してください。)
+
+内部的には、Python のソースコードはいつもバイトコード表現に
+翻訳されていて、そのバイトコードが Python の仮想マシンによって
+実行されます。めったに変更されないモジュールの解析が繰り返されることによる
+オーバーヘッドを避けるため、このバイトコードはモジュールが解析されるたびに
+名前が ".pic" で終わるファイルに書きこまれます。対応する .py ファイルが
+変更されたとき、そのファイルは再び解析および翻訳されて
+.pyc ファイルは書き直されます。
+
+一旦 .pyc ファイルが読み込まれればパフォーマンスの差はなく、
+.pyc ファイルから読み込まれたバイトコードも、直接の変換により
+生成されたバイトコードも全く同じです。唯一の違いは、.pyc ファイルから
+コードを読み込むのは .py ファイルを解析して翻訳するのよりも速いことなので、
+予めコンパイルされた .pyc ファイルがあると Python スクリプトの起動時間が
+改善します。必要なら、 Lib/compileall.py モジュールで、
+与えられたモジュール群の適切な .pyc ファイルを生成できます。
+
+なお、Python によって実行されるメインスクリプトは、たとえそのファイル名が
+.py で終わっていても、.pyc ファイルにコンパイルされません。
+バイトコードには変換されますが、そのバイトコードはファイルに保存されません。
+たいていメインスクリプトはとても短いので、
+これでも大きく速度を落とすことにはなりません。
 
 .. XXX check which of these projects are still alive
 
-There are also several programs which make it easier to intermingle Python and C
-code in various ways to increase performance.  See, for example, `Psyco
-<http://psyco.sourceforge.net/>`_, `Pyrex
-<http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_, `PyInline
-<http://pyinline.sourceforge.net/>`_, `Py2Cmod
-<http://sourceforge.net/projects/py2cmod/>`_, and `Weave
-<http://www.scipy.org/Weave>`_.
+Python と C のコードを様々な方法で混合して簡単にパフォーマンスを
+向上させるプログラムがいくつかあります。例えば
+`Psyco <http://psyco.sourceforge.net/>`_\ 、
+`Pyrex <http://www.cosc.canterbury.ac.nz/~greg/python/Pyrex/>`_\ 、
+`PyInline <http://pyinline.sourceforge.net/>`_\ 、
+`Py2Cmod <http://sourceforge.net/projects/py2cmod/>`_\ 、
+`Weave <http://www.scipy.org/Weave>`_
+を参照してください。
 
 
-How does Python manage memory?
-------------------------------
+Python はメモリをどのように管理するのですか？
+---------------------------------------------
 
-The details of Python memory management depend on the implementation.  The
-standard C implementation of Python uses reference counting to detect
-inaccessible objects, and another mechanism to collect reference cycles,
-periodically executing a cycle detection algorithm which looks for inaccessible
-cycles and deletes the objects involved. The :mod:`gc` module provides functions
-to perform a garbage collection, obtain debugging statistics, and tune the
-collector's parameters.
+Python のメモリ管理の詳細は実装に依ります。Python の標準の C 実装は
+参照カウントを使って、アクセスできないオブジェクトを探します。
+また別のメカニズムも使って参照サイクルを集めます。これは
+サイクル検出アルゴリズムを定期的に実行し、アクセスできないサイクルを探し、
+それに含まれるオブジェクトを削除します。\ :mod:`gc` モジュールの
+関数で、ガベージコレクションを実行し、デバッグ統計を取得し、
+コレクタのパラメタを変更できます。
 
-Jython relies on the Java runtime so the JVM's garbage collector is used.  This
-difference can cause some subtle porting problems if your Python code depends on
-the behavior of the reference counting implementation.
+Jython は Java ランタイムに頼るので、JVM のガベージコレクタが使われます。
+Python のコードが参照カウントの実装の振る舞いに依るとき、
+この違いが微妙な移植問題を起こすことがあります。
 
 .. XXX relevant for Python 2.6?
 
-Sometimes objects get stuck in tracebacks temporarily and hence are not
-deallocated when you might expect.  Clear the tracebacks with::
+   Sometimes objects get stuck in tracebacks temporarily and hence are not
+   deallocated when you might expect.  Clear the tracebacks with::
 
-   import sys
-   sys.exc_clear()
-   sys.exc_traceback = sys.last_traceback = None
+      import sys
+      sys.exc_clear()
+      sys.exc_traceback = sys.last_traceback = None
 
-Tracebacks are used for reporting errors, implementing debuggers and related
-things.  They contain a portion of the program state extracted during the
-handling of an exception (usually the most recent exception).
+   Tracebacks are used for reporting errors, implementing debuggers and related
+   things.  They contain a portion of the program state extracted during the
+   handling of an exception (usually the most recent exception).
 
-In the absence of circularities and tracebacks, Python programs do not need to
-manage memory explicitly.
+循環性がなければ、Python プログラムはメモリを明示的に
+管理する必要はありません。
 
-Why doesn't Python use a more traditional garbage collection scheme?  For one
-thing, this is not a C standard feature and hence it's not portable.  (Yes, we
-know about the Boehm GC library.  It has bits of assembler code for *most*
-common platforms, not for all of them, and although it is mostly transparent, it
-isn't completely transparent; patches are required to get Python to work with
-it.)
+なぜ Python は伝統的なガベージコレクション体系を使わないのでしょうか？
+まず、それは C の標準的な機能ではないのでポータブルではありません。
+(Boehm GC を例に取りましょう。これには *most* 有名なプラットフォームのための
+アセンブリコードが含まれますが、全てには対応していませんし、
+ほとんど transparent ですが、完全に transparent ではありません。
+Python を対応させるにはパッチが必要です。)
 
-Traditional GC also becomes a problem when Python is embedded into other
-applications.  While in a standalone Python it's fine to replace the standard
-malloc() and free() with versions provided by the GC library, an application
-embedding Python may want to have its *own* substitute for malloc() and free(),
-and may not want Python's.  Right now, Python works with anything that
-implements malloc() and free() properly.
+伝統的な GC は Python が他のアプリケーションに実装されるときにも
+問題となります。スタンドアロンの Python で動く限りでは、
+標準の malloc() と free() を GC ライブラリから提供されるものに置き換えても
+問題ありませんが、Python を実装したアプリケーションは Python の
+ものではない *独自の* 代替品を使おうとするかもしれません。
+現在のようにすることで、Python は malloc() と free() が
+適切に実装されている限りどんなものにも対応させられます。
 
-In Jython, the following code (which is fine in CPython) will probably run out
-of file descriptors long before it runs out of memory::
+Jython では、以下の (CPython では通る) コードはおそらく、
+メモリを使い切るより遥かに前にファイルディスクリプタを使い果たすでしょう::
 
    for file in very_long_list_of_files:
        f = open(file)
        c = f.read(1)
 
-Using the current reference counting and destructor scheme, each new assignment
-to f closes the previous file.  Using GC, this is not guaranteed.  If you want
-to write code that will work with any Python implementation, you should
-explicitly close the file or use the :keyword:`with` statement; this will work
-regardless of GC::
+現在の参照カウントとデストラクタのスキームを使えば、
+f への新しい代入ごとに前のファイルは閉じられます。GC を使うのでは、
+これは保証されません。どんな Python の実装にも適用できるコードを書くには、
+明示的にファイルを閉じるか、\ :keyword:`with` 文を使いましょう。これは GC に
+関係なく働きます::
 
    for file in very_long_list_of_files:
        with open(file) as f:
            c = f.read(1)
 
 
-Why isn't all memory freed when Python exits?
----------------------------------------------
+なぜ Python の終了時にすべてのメモリが開放されるわけではないのですか？
+----------------------------------------------------------------------
 
-Objects referenced from the global namespaces of Python modules are not always
-deallocated when Python exits.  This may happen if there are circular
-references.  There are also certain bits of memory that are allocated by the C
-library that are impossible to free (e.g. a tool like Purify will complain about
-these).  Python is, however, aggressive about cleaning up memory on exit and
-does try to destroy every single object.
+Python モジュールのグローバルな名前空間から参照されるオブジェクトは、
+Python の終了時にメモリの割り当てを解除されるとは限りません。
+これは、循環参照があるときに起こりえます。開放できない C ライブラリ
+(例えば、Purify のようなツールなどが当てはまります) によって
+割り当てられたいくらかのメモリも含まれます。しかし、Python は終了時に
+メモリをクリーンアップすることには積極的で、
+全ての各個オブジェクトを破棄しようとします。
 
-If you want to force Python to delete certain things on deallocation use the
-:mod:`atexit` module to run a function that will force those deletions.
-
-
-Why are there separate tuple and list data types?
--------------------------------------------------
-
-Lists and tuples, while similar in many respects, are generally used in
-fundamentally different ways.  Tuples can be thought of as being similar to
-Pascal records or C structs; they're small collections of related data which may
-be of different types which are operated on as a group.  For example, a
-Cartesian coordinate is appropriately represented as a tuple of two or three
-numbers.
-
-Lists, on the other hand, are more like arrays in other languages.  They tend to
-hold a varying number of objects all of which have the same type and which are
-operated on one-by-one.  For example, ``os.listdir('.')`` returns a list of
-strings representing the files in the current directory.  Functions which
-operate on this output would generally not break if you added another file or
-two to the directory.
-
-Tuples are immutable, meaning that once a tuple has been created, you can't
-replace any of its elements with a new value.  Lists are mutable, meaning that
-you can always change a list's elements.  Only immutable elements can be used as
-dictionary keys, and hence only tuples and not lists can be used as keys.
+再割り当て時に Python が特定のものを削除するように強制したいときは、
+:mod:`atexit` モジュールを使って削除を強制する関数を実行してください。
 
 
-How are lists implemented?
---------------------------
+なぜタプルとリストという別のデータ型が用意されているのですか？
+--------------------------------------------------------------
 
-Python's lists are really variable-length arrays, not Lisp-style linked lists.
-The implementation uses a contiguous array of references to other objects, and
-keeps a pointer to this array and the array's length in a list head structure.
+リストとタプルは、多くの点で似ていますが、一般には本質的に異なる方法で
+使われます。タプルは、Pascal のレコードや C の構造体と同様なものと
+考えられます。型が異なっても良い関連するデータの小さな集合で、
+グループとして演算されます。例えば、デカルト座標は 2 つや 3 つの数の
+タプルとして適切に表せます。
 
-This makes indexing a list ``a[i]`` an operation whose cost is independent of
-the size of the list or the value of the index.
+一方、リストは、もっと他の言語の配列に近いものです。全て同じ型の
+可変数のオブジェクトを持ち、それらが一つ一つ演算される傾向にあります。
+例えば、\ ``os.listdir('.')`` はカレントディレクトリ内にある
+ファイルの文字列表現のリストを返します。この出力を演算する関数は一般に、
+ディレクトリに一つや二つの別のファイルを加えても壊れません。
 
-When items are appended or inserted, the array of references is resized.  Some
-cleverness is applied to improve the performance of appending items repeatedly;
-when the array must be grown, some extra space is allocated so the next few
-times don't require an actual resize.
-
-
-How are dictionaries implemented?
----------------------------------
-
-Python's dictionaries are implemented as resizable hash tables.  Compared to
-B-trees, this gives better performance for lookup (the most common operation by
-far) under most circumstances, and the implementation is simpler.
-
-Dictionaries work by computing a hash code for each key stored in the dictionary
-using the :func:`hash` built-in function.  The hash code varies widely depending
-on the key; for example, "Python" hashes to -539294296 while "python", a string
-that differs by a single bit, hashes to 1142331976.  The hash code is then used
-to calculate a location in an internal array where the value will be stored.
-Assuming that you're storing keys that all have different hash values, this
-means that dictionaries take constant time -- O(1), in computer science notation
--- to retrieve a key.  It also means that no sorted order of the keys is
-maintained, and traversing the array as the ``.keys()`` and ``.items()`` do will
-output the dictionary's content in some arbitrary jumbled order.
+タプルはイミュータブルなので、一度タプルが生成されたら、
+そのどの要素も新しい値に置き換えられません。リストはミュータブルなので、
+リストの要素はいつでも変更できます。イミュータブルな要素だけが
+辞書のキーとして使えるので、リストではなくタプルだけがキーとして使えます。
 
 
-Why must dictionary keys be immutable?
---------------------------------------
+リストはどのように実装されているのですか？
+------------------------------------------
 
-The hash table implementation of dictionaries uses a hash value calculated from
-the key value to find the key.  If the key were a mutable object, its value
-could change, and thus its hash could also change.  But since whoever changes
-the key object can't tell that it was being used as a dictionary key, it can't
-move the entry around in the dictionary.  Then, when you try to look up the same
-object in the dictionary it won't be found because its hash value is different.
-If you tried to look up the old value it wouldn't be found either, because the
-value of the object found in that hash bin would be different.
+Python のリストは真の可変長配列であり、Lisp スタイルの連結リストでは
+ありません。この実装は、他のオブジェクトへの参照の連続した配列を使い、
+リストの頭部構造にこの配列へのポインタと配列の長さを保持します。
 
-If you want a dictionary indexed with a list, simply convert the list to a tuple
-first; the function ``tuple(L)`` creates a tuple with the same entries as the
-list ``L``.  Tuples are immutable and can therefore be used as dictionary keys.
+これにより、リストのインデクシング ``a[i]`` は、リストの大きさやインデクスの値に依存しないコストで演算できます。
 
-Some unacceptable solutions that have been proposed:
+要素が追加または挿入されるとき、この参照の配列は大きさが変更されます。
+要素追加の繰り返しのパフォーマンスを上げるために、少し工夫されています。
+配列が大きくなるとき、次の何回かは実際に大きさを変更する必要がないように、
+いくらかの追加の領域が割り当てられます。
 
-- Hash lists by their address (object ID).  This doesn't work because if you
-  construct a new list with the same value it won't be found; e.g.::
+
+辞書はどのように実装されているのですか？
+----------------------------------------
+
+Python の辞書は大きさを変更できるハッシュテーブルとして実装されています。
+B 木にコンパイルされることで、ほとんどの条件下で (特に一般的な演算である)
+探索のパフォーマンスが良くなりますし、実装も単純です。
+
+辞書は、 :func:`hash` ビルトイン関数で、辞書に保存されているそれぞれの
+キーに対応するハッシュコードを計算して働きます。このハッシュコードはキーに
+大きく依存します。例えば、"Python" のハッシュ値は -539294296 ですが、
+ビットが一つ違うだけの文字列 "python" のハッシュ値は 1142331976 です。
+そしてこのハッシュコードは、内部配列での値が保存される位置を
+計算するために使われます。保存しているキーのハッシュ値が異なるとすれば、
+一定の時間 - コンピュータサイエンスの記法で言えば O(1) - でキーを
+検索できることになります。また、キーのいかなる並び順も
+保たれていないことにもなり、配列を ``.keys()`` や ``.items()`` として
+横断すると、辞書の内容が任意の混乱した順序で出力されます。
+
+
+なぜ辞書のキーはイミュータブルでなくてはならないのですか？
+----------------------------------------------------------
+
+辞書のハッシュテーブルの実装は、キーを見つけるために、
+キーから計算されたハッシュ値を使っています。もしキーがミュータブルな
+オブジェクトだったら、その値は変えられ、それによりハッシュ値も
+変わってしまいます。しかし、キーオブジェクトを変更したのが何者であれ、
+値が辞書のキーとして使われていたと気付けないので、辞書の中のエントリを
+適切な場所に動かせません。そうして、同じオブジェクトを探そうとしたときに、
+ハッシュ値が違うため見つかりません。古い値を探そうとしても、
+そのハッシュバイナリから見つかるオブジェクトの値は異なるでしょうから、
+これも見つかりません。
+
+リストでインデクシングされた辞書が必要なら、まず単純に
+リストをタプルに変換してください。関数 ``tuple(L)`` は、リスト ``L`` と
+同じエントリのタプルを生成します。タプルはイミュータブルなので、
+辞書のキーとして使えます。
+
+いくつかの受け入れられなかった提案:
+
+- アドレス (オブジェクト ID) のハッシュリスト。これは、
+  同じ値の新しいリストを作っても見つからないので駄目です。例えば::
 
      mydict = {[1, 2]: '12'}
      print mydict[[1, 2]]
 
-  would raise a KeyError exception because the id of the ``[1, 2]`` used in the
-  second line differs from that in the first line.  In other words, dictionary
-  keys should be compared using ``==``, not using :keyword:`is`.
+   は、2 行目の ``[1, 2]`` の id が 1 行目のものと違うため、
+   KeyError 例外を起こします。要するに、辞書のキーは :keyword:`is` ではなく、
+   ``==`` で比較されるべきです。
 
-- Make a copy when using a list as a key.  This doesn't work because the list,
-  being a mutable object, could contain a reference to itself, and then the
-  copying code would run into an infinite loop.
+- リストをキーとして使うときにコピーを作る。リストはミュータブルなので、
+  自分自身への参照を含むことができ、コードをコピーするときに無限ループに
+  ハマる可能性があるので、これは駄目です。
 
-- Allow lists as keys but tell the user not to modify them.  This would allow a
-  class of hard-to-track bugs in programs when you forgot or modified a list by
-  accident. It also invalidates an important invariant of dictionaries: every
-  value in ``d.keys()`` is usable as a key of the dictionary.
+- リストをキーとして使うことを認めるが、ユーザにそれを変更させないように
+  伝える。もしユーザが忘れたり、偶然にリストが変更されてしまったりしたら、
+  追跡困難なバグの可能性を生じてしまいます。またこれは、\ ``d.keys()`` の
+  すべての値は辞書のキーとして使えるという、辞書の重要な不変性も
+  潰してしまいます。
 
-- Mark lists as read-only once they are used as a dictionary key.  The problem
-  is that it's not just the top-level object that could change its value; you
-  could use a tuple containing a list as a key.  Entering anything as a key into
-  a dictionary would require marking all objects reachable from there as
-  read-only -- and again, self-referential objects could cause an infinite loop.
+- リストが一旦辞書のキーとして使われたら、読み込み専用のマークを付ける。
+  問題は、値を変えられるのはトップレベルオブジェクトだけではないことです。
+  リストを含むタプルもキーとして使えます。全てを辞書のキーとして導入すると、
+  そこから到達可能な全てのオブジェクトに読み込み専用のマークを
+  付ける必要があります - そして再び、自己参照オブジェクトが
+  無限ループを引き起こします。
 
-There is a trick to get around this if you need to, but use it at your own risk:
-You can wrap a mutable structure inside a class instance which has both a
-:meth:`__eq__` and a :meth:`__hash__` method.  You must then make sure that the
-hash value for all such wrapper objects that reside in a dictionary (or other
-hash based structure), remain fixed while the object is in the dictionary (or
-other structure). ::
+必要ならばこれを回避する方法がありますが、自己責任のもとで行ってください。
+ミュータブルな構造を、\ :meth:`__eq__` と :meth:`__hash__` メソッドの
+両方を持つクラスインスタンスに含めることができます。その時、
+辞書 (またはハッシュに基づく別の構造体) に属するような全ての
+ラッパーオブジェクトのハッシュ値が、そのオブジェクトが
+辞書 (その他の構造体) 中にある間固定され続けることを確実にしてください::
 
    class ListWrapper:
        def __init__(self, the_list):
@@ -640,121 +636,130 @@ other structure). ::
                    result = (result % 7777777) + i * 333
            return result
 
-Note that the hash computation is complicated by the possibility that some
-members of the list may be unhashable and also by the possibility of arithmetic
-overflow.
+なお、リストのメンバーの中にハッシュ化できないものがある可能性や、
+算術オーバーフローの可能性から、ハッシュ計算は複雑になります。
 
-Furthermore it must always be the case that if ``o1 == o2`` (ie ``o1.__eq__(o2)
-is True``) then ``hash(o1) == hash(o2)`` (ie, ``o1.__hash__() == o2.__hash__()``),
-regardless of whether the object is in a dictionary or not.  If you fail to meet
-these restrictions dictionaries and other hash based structures will misbehave.
+さらに、そのオブジェクトが辞書に含まれるか否かにかかわらず、\ ``o1 == o2``
+(すなわち ``o1.__eq__(o2) が真``) ならばいつでも
+``hash(o1) == hash(o2)`` (すなわち ``o1.__hash__() == o2.__hash__``)
+でなくてはなりません。
+その制限に適合できなければ、辞書やその他のハッシュに基づく
+構造体は間違いを起こします。
 
-In the case of ListWrapper, whenever the wrapper object is in a dictionary the
-wrapped list must not change to avoid anomalies.  Don't do this unless you are
-prepared to think hard about the requirements and the consequences of not
-meeting them correctly.  Consider yourself warned.
+この ListWrapper の例では、異常を避けるため、ラッパオブジェクトが
+辞書内にある限りラップされたリストが変更されてはなりません。
+この条件と満たせなかった時の結果について知恵を絞る覚悟がない限り、
+これをしてはいけません。よく考えてください。
 
 
-Why doesn't list.sort() return the sorted list?
------------------------------------------------
+なぜ list.sort() はソートされたリストを返さないのですか？
+---------------------------------------------------------
 
-In situations where performance matters, making a copy of the list just to sort
-it would be wasteful. Therefore, :meth:`list.sort` sorts the list in place. In
-order to remind you of that fact, it does not return the sorted list.  This way,
-you won't be fooled into accidentally overwriting a list when you need a sorted
-copy but also need to keep the unsorted version around.
+パフォーマンスが問題となる状況では、ソートするためだけにリストのコピーを
+作るのは無駄が多いです。そこで、\ :meth:`list.sort` はインプレースに
+リストをソートします。このことを忘れないため、この関数は
+ソートされたリストを返しません。こうすることで、ソートされたコピーが必要で、
+ソートされていないものも残しておきたいときに、
+うっかり上書きしてしまうようなことがなくなります。
 
-In Python 2.4 a new built-in function -- :func:`sorted` -- has been added.
-This function creates a new list from a provided iterable, sorts it and returns
-it.  For example, here's how to iterate over the keys of a dictionary in sorted
-order::
+Python 2.4 で、新しい関数 -- :func:`sorted` -- が追加されました。
+この関数は、与えられたイテレート可能から新しいリストを生成し、
+ソートして返します。例えば、辞書のキーをソートされた順序で
+イテレートする方法は::
 
    for key in sorted(mydict):
        ... # do whatever with mydict[key]...
 
 
-How do you specify and enforce an interface spec in Python?
------------------------------------------------------------
+Python ではどのようにインタフェース仕様を特定し適用するのですか？
+-----------------------------------------------------------------
 
-An interface specification for a module as provided by languages such as C++ and
-Java describes the prototypes for the methods and functions of the module.  Many
-feel that compile-time enforcement of interface specifications helps in the
-construction of large programs.
+C++ や Java のような言語が提供するような、モジュールに対する
+インタフェース仕様の特定は、モジュールのメソッドや関数の原型を表現します。
+インタフェースの特定がコンパイル時に適用されることが、
+大きなプログラムの構成に役立つと、広く感じられています。
 
-Python 2.6 adds an :mod:`abc` module that lets you define Abstract Base Classes
-(ABCs).  You can then use :func:`isinstance` and :func:`issubclass` to check
-whether an instance or a class implements a particular ABC.  The
-:mod:`collections` modules defines a set of useful ABCs such as
-:class:`Iterable`, :class:`Container`, and :class:`MutableMapping`.
+Python 2.6 で、\ :mod:`abc` モジュールが追加され、
+抽象基底クラス (Abstract Base Classes/ABCs) を定義できるようになりました。
+これにより、\ :func:`isinstance` や :func:`issubclass` を使って、
+あるインスタンスやクラスが特定の ABC を実装するかを調べられるように
+なりました。\ :mod:`collections` モジュールによって、\ :class:`Iterable`\ 、
+:class:`Container` 、\ :class:`MutableMapping` などの役立つ ABC が
+定義されています。
 
-For Python, many of the advantages of interface specifications can be obtained
-by an appropriate test discipline for components.  There is also a tool,
-PyChecker, which can be used to find problems due to subclassing.
+Python では、コンポーネントの適切なテスト規律によって、
+インタフェース仕様の多くの強みを活かせます。サブクラス化による問題を
+見つけるために使えるツール PyChecker もあります。
 
-A good test suite for a module can both provide a regression test and serve as a
-module interface specification and a set of examples.  Many Python modules can
-be run as a script to provide a simple "self test."  Even modules which use
-complex external interfaces can often be tested in isolation using trivial
-"stub" emulations of the external interface.  The :mod:`doctest` and
-:mod:`unittest` modules or third-party test frameworks can be used to construct
-exhaustive test suites that exercise every line of code in a module.
+モジュールのための適切なテストスイートは、回帰テストを提供し、
+モジュールのインタフェース仕様や用例集としても役立ちます。
+多くの Python モジュールは、簡単な「自己テスト」を提供する
+スクリプトとして実行できます。複雑な外部インタフェースを使うモジュールさえ、
+外部インタフェースの細かい「スタブ」エミュレーションで単独に
+テストできることが多いです。\ :mod:`doctest` や :mod:`unittest` モジュール、
+あるいはサードパーティのテストフレームワークで、
+モジュールのコードの全ての行に及ぶ徹底的なテストスイートを構成できます。
 
-An appropriate testing discipline can help build large complex applications in
-Python as well as having interface specifications would.  In fact, it can be
-better because an interface specification cannot test certain properties of a
-program.  For example, the :meth:`append` method is expected to add new elements
-to the end of some internal list; an interface specification cannot test that
-your :meth:`append` implementation will actually do this correctly, but it's
-trivial to check this property in a test suite.
+Python で大きくて複雑なアプリケーションを構築するとき、
+インタフェース仕様と同様に、適切なテスト規律も役立ちます。
+実際、インタフェース仕様ではテストできないプログラムの属性もあるので、
+それ以上にもなりえます。例えば、\ :meth:`append` メソッドは新しい要素を
+ある内部リストの終わりに加えます。インタフェース仕様ではこの :meth:`append` の
+実装が実際にこれを行うかをテストできませんが、
+テストスイートならこの機能を簡単に確かめられます。
 
-Writing test suites is very helpful, and you might want to design your code with
-an eye to making it easily tested.  One increasingly popular technique,
-test-directed development, calls for writing parts of the test suite first,
-before you write any of the actual code.  Of course Python allows you to be
-sloppy and not write test cases at all.
+テストスイートを書くことはとても役に立ちますし、
+テストのしやすさという視点でコードを設計することにもつながります。
+テスト指向開発は、人気を増しつつある技法で、実際のコードを書き始める前に、
+最初からテストスイートの部品を書くことを求めます。
+もちろん、 Python で粗雑にテストケースを全く書かないこともできます。
 
 
-Why are default values shared between objects?
-----------------------------------------------
+なぜオブジェクト間でデフォルト値が共有されるのですか？
+------------------------------------------------------
 
-This type of bug commonly bites neophyte programmers.  Consider this function::
+この種のバグがよく初心者プログラマに噛み付きます。
+この関数を考えてみてください::
 
    def foo(mydict={}):  # Danger: shared reference to one dict for all calls
        ... compute something ...
        mydict[key] = value
        return mydict
 
-The first time you call this function, ``mydict`` contains a single item.  The
-second time, ``mydict`` contains two items because when ``foo()`` begins
-executing, ``mydict`` starts out with an item already in it.
+初めてこの関数を呼び出した時、\ ``mydict`` には一つの要素があります。
+二回目には、\ ``foo()`` が実行されるときに ``mydict`` には初めから
+一つの要素をすでに持っているので、\ ``mydict`` には二つの要素があります。
 
-It is often expected that a function call creates new objects for default
-values. This is not what happens. Default values are created exactly once, when
-the function is defined.  If that object is changed, like the dictionary in this
-example, subsequent calls to the function will refer to this changed object.
+関数の呼び出しによって、デフォルトの値に対する新しいオブジェクトが
+作られるのだと予想しがちです。実はそうなりません。デフォルト値は、
+関数が定義されたときに一度だけ生成されます。この例の辞書のように、
+そのオブジェクトが変更されたとき、
+その後の関数の呼び出しは変更後のオブジェクトを参照します。
 
-By definition, immutable objects such as numbers, strings, tuples, and ``None``,
-are safe from change. Changes to mutable objects such as dictionaries, lists,
-and class instances can lead to confusion.
+定義の時に、数、文字列、タプル、\ ``None`` など、
+イミュータブルなオブジェクトを使うと変更される危険がありません。
+辞書、リスト、クラスインスタンスなどのミュータブルなオブジェクトは
+混乱のもとです。
 
-Because of this feature, it is good programming practice to not use mutable
-objects as default values.  Instead, use ``None`` as the default value and
-inside the function, check if the parameter is ``None`` and create a new
-list/dictionary/whatever if it is.  For example, don't write::
+この性質から、ミュータブルなオブジェクトをデフォルト値として使わない
+プログラミング手法がいいです。代わりに、\ ``None`` をデフォルト値に使い、
+そのパラメタが ``None`` である時にだけ、
+関数の内部で新しいリスト/辞書/その他をつくるようにしてください。
+例えば、こう書かずに::
 
    def foo(mydict={}):
        ...
 
-but::
+こう書いてください::
 
    def foo(mydict=None):
        if mydict is None:
            mydict = {}  # create a new dict for local namespace
 
-This feature can be useful.  When you have a function that's time-consuming to
-compute, a common technique is to cache the parameters and the resulting value
-of each call to the function, and return the cached value if the same value is
-requested again.  This is called "memoizing", and can be implemented like this::
+この性質が便利なこともあります。時間のかかる計算を行う関数があるときに
+使われる一般的な技法は、関数が呼び出されるごとにパラメタと結果の値を
+キャッシュし、再び同じ値が要求されたらキャッシュされた値を返すというものです。
+これは "memoizing" と呼ばれ、このように実装されます::
 
    # Callers will never provide a third parameter for this function.
    def expensive (arg1, arg2, _cache={}):
@@ -766,17 +771,17 @@ requested again.  This is called "memoizing", and can be implemented like this::
        _cache[(arg1, arg2)] = result           # Store result in the cache
        return result
 
-You could use a global variable containing a dictionary instead of the default
-value; it's a matter of taste.
+デフォルト値の代わりに、辞書を含むグローバル変数も使えます。
+これは好みの問題です。
 
 
-Why is there no goto?
----------------------
+なぜ goto が無いのですか？
+--------------------------
 
-You can use exceptions to provide a "structured goto" that even works across
-function calls.  Many feel that exceptions can conveniently emulate all
-reasonable uses of the "go" or "goto" constructs of C, Fortran, and other
-languages.  For example::
+関数の呼び出しをまたいでも動作する "構造化された goto" を
+まかなうものとして例外を使えます。C、Fortran、その他の言語での
+"go" あるいは "goto" 構造の適切な用途は全て、
+例外で同じようなことををすれば便利であると、広く感じられています。例えば::
 
    class label: pass  # declare a label
 
@@ -788,118 +793,118 @@ languages.  For example::
         pass
    ...
 
-This doesn't allow you to jump into the middle of a loop, but that's usually
-considered an abuse of goto anyway.  Use sparingly.
+例外ではループ内へ跳ぶことはできませんが、
+どちらにしてもそれは goto の乱用と見なされるものです。使うのは控えてください。
 
 
-Why can't raw strings (r-strings) end with a backslash?
--------------------------------------------------------
+なぜ raw 文字列 (r-strings) はバックスラッシュで終わってはいけないのですか？
+----------------------------------------------------------------------------
 
-More precisely, they can't end with an odd number of backslashes: the unpaired
-backslash at the end escapes the closing quote character, leaving an
-unterminated string.
+正確には、奇数個のバックスラッシュで終わってはいけません。
+終わりの対になっていないバックスラッシュは、閉じ引用文字をエスケープし、
+終っていない文字列を残してしまいます。
 
-Raw strings were designed to ease creating input for processors (chiefly regular
-expression engines) that want to do their own backslash escape processing. Such
-processors consider an unmatched trailing backslash to be an error anyway, so
-raw strings disallow that.  In return, they allow you to pass on the string
-quote character by escaping it with a backslash.  These rules work well when
-r-strings are used for their intended purpose.
+raw 文字列は、独自にバックスラッシュの処理をしようとするプロセッサ
+(主に正規表現エンジン) への入力を生成しやすいように設計されたものです。
+このようなプロセッサは、終端の対になっていないバックスラッシュを
+結局エラーとみなすので、raw 文字列はそれを認めません。その代わりに、
+バックスラッシュでエスケープすることで、引用文字を文字列として
+渡すことができます。r-string が意図された目的に使われるときに、
+この規則が役に立つのです。
 
-If you're trying to build Windows pathnames, note that all Windows system calls
-accept forward slashes too::
+Windows のパス名を構築するときには、Windows のシステムコールは
+普通のスラッシュも受け付けることを憶えておいてください::
 
    f = open("/mydir/file.txt")  # works fine!
 
-If you're trying to build a pathname for a DOS command, try e.g. one of ::
+DOS コマンドのパス名を構築するときには、例えばこの中のどれかを試してください::
 
    dir = r"\this\is\my\dos\dir" "\\"
    dir = r"\this\is\my\dos\dir\ "[:-1]
    dir = "\\this\\is\\my\\dos\\dir\\"
 
 
-Why doesn't Python have a "with" statement for attribute assignments?
----------------------------------------------------------------------
+属性の代入に "with" 文が使えないのはなぜですか？
+------------------------------------------------
 
-Python has a 'with' statement that wraps the execution of a block, calling code
-on the entrance and exit from the block.  Some language have a construct that
-looks like this::
+Python には、ブロックの実行を包む 'with' 文があり、ブロックに入るときと
+ブロックから出るときに、コードを呼び出します。
+以下のような構造を持つ言語があります::
 
    with obj:
        a = 1               # equivalent to obj.a = 1
        total = total + 1   # obj.total = obj.total + 1
 
-In Python, such a construct would be ambiguous.
+Python では、このような構造は曖昧になるでしょう。
 
-Other languages, such as Object Pascal, Delphi, and C++, use static types, so
-it's possible to know, in an unambiguous way, what member is being assigned
-to. This is the main point of static typing -- the compiler *always* knows the
-scope of every variable at compile time.
+Object Pascal、Delphi、C++のような他の言語では、静的な型を使うので、
+曖昧な方法でも、どのメンバに代入されているのか分かります。
+これが静的型付けの要点です -- コンパイラは *always* コンパイル時に
+すべての変数のスコープを知るのです。
 
-Python uses dynamic types. It is impossible to know in advance which attribute
-will be referenced at runtime. Member attributes may be added or removed from
-objects on the fly. This makes it impossible to know, from a simple reading,
-what attribute is being referenced: a local one, a global one, or a member
-attribute?
+Python は動的な型を使います。実行時にどの属性が参照されるか事前に
+分かりません。動作中にメンバ属性が追加あるいは
+除去されるかもしれません。これでは、単純に読むだけでは
+どのアトリビュートが参照されているか分かりません。ローカルなのか、
+グローバルなのか、メンバ属性なのか。
 
-For instance, take the following incomplete snippet::
+例えば、以下の不完全なコード片を考えましょう::
 
    def foo(a):
        with a:
            print x
 
-The snippet assumes that "a" must have a member attribute called "x".  However,
-there is nothing in Python that tells the interpreter this. What should happen
-if "a" is, let us say, an integer?  If there is a global variable named "x",
-will it be used inside the with block?  As you see, the dynamic nature of Python
-makes such choices much harder.
+このコード片では、"a" は "x" というメンバ属性を持っていると仮定されています。
+しかし、Python ではインタプリタにはこの仮定を伝えられる仕組みはありません。
+"a" が、例えば整数だったら、どうなってしまうでしょうか。
+"x" という名前のグローバル変数があったら、それが with ブロックの中で
+使われるのでしょうか。この通り、Python の動的な特質から、
+このような選択はとても難しい物になっています。
 
-The primary benefit of "with" and similar language features (reduction of code
-volume) can, however, easily be achieved in Python by assignment.  Instead of::
+しかし、"with" やそれに類する言語の機能の一番の利点 (コード量の削減) は、
+Python では代入により簡単に手に入れられます::
 
    function(args).mydict[index][index].a = 21
    function(args).mydict[index][index].b = 42
    function(args).mydict[index][index].c = 63
 
-write this::
+こう書いてください::
 
    ref = function(args).mydict[index][index]
    ref.a = 21
    ref.b = 42
    ref.c = 63
 
-This also has the side-effect of increasing execution speed because name
-bindings are resolved at run-time in Python, and the second version only needs
-to perform the resolution once.
+Python では実行時に名前束縛が解決され、後者はその解決が一度で済むため、
+これには実行速度をあげる副作用もあります。
 
 
-Why are colons required for the if/while/def/class statements?
---------------------------------------------------------------
+if/while/def/class 文にコロンが必要なのはなぜですか？
+-----------------------------------------------------
 
-The colon is required primarily to enhance readability (one of the results of
-the experimental ABC language).  Consider this::
+主に可読性を高めるため (実験的な ABC 言語の結果の一つ) に、コロンが必要です::
 
    if a == b
        print a
 
-versus ::
+と::
 
    if a == b:
        print a
 
-Notice how the second one is slightly easier to read.  Notice further how a
-colon sets off the example in this FAQ answer; it's a standard usage in English.
+を考えれば、後者のほうが少し読みやすいでしょう。さらに言えば、
+この FAQ の解答例は次のようになるでしょう。これは、英語の標準的な用法です。
 
-Another minor reason is that the colon makes it easier for editors with syntax
-highlighting; they can look for colons to decide when indentation needs to be
-increased instead of having to do a more elaborate parsing of the program text.
+他の小さな理由は、コロンによってエディタがシンタックスハイライトを
+しやすくなることです。手の込んだ解析をしなくても、
+コロンを探せばいつインデンテーションを増やすべきかを決められます。
 
 
-Why does Python allow commas at the end of lists and tuples?
-------------------------------------------------------------
+なぜ Python ではリストやタプルの最後にカンマがあっても良いのですか？
+--------------------------------------------------------------------
 
-Python lets you add a trailing comma at the end of lists, tuples, and
-dictionaries::
+Python では、リスト、タプル、辞書の最後の要素の後端に
+カンマをつけても良いことになっています::
 
    [1, 2, 3,]
    ('a', 'b', 'c',)
@@ -909,15 +914,13 @@ dictionaries::
    }
 
 
-There are several reasons to allow this.
+これを許すのには、いくつかの理由があります。
 
-When you have a literal value for a list, tuple, or dictionary spread across
-multiple lines, it's easier to add more elements because you don't have to
-remember to add a comma to the previous line.  The lines can also be sorted in
-your editor without creating a syntax error.
+複数行にまたがるリスト、タプル、辞書にリテラル値を使っているとき、
+こうすれば前の行にカンマを加える必要がなくなるので、要素を加えやすくなります。
+構文エラーを引き起こすことなくエディタで行をソートできます。
 
-Accidentally omitting the comma can lead to errors that are hard to diagnose.
-For example::
+間違えてカンマを落としてしまうと、診断しづらいエラーにつながります。例えば::
 
        x = [
          "fee",
@@ -926,7 +929,9 @@ For example::
          "fum"
        ]
 
-This list looks like it has four elements, but it actually contains three:
-"fee", "fiefoo" and "fum".  Always adding the comma avoids this source of error.
+このリストには4つの要素があるように見えますが、
+実際には3つしかありません。"fee、"fiefoo"、"fum" です。
+いつもカンマを付けるようにすれば、この種のエラーが避けられます。
 
-Allowing the trailing comma may also make programmatic code generation easier.
+後端にカンマをつけても良いことにすれば、プログラムによるコード生成も簡単になります。
+

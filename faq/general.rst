@@ -1,399 +1,401 @@
 :tocdepth: 2
 
-==================
-General Python FAQ
-==================
+===============
+一般 Python FAQ
+===============
 
 .. contents::
 
-General Information
-===================
+一般情報
+========
 
-What is Python?
----------------
+Python とは何ですか？
+---------------------
 
-Python is an interpreted, interactive, object-oriented programming language.  It
-incorporates modules, exceptions, dynamic typing, very high level dynamic data
-types, and classes.  Python combines remarkable power with very clear syntax.
-It has interfaces to many system calls and libraries, as well as to various
-window systems, and is extensible in C or C++.  It is also usable as an
-extension language for applications that need a programmable interface.
-Finally, Python is portable: it runs on many Unix variants, on the Mac, and on
-PCs under MS-DOS, Windows, Windows NT, and OS/2.
+Python は、インタプリタ形式の、対話的な、
+オブジェクト指向プログラミング言語です。この言語には、モジュール、例外、
+動的な型付け、超高水準の動的なデータ型、およびクラスが取り入れられています。
+Python は驚くべきパワーと非常に分かりやすい文法を持ち合わせています。
+そして、多くのシステムコールやライブラリへだけでなく、
+様々なウィンドウシステムへのインタフェースがあり、
+C や C++ で拡張することもできます。また、プログラム可能なインタフェースが
+必要なアプリケーションのための拡張言語としても利用できます。
+最後に、Python はポータブルです。多くの Unix バリアント、
+Mac、そして MS-DOS、Windows、Windows NT、OS/2 上の PC で動かすことができます。
 
-To find out more, start with :ref:`tutorial-index`.  The `Beginner's Guide to
-Python <http://wiki.python.org/moin/BeginnersGuide>`_ links to other
-introductory tutorials and resources for learning Python.
-
-
-What is the Python Software Foundation?
----------------------------------------
-
-The Python Software Foundation is an independent non-profit organization that
-holds the copyright on Python versions 2.1 and newer.  The PSF's mission is to
-advance open source technology related to the Python programming language and to
-publicize the use of Python.  The PSF's home page is at
-http://www.python.org/psf/.
-
-Donations to the PSF are tax-exempt in the US.  If you use Python and find it
-helpful, please contribute via `the PSF donation page
-<http://www.python.org/psf/donations/>`_.
+さらに知りたければ、\ :ref:`tutorial-index` から始めましょう。他にも、
+`Beginner's Guide to Python <http://wiki.python.org/moin/BeginnersGuide>`_
+から、Python 学習のための入門用チュートリアルやリソースを参照できます。。
 
 
-Are there copyright restrictions on the use of Python?
-------------------------------------------------------
+Python Software Foundation とは何ですか？
+-----------------------------------------
 
-You can do anything you want with the source, as long as you leave the
-copyrights in and display those copyrights in any documentation about Python
-that you produce.  If you honor the copyright rules, it's OK to use Python for
-commercial use, to sell copies of Python in source or binary form (modified or
-unmodified), or to sell products that incorporate Python in some form.  We would
-still like to know about all commercial use of Python, of course.
+Python Software Foundation は、Python バージョン 2.1 以降の
+著作権を保持する独立の非営利組織です。PSF の任務は、Python
+プログラミング言語に関するオープンソース技術を進め、
+Python の使用を広めることです。PSF のホームページが
+http://www.python.org/psf/ にあります。
 
-See `the PSF license page <http://python.org/psf/license/>`_ to find further
-explanations and a link to the full text of the license.
-
-The Python logo is trademarked, and in certain cases permission is required to
-use it.  Consult `the Trademark Usage Policy
-<http://www.python.org/psf/trademarks/>`__ for more information.
+PSF への寄付は米国で免税されています。Python を利用して役立ったと感じたら、
+`the PSF donation page <http://www.python.org/psf/donations/>`_
+で貢献をお願いします。
 
 
-Why was Python created in the first place?
-------------------------------------------
+Python を使うのに著作権の制限はありますか？
+-------------------------------------------
 
-Here's a *very* brief summary of what started it all, written by Guido van
-Rossum:
+あなたが作成する Python に関するドキュメントのすべてに著作権を残し、
+それらの著作権を表示する限り、ソースコードをどのように扱ってもかまいません。
+この著作権規則を尊重する限り、商用に Python を利用しても、
+ソースあるいはバイナリ形式で(変更の有無にかかわらず) Python の
+コピーを販売しても、Python が何らかの形で組み込まれた製品を
+販売してかまいません。もちろん、Python のあらゆる商業用途についても同様です。
 
-   I had extensive experience with implementing an interpreted language in the
-   ABC group at CWI, and from working with this group I had learned a lot about
-   language design.  This is the origin of many Python features, including the
-   use of indentation for statement grouping and the inclusion of
-   very-high-level data types (although the details are all different in
-   Python).
+ライセンスのより詳しい説明と全文へのリンクは
+`the PSF license page <http://python.org/psf/license/>`_ を参照してください。
 
-   I had a number of gripes about the ABC language, but also liked many of its
-   features.  It was impossible to extend the ABC language (or its
-   implementation) to remedy my complaints -- in fact its lack of extensibility
-   was one of its biggest problems.  I had some experience with using Modula-2+
-   and talked with the designers of Modula-3 and read the Modula-3 report.
-   Modula-3 is the origin of the syntax and semantics used for exceptions, and
-   some other Python features.
-
-   I was working in the Amoeba distributed operating system group at CWI.  We
-   needed a better way to do system administration than by writing either C
-   programs or Bourne shell scripts, since Amoeba had its own system call
-   interface which wasn't easily accessible from the Bourne shell.  My
-   experience with error handling in Amoeba made me acutely aware of the
-   importance of exceptions as a programming language feature.
-
-   It occurred to me that a scripting language with a syntax like ABC but with
-   access to the Amoeba system calls would fill the need.  I realized that it
-   would be foolish to write an Amoeba-specific language, so I decided that I
-   needed a language that was generally extensible.
-
-   During the 1989 Christmas holidays, I had a lot of time on my hand, so I
-   decided to give it a try.  During the next year, while still mostly working
-   on it in my own time, Python was used in the Amoeba project with increasing
-   success, and the feedback from colleagues made me add many early
-   improvements.
-
-   In February 1991, after just over a year of development, I decided to post to
-   USENET.  The rest is in the ``Misc/HISTORY`` file.
+Python のロゴは商標登録されていて、使用に許可が必要な場合があります。
+詳しい情報は `the Trademark Usage Policy
+<http://www.python.org/psf/trademarks/>`__ を参照してください。
 
 
-What is Python good for?
-------------------------
+Python が誕生したきっかけは何ですか？
+-------------------------------------
 
-Python is a high-level general-purpose programming language that can be applied
-to many different classes of problems.
+Guido van Rossum による、すべてのきっかけの *非常に* 簡潔な概要は
+以下のとおりです:
 
-The language comes with a large standard library that covers areas such as
-string processing (regular expressions, Unicode, calculating differences between
-files), Internet protocols (HTTP, FTP, SMTP, XML-RPC, POP, IMAP, CGI
-programming), software engineering (unit testing, logging, profiling, parsing
-Python code), and operating system interfaces (system calls, filesystems, TCP/IP
-sockets).  Look at the table of contents for :ref:`library-index` to get an idea
-of what's available.  A wide variety of third-party extensions are also
-available.  Consult `the Python Package Index <http://pypi.python.org/pypi>`_ to
-find packages of interest to you.
+   私は CWI の ABC グループでインタプリタ言語を実装する幅広い経験をしていて、
+   そこで共に働くことで言語設計に関して大いに学びました。
+   これが文のグループ化へのインデントの使用や超高水準のデータ型の包含など、
+   (詳細は Python では全く異なりますが)
+   Python の多くの特徴のもととなっています。
 
+   私は ABC 言語に対して多くの不満を持っていましたが、
+   同時に特徴の多くが好きでもありました。ABC 言語 (やその実装 )を拡張して
+   私の不満を解消することは不可能でした (実際、拡張性の欠如は
+   大きな問題だったのです)。私は Modula-2+ を使用することでいくらかの
+   経験を積み、Modula-3 のデザイナーと話して Modula-3 のレポートを
+   読みました。Modula-3 は例外処理に使う構文や語義、
+   その他いくつかの Python の特徴の起源です。
 
-How does the Python version numbering scheme work?
---------------------------------------------------
+   私は CWI で Amoeba 分散オペレーティングシステムのグループで働いていました。
+   Amoeba のシステムコールインタフェースにはボーンシェルから
+   アクセスしにくかったので、C プログラムやボーンシェルスクリプトを
+   書くよりも良いシステム管理の方法が必要でした。Amoeba の
+   エラー処理の経験から、プログラミング言語の機能としての例外の
+   重要さを強く意識するようになりました。
 
-Python versions are numbered A.B.C or A.B.  A is the major version number -- it
-is only incremented for really major changes in the language.  B is the minor
-version number, incremented for less earth-shattering changes.  C is the
-micro-level -- it is incremented for each bugfix release.  See :pep:`6` for more
-information about bugfix releases.
+   ABC のような構文と Amoeba のようなシステムコールを合わせ持った
+   スクリプト言語が必要だろうと思いつきました。Amoeba 専用の言語を
+   書くのは愚かであるだろうと気づき、一般に拡張できるような
+   言語を求めることに決めました。
 
-Not all releases are bugfix releases.  In the run-up to a new major release, a
-series of development releases are made, denoted as alpha, beta, or release
-candidate.  Alphas are early releases in which interfaces aren't yet finalized;
-it's not unexpected to see an interface change between two alpha releases.
-Betas are more stable, preserving existing interfaces but possibly adding new
-modules, and release candidates are frozen, making no changes except as needed
-to fix critical bugs.
+   1989 年のクリスマス休暇の間、自由な時間がたくさんできたので、
+   その言語を実際に作ってみることにしました。翌年の間、
+   勤務時間以外はほとんどその開発に費やし、Python は
+   Amoeba プロジェクトのなかで成果を重ね、
+   同僚からのフィードバックは私の開発を大いに加速させてくれました。
 
-Alpha, beta and release candidate versions have an additional suffix.  The
-suffix for an alpha version is "aN" for some small number N, the suffix for a
-beta version is "bN" for some small number N, and the suffix for a release
-candidate version is "cN" for some small number N.  In other words, all versions
-labeled 2.0aN precede the versions labeled 2.0bN, which precede versions labeled
-2.0cN, and *those* precede 2.0.
-
-You may also find version numbers with a "+" suffix, e.g. "2.2+".  These are
-unreleased versions, built directly from the Subversion trunk.  In practice,
-after a final minor release is made, the Subversion trunk is incremented to the
-next minor version, which becomes the "a0" version,
-e.g. "2.4a0".
-
-See also the documentation for ``sys.version``, ``sys.hexversion``, and
-``sys.version_info``.
+   1991 年 2 月、1 年間と少しの開発を経て、USENET に投稿することにしました。
+   それは ``Misc/HISTORY`` ファイルに残っています。
 
 
-How do I obtain a copy of the Python source?
---------------------------------------------
+Python は何をするのに向いていますか？
+-------------------------------------
 
-The latest Python source distribution is always available from python.org, at
-http://www.python.org/download/.  The latest development sources can be obtained
-via anonymous Subversion at http://svn.python.org/projects/python/trunk.
+Python は、多岐にわたる問題に適用できる高水準な汎用プログラム言語です。
 
-The source distribution is a gzipped tar file containing the complete C source,
-Sphinx-formatted documentation, Python library modules, example programs, and
-several useful pieces of freely distributable software.  The source will compile
-and run out of the box on most UNIX platforms.
+この言語は、文字列処理(正規表現、Unicode、ファイル間の差分の計算)、
+インターネットプロトコル(HTTP、FTP、SMTP、XML-RPC、POP、IMAP、
+CGI プログラミング)、ソフトウェアエンジニアリング(Python コードの
+ユニットテスト、ロギング、プロファイリング、解析)、
+オペレーティングシステムインタフェース(システムコール、ファイルシステム、
+TCP/IP ソケット) のような領域をカバーする大規模な標準ライブラリから
+成り立っています。何ができるかを知るには :ref:`library-index` の
+一覧を参照してください。また、様々なサードパーティの拡張も使えます。
+`the Python Package Index <http://pypi.python.org/pypi>`_ から
+興味のあるパッケージを探してみましょう。
+
+
+Python のバージョン番号の仕組みはどうなっているのですか？
+---------------------------------------------------------
+
+Python のバージョン番号は A.B.C や A.B のように付けられています。
+A はメジャーバージョン番号で、言語の本当に重要な変更の時のみ増やされます。
+B はマイナーバージョン番号で、そこまでは大きくない変更の時に増やされます。
+C はマイクロレベルで、バグフィックスリリースの度に増やされます。
+バグフィックスリリースに関する詳細は :pep:`6` を参照してください。
+
+すべてのリリースがバグフィックスリリースであるというわけではありません。
+メジャーリリースへの準備段階では、一連の開発リリースが作られ、
+アルファ版、ベータ版、またはリリース候補と名付けられます。
+アルファ版はインタフェースが確定されないうちにリリースされる早期リリースで、
+２つのアルファリリース間でインタフェースが変わるかもしれません。
+ベータ版はもっと安定していて、現存のインタフェースは保存されますが
+新しいモジュールが追加されるかもしれません。リリース候補は固まったもので、
+致命的なバグを直すのでなければ変更されません。
+
+アルファ、ベータ、リリース候補の各バージョンには接尾語が追加されます。
+N をなにか小さい番号として、アルファ版の接尾語は "aN" 、
+ベータ版の接尾語は "bN" 、リリース候補の接尾語は "cN" です。
+つまり、バージョン 2.0aN、バージョン 2.0bN、バージョン 2.0cN、
+バージョン 2.0 の順にリリースされることになります。
+
+また、"2.2+" のように "+" 接尾語が付いたバージョン番号もあります。
+これは未発表のバージョンで、Subversion トランクから直接組み立てられています。
+実際、最後のマイナーリリースができた後、Subversion トランクは
+"2.4a0" のように "a0" がつく次のマイナーバージョンになります。
+
+``sys.version``\ 、\ ``sys.hexversion``\ 、\ ``sys.version_info`` についての
+ドキュメントも参照してください。
+
+
+Python のソースのコピーはどこで手に入りますか？
+-----------------------------------------------
+
+最新の Python ソースは python.org (http://www.python.org/download/) から
+いつでも手に入れることができます。最新の開発版ソースは
+http://svn.python.org/projects/python/trunk の匿名
+Subversion から手に入れることができます。
+
+ソースは gzip された tar ファイルで配布され、完全な C のソース、
+Sphinx によりフォーマットされたドキュメント、Python ライブラリモジュール、
+サンプルプログラム、そしていくつかの役立つ配布自由なソフトウェアを
+含んでいます。このソースはほとんどの UNIX プラットフォームで
+そのままコンパイルして動かせます。
 
 .. XXX update link once the dev faq is relocated
 
-Consult the `Developer FAQ <http://www.python.org/dev/faq/>`__ for more
-information on getting the source code and compiling it.
+ソースコードを手に入れてコンパイルすることの詳しい情報は
+`開発者 FAQ <http://www.python.org/dev/faq/>`__ を参照してください。
 
 
-How do I get documentation on Python?
--------------------------------------
+Python のドキュメントはどこで手に入りますか？
+---------------------------------------------
 
 .. XXX mention py3k
 
-The standard documentation for the current stable version of Python is available
-at http://docs.python.org/.  PDF, plain text, and downloadable HTML versions are
-also available at http://docs.python.org/download.html.
+Python の現行の安定バージョンの標準ドキュメントは http://docs.python.org/ から
+利用できます。また、PDF、プレーンテキスト、ダウンロードできる HTML 版も
+http://docs.python.org/download.html から利用できます。
 
-The documentation is written in reStructuredText and processed by `the Sphinx
-documentation tool <http://sphinx.pocoo.org/>`__.  The reStructuredText source
-for the documentation is part of the Python source distribution.
-
-
-I've never programmed before. Is there a Python tutorial?
----------------------------------------------------------
-
-There are numerous tutorials and books available.  The standard documentation
-includes :ref:`tutorial-index`.
-
-Consult `the Beginner's Guide <http://wiki.python.org/moin/BeginnersGuide>`_ to
-find information for beginning Python programmers, including lists of tutorials.
+このドキュメントは reStructuredText で書かれ、\ `the Sphinx documentation tool
+<http://sphinx.pocoo.org/>`__ で構成されました。このドキュメントに使われた
+reStructuredText のソースは Python のソース配布に含まれます。
 
 
-Is there a newsgroup or mailing list devoted to Python?
--------------------------------------------------------
+プログラミングをしたことがないのですが、 Python のチュートリアルはありますか？
+------------------------------------------------------------------------------
 
-There is a newsgroup, :newsgroup:`comp.lang.python`, and a mailing list,
-`python-list <http://mail.python.org/mailman/listinfo/python-list>`_.  The
-newsgroup and mailing list are gatewayed into each other -- if you can read news
-it's unnecessary to subscribe to the mailing list.
-:newsgroup:`comp.lang.python` is high-traffic, receiving hundreds of postings
-every day, and Usenet readers are often more able to cope with this volume.
+膨大な量の役に立つチュートリアルや書籍があります。標準のドキュメントには
+:ref:`tutorial-index` などがあります。
 
-Announcements of new software releases and events can be found in
-comp.lang.python.announce, a low-traffic moderated list that receives about five
-postings per day.  It's available as `the python-announce mailing list
-<http://mail.python.org/mailman/listinfo/python-announce-list>`_.
-
-More info about other mailing lists and newsgroups
-can be found at http://www.python.org/community/lists/.
+Python プログラム初心者のための情報のチュートリアルのリストは `the Beginner's
+Guide <http://wiki.python.org/moin/BeginnersGuide>`_ を参照してください。
 
 
-How do I get a beta test version of Python?
--------------------------------------------
+Python のためのニュースグループやメーリングリストはありますか？
+---------------------------------------------------------------
 
-Alpha and beta releases are available from http://www.python.org/download/.  All
-releases are announced on the comp.lang.python and comp.lang.python.announce
-newsgroups and on the Python home page at http://www.python.org/; an RSS feed of
-news is available.
+ニュースグループ :newsgroup:`comp.lang.python` やメーリングリスト
+`python-list <http://mail.python.org/mailman/listinfo/python-list>`_
+があります。ニュースグループとメーリングリストは互いに接続されていて、
+ニュースを購読すればメーリングリストに参加する必要はありません。
+:newsgroup:`comp.lang.python` は一日に数百のポスティングを受ける高い
+トラフィックで、USENET 読者は多くの場合、このボリュームに応えることができます。
+
+新しいソフトウェアリリースとイベントの告知は comp.lang.python.announce で
+見つけられます。これは 一日に 5 ポスティング程度を受ける低トラフィックの
+手頃なメーリングリストです。\ `the python-announce mailing list
+<http://mail.python.org/mailman/listinfo/python-announce-list>`_
+から利用可能です。
+
+その他のメーリングリストやニュースグループについての詳しい情報は
+http://www.python.org/community/lists/ にあります。
+
+
+Python のベータテスト版はどこで手に入りますか？
+-----------------------------------------------
+
+アルファ/ベータリリースは http://www.python.org/download/ で手に入ります。
+リリースはすべて comp.lang.python や comp.lang.python.announce の
+ニュースグループと Python ホームページ http://www.python.org/ で
+告知され、PSS ニュースフィードが使えます。
 
 .. XXX update link once the dev faq is relocated
 
-You can also access the development version of Python through Subversion.  See
-http://www.python.org/dev/faq/ for details.
+Subversion から開発版を手に入れることもできます。
+詳細は http://www.python.org/dev/faq/ を参照してください。
 
 
-How do I submit bug reports and patches for Python?
----------------------------------------------------
+Python のバグ報告やパッチを上げるにはどうしたら良いですか？
+-----------------------------------------------------------
 
-To report a bug or submit a patch, please use the Roundup installation at
-http://bugs.python.org/.
+バグの報告やパッチの投稿には、\ http://bugs.python.org/ から
+Roundup installation を利用してください。
 
-You must have a Roundup account to report bugs; this makes it possible for us to
-contact you if we have follow-up questions.  It will also enable Roundup to send
-you updates as we act on your bug. If you had previously used SourceForge to
-report bugs to Python, you can obtain your Roundup password through Roundup's
-`password reset procedure <http://bugs.python.org/user?@template=forgotten>`_.
+バグ報告には Roundup アカウントが必要です (こちらから関連する質問を
+させて頂くため、またバグを解決したときにアップデート版を送るため)。
+以前バグ報告に SourceForge を使っていたことがあるなら、Roundup の
+`password reset procedure <http://bugs.python.org/user?@template=forgotten>`_
+から Roundup のパスワードを取得することができます。
 
 .. XXX adapt link to dev guide
 
-For more information on how Python is developed, consult `the Python Developer's
-Guide <http://python.org/dev/>`_.
+Python 開発の工程について、詳しくは `the Python Developer's
+Guide <http://python.org/dev/>`_ を参照してください。
 
 
-Are there any published articles about Python that I can reference?
--------------------------------------------------------------------
+Python について発行された記事を何か参照できますか？
+---------------------------------------------------
 
-It's probably best to cite your favorite book about Python.
+Python に関するあなたの愛読書を引用するのが一番でしょう。
 
-The very first article about Python was written in 1991 and is now quite
-outdated.
+Python に関する一番初めの記事はとても古く、1991年に書かれています。
 
     Guido van Rossum and Jelke de Boer, "Interactively Testing Remote Servers
     Using the Python Programming Language", CWI Quarterly, Volume 4, Issue 4
     (December 1991), Amsterdam, pp 283-303.
 
 
-Are there any books on Python?
-------------------------------
+Python の本はありますか？
+-------------------------
 
-Yes, there are many, and more are being published.  See the python.org wiki at
-http://wiki.python.org/moin/PythonBooks for a list.
+はい、たくさんあり、そのほとんどは現在も出版されています。
+リストは python.org wiki http://wiki.python.org/moin/PythonBooks にあります。
 
-You can also search online bookstores for "Python" and filter out the Monty
-Python references; or perhaps search for "Python" and "language".
-
-
-Where in the world is www.python.org located?
----------------------------------------------
-
-It's currently in Amsterdam, graciously hosted by `XS4ALL
-<http://www.xs4all.nl>`_.  Thanks to Thomas Wouters for his work in arranging
-python.org's hosting.
+また、オンライン書店で "Python" で検索し、Monty Python をフィルタで
+除外してもいいです (または、"Python" と "言語" で検索してください)。
 
 
-Why is it called Python?
-------------------------
+www.python.org は世界のどこにあるのですか？
+-------------------------------------------
 
-When he began implementing Python, Guido van Rossum was also reading the
-published scripts from `"Monty Python's Flying Circus"
-<http://pythonline.com/>`__, a BBC comedy series from the 1970s.  Van Rossum
-thought he needed a name that was short, unique, and slightly mysterious, so he
-decided to call the language Python.
+現在、アムステルダムの `XS4ALL <http://www.xs4all.nl>`_ に優雅に
+迎えられています。python.org のホスティングの手配に関して、
+Thomas Wouters 氏に感謝いたします。
 
 
-Do I have to like "Monty Python's Flying Circus"?
+なぜ Python という名前なのですか？
+----------------------------------
+
+Python の開発が始まった頃、Guido van Rossum は 1970 年代に始まった BBC の
+コメディシリーズ `"Monty Python's Flying Circus" <http://pythonline.com/>`__ の
+スクリプト集を読んでいました。Van Rossum は、短くて、ユニークで、
+少しミステリアスな名前が欲しかったので、この言語の名前を Python と
+呼ぶことにしたのです。
+
+
+『空飛ぶモンティ・パイソン』を好きでなくてはいけませんか？
+----------------------------------------------------------
+
+いいえ。でも、好きになってくれるといいな。：）
+
+
+現実世界での Python
+===================
+
+Python はどれくらい安定していますか？
+-------------------------------------
+
+とても安定しています。1991 年以来新しい安定リリースはおよそ 6 から 8 ヶ月毎に
+出されていて、このペースが続きそうです。現在、主要なリリースはたいてい
+約 18 ヶ月毎に出されています。
+
+開発者が旧バージョンの "bugfix" リリースを公開するので、現行のリリースの
+安定性は徐々に向上していきます。バグフィックスリリースは
+、バージョン番号の 3 番目の成分によって示され(例: 2.5.3、2.6.2)、
+安定性に配慮されています。バグフィックスリリースには既知の問題への
+修正だけが含まれ、一連のバグフィックスリリースで同じインタフェースが
+保たれることが保証されているのです。
+
+最新の安定版は `Python download page <http://python.org/download/>`_ から
+いつでも手に入れることができます。現在、安定版に 2 つのブランチがあるので、
+推奨の実用版には 2.x と 3.x の２つがあります。現時点では Python 2 の方が
+Python 3 より多くのサードパーティソフトに対応しているので、Python 3.x は
+Python 2.x より使いづらいかもしれません。Python 2 のコードは基本的に
+そのままでは Python 3 で動かすことができません。
+
+
+どれくらいの人が Python を使っていますか？
+------------------------------------------
+
+正確な人数を調べるのは難しいですが、おそらく数万人のユーザーがいるでしょう。
+
+Python は自由にダウンロード可能なので、売上高がなく、多数のサイトから利用でき、
+多くの Linux ディストーションに同梱されているので、ダウンロード統計から
+全体の状況を知ることはできません。
+
+comp.lang.python ニュースグループはとても活発ですが、
+すべての Python ユーザーが投稿するわけではなく、読みすらしない人もいます。
+
+
+Python で行われた大きなプロジェクトはありますか？
 -------------------------------------------------
 
-No, but it helps.  :)
+Python を利用しているプロジェクトのリストは http://python.org/about/success を
+参照してください。\ `past Python conferences
+<http://python.org/community/workshops/>`_ から議事録を参照すると、
+多くの会社や組織の貢献がわかるでしょう。
+
+注目されている Python のプロジェクトは `the Mailman mailing list manager
+<http://www.list.org>`_ や `the Zope application server
+<http://www.zope.org>`_ などです。\ `Red Hat
+<http://www.redhat.com>`_ をはじめとするいくつかの Linux ディストーションの
+インストーラやシステムアドミニストレーションソフトウェアは、一部や全部が
+Python で書かれています。内部で Python を利用している企業には、
+Google、Yahoo、Lucasfilm Ltd. などがあります。
 
 
-Python in the real world
-========================
+将来 Python にどのような新しい開発が期待されますか？
+----------------------------------------------------
 
-How stable is Python?
----------------------
+Python Enhancement Proposals (PEPs) http://www.python.org/dev/peps/ を
+参照してください。PEPs は Python に提案された新機能について書かれた設計書で、
+簡潔な技術仕様と原理が提供されています。"Python X.Y Release Schedule"
+(X.Y はまだリリースされていないバージョン) を探してください。
 
-Very stable.  New, stable releases have been coming out roughly every 6 to 18
-months since 1991, and this seems likely to continue.  Currently there are
-usually around 18 months between major releases.
-
-The developers issue "bugfix" releases of older versions, so the stability of
-existing releases gradually improves.  Bugfix releases, indicated by a third
-component of the version number (e.g. 2.5.3, 2.6.2), are managed for stability;
-only fixes for known problems are included in a bugfix release, and it's
-guaranteed that interfaces will remain the same throughout a series of bugfix
-releases.
-
-The latest stable releases can always be found on the `Python download page
-<http://python.org/download/>`_.  There are two recommended production-ready
-versions at this point in time, because at the moment there are two branches of
-stable releases: 2.x and 3.x.  Python 3.x may be less useful than 2.x, since
-currently there is more third party software available for Python 2 than for
-Python 3.  Python 2 code will generally not run unchanged in Python 3.
+新しい開発については `the python-dev mailing list
+<http://mail.python.org/mailman/listinfo/python-dev/>`_ で議論されています。
 
 
-How many people are using Python?
----------------------------------
+Python の互換性を無くすような提案をしてもいいのですか？
+-------------------------------------------------------
 
-There are probably tens of thousands of users, though it's difficult to obtain
-an exact count.
+一般的には、してはいけません。世界中にすでに何百万行もの Python コードが
+あるので、既存のプログラムのどんなに僅かな部分でも無効にしてしまうような
+言語仕様の変更も認められてはなりません。コンバートするプログラムが出来てさえ、
+すべてのドキュメントをアップデートしなければならないという問題があります。
+Python に関する多くの本が出版されているので、それらを一発で不適切に
+するようなことはしたくないです。
 
-Python is available for free download, so there are no sales figures, and it's
-available from many different sites and packaged with many Linux distributions,
-so download statistics don't tell the whole story either.
-
-The comp.lang.python newsgroup is very active, but not all Python users post to
-the group or even read it.
-
-
-Have any significant projects been done in Python?
---------------------------------------------------
-
-See http://python.org/about/success for a list of projects that use Python.
-Consulting the proceedings for `past Python conferences
-<http://python.org/community/workshops/>`_ will reveal contributions from many
-different companies and organizations.
-
-High-profile Python projects include `the Mailman mailing list manager
-<http://www.list.org>`_ and `the Zope application server
-<http://www.zope.org>`_.  Several Linux distributions, most notably `Red Hat
-<http://www.redhat.com>`_, have written part or all of their installer and
-system administration software in Python.  Companies that use Python internally
-include Google, Yahoo, and Lucasfilm Ltd.
+仕様を変えなければならないのなら、緩やかなアップグレード計画が
+組まれなくてはなりません。\ :pep:`5` で、ユーザーの受ける分裂を最小限にしながら
+後方互換性のない変更を行うために従うべき手順について説明しています。
 
 
-What new developments are expected for Python in the future?
-------------------------------------------------------------
-
-See http://www.python.org/dev/peps/ for the Python Enhancement Proposals
-(PEPs). PEPs are design documents describing a suggested new feature for Python,
-providing a concise technical specification and a rationale.  Look for a PEP
-titled "Python X.Y Release Schedule", where X.Y is a version that hasn't been
-publicly released yet.
-
-New development is discussed on `the python-dev mailing list
-<http://mail.python.org/mailman/listinfo/python-dev/>`_.
-
-
-Is it reasonable to propose incompatible changes to Python?
------------------------------------------------------------
-
-In general, no.  There are already millions of lines of Python code around the
-world, so any change in the language that invalidates more than a very small
-fraction of existing programs has to be frowned upon.  Even if you can provide a
-conversion program, there's still the problem of updating all documentation;
-many books have been written about Python, and we don't want to invalidate them
-all at a single stroke.
-
-Providing a gradual upgrade path is necessary if a feature has to be changed.
-:pep:`5` describes the procedure followed for introducing backward-incompatible
-changes while minimizing disruption for users.
-
-
-Is Python Y2K (Year 2000) Compliant?
-------------------------------------
+Python は 2000 年問題に対応できますか？
+---------------------------------------
 
 .. remove this question?
 
-As of August, 2003 no major problems have been reported and Y2K compliance seems
-to be a non-issue.
+2003年8月現在、重大な問題は全く報告されていないので、
+2000 年問題は気にする必要はないように思われます。
 
-Python does very few date calculations and for those it does perform relies on
-the C library functions.  Python generally represents times either as seconds
-since 1970 or as a ``(year, month, day, ...)`` tuple where the year is expressed
-with four digits, which makes Y2K bugs unlikely.  So as long as your C library
-is okay, Python should be okay.  Of course, it's possible that a particular
-application written in Python makes assumptions about 2-digit years.
+Python は日付の計算とその実行でほんの少しだけ C ライブラリの関数に
+依存しています。Python は一般的に時間を 1970 年以来の秒か
+``(year, month, day, ...)`` タプルの年を 4 桁で表したもので表すので、
+2000 年問題のバグは起こらないでしょう。ですから C ライブラリに問題がなければ、
+Python にも問題がないはずです。もちろん、Python で書かれたある種の
+アプリケーションが 2 桁で表された年を誤って解釈することは
+あるかもしれません。
 
-Because Python is available free of charge, there are no absolute guarantees.
-If there *are* unforeseen problems, liability is the user's problem rather than
-the developers', and there is nobody you can sue for damages.  The Python
-copyright notice contains the following disclaimer:
+Python は無料で提供されているので、絶対の保証はありません。
+予期せぬ問題が *あれば*\ 、開発者の責任というよりはユーザーの責任であり、
+損害賠償を求める相手は誰もいません。Python の著作権表示には
+以下の注意書きが含まれています:
 
     4. PSF is making Python 2.3 available to Licensee on an "AS IS"
     basis.  PSF MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED.  BY
@@ -407,47 +409,46 @@ copyright notice contains the following disclaimer:
     A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING PYTHON 2.3,
     OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF THE POSSIBILITY THEREOF.
 
-The good news is that *if* you encounter a problem, you have full source
-available to track it down and fix it.  This is one advantage of an open source
-programming environment.
+嬉しいことに、 *もし* 問題にいきあたっても、その問題を探し出して
+修理するために完全なソースを使うことができます。
+これはオープンソースプログラミング環境の利点の１つです。
 
 
-Is Python a good language for beginning programmers?
-----------------------------------------------------
+Python は初心者プログラマに向いている言語ですか？
+-------------------------------------------------
 
-Yes.
+はい。
 
-It is still common to start students with a procedural and statically typed
-language such as Pascal, C, or a subset of C++ or Java.  Students may be better
-served by learning Python as their first language.  Python has a very simple and
-consistent syntax and a large standard library and, most importantly, using
-Python in a beginning programming course lets students concentrate on important
-programming skills such as problem decomposition and data type design.  With
-Python, students can be quickly introduced to basic concepts such as loops and
-procedures.  They can probably even work with user-defined objects in their very
-first course.
+未だにプログラミング初学者にとって一般的なのは、Pascal、C、C++ のサブセット、
+Java など、手続き型の静的型付けの言語です。生徒にとっては、
+第一の言語として Python を学ぶのが役に立つでしょう。Python には非常に簡潔で
+一貫した構文と大きな標準ライブラリがあります。そして一番重要なことに、
+初心者プログラミングのコースで Python を学ぶことで、生徒は問題の分析や
+データ型の設計など、重要なプログラミングスキルに集中することができるのです。
+Python なら、生徒はループや手続きなどの基本概念をすぐに取り入れられます。
+最初の課程でいきなりユーザ定義のオブジェクトを操ることさえできるでしょう。
 
-For a student who has never programmed before, using a statically typed language
-seems unnatural.  It presents additional complexity that the student must master
-and slows the pace of the course.  The students are trying to learn to think
-like a computer, decompose problems, design consistent interfaces, and
-encapsulate data.  While learning to use a statically typed language is
-important in the long term, it is not necessarily the best topic to address in
-the students' first programming course.
+プログラミングをしたことがない初心者にとって、静的型付け言語を使うのは
+不自然に思われます。習得すべき内容はより複雑になり、学習のペースが
+遅くなってしまいます。生徒は、コンピュータのように思考し、問題を分析し、
+一貫したインタフェースを設計して、データをカプセル化することを
+学ぶことになります。長期的に見れば静的型付け言語を学ぶことは重要ですが、
+それが最初のプログラミングの授業で学ぶべき最高の話題とは限りません。
 
-Many other aspects of Python make it a good first language.  Like Java, Python
-has a large standard library so that students can be assigned programming
-projects very early in the course that *do* something.  Assignments aren't
-restricted to the standard four-function calculator and check balancing
-programs.  By using the standard library, students can gain the satisfaction of
-working on realistic applications as they learn the fundamentals of programming.
-Using the standard library also teaches students about code reuse.  Third-party
-modules such as PyGame are also helpful in extending the students' reach.
+Python の良いところは他にもたくさんあります。Python には、Java のように
+大きな標準ライブラリがあり、生徒が何かを *する* 段階で非常に早く
+プログラミングプロジェクトに参加できるようになります。宿題は標準の
+四則演算機や平均を求めるプログラムに限定されません。標準ライブラリを
+使用することで、生徒はプログラミングの原理を学びながら現実的な
+アプリケーションに取り組む満足感を得ることができます。また、
+標準ライブラリの使用からコードの再利用を学ぶことができます。
+PyGame などのサードパーティモジュールもまた手が届く範囲を広げるのに役立ちます。
 
-Python's interactive interpreter enables students to test language features
-while they're programming.  They can keep a window with the interpreter running
-while they enter their program's source in another window.  If they can't
-remember the methods for a list, they can do something like this::
+Python のインタラクティブインタプリタによって、プログラミングをしながら、
+言語機能を確認することができます。別のウィンドウでプログラムのソースに
+入っている間、ウィンドウでインタプリタを起動させたままに
+しておくことができます。リストのメソッドを思い出せないときは、
+例えばこのようにできます::
 
    >>> L = []
    >>> dir(L)
@@ -462,51 +463,53 @@ remember the methods for a list, they can do something like this::
    >>> L
    [1]
 
-With the interpreter, documentation is never far from the student as he's
-programming.
+インタプリタがあれば、プログラミングをしている間にドキュメントは
+生徒のそばを離れません。
 
-There are also good IDEs for Python.  IDLE is a cross-platform IDE for Python
-that is written in Python using Tkinter.  PythonWin is a Windows-specific IDE.
-Emacs users will be happy to know that there is a very good Python mode for
-Emacs.  All of these programming environments provide syntax highlighting,
-auto-indenting, and access to the interactive interpreter while coding.  Consult
-http://www.python.org/editors/ for a full list of Python editing environments.
+Python のための良い IDE もあります。IDLE は Python で Tkinter を使って
+書かれたクロスプラットフォーム IDE です。PythonWin は Windows 専用の
+IDE です。Emacs には、ユーザにとって幸運なことに、素晴らしい Python モードが
+あります。これらすべてのプログラミング環境から、シンタックスハイライト、
+オートインデント、コーディング中のインタラクティブインタプリタへのアクセスが
+使えます。 http://www.python.org/editors/ から Python 編集環境の
+一覧を参照してください。
 
-If you want to discuss Python's use in education, you may be interested in
-joining `the edu-sig mailing list
-<http://python.org/community/sigs/current/edu-sig>`_.
+Python の教育における利用についての議論がしたいなら、\ `the edu-sig mailing list
+<http://python.org/community/sigs/current/edu-sig>`_ に参加するとよいでしょう。
 
 
-Upgrading Python
-================
+Python のアップグレード
+=======================
 
-What is this bsddb185 module my application keeps complaining about?
---------------------------------------------------------------------
+私のアプリケーションに使われている bsddb185 モジュールは何が問題とされていますか？
+----------------------------------------------------------------------------------
 
 .. XXX remove this question?
 
-Starting with Python2.3, the distribution includes the `PyBSDDB package
-<http://pybsddb.sf.net/>` as a replacement for the old bsddb module.  It
-includes functions which provide backward compatibility at the API level, but
-requires a newer version of the underlying `Berkeley DB
-<http://www.sleepycat.com>`_ library.  Files created with the older bsddb module
-can't be opened directly using the new module.
+Python2.3 から、配布時に古い bsddb モジュールの代わりに `PyBSDDB package
+<http://pybsddb.sf.net/>`_ が含まれるようになりました。このモジュールは
+API レベルでは後方互換性を保っていますが、基本となる `Berkeley DB
+<http://www.sleepycat.com>`_ ライブラリは新しいものが必要となります。
+古い bsddb モジュールで作られたファイルは新しいモジュールで
+直接開くことができません。
 
-Using your old version of Python and a pair of scripts which are part of Python
-2.3 (db2pickle.py and pickle2db.py, in the Tools/scripts directory) you can
-convert your old database files to the new format.  Using your old Python
-version, run the db2pickle.py script to convert it to a pickle, e.g.::
+古いバージョンの Python と Python 2.3 の一部である２つのスクリプト
+(Tools/scripts ディレクトリの db2pickle.py と pickle2db.py) を使用して、
+古いデータベースファイルを新しいフォーマットにコンバートすることができます。
+古いバージョンの Python を使って、スクリプトを pickle に変換するために
+db2pickle.py スクリプトを起動してください。例えば::
 
    python2.2 <pathto>/db2pickley.py database.db database.pck
 
-Rename your database file::
+データベースファイルを改名してください::
 
    mv database.db olddatabase.db
 
-Now convert the pickle file to a new format database::
+そして、 pickle ファイルを新しいフォーマットのデータベースに変換してください::
 
    python <pathto>/pickle2db.py database.db database.pck
 
-The precise commands you use will vary depending on the particulars of your
-installation.  For full details about operation of these two scripts check the
-doc string at the start of each one.
+入力すべき正確なコマンドは、あなたのインストールの詳細によって変わります。
+これら 2 つのスクリプトの命令の詳細は、それぞれの最初にある
+doc string を確認してください。
+

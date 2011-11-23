@@ -1,0 +1,38 @@
+@@ -56,34 +56,35 @@
+    Optional *s* is the initial header value.  If ``None`` (the default), the
+    initial header value is not set.  You can later append to the header with
+    :meth:`append` method calls.  *s* may be a byte string or a Unicode string, but
+    see the :meth:`append` documentation for semantics.
+ 
+    Optional *charset* serves two purposes: it has the same meaning as the *charset*
+    argument to the :meth:`append` method.  It also sets the default character set
+    for all subsequent :meth:`append` calls that omit the *charset* argument.  If
+    *charset* is not provided in the constructor (the default), the ``us-ascii``
+    character set is used both as *s*'s initial charset and as the default for
+    subsequent :meth:`append` calls.
+ 
+-   The maximum line length can be specified explicit via *maxlinelen*.  For
++   The maximum line length can be specified explicitly via *maxlinelen*.  For
+    splitting the first line to a shorter value (to account for the field header
+    which isn't included in *s*, e.g. :mailheader:`Subject`) pass in the name of the
+    field in *header_name*.  The default *maxlinelen* is 76, and the default value
+    for *header_name* is ``None``, meaning it is not taken into account for the
+    first line of a long, split header.
+ 
+    Optional *continuation_ws* must be :rfc:`2822`\ -compliant folding whitespace,
+    and is usually either a space or a hard tab character. This character will be
+-   prepended to continuation lines.
++   prepended to continuation lines.  *continuation_ws* defaults to a single
++   space character (" ").
+ 
+    Optional *errors* is passed straight through to the :meth:`append` method.
+ 
+ 
+    .. method:: append(s[, charset[, errors]])
+ 
+       Append the string *s* to the MIME header.
+ 
+       Optional *charset*, if given, should be a :class:`~email.charset.Charset`
+       instance (see :mod:`email.charset`) or the name of a character set, which
+       will be converted to a :class:`~email.charset.Charset` instance.  A value
+       of ``None`` (the default) means that the *charset* given in the constructor

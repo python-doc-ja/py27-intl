@@ -40,6 +40,7 @@ C言語ではなく、Pythonで実装されているため、復号は非常に�
 
 
 .. class:: ZipFile
+   :noindex:
 
    ZIP ファイルの読み書きのためのクラスです。コンストラクタの詳細については、 :ref:`zipfile-objects` 節)
    を参照してください。
@@ -64,6 +65,10 @@ C言語ではなく、Pythonで実装されているため、復号は非常に�
 
    *filename* が正しいマジックナンバをもつ ZIP ファイルのときに ``True`` を返し、
    そうでない場合 ``False`` を返します。
+   *filename* にはファイルやファイルライクオブジェクトを渡すこともできます。
+
+   .. versionchanged:: 2.7
+      ファイルやファイルライクオブジェクトをサポート
 
 
 .. data:: ZIP_STORED
@@ -97,23 +102,39 @@ ZipFile オブジェクト
    パラメタは、既存のファイルを読むためには ``'r'`` 、既存のファイルを切り詰めたり新しいファイルに書き込むためには ``'w'`` 、
    追記を行うためには ``'a'`` でなくてはなりません。 *mode* が ``'a'`` で *file* が既存の ZIP ファイルを
    参照している場合、追加するファイルは既存のファイル中の ZIP アーカイブに追加されます。 *file* が ZIP を参照していない場合、新しい ZIP
-   アーカイブが生成され、既存のファイルの末尾に追加されます。このことは、ある ZIP ファイルを他のファイル、例えば
-   :file:`python.exe` に ::
-
-      cat myzip.zip >> python.exe
-
-   として追加することができ、少なくとも :program:`WinZip` がこのようなファイルを読めることを意味します。
-   もし、 *mode* が ``a`` で、かつ、ファイルが存在しなかった場合、新規に作成されます。
-   *compression* はアーカイブを書き出すときの ZIP 圧縮法で、 :const:`ZIP_STORED` または :const:`ZIP_DEFLATED` でなくては
-   なりません。不正な値を指定すると :exc:`RuntimeError` が送出されます。また、 :const:`ZIP_DEFLATED`
-   定数が指定されているのに :mod:`zlib` を利用することができない場合、 :exc:`RuntimeError` が送出されます。デフォルト値は
-   :const:`ZIP_STORED` です。 *allowZip64* が ``True`` ならば 2GB より大きな ZIP ファイルの作成時に
-   ZIP64 拡張を使用します。これが ``False`` ならば、 :mod:`zipfile` モジュールは ZIP64
-   拡張が必要になる場面で例外を送出します。 ZIP64 拡張はデフォルトでは無効にされていますが、これは Unix の :program:`zip` および
-   :program:`unzip` (InfoZIP ユーティリティ) コマンドがこの拡張をサポートしていないからです。
+   アーカイブが生成され、既存のファイルの末尾に追加されます。
+   このことは、ある ZIP ファイルを他のファイル(例えば :file:`python.exe`)に
+   追加することを意味しています。
 
    .. versionchanged:: 2.6
-      mode が 'a' でファイルが存在しない場合、ファイルが作られるようになりました。
+      *mode* が ``'a'`` でファイルが存在しない場合、ファイルが作られるようになりました。
+
+   *compression* はアーカイブを書き出すときの ZIP 圧縮法で、 :const:`ZIP_STORED`
+   または :const:`ZIP_DEFLATED` でなくてはなりません。
+   不正な値を指定すると :exc:`RuntimeError` が送出されます。
+   また、 :const:`ZIP_DEFLATED` 定数が指定されているのに :mod:`zlib` を利用することが
+   できない場合も、 :exc:`RuntimeError` が送出されます。
+   デフォルト値は :const:`ZIP_STORED` です。
+   *allowZip64* が ``True`` ならば 2GB より大きな ZIP ファイルの作成時に
+   ZIP64 拡張を使用します。これが ``False`` (デフォルト) ならば、 :mod:`zipfile`
+   モジュールは ZIP64 拡張が必要になる場面で例外を送出します。
+   ZIP64 拡張はデフォルトでは無効にされていますが、これは Unix の :program:`zip` および
+   :program:`unzip` (InfoZIP ユーティリティ) コマンドがこの拡張をサポートしていないからです。
+
+   .. versionchanged:: 2.7.1
+      ファイルが ``'a'`` か ``'w'`` モードで作成されて、アーカイブに1ファイルも
+      追加しないまま :meth:`close` した場合に、空のアーカイブとして正しいZIPの
+      構造がそのファイルに書かれるようになりました。
+
+   ZipFile はコンテキストマネージャーにもなっているので、 :keyword:`with` 文をサポートしています。
+   次の例では、 *myzip* は :keyword:`with` 文のブロックが終了したときに、
+   (たとえ例外が発生したとしても) close されます。 ::
+
+      with ZipFile('spam.zip', 'w') as myzip:
+          myzip.write('eggs.txt')
+
+   .. versionadded:: 2.7
+      :class:`ZipFile` にコンテキストマネージャーの機能を追加しました。
 
 
 .. method:: ZipFile.close()
@@ -150,8 +171,8 @@ ZipFile オブジェクト
    .. note::
 
       file-like オブジェクトは読み出し専用で、以下のメソッドを提供します:
-      :meth:`read`, :meth:`readline`, :meth:`readlines`, :meth:`__iter__`,
-      :meth:`next`
+      :meth:`!read`, :meth:`!readline`, :meth:`!readlines`, :meth:`!__iter__`,
+      :meth:`!next`
 
    .. note::
 
@@ -264,7 +285,7 @@ ZipFile オブジェクト
       もし、 ``arcname`` (``arcname`` が与えられない場合は、 ``filename``) が null byte を含むなら、
       アーカイブ中のファイルのファイル名は、 null byte までで、切り詰められます。
 
-.. method:: ZipFile.writestr(zinfo_or_arcname, bytes)
+.. method:: ZipFile.writestr(zinfo_or_arcname, bytes[, compress_type])
 
    文字列 *bytes* をアーカイブに書き込みます。
    *zinfo_or_arcname* はアーカイブ中で指定するファイル名か、または :class:`ZipInfo` インスタンス
@@ -275,13 +296,19 @@ ZipFile オブジェクト
    開かれていなければなりません。
    閉じた ZipFile に対し :meth:`writestr` メソッドを呼び出すと :exc:`RuntimeError` が送出されます。
 
+   *compressed_type* が指定された場合、その値はコンストラクタに与えられた *compression*
+   の値か、 *zinfo_or_arcname* が :class:`ZipInfo` のインスタンスだったときはその値を
+   オーバーライドします。
+
    .. note::
 
-      :class:`ZipInfo` インスタンスを、引数 *zinfo_or_acrname* として与えた場合、
+      :class:`ZipInfo` インスタンスを、引数 *zinfo_or_arcname* として与えた場合、
       与えられた :class:`ZipInfo` インスタンスのメンバーである、 *compress_type*
       で指定された圧縮方法が使われます。デフォルトでは、
       :class:`ZipInfo` コンストラクターが、このメンバーを :const:`ZIP_STORED` に設定します。
 
+   .. versionchanged:: 2.7
+      *compression_type* 引数
 
 以下のデータ属性も利用することができます。
 

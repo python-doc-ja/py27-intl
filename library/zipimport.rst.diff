@@ -1,0 +1,34 @@
+@@ -87,24 +87,33 @@
+    .. method:: get_code(fullname)
+ 
+       Return the code object for the specified module. Raise
+       :exc:`ZipImportError` if the module couldn't be found.
+ 
+ 
+    .. method:: get_data(pathname)
+ 
+       Return the data associated with *pathname*. Raise :exc:`IOError` if the
+       file wasn't found.
+ 
+ 
++   .. method:: get_filename(fullname)
++
++      Return the value ``__file__`` would be set to if the specified module
++      was imported. Raise :exc:`ZipImportError` if the module couldn't be
++      found.
++
++   .. versionadded:: 2.7
++
++
+    .. method:: get_source(fullname)
+ 
+       Return the source code for the specified module. Raise
+       :exc:`ZipImportError` if the module couldn't be found, return
+       :const:`None` if the archive does contain the module, but has no source
+       for it.
+ 
+ 
+    .. method:: is_package(fullname)
+ 
+       Return True if the module specified by *fullname* is a package. Raise
+       :exc:`ZipImportError` if the module couldn't be found.

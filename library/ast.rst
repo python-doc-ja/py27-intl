@@ -24,7 +24,12 @@
 抽象構文木は組み込み関数 :func:`compile` を使って Python コード・オブジェクトにコンパイルすることができます。
 
 
-ノード・クラス
+.. seealso::
+
+   最新バージョンの `ast module Python source code
+   <http://svn.python.org/view/python/branches/release27-maint/Lib/ast.py?view=markup>`_
+
+Node クラス
 --------------
 
 .. class:: AST
@@ -127,10 +132,10 @@
 
 ノード・クラスの他に、 :mod:`ast` モジュールは以下のような抽象構文木をトラバースするためのユーティリティ関数やクラスも定義しています。
 
-.. function:: parse(expr, filename='<unknown>', mode='exec')
+.. function:: parse(source, filename='<unknown>', mode='exec')
 
-   式を解析して AST ノードにします。
-   ``compile(expr, filename, mode, ast.PyCF_ONLY_AST)`` と等価です。
+   *source* を解析して AST ノードにします。
+   ``compile(source, filename, mode, ast.PyCF_ONLY_AST)`` と等価です。
 
 
 .. function:: literal_eval(node_or_string)
@@ -193,7 +198,7 @@
 
 .. function:: walk(node)
 
-   *node* の全ての子ノードを再帰的に yield します。
+   *node* の全ての子孫ノード(*node* 自体を含む)を再帰的に yield します。
    順番は決められていません。
    この関数はノードをその場で変更するだけで文脈を気にしないような場合に便利です。
 

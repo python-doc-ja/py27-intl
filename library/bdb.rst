@@ -190,24 +190,13 @@
       フレームのディスパッチ方法を決定します。
       *event* は次のうちのどれかです。
 
-
-      .. * ``"line"``: A new line of code is going to be executed.
-         * ``"call"``: A function is about to be called, or another code block
-           entered.
-         * ``"return"``: A function or other code block is about to return.
-         * ``"exception"``: An exception has occurred.
-         * ``"c_call"``: A C function is about to be called.
-         * ``"c_return"``: A C function has returned.
-         * ``"c_exception"``: A C function has thrown an exception.
-
       * ``"line"``: 新しい行を実行しようとしています。
       * ``"call"``: 関数が呼び出されているか、別のコードブロックに入ります。
       * ``"return"``: 関数か別のコードブロックからreturnしようとしています。
       * ``"exception"``: 例外が発生しました。
       * ``"c_call"``: C関数を呼び出そうとしています。
       * ``"c_return"``: C関数からreturnしました。
-      * ``"c_exception"``: C関数が例外を投げました。
-
+      * ``"c_exception"``: C関数が例外を発生させました。
 
       .. For the Python events, specialized functions (see below) are called.  For
          the C events, no action is taken.
@@ -644,30 +633,12 @@
 
 .. function:: effective(file, line, frame)
 
-   .. Determine if there is an effective (active) breakpoint at this line of code.
-      Return breakpoint number or 0 if none.
-
-   .. (訳注: この段落の説明は間違っているので訳さない)
-      アクティブなブレークポイントがこのコードの行にあるかどうかをチェックします。
-      ブレークポイントがあればその番号を、なければ 0 を返します。
-
-
-   .. Called only if we know there is a breakpoint at this location.  Returns the
-      breakpoint that was triggered and a flag that indicates if it is ok to delete
-      a temporary breakpoint.
-
-   その場所にブレークポイントがあると判っている場合にだけ呼び出されます。
-   発動中のブレークポイントと、(そのブレークポイントが
-   テンポラリブレークポイントだったときに)削除しても良いかどうかを示すフラグを
-   返します。
-
-
-   (訳注: (breakpoint, 0 or 1) のタプルを返します。タプルの2つ目の要素が1のとき、かつ、
-   breakpoint がテンポラリな場合に、そのブレークポイントを削除できるという意味です)
+   指定されたソースコード中の行に(有効な)ブレークポイントがあるかどうかを判断します。
+   ブレークポイントと、テンポラリブレークポイントを削除して良いかどうかを示すフラグからなる
+   タプルを返します。
+   マッチするブレークポイントが存在しない場合は ``(None, None)`` を返します。
 
 
 .. function:: set_trace()
-
-   .. Starts debugging with a :class:`Bdb` instance from caller's frame.
 
    :class:`Bdb` クラスのインスタンスを使って、呼び出し元のフレームからデバッグを開始します。

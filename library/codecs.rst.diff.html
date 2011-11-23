@@ -1,0 +1,187 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/codecs.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -751,25 +751,25 @@</span>
+ :class:`StreamRecoder` instances define the combined interfaces of
+ :class:`StreamReader` and :class:`StreamWriter` classes. They inherit all other
+ methods and attributes from the underlying stream.
+ 
+ 
+ .. _encodings-overview:
+ 
+ Encodings and Unicode
+ ---------------------
+ 
+ Unicode strings are stored internally as sequences of codepoints (to be precise
+ as :ctype:`Py_UNICODE` arrays). Depending on the way Python is compiled (either
+<span class="gd">-via :option:`--enable-unicode=ucs2` or :option:`--enable-unicode=ucs4`, with the</span>
+<span class="gi">+via ``--enable-unicode=ucs2`` or ``--enable-unicode=ucs4``, with the</span>
+ former being the default) :ctype:`Py_UNICODE` is either a 16-bit or 32-bit data
+ type. Once a Unicode object is used outside of CPU and memory, CPU endianness
+ and how these arrays are stored as bytes become an issue.  Transforming a
+ unicode object into a sequence of bytes is called encoding and recreating the
+ unicode object from the sequence of bytes is known as decoding.  There are many
+ different methods for how this transformation can be done (these methods are
+ also called encodings). The simplest method is to map the codepoints 0-255 to
+ the bytes ``0x0``-``0xff``. This means that a unicode object that contains
+ codepoints above ``U+00FF`` can&#39;t be encoded with this method (which is called
+ ``&#39;latin-1&#39;`` or ``&#39;iso-8859-1&#39;``). :func:`unicode.encode` will raise a
+ :exc:`UnicodeEncodeError` that looks like this: ``UnicodeEncodeError: &#39;latin-1&#39;
+ codec can&#39;t encode character u&#39;\u1234&#39; in position 3: ordinal not in
+<span class="gu">@@ -899,39 +899,43 @@</span>
+ +-----------------+--------------------------------+--------------------------------+
+ | big5hkscs       | big5-hkscs, hkscs              | Traditional Chinese            |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp037           | IBM037, IBM039                 | English                        |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp424           | EBCDIC-CP-HE, IBM424           | Hebrew                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp437           | 437, IBM437                    | English                        |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp500           | EBCDIC-CP-BE, EBCDIC-CP-CH,    | Western Europe                 |
+ |                 | IBM500                         |                                |
+ +-----------------+--------------------------------+--------------------------------+
+<span class="gi">+| cp720           |                                | Arabic                         |</span>
+<span class="gi">++-----------------+--------------------------------+--------------------------------+</span>
+ | cp737           |                                | Greek                          |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp775           | IBM775                         | Baltic languages               |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp850           | 850, IBM850                    | Western Europe                 |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp852           | 852, IBM852                    | Central and Eastern Europe     |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp855           | 855, IBM855                    | Bulgarian, Byelorussian,       |
+ |                 |                                | Macedonian, Russian, Serbian   |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp856           |                                | Hebrew                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp857           | 857, IBM857                    | Turkish                        |
+ +-----------------+--------------------------------+--------------------------------+
+<span class="gi">+| cp858           | 858, IBM858                    | Western Europe                 |</span>
+<span class="gi">++-----------------+--------------------------------+--------------------------------+</span>
+ | cp860           | 860, IBM860                    | Portuguese                     |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp861           | 861, CP-IS, IBM861             | Icelandic                      |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp862           | 862, IBM862                    | Hebrew                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp863           | 863, IBM863                    | Canadian                       |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp864           | IBM864                         | Arabic                         |
+ +-----------------+--------------------------------+--------------------------------+
+ | cp865           | 865, IBM865                    | Danish, Norwegian              |
+ +-----------------+--------------------------------+--------------------------------+
+<span class="gu">@@ -1188,33 +1192,39 @@</span>
+ 
+ These RFCs together define a protocol to support non-ASCII characters in domain
+ names. A domain name containing non-ASCII characters (such as
+ ``www.Alliancefrançaise.nu``) is converted into an ASCII-compatible encoding
+ (ACE, such as ``www.xn--alliancefranaise-npb.nu``). The ACE form of the domain
+ name is then used in all places where arbitrary characters are not allowed by
+ the protocol, such as DNS queries, HTTP :mailheader:`Host` fields, and so
+ on. This conversion is carried out in the application; if possible invisible to
+ the user: The application should transparently convert Unicode domain labels to
+ IDNA on the wire, and convert back ACE labels to Unicode before presenting them
+ to the user.
+ 
+<span class="gd">-Python supports this conversion in several ways: The ``idna`` codec allows to</span>
+<span class="gd">-convert between Unicode and the ACE. Furthermore, the :mod:`socket` module</span>
+<span class="gi">+Python supports this conversion in several ways:  the ``idna`` codec performs</span>
+<span class="gi">+conversion between Unicode and ACE, separating an input string into labels</span>
+<span class="gi">+based on the separator characters defined in `section 3.1`_ (1) of :rfc:`3490`</span>
+<span class="gi">+and converting each label to ACE as required, and conversely separating an input</span>
+<span class="gi">+byte string into labels based on the ``.`` separator and converting any ACE</span>
+<span class="gi">+labels found into unicode.  Furthermore, the :mod:`socket` module</span>
+ transparently converts Unicode host names to ACE, so that applications need not
+ be concerned about converting host names themselves when they pass them to the
+ socket module. On top of that, modules that have host names as function
+ parameters, such as :mod:`httplib` and :mod:`ftplib`, accept Unicode host names
+ (:mod:`httplib` then also transparently sends an IDNA hostname in the
+ :mailheader:`Host` field if it sends that field at all).
+ 
+<span class="gi">+.. _section 3.1: http://tools.ietf.org/html/rfc3490#section-3.1</span>
+<span class="gi">+</span>
+ When receiving host names from the wire (such as in reverse name lookup), no
+ automatic conversion to Unicode is performed: Applications wishing to present
+ such host names to the user should decode them to Unicode.
+ 
+ The module :mod:`encodings.idna` also implements the nameprep procedure, which
+ performs certain normalizations on host names, to achieve case-insensitivity of
+ international domain names, and to unify similar characters. The nameprep
+ functions can be used directly if desired.
+ 
+ 
+ .. function:: nameprep(label)
+ 
+</pre></div>
+
+</body>
+</html>

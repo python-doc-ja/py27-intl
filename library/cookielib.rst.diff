@@ -1,0 +1,27 @@
+@@ -741,25 +741,25 @@
+ The first example shows the most common usage of :mod:`cookielib`::
+ 
+    import cookielib, urllib2
+    cj = cookielib.CookieJar()
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    r = opener.open("http://example.com/")
+ 
+ This example illustrates how to open a URL using your Netscape, Mozilla, or Lynx
+ cookies (assumes Unix/Netscape convention for location of the cookies file)::
+ 
+    import os, cookielib, urllib2
+    cj = cookielib.MozillaCookieJar()
+-   cj.load(os.path.join(os.environ["HOME"], ".netscape/cookies.txt"))
++   cj.load(os.path.join(os.path.expanduser("~"), ".netscape", "cookies.txt"))
+    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+    r = opener.open("http://example.com/")
+ 
+ The next example illustrates the use of :class:`DefaultCookiePolicy`. Turn on
+ RFC 2965 cookies, be more strict about domains when setting and returning
+ Netscape cookies, and block some domains from setting cookies or having them
+ returned::
+ 
+    import urllib2
+    from cookielib import CookieJar, DefaultCookiePolicy
+    policy = DefaultCookiePolicy(
+        rfc2965=True, strict_ns_domain=DefaultCookiePolicy.DomainStrict,

@@ -78,7 +78,7 @@ CSV ファイルを処理する作業が鬱陶しいものになることがあ�
 
    .. versionchanged:: 2.5
       パーサが複数行に亘るクオートされたフィールドに関して厳格になりました。以前は、クオートされたフィールドの中で終端の改行文字無しに行が終わった場合、
-      返されるフィールドには改行が挿入されていましたが、この振る舞いはフールドの中に復帰文字を含むようなファイルを読むときに問題を起こしていました。
+      返されるフィールドには改行が挿入されていましたが、この振る舞いはフィールドの中に復帰文字を含むようなファイルを読むときに問題を起こしていました。
       そこでフィールドに改行文字を挿入せずに返すように改められました。この結果、フィールドに埋め込まれた改行文字が重要ならば、入力は改行文字を保存する
       ような仕方で複数行に分割されなければなりません。 .
 
@@ -291,7 +291,7 @@ Dialect は以下の属性をサポートしています:
    :const:`True` の場合、この文字は二重化されます。 :const:`False` の場合、 *escapechar* は *quotechar*
    の前に置かれます。デフォルトでは :const:`True` です。
 
-   出力においては、 *doublequote* が :const:`False` で *escapechar* がセットされていない場合、フールド内に
+   出力においては、 *doublequote* が :const:`False` で *escapechar* がセットされていない場合、フィールド内に
    *quotechar* が現れると :exc:`Error` が送出されます。
 
 
@@ -402,6 +402,15 @@ writer オブジェクトには以下の公開属性があります:
 
    writer で使われる表現形式の読み取り専用の記述です。
 
+DictWriter のオブジェクトは以下の public メソッドを持っています。
+
+.. method:: DictWriter.writeheader()
+
+   (コンストラクタで指定された)フィールド名の行を出力します。
+
+   .. versionadded:: 2.7
+
+
 
 .. _csv-examples:
 
@@ -411,41 +420,44 @@ writer オブジェクトには以下の公開属性があります:
 最も簡単な CSV ファイル読み込みの例です::
 
    import csv
-   reader = csv.reader(file("some.csv", "rb"))
-   for row in reader:
-       print row
+   with open('some.csv', 'rb') as f:
+       reader = csv.reader(f)
+       for row in reader:
+           print row
 
 別の書式での読み込み::
 
    import csv
-   reader = csv.reader(open("passwd", "rb"), delimiter=':', quoting=csv.QUOTE_NONE)
-   for row in reader:
-       print row
+   with open('passwd', 'rb') as f:
+       reader = csv.reader(f, delimiter=':', quoting=csv.QUOTE_NONE)
+       for row in reader:
+           print row
 
 上に対して、単純な書き込みのプログラム例は以下のようになります。 ::
 
    import csv
-   writer = csv.writer(file("some.csv", "wb"))
-   writer.writerows(someiterable)
+   with open('some.csv', 'wb') as f:
+       writer = csv.writer(f)
+       writer.writerows(someiterable)
 
 新しい表現形式の登録::
 
    import csv
-
    csv.register_dialect('unixpwd', delimiter=':', quoting=csv.QUOTE_NONE)
-
-   reader = csv.reader(open("passwd", "rb"), 'unixpwd')
+   with open('passwd', 'rb') as f:
+       reader = csv.reader(f, 'unixpwd')
 
 もう少し手の込んだ reader の使い方 --- エラーを捉えてレポートします。 ::
 
    import csv, sys
-   filename = "some.csv"
-   reader = csv.reader(open(filename, "rb"))
-   try:
-       for row in reader:
-           print row
-   except csv.Error, e:
-       sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
+   filename = 'some.csv'
+   with open(filename, 'rb') as f:
+       reader = csv.reader(f)
+       try:
+           for row in reader:
+               print row
+       except csv.Error, e:
+           sys.exit('file %s, line %d: %s' % (filename, reader.line_num, e))
 
 このモジュールは文字列の解析は直接サポートしませんが、簡単にできます。 ::
 

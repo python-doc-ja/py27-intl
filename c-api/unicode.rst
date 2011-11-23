@@ -207,6 +207,88 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
    Unicode オブジェクトでなければ *NULL* を返します。
 
 
+.. c:function:: PyObject* PyUnicode_FromStringAndSize(const char *u, Py_ssize_t size)
+
+   char 型バッファ *u*  から Unicode オブジェクトを生成します。
+   *u* の内容は UTF-8 エンコードされているものとします。
+   *u* を *NULL* にしてもよく、その場合オブジェクトの内容は未定義で、
+   バッファに必要な情報を埋めるのはユーザの責任です。バッファの内容は新たなオブジェクトに
+   コピーされます。バッファが *NULL* でない場合、戻り値は共有されたオブジェクトになることがあります。
+   従って、この関数が返す Unicode オブジェクトを変更してよいのは *u* が *NULL* のときだけです。
+
+   .. versionadded:: 2.6
+
+
+.. c:function:: PyObject *PyUnicode_FromString(const char *u)
+
+   UTF-8 エンコードされたNUL文字終端のchar 型バッファ *u* から Unicode オブジェクトを生成します。
+
+   .. versionadded:: 2.6
+
+
+.. c:function:: PyObject* PyUnicode_FromFormat(const char *format, ...)
+
+   :c:func:`printf` スタイルの *format* 文字列と可変長引数を受け取り、
+   結果の unicode 文字の長さを計算し、フォーマットされた文字列を含む unicode オブジェクトを
+   返します。可変長引数は C の型を持っていて、 *format* 文字列で指定された書式指定文字に
+   完全に従う必要があります。
+   以下の書式指定文字が利用できます:
+
+   +-------------------+---------------------+--------------------------------------------+
+   | 書式指定文字      | 型                  | 備考                                       |
+   +===================+=====================+============================================+
+   | :attr:`%%`        | *n/a*               | リテラルの % 文字                          |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%c`        | int                 | C言語のintで表現される1文字                |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%d`        | int                 | ``printf("%d")`` と全く同じ                |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%u`        | unsigned int        | ``printf("%u")`` と全く同じ                |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%ld`       | long                | ``printf("%ld")`` と全く同じ               |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%lu`       | unsigned long       | ``printf("%lu")`` と全く同じ               |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%zd`       | Py_ssize_t          | ``printf("%zd")`` と全く同じ               |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%zu`       | size_t              | ``printf("%zu")`` と全く同じ               |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%i`        | int                 | ``printf("%i")`` と全く同じ                |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%x`        | int                 | ``printf("%x")`` と全く同じ                |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%s`        | char\*              | NUL 文字で終わる文字列                     |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%p`        | void\*              | C ポインタの16進数表現。                   |
+   |                   |                     | ``printf("%p")`` とほぼ同じですが、        |
+   |                   |                     | プラットフォームの ``printf`` に依存せず   |
+   |                   |                     | ``0x`` リテラルで始まることが保証されます  |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%U`        | PyObject\*          | unicode オブジェクト                       |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%V`        | PyObject\*, char \* | unicode オブジェクト(*NULL* でも良い)と、  |
+   |                   |                     | 2つめの引数として NUL 終端の C 文字列      |
+   |                   |                     | (2つめの引数は1つめの引数が *NULL* だった  |
+   |                   |                     | 時にのみ利用されます)                      |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%S`        | PyObject\*          | :func:`PyObject_Unicode` の戻り値          |
+   +-------------------+---------------------+--------------------------------------------+
+   | :attr:`%R`        | PyObject\*          | :func:`PyObject_Repr` の戻り値             |
+   +-------------------+---------------------+--------------------------------------------+
+
+   解釈されない書式指定文字があると、それ以降のフォーマット文字列はそのまま出力の文字列にコピーされ、
+   以降の引数は無視されます。
+
+   .. versionadded:: 2.6
+
+
+.. c:function:: PyObject* PyUnicode_FromFormatV(const char *format, va_list vargs)
+
+   2引数であることを除いて :c:func:`PyUnicode_FromFormat` と同じです。
+
+   .. versionadded:: 2.6
+
+
 .. c:function:: Py_ssize_t PyUnicode_GetSize(PyObject *unicode)
 
    Unicode オブジェクトの長さを返します。
@@ -241,11 +323,12 @@ Unicode オブジェクトを生成したり、Unicode のシーケンスとし�
 wchar_t サポート
 """""""""""""""""
 
-wchar_t をサポートするプラットフォームでの wchar_t サポート:
+:c:type:`wchar_t` をサポートするプラットフォームでの wchar_t サポート:
 
 .. c:function:: PyObject* PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
 
-   *size* の :c:type:`wchar_t` バッファ *w* から Unicode オブジェクトを生成します。失敗すると *NULL* を返します。
+   *size* の :c:type:`wchar_t` バッファ *w* から Unicode オブジェクトを生成します。
+   失敗すると *NULL* を返します。
 
    .. versionchanged:: 2.5
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
@@ -304,7 +387,8 @@ Python には、処理速度を高めるために C で書かれた codec が揃
 
 .. c:function:: PyObject* PyUnicode_Encode(const Py_UNICODE *s, Py_ssize_t size, const char *encoding, const char *errors)
 
-   *size* で指定されたサイズの :c:type:`Py_UNICODE` バッファをエンコードした Python 文字列オブジェクトを返します。
+   *size* で指定されたサイズの :c:type:`Py_UNICODE` バッファ *s* をエンコードした
+   Python 文字列オブジェクトを返します。
    *encoding* および *errors* は Unicode 型の :meth:`encode` メソッドに与える同名のパラメータと
    同じ意味を持ちます。使用する codec の検索は、 Python の codec レジストリを使って行います。codec が例外を送出した場合には
    *NULL* を返します。
@@ -349,8 +433,9 @@ UTF-8 Codecs
 
 .. c:function:: PyObject* PyUnicode_EncodeUTF8(const Py_UNICODE *s, Py_ssize_t size, const char *errors)
 
-   *size* で指定された長さを持つ :c:type:`Py_UNICODE` 型バッファを UTF-8 でエンコードし、 Python
-   文字列オブジェクトにして返します。 codec が例外を送出した場合には *NULL* を返します。
+   *size* で指定された長さを持つ :c:type:`Py_UNICODE` 型バッファ *s* を UTF-8 で
+   エンコードし、 Python 文字列オブジェクトにして返します。
+   codec が例外を送出した場合には *NULL* を返します。
 
    .. versionchanged:: 2.5
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
@@ -675,8 +760,6 @@ ASCII Codecs
 Character Map Codecs
 """"""""""""""""""""
 
-以下は mapping codec の APIです:
-
 この codec は、多くの様々な codec を実装する際に使われるという点で特殊な codec です (実際、 :mod:`encodings`
 パッケージに入っている標準 codecs のほとんどは、この codec を使っています)。この codec は、文字のエンコードやデコードにマップ型
 (mapping) を使います。
@@ -694,6 +777,7 @@ Character Map Codecs
 Latin-1 として解釈されます。このため、codec を実現するマップ型に入れる必要がある対応付け関係は、ある文字を別の
 コード点に対応付けるものだけです。
 
+以下は mapping codec の APIです:
 
 .. c:function:: PyObject* PyUnicode_DecodeCharmap(const char *s, Py_ssize_t size, PyObject *mapping, const char *errors)
 
@@ -732,8 +816,9 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
 
 .. c:function:: PyObject* PyUnicode_TranslateCharmap(const Py_UNICODE *s, Py_ssize_t size, PyObject *table, const char *errors)
 
-   指定された長さを持つ :c:type:`Py_UNICODE` バッファを、文字変換マップ *table* を適用して変換し、変換結果を Unicode
-   オブジェクトで返します。codec が例外を発行した場合には *NULL* を返します。
+   *size* で指定された長さを持つ :c:type:`Py_UNICODE` バッファを、文字変換マップ *table*
+   を適用して変換し、変換結果を Unicode オブジェクトで返します。
+   codec が例外を発行した場合には *NULL* を返します。
 
    対応付けを行う *table* は、 Unicode 序数を表す整数を Unicode 序数を表す整数または ``None`` に対応付けます。
    (``None`` の場合にはその文字を削除します)
@@ -746,14 +831,16 @@ Latin-1 として解釈されます。このため、codec を実現するマッ
       この関数は以前は *size* の型に :c:type:`int` を利用していました。
       この変更により、 64bit システムを正しくサポートするには修正が必要になります。
 
+
+.. MBCS codecs for Windows
+
+Windows 用の MBCS codec
+"""""""""""""""""""""""
+
 以下は MBCS codec の API です。この codec は現在のところ、 Windows 上だけで利用でき、変換の実装には Win32 MBCS
 変換機構 (Win32 MBCS converter) を使っています。 MBCS (または DBCS) はエンコード方式の種類 (class)
 を表す言葉で、単一のエンコード方式を表すわけでなないので注意してください。利用されるエンコード方式 (target encoding) は、 codec
 を動作させているマシン上のユーザ設定で定義されています。
-
-
-MBCS codecs for Windows
-"""""""""""""""""""""""
 
 
 .. c:function:: PyObject* PyUnicode_DecodeMBCS(const char *s, Py_ssize_t size, const char *errors)
@@ -812,7 +899,8 @@ Methods & Slots
 
 .. c:function:: PyObject* PyUnicode_Split(PyObject *s, PyObject *sep, Py_ssize_t maxsplit)
 
-   Unicode 文字列のリストを分割して、 Unicode 文字列からなるリストを返します。 *sep* が *NULL* の場合、全ての空白文字を使って
+   Unicode 文字列のリストを分割して、 Unicode 文字列からなるリストを返します。
+   *sep* が *NULL* の場合、全ての空白文字を使って
    分割を行います。それ以外の場合、指定された文字を使って分割を行います。最大で *maxsplit* 個までの分割を行います。 *maxsplit*
    が負ならば分割数に制限を設けません。分割結果のリスト内には分割文字は含みません。
 
@@ -843,12 +931,13 @@ Methods & Slots
 
 .. c:function:: PyObject* PyUnicode_Join(PyObject *separator, PyObject *seq)
 
-   指定した *separator* で文字列からなるシーケンスを連結 (join) し、連結結果を Unicode 文字列で返します。
+   指定した *separator* で文字列からなるシーケンスを連結 (join) し、
+   連結結果を Unicode 文字列で返します。
 
 
 .. c:function:: int PyUnicode_Tailmatch(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
 
-   *substr* が *str*[*start*:*end*] の末端 (*direction* == -1 は先頭一致、 *direction* == 1 は末尾一致) で
+   *substr* が ``str[start:end]`` の末端 (*direction* == -1 は先頭一致、 *direction* == 1 は末尾一致) で
    とマッチする場合に 1 を返し、それ以外の場合には 0 を返します。エラーが発生した時は ``-1``
    を返します。
 
@@ -859,7 +948,7 @@ Methods & Slots
 
 .. c:function:: Py_ssize_t PyUnicode_Find(PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int direction)
 
-   *str*[*start*:*end*] 中に *substr* が最初に出現する場所を返します。このとき指定された検索方向 *direction*
+   ``str[start:end]`` 中に *substr* が最初に出現する場所を返します。このとき指定された検索方向 *direction*
    (*direction* == 1 は順方向検索、 *direction* == -1 は逆方向検索) で検索します。戻り値は最初にマッチが見つかった場所の
    インデクスです; 戻り値 ``-1`` はマッチが見つからなかったことを表し、 ``-2`` はエラーが発生して例外情報が設定されていることを表します。
 

@@ -1,0 +1,312 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/heapq.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -1,31 +1,38 @@</span>
+ :mod:`heapq` --- Heap queue algorithm
+ =====================================
+ 
+ .. module:: heapq
+    :synopsis: Heap queue algorithm (a.k.a. priority queue).
+ .. moduleauthor:: Kevin O&#39;Connor
+ .. sectionauthor:: Guido van Rossum &lt;guido@python.org&gt;
+ .. sectionauthor:: François Pinard
+<span class="gi">+.. sectionauthor:: Raymond Hettinger</span>
+ 
+ .. versionadded:: 2.3
+ 
+ This module provides an implementation of the heap queue algorithm, also known
+ as the priority queue algorithm.
+ 
+<span class="gd">-Heaps are arrays for which ``heap[k] &lt;= heap[2*k+1]`` and ``heap[k] &lt;=</span>
+<span class="gd">-heap[2*k+2]`` for all *k*, counting elements from zero.  For the sake of</span>
+<span class="gd">-comparison, non-existing elements are considered to be infinite.  The</span>
+<span class="gd">-interesting property of a heap is that ``heap[0]`` is always its smallest</span>
+<span class="gd">-element.</span>
+<span class="gi">+.. seealso::</span>
+<span class="gi">+</span>
+<span class="gi">+   Latest version of the `heapq Python source code</span>
+<span class="gi">+   &lt;http://svn.python.org/view/python/branches/release27-maint/Lib/heapq.py?view=markup&gt;`_</span>
+<span class="gi">+</span>
+<span class="gi">+Heaps are binary trees for which every parent node has a value less than or</span>
+<span class="gi">+equal to any of its children.  This implementation uses arrays for which</span>
+<span class="gi">+``heap[k] &lt;= heap[2*k+1]`` and ``heap[k] &lt;= heap[2*k+2]`` for all *k*, counting</span>
+<span class="gi">+elements from zero.  For the sake of comparison, non-existing elements are</span>
+<span class="gi">+considered to be infinite.  The interesting property of a heap is that its</span>
+<span class="gi">+smallest element is always the root, ``heap[0]``.</span>
+ 
+ The API below differs from textbook heap algorithms in two aspects: (a) We use
+ zero-based indexing.  This makes the relationship between the index for a node
+ and the indexes for its children slightly less obvious, but is more suitable
+ since Python uses zero-based indexing. (b) Our pop method returns the smallest
+ item, not the largest (called a &quot;min heap&quot; in textbooks; a &quot;max heap&quot; is more
+ common in texts because of its suitability for in-place sorting).
+ 
+ These two make it possible to view the heap as a regular Python list without
+ surprises: ``heap[0]`` is the smallest item, and ``heap.sort()`` maintains the
+ heap invariant!
+ 
+<span class="gu">@@ -53,63 +60,34 @@</span>
+ 
+    .. versionadded:: 2.6
+ 
+ .. function:: heapify(x)
+ 
+    Transform list *x* into a heap, in-place, in linear time.
+ 
+ 
+ .. function:: heapreplace(heap, item)
+ 
+    Pop and return the smallest item from the *heap*, and also push the new *item*.
+    The heap size doesn&#39;t change. If the heap is empty, :exc:`IndexError` is raised.
+<span class="gd">-   This is more efficient than :func:`heappop` followed by  :func:`heappush`, and</span>
+<span class="gd">-   can be more appropriate when using a fixed-size heap.  Note that the value</span>
+<span class="gd">-   returned may be larger than *item*!  That constrains reasonable uses of this</span>
+<span class="gd">-   routine unless written as part of a conditional replacement::</span>
+ 
+<span class="gd">-      if item &gt; heap[0]:</span>
+<span class="gd">-          item = heapreplace(heap, item)</span>
+<span class="gi">+   This one step operation is more efficient than a :func:`heappop` followed by</span>
+<span class="gi">+   :func:`heappush` and can be more appropriate when using a fixed-size heap.</span>
+<span class="gi">+   The pop/push combination always returns an element from the heap and replaces</span>
+<span class="gi">+   it with *item*.</span>
+ 
+<span class="gd">-Example of use:</span>
+<span class="gd">-</span>
+<span class="gd">-   &gt;&gt;&gt; from heapq import heappush, heappop</span>
+<span class="gd">-   &gt;&gt;&gt; heap = []</span>
+<span class="gd">-   &gt;&gt;&gt; data = [1, 3, 5, 7, 9, 2, 4, 6, 8, 0]</span>
+<span class="gd">-   &gt;&gt;&gt; for item in data:</span>
+<span class="gd">-   ...     heappush(heap, item)</span>
+<span class="gd">-   ...</span>
+<span class="gd">-   &gt;&gt;&gt; ordered = []</span>
+<span class="gd">-   &gt;&gt;&gt; while heap:</span>
+<span class="gd">-   ...     ordered.append(heappop(heap))</span>
+<span class="gd">-   ...</span>
+<span class="gd">-   &gt;&gt;&gt; print ordered</span>
+<span class="gd">-   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+<span class="gd">-   &gt;&gt;&gt; data.sort()</span>
+<span class="gd">-   &gt;&gt;&gt; print data == ordered</span>
+<span class="gd">-   True</span>
+<span class="gd">-</span>
+<span class="gd">-Using a heap to insert items at the correct place in a priority queue:</span>
+<span class="gd">-</span>
+<span class="gd">-   &gt;&gt;&gt; heap = []</span>
+<span class="gd">-   &gt;&gt;&gt; data = [(1, &#39;J&#39;), (4, &#39;N&#39;), (3, &#39;H&#39;), (2, &#39;O&#39;)]</span>
+<span class="gd">-   &gt;&gt;&gt; for item in data:</span>
+<span class="gd">-   ...     heappush(heap, item)</span>
+<span class="gd">-   ...</span>
+<span class="gd">-   &gt;&gt;&gt; while heap:</span>
+<span class="gd">-   ...     print heappop(heap)[1]</span>
+<span class="gd">-   J</span>
+<span class="gd">-   O</span>
+<span class="gd">-   H</span>
+<span class="gd">-   N</span>
+<span class="gi">+   The value returned may be larger than the *item* added.  If that isn&#39;t</span>
+<span class="gi">+   desired, consider using :func:`heappushpop` instead.  Its push/pop</span>
+<span class="gi">+   combination returns the smaller of the two values, leaving the larger value</span>
+<span class="gi">+   on the heap.</span>
+ 
+ 
+ The module also offers three general purpose functions based on heaps.
+ 
+ 
+ .. function:: merge(*iterables)
+ 
+    Merge multiple sorted inputs into a single sorted output (for example, merge
+    timestamped entries from multiple log files).  Returns an :term:`iterator`
+    over the sorted values.
+ 
+    Similar to ``sorted(itertools.chain(*iterables))`` but returns an iterable, does
+<span class="gu">@@ -142,30 +120,118 @@</span>
+ 
+    .. versionadded:: 2.4
+ 
+    .. versionchanged:: 2.5
+       Added the optional *key* argument.
+ 
+ The latter two functions perform best for smaller values of *n*.  For larger
+ values, it is more efficient to use the :func:`sorted` function.  Also, when
+ ``n==1``, it is more efficient to use the built-in :func:`min` and :func:`max`
+ functions.
+ 
+ 
+<span class="gi">+Basic Examples</span>
+<span class="gi">+--------------</span>
+<span class="gi">+</span>
+<span class="gi">+A `heapsort &lt;http://en.wikipedia.org/wiki/Heapsort&gt;`_ can be implemented by</span>
+<span class="gi">+pushing all values onto a heap and then popping off the smallest values one at a</span>
+<span class="gi">+time::</span>
+<span class="gi">+</span>
+<span class="gi">+   &gt;&gt;&gt; def heapsort(iterable):</span>
+<span class="gi">+   ...     &#39;Equivalent to sorted(iterable)&#39;</span>
+<span class="gi">+   ...     h = []</span>
+<span class="gi">+   ...     for value in iterable:</span>
+<span class="gi">+   ...         heappush(h, value)</span>
+<span class="gi">+   ...     return [heappop(h) for i in range(len(h))]</span>
+<span class="gi">+   ...</span>
+<span class="gi">+   &gt;&gt;&gt; heapsort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0])</span>
+<span class="gi">+   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+<span class="gi">+</span>
+<span class="gi">+Heap elements can be tuples.  This is useful for assigning comparison values</span>
+<span class="gi">+(such as task priorities) alongside the main record being tracked::</span>
+<span class="gi">+</span>
+<span class="gi">+    &gt;&gt;&gt; h = []</span>
+<span class="gi">+    &gt;&gt;&gt; heappush(h, (5, &#39;write code&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; heappush(h, (7, &#39;release product&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; heappush(h, (1, &#39;write spec&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; heappush(h, (3, &#39;create tests&#39;))</span>
+<span class="gi">+    &gt;&gt;&gt; heappop(h)</span>
+<span class="gi">+    (1, &#39;write spec&#39;)</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+Priority Queue Implementation Notes</span>
+<span class="gi">+-----------------------------------</span>
+<span class="gi">+</span>
+<span class="gi">+A `priority queue &lt;http://en.wikipedia.org/wiki/Priority_queue&gt;`_ is common use</span>
+<span class="gi">+for a heap, and it presents several implementation challenges:</span>
+<span class="gi">+</span>
+<span class="gi">+* Sort stability:  how do you get two tasks with equal priorities to be returned</span>
+<span class="gi">+  in the order they were originally added?</span>
+<span class="gi">+</span>
+<span class="gi">+* In the future with Python 3, tuple comparison breaks for (priority, task)</span>
+<span class="gi">+  pairs if the priorities are equal and the tasks do not have a default</span>
+<span class="gi">+  comparison order.</span>
+<span class="gi">+</span>
+<span class="gi">+* If the priority of a task changes, how do you move it to a new position in</span>
+<span class="gi">+  the heap?</span>
+<span class="gi">+</span>
+<span class="gi">+* Or if a pending task needs to be deleted, how do you find it and remove it</span>
+<span class="gi">+  from the queue?</span>
+<span class="gi">+</span>
+<span class="gi">+A solution to the first two challenges is to store entries as 3-element list</span>
+<span class="gi">+including the priority, an entry count, and the task.  The entry count serves as</span>
+<span class="gi">+a tie-breaker so that two tasks with the same priority are returned in the order</span>
+<span class="gi">+they were added. And since no two entry counts are the same, the tuple</span>
+<span class="gi">+comparison will never attempt to directly compare two tasks.</span>
+<span class="gi">+</span>
+<span class="gi">+The remaining challenges revolve around finding a pending task and making</span>
+<span class="gi">+changes to its priority or removing it entirely.  Finding a task can be done</span>
+<span class="gi">+with a dictionary pointing to an entry in the queue.</span>
+<span class="gi">+</span>
+<span class="gi">+Removing the entry or changing its priority is more difficult because it would</span>
+<span class="gi">+break the heap structure invariants.  So, a possible solution is to mark an</span>
+<span class="gi">+entry as invalid and optionally add a new entry with the revised priority::</span>
+<span class="gi">+</span>
+<span class="gi">+    pq = []                         # the priority queue list</span>
+<span class="gi">+    counter = itertools.count(1)    # unique sequence count</span>
+<span class="gi">+    task_finder = {}                # mapping of tasks to entries</span>
+<span class="gi">+    INVALID = 0                     # mark an entry as deleted</span>
+<span class="gi">+</span>
+<span class="gi">+    def add_task(priority, task, count=None):</span>
+<span class="gi">+        if count is None:</span>
+<span class="gi">+            count = next(counter)</span>
+<span class="gi">+        entry = [priority, count, task]</span>
+<span class="gi">+        task_finder[task] = entry</span>
+<span class="gi">+        heappush(pq, entry)</span>
+<span class="gi">+</span>
+<span class="gi">+    def get_top_priority():</span>
+<span class="gi">+        while True:</span>
+<span class="gi">+            priority, count, task = heappop(pq)</span>
+<span class="gi">+            del task_finder[task]</span>
+<span class="gi">+            if count is not INVALID:</span>
+<span class="gi">+                return task</span>
+<span class="gi">+</span>
+<span class="gi">+    def delete_task(task):</span>
+<span class="gi">+        entry = task_finder[task]</span>
+<span class="gi">+        entry[1] = INVALID</span>
+<span class="gi">+</span>
+<span class="gi">+    def reprioritize(priority, task):</span>
+<span class="gi">+        entry = task_finder[task]</span>
+<span class="gi">+        add_task(priority, task, entry[1])</span>
+<span class="gi">+        entry[1] = INVALID</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ Theory
+ ------
+ 
+<span class="gd">-(This explanation is due to François Pinard.  The Python code for this module</span>
+<span class="gd">-was contributed by Kevin O&#39;Connor.)</span>
+<span class="gd">-</span>
+ Heaps are arrays for which ``a[k] &lt;= a[2*k+1]`` and ``a[k] &lt;= a[2*k+2]`` for all
+ *k*, counting elements from 0.  For the sake of comparison, non-existing
+ elements are considered to be infinite.  The interesting property of a heap is
+ that ``a[0]`` is always its smallest element.
+ 
+ The strange invariant above is meant to be an efficient memory representation
+ for a tournament.  The numbers below are *k*, not ``a[k]``::
+ 
+                                   0
+ 
+                  1                                 2
+ 
+</pre></div>
+
+</body>
+</html>

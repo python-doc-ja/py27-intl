@@ -1,0 +1,206 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>library/_winreg.rst</title>
+<style type="text/css">
+.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #808080 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0040D0 } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
+</style>
+</head>
+<body>
+<div class="highlight"><pre><span class="gu">@@ -56,40 +56,102 @@</span>
+ 
+    *sub_key* is a string that names the key this method opens or creates.
+ 
+    If *key* is one of the predefined keys, *sub_key* may be ``None``. In that
+    case, the handle returned is the same key handle passed in to the function.
+ 
+    If the key already exists, this function opens the existing key.
+ 
+    The return value is the handle of the opened key. If the function fails, a
+    :exc:`WindowsError` exception is raised.
+ 
+ 
+<span class="gi">+.. function:: CreateKeyEx(key, sub_key[, res[, sam]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Creates or opens the specified key, returning a</span>
+<span class="gi">+   :ref:`handle object &lt;handle-object&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+   *key* is an already open key, or one of the predefined</span>
+<span class="gi">+   :ref:`HKEY_* constants &lt;hkey-constants&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+   *sub_key* is a string that names the key this method opens or creates.</span>
+<span class="gi">+</span>
+<span class="gi">+   *res* is a reserved integer, and must be zero. The default is zero.</span>
+<span class="gi">+</span>
+<span class="gi">+   *sam* is an integer that specifies an access mask that describes the desired</span>
+<span class="gi">+   security access for the key.  Default is :const:`KEY_ALL_ACCESS`.  See</span>
+<span class="gi">+   :ref:`Access Rights &lt;access-rights&gt;` for other allowed values.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   If *key* is one of the predefined keys, *sub_key* may be ``None``. In that</span>
+<span class="gi">+   case, the handle returned is the same key handle passed in to the function.</span>
+<span class="gi">+</span>
+<span class="gi">+   If the key already exists, this function opens the existing key.</span>
+<span class="gi">+</span>
+<span class="gi">+   The return value is the handle of the opened key. If the function fails, a</span>
+<span class="gi">+   :exc:`WindowsError` exception is raised.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. function:: DeleteKey(key, sub_key)
+ 
+    Deletes the specified key.
+ 
+    *key* is an already open key, or any one of the predefined
+    :ref:`HKEY_* constants &lt;hkey-constants&gt;`.
+ 
+<span class="gd">-   *sub_key* is a string that must be a subkey of the key  identified by the *key*</span>
+<span class="gd">-   parameter.  This value must not be  ``None``, and the key may not have subkeys.</span>
+<span class="gi">+   *sub_key* is a string that must be a subkey of the key identified by the *key*</span>
+<span class="gi">+   parameter.  This value must not be ``None``, and the key may not have subkeys.</span>
+ 
+    *This method can not delete keys with subkeys.*
+ 
+    If the method succeeds, the entire key, including all of its values, is removed.
+    If the method fails, a :exc:`WindowsError` exception is raised.
+ 
+ 
+<span class="gi">+.. function:: DeleteKeyEx(key, sub_key[, sam[, res]])</span>
+<span class="gi">+</span>
+<span class="gi">+   Deletes the specified key.</span>
+<span class="gi">+</span>
+<span class="gi">+   .. note::</span>
+<span class="gi">+      The :func:`DeleteKeyEx` function is implemented with the RegDeleteKeyEx</span>
+<span class="gi">+      Windows API function, which is specific to 64-bit versions of Windows.</span>
+<span class="gi">+      See the `RegDeleteKeyEx documentation</span>
+<span class="gi">+      &lt;http://msdn.microsoft.com/en-us/library/ms724847%28VS.85%29.aspx&gt;`__.</span>
+<span class="gi">+</span>
+<span class="gi">+   *key* is an already open key, or any one of the predefined</span>
+<span class="gi">+   :ref:`HKEY_* constants &lt;hkey-constants&gt;`.</span>
+<span class="gi">+</span>
+<span class="gi">+   *sub_key* is a string that must be a subkey of the key identified by the</span>
+<span class="gi">+   *key* parameter. This value must not be ``None``, and the key may not have</span>
+<span class="gi">+   subkeys.</span>
+<span class="gi">+</span>
+<span class="gi">+   *res* is a reserved integer, and must be zero. The default is zero.</span>
+<span class="gi">+</span>
+<span class="gi">+   *sam* is an integer that specifies an access mask that describes the desired</span>
+<span class="gi">+   security access for the key.  Default is :const:`KEY_WOW64_64KEY`.  See</span>
+<span class="gi">+   :ref:`Access Rights &lt;access-rights&gt;` for other allowed values.</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+<span class="gi">+   *This method can not delete keys with subkeys.*</span>
+<span class="gi">+</span>
+<span class="gi">+   If the method succeeds, the entire key, including all of its values, is</span>
+<span class="gi">+   removed. If the method fails, a :exc:`WindowsError` exception is raised.</span>
+<span class="gi">+</span>
+<span class="gi">+   On unsupported Windows versions, :exc:`NotImplementedError` is raised.</span>
+<span class="gi">+</span>
+<span class="gi">+.. versionadded:: 2.7</span>
+<span class="gi">+</span>
+<span class="gi">+</span>
+ .. function:: DeleteValue(key, value)
+ 
+    Removes a named value from a registry key.
+ 
+    *key* is an already open key, or one of the predefined
+    :ref:`HKEY_* constants &lt;hkey-constants&gt;`.
+ 
+    *value* is a string that identifies the value to remove.
+ 
+ 
+ .. function:: EnumKey(key, index)
+ 
+<span class="gu">@@ -174,25 +236,25 @@</span>
+    *key* is a handle returned by :func:`ConnectRegistry` or one of the constants
+    :const:`HKEY_USERS` or :const:`HKEY_LOCAL_MACHINE`.
+ 
+    *sub_key* is a string that identifies the subkey to load.
+ 
+    *file_name* is the name of the file to load registry data from. This file must
+    have been created with the :func:`SaveKey` function. Under the file allocation
+    table (FAT) file system, the filename may not have an extension.
+ 
+    A call to :func:`LoadKey` fails if the calling process does not have the
+    :const:`SE_RESTORE_PRIVILEGE` privilege.  Note that privileges are different
+    from permissions -- see the `RegLoadKey documentation
+<span class="gd">-   &lt;http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx&gt;`_ for</span>
+<span class="gi">+   &lt;http://msdn.microsoft.com/en-us/library/ms724889%28v=VS.85%29.aspx&gt;`__ for</span>
+    more details.
+ 
+    If *key* is a handle returned by :func:`ConnectRegistry`, then the path
+    specified in *file_name* is relative to the remote computer.
+ 
+ 
+ .. function:: OpenKey(key, sub_key[, res[, sam]])
+ 
+    Opens the specified key, returning a :ref:`handle object &lt;handle-object&gt;`.
+ 
+    *key* is an already open key, or any one of the predefined
+    :ref:`HKEY_* constants &lt;hkey-constants&gt;`.
+</pre></div>
+
+</body>
+</html>

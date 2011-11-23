@@ -17,34 +17,36 @@
 
 以下にこのモジュールの使い方の小さな例を二つ示します。ニュースグループに関する統計情報を列挙し、最新 10 件の記事を出力するには以下のようにします::
 
-   >>> s = NNTP('news.cwi.nl')
-   >>> resp, count, first, last, name = s.group('comp.lang.python')
+   >>> s = NNTP('news.gmane.org')
+   >>> resp, count, first, last, name = s.group('gmane.comp.python.committers')
    >>> print 'Group', name, 'has', count, 'articles, range', first, 'to', last
-   Group comp.lang.python has 59 articles, range 3742 to 3803
+   Group gmane.comp.python.committers has 1071 articles, range 1 to 1071
    >>> resp, subs = s.xhdr('subject', first + '-' + last)
    >>> for id, sub in subs[-10:]: print id, sub
    ...
-   3792 Re: Removing elements from a list while iterating...
-   3793 Re: Who likes Info files?
-   3794 Emacs and doc strings
-   3795 a few questions about the Mac implementation
-   3796 Re: executable python scripts
-   3797 Re: executable python scripts
-   3798 Re: a few questions about the Mac implementation
-   3799 Re: PROPOSAL: A Generic Python Object Interface for Python C Modules
-   3802 Re: executable python scripts
-   3803 Re: \POSIX{} wait and SIGCHLD
+   1062 Re: Mercurial Status?
+   1063 Re: [python-committers]  (Windows) buildbots on 3.x
+   1064 Re: Mercurial Status?
+   1065 Re: Mercurial Status?
+   1066 Python 2.6.6 status
+   1067 Commit Privileges for Ask Solem
+   1068 Re: Commit Privileges for Ask Solem
+   1069 Re: Commit Privileges for Ask Solem
+   1070 Re: Commit Privileges for Ask Solem
+   1071 2.6.6 rc 2
    >>> s.quit()
-   '205 news.cwi.nl closing connection.  Goodbye.'
+   '205 Bye!'
 
-ファイルから記事を投稿するには、以下のようにします (この例では記事番号は有効な番号を指定していると仮定しています)::
+ファイルから記事を投稿するには、以下のようにします。
+(この例では記事番号は有効な番号を指定していて、あなたがそのニュースグループに投稿する
+権限を持っていると仮定しています) ::
 
-   >>> s = NNTP('news.cwi.nl')
+   >>> s = NNTP('news.gmane.org')
    >>> f = open('/tmp/article')
    >>> s.post(f)
    '240 Article posted successfully.'
    >>> s.quit()
-   '205 news.cwi.nl closing connection.  Goodbye.'
+   '205 Bye!'
 
 このモジュール自体では以下の内容を定義しています:
 

@@ -1,0 +1,58 @@
+@@ -1,23 +1,28 @@
+ 
+ :mod:`random` --- Generate pseudo-random numbers
+ ================================================
+ 
+ .. module:: random
+    :synopsis: Generate pseudo-random numbers with various common distributions.
+ 
+ 
+ This module implements pseudo-random number generators for various
+ distributions.
+ 
++.. seealso::
++
++   Latest version of the `random module Python source code
++   <http://svn.python.org/view/python/branches/release27-maint/Lib/random.py?view=markup>`_
++
+ For integers, uniform selection from a range. For sequences, uniform selection
+ of a random element, a function to generate a random permutation of a list
+ in-place, and a function for random sampling without replacement.
+ 
+ On the real line, there are functions to compute uniform, normal (Gaussian),
+ lognormal, negative exponential, gamma, and beta distributions. For generating
+ distributions of angles, the von Mises distribution is available.
+ 
+ Almost all module functions depend on the basic function :func:`random`, which
+ generates a random float uniformly in the semi-open range [0.0, 1.0).  Python
+ uses the Mersenne Twister as the core generator.  It produces 53-bit precision
+ floats and has a period of 2\*\*19937-1.  The underlying implementation in C is
+@@ -64,28 +69,24 @@
+ .. function:: seed([x])
+ 
+    Initialize the basic random number generator. Optional argument *x* can be any
+    :term:`hashable` object. If *x* is omitted or ``None``, current system time is used;
+    current system time is also used to initialize the generator when the module is
+    first imported.  If randomness sources are provided by the operating system,
+    they are used instead of the system time (see the :func:`os.urandom` function
+    for details on availability).
+ 
+    .. versionchanged:: 2.4
+       formerly, operating system resources were not used.
+ 
+-   If *x* is not ``None`` or an int or long, ``hash(x)`` is used instead. If *x* is
+-   an int or long, *x* is used directly.
+-
+-
+ .. function:: getstate()
+ 
+    Return an object capturing the current internal state of the generator.  This
+    object can be passed to :func:`setstate` to restore the state.
+ 
+    .. versionadded:: 2.1
+ 
+    .. versionchanged:: 2.6
+       State values produced in Python 2.6 cannot be loaded into earlier versions.
+ 
+ 
+ .. function:: setstate(state)

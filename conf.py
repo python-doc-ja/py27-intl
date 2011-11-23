@@ -39,7 +39,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # and replace the values accordingly.
 #import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.6', '2.6.2'
+version, release = '2.7', '2.7ja1-dev'
 
 language = 'ja'
 
@@ -70,17 +70,7 @@ add_module_names = True
 # directory paths to ignore
 exclude_trees = [
 	'refs',
-	'maclib',
         'tools',
-        # todo: translate later
-        #'c-api', 
-        #'distutils',
-        #'extending',
-        #'howto',
-        #'install',
-        #'reference',
-        #'using',
-        #'whatsnew',
 ]
 
 exclude_dirnames = ['diff', 'orig', 'tools']
@@ -95,7 +85,7 @@ html_theme = 'sphinxdoc'
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%Y-%m-%d'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -153,7 +143,9 @@ latex_documents = [
     ('tutorial/index', 'tutorial.tex',
      'Python Tutorial', _stdauthor, 'manual'),
     ('using/index', 'using.tex',
-     'Using Python', _stdauthor, 'manual'),
+     'Python Setup and Usage', _stdauthor, 'manual'),
+    ('faq/index', 'faq.tex',
+     'Python Frequently Asked Questions', _stdauthor, 'manual'),
     ('whatsnew/' + version, 'whatsnew.tex',
      'What\'s New in Python', 'A. M. Kuchling', 'howto'),
 ]

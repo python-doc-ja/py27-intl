@@ -1114,7 +1114,7 @@ WSGI アプリケーションとの通信の大部分を処理します。
    # ここでは関数を使用しています (関数に限らず、例えばクラスを使用できる
    # ことに注意してください)。関数に渡された最初の引数は CGI スタイルの
    # 環境変数を含む辞書であり、 2 番目の変数は callable オブジェクトです
-   # (:pep:`333` を見てください)。
+   # (PEP 333 を見てください)。
    def hello_world_app(environ, start_response):
        status = '200 OK' # HTTP Status
        headers = [('Content-type', 'text/plain')] # HTTP Headers
