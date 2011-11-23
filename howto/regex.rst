@@ -45,7 +45,7 @@
   module, which provided Emacs-style patterns.  The :mod:`regex` module was
   removed completely in Python 2.5.
 
-:mod:`re` モジュール Python 1.5 で追加され、Perl スタイルの正規表現パターンを提供します。
+:mod:`re` モジュールは Python 1.5 で追加され、Perl スタイルの正規表現パターンを提供します。
 それ以前の Python では :mod:`regex` モジュールが Emacs スタイルのパターンを提供していました。
 :mod:`regex` モジュールは Python 2.5 で完全に削除されました。
 
@@ -182,7 +182,7 @@ Python コードは念入りに作られた正規表現より遅くなります�
   special nature.
 
 特殊文字は文字クラスの内部では有効になりません。
-例えば、 ``[akm$]``　は ``'a'``, ``'k'``, ``'m'``　または ``'$'``　にマッチします;
+例えば、 ``[akm$]`` は ``'a'``, ``'k'``, ``'m'`` または ``'$'`` にマッチします;
 ``'$'`` は通常は特殊文字ですが、文字クラス内部では特殊な性質は取り除かれます。
 
 ..
