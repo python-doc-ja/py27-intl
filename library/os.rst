@@ -70,7 +70,7 @@
 
    import されているオペレーティング・システム依存モジュールの名前です。
    現在次の名前が登録されています: ``'posix'``, ``'nt'``,
-   ``'mac'``, ``'os2'``, ``'ce'``, ``'java'``, ``'riscos'`` 。
+   ``'os2'``, ``'ce'``, ``'java'``, ``'riscos'``.
 
 
 .. _os-procinfo:
@@ -129,7 +129,7 @@
 
    プロセスの制御端末に対応するファイル名を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getegid()
@@ -137,7 +137,7 @@
    現在のプロセスの実効(effective)グループ id を返します。
    この id は現在のプロセスで実行されているファイルの "set id" ビットに対応します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: geteuid()
@@ -146,7 +146,7 @@
 
    現在のプロセスの実効(effective)ユーザ id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getgid()
@@ -155,14 +155,24 @@
 
    現在のプロセスの実際のグループ id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getgroups()
 
    現在のプロセスに関連づけられた従属グループ id のリストを返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
+
+
+.. function:: initgroups(username, gid)
+
+   システムの initgroups() を呼んで、指定された *username* がメンバーであるグループと
+   *gid* でしていされたグループでグループアクセスリストを初期化する。
+
+   利用できる環境: Unix
+
+   .. versionadded:: 2.7
 
 
 .. function:: getlogin()
@@ -172,7 +182,7 @@
    現在の実効ユーザ id のユーザ名を知りたいときには
    ``pwd.getpwuid(os.getuid())[0]`` を使うほうが便利です。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getpgid(pid)
@@ -180,7 +190,7 @@
    プロセス id *pid* のプロセスのプロセス・グループ id を返します。
    もし *pid* が 0 ならば、現在のプロセスのプロセス・グループ id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
  
    .. versionadded:: 2.3
  
@@ -191,7 +201,7 @@
 
    現在のプロセス・グループの id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getpid()
@@ -200,7 +210,7 @@
 
    現在のプロセス id を返します。
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix、 Windows
 
 
 .. function:: getppid()
@@ -209,7 +219,27 @@
 
    親プロセスの id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
+
+
+.. function:: getresuid()
+
+   現在のプロセスの real, effective, saved user id を示す、
+   (ruid, euid, suid) のタプルを返します。
+
+   利用できる環境: Unix
+
+   .. versionadded:: 2.7
+
+
+.. function:: getresgid()
+
+   現在のプロセスの real, effective, saved group id を示す、
+   (ruid, euid, suid) のタプルを返します。
+
+   利用できる環境: Unix
+
+   .. versionadded:: 2.7
 
 
 .. function:: getuid()
@@ -218,7 +248,7 @@
 
    現在のプロセスのユーザ id を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getenv(varname[, value])
@@ -227,7 +257,7 @@
    存在しない場合には *value* を返します。
    *value* のデフォルト値は ``None`` です。
 
-   利用できる環境: 主な Unix 互換環境、Windows。
+   利用できる環境: 主な Unix 互換環境、Windows
 
 
 .. function:: putenv(varname, value)
@@ -239,7 +269,7 @@
    :func:`popen` , :func:`fork` および :func:`execv`
    により起動された子プロセスに影響します。
 
-   利用できる環境: 主な Unix 互換環境、Windows。
+   利用できる環境: 主な Unix 互換環境、Windows
 
    .. note::
 
@@ -258,21 +288,21 @@
 
    現在のプロセスに実効グループ id をセットします。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: seteuid(euid)
 
    現在のプロセスに実効ユーザ id をセットします。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: setgid(gid)
 
    現在のプロセスにグループ id をセットします。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: setgroups(groups)
@@ -282,7 +312,7 @@
    各要素はグループを特定する整数でなくてはなりません。
    この操作は通常、スーパユーザしか利用できません。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.2
 
@@ -305,16 +335,34 @@
    利用できる環境: Unix
 
 
-.. function:: setreuid(ruid, euid)
+.. function:: setregid(rgid, egid)
 
-   現在のプロセスに対して実際のユーザ id および実効ユーザ id を設定します。
+   現在のプロセスの real, effective group id を設定します。
 
    利用できる環境: Unix
 
 
-.. function:: setregid(rgid, egid)
+.. function:: setresgid(rgid, egid, sgid)
 
-   現在のプロセスに対して実際のグループ id および実効ユーザ id を設定します。
+   現在のプロセスの real, effective, saved group id を設定します。
+
+   利用できる環境: Unix
+
+   .. versionadded:: 2.7
+
+
+.. function:: setresuid(ruid, euid, suid)
+
+   Set the current process's real, effective, and saved user ids.
+
+   利用できる環境: Unix
+
+   .. versionadded:: 2.7
+
+
+.. function:: setreuid(ruid, euid)
+
+   現在のプロセスに対して実際のユーザ id および実効ユーザ id を設定します。
 
    利用できる環境: Unix
 
@@ -324,7 +372,7 @@
    システムコール :c:func:`getsid` を呼び出します。
    機能については Unix マニュアルを参照してください。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.4
 
@@ -353,14 +401,14 @@
    不明なエラーコードに対して :c:func:`strerror` が ``NULL``
    を返す環境では、その場合に :exc:`ValueError` を送出します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: umask(mask)
 
    現在の数値 umask を設定し、以前の umask 値を返します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: uname()
@@ -413,7 +461,7 @@
    引数 *mode* および *bufsize* は、組み込み関数
    :func:`open`  における対応する引数と同じ意味を持ちます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionchanged:: 2.3
       引数 *mode* は、指定されるならば、
@@ -439,7 +487,7 @@
    例外は終了ステータスがゼロ
    (すなわちエラーなしで終了) の場合で、このときには ``None`` を返します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. deprecated:: 2.6
       この関数は撤廃されました。
@@ -461,7 +509,7 @@
    このファイルはディレクトリエントリ登録に関連付けられておらず、
    このファイルに対するファイル記述子がなくなると自動的に削除されます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 .. There are a number of different :func:`popen\*` functions that provide slightly
    different ways to create subprocesses.
@@ -505,7 +553,7 @@ I/O パイプのバッファサイズを表します。 *mode* を指定する�
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 2.0
 
@@ -519,7 +567,7 @@ I/O パイプのバッファサイズを表します。 *mode* を指定する�
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 2.0
 
@@ -533,7 +581,7 @@ I/O パイプのバッファサイズを表します。 *mode* を指定する�
       この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
       特に、 :ref:`subprocess-replacements` 節を参照してください。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 2.0
 
@@ -592,7 +640,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           except OSError:
               pass
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 2.6
 
@@ -601,14 +649,14 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
    ファイル記述子 *fd* の複製を返します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 .. function:: dup2(fd, fd2)
 
    ファイル記述子を *fd* から *fd2* に複製し、
    必要なら後者の記述子を前もって閉じておきます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: fchmod(fd, mode)
@@ -668,9 +716,9 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
 .. function:: fstat(fd)
 
-   :func:`stat` のようにファイル記述子 *fd* の状態を返します。
+   :func:`~os.stat` のようにファイル記述子 *fd* の状態を返します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: fstatvfs(fd)
@@ -691,7 +739,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    *f* の内部バッファを確実にディスクに書き込むために、まず ``f.flush()`` を実行し、
    それから ``os.fsync(f.fileno())`` してください。
 
-   利用できる環境: Unix、Windows (2.2.3 以降)
+   利用できる環境: Unix, Windows (2.2.3 以降)
 
 
 .. function:: ftruncate(fd, length)
@@ -718,7 +766,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    現在の位置からの相対には :const:`SEEK_CUR` か ``1`` を設定します;
    ファイルの末尾からの相対には :const:`SEEK_END` か ``2`` を設定します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 .. data:: SEEK_SET
           SEEK_CUR
@@ -727,7 +775,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    :func:`lseek` 関数に渡すパラメータ。
    値は順に 0, 1, 2 です。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 2.5
 
@@ -746,7 +794,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    特に、Windows ではバイナリファイルを開くときに :const:`O_BINARY` 
    を加える必要があります。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. note::
 
@@ -777,7 +825,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    ファイル記述子のペア ``(r, w)``  を返し、
    それぞれ読み出し、書き込み用に使うことができます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: read(fd, n)
@@ -786,7 +834,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    読み出されたバイト列の入った文字列を返します。
    *fd* が参照しているファイルの終端に達した場合、空の文字列が返されます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. note::
 
@@ -827,7 +875,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    ファイル記述子 *fd* に文字列 *str* を書き込みます。
    実際に書き込まれたバイト数を返します。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. note::
 
@@ -863,7 +911,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           O_EXCL
           O_TRUNC
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. data:: O_DSYNC
@@ -918,7 +966,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    アクセスが許可されている場合 ``True`` を、そうでない場合 ``False`` を返します。
    詳細は :manpage:`access(2)` のマニュアルページを参照してください。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
    .. note::
 
@@ -927,6 +975,25 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       セキュリティ・ホールを作り出してしまいます。
       というのは、調べる時点と開く時点の時間差を利用して
       そのユーザーがファイルを操作してしまうかもしれないからです。
+      :term:`EAFP` テクニックを利用する方が好ましいです。例えば::
+
+         if os.access("myfile", os.R_OK):
+             with open("myfile") as fp:
+                 return fp.read()
+         return "some default data"
+
+      このコードは次のように書いたほうが良いです::
+
+         try:
+             fp = open("myfile")
+         except IOError as e:
+             if e.errno == errno.EACCESS:
+                 return "some default data"
+             # Not a permission error.
+             raise
+         else:
+             with fp:
+                 return fp.read()
 
    .. note::
 
@@ -961,14 +1028,14 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
    現在の作業ディレクトリ (current working directory) を *path* に設定します。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: getcwd()
 
    現在の作業ディレクトリを表現する文字列を返します。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: getcwdu()
@@ -989,18 +1056,18 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    *flags* は、以下の値を(bitwise ORで)組み合わせたものです。
    (:mod:`stat` モジュールを参照してください):
 
-   * ``UF_NODUMP``
-   * ``UF_IMMUTABLE``
-   * ``UF_APPEND``
-   * ``UF_OPAQUE``
-   * ``UF_NOUNLINK``
-   * ``SF_ARCHIVED``
-   * ``SF_IMMUTABLE``
-   * ``SF_APPEND``
-   * ``SF_NOUNLINK``
-   * ``SF_SNAPSHOT``
+   * :data:`stat.UF_NODUMP`
+   * :data:`stat.UF_IMMUTABLE`
+   * :data:`stat.UF_APPEND`
+   * :data:`stat.UF_OPAQUE`
+   * :data:`stat.UF_NOUNLINK`
+   * :data:`stat.SF_ARCHIVED`
+   * :data:`stat.SF_IMMUTABLE`
+   * :data:`stat.SF_APPEND`
+   * :data:`stat.SF_NOUNLINK`
+   * :data:`stat.SF_SNAPSHOT`
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.6
 
@@ -1040,7 +1107,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    * :data:`stat.S_IWOTH`
    * :data:`stat.S_IXOTH`
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix、 Windows
 
    .. note::
 
@@ -1094,7 +1161,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    リスト内の順番は不定です。特殊エントリ ``'.'`` および ``'..'``
    は、それらがディレクトリに入っていてもリストには含められません。
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix、 Windows
 
    .. versionchanged:: 2.3
       Windows NT/2k/XP と Unixでは、 *path* が Unicode オブジェクトの場合、
@@ -1104,8 +1171,10 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
 .. function:: lstat(path)
 
-   :func:`stat` に似ていますが、シンボリックリンクをたどりません。
-   シンボリックリンクのない Windows のような環境では :func:`stat` の別名です。
+   与えられた *path* に対して、 :c:func:`lstat` システムコールと同じ
+   動作をします。
+   :func:`~os.stat` に似ていますが、シンボリックリンクをたどりません。
+   シンボリックリンクのない環境では :func:`~os.stat` の別名です。
 
 
 .. function:: mkfifo(path[, mode])
@@ -1171,15 +1240,14 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    *mode* の標準の値は ``0777`` (8進)です。
    システムによっては、 *mode* は無視されます。
    利用の際には、現在の umask 値が前もってマスクされます。
-
-   .. It is also possible to create temporary directories; see the
-      :mod:`tempfile` module's :func:`tempfile.mkdtemp` function.
+   指定されたディレクトリがすでに存在する場合は :exc:`OSError` 例外を発生
+   させます。
 
    一時ディレクトリを作成することもできます:
    :mod:`tempfile` モジュールの :func:`tempfile.mkdtemp`
    関数を参照してください。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: makedirs(path[, mode])
@@ -1260,7 +1328,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    Unixでは、ディレクトリエントリは削除されますが、記憶装置上にアロケーションされた
    ファイル領域は元のファイルが使われなくなるまで残されます。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: removedirs(path)
@@ -1295,7 +1363,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    これは *dst* が既に存在するファイル名の場合、
    名前変更の原子的操作を実装する手段がないからです。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: renames(old, new)
@@ -1320,28 +1388,28 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    そうでなければ :exc:`OSError` が送出されます。
    ディレクトリ・ツリー全体を削除するのには :func:`shutil.rmtree` が使えます。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: stat(path)
 
-   与えられた *path* に対して :c:func:`stat` システムコールを実行します。
-   戻り値はオブジェクトで、その属性が :c:type:`stat`
-   構造体の以下に挙げる各メンバ:
-   :attr:`st_mode` (保護モードビット), :attr:`st_ino` (i ノード番号),
-   :attr:`st_dev` (デバイス), :attr:`st_nlink` (ハードリンク数),
-   :attr:`st_uid` (所有者のユーザ ID), :attr:`st_gid` (所有者のグループ ID),
-   :attr:`st_size` (ファイルのバイトサイズ), :attr:`st_atime` (最終アクセス時刻),
-   :attr:`st_mtime` (最終更新時刻), :attr:`st_ctime` (プラットフォーム依存：
-   Unix では最終メタデータ変更時刻、 Windows では作成時刻) となっています。 ::
+   与えられた *path* に対して :c:func:`stat` システムコール相当の処理を実行します。
+   (この関数はシンボリックリンクをたどります。シンボリックリンクに対して stat
+   したい場合は :func:`lstat` を利用してください)
 
-      >>> import os
-      >>> statinfo = os.stat('somefile.txt')
-      >>> statinfo
-      (33188, 422511L, 769L, 1, 1032, 100, 926L, 1105022698,1105022732, 1105022732)
-      >>> statinfo.st_size
-      926L
-      >>>
+   戻り値はオブジェクトで、その属性は :c:type:`stat` 構造体に従います:
+
+   * :attr:`st_mode` - 保護 bits,
+   * :attr:`st_ino` - inode 番号,
+   * :attr:`st_dev` - デバイス,
+   * :attr:`st_nlink` - ハードリンク数,
+   * :attr:`st_uid` - オーナーの uid,
+   * :attr:`st_gid` - オーナーの group id,
+   * :attr:`st_size` - ファイルのサイズ(単位: byte),
+   * :attr:`st_atime` - 最近にアクセスされた時間,
+   * :attr:`st_mtime` - 最近に内容を変更した時間,
+   * :attr:`st_ctime` - プラットフォーム依存; Unix では最近のメタデータ変更時間、
+     Windows ではファイルが生成された時間
 
    .. versionchanged:: 2.3
       もし :func:`stat_float_times`
@@ -1350,24 +1418,41 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       Mac OS では、時間は常に浮動小数点です。
       詳細な説明は :func:`stat_float_times` を参照してください。
 
-   (Linux のような) Unix システムでは、以下の属性:
-   :attr:`st_blocks` (ファイル用にアロケーションされているブロック数),
-   :attr:`st_blksize` (ファイルシステムのブロックサイズ),
-   :attr:`st_rdev` (i ノードデバイスの場合、デバイスの形式),
-   :attr:`st_flags` (ファイルに対するユーザー定義のフラグ) も利用可能なときがあります。
+   (Linux のような) いくつかの Unix システムでは、以下の属性が利用できるかもしれません:
 
-   他の (FreeBSD のような) Unix システムでは、以下の属性: 
-   :attr:`st_gen` (ファイル生成番号),
-   :attr:`st_birthtime` (ファイル生成時刻) も利用可能なときがあります 
-   (ただし root がそれらを使うことにした場合以外は値が入っていないでしょう)。
+   * :attr:`st_blocks`  - ファイル用にアロケーションされているブロック数,
+   * :attr:`st_blksize` - ファイルシステムのブロックサイズ,
+   * :attr:`st_rdev`    - i ノードデバイスの場合、デバイスの形式,
+   * :attr:`st_flags`   - ファイルに対するユーザー定義のフラグ
 
-   Mac OS システムでは、以下の属性:
-   :attr:`st_rsize`, :attr:`st_creator`, :attr:`st_type`,
-   も利用可能なときがあります。
+   他の (FreeBSD のような) Unix システムでは、以下の属性が利用できる場合があります
+   (ただし root がそれらを使うことにした場合以外は値が入っていないでしょう):
 
-   RISCOS システムでは、以下の属性:
-   :attr:`st_ftype` (file type), :attr:`st_attrs` (attributes),
-   :attr:`st_obtype` (object type) も利用可能なときがあります。
+   * :attr:`st_gen` - ファイル生成番号,
+   * :attr:`st_birthtime` - ファイル生成時刻
+
+   Mac OS システムでは、以下の属性も利用可能なときがあります:
+
+   * :attr:`st_rsize`,
+   * :attr:`st_creator`,
+   * :attr:`st_type`,
+
+   RISCOS システムでは、以下の属性も利用できます:
+
+   * :attr:`st_ftype` (file type),
+   * :attr:`st_attrs` (attributes),
+   * :attr:`st_obtype` (object type)
+
+   .. note::
+
+      :attr:`st_atime`, :attr:`st_mtime`, および :attr:`st_ctime`
+      メンバの厳密な意味や精度はオペレーティングシステムや
+      ファイルシステムによって変わります。
+      例えば、FAT や FAT32 ファイルシステムを使っている Windows システムでは、
+      :attr:`st_atime` の精度は 1 日に過ぎません。
+      詳しくはお使いのオペレーティングシステムのドキュメントを参照してください。
+
+.. x
 
    後方互換性のために、 :func:`stat` の戻り値は
    少なくとも 10 個の整数からなるタプルとしてアクセスすることができます。
@@ -1387,16 +1472,16 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    :c:type:`stat` 構造体から情報を引き出す上で便利な関数や定数を定義しています。
    (Windows では、いくつかのデータ要素はダミーの値が埋められています。)
 
-   .. note::
+   利用できる環境: Unix, Windows
 
-      :attr:`st_atime`, :attr:`st_mtime`, および :attr:`st_ctime`
-      メンバの厳密な意味や精度は
-      オペレーティングシステムやファイルシステムによって変わります。
-      例えば、FAT や FAT32 ファイルシステムを使っている Windows システムでは、
-      :attr:`st_atime` の精度は 1 日に過ぎません。
-      詳しくはお使いのオペレーティングシステムのドキュメントを参照してください。
+   例::
 
-   利用できる環境: Unix、Windows。
+      >>> import os
+      >>> statinfo = os.stat('somefile.txt')
+      >>> statinfo
+      (33188, 422511, 769, 1, 1032, 100, 926, 1105022698,1105022732, 1105022732)
+      >>> statinfo.st_size
+      926
 
    .. versionchanged:: 2.2
       返されたオブジェクトの属性としてのアクセス機能を追加しました。
@@ -1407,11 +1492,14 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
 .. function:: stat_float_times([newvalue])
 
-   :class:`stat_result` がタイムスタンプに浮動小数点オブジェクトを使うかどうかを決定します。 *newvalue* が ``True``
-   の場合、以後の :func:`stat` 呼び出しは浮動小数点を返し、 ``False`` の場合には以後整数を返します。 *newvalue*
-   が省略された場合、現在の設定どおりの戻り値になります。
+   :class:`stat_result` がタイムスタンプに浮動小数点オブジェクトを
+   使うかどうかを決定します。
+   *newvalue* が ``True`` の場合、以後の :func:`~os.stat` 呼び出しは
+   浮動小数点を返し、 ``False`` の場合には以後整数を返します。
+   *newvalue* が省略された場合、現在の設定どおりの戻り値になります。
 
-   古いバージョンの Python と互換性を保つため、 :class:`stat_result` にタプルとしてアクセスすると、常に整数が返されます。
+   古いバージョンの Python と互換性を保つため、 :class:`stat_result`
+   にタプルとしてアクセスすると、常に整数が返されます。
 
    .. versionchanged:: 2.5
       Python はデフォルトで浮動小数点数を返すようになりました。浮動小数点数のタイムスタンプではうまく動かないアプリケーションはこの機能を利用して
@@ -1441,7 +1529,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    では、シーケンスとしてアクセスする場合に、 :c:type:`statvfs` 構造体から情報を引き出す上便利な関数や定数を定義しています; これは
    属性として各フィールドにアクセスできないバージョンの Python で動作する必要のあるコードを書く際に便利です。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionchanged:: 2.2
       返されたオブジェクトの属性としてのアクセス機能を追加しました.
@@ -1451,7 +1539,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
    *source* を指しているシンボリックリンクを *link_name* に作成します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: tempnam([dir[, prefix]])
@@ -1467,7 +1555,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       :func:`tempnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
       (:ref:`os-newstreams`) を使うよう検討してください。
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix、 Windows
 
 
 .. function:: tmpnam()
@@ -1481,7 +1569,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       :func:`tmpnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
       (:ref:`os-newstreams`) を使うよう検討してください。
 
-   利用できる環境: Unix、Windows。この関数はおそらく Windows では使うべきではないでしょう; Micorosoft の
+   利用できる環境: Unix, Windowsこの関数はおそらく Windows では使うべきではないでしょう; Micorosoft の
    :func:`tmpnam` 実装では、常に現在のドライブのルートディレクトリ下のファイル名を生成しますが、これは一般的には
    テンポラリファイルを置く場所としてはひどい場所です (アクセス権限によっては、この名前をつかってファイルを開くことすらできないかもしれません)。
 
@@ -1496,22 +1584,10 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    ファイル *path* を削除します。
    :func:`remove` と同じです;  :func:`unlink` の名前は伝統的な Unix の関数名です。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: utime(path, times)
-
-   .. Set the access and modified times of the file specified by *path*. If *times*
-      is ``None``, then the file's access and modified times are set to the current
-      time. (The effect is similar to running the Unix program :program:`touch` on
-      the path.)  Otherwise, *times* must be a 2-tuple of numbers, of the form
-      ``(atime, mtime)`` which is used to set the access and modified times,
-      respectively. Whether a directory can be given for *path* depends on whether
-      the operating system implements directories as files (for example, Windows
-      does not).  Note that the exact times you set here may not be returned by a
-      subsequent :func:`stat` call, depending on the resolution with which your
-      operating system records access and modification times; see :func:`stat`.
-
 
    *path* で指定されたファイルに最終アクセス時刻および最終修正時刻を設定します。
    *times* が ``None`` の場合、ファイルの最終アクセス時刻および最終更新時刻は現在の時刻になります。
@@ -1522,13 +1598,15 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
    *path* にディレクトリを指定できるかどうかは、オペレーティングシステムがディレクトリをファイルの一種として実装しているかどうかに依存します (例えば、 Windows
    はそうではありません)。
-   ここで設定した時刻の値は、オペレーティングシステムがアクセス時刻や更新時刻を記録する際の精度によっては、後で :func:`stat`
-   呼び出したときの値と同じにならないかも知れないので注意してください。 :func:`stat` も参照してください。
+   ここで設定した時刻の値は、オペレーティングシステムがアクセス時刻や
+   更新時刻を記録する際の精度によっては、後で :func:`~os.stat`
+   呼び出したときの値と同じにならないかも知れないので注意してください。
+   :func:`~os.stat` も参照してください。
 
    .. versionchanged:: 2.0
       *times* として ``None`` をサポートするようにしました.
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: walk(top[, topdown=True [, onerror=None[, followlinks=False]]])
@@ -1650,7 +1728,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    :const:`SIGABRT` シグナルを現在のプロセスに対して生成します。 Unixでは、標準設定の動作はコアダンプの生成です; Windows では、
    プロセスは即座に終了コード ``3`` を返します。 :func:`signal.signal` を使って :const:`SIGABRT` に対する
    シグナルハンドラを設定しているプログラムは異なる挙動を示すので注意してください。
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix、 Windows
 
 
 .. function:: execl(path, arg0, arg1, ...)
@@ -1696,16 +1774,16 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    :func:`execl`, :func:`execlp`, :func:`execv`,および
    :func:`execvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
 
-   利用できる環境: Unix、Windows
+   利用できる環境: Unix, Windows
 
 
 .. function:: _exit(n)
 
-   終了ステータス *n* でシステムを終了します。
+   終了ステータス *n* でプロセスを終了します。
    このときクリーンアップハンドラの呼び出しや、
    標準入出力バッファのフラッシュなどは行いません。
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix, Windows
 
    .. note::
 
@@ -1735,7 +1813,7 @@ Python で書かれたシステムプログラムに使います。
 
    誤った個数の引数が渡されたときなど、コマンドが間違って使われたことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1744,7 +1822,7 @@ Python で書かれたシステムプログラムに使います。
 
    入力データが間違っていたことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1753,7 +1831,7 @@ Python で書かれたシステムプログラムに使います。
 
    入力ファイルが存在しなかった、または、読み込み不可だったことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1762,7 +1840,7 @@ Python で書かれたシステムプログラムに使います。
 
    指定されたユーザが存在しなかったことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1771,7 +1849,7 @@ Python で書かれたシステムプログラムに使います。
 
    指定されたホストが存在しなかったことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1780,7 +1858,7 @@ Python で書かれたシステムプログラムに使います。
 
    要求されたサービスが利用できないことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1789,7 +1867,7 @@ Python で書かれたシステムプログラムに使います。
 
    内部ソフトウェアエラーが検出されたことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1809,7 +1887,7 @@ Python で書かれたシステムプログラムに使います。
    システムファイルが存在しなかった、開けなかった、
    あるいはその他のエラーが起きたことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1818,7 +1896,7 @@ Python で書かれたシステムプログラムに使います。
 
    ユーザには作成できない出力ファイルを指定したことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1827,7 +1905,7 @@ Python で書かれたシステムプログラムに使います。
 
    ファイルの I/O を行っている途中にエラーが発生したときの終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1838,7 +1916,7 @@ Python で書かれたシステムプログラムに使います。
    これは、再試行可能な操作の途中に、ネットワークに接続できないというような、
    実際にはエラーではないかも知れないことを意味します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1847,7 +1925,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロトコル交換が不正、不適切、または理解不能なことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1856,7 +1934,7 @@ Python で書かれたシステムプログラムに使います。
 
    操作を行うために十分な許可がなかった（ファイルシステムの問題を除く）ことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1865,7 +1943,7 @@ Python で書かれたシステムプログラムに使います。
 
    設定エラーが起こったことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1874,7 +1952,7 @@ Python で書かれたシステムプログラムに使います。
 
    "an entry was not found" のようなことを表す終了コード。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1888,7 +1966,7 @@ Python で書かれたシステムプログラムに使います。
    FreeBSD <= 6.3, Cygwin, OS/2 EMX を含む幾つかのプラットフォームにおいて、
    fork() をスレッド内から利用した場合に既知の問題があることに注意してください。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: forkpty()
@@ -1913,7 +1991,14 @@ Python で書かれたシステムプログラムに使います。
    ホストプラットフォームで利用可能なシグナルを特定する定数は :mod:`signal`
    モジュールで定義されています。
 
-   利用できる環境: Unix。
+   Windows: :data:`signal.CTRL_C_EVENT` と :data:`signal.CTRL_BREAK_EVENT`
+   は、同じコンソールウィンドウを共有しているコンソールプロセス(例: 子プロセス)
+   にだけ送ることができる特別なシグナルです。
+   その他の値を *sig* に与えると、そのプロセスが無条件に TerminateProcess API
+   によって kill され、終了コードが *sig* に設定されます。
+   Windows の :func:`kill` は kill するプロセスのハンドルも受け取ります。
+
+   .. versionadded:: 2.7 Windows サポート
 
 
 .. function:: killpg(pgid, sig)
@@ -1924,7 +2009,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスグループ *pgid* にシグナル *sig* を送ります。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -1933,7 +2018,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスの "nice 値" に *increment* を加えます。新たな nice 値を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: plock(op)
@@ -1942,7 +2027,7 @@ Python で書かれたシステムプログラムに使います。
    *op* (``<sys/lock.h>`` で定義されています)
    にはどのセグメントをロックするかを指定します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: popen(...)
@@ -2020,7 +2105,7 @@ Python で書かれたシステムプログラムに使います。
 
    は等価です。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
    :func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`  および :func:`spawnvpe` は
    Windows では利用できません。
@@ -2036,7 +2121,7 @@ Python で書かれたシステムプログラムに使います。
    :func:`spawn\*` 関数は新たなプロセスが生成されるとすぐに、
    プロセスの ID を戻り値として返ります。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 1.6
 
@@ -2049,7 +2134,7 @@ Python で書かれたシステムプログラムに使います。
    プロセスがうまく終了した場合には終了コードを、シグナルによってプロセスが
    kill された場合には ``-signal`` を返します。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
    .. versionadded:: 1.6
 
@@ -2064,7 +2149,7 @@ Python で書かれたシステムプログラムに使います。
    :const:`P_OVERLAY` が使われた場合、現在のプロセスは置き換えられます;
    従って :func:`spawn\*` は返りません。
 
-   利用できる環境: Windows。
+   利用できる環境: Windows
 
    .. versionadded:: 1.6
 
@@ -2089,7 +2174,7 @@ Python で書かれたシステムプログラムに使います。
    :func:`os.path.normpath` 関数を使って、Win32 用に
    正しくコード化されたパスになるようにしてください。
 
-   利用できる環境: Windows。
+   利用できる環境: Windows
 
    .. versionadded:: 2.0
 
@@ -2128,7 +2213,7 @@ Python で書かれたシステムプログラムに使います。
    :ref:`subprocess-replacements`
    というセクションのレシピを参考にして下さい。
 
-   利用できる環境: Unix、 Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: times()
@@ -2142,7 +2227,7 @@ Python で書かれたシステムプログラムに使います。
    または対応する Windows プラットフォーム API ドキュメントを参照してください。
    Windows では、最初の２つの要素だけが埋められ、残りは0になります。
 
-   利用できる環境: Unix、Windows。
+   利用できる環境: Unix, Windows
 
 
 .. function:: wait()
@@ -2153,7 +2238,7 @@ Python で書かれたシステムプログラムに使います。
    --- の入ったタプルを返します;
    コアダンプファイルが生成された場合、下位バイトの最上桁ビットが立てられます。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: waitpid(pid, options)
@@ -2198,7 +2283,7 @@ Python で書かれたシステムプログラムに使います。
    :func:`getrusage` を参照してください。 *options* は :func:`waitpid` および :func:`wait4`
    と同様です。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.5
 
@@ -2209,7 +2294,7 @@ Python で書かれたシステムプログラムに使います。
    リソース使用情報の詳しい情報は :mod:`resource`.\ :func:`getrusage` を参照してください。 :func:`wait4`
    の引数は :func:`waitpid` に与えられるものと同じです。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.5
 
@@ -2219,7 +2304,7 @@ Python で書かれたシステムプログラムに使います。
    子プロセス状態がすぐに取得できなかった場合に直ちに終了するようにするための :func:`waitpid` のオプションです。
    この場合、関数は ``(0, 0)`` を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. data:: WCONTINUED
@@ -2235,7 +2320,7 @@ Python で書かれたシステムプログラムに使います。
 
    このオプションによって子プロセスは停止されていながら停止されてから状態が報告されていない場合に報告されるようになります。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -2247,7 +2332,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスに対してコアダンプが生成されていた場合には ``True`` を、それ以外の場合は ``False`` を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -2256,7 +2341,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスがジョブ制御による停止状態から実行を継続された (continue) 場合に ``True`` を、それ以外の場合は ``False`` を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -2265,7 +2350,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスが停止された (stop) 場合に ``True`` を、それ以外の場合は ``False`` を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: WIFSIGNALED(status)
@@ -2279,7 +2364,7 @@ Python で書かれたシステムプログラムに使います。
 
    プロセスが :manpage:`exit(2)` システムコールで終了した場合に ``True`` を、それ以外の場合は ``False`` を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: WEXITSTATUS(status)
@@ -2287,14 +2372,14 @@ Python で書かれたシステムプログラムに使います。
    ``WIFEXITED(status)`` が真の場合、 :manpage:`exit(2)` システムコールに渡された整数パラメタを返します。そうでない場合、
    返される値には意味がありません。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: WSTOPSIG(status)
 
    プロセスを停止させたシグナル番号を返します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: WTERMSIG(status)
@@ -2327,7 +2412,7 @@ Python で書かれたシステムプログラムに使います。
    の指定値がホストシステムでサポートされておらず、 ``confstr_names`` にも入っていない場合、 :const:`errno.EINVAL`
    をエラー番号として :exc:`OSError` を送出します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 .. data:: confstr_names
 
@@ -2335,7 +2420,7 @@ Python で書かれたシステムプログラムに使います。
    ホストオペレーティングシステムで定義されている整数値に対応付けている辞書です。
    この辞書はシステムでどの設定名が定義されているかを決定するために利用できます。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. function:: getloadavg()
@@ -2343,7 +2428,7 @@ Python で書かれたシステムプログラムに使います。
    過去 1 分、5 分、15分間で、システムで走っているキューの平均プロセス数を返します。
    平均負荷が得られない場合には :exc:`OSError` を送出します。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
    .. versionadded:: 2.3
 
@@ -2356,7 +2441,7 @@ Python で書かれたシステムプログラムに使います。
    同様に当てはまります; 既知の設定名についての情報を与える辞書は
    ``sysconf_names`` で与えられています。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 
 .. data:: sysconf_names
@@ -2365,7 +2450,7 @@ Python で書かれたシステムプログラムに使います。
    ホストオペレーティングシステムで定義されている整数値に対応付けている辞書です。
    この辞書はシステムでどの設定名が定義されているかを決定するために利用できます。
 
-   利用できる環境: Unix。
+   利用できる環境: Unix
 
 以下のデータ値はパス名編集操作をサポートするために利用されます。
 これらの値は全てのプラットフォームで定義されています。
