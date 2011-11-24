@@ -194,8 +194,7 @@
 .. function:: acquire_lock()
 
    .. Acquire the interpreter's import lock for the current thread.  This lock should
-   .. be used by import hooks to ensure thread-safety when importing modules. On
-   .. platforms without threads, this function does nothing.
+   .. be used by import hooks to ensure thread-safety when importing modules.
 
    実行中のスレッドでインタープリタのインポートロックを取得します。
    インポートフックは、スレッドセーフのためにこのロックを取得しなければ
