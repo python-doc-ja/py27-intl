@@ -448,10 +448,10 @@ description_ と epilog_ がすでに正しくフォーマット済みで、行�
 conflict_handler
 ^^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` objects do not allow two actions with the same option
-string.  By default, :class:`ArgumentParser` objects raises an exception if an
-attempt is made to create an argument with an option string that is already in
-use::
+:class:`ArgumentParser` オブジェクトは同じオプション文字列に対して複数のアクションを
+許可していません。デフォルトでは、 :class:`ArgumentParser` オブジェクトは、
+すでに利用されているオプション文字列を使って新しい引数をつくろうとしたときに
+例外を発生させます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -460,10 +460,9 @@ use::
     ..
    ArgumentError: argument --foo: conflicting option string(s): --foo
 
-Sometimes (e.g. when using parents_) it may be useful to simply override any
-older arguments with the same option string.  To get this behavior, the value
-``'resolve'`` can be supplied to the ``conflict_handler=`` argument of
-:class:`ArgumentParser`::
+ときどき (例えば、 parents_ を利用する場合など), 古い引数を同じオプション文字列で
+上書きするほうが便利な場合があります。この動作をするには、 :class:`ArgumentParser`
+の ``conflict_handler=`` 引数に ``'resolve'`` を渡します::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', conflict_handler='resolve')
    >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -476,28 +475,27 @@ older arguments with the same option string.  To get this behavior, the value
     -f FOO      old foo help
     --foo FOO   new foo help
 
-Note that :class:`ArgumentParser` objects only remove an action if all of its
-option strings are overridden.  So, in the example above, the old ``-f/--foo``
-action is retained as the ``-f`` action, because only the ``--foo`` option
-string was overridden.
+:class:`ArgumentParser` オブジェクトは、全てのオプション文字列がオーバーライド
+サれた場合にだけアクションを削除することに注目してください。上の例では、
+``--foo`` オプション文字列だけがオーバーライドされているので、
+古い ``-f/--foo`` アクションは ``-f`` アクションとして残っています。
 
 
 prog
 ^^^^
 
-By default, :class:`ArgumentParser` objects uses ``sys.argv[0]`` to determine
-how to display the name of the program in help messages.  This default is almost
-always desirable because it will make the help messages match how the program was
-invoked on the command line.  For example, consider a file named
-``myprogram.py`` with the following code::
+デフォルトでは、 :class:`ArgumentParser` オブジェクトはヘルプメッセージ中に表示する
+プログラム名を ``sys.argv[0]`` から取得します。このデフォルトの動作は、プログラムが
+コマンドライン上でどう起動されたにヘルプメッセージをマッチさせるので、か多くの場合に
+正しい挙動です。例えば、 ``myprogram.py`` という名前のファイルに次のコードがあるとします::
 
    import argparse
    parser = argparse.ArgumentParser()
    parser.add_argument('--foo', help='foo help')
    args = parser.parse_args()
 
-The help for this program will display ``myprogram.py`` as the program name
-(regardless of where the program was invoked from)::
+このプログラムのヘルプは、プログラム名として (プログラムがどこから起動されたのかに
+関わらず) ``myprogram.py`` を表示します::
 
    $ python myprogram.py --help
    usage: myprogram.py [-h] [--foo FOO]
@@ -513,8 +511,8 @@ The help for this program will display ``myprogram.py`` as the program name
     -h, --help  show this help message and exit
     --foo FOO   foo help
 
-To change this default behavior, another value can be supplied using the
-``prog=`` argument to :class:`ArgumentParser`::
+このデフォルトの動作を変更するには、 :class:`ArgumentParser` の ``prog=``
+引数に他の値を指定します::
 
    >>> parser = argparse.ArgumentParser(prog='myprogram')
    >>> parser.print_help()
@@ -523,9 +521,8 @@ To change this default behavior, another value can be supplied using the
    optional arguments:
     -h, --help  show this help message and exit
 
-Note that the program name, whether determined from ``sys.argv[0]`` or from the
-``prog=`` argument, is available to help messages using the ``%(prog)s`` format
-specifier.
+プログラム名は、 ``sys.argv[0]`` から取られた場合でも ``prog=`` 引数で与えられた場合でも、
+ヘルプメッセージ中では ``%(prog)s`` フォーマット指定で利用することができます。
 
 ::
 
@@ -542,8 +539,8 @@ specifier.
 usage
 ^^^^^
 
-By default, :class:`ArgumentParser` calculates the usage message from the
-arguments it contains::
+デフォルトでは、 :class:`ArgumentParser` は使用法メッセージを、もっている
+引数から生成します::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('--foo', nargs='?', help='foo help')
@@ -558,7 +555,7 @@ arguments it contains::
     -h, --help   show this help message and exit
     --foo [FOO]  foo help
 
-The default message can be overridden with the ``usage=`` keyword argument::
+デフォルトのメッセージは ``usage=`` キーワード引数でオーバーライドできます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', usage='%(prog)s [options]')
    >>> parser.add_argument('--foo', nargs='?', help='foo help')
@@ -573,8 +570,7 @@ The default message can be overridden with the ``usage=`` keyword argument::
     -h, --help   show this help message and exit
     --foo [FOO]  foo help
 
-The ``%(prog)s`` format specifier is available to fill in the program name in
-your usage messages.
+``%(prog)s`` フォーマット指定子を、使用法メッセージ中でプログラム名として利用できます。
 
 
 The add_argument() method
