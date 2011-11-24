@@ -1,25 +1,29 @@
-:mod:`argparse` --- Parser for command-line options, arguments and sub-commands
+.. :mod:`argparse` --- Parser for command-line options, arguments and sub-commands
+
+:mod:`argparse` --- コマンドラインオプション、引数、サブコマンドのパーサー
 ===============================================================================
 
 .. module:: argparse
-   :synopsis: Command-line option and argument-parsing library.
+   :synopsis: コマンドラインオプションと引数のパーサーライブラリ
 .. moduleauthor:: Steven Bethard <steven.bethard@gmail.com>
 .. versionadded:: 2.7
 .. sectionauthor:: Steven Bethard <steven.bethard@gmail.com>
 
 
-The :mod:`argparse` module makes it easy to write user-friendly command-line
-interfaces. The program defines what arguments it requires, and :mod:`argparse`
-will figure out how to parse those out of :data:`sys.argv`.  The :mod:`argparse`
-module also automatically generates help and usage messages and issues errors
-when users give the program invalid arguments.
+:mod:`argparse` モジュールはユーザーフレンドリーなコマンドラインインタフェースの
+作成を簡単にします。
+プログラムがどんな引数を必要としているのかを定義すると、 :mod:`argparse` が
+:data:`sys.argv` からそのオプションをパースする部分の面倒を見ます。
+:mod:`argparse` モジュールは自動的にヘルプと使用方法メッセージを生成し、
+ユーザーが不正な引数をプログラムに指定したときにエラーを発生させます。
 
 
-Example
+.. Example
+
+例
 -------
 
-The following code is a Python program that takes a list of integers and
-produces either the sum or the max::
+次のコードは、整数のリストを受け取って合計か最大値を返す Python プログラムです::
 
    import argparse
 
@@ -33,8 +37,8 @@ produces either the sum or the max::
    args = parser.parse_args()
    print args.accumulate(args.integers)
 
-Assuming the Python code above is saved into a file called ``prog.py``, it can
-be run at the command line and provides useful help messages::
+上の Python コードが ``prog.py`` という名前のファイルに保存されたと仮定します。
+コマンドラインから実行して、便利なヘルプメッセージを提供することができます。 ::
 
    $ prog.py -h
    usage: prog.py [-h] [--sum] N [N ...]
@@ -48,8 +52,8 @@ be run at the command line and provides useful help messages::
     -h, --help  show this help message and exit
     --sum       sum the integers (default: find the max)
 
-When run with the appropriate arguments, it prints either the sum or the max of
-the command-line integers::
+妥当な引数を与えて実行された場合、このプログラムはコマンドライン引数の整数列の
+合計か最大値を表示します::
 
    $ prog.py 1 2 3 4
    4
@@ -57,35 +61,40 @@ the command-line integers::
    $ prog.py 1 2 3 4 --sum
    10
 
-If invalid arguments are passed in, it will issue an error::
+不正な引数が与えられた場合、エラーを発生させます::
 
    $ prog.py a b c
    usage: prog.py [-h] [--sum] N [N ...]
    prog.py: error: argument N: invalid int value: 'a'
 
-The following sections walk you through this example.
+以降のセクションでは、この例をひと通り解説して行きます。
 
 
-Creating a parser
+.. Creating a parser
+
+パーサーを作る
 ^^^^^^^^^^^^^^^^^
 
-The first step in using the :mod:`argparse` is creating an
-:class:`ArgumentParser` object::
+:mod:`argparse` を使う最初のステップは、 :class:`ArgumentParser`
+オブジェクトを生成することです::
 
    >>> parser = argparse.ArgumentParser(description='Process some integers.')
 
-The :class:`ArgumentParser` object will hold all the information necessary to
-parse the command line into Python data types.
+:class:`ArgumentParser` オブジェクトはコマンドラインを解析して Python データ型にする
+ために必要な全ての情報を保持します。
 
 
-Adding arguments
+.. Adding arguments
+
+引数を追加する
 ^^^^^^^^^^^^^^^^
 
-Filling an :class:`ArgumentParser` with information about program arguments is
-done by making calls to the :meth:`~ArgumentParser.add_argument` method.
-Generally, these calls tell the :class:`ArgumentParser` how to take the strings
-on the command line and turn them into objects.  This information is stored and
-used when :meth:`~ArgumentParser.parse_args` is called. For example::
+:class:`ArgumentParser` にプログラム引数の情報を与えるために、
+:meth:`~ArgumentParser.add_argument` メソッドを呼び出します。
+一般的に、このメソッドの呼び出しは :class:`ArgumentParser` に、コマンドラインの
+文字列を受け取ってそれをオブジェクトにする方法を教えます。
+この情報は保存され、 :meth:`~ArgumentParser.parse_args` が呼び出されたときに
+利用されます。例えば::
 
    >>> parser.add_argument('integers', metavar='N', type=int, nargs='+',
    ...                     help='an integer for the accumulator')
@@ -93,77 +102,80 @@ used when :meth:`~ArgumentParser.parse_args` is called. For example::
    ...                     const=sum, default=max,
    ...                     help='sum the integers (default: find the max)')
 
-Later, calling :meth:`~ArgumentParser.parse_args` will return an object with
-two attributes, ``integers`` and ``accumulate``.  The ``integers`` attribute
-will be a list of one or more ints, and the ``accumulate`` attribute will be
-either the :func:`sum` function, if ``--sum`` was specified at the command line,
-or the :func:`max` function if it was not.
+あとで、 :meth:`~ArgumentParser.parse_args` を呼び出すと、 ``integers`` と
+``accumulate`` という2つの属性を持ったオブジェクトを返します。
+``integers`` 属性は1つ以上の整数のリストで、 ``accumulate`` 属性はコマンドラインから
+``--sum`` が指定された場合は :func:`sum` 関数、それ以外の場合は :func:`max` 関数に
+なります。
 
 
-Parsing arguments
+.. Parsing arguments
+
+引数をパースする
 ^^^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` parses args through the
-:meth:`~ArgumentParser.parse_args` method.  This will inspect the command line,
-convert each arg to the appropriate type and then invoke the appropriate action.
-In most cases, this means a simple namespace object will be built up from
-attributes parsed out of the command line::
+:class:`ArgumentParser` は引数を :meth:`~ArgumentParser.parse_args`
+メソッドでパースします。
+このメソッドはコマンドラインを調べ、各引数を正しい型に変換して、適切なアクションを
+実行します。ほとんどの場合、これはシンプルな namespace オブジェクトを
+コマンドラインの解析結果から構築することを意味します::
 
    >>> parser.parse_args(['--sum', '7', '-1', '42'])
    Namespace(accumulate=<built-in function sum>, integers=[7, -1, 42])
 
-In a script, :meth:`~ArgumentParser.parse_args` will typically be called with no
-arguments, and the :class:`ArgumentParser` will automatically determine the
-command-line args from :data:`sys.argv`.
+スクリプトでは、 :meth:`~ArgumentParser.parse_args` は典型的には引数なしで
+呼び出され、 :class:`ArgumentParser` は自動的に :data:`sys.argv` から
+コマンドライン引数を取得します。
 
 
-ArgumentParser objects
-----------------------
+.. ArgumentParser objects
+
+ArgumentParser オブジェクト
+----------------------------
 
 .. class:: ArgumentParser([description], [epilog], [prog], [usage], [add_help], [argument_default], [parents], [prefix_chars], [conflict_handler], [formatter_class])
 
-   Create a new :class:`ArgumentParser` object.  Each parameter has its own more
-   detailed description below, but in short they are:
+   新しい :class:`ArgumentParser` オブジェクトを生成します。
+   各引数についてはあとで詳しく説明しますが、簡単に言うと:
 
-   * description_ - Text to display before the argument help.
+   * description_ - 引数のヘルプの前に表示されるテキスト
 
-   * epilog_ - Text to display after the argument help.
+   * epilog_ - 引数のヘルプの後で表示されるテキスト
 
-   * add_help_ - Add a -h/--help option to the parser. (default: ``True``)
+   * add_help_ - -h/--help オプションをパーサーに追加する (デフォルト: ``True``)
 
-   * argument_default_ - Set the global default value for arguments.
-     (default: ``None``)
+   * argument_default_ - 引数にグローバルのデフォルト値を設定する
+     (デフォルト: ``None``)
 
-   * parents_ - A list of :class:`ArgumentParser` objects whose arguments should
-     also be included.
+   * parents_ - :class:`ArgumentParser` オブジェクトのリストで、このオブジェクトの
+     引数が追加される
 
-   * prefix_chars_ - The set of characters that prefix optional arguments.
-     (default: '-')
+   * prefix_chars_ - オプションの引数の prefix になる文字集合
+     (デフォルト: '-')
 
-   * fromfile_prefix_chars_ - The set of characters that prefix files from
-     which additional arguments should be read. (default: ``None``)
+   * fromfile_prefix_chars_ - 追加の引数を読み込むファイルの prefix になる文字集合
+     (デフォルト: ``None``)
 
-   * formatter_class_ - A class for customizing the help output.
+   * formatter_class_ - ヘルプ出力をカスタマイズするためのクラス
 
-   * conflict_handler_ - Usually unnecessary, defines strategy for resolving
-     conflicting optionals.
+   * conflict_handler_ - 衝突するオプションを解決する方法を定義する。
+     通常は利用する必要はありません。
 
-   * prog_ - The name of the program (default:
-     :data:`sys.argv[0]`)
+   * prog_ - プログラム名 (デフォルト: :data:`sys.argv[0]`)
 
-   * usage_ - The string describing the program usage (default: generated)
+   * usage_ - プログラムの利用方法を解説する文字列 (デフォルト: 生成される)
 
-The following sections describe how each of these are used.
+以下のセクションでは各オプションの利用方法を解説します。
 
 
 description
 ^^^^^^^^^^^
 
-Most calls to the :class:`ArgumentParser` constructor will use the
-``description=`` keyword argument.  This argument gives a brief description of
-what the program does and how it works.  In help messages, the description is
-displayed between the command-line usage string and the help messages for the
-various arguments::
+多くの場合、 :class:`ArgumentParser` のコンストラクタを呼び出すときに
+``description=`` キーワード引数が利用されます。
+この引数はプログラムが何をしてどう動くのかについての短い説明です。
+ヘルプメッセージで、この description はコマンドラインの利用法と引数の
+ヘルプメッセージの間に表示されます::
 
    >>> parser = argparse.ArgumentParser(description='A foo that bars')
    >>> parser.print_help()
@@ -174,16 +186,16 @@ various arguments::
    optional arguments:
     -h, --help  show this help message and exit
 
-By default, the description will be line-wrapped so that it fits within the
-given space.  To change this behavior, see the formatter_class_ argument.
+デフォルトでは、 description は行ラップされるので、与えられたスペースに
+マッチします。この挙動を変更するには、 formatter_class_ 引数を参照してください。
 
 
 epilog
 ^^^^^^
 
-Some programs like to display additional description of the program after the
-description of the arguments.  Such text can be specified using the ``epilog=``
-argument to :class:`ArgumentParser`::
+いくつかのプログラムは、プログラムについての追加の説明を引数の解説の
+後に表示します。このテキストは :class:`ArgumentParser` の ``epilog=`` 引数に
+指定することができます::
 
    >>> parser = argparse.ArgumentParser(
    ...     description='A foo that bars',
@@ -198,25 +210,25 @@ argument to :class:`ArgumentParser`::
 
    And that's how you'd foo a bar
 
-As with the description_ argument, the ``epilog=`` text is by default
-line-wrapped, but this behavior can be adjusted with the formatter_class_
-argument to :class:`ArgumentParser`.
+description_ 引数と同じく、 ``epilog=`` テキストもデフォルトで行ラップされ、
+:class:`ArgumentParser` の formatter_class_ 引数で動作を調整することができます。
 
 
 add_help
 ^^^^^^^^
 
-By default, ArgumentParser objects add an option which simply displays
-the parser's help message. For example, consider a file named
-``myprogram.py`` containing the following code::
+デフォルトでは、 ArgumentParser オブジェクトはシンプルにパーサーの
+ヘルプメッセージを表示するオプションを自動的に追加します。
+例えば、以下のコードを含む ``myprogram.py`` ファイルについて
+考えてください::
 
    import argparse
    parser = argparse.ArgumentParser()
    parser.add_argument('--foo', help='foo help')
    args = parser.parse_args()
 
-If ``-h`` or ``--help`` is supplied at the command line, the ArgumentParser
-help will be printed::
+コマンドラインに ``-h`` か ``--help`` が指定された場合、 ArgumentParser の
+help が表示されます::
 
    $ python myprogram.py --help
    usage: myprogram.py [-h] [--foo FOO]
@@ -225,9 +237,9 @@ help will be printed::
     -h, --help  show this help message and exit
     --foo FOO   foo help
 
-Occasionally, it may be useful to disable the addition of this help option.
-This can be achieved by passing ``False`` as the ``add_help=`` argument to
-:class:`ArgumentParser`::
+必要に応じて、この help オプションを無効にする場合があります。
+これは :class:`ArgumentParser` の ``add_help=`` 引数に ``False``
+を渡すことで可能です::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
    >>> parser.add_argument('--foo', help='foo help')
@@ -237,11 +249,11 @@ This can be achieved by passing ``False`` as the ``add_help=`` argument to
    optional arguments:
     --foo FOO  foo help
 
-The help option is typically ``-h/--help``. The exception to this is
-if the ``prefix_chars=`` is specified and does not include ``'-'``, in
-which case ``-h`` and ``--help`` are not valid options.  In
-this case, the first character in ``prefix_chars`` is used to prefix
-the help options::
+ヘルプオプションは通常 ``-h/--help`` です。例外は ``prefix_chars=``
+が指定されてその中に ``'-'`` が無かった場合で、その場合は ``-h`` と
+``--help`` は有効なオプションではありません。
+この場合、 ``prefix_chars`` の最初の文字がヘルプオプションの prefix
+として利用されます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='+/')
    >>> parser.print_help()
