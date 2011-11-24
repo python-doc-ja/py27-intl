@@ -49,11 +49,6 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       メッセージのフラット化は :class:`Message` の変更を引き起こす可能性があります
       (例えば、MIME の境界が生成される、変更される等)。
 
-       Flattening the message may trigger
-       changes to the :class:`Message` if defaults need to be filled in to
-       complete the transformation to a string (for example, MIME boundaries may
-       be generated or modified).
-
       このメソッドは手軽に利用する事ができますが、必ずしも期待通りにメッセージを\
       フォーマットするとは限りません。たとえば、これはデフォルトでは ``From`` で\
       始まる行を変更してしまいます。以下の例のように :class:`~email.generator.Generator`
@@ -151,9 +146,24 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       文字セット名をあらわす文字列、あるいは ``None`` のいずれかが指定できます。
       文字列を指定した場合、これは :class:`~email.charset.Charset` インスタンスに変換されます。
       *charset* が ``None`` の場合、 ``charset`` パラメータは
-      :mailheader:`Content-Type` ヘッダから除去されます。
+      :mailheader:`Content-Type` ヘッダから除去されます
+      (それ以外にメッセージの変形は行われません)。
       これ以外のものを文字セットとして指定した場合、 :exc:`TypeError`
       が発生します。
+
+      :mailheader:`MIME-Version` ヘッダが存在しなければ、追加されます。
+      :mailheader:`Content-Type` ヘッダが存在しなければ、
+      :mimetype:`text/plain` を値として追加されます。
+      :mailheader:`Content-Type` が存在していてもいなくても、
+      ``charset`` パラメタは *charset.output_charset* に設定されます。
+      *charset.input_charset* と *charset.output_charset* が異なるなら、
+      ペイロードは *output_charset* に再エンコードされます。
+      :mailheader:`Content-Transfer-Encoding` ヘッダが存在しなければ、
+      ペイロードは、必要なら指定された :class:`~email.charset.Charset` 
+      を使って transfer エンコードされ、適切な値のヘッダが追加されます。
+      :mailheader:`Content-Transfer-Encoding` ヘッダがすでに存在すれば、
+      ペイロードはすでにその :mailheader:`Content-Transfer-Encoding` によって
+      正しくエンコードされたものと見なされ、変形されません。
 
       ここでいうメッセージとは、unicode 文字列か *charset.input_charset* でエンコードされた
       ペイロードを持つ :mimetype:`text/\*` 形式のものを仮定しています。これは、もし必要とあらば\
@@ -288,6 +298,13 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       ふつう、パラメータの値が ``None`` 以外のときは、
       ``key="value"`` の形で追加されます。
       パラメータの値が ``None`` のときはキーのみが追加されます。
+      値が非 ASCII 文字を含むなら、それは ``(CHARSET, LANGUAGE, VALUE)`` の
+      形式の 3 タプルでなくてはなりません。
+      ここで ``CHARSET`` はその値をエンコードするのに使われる文字セットを
+      指名する文字列で、 ``LANGUAGE`` は通常 ``None`` か空文字列にでき
+      (その他の可能性は :RFC:`2231` を参照してください)、 ``VALUE`` は
+      非 ASCII コードポイントを含む文字列値です。
+      
 
       例を示しましょう::
 
@@ -296,6 +313,15 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
       こうするとヘッダには以下のように追加されます。 ::
 
          Content-Disposition: attachment; filename="bud.gif"
+
+      非 ASCII 文字を使った例::
+
+         msg.add_header('Content-Disposition', 'attachment',
+                        filename=('iso-8859-1', '', 'Fußballer.ppt'))
+
+      は、以下のようになります::
+
+         Content-Disposition: attachment; filename*="iso-8859-1''Fu%DFballer.ppt"
 
 
    .. method:: replace_header(_name, _value)
@@ -487,7 +513,8 @@ MIME コンテナ文書 (:mimetype:`multipart/\*` または
 
       そのメッセージ中の :mailheader:`Content-Disposition` ヘッダにある、
       ``filename`` パラメータの値を返します。
-      目的のヘッダに ``filename`` パラメータがない場合には ``name``
+      目的のヘッダに ``filename`` パラメータがない場合には
+      :mailheader:`Content-Type` ヘッダにある ``name``
       パラメータを探します。
       それも無い場合またはヘッダが無い場合には *failobj* が返されます。
       返される文字列はつねに :meth:`email.utils.unquote` によって unquote されます。
