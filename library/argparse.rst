@@ -266,11 +266,10 @@ help が表示されます::
 prefix_chars
 ^^^^^^^^^^^^
 
-Most command-line options will use ``'-'`` as the prefix, e.g. ``-f/--foo``.
-Parsers that need to support different or additional prefix
-characters, e.g. for options
-like ``+f`` or ``/foo``, may specify them using the ``prefix_chars=`` argument
-to the ArgumentParser constructor::
+ほとんどのコマンドラインオプションは、 ``-f/--foo`` のように prefix に ``'-'``
+を使います。
+``+f`` や ``/foo`` のような、他の、あるいは追加の prefix 文字をサポートしなければ
+ならない場合、 ArgumentParser のコンストラクタの ``prefix_chars=`` 引数を指定します::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='-+')
    >>> parser.add_argument('+f')
@@ -278,20 +277,18 @@ to the ArgumentParser constructor::
    >>> parser.parse_args('+f X ++bar Y'.split())
    Namespace(bar='Y', f='X')
 
-The ``prefix_chars=`` argument defaults to ``'-'``. Supplying a set of
-characters that does not include ``'-'`` will cause ``-f/--foo`` options to be
-disallowed.
+``prefix_chars=`` 引数のデフォルトは ``'-'`` です。
+``'-'`` を含まない文字集合を指定すると、 ``-f/--foo`` オプションが許可されなくなります。
 
 
 fromfile_prefix_chars
 ^^^^^^^^^^^^^^^^^^^^^
 
-Sometimes, for example when dealing with a particularly long argument lists, it
-may make sense to keep the list of arguments in a file rather than typing it out
-at the command line.  If the ``fromfile_prefix_chars=`` argument is given to the
-:class:`ArgumentParser` constructor, then arguments that start with any of the
-specified characters will be treated as files, and will be replaced by the
-arguments they contain.  For example::
+ときどき、例えば非常に長い引数リストを扱う場合に、その引数リストを毎回コマンドラインに
+タイプする代わりにファイルに置いておきたい場合があります。
+:class:`ArgumentParser` のコンストラクタに ``fromfile_prefix_chars=`` 引数が指定された
+場合、指定された文字のいずれかで始まる引数はファイルとして扱われ、そのファイルに
+含まれる引数リストに置換されます。例えば::
 
    >>> with open('args.txt', 'w') as fp:
    ...    fp.write('-f\nbar')
@@ -300,27 +297,26 @@ arguments they contain.  For example::
    >>> parser.parse_args(['-f', 'foo', '@args.txt'])
    Namespace(f='bar')
 
-Arguments read from a file must by default be one per line (but see also
-:meth:`~ArgumentParser.convert_arg_line_to_args`) and are treated as if they
-were in the same place as the original file referencing argument on the command
-line.  So in the example above, the expression ``['-f', 'foo', '@args.txt']``
-is considered equivalent to the expression ``['-f', 'foo', '-f', 'bar']``.
+ファイルから読み込まれる引数は、デフォルトでは1行に1つ(ただし、
+:meth:`~ArgumentParser.convert_arg_line_to_args` も参照してください)で、
+コマンドライン上でファイルを参照する引数があった場所にその引数があったものとして
+扱われます。なので、上の例では、 ``['-f', 'foo', '@args.txt']`` は
+``['-f', 'foo', '-f', 'bar']`` と等価になります。
 
-The ``fromfile_prefix_chars=`` argument defaults to ``None``, meaning that
-arguments will never be treated as file references.
+``fromfile_prefix_chars=`` 引数のデフォルト値は ``None`` で、
+引数がファイル参照だとして扱われることが無いことを意味しています。
 
 
 argument_default
 ^^^^^^^^^^^^^^^^
 
-Generally, argument defaults are specified either by passing a default to
-:meth:`~ArgumentParser.add_argument` or by calling the
-:meth:`~ArgumentParser.set_defaults` methods with a specific set of name-value
-pairs.  Sometimes however, it may be useful to specify a single parser-wide
-default for arguments.  This can be accomplished by passing the
-``argument_default=`` keyword argument to :class:`ArgumentParser`.  For example,
-to globally suppress attribute creation on :meth:`~ArgumentParser.parse_args`
-calls, we supply ``argument_default=SUPPRESS``::
+一般的には、引数のデフォルト値は :meth:`~ArgumentParser.add_argument` メソッドに
+デフォルト値を渡すか、 :meth:`~ArgumentParser.set_defaults` メソッドに
+name-value ペアを渡すことで指定します。
+しかしまれに、1つのパーサー全体に適用されるデフォルト引数が便利なことがあります。
+これをするには、 :class:`ArgumentParser` に ``argument_default=`` キーワード
+引数を渡します。例えば、全体で :meth:`~ArgumentParser.parse_args` メソッド呼び出しの
+属性の生成を抑制するには、 ``argument_default=SUPPRESS`` を指定します::
 
    >>> parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
    >>> parser.add_argument('--foo')
@@ -334,12 +330,12 @@ calls, we supply ``argument_default=SUPPRESS``::
 parents
 ^^^^^^^
 
-Sometimes, several parsers share a common set of arguments. Rather than
-repeating the definitions of these arguments, a single parser with all the
-shared arguments and passed to ``parents=`` argument to :class:`ArgumentParser`
-can be used.  The ``parents=`` argument takes a list of :class:`ArgumentParser`
-objects, collects all the positional and optional actions from them, and adds
-these actions to the :class:`ArgumentParser` object being constructed::
+ときどき、いくつかのパーサーが共通の引数セットを共有することがあります。
+それらの引数を繰り返し定義する代わりに、全ての共通引数を持った parser を
+:class:`ArgumentParser` の ``parents=`` 引数に渡すことができます。
+``parents=`` 引数は :class:`ArgumentParser` オブジェクトのリストを受け取り、
+全ての位置アクションとオプションのアクションをそれらから集め、
+そのアクションを構築中の :class:`ArgumentParser` オブジェクトに追加します::
 
    >>> parent_parser = argparse.ArgumentParser(add_help=False)
    >>> parent_parser.add_argument('--parent', type=int)
@@ -354,32 +350,32 @@ these actions to the :class:`ArgumentParser` object being constructed::
    >>> bar_parser.parse_args(['--bar', 'YYY'])
    Namespace(bar='YYY', parent=None)
 
-Note that most parent parsers will specify ``add_help=False``.  Otherwise, the
-:class:`ArgumentParser` will see two ``-h/--help`` options (one in the parent
-and one in the child) and raise an error.
+一番親になるパーサーに ``add_help=False`` を指定していることに注目してください。
+こうしないと、 :class:`ArgumentParser` は2つの ``-h/--help`` オプションを
+与えられる (1つは親から、もうひとつは子から) ことになり、エラーを発生させます。
 
 .. note::
-   You must fully initialize the parsers before passing them via ``parents=``.
-   If you change the parent parsers after the child parser, those changes will
-   not be reflected in the child.
+   ``parents=`` に渡す前にパーサーを完全に初期化する必要があります。
+   子パーサーを作成してから親パーサーを変更した場合、その変更は子パーサーに
+   反映されません。
 
 
 formatter_class
 ^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` objects allow the help formatting to be customized by
-specifying an alternate formatting class.  Currently, there are three such
-classes:
+:class:`ArgumentParser` オブジェクトは代わりのフォーマットクラスを指定することで
+ヘルプのフォーマットをカスタマイズすることができます。
+現在、3つのフォーマットクラスがあります:
 
 .. class:: RawDescriptionHelpFormatter
            RawTextHelpFormatter
            ArgumentDefaultsHelpFormatter
 
-The first two allow more control over how textual descriptions are displayed,
-while the last automatically adds information about argument default values.
+最初の2つは説明のテキストがどう表示されるかについてより制御できるようになっており、
+残りの1つは引数のデフォルト値についての情報を自動的に追加します。
 
-By default, :class:`ArgumentParser` objects line-wrap the description_ and
-epilog_ texts in command-line help messages::
+デフォルトでは、 :class:`ArgumentParser` オブジェクトはコマンドラインのヘルプ
+メッセージ中でdescription_ と epilog_ を行ラップします::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
@@ -401,9 +397,9 @@ epilog_ texts in command-line help messages::
    likewise for this epilog whose whitespace will be cleaned up and whose words
    will be wrapped across a couple lines
 
-Passing :class:`~argparse.RawDescriptionHelpFormatter` as ``formatter_class=``
-indicates that description_ and epilog_ are already correctly formatted and
-should not be line-wrapped::
+``formatter_class=`` に :class:`~argparse.RawDescriptionHelpFormatter` を渡すと、
+description_ と epilog_ がすでに正しくフォーマット済みで、行ラップしてはいけない
+ことを指定できます::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
@@ -427,11 +423,11 @@ should not be line-wrapped::
    optional arguments:
     -h, --help  show this help message and exit
 
-:class:`RawTextHelpFormatter` maintains whitespace for all sorts of help text
-including argument descriptions.
+:class:`RawTextHelpFormatter` は引数の説明を含めて全ての種類のヘルプテキストで
+空白を維持します。
 
-The other formatter class available, :class:`ArgumentDefaultsHelpFormatter`,
-will add information about the default value of each of the arguments::
+残りの利用できるフォーマットクラスである :class:`ArgumentDefaultsHelpFormatter`
+は、各引数のデフォルト値に関する情報を追加します::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
