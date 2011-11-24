@@ -29,7 +29,7 @@
 このモジュールでは以下のクラスを提供しています:
 
 
-.. class:: HTTPConnection(host[, port[, strict[, timeout]]])
+.. class:: HTTPConnection(host[, port[, strict[, timeout[, source_address]]]])
 
    :class:`HTTPConnection` インスタンスは、HTTP サーバとの一回のトランザクションを表現します。インスタンスの生成はホスト名と
    オプションのポート番号を与えて行います。
@@ -44,6 +44,8 @@
    のタイムアウト時間(秒数)として利用されます。(渡されなかった場合は、グローバルのデフォルト
    タイムアウト設定が利用されます。)
 
+   オプションの引数 *source_address* を (host, port) という形式のタプルにすると HTTP 接続の接続元アドレスとして使用します。
+
    例えば、以下の呼び出しは全て同じサーバの同じポートに接続するインスタンスを生成します::
 
       >>> h1 = httplib.HTTPConnection('www.cwi.nl')
@@ -56,19 +58,23 @@
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました
 
+   .. versionchanged:: 2.7
+      *source_address* 引数が追加されました
 
-.. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout]]]]])
+.. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout[, source_address]]]]]])
 
    :class:`HTTPConnection` のサブクラスで、セキュアなサーバと通信するために SSL を使います。標準のポート番号は ``443``
    です。
    *key_file* には、秘密鍵を格納したPEM形式ファイルのファイル名を指定します。 *cert_file* には、PEM形式の証明書チェーンファイルを指定します。
 
-   .. note::
-
-      この関数は証明書の検査を行いません
+   .. warning::
+      この関数はサーバ証明書の検査を行いません
 
    .. versionchanged:: 2.6
       *timeout* 引数が追加されました
+
+   .. versionchanged:: 2.7
+      *source_address* 引数が追加されました
 
 .. class:: HTTPResponse(sock[, debuglevel=0][, strict=0])
 
@@ -409,6 +415,14 @@ HTTPConnection オブジェクト
 
    デバッグレベル (印字されるデバッグ出力の量) を設定します。標準のデバッグレベルは ``0`` で、デバッグ出力を全く印字しません。
 
+.. method:: HTTPConnection.set_tunnel(host,port=None, headers=None)
+
+   HTTP トンネリング接続のホスト名とポート番号を設定します。
+   通常はプロキシサーバを通して HTTP 接続を行うときに必要になります。
+
+   ヘッダのパラメータは CONNECT リクエストで送信するために他の HTTP ヘッダにマッピングされます。
+
+   .. versionadded:: 2.7
 
 .. method:: HTTPConnection.connect()
 
@@ -471,6 +485,9 @@ HTTPResponse オブジェクト
 
    .. versionadded:: 2.4
 
+.. method:: HTTPResponse.fileno()
+
+   ソケットの ``fileno`` を返します。
 
 .. attribute:: HTTPResponse.msg
 
