@@ -84,7 +84,7 @@ SELECT 文を実行した後データを取得する方法は3つありどれを
    >>> for row in c:
    ...    print row
    ...
-   (u'2006-01-05', u'BUY', u'RHAT', 100, 35.140000000000001)
+   (u'2006-01-05', u'BUY', u'RHAT', 100, 35.14)
    (u'2006-03-28', u'BUY', u'IBM', 1000, 45.0)
    (u'2006-04-06', u'SELL', u'IBM', 500, 53.0)
    (u'2006-04-05', u'BUY', u'MSOFT', 1000, 72.0)
@@ -143,7 +143,7 @@ SELECT 文を実行した後データを取得する方法は3つありどれを
    読み取るのはカラム名の中の最初の空白までの全てですので、カラム名として使われるのは単純に "x" ということになります。
 
 
-.. function:: connect(database[, timeout, isolation_level, detect_types, factory])
+.. function:: connect(database[, timeout, detect_types, isolation_level, check_same_thread, factory, cached_statements])
 
    ファイル *database* の SQLite データベースへの接続を開きます。 ``":memory:"`` という名前を使うことでディスクの代わりに
    RAM 上のデータベースへの接続を開くこともできます。
@@ -383,6 +383,23 @@ Connection オブジェクト
    *handler* 引数に :const:`None` を渡して呼び出してください。
 
 
+.. method:: Connection.enable_load_extension(enabled)
+
+   .. versionadded:: 2.7
+
+   このメソッドは SQLite エンジンが共有ライブラリから SQLite 拡張を読み込むのを許可したり、禁止したりします。
+   SQLite 拡張は新しい関数や集計関数や仮想テーブルの実装を定義できます。
+   1つの有名な拡張は SQLite によって頒布されている全テキスト検索拡張です。
+
+   .. literalinclude:: ../includes/sqlite3/load_extension.py
+
+.. method:: Connection.load_extension(path)
+
+   .. versionadded:: 2.7
+
+   このメソッドは共有ライブラリから SQLite 拡張を読み込みます。
+   このメソッドを使う前に :meth:`enable_load_extension` で拡張の読み込みを許可しておかなくてはなりません。
+
 .. attribute:: Connection.row_factory
 
    この属性を、カーソルとタプルの形での元の行のデータを受け取り最終的な行を表す
@@ -459,11 +476,9 @@ Connection オブジェクト
 カーソルオブジェクト
 ====================
 
-.. class: Cursor
+.. class:: Cursor
 
-   .. A SQLite database cursor has the following attributes and methods:
-
-   SQLite データベースのカーソルクラス。以下の属性やメソッドを持ちます。
+   :class:`Cursor` インスタンスは以下の属性やメソッドを持ちます。
 
 .. method:: Cursor.execute(sql, [parameters])
 
@@ -665,7 +680,7 @@ Rowの例のために、まずサンプルのテーブルを初期化します�
     >>> type(r)
     <type 'sqlite3.Row'>
     >>> r
-    (u'2006-01-05', u'BUY', u'RHAT', 100.0, 35.140000000000001)
+    (u'2006-01-05', u'BUY', u'RHAT', 100.0, 35.14)
     >>> len(r)
     5
     >>> r[2]
@@ -920,3 +935,16 @@ Connection オブジェクトはコンテキストマネージャーとして利
 トランザクションはコミットされます。
 
 .. literalinclude:: ../includes/sqlite3/ctx_manager.py
+
+
+既知の問題
+==========
+
+マルチスレッド
+--------------
+
+古いバージョンの SQLite はスレッド間でのコネクションの共有に問題がありました。
+その理由は、Python のモジュールではスレッド間のコネクションとカーソルの共有ができないためです。
+依然としてそのようなことをしようとすると、実行時に例外を受け取るでしょう。
+
+唯一の例外は :meth:`~Connection.interrupt` メソッドで、これだけが異なるスレッドから呼び出せます。

@@ -147,13 +147,13 @@
              self.func(self.arg)
 
      class AcceptLists(TestFuncAcceptsSequences):
-         arg = [1,2,3]
+         arg = [1, 2, 3]
 
      class AcceptStrings(TestFuncAcceptsSequences):
          arg = 'abc'
 
      class AcceptTuples(TestFuncAcceptsSequences):
-         arg = (1,2,3)
+         arg = (1, 2, 3)
 
 
 .. seealso::
@@ -164,35 +164,36 @@
 
 .. _regrtest:
 
-:mod:`test.regrtest` を使ってテストを実行する
----------------------------------------------
+コマンドラインインタフェースを利用してテストを実行する
+---------------------------------------------------------
 
-:mod:`test.regrtest` を使うと Python の回帰テストスイートを実行
-できます。スクリプトを単独で実行すると、自動的に :mod:`test` パッケージ内の
+:mod:`test.regrtest` はスクリプトとして Python の回帰テストスイートを実行できます。
+:option:`-m` オプションを利用して、 :program:`python -m test.regrtest` として実行します。
+スクリプトを実行すると、自動的に :mod:`test` パッケージ内の
 すべての回帰テストを実行し始めます。パッケージ内の名前が ``test_`` で始まる
 全モジュールを見つけ、それをインポートし、もしあるなら関数 :func:`test_main` を
 実行してテストを行います。
 実行するテストの名前もスクリプトに渡される可能性があります。
-単一の回帰テストを指定  (:program:`python regrtest.py`
-:option:`test_spam.py`) すると、出力を最小限にします。テストが成功したかあるいは
+単一の回帰テストを指定  (:program:`python -m test.regrtest test_spam`)
+すると、出力を最小限にします。テストが成功したかあるいは
 失敗したかだけを出力するので、出力は最小限になります。
 
 直接 :mod:`test.regrtest` を実行すると、テストに利用するリソースを設定できます。
 これを行うには、 :option:`-u` コマンドラインオプションを使います。
-すべてのリソースを使うには、 :program:`python regrtest.py` :option:`-uall`
-を実行します。 :option:`-u` のオプションに :option:`all` を指定すると、
+すべてのリソースを使うには、 :program:`python -m test.regrtest -uall`
+を実行します。 :option:`-u` のオプションに ``all`` を指定すると、
 すべてのリソースを有効にします。(よくある場合ですが)
 何か一つを除く全てが必要な場合、カンマで区切った不要なリソースのリストを
-:option:`all` の後に並べます。
-コマンド :program:`python regrtest.py` :option:`-uall,-audio,-largefile`
-とすると、 :option:`audio` と :option:`largefile` リソースを除く
+``all`` の後に並べます。
+コマンド :program:`python -m test.regrtest -uall,-audio,-largefile`
+とすると、 ``audio`` と ``largefile`` リソースを除く
 全てのリソースを使って :mod:`test.regrtest` を実行します。
 すべてのリソースのリストと追加のコマンドラインオプションを出力するには、
-:program:`python regrtest.py` :option:`-h` を実行してください。
+:program:`python -m test.regrtest -h` を実行してください。
 
 テストを実行しようとするプラットフォームによっては、回帰テストを実行する
 別の方法があります。 Unix では、Python をビルドしたトップレベルディレクトリで
-:program:`make` :option:`test` を実行できます。
+:program:`make test` を実行できます。
 Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` を実行すると、
 すべての回帰テストを実行します。
 
@@ -221,16 +222,9 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
    の assertXXX メソッドが推奨されます。
 
 
-.. exception:: TestSkipped
-
-   :exc:`TestFailed` のサブクラスです。テストがスキップされたとき送出されます。
-   テスト時に (ネットワーク接続のような) 必要なリソースが利用できないときに
-   送出されます。
-
-
 .. exception:: ResourceDenied
 
-   :exc:`TestSkipped` のサブクラスです。（ネットワーク接続のような）リソースが
+   :exc:`unittest.TestSkipped` のサブクラスです。（ネットワーク接続のような）リソースが
    利用できないとき送出されます。
    :func:`requires` 関数によって送出されます。
 
@@ -256,8 +250,8 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
 .. data:: TESTFN
 
-   一時ファイルを作成するパスに設定されます。作成した一時ファイルは全て閉じ、
-   unlink (削除) せねばなりません。
+   テンポラリファイルの名前として安全に利用できる名前に設定されます。
+   作成した一時ファイルは全て閉じ、unlink (削除) せねばなりません。
 
 :mod:`test.test_support` モジュールでは、以下の関数を定義しています:
 
@@ -279,8 +273,9 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
    *resource* が利用できなければ、 :exc:`ResourceDenied` を送出します。
    その場合、 *msg* は :exc:`ResourceDenied` の引数になります。
-   *__name__* が ``"__main__"`` である関数にから呼び出された場合には
-   常に真を返します。テストを :mod:`test.regrtest` から実行するときに使われます。
+   ``__name__`` が ``"__main__"`` である関数にから呼び出された場合には
+   常に :const:`True` を返します。
+   テストを :mod:`test.regrtest` から実行するときに使われます。
 
 
 .. function:: findfile(filename)
@@ -310,41 +305,81 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
    実行します。
 
 
-.. function:: check_warnings()
+.. function:: check_warnings(*filters, quiet=True)
 
-   warning が正しく発行されているかどうか1つのassertionでチェックする、
-   ``warnings.catch_warnings()`` を使いやすくするラッパーです。
-   これは、 ``warnings.catch_warnings(record=True)`` を呼ぶのとほぼ同じです。
+   warning が正しく発行されているかどうかチェックする、
+   :func:`warnings.catch_warnings()` を使いやすくするラッパーです。
+   これは、 :meth:`warnings.simplefilter` を ``always`` に設定して、
+   記録された結果を自動的に検証するオプションと共に
+   ``warnings.catch_warnings(record=True)`` を呼ぶのとほぼ同じです。
 
-   主な違いは、この関数がコンテキストマネージャーのエントリーになっている
-   ことです。
-   ただのリストの代わりに、 :class:`WarningRecorder` のインスタンスが返されます。
-   warning のリストには、 recorder オブジェクトの :attr:`warnings` 属性から
-   アクセスできます。また、最後に発生した warning には、オブジェクトから
-   直接アクセスすることができます。
-   warning が1つも発生しなかった場合は、後者の属性は :const:`None` になります。
+   ``check_warnings`` は ``("message regexp", WarningCategory)`` の形をした
+   2要素タプルをポジション引数として受け取ります。1つ以上の *filters* が
+   与えられた場合や、オプションのキーワード引数 *quiet* が :const:`False`
+   の場合、警告が期待通りであるかどうかをチェックします。
+   指定された各 filter は最低でも1回は囲われたコード内で発生した警告と
+   マッチしなければテストが失敗しますし、指定されたどの filter ともマッチしない
+   警告が発生してもテストが失敗します。前者のチェックを無効にするには、
+   *quiet* を :const:`True` にします。
 
-   .. todo::
-      訳注: 直接アクセスの部分が、具体的にどうするのか判ってないので確認する。
+   引数が1つもない場合、デフォルトでは次のようになります::
 
-   recorder オブジェクトは :meth:`reset` メソッドを持っています。
-   このメソッドは warning リストをクリアします。
+      check_warnings(("", Warning), quiet=True)
 
-   コンテキストマネージャーは次のようにして利用します。 ::
+   この場合、全ての警告は補足され、エラーは発生しません。
 
-      with check_warnings() as w:
-          warnings.simplefilter("always")
+   コンテキストマネージャーに入る時、 :class:`WarningRecorder` インスタンスが
+   返されます。このレコーダーオブジェクトの :attr:`warnings` 属性から、
+   :func:`~warnings.catch_warnings` から得られる警告のリストを取得することができます。
+   便利さのために、レコーダーオブジェクトから直接、一番最近に発生した
+   警告を表すオブジェクトの属性にアクセスできます(以下にある例を参照してください)。
+   警告が1つも発生しなかった場合、それらの全ての属性は :const:`None` を返します。
+
+   レコーダーオブジェクトの :meth:`reset` メソッドは警告リストをクリアします。
+
+   コンテキストマネージャーは次のようにして使います::
+
+      with check_warnings(("assertion is always true", SyntaxWarning),
+                          ("", UserWarning)):
+          exec('assert(False, "Hey!")')
+          warnings.warn(UserWarning("Hide me!"))
+
+   この場合、どちらの警告も発生しなかった場合や、それ以外の警告が発生した場合は、
+   :func:`check_warnings` はエラーを発生させます。
+
+   警告が発生したかどうかだけでなく、もっと詳しいチェックが必要な場合は、
+   次のようなコードになります::
+
+      with check_warnings(quiet=True) as w:
           warnings.warn("foo")
-          assert str(w.message) == "foo"
+          assert str(w.args[0]) == "foo"
           warnings.warn("bar")
-          assert str(w.message) == "bar"
-          assert str(w.warnings[0].message) == "foo"
-          assert str(w.warnings[1].message) == "bar"
+          assert str(w.args[0]) == "bar"
+          assert str(w.warnings[0].args[0]) == "foo"
+          assert str(w.warnings[1].args[0]) == "bar"
           w.reset()
           assert len(w.warnings) == 0
 
-   .. versionadded:: 2.6
+   全ての警告をキャプチャし、テストコードがその警告を直接テストします。
 
+   .. versionadded:: 2.6
+   .. versionchanged:: 2.7
+      新しいオプション引数 *filters* と *quiet*
+
+
+.. function:: check_py3k_warnings(*filters, quiet=False)
+
+   :func:`check_warnings` と似ていますが、 Python 3 互換性警告のためのものです。
+   ``sys.py3kwarning == 1`` の時、警告が実際に発生していることをチェックします。
+   ``sys.py3kwarning == 0`` の時、警告が発生していないことをチェックします。
+   ポジション引数として ``("message regexp", WarningCategory)`` の形をした
+   2要素タプルを受け取ります。
+   オプション引数 *quiet* が :const:`True` のとき、filter になにもマッチ
+   しなくても失敗しません。引数がない場合は次と同じになります::
+
+      check_py3k_warnings(("", DeprecationWarning), quiet=False)
+
+   .. versionadded:: 2.7
 
 .. function:: captured_stdout()
 
@@ -359,6 +394,53 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
       assert s.getvalue() == "hello"
 
    .. versionadded:: 2.6
+
+
+.. function:: import_module(name, deprecated=False)
+
+   この関数は *name* で指定されたモジュールを import して返します。
+   通常の import と異なり、この関数はモジュールを import できなかった
+   場合に :exc:`unittest.SkipTest` 例外を発生させます。
+
+   *deprecated* が :const:`True` の場合、 import 中はモジュールとパッケージの
+   廃止メッセージが抑制されます。
+
+   .. versionadded:: 2.7
+
+
+.. function:: import_fresh_module(name, fresh=(), blocked=(), deprecated=False)
+
+   この関数は、 *name* で指定された Python モジュールを、 import 前に
+   ``sys.modules`` から削除することで新規に import してそのコピーを返します。
+   :func:`reload` 関数と違い、もとのモジュールはこの操作によって影響をうけません。
+
+   *fresh* は、同じように import 前に ``sys.modules`` から削除される
+   モジュール名の iterable です。
+
+   *blocked* もモジュール名の iterable で、 import 中にモジュールキャッシュ内で
+   その名前を :const:`0` に置き換えることで、そのモジュールを import しようとすると
+   :exc:`ImportError` を発生させます。
+
+   指定されたモジュールと *fresh* や *blocked* 引数内のモジュール名は
+   import 前に保存され、 fresh import が完了したら ``sys.modules``
+   に戻されます。
+
+   *deprecated* が :const:`True` の場合、 import 中はモジュールとパッケージの
+   廃止メッセージが抑制されます。
+
+   この関数はモジュールを import できなかった場合に
+   :exc:`unittest.SkipTest` 例外を発生させます。
+
+   使用例::
+
+      # Get copies of the warnings module for testing without
+      # affecting the version being used by the rest of the test suite
+      # One copy uses the C implementation, the other is forced to use
+      # the pure Python fallback implementation
+      py_warnings = import_fresh_module('warnings', blocked=['_warnings'])
+      c_warnings = import_fresh_module('warnings', fresh=['_warnings'])
+
+   .. versionadded:: 2.7
 
 
 :mod:`test.test_support` モジュールは以下のクラスを定義しています。
@@ -378,8 +460,13 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
 
    一時的に環境変数をセット・アンセットするためのクラスです。
    このクラスのインスタンスはコンテキストマネージャーとして利用されます。
+   また、 ``os.environ`` に対する参照・更新を行う完全な辞書のインタフェースを
+   持ちます。コンテキストマネージャーが終了した時、このインスタンス経由で
+   環境変数へ行った全ての変更はロールバックされます。
 
    .. versionadded:: 2.6
+   .. versionchanged:: 2.7
+      辞書のインタフェースを追加しました。
 
 
 .. method:: EnvironmentVarGuard.set(envvar, value)

@@ -98,25 +98,25 @@
  Modifiers
  ^^^^^^^^^
  
--``--file=<file>, -f``
 +.. program:: trace
+ 
+-``--file=<file>, -f``
++.. cmdoption:: -f, --file=<file>
  
 -   Name of a file to accumulate counts over several tracing runs. Should be used
 -   with the ``--count`` option.
-+.. cmdoption:: -f, --file=<file>
- 
--``--coverdir=<dir>, -C``
 +   Name of a file to accumulate counts over several tracing runs.  Should be
 +   used with the :option:`--count <-c>` option.
  
--   Directory where the report files go. The coverage report for
--   ``package.module`` is written to file ``dir/package/module.cover``.
+-``--coverdir=<dir>, -C``
 +.. cmdoption:: -C, --coverdir=<dir>
  
--``--missing, -m``
+-   Directory where the report files go. The coverage report for
+-   ``package.module`` is written to file ``dir/package/module.cover``.
 +   Directory where the report files go.  The coverage report for
 +   ``package.module`` is written to file :file:`{dir}/{package}/{module}.cover`.
 +
+-``--missing, -m``
 +.. cmdoption:: -m, --missing
  
     When generating annotated listings, mark lines which were not executed with
@@ -152,21 +152,21 @@
  
  These options may be repeated multiple times.
  
--``--ignore-module=<mod>``
 +.. program:: trace
+ 
+-``--ignore-module=<mod>``
++.. cmdoption:: --ignore-module=<mod>
  
 -   Accepts comma separated list of module names. Ignore each of the named
 -   modules and its submodules (if it is a package).
-+.. cmdoption:: --ignore-module=<mod>
- 
--``--ignore-dir=<dir>``
 +   Ignore each of the given module names and its submodules (if it is a
 +   package).  The argument can be a list of names separated by a comma.
  
--   Ignore all modules and packages in the named directory and subdirectories
--   (multiple directories can be joined by ``os.pathsep``).
+-``--ignore-dir=<dir>``
 +.. cmdoption:: --ignore-dir=<dir>
 +
+-   Ignore all modules and packages in the named directory and subdirectories
+-   (multiple directories can be joined by ``os.pathsep``).
 +   Ignore all modules and packages in the named directory and subdirectories.
 +   The argument can be a list of directories separated by :data:`os.pathsep`.
  
@@ -177,61 +177,59 @@
 +Programmatic Interface
 +----------------------
  
-+.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])
- 
 -.. class:: Trace(count=1, trace=1, countfuncs=0, countcallers=0, ignoremods=(), ignoredirs=(), infile=None, outfile=None, timing=False)
-+   Create an object to trace execution of a single statement or expression.  All
-+   parameters are optional.  *count* enables counting of line numbers.  *trace*
-+   enables line execution tracing.  *countfuncs* enables listing of the
-+   functions called during the run.  *countcallers* enables call relationship
-+   tracking.  *ignoremods* is a list of modules or packages to ignore.
-+   *ignoredirs* is a list of directories whose modules or packages should be
-+   ignored.  *infile* is the name of the file from which to read stored count
-+   information.  *outfile* is the name of the file in which to write updated
-+   count information.  *timing* enables a timestamp relative to when tracing was
-+   started to be displayed.
++.. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])
  
 -   Create an object to trace execution of a single statement or expression. All
 -   parameters are optional.  *count* enables counting of line numbers. *trace*
++   Create an object to trace execution of a single statement or expression.  All
++   parameters are optional.  *count* enables counting of line numbers.  *trace*
 -   enables line execution tracing.  *countfuncs* enables listing of the functions
 -   called during the run.  *countcallers* enables call relationship tracking.
++   enables line execution tracing.  *countfuncs* enables listing of the
++   functions called during the run.  *countcallers* enables call relationship
 -   *ignoremods* is a list of modules or packages to ignore.  *ignoredirs* is a list
 -   of directories whose modules or packages should be ignored.  *infile* is the
++   tracking.  *ignoremods* is a list of modules or packages to ignore.
++   *ignoredirs* is a list of directories whose modules or packages should be
 -   name of the file from which to read stored count information.  *outfile* is
 -   the name of the file in which to write updated count information. *timing*
++   ignored.  *infile* is the name of the file from which to read stored count
++   information.  *outfile* is the name of the file in which to write updated
 -   enables a timestamp relative to when tracing was started to be displayed.
++   count information.  *timing* enables a timestamp relative to when tracing was
++   started to be displayed.
+
+-.. method:: Trace.run(cmd)
 +    .. method:: run(cmd)
  
+-   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters.
+-   *cmd* must be a string or code object, suitable for passing into :func:`exec`.
 +       Execute the command and gather statistics from the execution with
 +       the current tracing parameters.  *cmd* must be a string or code object,
 +       suitable for passing into :func:`exec`.
  
--.. method:: Trace.run(cmd)
+-.. method:: Trace.runctx(cmd, globals=None, locals=None)
 +    .. method:: runctx(cmd[, globals=None[, locals=None]])
  
--   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters.
--   *cmd* must be a string or code object, suitable for passing into :func:`exec`.
+-   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters
+-   in the defined global and local environments.  If not defined, *globals* and
+-   *locals* default to empty dictionaries.
 +       Execute the command and gather statistics from the execution with the
 +       current tracing parameters, in the defined global and local
 +       environments.  If not defined, *globals* and *locals* default to empty
 +       dictionaries.
  
+-.. method:: Trace.runfunc(func, *args, **kwds)
 +    .. method:: runfunc(func, *args, **kwds)
  
--.. method:: Trace.runctx(cmd, globals=None, locals=None)
+-   Call *func* with the given arguments under control of the :class:`Trace` object
+-   with the current tracing parameters.
 +       Call *func* with the given arguments under control of the :class:`Trace`
 +       object with the current tracing parameters.
  
--   Run *cmd* under control of the :class:`Trace` object with the current tracing parameters
--   in the defined global and local environments.  If not defined, *globals* and
--   *locals* default to empty dictionaries.
 +    .. method:: results()
  
--
--.. method:: Trace.runfunc(func, *args, **kwds)
--
--   Call *func* with the given arguments under control of the :class:`Trace` object
--   with the current tracing parameters.
 -
 -.. method:: Trace.results()
 -
