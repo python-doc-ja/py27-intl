@@ -375,7 +375,7 @@ formatter_class
 残りの1つは引数のデフォルト値についての情報を自動的に追加します。
 
 デフォルトでは、 :class:`ArgumentParser` オブジェクトはコマンドラインのヘルプ
-メッセージ中でdescription_ と epilog_ を行ラップします::
+メッセージ中で description_ と epilog_ を行ラップします::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
