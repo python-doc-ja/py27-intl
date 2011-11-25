@@ -573,30 +573,30 @@ usage
 ``%(prog)s`` フォーマット指定子を、使用法メッセージ中でプログラム名として利用できます。
 
 
-The add_argument() method
+.. The add_argument() method
+
+add_argument() メソッド
 -------------------------
 
 .. method:: ArgumentParser.add_argument(name or flags..., [action], [nargs], [const], [default], [type], [choices], [required], [help], [metavar], [dest])
 
-   Define how a single command-line argument should be parsed.  Each parameter
-   has its own more detailed description below, but in short they are:
+   1つのコマンドライン引数がどう解析されるかを定義します。
+   各引数についての解説は以下で行いますが、簡潔には:
 
-   * `name or flags`_ - Either a name or a list of option strings, e.g. ``foo``
-     or ``-f, --foo``.
+   * `name or flags`_ - 名前か、オプション文字列のリスト (例: ``foo`` か
+     ``-f, --foo``)
 
-   * action_ - The basic type of action to be taken when this argument is
-     encountered at the command line.
+   * action_ - コマンドラインにこの引数があった時のアクション
 
-   * nargs_ - The number of command-line arguments that should be consumed.
+   * nargs_ - 消費するべきコマンドライン引数の数
 
-   * const_ - A constant value required by some action_ and nargs_ selections.
+   * const_ - いくつかの action_ と nargs_ の組み合わせで利用される定数
 
-   * default_ - The value produced if the argument is absent from the
-     command line.
+   * default_ - コマンドラインに引数がなかった場合に生成される値
 
-   * type_ - The type to which the command-line argument should be converted.
+   * type_ - コマンドライン引数が変換されるべき型
 
-   * choices_ - A container of the allowable values for the argument.
+   * choices_ - 引数として許される値のコンテナ
 
    * required_ - Whether or not the command-line option may be omitted
      (optionals only).
@@ -614,22 +614,20 @@ The following sections describe how each of these are used.
 name or flags
 ^^^^^^^^^^^^^
 
-The :meth:`~ArgumentParser.add_argument` method must know whether an optional
-argument, like ``-f`` or ``--foo``, or a positional argument, like a list of
-filenames, is expected.  The first arguments passed to
-:meth:`~ArgumentParser.add_argument` must therefore be either a series of
-flags, or a simple argument name.  For example, an optional argument could
-be created like::
+:meth:`~ArgumentParser.add_argument` メソッドは、指定されているのが
+``-f`` や ``--foo`` のようなオプション引数なのか、ファイル名リストなどの
+位置引数なのかを知る必要があります。そのため、 :meth:`~ArgumentParser.add_argument`
+の第1引数は、フラグのリストか、シンプルな引数名のどちらかになります。
+例えば、オプション引数は次のようにして作ります::
 
    >>> parser.add_argument('-f', '--foo')
 
-while a positional argument could be created like::
+一方、位置引数は次のようにして作ります::
 
    >>> parser.add_argument('bar')
 
-When :meth:`~ArgumentParser.parse_args` is called, optional arguments will be
-identified by the ``-`` prefix, and the remaining arguments will be assumed to
-be positional::
+:meth:`~ArgumentParser.parse_args` が呼ばれた時、オプション引数は ``-`` prefix
+により識別され、それ以外の引数は位置引数として扱われます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-f', '--foo')
@@ -646,33 +644,33 @@ be positional::
 action
 ^^^^^^
 
-:class:`ArgumentParser` objects associate command-line args with actions.  These
-actions can do just about anything with the command-line args associated with
-them, though most actions simply add an attribute to the object returned by
-:meth:`~ArgumentParser.parse_args`.  The ``action`` keyword argument specifies
-how the command-line args should be handled. The supported actions are:
+:class:`ArgumentParser` オブジェクトはコマンドライン引数にアクションを割り当てます。
+このアクションは、割り当てられたコマンドライン引数に関してどんな処理でもできますが、
+ほとんどのアクションは単に :meth:`~ArgumentParser.parse_args` が返すオブジェクトに
+属性を追加するだけです。 ``action`` キーワード引数は、コマンドライン引数がどう
+処理されるかを指定します。サポートされているアクションは:
 
-* ``'store'`` - This just stores the argument's value.  This is the default
-  action. For example::
+* ``'store'`` - これは単に引数の値を格納します。これはデフォルトのアクションです。
+  例えば:
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo')
     >>> parser.parse_args('--foo 1'.split())
     Namespace(foo='1')
 
-* ``'store_const'`` - This stores the value specified by the const_ keyword
-  argument.  (Note that the const_ keyword argument defaults to the rather
-  unhelpful ``None``.)  The ``'store_const'`` action is most commonly used with
-  optional arguments that specify some sort of flag.  For example::
+* ``'store_const'`` - このアクションは const_ キーワード引数で指定された値を
+  格納します。 (const_ キーワード引数のデフォルト値はあまり役に立たない ``None``
+  であることに注意) ``'store_const'`` アクションは、何かの種類のフラグを
+  指定するオプション引数によく使われます。例えば::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='store_const', const=42)
     >>> parser.parse_args('--foo'.split())
     Namespace(foo=42)
 
-* ``'store_true'`` and ``'store_false'`` - These store the values ``True`` and
-  ``False`` respectively.  These are special cases of ``'store_const'``.  For
-  example::
+* ``'store_true'``, ``'store_false'`` - これらのアクションはそれぞれ ``True``
+  と ``False`` を格納します。これらは ``'store_const'`` の特別版になります。
+  例えば::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='store_true')
@@ -680,20 +678,19 @@ how the command-line args should be handled. The supported actions are:
     >>> parser.parse_args('--foo --bar'.split())
     Namespace(bar=False, foo=True)
 
-* ``'append'`` - This stores a list, and appends each argument value to the
-  list.  This is useful to allow an option to be specified multiple times.
-  Example usage::
+* ``'append'`` - このアクションはリストを格納して、各引数の値をそのリストに
+  追加します。このアクションは複数回指定することができるオプションに便利です。
+  利用例::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='append')
     >>> parser.parse_args('--foo 1 --foo 2'.split())
     Namespace(foo=['1', '2'])
 
-* ``'append_const'`` - This stores a list, and appends the value specified by
-  the const_ keyword argument to the list.  (Note that the const_ keyword
-  argument defaults to ``None``.)  The ``'append_const'`` action is typically
-  useful when multiple arguments need to store constants to the same list. For
-  example::
+* ``'append_const'`` - このアクションはリストを格納して、 const_ キーワード引数に
+  与えられた値をそのリストに追加します。(const_ キーワード引数のデフォルト値は
+  あまり役に立たない ``None`` であることに注意) ``'append_const'`` アクションは、
+  定数を同じリストに複数回格納する場合に便利です。例えば::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--str', dest='types', action='append_const', const=str)
@@ -701,9 +698,9 @@ how the command-line args should be handled. The supported actions are:
     >>> parser.parse_args('--str --int'.split())
     Namespace(types=[<type 'str'>, <type 'int'>])
 
-* ``'version'`` - This expects a ``version=`` keyword argument in the
-  :meth:`~ArgumentParser.add_argument` call, and prints version information
-  and exits when invoked.
+* ``'version'`` - このアクションは :meth:`~ArgumentParser.add_argument` の呼び出しに
+  ``version=`` キーワード引数を期待します。指定されたときはバージョン情報を表示して
+  終了します。 ::
 
     >>> import argparse
     >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -711,26 +708,24 @@ how the command-line args should be handled. The supported actions are:
     >>> parser.parse_args(['--version'])
     PROG 2.0
 
-You can also specify an arbitrary action by passing an object that implements
-the Action API.  The easiest way to do this is to extend
-:class:`argparse.Action`, supplying an appropriate ``__call__`` method.  The
-``__call__`` method should accept four parameters:
+Action API を実装したオブジェクトを渡すことで、任意のアクションを指定することもできます。
+独自のアクションを作る一番手軽な方法は :class:`argparse.Action` を継承して、
+適切な ``__call__`` メソッドを実装することです。 ``__call__`` メソッドは
+4つの引数を受け取らなければなりません:
 
-* ``parser`` - The ArgumentParser object which contains this action.
+* ``parser`` - このアクションを持っている ArgumentParser オブジェクト
 
-* ``namespace`` - The namespace object that will be returned by
-  :meth:`~ArgumentParser.parse_args`.  Most actions add an attribute to this
-  object.
+* ``namespace`` - :meth:`~ArgumentParser.parse_args` が返す namespace オブジェクト。
+  ほとんどのアクションはこのオブジェクトに属性を追加します。
 
-* ``values`` - The associated command-line args, with any type-conversions
-  applied.  (Type-conversions are specified with the type_ keyword argument to
-  :meth:`~ArgumentParser.add_argument`.
+* ``values`` - 型変換が適用された後の、関連付けられたコマンドライン引数。
+  (型変換は :meth:`~ArgumentParser.add_argument` メソッドの type_ キーワード引数で
+  指定されます)
 
-* ``option_string`` - The option string that was used to invoke this action.
-  The ``option_string`` argument is optional, and will be absent if the action
-  is associated with a positional argument.
+* ``option_string`` - このアクションを実行したオプション文字列。 ``option_string``
+  引数はオプションで、アクションが位置引数に関連付けられた場合は渡されません。
 
-An example of a custom action::
+カスタムアクションの例です::
 
    >>> class FooAction(argparse.Action):
    ...     def __call__(self, parser, namespace, values, option_string=None):
@@ -750,13 +745,12 @@ An example of a custom action::
 nargs
 ^^^^^
 
-ArgumentParser objects usually associate a single command-line argument with a
-single action to be taken.  The ``nargs`` keyword argument associates a
-different number of command-line arguments with a single action.  The supported
-values are:
+ArgumentParser オブジェクトは通常1つのコマンドライン引数を1つのアクションに渡します。
+``nargs`` キーワード引数は1つのアクションにそれ以外の数のコマンドライン引数を
+割り当てます。指定できる値は:
 
-* N (an integer).  N args from the command line will be gathered together into a
-  list.  For example::
+* N (整数).  N 個の引数がコマンドラインから集められ、リストに格納されます。
+  例えば::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs=2)
@@ -764,15 +758,14 @@ values are:
      >>> parser.parse_args('c --foo a b'.split())
      Namespace(bar=['c'], foo=['a', 'b'])
 
-  Note that ``nargs=1`` produces a list of one item.  This is different from
-  the default, in which the item is produced by itself.
+  ``nargs=1`` は1要素のリストを作ることに注意してください。これはデフォルトの、
+  要素がそのまま属性になる動作とは異なります。
 
-* ``'?'``. One arg will be consumed from the command line if possible, and
-  produced as a single item.  If no command-line arg is present, the value from
-  default_ will be produced.  Note that for optional arguments, there is an
-  additional case - the option string is present but not followed by a
-  command-line arg.  In this case the value from const_ will be produced.  Some
-  examples to illustrate this::
+* ``'?'``. 可能なら1つの引数がコマンドラインから取られ、1つのアイテムを作ります。
+  コマンドライン引数が存在しない場合、 default_ の値が生成されます。
+  オプション引数の場合、さらにオプション引数がしていされ、その後にコマンドライン
+  引数が無いというケースもありえます。この場合は const_ の値が生成されます。
+  この動作の例です::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs='?', const='c', default='d')
@@ -784,8 +777,7 @@ values are:
      >>> parser.parse_args(''.split())
      Namespace(bar='d', foo='d')
 
-  One of the more common uses of ``nargs='?'`` is to allow optional input and
-  output files::
+  ``nargs='?'`` のよくある利用例の1つは、入出力ファイルの指定オプションです::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
@@ -799,10 +791,9 @@ values are:
      Namespace(infile=<open file '<stdin>', mode 'r' at 0x...>,
                outfile=<open file '<stdout>', mode 'w' at 0x...>)
 
-* ``'*'``.  All command-line args present are gathered into a list.  Note that
-  it generally doesn't make much sense to have more than one positional argument
-  with ``nargs='*'``, but multiple optional arguments with ``nargs='*'`` is
-  possible.  For example::
+* ``'*'``. 全てのコマンドライン引数がリストに集められます。複数の位置引数が
+  ``nargs='*'`` を持つことにあまり意味はありませんが、複数のオプション引数が
+  ``nargs='*'`` を持つことはありえます。例えば::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs='*')
@@ -811,9 +802,9 @@ values are:
      >>> parser.parse_args('a b --foo x y --bar 1 2'.split())
      Namespace(bar=['1', '2'], baz=['a', 'b'], foo=['x', 'y'])
 
-* ``'+'``. Just like ``'*'``, all command-line args present are gathered into a
-  list.  Additionally, an error message will be generated if there wasn't at
-  least one command-line arg present.  For example::
+* ``'+'``. ``'*'`` と同じように、全てのコマンドライン引数をリストに集めます。
+  加えて、最低でも1つのコマンドライン引数が存在しない場合にエラーメッセージを
+  生成します。例えば::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> parser.add_argument('foo', nargs='+')
@@ -823,30 +814,30 @@ values are:
      usage: PROG [-h] foo [foo ...]
      PROG: error: too few arguments
 
-If the ``nargs`` keyword argument is not provided, the number of args consumed
-is determined by the action_.  Generally this means a single command-line arg
-will be consumed and a single item (not a list) will be produced.
+``nargs`` キーワード引数が指定されない場合、消費される引数の数は action_ によって
+決定されます。通常これは、1つのコマンドライン引数は1つのアイテムになる(リストには
+ならない)ことを意味します。
 
 
 const
 ^^^^^
 
-The ``const`` argument of :meth:`~ArgumentParser.add_argument` is used to hold
-constant values that are not read from the command line but are required for
-the various :class:`ArgumentParser` actions.  The two most common uses of it are:
+:meth:`~ArgumentParser.add_argument` の ``const`` 引数は、コマンドライン引数から
+読み込まれないけれども :class:`ArgumentParser` のいくつかのアクションで必要と
+される値のために使われます。この引数の2つのよくあるユースケースは:
 
-* When :meth:`~ArgumentParser.add_argument` is called with
-  ``action='store_const'`` or ``action='append_const'``.  These actions add the
-  ``const`` value to one of the attributes of the object returned by :meth:`~ArgumentParser.parse_args`. See the action_ description for examples.
+* :meth:`~ArgumentParser.add_argument` が ``action='store_const'`` か
+  ``action='append_const'`` で呼び出された時、これらのアクションは ``const``
+  の値を :meth:`~ArgumentParser.parse_args` が返すオブジェクトの属性に追加します。
+  サンプルは action_ の解説を参照してください。
 
-* When :meth:`~ArgumentParser.add_argument` is called with option strings
-  (like ``-f`` or ``--foo``) and ``nargs='?'``.  This creates an optional
-  argument that can be followed by zero or one command-line args.
-  When parsing the command line, if the option string is encountered with no
-  command-line arg following it, the value of ``const`` will be assumed instead.
-  See the nargs_ description for examples.
+* :meth:`~ArgumentParser.add_argument` がオプション文字列 (``-f`` や ``--foo``)
+  と ``nargs='?'`` で呼び出された場合。この場合0個か1つのコマンドライン引数を
+  取るオプション引数が作られます。オプション引数にコマンドライン引数が続かなかった
+  場合、 ``const`` の値が代わりに利用されます。
+  サンプルは nargs_ の解説を参照してください。
 
-The ``const`` keyword argument defaults to ``None``.
+``const`` キーワード引数のデフォルト値は ``None`` です。
 
 
 default
