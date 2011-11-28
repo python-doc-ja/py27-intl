@@ -1132,28 +1132,30 @@ dest
    Namespace(bar='XXX')
 
 
-The parse_args() method
+parse_args() メソッド
 -----------------------
 
 .. method:: ArgumentParser.parse_args(args=None, namespace=None)
 
-   Convert argument strings to objects and assign them as attributes of the
-   namespace.  Return the populated namespace.
+   引数の文字列をオブジェクトに変換し、 namespace オブジェクトの
+   属性に代入します。結果の namespace オブジェクトを返します。
 
-   Previous calls to :meth:`add_argument` determine exactly what objects are
-   created and how they are assigned. See the documentation for
-   :meth:`add_argument` for details.
+   事前の :meth:`add_argument` メソッドの呼び出しが、どのオブジェクトが
+   生成されてどう代入されるかを決定します。
+   詳細は :meth:`add_argument` のドキュメントを参照してください。
 
-   By default, the arg strings are taken from :data:`sys.argv`, and a new empty
-   :class:`Namespace` object is created for the attributes.
+   デフォルトでは、引数文字列は :data:`sys.argv` から取られ、
+   新しい空の :class:`Namespace` オブジェクトが属性のために作られます。
 
 
-Option value syntax
+.. Option value syntax
+
+オプション値の文法
 ^^^^^^^^^^^^^^^^^^^
 
-The :meth:`~ArgumentParser.parse_args` method supports several ways of
-specifying the value of an option (if it takes one).  In the simplest case, the
-option and its value are passed as two separate arguments::
+:meth:`~ArgumentParser.parse_args` メソッドはオプションの値(があれば)
+を指定する複数の方法をサポートしています。
+一番シンプルな方法は、オプションとその値は2つの別々の引数として渡されます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x')
@@ -1163,21 +1165,21 @@ option and its value are passed as two separate arguments::
    >>> parser.parse_args('--foo FOO'.split())
    Namespace(foo='FOO', x=None)
 
-For long options (options with names longer than a single character), the option
-and value can also be passed as a single command-line argument, using ``=`` to
-separate them::
+長いオプション (1文字よりも長い名前を持ったオプション) では、
+オプションとその値は ``=`` で区切られた1つのコマンドライン引数として
+渡すこともできます::
 
    >>> parser.parse_args('--foo=FOO'.split())
    Namespace(foo='FOO', x=None)
 
-For short options (options only one character long), the option and its value
-can be concatenated::
+短いオプション (1文字のオプション) では、オプションとその値は連結して渡す
+ことができます::
 
    >>> parser.parse_args('-xX'.split())
    Namespace(foo=None, x='X')
 
-Several short options can be joined together, using only a single ``-`` prefix,
-as long as only the last option (or none of them) requires a value::
+複数の短いオプションは、最後の1つ(か、0個)のオプションだけが値を
+要求する場合には、1つの ``-`` prefix だけで連結することができます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x', action='store_true')
@@ -1187,13 +1189,16 @@ as long as only the last option (or none of them) requires a value::
    Namespace(x=True, y=True, z='Z')
 
 
-Invalid arguments
+.. Invalid arguments
+
+不正な引数
 ^^^^^^^^^^^^^^^^^
 
-While parsing the command line, :meth:`~ArgumentParser.parse_args` checks for a
-variety of errors, including ambiguous options, invalid types, invalid options,
-wrong number of positional arguments, etc.  When it encounters such an error,
-it exits and prints the error along with a usage message::
+:meth:`~ArgumentParser.parse_args` は、コマンドラインの解析中に、
+曖昧なオプション、不正な型、不正なオプション、位置引数の数の不一致などの
+エラーを検証します。
+それらのエラーが発生した場合、エラーメッセージと使用法メッセージを
+表示して終了します::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('--foo', type=int)
@@ -1215,16 +1220,18 @@ it exits and prints the error along with a usage message::
    PROG: error: extra arguments found: badger
 
 
-Arguments containing ``"-"``
+.. Arguments containing ``"-"``
+
+``"-"`` を含む引数
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :meth:`~ArgumentParser.parse_args` method attempts to give errors whenever
-the user has clearly made a mistake, but some situations are inherently
-ambiguous.  For example, the command-line arg ``'-1'`` could either be an
-attempt to specify an option or an attempt to provide a positional argument.
-The :meth:`~ArgumentParser.parse_args` method is cautious here: positional
-arguments may only begin with ``'-'`` if they look like negative numbers and
-there are no options in the parser that look like negative numbers::
+:meth:`~ArgumentParser.parse_args` メソッドは、ユーザーが明らかなミスを
+した場合はエラーを表示しますが、いくつか本質的に曖昧な場面があります。
+例えば、コマンドライン引数 ``'-1'`` は、オプションの指定かもしれませんし
+位置引数かもしれません。 :meth:`~ArgumentParser.parse_args` メソッドは
+これを次のように扱います: 負の数として解釈でき、パーサーに負の数のように
+解釈できるオプションが存在しない場合にのみ、 ``'-'`` で始まる位置引数
+になりえます::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x')
@@ -1256,20 +1263,21 @@ there are no options in the parser that look like negative numbers::
    usage: PROG [-h] [-1 ONE] [foo]
    PROG: error: argument -1: expected one argument
 
-If you have positional arguments that must begin with ``'-'`` and don't look
-like negative numbers, you can insert the pseudo-argument ``'--'`` which tells
-:meth:`~ArgumentParser.parse_args` that everything after that is a positional
-argument::
+``'-'`` で始まる位置引数があって、それが負の数として解釈できない場合、
+ダミーの引数 ``'--'`` を挿入して、 :meth:`~ArgumentParser.parse_args` に
+それ以降の全てが位置引数だと教えることができます::
 
    >>> parser.parse_args(['--', '-f'])
    Namespace(foo='-f', one=None)
 
 
-Argument abbreviations
+.. Argument abbreviations
+
+引数の短縮形
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The :meth:`~ArgumentParser.parse_args` method allows long options to be
-abbreviated if the abbreviation is unambiguous::
+:meth:`~ArgumentParser.parse_args` メソッドは、長いオプションを、
+曖昧さが無い範囲で短縮することを許可しています::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-bacon')
@@ -1282,16 +1290,17 @@ abbreviated if the abbreviation is unambiguous::
    usage: PROG [-h] [-bacon BACON] [-badger BADGER]
    PROG: error: ambiguous option: -ba could match -badger, -bacon
 
-An error is produced for arguments that could produce more than one options.
+引数が複数のオプションになり得る場合はエラーになります。
 
 
-Beyond ``sys.argv``
+.. Beyond ``sys.argv``
+
+``sys.argv`` 以外
 ^^^^^^^^^^^^^^^^^^^
 
-Sometimes it may be useful to have an ArgumentParser parse args other than those
-of :data:`sys.argv`.  This can be accomplished by passing a list of strings to
-:meth:`~ArgumentParser.parse_args`.  This is useful for testing at the
-interactive prompt::
+ArgumentParser が :data:`sys.argv` 以外の引数をパースできると役に立つ場合があります。
+その場合は文字列のリストを :meth:`~ArgumentParser.parse_args` に渡します。
+これはインタラクティブプロンプトからテストするときに便利です::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument(
@@ -1306,14 +1315,17 @@ interactive prompt::
    Namespace(accumulate=<built-in function sum>, integers=[1, 2, 3, 4])
 
 
-The Namespace object
-^^^^^^^^^^^^^^^^^^^^
+.. The Namespace object
 
-By default, :meth:`~ArgumentParser.parse_args` will return a new object of type
-:class:`Namespace` where the necessary attributes have been set. This class is
-deliberately simple, just an :class:`object` subclass with a readable string
-representation. If you prefer to have dict-like view of the attributes, you
-can use the standard Python idiom via :func:`vars`::
+Namespace オブジェクト
+^^^^^^^^^^^^^^^^^^^^^^^
+
+デフォルトでは、 :meth:`~ArgumentParser.parse_args` は :class:`Namespace`
+の新しいオブジェクトに必要な属性を設定して返します。このクラスはシンプルに
+設計されており、単に読みやすい文字列表現を持った :class:`object` のサブクラスです。
+もし属性を辞書のように扱える方が良ければ、 :func:`vars` を使う標準的な
+Python のイディオムを利用することができます::
+
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo')
@@ -1321,9 +1333,9 @@ can use the standard Python idiom via :func:`vars`::
    >>> vars(args)
    {'foo': 'BAR'}
 
-It may also be useful to have an :class:`ArgumentParser` assign attributes to an
-already existing object, rather than a new :class:`Namespace` object.  This can
-be achieved by specifying the ``namespace=`` keyword argument::
+:class:`ArgumentParser` が、新しい :class:`Namespace` オブジェクトではなく、
+既存のオブジェクトに属性を設定する方が良い場合があります。
+これは ``namespace=`` キーワード引数を指定することで可能です::
 
    >>> class C(object):
    ...     pass
@@ -1336,8 +1348,10 @@ be achieved by specifying the ``namespace=`` keyword argument::
    'BAR'
 
 
-Other utilities
----------------
+.. Other utilities
+
+その他のユーティリティ
+------------------------
 
 Sub-commands
 ^^^^^^^^^^^^
