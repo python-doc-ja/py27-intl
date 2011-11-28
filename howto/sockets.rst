@@ -68,13 +68,8 @@ STREAM ソケットが一番分かりやすく、一番性能が出るのだ。
 歴史
 ----
 
-..
-   Of the various forms of IPC (*Inter Process Communication*), sockets are by far
-   the most popular.  On any given platform, there are likely to be other forms of
-   IPC that are faster, but for cross-platform communication, sockets are about the
-   only game in town.
-
-各種 IPC (*Inter Process Communication* = プロセス間通信) の中でも、ソケットは群を抜いて人気がある。
+各種 :abbr:`IPC (Inter Process Communication` (プロセス間通信) の中でも、
+ソケットは群を抜いて人気がある。
 どのプラットフォームにも、ソケットより速い IPC はあるだろう。
 だが、プラットフォームをまたぐ通信はソケットの独擅場だ。
 
@@ -106,21 +101,12 @@ STREAM ソケットが一番分かりやすく、一番性能が出るのだ。
    #ここでウェブサーバに 80 番 (http の標準) ポートで接続
    s.connect(("www.mcmillan-inc.com", 80))
 
-..
-   When the ``connect`` completes, the socket ``s`` can now be used to send in a
-   request for the text of this page. The same socket will read the reply, and then
-   be destroyed. That's right - destroyed. Client sockets are normally only used
-   for one exchange (or a small set of sequential exchanges).
 
 この ``connect`` が完了すると、ソケット ``s`` を使ってこのページ文章への要求を送ることができるようになる。
 その同じソケットが返答を読み、そして破壊される。そう、破壊される。
 クライアントソケットは通常、一回 (か少数の) やり取りで使い捨てになるのだ。
 
-..
-   What happens in the web server is a bit more complex. First, the web server
-   creates a "server socket". ::
-
-ウェブサーバで起こる事柄はもう少し複雑だ。まず「サーバソケット」を作る。 ::
+ウェブサーバで起こる事柄はもう少し複雑だ。まず「サーバソケット」を作る::
 
    #INET の STREAM ソケットを作る
    serversocket = socket.socket(
@@ -163,7 +149,7 @@ STREAM ソケットが一番分かりやすく、一番性能が出るのだ。
    OK, now we have a "server" socket, listening on port 80. Now we enter the
    mainloop of the web server::
 
-よし、「サーバ」ソケットができて、80 番ポートで耳を澄ましているところまで来た。
+よし、「サーバーソケット」ができて、80 番ポートで耳を澄ましているところまで来た。
 では、ウェブサーバのメインループに入ろう::
 
    while 1:
@@ -292,7 +278,7 @@ IPC
    request, the reads a reply.  That's it. The socket is discarded. This means that
    a client can detect the end of the reply by receiving 0 bytes.
 
-HTTP のようなプロトコルでは、ひとつのソケットを転送ひとつにしか使わない。
+HTTP のようなプロトコルでは、ひとつのソケットを1回の転送にしか使わない。
 クライアントは要求を送り、返答を受ける。以上だ。これでソケットは破棄される。
 だからこの場合、クライアントは受信 0 バイトの時点で返答の末尾を検出することができる。
 
@@ -309,7 +295,7 @@ HTTP のようなプロトコルでは、ひとつのソケットを転送ひと
    righter than others).
 
 だが、以降の転送にもそのソケットを使い回すつもりなら、
-*ソケットに "EOT" (End of Transfer) など存在しない* ことを認める必要がある。
+ソケットに "EOT" (End of Transfer) など *存在しない* ことを認識する必要がある。
 もう一度言おう: ソケットの ``send`` や ``recv`` が 0 バイト処理で返ってきたなら、その接続は終わっている。
 終わって *いない* なら、いつまで ``recv`` を待てばいいかは分からない。
 ソケットは「もう読むものが (今のところ) ないぜ」などと *言わない* のだから。
@@ -600,7 +586,7 @@ POSIX 方式 ``O_NDELAY`` のどちらを選ぶか決めなくてはならなく
 
 C において ``select`` でコードを書くのはかなり面倒だが、Python
 なら造作もない。しかし Python で ``select`` を理解しておけば
-C でもほとんど問題なく書ける、という程度には似ている。 ::
+C でもほとんど問題なく書ける、という程度には似ている::
 
    readable, writable, in_error = \
                   select.select(
@@ -627,17 +613,9 @@ C でもほとんど問題なく書ける、という程度には似ている。
 これは、やっておいて損はない - 特に理由がなければ、
 かなり長い (たとえば 1 分とかの) 時間制限を付けておくことだ。
 
-..
-   In return, you will get three lists. They have the sockets that are actually
-   readable, writable and in error. Each of these lists is a subset (possibly
-   empty) of the corresponding list you passed in. And if you put a socket in more
-   than one input list, it will only be (at most) in one output list.
-
-それら引数の見返りとして手に入るのは三つのリストである。
+戻り値として、三つのリストが手に入る。
 それぞれには、実際に読めるソケット、書けるソケット、エラー中のソケットが入っていて、
 渡したリストの部分集合 (空集合かもしれない) になっている。
-ひとつのソケットを入力リストのうち複数に入れても、
-出力リストには (最大でも) ひとつにしか入らない。
 
 ..
    If a socket is in the output readable list, you can be
