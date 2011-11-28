@@ -194,19 +194,20 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
   .. versionadded:: 2.3
 
 
-.. function:: create_connection(address[, timeout])
-
-   .. Convenience function.  Connect to *address* (a 2-tuple ``(host, port)``),
-      and return the socket object.  Passing the optional *timeout* parameter will
-      set the timeout on the socket instance before attempting to connect.  If no
-      *timeout* is supplied, the global default timeout setting returned by
-      :func:`getdefaulttimeout` is used.
+.. function:: create_connection(address[, timeout[, source_address]])
 
    便利関数。
    *address* (``(host, port)`` の形のタプル) に接続してソケットオブジェクトを返します。
    オプションの *timeout* 引数を指定すると、接続を試みる前にソケットオブジェクトのタイムアウトを設定します。
 
+   *source_address* は接続する前にバインドするソースアドレスを指定するオプション引数で、
+   指定する場合は ``(host, port)`` の2要素タプルでなければなりません。
+   host や port が '' か 0 だった場合は、OSのデフォルトの動作になります。
+
    .. versionadded:: 2.6
+
+   .. versionchanged:: 2.7
+      *source_address* が追加されました.
 
 
 .. function:: getaddrinfo(host, port, family=0, socktype=0, proto=0, flags=0)
@@ -461,6 +462,9 @@ DNSの処理やホストの設定によって異なるIPv4/6アドレスを取�
    Module :mod:`SocketServer`
       ネットワークサーバの開発を省力化するためのクラス群。
 
+   Module :mod:`ssl`
+      ソケットオブジェクトに対する TLS/SSL ラッパー.
+
 
 .. _socket-objects:
 
@@ -492,6 +496,11 @@ socket オブジェクト
 
    ソケットをクローズします。以降、このソケットでは全ての操作が失敗します。リモート端点ではキューに溜まったデータがフラッシュされた後はそれ以上の
    データを受信しません。ソケットはガベージコレクション時に自動的にクローズされます。
+
+   .. note::
+      :meth:`close` は接続に関連付けられたリソースを開放しますが、
+      接続をすぐに切断するとは限りません。接続を即座に切断したい場合は、
+      :meth:`close` の前に :meth:`shutdown` を呼び出してください。
 
 
 .. method:: socket.connect(address)
@@ -566,7 +575,8 @@ socket オブジェクト
 .. method:: socket.listen(backlog)
 
    ソケットをListenし、接続を待ちます。引数 *backlog* には接続キューの最
-   大の長さ(1以上)を指定します。 *backlog* の最大数はシステムに依存します (通常は5)。
+   大の長さ(0以上)を指定します。 *backlog* の最大数はシステムに依存します (通常は5)。
+   最小値は必ず 0 です。
 
 
 .. method:: socket.makefile([mode[, bufsize]])
@@ -581,6 +591,13 @@ socket オブジェクト
    オプション引数の *mode* と *bufsize* には、 :func:`file` 組み込み関数と同じ値を指定します。
 
 
+   .. note::
+
+      Windows では、 :meth:`makefile` によって作成される file-like オブジェクトは、
+      :meth:`subprocess.Popen` などのファイルディスクリプタのある file オブジェクトを
+      期待している場所で利用することはできません。
+
+ 
 .. method:: socket.recv(bufsize[, flags])
 
    ソケットからデータを受信し、文字列として返します。受信する最大バイト数は、 *bufsize* で指定します。 *flags* のデフォルト値は0です。
@@ -712,6 +729,9 @@ socket オブジェクト
    接続の片方向、または両方向を切断します。 *how* が :const:`SHUT_RD` の場合、以降
    は受信を行えません。 *how* が :const:`SHUT_WR` の場合、以降は送信を行えません。
    *how* が ``SHUT_RDWR`` の場合、以降は送受信を行えません。
+   プラットフォームによっては、接続の片方向をシャットダウンすると相手側も
+   閉じられます。(例えば、 Mac OS X では、 ``shutdown(SHUT_WR)`` をすると、
+   接続の相手側はもう read ができなくなります)
 
 :meth:`read` メソッドと :meth:`write` メソッドは存在しませんので注意
 してください。代わりに *flags* を省略した :meth:`~socket.recv` と :meth:`~socket.send` を使うことができます。
