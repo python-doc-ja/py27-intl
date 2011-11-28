@@ -1,10 +1,15 @@
-:mod:`optparse` --- より強力なコマンドラインオプション解析器
+:mod:`optparse` --- コマンドラインオプション解析器
 ============================================================
 
 .. module:: optparse
-   :synopsis: より便利で柔軟性に富んだ強力なコマンドライン解析ライブラリ
-.. moduleauthor:: Greg Ward <gward@python.net>
+   :synopsis: コマンドラインオプション解析機
+   :deprecated:
 
+.. deprecated:: 2.7
+   :mod:`optparse` モジュールは廃止予定で、今後開発はされません。
+   今後の開発は :mod:`argparse` モジュールに対して行われます。
+
+.. moduleauthor:: Greg Ward <gward@python.net>
 
 .. versionadded:: 2.3
 
@@ -61,9 +66,9 @@
 
 .. code-block:: text
 
-   usage: <yourscript> [options]
+   Usage: <yourscript> [options]
 
-   options:
+   Options:
      -h, --help            show this help message and exit
      -f FILE, --file=FILE  write report to FILE
      -q, --quiet           don't print status messages to stdout
@@ -96,22 +101,29 @@
    または ``sys.argv[1:]`` の代替として提供される別のリストの要素」と読むべきでしょう。
 
 オプション (option)
-   追加的な情報を与えるための引数で、プログラムの実行に対する教示やカスタマイズを行います。オプションには多様な文法が存在します。伝統的な Unix
-   における書法はハイフン ("-") の後ろに一文字が続くもので、例えば ``"-x"`` や ``"-F"`` です。また、伝統的な Unix における
-   書法では、複数のオプションを一つの引数にまとめられます。例えば ``"-x -F"`` は ``"-xF"`` と等価です。 GNU プロジェクトでは
-   ``"--"`` の後ろにハイフンで区切りの語を指定する方法、例えば ``"--file"`` や ``"--dry-run"`` も提供して
-   います。 :mod:`optparse` は、これら二種類のオプション書法だけをサポートしています。
+   追加的な情報を与えるための引数で、プログラムの実行に対する教示やカスタマイズを行います。
+   オプションには多様な文法が存在します。伝統的な Unix
+   における書法はハイフン ("-") の後ろに一文字が続くもので、例えば ``-x`` や ``-F`` です。
+   また、伝統的な Unix における書法では、複数のオプションを一つの引数にまとめられます。
+   例えば ``-x -F`` は ``-xF`` と等価です。 GNU プロジェクトでは
+   ``--`` の後ろにハイフンで区切りの語を指定する方法、例えば ``--file`` や
+   ``--dry-run`` も提供しています。
+   :mod:`optparse` は、これら二種類のオプション書法だけをサポートしています。
 
    他に見られる他のオプション書法には以下のようなものがあります:
 
-   * ハイフンの後ろに数個の文字が続くもので、例えば ``"-pf"``  (このオプションは複数のオプションを一つにまとめたものとは * 違います*)
+   * ハイフンの後ろに数個の文字が続くもので、例えば ``-pf``
+     (このオプションは複数のオプションを一つにまとめたものとは *違います*)
 
-   * ハイフンの後ろに語が続くもので、例えば ``"-file"``  (これは技術的には上の書式と同じですが、通常同じプログラム上で一緒に
+   * ハイフンの後ろに語が続くもので、例えば ``-file``
+     (これは技術的には上の書式と同じですが、通常同じプログラム上で一緒に
      使うことはありません)
 
-   * プラス記号の後ろに一文字、数個の文字、または語を続けたもので、例えば ``"+f"``, ``"+rgb"``
+   * プラス記号の後ろに一文字、数個の文字、または語を続けたもので、例えば
+     ``+f``, ``+rgb``
 
-   * スラッシュ記号の後ろに一文字、数個の文字、または語を続けたもので、例えば ``"/f"``, ``"/file"``
+   * スラッシュ記号の後ろに一文字、数個の文字、または語を続けたもので、例えば
+     ``/f``, ``/file``
 
    上記のオプション書法は :mod:`optparse` ではサポートしておらず、今後もサポートする予定はありません。これは故意によるものです:
    最初の三つはどの環境の標準でもなく、最後の一つは VMS や MS-DOS, そして Windows を対象にしているときにしか意味をなさないからです。
@@ -132,11 +144,14 @@
       -ffoo
       --file=foo
 
-   通常、オプションは引数をとることもとらないこともあります。あるオプションは引数をとることがなく、またあるオプションは常に引数をとります。多くの人々が
-   「オプションのオプション引数」機能を欲しています。これは、あるオプションが引数が指定されている
-   場合には引数をとり、そうでない場合には引数をもたないようにするという機能です。この機能は引数解析をあいまいにするため、議論の的となっています: 例えば、もし
-   :option:`-a` がオプション引数をとり、 :option:`-b` がまったく別のオプションだとしたら、 :option:`-ab`
-   をどうやって解析すればいいのでしょうか？こうした曖昧さが存在するため、 :mod:`optparse` は今のところこの機能をサポートしていません。
+   通常、オプションは引数をとることもとらないこともあります。あるオプションは引数をとることがなく、
+   またあるオプションは常に引数をとります。
+   多くの人々が「オプションのオプション引数」機能を欲しています。
+   これは、あるオプションが引数が指定されている場合には引数をとり、そうでない場合には引数を
+   もたないようにするという機能です。この機能は引数解析をあいまいにするため、議論の的となっています: 例えば、もし
+   ``-a`` がオプション引数をとり、 ``-b`` がまったく別のオプションだとしたら、
+   ``-ab`` をどうやって解析すればいいのでしょうか？
+   こうした曖昧さが存在するため、 :mod:`optparse` は今のところこの機能をサポートしていません。
 
 固定引数 (positional argument)
    他のオプションが解析される、すなわち他のオプションとその引数が解析されて引数リストから除去された後に引数リストに置かれているものです。
@@ -150,8 +165,9 @@
 
    prog -v --report /tmp/report.txt foo bar
 
-``"-v"`` と ``"--report"`` はどちらもオプションです。 :option:`--report` オプションが引数をとるとすれば、
-``"/tmp/report.txt"`` はオプションの引数です。 ``"foo"`` と ``"bar"`` は固定引数になります。
+``-v`` と ``--report`` はどちらもオプションです。 ``--report`` オプションが引数をとるとすれば、
+``/tmp/report.txt`` はオプションの引数です。
+``foo`` と ``bar`` は固定引数になります。
 
 
 .. _optparse-what-options-for:
@@ -222,7 +238,7 @@ GUI でできた「環境設定」ダイアログ上のウィジェットであ�
    parser.add_option(opt_str, ...,
                      attr=value, ...)
 
-各オプションには、 ``"-f"`` や ``"--file"`` のような一つまたは複数の
+各オプションには、 ``-f`` や ``--file`` のような一つまたは複数の
 オプション文字列と、パーザがコマンドライン上のオプションを見つけた際に、何を準備し、何を行うべきかを :mod:`optparse`
 に教えるためのオプション属性 (option attribute)がいくつか入ります。
 
@@ -247,7 +263,7 @@ GUI でできた「環境設定」ダイアログ上のウィジェットであ�
 
 :meth:`parse_args` は二つの値を返します:
 
-* 全てのオプションに対する値の入ったオブジェクト ``options`` --- 例えば、 ``"--file"``
+* 全てのオプションに対する値の入ったオブジェクト ``options`` --- 例えば、 ``--file``
   が単一の文字列引数をとる場合、 ``options.file`` はユーザが指定したファイル名になります。オプションを指定しなかった場合には ``None``
   になります。
 
@@ -291,7 +307,7 @@ store アクション
    args = ["-f", "foo.txt"]
    (options, args) = parser.parse_args(args)
 
-オプション文字列 ``"-f"`` を見つけると、 :mod:`optparse` は次の引数である ``"foo.txt"`` を消費し、その値を
+オプション文字列 ``-f`` を見つけると、 :mod:`optparse` は次の引数である ``foo.txt`` を消費し、その値を
 ``options.filename`` に保存します。従って、この :meth:`parse_args` 呼び出し後には
 ``options.filename`` は ``"foo.txt"`` になっています。
 
@@ -304,13 +320,14 @@ store アクション
 このオプションには長い形式のオプション文字列がないため、設定に問題がないということに注意してください。また、デフォルトのアクションは ``store``
 なので、ここでは action を明示的に指定していません。
 
-架空のコマンドラインをもう一つ解析してみましょう。今度は、オプション引数をオプションの右側にぴったりくっつけて一緒くたにします: :option:`-n42`
-(一つの引数のみ) は :option:`-n 42` (二つの引数からなる) と等価になるので、 ::
+架空のコマンドラインをもう一つ解析してみましょう。今度は、オプション引数を
+オプションの右側にぴったりくっつけて一緒くたにします: ``-n42``
+(一つの引数のみ) は ``-n 42`` (二つの引数からなる) と等価になるので、 ::
 
    (options, args) = parser.parse_args(["-n42"])
    print options.num
 
-は ``"42"`` を出力します。
+は ``42`` を出力します。
 
 型を指定しない場合、 :mod:`optparse` は引数を ``string`` であると仮定します。デフォルトのアクションが ``store``
 であることも併せて考えると、最初の例はもっと短くなります::
@@ -318,9 +335,9 @@ store アクション
    parser.add_option("-f", "--file", dest="filename")
 
 保存先 (destination) を指定しない場合、 :mod:`optparse` はデフォルト値としてオプション文字列から気のきいた名前を設定します:
-最初に指定した長い形式のオプション文字列が ``"--foo-bar"`` であれば、デフォルトの保存先は ``foo_bar``
+最初に指定した長い形式のオプション文字列が ``--foo-bar`` であれば、デフォルトの保存先は ``foo_bar``
 になります。長い形式のオプション文字列がなければ、 :mod:`optparse` は最初に指定した短い形式のオプション文字列を探します:
-例えば、 ``"-f"`` に対する保存先は ``f`` になります。
+例えば、 ``-f`` に対する保存先は ``f`` になります。
 
 :mod:`optparse` では、 ``long`` や ``complex`` といった組み込み型も取り入れています。型の追加は
 :ref:`optparse-extending-optparse` で触れています。
@@ -333,15 +350,15 @@ store アクション
 
 フラグオプション---特定のオプションに対して真または偽の値の値を設定するオプション--- はよく使われます。 :mod:`optparse`
 では、二つのアクション、 ``store_true`` および ``store_false`` をサポートしています。例えば、 ``verbose``
-というフラグを ``"-v"`` で有効にして、 ``"-q"`` で無効にしたいとします::
+というフラグを ``-v`` で有効にして、 ``-q`` で無効にしたいとします::
 
    parser.add_option("-v", action="store_true", dest="verbose")
    parser.add_option("-q", action="store_false", dest="verbose")
 
 ここでは二つのオプションに同じ保存先を指定していますが、全く問題ありません (下記のように、デフォルト値の設定を少し注意深く行わねばならないだけです)
 
-``"-v"`` をコマンドライン上に見つけると、 :mod:`optparse` は ``options.verbose`` を ``True``
-に設定します。 ``"-q"`` を見つければ、 ``options.verbose`` は ``False`` にセットされます。
+``-v`` をコマンドライン上に見つけると、 :mod:`optparse` は ``options.verbose`` を ``True``
+に設定します。 ``-q`` を見つければ、 ``options.verbose`` は ``False`` にセットされます。
 
 
 .. _optparse-other-actions:
@@ -377,7 +394,7 @@ store アクション
 たいていはこれで十分ですが、もっときちんと制御したい場合もあります。 :mod:`optparse` では各保存先に対してデフォルト値を指定し、コマンドライン
 の解析前にデフォルト値が設定されるようにできます。
 
-まず、 verbose/quiet の例について考えてみましょう。 :mod:`optparse` に対して、 ``"-q"`` がない限り
+まず、 verbose/quiet の例について考えてみましょう。 :mod:`optparse` に対して、 ``-q`` がない限り
 ``verbose`` を ``True`` に設定させたいなら、以下のようにします::
 
    parser.add_option("-v", action="store_true", dest="verbose", default=True)
@@ -434,15 +451,15 @@ store アクション
                      help="interaction mode: novice, intermediate, "
                           "or expert [default: %default]")
 
-:mod:`optparse` がコマンドライン上で ``"-h"`` や ``"--help"`` を
+:mod:`optparse` がコマンドライン上で ``-h`` や ``--help`` を
 見つけた場合や、 :meth:`parser.print_help` を呼び出した場合、この :class:`OptionParser`
 は以下のようなメッセージを標準出力に出力します。
 
 .. code-block:: text
 
-   usage: <yourscript> [options] arg1 arg2
+   Usage: <yourscript> [options] arg1 arg2
 
-   options:
+   Options:
      -h, --help            show this help message and exit
      -v, --verbose         make lots of noise [default]
      -q, --quiet           be vewwy quiet (I'm hunting wabbits)
@@ -459,11 +476,11 @@ store アクション
 
      usage = "usage: %prog [options] arg1 arg2"
 
-  :mod:`optparse` は ``"%prog"`` を現在のプログラム名、すなわち ``os.path.basename(sys.argv[0])``
+  :mod:`optparse` は ``%prog`` を現在のプログラム名、すなわち ``os.path.basename(sys.argv[0])``
   と置き換えます。この文字列は詳細なオプションヘルプの前に展開され出力されます。
 
   usage の文字列を指定しない場合、 :mod:`optparse` は型どおりとはいえ気の利いたデフォルト値、
-  ``"usage: %prog [options]"`` を使います。固定引数をとらないスクリプトの場合はこれで十分でしょう。
+  ``"Usage: %prog [options]"`` を使います。固定引数をとらないスクリプトの場合はこれで十分でしょう。
 
 * 全てのオプションにヘルプ文字列を定義します。行の折り返しは気にしなくてかまいません --- :mod:`optparse`
   は行の折り返しに気を配り、見栄えのよいヘルプ出力を生成します。
@@ -475,17 +492,19 @@ store アクション
   のようになります。
 
   ここで "MODE" はメタ変数 (meta-variable) と呼ばれます: メタ変数は、ユーザが
-  :option:`-m` / :option:`--mode` に対して指定するはずの引数を表します。デフォルトでは、 :mod:`optparse`
+  ``-m``/``--mode`` に対して指定するはずの引数を表します。デフォルトでは、 :mod:`optparse`
   は保存先の変数名を大文字だけにしたものをメタ変数に使います。これは時として期待通りの結果になりません ---
-  例えば、上の例の :option:`--filename` オプションでは明示的に ``metavar="FILE"`` を設定しており、その結果自動生成された
+  例えば、上の例の ``--filename`` オプションでは明示的に ``metavar="FILE"`` を設定しており、その結果自動生成された
   オプション説明テキストは::
 
      -f FILE, --filename=FILE
 
   のようになります。
 
-  この機能の重要さは、単に表示スペースを節約するといった理由にとどまりません:  上の例では、手作業で書いたヘルプテキストの中でメタ変数として "FILE" を
-  使っています。その結果、ユーザに対してやや堅苦しい表現の書法 "-f FILE" と、より平易に意味付けを説明した "write output to FILE"
+  この機能の重要さは、単に表示スペースを節約するといった理由にとどまりません:
+  上の例では、手作業で書いたヘルプテキストの中でメタ変数として ``FILE`` を
+  使っています。その結果、ユーザに対してやや堅苦しい表現の書法 ``-f FILE`` と、
+  より平易に意味付けを説明した "write output to FILE"
   との間に対応があるというヒントを与えています。これは、エンドユーザにとってより明解で便利なヘルプテキストを作成する単純でありながら効果的な手法なのです。
 
 .. versionadded:: 2.4
@@ -493,18 +512,32 @@ store アクション
    は ``%default`` をデフォルト値の :func:`str` で置き換えます。該当するオプションにデフォルト値がない場合 (あるいはデフォルト値が
    ``None`` である場合) ``%default`` の展開結果は ``none`` になります。
 
-.. When dealing with many options, it is convenient to group these
-   options for better help output.  An :class:`OptionParser` can contain
-   several option groups, each of which can contain several options.
+.. Grouping Options
+
+オプションをグループ化する
++++++++++++++++++++++++++++
 
 たくさんのオプションを扱う場合、オプションをグループ分けするとヘルプ出力が\
 見やすくなります。 :class:`OptionParser` は、複数のオプションをまとめた\
 オプショングループを複数持つことができます。
 
-.. Continuing with the parser defined above, adding an
-   :class:`OptionGroup` to a parser is easy::
+オプションのグループは、 :class:`OptionGroup` を使って作成します:
 
-先程定義した ``parser`` に、 :class:`OptionGroup` を追加してみます。 ::
+.. class:: OptionGroup(parser, title, description=None)
+
+   * *parser* は、このグループが属する  :class:`OptionParser` のインスタンスです
+   * *title* はグループのタイトルです
+   * *description* はオプションで、グループの長い説明です
+
+:class:`OptionGroup` は (:class:`OptionParser` のように) :class:`OptionContainer`
+を継承していて、オプションをグループに追加するために :meth:`add_option`
+メソッドを利用できます。
+
+全てのオプションを定義したら、 :class:`OptionParser` の :meth:`add_option_group`
+メソッドを使ってグループを定義済みのパーサーに追加します。
+
+前のセクションで定義したパーサーに、続けて :class:`OptionGroup` を
+追加します::
 
     group = OptionGroup(parser, "Dangerous Options",
                         "Caution: use these options at your own risk.  "
@@ -518,20 +551,72 @@ store アクション
 
 .. code-block:: text
 
-    usage:  [options] arg1 arg2
+   Usage: <yourscript> [options] arg1 arg2
 
-    options:
-      -h, --help           show this help message and exit
-      -v, --verbose        make lots of noise [default]
-      -q, --quiet          be vewwy quiet (I'm hunting wabbits)
-      -fFILE, --file=FILE  write output to FILE
-      -mMODE, --mode=MODE  interaction mode: one of 'novice', 'intermediate'
-                           [default], 'expert'
+   Options:
+     -h, --help            show this help message and exit
+     -v, --verbose         make lots of noise [default]
+     -q, --quiet           be vewwy quiet (I'm hunting wabbits)
+     -f FILE, --filename=FILE
+                           write output to FILE
+     -m MODE, --mode=MODE  interaction mode: novice, intermediate, or
+                           expert [default: intermediate]
 
-      Dangerous Options:
-      Caution: use of these options is at your own risk.  It is believed that
-      some of them bite.
-      -g                 Group option.
+     Dangerous Options:
+       Caution: use these options at your own risk.  It is believed that some
+       of them bite.
+
+       -g                  Group option.
+
+さらにサンプルを拡張して、複数のグループを使うようにしてみます::
+
+    group = OptionGroup(parser, "Dangerous Options",
+                        "Caution: use these options at your own risk.  "
+                        "It is believed that some of them bite.")
+    group.add_option("-g", action="store_true", help="Group option.")
+    parser.add_option_group(group)
+
+    group = OptionGroup(parser, "Debug Options")
+    group.add_option("-d", "--debug", action="store_true",
+                     help="Print debug information")
+    group.add_option("-s", "--sql", action="store_true",
+                     help="Print all SQL statements executed")
+    group.add_option("-e", action="store_true", help="Print every action done")
+    parser.add_option_group(group)
+
+出力結果は次のようになります:
+
+.. code-block:: text
+
+   Usage: <yourscript> [options] arg1 arg2
+
+   Options:
+     -h, --help            show this help message and exit
+     -v, --verbose         make lots of noise [default]
+     -q, --quiet           be vewwy quiet (I'm hunting wabbits)
+     -f FILE, --filename=FILE
+                           write output to FILE
+     -m MODE, --mode=MODE  interaction mode: novice, intermediate, or expert
+                           [default: intermediate]
+
+     Dangerous Options:
+       Caution: use these options at your own risk.  It is believed that some
+       of them bite.
+
+       -g                  Group option.
+
+     Debug Options:
+       -d, --debug         Print debug information
+       -s, --sql           Print all SQL statements executed
+       -e                  Print every action done
+
+もう1つの、特にオプショングループをプログラムから操作するときに利用できる
+メソッドがあります:
+
+.. method:: OptionParser.get_option_group(opt_str)
+
+   *opt_str* と同じ title か long description を持っている :class:`OptionGroup`
+   があれば返します。
 
 .. _optparse-printing-version-string:
 
@@ -543,10 +628,10 @@ store アクション
 
    parser = OptionParser(usage="%prog [-f] [-q]", version="%prog 1.0")
 
-``"%prog"`` は *usage* と同じような展開を受けます。その他にも ``version`` には何でも好きな内容を入れられます。
-``version`` を指定した場合、 :mod:`optparse` は自動的に ``"--version"`` オプションをパーザに渡します。
-コマンドライン中に ``"--version"`` が見つかると、 :mod:`optparse` は ``version`` 文字列を展開して
-(``"%prog"`` を置き換えて) 標準出力に出力し、プログラムを終了します。
+``%prog`` は *usage* と同じような展開を受けます。その他にも ``version`` には何でも好きな内容を入れられます。
+``version`` を指定した場合、 :mod:`optparse` は自動的に ``--version`` オプションをパーザに渡します。
+コマンドライン中に ``--version`` が見つかると、 :mod:`optparse` は ``version`` 文字列を展開して
+(``%prog`` を置き換えて) 標準出力に出力し、プログラムを終了します。
 
 例えば、 ``/usr/bin/foo`` という名前のスクリプトなら::
 
@@ -561,14 +646,9 @@ store アクション
 
 .. method:: OptionParser.print_version(file=None)
 
-   .. Print the version message for the current program (``self.version``) to
-      *file* (default stdout).  As with :meth:`print_usage`, any occurrence
-      of ``"%prog"`` in ``self.version`` is replaced with the name of the current
-      program.  Does nothing if ``self.version`` is empty or undefined.
-
    現在のプログラムのバージョン (``self.version``) を *file* (デフォルト: stdout)
    へ表示します。 :meth:`print_usage` と同じく、 ``self.version`` の中の全ての
-   ``"%prog"`` が現在のプログラム名に置き換えられます。
+   ``%prog`` が現在のプログラム名に置き換えられます。
    ``self.version`` が空文字列だだったり未定義だったときは何もしません。
 
 .. method:: OptionParser.get_version()
@@ -593,8 +673,8 @@ store アクション
 
 もっと重要なのはユーザ側のエラーの処理です。というのも、ユーザの操作エラーという\
 ものはコードの安定性に関係なく起こるからです。 :mod:`optparse` は、誤ったオプション引数の指定 (整数を引数にとるオプション
-:option:`-n` に対して ``"-n4x"`` と指定してしまうなど) や、引数を指定し忘れた場合 (:option:`-n`
-が何らかの引数をとるオプションであるのに、 ``"-n"`` が引数の末尾に来ている場合) といった、ユーザによるエラーを自動的に\
+``-n`` に対して ``-n 4x`` と指定してしまうなど) や、引数を指定し忘れた場合 (``-n``
+が何らかの引数をとるオプションであるのに、 ``-n`` が引数の末尾に来ている場合) といった、ユーザによるエラーを自動的に\
 検出します。また、アプリケーション側で定義されたエラー条件が起きた場合、
 :func:`OptionParser.error` を呼び出してエラーを通知できます::
 
@@ -606,17 +686,17 @@ store アクション
 いずれの場合にも :mod:`optparse` はエラーを同じやり方で処理します。すなわち、
 プログラムの使用法メッセージとエラーメッセージを標準エラー出力に出力して、終了ステータス 2 でプログラムを終了させます。
 
-上に挙げた最初の例、すなわち整数を引数にとるオプションにユーザが ``"4x"`` を指定した場合を考えてみましょう::
+上に挙げた最初の例、すなわち整数を引数にとるオプションにユーザが ``4x`` を指定した場合を考えてみましょう::
 
    $ /usr/bin/foo -n 4x
-   usage: foo [options]
+   Usage: foo [options]
 
    foo: error: option -n: invalid integer value: '4x'
 
 値を全く指定しない場合には、以下のようになります::
 
    $ /usr/bin/foo -n
-   usage: foo [options]
+   Usage: foo [options]
 
    foo: error: -n option requires an argument
 
@@ -694,7 +774,7 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
 
    ``version`` (デフォルト: ``None``)
       ユーザがバージョンオプションを与えたときに表示されるバージョン文字列です。 ``version`` に真の値を与えると、 :mod:`optparse`
-      は自動的に単独のオプション文字列 ``"--version"`` とともにバージョンオプションを追加します。部分文字列 ``"%prog"`` は
+      は自動的に単独のオプション文字列 ``--version`` とともにバージョンオプションを追加します。部分文字列 ``%prog`` は
       ``usage`` と同様に展開されます。
 
    ``conflict_handler`` (デフォルト: ``"error"``)
@@ -710,11 +790,11 @@ OptionParser のコンストラクタの引数はどれも必須ではありま�
       はこの目的のためにすぐ使えるクラスを二つ提供しています。 IndentedHelpFormatter と TitledHelpFormatter がそれです。
 
    ``add_help_option`` (デフォルト: ``True``)
-      もし真ならば、 :mod:`optparse` はパーザにヘルプオプションを (オプション文字列 ``"-h"`` と ``"--help"`` とともに)
-      追加します。
+      もし真ならば、 :mod:`optparse` はパーザにヘルプオプションを (オプション文字列
+      ``-h`` と ``--help`` とともに)追加します。
 
    ``prog``
-      ``usage`` や ``version`` の中の ``"%prog"`` を展開するときに
+      ``usage`` や ``version`` の中の ``%prog`` を展開するときに
       ``os.path.basename(sys.argv[0])`` の代わりに使われる文字列です。
 
    ``epilog`` (default: ``None``)
@@ -762,7 +842,7 @@ meth:``OptionParser.add_option()`` を使う方法です。
 オプションの定義
 ^^^^^^^^^^^^^^^^
 
-各々の :class:`Option` インスタンス、は :option:`-f` や :option:`--file`
+各々の :class:`Option` インスタンス、は ``-f`` や ``--file``
 といった同義のコマンドラインオプションからなる集合を表現しています。
 一つの :class:`Option` には任意の数のオプションを短い形式でも長い形式でも指定できます。
 ただし、少なくとも一つは指定せねばなりません。
@@ -941,7 +1021,7 @@ meth:``OptionParser.add_option()`` を使う方法です。
 
 .. attribute:: Option.help
 
-   ユーザが :attr:`~Option.help` オプション(``"--help"`` のような)を指定
+   ユーザが :attr:`~Option.help` オプション(``--help`` のような)を指定
    したときに表示される、使用可能な全オプションのリストの中のこのオプションに
    関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
    オプションを隠すには特殊な値 :data:`optparse.SUPPRESS_HELP` を使います。
@@ -981,9 +1061,9 @@ meth:``OptionParser.add_option()`` を使う方法です。
 
   :attr:`~Option.dest` を指定しない場合、 :mod:`optparse` は保存先を最初の
   長い形式のオプション文字列から導出します
-  (例えば、 ``"--foo-bar"`` は ``foo_bar`` になります)。長い形式の
+  (例えば、 ``--foo-bar`` は ``foo_bar`` になります)。長い形式の
   オプション文字列がない場合、 :mod:`optparse` は最初の短い形式のオプション
-  から保存先の変数名を導出します (``"-f"`` は ``f`` になります)。
+  から保存先の変数名を導出します (``-f`` は ``f`` になります)。
 
   例えば::
 
@@ -1016,7 +1096,7 @@ meth:``OptionParser.add_option()`` を使う方法です。
      parser.add_option("--noisy",
                        action="store_const", const=2, dest="verbose")
 
-  とします。 ``"--noisy"`` が見つかると、 :mod:`optparse` は  ::
+  とします。 ``--noisy`` が見つかると、 :mod:`optparse` は  ::
 
      options.verbose = 2
 
@@ -1051,14 +1131,14 @@ meth:``OptionParser.add_option()`` を使う方法です。
 
      parser.add_option("-t", "--tracks", action="append", type="int")
 
-  ``"-t3"`` がコマンドライン上で見つかると、 :mod:`optparse` は::
+  ``-t3`` がコマンドライン上で見つかると、 :mod:`optparse` は::
 
      options.tracks = []
      options.tracks.append(int("3"))
 
   と同等の処理を行います。
 
-  その後、 ``"--tracks=4"`` が見つかると::
+  その後、 ``--tracks=4`` が見つかると::
 
      options.tracks.append(int("4"))
 
@@ -1082,14 +1162,14 @@ meth:``OptionParser.add_option()`` を使う方法です。
 
      parser.add_option("-v", action="count", dest="verbosity")
 
-  コマンドライン上で最初に ``"-v"`` が見つかると、 :mod:`optparse` は::
+  コマンドライン上で最初に ``-v`` が見つかると、 :mod:`optparse` は::
 
      options.verbosity = 0
      options.verbosity += 1
 
   と同等の処理を行います。
 
-  以後、 ``"-v"`` が見つかるたびに、  ::
+  以後、 ``-v`` が見つかるたびに、  ::
 
      options.verbosity += 1
 
@@ -1134,15 +1214,15 @@ meth:``OptionParser.add_option()`` を使う方法です。
                        help="Input file to read data from")
      parser.add_option("--secret", help=SUPPRESS_HELP)
 
-  :mod:`optparse` がコマンドライン上に ``"-h"`` または  ``"--help"`` を
+  :mod:`optparse` がコマンドライン上に ``-h`` または  ``--help`` を
   見つけると、以下のようなヘルプメッセージを標準出力に出力します
   (``sys.argv[0]`` は ``"foo.py"`` だとします)。
 
   .. code-block:: text
 
-     usage: foo.py [options]
+     Usage: foo.py [options]
 
-     options:
+     Options:
        -h, --help        Show this help message and exit
        -v                Be moderately verbose
        --file=FILENAME   Input file to read data from
@@ -1250,12 +1330,8 @@ OptionParser を作成してオプションを追加していく上で大事な�
 
 .. method:: OptionParser.disable_interspersed_args()
 
-   .. Set parsing to stop on the first non-option.  For example, if ``"-a"`` and
-      ``"-b"`` are both simple options that take no arguments, :mod:`optparse`
-      normally accepts this syntax:
-
    オプションで無い最初の引数を見つけた時点でパースを止めるように設定します。
-   例えば、 ``"-a"`` と ``"-b"`` が両方とも引数を取らないシンプルなオプション
+   例えば、 ``-a`` と ``-b`` が両方とも引数を取らないシンプルなオプション
    だったとすると、 :mod:`optparse` は通常次の構文を受け付け、 ::
 
       prog -a arg1 -b arg2
@@ -1295,7 +1371,7 @@ OptionParser を作成してオプションを追加していく上で大事な�
 
 .. method:: OptionParser.has_option(opt_str)
 
-   :class:`OptionParser` に(``"-q"`` や ``"--verbose"`` のような) オプション
+   :class:`OptionParser` に(``-q`` や ``--verbose`` のような) オプション
    ``opt_str`` がある場合、真を返します。
 
 .. method:: OptionParser.remove_option(opt_str)
@@ -1345,12 +1421,12 @@ OptionParser を作成してオプションを追加していく上で大事な�
    parser.add_option("-n", "--dry-run", ..., help="do no harm")
    parser.add_option("-n", "--noisy", ..., help="be noisy")
 
-この時点で、 :mod:`optparse` はすでに追加済のオプションがオプション文字列 ``"-n"`` を使っていることを検出します。
+この時点で、 :mod:`optparse` はすでに追加済のオプションがオプション文字列 ``-n`` を使っていることを検出します。
 ``conflict_handler`` が ``"resolve"`` なので、 :mod:`optparse` は既に追加済のオプションリストの方から
-``"-n"`` を除去して問題を解決します。従って、 ``"-n"`` の除去されたオプションは ``"--dry-run"`` だけでしか有効にできなく
+``-n`` を除去して問題を解決します。従って、 ``-n`` の除去されたオプションは ``--dry-run`` だけでしか有効にできなく
 なります。ユーザがヘルプ文字列を要求した場合、問題解決の結果を反映したメッセージが出力されます::
 
-   options:
+   Options:
      --dry-run     do no harm
      [...]
      -n, --noisy   be noisy
@@ -1361,10 +1437,10 @@ OptionParser を作成してオプションを追加していく上で大事な�
 
    parser.add_option("--dry-run", ..., help="new dry-run option")
 
-を行った時点で、最初の :option:`-n/--dry-run` オプションはもはやアクセスできなくなります。このため、 :mod:`optparse` は
+を行った時点で、最初の ``-n``/``--dry-run`` オプションはもはやアクセスできなくなります。このため、 :mod:`optparse` は
 オプションを消去してしまい、ヘルプテキスト::
 
-   options:
+   Options:
      [...]
      -n, --noisy   be noisy
      --dry-run     new dry-run option
@@ -1401,13 +1477,8 @@ OptionParser にはその他にも幾つかの公開されたメソッドがあ�
 
 .. method:: OptionParser.print_usage(file=None)
 
-   .. Print the usage message for the current program (``self.usage``) to *file*
-      (default stdout).  Any occurrence of the string ``"%prog"`` in ``self.usage``
-      is replaced with the name of the current program.  Does nothing if
-      ``self.usage`` is empty or not defined.
-
    現在のプログラムの使用法メッセージ (``self.usage``) を *file* (デフォルト:
-   stdout) に表示します。 ``self.usage`` 内にある全ての ``"%prog"`` という文字列は
+   stdout) に表示します。 ``self.usage`` 内にある全ての ``%prog`` という文字列は
    現在のプログラム名に置換されます。 ``self.usage`` が空もしくは未定義の時は
    何もしません。
 
@@ -1482,8 +1553,8 @@ callback オプションを最も簡単に定義するには、 :meth:`OptionPar
    parser.add_option("-c", action="callback", callback=my_callback)
 
 ``callback`` は関数 (または呼び出し可能オブジェクト)なので、callback オプションを定義する時にはあらかじめ
-``my_callback()`` を定義しておかねばなりません。この単純なケースでは、 :mod:`optparse` は :option:`-c` が
-何らかの引数をとるかどうか判別できず、通常は :option:`-c` が引数を伴わないことを意味します --- 知りたいことはただ単に
+``my_callback()`` を定義しておかねばなりません。この単純なケースでは、 :mod:`optparse` は ``-c`` が
+何らかの引数をとるかどうか判別できず、通常は ``c`` が引数を伴わないことを意味します --- 知りたいことはただ単に
 :option:`-c` がコマンドライン上に現れたどうかだけです。とはいえ、場合によっては、自分のコールバック関数に
 任意の個数のコマンドライン引数を消費させたいこともあるでしょう。これがコールバック関数をトリッキーなものにしています;
 これについてはこの節の後の方で説明します。
@@ -1535,7 +1606,7 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 ``opt_str``
    は、コールバック呼び出しのきっかけとなったコマンドライン上のオプション文字列です。 (長い形式のオプションに対する省略形が使われている場合、 *opt*
-   は完全な、正式な形のオプション文字列となります ---  例えば、ユーザが :option:`--foobar` の短縮形として ``"--foo"``
+   は完全な、正式な形のオプション文字列となります ---  例えば、ユーザが :option:`--foobar` の短縮形として ``--foo``
    をコマンドラインに入力した時には、 *opt_str*  は ``"--foobar"`` となります。)
 
 ``value``
@@ -1606,7 +1677,8 @@ callback オプションを定義する場合には、他にもいくつかオ�
 コールバックの例 2: オプションの順番をチェックする
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-もう少し面白みのある例を示します: この例では、 ``"-b"`` を発見して、その後で ``"-a"`` がコマンドライン中に現れた場合にはエラーになります。
+もう少し面白みのある例を示します: この例では、 ``-b`` を発見して、その後で
+``-a`` がコマンドライン中に現れた場合にはエラーになります。
 ::
 
    def check_order(option, opt_str, value, parser):
@@ -1623,7 +1695,7 @@ callback オプションを定義する場合には、他にもいくつかオ�
 コールバックの例 3: オプションの順番をチェックする (汎用的)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-このコールバック (フラグを立てるが、 ``"-b"`` が既に指定されていればエラーになる)
+このコールバック (フラグを立てるが、 ``-b`` が既に指定されていればエラーになる)
 を同様の複数のオプションに対して再利用したければ、もう少し作業する必要があります: エラーメッセージとセットされるフラグを一般化しなければなりません。  ::
 
    def check_order(option, opt_str, value, parser):
@@ -1689,14 +1761,14 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 あるオプションに可変個の引数を持たせたいと考えているなら、問題はいささか手強くなってきます。この場合、 :mod:`optparse`
 では該当する組み込みのオプション解析機能を提供していないので、自分でコールバックを書かねばなりません。さらに、 :mod:`optparse`
-が普段処理している、伝統的な Unix コマンドライン解析における難題を自分で解決せねばなりません。とりわけ、コールバック関数では引数が裸の ``"--"``
-や ``"-"`` の場合における慣習的な処理規則:
+が普段処理している、伝統的な Unix コマンドライン解析における難題を自分で解決せねばなりません。とりわけ、コールバック関数では引数が裸の ``--``
+や ``-`` の場合における慣習的な処理規則:
 
-* either ``"--"`` or ``"-"`` can be option arguments
+* either ``--`` or ``-`` can be option arguments
 
-* 裸の ``"--"`` (何らかのオプションの引数でない場合): コマンドライン処理を停止し、 ``"--"`` を無視します。
+* 裸の ``--`` (何らかのオプションの引数でない場合): コマンドライン処理を停止し、 ``--`` を無視します。
 
-* 裸の ``"-"`` (何らかのオプションの引数でない場合): コマンドライン処理を停止しますが、 ``"-"`` は残します
+* 裸の ``-`` (何らかのオプションの引数でない場合): コマンドライン処理を停止しますが、 ``-`` は残します
   (``parser.largs`` に追加します)。
 
 を実装せねばなりません。
@@ -1767,7 +1839,7 @@ callback オプションを定義する場合には、他にもいくつかオ�
       def check_mytype(option, opt, value)
 
    ここで ``option`` は :class:`Option` のインスタンスであり、 ``opt`` は
-   オプション文字列(たとえば ``"-f"``)で、 ``value`` は望みの型として
+   オプション文字列(たとえば ``-f``)で、 ``value`` は望みの型として
    チェックされ変換されるべくコマンドラインで与えられる文字列です。
    ``check_mytype()`` は想定されている型 ``mytype`` のオブジェクトを
    返さなければなりません。型チェック関数から返される値は
@@ -1875,7 +1947,7 @@ Python の常として、良いマナーと常識以外にそうすることを�
 
 例えば、 ``"extend"`` アクションというのを追加してみましょう。このアクションは標準的な ``"append"``
 アクションと似ていますが、コマンドラインから一つだけ値を読み取って既存のリストに追加するのではなく、複数の値をコンマ区切りの文字列として
-読み取ってそれらで既存のリストを拡張します。すなわち、もし ``"--names"`` が ``"string"`` 型の ``"extend"``
+読み取ってそれらで既存のリストを拡張します。すなわち、もし ``--names`` が ``"string"`` 型の ``"extend"``
 オプションだとすると、次のコマンドライン  ::
 
    --names=foo,bar --names blah --names ding,dong
