@@ -1,4 +1,3 @@
-
 .. _debugger:
 
 :mod:`pdb` --- Python デバッガ
@@ -78,9 +77,9 @@
    -> print spam
    (Pdb)
 
+
 モジュールは以下の関数を定義しています。
 それぞれが少しづつ違った方法でデバッガに入ります:
-
 
 .. function:: run(statement[, globals[, locals]])
 
@@ -127,7 +126,38 @@
 
 .. function:: pm()
 
-   ``sys.last_traceback`` のトレースバックの事後解析デバッギングに入ります。
+   :data:``sys.last_traceback`` のトレースバックの事後解析デバッギングに入ります。
+
+
+``run*`` 関数と :func:`set_trace` は、 :class:`Pdb` クラスをインスタンス化して
+同名のメソッドを実行することのエイリアス関数です。
+それ以上の機能を利用したい場合は、インスタンス化を自分でしなければなりません。
+
+.. class:: Pdb(completekey='tab', stdin=None, stdout=None, skip=None)
+
+   :class:`Pdb` はデバッガークラスです。
+
+   *completekey*, *stdin*, *stdout* 引数は、基底にある :class:`cmd.Cmd`
+   クラスに渡されます。そちらの解説を参照してください。
+
+   *skip* 引数が指定された場合、 glob スタイルのモジュール名パターンの iterable
+   (イテレート可能オブジェクト) でなければなりません。
+   デバッガはこのパターンのどれかにマッチするモジュールに属するフレームには
+   ステップ・インしません。 [1]_
+
+   *skip* を使ってトレースする呼び出しの例::
+
+      import pdb; pdb.Pdb(skip=['django.*']).set_trace()
+
+   .. versionadded:: 2.7
+      *skip* 引数
+
+   .. method:: run(statement[, globals[, locals]])
+               runeval(expression[, globals[, locals]])
+               runcall(function[, argument, ...])
+               set_trace()
+
+      上で説明された関数のドキュメントを参照してください。
 
 
 .. _debugger-commands:
@@ -213,7 +243,8 @@ tbreak [[*filename*:]\ *lineno* | *function*\ [, *condition*]]
    一時的なブレークポイントで、最初にそこに達したときに自動的に取り除かれます。
    引数は break と同じです。
 
-cl(ear) [*bpnumber* [*bpnumber ...*]]
+cl(ear) [*filename:lineno* | *bpnumber* [*bpnumber ...*]]
+   *filename:lineno* 引数を与えると、その行にある全てのブレークポイントを解除します。
    スペースで区切られたブレークポイントナンバーのリストを与えると、
    それらのブレークポイントを解除します。
    引数なしの場合は、すべてのブレークポイントを解除します
@@ -372,3 +403,9 @@ run [*args* ...]
 
 q(uit)
    デバッガを終了します。実行しているプログラムは中断されます。
+
+
+.. rubric:: 脚注
+
+.. [1] フレームが属するモジュールは、そのフレームのグローバルの
+       ``__name__`` によって決定されます。
