@@ -2,14 +2,11 @@
   Unicode HOWTO
 *****************
 
-:Release: 1.02
+:Release: 1.03
 
-..
-  This HOWTO discusses Python's support for Unicode, and explains various problems
-  that people commonly encounter when trying to work with Unicode.
-
-この HOWTO 文書は Python の Unicode サポートについて論じ、
+この HOWTO 文書は Python 2.x の Unicode サポートについて論じ、
 さらに Unicode を使おうというときによくでくわす多くの問題について説明します。
+(この HOWTO はまだ Python 3.x をカバーしていません)
 
 ..
   Introduction to Unicode
@@ -281,11 +278,9 @@ U+12ca はコードポイントで、特定の文字を示しています; こ�
 4. 多くのインターネット標準がテキストデータとして定義されていて、
    それらはゼロバイトの埋め込まれた内容を扱うことができません。
 
-..
-  generally people don't use this encoding, instead choosing other encodings that
-  are more efficient and convenient.
-
 一般的にこのエンコーディングは使わず、変わりにより効率的で便利な他のエンコーディングが選ばれています。
+UTF-8 はたぶん最も一般的にサポートされているエンコーディングです。
+このエンコーディングについては後で説明します。
 
 ..
   Encodings don't have to handle every possible Unicode character, and most
@@ -435,12 +430,9 @@ Wikipedia の記事はしばしば役に立ちます; 試しに "character encod
 <http://en.wikipedia.org/wiki/Character_encoding> の記事と
 UTF-8 <http://en.wikipedia.org/wiki/UTF-8> の記事を読んでみて下さい。
 
-..
-  Python's Unicode Support
-  ========================
 
-Python の Unicode サポート
-==========================
+Python 2.x の Unicode サポート
+===============================
 
 ..
   Now that you've learned the rudiments of Unicode, we can look at Python's
@@ -524,7 +516,7 @@ Python 内部では Unicode 文字列は16-bit, 32-bit 整数のどちらかで�
   synonyms for the same encoding.
 
 エンコーディングはエンコーディング名を含む文字列によって指定されます。
-Python 2.4 ではエンコーディングはおよそ100に及びます; 
+Python 2.7 ではエンコーディングはおよそ100に及びます; 
 一覧は Python ライブラリレファレンスの :ref:`standard-encodings` を参照して下さい。
 いくつかのエンコーディングは複数の名前を持っています; 例えば 'latin-1', 'iso_8859_1',
 そして '8859' これらは全て同じエンコーディングの別称です。
@@ -768,10 +760,18 @@ Python 2.4 では 127 より大きい文字でも動作しますが、警告を�
 
 これを Python 2.4 で動作させたときには、以下の警告が出力されます::
 
-    amk:~$ python p263.py
+    amk:~$ python2.4 p263.py
     sys:1: DeprecationWarning: Non-ASCII character '\xe9'
          in file p263.py on line 2, but no encoding declared;
          see http://www.python.org/peps/pep-0263.html for details
+
+Python 2.5 以降ではより厳格になり、文法エラーになります::
+
+    amk:~$ python2.5 p263.py
+    File "/tmp/p263.py", line 2
+    SyntaxError: Non-ASCII character '\xc3' in file /tmp/p263.py
+      on line 2, but no encoding declared; see
+      http://www.python.org/peps/pep-0263.html for details
 
 
 ..
@@ -823,15 +823,6 @@ Unicode 仕様はコードポイントについての情報データベースを
     4 33af So SQUARE RAD OVER S SQUARED
     1000.0
 
-..
-  The category codes are abbreviations describing the nature of the character.
-  These are grouped into categories such as "Letter", "Number", "Punctuation", or
-  "Symbol", which in turn are broken up into subcategories.  To take the codes
-  from the above output, ``'Ll'`` means 'Letter, lowercase', ``'No'`` means
-  "Number, other", ``'Mn'`` is "Mark, nonspacing", and ``'So'`` is "Symbol,
-  other".  See
-  <http://unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values> for a
-  list of category codes.
 
 カテゴリコードは文字の性質を簡単に説明するものです。
 カテゴリの分類は "Letter", "Number", "Punctuation" または "Symbol" で、
@@ -840,7 +831,7 @@ Unicode 仕様はコードポイントについての情報データベースを
 ``'No'`` は "Number, other" を意味しています、 ``'Mn'`` は "Mark, nonspacing" で
 ``'So'`` は "Symbol, other" です。
 カテゴリコードの一覧は
-<http://unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values> 
+<http://www.unicode.org/reports/tr44/#General_Category_Values>
 を参照して下さい。
 
 ..
@@ -1244,7 +1235,10 @@ several links.
 
 Version 1.02: posted August 16 2005.  Corrects factual errors.
 
+Version 1.03: posted June 20 2010.  Notes that Python 3.x is not covered,
+and that the HOWTO only covers 2.x.
 
+.. comment Describe Python 3.x support (new section? new document?)
 .. comment Additional topic: building Python w/ UCS2 or UCS4 support
 .. comment Describe obscure -U switch somewhere?
 .. comment Describe use of codecs.StreamRecoder and StreamReaderWriter
