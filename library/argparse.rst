@@ -1545,11 +1545,11 @@ FileType オブジェクト
 
 .. method:: ArgumentParser.add_argument_group(title=None, description=None)
 
-   By default, :class:`ArgumentParser` groups command-line arguments into
-   "positional arguments" and "optional arguments" when displaying help
-   messages. When there is a better conceptual grouping of arguments than this
-   default one, appropriate groups can be created using the
-   :meth:`add_argument_group` method::
+   デフォルトでは、 :class:`ArgumentParser` はヘルプメッセージを表示するときに、
+   コマンドライン引数を "positional arguments"(位置引数) と
+   "optional arguments"(オプション引数) にグループ化します。
+   このデフォルトの動作よりも良い引数のグループ化方法がある場合、
+   :meth:`add_argument_group` メソッドで適切なグループを作成できます::
 
      >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
      >>> group = parser.add_argument_group('group')
@@ -1562,13 +1562,13 @@ FileType オブジェクト
        bar    bar help
        --foo FOO  foo help
 
-   The :meth:`add_argument_group` method returns an argument group object which
-   has an :meth:`~ArgumentParser.add_argument` method just like a regular
-   :class:`ArgumentParser`.  When an argument is added to the group, the parser
-   treats it just like a normal argument, but displays the argument in a
-   separate group for help messages.  The :meth:`add_argument_group` method
-   accepts *title* and *description* arguments which can be used to
-   customize this display::
+   :meth:`add_argument_group` メソッドは、通常の :class:`ArgumentParser`
+   と同じような :meth:`~ArgumentParser.add_argument` メソッドを持つ
+   引数グループオブジェクトを返します。
+   引数がグループに追加された時、パーサーはその引数を通常の引数のように扱いますが、
+   ヘルプメッセージではその引数を分離されたグループの中に表示します。
+   :meth:`add_argument_group` メソッドには、この表示をカスタマイズするための
+   *title* と *description* 引数があります::
 
      >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
      >>> group1 = parser.add_argument_group('group1', 'group1 description')
@@ -1588,18 +1588,19 @@ FileType オブジェクト
 
        --bar BAR  bar help
 
-   Note that any arguments not your user defined groups will end up back in the
-   usual "positional arguments" and "optional arguments" sections.
+   ユーザー定義グループ以外の全ての引数は通常の "positional arguments" と
+   "optional arguments" セクションに表示されます。
 
 
-Mutual exclusion
-^^^^^^^^^^^^^^^^
+.. Mutual exclusion
+
+相互排他
+^^^^^^^^^^^^
 
 .. method:: add_mutually_exclusive_group(required=False)
 
-   Create a mutually exclusive group. :mod:`argparse` will make sure that only
-   one of the arguments in the mutually exclusive group was present on the
-   command line::
+   相互排他グループを作ります。 :mod:`argparse` は相互排他グループの中で
+   ただ1つの引数のみが存在することを確認します::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> group = parser.add_mutually_exclusive_group()
@@ -1613,9 +1614,8 @@ Mutual exclusion
      usage: PROG [-h] [--foo | --bar]
      PROG: error: argument --bar: not allowed with argument --foo
 
-   The :meth:`add_mutually_exclusive_group` method also accepts a *required*
-   argument, to indicate that at least one of the mutually exclusive arguments
-   is required::
+   :meth:`add_mutually_exclusive_group` メソッドは、その相互排他引数のどれか
+   1つを選ぶことが要求されることを示す *required* 引数を取ります::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> group = parser.add_mutually_exclusive_group(required=True)
@@ -1625,21 +1625,22 @@ Mutual exclusion
      usage: PROG [-h] (--foo | --bar)
      PROG: error: one of the arguments --foo --bar is required
 
-   Note that currently mutually exclusive argument groups do not support the
-   *title* and *description* arguments of
-   :meth:`~ArgumentParser.add_argument_group`.
+   現在のところ、相互排他引数グループは
+   :meth:`~ArgumentParser.add_argument_group` の *title* と *description*
+   引数をサポートしていません。
 
 
-Parser defaults
-^^^^^^^^^^^^^^^
+.. Parser defaults
+
+パーサーのデフォルト値
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.set_defaults(**kwargs)
 
-   Most of the time, the attributes of the object returned by :meth:`parse_args`
-   will be fully determined by inspecting the command-line args and the argument
-   actions.  :meth:`set_defaults` allows some additional
-   attributes that are determined without any inspection of the command line to
-   be added::
+   ほとんどの場合、 :meth:`parse_args` が返すオブジェクトの属性はコマンドライン
+   引数の内容と引数のアクションによってのみ決定されます。 :meth:`set_defaults`
+   を使うと与えられたコマンドライン引数の内容によらず追加の属性を決定する
+   ことが可能です::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('foo', type=int)
@@ -1647,7 +1648,7 @@ Parser defaults
      >>> parser.parse_args(['736'])
      Namespace(bar=42, baz='badger', foo=736)
 
-   Note that parser-level defaults always override argument-level defaults::
+   パーサーレベルのデフォルト値は常に引数レベルのデフォルト値をオーバーライドします::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', default='bar')
@@ -1655,15 +1656,14 @@ Parser defaults
      >>> parser.parse_args([])
      Namespace(foo='spam')
 
-   Parser-level defaults can be particularly useful when working with multiple
-   parsers.  See the :meth:`~ArgumentParser.add_subparsers` method for an
-   example of this type.
+   パーサーレベルの default は、複数のパーサーを扱うときに特に便利です。
+   このタイプの例については :meth:`~ArgumentParser.add_subparsers` メソッドを
+   参照してください。
 
 .. method:: ArgumentParser.get_default(dest)
 
-   Get the default value for a namespace attribute, as set by either
-   :meth:`~ArgumentParser.add_argument` or by
-   :meth:`~ArgumentParser.set_defaults`::
+   :meth:`~ArgumentParser.add_argument` か :meth:`~ArgumentParser.set_defaults`
+   によって指定された、 namespace の属性のデフォルト値を取得します::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', default='badger')
@@ -1671,50 +1671,54 @@ Parser defaults
      'badger'
 
 
-Printing help
+.. Printing help
+
+ヘルプの表示
 ^^^^^^^^^^^^^
 
-In most typical applications, :meth:`~ArgumentParser.parse_args` will take
-care of formatting and printing any usage or error messages.  However, several
-formatting methods are available:
+ほとんどの典型的なアプリケーションでは、 :meth:`~ArgumentParser.parse_args`
+が使用法やエラーメッセージのフォーマットと表示について面倒を見ます。
+しかし、いくつかのフォーマットメソッドが利用できます:
 
 .. method:: ArgumentParser.print_usage(file=None)
 
-   Print a brief description of how the :class:`ArgumentParser` should be
-   invoked on the command line.  If *file* is ``None``, :data:`sys.stdout` is
-   assumed.
+   :class:`ArgumentParser` がコマンドラインからどう実行されるべきかの
+   短い説明を表示します。
+   *file* が ``None`` の時は、 :data:`sys.stdout` に出力されます。
 
 .. method:: ArgumentParser.print_help(file=None)
 
-   Print a help message, including the program usage and information about the
-   arguments registered with the :class:`ArgumentParser`.  If *file* is
-   ``None``, :data:`sys.stdout` is assumed.
+   プログラムの使用法と :class:`ArgumentParser` に登録された引数についての
+   情報を含むヘルプメッセージを表示します。
+   *file* が ``None`` の時は、 :data:`sys.stdout` に出力されます。
 
-There are also variants of these methods that simply return a string instead of
-printing it:
+これらのメソッドの、表示する代わりにシンプルに文字列を返すバージョンも
+あります:
 
 .. method:: ArgumentParser.format_usage()
 
-   Return a string containing a brief description of how the
-   :class:`ArgumentParser` should be invoked on the command line.
+   :class:`ArgumentParser` がコマンドラインからどう実行されるべきかの
+   短い説明を格納した文字列を返します。
 
 .. method:: ArgumentParser.format_help()
 
-   Return a string containing a help message, including the program usage and
-   information about the arguments registered with the :class:`ArgumentParser`.
+   プログラムの使用法と :class:`ArgumentParser` に登録された引数についての
+   情報を含むヘルプメッセージを格納した文字列を返します。
 
 
-Partial parsing
+.. Partial parsing
+
+部分解析
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.parse_known_args(args=None, namespace=None)
 
-Sometimes a script may only parse a few of the command-line arguments, passing
-the remaining arguments on to another script or program. In these cases, the
-:meth:`~ArgumentParser.parse_known_args` method can be useful.  It works much like
-:meth:`~ArgumentParser.parse_args` except that it does not produce an error when
-extra arguments are present.  Instead, it returns a two item tuple containing
-the populated namespace and the list of remaining argument strings.
+ときどき、スクリプトがコマンドライン引数のいくつかだけを解析し、残りの引数は
+別のスクリプトやプログラムに渡すことがあります。こういった場合、
+:meth:`~ArgumentParser.parse_known_args` メソッドが便利です。
+これは :meth:`~ArgumentParser.parse_args` と同じように動作しますが、
+余分な引数が存在してもエラーを生成しません。代わりに、評価された namespace
+オブジェクトと、残りの引数文字列のリストからなる2要素タプルを返します。
 
 ::
 
@@ -1725,22 +1729,25 @@ the populated namespace and the list of remaining argument strings.
    (Namespace(bar='BAR', foo=True), ['--badger', 'spam'])
 
 
-Customizing file parsing
-^^^^^^^^^^^^^^^^^^^^^^^^
+.. Customizing file parsing
+
+ファイル解析のカスタマイズ
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.convert_arg_line_to_args(arg_line)
 
-   Arguments that are read from a file (see the *fromfile_prefix_chars*
-   keyword argument to the :class:`ArgumentParser` constructor) are read one
-   argument per line. :meth:`convert_arg_line_to_args` can be overriden for
-   fancier reading.
+   ファイルから引数を読み込む場合(:class:`ArgumentParser` コンストラクタの
+   *fromfile_prefix_chars* キーワード引数を参照)、1行につき1つの引数を
+   読み込みます。
+   :meth:`convert_arg_line_to_args` をオーバーライドしてこの動作を
+   カスタマイズすることができます。
 
-   This method takes a single argument *arg_line* which is a string read from
-   the argument file.  It returns a list of arguments parsed from this string.
-   The method is called once per line read from the argument file, in order.
+   このメソッドは、引数ファイルから読まれた文字列である1つの引数 *arg_line*
+   を受け取ります。そしてその文字列を解析した結果の引数のリストを返します。
+   このメソッドはファイルから1行読みこむごとに、順番に呼ばれます。
 
-   A useful override of this method is one that treats each space-separated word
-   as an argument::
+   このメソッドをオーバーライドする便利な例として、スペース区切りのワードを
+   1つの引数として扱います::
 
     def convert_arg_line_to_args(self, arg_line):
         for arg in arg_line.split():
@@ -1749,18 +1756,20 @@ Customizing file parsing
             yield arg
 
 
-Exiting methods
+.. Exiting methods
+
+終了メソッド
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.exit(status=0, message=None)
 
-   This method terminates the program, exiting with the specified *status*
-   and, if given, it prints a *message* before that.
+   このメソッドは、 *message* が指定されていればそれを表示した後、
+   指定された終了ステータス *status* でプログラムを終了します。
 
 .. method:: ArgumentParser.error(message)
 
-   This method prints a usage message including the *message* to the
-   standard output and terminates the program with a status code of 2.
+   このメソッドは *message* を含む使用法メッセージを標準出力に表示して、
+   終了ステータス 2 でプログラムを終了します。
 
 
 .. _argparse-from-optparse:
