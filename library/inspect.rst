@@ -389,23 +389,14 @@ Note:
 
 .. function:: getmoduleinfo(path)
 
-   .. Return a tuple of values that describe how Python will interpret the file
-   .. identified by *path* if it is a module, or ``None`` if it would not be
-   .. identified as a module.  The return tuple is ``(name, suffix, mode, mtype)``,
-   .. where *name* is the name of the module without the name of any enclosing
-   .. package, *suffix* is the trailing part of the file name (which may not be a
-   .. dot-delimited extension), *mode* is the :func:`open` mode that would be used
-   .. (``'r'`` or ``'rb'``), and *mtype* is an integer giving the type of the
-   .. module.  *mtype* will have a value which can be compared to the constants
-   .. defined in the :mod:`imp` module; see the documentation for that module for
-   .. more information on module types.
-
    *path* で指定したファイルがモジュールであれば、そのモジュールが Python でどのように解釈されるかを示す
-   ``(name, suffix, mode, mtype)`` のタプルを返します。モジュールでなければ ``None`` を返します。
+   ``(name, suffix, mode, module_type)`` のタプルを返します。
+   モジュールでなければ ``None`` を返します。
    *name* はパッケージ名を含まないモジュール名、 *suffix* はファイル名からモジュール名を除いた残りの部分
    (ドット区切りの拡張子であってはなりません)、
    *mode* は :func:`open` で指定されるファイルモード (``'r'`` または ``'rb'``)、
-   *mtype* は :mod:`imp` で定義している定数のいずれかが指定されます。
+   *module_type* はモジュールタイプを示す整数で、 :mod:`imp` で定義している
+   定数のいずれかが指定されます。
    モジュールタイプについては :mod:`imp` を参照してください。
 
 
@@ -438,9 +429,8 @@ Note:
 
 .. function:: isclass(object)
 
-   .. Return true if the object is a class.
-
-   オブジェクトがクラスの場合は真を返します。
+   オブジェクトが、ビルトインもしくは Python で作られたクラスの場合に
+   真を返します。
 
 
 .. function:: ismethod(object)
@@ -452,9 +442,8 @@ Note:
 
 .. function:: isfunction(object)
 
-   .. Return true if the object is a Python function or unnamed (:term:`lambda`) function.
-
-   オブジェクトが Python の関数、または無名関数 (:term:`lambda`) の場合は真を返します。
+   オブジェクトが Python の関数(:term:`labmda` 式で生成されたものを含む)
+   である場合に真を返します。
 
 
 .. function:: isgeneratorfunction(object)
@@ -500,9 +489,8 @@ Note:
 
 .. function:: isbuiltin(object)
 
-   .. Return true if the object is a built-in function.
-
-   オブジェクトが組み込み関数の場合は真を返します。
+   オブジェクトが組み込み関数か束縛済みのビルトインメソッドの場合に
+   真を返します。
 
 
 .. function:: isroutine(object)
@@ -523,28 +511,14 @@ Note:
 
 .. function:: ismethoddescriptor(object)
 
-   .. Return true if the object is a method descriptor, but not if :func:`ismethod`
-   .. or :func:`isclass` or :func:`isfunction` are true.
-
-   オブジェクトがメソッドデスクリプタの場合に真を返しますが、
-   :func:`ismethod`, :func:`isclass` または :func:`isfunction` が真の場合には真を返しません。
-
-
-   .. This is new as of Python 2.2, and, for example, is true of
-   .. ``int.__add__``. An object passing this test has a :attr:`__get__` attribute
-   .. but not a :attr:`__set__` attribute, but beyond that the set of attributes
-   .. varies.  :attr:`__name__` is usually sensible, and :attr:`__doc__` often is.
+   オブジェクトがメソッドデスクリプタであり、
+   :func:`ismethod`, :func:`isclass`, :func:`isfunction`, :func:`isbuiltin`
+   でない場合に真を返します。
 
    この機能は Python 2.2 から新たに追加されたもので、例えば ``int.__add__`` は真になります。
    このテストをパスするオブジェクトは :attr:`__get__` 属性を持ちますが :attr:`__set__` 属性を持ちません。
    それ以外の属性を持っているかもしれません。
    通常 :attr:`__name__` を持っていますし、しばしば :attr:`__doc__` も持っています。
-
-
-   .. Methods implemented via descriptors that also pass one of the other tests
-   .. return false from the :func:`ismethoddescriptor` test, simply because the
-   .. other tests promise more -- you can, e.g., count on having the
-   .. :attr:`im_func` attribute (etc) when an object passes :func:`ismethod`.
 
    デスクリプタを使って実装されたメソッドで、上記のいずれかのテストもパスしているものは、
    :func:`ismethoddescriptor` では偽を返します。これは単に他のテストの方がもっと確実だからです --
@@ -731,48 +705,29 @@ Note:
 
 .. function:: getargspec(func)
 
-   .. Get the names and default values of a Python function's arguments. A tuple of four
-   .. things is returned: ``(args, varargs, varkw, defaults)``. *args* is a list of
-   .. the argument names (it may contain nested lists). *varargs* and *varkw* are the
-   .. names of the ``*`` and ``**`` arguments or ``None``. *defaults* is a tuple of
-   .. default argument values or None if there are no default arguments; if this tuple
-   .. has *n* elements, they correspond to the last *n* elements listed in *args*.
-
-   Python 関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、次の値を返します: ``(args, varargs, varkw, defaults)`` 。
+   Python 関数の引数名とデフォルト値を取得します。戻り値は長さ4のタプルで、
+   次の値を返します: ``(args, varargs, keywords, defaults)`` 。
    *args* は引数名のリストです (ネストしたリストが格納される場合があります)。
-   *varargs* と *varkw* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
+   *varargs* と *keywords* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
    *defaults* は引数のデフォルト値のタプルか、デフォルト値がない場合は ``None`` です。
    このタプルに *n* 個の要素があれば、各要素は *args* の後ろから *n* 個分の引数のデフォルト値となります。
 
-
-   .. .. versionchanged:: 2.6
-   ..    Returns a :term:`named tuple` ``ArgSpec(args, varargs, keywords,
-   ..    defaults)``.
-
    .. versionchanged:: 2.6
-      ``ArgSpec(args, varargs, keywords, defaults)`` 形式の名前付きタプル (:term:`named tuple`) を返します。
+      ``ArgSpec(args, varargs, keywords, defaults)`` 形式の
+      名前付きタプル (:term:`named tuple`) を返します。
 
 
 .. function:: getargvalues(frame)
 
-   .. Get information about arguments passed into a particular frame. A tuple of four
-   .. things is returned: ``(args, varargs, varkw, locals)``. *args* is a list of the
-   .. argument names (it may contain nested lists). *varargs* and *varkw* are the
-   .. names of the ``*`` and ``**`` arguments or ``None``. *locals* is the locals
-   .. dictionary of the given frame.
-
-   指定したフレームに渡された引数の情報を取得します。戻り値は長さ4のタプルで、次の値を返します: ``(args, varargs, varkw, locals)`` 。
+   指定したフレームに渡された引数の情報を取得します。
+   戻り値は長さ4のタプルで、次の値を返します: ``(args, varargs, keywords, locals)``.
    *args* は引数名のリストです (ネストしたリストが格納される場合があります)。
-   *varargs* と *varkw* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
+   *varargs* と *keywords* は ``*`` 引数と ``**`` 引数の名前で、引数がなければ ``None`` となります。
    *locals* は指定したフレームのローカル変数の辞書です。
 
-
-   .. .. versionchanged:: 2.6
-   ..    Returns a :term:`named tuple` ``ArgInfo(args, varargs, keywords,
-   ..    locals)``.
-
    .. versionchanged:: 2.6
-      ``ArgInfo(args, varargs, keywords, locals)`` 形式の名前付きタプル (:term:`named tuple`) を返します。
+      ``ArgInfo(args, varargs, keywords, locals)`` 形式の
+      名前付きタプル (:term:`named tuple`) を返します。
 
 
 .. function:: formatargspec(args[, varargs, varkw, defaults, formatarg, formatvarargs, formatvarkw, formatvalue, join])
@@ -797,14 +752,34 @@ Note:
 
 .. function:: getmro(cls)
 
-   .. Return a tuple of class cls's base classes, including cls, in method resolution
-   .. order.  No class appears more than once in this tuple. Note that the method
-   .. resolution order depends on cls's type.  Unless a very peculiar user-defined
-   .. metatype is in use, cls will be the first element of the tuple.
-
    *cls* クラスの基底クラス (*cls* 自身も含む) を、メソッドの優先順位順に並べたタプルを返します。
    結果のリスト内で各クラスは一度だけ格納されます。メソッドの優先順位はクラスの型によって異なります。
    非常に特殊なユーザ定義のメタクラスを使用していない限り、 *cls* が戻り値の先頭要素となります。
+
+.. function:: getcallargs(func[, *args][, **kwds])
+
+   *args* と *kwds* を、 Python の関数もしくはメソッド *func* を呼び出した
+   場合と同じように引数名に束縛します。束縛済みメソッド(bound method)の場合、
+   最初の引数(慣習的に ``self`` という名前が付けられます)にも、関連づけられた
+   インスタンスを束縛します。引数名 (``*`` や ``**`` 引数が存在すればその名前も)
+   に *args* と *kwds* からの値をマップした辞書を返します。
+   *func* を正しく呼び出せない場合、つまり ``func(*args, **kwds)`` が
+   シグネチャの不一致のために例外を投げるような場合には、それと同じ型で
+   同じか似ているメッセージの例外を発生させます。例::
+
+    >>> from inspect import getcallargs
+    >>> def f(a, b=1, *pos, **named):
+    ...     pass
+    >>> getcallargs(f, 1, 2, 3)
+    {'a': 1, 'named': {}, 'b': 2, 'pos': (3,)}
+    >>> getcallargs(f, a=2, x=4)
+    {'a': 2, 'named': {'x': 4}, 'b': 1, 'pos': ()}
+    >>> getcallargs(f)
+    Traceback (most recent call last):
+    ...
+    TypeError: f() takes at least 1 argument (0 given)
+
+   .. versionadded:: 2.7
 
 
 .. _inspect-stack:
