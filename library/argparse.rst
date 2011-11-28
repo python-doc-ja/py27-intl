@@ -1353,24 +1353,26 @@ Python のイディオムを利用することができます::
 その他のユーティリティ
 ------------------------
 
-Sub-commands
-^^^^^^^^^^^^
+.. Sub-commands
+
+サブコマンド
+^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.add_subparsers()
 
-   Many programs split up their functionality into a number of sub-commands,
-   for example, the ``svn`` program can invoke sub-commands like ``svn
-   checkout``, ``svn update``, and ``svn commit``.  Splitting up functionality
-   this way can be a particularly good idea when a program performs several
-   different functions which require different kinds of command-line arguments.
-   :class:`ArgumentParser` supports the creation of such sub-commands with the
-   :meth:`add_subparsers` method.  The :meth:`add_subparsers` method is normally
-   called with no arguments and returns an special action object.  This object
-   has a single method, :meth:`~ArgumentParser.add_parser`, which takes a
-   command name and any :class:`ArgumentParser` constructor arguments, and
-   returns an :class:`ArgumentParser` object that can be modified as usual.
+   多くのプログラムは、その機能をサブコマンドへと分割します。
+   例えば ``svn`` プログラムは ``svn checkout``, ``svn update``, ``svn commit``
+   などのサブコマンドを利用できます。
+   機能をサブコマンドに分割するのは、プログラムがいくつかの異なった機能を持っていて、
+   それぞれが異なるコマンドライン引数を必要とする場合には良いアイデアです。
+   :class:`ArgumentParser` は :meth:`add_subparsers` メソッドによりサブコマンドを
+   サポートしています。 :meth:`add_subparsers` メソッドは通常引数なしに呼び出され、
+   特殊なアクションオブジェクトを返します。このオブジェクトには1つのメソッド
+   :meth:`~ArgumentParser.add_parser` があり、コマンド名と :class:`ArgumentParser`
+   コンストラクタの任意の引数を受け取り、通常の方法で操作できる
+   :class:`ArgumentParser` オブジェクトを返します。
 
-   Some example usage::
+   いくつかの使用例::
 
      >>> # create the top-level parser
      >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -1391,18 +1393,18 @@ Sub-commands
      >>> parser.parse_args(['--foo', 'b', '--baz', 'Z'])
      Namespace(baz='Z', foo=True)
 
-   Note that the object returned by :meth:`parse_args` will only contain
-   attributes for the main parser and the subparser that was selected by the
-   command line (and not any other subparsers).  So in the example above, when
-   the ``"a"`` command is specified, only the ``foo`` and ``bar`` attributes are
-   present, and when the ``"b"`` command is specified, only the ``foo`` and
-   ``baz`` attributes are present.
+   :meth:`parse_args` が返すオブジェクトにはメインパーサーとコマンドラインで
+   選択されたサブパーサーによる属性だけが設定されており、選択されなかった
+   サブコマンドのパーサーの属性が設定されていないことに注意してください。
+   なので、上の例では、 ``"a"`` コマンドが指定されたときは ``foo``, ``bar``
+   属性だけが存在し、 ``"b"`` コマンドが指定されたときは ``foo``, ``baz``
+   属性だけが存在しています。
 
-   Similarly, when a help message is requested from a subparser, only the help
-   for that particular parser will be printed.  The help message will not
-   include parent parser or sibling parser messages.  (A help message for each
-   subparser command, however, can be given by supplying the ``help=`` argument
-   to :meth:`add_parser` as above.)
+   同じように、サブパーサーにヘルプメッセージが要求された場合は、そのパーサーに
+   対するヘルプだけが表示されます。ヘルプメッセージには親パーサーや兄弟パーサーの
+   ヘルプメッセージを表示しません。
+   (ただし、各サブパーサーコマンドのヘルプメッセージは、上の例にもあるように
+   :meth:`add_parser` の ``help=`` 引数によって指定できます)
 
    ::
 
@@ -1434,9 +1436,9 @@ Sub-commands
        -h, --help     show this help message and exit
        --baz {X,Y,Z}  baz help
 
-   The :meth:`add_subparsers` method also supports ``title`` and ``description``
-   keyword arguments.  When either is present, the subparser's commands will
-   appear in their own group in the help output.  For example::
+   :meth:`add_subparsers` メソッドは ``title`` と ``description`` キーワード
+   引数もサポートしています。どちらかが存在する場合、サブパーサーのコマンドは
+   ヘルプ出力でそれぞれのグループの中に表示されます。例えば::
 
      >>> parser = argparse.ArgumentParser()
      >>> subparsers = parser.add_subparsers(title='subcommands',
@@ -1456,10 +1458,9 @@ Sub-commands
        {foo,bar}   additional help
 
 
-   One particularly effective way of handling sub-commands is to combine the use
-   of the :meth:`add_subparsers` method with calls to :meth:`set_defaults` so
-   that each subparser knows which Python function it should execute.  For
-   example::
+   サブコマンドを扱う1つの便利な方法は :meth:`add_subparsers` メソッドと
+   :meth:`set_defaults` を組み合わせて、各サブパーサーにどの Python 関数を
+   実行するかを教えることです。例えば::
 
      >>> # sub-command functions
      >>> def foo(args):
@@ -1493,12 +1494,12 @@ Sub-commands
      >>> args.func(args)
      ((XYZYX))
 
-   This way, you can let :meth:`parse_args` does the job of calling the
-   appropriate function after argument parsing is complete.  Associating
-   functions with actions like this is typically the easiest way to handle the
-   different actions for each of your subparsers.  However, if it is necessary
-   to check the name of the subparser that was invoked, the ``dest`` keyword
-   argument to the :meth:`add_subparsers` call will work::
+   こうすると、 :meth:`parse_args` が引数の解析が終わってから適切な関数を
+   呼び出すようになります。このように関数をアクションに関連付けるのは大抵
+   サブパーサーごとに異なるアクションを扱う最も簡単な方法です。
+   ただし、実行されたサブパーサーの名前を確認する必要がある場合は、
+   :meth:`add_subparsers` を呼び出すときに ``dest`` キーワードを指定する
+   ことができます::
 
      >>> parser = argparse.ArgumentParser()
      >>> subparsers = parser.add_subparsers(dest='subparser_name')
@@ -1510,24 +1511,26 @@ Sub-commands
      Namespace(subparser_name='2', y='frobble')
 
 
-FileType objects
-^^^^^^^^^^^^^^^^
+.. FileType objects
+
+FileType オブジェクト
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. class:: FileType(mode='r', bufsize=None)
 
-   The :class:`FileType` factory creates objects that can be passed to the type
-   argument of :meth:`ArgumentParser.add_argument`.  Arguments that have
-   :class:`FileType` objects as their type will open command-line args as files
-   with the requested modes and buffer sizes:
+   :class:`FileType` ファクトリは :meth:`ArgumentParser.add_argument` の
+   type 引数に渡すことができるオブジェクトを生成します。
+   type が :class:`FileType` オブジェクトである引数はコマンドライン引数を、
+   指定されたモードとバッファサイズでファイルとして開きます:
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--output', type=argparse.FileType('wb', 0))
    >>> parser.parse_args(['--output', 'out'])
    Namespace(output=<open file 'out', mode 'wb' at 0x...>)
 
-   FileType objects understand the pseudo-argument ``'-'`` and automatically
-   convert this into ``sys.stdin`` for readable :class:`FileType` objects and
-   ``sys.stdout`` for writable :class:`FileType` objects:
+   FileType オブジェクトは擬似引数 ``'-'`` を識別し、読み込み用の :class:`FileType`
+   であれば ``sys.stdin`` を、書き込み用の :class:`FileType` であれば ``sys.stdout``
+   に変換します:
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('infile', type=argparse.FileType('r'))
@@ -1535,7 +1538,9 @@ FileType objects
    Namespace(infile=<open file '<stdin>', mode 'r' at 0x...>)
 
 
-Argument groups
+.. Argument groups
+
+引数グループ
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.add_argument_group(title=None, description=None)
@@ -1760,8 +1765,10 @@ Exiting methods
 
 .. _argparse-from-optparse:
 
-Upgrading optparse code
------------------------
+.. Upgrading optparse code
+
+optparse からのアップグレード
+--------------------------------
 
 Originally, the :mod:`argparse` module had attempted to maintain compatibility
 with :mod:`optparse`.  However, :mod:`optparse` was difficult to extend
