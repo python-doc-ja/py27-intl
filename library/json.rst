@@ -7,7 +7,7 @@
 .. sectionauthor:: Bob Ippolito <bob@redivi.com>
 .. versionadded:: 2.6
 
-JSON (JavaScript Object Notation) <http://json.org> は JavaScript 文法
+`JSON (JavaScript Object Notation) <http://json.org>`_ は JavaScript 文法
 (ECMA-262 3rd edition) のサブセットで軽量のデータ交換形式として使われています。
 
 :mod:`json` の API は標準ライブラリの :mod:`marshal` や :mod:`pickle`
@@ -140,8 +140,8 @@ JSON オブジェクトのデコーディング方法を誂える::
    ``-Infinity``) を使うことなく :exc:`ValueError` になります。
 
    *indent* が非負の整数であれば、JSON の配列要素とオブジェクトメンバはその\
-   インデントレベルで見やすく表示されます。インデントレベルが 0
-   ならば改行だけが挿入されます。 ``None`` (デフォルト)
+   インデントレベルで見やすく表示されます。インデントレベルが 0 か負であれば
+   改行だけが挿入されます。 ``None`` (デフォルト)
    では最もコンパクトな表現が選択されます。
 
    *separators* がタプル ``(item_separator, dict_separator)`` ならば、
@@ -156,8 +156,14 @@ JSON オブジェクトのデコーディング方法を誂える::
 
    カスタマイズされた :class:`JSONEncoder` のサブクラス
    (たとえば追加の型を直列化するように :meth:`default` メソッドをオーバーライドしたもの)
-   を使うには、 *cls* キーワード引数に指定します。
+   を使うには、 *cls* キーワード引数に指定します;
+   指定しなければ :class:`JSONEncoder` が使われます。
 
+   .. note::
+
+      :mod:`pickle` や :mod:`marshal` と違って、JSON は枠付きのプロトコル (framed protocol) ではないので、
+      同じ *fp* に対して繰り返し :func:`dump` を呼び、
+      たくさんのオブジェクトを直列化しようとすると、不正な JSON ファイルが作られてしまいます。
 
 .. function:: dumps(obj[, skipkeys[, ensure_ascii[, check_circular[, allow_nan[, cls[, indent[, separators[, encoding[, default[, **kw]]]]]]]]]])
 
@@ -167,7 +173,7 @@ JSON オブジェクトのデコーディング方法を誂える::
    インスタンスになります。その他の引数は :func:`dump` におけるものと同じ意味です。
 
 
-.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
+.. function:: load(fp[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])
 
    直列化された *fp* (``.read()`` をサポートするファイル的オブジェクトで
    JSON 文書を収めたもの) の内容を Python オブジェクトに戻します。
@@ -182,6 +188,14 @@ JSON オブジェクトのデコーディング方法を誂える::
    (:class:`dict`) に対して呼ばれます。 *object_hook* の返り値は :class:`dict`
    の代わりに使われます。この機能は独自のデコーダ (たとえば JSON-RPC クラスヒンティング)
    を実装するのに使えます。
+
+   *object_pairs_hook* はオプションで渡す関数で、ペアの順序付きリストのデコード結果に対して呼ばれます。
+   *object_pairs_hook* の返り値は :class:`dict` の代わりに使われます。
+   この機能はキーと値のデコードされる順序に依存する独自のデコーダ (たとえば :func:`collections.OrderedDict` は挿入の順序を記憶します) を実装するのに使えます。
+   *object_hook* も定義されている場合は、 *object_pairs_hook* が優先して使用されます。
+
+   .. versionchanged:: 2.7
+      *object_pairs_hook* のサポートを追加しました。
 
    *parse_float* は、もし指定されれば、全てのデコードされる JSON
    の浮動小数点数文字列に対して呼ばれます。デフォルトでは、 ``float(num_str)``
@@ -198,11 +212,11 @@ JSON オブジェクトのデコーディング方法を誂える::
    ``'false'`` 。これは不正な JSON 数値に遭遇したときに例外を送出するのに使えます。
 
    カスタマイズされた :class:`JSONDecoder` のサブクラスを使うには、
-   *cls* キーワード引数に指定します。追加のキーワード引数は
-   このクラスのコンストラクタに引き渡されます。
+   *cls* キーワード引数に指定します; 指定しなかった場合は :class:`JSONDecoder` が使われます。
+   追加のキーワード引数はこのクラスのコンストラクタに引き渡されます。
 
 
-.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, **kw]]]]]]])
+.. function:: loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])
 
    直列化された *s* (:class:`str` または :class:`unicode` インスタンスで
    JSON 文書を含むもの) を Python オブジェクトに戻します。
@@ -219,7 +233,7 @@ JSON オブジェクトのデコーディング方法を誂える::
 エンコーダおよびデコーダ
 -------------------------
 
-.. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict]]]]]])
+.. class:: JSONDecoder([encoding[, object_hook[, parse_float[, parse_int[, parse_constant[, strict[, object_pairs_hook]]]]]]])
 
    単純な JSON デコーダ。
 
@@ -261,6 +275,15 @@ JSON オブジェクトのデコーディング方法を誂える::
    の代わりに使われます。この機能は独自の脱直列化 (たとえば JSON-RPC
    クラスヒンティングをサポートするような) を提供するのに使えます。
 
+   *object_pairs_hook* は、もし指定されれば、全てのペアの順序付きリストに
+   デコードされた JSON オブジェクトに対して呼ばれます。
+   *object_pairs_hook* の返り値は :class:`dict` の代わりに使われます。
+   この機能はキーと値のデコードされる順序に依存する独自のデコーダ (たとえば :func:`collections.OrderedDict` は挿入の順序を記憶します) を実装するのに使えます。
+   *object_hook* も定義されている場合は、 *object_pairs_hook* が優先して使用されます。
+
+   .. versionchanged:: 2.7
+      *object_pairs_hook* のサポートを追加しました。
+
    *parse_float* は、もし指定されれば、全てのデコードされる JSON
    の浮動小数点数文字列に対して呼ばれます。デフォルトでは、 ``float(num_str)``
    と等価です。これは JSON 浮動小数点数に対して他のデータ型やパーサ
@@ -275,6 +298,8 @@ JSON オブジェクトのデコーディング方法を誂える::
    ``'-Infinity'``, ``'Infinity'``, ``'NaN'``, ``'null'``, ``'true'``,
    ``'false'`` 。これは不正な JSON 数値に遭遇したときに例外を送出するのに使えます。
 
+   *strict* が ``False`` (デフォルトは ``True``) の場合、制御文字を文字列に含めることができます。
+   ここで言う制御文字とは、 ``'\t'`` (タブ)、 ``'\n'`` 、 ``'\r'`` 、 ``'0'`` を含む 0-31 の範囲のコードを持つ文字のことです。
 
    .. method:: decode(s)
 
@@ -341,7 +366,7 @@ JSON オブジェクトのデコーディング方法を誂える::
    矛盾しません。 ``True`` でない場合は、そのような浮動小数点数をエンコードすると
    :exc:`ValueError` が送出されます。
 
-   *sort_keys* が ``True`` (デフォルト) ならば、辞書の出力がキーでソートされます。
+   *sort_keys* が ``True`` (デフォルトは ``False``) ならば、辞書の出力がキーでソートされます。
    これは JSON の直列化がいつでも比較できるようになるので回帰試験の際に便利です。
 
    *indent* が非負の整数であれば (デフォルトでは ``None`` です)、JSON
