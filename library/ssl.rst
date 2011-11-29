@@ -1,8 +1,8 @@
-:mod:`ssl` --- ソケットオブジェクトに対するSSLラッパー
-=======================================================
+:mod:`ssl` --- ソケットオブジェクトに対する TLS/SSL ラッパー
+==============================================================
 
 .. module:: ssl
-   :synopsis: ソケットオブジェクトに対するSSLラッパー
+   :synopsis: ソケットオブジェクトに対する TLS/SSL ラッパー
 
 .. moduleauthor:: Bill Janssen <bill.janssen@gmail.com>
 
@@ -54,7 +54,7 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
    :exc:`IOError` のサブタイプです。
 
 
-.. function:: wrap_socket (sock, keyfile=None, certfile=None, server_side=False, cert_reqs=CERT_NONE, ssl_version={see docs}, ca_certs=None, do_handshake_on_connect=True, suppress_ragged_eofs=True)
+.. function:: wrap_socket (sock, keyfile=None, certfile=None, server_side=False, cert_reqs=CERT_NONE, ssl_version={see docs}, ca_certs=None, do_handshake_on_connect=True, suppress_ragged_eofs=True, ciphers=None)
 
    :class:`socket.socket` のインスタンス ``sock`` を受け取り、 :class:`socket.socket` のサブタイプである
    :class:`ssl.SSLSocket` のインスタンスを返します。 :class:`ssl.SSLSocket` は低レイヤの
@@ -118,14 +118,26 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
        ========================  =========  =========  ==========  =========
         *client* / **server**    **SSLv2**  **SSLv3**  **SSLv23**  **TLSv1**
        ------------------------  ---------  ---------  ----------  ---------
-        *SSLv2*                    yes        no         yes*        no
+        *SSLv2*                    yes        no         yes         no
         *SSLv3*                    yes        yes        yes         no
         *SSLv23*                   yes        no         yes         no
         *TLSv1*                    no         no         yes         yes
        ========================  =========  =========  ==========  =========
 
-   幾つかの古いバージョンのOpenSSL(例えば、OS X 10.4 の 0.9.7l)では、
-   SSLv2クライアントが SSLv23 サーバーに接続できません。
+   .. note::
+
+      どの接続が成功するかは、 OpenSSL のバージョンに依存して大きく変わります。
+      例えば、いくつか古めのバージョンの OpenSSL (OS X 10.4 の 0.9.7l など)
+      では、 SSLv2 クライアントは SSLv23 サーバーに接続できませんでした。
+      また、 OpenSSL 1.0.0 の初期では、 SSLv23 クライアントは明示的に SSLv2
+      cipher を有効にしない限りは SSLv2 接続を試みずませんでした。
+      このバージョンで SSLv2 を有効にするには、 *ciphers* 引数に ``"ALL"`` か
+      ``"SSLv2"`` を指定することができます。
+
+   *ciphers* 引数はこの SSL オブジェクトで利用可能な cipher を指定します。
+   これは、 `OpenSSL cipher list format
+   <http://www.openssl.org/docs/apps/ciphers.html#CIPHER_LIST_FORMAT>`_
+   にある文字列のどれかでなければなりません。
 
    ``do_handshake_on_connect`` 引数は、 :meth:`socket.connect` の後に自動的に
    SSLハンドシェイクを行うか、それともアプリケーションが明示的に :meth:`SSLSocket.do_handshake`
@@ -137,6 +149,9 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
    予期しないEOFを受け取った時に通知する方法を指定します。
    :const:`True` (デフォルト) の場合、下位のソケットレイヤーから予期せぬEOFエラーが来た場合、
    通常のEOFを返します。 :const:`False` の場合、呼び出し元に例外を投げて通知します。
+
+   .. versionchanged:: 2.7
+      新しいオプション引数 *ciphers*
 
 .. function:: RAND_status()
 
@@ -224,6 +239,9 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
 
    チャンネル暗号化プロトコルに SSL バージョン2を選択する。
 
+   このプロトコルは、 OpenSSL が OPENSSL_NO_SSL2 フラグが有効な状態で
+   コンパイルされている場合には利用できません。
+
    .. warning::
 
       SSL version 2 は非セキュアです。
@@ -252,6 +270,35 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
 
    チャンネル暗号化プロトコルとしてTLSバージョン1を選択します。
    これは最も現代的で、接続の両サイドが利用できる場合は、たぶん最も安全な選択肢です。
+
+.. data:: OPENSSL_VERSION
+
+   インタプリタによってロードされた OpenSSL ライブラリのバージョン文字列::
+
+    >>> ssl.OPENSSL_VERSION
+    'OpenSSL 0.9.8k 25 Mar 2009'
+
+   .. versionadded:: 2.7
+
+.. data:: OPENSSL_VERSION_INFO
+
+   OpenSSL ライブラリのバージョン情報を表す5つの整数のタプル::
+
+    >>> ssl.OPENSSL_VERSION_INFO
+    (0, 9, 8, 11, 15)
+
+   .. versionadded:: 2.7
+
+.. data:: OPENSSL_VERSION_NUMBER
+
+   1つの整数の形式の、 OpenSSL ライブラリの生のバージョン番号::
+
+    >>> ssl.OPENSSL_VERSION_NUMBER
+    9470143L
+    >>> hex(ssl.OPENSSL_VERSION_NUMBER)
+    '0x9080bfL'
+
+   .. versionadded:: 2.7
 
 
 SSLSocket オブジェクト
@@ -453,11 +500,11 @@ SSLサポートをテストする
 ユーザーコードは次のイディオムを利用することができます。 ::
 
    try:
-      import ssl
+       import ssl
    except ImportError:
-      pass
+       pass
    else:
-      [ do something that requires SSL support ]
+       ... # do something that requires SSL support
 
 
 クライアントサイドの処理
@@ -530,29 +577,31 @@ SSLサポートをテストする
 :func:`wrap_socket` を利用してサーバーサイドSSLコンテキストを生成します。 ::
 
    while True:
-      newsocket, fromaddr = bindsocket.accept()
-      connstream = ssl.wrap_socket(newsocket,
-                                   server_side=True,
-                                   certfile="mycertfile",
-                                   keyfile="mykeyfile",
-                                   ssl_version=ssl.PROTOCOL_TLSv1)
-      deal_with_client(connstream)
+       newsocket, fromaddr = bindsocket.accept()
+       connstream = ssl.wrap_socket(newsocket,
+                                    server_side=True,
+                                    certfile="mycertfile",
+                                    keyfile="mykeyfile",
+                                    ssl_version=ssl.PROTOCOL_TLSv1)
+       try:
+           deal_with_client(connstream)
+       finally:
+           connstream.shutdown(socket.SHUT_RDWR)
+           connstream.close()
 
 そして、 ``connstream`` からデータを読み、クライアントと切断する(あるいはクライアントが
 切断してくる)まで何か処理をします。 ::
 
    def deal_with_client(connstream):
-
-      data = connstream.read()
-      # 空のデータは、クライアントが接続を切ってきた事を意味します。
-      while data:
-         if not do_something(connstream, data):
-            # 処理が終了したときに do_something が False
-            # を返すと仮定します。
-            break
-         data = connstream.read()
-      # クライアントを切断します。
-      connstream.close()
+       data = connstream.read()
+       # null data means the client is finished with us
+       while data:
+           if not do_something(connstream, data):
+               # we'll assume do_something returns False
+               # when we're finished with client
+               break
+           data = connstream.read()
+       # finished with client
 
 そして新しいクライアント接続のために listen に戻ります。
 
