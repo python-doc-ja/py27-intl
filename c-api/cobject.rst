@@ -9,7 +9,7 @@ Cオブジェクト (CObject)
 
 .. warning::
 
-   CObject API は Python 2.7 から非推奨になりました。新しい :ref:`capsule` APIへ移行してください。
+   CObject API は Python 2.7 から非推奨になりました。新しい :ref:`capsules` APIへ移行してください。
 
 
 .. c:type:: PyCObject
