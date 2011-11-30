@@ -1720,18 +1720,18 @@ sets は要素の位置と (要素の) 挿入位置を保持しません。し�
 
 Python 2.7 では、空でない set (frozenset ではない) は、:class:`set`
 コンストラクタに加え、要素を波カッコ中にカンマで区切って
-列挙することでも生成できます。例: ``{'jack', 'sjoerd'}``。
+列挙することでも生成できます。例: ``{'jack', 'sjoerd'}``.
 
 両方のクラスのコンストラクタの働きは同じです:
 
 .. class:: set([iterable])
            frozenset([iterable])
 
-*iterable* から要素と取り込んだ、新しい set もしくは frozenset オブジェ
-クトを返します。 set の要素はハッシュ可能なものでなくてはなりません。
-set の set, つまり内部 set は :class:`frozenset` オブジェクトでなく
-てはなりません。もし、 *iterable* が指定されないならば、新しい空の set
-が返されます。
+   *iterable* から要素と取り込んだ、新しい set もしくは frozenset オブジェ
+   クトを返します。 set の要素はハッシュ可能なものでなくてはなりません。
+   set の set, つまり内部 set は :class:`frozenset` オブジェクトでなく
+   てはなりません。もし、 *iterable* が指定されないならば、新しい空の set
+   が返されます。
 
    :class:`set` および :class:`frozenset` のインスタンスは以下の操作を
    提供します:
