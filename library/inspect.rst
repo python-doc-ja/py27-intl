@@ -442,7 +442,7 @@ Note:
 
 .. function:: isfunction(object)
 
-   オブジェクトが Python の関数(:term:`labmda` 式で生成されたものを含む)
+   オブジェクトが Python の関数(:term:`lambda` 式で生成されたものを含む)
    である場合に真を返します。
 
 
