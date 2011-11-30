@@ -24,48 +24,47 @@
 -   run_module(sys.argv[0], run_name="__main__", alter_sys=True)
  
 -The :mod:`runpy` module provides a single function:
-+.. function:: run_module(mod_name, init_globals=None, run_name=None, alter_sys=False)
- 
-+   Execute the code of the specified module and return the resulting module
-+   globals dictionary. The module's code is first located using the standard
-+   import mechanism (refer to :pep:`302` for details) and then executed in a
-+   fresh module namespace.
- 
 -.. function:: run_module(mod_name[, init_globals] [, run_name][, alter_sys])
-+   If the supplied module name refers to a package rather than a normal
-+   module, then that package is imported and the ``__main__`` submodule within
-+   that package is then executed and the resulting module globals dictionary
-+   returned.
++.. function:: run_module(mod_name, init_globals=None, run_name=None, alter_sys=False)
  
 -   Execute the code of the specified module and return the resulting module globals
 -   dictionary. The module's code is first located using the standard import
 -   mechanism (refer to :pep:`302` for details) and then executed in a fresh module
 -   namespace.
-+   The optional dictionary argument *init_globals* may be used to pre-populate
-+   the module's globals dictionary before the code is executed. The supplied
-+   dictionary will not be modified. If any of the special global variables
-+   below are defined in the supplied dictionary, those definitions are
-+   overridden by :func:`run_module`.
++   Execute the code of the specified module and return the resulting module
++   globals dictionary. The module's code is first located using the standard
++   import mechanism (refer to :pep:`302` for details) and then executed in a
++   fresh module namespace.
+ 
++   If the supplied module name refers to a package rather than a normal
++   that package is then executed and the resulting module globals dictionary
++   returned.
  
 -   The optional dictionary argument *init_globals* may be used to pre-populate the
 -   globals dictionary before the code is executed. The supplied dictionary will not
 -   be modified. If any of the special global variables below are defined in the
 -   supplied dictionary, those definitions are overridden by the ``run_module``
 -   function.
++   The optional dictionary argument *init_globals* may be used to pre-populate
++   the module's globals dictionary before the code is executed. The supplied
++   dictionary will not be modified. If any of the special global variables
++   below are defined in the supplied dictionary, those definitions are
++   overridden by :func:`run_module`.
+ 
+-   The special global variables ``__name__``, ``__file__``, ``__loader__`` and
+-   ``__builtins__`` are set in the globals dictionary before the module code is
+-   executed.
 +   The special global variables ``__name__``, ``__file__``, ``__loader__``
 +   and ``__package__`` are set in the globals dictionary before the module
 +   code is executed (Note that this is a minimal set of variables - other
 +   variables may be set implicitly as an interpreter implementation detail).
  
--   The special global variables ``__name__``, ``__file__``, ``__loader__`` and
--   ``__builtins__`` are set in the globals dictionary before the module code is
--   executed.
+-   ``__name__`` is set to *run_name* if this optional argument is supplied, and the
+-   *mod_name* argument otherwise.
 +   ``__name__`` is set to *run_name* if this optional argument is not
 +   :const:`None`, to ``mod_name + '.__main__'`` if the named module is a
 +   package and to the *mod_name* argument otherwise.
  
--   ``__name__`` is set to *run_name* if this optional argument is supplied, and the
--   *mod_name* argument otherwise.
 +   ``__file__`` is set to the name provided by the module loader. If the
 +   loader does not make filename information available, this variable is set
 +   to :const:`None`.
