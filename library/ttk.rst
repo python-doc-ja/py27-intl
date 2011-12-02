@@ -15,72 +15,73 @@ provided by the new Tk, like anti-aliased font rendering under X11, window
 transparency (on X11 you will need a composition window manager) will be
 missing.
 
-The basic idea of :mod:`ttk` is to separate, to the extent possible, the code
-implementing a widget's behavior from the code implementing its appearance.
+:mod:`ttk` モジュールは Tk 8.5 で導入された Tk のテーマ付きウィジェットへのアクセスを提供します。
+Tk 8.5 が無い環境で Python がコンパイルされていた場合でも、 Tile がインストールされていればこのモジュールはそれを使おうとします。
+しかし、 X11 上のフォントのアンチエイリアスや透過ウィンドウ (X11 では***ウィンドウマネージャが必要です) などの新しい Tk が提供している機能は使えません。
 
+:mod:`ttk` の基本的なアイディアは、拡張可能性のためにウィジェットの動作を実装するコードと見た目を記述するコードを分離することです。
 
 .. seealso::
 
    `Tk Widget Styling Support <http://www.tcl.tk/cgi-bin/tct/tip/48>`_
-      The document which brought up theming support for Tk
+      Tk テーマのサポート***のドキュメントThe document which brought up theming support for Tk
 
 
-Using Ttk
----------
+Ttk を使う
+----------
 
-To start using Ttk, import its module::
+Ttk を使い始めるために、モジュールをインポートします::
 
    import ttk
 
-But code like this::
+しかしこのようなコードでは::
 
    from Tkinter import *
 
-may optionally want to use this::
+このように使いたいことがあるかもしれません::
 
    from Tkinter import *
    from ttk import *
 
-And then several :mod:`ttk` widgets (:class:`Button`, :class:`Checkbutton`,
-:class:`Entry`, :class:`Frame`, :class:`Label`, :class:`LabelFrame`,
-:class:`Menubutton`, :class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale`
-and :class:`Scrollbar`) will automatically substitute for the Tk widgets.
+このように書くと、いくつかの :mod:`ttk` ウィジェット (:class:`Button` 、
+:class:`Checkbutton` 、 :class:`Entry` 、 :class:`Frame` 、 :class:`Label` 、
+:class:`LabelFrame` 、 :class:`Menubutton` 、 :class:`PanedWindow` 、
+:class:`Radiobutton` 、 :class:`Scale` 、
+:class:`Scrollbar`) は自動的に Tk ウィジェットを置き換えます。
 
-This has the direct benefit of using the new widgets, giving better look & feel
-across platforms, but be aware that they are not totally compatible. The main
-difference is that widget options such as "fg", "bg" and others related to
-widget styling are no longer present in Ttk widgets. Use :class:`ttk.Style` to
-achieve the same (or better) styling.
+これにはプラットフォームをまたいでより良い見た目を得られるという、直接的な利益がありますが、ウィジェットは完全な互換性を持っているわけではないことに注意してください。
+一番の違いは "fg" や "bg" やその他のスタイルに関係するウィジェットのオプションが Ttk ウィジェットから無くなっていることです。
+同じ (もしくはより良い) 見た目にするためには :class:`ttk.Style` を使ってください。
 
 .. seealso::
 
    `Converting existing applications to use the Tile widgets <http://tktable.sourceforge.net/tile/doc/converting.txt>`_
-     A text which talks in Tcl terms about differences typically found when
-     converting applications to use the new widgets.
+     Tcl においてアプリケーションを新しいウィジェットに移行するときに出てくる典型的な差異について書いてあるテキスト
 
 
-Ttk Widgets
------------
+Ttk ウィジェット
+----------------
 
-Ttk comes with 17 widgets, 11 of which already exist in Tkinter:
-:class:`Button`, :class:`Checkbutton`, :class:`Entry`, :class:`Frame`,
-:class:`Label`, :class:`LabelFrame`, :class:`Menubutton`,
-:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale` and
-:class:`Scrollbar`. The 6 new widget classes are: :class:`Combobox`,
-:class:`Notebook`, :class:`Progressbar`, :class:`Separator`,
-:class:`Sizegrip` and :class:`Treeview`.  All of these classes are
-subclasses of :class:`Widget`.
+Ttk には 17 のウィジェットがあり、そのうち 11 は Tkinter に既にあるものです:
+:class:`Button` 、 :class:`Checkbutton` 、 :class:`Entry` 、 :class:`Frame` 、
+:class:`Label` 、 :class:`LabelFrame` 、 :class:`Menubutton` 、
+:class:`PanedWindow` 、 :class:`Radiobutton` 、 :class:`Scale` 、
+:class:`Scrollbar` 。
+新しい 6 つのウィジェットクラスは次のものです: :class:`Combobox` 、
+:class:`Notebook` 、 :class:`Progressbar` 、 :class:`Separator` 、
+:class:`Sizegrip` 、 :class:`Treeview` 。
+これらのクラスは全て :class:`Widget` の子クラスです。
 
-As said previously, you will notice changes in look-and-feel as well in the
-styling code. To demonstrate the latter, a very simple example is shown below.
+上にも書いた通り、スタイルの記述コードと同様に見た目も変わっていることに気付くでしょう。
+それを見せるために、非常に簡単な例を以下に示します。
 
-Tk code::
+Tk のコード::
 
    l1 = Tkinter.Label(text="Test", fg="black", bg="white")
    l2 = Tkinter.Label(text="Test", fg="black", bg="white")
 
 
-Corresponding Ttk code::
+それに相当する Ttk のコード::
 
    style = ttk.Style()
    style.configure("BW.TLabel", foreground="black", background="white")
@@ -88,11 +89,10 @@ Corresponding Ttk code::
    l1 = ttk.Label(text="Test", style="BW.TLabel")
    l2 = ttk.Label(text="Test", style="BW.TLabel")
 
-For more information about TtkStyling_ read the :class:`Style` class
-documentation.
+TtkStyling_ についての情報は :class:`Style` クラスの文書を読んでください。
 
-Widget
-------
+ウィジェット
+------------
 
 :class:`ttk.Widget` defines standard options and methods supported by Tk
 themed widgets and is not supposed to be directly instantiated.
