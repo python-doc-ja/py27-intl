@@ -273,13 +273,13 @@ memoryview オブジェクト
 :class:`memoryview` オブジェクトは、新しい、他のオブジェクトと同じように扱える
 Python オブジェクトの形をした C言語レベルのバッファへのインタフェースです。
 
-.. cfunction:: PyObject *PyMemoryView_FromObject(PyObject *obj)
+.. c:function:: PyObject *PyMemoryView_FromObject(PyObject *obj)
 
    新しいバッファインタフェースを定義しているオブジェクトから memoryview
    オブジェクトを作ります。
 
 
-.. cfunction:: PyObject *PyMemoryView_FromBuffer(Py_buffer *view)
+.. c:function:: PyObject *PyMemoryView_FromBuffer(Py_buffer *view)
 
    buffer-info 構造体 *view* をラップする memoryview オブジェクトを作ります。
    作られた memoryview オブジェクトはバッファを所有することになるので、
@@ -287,7 +287,7 @@ Python オブジェクトの形をした C言語レベルのバッファへの�
    解放されます。
 
 
-.. cfunction:: PyObject *PyMemoryView_GetContiguous(PyObject *obj, int buffertype, char order)
+.. c:function:: PyObject *PyMemoryView_GetContiguous(PyObject *obj, int buffertype, char order)
 
    buffer インタフェースを定義しているオブジェクトから ('C' か 'F'ortran の *order* で)
    連続したメモリチャンクへの memoryview オブジェクトを作ります。
@@ -296,13 +296,13 @@ Python オブジェクトの形をした C言語レベルのバッファへの�
    オブジェクトを参照します。
 
 
-.. cfunction:: int PyMemoryView_Check(PyObject *obj)
+.. c:function:: int PyMemoryView_Check(PyObject *obj)
 
    *obj* が memoryview オブジェクトの場合に真を返します。
    現在のところ、 :class:`memoryview` のサブクラスの作成は許可されていません。
 
 
-.. cfunction:: Py_buffer *PyMemoryView_GET_BUFFER(PyObject *obj)
+.. c:function:: Py_buffer *PyMemoryView_GET_BUFFER(PyObject *obj)
 
    与えられたオブジェクトにラップされた buffer-info 構造体へのポインタを返します。
    オブジェクトは memoryview インスタンスで **なければなりません** 。

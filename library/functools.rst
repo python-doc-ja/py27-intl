@@ -46,10 +46,6 @@
    クラスデコレータ。
    このデコレータは全てのリッチ順序比較演算をサポートするための労力を軽減します。
 
-   The class must define one of :meth:`__lt__`, :meth:`__le__`,
-   :meth:`__gt__`, or :meth:`__ge__`.
-   In addition, the class should supply an :meth:`__eq__` method.
-
    引数のクラスは、 :meth:`__lt__`, :meth:`__le__`, :meth:`__gt__`, :meth:`__ge__`
    の中からどれか1つと、 :meth:`__eq__` メソッドを定義する必要があります。
 

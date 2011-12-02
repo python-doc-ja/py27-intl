@@ -1,26 +1,27 @@
 .. _logging-cookbook:
 
-================
-Logging Cookbook
-================
+====================
+ロギングクックブック
+====================
 
 :Author: Vinay Sajip <vinay_sajip at red-dove dot com>
 
-This page contains a number of recipes related to logging, which have been found
-useful in the past.
+このページでは、過去に見つかった、ロギングに関するいくつかの便利な
+レシピを紹介します。
 
 .. currentmodule:: logging
 
-Using logging in multiple modules
----------------------------------
+複数のモジュールでロギングを使う
+--------------------------------
 
-Multiple calls to ``logging.getLogger('someLogger')`` return a reference to the
-same logger object.  This is true not only within the same module, but also
-across modules as long as it is in the same Python interpreter process.  It is
-true for references to the same object; additionally, application code can
-define and configure a parent logger in one module and create (but not
-configure) a child logger in a separate module, and all logger calls to the
-child will pass up to the parent.  Here is a main module::
+``logging.getLogger('someLogger')`` の複数回の呼び出しは同じロガーへの参照を返します。
+これは同じ Python インタプリタプロセス上で動いている限り、
+一つのモジュールの中からに限らず、モジュールをまたいでも当てはまります。
+同じオブジェクトへの参照という点でも正しいです。
+さらに、一つのモジュールの中で親ロガーを定義して設定し、
+別のモジュールで子ロガーを定義する (ただし設定はしない) ことが可能で、
+すべての子ロガーへの呼び出しは親にまで渡されます。
+まずはメインのモジュールです::
 
     import logging
     import auxiliary_module
@@ -52,7 +53,7 @@ child will pass up to the parent.  Here is a main module::
     auxiliary_module.some_function()
     logger.info('done with auxiliary_module.some_function()')
 
-Here is the auxiliary module::
+そして補助モジュール (auxiliary module) がこちらです::
 
     import logging
 
@@ -71,7 +72,7 @@ Here is the auxiliary module::
     def some_function():
         module_logger.info('received a call to "some_function"')
 
-The output looks like this::
+出力はこのようになります::
 
     2005-03-23 23:47:11,663 - spam_application - INFO -
        creating an instance of auxiliary_module.Auxiliary
@@ -94,16 +95,16 @@ The output looks like this::
     2005-03-23 23:47:11,673 - spam_application - INFO -
        done with auxiliary_module.some_function()
 
-Multiple handlers and formatters
---------------------------------
+複数のハンドラとフォーマッタ
+----------------------------
 
-Loggers are plain Python objects.  The :func:`addHandler` method has no minimum
-or maximum quota for the number of handlers you may add.  Sometimes it will be
-beneficial for an application to log all messages of all severities to a text
-file while simultaneously logging errors or above to the console.  To set this
-up, simply configure the appropriate handlers.  The logging calls in the
-application code will remain unchanged.  Here is a slight modification to the
-previous simple module-based configuration example::
+ロガーは通常の Python オブジェクトです。
+:func:`addHandler` メソッドは追加されるハンドラの個数について最小値も最大値も定めていません。
+時にアプリケーションがすべての深刻度のすべてのメッセージをテキストファイルに記録しつつ、
+同時にエラーやそれ以上のものをコンソールに出力することが役に立ちます。
+これを実現する方法は、単に適切なハンドラを設定するだけです。
+アプリケーションコードの中のログ記録の呼び出しは変更されずに残ります。
+少し前に取り上げた単純なモジュール式の例を少し変えるとこうなります::
 
     import logging
 
@@ -130,27 +131,26 @@ previous simple module-based configuration example::
     logger.error('error message')
     logger.critical('critical message')
 
-Notice that the 'application' code does not care about multiple handlers.  All
-that changed was the addition and configuration of a new handler named *fh*.
+「アプリケーション」のコードは複数のハンドラについて何も気にしていないことに注目してください。
+変更した箇所は新しい *fh* という名のハンドラを追加して設定したところがすべてです。
 
-The ability to create new handlers with higher- or lower-severity filters can be
-very helpful when writing and testing an application.  Instead of using many
-``print`` statements for debugging, use ``logger.debug``: Unlike the print
-statements, which you will have to delete or comment out later, the logger.debug
-statements can remain intact in the source code and remain dormant until you
-need them again.  At that time, the only change that needs to happen is to
-modify the severity level of the logger and/or handler to debug.
+新しいハンドラを高い、もしくは低い深刻度に対するフィルタと共に生成できることは、
+アプリケーションを書いてテストを行うときとても助けになります。
+デバッグ用にたくさんの ``print`` 文を使う代わりに ``logger.debug`` を使いましょう。
+あとで消したりコメントアウトしたりしなければならない print 文と違って、
+logger.debug 命令はソースコードの中にそのまま残しておいて再び必要になるまで休眠させておけます。
+その時必要になるのはただロガーおよび/またはハンドラの深刻度の設定をいじることだけです。
 
 .. _multiple-destinations:
 
-Logging to multiple destinations
---------------------------------
+複数の出力先にログを出力する
+----------------------------
 
-Let's say you want to log to console and file with different message formats and
-in differing circumstances. Say you want to log messages with levels of DEBUG
-and higher to file, and those messages at level INFO and higher to the console.
-Let's also assume that the file should contain timestamps, but the console
-messages should not. Here's how you can achieve this::
+コンソールとファイルに、別々のメッセージ書式で、別々の状況に応じたログ出力を行わせたいとしましょう。
+例えば DEBUG よりも高いレベルのメッセージはファイルに記録し、
+INFO 以上のレベルのメッセージはコンソールに出力したいという場合です。
+また、ファイルにはタイムスタンプを記録し、コンソールには出力しないとします。
+以下のようにすれば、こうした挙動を実現できます::
 
    import logging
 
@@ -184,14 +184,14 @@ messages should not. Here's how you can achieve this::
    logger2.warning('Jail zesty vixen who grabbed pay from quack.')
    logger2.error('The five boxing wizards jump quickly.')
 
-When you run this, on the console you will see ::
+このスクリプトを実行すると、コンソールには以下のように表示されるでしょう::
 
    root        : INFO     Jackdaws love my big sphinx of quartz.
    myapp.area1 : INFO     How quickly daft jumping zebras vex.
    myapp.area2 : WARNING  Jail zesty vixen who grabbed pay from quack.
    myapp.area2 : ERROR    The five boxing wizards jump quickly.
 
-and in the file you will see something like ::
+そして、ファイルは以下のようになるはずです::
 
    10-22 22:19 root         INFO     Jackdaws love my big sphinx of quartz.
    10-22 22:19 myapp.area1  DEBUG    Quick zephyrs blow, vexing daft Jim.
@@ -199,17 +199,16 @@ and in the file you will see something like ::
    10-22 22:19 myapp.area2  WARNING  Jail zesty vixen who grabbed pay from quack.
    10-22 22:19 myapp.area2  ERROR    The five boxing wizards jump quickly.
 
-As you can see, the DEBUG message only shows up in the file. The other messages
-are sent to both destinations.
+これを見て分かる通り、 DEBUG メッセージはファイルだけに出力され、その他のメッセージは両方に出力されます。
 
-This example uses console and file handlers, but you can use any number and
-combination of handlers you choose.
+この例ではコンソールとファイルのハンドラだけを使っていますが、
+実際には任意の数のハンドラや組み合わせを使えます。
 
 
-Configuration server example
-----------------------------
+設定サーバの例
+--------------
 
-Here is an example of a module using the logging configuration server::
+ログ記録設定サーバを使うモジュールの例です::
 
     import logging
     import logging.config
@@ -240,9 +239,8 @@ Here is an example of a module using the logging configuration server::
         logging.config.stopListening()
         t.join()
 
-And here is a script that takes a filename and sends that file to the server,
-properly preceded with the binary-encoded length, as the new logging
-configuration::
+そしてファイル名を受け取ってそのファイルをサーバに送るスクリプトですが、
+それに先だってバイナリエンコード長を新しいログ記録の設定として先に送っておきます::
 
     #!/usr/bin/env python
     import socket, sys, struct
@@ -264,12 +262,11 @@ configuration::
 
 .. _network-logging:
 
-Sending and receiving logging events across a network
------------------------------------------------------
+ネットワーク越しのロギングイベントの送信と受信
+----------------------------------------------
 
-Let's say you want to send logging events across a network, and handle them at
-the receiving end. A simple way of doing this is attaching a
-:class:`SocketHandler` instance to the root logger at the sending end::
+ログイベントをネットワーク越しに送信し、受信端でそれを処理したいとしましょう。
+:class:`SocketHandler` インスタンスを送信端のルートロガーに接続すれば、簡単に実現できます::
 
    import logging, logging.handlers
 
@@ -295,8 +292,8 @@ the receiving end. A simple way of doing this is attaching a
    logger2.warning('Jail zesty vixen who grabbed pay from quack.')
    logger2.error('The five boxing wizards jump quickly.')
 
-At the receiving end, you can set up a receiver using the :mod:`socketserver`
-module. Here is a basic working example::
+受信端では、 :mod:`SocketServer` モジュールを使って受信プログラムを作成しておきます。
+簡単な実用プログラムを以下に示します::
 
    import pickle
    import logging
@@ -383,8 +380,9 @@ module. Here is a basic working example::
    if __name__ == '__main__':
        main()
 
-First run the server, and then the client. On the client side, nothing is
-printed on the console; on the server side, you should see something like::
+先にサーバを起動しておき、次にクライアントを起動します。
+クライアント側では、コンソールには何も出力されません;
+サーバ側では以下のようなメッセージを目にするはずです::
 
    About to start TCP server...
       59 root            INFO     Jackdaws love my big sphinx of quartz.
@@ -393,49 +391,46 @@ printed on the console; on the server side, you should see something like::
       69 myapp.area2     WARNING  Jail zesty vixen who grabbed pay from quack.
       69 myapp.area2     ERROR    The five boxing wizards jump quickly.
 
-Note that there are some security issues with pickle in some scenarios. If
-these affect you, you can use an alternative serialization scheme by overriding
-the :meth:`makePickle` method and implementing your alternative there, as
-well as adapting the above script to use your alternative serialization.
+特定のシナリオでは pickle にはいくつかのセキュリティ上の問題があることに注意してください。
+これが問題になる場合、 :meth:`makePickle` メソッドをオーバーライドして代替手段を実装することで
+異なるシリアライズ手法を使用できます。
+代替シリアライズ手法を使うように上記のスクリプトを修正することもできます。
 
 
 .. _context-info:
 
-Adding contextual information to your logging output
-----------------------------------------------------
+コンテキスト情報をログ記録出力に付加する
+----------------------------------------
 
-Sometimes you want logging output to contain contextual information in
-addition to the parameters passed to the logging call. For example, in a
-networked application, it may be desirable to log client-specific information
-in the log (e.g. remote client's username, or IP address). Although you could
-use the *extra* parameter to achieve this, it's not always convenient to pass
-the information in this way. While it might be tempting to create
-:class:`Logger` instances on a per-connection basis, this is not a good idea
-because these instances are not garbage collected. While this is not a problem
-in practice, when the number of :class:`Logger` instances is dependent on the
-level of granularity you want to use in logging an application, it could
-be hard to manage if the number of :class:`Logger` instances becomes
-effectively unbounded.
+時にはログ記録出力にログ関数の呼び出し時に渡されたパラメータに加えてコンテキスト情報を含めたいこともあるでしょう。
+たとえば、ネットワークアプリケーションで、クライアント固有の情報
+(例: リモートクライアントの名前、 IP アドレス) もログ記録に残しておきたいと思ったとしましょう。
+*extra* パラメータをこの目的に使うこともできますが、
+いつでもこの方法で情報を渡すのが便利なやり方とも限りません。
+また接続ごとに :class:`Logger` インスタンスを生成する誘惑に駆られるかもしれませんが、
+生成した :class:`Logger` インスタンスはガーベジコレクションで回収されないので、これは良いアイデアとは言えません。
+この例は現実的な問題ではないかもしれませんが、
+:class:`Logger` インスタンスの個数がアプリケーションの中でログ記録が行われるレベルの粒度に依存する場合、
+:class:`Logger` インスタンスの個数が事実上無制限にならないと、管理が難しくなります。
 
 
-Using LoggerAdapters to impart contextual information
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+LoggerAdapter を使ったコンテキスト情報の伝達
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An easy way in which you can pass contextual information to be output along
-with logging event information is to use the :class:`LoggerAdapter` class.
-This class is designed to look like a :class:`Logger`, so that you can call
+ログ記録イベントの情報と一緒に出力される文脈情報を渡す簡単な方法は、
+:class:`LoggerAdapter` を使うことです。
+このクラスは :class:`Logger` のように見えるように設計されていて、
 :meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`,
-:meth:`exception`, :meth:`critical` and :meth:`log`. These methods have the
-same signatures as their counterparts in :class:`Logger`, so you can use the
-two types of instances interchangeably.
+:meth:`exception`, :meth:`critical`, :meth:`log` の各メソッドを呼び出せるようになっています。
+これらのメソッドは対応する :class:`Logger` のメソッドと同じ引数を取るので、
+二つの型を取り替えて使うことができます。
 
-When you create an instance of :class:`LoggerAdapter`, you pass it a
-:class:`Logger` instance and a dict-like object which contains your contextual
-information. When you call one of the logging methods on an instance of
-:class:`LoggerAdapter`, it delegates the call to the underlying instance of
-:class:`Logger` passed to its constructor, and arranges to pass the contextual
-information in the delegated call. Here's a snippet from the code of
-:class:`LoggerAdapter`::
+:class:`LoggerAdapter` のインスタンスを生成する際には、
+:class:`Logger` インスタンスと文脈情報を収めた辞書風 (dict-like) のオブジェクトを渡します。
+:class:`LoggerAdapter` のログ記録メソッドを呼び出すと、
+呼び出しをコンストラクタに渡された配下の :class:`Logger` インスタンスに委譲し、
+その際文脈情報をその委譲された呼び出しに埋め込みます。
+:class:`LoggerAdapter` のコードから少し抜き出してみます::
 
     def debug(self, msg, *args, **kwargs):
         """
@@ -445,24 +440,18 @@ information in the delegated call. Here's a snippet from the code of
         msg, kwargs = self.process(msg, kwargs)
         self.logger.debug(msg, *args, **kwargs)
 
-The :meth:`process` method of :class:`LoggerAdapter` is where the contextual
-information is added to the logging output. It's passed the message and
-keyword arguments of the logging call, and it passes back (potentially)
-modified versions of these to use in the call to the underlying logger. The
-default implementation of this method leaves the message alone, but inserts
-an 'extra' key in the keyword argument whose value is the dict-like object
-passed to the constructor. Of course, if you had passed an 'extra' keyword
-argument in the call to the adapter, it will be silently overwritten.
+:class:`LoggerAdapter` の :meth:`process` メソッドが文脈情報をログ出力に加える舞台です。
+そこではログ記録呼び出しのメッセージとキーワード引数が渡され、
+加工された (可能性のある) それらの情報を配下のロガーへの呼び出しに渡し直します。
+このメソッドのデフォルト実装ではメッセージは元のままですが、
+キーワード引数にはコンストラクタに渡された辞書風オブジェクトを値として "extra" キーが挿入されます。
+もちろん、呼び出し時に "extra" キーワードを使った場合には何事もなかったかのように上書きされます。
 
-The advantage of using 'extra' is that the values in the dict-like object are
-merged into the :class:`LogRecord` instance's __dict__, allowing you to use
-customized strings with your :class:`Formatter` instances which know about
-the keys of the dict-like object. If you need a different method, e.g. if you
-want to prepend or append the contextual information to the message string,
-you just need to subclass :class:`LoggerAdapter` and override :meth:`process`
-to do what you need. Here's an example script which uses this class, which
-also illustrates what dict-like behaviour is needed from an arbitrary
-'dict-like' object for use in the constructor::
+"extra" を用いる利点は辞書風オブジェクトの中の値が :class:`LogRecord` インスタンスの __dict__ にマージされることで、
+辞書風オブジェクトのキーを知っている :class:`Formatter` を用意して文字列をカスタマイズするようにできることです。
+それ以外のメソッドが必要なとき、たとえば文脈情報をメッセージの前や後ろにつなげたい場合には、
+:class:`LoggerAdapter` から :meth:`process` を望むようにオーバライドしたサブクラスを作ることが必要なだけです。
+次に挙げるのはこのクラスを使った例で、コンストラクタで使われる「辞書風」オブジェクトにどの振る舞いが必要なのかも示しています::
 
    import logging
 
@@ -509,7 +498,7 @@ also illustrates what dict-like behaviour is needed from an arbitrary
            lvlname = logging.getLevelName(lvl)
            a2.log(lvl, 'A message at %s level with %d %s', lvlname, 2, 'parameters')
 
-When this script is run, the output should look something like this::
+このスクリプトが実行されると、出力は以下のようになります::
 
    2008-01-18 14:49:54,023 a.b.c DEBUG    IP: 123.231.231.123 User: sheila   A debug message
    2008-01-18 14:49:54,023 a.b.c INFO     IP: 123.231.231.123 User: sheila   An info message with some parameters
@@ -527,22 +516,23 @@ When this script is run, the output should look something like this::
 
 .. _filters-contextual:
 
-Using Filters to impart contextual information
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Filter を使ったコンテキスト情報の伝達
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can also add contextual information to log output using a user-defined
-:class:`Filter`. ``Filter`` instances are allowed to modify the ``LogRecords``
-passed to them, including adding additional attributes which can then be output
-using a suitable format string, or if needed a custom :class:`Formatter`.
+ユーザ定義の :class:`Filter` を使ってログ出力にコンテキスト情報を
+加えることもできます。 ``Filter`` インスタンスは、渡された ``LogRecords``
+を修正することができます。これにより、適切なフォーマット文字列や
+必要なら :class:`Formatter` を使って、出力となる属性を新しく追加する
+ことも出来ます。
 
-For example in a web application, the request being processed (or at least,
-the interesting parts of it) can be stored in a threadlocal
-(:class:`threading.local`) variable, and then accessed from a ``Filter`` to
-add, say, information from the request - say, the remote IP address and remote
-user's username - to the ``LogRecord``, using the attribute names 'ip' and
-'user' as in the ``LoggerAdapter`` example above. In that case, the same format
-string can be used to get similar output to that shown above. Here's an example
-script::
+例えば、web アプリケーションで、処理されるリクエスト (または、
+少なくともその重要な部分) は、スレッドローカル (:class:`threading.local`)
+な変数に保存して、 ``Filter`` からアクセスすることで、 ``LogRecord`` に
+リクエストの情報を追加できます。例えば、リモート IP アドレスやリモートユーザの
+ユーザ名にアクセスしたいなら、上述の ``LoggerAdapter`` の例のように属性名
+'ip' や 'user' を使うといったようにです。そのばあい、同じフォーマット文字列を
+使って以下に示すように似たような出力を得られます。これはスクリプトの例です::
+
 
     import logging
     from random import choice
@@ -581,7 +571,7 @@ script::
            lvlname = logging.getLevelName(lvl)
            a2.log(lvl, 'A message at %s level with %d %s', lvlname, 2, 'parameters')
 
-which, when run, produces something like::
+そして、実行時に、以下のようになります::
 
     2010-09-06 22:38:15,292 a.b.c DEBUG    IP: 123.231.231.123 User: fred     A debug message
     2010-09-06 22:38:15,300 a.b.c INFO     IP: 192.168.0.1     User: sheila   An info message with some parameters
@@ -599,44 +589,46 @@ which, when run, produces something like::
 
 .. _multiple-processes:
 
-Logging to a single file from multiple processes
-------------------------------------------------
+複数のプロセスからの単一ファイルへのログ記録
+--------------------------------------------
 
-Although logging is thread-safe, and logging to a single file from multiple
-threads in a single process *is* supported, logging to a single file from
-*multiple processes* is *not* supported, because there is no standard way to
-serialize access to a single file across multiple processes in Python. If you
-need to log to a single file from multiple processes, one way of doing this is
-to have all the processes log to a :class:`SocketHandler`, and have a separate
-process which implements a socket server which reads from the socket and logs
-to file. (If you prefer, you can dedicate one thread in one of the existing
-processes to perform this function.) The following section documents this
-approach in more detail and includes a working socket receiver which can be
-used as a starting point for you to adapt in your own applications.
+ログ記録はスレッドセーフであり、単一プロセスの複数のスレッドからの
+単一ファイルへのログ記録はサポート *されています* が、
+*複数プロセス* からの単一ファイルへのログ記録はサポート *されません* 。
+なぜなら、複数のプロセスをまたいで単一のファイルへのアクセスを直列化する
+標準の方法が Python には存在しないからです。
+複数のプロセスから単一ファイルへログ記録しなければならないなら、最も良い方法は、
+すべてのプロセスが :class:`SocketHandler` に対してログ記録を行い、
+独立したプロセスとしてソケットサーバを動かすことです。
+ソケットサーバはソケットから読み取ってファイルにログを書き出します。
+(この機能を実行するために、既存のプロセスの 1 つのスレッドを割り当てることもできます)
+以下の節では、このアプローチをさらに詳細に文書化しています。
+動作するソケット受信プログラムが含まれているので、
+アプリケーションに組み込むための出発点として使用できるでしょう。
 
-If you are using a recent version of Python which includes the
-:mod:`multiprocessing` module, you could write your own handler which uses the
-:class:`Lock` class from this module to serialize access to the file from
-your processes. The existing :class:`FileHandler` and subclasses do not make
-use of :mod:`multiprocessing` at present, though they may do so in the future.
-Note that at present, the :mod:`multiprocessing` module does not provide
-working lock functionality on all platforms (see
-http://bugs.python.org/issue3770).
+:mod:`multiprocessing` モジュールを含む最近のバージョンの Python を使用しているなら、
+複数のプロセスからファイルへのアクセスを直列化するために
+:mod:`multiprocessing` モジュールの :class:`Lock` クラスを使って独自のハンドラを書くことができます。
+既存の :class:`FileHandler` とそのサブクラスは現在のところ :mod:`multiprocessing` を利用していませんが、
+将来は利用するようになるかもしれません。
+現在のところ :mod:`multiprocessing` モジュールが提供するロック機能は
+すべてのプラットホームで動作するわけではないことに注意してください。
+(http://bugs.python.org/issue3770 参照)
 
 .. currentmodule:: logging.handlers
 
 
-Using file rotation
--------------------
+ファイルの循環を使う
+--------------------
 
 .. sectionauthor:: Doug Hellmann, Vinay Sajip (changes)
 .. (see <http://blog.doughellmann.com/2007/05/pymotw-logging.html>)
 
-Sometimes you want to let a log file grow to a certain size, then open a new
-file and log to that. You may want to keep a certain number of these files, and
-when that many files have been created, rotate the files so that the number of
-files and the size of the files both remain bounded. For this usage pattern, the
-logging package provides a :class:`RotatingFileHandler`::
+ログファイルがある大きさに達したら、新しいファイルを開いてそこにログを
+取りたいことがあります。そのファイルをある数だけ残し、その数のファイルが
+生成されたらファイルを循環し、ファイルの数も大きさも制限したいことも
+あるでしょう。この利用パターンのために、logging パッケージは
+:class:`RotatingFileHandler` を提供しています::
 
    import glob
    import logging
@@ -664,8 +656,8 @@ logging package provides a :class:`RotatingFileHandler`::
    for filename in logfiles:
        print(filename)
 
-The result should be 6 separate files, each with part of the log history for the
-application::
+この結果として、アプリケーションのログ履歴の一部である、 6 つに別れた
+ファイルが得られます::
 
    logging_rotatingfile_example.out
    logging_rotatingfile_example.out.1
@@ -674,11 +666,11 @@ application::
    logging_rotatingfile_example.out.4
    logging_rotatingfile_example.out.5
 
-The most current file is always :file:`logging_rotatingfile_example.out`,
-and each time it reaches the size limit it is renamed with the suffix
-``.1``. Each of the existing backup files is renamed to increment the suffix
-(``.1`` becomes ``.2``, etc.)  and the ``.6`` file is erased.
+最新のファイルはいつでも :file:`logging_rotatingfile_example.out` で、
+サイズの上限に達するたびに拡張子 ``.1`` を付けた名前に改名されます。
+既にあるバックアップファイルはその拡張子がインクリメントされ (``.1`` が ``.2`` になるなど)、
+``.6`` ファイルは消去されます。
 
-Obviously this example sets the log length much much too small as an extreme
-example.  You would want to set *maxBytes* to an appropriate value.
+明らかに、ここでは例示のためにファイルの大きさをとんでもなく小さな値に設定しています。
+実際に使うときは *maxBytes* を適切な値に設定してください。
 
