@@ -442,7 +442,7 @@ Note:
 
 .. function:: isfunction(object)
 
-   オブジェクトが Python の関数(:term:`labmda` 式で生成されたものを含む)
+   オブジェクトが Python の関数(:term:`lambda` 式で生成されたものを含む)
    である場合に真を返します。
 
 
@@ -564,7 +564,7 @@ Note:
       .. :ctype:`PyGetSetDef` structures.  For Python implementations without such
       .. types, this method will always return ``False``.
 
-      getset とは、拡張モジュールで :ctype:`PyGetSetDef` 構造体を用いて定義された属性のことです。
+      getset とは、拡張モジュールで :c:type:`PyGetSetDef` 構造体を用いて定義された属性のことです。
       そのような型を持たない Python 実装の場合は、このメソッドは常に ``False`` を返します。
 
 
@@ -584,7 +584,7 @@ Note:
       .. :ctype:`PyMemberDef` structures.  For Python implementations without such
       .. types, this method will always return ``False``.
 
-      メンバーデスクリプタとは、拡張モジュールで :ctype:`PyMemberDef` 構造体を用いて定義された属性のことです。
+      メンバーデスクリプタとは、拡張モジュールで :c:type:`PyMemberDef` 構造体を用いて定義された属性のことです。
       そのような型を持たない Python 実装の場合は、このメソッドは常に ``False`` を返します。
 
 
