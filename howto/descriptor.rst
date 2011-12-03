@@ -1,54 +1,57 @@
-==============================
-Descriptor HowTo Guide (英語)
-==============================
+===========================
+ディスクリプタ HowTo ガイド
+===========================
 
 :Author: Raymond Hettinger
 :Contact: <python at rcn dot com>
 
 .. Contents::
 
-Abstract
---------
+概要
+----
 
-Defines descriptors, summarizes the protocol, and shows how descriptors are
-called.  Examines a custom descriptor and several built-in python descriptors
-including functions, properties, static methods, and class methods.  Shows how
-each works by giving a pure Python equivalent and a sample application.
+ディスクリプタを定義し、プロトコルを要約し、ディスクリプタがどのように
+呼び出されるか示します。カスタムのディスクリプタや、
+関数、プロパティ、静的メソッド、クラスメソッドを含む、いくつかの組み込み Python
+ディスクリプタを考察します。等価な pure Python やサンプルアプリケーションを
+与えることにより、それぞれがどのように働くかを示します。
 
-Learning about descriptors not only provides access to a larger toolset, it
-creates a deeper understanding of how Python works and an appreciation for the
-elegance of its design.
-
-
-Definition and Introduction
----------------------------
-
-In general, a descriptor is an object attribute with "binding behavior", one
-whose attribute access has been overridden by methods in the descriptor
-protocol.  Those methods are :meth:`__get__`, :meth:`__set__`, and
-:meth:`__delete__`.  If any of those methods are defined for an object, it is
-said to be a descriptor.
-
-The default behavior for attribute access is to get, set, or delete the
-attribute from an object's dictionary.  For instance, ``a.x`` has a lookup chain
-starting with ``a.__dict__['x']``, then ``type(a).__dict__['x']``, and
-continuing through the base classes of ``type(a)`` excluding metaclasses. If the
-looked-up value is an object defining one of the descriptor methods, then Python
-may override the default behavior and invoke the descriptor method instead.
-Where this occurs in the precedence chain depends on which descriptor methods
-were defined.  Note that descriptors are only invoked for new style objects or
-classes (a class is new style if it inherits from :class:`object` or
-:class:`type`).
-
-Descriptors are a powerful, general purpose protocol.  They are the mechanism
-behind properties, methods, static methods, class methods, and :func:`super()`.
-They are used used throughout Python itself to implement the new style classes
-introduced in version 2.2.  Descriptors simplify the underlying C-code and offer
-a flexible set of new tools for everyday Python programs.
+ディスクリプタについて、大きなツールセットが使えるようにするだけでなく、
+Python の仕組みや、洗練された設計のアプリケーションについて、深い理解を
+生み出します。
 
 
-Descriptor Protocol
--------------------
+定義と導入
+----------
+
+一般に、ディスクリプタは "束縛動作 (binding behavior)" をもつ
+オブジェクト属性で、その属性アクセスが、ディスクリプタプロトコルの
+メソッドによってオーバーライドされたものです。このメソッドは、
+:meth:`__get__`, :meth:`__set__`, および :meth:`__delete__` です。
+これらのメソッドのいずれかが、オブジェクトに定義されていれば、
+それはディスクリプタと呼ばれます。
+
+属性アクセスのデフォルトの振る舞いは、オブジェクトの辞書の属性の
+取得、設定、削除です。例えば ``a.x`` は、まず ``a.__dict__['x']`` 、
+それから ``type(a).__dict__['x']`` 、さらに ``type(a)`` のメタクラスを除く
+基底クラスへと続くというように探索が連鎖します。
+見つかった値が、ディスクリプタメソッドのいずれかを定義しているオブジェクトなら、
+Python はそのデフォルトの振る舞いをオーバーライドし、代わりに
+ディスクリプタメソッドを呼び出します。これがどの連鎖順位で行われるかは、
+どのディスクリプタメソッドが定義されているかに依ります。なお、ディスクリプタは、
+新スタイルのオブジェクトまたはクラスにのみ呼び出されます (あるクラスは、
+それが :class:`object` または :class:`type` を継承していれば、新スタイルです)。
+
+ディスクリプタは、強力な、多目的のプロトコルです。これは
+プロパティ、メソッド、静的メソッド、クラスメソッド、そして :func:`super()` の
+背後にある機構です。これはバージョン 2.2 で導入された新スタイル
+クラスを実装するために、Python のいたるところで使わています。
+ディスクリプタは、基幹にある C コードを簡潔にし、毎日の Python プログラムに、
+柔軟な新しいツール群を提供します。
+
+
+ディスクリプタプロトコル
+------------------------
 
 ``descr.__get__(self, obj, type=None) --> value``
 
@@ -56,53 +59,57 @@ Descriptor Protocol
 
 ``descr.__delete__(self, obj) --> None``
 
-That is all there is to it.  Define any of these methods and an object is
-considered a descriptor and can override default behavior upon being looked up
-as an attribute.
+これで全てです。これらのメソッドのいずれかを定義すれば、オブジェクトは
+ディスクリプタとみなされ、探索された際のデフォルトの振る舞いを
+オーバーライドできます。
 
-If an object defines both :meth:`__get__` and :meth:`__set__`, it is considered
-a data descriptor.  Descriptors that only define :meth:`__get__` are called
-non-data descriptors (they are typically used for methods but other uses are
-possible).
+あるオブジェクトが :meth:`__get__` と :meth:`__set__` の両方を定義していたら、
+それはデータディスクリプタとみなされます。 :meth:`__get__` だけを定義している
+ディスクリプタは、非データディスクリプタと呼ばれます (これらは典型的には
+メソッドに使われますが、他の使い方も出来ます)。
 
-Data and non-data descriptors differ in how overrides are calculated with
-respect to entries in an instance's dictionary.  If an instance's dictionary
-has an entry with the same name as a data descriptor, the data descriptor
-takes precedence.  If an instance's dictionary has an entry with the same
-name as a non-data descriptor, the dictionary entry takes precedence.
+データディスクリプタと非データディスクリプタでは、オーバーライドが
+インスタンスの辞書のエントリに関してどのように計算されるかが異なります。
+インスタンスの辞書に、データディスクリプタと同名の項目があれば、
+データディスクリプタの方が優先されます。
+インスタンスの辞書に、非データディスクリプタと同名の項目があれば、
+辞書の項目の方が優先されます。
 
-To make a read-only data descriptor, define both :meth:`__get__` and
-:meth:`__set__` with the :meth:`__set__` raising an :exc:`AttributeError` when
-called.  Defining the :meth:`__set__` method with an exception raising
-placeholder is enough to make it a data descriptor.
+読み込み専用のデータディスクリプタを作るには、 :meth:`__get__` と
+:meth:`__set__` の両方を定義し、 :meth:`__set__` が呼び出されたときに
+:exc:`AttributeError` が送出されるようにしてください。
+例外を送出する :meth:`__set__` メソッドをプレースホルダとして定義すれば、
+データディスクリプタにするのに十分です。
 
 
-Invoking Descriptors
---------------------
+ディスクリプタの呼び出し
+------------------------
 
-A descriptor can be called directly by its method name.  For example,
-``d.__get__(obj)``.
+ディスクリプタは、メソッド名で直接呼ぶことも出来ます。
+例えば、 ``d.__get__(obj)`` です。
 
-Alternatively, it is more common for a descriptor to be invoked automatically
-upon attribute access.  For example, ``obj.d`` looks up ``d`` in the dictionary
-of ``obj``.  If ``d`` defines the method :meth:`__get__`, then ``d.__get__(obj)``
-is invoked according to the precedence rules listed below.
+または、一般的に、ディスクリプタは属性アクセスから自動的に呼び出されます。
+例えば、 ``obj.d`` は ``obj`` の辞書から ``d`` を探索します。 ``d`` が
+メソッド :meth:`__get__` を定義していたら、以下に列挙する優先順位に従って、
+``d.__get__(obj)`` が呼び出されます。
 
-The details of invocation depend on whether ``obj`` is an object or a class.
-Either way, descriptors only work for new style objects and classes.  A class is
-new style if it is a subclass of :class:`object`.
+呼び出しの詳細は、 ``obj`` がオブジェクトかクラスかに依ります。どちらにしても、
+ディスクリプタは新スタイルのオブジェクトやクラスにのみ働きます。
+クラスは、それが :class:`object` のサブクラスであるなら新スタイルです。
 
-For objects, the machinery is in :meth:`object.__getattribute__` which
-transforms ``b.x`` into ``type(b).__dict__['x'].__get__(b, type(b))``.  The
-implementation works through a precedence chain that gives data descriptors
-priority over instance variables, instance variables priority over non-data
-descriptors, and assigns lowest priority to :meth:`__getattr__` if provided.  The
-full C implementation can be found in :cfunc:`PyObject_GenericGetAttr()` in
-`Objects/object.c <http://svn.python.org/view/python/trunk/Objects/object.c?view=markup>`_\.
+オブジェクトでは、その機構は ``b.x`` を
+``type(b).__dict__['x'].__get__(b, type(b))`` に変換する
+:meth:`object.__getattribute__` にあります。
+データディスクリプタの優先度はインスタンス変数より高く、インスタンス変数の
+優先度は非データディスクリプタより高く、(提供されていれば)
+:meth:`__getattr__` の優先度が最も低いように実装されています。
+完全な C 実装は、
+`Objects/object.c <http://svn.python.org/view/python/trunk/Objects/object.c?view=markup>`_
+の :c:func:`PyObject_GenericGetAttr()` で見つかります。
 
-For classes, the machinery is in :meth:`type.__getattribute__` which transforms
-``B.x`` into ``B.__dict__['x'].__get__(None, B)``.  In pure Python, it looks
-like::
+クラスでは、その機構は ``B.x`` を ``B.__dict__['x'].__get__(None, B)`` に
+変換する :meth:`type.__getattribute__` にあります。
+pure Python では、このようになります::
 
     def __getattribute__(self, key):
         "Emulate type_getattro() in Objects/typeobject.c"
@@ -111,47 +118,52 @@ like::
            return v.__get__(None, self)
         return v
 
-The important points to remember are:
+憶えておくべき重要な点は:
 
-* descriptors are invoked by the :meth:`__getattribute__` method
-* overriding :meth:`__getattribute__` prevents automatic descriptor calls
-* :meth:`__getattribute__` is only available with new style classes and objects
-* :meth:`object.__getattribute__` and :meth:`type.__getattribute__` make
-  different calls to :meth:`__get__`.
-* data descriptors always override instance dictionaries.
-* non-data descriptors may be overridden by instance dictionaries.
+* ディスクリプタは :meth:`__getattribute__` メソッドに呼び出される
+* :meth:`__getattribute__` をオーバーライドすると、
+  自動的なディスクリプタの呼び出しが防がれる。
+* :meth:`__getattribute__` は新スタイルのクラスとオブジェクトにのみ使える。
+* :meth:`object.__getattribute__` と :meth:`type.__getattribute__` では、
+  :meth:`__get__` の呼び出しが異なる。
+* データディスクリプタは、必ずインスタンス辞書をオーバーライドする。
+* 非データディスクリプタは、インスタンス辞書にオーバーライドされることがある。
 
-The object returned by ``super()`` also has a custom :meth:`__getattribute__`
-method for invoking descriptors.  The call ``super(B, obj).m()`` searches
-``obj.__class__.__mro__`` for the base class ``A`` immediately following ``B``
-and then returns ``A.__dict__['m'].__get__(obj, A)``.  If not a descriptor,
-``m`` is returned unchanged.  If not in the dictionary, ``m`` reverts to a
-search using :meth:`object.__getattribute__`.
+``super()`` によって返されたオブジェクトもまた、ディスクリプタの呼び出しに
+カスタムの :meth:`__getattribute__` メソッドを持ちます。
+``super(B, obj).m()`` の呼び出しは、 ``obj.__class__.__mro__`` の中から、
+``B`` の直接の基底クラス ``A`` を探し、 ``A.__dict__['m'].__get__(obj, A)``
+を返します。ディスクリプタでなければ、 ``m`` はそのまま返されます。
+辞書になければ、 ``m`` は :meth:`object.__getattribute__` を使って、
+さかのぼって探索されます。
 
-Note, in Python 2.2, ``super(B, obj).m()`` would only invoke :meth:`__get__` if
-``m`` was a data descriptor.  In Python 2.3, non-data descriptors also get
-invoked unless an old-style class is involved.  The implementation details are
-in :cfunc:`super_getattro()` in
+なお、Python 2.2 では、 ``m`` がデータディスクリプタなら、
+``super(B, obj).m()`` は :meth:`__get__` を呼び出すだけです。
+Python 2.3 では、旧スタイルクラスが呼び出されなければ、非データディスクリプタも
+呼び出されます。実装の詳細は、
 `Objects/typeobject.c <http://svn.python.org/view/python/trunk/Objects/typeobject.c?view=markup>`_
-and a pure Python equivalent can be found in `Guido's Tutorial`_.
+の :c:func:`super_getattro()` と、 `Guido's Tutorial`_ にある等価な pure
+Python を参照してください。
 
 .. _`Guido's Tutorial`: http://www.python.org/2.2.3/descrintro.html#cooperation
 
-The details above show that the mechanism for descriptors is embedded in the
-:meth:`__getattribute__()` methods for :class:`object`, :class:`type`, and
-:func:`super`.  Classes inherit this machinery when they derive from
-:class:`object` or if they have a meta-class providing similar functionality.
-Likewise, classes can turn-off descriptor invocation by overriding
-:meth:`__getattribute__()`.
+上述の詳細は、ディスクリプタの機構が、 :meth:`__getattribute__()` メソッドに
+埋めこまれ、 :class:`object`, :class:`type`, そして :func:`super` に
+使われているということを表しています。クラスは、 :class:`object` から
+導出されたとき、または、同じような機能を提供するメタクラスをもつとき、
+この機構を継承します。
+同様に、 :meth:`__getattribute__()` をオーバーライドすることで、
+ディスクリプタの呼び出しを無効にできます。
 
 
-Descriptor Example
+ディスクリプタの例
 ------------------
 
-The following code creates a class whose objects are data descriptors which
-print a message for each get or set.  Overriding :meth:`__getattribute__` is
-alternate approach that could do this for every attribute.  However, this
-descriptor is useful for monitoring just a few chosen attributes::
+以下のコードは、オブジェクトが取得と設定のたびにメッセージを表示する
+データディスクリプタであるようなクラスを生成します。
+代わりに :meth:`__getattribute__` を
+オーバーライドすると、全ての属性に対してこれができます。
+しかし、このディスクリプタは、少数の選ばれた属性を監視するのに便利です::
 
     class RevealAccess(object):
         """A data descriptor that sets and returns values
@@ -186,21 +198,22 @@ descriptor is useful for monitoring just a few chosen attributes::
     >>> m.y
     5
 
-The protocol is simple and offers exciting possibilities.  Several use cases are
-so common that they have been packaged into individual function calls.
-Properties, bound and unbound methods, static methods, and class methods are all
-based on the descriptor protocol.
+このプロトコルは単純ですが、ワクワクする可能性も秘めています。
+ユースケースの中には、あまりに一般的なので個別の関数の呼び出しにまとめられた
+ものもあります。プロパティ、束縛および非束縛のメソッド、静的メソッド、
+そしてクラスメソッドは、全てディスクリプタプロトコルに基づいています。
 
 
-Properties
+プロパティ
 ----------
 
-Calling :func:`property` is a succinct way of building a data descriptor that
-triggers function calls upon access to an attribute.  Its signature is::
+:func:`property` を呼び出すことで、属性へアクセスすると関数の呼び出しを
+引き起こす、データディスクリプタを簡潔に組み立てられます。
+シグネチャはこうです::
 
     property(fget=None, fset=None, fdel=None, doc=None) -> property attribute
 
-The documentation shows a typical use to define a managed attribute ``x``::
+このドキュメントでは、管理された属性 ``x`` を定義する典型的な使用法を示します::
 
     class C(object):
         def getx(self): return self.__x
@@ -208,8 +221,8 @@ The documentation shows a typical use to define a managed attribute ``x``::
         def delx(self): del self.__x
         x = property(getx, setx, delx, "I'm the 'x' property.")
 
-To see how :func:`property` is implemented in terms of the descriptor protocol,
-here is a pure Python equivalent::
+ディスクリプタの見地から :func:`property` がどのように実装されているかを
+見るために、等価な Python をここに挙げます::
 
     class Property(object):
         "Emulate PyProperty_Type() in Objects/descrobject.c"
@@ -237,15 +250,15 @@ here is a pure Python equivalent::
                 raise AttributeError, "can't delete attribute"
             self.fdel(obj)
 
-The :func:`property` builtin helps whenever a user interface has granted
-attribute access and then subsequent changes require the intervention of a
-method.
+組み込みの :func:`property` 関数は、ユーザインタフェースへの属性アクセスが
+与えられ、続く変更がメソッドの介入を要求するときに役立ちます。
 
-For instance, a spreadsheet class may grant access to a cell value through
-``Cell('b10').value``. Subsequent improvements to the program require the cell
-to be recalculated on every access; however, the programmer does not want to
-affect existing client code accessing the attribute directly.  The solution is
-to wrap access to the value attribute in a property data descriptor::
+例えば、スプレッドシートクラスが、 ``Cell('b10').value`` でセルの値を
+取得できるとします。続く改良により、プログラムがアクセスの度にセルの再計算を
+することを要求しました。しかしプログラマは、その属性に直接アクセスする
+既存のクライアントコードに影響を与えたくありません。
+この解決策は、property データディスクリプタ内に値属性へのアクセスを
+ラップすることです::
 
     class Cell(object):
         . . .
@@ -256,24 +269,24 @@ to wrap access to the value attribute in a property data descriptor::
         value = property(getvalue)
 
 
-Functions and Methods
----------------------
+関数とメソッド
+--------------
 
-Python's object oriented features are built upon a function based environment.
-Using non-data descriptors, the two are merged seamlessly.
+Python のオブジェクト指向機能は、関数に基づく環境の上に構築されています。
+非データディスクリプタを使って、この 2 つはシームレスに組み合わされています。
 
-Class dictionaries store methods as functions.  In a class definition, methods
-are written using :keyword:`def` and :keyword:`lambda`, the usual tools for
-creating functions.  The only difference from regular functions is that the
-first argument is reserved for the object instance.  By Python convention, the
-instance reference is called *self* but may be called *this* or any other
-variable name.
+クラス辞書は、メソッドを関数として保存します。クラス定義内で、メソッドは、
+関数を使うのに便利なツール、 :keyword:`def` や :keyword:`lambda` を
+使って書かれます。標準の関数との唯一の違いは、第一引数が
+オブジェクトインスタンスのために予約されていることです。
+Python の慣習では、このインスタンスの参照は *self* と呼ばれますが、
+*this* その他の好きな変数名で呼び出せます。
 
-To support method calls, functions include the :meth:`__get__` method for
-binding methods during attribute access.  This means that all functions are
-non-data descriptors which return bound or unbound methods depending whether
-they are invoked from an object or a class.  In pure python, it works like
-this::
+メソッドの呼び出しをサポートするために、関数の :meth:`__get__` メソッドは
+属性アクセス時にメソッドを束縛します。これにより、すべての関数は、
+それが呼び出されたのがオブジェクトかクラスかによって、束縛か非束縛メソッドを
+返す非データディスクリプタになります。pure Python では、これはこのように
+はたらきます::
 
     class Function(object):
         . . .
@@ -281,79 +294,78 @@ this::
             "Simulate func_descr_get() in Objects/funcobject.c"
             return types.MethodType(self, obj, objtype)
 
-Running the interpreter shows how the function descriptor works in practice::
+インタプリタを起動すると、この関数ディスクリプタが実際にどうはたらくかを
+見られます::
 
     >>> class D(object):
          def f(self, x):
               return x
 
     >>> d = D()
-    >>> D.__dict__['f'] # Stored internally as a function
+    >>> D.__dict__['f'] # 関数として内部に保存されている
     <function f at 0x00C45070>
-    >>> D.f             # Get from a class becomes an unbound method
+    >>> D.f             # クラスから取得すると非束縛メソッドになる
     <unbound method D.f>
-    >>> d.f             # Get from an instance becomes a bound method
+    >>> d.f             # クラスから取得すると束縛メソッドになる
     <bound method D.f of <__main__.D object at 0x00B18C90>>
 
-The output suggests that bound and unbound methods are two different types.
-While they could have been implemented that way, the actual C implementation of
-:ctype:`PyMethod_Type` in
+この出力が暗示するのは、束縛メソッドと非束縛メソッドは 2 つの異なる
+型であるということです。これらは、異なる型として実装することも出来ますが、
 `Objects/classobject.c <http://svn.python.org/view/python/trunk/Objects/classobject.c?view=markup>`_
-is a single object with two different representations depending on whether the
-:attr:`im_self` field is set or is *NULL* (the C equivalent of *None*).
+における :ctype:`PyMethod_Type` の実際の C 実装は、 :attr:`im_self` が
+*NULL* (*None* と等価な C) に設定されているかに依って 2 つの異なる表現を持つ、
+1 つのオブジェクトです。
 
-Likewise, the effects of calling a method object depend on the :attr:`im_self`
-field. If set (meaning bound), the original function (stored in the
-:attr:`im_func` field) is called as expected with the first argument set to the
-instance.  If unbound, all of the arguments are passed unchanged to the original
-function. The actual C implementation of :func:`instancemethod_call()` is only
-slightly more complex in that it includes some type checking.
+同様に、メソッドオブジェクトを呼び出すことの効果も、 :attr:`im_self`
+フィールドに依ります。設定されていれば (束縛を意味し)、期待通り
+(:attr:`im_func` フィールドに保存されている) 元の関数が、
+第一引数をインスタンスとして、呼び出されます。
+非束縛なら、すべての引数がそのまま元の関数に渡されます。
+:func:`instancemethod_call()` の実際の C 実装は、型チェックがあるため、
+もう少しだけ複雑です。
 
 
-Static Methods and Class Methods
---------------------------------
+静的メソッドとクラスメソッド
+----------------------------
 
-Non-data descriptors provide a simple mechanism for variations on the usual
-patterns of binding functions into methods.
+非データディスクリプタは、関数をメソッドに束縛する、各種の一般的なパターンに、
+単純な機構を提供します。
 
-To recap, functions have a :meth:`__get__` method so that they can be converted
-to a method when accessed as attributes.  The non-data descriptor transforms a
-``obj.f(*args)`` call into ``f(obj, *args)``.  Calling ``klass.f(*args)``
-becomes ``f(*args)``.
+まとめると、関数は :meth:`__get__` メソッドを持ち、属性として
+アクセスされたとき、メソッドに変換されます。この非データディスクリプタは、
+``obj.f(*args)`` の呼び出しを ``f(obj, *args)`` に変換します。
+``klass.f(*args)`` を呼び出すと ``f(*args)`` になります。
 
-This chart summarizes the binding and its two most useful variants:
+このチャートは、束縛と、その 2 つの異なる便利な形をまとめています:
 
       +-----------------+----------------------+------------------+
-      | Transformation  | Called from an       | Called from a    |
-      |                 | Object               | Class            |
+      | 変換            | オブジェクトから     | クラスから       |
+      |                 | 呼び出される         | 呼び出される     |
       +=================+======================+==================+
-      | function        | f(obj, \*args)       | f(\*args)        |
+      | 関数            | f(obj, \*args)       | f(\*args)        |
       +-----------------+----------------------+------------------+
-      | staticmethod    | f(\*args)            | f(\*args)        |
+      | 静的メソッド    | f(\*args)            | f(\*args)        |
       +-----------------+----------------------+------------------+
-      | classmethod     | f(type(obj), \*args) | f(klass, \*args) |
+      | クラスメソッド  | f(type(obj), \*args) | f(klass, \*args) |
       +-----------------+----------------------+------------------+
 
-Static methods return the underlying function without changes.  Calling either
-``c.f`` or ``C.f`` is the equivalent of a direct lookup into
-``object.__getattribute__(c, "f")`` or ``object.__getattribute__(C, "f")``. As a
-result, the function becomes identically accessible from either an object or a
-class.
+静的メソッドは、下にある関数をそのまま返します。
+``c.f`` や ``C.f`` は、 ``object.__getattribute__(c, "f")`` や
+``object.__getattribute__(C, "f")`` を直接探索するのと同じです。
+結果として、関数はオブジェクトとクラスから同じようにアクセスできます。
 
-Good candidates for static methods are methods that do not reference the
-``self`` variable.
+静的メソッドにすると良いのは、 ``self`` 変数への参照を持たない
+メソッドです。
 
-For instance, a statistics package may include a container class for
-experimental data.  The class provides normal methods for computing the average,
-mean, median, and other descriptive statistics that depend on the data. However,
-there may be useful functions which are conceptually related but do not depend
-on the data.  For instance, ``erf(x)`` is handy conversion routine that comes up
-in statistical work but does not directly depend on a particular dataset.
-It can be called either from an object or the class:  ``s.erf(1.5) --> .9332`` or
-``Sample.erf(1.5) --> .9332``.
+例えば、統計パッケージに、実験データのコンテナがあるとします。
+そのクラスは、平均、メジアン、その他の、データに依る記述統計を計算する
+標準メソッドを提供します。しかし、概念上は関係があっても、データには
+依らないような便利な関数もあります。例えば、 ``erf(x)`` は統計上の便利な
+変換ルーチンですが、特定のデータセットに直接には依存しません。
+これは、オブジェクトからでもクラスからでも呼び出せます:
+``s.erf(1.5) --> .9332`` または ``Sample.erf(1.5) --> .9332`` 。
 
-Since staticmethods return the underlying function with no changes, the example
-calls are unexciting::
+静的メソッドは下にある関数をそのまま返すので、呼び出しの例は面白くありません::
 
     >>> class E(object):
          def f(x):
@@ -365,8 +377,8 @@ calls are unexciting::
     >>> print E().f(3)
     3
 
-Using the non-data descriptor protocol, a pure Python version of
-:func:`staticmethod` would look like this::
+非データディスクリプタプロトコルを使うと、pure Python 版の
+:func:`staticmethod` は以下のようになります::
 
     class StaticMethod(object):
      "Emulate PyStaticMethod_Type() in Objects/funcobject.c"
@@ -377,9 +389,9 @@ Using the non-data descriptor protocol, a pure Python version of
      def __get__(self, obj, objtype=None):
           return self.f
 
-Unlike static methods, class methods prepend the class reference to the
-argument list before calling the function.  This format is the same
-for whether the caller is an object or a class::
+静的メソッドとは違って、クラスメソッドは関数を呼び出す前にクラス参照を
+引数リストの先頭に加えます。このフォーマットは、
+呼び出し元がオブジェクトでもクラスでも同じです::
 
     >>> class E(object):
          def f(klass, x):
@@ -392,11 +404,11 @@ for whether the caller is an object or a class::
     ('E', 3)
 
 
-This behavior is useful whenever the function only needs to have a class
-reference and does not care about any underlying data.  One use for classmethods
-is to create alternate class constructors.  In Python 2.3, the classmethod
-:func:`dict.fromkeys` creates a new dictionary from a list of keys.  The pure
-Python equivalent is::
+この振る舞いは、関数がクラス参照のみを必要とし、下にあるデータを
+考慮しないときに便利です。クラスメソッドの使い方の一つは、代わりの
+クラスコンストラクタを作ることです。Python 2.3 では、クラスメソッド
+:func:`dict.fromkeys` は新しい辞書をキーのリストから生成します。
+等価な pure Python は::
 
     class Dict:
         . . .
@@ -408,13 +420,13 @@ Python equivalent is::
             return d
         fromkeys = classmethod(fromkeys)
 
-Now a new dictionary of unique keys can be constructed like this::
+これで一意なキーを持つ新しい辞書が以下のように構成できます::
 
     >>> Dict.fromkeys('abracadabra')
     {'a': None, 'r': None, 'b': None, 'c': None, 'd': None}
 
-Using the non-data descriptor protocol, a pure Python version of
-:func:`classmethod` would look like this::
+非データディスクリプタプロトコルを使った、 :func:`classmethod` の pure Python
+版はこのようになります::
 
     class ClassMethod(object):
          "Emulate PyClassMethod_Type() in Objects/funcobject.c"
