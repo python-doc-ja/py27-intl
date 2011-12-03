@@ -8,23 +8,16 @@
 
 .. index:: single: ttk
 
-The :mod:`ttk` module provides access to the Tk themed widget set, which has
-been introduced in Tk 8.5. If Python is not compiled against Tk 8.5 code may
-still use this module as long as Tile is installed. However, some features
-provided by the new Tk, like anti-aliased font rendering under X11, window
-transparency (on X11 you will need a composition window manager) will be
-missing.
-
 :mod:`ttk` モジュールは Tk 8.5 で導入された Tk のテーマ付きウィジェットへのアクセスを提供します。
 Tk 8.5 が無い環境で Python がコンパイルされていた場合でも、 Tile がインストールされていればこのモジュールはそれを使おうとします。
-しかし、 X11 上のフォントのアンチエイリアスや透過ウィンドウ (X11 では***ウィンドウマネージャが必要です) などの新しい Tk が提供している機能は使えません。
+しかし、 X11 上のフォントのアンチエイリアスや透過ウィンドウ (X11 ではコンポジションウィンドウマネージャが必要です) などの新しい Tk が提供している機能は使えません。
 
 :mod:`ttk` の基本的なアイディアは、拡張可能性のためにウィジェットの動作を実装するコードと見た目を記述するコードを分離することです。
 
 .. seealso::
 
    `Tk Widget Styling Support <http://www.tcl.tk/cgi-bin/tct/tip/48>`_
-      Tk テーマのサポート***のドキュメントThe document which brought up theming support for Tk
+      Tk のテーマサポートの始まりのドキュメント
 
 
 Ttk を使う
@@ -56,7 +49,7 @@ Ttk を使い始めるために、モジュールをインポートします::
 .. seealso::
 
    `Converting existing applications to use the Tile widgets <http://tktable.sourceforge.net/tile/doc/converting.txt>`_
-     Tcl においてアプリケーションを新しいウィジェットに移行するときに出てくる典型的な差異について書いてあるテキスト
+     Tcl において、アプリケーションを新しいウィジェットに移行するときに出てくる典型的な差異について書かれているテキスト
 
 
 Ttk ウィジェット
@@ -94,129 +87,128 @@ TtkStyling_ についての情報は :class:`Style` クラスの文書を読ん�
 ウィジェット
 ------------
 
-:class:`ttk.Widget` defines standard options and methods supported by Tk
-themed widgets and is not supposed to be directly instantiated.
+:class:`ttk.Widget` はTk のテーマ付きウィジェットがサポートしている標準のオプションやメソッドを定義するもので、
+これを直接インスタンス化するものではありません。
 
 
-Standard Options
+標準オプション
+^^^^^^^^^^^^^^
+
+全ての :mod:`ttk` ウィジェットは以下のオプションを受け付けます:
+
+   +------------+--------------------------------------------------------------+
+   | オプション | 説明                                                         |
+   +============+==============================================================+
+   | class      | ウィンドウクラスを指定します。このクラスはオプション         |
+   |            | データベースにウィンドウの他のオプションについて問い合わせを |
+   |            | 行うときに使われ、これによりウィンドウのデフォルトの         |
+   |            | バインドタグを決定したり、ウィジェットのデフォルトの         |
+   |            | レイアウトやスタイルを選択します。これは読み取り専用の       |
+   |            | オプションでウィンドウが作られるときにのみ指定できます。     |
+   +------------+--------------------------------------------------------------+
+   | cursor     | このウィジェットで使うマウスカーソルを指定します。           |
+   |            | 空文字列 (デフォルト) が設定されている場合は、               |
+   |            | カーソルは親ウィジェットのものを引き継ぎます。               |
+   +------------+--------------------------------------------------------------+
+   | takefocus  | キーボードによる移動のときにウィンドウがフォーカスを         |
+   |            | 受け入れるかを決定します。 0 、 1 、空文字列のいずれかを     |
+   |            | 返します。 0 の場合、キーボードによる移動でそのウィンドウは  |
+   |            | 常にスキップされます。 1 の場合、そのウィンドウが            |
+   |            | 表示されているときに限り入力フォーカスを受け入れます。       |
+   |            | 空文字列は、移動スクリプトによってウィンドウに               |
+   |            | フォーカスを当てるかどうかが決まることを意味します。         |
+   +------------+--------------------------------------------------------------+
+   | style      | 独自のウィジェットスタイルを指定するのに使われます。         |
+   +------------+--------------------------------------------------------------+
+
+
+スクロール可能ウィジェットのオプション
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+以下のオプションはスクロールバーで操作されるウィジェットが持っているオプションです。
+
+   +----------------+---------------------------------------------------------+
+   | オプション     | 説明                                                    |
+   +================+=========================================================+
+   | xscrollcommand | 水平方向のスクロールバーとのやり取りに使われます。      |
+   |                |                                                         |
+   |                | ウィジェットのウィンドウが再描画されたとき,             |
+   |                | ウィジェットは scrollcommand に基いて Tcl コマンドを    |
+   |                | 生成します。                                            |
+   |                |                                                         |
+   |                | 通常このオプションにはあるスクロールバーの              |
+   |                | :meth:`Scrollbar.set` メソッドが設定されます。          |
+   |                | こうすると、ウィンドウの見た目が変わったときに          |
+   |                | スクロールバーの状態も更新されます。                    |
+   +----------------+---------------------------------------------------------+
+   | yscrollcommand | 垂直方向のスクロールバーとのやり取りに使われます。      |
+   |                | 詳しいことは、上記を参照してください。                  |
+   +----------------+---------------------------------------------------------+
+
+
+ラベルオプション
 ^^^^^^^^^^^^^^^^
 
-All the :mod:`ttk` widgets accept the following options:
-
-   +-----------+--------------------------------------------------------------+
-   | Option    | Description                                                  |
-   +===========+==============================================================+
-   | class     | Specifies the window class. The class is used when querying  |
-   |           | the option database for the window's other options, to       |
-   |           | determine the default bindtags for the window, and to select |
-   |           | the widget's default layout and style. This is a read-only   |
-   |           | option which may only be specified when the window is        |
-   |           | created.                                                     |
-   +-----------+--------------------------------------------------------------+
-   | cursor    | Specifies the mouse cursor to be used for the widget. If set |
-   |           | to the empty string (the default), the cursor is inherited   |
-   |           | from the parent widget.                                      |
-   +-----------+--------------------------------------------------------------+
-   | takefocus | Determines whether the window accepts the focus during       |
-   |           | keyboard traversal. 0, 1 or an empty string is returned.     |
-   |           | If 0, the window should be skipped entirely                  |
-   |           | during keyboard traversal. If 1, the window                  |
-   |           | should receive the input focus as long as it is viewable.    |
-   |           | An empty string means that the traversal scripts make the    |
-   |           | decision about whether or not to focus on the window.        |
-   +-----------+--------------------------------------------------------------+
-   | style     | May be used to specify a custom widget style.                |
-   +-----------+--------------------------------------------------------------+
-
-
-Scrollable Widget Options
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The following options are supported by widgets that are controlled by a
-scrollbar.
-
-   +----------------+---------------------------------------------------------+
-   | option         | description                                             |
-   +================+=========================================================+
-   | xscrollcommand | Used to communicate with horizontal scrollbars.         |
-   |                |                                                         |
-   |                | When the view in the widget's window changes, the widget|
-   |                | will generate a Tcl command based on the scrollcommand. |
-   |                |                                                         |
-   |                | Usually this option consists of the                     |
-   |                | :meth:`Scrollbar.set` method of some scrollbar. This    |
-   |                | will cause                                              |
-   |                | the scrollbar to be updated whenever the view in the    |
-   |                | window changes.                                         |
-   +----------------+---------------------------------------------------------+
-   | yscrollcommand | Used to communicate with vertical scrollbars.           |
-   |                | For more information, see above.                        |
-   +----------------+---------------------------------------------------------+
-
-
-Label Options
-^^^^^^^^^^^^^
-
-The following options are supported by labels, buttons and other button-like
-widgets.
+以下のオプションはラベルやボタンやボタンに類似したウィジェットがが持っているオプションです。
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
 
    +--------------+-----------------------------------------------------------+
-   | option       | description                                               |
+   | オプション   | 説明                                                      |
    +==============+===========================================================+
-   | text         | Specifies a text string to be displayed inside the widget.|
+   | text         | ウィジェットに表示される文字列を指定します。              |
    +--------------+-----------------------------------------------------------+
-   | textvariable | Specifies a name whose value will be used in place of the |
-   |              | text option resource.                                     |
+   | textvariable | text オプションの代わりに使う値の変数名を指定します。     |
    +--------------+-----------------------------------------------------------+
-   | underline    | If set, specifies the index (0-based) of a character to   |
-   |              | underline in the text string. The underline character is  |
-   |              | used for mnemonic activation.                             |
+   | underline    | このオプションを設定すると、文字列の中で下線を引く文字の  |
+   |              | インデックス (0 基点) を指定します。下線が引かれた文字は  |
+   |              | ショートカットとして使われます。                          |
    +--------------+-----------------------------------------------------------+
-   | image        | Specifies an image to display. This is a list of 1 or more|
-   |              | elements. The first element is the default image name. The|
-   |              | rest of the list is a sequence of statespec/value pairs as|
-   |              | defined by :meth:`Style.map`, specifying different images |
-   |              | to use when the widget is in a particular state or a      |
-   |              | combination of states. All images in the list should have |
-   |              | the same size.                                            |
+   | image        | 表示する画像を指定します。これは 1 つ以上の要素を持つ     |
+   |              | リストです。先頭の要素はデフォルトの画像名です。          |
+   |              | 残りの要素は :meth:`Style.map` で定義されているような     |
+   |              | 状態名と値のペアの並びで、ウィジェットがある状態、        |
+   |              | もしくはある状態の組み合わせにいるときに使用する          |
+   |              | 別の画像を指定します。                                    |
+   |              | このリストにある全ての画像は同じサイズでなればなりません。|
    +--------------+-----------------------------------------------------------+
-   | compound     | Specifies how to display the image relative to the text,  |
-   |              | in the case both text and image options are present.      |
-   |              | Valid values are:                                         |
+   | compound     | text オプションと image オプションが両方とも              |
+   |              | 指定されていた場合に、テキストに対して                    |
+   |              | 画像をどう配置するかを指定します。                        |
    |              |                                                           |
-   |              | * text: display text only                                 |
-   |              | * image: display image only                               |
-   |              | * top, bottom, left, right: display image above, below,   |
-   |              |   left of, or right of the text, respectively.            |
-   |              | * none: the default. display the image if present,        |
-   |              |   otherwise the text.                                     |
+   |              | * text: テキストのみ表示する                              |
+   |              | * image: 画像のみ表示する                                 |
+   |              | * top, bottom, left, right: それぞれ画像をテキストの      |
+   |              |   上、下、左、右に配置する。                              |
+   |              | * none: デフォルト。もしあれば画像を表示し、              |
+   |              |   そうでなければテキストを表示する                        |
    +--------------+-----------------------------------------------------------+
-   | width        | If greater than zero, specifies how much space, in        |
-   |              | character widths, to allocate for the text label; if less |
-   |              | than zero, specifies a minimum width. If zero or          |
-   |              | unspecified, the natural width of the text label is used. |
+   | width        | 0 より大きい場合、テキストラベルを作成するのに            |
+   |              | どれくらいのスペースを使うかを文字の幅で指定します。      |
+   |              | 0 より小さい場合、最小の幅が指定されます。                |
+   |              | 0 もしくは無指定の場合、テキストラベルに対して            |
+   |              | 自然な幅が使われます。                                    |
    +--------------+-----------------------------------------------------------+
 
 
-Compatibility Options
-^^^^^^^^^^^^^^^^^^^^^
+互換性オプション
+^^^^^^^^^^^^^^^^
 
-   +--------+----------------------------------------------------------------+
-   | option | description                                                    |
-   +========+================================================================+
-   | state  | May be set to "normal" or "disabled" to control the "disabled" |
-   |        | state bit. This is a write-only option: setting it changes the |
-   |        | widget state, but the :meth:`Widget.state` method does not     |
-   |        | affect this option.                                            |
-   +--------+----------------------------------------------------------------+
+   +------------+--------------------------------------------------------------+
+   | オプション | 説明                                                         |
+   +============+==============================================================+
+   | state      | "normal" か "disabled" に設定され、 "disabled" 状態のビットを|
+   |            | コントロールします。これは書き込み専用のオプションです:      |
+   |            | これを設定するとウィジェットの状態を変更できますが、         |
+   |            | :meth:`Widget.state` メソッドはこのオプションに影響を        |
+   |            | 及ぼしません。                                               |
+   +------------+--------------------------------------------------------------+
 
-Widget States
-^^^^^^^^^^^^^
+ウィジェットの状態
+^^^^^^^^^^^^^^^^^^
 
-The widget state is a bitmap of independent state flags.
+ウィジェットの状態は独立した状態フラグのビットマップです。
 
    +------------+-------------------------------------------------------------+
    | flag       | description                                                 |
@@ -431,7 +423,7 @@ There are also specific options for tabs:
    +-----------+--------------------------------------------------------------+
    | compound  | Specifies how to display the image relative to the text, in  |
    |           | the case both text and image options are present. See        |
-   |           | `Label Options`_ for legal values.                           |
+   |           | `ラベルオプション`_ for legal values.                        |
    +-----------+--------------------------------------------------------------+
    | underline | Specifies the index (0-based) of a character to underline in |
    |           | the text string. The underlined character is used for        |
@@ -695,7 +687,7 @@ Each item also has a list of tags, which can be used to associate event bindings
 with individual items and control the appearance of the item.
 
 The Treeview widget supports horizontal and vertical scrolling, according to
-the options described in `Scrollable Widget Options`_ and the methods
+the options described in `スクロール可能ウィジェットのオプション`_ and the methods
 :meth:`Treeview.xview` and :meth:`Treeview.yview`.
 
 
