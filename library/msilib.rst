@@ -36,8 +36,8 @@
 
 .. function:: UuidCreate()
 
-   新しい一意識別子の文字列表現を返します。この関数は Windows API の関数 :cfunc:`UuidCreate` と
-   :cfunc:`UuidToString` をラップしたものです。
+   新しい一意識別子の文字列表現を返します。この関数は Windows API の関数 :c:func:`UuidCreate` と
+   :c:func:`UuidToString` をラップしたものです。
 
 
 .. function:: OpenDatabase(path, persist)
@@ -51,7 +51,7 @@
 
 .. function:: CreateRecord(count)
 
-   :cfunc:`MSICreateRecord` を呼び出して新しいレコードオブジェクトを返します。 *count* はレコードのフィールドの数です。
+   :c:func:`MSICreateRecord` を呼び出して新しいレコードオブジェクトを返します。 *count* はレコードのフィールドの数です。
 
 
 .. function:: init_database(name, schema, ProductName, ProductCode, ProductVersion, Manufacturer)
@@ -117,17 +117,17 @@
 
 .. method:: Database.OpenView(sql)
 
-   :cfunc:`MSIDatabaseOpenView` を呼び出してビューオブジェクトを返します。 *sql* は実行される SQL 命令です。
+   :c:func:`MSIDatabaseOpenView` を呼び出してビューオブジェクトを返します。 *sql* は実行される SQL 命令です。
 
 
 .. method:: Database.Commit()
 
-   :cfunc:`MSIDatabaseCommit` を呼び出して現在のトランザクションで保留されている変更をコミットします。
+   :c:func:`MSIDatabaseCommit` を呼び出して現在のトランザクションで保留されている変更をコミットします。
 
 
 .. method:: Database.GetSummaryInformation(count)
 
-   :cfunc:`MsiGetSummaryInformation` を呼び出して新しいサマリー情報オブジェクトを返します。 *count*
+   :c:func:`MsiGetSummaryInformation` を呼び出して新しいサマリー情報オブジェクトを返します。 *count*
    は更新された値の最大数です。
 
 
@@ -145,25 +145,25 @@
 
 .. method:: View.Execute(params)
 
-   :cfunc:`MSIViewExecute` を通してビューに対する SQL 問い合わせを実行します。
+   :c:func:`MSIViewExecute` を通してビューに対する SQL 問い合わせを実行します。
    *params* が ``None`` でない場合、
    クエリ中のパラメータトークンの実際の値を与えるものです。
 
 
 .. method:: View.GetColumnInfo(kind)
 
-   :cfunc:`MsiViewGetColumnInfo` の呼び出しを通してビューのカラムを説明するレコードを返します。 *kind* は
+   :c:func:`MsiViewGetColumnInfo` の呼び出しを通してビューのカラムを説明するレコードを返します。 *kind* は
    ``MSICOLINFO_NAMES`` または ``MSICOLINFO_TYPES`` です。
 
 
 .. method:: View.Fetch()
 
-   :cfunc:`MsiViewFetch` の呼び出しを通してクエリの結果レコードを返します。
+   :c:func:`MsiViewFetch` の呼び出しを通してクエリの結果レコードを返します。
 
 
 .. method:: View.Modify(kind, data)
 
-   :cfunc:`MsiViewModify` を呼び出してビューを変更します。 *kind* は ``MSIMODIFY_SEEK``,
+   :c:func:`MsiViewModify` を呼び出してビューを変更します。 *kind* は ``MSIMODIFY_SEEK``,
    ``MSIMODIFY_REFRESH``, ``MSIMODIFY_INSERT``, ``MSIMODIFY_UPDATE``,
    ``MSIMODIFY_ASSIGN``, ``MSIMODIFY_REPLACE``, ``MSIMODIFY_MERGE``,
    ``MSIMODIFY_DELETE``, ``MSIMODIFY_INSERT_TEMPORARY``, ``MSIMODIFY_VALIDATE``,
@@ -175,7 +175,7 @@
 
 .. method:: View.Close()
 
-   :cfunc:`MsiViewClose` を通してビューを閉じます。
+   :c:func:`MsiViewClose` を通してビューを閉じます。
 
 
 .. seealso::
@@ -194,7 +194,7 @@
 
 .. method:: SummaryInformation.GetProperty(field)
 
-   :cfunc:`MsiSummaryInfoGetProperty` を通してサマリーのプロパティを返します。 *field* はプロパティ名で、定数
+   :c:func:`MsiSummaryInfoGetProperty` を通してサマリーのプロパティを返します。 *field* はプロパティ名で、定数
    ``PID_CODEPAGE``, ``PID_TITLE``, ``PID_SUBJECT``, ``PID_AUTHOR``,
    ``PID_KEYWORDS``, ``PID_COMMENTS``, ``PID_TEMPLATE``, ``PID_LASTAUTHOR``,
    ``PID_REVNUMBER``, ``PID_LASTPRINTED``, ``PID_CREATE_DTM``,
@@ -204,18 +204,18 @@
 
 .. method:: SummaryInformation.GetPropertyCount()
 
-   :cfunc:`MsiSummaryInfoGetPropertyCount` を通してサマリープロパティの個数を返します。
+   :c:func:`MsiSummaryInfoGetPropertyCount` を通してサマリープロパティの個数を返します。
 
 
 .. method:: SummaryInformation.SetProperty(field, value)
 
-   :cfunc:`MsiSummaryInfoSetProperty` を通してプロパティをセットします。 *field* は
+   :c:func:`MsiSummaryInfoSetProperty` を通してプロパティをセットします。 *field* は
    :meth:`GetProperty` におけるものと同じ値をとります。 *value* はプロパティの新しい値です。許される値の型は整数と文字列です。
 
 
 .. method:: SummaryInformation.Persist()
 
-   :cfunc:`MsiSummaryInfoPersist` を使って変更されたプロパティをサマリー情報ストリームに書き込みます。
+   :c:func:`MsiSummaryInfoPersist` を使って変更されたプロパティをサマリー情報ストリームに書き込みます。
 
 
 .. seealso::
@@ -233,7 +233,7 @@
 
 .. method:: Record.GetFieldCount()
 
-   :cfunc:`MsiRecordGetFieldCount` を通してレコードのフィールド数を返します。
+   :c:func:`MsiRecordGetFieldCount` を通してレコードのフィールド数を返します。
 
 
 .. method:: Record.GetInteger(field)
@@ -248,25 +248,25 @@
 
 .. method:: Record.SetString(field, value)
 
-   :cfunc:`MsiRecordSetString` を通して *field* を *value* にセットします。 *field* は整数、 *value*
+   :c:func:`MsiRecordSetString` を通して *field* を *value* にセットします。 *field* は整数、 *value*
    は文字列でなければなりません。
 
 
 .. method:: Record.SetStream(field, value)
 
-   :cfunc:`MsiRecordSetStream` を通して *field* を *value* という名のファイルの内容にセットします。 *field*
+   :c:func:`MsiRecordSetStream` を通して *field* を *value* という名のファイルの内容にセットします。 *field*
    は整数、 *value* は文字列でなければなりません。
 
 
 .. method:: Record.SetInteger(field, value)
 
-   :cfunc:`MsiRecordSetInteger` を通して *field* を *value* にセットします。 *field* も *value*
+   :c:func:`MsiRecordSetInteger` を通して *field* を *value* にセットします。 *field* も *value*
    も整数でなければなりません。
 
 
 .. method:: Record.ClearData()
 
-   :cfunc:`MsiRecordClearData` を通してレコードの全てのフィールドを 0 にセットします。
+   :c:func:`MsiRecordClearData` を通してレコードの全てのフィールドを 0 にセットします。
 
 
 .. seealso::

@@ -19,7 +19,7 @@
 ==============
 
 一部のコードを 3.0 にだけコンパイルするための一番簡単な方法は、
-:cmacro:`PY_MAJOR_VERSION` が 3 以上かどうかチェックすることです。 ::
+:c:macro:`PY_MAJOR_VERSION` が 3 以上かどうかチェックすることです。 ::
 
    #if PY_MAJOR_VERSION >= 3
    #define IS_PY3K
@@ -44,12 +44,12 @@ Python 3.0 の :func:`str` (C では ``PyString_*`` 関数) タイプは 2.x の
 :func:`unicode` (``PyUnicode_*``) と同じものです。昔の 8 ビット文字列タイプは
 :func:`bytes` です。Python 2.6 以降には互換性ヘッダ :file:`bytesobject.h`
 が用意されており、 ``PyBytes`` 系の名前を ``PyString`` 系にマップしています。
-3.0 との互換性を最大限確保するには、 :ctype:`PyUnicode` は文字データに、
-:ctype:`PyBytes` はバイナリデータにだけ使うべきです。
+3.0 との互換性を最大限確保するには、 :c:type:`PyUnicode` は文字データに、
+:c:type:`PyBytes` はバイナリデータにだけ使うべきです。
 ほかにも、3.0 の
-:ctype:`PyBytes` と :ctype:`PyUnicode` は 2.x の :ctype:`PyString` と
-:ctype:`PyUnicode` とは違って交換不可能だということも重要です。以下の例では
-:ctype:`PyUnicode`, :ctype:`PyString`, :ctype:`PyBytes` に関する
+:c:type:`PyBytes` と :c:type:`PyUnicode` は 2.x の :c:type:`PyString` と
+:c:type:`PyUnicode` とは違って交換不可能だということも重要です。以下の例では
+:c:type:`PyUnicode`, :c:type:`PyString`, :c:type:`PyBytes` に関する
 ベストプラクティスを見ることができます。 ::
 
    #include "stdlib.h"

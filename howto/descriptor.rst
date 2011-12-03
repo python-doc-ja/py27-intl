@@ -312,7 +312,7 @@ Python の慣習では、このインスタンスの参照は *self* と呼ば�
 この出力が暗示するのは、束縛メソッドと非束縛メソッドは 2 つの異なる
 型であるということです。これらは、異なる型として実装することも出来ますが、
 `Objects/classobject.c <http://svn.python.org/view/python/trunk/Objects/classobject.c?view=markup>`_
-における :ctype:`PyMethod_Type` の実際の C 実装は、 :attr:`im_self` が
+における :c:type:`PyMethod_Type` の実際の C 実装は、 :attr:`im_self` が
 *NULL* (*None* と等価な C) に設定されているかに依って 2 つの異なる表現を持つ、
 1 つのオブジェクトです。
 

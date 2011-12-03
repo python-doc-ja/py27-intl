@@ -624,7 +624,7 @@ C拡張を書いたりPythonインタプリタを埋め込むときに最も一�
    GIL を保持していなければならず、開放しません。
 
 
-.. cfunction:: void PyEval_ReInitThreads()
+.. c:function:: void PyEval_ReInitThreads()
 
    この関数は :c:func:`PyOS_AfterFork` から呼び出され、新しい子プロセスが、
    子プロセス内で実行していないスレッドが持っているロックを持たないようにします。
@@ -928,7 +928,7 @@ Python はそのような提供された関数を呼び出します。
 通知はワーカースレッドなどからスケジュールされ、実際の呼び出しはメインスレッドで
 最初の、GILを所有していて任意の Python API 呼び出しが可能なタイミングで実行されます。
 
-.. cfunction:: int Py_AddPendingCall(int (*func)(void *), void *arg)
+.. c:function:: int Py_AddPendingCall(int (*func)(void *), void *arg)
 
    .. index:: single: Py_AddPendingCall()
 

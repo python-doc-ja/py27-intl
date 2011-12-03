@@ -28,7 +28,7 @@ OSSはオープンソースあるいは商用のUnixで広く利用でき、Linu
 
    何らかのエラーのときに送出される例外です。引数は何が誤っているかを示す文字列です。
 
-   (:mod:`ossaudiodev` が :cfunc:`open` 、 :cfunc:`write` 、 :cfunc:`ioctl`
+   (:mod:`ossaudiodev` が :c:func:`open` 、 :c:func:`write` 、 :c:func:`ioctl`
    などのシステムコールからエラーを受け取った場合には :exc:`IOError` を送出します。 :mod:`ossaudiodev`
    が直接エラーを検出した場合には :exc:`OSSAudioError` になります。)
 

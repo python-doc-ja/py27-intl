@@ -14,8 +14,8 @@
 .. It cannot be used on regular files to determine whether a file has grown since
 .. it was last read.
 
-このモジュールでは、ほとんどのオペレーティングシステムで利用可能な :cfunc:`select` および :cfunc:`poll` 関数、
-Linux 2.5+ で利用可能な :cfunc:`epoll` 、多くのBSDで利用可能な :cfunc:`kqueue` 関数に対するアクセスを提供しています。
+このモジュールでは、ほとんどのオペレーティングシステムで利用可能な :c:func:`select` および :c:func:`poll` 関数、
+Linux 2.5+ で利用可能な :c:func:`epoll` 、多くのBSDで利用可能な :c:func:`kqueue` 関数に対するアクセスを提供しています。
 Windows 上ではソケットに対してしか動作しないので注意してください; その他のオペレーティングシステムでは、他のファイル形式でも
 (特に Unixではパイプにも) 動作します。通常のファイルに対して適用し、最後にファイルを読み出した時から内容が増えているかを
 決定するために使うことはできません。
@@ -32,8 +32,8 @@ Windows 上ではソケットに対してしか動作しないので注意して
    .. containing the numeric error code from :cdata:`errno` and the corresponding
    .. string, as would be printed by the C function :cfunc:`perror`.
 
-   エラーが発生したときに送出される例外です。エラーに付属する値は、 :cdata:`errno` からとったエラーコードを表す数値とその
-   エラーコードに対応する文字列からなるペアで、C 関数の :cfunc:`perror` が出力するものと同様です。
+   エラーが発生したときに送出される例外です。エラーに付属する値は、 :c:data:`errno` からとったエラーコードを表す数値とその
+   エラーコードに対応する文字列からなるペアで、C 関数の :c:func:`perror` が出力するものと同様です。
 
 
 .. function:: epoll([sizehint=-1])
@@ -94,7 +94,7 @@ Windows 上ではソケットに対してしか動作しないので注意して
    .. integers representing file descriptors or objects with a parameterless method
    .. named :meth:`fileno` returning such an integer:
 
-   Unix の :cfunc:`select` システムコールに対する直接的なインタフェースです。
+   Unix の :c:func:`select` システムコールに対する直接的なインタフェースです。
    最初の 3 つの引数は '待機可能オブジェクト' からなるシーケンスです:
    待機可能オブジェクトとは、ファイル記述子を表す整数値か、引数なしで整数を返すメソッド :meth:`fileno` を持つオブジェクトです。
 
@@ -161,7 +161,7 @@ Windows 上ではソケットに対してしか動作しないので注意して
       .. WinSock.
 
       :func:`select` は Windows のファイルオブジェクトを受理しませんが、ソケットは受理します。
-      Windows では、背後の :cfunc:`select` 関数は WinSock ライブラリで提供されており、
+      Windows では、背後の :c:func:`select` 関数は WinSock ライブラリで提供されており、
       WinSock によって生成されたものではないファイル記述子を扱うことができないのです。
 
 .. attribute:: select.PIPE_BUF
@@ -288,11 +288,11 @@ Windows 上ではソケットに対してしか動作しないので注意して
 .. linearly scanned again. :cfunc:`select` is O(highest file descriptor), while
 .. :cfunc:`poll` is O(number of file descriptors).
 
-:cfunc:`poll` システムコールはほとんどの Unix システムでサポートされており、
+:c:func:`poll` システムコールはほとんどの Unix システムでサポートされており、
 非常に多数のクライアントに同時にサービスを提供するようなネットワークサーバが高いスケーラビリティを持てるようにしています。
-:cfunc:`poll` は対象のファイル記述子を列挙するだけでよいため、良くスケールします。
-一方、 :cfunc:`select` はビット対応表を構築し、対象ファイルの記述子に対応するビットを立て、その後全ての対応表の全てのビットを線形探索します。
-:cfunc:`select` は O(最大のファイル記述子番号) なのに対し、 :cfunc:`poll` は O(対象とするファイル記述子の数) で済みます。
+:c:func:`poll` は対象のファイル記述子を列挙するだけでよいため、良くスケールします。
+一方、 :c:func:`select` はビット対応表を構築し、対象ファイルの記述子に対応するビットを立て、その後全ての対応表の全てのビットを線形探索します。
+:c:func:`select` は O(最大のファイル記述子番号) なのに対し、 :c:func:`poll` は O(対象とするファイル記述子の数) で済みます。
 
 
 .. method:: poll.register(fd[, eventmask])

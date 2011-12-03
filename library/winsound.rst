@@ -25,7 +25,7 @@
 
 .. function:: PlaySound(sound, flags)
 
-   プラットフォームの API から関数 :cfunc:`PlaySound` を呼び出します。
+   プラットフォームの API から関数 :c:func:`PlaySound` を呼び出します。
    引数 *sound* はファイル名、音声データの文字列、または
    ``None`` をとり得ます。
    *sound* の解釈は *flags* の値に依存します。この値は以下に述べる定数をビット単位OR
@@ -36,7 +36,7 @@
 
 .. function:: MessageBeep([type=MB_OK])
 
-   根底にある :cfunc:`MessageBeep` 関数をプラットフォームの API から呼び出します。この関数は音声をレジストリの指定に従って再生します。
+   根底にある :c:func:`MessageBeep` 関数をプラットフォームの API から呼び出します。この関数は音声をレジストリの指定に従って再生します。
    *type* 引数はどの音声を再生するかを指定します; とり得る値は ``-1``, ``MB_ICONASTERISK``,
    ``MB_ICONEXCLAMATION``, ``MB_ICONHAND``, ``MB_ICONQUESTION``,および ``MB_OK`` で、
    全て以下に記述されています。値 ``-1`` は "単純なビープ音" を再生します; この値は他の場合で音声を再生することができなかった

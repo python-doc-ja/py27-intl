@@ -53,7 +53,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
 
 .. c:function:: double PyOS_string_to_double(const char *s, char **endptr, PyObject *overflow_exception)
 
-   文字列 ``s`` を :ctype:`double` に変換します。失敗したときは Python の例外を発生させます。
+   文字列 ``s`` を :c:type:`double` に変換します。失敗したときは Python の例外を発生させます。
    受け入れられる文字列は、 Python の :func:`float` コンストラクタが受け付ける文字列に準拠しますが、
    ``s`` の先頭と末尾に空白文字があってはならないという部分が異なります。
    この変換は現在のロケールに依存しません。
@@ -114,7 +114,7 @@ The return value (*rv*) for these functions should be interpreted as follows:
       代わりに :func:`PyOS_double_to_string` を使ってください。
 
 
-.. cfunction:: char* PyOS_double_to_string(double val, char format_code, int precision, int flags, int *ptype)
+.. c:function:: char* PyOS_double_to_string(double val, char format_code, int precision, int flags, int *ptype)
 
    :c:type:`double` *val* を指定された *format_code*, *precision*, *flags* に基づいて文字列に変換します。
 

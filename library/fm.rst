@@ -29,7 +29,7 @@ glyph metrics; printer  matching。
 
 .. function:: init()
 
-   関数を初期化します。 :cfunc:`fminit` を呼び出します。
+   関数を初期化します。 :c:func:`fminit` を呼び出します。
    この関数は :mod:`fm` モジュールを最初にインポートすると自動的に呼び出さ\
    れるので、普通、呼び出す必要はありません。
 
@@ -41,7 +41,7 @@ glyph metrics; printer  matching。
 
 .. function:: enumerate()
 
-   利用可能なフォント名のリストを返します。この関数は :cfunc:`fmenumerate` へのインタフェースです。
+   利用可能なフォント名のリストを返します。この関数は :c:func:`fmenumerate` へのインタフェースです。
 
 
 .. function:: prstr(string)

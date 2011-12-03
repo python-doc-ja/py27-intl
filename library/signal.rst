@@ -119,7 +119,7 @@
    .. the system are defined by this module.
 
    全てのシグナル番号はシンボル定義されています。例えば、ハングアップシグナルは :const:`signal.SIGHUP` で定義されています; 変数名は C
-   言語のプログラムで使われているのと同じ名前で、 ``<signal.h>`` にあります。 ':cfunc:`signal`' に関する Unix
+   言語のプログラムで使われているのと同じ名前で、 ``<signal.h>`` にあります。 ':c:func:`signal`' に関する Unix
    マニュアルページでは、システムで定義されているシグナルを列挙しています (あるシステムではリストは :manpage:`signal(2)`
    に、別のシステムでは :manpage:`signal(7)` に列挙されています)。全てのシステムで同じシグナル名のセットを定義しているわけではないので
    注意してください; このモジュールでは、システムで定義されているシグナル名だけを定義しています。
@@ -346,7 +346,7 @@
    .. :cfunc:`siginterrupt` with a true *flag* value for the given signal.
 
    :func:`signal` を使ってシグナルハンドラを設定したときに、暗黙のうちに
-   *flag* に true を指定して :cfunc:`siginterrupt` が実行されるため、
+   *flag* に true を指定して :c:func:`siginterrupt` が実行されるため、
    中断に対するリスタートの動作がリセットされることに注意してください。
 
 
