@@ -98,9 +98,6 @@ Python は格納されている値の10進小数での近似値を表示する�
 見つけることができます。 (いくつかの言語ではデフォルトの、あるいはどの
 出力モードを選んでも、この差を **表示** しないかもしれませんが)
 
-+Other surprises follow from this one.  For example, if you try to round the
-+value 2.675 to two decimal places, you get this ::
-
 他にも期待と異なるかもしれない場合があります。
 例えば、 2.675 という値を小数点以下2桁で丸めようとすると、次のような
 結果になります。
@@ -110,13 +107,6 @@ Python は格納されている値の10進小数での近似値を表示する�
 
    >>> round(2.675, 2)
    2.67
-
-The documentation for the built-in :func:`round` function says that it rounds
-to the nearest value, rounding ties away from zero.  Since the decimal fraction
-2.675 is exactly halfway between 2.67 and 2.68, you might expect the result
-here to be (a binary approximation to) 2.68.  It's not, because when the
-decimal string ``2.675`` is converted to a binary floating-point number, it's
-again replaced with a binary approximation, whose exact value is ::
 
 組み込み関数 :func:`round` のドキュメントには、もっとも近い値に丸め、中央値の
 場合は 0 から遠い方に丸めると書かれています。10進数の 2.675 は 2.67 と 2.68
