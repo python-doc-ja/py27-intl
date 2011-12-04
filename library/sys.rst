@@ -17,10 +17,7 @@
    Pythonを起動した場合、 ``argv[0]`` は文字列 ``'-c'`` となります。
    スクリプト名なしでPythonを起動した場合、 ``argv[0]`` は空文字列になります。
 
-   .. To loop over the standard input, or the list of files given on the
-      command line, see the :mod:`fileinput` module.
-
-   標準入力もしくはコマンドライン引数で指定されたファイルのリストに対してループするには、
+   標準入力もしくはコマンドライン引数で指定されたファイルのリストに渡ってループするには、
    :mod:`fileinput` モジュールを参照してください。
 
 .. data:: byteorder
@@ -50,6 +47,14 @@
    ``modules.keys()`` は、インポートされたモジュールのみのリストを返します。)
 
 
+.. function:: call_tracing(func, args)
+
+   トレーシングが有効な間、 ``func(*args)`` を呼び出します。
+   トレーシングの状態は保存され、後で復元されます。
+   これは、別のコードをチェックポイントから再帰的にデバッグするために、
+   デバッガから呼び出されることを意図しています。
+
+
 .. data:: copyright
 
    Pythonインタープリタの著作権を表示する文字列。
@@ -57,14 +62,8 @@
 
 .. function:: _clear_type_cache()
 
-   .. Clear the internal type cache. The type cache is used to speed up attribute
-      and method lookups. Use the function *only* to drop unnecessary references
-      during reference leak debugging.
-
    内部の型キャッシュをクリアします。型キャッシュは属性とメソッドの検索を高速化するために利用されます。
    この関数は、参照リークをデバッグするときに不要な参照を削除するため **だけ** に利用してください。
-
-   .. This function should be used for internal and specialized purposes only.
 
    この関数は、内部的かつ特殊な目的にのみ利用されるべきです。
 
@@ -177,7 +176,7 @@
 .. data:: exec_prefix
 
    Python のプラットフォーム依存なファイルがインストールされているディレクトリ名(サイト固有)。デフォルトでは、この値は ``'/usr/local'`` です
-   が、ビルド時に :program:`configure` の :option:`--exec-prefix` 引数で
+   が、ビルド時に :program:`configure` の ``--exec-prefix`` 引数で
    指定することができます。全ての設定ファイル(:file:`pyconfig.h` など)は
    ``exec_prefix + '/lib/pythonversion/config'`` に、共有ライブラリは
    ``exec_prefix + '/lib/pythonversion/lib-dynload'`` にインストールされます
@@ -193,8 +192,10 @@
 .. function:: exit([arg])
 
    Python を終了します。 :func:`exit` は :exc:`SystemExit` を送出するので、
-   :keyword:`try` ステートメントの :keyword:`finally` 節に終了処理を記\
-   述したり、上位レベルで例外を捕捉して exit 処理を中断したりすることができます。
+   :keyword:`try` ステートメントの :keyword:`finally` 節に終了処理を
+   記述したり、上位レベルで例外を捕捉して exit 処理を中断したりすることが
+   できます。
+   
    オプション引数 *arg* には、終了ステータスとして整数(デフォルトは0）
    または整数以外の型のオブジェクトを指定することができます。
    整数を指定した場合、シェル等は 0 は"正常終了"、 0 以外の整数を"異常終了"として扱います。
@@ -202,8 +203,12 @@
    システムによっては特定の終了コードに個別の意味を持たせている場合がありますが、このような定義は僅かしかありません。
    Unix プログラムでは文法エラーの場合には 2 を、それ以外のエラーならば 1 を返します。
    *arg* に *None* を指定した場合は、数値の 0 を指定した場合と同じです。
-   それ以外のオブジェクトを指定すると、そのオブェクトが ``sys.stderr`` に出力され、終了コードとして 1 を返します。
+   それ以外のオブジェクトを指定すると、そのオブェクトが :data:`sys.stderr` に出力され、終了コードとして 1 を返します。
    エラー発生時には ``sys.exit("エラーメッセージ")`` と書くと、簡単にプログラムを終了することができます。
+   
+   究極には、 :func:`exit` は例外を送出する "だけ" なので、これがメインスレッド
+   から呼び出されたときは、プロセスを終了するだけで、
+   例外は遮断されません。
 
 
 .. data:: exitfunc
@@ -225,45 +230,28 @@
 
 .. data:: flags
 
-   .. The struct sequence *flags* exposes the status of command line flags. The
-      attributes are read only.
-
    属性とシーケンスを利用して、コマンドラインフラグの状態を提供しています。
    属性は読み込み専用になっています。
 
-   +------------------------------+------------------------------------------+
-   | 属性                         | フラグ                                   |
-   +==============================+==========================================+
-   | :const:`debug`               | -d                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`py3k_warning`        | -3                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`division_warning`    | -Q                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`division_new`        | -Qnew                                    |
-   +------------------------------+------------------------------------------+
-   | :const:`inspect`             | -i                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`interactive`         | -i                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`optimize`            | -O or -OO                                |
-   +------------------------------+------------------------------------------+
-   | :const:`dont_write_bytecode` | -B                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`no_user_site`        | -s                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`no_site`             | -S                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`ignore_environment`  | -E                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`tabcheck`            | -t or -tt                                |
-   +------------------------------+------------------------------------------+
-   | :const:`verbose`             | -v                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`unicode`             | -U                                       |
-   +------------------------------+------------------------------------------+
-   | :const:`bytes_warning`       | -b                                       |
-   +------------------------------+------------------------------------------+
+   ============================= ===================================
+   属性                          フラグ
+   ============================= ===================================
+   :const:`debug`                :option:`-d`
+   :const:`py3k_warning`         :option:`-3`
+   :const:`division_warning`     :option:`-Q`
+   :const:`division_new`         :option:`-Qnew <-Q>`
+   :const:`inspect`              :option:`-i`
+   :const:`interactive`          :option:`-i`
+   :const:`optimize`             :option:`-O` or :option:`-OO`
+   :const:`dont_write_bytecode`  :option:`-B`
+   :const:`no_user_site`         :option:`-s`
+   :const:`no_site`              :option:`-S`
+   :const:`ignore_environment`   :option:`-E`
+   :const:`tabcheck`             :option:`-t` or :option:`-tt <-t>`
+   :const:`verbose`              :option:`-v`
+   :const:`unicode`              :option:`-U`
+   :const:`bytes_warning`        :option:`-b`
+   ============================= ===================================
 
    .. versionadded:: 2.6
 
@@ -322,6 +310,17 @@
       '9876543211234568'
 
    .. versionadded:: 2.6
+
+.. data:: float_repr_style
+
+   :func:`repr` 関数が浮動小数点数に対してどう振る舞うかを指し示す文字列です。
+   この文字列が値 ``'short'`` を持てば、有限の浮動小数点数 ``x`` に対して、
+   ``repr(x)`` は ``float(repr(x)) == x`` を満たす短い文字列を返そうとします。
+   これは、 Python 2.7 以降での標準の振る舞いです。そうでなければ、
+   ``float_repr_style`` は値 ``'legacy'`` を持ち、 ``repr(x)`` は
+   2.7 以前のバージョンの Python と同じように振る舞います。
+
+   .. versionadded:: 2.7
 
 
 .. function:: getcheckinterval()
@@ -384,26 +383,14 @@
 
 .. function:: getsizeof(object[, default])
 
-   .. Return the size of an object in bytes. The object can be any type of
-      object. All built-in objects will return correct results, but this
-      does not have to hold true for third-party extensions as it is implementation
-      specific.
-
    *object* のサイズをバイト数で返します。
    *object* は任意の型のオブジェクトです。
    全てのビルトイン型は正しい値を返します。
    サードパーティー製の型については実装依存になります。
 
-   .. If given, *default* will be returned if the object does not provide means to
-      retrieve the size.  Otherwise a :exc:`TypeError` will be raised.
-
    *default* 引数が与えられると、
    オブジェクト型がサイズを取得する手段を提供していない場合に返されます。
    与えられてない場合には ``TypeError`` 例外が発生します。
-
-   .. :func:`getsizeof` calls the object's ``__sizeof__`` method and adds an
-      additional garbage collector overhead if the object is managed by the garbage
-      collector.
 
    :func:`getsizeof` は *object* の ``__sizeof__`` メソッドを呼び出し、
    そのオブジェクトがガベージコレクタに管理されていた場合はガベージコレクタの
@@ -450,11 +437,6 @@
 
    .. impl-detail::
 
-      .. The :func:`gettrace` function is intended only for implementing debuggers,
-         profilers, coverage tools and the like.  Its behavior is part of the
-         implementation platform, rather than part of the language definition,
-         and thus may not be available in all Python implementations.
-
       :func:`gettrace` 関数は、デバッガ、プロファイラ、カバレッジツールなどの実装に使うことのみを想定しています。
       この関数の振る舞いは言語定義ではなく実装プラットフォームの一部です。
       そのため、他の Python 実装では利用できないかもしれません。
@@ -464,14 +446,20 @@
 
 .. function:: getwindowsversion()
 
-   実行中の Windows のバージョンを示す、以下の値のタプルを返します：
-   *major*, *minor*, *build*, *platform*, *text* 。
-   *text* は文字列、それ以外の値は整数です。
+   実行中の Windows バージョンを示す、名前付きタプルを返します。
+   名前付けされた要素は、 *major*, *minor*,
+   *build*, *platform*, *service_pack*, *service_pack_minor*,
+   *service_pack_major*, *suite_mask*, および *product_type* です。
+   *service_pack* は、文字列を含み、それ以外は整数です。
+   この構成要素には名前でもアクセスできるので、 ``sys.getwindowsversion()[0]``
+   は ``sys.getwindowsversion().major`` と等価です。
+   先行のバージョンとの互換性のため、最初の 5 要素がインデクシングで
+   得られます。
 
    *platform* は、以下の値となります:
 
    +-----------------------------------------+-------------------------+
-   | Constant                                | Platform                |
+   | 定数                                    | プラットフォーム        |
    +=========================================+=========================+
    | :const:`0 (VER_PLATFORM_WIN32s)`        | Win32s on Windows 3.1   |
    +-----------------------------------------+-------------------------+
@@ -482,16 +470,36 @@
    | :const:`3 (VER_PLATFORM_WIN32_CE)`      | Windows CE              |
    +-----------------------------------------+-------------------------+
 
-   この関数は、Win32 :func:`GetVersionEx` 関数を呼び出します。詳細はマイクロソフトのドキュメントを参照してください。
+   *product_type* は、以下の値のいずれかになります。:
+
+   +---------------------------------------+----------------------------------------+
+   | 定数                                  | 意味                                   |
+   +=======================================+========================================+
+   | :const:`1 (VER_NT_WORKSTATION)`       | システムはワークステーションです。     |
+   +---------------------------------------+----------------------------------------+
+   | :const:`2 (VER_NT_DOMAIN_CONTROLLER)` | システムはドメインコントローラです。   |
+   +---------------------------------------+----------------------------------------+
+   | :const:`3 (VER_NT_SERVER)`            | システムはサーバですが、               |
+   |                                       | ドメインコントローラではありません。   |
+   +---------------------------------------+----------------------------------------+
+
+
+   この関数は、Win32 :c:func:`GetVersionEx` 関数を呼び出します。
+   これらのフィールドに関する詳細は :c:func:`OSVERSIONINFOEX` についての
+   マイクロソフトのドキュメントを参照してください。
 
    利用可能: Windows.
 
    .. versionadded:: 2.3
+   .. versionchanged:: 2.7
+      名前付きタプルに変更され、 *service_pack_minor*,
+      *service_pack_major*, *suite_mask*, および *product_type* が
+      追加されました。
 
 
 .. data:: hexversion
 
-   整数にエンコードされたバージョン番号。
+   単精度整数にエンコードされたバージョン番号。
    この値は新バージョン(正規リリース以外であっても)ごとにかならず増加します。
    例えば、Python 1.5.2 以降でのみ動作するプログラムでは、以下のようなチェックを行います。 ::
 
@@ -506,7 +514,50 @@
    より読みやすいバージョン番号が必要な場合には
    ``version_info`` を使用してください。
 
+   ``hexversion`` は以下のレイアウトで表される 32-bit 数です:
+
+   +-----------------------------------+--------------------------------------------------+
+   | ビット (ビッグエンディアンオーダ) | 意味                                             |
+   +===================================+==================================================+
+   | :const:`1-8`                      |  ``PY_MAJOR_VERSION``                            |
+   |                                   |  (``2.1.0a3`` の ``2``)                          |
+   +-----------------------------------+--------------------------------------------------+
+   | :const:`9-16`                     |  ``PY_MINOR_VERSION``                            |
+   |                                   |  (``2.1.0a3`` の ``1``)                          |
+   +-----------------------------------+--------------------------------------------------+
+   | :const:`17-24`                    |  ``PY_MICRO_VERSION``                            |
+   |                                   |  (``2.1.0a3`` の ``0``)                          |
+   +-----------------------------------+--------------------------------------------------+
+   | :const:`25-28`                    |  ``PY_RELEASE_LEVEL``  (アルファでは ``0xA`` 、  |
+   |                                   |  ベータでは ``0xB`` 、リリース候補では ``0xC`` 、|
+   |                                   |  そして最終版は ``0xF``)                         |
+   +-----------------------------------+--------------------------------------------------+
+   | :const:`29-32`                    |  ``PY_RELEASE_SERIAL``  (the ``3`` in            |
+   |                                   |  ``2.1.0a3`` の ``0`` 、最終リリースでは 0)      |
+   +-----------------------------------+--------------------------------------------------+
+
+   従って、 ``2.1.0a3`` は hexversion で ``0x020100a3`` です。
+
    .. versionadded:: 1.5.2
+
+
+.. data:: long_info
+
+   Python における整数の内部表現に関する情報を保持する、構造体のシーケンスです。
+   この属性は読み込み専用です。
+
+   +-------------------------+-----------------------------------------------------+
+   | 属性                    | 説明                                                |
+   +=========================+=====================================================+
+   | :const:`bits_per_digit` | 各桁に保持されるビットの数です。Python の           |
+   |                         | 整数は、内部的に ``2**long_info.bits_per_digit`` を |
+   |                         | 基数として保存されます。                            |
+   +-------------------------+-----------------------------------------------------+
+   | :const:`sizeof_digit`   | 桁を表すのに使われる、バイトで表した C 型の         |
+   |                         | 大きさです。                                        |
+   +-------------------------+-----------------------------------------------------+
+
+   .. versionadded:: 2.7
 
 
 .. data:: last_type
@@ -529,10 +580,6 @@
 
 .. data:: maxsize
 
-   .. The largest positive integer supported by the platform's Py_ssize_t type,
-      and thus the maximum size lists, strings, dicts, and many other containers
-      can have.
-
    プラットフォームの Py_ssize_t 型がサポートしている最大の正の整数。
    したがって、リスト、文字列、辞書、その他コンテナ型の最大のサイズ。
 
@@ -544,14 +591,6 @@
 
 .. data:: meta_path
 
-    .. A list of :term:`finder` objects that have their :meth:`find_module`
-       methods called to see if one of the objects can find the module to be
-       imported. The :meth:`find_module` method is called at least with the
-       absolute name of the module being imported. If the module to be imported is
-       contained in package then the parent package's :attr:`__path__` attribute
-       is passed in as a second argument. The method returns :keyword:`None` if
-       the module cannot be found, else returns a :term:`loader`.
-
     :term:`finder` オブジェクトのリストです。
     :term:`finder` オブジェクトの :meth:`find_module` メソッドは、
     import するモジュールを探すために呼び出されます。
@@ -560,13 +599,8 @@
     そのメソッドは、モジュールが見つからなかった場合は :const:`None` を、
     見つかった場合は :term:`loader` を返します。
 
-    .. :data:`sys.meta_path` is searched before any implicit default finders or
-       :data:`sys.path`.
-
     :data:`sys.meta_path` は、デフォルトの暗黙の finder や、
     :data:`sys.path` よりも先に検索されます。
-
-    .. See :pep:`302` for the original specification.
 
     オリジナルの仕様については、 :pep:`302` を参照してください。
 
@@ -604,10 +638,6 @@
 
 .. data:: path_hooks
 
-    .. A list of callables that take a path argument to try to create a
-       :term:`finder` for the path. If a finder can be created, it is to be
-       returned by the callable, else raise :exc:`ImportError`.
-
     path を引数にとって、その path に対する :term:`finder` の作成を試みる呼び出し可能オブジェクトのリスト。
     finder の作成に成功したら、その呼出可能オブジェクトのは finder を返します。
     失敗した場合は、 :exc:`ImportError` を発生させます。
@@ -619,20 +649,11 @@
 
 .. data:: path_importer_cache
 
-   .. A dictionary acting as a cache for :term:`finder` objects. The keys are
-      paths that have been passed to :data:`sys.path_hooks` and the values are
-      the finders that are found. If a path is a valid file system path but no
-      explicit finder is found on :data:`sys.path_hooks` then :keyword:`None` is
-      stored to represent the implicit default finder should be used. If the path
-      is not an existing path then :class:`imp.NullImporter` is set.
-
    :term:`finder` オブジェクトのキャッシュとなる辞書。
    キーは :data:`sys.path_hooks` に渡される path で、値は見つかった finder オブジェクト。
    path が有効なファイルシステムパスであり、かつ finder が :data:`sys.path_hooks` から見つからない場合、
    暗黙のデフォルト finder を利用するという意味で :const:`None` が格納されます。
    path が既存のパスではない場合、 :class:`imp.NullImporter` が格納されます。
-
-   .. Originally specified in :pep:`302`.
 
    オリジナルの仕様は :pep:`302` を参照してください。
 
@@ -641,11 +662,6 @@
 
    プラットフォームを識別する文字列で、 ``path``
    にプラットフォーム別のサブディレクトリを追加する場合などに利用します。
-
-   .. For Unix systems, this is the lowercased OS name as returned by ``uname -s``
-      with the first part of the version as returned by ``uname -r`` appended,
-      e.g. ``'sunos5'`` or ``'linux2'``, *at the time when Python was built*.
-      For other systems, the values are:
 
    Unix システムでは、この値は ``uname -s`` が返す小文字のOS名を前半に、
    ``uname -r`` が返すバージョン名を後半に追加したものになります。
@@ -669,7 +685,7 @@
 
    サイト固有の、プラットフォームに依存しないファイルを格納するディレクトリを示す文字列。
    デフォルトでは ``'/usr/local'`` になります。
-   この値はビルド時に :program:`configure` スクリプトの :option:`--prefix` 引数で指定する事ができます。
+   この値はビルド時に :program:`configure` スクリプトの ``--prefix`` 引数で指定する事ができます。
    Python　ライブラリの主要部分は ``prefix + '/lib/pythonversion'`` にインストールされ、プラットフォーム非依存なヘッダファイル(:file:`pyconfig.h` 以外)は
    ``prefix + '/include/pythonversion'`` に格納されます (但し *version* は ``version[:3]``)。
 
@@ -688,11 +704,6 @@
 
 .. data:: py3kwarning
 
-   .. Bool containing the status of the Python 3.0 warning flag. It's ``True``
-      when Python is started with the -3 option.  (This should be considered
-      read-only; setting it to a different value doesn't have an effect on
-      Python 3.0 warnings.)
-
    Python 3.0 warning flag の状態を格納する Bool 値。
    Python が -3 オプションを付けて起動された場合は ``True`` になります。
    (この値は定数として扱ってください。この変数を変更しても、Python 3.0 warning
@@ -702,12 +713,6 @@
 
 
 .. data:: dont_write_bytecode
-
-   .. If this is true, Python won't try to write ``.pyc`` or ``.pyo`` files on the
-      import of source modules.  This value is initially set to ``True`` or ``False``
-      depending on the ``-B`` command line option and the ``PYTHONDONTWRITEBYTECODE``
-      environment variable, but you can set it yourself to control bytecode file
-      generation.
 
    この値が true の時、 Python はソースモジュールを import するときに ``.pyc`` や ``.pyo``
    ファイルを生成しません。
@@ -789,99 +794,61 @@
    トレース関数はスレッド毎に設定することができるので、デバッグを行う全てのスレッドで
    :func:`settrace` を呼び出し、トレース関数を登録してください。
 
-   .. Trace functions should have three arguments: *frame*, *event*, and
-      *arg*. *frame* is the current stack frame.  *event* is a string: ``'call'``,
-      ``'line'``, ``'return'``, ``'exception'``, ``'c_call'``, ``'c_return'``, or
-      ``'c_exception'``. *arg* depends on the event type.
-
    Trace関数は3つの引数: *frame*, *event*, *arg* を受け取る必要があります。
    *event* は文字列です。 ``'call'``, ``'line'``, ``'return'``, ``'exception'``, ``'c_call'``,
    ``'c_return'``, ``'c_exception'`` のどれかが渡されます。
    *arg* はイベントの種類によって異なります。
 
-   .. The trace function is invoked (with *event* set to ``'call'``) whenever a new
-      local scope is entered; it should return a reference to a local trace
-      function to be used that scope, or ``None`` if the scope shouldn't be traced.
-
    trace 関数は (*event* に ``'call'`` を渡された状態で) 新しいローカルスコープに入るたびに呼ばれます。
    この場合、そのスコープで利用するローカルの trace 関数か、そのスコープを trace しないのであれば
    ``None`` を返します。
-
-   .. The local trace function should return a reference to itself (or to another
-      function for further tracing in that scope), or ``None`` to turn off tracing
-      in that scope.
 
    ローカル trace 関数は自身への参照 (もしくはそのスコープの以降の trace を行う別の関数)
    を返すべきです。
    もしくは、そのスコープの trace を止めるために ``None`` を返します。
 
-   .. The events have the following meaning:
-
    *event* には以下の意味があります。
 
    ``'call'``
-      .. A function is called (or some other code block entered).  The
-         global trace function is called; *arg* is ``None``; the return value
-         specifies the local trace function.
-
       関数が呼び出された(もしくは、何かのコードブロックに入った)。
       グローバルの trace 関数が呼ばれる。
       *arg* は ``None`` が渡される。
       戻り値はローカルの trace 関数。
 
    ``'line'``
-      .. The interpreter is about to execute a new line of code (sometimes multiple
-         line events on one line exist).  The local trace function is called; *arg*
-         is ``None``; the return value specifies the new local trace function.
-
       インタプリタが新しい行を実行しようとしている。
-      (1つの行に対して複数回の line イベントが発生する場合があります)
+      または、ループの条件で最実行しようとしている。
+      ローカルの trace 関数が呼ばれる。
+      *arg* は ``None`` 。
       戻り値は新しいローカルの trace 関数。
+      これがどのように振る舞うかの詳細な説明は、
+      :file:`Objects/lnotab_notes.txt` を参照のこと。
 
    ``'return'``
-      .. A function (or other code block) is about to return.  The local trace
-         function is called; *arg* is the value that will be returned.  The trace
-         function's return value is ignored.
-
       関数(あるいは別のコードブロック)から戻ろうとしている。
       ローカルの trace 関数が呼ばれる。
-      *arg* は返り値。
+      *arg* は返されようとしている値、または、
+      このイベントが例外が送出されることによって起こったなら ``None`` 。
       trace 関数の戻り値は無視される。
 
    ``'exception'``
-      .. An exception has occurred.  The local trace function is called; *arg* is a
-         tuple ``(exception, value, traceback)``; the return value specifies the
-         new local trace function.
-
       例外が発生した。
       ローカルの trace 関数が呼ばれる。
       *arg* は ``(exception, value, traceback)`` のタプル。
       戻り値は新しいローカルの trace 関数。
 
    ``'c_call'``
-      .. A C function is about to be called.  This may be an extension function or
-         a builtin.  *arg* is the C function object.
-
       C 関数(拡張関数かビルトイン関数)が呼ばれようとしている。
       *arg* は C 関数オブジェクト。
 
    ``'c_return'``
-      .. A C function has returned. *arg* is ``None``.
-
-      C 関数から戻った。 *arg* は ``None``
+      C 関数から戻った。 *arg* は C の関数オブジェクト。
 
    ``'c_exception'``
-      .. A C function has thrown an exception.  *arg* is ``None``.
-
-      C 関数が例外を発生させた。 *arg* は ``None``
-
-   .. Note that as an exception is propagated down the chain of callers, an
-      ``'exception'`` event is generated at each level.
+      C 関数が例外を発生させた。 *arg* は C の関数オブジェクト。
 
    例外が呼び出しチェインを辿って伝播していくことに注意してください。
    ``'exception'`` イベントは各レベルで発生します。
-
-   .. For more information on code and frame objects, refer to :ref:`types`.
 
    code と frame オブジェクトについては、 :ref:`types` を参照してください。
 
@@ -895,7 +862,7 @@
 
    *on_flag* が真の場合、Pentium タイムスタンプカウンタを使った VM 計測結果のダンプ出力を有効にします。
    *on_flag* をオフにするとダンプ出力を無効化します。
-   この関数は Python を :option:`--with-tsc` つきでコンパイルしたときにのみ利用できます。
+   この関数は Python を ``--with-tsc`` つきでコンパイルしたときにのみ利用できます。
    ダンプの内容を理解したければ、 Python ソースコード中の :file:`Python/ceval.c` を読んでください。
 
    .. versionadded:: 2.4
@@ -934,11 +901,6 @@
    また、 ``sys.std*`` オブジェクトが(訳注:別のファイルライクオブジェクトに)リダイレクトされている場合でも、
    本当の標準ストリームに表示する場合に利用できます。
 
-   .. It can also be used to restore the actual files to known working file objects
-      in case they have been overwritten with a broken object.  However, the
-      preferred way to do this is to explicitly save the previous stream before
-      replacing it, and restore the saved object.
-
    また、標準ストリームを置き換えたオブジェクトが壊れた場合に、動作する本物のファイルをリストアするために
    利用することもできます。
    しかし、明示的に置き換え前のストリームを保存しておき、そのオブジェクトをリストアする事を推奨します。
@@ -971,8 +933,12 @@
    *releaselevel* 以外は全て整数です。 *releaselevel* の値は、 ``'alpha'``, ``'beta'``,
    ``'candidate'``, ``'final'`` の何れかです。
    Python 2.0 の ``version_info`` は、 ``(2, 0, 0, 'final', 0)`` となります。
+   構成要素には名前でもアクセスできるので、 ``sys.version_info[0]`` は
+   ``sys.version_info.major`` と等価、などになります。
 
    .. versionadded:: 2.0
+   .. versionchanged:: 2.7
+      構成する属性に名前をつけました。
 
 
 .. data:: warnoptions
