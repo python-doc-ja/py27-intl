@@ -15,7 +15,7 @@
 また、 :mod:`urllib` モジュールもFTPを使うURLを操作するのにこのクラスを使っています。 FTP (File Transfer
 Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下さい。
 
-:mod:`ftplib` モジュールを使ったサンプルを以下に示します： ::
+:mod:`ftplib` モジュールを使ったサンプルを以下に示します::
 
    >>> from ftplib import FTP
    >>> ftp = FTP('ftp.cwi.nl')   # ホストのデフォルトポートへ接続
@@ -49,6 +49,39 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
       *timeout* が追加されました。
 
 
+.. class:: FTP_TLS([host[, user[, passwd[, acct[, keyfile[, certfile[, timeout]]]]]]])
+
+   :rfc:`4217` に記述されている TLS サポートを FTP に加えた :class:`FTP` の
+   サブクラスです。認証の前に FTP コントロール接続を暗示的にセキュアにし、
+   通常通りに port 21 に接続します。データ接続をセキュアにするには、ユーザが
+   :meth:`prot_p` メソッドを呼び出してそれを明示的に要求しなければなりません。
+   *keyfile* と *certfile* は省略可できます -- これらは、SSL 接続のための、
+   PEM フォーマットの秘密鍵と証明書チェーンファイル名を含むことができます。
+
+   .. versionadded:: 2.7
+
+   :class:`FTP_TLS` クラスを使ったサンプルセッションはこちらです:
+
+   >>> from ftplib import FTP_TLS
+   >>> ftps = FTP_TLS('ftp.python.org')
+   >>> ftps.login()           # 制御チャネルをセキュアにする前に匿名でログインする
+   >>> ftps.prot_p()          # セキュアなデータ接続に移行する
+   >>> ftps.retrlines('LIST') # ディレクトリの内容をセキュアに列挙する
+   total 9
+   drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 .
+   drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 ..
+   drwxr-xr-x   2 root     wheel        1024 Jan  3  1994 bin
+   drwxr-xr-x   2 root     wheel        1024 Jan  3  1994 etc
+   d-wxrwxr-x   2 ftp      wheel        1024 Sep  5 13:43 incoming
+   drwxr-xr-x   2 root     wheel        1024 Nov 17  1993 lib
+   drwxr-xr-x   6 1094     wheel        1024 Sep 13 19:07 pub
+   drwxr-xr-x   3 root     wheel        1024 Jan  3  1994 usr
+   -rw-r--r--   1 root     root          312 Aug  1  1994 welcome.msg
+   '226 Transfer complete.'
+   >>> ftps.quit()
+   >>>
+
+
 .. exception:: error_reply
 
    サーバから想定外の応答があった時に発生する例外。
@@ -56,24 +89,27 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
 
 .. exception:: error_temp
 
-   400--499の範囲のエラー応答コードを受け取った時に発生する例外。
+   一時的エラーを表すエラーコード(400--499の範囲の応答コード)を
+   受け取った時に発生する例外。
 
 
 .. exception:: error_perm
 
-   500--599の範囲のエラー応答コードを受け取った時に発生する例外。
+   永久エラーを表すエラーコード(500--599の範囲の応答コード)を
+   受け取った時に発生する例外。
 
 
 .. exception:: error_proto
 
-   1--5の数字で始まらない応答コードをサーバから受け取った時に発生する例外。
+   File Transfer Protocol の応答仕様に適合しない、すなわち1--5の数字で
+   始まらない応答コードをサーバから受け取った時に発生する例外。
 
 
 .. data:: all_errors
 
    :class:`FTP` インスタンスのメソッド実行時、FTP接続で（プログラミングの
    エラーと考えられるメソッドの実行によって）発生する全ての例外（タプル形式）。
-   この例外には以下の４つのエラーはもちろん、 :exc:`socket.error` と
+   この例外には以上の４つのエラーはもちろん、 :exc:`socket.error` と
    :exc:`IOError` も含まれます。
 
 
@@ -158,7 +194,9 @@ FTP オブジェクト
 
 .. method:: FTP.voidcmd(command)
 
-   シンプルなコマンド文字列をサーバに送信して、その応答を扱います。応答コードが200--299の範囲にあれば何も返しません。それ以外は例外を発生します。
+   シンプルなコマンド文字列をサーバに送信して、その応答を扱います。応答コードが
+   成功に関係するもの(200--299の範囲にあるコード)なら何も返しません。
+   それ以外は :exc:`error_reply` を発生します。
 
 
 .. method:: FTP.retrbinary(command, callback[, maxblocksize[, rest]])
@@ -172,17 +210,13 @@ FTP オブジェクト
 
 .. method:: FTP.retrlines(command[, callback])
 
-   .. Retrieve a file or directory listing in ASCII transfer mode.  *command*
-      should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
-      command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
-      ``'LIST'``).  The *callback* function is called for each line with a
-      string argument containing the line with the trailing CRLF stripped.
-      The default *callback* prints the line to ``sys.stdout``.
-
    ASCII転送モードでファイルとディレクトリのリストを受信します。
    *command* は、適切な ``RETR`` コマンド(:meth:`retrbinary` を参照)あるいは
    ``LIST``, ``NLST``, ``MLSD`` のようなコマンド(通常は文字列 ``'LIST'``)で
    なければなりません。
+   ``LIST`` は、ファイルのリストとそれらのファイルに関する情報を受信します。
+   ``NLST`` は、ファイル名のリストを受信します。サーバによっては、 ``MLSD`` は
+   機械で読めるリストとそれらのファイルに関する情報を受信します。
    関数 *callback* は末尾のCRLFを取り除いた各行を引数にして実行されます。
    デフォルトでは *callback* は ``sys.stdout`` に各行を表示します。
 
@@ -193,13 +227,14 @@ FTP オブジェクト
    2.0以前ではデフォルトでパッシブモードはオフにされていましたが、 Python 2.1以後ではデフォルトでオンになっています。）
 
 
-.. method:: FTP.storbinary(command, file[, blocksize, callback])
+.. method:: FTP.storbinary(command, file[, blocksize, callback, rest])
 
    バイナリ転送モードでファイルを転送します。 *command* は適切な ``STOR`` コマンド： ``"STOR filename"`` でなければなりません。
    *file* は開かれたファイルオブジェクトで、 :meth:`read` メソッドで EOFまで読み込まれ、ブロックサイズ *blocksize* でデータが転送されま
    す。引数 *blocksize* のデフォルト値は8192です。
    *callback* はオプションの引数で、引数を1つとる呼び出し可能オブジェクトを渡します。
    各データブロックが送信された後に、そのブロックを引数にして呼び出されます。
+   *rest* は、 :meth:`transfercmd` メソッドにあるものと同じ意味です。
 
    .. versionchanged:: 2.1
       *blocksize* のデフォルト値が追加されました.
@@ -207,6 +242,8 @@ FTP オブジェクト
    .. versionchanged:: 2.6
       *callback* 引数が追加されました。
 
+   .. versionchanged:: 2.7
+      *rest* パラメタが追加されました。
 
 .. method:: FTP.storlines(command, file[, callback])
 
@@ -243,7 +280,7 @@ FTP オブジェクト
 
 .. method:: FTP.nlst(argument[, ...])
 
-   ``NLST`` コマンドで返されるファイルのリストを返します。省略可能な *argument* は、リストアップするディレクトリです（デフォルト
+   ``NLST`` コマンドで返されるファイル名のリストを返します。省略可能な *argument* は、リストアップするディレクトリです（デフォルト
    ではサーバのカレントディレクトリです）。 ``NLST`` コマンドに非標準である複数の引数を渡すことができます。
 
 
@@ -305,4 +342,29 @@ FTP オブジェクト
    接続を一方的に閉じます。既に閉じた接続に対して実行すべきではありません（例えば :meth:`quit` を呼び出して成功した後など）。
    この実行の後、 :class:`FTP` インスタンスはもう使用すべきではありません（ :meth:`close` あるいは :meth:`quit` を呼び出した後で、
    :meth:`login` メソッドをもう一度実行して再び接続を開くことはできません）。
+
+
+FTP_TLS オブジェクト
+--------------------
+
+:class:`FTP_TLS` クラスは :class:`FTP` を継承し、さらにオブジェクトを
+定義します。
+
+.. attribute:: FTP_TLS.ssl_version
+
+   使用する SSL のバージョン (デフォルトは *TLSv1*) です。
+
+.. method:: FTP_TLS.auth()
+
+   :meth:`ssl_version` 属性で指定されたものに従って、
+   TLS または SSL を使い、セキュアコントロール接続をセットアップします。
+
+.. method:: FTP_TLS.prot_p()
+
+   セキュアデータ接続をセットアップします。
+
+.. method:: FTP_TLS.prot_c()
+
+   平文データ接続をセットアップします。
+
 
