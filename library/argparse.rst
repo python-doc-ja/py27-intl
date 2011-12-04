@@ -1777,35 +1777,36 @@ FileType オブジェクト
 optparse からのアップグレード
 --------------------------------
 
-Originally, the :mod:`argparse` module had attempted to maintain compatibility
-with :mod:`optparse`.  However, :mod:`optparse` was difficult to extend
-transparently, particularly with the changes required to support the new
-``nargs=`` specifiers and better usage messages.  When most everything in
-:mod:`optparse` had either been copy-pasted over or monkey-patched, it no
-longer seemed practical to try to maintain the backwards compatibility.
+もともと、 :mod:`argparse` モジュールを :mod:`optparse` モジュールとの
+互換性を保って開発しようという試みがありました。しかし、特に新しい ``nargs=``
+指定子とより良い使用法メッセージのために必要な変更のために、:mod:`optparse`
+を透過的に拡張することは難しかったのです。 :mod:`optparse` のほとんどすべてが
+コピーペーストされたりモンキーパッチを当てられたりしたとき、もはや後方互換性を
+保とうとすることは現実的ではありませんでした。
 
-A partial upgrade path from :mod:`optparse` to :mod:`argparse`:
+:mod:`optparse` から :mod:`argparse` への現実的なアップグレード・パス:
 
-* Replace all :meth:`optparse.OptionParser.add_option` calls with
-  :meth:`ArgumentParser.add_argument` calls.
+* 全ての :meth:`optparse.OptionParser.add_option` の呼び出しを、
+  :meth:`ArgumentParser.add_argument` の呼び出しに置き換える。
 
-* Replace ``options, args = parser.parse_args()`` with ``args =
-  parser.parse_args()`` and add additional :meth:`ArgumentParser.add_argument`
-  calls for the positional arguments.
+* ``options, args = parser.parse_args()`` を ``args = parser.parse_args()``
+  に置き換え、位置引数については追加で :meth:`ArgumentParser.add_argument`
+  を呼び出す。
 
-* Replace callback actions and the ``callback_*`` keyword arguments with
-  ``type`` or ``action`` arguments.
+* コールバック・アクションと ``callback_*`` キーワード引数を
+  ``type`` や ``action`` 引数に置き換える。
 
-* Replace string names for ``type`` keyword arguments with the corresponding
-  type objects (e.g. int, float, complex, etc).
+* ``type`` キーワード引数に渡していた文字列の名前を、それに応じたオブジェクト
+  (例: int, float, complex, ...) に置き換える。
 
-* Replace :class:`optparse.Values` with :class:`Namespace` and
-  :exc:`optparse.OptionError` and :exc:`optparse.OptionValueError` with
-  :exc:`ArgumentError`.
+* :class:`optparse.Values` を :class:`Namespace` に置き換え、
+  :exc:`optparse.OptionError` と :exc:`optparse.OptionValueError` を
+  :exc:`ArgumentError` に置き換える。
 
-* Replace strings with implicit arguments such as ``%default`` or ``%prog`` with
-  the standard Python syntax to use dictionaries to format strings, that is,
-  ``%(default)s`` and ``%(prog)s``.
+* ``%default`` や ``%prog`` などの暗黙の引数を含む文字列を、
+  ``%(default)s`` や ``%(prog)s`` などの、通常の Python で辞書を
+  使う場合のフォーマット文字列に置き換える。
 
-* Replace the OptionParser constructor ``version`` argument with a call to
+* OptionParser のコンストラクタの ``version`` 引数を、
   ``parser.add_argument('--version', action='version', version='<the version>')``
+  に置き換える。
