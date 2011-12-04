@@ -98,12 +98,12 @@ u-LAW フォーマットでオーディオデータを録音、再生できま�
    ります。
    メンバー名は相当する C のものとは少し違っています：
    ステータスオブジェクトは１つの構造体です。
-   その中の構造体である :cdata:`play` のメンバーには名前の初めに ``o_`` がつ\
-   いていて、 :cdata:`record` には ``i_`` がついています。
-   そのため、C のメンバーである :cdata:`play.sample_rate` は
-   :attr:`o_sample_rate` として、 :cdata:`record.gain` は :attr:`i_gain`
+   その中の構造体である :c:data:`play` のメンバーには名前の初めに ``o_`` がつ\
+   いていて、 :c:data:`record` には ``i_`` がついています。
+   そのため、C のメンバーである :c:data:`play.sample_rate` は
+   :attr:`o_sample_rate` として、 :c:data:`record.gain` は :attr:`i_gain`
    として参照され、
-   :cdata:`monitor_gain` はそのまま :attr:`monitor_gain` で参照されます。
+   :c:data:`monitor_gain` はそのまま :attr:`monitor_gain` で参照されます。
 
 
 .. method:: audio device.ibufcount()

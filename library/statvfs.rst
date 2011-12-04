@@ -58,7 +58,7 @@
 
 .. data:: F_FLAG
 
-   フラグで、システム依存です: :cfunc:`statvfs` マニュアルページを参照してください。
+   フラグで、システム依存です: :c:func:`statvfs` マニュアルページを参照してください。
 
 
 .. data:: F_NAMEMAX

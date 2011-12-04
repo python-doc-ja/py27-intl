@@ -25,7 +25,7 @@
 .. :ref:`exceptionhandling` for details).
 
 Python プログラマは、このモジュールの :func:`warn` 関数を使って警告を発することができます。(C 言語のプログラマは
-:cfunc:`PyErr_WarnEx` を使います; 詳細は :ref:`exceptionhandling` を参照してください)。
+:c:func:`PyErr_WarnEx` を使います; 詳細は :ref:`exceptionhandling` を参照してください)。
 
 
 .. Warning messages are normally written to ``sys.stderr``, but their disposition

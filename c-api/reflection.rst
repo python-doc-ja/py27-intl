@@ -29,7 +29,7 @@
    現在実行中のフレームがなければ *NULL* を返します。
 
 
-.. cfunction:: int PyFrame_GetLineNumber(PyFrameObject *frame)
+.. c:function:: int PyFrame_GetLineNumber(PyFrameObject *frame)
 
    *frame* が現在実行している行番号を返します。
 

@@ -318,7 +318,7 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    クラスのタプルでも構いません。 *dict* 引数はクラス変数とメソッドの辞書を指定するために使えます。
 
 
-.. cfunction:: PyObject* PyErr_NewExceptionWithDoc(char *name, char *doc, PyObject *base, PyObject *dict)
+.. c:function:: PyObject* PyErr_NewExceptionWithDoc(char *name, char *doc, PyObject *base, PyObject *dict)
 
    :c:func:`PyErr_NewException` とほぼ同じですが、新しい例外クラスに簡単に docstring
    を設定できます。
@@ -346,33 +346,33 @@ Unicode 例外オブジェクト
 
 以下の関数は C言語から Unicode 例外を作ったり修正したりするために利用します。
 
-.. cfunction:: PyObject* PyUnicodeDecodeError_Create(const char *encoding, const char *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+.. c:function:: PyObject* PyUnicodeDecodeError_Create(const char *encoding, const char *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
 
    *encoding*, *object*, *length*, *start*, *end*, *reason* 属性をもった
    :class:`UnicodeDecodeError` オブジェクトを作成します。
 
-.. cfunction:: PyObject* PyUnicodeEncodeError_Create(const char *encoding, const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+.. c:function:: PyObject* PyUnicodeEncodeError_Create(const char *encoding, const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
 
    *encoding*, *object*, *length*, *start*, *end*, *reason* 属性を持った
    :class:`UnicodeEncodeError` オブジェクトを作成します。
 
-.. cfunction:: PyObject* PyUnicodeTranslateError_Create(const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
+.. c:function:: PyObject* PyUnicodeTranslateError_Create(const Py_UNICODE *object, Py_ssize_t length, Py_ssize_t start, Py_ssize_t end, const char *reason)
 
    *object*, *length*, *start*, *end*, *reason* 属性を持った
    :class:`UnicodeTranslateError` オブジェクトを作成します。
 
-.. cfunction:: PyObject* PyUnicodeDecodeError_GetEncoding(PyObject *exc)
+.. c:function:: PyObject* PyUnicodeDecodeError_GetEncoding(PyObject *exc)
                PyObject* PyUnicodeEncodeError_GetEncoding(PyObject *exc)
 
    与えられた例外オブジェクトの *encoding* 属性を返します。
 
-.. cfunction:: PyObject* PyUnicodeDecodeError_GetObject(PyObject *exc)
+.. c:function:: PyObject* PyUnicodeDecodeError_GetObject(PyObject *exc)
                PyObject* PyUnicodeEncodeError_GetObject(PyObject *exc)
                PyObject* PyUnicodeTranslateError_GetObject(PyObject *exc)
 
    与えられた例外オブジェクトの *object* 属性を返します。
 
-.. cfunction:: int PyUnicodeDecodeError_GetStart(PyObject *exc, Py_ssize_t *start)
+.. c:function:: int PyUnicodeDecodeError_GetStart(PyObject *exc, Py_ssize_t *start)
                int PyUnicodeEncodeError_GetStart(PyObject *exc, Py_ssize_t *start)
                int PyUnicodeTranslateError_GetStart(PyObject *exc, Py_ssize_t *start)
 
@@ -380,14 +380,14 @@ Unicode 例外オブジェクト
    *start* は *NULL* であってはなりません。
    成功したら ``0`` を、失敗したら ``-1`` を返します。
 
-.. cfunction:: int PyUnicodeDecodeError_SetStart(PyObject *exc, Py_ssize_t start)
+.. c:function:: int PyUnicodeDecodeError_SetStart(PyObject *exc, Py_ssize_t start)
                int PyUnicodeEncodeError_SetStart(PyObject *exc, Py_ssize_t start)
                int PyUnicodeTranslateError_SetStart(PyObject *exc, Py_ssize_t start)
 
    渡された例外オブジェクトの *start* 属性を *start* に設定します。
    成功したら ``0`` を、失敗したら ``-1`` を返します。
 
-.. cfunction:: int PyUnicodeDecodeError_GetEnd(PyObject *exc, Py_ssize_t *end)
+.. c:function:: int PyUnicodeDecodeError_GetEnd(PyObject *exc, Py_ssize_t *end)
                int PyUnicodeEncodeError_GetEnd(PyObject *exc, Py_ssize_t *end)
                int PyUnicodeTranslateError_GetEnd(PyObject *exc, Py_ssize_t *end)
 
@@ -395,20 +395,20 @@ Unicode 例外オブジェクト
    *end* は *NULL* であってはなりません。
    成功したら ``0`` を、失敗したら ``-1`` を返します。
 
-.. cfunction:: int PyUnicodeDecodeError_SetEnd(PyObject *exc, Py_ssize_t end)
+.. c:function:: int PyUnicodeDecodeError_SetEnd(PyObject *exc, Py_ssize_t end)
                int PyUnicodeEncodeError_SetEnd(PyObject *exc, Py_ssize_t end)
                int PyUnicodeTranslateError_SetEnd(PyObject *exc, Py_ssize_t end)
 
    渡された例外オブジェクトの *end* 属性を *end* に設定します。
    成功したら ``0`` を、失敗したら ``-1`` を返します。
 
-.. cfunction:: PyObject* PyUnicodeDecodeError_GetReason(PyObject *exc)
+.. c:function:: PyObject* PyUnicodeDecodeError_GetReason(PyObject *exc)
                PyObject* PyUnicodeEncodeError_GetReason(PyObject *exc)
                PyObject* PyUnicodeTranslateError_GetReason(PyObject *exc)
 
    渡された例外オブジェクトの *reason* 属性を返します。
 
-.. cfunction:: int PyUnicodeDecodeError_SetReason(PyObject *exc, const char *reason)
+.. c:function:: int PyUnicodeDecodeError_SetReason(PyObject *exc, const char *reason)
                int PyUnicodeEncodeError_SetReason(PyObject *exc, const char *reason)
                int PyUnicodeTranslateError_SetReason(PyObject *exc, const char *reason)
 

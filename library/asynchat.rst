@@ -28,7 +28,7 @@
    もできますが、メッセージ/レスポンス処理を中心に行う場合には使えないメソッドもあります。
 
    :class:`asyncore.dispatcher` と同様に、 :class:`async_chat` も
-   :cfunc:`select` 呼出し後のソケットの状態からイベントを生成します。ポーリングループ開始後、イベント処理フレームワークが自動的に
+   :c:func:`select` 呼出し後のソケットの状態からイベントを生成します。ポーリングループ開始後、イベント処理フレームワークが自動的に
    :class:`async_chat` のメソッドを呼び出しますので、プログラマが処理を記述する必要はありません。
 
    .. Two class attributes can be modified, to improve performance, or possibly
