@@ -337,9 +337,9 @@ APIのさらなる呼び出しは意図した通りには動かない可能性�
    関数が呼び出されます。 *obj* のreprが警告メッセージにプリントされるでしょう。
 
 
-.. _unicodeexceptions:
-
 .. Unicode Exception Objects
+
+.. _unicodeexceptions:
 
 Unicode 例外オブジェクト
 =========================

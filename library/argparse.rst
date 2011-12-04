@@ -1774,8 +1774,6 @@ FileType オブジェクト
 
 .. _argparse-from-optparse:
 
-.. Upgrading optparse code
-
 optparse からのアップグレード
 --------------------------------
 

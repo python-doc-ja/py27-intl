@@ -469,7 +469,7 @@ PEP 327: Decimal Data Type
 ==========================
 
 Python has always supported floating-point (FP) numbers, based on the underlying
-C :ctype:`double` type, as a data type.  However, while most programming
+C :c:type:`double` type, as a data type.  However, while most programming
 languages provide a floating-point type, many people (even programmers) are
 unaware that floating-point numbers don't represent certain decimal fractions
 accurately.  The new :class:`Decimal` type can represent these fractions

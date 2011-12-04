@@ -139,8 +139,6 @@
 
 .. _manifest_template:
 
-.. The MANIFEST.in template
-
 MANIFEST.in テンプレート
 ========================
 
