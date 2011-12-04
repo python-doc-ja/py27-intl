@@ -1,6 +1,6 @@
-****************************
-  What's New in Python 2.7
-****************************
+********************************************
+  What's New in Python 2.7 (一部日本語訳)
+********************************************
 
 :Author: A.M. Kuchling (amk at amk.ca)
 :Release: |release|
@@ -1214,29 +1214,30 @@ Python 言語コアにいくつかの小さな変更が加えられました。
   ``('md5', 'sha1', 'sha224', 'sha256', 'sha384', 'sha512')`` が含まれています。
   (Contributed by Carl Chenet; :issue:`7418`.)
 
-* The default :class:`~httplib.HTTPResponse` class used by the :mod:`httplib` module now
-  supports buffering, resulting in much faster reading of HTTP responses.
+* :mod:`httplib` モジュールで使われているデフォルトの :class:`~httplib.HTTPResponse`
+  クラスがバッファリングをサポートし、HTTPレスポンスをより高速に読み込めるようになりました。
   (Contributed by Kristján Valur Jónsson; :issue:`4879`.)
 
-  The :class:`~httplib.HTTPConnection` and :class:`~httplib.HTTPSConnection` classes
-  now support a *source_address* parameter, a ``(host, port)`` 2-tuple
-  giving the source address that will be used for the connection.
+  :class:`~httplib.HTTPConnection` と :class:`~httplib.HTTPSConnection` クラスが
+  *source_address* 引数として ``(host, port)`` の2要素タプルを受け取るようになりました。
+  これは接続のソースアドレスとして利用されます。
   (Contributed by Eldon Ziegler; :issue:`3972`.)
 
-* The :mod:`ihooks` module now supports relative imports.  Note that
-  :mod:`ihooks` is an older module for customizing imports,
-  superseded by the :mod:`imputil` module added in Python 2.0.
+* :mod:`ihooks` モジュールが相対 import をサポートしました。
+  :mod:`ihooks` import をカスタマイズするための古いモジュールで、
+  Python 2.0 で追加された :mod:`imputil` モジュールに取って変わられて
+  いることに注意してください。
   (Relative import support added by Neil Schemenauer.)
 
   .. revision 75423
 
-* The :mod:`imaplib` module now supports IPv6 addresses.
+* :mod:`imaplib` モジュールが IPv6 アドレスをサポートするようになりました。
   (Contributed by Derek Morr; :issue:`1655`.)
 
-* New function: the :mod:`inspect` module's :func:`~inspect.getcallargs`
-  takes a callable and its positional and keyword arguments,
-  and figures out which of the callable's parameters will receive each argument,
-  returning a dictionary mapping argument names to their values.  For example::
+* :mod:`inspect` モジュールに :func:`~inspect.getcallargs` 関数が追加されました。
+  callable とその位置引数、キーワード引数を受け取り、
+  callable のどの仮引数がどの実引数を受け取るかを計算し、
+  引数名から値へマップする辞書を返します。例えば::
 
     >>> from inspect import getcallargs
     >>> def f(a, b=1, *pos, **named):
