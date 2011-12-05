@@ -9,7 +9,7 @@
 
 または、Google Project Hosting 上の Issue Tracker
 
-`<http://code.google.com/p/python-doc-ja/issues/list>`_
+`<http://code.google.com/p/python-doc-ja/issues/entry>`_
 
 までご報告ください。
 

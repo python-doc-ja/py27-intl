@@ -38,7 +38,7 @@
 
 .. note::
    訳注: 日本語訳の問題については、 Google Project Hosting 上の Issue Tracker
-   <http://code.google.com/p/python-doc-ja/issues/list> に登録するか、
+   <http://code.google.com/p/python-doc-ja/issues/entry> に登録するか、
    python-doc-jp@python.jp にメールで報告をお願いします。
 
 .. including the ACKS file here so that it can be maintained separately
