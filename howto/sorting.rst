@@ -13,8 +13,8 @@
 
 Python のリストにはリストをインプレースに変更する、
 組み込みメソッド :meth:`list.sort` があります。
-他にも :func:`sorted` 組み込み関数があり、
-イテラブルからソートしたリストを作成します。
+他にもイテラブルからソートしたリストを作成する
+組み込み関数 :func:`sorted` があります。
 
 ..
   In this document, we explore the various techniques for sorting data using Python.
@@ -215,8 +215,7 @@ operator モジュールの関数は複数の段階でのソートを可能に�
   <http://en.wikipedia.org/wiki/Sorting_algorithm#Stability>`_\. That means that
   when multiple records have the same key, their original order is preserved.
 
-Python 2.2 からソートは、`stable 
-Starting with Python 2.2, sorts are guaranteed to be `stable
+Python 2.2 からソートは、 `stable
 <http://en.wikipedia.org/wiki/Sorting_algorithm#Stability>`_
 であることが保証されるようになりました。
 これはレコードの中に同じキーがある場合、

@@ -43,7 +43,7 @@ ASCII は0から127までの、異なる文字の数値コードを定義して�
   spellings such as 'coöperate'.)
 
 ASCII はアメリカの開発標準だったのでアクセント無しの文字のみを定義していて、
-'e' はありましたが、'é' や 'Í' はありませんでした。
+'e' はありましたが、 'é' や 'Í' はありませんでした。
 つまり、アクセント付きの文字を必要とする言語は ASCII できちんと表現するとができません。
 (実際には英語でもアクセント無いために起きる問題がありました、
 'naïve' や 'café' のようなアクセントを含む単語や、
@@ -56,7 +56,7 @@ ASCII はアメリカの開発標準だったのでアクセント無しの文�
 
 しばらくの間は単にアクセントが表示されないプログラムを書きました。
 1980年半ばのフランス語で出版された Apple ][ の BASIC プログラムを見た記憶を辿ると、
-そこにはこんな行が含んでいました::
+そこにはこんな行が含まれていました::
 
 	PRINT "FICHER EST COMPLETE."
 	PRINT "CARACTERE NON ACCEPTE."
@@ -866,7 +866,7 @@ Unicode と 8-bit 文字型については Python ライブラリレファレン
 Marc-André Lemburg は EuroPython 2002 で "Python and Unicode" という題のプレゼンテーションを行ないました。
 彼のスライドの PDF バージョンが
 <http://downloads.egenix.com/python/Unicode-EPC2002-Talk.pdf> から入手できます。
-これは、Python の Unicode 機能のデザインを素晴しい概観になっています。
+これは、Python の Unicode 機能のデザインの素晴しい概観になっています。
 
 ..
   Reading and Writing Unicode Data
