@@ -744,8 +744,6 @@ logging モジュールは、クライアントで特殊な作業を必要とし
 
 .. function:: log(level, msg[, *args[, **kwargs]])
 
-   Logs a message with level *level* on the root logger. The other arguments are
-   interpreted as for :func:`debug`.
    レベル *level* のメッセージをルートロガーで記録します。
    その他の引数は :func:`debug` と同じように解釈されます。
 
