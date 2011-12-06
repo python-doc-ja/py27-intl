@@ -256,6 +256,23 @@
       CやC++で書かれたモジュール。ユーザーコードやPythonのコアとやりとりするために、
       PythonのC APIを利用します。
 
+   file object
+      内部リソースに対してファイル由来の API (read() や write() のようなメソッド) を
+      持つオブジェクト。
+      作成された方法に応じて、ファイルオブジェクトはディスクや
+      他のストレージ上のファイルやコミュニュケーション機器
+      (例えば標準入出力、メモリ上のバッファ、ソケット、パイプなど)
+      に対するアクセスを仲介します。
+      ファイルオブジェクトは file-like object やストリームなどと呼ばれます。
+   
+      ファイルオブジェクトには3つの種類があります:
+      バイナリファイル、バイナリバッファ、テキストふぁいる。
+      これらのインターフェースは io モジュール内で定義されています。
+      ファイルオブジェクトを作成する標準的な方法は open() 関数を利用することです。
+
+   file-like object
+      file object の別名
+
    finder
       モジュールの :term:`loader` を探すオブジェクト。
       :meth:`find_module` という名前のメソッドを実装していなければなりません。
@@ -588,6 +605,14 @@
       第一引数(:term:`argument`) として受け取ります(この第一引数は普段
       ``self`` と呼ばれます)。
       :term:`function` と :term:`nested scope` も参照してください。
+
+   method resolution order
+      メソッド解決順序 (Method Resolution Order) はメンバの
+      探索時の基底クラスの探索順序です。
+      Python 2.3 の Method Resolution Order を参照して下さい。
+
+   MRO
+      method resolution order を参照して下さい。
 
    mutable
       (変更可能オブジェクト)
