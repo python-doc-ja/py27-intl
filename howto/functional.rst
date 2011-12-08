@@ -729,8 +729,7 @@ Python のビルトイン関数 :func:`map` と :func:`filter` は少し
     [9878, 9828, 8442, 7953, 6431, 6213, 2207, 769]
 
 (ソートに関する詳細な論議は Python wiki の Sorting mini-HOWTO
-を参照: http://wiki.python.org/moin/HowTo/Sorting
-[訳注: 古い版の和訳が http://www.python.jp/Zope/articles/tips/sorthowto にあります])
+を参照: http://wiki.python.org/moin/HowTo/Sorting [#]_
 
 ビルトインの ``any(iter)`` および ``all(iter)`` はイテラブルの真値を調べます。
 :func:`any` は要素のどれかが真値なら True を返し、
@@ -1223,14 +1222,13 @@ Collin Winter の
 
     join = partial(foldl, concat, "")
 
+更新履歴と謝辞
+==============
 
-Revision History and Acknowledgements
-=====================================
-
-The author would like to thank the following people for offering suggestions,
-corrections and assistance with various drafts of this article: Ian Bicking,
-Nick Coghlan, Nick Efford, Raymond Hettinger, Jim Jewett, Mike Krell, Leandro
-Lameiro, Jussi Salmela, Collin Winter, Blake Winton.
+著者は提案の申し出や修正、様々なこの記事の草稿の助けをしてくれた
+以下の人々に感謝します:
+Ian Bicking, Nick Coghlan, Nick Efford, Raymond Hettinger, Jim Jewett,
+Mike Krell, Leandro Lameiro, Jussi Salmela, Collin Winter, Blake Winton.
 
 Version 0.1: posted June 30 2006.
 
@@ -1251,42 +1249,37 @@ Winter; adds short section on the operator module; a few other edits.
 一般論
 ------
 
-**Structure and Interpretation of Computer Programs**, by Harold Abelson and
-Gerald Jay Sussman with Julie Sussman.  Full text at
-http://mitpress.mit.edu/sicp/.  In this classic textbook of computer science,
-chapters 2 and 3 discuss the use of sequences and streams to organize the data
-flow inside a program.  The book uses Scheme for its examples, but many of the
-design approaches described in these chapters are applicable to functional-style
-Python code.
+Harold Abelson と Gerald Jay Sussman, Julie Sussman による
+**Structure and Interpretation of Computer Programs** 。
+http://mitpress.mit.edu/sicp/ に全文があります。
+この計算機科学に関する古典的な教科書では、
+2 章と 3 章でデータフローをプログラム内でまとめるための
+シーケンスとストリームの利用について議論しています。
+この本は例として Scheme を使っていますが、
+これらの章内の多くのデザインアプローチは
+関数スタイルな Python コードにも適用できます。
 
-http://www.defmacro.org/ramblings/fp.html: A general introduction to functional
-programming that uses Java examples and has a lengthy historical introduction.
+http://www.defmacro.org/ramblings/fp.html: 関数プログラミングの一般的な入門で
+Java での例を利用していて、長大な歴史の紹介があります。
 
-http://en.wikipedia.org/wiki/Functional_programming: General Wikipedia entry
-describing functional programming.
-(日本語は http://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E8%A8%80%E8%AA%9E
-に「関数型言語」という項目で説明しています。)
+http://en.wikipedia.org/wiki/Functional_programming: 関数プログラミングに関する
+一般的な内容の記事 [#]_ 。
 
-http://en.wikipedia.org/wiki/Coroutine: Entry for coroutines.
-(日本語は
-http://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%AB%E3%83%BC%E3%83%81%E3%83%B3 です。)
+http://en.wikipedia.org/wiki/Coroutine: コルーチンに関する記事 [#]_ 。
 
-http://en.wikipedia.org/wiki/Currying: Entry for the concept of currying.
-(日本語は http://ja.wikipedia.org/wiki/%E3%82%AB%E3%83%AA%E3%83%BC%E5%8C%96 です。)
+http://en.wikipedia.org/wiki/Currying: カリー化の概念に関する記事 [#]_ 。
 
 Python 特有の話
 ---------------
 
-http://gnosis.cx/TPiP/: The first chapter of David Mertz's book
-:title-reference:`Text Processing in Python` discusses functional programming
-for text processing, in the section titled "Utilizing Higher-Order Functions in
-Text Processing".
+http://gnosis.cx/TPiP/: David Mertz's の本の最初の章
+:title-reference:`Text Processing in Python` では文書処理のための
+関数プログラミングについて議論しています、
+この議論の節には
+"Utilizing Higher-Order Functions in Text Processing"
+というタイトルがついています。
 
-David Mertz は IBM の DeveloperWorks サイトにも、
-三部構成で関数型プログラミングの記事を書いています:
-`第1回 <http://www.ibm.com/developerworks/jp/linux/library/l-prog/>`__ /
-`第2回 <http://www.ibm.com/developerworks/jp/linux/library/l-prog2/>`__ /
-`第3回 <http://www.ibm.com/developerworks/jp/linux/library/l-prog3/>`__
+
 
 Python 文書
 -----------
@@ -1359,4 +1352,17 @@ features in Python 2.5.
              sys.stdout.write(', ')
         print elem[-1]
 
+.. rubric:: Footnotes
 
+.. [#] 訳注 Python Wiki の内容の最新の情報は反映されていませんが、
+       Python ドキュメント内に和訳があります :ref:`sortinghowto`
+.. [#] 訳注 日本語版 Wikipedia に
+       `関数型言語
+       <http://ja.wikipedia.org/wiki/%E9%96%A2%E6%95%B0%E5%9E%8B%E8%A8%80%E8%AA%9E>`_
+       に関する記事があります。
+.. [#] 訳注 日本語版 Wikipedia に
+       `コルーチン <http://ja.wikipedia.org/wiki/%E3%82%B3%E3%83%AB%E3%83%BC%E3%83%81%E3%83%B3>`_
+       に関する記事があります。
+.. [#] 訳注 日本語版 Wikipedia に
+       `カリー化 <http://ja.wikipedia.org/wiki/%E3%82%AB%E3%83%AA%E3%83%BC%E5%8C%96>`_
+       に関する記事があります。

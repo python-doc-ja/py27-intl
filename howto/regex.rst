@@ -2521,8 +2521,8 @@ re.VERBOSE の利用
   Feedback
   ========
 
-Feedback
-========
+フィードバック
+==============
 
 ..
   Regular expressions are a complicated topic.  Did this document help you
@@ -2530,10 +2530,11 @@ Feedback
   encountered that weren't covered here?  If so, please send suggestions for
   improvements to the author.
 
-Regular expressions are a complicated topic.  Did this document help you
-understand them?  Were there parts that were unclear, or Problems you
-encountered that weren't covered here?  If so, please send suggestions for
-improvements to the author.
+正規表現は複雑な話題です。
+このドキュメントは助けになったでしょうか？
+わかりにくかったところや、あなたが遭遇した問題が
+扱われていない等なかったでしょうか？
+もしそんな問題があれば、著者に改善の提案を送って下さい。
 
 ..
   The most complete book on regular expressions is almost certainly Jeffrey
@@ -2544,15 +2545,19 @@ improvements to the author.
   now-removed :mod:`regex` module, which won't help you much.)  Consider checking
   it out from your library.
 
-The most complete book on regular expressions is almost certainly Jeffrey
-Friedl's Mastering Regular Expressions, published by O'Reilly.  Unfortunately,
-it exclusively concentrates on Perl and Java's flavours of regular expressions,
-and doesn't contain any Python material at all, so it won't be useful as a
-reference for programming in Python.  (The first edition covered Python's
-now-removed :mod:`regex` module, which won't help you much.)  Consider checking
-it out from your library.
-
+O'Reilly から出版されている Jeffrey Friedl の Mastering Regular Expressions は
+正規表現に関するほぼ完璧な書籍です [#]_ 。
+不幸なことに、この本は Perl と Java の正規表現を集中して扱っていて、
+Python の正規表現については全く扱っていません、
+そのため Python プログラミングのためのレファレンスとして使うことはできません。
+(第一版はいまや削除された Python の :mod:`regex` モジュールについて
+扱っていましたが、これはあまり役に立たないでしょう。)
+図書館で調べるのを検討してみましょう。
 
 .. rubric:: Footnotes
 
-.. [#] Introduced in Python 2.2.2.
+..
+  .. [#] Introduced in Python 2.2.2.
+
+.. [#] Python 2.2.2 で導入されました。
+.. [#] 訳注 日本語訳「詳説 正規表現」が出版されています。
