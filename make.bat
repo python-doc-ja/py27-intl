@@ -46,7 +46,7 @@ goto end
 
 :update
 ::svn update tools/sphinx
-hg --cwd tools/sphinx pull -uf
+hg --cwd tools/sphinx pull -ufr1.1
 svn update tools/docutils
 svn update tools/jinja2
 svn update tools/pygments
@@ -74,6 +74,6 @@ for %%f in (*.idx) do mendex -U -f -d `basename %%f .idx`.dic -s python.ist %%f
 for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
 for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
 for %%f in (*.dvi) do dvipdfmx %%f
-goto end
+goto end
 
 :end
