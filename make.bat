@@ -10,6 +10,7 @@ if "%1" EQU "" goto help
 if "%1" EQU "html" goto build
 if "%1" EQU "htmlhelp" goto build
 if "%1" EQU "latex" goto build
+if "%1" EQU "latexpdf" goto latexpdf
 if "%1" EQU "text" goto build
 if "%1" EQU "suspicious" goto build
 if "%1" EQU "linkcheck" goto build
@@ -26,6 +27,7 @@ echo %this% update
 echo %this% html
 echo %this% htmlhelp
 echo %this% latex
+echo %this% latexpdf
 echo %this% text
 echo %this% suspicious
 echo %this% linkcheck
@@ -57,5 +59,21 @@ if not exist build\doctrees mkdir build\doctrees
 tools\sphinx-build.py -b%1 -dbuild\doctrees . build\%*
 if "%1" EQU "htmlhelp" "%HTMLHELP%" build\htmlhelp\python%DISTVERSION:.=%.hhp
 goto end
+
+:latexpdf
+if not exist build mkdir build
+if not exist build\%1 mkdir build\%1
+if not exist build\doctrees mkdir build\doctrees
+tools\sphinx-build.py -blatex -dbuild\doctrees . build\latex
+cd build\latex
+for %%f in (*.pdf *.png *.gif *.jpg *.jpeg) do extractbb %%f
+for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
+for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
+for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
+for %%f in (*.idx) do mendex -U -f -d `basename %%f .idx`.dic -s python.ist %%f
+for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
+for %%f in (*.tex) do platex -kanji=utf8 %LATEXOPTS% %%f
+for %%f in (*.dvi) do dvipdfmx %%f
+goto end
 
 :end
