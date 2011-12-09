@@ -62,7 +62,7 @@ goto end
 
 :latexpdf
 if not exist build mkdir build
-if not exist build\%1 mkdir build\%1
+if not exist build\latex mkdir build\latex
 if not exist build\doctrees mkdir build\doctrees
 tools\sphinx-build.py -blatex -dbuild\doctrees . build\latex
 cd build\latex
