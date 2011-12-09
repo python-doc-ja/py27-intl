@@ -95,7 +95,7 @@
    .. raised.  Other exceptions indicate problems with the arguments or
    .. environment.
 
-   モジュールがファイルの中にあるならば、返された *file* は ``None`` で、
+   モジュールがファイルとして存在していなければ、返された *file* は ``None`` で、
    *pathname* は空文字列、 *description* タプルはその拡張子とモードに対して空文字列を含みます。
    モジュール型は上の括弧の中に示されます。検索が失敗すれば、 :exc:`ImportError` が発生します。
    他の例外は引数または環境に問題があることを示唆します。
