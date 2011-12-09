@@ -1220,12 +1220,20 @@ Marc-André Lemburg のプレゼンテーション
 <http://downloads.egenix.com/python/LSM2005-Developing-Unicode-aware-applications-in-Python.pdf>
 から入手可能です、そして文字エンコーディングの問題と同様にアプリケーションの国際化やローカライズについても議論されています。
 
+..
+  Revision History and Acknowledgements
+  =====================================
 
-Revision History and Acknowledgements
-=====================================
+更新履歴と謝辞
+==============
 
-Thanks to the following people who have noted errors or offered suggestions on
-this article: Nicholas Bastin, Marius Gedminas, Kent Johnson, Ken Krugler,
+..
+  Thanks to the following people who have noted errors or offered suggestions on
+  this article: Nicholas Bastin, Marius Gedminas, Kent Johnson, Ken Krugler,
+  Marc-André Lemburg, Martin von Löwis, Chad Whitacre.
+
+この記事中の誤りの指摘や提案を申し出てくれた以下の人々に感謝します:
+Nicholas Bastin, Marius Gedminas, Kent Johnson, Ken Krugler,
 Marc-André Lemburg, Martin von Löwis, Chad Whitacre.
 
 Version 1.0: posted August 5 2005.

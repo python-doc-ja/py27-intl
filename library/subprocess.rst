@@ -64,7 +64,7 @@ subprocess モジュールを使う
         ['/bin/vikings', '-input', 'eggs.txt', '-output', 'spam spam.txt', '-cmd', "ech '$MONEY"]
         >>> p = subprocess.Popen(args) # Success!
 
-      シェルの中で (*-input* 、 *eggs.txt* のように) 
+      シェルの中で (*-input* 、 *eggs.txt* のように)
       スペースで区切られたオプションと引数は
       リストの別の要素として区切られていること、
       シェルの中で (上にあるようなスペースを含むファイル名や
@@ -86,10 +86,28 @@ subprocess モジュールを使う
 
       Popen(['/bin/sh', '-c', args[0], args[1], ...])
 
+   .. warning::
+
+      信頼されていないソースからの衛生化されていない入力を組み込んだ
+      シェルコマンドを実行すると、任意のコマンドを実行されることになる
+      セキュリティ上の重大な欠陥 `シェルインジェクション(en)
+      <http://en.wikipedia.org/wiki/Shell_injection#Shell_injection>`_
+      に対して脆弱になります。この理由から、コマンド文字列が外部入力から
+      構成される場合、 *shell=True* は *絶対に使うべきではありません*::
+
+         >>> from subprocess import call
+         >>> filename = input("What file would you like to display?\n")
+         What file would you like to display?
+         non_existent; rm -rf / #
+         >>> call("cat " + filename, shell=True) # Uh-oh. This will end badly...
+
+      *shell=False* は、この脆弱性に悩まされません。上述のノートは、
+      *shell=False* を使ったコードを動かすのに役立つでしょう。
+
    Windows の場合: :class:`Popen` クラスは子プログラムを実行するのに文字列の扱える CreateProcess()
-   を使います。 *args* がシーケンスの場合、これは :meth:`list2cmdline` メソッドをつかってコマンドライン文字列に変換されます。注意:
-   すべての MS Windows アプリケーションがコマンドライン引数を同じやりかたで解釈するとは限りません。 :meth:`list2cmdline` は MS
-   C ランタイムと同じやりかたで文字列を解釈するアプリケーション用に設計されています。
+   を使います。 *args* がシーケンスの場合、これは
+   :ref:`converting-argument-sequence` で解説する方法に従って、
+   文字列に変換されます。
 
    *bufsize* は、もしこれが与えられた場合、ビルトインの open() 関数の該当する引数と同じ意味をもちます: :const:`0`
    はバッファされないことを意味し、 :const:`1` は行ごとにバッファされることを、それ以外の正の値は (ほぼ)
@@ -153,15 +171,13 @@ subprocess モジュールを使う
       :attr:`stdout`, :attr:`stdin` および :attr:`stderr` のファイルオブジェクトの newlines 属性は
       communicate() メソッドでは更新されません。
 
-   *startupinfo* および *creationflags* が与えられた場合、これらは内部で呼びだされる CreateProcess()
-   関数に渡されます。これらはメインウインドウの形状や新しいプロセスの優先度などを指定することができます。  (Windows のみ)
+   *startupinfo* は、根底の ``CreateProcess`` 関数に渡される
+   :class:`STARTUPINFO` オブジェクトになります。
+   *creationflags* は、与えられるなら、 :data:`CREATE_NEW_CONSOLE` または
+   :data:`CREATE_NEW_PROCESS_GROUP` にできます。(Windows のみ)
 
 
 .. data:: PIPE
-
-   .. Special value that can be used as the *stdin*, *stdout* or *stderr* argument
-      to :class:`Popen` and indicates that a pipe to the standard stream should be
-      opened.
 
    :class:`Popen` の *stdin*, *stdout*, *stderr* 引数に渡して、標準ストリームに対する
    パイプを開くことを指定するための特別な値.
@@ -169,17 +185,13 @@ subprocess モジュールを使う
 
 .. data:: STDOUT
 
-   .. Special value that can be used as the *stderr* argument to :class:`Popen` and
-      indicates that standard error should go into the same handle as standard
-      output.
-
    :class:`Popen` の *stderr* 引数に渡して、標準エラーが標準出力と同じハンドルに出力されるように指定するための特別な値.
 
 
 便利な関数
 ^^^^^^^^^^
 
-このモジュールは二つのショートカット関数も定義しています:
+このモジュールは以下の二つのショートカット関数も定義しています:
 
 
 .. function:: call(*popenargs, **kwargs)
@@ -189,6 +201,13 @@ subprocess モジュールを使う
    この引数は :class:`Popen` コンストラクタの引数と同じです。使用例::
 
       >>> retcode = call(["ls", "-l"])
+
+   .. warning::
+
+      :meth:`Popen.wait` のように、これは以下の場合にデッドロックになります。
+      ``stdout=PIPE`` および/または``stderr=PIPE`` を使って、
+      子プロセスが十分な出力を生成したのに、出力先が、OS パイプバッファが
+      それ以上のデータを受け付けるのを待っているような場合です。
 
 
 .. function:: check_call(*popenargs, **kwargs)
@@ -203,6 +222,35 @@ subprocess モジュールを使う
       0
 
    .. versionadded:: 2.5
+
+   .. warning::
+
+      :func:`call` の警告を参照してください。
+
+
+.. function:: check_output(*popenargs, **kwargs)
+
+   引数でコマンドを実行し、その出力をバイト文字列として返します。
+
+   終了コードが非 0 なら、 :exc:`CalledProcessError` を送出します。
+   :exc:`CalledProcessError` オブジェクトは、戻りコードを
+   :attr:`returncode` 属性に、出力を :attr:`output` 属性に保持します。
+
+   引数は、 :class:`Popen` コンストラクタのものと同じです。例::
+
+      >>> subprocess.check_output(["ls", "-l", "/dev/null"])
+      'crw-rw-rw- 1 root root 1, 3 Oct 18  2007 /dev/null\n'
+
+   stdout 引数は内部で使われるため、許可されません。
+   結果の標準エラーを捕捉するには、 ``stderr=subprocess.STDOUT`` を
+   使ってください::
+
+      >>> subprocess.check_output(
+      ...     ["/bin/sh", "-c", "ls non_existent_file; exit 0"],
+      ...     stderr=subprocess.STDOUT)
+      'ls: non_existent_file: No such file or directory\n'
+
+   .. versionadded:: 2.7
 
 
 例外
@@ -246,12 +294,9 @@ Popen オブジェクト
 
    .. warning::
 
-      .. This will deadlock if the child process generates enough output to a
-         stdout or stderr pipe such that it blocks waiting for the OS pipe buffer
-         to accept more data.  Use :meth:`communicate` to avoid that.
-
-      子プロセスが stdout もしくは stderr パイプに対してブロックするまで出力し、
-      OSのパイプバッファが送信可能になるまで待つ場合、このメソッドを呼ぶとデッドロックします。
+      これは、子プロセスが十分な出力を生成したのに、出力先が、
+      OS パイプバッファがそれ以上のデータを受け付けるのを待っているような
+      場合に、デッドロックになります。
       これを避けるために、 :meth:`communicate` を利用してください。
 
 .. method:: Popen.communicate(input=None)
@@ -261,11 +306,6 @@ Popen オブジェクト
    を指定します。
 
    :meth:`communicate` はタプル ``(stdoutdata, stderrdata)`` を返します。
-
-   .. Note that if you want to send data to the process's stdin, you need to create
-      the Popen object with ``stdin=PIPE``.  Similarly, to get anything other than
-      ``None`` in the result tuple, you need to give ``stdout=PIPE`` and/or
-      ``stderr=PIPE`` too.
 
    子プロセスの標準入力にデータを送りたい場合は、 Popen オブジェクトを ``stdin=PIPE``
    と指定して作成しなければなりません。
@@ -280,17 +320,14 @@ Popen オブジェクト
 
 .. method:: Popen.send_signal(signal)
 
-   .. Sends the signal *signal* to the child.
-
    *signal* シグナルを子プロセスに送ります。
 
    .. note::
 
-      .. On Windows only SIGTERM is supported so far. It's an alias for
-         :meth:`terminate`.
-
-      Windows では SIGTERM だけがサポートされています。
-      これは :meth:`terminate` のエイリアスです。
+      Windows では、 SIGTERM は :meth:`terminate` のエイリアスです。
+      CTRL_C_EVENT と CTRL_BREAK_EVENT を、
+      `CREATE_NEW_PROCESS_GROUP` を含む *creationflags* で始まった、
+      プロセスに送れます。
 
    .. versionadded:: 2.6
 
@@ -323,10 +360,6 @@ Popen オブジェクト
 以下の属性も利用できます:
 
 .. warning::
-   .. Use :meth:`communicate` rather than :meth:`.stdin.write`,
-      :meth:`.stdout.read` or :meth:`.stderr.read` to avoid deadlocks due
-      to any of the other OS pipe buffers filling up and blocking the child
-      process.
 
    :meth:`.stdin.write`, :meth:`.stdout.read`, :meth:`.stderr.read` を利用すると、
    別のパイプのOSパイプバッファがいっぱいになってデッドロックする恐れがあります。
@@ -366,6 +399,112 @@ Popen オブジェクト
    負の値 -N は子プロセスがシグナル N により中止させられたことを示します (Unix のみ)。
 
 
+Windows Popen ヘルパ
+---------------------
+
+:class:`STARTUPINFO` クラスと以下の定数は、Windows でいつでも利用できます。
+
+.. class:: STARTUPINFO()
+
+   :class:`Popen` の生成に使われる Windows
+   `STARTUPINFO <http://msdn.microsoft.com/en-us/library/ms686331(v=vs.85).aspx>`__
+   構造の部分的なサポートです。
+
+   .. attribute:: dwFlags
+
+      特定の :class:`STARTUPINFO` のメンバが、プロセスがウィンドウを
+      生成するときに使われるかを決定するビットフィールドです::
+
+         si = subprocess.STARTUPINFO()
+         si.dwFlags = subprocess.STARTF_USESTDHANDLES | subprocess.STARTF_USESHOWWINDOW
+
+   .. attribute:: hStdInput
+
+      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
+      このメンバがプロセスの標準入力処理です。
+      :data:`STARTF_USESTDHANDLES` が指定されなければ、標準入力のデフォルトは
+      キーボードバッファです。
+
+   .. attribute:: hStdOutput
+
+      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
+      このメンバがプロセスの標準出力処理です。
+      そうでなければ、このメンバは無視され、標準出力のデフォルトは
+      コンソールウィンドウのバッファです。
+
+   .. attribute:: hStdError
+
+      :attr:`dwFlags` が :data:`STARTF_USESTDHANDLES` を指定すれば、
+      このメンバがプロセスの標準エラー処理です。
+      そうでなければ、このメンバは無視され、標準エラーのデフォルトは
+      コンソールウィンドウのバッファです。
+
+   .. attribute:: wShowWindow
+
+      :attr:`dwFlags` が :data:`STARTF_USESHOWWINDOW` を指定すれば、
+      このメンバは
+      `ShowWindow <http://msdn.microsoft.com/en-us/library/ms633548(v=vs.85).aspx>`__
+      関数の ``nCmdShow`` パラメタで指定された値なら、 ``SW_SHOWDEFAULT``
+      以外の任意のものにできます。しかし、このメンバは無視されます。
+
+      この属性には :data:`SW_HIDE` が提供されています。
+      これは、 :class:`Popen` が ``shell=True`` として呼び出されたときに
+      使われます。
+
+
+定数
+^^^^
+
+:mod:`subprocess` モジュールは、以下の定数を公開します。
+
+.. data:: STD_INPUT_HANDLE
+
+   標準入力デバイスです。この初期値は、コンソール入力バッファ、
+   ``CONIN$`` です。
+
+.. data:: STD_OUTPUT_HANDLE
+
+   標準出力デバイスです。この初期値は、アクティブコンソールスクリーン、
+   ``CONOUT$`` です。
+
+.. data:: STD_ERROR_HANDLE
+
+   標準エラーデバイスです。この初期値は、アクティブコンソールスクリーン、
+   ``CONOUT$`` です。
+
+.. data:: SW_HIDE
+
+   ウィンドウを隠します。別のウィンドウが活性化します。
+
+.. data:: STARTF_USESTDHANDLES
+
+   追加情報を保持する、 :attr:`STARTUPINFO.hStdInput`,
+   :attr:`STARTUPINFO.hStdOutput`, および :attr:`STARTUPINFO.hStdError`
+   メンバを指定します。
+
+.. data:: STARTF_USESHOWWINDOW
+
+   追加情報を保持する、 :attr:`STARTUPINFO.wShowWindow` 
+   メンバを指定します。
+
+.. data:: CREATE_NEW_CONSOLE
+
+   新しいプロセスが、親プロセスのコンソールを継承する (デフォルト) 
+   のではなく、新しいコンソールを持ちます。
+
+   :class:`Popen` が ``shell=True`` として生成されたとき、
+   このフラグは必ず設定されます。
+
+.. data:: CREATE_NEW_PROCESS_GROUP
+
+   新しいプロセスグループが生成されることを指定する :class:`Popen`
+   ``creationflags`` パラメタです。このフラグは、サブプロセスで
+   :func:`os.kill` を使うのに必要です。
+
+   :data:`CREATE_NEW_CONSOLE` が指定されていたら、このフラグは
+   無視されます。
+
+
 .. _subprocess-replacements:
 
 古い関数を subprocess モジュールで置き換える
@@ -400,8 +539,11 @@ Popen オブジェクト
    ==>
    p1 = Popen(["dmesg"], stdout=PIPE)
    p2 = Popen(["grep", "hda"], stdin=p1.stdout, stdout=PIPE)
+   p1.stdout.close()  # Allow p1 to receive a SIGPIPE if p2 exits.
    output = p2.communicate()[0]
 
+p2 を開始した後の p1.stdout.close() の呼び出しは、p1 が p2 の前に
+存在した場合に、p1 が SIGPIPE を受け取るために重要です。
 
 :func:`os.system()` を置き換える
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -567,4 +709,31 @@ popen2.Popen3 および popen2.Popen4 は基本的には subprocess.Popen と同
 
 * popen2 はデフォルトですべてのファイル記述子を閉じますが、 :class:`Popen` では明示的に ``close_fds=True``
   を指定する必要があります。
+
+注釈
+-----
+
+.. _converting-argument-sequence:
+
+Windows における引数シーケンスから文字列への変換
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Windows では、 *args* シーケンスは以下の (MS C ランタイムで使われる規則に
+対応する) 規則を使って解析できる文字列に変換されます:
+
+1. 引数は、スペースかタブのどちらかの空白で分けられます。
+
+2. ダブルクオーテーションマークで囲まれた文字列は、空白が含まれていたとしても
+   1 つの引数として解釈されます。クオートされた文字列は引数に埋め込めます。
+
+3. バックスラッシュに続くダブルクオーテーションマークは、
+   文字通りのダブルクオーテーションマークと解釈されます。
+
+4. バックスラッシュは、ダブルクオーテーションが続かない限り、
+   文字通りに解釈されます。
+
+5. 複数のバックスラッシュにダブルクオーテーションマークが続くなら、
+   バックスラッシュ 2 つで 1 つのバックスラッシュ文字と解釈されます。
+   バックスラッシュの数が奇数なら、最後のバックスラッシュは
+   規則 3 に従って続くダブルクオーテーションマークをエスケープします。
 

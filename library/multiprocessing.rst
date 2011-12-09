@@ -32,7 +32,7 @@
 .. note::
 
     このパッケージに含まれる機能を使用するためには、子プロセスから
-    ``__main__`` メソッドを呼び出せる必要があります。
+    ``__main__`` モジュールを呼び出せる必要があります。
     このことについては :ref:`multiprocessing-programming` で触れていますが、
     ここであらためて強調しておきます。何故かというと、いくつかのサンプルコード、例えば
     :class:`multiprocessing.Pool` のサンプルはインタラクティブシェル上では動作しないからです。
@@ -716,6 +716,8 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
       コネクションの向こう側へ :meth:`recv` を使用して読み込むオブジェクトを送ります。
 
       オブジェクトは pickle でシリアライズ可能でなければなりません。
+      pickle が極端に大きすぎる (OS にも依りますが、およそ 32 MB+) と、
+      ValueError 例外が送出されることがあります。
 
    .. method:: recv()
 
@@ -831,6 +833,12 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
 .. class:: Event()
 
    :class:`threading.Event` のクローンです。
+   このメソッドは、終了時の内部セマフォの状態を返すので、タイムアウトが
+   与えられ、実際にオペレーションがタイムアウトしたのでなければ、
+   必ず ``True`` を返します。
+
+   .. versionchanged:: 2.7
+      以前は、このメソッドは必ず ``None`` を返していました。
 
 .. class:: Lock()
 
@@ -842,7 +850,7 @@ Connection オブジェクトは通常は :func:`Pipe` を使用して作成さ�
 
 .. class:: Semaphore([value])
 
-   束縛されたセマフォオブジェクト: :class:`threading.Semaphore` のクローンです。
+   セマフォオブジェクト: :class:`threading.Semaphore` のクローンです。
 
 .. note::
 
@@ -1113,9 +1121,11 @@ Manager は別のプロセス間で共有されるデータの作成方法を提
    *authkey* が ``None`` の場合 ``current_process().authkey`` が使用されます。
    *authkey* を使用する場合は文字列でなければなりません。
 
-   .. method:: start()
+   .. method:: start([initializer[, initargs]])
 
       マネージャを開始するためにサブプロセスを開始します。
+      *initializer* が ``None`` でなければ、サブプロセスは開始時に
+      ``initializer(*initargs)`` を呼び出します。
 
    .. method:: get_server()
 
@@ -1247,6 +1257,24 @@ Manager は別のプロセス間で共有されるデータの作成方法を提
                list(sequence)
 
       共有 ``list`` オブジェクトを作成して、そのプロキシを返します。
+
+   .. note::
+
+      プロキシには、ミュータブルな値や、辞書とリストのプロキシの要素が、
+      いつ変えられたのかを知る方法がないため、これらの値や要素の変化は
+      マネージャを通して伝播しません。要素などを変化させるために、
+      コンテナプロキシに変化されたオブジェクトを再代入できます。
+
+         # create a list proxy and append a mutable object (a dictionary)
+         lproxy = manager.list()
+         lproxy.append({})
+         # now mutate the dictionary
+         d = lproxy[0]
+         d['a'] = 1
+         d['b'] = 2
+         # at this point, the changes to d are not yet synced, but by
+         # reassigning the dictionary, the proxy is notified of the change
+         lproxy[0] = d
 
 
 Namespace オブジェクト
@@ -1501,7 +1529,7 @@ Proxy オブジェクト
 
 :class:`Pool` クラスでタスクを実行するプロセスのプールを作成することができます。
 
-.. class:: multiprocessing.Pool([processes[, initializer[, initargs]]])
+.. class:: multiprocessing.Pool([processes[, initializer[, initargs[, maxtasksperchild]]]])
 
    プロセスプールオブジェクトはジョブが実行されるようにワーカープロセスのプールを制御します。
    タイムアウトやコールバックで非同期の実行をサポートして、並列 map 実装を持ちます。
@@ -1509,6 +1537,22 @@ Proxy オブジェクト
    *processes* は使用するワーカープロセスの数です。 *processes* が ``None`` の場合
    :func:`cpu_count` が返す数を使用します。 *initializer* が ``None`` の場合、
    各ワーカープロセスが開始時に ``initializer(*initargs)`` を呼び出します。
+
+   .. versionadded:: 2.7
+      *maxtasksperchild* は、使われないリソースの開放のために
+      ワーカープロセスが退出して、新しい
+      ワーカープロセスで置き換えられるまでに完了できるタスクの数です。
+      デフォルトの *maxtasksperchild* は None で、ワーカープロセスが
+      プールと同じだけ残ることを意味します。
+
+   .. note::
+
+      :class:`Pool` 中のワーカープロセスは典型的に、プールのワークキューの
+      存続期間とちょうど同じだけ残ります。(Apache, mod_wsgi, 等のような)
+      他のシステムによく見られるパターンは、ワーカーが設定された量だけの
+      ワークを完了させるまでプールに置いたら退出させ、新しいプロセスが
+      産まれて古いプロセスを置き換えるものです。
+      :class:`Pool` の *maxtasksperchild* 引数は、この能力をエンドユーザに開放します。
 
    .. method:: apply(func[, args[, kwds]])
 
@@ -2158,13 +2202,13 @@ Windows では :func:`os.fork` がないので幾つか追加制限がありま�
 .. literalinclude:: ../includes/mp_pool.py
 
 
-ロック、コンディションやキューのような同期の例を紹介します
+ロック、コンディションやキューのような同期の例を紹介します。
 
 .. literalinclude:: ../includes/mp_synchronize.py
 
 
 ワーカープロセスのコレクションに対するタスクをフィードするキューの使用方法と
-その結果をまとめる方法を紹介します。
+その結果をまとめる方法の例をを紹介します。
 
 .. literalinclude:: ../includes/mp_workers.py
 
