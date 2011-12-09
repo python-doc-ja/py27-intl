@@ -45,7 +45,7 @@ checkout:
 	fi
 	@if [ ! -d tools/docutils ]; then \
 	  echo "Checking out Docutils..."; \
-	  svn export svn://svn.berlios.de/docutils/tags/docutils-0.7/docutils tools/docutils; \
+	  svn export http://docutils.svn.sourceforge.net/svnroot/docutils/tags/docutils-0.7/docutils tools/docutils; \
 	fi
 	@if [ ! -d tools/jinja2 ]; then \
 	  echo "Checking out Jinja..."; \

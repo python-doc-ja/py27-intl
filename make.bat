@@ -39,7 +39,7 @@ goto end
 ::svn co %SVNROOT%/external/Sphinx-0.6.5/sphinx tools/sphinx
 hg clone https://bitbucket.org/birkenfeld/sphinx -r1.1 tools/sphinx
 ::svn co %SVNROOT%/external/docutils-0.6/docutils tools/docutils
-svn export svn://svn.berlios.de/docutils/tags/docutils-0.7/docutils tools/docutils
+svn export http://docutils.svn.sourceforge.net/svnroot/docutils/tags/docutils-0.7/docutils tools/docutils
 svn co %SVNROOT%/external/Jinja-2.3.1/jinja2 tools/jinja2
 svn co %SVNROOT%/external/Pygments-1.3.1/pygments tools/pygments
 goto end
