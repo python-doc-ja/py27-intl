@@ -696,7 +696,7 @@ ttk.Progressbar
 
 .. note from translator (cocoatomo)
 
-   - tag binding means class option in standard option
+   - tag binding refers tag_bind method
    - 'list' is list in Tcl, which is space-separated strings, not list in Python
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
@@ -726,7 +726,7 @@ ttk.Progressbar
    |                | 変更することはできません。                             |
    |                |                                                        |
    |                | このオプションの値によらず、アプリケーションのコードと |
-   |                | タグバインディングは好きなように選択状態を             |
+   |                | タグバインディングからは好きなように選択状態を         |
    |                | 設定できます。                                         |
    +----------------+--------------------------------------------------------+
    | show           | ツリーのどの要素を表示するかを指定する、以下にある値を |
@@ -746,46 +746,44 @@ ttk.Progressbar
 要素オプション
 ^^^^^^^^^^^^^^
 
-The following item options may be specified for items in the insert and item
-widget commands.
+以下の要素オプションは、ウィジェットの insert コマンドと item コマンドで要素に対して指定できます。
 
-   +--------+---------------------------------------------------------------+
-   | option | description                                                   |
-   +========+===============================================================+
-   | text   | The textual label to display for the item.                    |
-   +--------+---------------------------------------------------------------+
-   | image  | A Tk Image, displayed to the left of the label.               |
-   +--------+---------------------------------------------------------------+
-   | values | The list of values associated with the item.                  |
-   |        |                                                               |
-   |        | Each item should have the same number of values as the widget |
-   |        | option columns. If there are fewer values than columns, the   |
-   |        | remaining values are assumed empty. If there are more values  |
-   |        | than columns, the extra values are ignored.                   |
-   +--------+---------------------------------------------------------------+
-   | open   | True/False value indicating whether the item's children should|
-   |        | be displayed or hidden.                                       |
-   +--------+---------------------------------------------------------------+
-   | tags   | A list of tags associated with this item.                     |
-   +--------+---------------------------------------------------------------+
+   +------------+--------------------------------------------------------------+
+   | オプション | 説明                                                         |
+   +============+==============================================================+
+   | text       | アイテムに表示するテキストラベルです。                       |
+   +------------+--------------------------------------------------------------+
+   | image      | ラベルの左に表示される Tk 画像です。                         |
+   +------------+--------------------------------------------------------------+
+   | values     | 要素に関連付けられている値のリストです。                     |
+   |            |                                                              |
+   |            | それぞれの要素はウィジェットの columns オプションと          |
+   |            | 同じ数の値を持たなければいけません。 columns オプションより  |
+   |            | 少ない場合、残りの値は空として扱われます。                   |
+   |            | columns オプションより多い場合、余計な値は無視されます。     |
+   +------------+--------------------------------------------------------------+
+   | open       | 要素の子供を表示するか隠すかを指示する真偽値です。           |
+   +------------+--------------------------------------------------------------+
+   | tags       | この要素に関連付いているタグのリストです。                   |
+   +------------+--------------------------------------------------------------+
 
 
-Tag Options
-^^^^^^^^^^^
+タグオプション
+^^^^^^^^^^^^^^
 
-The following options may be specified on tags:
+以下のオプションはタグに対して設定できます:
 
    +------------+-----------------------------------------------------------+
-   | option     | description                                               |
+   | オプション | 説明                                                      |
    +============+===========================================================+
-   | foreground | Specifies the text foreground color.                      |
+   | foreground | テキストの色を指定します。                                |
    +------------+-----------------------------------------------------------+
-   | background | Specifies the cell or item background color.              |
+   | background | セルや要素の背景色を指定します。                          |
    +------------+-----------------------------------------------------------+
-   | font       | Specifies the font to use when drawing text.              |
+   | font       | テキストを描画するときに使うフォントを指定します。        |
    +------------+-----------------------------------------------------------+
-   | image      | Specifies the item image, in case the item's image option |
-   |            | is empty.                                                 |
+   | image      | 要素の image オプションが空だった場合に使用する画像を     |
+   |            | 指定します。                                              |
    +------------+-----------------------------------------------------------+
 
 
@@ -1008,7 +1006,7 @@ ttk.Treeview
       as the item identifier; *iid* must not already exist in the tree.
       Otherwise, a new unique identifier is generated.
 
-      See `Item Options`_ for the list of available points.
+      See `要素オプション`_ for the list of available points.
 
 
    .. method:: item(item[, option[, **kw]])
