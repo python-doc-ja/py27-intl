@@ -150,7 +150,7 @@
      inst = Cls()
      inst.x = inst.x + 1   # writes inst.x as 4 leaving Cls.x as 3
  
-  このことは、:func:`property` で作成されたプロパティのような
+  このことは、 :func:`property` で作成されたプロパティのような
   デスクリプタ属性に対しては、必ずしもあてはまるとは限りません、
 
   .. index::

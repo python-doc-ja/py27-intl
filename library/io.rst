@@ -617,7 +617,7 @@ I/O 基底クラス
 
    第四引数 *max_buffer_size* が提供されていますが、使われず、非推奨です。
 
-   :class:`BufferedRWPair` は、:exc:`UnsupportedOperation` を送出する
+   :class:`BufferedRWPair` は、 :exc:`UnsupportedOperation` を送出する
    :meth:`~BufferedIOBase.detach` を除く、
    :class:`BufferedIOBase` の全てのメソッドを実装します。
 

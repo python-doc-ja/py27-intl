@@ -126,7 +126,7 @@
 
 .. function:: pm()
 
-   :data:``sys.last_traceback`` のトレースバックの事後解析デバッギングに入ります。
+   :data:`sys.last_traceback` のトレースバックの事後解析デバッギングに入ります。
 
 
 ``run*`` 関数と :func:`set_trace` は、 :class:`Pdb` クラスをインスタンス化して
