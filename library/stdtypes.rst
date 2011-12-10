@@ -1713,7 +1713,7 @@ sets は要素の位置と (要素の) 挿入位置を保持しません。し�
 (:term:`hashable`) です --- 作成後に内容を改変できません。
 そのため、辞書のキーや他の集合の要素として使えます。
 
-Python 2.7 では、空でない set (frozenset ではない) は、:class:`set`
+Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set`
 コンストラクタに加え、要素を波カッコ中にカンマで区切って
 列挙することでも生成できます。例: ``{'jack', 'sjoerd'}``.
 
@@ -2213,7 +2213,7 @@ Python 2.7 では、空でない set (frozenset ではない) は、:class:`set`
    同じリストを作成する他の方法は、
    ``pairs = [(v, k) for (k, v) in d.items()]`` です。
 
-   辞書の項目の追加や削除中にビューをイテレートすると、:exc:`RuntimeError`
+   辞書の項目の追加や削除中にビューをイテレートすると、 :exc:`RuntimeError`
    を送出したり、すべての項目に渡ってイテレートできなかったりします。
 
 .. describe:: x in dictview

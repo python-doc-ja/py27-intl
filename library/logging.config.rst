@@ -28,7 +28,7 @@
 これらの関数は、 :mod:`logging.config` にあります。
 これらの関数の使用はオプションです ---
 :mod:`logging` モジュールはこれらの関数を使うか、 (:mod:`logging` 自体で
-定義されている) 主要な API を呼び出し、:mod:`logging` か
+定義されている) 主要な API を呼び出し、 :mod:`logging` か
 :mod:`logging.handlers` で宣言されているハンドラを定義することで設定できます。
 
 .. function:: dictConfig(config)
