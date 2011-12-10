@@ -25,6 +25,7 @@ help:
 	@echo "  html       to make standalone HTML files"
 	@echo "  htmlhelp   to make HTML files and a HTML help project"
 	@echo "  latex      to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+	@echo "  latexpdf   to make pdf via LaTeX, you can set PAPER=a4 or PAPER=letter"
 	@echo "  text       to make plain text files"
 	@echo "  changes    to make an overview over all changed/added/deprecated items"
 	@echo "  linkcheck  to check all external links for integrity"
@@ -44,7 +45,7 @@ checkout:
 	fi
 	@if [ ! -d tools/docutils ]; then \
 	  echo "Checking out Docutils..."; \
-	  svn export svn://svn.berlios.de/docutils/tags/docutils-0.7/docutils tools/docutils; \
+	  svn export http://docutils.svn.sourceforge.net/svnroot/docutils/tags/docutils-0.7/docutils tools/docutils; \
 	fi
 	@if [ ! -d tools/jinja2 ]; then \
 	  echo "Checking out Jinja..."; \
@@ -81,6 +82,11 @@ latex: build
 	@echo "Build finished; the LaTeX files are in build/latex."
 	@echo "Run \`make all-pdf' or \`make all-ps' in that directory to" \
 	      "run these through (pdf)latex."
+
+latexpdf: BUILDER = latex
+latexpdf: build
+	cp refs/mendex/*.dic build/latex/
+	make -C build/latex all-pdf-ja
 
 text: BUILDER = text
 text: build

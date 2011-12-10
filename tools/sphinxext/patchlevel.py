@@ -14,6 +14,12 @@ import os
 import re
 import sys
 
+def get_conf_version_info(srcdir):
+    confpy = os.path.join(srcdir, 'conf.py')
+    conf = {}
+    execfile(confpy, conf)
+    return conf["version"], conf["release"]
+
 def get_header_version_info(srcdir):
     patchlevel_h = os.path.join(srcdir, '..', 'Include', 'patchlevel.h')
 
@@ -68,4 +74,5 @@ def get_version_info():
         return version, release
 
 if __name__ == '__main__':
-    print get_header_version_info('.')[1]
+    #print get_header_version_info('.')[1]
+    print get_conf_version_info('.')[1].replace('.', '')
