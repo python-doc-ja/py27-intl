@@ -37,9 +37,9 @@ Ttk を使い始めるために、モジュールをインポートします::
    from ttk import *
 
 このように書くと、いくつかの :mod:`ttk` ウィジェット (:class:`Button` 、
-:class:`Checkbutton` 、 :class:`Entry` 、 :class:`Frame` 、 :class:`Label` 、
-:class:`LabelFrame` 、 :class:`Menubutton` 、 :class:`PanedWindow` 、
-:class:`Radiobutton` 、 :class:`Scale` 、
+:class:`Checkbutton`, :class:`Entry`, :class:`Frame`, :class:`Label` 、
+:class:`LabelFrame`, :class:`Menubutton`, :class:`PanedWindow` 、
+:class:`Radiobutton`, :class:`Scale` 、
 :class:`Scrollbar`) は自動的に Tk ウィジェットを置き換えます。
 
 これにはプラットフォームをまたいでより良い見た目を得られるという、直接的な利益がありますが、ウィジェットは完全な互換性を持っているわけではないことに注意してください。
@@ -56,13 +56,13 @@ Ttk ウィジェット
 ----------------
 
 Ttk には 17 のウィジェットがあり、そのうち 11 は Tkinter に既にあるものです:
-:class:`Button` 、 :class:`Checkbutton` 、 :class:`Entry` 、 :class:`Frame` 、
-:class:`Label` 、 :class:`LabelFrame` 、 :class:`Menubutton` 、
-:class:`PanedWindow` 、 :class:`Radiobutton` 、 :class:`Scale` 、
+:class:`Button`, :class:`Checkbutton`, :class:`Entry`, :class:`Frame` 、
+:class:`Label`, :class:`LabelFrame`, :class:`Menubutton` 、
+:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale` 、
 :class:`Scrollbar` 。
 新しい 6 つのウィジェットクラスは次のものです: :class:`Combobox` 、
-:class:`Notebook` 、 :class:`Progressbar` 、 :class:`Separator` 、
-:class:`Sizegrip` 、 :class:`Treeview` 。
+:class:`Notebook`, :class:`Progressbar`, :class:`Separator` 、
+:class:`Sizegrip`, :class:`Treeview` 。
 これらのクラスは全て :class:`Widget` の子クラスです。
 
 上にも書いた通り、スタイルの記述コードと同様に見た目も変わっていることに気付くでしょう。
@@ -149,7 +149,7 @@ TtkStyling_ についての情報は :class:`Style` クラスの文書を読ん�
 ラベルオプション
 ^^^^^^^^^^^^^^^^
 
-以下のオプションはラベルやボタンやボタンに類似したウィジェットがが持っているオプションです。
+以下のオプションはラベルやボタンやボタンに類似したウィジェットが持っているオプションです。
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
@@ -282,10 +282,10 @@ ttk.Widget
 このウィジェットは :class:`Entry` の子クラスです。
 
 :class:`Widget` から継承したメソッド (:meth:`Widget.cget`、
-:meth:`Widget.configure` 、 :meth:`Widget.identify` 、 :meth:`Widget.instate`
+:meth:`Widget.configure`, :meth:`Widget.identify`, :meth:`Widget.instate`
 、 :meth:`Widget.state`) と :class:`Entry` から継承したメソッド
-(:meth:`Entry.bbox` 、 :meth:`Entry.delete` 、 :meth:`Entry.icursor` 、
-:meth:`Entry.index` 、 :meth:`Entry.inset` 、 :meth:`Entry.selection` 、
+(:meth:`Entry.bbox`, :meth:`Entry.delete`, :meth:`Entry.icursor` 、
+:meth:`Entry.index`, :meth:`Entry.inset`, :meth:`Entry.selection` 、
 :meth:`Entry.xview`) に加え、このクラスには :class:`ttk.Combobox` で説明する
 メソッドがあります。
 
@@ -297,9 +297,9 @@ ttk.Widget
    +-----------------+---------------------------------------------------------+
    | オプション      | 説明                                                    |
    +=================+=========================================================+
-   | exportselection | 真偽値を取る。設定されている場合、ウィジェットの選択は. If set, the widget selection is linked  |
-   |                 | to the Window Manager selection (which can be returned  |
-   |                 | by invoking :meth:`Misc.selection_get`, for example).   |
+   | exportselection | 真偽値を取る。設定されている場合、ウィジェットの選択は  |
+   |                 | ウィンドウマネージャの選択とリンクしています。(例えば、 |
+   |                 | :meth:`Misc.selection_get` を実行することで得られます。)|
    +-----------------+---------------------------------------------------------+
    | justify         | ウィジェットの中でテキストをどう配置するかを指定します。|
    |                 | "left" 、 "center" 、 "right" のうちのどれか 1 つです。 |
@@ -631,7 +631,7 @@ ttk.Progressbar
    | オプション | 説明                                                       |
    +============+============================================================+
    | orient     | "horizontal" か "vertical" のいずれかです。                |
-   |            | セパレータの方向を指定します。the separator.               |
+   |            | セパレータの方向を指定します。                             |
    +------------+------------------------------------------------------------+
 
 
@@ -644,102 +644,107 @@ ttk.Progressbar
 このウィジェットは :class:`ttk.Widget` から継承したもの以外のオプションとメソッドを持ちません。
 
 
-Platform-specific notes
-^^^^^^^^^^^^^^^^^^^^^^^
+プラットフォーム固有のメモ
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* On Mac OS X, toplevel windows automatically include a built-in size grip
-  by default. Adding a :class:`Sizegrip` is harmless, since the built-in
-  grip will just mask the widget.
+* Mac OS X では、最上位のウィンドウにはデフォルトで組み込みのサイズグリップが含まれています。
+  組み込みのグリップが :class:`Sizegrip` を隠してしまうので、 :class:`Sizegrip` を追加するのは無害です。
 
 
-Bugs
+バグ
 ^^^^
 
-* If the containing toplevel's position was specified relative to the right
-  or bottom of the screen (e.g. ....), the :class:`Sizegrip` widget will
-  not resize the window.
-* This widget supports only "southeast" resizing.
+.. memo
+
+   I (cocoatomo) didn't have confidence translations on 
+
+   - relative to the right or bottom of the screen
+   - (e.g. ....).
+
+* 最上位のウィンドウの位置がスクリーンに対して右や下に指定されている場合 (などなど....)、
+  :class:`Sizegrip` ウィジェットはウィンドウのサイズ変更をしません。
+* このウィジェットは "南東" 方向のサイズ変更しかサポートしていません。
 
 
-Treeview
---------
+ツリービュー
+------------
 
-The :class:`ttk.Treeview` widget displays a hierarchical collection of items.
-Each item has a textual label, an optional image, and an optional list of data
-values. The data values are displayed in successive columns after the tree
-label.
+:class:`ttk.Treeview` ウィジェットは階層のある要素 (アイテム) の集まりを表示します。
+それぞれの要素はテキストラベル、オプションの画像、オプションのデータのリストを持っています。
+データはラベルの後に続くカラムに表示されます。
 
-The order in which data values are displayed may be controlled by setting
-the widget option ``displaycolumns``. The tree widget can also display column
-headings. Columns may be accessed by number or symbolic names listed in the
-widget option columns. See `Column Identifiers`_.
+データが表示される順序はウィジェットの ``displaycolumns`` オプションで制御されます。
+ツリーウィジェットはカラムヘッダを表示することもできます。
+カラムには数字もしくはウィジェットの columns オプションにある名前でアクセスできます。
+`Column Identifiers`_ を参照してください。
 
-Each item is identified by an unique name. The widget will generate item IDs
-if they are not supplied by the caller. There is a distinguished root item,
-named ``{}``. The root item itself is not displayed; its children appear at the
-top level of the hierarchy.
+それぞれの要素は一意な名前で識別されます。
+要素の作成時に ID が与えられなかった場合、ウィジェットが要素の ID を生成します。
+このウィジェットには ``{}`` という名前の特別なルート要素があります。
+ルート要素自身は表示されません; その子要素たちが階層の最上位に現れます。
 
-Each item also has a list of tags, which can be used to associate event bindings
-with individual items and control the appearance of the item.
+それぞれの要素はタグのリストも持っていて、イベントバインディングと個別の要素を関連付け、要素の見た目を管理するのに使えます。
 
-The Treeview widget supports horizontal and vertical scrolling, according to
-the options described in `スクロール可能ウィジェットのオプション`_ and the methods
-:meth:`Treeview.xview` and :meth:`Treeview.yview`.
+ツリービューウィジェットは水平方向と垂直方向のスクロールをサポートしていて、
+`スクロール可能ウィジェットのオプション`_ に記述してあるオプションと :meth:`Treeview.xview` メソッドおよび :meth:`Treeview.yview` メソッドが使えます。
 
 
-Options
-^^^^^^^
+オプション
+^^^^^^^^^^
 
-This widget accepts the following specific options:
+このウィジェットは以下のオプションを受け付けます:
+
+.. note from translator (cocoatomo)
+
+   - tag binding means class option in standard option
+   - 'list' is list in Tcl, which is space-separated strings, not list in Python
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
 
    +----------------+--------------------------------------------------------+
-   | option         | description                                            |
+   | オプション     | 説明                                                   |
    +================+========================================================+
-   | columns        | A list of column identifiers, specifying the number of |
-   |                | columns and their names.                               |
+   | columns        | カラム数とその名前を指定するカラム識別子のリストです。 |
    +----------------+--------------------------------------------------------+
-   | displaycolumns | A list of column identifiers (either symbolic or       |
-   |                | integer indices) specifying which data columns are     |
-   |                | displayed and the order in which they appear, or the   |
-   |                | string "#all".                                         |
+   | displaycolumns | どのデータカラムをどの順序で表示するかを指定する、     |
+   |                | (名前もしくは整数のインデックスの) カラム識別子の      |
+   |                | リストか、文字列 "#all" です。                         |
    +----------------+--------------------------------------------------------+
-   | height         | Specifies the number of rows which should be visible.  |
-   |                | Note: the requested width is determined from the sum   |
-   |                | of the column widths.                                  |
+   | height         | 表示する行数を指定します。                             |
+   |                | メモ: 表示に必要な幅はカラム幅の合計から決定されます。 |
    +----------------+--------------------------------------------------------+
-   | padding        | Specifies the internal padding for the widget. The     |
-   |                | padding is a list of up to four length specifications. |
+   | padding        | ウィジェットの内部のパディングのサイズを指定します。   |
+   |                | パディングは最大 4 個の長さ指定のリストです。          |
    +----------------+--------------------------------------------------------+
-   | selectmode     | Controls how the built-in class bindings manage the    |
-   |                | selection. One of "extended", "browse" or "none".      |
-   |                | If set to "extended" (the default), multiple items may |
-   |                | be selected. If "browse", only a single item will be   |
-   |                | selected at a time. If "none", the selection will not  |
-   |                | be changed.                                            |
+   | selectmode     | 組み込みのクラスバインディングが選択状態を             |
+   |                | どう管理するかを指定します。設定する値は               |
+   |                | "extended" 、 "browse" 、 "none" のどれか 1 つです。   |
+   |                | "extended" に設定した場合 (デフォルト)、複数の要素が   |
+   |                | 選択できます。 "browse" に設定した場合、同時に 1 つの  |
+   |                | 要素しか選択できません。 "none" に設定した場合、選択を |
+   |                | 変更することはできません。                             |
    |                |                                                        |
-   |                | Note that the application code and tag bindings can set|
-   |                | the selection however they wish, regardless of the     |
-   |                | value  of this option.                                 |
+   |                | このオプションの値によらず、アプリケーションのコードと |
+   |                | タグバインディングは好きなように選択状態を             |
+   |                | 設定できます。                                         |
    +----------------+--------------------------------------------------------+
-   | show           | A list containing zero or more of the following values,|
-   |                | specifying which elements of the tree to display.      |
+   | show           | ツリーのどの要素を表示するかを指定する、以下にある値を |
+   |                | 0 個以上含むリストです。                               |
    |                |                                                        |
-   |                | * tree: display tree labels in column #0.              |
-   |                | * headings: display the heading row.                   |
+   |                | * tree: カラム #0 にツリーのラベルを表示します。       |
+   |                | * headings: ヘッダ行を表示します。                     |
    |                |                                                        |
-   |                | The default is "tree headings", i.e., show all         |
-   |                | elements.                                              |
+   |                | デフォルトは "tree headings" 、つまり全ての要素を      |
+   |                | 表示します。                                           |
    |                |                                                        |
-   |                | **Note**: Column #0 always refers to the tree column,  |
-   |                | even if show="tree" is not specified.                  |
+   |                | **メモ**: show="tree" が指定されていない場合でも、     |
+   |                | カラム #0 は常にツリーカラムを参照します。             |
    +----------------+--------------------------------------------------------+
 
 
-Item Options
-^^^^^^^^^^^^
+要素オプション
+^^^^^^^^^^^^^^
 
 The following item options may be specified for items in the insert and item
 widget commands.
