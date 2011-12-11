@@ -676,7 +676,7 @@ ttk.Progressbar
 データが表示される順序はウィジェットの ``displaycolumns`` オプションで制御されます。
 ツリーウィジェットはカラムヘッダを表示することもできます。
 カラムには数字もしくはウィジェットの columns オプションにある名前でアクセスできます。
-`Column Identifiers`_ を参照してください。
+`カラム識別子`_ を参照してください。
 
 それぞれの要素は一意な名前で識別されます。
 要素の作成時に ID が与えられなかった場合、ウィジェットが要素の ID を生成します。
@@ -787,10 +787,10 @@ ttk.Progressbar
    +------------+-----------------------------------------------------------+
 
 
-Column Identifiers
-^^^^^^^^^^^^^^^^^^
+カラム識別子
+^^^^^^^^^^^^
 
-Column identifiers take any of the following forms:
+カラム識別子は以下のいずれかの形式を取ります:
 
 * A symbolic name from the list of columns option.
 * An integer n, specifying the nth data column.
