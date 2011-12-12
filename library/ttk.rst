@@ -792,44 +792,41 @@ ttk.Progressbar
 
 カラム識別子は以下のいずれかの形式を取ります:
 
-* A symbolic name from the list of columns option.
-* An integer n, specifying the nth data column.
-* A string of the form #n, where n is an integer, specifying the nth display
-  column.
+* columns オプションのリストにある名前。
+* n 番目のデータカラムを指し示す整数 n 。
+* n を整数として n 番目の表示されているカラムを指し示す #n という形式の文字列。
 
-Notes:
+メモ:
 
-* Item's option values may be displayed in a different order than the order
-  in which they are stored.
-* Column #0 always refers to the tree column, even if show="tree" is not
-  specified.
+* 要素のオプション値は実際に格納されている順序とは違った順序で表示されることがあります。
+* show="tree" が指定されていない場合でも、カラム #0 は常にツリーカラムを指しています。
 
-A data column number is an index into an item's option values list; a display
-column number is the column number in the tree where the values are displayed.
-Tree labels are displayed in column #0. If option displaycolumns is not set,
-then data column n is displayed in column #n+1. Again, **column #0 always
-refers to the tree column**.
+データカラムを指す数字は、要素の values オプションのリストのインデックスです;
+表示カラムを指す数字は、値が表示されているツリーのカラム番号です。
+ツリーラベルはカラム #0 に表示されます。
+displaycolumns オプションが設定されていない場合は、 n 番目のデータカラムは
+カラム #n+1 に表示されます。
+再度言っておくと、 **カラム #0 は常にツリーカラムを指します** 。
 
 
-Virtual Events
-^^^^^^^^^^^^^^
+仮想イベント
+^^^^^^^^^^^^
 
-The Treeview widget generates the following virtual events.
+ツリービューは以下の仮想イベントを生成します。
 
    +--------------------+--------------------------------------------------+
-   | event              | description                                      |
+   | イベント           | 説明                                             |
    +====================+==================================================+
-   | <<TreeviewSelect>> | Generated whenever the selection changes.        |
+   | <<TreeviewSelect>> | 選択状態が変更されたときに生成されます。         |
    +--------------------+--------------------------------------------------+
-   | <<TreeviewOpen>>   | Generated just before settings the focus item to |
-   |                    | open=True.                                       |
+   | <<TreeviewOpen>>   | フォーカスが当たっている要素に open=True が      |
+   |                    | 設定される直前に生成されます。                   |
    +--------------------+--------------------------------------------------+
-   | <<TreeviewClose>>  | Generated just after setting the focus item to   |
-   |                    | open=False.                                      |
+   | <<TreeviewClose>>  | フォーカスが当たっている要素に open=False が     |
+   |                    | 設定された直後に生成されます。                   |
    +--------------------+--------------------------------------------------+
 
-The :meth:`Treeview.focus` and :meth:`Treeview.selection` methods can be used
-to determine the affected item or items.
+:meth:`Treeview.focus` メソッドと :meth:`Treeview.selection` メソッドは変更を受けた要素を判別するのに使えます。
 
 
 ttk.Treeview
@@ -839,84 +836,85 @@ ttk.Treeview
 
    .. method:: bbox(item[, column=None])
 
-      Returns the bounding box (relative to the treeview widget's window) of
-      the specified *item* in the form (x, y, width, height).
+      (ツリービューウィジェットのウィンドウを基準として) 指定された *item* の
+      バウンディングボックス情報を (x 座標, y 座標, 幅, 高さ) の形式で返します。
 
-      If *column* is specified, returns the bounding box of that cell. If the
-      *item* is not visible (i.e., if it is a descendant of a closed item or is
-      scrolled offscreen), returns an empty string.
+      *column* が指定されている場合は、セルのバウンディングボックスを返します。
+      (例えば、閉じた状態の要素の子供であったり、枠外にスクロールされていて)
+      *item* が見えなくなっている場合は、空文字列が返されます。
 
 
    .. method:: get_children([item])
 
-      Returns the list of children belonging to *item*.
+      *item* の子要素のリストを返します。
 
-      If *item* is not specified, returns root children.
+      *item* が指定されていなかった場合は、ルート要素の子供が返されます。
 
 
    .. method:: set_children(item, *newchildren)
 
-      Replaces *item*'s child with *newchildren*.
+      *item* の子要素を *newchildren* で置き換えます。
 
-      Children present in *item* that are not present in *newchildren* are
-      detached from the tree. No items in *newchildren* may be an ancestor of
-      *item*. Note that not specifying *newchildren* results in detaching
-      *item*'s children.
+      *item* にいる子供のうち *newchildren* にないものはツリーから切り離されます。
+      *newchildren* にあるどの要素も *item* の祖先であってはいけません。
+      *newchildren* を指定しなかった場合は、 *item* の子要素が全て切り離されることに注意してください。
 
 
    .. method:: column(column[, option=None[, **kw]])
 
-      Query or modify the options for the specified *column*.
+      指定した *column* のオプションを問い合わせたり、変更したりします。
 
-      If *kw* is not given, returns a dict of the column option values. If
-      *option* is specified then the value for that *option* is returned.
-      Otherwise, sets the options to the corresponding values.
+      *kw* が与えられなかった場合は、カラムのオプション値の辞書が返されます。
+      *option* が指定されていた場合は、その *option* の値が返されます。
+      それ以外の場合は、オプションに値を設定します。
 
-      The valid options/values are:
+      設定できるオプションとその値は次の通りです:
 
       * id
-         Returns the column name. This is a read-only option.
-      * anchor: One of the standard Tk anchor values.
-         Specifies how the text in this column should be aligned with respect
-         to the cell.
-      * minwidth: width
-         The minimum width of the column in pixels. The treeview widget will
-         not make the column any smaller than specified by this option when
-         the widget is resized or the user drags a column.
-      * stretch: True/False
-         Specifies whether the column's width should be adjusted when
-         the widget is resized.
-      * width: width
-         The width of the column in pixels.
+         カラム名を返します。これは読み取り専用のオプションです。
+      * anchor: 標準の Tk anchor の値
+         このカラムでセルに対してテキストをどう配置するかを指定します。
+      * minwidth: 幅
+         カラムの最小幅をピクセル単位で表したものです。
+         ツリービューウィジェットは、ウィジェットのサイズが変更されたり
+         カラムをユーザがドラッグして移動させたりしたときに、
+         このオプションで指定した幅より狭くすることはありません。
+      * stretch: True もしくは False
+         ウィジェットがサイズ変更されたとき、カラムの幅をそれに合わせるかどうかを指定します。
+      * width: 幅
+         カラムの幅をピクセル単位で表したものです。
 
-      To configure the tree column, call this with column = "#0"
+      ツリーカラムの設定を行うには、 column = "#0" を付けてこのメソッドを呼び出してください。
 
    .. method:: delete(*items)
 
-      Delete all specified *items* and all their descendants.
+      指定された *items* とその子孫たち全てを削除します。
 
-      The root item may not be deleted.
+      ルート要素は削除されません。
 
 
    .. method:: detach(*items)
 
-      Unlinks all of the specified *items* from the tree.
+      指定された *items* を全てツリーから切り離します。
 
       The items and all of their descendants are still present, and may be
       reinserted at another point in the tree, but will not be displayed.
+      その要素と子孫たちは依然として存在していて、ツリーの別の場所に再度
+      挿入することができますが、隠された状態になり表示はされません。
 
-      The root item may not be detached.
+      ルート要素は切り離されません。
 
 
    .. method:: exists(item)
 
-      Returns True if the specified *item* is present in the tree.
+      指定された *item* がツリーの中にあれば True を返します。
 
 
    .. method:: focus([item=None])
 
-      If *item* is specified, sets the focus item to *item*. Otherwise, returns
-      the current focus item, or '' if there is none.
+      *item* が指定されていた場合は、 *item* にフォーカスを当てます。
+      そうでない場合は、現在フォーカスが当たっている要素が、
+      どの要素にもフォーカスが当たっていない場合は '' が返されます。
 
 
    .. method:: heading(column[, option=None[, **kw]])
