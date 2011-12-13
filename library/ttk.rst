@@ -302,7 +302,7 @@ ttk.Widget
    |                 | :meth:`Misc.selection_get` を実行することで得られます。)|
    +-----------------+---------------------------------------------------------+
    | justify         | ウィジェットの中でテキストをどう配置するかを指定します。|
-   |                 | "left" 、 "center" 、 "right" のうちのどれか 1 つです。 |
+   |                 | "left", "center", "right" のうちのどれか 1 つです。     |
    +-----------------+---------------------------------------------------------+
    | height          | ポップダウンリストの高さを行数で指定します。            |
    +-----------------+---------------------------------------------------------+
@@ -310,7 +310,7 @@ ttk.Widget
    |                 | (:meth:`Misc.register` などで登録した) スクリプトです。 |
    |                 | どの値を表示するかについても指定できます。              |
    +-----------------+---------------------------------------------------------+
-   | state           | "normal" 、 "readonly" 、 "disabled" のどれか 1 つです。|
+   | state           | "normal", "readonly", "disabled" のどれか 1 つです。    |
    |                 | "readonly" 状態では、直接入力値を編集することはできず、 |
    |                 | ユーザはドロップダウンリストから値を 1 つ選ぶことしか   |
    |                 | できません。 "normal" 状態では、テキストフィールドは    |
@@ -407,12 +407,12 @@ Ttk ノートブックウィジェットは複数のウィンドウを管理し�
    +-----------+--------------------------------------------------------------+
    | オプション| 説明                                                         |
    +===========+==============================================================+
-   | state     | "normal" 、 "disabled" 、 "hidden" のうちどれか 1 つです。   |
+   | state     | "normal", "disabled", "hidden" のうちどれか 1 つです。       |
    |           | "disabled" の場合、タブは選択することができません。          |
    |           | "hidden" の場合、タブは表示されません。                      |
    +-----------+--------------------------------------------------------------+
    | sticky    | ペイン領域の中に子ウィンドウがどう置かれるかを指定します。   |
-   |           | 指定する値は "n" 、 "s" 、 "e" 、 "w" からなる 0 文字以上の  |
+   |           | 指定する値は "n", "s", "e", "w" からなる 0 文字以上の        |
    |           | 文字列です。配置マネージャの :meth:`grid` と同様に、         |
    |           | それぞれの文字は子ウィンドウが (北、南、東、西の) どの辺に   |
    |           | 対して追随するかに対応しています。                           |
@@ -679,7 +679,7 @@ ttk.Progressbar
 `カラム識別子`_ を参照してください。
 
 それぞれの要素は一意な名前で識別されます。
-要素の作成時に ID が与えられなかった場合、ウィジェットが要素の ID を生成します。
+要素の作成時に識別子が与えられなかった場合、ウィジェットが要素の識別子を生成します。
 このウィジェットには ``{}`` という名前の特別なルート要素があります。
 ルート要素自身は表示されません; その子要素たちが階層の最上位に現れます。
 
@@ -719,7 +719,7 @@ ttk.Progressbar
    +----------------+--------------------------------------------------------+
    | selectmode     | 組み込みのクラスバインディングが選択状態を             |
    |                | どう管理するかを指定します。設定する値は               |
-   |                | "extended" 、 "browse" 、 "none" のどれか 1 つです。   |
+   |                | "extended", "browse", "none" のどれか 1 つです。       |
    |                | "extended" に設定した場合 (デフォルト)、複数の要素が   |
    |                | 選択できます。 "browse" に設定した場合、同時に 1 つの  |
    |                | 要素しか選択できません。 "none" に設定した場合、選択を |
@@ -919,49 +919,49 @@ ttk.Treeview
 
    .. method:: heading(column[, option=None[, **kw]])
 
-      Query or modify the heading options for the specified *column*.
+      指定された *column* の heading のオプションを問い合わせたり、変更したりします。
 
-      If *kw* is not given, returns a dict of the heading option values. If
-      *option* is specified then the value for that *option* is returned.
-      Otherwise, sets the options to the corresponding values.
+      *kw* が与えられなかった場合は、見出しのオプション値の辞書が返されます。
+      *option* が指定されている場合は、 *option* の値が返されます。
+      それ以外の場合は、オプションに値を設定します。
 
-      The valid options/values are:
+      設定できるオプションとその値は次の通りです:
 
-      * text: text
-         The text to display in the column heading.
-      * image: imageName
-         Specifies an image to display to the right of the column heading.
+      * text: テキスト
+         カラムの見出しに表示するテキスト。
+      * image: 画像名
+         カラムの見出しの右に表示する画像を指定します。
       * anchor: anchor
-         Specifies how the heading text should be aligned. One of the standard
-         Tk anchor values.
-      * command: callback
-         A callback to be invoked when the heading label is pressed.
+         見出しのテキストをどう配置するかを指定します。標準の Tk anchor の値です。
+      * command: コールバック
+         見出しラベルがクリックされたときに実行されるコールバックです。
 
-      To configure the tree column heading, call this with column = "#0".
-
+      ツリーカラムの見出しの設定を行うには、 column = "#0" を付けてこのメソッドを呼び出してください。
 
    .. method:: identify(component, x, y)
 
-      Returns a description of the specified *component* under the point given
-      by *x* and *y*, or the empty string if no such *component* is present at
-      that position.
+      *x* *y* で与えられた場所にある指定された *component* の説明を返します。
+      その場所に指定された *component* が無い場合は空文字列を返します。
+      (訳注: component には "region", "item", "column", "row", "element" が指定でき、
+      それぞれ "cell", "heading" などの場所の名前、要素の識別子、 #n という形式のカラム名、
+      その行にある要素の識別子、 "text", "padding" などの画面構成要素の名前を返します。)
 
 
    .. method:: identify_row(y)
 
-      Returns the item ID of the item at position *y*.
+      y 座標が *y* の位置にある要素の識別子を返します。
 
 
    .. method:: identify_column(x)
 
-      Returns the data column identifier of the cell at position *x*.
+      x 座標が *x* の位置にあるセルのデータカラムの識別子を返します。
 
-      The tree column has ID #0.
+      ツリーカラムは #0 という識別子を持ちます。
 
 
    .. method:: identify_region(x, y)
 
-      Returns one of:
+      以下のうち 1 つを返します:
 
       +-----------+--------------------------------------+
       | region    | meaning                              |
