@@ -964,169 +964,162 @@ ttk.Treeview
       以下のうち 1 つを返します:
 
       +-----------+--------------------------------------+
-      | region    | meaning                              |
+      | region    | 意味                                 |
       +===========+======================================+
-      | heading   | Tree heading area.                   |
+      | heading   | ツリーの見出し領域                   |
       +-----------+--------------------------------------+
-      | separator | Space between two columns headings.  |
+      | separator | 2 つのカラム見出しの間のスペース     |
       +-----------+--------------------------------------+
-      | tree      | The tree area.                       |
+      | tree      | ツリーの領域                         |
       +-----------+--------------------------------------+
-      | cell      | A data cell.                         |
+      | cell      | データセル                           |
       +-----------+--------------------------------------+
 
-      Availability: Tk 8.6.
+      使用可能バージョン: Tk 8.6
 
 
    .. method:: identify_element(x, y)
 
-      Returns the element at position *x*, *y*.
+      *x* *y* の位置にある画面構成要素の名前を返します。
 
-      Availability: Tk 8.6.
+      使用可能バージョン: Tk 8.6
 
 
    .. method:: index(item)
 
-      Returns the integer index of *item* within its parent's list of children.
+      親要素の子要素リストの中での *item* のインデックスを返します。
 
 
    .. method:: insert(parent, index[, iid=None[, **kw]])
 
-      Creates a new item and returns the item identifier of the newly created
-      item.
+      新しい要素を作り、その要素の識別子を返します。
 
-      *parent* is the item ID of the parent item, or the empty string to create
-      a new top-level item. *index* is an integer, or the value "end",
-      specifying where in the list of parent's children to insert the new item.
-      If *index* is less than or equal to zero, the new node is inserted at
-      the beginning; if *index* is greater than or equal to the current number
-      of children, it is inserted at the end. If *iid* is specified, it is used
-      as the item identifier; *iid* must not already exist in the tree.
-      Otherwise, a new unique identifier is generated.
+      *parent* は親となる要素の識別子で、空文字列にすると新しい
+      要素を最上位に作成します。
+      *index* は整数もしくは "end" という値で、それによって
+      親要素の子要素リストのどこに新しい要素を挿入するかを指定します。
+      *index* が 0 以下だった場合は、新しい要素は先頭に挿入されます;
+      *index* が現在の子要素の数以上だった場合は末尾に挿入されます。
+      *iid* が指定された場合は、要素の識別子として使われます;
+      *iid* はまだツリーに存在していないものに限ります。
+      それ以外の場合は、一意な識別子が生成されます。
 
-      See `要素オプション`_ for the list of available points.
+      使用できるオプションのリストについては `要素オプション`_ を参照してください。
 
 
    .. method:: item(item[, option[, **kw]])
 
-      Query or modify the options for the specified *item*.
+      指定された *item* のオプションを問い合わせたり、変更したりします。
 
-      If no options are given, a dict with options/values for the item is
-      returned.
-      If *option* is specified then the value for that option is returned.
-      Otherwise, sets the options to the corresponding values as given by *kw*.
+      オプションが与えられなかった場合は、要素のオプションと値が辞書の形で返されます。
+      *option* が指定された場合は、そのオプションの値が返されます。
+      それ以外の場合は、 *kw* で与えられたようにオプションに値が設定されます。
 
 
    .. method:: move(item, parent, index)
 
-      Moves *item* to position *index* in *parent*'s list of children.
+      *item* を *parent* の子要素リストの *index* の位置に移動します。
 
-      It is illegal to move an item under one of its descendants. If *index* is
-      less than or equal to zero, *item* is moved to the beginning; if greater
-      than or equal to the number of children, it is moved to the end. If *item*
-      was detached it is reattached.
+      要素を自身の子孫の下に移動させるのは許されていません。
+      *index* が 0 以下の場合、 *item* は先頭に移動されます;
+      子要素の数以上だった場合、末尾に移動されます。
+      *item* が切り離された状態の場合は、再度取り付けられます。
 
 
    .. method:: next(item)
 
-      Returns the identifier of *item*'s next sibling, or '' if *item* is the
-      last child of its parent.
+      *item* の 1 つ下の兄弟の識別子を、 *item* が親にとって一番下の子供だった場合 '' を返します。
 
 
    .. method:: parent(item)
 
-      Returns the ID of the parent of *item*, or '' if *item* is at the top
-      level of the hierarchy.
+      *item* の親の識別子を、 *item* が階層の最上位にいた場合 '' を返します。
 
 
    .. method:: prev(item)
 
-      Returns the identifier of *item*'s previous sibling, or '' if *item* is
-      the first child of its parent.
+      *item* の 1 つ上の兄弟の識別子を、 *item* が親にとって一番上の子供だった場合 '' を返します。
 
 
    .. method:: reattach(item, parent, index)
 
-      An alias for :meth:`Treeview.move`.
+      :meth:`Treeview.move` のエイリアスです。
 
 
    .. method:: see(item)
 
-      Ensure that *item* is visible.
+      *item* を見える状態にします。
 
-      Sets all of *item*'s ancestors open option to True, and scrolls the
-      widget if necessary so that *item* is within the visible portion of
-      the tree.
+      *item* の全ての子孫の open オプションを True にし、必要であれば *item* がツリーの見える範囲に来るようにウィジェットをスクロールさせます。
 
 
    .. method:: selection([selop=None[, items=None]])
 
-      If *selop* is not specified, returns selected items. Otherwise, it will
-      act according to the following selection methods.
+      *selop* が指定されなかった場合は、選択されている要素を返します。
+      そうでなければ、以下の選択メソッドに従って動作します。
+      (訳注: *selop* には "set", "add", "remove", "toggle" のうち 1 つが指定できます。
+      *items* にはそれぞれのメソッドの引数を指定します。)
 
 
    .. method:: selection_set(items)
 
-      *items* becomes the new selection.
+      新しく選択状態の要素が *items* になります。
 
 
    .. method:: selection_add(items)
 
-      Add *items* to the selection.
+      選択状態の要素として *items* を追加します。
 
 
    .. method:: selection_remove(items)
 
-      Remove *items* from the selection.
+      選択状態の要素から *items* を取り除きます。
 
 
    .. method:: selection_toggle(items)
 
-      Toggle the selection state of each item in *items*.
+      *items* のそれぞれの要素の選択状態を入れ替えます。
 
 
    .. method:: set(item[, column=None[, value=None]])
 
-      With one argument, returns a dictionary of column/value pairs for the
-      specified *item*. With two arguments, returns the current value of the
-      specified *column*. With three arguments, sets the value of given
-      *column* in given *item* to the specified *value*.
+      1 引数で呼び出された場合、指定された *item* のカラムと値のペアからなる辞書を返します。
+      2 引数で呼び出された場合、指定された *column* の現在の値を返します。
+      3 引数で呼び出された場合、与えられた *item* の *column* を指定された値 *value* に設定します。
 
 
    .. method:: tag_bind(tagname[, sequence=None[, callback=None]])
 
-      Bind a callback for the given event *sequence* to the tag *tagname*.
-      When an event is delivered to an item, the callbacks for each of the
-      item's tags option are called.
+      与えられたイベント *sequence* 用のコールバックをタグ *tagname* にバインドします。
+      イベントが要素に渡ってきたときに、要素の tags オプションのそれぞれのコールバックが呼び出されます。
 
 
    .. method:: tag_configure(tagname[, option=None[, **kw]])
 
-      Query or modify the options for the specified *tagname*.
+      指定された *tagname* のオプションを問い合わせたり、変更したりします。
 
-      If *kw* is not given, returns a dict of the option settings for
-      *tagname*. If *option* is specified, returns the value for that *option*
-      for the specified *tagname*. Otherwise, sets the options to the
-      corresponding values for the given *tagname*.
+      *kw* が与えられなかった場合、 *tagname* のオプション設定を辞書の形で返します。
+      *option* が指定された場合、指定された *tagname* の *option* の値を返します。
+      それ以外の場合、与えられた *tagname* のオプションに値を設定します。
 
 
    .. method:: tag_has(tagname[, item])
 
-      If *item* is specified, returns 1 or 0 depending on whether the specified
-      *item* has the given *tagname*. Otherwise, returns a list of all items
-      that have the specified tag.
+      *item* が指定されていた場合、指定された *item* が与えられた *tagname* を
+      持っているかどうかに従って 1 または 0 が返されます。
+      そうでない場合、指定されたタグを持つ全ての要素のリストを返します。
 
-      Availability: Tk 8.6
+      使用可能バージョン: Tk 8.6
 
 
    .. method:: xview(*args)
 
-      Query or modify horizontal position of the treeview.
+      ツリービューの水平方向の位置を問い合わせたり、変更したりします。
 
 
    .. method:: yview(*args)
 
-      Query or modify vertical position of the treeview.
+      ツリービューの垂直方向の位置を問い合わせたり、変更したりします。
 
 
 .. _TtkStyling:
@@ -1134,33 +1127,34 @@ ttk.Treeview
 Ttk Styling
 -----------
 
-Each widget in :mod:`ttk` is assigned a style, which specifies the set of
-elements making up the widget and how they are arranged, along with dynamic and
-default settings for element options. By default the style name is the same as
-the widget's class name, but it may be overridden by the widget's style
-option. If the class name of a widget is unknown, use the method
-:meth:`Misc.winfo_class` (somewidget.winfo_class()).
+:mod:`ttk` のそれぞれのウィジェットにはスタイルが関連付けられていて、
+それと動的もしくはデフォルトで設定される要素のオプションによって
+ウィジェットを構成する要素とその配置を指定します。
+デフォルトではスタイル名はウィジェットのクラス名と同じですが、ウィジェットの style オプションで上書きすることができます。
+ウィジェットのクラス名が分からない場合は、 :meth:`Misc.winfo_class` (somewidget.winfo_class()) メソッドを使ってください。
 
 .. seealso::
 
    `Tcl'2004 conference presentation <http://tktable.sourceforge.net/tile/tile-tcl2004.pdf>`_
-      This document explains how the theme engine works
+      この文書ではテーマエンジンがどう動くかを説明しています
 
 
 .. class:: Style
 
-   This class is used to manipulate the style database.
+   このクラスはスタイルデータベースを操作するために使われます。
 
 
    .. method:: configure(style, query_opt=None, **kw)
 
-      Query or set the default value of the specified option(s) in *style*.
+      *style* の指定されたオプションのデフォルト値を問い合わせたり、設定したりします。
 
-      Each key in *kw* is an option and each value is a string identifying
-      the value for that option.
+      *kw* のそれぞれのキーはオプションで値はそのオプションの値の文字列です。
 
       For example, to change every default button to be a flat button with some
       padding and a different background color do::
+      例えば、全てのデフォルトのボタンをパディングのある平らな見た目にし
+      背景の色を変更するには以下のようにします
+      ::
 
          import ttk
          import Tkinter
