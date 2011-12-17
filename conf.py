@@ -69,7 +69,7 @@ add_module_names = True
 
 # directory paths to ignore
 exclude_trees = [
-	'refs',
+        'refs',
         'tools',
 ]
 
@@ -118,9 +118,6 @@ html_split_index = True
 # Options for LaTeX output
 # ------------------------
 
-# The paper size ('letter' or 'a4').
-latex_paper_size = 'a4'
-
 # todo: translate commented topics.
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
@@ -150,12 +147,11 @@ latex_documents = [
      'What\'s New in Python', 'A. M. Kuchling', 'howto'),
 ]
 
-# todo: translate howtos
 # Collect all HOWTOs individually
-#latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
-#                        'HOWTO', _stdauthor, 'howto')
-#                       for fn in os.listdir('howto')
-#                       if fn.endswith('.rst') and fn != 'index.rst')
+latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
+                        'HOWTO', _stdauthor, 'howto')
+                       for fn in os.listdir('howto')
+                       if fn.endswith('.rst') and fn != 'index.rst')
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = r'''
@@ -192,11 +188,10 @@ latex_preamble = r'''
 # Documents to append as an appendix to all manuals.
 latex_appendices = ['glossary', 'about', 'license', 'copyright']
 
-latex_docclass = {'manual': 'jreport'}
+latex_docclass = {'manual': 'jreport', 'howto': 'jarticle'}
 latex_elements = {
         'papersize': 'a4paper',
         'pointsize': '10pt',
-        'classoptins': ',dvipdfm',
         }
 
 # Options for the coverage checker
