@@ -27,7 +27,7 @@ Windows システム上でも利用できます。
    `An Introduction to Tkinter <http://www.pythonware.com/library/an-introduction-to-tkinter.htm>`_
       Fredrik Lundh のオンラインリファレンス資料です。
 
-   `Tkinter reference: a GUI for Python <http://inhost.nmt.edu/tcc/help/pubs/lang.html>`_
+   `Tkinter reference: a GUI for Python <http://infohost.nmt.edu/tcc/help/pubs/lang.html>`_
       オンラインリファレンス資料です。
 
    `Python and Tkinter Programming <http://www.amazon.com/exec/obidos/ASIN/1884777813>`_

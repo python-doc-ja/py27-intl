@@ -153,7 +153,7 @@ Vim と Emacs は Python をよくサポートした、素晴らしいエディ�
 * http://sourceforge.net/projects/python-mode
 
 Geany はたくさんの言語をサポートした素晴らしい IDE です。
-さらなる情報は、 http://gean.uvena.de/ を読んでください。
+さらなる情報は、 http://geany.uvena.de/ を読んでください。
 
 Komodo edit も非常に良い IDE です。これもたくさんの言語をサポートしています。
 さらなる情報は、

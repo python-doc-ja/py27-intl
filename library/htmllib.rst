@@ -56,7 +56,7 @@
 
 .. class:: HTMLParser(formatter)
 
-   基底となる HTML パーザクラスです。XHTML 1.0 仕様  (http://www.w3.rog/TR/xhtml1)
+   基底となる HTML パーザクラスです。XHTML 1.0 仕様  (http://www.w3.org/TR/xhtml1)
    勧告で要求されている全てのエンティティ名をサポートしています。
    また、全ての HTML 2.0 の要素および HTML 3.0、3.2 の多くの要素のハンドラを定義しています。
 
