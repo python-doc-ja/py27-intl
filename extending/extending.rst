@@ -97,7 +97,7 @@ Python インタプリタ全体を通して、一つの重要な取り決めが�
 の場合、例外は何も起きていないことになります。第二のグローバル変数には、例外の "付属値 (associated value)"
 (:keyword:`raise` 文の第二引数) が入ります。第三の値には、エラーの発生源が Python コード内だった場合にスタックトレースバック
 (stack traceback) が入ります。これらの三つの変数は、それぞれ Python の変数 ``sys.exc_type`` 、
-``sys.exc_value `` および `` sys.exc_traceback`` と等価な C の変数です (Python ライブラリリファレンスの
+``sys.exc_value`` および ``sys.exc_traceback`` と等価な C の変数です (Python ライブラリリファレンスの
 :mod:`sys` モジュールに関する節を参照してください。)
 エラーがどのように受け渡されるかを理解するには、これらの変数についてよく知っておくことが重要です。
 

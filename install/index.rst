@@ -566,7 +566,7 @@ import  されます。ただし、設定するには、単に :file:`site.py` �
 
 :envvar:`PYTHONPATH` を使うと、 ``sys.path`` の先頭に一連の
 パスを追加できます。例えば、 :envvar:`PYTHONPATH` を ``/www/python:/opt/py`` に設定すると、検索パスは
-``['/www/python', '/opt/py']`` から始まります。  (`` sys.path`` にディレクトリを追加するには、そのディレクトリが
+``['/www/python', '/opt/py']`` から始まります。  (``sys.path`` にディレクトリを追加するには、そのディレクトリが
 実在しなければなりません; :mod:`site` は実在しないディレクトリを除去します。)
 
 最後に、 ``sys.path`` はただの普通の Python のリストなので、どんな Python アプリケーションもエントリを追加したり除去したりと
