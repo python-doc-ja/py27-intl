@@ -1,7 +1,7 @@
 日本語訳について
 ========================
 
-この文書は、Pythonドキュメント翻訳プロジェクトによる Python Library Reference Release 2.3.3
+この文書は、Pythonドキュメント翻訳プロジェクトによる Python Library Reference Release
 の日本語訳版です。日本語訳に対する質問や提案などがありましたら、Pythonドキュメント翻訳プロジェクトのメーリングリスト
 
 `<http://www.python.jp/mailman/listinfo/python-doc-jp>`_
