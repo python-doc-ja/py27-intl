@@ -36,10 +36,10 @@ Ttk を使い始めるために、モジュールをインポートします::
    from Tkinter import *
    from ttk import *
 
-このように書くと、いくつかの :mod:`ttk` ウィジェット (:class:`Button` 、
-:class:`Checkbutton`, :class:`Entry`, :class:`Frame`, :class:`Label` 、
-:class:`LabelFrame`, :class:`Menubutton`, :class:`PanedWindow` 、
-:class:`Radiobutton`, :class:`Scale` 、
+このように書くと、いくつかの :mod:`ttk` ウィジェット (:class:`Button`,
+:class:`Checkbutton`, :class:`Entry`, :class:`Frame`, :class:`Label`,
+:class:`LabelFrame`, :class:`Menubutton`, :class:`PanedWindow`,
+:class:`Radiobutton`, :class:`Scale`,
 :class:`Scrollbar`) は自動的に Tk ウィジェットを置き換えます。
 
 これにはプラットフォームをまたいでより良い見た目を得られるという、直接的な利益がありますが、ウィジェットは完全な互換性を持っているわけではないことに注意してください。
@@ -56,12 +56,12 @@ Ttk ウィジェット
 ----------------
 
 Ttk には 17 のウィジェットがあり、そのうち 11 は Tkinter に既にあるものです:
-:class:`Button`, :class:`Checkbutton`, :class:`Entry`, :class:`Frame` 、
-:class:`Label`, :class:`LabelFrame`, :class:`Menubutton` 、
-:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale` 、
+:class:`Button`, :class:`Checkbutton`, :class:`Entry`, :class:`Frame`,
+:class:`Label`, :class:`LabelFrame`, :class:`Menubutton`,
+:class:`PanedWindow`, :class:`Radiobutton`, :class:`Scale`,
 :class:`Scrollbar` 。
-新しい 6 つのウィジェットクラスは次のものです: :class:`Combobox` 、
-:class:`Notebook`, :class:`Progressbar`, :class:`Separator` 、
+新しい 6 つのウィジェットクラスは次のものです: :class:`Combobox`,
+:class:`Notebook`, :class:`Progressbar`, :class:`Separator`,
 :class:`Sizegrip`, :class:`Treeview` 。
 これらのクラスは全て :class:`Widget` の子クラスです。
 
@@ -74,7 +74,8 @@ Tk のコード::
    l2 = Tkinter.Label(text="Test", fg="black", bg="white")
 
 
-それに相当する Ttk のコード::
+それに相当する Ttk のコード
+::
 
    style = ttk.Style()
    style.configure("BW.TLabel", foreground="black", background="white")
@@ -281,11 +282,11 @@ ttk.Widget
 :class:`ttk.Combobox` ウィジェットはテキストフィールドと値のポップダウンリストを結び付けます。
 このウィジェットは :class:`Entry` の子クラスです。
 
-:class:`Widget` から継承したメソッド (:meth:`Widget.cget`、
-:meth:`Widget.configure`, :meth:`Widget.identify`, :meth:`Widget.instate`
-、 :meth:`Widget.state`) と :class:`Entry` から継承したメソッド
-(:meth:`Entry.bbox`, :meth:`Entry.delete`, :meth:`Entry.icursor` 、
-:meth:`Entry.index`, :meth:`Entry.inset`, :meth:`Entry.selection` 、
+:class:`Widget` から継承したメソッド (:meth:`Widget.cget`,
+:meth:`Widget.configure`, :meth:`Widget.identify`, :meth:`Widget.instate`,
+:meth:`Widget.state`) と :class:`Entry` から継承したメソッド
+(:meth:`Entry.bbox`, :meth:`Entry.delete`, :meth:`Entry.icursor`,
+:meth:`Entry.index`, :meth:`Entry.inset`, :meth:`Entry.selection`,
 :meth:`Entry.xview`) に加え、このクラスには :class:`ttk.Combobox` で説明する
 メソッドがあります。
 
@@ -1148,12 +1149,11 @@ Ttk Styling
 
       *style* の指定されたオプションのデフォルト値を問い合わせたり、設定したりします。
 
-      *kw* のそれぞれのキーはオプションで値はそのオプションの値の文字列です。
+      *kw* のそれぞれのキーはオプション名で値はそのオプションの値の文字列です。
 
-      For example, to change every default button to be a flat button with some
-      padding and a different background color do::
       例えば、全てのデフォルトのボタンをパディングのある平らな見た目にし
       背景の色を変更するには以下のようにします
+
       ::
 
          import ttk
@@ -1172,14 +1172,15 @@ Ttk Styling
 
    .. method:: map(style, query_opt=None, **kw)
 
-      Query or sets dynamic values of the specified option(s) in *style*.
+      *style* の指定されたオプションの動的な値を問い合わせたり、設定したりします。
 
-      Each key in *kw* is an option and each value should be a list or a
-      tuple (usually) containing statespecs grouped in tuples, lists, or
-      something else of your preference. A statespec is a compound of one
-      or more states and then a value.
+      *kw* のそれぞれのキーはオプション名で、値はタプルやリストや
+      何か他の好きなものでグループ化された状態仕様 (statespec) を要素とするリストやタプルです。
+      状態仕様は 1 つもしくは複数の状態と値の組み合わせです。
 
-      An example::
+      例
+
+      ::
 
          import Tkinter
          import ttk
@@ -1196,12 +1197,16 @@ Ttk Styling
 
          root.mainloop()
 
-
+*** something wrong in this code. cannot find style 'C.Button'. verify implementationn
       Note that the order of the (states, value) sequences for an
       option matters.  In the previous example, if you change the
       order to ``[('active', 'blue'), ('pressed', 'red')]`` in the
       foreground option, for example, you would get a blue foreground
       when the widget is in the active or pressed states.
+      あるオプションに対する状態と値の組 (states, value) の並び順は
+      スタイルに影響を与えることに注意してください。
+      例えば、 foreground オプションの順序を ``[('active', 'blue'), ('pressed', 'red')]`` に変更した場合、
+      ウィジェットがアクティブなとき***
 
    .. method:: lookup(style, option[, state=None[, default=None]])
 
