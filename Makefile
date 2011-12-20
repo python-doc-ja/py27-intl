@@ -41,7 +41,7 @@ help:
 checkout:
 	@if [ ! -d tools/sphinx ]; then \
 	  echo "Checking out Sphinx..."; \
-	  hg clone https://bitbucket.org/birkenfeld/sphinx -r1.1 tools/sphinx; \
+	  hg clone https://bitbucket.org/uchida/sphinx -b py27ja-release tools/sphinx; \
 	fi
 	@if [ ! -d tools/docutils ]; then \
 	  echo "Checking out Docutils..."; \

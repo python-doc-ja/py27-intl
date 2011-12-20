@@ -37,7 +37,7 @@ goto end
 
 :checkout
 ::svn co %SVNROOT%/external/Sphinx-0.6.5/sphinx tools/sphinx
-hg clone https://bitbucket.org/birkenfeld/sphinx -r1.1 tools/sphinx
+hg clone https://bitbucket.org/uchida/sphinx -b py27ja-release tools/sphinx
 ::svn co %SVNROOT%/external/docutils-0.6/docutils tools/docutils
 svn export http://docutils.svn.sourceforge.net/svnroot/docutils/tags/docutils-0.7/docutils tools/docutils
 svn co %SVNROOT%/external/Jinja-2.3.1/jinja2 tools/jinja2
@@ -46,7 +46,7 @@ goto end
 
 :update
 ::svn update tools/sphinx
-hg --cwd tools/sphinx pull -ufr1.1
+hg --cwd tools/sphinx pull -ufb py27ja-release
 svn update tools/docutils
 svn update tools/jinja2
 svn update tools/pygments
