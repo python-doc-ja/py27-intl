@@ -1352,7 +1352,7 @@ features in Python 2.5.
              sys.stdout.write(', ')
         print elem[-1]
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注 Python Wiki の内容の最新の情報は反映されていませんが、
        Python ドキュメント内に和訳があります :ref:`sortinghowto`

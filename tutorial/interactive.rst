@@ -183,7 +183,7 @@ import されたモジュールのうち、 :mod:`os` のようなインタプ�
 別の優れたインタラクティブ環境としては `bpython`_ があります。
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注: これはデフォルト設定の Readline では現れません。
    ``set mark-modified-lines on`` という行を :file:`~/.inputrc` または環境変数

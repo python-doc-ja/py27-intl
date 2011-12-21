@@ -202,7 +202,7 @@ Python オブジェクトを直列化 (シリアライズ) および非直列化
    .. versionadded:: 2.4
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 
 .. .. [#] The name of this module stems from a bit of terminology used by the designers of

@@ -284,7 +284,7 @@ Python がコマンドをスクリプトから読み出しているときや、 
        execfile(filename)
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] GNU Readline パッケージに関する問題のせいで妨げられることがあります。
 

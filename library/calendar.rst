@@ -337,7 +337,7 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
    Module :mod:`time`
       低レベルの時間に関連した関数群。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注: proleptic Gregorian 暦とはグレゴリオ暦制定(1582年)以前についても\
    グレゴリオ暦で言い表す暦の方式のことで ISO 8601 などでも採用されています

@@ -141,7 +141,7 @@
 .. versionchanged:: 2.5
    以前の非推奨メソッド :meth:`__call__` は削除されました。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注: idempotent、その操作を何回くり返しても 1回だけ行ったのと\
        結果が同じになること。

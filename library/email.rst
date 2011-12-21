@@ -333,7 +333,7 @@ RFC 準拠の日付を生成したりなどのよくおこわれるタスクに�
 :func:`body_line_iterator` 関数によって提供されています。
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 配送状態通知 (Delivery Status Notifications, DSN) は :rfc:`1894` によって定義されています。
 

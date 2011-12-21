@@ -204,7 +204,7 @@
    プログラムのメモリリークをデバッグするときに指定します。（ ``DEBUG_COLLECTABLE | DEBUG_UNCOLLECTABLE |
    DEBUG_INSTANCES |  DEBUG_OBJECTS | DEBUG_SAVEALL`` と同じ。）
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] Python 2.2より前のバージョンでは、 :meth:`__del__` メソッドを持つ
        オブジェクトだけでなく、全ての到達不能オブジェクトが格納されていた。）

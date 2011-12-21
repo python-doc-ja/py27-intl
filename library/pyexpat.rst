@@ -817,7 +817,7 @@ Expat エラー定数
    :noindex:
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] XML の出力に含まれるエンコーディング文字列は適切な標準に\
    適合していなければなりません。

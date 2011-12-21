@@ -40,7 +40,7 @@ Parser() クラスの parse(filename) か parsestr(message_as_string) メソッ�
 .. literalinclude:: ../includes/email-alternative.py
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [1] 最初の思いつきと用例は Matthew Dixon Cowles のおかげです。
 .. [2] Martin Matejek が教えてくれました。

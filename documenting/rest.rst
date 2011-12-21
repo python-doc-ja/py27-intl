@@ -340,14 +340,14 @@ reSTの拡張メカニズムの一つで、 Sphinx はディレクティブを�
 
    Lorem ipsum [#]_ dolor sit amet ... [#]_
 
-   .. rubric:: Footnotes
+   .. rubric:: 注記
 
    .. [#] 最初の脚注の内容
    .. [#] 二つ目の脚注の内容
 
 ..    Lorem ipsum [#]_ dolor sit amet ... [#]_
 ..
-..    .. rubric:: Footnotes
+..    .. rubric:: 注記
 ..
 ..    .. [#] Text of the first footnote.
 ..    .. [#] Text of the second footnote.

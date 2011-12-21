@@ -71,7 +71,7 @@ Web フォームを提供しています。
 詳細な課題解決ワークフローについては、 http://www.python.org/dev/workflow/
 を参照してください。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注：原文ではextension moduleですが、これはC言語で書かれたモジュールという
        意味ではなくて、広義で非標準ライブラリを指しているかもしれません。

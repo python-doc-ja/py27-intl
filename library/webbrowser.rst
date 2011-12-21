@@ -181,6 +181,6 @@ Notes:
    .. versionadded:: 2.5
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [1] ここでブラウザの名前が絶対パスで書かれていない場合は :envvar:`PATH` 環境変数で与えられたディレクトリから探し出されます。

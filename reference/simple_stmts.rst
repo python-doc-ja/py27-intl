@@ -908,7 +908,7 @@ future 文の入ったモジュール :mod:`M` 内で使われている :keyword
 :func:`globals` および :func:`locals` は、それぞれ現在のグローバル辞書とローカル辞書を返すので、
 :keyword:`exec` に渡して使うと便利です。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] パーサーは Unix スタイルの行末の慣習しか許可しないことに注意してください。
        コードをファイルから読み込む場合、Windows や Mac スタイルの改行を変換するために

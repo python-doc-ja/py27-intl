@@ -183,7 +183,7 @@
           x = abstractproperty(getx, setx)
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] C++ プログラマは Python の仮想的基底クラスの概念は C++ のものと同じで\
    はないということを銘記すべきです。
