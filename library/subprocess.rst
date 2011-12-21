@@ -205,7 +205,7 @@ subprocess モジュールを使う
    .. warning::
 
       :meth:`Popen.wait` のように、これは以下の場合にデッドロックになります。
-      ``stdout=PIPE`` および/または``stderr=PIPE`` を使って、
+      ``stdout=PIPE`` および/または ``stderr=PIPE`` を使って、
       子プロセスが十分な出力を生成したのに、出力先が、OS パイプバッファが
       それ以上のデータを受け付けるのを待っているような場合です。
 

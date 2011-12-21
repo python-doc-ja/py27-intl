@@ -41,12 +41,6 @@
    .. versionchanged:: 2.5
       オプションの引数 *generation* が追加されました.
 
-   .. .. versionchanged:: 2.6
-      The free lists maintained for a number of builtin types are cleared
-      whenever a full collection or collection of the highest generation (2)
-      is run.  Not all items in some free lists may be freed due to the
-      particular implementation, in particular :class:`int` and :class:`float`.
-
    .. versionchanged:: 2.6
       幾つかの組み込み型のフリーリストは、最高(第二)世代のGC、あるいはフルGCが
       実行されるたびにクリアされます。
@@ -124,13 +118,6 @@
    .. versionadded:: 2.3
 
 .. function:: is_tracked(obj)
-
-   Returns True if the object is currently tracked by the garbage collector,
-   False otherwise.  As a general rule, instances of atomic types aren't
-   tracked and instances of non-atomic types (containers, user-defined
-   objects...) are.  However, some type-specific optimizations can be present
-   in order to suppress the garbage collector footprint of simple instances
-   (e.g. dicts containing only atomic keys and values):
 
    ``obj`` がGCに管理されていたら True を返し、それ以外の場合は False を返します。
    一般的なルールとして、アトミックな(訳注:他のオブジェクトを参照しないで単一で
@@ -219,6 +206,6 @@
 
 .. rubric:: Footnotes
 
-.. [#] Python 2.2より前のバージョンでは、 :meth:`__del__` メソッドを持つオブジェクトだけでなく、全ての到達不能オブジェクトが格納されてい
-   た。）
+.. [#] Python 2.2より前のバージョンでは、 :meth:`__del__` メソッドを持つ
+       オブジェクトだけでなく、全ての到達不能オブジェクトが格納されていた。）
 

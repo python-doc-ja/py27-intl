@@ -784,7 +784,7 @@ future 文は、モジュールの先頭周辺に書かなければなりませ�
 
 です。
 
-Python 2.6 が認識する機能は、 ``unicode_literals``, ``print_function`,
+Python 2.6 が認識する機能は、 ``unicode_literals``, ``print_function``,
 ``absolute_import``, ``division``, ``generators``,
 ``nested_scopes``, ``with_statement`` です。 ``generators``, ``with_statement``,
 ``nested_scopes`` は Python 2.6 以上では常に有効なので冗長です。

@@ -866,7 +866,7 @@ ABC                        継承しているクラス     抽象メソッド   
                            :class:`Iterable`,                             ``index``, ``count``
                            :class:`Container`
 
-:class:`MutableSequnce`    :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
+:class:`MutableSequence`   :class:`Sequence`      ``__setitem__``         Sequence から継承したメソッドと、
                                                   ``__delitem__``,        ``append``, ``reverse``, ``extend``, ``pop``,
                                                   ``insert``,             ``remove``, ``__iadd__``
 

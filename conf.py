@@ -69,7 +69,7 @@ add_module_names = True
 
 # directory paths to ignore
 exclude_trees = [
-	'refs',
+        'refs',
         'tools',
 ]
 
@@ -118,9 +118,6 @@ html_split_index = True
 # Options for LaTeX output
 # ------------------------
 
-# The paper size ('letter' or 'a4').
-latex_paper_size = 'a4'
-
 # todo: translate commented topics.
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
@@ -150,12 +147,11 @@ latex_documents = [
      'What\'s New in Python', 'A. M. Kuchling', 'howto'),
 ]
 
-# todo: translate howtos
 # Collect all HOWTOs individually
-#latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
-#                        'HOWTO', _stdauthor, 'howto')
-#                       for fn in os.listdir('howto')
-#                       if fn.endswith('.rst') and fn != 'index.rst')
+latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
+                        '', _stdauthor, 'howto')
+                       for fn in os.listdir('howto')
+                       if fn.endswith('.rst') and fn != 'index.rst')
 
 # Additional stuff for the LaTeX preamble.
 latex_preamble = r'''
@@ -163,40 +159,15 @@ latex_preamble = r'''
   \strong{Python Software Foundation}\\
   Email: \email{docs@python.org}
 }
-\makeatletter
-\renewcommand{\DOCH}{
-  \raggedleft\CNV\FmN{\@chapapp}\space
-  \CNoV\thechapter\CNV\FmN{\@chappos}
-  \par\nobreak\vskip40\p@
-}
-\fancypagestyle{normal}{
-  \fancyhf{}
-  \fancyfoot[LE,RO]{{\py@HeaderFamily\thepage}}
-  \fancyfoot[LO]{{\py@HeaderFamily\nouppercase{\rightmark}}}
-  \fancyfoot[RE]{{\py@HeaderFamily\nouppercase{\leftmark}}}
-  \fancyhead[LE,RO]{{\py@HeaderFamily \@title, \py@release}}
-  \renewcommand{\headrulewidth}{0.4pt}
-  \renewcommand{\footrulewidth}{0.4pt}
-  \def\chaptermark##1{\markboth{\@chapapp\space\thechapter\space\@chappos\space ##1}{}}
-}
-\renewcommand{\appendix}{\par
-  \setcounter{chapter}{0}%
-  \setcounter{section}{0}%
-  \gdef\@chapapp{\appendixname}%
-  \gdef\@chappos{}%
-  \gdef\thechapter{\@Alph\c@chapter}
-}
-\makeatother
 '''
 
 # Documents to append as an appendix to all manuals.
 latex_appendices = ['glossary', 'about', 'license', 'copyright']
 
-latex_docclass = {'manual': 'jreport'}
+latex_docclass = {'manual': 'jsbook', 'howto': 'jsarticle'}
 latex_elements = {
         'papersize': 'a4paper',
         'pointsize': '10pt',
-        'classoptins': ',dvipdfm',
         }
 
 # Options for the coverage checker

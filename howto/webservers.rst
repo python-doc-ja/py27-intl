@@ -1041,7 +1041,7 @@ wiki ページのテキストであったりします。
 
 ..
   Often relational database engines like `MySQL <http://www.mysql.com/>`_ or
-  `PostgreSQL <http://http://www.postgresql.org/>`_ are used due to their good
+  `PostgreSQL <http://www.postgresql.org/>`_ are used due to their good
   performance handling very large databases consisting of up to millions of
   entries.  These are *queried* using a language called `SQL
   <http://en.wikipedia.org/wiki/SQL>`_.  Python programmers in general do not like
@@ -1051,7 +1051,7 @@ wiki ページのテキストであったりします。
   object-oriented access into SQL code under the hood, the user does not need to
   think about it.  Most `frameworks`_ use ORMs and it works quite well.
 
-しばしば `MySQL <http://www.mysql.com/>`_ や `PostgreSQL <http://http://www.postgresql.org/>`_ 
+しばしば `MySQL <http://www.mysql.com/>`_ や `PostgreSQL <http://www.postgresql.org/>`_ 
 のようなリレーショナルデータベースエンジンが利用されます、
 それは数百万エントリに及ぶ非常に大きなデータベースを優れたパフォーマンスで扱うことができるためです。
 それらは `SQL <http://en.wikipedia.org/wiki/SQL>`_ と呼ばれる言語を利用した *照会 (queried)* です。
