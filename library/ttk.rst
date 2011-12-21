@@ -1197,26 +1197,23 @@ Ttk Styling
 
          root.mainloop()
 
-*** something wrong in this code. cannot find style 'C.Button'. verify implementationn
-      Note that the order of the (states, value) sequences for an
-      option matters.  In the previous example, if you change the
-      order to ``[('active', 'blue'), ('pressed', 'red')]`` in the
-      foreground option, for example, you would get a blue foreground
-      when the widget is in the active or pressed states.
+
       あるオプションに対する状態と値の組 (states, value) の並び順は
       スタイルに影響を与えることに注意してください。
       例えば、 foreground オプションの順序を ``[('active', 'blue'), ('pressed', 'red')]`` に変更した場合、
-      ウィジェットがアクティブなとき***
+      ウィジェットがアクティブもしくは押された状態のとき前面が青くなります。
+
 
    .. method:: lookup(style, option[, state=None[, default=None]])
 
-      Returns the value specified for *option* in *style*.
+      *style* の指定された *option* の値を返します。
 
-      If *state* is specified, it is expected to be a sequence of one or more
-      states. If the *default* argument is set, it is used as a fallback value
-      in case no specification for option is found.
+      *state* を指定する場合は、1 つ以上の状態名の並びである必要があります。
+      *default* 引数が指定されていた場合は、オプション指定が見付からなかったときに
+      代わりに返される値として使われます。
 
-      To check what font a Button uses by default, do::
+      デフォルトでボタンがどのフォントを使うかを調べるには、以下のように実行します
+      ::
 
          import ttk
 
@@ -1225,16 +1222,18 @@ Ttk Styling
 
    .. method:: layout(style[, layoutspec=None])
 
-      Define the widget layout for given *style*. If *layoutspec* is omitted,
-      return the layout specification for given style.
+      与えられた *style* でのウィジェットのレイアウトを定義します。
+      *layoutspec* が省略されていた場合は、
+      与えられたスタイルのレイアウト仕様を返します。
 
-      *layoutspec*, if specified, is expected to be a list or some other
-      sequence type (excluding strings), where each item should be a tuple and
-      the first item is the layout name and the second item should have the
-      format described described in `Layouts`_.
+      *layoutspec* を指定する場合は、リストもしくは
+      (文字列を除いた) 他のシーケンス型である必要があります。
+      それぞれの要素はタプルで、レイアウト名を 1 番目の要素とし、
+      2 番目の要素は `レイアウト`_ で説明されているフォーマットである必要があります。
 
-      To understand the format, see the following example (it is not
-      intended to do anything useful)::
+      フォーマットを理解するために以下の例を見てください
+      (何かを使い易くするための例ではありません)
+      ::
 
          import ttk
          import Tkinter
@@ -1260,74 +1259,72 @@ Ttk Styling
 
    .. method:: element_create(elementname, etype, *args, **kw)
 
-      Create a new element in the current theme, of the given *etype* which is
-      expected to be either "image", "from" or "vsapi". The latter is only
-      available in Tk 8.6a for Windows XP and Vista and is not described here.
+      与えられた *etype* ("image", "from", "vsapi" のいずれか) の現在のテーマに新しい要素を作成します。
+      最後の "vsapi" は Windows XP と Vista の Tk 8.6a のみで使用可能でここでは説明しません。
 
-      If "image" is used, *args* should contain the default image name followed
-      by statespec/value pairs (this is the imagespec), and *kw* may have the
-      following options:
+      "image" が使われた場合、 *args* はデフォルトの画像名の後ろに
+      状態仕様と値のペア (これが画像仕様です) を並べたものである必要があります。
+      *kw* には以下のオプションが指定できます:
 
        * border=padding
-          padding is a list of up to four integers, specifying the left, top,
-          right, and bottom borders, respectively.
+          padding は 4 個以下の整数のリストで、それぞれ左、上、右、下の縁の幅を指定します。
 
        * height=height
-          Specifies a minimum height for the element. If less than zero, the
-          base image's height is used as a default.
+          要素の最小の高さを指定します。0 より小さい場合は、
+          画像の高さをデフォルトとして使用します。
 
        * padding=padding
-          Specifies the element's interior padding. Defaults to border's value
-          if not specified.
+          要素の内部のパディングを指定します。指定されない場合は、
+          border の値がデフォルトとして使われます。
 
        * sticky=spec
           Specifies how the image is placed within the final parcel. spec
           contains zero or more characters “n”, “s”, “w”, or “e”.
+          1 つ外側の枠に対し画像をどう配置するかを指定します。
+          spec は "n", "s", "w", "e" の文字を 0 個以上含みます。
 
        * width=width
-          Specifies a minimum width for the element. If less than zero, the
-          base image's width is used as a default.
+          要素の最小の幅を指定します。0 より小さい場合は、
+          画像の幅をデフォルトとして使用します。
 
-      If "from" is used as the value of *etype*,
-      :meth:`element_create` will clone an existing
-      element. *args* is expected to contain a themename, from which
-      the element will be cloned, and optionally an element to clone from.
-      If this element to clone from is not specified, an empty element will
-      be used. *kw* is discarded.
+      *etype* の値として "from" が使われた場合は、
+      :meth:`element_create` が現在の要素を複製します。
+      *args* は要素の複製元のテーマの名前と、オプションで複製する要素を含んでいる必要があります。
+      複製元の要素が指定されていなかった場合、空要素が使用され、 *kw* は破棄されます。
 
 
    .. method:: element_names()
 
-      Returns the list of elements defined in the current theme.
+      現在のテーマに定義されている要素のリストを返します。
 
 
    .. method:: element_options(elementname)
 
-      Returns the list of *elementname*'s options.
+      *elementname* のオプションのリストを返します。
 
 
    .. method:: theme_create(themename[, parent=None[, settings=None]])
 
-      Create a new theme.
+      新しいテーマを作成します。
 
-      It is an error if *themename* already exists. If *parent* is specified,
-      the new theme will inherit styles, elements and layouts from the parent
-      theme. If *settings* are present they are expected to have the same
-      syntax used for :meth:`theme_settings`.
+      *themename* が既に存在していた場合はエラーになります。
+      *parent* が指定されていた場合は、新しいテーマは親テーマからスタイルや要素やレイアウトを継承します。
+      *settings* が指定された場合は、 :meth:`theme_settings` で使われるのと
+      同じ形式である必要があります。
 
 
    .. method:: theme_settings(themename, settings)
 
-      Temporarily sets the current theme to *themename*, apply specified
-      *settings* and then restore the previous theme.
+      一時的に現在のテーマを *themename* に設定し、指定された *settings* を適用した後、元のテーマを復元します。
 
-      Each key in *settings* is a style and each value may contain the keys
-      'configure', 'map', 'layout' and 'element create' and they are expected
-      to have the same format as specified by the methods
-      :meth:`Style.configure`, :meth:`Style.map`, :meth:`Style.layout` and
-      :meth:`Style.element_create` respectively.
+      *settings* のそれぞれのキーはスタイル名で値はさらに
+      'configure', 'map', 'layout', 'element create' をキーとして持ち、
+      その値はそれぞれ :meth:`Style.configure`, :meth:`Style.map`,
+      :meth:`Style.layout`, :meth:`Style.element_create` メソッドで
+      指定するのと同じ形式である必要があります。
 
-      As an example, let's change the Combobox for the default theme a bit::
+      例として、コンボボックスの default テーマを少し変更してみましょう
+      ::
 
          import ttk
          import Tkinter
@@ -1355,24 +1352,25 @@ Ttk Styling
 
    .. method:: theme_names()
 
-      Returns a list of all known themes.
+      全ての既存のテーマのリストを返します。
 
 
    .. method:: theme_use([themename])
 
-      If *themename* is not given, returns the theme in use.  Otherwise, sets
-      the current theme to *themename*, refreshes all widgets and emits a
-      <<ThemeChanged>> event.
+      *themename* が与えられなかった場合は、現在使用中のテーマ名を返します。
+      そうでない場合は、現在のテーマを *themename* に設定し、
+      全てのウィジェットを再描画し、 <<ThemeChanged>> イベントを発生させます。
 
 
-Layouts
-^^^^^^^
+レイアウト
+^^^^^^^^^^
 
 A layout can be just None, if it takes no options, or a dict of
 options specifying how to arrange the element. The layout mechanism
 uses a simplified version of the pack geometry manager: given an
 initial cavity, each element is allocated a parcel. Valid
 options/values are:
+レイアウトはオプションを取らない場合はただの None にでき、
 
  * side: whichside
     Specifies which side of the cavity to place the element; one of
@@ -1392,4 +1390,4 @@ options/values are:
     element is a tuple (or other sequence type) where the first item is
     the layout name, and the other is a `Layout`_.
 
-.. _Layout: `Layouts`_
+.. _Layout: `レイアウト`_
