@@ -336,11 +336,11 @@ reSTの拡張メカニズムの一つで、 Sphinx はディレクティブを�
 .. body at the bottom of the document after a "Footnotes" rubric heading, like so::
 
 脚注を使うときは、 ``[#]_`` を使って脚注を入れる場所を示し、脚注の内容はドキュメントの
-最後に、次の例のように、"Footnotes" という rubric ヘッダの後に書きます。 ::
+最後に、次の例のように、"Footnotes" [#]_ という rubric ヘッダの後に書きます。 ::
 
    Lorem ipsum [#]_ dolor sit amet ... [#]_
 
-   .. rubric:: 注記
+   .. rubric:: Footnotes
 
    .. [#] 最初の脚注の内容
    .. [#] 二つ目の脚注の内容
@@ -392,3 +392,8 @@ reST ドキュメントをオーサリングするときに良く問題になる
 * **インラインマークアップの区切り:** 上で述べたように、インラインマークアップは
   囲っているテキストと non-word 文字で区切られています。
   スペースを囲むときにはエスケープが必要になります。
+
+.. rubric:: 注記
+
+.. [#] 訳注：Sphinx 1.0 以降では日本語で Footnotes の代わりに "注記" も許容されるようです。
+
