@@ -17,7 +17,7 @@ Tk 8.5 が無い環境で Python がコンパイルされていた場合でも�
 .. seealso::
 
    `Tk Widget Styling Support <http://www.tcl.tk/cgi-bin/tct/tip/48>`_
-      Tk のテーマサポートの始まりのドキュメント
+      Tk のテーマサポートの立ち上げのドキュメント
 
 
 Ttk を使う
@@ -27,11 +27,13 @@ Ttk を使い始めるために、モジュールをインポートします::
 
    import ttk
 
-しかしこのようなコードでは::
+しかしこのようなコードでは
+::
 
    from Tkinter import *
 
-このように使いたいことがあるかもしれません::
+このように使いたいことがあるかもしれません
+::
 
    from Tkinter import *
    from ttk import *
@@ -68,7 +70,8 @@ Ttk には 17 のウィジェットがあり、そのうち 11 は Tkinter に�
 上にも書いた通り、スタイルの記述コードと同様に見た目も変わっていることに気付くでしょう。
 それを見せるために、非常に簡単な例を以下に示します。
 
-Tk のコード::
+Tk のコード
+::
 
    l1 = Tkinter.Label(text="Test", fg="black", bg="white")
    l2 = Tkinter.Label(text="Test", fg="black", bg="white")
@@ -396,13 +399,6 @@ Ttk ノートブックウィジェットは複数のウィンドウを管理し�
 タブオプション
 ^^^^^^^^^^^^^^
 
-.. memo
-
-   by cocoatomo
-   The description about image option refers to :class:`Widget`,
-   which section has no explanation about image option.
-   It may be refering `ラベルオプション`_ ?
-
 タブ用のオプションもあります:
 
    +-----------+--------------------------------------------------------------+
@@ -425,7 +421,7 @@ Ttk ノートブックウィジェットは複数のウィンドウを管理し�
    | text      | タブに表示するテキストを指定します。                         |
    +-----------+--------------------------------------------------------------+
    | image     | タブに表示する画像を指定します。 :class:`Widget` の          |
-   |           | オプションの説明を参照してください。                         |
+   |           | `ラベルオプション`_ の説明を参照してください。               |
    +-----------+--------------------------------------------------------------+
    | compound  | text オプションと image オプションが両方指定されているときに |
    |           | テキストに対して画像をどう表示するかを指定します。           |
@@ -699,6 +695,7 @@ ttk.Progressbar
 
    - tag binding refers tag_bind method
    - 'list' is list in Tcl, which is space-separated strings, not list in Python
+   TODO add explanation for list in Tcl
 
 .. tabularcolumns:: |p{0.2\textwidth}|p{0.7\textwidth}|
 ..
@@ -727,7 +724,7 @@ ttk.Progressbar
    |                | 変更することはできません。                             |
    |                |                                                        |
    |                | このオプションの値によらず、アプリケーションのコードと |
-   |                | タグバインディングからは好きなように選択状態を         |
+   |                | 関連付けられているタグからは好きなように選択状態を     |
    |                | 設定できます。                                         |
    +----------------+--------------------------------------------------------+
    | show           | ツリーのどの要素を表示するかを指定する、以下にある値を |
@@ -1125,8 +1122,8 @@ ttk.Treeview
 
 .. _TtkStyling:
 
-Ttk Styling
------------
+Ttk スタイル
+------------
 
 :mod:`ttk` のそれぞれのウィジェットにはスタイルが関連付けられていて、
 それと動的もしくはデフォルトで設定される要素のオプションによって
@@ -1227,7 +1224,7 @@ Ttk Styling
       与えられたスタイルのレイアウト仕様を返します。
 
       *layoutspec* を指定する場合は、リストもしくは
-      (文字列を除いた) 他のシーケンス型である必要があります。
+      (文字列を除いた) 何か他のシーケンス型である必要があります。
       それぞれの要素はタプルで、レイアウト名を 1 番目の要素とし、
       2 番目の要素は `レイアウト`_ で説明されているフォーマットである必要があります。
 
@@ -1278,8 +1275,6 @@ Ttk Styling
           border の値がデフォルトとして使われます。
 
        * sticky=spec
-          Specifies how the image is placed within the final parcel. spec
-          contains zero or more characters “n”, “s”, “w”, or “e”.
           1 つ外側の枠に対し画像をどう配置するかを指定します。
           spec は "n", "s", "w", "e" の文字を 0 個以上含みます。
 
@@ -1365,29 +1360,29 @@ Ttk Styling
 レイアウト
 ^^^^^^^^^^
 
-A layout can be just None, if it takes no options, or a dict of
-options specifying how to arrange the element. The layout mechanism
-uses a simplified version of the pack geometry manager: given an
-initial cavity, each element is allocated a parcel. Valid
-options/values are:
-レイアウトはオプションを取らない場合はただの None にでき、
+レイアウトはオプションを取らない場合はただの None にできますし、
+そうでない場合は要素をどう配置するかを指定するオプションの辞書になります。
+レイアウト機構は単純化したジオメトリマネージャを使っています:
+最初に空間が与えられ、それぞれの要素に分割された空間が配分されます。
+設定できるオプションと値は次の通りです:
 
- * side: whichside
-    Specifies which side of the cavity to place the element; one of
-    top, right, bottom or left. If omitted, the element occupies the
-    entire cavity.
+ * side: 辺の名前
+    要素を空間のどちら側に配置するかを指定します;
+    top, right, bottom, left のどれか 1 つです。
+    省略された場合は、要素は空間全体を占めます。
 
- * sticky: nswe
-    Specifies where the element is placed inside its allocated parcel.
+ * sticky: n, s, w, e から 0 個以上
+    配分された空間の内部に要素をどう配置するかを指定します。
 
- * unit: 0 or 1
+ * unit: 0 か 1
     If set to 1, causes the element and all of its descendants to be treated as
     a single element for the purposes of :meth:`Widget.identify` et al. It's
     used for things like scrollbar thumbs with grips.
+    1 を設定した場合、要素とその
 
- * children: [sublayout... ]
-    Specifies a list of elements to place inside the element. Each
-    element is a tuple (or other sequence type) where the first item is
-    the layout name, and the other is a `Layout`_.
+ * children: [内部レイアウト... ]
+    要素の内部に配置する要素のリストを指定します。
+    リストのそれぞれの要素はタプル (もしくは他のシーケンス型) で、
+    それの 1 番目の要素はレイアウト名でそれ以降は `Layout`_ です。
 
 .. _Layout: `レイアウト`_
