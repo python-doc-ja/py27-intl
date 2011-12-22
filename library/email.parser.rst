@@ -236,7 +236,7 @@ Parser クラス API
   インスタンスが現れます。詳しい情報については
   :mod:`email.errors` を参照してください。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] Python 2.4 から導入された email パッケージバージョン 3.0 では、
    旧式の :class:`Parser` は :class:`FeedParser` によって書き直されました。

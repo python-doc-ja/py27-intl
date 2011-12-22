@@ -68,7 +68,7 @@
    これは Python の拡張 print
    文が対応できるようになっている必要があります。 *level* は内部的に使用されます。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 訳注: 原文では file-like。
 

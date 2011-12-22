@@ -52,4 +52,5 @@
 * 松江
 * 森本哲也
 * osawa <osawa at sm.rim.or.jp> (2.0) 
+* 打田旭宏
 

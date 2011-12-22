@@ -3069,7 +3069,7 @@ arg-n)`` の呼び出しと完全に等価です。
       [<type 'bool'>]
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] これらの特殊なメソッドのさらなる情報は、 Python リファレンスマ
    ニュアル (:ref:`customization`) を参照下さい。

@@ -174,7 +174,7 @@
    :func:`encode` 関数は撤去されました。かわりに
    :meth:`Header.encode` メソッドを使ってください。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 注意: この時間帯のオフセット値は ``time.timezone`` の値と\
    符号が逆です。これは ``time.timezone`` が POSIX

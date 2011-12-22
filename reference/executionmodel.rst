@@ -206,7 +206,7 @@ Python は、エラー処理に "プログラムの終了 (termination)"  モデ
 :keyword:`try` 文については、 :ref:`try` 節、 :keyword:`raise` 文については  :ref:`raise`
 節も参照してください。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] この制限は、上記の操作によって実行されるコードが、モジュールをコンパイルしたときには利用できないために起こります。
 

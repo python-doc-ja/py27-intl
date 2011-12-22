@@ -634,7 +634,7 @@ Python 2.4 からは、 :func:`lgettext` ファミリが導入されました。
 
 * Barry Warsaw
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 標準でロケールが収められているディレクトリはシステム依存です; 例えば、RedHat Linux では :file:`/usr/share/locale`
    ですが、 Solaris では :file:`/usr/lib/locale` です。 :mod:`gettext`

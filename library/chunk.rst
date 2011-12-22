@@ -114,7 +114,7 @@ IDはチャンクの種類を識別する4バイトの文字列です。
       チャンクの最後まで飛びます。さらにチャンクの :meth:`read` を呼び出すと、 ``''`` が返されます。
       もしチャンクの内容に興味がないなら、このメソッドを呼び出してファイルポインタを次のチャンクの始めに設定します。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] "EA IFF 85" Standard for Interchange Format Files, Jerry Morrison, Electronic
    Arts, January 1985.

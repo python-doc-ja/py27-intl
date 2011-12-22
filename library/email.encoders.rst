@@ -55,7 +55,7 @@
    これは何もしないエンコーダです。
    :mailheader:`Content-Transfer-Encoding` ヘッダを設定さえしません。
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. [#] 注意: :meth:`encode_quopri` を\
        使ってエンコードすると、データ中のタブ文字や空白文字も\

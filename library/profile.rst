@@ -1101,7 +1101,7 @@ calibrate メソッドは引数として与えられた数だけ Python の呼�
    自前のタイマ関数で最高の結果を得るには、 :mod:`_lsprof` 内部モジュールの C ソースファイルにハードコードする必要があるかもしれません。
 
 
-.. rubric:: Footnotes
+.. rubric:: 注記
 
 .. .. [#] Updated and converted to LaTeX by Guido van Rossum. Further updated by Armin
 ..    Rigo to integrate the documentation for the new :mod:`cProfile` module of Python
