@@ -3,7 +3,8 @@ setlocal
 
 set SVNROOT=http://svn.python.org/projects
 ::if "%PYTHON%" EQU "" set PYTHON=..\pcbuild\python
-if "%HTMLHELP%" EQU "" set HTMLHELP=%ProgramFiles%\HTML Help Workshop\hhc.exe
+if "%HTMLHELP%" EQU "" if "%ProgramFiles(x86)%" EQU "" set HTMLHELP=%ProgramFiles%\HTML Help Workshop\hhc.exe
+if "%HTMLHELP%" EQU "" if "%ProgramFiles(x86)%" NEQ "" set HTMLHELP=%ProgramFiles(x86)%\HTML Help Workshop\hhc.exe
 if "%DISTVERSION%" EQU "" for /f "usebackq" %%v in (`tools\sphinxext\patchlevel.py`) do set DISTVERSION=%%v
 
 if "%1" EQU "" goto help
