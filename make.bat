@@ -10,6 +10,7 @@ if "%DISTVERSION%" EQU "" for /f "usebackq" %%v in (`tools\sphinxext\patchlevel.
 if "%1" EQU "" goto help
 if "%1" EQU "html" goto build
 if "%1" EQU "htmlhelp" goto build
+if "%1" EQU "epub" goto build
 if "%1" EQU "latex" goto build
 if "%1" EQU "latexpdf" goto latexpdf
 if "%1" EQU "text" goto build
@@ -27,6 +28,7 @@ echo %this% checkout
 echo %this% update
 echo %this% html
 echo %this% htmlhelp
+echo %this% epub
 echo %this% latex
 echo %this% latexpdf
 echo %this% text
