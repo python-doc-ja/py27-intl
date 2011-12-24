@@ -16,3 +16,5 @@
    windows.rst
    gui.rst
    installed.rst
+   
+   jptranslation.rst
