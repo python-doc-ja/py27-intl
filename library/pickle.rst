@@ -448,7 +448,7 @@ pickle 化プロトコル
 .. method:: object.__getinitargs__()
 
    pickle 化されたクラスインスタンスが unpickle 化されたとき、
-   :meth:`__init__` メソッドは通常呼び出され*ません*。 unpickle 化の
+   :meth:`__init__` メソッドは通常呼び出され *ません* 。 unpickle 化の
    際に :meth:`__init__` が呼び出される方が望ましい場合、旧スタイルク
    ラスではメソッド :meth:`__getinitargs__` を定義することができます。
    このメソッドはクラスコンストラクタ (例えば :meth:`__init__`) に渡さ

@@ -941,8 +941,8 @@ Below ar8-bit 文字列と Unicode オブジェクトは、どちらも以下に
 
    .. note::
 
-      :meth:`~str.find` メソッドは、*sub* の位置を知りたいときにのみ
-      使うべきです。*sub* が部分文字列であるかどうかのみを調べるには、
+      :meth:`~str.find` メソッドは、 *sub* の位置を知りたいときにのみ
+      使うべきです。 *sub* が部分文字列であるかどうかのみを調べるには、
       :keyword:`in` 演算子を使ってください::
 
          >>> 'Py' in 'Python'
@@ -2189,7 +2189,7 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
 ----------------------
 
 :meth:`dict.keys` 、 :meth:`dict.values` 、 :meth:`dict.items` によって
-返されるオブジェクトは、*ビューオブジェクト* です。これらは、辞書の項目の
+返されるオブジェクトは、 *ビューオブジェクト* です。これらは、辞書の項目の
 動的なビューを提供し、辞書が変更された時、ビューはその変更を反映します。
 
 辞書ビューを通して反復することで、対応するデータを産出できます。
@@ -2617,7 +2617,7 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
 
 .. class:: memoryview(obj)
 
-   *obj* を参照する :class:`memoryview` を作成します。*obj* は
+   *obj* を参照する :class:`memoryview` を作成します。 *obj* は
    バッファプロトコルをサポートしていなければなりません。
    バッファプロトコルをサポートする組み込みオブジェクトには、
    :class:`str` 、 :class:`bytearray` などがあります

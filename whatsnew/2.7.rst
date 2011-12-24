@@ -1291,7 +1291,7 @@ Python 言語コアにいくつかの小さな変更が加えられました。
   なお要素は、実際の値ではなく、その入力内での位置に依って
   一意であるとみなされます。
 
-  :func:`itertools.count` 関数は、1 以外の値を増分できるように、*step* 引数を
+  :func:`itertools.count` 関数は、1 以外の値を増分できるように、 *step* 引数を
   追加しました。 :func:`~itertools.count` はまた、キーワード引数に対応し、
   さらに浮動小数点数や :class:`~decimal.Decimal` インスタンスのような、
   非整数の値を使えるようになりました。(Implemented by Raymond
