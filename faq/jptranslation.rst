@@ -4,7 +4,7 @@
 このドキュメントについて
 ========================
 
-この文書は、Pythonドキュメント翻訳プロジェクトによる "Python HOWTO"
+この文書は、Pythonドキュメント翻訳プロジェクトによる "Python Frequently Asked Questions"
 の日本語訳版です。
 日本語訳に対する質問や提案などがありましたら、Pythonドキュメント
 翻訳プロジェクトのメーリングリスト
@@ -21,7 +21,5 @@
 翻訳者一覧 (敬称略)
 ===================
 
-* TAKAHASHI Tamotsu
-* 打田旭宏
 * Arihiro TAKASE <hinaclegear at gmail.com>
 

@@ -54,3 +54,4 @@
 * osawa <osawa at sm.rim.or.jp> (2.0) 
 * 打田旭宏
 * cocoatomo
+* Arihiro TAKASE <hinaclegear at gmail.com>
