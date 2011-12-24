@@ -22,5 +22,4 @@
 ===================
 
 * INADA Naoki <inada-n at klab.jp>
-* Arihiro TAKASE <hinaclegear at gmail.com> 
 

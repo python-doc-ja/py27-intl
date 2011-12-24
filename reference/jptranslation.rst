@@ -23,5 +23,4 @@
 * hkurosawa
 * INADA Naoki
 * 森本哲也
-* Arihiro TAKASE <hinaclegear at gmail.com> 
 

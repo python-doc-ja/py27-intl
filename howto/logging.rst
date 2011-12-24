@@ -8,24 +8,9 @@
 
 .. currentmodule:: logging
 
-<<<<<<< local
-Basic Logging Tutorial
-----------------------
-=======
->>>>>>> other
 基本ロギングチュートリアル
 --------------------------
 
-<<<<<<< local
-Logging is a means of tracking events that happen when some software runs. The
-software's developer adds logging calls to their code to indicate that certain
-events have occurred. An event is described by a descriptive message which can
-optionally contain variable data (i.e. data that is potentially different for
-each occurrence of the event). Events also have an importance which the
-developer ascribes to the event; the importance can also be called the *level*
-or *severity*.
-=======
->>>>>>> other
 ロギングは、あるソフトウェアが実行されているときに起こったイベントを
 追跡するための手段です。ソフトウェアの開発者は、特定のイベントが
 発生したことを示すロギングの呼び出しをコードに加えます。
@@ -34,66 +19,16 @@ or *severity*.
 イベントには、開発者がそのイベントに定めた重要性も含まれます。
 重要性は、 *レベル (level)* や *重大度 (severity)* とも呼ばれます。
 
-<<<<<<< local
-When to use logging
-^^^^^^^^^^^^^^^^^^^
-=======
->>>>>>> other
 ロギングを使うべきとき
 ^^^^^^^^^^^^^^^^^^^^^^
 
-<<<<<<< local
-Logging provides a set of convenience functions for simple logging usage. These
-are :func:`debug`, :func:`info`, :func:`warning`, :func:`error` and
-:func:`critical`. To determine when to use logging, see the table below, which
-states, for each of a set of common tasks, the best tool to use for it.
-=======
->>>>>>> other
 logging は、単純なロギングの用法に便利な関数群を提供しています。
 この中には、 :func:`debug`, :func:`info`, :func:`warning`, :func:`error` および
 :func:`critical` があります。logging を使うべき時を決めるには、
 よくあるタスクに使う最適なツールを述べた、以下のテーブルを参照してください。
 
-<<<<<<< local
-+-------------------------------------+--------------------------------------+
-| Task you want to perform            | The best tool for the task           |
-+=====================================+======================================+
-| Display console output for ordinary | :func:`print`                        |
-| usage of a command line script or   |                                      |
-| program                             |                                      |
-+-------------------------------------+--------------------------------------+
-| Report events that occur during     | :func:`logging.info` (or             |
-| normal operation of a program (e.g. | :func:`logging.debug` for very       |
-| for status monitoring or fault      | detailed output for diagnostic       |
-| investigation)                      | purposes)                            |
-+-------------------------------------+--------------------------------------+
-| Issue a warning regarding a         | :func:`warnings.warn` in library     |
-| particular runtime event            | code if the issue is avoidable and   |
-|                                     | the client application should be     |
-|                                     | modified to eliminate the warning    |
-|                                     |                                      |
-|                                     | :func:`logging.warning` if there is  |
-|                                     | nothing the client application can do|
-|                                     | about the situation, but the event   |
-|                                     | should still be noted                |
-+-------------------------------------+--------------------------------------+
-| Report an error regarding a         | Raise an exception                   |
-| particular runtime event            |                                      |
-+-------------------------------------+--------------------------------------+
-| Report suppression of an error      | :func:`logging.error`,               |
-| without raising an exception (e.g.  | :func:`logging.exception` or         |
-| error handler in a long-running     | :func:`logging.critical` as          |
-| server process)                     | appropriate for the specific error   |
-|                                     | and application domain               |
-+-------------------------------------+--------------------------------------+
-=======
->>>>>>> other
 +-----------------------------------+------------------------------------------+
-<<<<<<< local
-| 行いたいタスク                    | 最適なツール                             |
-=======
 | 行いたいタスク                    | そのタスクに最適なツール                 |
->>>>>>> other
 +===================================+==========================================+
 | コマンドラインスクリプトや        | :func:`print`                            |
 | プログラムで普通に使う、          |                                          |
@@ -121,92 +56,33 @@ logging は、単純なロギングの用法に便利な関数群を提供して
 |                                   | :func:`logging.critical`                 |
 +-----------------------------------+------------------------------------------+
 
-<<<<<<< local
-The logging functions are named after the level or severity of the events
-they are used to track. The standard levels and their applicability are
-described below (in increasing order of severity):
-=======
->>>>>>> other
 ロギング関数は、そのイベントのレベルや重大度から名前を付けられ、
 それが追跡に使われます。標準のレベルとその適用範囲は、
-<<<<<<< local
-いかに (重大度が増す順に) 記述されています
-=======
 以下に (重大度が増す順に) 記述されています
->>>>>>> other
 
 +--------------+---------------------------------------------+
-<<<<<<< local
-| Level        | When it's used                              |
-+--------------+---------------------------------------------+
-=======
->>>>>>> other
 | レベル       | 使われるとき                                |
 +==============+=============================================+
-<<<<<<< local
-| ``DEBUG``    | Detailed information, typically of interest |
-|              | only when diagnosing problems.              |
-|              | おもに問題を診断するときにのみ関心が        |
-=======
 | ``DEBUG``    | おもに問題を診断するときにのみ関心が        |
->>>>>>> other
 |              | あるような、詳細な情報                      |
 +--------------+---------------------------------------------+
-<<<<<<< local
-| ``INFO``     | Confirmation that things are working as     |
-|              | expected.                                   |
-|              | 想定された通りのことが起こったことの確認    |
-=======
 | ``INFO``     | 想定された通りのことが起こったことの確認    |
->>>>>>> other
 |              |                                             |
 +--------------+---------------------------------------------+
-<<<<<<< local
-| ``WARNING``  | An indication that something unexpected     |
-|              | happened, or indicative of some problem in  |
-|              | the near future (e.g. 'disk space low').    |
-|              | The software is still working as expected.  |
-|              | 想定外のことが起こった、または問題が近く    |
-=======
 | ``WARNING``  | 想定外のことが起こった、または問題が近く    |
->>>>>>> other
 |              | 起こりそうである (例えば、'disk space low') |
 |              | ことの表示                                  |
 +--------------+---------------------------------------------+
-<<<<<<< local
-| ``ERROR``    | Due to a more serious problem, the software |
-|              | has not been able to perform some function. |
-|              | より重大な問題により、ソフトウェアが        |
-=======
 | ``ERROR``    | より重大な問題により、ソフトウェアが        |
->>>>>>> other
 |              | ある機能を実行できないこと                  |
 +--------------+---------------------------------------------+
-<<<<<<< local
-| ``CRITICAL`` | A serious error, indicating that the program|
-|              | itself may be unable to continue running.   |
-|              | プログラム自体が実行を続けられないことを    |
-=======
 | ``CRITICAL`` | プログラム自体が実行を続けられないことを    |
->>>>>>> other
 |              | 表す、重大なエラー                          |
 +--------------+---------------------------------------------+
 
-<<<<<<< local
-The default level is ``WARNING``, which means that only events of this level
-and above will be tracked, unless the logging package is configured to do
-otherwise.
-=======
->>>>>>> other
 デフォルトのレベルは ``WARNING`` で、logging パッケージが他に設定されなければ、
 このレベル以上のイベントのみ追跡されます。
 
-<<<<<<< local
-Events that are tracked can be handled in different ways. The simplest way of
-handling tracked events is to print them to the console. Another common way
-is to write them to a disk file.
-=======
->>>>>>> other
 追跡されるイベントは、異なる方法で処理されます。追跡されたイベントを
 処理する最も単純な方法は、それをコンソールに表示することです。
 その他のよくある方法は、それをディスクファイルに書き出すことです。
@@ -214,46 +90,20 @@ is to write them to a disk file.
 
 .. _howto-minimal-example:
 
-<<<<<<< local
-A simple example
-^^^^^^^^^^^^^^^^
-=======
->>>>>>> other
 簡単な例
 ^^^^^^^^
 
-<<<<<<< local
-A very simple example is::
-=======
->>>>>>> other
 ごく簡単な例は::
 
    import logging
    logging.warning('Watch out!') # will print a message to the console
    logging.info('I told you so') # will not print anything
 
-<<<<<<< local
-If you type these lines into a script and run it, you'll see::
-=======
->>>>>>> other
 これらの行をスクリプトにタイプして実行すると、次のようにコンソールに
-<<<<<<< local
-出力されます。::
-=======
 出力されます::
->>>>>>> other
 
    WARNING:root:Watch out!
 
-<<<<<<< local
-printed out on the console. The ``INFO`` message doesn't appear because the
-default level is ``WARNING``. The printed message includes the indication of
-the level and the description of the event provided in the logging call, i.e.
-'Watch out!'. Don't worry about the 'root' part for now: it will be explained
-later. The actual output can be formatted quite flexibly if you need that;
-formatting options will also be explained later.
-=======
->>>>>>> other
 デフォルトのレベルは ``WARNING`` なので、 ``INFO`` メッセージは現れません。
 表示されたメッセージには、レベルの表示と、ロギングの呼び出しで
 提供された、イベントの説明すなわち 'Watch out!' が含まれます。
@@ -261,19 +111,9 @@ formatting options will also be explained later.
 必要に応じてかなり柔軟に書式化できます。書式化操作もあとで説明します。
 
 
-<<<<<<< local
-Logging to a file
-^^^^^^^^^^^^^^^^^
-=======
->>>>>>> other
 ファイルへのロギング
 ^^^^^^^^^^^^^^^^^^^^
 
-<<<<<<< local
-A very common situation is that of recording logging events in a file, so let's
-look at that next::
-=======
->>>>>>> other
 非常によくある状況として、ロギングイベントのファイルへの記録が
 挙げられますから、次はそれを見てみましょう::
 
@@ -283,11 +123,6 @@ look at that next::
    logging.info('So should this')
    logging.warning('And this, too')
 
-<<<<<<< local
-And now if we open the file and look at what we have, we should find the log
-messages::
-=======
->>>>>>> other
 そして、ファイルを開いて何が起こったか見てみると、このようなログメッセージが
 見つかるでしょう::
 
@@ -295,41 +130,19 @@ messages::
    INFO:root:So should this
    WARNING:root:And this, too
 
-<<<<<<< local
-This example also shows how you can set the logging level which acts as the
-threshold for tracking. In this case, because we set the threshold to
-``DEBUG``, all of the messages were printed.
-=======
->>>>>>> other
 この例はまた、追跡のしきい値となるロギングレベルを設定する方法も示しています。
 この例では、しきい値を ``DEBUG`` に設定しているので、全てのメッセージが
 表示されています。
 
-<<<<<<< local
-If you want to set the logging level from a command-line option such as::
-=======
->>>>>>> other
 ロギングレベルをコマンドラインオプションから次のように設定したいなら::
 
    --log=INFO
 
-<<<<<<< local
-and you have the value of the parameter passed for ``--log`` in some variable
-*loglevel*, you can use::
-=======
->>>>>>> other
 ``--log`` に渡されたパラメタの値をある変数 *loglevel* に保存すれば::
 
    getattr(logging, loglevel.upper())
 
-<<<<<<< local
-to get the value which you'll pass to :func:`basicConfig` via the *level*
-argument. You may want to error check any user input value, perhaps as in the
-following example::
-を使って、 *level* 引数を通して :func:`basicConfig` に渡すべき値を得られます。
-=======
 を使い、 *level* 引数を通して :func:`basicConfig` に渡すべき値を得られます。
->>>>>>> other
 ユーザの入力値をすべてエラーチェックしたいこともあり、以下のように
 なるかもしれません::
 
@@ -341,21 +154,11 @@ following example::
        raise ValueError('Invalid log level: %s' % loglevel)
    logging.basicConfig(level=numeric_level, ...)
 
-<<<<<<< local
-The call to :func:`basicConfig` should come *before* any calls to :func:`debug`,
-:func:`info` etc. As it's intended as a one-off simple configuration facility,
-only the first call will actually do anything: subsequent calls are effectively
-no-ops.
-=======
->>>>>>> other
 :func:`basicConfig` は、 :func:`debug` や :func:`info` を
 最初に呼び出す *前* に呼び出さなければなりません。
-<<<<<<< local
-=======
 これは、一度限りの単純な設定機能を意図しているので、
 実際に作用するのは最初の呼び出しのみで、
 続く呼び出しの効果は no-op です。
->>>>>>> other
 
 上記のスクリプトを複数回実行すると、2 回目以降の実行によるメッセージは
 *example.log* に加えられます。以前の実行によるメッセージを記憶せず、

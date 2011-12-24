@@ -64,21 +64,10 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 
    .. attribute:: args
 
-<<<<<<< local
-      The tuple of arguments given to the exception constructor.  Some built-in
-      exceptions (like :exc:`IOError`) expect a certain number of arguments and
-      assign a special meaning to the elements of this tuple, while others are
-      usually called only with a single string giving an error message.
-=======
->>>>>>> other
       例外コンストラクタに与えられた引数のタプルです。
-<<<<<<< local
-      組み込み例外の中には、(:exc:`IOError` など) 引数を
-=======
       組み込み例外は普通、エラーメッセージを与える一つの文字列だけを
       引数として呼ばれますが、中には (:exc:`IOError` など) いくつかの引数を
       必要とし、このタプルの要素に特別な意味を込めるものもあります。
->>>>>>> other
 
 .. exception:: Exception
 
@@ -86,10 +75,6 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
    出されています。全てのユーザ定義例外はこのクラスの派生クラスであるべき
    です。
 
-<<<<<<< local
-
-=======
->>>>>>> other
    .. versionchanged:: 2.5
       :exc:`BaseException` を継承するように変更されました.
 
@@ -544,11 +529,7 @@ Python チュートリアルの :ref:`tut-userexceptions` の項目にありま�
 
 .. exception:: UnicodeWarning
 
-<<<<<<< local
-   ユニコードに関連した警告の基底クラスです。
-=======
    Unicode に関連した警告の基底クラスです。
->>>>>>> other
 
    .. versionadded:: 2.5
 

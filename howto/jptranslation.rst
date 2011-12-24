@@ -23,5 +23,4 @@
 
 * TAKAHASHI Tamotsu
 * 打田旭宏
-* Arihiro TAKASE <hinaclegear at gmail.com> 
 

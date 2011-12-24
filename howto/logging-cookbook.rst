@@ -208,11 +208,7 @@ INFO 以上のレベルのメッセージはコンソールに出力したいと
 設定サーバの例
 --------------
 
-<<<<<<< local
-ログ記録設定サーバを使うモジュールの例です。
-=======
 ログ記録設定サーバを使うモジュールの例です::
->>>>>>> other
 
     import logging
     import logging.config
@@ -661,11 +657,7 @@ Filter を使ったコンテキスト情報の伝達
        print(filename)
 
 この結果として、アプリケーションのログ履歴の一部である、 6 つに別れた
-<<<<<<< local
-ファイルが得られます。
-=======
 ファイルが得られます::
->>>>>>> other
 
    logging_rotatingfile_example.out
    logging_rotatingfile_example.out.1
