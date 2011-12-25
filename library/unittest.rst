@@ -9,8 +9,10 @@
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Raymond Hettinger <python@rcn.com>
 
-
 .. versionadded:: 2.1
+
+(読者の方がすでにテストの基本概念についてなじみがあるようでしたら、
+この部分をとばして :ref:`the list of assert methods <assert-methods>` に進むと良いでしょう。)
 
 この Python ユニットテストフレームワークは時に "PyUnit" とも呼ばれ、
 Kent Beck と Erich Gamma による JUnit の Python 版です。
@@ -50,8 +52,8 @@ test runner (テストランナー)
 います。 :class:`TestCase` クラスは新規にテストを作成する場合に使用し、
 :class:`FunctionTestCase` は既存のテストを :mod:`unittest` に組み込む
 場合に使用します。テストフィクスチャーの設定処理と終了処理は、
-:class:`TestCase` では :meth:`setUp` メソッドと :meth:`tearDown` をオー
-バーライドして記述し、 :class:`FunctionTestCase` では初期設定・終了処
+:class:`TestCase` では :meth:`~TestCase.setUp` メソッドと :meth:`~TestCase.tearDown`
+をオーバーライドして記述し、 :class:`FunctionTestCase` では初期設定・終了処
 理を行う既存の関数をコンストラクタで指定します。テスト実行時、まずテス
 トフィクスチャーの初期設定が最初に実行されます。初期設定が正常終了した
 場合、テスト実行後にはテスト結果に関わらず終了処理が実行されます。
@@ -62,19 +64,24 @@ test runner (テストランナー)
 トとテストスイートをまとめる事ができます。テストスイートを実行すると、
 スイートと子スイートに追加されている全てのテストが実行されます。
 
-テストランナーは :meth:`run` メソッドを持つオブジェクトで、
-:meth:`run` は引数として :class:`TestCase` か :class:`TestSuite` オブ
+テストランナーは :meth:`~TestRunner.run` メソッドを持つオブジェクトです。
+このメソッドは引数として :class:`TestCase` か :class:`TestSuite` オブ
 ジェクトを受け取り、テスト結果を :class:`TestResult` オブジェクトで戻
 します。 :mod:`unittest` ではデフォルトでテスト結果を標準エラーに出力
 する :class:`TextTestRunner` をサンプルとして実装しています。これ以外
-のランナー (グラフィックインターフェース用など) を実装する場合でも、特
-定のクラスから派生する必要はありません。
+のランナー (グラフィックインターフェース用など) を実装する場合でも、
+特別なクラスから派生させて実装する必要はありません。
 
 
 .. seealso::
 
    Module :mod:`doctest`
       もうひとつのテストをサポートするモジュールで、本モジュールと趣きが異なっています。
+
+   `unittest2: ユニットテストの新機能の Python 2.4-2.6 向けバックポート <http://pypi.python.org/pypi/unittest2>`_
+      Python 2.7 になり多くの機能が unittest に追加されました。特に、
+      テストディスカバリが追加されました。 unittest2 を導入する事で
+      以前のバージョンの Python でもこれらの機能を使えます。
 
    `Simple Smalltalk Testing: With Patterns <http://www.XProgramming.com/testfram.htm>`_
       Kent Beck のテスティングフレームワークに関する原論文で、ここに記載されたパターンを
@@ -84,8 +91,13 @@ test runner (テストランナー)
       サードパーティのユニットテストフレームワークで軽量な文法でテストを書くことができます。
       例えば、 ``assert func(10) == 42``  のように書きます。
 
-   `python-mock <http://python-mock.sourceforge.net/>`_ と `minimock <http://blog.ianbicking.org/minimock.html>`_
-      テスト用のモックオブジェクトを作成するツールです (モックオブジェクトは外部リソースをシミュレートします)。
+   `The Python Testing Tools Taxonomy <http://pycheesecake.org/wiki/PythonTestingToolsTaxonomy>`_
+      多くの Python のテストツールが一覧で紹介されています。
+      ファンクショナルテストのフレームワークやモックライブラリも掲載されています。
+
+   `Testing in Python Mailing List <http://lists.idyll.org/listinfo/testing-in-python>`_
+      Python でテストやテストツールについての議論に特化したグループです。
+
 
 .. _unittest-minimal-example:
 
@@ -112,12 +124,16 @@ test runner (テストランナー)
            self.seq.sort()
            self.assertEqual(self.seq, range(10))
 
+           # should raise an exception for an immutable sequence
+           self.assertRaises(TypeError, random.shuffle, (1,2,3))
+
        def test_choice(self):
            element = random.choice(self.seq)
            self.assertTrue(element in self.seq)
 
        def test_sample(self):
-           self.assertRaises(ValueError, random.sample, self.seq, 20)
+           with self.assertRaises(ValueError):
+               random.sample(self.seq, 20)
            for element in random.sample(self.seq, 5):
                self.assertTrue(element in self.seq)
 
@@ -129,16 +145,16 @@ test runner (テストランナー)
 ンナーはこの命名規約によってテストを行うメソッドを検索します。
 
 これらのテスト内では、予定の結果が得られていることを確かめるために
-:meth:`assertEqual` を、条件のチェックに :meth:`assert_` を、例外が発
-生する事を確認するために :meth:`assertRaises` をそれぞれ呼び出していま
-す。 :keyword:`assert` 文の代わりにこれらのメソッドを使用すると、テス
-トランナーでテスト結果を集計してレポートを作成する事ができます。
+:meth:`~TestCase.assertEqual` を、条件のチェックに :meth:`~TestCase.assertTrue` を、
+例外が発生する事を確認するために :meth:`~TestCase.assertRaises` を
+それぞれ呼び出しています。 :keyword:`assert` 文の代わりにこれらのメソッドを使用すると、
+テストランナーでテスト結果を集計してレポートを作成する事ができます。
 
-:meth:`setUp` メソッドが定義されている場合、テストランナーは各テストを
-実行する前に :meth:`setUp` メソッドを呼び出します。同様に、
-:meth:`tearDown` メソッドが定義されている場合は各テストの実行後に呼び
+:meth:`~TestCase.setUp` メソッドが定義されている場合、テストランナーは各テストを
+実行する前に :meth:`~TestCase.setUp` メソッドを呼び出します。同様に、
+:meth:`~TestCase.tearDown` メソッドが定義されている場合は各テストの実行後に呼び
 出します。上のサンプルでは、それぞれのテスト用に新しいシーケンスを作成
-するために :meth:`setUp` を使用しています。
+するために :meth:`~TestCase.setUp` を使用しています。
 
 サンプルの末尾が、簡単なテストの実行方法です。 :func:`unittest.main`
 は、テストスクリプトのコマンドライン用インターフェースです。コマンドラ
@@ -176,6 +192,143 @@ test runner (テストランナー)
 章を参照してください。
 
 
+.. _unittest-command-line-interface:
+
+コマンドラインインタフェース
+----------------------------
+
+ユニットテストモジュールはコマンドラインから使うこともできます。
+モジュール、クラス、もしくは、特定のテストメソッドで定義されたテストを実行します。::
+
+   python -m unittest test_module1 test_module2
+   python -m unittest test_module.TestClass
+   python -m unittest test_module.TestClass.test_method
+
+引数として渡す事ができるのは、テストが定義されたモジュール名、
+もしくはクラス、メソッドのフルパス名です。
+
+テスト実行時に（冗長な）詳細を表示するには -f フラグを渡します。::
+
+   python -m unittest -v test_module
+
+コマンドラインプションの一覧を表示するには以下のコマンドを実行します。::
+
+   python -m unittest -h
+
+..  versionchanged:: 2.7
+   以前のバージョンでは、特定のメソッドでしか実行できず、
+   モジュールやクラスは指定できませんでした。
+
+
+コマンドラインオプション
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+:program:`unittest` には以下のコマンドラインオプションがあります:
+
+.. program:: unittest
+
+.. cmdoption:: -b, --buffer
+
+   標準出力と標準エラーのストリームをテスト実行の間バッファリングします。
+   テストが成功している間は結果の出力は破棄されます。
+   テストが失敗、もしくはエラーが発生した場合には、
+   結果にエラーメッセージが追加されたうえで通常通り出力されます。
+
+.. cmdoption:: -c, --catch
+
+   control-C を実行中のテストが終了するまで遅延させ、そこまでの結果を出力します。
+   二回目の control-C は、通常通り :exc:`KeyboardInterrupt`
+   の例外を発生させます。
+
+   この機能の仕組みについては、 `Signal Handling`_ を参照してください。
+
+.. cmdoption:: -f, --failfast
+
+   初回のエラーもしくは失敗の時にテストを停止します。
+
+.. versionadded:: 2.7
+   コマンドラインオプションの ``-b``, ``-c`` および ``-f`` が追加されました。
+
+このコマンドラインは、プロジェクト内の全テストを実行したり、
+サブセットのみを実行したりといった、テストディスカバリを使用することもできます。
+
+
+.. _unittest-test-discovery:
+
+テストディスカバリ
+------------------
+
+.. versionadded:: 2.7
+
+unittest はシンプルなテストディスカバリをサポートします。
+このテストディスカバリに対応するために、テストが定義された全ファイルは
+:ref:`modules <tut-modules>` もしくは :ref:`packages <tut-packages>` として
+プロジェクトの最上位のディスカバリでインポート可能である必要があります。
+（つまり、これらのファイルは :ref:`identifiers <identifiers>` として有効で
+ある必要があるということです。）
+
+テストディスカバリは :meth:`TestLoader.discover` で実装されています。
+しかし、コマンドラインからも使う事ができます。コマンドラインからは以下のように使用します。::
+
+   cd project_directory
+   python -m unittest discover
+
+``discover`` サブコマンドには以下のオプションがあります。
+
+.. program:: unittest discover
+
+.. cmdoption:: -v, --verbose
+
+   詳細な出よr区
+
+.. cmdoption:: -s directory
+
+   ディスカバリを開始するディレクトリ （デフォルトは '.'）
+
+.. cmdoption:: -p pattern
+
+   テストファイル名を識別するパターン （デフォルトは 'test*.py'）
+
+.. cmdoption:: -t directory
+
+   プロジェクトの最上位のディスカバリのディレクトリ （デフォルトは開始のディレクトリ）
+
+The :option:`-s`, :option:`-p`, and :option:`-t` options can be passed in
+as positional arguments in that order. The following two command lines
+are equivalent::
+
+:option:`-s` 、 :option:`-p` 、および :option:`-t` の各オプションは、
+この順番で指定すれば位置固定の引数として指定する事ができます。
+以下の二つのコマンドは同じ結果になります。::
+
+   python -m unittest discover -s project_directory -p '*_test.py'
+   python -m unittest discover project_directory '*_test.py'
+
+パスを渡すのはもちろんのこと、例えば ``myproject.subpackage.test`` のように、
+パッケージ名をスタートディレクトリとして渡すことができます。
+指定したパッケージがインポートされ、そのパッケージのファイルシステム上のパスが
+スタートディレクトリになります。
+
+.. caution::
+
+    テストディスカバリはテストをインポートすることで読み込みます。
+    テストディスカバリは一度、指定した開始ディレクトリから全テストファイルを探索し、
+    そのファイルのパスをパッケージ名に変換してインポートします。
+    例えば、 `foo/bar/baz.py` は ``foo.bar.baz`` としてインポートされます。
+
+    もしパッケージをグローバルにインストールしていて、
+    インストールしたのとは異なるパッケージのコピーをディスカバリしようとすると、
+    間違った場所からインポートして *しまうかもしれません* 。
+    このような状態になるとテストディスカバリは警告を出し、停止します。
+
+    スタートディレクトリとしてディレクトリのパスではなく
+    パッケージ名を指定した場合は、いずれかの場所からインポートされます。
+    この場合は警告が表示されません。
+
+テストモジュールとテストパッケージは、テストのロードとディスカバリを
+カスタマイズすることができます。そのために `load_tests protocol`_ を使用します。
+
+
 .. _organizing-tests:
 
 テストの構成
@@ -194,7 +347,7 @@ test runner (テストランナー)
 :class:`TestCase` インスタンスは外部から完全に独立し、単独で実行する事
 も、他の任意のテストと一緒に実行する事もできなければなりません。
 
-以下のように、 :class:`TestCase` のサブクラスは :meth:`runTest` をオー
+以下のように、 :class:`TestCase` のサブクラスは :meth:`~TestCase.runTest` をオー
 バライドし、必要なテスト処理を記述するだけで簡単に書くことができます::
 
    import unittest
@@ -205,7 +358,7 @@ test runner (テストランナー)
            self.assertEqual(widget.size(), (50,50), 'incorrect default size')
 
 何らかのテストを行う場合、ベースクラス :class:`TestCase` の
-:meth:`assert\*` か :meth:`fail\*` メソッドを使用してください。テスト
+:meth:`assert\*` メソッドを使用してください。テスト
 が失敗すると例外が送出され、 :mod:`unittest` はテスト結果を
 :dfn:`failure` とします。その他の例外は :dfn:`error` となります。
 これによりどこに問題があるかが判ります。 :dfn:`failure` は間違った結果
@@ -223,7 +376,7 @@ test runner (テストランナー)
 れのサブクラスで :class:`Widget` オブジェクトを生成する処理を記述する
 のは好ましくありません。
 
-このような場合、初期化処理は :meth:`setUp` メソッドに切り出し、テスト
+このような場合、初期化処理は :meth:`~TestCase.setUp` メソッドに切り出し、テスト
 実行時にテストフレームワークが自動的に実行するようにすることができます::
 
    import unittest
@@ -243,12 +396,12 @@ test runner (テストランナー)
            self.assertEqual(self.widget.size(), (100,150),
                            'wrong size after resize')
 
-テスト中に :meth:`setUp` メソッドで例外が発生した場合、テストフレーム
-ワークはテストを実行することができないとみなし、 :meth:`runTest` を実
+テスト中に :meth:`~TestCase.setUp` メソッドで例外が発生した場合、テストフレーム
+ワークはテストを実行することができないとみなし、 :meth:`~TestCase.runTest` を実
 行しません。
 
-同様に、終了処理を :meth:`tearDown` メソッドに記述すると、
-:meth:`runTest` メソッド終了後に実行されます::
+同様に、終了処理を :meth:`~TestCase.tearDown` メソッドに記述すると、
+:meth:`~TestCase.runTest` メソッド終了後に実行されます::
 
    import unittest
 
@@ -260,8 +413,8 @@ test runner (テストランナー)
            self.widget.dispose()
            self.widget = None
 
-:meth:`setUp` が正常終了した場合、 :meth:`runTest` が成功したかどうか
-に従って :meth:`tearDown` が実行されます。
+:meth:`~TestCase.setUp` が正常終了した場合、 :meth:`~TestCase.runTest` が成功したかどうか
+に従って :meth:`~TestCase.tearDown` が実行されます。
 
 このような、テストを実行する環境を :dfn:`fixture` と呼びます。
 
@@ -337,8 +490,8 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
 :class:`TestLoader` は自動的にテストメソッドを識別するのに ``'test'``
 というメソッド名の接頭辞を使います。
 
-いろいろなテストケースが実行される順序は、テスト関数名を組み込み関数
-:func:`cmp` でソートして決定されます。
+いろいろなテストケースが実行される順序は、テスト関数名を組み込みの
+文字列の順番に従って決まります。
 
 システム全体のテストを行う場合など、テストスイートをさらにグループ化し
 たい場合がありますが、このような場合、 :class:`TestSuite` インスタンス
@@ -413,12 +566,119 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
    時間を掛けて :class:`TestCase` のサブクラスに書き直した方が将来的な
    テストのリファクタリングが限りなく易しくなります。
 
+既存のテストが :mod:`doctest` を使って書かれている場合もあるでしょう。
+その場合、 :mod:`doctest` は :class:`DocTestSuite` クラスを提供します。
+このクラスは、既存の :mod:`doctest`\ ベースのテストから、
+自動的に :class:`unittest.TestSuite` のインスタンスを作成します。
+
+
+.. _unittest-skipping:
+
+テストのスキップと意図的な失敗
+--------------------------------
+
+.. versionadded:: 2.7
+
+unittest は特定のテストメソッドやテストクラス全体をスキップする仕組みを備えています。
+さらに、この機能はテスト結果を「意図的な失敗」とすることができ、
+テストが失敗しても :class:`TestResult` の失敗数にはカウントされなくなります。
+
+テストをスキップするには、 単に :func:`skip` :term:`デコレータ` を使用するか、
+条件を表現するための :func:`skip` に類する :term:`デコレータ` を使用します。
+
+スキップは以下のようになります。 ::
+
+   class MyTestCase(unittest.TestCase):
+
+       @unittest.skip("demonstrating skipping")
+       def test_nothing(self):
+           self.fail("shouldn't happen")
+
+       @unittest.skipIf(mylib.__version__ < (1, 3),
+                        "not supported in this library version")
+       def test_format(self):
+           # Tests that work for only a certain version of the library.
+           pass
+
+       @unittest.skipUnless(sys.platform.startswith("win"), "requires Windows")
+       def test_windows_support(self):
+           # windows specific testing code
+           pass
+
+このサンプルを詳細モードで実行すると以下のように出力されます。 ::
+
+   test_format (__main__.MyTestCase) ... skipped 'not supported in this library version'
+   test_nothing (__main__.MyTestCase) ... skipped 'demonstrating skipping'
+   test_windows_support (__main__.MyTestCase) ... skipped 'requires Windows'
+
+   ----------------------------------------------------------------------
+   Ran 3 tests in 0.005s
+
+   OK (skipped=3)
+
+テストクラスは以下のようにメソッドをスキップすることができます。 ::
+
+   @skip("showing class skipping")
+   class MySkippedTestCase(unittest.TestCase):
+       def test_not_run(self):
+           pass
+
+:meth:`TestCase.setUp` もスキップすることができます。
+この機能はセットアップの対象のリソースが使用不可能な状態の時に便利です。
+
+意図的な失敗の機能を使用するには、 :func:`expectedFailure` デコレータを使います。 ::
+
+   class ExpectedFailureTestCase(unittest.TestCase):
+       @unittest.expectedFailure
+       def test_fail(self):
+           self.assertEqual(1, 0, "broken")
+
+独自のスキップ用のデコレータも簡単に作成することができます。
+そのためには、独自のデコレータのスキップしたい時点で :func:`skip` を呼び出します。
+以下のデコレータはオブジェクトに指定した属性が無い場合にテストをスキップします。 ::
+
+   def skipUnlessHasattr(obj, attr):
+       if hasattr(obj, attr):
+           return lambda func: func
+       return unittest.skip("{0!r} doesn't have {1!r}".format(obj, attr))
+
+以下のデコレータはテストのスキップと意図的な失敗を実装しています。
+
+.. function:: skip(reason)
+
+   デコレートしたテストを無条件でスキップします。
+   *reason* にはテストをスキップした理由を記載します。
+
+.. function:: skipIf(condition, reason)
+
+   *condition* が真の場合に、デコレートしたテストをスキップします。
+
+.. function:: skipUnless(condition, reason)
+
+   *condition* が偽の場合に、デコレートしたテストをスキップします。
+
+.. function:: expectedFailure
+
+   テストの失敗が意図的であることを表します。
+   該当のテストが失敗しても、そのテストは失敗にカウントされません。
+
+スキップしたテストの前後では、 :meth:`setUp` および :meth:`tearDown` は実行されません。
+同様に、スキップしたテストクラスの前後では、 :meth:`setUpClass` および
+ :meth:`tearDownClass` は実行されません。
+
 
 .. _unittest-contents:
 
 クラスと関数
 ------------
 
+この節では、 :mod:`unittest` モジュールのAPIの詳細について説明します。
+
+
+.. _testcase-objects:
+
+テストクラス
+~~~~~~~~~~~~
 
 .. class:: TestCase([methodName])
 
@@ -442,10 +702,604 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
    ここでは、それぞれが一つずつのテストを実行するような
    :class:`WidgetTestCase` の二つのインスタンスを作成しています。
 
-   *methodName* のデフォルトは ``'runTest'`` です。
+   *methodName* のデフォルトは :meth:`runTest` です。
+
+   :class:`TestCase` のインスタンスのメソッドは3種類のグループに分けられます。
+   1つ目のグループのメソッドはテストの実行で使用します。2つ目のグループのメソッドは
+   条件の確認および失敗のレポートといったテストの実装で使用されます。3つ目のグループである
+   問い合わせ用のメソッドはテスト自身の情報を収集するために使用します。
+
+   はじめのグループ（テスト実行）に含まれるメソッドは以下の通りです。
 
 
-.. class:: FunctionTestCase(testFunc[, setUp[, tearDown[, description]]])
+   .. method:: setUp()
+
+      テストフィクスチャの準備のために呼び出されるメソッドです。テストメソッドの直前に
+      呼び出されます。このメソッドを実行中に例外が発生した場合、テストの失敗ではなくエラーと
+      されます。デフォルトの実装では何も行いません。
+
+
+   .. method:: tearDown()
+
+      テストメソッドが実行され、結果が記録された直後に呼び出されるメソッドです。
+      このメソッドはテストメソッドで例外が投げられても呼び出されます。
+      そのため、サブクラスでこのメソッドを実装する場合は、内部状態を確認することが
+      必要になるでしょう。メソッドを実行中に例外が発生した場合、テストの失敗ではなく
+      エラーとみなされます。このメソッドは、テストの結果に関わらず
+      :meth:`setUp` が成功した場合にのみ呼ばれます。
+      デフォルトの実装では何も行いません。
+
+
+   .. method:: setUpClass()
+
+      クラス内に定義されたテストが実行される前に呼び出されるクラスメソッドです。
+      ``setUpClass`` はクラスを唯一の引数として取り、 :func:`classmethod` で
+      デコレートされている必要があります。 ::
+
+        @classmethod
+        def setUpClass(cls):
+            ...
+
+      詳しくは `Class and Module Fixtures`_ を参照してください。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: tearDownClass()
+
+      クラス内に定義されたテストが実行された後に呼び出されるクラスメソッドです。
+      ``tearDownClass`` はクラスを唯一の引数として取り、 :func:`classmethod` で
+      デコレートされている必要があります。 ::
+
+        @classmethod
+        def tearDownClass(cls):
+            ...
+
+      詳しくは `Class and Module Fixtures`_ を参照してください。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: run(result=None)
+
+      テストを実行し、テスト結果を *result* に指定されたテスト結果オブジェ
+      クトに渡します。 *result* 省略されるか :const:`None` か渡された場合、
+      一時的な結果オブジェクトを（ :meth:`defaultTestCase` メソッドを呼んで）
+      生成して使用しますが :meth:`run` の呼び出し元には渡されません。
+
+      このメソッドは、単に :class:`TestCase` インスタンスの呼び出した場合と
+      同様に振る舞います。
+
+
+   .. method:: skipTest(reason)
+
+      現在のテストでテストクラスもしくは :meth:`setUp` をスキップする場合に呼ばれます。
+      詳細については、 :ref:`unittest-skipping` を参照してください。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: debug()
+
+      テスト結果を収集せずにテストを実行します。例外が呼び出し元に通知さ
+      れます。また、テストをデバッガで実行することができます。
+
+   .. _assert-methods:
+
+   :class:`TestCase` クラスには、条件の確認と失敗のレポートのために
+   以下のメソッドが定義されています。
+
+   +-----------------------------------------+-----------------------------+---------------+
+   | メソッド                                | 確認事項                    | バージョン    |
+   +=========================================+=============================+===============+
+   | :meth:`assertEqual(a, b)                | ``a == b``                  |               |
+   | <TestCase.assertEqual>`                 |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertNotEqual(a, b)             | ``a != b``                  |               |
+   | <TestCase.assertNotEqual>`              |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertTrue(x)                    | ``bool(x) is True``         |               |
+   | <TestCase.assertTrue>`                  |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertFalse(x)                   | ``bool(x) is False``        |               |
+   | <TestCase.assertFalse>`                 |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIs(a, b)                   | ``a is b``                  | 2.7           |
+   | <TestCase.assertIs>`                    |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIsNot(a, b)                | ``a is not b``              | 2.7           |
+   | <TestCase.assertIsNot>`                 |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIsNone(x)                  | ``x is None``               | 2.7           |
+   | <TestCase.assertIsNone>`                |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIsNotNone(x)               | ``x is not None``           | 2.7           |
+   | <TestCase.assertIsNotNone>`             |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIn(a, b)                   | ``a in b``                  | 2.7           |
+   | <TestCase.assertIn>`                    |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertNotIn(a, b)                | ``a not in b``              | 2.7           |
+   | <TestCase.assertNotIn>`                 |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertIsInstance(a, b)           | ``isinstance(a, b)``        | 2.7           |
+   | <TestCase.assertIsInstance>`            |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+   | :meth:`assertNotIsInstance(a, b)        | ``not isinstance(a, b)``    | 2.7           |
+   | <TestCase.assertNotIsInstance>`         |                             |               |
+   +-----------------------------------------+-----------------------------+---------------+
+
+   （ :meth:`assertRaises` と :meth:`assertRaisesRegexp` を除く）すべての
+   アサートメソッドには *msg* 引数を指定することができ、テストの失敗時の
+   エラーメッセージで使用されます。
+   （ :data:`longMessage` も参照してください。）
+
+   .. method:: assertEqual(first, second, msg=None)
+
+      *first* と *second* が等しいことをテストします。
+      両者が比較出来ない場合は、テストが失敗します。
+
+      さらに、 *first* と *second* が厳密に同じ型であり、
+      その型が、list, tuple, dict, set, frozenset もしくは unicode のいずれか、
+      または :meth:`addTypeEqualityFunc` で比較関数が登録されている型の場合には、
+      デフォルトのエラーメッセージを生成するために、その型特有の比較関数が呼ばれます。
+      （ :ref:`list of type-specific methods <type-specific-methods>` も参照してください。）
+
+      .. versionchanged:: 2.7
+         型特有の比較関数の自動呼び出しを追加。
+
+
+   .. method:: assertNotEqual(first, second, msg=None)
+
+      *first* と *second* が等しくないことをテストします。
+      両者が比較出来ない場合は、テストが失敗します。
+
+   .. method:: assertTrue(expr, msg=None)
+               assertFalse(expr, msg=None)
+
+      *expr* が真（偽）であることをテストします。
+
+      このメソッドは、 ``bool(expr) is True`` と等価であり、 ``expr is True`` と
+      等価ではないことに注意が必要です（後者のためには、 ``assertIs(expr, True)``
+      が用意されています）。また、専用のメソッドが使用できる場合には、
+      そちらを使用してください（例えば ``assertTrue(a == b)`` の代わりに
+      ``assertEqual(a, b)`` を使用してください）。そうすることにより、
+      テスト失敗時のエラーメッセージを詳細に表示することができます。
+
+
+   .. method:: assertIs(first, second, msg=None)
+               assertIsNot(first, second, msg=None)
+
+      *first* と *second* が同じオブジェクトであること（そうでないこと）をテストします。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertIsNone(expr, msg=None)
+               assertIsNotNone(expr, msg=None)
+
+      *expr* が None であること（そうでないこと）をテストします。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertIn(first, second, msg=None)
+               assertNotIn(first, second, msg=None)
+
+      *first* が *second* に含まれること（そうでないこと）をテストします。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertIsInstance(obj, cls, msg=None)
+               assertNotIsInstance(obj, cls, msg=None)
+
+      *obj* が *cls* のインスタンスであること（そうでないこと）をテストします。
+      （この *cls* は、 :func:`isinstance` が扱うことのできる、クラスもしくは
+      クラスのタプルである必要があります。）
+
+      .. versionadded:: 2.7
+
+
+   例外と例外発生時の警告を確認するために以下のメソッドを使用することができます。
+
+   +---------------------------------------------------------+--------------------------------------+------------+
+   | Method                                                  | Checks that                          | New in     |
+   +=========================================================+======================================+============+
+   | :meth:`assertRaises(exc, fun, *args, **kwds)            | ``fun(*args, **kwds)`` raises `exc`  |            |
+   | <TestCase.assertRaises>`                                |                                      |            |
+   +---------------------------------------------------------+--------------------------------------+------------+
+   | :meth:`assertRaisesRegexp(exc, re, fun, *args, **kwds)  | ``fun(*args, **kwds)`` raises `exc`  | 2.7        |
+   | <TestCase.assertRaisesRegexp>`                          | and the message matches `re`         |            |
+   +---------------------------------------------------------+--------------------------------------+------------+
+
+   .. method:: assertRaises(exception, callable, *args, **kwds)
+               assertRaises(exception)
+
+      *callable* を呼び出した時に例外が発生することをテストします。
+      :meth:`assertRaises` で指定した位置パラメータとキーワードパラメータを
+      該当メソッドに渡します。 *exception* が投げられた場合にテストが成功します。
+      また、他の例外が投げられた場合はエラー、例外が投げられなかった場合は失敗になります。
+      複数の例外をキャッチする場合には、例外クラスのタプルを *exception* に
+      指定してください。
+
+      *exception* 引数のみが渡された場合には、コンテキストマネージャが返されます。
+      これにより関数名を渡す形式ではなく、インラインでテスト対象のコードを書くことができます。 ::
+
+         with self.assertRaises(SomeException):
+             do_something()
+
+      このコンテキストマネージャは :attr:`exception` で
+      指定されたオブジェクトを格納します。
+      これにより、例外発生時の詳細な確認をおこなうことができます。::
+
+        with self.assertRaises(SomeException) as cm:
+            do_something()
+
+        the_exception = cm.exception
+        self.assertEqual(the_exception.error_code, 3)
+
+      .. versionchanged:: 2.7
+         コンテキストマネージャとして :meth:`assertRaises` を使用する機能を追加。
+
+
+   .. method:: assertRaisesRegexp(exception, regexp, callable, *args, **kwds)
+               assertRaisesRegexp(exception, regexp)
+
+      :meth:`assertRaises` と同等ですが、例外の文字列表現が正規表現オブジェクトにマッチ
+      することもテストします。 *regexp* は正規表現オブジェクトか、 :func:`re.search` が
+      扱える正規表現が書かれた文字列である必要があります。例えば以下のようになります。 ::
+
+         self.assertRaisesRegexp(ValueError, 'invalid literal for.*XYZ$',
+                                 int, 'XYZ')
+
+      もしくは ::
+
+         with self.assertRaisesRegexp(ValueError, 'literal'):
+            int('XYZ')
+
+      .. versionadded:: 2.7
+
+
+
+   さらに特有の確認を行うために以下のメソッドが用意されています。
+
+   +---------------------------------------+--------------------------------+--------------+
+   | メソッド                              | 確認項目                       | バージョン   |
+   +=======================================+================================+==============+
+   | :meth:`assertAlmostEqual(a, b)        | ``round(a-b, 7) == 0``         |              |
+   | <TestCase.assertAlmostEqual>`         |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertNotAlmostEqual(a, b)     | ``round(a-b, 7) != 0``         |              |
+   | <TestCase.assertNotAlmostEqual>`      |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertGreater(a, b)            | ``a > b``                      | 2.7          |
+   | <TestCase.assertGreater>`             |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertGreaterEqual(a, b)       | ``a >= b``                     | 2.7          |
+   | <TestCase.assertGreaterEqual>`        |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertLess(a, b)               | ``a < b``                      | 2.7          |
+   | <TestCase.assertLess>`                |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertLessEqual(a, b)          | ``a <= b``                     | 2.7          |
+   | <TestCase.assertLessEqual>`           |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertRegexpMatches(s, re)     | ``regex.search(s)``            | 2.7          |
+   | <TestCase.assertRegexpMatches>`       |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertNotRegexpMatches(s, re)  | ``not regex.search(s)``        | 2.7          |
+   | <TestCase.assertNotRegexpMatches>`    |                                |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertItemsEqual(a, b)         | sorted(a) == sorted(b) and     | 2.7          |
+   | <TestCase.assertItemsEqual>`          | works with unhashable objs     |              |
+   +---------------------------------------+--------------------------------+--------------+
+   | :meth:`assertDictContainsSubset(a, b) | all the key/value pairs        | 2.7          |
+   | <TestCase.assertDictContainsSubset>`  | in `a` exist in `b`            |              |
+   +---------------------------------------+--------------------------------+--------------+
+
+
+   .. method:: assertAlmostEqual(first, second, places=7, msg=None, delta=None)
+               assertNotAlmostEqual(first, second, places=7, msg=None, delta=None)
+
+      *first* と *second* が近似的に等しい（等しくない）ことをテストします。
+      この比較は、*places* （デフォルト7）で指定した小数位で丸めた差分を
+      ゼロと比べることでおこないます。これらのメソッドは、（ :func:`round` と同様に）
+       *小数位* を指定するのであって、*有効桁数* を指定するのではないことに注意してください。
+
+      *places* の代わりに *delta* が渡された場合には、
+      *first* と *second* の差分が *delta* より大きい（小さい）ことをテストします。
+
+      *delta* と *places* の両方が指定された場合は ``TypeError`` が投げられます。
+
+      .. versionchanged:: 2.7
+         :meth:`assertAlmostEqual` は、オブジェクトが等しい場合には自動で
+	 近似的に等しいとみなすようになりました。
+         :meth:`assertNotAlmostEqual` は、オブジェクトが等しい場合には自動的に
+	 失敗するようになりました。
+         *delta* 引数が追加されました。
+
+
+   .. method:: assertGreater(first, second, msg=None)
+               assertGreaterEqual(first, second, msg=None)
+               assertLess(first, second, msg=None)
+               assertLessEqual(first, second, msg=None)
+
+      *first* が *second* と比べて、メソッド名に対応して >, >=, < もしくは <=
+      であることをテストします。そうでない場合はテストが失敗します。 ::
+
+         >>> self.assertGreaterEqual(3, 4)
+         AssertionError: "3" unexpectedly not greater than or equal to "4"
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertRegexpMatches(text, regexp, msg=None)
+
+      *regexp* の検索が *text* とマッチすることをテストします。テスト失敗時には、
+      エラーメッセージにパターンと *text* が表示されます（もしくは、
+      パターンと意図しないかたちでマッチした *text* の一部が表示されます）。
+      *regexp* は正規表現オブジェクトか、 :func:`re.search` が
+      扱える正規表現が書かれた文字列である必要があります。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertNotRegexpMatches(text, regexp, msg=None)
+
+      *regexp* の検索が *text* とマッチしないことをテストします。テスト失敗時には、
+      エラーメッセージにマッチしたパターンと *text* が表示されます。
+      *regexp* は正規表現オブジェクトか、 :func:`re.search` が
+      扱える正規表現が書かれた文字列である必要があります。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertItemsEqual(actual, expected, msg=None)
+
+      シーケンス *expected* が *actual* と同じ要素を含んでいることをテストします。
+      要素の順序はテスト結果に影響しません。要素が含まれていない場合には、
+      シーケンスの差分がエラーメッセージとして表示されます。
+
+      *actual* と *expected* の比較では、重複した要素は無視 *されません* 。
+      両者に同じ数の要素が含まれていることを検証します。このメソッドは
+      ``assertEqual(sorted(expected), sorted(actual))`` と同等に振る舞うことに加えて、
+      ハッシュ化できないオブジェクトのシーケンスでも動作します。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertDictContainsSubset(expected, actual, msg=None)
+
+      辞書 *actual* のキー/バリューペアが *expected* のスーパーセットになっているかどうかを
+      テストします。そうなっていない場合には、足りないキーとバリューの一覧が
+      エラーメッセージに表示されます。
+
+      .. versionadded:: 2.7
+      .. deprecated:: 3.2
+
+
+
+   .. _type-specific-methods:
+
+   :meth:`assertEqual` メソッドは、同じ型のオブジェクトの等価性確認のために、
+   型ごとに特有のメソッドにディスパッチします。これらのメソッドは、ほとんどの組み込み型用の
+   メソッドは既に実装されています。さらに、 :meth:`addTypeEqualityFunc` を使う事で
+   新たなメソッドを登録することができます。
+
+   .. method:: addTypeEqualityFunc(typeobj, function)
+
+      :meth:`assertEqual` で呼び出される型特有のメソッドを登録します。
+      登録するメソッドは、 比較する2つのオブジェクトの型がが厳密に *typeobj* と同じ
+      （サブクラスでもいけません）の場合に等価性を確認します。 *function*  は
+      :meth:`assertEqual` と同様に、2つの位置固定引数と、3番目に msg=None のキーワード引数を
+      取れる必要があります。このメソッドは、始めの2つに指定したパラメータ間の差分を
+      検出した時に :data:`self.failureException(msg) <failureException>` の例外を投げる
+      必要があります。この例外を投げる際は、出来る限り、エラーの内容が分かる有用な情報と
+      差分の詳細をエラーメッセージに含めてください。
+
+      .. versionadded:: 2.7
+
+   :meth:`~TestCase.assertEqual` が自動的に呼び出す型特有のメソッドの概要を
+   以下の表示に記載しています。これらのメソッドは通常は直接呼び出す必要がない
+   ことに注意が必要です。
+
+   +-----------------------------------------+-----------------------------+--------------+
+   | メソッド                                | 比較の対象                  | 初出         |
+   +=========================================+=============================+==============+
+   | :meth:`assertMultiLineEqual(a, b)       | strings                     | 2.7          |
+   | <TestCase.assertMultiLineEqual>`        |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+   | :meth:`assertSequenceEqual(a, b)        | sequences                   | 2.7          |
+   | <TestCase.assertSequenceEqual>`         |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+   | :meth:`assertListEqual(a, b)            | lists                       | 2.7          |
+   | <TestCase.assertListEqual>`             |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+   | :meth:`assertTupleEqual(a, b)           | tuples                      | 2.7          |
+   | <TestCase.assertTupleEqual>`            |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+   | :meth:`assertSetEqual(a, b)             | sets or frozensets          | 2.7          |
+   | <TestCase.assertSetEqual>`              |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+   | :meth:`assertDictEqual(a, b)            | dicts                       | 2.7          |
+   | <TestCase.assertDictEqual>`             |                             |              |
+   +-----------------------------------------+-----------------------------+--------------+
+
+
+
+   .. method:: assertMultiLineEqual(first, second, msg=None)
+
+      複数行の文字列 *first* が文字列 *second* と等しいことをテストします。
+      等しくない場合には、両者の差分がハイライトされてエラーメッセージに表示されます。
+      このメソッドは、デフォルトで、 :meth:`assertEqual` が string を比較するときに
+      自動的に使用します。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertSequenceEqual(seq1, seq2, msg=None, seq_type=None)
+
+      2つのシーケンスが等しいことをテストします。 *seq_type* が指定された場合、
+      *seq1* と *seq2* が *seq_type* のインスタンスで無い場合にはテストが失敗します。
+      シーケンスどうしが異なる場合には、両者の差分がエラーメッセージに表示されます。
+
+      このメソッドは直接 :meth:`assertEqual` からは呼ばれませんが、
+      :meth:`assertListEqual` と :meth:`assertTupleEqual` の実装で使われています。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertListEqual(list1, list2, msg=None)
+               assertTupleEqual(tuple1, tuple2, msg=None)
+
+      2つのリストまたはタプルが等しいかどうかをテストします。等しくない場合には、
+      両者の差分を表示します。2つのパラメータの型が異なる場合には
+      テストがエラーになります。このメソッドは、デフォルトで、 :meth:`assertEqual` が
+      list または tuple を比較するときに自動的に使用します。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertSetEqual(set1, set2, msg=None)
+
+      2つのセットが等しいかどうかをテストします。等しくない場合には、
+      両者の差分を表示します。このメソッドは、デフォルトで、 :meth:`assertEqual` が
+      set もしくは frozenset を比較するときに自動的に使用します。
+
+      *set1* or *set2* のいずれかに :meth:`set.difference` が無い場合には
+      テストは失敗します。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: assertDictEqual(expected, actual, msg=None)
+
+      2つの辞書が等しいかどうかをテストします。等しくない場合には、
+      両者の差分を表示します。このメソッドは、デフォルトで、 :meth:`assertEqual` が
+      dict を比較するときに自動的に使用します。
+
+      .. versionadded:: 2.7
+
+
+
+   .. _other-methods-and-attrs:
+
+   最後に、 :class:`TestCase` の残りのメソッドと属性を紹介します。
+
+
+   .. method:: fail(msg=None)
+
+      無条件にテストを失敗させます。
+      エラーメッセージの表示に、 *msg* または ``None`` が使われます。
+
+
+   .. attribute:: failureException
+
+      :meth:`test` メソッドが送出する例外を指定するクラス属性です。
+      例えばテストフレームワークで追加情報を付した特殊な例外が必要になる場合、
+      この例外のサブクラスとして作成します。この属性の初期値は :exc:`AssertionError`
+      です。
+
+
+   .. attribute:: longMessage
+
+      この属性に ``True`` が設定された場合、 :ref:`assert methods <assert-methods>`
+      で指定したすべての明示的な失敗メッセージが、通常の失敗メッセージに追加されます。
+      通常の失敗メッセージには、オブジェクトに関する有用な情報が含まれています。
+      例えば、 assertEqual は異なるオブジェクトの repr を表示します。
+      この属性を ``True`` にすることで、カスタマイズしたエラーメッセージを通常の
+      メッセージに追加することができます。
+
+      この属性はデフォルトで ``False`` になっていて、カスタムメッセージが渡されても
+      表示しないようになっています。
+
+      アサートメソッドを呼び出す前に、
+      インスタンス属性として ``True`` または ``False`` を指定することで、
+      この設定をオーバーライドすることができます。
+
+      .. versionadded:: 2.7
+
+
+   .. attribute:: maxDiff
+
+      この属性は、アサーションメソッドが失敗をレポートする時に表示する
+      差分の長さをコントロールします。デフォルトは 80*8 文字です。
+      この属性が影響するメソッドは、
+      :meth:`assertSequenceEqual` （およびこのメソッドに委譲するシーケンス比較メソッド）、
+      :meth:`assertDictEqual` と :meth:`assertMultiLineEqual` です。
+
+      ``maxDiff`` に ``None`` を指定すると差分表示の上限がなくなります。
+
+      .. versionadded:: 2.7
+
+
+   テストフレームワークは、テスト情報を収集するために以下のメソッドを使用
+   します。
+
+
+   .. method:: countTestCases()
+
+      テストオブジェクトに含まれるテストの数を返します。
+      :class:`TestCase` インスタンスは常に ``1`` を返します。
+
+
+   .. method:: defaultTestResult()
+
+      このテストケースクラスで使われるテスト結果クラスのインスタンスを (
+      もし :meth:`run` メソッドに他の結果インスタンスが提供されないならば
+      ) 返します。
+
+      :class:`TestCase` インスタンスに対しては、いつも
+      :class:`TestResult` のインスタンスですので、 :class:`TestCase` のサ
+      ブクラスでは必要に応じてこのメソッドをオーバライドしてください。
+
+
+   .. method:: id()
+
+      テストケースを特定する文字列を返します。通常、 *id* はモジュール名・
+      クラス名を含む、テストメソッドのフルネームを指定します。
+
+
+   .. method:: shortDescription()
+
+      テストの説明を一行分、または説明がない場合には :const:`None` を返し
+      ます。デフォルトでは、テストメソッドの docstring の先頭の一行、また
+      は :const:`None` を返します。
+
+
+
+   .. method:: addCleanup(function, *args, **kwargs)
+
+      :meth:`tearDown` の後に呼び出される関数を追加します。
+      この関数はリソースのクリーンアップのために使用します。
+      追加された関数は、追加された順と逆の順番で呼び出されます（LIFO）。
+      :meth:`addCleanup` に渡された引数とキーワード引数が
+      追加された関数にも渡されます。
+
+      :meth:`setUp` が失敗した場合、つまり :meth:`tearDown` が呼ばれなかった場合でも、
+      追加されたクリーンアップ関数は呼び出されます。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: doCleanups()
+
+      このメソッドは、 :meth:`tearDown` の後、もしくは、
+      :meth:`setUp` が例外を投げた場合は :meth:`setUp` の後に、
+      無条件で呼ばれます。
+
+      このメソッドは、 :meth:`addCleanup` で追加された関数を呼び出す責務を担います。
+      もし、クリーンアップ関数を :meth:`tearDown` より前に呼び出す必要がある場合には、
+      :meth:`doCleanups` を明示的に呼び出してください。
+
+      :meth:`doCleanups` は、どこで呼び出されても、
+      クリーンアップ関数をスタックから削除して実行します。
+
+      .. versionadded:: 2.7
+
+
+.. class:: FunctionTestCase(testFunc, setUp=None, tearDown=None, description=None)
 
    このクラスでは :class:`TestCase` インターフェースの内、テストランナー
    がテストを実行するためのインターフェースだけを実装しており、テスト
@@ -454,7 +1308,36 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
    ために使用します。
 
 
-.. class:: TestSuite([tests])
+廃止予定のエイリアス
+####################
+
+歴史的な経緯で、 :class:`TestCase` のいくつかのエイリアスは廃止予定となりました。
+以下の表に、廃止予定のエイリアスをまとめます。
+
+   ==============================  ===============================
+    メソッド名                      廃止予定のエリアス
+   ==============================  ===============================
+    :meth:`.assertEqual`            failUnlessEqual, assertEquals
+    :meth:`.assertNotEqual`         failIfEqual
+    :meth:`.assertTrue`             failUnless, assert\_
+    :meth:`.assertFalse`            failIf
+    :meth:`.assertRaises`           failUnlessRaises
+    :meth:`.assertAlmostEqual`      failUnlessAlmostEqual
+    :meth:`.assertNotAlmostEqual`   failIfAlmostEqual
+   ==============================  ===============================
+
+   .. deprecated:: 2.7
+         表の第2列のエイリアスを廃止予定
+
+
+
+.. _testsuite-objects:
+
+Grouping tests
+~~~~~~~~~~~~~~
+
+.. class:: TestSuite(tests=())
+
 
    このクラスは、個々のテストケースやテストスイートの集約を示します。
    通常のテストケースと同じようにテストランナーで実行するためのインタ
@@ -462,26 +1345,401 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
    ことはスイートの繰り返しを使って個々のテストを実行することと同じで
    す。
 
-   引数 *tests* が与えられるならば、それはテストケースに亘る繰り返し可
+   引数 *tests* が指定された場合、それはテストケースに亘る繰り返し可
    能オブジェクトまたは内部でスイートを組み立てるための他のテストスイー
    トでなければなりません。
    後からテストケースやスイートをコレクションに付け加えるためのメソッ
    ドも提供されています。
 
+   :class:`TestSuite` は :class:`TestCase` オブジェクトのように振る舞います。
+   違いは、スイートにはテストを実装しない点にあります。代わりに、テストをまとめて
+   グループ化して、同時に実行します。 :class:`TestSuite` のインスタンスに
+   テスト追加するためのメソッドが用意されています。
 
-.. class:: TestLoader()
+   .. method:: TestSuite.addTest(test)
 
-   モジュールまたは :class:`TestCase` クラスから、指定した条件に従って
-   テストをロードし、 :class:`TestSuite` にラップして返します。このク
-   ラスは与えられたモジュールまたは :class:`TestCase` のサブクラスの中
-   から全てのテストをロードできます。
+      :class:`TestCase` 又は :class:`TestSuite` のインスタンスをスイート
+      に追加します。
 
 
-.. class:: TestResult()
+   .. method:: TestSuite.addTests(tests)
 
-   このクラスはどのテストが成功しどのテストが失敗したかの情報を集積す
-   るのに使います。
+      イテラブル *tests* に含まれる全ての :class:`TestCase` 又は
+      :class:`TestSuite` のインスタンスをスイートに追加します。
 
+      このメソッドは *test* 上のイテレーションをしながらそれぞれの要素に
+      :meth:`addTest` を呼び出すのと等価です。
+
+   :class:`TestSuite` クラスは :class:`TestCase` と以下のメソッドを共有し
+   ます。
+
+
+   .. method:: run(result)
+
+      スイート内のテストを実行し、結果を *result* で指定した結果オブジェ
+      クトに収集します。 :meth:`TestCase.run` と異なり、
+      :meth:`TestSuite.run` では必ず結果オブジェクトを指定する必要があり
+      ます。
+
+
+  .. method:: debug()
+
+      このスイートに関連づけられたテストを結果を収集せずに実行します。こ
+      れによりテストで送出された例外は呼び出し元に伝わるようになり、デバッ
+      ガの下でのテスト実行をサポートできるようになります。
+
+
+   .. method:: TestSuite.countTestCases()
+
+      このテストオブジェクトによって表現されるテストの数を返します。これ
+      には個別のテストと下位のスイートも含まれます。
+
+   .. method:: __iter__()
+
+      :class:`TestSuite` でグループ化されたテストはイテレータでアクセスできます。
+      サブクラスは :meth:`__iter__` をオーバーライドすることで、テストへのアクセスを
+      定義します。1つのメソッド内でこのメソッドは何度も呼ばれる可能性があることに注意
+      してください（例えば、テスト数のカウントと等価性の比較）。
+      そのため、イテレーションを繰り返しても同じテストを返すように実装してください。
+
+      .. versionchanged:: 2.7
+         以前のバージョンでは :class:`TestSuite` はイテレータではなく、直接テストに
+	 アクセスしていました。そのため、 :meth:`__iter__` をオーバーラードしても
+	 テストにアクセスできませんでした。
+
+   通常、 :class:`TestSuite` の :meth:`run` メソッドは
+   :class:`TestRunner` が起動するため、ユーザが直接実行する必要はありません。
+
+
+テストのロードと起動
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ .. class:: TestLoader()
+
+
+   :class:`TestLoader` クラスはクラスとモジュールからテストスイートを生成します。
+   通常、このクラスのインスタンスを明示的に生成する必要はありません。
+   :mod:`unittest` モジュールの ``unittest.defaultTestLoader`` を
+   共用インスタンスとして使用することができます。
+   しかし、このクラスのサブクラスやインスタンスで、属性をカスタマイズすることができます。
+
+   :class:`TestLoader` のオブジェクトには以下のメソッドがあります。
+
+
+   .. method:: loadTestsFromTestCase(testCaseClass)
+
+      :class:`TestCase` の派生クラス :class:`testCaseClass` に含まれる全
+      テストケースのスイートを返します。
+
+
+   .. method:: loadTestsFromModule(module)
+
+      指定したモジュールに含まれる全テストケースのスイートを返します。このメ
+      ソッドは *module* 内の :class:`TestCase` 派生クラスを検索し、見つかっ
+      たクラスのテストメソッドごとにクラスのインスタンスを作成します。
+
+      .. note::
+
+         :class:`TestCase` クラスを基底クラスとしてクラス階層を構築すると
+         fixture や補助的な関数をうまく共用することができますが、基底クラ
+         スに直接インスタンス化できないテストメソッドがあると、この
+         :meth:`loadTestsFromModule` を使うことができません。この場合でも、
+         fixture が全て別々で定義がサブクラスにある場合は使用することがで
+         きます。
+
+      モジュールが ``load_tests`` 関数を用意している場合、この関数が
+      テストのロードに使われます。これによりテストのロードをカスタマイズできます。
+      これが `load_tests protocol`_ です。
+
+      .. versionchanged:: 2.7
+         ``load_tests`` をサポートしました。
+
+   .. method:: loadTestsFromName(name, module=None)
+
+      文字列で指定される全テストケースを含むスイートを返します。
+
+      *name* には "ドット修飾名" でモジュールかテストケースクラス、テスト
+      ケースクラス内のメソッド、 :class:`TestSuite` インスタンスまたは
+      :class:`TestCase` か :class:`TestSuite` のインスタンスを返す呼び出
+      し可能オブジェクトを指定します。このチェックはここで挙げた順番に行
+      なわれます。すなわち、候補テストケースクラス内のメソッドは「呼び出
+      し可能オブジェクト」としてではなく「テストケースクラス内のメソッド」
+      として拾い出されます。
+
+      例えば :mod:`SampleTests` モジュールに :class:`TestCase` から派生し
+      た :class:`SampleTestCase` クラスがあり、 :class:`SampleTestCase`
+      にはテストメソッド :meth:`test_one` ・ :meth:`test_two` ・
+      :meth:`test_three` があるとします。この場合、 *name* に
+      ``'SampleTests.SampleTestCase'`` と指定すると、
+      :class:`SampleTestCase` の三つのテストメソッドを実行するテストスイートが
+      作成されます。 ``'SampleTests.SampleTestCase.test_two'`` と指定すれ
+      ば、 :meth:`test_two` だけを実行するテストスイートが作成されます。
+      インポートされていないモジュールやパッケージ名を含んだ名前を指定し
+      た場合は自動的にインポートされます。
+
+      また、 *module* を指定した場合、 *module* 内の *name* を取得します。
+
+
+   .. method:: loadTestsFromNames(names, module=None)
+
+      :meth:`loadTestsFromName` と同じですが、名前を一つだけ指定するので
+      はなく、複数の名前のシーケンスを指定する事ができます。戻り値は
+      *names* 中の名前で指定されるテスト全てを含むテストスイートです。
+
+
+   .. method:: getTestCaseNames(testCaseClass)
+
+      *testCaseClass* 中の全てのメソッド名を含むソート済みシーケンスを返
+      します。 *testCaseClass* は :class:`TestCase` のサブクラスでなけれ
+      ばなりません。
+
+
+
+   .. method:: discover(start_dir, pattern='test*.py', top_level_dir=None)
+
+      すべてのテストモジュールを指定された開始ディレクトリから検索して返します。
+      再帰的にサブディレクトリも検索します。 *pattern* にマッチしたテストファイルだけが
+      ロードの対象になります。（シェルスタイルのパターンマッチングが使われます。）
+      その中で、インポート可能なもジュール（つまりPythonの識別子として
+      有効であるということです）がロードされます。
+
+      すべてのテストモジュールはプロジェクトのトップレベルからインポート可能である必要が
+      あります。開始ディレクトリがトップレベルディレクトリでない場合は、
+      トップレベルディレクトリが分離できなくてはいけません。      
+
+      例えば、シンタックスエラーなどで、モジュールのインポートに失敗した場合、
+      エラーが記録され、ディスカバリ自体は続けられます。
+
+      テストパッケージ名（ :file:`__init__.py` の置かれたディレクトリ名） が
+      パターンにマッチした場合、 ``load_tests`` 関数がチェックされます。
+      この関数が存在している場合、この関数に *loader*, *tests*, *pattern* が渡され
+      呼び出されます。
+
+      load_tests が存在して、ディスカバリがパッケージ内を再帰的な検索を
+      続けている途中で *ない* 場合、 ``load_tests`` はそのパッケージ内の全ての
+      テストをロードする責務を担います。
+
+      意図的にパターンはローダの属性として保持されないようになっています。
+      それにより、パッケージが自分自身のディスカバリを続ける事ができます。
+      *top_level_dir* は保持されるため、 ``loader.discover()`` に引数として
+      渡す必要はありません。
+
+      .. versionadded:: 2.7
+
+   以下の属性は、サブクラス化またはインスタンスの属性値を変更して
+   :class:`TestLoader` をカスタマイズする場合に使用します。
+
+
+   .. attribute:: testMethodPrefix
+
+      テストメソッドの名前と判断されるメソッド名の接頭語を示す文字列。デ
+      フォルト値は ``'test'`` です。
+
+      この値は :meth:`getTestCaseNames` と全ての :meth:`loadTestsFrom\*`
+      メソッドに影響を与えます。
+
+
+   .. attribute:: sortTestMethodsUsing
+
+      :meth:`getTestCaseNames` および全ての :meth:`loadTestsFrom\*` メソッ
+      ドでメソッド名をソートする際に使用する比較関数。デフォルト値は組み
+      込み関数 :func:`cmp` です。ソートを行なわないようにこの属性に
+      :const:`None` を指定することもできます。
+
+
+   .. attribute:: suiteClass
+
+      テストのリストからテストスイートを構築する呼び出し可能オブジェクト。
+      メソッドを持つ必要はありません。デフォルト値は :class:`TestSuite`
+      です。
+
+      この値は全ての :meth:`loadTestsFrom\*` メソッドに影響を与えます。
+
+
+.. class:: TestResult
+
+   このクラスはどのテストが成功しどのテストが失敗したかという
+   情報を収集するのに使います。
+
+   :class:`TestResult` は、複数のテスト結果を記録します。
+   :class:`TestCase` クラスと :class:`TestSuite` クラスのテスト結果を正し
+   く記録しますので、テスト開発者が独自にテスト結果を管理する処理を開発す
+   る必要はありません。
+
+   :mod:`unittest` を利用したテストフレームワークでは、
+   :meth:`TestRunner.run` が返す :class:`TestResult` インスタンスを参照し、
+   テスト結果をレポートします。
+
+   以下の属性は、テストの実行結果を検査する際に使用することができます。
+
+
+   .. attribute:: errors
+
+      :class:`TestCase` と例外のトレースバック情報をフォーマットした文字
+      列の 2 要素タプルからなるリスト。それぞれのタプルは予想外の例外を送
+      出したテストに対応します。
+
+      .. versionchanged:: 2.2
+         :func:`sys.exc_info` の結果ではなく、フォーマットしたトレースバッ
+         クを保存します。
+
+
+   .. attribute:: failures
+
+      :class:`TestCase` と例外のトレースバック情報をフォーマットした文字列の
+      2 要素タプルからなるリスト。それぞれのタプルは
+      :meth:`TestCase.fail\*` や :meth:`TestCase.assert\*` メソッドを使っ
+      て見つけ出した失敗に対応します。
+
+      .. versionchanged:: 2.2
+         :func:`sys.exc_info` の結果ではなく、フォーマットしたトレースバック
+         を保存します。
+
+   .. attribute:: skipped
+
+      :class:`TestCase` インスタンスと理由の文字列の2要素タプルからなるリストを
+      保持します。
+
+      .. versionadded:: 2.7
+
+   .. attribute:: expectedFailures
+
+      :class:`TestCase` と例外のトレースバック情報をフォーマットした文字列の
+      2 要素タプルからなるリスト。それぞれのタプルは意図した失敗に対応します。
+
+   .. attribute:: unexpectedSuccesses
+
+      意図した失敗のマークが付いていながら成功してしまった :class:`TestCase` の
+      インスタンスのリスト。
+
+   .. attribute:: shouldStop
+
+      ``True`` が設定されると :meth:`stop` によりテストの実行が停止します。
+
+
+   .. attribute:: testsRun
+
+      これまでに実行したテストの総数です。
+
+
+   .. attribute:: buffer
+
+      ``True`` が設定されると、 ``sys.stdout`` と ``sys.stderr`` は、
+      :meth:`startTest` から :meth:`stopTest` が呼ばれるまでの間バッファリングされます。
+      実際に、結果が ``sys.stdout`` と ``sys.stderr`` に出力されるのは、
+      テストが失敗するかエラーが発生した時になります。表示の際には、
+      全ての失敗 / エラーメッセージが表示されます。
+
+      .. versionadded:: 2.7
+
+
+   .. attribute:: failfast
+
+      ``True`` が設定されると、 :meth:`stop` が始めの失敗もしくはエラーの時に呼び出され、
+      テストの実行が終了します。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: wasSuccessful()
+
+      これまでに実行したテストが全て成功していれば :const:`True` を、それ
+      以外なら :const:`False` を返します。
+
+
+   .. method:: stop()
+
+      このメソッドを呼び出して :class:`TestResult` の ``shouldStop`` 属性
+      に :const:`True` をセットすることで、実行中のテストは中断しなければ
+      ならないというシグナルを送ることができます。 :class:`TestRunner` オ
+      ブジェクトはこのフラグを尊重してそれ以上のテストを実行することなく
+      復帰しなければなりません。
+
+      たとえばこの機能は、ユーザのキーボード割り込みを受け取って
+      :class:`TextTestRunner` クラスがテストフレームワークを停止させるの
+      に使えます。 :class:`TestRunner` の実装を提供する対話的なツールでも
+      同じように使用することができます。
+
+   以下のメソッドは内部データ管理用のメソッドですが、対話的にテスト結果を
+   レポートするテストツールを開発する場合などにはサブクラスで拡張すること
+   ができます。
+
+
+   .. method:: startTest(test)
+   
+      *test* を実行する直前に呼び出されます。
+   
+   .. method:: stopTest(test)
+   
+      *test* の実行直後に、テスト結果に関わらず呼び出されます。
+   
+   .. method:: startTestRun(test)
+
+      全てのテストが実行される前に一度だけ実行されます。
+
+      .. versionadded:: 2.7
+
+
+   .. method:: stopTestRun(test)
+
+      全てのテストが実行された後に一度だけ実行されます。
+
+      .. versionadded:: 2.7
+   
+   .. method:: addError(test, err)
+   
+      テスト *test* 実行中に、想定外の例外が発生した場合に呼び出されます。
+      *err* は :func:`sys.exc_info` が返すタプル ``(type, value,
+      traceback)`` です。
+   
+      デフォルトの実装では、タプル、 ``(test, formatted_err)`` をインスタ
+      ンスの ``errors`` 属性に追加します。ここで、 *formatted_err* は、
+      *err* から導出される、整形されたトレースバックです。
+   
+   
+   .. method:: addFailure(test, err)
+   
+      テストが失敗した場合に呼び出されます。 *err* は
+      :func:`sys.exc_info` が返すタプル ``(type, value, traceback)`` です。
+   
+      デフォルトの実装では、タプル、 ``(test, formatted_err)`` をインスタ
+      ンスの ``errors`` 属性に追加します。ここで、 *formatted_err* は、
+      *err* から導出される、整形されたトレースバックです。
+   
+   
+   .. method:: addSuccess(test)
+   
+      テストケース *test* が成功した場合に呼び出されます。
+   
+      デフォルトの実装では何もしません。
+
+
+   .. method:: addSkip(test, reason)
+
+      *test* がスキップされた時に呼び出されます。
+      *reason* はスキップの際に渡された理由の文字列です。
+
+      デフォルトの実装では、 ``(test, reason)`` のタプルを
+      インスタンスの :attr:`skipped` 属性に追加します。
+
+
+   .. method:: addExpectedFailure(test, err)
+
+      :func:`expectedFailure` のデコレータでマークされた *test* が
+      失敗した時に呼び出されます。
+
+      デフォルトの実装では ``(test, formatted_err)`` のタプルを
+      インスタンスの :attr:`expectedFailures` に追加します。
+      ここで *formatted_err* は *err* から派生した整形されたトレースバックです。
+
+
+   .. method:: addUnexpectedSuccess(test)
+
+      :func:`expectedFailure` のデコレータでマークされた *test* が
+      成功した時に呼び出されます。
+
+      デフォルトの実装ではテストをインスタンスの :attr:`unexpectedSuccesses` 属性に
+      追加します。
 
 .. data:: defaultTestLoader
 
@@ -491,12 +1749,28 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
    ます。
 
 
-.. class:: TextTestRunner([stream[, descriptions[, verbosity]]])
+.. class:: TextTestRunner(stream=sys.stderr, descriptions=True, verbosity=1)
 
    実行結果を標準エラーに出力する、単純なテストランナー。いくつかの設
    定項目がありますが、非常に単純です。グラフィカルなテスト実行アプリ
    ケーションでは、独自のテストランナーを作成してください。
 
+   .. method:: _makeResult()
+
+      このメソッドは :meth:`run` で使われる ``TestResult`` のインスタンスを返します。
+      このメソッドは明示的に呼び出す必要はありませんが、
+      サブクラスで ``TestResult`` をカスタマイズすることができます。
+
+      ``_makeResult()`` は、 ``TextTestRunner`` のコンストラクタで
+      ``resultclass`` 引数として渡されたクラスもしくはコーラブルオブジェクトを
+      インスタンス化します。 ``resultclass`` が指定されていない場合には、
+      デフォルトで :class:`TextTestResult` が使用されます。結果のクラスは
+      以下の引数が渡されインスタンス化されます。 ::
+
+            stream, descriptions, verbosity
+
+
+.. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader[, exit[, verbosity[, failfast[, catchbreak[,buffer]]]]]]]]]])
 
 .. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader]]]]])
 
@@ -508,482 +1782,242 @@ JUnit では、多数の小さなテストケースを同じテスト環境で�
       if __name__ == '__main__':
           unittest.main()
 
+   You can run tests with more detailed information by passing in the verbosity
+   argument::
+
+      if __name__ == '__main__':
+          unittest.main(verbosity=2)
+
    引数、 *testRunner* は、test runner class、あるいは、そのインスタン
-   スのどちらでも構いません。
+   スのどちらでも構いません。でフォルトでは ``main`` はテストが成功したか失敗したかに
+   対応した終了コードと共に :func:`sys.exit` を呼び出します。
 
-場合によっては、 :mod:`doctest` モジュールを使って書かれた既存のテスト
-があります。その場合、モジュールは既存の :mod:`doctest` に基づいたテス
-トコードから :class:`unittest.TestSuite` インスタンスを自動的に構築で
-きる :class:`DocTestSuite` クラスを提供します。
+   ``main`` は、 ``exit=False`` を指定する事で対話的なインタプリタから
+   使用することもできます。この引数を指定すると、 :func:`sys.exit` を呼ばずに、
+   結果のみを出力します。 ::
 
-.. versionadded:: 2.3
+      >>> from unittest import main
+      >>> main(module='test_module', exit=False)
 
+   ``failfast``, ``catchbreak`` と ``buffer`` は、 `command-line options`_ にある
+   同名のオプションと同じ効果のあるパラメータです。
 
-.. _testcase-objects:
+   ``main`` を呼び出すと、 ``TestProgram`` のインスタンスが返されます。
+   このインスタンスは、 ``result`` 属性にテスト結果を保持します。
 
-TestCase オブジェクト
----------------------
+   .. versionchanged:: 2.7
+      ``exit``, ``verbosity``, ``failfast``, ``catchbreak`` と ``buffer``
+      パラメータが追加されました。
 
-:class:`TestCase` クラスのインスタンスは個別のテストをあらわすオブジェ
-クトですが、 :class:`TestCase` の具象サブクラスには複数のテストを定義
-する事ができます --- 具象サブクラスは、特定の fixture (テスト設備) を示し
-ている、と考えてください。 fixture は、それぞれのテストケースごとに作成・
-解放されます。
 
-:class:`TestCase` インスタンスには、次の3種類のメソッドがあります:
-テストを実行するためのメソッド・条件のチェックやテスト失敗のレポートの
-ためのメソッド・テストの情報収集に使用する問い合わせメソッドです。
+load_tests Protocol
+###################
 
-テストを実行するためのメソッドを以下に示します:
+.. versionadded:: 2.7
 
+Modules or packages can customize how tests are loaded from them during normal
+test runs or test discovery by implementing a function called ``load_tests``.
 
-.. method:: TestCase.setUp()
+If a test module defines ``load_tests`` it will be called by
+:meth:`TestLoader.loadTestsFromModule` with the following arguments::
 
-   テストを実行する直前に、 fixture を作成する為に呼び出されます。この
-   メソッドを実行中に例外が発生した場合、テストの失敗ではなくエラーと
-   されます。デフォルトの実装では何も行いません。
+    load_tests(loader, standard_tests, None)
 
+It should return a :class:`TestSuite`.
 
-.. method:: TestCase.tearDown()
+*loader* is the instance of :class:`TestLoader` doing the loading.
+*standard_tests* are the tests that would be loaded by default from the
+module. It is common for test modules to only want to add or remove tests
+from the standard set of tests.
+The third argument is used when loading packages as part of test discovery.
 
-   テストを実行し、結果を記録した直後に呼び出されます。テスト実行中に
-   例外が発生しても呼び出されますので、内部状態に注意して処理を行って
-   ください。メソッドを実行中に例外が発生した場合、テストの失敗ではな
-   くエラーとみなされます。このメソッドは、 :meth:`setUp` が正常終了し
-   た場合にはテストメソッドの実行結果に関わり無く呼び出されます。デフォ
-   ルトの実装では何も行いません。
+A typical ``load_tests`` function that loads tests from a specific set of
+:class:`TestCase` classes may look like::
 
+    test_cases = (TestCase1, TestCase2, TestCase3)
 
-.. method:: TestCase.run([result])
+    def load_tests(loader, tests, pattern):
+        suite = TestSuite()
+        for test_class in test_cases:
+            tests = loader.loadTestsFromTestCase(test_class)
+            suite.addTests(tests)
+        return suite
 
-   テストを実行し、テスト結果を *result* に指定されたテスト結果オブジェ
-   クトに収集します。 *result* が :const:`None` か省略された場合、一時
-   的な結果オブジェクトを( :meth:`defaultTestCase` メソッドを呼んで)生成
-   して使用しますが :meth:`run` の呼び出し元には渡されません。
+If discovery is started, either from the command line or by calling
+:meth:`TestLoader.discover`, with a pattern that matches a package
+name then the package :file:`__init__.py` will be checked for ``load_tests``.
 
-   このメソッドは、 :class:`TestCase` インスタンスの呼び出しと等価です。
+.. note::
 
+   The default pattern is 'test*.py'. This matches all Python files
+   that start with 'test' but *won't* match any test directories.
 
-.. method:: TestCase.debug()
+   A pattern like 'test*' will match test packages as well as
+   modules.
 
-   テスト結果を収集せずにテストを実行します。例外が呼び出し元に通知さ
-   れるため、テストをデバッガで実行することができます。
+If the package :file:`__init__.py` defines ``load_tests`` then it will be
+called and discovery not continued into the package. ``load_tests``
+is called with the following arguments::
 
-テスト結果のチェックとレポートには、以下のメソッドを使用してください。
+    load_tests(loader, standard_tests, pattern)
 
+This should return a :class:`TestSuite` representing all the tests
+from the package. (``standard_tests`` will only contain tests
+collected from :file:`__init__.py`.)
 
-.. method:: TestCase.assert_(expr[, msg])
-            TestCase.failUnless(expr[, msg])
-            TestCase.assertTrue(expr[, msg])
+Because the pattern is passed into ``load_tests`` the package is free to
+continue (and potentially modify) test discovery. A 'do nothing'
+``load_tests`` function for a test package would look like::
 
-   *expr* が偽の場合、テスト失敗を通知します。 *msg* にはエラーの説明
-    を指定するか、または :const:`None` を指定してください。
+    def load_tests(loader, standard_tests, pattern):
+        # top level directory cached on loader instance
+        this_dir = os.path.dirname(__file__)
+        package_tests = loader.discover(start_dir=this_dir, pattern=pattern)
+        standard_tests.addTests(package_tests)
+        return standard_tests
 
 
-.. method:: TestCase.assertEqual(first, second[, msg])
-            TestCase.failUnlessEqual(first, second[, msg])
 
-   *first* と *second* *expr* が等しくない場合、テスト失敗を通知します。
-   エラー内容は *msg* に指定された値か、または :const:`None` となりま
-   す。 :meth:`failUnlessEqual` では *msg* のデフォルト値は *first* と
-   *second* を含んだ文字列となりますので、 :meth:`failUnless` の第一引
-   数に比較の結果を指定するよりも便利です。
+Class and Module Fixtures
+-------------------------
 
+Class and module level fixtures are implemented in :class:`TestSuite`. When
+the test suite encounters a test from a new class then :meth:`tearDownClass`
+from the previous class (if there is one) is called, followed by
+:meth:`setUpClass` from the new class.
 
-.. method:: TestCase.assertNotEqual(first, second[, msg])
-            TestCase.failIfEqual(first, second[, msg])
+Similarly if a test is from a different module from the previous test then
+``tearDownModule`` from the previous module is run, followed by
+``setUpModule`` from the new module.
 
-   *first* と *second* *expr* が等しい場合、テスト失敗を通知します。エ
-   ラー内容は *msg* に指定された値か、または :const:`None` となります。
-   :meth:`failUnlessEqual` では *msg* のデフォルト値は *first* と
-   *second* を含んだ文字列となりますので、 :meth:`failUnless` の第一引
-   数に比較の結果を指定するよりも便利です。
+After all the tests have run the final ``tearDownClass`` and
+``tearDownModule`` are run.
 
+Note that shared fixtures do not play well with [potential] features like test
+parallelization and they break test isolation. They should be used with care.
 
-.. method:: TestCase.assertAlmostEqual(first, second[, places[, msg]])
-            TestCase.failUnlessAlmostEqual(first, second[, places[, msg]])
+The default ordering of tests created by the unittest test loaders is to group
+all tests from the same modules and classes together. This will lead to
+``setUpClass`` / ``setUpModule`` (etc) being called exactly once per class and
+module. If you randomize the order, so that tests from different modules and
+classes are adjacent to each other, then these shared fixture functions may be
+called multiple times in a single test run.
 
-   *first* と *second* を *places* (デフォルトは 7 です) で与えた小数
-   位で値を丸めて差分を計算し、ゼロと比較することで、近似的に等価であ
-   るかどうかをテストします。指定小数位の比較というものは指定有効桁数
-   の比較ではないので注意してください。
-   値の比較結果が等しくなかった場合、テストは失敗し、 *msg* で指定した
-   説明か、 :const:`None` を返します。
+Shared fixtures are not intended to work with suites with non-standard
+ordering. A ``BaseTestSuite`` still exists for frameworks that don't want to
+support shared fixtures.
 
+If there are any exceptions raised during one of the shared fixture functions
+the test is reported as an error. Because there is no corresponding test
+instance an ``_ErrorHolder`` object (that has the same interface as a
+:class:`TestCase`) is created to represent the error. If you are just using
+the standard unittest test runner then this detail doesn't matter, but if you
+are a framework author it may be relevant.
 
-.. method:: TestCase.assertNotAlmostEqual(first, second[, places[, msg]])
-            TestCase.failUnlessAlmostEqual(first, second[, places[, msg]])
 
-   *first* と *second* を *places* (デフォルトは 7 です) で与えた小数
-   位で値を丸めて差分を計算し、ゼロと比較することで、近似的に等価でな
-   いかどうかをテストします。指定小数位の比較というものは指定有効桁数
-   の比較ではないので注意してください。
-   値の比較結果が等しかった場合、テストは失敗し、 *msg* で与えた説明か、
-   :const:`None` を返します。
+setUpClass and tearDownClass
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+These must be implemented as class methods::
 
-.. method:: TestCase.assertRaises(exception, callable, ...)
-            TestCase.failUnlessRaises(exception, callable, ...)
+    import unittest
 
-   *callable* を呼び出し、発生した例外をテストします。
-   :meth:`assertRaises` には、任意の位置パラメータとキーワードパラメー
-   タを指定する事ができます。 *exception* で指定した例外が発生した場合
-   はテスト成功とし、それ以外の例外が発生するか例外が発生しない場合に
-   テスト失敗となります。複数の例外を指定する場合には、例外クラスのタ
-   プルを *exception* に指定します。
+    class Test(unittest.TestCase):
+        @classmethod
+        def setUpClass(cls):
+            cls._connection = createExpensiveConnectionObject()
 
+        @classmethod
+        def tearDownClass(cls):
+            cls._connection.destroy()
 
-.. method:: TestCase.failIf(expr[, msg])
-            TestCase.assertFalse(expr[, msg])
+If you want the ``setUpClass`` and ``tearDownClass`` on base classes called
+then you must call up to them yourself. The implementations in
+:class:`TestCase` are empty.
 
-   :meth:`failIf` は :meth:`failUnless` の逆で、 *expr* が真の場合、テ
-   スト失敗を通知します。エラー内容は *msg* に指定された値か、または
-   :const:`None` となります。
+If an exception is raised during a ``setUpClass`` then the tests in the class
+are not run and the ``tearDownClass`` is not run. Skipped classes will not
+have ``setUpClass`` or ``tearDownClass`` run. If the exception is a
+``SkipTest`` exception then the class will be reported as having been skipped
+instead of as an error.
 
 
-.. method:: TestCase.fail([msg])
+setUpModule and tearDownModule
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   無条件にテスト失敗を通知します。エラー内容は *msg* に指定された値か、
-   または :const:`None` となります。
+These should be implemented as functions::
 
+    def setUpModule():
+        createConnection()
 
-.. attribute:: TestCase.failureException
+    def tearDownModule():
+        closeConnection()
 
-   :meth:`test` メソッドが送出する例外を指定するクラス属性。テストフレー
-   ムワークで追加情報を持つ等の特殊な例外を使用する場合、この例外のサ
-   ブクラスとして作成します。この属性の初期値は :exc:`AssertionError`
-   です。
+If an exception is raised in a ``setUpModule`` then none of the tests in the
+module will be run and the ``tearDownModule`` will not be run. If the exception is a
+``SkipTest`` exception then the module will be reported as having been skipped
+instead of as an error.
 
-テストフレームワークは、テスト情報を収集するために以下のメソッドを使用
-します:
 
+Signal Handling
+---------------
 
-.. method:: TestCase.countTestCases()
+The :option:`-c/--catch <unittest -c>` command-line option to unittest,
+along with the ``catchbreak`` parameter to :func:`unittest.main()`, provide
+more friendly handling of control-C during a test run. With catch break
+behavior enabled control-C will allow the currently running test to complete,
+and the test run will then end and report all the results so far. A second
+control-c will raise a :exc:`KeyboardInterrupt` in the usual way.
 
-   テストオブジェクトに含まれるテストの数を返します。
-   :class:`TestCase` インスタンスは常に ``1`` を返します。
+The control-c handling signal handler attempts to remain compatible with code or
+tests that install their own :const:`signal.SIGINT` handler. If the ``unittest``
+handler is called but *isn't* the installed :const:`signal.SIGINT` handler,
+i.e. it has been replaced by the system under test and delegated to, then it
+calls the default handler. This will normally be the expected behavior by code
+that replaces an installed handler and delegates to it. For individual tests
+that need ``unittest`` control-c handling disabled the :func:`removeHandler`
+decorator can be used.
 
+There are a few utility functions for framework authors to enable control-c
+handling functionality within test frameworks.
 
-.. method:: TestCase.defaultTestResult()
+.. function:: installHandler()
 
-   このテストケースクラスで使われるテスト結果クラスのインスタンスを (
-   もし :meth:`run` メソッドに他の結果インスタンスが提供されないならば
-   ) 返します。
+   Install the control-c handler. When a :const:`signal.SIGINT` is received
+   (usually in response to the user pressing control-c) all registered results
+   have :meth:`~TestResult.stop` called.
 
-   :class:`TestCase` インスタンスに対しては、いつも
-   :class:`TestResult` のインスタンスですので、 :class:`TestCase` のサ
-   ブクラスでは必要に応じてこのメソッドをオーバライドしてください。
+   .. versionadded:: 2.7
 
+.. function:: registerResult(result)
 
-.. method:: TestCase.id()
+   Register a :class:`TestResult` object for control-c handling. Registering a
+   result stores a weak reference to it, so it doesn't prevent the result from
+   being garbage collected.
 
-   テストケースを特定する文字列を返します。通常、 *id* はモジュール名・
-   クラス名を含む、テストメソッドのフルネームを指定します。
+   Registering a :class:`TestResult` object has no side-effects if control-c
+   handling is not enabled, so test frameworks can unconditionally register
+   all results they create independently of whether or not handling is enabled.
 
+   .. versionadded:: 2.7
 
-.. method:: TestCase.shortDescription()
+.. function:: removeResult(result)
 
-   テストの説明を一行分、または説明がない場合には :const:`None` を返し
-   ます。デフォルトでは、テストメソッドの docstring の先頭の一行、また
-   は :const:`None` を返します。
+   Remove a registered result. Once a result has been removed then
+   :meth:`~TestResult.stop` will no longer be called on that result object in
+   response to a control-c.
 
+   .. versionadded:: 2.7
 
-.. _testsuite-objects:
+.. function:: removeHandler(function=None)
 
-TestSuite オブジェクト
-----------------------
+   When called without arguments this function removes the control-c handler
+   if it has been installed. This function can also be used as a test decorator
+   to temporarily remove the handler whilst the test is being executed::
 
-:class:`TestSuite` オブジェクトは :class:`TestCase` とよく似た動作をし
-ますが、実際のテストは実装せず、一まとめにに実行するテストのグループを
-まとめるために使用します。 :class:`TestSuite` には以下のメソッドが追加
-されています:
+      @unittest.removeHandler
+      def test_signal_handling(self):
+          ...
 
-
-.. method:: TestSuite.addTest(test)
-
-   :class:`TestCase` 又は :class:`TestSuite` のインスタンスをスイート
-   に追加します。
-
-
-.. method:: TestSuite.addTests(tests)
-
-   イテラブル *tests* に含まれる全ての :class:`TestCase` 又は
-   :class:`TestSuite` のインスタンスをスイートに追加します。
-
-   このメソッドは *test* 上のイテレーションをしながらそれぞれの要素に
-   :meth:`addTest` を呼び出すのと等価です。
-
-:class:`TestSuite` クラスは :class:`TestCase` と以下のメソッドを共有し
-ます:
-
-
-.. method:: TestSuite.run(result)
-
-   スイート内のテストを実行し、結果を *result* で指定した結果オブジェ
-   クトに収集します。 :meth:`TestCase.run` と異なり、
-   :meth:`TestSuite.run` では必ず結果オブジェクトを指定する必要があり
-   ます。
-
-
-.. method:: TestSuite.debug()
-
-   このスイートに関連づけられたテストを結果を収集せずに実行します。こ
-   れによりテストで送出された例外は呼び出し元に伝わるようになり、デバッ
-   ガの下でのテスト実行をサポートできるようになります。
-
-
-.. method:: TestSuite.countTestCases()
-
-   このテストオブジェクトによって表現されるテストの数を返します。これ
-   には個別のテストと下位のスイートも含まれます。
-
-通常、 :class:`TestSuite` の :meth:`run` メソッドは
-:class:`TestRunner` が起動するため、ユーザが直接実行する必要はありませ
-ん。
-
-
-.. _testresult-objects:
-
-TestResultオブジェクト
-----------------------
-
-:class:`TestResult` は、複数のテスト結果を記録します。
-:class:`TestCase` クラスと :class:`TestSuite` クラスのテスト結果を正し
-く記録しますので、テスト開発者が独自にテスト結果を管理する処理を開発す
-る必要はありません。
-
-:mod:`unittest` を利用したテストフレームワークでは、
-:meth:`TestRunner.run` が返す :class:`TestResult` インスタンスを参照し、
-テスト結果をレポートします。
-
-以下の属性は、テストの実行結果を検査する際に使用することができます:
-
-
-.. attribute:: TestResult.errors
-
-   :class:`TestCase` と例外のトレースバック情報をフォーマットした文字
-   列の 2 要素タプルからなるリスト。それぞれのタプルは予想外の例外を送
-   出したテストに対応します。
-
-   .. versionchanged:: 2.2
-      :func:`sys.exc_info` の結果ではなく、フォーマットしたトレースバッ
-      クを保存します。
-
-
-.. attribute:: TestResult.failures
-
-   :class:`TestCase` と例外のトレースバック情報をフォーマットした文字列の
-   2 要素タプルからなるリスト。それぞれのタプルは
-   :meth:`TestCase.fail\*` や :meth:`TestCase.assert\*` メソッドを使っ
-   て見つけ出した失敗に対応します。
-
-   .. versionchanged:: 2.2
-      :func:`sys.exc_info` の結果ではなく、フォーマットしたトレースバッ
-      クを保存します。
-
-
-.. attribute:: TestResult.testsRun
-
-   これまでに実行したテストの総数です。
-
-
-.. method:: TestResult.wasSuccessful()
-
-   これまでに実行したテストが全て成功していれば :const:`True` を、それ
-   以外なら :const:`False` を返します。
-
-
-.. method:: TestResult.stop()
-
-   このメソッドを呼び出して :class:`TestResult` の ``shouldStop`` 属性
-   に :const:`True` をセットすることで、実行中のテストは中断しなければ
-   ならないというシグナルを送ることができます。 :class:`TestRunner` オ
-   ブジェクトはこのフラグを尊重してそれ以上のテストを実行することなく
-   復帰しなければなりません。
-
-   たとえばこの機能は、ユーザのキーボード割り込みを受け取って
-   :class:`TextTestRunner` クラスがテストフレームワークを停止させるの
-   に使えます。 :class:`TestRunner` の実装を提供する対話的なツールでも
-   同じように使用することができます。
-
-以下のメソッドは内部データ管理用のメソッドですが、対話的にテスト結果を
-レポートするテストツールを開発する場合などにはサブクラスで拡張すること
-ができます。
-
-
-.. method:: TestResult.startTest(test)
-
-   *test* を実行する直前に呼び出されます。
-
-   デフォルトの実装では単純にインスタンスの ``testRun`` カウンタをインクリメントします。
-
-
-.. method:: TestResult.stopTest(test)
-
-   *test* の実行直後に、テスト結果に関わらず呼び出されます。
-
-   デフォルトの実装では何もしません。
-
-
-.. method:: TestResult.addError(test, err)
-
-   テスト *test* 実行中に、想定外の例外が発生した場合に呼び出されます。
-   *err* は :func:`sys.exc_info` が返すタプル ``(type, value,
-   traceback)`` です。
-
-   デフォルトの実装では、タプル、 ``(test, formatted_err)`` をインスタ
-   ンスの ``errors`` 属性に追加します。ここで、 *formatted_err* は、
-   *err* から導出される、整形されたトレースバックです。
-
-
-.. method:: TestResult.addFailure(test, err)
-
-   テストが失敗した場合に呼び出されます。 *err* は
-   :func:`sys.exc_info` が返すタプル ``(type, value, traceback)`` です。
-
-   デフォルトの実装では、タプル、 ``(test, formatted_err)`` をインスタ
-   ンスの ``errors`` 属性に追加します。ここで、 *formatted_err* は、
-   *err* から導出される、整形されたトレースバックです。
-
-
-.. method:: TestResult.addSuccess(test)
-
-   テストケース *test* が成功した場合に呼び出されます。
-
-   デフォルトの実装では何もしません。
-
-
-.. _testloader-objects:
-
-TestLoader オブジェクト
------------------------
-
-:class:`TestLoader` クラスは、クラスやモジュールからテストスイートを作
-成するために使用します。通常はこのクラスのインスタンスを作成する必要は
-なく、 :mod:`unittest` モジュールのモジュール属性
-``unittest.defaultTestLoader`` を共用インスタンスとして使用することが
-できます。ただ、サブクラスや別のインスタンスを活用すると設定可能なプロ
-パティをカスタマイズすることもできます。
-
-:class:`TestLoader` オブジェクトには以下のメソッドがあります:
-
-
-.. method:: TestLoader.loadTestsFromTestCase(testCaseClass)
-
-   :class:`TestCase` の派生クラス :class:`testCaseClass` に含まれる全
-   テストケースのスイートを返します。
-
-
-.. method:: TestLoader.loadTestsFromModule(module)
-
-   指定したモジュールに含まれる全テストケースのスイートを返します。このメ
-   ソッドは *module* 内の :class:`TestCase` 派生クラスを検索し、見つかっ
-   たクラスのテストメソッドごとにクラスのインスタンスを作成します。
-
-   .. warning::
-
-      :class:`TestCase` クラスを基底クラスとしてクラス階層を構築すると
-      fixture や補助的な関数をうまく共用することができますが、基底クラ
-      スに直接インスタンス化できないテストメソッドがあると、この
-      :meth:`loadTestsFromModule` を使うことができません。この場合でも、
-      fixture が全て別々で定義がサブクラスにある場合は使用することがで
-      きます。
-
-
-.. method:: TestLoader.loadTestsFromName(name[, module])
-
-   文字列で指定される全テストケースを含むスイートを返します。
-
-   *name* には "ドット修飾名" でモジュールかテストケースクラス、テスト
-   ケースクラス内のメソッド、 :class:`TestSuite` インスタンスまたは
-   :class:`TestCase` か :class:`TestSuite` のインスタンスを返す呼び出
-   し可能オブジェクトを指定します。このチェックはここで挙げた順番に行
-   なわれます。すなわち、候補テストケースクラス内のメソッドは「呼び出
-   し可能オブジェクト」としてではなく「テストケースクラス内のメソッド」
-   として拾い出されます。
-
-   例えば :mod:`SampleTests` モジュールに :class:`TestCase` から派生し
-   た :class:`SampleTestCase` クラスがあり、 :class:`SampleTestCase`
-   にはテストメソッド :meth:`test_one` ・ :meth:`test_two` ・
-   :meth:`test_three` があるとします。この場合、 *name* に
-   ``'SampleTests.SampleTestCase'`` と指定すると、
-   :class:`SampleTestCase` の三つのテストメソッドを実行するテストスイートが
-   作成されます。 ``'SampleTests.SampleTestCase.test_two'`` と指定すれ
-   ば、 :meth:`test_two` だけを実行するテストスイートが作成されます。
-   インポートされていないモジュールやパッケージ名を含んだ名前を指定し
-   た場合は自動的にインポートされます。
-
-   また、 *module* を指定した場合、 *module* 内の *name* を取得します。
-
-
-.. method:: TestLoader.loadTestsFromNames(names[, module])
-
-   :meth:`loadTestsFromName` と同じですが、名前を一つだけ指定するので
-   はなく、複数の名前のシーケンスを指定する事ができます。戻り値は
-   *names* 中の名前で指定されるテスト全てを含むテストスイートです。
-
-
-.. method:: TestLoader.getTestCaseNames(testCaseClass)
-
-   *testCaseClass* 中の全てのメソッド名を含むソート済みシーケンスを返
-   します。 *testCaseClass* は :class:`TestCase` のサブクラスでなけれ
-   ばなりません。
-
-以下の属性は、サブクラス化またはインスタンスの属性値を変更して
-:class:`TestLoader` をカスタマイズする場合に使用します。
-
-
-.. attribute:: TestLoader.testMethodPrefix
-
-   テストメソッドの名前と判断されるメソッド名の接頭語を示す文字列。デ
-   フォルト値は ``'test'`` です。
-
-   この値は :meth:`getTestCaseNames` と全ての :meth:`loadTestsFrom\*`
-   メソッドに影響を与えます。
-
-
-.. attribute:: TestLoader.sortTestMethodsUsing
-
-   :meth:`getTestCaseNames` および全ての :meth:`loadTestsFrom\*` メソッ
-   ドでメソッド名をソートする際に使用する比較関数。デフォルト値は組み
-   込み関数 :func:`cmp` です。ソートを行なわないようにこの属性に
-   :const:`None` を指定することもできます。
-
-
-.. attribute:: TestLoader.suiteClass
-
-   テストのリストからテストスイートを構築する呼び出し可能オブジェクト。
-   メソッドを持つ必要はありません。デフォルト値は :class:`TestSuite`
-   です。
-
-   この値は全ての :meth:`loadTestsFrom\*` メソッドに影響を与えます。
-
-.. % \subsection{追加エラー情報の取得
-.. % \label{unittest-error-info}}
-.. % 統合開発環境(IDE)等のアプリケーションでは、より詳細なエラー情報を使用す
-.. % る場合があります。この場合、独自の\class{TestResult}クラスの実装を使用
-.. % し、\class{TestCase}クラスの\method{defaultTestResult()}メソッドを拡張し
-.. % て必要な情報を取得する事ができます。
-.. % 以下に\class{TestResult}を拡張して例外オブジェクトとトレースバックオブジ
-.. % ェクトをそのまま格納する例を示します。(トレースバックオブジェクトを保存
-.. % すると、通常は解放されるメモリが解放されなくなり、テストの実行に影響を与
-.. % える場合がありますので注意してください。)
-.. % %begin{verbatim}
-.. % import unittest
-.. % class MyTestCase(unittest.TestCase):
-.. % def defaultTestResult(self):
-.. % return MyTestResult()
-.. % class MyTestResult(unittest.TestResult):
-.. % def __init__(self):
-.. % self.errors_tb = []
-.. % self.failures_tb = []
-.. % def addError(self, test, err):
-.. % self.errors_tb.append((test, err))
-.. % unittest.TestResult.addError(self, test, err)
-.. % def addFailure(self, test, err):
-.. % self.failures_tb.append((test, err))
-.. % unittest.TestResult.addFailure(self, test, err)
-.. % %end{verbatim}
-.. % \class{TestCase}ではなく\class{MyTestCase}をベースクラスとしたテストで
-.. % は、追加情報がテスト結果オブジェクトに格納されます。
+   .. versionadded:: 2.7
 
