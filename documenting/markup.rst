@@ -13,7 +13,7 @@ Sphinx は標準の reST マークアップに対して、たくさんのディ�
 
    これは Sphinx の拡張マークアップの機能の概要です。
    網羅された情報は `Sphinxのドキュメント
-   <http://sphinx.pocoo.org/contents.html>` にあります。
+   <http://sphinx.pocoo.org/contents.html>`_ にあります。
 
 メタ情報マークアップ (Meta-information markup)
 ------------------------------------------------
