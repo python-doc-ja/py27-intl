@@ -1810,29 +1810,30 @@ Grouping tests
       パラメータが追加されました。
 
 
-load_tests Protocol
-###################
+load_tests プロトコル
+#####################
 
 .. versionadded:: 2.7
 
-Modules or packages can customize how tests are loaded from them during normal
-test runs or test discovery by implementing a function called ``load_tests``.
+モジュールやパッケージには、 ``load_tests`` と呼ばれる関数を実装できます。
+これにより、通常のテスト実行時やテストディスカバリ時のテストのロードされ方を
+カスタマイズできます。
 
-If a test module defines ``load_tests`` it will be called by
-:meth:`TestLoader.loadTestsFromModule` with the following arguments::
+テストモジュールが ``load_tests`` を定義していると、
+それが :meth:`TestLoader.loadTestsFromModule` から呼ばれます。引数は以下です::
 
     load_tests(loader, standard_tests, None)
 
-It should return a :class:`TestSuite`.
+これは :class:`TestSuite` を返すべきです。
 
-*loader* is the instance of :class:`TestLoader` doing the loading.
-*standard_tests* are the tests that would be loaded by default from the
-module. It is common for test modules to only want to add or remove tests
-from the standard set of tests.
-The third argument is used when loading packages as part of test discovery.
+*loader* はローディングを行う :class:`TestLoader` のインスタンスです。
+*standard_tests* は、そのモジュールからデフォルトでロードされるテストです。
+これは、テストの標準セットのテストの追加や削除のみを行いたい
+テストモジュールに一般に使われます。第三引数は、パッケージをテストディスカバリの
+一部としてロードするときに使われます。
 
-A typical ``load_tests`` function that loads tests from a specific set of
-:class:`TestCase` classes may look like::
+特定の :class:`TestCase` クラスのセットからテストをロードする
+典型的な ``load_tests`` 関数は、このようになります::
 
     test_cases = (TestCase1, TestCase2, TestCase3)
 
@@ -1843,31 +1844,32 @@ A typical ``load_tests`` function that loads tests from a specific set of
             suite.addTests(tests)
         return suite
 
-If discovery is started, either from the command line or by calling
-:meth:`TestLoader.discover`, with a pattern that matches a package
-name then the package :file:`__init__.py` will be checked for ``load_tests``.
+ディスカバリが開始されると、パッケージ名にマッチするパターンを、
+コマンドラインまたは:meth:`TestLoader.discover` に与えることで、
+:file:`__init__.py` に ``load_tests`` があるか調べられます。
 
 .. note::
 
-   The default pattern is 'test*.py'. This matches all Python files
-   that start with 'test' but *won't* match any test directories.
+   デフォルトのパターンは 'test*.py' です。これは、 'test' で始まる
+   全ての Python ファイルにマッチしますが、テストディレクトリには絶対に
+   マッチ *しません* 。
 
-   A pattern like 'test*' will match test packages as well as
-   modules.
+   'test*' のようなパターンは、モジュールだけでなくテストパッケージにも
+   マッチします。
 
-If the package :file:`__init__.py` defines ``load_tests`` then it will be
-called and discovery not continued into the package. ``load_tests``
-is called with the following arguments::
+パッケージ :file:`__init__.py` が ``load_tests`` を定義していると、
+それが呼び出され、ディスカバリはそれ以上パッケージ内で続けられません。
+``load_tests`` が以下の引数で呼び出されます::
 
     load_tests(loader, standard_tests, pattern)
 
-This should return a :class:`TestSuite` representing all the tests
-from the package. (``standard_tests`` will only contain tests
-collected from :file:`__init__.py`.)
+これはパッケージ内のすべてのテストを表す :class:`TestSuite` を返すべきです。
+(``standard_tests`` には、 :file:`__init__.py` から収集されたテストのみが
+含まれます。)
 
-Because the pattern is passed into ``load_tests`` the package is free to
-continue (and potentially modify) test discovery. A 'do nothing'
-``load_tests`` function for a test package would look like::
+パターンは ``load_tests`` に渡されるので、パッケージは自由に
+テストディスカバリを継続 (必要なら変更) できます。テストパッケージに
+'何もしない' ``load_tests`` 関数は次のようになります。::
 
     def load_tests(loader, standard_tests, pattern):
         # top level directory cached on loader instance
@@ -1878,47 +1880,46 @@ continue (and potentially modify) test discovery. A 'do nothing'
 
 
 
-Class and Module Fixtures
--------------------------
+クラスとモジュールの修正
+------------------------
 
-Class and module level fixtures are implemented in :class:`TestSuite`. When
-the test suite encounters a test from a new class then :meth:`tearDownClass`
-from the previous class (if there is one) is called, followed by
-:meth:`setUpClass` from the new class.
+クラスレベルとモジュールレベルの修正が :class:`TestSuite` に実装されました。
+テストスイートが新しいクラスのテストに出会うと、以前のクラス (があれば) から
+:meth:`tearDownClass` が呼び出され、その後に新しいクラスから
+:meth:`setUpClass` が呼び出されます。
 
-Similarly if a test is from a different module from the previous test then
-``tearDownModule`` from the previous module is run, followed by
-``setUpModule`` from the new module.
+同様に、テストが以前のテストとは異なるモジュールからのテストであるとき、
+まず以前のモジュールから ``tearDownModule`` が実行され、その後に新しいモジュール
+から ``setUpModule`` が実行されます。
 
-After all the tests have run the final ``tearDownClass`` and
-``tearDownModule`` are run.
+すべてのテストが実行された後、最後の ``tearDownClass`` と ``tearDownModule``
+が実行されます。
 
-Note that shared fixtures do not play well with [potential] features like test
-parallelization and they break test isolation. They should be used with care.
+なお、共通の修正は、テストの並列化などの [潜在的な] 機能と同時には
+うまくいかず、テストの分離を中断します。気をつけて使うべきです。
 
-The default ordering of tests created by the unittest test loaders is to group
-all tests from the same modules and classes together. This will lead to
-``setUpClass`` / ``setUpModule`` (etc) being called exactly once per class and
-module. If you randomize the order, so that tests from different modules and
-classes are adjacent to each other, then these shared fixture functions may be
-called multiple times in a single test run.
+unittest テストローダによるテスト作成のデフォルトの順序では、
+同じモジュールやクラスからのテストはすべて同じグループにまとめられます。
+これにより、 ``setUpClass`` / ``setUpModule`` (など) は、一つのクラスや
+モジュールにつき一度だけ呼ばれます。この順序をバラバラにし、
+異なるモジュールやクラスのテストが並ぶようにすると、共通の修正関数は、
+一度のテストで複数回呼ばれるようにもなります。
 
-Shared fixtures are not intended to work with suites with non-standard
-ordering. A ``BaseTestSuite`` still exists for frameworks that don't want to
-support shared fixtures.
+共通の修正は、普通でない順序に合わせることを意図していません。
+共通の修正を望まないフレームワークのために、 ``BaseTestSuite`` が
+まだ存在しています。
 
-If there are any exceptions raised during one of the shared fixture functions
-the test is reported as an error. Because there is no corresponding test
-instance an ``_ErrorHolder`` object (that has the same interface as a
-:class:`TestCase`) is created to represent the error. If you are just using
-the standard unittest test runner then this detail doesn't matter, but if you
-are a framework author it may be relevant.
+共通の修正関数のいずれかの中で送出された例外があれば、そのテストはエラーとして
+報告されます。対応するテストインスタンスが無いので、(:class:`TestCase` と
+同じインタフェースの) ``_ErrorHolder`` オブジェクトが生成され、エラーを
+表します。貴方が標準 unittest テストランナーであればこの詳細は問題に
+なりませんが、貴方はそれが関係するフレームワーク作者かもしれません。
 
 
-setUpClass and tearDownClass
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setUpClass と tearDownClass
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These must be implemented as class methods::
+これらは、クラスメソッドとして実装されなければなりません::
 
     import unittest
 
@@ -1931,21 +1932,20 @@ These must be implemented as class methods::
         def tearDownClass(cls):
             cls._connection.destroy()
 
-If you want the ``setUpClass`` and ``tearDownClass`` on base classes called
-then you must call up to them yourself. The implementations in
-:class:`TestCase` are empty.
+基底クラスの ``setUpClass`` および ``tearDownClass`` を使いたいなら、
+それらを自分で呼び出さなければなりません。 :class:`TestCase` の実装は
+空です。
 
-If an exception is raised during a ``setUpClass`` then the tests in the class
-are not run and the ``tearDownClass`` is not run. Skipped classes will not
-have ``setUpClass`` or ``tearDownClass`` run. If the exception is a
-``SkipTest`` exception then the class will be reported as having been skipped
-instead of as an error.
+``setUpClass`` の中で例外が送出されたら、クラス内のテストは実行されず、
+``tearDownClass`` も実行されません。スキップされたクラスは ``setUpClass`` も
+``tearDownClass`` も実行されません。例外が ``SkipTest`` 例外であると、
+そのクラスはエラーとしてではなくスキップされたものとして報告されます。
 
 
-setUpModule and tearDownModule
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+setUpModule と tearDownModule
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-These should be implemented as functions::
+これらは、関数として実装されなければなりません::
 
     def setUpModule():
         createConnection()
@@ -1953,67 +1953,68 @@ These should be implemented as functions::
     def tearDownModule():
         closeConnection()
 
-If an exception is raised in a ``setUpModule`` then none of the tests in the
-module will be run and the ``tearDownModule`` will not be run. If the exception is a
-``SkipTest`` exception then the module will be reported as having been skipped
-instead of as an error.
+``setUpModule`` の中で例外が送出されたら、モジュール内のテストは実行されず、
+``tearDownModule`` も実行されません。例外が ``SkipTest`` 例外であると、
+そのモジュールはエラーとしてではなくスキップされたものとして報告されます。
 
 
-Signal Handling
----------------
+シグナルハンドリング
+--------------------
 
-The :option:`-c/--catch <unittest -c>` command-line option to unittest,
-along with the ``catchbreak`` parameter to :func:`unittest.main()`, provide
-more friendly handling of control-C during a test run. With catch break
-behavior enabled control-C will allow the currently running test to complete,
-and the test run will then end and report all the results so far. A second
-control-c will raise a :exc:`KeyboardInterrupt` in the usual way.
+unittest の :option:`-c/--catch <unittest -c>` コマンドラインオプションや、
+:func:`unittest.main()` の ``catchbreak`` パラメタは、テスト実行中の
+control-C の処理をよりフレンドリーにします。中断捕捉動作を有効である場合、
+control-C が押されると、現在実行されているテストまで完了され、
+そのテストランが終わると今までの結果が報告されます。control-C がもう一度
+押されると、通常通り :exc:`KeyboardInterrupt` が送出されます。
 
-The control-c handling signal handler attempts to remain compatible with code or
-tests that install their own :const:`signal.SIGINT` handler. If the ``unittest``
-handler is called but *isn't* the installed :const:`signal.SIGINT` handler,
-i.e. it has been replaced by the system under test and delegated to, then it
-calls the default handler. This will normally be the expected behavior by code
-that replaces an installed handler and delegates to it. For individual tests
-that need ``unittest`` control-c handling disabled the :func:`removeHandler`
-decorator can be used.
+シグナルハンドラを処理する control-c は、独自の :const:`signal.SIGINT`
+ハンドラをインストールするコードやテストの互換性を保とうとします。
+``unittest`` ハンドラが呼ばれ、それがインストールされた
+:const:`signal.SIGINT` ハンドラで *なければ* 、すなわちテスト中のシステムに
+置き換えられて移譲されたなら、それはデフォルトのハンドラを呼び出します。
+インストールされたハンドラを置き換えて委譲するようなコードは、
+通常その動作を期待するからです。 ``unittest`` の control-c 処理を
+無効にしたいような個別のテストには、 :func:`removeHandler` デコレータが
+使えます。
 
-There are a few utility functions for framework authors to enable control-c
-handling functionality within test frameworks.
+
+フレームワークの作者がテストフレームワーク内で control-c 処理を有効にする
+ための、いくつかのユーティリティ関数があります。
 
 .. function:: installHandler()
 
-   Install the control-c handler. When a :const:`signal.SIGINT` is received
-   (usually in response to the user pressing control-c) all registered results
-   have :meth:`~TestResult.stop` called.
+   control-c ハンドラをインストールします。(主にユーザが control-c を
+   押したことにより) :const:`signal.SIGINT` が受け取られると、
+   登録した結果すべてに :meth:`~TestResult.stop` が呼び出されます。
 
    .. versionadded:: 2.7
 
 .. function:: registerResult(result)
 
-   Register a :class:`TestResult` object for control-c handling. Registering a
-   result stores a weak reference to it, so it doesn't prevent the result from
-   being garbage collected.
+   control-c 処理のために :class:`TestResult` を登録します。結果を登録すると
+   それに対する弱参照が格納されるので、結果がガベージコレクトされるのを
+   妨げません。
 
-   Registering a :class:`TestResult` object has no side-effects if control-c
-   handling is not enabled, so test frameworks can unconditionally register
-   all results they create independently of whether or not handling is enabled.
+   control-c 処理が有効でなければ、 :class:`TestResult` オブジェクトの
+   登録には副作用がありません。ですからテストフレームワークは、
+   処理が有効か無効かにかかわらず、作成する全ての結果を無条件に登録できます。
 
    .. versionadded:: 2.7
 
 .. function:: removeResult(result)
 
-   Remove a registered result. Once a result has been removed then
-   :meth:`~TestResult.stop` will no longer be called on that result object in
-   response to a control-c.
+   登録された結果を削除します。一旦結果が削除されると、control-c が
+   押された際にその結果オブジェクトに対して :meth:`~TestResult.stop` が
+   呼び出されなくなります。
 
    .. versionadded:: 2.7
 
 .. function:: removeHandler(function=None)
 
-   When called without arguments this function removes the control-c handler
-   if it has been installed. This function can also be used as a test decorator
-   to temporarily remove the handler whilst the test is being executed::
+   引数なしで呼び出されたとき、control-c ハンドラがインストールされていると、
+   この関数はそれを取り除きます。この関数は、テストが実行されている間だけ
+   一時的にハンドラを取り除くテストデコレータとしても使えます。
 
       @unittest.removeHandler
       def test_signal_handling(self):
