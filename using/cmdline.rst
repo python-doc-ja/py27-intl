@@ -541,7 +541,6 @@ Python を起動するとき、以下のうち任意のオプションを指定�
 
 .. envvar:: PYTHONNOUSERSITE
 
-   If this is set, Python won't add the user site directory to sys.path
    この環境変数が設定されている場合、 Python はユーザー site ディレクトリを
    sys.path に追加しません。
 
