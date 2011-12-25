@@ -62,7 +62,6 @@ OpenSolaris に最新版の Python をインストールするには、 blastwav
 Python のビルド
 ===============
 
-If you want to compile CPython yourself, first thing you should do is get the
 CPython を自分でコンパイルしたい場合、最初にするべきことは
 `ソース <http://python.org/download/source/>`_ を取得することです。
 最新リリース版のソースか、新しい
@@ -89,16 +88,10 @@ Python のソースツリーのルートにある :file:`README` の中に細か
 Python に関係するパスとファイル
 ================================
 
-.. todo::
-   以下の訳に自信がない。
-   These are subject to difference depending on local installation conventions;
-   :envvar:`prefix` (``${prefix}``) and :envvar:`exec_prefix` (``${exec_prefix}``)
-   are installation-dependent and should be interpreted as for GNU software; they
-   may be the same.
-
-ローカルインストールの慣習による違いを扱うために、 :envvar:`prefix` (``${prefix}``)
-と :envvar:`exec_prefix` (``${exec_prefix}``) はインストール依存で、 GNU software
-によって解釈されます。これらは同じかもしれません。
+これらはローカルインストール時の規約に応じて変化します;
+:envvar:`prefix` (``${prefix}``) と :envvar:`exec_prefix` (``${exec_prefix}``) は
+インストール状況に依存していて、GNU ソフトウェアによって解釈されます;
+この二つは同じかもしれません。
 
 例えば、ほとんどの Linux システムでは、デフォルトでは両方が :file:`/usr` です。
 
