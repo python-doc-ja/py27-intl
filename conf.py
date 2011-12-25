@@ -39,7 +39,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 # and replace the values accordingly.
 #import patchlevel
 #version, release = patchlevel.get_version_info()
-version, release = '2.7', '2.7ja1-dev'
+version, release = '2.7', '2.7ja1'
 
 language = 'ja'
 
