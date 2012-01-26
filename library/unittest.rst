@@ -240,7 +240,7 @@ test runner (テストランナー)
    二回目の control-C は、通常通り :exc:`KeyboardInterrupt`
    の例外を発生させます。
 
-   この機能の仕組みについては、 `Signal Handling`_ を参照してください。
+   この機能の仕組みについては、 `シグナルハンドリング`_ を参照してください。
 
 .. cmdoption:: -f, --failfast
 
@@ -279,7 +279,7 @@ unittest はシンプルなテストディスカバリをサポートします�
 
 .. cmdoption:: -v, --verbose
 
-   詳細な出よr区
+   詳細な出力
 
 .. cmdoption:: -s directory
 
@@ -292,10 +292,6 @@ unittest はシンプルなテストディスカバリをサポートします�
 .. cmdoption:: -t directory
 
    プロジェクトの最上位のディスカバリのディレクトリ （デフォルトは開始のディレクトリ）
-
-The :option:`-s`, :option:`-p`, and :option:`-t` options can be passed in
-as positional arguments in that order. The following two command lines
-are equivalent::
 
 :option:`-s` 、 :option:`-p` 、および :option:`-t` の各オプションは、
 この順番で指定すれば位置固定の引数として指定する事ができます。
@@ -326,7 +322,7 @@ are equivalent::
     この場合は警告が表示されません。
 
 テストモジュールとテストパッケージは、テストのロードとディスカバリを
-カスタマイズすることができます。そのために `load_tests protocol`_ を使用します。
+カスタマイズすることができます。そのために `load_tests プロトコル`_ を使用します。
 
 
 .. _organizing-tests:
@@ -664,7 +660,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
 
 スキップしたテストの前後では、 :meth:`setUp` および :meth:`tearDown` は実行されません。
 同様に、スキップしたテストクラスの前後では、 :meth:`setUpClass` および
- :meth:`tearDownClass` は実行されません。
+:meth:`tearDownClass` は実行されません。
 
 
 .. _unittest-contents:
@@ -740,7 +736,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
         def setUpClass(cls):
             ...
 
-      詳しくは `Class and Module Fixtures`_ を参照してください。
+      詳しくは `クラスとモジュールの修正`_ を参照してください。
 
       .. versionadded:: 2.7
 
@@ -755,7 +751,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
         def tearDownClass(cls):
             ...
 
-      詳しくは `Class and Module Fixtures`_ を参照してください。
+      詳しくは `クラスとモジュールの修正`_ を参照してください。
 
       .. versionadded:: 2.7
 
@@ -1005,7 +1001,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
       *first* と *second* が近似的に等しい（等しくない）ことをテストします。
       この比較は、*places* （デフォルト7）で指定した小数位で丸めた差分を
       ゼロと比べることでおこないます。これらのメソッドは、（ :func:`round` と同様に）
-       *小数位* を指定するのであって、*有効桁数* を指定するのではないことに注意してください。
+      *小数位* を指定するのであって、*有効桁数* を指定するのではないことに注意してください。
 
       *places* の代わりに *delta* が渡された場合には、
       *first* と *second* の差分が *delta* より大きい（小さい）ことをテストします。
@@ -1449,7 +1445,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
 
       モジュールが ``load_tests`` 関数を用意している場合、この関数が
       テストのロードに使われます。これによりテストのロードをカスタマイズできます。
-      これが `load_tests protocol`_ です。
+      これが `load_tests プロトコル`_ です。
 
       .. versionchanged:: 2.7
          ``load_tests`` をサポートしました。
@@ -1772,8 +1768,6 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
 
 .. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader[, exit[, verbosity[, failfast[, catchbreak[,buffer]]]]]]]]]])
 
-.. function:: main([module[, defaultTest[, argv[, testRunner[, testLoader]]]]])
-
    テストを実行するためのコマンドラインプログラム。この関数を使えば、
    簡単に実行可能なテストモジュールを作成する事ができます。
    一番簡単なこの関数の使い方は、以下の行をテストスクリプトの最後に置
@@ -1782,8 +1776,7 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
       if __name__ == '__main__':
           unittest.main()
 
-   You can run tests with more detailed information by passing in the verbosity
-   argument::
+   より詳細な情報は verbosity 引数を指定して実行すると得られます。 ::
 
       if __name__ == '__main__':
           unittest.main(verbosity=2)
@@ -1799,8 +1792,8 @@ unittest は特定のテストメソッドやテストクラス全体をスキ�
       >>> from unittest import main
       >>> main(module='test_module', exit=False)
 
-   ``failfast``, ``catchbreak`` と ``buffer`` は、 `command-line options`_ にある
-   同名のオプションと同じ効果のあるパラメータです。
+   ``failfast``, ``catchbreak`` と ``buffer`` は、 `コマンドラインオプション`_
+   にある同名のオプションと同じ効果のあるパラメータです。
 
    ``main`` を呼び出すと、 ``TestProgram`` のインスタンスが返されます。
    このインスタンスは、 ``result`` 属性にテスト結果を保持します。
@@ -1845,7 +1838,7 @@ load_tests プロトコル
         return suite
 
 ディスカバリが開始されると、パッケージ名にマッチするパターンを、
-コマンドラインまたは:meth:`TestLoader.discover` に与えることで、
+コマンドラインまたは :meth:`TestLoader.discover` に与えることで、
 :file:`__init__.py` に ``load_tests`` があるか調べられます。
 
 .. note::
@@ -2014,7 +2007,7 @@ control-C が押されると、現在実行されているテストまで完了�
 
    引数なしで呼び出されたとき、control-c ハンドラがインストールされていると、
    この関数はそれを取り除きます。この関数は、テストが実行されている間だけ
-   一時的にハンドラを取り除くテストデコレータとしても使えます。
+   一時的にハンドラを取り除くテストデコレータとしても使えます。 ::
 
       @unittest.removeHandler
       def test_signal_handling(self):
