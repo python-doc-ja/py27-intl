@@ -839,7 +839,7 @@ xrange オブジェクトはスライス、結合、反復をサポートせず�
 
 .. index:: pair: string; methods
 
-Below ar8-bit 文字列と Unicode オブジェクトは、どちらも以下に挙げるメソッドに
+8-bit 文字列と Unicode オブジェクトは、どちらも以下に挙げるメソッドに
 対応しています。この中には、 :class:`bytearray` オブジェクトで使えるものも
 あります。
 
