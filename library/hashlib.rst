@@ -76,7 +76,7 @@ SHA1、SHA224、SHA256、SHA384およびSHA512 (FIPS 180-2 で定義されてい
 .. data:: hashlib.algorithms
 
    このモジュールによってサポートされていることが保証されるハッシュアルゴリズムの
-   名前が入ったたぷる。
+   名前が入ったタプル。
 
    .. versionadded:: 2.7
 
