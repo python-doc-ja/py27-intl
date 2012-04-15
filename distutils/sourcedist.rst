@@ -149,8 +149,6 @@ MANIFEST.in テンプレート
 それを解釈して、パッケージに含めるファイルのリストを含んだ :file:`MANIFEST`
 ファイルを生成します。
 
-This mechanism can be used when the default list of files is not enough.
-(See :ref:`manifest`).
 この機構は、デフォルトのファイルリストが十分でないときに利用できます。
 (:ref:`manifest` を参照)
 
