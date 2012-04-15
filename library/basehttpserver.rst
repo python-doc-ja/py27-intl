@@ -55,7 +55,7 @@
    リクエストに関連する情報は全て、ハンドラのインスタンス変数に記憶されています。
    サブクラスでは :meth:`__init__` メソッドを上書きしたり拡張したりする必要はありません。
 
-:class:`BaseHTTPRequestHandler` は以下のインスタンス変数を持っています:
+   :class:`BaseHTTPRequestHandler` は以下のインスタンス変数を持っています:
 
 
    .. attribute:: client_address
