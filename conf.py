@@ -41,6 +41,7 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 #version, release = patchlevel.get_version_info()
 version, release = '2.7', '2.7ja1'
 
+locale_dirs = ["locale"]
 language = 'ja'
 
 # There are two options for replacing |today|: either, you set today to some
