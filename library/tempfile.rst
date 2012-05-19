@@ -147,20 +147,6 @@
    .. versionadded:: 2.3
 
 
-.. function:: mkdtemp([suffix[, prefix[, dir]]])
-
-   可能な限り安全な方法で一時ディレクトリを作成します。ディレクトリの生成で競合条件は発生しません。ディレクトリを作成したユーザ ID だけが、このディレクトリ
-   に対して内容を読み出したり、書き込んだり、検索したりすることができます。
-
-   :func:`mkdtemp` によって作られたディレクトリとその内容が用済みになった時、にそれを消去するのはユーザの責任です。
-
-   *prefix* 、 *suffix* 、および *dir* 引数は :func:`mkstemp` のものと同じです。
-
-   :func:`mkdtemp` は新たに生成されたディレクトリの絶対パス名を返します。
-
-   .. versionadded:: 2.3
-
-
 .. function:: mkdtemp([suffix=''[, prefix='tmp'[, dir=None]]])
 
    ..
@@ -169,7 +155,7 @@
        readable, writable, and searchable only by the creating user ID.
 
    可能な限り最もセキュアな方法で、一時ディレクトリを作成します。
-   ディレクトリの作成時に、競合状態はありません。
+   ディレクトリの生成で競合条件は発生しません。
    作成されたディレクトリは、作成したユーザーIDのみで、読み込み可能で、書き込み可能で、
    検索可能です。
 
@@ -177,18 +163,18 @@
       The user of :func:`mkdtemp` is responsible for deleting the temporary
       directory and its contents when done with it.
 
-   :func:`mkdtemp` 関数のユーザーは、作成された一時ディレクトリとその中身を
-   削除する責任があります。
+   :func:`mkdtemp` によって作られたディレクトリとその内容が用済みになった時に
+   それを消去するのはユーザの責任です。
 
    ..
       The *prefix*, *suffix*, and *dir* arguments are the same as for
       :func:`mkstemp`.
 
-   *prefix*, *suffix*, *dir* 引数は :func:`mkstemp` 関数と同じです。
+   *prefix*, *suffix*, *dir* 引数は :func:`mkstemp` 関数のものと同じです。
 
    .. :func:`mkdtemp` returns the absolute pathname of the new directory.
 
-   :func:`mkdtemp` は生成したディレクトリの絶対パスを返します。
+   :func:`mkdtemp` は新たに生成されたディレクトリの絶対パス名を返します。
 
    .. versionadded:: 2.3
 
