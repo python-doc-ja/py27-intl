@@ -321,7 +321,7 @@ Windows 上で Python をコンパイルする
 CPython を自分でコンパイルしたい場合、最初にすることは
 `ソース <http://python.org/download/source/>`_ を取得することです。
 最新版リリースのソースをダウンロードするか、最新の `チェックアウト
-<http://www.python.org/dev/faq/#how-do-i-get-a-checkout-of-the-repository-read-only-and-read-write>`_
+<http://docs.python.org/devguide/setup#checking-out-the-code>`_
 を取得することができます。
 
 公式の Python リリースをビルドするのに使われている Microsoft Visual C++ コンパイラのために、

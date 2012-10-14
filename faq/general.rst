@@ -169,7 +169,7 @@ Sphinx によりフォーマットされたドキュメント、Python ライブ
 .. XXX update link once the dev faq is relocated
 
 ソースコードを手に入れてコンパイルすることの詳しい情報は
-`開発者 FAQ <http://www.python.org/dev/faq/>`__ を参照してください。
+`開発者 FAQ <http://docs.python.org/devguide/faq>`__ を参照してください。
 
 
 Python のドキュメントはどこで手に入りますか？
@@ -227,7 +227,7 @@ Python のベータテスト版はどこで手に入りますか？
 .. XXX update link once the dev faq is relocated
 
 Subversion から開発版を手に入れることもできます。
-詳細は http://www.python.org/dev/faq/ を参照してください。
+詳細は http://docs.python.org/devguide/faq を参照してください。
 
 
 Python のバグ報告やパッチを上げるにはどうしたら良いですか？

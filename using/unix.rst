@@ -66,7 +66,7 @@ CPython を自分でコンパイルしたい場合、最初にするべきこと
 `ソース <http://python.org/download/source/>`_ を取得することです。
 最新リリース版のソースか、新しい
 `チェックアウト
-<http://www.python.org/dev/faq/#how-do-i-get-a-checkout-of-the-repository-read-only-and-read-write>`_
+<http://docs.python.org/devguide/setup#getting-the-source-code>`_
 をダウンロードすることができます。
 
 ビルド手順は通常次のステップで構成されます。 ::
