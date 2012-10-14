@@ -114,7 +114,7 @@
 
 **キュー (Queue)**
 
-   :class:`Queue` クラスは :class:`Queue.Queue` クラスとほとんど同じように使うことができます。
+   :class:`~multiprocessing.Queue` クラスは :class:`Queue.Queue` クラスとほとんど同じように使うことができます。
    以下に例を示します。 ::
 
       from multiprocessing import Process, Queue
