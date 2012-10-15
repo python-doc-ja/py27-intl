@@ -465,7 +465,7 @@ pickle 化プロトコル
    変更する必要がある場合には :meth:`__getnewargs__` を定義してください。
    新スタイルクラス :class:`C` のインスタンスは、次のように生成されます。::
 
-      obj = C.__new__(C, \*args)
+      obj = C.__new__(C, *args)
 
    ここで *args* は元のオブジェクトの :meth:`__getnewargs__` メソッドを呼
    び出した時の戻り値となります。 :meth:`__getnewargs__` を定義していな
