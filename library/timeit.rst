@@ -38,9 +38,10 @@ Python Cookbook、"Algorithms" の章にある Tim Peters が書いた解説を�
       larger in this case because of the extra function calls.
 
    .. versionchanged:: 2.6
-      *stmt* と *setup* 引数は、引数なしで呼び出し可能なオブジェクトを受け取れるようになりました。
-      呼び出し可能オブジェクトを利用すると、 :meth:`timeit` メソッドから実行されるときに、
-      タイマーの中で指定されたオブジェクトの呼び出しを行ないます。
+      *stmt* と *setup* 引数は、引数なしの呼び出し可能オブジェクトも
+      受け取れるようになりました。
+      オブジェクトを与えると、そのオブジェクトへの呼び出しがタイマー関数に
+      埋め込まれ、そしてその関数が :meth:`timeit` によって実行されます。
       この場合、関数呼び出しが増えるために、オーバーヘッドが少し増えることに注意してください。
 
 .. method:: Timer.print_exc([file=None])
