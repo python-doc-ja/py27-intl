@@ -492,7 +492,7 @@ pickle 化プロトコル
 
    .. note::
 
-      新しいスタイルのクラスにおいて :meth:`__getstate__` が負値を返す
+      新しいスタイルのクラスにおいて :meth:`__getstate__` が偽値を返す
       場合、 :meth:`__setstate__` メソッドは呼ばれません。
 
 .. note::
