@@ -2613,9 +2613,9 @@ Python 2.7 では、空でない set (frozenset ではない) は、 :class:`set
 
 .. versionadded:: 2.7
 
-:class:`memoryview` オブジェクトは、Python コードが
-バッファプロトコルをコピーすることなく
-対応しているオブジェクトの内部データにアクセス出来るようにします。
+:class:`memoryview` オブジェクトは、Python コードが、バッファプロトコルを
+サポートするオブジェクトの内部データへ、コピーすることなく
+アクセスすることを可能にします。
 メモリは通常、単純なバイト列として解釈されます。
 
 .. class:: memoryview(obj)
