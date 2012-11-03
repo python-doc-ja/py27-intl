@@ -904,7 +904,7 @@ future 文の入ったモジュール :mod:`M` 内で使われている :keyword
    builtin: globals
    builtin: locals
 
-**プログラマのためのヒント:** 式の動的な評価は、組み込み関数 :func:`eval` でサポートされています組み込み関数
+**プログラマのためのヒント:** 式の動的な評価は、組み込み関数 :func:`eval` でサポートされています。組み込み関数
 :func:`globals` および :func:`locals` は、それぞれ現在のグローバル辞書とローカル辞書を返すので、
 :keyword:`exec` に渡して使うと便利です。
 
