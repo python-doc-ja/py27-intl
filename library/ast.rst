@@ -1,7 +1,7 @@
 .. _ast:
 
-抽象構文木
-==========
+:mod:`ast` --- 抽象構文木
+=========================
 
 .. module:: ast
    :synopsis: Abstract Syntax Tree classes and manipulation.
