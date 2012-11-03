@@ -9,7 +9,7 @@
 .. sectionauthor:: Georg Brandl <georg@python.org>
 
 .. versionadded:: 2.5
-   低級モジュール ``_ast`` はノード・クラスだけ含みます。
+   低級モジュール ``_ast`` はノード・クラスだけを含みます。
 
 .. versionadded:: 2.6
    高級モジュール ``ast`` は全てのヘルパーを含みます。
