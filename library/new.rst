@@ -30,10 +30,8 @@
 
 .. function:: function(code, globals[, name[, argdefs[, closure]]])
 
-   与えられたコードとグローバル変数をもつ(Python)関数を返します。 *name* を与えるならば、文字列か ``None`` でなければならない。文字列の場合は、関数は与えられた名前をもつ。そうでなければ、関数名は ``code.co_name`` から取られる。 *argdefs* を与える場合はタプルでなければならず、パラメータのデフォルト値を決めるために使われます。
+   与えられたコードとグローバル変数をもつ(Python)関数を返します。 *name* を与えるならば、文字列か ``None`` でなければなりません。文字列の場合は、関数は与えられた名前をもちます。そうでなければ、関数名は ``code.co_name`` から取られます。 *argdefs* を与える場合はタプルでなければならず、パラメータのデフォルト値を決めるために使われます。
    *closure* を与える場合は ``None`` または名前を ``code.co_freevars`` に束縛するセルオブジェクトのタプルである必要があります。
-
-   )が与えられていると、
 
 
 .. function:: code(argcount, nlocals, stacksize, flags, codestring, constants, names, varnames, filename, name, firstlineno, lnotab)
@@ -45,8 +43,8 @@
 
 .. function:: module(name[, doc])
 
-   この関数は *name* という名前の新しいモジュールオブジェクトを返します。 *name* は文字列でなければならない。省略可能な *doc*
-   引数はどんな型でもよい。
+   この関数は *name* という名前の新しいモジュールオブジェクトを返します。 *name* は文字列でなければなりません。省略可能な *doc*
+   引数は任意の型を取ることができます。
 
 
 .. function:: classobj(name, baseclasses, dict)
