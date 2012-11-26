@@ -25,12 +25,12 @@
   }
 
   function patch_url(url, new_version) {
-    var url_re = /\.org\/(\d|py3k|dev|((release\/)?\d\.\d[\w\d\.]*))\//,
-        new_url = url.replace(url_re, '.org/' + new_version + '/');
+    var url_re = /\.jp\/(\d|py3k|dev|((release\/)?\d\.\d[\w\d\.]*))\//,
+        new_url = url.replace(url_re, '.jp/' + new_version + '/');
 
     if (new_url == url && !new_url.match(url_re)) {
       // python 2 url without version?
-      new_url = url.replace(/\.org\//, '.org/' + new_version + '/');
+      new_url = url.replace(/\.jp\//, '.jp/' + new_version + '/');
     }
     return new_url;
   }
@@ -49,7 +49,7 @@
            window.location.href = new_url;
         },
         error: function() {
-           window.location.href = 'http://docs.python.org/' + selected;
+           window.location.href = 'http://docs.python.jp/' + selected;
         }
       });
     }
