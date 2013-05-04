@@ -614,6 +614,22 @@
       自動的に join されるのを防ぎます。
       詳細は :meth:`join_thread` を参照してください。
 
+.. class:: multiprocessing.queues.SimpleQueue()
+
+   It is a simplified :class:`~multiprocessing.Queue` type, very close to a locked :class:`Pipe`.
+
+   .. method:: empty()
+
+      Return ``True`` if the queue is empty, ``False`` otherwise.
+
+   .. method:: get()
+
+      Remove and return an item from the queue.
+
+   .. method:: put(item)
+
+      Put *item* into the queue.
+
 .. class:: JoinableQueue([maxsize])
 
    :class:`JoinableQueue` は :class:`~multiprocessing.Queue` のサブクラスであり、
