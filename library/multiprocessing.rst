@@ -616,19 +616,20 @@
 
 .. class:: multiprocessing.queues.SimpleQueue()
 
-   It is a simplified :class:`~multiprocessing.Queue` type, very close to a locked :class:`Pipe`.
+   単純化された :class:`~multiprocessing.Queue` 型です。
+   ロックされた :class:`Pipe` に非常に似ています。
 
    .. method:: empty()
 
-      Return ``True`` if the queue is empty, ``False`` otherwise.
+      もしキューが空ならば ``True`` を、そうでなければ ``False`` を返します。
 
    .. method:: get()
 
-      Remove and return an item from the queue.
+      キューから要素を取り除いて返します。
 
    .. method:: put(item)
 
-      Put *item* into the queue.
+      *item* をキューに追加します。
 
 .. class:: JoinableQueue([maxsize])
 
