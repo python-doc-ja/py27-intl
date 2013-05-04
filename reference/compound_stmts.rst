@@ -196,8 +196,8 @@
 
 .. versionchanged:: 2.5
    以前のバージョンの Python では、 :keyword:`try`...\ :keyword:`except`...\ :keyword:`finally`
-   が機能しませんでした。 :keyword:`try`...\ :keyword:`except` は :keyword:`try`...\
-   :keyword:`finally` 中でネストされなければいけません。.
+   は機能しませんでした。 :keyword:`try`...\ :keyword:`except` は :keyword:`try`...\
+   :keyword:`finally` 中でネストさせる必要がありました。
 
 :keyword:`except` 節は一つまたはそれ以上の例外ハンドラを指定します。 :keyword:`try`
 節内で全く例外が起きなければ、どの例外ハンドラも実行されません。 :keyword:`try` スイート内で例外が発生すると、
