@@ -243,7 +243,7 @@
    :func:`Manager` 関数が返すマネージャは :class:`list` 、 :class:`dict` 、
    :class:`Namespace` 、 :class:`Lock` 、 :class:`RLock` 、 :class:`Semaphore` 、
    :class:`BoundedSemaphore` 、 :class:`Condition` 、 :class:`Event` 、
-   :class:`Queue` 、 :class:`Value` 、 :class:`Array` をサポートします。
+   :class:`~multiprocessing.Queue` 、 :class:`Value` 、 :class:`Array` をサポートします。
    以下にサンプルコードを示します。 ::
 
       from multiprocessing import Process, Manager
@@ -475,9 +475,10 @@
 メッセージのやりとりのために :func:`Pipe` (2つのプロセス間の通信用)、
 もしくはキュー (複数プロセスがメッセージを生成、消費する通信用) を使用することができます。
 
-:class:`Queue` と :class:`JoinableQueue` は複数プロセスから生成/消費を行う FIFO キューです。
+:class:`~multiprocessing.Queue`, :class:`multiprocessing.queues.SimpleQueue`,
+:class:`JoinableQueue` は複数プロセスから生成/消費を行う FIFO キューです。
 これらのキューは標準ライブラリの :class:`Queue.Queue` を模倣しています。
-:class:`Queue` には Python 2.5 の :class:`Queue.Queue` クラスで導入された
+:class:`~multiprocessing.Queue` には Python 2.5 の :class:`Queue.Queue` クラスで導入された
 :meth:`~Queue.Queue.task_done` と :meth:`~Queue.Queue.join` メソッドがないことが違う点です。
 
 もし :class:`JoinableQueue` を使用するなら、キューから削除される各タスクのために
@@ -496,7 +497,7 @@
 
 .. warning::
 
-   :class:`Queue` を利用しようとしている最中にプロセスを
+   :class:`~multiprocessing.Queue` を利用しようとしている最中にプロセスを
    :meth:`Process.terminate` や :func:`os.kill` で終了させる場合、
    キューにあるデータは破損し易くなります。
    終了した後で他のプロセスがキューを利用しようとすると、例外を発生させる可能性があります。
@@ -536,7 +537,7 @@
    標準ライブラリの :mod:`Queue` モジュールからの通常の :exc:`Queue.Empty` や
    :exc:`Queue.Full` 例外はタイムアウトのシグナルを送るために発生します。
 
-   :class:`Queue` は :meth:`~Queue.Queue.task_done` や :meth:`~Queue.Queue.join` を除く
+   :class:`~multiprocessing.Queue` は :meth:`~Queue.Queue.task_done` や :meth:`~Queue.Queue.join` を除く
    :class:`Queue.Queue` の全てのメソッドを実装します。
 
    .. method:: qsize()
@@ -586,7 +587,7 @@
 
       ``get(False)`` と等価です。
 
-   :class:`multiprocessing.Queue` は :class:`Queue.Queue` にはない追加メソッドがあります。
+   :class:`~multiprocessing.Queue` は :class:`Queue.Queue` にはない追加メソッドがあります。
    これらのメソッドは通常、ほとんどのコードに必要ありません。
 
    .. method:: close()
@@ -615,7 +616,7 @@
 
 .. class:: JoinableQueue([maxsize])
 
-   :class:`JoinableQueue` は :class:`Queue` のサブクラスであり、
+   :class:`JoinableQueue` は :class:`~multiprocessing.Queue` のサブクラスであり、
    :meth:`task_done` や :meth:`join` メソッドが追加されているキューです。
 
    .. method:: task_done()
@@ -1582,7 +1583,7 @@ Proxy オブジェクト
 
    .. method:: map_async(func, iterable[, chunksize[, callback]])
 
-      :meth:`map` メソッドの一種で結果オブジェクトを返します。
+      :meth:`.map` メソッドの一種で結果オブジェクトを返します。
 
       *callback* が指定された場合、1つの引数を受け取って呼び出されます。
       その結果を返せるようになったときに *callback* が結果オブジェクトに対して
@@ -1593,12 +1594,12 @@ Proxy オブジェクト
 
       :func:`itertools.imap` と同じです。
 
-      *chunksize* 引数は :meth:`map` メソッドで使用されるものと同じです。
+      *chunksize* 引数は :meth:`.map` メソッドで使用されるものと同じです。
       引数 iterable がとても大きいなら *chunksize* に大きな値を指定して使用する方が
       デフォルト値の ``1`` を使用するよりもジョブの完了が **かなり** 速くなります。
 
       また *chunksize* が ``1`` の場合 :meth:`imap` メソッドが返すイテレータの
-      :meth:`next` メソッドはオプションで *timeout* パラメータを持ちます。
+      :meth:`!next` メソッドはオプションで *timeout* パラメータを持ちます。
       ``next(timeout)`` は、その結果が *timeout* 秒以内に返されないときに
       :exc:`multiprocessing.TimeoutError` を発生させます。
 
@@ -2027,7 +2028,7 @@ pickle/unpickle より継承する方が良い
 
     キューに要素を追加するプロセスは、全てのバッファされた要素が "feeder" スレッドによって
     下位層のパイプに対してフィードされるまで終了を待つということを覚えておいてください。
-    (子プロセスはこの動作を避けるためにキューの :meth:`Queue.cancel_join_thread`
+    (子プロセスはこの動作を避けるためにキューの :meth:`~multiprocessing.Queue.cancel_join_thread`
     メソッドを呼ぶことができます。)
 
     これはキューを使用するときに、キューに追加された全ての要素が最終的に
@@ -2137,7 +2138,7 @@ Windows
 Windows には :func:`os.fork` がないのでいくつか追加制限があります。
 
 さらなる pickle 化可能性
-    Process.__init__()へ渡す全ての引数は、pickle化できるものにしてください。
+    :meth:`Process.__init__` へ渡す全ての引数は、pickle化できるものにしてください。
     これはとりわけ、Windows 上で、束縛メソッドや非束縛メソッドを
     直接 ``target`` 引数として使ってはならない、ということを意味します。
     メソッドではなく、関数を使うしかないです。
