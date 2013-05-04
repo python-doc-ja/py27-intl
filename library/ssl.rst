@@ -119,7 +119,7 @@ TLS, SSL, certificates に関するより一般的な情報は、末尾にある
         *client* / **server**    **SSLv2**  **SSLv3**  **SSLv23**  **TLSv1**
        ------------------------  ---------  ---------  ----------  ---------
         *SSLv2*                    yes        no         yes         no
-        *SSLv3*                    yes        yes        yes         no
+        *SSLv3*                    no         yes        yes         no
         *SSLv23*                   yes        no         yes         no
         *TLSv1*                    no         no         yes         yes
        ========================  =========  =========  ==========  =========
