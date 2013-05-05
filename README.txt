@@ -11,6 +11,28 @@ documentation.  There's also a chapter intended to point out differences to
 those familiar with the previous docs written in LaTeX.
 
 
+日本語版ビルド
+===============
+
+virtualenv を使ってください。
+ライブラリをインストールします。
+
+.. code:: bash
+
+    $ pip install -r requirements.txt
+
+あとは下の without make と同じです。 html なら
+
+.. code:: bash
+
+    $ python tools/sphinx-build.py -bhtml . build/html
+
+TODO: Sphinx-1.2b1 を使うと versionchanged の翻訳が2回表示される問題があるので、
+その修正を待ってアップデート。 (その際 docutils のバージョンも最新に)
+
+TODO: 内田さんの Sphinx 改造版を使っているけれども、 HTMLHELP の問題が本家で直ったら
+本家のバージョンを使うことにする。あるいは HTMLHELP の日本語ビルドを正式リリースから外す。
+
 Building the docs
 =================
 
