@@ -101,6 +101,7 @@ Fredrik Lundh のページも xml.etree.ElementTree の開発バージョンの�
    ``(event, elem)`` ペアのイテレータ(:term:`iterator`)を返します。
 
    .. note::
+
       :func:`iterparse` は "start" イベントを送り出すとき\
       開始タグの ">" なる文字を見たことだけを保証しますので、
       アトリビュートは定義されますが、その時点ではテキストの内容も\

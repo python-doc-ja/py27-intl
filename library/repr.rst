@@ -7,6 +7,7 @@
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 .. note::
+
    :mod:`repr` モジュールは Python 3.0 では :mod:`reprlib` にリネームされました。
    :term:`2to3` ツールはソースコード内の import 文を自動で 3.0 に適応させます。
 

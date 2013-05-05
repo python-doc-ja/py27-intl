@@ -7,6 +7,7 @@
 .. sectionauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 
 .. note::
+
    :mod:`xmlrpclib` モジュールは、Python 3では :mod:`xmlrpc.client` にリネームされました。
    :term:`2to3` ツールは、自動的にソースコードのimportをPython 3用に修正します。
 

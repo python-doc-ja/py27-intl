@@ -12,6 +12,7 @@
    converting your sources to 3.0.
 
 .. note::
+
    :mod:`cookielib` モジュールは、Python 3では :mod:`http.cookiejar` にリネームされました。
    :term:`2to3` ツールは自動的にソースコード内のimportをPython 3用に修正します。
 

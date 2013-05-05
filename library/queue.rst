@@ -5,6 +5,7 @@
    :synopsis: 同期キュークラス
 
 .. note::
+
     :mod:`Queue` モジュールは Python 3.0 で :mod:`queue` という名前に変更されました。
     :term:`2to3` ツールは、自動的に import を変換します。
 

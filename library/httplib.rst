@@ -10,6 +10,7 @@
    your sources to 3.0.
 
 .. note::
+
    :mod:`httplib` モジュールは、Python 3.0 では :mod:`http.client` にリネームされました。
    :term:`2to3` ツールが自動的にソースコードのimportを修正します。
 

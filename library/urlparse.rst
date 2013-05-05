@@ -17,6 +17,7 @@
    your sources to 3.0.
 
 .. note::
+
    :mod:`urlparse` モジュールは Python 3 では :mod:`urllib.parse` にリネームされました。
    :term:`2to3` ツールはソースコードのimportを自動的に Python 3 用に修正します。
 

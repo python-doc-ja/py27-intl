@@ -12,6 +12,7 @@
    adapt imports when converting your sources to 3.0.
 
 .. note::
+
    :mod:`SimpleXMLRPCServer` モジュールは、Python 3では :mod:`xmlrpc.server`
    モジュールに統合されました。
    :term:`2to3` ツールが自動的にソースコード内のimportを修正します。

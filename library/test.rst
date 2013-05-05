@@ -8,6 +8,7 @@
 .. sectionauthor:: Brett Cannon <brett@python.org>
 
 .. note::
+
    :mod:`test` パッケージは、 Python の内部で使用されるためのものです。
    ドキュメントが書かれたのは Python のコア開発者の利便性を考えてのことです。
    Python の標準ライブラリ以外でこのパッケージを使用することは、
@@ -205,6 +206,7 @@ Windows上では、 :file:`PCBuild` ディレクトリから :program:`rt.bat` �
    :synopsis: Python 回帰テストのサポート
 
 .. note::
+
    :mod:`test.test_support` モジュールは、Python 3では :mod:`test.support` に
    リネームされました。
 

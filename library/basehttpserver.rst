@@ -5,6 +5,7 @@
    :synopsis: 基本的な機能を持つ HTTP サーバ  (SimpleHTTPServer および CGIHTTPServer の基底クラス)。
 
 .. note::
+
    :mod:`BaseHTTPServer` モジュールは Python 3.0 では :mod:`http.server` に統合されました。
    ソースコードを 3.0 用に変換する時は、 :term:`2to3` ツールが自動的に import を修正します。
 

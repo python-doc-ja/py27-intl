@@ -6,6 +6,7 @@
    :synopsis: 1つのインタープリタの中でのマルチスレッド制御
 
 .. note::
+
    Python 3.0 では :mod:`thread` モジュールは :mod:`_thread` に改名さ
    れました。
    :term:`2to3` ツールは、 3.0 コードへの変換時に、自動的に import 宣

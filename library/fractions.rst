@@ -91,7 +91,9 @@ Fraction インスタンスは一対の整数、他の有理数または文字�
       気を付けてください ``Fraction.from_float(0.3)`` と ``Fraction(3, 10)``
       の値は同じではありません。
 
-      .. note:: From Python 2.7 以降では、 :class:`float` から直接 
+      .. note::
+
+         From Python 2.7 以降では、 :class:`float` から直接 
          :class:`Fraction` インスタンスを構成することも出来ます。
 
 
@@ -100,7 +102,9 @@ Fraction インスタンスは一対の整数、他の有理数または文字�
       このクラスメソッドは :class:`decimal.Decimal` である *dec* の正確な値を表す
       :class:`Fraction` を構築します。
 
-      .. note:: From Python 2.7 以降では、 :class:`decimal.Decimal` から直接 
+      .. note::
+
+         From Python 2.7 以降では、 :class:`decimal.Decimal` から直接 
          :class:`Fraction` インスタンスを構成することも出来ます。
 
 

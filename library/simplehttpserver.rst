@@ -11,6 +11,7 @@
    converting your sources to 3.0.
 
 .. note::
+
    :mod:`SimpleHTTPServer` モジュールは、Python 3では :mod:`http.server` にリネームされました。
    :term:`2to3` ツールが、ソースコード内のimportを自動的にPython 3用に修正します。
 

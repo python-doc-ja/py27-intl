@@ -6,6 +6,7 @@
    :synopsis: HTML と XHTML を扱えるシンプルなパーザ。
 
 .. note::
+
     :mod:`HTMLParser` モジュールは Python 3.0 で :mod:`html.parser`
     に改名されました。
     ソースを 3.0 用に移行する際には :term:`2to3` がインポートを自動的に直してくれます。

@@ -13,6 +13,7 @@
 
 
 .. note::
+
    :mod:`urllib2` モジュールは、Python 3.0で :mod:`urllib.request`, :mod:`urllib.error`
    に分割されました。
    :term:`2to3` ツールが自動的にソースコードのimportを修正します。

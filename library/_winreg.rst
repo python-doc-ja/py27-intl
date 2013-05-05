@@ -7,6 +7,7 @@
 .. sectionauthor:: Mark Hammond <MarkH@ActiveState.com>
 
 .. note::
+
    :mod:`_winreg` モジュールは Python 3.0 では :mod:`winreg` にリネームされました。
    ソースコードを3.0用に変換するときは、 :term:`2to3` ツールが自動的に import を修正します。
 
@@ -27,6 +28,7 @@
    レジストリキーを特定します。
 
    .. note::
+
       このメソッドを使って (または :meth:`handle.Close` によって) *hkey* が
       閉じられなかった場合、Python が *hkey* オブジェクトを破壊する際に閉じられます。
 
@@ -111,6 +113,7 @@
    指定された key を削除します。
 
    .. note::
+
       :func:`DeleteKeyEx` 関数は RegDeleteKeyEx Windows API 関数を使って実装
       されています。このAPIは 64bit 版Windowsにしかありません。
       `RegDeleteKeyEx のドキュメント

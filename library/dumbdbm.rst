@@ -5,6 +5,7 @@
    :synopsis: 単純な DBM インタフェースに対する可搬性のある実装。
 
 .. note::
+
    :mod:`dumbdbm` モジュールは、 Python 3.0 では :mod:`dbm.dumb` にリネームされます。
    :term:`2to3` ツールが自動的にimportを修正します。
 

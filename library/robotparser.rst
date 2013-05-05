@@ -20,6 +20,7 @@
    your sources to 3.0.
 
 .. note::
+
    :mod:`robotparser` モジュールは、 Python 3.0 では :mod:`urllib.robotparser`
    にリネームされました。
    :term:`2to3` ツールが自動的にソースコードの import を修正します。
