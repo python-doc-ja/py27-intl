@@ -3,12 +3,16 @@
     Sphinx - Python documentation toolchain
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    :copyright: 2007 by Georg Brandl.
+    :copyright: 2007-2010 by Georg Brandl.
     :license: Python license.
 """
 
 import os
 import sys
+import warnings
+
+# Get rid of UserWarnings reported by pkg_resources.
+warnings.filterwarnings('ignore', category=UserWarning, module='jinja2')
 
 _sphinx_path = os.path.dirname(os.path.abspath(__file__)) + '/sphinx'
 if os.path.isdir(_sphinx_path):
