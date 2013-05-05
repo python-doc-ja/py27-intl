@@ -805,6 +805,7 @@ Python ソース配布物内の使用例を見てください。
    この関数を呼び出したスレッドがすでにロックを獲得している場合、デッドロックに陥ります。
 
    .. warning::
+
       この関数は現在のスレッド状態を変更しません。代わりに
       :c:func:`PyEval_RestoreThread` か :c:func:`PyEval_AcquireThread` を利用してください。
 
@@ -813,6 +814,7 @@ Python ソース配布物内の使用例を見てください。
    GILを解放します。ロックは前もって作成されていなければなりません。
 
    .. warning::
+
       この関数は現在のスレッド状態を変更しません。代わりに
       :c:func:`PyEval_SaveThread` か :c:func:`PyEval_ReleaseThread` を利用してください。
 
