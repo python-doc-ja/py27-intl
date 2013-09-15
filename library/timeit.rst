@@ -19,11 +19,11 @@
 Python Cookbook、"Algorithms" の章にある Tim Peters が書いた解説を参照してください。
 
 
-Basic Examples
+基本的な例
 --------------
 
-The following example shows how the :ref:`command-line-interface`
-can be used to compare three different expressions:
+次の例は、3つの異なる式を比較するために :ref:`command-line-interface` を
+使う方法を示します:
 
 .. code-block:: sh
 
@@ -34,7 +34,7 @@ can be used to compare three different expressions:
    $ python -m timeit '"-".join(map(str, range(100)))'
    10000 loops, best of 3: 25.2 usec per loop
 
-This can be achieved from the :ref:`python-interface` with::
+これは、次のように :ref:`python-interface` を使って達成することができます::
 
    >>> import timeit
    >>> timeit.timeit('"-".join(str(n) for n in range(100))', number=10000)
@@ -44,17 +44,17 @@ This can be achieved from the :ref:`python-interface` with::
    >>> timeit.timeit('"-".join(map(str, range(100)))', number=10000)
    0.5858950614929199
 
-Note however that :mod:`timeit` will automatically determine the number of
-repetitions only when the command-line interface is used.  In the
-:ref:`timeit-examples` section you can find more advanced examples.
+ただし、 :mod:`timeit` が自動的に反復の回数を決定するのはコマンドライン
+インターフェースを使った時だけということに注意してください。
+:ref:`timeit-examples` の節にはより高度な例があります。
 
 
 .. _python-interface:
 
-Python Interface
-----------------
+Python インターフェース
+-----------------------
 
-The module defines three convenience functions and a public class:
+このモジュールには3つの便利関数と1つの公開クラスが定義されています。
 
 
 .. function:: timeit(stmt='pass', setup='pass', timer=<default timer>, number=1000000)
@@ -82,13 +82,14 @@ The module defines three convenience functions and a public class:
 
 .. function:: default_timer()
 
-   Define a default timer, in a platform-specific manner.  On Windows,
-   :func:`time.clock` has microsecond granularity, but :func:`time.time`'s
-   granularity is 1/60th of a second.  On Unix, :func:`time.clock` has 1/100th of
-   a second granularity, and :func:`time.time` is much more precise.  On either
-   platform, :func:`default_timer` measures wall clock time, not the CPU
-   time.  This means that other processes running on the same computer may
-   interfere with the timing.
+   プラットフォーム依存の方法でデフォルトのタイマを定義します。
+   Windows の場合、 :func:`time.clock` はマイクロ秒の精度がありますが、
+   :func:`time.time` は 1/60 秒の精度しかありません。
+   一方 Unixの場合、 :func:`time.clock` でも 1/100 秒の精度があり、
+   :func:`time.time` はもっと正確です。いずれのプラットフォームにおいても、
+   デフォルトのタイマ関数は CPU 時間ではなく通常の時間 (wall clock time) を返します。
+   つまり、同じコンピュータ上で別のプロセスが動いている場合、
+   測定に干渉する可能性があるということです。
 
 
 .. class:: Timer(stmt='pass', setup='pass', timer=<timer function>)
@@ -118,7 +119,7 @@ The module defines three convenience functions and a public class:
 
    .. method:: Timer.timeit(number=1000000)
 
-      メイン文の実行時間を *number* 回取得します。このメソッドはセットアップ文を1回だけ実行し、メイン文を指定回数実行するのにかかった秒数を浮動小数で返します。
+      メイン文を *number* 回実行した時間を計測します。このメソッドはセットアップ文を1回だけ実行し、メイン文を指定回数実行するのにかかった秒数を浮動小数で返します。
       引数はループを何回実行するかの指定で、デフォルト値は 100万回です。メイン文、セットアップ文、タイマ関数はコンストラクタで指定されたものを使用します。
 
       .. note::
@@ -209,23 +210,25 @@ The module defines three convenience functions and a public class:
 この複数行のオプションは  :option:`-s` においても同じ形式で指定可能です。
 
 オプション :option:`-n` でループの回数が指定されていない場合、10回から始めて、
-所要時間が 0.2 秒になるまで回数を増やすことで適切なループ回数が\
+所要時間が 0.2 秒になるまで回数を増やすことで適切なループ回数が
 自動計算されるようになっています。
 
-:func:`default_timer` measurations can be affected by other programs running on
-the same machine, so
-the best thing to do when accurate timing is necessary is to repeat
-the timing a few times and use the best time.  The :option:`-r` option is good
-for this; the default of 3 repetitions is probably enough in most cases.  On
-Unix, you can use :func:`time.clock` to measure CPU time.
+:func:`default_timer` の結果は同じコンピュータ上で動作している別の
+プロセスに影響を受けることがあります。そのため、正確な時間を計測する必要が
+ある場合に最善の方法は、時間の取得を数回くり返してその中の最短の時間を
+採用することです。 :option:`-r` オプションはこれをおこなうもので、
+デフォルトのくり返し回数は3回になっています。多くの場合はデフォルトのままで
+充分でしょう。 Unix の場合 :func:`time.clock` を使って CPU 時間で測定
+することもできます。
 
 .. note::
 
-   pass 文の実行による基本的なオーバーヘッドが存在することに注意してください。ここにあるコードはこの事実を隠そうとはしておらず、注意を払う
-   必要があります。基本的なオーバーヘッドは引数なしでプログラムを起動することにより計測できます。
-   基本的なオーバヘッドは Python のバージョンによって異なります。
+   pass 文の実行による基本的なオーバーヘッドが存在することに注意してください。
+   ここにあるコードはこの事実を隠そうとはしていませんが、注意する必要があります。
+   基本的なオーバーヘッドは引数なしでプログラムを起動することにより計測でき、
+   それは Python のバージョンによって異なるでしょう。
    Python 2.3 とそれ以前の Python の公平な比較をおこなう場合、
-   古い方の Python は  :option:`-O` オプションで起動し
+   古い Python では :option:`-O` オプションを付けて起動して
    ``SET_LINENO`` 命令の実行時間が含まれないようにする必要があります。
 
 
@@ -234,7 +237,7 @@ Unix, you can use :func:`time.clock` to measure CPU time.
 使用例
 ------
 
-It is possible to provide a setup statement that is executed only once at the beginning:
+最初に一回だけ実行されるセットアップ文を提供することが可能です:
 
 .. code-block:: sh
 
@@ -251,7 +254,7 @@ It is possible to provide a setup statement that is executed only once at the be
    >>> timeit.timeit('text.find(char)', setup='text = "sample string"; char = "g"')
    1.7246671520006203
 
-The same can be done using the :class:`Timer` class and its methods::
+同じことは :class:`Timer` クラスとそのメソッドを使用して行うこともできます::
 
    >>> import timeit
    >>> t = timeit.Timer('char in text', setup='text = "sample string"; char = "g"')
@@ -261,9 +264,10 @@ The same can be done using the :class:`Timer` class and its methods::
    [0.40193588800002544, 0.3960157959998014, 0.39594301399984033]
 
 
-The following examples show how to time expressions that contain multiple lines.
-Here we compare the cost of using :func:`hasattr` vs. :keyword:`try`/:keyword:`except`
-to test for missing and present object attributes:
+以下の例は、複数行を含んだ式を計測する方法を示しています。
+ここでは、オブジェクトの存在する属性と存在しない属性に対してテストするために
+:func:`hasattr` と :keyword:`try`/:keyword:`except` を使用した場合のコストを
+比較しています:
 
 .. code-block:: sh
 
