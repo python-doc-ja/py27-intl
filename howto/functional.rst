@@ -862,7 +862,7 @@ itertools モジュール
     itertools.cycle([1,2,3,4,5]) =>
       1, 2, 3, 4, 5, 1, 2, 3, 4, 5, ...
 
-``itertools.repeat(elem, [n])`` は、差し出された要素を ``n``
+``itertools.repeat(elem, [n])`` は、与えられた要素を ``n``
 回返しますが、 ``n`` がなければ永遠に返し続けます。 ::
 
     itertools.repeat('abc') =>
