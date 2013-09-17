@@ -81,7 +81,7 @@
 .. c:function:: int PyFloat_ClearFreeList()
 
    float の free list をクリアします。
-   開放できなかったアイテム数を返します。
+   解放できなかったアイテム数を返します。
 
    .. versionadded:: 2.6
 

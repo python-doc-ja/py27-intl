@@ -1,5 +1,5 @@
-:mod:`email`: イテレータ
-------------------------
+:mod:`email.iterators`: イテレータ
+----------------------------------
 
 .. module:: email.iterators
    :synopsis: メッセージオブジェクトツリーをたどる。
