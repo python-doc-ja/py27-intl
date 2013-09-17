@@ -117,6 +117,6 @@
 .. c:function:: int PyInt_ClearFreeList()
 
    整数の free list をクリアします。
-   開放できなかった要素の数を返します。
+   解放できなかった要素の数を返します。
 
    .. versionadded:: 2.6

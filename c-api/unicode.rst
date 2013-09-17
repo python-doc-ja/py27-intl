@@ -90,7 +90,7 @@ UCS2 と UCS4 の Python ビルドの間にはバイナリ互換性がないこ�
 .. c:function:: int PyUnicode_ClearFreeList()
 
    free list をクリアします。
-   開放できなかった要素数を返します。
+   解放できなかった要素数を返します。
 
    .. versionadded:: 2.6
 

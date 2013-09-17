@@ -66,7 +66,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    *p* に関連付けられたファイルオブジェクトを :c:type:`FILE\*` で返します。
 
-   呼び出し側が :term:`GIL` を開放している間もこの関数が返した :c:type:`FILE\*`
+   呼び出し側が :term:`GIL` を解放している間もこの関数が返した :c:type:`FILE\*`
    オブジェクトを使うのであれば、以下に解説されている :c:func:`PyFile_IncUseCount`
    と :c:func:`PyFile_DecUseCount` 関数を適切に呼び出さなければなりません。
 
@@ -83,7 +83,7 @@ Python の組み込みファイルオブジェクトは、全て標準 C ライ�
 
    この関数を呼び出すときは、 :term:`GIL` を取得していなければなりません。
 
-   例えば、 :c:func:`PyFile_AsFile` を呼び出した後、GILを開放する前に
+   例えば、 :c:func:`PyFile_AsFile` を呼び出した後、GILを解放する前に
    この関数を呼び出します。 ::
 
       FILE *fp = PyFile_AsFile(p);

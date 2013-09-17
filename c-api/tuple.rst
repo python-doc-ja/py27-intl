@@ -140,6 +140,6 @@
 .. c:function:: int PyTuple_ClearFreeList()
 
    free list をクリアします。
-   開放したアイテム数を返します。
+   解放したアイテム数を返します。
 
    .. versionadded:: 2.6
