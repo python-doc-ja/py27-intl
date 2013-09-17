@@ -324,6 +324,8 @@ http://www.pythoncraft.com/OSCON2001/ を参照してください。
 
 実行時には、以下のように出力されます:
 
+.. code-block:: none
+
    Running worker
    Running worker
    Running worker
