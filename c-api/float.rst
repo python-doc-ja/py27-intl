@@ -50,6 +50,11 @@
 .. c:function:: double PyFloat_AsDouble(PyObject *pyfloat)
 
    *pyfloat* の指す値を、 C の :c:type:`double` 型表現で返します。
+   *pyfloat* が Python 浮動小数点オブジェクトではなく、かつ
+   :meth:`__float__` メソッドを持っていれば、 *pyfloat* を浮動小数点に
+   変換するためにこのメソッドが最初に呼ばれます。失敗した場合 ``-1.0``
+   を返します。そのため呼び出し元は :c:func:`PyErr_Occurred` を呼んで
+   エラーをチェックすべきです。
 
 
 .. c:function:: double PyFloat_AS_DOUBLE(PyObject *pyfloat)
