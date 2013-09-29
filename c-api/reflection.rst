@@ -37,7 +37,7 @@
 .. c:function:: int PyEval_GetRestricted()
 
    現在のフレームがありそれが制限モードで実行していた場合、真を返します。
-   それ以外の場合は僞を返します。
+   それ以外の場合は偽を返します。
 
 
 .. c:function:: const char* PyEval_GetFuncName(PyObject *func)
