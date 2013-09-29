@@ -37,7 +37,7 @@
 
 .. c:function:: PyObject* PyDict_New()
 
-   *p* が辞書型オブジェクトで、かつ辞書型のサブタイプのインスタンスでない場合に真を返します。
+   空の新たな辞書を返します。失敗すると *NULL* を返します。
 
 
 .. c:function:: PyObject* PyDictProxy_New(PyObject *dict)
