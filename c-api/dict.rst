@@ -110,22 +110,16 @@
 .. c:function:: PyObject* PyDict_Items(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`item` のように、辞書内の全ての要素対が入った :c:type:`PyListObject` を返します。
-   (:meth:`items` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
-   参照してください。)
 
 
 .. c:function:: PyObject* PyDict_Keys(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`keys` のように、辞書内の全てのキーが入った :c:type:`PyListObject` を返します。
-   (:meth:`keys` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
-   参照してください。)
 
 
 .. c:function:: PyObject* PyDict_Values(PyObject *p)
 
    辞書オブジェクトのメソッド :meth:`values` のように、辞書内の全ての値が入った :c:type:`PyListObject` を返します。
-   (:meth:`values` については Python ライブラリリファレンス (XXX reference: ../lib/lib.html) を
-   参照してください。)
 
 
 .. c:function:: Py_ssize_t PyDict_Size(PyObject *p)
