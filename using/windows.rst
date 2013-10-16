@@ -251,7 +251,6 @@ administrative rights):
       ftype Python.File=C:\Path\to\pythonw.exe "%1" %*
 
 
-Additional modules
 追加のモジュール
 =================
 
