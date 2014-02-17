@@ -112,4 +112,4 @@ Python オブジェクトとしての複素数型
 .. c:function:: Py_complex PyComplex_AsCComplex(PyObject *op)
 
    複素数値 *op* から :c:type:`Py_complex` 型を生成します。
-
+   失敗時は実数としての -1.0 を返します。
