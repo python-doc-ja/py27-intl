@@ -757,7 +757,7 @@ Cygwinに移植されたWindows用の GNU C コンパイラ向けです。さら
 .. function:: newer_pairwise(sources, targets)
 
    ふたつのファイル名リストを並列に探索して、それぞれのソースが対応するターゲットより
-   新しいかをテストします。 :func:`newer` の意味でターゲットよりソースが新しいペアのリスト(*sources*,*targets*)を返します。
+   新しいかをテストします。 :func:`newer` の意味でターゲットよりソースが新しいペアのリスト(*sources*, *targets*)を返します。
 
    .. % % equivalent to a listcomp...
 
