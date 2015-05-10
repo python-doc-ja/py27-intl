@@ -352,7 +352,7 @@ FTP_TLS オブジェクト
 
 .. attribute:: FTP_TLS.ssl_version
 
-   使用する SSL のバージョン (デフォルトは *TLSv1*) です。
+   使用する SSL のバージョン (デフォルトは :attr:`ssl.PROTOCOL_SSLv23`) です。
 
 .. method:: FTP_TLS.auth()
 
