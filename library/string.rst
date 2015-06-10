@@ -701,7 +701,7 @@ align オプションは意味を持ちません。
    いるわけではありません。
 
 
-Templateの使い方の例を以下に示します:
+Templateの使い方の例を以下に示します::
 
    >>> from string import Template
    >>> s = Template('$who likes $what')
