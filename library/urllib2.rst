@@ -67,7 +67,7 @@
 .. function:: install_opener(opener)
 
    指定された :class:`OpenerDirector` のインスタンスを、デフォルトで利用されるグローバルの opener としてインストールします。
-   opener のインストールは、 urlopen にその opener を使って欲しいとき以外必要ありません。普段は単に :func:`~urllib.request.urlopen` の代わりに :meth:`OpenerDirector.open` を利用してください。
+   opener のインストールは、 urlopen にその opener を使って欲しいとき以外必要ありません。普段は単に :func:`urlopen` の代わりに :meth:`OpenerDirector.open` を利用してください。
    この関数は引数が本当に :class:`OpenerDirector` のインスタンスであるかどうかはチェックしません。適切なインタフェースを持った任意のクラスを利用することができます。
 
 
