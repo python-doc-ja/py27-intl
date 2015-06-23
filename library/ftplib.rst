@@ -19,8 +19,7 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
 
    >>> from ftplib import FTP
    >>> ftp = FTP('ftp.cwi.nl')   # ホストのデフォルトポートへ接続
-   >>> ftp.login()               # ユーザ名 anonymous、パスワード anonyumou
-   s@
+   >>> ftp.login()               # ユーザ名 anonymous、パスワード anonyumous@
    >>> ftp.retrlines('LIST')     # ディレクトリの内容をリストアップ
    total 24418
    drwxrwsr-x   5 ftp-usr  pdmaint     1536 Mar 20 09:48 .
