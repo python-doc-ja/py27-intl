@@ -43,76 +43,76 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
    :class:`Calendar` インスタンスには以下のメソッドがあります。
 
 
-.. method:: iterweekdays(weekday)
+   .. method:: iterweekdays(weekday)
 
-      曜日の数字を一週間分生成するイテレータを返します。
-      イテレータから得られる最初の数字は :meth:`firstweekday`
-      が返す数字と同じになります。
+         曜日の数字を一週間分生成するイテレータを返します。
+         イテレータから得られる最初の数字は :meth:`firstweekday`
+         が返す数字と同じになります。
 
-      .. % firstweekday は属性
-      .. % getfirstweekday() の謂いか
-
-
-.. method:: itermonthdates(year, month)
-
-      *year* 年 *month* 月に対するイテレータを返します。
-      このイテレータはその月の全ての日(:class:`datetime.date`
-      オブジェクトとして) およびその前後の日で週に欠けが無いようにするのに必要な日を返します。
+         .. % firstweekday は属性
+         .. % getfirstweekday() の謂いか
 
 
-.. method:: itermonthdays2(year, month)
+   .. method:: itermonthdates(year, month)
 
-      *year* 年 *month* 月に対する :meth:`itermonthdates` と同じような
-      イテレータを返します。生成されるのは日付の数字と曜日を表す数字のタプルです。
-
-
-.. method:: itermonthdays(year, month)
-
-      *year* 年 *month* 月に対する :meth:`itermonthdates` と同じようなイテレータを返します。
-      生成されるのは日付の数字だけです。
+         *year* 年 *month* 月に対するイテレータを返します。
+         このイテレータはその月の全ての日(:class:`datetime.date`
+         オブジェクトとして) およびその前後の日で週に欠けが無いようにするのに必要な日を返します。
 
 
-.. method:: monthdatescalendar(year, month)
+   .. method:: itermonthdays2(year, month)
 
-      *year* 年 *month* 月の週のリストを返します。
-      週は全て七つの :class:`datetime.date` オブジェクトからなるリストです。
-
-
-.. method:: monthdays2calendar(year, month)
-
-      *year* 年 *month* 月の週のリストを返します。
-      週は全て七つの日付の数字と曜日を表す数字のタプルからなるリストです。
+         *year* 年 *month* 月に対する :meth:`itermonthdates` と同じような
+         イテレータを返します。生成されるのは日付の数字と曜日を表す数字のタプルです。
 
 
-.. method:: monthdayscalendar(year, month)
+   .. method:: itermonthdays(year, month)
 
-      *year* 年 *month* 月の週のリストを返します。
-      週は全て七つの日付の数字からなるリストです。
-
-
-.. method:: yeardatescalendar(year[, width])
-
-      指定された年のデータを整形に向く形で返します。
-      返される値は月の並びのリストです。
-      月の並びは最大で *width* ヶ月(デフォルトは3ヶ月)分です。
-      各月は4ないし6週からなり、各週は1ないし7日からなります。
-      各日は :class:`datetime.date` オブジェクトです。
+         *year* 年 *month* 月に対する :meth:`itermonthdates` と同じようなイテレータを返します。
+         生成されるのは日付の数字だけです。
 
 
-.. method:: yeardays2calendar(year[, width])
+   .. method:: monthdatescalendar(year, month)
 
-      指定された年のデータを整形に向く形で返します
-      (:meth:`yeardatescalendar` と同様です)。
-      週のリストの中が日付の数字と曜日の数字のタプルになります。
-      月の範囲外の部分の日付はゼロです。
+         *year* 年 *month* 月の週のリストを返します。
+         週は全て七つの :class:`datetime.date` オブジェクトからなるリストです。
 
 
-.. method:: yeardayscalendar(year[, width])
+   .. method:: monthdays2calendar(year, month)
 
-      指定された年のデータを整形に向く形で返します
-      (:meth:`yeardatescalendar` と同様です)。
-      週のリストの中が日付の数字になります。
-      月の範囲外の日付はゼロです。
+         *year* 年 *month* 月の週のリストを返します。
+         週は全て七つの日付の数字と曜日を表す数字のタプルからなるリストです。
+
+
+   .. method:: monthdayscalendar(year, month)
+
+         *year* 年 *month* 月の週のリストを返します。
+         週は全て七つの日付の数字からなるリストです。
+
+
+   .. method:: yeardatescalendar(year[, width])
+
+         指定された年のデータを整形に向く形で返します。
+         返される値は月の並びのリストです。
+         月の並びは最大で *width* ヶ月(デフォルトは3ヶ月)分です。
+         各月は4ないし6週からなり、各週は1ないし7日からなります。
+         各日は :class:`datetime.date` オブジェクトです。
+
+
+   .. method:: yeardays2calendar(year[, width])
+
+         指定された年のデータを整形に向く形で返します
+         (:meth:`yeardatescalendar` と同様です)。
+         週のリストの中が日付の数字と曜日の数字のタプルになります。
+         月の範囲外の部分の日付はゼロです。
+
+
+   .. method:: yeardayscalendar(year[, width])
+
+         指定された年のデータを整形に向く形で返します
+         (:meth:`yeardatescalendar` と同様です)。
+         週のリストの中が日付の数字になります。
+         月の範囲外の日付はゼロです。
 
 
 .. class:: TextCalendar([firstweekday])
