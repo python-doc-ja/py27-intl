@@ -975,11 +975,12 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: property([fget[, fset[, fdel[, doc]]]])
 
    :term:`new-style class` (新しい形式のクラス) (:class:`object` から
-   派生したクラス) におけるプロパティ属性を返します。
+   派生したクラス) における property 属性を返します。
 
-   *fget* は属性値を取得するための関数で、同様に *fset* は属性値を設定
-   するための関数です。また、 *fdel* は属性を削除するための関数です。
-   以下に属性 ``x`` を扱う典型的な利用法を示します。::
+   *fget* は属性値を取得するための関数で、同様に *fset* は設定するための関数、
+   *fdel* は削除するための関数です。
+
+   典型的な使用法は、属性 ``x`` の処理の定義です::
 
       class C(object):
           def __init__(self):
@@ -987,20 +988,23 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 
           def getx(self):
               return self._x
+
           def setx(self, value):
               self._x = value
+
           def delx(self):
               del self._x
+
           x = property(getx, setx, delx, "I'm the 'x' property.")
 
    もし *c* が *C* のインスタンスならば、 ``c.x`` は getter を呼び出し、
-   ``c.x = value`` は setter を、 ``del c.x`` は deleter を呼び出します。 
+   ``c.x = value`` は setter を、 ``del c.x`` は deleter を呼び出します。
 
-   *doc* がもし与えられたならばそれがプロパティ属性のドキュメント文字
-   列になります。与えられない場合、プロパティは *fget* のドキュメント
-   文字列(もしあれば)をコピーします。これにより、読み取り専用プロパティを
-   :func:`property` を :term:`decorator` (デコレータ)として使って
-   容易に作れるようになります。::
+   *doc* がもし与えられたならばそれが property 属性のドキュメント文字
+   列になります。与えられなければ、 property は *fget* のドキュメント
+   文字列(もしあれば)をコピーします。そのため、 :func:`property` を
+   デコレータ (:term:`decorator`) として使えば、
+   読み取り専用 property を作るのは容易です::
 
       class Parrot(object):
           def __init__(self):
@@ -1011,14 +1015,15 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
               """Get the current voltage."""
               return self._voltage
 
-   のようにすると、 :meth:`voltage` が同じ名前の読み取り専用属性の
-   "getter" になります。
+   ``@property`` デコレータは :meth:`voltage` を同じ名前のまま
+   読み取り専用属性の "getter" にし、voltage のドキュメント文字列を
+   “Get the current voltage.” に設定します。
 
-   property オブジェクトは :attr:`getter`, :attr:`setter`, :attr:`deleter`
-   メソッドを持っています。
-   これらのメソッドは、元の property に加えて、デコレートした関数を対応する
-   アクセッサに設定した property を作成します。
-   これを説明するには、以下の例が最適でしょう。::
+   property オブジェクトは :attr:`~property.getter`, :attr:`~property.setter`,
+   :attr:`~property.deleter` メソッドを持っています。
+   これらのメソッドをデコレータとして使うと、対応するアクセサ関数が
+   デコレートされた関数に設定された、 property のコピーを作成できます。
+   これを一番分かりやすく説明する例があります::
 
       class C(object):
           def __init__(self):
@@ -1037,11 +1042,11 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
           def x(self):
               del self._x
 
-   このコードは、最初の例と等価です。追加の関数に、元々の属性と同じ名
-   前 (この例では、 ``x`` です) を与えることに注意して下さい。
+   このコードは、最初の例と等価です。追加の関数には必ず、元々の属性と同じ名
+   前 (この例では ``x``) を与えて下さい。
 
-   返される属性も、コンストラクタの引数を反映した、 ``fget``,
-   ``fset``, そして ``fdel`` 属性を持ちます。
+   返されるプロパティオブジェクトも、コンストラクタの引数に対応する、
+   ``fget``, ``fset``, そして ``fdel`` 属性を持ちます。
 
    .. versionadded:: 2.2
 
@@ -1197,22 +1202,22 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
 .. function:: reversed(seq)
 
    要素を逆順に取り出すイテレータ (reverse :term:`iterator`) を返します。
-   *seq* は :meth:`__reversed__` メソッドを持つオブジェクトであるか、
-   シーケンス型プロトコル (:meth:`__len__` メソッド、および、 ``0`` か
-   ら始まる整数を引数にとる :meth:`__getitem__` メソッド) をサポートし
-   ていなければなりません。
+   *seq* は :meth:`__reversed__` メソッドを持つか、
+   シーケンス型プロトコル (:meth:`__len__` メソッド、および、
+   ``0`` 以上の整数を引数とする :meth:`__getitem__` メソッド) を
+   サポートするオブジェクトでなければなりません。
 
    .. versionadded:: 2.4
 
    .. versionchanged:: 2.6
-      カスタムの :meth:`__reversed__` メソッドを書く可能性を追加しました。
+      カスタムの :meth:`__reversed__` メソッドが使えるようになりました。
 
 
-.. function:: round(x[, n])
+.. function:: round(number[, ndigits])
 
-   *x* を小数点以下 *n* 桁で丸めた浮動小数点数の値を返します。 *n* が
+   *x* を小数点以下 *ndigits* 桁で丸めた浮動小数点数の値を返します。 *ndigits* が
    省略されると、デフォルトはゼロになります。結果は浮動小数点数です。値
-   は最も近い 10 のマイナス *n* 乗の倍数に丸められます。二つの倍数との
+   は最も近い 10 のマイナス *ndigits* 乗の倍数に丸められます。二つの倍数との
    距離が等しい場合、ゼロから離れる方向に丸められます (従って、例えば
    ``round(0.5)`` は ``1.0`` になり、 ``round(-0.5)`` は ``-1.0`` に
    なります)。
@@ -1224,6 +1229,7 @@ Python インタプリタは数多くの組み込み関数を持っていて、�
       ``2.67`` を与えます。これはバグではありません: これはほとんどの
       小数が浮動小数点数で正確に表せないことの結果です。詳しくは
       :ref:`tut-fp-issues` を参照してください。
+
 
 .. function:: set([iterable])
    :noindex:
