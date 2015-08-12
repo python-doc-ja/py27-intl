@@ -23,6 +23,31 @@ codec(エンコーダとデコーダ)の基底クラスを定義し、 codec お
 
 :mod:`codecs` では以下の関数を定義しています:
 
+.. function:: encode(obj, [encoding[, errors]])
+
+   *obj* を *encoding* に登録された codec を使用してエンコードします。
+   デフォルトのエンコーディングは ``'ascii'`` です。
+
+   *Errors* を与えることで望むエラー処理方式を登録できます。
+   デフォルトのエラーハンドラは ``'strict'`` で、エンコーディングエラーの
+   際に :exc:`ValueError` (または :exc:`UnicodeEncodeError` など、
+   codec 特有のサブクラス) を送出します。codec エラー処理についての詳細は、
+   :ref:`codec-base-classes` を参照してください。
+
+   .. versionadded:: 2.4
+
+.. function:: decode(obj, [encoding[, errors]])
+
+   *obj* を *encoding* に登録された codec を使用してデコードします。
+   デフォルトのエンコーディングは ``'ascii'`` です。
+
+   *Errors* を与えることで望むエラー処理方式を登録できます。
+   デフォルトのエラーハンドラは ``'strict'`` で、エンコーディングエラーの
+   際に :exc:`ValueError` (または :exc:`UnicodeEncodeError` など、
+   codec 特有のサブクラス) を送出します。codec エラー処理についての詳細は、
+   :ref:`codec-base-classes` を参照してください。
+
+   .. versionadded:: 2.4
 
 .. function:: register(search_function)
 
