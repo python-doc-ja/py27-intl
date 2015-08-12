@@ -248,9 +248,10 @@ cgi モジュールを使う
 より細かく CGI をコントロールしたり、このモジュールで実装されているアルゴリズムを他の状況で利用したい場合には、以下の関数が便利です。
 
 
-.. function:: parse(fp[, keep_blank_values[, strict_parsing]])
+.. function:: parse(fp[, environ[, keep_blank_values[, strict_parsing]]])
 
-   環境変数、またはファイルからからクエリを解釈します (ファイルは標準で ``sys.stdin`` になります) *keep_blank_values*
+   環境変数、またはファイルからからクエリを解釈します (ファイルは標準で
+   ``sys.stdin`` 、環境変数は標準で ``os.environ`` になります) *keep_blank_values*
    および *strict_parsing* パラメタはそのまま :func:`urlparse.parse_qs` に渡されます。
 
 
