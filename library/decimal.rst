@@ -246,7 +246,7 @@ Quick-start Tutorial
 
 :mod:`Decimal` モジュールでは、標準仕様に従って、すぐ利用できる\
 二つの標準コンテキスト、 :const:`BasicContext` および
-:const:`ExtendedContext` を提供しています。後者はほとんどのトラップが\
+:const:`ExtendedContext` を提供しています。前者はほとんどのトラップが\
 有効になっており、とりわけデバッグの際に便利です:
 
 .. doctest:: newcontext
