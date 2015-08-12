@@ -179,7 +179,7 @@ Python の通常の整数型では C の unsigned (long) 整数の最大範囲�
    アレイの型コードは ``'u'`` でなければなりません。
    それ以外の場合には、 :exc:`ValueError` を送出します。
    他の型のアレイに Unicode 型のデータを追加するには、
-   ``array.fromstring(unicodestring.decode(enc))`` を使ってください。
+   ``array.fromstring(unicodestring.encode(enc))`` を使ってください。
 
 
 .. method:: array.index(x)
