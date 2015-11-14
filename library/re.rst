@@ -584,7 +584,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       Added the optional flags argument.
 
 
-.. function:: sub(pattern, repl, string[, count, flags])
+.. function:: sub(pattern, repl, string[, count, flags=0])
 
    *string* 内で、 *pattern* と重複しないマッチの内、一番左にあるものを置換 *repl* で置換して
    得られた文字列を返します。もしパターンが見つからなければ、 *string* を変更せずに返します。 *repl*
@@ -629,7 +629,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       オプションの flags 引数が追加されました。
 
    
-.. function:: subn(pattern, repl, string[, count, flags])
+.. function:: subn(pattern, repl, string[, count, flags=0])
 
    :func:`sub` と同じ操作を行いますが、タプル ``(new_string、 number_of_subs_made)`` を返します。
 
