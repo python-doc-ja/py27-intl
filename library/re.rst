@@ -978,16 +978,16 @@ MatchObject オブジェクト
 
 あなたがポーカープログラムを書いているとします。プレイヤーの持ち札はそれぞれの文字が1枚のカードを
 意味する5文字の文字列によって表現されます。
-"a" はエース、 "k" はキング、 "q" はクイーン、 "j" はジャック "0" は10、そして "1" から
+"a" はエース、 "k" はキング、 "q" はクイーン、 "j" はジャック "t" は10、そして "2" から
 "9" はそれぞれの数字のカードを表します。
 
 与えられた文字列が、持ち札として有効かを確認するために、下記のようにするかも知れません。 :
 
-   >>> valid = re.compile(r"[0-9akqj]{5}$")
-   >>> displaymatch(valid.match("ak05q"))  # Valid.
-   "<Match: 'ak05q', groups=()>"
-   >>> displaymatch(valid.match("ak05e"))  # Invalid.
-   >>> displaymatch(valid.match("ak0"))    # Invalid.
+   >>> valid = re.compile(r"^[a2-9tjqk]{5}$")
+   >>> displaymatch(valid.match("akt5q"))  # Valid.
+   "<Match: 'akt5q', groups=()>"
+   >>> displaymatch(valid.match("akt5e"))  # Invalid.
+   >>> displaymatch(valid.match("akt"))    # Invalid.
    >>> displaymatch(valid.match("727ak"))  # Valid.
    "<Match: '727ak', groups=()>"
 
