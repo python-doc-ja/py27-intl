@@ -417,7 +417,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
 それなりのアプリケーションのほとんどで、コンパイルされた形式が用いられるのが普通です。
 
 
-.. function:: compile(pattern[, flags])
+.. function:: compile(pattern, flags=0)
 
    正規表現パターンを正規表現オブジェクトにコンパイルします。このオブジェクトは、以下で述べる
    :func:`match` と :func:`search` メソッドを使って、マッチングに使うことができます。
@@ -497,7 +497,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
                          \d *  # 小数点以下""", re.X)
       b = re.compile(r"\d+\.\d*")
 
-.. function:: search(pattern, string[, flags])
+.. function:: search(pattern, string, flags=0)
 
    *string* 全体を走査して、正規表現 *pattern* がマッチを発生する位置を探して、対応する
    :class:`MatchObject` インスタンスを返します。
@@ -505,7 +505,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
    これは、文字列内のある点で長さゼロのマッチを探すこととは異なることに注意して下さい。
 
 
-.. function:: match(pattern, string[, flags])
+.. function:: match(pattern, string, flags=0)
 
    もし *string* の先頭で 0 個以上の文字が正規表現 *pattern* とマッチすれば、対応する
    :class:`MatchObject` インスタンスを返します。もし文字列がパターンとマッチしなければ、
@@ -518,7 +518,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       :func:`search` を使って下さい。
 
 
-.. function:: split(pattern, string[, maxsplit=0, flags=0])
+.. function:: split(pattern, string, maxsplit=0, flags=0)
 
    *string* を、 *pattern* があるたびに分割します。もし括弧のキャプチャが *pattern* で使われていれば、
    パターン内のすべてのグループのテキストも結果のリストの一部として返されます。 *maxsplit* がゼロでなければ、
@@ -556,7 +556,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       オプションの flags 引数が追加されました。
 
 
-.. function:: findall(pattern, string[, flags])
+.. function:: findall(pattern, string, flags=0)
 
    *pattern* の *string* へのマッチのうち、重複しない全てのマッチを文字列のリストとして返します。
    *string* は左から右へと走査され、マッチは見つかった順番で返されます。
@@ -570,7 +570,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       オプションの flags 引数を追加しました.
 
 
-.. function:: finditer(pattern, string[, flags])
+.. function:: finditer(pattern, string, flags=0)
 
    *string* 内の RE *pattern* の重複しないマッチを :class:`MatchObject` インスタンス
    を返す :term:`iterator` を返します。
@@ -584,7 +584,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       Added the optional flags argument.
 
 
-.. function:: sub(pattern, repl, string[, count, flags=0])
+.. function:: sub(pattern, repl, string, count=0, flags=0)
 
    *string* 内で、 *pattern* と重複しないマッチの内、一番左にあるものを置換 *repl* で置換して
    得られた文字列を返します。もしパターンが見つからなければ、 *string* を変更せずに返します。 *repl*
@@ -629,7 +629,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       オプションの flags 引数が追加されました。
 
    
-.. function:: subn(pattern, repl, string[, count, flags=0])
+.. function:: subn(pattern, repl, string, count=0, flags=0)
 
    :func:`sub` と同じ操作を行いますが、タプル ``(new_string、 number_of_subs_made)`` を返します。
 
@@ -717,7 +717,7 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       <_sre.SRE_Match object at ...>
 
 
-   .. method:: RegexObject.split(string[, maxsplit= 0])
+   .. method:: RegexObject.split(string, maxsplit=0)
 
       :func:`split` 関数と同様で、コンパイルしたパターンを使います。
       ただし、 :meth:`match` と同じように、省略可能な *pos*, *endpos*
@@ -738,12 +738,12 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       引数で検索範囲を指定することができます。
 
 
-   .. method:: RegexObject.sub(repl, string[, count=0])
+   .. method:: RegexObject.sub(repl, string, count=0)
 
       :func:`sub` 関数と同様で、コンパイルしたパターンを使います。
 
 
-   .. method:: RegexObject.subn(repl, string[, count=0])
+   .. method:: RegexObject.subn(repl, string, count=0)
 
       :func:`subn` 関数と同様で、コンパイルしたパターンを使います。
 
