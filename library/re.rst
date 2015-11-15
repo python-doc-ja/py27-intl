@@ -233,13 +233,8 @@
    +-----------------------------------------+----------------------------------+
 
 ``(?P=name)``
-   A backreference to a named group; it matches whatever text was matched by the
-   earlier group named *name*.
-
-   ..
-     旧原文と旧訳
-     Matches whatever text was matched by the earlier group named *name*.
-     前に *name* と名前付けされたグループにマッチした、いかなるテキストにもマッチします。
+   名前付きグループへの後方参照です; 既出のグループ名 *name* にマッチする文字列は
+   何にでもマッチします。
 
 ``(?#...)``
    コメントです；括弧の内容は単純に無視されます。
