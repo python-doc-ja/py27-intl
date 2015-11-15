@@ -406,30 +406,6 @@ Python 文字列リテラルによってサポートされている標準エス�
 になります。
 
 
-.. _matching-searching:
-
-マッチング vs 検索
-------------------
-
-.. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
-
-
-Python は、正規表現に基づく、2つの異なるプリミティブな操作を提供しています。
-**search** が文字列のすべての場所で、一致するかを確認する (これは Perl のデフォルト動作です)
-のに対し、 **match** は、文字列の先頭で一致するかを確認します。
-
-マッチは、 ``'^'`` で始まる正規表現を使ったとしても、検索と異なる動作になるかもしれないことに
-注意して下さい：
-``'^'`` は文字列の先頭、もしくは、 :const:`MULTILINE` モードでは改行の直後ともマッチします。
-"マッチ" 操作は、もしそのパターンが、モードに拘らず文字列の先頭とマッチするか、あるいは改行がその前に
-あるかどうかに拘らず、省略可能な *pos* 引数によって与えられる先頭位置でマッチする場合のみ成功します。
-
-
-   >>> re.match("c", "abcdef")  # マッチしない
-   >>> re.search("c", "abcdef") # マッチする
-   <_sre.SRE_Match object at ...>
-
-
 .. _contents-of-module-re:
 
 
@@ -543,6 +519,18 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
    ``None`` を返します；
    これは長さゼロのマッチとは異なることに注意して下さい。
 
+   Note that even in :const:`MULTILINE` mode, :func:`re.match` will only match
+   at the beginning of the string and not at the beginning of each line.
+
+   If you want to locate a match anywhere in *string*, use :func:`search`
+   instead (see also :ref:`search-vs-match`).
+
+..
+   旧原文と翻訳
+   .. note::
+
+      If you want to locate a match anywhere in *string*, use :func:`search`
+      instead.
    .. note::
 
       もし *string* のどこかにマッチを位置付けたいのであれば、代わりに
@@ -733,19 +721,25 @@ Python は、正規表現に基づく、2つの異なるプリミティブな操
       省略可能な引数 *pos* と *endpos* 引数は、 :meth:`~RegexObject.search`
       メソッドと同じ意味を持ちます。
 
-      .. .. note:
-         If you want to locate a match anywhere in *string*, use
-         :meth:`~RegexObject.search` instead.
+      ..
+         旧原文と旧訳
+         .. .. note:
+            If you want to locate a match anywhere in *string*, use
+            :meth:`~RegexObject.search` instead.
+   
+         .. note::
+   
+            *string* のどこにでもマッチさせたければ、代わりに
+            :meth:`~RegexObject.search` を使って下さい。
 
-      .. note::
-
-         *string* のどこにでもマッチさせたければ、代わりに
-         :meth:`~RegexObject.search` を使って下さい。
 
       >>> pattern = re.compile("o")
       >>> pattern.match("dog")      # "o" は文字列 "dog." の先頭にないため、マッチしません
       >>> pattern.match("dog", 1)   # "o" が文字列 "dog" の2番目にあるので、マッチします
       <_sre.SRE_Match object at ...>
+
+      If you want to locate a match anywhere in *string*, use
+      :meth:`~RegexObject.search` instead (see also :ref:`search-vs-match`).
 
 
    .. method:: RegexObject.split(string, maxsplit=0)
@@ -1117,35 +1111,155 @@ Python 2.3 からは、再帰を避けるために ``*?`` パターンの利用�
 それ以上の恩恵として、そのような正規表現は、再帰的な同等のものよりもより速く動作します。
 
 
+.. _search-vs-match:
+
 search() vs. match()
 ^^^^^^^^^^^^^^^^^^^^
 
-簡単に言えば、 :func:`match` は文字列の先頭でのみパターンにマッチしようとします。
-対して、 :func:`search` は文字列のどこででもパターンにマッチしようとします。
-例えば :
+.. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
-   >>> re.match("o", "dog")  # "o" は文字列 "dog" の最初の文字ではないのでマッチしません
-   >>> re.search("o", "dog") # search() では、文字列のどこであってもマッチする
+Python offers two different primitive operations based on regular expressions:
+:func:`re.match` checks for a match only at the beginning of the string, while
+:func:`re.search` checks for a match anywhere in the string (this is what Perl
+does by default).
+
+For example::
+
+   >>> re.match("c", "abcdef")  # No match
+   >>> re.search("c", "abcdef") # Match
    <_sre.SRE_Match object at ...>
 
-.. note::
+Regular expressions beginning with ``'^'`` can be used with :func:`search` to
+restrict the match at the beginning of the string::
 
-   以下は、 ``re.compile("pattern")`` により生成された正規表現オブジェクトにのみ当てはまります。
-   ``re.match(pattern, string)`` や ``re.search(pattern, string)`` などには当てはまり
-   ません。
-
-:func:`match` は、検索開始インデックスを指定するための、オプショナルな2つめのパラメータをとります。 ::
-
-   >>> pattern = re.compile("o")
-   >>> pattern.match("dog")      # "o" が "dog" の先頭にないのでマッチしない
-
-   # 検索開始インデックスのデフォルト値が 0 であるため上記と等価 :
-   >>> pattern.match("dog", 0)
-
-   # "o" が "dog" の2番目の文字なのでマッチする ( インデックス 0 が最初の文字である ) :
-   >>> pattern.match("dog", 1)
+   >>> re.match("c", "abcdef")  # No match
+   >>> re.search("^c", "abcdef") # No match
+   >>> re.search("^a", "abcdef")  # Match
    <_sre.SRE_Match object at ...>
-   >>> pattern.match("dog", 2)   # "o" は "dog" の3番目の文字ではないのでマッチしない
+
+Note however that in :const:`MULTILINE` mode :func:`match` only matches at the
+beginning of the string, whereas using :func:`search` with a regular expression
+beginning with ``'^'`` will match at the beginning of each line.
+
+   >>> re.match('X', 'A\nB\nX', re.MULTILINE)  # No match
+   >>> re.search('^X', 'A\nB\nX', re.MULTILINE)  # Match
+   <_sre.SRE_Match object at ...>
+
+..
+   =========================================================================================================
+   上の方から移動してきた「旧原文と旧訳」
+   .. _matching-searching:
+   
+   Matching vs Searching
+   ---------------------
+   
+   .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+   
+   
+   Python offers two different primitive operations based on regular expressions:
+   **match** checks for a match only at the beginning of the string, while
+   **search** checks for a match anywhere in the string (this is what Perl does
+   by default).
+   
+   Note that match may differ from search even when using a regular expression
+   beginning with ``'^'``: ``'^'`` matches only at the start of the string, or in
+   :const:`MULTILINE` mode also immediately following a newline.  The "match"
+   operation succeeds only if the pattern matches at the start of the string
+   regardless of mode, or at the starting position given by the optional *pos*
+   argument regardless of whether a newline precedes it.
+   
+      >>> re.match("c", "abcdef")  # No match
+      >>> re.search("c", "abcdef") # Match
+      <_sre.SRE_Match object at ...>
+   
+   ======================================================
+   .. _matching-searching:
+   
+   マッチング vs 検索
+   ------------------
+   
+   .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+   
+   
+   Python は、正規表現に基づく、2つの異なるプリミティブな操作を提供しています。
+   **search** が文字列のすべての場所で、一致するかを確認する (これは Perl のデフォルト動作です)
+   のに対し、 **match** は、文字列の先頭で一致するかを確認します。
+   
+   マッチは、 ``'^'`` で始まる正規表現を使ったとしても、検索と異なる動作になるかもしれないことに
+   注意して下さい：
+   ``'^'`` は文字列の先頭、もしくは、 :const:`MULTILINE` モードでは改行の直後ともマッチします。
+   "マッチ" 操作は、もしそのパターンが、モードに拘らず文字列の先頭とマッチするか、あるいは改行がその前に
+   あるかどうかに拘らず、省略可能な *pos* 引数によって与えられる先頭位置でマッチする場合のみ成功します。
+   
+   
+      >>> re.match("c", "abcdef")  # マッチしない
+      >>> re.search("c", "abcdef") # マッチする
+      <_sre.SRE_Match object at ...>
+    
+..
+   =========================================================================================================
+   旧原文と旧訳
+   search() vs. match()
+   ^^^^^^^^^^^^^^^^^^^^
+   
+   In a nutshell, :func:`match` only attempts to match a pattern at the beginning
+   of a string where :func:`search` will match a pattern anywhere in a string.
+   For example:
+   
+      >>> re.match("o", "dog")  # No match as "o" is not the first letter of "dog".
+      >>> re.search("o", "dog") # Match as search() looks everywhere in the string.
+      <_sre.SRE_Match object at ...>
+   
+   .. note::
+   
+      The following applies only to regular expression objects like those created
+      with ``re.compile("pattern")``, not the primitives ``re.match(pattern,
+      string)`` or ``re.search(pattern, string)``.
+   
+   :func:`match` has an optional second parameter that gives an index in the string
+   where the search is to start::
+   
+      >>> pattern = re.compile("o")
+      >>> pattern.match("dog")      # No match as "o" is not at the start of "dog."
+   
+      # Equivalent to the above expression as 0 is the default starting index:
+      >>> pattern.match("dog", 0)
+   
+      # Match as "o" is the 2nd character of "dog" (index 0 is the first):
+      >>> pattern.match("dog", 1)
+      <_sre.SRE_Match object at ...>
+      >>> pattern.match("dog", 2)   # No match as "o" is not the 3rd character of "dog."
+
+   ======================================================
+   search() vs. match()
+   ^^^^^^^^^^^^^^^^^^^^
+   
+   簡単に言えば、 :func:`match` は文字列の先頭でのみパターンにマッチしようとします。
+   対して、 :func:`search` は文字列のどこででもパターンにマッチしようとします。
+   例えば :
+   
+      >>> re.match("o", "dog")  # "o" は文字列 "dog" の最初の文字ではないのでマッチしません
+      >>> re.search("o", "dog") # search() では、文字列のどこであってもマッチする
+      <_sre.SRE_Match object at ...>
+   
+   .. note::
+   
+      以下は、 ``re.compile("pattern")`` により生成された正規表現オブジェクトにのみ当てはまります。
+      ``re.match(pattern, string)`` や ``re.search(pattern, string)`` などには当てはまり
+      ません。
+   
+   :func:`match` は、検索開始インデックスを指定するための、オプショナルな2つめのパラメータをとります。 ::
+   
+      >>> pattern = re.compile("o")
+      >>> pattern.match("dog")      # "o" が "dog" の先頭にないのでマッチしない
+   
+      # 検索開始インデックスのデフォルト値が 0 であるため上記と等価 :
+      >>> pattern.match("dog", 0)
+   
+      # "o" が "dog" の2番目の文字なのでマッチする ( インデックス 0 が最初の文字である ) :
+      >>> pattern.match("dog", 1)
+      <_sre.SRE_Match object at ...>
+      >>> pattern.match("dog", 2)   # "o" は "dog" の3番目の文字ではないのでマッチしない
 
 
 電話帳の作成
