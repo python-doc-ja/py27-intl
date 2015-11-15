@@ -276,15 +276,11 @@
       'egg'
 
 ``(?<!...)``
-   もし文字列内の現在位置の前に ``...`` とのマッチがないならば、マッチします。
+   文字列内の現在位置の前に ``...`` とのマッチがない場合に、マッチします。
    これは :dfn:`否定後読みアサーション(negative lookbehind assertion)` と呼ばれます。
-   肯定後読みアサーションと同様に、含まれるパターンは固定長さの文字列だけに
-   マッチしなければいけません。否定後読みアサーションで始まるパターンは、検索される文字列の
-   先頭とマッチすることができます。
-
-   ..
-      翻訳メモ：「固定長さの文字列」のあとに「 and shouldn't contain group references.」が追加されている。(全体では「Similar to positive lookbehind assertions, the contained pattern must only match strings of some fixed length and shouldn't contain group references.」となっている。)
-
+   肯定後読みアサーションと同様に、含まれるパターンは固定長さの文字列だけにマッチ
+   しなければならず、グループ参照を含んではなりません。否定後読みアサーションで
+   始まるパターンは、検索される文字列の先頭とマッチできます。
 
 ``(?(id/name)yes-pattern|no-pattern)``
    グループに *id* が与えられている、もしくは *name* があるとき、 ``yes-pattern``  と
