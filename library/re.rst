@@ -445,12 +445,6 @@ Python 文字列リテラルによってサポートされている標準エス�
    \r      \t      \v      \x
    \\
 
-.. 以下新規追加なので訳出忘れずに。
-
-(Note that ``\b`` is used to represent word boundaries, and means "backspace"
-only inside character classes.)
-
-
 8進エスケープは制限された形式で含まれています：もし第1桁が 0 であるか、もし8進3桁であれば、それは
 8進エスケープとみなされます。
 そうでなければ、それはグループ参照です。文字列リテラルについて、 8進エスケープはほとんどの場合3桁長
