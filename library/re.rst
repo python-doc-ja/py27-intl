@@ -867,10 +867,26 @@ MatchObject オブジェクト
 
 .. class:: MatchObject
 
-   :class:`MatchObject` は、常に真偽値 :const:`True` を持ちます。
-   そのため、例えば :func:`match` がマッチしたかどうかを単純な if 文で確認する
-   ことができます。
-   :class:`MatchObject` は以下のメソッドと、属性を持ちます。
+   Match objects always have a boolean value of ``True``.
+   Since :meth:`~regex.match` and :meth:`~regex.search` return ``None``
+   when there is no match, you can test whether there was a match with a simple
+   ``if`` statement::
+
+      match = re.search(pattern, string)
+      if match:
+          process(match)
+
+   Match objects support the following methods and attributes:
+
+   ..
+      旧原文と旧訳
+      Match Objects always have a boolean value of :const:`True`, so that you can test
+      whether e.g. :func:`match` resulted in a match with a simple if statement.  They
+      support the following methods and attributes:
+      :class:`MatchObject` は、常に真偽値 :const:`True` を持ちます。
+      そのため、例えば :func:`match` がマッチしたかどうかを単純な if 文で確認する
+      ことができます。
+      :class:`MatchObject` は以下のメソッドと、属性を持ちます。
 
 
    .. method:: MatchObject.expand(template)
