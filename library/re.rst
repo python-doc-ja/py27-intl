@@ -795,31 +795,16 @@ only inside character classes.)
       もし文字列がパタンーとマッチしなければ、 ``None`` を返します。
       これは長さゼロのマッチとは異なることに注意して下さい。
 
-      .. The optional *pos* and *endpos* parameters have the same meaning as for the
-         :meth:`~RegexObject.search` method.
-
       省略可能な引数 *pos* と *endpos* 引数は、 :meth:`~RegexObject.search`
       メソッドと同じ意味を持ちます。
-
-      ..
-         旧原文と旧訳
-         .. .. note:
-            If you want to locate a match anywhere in *string*, use
-            :meth:`~RegexObject.search` instead.
-   
-         .. note::
-   
-            *string* のどこにでもマッチさせたければ、代わりに
-            :meth:`~RegexObject.search` を使って下さい。
-
 
       >>> pattern = re.compile("o")
       >>> pattern.match("dog")      # "o" は文字列 "dog." の先頭にないため、マッチしません
       >>> pattern.match("dog", 1)   # "o" が文字列 "dog" の2番目にあるので、マッチします
       <_sre.SRE_Match object at ...>
 
-      If you want to locate a match anywhere in *string*, use
-      :meth:`~RegexObject.search` instead (see also :ref:`search-vs-match`).
+      *string* のどこにでもマッチさせたければ、代わりに :meth:`~RegexObject.search` を
+      使って下さい( :ref:`search-vs-match`) も参照してください)。
 
 
    .. method:: RegexObject.split(string, maxsplit=0)
