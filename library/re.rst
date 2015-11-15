@@ -263,6 +263,10 @@
    バックアップして、含まれているパターンとマッチするかどうか検査するからです。含まれるパターンは、
    固定長の文字列にのみマッチしなければなりません、ということは、 ``abc`` や ``a|b``
    は許されますが、 ``a*`` や ``a{3,4}`` は許されないことを意味します。
+
+   .. 以下新規追加なので訳出忘れずに。(対応後はこのコメント行追加による空行もなくすこと。)
+
+   Group references are not supported even if they match strings of some fixed length.
    肯定後読みアサーションで始まるパターンは、検索される文字列の
    先頭とは決してマッチしないことに注意して下さい；多分、 :func:`match` 関数よりは
    :func:`search` 関数を使いたいでしょう:
@@ -287,6 +291,10 @@
    肯定後読みアサーションと同様に、含まれるパターンは固定長さの文字列だけに
    マッチしなければいけません。否定後読みアサーションで始まるパターンは、検索される文字列の
    先頭とマッチすることができます。
+
+   ..
+      翻訳メモ：「固定長さの文字列」のあとに「 and shouldn't contain group references.」が追加されている。(全体では「Similar to positive lookbehind assertions, the contained pattern must only match strings of some fixed length and shouldn't contain group references.」となっている。)
+
 
 ``(?(id/name)yes-pattern|no-pattern)``
    グループに *id* が与えられている、もしくは *name* があるとき、 ``yes-pattern``  と
