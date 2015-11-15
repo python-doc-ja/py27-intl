@@ -27,13 +27,6 @@
 ことに注意して下さい。
 関数は正規表現オブジェクトのコンパイルを必要としない近道ですが、いくつかのチューニング変数を失います。
 
-.. seealso::
-
-   Mastering Regular Expressions 詳説正規表現
-      Jeffrey Friedl 著、O'Reilly 刊の正規表現に関する本です。この本の第2版\
-      ではPyhonについては触れていませんが、良い正規表現パターンの書き方を非常に\
-      くわしく説明しています。
-
 .. _re-syntax:
 
 正規表現のシンタクス
@@ -468,6 +461,14 @@ only inside character classes.)
 8進エスケープとみなされます。
 そうでなければ、それはグループ参照です。文字列リテラルについて、 8進エスケープはほとんどの場合3桁長
 になります。
+
+.. seealso::
+
+   Mastering Regular Expressions 詳説正規表現
+      Jeffrey Friedl 著、O'Reilly 刊の正規表現に関する本です。この本の第2版\
+      ではPyhonについては触れていませんが、良い正規表現パターンの書き方を非常に\
+      くわしく説明しています。
+
 
 
 .. _contents-of-module-re:
