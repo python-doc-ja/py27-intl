@@ -551,25 +551,11 @@ only inside character classes.)
 .. data:: X
           VERBOSE
 
-   This flag allows you to write regular expressions that look nicer and are
-   more readable by allowing you to visually separate logical sections of the
-   pattern and add comments. Whitespace within the pattern is ignored, except
-   when in a character class or when preceded by an unescaped backslash.
-   When a line contains a ``#`` that is not in a character class and is not
-   preceded by an unescaped backslash, all characters from the leftmost such
-   ``#`` through the end of the line are ignored.
-
-   ..
-     旧原文と旧訳
-     This flag allows you to write regular expressions that look nicer. Whitespace
-     within the pattern is ignored, except when in a character class or preceded by
-     an unescaped backslash, and, when a line contains a ``'#'`` neither in a
-     character class or preceded by an unescaped backslash, all characters from the
-     leftmost such ``'#'`` through the end of the line are ignored.
-     このフラグによって、より見やすく正規表現を書くことができます。パターン内の空白は、文字クラス内にあるか
-     エスケープされていないバックスラッシュが前にある時以外は無視されます。また、行に、文字クラス内にもなく、
-     エスケープされていないバックスラッシュが前にもない ``'#'`` がある時は、そのような ``'#'`` の左端
-     からその行の末尾までが無視されます。
+   このフラグによって、より見やすく正規表現を書くことができます。パターン内の
+   空白は、文字クラス内にあるかエスケープされていないバックスラッシュが
+   前にある時以外は無視されます。また、行に、文字クラス内にもなく、エスケープ
+   されていないバックスラッシュが前にもない ``'#'`` がある時は、そのような
+   ``'#'`` の左端からその行の末尾までが無視されます。
 
    つまり、数字にマッチする下記のふたつの正規表現オブジェクトは、機能的に等価です。::
 
