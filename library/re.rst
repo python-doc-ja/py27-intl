@@ -693,31 +693,15 @@ Python 文字列リテラルによってサポートされている標準エス�
    以前のマッチと隣合わせでない時だけ置換されますので、 ``sub('x*', '-', 'abc')`` は
    ``'-a-b-c-'`` を返します。
 
-   In string-type *repl* arguments, in addition to the character escapes and
-   backreferences described above,
-   ``\g<name>`` will use the substring matched by the group named ``name``, as
-   defined by the ``(?P<name>...)`` syntax. ``\g<number>`` uses the corresponding
-   group number; ``\g<2>`` is therefore equivalent to ``\2``, but isn't ambiguous
-   in a replacement such as ``\g<2>0``.  ``\20`` would be interpreted as a
-   reference to group 20, not a reference to group 2 followed by the literal
-   character ``'0'``.  The backreference ``\g<0>`` substitutes in the entire
-   substring matched by the RE.
-
-   ..
-       旧原文と旧訳(In addition toの部分だけ違う)
-       In addition to character escapes and backreferences as described above,
-       ``\g<name>`` will use the substring matched by the group named ``name``, as
-       defined by the ``(?P<name>...)`` syntax. ``\g<number>`` uses the corresponding
-       group number; ``\g<2>`` is therefore equivalent to ``\2``, but isn't ambiguous
-       in a replacement such as ``\g<2>0``.  ``\20`` would be interpreted as a
-       reference to group 20, not a reference to group 2 followed by the literal
-       character ``'0'``.  The backreference ``\g<0>`` substitutes in the entire
-       substring matched by the RE.
-       上で述べた文字エスケープや後方参照の他に、 ``\g<name>`` は、 ``(?P<name>...)`` のシンタクスで定義されているように、
-       ``name`` という名前のグループとマッチしたサブ文字列を使います。 ``\g<number>`` は対応するグループ番号を使います；それゆえ
-       ``\g<2>`` は ``\2`` と同じ意味ですが、 ``\g<2>0`` のような置換でもあいまいではありません。 ``\20`` は、グループ 20
-       への参照として解釈されますが、グループ 2 にリテラル文字 ``'0'`` が続いたものへの参照としては解釈されません。後方参照  ``\g<0>`` は、
-       RE とマッチするサブ文字列全体を置き換えます。
+   文字列タイプ *repl* 引数では、上で述べた文字エスケープや後方参照の他に、
+   ``\g<name>`` は、 ``(?P<name>...)`` シンタクスで定義された ``name`` グループ
+   によるマッチ部分文字列を使用することになりますし、
+   ``\g<number>`` は対応するグループ番号への参照となります;
+   ``\g<2>`` はつまり ``\2`` と等価ですが、 ``\g<2>0`` のような置換においても
+   曖昧になりません。
+   ``\20`` は、グループ 20への参照として解釈され、グループ 2 にリテラル文字 ``'0'``
+   が続いたものへの参照としては解釈されないかもしれません。
+   後方参照  ``\g<0>`` は、RE とマッチするサブ文字列全体を置き換えます。
 
    .. versionchanged:: 2.7
       オプションの flags 引数が追加されました。
