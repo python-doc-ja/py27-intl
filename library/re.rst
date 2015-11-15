@@ -1123,28 +1123,6 @@ Python には現在のところ、 :c:func:`scanf` に相当するものがあ�
    (\S+) - (\d+) errors, (\d+) warnings
 
 
-再帰を避ける
-^^^^^^^^^^^^^
-
-エンジンに大量の再帰を要求するような正規表現を作成すると、
-``maximum recursion limit exceeded`` (最大再帰制限を超過した)
-というメッセージを持つ :exc:`RuntimeError` 例外に出くわすかもしれません。たとえば、 ::
-
-   >>> s = "Begin" + 1000 * 'a very long string' + 'end'
-   >>> re.match('Begin (\w| )*? end', s).end()
-   Traceback (most recent call last):
-     File "<stdin>", line 1, in ?
-     File "/usr/local/lib/python2.5/re.py", line 132, in match
-       return _compile(pattern, flags).match(string)
-   RuntimeError: maximum recursion limit exceeded
-
-再帰を避けるように正規表現を組みなおせることはよくあります。
-
-Python 2.3 からは、再帰を避けるために ``*?`` パターンの利用が特別扱いされるようになりました。
-したがって、上の正規表現は ``Begin[a-zA-Z0-9_ ]*?end`` に書き直すことで再帰を防ぐことができます。
-それ以上の恩恵として、そのような正規表現は、再帰的な同等のものよりもより速く動作します。
-
-
 .. _search-vs-match:
 
 search() vs. match()
