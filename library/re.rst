@@ -370,6 +370,20 @@
    文字特性データベースで空白と分類されている全てにマッチします。
 
 ``\S``
+   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified,
+   matches any non-whitespace character; this is equivalent to the set ``[^
+   \t\n\r\f\v]`` With :const:`LOCALE`, it will match the above set plus any
+   non-space character in the current locale. If :const:`UNICODE` is set, the
+   above set ``[^ \t\n\r\f\v]`` plus the characters not marked as space in the
+   Unicode character properties database.
+..
+   旧原文と旧訳
+   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
+   any non-whitespace character; this is equivalent to the set ``[^ \t\n\r\f\v]``
+   With :const:`LOCALE`, it will match any character not in this set, and not
+   defined as space in the current locale. If :const:`UNICODE` is set, this will
+   match anything other than ``[ \t\n\r\f\v]`` and characters marked as space in
+   the Unicode character properties database.
    :const:`LOCALE` と :const:`UNICODE` がフラグが指定されていない場合、任意の非空白文字と
    マッチします；これは集合 ``[^ \t\n\r\f\v]`` と同じ意味です。 :const:`LOCALE` がある場合、
    これはこの集合に無い文字と、現在のロケールで空白と定義されていない文字にマッチします。
@@ -384,6 +398,20 @@
    文字特性データベースで英数字として分類されているものとマッチします。
 
 ``\W``
+   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
+   any non-alphanumeric character; this is equivalent to the set ``[^a-zA-Z0-9_]``.
+   With :const:`LOCALE`, it will match any character not in the set ``[0-9_]``, and
+   not defined as alphanumeric for the current locale. If :const:`UNICODE` is set,
+   this will match anything other than ``[0-9_]`` plus characters classied as
+   not alphanumeric in the Unicode character properties database.
+..
+   旧原文と旧訳
+   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
+   any non-alphanumeric character; this is equivalent to the set ``[^a-zA-Z0-9_]``.
+   With :const:`LOCALE`, it will match any character not in the set ``[0-9_]``, and
+   not defined as alphanumeric for the current locale. If :const:`UNICODE` is set,
+   this will match anything other than ``[0-9_]`` and characters marked as
+   alphanumeric in the Unicode character properties database.
    :const:`LOCALE` と :const:`UNICODE` フラグが指定されていない時、任意の非英数文字とマッチ
    します；これは集合 ``[^a-zA-Z0-9_]`` と同じ意味です。 :const:`LOCALE` が指定されていると、
    集合 ``[0-9_]`` になく、現在のロケールで英数字として定義されていない任意の文字とマッチします。
@@ -392,6 +420,12 @@
 
 ``\Z``
    文字列の末尾とのみマッチします。
+
+.. 以下 If both 部分、新規追加部分なので訳出忘れずに。
+
+If both :const:`LOCALE` and :const:`UNICODE` flags are included for a
+particular sequence, then :const:`LOCALE` flag takes effect first followed by
+the :const:`UNICODE`.
 
 Python 文字列リテラルによってサポートされている標準エスケープのほとんども、正規表現パーザに認識
 されます::
