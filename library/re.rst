@@ -485,7 +485,7 @@ only inside character classes.)
 .. function:: compile(pattern, flags=0)
 
    正規表現パターンを正規表現オブジェクトにコンパイルします。このオブジェクトは、以下で述べる
-   :func:`match` と :func:`search` メソッドを使って、マッチングに使うことができます。
+   :func:`~RegexObject.match` と :func:`~RegexObject.search` メソッドを使って、マッチングに使うことができます。
 
    式の動作は、 *flags* の値を指定することで加減することができます。値は以下の変数を、ビットごとの
    OR ( ``|`` 演算子)を使って組み合わせることができます。
