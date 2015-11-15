@@ -1284,7 +1284,7 @@ beginning with ``'^'`` will match at the beginning of each line.
 最初に、入力を示します。通常、これはファイルからの入力になるでしょう。ここでは、3重引用符の書式
 とします :
 
-   >>> input = """Ross McFluff: 834.345.1254 155 Elm Street
+   >>> text = """Ross McFluff: 834.345.1254 155 Elm Street
    ...
    ... Ronald Heathmore: 892.345.3428 436 Finley Avenue
    ... Frank Burger: 925.541.7625 662 South Dogwood Way
@@ -1298,7 +1298,7 @@ beginning with ``'^'`` will match at the beginning of each line.
 .. doctest::
    :options: +NORMALIZE_WHITESPACE
 
-   >>> entries = re.split("\n+", input)
+   >>> entries = re.split("\n+", text)
    >>> entries
    ['Ross McFluff: 834.345.1254 155 Elm Street',
    'Ronald Heathmore: 892.345.3428 436 Finley Avenue',
