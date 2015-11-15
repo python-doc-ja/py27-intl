@@ -570,7 +570,7 @@ only inside character classes.)
 
 .. function:: search(pattern, string, flags=0)
 
-   *string* 全体を走査して、正規表現 *pattern* がマッチを発生する位置を探して、対応する
+   *string* 全体を走査して、正規表現 *pattern* がマッチを発生する最初の位置を探して、対応する
    :class:`MatchObject` インスタンスを返します。
    もし文字列内に、そのパターンとマッチする位置がないならば、 ``None`` を返します；
    これは、文字列内のある点で長さゼロのマッチを探すこととは異なることに注意して下さい。
