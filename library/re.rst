@@ -840,16 +840,8 @@ only inside character classes.)
 
    .. attribute:: RegexObject.flags
 
-      The regex matching flags.  This is a combination of the flags given to
-      :func:`.compile` and any ``(?...)`` inline flags in the pattern.
-
-      ..
-        旧原文と旧訳
-        The flags argument used when the RE object was compiled, or ``0`` if no flags
-        were provided.
-        RE オブジェクトがコンパイルされたとき使われた flags 引数です。
-        もし flags が何も提供されなければ ``0`` です。
-
+      正規表現のマッチングフラグです。これは :func:`.compile` で指定されたフラグ、
+      およびパターン内の ``(?...)`` インラインフラグとの組み合わせになりなす。
 
    .. attribute:: RegexObject.groups
 
