@@ -358,25 +358,11 @@
    文字特性データベースで英数字として分類されているものとマッチします。
 
 ``\W``
-   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
-   any non-alphanumeric character; this is equivalent to the set ``[^a-zA-Z0-9_]``.
-   With :const:`LOCALE`, it will match any character not in the set ``[0-9_]``, and
-   not defined as alphanumeric for the current locale. If :const:`UNICODE` is set,
-   this will match anything other than ``[0-9_]`` plus characters classified as
-   not alphanumeric in the Unicode character properties database.
-..
-   旧原文と旧訳
-   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
-   any non-alphanumeric character; this is equivalent to the set ``[^a-zA-Z0-9_]``.
-   With :const:`LOCALE`, it will match any character not in the set ``[0-9_]``, and
-   not defined as alphanumeric for the current locale. If :const:`UNICODE` is set,
-   this will match anything other than ``[0-9_]`` and characters marked as
-   alphanumeric in the Unicode character properties database.
    :const:`LOCALE` と :const:`UNICODE` フラグが指定されていない時、任意の非英数文字とマッチ
    します；これは集合 ``[^a-zA-Z0-9_]`` と同じ意味です。 :const:`LOCALE` が指定されていると、
    集合 ``[0-9_]`` になく、現在のロケールで英数字として定義されていない任意の文字とマッチします。
-   もし :const:`UNICODE` がセットされていれば、これは ``[0-9_]`` および Unicode 文字特性
-   データベースで英数字として表されている文字以外のものとマッチします。
+   もし :const:`UNICODE` がセットされていれば、これは ``[0-9_]`` 以外と、および Unicode 文字特性
+   データベースで非英数字と分類されている文字とマッチします。
 
 ``\Z``
    文字列の末尾とのみマッチします。
