@@ -411,11 +411,8 @@
 ``\Z``
    文字列の末尾とのみマッチします。
 
-.. 以下 If both 部分、新規追加部分なので訳出忘れずに。
-
-If both :const:`LOCALE` and :const:`UNICODE` flags are included for a
-particular sequence, then :const:`LOCALE` flag takes effect first followed by
-the :const:`UNICODE`.
+特定のシーケンスに対し :const:`LOCALE` と :const:`UNICODE` のどちらも影響しうる
+場合は、 :const:`LOCALE` が指定されていれば必ず :const:`LOCALE` の効果に従います。
 
 Python 文字列リテラルによってサポートされている標準エスケープのほとんども、正規表現パーザに認識
 されます::
