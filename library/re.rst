@@ -337,26 +337,10 @@
    ベースで数字とマーク付けされている文字以外にマッチします。
 
 ``\s``
-   When the :const:`UNICODE` flag is not specified, it matches any whitespace
-   character, this is equivalent to the set ``[ \t\n\r\f\v]``. The
-   :const:`LOCALE` flag has no extra effect on matching of the space.
-   If :const:`UNICODE` is set, this will match the characters ``[ \t\n\r\f\v]``
-   plus whatever is classified as space in the Unicode character properties
-   database.
-
-..
-   旧原文と旧訳
-   When the :const:`LOCALE` and :const:`UNICODE` flags are not specified, matches
-   any whitespace character; this is equivalent to the set ``[ \t\n\r\f\v]``. With
-   :const:`LOCALE`, it will match this set plus whatever characters are defined as
-   space for the current locale. If :const:`UNICODE` is set, this will match the
-   characters ``[ \t\n\r\f\v]`` plus whatever is classified as space in the Unicode
-   character properties database.
-   :const:`LOCALE` と :const:`UNICODE` フラグが指定されていない場合、任意の空白文字とマッチ
-   します；これは集合 ``[ \t\n\r\f\v]`` と同じ意味です。
-
-   :const:`LOCALE` がある場合、これはこの集合に加えて現在のロケールで空白と定義されている全てに
-   マッチします。 :const:`UNICODE` が設定されると、これは ``[ \t\n\r\f\v]`` と Unicode
+   :const:`UNICODE` フラグが指定されていない場合、任意の空白文字とマッチ
+   し、これは集合 ``[ \t\n\r\f\v]`` と同じ意味です。 :const:`LOCALE` フラグは
+   空白文字とのマッチについて特別な意味を持ちません。
+   :const:`UNICODE`  が指定されている場合、これは ``[ \t\n\r\f\v]`` と Unicode
    文字特性データベースで空白と分類されている全てにマッチします。
 
 ``\S``
