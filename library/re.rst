@@ -319,18 +319,9 @@
    文字を表します。
 
 ``\B``
-   Matches the empty string, but only when it is *not* at the beginning or end of a
-   word.  This means that ``r'py\B'`` matches ``'python'``, ``'py3'``, ``'py2'``,
-   but not ``'py'``, ``'py.'``, or ``'py!'``.
-   ``\B`` is just the opposite of ``\b``, so is also subject to the settings
-   of ``LOCALE`` and ``UNICODE``.
-
-..
-   旧原文と旧訳
-   Matches the empty string, but only when it is *not* at the beginning or end of a
-   word.  This is just the opposite of ``\b``, so is also subject to the settings
-   of ``LOCALE`` and ``UNICODE``.
    空文字列とマッチしますが、それが単語の先頭あるいは末尾に *ない* 時だけです。
+   ``r'py\B'`` は ``'python'``, ``'py3'``, ``'py2'`` にはマッチしますが、
+   ``'py'``, ``'py.'``, ``'py!'`` にはマッチしません。
    これは ``\b`` のちょうど反対ですので、同じように ``LOCALE`` と ``UNICODE``
    の設定に影響されます。
 
