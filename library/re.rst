@@ -308,23 +308,15 @@
    文字列の先頭だけにマッチします。
 
 ``\b``
-   空文字列とマッチしますが、単語の先頭か末尾の時だけです。単語は英数字あるいは下線文字の並んだ
-   ものとして定義されていますので、単語の末尾は空白あるいは非英数字、非下線文字によって表されます。
-   Note that formally, ``\b`` is defined as the boundary between a ``\w`` and
-   a ``\W`` character (or vice versa), or between ``\w`` and the beginning/end
-   of the string, so the precise set of characters deemed to be alphanumeric
-   depends on the values of the ``UNICODE`` and ``LOCALE`` flags.
-   For example, ``r'\bfoo\b'`` matches ``'foo'``, ``'foo.'``, ``'(foo)'``,
-   ``'bar foo baz'`` but not ``'foobar'`` or ``'foo3'``.
-   文字範囲内では、``\b`` は Python の文字列リテラルとの互換性のため、後退 (backspace)
+   空文字列とマッチしますが、単語の先頭か末尾の時だけです。単語とは英数字または
+   アンダースコアからなるシーケンスで、単語の終わりは空白文字、あるいはアンダースコア
+   を除く記号で表します。 ``\b`` は ``\w`` および ``\W`` の間 (およびその逆) あるいは
+   ``\w`` と文字列の開始/終了との間の境界として定義されていますので、文字の正確な集合は
+   ``UNICODE`` と ``LOCALE`` フラグの値に依存します。
+   例えば、 ``r'\bfoo\b'`` は ``'foo'`` , ``'foo.'`` , ``'(foo)'``, ``'bar foo baz'``
+   にマッチしますが、 ``'foobar'``, ``'foo3'`` にはマッチしません。
+   文字範囲内では、 ``\b`` は Python の文字列リテラルとの互換性のため、後退 (backspace)
    文字を表します。
-
-..
-   旧原文と旧訳
-   Note that  ``\b`` is defined as the boundary between ``\w`` and ``\W``, so the
-   precise set of characters deemed to be alphanumeric depends on the values of the
-   ``UNICODE`` and ``LOCALE`` flags.
-   文字の正確な集合は、 ``UNICODE`` と ``LOCALE`` フラグの値に依存することに注意して下さい。
 
 ``\B``
    Matches the empty string, but only when it is *not* at the beginning or end of a
