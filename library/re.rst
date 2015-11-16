@@ -574,22 +574,11 @@ Python 文字列リテラルによってサポートされている標準エス�
    ``None`` を返します；
    これは長さゼロのマッチとは異なることに注意して下さい。
 
-   Note that even in :const:`MULTILINE` mode, :func:`re.match` will only match
-   at the beginning of the string and not at the beginning of each line.
+   :const:`MULTILINE` モードであっても、:func:`re.match` は文字列の先頭のみにマッチし、
+   各行の先頭にはマッチしないことに注意してください。
 
-   If you want to locate a match anywhere in *string*, use :func:`search`
-   instead (see also :ref:`search-vs-match`).
-
-..
-   旧原文と翻訳
-   .. note::
-
-      If you want to locate a match anywhere in *string*, use :func:`search`
-      instead.
-   .. note::
-
-      もし *string* のどこかにマッチを位置付けたいのであれば、代わりに
-      :func:`search` を使って下さい。
+   *string* のどこにでもマッチさせたければ、 :func:`search` を使って下さい
+   (:ref:`search-vs-match` も参照してください)。
 
 
 .. function:: split(pattern, string, maxsplit=0, flags=0)
