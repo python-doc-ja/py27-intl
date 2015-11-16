@@ -316,18 +316,15 @@
    depends on the values of the ``UNICODE`` and ``LOCALE`` flags.
    For example, ``r'\bfoo\b'`` matches ``'foo'``, ``'foo.'``, ``'(foo)'``,
    ``'bar foo baz'`` but not ``'foobar'`` or ``'foo3'``.
-   Inside a character range, ``\b`` represents the backspace character, for
-   compatibility with Python's string literals.
+   文字範囲内では、``\b`` は Python の文字列リテラルとの互換性のため、後退 (backspace)
+   文字を表します。
 
 ..
    旧原文と旧訳
    Note that  ``\b`` is defined as the boundary between ``\w`` and ``\W``, so the
    precise set of characters deemed to be alphanumeric depends on the values of the
-   ``UNICODE`` and ``LOCALE`` flags.  Inside a character range, ``\b`` represents
-   the backspace character, for compatibility with Python's string literals.
+   ``UNICODE`` and ``LOCALE`` flags.
    文字の正確な集合は、 ``UNICODE`` と ``LOCALE`` フラグの値に依存することに注意して下さい。
-   文字の範囲の中では、 ``\b`` は、 Python の文字列リテラルと互換性を持たせるために、後退
-   (backspace)文字を表します。
 
 ``\B``
    Matches the empty string, but only when it is *not* at the beginning or end of a
