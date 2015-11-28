@@ -8,19 +8,17 @@
 # that aren't pickleable (module imports are okay, they're removed automatically).
 
 import sys, os, time
-sys.path.append(os.path.abspath('tools/sphinxext'))
+sys.path.append(os.path.abspath('tools/extensions'))
 
 # General configuration
 # ---------------------
 
-# ../Include ディレクトリが存在しないので、coverage拡張を無効化
+# JP: ../Include ディレクトリが存在しないので、coverage拡張を無効化
+# JP: jpsupport 拡張を利用
 
-extensions = ['sphinx.ext.refcounting',
-              'sphinx.ext.doctest',
-              'pyspecific',
-              'jpsupport',
-              ]
-templates_path = ['tools/sphinxext']
+extensions = ['sphinx.ext.doctest',
+              'pyspecific', 'c_annotations',
+              'jpsupport']
 
 # General substitutions.
 project = 'Python'
@@ -35,6 +33,8 @@ copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
 
 # We look for the Include/patchlevel.h file in the current Python source tree
 # and replace the values accordingly.
+
+# JP: ../Include が無いので patchlevel モジュールを使わない
 #import patchlevel
 #version, release = patchlevel.get_version_info()
 version, release = '2.7', '2.7ja1'
@@ -48,46 +48,31 @@ today = ''
 today_fmt = u'%Y年 %m月 %d日'
 
 # List of files that shouldn't be included in the build.
-unused_docs = [
-    'maclib/scrap',
-    'library/xmllib',
-    'library/xml.etree',
-    'documenting/sphinx',
-]
-
-# Relative filename of the reference count data file.
-refcount_file = 'data/refcounts.dat'
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-add_module_names = True
-
-# directory paths to ignore
-exclude_trees = [
-        'refs',
-        'tools',
+exclude_patterns = [
+    'maclib/scrap.rst',
+    'library/xmllib.rst',
+    'library/xml.etree.rst',
 ]
 
 exclude_dirnames = ['diff', 'orig', 'tools']
 
-trim_doctest_flags = False
+# Require Sphinx 1.2 for build.
+needs_sphinx = '1.2'
 
 
 # Options for HTML output
 # -----------------------
 
-html_theme = 'sphinxdoc'
+html_theme = 'default'
+html_theme_options = {'collapsiblesidebar': True}
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
+# JP: 英語の日付フォーマットから変更
 html_last_updated_fmt = '%Y-%m-%d'
 
-# If true, SmartyPants will be used to convert quotes and dashes to
-# typographically correct entities.
-html_use_smartypants = True
+# Path to find HTML templates.
+templates_path = ['tools/templates']
 
 # Custom sidebar templates, filenames relative to this file.
 html_sidebars = {
@@ -101,10 +86,10 @@ html_additional_pages = {
 }
 
 # Output an OpenSearch description file.
-html_use_opensearch = 'http://docs.python.org/dev'
+html_use_opensearch = 'https://docs.python.org/'
 
 # Additional static files.
-html_static_path = ['tools/sphinxext/static']
+html_static_path = ['tools/static']
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'python' + release.replace('.', '')
@@ -116,35 +101,37 @@ html_split_index = True
 # Options for LaTeX output
 # ------------------------
 
-# todo: translate commented topics.
+# The paper size ('letter' or 'a4').
+latex_paper_size = 'a4'
+
+# The font size ('10pt', '11pt' or '12pt').
+latex_font_size = '10pt'
+
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
-_stdauthor = r'Guido van Rossum\\Fred L. Drake, Jr., editor'
+_stdauthor = r'Guido van Rossum\\and the Python development team'
 latex_documents = [
     ('c-api/index', 'c-api.tex',
-     '', _stdauthor, 'manual'),
-    ('distutils/index', 'distutils.tex',
-     '', _stdauthor, 'manual'),
-    ('documenting/index', 'documenting.tex',
-     '', 'Georg Brandl', 'manual'),
+     'The Python/C API', _stdauthor, 'manual'),
+    ('distributing/index', 'distributing.tex',
+     'Distributing Python Modules', _stdauthor, 'manual'),
     ('extending/index', 'extending.tex',
-     '', _stdauthor, 'manual'),
-    ('install/index', 'install.tex',
-     '', _stdauthor, 'manual'),
+     'Extending and Embedding Python', _stdauthor, 'manual'),
+    ('installing/index', 'installing.tex',
+     'Installing Python Modules', _stdauthor, 'manual'),
     ('library/index', 'library.tex',
-     '', _stdauthor, 'manual'),
+     'The Python Library Reference', _stdauthor, 'manual'),
     ('reference/index', 'reference.tex',
-     '', _stdauthor, 'manual'),
+     'The Python Language Reference', _stdauthor, 'manual'),
     ('tutorial/index', 'tutorial.tex',
-     '', _stdauthor, 'manual'),
+     'Python Tutorial', _stdauthor, 'manual'),
     ('using/index', 'using.tex',
-     '', _stdauthor, 'manual'),
+     'Python Setup and Usage', _stdauthor, 'manual'),
     ('faq/index', 'faq.tex',
-     '', _stdauthor, 'manual'),
+     'Python Frequently Asked Questions', _stdauthor, 'manual'),
     ('whatsnew/' + version, 'whatsnew.tex',
-     '', 'A. M. Kuchling', 'howto'),
+     'What\'s New in Python', 'A. M. Kuchling', 'howto'),
 ]
-
 # Collect all HOWTOs individually
 latex_documents.extend(('howto/' + fn[:-4], 'howto-' + fn[:-4] + '.tex',
                         '', _stdauthor, 'howto')
@@ -157,16 +144,15 @@ latex_preamble = r'''
   \strong{Python Software Foundation}\\
   Email: \email{docs@python.org}
 }
+\let\Verbatim=\OriginalVerbatim
+\let\endVerbatim=\endOriginalVerbatim
 '''
 
 # Documents to append as an appendix to all manuals.
 latex_appendices = ['glossary', 'about', 'license', 'copyright']
 
-latex_docclass = {'manual': 'jsbook', 'howto': 'jsarticle'}
-latex_elements = {
-        'papersize': 'a4paper',
-        'pointsize': '10pt',
-        }
+# Get LaTeX to handle Unicode correctly
+latex_elements = {'inputenc': r'\usepackage[utf8x]{inputenc}', 'utf8extra': ''}
 
 # Options for the coverage checker
 # --------------------------------
@@ -205,6 +191,22 @@ coverage_ignore_c_items = {
 }
 
 
+# Options for the link checker
+# ----------------------------
+
+# Ignore certain URLs.
+linkcheck_ignore = [r'https://bugs.python.org/(issue)?\d+',
+                    # Ignore PEPs for now, they all have permanent redirects.
+                    r'http://www.python.org/dev/peps/pep-\d+']
+
+
+# Options for extensions
+# ----------------------
+
+# Relative filename of the reference count data file.
+refcount_file = 'data/refcounts.dat'
+
+# JP: ePub の設定は元の conf.py にはない
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
@@ -212,34 +214,3 @@ epub_title = u'Python ドキュメント 日本語訳'
 epub_author = u'Python ドキュメント 翻訳プロジェクト'
 epub_publisher = epub_author
 epub_copyright = u'2010, Pythonドキュメント翻訳プロジェクト'
-
-# The language of the text. It defaults to the language option
-# or en if the language is not set.
-#epub_language = ''
-
-# The scheme of the identifier. Typical schemes are ISBN or URL.
-#epub_scheme = ''
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#epub_identifier = ''
-
-# A unique identification for the text.
-#epub_uid = ''
-
-# HTML files that should be inserted before the pages created by sphinx.
-# The format is a list of tuples containing the path and title.
-#epub_pre_files = []
-
-# HTML files shat should be inserted after the pages created by sphinx.
-# The format is a list of tuples containing the path and title.
-#epub_post_files = []
-
-# A list of files that should not be packed into the epub file.
-#epub_exclude_files = []
-
-# The depth of the table of contents in toc.ncx.
-#epub_tocdepth = 3
-
-# Allow duplicate toc entries.
-#epub_tocdup = True
