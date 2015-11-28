@@ -14,12 +14,10 @@ sys.path.append(os.path.abspath('tools/sphinxext'))
 # ---------------------
 
 # ../Include ディレクトリが存在しないので、coverage拡張を無効化
-# 翻訳時のtodoを記録するために、todo拡張を有効化
 
 extensions = ['sphinx.ext.refcounting',
               'sphinx.ext.doctest',
               'pyspecific',
-              'sphinx.ext.todo',
               'jpsupport',
               ]
 templates_path = ['tools/sphinxext']
