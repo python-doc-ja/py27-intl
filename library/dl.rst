@@ -1,114 +1,114 @@
 
-:mod:`dl` --- 共有オブジェクトのC関数の呼び出し
-===============================================
+:mod:`dl` --- Call C functions in shared objects
+================================================
 
 .. module:: dl
    :platform: Unix
-   :synopsis: 共有オブジェクトのC関数の呼び出し
+   :synopsis: Call C functions in shared objects.
    :deprecated:
 
 .. deprecated:: 2.6
-    :mod:`dl` モジュールは Python 3.0 で削除されました。代わりに :mod:`ctypes`
-    モジュールを使ってください。
+    The :mod:`dl` module has been removed in Python 3. Use the :mod:`ctypes`
+    module instead.
 
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
-:mod:`dl` モジュールは :c:func:`dlopen` 関数へのインタフェースを定義します。
-これはダイナミックライブラリにハンドルするための
-Unix プラットフォーム上の最も一般的なインタフェースです。
-そのライブラリの任意の関数を呼ぶプログラムを与えます。
+The :mod:`dl` module defines an interface to the :c:func:`dlopen` function, which
+is the most common interface on Unix platforms for handling dynamically linked
+libraries. It allows the program to call arbitrary functions in such a library.
 
 .. warning::
 
-   :mod:`dl` モジュールは Python の型システムとエラー処理をバイパスしています。
-   もし間違って使用すれば、セグメンテーションフォルト、
-   クラッシュ、その他の不正な動作を起こします。
+   The :mod:`dl` module bypasses the Python type system and  error handling. If
+   used incorrectly it may cause segmentation faults, crashes or other incorrect
+   behaviour.
 
 .. note::
 
-   このモジュールは ``sizeof(int) == sizeof(long) == sizeof(char *)`` でなければ働きません。
-   そうでなければimportするときに :exc:`SystemError` が送出されるでしょう。
+   This module will not work unless ``sizeof(int) == sizeof(long) == sizeof(char
+   *)`` If this is not the case, :exc:`SystemError` will be raised on import.
 
-:mod:`dl` モジュールは次の関数を定義します:
+The :mod:`dl` module defines the following function:
 
 
 .. function:: open(name[, mode=RTLD_LAZY])
 
-   共有オブジェクトファイルを開いて、ハンドルを返します。
-   モードは遅延結合(:const:`RTLD_LAZY`)または即時結合(:const:`RTLD_NOW`) を表します。
-   デフォルトは :const:`RTLD_LAZY` です。
-   いくつかのシステムは :const:`RTLD_NOW` をサポートしていないことに注意してください。
+   Open a shared object file, and return a handle. Mode signifies late binding
+   (:const:`RTLD_LAZY`) or immediate binding (:const:`RTLD_NOW`). Default is
+   :const:`RTLD_LAZY`. Note that some systems do not support :const:`RTLD_NOW`.
 
-   返り値は :class:`dlobject` です。
+   Return value is a :class:`dlobject`.
 
-:mod:`dl` モジュールは次の定数を定義します:
+The :mod:`dl` module defines the following constants:
 
 
 .. data:: RTLD_LAZY
 
-   :func:`.open` の引数として使います。
+   Useful as an argument to :func:`.open`.
 
 
 .. data:: RTLD_NOW
 
-   :func:`.open` の引数として使います。
-   即時結合をサポートしないシステムでは、この定数がモジュールに現われないことに注意してください。
-   最大のポータビリティを求めるならば、システムが即時結合をサポートするかどうかを決定するために :func:`hasattr` を使用してください。
+   Useful as an argument to :func:`.open`.  Note that on systems which do not
+   support immediate binding, this constant will not appear in the module. For
+   maximum portability, use :func:`hasattr` to determine if the system supports
+   immediate binding.
 
-:mod:`dl` モジュールは次の例外を定義します:
+The :mod:`dl` module defines the following exception:
 
 
 .. exception:: error
 
-   動的なロードやリンクルーチンの内部でエラーが生じたときに送出される例外です。
+   Exception raised when an error has occurred inside the dynamic loading and
+   linking routines.
 
-例::
+Example::
 
    >>> import dl, time
    >>> a=dl.open('/lib/libc.so.6')
    >>> a.call('time'), time.time()
    (929723914, 929723914.498)
 
-この例はDebian GNU/Linuxシステム上で行なったもので、
-このモジュールの使用はたいてい悪い選択肢であるという事実のよい例です。
+This example was tried on a Debian GNU/Linux system, and is a good example of
+the fact that using this module is usually a bad alternative.
 
 
 .. _dl-objects:
 
-Dlオブジェクト
---------------
+Dl Objects
+----------
 
-:func:`.open` によって返されたDlオブジェクトは次のメソッドを持っています:
+Dl objects, as returned by :func:`.open` above, have the following methods:
 
 
 .. method:: dl.close()
 
-   メモリーを除く全てのリソースを解放します。
+   Free all resources, except the memory.
 
 
 .. method:: dl.sym(name)
 
-   *name* という名前の関数が参照された共有オブジェクトに存在する場合、
-   そのポインター(整数値)を返します。存在しない場合 ``None`` を返します。
-   これは次のように使えます::
+   Return the pointer for the function named *name*, as a number, if it exists in
+   the referenced shared object, otherwise ``None``. This is useful in code like::
 
       >>> if a.sym('time'):
       ...     a.call('time')
       ... else:
       ...     time.time()
 
-   (0は *NULL* ポインターであるので、この関数は0でない数を返すだろうということに注意してください)
+   (Note that this function will return a non-zero number, as zero is the *NULL*
+   pointer)
 
 
 .. method:: dl.call(name[, arg1[, arg2...]])
 
-   参照された共有オブジェクトの *name* という名前の関数を呼出します。
-   引数は、Python整数(そのまま渡される)、Python文字列(ポインターが渡される)、
-   ``None`` (*NULL* として渡される)
-   のどれかでなければいけません。
-   Pythonはその文字列が変化させられるのを好まないので、
-   文字列は :c:type:`const char*` として関数に渡されるべきであることに注意してください。
+   Call the function named *name* in the referenced shared object. The arguments
+   must be either Python integers, which will be  passed as is, Python strings, to
+   which a pointer will be passed,  or ``None``, which will be passed as *NULL*.
+   Note that  strings should only be passed to functions as :c:type:`const char\*`,
+   as Python will not like its string mutated.
 
-   最大で10個の引数が渡すことができ、与えられない引数は ``None`` として扱われます。
-   関数の返り値は C :c:type:`long` (Python整数である)です。
+   There must be at most 10 arguments, and arguments not given will be treated as
+   ``None``. The function's return value must be a C :c:type:`long`, which is a
+   Python integer.
 

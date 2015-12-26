@@ -1,68 +1,74 @@
 
-:mod:`spwd` --- シャドウパスワードデータベース
-==============================================
+:mod:`spwd` --- The shadow password database
+============================================
 
 .. module:: spwd
    :platform: Unix
-   :synopsis: シャドウパスワードデータベース(getspnam() など
+   :synopsis: The shadow password database (getspnam() and friends).
 
 
 .. versionadded:: 2.5
 
-このモジュールは Unix のシャドウパスワードデータベースへのアクセスを提供します。
-様々な Unix 環境で利用できます。
+This module provides access to the Unix shadow password database. It is
+available on various Unix versions.
 
-シャドウパスワードデータベースへアクセスできる権限が必要(大抵の場合 root である必要があります)です。
+You must have enough privileges to access the shadow password database (this
+usually means you have to be root).
 
-シャドウパスワードデータベースのエントリはタプル状のオプジェクトで提供され、その属性は ``spwd``
-構造のメンバーに対応しています（以下を参照してください。 ``<shadow.h>を参照``):
+Shadow password database entries are reported as a tuple-like object, whose
+attributes correspond to the members of the ``spwd`` structure (Attribute field
+below, see ``<shadow.h>``):
 
-+-------+---------------+----------------------------------------------------------+
-| Index | Attribute     | Meaning                                                  |
-+=======+===============+==========================================================+
-| 0     | ``sp_nam``    | ログイン名                                               |
-+-------+---------------+----------------------------------------------------------+
-| 1     | ``sp_pwd``    | 暗号化されたパスワード                                   |
-+-------+---------------+----------------------------------------------------------+
-| 2     | ``sp_lstchg`` | 最終更新日                                               |
-+-------+---------------+----------------------------------------------------------+
-| 3     | ``sp_min``    | パスワード変更が出来るようになるまでの最小日数           |
-+-------+---------------+----------------------------------------------------------+
-| 4     | ``sp_max``    | パスワードを変更しなくても良い最大日数                   |
-+-------+---------------+----------------------------------------------------------+
-| 5     | ``sp_warn``   | パスワードが期限切れになる前に、                         |
-|       |               | 期限切れが近づいている旨の警告をユーザに出しはじめる日数 |
-+-------+---------------+----------------------------------------------------------+
-| 6     | ``sp_inact``  | パスワードが期限切れになってから、                       |
-|       |               | アカウントがinactiveとなり使用できなくなるまでの日数     |
-+-------+---------------+----------------------------------------------------------+
-| 7     | ``sp_expire`` | 1970-01-01からアカウントが使用できなくなるまでの日数     |
-+-------+---------------+----------------------------------------------------------+
-| 8     | ``sp_flag``   | 将来のために予約                                         |
-+-------+---------------+----------------------------------------------------------+
++-------+---------------+---------------------------------+
+| Index | Attribute     | Meaning                         |
++=======+===============+=================================+
+| 0     | ``sp_nam``    | Login name                      |
++-------+---------------+---------------------------------+
+| 1     | ``sp_pwd``    | Encrypted password              |
++-------+---------------+---------------------------------+
+| 2     | ``sp_lstchg`` | Date of last change             |
++-------+---------------+---------------------------------+
+| 3     | ``sp_min``    | Minimal number of days between  |
+|       |               | changes                         |
++-------+---------------+---------------------------------+
+| 4     | ``sp_max``    | Maximum number of days between  |
+|       |               | changes                         |
++-------+---------------+---------------------------------+
+| 5     | ``sp_warn``   | Number of days before password  |
+|       |               | expires to warn user about it   |
++-------+---------------+---------------------------------+
+| 6     | ``sp_inact``  | Number of days after password   |
+|       |               | expires until account is        |
+|       |               | blocked                         |
++-------+---------------+---------------------------------+
+| 7     | ``sp_expire`` | Number of days since 1970-01-01 |
+|       |               | until account is disabled       |
++-------+---------------+---------------------------------+
+| 8     | ``sp_flag``   | Reserved                        |
++-------+---------------+---------------------------------+
 
-*sp_nam* と *sp_pwd* は文字列で、他は全て整数です。
+The sp_nam and sp_pwd items are strings, all others are integers.
+:exc:`KeyError` is raised if the entry asked for cannot be found.
 
-エントリが見つからなかった時は :exc:`KeyError` が起きます。
-
-このモジュールでは以下を定義しています:
+It defines the following items:
 
 
 .. function:: getspnam(name)
 
-   与えられたユーザ名に対応するシャドウパスワードデータベースのエントリを返します。
+   Return the shadow password database entry for the given user name.
 
 
 .. function:: getspall()
 
-   利用可能なシャドウパスワードデータベースの全エントリを任意の順番で返します。
+   Return a list of all available shadow password database entries, in arbitrary
+   order.
 
 
 .. seealso::
 
-   :mod:`grp` モジュール
-      このモジュールに似たグループデータベースへのインタフェース
+   Module :mod:`grp`
+      An interface to the group database, similar to this.
 
-   :mod:`pwd` モジュール
-      このモジュールに似た通常のパスワードデータベースへのインタフェース
+   Module :mod:`pwd`
+      An interface to the normal password database, similar to this.
 

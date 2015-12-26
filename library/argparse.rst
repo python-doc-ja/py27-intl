@@ -1,29 +1,35 @@
-.. :mod:`argparse` --- Parser for command-line options, arguments and sub-commands
-
-:mod:`argparse` --- コマンドラインオプション、引数、サブコマンドのパーサー
+:mod:`argparse` --- Parser for command-line options, arguments and sub-commands
 ===============================================================================
 
 .. module:: argparse
-   :synopsis: コマンドラインオプションと引数のパーサーライブラリ
+   :synopsis: Command-line option and argument parsing library.
 .. moduleauthor:: Steven Bethard <steven.bethard@gmail.com>
-.. versionadded:: 2.7
 .. sectionauthor:: Steven Bethard <steven.bethard@gmail.com>
 
+.. versionadded:: 2.7
 
-:mod:`argparse` モジュールはユーザーフレンドリーなコマンドラインインタフェースの
-作成を簡単にします。
-プログラムがどんな引数を必要としているのかを定義すると、 :mod:`argparse` が
-:data:`sys.argv` からそのオプションをパースする部分の面倒を見ます。
-:mod:`argparse` モジュールは自動的にヘルプと使用方法メッセージを生成し、
-ユーザーが不正な引数をプログラムに指定したときにエラーを発生させます。
+**Source code:** :source:`Lib/argparse.py`
+
+--------------
+
+.. sidebar:: Tutorial
+
+   This page contains the API reference information. For a more gentle
+   introduction to Python command-line parsing, have a look at the
+   :ref:`argparse tutorial <argparse-tutorial>`.
+
+The :mod:`argparse` module makes it easy to write user-friendly command-line
+interfaces. The program defines what arguments it requires, and :mod:`argparse`
+will figure out how to parse those out of :data:`sys.argv`.  The :mod:`argparse`
+module also automatically generates help and usage messages and issues errors
+when users give the program invalid arguments.
 
 
-.. Example
-
-例
+Example
 -------
 
-次のコードは、整数のリストを受け取って合計か最大値を返す Python プログラムです::
+The following code is a Python program that takes a list of integers and
+produces either the sum or the max::
 
    import argparse
 
@@ -37,10 +43,10 @@
    args = parser.parse_args()
    print args.accumulate(args.integers)
 
-上の Python コードが ``prog.py`` という名前のファイルに保存されたと仮定します。
-コマンドラインから実行して、便利なヘルプメッセージを提供することができます。 ::
+Assuming the Python code above is saved into a file called ``prog.py``, it can
+be run at the command line and provides useful help messages::
 
-   $ prog.py -h
+   $ python prog.py -h
    usage: prog.py [-h] [--sum] N [N ...]
 
    Process some integers.
@@ -52,49 +58,44 @@
     -h, --help  show this help message and exit
     --sum       sum the integers (default: find the max)
 
-妥当な引数を与えて実行された場合、このプログラムはコマンドライン引数の整数列の
-合計か最大値を表示します::
+When run with the appropriate arguments, it prints either the sum or the max of
+the command-line integers::
 
-   $ prog.py 1 2 3 4
+   $ python prog.py 1 2 3 4
    4
 
-   $ prog.py 1 2 3 4 --sum
+   $ python prog.py 1 2 3 4 --sum
    10
 
-不正な引数が与えられた場合、エラーを発生させます::
+If invalid arguments are passed in, it will issue an error::
 
-   $ prog.py a b c
+   $ python prog.py a b c
    usage: prog.py [-h] [--sum] N [N ...]
    prog.py: error: argument N: invalid int value: 'a'
 
-以降のセクションでは、この例をひと通り解説して行きます。
+The following sections walk you through this example.
 
 
-.. Creating a parser
-
-パーサーを作る
+Creating a parser
 ^^^^^^^^^^^^^^^^^
 
-:mod:`argparse` を使う最初のステップは、 :class:`ArgumentParser`
-オブジェクトを生成することです::
+The first step in using the :mod:`argparse` is creating an
+:class:`ArgumentParser` object::
 
    >>> parser = argparse.ArgumentParser(description='Process some integers.')
 
-:class:`ArgumentParser` オブジェクトはコマンドラインを解析して Python データ型にする
-ために必要な全ての情報を保持します。
+The :class:`ArgumentParser` object will hold all the information necessary to
+parse the command line into Python data types.
 
 
-.. Adding arguments
-
-引数を追加する
+Adding arguments
 ^^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` にプログラム引数の情報を与えるために、
-:meth:`~ArgumentParser.add_argument` メソッドを呼び出します。
-一般的に、このメソッドの呼び出しは :class:`ArgumentParser` に、コマンドラインの
-文字列を受け取ってそれをオブジェクトにする方法を教えます。
-この情報は保存され、 :meth:`~ArgumentParser.parse_args` が呼び出されたときに
-利用されます。例えば::
+Filling an :class:`ArgumentParser` with information about program arguments is
+done by making calls to the :meth:`~ArgumentParser.add_argument` method.
+Generally, these calls tell the :class:`ArgumentParser` how to take the strings
+on the command line and turn them into objects.  This information is stored and
+used when :meth:`~ArgumentParser.parse_args` is called. For example::
 
    >>> parser.add_argument('integers', metavar='N', type=int, nargs='+',
    ...                     help='an integer for the accumulator')
@@ -102,80 +103,178 @@
    ...                     const=sum, default=max,
    ...                     help='sum the integers (default: find the max)')
 
-あとで、 :meth:`~ArgumentParser.parse_args` を呼び出すと、 ``integers`` と
-``accumulate`` という2つの属性を持ったオブジェクトを返します。
-``integers`` 属性は1つ以上の整数のリストで、 ``accumulate`` 属性はコマンドラインから
-``--sum`` が指定された場合は :func:`sum` 関数、それ以外の場合は :func:`max` 関数に
-なります。
+Later, calling :meth:`~ArgumentParser.parse_args` will return an object with
+two attributes, ``integers`` and ``accumulate``.  The ``integers`` attribute
+will be a list of one or more ints, and the ``accumulate`` attribute will be
+either the :func:`sum` function, if ``--sum`` was specified at the command line,
+or the :func:`max` function if it was not.
 
 
-.. Parsing arguments
-
-引数をパースする
+Parsing arguments
 ^^^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` は引数を :meth:`~ArgumentParser.parse_args`
-メソッドでパースします。
-このメソッドはコマンドラインを調べ、各引数を正しい型に変換して、適切なアクションを
-実行します。ほとんどの場合、これはシンプルな namespace オブジェクトを
-コマンドラインの解析結果から構築することを意味します::
+:class:`ArgumentParser` parses arguments through the
+:meth:`~ArgumentParser.parse_args` method.  This will inspect the command line,
+convert each argument to the appropriate type and then invoke the appropriate action.
+In most cases, this means a simple :class:`Namespace` object will be built up from
+attributes parsed out of the command line::
 
    >>> parser.parse_args(['--sum', '7', '-1', '42'])
    Namespace(accumulate=<built-in function sum>, integers=[7, -1, 42])
 
-スクリプトでは、 :meth:`~ArgumentParser.parse_args` は典型的には引数なしで
-呼び出され、 :class:`ArgumentParser` は自動的に :data:`sys.argv` から
-コマンドライン引数を取得します。
+In a script, :meth:`~ArgumentParser.parse_args` will typically be called with no
+arguments, and the :class:`ArgumentParser` will automatically determine the
+command-line arguments from :data:`sys.argv`.
 
 
-.. ArgumentParser objects
+ArgumentParser objects
+----------------------
 
-ArgumentParser オブジェクト
-----------------------------
+.. class:: ArgumentParser(prog=None, usage=None, description=None, \
+                          epilog=None, parents=[], \
+                          formatter_class=argparse.HelpFormatter, \
+                          prefix_chars='-', fromfile_prefix_chars=None, \
+                          argument_default=None, conflict_handler='error', \
+                          add_help=True)
 
-.. class:: ArgumentParser([description], [epilog], [prog], [usage], [add_help], [argument_default], [parents], [prefix_chars], [conflict_handler], [formatter_class])
+   Create a new :class:`ArgumentParser` object. All parameters should be passed
+   as keyword arguments. Each parameter has its own more detailed description
+   below, but in short they are:
 
-   新しい :class:`ArgumentParser` オブジェクトを生成します。
-   各引数についてはあとで詳しく説明しますが、簡単に言うと:
+   * prog_ - The name of the program (default: ``sys.argv[0]``)
 
-   * description_ - 引数のヘルプの前に表示されるテキスト
+   * usage_ - The string describing the program usage (default: generated from
+     arguments added to parser)
 
-   * epilog_ - 引数のヘルプの後で表示されるテキスト
+   * description_ - Text to display before the argument help (default: none)
 
-   * add_help_ - -h/--help オプションをパーサーに追加する (デフォルト: ``True``)
+   * epilog_ - Text to display after the argument help (default: none)
 
-   * argument_default_ - 引数にグローバルのデフォルト値を設定する
-     (デフォルト: ``None``)
+   * parents_ - A list of :class:`ArgumentParser` objects whose arguments should
+     also be included
 
-   * parents_ - :class:`ArgumentParser` オブジェクトのリストで、このオブジェクトの
-     引数が追加される
+   * formatter_class_ - A class for customizing the help output
 
-   * prefix_chars_ - オプションの引数の prefix になる文字集合
-     (デフォルト: '-')
+   * prefix_chars_ - The set of characters that prefix optional arguments
+     (default: '-')
 
-   * fromfile_prefix_chars_ - 追加の引数を読み込むファイルの prefix になる文字集合
-     (デフォルト: ``None``)
+   * fromfile_prefix_chars_ - The set of characters that prefix files from
+     which additional arguments should be read (default: ``None``)
 
-   * formatter_class_ - ヘルプ出力をカスタマイズするためのクラス
+   * argument_default_ - The global default value for arguments
+     (default: ``None``)
 
-   * conflict_handler_ - 衝突するオプションを解決する方法を定義する。
-     通常は利用する必要はありません。
+   * conflict_handler_ - The strategy for resolving conflicting optionals
+     (usually unnecessary)
 
-   * prog_ - プログラム名 (デフォルト: :data:`sys.argv[0]`)
+   * add_help_ - Add a -h/--help option to the parser (default: ``True``)
 
-   * usage_ - プログラムの利用方法を解説する文字列 (デフォルト: 生成される)
+The following sections describe how each of these are used.
 
-以下のセクションでは各オプションの利用方法を解説します。
+
+prog
+^^^^
+
+By default, :class:`ArgumentParser` objects uses ``sys.argv[0]`` to determine
+how to display the name of the program in help messages.  This default is almost
+always desirable because it will make the help messages match how the program was
+invoked on the command line.  For example, consider a file named
+``myprogram.py`` with the following code::
+
+   import argparse
+   parser = argparse.ArgumentParser()
+   parser.add_argument('--foo', help='foo help')
+   args = parser.parse_args()
+
+The help for this program will display ``myprogram.py`` as the program name
+(regardless of where the program was invoked from)::
+
+   $ python myprogram.py --help
+   usage: myprogram.py [-h] [--foo FOO]
+
+   optional arguments:
+    -h, --help  show this help message and exit
+    --foo FOO   foo help
+   $ cd ..
+   $ python subdir\myprogram.py --help
+   usage: myprogram.py [-h] [--foo FOO]
+
+   optional arguments:
+    -h, --help  show this help message and exit
+    --foo FOO   foo help
+
+To change this default behavior, another value can be supplied using the
+``prog=`` argument to :class:`ArgumentParser`::
+
+   >>> parser = argparse.ArgumentParser(prog='myprogram')
+   >>> parser.print_help()
+   usage: myprogram [-h]
+
+   optional arguments:
+    -h, --help  show this help message and exit
+
+Note that the program name, whether determined from ``sys.argv[0]`` or from the
+``prog=`` argument, is available to help messages using the ``%(prog)s`` format
+specifier.
+
+::
+
+   >>> parser = argparse.ArgumentParser(prog='myprogram')
+   >>> parser.add_argument('--foo', help='foo of the %(prog)s program')
+   >>> parser.print_help()
+   usage: myprogram [-h] [--foo FOO]
+
+   optional arguments:
+    -h, --help  show this help message and exit
+    --foo FOO   foo of the myprogram program
+
+
+usage
+^^^^^
+
+By default, :class:`ArgumentParser` calculates the usage message from the
+arguments it contains::
+
+   >>> parser = argparse.ArgumentParser(prog='PROG')
+   >>> parser.add_argument('--foo', nargs='?', help='foo help')
+   >>> parser.add_argument('bar', nargs='+', help='bar help')
+   >>> parser.print_help()
+   usage: PROG [-h] [--foo [FOO]] bar [bar ...]
+
+   positional arguments:
+    bar          bar help
+
+   optional arguments:
+    -h, --help   show this help message and exit
+    --foo [FOO]  foo help
+
+The default message can be overridden with the ``usage=`` keyword argument::
+
+   >>> parser = argparse.ArgumentParser(prog='PROG', usage='%(prog)s [options]')
+   >>> parser.add_argument('--foo', nargs='?', help='foo help')
+   >>> parser.add_argument('bar', nargs='+', help='bar help')
+   >>> parser.print_help()
+   usage: PROG [options]
+
+   positional arguments:
+    bar          bar help
+
+   optional arguments:
+    -h, --help   show this help message and exit
+    --foo [FOO]  foo help
+
+The ``%(prog)s`` format specifier is available to fill in the program name in
+your usage messages.
 
 
 description
 ^^^^^^^^^^^
 
-多くの場合、 :class:`ArgumentParser` のコンストラクタを呼び出すときに
-``description=`` キーワード引数が利用されます。
-この引数はプログラムが何をしてどう動くのかについての短い説明です。
-ヘルプメッセージで、この description はコマンドラインの利用法と引数の
-ヘルプメッセージの間に表示されます::
+Most calls to the :class:`ArgumentParser` constructor will use the
+``description=`` keyword argument.  This argument gives a brief description of
+what the program does and how it works.  In help messages, the description is
+displayed between the command-line usage string and the help messages for the
+various arguments::
 
    >>> parser = argparse.ArgumentParser(description='A foo that bars')
    >>> parser.print_help()
@@ -186,16 +285,16 @@ description
    optional arguments:
     -h, --help  show this help message and exit
 
-デフォルトでは、 description は行ラップされるので、与えられたスペースに
-マッチします。この挙動を変更するには、 formatter_class_ 引数を参照してください。
+By default, the description will be line-wrapped so that it fits within the
+given space.  To change this behavior, see the formatter_class_ argument.
 
 
 epilog
 ^^^^^^
 
-いくつかのプログラムは、プログラムについての追加の説明を引数の解説の
-後に表示します。このテキストは :class:`ArgumentParser` の ``epilog=`` 引数に
-指定することができます::
+Some programs like to display additional description of the program after the
+description of the arguments.  Such text can be specified using the ``epilog=``
+argument to :class:`ArgumentParser`::
 
    >>> parser = argparse.ArgumentParser(
    ...     description='A foo that bars',
@@ -210,132 +309,20 @@ epilog
 
    And that's how you'd foo a bar
 
-description_ 引数と同じく、 ``epilog=`` テキストもデフォルトで行ラップされ、
-:class:`ArgumentParser` の formatter_class_ 引数で動作を調整することができます。
-
-
-add_help
-^^^^^^^^
-
-デフォルトでは、 ArgumentParser オブジェクトはシンプルにパーサーの
-ヘルプメッセージを表示するオプションを自動的に追加します。
-例えば、以下のコードを含む ``myprogram.py`` ファイルについて
-考えてください::
-
-   import argparse
-   parser = argparse.ArgumentParser()
-   parser.add_argument('--foo', help='foo help')
-   args = parser.parse_args()
-
-コマンドラインに ``-h`` か ``--help`` が指定された場合、 ArgumentParser の
-help が表示されます::
-
-   $ python myprogram.py --help
-   usage: myprogram.py [-h] [--foo FOO]
-
-   optional arguments:
-    -h, --help  show this help message and exit
-    --foo FOO   foo help
-
-必要に応じて、この help オプションを無効にする場合があります。
-これは :class:`ArgumentParser` の ``add_help=`` 引数に ``False``
-を渡すことで可能です::
-
-   >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
-   >>> parser.add_argument('--foo', help='foo help')
-   >>> parser.print_help()
-   usage: PROG [--foo FOO]
-
-   optional arguments:
-    --foo FOO  foo help
-
-ヘルプオプションは通常 ``-h/--help`` です。例外は ``prefix_chars=``
-が指定されてその中に ``'-'`` が無かった場合で、その場合は ``-h`` と
-``--help`` は有効なオプションではありません。
-この場合、 ``prefix_chars`` の最初の文字がヘルプオプションの prefix
-として利用されます::
-
-   >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='+/')
-   >>> parser.print_help()
-   usage: PROG [+h]
-
-   optional arguments:
-     +h, ++help  show this help message and exit
-
-
-prefix_chars
-^^^^^^^^^^^^
-
-ほとんどのコマンドラインオプションは、 ``-f/--foo`` のように prefix に ``'-'``
-を使います。
-``+f`` や ``/foo`` のような、他の、あるいは追加の prefix 文字をサポートしなければ
-ならない場合、 ArgumentParser のコンストラクタの ``prefix_chars=`` 引数を指定します::
-
-   >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='-+')
-   >>> parser.add_argument('+f')
-   >>> parser.add_argument('++bar')
-   >>> parser.parse_args('+f X ++bar Y'.split())
-   Namespace(bar='Y', f='X')
-
-``prefix_chars=`` 引数のデフォルトは ``'-'`` です。
-``'-'`` を含まない文字集合を指定すると、 ``-f/--foo`` オプションが許可されなくなります。
-
-
-fromfile_prefix_chars
-^^^^^^^^^^^^^^^^^^^^^
-
-ときどき、例えば非常に長い引数リストを扱う場合に、その引数リストを毎回コマンドラインに
-タイプする代わりにファイルに置いておきたい場合があります。
-:class:`ArgumentParser` のコンストラクタに ``fromfile_prefix_chars=`` 引数が指定された
-場合、指定された文字のいずれかで始まる引数はファイルとして扱われ、そのファイルに
-含まれる引数リストに置換されます。例えば::
-
-   >>> with open('args.txt', 'w') as fp:
-   ...    fp.write('-f\nbar')
-   >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
-   >>> parser.add_argument('-f')
-   >>> parser.parse_args(['-f', 'foo', '@args.txt'])
-   Namespace(f='bar')
-
-ファイルから読み込まれる引数は、デフォルトでは1行に1つ(ただし、
-:meth:`~ArgumentParser.convert_arg_line_to_args` も参照してください)で、
-コマンドライン上でファイルを参照する引数があった場所にその引数があったものとして
-扱われます。なので、上の例では、 ``['-f', 'foo', '@args.txt']`` は
-``['-f', 'foo', '-f', 'bar']`` と等価になります。
-
-``fromfile_prefix_chars=`` 引数のデフォルト値は ``None`` で、
-引数がファイル参照だとして扱われることが無いことを意味しています。
-
-
-argument_default
-^^^^^^^^^^^^^^^^
-
-一般的には、引数のデフォルト値は :meth:`~ArgumentParser.add_argument` メソッドに
-デフォルト値を渡すか、 :meth:`~ArgumentParser.set_defaults` メソッドに
-name-value ペアを渡すことで指定します。
-しかしまれに、1つのパーサー全体に適用されるデフォルト引数が便利なことがあります。
-これをするには、 :class:`ArgumentParser` に ``argument_default=`` キーワード
-引数を渡します。例えば、全体で :meth:`~ArgumentParser.parse_args` メソッド呼び出しの
-属性の生成を抑制するには、 ``argument_default=SUPPRESS`` を指定します::
-
-   >>> parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
-   >>> parser.add_argument('--foo')
-   >>> parser.add_argument('bar', nargs='?')
-   >>> parser.parse_args(['--foo', '1', 'BAR'])
-   Namespace(bar='BAR', foo='1')
-   >>> parser.parse_args([])
-   Namespace()
+As with the description_ argument, the ``epilog=`` text is by default
+line-wrapped, but this behavior can be adjusted with the formatter_class_
+argument to :class:`ArgumentParser`.
 
 
 parents
 ^^^^^^^
 
-ときどき、いくつかのパーサーが共通の引数セットを共有することがあります。
-それらの引数を繰り返し定義する代わりに、全ての共通引数を持った parser を
-:class:`ArgumentParser` の ``parents=`` 引数に渡すことができます。
-``parents=`` 引数は :class:`ArgumentParser` オブジェクトのリストを受け取り、
-全ての位置アクションとオプションのアクションをそれらから集め、
-そのアクションを構築中の :class:`ArgumentParser` オブジェクトに追加します::
+Sometimes, several parsers share a common set of arguments. Rather than
+repeating the definitions of these arguments, a single parser with all the
+shared arguments and passed to ``parents=`` argument to :class:`ArgumentParser`
+can be used.  The ``parents=`` argument takes a list of :class:`ArgumentParser`
+objects, collects all the positional and optional actions from them, and adds
+these actions to the :class:`ArgumentParser` object being constructed::
 
    >>> parent_parser = argparse.ArgumentParser(add_help=False)
    >>> parent_parser.add_argument('--parent', type=int)
@@ -350,32 +337,32 @@ parents
    >>> bar_parser.parse_args(['--bar', 'YYY'])
    Namespace(bar='YYY', parent=None)
 
-一番親になるパーサーに ``add_help=False`` を指定していることに注目してください。
-こうしないと、 :class:`ArgumentParser` は2つの ``-h/--help`` オプションを
-与えられる (1つは親から、もうひとつは子から) ことになり、エラーを発生させます。
+Note that most parent parsers will specify ``add_help=False``.  Otherwise, the
+:class:`ArgumentParser` will see two ``-h/--help`` options (one in the parent
+and one in the child) and raise an error.
 
 .. note::
-   ``parents=`` に渡す前にパーサーを完全に初期化する必要があります。
-   子パーサーを作成してから親パーサーを変更した場合、その変更は子パーサーに
-   反映されません。
+   You must fully initialize the parsers before passing them via ``parents=``.
+   If you change the parent parsers after the child parser, those changes will
+   not be reflected in the child.
 
 
 formatter_class
 ^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` オブジェクトは代わりのフォーマットクラスを指定することで
-ヘルプのフォーマットをカスタマイズすることができます。
-現在、3つのフォーマットクラスがあります:
+:class:`ArgumentParser` objects allow the help formatting to be customized by
+specifying an alternate formatting class.  Currently, there are three such
+classes:
 
 .. class:: RawDescriptionHelpFormatter
            RawTextHelpFormatter
            ArgumentDefaultsHelpFormatter
 
-最初の2つは説明のテキストがどう表示されるかについてより制御できるようになっており、
-残りの1つは引数のデフォルト値についての情報を自動的に追加します。
+The first two allow more control over how textual descriptions are displayed,
+while the last automatically adds information about argument default values.
 
-デフォルトでは、 :class:`ArgumentParser` オブジェクトはコマンドラインのヘルプ
-メッセージ中で description_ と epilog_ を行ラップします::
+By default, :class:`ArgumentParser` objects line-wrap the description_ and
+epilog_ texts in command-line help messages::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
@@ -397,9 +384,9 @@ formatter_class
    likewise for this epilog whose whitespace will be cleaned up and whose words
    will be wrapped across a couple lines
 
-``formatter_class=`` に :class:`~argparse.RawDescriptionHelpFormatter` を渡すと、
-description_ と epilog_ がすでに正しくフォーマット済みで、行ラップしてはいけない
-ことを指定できます::
+Passing :class:`RawDescriptionHelpFormatter` as ``formatter_class=``
+indicates that description_ and epilog_ are already correctly formatted and
+should not be line-wrapped::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
@@ -423,11 +410,11 @@ description_ と epilog_ がすでに正しくフォーマット済みで、行�
    optional arguments:
     -h, --help  show this help message and exit
 
-:class:`RawTextHelpFormatter` は引数の説明を含めて全ての種類のヘルプテキストで
-空白を維持します。
+:class:`RawTextHelpFormatter` maintains whitespace for all sorts of help text,
+including argument descriptions.
 
-残りの利用できるフォーマットクラスである :class:`ArgumentDefaultsHelpFormatter`
-は、各引数のデフォルト値に関する情報を追加します::
+The other formatter class available, :class:`ArgumentDefaultsHelpFormatter`,
+will add information about the default value of each of the arguments::
 
    >>> parser = argparse.ArgumentParser(
    ...     prog='PROG',
@@ -445,13 +432,81 @@ description_ と epilog_ がすでに正しくフォーマット済みで、行�
     --foo FOO   FOO! (default: 42)
 
 
+prefix_chars
+^^^^^^^^^^^^
+
+Most command-line options will use ``-`` as the prefix, e.g. ``-f/--foo``.
+Parsers that need to support different or additional prefix
+characters, e.g. for options
+like ``+f`` or ``/foo``, may specify them using the ``prefix_chars=`` argument
+to the ArgumentParser constructor::
+
+   >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='-+')
+   >>> parser.add_argument('+f')
+   >>> parser.add_argument('++bar')
+   >>> parser.parse_args('+f X ++bar Y'.split())
+   Namespace(bar='Y', f='X')
+
+The ``prefix_chars=`` argument defaults to ``'-'``. Supplying a set of
+characters that does not include ``-`` will cause ``-f/--foo`` options to be
+disallowed.
+
+
+fromfile_prefix_chars
+^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes, for example when dealing with a particularly long argument lists, it
+may make sense to keep the list of arguments in a file rather than typing it out
+at the command line.  If the ``fromfile_prefix_chars=`` argument is given to the
+:class:`ArgumentParser` constructor, then arguments that start with any of the
+specified characters will be treated as files, and will be replaced by the
+arguments they contain.  For example::
+
+   >>> with open('args.txt', 'w') as fp:
+   ...    fp.write('-f\nbar')
+   >>> parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
+   >>> parser.add_argument('-f')
+   >>> parser.parse_args(['-f', 'foo', '@args.txt'])
+   Namespace(f='bar')
+
+Arguments read from a file must by default be one per line (but see also
+:meth:`~ArgumentParser.convert_arg_line_to_args`) and are treated as if they
+were in the same place as the original file referencing argument on the command
+line.  So in the example above, the expression ``['-f', 'foo', '@args.txt']``
+is considered equivalent to the expression ``['-f', 'foo', '-f', 'bar']``.
+
+The ``fromfile_prefix_chars=`` argument defaults to ``None``, meaning that
+arguments will never be treated as file references.
+
+
+argument_default
+^^^^^^^^^^^^^^^^
+
+Generally, argument defaults are specified either by passing a default to
+:meth:`~ArgumentParser.add_argument` or by calling the
+:meth:`~ArgumentParser.set_defaults` methods with a specific set of name-value
+pairs.  Sometimes however, it may be useful to specify a single parser-wide
+default for arguments.  This can be accomplished by passing the
+``argument_default=`` keyword argument to :class:`ArgumentParser`.  For example,
+to globally suppress attribute creation on :meth:`~ArgumentParser.parse_args`
+calls, we supply ``argument_default=SUPPRESS``::
+
+   >>> parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
+   >>> parser.add_argument('--foo')
+   >>> parser.add_argument('bar', nargs='?')
+   >>> parser.parse_args(['--foo', '1', 'BAR'])
+   Namespace(bar='BAR', foo='1')
+   >>> parser.parse_args([])
+   Namespace()
+
+
 conflict_handler
 ^^^^^^^^^^^^^^^^
 
-:class:`ArgumentParser` オブジェクトは同じオプション文字列に対して複数のアクションを
-許可していません。デフォルトでは、 :class:`ArgumentParser` オブジェクトは、
-すでに利用されているオプション文字列を使って新しい引数をつくろうとしたときに
-例外を発生させます::
+:class:`ArgumentParser` objects do not allow two actions with the same option
+string.  By default, :class:`ArgumentParser` objects raises an exception if an
+attempt is made to create an argument with an option string that is already in
+use::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -460,9 +515,10 @@ conflict_handler
     ..
    ArgumentError: argument --foo: conflicting option string(s): --foo
 
-ときどき (例えば、 parents_ を利用する場合など), 古い引数を同じオプション文字列で
-上書きするほうが便利な場合があります。この動作をするには、 :class:`ArgumentParser`
-の ``conflict_handler=`` 引数に ``'resolve'`` を渡します::
+Sometimes (e.g. when using parents_) it may be useful to simply override any
+older arguments with the same option string.  To get this behavior, the value
+``'resolve'`` can be supplied to the ``conflict_handler=`` argument of
+:class:`ArgumentParser`::
 
    >>> parser = argparse.ArgumentParser(prog='PROG', conflict_handler='resolve')
    >>> parser.add_argument('-f', '--foo', help='old foo help')
@@ -475,27 +531,26 @@ conflict_handler
     -f FOO      old foo help
     --foo FOO   new foo help
 
-:class:`ArgumentParser` オブジェクトは、全てのオプション文字列がオーバーライド
-サれた場合にだけアクションを削除することに注目してください。上の例では、
-``--foo`` オプション文字列だけがオーバーライドされているので、
-古い ``-f/--foo`` アクションは ``-f`` アクションとして残っています。
+Note that :class:`ArgumentParser` objects only remove an action if all of its
+option strings are overridden.  So, in the example above, the old ``-f/--foo``
+action is retained as the ``-f`` action, because only the ``--foo`` option
+string was overridden.
 
 
-prog
-^^^^
+add_help
+^^^^^^^^
 
-デフォルトでは、 :class:`ArgumentParser` オブジェクトはヘルプメッセージ中に表示する
-プログラム名を ``sys.argv[0]`` から取得します。このデフォルトの動作は、プログラムが
-コマンドライン上でどう起動されたにヘルプメッセージをマッチさせるので、か多くの場合に
-正しい挙動です。例えば、 ``myprogram.py`` という名前のファイルに次のコードがあるとします::
+By default, ArgumentParser objects add an option which simply displays
+the parser's help message. For example, consider a file named
+``myprogram.py`` containing the following code::
 
    import argparse
    parser = argparse.ArgumentParser()
    parser.add_argument('--foo', help='foo help')
    args = parser.parse_args()
 
-このプログラムのヘルプは、プログラム名として (プログラムがどこから起動されたのかに
-関わらず) ``myprogram.py`` を表示します::
+If ``-h`` or ``--help`` is supplied at the command line, the ArgumentParser
+help will be printed::
 
    $ python myprogram.py --help
    usage: myprogram.py [-h] [--foo FOO]
@@ -503,129 +558,92 @@ prog
    optional arguments:
     -h, --help  show this help message and exit
     --foo FOO   foo help
-   $ cd ..
-   $ python subdir\myprogram.py --help
-   usage: myprogram.py [-h] [--foo FOO]
 
-   optional arguments:
-    -h, --help  show this help message and exit
-    --foo FOO   foo help
+Occasionally, it may be useful to disable the addition of this help option.
+This can be achieved by passing ``False`` as the ``add_help=`` argument to
+:class:`ArgumentParser`::
 
-このデフォルトの動作を変更するには、 :class:`ArgumentParser` の ``prog=``
-引数に他の値を指定します::
-
-   >>> parser = argparse.ArgumentParser(prog='myprogram')
+   >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
+   >>> parser.add_argument('--foo', help='foo help')
    >>> parser.print_help()
-   usage: myprogram [-h]
+   usage: PROG [--foo FOO]
 
    optional arguments:
-    -h, --help  show this help message and exit
+    --foo FOO  foo help
 
-プログラム名は、 ``sys.argv[0]`` から取られた場合でも ``prog=`` 引数で与えられた場合でも、
-ヘルプメッセージ中では ``%(prog)s`` フォーマット指定で利用することができます。
+The help option is typically ``-h/--help``. The exception to this is
+if the ``prefix_chars=`` is specified and does not include ``-``, in
+which case ``-h`` and ``--help`` are not valid options.  In
+this case, the first character in ``prefix_chars`` is used to prefix
+the help options::
 
-::
-
-   >>> parser = argparse.ArgumentParser(prog='myprogram')
-   >>> parser.add_argument('--foo', help='foo of the %(prog)s program')
+   >>> parser = argparse.ArgumentParser(prog='PROG', prefix_chars='+/')
    >>> parser.print_help()
-   usage: myprogram [-h] [--foo FOO]
+   usage: PROG [+h]
 
    optional arguments:
-    -h, --help  show this help message and exit
-    --foo FOO   foo of the myprogram program
+     +h, ++help  show this help message and exit
 
 
-usage
-^^^^^
-
-デフォルトでは、 :class:`ArgumentParser` は使用法メッセージを、もっている
-引数から生成します::
-
-   >>> parser = argparse.ArgumentParser(prog='PROG')
-   >>> parser.add_argument('--foo', nargs='?', help='foo help')
-   >>> parser.add_argument('bar', nargs='+', help='bar help')
-   >>> parser.print_help()
-   usage: PROG [-h] [--foo [FOO]] bar [bar ...]
-
-   positional arguments:
-    bar          bar help
-
-   optional arguments:
-    -h, --help   show this help message and exit
-    --foo [FOO]  foo help
-
-デフォルトのメッセージは ``usage=`` キーワード引数でオーバーライドできます::
-
-   >>> parser = argparse.ArgumentParser(prog='PROG', usage='%(prog)s [options]')
-   >>> parser.add_argument('--foo', nargs='?', help='foo help')
-   >>> parser.add_argument('bar', nargs='+', help='bar help')
-   >>> parser.print_help()
-   usage: PROG [options]
-
-   positional arguments:
-    bar          bar help
-
-   optional arguments:
-    -h, --help   show this help message and exit
-    --foo [FOO]  foo help
-
-``%(prog)s`` フォーマット指定子を、使用法メッセージ中でプログラム名として利用できます。
-
-
-.. The add_argument() method
-
-add_argument() メソッド
+The add_argument() method
 -------------------------
 
-.. method:: ArgumentParser.add_argument(name or flags..., [action], [nargs], [const], [default], [type], [choices], [required], [help], [metavar], [dest])
+.. method:: ArgumentParser.add_argument(name or flags..., [action], [nargs], \
+                           [const], [default], [type], [choices], [required], \
+                           [help], [metavar], [dest])
 
-   1つのコマンドライン引数がどう解析されるかを定義します。
-   各引数についての解説は以下で行いますが、簡潔には:
+   Define how a single command-line argument should be parsed.  Each parameter
+   has its own more detailed description below, but in short they are:
 
-   * `name or flags`_ - 名前か、オプション文字列のリスト (例: ``foo`` か
-     ``-f, --foo``)
+   * `name or flags`_ - Either a name or a list of option strings, e.g. ``foo``
+     or ``-f, --foo``.
 
-   * action_ - コマンドラインにこの引数があった時のアクション
+   * action_ - The basic type of action to be taken when this argument is
+     encountered at the command line.
 
-   * nargs_ - 消費するべきコマンドライン引数の数
+   * nargs_ - The number of command-line arguments that should be consumed.
 
-   * const_ - いくつかの action_ と nargs_ の組み合わせで利用される定数
+   * const_ - A constant value required by some action_ and nargs_ selections.
 
-   * default_ - コマンドラインに引数がなかった場合に生成される値
+   * default_ - The value produced if the argument is absent from the
+     command line.
 
-   * type_ - コマンドライン引数が変換されるべき型
+   * type_ - The type to which the command-line argument should be converted.
 
-   * choices_ - 引数として許される値のコンテナ
+   * choices_ - A container of the allowable values for the argument.
 
-   * required_ - コマンドラインオプションが省略可能かどうか(オプション引数のみ)
+   * required_ - Whether or not the command-line option may be omitted
+     (optionals only).
 
-   * help_ - 引数が何なのかを示す簡潔な説明
+   * help_ - A brief description of what the argument does.
 
-   * metavar_ - 使用法メッセージの中で使われる引数の名前
+   * metavar_ - A name for the argument in usage messages.
 
-   * dest_ - :meth:`parse_args` が返すオブジェクトに追加される属性名
+   * dest_ - The name of the attribute to be added to the object returned by
+     :meth:`parse_args`.
 
-以下のセクションではこれらの使い方を説明します。
+The following sections describe how each of these are used.
 
 
 name or flags
 ^^^^^^^^^^^^^
 
-:meth:`~ArgumentParser.add_argument` メソッドは、指定されているのが
-``-f`` や ``--foo`` のようなオプション引数なのか、ファイル名リストなどの
-位置引数なのかを知る必要があります。そのため、 :meth:`~ArgumentParser.add_argument`
-の第1引数は、フラグのリストか、シンプルな引数名のどちらかになります。
-例えば、オプション引数は次のようにして作ります::
+The :meth:`~ArgumentParser.add_argument` method must know whether an optional
+argument, like ``-f`` or ``--foo``, or a positional argument, like a list of
+filenames, is expected.  The first arguments passed to
+:meth:`~ArgumentParser.add_argument` must therefore be either a series of
+flags, or a simple argument name.  For example, an optional argument could
+be created like::
 
    >>> parser.add_argument('-f', '--foo')
 
-一方、位置引数は次のようにして作ります::
+while a positional argument could be created like::
 
    >>> parser.add_argument('bar')
 
-:meth:`~ArgumentParser.parse_args` が呼ばれた時、オプション引数は ``-`` prefix
-により識別され、それ以外の引数は位置引数として扱われます::
+When :meth:`~ArgumentParser.parse_args` is called, optional arguments will be
+identified by the ``-`` prefix, and the remaining arguments will be assumed to
+be positional::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-f', '--foo')
@@ -642,53 +660,56 @@ name or flags
 action
 ^^^^^^
 
-:class:`ArgumentParser` オブジェクトはコマンドライン引数にアクションを割り当てます。
-このアクションは、割り当てられたコマンドライン引数に関してどんな処理でもできますが、
-ほとんどのアクションは単に :meth:`~ArgumentParser.parse_args` が返すオブジェクトに
-属性を追加するだけです。 ``action`` キーワード引数は、コマンドライン引数がどう
-処理されるかを指定します。サポートされているアクションは:
+:class:`ArgumentParser` objects associate command-line arguments with actions.  These
+actions can do just about anything with the command-line arguments associated with
+them, though most actions simply add an attribute to the object returned by
+:meth:`~ArgumentParser.parse_args`.  The ``action`` keyword argument specifies
+how the command-line arguments should be handled. The supplied actions are:
 
-* ``'store'`` - これは単に引数の値を格納します。これはデフォルトのアクションです。
-  例えば:
+* ``'store'`` - This just stores the argument's value.  This is the default
+  action. For example::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo')
     >>> parser.parse_args('--foo 1'.split())
     Namespace(foo='1')
 
-* ``'store_const'`` - このアクションは const_ キーワード引数で指定された値を
-  格納します。 (const_ キーワード引数のデフォルト値はあまり役に立たない ``None``
-  であることに注意) ``'store_const'`` アクションは、何かの種類のフラグを
-  指定するオプション引数によく使われます。例えば::
+* ``'store_const'`` - This stores the value specified by the const_ keyword
+  argument.  (Note that the const_ keyword argument defaults to the rather
+  unhelpful ``None``.)  The ``'store_const'`` action is most commonly used with
+  optional arguments that specify some sort of flag.  For example::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='store_const', const=42)
     >>> parser.parse_args('--foo'.split())
     Namespace(foo=42)
 
-* ``'store_true'``, ``'store_false'`` - これらのアクションはそれぞれ ``True``
-  と ``False`` を格納します。これらは ``'store_const'`` の特別版になります。
-  例えば::
+* ``'store_true'`` and ``'store_false'`` - These are special cases of
+  ``'store_const'`` using for storing the values ``True`` and ``False``
+  respectively.  In addition, they create default values of *False* and *True*
+  respectively.  For example::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='store_true')
     >>> parser.add_argument('--bar', action='store_false')
+    >>> parser.add_argument('--baz', action='store_false')
     >>> parser.parse_args('--foo --bar'.split())
-    Namespace(bar=False, foo=True)
+    Namespace(bar=False, baz=True, foo=True)
 
-* ``'append'`` - このアクションはリストを格納して、各引数の値をそのリストに
-  追加します。このアクションは複数回指定することができるオプションに便利です。
-  利用例::
+* ``'append'`` - This stores a list, and appends each argument value to the
+  list.  This is useful to allow an option to be specified multiple times.
+  Example usage::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--foo', action='append')
     >>> parser.parse_args('--foo 1 --foo 2'.split())
     Namespace(foo=['1', '2'])
 
-* ``'append_const'`` - このアクションはリストを格納して、 const_ キーワード引数に
-  与えられた値をそのリストに追加します。(const_ キーワード引数のデフォルト値は
-  あまり役に立たない ``None`` であることに注意) ``'append_const'`` アクションは、
-  定数を同じリストに複数回格納する場合に便利です。例えば::
+* ``'append_const'`` - This stores a list, and appends the value specified by
+  the const_ keyword argument to the list.  (Note that the const_ keyword
+  argument defaults to ``None``.)  The ``'append_const'`` action is typically
+  useful when multiple arguments need to store constants to the same list. For
+  example::
 
     >>> parser = argparse.ArgumentParser()
     >>> parser.add_argument('--str', dest='types', action='append_const', const=str)
@@ -696,9 +717,22 @@ action
     >>> parser.parse_args('--str --int'.split())
     Namespace(types=[<type 'str'>, <type 'int'>])
 
-* ``'version'`` - このアクションは :meth:`~ArgumentParser.add_argument` の呼び出しに
-  ``version=`` キーワード引数を期待します。指定されたときはバージョン情報を表示して
-  終了します。 ::
+* ``'count'`` - This counts the number of times a keyword argument occurs. For
+  example, this is useful for increasing verbosity levels::
+
+    >>> parser = argparse.ArgumentParser()
+    >>> parser.add_argument('--verbose', '-v', action='count')
+    >>> parser.parse_args('-vvv'.split())
+    Namespace(verbose=3)
+
+* ``'help'`` - This prints a complete help message for all the options in the
+  current parser and then exits. By default a help action is automatically
+  added to the parser. See :class:`ArgumentParser` for details of how the
+  output is created.
+
+* ``'version'`` - This expects a ``version=`` keyword argument in the
+  :meth:`~ArgumentParser.add_argument` call, and prints version information
+  and exits when invoked::
 
     >>> import argparse
     >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -706,26 +740,18 @@ action
     >>> parser.parse_args(['--version'])
     PROG 2.0
 
-Action API を実装したオブジェクトを渡すことで、任意のアクションを指定することもできます。
-独自のアクションを作る一番手軽な方法は :class:`argparse.Action` を継承して、
-適切な ``__call__`` メソッドを実装することです。 ``__call__`` メソッドは
-4つの引数を受け取らなければなりません:
+You may also specify an arbitrary action by passing an Action subclass or
+other object that implements the same interface.  The recommended way to do
+this is to extend :class:`Action`, overriding the ``__call__`` method
+and optionally the ``__init__`` method.
 
-* ``parser`` - このアクションを持っている ArgumentParser オブジェクト
-
-* ``namespace`` - :meth:`~ArgumentParser.parse_args` が返す namespace オブジェクト。
-  ほとんどのアクションはこのオブジェクトに属性を追加します。
-
-* ``values`` - 型変換が適用された後の、関連付けられたコマンドライン引数。
-  (型変換は :meth:`~ArgumentParser.add_argument` メソッドの type_ キーワード引数で
-  指定されます)
-
-* ``option_string`` - このアクションを実行したオプション文字列。 ``option_string``
-  引数はオプションで、アクションが位置引数に関連付けられた場合は渡されません。
-
-カスタムアクションの例です::
+An example of a custom action::
 
    >>> class FooAction(argparse.Action):
+   ...     def __init__(self, option_strings, dest, nargs=None, **kwargs):
+   ...         if nargs is not None:
+   ...             raise ValueError("nargs not allowed")
+   ...         super(FooAction, self).__init__(option_strings, dest, **kwargs)
    ...     def __call__(self, parser, namespace, values, option_string=None):
    ...         print '%r %r %r' % (namespace, values, option_string)
    ...         setattr(namespace, self.dest, values)
@@ -739,16 +765,18 @@ Action API を実装したオブジェクトを渡すことで、任意のアク
    >>> args
    Namespace(bar='1', foo='2')
 
+For more details, see :class:`Action`.
 
 nargs
 ^^^^^
 
-ArgumentParser オブジェクトは通常1つのコマンドライン引数を1つのアクションに渡します。
-``nargs`` キーワード引数は1つのアクションにそれ以外の数のコマンドライン引数を
-割り当てます。指定できる値は:
+ArgumentParser objects usually associate a single command-line argument with a
+single action to be taken.  The ``nargs`` keyword argument associates a
+different number of command-line arguments with a single action.  The supported
+values are:
 
-* N (整数).  N 個の引数がコマンドラインから集められ、リストに格納されます。
-  例えば::
+* ``N`` (an integer).  ``N`` arguments from the command line will be gathered
+  together into a list.  For example::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs=2)
@@ -756,14 +784,15 @@ ArgumentParser オブジェクトは通常1つのコマンドライン引数を1
      >>> parser.parse_args('c --foo a b'.split())
      Namespace(bar=['c'], foo=['a', 'b'])
 
-  ``nargs=1`` は1要素のリストを作ることに注意してください。これはデフォルトの、
-  要素がそのまま属性になる動作とは異なります。
+  Note that ``nargs=1`` produces a list of one item.  This is different from
+  the default, in which the item is produced by itself.
 
-* ``'?'``. 可能なら1つの引数がコマンドラインから取られ、1つのアイテムを作ります。
-  コマンドライン引数が存在しない場合、 default_ の値が生成されます。
-  オプション引数の場合、さらにオプション引数がしていされ、その後にコマンドライン
-  引数が無いというケースもありえます。この場合は const_ の値が生成されます。
-  この動作の例です::
+* ``'?'``. One argument will be consumed from the command line if possible, and
+  produced as a single item.  If no command-line argument is present, the value from
+  default_ will be produced.  Note that for optional arguments, there is an
+  additional case - the option string is present but not followed by a
+  command-line argument.  In this case the value from const_ will be produced.  Some
+  examples to illustrate this::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs='?', const='c', default='d')
@@ -775,7 +804,8 @@ ArgumentParser オブジェクトは通常1つのコマンドライン引数を1
      >>> parser.parse_args(''.split())
      Namespace(bar='d', foo='d')
 
-  ``nargs='?'`` のよくある利用例の1つは、入出力ファイルの指定オプションです::
+  One of the more common uses of ``nargs='?'`` is to allow optional input and
+  output files::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('infile', nargs='?', type=argparse.FileType('r'),
@@ -789,9 +819,10 @@ ArgumentParser オブジェクトは通常1つのコマンドライン引数を1
      Namespace(infile=<open file '<stdin>', mode 'r' at 0x...>,
                outfile=<open file '<stdout>', mode 'w' at 0x...>)
 
-* ``'*'``. 全てのコマンドライン引数がリストに集められます。複数の位置引数が
-  ``nargs='*'`` を持つことにあまり意味はありませんが、複数のオプション引数が
-  ``nargs='*'`` を持つことはありえます。例えば::
+* ``'*'``.  All command-line arguments present are gathered into a list.  Note that
+  it generally doesn't make much sense to have more than one positional argument
+  with ``nargs='*'``, but multiple optional arguments with ``nargs='*'`` is
+  possible.  For example::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', nargs='*')
@@ -800,9 +831,9 @@ ArgumentParser オブジェクトは通常1つのコマンドライン引数を1
      >>> parser.parse_args('a b --foo x y --bar 1 2'.split())
      Namespace(bar=['1', '2'], baz=['a', 'b'], foo=['x', 'y'])
 
-* ``'+'``. ``'*'`` と同じように、全てのコマンドライン引数をリストに集めます。
-  加えて、最低でも1つのコマンドライン引数が存在しない場合にエラーメッセージを
-  生成します。例えば::
+* ``'+'``. Just like ``'*'``, all command-line args present are gathered into a
+  list.  Additionally, an error message will be generated if there wasn't at
+  least one command-line argument present.  For example::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> parser.add_argument('foo', nargs='+')
@@ -812,40 +843,53 @@ ArgumentParser オブジェクトは通常1つのコマンドライン引数を1
      usage: PROG [-h] foo [foo ...]
      PROG: error: too few arguments
 
-``nargs`` キーワード引数が指定されない場合、消費される引数の数は action_ によって
-決定されます。通常これは、1つのコマンドライン引数は1つのアイテムになる(リストには
-ならない)ことを意味します。
+* ``argparse.REMAINDER``.  All the remaining command-line arguments are gathered
+  into a list.  This is commonly useful for command line utilities that dispatch
+  to other command line utilities::
+
+     >>> parser = argparse.ArgumentParser(prog='PROG')
+     >>> parser.add_argument('--foo')
+     >>> parser.add_argument('command')
+     >>> parser.add_argument('args', nargs=argparse.REMAINDER)
+     >>> print parser.parse_args('--foo B cmd --arg1 XX ZZ'.split())
+     Namespace(args=['--arg1', 'XX', 'ZZ'], command='cmd', foo='B')
+
+If the ``nargs`` keyword argument is not provided, the number of arguments consumed
+is determined by the action_.  Generally this means a single command-line argument
+will be consumed and a single item (not a list) will be produced.
 
 
 const
 ^^^^^
 
-:meth:`~ArgumentParser.add_argument` の ``const`` 引数は、コマンドライン引数から
-読み込まれないけれども :class:`ArgumentParser` のいくつかのアクションで必要と
-される値のために使われます。この引数の2つのよくあるユースケースは:
+The ``const`` argument of :meth:`~ArgumentParser.add_argument` is used to hold
+constant values that are not read from the command line but are required for
+the various :class:`ArgumentParser` actions.  The two most common uses of it are:
 
-* :meth:`~ArgumentParser.add_argument` が ``action='store_const'`` か
-  ``action='append_const'`` で呼び出された時、これらのアクションは ``const``
-  の値を :meth:`~ArgumentParser.parse_args` が返すオブジェクトの属性に追加します。
-  サンプルは action_ の解説を参照してください。
+* When :meth:`~ArgumentParser.add_argument` is called with
+  ``action='store_const'`` or ``action='append_const'``.  These actions add the
+  ``const`` value to one of the attributes of the object returned by
+  :meth:`~ArgumentParser.parse_args`. See the action_ description for examples.
 
-* :meth:`~ArgumentParser.add_argument` がオプション文字列 (``-f`` や ``--foo``)
-  と ``nargs='?'`` で呼び出された場合。この場合0個か1つのコマンドライン引数を
-  取るオプション引数が作られます。オプション引数にコマンドライン引数が続かなかった
-  場合、 ``const`` の値が代わりに利用されます。
-  サンプルは nargs_ の解説を参照してください。
+* When :meth:`~ArgumentParser.add_argument` is called with option strings
+  (like ``-f`` or ``--foo``) and ``nargs='?'``.  This creates an optional
+  argument that can be followed by zero or one command-line arguments.
+  When parsing the command line, if the option string is encountered with no
+  command-line argument following it, the value of ``const`` will be assumed instead.
+  See the nargs_ description for examples.
 
-``const`` キーワード引数のデフォルト値は ``None`` です。
+The ``const`` keyword argument defaults to ``None``.
 
 
 default
 ^^^^^^^
 
-全てのオプション引数といくつかの位置引数はコマンドライン上で省略される
-ことがあります。 :meth:`~ArgumentParser.add_argument` の ``default``
-キーワード引数(デフォルト: ``None``)は、コマンドライン引数が存在しなかった
-場合に利用する値を指定します。オプション引数では、オプション文字列が
-コマンドライン上に存在しなかったときに ``default`` の値が利用されます::
+All optional arguments and some positional arguments may be omitted at the
+command line.  The ``default`` keyword argument of
+:meth:`~ArgumentParser.add_argument`, whose value defaults to ``None``,
+specifies what value should be used if the command-line argument is not present.
+For optional arguments, the ``default`` value is used when the option string
+was not present at the command line::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo', default=42)
@@ -854,8 +898,19 @@ default
    >>> parser.parse_args(''.split())
    Namespace(foo=42)
 
-位置引数では、 nargs_ ``='?'`` か ``'*'`` で、コマンドライン引数が存在
-しなかったときに ``default`` 値が利用されます::
+If the ``default`` value is a string, the parser parses the value as if it
+were a command-line argument.  In particular, the parser applies any type_
+conversion argument, if provided, before setting the attribute on the
+:class:`Namespace` return value.  Otherwise, the parser uses the value as is::
+
+   >>> parser = argparse.ArgumentParser()
+   >>> parser.add_argument('--length', default='10', type=int)
+   >>> parser.add_argument('--width', default=10.5, type=int)
+   >>> parser.parse_args()
+   Namespace(length=10, width=10.5)
+
+For positional arguments with nargs_ equal to ``?`` or ``*``, the ``default`` value
+is used when no command-line argument was present::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('foo', nargs='?', default=42)
@@ -865,8 +920,8 @@ default
    Namespace(foo=42)
 
 
-``default=argparse.SUPPRESS`` を渡すと、コマンドライン引数が存在しないときに
-属性の追加をしなくなります::
+Providing ``default=argparse.SUPPRESS`` causes no attribute to be added if the
+command-line argument was not present.::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo', default=argparse.SUPPRESS)
@@ -879,13 +934,12 @@ default
 type
 ^^^^
 
-デフォルトでは、 ArgumentParser オブジェクトはコマンドライン引数を
-単なる文字列として読み込みます。しかし、コマンドラインの文字列は
-:class:`float`, :class:`int`, :class:`file` など別の型として
-扱うべき事がよくあります。 :meth:`~ArgumentParser.add_argument` の
-``type`` キーワード引数により型チェックと型変換を行うことができます。
-たくさんのよく使われるビルトイン型を ``type`` 引数の値として直接
-指定することができます::
+By default, :class:`ArgumentParser` objects read command-line arguments in as simple
+strings. However, quite often the command-line string should instead be
+interpreted as another type, like a :class:`float` or :class:`int`.  The
+``type`` keyword argument of :meth:`~ArgumentParser.add_argument` allows any
+necessary type-checking and type conversions to be performed.  Common built-in
+types and functions can be used directly as the value of the ``type`` argument::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('foo', type=int)
@@ -893,17 +947,21 @@ type
    >>> parser.parse_args('2 temp.txt'.split())
    Namespace(bar=<open file 'temp.txt', mode 'r' at 0x...>, foo=2)
 
-いろいろな種類のファイルを簡単に扱うために、 argparse モジュールは ``mode=``
-と ``bufsize=`` 引数を取る FileType ファクトリを提供しています。
-例えば、書き込み可能なファイルを作るために ``FileType('w')`` を利用できます::
+See the section on the default_ keyword argument for information on when the
+``type`` argument is applied to default arguments.
+
+To ease the use of various types of files, the argparse module provides the
+factory FileType which takes the ``mode=`` and ``bufsize=`` arguments of the
+``file`` object.  For example, ``FileType('w')`` can be used to create a
+writable file::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('bar', type=argparse.FileType('w'))
    >>> parser.parse_args(['out.txt'])
    Namespace(bar=<open file 'out.txt', mode 'w' at 0x...>)
 
-``type=`` には1つの文字列を引数に受け取って型変換結果を返すような任意の callable
-を渡すことができます::
+``type=`` can take any callable that takes a single string argument and returns
+the converted value::
 
    >>> def perfect_square(string):
    ...     value = int(string)
@@ -921,7 +979,8 @@ type
    usage: PROG [-h] foo
    PROG: error: argument foo: '7' is not a perfect square
 
-さらに、 choices_ キーワード引数を使って、値の範囲をチェックすることもできます::
+The choices_ keyword argument may be more convenient for type checkers that
+simply check against a range of values::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('foo', type=int, choices=xrange(5, 10))
@@ -931,49 +990,51 @@ type
    usage: PROG [-h] {5,6,7,8,9}
    PROG: error: argument foo: invalid choice: 11 (choose from 5, 6, 7, 8, 9)
 
-詳細は choices_ セクションを参照してください。
+See the choices_ section for more details.
 
 
 choices
 ^^^^^^^
 
-コマンドライン引数をいくつかの選択肢のなかから選ばせたい場合があります。
-これは :meth:`~ArgumentParser.add_argument` に ``choices`` キーワード引数を
-渡すことで可能です。コマンドラインを解析する時、引数の値がチェックされ、
-その値が選択肢の中に含まれていない場合はエラーメッセージを表示します::
+Some command-line arguments should be selected from a restricted set of values.
+These can be handled by passing a container object as the *choices* keyword
+argument to :meth:`~ArgumentParser.add_argument`.  When the command line is
+parsed, argument values will be checked, and an error message will be displayed
+if the argument was not one of the acceptable values::
 
-   >>> parser = argparse.ArgumentParser(prog='PROG')
-   >>> parser.add_argument('foo', choices='abc')
-   >>> parser.parse_args('c'.split())
-   Namespace(foo='c')
-   >>> parser.parse_args('X'.split())
-   usage: PROG [-h] {a,b,c}
-   PROG: error: argument foo: invalid choice: 'X' (choose from 'a', 'b', 'c')
+   >>> parser = argparse.ArgumentParser(prog='game.py')
+   >>> parser.add_argument('move', choices=['rock', 'paper', 'scissors'])
+   >>> parser.parse_args(['rock'])
+   Namespace(move='rock')
+   >>> parser.parse_args(['fire'])
+   usage: game.py [-h] {rock,paper,scissors}
+   game.py: error: argument move: invalid choice: 'fire' (choose from 'rock',
+   'paper', 'scissors')
 
-``choices`` コンテナに含まれているかどうかのチェックは、 type_ による型変換が
-実行された後であることに注意してください。なので、 ``choices`` に格納する
-オブジェクトの型は指定された type_ にマッチしている必要があります::
+Note that inclusion in the *choices* container is checked after any type_
+conversions have been performed, so the type of the objects in the *choices*
+container should match the type_ specified::
 
-   >>> parser = argparse.ArgumentParser(prog='PROG')
-   >>> parser.add_argument('foo', type=complex, choices=[1, 1j])
-   >>> parser.parse_args('1j'.split())
-   Namespace(foo=1j)
-   >>> parser.parse_args('-- -4'.split())
-   usage: PROG [-h] {1,1j}
-   PROG: error: argument foo: invalid choice: (-4+0j) (choose from 1, 1j)
+   >>> parser = argparse.ArgumentParser(prog='doors.py')
+   >>> parser.add_argument('door', type=int, choices=range(1, 4))
+   >>> print(parser.parse_args(['3']))
+   Namespace(door=3)
+   >>> parser.parse_args(['4'])
+   usage: doors.py [-h] {1,2,3}
+   doors.py: error: argument door: invalid choice: 4 (choose from 1, 2, 3)
 
-``in`` 演算をサポートしている任意のオブジェクトを ``choices`` に渡すことができます。
-なので、 :class:`dict`, :class:`set`, その他カスタムコンテナなどは全てサポート
-しています。
+Any object that supports the ``in`` operator can be passed as the *choices*
+value, so :class:`dict` objects, :class:`set` objects, custom containers,
+etc. are all supported.
 
 
 required
 ^^^^^^^^
 
-通常、 :mod:`argparse` モジュールは ``-f`` や ``--bar`` といったフラグは
-*オプション(optional)* 引数だと仮定し、コマンドライン上になくても良いものとして
-扱います。オプションを *要求(required)* するには、 :meth:`~ArgumentParser.add_argument`
-の ``required=`` キーワード引数に ``True`` を指定します::
+In general, the :mod:`argparse` module assumes that flags like ``-f`` and ``--bar``
+indicate *optional* arguments, which can always be omitted at the command line.
+To make an option *required*, ``True`` can be specified for the ``required=``
+keyword argument to :meth:`~ArgumentParser.add_argument`::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo', required=True)
@@ -983,21 +1044,23 @@ required
    usage: argparse.py [-h] [--foo FOO]
    argparse.py: error: option --foo is required
 
-上の例のように、オプションが ``required`` と指定されると、 :meth:`~ArgumentParser.parse_args`
-はそのオプションがコマンドラインに存在しないときにエラーを表示します。
+As the example shows, if an option is marked as ``required``,
+:meth:`~ArgumentParser.parse_args` will report an error if that option is not
+present at the command line.
 
 .. note::
 
-    ユーザーは *option* は *自由に選択できる(optional)* だと期待するので、
-    required option は一般的には悪いもので、できる限り避けるべきです。
+    Required options are generally considered bad form because users expect
+    *options* to be *optional*, and thus they should be avoided when possible.
 
 
 help
 ^^^^
 
-``help`` の値はその引数の簡潔な説明を含む文字列です。
-ユーザーが(コマンドライン上で ``-h`` か ``--help`` を指定するなどして)
-ヘルプを要求したとき、この ``help`` の説明が各引数に表示されます::
+The ``help`` value is a string containing a brief description of the argument.
+When a user requests help (usually by using ``-h`` or ``--help`` at the
+command line), these ``help`` descriptions will be displayed with each
+argument::
 
    >>> parser = argparse.ArgumentParser(prog='frobble')
    >>> parser.add_argument('--foo', action='store_true',
@@ -1014,10 +1077,10 @@ help
     -h, --help  show this help message and exit
     --foo   foo the bars before frobbling
 
-``help`` 文字列には、プログラム名や引数の default_ などを繰り返し記述するのを
-避けるためのフォーマット指定子を含めることができます。利用できる指定子には、
-プログラム名 ``%(prog)s`` と、 ``%(default)s`` や ``%(type)s`` など
-:meth:`~ArgumentParser.add_argument` のキーワード引数の多くが含まれます::
+The ``help`` strings can include various format specifiers to avoid repetition
+of things like the program name or the argument default_.  The available
+specifiers include the program name, ``%(prog)s`` and most keyword arguments to
+:meth:`~ArgumentParser.add_argument`, e.g. ``%(default)s``, ``%(type)s``, etc.::
 
    >>> parser = argparse.ArgumentParser(prog='frobble')
    >>> parser.add_argument('bar', nargs='?', type=int, default=42,
@@ -1031,17 +1094,29 @@ help
    optional arguments:
     -h, --help  show this help message and exit
 
+:mod:`argparse` supports silencing the help entry for certain options, by
+setting the ``help`` value to ``argparse.SUPPRESS``::
+
+   >>> parser = argparse.ArgumentParser(prog='frobble')
+   >>> parser.add_argument('--foo', help=argparse.SUPPRESS)
+   >>> parser.print_help()
+   usage: frobble [-h]
+
+   optional arguments:
+     -h, --help  show this help message and exit
+
 
 metavar
 ^^^^^^^
 
-:class:`ArgumentParser` がヘルプメッセージを出力する時、各引数に対してなんらかの
-参照方法が必要です。デフォルトでは、 ArgumentParser オブジェクトは各オブジェクトの
-"名前" として dest_ を利用します。デフォルトでは、位置引数には dest_ の値をそのまま
-利用し、オプション引数については dest_ の値を大文字に変換して利用します。
-なので、1つの ``dest='bar'`` である位置引数は ``bar`` として参照されます。
-1つのオプション引数 ``--foo`` が1つのコマンドライン引数を要求するときは、その引数は
-``FOO`` として参照されます。例です::
+When :class:`ArgumentParser` generates help messages, it needs some way to refer
+to each expected argument.  By default, ArgumentParser objects use the dest_
+value as the "name" of each object.  By default, for positional argument
+actions, the dest_ value is used directly, and for optional argument actions,
+the dest_ value is uppercased.  So, a single positional argument with
+``dest='bar'`` will be referred to as ``bar``. A single
+optional argument ``--foo`` that should be followed by a single command-line argument
+will be referred to as ``FOO``.  An example::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo')
@@ -1058,7 +1133,7 @@ metavar
     -h, --help  show this help message and exit
     --foo FOO
 
-代わりの名前を、 ``metavar`` として指定できます::
+An alternative name can be specified with ``metavar``::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo', metavar='YYY')
@@ -1075,12 +1150,13 @@ metavar
     -h, --help  show this help message and exit
     --foo YYY
 
-``metavar`` は *表示される* 名前だけを変更することに注意してください。
-:meth:`~ArgumentParser.parse_args` の返すオブジェクトの属性名は dest_
-の値のままです。
+Note that ``metavar`` only changes the *displayed* name - the name of the
+attribute on the :meth:`~ArgumentParser.parse_args` object is still determined
+by the dest_ value.
 
-``nargs`` を指定した場合、 metavar が複数回利用されるかもしれません。
-``metavar`` にタプルを渡すと、各引数に対して異なる名前を指定できます::
+Different values of ``nargs`` may cause the metavar to be used multiple times.
+Providing a tuple to ``metavar`` specifies a different display for each of the
+arguments::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x', nargs=2)
@@ -1097,24 +1173,26 @@ metavar
 dest
 ^^^^
 
-ほとんどの :class:`ArgumentParser` のアクションは :meth:`~ArgumentParser.parse_args`
-が返すオブジェクトに対する属性として値を追加します。
-この属性の名前は :meth:`~ArgumentParser.add_argument` の ``dest`` キーワード
-引数によって決定されます。位置引数のアクションについては、 ``dest`` は通常
-:meth:`~ArgumentParser.add_argument` の第一引数として渡します::
+Most :class:`ArgumentParser` actions add some value as an attribute of the
+object returned by :meth:`~ArgumentParser.parse_args`.  The name of this
+attribute is determined by the ``dest`` keyword argument of
+:meth:`~ArgumentParser.add_argument`.  For positional argument actions,
+``dest`` is normally supplied as the first argument to
+:meth:`~ArgumentParser.add_argument`::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('bar')
    >>> parser.parse_args('XXX'.split())
    Namespace(bar='XXX')
 
-オプション引数のアクションについては、 ``dest`` の値は通常オプション文字列から
-生成されます。 :class:`ArgumentParser` は最初の長いオプション文字列を選択し、
-先頭の ``'--'`` を除去することで ``dest`` の値を生成します。
-長いオプション文字列が指定されていない場合、最初の短いオプション文字列から
-先頭の ``'-'`` 文字を除去することで ``dest`` を生成します。
-先頭以外の全ての ``'-'`` 文字は、妥当な属性名になるように ``'_'`` 文字へ
-変換されます。次の例はこの動作を示しています::
+For optional argument actions, the value of ``dest`` is normally inferred from
+the option strings.  :class:`ArgumentParser` generates the value of ``dest`` by
+taking the first long option string and stripping away the initial ``--``
+string.  If no long option strings were supplied, ``dest`` will be derived from
+the first short option string by stripping the initial ``-`` character.  Any
+internal ``-`` characters will be converted to ``_`` characters to make sure
+the string is a valid attribute name.  The examples below illustrate this
+behavior::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('-f', '--foo-bar', '--foo')
@@ -1124,38 +1202,77 @@ dest
    >>> parser.parse_args('--foo 1 -y 2'.split())
    Namespace(foo_bar='1', x='2')
 
-``dest`` にカスタムの属性名を与えることも可能です::
+``dest`` allows a custom attribute name to be provided::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo', dest='bar')
    >>> parser.parse_args('--foo XXX'.split())
    Namespace(bar='XXX')
 
+Action classes
+^^^^^^^^^^^^^^
 
-parse_args() メソッド
+Action classes implement the Action API, a callable which returns a callable
+which processes arguments from the command-line. Any object which follows this
+API may be passed as the ``action`` parameter to :meth:`add_argument`.
+
+.. class:: Action(option_strings, dest, nargs=None, const=None, default=None, \
+                  type=None, choices=None, required=False, help=None, \
+                  metavar=None)
+
+Action objects are used by an ArgumentParser to represent the information needed
+to parse a single argument from one or more strings from the command line. The
+Action class must accept the two positional arguments plus any keyword arguments
+passed to :meth:`ArgumentParser.add_argument` except for the ``action`` itself.
+
+Instances of Action (or return value of any callable to the ``action``
+parameter) should have attributes "dest", "option_strings", "default", "type",
+"required", "help", etc. defined. The easiest way to ensure these attributes
+are defined is to call ``Action.__init__``.
+
+Action instances should be callable, so subclasses must override the
+``__call__`` method, which should accept four parameters:
+
+* ``parser`` - The ArgumentParser object which contains this action.
+
+* ``namespace`` - The :class:`Namespace` object that will be returned by
+  :meth:`~ArgumentParser.parse_args`.  Most actions add an attribute to this
+  object using :func:`setattr`.
+
+* ``values`` - The associated command-line arguments, with any type conversions
+  applied.  Type conversions are specified with the type_ keyword argument to
+  :meth:`~ArgumentParser.add_argument`.
+
+* ``option_string`` - The option string that was used to invoke this action.
+  The ``option_string`` argument is optional, and will be absent if the action
+  is associated with a positional argument.
+
+The ``__call__`` method may perform arbitrary actions, but will typically set
+attributes on the ``namespace`` based on ``dest`` and ``values``.
+
+
+The parse_args() method
 -----------------------
 
 .. method:: ArgumentParser.parse_args(args=None, namespace=None)
 
-   引数の文字列をオブジェクトに変換し、 namespace オブジェクトの
-   属性に代入します。結果の namespace オブジェクトを返します。
+   Convert argument strings to objects and assign them as attributes of the
+   namespace.  Return the populated namespace.
 
-   事前の :meth:`add_argument` メソッドの呼び出しが、どのオブジェクトが
-   生成されてどう代入されるかを決定します。
-   詳細は :meth:`add_argument` のドキュメントを参照してください。
+   Previous calls to :meth:`add_argument` determine exactly what objects are
+   created and how they are assigned. See the documentation for
+   :meth:`add_argument` for details.
 
-   デフォルトでは、引数文字列は :data:`sys.argv` から取られ、
-   新しい空の :class:`Namespace` オブジェクトが属性のために作られます。
+   By default, the argument strings are taken from :data:`sys.argv`, and a new empty
+   :class:`Namespace` object is created for the attributes.
 
 
-.. Option value syntax
-
-オプション値の文法
+Option value syntax
 ^^^^^^^^^^^^^^^^^^^
 
-:meth:`~ArgumentParser.parse_args` メソッドはオプションの値(があれば)
-を指定する複数の方法をサポートしています。
-一番シンプルな方法は、オプションとその値は2つの別々の引数として渡されます::
+The :meth:`~ArgumentParser.parse_args` method supports several ways of
+specifying the value of an option (if it takes one).  In the simplest case, the
+option and its value are passed as two separate arguments::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x')
@@ -1165,21 +1282,21 @@ parse_args() メソッド
    >>> parser.parse_args('--foo FOO'.split())
    Namespace(foo='FOO', x=None)
 
-長いオプション (1文字よりも長い名前を持ったオプション) では、
-オプションとその値は ``=`` で区切られた1つのコマンドライン引数として
-渡すこともできます::
+For long options (options with names longer than a single character), the option
+and value can also be passed as a single command-line argument, using ``=`` to
+separate them::
 
    >>> parser.parse_args('--foo=FOO'.split())
    Namespace(foo='FOO', x=None)
 
-短いオプション (1文字のオプション) では、オプションとその値は連結して渡す
-ことができます::
+For short options (options only one character long), the option and its value
+can be concatenated::
 
    >>> parser.parse_args('-xX'.split())
    Namespace(foo=None, x='X')
 
-複数の短いオプションは、最後の1つ(か、0個)のオプションだけが値を
-要求する場合には、1つの ``-`` prefix だけで連結することができます::
+Several short options can be joined together, using only a single ``-`` prefix,
+as long as only the last option (or none of them) requires a value::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x', action='store_true')
@@ -1189,16 +1306,13 @@ parse_args() メソッド
    Namespace(x=True, y=True, z='Z')
 
 
-.. Invalid arguments
-
-不正な引数
+Invalid arguments
 ^^^^^^^^^^^^^^^^^
 
-:meth:`~ArgumentParser.parse_args` は、コマンドラインの解析中に、
-曖昧なオプション、不正な型、不正なオプション、位置引数の数の不一致などの
-エラーを検証します。
-それらのエラーが発生した場合、エラーメッセージと使用法メッセージを
-表示して終了します::
+While parsing the command line, :meth:`~ArgumentParser.parse_args` checks for a
+variety of errors, including ambiguous options, invalid types, invalid options,
+wrong number of positional arguments, etc.  When it encounters such an error,
+it exits and prints the error along with a usage message::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('--foo', type=int)
@@ -1220,18 +1334,16 @@ parse_args() メソッド
    PROG: error: extra arguments found: badger
 
 
-.. Arguments containing ``"-"``
+Arguments containing ``-``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``"-"`` を含む引数
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-:meth:`~ArgumentParser.parse_args` メソッドは、ユーザーが明らかなミスを
-した場合はエラーを表示しますが、いくつか本質的に曖昧な場面があります。
-例えば、コマンドライン引数 ``'-1'`` は、オプションの指定かもしれませんし
-位置引数かもしれません。 :meth:`~ArgumentParser.parse_args` メソッドは
-これを次のように扱います: 負の数として解釈でき、パーサーに負の数のように
-解釈できるオプションが存在しない場合にのみ、 ``'-'`` で始まる位置引数
-になりえます::
+The :meth:`~ArgumentParser.parse_args` method attempts to give errors whenever
+the user has clearly made a mistake, but some situations are inherently
+ambiguous.  For example, the command-line argument ``-1`` could either be an
+attempt to specify an option or an attempt to provide a positional argument.
+The :meth:`~ArgumentParser.parse_args` method is cautious here: positional
+arguments may only begin with ``-`` if they look like negative numbers and
+there are no options in the parser that look like negative numbers::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-x')
@@ -1263,21 +1375,22 @@ parse_args() メソッド
    usage: PROG [-h] [-1 ONE] [foo]
    PROG: error: argument -1: expected one argument
 
-``'-'`` で始まる位置引数があって、それが負の数として解釈できない場合、
-ダミーの引数 ``'--'`` を挿入して、 :meth:`~ArgumentParser.parse_args` に
-それ以降の全てが位置引数だと教えることができます::
+If you have positional arguments that must begin with ``-`` and don't look
+like negative numbers, you can insert the pseudo-argument ``'--'`` which tells
+:meth:`~ArgumentParser.parse_args` that everything after that is a positional
+argument::
 
    >>> parser.parse_args(['--', '-f'])
    Namespace(foo='-f', one=None)
 
+.. _prefix-matching:
 
-.. Argument abbreviations
+Argument abbreviations (prefix matching)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-引数の短縮形
-^^^^^^^^^^^^^^^^^^^^^^
-
-:meth:`~ArgumentParser.parse_args` メソッドは、長いオプションを、
-曖昧さが無い範囲で短縮することを許可しています::
+The :meth:`~ArgumentParser.parse_args` method allows long options to be
+abbreviated to a prefix, if the abbreviation is unambiguous (the prefix matches
+a unique option)::
 
    >>> parser = argparse.ArgumentParser(prog='PROG')
    >>> parser.add_argument('-bacon')
@@ -1290,17 +1403,16 @@ parse_args() メソッド
    usage: PROG [-h] [-bacon BACON] [-badger BADGER]
    PROG: error: ambiguous option: -ba could match -badger, -bacon
 
-引数が複数のオプションになり得る場合はエラーになります。
+An error is produced for arguments that could produce more than one options.
 
 
-.. Beyond ``sys.argv``
-
-``sys.argv`` 以外
+Beyond ``sys.argv``
 ^^^^^^^^^^^^^^^^^^^
 
-ArgumentParser が :data:`sys.argv` 以外の引数をパースできると役に立つ場合があります。
-その場合は文字列のリストを :meth:`~ArgumentParser.parse_args` に渡します。
-これはインタラクティブプロンプトからテストするときに便利です::
+Sometimes it may be useful to have an ArgumentParser parse arguments other than those
+of :data:`sys.argv`.  This can be accomplished by passing a list of strings to
+:meth:`~ArgumentParser.parse_args`.  This is useful for testing at the
+interactive prompt::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument(
@@ -1315,17 +1427,17 @@ ArgumentParser が :data:`sys.argv` 以外の引数をパースできると役�
    Namespace(accumulate=<built-in function sum>, integers=[1, 2, 3, 4])
 
 
-.. The Namespace object
+The Namespace object
+^^^^^^^^^^^^^^^^^^^^
 
-Namespace オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^^
+.. class:: Namespace
 
-デフォルトでは、 :meth:`~ArgumentParser.parse_args` は :class:`Namespace`
-の新しいオブジェクトに必要な属性を設定して返します。このクラスはシンプルに
-設計されており、単に読みやすい文字列表現を持った :class:`object` のサブクラスです。
-もし属性を辞書のように扱える方が良ければ、 :func:`vars` を使う標準的な
-Python のイディオムを利用することができます::
+   Simple class used by default by :meth:`~ArgumentParser.parse_args` to create
+   an object holding attributes and return it.
 
+This class is deliberately simple, just an :class:`object` subclass with a
+readable string representation. If you prefer to have dict-like view of the
+attributes, you can use the standard Python idiom, :func:`vars`::
 
    >>> parser = argparse.ArgumentParser()
    >>> parser.add_argument('--foo')
@@ -1333,9 +1445,9 @@ Python のイディオムを利用することができます::
    >>> vars(args)
    {'foo': 'BAR'}
 
-:class:`ArgumentParser` が、新しい :class:`Namespace` オブジェクトではなく、
-既存のオブジェクトに属性を設定する方が良い場合があります。
-これは ``namespace=`` キーワード引数を指定することで可能です::
+It may also be useful to have an :class:`ArgumentParser` assign attributes to an
+already existing object, rather than a new :class:`Namespace` object.  This can
+be achieved by specifying the ``namespace=`` keyword argument::
 
    >>> class C(object):
    ...     pass
@@ -1348,31 +1460,57 @@ Python のイディオムを利用することができます::
    'BAR'
 
 
-.. Other utilities
+Other utilities
+---------------
 
-その他のユーティリティ
-------------------------
+Sub-commands
+^^^^^^^^^^^^
 
-.. Sub-commands
+.. method:: ArgumentParser.add_subparsers([title], [description], [prog], \
+                                          [parser_class], [action], \
+                                          [option_string], [dest], [help], \
+                                          [metavar])
 
-サブコマンド
-^^^^^^^^^^^^^^
+   Many programs split up their functionality into a number of sub-commands,
+   for example, the ``svn`` program can invoke sub-commands like ``svn
+   checkout``, ``svn update``, and ``svn commit``.  Splitting up functionality
+   this way can be a particularly good idea when a program performs several
+   different functions which require different kinds of command-line arguments.
+   :class:`ArgumentParser` supports the creation of such sub-commands with the
+   :meth:`add_subparsers` method.  The :meth:`add_subparsers` method is normally
+   called with no arguments and returns a special action object.  This object
+   has a single method, :meth:`~ArgumentParser.add_parser`, which takes a
+   command name and any :class:`ArgumentParser` constructor arguments, and
+   returns an :class:`ArgumentParser` object that can be modified as usual.
 
-.. method:: ArgumentParser.add_subparsers()
+   Description of parameters:
 
-   多くのプログラムは、その機能をサブコマンドへと分割します。
-   例えば ``svn`` プログラムは ``svn checkout``, ``svn update``, ``svn commit``
-   などのサブコマンドを利用できます。
-   機能をサブコマンドに分割するのは、プログラムがいくつかの異なった機能を持っていて、
-   それぞれが異なるコマンドライン引数を必要とする場合には良いアイデアです。
-   :class:`ArgumentParser` は :meth:`add_subparsers` メソッドによりサブコマンドを
-   サポートしています。 :meth:`add_subparsers` メソッドは通常引数なしに呼び出され、
-   特殊なアクションオブジェクトを返します。このオブジェクトには1つのメソッド
-   :meth:`~ArgumentParser.add_parser` があり、コマンド名と :class:`ArgumentParser`
-   コンストラクタの任意の引数を受け取り、通常の方法で操作できる
-   :class:`ArgumentParser` オブジェクトを返します。
+   * title - title for the sub-parser group in help output; by default
+     "subcommands" if description is provided, otherwise uses title for
+     positional arguments
 
-   いくつかの使用例::
+   * description - description for the sub-parser group in help output, by
+     default None
+
+   * prog - usage information that will be displayed with sub-command help,
+     by default the name of the program and any positional arguments before the
+     subparser argument
+
+   * parser_class - class which will be used to create sub-parser instances, by
+     default the class of the current parser (e.g. ArgumentParser)
+
+   * action_ - the basic type of action to be taken when this argument is
+     encountered at the command line
+
+   * dest_ - name of the attribute under which sub-command name will be
+     stored; by default None and no value is stored
+
+   * help_ - help for sub-parser group in help output, by default None
+
+   * metavar_ - string presenting available sub-commands in help; by default it
+     is None and presents sub-commands in form {cmd1, cmd2, ..}
+
+   Some example usage::
 
      >>> # create the top-level parser
      >>> parser = argparse.ArgumentParser(prog='PROG')
@@ -1387,24 +1525,24 @@ Python のイディオムを利用することができます::
      >>> parser_b = subparsers.add_parser('b', help='b help')
      >>> parser_b.add_argument('--baz', choices='XYZ', help='baz help')
      >>>
-     >>> # parse some arg lists
+     >>> # parse some argument lists
      >>> parser.parse_args(['a', '12'])
      Namespace(bar=12, foo=False)
      >>> parser.parse_args(['--foo', 'b', '--baz', 'Z'])
      Namespace(baz='Z', foo=True)
 
-   :meth:`parse_args` が返すオブジェクトにはメインパーサーとコマンドラインで
-   選択されたサブパーサーによる属性だけが設定されており、選択されなかった
-   サブコマンドのパーサーの属性が設定されていないことに注意してください。
-   なので、上の例では、 ``"a"`` コマンドが指定されたときは ``foo``, ``bar``
-   属性だけが存在し、 ``"b"`` コマンドが指定されたときは ``foo``, ``baz``
-   属性だけが存在しています。
+   Note that the object returned by :meth:`parse_args` will only contain
+   attributes for the main parser and the subparser that was selected by the
+   command line (and not any other subparsers).  So in the example above, when
+   the ``a`` command is specified, only the ``foo`` and ``bar`` attributes are
+   present, and when the ``b`` command is specified, only the ``foo`` and
+   ``baz`` attributes are present.
 
-   同じように、サブパーサーにヘルプメッセージが要求された場合は、そのパーサーに
-   対するヘルプだけが表示されます。ヘルプメッセージには親パーサーや兄弟パーサーの
-   ヘルプメッセージを表示しません。
-   (ただし、各サブパーサーコマンドのヘルプメッセージは、上の例にもあるように
-   :meth:`add_parser` の ``help=`` 引数によって指定できます)
+   Similarly, when a help message is requested from a subparser, only the help
+   for that particular parser will be printed.  The help message will not
+   include parent parser or sibling parser messages.  (A help message for each
+   subparser command, however, can be given by supplying the ``help=`` argument
+   to :meth:`add_parser` as above.)
 
    ::
 
@@ -1413,8 +1551,8 @@ Python のイディオムを利用することができます::
 
      positional arguments:
        {a,b}   sub-command help
-     a     a help
-     b     b help
+         a     a help
+         b     b help
 
      optional arguments:
        -h, --help  show this help message and exit
@@ -1436,9 +1574,9 @@ Python のイディオムを利用することができます::
        -h, --help     show this help message and exit
        --baz {X,Y,Z}  baz help
 
-   :meth:`add_subparsers` メソッドは ``title`` と ``description`` キーワード
-   引数もサポートしています。どちらかが存在する場合、サブパーサーのコマンドは
-   ヘルプ出力でそれぞれのグループの中に表示されます。例えば::
+   The :meth:`add_subparsers` method also supports ``title`` and ``description``
+   keyword arguments.  When either is present, the subparser's commands will
+   appear in their own group in the help output.  For example::
 
      >>> parser = argparse.ArgumentParser()
      >>> subparsers = parser.add_subparsers(title='subcommands',
@@ -1458,9 +1596,10 @@ Python のイディオムを利用することができます::
        {foo,bar}   additional help
 
 
-   サブコマンドを扱う1つの便利な方法は :meth:`add_subparsers` メソッドと
-   :meth:`set_defaults` を組み合わせて、各サブパーサーにどの Python 関数を
-   実行するかを教えることです。例えば::
+   One particularly effective way of handling sub-commands is to combine the use
+   of the :meth:`add_subparsers` method with calls to :meth:`set_defaults` so
+   that each subparser knows which Python function it should execute.  For
+   example::
 
      >>> # sub-command functions
      >>> def foo(args):
@@ -1494,12 +1633,12 @@ Python のイディオムを利用することができます::
      >>> args.func(args)
      ((XYZYX))
 
-   こうすると、 :meth:`parse_args` が引数の解析が終わってから適切な関数を
-   呼び出すようになります。このように関数をアクションに関連付けるのは大抵
-   サブパーサーごとに異なるアクションを扱う最も簡単な方法です。
-   ただし、実行されたサブパーサーの名前を確認する必要がある場合は、
-   :meth:`add_subparsers` を呼び出すときに ``dest`` キーワードを指定する
-   ことができます::
+   This way, you can let :meth:`parse_args` do the job of calling the
+   appropriate function after argument parsing is complete.  Associating
+   functions with actions like this is typically the easiest way to handle the
+   different actions for each of your subparsers.  However, if it is necessary
+   to check the name of the subparser that was invoked, the ``dest`` keyword
+   argument to the :meth:`add_subparsers` call will work::
 
      >>> parser = argparse.ArgumentParser()
      >>> subparsers = parser.add_subparsers(dest='subparser_name')
@@ -1511,45 +1650,41 @@ Python のイディオムを利用することができます::
      Namespace(subparser_name='2', y='frobble')
 
 
-.. FileType objects
-
-FileType オブジェクト
-^^^^^^^^^^^^^^^^^^^^^^
+FileType objects
+^^^^^^^^^^^^^^^^
 
 .. class:: FileType(mode='r', bufsize=None)
 
-   :class:`FileType` ファクトリは :meth:`ArgumentParser.add_argument` の
-   type 引数に渡すことができるオブジェクトを生成します。
-   type が :class:`FileType` オブジェクトである引数はコマンドライン引数を、
-   指定されたモードとバッファサイズでファイルとして開きます:
+   The :class:`FileType` factory creates objects that can be passed to the type
+   argument of :meth:`ArgumentParser.add_argument`.  Arguments that have
+   :class:`FileType` objects as their type will open command-line arguments as files
+   with the requested modes and buffer sizes::
 
-   >>> parser = argparse.ArgumentParser()
-   >>> parser.add_argument('--output', type=argparse.FileType('wb', 0))
-   >>> parser.parse_args(['--output', 'out'])
-   Namespace(output=<open file 'out', mode 'wb' at 0x...>)
+      >>> parser = argparse.ArgumentParser()
+      >>> parser.add_argument('--output', type=argparse.FileType('wb', 0))
+      >>> parser.parse_args(['--output', 'out'])
+      Namespace(output=<open file 'out', mode 'wb' at 0x...>)
 
-   FileType オブジェクトは擬似引数 ``'-'`` を識別し、読み込み用の :class:`FileType`
-   であれば ``sys.stdin`` を、書き込み用の :class:`FileType` であれば ``sys.stdout``
-   に変換します:
+   FileType objects understand the pseudo-argument ``'-'`` and automatically
+   convert this into ``sys.stdin`` for readable :class:`FileType` objects and
+   ``sys.stdout`` for writable :class:`FileType` objects::
 
-   >>> parser = argparse.ArgumentParser()
-   >>> parser.add_argument('infile', type=argparse.FileType('r'))
-   >>> parser.parse_args(['-'])
-   Namespace(infile=<open file '<stdin>', mode 'r' at 0x...>)
+      >>> parser = argparse.ArgumentParser()
+      >>> parser.add_argument('infile', type=argparse.FileType('r'))
+      >>> parser.parse_args(['-'])
+      Namespace(infile=<open file '<stdin>', mode 'r' at 0x...>)
 
 
-.. Argument groups
-
-引数グループ
+Argument groups
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.add_argument_group(title=None, description=None)
 
-   デフォルトでは、 :class:`ArgumentParser` はヘルプメッセージを表示するときに、
-   コマンドライン引数を "positional arguments"(位置引数) と
-   "optional arguments"(オプション引数) にグループ化します。
-   このデフォルトの動作よりも良い引数のグループ化方法がある場合、
-   :meth:`add_argument_group` メソッドで適切なグループを作成できます::
+   By default, :class:`ArgumentParser` groups command-line arguments into
+   "positional arguments" and "optional arguments" when displaying help
+   messages. When there is a better conceptual grouping of arguments than this
+   default one, appropriate groups can be created using the
+   :meth:`add_argument_group` method::
 
      >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
      >>> group = parser.add_argument_group('group')
@@ -1562,13 +1697,13 @@ FileType オブジェクト
        bar    bar help
        --foo FOO  foo help
 
-   :meth:`add_argument_group` メソッドは、通常の :class:`ArgumentParser`
-   と同じような :meth:`~ArgumentParser.add_argument` メソッドを持つ
-   引数グループオブジェクトを返します。
-   引数がグループに追加された時、パーサーはその引数を通常の引数のように扱いますが、
-   ヘルプメッセージではその引数を分離されたグループの中に表示します。
-   :meth:`add_argument_group` メソッドには、この表示をカスタマイズするための
-   *title* と *description* 引数があります::
+   The :meth:`add_argument_group` method returns an argument group object which
+   has an :meth:`~ArgumentParser.add_argument` method just like a regular
+   :class:`ArgumentParser`.  When an argument is added to the group, the parser
+   treats it just like a normal argument, but displays the argument in a
+   separate group for help messages.  The :meth:`add_argument_group` method
+   accepts *title* and *description* arguments which can be used to
+   customize this display::
 
      >>> parser = argparse.ArgumentParser(prog='PROG', add_help=False)
      >>> group1 = parser.add_argument_group('group1', 'group1 description')
@@ -1588,19 +1723,18 @@ FileType オブジェクト
 
        --bar BAR  bar help
 
-   ユーザー定義グループ以外の全ての引数は通常の "positional arguments" と
-   "optional arguments" セクションに表示されます。
+   Note that any arguments not in your user-defined groups will end up back
+   in the usual "positional arguments" and "optional arguments" sections.
 
 
-.. Mutual exclusion
+Mutual exclusion
+^^^^^^^^^^^^^^^^
 
-相互排他
-^^^^^^^^^^^^
+.. method:: ArgumentParser.add_mutually_exclusive_group(required=False)
 
-.. method:: add_mutually_exclusive_group(required=False)
-
-   相互排他グループを作ります。 :mod:`argparse` は相互排他グループの中で
-   ただ1つの引数のみが存在することを確認します::
+   Create a mutually exclusive group. :mod:`argparse` will make sure that only
+   one of the arguments in the mutually exclusive group was present on the
+   command line::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> group = parser.add_mutually_exclusive_group()
@@ -1614,8 +1748,9 @@ FileType オブジェクト
      usage: PROG [-h] [--foo | --bar]
      PROG: error: argument --bar: not allowed with argument --foo
 
-   :meth:`add_mutually_exclusive_group` メソッドは、その相互排他引数のどれか
-   1つを選ぶことが要求されることを示す *required* 引数を取ります::
+   The :meth:`add_mutually_exclusive_group` method also accepts a *required*
+   argument, to indicate that at least one of the mutually exclusive arguments
+   is required::
 
      >>> parser = argparse.ArgumentParser(prog='PROG')
      >>> group = parser.add_mutually_exclusive_group(required=True)
@@ -1625,22 +1760,21 @@ FileType オブジェクト
      usage: PROG [-h] (--foo | --bar)
      PROG: error: one of the arguments --foo --bar is required
 
-   現在のところ、相互排他引数グループは
-   :meth:`~ArgumentParser.add_argument_group` の *title* と *description*
-   引数をサポートしていません。
+   Note that currently mutually exclusive argument groups do not support the
+   *title* and *description* arguments of
+   :meth:`~ArgumentParser.add_argument_group`.
 
 
-.. Parser defaults
-
-パーサーのデフォルト値
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Parser defaults
+^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.set_defaults(**kwargs)
 
-   ほとんどの場合、 :meth:`parse_args` が返すオブジェクトの属性はコマンドライン
-   引数の内容と引数のアクションによってのみ決定されます。 :meth:`set_defaults`
-   を使うと与えられたコマンドライン引数の内容によらず追加の属性を決定する
-   ことが可能です::
+   Most of the time, the attributes of the object returned by :meth:`parse_args`
+   will be fully determined by inspecting the command-line arguments and the argument
+   actions.  :meth:`set_defaults` allows some additional
+   attributes that are determined without any inspection of the command line to
+   be added::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('foo', type=int)
@@ -1648,7 +1782,7 @@ FileType オブジェクト
      >>> parser.parse_args(['736'])
      Namespace(bar=42, baz='badger', foo=736)
 
-   パーサーレベルのデフォルト値は常に引数レベルのデフォルト値をオーバーライドします::
+   Note that parser-level defaults always override argument-level defaults::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', default='bar')
@@ -1656,14 +1790,15 @@ FileType オブジェクト
      >>> parser.parse_args([])
      Namespace(foo='spam')
 
-   パーサーレベルの default は、複数のパーサーを扱うときに特に便利です。
-   このタイプの例については :meth:`~ArgumentParser.add_subparsers` メソッドを
-   参照してください。
+   Parser-level defaults can be particularly useful when working with multiple
+   parsers.  See the :meth:`~ArgumentParser.add_subparsers` method for an
+   example of this type.
 
 .. method:: ArgumentParser.get_default(dest)
 
-   :meth:`~ArgumentParser.add_argument` か :meth:`~ArgumentParser.set_defaults`
-   によって指定された、 namespace の属性のデフォルト値を取得します::
+   Get the default value for a namespace attribute, as set by either
+   :meth:`~ArgumentParser.add_argument` or by
+   :meth:`~ArgumentParser.set_defaults`::
 
      >>> parser = argparse.ArgumentParser()
      >>> parser.add_argument('--foo', default='badger')
@@ -1671,54 +1806,50 @@ FileType オブジェクト
      'badger'
 
 
-.. Printing help
-
-ヘルプの表示
+Printing help
 ^^^^^^^^^^^^^
 
-ほとんどの典型的なアプリケーションでは、 :meth:`~ArgumentParser.parse_args`
-が使用法やエラーメッセージのフォーマットと表示について面倒を見ます。
-しかし、いくつかのフォーマットメソッドが利用できます:
+In most typical applications, :meth:`~ArgumentParser.parse_args` will take
+care of formatting and printing any usage or error messages.  However, several
+formatting methods are available:
 
 .. method:: ArgumentParser.print_usage(file=None)
 
-   :class:`ArgumentParser` がコマンドラインからどう実行されるべきかの
-   短い説明を表示します。
-   *file* が ``None`` の時は、 :data:`sys.stdout` に出力されます。
+   Print a brief description of how the :class:`ArgumentParser` should be
+   invoked on the command line.  If *file* is ``None``, :data:`sys.stdout` is
+   assumed.
 
 .. method:: ArgumentParser.print_help(file=None)
 
-   プログラムの使用法と :class:`ArgumentParser` に登録された引数についての
-   情報を含むヘルプメッセージを表示します。
-   *file* が ``None`` の時は、 :data:`sys.stdout` に出力されます。
+   Print a help message, including the program usage and information about the
+   arguments registered with the :class:`ArgumentParser`.  If *file* is
+   ``None``, :data:`sys.stdout` is assumed.
 
-これらのメソッドの、表示する代わりにシンプルに文字列を返すバージョンも
-あります:
+There are also variants of these methods that simply return a string instead of
+printing it:
 
 .. method:: ArgumentParser.format_usage()
 
-   :class:`ArgumentParser` がコマンドラインからどう実行されるべきかの
-   短い説明を格納した文字列を返します。
+   Return a string containing a brief description of how the
+   :class:`ArgumentParser` should be invoked on the command line.
 
 .. method:: ArgumentParser.format_help()
 
-   プログラムの使用法と :class:`ArgumentParser` に登録された引数についての
-   情報を含むヘルプメッセージを格納した文字列を返します。
+   Return a string containing a help message, including the program usage and
+   information about the arguments registered with the :class:`ArgumentParser`.
 
 
-.. Partial parsing
-
-部分解析
+Partial parsing
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.parse_known_args(args=None, namespace=None)
 
-ときどき、スクリプトがコマンドライン引数のいくつかだけを解析し、残りの引数は
-別のスクリプトやプログラムに渡すことがあります。こういった場合、
-:meth:`~ArgumentParser.parse_known_args` メソッドが便利です。
-これは :meth:`~ArgumentParser.parse_args` と同じように動作しますが、
-余分な引数が存在してもエラーを生成しません。代わりに、評価された namespace
-オブジェクトと、残りの引数文字列のリストからなる2要素タプルを返します。
+Sometimes a script may only parse a few of the command-line arguments, passing
+the remaining arguments on to another script or program. In these cases, the
+:meth:`~ArgumentParser.parse_known_args` method can be useful.  It works much like
+:meth:`~ArgumentParser.parse_args` except that it does not produce an error when
+extra arguments are present.  Instead, it returns a two item tuple containing
+the populated namespace and the list of remaining argument strings.
 
 ::
 
@@ -1728,85 +1859,93 @@ FileType オブジェクト
    >>> parser.parse_known_args(['--foo', '--badger', 'BAR', 'spam'])
    (Namespace(bar='BAR', foo=True), ['--badger', 'spam'])
 
+.. warning::
+   :ref:`Prefix matching <prefix-matching>` rules apply to
+   :meth:`parse_known_args`. The parser may consume an option even if it's just
+   a prefix of one of its known options, instead of leaving it in the remaining
+   arguments list.
 
-.. Customizing file parsing
 
-ファイル解析のカスタマイズ
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Customizing file parsing
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.convert_arg_line_to_args(arg_line)
 
-   ファイルから引数を読み込む場合(:class:`ArgumentParser` コンストラクタの
-   *fromfile_prefix_chars* キーワード引数を参照)、1行につき1つの引数を
-   読み込みます。
-   :meth:`convert_arg_line_to_args` をオーバーライドしてこの動作を
-   カスタマイズすることができます。
+   Arguments that are read from a file (see the *fromfile_prefix_chars*
+   keyword argument to the :class:`ArgumentParser` constructor) are read one
+   argument per line. :meth:`convert_arg_line_to_args` can be overriden for
+   fancier reading.
 
-   このメソッドは、引数ファイルから読まれた文字列である1つの引数 *arg_line*
-   を受け取ります。そしてその文字列を解析した結果の引数のリストを返します。
-   このメソッドはファイルから1行読みこむごとに、順番に呼ばれます。
+   This method takes a single argument *arg_line* which is a string read from
+   the argument file.  It returns a list of arguments parsed from this string.
+   The method is called once per line read from the argument file, in order.
 
-   このメソッドをオーバーライドする便利な例として、スペース区切りのワードを
-   1つの引数として扱います::
+   A useful override of this method is one that treats each space-separated word
+   as an argument::
 
     def convert_arg_line_to_args(self, arg_line):
-        for arg in arg_line.split():
-            if not arg.strip():
-                continue
-            yield arg
+        return arg_line.split()
 
 
-.. Exiting methods
-
-終了メソッド
+Exiting methods
 ^^^^^^^^^^^^^^^
 
 .. method:: ArgumentParser.exit(status=0, message=None)
 
-   このメソッドは、 *message* が指定されていればそれを表示した後、
-   指定された終了ステータス *status* でプログラムを終了します。
+   This method terminates the program, exiting with the specified *status*
+   and, if given, it prints a *message* before that.
 
 .. method:: ArgumentParser.error(message)
 
-   このメソッドは *message* を含む使用法メッセージを標準出力に表示して、
-   終了ステータス 2 でプログラムを終了します。
+   This method prints a usage message including the *message* to the
+   standard error and terminates the program with a status code of 2.
 
 
 .. _argparse-from-optparse:
 
-optparse からのアップグレード
---------------------------------
+Upgrading optparse code
+-----------------------
 
-もともと、 :mod:`argparse` モジュールを :mod:`optparse` モジュールとの
-互換性を保って開発しようという試みがありました。しかし、特に新しい ``nargs=``
-指定子とより良い使用法メッセージのために必要な変更のために、 :mod:`optparse`
-を透過的に拡張することは難しかったのです。 :mod:`optparse` のほとんどすべてが
-コピーペーストされたりモンキーパッチを当てられたりしたとき、もはや後方互換性を
-保とうとすることは現実的ではありませんでした。
+Originally, the :mod:`argparse` module had attempted to maintain compatibility
+with :mod:`optparse`.  However, :mod:`optparse` was difficult to extend
+transparently, particularly with the changes required to support the new
+``nargs=`` specifiers and better usage messages.  When most everything in
+:mod:`optparse` had either been copy-pasted over or monkey-patched, it no
+longer seemed practical to try to maintain the backwards compatibility.
 
-:mod:`optparse` から :mod:`argparse` への現実的なアップグレード・パス:
+The :mod:`argparse` module improves on the standard library :mod:`optparse`
+module in a number of ways including:
 
-* 全ての :meth:`optparse.OptionParser.add_option` の呼び出しを、
-  :meth:`ArgumentParser.add_argument` の呼び出しに置き換える。
+* Handling positional arguments.
+* Supporting sub-commands.
+* Allowing alternative option prefixes like ``+`` and ``/``.
+* Handling zero-or-more and one-or-more style arguments.
+* Producing more informative usage messages.
+* Providing a much simpler interface for custom ``type`` and ``action``.
 
-* ``options, args = parser.parse_args()`` を ``args = parser.parse_args()``
-  に置き換え、位置引数については追加で :meth:`ArgumentParser.add_argument`
-  を呼び出す。
+A partial upgrade path from :mod:`optparse` to :mod:`argparse`:
 
-* コールバック・アクションと ``callback_*`` キーワード引数を
-  ``type`` や ``action`` 引数に置き換える。
+* Replace all :meth:`optparse.OptionParser.add_option` calls with
+  :meth:`ArgumentParser.add_argument` calls.
 
-* ``type`` キーワード引数に渡していた文字列の名前を、それに応じたオブジェクト
-  (例: int, float, complex, ...) に置き換える。
+* Replace ``(options, args) = parser.parse_args()`` with ``args =
+  parser.parse_args()`` and add additional :meth:`ArgumentParser.add_argument`
+  calls for the positional arguments. Keep in mind that what was previously
+  called ``options``, now in :mod:`argparse` context is called ``args``.
 
-* :class:`optparse.Values` を :class:`Namespace` に置き換え、
-  :exc:`optparse.OptionError` と :exc:`optparse.OptionValueError` を
-  :exc:`ArgumentError` に置き換える。
+* Replace callback actions and the ``callback_*`` keyword arguments with
+  ``type`` or ``action`` arguments.
 
-* ``%default`` や ``%prog`` などの暗黙の引数を含む文字列を、
-  ``%(default)s`` や ``%(prog)s`` などの、通常の Python で辞書を
-  使う場合のフォーマット文字列に置き換える。
+* Replace string names for ``type`` keyword arguments with the corresponding
+  type objects (e.g. int, float, complex, etc).
 
-* OptionParser のコンストラクタの ``version`` 引数を、
-  ``parser.add_argument('--version', action='version', version='<the version>')``
-  に置き換える。
+* Replace :class:`optparse.Values` with :class:`Namespace` and
+  :exc:`optparse.OptionError` and :exc:`optparse.OptionValueError` with
+  :exc:`ArgumentError`.
+
+* Replace strings with implicit arguments such as ``%default`` or ``%prog`` with
+  the standard Python syntax to use dictionaries to format strings, that is,
+  ``%(default)s`` and ``%(prog)s``.
+
+* Replace the OptionParser constructor ``version`` argument with a call to
+  ``parser.add_argument('--version', action='version', version='<the version>')``.

@@ -1,6 +1,5 @@
-
-:mod:`xml.etree.ElementTree` --- ElementTree XML API
-====================================================
+:mod:`xml.etree.ElementTree` --- The ElementTree XML API
+========================================================
 
 .. module:: xml.etree.ElementTree
    :synopsis: Implementation of the ElementTree API.
@@ -9,358 +8,764 @@
 
 .. versionadded:: 2.5
 
-:class:`Element` 型は柔軟性のあるコンテナオブジェクトで、階層的データ構造を
-メモリーに格納するようにデザインされています。この型は言わばリストと辞書の
-間の子のようなものです。
+**Source code:** :source:`Lib/xml/etree/ElementTree.py`
 
-各エレメントは関連する多くのプロパティを具えています:
+--------------
 
-* このエレメントがどういう種類のデータを表現しているかを同定する文字列であるタグ(別の言い方をすればエレメントの型)
+The :class:`Element` type is a flexible container object, designed to store
+hierarchical data structures in memory.  The type can be described as a cross
+between a list and a dictionary.
 
-* 幾つもの属性(Python 辞書に収められます)
 
-* テキスト文字列
+.. warning::
 
-* オプションの末尾文字列
+   The :mod:`xml.etree.ElementTree` module is not secure against
+   maliciously constructed data.  If you need to parse untrusted or
+   unauthenticated data see :ref:`xml-vulnerabilities`.
 
-* 幾つもの子エレメント(Python シーケンスに収められます)
 
-element のインスタンスを作るには、 :class:`Element` コンストラクタや
-:func:`SubElement` ファクトリー関数を使います。
+Each element has a number of properties associated with it:
 
-:class:`ElementTree` クラスはエレメントの構造を包み込み、それと XML を行き来するのに使えます。
+* a tag which is a string identifying what kind of data this element represents
+  (the element type, in other words).
 
-この API の C 実装である :mod:`xml.etree.cElementTree` も使用可能です。
+* a number of attributes, stored in a Python dictionary.
 
-チュートリアルその他のドキュメントへのリンクについては
-http://effbot.org/zone/element-index.htm を参照して下さい。
-Fredrik Lundh のページも xml.etree.ElementTree の開発バージョンの置き場所です。
+* a text string.
+
+* an optional tail string.
+
+* a number of child elements, stored in a Python sequence
+
+To create an element instance, use the :class:`Element` constructor or the
+:func:`SubElement` factory function.
+
+The :class:`ElementTree` class can be used to wrap an element structure, and
+convert it from and to XML.
+
+A C implementation of this API is available as :mod:`xml.etree.cElementTree`.
+
+See http://effbot.org/zone/element-index.htm for tutorials and links to other
+docs.  Fredrik Lundh's page is also the location of the development version of
+the xml.etree.ElementTree.
 
 .. versionchanged:: 2.7
-   ElementTree API が 1.3 に更新されました。
-   より詳しい情報については、
-   `Introducing ElementTree 1.3 <http://effbot.org/zone/elementtree-13-intro.htm>`_
-   を参照してください。
+   The ElementTree API is updated to 1.3.  For more information, see
+   `Introducing ElementTree 1.3
+   <http://effbot.org/zone/elementtree-13-intro.htm>`_.
 
+Tutorial
+--------
+
+This is a short tutorial for using :mod:`xml.etree.ElementTree` (``ET`` in
+short).  The goal is to demonstrate some of the building blocks and basic
+concepts of the module.
+
+XML tree and elements
+^^^^^^^^^^^^^^^^^^^^^
+
+XML is an inherently hierarchical data format, and the most natural way to
+represent it is with a tree.  ``ET`` has two classes for this purpose -
+:class:`ElementTree` represents the whole XML document as a tree, and
+:class:`Element` represents a single node in this tree.  Interactions with
+the whole document (reading and writing to/from files) are usually done
+on the :class:`ElementTree` level.  Interactions with a single XML element
+and its sub-elements are done on the :class:`Element` level.
+
+.. _elementtree-parsing-xml:
+
+Parsing XML
+^^^^^^^^^^^
+
+We'll be using the following XML document as the sample data for this section:
+
+.. code-block:: xml
+
+   <?xml version="1.0"?>
+   <data>
+       <country name="Liechtenstein">
+           <rank>1</rank>
+           <year>2008</year>
+           <gdppc>141100</gdppc>
+           <neighbor name="Austria" direction="E"/>
+           <neighbor name="Switzerland" direction="W"/>
+       </country>
+       <country name="Singapore">
+           <rank>4</rank>
+           <year>2011</year>
+           <gdppc>59900</gdppc>
+           <neighbor name="Malaysia" direction="N"/>
+       </country>
+       <country name="Panama">
+           <rank>68</rank>
+           <year>2011</year>
+           <gdppc>13600</gdppc>
+           <neighbor name="Costa Rica" direction="W"/>
+           <neighbor name="Colombia" direction="E"/>
+       </country>
+   </data>
+
+We have a number of ways to import the data.  Reading the file from disk::
+
+   import xml.etree.ElementTree as ET
+   tree = ET.parse('country_data.xml')
+   root = tree.getroot()
+
+Reading the data from a string::
+
+   root = ET.fromstring(country_data_as_string)
+
+:func:`fromstring` parses XML from a string directly into an :class:`Element`,
+which is the root element of the parsed tree.  Other parsing functions may
+create an :class:`ElementTree`.  Check the documentation to be sure.
+
+As an :class:`Element`, ``root`` has a tag and a dictionary of attributes::
+
+   >>> root.tag
+   'data'
+   >>> root.attrib
+   {}
+
+It also has children nodes over which we can iterate::
+
+   >>> for child in root:
+   ...   print child.tag, child.attrib
+   ...
+   country {'name': 'Liechtenstein'}
+   country {'name': 'Singapore'}
+   country {'name': 'Panama'}
+
+Children are nested, and we can access specific child nodes by index::
+
+   >>> root[0][1].text
+   '2008'
+
+Finding interesting elements
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:class:`Element` has some useful methods that help iterate recursively over all
+the sub-tree below it (its children, their children, and so on).  For example,
+:meth:`Element.iter`::
+
+   >>> for neighbor in root.iter('neighbor'):
+   ...   print neighbor.attrib
+   ...
+   {'name': 'Austria', 'direction': 'E'}
+   {'name': 'Switzerland', 'direction': 'W'}
+   {'name': 'Malaysia', 'direction': 'N'}
+   {'name': 'Costa Rica', 'direction': 'W'}
+   {'name': 'Colombia', 'direction': 'E'}
+
+:meth:`Element.findall` finds only elements with a tag which are direct
+children of the current element.  :meth:`Element.find` finds the *first* child
+with a particular tag, and :attr:`Element.text` accesses the element's text
+content.  :meth:`Element.get` accesses the element's attributes::
+
+   >>> for country in root.findall('country'):
+   ...   rank = country.find('rank').text
+   ...   name = country.get('name')
+   ...   print name, rank
+   ...
+   Liechtenstein 1
+   Singapore 4
+   Panama 68
+
+More sophisticated specification of which elements to look for is possible by
+using :ref:`XPath <elementtree-xpath>`.
+
+Modifying an XML File
+^^^^^^^^^^^^^^^^^^^^^
+
+:class:`ElementTree` provides a simple way to build XML documents and write them to files.
+The :meth:`ElementTree.write` method serves this purpose.
+
+Once created, an :class:`Element` object may be manipulated by directly changing
+its fields (such as :attr:`Element.text`), adding and modifying attributes
+(:meth:`Element.set` method), as well as adding new children (for example
+with :meth:`Element.append`).
+
+Let's say we want to add one to each country's rank, and add an ``updated``
+attribute to the rank element::
+
+   >>> for rank in root.iter('rank'):
+   ...   new_rank = int(rank.text) + 1
+   ...   rank.text = str(new_rank)
+   ...   rank.set('updated', 'yes')
+   ...
+   >>> tree.write('output.xml')
+
+Our XML now looks like this:
+
+.. code-block:: xml
+
+   <?xml version="1.0"?>
+   <data>
+       <country name="Liechtenstein">
+           <rank updated="yes">2</rank>
+           <year>2008</year>
+           <gdppc>141100</gdppc>
+           <neighbor name="Austria" direction="E"/>
+           <neighbor name="Switzerland" direction="W"/>
+       </country>
+       <country name="Singapore">
+           <rank updated="yes">5</rank>
+           <year>2011</year>
+           <gdppc>59900</gdppc>
+           <neighbor name="Malaysia" direction="N"/>
+       </country>
+       <country name="Panama">
+           <rank updated="yes">69</rank>
+           <year>2011</year>
+           <gdppc>13600</gdppc>
+           <neighbor name="Costa Rica" direction="W"/>
+           <neighbor name="Colombia" direction="E"/>
+       </country>
+   </data>
+
+We can remove elements using :meth:`Element.remove`.  Let's say we want to
+remove all countries with a rank higher than 50::
+
+   >>> for country in root.findall('country'):
+   ...   rank = int(country.find('rank').text)
+   ...   if rank > 50:
+   ...     root.remove(country)
+   ...
+   >>> tree.write('output.xml')
+
+Our XML now looks like this:
+
+.. code-block:: xml
+
+   <?xml version="1.0"?>
+   <data>
+       <country name="Liechtenstein">
+           <rank updated="yes">2</rank>
+           <year>2008</year>
+           <gdppc>141100</gdppc>
+           <neighbor name="Austria" direction="E"/>
+           <neighbor name="Switzerland" direction="W"/>
+       </country>
+       <country name="Singapore">
+           <rank updated="yes">5</rank>
+           <year>2011</year>
+           <gdppc>59900</gdppc>
+           <neighbor name="Malaysia" direction="N"/>
+       </country>
+   </data>
+
+Building XML documents
+^^^^^^^^^^^^^^^^^^^^^^
+
+The :func:`SubElement` function also provides a convenient way to create new
+sub-elements for a given element::
+
+   >>> a = ET.Element('a')
+   >>> b = ET.SubElement(a, 'b')
+   >>> c = ET.SubElement(a, 'c')
+   >>> d = ET.SubElement(c, 'd')
+   >>> ET.dump(a)
+   <a><b /><c><d /></c></a>
+
+Parsing XML with Namespaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If the XML input has `namespaces
+<https://en.wikipedia.org/wiki/XML_namespace>`__, tags and attributes
+with prefixes in the form ``prefix:sometag`` get expanded to
+``{uri}sometag`` where the *prefix* is replaced by the full *URI*.
+Also, if there is a `default namespace
+<http://www.w3.org/TR/2006/REC-xml-names-20060816/#defaulting>`__,
+that full URI gets prepended to all of the non-prefixed tags.
+
+Here is an XML example that incorporates two namespaces, one with the
+prefix "fictional" and the other serving as the default namespace:
+
+.. code-block:: xml
+
+    <?xml version="1.0"?>
+    <actors xmlns:fictional="http://characters.example.com"
+            xmlns="http://people.example.com">
+        <actor>
+            <name>John Cleese</name>
+            <fictional:character>Lancelot</fictional:character>
+            <fictional:character>Archie Leach</fictional:character>
+        </actor>
+        <actor>
+            <name>Eric Idle</name>
+            <fictional:character>Sir Robin</fictional:character>
+            <fictional:character>Gunther</fictional:character>
+            <fictional:character>Commander Clement</fictional:character>
+        </actor>
+    </actors>
+
+One way to search and explore this XML example is to manually add the
+URI to every tag or attribute in the xpath of a
+:meth:`~Element.find` or :meth:`~Element.findall`::
+
+    root = fromstring(xml_text)
+    for actor in root.findall('{http://people.example.com}actor'):
+        name = actor.find('{http://people.example.com}name')
+        print name.text
+        for char in actor.findall('{http://characters.example.com}character'):
+            print ' |-->', char.text
+
+
+A better way to search the namespaced XML example is to create a
+dictionary with your own prefixes and use those in the search functions::
+
+    ns = {'real_person': 'http://people.example.com',
+          'role': 'http://characters.example.com'}
+
+    for actor in root.findall('real_person:actor', ns):
+        name = actor.find('real_person:name', ns)
+        print name.text
+        for char in actor.findall('role:character', ns):
+            print ' |-->', char.text
+
+These two approaches both output::
+
+    John Cleese
+     |--> Lancelot
+     |--> Archie Leach
+    Eric Idle
+     |--> Sir Robin
+     |--> Gunther
+     |--> Commander Clement
+
+
+Additional resources
+^^^^^^^^^^^^^^^^^^^^
+
+See http://effbot.org/zone/element-index.htm for tutorials and links to other
+docs.
+
+.. _elementtree-xpath:
+
+XPath support
+-------------
+
+This module provides limited support for
+`XPath expressions <http://www.w3.org/TR/xpath>`_ for locating elements in a
+tree.  The goal is to support a small subset of the abbreviated syntax; a full
+XPath engine is outside the scope of the module.
+
+Example
+^^^^^^^
+
+Here's an example that demonstrates some of the XPath capabilities of the
+module.  We'll be using the ``countrydata`` XML document from the
+:ref:`Parsing XML <elementtree-parsing-xml>` section::
+
+   import xml.etree.ElementTree as ET
+
+   root = ET.fromstring(countrydata)
+
+   # Top-level elements
+   root.findall(".")
+
+   # All 'neighbor' grand-children of 'country' children of the top-level
+   # elements
+   root.findall("./country/neighbor")
+
+   # Nodes with name='Singapore' that have a 'year' child
+   root.findall(".//year/..[@name='Singapore']")
+
+   # 'year' nodes that are children of nodes with name='Singapore'
+   root.findall(".//*[@name='Singapore']/year")
+
+   # All 'neighbor' nodes that are the second child of their parent
+   root.findall(".//neighbor[2]")
+
+Supported XPath syntax
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. tabularcolumns:: |l|L|
+
++-----------------------+------------------------------------------------------+
+| Syntax                | Meaning                                              |
++=======================+======================================================+
+| ``tag``               | Selects all child elements with the given tag.       |
+|                       | For example, ``spam`` selects all child elements     |
+|                       | named ``spam``, and ``spam/egg`` selects all         |
+|                       | grandchildren named ``egg`` in all children named    |
+|                       | ``spam``.                                            |
++-----------------------+------------------------------------------------------+
+| ``*``                 | Selects all child elements.  For example, ``*/egg``  |
+|                       | selects all grandchildren named ``egg``.             |
++-----------------------+------------------------------------------------------+
+| ``.``                 | Selects the current node.  This is mostly useful     |
+|                       | at the beginning of the path, to indicate that it's  |
+|                       | a relative path.                                     |
++-----------------------+------------------------------------------------------+
+| ``//``                | Selects all subelements, on all levels beneath the   |
+|                       | current  element.  For example, ``.//egg`` selects   |
+|                       | all ``egg`` elements in the entire tree.             |
++-----------------------+------------------------------------------------------+
+| ``..``                | Selects the parent element.                          |
++-----------------------+------------------------------------------------------+
+| ``[@attrib]``         | Selects all elements that have the given attribute.  |
++-----------------------+------------------------------------------------------+
+| ``[@attrib='value']`` | Selects all elements for which the given attribute   |
+|                       | has the given value.  The value cannot contain       |
+|                       | quotes.                                              |
++-----------------------+------------------------------------------------------+
+| ``[tag]``             | Selects all elements that have a child named         |
+|                       | ``tag``.  Only immediate children are supported.     |
++-----------------------+------------------------------------------------------+
+| ``[tag='text']``      | Selects all elements that have a child named         |
+|                       | ``tag`` whose complete text content, including       |
+|                       | descendants, equals the given ``text``.              |
++-----------------------+------------------------------------------------------+
+| ``[position]``        | Selects all elements that are located at the given   |
+|                       | position.  The position can be either an integer     |
+|                       | (1 is the first position), the expression ``last()`` |
+|                       | (for the last position), or a position relative to   |
+|                       | the last position (e.g. ``last()-1``).               |
++-----------------------+------------------------------------------------------+
+
+Predicates (expressions within square brackets) must be preceded by a tag
+name, an asterisk, or another predicate.  ``position`` predicates must be
+preceded by a tag name.
+
+Reference
+---------
 
 .. _elementtree-functions:
 
-関数
-----
+Functions
+^^^^^^^^^
 
 
 .. function:: Comment(text=None)
 
-   コメント・エレメントのファクトリーです。このファクトリー関数は、標準のシリアライザでは
-   XML コメントにシリアライズされる特別な要素を作ります。コメント文字列は byte
-   文字列でも Unicode 文字列でも構いません。
-   *text* はそのコメント文字列を含んだ文字列です。
-   コメントを表わすエレメントのインスタンスを返します。
+   Comment element factory.  This factory function creates a special element
+   that will be serialized as an XML comment by the standard serializer.  The
+   comment string can be either a bytestring or a Unicode string.  *text* is a
+   string containing the comment string.  Returns an element instance
+   representing a comment.
 
 
 .. function:: dump(elem)
 
-   エレメントの木もしくはエレメントの構造を sys.stdout に書き込みます。この関数はデバグ目的でだけ使用してください。
+   Writes an element tree or element structure to sys.stdout.  This function
+   should be used for debugging only.
 
-   出力される形式の正確なところは実装依存です。このバージョンでは、通常の XML ファイルとして書き込まれます。
+   The exact output format is implementation dependent.  In this version, it's
+   written as an ordinary XML file.
 
-   *elem* はエレメントの木もしくは個別のエレメントです。
+   *elem* is an element tree or an individual element.
 
 
 .. function:: fromstring(text)
 
-   文字列定数で与えられた XML 断片を構文解析します。 :func:`XML` 関数と
-   同じです。 *text* は XML データの文字列です。
-   :class:`Element` インスタンスを返します。
+   Parses an XML section from a string constant.  Same as :func:`XML`.  *text*
+   is a string containing XML data.  Returns an :class:`Element` instance.
 
 
 .. function:: fromstringlist(sequence, parser=None)
 
-   文字列のシーケンスからXMLドキュメントを解析します。
-   *sequence* は XML データのフラグメントを格納した、 list かその他のシーケンスです。
-   *parser* はオプションの parser インスタンスです。指定されなかった場合、
-   標準の :class:`XMLParser` パーサーが利用されます。
-   :class:`Elment` インスタンスを返します。
+   Parses an XML document from a sequence of string fragments.  *sequence* is a
+   list or other sequence containing XML data fragments.  *parser* is an
+   optional parser instance.  If not given, the standard :class:`XMLParser`
+   parser is used.  Returns an :class:`Element` instance.
 
    .. versionadded:: 2.7
 
 
 .. function:: iselement(element)
 
-   オブジェクトが正当なエレメント・オブジェクトであるかをチェックします。 *element* はエレメント・インスタンスです。
-   引数がエレメント・オブジェクトならば真値を返します。
+   Checks if an object appears to be a valid element object.  *element* is an
+   element instance.  Returns a true value if this is an element object.
 
 
 .. function:: iterparse(source, events=None, parser=None)
 
-   XML 断片を構文解析してエレメントの木を漸増的に作っていき、その間進行状況をユーザーに報告します。 *source* は XML
-   データを含むファイル名またはファイル風オブジェクト。 *events* は報告すべきイベントのリスト。
-   省略された場合は "end" イベントだけが報告されます。
-   *parser* はオプションの引数で、パーサーのインスタンスを指定します。
-   指定されなかった場合は標準の :class:`XMLParser` が利用されます。
-   ``(event, elem)`` ペアのイテレータ(:term:`iterator`)を返します。
+   Parses an XML section into an element tree incrementally, and reports what's
+   going on to the user.  *source* is a filename or file object containing XML
+   data.  *events* is a list of events to report back.  If omitted, only "end"
+   events are reported.  *parser* is an optional parser instance.  If not
+   given, the standard :class:`XMLParser` parser is used.  *parser* is not
+   supported by ``cElementTree``. Returns an :term:`iterator` providing
+   ``(event, elem)`` pairs.
 
    .. note::
 
-      :func:`iterparse` は "start" イベントを送り出すとき\
-      開始タグの ">" なる文字を見たことだけを保証しますので、
-      アトリビュートは定義されますが、その時点ではテキストの内容も\
-      テール・アトリビュートもまだ定義されていません。
-      同じことは子エレメントにも言えて、その時点ではあるともないとも言えません。
+      :func:`iterparse` only guarantees that it has seen the ">"
+      character of a starting tag when it emits a "start" event, so the
+      attributes are defined, but the contents of the text and tail attributes
+      are undefined at that point.  The same applies to the element children;
+      they may or may not be present.
 
-      全部が揃ったエレメントが必要ならば、"end" イベントを探すようにして下さい。
+      If you need a fully populated element, look for "end" events instead.
 
 
 .. function:: parse(source, parser=None)
 
-   XML 断片を構文解析して element tree にします。
-   *source* は XML データを含むファイル名またはファイル風オブジェクト。 *parser*
-   はオプションの構文解析器インスタンスです。
-   これが与えられない場合、標準の :class:`XMLParser` パーサーが使われます。
-   :class:`ElementTree` インスタンスを返します。
+   Parses an XML section into an element tree.  *source* is a filename or file
+   object containing XML data.  *parser* is an optional parser instance.  If
+   not given, the standard :class:`XMLParser` parser is used.  Returns an
+   :class:`ElementTree` instance.
 
 
 .. function:: ProcessingInstruction(target, text=None)
 
-   PI エレメントのファクトリー。このファクトリー関数は XML の処理命令(processing instruction)
-   としてシリアライズされる特別なエレメントを作ります。 *target* は PI ターゲットを含んだ文字列です。 *text* は与えられるならば PI
-   コンテンツを含んだ文字列です。
-   PI を表わすエレメント・インスタンスを返します。
+   PI element factory.  This factory function creates a special element that
+   will be serialized as an XML processing instruction.  *target* is a string
+   containing the PI target.  *text* is a string containing the PI contents, if
+   given.  Returns an element instance, representing a processing instruction.
 
 
 .. function:: register_namespace(prefix, uri)
 
-   名前空間の prefix を登録します。レジストリはグローバルで、与えられた prefix
-   か名前空間URI のどちらかの既存のマッピングは全て削除されます。
-   *prefix* は名前空間の prefix です。 *uri* は名前空間のURIです。
-   この名前空間のタグや属性は、可能な限り与えられた prefix をつけてシリアライズされます。
+   Registers a namespace prefix.  The registry is global, and any existing
+   mapping for either the given prefix or the namespace URI will be removed.
+   *prefix* is a namespace prefix.  *uri* is a namespace uri.  Tags and
+   attributes in this namespace will be serialized with the given prefix, if at
+   all possible.
 
    .. versionadded:: 2.7
 
 
-.. function:: SubElement(parent, tag[, attrib[, **extra]])
+.. function:: SubElement(parent, tag, attrib={}, **extra)
 
-   子エレメントのファクトリー。この関数はエレメント・インスタンスを作り、それを既存のエレメントに追加します。
+   Subelement factory.  This function creates an element instance, and appends
+   it to an existing element.
 
-   エレメント名、アトリビュート名およびアトリビュート値は byte 文字列でも Unicode 文字列でも構いません。 *parent*
-   は親エレメントです。 *tag* はエレメント名です。 *attrib* はオプションの辞書で、エレメントのアトリビュートを含んでいます。 *extra*
-   は追加のアトリビュートで、キーワード引数として与えられたものです。
-   エレメント・インスタンスを返します。
+   The element name, attribute names, and attribute values can be either
+   bytestrings or Unicode strings.  *parent* is the parent element.  *tag* is
+   the subelement name.  *attrib* is an optional dictionary, containing element
+   attributes.  *extra* contains additional attributes, given as keyword
+   arguments.  Returns an element instance.
 
 
 .. function:: tostring(element, encoding="us-ascii", method="xml")
 
-   XML エレメントを全ての子エレメントを含めて表現する文字列を生成します。
-   *element* は :class:`Element` のインスタンスです。 *encoding* [1]_
-   は出力エンコーディング(デフォルトは US-ASCII)です。
-   *method* は ``"xml"``, ``"html"``, ``"text"`` のいずれか(デフォルトは ``"xml"``) です。
-   XML データを含んだエンコードされた文字列を返します。
+   Generates a string representation of an XML element, including all
+   subelements.  *element* is an :class:`Element` instance.  *encoding* [1]_ is
+   the output encoding (default is US-ASCII).  *method* is either ``"xml"``,
+   ``"html"`` or ``"text"`` (default is ``"xml"``).  Returns an encoded string
+   containing the XML data.
 
 
 .. function:: tostringlist(element, encoding="us-ascii", method="xml")
 
-   XML エレメントを全ての子エレメントを含めて表現する文字列を生成します。
-   *element* は :class:`Element` のインスタンスです。 *encoding* [1]_
-   は出力エンコーディング(デフォルトは US-ASCII)です。
-   *method* は ``"xml"``, ``"html"``, ``"text"`` のいずれか(デフォルトは ``"xml"``) です。
-   XML データを含んだエンコードされた文字列のリストを返します。
-   これは、 ``"".join(tostringlist(element)) == tostring(element)``
-   であること以外、なにか特定のシーケンスになることは保証していません。
+   Generates a string representation of an XML element, including all
+   subelements.  *element* is an :class:`Element` instance.  *encoding* [1]_ is
+   the output encoding (default is US-ASCII).   *method* is either ``"xml"``,
+   ``"html"`` or ``"text"`` (default is ``"xml"``).  Returns a list of encoded
+   strings containing the XML data.  It does not guarantee any specific
+   sequence, except that ``"".join(tostringlist(element)) ==
+   tostring(element)``.
 
    .. versionadded:: 2.7
 
 
 .. function:: XML(text, parser=None)
 
-   文字列定数で与えられた XML 断片を構文解析します。この関数は Python コードに
-   「XML リテラル」を埋め込むのに使えます。 *text* は XML データを含んだ文字列です。
-   *parser* はオプションで、パーサーのインスタンスです。指定されなかった場合は、
-   標準の :class:`XMLParser` パーサーを利用します。
-   :class:`Element` のインスタンスを返します。
+   Parses an XML section from a string constant.  This function can be used to
+   embed "XML literals" in Python code.  *text* is a string containing XML
+   data.  *parser* is an optional parser instance.  If not given, the standard
+   :class:`XMLParser` parser is used.  Returns an :class:`Element` instance.
 
 
 .. function:: XMLID(text, parser=None)
 
-   文字列定数で与えられた XML 断片を構文解析し、エレメント ID からエレメント
-   へのマッピングを与える辞書も同時に返します。 *text* は XMLデータを
-   含んだ文字列です。
-   *parser* はオプションで、パーサーのインスタンスです。指定されなかった場合は、
-   標準の :class:`XMLParser` パーサーを利用します。
-   :class:`Element` のインスタンスと辞書のタプルを返します。
+   Parses an XML section from a string constant, and also returns a dictionary
+   which maps from element id:s to elements.  *text* is a string containing XML
+   data.  *parser* is an optional parser instance.  If not given, the standard
+   :class:`XMLParser` parser is used.  Returns a tuple containing an
+   :class:`Element` instance and a dictionary.
 
 
 .. _elementtree-element-objects:
 
-Element オブジェクト
-----------------------
+Element Objects
+^^^^^^^^^^^^^^^
 
-.. function:: Element(tag[, attrib][, **extra])
+.. class:: Element(tag, attrib={}, **extra)
 
-   エレメントクラス。この関数は Element インタフェースを定義すると同時に、
-   そのリファレンス実装を提供します。
+   Element class.  This class defines the Element interface, and provides a
+   reference implementation of this interface.
 
-   エレメント名、アトリビュート名およびアトリビュート値は bytes 文字列でも
-   Unicode 文字列でも構いません。 *tag* はエレメント名です。
-   *attrib* はオプションの辞書で、エレメントのアトリビュートを含んでいます。 *extra*
-   は追加のアトリビュートで、キーワード引数として与えられたものです。
-   エレメント・インスタンスを返します。
-
+   The element name, attribute names, and attribute values can be either
+   bytestrings or Unicode strings.  *tag* is the element name.  *attrib* is
+   an optional dictionary, containing element attributes.  *extra* contains
+   additional attributes, given as keyword arguments.
 
 
    .. attribute:: tag
 
-      このエレメントが表すデータの種類を示す文字列です(言い替えると、エレメントの型です)。
+      A string identifying what kind of data this element represents (the
+      element type, in other words).
+
 
    .. attribute:: text
+                  tail
 
-      *text* アトリビュートはエレメントに結びつけられた付加的なデータを保持するのに使われます。
-      名前が示唆しているようにこのアトリビュートはたいてい文字列ですが、
-      アプリケーション固有のオブジェクトであって構いません。
-      エレメントが XML ファイルから作られたものならば、このアトリビュートは
-      エレメント・タグの間にあるテキストを丸ごと含みます。
+      These attributes can be used to hold additional data associated with
+      the element.  Their values are usually strings but may be any
+      application-specific object.  If the element is created from
+      an XML file, the *text* attribute holds either the text between
+      the element's start tag and its first child or end tag, or ``None``, and
+      the *tail* attribute holds either the text between the element's
+      end tag and the next tag, or ``None``.  For the XML data
 
+      .. code-block:: xml
 
-   .. attribute:: tail
+         <a><b>1<c>2<d/>3</c></b>4</a>
 
-      *tail* アトリビュートはエレメントに結びつけられた付加的なデータを保持するのに使われます。
-      このアトリビュートはたいてい文字列ですが、アプリケーション固有のオブジェクトであって構いません。
-      エレメントが XML ファイルから作られたものならば、このアトリビュートはエレメントの
-      終了タグと次のタグの直前までの間に見つかったテキストを丸ごと含みます。
+      the *a* element has ``None`` for both *text* and *tail* attributes,
+      the *b* element has *text* ``"1"`` and *tail* ``"4"``,
+      the *c* element has *text* ``"2"`` and *tail* ``None``,
+      and the *d* element has *text* ``None`` and *tail* ``"3"``.
+
+      To collect the inner text of an element, see :meth:`itertext`, for
+      example ``"".join(element.itertext())``.
+
+      Applications may store arbitrary objects in these attributes.
 
 
    .. attribute:: attrib
 
-      エレメントのアトリビュートを保持する辞書です。
-      次のことに注意しましょう。
-      *attrib* は普通の書き換え可能な Python の辞書ではあるのですが、
-      ElementTree の実装によっては別の内部表現を選択して要求されたときにだけ辞書を作るようにするかもしれません。
-      そうした実装の利益を享受するために、可能な限り下記の辞書メソッドを通じて使いましょう。
+      A dictionary containing the element's attributes.  Note that while the
+      *attrib* value is always a real mutable Python dictionary, an ElementTree
+      implementation may choose to use another internal representation, and
+      create the dictionary only if someone asks for it.  To take advantage of
+      such implementations, use the dictionary methods below whenever possible.
 
-   以下の辞書風メソッドがエレメントのアトリビュートに対して働きます。
+   The following dictionary-like methods work on the element attributes.
+
 
    .. method:: clear()
 
-      エレメントをリセットします。全ての子孫エレメントを削除し、アトリビュートをクリアし、
-      test と tail を ``None`` にセットします。
+      Resets an element.  This function removes all subelements, clears all
+      attributes, and sets the text and tail attributes to None.
 
 
    .. method:: get(key, default=None)
 
-      エレメントの *key* という名前のアトリビュートを取得します。
+      Gets the element attribute named *key*.
 
-      アトリビュートの値、またはアトリビュートがない場合は *default* を返します。
+      Returns the attribute value, or *default* if the attribute was not found.
 
 
    .. method:: items()
 
-      エレメントのアトリビュートを (名前, 値) ペアのシーケンスとして返します。
-      返されるアトリビュートの順番は決まっていません。
+      Returns the element attributes as a sequence of (name, value) pairs.  The
+      attributes are returned in an arbitrary order.
 
 
    .. method:: keys()
 
-      エレメントのアトリビュート名をリストとして返します。
-      返される名前の順番は決まっていません。
+      Returns the elements attribute names as a list.  The names are returned
+      in an arbitrary order.
+
 
    .. method:: set(key, value)
 
-      エレメントのアトリビュート *key* に *value* をセットします。
+      Set the attribute *key* on the element to *value*.
 
-   以下のメソッドはエレメントの子(サブエレメント)に対して働きます。
+   The following methods work on the element's children (subelements).
+
 
    .. method:: append(subelement)
 
-      エレメント *subelement* をこのエレメントの内部にあるサブエレメントの
-      リストの最後に追加します。
+      Adds the element *subelement* to the end of this elements internal list
+      of subelements.
+
 
    .. method:: extend(subelements)
 
-      シーケンスオブジェクト *subelements* から 0個以上のサブエレメントを追加します。
-      サブエレメントが有効なオブジェクトでない場合は :exc:`AssertionError`
-      を発生させます。
+      Appends *subelements* from a sequence object with zero or more elements.
+      Raises :exc:`AssertionError` if a subelement is not a valid object.
 
       .. versionadded:: 2.7
 
+
    .. method:: find(match)
 
-      *match* にマッチする最初のサブエレメントを探します。
-      *match* はタグ名かパス(path)です。
-      エレメント・インスタンスまたは ``None`` を返します。
+      Finds the first subelement matching *match*.  *match* may be a tag name
+      or path.  Returns an element instance or ``None``.
+
 
    .. method:: findall(match)
 
-      タグ名かパスにマッチする全てのサブエレメントを探します。
-      全てのマッチするエレメントを、ドキュメント上の順序で含むリストを返します。
+      Finds all matching subelements, by tag name or path.  Returns a list
+      containing all matching elements in document order.
+
 
    .. method:: findtext(match, default=None)
 
-      *match* にマッチする最初のサブエレメントのテキストを探します。
-      *match* はタグ名かパスです。
-      最初にマッチするエレメントの text を返すか、エレメントが見あたらなかった場合
-      *default* を返します。
-      マッチしたエレメントに text がなければ空文字列が返されるので気を付けましょう。
+      Finds text for the first subelement matching *match*.  *match* may be
+      a tag name or path.  Returns the text content of the first matching
+      element, or *default* if no element was found.  Note that if the matching
+      element has no text content an empty string is returned.
+
 
    .. method:: getchildren()
 
       .. deprecated:: 2.7
-         ``list(elem)`` を使うか、 Element に対してイテレートしてください。
+         Use ``list(elem)`` or iteration.
+
 
    .. method:: getiterator(tag=None)
 
       .. deprecated:: 2.7
-         :meth:`Element.iter` メソッドを使ってください。
+         Use method :meth:`Element.iter` instead.
+
 
    .. method:: insert(index, element)
 
-      サブエレメントをこのエレメントの与えられた位置に挿入します。
+      Inserts a subelement at the given position in this element.
 
 
    .. method:: iter(tag=None)
 
-      現在のエレメントを根とするツリーのイテレータ(:term:`iterator`)を作ります。
-      イテレータは現在のエレメントとそれ以下の全てのエレメントを、
-      文書中での出現順(深さ優先順)でイテレートします。
-      *tag* が ``None`` または ``'*'`` でない場合は、
-      与えられたタグに等しいものについてのみイテレータから返されます。
-      イテレート中にツリー構造が変更された場合の結果は未定義です。
+      Creates a tree :term:`iterator` with the current element as the root.
+      The iterator iterates over this element and all elements below it, in
+      document (depth first) order.  If *tag* is not ``None`` or ``'*'``, only
+      elements whose tag equals *tag* are returned from the iterator.  If the
+      tree structure is modified during iteration, the result is undefined.
+
+      .. versionadded:: 2.7
 
 
    .. method:: iterfind(match)
 
-      タグ名かパスにマッチする全てのサブエレメントを探します。
-      全てのマッチするエレメントをドキュメント上の順序で yield する
-      イテレート可能オブジェクトを返します。
+      Finds all matching subelements, by tag name or path.  Returns an iterable
+      yielding all matching elements in document order.
 
       .. versionadded:: 2.7
 
 
    .. method:: itertext()
 
-      text のイテレータを作成します。
-      このイテレータは、このエレメントと全てのサブエレメントをドキュメント上の
-      順序で巡回し、全ての内部の text を返します。
+      Creates a text iterator.  The iterator loops over this element and all
+      subelements, in document order, and returns all inner text.
 
       .. versionadded:: 2.7
 
 
    .. method:: makeelement(tag, attrib)
 
-      現在のエレメントと同じ型の新しいエレメント・オブジェクトを作ります。
-      このメソッドは呼び出さずに、 :func:`SubElement` ファクトリー関数を使って下さい。
+      Creates a new element object of the same type as this element.  Do not
+      call this method, use the :func:`SubElement` factory function instead.
+
 
    .. method:: remove(subelement)
 
-      現在のエレメントから *subelement* を削除します。
-      find\* メソッド群と違ってこのメソッドはエレメントをインスタンスの同一性で比較します。
-      タグや内容では比較しません。
+      Removes *subelement* from the element.  Unlike the find\* methods this
+      method compares elements based on the instance identity, not on tag value
+      or contents.
 
-   :class:`Element` オブジェクトは以下のシーケンス型のメソッドを、サブエレメントを
-   操作するためにサポートします:  :meth:`__delitem__`, :meth:`__getitem__`, :meth:`__setitem__`,
-   :meth:`__len__`.
+   :class:`Element` objects also support the following sequence type methods
+   for working with subelements: :meth:`~object.__delitem__`,
+   :meth:`~object.__getitem__`, :meth:`~object.__setitem__`,
+   :meth:`~object.__len__`.
 
-   注意: サブエレメントを持たないエレメントの真偽値は ``False`` になります。
-   この挙動は将来のバージョンで変更されるかもしれません。
-   直接真偽値をテストするのでなく、 ``len(elem)`` か ``elem is None`` を利用してください。 ::
+   Caution: Elements with no subelements will test as ``False``.  This behavior
+   will change in future versions.  Use specific ``len(elem)`` or ``elem is
+   None`` test instead. ::
 
      element = root.find('foo')
 
@@ -373,102 +778,90 @@ Element オブジェクト
 
 .. _elementtree-elementtree-objects:
 
-ElementTree オブジェクト
-------------------------
+ElementTree Objects
+^^^^^^^^^^^^^^^^^^^
 
 
 .. class:: ElementTree(element=None, file=None)
 
-   ElementTree ラッパー・クラス。このクラスはエレメントの全階層を表現し、
-   さらに標準 XML との相互変換を追加しています。
+   ElementTree wrapper class.  This class represents an entire element
+   hierarchy, and adds some extra support for serialization to and from
+   standard XML.
 
-   *element* は根エレメントです。
-   木はもし *file* が与えられればその XML の内容により初期化されます。
+   *element* is the root element.  The tree is initialized with the contents
+   of the XML *file* if given.
 
 
    .. method:: _setroot(element)
 
-      この木の根エレメントを置き換えます。
-      したがって現在の木の内容は破棄され、与えられたエレメントが代わりに使われます。
-      注意して使ってください。 *element* はエレメント・インスタンスです。
+      Replaces the root element for this tree.  This discards the current
+      contents of the tree, and replaces it with the given element.  Use with
+      care.  *element* is an element instance.
 
 
    .. method:: find(match)
 
-      *match* にマッチする最初のトップレベルのエレメントを探します。
-      *match* はタグ名かパスです。
-      getroot().find(path) と同じです。
-      最初に条件に合ったエレメント、または見つからない時は ``None`` を返します。
+      Same as :meth:`Element.find`, starting at the root of the tree.
 
 
    .. method:: findall(match)
 
-      タグ名かパスにマッチする全てのサブエレメントを探します。
-      getroot().findall(match) と同じです。 *match* はタグ名かパスです。
-      条件に合った全てのエレメントを、ドキュメント上の順序で格納したリストを返します。
+      Same as :meth:`Element.findall`, starting at the root of the tree.
 
 
    .. method:: findtext(match, default=None)
 
-      子孫エレメントの中で与えられたタグを持つ最初のもののテキストを見つけます。
-      getroot().findtext(match) と同じです。 *match* はタグ名かパスです。
-      *default* はエレメントが見つからなかった場合に返される値です。
-      条件に合った最初のエレメントのテキスト、または見つからなかった場合にはデフォルト値を返します。
-      もしエレメントが見つかったもののテキストがなかった場合には、
-      このメソッドは空文字列を返すということに気をつけてください。
+      Same as :meth:`Element.findtext`, starting at the root of the tree.
 
 
    .. method:: getiterator(tag=None)
 
       .. deprecated:: 2.7
-         代わりに :meth:`ElementTree.iter` メソッドを利用してください。
+         Use method :meth:`ElementTree.iter` instead.
 
 
    .. method:: getroot()
 
-      この木の根エレメントを返します。
+      Returns the root element for this tree.
 
 
    .. method:: iter(tag=None)
 
-      ルートエレメントに対する、ツリーを巡回するイテレータを返します。
-      イテレータはツリーの全てのエレメントに渡ってセクション順にループします。
-      *tag* は探したいタグです(デフォルトでは全てのエレメントを返します)。
+      Creates and returns a tree iterator for the root element.  The iterator
+      loops over all elements in this tree, in section order.  *tag* is the tag
+      to look for (default is to return all elements).
 
 
    .. method:: iterfind(match)
 
-      タグ名かパスにマッチする全てのサブエレメントを返します。
-      getroot().iterfind(match) と同じです。
-      全てのマッチするエレメントをドキュメント順に yield するイテレート可能
-      オブジェクトを返します。
+      Finds all matching subelements, by tag name or path.  Same as
+      getroot().iterfind(match). Returns an iterable yielding all matching
+      elements in document order.
 
       .. versionadded:: 2.7
 
 
    .. method:: parse(source, parser=None)
 
-      外部の XML 断片をこのエレメントの木に読み込みます。
-      *source* は XML データを含むファイル名またはファイル風オブジェクト。
-      *parser* はオプションの構文解析器インスタンスです。
-      これが与えられない場合、標準の XMLParser パーサーが使われます。
-      断片の根エレメントを返します。
+      Loads an external XML section into this element tree.  *source* is a file
+      name or file object.  *parser* is an optional parser instance.  If not
+      given, the standard XMLParser parser is used.  Returns the section
+      root element.
 
 
-   .. method:: write(file, encoding="us-ascii", xml_declaration=None, method="xml")
+   .. method:: write(file, encoding="us-ascii", xml_declaration=None, \
+                     default_namespace=None, method="xml")
 
-      エレメントの木をファイルに XML として書き込みます。
-      *file* はファイル名またはファイル風オブジェクトで書き込み用に開かれたもの。
-      *encoding* [1]_ は出力エンコーディング(デフォルトは US-ASCII)です。
-      *xml_declaration* は、 XML 宣言がファイルに書かれるかどうかを制御します。
-      False の場合は常に書かれず、 True の場合は常に書かれ、 None の場合は
-      US-ASCII か UTF-8 以外の場合に書かれます (デフォルトは None です)。
-      *method* は ``"xml"``, ``"html"``, ``"text"`` のいづれかです
-      (デフォルトは ``"xml"`` です)。
-      エンコードされた文字列を返します。
+      Writes the element tree to a file, as XML.  *file* is a file name, or a
+      file object opened for writing.  *encoding* [1]_ is the output encoding
+      (default is US-ASCII).  *xml_declaration* controls if an XML declaration
+      should be added to the file.  Use False for never, True for always, None
+      for only if not US-ASCII or UTF-8 (default is None).  *default_namespace*
+      sets the default XML namespace (for "xmlns").  *method* is either
+      ``"xml"``, ``"html"`` or ``"text"`` (default is ``"xml"``).  Returns an
+      encoded string.
 
-
-次に示すのがこれから操作する XML ファイルです::
+This is the XML file that is going to be manipulated::
 
     <html>
         <head>
@@ -480,7 +873,7 @@ ElementTree オブジェクト
         </body>
     </html>
 
-第1段落の全てのリンクの "target" アトリビュートを変更する例::
+Example of changing the attribute "target" of every link in first paragraph::
 
     >>> from xml.etree.ElementTree import ElementTree
     >>> tree = ElementTree()
@@ -496,118 +889,111 @@ ElementTree オブジェクト
     ...     i.attrib["target"] = "blank"
     >>> tree.write("output.xhtml")
 
-
 .. _elementtree-qname-objects:
 
-QName オブジェクト
-------------------
+QName Objects
+^^^^^^^^^^^^^
 
 
 .. class:: QName(text_or_uri, tag=None)
 
-   QName ラッパー。このクラスは QName アトリビュート値をラップし、出力時に
-   真っ当な名前空間の扱いを得るために使われます。 *text_or_uri*
-   は {uri}local という形式の QName 値を含む文字列、または tag 引数が与えられた場合には QName の URI 部分の文字列です。
-   *tag* が与えられた場合、一つめの引数は URI と解釈され、この引数はローカル名と解釈されます。
-   :class:`QName` インスタンスは不透明です。
+   QName wrapper.  This can be used to wrap a QName attribute value, in order
+   to get proper namespace handling on output.  *text_or_uri* is a string
+   containing the QName value, in the form {uri}local, or, if the tag argument
+   is given, the URI part of a QName.  If *tag* is given, the first argument is
+   interpreted as an URI, and this argument is interpreted as a local name.
+   :class:`QName` instances are opaque.
 
 
 .. _elementtree-treebuilder-objects:
 
-TreeBuilder オブジェクト
-------------------------
+TreeBuilder Objects
+^^^^^^^^^^^^^^^^^^^
 
 
 .. class:: TreeBuilder(element_factory=None)
 
-   汎用のエレメント構造ビルダー。これは start, data, end の
-   メソッド呼び出しの列を整形式のエレメント構造に変換します。
-   このクラスを使うと、好みの XML 構文解析器、または他の XML に似た形式の
-   構文解析器を使って、エレメント構造を作り出すことができます。 *element_factory*
-   が与えられた場合には、新しい :class:`Element` インスタンスを作る際にこれを呼び出します。
+   Generic element structure builder.  This builder converts a sequence of
+   start, data, and end method calls to a well-formed element structure.  You
+   can use this class to build an element structure using a custom XML parser,
+   or a parser for some other XML-like format.  The *element_factory* is called
+   to create new :class:`Element` instances when given.
 
 
    .. method:: close()
 
-      ビルダーのバッファをフラッシュし、最上位の文書エレメントを返します。
-      :class:`Element` インスタンスを返します。
+      Flushes the builder buffers, and returns the toplevel document
+      element.  Returns an :class:`Element` instance.
 
 
    .. method:: data(data)
 
-      現在のエレメントにテキストを追加します。 *data* は文字列です。
-      bytes 文字列もしくは Unicode 文字列でなければなりません。
+      Adds text to the current element.  *data* is a string.  This should be
+      either a bytestring, or a Unicode string.
 
 
    .. method:: end(tag)
 
-      現在のエレメントを閉じます。 *tag* はエレメントの名前です。
-      閉じられたエレメントを返します。
+      Closes the current element.  *tag* is the element name.  Returns the
+      closed element.
 
 
    .. method:: start(tag, attrs)
 
-      新しいエレメントを開きます。 *tag* はエレメントの名前です。
-      *attrs* はエレメントのアトリビュートを保持した辞書です。
-      開かれたエレメントを返します。
+      Opens a new element.  *tag* is the element name.  *attrs* is a dictionary
+      containing element attributes.  Returns the opened element.
 
-   加えて、カスタムの :class:`TreeBuilder` オブジェクトは以下のメソッドを
-   提供できます。
+
+   In addition, a custom :class:`TreeBuilder` object can provide the
+   following method:
 
    .. method:: doctype(name, pubid, system)
 
-      doctype 宣言を処理します。 *name* は doctype 名です。
-      *pubid* は公式の識別子です。 *system* はシステム識別子です。
-      このメソッドはデフォルトの :class:`TreeBuilder` クラスには存在しません。
+      Handles a doctype declaration.  *name* is the doctype name.  *pubid* is
+      the public identifier.  *system* is the system identifier.  This method
+      does not exist on the default :class:`TreeBuilder` class.
 
       .. versionadded:: 2.7
 
 
 .. _elementtree-xmlparser-objects:
 
-XMLParser オブジェクト
------------------------
+XMLParser Objects
+^^^^^^^^^^^^^^^^^
 
-   XML ソースからエレメント構造を作るもので、expat 構文解析器に基づいています。 *html* は前もって定義された HTML
-   エンティティです。このオプションは現在の実装ではサポートされていません。
-   *target* はターゲットとなるオブジェクトです。省略された場合、標準の
-   TreeBuilder クラスのインスタンスが使われます。
 
 .. class:: XMLParser(html=0, target=None, encoding=None)
 
-   expat パーサーを利用した、XML ソースデータからの :class:`Element` 構造ビルダー。
-   *html* は定義済みの HTML エンティティです。このフラグは現在の実装では
-   サポートされていません。
-   *target* はターゲットオブジェクトです。省略された場合、ビルダーは
-   標準の TreeBuilder クラスのインスタンスを利用します。
-   *encoding* [1]_ はオプションで、与えられた場合は XML ファイルで指定された
-   エンコーディングをオーバーライドします。
+   :class:`Element` structure builder for XML source data, based on the expat
+   parser.  *html* are predefined HTML entities.  This flag is not supported by
+   the current implementation.  *target* is the target object.  If omitted, the
+   builder uses an instance of the standard TreeBuilder class.  *encoding* [1]_
+   is optional.  If given, the value overrides the encoding specified in the
+   XML file.
 
 
    .. method:: close()
 
-      構文解析器にデータを供給するのを終わりにします。
-      エレメント構造を返します。
+      Finishes feeding data to the parser.  Returns an element structure.
 
 
    .. method:: doctype(name, pubid, system)
 
       .. deprecated:: 2.7
-         カスタムの TreeBuilder target で :meth:`TreeBuilder.doctype` メソッドを
-         定義してください。
+         Define the :meth:`TreeBuilder.doctype` method on a custom TreeBuilder
+         target.
 
 
    .. method:: feed(data)
 
-      構文解析器にデータを供給します。
-      *data* はエンコードされたデータです。
+      Feeds data to the parser.  *data* is encoded data.
 
-:meth:`XMLParser.feed` は *target* の :meth:`start` メソッドを
-それぞれの開始タグに対して呼び、また :meth:`end` メソッドを終了タグに対して呼び、
-そしてデータは :meth:`data` メソッドで処理されます。
-:meth:`XMLParser.close` は *target* の :meth:`close` メソッドを呼びます。
-:class:`XMLParser` は木構造を構築する以外にも使えます。
-以下の例は、XML ファイルの最高の深さを数えます::
+:meth:`XMLParser.feed` calls *target*\'s :meth:`start` method
+for each opening tag, its :meth:`end` method for each closing tag,
+and data is processed by method :meth:`data`.  :meth:`XMLParser.close`
+calls *target*\'s method :meth:`close`.
+:class:`XMLParser` can be used not only for building a tree structure.
+This is an example of counting the maximum depth of an XML file::
 
     >>> from xml.etree.ElementTree import XMLParser
     >>> class MaxDepth:                     # The target object of the parser
@@ -642,12 +1028,9 @@ XMLParser オブジェクト
     4
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] XML の出力に含まれるエンコーディング文字列は適切な標準に\
-   適合していなければなりません。
-   たとえば、"UTF-8" は正当ですが、"UTF8" は違います。
-   http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
-   と
-   http://www.iana.org/assignments/character-sets
-   を参照して下さい。
+.. [#] The encoding string included in XML output should conform to the
+   appropriate standards.  For example, "UTF-8" is valid, but "UTF8" is
+   not.  See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
+   and http://www.iana.org/assignments/character-sets/character-sets.xhtml.

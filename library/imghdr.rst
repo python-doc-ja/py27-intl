@@ -1,22 +1,27 @@
-
-:mod:`imghdr` --- 画像の形式を決定する
-======================================
+:mod:`imghdr` --- Determine the type of an image
+================================================
 
 .. module:: imghdr
-   :synopsis: ファイルやバイトストリームに含まれる画像の形式を決定する。
+   :synopsis: Determine the type of image contained in a file or byte stream.
 
+**Source code:** :source:`Lib/imghdr.py`
 
-:mod:`imghdr` モジュールはファイルやバイトストリームに含まれる画像の形式を決定します。
+--------------
 
-:mod:`imghdr` モジュールは次の関数を定義しています:
+The :mod:`imghdr` module determines the type of image contained in a file or
+byte stream.
+
+The :mod:`imghdr` module defines the following function:
 
 
 .. function:: what(filename[, h])
 
-   *filename* という名前のファイル内の画像データをテストし、画像形式を表す文字列を返します。
-   オプションの *h* が与えられた場合は、 *filename* は無視され、テストするバイトストリームを含んでいると *h* は仮定されます。
+   Tests the image data contained in the file named by *filename*, and returns a
+   string describing the image type.  If optional *h* is provided, the *filename*
+   is ignored and *h* is assumed to contain the byte stream to test.
 
-以下に :func:`what` からの戻り値とともにリストするように、次の画像形式が認識されます:
+The following image types are recognized, as listed below with the return value
+from :func:`what`:
 
 +------------+-----------------------------------+
 | Value      | Image format                      |
@@ -45,22 +50,24 @@
 +------------+-----------------------------------+
 
 .. versionadded:: 2.5
-   Exif の検出.
+   Exif detection.
 
-この変数に追加することで、あなたは :mod:`imghdr` が認識できるファイル形式のリストを拡張できます:
+You can extend the list of file types :mod:`imghdr` can recognize by appending
+to this variable:
 
 
 .. data:: tests
 
-   個別のテストを行う関数のリスト。それぞれの関数は二つの引数をとります:
-   バイトストリームとオープンされたファイルのようにふるまうオブジェクト。
-   :func:`what` がバイトストリームとともに呼び出されたときは、ファイルのようにふるまうオブジェクトは ``None`` でしょう。
+   A list of functions performing the individual tests.  Each function takes two
+   arguments: the byte-stream and an open file-like object. When :func:`what` is
+   called with a byte-stream, the file-like object will be ``None``.
 
-   テストが成功した場合は、テスト関数は画像形式を表す文字列を返すべきです。あるいは、失敗した場合は ``None`` を返すべきです。
+   The test function should return a string describing the image type if the test
+   succeeded, or ``None`` if it failed.
 
-例::
+Example::
 
    >>> import imghdr
-   >>> imghdr.what('/tmp/bass.gif')
+   >>> imghdr.what('bass.gif')
    'gif'
 

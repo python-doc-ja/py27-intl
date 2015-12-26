@@ -1,9 +1,9 @@
-==================================================
-:mod:`turtle` --- Tkのためのタートルグラフィックス
-==================================================
+========================================
+:mod:`turtle` --- Turtle graphics for Tk
+========================================
 
 .. module:: turtle
-   :synopsis: Tkのためのタートルグラフィックス
+   :synopsis: Turtle graphics for Tk
 .. sectionauthor:: Gregor Lingl <gregor.lingl@aon.at>
 
 .. testsetup:: default
@@ -11,79 +11,82 @@
    from turtle import *
    turtle = Turtle()
 
-はじめに
-========
+Introduction
+============
 
-タートルグラフィックスは子供にプログラミングを紹介するのによく使われます。
-タートルグラフィックスは Wally Feurzig と Seymore Papert が 1966 年に開発した Logo プログラミング言語の一部でした。
+Turtle graphics is a popular way for introducing programming to kids.  It was
+part of the original Logo programming language developed by Wally Feurzig and
+Seymour Papert in 1966.
 
-x-y 平面の (0, 0) から動き出すロボット亀を想像してみて下さい。
-``turtle.forward(15)`` という命令を出すと、その亀が (スクリーン上で!) 15
-ピクセル分顔を向けている方向に動き、動きに沿って線を引きます。
-``turtle.left(25)`` という命令を出すと、今度はその場で25度反時計回りに回ります。
+Imagine a robotic turtle starting at (0, 0) in the x-y plane.  After an ``import turtle``, give it the
+command ``turtle.forward(15)``, and it moves (on-screen!) 15 pixels in the
+direction it is facing, drawing a line as it moves.  Give it the command
+``turtle.right(25)``, and it rotates in-place 25 degrees clockwise.
 
-  .. clockwise とあるが、左に回るので *反* 時計回り
+By combining together these and similar commands, intricate shapes and pictures
+can easily be drawn.
 
-これらの命令と他の同様な命令を組み合わせることで、複雑な形や絵が簡単に描けます。
+The :mod:`turtle` module is an extended reimplementation of the same-named
+module from the Python standard distribution up to version Python 2.5.
 
-:mod:`turtle` モジュールは同じ名前を持った Python 2.5 までのモジュールの拡張された再実装です。
+It tries to keep the merits of the old turtle module and to be (nearly) 100%
+compatible with it.  This means in the first place to enable the learning
+programmer to use all the commands, classes and methods interactively when using
+the module from within IDLE run with the ``-n`` switch.
 
-再実装に際しては古い turtle モジュールのメリットをそのままに、
-(ほぼ) 100% 互換性を保つようにしました。
-すなわち、まず第一に、学習中のプログラマがモジュールを ``-n`` スイッチを付けて走らせている
-IDLE の中から全てのコマンド、クラス、メソッドを対話的に使えるようにしました。
+The turtle module provides turtle graphics primitives, in both object-oriented
+and procedure-oriented ways.  Because it uses :mod:`Tkinter` for the underlying
+graphics, it needs a version of Python installed with Tk support.
 
-turtle モジュールはオブジェクト指向と手続き指向の両方の方法でタートルグラフィックス・プリミティブを提供します。グラフィックスの基礎として :mod:`Tkinter` を使っているために、Tk をサポートした Python のバージョンが必要です。
+The object-oriented interface uses essentially two+two classes:
 
-オブジェクト指向インターフェイスでは、本質的に 2+2 のクラスを使います:
+1. The :class:`TurtleScreen` class defines graphics windows as a playground for
+   the drawing turtles.  Its constructor needs a :class:`Tkinter.Canvas` or a
+   :class:`ScrolledCanvas` as argument.  It should be used when :mod:`turtle` is
+   used as part of some application.
 
-1. :class:`TurtleScreen` クラスはタートルが絵を描きながら走り回る画面を定義します。
-   そのコンストラクタには :class:`Tkinter.Canvas` または :class:`ScrolledCanvas`
-   を渡す必要があります。
-   :mod:`turtle` をアプリケーションの一部として用いたい場合にはこれを使うべきです。
+   The function :func:`Screen` returns a singleton object of a
+   :class:`TurtleScreen` subclass. This function should be used when
+   :mod:`turtle` is used as a standalone tool for doing graphics.
+   As a singleton object, inheriting from its class is not possible.
 
-   :func:`Screen` 関数は :class:`TurtleScreen` のサブクラスのシングルトンオブジェクトを返します。
-   :mod:`turtle` をグラフィクスを使う一つの独立したツールとして使う場合には、
-   この関数を呼び出すべきです。
-   シングルトンなので、そのクラスからの継承はできません。
+   All methods of TurtleScreen/Screen also exist as functions, i.e. as part of
+   the procedure-oriented interface.
 
-   TurtleScreen/Screen の全てのメソッドは関数としても、すなわち、
-   手続き指向インターフェイスの一部としても存在しています。
+2. :class:`RawTurtle` (alias: :class:`RawPen`) defines Turtle objects which draw
+   on a :class:`TurtleScreen`.  Its constructor needs a Canvas, ScrolledCanvas
+   or TurtleScreen as argument, so the RawTurtle objects know where to draw.
 
-2. :class:`RawTurtle` (別名: :class:`RawPen`) は :class:`TurtleScreen`
-   上に絵を描く Turtle オブジェクトを定義します。
-   コンストラクタには Canvas, ScrolledCanvas, TurtleScreen
-   のいずれかを引数として渡して RawTurtle オブジェクトがどこに絵を描くかを教えます。
+   Derived from RawTurtle is the subclass :class:`Turtle` (alias: :class:`Pen`),
+   which draws on "the" :class:`Screen` - instance which is automatically
+   created, if not already present.
 
-   RawTurtle の派生はサブクラス :class:`Turtle` (別名: :class:`Pen`) で、
-   "唯一の" :class:`Screen` (既に与えられているのでなければ自動的に作られたインスタンス)
-   に絵を描きます。
+   All methods of RawTurtle/Turtle also exist as functions, i.e. part of the
+   procedure-oriented interface.
 
-   RawTurtle/Turtle の全てのメソッドは関数としても、すなわち、
-   手続き指向インターフェイスの一部としても存在しています。
+The procedural interface provides functions which are derived from the methods
+of the classes :class:`Screen` and :class:`Turtle`.  They have the same names as
+the corresponding methods.  A screen object is automatically created whenever a
+function derived from a Screen method is called.  An (unnamed) turtle object is
+automatically created whenever any of the functions derived from a Turtle method
+is called.
 
-手続き型インターフェイスでは :class:`Screen` および :class:`Turtle`
-クラスのメソッドを元にした関数を提供しています。
-その名前は対応するメソッドと一緒です。
-Screen のメソッドを元にした関数が呼び出されるといつでも screen オブジェクトが自動的に作られます。
-Turtle のメソッドを元にした関数が呼び出されるといつでも(名無しの) turtle オブジェクトが自動的に作られます。
-
-複数のタートルを一つのスクリーン上で使いたい場合、オブジェクト指向インターフェイスを使わなければなりません。
-
-   .. an a screen は on a screen だと考えた
+To use multiple turtles an a screen one has to use the object-oriented interface.
 
 .. note::
-   以下の文書では関数に対する引数リストが与えられています。
-   メソッドでは、勿論、ここでは省略されている *self* が第一引数になります。
+   In the following documentation the argument list for functions is given.
+   Methods, of course, have the additional first argument *self* which is
+   omitted here.
 
-Turtle および Screen のメソッド概観
-===================================
 
-Turtle のメソッド
------------------
+Overview over available Turtle and Screen methods
+=================================================
 
-Turtle の動き
-   移動および描画
+Turtle methods
+--------------
+
+Turtle motion
+   Move and draw
       | :func:`forward` | :func:`fd`
       | :func:`backward` | :func:`bk` | :func:`back`
       | :func:`right` | :func:`rt`
@@ -101,7 +104,7 @@ Turtle の動き
       | :func:`undo`
       | :func:`speed`
 
-   Turtle の状態を知る
+   Tell Turtle's state
       | :func:`position` | :func:`pos`
       | :func:`towards`
       | :func:`xcor`
@@ -109,40 +112,40 @@ Turtle の動き
       | :func:`heading`
       | :func:`distance`
 
-   設定と計測
+   Setting and measurement
       | :func:`degrees`
       | :func:`radians`
 
-Pen の制御
-   描画状態
+Pen control
+   Drawing state
       | :func:`pendown` | :func:`pd` | :func:`down`
       | :func:`penup` | :func:`pu` | :func:`up`
       | :func:`pensize` | :func:`width`
       | :func:`pen`
       | :func:`isdown`
 
-   色の制御
+   Color control
       | :func:`color`
       | :func:`pencolor`
       | :func:`fillcolor`
 
-   塗りつぶし
+   Filling
       | :func:`fill`
       | :func:`begin_fill`
       | :func:`end_fill`
 
-   さらなる描画の制御
+   More drawing control
       | :func:`reset`
       | :func:`clear`
       | :func:`write`
 
-タートルの状態
-   可視性
+Turtle state
+   Visibility
       | :func:`showturtle` | :func:`st`
       | :func:`hideturtle` | :func:`ht`
       | :func:`isvisible`
 
-   見た目
+   Appearance
       | :func:`shape`
       | :func:`resizemode`
       | :func:`shapesize` | :func:`turtlesize`
@@ -150,12 +153,13 @@ Pen の制御
       | :func:`tiltangle`
       | :func:`tilt`
 
-イベントを利用する
+Using events
    | :func:`onclick`
    | :func:`onrelease`
    | :func:`ondrag`
+   | :func:`mainloop` | :func:`done`
 
-特別な Turtle のメソッド
+Special Turtle methods
    | :func:`begin_poly`
    | :func:`end_poly`
    | :func:`get_poly`
@@ -168,10 +172,11 @@ Pen の制御
    | :func:`window_width`
    | :func:`window_height`
 
-TurtleScreen/Screen のメソッド
+
+Methods of TurtleScreen/Screen
 ------------------------------
 
-ウィンドウの制御
+Window control
    | :func:`bgcolor`
    | :func:`bgpic`
    | :func:`clear` | :func:`clearscreen`
@@ -179,18 +184,18 @@ TurtleScreen/Screen のメソッド
    | :func:`screensize`
    | :func:`setworldcoordinates`
 
-アニメーションの制御
+Animation control
    | :func:`delay`
    | :func:`tracer`
    | :func:`update`
 
-スクリーンイベントを利用する
+Using screen events
    | :func:`listen`
    | :func:`onkey`
    | :func:`onclick` | :func:`onscreenclick`
    | :func:`ontimer`
 
-設定と特殊なメソッド
+Settings and special methods
    | :func:`mode`
    | :func:`colormode`
    | :func:`getcanvas`
@@ -200,31 +205,34 @@ TurtleScreen/Screen のメソッド
    | :func:`window_height`
    | :func:`window_width`
 
-Screen 独自のメソッド
+Methods specific to Screen
    | :func:`bye`
    | :func:`exitonclick`
    | :func:`setup`
    | :func:`title`
 
-RawTurtle/Turtle のメソッドと対応する関数
-=========================================
 
-この節のほとんどの例では ``turtle`` という名前の Turtle インスタンスを使います。
+Methods of RawTurtle/Turtle and corresponding functions
+=======================================================
 
-Turtle の動き
+Most of the examples in this section refer to a Turtle instance called
+``turtle``.
+
+Turtle motion
 -------------
 
 .. function:: forward(distance)
               fd(distance)
 
-   :param distance: 数 (整数または浮動小数点数)
+   :param distance: a number (integer or float)
 
-   タートルが頭を向けている方へ、タートルを距離 *distance* だけ前進させます。
+   Move the turtle forward by the specified *distance*, in the direction the
+   turtle is headed.
 
    .. doctest::
 
       >>> turtle.position()
-      (0.00, 0.00)
+      (0.00,0.00)
       >>> turtle.forward(25)
       >>> turtle.position()
       (25.00,0.00)
@@ -232,14 +240,15 @@ Turtle の動き
       >>> turtle.position()
       (-50.00,0.00)
 
+
 .. function:: back(distance)
               bk(distance)
               backward(distance)
 
-   :param distance: 数
+   :param distance: a number
 
-   タートルが頭を向けている方と反対方向へ、タートルを距離 *distance* だけ後退させます。
-   タートルの向きは変えません。
+   Move the turtle backward by *distance*, opposite to the direction the
+   turtle is headed.  Do not change the turtle's heading.
 
    .. doctest::
       :hide:
@@ -258,12 +267,11 @@ Turtle の動き
 .. function:: right(angle)
               rt(angle)
 
-   :param angle: 数 (整数または浮動小数点数)
+   :param angle: a number (integer or float)
 
-   タートルを *angle* 単位だけ右に回します。
-   (単位のデフォルトは度ですが、 :func:`degrees` と :func:`radians` 関数を使って設定できます。)
-   角度の向きはタートルのモードによって意味が変わります。
-   :func:`mode` を参照してください。
+   Turn turtle right by *angle* units.  (Units are by default degrees, but
+   can be set via the :func:`degrees` and :func:`radians` functions.)  Angle
+   orientation depends on the turtle mode, see :func:`mode`.
 
    .. doctest::
       :hide:
@@ -282,12 +290,11 @@ Turtle の動き
 .. function:: left(angle)
               lt(angle)
 
-   :param angle: 数 (整数または浮動小数点数)
+   :param angle: a number (integer or float)
 
-   タートルを *angle* 単位だけ左に回します。
-   (単位のデフォルトは度ですが、 :func:`degrees` と :func:`radians` 関数を使って設定できます。)
-   角度の向きはタートルのモードによって意味が変わります。
-   :func:`mode` を参照してください。
+   Turn turtle left by *angle* units.  (Units are by default degrees, but
+   can be set via the :func:`degrees` and :func:`radians` functions.)  Angle
+   orientation depends on the turtle mode, see :func:`mode`.
 
    .. doctest::
       :hide:
@@ -307,16 +314,14 @@ Turtle の動き
               setpos(x, y=None)
               setposition(x, y=None)
 
-   :param x: 数または数のペア/ベクトル
-   :param y: 数または ``None``
+   :param x: a number or a pair/vector of numbers
+   :param y: a number or ``None``
 
-   *y* が ``None`` の場合、
-   *x* は座標のペアかまたは :class:`Vec2D` (たとえば :func:`pos` で返されます)
-   でなければなりません。
+   If *y* is ``None``, *x* must be a pair of coordinates or a :class:`Vec2D`
+   (e.g. as returned by :func:`pos`).
 
-   タートルを指定された絶対位置に移動します。
-   ペンが下りていれば線を引きます。
-   タートルの向きは変わりません。
+   Move turtle to an absolute position.  If the pen is down, draw line.  Do
+   not change the turtle's orientation.
 
    .. doctest::
       :hide:
@@ -341,10 +346,10 @@ Turtle の動き
 
 .. function:: setx(x)
 
-   :param x: 数 (整数または浮動小数点数)
+   :param x: a number (integer or float)
 
-   タートルの第一座標を *x* にします。
-   第二座標は変わりません。
+   Set the turtle's first coordinate to *x*, leave second coordinate
+   unchanged.
 
    .. doctest::
       :hide:
@@ -362,10 +367,9 @@ Turtle の動き
 
 .. function:: sety(y)
 
-   :param y: 数 (整数または浮動小数点数)
+   :param y: a number (integer or float)
 
-   タートルの第二座標を *y* にします。
-   第一座標は変わりません。
+   Set the turtle's second coordinate to *y*, leave first coordinate unchanged.
 
    .. doctest::
       :hide:
@@ -384,18 +388,18 @@ Turtle の動き
 .. function:: setheading(to_angle)
               seth(to_angle)
 
-   :param to_angle: 数 (整数または浮動小数点数)
+   :param to_angle: a number (integer or float)
 
-   タートルの向きを *to_angle* に設定します。
-   以下はよく使われる方向を度で表わしたものです:
+   Set the orientation of the turtle to *to_angle*.  Here are some common
+   directions in degrees:
 
    =================== ====================
-    標準モード           logo モード
+    standard mode           logo mode
    =================== ====================
-      0 - 東                  0 - 北
-     90 - 北                 90 - 東
-    180 - 西                180 - 南
-    270 - 南                270 - 西
+      0 - east                0 - north
+     90 - north              90 - east
+    180 - west              180 - south
+    270 - south             270 - west
    =================== ====================
 
    .. doctest::
@@ -404,10 +408,11 @@ Turtle の動き
       >>> turtle.heading()
       90.0
 
+
 .. function:: home()
 
-   タートルを原点 -- 座標 (0, 0) -- に移動し、向きを開始方向に設定します
-   (開始方向はモードに依って違います。 :func:`mode` を参照してください)。
+   Move turtle to the origin -- coordinates (0,0) -- and set its heading to
+   its start-orientation (which depends on the mode, see :func:`mode`).
 
    .. doctest::
       :hide:
@@ -430,23 +435,21 @@ Turtle の動き
 
 .. function:: circle(radius, extent=None, steps=None)
 
-   :param radius: 数
-   :param extent: 数 (または ``None``)
-   :param steps: 整数 (または ``None``)
+   :param radius: a number
+   :param extent: a number (or ``None``)
+   :param steps: an integer (or ``None``)
 
-   半径 *radius* の円を描きます。
-   中心はタートルの左 *radius* ユニットの点です。
-   *extent* -- 角度です -- は円のどの部分を描くかを決定します。
-   *extent* が与えられなければ、デフォルトで完全な円になります。
-   *extent* が完全な円でない場合は、弧の一つの端点は、現在のペンの位置です。
-   *radius* が正の場合、弧は反時計回りに描かれます。
-   そうでなければ、時計回りです。
-   最後にタートルの向きが *extent* 分だけ変わります。
+   Draw a circle with given *radius*.  The center is *radius* units left of
+   the turtle; *extent* -- an angle -- determines which part of the circle
+   is drawn.  If *extent* is not given, draw the entire circle.  If *extent*
+   is not a full circle, one endpoint of the arc is the current pen
+   position.  Draw the arc in counterclockwise direction if *radius* is
+   positive, otherwise in clockwise direction.  Finally the direction of the
+   turtle is changed by the amount of *extent*.
 
-   円は内接する正多角形で近似されます。
-   *steps* でそのために使うステップ数を決定します。
-   この値は与えられなければ自動的に計算されます。
-   また、これを正多角形の描画に利用することもできます。
+   As the circle is approximated by an inscribed regular polygon, *steps*
+   determines the number of steps to use.  If not given, it will be
+   calculated automatically.  May be used to draw regular polygons.
 
    .. doctest::
 
@@ -460,7 +463,7 @@ Turtle の動き
       (-0.00,0.00)
       >>> turtle.heading()
       0.0
-      >>> turtle.circle(120, 180)  # 半円を描きます
+      >>> turtle.circle(120, 180)  # draw a semicircle
       >>> turtle.position()
       (0.00,240.00)
       >>> turtle.heading()
@@ -469,12 +472,12 @@ Turtle の動き
 
 .. function:: dot(size=None, *color)
 
-   :param size: 1 以上の整数 (与えられる場合には)
-   :param color: 色を表わす文字列またはタプル
+   :param size: an integer >= 1 (if given)
+   :param color: a colorstring or a numeric color tuple
 
-   直径 *size* の丸い点を *color* で指定された色で描きます。
-   *size* が与えられなかった場合、pensize+4 と 2*pensize
-   の大きい方が使われます。
+   Draw a circular dot with diameter *size*, using *color*.  If *size* is
+   not given, the maximum of pensize+4 and 2*pensize is used.
+
 
    .. doctest::
 
@@ -489,9 +492,9 @@ Turtle の動き
 
 .. function:: stamp()
 
-   キャンバス上の現在タートルがいる位置にタートルの姿のハンコを押します。
-   そのハンコに対して stamp_id が返されますが、
-   これを使うと後で ``clearstamp(stamp_id)`` のように呼び出して消すことができます。
+   Stamp a copy of the turtle shape onto the canvas at the current turtle
+   position.  Return a stamp_id for that stamp, which can be used to delete
+   it by calling ``clearstamp(stamp_id)``.
 
    .. doctest::
 
@@ -503,9 +506,10 @@ Turtle の動き
 
 .. function:: clearstamp(stampid)
 
-   :param stampid: 整数で、先立つ :func:`stamp` 呼出しで返された値でなければなりません
+   :param stampid: an integer, must be return value of previous
+                   :func:`stamp` call
 
-   *stampid* に対応するハンコを消します。
+   Delete stamp with given *stampid*.
 
    .. doctest::
 
@@ -523,12 +527,11 @@ Turtle の動き
 
 .. function:: clearstamps(n=None)
 
-   :param n: 整数 (または ``None``)
+   :param n: an integer (or ``None``)
 
-   全ての、または最初の/最後の *n* 個のハンコを消します。
-   *n* が None の場合、全てのハンコを消します。
-   *n* が正の場合には最初の *n* 個、
-   *n* が負の場合には最後の *n* 個を消します。
+   Delete all or first/last *n* of turtle's stamps.  If *n* is None, delete
+   all stamps, if *n* > 0 delete first *n* stamps, else if *n* < 0 delete
+   last *n* stamps.
 
    .. doctest::
 
@@ -549,8 +552,8 @@ Turtle の動き
 
 .. function:: undo()
 
-   最後の(繰り返すことにより複数の)タートルの動きを取り消します。
-   取り消しできる動きの最大数は undobuffer のサイズによって決まります。
+   Undo (repeatedly) the last turtle action(s).  Number of available
+   undo actions is determined by the size of the undobuffer.
 
    .. doctest::
 
@@ -563,14 +566,13 @@ Turtle の動き
 
 .. function:: speed(speed=None)
 
-   :param speed: 0 から 10 までの整数またはスピードを表わす文字列(以下の説明を参照)
+   :param speed: an integer in the range 0..10 or a speedstring (see below)
 
-   タートルのスピードを 0 から 10 までの範囲の整数に設定します。
-   引数が与えられない場合は現在のスピードを返します。
+   Set the turtle's speed to an integer value in the range 0..10.  If no
+   argument is given, return current speed.
 
-   与えられた数字が 10 より大きかったり 0.5 より小さかったりした場合は、
-   スピードは 0 になります。
-   スピードを表わす文字列は次のように数字に変換されます:
+   If input is a number greater than 10 or smaller than 0.5, speed is set
+   to 0.  Speedstrings are mapped to speedvalues as follows:
 
    * "fastest":  0
    * "fast":  10
@@ -578,10 +580,12 @@ Turtle の動き
    * "slow":  3
    * "slowest":  1
 
-   1 から 10 までのスピードを上げていくにつれて線を描いたりタートルが回ったりするアニメーションがだんだん速くなります。
+   Speeds from 1 to 10 enforce increasingly faster animation of line drawing
+   and turtle turning.
 
-   注意: *speed* = 0 はアニメーションを無くします。
-   forward/backward ではタートルがジャンプし、left/right では瞬時に方向を変えます。
+   Attention: *speed* = 0 means that *no* animation takes
+   place. forward/back makes turtle jump and likewise left/right make the
+   turtle turn instantly.
 
    .. doctest::
 
@@ -595,13 +599,13 @@ Turtle の動き
       9
 
 
-Turtle の状態を知る
+Tell Turtle's state
 -------------------
 
 .. function:: position()
               pos()
 
-   タートルの現在位置を (:class:`Vec2D` のベクトルとして) 返します。
+   Return the turtle's current location (x,y) (as a :class:`Vec2D` vector).
 
    .. doctest::
 
@@ -611,13 +615,12 @@ Turtle の状態を知る
 
 .. function:: towards(x, y=None)
 
-   :param x: 数または数のペア/ベクトルまたはタートルのインスタンス
-   :param y: *x* が数ならば数、そうでなければ ``None``
+   :param x: a number or a pair/vector of numbers or a turtle instance
+   :param y: a number if *x* is a number, else ``None``
 
-   タートルの位置から指定された (x,y) への直線の角度を返します。
-   この値はタートルの開始方向にそして開始方向はモード
-   ("standard"/"world" または "logo")
-   に依存します。
+   Return the angle between the line from turtle position to position specified
+   by (x,y), the vector or the other turtle.  This depends on the turtle's start
+   orientation which depends on the mode - "standard"/"world" or "logo").
 
    .. doctest::
 
@@ -628,7 +631,7 @@ Turtle の状態を知る
 
 .. function:: xcor()
 
-   タートルの x 座標を返します。
+   Return the turtle's x coordinate.
 
    .. doctest::
 
@@ -643,7 +646,7 @@ Turtle の状態を知る
 
 .. function:: ycor()
 
-   タートルの y 座標を返します。
+   Return the turtle's y coordinate.
 
    .. doctest::
 
@@ -658,8 +661,8 @@ Turtle の状態を知る
 
 .. function:: heading()
 
-   タートルの現在の向きを返します (返される値はタートルのモードに依存します。
-   :func:`mode` を参照してください)。
+   Return the turtle's current heading (value depends on the turtle mode, see
+   :func:`mode`).
 
    .. doctest::
 
@@ -671,11 +674,11 @@ Turtle の状態を知る
 
 .. function:: distance(x, y=None)
 
-   :param x: 数または数のペア/ベクトルまたはタートルのインスタンス
-   :param y: *x* が数ならば数、そうでなければ ``None``
+   :param x: a number or a pair/vector of numbers or a turtle instance
+   :param y: a number if *x* is a number, else ``None``
 
-   タートルから与えられた (x,y) あるいはベクトルあるいは渡されたタートルへの距離を、
-   タートルのステップを単位として測った値を返します。
+   Return the distance from the turtle to (x,y), the given vector, or the given
+   other turtle, in turtle step units.
 
    .. doctest::
 
@@ -690,15 +693,15 @@ Turtle の状態を知る
       77.0
 
 
-設定と計測
-----------
+Settings for measurement
+------------------------
 
 .. function:: degrees(fullcircle=360.0)
 
-   :param fullcircle: 数
+   :param fullcircle: a number
 
-   角度を計る単位「度」を、円周を何等分するかという値に指定します。
-   デフォルトは360等分で通常の意味での度です。
+   Set angle measurement units, i.e. set number of "degrees" for a full circle.
+   Default value is 360 degrees.
 
    .. doctest::
 
@@ -707,8 +710,8 @@ Turtle の状態を知る
       >>> turtle.heading()
       90.0
 
-      角度の単位をグラード(grad. gon, grade, gradian とも呼ばれ、
-      90度の 1/100)に変更する
+      Change angle measurement unit to grad (also known as gon,
+      grade, or gradian and equals 1/100-th of the right angle.)
       >>> turtle.degrees(400.0)
       >>> turtle.heading()
       100.0
@@ -719,8 +722,8 @@ Turtle の状態を知る
 
 .. function:: radians()
 
-   角度を計る単位をラジアンにします。
-   ``degrees(2*math.pi)`` と同じ意味です。
+   Set the angle measurement units to radians.  Equivalent to
+   ``degrees(2*math.pi)``.
 
    .. doctest::
 
@@ -738,62 +741,65 @@ Turtle の状態を知る
       >>> turtle.degrees(360)
 
 
-Pen の制御
+Pen control
 -----------
 
-描画状態
+Drawing state
 ~~~~~~~~~~~~~
 
 .. function:: pendown()
               pd()
               down()
 
-   ペンを下ろします -- 動くと線が引かれます。
+   Pull the pen down -- drawing when moving.
+
 
 .. function:: penup()
               pu()
               up()
 
-   ペンを上げます -- 動いても線は引かれません。
+   Pull the pen up -- no drawing when moving.
+
 
 .. function:: pensize(width=None)
               width(width=None)
 
-   :param width: 正の数
+   :param width: a positive number
 
-   線の太さを *width* にするか、または現在の太さを返します。
-   resizemode が "auto" でタートルの形が多角形の場合、
-   その多角形も同じ太さで描画されます。
-   引数が渡されなければ、現在の pensize が返されます。
+   Set the line thickness to *width* or return it.  If resizemode is set to
+   "auto" and turtleshape is a polygon, that polygon is drawn with the same line
+   thickness.  If no argument is given, the current pensize is returned.
 
    .. doctest::
 
       >>> turtle.pensize()
       1
-      >>> turtle.pensize(10)   # これ以降幅 10 の線が描かれます
+      >>> turtle.pensize(10)   # from here on lines of width 10 are drawn
 
 
 .. function:: pen(pen=None, **pendict)
 
-   :param pen: 以下にリストされたキーをもった辞書
-   :param pendict: 以下にリストされたキーをキーワードとするキーワード引数
+   :param pen: a dictionary with some or all of the below listed keys
+   :param pendict: one or more keyword-arguments with the below listed keys as keywords
 
-   ペンの属性を "pen-dictionary" に以下のキー/値ペアで設定するかまたは返します。
+   Return or set the pen's attributes in a "pen-dictionary" with the following
+   key/value pairs:
 
    * "shown": True/False
    * "pendown": True/False
-   * "pencolor": 色文字列または色タプル
-   * "fillcolor": 色文字列または色タプル
-   * "pensize": 正の数
-   * "speed": 0 から 10 までの整数
-   * "resizemode": "auto" または "user" または "noresize"
-   * "stretchfactor": (正の数, 正の数)
-   * "outline": 正の数
-   * "tilt": 数
+   * "pencolor": color-string or color-tuple
+   * "fillcolor": color-string or color-tuple
+   * "pensize": positive number
+   * "speed": number in range 0..10
+   * "resizemode": "auto" or "user" or "noresize"
+   * "stretchfactor": (positive number, positive number)
+   * "outline": positive number
+   * "tilt": number
 
-   この辞書を以降の :func:`pen` 呼出しに渡して以前のペンの状態に復旧することができます。
-   さらに一つ以上の属性をキーワード引数として渡すこともできます。
-   一つの文で幾つものペンの属性を設定するのに使えます。
+   This dictionary can be used as argument for a subsequent call to :func:`pen`
+   to restore the former pen-state.  Moreover one or more of these attributes
+   can be provided as keyword-arguments.  This can be used to set several pen
+   attributes in one statement.
 
    .. doctest::
       :options: +NORMALIZE_WHITESPACE
@@ -819,7 +825,7 @@ Pen の制御
 
 .. function:: isdown()
 
-   もしペンが下りていれば ``True`` を、上がっていれば ``False`` を返します。
+   Return ``True`` if pen is down, ``False`` if it's up.
 
    .. doctest::
 
@@ -831,35 +837,35 @@ Pen の制御
       True
 
 
-色の制御
+Color control
 ~~~~~~~~~~~~~
 
 .. function:: pencolor(*args)
 
-   ペンの色(pencolor)を設定するかまたは返します。
+   Return or set the pencolor.
 
-   4種類の入力形式が受け入れ可能です:
+   Four input formats are allowed:
 
    ``pencolor()``
-      現在のペンの色を色指定文字列またはタプルで返します
-      (例を見て下さい)。
-      次の color/pencolor/fillcolor の呼び出しへの入力に使うこともあるでしょう。
+      Return the current pencolor as color specification string or
+      as a tuple (see example).  May be used as input to another
+      color/pencolor/fillcolor call.
 
    ``pencolor(colorstring)``
-      ペンの色を *colorstring* に設定します。
-      その値は Tk の色指定文字列で、 ``"red"``, ``"yellow"``, ``"#33cc8c"``
-      のような文字列です。
+      Set pencolor to *colorstring*, which is a Tk color specification string,
+      such as ``"red"``, ``"yellow"``, or ``"#33cc8c"``.
 
    ``pencolor((r, g, b))``
-      ペンの色を *r*, *g*, *b* のタプルで表された RGB の色に設定します。
-      各 *r*, *g*, *b* は 0 から colormode の間の値でなければなりません。
-      ここで colormode は 1.0 か 255 のどちらかです (:func:`colormode` を参照)。
+      Set pencolor to the RGB color represented by the tuple of *r*, *g*, and
+      *b*.  Each of *r*, *g*, and *b* must be in the range 0..colormode, where
+      colormode is either 1.0 or 255 (see :func:`colormode`).
 
    ``pencolor(r, g, b)``
-      ペンの色を *r*, *g*, *b* で表された RGB の色に設定します。
-      各 *r*, *g*, *b* は 0 から colormode の間の値でなければなりません。
+      Set pencolor to the RGB color represented by *r*, *g*, and *b*.  Each of
+      *r*, *g*, and *b* must be in the range 0..colormode.
 
-   タートルの形(turtleshape)が多角形の場合、多角形の外側が新しく設定された色で描かれます。
+    If turtleshape is a polygon, the outline of that polygon is drawn with the
+    newly set pencolor.
 
    .. doctest::
 
@@ -884,30 +890,30 @@ Pen の制御
 
 .. function:: fillcolor(*args)
 
-   塗りつぶしの色(fillcolor)を設定するかまたは返します。
+   Return or set the fillcolor.
 
-   4種類の入力形式が受け入れ可能です:
+   Four input formats are allowed:
 
    ``fillcolor()``
-      現在の塗りつぶしの色を色指定文字列またはタプルで返します
-      (例を見て下さい)。
-      次の color/pencolor/fillcolor の呼び出しへの入力に使うこともあるでしょう。
+      Return the current fillcolor as color specification string, possibly
+      in tuple format (see example).  May be used as input to another
+      color/pencolor/fillcolor call.
 
    ``fillcolor(colorstring)``
-      塗りつぶしの色を *colorstring* に設定します。
-      その値は Tk の色指定文字列で、 ``"red"``, ``"yellow"``, ``"#33cc8c"``
-      のような文字列です。
+      Set fillcolor to *colorstring*, which is a Tk color specification string,
+      such as ``"red"``, ``"yellow"``, or ``"#33cc8c"``.
 
    ``fillcolor((r, g, b))``
-      塗りつぶしの色を *r*, *g*, *b* のタプルで表された RGB の色に設定します。
-      各 *r*, *g*, *b* は 0 から colormode の間の値でなければなりません。
-      ここで colormode は 1.0 か 255 のどちらかです (:func:`colormode` を参照)。
+      Set fillcolor to the RGB color represented by the tuple of *r*, *g*, and
+      *b*.  Each of *r*, *g*, and *b* must be in the range 0..colormode, where
+      colormode is either 1.0 or 255 (see :func:`colormode`).
 
    ``fillcolor(r, g, b)``
-      塗りつぶしの色を *r*, *g*, *b* で表された RGB の色に設定します。
-      各 *r*, *g*, *b* は 0 から colormode の間の値でなければなりません。
+      Set fillcolor to the RGB color represented by *r*, *g*, and *b*.  Each of
+      *r*, *g*, and *b* must be in the range 0..colormode.
 
-   タートルの形(turtleshape)が多角形の場合、多角形の内側が新しく設定された色で描かれます。
+    If turtleshape is a polygon, the interior of that polygon is drawn
+    with the newly set fillcolor.
 
    .. doctest::
 
@@ -927,25 +933,26 @@ Pen の制御
 
 .. function:: color(*args)
 
-   ペンの色(pencolor)と塗りつぶしの色(fillcolor)を設定するかまたは返します。
+   Return or set pencolor and fillcolor.
 
-   いくつかの入力形式が受け入れ可能です。
-   形式ごとに 0 から 3 個の引数を以下のように使います:
+   Several input formats are allowed.  They use 0 to 3 arguments as
+   follows:
 
    ``color()``
-      現在のペンの色と塗りつぶしの色を :func:`pencolor` および
-      :func:`fillcolor` で返される色指定文字列またはタプルのペアで返します。
+      Return the current pencolor and the current fillcolor as a pair of color
+      specification strings or tuples as returned by :func:`pencolor` and
+      :func:`fillcolor`.
 
    ``color(colorstring)``, ``color((r,g,b))``, ``color(r,g,b)``
-      :func:`pencolor` の入力と同じですが、塗りつぶしの色とペンの色、
-      両方を与えられた値に設定します。
+      Inputs as in :func:`pencolor`, set both, fillcolor and pencolor, to the
+      given value.
 
    ``color(colorstring1, colorstring2)``, ``color((r1,g1,b1), (r2,g2,b2))``
-      ``pencolor(colorstring1)`` および ``fillcolor(colorstring2)``
-      を呼び出すのと等価です。
-      もう一つの入力形式についても同様です。
+      Equivalent to ``pencolor(colorstring1)`` and ``fillcolor(colorstring2)``
+      and analogously if the other input format is used.
 
-   タートルの形(turtleshape)が多角形の場合、多角形の内側も外側も新しく設定された色で描かれます。
+    If turtleshape is a polygon, outline and interior of that polygon is drawn
+    with the newly set colors.
 
    .. doctest::
 
@@ -957,11 +964,11 @@ Pen の制御
        ((40, 80, 120), (160, 200, 240))
 
 
-こちらも参照: スクリーンのメソッド :func:`colormode` 。
+See also: Screen method :func:`colormode`.
 
 
-塗りつぶし
-~~~~~~~~~~
+Filling
+~~~~~~~
 
 .. doctest::
    :hide:
@@ -970,12 +977,11 @@ Pen の制御
 
 .. function:: fill(flag)
 
-   :param flag: True/False (またはそれぞれ 1/0)
+   :param flag: True/False (or 1/0 respectively)
 
-   塗りつぶしたい形を描く前に ``fill(True)`` を呼び出し、それが終わったら
-   ``fill(False)`` を呼び出します。
-   引数なしで呼び出されたときは、塗りつぶしの状態(fillstate)の値
-   (``True`` なら塗りつぶす、 ``False`` なら塗りつぶさない)を返します。
+   Call ``fill(True)`` before drawing the shape you want to fill, and
+   ``fill(False)`` when done.  When used without argument: return fillstate
+   (``True`` if filling, ``False`` else).
 
    .. doctest::
 
@@ -989,14 +995,13 @@ Pen の制御
 
 .. function:: begin_fill()
 
-   塗りつぶしたい図形を描く直前に呼び出します。
-   ``fill(True)`` と等価です。
+   Call just before drawing a shape to be filled.  Equivalent to ``fill(True)``.
 
 
 .. function:: end_fill()
 
-   最後に呼び出された :func:`begin_fill` の後に描かれた図形を塗りつぶします。
-   ``fill(False)`` と等価です。
+   Fill the shape drawn after the last call to :func:`begin_fill`.  Equivalent
+   to ``fill(False)``.
 
    .. doctest::
 
@@ -1006,13 +1011,13 @@ Pen の制御
       >>> turtle.end_fill()
 
 
-さらなる描画の制御
+More drawing control
 ~~~~~~~~~~~~~~~~~~~~
 
 .. function:: reset()
 
-   タートルの描いたものをスクリーンから消し、タートルを中心に戻して、
-   全ての変数をデフォルト値に設定し直します。
+   Delete the turtle's drawings from the screen, re-center the turtle and set
+   variables to the default values.
 
    .. doctest::
 
@@ -1031,40 +1036,38 @@ Pen の制御
 
 .. function:: clear()
 
-   タートルの描いたものをスクリーンから消します。タートルは動かしません。
-   タートルの状態と位置、それに他のタートルたちの描いたものは影響を受けません。
+   Delete the turtle's drawings from the screen.  Do not move turtle.  State and
+   position of the turtle as well as drawings of other turtles are not affected.
 
 
 .. function:: write(arg, move=False, align="left", font=("Arial", 8, "normal"))
 
-   :param arg: TurtleScreen に書かれるオブジェクト
+   :param arg: object to be written to the TurtleScreen
    :param move: True/False
-   :param align: 文字列 "left", "center", right" のどれか
-   :param font: 三つ組み (fontname, fontsize, fonttype)
+   :param align: one of the strings "left", "center" or right"
+   :param font: a triple (fontname, fontsize, fonttype)
 
-   文字を書きます—
-   *arg* の文字列表現を、現在のタートルの位置に、
-   *align* ("left", "center", right" のどれか) に従って、
-   与えられたフォントで。
-   もし *move* が True ならば、ペンは書いた文の右下隅に移動します。
-   デフォルトでは、 *move* は False です。
+   Write text - the string representation of *arg* - at the current turtle
+   position according to *align* ("left", "center" or right") and with the given
+   font.  If *move* is true, the pen is moved to the bottom-right corner of the
+   text.  By default, *move* is ``False``.
 
    >>> turtle.write("Home = ", True, align="center")
    >>> turtle.write((0,0), True)
 
 
-タートルの状態
---------------
+Turtle state
+------------
 
-可視性
+Visibility
 ~~~~~~~~~~
 
 .. function:: hideturtle()
               ht()
 
-   タートルを見えなくします。
-   複雑な図を描いている途中、タートルが見えないようにするのは良い考えです。
-   というのもタートルを隠すことで描画が目に見えて速くなるからです。
+   Make the turtle invisible.  It's a good idea to do this while you're in the
+   middle of doing some complex drawing, because hiding the turtle speeds up the
+   drawing observably.
 
    .. doctest::
 
@@ -1074,7 +1077,7 @@ Pen の制御
 .. function:: showturtle()
               st()
 
-   タートルが見えるようにします。
+   Make the turtle visible.
 
    .. doctest::
 
@@ -1083,7 +1086,7 @@ Pen の制御
 
 .. function:: isvisible()
 
-   タートルが見えている状態ならば True を、隠されていれば False を返します。
+   Return ``True`` if the Turtle is shown, ``False`` if it's hidden.
 
    >>> turtle.hideturtle()
    >>> turtle.isvisible()
@@ -1093,20 +1096,18 @@ Pen の制御
    True
 
 
-見た目
+Appearance
 ~~~~~~~~~~
 
 .. function:: shape(name=None)
 
-   :param name: 形の名前(shapename)として正しい文字列
+   :param name: a string which is a valid shapename
 
-   タートルの形を与えられた名前(*name*)の形に設定するか、
-   もしくは名前が与えられなければ現在の形の名前を返します。
-   *name* という名前の形は TurtleScreen の形の辞書に載っていなければなりません。
-   最初は次の多角形が載っています:
-   "arrow", "turtle", "circle", "square", "triangle", "classic"。
-   形についての扱いを学ぶには Screen のメソッド :func:`register_shape`
-   を参照して下さい。
+   Set turtle shape to shape with given *name* or, if name is not given, return
+   name of current shape.  Shape with *name* must exist in the TurtleScreen's
+   shape dictionary.  Initially there are the following polygon shapes: "arrow",
+   "turtle", "circle", "square", "triangle", "classic".  To learn about how to
+   deal with shapes see Screen method :func:`register_shape`.
 
    .. doctest::
 
@@ -1119,18 +1120,19 @@ Pen の制御
 
 .. function:: resizemode(rmode=None)
 
-   :param rmode: 文字列 "auto", "user", "noresize" のどれか
+   :param rmode: one of the strings "auto", "user", "noresize"
 
-   サイズ変更のモード(resizemode)を "auto", "user", "noresize" のどれかに設定します。
-   もし *rmode* が与えられなければ、現在のサイズ変更モードを返します。
-   それぞれのサイズ変更モードは以下の効果を持ちます:
+   Set resizemode to one of the values: "auto", "user", "noresize".  If *rmode*
+   is not given, return current resizemode.  Different resizemodes have the
+   following effects:
 
-   - "auto": ペンのサイズに対応してタートルの見た目を調整します。
-   - "user": 伸長係数(stretchfactor)およびアウトライン幅(outlinewidth)の値に\
-     対応してタートルの見た目を調整します。これらの値は :func:`shapesize` で設定します。
-   - "noresize": タートルの見た目を調整しません。
+   - "auto": adapts the appearance of the turtle corresponding to the value of pensize.
+   - "user": adapts the appearance of the turtle according to the values of
+     stretchfactor and outlinewidth (outline), which are set by
+     :func:`shapesize`.
+   - "noresize": no adaption of the turtle's appearance takes place.
 
-   resizemode("user") は :func:`shapesize` に引数を渡したときに呼び出されます。
+   resizemode("user") is called by :func:`shapesize` when used with arguments.
 
    .. doctest::
 
@@ -1144,17 +1146,16 @@ Pen の制御
 .. function:: shapesize(stretch_wid=None, stretch_len=None, outline=None)
               turtlesize(stretch_wid=None, stretch_len=None, outline=None)
 
-   :param stretch_wid: 正の数
-   :param stretch_len: 正の数
-   :param outline: 正の数
+   :param stretch_wid: positive number
+   :param stretch_len: positive number
+   :param outline: positive number
 
-   ペンの属性 x/y-伸長係数および/またはアウトラインを返すかまたは設定します。
-   サイズ変更のモードは "user" に設定されます。
-   サイズ変更のモードが "user" に設定されたときかつそのときに限り、
-   タートルは伸長係数(stretchfactor)に従って伸長されて表示されます。
-   *stretch_wid* は進行方向に直交する向きの伸長係数で、
-   *stretch_len* は進行方向に沿ったの伸長係数、
-   *outline* はアウトラインの幅を決めるものです。
+   Return or set the pen's attributes x/y-stretchfactors and/or outline.  Set
+   resizemode to "user".  If and only if resizemode is set to "user", the turtle
+   will be displayed stretched according to its stretchfactors: *stretch_wid* is
+   stretchfactor perpendicular to its orientation, *stretch_len* is
+   stretchfactor in direction of its orientation, *outline* determines the width
+   of the shapes's outline.
 
    .. doctest::
 
@@ -1171,10 +1172,10 @@ Pen の制御
 
 .. function:: tilt(angle)
 
-   :param angle: 数
+   :param angle: a number
 
-   タートルの形(turtleshape)を現在の傾斜角から角度(*angle*)だけ回転します。
-   このときタートルの進む方向は *変わりません* 。
+   Rotate the turtleshape by *angle* from its current tilt-angle, but do *not*
+   change the turtle's heading (direction of movement).
 
    .. doctest::
 
@@ -1189,11 +1190,11 @@ Pen の制御
 
 .. function:: settiltangle(angle)
 
-   :param angle: 数
+   :param angle: a number
 
-   タートルの形(turtleshape)を現在の傾斜角に関わらず、
-   指定された角度(*angle*)の向きに回転します。
-   タートルの進む方向は *変わりません* 。
+   Rotate the turtleshape to point in the direction specified by *angle*,
+   regardless of its current tilt-angle.  *Do not* change the turtle's heading
+   (direction of movement).
 
    .. doctest::
 
@@ -1208,8 +1209,8 @@ Pen の制御
 
 .. function:: tiltangle()
 
-   現在の傾斜角を返します。
-   すなわち、タートルの形が向いている角度と進んでいく方向との間の角度を返します。
+   Return the current tilt-angle, i.e. the angle between the orientation of the
+   turtleshape and the heading of the turtle (its direction of movement).
 
    .. doctest::
 
@@ -1221,42 +1222,40 @@ Pen の制御
       45.0
 
 
-イベントを利用する
-------------------
+Using events
+------------
 
 .. function:: onclick(fun, btn=1, add=None)
 
-   :param fun: 2引数の関数でキャンバスのクリックされた点の座標を引数として\
-               呼び出されるものです
-   :param num: マウスボタンの番号、デフォルトは 1 (左マウスボタン)
-   :param add: ``True`` または ``False`` -- ``True`` ならば、
-               新しい束縛が追加されますが、そうでなければ、
-               以前の束縛を置き換えます。
+   :param fun: a function with two arguments which will be called with the
+               coordinates of the clicked point on the canvas
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
+               added, otherwise it will replace a former binding
 
-   *fun* をタートルのマウスクリック(mouse-click)イベントに束縛します。
-   *fun* が ``None`` ならば、既存の束縛が取り除かれます。
-   無名タートル、つまり手続き的なやり方の例です:
+   Bind *fun* to mouse-click events on this turtle.  If *fun* is ``None``,
+   existing bindings are removed.  Example for the anonymous turtle, i.e. the
+   procedural way:
 
    .. doctest::
 
       >>> def turn(x, y):
       ...     left(180)
       ...
-      >>> onclick(turn)  # タートルをクリックすると回転します
-      >>> onclick(None)  # イベント束縛は消去されます
+      >>> onclick(turn)  # Now clicking into the turtle will turn it.
+      >>> onclick(None)  # event-binding will be removed
 
 
 .. function:: onrelease(fun, btn=1, add=None)
 
-   :param fun: 2引数の関数でキャンバスのクリックされた点の座標を引数として\
-               呼び出されるものです
-   :param num: マウスボタンの番号、デフォルトは 1 (左マウスボタン)
-   :param add: ``True`` または ``False`` -- ``True`` ならば、
-               新しい束縛が追加されますが、そうでなければ、
-               以前の束縛を置き換えます。
+   :param fun: a function with two arguments which will be called with the
+               coordinates of the clicked point on the canvas
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
+               added, otherwise it will replace a former binding
 
-   *fun* をタートルのマウスボタンリリース(mouse-button-release)イベントに束縛します。
-   *fun* が ``None`` ならば、既存の束縛が取り除かれます。
+   Bind *fun* to mouse-button-release events on this turtle.  If *fun* is
+   ``None``, existing bindings are removed.
 
    .. doctest::
 
@@ -1267,50 +1266,59 @@ Pen の制御
       ...         self.fillcolor("")
       ...
       >>> turtle = MyTurtle()
-      >>> turtle.onclick(turtle.glow)     # タートル上でクリックすると塗りつぶしの色が赤に
-      >>> turtle.onrelease(turtle.unglow) # リリース時に透明に
+      >>> turtle.onclick(turtle.glow)     # clicking on turtle turns fillcolor red,
+      >>> turtle.onrelease(turtle.unglow) # releasing turns it to transparent.
 
 
 .. function:: ondrag(fun, btn=1, add=None)
 
-   :param fun: 2引数の関数でキャンバスのクリックされた点の座標を引数として\
-               呼び出されるものです
-   :param num: マウスボタンの番号、デフォルトは 1 (左マウスボタン)
-   :param add: ``True`` または ``False`` -- ``True`` ならば、
-               新しい束縛が追加されますが、そうでなければ、
-               以前の束縛を置き換えます。
+   :param fun: a function with two arguments which will be called with the
+               coordinates of the clicked point on the canvas
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
+               added, otherwise it will replace a former binding
 
-   *fun* をタートルのマウスムーブ(mouse-move)イベントに束縛します。
-   *fun* が ``None`` ならば、既存の束縛が取り除かれます。
+   Bind *fun* to mouse-move events on this turtle.  If *fun* is ``None``,
+   existing bindings are removed.
 
-   注意: 全てのマウスムーブイベントのシーケンスに先立ってマウスクリックイベントが\
-   起こります。
+   Remark: Every sequence of mouse-move-events on a turtle is preceded by a
+   mouse-click event on that turtle.
 
    .. doctest::
 
       >>> turtle.ondrag(turtle.goto)
 
-   この後、タートルをクリックしてドラッグするとタートルはスクリーン上を動き
-   それによって(ペンが下りていれば)手書きの線ができあがります
+   Subsequently, clicking and dragging the Turtle will move it across
+   the screen thereby producing handdrawings (if pen is down).
 
 
-特別な Turtle のメソッド
-------------------------
+.. function:: mainloop()
+              done()
+
+   Starts event loop - calling Tkinter's mainloop function. Must be the last
+   statement in a turtle graphics program.
+
+      >>> turtle.mainloop()
+
+
+Special Turtle methods
+----------------------
 
 .. function:: begin_poly()
 
-   多角形の頂点の記録を開始します。現在のタートル位置が最初の頂点です。
+   Start recording the vertices of a polygon.  Current turtle position is first
+   vertex of polygon.
 
 
 .. function:: end_poly()
 
-   多角形の頂点の記録を停止します。現在のタートル位置が最後の頂点です。
-   この頂点が最初の頂点と結ばれます。
+   Stop recording the vertices of a polygon.  Current turtle position is last
+   vertex of polygon.  This will be connected with the first vertex.
 
 
 .. function:: get_poly()
 
-   最後に記録された多角形を返します。
+   Return the last recorded polygon.
 
    .. doctest::
 
@@ -1328,7 +1336,8 @@ Pen の制御
 
 .. function:: clone()
 
-   位置、向きその他のプロパティがそっくり同じタートルのクローンを作って返します。
+   Create and return a clone of the turtle with same position, heading and
+   turtle properties.
 
    .. doctest::
 
@@ -1339,8 +1348,8 @@ Pen の制御
 .. function:: getturtle()
               getpen()
 
-   Turtle オブジェクトそのものを返します。
-   唯一の意味のある使い方: 無名タートルを返す関数として使う。
+   Return the Turtle object itself.  Only reasonable use: as a function to
+   return the "anonymous turtle":
 
    .. doctest::
 
@@ -1352,8 +1361,8 @@ Pen の制御
 
 .. function:: getscreen()
 
-   タートルが描画中の :class:`TurtleScreen` オブジェクトを返します。
-   TurtleScreen のメソッドをそのオブジェクトに対して呼び出すことができます。
+   Return the :class:`TurtleScreen` object the turtle is drawing on.
+   TurtleScreen methods can then be called for that object.
 
    .. doctest::
 
@@ -1365,13 +1374,12 @@ Pen の制御
 
 .. function:: setundobuffer(size)
 
-   :param size: 整数または ``None``
+   :param size: an integer or ``None``
 
-   アンドゥバッファを設定または無効化します。
-   *size* が整数ならばそのサイズの空のアンドゥバッファを用意します。
-   *size* の値はタートルのアクションを何度 :func:`undo` メソッド/関数で\
-   取り消せるかの最大数を与えます。
-   *size* が ``None`` ならば、アンドゥバッファは無効化されます。
+   Set or disable undobuffer.  If *size* is an integer an empty undobuffer of
+   given size is installed.  *size* gives the maximum number of turtle actions
+   that can be undone by the :func:`undo` method/function.  If *size* is
+   ``None``, the undobuffer is disabled.
 
    .. doctest::
 
@@ -1380,7 +1388,7 @@ Pen の制御
 
 .. function:: undobufferentries()
 
-   アンドゥバッファのエントリー数を返します。
+   Return number of entries in the undobuffer.
 
    .. doctest::
 
@@ -1390,7 +1398,7 @@ Pen の制御
 
 .. function:: tracer(flag=None, delay=None)
 
-   対応する TurtleScreen のメソッドの複製です。
+   A replica of the corresponding TurtleScreen method.
 
    .. deprecated:: 2.6
 
@@ -1398,23 +1406,25 @@ Pen の制御
 .. function:: window_width()
               window_height()
 
-   どちらも対応する TurtleScreen のメソッドの複製です。
+   Both are replicas of the corresponding TurtleScreen methods.
 
    .. deprecated:: 2.6
 
 
 .. _compoundshapes:
 
-合成形の使用に関する補遺
-------------------------
+Excursus about the use of compound shapes
+-----------------------------------------
 
-合成されたタートルの形、つまり幾つかの色の違う多角形から成るような形を使うには、
-以下のように補助クラス :class:`Shape` を直接使わなければなりません:
+To use compound turtle shapes, which consist of several polygons of different
+color, you must use the helper class :class:`Shape` explicitly as described
+below:
 
-1. タイプ "compound" の空の Shape オブジェクトを作ります。
-2. :meth:`addcomponent` メソッドを使って、好きなだけここにコンポーネントを追加します。
+1. Create an empty Shape object of type "compound".
+2. Add as many components to this object as desired, using the
+   :meth:`addcomponent` method.
 
-   例えば:
+   For example:
 
    .. doctest::
 
@@ -1424,7 +1434,7 @@ Pen の制御
       >>> poly2 = ((0,0),(10,-5),(-10,-5))
       >>> s.addcomponent(poly2, "blue", "red")
 
-3. こうして作った Shape を Screen の形のリスト(shapelist) に追加して使います:
+3. Now add the Shape to the Screen's shapelist and use it:
 
    .. doctest::
 
@@ -1434,30 +1444,32 @@ Pen の制御
 
 .. note::
 
-   :class:`Shape` クラスは :func:`register_shape` の内部では違った使われ方をします。
-   アプリケーションを書く人が Shape クラスを扱わなければならないのは、
-   上で示したように合成された形を使うとき *だけ* です。
+   The :class:`Shape` class is used internally by the :func:`register_shape`
+   method in different ways.  The application programmer has to deal with the
+   Shape class *only* when using compound shapes like shown above!
 
 
-TurtleScreen/Screen のメソッドと対応する関数
-============================================
+Methods of TurtleScreen/Screen and corresponding functions
+==========================================================
 
-この節のほとんどの例では ``screen`` という名前の TurtleScreen インスタンスを使います。
+Most of the examples in this section refer to a TurtleScreen instance called
+``screen``.
 
 .. doctest::
    :hide:
 
    >>> screen = Screen()
 
-ウィンドウの制御
-----------------
+Window control
+--------------
 
 .. function:: bgcolor(*args)
 
-   :param args: 色文字列または 0 から colormode の範囲の数3つ、
-                またはそれを三つ組みにしたもの
+   :param args: a color string or three numbers in the range 0..colormode or a
+                3-tuple of such numbers
 
-   TurtleScreen の背景色を設定するかまたは返します。
+
+   Set or return background color of the TurtleScreen.
 
    .. doctest::
 
@@ -1471,80 +1483,78 @@ TurtleScreen/Screen のメソッドと対応する関数
 
 .. function:: bgpic(picname=None)
 
-   :param picname: 文字列で gif ファイルの名前 ``"nopic"`` 、または ``None``
+   :param picname: a string, name of a gif-file or ``"nopic"``, or ``None``
 
-   背景の画像を設定するかまたは現在の背景画像(backgroundimage)の名前を返します。
-   *picname* がファイル名ならば、その画像を背景に設定します。
-   *picname* が ``"nopic"`` ならば、(もしあれば)背景画像を削除します。
-   *picname* が ``None`` ならば、現在の背景画像のファイル名を返します。 ::
+   Set background image or return name of current backgroundimage.  If *picname*
+   is a filename, set the corresponding image as background.  If *picname* is
+   ``"nopic"``, delete background image, if present.  If *picname* is ``None``,
+   return the filename of the current backgroundimage. ::
 
-      >>> screen.bgpic()
-      "nopic"
-      >>> screen.bgpic("landscape.gif")
-      >>> screen.bgpic()
-      "landscape.gif"
+       >>> screen.bgpic()
+       'nopic'
+       >>> screen.bgpic("landscape.gif")
+       >>> screen.bgpic()
+       "landscape.gif"
 
 
 .. function:: clear()
               clearscreen()
 
-   全ての図形と全てのタートルを TurtleScreen から削除します。
-   そして空になった TurtleScreen をリセットして初期状態に戻します:
-   白い背景、背景画像もイベント束縛もなく、トレーシングはオンです。
+   Delete all drawings and all turtles from the TurtleScreen.  Reset the now
+   empty TurtleScreen to its initial state: white background, no background
+   image, no event bindings and tracing on.
 
    .. note::
-      この TurtleScreen メソッドはグローバル関数としては ``clearscreen``
-      という名前でだけ使えます。
-      グローバル関数 ``clear`` は Turtle メソッドの ``clear``
-      から派生した別ものです。
+      This TurtleScreen method is available as a global function only under the
+      name ``clearscreen``.  The global function ``clear`` is another one
+      derived from the Turtle method ``clear``.
 
 
 .. function:: reset()
               resetscreen()
 
-   スクリーン上の全てのタートルをリセットしその初期状態に戻します。
+   Reset all Turtles on the Screen to their initial state.
 
    .. note::
-      この TurtleScreen メソッドはグローバル関数としては ``resetscreen``
-      という名前でだけ使えます。
-      グローバル関数 ``reset`` は Turtle メソッドの ``reset``
-      から派生した別ものです。
+      This TurtleScreen method is available as a global function only under the
+      name ``resetscreen``.  The global function ``reset`` is another one
+      derived from the Turtle method ``reset``.
 
 
 .. function:: screensize(canvwidth=None, canvheight=None, bg=None)
 
-   :param canvwidth: 正の整数でピクセル単位の新しいキャンバス幅(canvaswidth)
-   :param canvheight: 正の整数でピクセル単位の新しいキャンバス高さ(canvasheight)
-   :param bg: 色文字列または色タプルで新しい背景色
+   :param canvwidth: positive integer, new width of canvas in pixels
+   :param canvheight: positive integer, new height of canvas in pixels
+   :param bg: colorstring or color-tuple, new background color
 
-   引数が渡されなければ、現在の (キャンバス幅, キャンバス高さ) を返します。
-   そうでなければタートルが描画するキャンバスのサイズを変更します。
-   描画ウィンドウには影響しません。
-   キャンバスの隠れた部分を見るためにはスクロールバーを使って下さい。
-   このメソッドを使うと、以前はキャンバスの外にあったそうした図形の一部を\
-   見えるようにすることができます。
+   If no arguments are given, return current (canvaswidth, canvasheight).  Else
+   resize the canvas the turtles are drawing on.  Do not alter the drawing
+   window.  To observe hidden parts of the canvas, use the scrollbars. With this
+   method, one can make visible those parts of a drawing which were outside the
+   canvas before.
 
       >>> screen.screensize()
       (400, 300)
-      >>> turtle.screensize(2000,1500)
+      >>> screen.screensize(2000,1500)
       >>> screen.screensize()
       (2000, 1500)
 
-   # 逃げ出してしまったタートルを探すためとかね ;-)
+   e.g. to search for an erroneously escaped turtle ;-)
 
 
 .. function:: setworldcoordinates(llx, lly, urx, ury)
 
-   :param llx: 数でキャンバスの左下隅の x-座標
-   :param lly: 数でキャンバスの左下隅の y-座標
-   :param urx: 数でキャンバスの右上隅の x-座標
-   :param ury: 数でキャンバスの右上隅の y-座標
+   :param llx: a number, x-coordinate of lower left corner of canvas
+   :param lly: a number, y-coordinate of lower left corner of canvas
+   :param urx: a number, x-coordinate of upper right corner of canvas
+   :param ury: a number, y-coordinate of upper right corner of canvas
 
-   ユーザー定義座標系を準備し必要ならばモードを "world" に切り替えます。
-   この動作は ``screen.reset()`` を伴います。
-   すでに "world" モードになっていた場合、全ての図形は新しい座標に従って再描画されます。
+   Set up user-defined coordinate system and switch to mode "world" if
+   necessary.  This performs a ``screen.reset()``.  If mode "world" is already
+   active, all drawings are redrawn according to the new coordinates.
 
-   **重要なお知らせ**: ユーザー定義座標系では角度が歪むかもしれません。
+   **ATTENTION**: in user-defined coordinate systems angles may appear
+   distorted.
 
    .. doctest::
 
@@ -1554,7 +1564,7 @@ TurtleScreen/Screen のメソッドと対応する関数
       ...     left(10)
       ...
       >>> for _ in range(8):
-      ...     left(45); fd(2)   # 正八角形
+      ...     left(45); fd(2)   # a regular octagon
 
    .. doctest::
       :hide:
@@ -1564,18 +1574,18 @@ TurtleScreen/Screen のメソッドと対応する関数
       ...      t.reset()
 
 
-アニメーションの制御
---------------------
+Animation control
+-----------------
 
 .. function:: delay(delay=None)
 
-   :param delay: 正の整数
+   :param delay: positive integer
 
-   描画の遅延(*delay*)をミリ秒単位で設定するかまたはその値を返します。
-   (これは概ね引き続くキャンバス更新の時間間隔です。)
-   遅延が大きくなると、アニメーションは遅くなります。
+   Set or return the drawing *delay* in milliseconds.  (This is approximately
+   the time interval between two consecutive canvas updates.)  The longer the
+   drawing delay, the slower the animation.
 
-   オプション引数:
+   Optional argument:
 
    .. doctest::
 
@@ -1588,13 +1598,13 @@ TurtleScreen/Screen のメソッドと対応する関数
 
 .. function:: tracer(n=None, delay=None)
 
-   :param n: 非負整数
-   :param delay: 非負整数
+   :param n: nonnegative integer
+   :param delay: nonnegative integer
 
-   タートルのアニメーションをオン・オフし、描画更新の遅延を設定します。
-   *n* が与えられた場合、通常のスクリーン更新のうち 1/n しか実際に実行されません。
-   (複雑なグラフィックスの描画を加速するのに使えます。)
-   二つ目の引数は遅延の値を設定します(:func:`delay` も参照)。
+   Turn turtle animation on/off and set delay for update drawings.  If *n* is
+   given, only each n-th regular screen update is really performed.  (Can be
+   used to accelerate the drawing of complex graphics.)  Second argument sets
+   delay value (see :func:`delay`).
 
    .. doctest::
 
@@ -1608,31 +1618,28 @@ TurtleScreen/Screen のメソッドと対応する関数
 
 .. function:: update()
 
-   TurtleScreen の更新を実行します。
-   トレーサーがオフの時に使われます。
+   Perform a TurtleScreen update. To be used when tracer is turned off.
+
+See also the RawTurtle/Turtle method :func:`speed`.
 
 
-RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
-
-
-スクリーンイベントを利用する
-----------------------------
+Using screen events
+-------------------
 
 .. function:: listen(xdummy=None, ydummy=None)
 
-   TurtleScreen に(キー・イベントを収集するために)フォーカスします。
-   ダミー引数は :func:`listen` を onclick メソッドに渡せるようにするためのものです。
+   Set focus on TurtleScreen (in order to collect key-events).  Dummy arguments
+   are provided in order to be able to pass :func:`listen` to the onclick method.
 
 
 .. function:: onkey(fun, key)
 
-   :param fun: 引数なしの関数または ``None``
-   :param key: 文字列: キー (例 "a") またはキー・シンボル (例 "space")
+   :param fun: a function with no arguments or ``None``
+   :param key: a string: key (e.g. "a") or key-symbol (e.g. "space")
 
-   *fun* を指定されたキーのキーリリース(key-release)イベントに束縛します。
-   *fun* が ``None`` ならばイベント束縛は除かれます。
-   注意: キー・イベントを登録できるようにするためには TurtleScreen
-   はフォーカスを持っていないとなりません(:func:`listen` を参照)。
+   Bind *fun* to key-release event of key.  If *fun* is ``None``, event bindings
+   are removed. Remark: in order to be able to register key-events, TurtleScreen
+   must have the focus. (See method :func:`listen`.)
 
    .. doctest::
 
@@ -1647,40 +1654,36 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
 .. function:: onclick(fun, btn=1, add=None)
               onscreenclick(fun, btn=1, add=None)
 
-   :param fun: 2引数の関数でキャンバスのクリックされた点の座標を引数として\
-               呼び出されるものです
-   :param num: マウスボタンの番号、デフォルトは 1 (左マウスボタン)
-   :param add: ``True`` または ``False`` -- ``True`` ならば、
-               新しい束縛が追加されますが、そうでなければ、
-               以前の束縛を置き換えます。
+   :param fun: a function with two arguments which will be called with the
+               coordinates of the clicked point on the canvas
+   :param num: number of the mouse-button, defaults to 1 (left mouse button)
+   :param add: ``True`` or ``False`` -- if ``True``, a new binding will be
+               added, otherwise it will replace a former binding
 
-   *fun* をタートルのマウスクリック(mouse-click)イベントに束縛します。
-   *fun* が ``None`` ならば、既存の束縛が取り除かれます。
+   Bind *fun* to mouse-click events on this screen.  If *fun* is ``None``,
+   existing bindings are removed.
 
-   Example for a
-   ``screen`` という名の TurtleScreen インスタンスと turtle という名前の
-   Turtle インスタンスの例:
+   Example for a TurtleScreen instance named ``screen`` and a Turtle instance
+   named turtle:
 
    .. doctest::
 
-      >>> screen.onclick(turtle.goto) # この後、TurtleScreen をクリックすると
-      >>>                             # タートルをクリックされた点に
-      >>>                             # 移動させることになります
-      >>> screen.onclick(None)  # イベント束縛を取り除きます
+      >>> screen.onclick(turtle.goto) # Subsequently clicking into the TurtleScreen will
+      >>>                             # make the turtle move to the clicked point.
+      >>> screen.onclick(None)        # remove event binding again
 
    .. note::
-      この TurtleScreen メソッドはグローバル関数としては ``onscreenclick``
-      という名前でだけ使えます。
-      グローバル関数 ``onclick`` は Turtle メソッドの ``onclick``
-      から派生した別ものです。
+      This TurtleScreen method is available as a global function only under the
+      name ``onscreenclick``.  The global function ``onclick`` is another one
+      derived from the Turtle method ``onclick``.
 
 
 .. function:: ontimer(fun, t=0)
 
-   :param fun: 引数なし関数
-   :param t: 数 >= 0
+   :param fun: a function with no arguments
+   :param t: a number >= 0
 
-   *t* ミリ秒後に *fun* を呼び出すタイマーを仕掛けます。
+   Install a timer that calls *fun* after *t* milliseconds.
 
    .. doctest::
 
@@ -1690,46 +1693,45 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
       ...         fd(50)
       ...         lt(60)
       ...         screen.ontimer(f, 250)
-      >>> f()   ### タートルが歩き続けます
+      >>> f()   ### makes the turtle march around
       >>> running = False
 
 
-設定と特殊なメソッド
---------------------
+Settings and special methods
+----------------------------
 
 .. function:: mode(mode=None)
 
-   :param mode: 文字列 "standard", "logo", "world" のいずれか
+   :param mode: one of the strings "standard", "logo" or "world"
 
-   タートルのモード("standard", "logo", "world" のいずれか)を設定してリセットします。
-   モードが渡されなければ現在のモードが返されます。
+   Set turtle mode ("standard", "logo" or "world") and perform reset.  If mode
+   is not given, current mode is returned.
 
-   モード "standard" は古い :mod:`turtle` 互換です。
-   モード "logo" は Logo タートルグラフィックスとほぼ互換です。
-   モード "world" はユーザーの定義した「世界座標(world coordinates)」を使います。
-   **重要なお知らせ**: このモードでは ``x/y`` 比が 1 でないと角度が歪むかもしれません。
+   Mode "standard" is compatible with old :mod:`turtle`.  Mode "logo" is
+   compatible with most Logo turtle graphics.  Mode "world" uses user-defined
+   "world coordinates". **Attention**: in this mode angles appear distorted if
+   ``x/y`` unit-ratio doesn't equal 1.
 
    ============ ========================= ===================
-      モード      タートルの向きの初期値      正の角度
+       Mode      Initial turtle heading     positive angles
    ============ ========================= ===================
-    "standard"    右 (東) 向き              反時計回り
-      "logo"      上 (北) 向き              時計回り
+    "standard"    to the right (east)       counterclockwise
+      "logo"        upward    (north)         clockwise
    ============ ========================= ===================
 
    .. doctest::
 
-      >>> mode("logo")   # タートルが北を向くようにリセットします
+      >>> mode("logo")   # resets turtle heading to north
       >>> mode()
       'logo'
 
 
 .. function:: colormode(cmode=None)
 
-   :param cmode: 1.0 か 255 のどちらかの値
+   :param cmode: one of the values 1.0 or 255
 
-   色モード(colormode)を返すか、または 1.0 か 255 のどちらかの値に設定します。
-   設定した後は、色トリプルの *r*, *g*, *b* 値は 0 から *cmode*
-   の範囲になければなりません。
+   Return the colormode or set it to 1.0 or 255.  Subsequently *r*, *g*, *b*
+   values of color triples have to be in the range 0..\ *cmode*.
 
    .. doctest::
 
@@ -1748,8 +1750,8 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
 
 .. function:: getcanvas()
 
-   この TurtleScreen の Canvas を返します。
-   Tkinter の Canvas を使って何をするか知っている人には有用です。
+   Return the Canvas of this TurtleScreen.  Useful for insiders who know what to
+   do with a Tkinter Canvas.
 
    .. doctest::
 
@@ -1760,7 +1762,7 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
 
 .. function:: getshapes()
 
-   現在使うことのできる全てのタートルの形のリストを返します。
+   Return a list of names of all currently available turtle shapes.
 
    .. doctest::
 
@@ -1771,34 +1773,34 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
 .. function:: register_shape(name, shape=None)
               addshape(name, shape=None)
 
-   この関数を呼び出す三つの異なる方法があります:
+   There are three different ways to call this function:
 
-   (1) *name* が gif ファイルの名前で *shape* が ``None``:
-       対応する画像の形を取り込みます。 ::
+   (1) *name* is the name of a gif-file and *shape* is ``None``: Install the
+       corresponding image shape. ::
 
        >>> screen.register_shape("turtle.gif")
 
        .. note::
-          画像の形はタートルが向きを変えても *回転しません* ので、
-          タートルがどちらを向いているか見ても判りません!
+          Image shapes *do not* rotate when turning the turtle, so they do not
+          display the heading of the turtle!
 
-   (2) *name* が任意の文字列で *shape* が座標ペアのタプル:
-       対応する多角形を取り込みます。
+   (2) *name* is an arbitrary string and *shape* is a tuple of pairs of
+       coordinates: Install the corresponding polygon shape.
 
        .. doctest::
 
           >>> screen.register_shape("triangle", ((5,-3), (0,5), (-5,-3)))
 
-   (3) *name* が任意の文字列で *shape* が (合成形の) :class:`Shape`
-       オブジェクト: 対応する合成形を取り込みます。
+   (3) *name* is an arbitrary string and shape is a (compound) :class:`Shape`
+       object: Install the corresponding compound shape.
 
-   タートルの形を TurtleScreen の形リスト(shapelist)に加えます。
-   このように登録された形だけが ``shape(shapename)`` コマンドに使えます。
+   Add a turtle shape to TurtleScreen's shapelist.  Only thusly registered
+   shapes can be used by issuing the command ``shape(shapename)``.
 
 
 .. function:: turtles()
 
-   スクリーン上のタートルのリストを返します。
+   Return the list of turtles on the screen.
 
    .. doctest::
 
@@ -1808,178 +1810,184 @@ RawTurtle/Turtle のメソッド :func:`speed` も参照して下さい。
 
 .. function:: window_height()
 
-   タートルウィンドウの高さを返します。 ::
+   Return the height of the turtle window. ::
 
-      >>> screen.window_height()
-      480
+       >>> screen.window_height()
+       480
 
 
 .. function:: window_width()
 
-   タートルウィンドウの幅を返します。 ::
+   Return the width of the turtle window. ::
 
-      >>> screen.window_width()
-      640
+       >>> screen.window_width()
+       640
 
 
 .. _screenspecific:
 
-Screen 独自のメソッド、TurtleScreen から継承したもの以外
---------------------------------------------------------
+Methods specific to Screen, not inherited from TurtleScreen
+-----------------------------------------------------------
 
 .. function:: bye()
 
-   タートルグラフィックス(turtlegraphics)のウィンドウを閉じます。
+   Shut the turtlegraphics window.
 
 
 .. function:: exitonclick()
 
-   スクリーン上のマウスクリックに bye() メソッドを束縛します。
+   Bind bye() method to mouse clicks on the Screen.
 
 
-   設定辞書中の "using_IDLE" の値が ``False`` (デフォルトです) の場合、
-   さらにメインループ(mainloop)に入ります。
-   注意: もし IDLE が ``-n`` スイッチ(サブプロセスなし)付きで使われているときは、
-   この値は :file:`turtle.cfg` の中で ``True`` とされているべきです。
-   この場合、IDLE のメインループもクライアントスクリプトから見てアクティブです。
-
-     .. どういうことだか解らずに訳しています
+   If the value "using_IDLE" in the configuration dictionary is ``False``
+   (default value), also enter mainloop.  Remark: If IDLE with the ``-n`` switch
+   (no subprocess) is used, this value should be set to ``True`` in
+   :file:`turtle.cfg`.  In this case IDLE's own mainloop is active also for the
+   client script.
 
 
 .. function:: setup(width=_CFG["width"], height=_CFG["height"], startx=_CFG["leftright"], starty=_CFG["topbottom"])
 
-   メインウィンドウのサイズとポジションを設定します。
-   引数のデフォルト値は設定辞書に収められており、
-   :file:`turtle.cfg` ファイルを通じて変更できます。
+   Set the size and position of the main window.  Default values of arguments
+   are stored in the configuration dictionary and can be changed via a
+   :file:`turtle.cfg` file.
 
-   :param width: 整数ならばピクセル単位のサイズ、浮動小数点数ならばスクリーンに対する割合
-                 (スクリーンの 50% がデフォルト)
-   :param height: 整数ならばピクセル単位の高さ、浮動小数点数ならばスクリーンに対する割合
-                  (スクリーンの 75% がデフォルト)
-   :param startx: 正の数ならばスクリーンの左端からピクセル単位で測った開始位置、
-                  負の数ならば右端から、None ならば水平方向に真ん中
-   :param startx: 正の数ならばスクリーンの上端からピクセル単位で測った開始位置、
-                  負の数ならば下端から、None ならば垂直方向に真ん中
+   :param width: if an integer, a size in pixels, if a float, a fraction of the
+                 screen; default is 50% of screen
+   :param height: if an integer, the height in pixels, if a float, a fraction of
+                  the screen; default is 75% of screen
+   :param startx: if positive, starting position in pixels from the left
+                  edge of the screen, if negative from the right edge, if None,
+                  center window horizontally
+   :param starty: if positive, starting position in pixels from the top
+                  edge of the screen, if negative from the bottom edge, if None,
+                  center window vertically
 
    .. doctest::
 
       >>> screen.setup (width=200, height=200, startx=0, starty=0)
-      >>>              # ウィンドウを 200×200 ピクセルにして, スクリーンの左上に
+      >>>              # sets window to 200x200 pixels, in upper left of screen
       >>> screen.setup(width=.75, height=0.5, startx=None, starty=None)
-      >>>              # ウィンドウをスクリーンの 75% かける 50% にして, スクリーンの真ん中に
+      >>>              # sets window to 75% of screen by 50% of screen and centers
 
 
 .. function:: title(titlestring)
 
-   :param titlestring: タートルグラフィックスウィンドウのタイトルバーに表示される文字列
+   :param titlestring: a string that is shown in the titlebar of the turtle
+                       graphics window
 
-   ウインドウのタイトルを *titlestring* に設定します。
+   Set title of turtle window to *titlestring*.
 
    .. doctest::
 
       >>> screen.title("Welcome to the turtle zoo!")
 
 
-:mod:`turtle` モジュールのパブリッククラス
-==========================================
+The public classes of the module :mod:`turtle`
+==============================================
 
 
 .. class:: RawTurtle(canvas)
            RawPen(canvas)
 
-   :param canvas: :class:`Tkinter.Canvas`, :class:`ScrolledCanvas`,
-                  :class:`TurtleScreen` のいずれか
+   :param canvas: a :class:`Tkinter.Canvas`, a :class:`ScrolledCanvas` or a
+                  :class:`TurtleScreen`
 
-   タートルを作ります。
-   タートルには上の「Turtle/RawTurtle のメソッド」で説明した全てのメソッドがあります。
+   Create a turtle.  The turtle has all methods described above as "methods of
+   Turtle/RawTurtle".
 
 
 .. class:: Turtle()
 
-   RawTurtle のサブクラスで同じインターフェイスを持ちますが、
-   最初に必要になったとき自動的に作られる :class:`Screen` オブジェクトに描画します。
+   Subclass of RawTurtle, has the same interface but draws on a default
+   :class:`Screen` object created automatically when needed for the first time.
 
 
 .. class:: TurtleScreen(cv)
 
-   :param cv: :class:`Tkinter.Canvas`
+   :param cv: a :class:`Tkinter.Canvas`
 
-   上で説明した :func:`setbg` のようなスクリーン向けのメソッドを提供します。
+   Provides screen oriented methods like :func:`setbg` etc. that are described
+   above.
 
 .. class:: Screen()
 
-   TurtleScreen のサブクラスで :ref:`4つのメソッドが加わっています <screenspecific>` 。
+   Subclass of TurtleScreen, with :ref:`four methods added <screenspecific>`.
+
 
 .. class:: ScrolledCanvas(master)
 
-   :param master: この ScrolledCanvas すなわちスクロールバーの付いた Tkinter
-      canvas を収める Tkinter ウィジェット
+   :param master: some Tkinter widget to contain the ScrolledCanvas, i.e.
+      a Tkinter-canvas with scrollbars added
 
-   タートルたちが遊び回る場所として自動的に ScrolledCanvas を提供する
-   Screen クラスによって使われます
+   Used by class Screen, which thus automatically provides a ScrolledCanvas as
+   playground for the turtles.
 
 .. class:: Shape(type_, data)
 
-   :param type\_: 文字列 "polygon", "image", "compound" のいずれか
+   :param type\_: one of the strings "polygon", "image", "compound"
 
-   形をモデル化するデータ構造。
-   ペア ``(type_, data)`` は以下の仕様に従わなければなりません。
+   Data structure modeling shapes.  The pair ``(type_, data)`` must follow this
+   specification:
 
 
    =========== ===========
    *type_*     *data*
    =========== ===========
-   "polygon"   多角形タプル、すなわち座標ペアのタプル
-   "image"     画像  (この形式は内部的にのみ使用されます!)
-   "compound"  ``None`` (合成形は :meth:`addcomponent` メソッドを使って\
-               作らなければなりません)
+   "polygon"   a polygon-tuple, i.e. a tuple of pairs of coordinates
+   "image"     an image  (in this form only used internally!)
+   "compound"  ``None`` (a compound shape has to be constructed using the
+               :meth:`addcomponent` method)
    =========== ===========
 
    .. method:: addcomponent(poly, fill, outline=None)
 
-      :param poly: 多角形、すなわち数のペアのタプル
-      :param fill: *poly* を塗りつぶす色
-      :param outline: *poly* のアウトラインの色 (与えられた場合)
+      :param poly: a polygon, i.e. a tuple of pairs of numbers
+      :param fill: a color the *poly* will be filled with
+      :param outline: a color for the poly's outline (if given)
 
-      例:
+      Example:
 
       .. doctest::
 
          >>> poly = ((0,0),(10,-5),(0,10),(-10,-5))
          >>> s = Shape("compound")
          >>> s.addcomponent(poly, "red", "blue")
-         >>> # .. もっと成分を増やした後 register_shape() を使います
+         >>> # ... add more components and then use register_shape()
 
-      :ref:`compoundshapes` を参照。
+      See :ref:`compoundshapes`.
 
 
 .. class:: Vec2D(x, y)
 
-   2次元ベクトルのクラスで、タートルグラフィックスを実装するための補助クラス。
-   タートルグラフィックスを使ったプログラムでも有用でしょう。
-   タプルから派生しているので、ベクターはタプルです!
+   A two-dimensional vector class, used as a helper class for implementing
+   turtle graphics.  May be useful for turtle graphics programs too.  Derived
+   from tuple, so a vector is a tuple!
 
-   以下の演算が使えます (*a*, *b* はベクトル、 *k* は数):
+   Provides (for *a*, *b* vectors, *k* number):
 
-   * ``a + b`` ベクトル和
-   * ``a - b`` ベクトル差
-   * ``a * b`` 内積
-   * ``k * a`` および ``a * k`` スカラー倍
-   * ``abs(a)``  a の絶対値
-   * ``a.rotate(angle)`` 回転
+   * ``a + b`` vector addition
+   * ``a - b`` vector subtraction
+   * ``a * b`` inner product
+   * ``k * a`` and ``a * k`` multiplication with scalar
+   * ``abs(a)`` absolute value of a
+   * ``a.rotate(angle)`` rotation
 
 
-ヘルプと設定
-============
+Help and configuration
+======================
 
-ヘルプの使い方
+How to use help
 ---------------
 
-Screen と Turtle クラスのパブリックメソッドはドキュメント文字列で網羅的に文書化されていますので、Python のヘルプ機能を通じてオンラインヘルプとして利用できます:
+The public methods of the Screen and Turtle classes are documented extensively
+via docstrings.  So these can be used as online-help via the Python help
+facilities:
 
-- IDLE を使っているときは、打ち込んだ関数/メソッド呼び出しのシグニチャとドキュメント文字列の一行目がツールチップとして表示されます。
+- When using IDLE, tooltips show the signatures and first lines of the
+  docstrings of typed in function-/method calls.
 
-- :func:`help` をメソッドや関数に対して呼び出すとドキュメント文字列が表示されます::
+- Calling :func:`help` on methods or functions displays the docstrings::
 
      >>> help(Screen.bgcolor)
      Help on method bgcolor in module turtle:
@@ -2010,7 +2018,8 @@ Screen と Turtle クラスのパブリックメソッドはドキュメント�
 
          >>> turtle.penup()
 
-- メソッドに由来する関数のドキュメント文字列は変更された形をとります::
+- The docstrings of the functions which are derived from methods have a modified
+  form::
 
      >>> help(bgcolor)
      Help on function bgcolor in module turtle:
@@ -2043,52 +2052,51 @@ Screen と Turtle クラスのパブリックメソッドはドキュメント�
          Example:
          >>> penup()
 
-これらの変更されたドキュメント文字列はインポート時にメソッドから導出される関数定義と一緒に自動的に作られます。
+These modified docstrings are created automatically together with the function
+definitions that are derived from the methods at import time.
 
 
-ドキュメント文字列の翻訳
-------------------------
+Translation of docstrings into different languages
+--------------------------------------------------
 
-Screen と Turtle クラスのパブリックメソッドについて、
-キーがメソッド名で値がドキュメント文字列である辞書を作るユーティリティがあります。
+There is a utility to create a dictionary the keys of which are the method names
+and the values of which are the docstrings of the public methods of the classes
+Screen and Turtle.
 
 .. function:: write_docstringdict(filename="turtle_docstringdict")
 
-   :param filename: ファイル名として使われる文字列
+   :param filename: a string, used as filename
 
-   ドキュメント文字列辞書(docstring-dictionary)を作って与えられたファイル名の
-   Python スクリプトに書き込みます。
-   この関数はわざわざ呼び出さなければなりません (タートルグラフィックスのクラスから\
-   使われることはありません)。
-   ドキュメント文字列辞書は :file:`{filename}.py` という Python
-   スクリプトに書き込まれます。
-   ドキュメント文字列の異なった言語への翻訳に対するテンプレートとして\
-   使われることを意図したものです。
+   Create and write docstring-dictionary to a Python script with the given
+   filename.  This function has to be called explicitly (it is not used by the
+   turtle graphics classes).  The docstring dictionary will be written to the
+   Python script :file:`{filename}.py`.  It is intended to serve as a template
+   for translation of the docstrings into different languages.
 
+If you (or your students) want to use :mod:`turtle` with online help in your
+native language, you have to translate the docstrings and save the resulting
+file as e.g. :file:`turtle_docstringdict_german.py`.
 
-もしあなたが(またはあなたの生徒さんが) :mod:`turtle` を自国語のオンラインヘルプ\
-付きで使いたいならば、ドキュメント文字列を翻訳してできあがったファイルをたとえば
-:file:`turtle_docstringdict_german.py` という名前で保存しなければなりません。
+If you have an appropriate entry in your :file:`turtle.cfg` file this dictionary
+will be read in at import time and will replace the original English docstrings.
 
-さらに :file:`turtle.cfg` ファイルで適切な設定をしておけば、
-このファイルがインポート時に読み込まれて元の英語のドキュメント文字列を置き換えます。
-
-この文書を書いている時点ではドイツ語とイタリア語のドキュメント文字列辞書が存在します。
-( glingl@aon.at にリクエストして下さい。)
+At the time of this writing there are docstring dictionaries in German and in
+Italian.  (Requests please to glingl@aon.at.)
 
 
-Screen および Turtle の設定方法
--------------------------------
 
-初期デフォルト設定では古い turtle の見た目と振る舞いを真似るようにして、
-互換性を最大限に保つようにしています。
+How to configure Screen and Turtles
+-----------------------------------
 
-このモジュールの特性を反映した、あるいは個々人の必要性
-(たとえばクラスルームでの使用)に合致した、異なった設定を使いたい場合、
-設定ファイル ``turtle.cfg`` を用意してインポート時に読み込ませその設定に\
-従わせることができます。
+The built-in default configuration mimics the appearance and behaviour of the
+old turtle module in order to retain best possible compatibility with it.
 
-初期設定は以下の turtle.cfg に対応します::
+If you want to use a different configuration which better reflects the features
+of this module or which better fits to your needs, e.g. for use in a classroom,
+you can prepare a configuration file ``turtle.cfg`` which will be read at import
+time and modify the configuration according to its settings.
+
+The built in configuration would correspond to the following turtle.cfg::
 
    width = 0.5
    height = 0.75
@@ -2111,100 +2119,110 @@ Screen および Turtle の設定方法
    title = Python Turtle Graphics
    using_IDLE = False
 
-いくつかピックアップしたエントリーの短い説明:
+Short explanation of selected entries:
 
-- 最初の4行は :meth:`Screen.setup` メソッドの引数に当たります。
-- 5行目6行目は :meth:`Screen.screensize` メソッドの引数に当たります。
-- *shape* は最初から用意されている形ならどれでも使えます(arrow, turtle など)。
-  詳しくは ``help(shape)`` をお試し下さい。
-- 塗りつぶしの色(fillcolor)を使いたくない(つまりタートルを透明にしたい)場合、
-  ``fillcolor = ""`` と書かなければなりません。
-  (しかし全ての空でない文字列は cfg ファイル中で引用符を付けてはいけません)
-- タートルにその状態を反映させるためには ``resizemode = auto`` とします。
-- たとえば ``language = italian`` とするとドキュメント文字列辞書(docstringdict)
-  として :file:`turtle_docstringdict_italian.py` がインポート時に読み込まれます
-  (もしそれがインポートパス、たとえば :mod:`turtle` と同じディレクトリにあれば)。
-- *exampleturtle* および *examplescreen* はこれらのオブジェクトの\
-  ドキュメント文字列内での呼び名を決めます。
-  メソッドのドキュメント文字列から関数のドキュメント文字列に変換する際に、
-  これらの名前は取り除かれます。
-- *using_IDLE*: IDLE とその -n スイッチ(サブプロセスなし)を常用するならば、
-  この値を ``True`` に設定して下さい。
-  これにより :func:`exitonclick` がメインループ(mainloop)に入るのを阻止します。
+- The first four lines correspond to the arguments of the :meth:`Screen.setup`
+  method.
+- Line 5 and 6 correspond to the arguments of the method
+  :meth:`Screen.screensize`.
+- *shape* can be any of the built-in shapes, e.g: arrow, turtle, etc.  For more
+  info try ``help(shape)``.
+- If you want to use no fillcolor (i.e. make the turtle transparent), you have
+  to write ``fillcolor = ""`` (but all nonempty strings must not have quotes in
+  the cfg-file).
+- If you want to reflect the turtle its state, you have to use ``resizemode =
+  auto``.
+- If you set e.g. ``language = italian`` the docstringdict
+  :file:`turtle_docstringdict_italian.py` will be loaded at import time (if
+  present on the import path, e.g. in the same directory as :mod:`turtle`.
+- The entries *exampleturtle* and *examplescreen* define the names of these
+  objects as they occur in the docstrings.  The transformation of
+  method-docstrings to function-docstrings will delete these names from the
+  docstrings.
+- *using_IDLE*: Set this to ``True`` if you regularly work with IDLE and its -n
+  switch ("no subprocess").  This will prevent :func:`exitonclick` to enter the
+  mainloop.
 
-:file:`turtle.cfg` ファイルは :mod:`turtle` の保存されているディレクトリと\
-現在の作業ディレクトリに追加的に存在し得ます。
-後者が前者の設定をオーバーライドします。
+There can be a :file:`turtle.cfg` file in the directory where :mod:`turtle` is
+stored and an additional one in the current working directory.  The latter will
+override the settings of the first one.
 
-:file:`Demo/turtle` ディレクトリにも :file:`turtle.cfg` ファイルがあります。
-デモを実際に(できればデモビュワーからでなく)実行してそこに書かれたものとその効果を\
-学びましょう。
+The :file:`Demo/turtle` directory contains a :file:`turtle.cfg` file.  You can
+study it as an example and see its effects when running the demos (preferably
+not from within the demo-viewer).
 
 
-デモスクリプト
-==============
+Demo scripts
+============
 
-ソース配布物の :file:`Demo/turtle` ディレクトリにデモスクリプト一式があります。
+There is a set of demo scripts in the turtledemo directory located in the
+:file:`Demo/turtle` directory in the source distribution.
 
-内容は以下の通りです:
+It contains:
 
-- 新しい :mod:`turtle` モジュールの 15 の異なった特徴を示すデモスクリプト一式
-- ソースコードを眺めつつスクリプトを実行できるデモビュワー :file:`turtleDemo.py` 。
-  14 個が Examples メニューからアクセスできます。
-  もちろんそれらを独立して実行することもできます。
-- :file:`turtledemo_two_canvases.py` は同時に二つのキャンバスを使用するデモです。
-  これはビュワーからは実行できません。
-- :file:`turtle.cfg` ファイルも同じディレクトリにあり、
-  設定ファイルの書き方の例としても参考にできます。
+- a set of 15 demo scripts demonstrating different features of the new module
+  :mod:`turtle`
+- a demo viewer :file:`turtleDemo.py` which can be used to view the sourcecode
+  of the scripts and run them at the same time. 14 of the examples can be
+  accessed via the Examples menu; all of them can also be run standalone.
+- The example :file:`turtledemo_two_canvases.py` demonstrates the simultaneous
+  use of two canvases with the turtle module.  Therefore it only can be run
+  standalone.
+- There is a :file:`turtle.cfg` file in this directory, which also serves as an
+  example for how to write and use such files.
 
-デモスクリプトは以下の通りです:
+The demoscripts are:
+
+.. tabularcolumns:: |l|L|L|
 
 +----------------+------------------------------+-----------------------+
-| 名前           | 説明                         | 特徴                  |
+| Name           | Description                  | Features              |
++================+==============================+=======================+
+| bytedesign     | complex classical            | :func:`tracer`, delay,|
+|                | turtlegraphics pattern       | :func:`update`        |
 +----------------+------------------------------+-----------------------+
-| bytedesign     | 複雑な古典的タートル\        | :func:`tracer`, delay,|
-|                | グラフィックスパターン       | :func:`update`        |
+| chaos          | graphs Verhulst dynamics,    | world coordinates     |
+|                | shows that computer's        |                       |
+|                | computations can generate    |                       |
+|                | results sometimes against the|                       |
+|                | common sense expectations    |                       |
 +----------------+------------------------------+-----------------------+
-| chaos          | verhust 力学系のグラフ化,    | 世界座標系            |
-|                | コンピュータの計算が常識的   |                       |
-|                | な予想に反する場合があること |                       |
-|                | を示します。                 |                       |
+| clock          | analog clock showing time    | turtles as clock's    |
+|                | of your computer             | hands, ontimer        |
 +----------------+------------------------------+-----------------------+
-| clock          | コンピュータの時間を示す\    | タートルが時計の針,   |
-|                | アナログ時計                 | ontimer               |
+| colormixer     | experiment with r, g, b      | :func:`ondrag`        |
 +----------------+------------------------------+-----------------------+
-| colormixer     | r, g, b の実験               | :func:`ondrag`        |
+| fractalcurves  | Hilbert & Koch curves        | recursion             |
 +----------------+------------------------------+-----------------------+
-| fractalcurves  | Hilbert & Koch 曲線          | 再帰                  |
+| lindenmayer    | ethnomathematics             | L-System              |
+|                | (indian kolams)              |                       |
 +----------------+------------------------------+-----------------------+
-| lindenmayer    | 民俗的数学                   | L-システム            |
-|                | (インド kolams)              |                       |
-+----------------+------------------------------+-----------------------+
-| minimal_hanoi  | ハノイの塔                   | ハノイ盤として正方形\ |
-|                |                              | のタートル            |
+| minimal_hanoi  | Towers of Hanoi              | Rectangular Turtles   |
+|                |                              | as Hanoi discs        |
 |                |                              | (shape, shapesize)    |
 +----------------+------------------------------+-----------------------+
-| paint          | 超極小主義的描画プログラム   | :func:`onclick`       |
+| paint          | super minimalistic           | :func:`onclick`       |
+|                | drawing program              |                       |
 +----------------+------------------------------+-----------------------+
-| peace          | 初歩的                       | turtle: 見た目と\     |
-|                |                              | アニメーション        |
+| peace          | elementary                   | turtle: appearance    |
+|                |                              | and animation         |
 +----------------+------------------------------+-----------------------+
-| penrose        | 凧と矢による非周期的\        | :func:`stamp`         |
-|                | タイリング                   |                       |
+| penrose        | aperiodic tiling with        | :func:`stamp`         |
+|                | kites and darts              |                       |
 +----------------+------------------------------+-----------------------+
-| planet_and_moon| 重力系のシミュレーション     | 合成形,               |
-|                |                              | :class:`Vec2D`        |
+| planet_and_moon| simulation of                | compound shapes,      |
+|                | gravitational system         | :class:`Vec2D`        |
 +----------------+------------------------------+-----------------------+
-| tree           | (図形的) 幅優先木            | :func:`clone`         |
-|                | (ジェネレータを使って)       |                       |
+| tree           | a (graphical) breadth        | :func:`clone`         |
+|                | first tree (using generators)|                       |
 +----------------+------------------------------+-----------------------+
-| wikipedia      | タートルグラフィックスにつ\  | :func:`clone`,        |
-|                | いての wikipedia の記事の例  | :func:`undo`          |
+| wikipedia      | a pattern from the wikipedia | :func:`clone`,        |
+|                | article on turtle graphics   | :func:`undo`          |
 +----------------+------------------------------+-----------------------+
-| yingyang       | もう一つの初歩的な例         | :func:`circle`        |
+| yingyang       | another elementary example   | :func:`circle`        |
 +----------------+------------------------------+-----------------------+
 
-楽しんでね!
+Have fun!
 
 .. doctest::
    :hide:

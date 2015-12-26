@@ -1,10 +1,10 @@
 
-:mod:`binascii` --- バイナリデータと ASCIIデータとの間での変換
-==============================================================
+:mod:`binascii` --- Convert between binary and ASCII
+====================================================
 
 .. module:: binascii
-   :synopsis: バイナリと各種 ASCII コード化バイナリ表現との間の\
-      変換を行うツール群。
+   :synopsis: Tools for converting between binary and various ASCII-encoded binary
+              representations.
 
 
 .. index::
@@ -12,115 +12,103 @@
    module: base64
    module: binhex
 
-:mod:`binascii` モジュールにはバイナリと ASCIIコード化された\
-バイナリ表現との間の変換を行うための多数のメソッドが含まれています。
-通常、これらの関数を直接使う必要はなく、 :mod:`uu` 、 :mod:`base64` や
-:mod:`binhex` といった、ラッパ(wrapper)モジュールを使うことになるでしょう。
-:mod:`binascii` モジュールは、高レベルなモジュールで利用される、高速\
-な C で書かれた低レベル関数を提供しています。
+The :mod:`binascii` module contains a number of methods to convert between
+binary and various ASCII-encoded binary representations. Normally, you will not
+use these functions directly but use wrapper modules like :mod:`uu`,
+:mod:`base64`, or :mod:`binhex` instead. The :mod:`binascii` module contains
+low-level functions written in C for greater speed that are used by the
+higher-level modules.
 
-:mod:`binascii` モジュールでは以下の関数を定義します:
+The :mod:`binascii` module defines the following functions:
 
 
 .. function:: a2b_uu(string)
 
-   uuencode された 1 行のデータをバイナリに変換し、変換後のバイナリ\
-   データを返します。最後の行を除いて、通常 1 行には(バイナリデータで) 45
-   バイトが含まれます。入力データの先頭には空白文字が連続していても\
-   かまいません。
+   Convert a single line of uuencoded data back to binary and return the binary
+   data. Lines normally contain 45 (binary) bytes, except for the last line. Line
+   data may be followed by whitespace.
 
 
 .. function:: b2a_uu(data)
 
-   バイナリデータを uuencode して 1 行の ASCII 文字列に変換します。
-   戻り値は変換後の 1 行の文字列で、改行を含みます。 *data* の長さは
-   45 バイト以下でなければなりません。
+   Convert binary data to a line of ASCII characters, the return value is the
+   converted line, including a newline char. The length of *data* should be at most
+   45.
 
 
 .. function:: a2b_base64(string)
 
-   base64 でエンコードされたデータのブロックをバイナリに変換し、\
-   変換後のバイナリデータを返します。一度に 1 行以上のデータを\
-   与えてもかまいません。
+   Convert a block of base64 data back to binary and return the binary data. More
+   than one line may be passed at a time.
 
 
 .. function:: b2a_base64(data)
 
-   バイナリデータを base64 でエンコードして 1 行の ASCII 文字列に\
-   変換します。戻り値は変換後の 1 行の文字列で、改行文字を含みます。
-   base64 標準を遵守するためには、 *data* の長さは 57 バイト以下で\
-   なくてはなりません。
+   Convert binary data to a line of ASCII characters in base64 coding. The return
+   value is the converted line, including a newline char. The length of *data*
+   should be at most 57 to adhere to the base64 standard.
 
 
 .. function:: a2b_qp(string[, header])
 
-   quoted-printable 形式のデータをバイナリに変換し、バイナリデータを\
-   返します。一度に 1 行以上のデータを渡すことができます。
-   オプション引数 *header* が与えられており、かつその値が真であれば、\
-   アンダースコアは空白文字にデコードされます。
+   Convert a block of quoted-printable data back to binary and return the binary
+   data. More than one line may be passed at a time. If the optional argument
+   *header* is present and true, underscores will be decoded as spaces.
 
 
 .. function:: b2a_qp(data[, quotetabs, istext, header])
 
-   バイナリデータを quoted-printable 形式でエンコードして 1 行から複数行の
-   ASCII 文字列に変換します。変換後の文字列を返します。
-   オプション引数 *quptetabs* が存在し、かつその値が真であれば、\
-   全てのタブおよび空白文字もエンコードされます。
-   オプション引数  *istext* が存在し、かつその値が真であれば、改行はエンコードされま\
-   せんが、行末の空白文字はエンコードされます。
-   オプション引数 *header* が存在し、かつその値が真である場合、空白文\
-   字はRFC1522にしたがってアンダースコアにエンコードされます。
-   オプション引数 *header* が存在し、かつその値が偽である場合、改行文字も同様に\
-   エンコードされます。
-   そうでない場合、復帰 (linefeed) 文字の変換によってバイナリデータ\
-   ストリームが破損してしまうかもしれません。
+   Convert binary data to a line(s) of ASCII characters in quoted-printable
+   encoding.  The return value is the converted line(s). If the optional argument
+   *quotetabs* is present and true, all tabs and spaces will be encoded.   If the
+   optional argument *istext* is present and true, newlines are not encoded but
+   trailing whitespace will be encoded. If the optional argument *header* is
+   present and true, spaces will be encoded as underscores per RFC1522. If the
+   optional argument *header* is present and false, newline characters will be
+   encoded as well; otherwise linefeed conversion might corrupt the binary data
+   stream.
 
 
 .. function:: a2b_hqx(string)
 
-   binhex4 形式の ASCII 文字列データを RLE 展開を行わないでバイナリに\
-   変換します。文字列はバイナリのバイトデータを完全に含むような長さか、\
-   または (binhex4 データの最後の部分の場合) 余白のビットがゼロになって\
-   いなければなりません。
+   Convert binhex4 formatted ASCII data to binary, without doing RLE-decompression.
+   The string should contain a complete number of binary bytes, or (in case of the
+   last portion of the binhex4 data) have the remaining bits zero.
 
 
 .. function:: rledecode_hqx(data)
 
-   *data* に対し、binhex4 標準に従って RLE 展開を行います。
-   このアルゴリズムでは、あるバイトの後ろに ``0x90`` がきた場合、\
-   そのバイトの反復を指示しており、さらにその後ろに反復カウントが\
-   続きます。カウントが ``0`` の場合 ``0x90`` 自体を示します。
-   このルーチンは入力データの末端における反復指定が不完全でない\
-   かぎり解凍されたデータを返しますが、不完全な場合、例外 :exc:`Incomplete`
-   が送出されます。
+   Perform RLE-decompression on the data, as per the binhex4 standard. The
+   algorithm uses ``0x90`` after a byte as a repeat indicator, followed by a count.
+   A count of ``0`` specifies a byte value of ``0x90``. The routine returns the
+   decompressed data, unless data input data ends in an orphaned repeat indicator,
+   in which case the :exc:`Incomplete` exception is raised.
 
 
 .. function:: rlecode_hqx(data)
 
-   binhex4 方式の RLE 圧縮を *data* に対して行い、その結果を\
-   返します。
+   Perform binhex4 style RLE-compression on *data* and return the result.
 
 
 .. function:: b2a_hqx(data)
 
-   バイナリを hexbin4 エンコードして ASCII 文字列に変換し、変換後の\
-   文字列を返します。引数の *data* はすでに RLE エンコードされて\
-   いなければならず、その長さは (最後のフラグメントを除いて) 3 で\
-   割り切れなければなりません。
+   Perform hexbin4 binary-to-ASCII translation and return the resulting string. The
+   argument should already be RLE-coded, and have a length divisible by 3 (except
+   possibly the last fragment).
 
 
 .. function:: crc_hqx(data, crc)
 
-   *data* の binhex4 CRC 値を計算します。初期値は *crc* で、計算\
-   結果を返します。
+   Compute the binhex4 crc value of *data*, starting with an initial *crc* and
+   returning the result.
 
 
 .. function:: crc32(data[, crc])
 
-   32 ビットチェックサムである CRC-32 を *data* に対して計算します。
-   初期値は *crc* です。これは ZIP ファイルのチェックサムと同じです。
-   このアルゴリズムはチェックサムアルゴリズムとして設計されたもので、\
-   一般的なハッシュアルゴリズムには向きません。以下のようにして使います::
+   Compute CRC-32, the 32-bit checksum of data, starting with an initial crc.  This
+   is consistent with the ZIP file checksum.  Since the algorithm is designed for
+   use as a checksum algorithm, it is not suitable for use as a general hash
+   algorithm.  Use as follows::
 
       print binascii.crc32("hello world")
       # Or, in two pieces:
@@ -129,62 +117,62 @@
       print 'crc32 = 0x%08x' % crc
 
 .. note::
-   全ての Python のバージョン、全てのプラットフォームに渡って同じ数値を\
-   生成しようとするならば、crc32(data) & 0xffffffff を使って下さい。
-   チェックサムをバイナリ形式そのままでだけ扱うならばこのような細工は必要ありません。
-   返値は符号に関係なく正しい32ビットのバイナリ表現だからです。
+   To generate the same numeric value across all Python versions and
+   platforms use crc32(data) & 0xffffffff.  If you are only using
+   the checksum in packed binary format this is not necessary as the
+   return value is the correct 32bit binary representation
+   regardless of sign.
 
 .. versionchanged:: 2.6
-   返値はどのプラットフォームでも [-2**31, 2**31-1] の範囲の値です。
-   過去においては返値はあるプラットフォームでは符号付きでまた別のところでは\
-   符号無しでした。3.0 における振る舞いに合わせるためには & 0xffffffff
-   を施して下さい。
+   The return value is in the range [-2**31, 2**31-1]
+   regardless of platform.  In the past the value would be signed on
+   some platforms and unsigned on others.  Use & 0xffffffff on the
+   value if you want it to match Python 3 behavior.
 
 .. versionchanged:: 3.0
-   返値はどのプラットフォームでも  [0, 2**32-1] の範囲の符号無しです。
+   The return value is unsigned and in the range [0, 2**32-1]
+   regardless of platform.
 
 
 .. function:: b2a_hex(data)
               hexlify(data)
 
-   バイナリデータ *data* の16進数表現を返します。 *data* の各\
-   バイトは対応する 2 桁の16進数表現に変換されます。従って、変換結果の\
-   文字列は *data* の 2 倍の長さになります。
+   Return the hexadecimal representation of the binary *data*.  Every byte of
+   *data* is converted into the corresponding 2-digit hex representation.  The
+   resulting string is therefore twice as long as the length of *data*.
 
 
 .. function:: a2b_hex(hexstr)
               unhexlify(hexstr)
 
-   16 進数表記の文字列 *hexstr* の表すバイナリデータを返します。
-   この関数は :func:`b2a_hex` の逆です。 *hexstr* は
-   16進数字 (大文字でも小文字でもかまいません) を偶数個含んでいなければ\
-   なりません。そうでないばあい、例外 :exc:`TypeError` が送出\
-   されます。
+   Return the binary data represented by the hexadecimal string *hexstr*.  This
+   function is the inverse of :func:`b2a_hex`. *hexstr* must contain an even number
+   of hexadecimal digits (which can be upper or lower case), otherwise a
+   :exc:`TypeError` is raised.
 
 
 .. exception:: Error
 
-   エラーが発生した際に送出される例外です。通常はプログラムのエラーです。
+   Exception raised on errors. These are usually programming errors.
 
 
 .. exception:: Incomplete
 
-   変換するデータが不完全な場合に送出される例外です。通常はプログラムの\
-   エラーではなく、多少追加読み込みを行って再度変換\
-   を試みることで対処できます。
+   Exception raised on incomplete data. These are usually not programming errors,
+   but may be handled by reading a little more data and trying again.
 
 
 .. seealso::
 
-   :mod:`base64` モジュール
-      MIME 電子メールメッセージで使われる base64 エンコードのサポート。
+   Module :mod:`base64`
+      Support for base64 encoding used in MIME email messages.
 
-   :mod:`binhex` モジュール
-      Macintosh で使われる binhex フォーマットのサポート。
+   Module :mod:`binhex`
+      Support for the binhex format used on the Macintosh.
 
-   :mod:`uu` モジュール
-      Unixで使われる UU エンコードのサポート。
+   Module :mod:`uu`
+      Support for UU encoding used on Unix.
 
-   :mod:`quopri` モジュール
-      MIME 電子メールメッセージで使われる quoted-printable エンコードのサポート。
+   Module :mod:`quopri`
+      Support for quoted-printable encoding used in MIME email messages.
 

@@ -1,14 +1,15 @@
 
 .. _language:
 
-******************
-Python言語サービス
-******************
+************************
+Python Language Services
+************************
 
-PythonにはPython言語を使って作業するときに役に立つモジュールがたくさん提供されています。
-これらのモジュールはトークンの切り出し、パース、構文解析、バイトコードのディスアセンブリおよびその他のさまざまな機能をサポートしています。
+Python provides a number of modules to assist in working with the Python
+language.  These modules support tokenizing, parsing, syntax analysis, bytecode
+disassembly, and various other facilities.
 
-これらのモジュールには、次のものが含まれています:
+These modules include:
 
 
 .. toctree::

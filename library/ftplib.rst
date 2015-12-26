@@ -1,71 +1,87 @@
-:mod:`ftplib` --- FTPプロトコルクライアント
-===========================================
+:mod:`ftplib` --- FTP protocol client
+=====================================
 
 .. module:: ftplib
-   :synopsis: FTPプロトコルクライアント(ソケットを必要とします)。
+   :synopsis: FTP protocol client (requires sockets).
 
 
 .. index::
    pair: FTP; protocol
    single: FTP; ftplib (standard module)
 
-このモジュールでは :class:`FTP` クラスと、それに関連するいくつかの項目を定義しています。
-:class:`FTP` クラスは、FTPプロトコルのクライアント側の機能を備えています。
-このクラスを使うとFTPのいろいろな機能の自動化、例えば他のFTPサーバのミラーリングといったことを実行するPythonプログラムを書くことができます。
-また、 :mod:`urllib` モジュールもFTPを使うURLを操作するのにこのクラスを使っています。 FTP (File Transfer
-Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下さい。
+**Source code:** :source:`Lib/ftplib.py`
 
-:mod:`ftplib` モジュールを使ったサンプルを以下に示します::
+--------------
+
+This module defines the class :class:`FTP` and a few related items. The
+:class:`FTP` class implements the client side of the FTP protocol.  You can use
+this to write Python programs that perform a variety of automated FTP jobs, such
+as mirroring other ftp servers.  It is also used by the module :mod:`urllib` to
+handle URLs that use FTP.  For more information on FTP (File Transfer Protocol),
+see Internet :rfc:`959`.
+
+Here's a sample session using the :mod:`ftplib` module::
 
    >>> from ftplib import FTP
-   >>> ftp = FTP('ftp.cwi.nl')   # ホストのデフォルトポートへ接続
-   >>> ftp.login()               # ユーザ名 anonymous、パスワード anonyumous@
-   >>> ftp.retrlines('LIST')     # ディレクトリの内容をリストアップ
-   total 24418
-   drwxrwsr-x   5 ftp-usr  pdmaint     1536 Mar 20 09:48 .
-   dr-xr-srwt 105 ftp-usr  pdmaint     1536 Mar 21 14:32 ..
-   -rw-r--r--   1 ftp-usr  pdmaint     5305 Mar 20 09:48 INDEX
-    .
-    .
-    .
+   >>> ftp = FTP('ftp.debian.org')     # connect to host, default port
+   >>> ftp.login()                     # user anonymous, passwd anonymous@
+   '230 Login successful.'
+   >>> ftp.cwd('debian')               # change into "debian" directory
+   >>> ftp.retrlines('LIST')           # list directory contents
+   -rw-rw-r--    1 1176     1176         1063 Jun 15 10:18 README
+   ...
+   drwxr-sr-x    5 1176     1176         4096 Dec 19  2000 pool
+   drwxr-sr-x    4 1176     1176         4096 Nov 17  2008 project
+   drwxr-xr-x    3 1176     1176         4096 Oct 10  2012 tools
+   '226 Directory send OK.'
    >>> ftp.retrbinary('RETR README', open('README', 'wb').write)
    '226 Transfer complete.'
    >>> ftp.quit()
 
 
-このモジュールは以下の項目を定義しています。
+The module defines the following items:
 
 .. class:: FTP([host[, user[, passwd[, acct[, timeout]]]]])
 
-   :class:`FTP` クラスの新しいインスタンスを返します。 *host* が与えられると、 ``connect(host)`` メソッドが実行されます。
-   *user* が与えられると、さらに ``login(user, passwd, acct)`` メソッドが実行されます（この *passwd* と *acct* は指定され
-   なければデフォルトでは空文字列です）。
-
-   オプションの *timeout* 引数は、コネクションの接続時など、ブロックする操作におけるタイムアウト時間を秒数で指定します。
-   (指定されなかった場合、グローバルのデフォルトタイムアウト設定が利用されます。)
+   Return a new instance of the :class:`FTP` class.  When *host* is given, the
+   method call ``connect(host)`` is made.  When *user* is given, additionally
+   the method call ``login(user, passwd, acct)`` is made (where *passwd* and
+   *acct* default to the empty string when not given).  The optional *timeout*
+   parameter specifies a timeout in seconds for blocking operations like the
+   connection attempt (if is not specified, the global default timeout setting
+   will be used).
 
    .. versionchanged:: 2.6
-      *timeout* が追加されました。
+      *timeout* was added.
 
 
-.. class:: FTP_TLS([host[, user[, passwd[, acct[, keyfile[, certfile[, timeout]]]]]]])
+.. class:: FTP_TLS([host[, user[, passwd[, acct[, keyfile[, certfile[, context[, timeout]]]]]]]])
 
-   :rfc:`4217` に記述されている TLS サポートを FTP に加えた :class:`FTP` の
-   サブクラスです。認証の前に FTP コントロール接続を暗示的にセキュアにし、
-   通常通りに port 21 に接続します。データ接続をセキュアにするには、ユーザが
-   :meth:`prot_p` メソッドを呼び出してそれを明示的に要求しなければなりません。
-   *keyfile* と *certfile* は省略可できます -- これらは、SSL 接続のための、
-   PEM フォーマットの秘密鍵と証明書チェーンファイル名を含むことができます。
+   A :class:`FTP` subclass which adds TLS support to FTP as described in
+   :rfc:`4217`.
+   Connect as usual to port 21 implicitly securing the FTP control connection
+   before authenticating. Securing the data connection requires the user to
+   explicitly ask for it by calling the :meth:`prot_p` method.  *context*
+   is a :class:`ssl.SSLContext` object which allows bundling SSL configuration
+   options, certificates and private keys into a single (potentially
+   long-lived) structure.  Please read :ref:`ssl-security` for best practices.
+
+   *keyfile* and *certfile* are a legacy alternative to *context* -- they
+   can point to PEM-formatted private key and certificate chain files
+   (respectively) for the SSL connection.
 
    .. versionadded:: 2.7
 
-   :class:`FTP_TLS` クラスを使ったサンプルセッションはこちらです:
+   .. versionchanged:: 2.7.10
+      The *context* parameter was added.
+
+   Here's a sample session using the :class:`FTP_TLS` class:
 
    >>> from ftplib import FTP_TLS
    >>> ftps = FTP_TLS('ftp.python.org')
-   >>> ftps.login()           # 制御チャネルをセキュアにする前に匿名でログインする
-   >>> ftps.prot_p()          # セキュアなデータ接続に移行する
-   >>> ftps.retrlines('LIST') # ディレクトリの内容をセキュアに列挙する
+   >>> ftps.login()           # login anonymously before securing control channel
+   >>> ftps.prot_p()          # switch to secure data connection
+   >>> ftps.retrlines('LIST') # list directory content securely
    total 9
    drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 .
    drwxr-xr-x   8 root     wheel        1024 Jan  3  1994 ..
@@ -83,287 +99,310 @@ Protocol)についての詳しい情報はInternet :rfc:`959` を参照して下
 
 .. exception:: error_reply
 
-   サーバから想定外の応答があった時に発生する例外。
+   Exception raised when an unexpected reply is received from the server.
 
 
 .. exception:: error_temp
 
-   一時的エラーを表すエラーコード(400--499の範囲の応答コード)を
-   受け取った時に発生する例外。
+   Exception raised when an error code signifying a temporary error (response
+   codes in the range 400--499) is received.
 
 
 .. exception:: error_perm
 
-   永久エラーを表すエラーコード(500--599の範囲の応答コード)を
-   受け取った時に発生する例外。
+   Exception raised when an error code signifying a permanent error (response
+   codes in the range 500--599) is received.
 
 
 .. exception:: error_proto
 
-   File Transfer Protocol の応答仕様に適合しない、すなわち1--5の数字で
-   始まらない応答コードをサーバから受け取った時に発生する例外。
+   Exception raised when a reply is received from the server that does not fit
+   the response specifications of the File Transfer Protocol, i.e. begin with a
+   digit in the range 1--5.
 
 
 .. data:: all_errors
 
-   :class:`FTP` インスタンスのメソッド実行時、FTP接続で（プログラミングの
-   エラーと考えられるメソッドの実行によって）発生する全ての例外（タプル形式）。
-   この例外には以上の４つのエラーはもちろん、 :exc:`socket.error` と
-   :exc:`IOError` も含まれます。
+   The set of all exceptions (as a tuple) that methods of :class:`FTP`
+   instances may raise as a result of problems with the FTP connection (as
+   opposed to programming errors made by the caller).  This set includes the
+   four exceptions listed above as well as :exc:`socket.error` and
+   :exc:`IOError`.
 
 
 .. seealso::
 
    Module :mod:`netrc`
-      :file:`.netrc` ファイルフォーマットのパーザ。 :file:`.netrc` ファイルは、
-      FTPクライアントがユーザにプロンプトを出す前に、ユーザ認証情報を
-      ロードするのによく使われます。
+      Parser for the :file:`.netrc` file format.  The file :file:`.netrc` is
+      typically used by FTP clients to load user authentication information
+      before prompting the user.
 
    .. index:: single: ftpmirror.py
 
-   Pythonのソースディストリビューションの :file:`Tools/scripts/ftpmi rror.py` ファイルは、FTPサイトあるいはその一部をミ
-   ラーリングするスクリプトで、 :mod:`ftplib` モジュールを使っています。このモジュールを適用した応用例として使うことができます。
+   The file :file:`Tools/scripts/ftpmirror.py` in the Python source distribution is
+   a script that can mirror FTP sites, or portions thereof, using the :mod:`ftplib`
+   module. It can be used as an extended example that applies this module.
 
 
 .. _ftp-objects:
 
-FTP オブジェクト
-----------------
+FTP Objects
+-----------
 
-いくつかのコマンドは２つのタイプについて実行します：１つはテキストファイルで、もう１つはバイナリファイルを扱います。
-これらのメソッドのテキストバージョンでは ``lines`` 、バイナリバージョンでは ``binary`` の語がメソッド名の終わりについています。
+Several methods are available in two flavors: one for handling text files and
+another for binary files.  These are named for the command which is used
+followed by ``lines`` for the text version or ``binary`` for the binary version.
 
-:class:`FTP` インスタンスには以下のメソッドがあります：
+:class:`FTP` instances have the following methods:
 
 
 .. method:: FTP.set_debuglevel(level)
 
-   インスタンスのデバッグレベルを設定します。この設定によってデバッグ時に出力される量を調節します。デフォルトは ``0`` で、何も出力されません。
-   ``1`` なら、一般的に１つのコマンドあたり１行の適当な量のデバッグ出力を行います。
-   ``2`` 以上なら、コントロール接続で受信した各行を出力して、最大のデバッグ出力をします。
+   Set the instance's debugging level.  This controls the amount of debugging
+   output printed.  The default, ``0``, produces no debugging output.  A value of
+   ``1`` produces a moderate amount of debugging output, generally a single line
+   per request.  A value of ``2`` or higher produces the maximum amount of
+   debugging output, logging each line sent and received on the control connection.
 
 
 .. method:: FTP.connect(host[, port[, timeout]])
 
-   指定されたホストとポートに接続します。ポート番号のデフォルト値はFTPプロトコルの仕様で定められた ``21`` です。
-   他のポート番号を指定する必要はめったにありません。この関数はひとつのインスタンスに対して一度だけ実行すべきです；
-   インスタンスが作られた時にホスト名が与えられていたら、呼び出すべきではありません。これ以外の他の全てのメソッドは接続された後で実行可能となります。
+   Connect to the given host and port.  The default port number is ``21``, as
+   specified by the FTP protocol specification.  It is rarely needed to specify a
+   different port number.  This function should be called only once for each
+   instance; it should not be called at all if a host was given when the instance
+   was created.  All other methods can only be used after a connection has been
+   made.
 
    The optional *timeout* parameter specifies a timeout in seconds for the
    connection attempt. If no *timeout* is passed, the global default timeout
    setting will be used.
 
-   オプションの *timeout* 引数は、コネクションの接続におけるタイムアウト時間を秒数で指定します。
-   *timeout* が渡されなかった場合、グローバルのデフォルトタイムアウト設定が利用されます。
-
    .. versionchanged:: 2.6
-      *timeout* が追加されました
+      *timeout* was added.
+
 
 .. method:: FTP.getwelcome()
 
-   接続して最初にサーバから送られてくるウェルカムメッセージを返します。（このメッセージには、ユーザにとって適切な注意書きやヘルプ情報が含まれる
-   ことがあります。）
+   Return the welcome message sent by the server in reply to the initial
+   connection.  (This message sometimes contains disclaimers or help information
+   that may be relevant to the user.)
 
 
 .. method:: FTP.login([user[, passwd[, acct]]])
 
-   与えられた *user* でログインします。 *passwd* と *acct* のパラメータは
-   省略可能で、デフォルトでは空文字列です。
-   もし *user* が指定されないなら、デフォルトで ``'anonymous'`` になります。
-   もし *user* が ``'anonymous'`` なら、デフォルトの *passwd* は
-   ``'anonymous@'`` になります。
-   この関数は各インスタンスについて一度だけ、接続が確立した後に呼び出さなければ
-   なりません。
-   インスタンスが作られた時にホスト名とユーザ名が与えられていたら、この
-   メソッドを実行すべきではありません。
-   ほとんどのFTPコマンドはクライアントがログインした後に実行可能になります。
-   *acct* 引数は "accounting information" を提供します。ほとんどのシステムは
-   これを実装していません。
+   Log in as the given *user*.  The *passwd* and *acct* parameters are optional and
+   default to the empty string.  If no *user* is specified, it defaults to
+   ``'anonymous'``.  If *user* is ``'anonymous'``, the default *passwd* is
+   ``'anonymous@'``.  This function should be called only once for each instance,
+   after a connection has been established; it should not be called at all if a
+   host and user were given when the instance was created.  Most FTP commands are
+   only allowed after the client has logged in.  The *acct* parameter supplies
+   "accounting information"; few systems implement this.
 
 
 .. method:: FTP.abort()
 
-   実行中のファイル転送を中止します。これはいつも機能するわけではありませんが、やってみる価値はあります。
+   Abort a file transfer that is in progress.  Using this does not always work, but
+   it's worth a try.
 
 
 .. method:: FTP.sendcmd(command)
 
-   シンプルなコマンド文字列をサーバに送信して、受信した文字列を返します。
+   Send a simple command string to the server and return the response string.
 
 
 .. method:: FTP.voidcmd(command)
 
-   シンプルなコマンド文字列をサーバに送信して、その応答を扱います。応答コードが
-   成功に関係するもの(200--299の範囲にあるコード)なら何も返しません。
-   それ以外は :exc:`error_reply` を発生します。
+   Send a simple command string to the server and handle the response.  Return
+   nothing if a response code corresponding to success (codes in the range
+   200--299) is received.  Raise :exc:`error_reply` otherwise.
 
 
 .. method:: FTP.retrbinary(command, callback[, maxblocksize[, rest]])
 
-   バイナリ転送モードでファイルを受信します。 *command* は適切な ``RETR`` コマンド： ``'RETR filename'`` でなければなりません。
-   関数 *callback* は、受信したデータブロックのそれぞれに対して、データブロックを１つの文字列の引数として呼び出されます。
-   省略可能な引数 *maxblocksize* は、実際の転送を行うのに作られた低レベルのソケットオブジェクトから読み込む最大のチャンクサイズを指定します（これ
-   は *callback* に与えられるデータブロックの最大サイズにもなります）。妥当なデフォルト値が設定されます。
-   *rest* は、 :meth:`transfercmd` メソッドと同じものです。
+   Retrieve a file in binary transfer mode.  *command* should be an appropriate
+   ``RETR`` command: ``'RETR filename'``. The *callback* function is called for
+   each block of data received, with a single string argument giving the data
+   block. The optional *maxblocksize* argument specifies the maximum chunk size to
+   read on the low-level socket object created to do the actual transfer (which
+   will also be the largest size of the data blocks passed to *callback*).  A
+   reasonable default is chosen. *rest* means the same thing as in the
+   :meth:`transfercmd` method.
 
 
 .. method:: FTP.retrlines(command[, callback])
 
-   ASCII転送モードでファイルとディレクトリのリストを受信します。
-   *command* は、適切な ``RETR`` コマンド(:meth:`retrbinary` を参照)あるいは
-   ``LIST``, ``NLST``, ``MLSD`` のようなコマンド(通常は文字列 ``'LIST'``)で
-   なければなりません。
-   ``LIST`` は、ファイルのリストとそれらのファイルに関する情報を受信します。
-   ``NLST`` は、ファイル名のリストを受信します。サーバによっては、 ``MLSD`` は
-   機械で読めるリストとそれらのファイルに関する情報を受信します。
-   関数 *callback* は末尾のCRLFを取り除いた各行を引数にして実行されます。
-   デフォルトでは *callback* は ``sys.stdout`` に各行を表示します。
+   Retrieve a file or directory listing in ASCII transfer mode.  *command*
+   should be an appropriate ``RETR`` command (see :meth:`retrbinary`) or a
+   command such as ``LIST``, ``NLST`` or ``MLSD`` (usually just the string
+   ``'LIST'``).  ``LIST`` retrieves a list of files and information about those files.
+   ``NLST`` retrieves a list of file names.  On some servers, ``MLSD`` retrieves
+   a machine readable list of files and information about those files.  The *callback*
+   function is called for each line with a string argument containing the line with
+   the trailing CRLF stripped.  The default *callback* prints the line to ``sys.stdout``.
 
 
 .. method:: FTP.set_pasv(boolean)
 
-   *boolean* がtrueなら"パッシブモード"をオンにし、そうでないならパッシブモードをオフにします。（Python
-   2.0以前ではデフォルトでパッシブモードはオフにされていましたが、 Python 2.1以後ではデフォルトでオンになっています。）
+   Enable "passive" mode if *boolean* is true, other disable passive mode.  (In
+   Python 2.0 and before, passive mode was off by default; in Python 2.1 and later,
+   it is on by default.)
 
 
 .. method:: FTP.storbinary(command, file[, blocksize, callback, rest])
 
-   バイナリ転送モードでファイルを転送します。 *command* は適切な ``STOR`` コマンド： ``"STOR filename"`` でなければなりません。
-   *file* は開かれたファイルオブジェクトで、 :meth:`read` メソッドで EOFまで読み込まれ、ブロックサイズ *blocksize* でデータが転送されま
-   す。引数 *blocksize* のデフォルト値は8192です。
-   *callback* はオプションの引数で、引数を1つとる呼び出し可能オブジェクトを渡します。
-   各データブロックが送信された後に、そのブロックを引数にして呼び出されます。
-   *rest* は、 :meth:`transfercmd` メソッドにあるものと同じ意味です。
+   Store a file in binary transfer mode.  *command* should be an appropriate
+   ``STOR`` command: ``"STOR filename"``. *file* is an open file object which is
+   read until EOF using its :meth:`read` method in blocks of size *blocksize* to
+   provide the data to be stored.  The *blocksize* argument defaults to 8192.
+   *callback* is an optional single parameter callable that is called
+   on each block of data after it is sent. *rest* means the same thing as in
+   the :meth:`transfercmd` method.
 
    .. versionchanged:: 2.1
-      *blocksize* のデフォルト値が追加されました.
+      default for *blocksize* added.
 
    .. versionchanged:: 2.6
-      *callback* 引数が追加されました。
+      *callback* parameter added.
 
    .. versionchanged:: 2.7
-      *rest* パラメタが追加されました。
+      *rest* parameter added.
 
 .. method:: FTP.storlines(command, file[, callback])
 
-   ASCII転送モードでファイルを転送します。
-   *command* は適切な ``STOR`` コマンドでなければなりません
-   (:meth:`storbinary` を参照)。
-   *file* は開かれたファイルオブジェクトで、 :meth:`readline` メソッド
-   でEOFまで読み込まれ、各行がデータが転送されます。
-   *callback* はオプションの引数で、引数を1つとる呼び出し可能オブジェクトを渡します。
-   各行が送信された後に、その行数を引数にして呼び出されます。
+   Store a file in ASCII transfer mode.  *command* should be an appropriate
+   ``STOR`` command (see :meth:`storbinary`).  Lines are read until EOF from the
+   open file object *file* using its :meth:`~file.readline` method to provide
+   the data to be stored.  *callback* is an optional single parameter callable
+   that is called on each line after it is sent.
 
    .. versionchanged:: 2.6
-      *callback* 引数が追加されました。
+      *callback* parameter added.
+
 
 .. method:: FTP.transfercmd(cmd[, rest])
 
-   データ接続中に転送を初期化します。もし転送中なら、 ``EPRT`` あるいは ``PORT`` コマンドと、 *cmd* で指定したコマンドを送信し、接続を続けます。
-   サーバがパッシブなら、 ``EPSV`` あるいは ``PASV`` コマンドを送信して接続し、転送コマンドを開始します。
-   どちらの場合も、接続のためのソケットを返します。
+   Initiate a transfer over the data connection.  If the transfer is active, send a
+   ``EPRT`` or  ``PORT`` command and the transfer command specified by *cmd*, and
+   accept the connection.  If the server is passive, send a ``EPSV`` or ``PASV``
+   command, connect to it, and start the transfer command.  Either way, return the
+   socket for the connection.
 
-   省略可能な *rest* が与えられたら、 ``REST`` コマンドがサーバに送信され、 *rest* を引数として与えます。
-   *rest* は普通、要求したファイルのバイトオフセット値で、最初のバイトをとばして指定したオフセット値からファイルのバイト転送を再開するよう伝えます。
-   しかし、RFC 959では *rest* が印字可能なASCIIコード33から126の範囲の文字列からなることを要求していることに注意して下さい。
-   したがって、 :meth:`transfercmd` メソッドは *rest* を文字列に変換しますが、文字列の内容についてチェックしません。
-   もし ``REST`` コマンドをサーバが認識しないなら、例外 :exc:`error_re ply` が発生します。
-   この例外が発生したら、引数 *rest* なしに :meth:`transfercmd` を実行します。
+   If optional *rest* is given, a ``REST`` command is sent to the server, passing
+   *rest* as an argument.  *rest* is usually a byte offset into the requested file,
+   telling the server to restart sending the file's bytes at the requested offset,
+   skipping over the initial bytes.  Note however that RFC 959 requires only that
+   *rest* be a string containing characters in the printable range from ASCII code
+   33 to ASCII code 126.  The :meth:`transfercmd` method, therefore, converts
+   *rest* to a string, but no check is performed on the string's contents.  If the
+   server does not recognize the ``REST`` command, an :exc:`error_reply` exception
+   will be raised.  If this happens, simply call :meth:`transfercmd` without a
+   *rest* argument.
 
 
 .. method:: FTP.ntransfercmd(cmd[, rest])
 
-   :meth:`transfercmd` と同様ですが、データと予想されるサイズとのタプルを返します。
-   もしサイズが計算できないなら、サイズの代わりに ``None`` が返されます。 *cmd* と *rest* は :meth:`transfercmd` のものと同じです。
+   Like :meth:`transfercmd`, but returns a tuple of the data connection and the
+   expected size of the data.  If the expected size could not be computed, ``None``
+   will be returned as the expected size.  *cmd* and *rest* means the same thing as
+   in :meth:`transfercmd`.
 
 
 .. method:: FTP.nlst(argument[, ...])
 
-   ``NLST`` コマンドで返されるファイル名のリストを返します。省略可能な *argument* は、リストアップするディレクトリです（デフォルト
-   ではサーバのカレントディレクトリです）。 ``NLST`` コマンドに非標準である複数の引数を渡すことができます。
+   Return a list of file names as returned by the ``NLST`` command.  The
+   optional *argument* is a directory to list (default is the current server
+   directory).  Multiple arguments can be used to pass non-standard options to
+   the ``NLST`` command.
 
 
 .. method:: FTP.dir(argument[, ...])
 
-   ``LIST`` コマンドで返されるディレクトリ内のリストを作り、標準出力へ出力します。
-   省略可能な *argument* は、リストアップするディレクトリです（デフォルトではサーバのカレントディレクトリです）。
-   ``LIST`` コマンドに非標準である複数の引数を渡すことができます。
-   もし最後の引数が関数なら、 :meth:`retrlines` のように *callback* とし
-   て使われます；デフォルトでは ``sys.stdout`` に印字します。このメソッドは ``None`` を返します。
+   Produce a directory listing as returned by the ``LIST`` command, printing it to
+   standard output.  The optional *argument* is a directory to list (default is the
+   current server directory).  Multiple arguments can be used to pass non-standard
+   options to the ``LIST`` command.  If the last argument is a function, it is used
+   as a *callback* function as for :meth:`retrlines`; the default prints to
+   ``sys.stdout``.  This method returns ``None``.
 
 
 .. method:: FTP.rename(fromname, toname)
 
-   サーバ上のファイルのファイル名 *fromname* を *toname* へ変更します。
+   Rename file *fromname* on the server to *toname*.
 
 
 .. method:: FTP.delete(filename)
 
-   サーバからファイル *filename* を削除します。成功したら応答のテキストを返し、そうでないならパーミッションエラーでは
-   :exc:`error_perm` を、他のエラーでは :exc:`error_reply` を返します。
+   Remove the file named *filename* from the server.  If successful, returns the
+   text of the response, otherwise raises :exc:`error_perm` on permission errors or
+   :exc:`error_reply` on other errors.
 
 
 .. method:: FTP.cwd(pathname)
 
-   サーバのカレントディレクトリを設定します。
+   Set the current directory on the server.
 
 
 .. method:: FTP.mkd(pathname)
 
-   サーバ上に新たにディレクトリを作ります。
+   Create a new directory on the server.
 
 
 .. method:: FTP.pwd()
 
-   サーバ上のカレントディレクトリのパスを返します。
+   Return the pathname of the current directory on the server.
 
 
 .. method:: FTP.rmd(dirname)
 
-   サーバ上のディレクトリ *dirname* を削除します。
+   Remove the directory named *dirname* on the server.
 
 
 .. method:: FTP.size(filename)
 
-   サーバ上のファイル *filename* のサイズを尋ねます。成功したらファイルサイズが整数で返され、そうでないなら ``None`` が返されます。
-   ``SIZE`` コマンドは標準化されていませんが、多くの普通のサーバで実装されていることに注意して下さい。
+   Request the size of the file named *filename* on the server.  On success, the
+   size of the file is returned as an integer, otherwise ``None`` is returned.
+   Note that the ``SIZE`` command is not  standardized, but is supported by many
+   common server implementations.
 
 
 .. method:: FTP.quit()
 
-   サーバに ``QUIT`` コマンドを送信し、接続を閉じます。これは接続を閉じるのに"礼儀正しい"方法ですが、 ``QUIT`` コマンドに反
-   応してサーバの例外が発生するかもしれません。この例外は、 :meth:`close` メソッドによって :class:`FTP` インスタンスに対
-   するその後のコマンド使用が不可になっていることを示しています（下記参照）。
+   Send a ``QUIT`` command to the server and close the connection. This is the
+   "polite" way to close a connection, but it may raise an exception if the server
+   responds with an error to the ``QUIT`` command.  This implies a call to the
+   :meth:`close` method which renders the :class:`FTP` instance useless for
+   subsequent calls (see below).
 
 
 .. method:: FTP.close()
 
-   接続を一方的に閉じます。既に閉じた接続に対して実行すべきではありません（例えば :meth:`quit` を呼び出して成功した後など）。
-   この実行の後、 :class:`FTP` インスタンスはもう使用すべきではありません（ :meth:`close` あるいは :meth:`quit` を呼び出した後で、
-   :meth:`login` メソッドをもう一度実行して再び接続を開くことはできません）。
+   Close the connection unilaterally.  This should not be applied to an already
+   closed connection such as after a successful call to :meth:`~FTP.quit`.
+   After this call the :class:`FTP` instance should not be used any more (after
+   a call to :meth:`close` or :meth:`~FTP.quit` you cannot reopen the
+   connection by issuing another :meth:`login` method).
 
 
-FTP_TLS オブジェクト
---------------------
+FTP_TLS Objects
+---------------
 
-:class:`FTP_TLS` クラスは :class:`FTP` を継承し、さらにオブジェクトを
-定義します。
+:class:`FTP_TLS` class inherits from :class:`FTP`, defining these additional objects:
 
 .. attribute:: FTP_TLS.ssl_version
 
-   使用する SSL のバージョン (デフォルトは :attr:`ssl.PROTOCOL_SSLv23`) です。
+   The SSL version to use (defaults to :attr:`ssl.PROTOCOL_SSLv23`).
 
 .. method:: FTP_TLS.auth()
 
-   :meth:`ssl_version` 属性で指定されたものに従って、
-   TLS または SSL を使い、セキュアコントロール接続をセットアップします。
+   Set up secure control connection by using TLS or SSL, depending on what
+   specified in :meth:`ssl_version` attribute.
 
 .. method:: FTP_TLS.prot_p()
 
-   セキュアデータ接続をセットアップします。
+   Set up secure data connection.
 
 .. method:: FTP_TLS.prot_c()
 
-   平文データ接続をセットアップします。
-
-
+   Set up clear text data connection.

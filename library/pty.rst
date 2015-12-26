@@ -1,46 +1,48 @@
 
-:mod:`pty` --- 擬似端末ユーティリティ
-=====================================
+:mod:`pty` --- Pseudo-terminal utilities
+========================================
 
 .. module:: pty
    :platform: Linux
-   :synopsis: Linux用の擬似端末を制御する
+   :synopsis: Pseudo-Terminal Handling for Linux.
 .. moduleauthor:: Steen Lumholt
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
-:mod:`pty` モジュールは擬似端末(他のプロセスを実行してその制御をしている端末を\
-プログラムで読み書きする)を制御する操作を定義しています。
+The :mod:`pty` module defines operations for handling the pseudo-terminal
+concept: starting another process and being able to write to and read from its
+controlling terminal programmatically.
 
-擬似端末の制御はプラットフォームに強く依存するので、Linux用のコード\
-しか存在していません。(Linux用のコードは他のプラットフォームでも動作するよう\
-に作られていますがテストされていません。)
+Because pseudo-terminal handling is highly platform dependent, there is code to
+do it only for Linux. (The Linux code is supposed to work on other platforms,
+but hasn't been tested yet.)
 
-:mod:`pty` モジュールでは以下の関数を定義しています:
+The :mod:`pty` module defines the following functions:
 
 
 .. function:: fork()
 
-   forkします。子プロセスの制御端末を擬似端末に接続します。
-   返り値は ``(pid, fd)`` です。子プロセスは *pid* として0、
-   *fd* として *invalid* をそれぞれ受けとります。
-   親プロセスは *pid* として子プロセスのPID、 *fd* として子プロセスの制御端末
-   (子プロセスの標準入出力に接続されている)のファイルディスクリプタを受けとります。
+   Fork. Connect the child's controlling terminal to a pseudo-terminal. Return
+   value is ``(pid, fd)``. Note that the child  gets *pid* 0, and the *fd* is
+   *invalid*. The parent's return value is the *pid* of the child, and *fd* is a
+   file descriptor connected to the child's controlling terminal (and also to the
+   child's standard input and output).
 
 
 .. function:: openpty()
 
-   新しい擬似端末のペアを開きます。利用できるなら :func:`os.openpty` を使い、
-   利用できなければ一般的なUnixシステム用のエミュレーションコードを使います。
-   マスター、スレーブそれぞれのためのファイルディスクリプタ、
-   ``(master, slave)`` のタプルを返します。
+   Open a new pseudo-terminal pair, using :func:`os.openpty` if possible, or
+   emulation code for generic Unix systems. Return a pair of file descriptors
+   ``(master, slave)``, for the master and the slave end, respectively.
 
 
 .. function:: spawn(argv[, master_read[, stdin_read]])
 
-   プロセスを生成して制御端末を現在のプロセスの標準入出力に接続します。
-   これは制御端末を読もうとするプログラムをごまかすために利用されます。
+   Spawn a process, and connect its controlling terminal with the current
+   process's standard io. This is often used to baffle programs which insist on
+   reading from the controlling terminal.
 
-   *master_read* と *stdin_read* にはファイルディスクリプタから読み込む
-   関数を指定してください。デフォルトでは呼ばれるたびに1024バイトずつ\
-   読み込もうとします。
+   The functions *master_read* and *stdin_read* should be functions which read from
+   a file descriptor. The defaults try to read 1024 bytes each time they are
+   called.
+

@@ -1,25 +1,28 @@
 
-:mod:`md5` --- MD5 メッセージダイジェストアルゴリズム
-=====================================================
+:mod:`md5` --- MD5 message digest algorithm
+===========================================
 
 .. module:: md5
-   :synopsis: RSA の MD5 メッセージダイジェストアルゴリズム
+   :synopsis: RSA's MD5 message digest algorithm.
    :deprecated:
 
 
 .. deprecated:: 2.5
-   代わりにモジュール :mod:`hashlib` を使ってください。
+   Use the :mod:`hashlib` module instead.
 
 .. index::
    single: message digest, MD5
    single: checksum; MD5
 
-このモジュールは RSA 社の MD5 メッセージダイジェスト  アルゴリズムへのインタフェースを実装しています。 (Internet :rfc:`1321`
-も参照してください)。利用方法は極めて単純です。まず md5 オブジェクトを :func:`new` を使って生成します。後は :meth:`update`
-メソッドを使って、生成されたオブジェクトに任意の文字列データを入力します。オブジェクトに入力された文字列データ全体の :dfn:`digest`
-("fingerprint" として知られる強力な  128-bit チェックサム) は :meth:`digest` を使っていつでも調べることができます。
+This module implements the interface to RSA's MD5 message digest  algorithm (see
+also Internet :rfc:`1321`).  Its use is quite straightforward: use :func:`new`
+to create an md5 object. You can now feed this object with arbitrary strings
+using the :meth:`update` method, and at any point you can ask it for the
+:dfn:`digest` (a strong kind of 128-bit checksum, a.k.a. "fingerprint") of the
+concatenation of the strings fed to it so far using the :meth:`digest` method.
 
-例えば、文字列 ``'Nobody inspects the spammish repetition'``  のダイジェストを得るためには以下のようにします:
+For example, to obtain the digest of the string ``'Nobody inspects the spammish
+repetition'``:
 
    >>> import md5
    >>> m = md5.new()
@@ -28,59 +31,66 @@
    >>> m.digest()
    '\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9'
 
-もっと詰めて書くと以下のようになります:
+More condensed:
 
    >>> md5.new("Nobody inspects the spammish repetition").digest()
    '\xbbd\x9c\x83\xdd\x1e\xa5\xc9\xd9\xde\xc9\xa1\x8d\xf0\xff\xe9'
 
-以下の値はモジュールの中で定数として与えられており、 :func:`new` で返される md5 オブジェクトの属性としても与えられます:
+The following values are provided as constants in the module and as attributes
+of the md5 objects returned by :func:`new`:
 
 
 .. data:: digest_size
 
-   返されるダイジェスト値のバイト数で表した長さ。常に ``16`` です。
+   The size of the resulting digest in bytes.  This is always ``16``.
 
-md5 クラスオブジェクトは以下のメソッドをサポートします:
+The md5 module provides the following functions:
 
 
 .. function:: new([arg])
 
-   新たな md5 オブジェクトを返します。もし *arg* が存在するなら、 ``update(arg)`` を呼び出します。
+   Return a new md5 object.  If *arg* is present, the method call ``update(arg)``
+   is made.
 
 
 .. function:: md5([arg])
 
-   下位互換性のために、 :func:`new` の別名として提供されています。
+   For backward compatibility reasons, this is an alternative name for the
+   :func:`new` function.
 
-md5 オブジェクトは以下のメソッドをサポートします:
+An md5 object has the following methods:
 
 
 .. method:: md5.update(arg)
 
-   文字列 *arg* を入力として md5 オブジェクトを更新します。このメソッドを繰り返して呼び出す操作は、それぞれの呼び出し時の引数 *arg*
-   を結合したデータを引数として一回の呼び出す操作と同等になります: つまり、 ``m.update(a); m.update(b)`` は
-   ``m.update(a+b)`` と同等です。
+   Update the md5 object with the string *arg*.  Repeated calls are equivalent to a
+   single call with the concatenation of all the arguments: ``m.update(a);
+   m.update(b)`` is equivalent to ``m.update(a+b)``.
 
 
 .. method:: md5.digest()
 
-   これまで :meth:`update` で与えてきた文字列入力のダイジェストを返します。返り値は 16 バイトの文字列で、null バイトを含む非 ASCII
-   文字が入っているかもしれません。
+   Return the digest of the strings passed to the :meth:`update` method so far.
+   This is a 16-byte string which may contain non-ASCII characters, including null
+   bytes.
 
 
 .. method:: md5.hexdigest()
 
-   :meth:`digest` に似ていますが、ダイジェストは長さ 32 の文字列になり、16 進表記文字しか含みません。この文字列は電子メールやその
-   他のバイナリを受け付けない環境でダイジェストを安全にやりとりするために使うことができます。
+   Like :meth:`digest` except the digest is returned as a string of length 32,
+   containing only hexadecimal digits.  This may  be used to exchange the value
+   safely in email or other non-binary environments.
 
 
 .. method:: md5.copy()
 
-   md5 オブジェクトのコピー ("クローン") を返します。冒頭の部分文字列が共通な複数の文字列のダイジェストを効率よく計算する際に使うことができます。
+   Return a copy ("clone") of the md5 object.  This can be used to efficiently
+   compute the digests of strings that share a common initial substring.
 
 
 .. seealso::
 
    Module :mod:`sha`
-      Secure Hash Algorithm (SHA) を実装した類似のモジュール。 SHA アルゴリズムはより安全なハッシュアルゴリズムだと考えられています。
+      Similar module implementing the Secure Hash Algorithm (SHA).  The SHA algorithm
+      is considered a more secure hash.
 

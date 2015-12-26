@@ -1,17 +1,17 @@
 
 .. _custominterp:
 
-****************************
-カスタム Python インタプリタ
-****************************
+**************************
+Custom Python Interpreters
+**************************
 
-この章で解説されるモジュールで Python の対話インタプリタに似たインタフェースを書くことができます。
-もし Python そのもの以外に何か特殊な機能をサポートした Python インタプリタを作りたければ、
-:mod:`code` モジュールを参照してください。
-(:mod:`codeop` モジュールはより低レベルで、不完全(かもしれない)
-Python コード断片のコンパイルをサポートするために使われます。)
+The modules described in this chapter allow writing interfaces similar to
+Python's interactive interpreter.  If you want a Python interpreter that
+supports some special feature in addition to the Python language, you should
+look at the :mod:`code` module.  (The :mod:`codeop` module is lower-level, used
+to support compiling a possibly-incomplete chunk of Python code.)
 
-この章で解説されるモジュールの完全な一覧は:
+The full list of modules described in this chapter is:
 
 
 .. toctree::

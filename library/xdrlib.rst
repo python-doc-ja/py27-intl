@@ -1,117 +1,126 @@
-
-:mod:`xdrlib` --- XDR データのエンコードおよびデコード
-======================================================
+:mod:`xdrlib` --- Encode and decode XDR data
+============================================
 
 .. module:: xdrlib
-   :synopsis: 外部データ表現 (XDR, External Data Representation)  データのエンコードおよびデコード。
+   :synopsis: Encoders and decoders for the External Data Representation (XDR).
 
 
 .. index::
    single: XDR
    single: External Data Representation
 
-:mod:`xdrlib` モジュールは外部データ表現標準 (External Data  Representation Standard)
-のサポートを実現します。この標準は 1987 年に Sun Microsystems, Inc. によって書かれ、 :rfc:`1014`
-で定義されています。このモジュールでは RFC で記述されているほとんどのデータ型をサポートしています。
+**Source code:** :source:`Lib/xdrlib.py`
 
-:mod:`xdrlib` モジュールでは 2 つのクラスが定義されています。一つは変数を XDR 表現にパックするためのクラスで、もう一方は XDR
-表現からアンパックするためのものです。2 つの例外クラスが同様にして定義されています。
+--------------
+
+The :mod:`xdrlib` module supports the External Data Representation Standard as
+described in :rfc:`1014`, written by Sun Microsystems, Inc. June 1987.  It
+supports most of the data types described in the RFC.
+
+The :mod:`xdrlib` module defines two classes, one for packing variables into XDR
+representation, and another for unpacking from XDR representation.  There are
+also two exception classes.
 
 
 .. class:: Packer()
 
-   :class:`Packer` はデータを XDR 表現にパックするためのクラスです。 :class:`Packer`
-   クラスのインスタンス生成は引数なしで行われます。
+   :class:`Packer` is the class for packing data into XDR representation. The
+   :class:`Packer` class is instantiated with no arguments.
 
 
 .. class:: Unpacker(data)
 
-   ``Unpacker`` は Packer と対をなしていて、文字列バッファから XDR をアンパックするためのクラスです。入力バッファ *data*
-   を引数に与えてインスタンスを生成します。
+   ``Unpacker`` is the complementary class which unpacks XDR data values from a
+   string buffer.  The input buffer is given as *data*.
 
 
 .. seealso::
 
    :rfc:`1014` - XDR: External Data Representation Standard
-      この RFC が、かつてこのモジュールが最初に書かれた当時に XDR 標準であったデータのエンコード方法を定義していました。現在は :rfc:`1832`
-      に更新されているようです。
+      This RFC defined the encoding of data which was XDR at the time this module was
+      originally written.  It has apparently been obsoleted by :rfc:`1832`.
 
    :rfc:`1832` - XDR: External Data Representation Standard
-      こちらが新しい方のRFCで、XDR の改訂版が定義されています。
+      Newer RFC that provides a revised definition of XDR.
 
 
 .. _xdr-packer-objects:
 
-Packer オブジェクト
--------------------
+Packer Objects
+--------------
 
-:class:`Packer` インスタンスには以下のメソッドがあります:
+:class:`Packer` instances have the following methods:
 
 
 .. method:: Packer.get_buffer()
 
-   現在のパック処理用バッファを文字列で返します。
+   Returns the current pack buffer as a string.
 
 
 .. method:: Packer.reset()
 
-   パック処理用バッファをリセットして、空文字にします。
+   Resets the pack buffer to the empty string.
 
-一般的には、適切な ``pack_type()`` メソッドを使えば、一般に用いられているほとんどの XDR データをパックすることができます。
-各々のメソッドは一つの引数をとり、パックしたい値を与えます。単純なデータ型をパックするメソッドとして、以下のメソッド: :meth:`pack_uint`
-、 :meth:`pack_int` 、 :meth:`pack_enum` 、 :meth:`pack_bool` 、 :meth:`pack_uhyper`
-そして :meth:`pack_hyper` がサポートされています。
+In general, you can pack any of the most common XDR data types by calling the
+appropriate ``pack_type()`` method.  Each method takes a single argument, the
+value to pack.  The following simple data type packing methods are supported:
+:meth:`pack_uint`, :meth:`pack_int`, :meth:`pack_enum`, :meth:`pack_bool`,
+:meth:`pack_uhyper`, and :meth:`pack_hyper`.
 
 
 .. method:: Packer.pack_float(value)
 
-   単精度 (single-precision) の浮動小数点数 *value* をパックします。
+   Packs the single-precision floating point number *value*.
 
 
 .. method:: Packer.pack_double(value)
 
-   倍精度 (double-precision) の浮動小数点数 *value* をパックします。
+   Packs the double-precision floating point number *value*.
 
-以下のメソッドは文字列、バイト列、不透明データ (opaque data) のパック処理をサポートします:
+The following methods support packing strings, bytes, and opaque data:
 
 
 .. method:: Packer.pack_fstring(n, s)
 
-   固定長の文字列、 *s* をパックします。 *n* は文字列の長さですが、この値自体はデータバッファにはパック *されません* 。 4
-   バイトのアラインメントを保証するために、文字列は必要に応じて null  バイト列でパディングされます。
+   Packs a fixed length string, *s*.  *n* is the length of the string but it is
+   *not* packed into the data buffer.  The string is padded with null bytes if
+   necessary to guaranteed 4 byte alignment.
 
 
 .. method:: Packer.pack_fopaque(n, data)
 
-   :meth:`pack_fstring` と同じく、固定長の不透明データストリームをパックします。
+   Packs a fixed length opaque data stream, similarly to :meth:`pack_fstring`.
 
 
 .. method:: Packer.pack_string(s)
 
-   可変長の文字列 *s* をパックします。文字列の長さが最初に符号なし整数でパックされ、続いて :meth:`pack_fstring` を使って文字列データが
-   パックされます。
+   Packs a variable length string, *s*.  The length of the string is first packed
+   as an unsigned integer, then the string data is packed with
+   :meth:`pack_fstring`.
 
 
 .. method:: Packer.pack_opaque(data)
 
-   :meth:`pack_string` と同じく、可変長の不透明データ文字列をパックします。
+   Packs a variable length opaque data string, similarly to :meth:`pack_string`.
 
 
 .. method:: Packer.pack_bytes(bytes)
 
-   :meth:`pack_string` と同じく、可変長のバイトストリームをパックします。
+   Packs a variable length byte stream, similarly to :meth:`pack_string`.
 
-以下のメソッドはアレイやリストのパック処理をサポートします:
+The following methods support packing arrays and lists:
 
 
 .. method:: Packer.pack_list(list, pack_item)
 
-   一様な項目からなる *list* をパックします。このメソッドはサイズ不定、すなわち、全てのリスト内容を網羅するまでサイズが
-   分からないリストに対して有用です。リストのすべての項目に対し、最初に符号無し整数 ``1`` がパックされ、続いてリスト中の
-   データがパックされます。 *pack_item* は個々の項目をパックするために呼び出される関数です。リストの末端に到達すると、符号無し整数 ``0``
-   がパックされます。
+   Packs a *list* of homogeneous items.  This method is useful for lists with an
+   indeterminate size; i.e. the size is not available until the entire list has
+   been walked.  For each item in the list, an unsigned integer ``1`` is packed
+   first, followed by the data value from the list.  *pack_item* is the function
+   that is called to pack the individual item.  At the end of the list, an unsigned
+   integer ``0`` is packed.
 
-   例えば、整数のリストをパックするには、コードは以下のようになるはずです::
+   For example, to pack a list of integers, the code might appear like this::
 
       import xdrlib
       p = xdrlib.Packer()
@@ -120,138 +129,150 @@ Packer オブジェクト
 
 .. method:: Packer.pack_farray(n, array, pack_item)
 
-   一様な項目からなる固定長のリスト (*array*) をパックします。 *n* はリストの長さです。この値はデータバッファにパック *されません*
-   が、 ``len(array)`` が *n* と等しくない場合、例外 :exc:`ValueError` が送出されます。上と同様に、 *pack_item*
-   は個々の要素をパック処理するための関数です。
+   Packs a fixed length list (*array*) of homogeneous items.  *n* is the length of
+   the list; it is *not* packed into the buffer, but a :exc:`ValueError` exception
+   is raised if ``len(array)`` is not equal to *n*.  As above, *pack_item* is the
+   function used to pack each element.
 
 
 .. method:: Packer.pack_array(list, pack_item)
 
-   一様の項目からなる可変長の *list* をパックします。まず、リストの長さが符号無し整数でパックされ、つづいて各要素が上の
-   :meth:`pack_farray` と同じやり方でパックされます。
+   Packs a variable length *list* of homogeneous items.  First, the length of the
+   list is packed as an unsigned integer, then each element is packed as in
+   :meth:`pack_farray` above.
 
 
 .. _xdr-unpacker-objects:
 
-Unpacker オブジェクト
----------------------
+Unpacker Objects
+----------------
 
-:class:`Unpacker` クラスは以下のメソッドを提供します:
+The :class:`Unpacker` class offers the following methods:
 
 
 .. method:: Unpacker.reset(data)
 
-   文字列バッファを *data* でリセットします。
+   Resets the string buffer with the given *data*.
 
 
 .. method:: Unpacker.get_position()
 
-   データバッファ中の現在のアンパック処理位置を返します。
+   Returns the current unpack position in the data buffer.
 
 
 .. method:: Unpacker.set_position(position)
 
-   データバッファ中のアンパック処理位置を *position* に設定します。 :meth:`get_position` および
-   :meth:`set_position` は注意して使わなければなりません。
+   Sets the data buffer unpack position to *position*.  You should be careful about
+   using :meth:`get_position` and :meth:`set_position`.
 
 
 .. method:: Unpacker.get_buffer()
 
-   現在のアンパック処理用データバッファを文字列で返します。
+   Returns the current unpack data buffer as a string.
 
 
 .. method:: Unpacker.done()
 
-   アンパック処理を終了させます。全てのデータがまだアンパックされていなければ、例外 :exc:`Error` が送出されます。
+   Indicates unpack completion.  Raises an :exc:`Error` exception if all of the
+   data has not been unpacked.
 
-上のメソッドに加えて、 :class:`Packer` でパック処理できるデータ型はいずれも :class:`Unpacker`
-でアンパック処理できます。アンパック処理メソッドは ``unpack_type()`` の形式をとり、引数をとりません。
-これらのメソッドはアンパックされたデータオブジェクトを返します。
+In addition, every data type that can be packed with a :class:`Packer`, can be
+unpacked with an :class:`Unpacker`.  Unpacking methods are of the form
+``unpack_type()``, and take no arguments.  They return the unpacked object.
 
 
 .. method:: Unpacker.unpack_float()
 
-   単精度の浮動小数点数をアンパックします。
+   Unpacks a single-precision floating point number.
 
 
 .. method:: Unpacker.unpack_double()
 
-   :meth:`unpack_float` と同様に、倍精度の浮動小数点数をアンパックします。
+   Unpacks a double-precision floating point number, similarly to
+   :meth:`unpack_float`.
 
-上のメソッドに加えて、文字列、バイト列、不透明データをアンパックする以下のメソッドが提供されています:
+In addition, the following methods unpack strings, bytes, and opaque data:
 
 
 .. method:: Unpacker.unpack_fstring(n)
 
-   固定長の文字列をアンパックして返します。 *n* は予想される文字列の長さです。4 バイトのアラインメントを保証するために null バイトによる
-   パディングが行われているものと仮定して処理を行います。
+   Unpacks and returns a fixed length string.  *n* is the number of characters
+   expected.  Padding with null bytes to guaranteed 4 byte alignment is assumed.
 
 
 .. method:: Unpacker.unpack_fopaque(n)
 
-   :meth:`unpack_fstring` と同様に、固定長の不透明データストリームをアンパックして返します。
+   Unpacks and returns a fixed length opaque data stream, similarly to
+   :meth:`unpack_fstring`.
 
 
 .. method:: Unpacker.unpack_string()
 
-   可変長の文字列をアンパックして返します。最初に文字列の長さが符号無し整数としてアンパックされ、次に :meth:`unpack_fstring` を使って
-   文字列データがアンパックされます。
+   Unpacks and returns a variable length string.  The length of the string is first
+   unpacked as an unsigned integer, then the string data is unpacked with
+   :meth:`unpack_fstring`.
 
 
 .. method:: Unpacker.unpack_opaque()
 
-   :meth:`unpack_string` と同様に、可変長の不透明データ文字列をアンパックして返します。
+   Unpacks and returns a variable length opaque data string, similarly to
+   :meth:`unpack_string`.
 
 
 .. method:: Unpacker.unpack_bytes()
 
-   :meth:`unpack_string` と同様に、可変長のバイトストリームをアンパックして返します。
+   Unpacks and returns a variable length byte stream, similarly to
+   :meth:`unpack_string`.
 
-以下メソッドはアレイおよびリストのアンパック処理をサポートします。
+The following methods support unpacking arrays and lists:
 
 
 .. method:: Unpacker.unpack_list(unpack_item)
 
-   一様な項目からなるリストをアンパック処理してかえします。リストは一度に 1 要素づつアンパック処理されます、まず符号無し整数によるフラグ
-   がアンパックされます。もしフラグが ``1`` なら、要素はアンパックされ、返り値のリストに追加されます。フラグが ``0`` であれば、リストの終端
-   を示します。 *unpack_item* は個々の項目をアンパック処理するために呼び出される関数です。
+   Unpacks and returns a list of homogeneous items.  The list is unpacked one
+   element at a time by first unpacking an unsigned integer flag.  If the flag is
+   ``1``, then the item is unpacked and appended to the list.  A flag of ``0``
+   indicates the end of the list.  *unpack_item* is the function that is called to
+   unpack the items.
 
 
 .. method:: Unpacker.unpack_farray(n, unpack_item)
 
-   一様な項目からなる固定長のアレイをアンパックして（リストとして）返します。 *n* はバッファ内に存在すると期待されるリストの要素数です。上と同様に、
-   *unpack_item* は各要素をアンパックするために使われる関数です。
+   Unpacks and returns (as a list) a fixed length array of homogeneous items.  *n*
+   is number of list elements to expect in the buffer. As above, *unpack_item* is
+   the function used to unpack each element.
 
 
 .. method:: Unpacker.unpack_array(unpack_item)
 
-   一様な項目からなる可変長の *list* をアンパックして返します。まず、リストの長さが符号無し整数としてアンパックされ、続いて各要素が上の
-   :meth:`unpack_farray` のようにしてアンパック処理されます。
+   Unpacks and returns a variable length *list* of homogeneous items. First, the
+   length of the list is unpacked as an unsigned integer, then each element is
+   unpacked as in :meth:`unpack_farray` above.
 
 
 .. _xdr-exceptions:
 
-例外
-----
+Exceptions
+----------
 
-このモジュールでの例外はクラスインスタンスとしてコードされています:
+Exceptions in this module are coded as class instances:
 
 
 .. exception:: Error
 
-   ベースとなる例外クラスです。 :exc:`Error` public なデータメンバとして :attr:`msg` を持ち、エラーの詳細が収められています。
+   The base exception class.  :exc:`Error` has a single public attribute
+   :attr:`msg` containing the description of the error.
 
 
 .. exception:: ConversionError
 
-   :exc:`Error` から派生したクラスです。インスタンス変数は塚されていません。
+   Class derived from :exc:`Error`.  Contains no additional instance variables.
 
-これらの例外を補足する方法を以下の例に示します::
+Here is an example of how you would catch one of these exceptions::
 
    import xdrlib
    p = xdrlib.Packer()
    try:
        p.pack_double(8.01)
-   except xdrlib.ConversionError, instance:
+   except xdrlib.ConversionError as instance:
        print 'packing the double failed:', instance.msg
-

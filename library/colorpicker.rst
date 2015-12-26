@@ -1,26 +1,28 @@
 
-:mod:`ColorPicker` --- 色選択ダイアログ
-=======================================
+:mod:`ColorPicker` --- Color selection dialog
+=============================================
 
 .. module:: ColorPicker
    :platform: Mac
-   :synopsis: 標準色選択ダイアログへのインターフェース
+   :synopsis: Interface to the standard color selection dialog.
    :deprecated:
 .. moduleauthor:: Just van Rossum <just@letterror.com>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-:mod:`ColorPicker` モジュールは標準色選択ダイアログへのアクセスを提\
-供します。
+The :mod:`ColorPicker` module provides access to the standard color picker
+dialog.
 
 .. note::
 
-   このモジュールは Python 3.x で削除されました。
+   This module has been removed in Python 3.x.
+
 
 .. function:: GetColor(prompt, rgb)
 
-   標準色選択ダイアログを表示し、ユーザが色を選択することを可能にします。
-   *prompt* の文字列によりユーザに指示を与えられ、デフォルトの選択色を
-   *rgb* で設定する事ができます。 *rgb* は赤、緑、青の色要素のタプル\
-   で与えてください。 :func:`GetColor` はユーザが選択した\
-   色のタプルと色が選択されたか、取り消されたかを示すフラグを返します。
+   Show a standard color selection dialog and allow the user to select a color.
+   The user is given instruction by the *prompt* string, and the default color is
+   set to *rgb*.  *rgb* must be a tuple giving the red, green, and blue components
+   of the color. :func:`GetColor` returns a tuple giving the user's selected color
+   and a flag indicating whether they accepted the selection of cancelled.
+

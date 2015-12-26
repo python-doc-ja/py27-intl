@@ -1,205 +1,217 @@
-
-:mod:`curses` --- 文字セル表示のための端末操作
-==============================================
+:mod:`curses` --- Terminal handling for character-cell displays
+===============================================================
 
 .. module:: curses
-   :synopsis: 可搬性のある端末操作を提供する curses ライブラリへのインタフェース．
+   :synopsis: An interface to the curses library, providing portable terminal
+              handling.
    :platform: Unix
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 .. sectionauthor:: Eric Raymond <esr@thyrsus.com>
 
 .. versionchanged:: 1.6
-   ``ncurses`` ライブラリのサポートを追加し、パッケージに変換しました.
+   Added support for the ``ncurses`` library and converted to a package.
 
-:mod:`curses` モジュールは、可搬性のある端末操作を行うためのデファクトスタンダードである、curses
-ライブラリへのインタフェースを提供します。
+The :mod:`curses` module provides an interface to the curses library, the
+de-facto standard for portable advanced terminal handling.
 
-Unix 環境では curses は非常に広く用いられていますが、DOS、OS2、そしておそらく他のシステムのバージョンも利用することができます。
-この拡張モジュールは Linux および BSD 系の Unixで動作するオープンソースの curses ライブラリである ncurses の API に
-合致するように設計されています。
+While curses is most widely used in the Unix environment, versions are available
+for DOS, OS/2, and possibly other systems as well.  This extension module is
+designed to match the API of ncurses, an open-source curses library hosted on
+Linux and the BSD variants of Unix.
 
 .. note::
 
-   .. Since version 5.4, the ncurses library decides how to interpret non-ASCII data
-      using the ``nl_langinfo`` function.  That means that you have to call
-      :func:`locale.setlocale` in the application and encode Unicode strings
-      using one of the system's available encodings.  This example uses the
-      system's default encoding::
-
-   version 5.4 から、ncurses ライブラリは ``nl_langinfo`` 関数を利用して
-   非ASCIIデータをどう解釈するかを決定するようになりました。
-   これは、アプリケーションは :func:`locale.setlocale` 関数を呼び出して、
-   Unicode文字列をシステムの利用可能なエンコーディングのどれかで
-   エンコードする必要があることを意味します。
-   この例では、システムのデフォルトエンコーディングを利用しています。 ::
+   Since version 5.4, the ncurses library decides how to interpret non-ASCII data
+   using the ``nl_langinfo`` function.  That means that you have to call
+   :func:`locale.setlocale` in the application and encode Unicode strings
+   using one of the system's available encodings.  This example uses the
+   system's default encoding::
 
       import locale
       locale.setlocale(locale.LC_ALL, '')
       code = locale.getpreferredencoding()
 
-   この後、 :meth:`str.encode` を呼び出すときに *code* を利用します。
+   Then use *code* as the encoding for :meth:`str.encode` calls.
 
 .. seealso::
 
    Module :mod:`curses.ascii`
-      ロケール設定に関わらず ASCII 文字を扱うためのユーティリティ。
+      Utilities for working with ASCII characters, regardless of your locale settings.
 
    Module :mod:`curses.panel`
-      curses ウィンドウにデプス機能を追加するパネルスタック拡張。
+      A panel stack extension that adds depth to  curses windows.
 
    Module :mod:`curses.textpad`
-      :program:`Emacs` ライクなキーバインディングをサポートする編集可能な curses 用テキストウィジェット。
-
-   Module :mod:`curses.wrapper`
-      アプリケーションの起動時および終了時に適切な端末のセットアップとリセットを確実に行うための関数。
+      Editable text widget for curses supporting  :program:`Emacs`\ -like bindings.
 
    :ref:`curses-howto`
-      Andrew Kuchling および Eric Raymond によって書かれた、curses を Python で使うためのチュートリアルです。
+      Tutorial material on using curses with Python, by Andrew Kuchling and Eric
+      Raymond.
 
-   Python ソースコードの :file:`Demo/curses/` ディレクトリには、このモジュールで提供されている curses
-   バインディングを使ったプログラム例がいくつか収められています。
+   The :source:`Demo/curses/` directory in the Python source distribution contains
+   some example programs using the curses bindings provided by this module.
 
 
 .. _curses-functions:
 
-関数
-----
+Functions
+---------
 
-:mod:`curses` モジュールでは以下の例外を定義しています:
+The module :mod:`curses` defines the following exception:
 
 
 .. exception:: error
 
-   curses ライブラリ関数がエラーを返した際に送出される例外です。
+   Exception raised when a curses library function returns an error.
 
 .. note::
 
-   関数やメソッドにおけるオプションの引数 *x* および *y*  がある場合、標準の値は常に現在のカーソルになります。オプションの *attr*
-   がある場合、標準の値は :const:`A_NORMAL` です。
+   Whenever *x* or *y* arguments to a function or a method are optional, they
+   default to the current cursor location. Whenever *attr* is optional, it defaults
+   to :const:`A_NORMAL`.
 
-:mod:`curses` では以下の関数を定義しています:
+The module :mod:`curses` defines the following functions:
 
 
 .. function:: baudrate()
 
-   端末の出力速度をビット／秒で返します。ソフトウェア端末エミュレータの場合、これは固定の高い値を持つことになります。この関数は歴史的な理由で入れられています;
-   かつては、この関数は時間遅延を生成するための出力ループを書くために用いられたり、行速度に応じてインタフェースを切り替えたりするために用いられたり
-   していました。
+   Return the output speed of the terminal in bits per second.  On software
+   terminal emulators it will have a fixed high value. Included for historical
+   reasons; in former times, it was used to  write output loops for time delays and
+   occasionally to change interfaces depending on the line speed.
 
 
 .. function:: beep()
 
-   注意を促す短い音を鳴らします。
+   Emit a short attention sound.
 
 
 .. function:: can_change_color()
 
-   端末に表示される色をプログラマが変更できるか否かによって、真または偽を返します。
+   Return ``True`` or ``False``, depending on whether the programmer can change the colors
+   displayed by the terminal.
 
 
 .. function:: cbreak()
 
-   cbreak モードに入ります。cbreak モード ("rare" モードと呼ばれることもあります) では、通常の tty 行バッファリングはオフにされ、
-   文字を一文字一文字読むことができます。ただし、raw モードとは異なり、特殊文字
-   (割り込み:interrupt、終了:quit、一時停止:suspend、およびフロー制御) については、tty ドライバおよび呼び出し側のプログラムに
-   対する通常の効果をもっています。まず :func:`raw` を呼び出し、次いで :func:`cbreak` を呼び出すと、端末を cbreak モード
-   にします。
+   Enter cbreak mode.  In cbreak mode (sometimes called "rare" mode) normal tty
+   line buffering is turned off and characters are available to be read one by one.
+   However, unlike raw mode, special characters (interrupt, quit, suspend, and flow
+   control) retain their effects on the tty driver and calling program.  Calling
+   first :func:`raw` then :func:`cbreak` leaves the terminal in cbreak mode.
 
 
 .. function:: color_content(color_number)
 
-   色 *color_number* の赤、緑、および青 (RGB) 要素の強度を返します。 *color_number* は ``0`` から
-   :const:`COLORS` の間でなければなりません。与えられた色の R、G、B、の値からなる三要素のタプルが返されます。この値は ``0``
-   (その成分はない) から ``1000`` (その成分の最大強度) の範囲をとります。
+   Return the intensity of the red, green, and blue (RGB) components in the color
+   *color_number*, which must be between ``0`` and :const:`COLORS`.  A 3-tuple is
+   returned, containing the R,G,B values for the given color, which will be between
+   ``0`` (no component) and ``1000`` (maximum amount of component).
 
 
 .. function:: color_pair(color_number)
 
-   指定された色の表示テキストにおける属性値を返します。属性値は :const:`A_STANDOUT`, :const:`A_REVERSE` 、およびその他の
-   :const:`A_\*` 属性と組み合わせられています。 :func:`pair_number` はこの関数の逆です。
+   Return the attribute value for displaying text in the specified color.  This
+   attribute value can be combined with :const:`A_STANDOUT`, :const:`A_REVERSE`,
+   and the other :const:`A_\*` attributes.  :func:`pair_number` is the counterpart
+   to this function.
 
 
 .. function:: curs_set(visibility)
 
-   カーソルの状態を設定します。 *visibility* は 0、1、または 2 に設定され、それぞれ不可視、通常、または非常に可視、を意味します。
-   要求された可視属性を端末がサポートしている場合、以前のカーソル状態が返されます; そうでなければ例外が送出されます。多くの端末では、 "可視 (通常)"
-   モードは下線カーソルで、"非常に可視" モードはブロックカーソルです。
+   Set the cursor state.  *visibility* can be set to 0, 1, or 2, for invisible,
+   normal, or very visible.  If the terminal supports the visibility requested, the
+   previous cursor state is returned; otherwise, an exception is raised.  On many
+   terminals, the "visible" mode is an underline cursor and the "very visible" mode
+   is a block cursor.
 
 
 .. function:: def_prog_mode()
 
-   現在の端末属性を、稼動中のプログラムが curses を使う際のモードである "プログラム" モードとして保存します。(このモードの反対は、プログラムが
-   curses を使わない "シェル" モードです。) その後 :func:`reset_prog_mode` を呼ぶとこのモードを復旧します。
+   Save the current terminal mode as the "program" mode, the mode when the running
+   program is using curses.  (Its counterpart is the "shell" mode, for when the
+   program is not in curses.)  Subsequent calls to :func:`reset_prog_mode` will
+   restore this mode.
 
 
 .. function:: def_shell_mode()
 
-   現在の端末属性を、稼動中のプログラムが curses を使っていないときのモードである "シェル" モードとして保存します。(このモードの反対は、
-   プログラムが curses 機能を利用している "プログラム" モードです。) その後 :func:`reset_shell_mode`
-   を呼ぶとこのモードを復旧します。
+   Save the current terminal mode as the "shell" mode, the mode when the running
+   program is not using curses.  (Its counterpart is the "program" mode, when the
+   program is using curses capabilities.) Subsequent calls to
+   :func:`reset_shell_mode` will restore this mode.
 
 
 .. function:: delay_output(ms)
 
-   出力に *ms* ミリ秒の一時停止を入れます。
+   Insert an *ms* millisecond pause in output.
 
 
 .. function:: doupdate()
 
-   物理スクリーン (physical screen) を更新します。curses ライブラリは、
-   現在の物理スクリーンの内容と、次の状態として要求されている仮想スクリーンをそれぞれ表す、2 つのデータ構造を保持しています。 :func:`doupdate`
-   は更新を適用し、物理スクリーンを仮想スクリーンに一致させます。
+   Update the physical screen.  The curses library keeps two data structures, one
+   representing the current physical screen contents and a virtual screen
+   representing the desired next state.  The :func:`doupdate` ground updates the
+   physical screen to match the virtual screen.
 
-   仮想スクリーンは :meth:`addstr` のような書き込み操作をウィンドウに行った後に :meth:`noutrefresh`
-   を呼び出して更新することができます。通常の :meth:`refresh` 呼び出しは、単に :meth:`noutrefresh`  を呼んだ後に
-   :func:`doupdate` を呼ぶだけです; 複数のウィンドウを更新しなければならない場合、全てのウィンドウに対して
-   :meth:`noutrefresh` を呼び出した後、一度だけ :func:`doupdate`
-   を呼ぶことで、パフォーマンスを向上させることができ、おそらくスクリーンのちらつきも押さえることができます。
+   The virtual screen may be updated by a :meth:`noutrefresh` call after write
+   operations such as :meth:`addstr` have been performed on a window.  The normal
+   :meth:`refresh` call is simply :meth:`noutrefresh` followed by :func:`doupdate`;
+   if you have to update multiple windows, you can speed performance and perhaps
+   reduce screen flicker by issuing :meth:`noutrefresh` calls on all windows,
+   followed by a single :func:`doupdate`.
 
 
 .. function:: echo()
 
-   echo モードに入ります。 echo モードでは、各文字入力はスクリーン上に入力された通りにエコーバックされます。
+   Enter echo mode.  In echo mode, each character input is echoed to the screen as
+   it is entered.
 
 
 .. function:: endwin()
 
-   ライブラリの非初期化を行い、端末を通常の状態に戻します。
+   De-initialize the library, and return terminal to normal status.
 
 
 .. function:: erasechar()
 
-   ユーザの現在の消去文字 (erase character) 設定を返します。 Unix オペレーティングシステムでは、この値は curses プログラムが
-   制御している端末の属性であり、curses ライブラリ自体では設定されません。
+   Return the user's current erase character.  Under Unix operating systems this
+   is a property of the controlling tty of the curses program, and is not set by
+   the curses library itself.
 
 
 .. function:: filter()
 
-   :func:`.filter` ルーチンを使う場合、 :func:`initscr` を呼ぶ前に呼び出さなくてはなりません。この手順のもたらす効果は以下の
-   通りです: まず二つの関数の呼び出しの間は、LINES は 1 に設定されます; clear、cup、cud、cud1、cuu1、cuu、vpa
-   は無効化されます; home 文字列は cr の値に設定されます。これにより、カーソルは現在の行に制限されるので、スクリーンの更新も同様に制限されます。
-   この関数は、スクリーンの他の部分に影響を及ぼさずに文字単位の行編集を行う場合に利用できます。
+   The :func:`.filter` routine, if used, must be called before :func:`initscr` is
+   called.  The effect is that, during those calls, :envvar:`LINES` is set to 1; the
+   capabilities clear, cup, cud, cud1, cuu1, cuu, vpa are disabled; and the home
+   string is set to the value of cr. The effect is that the cursor is confined to
+   the current line, and so are screen updates.  This may be used for enabling
+   character-at-a-time  line editing without touching the rest of the screen.
 
 
 .. function:: flash()
 
-   スクリーンをフラッシュ(flash) します。すなわち、画面を色反転 (reverse-video) にして、短時間でもとにもどします。人によっては、
-   :func:`beep` で生成される可聴な注意音よりも、このような  "可視ベル(visible bell)" を好みます。
+   Flash the screen.  That is, change it to reverse-video and then change it back
+   in a short interval.  Some people prefer such as 'visible bell' to the audible
+   attention signal produced by :func:`beep`.
 
 
 .. function:: flushinp()
 
-   全ての入力バッファをフラッシュします。この関数は、ユーザによってすでに入力されているが、まだプログラムによって処理されていない全ての先行入力文字
-   (typeahead) を捨て去ります。
+   Flush all input buffers.  This throws away any  typeahead  that  has been typed
+   by the user and has not yet been processed by the program.
 
 
 .. function:: getmouse()
 
-   :meth:`getch` が :const:`KEY_MOUSE` を返してマウスイベントを通知した後、この関数を呼んで待ち行列 (queue)
-   上に置かれているマウスイベントを取得しなければなりません。イベントは  ``(id, x, y, z, bstate)`` の 5
-   要素のタプルで表現されています。 *id* は複数のデバイスを区別するための ID 値で、 *x*, *y*, *z* はイベントの座標値です (現在 *z*
-   は使われていません)。 *bstate* は整数値で、その各ビットはイベントのタイプを示す値に設定されています。
-   この値は以下に示す定数のうち一つまたはそれ以上のビット単位 OR  になっています。以下の定数の *n* は 1 から 4 のボタン番号を示します:
+   After :meth:`getch` returns :const:`KEY_MOUSE` to signal a mouse event, this
+   method should be call to retrieve the queued mouse event, represented as a
+   5-tuple ``(id, x, y, z, bstate)``. *id* is an ID value used to distinguish
+   multiple devices, and *x*, *y*, *z* are the event's coordinates.  (*z* is
+   currently unused.)  *bstate* is an integer value whose bits will be set to
+   indicate the type of event, and will be the bitwise OR of one or more of the
+   following constants, where *n* is the button number from 1 to 4:
    :const:`BUTTONn_PRESSED`, :const:`BUTTONn_RELEASED`, :const:`BUTTONn_CLICKED`,
    :const:`BUTTONn_DOUBLE_CLICKED`, :const:`BUTTONn_TRIPLE_CLICKED`,
    :const:`BUTTON_SHIFT`, :const:`BUTTON_CTRL`, :const:`BUTTON_ALT`.
@@ -207,1028 +219,1252 @@ Unix 環境では curses は非常に広く用いられていますが、DOS、O
 
 .. function:: getsyx()
 
-   仮想スクリーンにおける現在のカーソル位置を y および x の順で返します。 leaveok が真に設定されていれば、 -1、-1 が返されます。
+   Return the current coordinates of the virtual screen cursor in y and x.  If
+   leaveok is currently true, then -1,-1 is returned.
 
 
 .. function:: getwin(file)
 
-   以前の :func:`putwin` 呼び出しでファイルに保存されている、ウィンドウ関連データを読み出します。次に、このルーチンは
-   そのデータを使って新たなウィンドウを生成し初期化して、その新規ウィンドウオブジェクトを返します。
+   Read window related data stored in the file by an earlier :func:`putwin` call.
+   The routine then creates and initializes a new window using that data, returning
+   the new window object.
 
 
 .. function:: has_colors()
 
-   端末が色表示を行える場合には真を返します。そうでない場合には偽を返します。
+   Return ``True`` if the terminal can display colors; otherwise, return ``False``.
 
 
 .. function:: has_ic()
 
-   端末が文字の挿入／削除機能を持つ場合に真を返します。この関数は、最近の端末エミュレータがどれもこの機能を持っているのと同じく、
-   歴史的な理由だけのために含められています。
+   Return ``True`` if the terminal has insert- and delete-character capabilities.
+   This function is included for historical reasons only, as all modern software
+   terminal emulators have such capabilities.
 
 
 .. function:: has_il()
 
-   端末が行の挿入／削除機能を持つか、領域単位のスクロールによって機能をシミュレートできる場合に真を返します。
-   この関数は、最近の端末エミュレータがどれもこの機能を持っているのと同じく、歴史的な理由だけのために含められています。
+   Return ``True`` if the terminal has insert- and delete-line capabilities, or can
+   simulate  them  using scrolling regions. This function is included for
+   historical reasons only, as all modern software terminal emulators have such
+   capabilities.
 
 
 .. function:: has_key(ch)
 
-   キー値 *ch* をとり、現在の端末タイプがその値のキーを認識できる場合に真を返します。
+   Take a key value *ch*, and return ``True`` if the current terminal type recognizes
+   a key with that value.
 
 
 .. function:: halfdelay(tenths)
 
-   半遅延モード、すなわち cbreak モードに似た、ユーザが打鍵した文字がすぐにプログラムで利用できるようになるモードで使われます。
-   しかしながら、何も入力されなかった場合、 *tenths* 十秒後に例外が送出されます。 *tenths* の値は 1 から 255 の間でなければ
-   なりません。半遅延モードから抜けるには :func:`nocbreak`  を使います。
+   Used for half-delay mode, which is similar to cbreak mode in that characters
+   typed by the user are immediately available to the program. However, after
+   blocking for *tenths* tenths of seconds, an exception is raised if nothing has
+   been typed.  The value of *tenths* must be a number between ``1`` and ``255``.  Use
+   :func:`nocbreak` to leave half-delay mode.
 
 
 .. function:: init_color(color_number, r, g, b)
 
-   色の定義を変更します。変更したい色番号と、その後に 3 つ組みの RGB 値 (赤、緑、青の成分の大きさ) をとります。 *color_number* の値は
-   ``0`` から :const:`COLORS` の間でなければなりません。 *r*, *g*, *b* の値は ``0`` から ``1000`` の
-   間でなければなりません。 :func:`init_color` を使うと、スクリーン上でカラーが使用されている部分は全て新しい設定に
-   即時変更されます。この関数はほとんどの端末で何も行いません; :func:`can_change_color` が ``1`` を返す場合にのみ動作します。
+   Change the definition of a color, taking the number of the color to be changed
+   followed by three RGB values (for the amounts of red, green, and blue
+   components).  The value of *color_number* must be between ``0`` and
+   :const:`COLORS`.  Each of *r*, *g*, *b*, must be a value between ``0`` and
+   ``1000``.  When :func:`init_color` is used, all occurrences of that color on the
+   screen immediately change to the new definition.  This function is a no-op on
+   most terminals; it is active only if :func:`can_change_color` returns ``1``.
 
 
 .. function:: init_pair(pair_number, fg, bg)
 
-   色ペアの定義を変更します。3 つの引数: 変更したい色ペア、前景色の色番号、背景色の色番号、をとります。 *pair_number* は ``1`` から
-   ``COLOR_PAIRS -1`` の間でなければなりません (``0`` 色ペアは黒色背景に白色前景となるように設定されており、変更することができません)
-   。 *fg* および *bg* 引数は ``0`` と :const:`COLORS` の間でなければなりません。
-   色ペアが以前に初期化されていれば、スクリーンを更新して、指定された色ペアの部分を新たな設定に変更します。
+   Change the definition of a color-pair.  It takes three arguments: the number of
+   the color-pair to be changed, the foreground color number, and the background
+   color number.  The value of *pair_number* must be between ``1`` and
+   ``COLOR_PAIRS - 1`` (the ``0`` color pair is wired to white on black and cannot
+   be changed).  The value of *fg* and *bg* arguments must be between ``0`` and
+   :const:`COLORS`.  If the color-pair was previously initialized, the screen is
+   refreshed and all occurrences of that color-pair are changed to the new
+   definition.
 
 
 .. function:: initscr()
 
-   ライブラリを初期化します。スクリーン全体をあらわす :class:`WindowObject`  を返します。
+   Initialize the library. Return a :class:`WindowObject` which represents the
+   whole screen.
 
    .. note::
 
-      端末のオープン時にエラーが発生した場合、curses ライブラリによってインタープリタが終了される場合があります。
+      If there is an error opening the terminal, the underlying curses library may
+      cause the interpreter to exit.
+
+
+.. function:: is_term_resized(nlines, ncols)
+
+   Return ``True`` if :func:`resize_term` would modify the window structure,
+   ``False`` otherwise.
 
 
 .. function:: isendwin()
 
-   :func:`endwin` がすでに呼び出されている (すなわち、curses ライブラリが非初期化されてしまっている) 場合に真を返します。
+   Return ``True`` if :func:`endwin` has been called (that is, the  curses library has
+   been deinitialized).
 
 
 .. function:: keyname(k)
 
-   *k* に番号付けされているキーの名前を返します。印字可能な ASCII 文字を生成するキーの名前はそのキーの文字自体になります。
-   コントロールキーと組み合わせたキーの名前は、キャレットの後に対応する ASCII 文字が続く 2 文字の文字列になります。Alt キーと組み合わせたキー
-   (128-255) の名前は、先頭に 'M-' が付き、その後に対応する ASCII 文字が続く文字列になります。
+   Return the name of the key numbered *k*.  The name of a key generating printable
+   ASCII character is the key's character.  The name of a control-key combination
+   is a two-character string consisting of a caret followed by the corresponding
+   printable ASCII character.  The name of an alt-key combination (128-255) is a
+   string consisting of the prefix 'M-' followed by the name of the corresponding
+   ASCII character.
 
 
 .. function:: killchar()
 
-   ユーザの現在の行削除文字を返します。 Unix オペレーティングシステムでは、この値は curses プログラムが制御している端末の属性であり、curses
-   ライブラリ自体では設定されません。
+   Return the user's current line kill character. Under Unix operating systems
+   this is a property of the controlling tty of the curses program, and is not set
+   by the curses library itself.
 
 
 .. function:: longname()
 
-   現在の端末について記述している terminfo の長形式 name フィールドが入った文字列を返します。verbose 形式記述の最大長は 128
-   文字です。この値は :func:`initscr` 呼び出しの後でのみ定義されています。
+   Return a string containing the terminfo long name field describing the current
+   terminal.  The maximum length of a verbose description is 128 characters.  It is
+   defined only after the call to :func:`initscr`.
 
 
 .. function:: meta(yes)
 
-   *yes* が 1 の場合、8 ビット文字を入力として許します。 *yes* が 0 の場合、 7 ビット文字だけを許します。
+   If *yes* is 1, allow 8-bit characters to be input. If *yes* is 0,  allow only
+   7-bit chars.
 
 
 .. function:: mouseinterval(interval)
 
-   ボタンが押されてから離されるまでの時間をマウスクリック一回として認識する最大の時間間隔を設定します。以前の内部設定値を返します。標準の値は 200
-   ミリ秒、または 5 分の 1 秒です。
+   Set the maximum time in milliseconds that can elapse between press and release
+   events in order for them to be recognized as a click, and return the previous
+   interval value.  The default value is 200 msec, or one fifth of a second.
 
 
 .. function:: mousemask(mousemask)
 
-   報告すべきマウスイベントを設定し、 ``(availmask, oldmask)`` の組からなるタプルを返します。 *availmask*
-   はどの指定されたマウスイベントのどれが報告されるかを示します; どのイベント指定も完全に失敗した場合には 0 が返ります。 *oldmask*
-   は与えられたウィンドウの以前のマウスイベントマスクです。この関数が呼ばれない限り、マウスイベントは何も報告されません。
+   Set the mouse events to be reported, and return a tuple ``(availmask,
+   oldmask)``.   *availmask* indicates which of the specified mouse events can be
+   reported; on complete failure it returns 0.  *oldmask* is the previous value of
+   the given window's mouse event mask.  If this function is never called, no mouse
+   events are ever reported.
 
 
 .. function:: napms(ms)
 
-   *ms* ミリ秒スリープします。
+   Sleep for *ms* milliseconds.
 
 
 .. function:: newpad(nlines, ncols)
 
-   与えられた行とカラム数を持つパッド (pad) データ構造を生成し、そのポインタを返します。パッドはウィンドウオブジェクトとして返されます。
+   Create and return a pointer to a new pad data structure with the given number
+   of lines and columns.  A pad is returned as a window object.
 
-   パッドはウィンドウと同じようなものですが、スクリーンのサイズによる制限をうけず、スクリーンの特定の部分に関連付けられていなくても
-   かまいません。大きなウィンドウが必要であり、スクリーンにはそのウィンドウの一部しか一度に表示しない場合に使えます。 (スクロールや入力エコーなどによる)
-   パッドに対する再描画は起こりません。パッドに対する :meth:`refresh` および :meth:`noutrefresh` メソッド
-   は、パッド中の表示する部分と表示するために利用するスクリーン上の位置を指定する 6 つの引数が必要です。これらの引数は pminrow、 pmincol、
-   sminrow、 smincol、 smaxrow、smaxcol です;  p で始まる引数はパッド中の表示領域の左上位置で、s で始まる引数は
-   パッド領域を表示するスクリーン上のクリップ矩形を指定します。
+   A pad is like a window, except that it is not restricted by the screen size, and
+   is not necessarily associated with a particular part of the screen.  Pads can be
+   used when a large window is needed, and only a part of the window will be on the
+   screen at one time.  Automatic refreshes of pads (such as from scrolling or
+   echoing of input) do not occur.  The :meth:`refresh` and :meth:`noutrefresh`
+   methods of a pad require 6 arguments to specify the part of the pad to be
+   displayed and the location on the screen to be used for the display. The
+   arguments are *pminrow*, *pmincol*, *sminrow*, *smincol*, *smaxrow*, *smaxcol*; the *p*
+   arguments refer to the upper left corner of the pad region to be displayed and
+   the *s* arguments define a clipping box on the screen within which the pad region
+   is to be displayed.
 
 
-.. function:: newwin([nlines, ncols,] begin_y, begin_x)
+.. function:: newwin(nlines, ncols)
+              newwin(nlines, ncols, begin_y, begin_x)
 
-   左上の角が ``(begin_y, begin_x)`` で、高さ／幅が *nlines* / *ncols* の新規ウィンドウを返します。
+   Return a new window, whose left-upper corner is at  ``(begin_y, begin_x)``, and
+   whose height/width is  *nlines*/*ncols*.
 
-   標準では、ウィンドウは指定された位置からスクリーンの右下まで広がります。
+   By default, the window will extend from the  specified position to the lower
+   right corner of the screen.
 
 
 .. function:: nl()
 
-   newlime モードに入ります。このモードはリターンキーを入力中の改行として変換し、出力時に改行文字を復帰 (return) と改行 (line-feed)
-   に変換します。newline モードは初期化時にはオンになっています。
+   Enter newline mode.  This mode translates the return key into newline on input,
+   and translates newline into return and line-feed on output. Newline mode is
+   initially on.
 
 
 .. function:: nocbreak()
 
-   cbreak モードから離れます。行バッファリングを行う通常の "cooked"  モードに戻ります。
+   Leave cbreak mode.  Return to normal "cooked" mode with line buffering.
 
 
 .. function:: noecho()
 
-   echo モードから離れます。入力のエコーバックはオフにされます。
+   Leave echo mode.  Echoing of input characters is turned off.
 
 
 .. function:: nonl()
 
-   newline モードから離れます。入力時のリターンキーから改行への変換、および出力時の改行から復帰／改行への低レベル変換を無効化します
-   (ただし、 ``addch('\n')`` の振る舞いは変更せず、仮想スクリーン上では常に復帰と改行に等しくなります)。変換をオフにすることで、 curses
-   は水平方向の動きを少しだけ高速化できることがあります; また、入力中のリターンキーの検出ができるようになります。
+   Leave newline mode.  Disable translation of return into newline on input, and
+   disable low-level translation of newline into newline/return on output (but this
+   does not change the behavior of ``addch('\n')``, which always does the
+   equivalent of return and line feed on the virtual screen).  With translation
+   off, curses can sometimes speed up vertical motion a little; also, it will be
+   able to detect the return key on input.
 
 
 .. function:: noqiflush()
 
-   noquiflush ルーチンを使うと、通常行われている INTR、QUIT、および SUSP 文字による入力および出力キューのフラッシュが行われなく
-   なります。シグナルハンドラが終了した際、割り込みが発生しなかったかのように出力を続たい場合、ハンドラ中で :func:`noqiflush`
-   を呼び出すことができます。
+   When the :func:`noqiflush` routine is used, normal flush of input and output queues
+   associated with the INTR, QUIT and SUSP characters will not be done.  You may
+   want to call :func:`noqiflush` in a signal handler if you want output to
+   continue as though the interrupt had not occurred, after the handler exits.
 
 
 .. function:: noraw()
 
-   raw モードから離れます。行バッファリングを行う通常の "cooked"  モードに戻ります。
+   Leave raw mode. Return to normal "cooked" mode with line buffering.
 
 
 .. function:: pair_content(pair_number)
 
-   要求された色ペア中の色を含む ``(fg, bg)`` からなるタプルを返します。 *pair_number* は ``1`` から ``COLOR_PAIRS
-   - 1`` の間でなければなりません。
+   Return a tuple ``(fg, bg)`` containing the colors for the requested color pair.
+   The value of *pair_number* must be between ``1`` and ``COLOR_PAIRS - 1``.
 
 
 .. function:: pair_number(attr)
 
-   *attr* に対する色ペアセットの番号を返します。 :func:`color_pair`  はこの関数の逆に相当します。
+   Return the number of the color-pair set by the attribute value *attr*.
+   :func:`color_pair` is the counterpart to this function.
 
 
 .. function:: putp(string)
 
-   ``tputs(str, 1, putchar)`` と等価です; 現在の端末における、指定された terminfo 機能の値を出力します。putp
-   の出力は常に標準出力に送られるので注意して下さい。
+   Equivalent to ``tputs(str, 1, putchar)``; emit the value of a specified
+   terminfo capability for the current terminal.  Note that the output of :func:`putp`
+   always goes to standard output.
 
 
 .. function:: qiflush( [flag] )
 
-   *flag* が偽なら、 :func:`noqiflush` を呼ぶのとと同じ効果です。 *flag* が真か、引数が与えられていない場合、制御文字が読み出された
-   最にキューはフラッシュされます。
+   If *flag* is ``False``, the effect is the same as calling :func:`noqiflush`. If
+   *flag* is ``True``, or no argument is provided, the queues will be flushed when
+   these control characters are read.
 
 
 .. function:: raw()
 
-   raw モードに入ります。raw モードでは、通常の行バッファリングと割り込み (interrupt)、終了 (quit)、一時停止
-   (suspend)、およびフロー制御キーはオフになります; 文字は curses 入力関数に一文字づつ渡されます。
+   Enter raw mode.  In raw mode, normal line buffering and  processing of
+   interrupt, quit, suspend, and flow control keys are turned off; characters are
+   presented to curses input functions one by one.
 
 
 .. function:: reset_prog_mode()
 
-   端末を "program" モードに復旧し、予め :func:`def_prog_mode` で保存した内容に戻します。
+   Restore the  terminal  to "program" mode, as previously saved  by
+   :func:`def_prog_mode`.
 
 
 .. function:: reset_shell_mode()
 
-   端末を "shell" モードに復旧し、予め :func:`def_shell_mode` で保存した内容に戻します。
+   Restore the  terminal  to "shell" mode, as previously saved  by
+   :func:`def_shell_mode`.
+
+
+.. function:: resetty()
+
+   Restore the state of the terminal modes to what it was at the last call to
+   :func:`savetty`.
+
+
+.. function:: resize_term(nlines, ncols)
+
+   Backend function used by :func:`resizeterm`, performing most of the work;
+   when resizing the windows, :func:`resize_term` blank-fills the areas that are
+   extended.  The calling application should fill in these areas with
+   appropriate data.  The :func:`resize_term` function attempts to resize all
+   windows.  However, due to the calling convention of pads, it is not possible
+   to resize these without additional interaction with the application.
+
+
+.. function:: resizeterm(nlines, ncols)
+
+   Resize the standard and current windows to the specified dimensions, and
+   adjusts other bookkeeping data used by the curses library that record the
+   window dimensions (in particular the SIGWINCH handler).
+
+
+.. function:: savetty()
+
+   Save the current state of the terminal modes in a buffer, usable by
+   :func:`resetty`.
 
 
 .. function:: setsyx(y, x)
 
-   仮想スクリーンカーソルを *y*, *x* に設定します。 *y* および *x* が共に -1 の場合、leaveok が設定されます。
+   Set the virtual screen cursor to *y*, *x*. If *y* and *x* are both -1, then
+   leaveok is set.
 
 
 .. function:: setupterm([termstr, fd])
 
-   端末を初期化します。 *termstr* は文字列で、端末の名前を与えます; 省略された場合、TERM 環境変数の値が使われます。 *fd* は
-   初期化シーケンスが送られる先のファイル記述子です; *fd* を与えない場合、 ``sys.stdout`` のファイル記述子が使われます。
+   Initialize the terminal.  *termstr* is a string giving the terminal name; if
+   omitted, the value of the :envvar:`TERM` environment variable will be used.  *fd* is the
+   file descriptor to which any initialization sequences will be sent; if not
+   supplied, the file descriptor for ``sys.stdout`` will be used.
 
 
 .. function:: start_color()
 
-   プログラマがカラーを利用したい場合で、かつ他の何らかのカラー操作ルーチンを呼び出す前に呼び出さなくてはなりません。この関数は :func:`initscr`
-   を呼んだ直後に呼ぶようにしておくとよいでしょう。
+   Must be called if the programmer wants to use colors, and before any other color
+   manipulation routine is called.  It is good practice to call this routine right
+   after :func:`initscr`.
 
-   :func:`start_color` は 8 つの基本色 (黒、赤、緑、黄、青、マゼンタ、シアン、および白)
-   と、色数の最大値と端末がサポートする色ペアの最大数が入っている、 :mod:`curses` モジュールにおける二つのグローバル変数、
-   :const:`COLORS` および :const:`COLOR_PAIRS` を初期化します。
-   この関数はまた、色設定を端末のスイッチが入れられたときの状態に戻します。
+   :func:`start_color` initializes eight basic colors (black, red,  green, yellow,
+   blue, magenta, cyan, and white), and two global variables in the :mod:`curses`
+   module, :const:`COLORS` and :const:`COLOR_PAIRS`, containing the maximum number
+   of colors and color-pairs the terminal can support.  It also restores the colors
+   on the terminal to the values they had when the terminal was just turned on.
 
 
 .. function:: termattrs()
 
-   端末がサポートする全てのビデオ属性を論理和した値を返します。この情報は、curses プログラムがスクリーンの見え方を
-   完全に制御する必要がある場合に便利です。
+   Return a logical OR of all video attributes supported by the terminal.  This
+   information is useful when a curses program needs complete control over the
+   appearance of the screen.
 
 
 .. function:: termname()
 
-   14 文字以下になるように切り詰められた環境変数 TERM の値を返します。
+   Return the value of the environment variable :envvar:`TERM`, truncated to 14 characters.
 
 
 .. function:: tigetflag(capname)
 
-   terminfo 機能名 *capname* に対応する機能値をブール値で返します。 *capname* がブール値で表される機能値でない場合 ``-1``
-   が返され、機能がキャンセルされているか、端末記述上に見つからない場合には ``0`` を返します。
+   Return the value of the Boolean capability corresponding to the terminfo
+   capability name *capname*.  The value ``-1`` is returned if *capname* is not a
+   Boolean capability, or ``0`` if it is canceled or absent from the terminal
+   description.
 
 
 .. function:: tigetnum(capname)
 
-   terminfo 機能名 *capname* に対応する機能値を数値で返します。 *capname* が数値で表される機能値でない場合 ``-2``
-   が返され、機能がキャンセルされているか、端末記述上に見つからない場合には ``-1`` を返します。
+   Return the value of the numeric capability corresponding to the terminfo
+   capability name *capname*.  The value ``-2`` is returned if *capname* is not a
+   numeric capability, or ``-1`` if it is canceled or absent from the terminal
+   description.
 
 
 .. function:: tigetstr(capname)
 
-   terminfo 機能名 *capname* に対応する機能値を文字列値で返します。 *capname* が文字列値で表される機能値でない場合や、
-   機能がキャンセルされているか、端末記述上に見つからない場合には ``None`` を返します。
+   Return the value of the string capability corresponding to the terminfo
+   capability name *capname*.  ``None`` is returned if *capname* is not a string
+   capability, or is canceled or absent from the terminal description.
 
 
 .. function:: tparm(str[,...])
 
-   *str* を与えられたパラメタを使って文字列にインスタンス化します。 *str* は terminfo データベースから得られたパラメタを持つ文字列
-   でなければなりません。例えば、 ``tparm(tigetstr("cup"), 5, 3)``  は ``'\033[6;4H'``
-   のようになります。厳密には端末の形式によって異なる結果となります。
+   Instantiate the string *str* with the supplied parameters, where *str* should
+   be a parameterized string obtained from the terminfo database.  E.g.
+   ``tparm(tigetstr("cup"), 5, 3)`` could result in ``'\033[6;4H'``, the exact
+   result depending on terminal type.
 
 
 .. function:: typeahead(fd)
 
-   先読みチェックに使うためのファイル記述子 *fd* を指定します。 *fd* が ``-1`` の場合、先読みチェックは行われません。
+   Specify that the file descriptor *fd* be used for typeahead checking.  If *fd*
+   is ``-1``, then no typeahead checking is done.
 
-   curses ライブラリはスクリーンを更新する間、先読み文字列を定期的に検索することで "行はみ出し最適化 (line-breakout
-   optimization)" を行います。入力が得られ、かつ入力は端末からのものである場合、現在行おうとしている更新は refresh や doupdate
-   を再度呼び出すまで先送りにします。この関数は異なるファイル記述子で先読みチェックを行うように指定することができます。
+   The curses library does "line-breakout optimization" by looking for typeahead
+   periodically while updating the screen.  If input is found, and it is coming
+   from a tty, the current update is postponed until refresh or doupdate is called
+   again, allowing faster response to commands typed in advance. This function
+   allows specifying a different file descriptor for typeahead checking.
 
 
 .. function:: unctrl(ch)
 
-   *ch* の印字可能な表現を文字列で返します。制御文字は例えば ``^C`` のようにキャレットに続く文字として表示されます。印字可能文字はそのままです。
+   Return a string which is a printable representation of the character *ch*.
+   Control characters are displayed as a caret followed by the character, for
+   example as ``^C``. Printing characters are left as they are.
 
 
 .. function:: ungetch(ch)
 
-   *ch* をプッシュして、 :meth:`getch` を次に呼び出したときに返されるようにします。
+   Push *ch* so the next :meth:`getch` will return it.
 
    .. note::
 
-      :meth:`getch` を呼び出すまでは *ch* は一つしかプッシュできません。
+      Only one *ch* can be pushed before :meth:`getch` is called.
 
 
 .. function:: ungetmouse(id, x, y, z, bstate)
 
-   与えられた状態データが関連付けられた :const:`KEY_MOUSE` イベントを入力キューにプッシュします。
+   Push a :const:`KEY_MOUSE` event onto the input queue, associating the given
+   state data with it.
 
 
 .. function:: use_env(flag)
 
-   この関数を使う場合、 :func:`initscr` または newterm を呼ぶ前に呼び出さなくてはなりません。 *flag* が偽の場合、環境変数
-   :envvar:`LINES` および :envvar:`COLUMNS` の値 (これらは標準の設定で使われます) の値が設定されていたり、curses
-   がウィンドウ内で動作して (この場合 :envvar:`LINES` や :envvar:`COLUMNS` が設定
-   されていないとウィンドウのサイズを使います) いても、terminfo  データベースに指定された lines および columns の値を使います。
+   If used, this function should be called before :func:`initscr` or newterm are
+   called.  When *flag* is ``False``, the values of lines and columns specified in the
+   terminfo database will be used, even if environment variables :envvar:`LINES`
+   and :envvar:`COLUMNS` (used by default) are set, or if curses is running in a
+   window (in which case default behavior would be to use the window size if
+   :envvar:`LINES` and :envvar:`COLUMNS` are not set).
 
 
 .. function:: use_default_colors()
 
-   この機能をサポートしている端末上で、色の値としてデフォルト値を使う設定をします。
-   あなたのアプリケーションで透過性とサポートするためにこの関数を使ってください。デフォルトの色は色番号-1に割り当てられます。
+   Allow use of default values for colors on terminals supporting this feature. Use
+   this to support transparency in your application.  The default color is assigned
+   to the color number -1. After calling this function,  ``init_pair(x,
+   curses.COLOR_RED, -1)`` initializes, for instance, color pair *x* to a red
+   foreground color on the default background.
 
-   この関数を呼んだ後、たとえば ``init_pair(x, curses.COLOR_RED, -1)``
-   は色ペア *x* を赤い前景色とデフォルトの背景色に初期化します。
+
+.. function:: wrapper(func, ...)
+
+   Initialize curses and call another callable object, *func*, which should be the
+   rest of your curses-using application.  If the application raises an exception,
+   this function will restore the terminal to a sane state before re-raising the
+   exception and generating a traceback.  The callable object *func* is then passed
+   the main window 'stdscr' as its first argument, followed by any other arguments
+   passed to :func:`wrapper`.  Before calling *func*, :func:`wrapper` turns on
+   cbreak mode, turns off echo, enables the terminal keypad, and initializes colors
+   if the terminal has color support.  On exit (whether normally or by exception)
+   it restores cooked mode, turns on echo, and disables the terminal keypad.
 
 
 .. _curses-window-objects:
 
-Window オブジェクト
--------------------
+Window Objects
+--------------
 
-上記の :func:`initscr` や :func:`newwin` が返すウィンドウは、以下のメソッドを持ちます:
+Window objects, as returned by :func:`initscr` and :func:`newwin` above, have
+the following methods:
 
 
-.. method:: window.addch([y, x,] ch[, attr])
+.. method:: window.addch(ch[, attr])
+            window.addch(y, x, ch[, attr])
 
    .. note::
 
-      ここで *文字* は Python 文字 (長さ 1 の文字列) C における文字 (ASCII コード) を意味します。(この注釈は文字について触れている
-      ドキュメントではどこでも当てはまります。) 組み込みの :func:`ord` は文字列をコードの集まりにする際に便利です。
+      A *character* means a C character (an ASCII code), rather than a Python
+      character (a string of length 1). (This note is true whenever the
+      documentation mentions a character.) The built-in :func:`ord` is handy for
+      conveying strings to codes.
 
-   ``(y, x)`` にある文字 *ch* を属性 *attr* で描画します。このときその場所に以前描画された文字は上書きされます。
-   標準の設定では、文字の位置および属性はウィンドウオブジェクトにおける現在の設定になります。
-
-
-.. method:: window.addnstr([y, x,] str, n[, attr])
-
-   文字列 *str* から最大で *n* 文字を ``(y, x)``  に属性 *attr* で描画します。以前ディスプレイにあった内容はすべて
-   上書きされます。
+   Paint character *ch* at ``(y, x)`` with attributes *attr*, overwriting any
+   character previously painter at that location.  By default, the character
+   position and attributes are the current settings for the window object.
 
 
-.. method:: window.addstr([y, x,] str[, attr])
+.. method:: window.addnstr(str, n[, attr])
+            window.addnstr(y, x, str, n[, attr])
 
-   ``(y, x)`` に文字列 *str* を属性 *attr* で描画します。以前ディスプレイにあった内容はすべて上書きされます。
+   Paint at most *n* characters of the  string *str* at ``(y, x)`` with attributes
+   *attr*, overwriting anything previously on the display.
+
+
+.. method:: window.addstr(str[, attr])
+            window.addstr(y, x, str[, attr])
+
+   Paint the string *str* at ``(y, x)`` with attributes *attr*, overwriting
+   anything previously on the display.
 
 
 .. method:: window.attroff(attr)
 
-   現在のウィンドウに書き込まれた全ての内容に対し "バックグラウンド"  に設定された属性 *attr* を除去します。
+   Remove attribute *attr* from the "background" set applied to all writes to the
+   current window.
 
 
 .. method:: window.attron(attr)
 
-   現在のウィンドウに書き込まれた全ての内容に対し "バックグラウンド"  に属性 *attr* を追加します。
+   Add attribute *attr* from the "background" set applied to all writes to the
+   current window.
 
 
 .. method:: window.attrset(attr)
 
-   "バックグラウンド" の属性セットを *attr* に設定します。初期値は 0 (属性なし) です。
+   Set the "background" set of attributes to *attr*.  This set is initially 0 (no
+   attributes).
 
 
 .. method:: window.bkgd(ch[, attr])
 
-   ウィンドウ上の背景プロパティを、 *attr* を属性とする文字 *ch* に設定します。変更はそのウィンドウ中の全ての文字に以下のようにして適用されます:
+   Set the background property of the window to the character *ch*, with
+   attributes *attr*.  The change is then applied to every character position in
+   that window:
 
-   * ウィンドウ中の全ての文字の属性が新たな背景属性に変更されます。
+   * The attribute of every character in the window  is changed to the new
+     background attribute.
 
-   * 以前の背景文字が出現すると、常に新たな背景文字に変更されます。
+   * Wherever  the  former background character appears, it is changed to the new
+     background character.
 
 
 .. method:: window.bkgdset(ch[, attr])
 
-   ウィンドウの背景を設定します。ウィンドウの背景は、文字と何らかの属性の組み合わせから成り立ちます。背景情報の属性の部分は、
-   ウィンドウ上に描画されている空白でない全ての文字と組み合わされ (OR され) ます。空白文字には文字部分と属性部分の両方が組み合わされ
-   ます。背景は文字のプロパティとなり、スクロールや行／文字の挿入／削除操作の際には文字と一緒に移動します。
+   Set the window's background.  A window's background consists of a character and
+   any combination of attributes.  The attribute part of the background is combined
+   (OR'ed) with all non-blank characters that are written into the window.  Both
+   the character and attribute parts of the background are combined with the blank
+   characters.  The background becomes a property of the character and moves with
+   the character through any scrolling and insert/delete line/character operations.
 
 
 .. method:: window.border([ls[, rs[, ts[, bs[, tl[, tr[, bl[, br]]]]]]]])
 
-   ウィンドウの縁に境界線を描画します。各引数には境界の特定部分を表現するために使われる文字を指定します; 詳細は以下のテーブルを参照
-   してください。文字は整数または 1 文字からなる文字列で指定されます。
+   Draw a border around the edges of the window. Each parameter specifies  the
+   character to use for a specific part of the border; see the table below for more
+   details.  The characters can be specified as integers or as one-character
+   strings.
 
    .. note::
 
-      どの引数も、 ``0`` を指定した場合標準設定の文字が使われるようになります。キーワード引数は使うことが *できません* 。
-      標準の設定はテーブル中に示されています:
+      A ``0`` value for any parameter will cause the default character to be used for
+      that parameter.  Keyword parameters can *not* be used.  The defaults are listed
+      in this table:
 
-   +------+----------+-----------------------+
-   | 引数 | 記述     | 標準の設定値          |
-   +======+==========+=======================+
-   | *ls* | 左側     | :const:`ACS_VLINE`    |
-   +------+----------+-----------------------+
-   | *rs* | 右側     | :const:`ACS_VLINE`    |
-   +------+----------+-----------------------+
-   | *ts* | 上側     | :const:`ACS_HLINE`    |
-   +------+----------+-----------------------+
-   | *bs* | 下側     | :const:`ACS_HLINE`    |
-   +------+----------+-----------------------+
-   | *tl* | 左上の角 | :const:`ACS_ULCORNER` |
-   +------+----------+-----------------------+
-   | *tr* | 右上の角 | :const:`ACS_URCORNER` |
-   +------+----------+-----------------------+
-   | *bl* | 左下の角 | :const:`ACS_LLCORNER` |
-   +------+----------+-----------------------+
-   | *br* | 右下の角 | :const:`ACS_LRCORNER` |
-   +------+----------+-----------------------+
+   +-----------+---------------------+-----------------------+
+   | Parameter | Description         | Default value         |
+   +===========+=====================+=======================+
+   | *ls*      | Left side           | :const:`ACS_VLINE`    |
+   +-----------+---------------------+-----------------------+
+   | *rs*      | Right side          | :const:`ACS_VLINE`    |
+   +-----------+---------------------+-----------------------+
+   | *ts*      | Top                 | :const:`ACS_HLINE`    |
+   +-----------+---------------------+-----------------------+
+   | *bs*      | Bottom              | :const:`ACS_HLINE`    |
+   +-----------+---------------------+-----------------------+
+   | *tl*      | Upper-left corner   | :const:`ACS_ULCORNER` |
+   +-----------+---------------------+-----------------------+
+   | *tr*      | Upper-right corner  | :const:`ACS_URCORNER` |
+   +-----------+---------------------+-----------------------+
+   | *bl*      | Bottom-left corner  | :const:`ACS_LLCORNER` |
+   +-----------+---------------------+-----------------------+
+   | *br*      | Bottom-right corner | :const:`ACS_LRCORNER` |
+   +-----------+---------------------+-----------------------+
 
 
 .. method:: window.box([vertch, horch])
 
-   :meth:`border` と同様ですが、 *ls* および *rs* は共に *vertch* で、 *ts* および *bs* は共に *horch*
-   です。この関数では、角に使われる文字は常に標準設定の値です。
+   Similar to :meth:`border`, but both *ls* and *rs* are *vertch* and both *ts* and
+   *bs* are *horch*.  The default corner characters are always used by this function.
 
 
-.. method:: window.chgat([y, x, ] [num,] attr)
+.. method:: window.chgat(attr)
+            window.chgat(num, attr)
+            window.chgat(y, x, attr)
+            window.chgat(y, x, num, attr)
 
-   .. Sets the attributes of *num* characters at the current cursor position, or at
-      position ``(y, x)`` if supplied. If no value of *num* is given or *num* = -1,
-      the attribute will  be set on all the characters to the end of the line.  This
-      function does not move the cursor. The changed line will be touched using the
-      :meth:`touchline` method so that the contents will be redisplayed by the next
-      window refresh.
-
-   現在のカーソルのポジションか、引数が指定された場合は ``(y, x)`` から、
-   *num* 文字の属性を設定します。
-   *num* が指定されない、または *num* = -1 の場合は、属性はその行の終わりまでの\
-   すべての文字に適用されます。
-   この関数はカーソルを移動しません。
-   変更された行に対して :meth:`touchline` メソッドが呼び出されるので、
-   その行の内容は次のwindow refreshの時に再描画されます。
+   Set the attributes of *num* characters at the current cursor position, or at
+   position ``(y, x)`` if supplied. If no value of *num* is given or *num* = -1,
+   the attribute will  be set on all the characters to the end of the line.  This
+   function does not move the cursor. The changed line will be touched using the
+   :meth:`touchline` method so that the contents will be redisplayed by the next
+   window refresh.
 
 
 .. method:: window.clear()
 
-   :meth:`erase` に似ていますが、次に :meth:`refresh` が呼び出された際に全てのウィンドウを再描画するようにします。
+   Like :meth:`erase`, but also cause the whole window to be repainted upon next
+   call to :meth:`refresh`.
 
 
 .. method:: window.clearok(yes)
 
-   *yes* が 1 ならば、次の :meth:`refresh` はウィンドウを完全に消去します。
+   If *yes* is 1, the next call to :meth:`refresh` will clear the window
+   completely.
 
 
 .. method:: window.clrtobot()
 
-   カーソルの位置からウィンドウの端までを消去します: カーソル以降の全ての行が削除されるため、 :meth:`clrtoeol` が実行されたのと
-   おなじになります。
+   Erase from cursor to the end of the window: all lines below the cursor are
+   deleted, and then the equivalent of :meth:`clrtoeol` is performed.
 
 
 .. method:: window.clrtoeol()
 
-   カーソル位置から行末までを消去します。
+   Erase from cursor to the end of the line.
 
 
 .. method:: window.cursyncup()
 
-   ウィンドウの全ての親ウィンドウについて、現在のカーソル位置を反映するよう更新します。
+   Update the current cursor position of all the ancestors of the window to
+   reflect the current cursor position of the window.
 
 
 .. method:: window.delch([y, x])
 
-   ``(y, x)`` にある文字を削除します。 Delete any character at ``(y, x)``.
+   Delete any character at ``(y, x)``.
 
 
 .. method:: window.deleteln()
 
-   カーソルの下にある行を削除します。後続の行はすべて 1 行上に移動します。
+   Delete the line under the cursor. All following lines are moved up by one line.
 
 
-.. method:: window.derwin([nlines, ncols,] begin_y, begin_x)
+.. method:: window.derwin(begin_y, begin_x)
+            window.derwin(nlines, ncols, begin_y, begin_x)
 
-   "derive window (ウィンドウを派生する)" の短縮形です。 :meth:`derwin` は :meth:`subwin` と同じですが、
-   *begin_y* および *begin+x* はスクリーン全体の原点ではなく、ウィンドウの原点からの相対位置です。派生したウィンドウオブジェクト
-   が返されます。
+   An abbreviation for "derive window", :meth:`derwin` is the same as calling
+   :meth:`subwin`, except that *begin_y* and *begin_x* are relative to the origin
+   of the window, rather than relative to the entire screen.  Return a window
+   object for the derived window.
 
 
 .. method:: window.echochar(ch[, attr])
 
-   文字 *ch* に属性 *attr* を付与し、即座に :meth:`refresh` をウィンドウに対して呼び出します。
+   Add character *ch* with attribute *attr*, and immediately  call :meth:`refresh`
+   on the window.
 
 
 .. method:: window.enclose(y, x)
 
-   与えられた文字セル座標をスクリーン原点から相対的なものとし、ウィンドウの中に含まれるかを調べて、真または偽を返します。
-   スクリーン上のウィンドウの一部がマウスイベントの発生場所を含むかどうかを調べる上で便利です。
+   Test whether the given pair of screen-relative character-cell coordinates are
+   enclosed by the given window, returning ``True`` or ``False``.  It is useful for
+   determining what subset of the screen windows enclose the location of a mouse
+   event.
 
 
 .. method:: window.erase()
 
-   ウィンドウをクリアします。
+   Clear the window.
 
 
 .. method:: window.getbegyx()
 
-   左上の角の座標をあらわすタプル ``(y, x)`` を返します。
+   Return a tuple ``(y, x)`` of co-ordinates of upper-left corner.
+
+
+.. method:: window.getbkgd()
+
+   Return the given window's current background character/attribute pair.
 
 
 .. method:: window.getch([y, x])
 
-   文字を取得します。返される整数は ASCII の範囲の値となる *わけではない* ので
-   注意してください。ファンクションキー、キーパッド上のキー等は 256 よりも
-   大きな数字を返します。無遅延 (no-delay) モードでは、入力がない場合 -1 が
-   返されます。それ以外の場合は、 :func:`getch` はキー入力を待ちます。
+   Get a character. Note that the integer returned does *not* have to be in ASCII
+   range: function keys, keypad keys and so on return numbers higher than 256. In
+   no-delay mode, -1 is returned if there is no input, else :func:`getch` waits
+   until a key is pressed.
 
 
 .. method:: window.getkey([y, x])
 
-   文字を取得し、 :meth:`getch` のように整数を返す代わりに文字列を返します。ファンクションキー、キーバットキーなどは
-   キー名の入った複数バイトからなる文字列を返します。無遅延モードでは、入力がない場合例外が送出されます。
+   Get a character, returning a string instead of an integer, as :meth:`getch`
+   does. Function keys, keypad keys and so on return a multibyte string containing
+   the key name.  In no-delay mode, an exception is raised if there is no input.
 
 
 .. method:: window.getmaxyx()
 
-   ウィンドウの高さおよび幅を表すタプル ``(y, x)``  を返します。
+   Return a tuple ``(y, x)`` of the height and width of the window.
 
 
 .. method:: window.getparyx()
 
-   親ウィンドウ中におけるウィンドウの開始位置を x と y の二つの整数で返します。ウィンドウに親ウィンドウがない場合 ``-1,-1``  を返します。
+   Return the beginning coordinates of this window relative to its parent window
+   into two integer variables y and x.  Return ``-1, -1`` if this window has no
+   parent.
 
 
 .. method:: window.getstr([y, x])
 
-   原始的な文字編集機能つきで、ユーザの入力文字列を読み取ります。
+   Read a string from the user, with primitive line editing capacity.
 
 
 .. method:: window.getyx()
 
-   ウィンドウの左上角からの相対で表した現在のカーソル位置をタプル ``(y, x)`` で返します。
+   Return a tuple ``(y, x)`` of current cursor position  relative to the window's
+   upper-left corner.
 
 
-.. method:: window.hline([y, x,] ch, n)
+.. method:: window.hline(ch, n)
+            window.hline(y, x, ch, n)
 
-   ``(y, x)`` から始まり、 *n* の長さを持つ、文字 *ch* で作られる水平線を表示します。
+   Display a horizontal line starting at ``(y, x)`` with length *n* consisting of
+   the character *ch*.
 
 
 .. method:: window.idcok(flag)
 
-   *flag* が偽の場合、curses は端末のハードウェアによる文字挿入／削除機能を使おうとしなくなります; *flag* が真ならば、文字挿入／削除
-   は有効にされます。curses が最初に初期化された際には文字挿入／削除は標準の設定で有効になっています。
+   If *flag* is ``False``, curses no longer considers using the hardware insert/delete
+   character feature of the terminal; if *flag* is ``True``, use of character insertion
+   and deletion is enabled.  When curses is first initialized, use of character
+   insert/delete is enabled by default.
 
 
 .. method:: window.idlok(yes)
 
-   *yes* が 1 であれば、 :mod:`curses` はハードウェアの行編集機能を利用しようと試みます。行挿入／削除は無効化されます。
+   If called with *yes* equal to 1, :mod:`curses` will try and use hardware line
+   editing facilities. Otherwise, line insertion/deletion are disabled.
 
 
 .. method:: window.immedok(flag)
 
-   *flag* が真ならば、ウィンドウイメージ内における何らかの変更があるとウィンドウを更新するようになります; すなわち、 :meth:`refresh`
-   を自分で呼ばなくても良くなります。とはいえ、wrefresh を繰り返し呼び出すことになるため、この操作はかなりパフォーマンスを低下させます。
-   標準の設定では無効になっています。
+   If *flag* is ``True``, any change in the window image automatically causes the
+   window to be refreshed; you no longer have to call :meth:`refresh` yourself.
+   However, it may degrade performance considerably, due to repeated calls to
+   wrefresh.  This option is disabled by default.
 
 
 .. method:: window.inch([y, x])
 
-   ウィンドウの指定の位置の文字を返します。下位 8 ビットが常に文字となり、それより上のビットは属性を表します。
+   Return the character at the given position in the window. The bottom 8 bits are
+   the character proper, and upper bits are the attributes.
 
 
-.. method:: window.insch([y, x,] ch[, attr])
+.. method:: window.insch(ch[, attr])
+            window.insch(y, x, ch[, attr])
 
-   ``(y, x)`` に文字 *ch* を属性 *attr* で描画し、行の *x* からの内容を 1 文字分右にずらします。
+   Paint character *ch* at ``(y, x)`` with attributes *attr*, moving the line from
+   position *x* right by one character.
 
 
 .. method:: window.insdelln(nlines)
 
-   *nlines* 行を指定されたウィンドウの現在の行の上に挿入します。その下にある *nlines* 行は失われます。負の *nlines* を指定
-   すると、カーソルのある行以降の *nlines* を削除し、削除された行の後ろに続く内容が上に来ます。その下にある *nlines* は消去されます。
-   現在のカーソル位置はそのままです。
+   Insert *nlines* lines into the specified window above the current line.  The
+   *nlines* bottom lines are lost.  For negative *nlines*, delete *nlines* lines
+   starting with the one under the cursor, and move the remaining lines up.  The
+   bottom *nlines* lines are cleared.  The current cursor position remains the
+   same.
 
 
 .. method:: window.insertln()
 
-   カーソルの下に空行を 1 行入れます。それ以降の行は 1 行づつ下に移動します。
+   Insert a blank line under the cursor. All following lines are moved down by one
+   line.
 
 
-.. method:: window.insnstr([y, x,] str, n [, attr])
+.. method:: window.insnstr(str, n[, attr])
+            window.insnstr(y, x, str, n[, attr])
 
-   文字列をカーソルの下にある文字の前に (一行に収まるだけ) 最大 *n* 文字挿入します。 *n* がゼロまたは負の値の場合、文字列全体が挿入されます。
-   カーソルの右にある全ての文字は右に移動し、行の左端にある文字は失われます。カーソル位置は (*y*, *x* が指定されていた場合はそこに移動しますが、
-   その後は) 変化しません。
-
-
-.. method:: window.insstr([y, x, ] str [, attr])
-
-   キャラクタ文字列を (行に収まるだけ) カーソルより前に挿入します。カーソルの右側にある文字は全て右にシフトし、行の右端の文字は失われます。カーソル位置は
-   (*y*, *x* が指定されていた場合はそこに移動しますが、その後は) 変化しません。
+   Insert a character string (as many characters as will fit on the line) before
+   the character under the cursor, up to *n* characters.   If *n* is zero or
+   negative, the entire string is inserted. All characters to the right of the
+   cursor are shifted right, with the rightmost characters on the line being lost.
+   The cursor position does not change (after moving to *y*, *x*, if specified).
 
 
-.. method:: window.instr([y, x] [, n])
+.. method:: window.insstr(str[, attr])
+            window.insstr(y, x, str[, attr])
 
-   現在のカーソル位置、または *y*, *x* が指定されている場合にはその場所から始まるキャラクタ文字列をウィンドウから抽出して返します。
-   属性は文字から剥ぎ取られます。 *n* が指定された場合、 :meth:`instr` は (末尾の NUL 文字を除いて) 最大で *n* 文字までの長さからなる
-   文字列を返します。
+   Insert a character string (as many characters as will fit on the line) before
+   the character under the cursor.  All characters to the right of the cursor are
+   shifted right, with the rightmost characters on the line being lost.  The cursor
+   position does not change (after moving to *y*, *x*, if specified).
+
+
+.. method:: window.instr([n])
+            window.instr(y, x[, n])
+
+   Return a string of characters, extracted from the window starting at the
+   current cursor position, or at *y*, *x* if specified. Attributes are stripped
+   from the characters.  If *n* is specified, :meth:`instr` returns a string
+   at most *n* characters long (exclusive of the trailing NUL).
 
 
 .. method:: window.is_linetouched(line)
 
-   指定した行が、最後に :meth:`refresh` を呼んだ時から変更されている場合に真を返します; そうでない場合には偽を返します。 *line*
-   が現在のウィンドウ上の有効な行でない場合、 :exc:`curses.error` 例外を送出します。
+   Return ``True`` if the specified line was modified since the last call to
+   :meth:`refresh`; otherwise return ``False``.  Raise a :exc:`curses.error`
+   exception if *line* is not valid for the given window.
 
 
 .. method:: window.is_wintouched()
 
-   指定したウィンドウが、最後に :meth:`refresh` を呼んだ時から変更されている場合に真を返します; そうでない場合には偽を返します。
+   Return ``True`` if the specified window was modified since the last call to
+   :meth:`refresh`; otherwise return ``False``.
 
 
 .. method:: window.keypad(yes)
 
-   *yes* が 1 の場合、ある種のキー (キーパッドやファンクションキー) によって生成されたエスケープシーケンスは :mod:`curses` で
-   解釈されます。 *yes* が 0 の場合、エスケープシーケンスは入力ストリームにそのままの状態で残されます。
+   If *yes* is 1, escape sequences generated by some keys (keypad,  function keys)
+   will be interpreted by :mod:`curses`. If *yes* is 0, escape sequences will be
+   left as is in the input stream.
 
 
 .. method:: window.leaveok(yes)
 
-   *yes* が 1 の場合、カーソルは "カーソル位置" に移動せず現在の場所にとどめます。これにより、カーソルの移動を減らせる
-   可能性があります。この場合、カーソルは不可視にされます。
+   If *yes* is 1, cursor is left where it is on update, instead of being at "cursor
+   position."  This reduces cursor movement where possible. If possible the cursor
+   will be made invisible.
 
-   *yes* が 0 の場合、カーソルは更新の際に常に "カーソル位置" に移動します。
+   If *yes* is 0, cursor will always be at "cursor position" after an update.
 
 
 .. method:: window.move(new_y, new_x)
 
-   カーソルを ``(new_y, new_x)`` に移動します。
+   Move cursor to ``(new_y, new_x)``.
 
 
 .. method:: window.mvderwin(y, x)
 
-   ウィンドウを親ウィンドウの中で移動します。ウィンドウのスクリーン相対となるパラメタ群は変化しません。このルーチンは親ウィンドウの一部を
-   スクリーン上の同じ物理位置に表示する際に用いられます。
+   Move the window inside its parent window.  The screen-relative parameters of
+   the window are not changed.  This routine is used to display different parts of
+   the parent window at the same physical position on the screen.
 
 
 .. method:: window.mvwin(new_y, new_x)
 
-   ウィンドウの左上角が ``(new_y, new_x)`` になるように移動します。
+   Move the window so its upper-left corner is at ``(new_y, new_x)``.
 
 
 .. method:: window.nodelay(yes)
 
-   *yes* が ``1`` の場合、 :meth:`getch` は非ブロックで動作します。
+   If *yes* is ``1``, :meth:`getch` will be non-blocking.
 
 
 .. method:: window.notimeout(yes)
 
-   *yes* が ``1`` の場合、エスケープシーケンスはタイムアウトしなくなります。
+   If *yes* is ``1``, escape sequences will not be timed out.
 
-   *yes* が ``0`` の場合、数ミリ秒間の間エスケープシーケンスは解釈されず、入力ストリーム中にそのままの状態で残されます。
+   If *yes* is ``0``, after a few milliseconds, an escape sequence will not be
+   interpreted, and will be left in the input stream as is.
 
 
 .. method:: window.noutrefresh()
 
-   更新をマークはしますが待機します。この関数はウィンドウのデータ構造を表現したい内容を反映するように更新しますが、物理スクリーン上に
-   反映させるための強制更新を行いません。更新を行うためには :func:`doupdate` を呼び出します。
+   Mark for refresh but wait.  This function updates the data structure
+   representing the desired state of the window, but does not force an update of
+   the physical screen.  To accomplish that, call  :func:`doupdate`.
 
 
 .. method:: window.overlay(destwin[, sminrow, smincol, dminrow, dmincol, dmaxrow, dmaxcol])
 
-   ウィンドウを *destwin* の上に重ね書き (overlay) します。ウィンドウは同じサイズである必要はなく、重なっている領域だけが
-   複写されます。この複写は非破壊的 (non-destructive) です。これは現在の背景文字が *destwin* の内容を上書きしないことを意味します。
+   Overlay the window on top of *destwin*. The windows need not be the same size,
+   only the overlapping region is copied. This copy is non-destructive, which means
+   that the current background character does not overwrite the old contents of
+   *destwin*.
 
-   複写領域をきめ細かく制御するために、 :meth:`overlay` の第二形式を使うことができます。 *sminrow* および *smincol* は
-   元のウィンドウの左上の座標で、他の変数は *destwin* 内の矩形を表します。
+   To get fine-grained control over the copied region, the second form of
+   :meth:`overlay` can be used. *sminrow* and *smincol* are the upper-left
+   coordinates of the source window, and the other variables mark a rectangle in
+   the destination window.
 
 
 .. method:: window.overwrite(destwin[, sminrow, smincol, dminrow, dmincol, dmaxrow, dmaxcol])
 
-   *destwin* の上にウィンドウの内容を上書き (overwrite) します。ウィンドウは同じサイズである必要はなく、重なっている領域だけが
-   複写されます。この複写は破壊的 (destructive) です。これは現在の背景文字が *destwin* の内容を上書きすることを意味します。
+   Overwrite the window on top of *destwin*. The windows need not be the same size,
+   in which case only the overlapping region is copied. This copy is destructive,
+   which means that the current background character overwrites the old contents of
+   *destwin*.
 
-   複写領域をきめ細かく制御するために、 :meth:`overlay` の第二形式を使うことができます。 *sminrow* および *smincol* は
-   元のウィンドウの左上の座標で、他の変数は *destwin* 内の矩形を表します。
+   To get fine-grained control over the copied region, the second form of
+   :meth:`overwrite` can be used. *sminrow* and *smincol* are the upper-left
+   coordinates of the source window, the other variables mark a rectangle in the
+   destination window.
 
 
 .. method:: window.putwin(file)
 
-   ウィンドウに関連付けられている全てのデータを与えられたファイルオブジェクトに書き込みます。この情報は後に :func:`getwin` 関数を使って
-   取得することができます。
+   Write all data associated with the window into the provided file object.  This
+   information can be later retrieved using the :func:`getwin` function.
 
 
 .. method:: window.redrawln(beg, num)
 
-   *beg* 行から始まる *num* スクリーン行の表示内容が壊れており、次の :meth:`refresh` 呼び出しで完全に再描画されなければならない
-   ことを通知します。
+   Indicate that the *num* screen lines, starting at line *beg*, are corrupted and
+   should be completely redrawn on the next :meth:`refresh` call.
 
 
 .. method:: window.redrawwin()
 
-   ウィンドウ全体を更新 (touch) し、次の :meth:`refresh` 呼び出しで完全に再描画されるようにします。
+   Touch the entire window, causing it to be completely redrawn on the next
+   :meth:`refresh` call.
 
 
 .. method:: window.refresh([pminrow, pmincol, sminrow, smincol, smaxrow, smaxcol])
 
-   ディスプレイを即時更新し (現実のウィンドウとこれまでの描画／削除メソッドの内容との同期をとり) ます。
+   Update the display immediately (sync actual screen with previous
+   drawing/deleting methods).
 
-   6 つのオプション引数はウィンドウが :func:`newpad` で生成された場合にのみ指定することができます。追加の引数はパッドやスクリーンの
-   どの部分が含まれるのかを示すために必要です。 *pminrow* および *pmincol* にはパッドが表示されている矩形の
-   左上角を指定します。 *sminrow*,  *smincol*, *smaxrow*,  および *smaxcol*
-   には、スクリーン上に表示される矩形の縁を指定します。パッド内に表示される矩形の右下角はスクリーン座標から計算されるので、
-   矩形は同じサイズでなければなりません。矩形は両方とも、それぞれのウィンドウ構造内に完全に含まれていなければなりません。 *pminrow*,
-   *pmincol*, *sminrow*, または *smincol*  に負の値を指定すると、ゼロを指定したものとして扱われます。
+   The 6 optional arguments can only be specified when the window is a pad created
+   with :func:`newpad`.  The additional parameters are needed to indicate what part
+   of the pad and screen are involved. *pminrow* and *pmincol* specify the upper
+   left-hand corner of the rectangle to be displayed in the pad.  *sminrow*,
+   *smincol*, *smaxrow*, and *smaxcol* specify the edges of the rectangle to be
+   displayed on the screen.  The lower right-hand corner of the rectangle to be
+   displayed in the pad is calculated from the screen coordinates, since the
+   rectangles must be the same size.  Both rectangles must be entirely contained
+   within their respective structures.  Negative values of *pminrow*, *pmincol*,
+   *sminrow*, or *smincol* are treated as if they were zero.
+
+
+.. method:: window.resize(nlines, ncols)
+
+   Reallocate storage for a curses window to adjust its dimensions to the
+   specified values.  If either dimension is larger than the current values, the
+   window's data is filled with blanks that have the current background
+   rendition (as set by :meth:`bkgdset`) merged into them.
 
 
 .. method:: window.scroll([lines=1])
 
-   スクリーンまたはスクロール領域を上に *lines* 行スクロールします。
+   Scroll the screen or scrolling region upward by *lines* lines.
 
 
 .. method:: window.scrollok(flag)
 
-   ウィンドウのカーソルが、最下行で改行を行ったり最後の文字を入力したりした結果、ウィンドウやスクロール領域の縁からはみ出して移動した際の
-   動作を制御します。 *flag* が偽の場合、カーソルは最下行にそのままにしておかれます。 *flag* が真の場合、ウィンドウは 1 行上に
-   スクロールします。端末の物理スクロール効果を得るためには :meth:`idlok` も呼び出す必要があるので注意してください。
+   Control what happens when the cursor of a window is moved off the edge of the
+   window or scrolling region, either as a result of a newline action on the bottom
+   line, or typing the last character of the last line.  If *flag* is false, the
+   cursor is left on the bottom line.  If *flag* is true, the window is scrolled up
+   one line.  Note that in order to get the physical scrolling effect on the
+   terminal, it is also necessary to call :meth:`idlok`.
 
 
 .. method:: window.setscrreg(top, bottom)
 
-   スクロール領域を *top* から *bottom* に設定します。スクロール動作は全てこの領域で行われます。
+   Set the scrolling region from line *top* to line *bottom*. All scrolling actions
+   will take place in this region.
 
 
 .. method:: window.standend()
 
-   *A_STANDOUT* 属性をオフにします。端末によっては、この操作で全ての属性をオフにする副作用が発生します。
+   Turn off the standout attribute.  On some terminals this has the side effect of
+   turning off all attributes.
 
 
 .. method:: window.standout()
 
-   *A_STANDOUT* 属性をオンにします。
+   Turn on attribute *A_STANDOUT*.
 
 
-.. method:: window.subpad([nlines, ncols,] begin_y, begin_x)
+.. method:: window.subpad(begin_y, begin_x)
+            window.subpad(nlines, ncols, begin_y, begin_x)
 
-   左上の角が ``(begin_y, begin_x)`` にあり、幅／高さがそれぞれ *ncols* / *nlines* であるようなサブウィンドウを返します。
+   Return a sub-window, whose upper-left corner is at ``(begin_y, begin_x)``, and
+   whose width/height is *ncols*/*nlines*.
 
 
-.. method:: window.subwin([nlines, ncols,] begin_y, begin_x)
+.. method:: window.subwin(begin_y, begin_x)
+            window.subwin(nlines, ncols, begin_y, begin_x)
 
-   左上の角が ``(begin_y, begin_x)`` にあり、幅／高さがそれぞれ *ncols* / *nlines* であるようなサブウィンドウを返します。
+   Return a sub-window, whose upper-left corner is at ``(begin_y, begin_x)``, and
+   whose width/height is *ncols*/*nlines*.
 
-   標準の設定では、サブウィンドウは指定された場所からウィンドウの右下角まで広がります。
+   By default, the sub-window will extend from the specified position to the lower
+   right corner of the window.
 
 
 .. method:: window.syncdown()
 
-   このウィンドウの上位のウィンドウのいずれかで更新(touch)された各場所をこのウィンドウ内でも更新します。このルーチンは :meth:`refresh`
-   から呼び出されるので、手動で呼び出す必要はほとんどないはずです。
+   Touch each location in the window that has been touched in any of its ancestor
+   windows.  This routine is called by :meth:`refresh`, so it should almost never
+   be necessary to call it manually.
 
 
 .. method:: window.syncok(flag)
 
-   *flag* を真にして呼び出すと、ウィンドウが変更された際は常に :meth:`syncup` を自動的に呼ぶようになります。
+   If called with *flag* set to ``True``, then :meth:`syncup` is called automatically
+   whenever there is a change in the window.
 
 
 .. method:: window.syncup()
 
-   ウィンドウ内で更新 (touch) した場所を、上位の全てのウィンドウ内でも更新します。
+   Touch all locations in ancestors of the window that have been changed in  the
+   window.
 
 
 .. method:: window.timeout(delay)
 
-   ウィンドウのブロックまたは非ブロック読み込み動作を設定します。 *delay* が負の場合、ブロック読み出しが使われ、入力を無期限で
-   待ち受けます。 *delay* がゼロの場合、非ブロック読み出しが使われ、入力待ちの文字がない場合 :meth:`getch` は -1 を返し
-   ます。 *delay* が正の値であれば、 :meth:`getch` は *delay* ミリ秒間ブロックし、ブロック後の時点で入力がない場合には -1
-   を返します。
+   Set blocking or non-blocking read behavior for the window.  If *delay* is
+   negative, blocking read is used (which will wait indefinitely for input).  If
+   *delay* is zero, then non-blocking read is used, and -1 will be returned by
+   :meth:`getch` if no input is waiting.  If *delay* is positive, then
+   :meth:`getch` will block for *delay* milliseconds, and return -1 if there is
+   still no input at the end of that time.
 
 
 .. method:: window.touchline(start, count[, changed])
 
-   *start* から始まる *count* 行が変更されたかのように振舞わせます。
-   もし *changed* が与えられた場合、その引数は指定された行が変更された(*changed*\ =1)か、
-   変更されていないか(*changed*\ =0)を指定します。
+   Pretend *count* lines have been changed, starting with line *start*.  If
+   *changed* is supplied, it specifies whether the affected lines are marked as
+   having been changed (*changed*\ =1) or unchanged (*changed*\ =0).
 
 
 .. method:: window.touchwin()
 
-   描画を最適化するために、全てのウィンドウが変更されたかのように振舞わせます。
+   Pretend the whole window has been changed, for purposes of drawing
+   optimizations.
 
 
 .. method:: window.untouchwin()
 
-   ウィンドウ内の全ての行を、最後に :meth:`refresh` を呼んだ際から変更されていないものとしてマークします。
+   Mark all lines in  the  window  as unchanged since the last call to
+   :meth:`refresh`.
 
 
-.. method:: window.vline([y, x,] ch, n)
+.. method:: window.vline(ch, n)
+            window.vline(y, x, ch, n)
 
-   ``(y, x)`` から始まり、 *n* の長さを持つ、文字 *ch* で作られる垂直線を表示します。
+   Display a vertical line starting at ``(y, x)`` with length *n* consisting of the
+   character *ch*.
 
 
-定数
-----
+Constants
+---------
 
-:mod:`curses` モジュールでは以下のデータメンバを定義しています:
+The :mod:`curses` module defines the following data members:
 
 
 .. data:: ERR
 
-   :func:`getch` のような整数を返す curses ルーチンのいくつかは、失敗した際に :const:`ERR` を返します。
+   Some curses routines  that  return  an integer, such as  :func:`getch`, return
+   :const:`ERR` upon failure.
 
 
 .. data:: OK
 
-   :func:`napms` のような整数を返す curses ルーチンのいくつかは、成功した際に :const:`OK` を返します。
+   Some curses routines  that  return  an integer, such as  :func:`napms`, return
+   :const:`OK` upon success.
 
 
 .. data:: version
 
-   モジュールの現在のバージョンを表現する文字列です。 :const:`__version__` でも取得できます。
+   A string representing the current version of the module.  Also available as
+   :const:`__version__`.
 
-以下に文字セルの属性を指定するために利用可能ないくつかの定数を示します:
+Several constants are available to specify character cell attributes:
 
-+------------------+-----------------------------------------+
-| 属性             | 意味                                    |
-+==================+=========================================+
-| ``A_ALTCHARSET`` | 代用文字 (alternate character) モード。 |
-+------------------+-----------------------------------------+
-| ``A_BLINK``      | 点滅モード。                            |
-+------------------+-----------------------------------------+
-| ``A_BOLD``       | 太字モード。                            |
-+------------------+-----------------------------------------+
-| ``A_DIM``        | 低輝度モード。                          |
-+------------------+-----------------------------------------+
-| ``A_NORMAL``     | 通常の属性。                            |
-+------------------+-----------------------------------------+
-| ``A_REVERSE``    | 背景色と前景色を入れ替える。            |
-+------------------+-----------------------------------------+
-| ``A_STANDOUT``   | 強調モード。                            |
-+------------------+-----------------------------------------+
-| ``A_UNDERLINE``  | 下線モード。                            |
-+------------------+-----------------------------------------+
++------------------+-------------------------------+
+| Attribute        | Meaning                       |
++==================+===============================+
+| ``A_ALTCHARSET`` | Alternate character set mode. |
++------------------+-------------------------------+
+| ``A_BLINK``      | Blink mode.                   |
++------------------+-------------------------------+
+| ``A_BOLD``       | Bold mode.                    |
++------------------+-------------------------------+
+| ``A_DIM``        | Dim mode.                     |
++------------------+-------------------------------+
+| ``A_NORMAL``     | Normal attribute.             |
++------------------+-------------------------------+
+| ``A_REVERSE``    | Reverse background and        |
+|                  | foreground colors.            |
++------------------+-------------------------------+
+| ``A_STANDOUT``   | Standout mode.                |
++------------------+-------------------------------+
+| ``A_UNDERLINE``  | Underline mode.               |
++------------------+-------------------------------+
 
-キーは ``KEY_`` で始まる名前をもつ整数定数です。利用可能なキーキャップはシステムに依存します。
+Keys are referred to by integer constants with names starting with  ``KEY_``.
+The exact keycaps available are system dependent.
 
 .. XXX this table is far too large! should it be alphabetized?
 
-+-------------------+----------------------------------------------------+
-| キー定数          | キー                                               |
-+===================+====================================================+
-| ``KEY_MIN``       | 最小のキー値                                       |
-+-------------------+----------------------------------------------------+
-| ``KEY_BREAK``     | ブレーク (Break, 信頼できません)                   |
-+-------------------+----------------------------------------------------+
-| ``KEY_DOWN``      | 下向き矢印 (Down-arrow)                            |
-+-------------------+----------------------------------------------------+
-| ``KEY_UP``        | 上向き矢印 (Up-arrow)                              |
-+-------------------+----------------------------------------------------+
-| ``KEY_LEFT``      | 左向き矢印 (Left-arrow)                            |
-+-------------------+----------------------------------------------------+
-| ``KEY_RIGHT``     | 右向き矢印 (Right-arrow)                           |
-+-------------------+----------------------------------------------------+
-| ``KEY_HOME``      | ホームキー (Home, または上左矢印)                  |
-+-------------------+----------------------------------------------------+
-| ``KEY_BACKSPACE`` | バックスペース (Backspace, 信頼できません)         |
-+-------------------+----------------------------------------------------+
-| ``KEY_F0``        | ファンクションキー 64 個までサポートされています。 |
-+-------------------+----------------------------------------------------+
-| ``KEY_Fn``        | ファンクションキー *n* の値                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_DL``        | 行削除 (Delete line)                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_IL``        | 行挿入 (Insert line)                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_DC``        | 文字削除 (Delete char)                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_IC``        | 文字挿入、または文字挿入モードへ入る               |
-+-------------------+----------------------------------------------------+
-| ``KEY_EIC``       | 文字挿入モードから抜ける                           |
-+-------------------+----------------------------------------------------+
-| ``KEY_CLEAR``     | 画面消去                                           |
-+-------------------+----------------------------------------------------+
-| ``KEY_EOS``       | 画面の末端まで消去                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_EOL``       | 行末端まで消去                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_SF``        | 前に 1 行スクロール                                |
-+-------------------+----------------------------------------------------+
-| ``KEY_SR``        | 後ろ (逆方向) に 1 行スクロール                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_NPAGE``     | 次のページ (Page Next)                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_PPAGE``     | 前のページ (Page Prev)                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_STAB``      | タブ設定                                           |
-+-------------------+----------------------------------------------------+
-| ``KEY_CTAB``      | タブリセット                                       |
-+-------------------+----------------------------------------------------+
-| ``KEY_CATAB``     | 全てのタブをリセット                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_ENTER``     | 入力または送信 (信頼できません)                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SRESET``    | ソフトウェア (部分的) リセット (信頼できません)    |
-+-------------------+----------------------------------------------------+
-| ``KEY_RESET``     | リセットまたはハードリセット (信頼できません)      |
-+-------------------+----------------------------------------------------+
-| ``KEY_PRINT``     | 印刷 (Print)                                       |
-+-------------------+----------------------------------------------------+
-| ``KEY_LL``        | 下ホーム (Home down) または最下行 (左下)           |
-+-------------------+----------------------------------------------------+
-| ``KEY_A1``        | キーパッドの左上キー                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_A3``        | キーパッドの右上キー                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_B2``        | キーパッドの中央キー                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_C1``        | キーパッドの左下キー                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_C3``        | キーパッドの右下キー                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_BTAB``      | Back tab                                           |
-+-------------------+----------------------------------------------------+
-| ``KEY_BEG``       | 開始 (Beg)                                         |
-+-------------------+----------------------------------------------------+
-| ``KEY_CANCEL``    | キャンセル (Cancel)                                |
-+-------------------+----------------------------------------------------+
-| ``KEY_CLOSE``     | 閉じる (Close)                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_COMMAND``   | コマンド (Cmd)                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_COPY``      | コピー (Copy)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_CREATE``    | 生成 (Create)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_END``       | 終了 (End)                                         |
-+-------------------+----------------------------------------------------+
-| ``KEY_EXIT``      | 終了 (Exit)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_FIND``      | 検索 (Find)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_HELP``      | ヘルプ (Help)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_MARK``      | マーク (Mark)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_MESSAGE``   | メッセージ (Message)                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_MOVE``      | 移動 (Move)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_NEXT``      | 次へ (Next)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_OPEN``      | 開く (Open)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_OPTIONS``   | オプション (Options)                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_PREVIOUS``  | 前へ (Prev)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_REDO``      | やり直し (Redo)                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_REFERENCE`` | 参照 (Ref)                                         |
-+-------------------+----------------------------------------------------+
-| ``KEY_REFRESH``   | 更新 (Refresh)                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_REPLACE``   | 置換 (Replace)                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_RESTART``   | 再起動 (Restart)                                   |
-+-------------------+----------------------------------------------------+
-| ``KEY_RESUME``    | 再開 (Resume)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_SAVE``      | 保存 (Save)                                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_SBEG``      | シフト付き開始 Beg                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SCANCEL``   | シフト付きキャンセル Cancel                        |
-+-------------------+----------------------------------------------------+
-| ``KEY_SCOMMAND``  | シフト付き Command                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SCOPY``     | シフト付き Copy                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SCREATE``   | シフト付き Create                                  |
-+-------------------+----------------------------------------------------+
-| ``KEY_SDC``       | シフト付き Delete char                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_SDL``       | シフト付き Delete line                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_SELECT``    | 選択 (Select)                                      |
-+-------------------+----------------------------------------------------+
-| ``KEY_SEND``      | シフト付き End                                     |
-+-------------------+----------------------------------------------------+
-| ``KEY_SEOL``      | シフト付き Clear line                              |
-+-------------------+----------------------------------------------------+
-| ``KEY_SEXIT``     | シフト付き Dxit                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SFIND``     | シフト付き Find                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SHELP``     | シフト付き Help                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SHOME``     | シフト付き Home                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SIC``       | シフト付き Input                                   |
-+-------------------+----------------------------------------------------+
-| ``KEY_SLEFT``     | シフト付き Left arrow                              |
-+-------------------+----------------------------------------------------+
-| ``KEY_SMESSAGE``  | シフト付き Message                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SMOVE``     | シフト付き Move                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SNEXT``     | シフト付き Next                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SOPTIONS``  | シフト付き Options                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SPREVIOUS`` | シフト付き Prev                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SPRINT``    | シフト付き Print                                   |
-+-------------------+----------------------------------------------------+
-| ``KEY_SREDO``     | シフト付き Redo                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SREPLACE``  | シフト付き Replace                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SRIGHT``    | シフト付き Right arrow                             |
-+-------------------+----------------------------------------------------+
-| ``KEY_SRSUME``    | シフト付き Resume                                  |
-+-------------------+----------------------------------------------------+
-| ``KEY_SSAVE``     | シフト付き Save                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SSUSPEND``  | シフト付き Suspend                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_SUNDO``     | シフト付き Undo                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_SUSPEND``   | 一時停止 (Suspend)                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_UNDO``      | 元に戻す (Undo)                                    |
-+-------------------+----------------------------------------------------+
-| ``KEY_MOUSE``     | マウスイベント通知                                 |
-+-------------------+----------------------------------------------------+
-| ``KEY_RESIZE``    | 端末リサイズイベント                               |
-+-------------------+----------------------------------------------------+
-| ``KEY_MAX``       | 最大キー値                                         |
-+-------------------+----------------------------------------------------+
++-------------------+--------------------------------------------+
+| Key constant      | Key                                        |
++===================+============================================+
+| ``KEY_MIN``       | Minimum key value                          |
++-------------------+--------------------------------------------+
+| ``KEY_BREAK``     | Break key (unreliable)                     |
++-------------------+--------------------------------------------+
+| ``KEY_DOWN``      | Down-arrow                                 |
++-------------------+--------------------------------------------+
+| ``KEY_UP``        | Up-arrow                                   |
++-------------------+--------------------------------------------+
+| ``KEY_LEFT``      | Left-arrow                                 |
++-------------------+--------------------------------------------+
+| ``KEY_RIGHT``     | Right-arrow                                |
++-------------------+--------------------------------------------+
+| ``KEY_HOME``      | Home key (upward+left arrow)               |
++-------------------+--------------------------------------------+
+| ``KEY_BACKSPACE`` | Backspace (unreliable)                     |
++-------------------+--------------------------------------------+
+| ``KEY_F0``        | Function keys.  Up to 64 function keys are |
+|                   | supported.                                 |
++-------------------+--------------------------------------------+
+| ``KEY_Fn``        | Value of function key *n*                  |
++-------------------+--------------------------------------------+
+| ``KEY_DL``        | Delete line                                |
++-------------------+--------------------------------------------+
+| ``KEY_IL``        | Insert line                                |
++-------------------+--------------------------------------------+
+| ``KEY_DC``        | Delete character                           |
++-------------------+--------------------------------------------+
+| ``KEY_IC``        | Insert char or enter insert mode           |
++-------------------+--------------------------------------------+
+| ``KEY_EIC``       | Exit insert char mode                      |
++-------------------+--------------------------------------------+
+| ``KEY_CLEAR``     | Clear screen                               |
++-------------------+--------------------------------------------+
+| ``KEY_EOS``       | Clear to end of screen                     |
++-------------------+--------------------------------------------+
+| ``KEY_EOL``       | Clear to end of line                       |
++-------------------+--------------------------------------------+
+| ``KEY_SF``        | Scroll 1 line forward                      |
++-------------------+--------------------------------------------+
+| ``KEY_SR``        | Scroll 1 line backward (reverse)           |
++-------------------+--------------------------------------------+
+| ``KEY_NPAGE``     | Next page                                  |
++-------------------+--------------------------------------------+
+| ``KEY_PPAGE``     | Previous page                              |
++-------------------+--------------------------------------------+
+| ``KEY_STAB``      | Set tab                                    |
++-------------------+--------------------------------------------+
+| ``KEY_CTAB``      | Clear tab                                  |
++-------------------+--------------------------------------------+
+| ``KEY_CATAB``     | Clear all tabs                             |
++-------------------+--------------------------------------------+
+| ``KEY_ENTER``     | Enter or send (unreliable)                 |
++-------------------+--------------------------------------------+
+| ``KEY_SRESET``    | Soft (partial) reset (unreliable)          |
++-------------------+--------------------------------------------+
+| ``KEY_RESET``     | Reset or hard reset (unreliable)           |
++-------------------+--------------------------------------------+
+| ``KEY_PRINT``     | Print                                      |
++-------------------+--------------------------------------------+
+| ``KEY_LL``        | Home down or bottom (lower left)           |
++-------------------+--------------------------------------------+
+| ``KEY_A1``        | Upper left of keypad                       |
++-------------------+--------------------------------------------+
+| ``KEY_A3``        | Upper right of keypad                      |
++-------------------+--------------------------------------------+
+| ``KEY_B2``        | Center of keypad                           |
++-------------------+--------------------------------------------+
+| ``KEY_C1``        | Lower left of keypad                       |
++-------------------+--------------------------------------------+
+| ``KEY_C3``        | Lower right of keypad                      |
++-------------------+--------------------------------------------+
+| ``KEY_BTAB``      | Back tab                                   |
++-------------------+--------------------------------------------+
+| ``KEY_BEG``       | Beg (beginning)                            |
++-------------------+--------------------------------------------+
+| ``KEY_CANCEL``    | Cancel                                     |
++-------------------+--------------------------------------------+
+| ``KEY_CLOSE``     | Close                                      |
++-------------------+--------------------------------------------+
+| ``KEY_COMMAND``   | Cmd (command)                              |
++-------------------+--------------------------------------------+
+| ``KEY_COPY``      | Copy                                       |
++-------------------+--------------------------------------------+
+| ``KEY_CREATE``    | Create                                     |
++-------------------+--------------------------------------------+
+| ``KEY_END``       | End                                        |
++-------------------+--------------------------------------------+
+| ``KEY_EXIT``      | Exit                                       |
++-------------------+--------------------------------------------+
+| ``KEY_FIND``      | Find                                       |
++-------------------+--------------------------------------------+
+| ``KEY_HELP``      | Help                                       |
++-------------------+--------------------------------------------+
+| ``KEY_MARK``      | Mark                                       |
++-------------------+--------------------------------------------+
+| ``KEY_MESSAGE``   | Message                                    |
++-------------------+--------------------------------------------+
+| ``KEY_MOVE``      | Move                                       |
++-------------------+--------------------------------------------+
+| ``KEY_NEXT``      | Next                                       |
++-------------------+--------------------------------------------+
+| ``KEY_OPEN``      | Open                                       |
++-------------------+--------------------------------------------+
+| ``KEY_OPTIONS``   | Options                                    |
++-------------------+--------------------------------------------+
+| ``KEY_PREVIOUS``  | Prev (previous)                            |
++-------------------+--------------------------------------------+
+| ``KEY_REDO``      | Redo                                       |
++-------------------+--------------------------------------------+
+| ``KEY_REFERENCE`` | Ref (reference)                            |
++-------------------+--------------------------------------------+
+| ``KEY_REFRESH``   | Refresh                                    |
++-------------------+--------------------------------------------+
+| ``KEY_REPLACE``   | Replace                                    |
++-------------------+--------------------------------------------+
+| ``KEY_RESTART``   | Restart                                    |
++-------------------+--------------------------------------------+
+| ``KEY_RESUME``    | Resume                                     |
++-------------------+--------------------------------------------+
+| ``KEY_SAVE``      | Save                                       |
++-------------------+--------------------------------------------+
+| ``KEY_SBEG``      | Shifted Beg (beginning)                    |
++-------------------+--------------------------------------------+
+| ``KEY_SCANCEL``   | Shifted Cancel                             |
++-------------------+--------------------------------------------+
+| ``KEY_SCOMMAND``  | Shifted Command                            |
++-------------------+--------------------------------------------+
+| ``KEY_SCOPY``     | Shifted Copy                               |
++-------------------+--------------------------------------------+
+| ``KEY_SCREATE``   | Shifted Create                             |
++-------------------+--------------------------------------------+
+| ``KEY_SDC``       | Shifted Delete char                        |
++-------------------+--------------------------------------------+
+| ``KEY_SDL``       | Shifted Delete line                        |
++-------------------+--------------------------------------------+
+| ``KEY_SELECT``    | Select                                     |
++-------------------+--------------------------------------------+
+| ``KEY_SEND``      | Shifted End                                |
++-------------------+--------------------------------------------+
+| ``KEY_SEOL``      | Shifted Clear line                         |
++-------------------+--------------------------------------------+
+| ``KEY_SEXIT``     | Shifted Dxit                               |
++-------------------+--------------------------------------------+
+| ``KEY_SFIND``     | Shifted Find                               |
++-------------------+--------------------------------------------+
+| ``KEY_SHELP``     | Shifted Help                               |
++-------------------+--------------------------------------------+
+| ``KEY_SHOME``     | Shifted Home                               |
++-------------------+--------------------------------------------+
+| ``KEY_SIC``       | Shifted Input                              |
++-------------------+--------------------------------------------+
+| ``KEY_SLEFT``     | Shifted Left arrow                         |
++-------------------+--------------------------------------------+
+| ``KEY_SMESSAGE``  | Shifted Message                            |
++-------------------+--------------------------------------------+
+| ``KEY_SMOVE``     | Shifted Move                               |
++-------------------+--------------------------------------------+
+| ``KEY_SNEXT``     | Shifted Next                               |
++-------------------+--------------------------------------------+
+| ``KEY_SOPTIONS``  | Shifted Options                            |
++-------------------+--------------------------------------------+
+| ``KEY_SPREVIOUS`` | Shifted Prev                               |
++-------------------+--------------------------------------------+
+| ``KEY_SPRINT``    | Shifted Print                              |
++-------------------+--------------------------------------------+
+| ``KEY_SREDO``     | Shifted Redo                               |
++-------------------+--------------------------------------------+
+| ``KEY_SREPLACE``  | Shifted Replace                            |
++-------------------+--------------------------------------------+
+| ``KEY_SRIGHT``    | Shifted Right arrow                        |
++-------------------+--------------------------------------------+
+| ``KEY_SRSUME``    | Shifted Resume                             |
++-------------------+--------------------------------------------+
+| ``KEY_SSAVE``     | Shifted Save                               |
++-------------------+--------------------------------------------+
+| ``KEY_SSUSPEND``  | Shifted Suspend                            |
++-------------------+--------------------------------------------+
+| ``KEY_SUNDO``     | Shifted Undo                               |
++-------------------+--------------------------------------------+
+| ``KEY_SUSPEND``   | Suspend                                    |
++-------------------+--------------------------------------------+
+| ``KEY_UNDO``      | Undo                                       |
++-------------------+--------------------------------------------+
+| ``KEY_MOUSE``     | Mouse event has occurred                   |
++-------------------+--------------------------------------------+
+| ``KEY_RESIZE``    | Terminal resize event                      |
++-------------------+--------------------------------------------+
+| ``KEY_MAX``       | Maximum key value                          |
++-------------------+--------------------------------------------+
 
-VT100 や、X 端末エミュレータのようなソフトウェアエミュレーションでは、通常少なくとも 4 つのファンクションキー (:const:`KEY_F1`,
-:const:`KEY_F2`, :const:`KEY_F3`, :const:`KEY_F4`) が利用可能で、矢印キーは
-:const:`KEY_UP`, :const:`KEY_DOWN`, :const:`KEY_LEFT` および :const:`KEY_RIGHT`
-が対応付けられています。計算機に PC キーボードが付属している場合、矢印キーと 12 個のファンクションキー (古い PC キーボードには 10 個しか
-ファンクションキーがないかもしれません) が利用できると考えてよいでしょう; また、以下のキーパッド対応付けは標準的なものです:
+On VT100s and their software emulations, such as X terminal emulators, there are
+normally at least four function keys (:const:`KEY_F1`, :const:`KEY_F2`,
+:const:`KEY_F3`, :const:`KEY_F4`) available, and the arrow keys mapped to
+:const:`KEY_UP`, :const:`KEY_DOWN`, :const:`KEY_LEFT` and :const:`KEY_RIGHT` in
+the obvious way.  If your machine has a PC keyboard, it is safe to expect arrow
+keys and twelve function keys (older PC keyboards may have only ten function
+keys); also, the following keypad mappings are standard:
 
 +------------------+-----------+
-| キーキャップ     | 定数      |
+| Keycap           | Constant  |
 +==================+===========+
 | :kbd:`Insert`    | KEY_IC    |
 +------------------+-----------+
@@ -1243,218 +1479,235 @@ VT100 や、X 端末エミュレータのようなソフトウェアエミュレ
 | :kbd:`Page Down` | KEY_PPAGE |
 +------------------+-----------+
 
-代用文字 (alternative character) セットを以下の表に列挙します。これらは VT100 端末から継承したものであり、X 端末のような
-ソフトウェアエミュレーション上で一般に利用可能なものです。グラフィックが利用できない場合、curses は印字可能 ASCII文字による
-粗雑な近似出力を行います。
+The following table lists characters from the alternate character set. These are
+inherited from the VT100 terminal, and will generally be  available on software
+emulations such as X terminals.  When there is no graphic available, curses
+falls back on a crude printable ASCII approximation.
 
 .. note::
 
-   これらは :func:`initscr` が呼び出された後でしか利用できません。
+   These are available only after :func:`initscr` has  been called.
 
-+------------------+----------------------------------+
-| ACS コード       | 意味                             |
-+==================+==================================+
-| ``ACS_BBSS``     | 右上角の別名                     |
-+------------------+----------------------------------+
-| ``ACS_BLOCK``    | 黒四角ブロック                   |
-+------------------+----------------------------------+
-| ``ACS_BOARD``    | 白四角ブロック                   |
-+------------------+----------------------------------+
-| ``ACS_BSBS``     | 水平線の別名                     |
-+------------------+----------------------------------+
-| ``ACS_BSSB``     | 左上角の別名                     |
-+------------------+----------------------------------+
-| ``ACS_BSSS``     | 上向き T 字罫線の別名            |
-+------------------+----------------------------------+
-| ``ACS_BTEE``     | 下向き T 字罫線                  |
-+------------------+----------------------------------+
-| ``ACS_BULLET``   | 黒丸(bullet)                     |
-+------------------+----------------------------------+
-| ``ACS_CKBOARD``  | チェッカーボードパタン (点描)    |
-+------------------+----------------------------------+
-| ``ACS_DARROW``   | 下向き矢印                       |
-+------------------+----------------------------------+
-| ``ACS_DEGREE``   | 度                               |
-+------------------+----------------------------------+
-| ``ACS_DIAMOND``  | ダイアモンド                     |
-+------------------+----------------------------------+
-| ``ACS_GEQUAL``   | より大きいか等しい               |
-+------------------+----------------------------------+
-| ``ACS_HLINE``    | 水平線                           |
-+------------------+----------------------------------+
-| ``ACS_LANTERN``  | ランタン(lantern) シンボル       |
-+------------------+----------------------------------+
-| ``ACS_LARROW``   | left arrow                       |
-+------------------+----------------------------------+
-| ``ACS_LEQUAL``   | より小さいか等しい               |
-+------------------+----------------------------------+
-| ``ACS_LLCORNER`` | 左下角                           |
-+------------------+----------------------------------+
-| ``ACS_LRCORNER`` | 右下角                           |
-+------------------+----------------------------------+
-| ``ACS_LTEE``     | left tee                         |
-+------------------+----------------------------------+
-| ``ACS_NEQUAL``   | 等号否定                         |
-+------------------+----------------------------------+
-| ``ACS_PI``       | パイ記号                         |
-+------------------+----------------------------------+
-| ``ACS_PLMINUS``  | プラスマイナス記号               |
-+------------------+----------------------------------+
-| ``ACS_PLUS``     | 大プラス記号                     |
-+------------------+----------------------------------+
-| ``ACS_RARROW``   | 右向き矢印                       |
-+------------------+----------------------------------+
-| ``ACS_RTEE``     | 右向き T 字罫線                  |
-+------------------+----------------------------------+
-| ``ACS_S1``       | scan line 1                      |
-+------------------+----------------------------------+
-| ``ACS_S3``       | scan line 3                      |
-+------------------+----------------------------------+
-| ``ACS_S7``       | scan line 7                      |
-+------------------+----------------------------------+
-| ``ACS_S9``       | scan line 9                      |
-+------------------+----------------------------------+
-| ``ACS_SBBS``     | 右下角の別名                     |
-+------------------+----------------------------------+
-| ``ACS_SBSB``     | 垂直線の別名                     |
-+------------------+----------------------------------+
-| ``ACS_SBSS``     | 右向き T 字罫線の別名            |
-+------------------+----------------------------------+
-| ``ACS_SSBB``     | 左下角の別名                     |
-+------------------+----------------------------------+
-| ``ACS_SSBS``     | 下向き T 字罫線の別名            |
-+------------------+----------------------------------+
-| ``ACS_SSSB``     | 左向き T 字罫線の別名            |
-+------------------+----------------------------------+
-| ``ACS_SSSS``     | 交差罫線または大プラス記号の別名 |
-+------------------+----------------------------------+
-| ``ACS_STERLING`` | ポンドスターリング記号           |
-+------------------+----------------------------------+
-| ``ACS_TTEE``     | 上向き T 字罫線                  |
-+------------------+----------------------------------+
-| ``ACS_UARROW``   | 上向き矢印                       |
-+------------------+----------------------------------+
-| ``ACS_ULCORNER`` | 左上角                           |
-+------------------+----------------------------------+
-| ``ACS_URCORNER`` | 右上角                           |
-+------------------+----------------------------------+
-| ``ACS_VLINE``    | 垂直線                           |
-+------------------+----------------------------------+
++------------------+------------------------------------------+
+| ACS code         | Meaning                                  |
++==================+==========================================+
+| ``ACS_BBSS``     | alternate name for upper right corner    |
++------------------+------------------------------------------+
+| ``ACS_BLOCK``    | solid square block                       |
++------------------+------------------------------------------+
+| ``ACS_BOARD``    | board of squares                         |
++------------------+------------------------------------------+
+| ``ACS_BSBS``     | alternate name for horizontal line       |
++------------------+------------------------------------------+
+| ``ACS_BSSB``     | alternate name for upper left corner     |
++------------------+------------------------------------------+
+| ``ACS_BSSS``     | alternate name for top tee               |
++------------------+------------------------------------------+
+| ``ACS_BTEE``     | bottom tee                               |
++------------------+------------------------------------------+
+| ``ACS_BULLET``   | bullet                                   |
++------------------+------------------------------------------+
+| ``ACS_CKBOARD``  | checker board (stipple)                  |
++------------------+------------------------------------------+
+| ``ACS_DARROW``   | arrow pointing down                      |
++------------------+------------------------------------------+
+| ``ACS_DEGREE``   | degree symbol                            |
++------------------+------------------------------------------+
+| ``ACS_DIAMOND``  | diamond                                  |
++------------------+------------------------------------------+
+| ``ACS_GEQUAL``   | greater-than-or-equal-to                 |
++------------------+------------------------------------------+
+| ``ACS_HLINE``    | horizontal line                          |
++------------------+------------------------------------------+
+| ``ACS_LANTERN``  | lantern symbol                           |
++------------------+------------------------------------------+
+| ``ACS_LARROW``   | left arrow                               |
++------------------+------------------------------------------+
+| ``ACS_LEQUAL``   | less-than-or-equal-to                    |
++------------------+------------------------------------------+
+| ``ACS_LLCORNER`` | lower left-hand corner                   |
++------------------+------------------------------------------+
+| ``ACS_LRCORNER`` | lower right-hand corner                  |
++------------------+------------------------------------------+
+| ``ACS_LTEE``     | left tee                                 |
++------------------+------------------------------------------+
+| ``ACS_NEQUAL``   | not-equal sign                           |
++------------------+------------------------------------------+
+| ``ACS_PI``       | letter pi                                |
++------------------+------------------------------------------+
+| ``ACS_PLMINUS``  | plus-or-minus sign                       |
++------------------+------------------------------------------+
+| ``ACS_PLUS``     | big plus sign                            |
++------------------+------------------------------------------+
+| ``ACS_RARROW``   | right arrow                              |
++------------------+------------------------------------------+
+| ``ACS_RTEE``     | right tee                                |
++------------------+------------------------------------------+
+| ``ACS_S1``       | scan line 1                              |
++------------------+------------------------------------------+
+| ``ACS_S3``       | scan line 3                              |
++------------------+------------------------------------------+
+| ``ACS_S7``       | scan line 7                              |
++------------------+------------------------------------------+
+| ``ACS_S9``       | scan line 9                              |
++------------------+------------------------------------------+
+| ``ACS_SBBS``     | alternate name for lower right corner    |
++------------------+------------------------------------------+
+| ``ACS_SBSB``     | alternate name for vertical line         |
++------------------+------------------------------------------+
+| ``ACS_SBSS``     | alternate name for right tee             |
++------------------+------------------------------------------+
+| ``ACS_SSBB``     | alternate name for lower left corner     |
++------------------+------------------------------------------+
+| ``ACS_SSBS``     | alternate name for bottom tee            |
++------------------+------------------------------------------+
+| ``ACS_SSSB``     | alternate name for left tee              |
++------------------+------------------------------------------+
+| ``ACS_SSSS``     | alternate name for crossover or big plus |
++------------------+------------------------------------------+
+| ``ACS_STERLING`` | pound sterling                           |
++------------------+------------------------------------------+
+| ``ACS_TTEE``     | top tee                                  |
++------------------+------------------------------------------+
+| ``ACS_UARROW``   | up arrow                                 |
++------------------+------------------------------------------+
+| ``ACS_ULCORNER`` | upper left corner                        |
++------------------+------------------------------------------+
+| ``ACS_URCORNER`` | upper right corner                       |
++------------------+------------------------------------------+
+| ``ACS_VLINE``    | vertical line                            |
++------------------+------------------------------------------+
 
-以下のテーブルは定義済みの色を列挙したものです:
+The following table lists the predefined colors:
 
-+-------------------+---------------------------+
-| 定数              | 色                        |
-+===================+===========================+
-| ``COLOR_BLACK``   | 黒                        |
-+-------------------+---------------------------+
-| ``COLOR_BLUE``    | 青                        |
-+-------------------+---------------------------+
-| ``COLOR_CYAN``    | シアン (薄く緑がかった青) |
-+-------------------+---------------------------+
-| ``COLOR_GREEN``   | 緑                        |
-+-------------------+---------------------------+
-| ``COLOR_MAGENTA`` | マゼンタ (紫がかった赤)   |
-+-------------------+---------------------------+
-| ``COLOR_RED``     | 赤                        |
-+-------------------+---------------------------+
-| ``COLOR_WHITE``   | 白                        |
-+-------------------+---------------------------+
-| ``COLOR_YELLOW``  | 黄色                      |
-+-------------------+---------------------------+
++-------------------+----------------------------+
+| Constant          | Color                      |
++===================+============================+
+| ``COLOR_BLACK``   | Black                      |
++-------------------+----------------------------+
+| ``COLOR_BLUE``    | Blue                       |
++-------------------+----------------------------+
+| ``COLOR_CYAN``    | Cyan (light greenish blue) |
++-------------------+----------------------------+
+| ``COLOR_GREEN``   | Green                      |
++-------------------+----------------------------+
+| ``COLOR_MAGENTA`` | Magenta (purplish red)     |
++-------------------+----------------------------+
+| ``COLOR_RED``     | Red                        |
++-------------------+----------------------------+
+| ``COLOR_WHITE``   | White                      |
++-------------------+----------------------------+
+| ``COLOR_YELLOW``  | Yellow                     |
++-------------------+----------------------------+
 
 
-:mod:`curses.textpad` --- curses プログラムのためのテキスト入力ウィジェット
-===========================================================================
+:mod:`curses.textpad` --- Text input widget for curses programs
+===============================================================
 
 .. module:: curses.textpad
-   :synopsis: curses ウィンドウ内での Emacs ライクな入力編集機能。
+   :synopsis: Emacs-like input editing in a curses window.
 .. moduleauthor:: Eric Raymond <esr@thyrsus.com>
 .. sectionauthor:: Eric Raymond <esr@thyrsus.com>
 
 
 .. versionadded:: 1.6
 
-:mod:`curses.textpad` モジュールでは、curses ウィンドウ内での基本的なテキスト編集を処理し、Emacs に似た (すなわち
-Netscape Navigator,  BBedit 6.x, FrameMaker, その他諸々のプログラムとも似た) キーバインドをサポートしている
-:class:`Textbox` クラスを提供します。このモジュールではまた、テキストボックスを枠で囲むなどの目的のために有用な、矩形描画
-関数を提供しています。
+The :mod:`curses.textpad` module provides a :class:`Textbox` class that handles
+elementary text editing in a curses window, supporting a set of keybindings
+resembling those of Emacs (thus, also of Netscape Navigator, BBedit 6.x,
+FrameMaker, and many other programs).  The module also provides a
+rectangle-drawing function useful for framing text boxes or for other purposes.
 
-:mod:`curses.textpad` モジュールでは以下の関数を定義しています:
+The module :mod:`curses.textpad` defines the following function:
 
 
 .. function:: rectangle(win, uly, ulx, lry, lrx)
 
-   矩形を描画します。最初の引数はウィンドウオブジェクトでなければなりません; 残りの引数はそのウィンドウからの相対座標になります。 2 番目および 3
-   番目の引数は描画すべき矩形の左上角の y および x 座標です; 4 番目および 5 番目の引数は右下角の y および x 座標です。矩形は、
-   VT100/IBM PC におけるフォーム文字を利用できる端末(xterm やその他のほとんどのソフトウェア端末エミュレータを含む)
-   ではそれを使って描画されます。そうでなければ ASCII 文字のダッシュ、垂直バー、およびプラス記号で描画されます。
+   Draw a rectangle.  The first argument must be a window object; the remaining
+   arguments are coordinates relative to that window.  The second and third
+   arguments are the y and x coordinates of the upper left hand corner of the
+   rectangle to be drawn; the fourth and fifth arguments are the y and x
+   coordinates of the lower right hand corner. The rectangle will be drawn using
+   VT100/IBM PC forms characters on terminals that make this possible (including
+   xterm and most other software terminal emulators).  Otherwise it will be drawn
+   with ASCII  dashes, vertical bars, and plus signs.
 
 
 .. _curses-textpad-objects:
 
-Textbox オブジェクト
---------------------
+Textbox objects
+---------------
 
-以下のような :class:`Textbox` オブジェクトをインスタンス生成することができます:
+You can instantiate a :class:`Textbox` object as follows:
 
 
 .. class:: Textbox(win)
 
-   テキストボックスウィジェットオブジェクトを返します。 *win* 引数は、テキストボックスを入れるための :class:`WindowObject` で
-   なければなりません。テキストボックスの編集カーソルは、最初はテキストボックスが入っているウィンドウの左上角に配置され、その座標は ``(0, 0)``
-   です。インスタンスの :attr:`stripspaces`  フラグの初期値はオンに設定されます。
+   Return a textbox widget object.  The *win* argument should be a curses
+   :class:`WindowObject` in which the textbox is to be contained. The edit cursor
+   of the textbox is initially located at the upper left hand corner of the
+   containing window, with coordinates ``(0, 0)``. The instance's
+   :attr:`stripspaces` flag is initially on.
 
-   :class:`Textbox` オブジェクトは以下のメソッドを持ちます:
+   :class:`Textbox` objects have the following methods:
+
 
    .. method:: edit([validator])
 
-   普段使うことになるエントリポイントです。終了キーストロークの一つが入力されるまで編集キーストロークを受け付けます。 *validator*
-   を与える場合、関数でなければなりません。 *validator* はキーストロークが入力されるたびにそのキーストロークが引数となって呼び出されます;
-   返された値に対して、コマンドキーストロークとして解釈が行われます。このメソッドはウィンドウの内容を文字列として返します;
-   ウィンドウ内の空白が含められるかどうかは :attr:`stripspaces` メンバで決められます。
+      This is the entry point you will normally use.  It accepts editing
+      keystrokes until one of the termination keystrokes is entered.  If
+      *validator* is supplied, it must be a function.  It will be called for
+      each keystroke entered with the keystroke as a parameter; command dispatch
+      is done on the result. This method returns the window contents as a
+      string; whether blanks in the window are included is affected by the
+      :attr:`stripspaces` attribute.
 
 
    .. method:: do_command(ch)
 
-      単一のコマンドキーストロークを処理します。以下にサポートされている特殊キーストロークを示します:
+      Process a single command keystroke.  Here are the supported special
+      keystrokes:
 
-      +------------------+------------------------------------------------------------------------------------+
-      | キーストローク   | 動作                                                                               |
-      +==================+====================================================================================+
-      | :kbd:`Control-A` | ウィンドウの左端に移動します。                                                     |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-B` | カーソルを左へ移動し、必要なら前の行に折り返します。                               |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-D` | カーソル下の文字を削除します。                                                     |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-E` | 右端 (stripspaces がオフのとき) または行末 (stripspaces                            |
-      |                  | がオンのとき) に移動します。                                                       |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-F` | カーソルを右に移動し、必要なら次の行に折り返します。                               |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-G` | ウィンドウを終了し、その内容を返します。                                           |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-H` | 逆方向に文字を削除します。(バックスペース)                                         |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-J` | ウィンドウが 1 行であれば終了し、そうでなければ新しい行を挿入します。              |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-K` | 行が空白行ならその行全体を削除し、そうでなければカーソル以降行末までを消去します。 |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-L` | スクリーンを更新します。                                                           |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-N` | カーソルを下に移動します; 1 行下に移動します。                                     |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-O` | カーソルの場所に空行を 1 行挿入します。                                            |
-      +------------------+------------------------------------------------------------------------------------+
-      | :kbd:`Control-P` | カーソルを上に移動します; 1 行上に移動します。                                     |
-      +------------------+------------------------------------------------------------------------------------+
+      +------------------+-------------------------------------------+
+      | Keystroke        | Action                                    |
+      +==================+===========================================+
+      | :kbd:`Control-A` | Go to left edge of window.                |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-B` | Cursor left, wrapping to previous line if |
+      |                  | appropriate.                              |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-D` | Delete character under cursor.            |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-E` | Go to right edge (stripspaces off) or end |
+      |                  | of line (stripspaces on).                 |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-F` | Cursor right, wrapping to next line when  |
+      |                  | appropriate.                              |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-G` | Terminate, returning the window contents. |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-H` | Delete character backward.                |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-J` | Terminate if the window is 1 line,        |
+      |                  | otherwise insert newline.                 |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-K` | If line is blank, delete it, otherwise    |
+      |                  | clear to end of line.                     |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-L` | Refresh screen.                           |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-N` | Cursor down; move down one line.          |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-O` | Insert a blank line at cursor location.   |
+      +------------------+-------------------------------------------+
+      | :kbd:`Control-P` | Cursor up; move up one line.              |
+      +------------------+-------------------------------------------+
 
-      移動操作は、カーソルがウィンドウの縁にあって移動ができない場合には何も行いません。
-      場合によっては、以下のような同義のキーストロークがサポートされています:
+      Move operations do nothing if the cursor is at an edge where the movement
+      is not possible.  The following synonyms are supported where possible:
 
       +------------------------+------------------+
-      | 定数                   | キーストローク   |
+      | Constant               | Keystroke        |
       +========================+==================+
       | :const:`KEY_LEFT`      | :kbd:`Control-B` |
       +------------------------+------------------+
@@ -1467,45 +1720,21 @@ Textbox オブジェクト
       | :const:`KEY_BACKSPACE` | :kbd:`Control-h` |
       +------------------------+------------------+
 
-      他のキーストロークは、与えられた文字を挿入し、(行折り返し付きで) 右に移動するコマンドとして扱われます。
+      All other keystrokes are treated as a command to insert the given
+      character and move right (with line wrapping).
 
 
    .. method:: gather()
 
-      このメソッドはウィンドウの内容を文字列として返します; ウィンドウ内の空白が含められるかどうかは
-      :attr:`stripspaces` メンバ変数で決められます。
+      Return the window contents as a string; whether blanks in the
+      window are included is affected by the :attr:`stripspaces` member.
 
 
    .. attribute:: stripspaces
 
-      このデータメンバはウィンドウ内の空白領域の解釈方法を制御するためのフラグです。
-      フラグがオンに設定されている場合、各行の末端にある空白領域は無視されます;
-      すなわち、末端空白領域にカーソルが入ると、その場所の代わりに行の末尾にカーソルが移動します。また、末端の空白
-      領域はウィンドウの内容を取得する際に剥ぎ取られます。
-
-
-:mod:`curses.wrapper` --- curses プログラムのための端末ハンドラ
-===============================================================
-
-.. module:: curses.wrapper
-   :synopsis: curses プログラムのための端末設定ラッパ。
-.. moduleauthor:: Eric Raymond <esr@thyrsus.com>
-.. sectionauthor:: Eric Raymond <esr@thyrsus.com>
-
-
-.. versionadded:: 1.6
-
-このモジュールでは関数 :func:`wrapper` 一つを提供しています。これは curses 使用アプリケーションの残りの部分となるもう一つの関数です。
-アプリケーションが例外を送出した場合、 :func:`wrapper` は例外を再送出してトレースバックを生成する前に端末を正常な状態に復元します。
-
-
-.. function:: wrapper(func, ...)
-
-   curses を初期化し、別の関数 *func* を呼び出、エラーが発生した場合には通常のキーボード／スクリーン動作に戻すラッパ関数です。
-   呼び出し可能オブジェクト *func* は主ウィンドウの 'stdscr' に対する最初の引数として渡されます。その他の引数は :func:`wrapper`
-   に渡されます。
-
-フック関数を呼び出す前に、 :func:`wrapper` は cbreak モードをオン、エコーをオフにし、端末キーパッドを有効にします。
-端末がカラーをサポートしている場合にはカラーを初期化します。 (通常終了も例外による終了も) 終了時には cooked モードに復元し、
-エコーをオンにし、端末キーパッドを無効化します。
+      This attribute is a flag which controls the interpretation of blanks in
+      the window.  When it is on, trailing blanks on each line are ignored; any
+      cursor motion that would land the cursor on a trailing blank goes to the
+      end of that line instead, and trailing blanks are stripped when the window
+      contents are gathered.
 

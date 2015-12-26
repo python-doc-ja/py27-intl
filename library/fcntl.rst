@@ -1,10 +1,9 @@
-
-:mod:`fcntl` --- :func:`fcntl` および :func:`ioctl` システムコール
-==================================================================
+:mod:`fcntl` --- The ``fcntl`` and ``ioctl`` system calls
+=========================================================
 
 .. module:: fcntl
    :platform: Unix
-   :synopsis: fcntl() および ioctl() システムコール。
+   :synopsis: The fcntl() and ioctl() system calls.
 .. sectionauthor:: Jaap Vermeulen
 
 
@@ -12,77 +11,80 @@
    pair: UNIX; file control
    pair: UNIX; I/O control
 
-このモジュールでは、ファイル記述子 (file descriptor) に基づいたファイル制御\
-および I/O 制御を実現します。このモジュールは、 Unix
-のルーチンである :c:func:`fcntl`  および :c:func:`ioctl` へのインタフェースです。
+This module performs file control and I/O control on file descriptors. It is an
+interface to the :c:func:`fcntl` and :c:func:`ioctl` Unix routines.
 
-このモジュール内の全ての関数はファイル記述子 *fd* を最初の引数に取ります。
-この値は ``sys.stdin.fileno()`` が返すような\
-整数のファイル記述子でも、 ``sys.stdin`` 自体のような、純粋にファイル記述子だけを返す
-:meth:`fileno` メソッドを提供しているファイルオブジェクトでもかまいません。
+All functions in this module take a file descriptor *fd* as their first
+argument.  This can be an integer file descriptor, such as returned by
+``sys.stdin.fileno()``, or a file object, such as ``sys.stdin`` itself, which
+provides a :meth:`~io.IOBase.fileno` which returns a genuine file descriptor.
 
-このモジュールでは以下の関数を定義しています:
+The module defines the following functions:
 
 
 .. function:: fcntl(fd, op[, arg])
 
-   要求された操作をファイル記述子 *fd* (または :meth:`fileno`
-   メソッドを提供しているファイルオブジェクト) に対して実行します。
-   操作は *op* で定義され、オペレーティングシステム依存です。
-   これらの操作コードは :mod:`fcntl` モジュール内にもあります。
-   引数 *arg* はオプションで、標準では整数値 ``0`` です。
-   この引数を与える場合、整数か文字列の値をとります。
-   引数が無いか整数値の場合、この関数の戻り値は C 言語の
-   :c:func:`fcntl` を呼び出した際の整数の戻り値になります。
-   引数が文字列の場合には、 :func:`struct.pack` で作られる\
-   ようなバイナリの構造体を表します。
-   バイナリデータはバッファにコピーされ、そのアドレスが C 言語の
-   :c:func:`fcntl` 呼び出しに渡されます。
-   呼び出しが成功した後に戻される値はバッファの内容で、文字列\
-   オブジェクトに変換されています。
-   返される文字列は *arg* 引数と同じ長さになます。
-   この値は 1024 バイトに制限されています。
-   オペレーティングシステムからバッファに返される情報の長さが 1024
-   バイトよりも大きい場合、大抵はセグメンテーション違反となるか、\
-   より不可思議なデータの破損を引き起こします。
+   Perform the operation *op* on file descriptor *fd* (file objects providing
+   a :meth:`~io.IOBase.fileno` method are accepted as well).  The values used
+   for for *op* are operating system dependent, and are available as constants
+   in the :mod:`fcntl` module, using the same names as used in the relevant C
+   header files.  The argument *arg* is optional, and defaults to the integer
+   value ``0``.  When present, it can either be an integer value, or a string.
+   With the argument missing or an integer value, the return value of this function
+   is the integer return value of the C :c:func:`fcntl` call.  When the argument is
+   a string it represents a binary structure, e.g. created by :func:`struct.pack`.
+   The binary data is copied to a buffer whose address is passed to the C
+   :c:func:`fcntl` call.  The return value after a successful call is the contents
+   of the buffer, converted to a string object.  The length of the returned string
+   will be the same as the length of the *arg* argument.  This is limited to 1024
+   bytes.  If the information returned in the buffer by the operating system is
+   larger than 1024 bytes, this is most likely to result in a segmentation
+   violation or a more subtle data corruption.
 
-   :c:func:`fcntl` が失敗した場合、 :exc:`IOError` が送出されます。
+   If the :c:func:`fcntl` fails, an :exc:`IOError` is raised.
 
 
-.. function:: ioctl(fd, op, arg)
+.. function:: ioctl(fd, op[, arg[, mutate_flag]])
 
-   この関数は :func:`fcntl` 関数と同じですが、操作が通常ライブラリモジュール
-   :mod:`termios` で定義されており、引数の扱いがより複雑であるところが異なります。
+   This function is identical to the :func:`~fcntl.fcntl` function, except that the
+   operations are typically defined in the library module :mod:`termios` and the
+   argument handling is even more complicated.
 
-   パラメタ op は32ビットに収まる値に制限されます。
+   The op parameter is limited to values that can fit in 32-bits.
+   Additional constants of interest for use as the *op* argument can be
+   found in the :mod:`termios` module, under the same names as used in
+   the relevant C header files.
 
-   パラメタ *arg* は整数か、存在しない (整数 ``0`` と等価なものとして扱われます) か、\
-   (通常の Python 文字列のような) 読み出し専用の\
-   バッファインタフェースをサポートするオブジェクトか、\
-   読み書きバッファインタフェースをサポートするオブジェクトです。
+   The parameter *arg* can be one of an integer, absent (treated identically to the
+   integer ``0``), an object supporting the read-only buffer interface (most likely
+   a plain Python string) or an object supporting the read-write buffer interface.
 
-   最後の型のオブジェクトを除き、動作は :func:`fcntl` 関数と同じです。
+   In all but the last case, behaviour is as for the :func:`~fcntl.fcntl`
+   function.
 
-   可変なバッファが渡された場合、動作は *mutate_flag* 引数の値で決定されます。
+   If a mutable buffer is passed, then the behaviour is determined by the value of
+   the *mutate_flag* parameter.
 
-   この値が偽の場合、バッファの可変性は無視され、動作は読み出しバッファの場合と\
-   同じになりますが、上で述べた 1024 バイトの制限は回避されます --
-   従って、オペレーティングシステムが希望するバッファ長までであれば正しく動作します。
+   If it is false, the buffer's mutability is ignored and behaviour is as for a
+   read-only buffer, except that the 1024 byte limit mentioned above is avoided --
+   so long as the buffer you pass is as least as long as what the operating system
+   wants to put there, things should work.
 
-   *mutate_flag* が真の場合、バッファは (実際には) 根底にある :func:`ioctl`
-   システムコールに渡され、後者の戻り値が呼び出し側の
-   Python に引き渡され、バッファの新たな内容は  :func:`ioctl` の動作を反映します。
-   この説明はやや単純化されています。
-   というのは、与えられたバッファが 1024 バイト長よりも短い場合、バッファはまず
-   1024 バイト長の静的なバッファにコピーされてから :func:`ioctl` に渡され、\
-   その後引数で与えたバッファに戻しコピーされるからです。
+   If *mutate_flag* is true, then the buffer is (in effect) passed to the
+   underlying :func:`ioctl` system call, the latter's return code is passed back to
+   the calling Python, and the buffer's new contents reflect the action of the
+   :func:`ioctl`.  This is a slight simplification, because if the supplied buffer
+   is less than 1024 bytes long it is first copied into a static buffer 1024 bytes
+   long which is then passed to :func:`ioctl` and copied back into the supplied
+   buffer.
 
-   *mutate_flag* が与えられなかった場合、2.3 ではこの値は偽となります。
-   この仕様は今後のいくつかのバージョンを経た Python で変更される予定\
-   です: 2.4 では、 *mutate_flag* を提供し忘れると警告が出されますが\
-   同じ動作を行い、2.5 ではデフォルトの値が真となるはずです。
+   If *mutate_flag* is not supplied, then from Python 2.5 it defaults to true,
+   which is a change from versions 2.3 and 2.4. Supply the argument explicitly if
+   version portability is a priority.
 
-   以下に例を示します::
+   If the :c:func:`ioctl` fails, an :exc:`IOError` exception is raised.
+
+   An example::
 
       >>> import array, fcntl, struct, termios, os
       >>> os.getpgrp()
@@ -98,45 +100,46 @@
 
 .. function:: flock(fd, op)
 
-   ファイル記述子 *fd* (:meth:`fileno` メソッドを提供しているファイルオブジェクトも含む) に対してロック操作 *op* を実行します。
-   詳細は Unix マニュアルの :manpage:`flock(2)` を参照してください (システムによっては、この関数は :c:func:`fcntl`
-   を使ってエミュレーションされています)。
+   Perform the lock operation *op* on file descriptor *fd* (file objects providing
+   a :meth:`~io.IOBase.fileno` method are accepted as well). See the Unix manual
+   :manpage:`flock(2)` for details.  (On some systems, this function is emulated
+   using :c:func:`fcntl`.)
+
+   If the :c:func:`flock` fails, an :exc:`IOError` exception is raised.
 
 
 .. function:: lockf(fd, operation, [length, [start, [whence]]])
 
-   本質的に :func:`fcntl` によるロッキングの呼び出しをラップしたものです。
-   *fd* はロックまたはアンロックするファイルのファイル記述子で、
-   *operation* は以下の値のうちいずれかになります:
+   This is essentially a wrapper around the :func:`~fcntl.fcntl` locking calls.
+   *fd* is the file descriptor of the file to lock or unlock, and *operation*
+   is one of the following values:
 
-   * :const:`LOCK_UN` -- アンロック
-   * :const:`LOCK_SH` -- 共有ロックを取得
-   * :const:`LOCK_EX` -- 排他的ロックを取得
+   * :const:`LOCK_UN` -- unlock
+   * :const:`LOCK_SH` -- acquire a shared lock
+   * :const:`LOCK_EX` -- acquire an exclusive lock
 
-   *operation* が :const:`LOCK_SH` または :const:`LOCK_EX` の場合、
-   :const:`LOCK_NB` とビット OR
-   にすることでロック取得時にブロックしないようにすることができます。
-   :const:`LOCK_NB` が
-   使われ、ロックが取得できなかった場合、
-   :exc:`IOError` が送出され、例外は *errno* 属性を持ち、その値は :const:`EACCESS`
-   または :const:`EAGAIN` になります (オペレーティングシステムに依存します;
-   可搬性のため、両方の値をチェックしてください)。
-   少なくともいくつかのシステムでは、
-   ファイル記述子が参照しているファイルが書き込みのために開かれている場合、
-   :const:`LOCK_EX` だけしか使うことができません。
+   When *operation* is :const:`LOCK_SH` or :const:`LOCK_EX`, it can also be
+   bitwise ORed with :const:`LOCK_NB` to avoid blocking on lock acquisition.
+   If :const:`LOCK_NB` is used and the lock cannot be acquired, an
+   :exc:`IOError` will be raised and the exception will have an *errno*
+   attribute set to :const:`EACCES` or :const:`EAGAIN` (depending on the
+   operating system; for portability, check for both values).  On at least some
+   systems, :const:`LOCK_EX` can only be used if the file descriptor refers to a
+   file opened for writing.
 
-   *length* はロックを行いたいバイト数、
-   *start* はロック領域先頭の *whence* からの相対的なバイトオフセット、
-   *whence* は :func:`fileobj.seek` と同じで、具体的には:
+   *length* is the number of bytes to lock, *start* is the byte offset at
+   which the lock starts, relative to *whence*, and *whence* is as with
+   :func:`io.IOBase.seek`, specifically:
 
-   * :const:`0` -- ファイル先頭からの相対位置 (:const:`SEEK_SET`)
-   * :const:`1` -- 現在のバッファ位置からの相対位置 (:const:`SEEK_CUR`)
-   * :const:`2` -- ファイルの末尾からの相対位置 (:const:`SEEK_END`)
+   * :const:`0` -- relative to the start of the file (:data:`os.SEEK_SET`)
+   * :const:`1` -- relative to the current buffer position (:data:`os.SEEK_CUR`)
+   * :const:`2` -- relative to the end of the file (:data:`os.SEEK_END`)
 
-   *start* の標準の値は 0 で、ファイルの先頭から開始することを意味します。
-   *whence* の標準の値も 0 です。
+   The default for *start* is 0, which means to start at the beginning of the file.
+   The default for *length* is 0 which means to lock to the end of the file.  The
+   default for *whence* is also 0.
 
-以下に (全ての SVR4 互換システムでの) 例を示します::
+Examples (all on a SVR4 compliant system)::
 
    import struct, fcntl, os
 
@@ -146,13 +149,17 @@
    lockdata = struct.pack('hhllhh', fcntl.F_WRLCK, 0, 0, 0, 0, 0)
    rv = fcntl.fcntl(f, fcntl.F_SETLKW, lockdata)
 
-最初の例では、戻り値 *rv* は整数値を保持しています; 二つ目の例では文字列値を保持しています。
-*lockdata* 変数の構造体レイアウトはシステム依存です ---
-従って :func:`flock` を呼ぶ方がベターです。
+Note that in the first example the return value variable *rv* will hold an
+integer value; in the second example it will hold a string value.  The structure
+lay-out for the *lockdata* variable is system dependent --- therefore using the
+:func:`flock` call may be better.
 
 
 .. seealso::
 
-   :mod:`os` モジュール
-      もし :mod:`os` モジュールに :const:`O_SHLOCK` と :const:`O_EXLOCK` が 存在する場合
-      (BSD のみ)、 :func:`os.open` 関数は :func:`lockf` や :func:`flock` 関数を代替できます。
+   Module :mod:`os`
+      If the locking flags :data:`~os.O_SHLOCK` and :data:`~os.O_EXLOCK` are
+      present in the :mod:`os` module (on BSD only), the :func:`os.open`
+      function provides an alternative to the :func:`lockf` and :func:`flock`
+      functions.
+

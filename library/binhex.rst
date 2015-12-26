@@ -1,70 +1,63 @@
-
-:mod:`binhex` --- binhex4 形式ファイルのエンコードおよびデコード
-================================================================
+:mod:`binhex` --- Encode and decode binhex4 files
+=================================================
 
 .. module:: binhex
-   :synopsis: binhex4 形式ファイルのエンコードおよびデコード。
+   :synopsis: Encode and decode files in binhex4 format.
 
 
-このモジュールは binhex4 形式のファイルに対するエンコードやデコード\
-を行います。binhex4 は Macintosh のファイルを ASCII で表現できる\
-ようにしたものです。Macintosh 上では、ファイルと finder 情報の両方\
-のフォークがエンコード (またはデコード) されます。他のプラットフォーム\
-ではデータフォークだけが処理されます。
+This module encodes and decodes files in binhex4 format, a format allowing
+representation of Macintosh files in ASCII.  On the Macintosh, both forks of a
+file and the finder information are encoded (or decoded), on other platforms
+only the data fork is handled.
 
 .. note::
 
-   Python 3.0 で特別な Macintosh サポートは削除されました。
+   In Python 3.x, special Macintosh support has been removed.
 
 
-:mod:`binhex` モジュールでは以下の関数を定義しています:
+The :mod:`binhex` module defines the following functions:
 
 
 .. function:: binhex(input, output)
 
-   ファイル名 *input* のバイナリファイルをファイル名 *output* の binhex
-   形式ファイルに変換します。 *output* パラメタはファイル名でも
-   (:meth:`write` および :meth:`close` メソッドをサポートするような)
-   ファイル様オブジェクトでもかまいません。
+   Convert a binary file with filename *input* to binhex file *output*. The
+   *output* parameter can either be a filename or a file-like object (any object
+   supporting a :meth:`write` and :meth:`close` method).
 
 
 .. function:: hexbin(input[, output])
 
-   binhex 形式のファイル *input* をデコードします。
-   *input* はファイル名でも、 :meth:`write` および :meth:`close` メソッドを\
-   サポートするようなファイル様オブジェクトでもかまいません。
-   変換結果のファイルはファイル名 *output* になります。
-   この引数が省略された場合、出力ファイルは binhex ファイルの中から復元されます。
+   Decode a binhex file *input*. *input* may be a filename or a file-like object
+   supporting :meth:`read` and :meth:`close` methods. The resulting file is written
+   to a file named *output*, unless the argument is omitted in which case the
+   output filename is read from the binhex file.
 
-以下の例外も定義されています:
+The following exception is also defined:
 
 
 .. exception:: Error
 
-   binhex 形式を使ってエンコードできなかった場合 (例えば、ファイル名\
-   が filename フィールドに収まらないくらい長かった場合など) や、入力\
-   が正しくエンコードされた binhex 形式のデータでなかった場合に送出\
-   される例外です。
+   Exception raised when something can't be encoded using the binhex format (for
+   example, a filename is too long to fit in the filename field), or when input is
+   not properly encoded binhex data.
 
 
 .. seealso::
 
-   :mod:`binascii` モジュール
-      ASCII からバイナリ、およびバイナリから ASCII への変換をサポートするモジュール。
+   Module :mod:`binascii`
+      Support module containing ASCII-to-binary and binary-to-ASCII conversions.
 
 
 .. _binhex-notes:
 
-注記
-----
+Notes
+-----
 
-別のより強力なエンコーダおよびデコーダへのインタフェースが存在します。
-詳しくはソースを参照してください。
+There is an alternative, more powerful interface to the coder and decoder, see
+the source for details.
 
-非 Macintosh プラットフォームでテキストファイルをエンコードしたり\
-デコードしたりする場合でも、古い Macintosh の改行文字変換 (行末をキヤリッジ\
-リターンとする) が行われます。
+If you code or decode textfiles on non-Macintosh platforms they will still use
+the old Macintosh newline convention (carriage-return as end of line).
 
-このドキュメントを書いている時点では、 :func:`hexbin` はいつも正しく\
-動作するわけではないようです。
+As of this writing, :func:`hexbin` appears to not work in all cases.
 

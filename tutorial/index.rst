@@ -1,80 +1,43 @@
 .. _tutorial-index:
 
-#############################
- Python チュートリアル
-#############################
+######################
+  The Python Tutorial
+######################
 
-:Release: |version|
-:Date: |today|
+Python is an easy to learn, powerful programming language. It has efficient
+high-level data structures and a simple but effective approach to
+object-oriented programming. Python's elegant syntax and dynamic typing,
+together with its interpreted nature, make it an ideal language for scripting
+and rapid application development in many areas on most platforms.
 
-..  Python is an easy to learn, powerful programming language. It has efficient
-    high-level data structures and a simple but effective approach to
-    object-oriented programming. Python's elegant syntax and dynamic typing,
-    together with its interpreted nature, make it an ideal language for scripting
-    and rapid application development in many areas on most platforms.
+The Python interpreter and the extensive standard library are freely available
+in source or binary form for all major platforms from the Python Web site,
+https://www.python.org/, and may be freely distributed. The same site also
+contains distributions of and pointers to many free third party Python modules,
+programs and tools, and additional documentation.
 
-Python は簡単に習得でき、それでいて強力な言語の一つです。
-Python は高レベルなデータ構造を効率的に実装していて、
-オブジェクト指向プログラミングに対しても、単純ながら効果的なアプローチをとっています。
-洗練された文法とデータ型を動的に決定する機能、そしてインタプリタであるという特徴から、
-Python はほとんどのプラットフォームの幅広い対象領域において、
-スクリプティングや迅速なアプリケーション開発のための理想的な言語になっています。
+The Python interpreter is easily extended with new functions and data types
+implemented in C or C++ (or other languages callable from C). Python is also
+suitable as an extension language for customizable applications.
 
-..  The Python interpreter and the extensive standard library are freely available
-    in source or binary form for all major platforms from the Python Web site,
-    http://www.python.org/, and may be freely distributed. The same site also
-    contains distributions of and pointers to many free third party Python modules,
-    programs and tools, and additional documentation.
+This tutorial introduces the reader informally to the basic concepts and
+features of the Python language and system. It helps to have a Python
+interpreter handy for hands-on experience, but all examples are self-contained,
+so the tutorial can be read off-line as well.
 
-Pythonインタプリタ自体と膨大な標準ライブラリは、ソースコード形式や、
-主要なプラットフォーム向けのバイナリ形式で、Python Web サイト
-http://www.python.org/ から無料で入手でき、かつ無料で再配布できます。
-また、Python Webサイトでは、無料で手に入るたくさんのサードパーティ製
-Python モジュールから、プログラム、ツール類、その他のドキュメントに至るまで、
-配布物やポインタの情報を公開しています。
+For a description of standard objects and modules, see :ref:`library-index`.
+:ref:`reference-index` gives a more formal definition of the language.  To write
+extensions in C or C++, read :ref:`extending-index` and
+:ref:`c-api-index`. There are also several books covering Python in depth.
 
-..  The Python interpreter is easily extended with new functions and data types
-    implemented in C or C++ (or other languages callable from C). Python is also
-    suitable as an extension language for customizable applications.
+This tutorial does not attempt to be comprehensive and cover every single
+feature, or even every commonly used feature. Instead, it introduces many of
+Python's most noteworthy features, and will give you a good idea of the
+language's flavor and style. After reading it, you will be able to read and
+write Python modules and programs, and you will be ready to learn more about the
+various Python library modules described in :ref:`library-index`.
 
-Python インタプリタは、 C 言語や C++ 言語 (あるいはその他の C 言語から呼び出せる言語) で実装された新たな関数やデータ構造を組み込んで簡単に拡張できます。
-Python はまた、カスタマイズ可能なアプリケーションを作るための拡張機能記述言語としても適しています。
-
-..  This tutorial introduces the reader informally to the basic concepts and
-    features of the Python language and system. It helps to have a Python
-    interpreter handy for hands-on experience, but all examples are self-contained,
-    so the tutorial can be read off-line as well.
-
-このチュートリアルでは、Python の言語仕様と仕組みについて、基本的な概念と機能をざっと紹介します。
-Python インタプリタが手元にあれば、自分で試しながら学ぶ助けになりますが、
-例題は全て自己完結しているので、オフラインでも十分読めます。
-
-..  For a description of standard objects and modules, see :ref:`library-index`.
-    :ref:`reference-index` gives a more formal definition of the language.  To write
-    extensions in C or C++, read :ref:`extending-index` and
-    :ref:`c-api-index`. There are also several books covering Python in depth.
-
-標準のオブジェクトやモジュールの記述については、 :ref:`library-index` を参照してください。
-:ref:`reference-index` には、より形式的な言語の定義が書いてあります。
-C 言語や C++ 言語で拡張モジュールを書くなら、 :ref:`extending-index` や :ref:`c-api-index` を参照してください。
-他にも、 Python について広く深くカバーしている書籍はいくつかあります。
-
-..  This tutorial does not attempt to be comprehensive and cover every single
-    feature, or even every commonly used feature. Instead, it introduces many of
-    Python's most noteworthy features, and will give you a good idea of the
-    language's flavor and style. After reading it, you will be able to read and
-    write Python modules and programs, and you will be ready to learn more about the
-    various Python library modules described in :ref:`library-index`.
-
-このチュートリアルは網羅的な内容を目指しているわけではありませんし、
-Pythonの個別の機能や、よく使われる機能でさえ完全にカバーしてはいません。
-その代わり、このチュートリアルではPythonの特筆すべき機能をたくさん紹介して、
-この言語の持ち味やスタイルについて好印象を持ってもらうつもりです。
-このチュートリアルを読んだ後には、読者のみなさんは Python のモジュールやプログラムを
-読み書きできるようになり、 :ref:`library-index`
-に記述されているさまざまな Python ライブラリモジュールについて学べるようになるでしょう。
-
-:ref:`glossary` もまた役に立つはずです。
+The :ref:`glossary` is also worth going through.
 
 .. toctree::
    :numbered:
@@ -93,4 +56,4 @@ Pythonの個別の機能や、よく使われる機能でさえ完全にカバ�
    whatnow.rst
    interactive.rst
    floatingpoint.rst
-   jptranslation.rst
+   appendix.rst

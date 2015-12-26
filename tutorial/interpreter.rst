@@ -1,117 +1,107 @@
 .. _tut-using:
 
-*************************
-Python インタプリタを使う
-*************************
+****************************
+Using the Python Interpreter
+****************************
+
 
 .. _tut-invoking:
 
-インタプリタを起動する
-======================
+Invoking the Interpreter
+========================
 
-Python が使えるコンピュータなら、インタプリタは大抵 :file:`/usr/local/bin/python`
-にインストールされています。Unix シェルの検索パスに :file:`/usr/local/bin`
-を入れれば、シェルで ::
+The Python interpreter is usually installed as :file:`/usr/local/bin/python` on
+those machines where it is available; putting :file:`/usr/local/bin` in your
+Unix shell's search path makes it possible to start it by typing the command ::
 
    python
 
-とコマンドを入力すれば使えるようになります。
+to the shell.  Since the choice of the directory where the interpreter lives is
+an installation option, other places are possible; check with your local Python
+guru or system administrator.  (E.g., :file:`/usr/local/python` is a popular
+alternative location.)
 
-どのディレクトリに Python インタプリタをインストールするかは
-インストール時に選択できるので、インタプリタは他のディレクトリにあるかも
-しれません; 身近な Python に詳しい人か、システム管理者に聞いてみてください。
-(例えば、その他の場所としては :file:`/usr/local/python` が一般的です。)
-
-Windows では、 Python は大抵の場合 :file:`C:\\Python27`
-にインストールされますが、インストーラ実行時に変更することができます。
-このディレクトリをあなたのパスに追加するには、以下のコマンドを
-コマンドプロンプトで実行してください。 ::
+On Windows machines, the Python installation is usually placed in
+:file:`C:\\Python27`, though you can change this when you're running the
+installer.  To add this directory to your path,  you can type the following
+command into the command prompt in a DOS box::
 
    set path=%path%;C:\python27
 
-ファイル終端文字 (Unixでは :kbd:`Control-D` 、DOS や Windows では
-:kbd:`Control-Z`) を一次プロンプト (訳注: '>>>' のこと) に入力すると、
-インタプリタが終了ステータス 0 で終了します。
-もしこの操作がうまく働かないなら、コマンド: ``quit()`` と入力すれば
-インタプリタを終了できます。
+Typing an end-of-file character (:kbd:`Control-D` on Unix, :kbd:`Control-Z` on
+Windows) at the primary prompt causes the interpreter to exit with a zero exit
+status.  If that doesn't work, you can exit the interpreter by typing the
+following command: ``quit()``.
 
-通常、インタプリタの行編集機能は、あまり洗練されたものではありません。
-Unix では、インタプリタをインストールした誰かが GNU readline
-ライブラリのサポートを有効にしていれば、洗練された対話的行編集やヒストリ機能が
-利用できます。
-コマンドライン編集機能がサポートされているかを最も手っ取り早く調べる方法は、
-おそらく最初に表示された Python プロンプトに Control-P を入力してみることでしょう。
-ビープ音が鳴るなら、コマンドライン編集機能があります。編集キーについての解説は付録
-:ref:`tut-interacting` を参照してください。何も起こらないように見えるか、 ``^P``
-がエコーバックされるなら、コマンドライン編集機能は利用できません。
-この場合、現在編集中の行から文字を削除するにはバックスペースを使うしかありません。
+The interpreter's line-editing features usually aren't very sophisticated.  On
+Unix, whoever installed the interpreter may have enabled support for the GNU
+readline library, which adds more elaborate interactive editing and history
+features. Perhaps the quickest check to see whether command line editing is
+supported is typing :kbd:`Control-P` to the first Python prompt you get.  If it beeps,
+you have command line editing; see Appendix :ref:`tut-interacting` for an
+introduction to the keys.  If nothing appears to happen, or if ``^P`` is echoed,
+command line editing isn't available; you'll only be able to use backspace to
+remove characters from the current line.
 
-インタプリタはさながら Unix シェルのように働きます。
-標準入力が端末に接続された状態で呼び出されると、コマンドを対話的に読み込んで実行します。
-ファイル名を引数にしたり、標準入力からファイルを入力すると、インタプリタはファイルから
-*スクリプト* を読み込んで実行します。
+The interpreter operates somewhat like the Unix shell: when called with standard
+input connected to a tty device, it reads and executes commands interactively;
+when called with a file name argument or with a file as standard input, it reads
+and executes a *script* from that file.
 
-インタプリタを起動する第二の方法は ``python -c command [arg] ...`` です。
-この形式では、シェルの :option:`-c` オプションと同じように、 *command*
-に指定した文を実行します。
-Python 文には、スペースなどのシェルにとって特殊な意味をもつ文字がしばしば
-含まれるので、 *command* 全体をシングルクォート(訳注: ``'``)で囲っておいたほうが良いでしょう。
+A second way of starting the interpreter is ``python -c command [arg] ...``,
+which executes the statement(s) in *command*, analogous to the shell's
+:option:`-c` option.  Since Python statements often contain spaces or other
+characters that are special to the shell, it is usually advised to quote
+*command* in its entirety with single quotes.
 
-Python のモジュールには、スクリプトとしても便利に使えるものがあります。
-``python -m module [arg] ...`` のようにすると、 *module* のソースファイルを、
-フルパスを指定して起動したかのように実行できます。
+Some Python modules are also useful as scripts.  These can be invoked using
+``python -m module [arg] ...``, which executes the source file for *module* as
+if you had spelled out its full name on the command line.
 
-スクリプトファイルが使われた場合、スクリプトを走らせて、そのまま対話モードに
-入れると便利なことがあります。これには :option:`-i` をスクリプトの前に追加します。
-(前の段落で述べたのと同じ理由から、スクリプトを標準入力から読み込んだ場合には、
-このオプションはうまく働きません。)
+When a script file is used, it is sometimes useful to be able to run the script
+and enter interactive mode afterwards.  This can be done by passing :option:`-i`
+before the script.
+
+All command-line options are described in :ref:`using-on-general`.
 
 
 .. _tut-argpassing:
 
-引数の受け渡し
---------------
+Argument Passing
+----------------
 
-スクリプト名と引数を指定してインタプリタを起動した場合、スクリプト名や
-スクリプト名以後に指定した引数は、文字列のリストに変換されて ``sys``
-モジュールの ``argv`` 変数に格納されます。 ``import sys`` することで
-このリストにアクセスすることができます。
-``sys.argv`` には少なくとも一つ要素が入っています。
-スクリプト名も引数も指定しなければ ``sys.argv[0]`` は空の文字列になります。
-スクリプト名の代わりに ``'-'`` (標準入力を意味します) を指定すると、
-``sys.argv[0]`` は ``'-'`` になります。 :option:`-c`  *command* を使うと、
-``sys.argv[0]`` は ``'-c'`` になります。 :option:`-m` *module* を使った場合、
-``sys.argv[0]`` はモジュールのフルパスになります。
-:option:`-c` *command* や :option:`-m` *module* の後ろにオプションを指定した場合、
-Python インタプリタ自体はこれらの引数を処理せず、 ``sys.argv`` を介して
-*command* や *module* から扱えるようになります。
+When known to the interpreter, the script name and additional arguments
+thereafter are turned into a list of strings and assigned to the ``argv``
+variable in the ``sys`` module.  You can access this list by executing ``import
+sys``.  The length of the list is at least one; when no script and no arguments
+are given, ``sys.argv[0]`` is an empty string.  When the script name is given as
+``'-'`` (meaning  standard input), ``sys.argv[0]`` is set to ``'-'``.  When
+:option:`-c` *command* is used, ``sys.argv[0]`` is set to ``'-c'``.  When
+:option:`-m` *module* is used, ``sys.argv[0]``  is set to the full name of the
+located module.  Options found after  :option:`-c` *command* or :option:`-m`
+*module* are not consumed  by the Python interpreter's option processing but
+left in ``sys.argv`` for  the command or module to handle.
 
 
 .. _tut-interactive:
 
-対話モード
-----------
+Interactive Mode
+----------------
 
-インタプリタが命令を端末 (tty) やコマンドプロンプトから読み取っている場合、
-インタプリタは *対話モード (interactive mode)* で動作しているといいます。
-このモードでは、インタプリタは *一次プロンプト (primary prompt)* を表示して、
-ユーザにコマンドを入力するよう促します。
-一次プロンプトは普通、三つの「大なり記号」 (``>>>``) です。一つの入力が次の行まで続く
-(行継続: continuation line を行う) 場合、インタプリタは
-*二次プロンプト (secondary prompt)* を表示します。二次プロンプトは、
-デフォルトでは三つのドット (``...``) です。
-インタプリタは、最初のプロンプトを出す前にバージョン番号と著作権表示から始まる起動メッセージを出力します。
-
-::
+When commands are read from a tty, the interpreter is said to be in *interactive
+mode*.  In this mode it prompts for the next command with the *primary prompt*,
+usually three greater-than signs (``>>>``); for continuation lines it prompts
+with the *secondary prompt*, by default three dots (``...``). The interpreter
+prints a welcome message stating its version number and a copyright notice
+before printing the first prompt::
 
    python
    Python 2.7 (#1, Feb 28 2010, 00:02:06)
    Type "help", "copyright", "credits" or "license" for more information.
    >>>
 
-行継続は、例えば以下の :keyword:`if` 文のように、複数の行からなる構文を入力するときに必要です。
-
-::
+Continuation lines are needed when entering a multi-line construct. As an
+example, take a look at this :keyword:`if` statement::
 
    >>> the_world_is_flat = 1
    >>> if the_world_is_flat:
@@ -120,171 +110,54 @@ Python インタプリタ自体はこれらの引数を処理せず、 ``sys.arg
    Be careful not to fall off!
 
 
+For more on interactive mode, see :ref:`tut-interac`.
+
+
 .. _tut-interp:
 
-インタプリタとその環境
-======================
-
-.. _tut-error:
-
-エラー処理
-----------
-
-エラーが発生すると、インタプリタはエラーメッセージとスタックトレース
-(stack trace) を出力します。対話モードにいるときは、インタプリタは
-一次プロンプトに戻ります;
-スクリプトをファイルから実行しているときは、インタプリタはスタックトレースを
-出力した後、非ゼロの終了ステータスで終了します。 (:keyword:`try` 文の
-:keyword:`except` 節で処理された例外は、ここでいうエラーにはあたりません。)
-いくつかのエラーは常に致命的であり、非ゼロの終了ステータスとなるプログラムの
-終了を引き起こします。
-例えばインタプリタ内部の矛盾やある種のメモリ枯渇が当てはまります。
-エラーメッセージは全て標準エラー出力に書き込まれます;
-これに対して、通常は実行した命令から出力される内容は標準出力に書き込まれます。
-
-割り込み文字 (interrupt character、普通は Control-C か DEL) を
-一次または二次プロンプトに対してタイプすると、入力が取り消されて一次プロンプトに
-戻ります。 [#]_
-コマンドの実行中に割り込み文字をタイプすると :exc:`KeyboardInterrupt`
-例外が送出されます。この例外は :keyword:`try` 文で処理できます。
+The Interpreter and Its Environment
+===================================
 
 
-.. _tut-scripts:
+.. _tut-source-encoding:
 
-実行可能な Python スクリプト
-----------------------------
+Source Code Encoding
+--------------------
 
-BSD 風の Unix システムでは、Python スクリプトはシェルスクリプトのように
-直接実行可能にできます。これを行うには、以下の行
+It is possible to use encodings different than ASCII in Python source files. The
+best way to do it is to put one more special comment line right after the ``#!``
+line to define the source file encoding::
 
-::
-
-   #! /usr/bin/env python
-
-(ここではインタプリタがユーザの :envvar:`PATH` 上にあると仮定しています)
-をスクリプトの先頭に置き、スクリプトファイルに実行可能モードを設定します。
-``#!`` はファイルの最初の２文字でなければなりません。
-プラットフォームによっては、この最初の行を終端する改行文字が
-Windows 形式 (``'\r\n'``) ではなく、 Unix形式(``'\n'``)でなければ
-ならないことがあります。
-ハッシュまたはポンド文字、すなわち ``'#'`` は、Python ではコメントを
-書き始めるために使われていることに注意してください。
-
-:program:`chmod` コマンドを使えば、スクリプトに実行モード (または実行権)
-を与えることができます。
-
-::
-
-   $ chmod +x myscript.py
-
-Windows では、"実行モード" のような概念はありません。
-Python のインストーラーは自動的に ``.py`` ファイルを ``python.exe``
-に関連付けるので、 Python ファイルをダブルクリックするとそれをスクリプトとして実行します。
-``.pyw`` 拡張子も(訳注: ``pythonw.exe`` に)関連付けられ、通常コンソールウィンドウを
-抑制して実行します。
+   # -*- coding: encoding -*-
 
 
-ソースコードの文字コード
--------------------------
+With that declaration, all characters in the source file will be treated as
+having the encoding *encoding*, and it will be possible to directly write
+Unicode string literals in the selected encoding.  The list of possible
+encodings can be found in the Python Library Reference, in the section on
+:mod:`codecs`.
 
-ASCII 形式でない文字コードエンコーディング を Python ソースコードファイル中で
-使うことができます。
-最良の方法は、 ``#!`` 行の直後にもう一行特殊なコメントを挿入して、
-ソースファイルのエンコーディングを指定するというものです。
-
-::
-
-   # -*- coding: エンコーディング -*-
-
-このように宣言しておくと、ソースファイル中の全ての文字は *エンコーディング*
-という文字コードでエンコードされているものとして扱われ、Unicode 文字列
-リテラルを指定したエンコードで直接記述できます。
-実際に利用できるエンコードのリストは Python ライブラリリファレンスの
-:mod:`codecs` の節にあります。
-
-.. note::
-   訳注: *エンコーディング* の部分には、
-   実際には ``utf-8`` や ``cp932`` など、そのソースコードのエンコーディングを
-   記述します。
-
-   プログラムから日本語を扱う場合には、必ずある程度の文字コードの知識が必要に
-   なります。
-   もし文字コードについてよく判らないのであれば、まずは英語だけ扱いながら
-   チュートリアルを読み進めて、並行して文字コードについても勉強してみましょう。
-
-   現在は、 Unicode の扱い易さの観点から、推奨される文字コードは ``utf-8`` です。
-   ただし、 ``utf-8`` でソースを書いた場合、 ``utf-8`` を表示できない Windows の
-   コマンドプロンプトは ``print "こんにちは"`` を実行すると文字化けを起こすでしょう。
-   その場合は、互換性のために古い ``cp932`` エンコーディングを使うか、
-   ``print u"こんにちは"`` のように Unicode 文字列を使います。
-
-例えばユーロ通貨記号を含む Unicode リテラルを書くために、 ISO-8859-15
-エンコーディングを使えます。
-ISO-8859-15 では、ユーロ通過記号の序数 (ordinal) は 164 です。
-以下のスクリプトは 8364 という値 (Unicode でユーロ記号に対応するコードポイントの値)
-を出力して終了します。
-
-::
+For example, to write Unicode literals including the Euro currency symbol, the
+ISO-8859-15 encoding can be used, with the Euro symbol having the ordinal value
+164.  This script, when saved in the ISO-8859-15 encoding, will print the value
+8364 (the Unicode code point corresponding to the Euro symbol) and then exit::
 
    # -*- coding: iso-8859-15 -*-
 
    currency = u"€"
    print ord(currency)
 
-利用しているエディタがファイルを UTF-8 バイト整列記号 (通称 BOM:
-Byte Order Mark) 付きの ``UTF-8`` で保存できる場合、エンコード宣言の
-代わりに使うことができます。 IDLE は 
-``Options/General/Default Source Encoding/UTF-8`` が設定されている場合、
-UTF-8 でエンコードされたファイルの識別機能をサポートします。
-ただし、 (2.2 以前の) 古い Python リリースは UTF-8 シグネチャを理解しませんし、
-オペレーティングシステムは (Unix システムでしか使われていませんが) ``#!``
-の行を含むスクリプトファイルを判別できなくなるので注意してください。
+If your editor supports saving files as ``UTF-8`` with a UTF-8 *byte order mark*
+(aka BOM), you can use that instead of an encoding declaration. IDLE supports
+this capability if ``Options/General/Default Source Encoding/UTF-8`` is set.
+Notice that this signature is not understood in older Python releases (2.2 and
+earlier), and also not understood by the operating system for script files with
+``#!`` lines (only used on Unix systems).
 
-UTF-8 を (シグネチャやエンコーディング宣言を行って) 使うと、世界中のほとんどの
-言語で使われている文字を文字列リテラルやコメントの中に同時に使うことができます。
-識別子に対する非 ASCII 文字の使用はサポートされていません。
-全ての文字を正しく表示できるようにするには、使っているエディタがファイルを
-UTF-8 であると認識することができなければならず、かつファイル内で使われている
-全ての文字をサポートするようなフォントを使わなければなりません。
-
-
-.. _tut-startup:
-
-対話モード用の起動時実行ファイル
---------------------------------
-
-Python を対話的に使うときには、インタプリタが起動する度に実行される何らかの
-標準的なコマンドがあると便利なことがよくあります。
-これを行うには、 :envvar:`PYTHONSTARTUP` と呼ばれる環境変数を、インタプリタ
-起動時に実行されるコマンドが入ったファイル名に設定します。
-この機能は Unix シェルの :file:`.profile` に似ています。
-
-このファイルは対話セッションのときだけ読み出されます。
-Python がコマンドをスクリプトから読み出しているときや、 :file:`/dev/tty`
-がコマンドの入力元として明示的に指定されている(この場合対話的セッションの
-ように動作します) *わけではない* 場合にはこのファイルは読み出されません。
-ファイル内のコマンドは、対話的コマンドが実行される名前空間と同じ名前空間内で
-実行されます。このため、ファイル内で定義されていたり import された
-オブジェクトは、そのまま対話セッション内で使うことができます。
-また、このファイル内で ``sys.ps1`` や ``sys.ps2``
-を変更して、プロンプトを変更することもできます。
-
-もし現在のディレクトリから追加でスタートアップファイルを読み出したいのなら、
-グローバルのスタートアップファイルの中に
-``if os.path.isfile('.pythonrc.py'): execfile('.pythonrc.py')``
-のようなプログラムを書くことができます。
-スクリプト中でスタートアップファイルを使いたいのなら、以下のようにして
-スクリプト中で明示的に実行しなければなりません。
-
-::
-
-   import os
-   filename = os.environ.get('PYTHONSTARTUP')
-   if filename and os.path.isfile(filename):
-       execfile(filename)
-
-
-.. rubric:: 注記
-
-.. [#] GNU Readline パッケージに関する問題のせいで妨げられることがあります。
+By using UTF-8 (either through the signature or an encoding declaration),
+characters of most languages in the world can be used simultaneously in string
+literals and comments.  Using non-ASCII characters in identifiers is not
+supported. To display all these characters properly, your editor must recognize
+that the file is UTF-8, and it must use a font that supports all the characters
+in the file.
 

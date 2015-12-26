@@ -1,57 +1,63 @@
-:mod:`smtpd` --- SMTP サーバー
-==============================
+:mod:`smtpd` --- SMTP Server
+============================
 
 .. module:: smtpd
-   :synopsis: Python による SMTP サーバー実装
-
+   :synopsis: A SMTP server implementation in Python.
 
 .. moduleauthor:: Barry Warsaw <barry@zope.com>
 .. sectionauthor:: Moshe Zadka <moshez@moshez.org>
 
+**Source code:** :source:`Lib/smtpd.py`
+
+--------------
+
+This module offers several classes to implement SMTP servers.  One is a generic
+do-nothing implementation, which can be overridden, while the other two offer
+specific mail-sending strategies.
 
 
-
-このモジュールでは、 SMTP サーバを実装するためのクラスをいくつか提供しています。一つは何も行わない、オーバライドできる汎用のサーバで、
-その他の二つでは特定のメール送信ストラテジを提供しています。
-
-
-SMTPServer オブジェクト
------------------------
+SMTPServer Objects
+------------------
 
 
 .. class:: SMTPServer(localaddr, remoteaddr)
 
-   新たな :class:`SMTPServer` オブジェクトを作成します。このオブジェクトはローカルのアドレス *localaddr* に関連づけ (bind)
-   されます。オブジェクトは *remoteaddr* を上流の SMTP リレー先にします。
-   このクラスは :class:`asyncore.dispatcher` を継承しており、インスタンス化時に自身を :mod:`asyncore`
-   のイベントループに登録します。
+   Create a new :class:`SMTPServer` object, which binds to local address
+   *localaddr*.  It will treat *remoteaddr* as an upstream SMTP relayer.  It
+   inherits from :class:`asyncore.dispatcher`, and so will insert itself into
+   :mod:`asyncore`'s event loop on instantiation.
 
 
    .. method:: process_message(peer, mailfrom, rcpttos, data)
 
-      このクラスでは :exc:`NotImplementedError` 例外を送出します。受信したメッセージを使って何か意味のある処理をしたい場合にはこのメソッドを
-      オーバライドしてください。コンストラクタの *remoteaddr* に渡した値は :attr:`_remoteaddr` 属性で参照できます。 *peer*
-      はリモートホストのアドレスで、 *mailfrom* はメッセージエンベロープの発信元 (envelope originator) 、 *rcpttos*
-      はメッセージエンベロープの受信対象、そして *data* は電子メールの内容が入った(:rfc:`2822` 形式の)文字列です。
+      Raise :exc:`NotImplementedError` exception. Override this in subclasses to
+      do something useful with this message. Whatever was passed in the
+      constructor as *remoteaddr* will be available as the :attr:`_remoteaddr`
+      attribute. *peer* is the remote host's address, *mailfrom* is the envelope
+      originator, *rcpttos* are the envelope recipients and *data* is a string
+      containing the contents of the e-mail (which should be in :rfc:`2822`
+      format).
 
 
-DebuggingServer オブジェクト
-----------------------------
+DebuggingServer Objects
+-----------------------
 
 
 .. class:: DebuggingServer(localaddr, remoteaddr)
 
-   新たなデバッグ用サーバを生成します。引数は :class:`SMTPServer` と同じです。メッセージが届いても無視し、標準出力に出力します。
+   Create a new debugging server.  Arguments are as per :class:`SMTPServer`.
+   Messages will be discarded, and printed on stdout.
 
 
-PureProxy オブジェクト
-----------------------
+PureProxy Objects
+-----------------
 
 
 .. class:: PureProxy(localaddr, remoteaddr)
 
-   新たな単純プロキシ (pure proxy) サーバを生成します。引数は :class:`SMTPServer` と同じです。全てのメッセージを
-   *remoteaddr* にリレーします。このオブジェクトを動作させるとオープンリレーを作成してしまう可能性が多分にあります。注意してください。
+   Create a new pure proxy server. Arguments are as per :class:`SMTPServer`.
+   Everything will be relayed to *remoteaddr*.  Note that running this has a good
+   chance to make you into an open relay, so please be careful.
 
 
 MailmanProxy Objects
@@ -60,7 +66,9 @@ MailmanProxy Objects
 
 .. class:: MailmanProxy(localaddr, remoteaddr)
 
-   新たな単純プロキシサーバを生成します。引数は :class:`SMTPServer` と同じです。全てのメッセージを *remoteaddr* にリレーしますが、
-   ローカルの mailman の設定に *remoteaddr* がある場合には mailman を使って処理します。このオブジェクトを動作させるとオープンリレーを
-   作成してしまう可能性が多分にあります。注意してください。
+   Create a new pure proxy server. Arguments are as per :class:`SMTPServer`.
+   Everything will be relayed to *remoteaddr*, unless local mailman configurations
+   knows about an address, in which case it will be handled via mailman.  Note that
+   running this has a good chance to make you into an open relay, so please be
+   careful.
 

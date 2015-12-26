@@ -1,51 +1,57 @@
-
-:mod:`fnmatch` --- Unix ファイル名のパターンマッチ
-==================================================
+:mod:`fnmatch` --- Unix filename pattern matching
+=================================================
 
 .. module:: fnmatch
-   :synopsis: Unix シェル形式のファイル名のパターンマッチ。
+   :synopsis: Unix shell style filename pattern matching.
 
 
 .. index:: single: filenames; wildcard expansion
 
 .. index:: module: re
 
-このモジュールは Unix のシェル形式のワイルドカードへの対応を提供しますが、(:mod:`re` モジュールでドキュメント化されている)
-正規表現と同じでは *ありません* 。シェル形式のワイルドカードで使われる特別な文字は、
+**Source code:** :source:`Lib/fnmatch.py`
 
-+------------+-------------------------------------------+
-| Pattern    | Meaning                                   |
-+============+===========================================+
-| ``*``      | すべてにマッチします                      |
-+------------+-------------------------------------------+
-| ``?``      | 任意の一文字にマッチします                |
-+------------+-------------------------------------------+
-| ``[seq]``  | *seq* にある任意の文字にマッチします      |
-+------------+-------------------------------------------+
-| ``[!seq]`` | *seq* にない任意の文字にマッチします      |
-+------------+-------------------------------------------+
+--------------
+
+This module provides support for Unix shell-style wildcards, which are *not* the
+same as regular expressions (which are documented in the :mod:`re` module).  The
+special characters used in shell-style wildcards are:
+
++------------+------------------------------------+
+| Pattern    | Meaning                            |
++============+====================================+
+| ``*``      | matches everything                 |
++------------+------------------------------------+
+| ``?``      | matches any single character       |
++------------+------------------------------------+
+| ``[seq]``  | matches any character in *seq*     |
++------------+------------------------------------+
+| ``[!seq]`` | matches any character not in *seq* |
++------------+------------------------------------+
+
+For a literal match, wrap the meta-characters in brackets.
+For example, ``'[?]'`` matches the character ``'?'``.
 
 .. index:: module: glob
 
-ファイル名のセパレーター(Unixでは ``'/'``)はこのモジュールに固有なものでは *ない* ことに注意してください。パス名展開については、
-:mod:`glob` モジュールを参照してください (:mod:`glob` はパス名の部分にマッチさせるのに :func:`fnmatch` を使っ
-ています)。同様に、ピリオドで始まるファイル名はこのモジュールに固有ではなくて、 ``*`` と ``?`` のパターンでマッチします。
+Note that the filename separator (``'/'`` on Unix) is *not* special to this
+module.  See module :mod:`glob` for pathname expansion (:mod:`glob` uses
+:func:`fnmatch` to match pathname segments).  Similarly, filenames starting with
+a period are not special for this module, and are matched by the ``*`` and ``?``
+patterns.
 
-.. seealso::
-
-   最新バージョンの `fnmatch の Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/fnmatch.py?view=markup>`_
 
 .. function:: fnmatch(filename, pattern)
 
-   filenameの文字列がpatternの文字列にマッチするかテストして、 :const:`True` 、 :const:`False` のいずれかを返します。
-   オペレーティングシステムが大文字、小文字を区別しない場合、比較を行う前に、両方のパラメタを全て大文字、または全て小文字に揃えます。
-   オペレーティングシステムが標準でどうなっているかに関係なく、大小文字を区別して比較する場合には、 :func:`fnmatchcase` が使えます。
+   Test whether the *filename* string matches the *pattern* string, returning
+   :const:`True` or :const:`False`.  If the operating system is case-insensitive,
+   then both parameters will be normalized to all lower- or upper-case before
+   the comparison is performed.  :func:`fnmatchcase` can be used to perform a
+   case-sensitive comparison, regardless of whether that's standard for the
+   operating system.
 
-   .. This example will print all file names in the current directory with the
-      extension ``.txt``::
-
-   次の例では、カレントディレクトリにある、拡張子が ``.txt`` である全てのファイルを表示しています。 ::
+   This example will print all file names in the current directory with the
+   extension ``.txt``::
 
       import fnmatch
       import os
@@ -54,33 +60,32 @@
           if fnmatch.fnmatch(file, '*.txt'):
               print file
 
+
 .. function:: fnmatchcase(filename, pattern)
 
-   *filename* が *pattern* にマッチするかテストして、 :const:`True` 、 :const:`False` を返します。比較は大文字、小文字を区別します。
+   Test whether *filename* matches *pattern*, returning :const:`True` or
+   :const:`False`; the comparison is case-sensitive.
 
 
 .. function:: filter(names, pattern)
 
-   *pattern* にマッチする *names* のリストの部分集合を返します。
-   ``[n for n in names if fnmatch(n, pattern)]``
-   と同じですが、もっと効率よく実装しています。
+   Return the subset of the list of *names* that match *pattern*. It is the same as
+   ``[n for n in names if fnmatch(n, pattern)]``, but implemented more efficiently.
 
    .. versionadded:: 2.2
 
 
 .. function:: translate(pattern)
 
-   シェルスタイルの *pattern* を、正規表現に変換して返します。
+   Return the shell-style *pattern* converted to a regular expression.
 
-   メタ文字をクォートする方法が無いことに気を付けてください。
-
-   例:
+   Example:
 
       >>> import fnmatch, re
       >>>
       >>> regex = fnmatch.translate('*.txt')
       >>> regex
-      '.*\\.txt$'
+      '.*\\.txt\\Z(?ms)'
       >>> reobj = re.compile(regex)
       >>> reobj.match('foobar.txt')
       <_sre.SRE_Match object at 0x...>
@@ -89,5 +94,4 @@
 .. seealso::
 
    Module :mod:`glob`
-      Unix シェル形式のパス展開。
-
+      Unix shell-style path expansion.

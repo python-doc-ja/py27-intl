@@ -1,36 +1,47 @@
+:mod:`pickletools` --- Tools for pickle developers
+==================================================
 
-:mod:`pickletools` --- pickle 開発者のためのツール群
-====================================================
+.. module:: pickletools
+   :synopsis: Contains extensive comments about the pickle protocols and pickle-machine
+              opcodes, as well as some useful functions.
+
 
 .. versionadded:: 2.3
 
-.. module:: pickletools
-   :synopsis: pickle プロトコルと pickle マシン opcode に関する詳しいコメントと、有用な関数がいくつかが入っています。
+**Source code:** :source:`Lib/pickletools.py`
+
+--------------
+
+This module contains various constants relating to the intimate details of the
+:mod:`pickle` module, some lengthy comments about the implementation, and a few
+useful functions for analyzing pickled data.  The contents of this module are
+useful for Python core developers who are working on the :mod:`pickle` and
+:mod:`cPickle` implementations; ordinary users of the :mod:`pickle` module
+probably won't find the :mod:`pickletools` module relevant.
 
 
-このモジュールには、 :mod:`pickle` モジュールの詳細に関わる様々な定数や実装に関する長大なコメント、そして pickle 化されたデータ\
-を解析する上で有用な関数をいくつか定義しています。
-このモジュールの内容は :mod:`pickle` および :mod:`cPickle` の実装に関わっている
-Python コア開発者にとって有用なものです; 普通の :mod:`pickle` 利用者にとっては、
-:mod:`pickletools` モジュールはおそらく関係ないものでしょう。
+.. function:: dis(pickle, out=None, memo=None, indentlevel=4)
 
-
-.. function:: dis(pickle[, out=None, memo=None, indentlevel=4])
-
-   pickle をシンボル分解 (symbolic disassembly) した内容をファイル類似オブジェクト
-   *out* (デフォルトでは ``sys.stdout``) に出力します。
-   *pickle* は文字列にもファイル類似オブジェクトにもできます。
-   *memo* は Python 辞書型で、 pickle のメモに使われます。
-   同じ pickler の生成した複数の pickle 間にわたってシンボル分解を行う場合に使われます。
-   ストリーム中で ``MARK`` opcode で表される継続レベル (successive level) は
-   *indentlevel* に指定したスペース分インデントされます。
+   Outputs a symbolic disassembly of the pickle to the file-like object *out*,
+   defaulting to ``sys.stdout``.  *pickle* can be a string or a file-like object.
+   *memo* can be a Python dictionary that will be used as the pickle's memo; it can
+   be used to perform disassemblies across multiple pickles created by the same
+   pickler. Successive levels, indicated by ``MARK`` opcodes in the stream, are
+   indented by *indentlevel* spaces.
 
 
 .. function:: genops(pickle)
 
-   pickle 内の全ての opcode を取り出すイテレータ(:term:`iterator`)を返します。
-   このイテレータは ``(opcode, arg, pos)`` の三つ組みからなる配列を返します。
-   *opcode* は :class:`OpcodeInfo` クラスのインスタンスのクラスです。
-   *arg* は *opcode* の引数としてデコードされた Python オブジェクトの値です。
-   *pos* は *opcode* の場所を表す値です。
-   *pickle* は文字列でもファイル類似オブジェクトでもかまいません。
+   Provides an :term:`iterator` over all of the opcodes in a pickle, returning a
+   sequence of ``(opcode, arg, pos)`` triples.  *opcode* is an instance of an
+   :class:`OpcodeInfo` class; *arg* is the decoded value, as a Python object, of
+   the opcode's argument; *pos* is the position at which this opcode is located.
+   *pickle* can be a string or a file-like object.
+
+.. function:: optimize(picklestring)
+
+   Returns a new equivalent pickle string after eliminating unused ``PUT``
+   opcodes. The optimized pickle is shorter, takes less transmission time,
+   requires less storage space, and unpickles more efficiently.
+
+   .. versionadded:: 2.6

@@ -1,11 +1,10 @@
-
 .. _mswin-specific-services:
 
-*************************
-MS Windows 固有のサービス
-*************************
+****************************
+MS Windows Specific Services
+****************************
 
-この章では、MS Windows プラットフォーム上でのみ利用可能なモジュール群について記述します。
+This chapter describes modules that are only available on MS Windows platforms.
 
 
 .. toctree::

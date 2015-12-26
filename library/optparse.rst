@@ -1,33 +1,32 @@
-:mod:`optparse` --- コマンドラインオプション解析器
-============================================================
+:mod:`optparse` --- Parser for command line options
+===================================================
 
 .. module:: optparse
-   :synopsis: コマンドラインオプション解析機
+   :synopsis: Command-line option parsing library.
    :deprecated:
-
-.. deprecated:: 2.7
-   :mod:`optparse` モジュールは廃止予定で、今後開発はされません。
-   今後の開発は :mod:`argparse` モジュールに対して行われます。
-
 .. moduleauthor:: Greg Ward <gward@python.net>
+.. sectionauthor:: Greg Ward <gward@python.net>
 
 .. versionadded:: 2.3
 
-.. sectionauthor:: Greg Ward <gward@python.net>
+.. deprecated:: 2.7
+   The :mod:`optparse` module is deprecated and will not be developed further;
+   development will continue with the :mod:`argparse` module.
 
+**Source code:** :source:`Lib/optparse.py`
 
-:mod:`optparse` モジュールは、昔からある :mod:`getopt` よりも簡便で、
-柔軟性に富み、かつ強力なコマンドライン解析ライブラリです。
-:mod:`optparse` では、より宣言的なスタイルのコマンドライン解析手法、すなわち
-:class:`OptionParser` のインスタンスを作成してオプションを追加してゆき、その
-インスタンスでコマンドラインを解析するという手法をとっています。
-:mod:`optparse` を使うと、GNU/POSIX 構文でオプションを指定できるだけでなく、
-使用法やヘルプメッセージの生成も行えます。
+--------------
 
-:mod:`optparse` を使った簡単なスクリプトの例を以下に示します。 ::
+:mod:`optparse` is a more convenient, flexible, and powerful library for parsing
+command-line options than the old :mod:`getopt` module.  :mod:`optparse` uses a
+more declarative style of command-line parsing: you create an instance of
+:class:`OptionParser`, populate it with options, and parse the command
+line. :mod:`optparse` allows users to specify options in the conventional
+GNU/POSIX syntax, and additionally generates usage and help messages for you.
+
+Here's an example of using :mod:`optparse` in a simple script::
 
    from optparse import OptionParser
-
    [...]
    parser = OptionParser()
    parser.add_option("-f", "--file", dest="filename",
@@ -38,31 +37,31 @@
 
    (options, args) = parser.parse_args()
 
-このようにわずかな行数のコードによって、スクリプトのユーザはコマンドライン上で
-例えば以下のような「よくある使い方」を実行できるようになります。 ::
+With these few lines of code, users of your script can now do the "usual thing"
+on the command-line, for example::
 
    <yourscript> --file=outfile -q
 
-コマンドライン解析の中で、 :mod:`optparse` はユーザの指定した
-コマンドライン引数値に応じて :meth:`parse_args` の返す
-``options`` の属性値を設定してゆきます。 :meth:`parse_args` がコマンドライン解析から処理を戻したとき、
-``options.filename`` は ``"outfile"`` に、 ``options.verbose`` は ``False``
-になっているはずです。 :mod:`optparse` は長い形式と短い形式の両方のオプション表記をサポートしており、
-短い形式は結合して指定できます。
-また、様々な形でオプションに引数値を関連付けられます。
-従って、以下のコマンドラインは全て上の例と同じ意味になります。 ::
+As it parses the command line, :mod:`optparse` sets attributes of the
+``options`` object returned by :meth:`parse_args` based on user-supplied
+command-line values.  When :meth:`parse_args` returns from parsing this command
+line, ``options.filename`` will be ``"outfile"`` and ``options.verbose`` will be
+``False``.  :mod:`optparse` supports both long and short options, allows short
+options to be merged together, and allows options to be associated with their
+arguments in a variety of ways.  Thus, the following command lines are all
+equivalent to the above example::
 
    <yourscript> -f outfile --quiet
    <yourscript> --quiet --file outfile
    <yourscript> -q -foutfile
    <yourscript> -qfoutfile
 
-さらに、ユーザが ::
+Additionally, users can run one of  ::
 
    <yourscript> -h
    <yourscript> --help
 
-のいずれかを実行すると、 :mod:`optparse` はスクリプトのオプションについて簡単にまとめた内容を出力します。
+and :mod:`optparse` will print out a brief summary of your script's options:
 
 .. code-block:: text
 
@@ -73,368 +72,409 @@
      -f FILE, --file=FILE  write report to FILE
      -q, --quiet           don't print status messages to stdout
 
-*yourscript* の中身は実行時に決まります (通常は ``sys.argv[0]`` になります)。
+where the value of *yourscript* is determined at runtime (normally from
+``sys.argv[0]``).
 
 
 .. _optparse-background:
 
-背景
-------
+Background
+----------
 
-:mod:`optparse` は、素直で慣習に則ったコマンドラインインタフェースを備えたプログラムの作成を援助する目的で設計されました。その結果、Unix
-で慣習的に使われているコマンドラインの構文や機能だけをサポートするに留まっています。こうした慣習に詳しくなければ、
-よく知っておくためにもこの節を読んでおきましょう。
+:mod:`optparse` was explicitly designed to encourage the creation of programs
+with straightforward, conventional command-line interfaces.  To that end, it
+supports only the most common command-line syntax and semantics conventionally
+used under Unix.  If you are unfamiliar with these conventions, read this
+section to acquaint yourself with them.
 
 
 .. _optparse-terminology:
 
-用語集
-^^^^^^^^
+Terminology
+^^^^^^^^^^^
 
-引数 (argument)
-   コマンドラインでユーザが入力するテキストの塊で、シェルが :c:func:`execl` や :c:func:`execv` に引き渡すものです。Python
-   では、引数は ``sys.argv[1:]`` の要素となります。(``sys.argv[0]``
-   は実行しようとしているプログラムの名前です。引数解析に関しては、この要素はあまり重要ではありません。) Unix シェルでは、「語 (word)」と
-   いう用語も使います。
+argument
+   a string entered on the command-line, and passed by the shell to ``execl()``
+   or ``execv()``.  In Python, arguments are elements of ``sys.argv[1:]``
+   (``sys.argv[0]`` is the name of the program being executed).  Unix shells
+   also use the term "word".
 
-   場合によっては ``sys.argv[1:]`` 以外の引数リストを代入する方が望ましいことがあるので、「引数」は「 ``sys.argv[1:]``
-   または ``sys.argv[1:]`` の代替として提供される別のリストの要素」と読むべきでしょう。
+   It is occasionally desirable to substitute an argument list other than
+   ``sys.argv[1:]``, so you should read "argument" as "an element of
+   ``sys.argv[1:]``, or of some other list provided as a substitute for
+   ``sys.argv[1:]``".
 
-オプション (option)
-   追加的な情報を与えるための引数で、プログラムの実行に対する教示やカスタマイズを行います。
-   オプションには多様な文法が存在します。伝統的な Unix
-   における書法はハイフン ("-") の後ろに一文字が続くもので、例えば ``-x`` や ``-F`` です。
-   また、伝統的な Unix における書法では、複数のオプションを一つの引数にまとめられます。
-   例えば ``-x -F`` は ``-xF`` と等価です。 GNU プロジェクトでは
-   ``--`` の後ろにハイフンで区切りの語を指定する方法、例えば ``--file`` や
-   ``--dry-run`` も提供しています。
-   :mod:`optparse` は、これら二種類のオプション書法だけをサポートしています。
+option
+   an argument used to supply extra information to guide or customize the
+   execution of a program.  There are many different syntaxes for options; the
+   traditional Unix syntax is a hyphen ("-") followed by a single letter,
+   e.g. ``-x`` or ``-F``.  Also, traditional Unix syntax allows multiple
+   options to be merged into a single argument, e.g. ``-x -F`` is equivalent
+   to ``-xF``.  The GNU project introduced ``--`` followed by a series of
+   hyphen-separated words, e.g. ``--file`` or ``--dry-run``.  These are the
+   only two option syntaxes provided by :mod:`optparse`.
 
-   他に見られる他のオプション書法には以下のようなものがあります:
+   Some other option syntaxes that the world has seen include:
 
-   * ハイフンの後ろに数個の文字が続くもので、例えば ``-pf``
-     (このオプションは複数のオプションを一つにまとめたものとは *違います*)
+   * a hyphen followed by a few letters, e.g. ``-pf`` (this is *not* the same
+     as multiple options merged into a single argument)
 
-   * ハイフンの後ろに語が続くもので、例えば ``-file``
-     (これは技術的には上の書式と同じですが、通常同じプログラム上で一緒に
-     使うことはありません)
+   * a hyphen followed by a whole word, e.g. ``-file`` (this is technically
+     equivalent to the previous syntax, but they aren't usually seen in the same
+     program)
 
-   * プラス記号の後ろに一文字、数個の文字、または語を続けたもので、例えば
+   * a plus sign followed by a single letter, or a few letters, or a word, e.g.
      ``+f``, ``+rgb``
 
-   * スラッシュ記号の後ろに一文字、数個の文字、または語を続けたもので、例えば
-     ``/f``, ``/file``
+   * a slash followed by a letter, or a few letters, or a word, e.g. ``/f``,
+     ``/file``
 
-   上記のオプション書法は :mod:`optparse` ではサポートしておらず、今後もサポートする予定はありません。これは故意によるものです:
-   最初の三つはどの環境の標準でもなく、最後の一つは VMS や MS-DOS, そして Windows を対象にしているときにしか意味をなさないからです。
+   These option syntaxes are not supported by :mod:`optparse`, and they never
+   will be.  This is deliberate: the first three are non-standard on any
+   environment, and the last only makes sense if you're exclusively targeting
+   VMS, MS-DOS, and/or Windows.
 
-オプション引数 (option argument)
-   あるオプションの後ろに続く引数で、そのオプションに密接な関連をもち、オプションと同時に引数リストから取り出されます。 :mod:`optparse`
-   では、オプション引数は以下のように別々の引数にできます。
+option argument
+   an argument that follows an option, is closely associated with that option,
+   and is consumed from the argument list when that option is. With
+   :mod:`optparse`, option arguments may either be in a separate argument from
+   their option:
 
    .. code-block:: text
 
       -f foo
       --file foo
 
-   また、一つの引数中にも入れられます。
+   or included in the same argument:
 
    .. code-block:: text
 
       -ffoo
       --file=foo
 
-   通常、オプションは引数をとることもとらないこともあります。あるオプションは引数をとることがなく、
-   またあるオプションは常に引数をとります。
-   多くの人々が「オプションのオプション引数」機能を欲しています。
-   これは、あるオプションが引数が指定されている場合には引数をとり、そうでない場合には引数を
-   もたないようにするという機能です。この機能は引数解析をあいまいにするため、議論の的となっています: 例えば、もし
-   ``-a`` がオプション引数をとり、 ``-b`` がまったく別のオプションだとしたら、
-   ``-ab`` をどうやって解析すればいいのでしょうか？
-   こうした曖昧さが存在するため、 :mod:`optparse` は今のところこの機能をサポートしていません。
+   Typically, a given option either takes an argument or it doesn't. Lots of
+   people want an "optional option arguments" feature, meaning that some options
+   will take an argument if they see it, and won't if they don't.  This is
+   somewhat controversial, because it makes parsing ambiguous: if ``-a`` takes
+   an optional argument and ``-b`` is another option entirely, how do we
+   interpret ``-ab``?  Because of this ambiguity, :mod:`optparse` does not
+   support this feature.
 
-固定引数 (positional argument)
-   他のオプションが解析される、すなわち他のオプションとその引数が解析されて引数リストから除去された後に引数リストに置かれているものです。
+positional argument
+   something leftover in the argument list after options have been parsed, i.e.
+   after options and their arguments have been parsed and removed from the
+   argument list.
 
-必須のオプション (required option)
-   コマンドラインで与えなければならないオプションです; 「必須なオプション (required
-   option)」という語は、英語では矛盾した言葉です。 :mod:`optparse`
-   では必須オプションの実装を妨げてはいませんが、とりたてて実装上役立つこともしていません。
+required option
+   an option that must be supplied on the command-line; note that the phrase
+   "required option" is self-contradictory in English.  :mod:`optparse` doesn't
+   prevent you from implementing required options, but doesn't give you much
+   help at it either.
 
-例えば、下記のような架空のコマンドラインを考えてみましょう::
+For example, consider this hypothetical command-line::
 
-   prog -v --report /tmp/report.txt foo bar
+   prog -v --report report.txt foo bar
 
-``-v`` と ``--report`` はどちらもオプションです。 ``--report`` オプションが引数をとるとすれば、
-``/tmp/report.txt`` はオプションの引数です。
-``foo`` と ``bar`` は固定引数になります。
+``-v`` and ``--report`` are both options.  Assuming that ``--report``
+takes one argument, ``report.txt`` is an option argument.  ``foo`` and
+``bar`` are positional arguments.
 
 
 .. _optparse-what-options-for:
 
-オプションとは何か
-^^^^^^^^^^^^^^^^^^
+What are options for?
+^^^^^^^^^^^^^^^^^^^^^
 
-オプションはプログラムの実行を調整したり、カスタマイズしたりするための補助的な
-情報を与えるために使います。もっとはっきりいうと、オプションはあくまでもオプション
-(省略可能)であるということです。本来、プログラムはともかくもオプションなしでうまく実行できてしかるべきです。(Unix やGNU
-ツールセットのプログラムをランダムにピックアップしてみてください。オプションを全く指定しなくてもちゃんと動くでしょう？例外は ``find``,
-``tar``, ``dd`` くらいです---これらの例外は、オプション文法が標準的でなく、インタフェースが混乱を招くと酷評されてきた変種の
-はみ出しものなのです)
+Options are used to provide extra information to tune or customize the execution
+of a program.  In case it wasn't clear, options are usually *optional*.  A
+program should be able to run just fine with no options whatsoever.  (Pick a
+random program from the Unix or GNU toolsets.  Can it run without any options at
+all and still make sense?  The main exceptions are ``find``, ``tar``, and
+``dd``\ ---all of which are mutant oddballs that have been rightly criticized
+for their non-standard syntax and confusing interfaces.)
 
-多くの人が自分のプログラムに「必須のオプション」を持たせたいと考えます。しかしよく考えてください。必須なら、それは *オプション(省略可能) ではないのです！*
-プログラムを正しく動作させるのに絶対的に必要な情報があるとすれば、そこには固定引数を割り当てるべきなのです。
+Lots of people want their programs to have "required options".  Think about it.
+If it's required, then it's *not optional*!  If there is a piece of information
+that your program absolutely requires in order to run successfully, that's what
+positional arguments are for.
 
-良くできたコマンドラインインタフェース設計として、ファイルのコピーに使われる ``cp`` ユーティリティのことを考えてみましょう。ファイルのコピーでは、
-コピー先を指定せずにファイルをコピーするのは無意味な操作ですし、少なくとも一つのコピー元が必要です。従って、 ``cp`` は引数無しで実行すると失敗します。
-とはいえ、 ``cp`` はオプションを全く必要としない柔軟で便利なコマンドライン文法を備えています::
+As an example of good command-line interface design, consider the humble ``cp``
+utility, for copying files.  It doesn't make much sense to try to copy files
+without supplying a destination and at least one source. Hence, ``cp`` fails if
+you run it with no arguments.  However, it has a flexible, useful syntax that
+does not require any options at all::
 
    cp SOURCE DEST
    cp SOURCE ... DEST-DIR
 
-まだあります。ほとんどの ``cp`` の実装では、ファイルモードや変更時刻を変えずに
-コピーする、シンボリックリンクの追跡を行わない、すでにあるファイルを上書きする前に
-ユーザに尋ねる、など、ファイルをコピーする方法をいじるための一連のオプションを実装
-しています。しかし、こうしたオプションは、一つのファイルを別の場所にコピーする、または複数のファイルを別のディレクトリにコピーするという、 ``cp``
-の中心的な処理を乱すことはないのです。
+You can get pretty far with just that.  Most ``cp`` implementations provide a
+bunch of options to tweak exactly how the files are copied: you can preserve
+mode and modification time, avoid following symlinks, ask before clobbering
+existing files, etc.  But none of this distracts from the core mission of
+``cp``, which is to copy either one file to another, or several files to another
+directory.
 
 
 .. _optparse-what-positional-arguments-for:
 
-固定引数とは何か
-^^^^^^^^^^^^^^^^
+What are positional arguments for?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-固定引数とは、プログラムを動作させる上で絶対的に必要な情報となる引数です。
+Positional arguments are for those pieces of information that your program
+absolutely, positively requires to run.
 
-よいユーザインタフェースとは、可能な限り少ない固定引数をもつものです。プログラムを正しく動作させるために 17 個もの別個の情報が必要だとしたら、
-その *方法* はさして問題にはなりません ---ユーザはプログラムを正しく動作させられないうちに諦め、立ち去ってしまうからです。
-ユーザインタフェースがコマンドラインでも、設定ファイルでも、GUI やその他の何であっても同じです: 多くの要求をユーザに押し付ければ、ほとんどのユーザはただ
-音をあげてしまうだけなのです。
+A good user interface should have as few absolute requirements as possible.  If
+your program requires 17 distinct pieces of information in order to run
+successfully, it doesn't much matter *how* you get that information from the
+user---most people will give up and walk away before they successfully run the
+program.  This applies whether the user interface is a command-line, a
+configuration file, or a GUI: if you make that many demands on your users, most
+of them will simply give up.
 
-要するに、ユーザが絶対に提供しなければならない情報だけに制限する --- そして可能な限りよく練られたデフォルト設定を使うよう試みてください。
-もちろん、プログラムには適度な柔軟性を持たせたいとも望むはずですが、それこそがオプションの果たす役割です。繰り返しますが、設定ファイルのエントリであろうが、
-GUI でできた「環境設定」ダイアログ上のウィジェットであろうが、コマンドラインオプションであろうが関係ありません ---
-より多くのオプションを実装すればプログラムはより柔軟性を持ちますが、実装はより難解になるのです。高すぎる柔軟性はユーザを閉口させ、コードの維持を
-より難しくするのです。
+In short, try to minimize the amount of information that users are absolutely
+required to supply---use sensible defaults whenever possible.  Of course, you
+also want to make your programs reasonably flexible.  That's what options are
+for.  Again, it doesn't matter if they are entries in a config file, widgets in
+the "Preferences" dialog of a GUI, or command-line options---the more options
+you implement, the more flexible your program is, and the more complicated its
+implementation becomes.  Too much flexibility has drawbacks as well, of course;
+too many options can overwhelm users and make your code much harder to maintain.
 
 
 .. _optparse-tutorial:
 
-チュートリアル
-----------------
+Tutorial
+--------
 
-:mod:`optparse` はとても柔軟で強力でありながら、ほとんどの場合には簡単に利用できます。この節では、 :mod:`optparse`
-ベースのプログラムで広く使われているコードパターンについて述べます。
+While :mod:`optparse` is quite flexible and powerful, it's also straightforward
+to use in most cases.  This section covers the code patterns that are common to
+any :mod:`optparse`\ -based program.
 
-まず、 :class:`OptionParser` クラスを import しておかねばなりません。次に、プログラムの冒頭で
-:class:`OptionParser` インスタンスを生成しておきます::
+First, you need to import the OptionParser class; then, early in the main
+program, create an OptionParser instance::
 
    from optparse import OptionParser
    [...]
    parser = OptionParser()
 
-これでオプションを定義できるようになりました。基本的な構文は以下の通りです::
+Then you can start defining options.  The basic syntax is::
 
    parser.add_option(opt_str, ...,
                      attr=value, ...)
 
-各オプションには、 ``-f`` や ``--file`` のような一つまたは複数の
-オプション文字列と、パーザがコマンドライン上のオプションを見つけた際に、何を準備し、何を行うべきかを :mod:`optparse`
-に教えるためのオプション属性 (option attribute)がいくつか入ります。
+Each option has one or more option strings, such as ``-f`` or ``--file``,
+and several option attributes that tell :mod:`optparse` what to expect and what
+to do when it encounters that option on the command line.
 
-通常、各オプションには短いオプション文字列と長いオプション文字列があります。例えば::
+Typically, each option will have one short option string and one long option
+string, e.g.::
 
    parser.add_option("-f", "--file", ...)
 
-といった具合です。
+You're free to define as many short option strings and as many long option
+strings as you like (including zero), as long as there is at least one option
+string overall.
 
-オプション文字列は、(ゼロ文字の場合も含め)いくらでも短く、またいくらでも長くできます。ただしオプション文字列は少なくとも一つなければなりません。
+The option strings passed to :meth:`OptionParser.add_option` are effectively
+labels for the
+option defined by that call.  For brevity, we will frequently refer to
+*encountering an option* on the command line; in reality, :mod:`optparse`
+encounters *option strings* and looks up options from them.
 
-:meth:`add_option` に渡されたオプション文字列は、実際にはこの関数で定義したオプションに対するラベルになります。簡単のため、以後では
-コマンドライン上で *オプションを見つける* という表現をしばしば使いますが、これは実際には :mod:`optparse`
-がコマンドライン上の *オプション文字列* を見つけ、対応づけされているオプションを捜し出す、という処理に相当します。
-
-オプションを全て定義したら、 :mod:`optparse` にコマンドラインを解析するように指示します::
+Once all of your options are defined, instruct :mod:`optparse` to parse your
+program's command line::
 
    (options, args) = parser.parse_args()
 
-(お望みなら、 :meth:`parse_args` に自作の引数リストを渡してもかまいません。とはいえ、実際にはそうした必要はほとんどないでしょう:
-:mod:`optionparser` はデフォルトで ``sys.argv[1:]`` を使うからです。)
+(If you like, you can pass a custom argument list to :meth:`parse_args`, but
+that's rarely necessary: by default it uses ``sys.argv[1:]``.)
 
-:meth:`parse_args` は二つの値を返します:
+:meth:`parse_args` returns two values:
 
-* 全てのオプションに対する値の入ったオブジェクト ``options`` --- 例えば、 ``--file``
-  が単一の文字列引数をとる場合、 ``options.file`` はユーザが指定したファイル名になります。オプションを指定しなかった場合には ``None``
-  になります。
+* ``options``, an object containing values for all of your options---e.g. if
+  ``--file`` takes a single string argument, then ``options.file`` will be the
+  filename supplied by the user, or ``None`` if the user did not supply that
+  option
 
-* オプションの解析後に残った固定引数からなるリスト ``args`` 。
+* ``args``, the list of positional arguments leftover after parsing options
 
-このチュートリアルの節では、最も重要な四つのオプション属性:
+This tutorial section only covers the four most important option attributes:
 :attr:`~Option.action`, :attr:`~Option.type`, :attr:`~Option.dest`
-(destination), :attr:`~Option.help` についてしか触れません。
-このうち最も重要なのは :attr:`~Option.action` です。
+(destination), and :attr:`~Option.help`. Of these, :attr:`~Option.action` is the
+most fundamental.
 
 
 .. _optparse-understanding-option-actions:
 
-オプション・アクションを理解する
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Understanding option actions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-アクション(action)は :mod:`optparse` がコマンドライン上にあるオプションを
-見つけたときに何をすべきかを指示します。 :mod:`optparse` には押し着せのアクションのセットがハードコードされています。
-新たなアクションの追加は上級者向けの話題であり、 :ref:`optparse-extending-optparse` で触れます。
-ほとんどのアクションは、値を何らかの変数に記憶するよう :mod:`optparse` に指示します ---
-例えば、文字列をコマンドラインから取り出して、 ``options`` の属性の中に入れる、といった具合にです。
+Actions tell :mod:`optparse` what to do when it encounters an option on the
+command line.  There is a fixed set of actions hard-coded into :mod:`optparse`;
+adding new actions is an advanced topic covered in section
+:ref:`optparse-extending-optparse`.  Most actions tell :mod:`optparse` to store
+a value in some variable---for example, take a string from the command line and
+store it in an attribute of ``options``.
 
-オプション・アクションを指定しない場合、 :mod:`optparse` のデフォルトの動作は ``store`` になります。
+If you don't specify an option action, :mod:`optparse` defaults to ``store``.
 
 
 .. _optparse-store-action:
 
-store アクション
+The store action
 ^^^^^^^^^^^^^^^^
 
-もっとも良く使われるアクションは ``store`` です。このアクションは次の引数 (あるいは現在の引数の残りの部分) を取り出し、正しい型の値か確かめ、
-指定した保存先に保存するよう :mod:`optparse` に指示します。
+The most common option action is ``store``, which tells :mod:`optparse` to take
+the next argument (or the remainder of the current argument), ensure that it is
+of the correct type, and store it to your chosen destination.
 
-例えば::
+For example::
 
    parser.add_option("-f", "--file",
                      action="store", type="string", dest="filename")
 
-のように指定しておき、偽のコマンドラインを作成して :mod:`optparse` に解析させてみましょう::
+Now let's make up a fake command line and ask :mod:`optparse` to parse it::
 
    args = ["-f", "foo.txt"]
    (options, args) = parser.parse_args(args)
 
-オプション文字列 ``-f`` を見つけると、 :mod:`optparse` は次の引数である ``foo.txt`` を消費し、その値を
-``options.filename`` に保存します。従って、この :meth:`parse_args` 呼び出し後には
-``options.filename`` は ``"foo.txt"`` になっています。
+When :mod:`optparse` sees the option string ``-f``, it consumes the next
+argument, ``foo.txt``, and stores it in ``options.filename``.  So, after this
+call to :meth:`parse_args`, ``options.filename`` is ``"foo.txt"``.
 
-オプションの型として、 :mod:`optparse` は他にも ``int`` や ``float`` をサポートしています。
-
-整数の引数を想定したオプションの例を示します::
+Some other option types supported by :mod:`optparse` are ``int`` and ``float``.
+Here's an option that expects an integer argument::
 
    parser.add_option("-n", type="int", dest="num")
 
-このオプションには長い形式のオプション文字列がないため、設定に問題がないということに注意してください。また、デフォルトのアクションは ``store``
-なので、ここでは action を明示的に指定していません。
+Note that this option has no long option string, which is perfectly acceptable.
+Also, there's no explicit action, since the default is ``store``.
 
-架空のコマンドラインをもう一つ解析してみましょう。今度は、オプション引数を
-オプションの右側にぴったりくっつけて一緒くたにします: ``-n42``
-(一つの引数のみ) は ``-n 42`` (二つの引数からなる) と等価になるので、 ::
+Let's parse another fake command-line.  This time, we'll jam the option argument
+right up against the option: since ``-n42`` (one argument) is equivalent to
+``-n 42`` (two arguments), the code ::
 
    (options, args) = parser.parse_args(["-n42"])
    print options.num
 
-は ``42`` を出力します。
+will print ``42``.
 
-型を指定しない場合、 :mod:`optparse` は引数を ``string`` であると仮定します。デフォルトのアクションが ``store``
-であることも併せて考えると、最初の例はもっと短くなります::
+If you don't specify a type, :mod:`optparse` assumes ``string``.  Combined with
+the fact that the default action is ``store``, that means our first example can
+be a lot shorter::
 
    parser.add_option("-f", "--file", dest="filename")
 
-保存先 (destination) を指定しない場合、 :mod:`optparse` はデフォルト値としてオプション文字列から気のきいた名前を設定します:
-最初に指定した長い形式のオプション文字列が ``--foo-bar`` であれば、デフォルトの保存先は ``foo_bar``
-になります。長い形式のオプション文字列がなければ、 :mod:`optparse` は最初に指定した短い形式のオプション文字列を探します:
-例えば、 ``-f`` に対する保存先は ``f`` になります。
+If you don't supply a destination, :mod:`optparse` figures out a sensible
+default from the option strings: if the first long option string is
+``--foo-bar``, then the default destination is ``foo_bar``.  If there are no
+long option strings, :mod:`optparse` looks at the first short option string: the
+default destination for ``-f`` is ``f``.
 
-:mod:`optparse` では、 ``long`` や ``complex`` といった組み込み型も取り入れています。型の追加は
-:ref:`optparse-extending-optparse` で触れています。
+:mod:`optparse` also includes built-in ``long`` and ``complex`` types.  Adding
+types is covered in section :ref:`optparse-extending-optparse`.
 
 
 .. _optparse-handling-boolean-options:
 
-ブール値 (フラグ) オプションの処理
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Handling boolean (flag) options
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-フラグオプション---特定のオプションに対して真または偽の値の値を設定するオプション--- はよく使われます。 :mod:`optparse`
-では、二つのアクション、 ``store_true`` および ``store_false`` をサポートしています。例えば、 ``verbose``
-というフラグを ``-v`` で有効にして、 ``-q`` で無効にしたいとします::
+Flag options---set a variable to true or false when a particular option is seen
+---are quite common.  :mod:`optparse` supports them with two separate actions,
+``store_true`` and ``store_false``.  For example, you might have a ``verbose``
+flag that is turned on with ``-v`` and off with ``-q``::
 
    parser.add_option("-v", action="store_true", dest="verbose")
    parser.add_option("-q", action="store_false", dest="verbose")
 
-ここでは二つのオプションに同じ保存先を指定していますが、全く問題ありません (下記のように、デフォルト値の設定を少し注意深く行わねばならないだけです)
+Here we have two different options with the same destination, which is perfectly
+OK.  (It just means you have to be a bit careful when setting default values---
+see below.)
 
-``-v`` をコマンドライン上に見つけると、 :mod:`optparse` は ``options.verbose`` を ``True``
-に設定します。 ``-q`` を見つければ、 ``options.verbose`` は ``False`` にセットされます。
+When :mod:`optparse` encounters ``-v`` on the command line, it sets
+``options.verbose`` to ``True``; when it encounters ``-q``,
+``options.verbose`` is set to ``False``.
 
 
 .. _optparse-other-actions:
 
-その他のアクション
-^^^^^^^^^^^^^^^^^^
+Other actions
+^^^^^^^^^^^^^
 
-この他にも、 :mod:`optparse` は以下のようなアクションをサポートしています:
+Some other actions supported by :mod:`optparse` are:
 
 ``"store_const"``
-   定数値を保存します。
+   store a constant value
 
 ``"append"``
-   オプションの引数を指定のリストに追加します。
+   append this option's argument to a list
 
 ``"count"``
-   指定のカウンタを 1 増やします。
+   increment a counter by one
 
 ``"callback"``
-   指定の関数を呼び出します。
+   call a specified function
 
-これらのアクションについては、 :ref:`optparse-reference-guide` 節の「リファレンスガイド」および
-:ref:`optparse-option-callbacks` 節で触れます。
+These are covered in section :ref:`optparse-reference-guide`, Reference Guide
+and section :ref:`optparse-option-callbacks`.
 
 
 .. _optparse-default-values:
 
-デフォルト値
-^^^^^^^^^^^^
+Default values
+^^^^^^^^^^^^^^
 
-上記の例は全て、何らかのコマンドラインオプションが見つかった時に何らかの変数 (保存先: destination) に値を設定していました。
-では、該当するオプションが見つからなかった場合には何が起きるのでしょうか？デフォルトは全く与えていないため、これらの値は全て ``None`` になります。
-たいていはこれで十分ですが、もっときちんと制御したい場合もあります。 :mod:`optparse` では各保存先に対してデフォルト値を指定し、コマンドライン
-の解析前にデフォルト値が設定されるようにできます。
+All of the above examples involve setting some variable (the "destination") when
+certain command-line options are seen.  What happens if those options are never
+seen?  Since we didn't supply any defaults, they are all set to ``None``.  This
+is usually fine, but sometimes you want more control.  :mod:`optparse` lets you
+supply a default value for each destination, which is assigned before the
+command line is parsed.
 
-まず、 verbose/quiet の例について考えてみましょう。 :mod:`optparse` に対して、 ``-q`` がない限り
-``verbose`` を ``True`` に設定させたいなら、以下のようにします::
+First, consider the verbose/quiet example.  If we want :mod:`optparse` to set
+``verbose`` to ``True`` unless ``-q`` is seen, then we can do this::
 
    parser.add_option("-v", action="store_true", dest="verbose", default=True)
    parser.add_option("-q", action="store_false", dest="verbose")
 
-デフォルトの値は特定のオプションではなく *保存先* に対して適用されます。また、これら二つのオプションはたまたま同じ保存先を持っているにすぎないため、
-上のコードは下のコードと全く等価になります::
+Since default values apply to the *destination* rather than to any particular
+option, and these two options happen to have the same destination, this is
+exactly equivalent::
 
    parser.add_option("-v", action="store_true", dest="verbose")
    parser.add_option("-q", action="store_false", dest="verbose", default=True)
 
-下のような場合を考えてみましょう::
+Consider this::
 
    parser.add_option("-v", action="store_true", dest="verbose", default=False)
    parser.add_option("-q", action="store_false", dest="verbose", default=True)
 
-やはり ``verbose`` のデフォルト値は ``True`` になります; 特定の目的変数に対するデフォルト値として有効なのは、最後に指定した値だからです。
+Again, the default value for ``verbose`` will be ``True``: the last default
+value supplied for any particular destination is the one that counts.
 
-デフォルト値をすっきりと指定するには、 :class:`OptionParser` の :meth:`set_defaults`
-メソッドを使います。このメソッドは :meth:`parse_args` を呼び出す前ならいつでも使えます::
+A clearer way to specify default values is the :meth:`set_defaults` method of
+OptionParser, which you can call at any time before calling :meth:`parse_args`::
 
    parser.set_defaults(verbose=True)
    parser.add_option(...)
    (options, args) = parser.parse_args()
 
-前の例と同様、あるオプションの値の保存先に対するデフォルトの値は最後に指定した
-値になります。コードを読みやすくするため、デフォルト値を設定するときには両方のやり方を混ぜるのではなく、片方だけを使うようにしましょう。
+As before, the last value specified for a given option destination is the one
+that counts.  For clarity, try to use one method or the other of setting default
+values, not both.
 
 
 .. _optparse-generating-help:
 
-ヘルプの生成
-^^^^^^^^^^^^
+Generating help
+^^^^^^^^^^^^^^^
 
-:mod:`optparse` にはヘルプと使い方の説明 (usage text) を生成する機能があり、
-ユーザに優しいコマンドラインインタフェースを作成する上で役立ちます。
-やらなければならないのは、各オプションに対する :attr:`~Option.help` の値と、
-必要ならプログラム全体の使用法を説明する短いメッセージを与えることだけです。
-
-ユーザフレンドリな (ドキュメント付きの) オプションを追加した :class:`OptionParser` を以下に示します::
+:mod:`optparse`'s ability to generate help and usage text automatically is
+useful for creating user-friendly command-line interfaces.  All you have to do
+is supply a :attr:`~Option.help` value for each option, and optionally a short
+usage message for your whole program.  Here's an OptionParser populated with
+user-friendly (documented) options::
 
    usage = "usage: %prog [options] arg1 arg2"
    parser = OptionParser(usage=usage)
@@ -451,9 +491,9 @@ store アクション
                      help="interaction mode: novice, intermediate, "
                           "or expert [default: %default]")
 
-:mod:`optparse` がコマンドライン上で ``-h`` や ``--help`` を
-見つけた場合や、 :meth:`parser.print_help` を呼び出した場合、この :class:`OptionParser`
-は以下のようなメッセージを標準出力に出力します。
+If :mod:`optparse` encounters either ``-h`` or ``--help`` on the
+command-line, or if you just call :meth:`parser.print_help`, it prints the
+following to standard output:
 
 .. code-block:: text
 
@@ -468,76 +508,81 @@ store アクション
      -m MODE, --mode=MODE  interaction mode: novice, intermediate, or
                            expert [default: intermediate]
 
-(help オプションでヘルプを出力した場合、 :mod:`optparse` は出力後にプログラムを終了します。)
+(If the help output is triggered by a help option, :mod:`optparse` exits after
+printing the help text.)
 
-:mod:`optparse` ができるだけうまくメッセージを生成するよう手助けするには、他にもまだまだやるべきことがあります:
+There's a lot going on here to help :mod:`optparse` generate the best possible
+help message:
 
-* スクリプト自体の利用法を表すメッセージを定義します::
+* the script defines its own usage message::
 
      usage = "usage: %prog [options] arg1 arg2"
 
-  :mod:`optparse` は ``%prog`` を現在のプログラム名、すなわち ``os.path.basename(sys.argv[0])``
-  と置き換えます。この文字列は詳細なオプションヘルプの前に展開され出力されます。
+  :mod:`optparse` expands ``%prog`` in the usage string to the name of the
+  current program, i.e. ``os.path.basename(sys.argv[0])``.  The expanded string
+  is then printed before the detailed option help.
 
-  usage の文字列を指定しない場合、 :mod:`optparse` は型どおりとはいえ気の利いたデフォルト値、
-  ``"Usage: %prog [options]"`` を使います。固定引数をとらないスクリプトの場合はこれで十分でしょう。
+  If you don't supply a usage string, :mod:`optparse` uses a bland but sensible
+  default: ``"Usage: %prog [options]"``, which is fine if your script doesn't
+  take any positional arguments.
 
-* 全てのオプションにヘルプ文字列を定義します。行の折り返しは気にしなくてかまいません --- :mod:`optparse`
-  は行の折り返しに気を配り、見栄えのよいヘルプ出力を生成します。
+* every option defines a help string, and doesn't worry about line-wrapping---
+  :mod:`optparse` takes care of wrapping lines and making the help output look
+  good.
 
-* オプションが値をとるということは自動的に生成されるヘルプメッセージの中で分かります。例えば、"mode" option の場合には::
+* options that take a value indicate this fact in their automatically-generated
+  help message, e.g. for the "mode" option::
 
      -m MODE, --mode=MODE
 
-  のようになります。
-
-  ここで "MODE" はメタ変数 (meta-variable) と呼ばれます: メタ変数は、ユーザが
-  ``-m``/``--mode`` に対して指定するはずの引数を表します。デフォルトでは、 :mod:`optparse`
-  は保存先の変数名を大文字だけにしたものをメタ変数に使います。これは時として期待通りの結果になりません ---
-  例えば、上の例の ``--filename`` オプションでは明示的に ``metavar="FILE"`` を設定しており、その結果自動生成された
-  オプション説明テキストは::
+  Here, "MODE" is called the meta-variable: it stands for the argument that the
+  user is expected to supply to ``-m``/``--mode``.  By default,
+  :mod:`optparse` converts the destination variable name to uppercase and uses
+  that for the meta-variable.  Sometimes, that's not what you want---for
+  example, the ``--filename`` option explicitly sets ``metavar="FILE"``,
+  resulting in this automatically-generated option description::
 
      -f FILE, --filename=FILE
 
-  のようになります。
-
-  この機能の重要さは、単に表示スペースを節約するといった理由にとどまりません:
-  上の例では、手作業で書いたヘルプテキストの中でメタ変数として ``FILE`` を
-  使っています。その結果、ユーザに対してやや堅苦しい表現の書法 ``-f FILE`` と、
-  より平易に意味付けを説明した "write output to FILE"
-  との間に対応があるというヒントを与えています。これは、エンドユーザにとってより明解で便利なヘルプテキストを作成する単純でありながら効果的な手法なのです。
+  This is important for more than just saving space, though: the manually
+  written help text uses the meta-variable ``FILE`` to clue the user in that
+  there's a connection between the semi-formal syntax ``-f FILE`` and the informal
+  semantic description "write output to FILE". This is a simple but effective
+  way to make your help text a lot clearer and more useful for end users.
 
 .. versionadded:: 2.4
-   デフォルト値を持つオプションのヘルプ文字列には ``%default`` を入れられます --- :mod:`optparse`
-   は ``%default`` をデフォルト値の :func:`str` で置き換えます。該当するオプションにデフォルト値がない場合 (あるいはデフォルト値が
-   ``None`` である場合) ``%default`` の展開結果は ``none`` になります。
+   Options that have a default value can include ``%default`` in the help
+   string---\ :mod:`optparse` will replace it with :func:`str` of the option's
+   default value.  If an option has no default value (or the default value is
+   ``None``), ``%default`` expands to ``none``.
 
-.. Grouping Options
+Grouping Options
+++++++++++++++++
 
-オプションをグループ化する
-+++++++++++++++++++++++++++
+When dealing with many options, it is convenient to group these options for
+better help output.  An :class:`OptionParser` can contain several option groups,
+each of which can contain several options.
 
-たくさんのオプションを扱う場合、オプションをグループ分けするとヘルプ出力が\
-見やすくなります。 :class:`OptionParser` は、複数のオプションをまとめた\
-オプショングループを複数持つことができます。
-
-オプションのグループは、 :class:`OptionGroup` を使って作成します:
+An option group is obtained using the class :class:`OptionGroup`:
 
 .. class:: OptionGroup(parser, title, description=None)
 
-   * *parser* は、このグループが属する  :class:`OptionParser` のインスタンスです
-   * *title* はグループのタイトルです
-   * *description* はオプションで、グループの長い説明です
+   where
 
-:class:`OptionGroup` は (:class:`OptionParser` のように) :class:`OptionContainer`
-を継承していて、オプションをグループに追加するために :meth:`add_option`
-メソッドを利用できます。
+   * parser is the :class:`OptionParser` instance the group will be insterted in
+     to
+   * title is the group title
+   * description, optional, is a long description of the group
 
-全てのオプションを定義したら、 :class:`OptionParser` の :meth:`add_option_group`
-メソッドを使ってグループを定義済みのパーサーに追加します。
+:class:`OptionGroup` inherits from :class:`OptionContainer` (like
+:class:`OptionParser`) and so the :meth:`add_option` method can be used to add
+an option to the group.
 
-前のセクションで定義したパーサーに、続けて :class:`OptionGroup` を
-追加します::
+Once all the options are declared, using the :class:`OptionParser` method
+:meth:`add_option_group` the group is added to the previously defined parser.
+
+Continuing with the parser defined in the previous section, adding an
+:class:`OptionGroup` to a parser is easy::
 
     group = OptionGroup(parser, "Dangerous Options",
                         "Caution: use these options at your own risk.  "
@@ -545,9 +590,7 @@ store アクション
     group.add_option("-g", action="store_true", help="Group option.")
     parser.add_option_group(group)
 
-.. This would result in the following help output::
-
-この結果のヘルプ出力は次のようになります。
+This would result in the following help output:
 
 .. code-block:: text
 
@@ -568,7 +611,8 @@ store アクション
 
        -g                  Group option.
 
-さらにサンプルを拡張して、複数のグループを使うようにしてみます::
+A bit more complete example might involve using more than one group: still
+extending the previous example::
 
     group = OptionGroup(parser, "Dangerous Options",
                         "Caution: use these options at your own risk.  "
@@ -584,7 +628,7 @@ store アクション
     group.add_option("-e", action="store_true", help="Print every action done")
     parser.add_option_group(group)
 
-出力結果は次のようになります:
+that results in the following output:
 
 .. code-block:: text
 
@@ -610,110 +654,111 @@ store アクション
        -s, --sql           Print all SQL statements executed
        -e                  Print every action done
 
-もう1つの、特にオプショングループをプログラムから操作するときに利用できる
-メソッドがあります:
+Another interesting method, in particular when working programmatically with
+option groups is:
 
 .. method:: OptionParser.get_option_group(opt_str)
 
-   *opt_str* と同じ title か long description を持っている :class:`OptionGroup`
-   があれば返します。
+   Return the :class:`OptionGroup` to which the short or long option
+   string *opt_str* (e.g. ``'-o'`` or ``'--option'``) belongs. If
+   there's no such :class:`OptionGroup`, return ``None``.
 
 .. _optparse-printing-version-string:
 
-バージョン番号の出力
-^^^^^^^^^^^^^^^^^^^^
+Printing a version string
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` では、使用法メッセージと同様にプログラムのバージョン文字列を出力できます。 :class:`OptionParser`
-の ``version`` 引数に文字列を渡します::
+Similar to the brief usage string, :mod:`optparse` can also print a version
+string for your program.  You have to supply the string as the ``version``
+argument to OptionParser::
 
    parser = OptionParser(usage="%prog [-f] [-q]", version="%prog 1.0")
 
-``%prog`` は *usage* と同じような展開を受けます。その他にも ``version`` には何でも好きな内容を入れられます。
-``version`` を指定した場合、 :mod:`optparse` は自動的に ``--version`` オプションをパーザに渡します。
-コマンドライン中に ``--version`` が見つかると、 :mod:`optparse` は ``version`` 文字列を展開して
-(``%prog`` を置き換えて) 標準出力に出力し、プログラムを終了します。
+``%prog`` is expanded just like it is in ``usage``.  Apart from that,
+``version`` can contain anything you like.  When you supply it, :mod:`optparse`
+automatically adds a ``--version`` option to your parser. If it encounters
+this option on the command line, it expands your ``version`` string (by
+replacing ``%prog``), prints it to stdout, and exits.
 
-例えば、 ``/usr/bin/foo`` という名前のスクリプトなら::
+For example, if your script is called ``/usr/bin/foo``::
 
    $ /usr/bin/foo --version
    foo 1.0
 
-のようになります。
-
-.. The following two methods can be used to print and get the ``version`` string:
-
-以下の2つのメソッドを、 ``version`` 文字列を表示するために利用できます。
+The following two methods can be used to print and get the ``version`` string:
 
 .. method:: OptionParser.print_version(file=None)
 
-   現在のプログラムのバージョン (``self.version``) を *file* (デフォルト: stdout)
-   へ表示します。 :meth:`print_usage` と同じく、 ``self.version`` の中の全ての
-   ``%prog`` が現在のプログラム名に置き換えられます。
-   ``self.version`` が空文字列だだったり未定義だったときは何もしません。
+   Print the version message for the current program (``self.version``) to
+   *file* (default stdout).  As with :meth:`print_usage`, any occurrence
+   of ``%prog`` in ``self.version`` is replaced with the name of the current
+   program.  Does nothing if ``self.version`` is empty or undefined.
 
 .. method:: OptionParser.get_version()
 
-   .. Same as :meth:`print_version` but returns the version string instead of
-      printing it.
-
-   :meth:`print_version` と同じですが、バージョン文字列を表示する代わりに
-   返します。
+   Same as :meth:`print_version` but returns the version string instead of
+   printing it.
 
 
 .. _optparse-how-optparse-handles-errors:
 
-:mod:`optparse` のエラー処理法
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+How :mod:`optparse` handles errors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` を使う場合に気を付けねばならないエラーには、大きく分けてプログラマ側のエラーとユーザ側のエラーという二つの種類があります。
-プログラマ側のエラーの多くは、例えば不正なオプション文字列や定義されていないオプション属性の指定、あるいはオプション属性を指定し忘れるといった、
-誤った ``OptionParser.add_option()`` 呼び出しによるものです。
-こうした誤りは通常通りに処理されます。すなわち、例外(:exc:`optparse.OptionError` や :exc:`TypeError`)
-を送出して、プログラムをクラッシュさせます。
+There are two broad classes of errors that :mod:`optparse` has to worry about:
+programmer errors and user errors.  Programmer errors are usually erroneous
+calls to :func:`OptionParser.add_option`, e.g. invalid option strings, unknown
+option attributes, missing option attributes, etc.  These are dealt with in the
+usual way: raise an exception (either :exc:`optparse.OptionError` or
+:exc:`TypeError`) and let the program crash.
 
-もっと重要なのはユーザ側のエラーの処理です。というのも、ユーザの操作エラーという\
-ものはコードの安定性に関係なく起こるからです。 :mod:`optparse` は、誤ったオプション引数の指定 (整数を引数にとるオプション
-``-n`` に対して ``-n 4x`` と指定してしまうなど) や、引数を指定し忘れた場合 (``-n``
-が何らかの引数をとるオプションであるのに、 ``-n`` が引数の末尾に来ている場合) といった、ユーザによるエラーを自動的に\
-検出します。また、アプリケーション側で定義されたエラー条件が起きた場合、
-:func:`OptionParser.error` を呼び出してエラーを通知できます::
+Handling user errors is much more important, since they are guaranteed to happen
+no matter how stable your code is.  :mod:`optparse` can automatically detect
+some user errors, such as bad option arguments (passing ``-n 4x`` where
+``-n`` takes an integer argument), missing arguments (``-n`` at the end
+of the command line, where ``-n`` takes an argument of any type).  Also,
+you can call :func:`OptionParser.error` to signal an application-defined error
+condition::
 
    (options, args) = parser.parse_args()
    [...]
    if options.a and options.b:
        parser.error("options -a and -b are mutually exclusive")
 
-いずれの場合にも :mod:`optparse` はエラーを同じやり方で処理します。すなわち、
-プログラムの使用法メッセージとエラーメッセージを標準エラー出力に出力して、終了ステータス 2 でプログラムを終了させます。
+In either case, :mod:`optparse` handles the error the same way: it prints the
+program's usage message and an error message to standard error and exits with
+error status 2.
 
-上に挙げた最初の例、すなわち整数を引数にとるオプションにユーザが ``4x`` を指定した場合を考えてみましょう::
+Consider the first example above, where the user passes ``4x`` to an option
+that takes an integer::
 
    $ /usr/bin/foo -n 4x
    Usage: foo [options]
 
    foo: error: option -n: invalid integer value: '4x'
 
-値を全く指定しない場合には、以下のようになります::
+Or, where the user fails to pass a value at all::
 
    $ /usr/bin/foo -n
    Usage: foo [options]
 
    foo: error: -n option requires an argument
 
-:mod:`optparse` は、常にエラーを引き起こしたオプションについて説明の入ったエラーメッセージを生成するよう気を配ります;
-従って、 :func:`OptionParser.error` をアプリケーションコードから呼び出す場合にも、同じようなメッセージになるようにしてください。
+:mod:`optparse`\ -generated error messages take care always to mention the
+option involved in the error; be sure to do the same when calling
+:func:`OptionParser.error` from your application code.
 
-:mod:`optparse` のデフォルトのエラー処理動作が気に入らないのなら、 :class:`OptionParser`
-をサブクラス化して、 :meth:`~OptionParser.exit` かつ/または
-:meth:`~OptionParser.error` をオーバライドする必要があります。
+If :mod:`optparse`'s default error-handling behaviour does not suit your needs,
+you'll need to subclass OptionParser and override its :meth:`~OptionParser.exit`
+and/or :meth:`~OptionParser.error` methods.
 
 
 .. _optparse-putting-it-all-together:
 
-全てをつなぎ合わせる
-^^^^^^^^^^^^^^^^^^^^
+Putting it all together
+^^^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` を使ったスクリプトは、通常以下のようになります::
+Here's what :mod:`optparse`\ -based scripts usually look like::
 
    from optparse import OptionParser
    [...]
@@ -740,87 +785,90 @@ store アクション
 
 .. _optparse-reference-guide:
 
-リファレンスガイド
-------------------
+Reference Guide
+---------------
 
 
 .. _optparse-creating-parser:
 
-.. Creating the parser
-
-parserを作る
+Creating the parser
 ^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` を使う最初の一歩は OptionParser インスタンスを作ることです。
+The first step in using :mod:`optparse` is to create an OptionParser instance.
 
 .. class:: OptionParser(...)
 
-OptionParser のコンストラクタの引数はどれも必須ではありませんが、いくつものキーワード引数がオプションとして使えます。これらはキーワード引数と\
-して渡さなければなりません。すなわち、引数が宣言されている順番に頼ってはいけません。
+   The OptionParser constructor has no required arguments, but a number of
+   optional keyword arguments.  You should always pass them as keyword
+   arguments, i.e. do not rely on the order in which the arguments are declared.
 
-   ``usage`` (デフォルト: ``"%prog [options]"``)
-      プログラムが間違った方法で実行されるかまたはヘルプオプションを付けて実行された場合に表示される使用法です。 :mod:`optparse` は使用法の文\
-      字列を表示する際に ``%prog`` を ``os.path.basename(sys.argv[0])`` (または ``prog``
-      キーワード引数が指定されていればその値) に展開します。使用法メッセージを抑制するためには特別な
-      :data:`optparse.SUPPRESS_USAGE` という値を指定します。
+   ``usage`` (default: ``"%prog [options]"``)
+      The usage summary to print when your program is run incorrectly or with a
+      help option.  When :mod:`optparse` prints the usage string, it expands
+      ``%prog`` to ``os.path.basename(sys.argv[0])`` (or to ``prog`` if you
+      passed that keyword argument).  To suppress a usage message, pass the
+      special value :data:`optparse.SUPPRESS_USAGE`.
 
-   ``option_list`` (デフォルト: ``[]``)
-      パーザに追加する Option オブジェクトのリストです。 ``option_list`` の中のオプションは ``standard_option_list``
-      (OptionParser のサブクラスでセットされる可能性のあるクラス属性) の後に追加されますが、バージョンやヘルプのオプションよりは前になります。
-      このオプションの使用は推奨されません。パーザを作成した後で、 :meth:`add_option` を使って追加してください。
+   ``option_list`` (default: ``[]``)
+      A list of Option objects to populate the parser with.  The options in
+      ``option_list`` are added after any options in ``standard_option_list`` (a
+      class attribute that may be set by OptionParser subclasses), but before
+      any version or help options. Deprecated; use :meth:`add_option` after
+      creating the parser instead.
 
-   ``option_class`` (デフォルト: optparse.Option)
-      :meth:`add_option` でパーザにオプションを追加するときに使用されるクラス。
+   ``option_class`` (default: optparse.Option)
+      Class to use when adding options to the parser in :meth:`add_option`.
 
-   ``version`` (デフォルト: ``None``)
-      ユーザがバージョンオプションを与えたときに表示されるバージョン文字列です。 ``version`` に真の値を与えると、 :mod:`optparse`
-      は自動的に単独のオプション文字列 ``--version`` とともにバージョンオプションを追加します。部分文字列 ``%prog`` は
-      ``usage`` と同様に展開されます。
+   ``version`` (default: ``None``)
+      A version string to print when the user supplies a version option. If you
+      supply a true value for ``version``, :mod:`optparse` automatically adds a
+      version option with the single option string ``--version``.  The
+      substring ``%prog`` is expanded the same as for ``usage``.
 
-   ``conflict_handler`` (デフォルト: ``"error"``)
-      オプション文字列が衝突するようなオプションがパーザに追加されたときにどうするかを指定します。
-      :ref:`optparse-conflicts-between-options` 節を参照して下さい。
+   ``conflict_handler`` (default: ``"error"``)
+      Specifies what to do when options with conflicting option strings are
+      added to the parser; see section
+      :ref:`optparse-conflicts-between-options`.
 
-   ``description`` (デフォルト: ``None``)
-      プログラムの概要を表す一段落のテキストです。 :mod:`optparse` はユーザがヘルプを要求したときにこの概要を現在のターミナルの幅に合わせて\
-      整形し直して表示します (``usage`` の後、オプションリストの前に表示されます)。
+   ``description`` (default: ``None``)
+      A paragraph of text giving a brief overview of your program.
+      :mod:`optparse` reformats this paragraph to fit the current terminal width
+      and prints it when the user requests help (after ``usage``, but before the
+      list of options).
 
-   ``formatter`` (デフォルト: 新しい :class:`IndentedHelpFormatter`)
-      ヘルプテキストを表示する際に使われる optparse.HelpFormatter のインスタンスです。 :mod:`optparse`
-      はこの目的のためにすぐ使えるクラスを二つ提供しています。 IndentedHelpFormatter と TitledHelpFormatter がそれです。
+   ``formatter`` (default: a new :class:`IndentedHelpFormatter`)
+      An instance of optparse.HelpFormatter that will be used for printing help
+      text.  :mod:`optparse` provides two concrete classes for this purpose:
+      IndentedHelpFormatter and TitledHelpFormatter.
 
-   ``add_help_option`` (デフォルト: ``True``)
-      もし真ならば、 :mod:`optparse` はパーザにヘルプオプションを (オプション文字列
-      ``-h`` と ``--help`` とともに)追加します。
+   ``add_help_option`` (default: ``True``)
+      If true, :mod:`optparse` will add a help option (with option strings ``-h``
+      and ``--help``) to the parser.
 
    ``prog``
-      ``usage`` や ``version`` の中の ``%prog`` を展開するときに
-      ``os.path.basename(sys.argv[0])`` の代わりに使われる文字列です。
+      The string to use when expanding ``%prog`` in ``usage`` and ``version``
+      instead of ``os.path.basename(sys.argv[0])``.
 
    ``epilog`` (default: ``None``)
-
-      .. A paragraph of help text to print after the option help.
-
-      オプションのヘルプの後に表示されるヘルプテキスト.
-
+      A paragraph of help text to print after the option help.
 
 .. _optparse-populating-parser:
 
-パーザへのオプション追加
-^^^^^^^^^^^^^^^^^^^^^^^^
+Populating the parser
+^^^^^^^^^^^^^^^^^^^^^
 
-パーザにオプションを加えていくにはいくつか方法があります。
-推奨するのは :ref:`optparse-tutorial` 節で示したような
-meth:``OptionParser.add_option()`` を使う方法です。
-:meth:`add_option` は以下の二つのうちいずれかの方法で呼び出せます。
+There are several ways to populate the parser with options.  The preferred way
+is by using :meth:`OptionParser.add_option`, as shown in section
+:ref:`optparse-tutorial`.  :meth:`add_option` can be called in one of two ways:
 
-* (:func:`make_option` などが返す) :class:`Option` インスタンスを渡します。
+* pass it an Option instance (as returned by :func:`make_option`)
 
-* :func:`make_option` に (すなわち :class:`Option` のコンストラクタに)
-  固定引数とキーワード引数の組み合わせを渡して、 :class:`Option` インスタンスを生成させます。
+* pass it any combination of positional and keyword arguments that are
+  acceptable to :func:`make_option` (i.e., to the Option constructor), and it
+  will create the Option instance for you
 
-もう一つの方法は、あらかじめ作成しておいた :class:`Option` インスタンスからなるリストを、以下のようにして
-:class:`OptionParser` のコンストラクタに渡すというものです::
+The other alternative is to pass a list of pre-constructed Option instances to
+the OptionParser constructor, as in::
 
    option_list = [
        make_option("-f", "--filename",
@@ -830,264 +878,245 @@ meth:``OptionParser.add_option()`` を使う方法です。
        ]
    parser = OptionParser(option_list=option_list)
 
-(:func:`make_option` は :class:`Option` インスタンスを生成するファクトリ関数です;
-現在のところ、この関数は :class:`Option` のコンストラクタの\
-別名にすぎません。 :mod:`optparse` の将来のバージョンでは、 :class:`Option` を\
-複数のクラスに分割し、 :func:`make_option` は適切なクラスを選んで\
-インスタンスを生成するようになる予定です。従って、 :class:`Option` を直接インスタンス化しないでください。)
+(:func:`make_option` is a factory function for creating Option instances;
+currently it is an alias for the Option constructor.  A future version of
+:mod:`optparse` may split Option into several classes, and :func:`make_option`
+will pick the right class to instantiate.  Do not instantiate Option directly.)
 
 
 .. _optparse-defining-options:
 
-オプションの定義
+Defining options
 ^^^^^^^^^^^^^^^^
 
-各々の :class:`Option` インスタンス、は ``-f`` や ``--file``
-といった同義のコマンドラインオプションからなる集合を表現しています。
-一つの :class:`Option` には任意の数のオプションを短い形式でも長い形式でも指定できます。
-ただし、少なくとも一つは指定せねばなりません。
+Each Option instance represents a set of synonymous command-line option strings,
+e.g. ``-f`` and ``--file``.  You can specify any number of short or
+long option strings, but you must specify at least one overall option string.
 
-正しい方法で :class:`Option` インスタンスを生成するには、 :class:`OptionParser`
-の :meth:`add_option` を使います。
+The canonical way to create an :class:`Option` instance is with the
+:meth:`add_option` method of :class:`OptionParser`.
 
-.. method:: OptionParser.add_option(opt_str[, ...], attr=value, ...)
+.. method:: OptionParser.add_option(option)
+            OptionParser.add_option(*opt_str, attr=value, ...)
 
-   短い形式のオプション文字列を一つだけ持つようなオプションを生成するには
-   次のようにします。 ::
+   To define an option with only a short option string::
 
       parser.add_option("-f", attr=value, ...)
 
-
-   また、長い形式のオプション文字列を一つだけ持つようなオプションの定義は
-   次のようになります。 ::
+   And to define an option with only a long option string::
 
       parser.add_option("--foo", attr=value, ...)
 
-   .. The keyword arguments define attributes of the new Option object.  The most
-      important option attribute is :attr:`~Option.action`, and it largely
-      determines which other attributes are relevant or required.  If you pass
-      irrelevant option attributes, or fail to pass required ones, :mod:`optparse`
-      raises an :exc:`OptionError` exception explaining your mistake.
+   The keyword arguments define attributes of the new Option object.  The most
+   important option attribute is :attr:`~Option.action`, and it largely
+   determines which other attributes are relevant or required.  If you pass
+   irrelevant option attributes, or fail to pass required ones, :mod:`optparse`
+   raises an :exc:`OptionError` exception explaining your mistake.
 
-   キーワード引数は新しい :class:`Option` オブジェクトの属性を定義します。
-   オプションの属性のうちでもっとも重要なのは :attr:`~Option.action` です。
-   この属性は、他のどの属性と関連があるか、そしてどの属性が必要かに大きく
-   作用します。関係のないオプション属性を指定したり、必要な属性を指定し忘れたり
-   すると、 :mod:`optparse` は誤りを解説した :exc:`OptionError` 例外を送出します。
-
-   コマンドライン上にあるオプションが見つかったときの :mod:`optparse` の振舞いを
-   決定しているのは *アクション(action)* です。 :mod:`optparse` でハードコード
-   されている標準的なアクションには以下のようなものがあります:
+   An option's *action* determines what :mod:`optparse` does when it encounters
+   this option on the command-line.  The standard option actions hard-coded into
+   :mod:`optparse` are:
 
    ``"store"``
-      オプションの引数を保存します (デフォルトの動作です)
+      store this option's argument (default)
 
    ``"store_const"``
-      定数を保存します
+      store a constant value
 
    ``"store_true"``
-      真 (:const:`True`) を保存します
+      store a true value
 
    ``"store_false"``
-      偽 (:const:`False`) を保存します
+      store a false value
 
    ``"append"``
-      オプションの引数をリストに追加します
+      append this option's argument to a list
 
    ``"append_const"``
-      定数をリストに追加します
+      append a constant value to a list
 
    ``"count"``
-      カウンタを一つ増やします
+      increment a counter by one
 
    ``"callback"``
-      指定された関数を呼び出します
+      call a specified function
 
    ``"help"``
-      全てのオプションとそのドキュメントの入った使用法メッセージを出力します。
+      print a usage message including all options and the documentation for them
 
-   (アクションを指定しない場合、デフォルトは ``"store"`` になります。
-   このアクションでは、 :attr:`~Option.type` および :attr:`~Option.dest`
-   オプション属性を指定できます。
-   :ref:`optparse-standard-option-actions` を参照してください。)
+   (If you don't supply an action, the default is ``"store"``.  For this action,
+   you may also supply :attr:`~Option.type` and :attr:`~Option.dest` option
+   attributes; see :ref:`optparse-standard-option-actions`.)
 
-すでにお分かりのように、ほとんどのアクションはどこかに値を保存したり、
-値を更新したりします。この目的のために、 :mod:`optparse`
-は常に特別なオブジェクトを作り出し、それは通常 ``options`` と呼ばれます
-(:class:`optparse.Values` のインスタンスになっています)。オプションの引数
-(や、その他の様々な値) は、 :attr:`~Option.dest` (保存先:  destination)
-オプション属性に従って、 *options* の属性として保存されます。
+As you can see, most actions involve storing or updating a value somewhere.
+:mod:`optparse` always creates a special object for this, conventionally called
+``options`` (it happens to be an instance of :class:`optparse.Values`).  Option
+arguments (and various other values) are stored as attributes of this object,
+according to the :attr:`~Option.dest` (destination) option attribute.
 
-例えば、 ::
+For example, when you call ::
 
    parser.parse_args()
 
-を呼び出した場合、 :mod:`optparse` はまず ``options`` オブジェクトを生成します::
+one of the first things :mod:`optparse` does is create the ``options`` object::
 
    options = Values()
 
-パーザ中で以下のようなオプション ::
+If one of the options in this parser is defined with ::
 
    parser.add_option("-f", "--file", action="store", type="string", dest="filename")
 
-が定義されていて、パーズしたコマンドラインに以下のいずれかが入っていた場合::
+and the command-line being parsed includes any of the following::
 
    -ffoo
    -f foo
    --file=foo
    --file foo
 
-:mod:`optparse` はこのオプションを見つけて、 ::
+then :mod:`optparse`, on seeing this option, will do the equivalent of ::
 
    options.filename = "foo"
 
-と同等の処理を行います。
-
-:attr:`~Option.type` および :attr:`~Option.dest` オプション属性は
-:attr:`~Option.action` と同じくらい重要ですが、 *全ての*
-オプションで意味をなすのは :attr:`~Option.action` だけなのです。
+The :attr:`~Option.type` and :attr:`~Option.dest` option attributes are almost
+as important as :attr:`~Option.action`, but :attr:`~Option.action` is the only
+one that makes sense for *all* options.
 
 
 .. _optparse-option-attributes:
 
-オプション属性
-^^^^^^^^^^^^^^
+Option attributes
+^^^^^^^^^^^^^^^^^
 
-以下のオプション属性は :meth:`parser.add_option` へのキーワード引数として渡す
-ことができます。特定のオプションに無関係なオプション属性を渡した場合、または
-必須のオプションを渡しそこなった場合、 :mod:`optparse` は :exc:`OptionError`
-を送出します。
+The following option attributes may be passed as keyword arguments to
+:meth:`OptionParser.add_option`.  If you pass an option attribute that is not
+relevant to a particular option, or fail to pass a required option attribute,
+:mod:`optparse` raises :exc:`OptionError`.
 
 .. attribute:: Option.action
 
-   (デフォルト: ``"store"``)
+   (default: ``"store"``)
 
-   このオプションがコマンドラインにあった場合に :mod:`optparse` に何を
-   させるかを決めます。
-   取りうるオプションについては
-   :ref:`こちら <optparse-standard-option-actions>` を参照してください。
+   Determines :mod:`optparse`'s behaviour when this option is seen on the
+   command line; the available options are documented :ref:`here
+   <optparse-standard-option-actions>`.
 
 .. attribute:: Option.type
 
-   (デフォルト: ``"string"``)
+   (default: ``"string"``)
 
-   このオプションに与えられる引数の型 (たとえば ``"string"`` や ``"int"``)
-   です。
-   取りうるオプションについては
-   :ref:`こちら <optparse-standard-option-types>` を参照してください。
+   The argument type expected by this option (e.g., ``"string"`` or ``"int"``);
+   the available option types are documented :ref:`here
+   <optparse-standard-option-types>`.
 
 .. attribute:: Option.dest
 
-   (デフォルト: オプション文字列を使う)
+   (default: derived from option strings)
 
-   このオプションのアクションがある値をどこかに書いたり書き換えたりを意味する
-   場合、これは :mod:`optparse` にその書く場所を教えます。詳しく言えば
-   :attr:`~Option.dest` には :mod:`optparse` がコマンドラインを解析しながら
-   組み立てる ``options`` オブジェクトの属性の名前を指定します。
+   If the option's action implies writing or modifying a value somewhere, this
+   tells :mod:`optparse` where to write it: :attr:`~Option.dest` names an
+   attribute of the ``options`` object that :mod:`optparse` builds as it parses
+   the command line.
 
 .. attribute:: Option.default
 
-   コマンドラインに指定がなかったときにこのオプションの対象に使われる値です。
-   :meth:`OptionParser.set_defaults` も参照してください。
+   The value to use for this option's destination if the option is not seen on
+   the command line.  See also :meth:`OptionParser.set_defaults`.
 
 .. attribute:: Option.nargs
 
-   (デフォルト: 1)
+   (default: 1)
 
-   このオプションがあったときに幾つの :attr:`~Option.type` 型の引数が
-   消費されるべきかを指定します。 1 より大きい場合、 :mod:`optparse` は
-   :attr:`~Option.dest` に値のタプルを格納します。
+   How many arguments of type :attr:`~Option.type` should be consumed when this
+   option is seen.  If > 1, :mod:`optparse` will store a tuple of values to
+   :attr:`~Option.dest`.
 
 .. attribute:: Option.const
 
-   定数を格納する動作のための、その定数です。
+   For actions that store a constant value, the constant value to store.
 
 .. attribute:: Option.choices
 
-   ``"choice"`` 型オプションに対してユーザが選べる選択肢となる文字列の
-   リストです。
+   For options of type ``"choice"``, the list of strings the user may choose
+   from.
 
 .. attribute:: Option.callback
 
-   アクションが ``"callback"`` であるオプションに対し、このオプションがあった
-   ときに呼ばれる呼び出し可能オブジェクトです。呼び出し時に渡される引数の
-   詳細については、 :ref:`optparse-option-callbacks` を参照してください。
+   For options with action ``"callback"``, the callable to call when this option
+   is seen.  See section :ref:`optparse-option-callbacks` for detail on the
+   arguments passed to the callable.
 
 .. attribute:: Option.callback_args
                Option.callback_kwargs
 
-   ``callback`` に渡される標準的な4つのコールバック引数の後ろに追加する、
-   位置指定引数とキーワード引数。
+   Additional positional and keyword arguments to pass to ``callback`` after the
+   four standard callback arguments.
 
 .. attribute:: Option.help
 
-   ユーザが :attr:`~Option.help` オプション(``--help`` のような)を指定
-   したときに表示される、使用可能な全オプションのリストの中のこのオプションに
-   関する説明文です。説明文を提供しておかなければ、オプションは説明文なしで表示されます。
-   オプションを隠すには特殊な値 :data:`optparse.SUPPRESS_HELP` を使います。
+   Help text to print for this option when listing all available options after
+   the user supplies a :attr:`~Option.help` option (such as ``--help``).  If
+   no help text is supplied, the option will be listed without help text.  To
+   hide this option, use the special value :data:`optparse.SUPPRESS_HELP`.
 
 .. attribute:: Option.metavar
 
-   (デフォルト: オプション文字列から)
+   (default: derived from option strings)
 
-   説明文を表示する際にオプションの引数の身代わりになるものです。
-   例は :ref:`optparse-tutorial` 節を参照してください。
+   Stand-in for the option argument(s) to use when printing help text.  See
+   section :ref:`optparse-tutorial` for an example.
 
 
 .. _optparse-standard-option-actions:
 
-標準的なオプション・アクション
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Standard option actions
+^^^^^^^^^^^^^^^^^^^^^^^
 
-様々なオプション・アクションにはどれも互いに少しづつ異なった条件と作用が
-あります。ほとんどのアクションに関連するオプション属性がいくつかあり、
-値を指定して :mod:`optparse` の挙動を操作できます。いくつかのアクションには
-必須の属性があり、必ず値を指定せねばなりません。
+The various option actions all have slightly different requirements and effects.
+Most actions have several relevant option attributes which you may specify to
+guide :mod:`optparse`'s behaviour; a few have required attributes, which you
+must specify for any option using that action.
 
-* ``"store"`` [関連: :attr:`~Option.type`, :attr:`~Option.dest`,
+* ``"store"`` [relevant: :attr:`~Option.type`, :attr:`~Option.dest`,
   :attr:`~Option.nargs`, :attr:`~Option.choices`]
 
-  オプションの後には必ず引数が続きます。引数は :attr:`~Option.type` に従って
-  値に変換されて :attr:`~Option.dest` に保存されます。
-  :attr:`~Option.nargs` > 1 の場合、複数の引数をコマンドラインから取り出します。
-  引数は全て :attr:`~Option.type` に従って変換され、 :attr:`~Option.dest`
-  にタプルとして保存されます。 :ref:`optparse-standard-option-types` 節を
-  参照してください。
+  The option must be followed by an argument, which is converted to a value
+  according to :attr:`~Option.type` and stored in :attr:`~Option.dest`.  If
+  :attr:`~Option.nargs` > 1, multiple arguments will be consumed from the
+  command line; all will be converted according to :attr:`~Option.type` and
+  stored to :attr:`~Option.dest` as a tuple.  See the
+  :ref:`optparse-standard-option-types` section.
 
-  :attr:`~Option.choices` を(文字列のリストかタプルで) 指定した場合、型の
-  デフォルト値は ``"choice"`` になります。
+  If :attr:`~Option.choices` is supplied (a list or tuple of strings), the type
+  defaults to ``"choice"``.
 
-  :attr:`~Option.type` を指定しない場合、デフォルトの値は ``"string"`` です。
+  If :attr:`~Option.type` is not supplied, it defaults to ``"string"``.
 
-  :attr:`~Option.dest` を指定しない場合、 :mod:`optparse` は保存先を最初の
-  長い形式のオプション文字列から導出します
-  (例えば、 ``--foo-bar`` は ``foo_bar`` になります)。長い形式の
-  オプション文字列がない場合、 :mod:`optparse` は最初の短い形式のオプション
-  から保存先の変数名を導出します (``-f`` は ``f`` になります)。
+  If :attr:`~Option.dest` is not supplied, :mod:`optparse` derives a destination
+  from the first long option string (e.g., ``--foo-bar`` implies
+  ``foo_bar``). If there are no long option strings, :mod:`optparse` derives a
+  destination from the first short option string (e.g., ``-f`` implies ``f``).
 
-  例えば::
+  Example::
 
      parser.add_option("-f")
      parser.add_option("-p", type="float", nargs=3, dest="point")
 
-  とすると、以下のようなコマンドライン::
+  As it parses the command line ::
 
      -f foo.txt -p 1 -3.5 4 -fbar.txt
 
-  を解析した場合、 :mod:`optparse` は  ::
+  :mod:`optparse` will set ::
 
      options.f = "foo.txt"
      options.point = (1.0, -3.5, 4.0)
      options.f = "bar.txt"
 
-  のように設定を行います。
-
-* ``"store_const"`` [関連: :attr:`~Option.const`; 関連:
+* ``"store_const"`` [required: :attr:`~Option.const`; relevant:
   :attr:`~Option.dest`]
 
-  値 :attr:`~Option.cost` を :attr:`dest` に保存します。
+  The value :attr:`~Option.const` is stored in :attr:`~Option.dest`.
 
-  例えば::
+  Example::
 
      parser.add_option("-q", "--quiet",
                        action="store_const", const=0, dest="verbose")
@@ -1096,115 +1125,120 @@ meth:``OptionParser.add_option()`` を使う方法です。
      parser.add_option("--noisy",
                        action="store_const", const=2, dest="verbose")
 
-  とします。 ``--noisy`` が見つかると、 :mod:`optparse` は  ::
+  If ``--noisy`` is seen, :mod:`optparse` will set  ::
 
      options.verbose = 2
 
-  のように設定を行います。
+* ``"store_true"`` [relevant: :attr:`~Option.dest`]
 
-* ``"store_true"`` [関連: :attr:`~Option.dest`]
+  A special case of ``"store_const"`` that stores a true value to
+  :attr:`~Option.dest`.
 
-  ``"store_const"`` の特殊なケースで、真 (True) を :attr:`dest` に保存します。
+* ``"store_false"`` [relevant: :attr:`~Option.dest`]
 
-* ``"store_false"`` [関連::attr:`~Option.dest`]
+  Like ``"store_true"``, but stores a false value.
 
-  ``"store_true"`` と似ていて、偽 (False) を保存します。
-
-  例::
+  Example::
 
      parser.add_option("--clobber", action="store_true", dest="clobber")
      parser.add_option("--no-clobber", action="store_false", dest="clobber")
 
-* ``"append"`` [関連: :attr:`~Option.type`, :attr:`~Option.dest`,
+* ``"append"`` [relevant: :attr:`~Option.type`, :attr:`~Option.dest`,
   :attr:`~Option.nargs`, :attr:`~Option.choices`]
 
-  このオプションの後ろには必ず引数が続きます。引数は :attr:`~Option.dest` の
-  リストに追加されます。 :attr:`~Option.dest` のデフォルト値を指定しなかった場合、
-  :mod:`optparse` がこのオプションを最初にみつけた時点で空のリストを自動的に生成します。
-  :attr:`~Option.nargs` > 1 の場合、複数の引数をコマンドラインから取り出し、
-  長さ :attr:`~Option.nargs` のタプルを生成して :attr:`~Option.dest` に追加します。
+  The option must be followed by an argument, which is appended to the list in
+  :attr:`~Option.dest`.  If no default value for :attr:`~Option.dest` is
+  supplied, an empty list is automatically created when :mod:`optparse` first
+  encounters this option on the command-line.  If :attr:`~Option.nargs` > 1,
+  multiple arguments are consumed, and a tuple of length :attr:`~Option.nargs`
+  is appended to :attr:`~Option.dest`.
 
-  :attr:`~Option.type` および :attr:`~Option.dest` のデフォルト値は ``"store"``
-  アクションと同じです。
+  The defaults for :attr:`~Option.type` and :attr:`~Option.dest` are the same as
+  for the ``"store"`` action.
 
-  例::
+  Example::
 
      parser.add_option("-t", "--tracks", action="append", type="int")
 
-  ``-t3`` がコマンドライン上で見つかると、 :mod:`optparse` は::
+  If ``-t3`` is seen on the command-line, :mod:`optparse` does the equivalent
+  of::
 
      options.tracks = []
      options.tracks.append(int("3"))
 
-  と同等の処理を行います。
-
-  その後、 ``--tracks=4`` が見つかると::
+  If, a little later on, ``--tracks=4`` is seen, it does::
 
      options.tracks.append(int("4"))
 
-  を実行します。
+  The ``append`` action calls the ``append`` method on the current value of the
+  option.  This means that any default value specified must have an ``append``
+  method.  It also means that if the default value is non-empty, the default
+  elements will be present in the parsed value for the option, with any values
+  from the command line appended after those default values::
 
-* ``"append_const"`` [関連: :attr:`~Option.const`; 関連:
+     >>> parser.add_option("--files", action="append", default=['~/.mypkg/defaults'])
+     >>> opts, args = parser.parse_args(['--files', 'overrides.mypkg'])
+     >>> opts.files
+     ['~/.mypkg/defaults', 'overrides.mypkg']
+
+* ``"append_const"`` [required: :attr:`~Option.const`; relevant:
   :attr:`~Option.dest`]
 
-  ``"store_const"`` と同様ですが、 :attr:`~Option.const` の値は
-  :attr:`~Option.dest` に追加(append)されます。 ``"append"``
-  の場合と同じように :attr:`~Option.dest` のデフォルトは ``None``
-  ですがこのオプションを最初にみつけた時点で空のリストを自動的に生成します。
+  Like ``"store_const"``, but the value :attr:`~Option.const` is appended to
+  :attr:`~Option.dest`; as with ``"append"``, :attr:`~Option.dest` defaults to
+  ``None``, and an empty list is automatically created the first time the option
+  is encountered.
 
-* ``"count"`` [関連: :attr:`~Option.dest`]
+* ``"count"`` [relevant: :attr:`~Option.dest`]
 
-  :attr:`~Option.dest` に保存されている整数値をインクリメントします。
-  :attr:`~Option.dest` は (デフォルトの値を指定しない限り)
-  最初にインクリメントを行う前にゼロに設定されます。
+  Increment the integer stored at :attr:`~Option.dest`.  If no default value is
+  supplied, :attr:`~Option.dest` is set to zero before being incremented the
+  first time.
 
-  例::
+  Example::
 
      parser.add_option("-v", action="count", dest="verbosity")
 
-  コマンドライン上で最初に ``-v`` が見つかると、 :mod:`optparse` は::
+  The first time ``-v`` is seen on the command line, :mod:`optparse` does the
+  equivalent of::
 
      options.verbosity = 0
      options.verbosity += 1
 
-  と同等の処理を行います。
-
-  以後、 ``-v`` が見つかるたびに、  ::
+  Every subsequent occurrence of ``-v`` results in  ::
 
      options.verbosity += 1
 
-  を実行します。
-
-* ``"callback"`` [必須: :attr:`~Option.callback`; 関連:
+* ``"callback"`` [required: :attr:`~Option.callback`; relevant:
   :attr:`~Option.type`, :attr:`~Option.nargs`, :attr:`~Option.callback_args`,
   :attr:`~Option.callback_kwargs`]
 
-  :attr:`~Option.callback` に指定された関数を次のように呼び出します。  ::
+  Call the function specified by :attr:`~Option.callback`, which is called as ::
 
      func(option, opt_str, value, parser, *args, **kwargs)
 
-  詳細は、 :ref:`optparse-option-callbacks` 節を参照してください。
+  See section :ref:`optparse-option-callbacks` for more detail.
 
 * ``"help"``
 
-  現在のオプションパーザ内の全てのオプションに対する完全なヘルプメッセージを出力します。
-  ヘルプメッセージは :class:`OptionParser`
-  のコンストラクタに渡した ``usage``  文字列と、各オプションに渡した
-  :attr:`~Option.help` 文字列から生成します。
+  Prints a complete help message for all the options in the current option
+  parser.  The help message is constructed from the ``usage`` string passed to
+  OptionParser's constructor and the :attr:`~Option.help` string passed to every
+  option.
 
-  オプションに :attr:`~Option.help` 文字列が指定されていなくても、オプションは
-  ヘルプメッセージ中に列挙されます。オプションを完全に表示させないようにするには、
-  特殊な値 :data:`optparse.SUPPRESS_HELP` を使ってください。
+  If no :attr:`~Option.help` string is supplied for an option, it will still be
+  listed in the help message.  To omit an option entirely, use the special value
+  :data:`optparse.SUPPRESS_HELP`.
 
-  :mod:`optparse` は全ての :class:`OptionParser` に自動的に :attr:`~Option.help`
-  オプションを追加するので、通常自分で生成する必要はありません。
+  :mod:`optparse` automatically adds a :attr:`~Option.help` option to all
+  OptionParsers, so you do not normally need to create one.
 
-  例::
+  Example::
 
      from optparse import OptionParser, SUPPRESS_HELP
 
-     # 通常、 help オプションは自動的に追加されますが、
-     # add_help_option 引数を使って抑制することができます。
+     # usually, a help option is added automatically, but that can
+     # be suppressed using the add_help_option argument
      parser = OptionParser(add_help_option=False)
 
      parser.add_option("-h", "--help", action="help")
@@ -1214,9 +1248,9 @@ meth:``OptionParser.add_option()`` を使う方法です。
                        help="Input file to read data from")
      parser.add_option("--secret", help=SUPPRESS_HELP)
 
-  :mod:`optparse` がコマンドライン上に ``-h`` または  ``--help`` を
-  見つけると、以下のようなヘルプメッセージを標準出力に出力します
-  (``sys.argv[0]`` は ``"foo.py"`` だとします)。
+  If :mod:`optparse` sees either ``-h`` or ``--help`` on the command line,
+  it will print something like the following help message to stdout (assuming
+  ``sys.argv[0]`` is ``"foo.py"``):
 
   .. code-block:: text
 
@@ -1227,283 +1261,263 @@ meth:``OptionParser.add_option()`` を使う方法です。
        -v                Be moderately verbose
        --file=FILENAME   Input file to read data from
 
-  ヘルプメッセージの出力後、 :mod:`optparse` は ``sys.exit(0)`` で
-  プロセスを終了します。
+  After printing the help message, :mod:`optparse` terminates your process with
+  ``sys.exit(0)``.
 
 * ``"version"``
 
-  :class:`OptionParser` に指定されているバージョン番号を標準出力に出力して
-  終了します。バージョン番号は、実際には :class:`OptionParser` の
-  :meth:`print_version` メソッドで書式化されてから出力されます。
-  通常、 :class:`OptionParser` のコンストラクタに ``version`` 引数が指定された
-  ときのみ関係のあるアクションです。 :attr:`~Option.help` オプションと同様、
-  :mod:`optparse` はこのオプションを必要に応じて自動的に追加するので、
-  ``version`` オプションを作成することはほとんどないでしょう。
+  Prints the version number supplied to the OptionParser to stdout and exits.
+  The version number is actually formatted and printed by the
+  ``print_version()`` method of OptionParser.  Generally only relevant if the
+  ``version`` argument is supplied to the OptionParser constructor.  As with
+  :attr:`~Option.help` options, you will rarely create ``version`` options,
+  since :mod:`optparse` automatically adds them when needed.
 
 
 .. _optparse-standard-option-types:
 
-標準のオプション型
-^^^^^^^^^^^^^^^^^^
+Standard option types
+^^^^^^^^^^^^^^^^^^^^^
 
-:mod:`optparse` には、 ``"string"``, ``"int"``, ``"long"``, ``"choice"``,
-``"float"``, ``"complex"`` の 6 種類のビルトインのオプション型があります。
-新たなオプションの型を追加したければ、 :ref:`optparse-extending-optparse`
-節を参照してください。
+:mod:`optparse` has six built-in option types: ``"string"``, ``"int"``,
+``"long"``, ``"choice"``, ``"float"`` and ``"complex"``.  If you need to add new
+option types, see section :ref:`optparse-extending-optparse`.
 
-文字列オプションの引数はチェックや変換を一切受けません: コマンドライン上のテキストは保存先にそのまま保存されます (またはコールバックに渡されます)。
+Arguments to string options are not checked or converted in any way: the text on
+the command line is stored in the destination (or passed to the callback) as-is.
 
-整数引数 (``"int"`` 型や ``"long"`` 型) は次のように読み取られます。
+Integer arguments (type ``"int"`` or ``"long"``) are parsed as follows:
 
-* 数が ``0x`` から始まるならば、16進数として読み取られます
+* if the number starts with ``0x``, it is parsed as a hexadecimal number
 
-* 数が ``0`` から始まるならば、8進数として読み取られます
+* if the number starts with ``0``, it is parsed as an octal number
 
-* 数が ``0b`` から始まるならば、2進数として読み取られます
+* if the number starts with ``0b``, it is parsed as a binary number
 
-* それ以外の場合、数は10進数として読み取られます
+* otherwise, the number is parsed as a decimal number
 
 
-変換は適切な底(2, 8, 10, 16 のどれか)とともに :func:`int` または :func:`long`
-を呼び出すことで行なわれます。
-この変換が失敗した場合 :mod:`optparse` の処理も失敗に終わりますが、
-より役に立つエラーメッセージを出力します。
+The conversion is done by calling either :func:`int` or :func:`long` with the
+appropriate base (2, 8, 10, or 16).  If this fails, so will :mod:`optparse`,
+although with a more useful error message.
 
-``"float"`` および ``"complex"`` のオプション引数は直接 :func:`float` や
-:func:`complex` で変換されます。エラーは同様の扱いです。
+``"float"`` and ``"complex"`` option arguments are converted directly with
+:func:`float` and :func:`complex`, with similar error-handling.
 
-``"choice"`` オプションは ``"string"`` オプションのサブタイプです。
-:attr:`~Option.choice` オプションの属性 (文字列からなるシーケンス) には、
-利用できるオプション引数のセットを指定します。 :func:`optparse.check_choice`
-はユーザの指定したオプション引数とマスタリストを比較して、無効な文字列が
-指定された場合には :exc:`OptionValueError` を送出します。
+``"choice"`` options are a subtype of ``"string"`` options.  The
+:attr:`~Option.choices` option attribute (a sequence of strings) defines the
+set of allowed option arguments.  :func:`optparse.check_choice` compares
+user-supplied option arguments against this master list and raises
+:exc:`OptionValueError` if an invalid string is given.
 
 
 .. _optparse-parsing-arguments:
 
-引数の解析
-^^^^^^^^^^
+Parsing arguments
+^^^^^^^^^^^^^^^^^
 
-OptionParser を作成してオプションを追加していく上で大事なポイントは、 :meth:`parse_args` メソッドの呼び出しです。  ::
+The whole point of creating and populating an OptionParser is to call its
+:meth:`parse_args` method::
 
    (options, args) = parser.parse_args(args=None, values=None)
 
-ここで入力パラメータは
+where the input parameters are
 
 ``args``
-   処理する引数のリスト (デフォルト: ``sys.argv[1:]``)
+   the list of arguments to process (default: ``sys.argv[1:]``)
 
 ``values``
-   オプション引数を格納する :class:`optparse.Values` のオブジェクト
-   (デフォルト: 新しい :class:`Values` のインスタンス) --
-   既存のオブジェクトを指定した場合、オプションのデフォルトは
-   初期化されません。
+   a :class:`optparse.Values` object to store option arguments in (default: a
+   new instance of :class:`Values`) -- if you give an existing object, the
+   option defaults will not be initialized on it
 
-であり、戻り値は
+and the return values are
 
 ``options``
-   ``values`` に渡されたものと同じオブジェクト、または :mod:`optparse`
-   によって生成された optparse.Values インスタンス
+   the same object that was passed in as ``values``, or the optparse.Values
+   instance created by :mod:`optparse`
 
 ``args``
-   全てのオプションの処理が終わった後で残った位置引数
+   the leftover positional arguments after all options have been processed
 
-です。
+The most common usage is to supply neither keyword argument.  If you supply
+``values``, it will be modified with repeated :func:`setattr` calls (roughly one
+for every option argument stored to an option destination) and returned by
+:meth:`parse_args`.
 
-一番普通の使い方は一切キーワード引数を使わないというものです。
-``values`` を指定した場合、それは繰り返される :func:`setattr`
-の呼び出し (大雑把に言うと保存される各オプション引数につき一回ずつ) で更新されていき、 :meth:`parse_args` で返されます。
-
-:meth:`parse_args` が引数リストでエラーに遭遇した場合、 OptionParser の :meth:`error`
-メソッドを適切なエンドユーザ向けのエラーメッセージとともに呼び出します。この呼び出しにより、最終的に終了ステータス 2 (伝統的な Unix
-におけるコマンドラインエラーの終了ステータス) でプロセスを終了させることになります。
+If :meth:`parse_args` encounters any errors in the argument list, it calls the
+OptionParser's :meth:`error` method with an appropriate end-user error message.
+This ultimately terminates your process with an exit status of 2 (the
+traditional Unix exit status for command-line errors).
 
 
 .. _optparse-querying-manipulating-option-parser:
 
-オプション解析器への問い合わせと操作
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Querying and manipulating your option parser
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-オプションパーザのデフォルトの振る舞いは、ある程度カスタマイズすることができます。
-また、オプションパーザの中を調べることもできます。
-:class:`OptionParser` は幾つかのヘルパーメソッドを提供しています。
+The default behavior of the option parser can be customized slightly, and you
+can also poke around your option parser and see what's there.  OptionParser
+provides several methods to help you out:
 
 .. method:: OptionParser.disable_interspersed_args()
 
-   オプションで無い最初の引数を見つけた時点でパースを止めるように設定します。
-   例えば、 ``-a`` と ``-b`` が両方とも引数を取らないシンプルなオプション
-   だったとすると、 :mod:`optparse` は通常次の構文を受け付け、 ::
+   Set parsing to stop on the first non-option.  For example, if ``-a`` and
+   ``-b`` are both simple options that take no arguments, :mod:`optparse`
+   normally accepts this syntax::
 
       prog -a arg1 -b arg2
 
-   .. and treats it as equivalent to :
-
-   それを次と同じように扱います。 ::
+   and treats it as equivalent to  ::
 
       prog -a -b arg1 arg2
 
-   .. To disable this feature, call :meth:`disable_interspersed_args`.  This
-      restores traditional Unix syntax, where option parsing stops with the first
-      non-option argument.
+   To disable this feature, call :meth:`disable_interspersed_args`.  This
+   restores traditional Unix syntax, where option parsing stops with the first
+   non-option argument.
 
-   この機能を無効にしたいときは、 :meth:`disable_interspersed_args` メソッドを
-   呼び出してください。古典的な Unix システムのように、最初のオプションでない
-   引数を見つけたときにオプションの解析を止めるようになります。
-
-   .. Use this if you have a command processor which runs another command which has
-      options of its own and you want to make sure these options don't get
-      confused.  For example, each command might have a different set of options.
-
-   別のコマンドを実行するコマンドをプロセッサを作成する際、別のコマンドの
-   オプションと自身のオプションが混ざるのを防ぐために利用することができます。
-   例えば、各コマンドがそれぞれ異なるオプションのセットを持つ場合などに有効です。
+   Use this if you have a command processor which runs another command which has
+   options of its own and you want to make sure these options don't get
+   confused.  For example, each command might have a different set of options.
 
 .. method:: OptionParser.enable_interspersed_args()
 
-  オプションで無い最初の引数を見つけてもパースを止めないように設定します。
-  オプションとコマンド引数の順序が混ざっても良いようになります。
-  これはデフォルトの動作です。
+   Set parsing to not stop on the first non-option, allowing interspersing
+   switches with command arguments.  This is the default behavior.
 
 .. method:: OptionParser.get_option(opt_str)
 
-   オプション文字列 ``opt_str`` に対する :class:`Option` インスタンスを
-   返します。該当するオプションがなければ ``None`` を返します。
+   Returns the Option instance with the option string *opt_str*, or ``None`` if
+   no options have that option string.
 
 .. method:: OptionParser.has_option(opt_str)
 
-   :class:`OptionParser` に(``-q`` や ``--verbose`` のような) オプション
-   ``opt_str`` がある場合、真を返します。
+   Return true if the OptionParser has an option with option string *opt_str*
+   (e.g., ``-q`` or ``--verbose``).
 
 .. method:: OptionParser.remove_option(opt_str)
 
-   :class:`OptionParser` に ``opt_str`` に対応するオプションがある場合、
-   そのオプションを削除します。該当するオプションに他のオプション文字列が
-   指定されていた場合、それらのオプション文字列は全て無効になります。
-   *opt_str* がこの :class:`OptionParser` オブジェクトのどのオプションにも
-   属さない場合、 :exc:`ValueError` を送出します。
+   If the :class:`OptionParser` has an option corresponding to *opt_str*, that
+   option is removed.  If that option provided any other option strings, all of
+   those option strings become invalid. If *opt_str* does not occur in any
+   option belonging to this :class:`OptionParser`, raises :exc:`ValueError`.
 
 
 .. _optparse-conflicts-between-options:
 
-オプション間の衝突
-^^^^^^^^^^^^^^^^^^
+Conflicts between options
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-注意が足りないと、衝突するオプションを定義してしまうことがあります。 ::
+If you're not careful, it's easy to define options with conflicting option
+strings::
 
    parser.add_option("-n", "--dry-run", ...)
    [...]
    parser.add_option("-n", "--noisy", ...)
 
-(とりわけ、 :class:`OptionParser` から標準的なオプションを備えた自前のサブクラスを定義してしまった場合にはよく起きます。)
+(This is particularly true if you've defined your own OptionParser subclass with
+some standard options.)
 
-ユーザがオプションを追加するたびに、 :mod:`optparse` は既存のオプションとの衝突
-がないかチェックします。何らかの衝突が見付かると、現在設定されている衝突処理メカニズムを呼び出します。衝突処理メカニズムはコンストラクタ中で呼び出せます::
+Every time you add an option, :mod:`optparse` checks for conflicts with existing
+options.  If it finds any, it invokes the current conflict-handling mechanism.
+You can set the conflict-handling mechanism either in the constructor::
 
    parser = OptionParser(..., conflict_handler=handler)
 
-個別にも呼び出せます::
+or with a separate call::
 
    parser.set_conflict_handler(handler)
 
-衝突時の処理をおこなうハンドラ(handler)には、以下のものが利用できます:
+The available conflict handlers are:
 
-   ``"error"`` (デフォルトの設定)
-      オプション間の衝突をプログラム上のエラーとみなし、
-      :exc:`OptionConflictError` を送出します。
+   ``"error"`` (default)
+      assume option conflicts are a programming error and raise
+      :exc:`OptionConflictError`
 
    ``"resolve"``
-      オプション間の衝突をインテリジェントに解決します (下記参照)。
+      resolve option conflicts intelligently (see below)
 
 
-一例として、衝突をインテリジェントに解決する :class:`OptionParser` を定義し、衝突を起こすようなオプションを追加してみましょう::
+As an example, let's define an :class:`OptionParser` that resolves conflicts
+intelligently and add conflicting options to it::
 
    parser = OptionParser(conflict_handler="resolve")
    parser.add_option("-n", "--dry-run", ..., help="do no harm")
    parser.add_option("-n", "--noisy", ..., help="be noisy")
 
-この時点で、 :mod:`optparse` はすでに追加済のオプションがオプション文字列 ``-n`` を使っていることを検出します。
-``conflict_handler`` が ``"resolve"`` なので、 :mod:`optparse` は既に追加済のオプションリストの方から
-``-n`` を除去して問題を解決します。従って、 ``-n`` の除去されたオプションは ``--dry-run`` だけでしか有効にできなく
-なります。ユーザがヘルプ文字列を要求した場合、問題解決の結果を反映したメッセージが出力されます::
+At this point, :mod:`optparse` detects that a previously-added option is already
+using the ``-n`` option string.  Since ``conflict_handler`` is ``"resolve"``,
+it resolves the situation by removing ``-n`` from the earlier option's list of
+option strings.  Now ``--dry-run`` is the only way for the user to activate
+that option.  If the user asks for help, the help message will reflect that::
 
    Options:
      --dry-run     do no harm
      [...]
      -n, --noisy   be noisy
 
-これまでに追加したオプション文字列を跡形もなく削り去り、ユーザがそのオプションをコマンドラインから起動する手段をなくせます。
-この場合、 :mod:`optparse` はオプションを完全に除去してしまうので、こうしたオプションはヘルプテキストやその他のどこにも表示されなくなります。
-例えば、現在の :class:`OptionParser` の場合、以下の操作::
+It's possible to whittle away the option strings for a previously-added option
+until there are none left, and the user has no way of invoking that option from
+the command-line.  In that case, :mod:`optparse` removes that option completely,
+so it doesn't show up in help text or anywhere else. Carrying on with our
+existing OptionParser::
 
    parser.add_option("--dry-run", ..., help="new dry-run option")
 
-を行った時点で、最初の ``-n``/``--dry-run`` オプションはもはやアクセスできなくなります。このため、 :mod:`optparse` は
-オプションを消去してしまい、ヘルプテキスト::
+At this point, the original ``-n``/``--dry-run`` option is no longer
+accessible, so :mod:`optparse` removes it, leaving this help text::
 
    Options:
      [...]
      -n, --noisy   be noisy
      --dry-run     new dry-run option
 
-だけが残ります。
-
 
 .. _optparse-cleanup:
 
-クリーンアップ
-^^^^^^^^^^^^^^
+Cleanup
+^^^^^^^
 
-OptionParser インスタンスはいくつかの循環参照を抱えています。
-このことは Python のガーベジコレクタにとって問題になるわけではありませんが、
-使い終わった OptionParser に対して :meth:`~OptionParser.destroy`
-を呼び出すことでこの循環参照を意図的に断ち切るという方法を選ぶこともできます。
-この方法は特に長時間実行するアプリケーションで OptionParser から大きな
-オブジェクトグラフが到達可能になっているような場合に有用です。
+OptionParser instances have several cyclic references.  This should not be a
+problem for Python's garbage collector, but you may wish to break the cyclic
+references explicitly by calling :meth:`~OptionParser.destroy` on your
+OptionParser once you are done with it.  This is particularly useful in
+long-running applications where large object graphs are reachable from your
+OptionParser.
 
 
 .. _optparse-other-methods:
 
-その他のメソッド
-^^^^^^^^^^^^^^^^
+Other methods
+^^^^^^^^^^^^^
 
-OptionParser にはその他にも幾つかの公開されたメソッドがあります:
+OptionParser supports several other public methods:
 
 .. method:: OptionParser.set_usage(usage)
 
-  上で説明したコンストラクタの ``usage`` キーワード引数での規則に従った使用法の
-  文字列をセットします。 ``None`` を渡すとデフォルトの使用法文字列が使われる
-  ようになり、 :data:`optparse.SUPPRESS_USAGE` によって使用法メッセージを抑制
-  できます。
+   Set the usage string according to the rules described above for the ``usage``
+   constructor keyword argument.  Passing ``None`` sets the default usage
+   string; use :data:`optparse.SUPPRESS_USAGE` to suppress a usage message.
 
 .. method:: OptionParser.print_usage(file=None)
 
-   現在のプログラムの使用法メッセージ (``self.usage``) を *file* (デフォルト:
-   stdout) に表示します。 ``self.usage`` 内にある全ての ``%prog`` という文字列は
-   現在のプログラム名に置換されます。 ``self.usage`` が空もしくは未定義の時は
-   何もしません。
+   Print the usage message for the current program (``self.usage``) to *file*
+   (default stdout).  Any occurrence of the string ``%prog`` in ``self.usage``
+   is replaced with the name of the current program.  Does nothing if
+   ``self.usage`` is empty or not defined.
 
 .. method:: OptionParser.get_usage()
 
-   .. Same as :meth:`print_usage` but returns the usage string instead of
-      printing it.
-
-   :meth:`print_usage` と同じですが、使用法メッセージを表示する代わりに
-   文字列として返します。
+   Same as :meth:`print_usage` but returns the usage string instead of
+   printing it.
 
 .. method:: OptionParser.set_defaults(dest=value, ...)
 
-   .. Set default values for several option destinations at once.  Using
-      :meth:`set_defaults` is the preferred way to set default values for options,
-      since multiple options can share the same destination.  For example, if
-      several "mode" options all set the same destination, any one of them can set
-      the default, and the last one wins:
-
-   幾つかの保存先に対してデフォルト値をまとめてセットします。
-   :meth:`set_defaults` を使うのは複数のオプションにデフォルト値をセットする
-   好ましいやり方です。複数のオプションが同じ保存先を共有することがあり得るからです。
-   たとえば幾つかの "mode" オプションが全て同じ保存先をセットするものだったとすると、
-   どのオプションもデフォルトをセットすることができ、しかし最後に指定したもの
-   だけが有効になります。 ::
+   Set default values for several option destinations at once.  Using
+   :meth:`set_defaults` is the preferred way to set default values for options,
+   since multiple options can share the same destination.  For example, if
+   several "mode" options all set the same destination, any one of them can set
+   the default, and the last one wins::
 
       parser.add_option("--advanced", action="store_const",
                         dest="mode", const="advanced",
@@ -1512,9 +1526,7 @@ OptionParser にはその他にも幾つかの公開されたメソッドがあ�
                         dest="mode", const="novice",
                         default="advanced")  # overrides above setting
 
-   .. To avoid this confusion, use :meth:`set_defaults`:
-
-   こうした混乱を避けるために :meth:`set_defaults` を使います。 ::
+   To avoid this confusion, use :meth:`set_defaults`::
 
       parser.set_defaults(mode="advanced")
       parser.add_option("--advanced", action="store_const",
@@ -1523,163 +1535,170 @@ OptionParser にはその他にも幾つかの公開されたメソッドがあ�
                         dest="mode", const="novice")
 
 
-
 .. _optparse-option-callbacks:
 
-オプション処理コールバック
---------------------------
+Option Callbacks
+----------------
 
-:mod:`optparse` の組み込みのアクションや型が望みにかなったものでない場合、二つの選択肢があります: 一つは :mod:`optparse`
-の拡張、もう一つは callback オプションの定義です。 :mod:`optparse` の拡張は汎用性に富んでいますが、単純なケースに対して
-いささか大げさでもあります。大体は簡単なコールバックで事足りるでしょう。
+When :mod:`optparse`'s built-in actions and types aren't quite enough for your
+needs, you have two choices: extend :mod:`optparse` or define a callback option.
+Extending :mod:`optparse` is more general, but overkill for a lot of simple
+cases.  Quite often a simple callback is all you need.
 
-``callback`` オプションの定義は二つのステップからなります:
+There are two steps to defining a callback option:
 
-* ``"callback"`` アクションを使ってオプション自体を定義する。
+* define the option itself using the ``"callback"`` action
 
-* コールバックを書く。コールバックは少なくとも後で説明する 4 つの引数をとる関数
-  (またはメソッド) でなければなりません。
+* write the callback; this is a function (or method) that takes at least four
+  arguments, as described below
 
 
 .. _optparse-defining-callback-option:
 
-callbackオプションの定義
-^^^^^^^^^^^^^^^^^^^^^^^^
+Defining a callback option
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-callback オプションを最も簡単に定義するには、 :meth:`OptionParser.add_option`
-メソッドを使います。 :attr:`~Option.action` の他に指定しなければならない属性は
-``callback`` すなわちコールバックする関数自体です::
+As always, the easiest way to define a callback option is by using the
+:meth:`OptionParser.add_option` method.  Apart from :attr:`~Option.action`, the
+only option attribute you must specify is ``callback``, the function to call::
 
    parser.add_option("-c", action="callback", callback=my_callback)
 
-``callback`` は関数 (または呼び出し可能オブジェクト)なので、callback オプションを定義する時にはあらかじめ
-``my_callback()`` を定義しておかねばなりません。この単純なケースでは、 :mod:`optparse` は ``-c`` が
-何らかの引数をとるかどうか判別できず、通常は ``c`` が引数を伴わないことを意味します --- 知りたいことはただ単に
-:option:`-c` がコマンドライン上に現れたどうかだけです。とはいえ、場合によっては、自分のコールバック関数に
-任意の個数のコマンドライン引数を消費させたいこともあるでしょう。これがコールバック関数をトリッキーなものにしています;
-これについてはこの節の後の方で説明します。
+``callback`` is a function (or other callable object), so you must have already
+defined ``my_callback()`` when you create this callback option. In this simple
+case, :mod:`optparse` doesn't even know if ``-c`` takes any arguments,
+which usually means that the option takes no arguments---the mere presence of
+``-c`` on the command-line is all it needs to know.  In some
+circumstances, though, you might want your callback to consume an arbitrary
+number of command-line arguments.  This is where writing callbacks gets tricky;
+it's covered later in this section.
 
-:mod:`optparse` は常に四つの引数をコールバックに渡し、その他には
-:attr:`~Optioncallback_args` および :attr:`callback_kwargs` で指定した
-追加引数しか渡しません。従って、最小のコールバック関数シグネチャは::
+:mod:`optparse` always passes four particular arguments to your callback, and it
+will only pass additional arguments if you specify them via
+:attr:`~Option.callback_args` and :attr:`~Option.callback_kwargs`.  Thus, the
+minimal callback function signature is::
 
    def my_callback(option, opt, value, parser):
 
-のようになります。
+The four arguments to a callback are described below.
 
-コールバックの四つの引数については後で説明します。
-
-callback オプションを定義する場合には、他にもいくつかオプション属性を指定できます:
+There are several other option attributes that you can supply when you define a
+callback option:
 
 :attr:`~Option.type`
-   他で使われているのと同じ意味です: ``store`` や ``append`` アクションの時と同じく、
-   この属性は :mod:`optparse` に引数を一つ消費して :attr:`~Option.type` で
-   指定した型に変換させます。 :mod:`optparse` は変換後の値をどこかに保存する
-   代わりにコールバック関数に渡します。
+   has its usual meaning: as with the ``"store"`` or ``"append"`` actions, it
+   instructs :mod:`optparse` to consume one argument and convert it to
+   :attr:`~Option.type`.  Rather than storing the converted value(s) anywhere,
+   though, :mod:`optparse` passes it to your callback function.
 
 :attr:`~Option.nargs`
-   これも他で使われているのと同じ意味です: このオプションが指定されていて、かつ
-   ``nargs`` > 1 である場合、 :mod:`optparse` は ``nargs`` 個の引数を消費
-   します。このとき各引数は :attr:`type` 型に変換できねばなりません。
-   変換後の値はタプルとしてコールバックに渡されます。
+   also has its usual meaning: if it is supplied and > 1, :mod:`optparse` will
+   consume :attr:`~Option.nargs` arguments, each of which must be convertible to
+   :attr:`~Option.type`.  It then passes a tuple of converted values to your
+   callback.
 
 :attr:`~Option.callback_args`
-   その他の位置指定引数からなるタプルで、コールバックに渡されます。
+   a tuple of extra positional arguments to pass to the callback
 
 :attr:`~Option.callback_kwargs`
-   その他のキーワード引数からなる辞書で、コールバックに渡されます。
+   a dictionary of extra keyword arguments to pass to the callback
 
 
 .. _optparse-how-callbacks-called:
 
-コールバック関数はどのように呼び出されるか
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+How callbacks are called
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-コールバックは全て以下の形式で呼び出されます::
+All callbacks are called as follows::
 
    func(option, opt_str, value, parser, *args, **kwargs)
 
-ここで、
+where
 
 ``option``
-   コールバックを呼び出している :class:`Option` のインスタンスです。
+   is the Option instance that's calling the callback
 
 ``opt_str``
-   は、コールバック呼び出しのきっかけとなったコマンドライン上のオプション文字列です。 (長い形式のオプションに対する省略形が使われている場合、 *opt*
-   は完全な、正式な形のオプション文字列となります ---  例えば、ユーザが :option:`--foobar` の短縮形として ``--foo``
-   をコマンドラインに入力した時には、 *opt_str*  は ``"--foobar"`` となります。)
+   is the option string seen on the command-line that's triggering the callback.
+   (If an abbreviated long option was used, ``opt_str`` will be the full,
+   canonical option string---e.g. if the user puts ``--foo`` on the
+   command-line as an abbreviation for ``--foobar``, then ``opt_str`` will be
+   ``"--foobar"``.)
 
 ``value``
-   オプションの引数で、コマンドライン上に見つかったものです。
-   :mod:`optparse` は、 :attr:`~Option.type` が設定されている場合、単一の
-   引数しかとりません。 ``value`` の型はオプションの型として指定された型に
-   なります。このオプションに対する :attr:`~Option.type` が ``None`` で
-   ある(引数なしの) 場合、 ``value`` は ``None`` になります。
-   :attr:`~Option.nargs` > 1 であれば、 ``value`` は適切な型をもつ値の
-   タプルになります。
+   is the argument to this option seen on the command-line.  :mod:`optparse` will
+   only expect an argument if :attr:`~Option.type` is set; the type of ``value`` will be
+   the type implied by the option's type.  If :attr:`~Option.type` for this option is
+   ``None`` (no argument expected), then ``value`` will be ``None``.  If :attr:`~Option.nargs`
+   > 1, ``value`` will be a tuple of values of the appropriate type.
 
 ``parser``
-   現在のオプション解析の全てを駆動している :class:`OptionParser`  インスタンスです。この変数が有用なのは、この値を介してインスタンス属性と
-   していくつかの興味深いデータにアクセスできるからです:
+   is the OptionParser instance driving the whole thing, mainly useful because
+   you can access some other interesting data through its instance attributes:
 
    ``parser.largs``
-      現在放置されている引数、すなわち、すでに消費されたものの、オプションでもオプション引数でもない引数からなるリストです。 ``parser.largs``
-      は自由に変更でき、たとえば引数を追加したりできます (このリストは ``args`` 、すなわち :meth:`parse_args`
-      の二つ目の戻り値になります)
+      the current list of leftover arguments, ie. arguments that have been
+      consumed but are neither options nor option arguments. Feel free to modify
+      ``parser.largs``, e.g. by adding more arguments to it.  (This list will
+      become ``args``, the second return value of :meth:`parse_args`.)
 
    ``parser.rargs``
-      現在残っている引数、すなわち、 ``opt_str`` および ``value`` があれば除き、それ以外の引数が残っているリストです。
-      ``parser.rargs`` は自由に変更でき、例えばさらに引数を消費したりできます。
+      the current list of remaining arguments, ie. with ``opt_str`` and
+      ``value`` (if applicable) removed, and only the arguments following them
+      still there.  Feel free to modify ``parser.rargs``, e.g. by consuming more
+      arguments.
 
    ``parser.values``
-      オプションの値がデフォルトで保存されるオブジェクト (``optparse.OptionValues`` のインスタンス)
-      です。この値を使うと、コールバック関数がオプションの値を記憶するために、他の :mod:`optparse`
-      と同じ機構を使えるようにするため、グローバル変数や閉包 (closure) を台無しにしないので便利です。
-      コマンドライン上にすでに現れているオプションの値にもアクセスできます。
+      the object where option values are by default stored (an instance of
+      optparse.OptionValues).  This lets callbacks use the same mechanism as the
+      rest of :mod:`optparse` for storing option values; you don't need to mess
+      around with globals or closures.  You can also access or modify the
+      value(s) of any options already encountered on the command-line.
 
 ``args``
-   :attr:`~Option.callback_args` オプション属性で与えられた任意の固定引数
-   からなるタプルです。
+   is a tuple of arbitrary positional arguments supplied via the
+   :attr:`~Option.callback_args` option attribute.
 
 ``kwargs``
-   :attr:`~Option.callback_kwargs` オプション属性で与えられた任意の
-   キーワード引数からなるタプルです。
+   is a dictionary of arbitrary keyword arguments supplied via
+   :attr:`~Option.callback_kwargs`.
 
 
 .. _optparse-raising-errors-in-callback:
 
-コールバック中で例外を送出する
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Raising errors in a callback
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-オプション自体か、あるいはその引数に問題がある場合、コールバック関数は :exc:`OptionValueError`
-を送出せねばなりません。 :mod:`optparse` はこの例外をとらえてプログラムを終了させ、ユーザが指定しておいたエラーメッセージを
-標準エラー出力に出力します。エラーメッセージは明確、簡潔かつ正確で、どのオプションに誤りがあるかを示さねばなりません。さもなければ、ユーザは自分の
-操作のどこに問題があるかを解決するのに苦労することになります。
+The callback function should raise :exc:`OptionValueError` if there are any
+problems with the option or its argument(s).  :mod:`optparse` catches this and
+terminates the program, printing the error message you supply to stderr.  Your
+message should be clear, concise, accurate, and mention the option at fault.
+Otherwise, the user will have a hard time figuring out what he did wrong.
 
 
 .. _optparse-callback-example-1:
 
-コールバックの例 1: ありふれたコールバック
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 1: trivial callback
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-引数をとらず、発見したオプションを単に記録するだけのコールバックオプションの例を以下に示します::
+Here's an example of a callback option that takes no arguments, and simply
+records that the option was seen::
 
    def record_foo_seen(option, opt_str, value, parser):
        parser.values.saw_foo = True
 
    parser.add_option("--foo", action="callback", callback=record_foo_seen)
 
-もちろん、 ``"store_true"`` アクションを使っても実現できます。
+Of course, you could do that with the ``"store_true"`` action.
 
 
 .. _optparse-callback-example-2:
 
-コールバックの例 2: オプションの順番をチェックする
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 2: check option order
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-もう少し面白みのある例を示します: この例では、 ``-b`` を発見して、その後で
-``-a`` がコマンドライン中に現れた場合にはエラーになります。
-::
+Here's a slightly more interesting example: record the fact that ``-a`` is
+seen, but blow up if it comes after ``-b`` in the command-line.  ::
 
    def check_order(option, opt_str, value, parser):
        if parser.values.b:
@@ -1692,11 +1711,12 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 .. _optparse-callback-example-3:
 
-コールバックの例 3: オプションの順番をチェックする (汎用的)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 3: check option order (generalized)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-このコールバック (フラグを立てるが、 ``-b`` が既に指定されていればエラーになる)
-を同様の複数のオプションに対して再利用したければ、もう少し作業する必要があります: エラーメッセージとセットされるフラグを一般化しなければなりません。  ::
+If you want to re-use this callback for several similar options (set a flag, but
+blow up if ``-b`` has already been seen), it needs a bit of work: the error
+message and the flag that it sets must be generalized.  ::
 
    def check_order(option, opt_str, value, parser):
        if parser.values.b:
@@ -1710,11 +1730,12 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 .. _optparse-callback-example-4:
 
-コールバックの例 4: 任意の条件をチェックする
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 4: check arbitrary condition
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-もちろん、単に定義済みのオプションの値を調べるだけにとどまらず、コールバックには任意の条件を入れられます。例えば、満月でなければ呼び出してはならないオプション
-があるとしましょう。やらなければならないことはこれだけです::
+Of course, you could put any condition in there---you're not limited to checking
+the values of already-defined options.  For example, if you have options that
+should not be called when the moon is full, all you have to do is this::
 
    def check_moon(option, opt_str, value, parser):
        if is_moon_full():
@@ -1725,22 +1746,22 @@ callback オプションを定義する場合には、他にもいくつかオ�
    parser.add_option("--foo",
                      action="callback", callback=check_moon, dest="foo")
 
-(``is_moon_full()`` の定義は読者への課題としましょう。
+(The definition of ``is_moon_full()`` is left as an exercise for the reader.)
 
 
 .. _optparse-callback-example-5:
 
-コールバックの例5: 固定引数
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 5: fixed arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-決まった数の引数をとるようなコールパックオプションを定義するなら、問題はやや
-興味深くなってきます。引数をとるようコールバックに指定するのは、 ``"store"``
-や ``"append"`` オプションの定義に似ています。 :attr:`~Option.type` を定義して
-いれば、そのオプションは引数を受け取ったときに該当する型に変換できねば
-なりません。さらに :attr:`~Option.nargs` を指定すれば、オプションは
-:attr:`~Option.nargs` 個の引数を受け取ります。
+Things get slightly more interesting when you define callback options that take
+a fixed number of arguments.  Specifying that a callback option takes arguments
+is similar to defining a ``"store"`` or ``"append"`` option: if you define
+:attr:`~Option.type`, then the option takes one argument that must be
+convertible to that type; if you further define :attr:`~Option.nargs`, then the
+option takes :attr:`~Option.nargs` arguments.
 
-標準の ``"store"`` アクションをエミュレートする例を以下に示します::
+Here's an example that just emulates the standard ``"store"`` action::
 
    def store_value(option, opt_str, value, parser):
        setattr(parser.values, option.dest, value)
@@ -1749,35 +1770,39 @@ callback オプションを定義する場合には、他にもいくつかオ�
                      action="callback", callback=store_value,
                      type="int", nargs=3, dest="foo")
 
-:mod:`optparse` は 3 個の引数を受け取り、それらを整数に変換するところまで
-面倒をみてくれます。ユーザは単にそれを保存するだけです。
-(他の処理もできます; いうまでもなく、この例にはコールバックは必要ありません)
+Note that :mod:`optparse` takes care of consuming 3 arguments and converting
+them to integers for you; all you have to do is store them.  (Or whatever;
+obviously you don't need a callback for this example.)
 
 
 .. _optparse-callback-example-6:
 
-コールバックの例6: 可変個の引数
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback example 6: variable arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-あるオプションに可変個の引数を持たせたいと考えているなら、問題はいささか手強くなってきます。この場合、 :mod:`optparse`
-では該当する組み込みのオプション解析機能を提供していないので、自分でコールバックを書かねばなりません。さらに、 :mod:`optparse`
-が普段処理している、伝統的な Unix コマンドライン解析における難題を自分で解決せねばなりません。とりわけ、コールバック関数では引数が裸の ``--``
-や ``-`` の場合における慣習的な処理規則:
+Things get hairy when you want an option to take a variable number of arguments.
+For this case, you must write a callback, as :mod:`optparse` doesn't provide any
+built-in capabilities for it.  And you have to deal with certain intricacies of
+conventional Unix command-line parsing that :mod:`optparse` normally handles for
+you.  In particular, callbacks should implement the conventional rules for bare
+``--`` and ``-`` arguments:
 
 * either ``--`` or ``-`` can be option arguments
 
-* 裸の ``--`` (何らかのオプションの引数でない場合): コマンドライン処理を停止し、 ``--`` を無視します。
+* bare ``--`` (if not the argument to some option): halt command-line
+  processing and discard the ``--``
 
-* 裸の ``-`` (何らかのオプションの引数でない場合): コマンドライン処理を停止しますが、 ``-`` は残します
-  (``parser.largs`` に追加します)。
+* bare ``-`` (if not the argument to some option): halt command-line
+  processing but keep the ``-`` (append it to ``parser.largs``)
 
-を実装せねばなりません。
+If you want an option that takes a variable number of arguments, there are
+several subtle, tricky issues to worry about.  The exact implementation you
+choose will be based on which trade-offs you're willing to make for your
+application (which is why :mod:`optparse` doesn't support this sort of thing
+directly).
 
-オプションが可変個の引数をとるようにさせたいなら、いくつかの巧妙で厄介な問題に配慮しなければなりません。どういう実装を
-とるかは、アプリケーションでどのようなトレードオフを考慮するかによります (このため、 :mod:`optparse` では可変個の引数に
-関する問題を直接的に取り扱わないのです)。
-
-とはいえ、可変個の引数をもつオプションに対するスタブ (stub、仲介インタフェース) を以下に示しておきます::
+Nevertheless, here's a stab at a callback for an option with variable
+arguments::
 
     def vararg_callback(option, opt_str, value, parser):
         assert value is None
@@ -1809,63 +1834,61 @@ callback オプションを定義する場合には、他にもいくつかオ�
 
 .. _optparse-extending-optparse:
 
-:mod:`optparse` の拡張
-----------------------
+Extending :mod:`optparse`
+-------------------------
 
-:mod:`optparse` がコマンドラインオプションをどのように解釈するかを決める二つの重要な要素はそれぞれのオプションのアクションと型なので、拡張
-の方向は新しいアクションと型を追加することになると思います。
+Since the two major controlling factors in how :mod:`optparse` interprets
+command-line options are the action and type of each option, the most likely
+direction of extension is to add new actions and new types.
 
 
 .. _optparse-adding-new-types:
 
-新しい型の追加
-^^^^^^^^^^^^^^
+Adding new types
+^^^^^^^^^^^^^^^^
 
-新しい型を追加するためには、 :mod:`optparse` の :class:`Option` クラスの
-サブクラスを自身で定義する必要があります。このクラスには
-:mod:`optparse` における型を定義する一対の属性があります。それは
-:attr:`~Option.TYPES` と :attr:`~Option.TYPE_CHECKER` です。
+To add new types, you need to define your own subclass of :mod:`optparse`'s
+:class:`Option` class.  This class has a couple of attributes that define
+:mod:`optparse`'s types: :attr:`~Option.TYPES` and :attr:`~Option.TYPE_CHECKER`.
 
 .. attribute:: Option.TYPES
 
-   :attr:`TYPES` は型名のタプルです。新しく作るサブクラスでは、タプル
-   :attr:`TYPES` を単純に標準のものを利用して新しく定義すると良いでしょう。
+   A tuple of type names; in your subclass, simply define a new tuple
+   :attr:`TYPES` that builds on the standard one.
 
 .. attribute:: Option.TYPE_CHECKER
 
-   :attr:`TYPE_CHECKER` は辞書で型名を型チェック関数に対応付けるものです。
-   型チェック関数は以下のようなシグネチャを持ちます。 ::
+   A dictionary mapping type names to type-checking functions.  A type-checking
+   function has the following signature::
 
       def check_mytype(option, opt, value)
 
-   ここで ``option`` は :class:`Option` のインスタンスであり、 ``opt`` は
-   オプション文字列(たとえば ``-f``)で、 ``value`` は望みの型として
-   チェックされ変換されるべくコマンドラインで与えられる文字列です。
-   ``check_mytype()`` は想定されている型 ``mytype`` のオブジェクトを
-   返さなければなりません。型チェック関数から返される値は
-   :meth:`OptionParser.parse_args` で返されるOptionValues インスタンスに
-   収められるか、またはコールバックに ``value`` パラメータとして渡されます。
+   where ``option`` is an :class:`Option` instance, ``opt`` is an option string
+   (e.g., ``-f``), and ``value`` is the string from the command line that must
+   be checked and converted to your desired type.  ``check_mytype()`` should
+   return an object of the hypothetical type ``mytype``.  The value returned by
+   a type-checking function will wind up in the OptionValues instance returned
+   by :meth:`OptionParser.parse_args`, or be passed to a callback as the
+   ``value`` parameter.
 
-   型チェック関数は何か問題に遭遇したら :exc:`OptionValueError` を
-   送出しなければなりません。
-   :exc:`OptionValueError` は文字列一つを引数に取り、それはそのまま
-   :class:`OptionParser` の :meth:`error` メソッドに渡され、そこで
-   プログラム名と文字列 ``"error:"`` が前置されてプロセスが終了する前に
-   stderr に出力されます。
+   Your type-checking function should raise :exc:`OptionValueError` if it
+   encounters any problems.  :exc:`OptionValueError` takes a single string
+   argument, which is passed as-is to :class:`OptionParser`'s :meth:`error`
+   method, which in turn prepends the program name and the string ``"error:"``
+   and prints everything to stderr before terminating the process.
 
-馬鹿馬鹿しい例ですが、Python スタイルの複素数を解析する ``"complex"``
-オプション型を作ってみせることにします。(:mod:`optparse` 1.3 が複素数の
-サポートを組み込んでしまったため以前にも増して馬鹿らしくなりましたが、
-気にしないでください。)
+Here's a silly example that demonstrates adding a ``"complex"`` option type to
+parse Python-style complex numbers on the command line.  (This is even sillier
+than it used to be, because :mod:`optparse` 1.3 added built-in support for
+complex numbers, but never mind.)
 
-最初に必要な import 文を書きます。 ::
+First, the necessary imports::
 
    from copy import copy
    from optparse import Option, OptionValueError
 
-まずは型チェック関数を定義しなければなりません。これは後で(これから定義する
-Option のサブクラスの :attr:`~Option.TYPE_CHECKER` クラス属性の中で)
-参照されることになります。 ::
+You need to define your type-checker first, since it's referred to later (in the
+:attr:`~Option.TYPE_CHECKER` class attribute of your Option subclass)::
 
    def check_complex(option, opt, value):
        try:
@@ -1874,27 +1897,28 @@ Option のサブクラスの :attr:`~Option.TYPE_CHECKER` クラス属性の中�
            raise OptionValueError(
                "option %s: invalid complex value: %r" % (opt, value))
 
-最後に Option のサブクラスです。  ::
+Finally, the Option subclass::
 
    class MyOption (Option):
        TYPES = Option.TYPES + ("complex",)
        TYPE_CHECKER = copy(Option.TYPE_CHECKER)
        TYPE_CHECKER["complex"] = check_complex
 
-(もしここで :attr:`Option.TYPE_CHECKER` に :func:`copy` を適用しなければ、
-:mod:`optparse` の Option クラスの :attr:`~Option.TYPE_CHECKER` 属性を
-いじってしまうことになります。
-Python の常として、良いマナーと常識以外にそうすることを止めるものはありません。)
+(If we didn't make a :func:`copy` of :attr:`Option.TYPE_CHECKER`, we would end
+up modifying the :attr:`~Option.TYPE_CHECKER` attribute of :mod:`optparse`'s
+Option class.  This being Python, nothing stops you from doing that except good
+manners and common sense.)
 
-これだけです! もう新しいオプション型を使うスクリプトを他の :mod:`optparse` に基づいた
-スクリプトとまるで同じように書くことができます。ただし、 OptionParser に Option でなく MyOption
-を使うように指示しなければなければなりません。  ::
+That's it!  Now you can write a script that uses the new option type just like
+any other :mod:`optparse`\ -based script, except you have to instruct your
+OptionParser to use MyOption instead of Option::
 
    parser = OptionParser(option_class=MyOption)
    parser.add_option("-c", type="complex")
 
-別のやり方として、オプションリストを構築して OptionParser に渡すという方法もあります。 :meth:`add_option`
-を上でやったように使わないならば、OptionParser にどのクラスを使うのか教える必要はありません。  ::
+Alternately, you can build your own option list and pass it to OptionParser; if
+you don't use :meth:`add_option` in the above way, you don't need to tell
+OptionParser which option class to use::
 
    option_list = [MyOption("-c", action="store", type="complex", dest="c")]
    parser = OptionParser(option_list=option_list)
@@ -1902,61 +1926,66 @@ Python の常として、良いマナーと常識以外にそうすることを�
 
 .. _optparse-adding-new-actions:
 
-新しいアクションの追加
-^^^^^^^^^^^^^^^^^^^^^^
+Adding new actions
+^^^^^^^^^^^^^^^^^^
 
-新しいアクションの追加はもう少しトリッキーです。というのも :mod:`optparse`  が使っている二つのアクションの分類を理解する必要があるからです。
+Adding new actions is a bit trickier, because you have to understand that
+:mod:`optparse` has a couple of classifications for actions:
 
-"store" アクション
-   :mod:`optparse` が値を現在の OptionValues の属性に格納することになる
-   アクションです。この種類のオプションは Option のコンストラクタに
-   :attr:`~Option.dest` 属性を与えることが要求されます。
+"store" actions
+   actions that result in :mod:`optparse` storing a value to an attribute of the
+   current OptionValues instance; these options require a :attr:`~Option.dest`
+   attribute to be supplied to the Option constructor.
 
-"typed" アクション
-   コマンドラインから引数を受け取り、それがある型であることが期待されているアクションです。もう少しはっきり言えば、その型に変換される文字列を受け取るものです。
-   この種類のオプションは Option のコンストラクタに :attr:`type` 属性を与えることが要求されます。
+"typed" actions
+   actions that take a value from the command line and expect it to be of a
+   certain type; or rather, a string that can be converted to a certain type.
+   These options require a :attr:`~Option.type` attribute to the Option
+   constructor.
 
-この分類には重複する部分があります。デフォルトの "store" アクションには
-``"store"``, ``"store_const"``, ``"append"``, ``"count"`` などがありますが、
-デフォルトの "typed" オプションは ``"store"``, ``"append"``, ``"callback"``
-の三つです。
+These are overlapping sets: some default "store" actions are ``"store"``,
+``"store_const"``, ``"append"``, and ``"count"``, while the default "typed"
+actions are ``"store"``, ``"append"``, and ``"callback"``.
 
-アクションを追加する際に、以下の Option のクラス属性(全て文字列のリストです)
-の中の少なくとも一つに付け加えることでそのアクションを分類する必要があります。
+When you add an action, you need to categorize it by listing it in at least one
+of the following class attributes of Option (all are lists of strings):
 
 .. attribute:: Option.ACTIONS
 
-   全てのアクションは ACTIONS にリストされていなければなりません
+   All actions must be listed in ACTIONS.
 
 .. attribute:: Option.STORE_ACTIONS
 
-   "store" アクションはここにもリストされます
+   "store" actions are additionally listed here.
 
 .. attribute:: Option.TYPED_ACTIONS
 
-   "typed" アクションはここにもリストされます
+   "typed" actions are additionally listed here.
 
 .. attribute:: Option.ALWAYS_TYPED_ACTIONS
 
-   型を取るアクション (つまりそのオプションが値を取る) はここにもリストされます。このことの唯一の効果は :mod:`optparse`
-   が、型の指定が無くアクションが :attr:`ALWAYS_TYPED_ACTIONS` のリストにあるオプションに、デフォルト型 ``"string"``
-   を割り当てるということだけです。
+   Actions that always take a type (i.e. whose options always take a value) are
+   additionally listed here.  The only effect of this is that :mod:`optparse`
+   assigns the default type, ``"string"``, to options with no explicit type
+   whose action is listed in :attr:`ALWAYS_TYPED_ACTIONS`.
 
-実際に新しいアクションを実装するには、Option の :meth:`take_action`
-メソッドをオーバライドしてそのアクションを認識する場合分けを追加しなければなりません。
+In order to actually implement your new action, you must override Option's
+:meth:`take_action` method and add a case that recognizes your action.
 
-例えば、 ``"extend"`` アクションというのを追加してみましょう。このアクションは標準的な ``"append"``
-アクションと似ていますが、コマンドラインから一つだけ値を読み取って既存のリストに追加するのではなく、複数の値をコンマ区切りの文字列として
-読み取ってそれらで既存のリストを拡張します。すなわち、もし ``--names`` が ``"string"`` 型の ``"extend"``
-オプションだとすると、次のコマンドライン  ::
+For example, let's add an ``"extend"`` action.  This is similar to the standard
+``"append"`` action, but instead of taking a single value from the command-line
+and appending it to an existing list, ``"extend"`` will take multiple values in
+a single comma-delimited string, and extend an existing list with them.  That
+is, if ``--names`` is an ``"extend"`` option of type ``"string"``, the command
+line ::
 
    --names=foo,bar --names blah --names ding,dong
 
-の結果は次のリストになります。  ::
+would result in a list  ::
 
    ["foo", "bar", "blah", "ding", "dong"]
 
-再び Option のサブクラスを定義します。  ::
+Again we define a subclass of Option::
 
    class MyOption(Option):
 
@@ -1973,27 +2002,32 @@ Python の常として、良いマナーと常識以外にそうすることを�
                Option.take_action(
                    self, action, dest, opt, value, values, parser)
 
-注意すべきは次のようなところです。
+Features of note:
 
-* ``"extend"`` はコマンドラインの値を予期していると同時にその値をどこかに格納しますので、 :attr:`~Option.STORE_ACTIONS` と
-  :attr:`~Option.TYPED_ACTIONS` の両方に入ります。
+* ``"extend"`` both expects a value on the command-line and stores that value
+  somewhere, so it goes in both :attr:`~Option.STORE_ACTIONS` and
+  :attr:`~Option.TYPED_ACTIONS`.
 
-* :mod:`optparse` が ``extend`` アクションに ``"string"`` 型を割り当てるように ``"extend"`` アクションは
-  :attr:`~Option.ALWAYS_TYPED_ACTIONS` にも入れてあります。
+* to ensure that :mod:`optparse` assigns the default type of ``"string"`` to
+  ``"extend"`` actions, we put the ``"extend"`` action in
+  :attr:`~Option.ALWAYS_TYPED_ACTIONS` as well.
 
-* :meth:`MyOption.take_action` にはこの新しいアクション一つの扱いだけを実装してあり、他の標準的な
-  :mod:`optparse` のアクションについては :meth:`Option.take_action` に制御を戻すようにしてあります。
+* :meth:`MyOption.take_action` implements just this one new action, and passes
+  control back to :meth:`Option.take_action` for the standard :mod:`optparse`
+  actions.
 
-* ``values`` は optparse_parser.Values クラスのインスタンスであり、非常に有用な
-  :meth:`ensure_value` メソッドを提供しています。 :meth:`ensure_value` は本質的に安全弁付きの
-  :func:`getattr` です。次のように呼び出します。  ::
+* ``values`` is an instance of the optparse_parser.Values class, which provides
+  the very useful :meth:`ensure_value` method. :meth:`ensure_value` is
+  essentially :func:`getattr` with a safety valve; it is called as ::
 
      values.ensure_value(attr, value)
 
-  ``values`` に ``attr`` 属性が無いか None だった場合に、 :meth:`ensure_value` は最初に ``value``
-  をセットし、それから ``value`` を返します。この振る舞いは ``"extend"``, ``"append"``, ``"count"``
-  のように、データを変数に集積し、またその変数がある型 (最初の二つはリスト、最後のは整数) であると期待されるアクション
-  を作るのにとても使い易いものです。 :meth:`ensure_value` を使えば、
-  作ったアクションを使うスクリプトはオプションに保存先にデフォルト値をセットすることに煩わされずに済みます。デフォルトを None にしておけば
-  :meth:`ensure_value` がそれが必要になったときに適当な値を返してくれます。
-
+  If the ``attr`` attribute of ``values`` doesn't exist or is None, then
+  ensure_value() first sets it to ``value``, and then returns 'value. This is
+  very handy for actions like ``"extend"``, ``"append"``, and ``"count"``, all
+  of which accumulate data in a variable and expect that variable to be of a
+  certain type (a list for the first two, an integer for the latter).  Using
+  :meth:`ensure_value` means that scripts using your action don't have to worry
+  about setting a default value for the option destinations in question; they
+  can just leave the default as None and :meth:`ensure_value` will take care of
+  getting it right when it's needed.

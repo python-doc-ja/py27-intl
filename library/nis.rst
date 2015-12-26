@@ -1,64 +1,68 @@
 
-:mod:`nis` --- Sun の NIS (Yellow Pages) へのインタフェース
-===========================================================
+:mod:`nis` --- Interface to Sun's NIS (Yellow Pages)
+====================================================
 
 .. module:: nis
    :platform: Unix
-   :synopsis: Sun の NIS (Yellow Pages) ライブラリへのインタフェース。
+   :synopsis: Interface to Sun's NIS (Yellow Pages) library.
 .. moduleauthor:: Fred Gansevles <Fred.Gansevles@cs.utwente.nl>
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
-:mod:`nis` モジュールは複数のホストを集中管理する上で便利な NIS
-ライブラリを薄くラップします。
+The :mod:`nis` module gives a thin wrapper around the NIS library, useful for
+central administration of several hosts.
 
-NIS は Unix システム上にしかないので、このモジュールは Unix でしか利用できません。
+Because NIS exists only on Unix systems, this module is only available for Unix.
 
-:mod:`nis` モジュールでは以下の関数を定義しています:
+The :mod:`nis` module defines the following functions:
 
 
 .. function:: match(key, mapname[, domain=default_domain])
 
-   *mapname* 中で *key* に一致するものを返すか、見つからない\
-   場合にはエラー (:exc:`nis.error`) を送出します。
-   両方の引数とも文字列で、 *key* は 8 ビットクリーンです。
-   返される値は (``NULL`` その他を含む可能性のある) 任意のバイト列です。
+   Return the match for *key* in map *mapname*, or raise an error
+   (:exc:`nis.error`) if there is none. Both should be strings, *key* is 8-bit
+   clean. Return value is an arbitrary array of bytes (may contain ``NULL`` and
+   other joys).
 
-   *mapname* は他の名前の別名になっていないか最初にチェックされます。
+   Note that *mapname* is first checked if it is an alias to another name.
 
    .. versionchanged:: 2.5
-      *domain* 引数で参照するNISドメインをオーバーライドできます。
-      設定されない場合にはデフォルトのNISドメインを参照します。
+      The *domain* argument allows to override the NIS domain used for the lookup. If
+      unspecified, lookup is in the default NIS domain.
 
 
 .. function:: cat(mapname[, domain=default_domain])
 
-   ``match(key, mapname)==value`` となる
-   *key* を *value* に対応付ける辞書を返します。
-   辞書内のキーと値は共に任意のバイト列なので注意してください。
+   Return a dictionary mapping *key* to *value* such that ``match(key,
+   mapname)==value``. Note that both keys and values of the dictionary are
+   arbitrary arrays of bytes.
 
-   *mapname* は他の名前の別名になっていないか最初にチェックされます。
+   Note that *mapname* is first checked if it is an alias to another name.
 
    .. versionchanged:: 2.5
-      *domain* 引数で参照するNISドメインをオーバーライドできます。
-      設定されない場合にはデフォルトのNISドメインを参照します。
+      The *domain* argument allows to override the NIS domain used for the lookup. If
+      unspecified, lookup is in the default NIS domain.
 
 
-.. function:: maps()
+.. function:: maps([domain=default_domain])
 
-   有効なマップのリストを返します。
+   Return a list of all valid maps.
+
+   .. versionchanged:: 2.5
+      The *domain* argument allows to override the NIS domain used for the lookup. If
+      unspecified, lookup is in the default NIS domain.
 
 
 .. function:: get_default_domain()
 
-   システムのデフォルトNISドメインを返します。
+   Return the system default NIS domain.
 
    .. versionadded:: 2.5
 
-:mod:`nis` モジュールは以下の例外を定義しています:
+The :mod:`nis` module defines the following exception:
 
 
 .. exception:: error
 
-   NIS 関数がエラーコードを返した場合に送出されます。
+   An error raised when a NIS function returns an error code.
 

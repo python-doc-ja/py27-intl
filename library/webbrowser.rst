@@ -1,87 +1,107 @@
-
-:mod:`webbrowser` --- 便利なウェブブラウザコントローラー
-========================================================
+:mod:`webbrowser` --- Convenient Web-browser controller
+=======================================================
 
 .. module:: webbrowser
-   :synopsis: ウェウブブラウザーのための使い易いコントローラー
+   :synopsis: Easy-to-use controller for Web browsers.
 .. moduleauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/webbrowser.py`
 
-:mod:`webbrowser` モジュールにはウェブベースのドキュメントを表示するための、とてもハイレベルなインターフェースが定義されています。たいていの
-環境では、このモジュールの :func:`open` を呼び出すだけで正しく動作します。
+--------------
 
-Unixでは、X11上でグラフィカルなブラウザが選択されますが、グラフィカルなブラウザが利用できなかったり、X11が利用できない場合はテキストモードのブラウザ
-が使われます。もしテキストモードのブラウザが使われたら、ユーザがブラウザから抜け出すまでプロセスの呼び出しはブロックされます。
+The :mod:`webbrowser` module provides a high-level interface to allow displaying
+Web-based documents to users. Under most circumstances, simply calling the
+:func:`.open` function from this module will do the right thing.
 
-環境変数 :envvar:`BROWSER` が存在するならプラットフォームのデフォ
-ルトであるブラウザのリストをオーバーライドし、 :data:`os.pathsep` で区切られたリストの順にブラウザの起動を試みます。
-リストの中の値に ``%s`` が含まれていたら、テキストモードのブラウザのコマンドラインとして ``%s`` の代わりにURLが引数として解釈されます；
-もし ``%s`` が含まれなければ、起動するブラウザの名前として単純に解釈されます。 [1]_
+Under Unix, graphical browsers are preferred under X11, but text-mode browsers
+will be used if graphical browsers are not available or an X11 display isn't
+available.  If text-mode browsers are used, the calling process will block until
+the user exits the browser.
 
-非UnixプラットフォームあるいはUnix上でリモートブラウザが利用可能な場合、制御プロセスはユーザがブラウザを終了するのを待ちませんが、ディスプレイにブラウ
-ザのウィンドウを表示させたままにします。Unix上でリモートブラウザが利用可能でない場合、制御プロセスは新しいブラウザを立ち上げ、待ちます。
+If the environment variable :envvar:`BROWSER` exists, it is interpreted to
+override the platform default list of browsers, as a :data:`os.pathsep`-separated
+list of browsers to try in order.  When the value of a list part contains the
+string ``%s``, then it is  interpreted as a literal browser command line to be
+used with the argument URL substituted for ``%s``; if the part does not contain
+``%s``, it is simply interpreted as the name of the browser to launch. [1]_
 
-:program:`webbrowser` スクリプトをこのモジュールのコマンドライン
-インタフェースとして使うことができます。
-スクリプトは引数に一つの URL を受け付けます。また次のオプション引数を受け付けます。
-``-n`` により可能ならば新しいブラウザウィンドウで指定された URL を開きます。
-一方、 ``-t`` では新しいブラウザのページ(「タブ」) で開きます。
-当然ながらこれらのオプションは排他的です。
+For non-Unix platforms, or when a remote browser is available on Unix, the
+controlling process will not wait for the user to finish with the browser, but
+allow the remote browser to maintain its own windows on the display.  If remote
+browsers are not available on Unix, the controlling process will launch a new
+browser and wait.
 
-以下の例外が定義されています:
+The script :program:`webbrowser` can be used as a command-line interface for the
+module. It accepts an URL as the argument. It accepts the following optional
+parameters: ``-n`` opens the URL in a new browser window, if possible;
+``-t`` opens the URL in a new browser page ("tab"). The options are,
+naturally, mutually exclusive.  Usage example::
+
+   python -m webbrowser -t "http://www.python.org"
+
+The following exception is defined:
 
 
 .. exception:: Error
 
-   ブラウザのコントロールエラーが起こると発生する例外。
+   Exception raised when a browser control error occurs.
 
-以下の関数が定義されています:
+The following functions are defined:
 
 
-.. function:: open(url[, new=0[, autoraise=True]])
+.. function:: open(url, new=0, autoraise=True)
 
-   デフォルトのブラウザで *url* を表示します。 *new* が 0 なら、 *url* はブラウザの今までと同じウィンドウで開きます。 *new* が 1
-   なら、可能であればブラウザの新しいウィンドウが開きます。 *new* が 2 なら、可能であればブラウザの新しいタブが開きます。
-   *autoraise* が ``True`` なら、可能であればウィンドウが前面に表示されます（多く
-   のウィンドウマネージャではこの変数の設定に関わらず、前面に表示されます）。
+   Display *url* using the default browser. If *new* is 0, the *url* is opened
+   in the same browser window if possible.  If *new* is 1, a new browser window
+   is opened if possible.  If *new* is 2, a new browser page ("tab") is opened
+   if possible.  If *autoraise* is ``True``, the window is raised if possible
+   (note that under many window managers this will occur regardless of the
+   setting of this variable).
 
-   幾つかのプラットフォームにおいて、ファイル名をこの関数で開こうとすると、
-   OSによって関連付けられたプログラムが起動されます。しかし、この動作は
-   ポータブルではありませんし、サポートされていません。
+   Note that on some platforms, trying to open a filename using this function,
+   may work and start the operating system's associated program.  However, this
+   is neither supported nor portable.
 
    .. versionchanged:: 2.5
-      *new* を 2 にもできるようになりました.
+      *new* can now be 2.
 
 
 .. function:: open_new(url)
 
-   可能であれば、デフォルトブラウザの新しいウィンドウで *url* を開きますが、そうでない場合はブラウザのただ１つのウィンドウで *url* を開きます。
+   Open *url* in a new window of the default browser, if possible, otherwise, open
+   *url* in the only browser window.
 
 .. function:: open_new_tab(url)
 
-   可能であれば、デフォルトブラウザの新しいページ(「タブ」)で *url* を開きますが、そうでない場合は :func:`open_new` と同様に振る舞います。
+   Open *url* in a new page ("tab") of the default browser, if possible, otherwise
+   equivalent to :func:`open_new`.
 
    .. versionadded:: 2.5
 
 
 .. function:: get([name])
 
-   ブラウザの種類 *name* のコントローラーオブジェクトを返します。もし *name* が空文字列なら、呼び出した環境に適したデフォルトブラウザのコン
-   トローラーを返します。
+   Return a controller object for the browser type *name*.  If *name* is empty,
+   return a controller for a default browser appropriate to the caller's
+   environment.
 
 
 .. function:: register(name, constructor[, instance])
 
-   ブラウザの種類 *name* を登録します。ブラウザの種類が登録されたら、 :func:`get` でそのブラウザのコントローラーを呼び出すことができます。
-   *instance* が指定されなかったり、 ``None`` なら、インスタンスが必要な時には *constructor* がパラメータなしに呼び出されて作られます。
-   *instance* が指定されたら、 *constructor* は呼び出されないので、 ``None`` でかまいません。
+   Register the browser type *name*.  Once a browser type is registered, the
+   :func:`get` function can return a controller for that browser type.  If
+   *instance* is not provided, or is ``None``, *constructor* will be called without
+   parameters to create an instance when needed.  If *instance* is provided,
+   *constructor* will never be called, and may be ``None``.
 
-   この登録は、変数 :envvar:`BROWSER` を設定するか、 :func:`get` を空文字列でな
-   く、宣言したハンドラの名前と一致する引数とともに呼び出すときだけ、役に立ちます。
+   This entry point is only useful if you plan to either set the :envvar:`BROWSER`
+   variable or call :func:`get` with a nonempty argument matching the name of a
+   handler you declare.
 
-いくつかの種類のブラウザがあらかじめ定義されています。このモジュールで定義されている、関数 :func:`get` に与えるブラウザの名前
-と、それぞれのコントローラークラスのインスタンスを以下の表に示します。
+A number of browser types are predefined.  This table gives the type names that
+may be passed to the :func:`get` function and the corresponding instantiations
+for the controller classes, all defined in this module.
 
 +-----------------------+-----------------------------------------+-------+
 | Type Name             | Class Name                              | Notes |
@@ -120,29 +140,27 @@ Unixでは、X11上でグラフィカルなブラウザが選択されますが�
 +-----------------------+-----------------------------------------+-------+
 | ``'windows-default'`` | :class:`WindowsDefault`                 | \(2)  |
 +-----------------------+-----------------------------------------+-------+
-| ``'internet-config'`` | :class:`InternetConfig`                 | \(3)  |
+| ``'macosx'``          | :class:`MacOSX('default')`              | \(3)  |
 +-----------------------+-----------------------------------------+-------+
-| ``'macosx'``          | :class:`MacOSX('default')`              | \(4)  |
+| ``'safari'``          | :class:`MacOSX('safari')`               | \(3)  |
 +-----------------------+-----------------------------------------+-------+
 
 Notes:
 
 (1)
-   "Konqueror"はUnixのKDEデスクトップ環境のファイルマネージャで、KDEが動作している時にだけ意味を持ちます。
-   何か信頼できる方法でKDEを検出するのがいいでしょう；変数 :envvar:`KDEDIR` では十分ではありません。また、KDE
-   2で :program:`konqueror` コマンドを使うときにも、"kfm"が使われます  ---
-   Konquerorを動作させるのに最も良い方法が実装によって選択されます。
+   "Konqueror" is the file manager for the KDE desktop environment for Unix, and
+   only makes sense to use if KDE is running.  Some way of reliably detecting KDE
+   would be nice; the :envvar:`KDEDIR` variable is not sufficient.  Note also that
+   the name "kfm" is used even when using the :program:`konqueror` command with KDE
+   2 --- the implementation selects the best strategy for running Konqueror.
 
 (2)
-   Windowsプラットフォームのみ。
+   Only on Windows platforms.
 
 (3)
-   Mac OSプラットフォームのみ；標準MacPythonモジュール :mod:`ic` を必要とします。
+   Only on Mac OS X platform.
 
-(4)
-   Mac OS X プラットフォームのみ。
-
-簡単な例を示します。 ::
+Here are some simple examples::
 
    url = 'http://www.python.org/'
 
@@ -155,32 +173,36 @@ Notes:
 
 .. _browser-controllers:
 
-ブラウザコントローラーオブジェクト
-----------------------------------
+Browser Controller Objects
+--------------------------
 
-ブラウザコントローラーには以下のメソッドが定義されていて、モジュールレベルの便利な 3 つの関数に相当します:
+Browser controllers provide these methods which parallel three of the
+module-level convenience functions:
 
 
-.. method:: controller.open(url[, new=0[, autoraise=True]])
+.. method:: controller.open(url, new=0, autoraise=True)
 
-   このコントローラーでハンドルされたブラウザで *url* を表示します。 *new* が 1 なら、可能であればブラウザの新しいウィンドウが開きます。 *new* が
-   2 なら、可能であればブラウザの新しいページ(「タブ」)が開きます。
+   Display *url* using the browser handled by this controller. If *new* is 1, a new
+   browser window is opened if possible. If *new* is 2, a new browser page ("tab")
+   is opened if possible.
 
 
 .. method:: controller.open_new(url)
 
-   可能であれば、このコントローラーでハンドルされたブラウザの新しいウィンドウで *url* を開きますが、そうでない場合はブラウザのただ１つのウィンドウで
-   *url* を開きます。 :func:`open_new` の別名。
+   Open *url* in a new window of the browser handled by this controller, if
+   possible, otherwise, open *url* in the only browser window.  Alias
+   :func:`open_new`.
 
 
 .. method:: controller.open_new_tab(url)
 
-   可能であれば、このコントローラーでハンドルされたブラウザの新しいページ(「タブ」)で *url* を開きますが、そうでない場合は :func:`open_new`
-   と同じです。
+   Open *url* in a new page ("tab") of the browser handled by this controller, if
+   possible, otherwise equivalent to :func:`open_new`.
 
    .. versionadded:: 2.5
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [1] ここでブラウザの名前が絶対パスで書かれていない場合は :envvar:`PATH` 環境変数で与えられたディレクトリから探し出されます。
+.. [1] Executables named here without a full path will be searched in the
+       directories given in the :envvar:`PATH` environment variable.

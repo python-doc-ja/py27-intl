@@ -1,17 +1,18 @@
 
 .. _development:
 
-**********
-開発ツール
-**********
+*****************
+Development Tools
+*****************
 
-この章で紹介されるモジュールはソフトウェアを書くことを支援します。
-たとえば、 :mod:`pydoc` モジュールはモジュールの内容からドキュメントを生成します。
-:mod:`doctest` と :mod:`unittest` モジュールでは、
-自動的に実行して予想通りの出力が生成されるか確認するユニットテストを書くことができます。
-:program:`2to3` は Python2.x 用のソースコードを正当な Python 3.x コードに翻訳できます。
+The modules described in this chapter help you write software.  For example, the
+:mod:`pydoc` module takes a module and generates documentation based on the
+module's contents.  The :mod:`doctest` and :mod:`unittest` modules contains
+frameworks for writing unit tests that automatically exercise code and verify
+that the expected output is produced.  :program:`2to3` can translate Python 2.x
+source code into valid Python 3.x code.
 
-この章で解説されるモジュールの完全な一覧は:
+The list of modules described in this chapter is:
 
 
 .. toctree::

@@ -1,77 +1,82 @@
-
-:mod:`sunau` --- Sun AUファイルの読み書き
-=========================================
+:mod:`sunau` --- Read and write Sun AU files
+============================================
 
 .. module:: sunau
-   :synopsis: Sun AUサウンドフォーマットへのインターフェース
+   :synopsis: Provide an interface to the Sun AU sound format.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
+**Source code:** :source:`Lib/sunau.py`
 
-:mod:`sunau` モジュールは、Sun AUサウンドフォーマットへの便利なインター
-フェースを提供します。このモジュールは、 :mod:`aifc` モジュールや :mod:`wave` モジュールと互換性のあるインターフェースを備えています。
+--------------
 
-オーディオファイルはヘッダとそれに続くデータから構成されます。ヘッダのフィールドは以下の通りです：
+The :mod:`sunau` module provides a convenient interface to the Sun AU sound
+format.  Note that this module is interface-compatible with the modules
+:mod:`aifc` and :mod:`wave`.
 
-+---------------+------------------------------------------------------------------+
-| フィールド    | 内容                                                             |
-+===============+==================================================================+
-| magic word    | 4バイト文字列 ``.snd``                                           |
-+---------------+------------------------------------------------------------------+
-| header size   | infoを含むヘッダのサイズをバイト数で示したもの。                 |
-+---------------+------------------------------------------------------------------+
-| data size     | データの物理サイズをバイト数で示したもの。                       |
-+---------------+------------------------------------------------------------------+
-| encoding      | オーディオサンプルのエンコード形式。                             |
-+---------------+------------------------------------------------------------------+
-| sample rate   | サンプリングレート。                                             |
-+---------------+------------------------------------------------------------------+
-| # of channels | サンプルのチャンネル数。                                         |
-+---------------+------------------------------------------------------------------+
-| info          | オーディオファイルについての説明をASCII文字列で示したもの（null  |
-|               | バイトで埋められます）。                                         |
-+---------------+------------------------------------------------------------------+
+An audio file consists of a header followed by the data.  The fields of the
+header are:
 
-infoフィールド以外の全てのヘッダフィールドは4バイトの大きさです。ヘッダフィールドはbig-endianでエンコードされた、計32ビットの符合なし整数です。
++---------------+-----------------------------------------------+
+| Field         | Contents                                      |
++===============+===============================================+
+| magic word    | The four bytes ``.snd``.                      |
++---------------+-----------------------------------------------+
+| header size   | Size of the header, including info, in bytes. |
++---------------+-----------------------------------------------+
+| data size     | Physical size of the data, in bytes.          |
++---------------+-----------------------------------------------+
+| encoding      | Indicates how the audio samples are encoded.  |
++---------------+-----------------------------------------------+
+| sample rate   | The sampling rate.                            |
++---------------+-----------------------------------------------+
+| # of channels | The number of channels in the samples.        |
++---------------+-----------------------------------------------+
+| info          | ASCII string giving a description of the      |
+|               | audio file (padded with null bytes).          |
++---------------+-----------------------------------------------+
 
-:mod:`sunau` モジュールは以下の関数を定義しています：
+Apart from the info field, all header fields are 4 bytes in size. They are all
+32-bit unsigned integers encoded in big-endian byte order.
+
+The :mod:`sunau` module defines the following functions:
 
 
 .. function:: open(file, mode)
 
-   *file* が文字列ならその名前のファイルを開き、そうでないならファイルのようにシーク可能なオブジェクトとして扱います。 *mode* は以下のうち
-   のいずれかです。
+   If *file* is a string, open the file by that name, otherwise treat it as a
+   seekable file-like object. *mode* can be any of
 
    ``'r'``
-      読み込みのみのモード。
+      Read only mode.
 
    ``'w'``
-      書き込みのみのモード。
+      Write only mode.
 
-   読み込み／書き込み両方のモードで開くことはできないことに注意して下さい。
+   Note that it does not allow read/write files.
 
-   ``'r'`` の *mode* は :class:`AU_read` オブジェクトを
-   返し、 ``'w'`` と ``'wb'`` の *mode* は :class:`AU_write` オブジェクトを返します。
+   A *mode* of ``'r'`` returns a :class:`AU_read` object, while a *mode* of ``'w'``
+   or ``'wb'`` returns a :class:`AU_write` object.
 
 
 .. function:: openfp(file, mode)
 
-   :func:`.open` と同義。後方互換性のために残されています。
+   A synonym for :func:`.open`, maintained for backwards compatibility.
 
 
-:mod:`sunau` モジュールは以下の例外を定義しています：
-
+The :mod:`sunau` module defines the following exception:
 
 .. exception:: Error
 
-   Sun AUの仕様や実装に対する不適切な操作により何か実行不可能となった時に発生するエラー。
+   An error raised when something is impossible because of Sun AU specs or
+   implementation deficiency.
 
 
-:mod:`sunau` モジュールは以下のデータアイテムを定義しています：
-
+The :mod:`sunau` module defines the following data items:
 
 .. data:: AUDIO_FILE_MAGIC
 
-   big-endianで保存された正規のSun AUファイルは全てこの整数で始まります。これは文字列 ``.snd`` を整数に変換したものです。
+   An integer every valid Sun AU file begins with, stored in big-endian form.  This
+   is the string ``.snd`` interpreted as an integer.
 
 
 .. data:: AUDIO_FILE_ENCODING_MULAW_8
@@ -81,7 +86,8 @@ infoフィールド以外の全てのヘッダフィールドは4バイトの大
           AUDIO_FILE_ENCODING_LINEAR_32
           AUDIO_FILE_ENCODING_ALAW_8
 
-   AUヘッダのencodingフィールドの値で、このモジュールでサポートしているものです。
+   Values of the encoding field from the AU header which are supported by this
+   module.
 
 
 .. data:: AUDIO_FILE_ENCODING_FLOAT
@@ -91,154 +97,167 @@ infoフィールド以外の全てのヘッダフィールドは4バイトの大
           AUDIO_FILE_ENCODING_ADPCM_G723_3
           AUDIO_FILE_ENCODING_ADPCM_G723_5
 
-   AUヘッダのencodingフィールドの値のうち既知のものとして追加されているものですが、このモジュールではサポートされていません。
+   Additional known values of the encoding field from the AU header, but which are
+   not supported by this module.
 
 
 .. _au-read-objects:
 
-AU_read オブジェクト
---------------------
+AU_read Objects
+---------------
 
-上述の :func:`.open` によって返されるAU_readオブジェクトには、以下のメソッドがあります：
+AU_read objects, as returned by :func:`.open` above, have the following methods:
 
 
 .. method:: AU_read.close()
 
-   ストリームを閉じ、このオブジェクトのインスタンスを使用できなくします。
-   （これはオブジェクトのガベージコレクション時に自動的に呼び出されます。）
+   Close the stream, and make the instance unusable. (This is  called automatically
+   on deletion.)
 
 
 .. method:: AU_read.getnchannels()
 
-   オーディオチャンネル数（モノラルなら ``1`` 、ステレオなら ``2`` ）を返します。
+   Returns number of audio channels (1 for mone, 2 for stereo).
 
 
 .. method:: AU_read.getsampwidth()
 
-   サンプルサイズをバイト数で返します。
+   Returns sample width in bytes.
 
 
 .. method:: AU_read.getframerate()
 
-   サンプリングレートを返します。
+   Returns sampling frequency.
 
 
 .. method:: AU_read.getnframes()
 
-   オーディオフレーム数を返します。
+   Returns number of audio frames.
 
 
 .. method:: AU_read.getcomptype()
 
-   圧縮形式を返します。 ``'ULAW'``, ``'ALAW'``, ``'NONE'`` がサポートされている形式です。
+   Returns compression type. Supported compression types are ``'ULAW'``, ``'ALAW'``
+   and ``'NONE'``.
 
 
 .. method:: AU_read.getcompname()
 
-   :meth:`getcomptype` を人に判読可能な形にしたものです。上述の形式に対して、それぞれ ``'CCITT G.711 u-law'``,
-   ``'CCITT G.711 A-law'``, ``'not compressed'`` がサポートされています。
+   Human-readable version of :meth:`getcomptype`.  The supported types have the
+   respective names ``'CCITT G.711 u-law'``, ``'CCITT G.711 A-law'`` and ``'not
+   compressed'``.
 
 
 .. method:: AU_read.getparams()
 
-   :meth:`get\*` メソッドが返すのと同じ ``(nchannels,  sampwidth, framerate, nframes, comptype,
-   compname)`` のタプルを返します。
+   Returns a tuple ``(nchannels, sampwidth, framerate, nframes, comptype,
+   compname)``, equivalent to output of the :meth:`get\*` methods.
 
 
 .. method:: AU_read.readframes(n)
 
-   *n* 個のオーディオフレームの値を読み込んで、バイトごとに文字に変換した文字列を返します。
-   データはlinear形式で返されます。もし元のデータがu-LAW形式なら、変換されます。
+   Reads and returns at most *n* frames of audio, as a string of bytes.  The data
+   will be returned in linear format.  If the original data is in u-LAW format, it
+   will be converted.
 
 
 .. method:: AU_read.rewind()
 
-   ファイルのポインタをオーディオストリームの先頭に戻します。
+   Rewind the file pointer to the beginning of the audio stream.
 
-以下の2つのメソッドは共通の"位置"を定義しています。"位置"は他の関数とは独立して実装されています。
+The following two methods define a term "position" which is compatible between
+them, and is otherwise implementation dependent.
 
 
 .. method:: AU_read.setpos(pos)
 
-   ファイルのポインタを指定した位置に設定します。 :meth:`tell` で返される値を *pos* として使用しなければなりません。
+   Set the file pointer to the specified position.  Only values returned from
+   :meth:`tell` should be used for *pos*.
 
 
 .. method:: AU_read.tell()
 
-   ファイルの現在のポインタ位置を返します。返される値はファイルの実際の位置に対して何も操作はしません。
+   Return current file pointer position.  Note that the returned value has nothing
+   to do with the actual position in the file.
 
-以下の2つのメソッドは :mod:`aifc` モジュールとの互換性のために定義されていますが、何も面白いことはしません。
+The following two functions are defined for compatibility with the  :mod:`aifc`,
+and don't do anything interesting.
 
 
 .. method:: AU_read.getmarkers()
 
-   ``None`` を返します。
+   Returns ``None``.
 
 
 .. method:: AU_read.getmark(id)
 
-   エラーを発生します。
+   Raise an error.
 
 
 .. _au-write-objects:
 
-AU_write オブジェクト
----------------------
+AU_write Objects
+----------------
 
-上述の :func:`.open` によって返されるWave_writeオブジェクトには、以下のメソッドがあります：
+AU_write objects, as returned by :func:`.open` above, have the following methods:
 
 
 .. method:: AU_write.setnchannels(n)
 
-   チャンネル数を設定します。
+   Set the number of channels.
 
 
 .. method:: AU_write.setsampwidth(n)
 
-   サンプルサイズを（バイト数で）設定します。
+   Set the sample width (in bytes.)
 
 
 .. method:: AU_write.setframerate(n)
 
-   フレームレートを設定します。
+   Set the frame rate.
 
 
 .. method:: AU_write.setnframes(n)
 
-   フレーム数を設定します。あとからフレームが書き込まれるとフレーム数は変更されます。
+   Set the number of frames. This can be later changed, when and if more  frames
+   are written.
 
 
 .. method:: AU_write.setcomptype(type, name)
 
-   圧縮形式とその記述を設定します。 ``'NONE'`` と ``'ULAW'`` だけが、出力時にサポートされている形式です。
+   Set the compression type and description. Only ``'NONE'`` and ``'ULAW'`` are
+   supported on output.
 
 
 .. method:: AU_write.setparams(tuple)
 
-   *tuple* は ``(nchannels, sampwidth, framerate, nframes, comptype, compname)``
-   で、それぞれ :meth:`set\*` のメソッドの値にふさわしいものでなければなりません。全ての変数を設定します。
+   The *tuple* should be ``(nchannels, sampwidth, framerate, nframes, comptype,
+   compname)``, with values valid for the :meth:`set\*` methods.  Set all
+   parameters.
 
 
 .. method:: AU_write.tell()
 
-   ファイルの中の現在位置を返します。 :meth:`AU_read.tell` と
-   :meth:`AU_read.setpos` メソッドでお断りしたことがこのメソッドにも当てはまります。
+   Return current position in the file, with the same disclaimer for the
+   :meth:`AU_read.tell` and :meth:`AU_read.setpos` methods.
 
 
 .. method:: AU_write.writeframesraw(data)
 
-   *nframes* の修正なしにオーディオフレームを書き込みます。
+   Write audio frames, without correcting *nframes*.
 
 
 .. method:: AU_write.writeframes(data)
 
-   オーディオフレームを書き込んで *nframes* を修正します。
+   Write audio frames and make sure *nframes* is correct.
 
 
 .. method:: AU_write.close()
 
-   *nframes* が正しいか確認して、ファイルを閉じます。このメソッドはオブジェクトの削除時に呼び出されます。
+   Make sure *nframes* is correct, and close the file.
 
-:meth:`writeframes` や :meth:`writeframesraw` メソッドを呼び出したあ
-とで、どんなパラメータを設定しようとしても不正となることに注意して下さい。
+   This method is called upon deletion.
+
+Note that it is invalid to set any parameters after calling  :meth:`writeframes`
+or :meth:`writeframesraw`.
 

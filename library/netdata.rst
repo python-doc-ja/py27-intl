@@ -1,11 +1,12 @@
 
 .. _netdata:
 
-******************************
-インターネット上のデータの操作
-******************************
+**********************
+Internet Data Handling
+**********************
 
-この章ではインターネット上で一般的に利用されているデータ形式の操作をサポートするモジュール群について記述します．
+This chapter describes modules which support handling data formats commonly used
+on the Internet.
 
 
 .. toctree::

@@ -1,71 +1,61 @@
-
-:mod:`uu` --- uuencode形式のエンコードとデコード
-================================================
+:mod:`uu` --- Encode and decode uuencode files
+==============================================
 
 .. module:: uu
-   :synopsis: uuencode形式のエンコードとデコードを行う。
+   :synopsis: Encode and decode files in uuencode format.
 .. moduleauthor:: Lance Ellinghouse
 
+**Source code:** :source:`Lib/uu.py`
 
-このモジュールではファイルをuuencode形式(任意のバイナリデータをASCII文字列\
-に変換したもの)にエンコード、デコードする機能を提供します。
-引数としてファイルが仮定されている所では、ファイルのようなオブジェクトが\
-利用できます。後方互換性のために、パス名を含む文字列も利用できるようにし\
-ていて、対応するファイルを開いて読み書きします。しかし、このインタフェー\
-スは利用しないでください。呼び出し側でファイルを開いて(Windowsでは
-``'rb'`` か ``'wb'`` のモードで)利用する方法が推奨されます。
+--------------
+
+This module encodes and decodes files in uuencode format, allowing arbitrary
+binary data to be transferred over ASCII-only connections. Wherever a file
+argument is expected, the methods accept a file-like object.  For backwards
+compatibility, a string containing a pathname is also accepted, and the
+corresponding file will be opened for reading and writing; the pathname ``'-'``
+is understood to mean the standard input or output.  However, this interface is
+deprecated; it's better for the caller to open the file itself, and be sure
+that, when required, the mode is ``'rb'`` or ``'wb'`` on Windows.
 
 .. index::
    single: Jansen, Jack
    single: Ellinghouse, Lance
 
-このコードはLance Ellinghouseによって提供され、Jack Jansenによって更新さ\
-れました。
+This code was contributed by Lance Ellinghouse, and modified by Jack Jansen.
 
-.. seealso::
-
-   最新バージョンの `uu module Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/uu.py?view=markup>`_
-
-:mod:`uu` モジュールでは以下の関数を定義しています。
+The :mod:`uu` module defines the following functions:
 
 
 .. function:: encode(in_file, out_file[, name[, mode]])
 
-   *in_file* を *out_file* にエンコードします。
-   エンコードされたファイルには、デフォルトでデコード時に利用される\
-   *name* と *mode* を含んだヘッダがつきます。
-   省略された場合には、 *in_file* から取得された名前か ``'-'`` という文字と、
-   ``0666`` がそれぞれデフォルト値として与えられます。
+   Uuencode file *in_file* into file *out_file*.  The uuencoded file will have the
+   header specifying *name* and *mode* as the defaults for the results of decoding
+   the file. The default defaults are taken from *in_file*, or ``'-'`` and ``0666``
+   respectively.
 
 
-.. function:: decode(in_file[, out_file[, mode]])
+.. function:: decode(in_file[, out_file[, mode[, quiet]]])
 
-   uuencode形式でエンコードされた *in_file* をデコードして varout_file
-   に書き出します。
-   もし *out_file* がパス名でかつファイルを作る必要があるときには、
-   *mode* がパーミッションの設定に使われます。
-   *out_file* と *mode* のデフォルト値は *in_file* のヘッダから取得\
-   されます。
-   しかし、ヘッダで指定されたファイルが既に存在していた場合は、
-   :exc:`uu.Error` が送出されます。
+   This call decodes uuencoded file *in_file* placing the result on file
+   *out_file*. If *out_file* is a pathname, *mode* is used to set the permission
+   bits if the file must be created. Defaults for *out_file* and *mode* are taken
+   from the uuencode header.  However, if the file specified in the header already
+   exists, a :exc:`uu.Error` is raised.
 
-   誤った実装のuuencoderによる入力で、エラーから復旧できた場合、
-   :func:`decode` は標準エラー出力に警告を表示するかもしれません。
-   *quiet* を真にすることでこの警告を抑制することができます。
+   :func:`decode` may print a warning to standard error if the input was produced
+   by an incorrect uuencoder and Python could recover from that error.  Setting
+   *quiet* to a true value silences this warning.
 
 
 .. exception:: Error()
 
-   :exc:`Exception` のサブクラスで、 :func:`uu.decode` によって、さ\
-   まざまな状況で送出される可能性があります。上で紹介された場合以外にも、\
-   ヘッダのフォーマットが間違っている場合や、入力ファイルが途中で区切れた\
-   場合にも送出されます。
+   Subclass of :exc:`Exception`, this can be raised by :func:`uu.decode` under
+   various situations, such as described above, but also including a badly
+   formatted header, or truncated input file.
 
 
 .. seealso::
 
-   :mod:`binascii` モジュール
-      ASCII からバイナリへ、バイナリからASCIIへの\
-      変換をサポートするモジュール。
-
+   Module :mod:`binascii`
+      Support module containing ASCII-to-binary and binary-to-ASCII conversions.

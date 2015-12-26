@@ -1,9 +1,9 @@
 
 .. _internet:
 
-**********************************
-インターネットプロトコルとその支援
-**********************************
+******************************
+Internet Protocols and Support
+******************************
 
 .. index::
    single: WWW
@@ -12,12 +12,10 @@
 
 .. index:: module: socket
 
-この章で記述されるモジュールは、インターネットプロトコルを実装し、関連技術の支援を行います。
-それらは全てPythonで実装されています。
-これらのモジュールの大部分は、システム依存のモジュール
-:mod:`socket` が存在することが必要ですが、
-これは現在ではほとんどの一般的なプラットフォーム上でサポートされています。
-ここに概観を示します。
+The modules described in this chapter implement Internet protocols and  support
+for related technology.  They are all implemented in Python. Most of these
+modules require the presence of the system-dependent module :mod:`socket`, which
+is currently supported on most popular platforms.  Here is an overview:
 
 
 .. toctree::

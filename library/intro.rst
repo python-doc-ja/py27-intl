@@ -1,56 +1,52 @@
 
 .. _library-intro:
 
-********
-はじめに
-********
+************
+Introduction
+************
 
-この "Python ライブラリ" には様々な内容が収録されています。
+The "Python library" contains several different kinds of components.
 
-このライブラリには、数値型やリスト型のような、通常は言語の "核" をなす
-部分とみなされるデータ型が含まれています。 Python 言語のコア部分では、
-これらの型に対してリテラル表現形式を与え、意味づけ上のいくつかの制約を
-与えていますが、完全にその意味づけを定義しているわけではありません。
-(一方で、言語のコア部分では演算子のスペルや優先順位のような構文法的な
-属性を定義しています。) このライブラリにはまた、組み込み関数と例外が納
-められています --- 組み込み関数および例外は、全ての Python で書かれた
-コード上で、 :keyword:`import` 文を使わずに使うことができるオブジェク
-トです。これらの組み込み要素のうちいくつかは言語のコア部分で定義されて
-いますが、大半は言語コアの意味づけ上不可欠なものではないのでここでしか
-記述されていません。
+It contains data types that would normally be considered part of the "core" of a
+language, such as numbers and lists.  For these types, the Python language core
+defines the form of literals and places some constraints on their semantics, but
+does not fully define the semantics.  (On the other hand, the language core does
+define syntactic properties like the spelling and priorities of operators.)
 
-とはいえ、このライブラリの大部分に収録されているのはモジュールのコレク
-ションです。このコレクションを細分化する方法はいろいろあります。あるモ
-ジュールは C 言語で書かれ、 Python インタプリタに組み込まれています;
-一方別のモジュールは Python で書かれ、ソースコードの形式で取り込まれま
-す。またあるモジュールは、例えば実行スタックの追跡結果を出力するといっ
-た、 Python に非常に特化したインタフェースを提供し、一方他のモジュール
-では、特定のハードウェアにアクセスするといった、特定のオペレーティング
-システムに特化したインタフェースを提供し、さらに別のモジュールでは WWW
-(ワールドワイドウェブ) のような特定のアプリケーション分野に特化したイ
-ンタフェースを提供しています。モジュールによっては全てのバージョン、全
-ての移植版の Python で利用することができたり、背後にあるシステムがサポー
-トしている場合にのみ使えたり、 Python をコンパイルしてインストールする
-際に特定の設定オプションを選んだときにのみ利用できたりします。
+The library also contains built-in functions and exceptions --- objects that can
+be used by all Python code without the need of an :keyword:`import` statement.
+Some of these are defined by the core language, but many are not essential for
+the core semantics and are only described here.
 
-このマニュアルの構成は "内部から外部へ:" つまり、最初に組み込みのデー
-タ型を記述し、組み込みの関数および例外、そして最後に各モジュールといっ
-た形になっています。モジュールは関係のあるものでグループ化して一つの章
-にしています。
-章の順番付けや各章内のモジュールの順番付けは、大まかに重要性の高いもの
-から低いものになっています。
+The bulk of the library, however, consists of a collection of modules. There are
+many ways to dissect this collection.  Some modules are written in C and built
+in to the Python interpreter; others are written in Python and imported in
+source form.  Some modules provide interfaces that are highly specific to
+Python, like printing a stack trace; some provide interfaces that are specific
+to particular operating systems, such as access to specific hardware; others
+provide interfaces that are specific to a particular application domain, like
+the World Wide Web. Some modules are available in all versions and ports of
+Python; others are only available when the underlying system supports or
+requires them; yet others are available only when a particular configuration
+option was chosen at the time when Python was compiled and installed.
 
-つまり、このマニュアルを最初から読み始め、読み飽き始めたところで次の章
-に進めば、 Python ライブラリで利用できるモジュールやサポートしているア
-プリケーション領域の概要をそこそこ理解できるということです。もちろん、
-このマニュアルを小説のように読む必要は *ありません* --- (マニュアルの
-先頭部分にある) 目次にざっと目を通したり、 (最後尾にある) 索引でお目当
-ての関数やモジュール、用語を探すことだってできます。もしランダムな項目
-について勉強してみたいのなら、ランダムにページを選び (:mod:`random` 参
-照)、そこから 1, 2 節読むこともできます。このマニュアルの各節をどんな
-順番で読むかに関わらず、 :ref:`built-in-funcs` の章から始めるとよいでしょう。
-マニュアルの他の部分は、この節の内容について知っているものとして書かれ
-ているからです。
+This manual is organized "from the inside out:" it first describes the built-in
+data types, then the built-in functions and exceptions, and finally the modules,
+grouped in chapters of related modules.  The ordering of the chapters as well as
+the ordering of the modules within each chapter is roughly from most relevant to
+least important.
 
-それでは、ショーの始まりです！
+This means that if you start reading this manual from the start, and skip to the
+next chapter when you get bored, you will get a reasonable overview of the
+available modules and application areas that are supported by the Python
+library.  Of course, you don't *have* to read it like a novel --- you can also
+browse the table of contents (in front of the manual), or look for a specific
+function, module or term in the index (in the back).  And finally, if you enjoy
+learning about random subjects, you choose a random page number (see module
+:mod:`random`) and read a section or two.  Regardless of the order in which you
+read the sections of this manual, it helps to start with chapter
+:ref:`built-in-funcs`, as the remainder of the manual assumes familiarity with
+this material.
+
+Let the show begin!
 

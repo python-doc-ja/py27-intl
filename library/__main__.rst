@@ -1,15 +1,16 @@
 
-:mod:`__main__` --- トップレベルのスクリプト環境
+:mod:`__main__` --- Top-level script environment
 ================================================
 
 .. module:: __main__
-   :synopsis: トップレベルスクリプトが実行される環境。
+   :synopsis: The environment where the top-level script is run.
 
 
-このモジュールはPythonインタプリタのメインプログラムがコマンドを実行する際の環境をあらわしています。
-このモジュールを利用することで、通常は無名のこの環境にアクセスすることができます。
-実行されるコマンドは標準入力、スクリプトファイルあるいは対話環境での入力プロンプトから入力されます。
-この環境はPythonスクリプトをメインプログラムとして実行される際によく使われる"条件付きスクリプト"の一節が実行される環境です。 ::
+This module represents the (otherwise anonymous) scope in which the
+interpreter's main program executes --- commands read either from standard
+input, from a script file, or from an interactive prompt.  It is this
+environment in which the idiomatic "conditional script" stanza causes a script
+to run::
 
    if __name__ == "__main__":
        main()

@@ -1,345 +1,361 @@
 
-:mod:`xml.sax.xmlreader` --- XML パーサのインタフェース
-=========================================================
+:mod:`xml.sax.xmlreader` --- Interface for XML parsers
+======================================================
 
 .. module:: xml.sax.xmlreader
-   :synopsis: SAX 準拠の XML パーサが実装すべきインタフェースです。
+   :synopsis: Interface which SAX-compliant XML parsers must implement.
 .. moduleauthor:: Lars Marius Garshol <larsga@garshol.priv.no>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
 .. versionadded:: 2.0
 
-各 SAX パーサは Python モジュールとして :class:`XMLReader` インタフェース\
-を実装しており、関数 :func:`create_parser` を提供しています。この関数は\
-新たなパーサ・オブジェクトを生成する際、
-:func:`xml.sax.make_parser` から引き数なしで呼び出されます。
+SAX parsers implement the :class:`XMLReader` interface. They are implemented in
+a Python module, which must provide a function :func:`create_parser`. This
+function is invoked by  :func:`xml.sax.make_parser` with no arguments to create
+a new  parser object.
 
 
 .. class:: XMLReader()
 
-   SAX パーサが継承可能な基底クラスです。
+   Base class which can be inherited by SAX parsers.
 
 
 .. class:: IncrementalParser()
 
-   入力ソースをパースする際、すべてを一気に処理しないで、途中でドキュメ\
-   ントのチャンクを取得したいことがあります。SAX リーダは通常、ファイル\
-   全体を一気に読み込まずチャンク単位で処理するのですが、全体の処理が終\
-   わるまで :meth:`parse` は return しません。つまり、\
-   IncrementalParser インタフェースは :meth:`parse` にこのような排\
-   他的挙動を望まないときに使われます。
+   In some cases, it is desirable not to parse an input source at once, but to feed
+   chunks of the document as they get available. Note that the reader will normally
+   not read the entire file, but read it in chunks as well; still :meth:`parse`
+   won't return until the entire document is processed. So these interfaces should
+   be used if the blocking behaviour of :meth:`parse` is not desirable.
 
-   パーサのインスタンスが作成されると、feed メソッドを通じてすぐに、デー\
-   タを受け入れられるようになります。close メソッドの呼出しでパースが終\
-   わると、パーサは新しいデータを受け入れられるように、reset メソッドを\
-   呼び出されなければなりません。
+   When the parser is instantiated it is ready to begin accepting data from the
+   feed method immediately. After parsing has been finished with a call to close
+   the reset method must be called to make the parser ready to accept new data,
+   either from feed or using the parse method.
 
-   これらのメソッドをパース処理の途中で呼び出すことはできません。つまり、\
-   パースが実行された後で、パーサから return する前に呼び出す必要がある\
-   のです。
+   Note that these methods must *not* be called during parsing, that is, after
+   parse has been called and before it returns.
 
-   なお、SAX 2.0 ドライバを書く人のために、XMLReader インタフェースの \
-   parse メソッドがデフォルトで、IncrementalParser
-   の feed、close、reset メソッドを使って実装されています。
+   By default, the class also implements the parse method of the XMLReader
+   interface using the feed, close and reset methods of the IncrementalParser
+   interface as a convenience to SAX 2.0 driver writers.
 
 
 .. class:: Locator()
 
-   SAX イベントとドキュメントの位置を関連付けるインタフェースです。\
-   locator オブジェクトは DocumentHandler メソッドを呼び出している間\
-   だけ正しい情報を返し、それ以外とのときに呼び出すと、予測できない結果\
-   が返ります。情報を取得できない場合、メソッドは ``None`` を返すこ\
-   ともあります。
+   Interface for associating a SAX event with a document location. A locator object
+   will return valid results only during calls to DocumentHandler methods; at any
+   other time, the results are unpredictable. If information is not available,
+   methods may return ``None``.
 
 
 .. class:: InputSource([systemId])
 
-   :class:`XMLReader` がエンティティを読み込むために必要な情報をカプセ\
-   ル化します。
+   Encapsulation of the information needed by the :class:`XMLReader` to read
+   entities.
 
-   このクラスには公開識別子、システム識別子、(場合によっては文字エンコー\
-   ディング情報を含む)バイト・ストリーム、そしてエンティティの文字スト\
-   リームなどの情報が含まれます。
+   This class may include information about the public identifier, system
+   identifier, byte stream (possibly with character encoding information) and/or
+   the character stream of an entity.
 
-   アプリケーションは :meth:`XMLReader.parse` メソッドに渡す引き数、\
-   または EntityResolver.resolveEntity の戻り値としてこのオブジェトを作\
-   成します。
+   Applications will create objects of this class for use in the
+   :meth:`XMLReader.parse` method and for returning from
+   EntityResolver.resolveEntity.
 
-   :class:`InputSource` はアプリケーション側に属します。
-   :class:`XMLReader` はアプリケーションから渡された
-   :class:`InputSource` オブジェクトの変更を許していませんが、\
-   コピーを作り、それを変更することは可能です。
+   An :class:`InputSource` belongs to the application, the :class:`XMLReader` is
+   not allowed to modify :class:`InputSource` objects passed to it from the
+   application, although it may make copies and modify those.
 
 
 .. class:: AttributesImpl(attrs)
 
-   :class:`Attributes` インタフェース (
-   :ref:`attributes-objects` 参照)の実装です。辞書風のオブジェクトで、
-   :meth:`startElement` 内で要素の属性表示をおこないます。多くの辞書\
-   風オブジェクト操作に加え、ほかにもインタフェースに記述されているメ\
-   ソッドを、多数サポートしています。このクラスのオブジェクトはリーダ\
-   によってインスタンスを作成しなければなりません。また、 *attrs* は\
-   属性名と属性値を含む辞書風オブジェクトでなければなりません。
+   This is an implementation of the :class:`Attributes` interface (see section
+   :ref:`attributes-objects`).  This is a dictionary-like object which
+   represents the element attributes in a :meth:`startElement` call. In addition
+   to the most useful dictionary operations, it supports a number of other
+   methods as described by the interface. Objects of this class should be
+   instantiated by readers; *attrs* must be a dictionary-like object containing
+   a mapping from attribute names to attribute values.
 
 
 .. class:: AttributesNSImpl(attrs, qnames)
 
-   :class:`AttributesImpl` を名前空間認識型に改良したクラスで、
-   :meth:`startElementNS` に渡されます。 :class:`AttributesImpl` の派\
-   生クラスですが、 *namespaceURI* と *localname* 、この2つのタプ\
-   ルを解釈します。さらに、元のドキュメントに出てくる修飾名を返す多くの\
-   メソッドを提供します。このクラスは :class:`AttributesNS`
-   インタフェース (:ref:`attributes-ns-objects` 参照) の実装です。
+   Namespace-aware variant of :class:`AttributesImpl`, which will be passed to
+   :meth:`startElementNS`. It is derived from :class:`AttributesImpl`, but
+   understands attribute names as two-tuples of *namespaceURI* and
+   *localname*. In addition, it provides a number of methods expecting qualified
+   names as they appear in the original document.  This class implements the
+   :class:`AttributesNS` interface (see section :ref:`attributes-ns-objects`).
 
 
 .. _xmlreader-objects:
 
-XMLReader オブジェクト
-----------------------
+XMLReader Objects
+-----------------
 
-:class:`XMLReader` は次のメソッドをサポートします。:
+The :class:`XMLReader` interface supports the following methods:
 
 
 .. method:: XMLReader.parse(source)
 
-   入力ソースを処理し、SAX イベントを発生させます。 *source* オブジェクトにはシステム識別子(入力ソースを特定する文字列 -- 一般にファイル\
-   名やURL)、ファイル風オブジェクト、または :class:`InputSource` オブジェクトを指定できます。 :meth:`parse` から
-   return された段階で、入力データの処理は完了、パーサ・オブジェクトは破棄ないしリセットされます。
-   なお、現在の実装はバイト・ストリームのみをサポートしており、文字ストリームの処理は将来の課題になっています。
+   Process an input source, producing SAX events. The *source* object can be a
+   system identifier (a string identifying the input source -- typically a file
+   name or an URL), a file-like object, or an :class:`InputSource` object. When
+   :meth:`parse` returns, the input is completely processed, and the parser object
+   can be discarded or reset. As a limitation, the current implementation only
+   accepts byte streams; processing of character streams is for further study.
 
 
 .. method:: XMLReader.getContentHandler()
 
-   現在の :class:`ContentHandler` を返します。
+   Return the current :class:`~xml.sax.handler.ContentHandler`.
 
 
 .. method:: XMLReader.setContentHandler(handler)
 
-   現在の :class:`ContentHandler` をセットします。 :class:`ContentHandler`
-   がセットされていない場合、コンテント・イベントは破棄されます。
+   Set the current :class:`~xml.sax.handler.ContentHandler`.  If no
+   :class:`~xml.sax.handler.ContentHandler` is set, content events will be
+   discarded.
 
 
 .. method:: XMLReader.getDTDHandler()
 
-   現在の :class:`DTDHandler` を返します。
+   Return the current :class:`~xml.sax.handler.DTDHandler`.
 
 
 .. method:: XMLReader.setDTDHandler(handler)
 
-   現在の :class:`DTDHandler` をセットします。 :class:`DTDHandler` がセットされていない場合、DTD
-   イベントは破棄されます。
+   Set the current :class:`~xml.sax.handler.DTDHandler`.  If no
+   :class:`~xml.sax.handler.DTDHandler` is set, DTD
+   events will be discarded.
 
 
 .. method:: XMLReader.getEntityResolver()
 
-   現在の :class:`EntityResolver` を返します。
+   Return the current :class:`~xml.sax.handler.EntityResolver`.
 
 
 .. method:: XMLReader.setEntityResolver(handler)
 
-   現在の :class:`EntityResolver` をセットします。 :class:`EntityResolver`
-   がセットされていない場合、外部エンティティとして解決されるべきものが、システム識別子として解釈されてしまうため、該当するものがなければ結果
-   的にエラーとなります。
+   Set the current :class:`~xml.sax.handler.EntityResolver`.  If no
+   :class:`~xml.sax.handler.EntityResolver` is set,
+   attempts to resolve an external entity will result in opening the system
+   identifier for the entity, and fail if it is not available.
 
 
 .. method:: XMLReader.getErrorHandler()
 
-   現在の :class:`ErrorHandler` を返します。
+   Return the current :class:`~xml.sax.handler.ErrorHandler`.
 
 
 .. method:: XMLReader.setErrorHandler(handler)
 
-   現在のエラー・ハンドラをセットします。 :class:`ErrorHandler` がセットされていない場合、エラーは例外を発生し、警告が表示されます。
+   Set the current error handler.  If no :class:`~xml.sax.handler.ErrorHandler`
+   is set, errors will be raised as exceptions, and warnings will be printed.
 
 
 .. method:: XMLReader.setLocale(locale)
 
-   アプリケーションにエラーや警告のロカール設定を許可します。
+   Allow an application to set the locale for errors and warnings.
 
-   SAX パーサにとって、エラーや警告の地域化は必須ではありません。しかし、パーサは要求されたロカールをサポートしていない場合、SAX 例外を発生さ\
-   せなければなりません。アプリケーションはパースの途中でロカールを変更することもできます。
+   SAX parsers are not required to provide localization for errors and warnings; if
+   they cannot support the requested locale, however, they must raise a SAX
+   exception.  Applications may request a locale change in the middle of a parse.
 
 
 .. method:: XMLReader.getFeature(featurename)
 
-   機能 *featurename* の現在の設定を返します。その機能が認識できないときは、 :exc:`SAXNotRecognizedException`
-   を発生させます。広く使われている機能名の一覧はモジュール :mod:`xml.sax.handler` に書かれています。
+   Return the current setting for feature *featurename*.  If the feature is not
+   recognized, :exc:`SAXNotRecognizedException` is raised. The well-known
+   featurenames are listed in the module :mod:`xml.sax.handler`.
 
 
 .. method:: XMLReader.setFeature(featurename, value)
 
-   機能名 *featurename* に値 *value* をセットします。その機能が\
-   認識できないときは、 :exc:`SAXNotRecognizedException` を発生させ\
-   ます。また、パーサが指定された機能や設定をサポートしていないときは、
-   :exc:`SAXNotSupportedException` を発生させます。
+   Set the *featurename* to *value*. If the feature is not recognized,
+   :exc:`SAXNotRecognizedException` is raised. If the feature or its setting is not
+   supported by the parser, *SAXNotSupportedException* is raised.
 
 
 .. method:: XMLReader.getProperty(propertyname)
 
-   属性名 *propertyname* の現在の値を返します。その属性が認識できないときは、
-   :exc:`SAXNotRecognizedException` を発生させます。
-   広く使われている属性名の一覧はモジュール :mod:`xml.sax.handler` に書かれています。
+   Return the current setting for property *propertyname*. If the property is not
+   recognized, a :exc:`SAXNotRecognizedException` is raised. The well-known
+   propertynames are listed in the module :mod:`xml.sax.handler`.
 
 
 .. method:: XMLReader.setProperty(propertyname, value)
 
-   属性名 *propertyname* に値 *value* をセットします。その機能\
-   が認識できないときは、 :exc:`SAXNotRecognizedException` を発生さ\
-   せます。また、パーサが指定された機能や設定をサポートしていないときは、
-   :exc:`SAXNotSupportedException` を発生させます。
+   Set the *propertyname* to *value*. If the property is not recognized,
+   :exc:`SAXNotRecognizedException` is raised. If the property or its setting is
+   not supported by the parser, *SAXNotSupportedException* is raised.
 
 
 .. _incremental-parser-objects:
 
-IncrementalParser オブジェクト
-------------------------------
+IncrementalParser Objects
+-------------------------
 
-:class:`IncrementalParser` のインスタンスは次の追加メソッドを提供します。:
+Instances of :class:`IncrementalParser` offer the following additional methods:
 
 
 .. method:: IncrementalParser.feed(data)
 
-   *data* のチャンクを処理します。
+   Process a chunk of *data*.
 
 
 .. method:: IncrementalParser.close()
 
-   ドキュメントの終わりを決定します。終わりに達した時点でドキュメントが整形式であるかどうかを判別、ハンドラを起動後、パース時に使用した資源を解放します。
+   Assume the end of the document. That will check well-formedness conditions that
+   can be checked only at the end, invoke handlers, and may clean up resources
+   allocated during parsing.
 
 
 .. method:: IncrementalParser.reset()
 
-   このメソッドは close が呼び出された後、次のドキュメントをパース可能にするため、パーサのリセットするのに呼び出されます。close 後、reset
-   を呼び出さずに parse や feed を呼び出した場合の戻り値は未定義です。
+   This method is called after close has been called to reset the parser so that it
+   is ready to parse new documents. The results of calling parse or feed after
+   close without calling reset are undefined.
 
 
 .. _locator-objects:
 
-Locator オブジェクト
---------------------
+Locator Objects
+---------------
 
-:class:`Locator` のインスタンスは次のメソッドを提供します。:
+Instances of :class:`Locator` provide these methods:
 
 
 .. method:: Locator.getColumnNumber()
 
-   現在のイベントが終了する列番号を返します。
+   Return the column number where the current event ends.
 
 
 .. method:: Locator.getLineNumber()
 
-   現在のイベントが終了する行番号を返します。
+   Return the line number where the current event ends.
 
 
 .. method:: Locator.getPublicId()
 
-現在の文書イベントの公開識別子を返します。
+   Return the public identifier for the current event.
 
 
 .. method:: Locator.getSystemId()
 
-   現在のイベントのシステム識別子を返します。
+   Return the system identifier for the current event.
 
 
 .. _input-source-objects:
 
-InputSource オブジェクト
-------------------------
+InputSource Objects
+-------------------
 
 
 .. method:: InputSource.setPublicId(id)
 
-   この :class:`InputSource` の公開識別子をセットします。
+   Sets the public identifier of this :class:`InputSource`.
 
 
 .. method:: InputSource.getPublicId()
 
-   この :class:`InputSource` の公開識別子を返します。
+   Returns the public identifier of this :class:`InputSource`.
 
 
 .. method:: InputSource.setSystemId(id)
 
-   この :class:`InputSource` のシステム識別子をセットします。
+   Sets the system identifier of this :class:`InputSource`.
 
 
 .. method:: InputSource.getSystemId()
 
-   この :class:`InputSource` のシステム識別子を返します。
+   Returns the system identifier of this :class:`InputSource`.
 
 
 .. method:: InputSource.setEncoding(encoding)
 
-   この :class:`InputSource` の文字エンコーディングをセットします。
+   Sets the character encoding of this :class:`InputSource`.
 
-   指定するエンコーディングは XML エンコーディング宣言として定義された文字列でなければなりません(セクション 4.3.3 の XML 勧告を参照)。
+   The encoding must be a string acceptable for an XML encoding declaration (see
+   section 4.3.3 of the XML recommendation).
 
-   :class:`InputSource` のエンコーディング属性は、 :class:`InputSource` が\
-   たとえ文字ストリームを含んでいたとしても、無視されます。
+   The encoding attribute of the :class:`InputSource` is ignored if the
+   :class:`InputSource` also contains a character stream.
 
 
 .. method:: InputSource.getEncoding()
 
-   この :class:`InputSource` の文字エンコーディングを取得します。
+   Get the character encoding of this InputSource.
 
 
 .. method:: InputSource.setByteStream(bytefile)
 
-   この入力ソースのバイトストリーム(Python のファイル風オブジェクトですが、バイト列と文字の相互変換はサポートしません)を設定します。
+   Set the byte stream (a Python file-like object which does not perform
+   byte-to-character conversion) for this input source.
 
-   なお、文字ストリームが指定されてもSAX パーサは無視し、バイト・ストリームを使って指定された URI に接続しようとします。
+   The SAX parser will ignore this if there is also a character stream specified,
+   but it will use a byte stream in preference to opening a URI connection itself.
 
-   アプリケーション側でバイト・ストリームの文字エンコーディングを知っている場合は、setEncoding メソッドを使って指定する必要があります。
+   If the application knows the character encoding of the byte stream, it should
+   set it with the setEncoding method.
 
 
 .. method:: InputSource.getByteStream()
 
-   この入力ソースのバイトストリームを取得します。
+   Get the byte stream for this input source.
 
-   getEncoding メソッドは、このバイト・ストリームの文字エンコーディングを返します。認識できないときは None を返します。
+   The getEncoding method will return the character encoding for this byte stream,
+   or None if unknown.
 
 
 .. method:: InputSource.setCharacterStream(charfile)
 
-   この入力ソースの文字ストリームをセットします(ストリームは Python 1.6 の Unicode-wrapped
-   なファイル風オブジェクトで、ユニコード文字列への変換をサポートしていなければなりません)。
+   Set the character stream for this input source. (The stream must be a Python 1.6
+   Unicode-wrapped file-like that performs conversion to Unicode strings.)
 
-   なお、文字ストリームが指定されても SAX パーサは無視、システム識別子とみなし、バイト・ストリームを使って URI に接続しようとします。
+   If there is a character stream specified, the SAX parser will ignore any byte
+   stream and will not attempt to open a URI connection to the system identifier.
 
 
 .. method:: InputSource.getCharacterStream()
 
-   この入力ソースの文字ストリームを取得します。
+   Get the character stream for this input source.
 
 
 .. _attributes-objects:
 
-The :class:`Attributes` インタフェース
-----------------------------------------
+The :class:`Attributes` Interface
+---------------------------------
 
-:class:`Attributes` オブジェクトは :meth:`copy`, :meth:`get`,
-:meth:`has_key`, :meth:`items`, :meth:`keys`, :meth:`values`
-などを含む、マッピング・プロトコルの一部を実装したものです。さらに次のメソッドも提供されています。:
+:class:`Attributes` objects implement a portion of the mapping protocol,
+including the methods :meth:`~collections.Mapping.copy`,
+:meth:`~collections.Mapping.get`,
+:meth:`~collections.Mapping.has_key`,
+:meth:`~collections.Mapping.items`,
+:meth:`~collections.Mapping.keys`,
+and :meth:`~collections.Mapping.values`.  The following methods
+are also provided:
 
 
 .. method:: Attributes.getLength()
 
-   属性の数を返す。
+   Return the number of attributes.
 
 
 .. method:: Attributes.getNames()
 
-   属性の名前を返す。
+   Return the names of the attributes.
 
 
 .. method:: Attributes.getType(name)
 
-   属性名 *name* のタイプを返す。通常は ``'CDATA'``
+   Returns the type of the attribute *name*, which is normally ``'CDATA'``.
 
 
 .. method:: Attributes.getValue(name)
 
-   属性 *name* の値を返す。
+   Return the value of attribute *name*.
 
 .. getValueByQName, getNameByQName, getQNameByName, getQNames available
 .. here already, but documented only for derived class.
@@ -347,32 +363,32 @@ The :class:`Attributes` インタフェース
 
 .. _attributes-ns-objects:
 
-:class:`AttributesNS` インタフェース
---------------------------------------
+The :class:`AttributesNS` Interface
+-----------------------------------
 
-このインタフェースは :class:`Attributes` インタフェース
-(:ref:`attributes-objects` 参照) のサブタイプです。
-Attributes インタフェースがサポートしているすべてのメソッドは :class:`AttributesNS` オブジェクトでも利用可能です。
+This interface is a subtype of the :class:`Attributes` interface (see section
+:ref:`attributes-objects`).  All methods supported by that interface are also
+available on :class:`AttributesNS` objects.
 
-そのほか、次のメソッドがサポートされています。:
+The following methods are also available:
 
 
 .. method:: AttributesNS.getValueByQName(name)
 
-   修飾名の値を返す。
+   Return the value for a qualified name.
 
 
 .. method:: AttributesNS.getNameByQName(name)
 
-   修飾名 *name* に対応する ``(namespace, localname)`` のペアを返す。
+   Return the ``(namespace, localname)`` pair for a qualified *name*.
 
 
 .. method:: AttributesNS.getQNameByName(name)
 
-   ``(namespace, localname)`` のペアに対応する修飾名を返す。
+   Return the qualified name for a ``(namespace, localname)`` pair.
 
 
 .. method:: AttributesNS.getQNames()
 
-   すべての属性の修飾名を返す。
+   Return the qualified names of all attributes.
 

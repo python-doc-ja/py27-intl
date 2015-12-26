@@ -1,39 +1,38 @@
 
-:mod:`tty` --- 端末制御のための関数群
-=====================================
+:mod:`tty` --- Terminal control functions
+=========================================
 
 .. module:: tty
    :platform: Unix
-   :synopsis: 一般的な端末制御操作のためのユーティリティ関数群。
+   :synopsis: Utility functions that perform common terminal control operations.
 .. moduleauthor:: Steen Lumholt
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
 
-:mod:`tty` モジュールは端末を cbreak および raw モードにする\
-ための関数を定義しています。
+The :mod:`tty` module defines functions for putting the tty into cbreak and raw
+modes.
 
-このモジュールは :mod:`termios` モジュールを必要とするため、
-Unix でしか動作しません。
+Because it requires the :mod:`termios` module, it will work only on Unix.
 
-:mod:`tty` モジュールでは、以下の関数を定義しています:
+The :mod:`tty` module defines the following functions:
 
 
 .. function:: setraw(fd[, when])
 
-   ファイル記述子 *fd* のモードを raw モードに変えます。
-   *when* を省略すると標準の値は :const:`termios.TCSAFLUSH` に\
-   なり、 :func:`termios.tcsetattr` に渡されます。
+   Change the mode of the file descriptor *fd* to raw. If *when* is omitted, it
+   defaults to :const:`termios.TCSAFLUSH`, and is passed to
+   :func:`termios.tcsetattr`.
 
 
 .. function:: setcbreak(fd[, when])
 
-   ファイル記述子 *fd* のモードを cbreakモードに変えます。
-   *when* を省略すると標準の値は :const:`termios.TCSAFLUSH`
-   になり、 :func:`termios.tcsetattr` に渡されます。
+   Change the mode of file descriptor *fd* to cbreak. If *when* is omitted, it
+   defaults to :const:`termios.TCSAFLUSH`, and is passed to
+   :func:`termios.tcsetattr`.
 
 
 .. seealso::
 
-   :mod:`termios` モジュール
-      低レベル端末制御インタフェース。
+   Module :mod:`termios`
+      Low-level terminal control interface.
 

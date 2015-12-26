@@ -1,21 +1,26 @@
 
-:mod:`nntplib` --- NNTP プロトコルクライアント
-==============================================
+:mod:`nntplib` --- NNTP protocol client
+=======================================
 
 .. module:: nntplib
-   :synopsis: NNTP プロトコルクライアント (ソケットを必要とします)。
+   :synopsis: NNTP protocol client (requires sockets).
 
 
 .. index::
    pair: NNTP; protocol
    single: Network News Transfer Protocol
 
-このモジュールでは、クラス :class:`NNTP` を定義しています。このクラスは NNTP
-プロトコルのクライアント側を実装しています。このモジュールを使えば、ニュースリーダや記事投稿プログラム、または自動的にニュース記事を
-処理するプログラムを実装することができます。NNTP (Network News Transfer Protocol、ネットニュース転送プロトコル)
-の詳細については、インターネット :rfc:`977` を参照してください。
+**Source code:** :source:`Lib/nntplib.py`
 
-以下にこのモジュールの使い方の小さな例を二つ示します。ニュースグループに関する統計情報を列挙し、最新 10 件の記事を出力するには以下のようにします::
+--------------
+
+This module defines the class :class:`NNTP` which implements the client side of
+the NNTP protocol.  It can be used to implement a news reader or poster, or
+automated news processors.  For more information on NNTP (Network News Transfer
+Protocol), see Internet :rfc:`977`.
+
+Here are two small examples of how it can be used.  To list some statistics
+about a newsgroup and print the subjects of the last 10 articles::
 
    >>> s = NNTP('news.gmane.org')
    >>> resp, count, first, last, name = s.group('gmane.comp.python.committers')
@@ -37,262 +42,311 @@
    >>> s.quit()
    '205 Bye!'
 
-ファイルから記事を投稿するには、以下のようにします。
-(この例では記事番号は有効な番号を指定していて、あなたがそのニュースグループに投稿する
-権限を持っていると仮定しています) ::
+To post an article from a file (this assumes that the article has valid
+headers, and that you have right to post on the particular newsgroup)::
 
    >>> s = NNTP('news.gmane.org')
-   >>> f = open('/tmp/article')
+   >>> f = open('articlefile')
    >>> s.post(f)
    '240 Article posted successfully.'
    >>> s.quit()
    '205 Bye!'
 
-このモジュール自体では以下の内容を定義しています:
+The module itself defines the following items:
 
 
 .. class:: NNTP(host[, port [, user[, password [, readermode] [, usenetrc]]]])
 
-   ホスト *host* 上で動作し、ポート番号 *port* で要求待ちをしている NNTP サーバとの接続を表現する新たな :class:`NNTP`
-   クラスのインスタンスを返します。標準の *port* は 119 です。オプションの *user* および *password* が与えられているか、
-   または :file:`/.netrc` に適切な認証情報が指定されていて *usenetrc* が真 (デフォルト) の場合、 ``AUTHINFO USER``
-   および ``AUTHINFO PASS`` 命令を使ってサーバに対して身元証明および認証を行います。オプションのフラグ *readermode*
-   が真の場合、認証の実行に先立って ``mode reader``  命令が送信されます。reader モードは、ローカルマシン上の NNTP サーバ
-   に接続していて、 ``group`` のような reader 特有の命令を呼び出したい場合に便利なことがあります。予期せず
-   :exc:`NNTPPermanentError` に遭遇したなら、 *readermode* を設定する必要があるかもしれません。 *readermode*
-   のデフォルト値は ``None`` です。 *usenetrc* のデフォルト値は ``True`` です。
+   Return a new instance of the :class:`NNTP` class, representing a connection
+   to the NNTP server running on host *host*, listening at port *port*.  The
+   default *port* is 119.  If the optional *user* and *password* are provided,
+   or if suitable credentials are present in :file:`/.netrc` and the optional
+   flag *usenetrc* is true (the default), the ``AUTHINFO USER`` and ``AUTHINFO
+   PASS`` commands are used to identify and authenticate the user to the server.
+   If the optional flag *readermode* is true, then a ``mode reader`` command is
+   sent before authentication is performed.  Reader mode is sometimes necessary
+   if you are connecting to an NNTP server on the local machine and intend to
+   call reader-specific commands, such as ``group``.  If you get unexpected
+   :exc:`NNTPPermanentError`\ s, you might need to set *readermode*.
+   *readermode* defaults to ``None``. *usenetrc* defaults to ``True``.
 
    .. versionchanged:: 2.4
-      *usenetrc* 引数を追加しました.
+      *usenetrc* argument added.
 
 
 .. exception:: NNTPError
 
-   標準の例外 :exc:`Exception` から派生しており、 :mod:`nntplib` モジュールが送出する全ての例外の基底クラスです。
+   Derived from the standard exception :exc:`Exception`, this is the base class for
+   all exceptions raised by the :mod:`nntplib` module.
 
 
 .. exception:: NNTPReplyError
 
-   期待はずれの応答がサーバから返された場合に送出される例外です。以前のバージョンとの互換性のために、 ``error_reply``
-   はこのクラスと等価になっています。
+   Exception raised when an unexpected reply is received from the server.  For
+   backwards compatibility, the exception ``error_reply`` is equivalent to this
+   class.
 
 
 .. exception:: NNTPTemporaryError
 
-   エラーコードの範囲が 400-499 のエラーを受信した場合に送出される例外です。以前のバージョンとの互換性のために、 ``error_temp``
-   はこのクラスと等価になっています。
+   Exception raised when an error code in the range 400--499 is received.  For
+   backwards compatibility, the exception ``error_temp`` is equivalent to this
+   class.
 
 
 .. exception:: NNTPPermanentError
 
-   エラーコードの範囲が 500-599 のエラーを受信した場合に送出される例外です。以前のバージョンとの互換性のために、 ``error_perm``
-   はこのクラスと等価になっています。
+   Exception raised when an error code in the range 500--599 is received.  For
+   backwards compatibility, the exception ``error_perm`` is equivalent to this
+   class.
 
 
 .. exception:: NNTPProtocolError
 
-   サーバから返される応答が 1--5 の範囲の数字で始まっていない場合に送出される例外です。以前のバージョンとの互換性のために、 ``error_proto``
-   はこのクラスと等価になっています。
+   Exception raised when a reply is received from the server that does not begin
+   with a digit in the range 1--5.  For backwards compatibility, the exception
+   ``error_proto`` is equivalent to this class.
 
 
 .. exception:: NNTPDataError
 
-   応答データ中に何らかのエラーが存在する場合に送出される例外です。以前のバージョンとの互換性のために、 ``error_data``
-   はこのクラスと等価になっています。
+   Exception raised when there is some error in the response data.  For backwards
+   compatibility, the exception ``error_data`` is equivalent to this class.
 
 
 .. _nntp-objects:
 
-NNTP オブジェクト
------------------
+NNTP Objects
+------------
 
-NNTP インスタンスは以下のメソッドを持っています。全てのメソッドにおける戻り値のタプルで最初の要素となる *response* は、サーバの応答です:
-この文字列は 3 桁の数字からなるコードで始まります。サーバの応答がエラーを示す場合、上記のいずれかの例外が送出されます。
+NNTP instances have the following methods.  The *response* that is returned as
+the first item in the return tuple of almost all methods is the server's
+response: a string beginning with a three-digit code. If the server's response
+indicates an error, the method raises one of the above exceptions.
 
 
 .. method:: NNTP.getwelcome()
 
-   サーバに最初に接続した際に送信される応答中のウェルカムメッセージを返します。(このメッセージには時に、ユーザにとって重要な免責事項や
-   ヘルプ情報が入っています。)
+   Return the welcome message sent by the server in reply to the initial
+   connection.  (This message sometimes contains disclaimers or help information
+   that may be relevant to the user.)
 
 
 .. method:: NNTP.set_debuglevel(level)
 
-   インスタンスのデバッグレベルを設定します。このメソッドは印字されるデバッグ出力の量を制御します。標準では ``0`` に設定されていて、
-   これはデバッグ出力を全く印字しません。 ``1`` はそこそこの量、一般に NNTP 要求や応答あたり 1 行のデバッグ出力を生成します。値が ``2``
-   やそれ以上の場合、(メッセージテキストを含めて) NNTP 接続上で送受信された全ての内容を一行ごとにログ出力する、最大限のデバッグ出力を生成します。
+   Set the instance's debugging level.  This controls the amount of debugging
+   output printed.  The default, ``0``, produces no debugging output.  A value of
+   ``1`` produces a moderate amount of debugging output, generally a single line
+   per request or response.  A value of ``2`` or higher produces the maximum amount
+   of debugging output, logging each line sent and received on the connection
+   (including message text).
 
 
 .. method:: NNTP.newgroups(date, time, [file])
 
-   ``NEWSGROUPS`` 命令を送信します。 *date* 引数は ``'yymmdd'`` の形式を取り、日付を表します。 *time* 引数は
-   ``'hhmmss'`` の形式をとり、時刻を表します。与えられた日付および時刻以後新たに出現したニュースグループ名のリストを *groups* として、
-   ``(response, groups)`` を返します。 *file* 引数が指定されている場合、 ``NEWGROUPS`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。
+   Send a ``NEWGROUPS`` command.  The *date* argument should be a string of the
+   form ``'yymmdd'`` indicating the date, and *time* should be a string of the form
+   ``'hhmmss'`` indicating the time.  Return a pair ``(response, groups)`` where
+   *groups* is a list of group names that are new since the given date and time. If
+   the *file* parameter is supplied, then the output of the  ``NEWGROUPS`` command
+   is stored in a file.  If *file* is a string,  then the method will open a file
+   object with that name, write to it  then close it.  If *file* is a file object,
+   then it will start calling :meth:`write` on it to store the lines of the command
+   output. If *file* is supplied, then the returned *list* is an empty list.
 
 
 .. method:: NNTP.newnews(group, date, time, [file])
 
-   ``NEWNEWS`` 命令を送信します。ここで、 *group* はグループ名または ``'*'`` で、 *date* および *time* は
-   :meth:`newsgrups` における引数と同じ意味を持ちます。 ``(response, articles)`` からなるペアを返し、
-   *articles* はメッセージ ID のリストです。 *file* 引数が指定されている場合、 ``NEWNEWS`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。
+   Send a ``NEWNEWS`` command.  Here, *group* is a group name or ``'*'``, and
+   *date* and *time* have the same meaning as for :meth:`newgroups`.  Return a pair
+   ``(response, articles)`` where *articles* is a list of message ids. If the
+   *file* parameter is supplied, then the output of the  ``NEWNEWS`` command is
+   stored in a file.  If *file* is a string,  then the method will open a file
+   object with that name, write to it  then close it.  If *file* is a file object,
+   then it will start calling :meth:`write` on it to store the lines of the command
+   output. If *file* is supplied, then the returned *list* is an empty list.
 
 
 .. method:: NNTP.list([file])
 
-   ``LIST`` 命令を送信します。 ``(response, list)``  からなるペアを返します。 *list* はタプルからなるリストです。各タプルは
-   ``(group, last, first, flag)`` の形式をとり、 *group* がグループ名、 *last* および *first*
-   はそれぞれ最新および最初の記事の記事番号 (を表す文字列)、そして *flag* は投稿が可能な場合には ``'y'``, そうでない場合には
-   ``'n'``, グループがモデレート (moderated) されている場合には ``'m'`` となります。(順番に注意してください: *last*,
-   *first* の順です。) *file* 引数が指定されている場合、 ``LIST`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。
+   Send a ``LIST`` command.  Return a pair ``(response, list)`` where *list* is a
+   list of tuples.  Each tuple has the form ``(group, last, first, flag)``, where
+   *group* is a group name, *last* and *first* are the last and first article
+   numbers (as strings), and *flag* is ``'y'`` if posting is allowed, ``'n'`` if
+   not, and ``'m'`` if the newsgroup is moderated.  (Note the ordering: *last*,
+   *first*.) If the *file* parameter is supplied, then the output of the  ``LIST``
+   command is stored in a file.  If *file* is a string,  then the method will open
+   a file object with that name, write to it  then close it.  If *file* is a file
+   object, then it will start calling :meth:`write` on it to store the lines of the
+   command output. If *file* is supplied, then the returned *list* is an empty
+   list.
 
 
 .. method:: NNTP.descriptions(grouppattern)
 
-   ``LIST NEWSGROUPS`` 命令を送信します。 *grouppattern* は RFC2980 の定義に従う wildmat 文字列です
-   (実際には、 DOS や UNIX のシェルワイルドカード文字列と同じです)。 ``(response,list)`` からなるペアを返し、 *list*
-   はタプル ``(name, title)`` リストになります。
+   Send a ``LIST NEWSGROUPS`` command, where *grouppattern* is a wildmat string as
+   specified in RFC2980 (it's essentially the same as DOS or UNIX shell wildcard
+   strings).  Return a pair ``(response, list)``, where *list* is a list of tuples
+   containing ``(name, title)``.
 
    .. versionadded:: 2.4
 
 
 .. method:: NNTP.description(group)
 
-   単一のグループ *group* から説明文字列を取り出します。 ('group' が実際には wildmat 文字列で) 複数のグループがマッチした場合、
-   最初にマッチしたものを返します。何もマッチしなければ空文字列を返します。
+   Get a description for a single group *group*.  If more than one group matches
+   (if 'group' is a real wildmat string), return the first match.   If no group
+   matches, return an empty string.
 
-   このメソッドはサーバからの応答コードを省略します。応答コードが必要なら、 :meth:`descriptions` を使ってください。
+   This elides the response code from the server.  If the response code is needed,
+   use :meth:`descriptions`.
 
    .. versionadded:: 2.4
 
 
 .. method:: NNTP.group(name)
 
-   ``GROUP`` 命令を送信します。 *name* はグループ名です。タプル  ``(response, count, first, last, name)``
-   を返します。 *count* はグループ中の記事数 (の推定値) で、 *first* はグループ中の最初の記事番号、 *last* はグループ中の
-   最新の記事番号、 *name* はグループ名です。記事番号は文字列で返されます。
+   Send a ``GROUP`` command, where *name* is the group name. Return a tuple
+   ``(response, count, first, last, name)`` where *count* is the (estimated) number
+   of articles in the group, *first* is the first article number in the group,
+   *last* is the last article number in the group, and *name* is the group name.
+   The numbers are returned as strings.
 
 
 .. method:: NNTP.help([file])
 
-   ``HELP`` 命令を送信します。 ``(response, list)``  からなるペアを返します。 *list* はヘルプ文字列からなるリストです。
-   *file* 引数が指定されている場合、 ``HELP`` コマンドの出力結果はファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名
-   としてファイルをオープンし、書き込み後にクローズします。 *file* がファイルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出し
-   て出力結果を格納します。 *file* が指定されている場合は戻り値として空のリストを返します。
+   Send a ``HELP`` command.  Return a pair ``(response, list)`` where *list* is a
+   list of help strings. If the *file* parameter is supplied, then the output of
+   the  ``HELP`` command is stored in a file.  If *file* is a string,  then the
+   method will open a file object with that name, write to it  then close it.  If
+   *file* is a file object, then it will start calling :meth:`write` on it to store
+   the lines of the command output. If *file* is supplied, then the returned *list*
+   is an empty list.
 
 
 .. method:: NNTP.stat(id)
 
-   ``STAT`` 命令を送信します。 *id* は (``'<'`` と ``'>'`` に囲まれた形式の) メッセージ ID か、 (文字列の) 記事番号です。
-   三つ組み ``(response, number, id)`` を返します。 *number* は (文字列の) 記事番号で、 *id* は (``'<'`` と
-   ``'>'`` に囲まれた形式の) メッセージ ID です。
+   Send a ``STAT`` command, where *id* is the message id (enclosed in ``'<'`` and
+   ``'>'``) or an article number (as a string). Return a triple ``(response,
+   number, id)`` where *number* is the article number (as a string) and *id* is the
+   message id  (enclosed in ``'<'`` and ``'>'``).
 
 
 .. method:: NNTP.next()
 
-   ``NEXT`` 命令を送信します。 :meth:`stat` のような応答を返します。
+   Send a ``NEXT`` command.  Return as for :meth:`.stat`.
 
 
 .. method:: NNTP.last()
 
-   ``LAST`` 命令を送信します。 :meth:`stat` のような応答を返します。
+   Send a ``LAST`` command.  Return as for :meth:`.stat`.
 
 
 .. method:: NNTP.head(id)
 
-   ``HEAD`` 命令を送信します。 *id* は :meth:`stat` におけるのと同じ意味を持ちます。 ``(response, number, id,
-   list)`` からなるタプルを返します。最初の 3 要素は :meth:`stat` と同じもので、 *list* は記事のヘッダからなるリスト
-   (まだ解析されておらず、末尾の改行が取り去られたヘッダ行のリスト) です。
+   Send a ``HEAD`` command, where *id* has the same meaning as for :meth:`.stat`.
+   Return a tuple ``(response, number, id, list)`` where the first three are the
+   same as for :meth:`.stat`, and *list* is a list of the article's headers (an
+   uninterpreted list of lines, without trailing newlines).
 
 
 .. method:: NNTP.body(id,[file])
 
-   ``BODY`` 命令を送信します。 *id* は :meth:`stat` におけるのと同じ意味を持ちます。 *file* 引数が与えられている場合、記事本体
-   (body) はファイルに保存されます。 *file* が文字列の場合、このメソッドはその名前を持つファイルオブジェクトを
-   開き、記事を書き込んで閉じます。 *file* がファイルオブジェクトの場合、 :meth:`write` を呼び出して記事本体を記録します。
-   :meth:`head` のような戻り値を返します。 *file* が与えられていた場合、返される *list* は空のリストになります。
+   Send a ``BODY`` command, where *id* has the same meaning as for :meth:`.stat`.
+   If the *file* parameter is supplied, then the body is stored in a file.  If
+   *file* is a string, then the method will open a file object with that name,
+   write to it then close it. If *file* is a file object, then it will start
+   calling :meth:`write` on it to store the lines of the body. Return as for
+   :meth:`head`.  If *file* is supplied, then the returned *list* is an empty list.
 
 
 .. method:: NNTP.article(id)
 
-   ``ARTICLE`` 命令を送信します。 *id* は :meth:`stat` におけるのと同じ意味を持ちます。 :meth:`head`
-   のような戻り値を返します。
+   Send an ``ARTICLE`` command, where *id* has the same meaning as for
+   :meth:`.stat`.  Return as for :meth:`head`.
 
 
 .. method:: NNTP.slave()
 
-   ``SLAVE`` 命令を送信します。サーバの *response* を返します。
+   Send a ``SLAVE`` command.  Return the server's *response*.
 
 
 .. method:: NNTP.xhdr(header, string, [file])
 
-   ``XHDR`` 命令を送信します、この命令は RFC には定義されていませんが、一般に広まっている拡張です。 *header* 引数は、例えば
-   ``'subject'`` といったヘッダキーワードです。 *string* 引数は  ``'first-last'`` の形式でなければならず、ここで
-   *first* および *last* は検索の対象とする記事範囲の最初と最後の記事番号です。 ``(response, list)`` のペアを返します。
-   *list* は ``(id, text)`` のペアからなるリストで、 *id* が (文字列で表した) 記事番号、 *text* がその記事の
-   ヘッダテキストです。 *file* 引数が指定されている場合、 ``XHDR`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。
+   Send an ``XHDR`` command.  This command is not defined in the RFC but is a
+   common extension.  The *header* argument is a header keyword, e.g.
+   ``'subject'``.  The *string* argument should have the form ``'first-last'``
+   where *first* and *last* are the first and last article numbers to search.
+   Return a pair ``(response, list)``, where *list* is a list of pairs ``(id,
+   text)``, where *id* is an article number (as a string) and *text* is the text of
+   the requested header for that article. If the *file* parameter is supplied, then
+   the output of the  ``XHDR`` command is stored in a file.  If *file* is a string,
+   then the method will open a file object with that name, write to it  then close
+   it.  If *file* is a file object, then it will start calling :meth:`write` on it
+   to store the lines of the command output. If *file* is supplied, then the
+   returned *list* is an empty list.
 
 
 .. method:: NNTP.post(file)
 
-   ``POST`` 命令を使って記事をポストします。 *file* 引数は開かれているファイルオブジェクトで、その内容は :meth:`readline`
-   メソッドを使って EOF まで読み出されます。内容は必要なヘッダを含め、正しい形式のニュース記事でなければなりません。 :meth:`post` メソッドは
-   ``.`` で始まる行を自動的にエスケープします。
+   Post an article using the ``POST`` command.  The *file* argument is an open file
+   object which is read until EOF using its :meth:`~file.readline` method.  It should be
+   a well-formed news article, including the required headers.  The :meth:`post`
+   method automatically escapes lines beginning with ``.``.
 
 
 .. method:: NNTP.ihave(id, file)
 
-   ``IHAVE`` 命令を送信します。 *id* は (``'<'`` と ``'>'`` に囲まれた) メッセージ ID です。
-   応答がエラーでない場合、 *file* を :meth:`post` と全く同じように扱います。
+   Send an ``IHAVE`` command. *id* is a message id (enclosed in  ``'<'`` and
+   ``'>'``). If the response is not an error, treat *file* exactly as for the
+   :meth:`post` method.
 
 
 .. method:: NNTP.date()
 
-   タプル ``(response, date, time)`` を返します。このタプルには :meth:`newnews` および
-   :meth:`newgroups` メソッドに合った形式の、現在の日付および時刻が入っています。これはオプションの NNTP
-   拡張なので、全てのサーバでサポートされているとは限りません。
+   Return a triple ``(response, date, time)``, containing the current date and time
+   in a form suitable for the :meth:`newnews` and :meth:`newgroups` methods. This
+   is an optional NNTP extension, and may not be supported by all servers.
 
 
 .. method:: NNTP.xgtitle(name, [file])
 
-   ``XGTITLE`` 命令を処理し、 ``(response, list)`` からなるペアを返します。 *list* は ``(name, title)``
-   を含むタプルのリストです。 *file* 引数が指定されている場合、 ``XHDR`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。これはオプションの NNTP 拡張なので、全てのサーバでサポートされているとは限りません。
+   Process an ``XGTITLE`` command, returning a pair ``(response, list)``, where
+   *list* is a list of tuples containing ``(name, title)``. If the *file* parameter
+   is supplied, then the output of the  ``XGTITLE`` command is stored in a file.
+   If *file* is a string,  then the method will open a file object with that name,
+   write to it  then close it.  If *file* is a file object, then it will start
+   calling :meth:`write` on it to store the lines of the command output. If *file*
+   is supplied, then the returned *list* is an empty list. This is an optional NNTP
+   extension, and may not be supported by all servers.
 
-   RFC2980 では、 "この拡張は撤廃すべきである" と主張しています。 :meth:`descriptions` または
-   :meth:`description` を使うようにしてください。
+   RFC2980 says "It is suggested that this extension be deprecated".  Use
+   :meth:`descriptions` or :meth:`description` instead.
 
 
 .. method:: NNTP.xover(start, end, [file])
 
-   ``(resp, list)`` からなるペアを返します。 *list* はタプルからなるリストで、各タプルは記事番号 *start*  および *end*
-   の間に区切られた記事です。各タプルは ``(article number, subject, poster, date, id, references,
-   size, lines)`` の形式をとります。 *file* 引数が指定されている場合、 ``XHDR`` コマンドの出力結果は
-   ファイルに格納されます。 *file* が文字列の場合、この文字列をファイル名としてファイルをオープンし、書き込み後にクローズします。 *file* がファ
-   イルオブジェクトの場合、オブジェクトの :meth:`write` メソッドを呼び出して出力結果を格納します。 *file* が指定されている場合は戻り値として空の
-   リストを返します。これはオプションの NNTP 拡張なので、全てのサーバでサポートされているとは限りません。
+   Return a pair ``(resp, list)``.  *list* is a list of tuples, one for each
+   article in the range delimited by the *start* and *end* article numbers.  Each
+   tuple is of the form ``(article number, subject, poster, date, id, references,
+   size, lines)``. If the *file* parameter is supplied, then the output of the
+   ``XOVER`` command is stored in a file.  If *file* is a string,  then the method
+   will open a file object with that name, write to it  then close it.  If *file*
+   is a file object, then it will start calling :meth:`write` on it to store the
+   lines of the command output. If *file* is supplied, then the returned *list* is
+   an empty list. This is an optional NNTP extension, and may not be supported by
+   all servers.
 
 
 .. method:: NNTP.xpath(id)
 
-   ``(resp, path)`` からなるペアを返します。 *path* はメッセージ ID が *id* である記事のディレクトリパスです。
-   これはオプションの NNTP 拡張なので、全てのサーバでサポートされているとは限りません。
+   Return a pair ``(resp, path)``, where *path* is the directory path to the
+   article with message ID *id*.  This is an optional NNTP extension, and may not
+   be supported by all servers.
 
 
 .. method:: NNTP.quit()
 
-   ``QUIT`` 命令を送信し、接続を閉じます。このメソッドを呼び出した後は、NTTP オブジェクトの他のいかなるメソッドも呼び出してはいけません。
+   Send a ``QUIT`` command and close the connection.  Once this method has been
+   called, no other methods of the NNTP object should be called.
 

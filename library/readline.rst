@@ -1,203 +1,213 @@
-:mod:`readline` --- GNU readline のインタフェース
-=================================================
+:mod:`readline` --- GNU readline interface
+==========================================
 
 .. module:: readline
    :platform: Unix
-   :synopsis: Python のための GNU readline サポート。
+   :synopsis: GNU readline support for Python.
 .. sectionauthor:: Skip Montanaro <skip@pobox.com>
 
 
-:mod:`readline` モジュールでは、補完をしやすくしたり、ヒストリファイルを Python インタプリタから読み書きできるように
-するためのいくつかの関数を定義しています。このモジュールは直接使うことも :mod:`rlcompleter` モジュールを介して使うこともできます。
-このモジュールで利用される設定はインタプリタの対話プロンプトの振舞い、
-組み込みの :func:`raw_input` と :func:`input` 関数の振舞いに影響します。
+The :mod:`readline` module defines a number of functions to facilitate
+completion and reading/writing of history files from the Python interpreter.
+This module can be used directly or via the :mod:`rlcompleter` module.  Settings
+made using  this module affect the behaviour of both the interpreter's
+interactive prompt  and the prompts offered by the :func:`raw_input` and
+:func:`input` built-in functions.
 
-.. notes:
+.. note::
 
-  MacOS X では :mod:`readline` モジュールは GNU readline の代わりに ``libedit`` ライブラリを使って実装されています。
+  On MacOS X the :mod:`readline` module can be implemented using
+  the ``libedit`` library instead of GNU readline.
 
-  ``libedit`` の設定ファイルは GNU readline と異なります。プログラム上から設定文字列を読む場合、
-  :const:`readline.__doc__` の "libedit" テキストで GNU readline と libedit の違いをチェックできます。
+  The configuration file for ``libedit`` is different from that
+  of GNU readline. If you programmatically load configuration strings
+  you can check for the text "libedit" in :const:`readline.__doc__`
+  to differentiate between GNU readline and libedit.
 
-:mod:`readline` モジュールでは以下の関数を定義しています:
+
+The :mod:`readline` module defines the following functions:
 
 
 .. function:: parse_and_bind(string)
 
-   readline 初期化ファイルの行を一行解釈して実行します。
+   Parse and execute single line of a readline init file.
 
 
 .. function:: get_line_buffer()
 
-   行編集バッファの現在の内容を返します。
+   Return the current contents of the line buffer.
 
 
 .. function:: insert_text(string)
 
-   コマンドラインにテキストを挿入します。
+   Insert text into the command line.
 
 
 .. function:: read_init_file([filename])
 
-   readline 初期化ファイルを解釈します。標準のファイル名設定は最後に使われたファイル名です。
+   Parse a readline initialization file. The default filename is the last filename
+   used.
 
 
 .. function:: read_history_file([filename])
 
-   readline ヒストリファイルを読み出します。標準のファイル名設定は :file:`~/.history` です。
+   Load a readline history file. The default filename is :file:`~/.history`.
 
 
 .. function:: write_history_file([filename])
 
-   readline ヒストリファイルを保存します。標準のファイル名設定は :file:`~/.history` です。
+   Save a readline history file. The default filename is :file:`~/.history`.
 
 
 .. function:: clear_history()
 
-   現在のヒストリをクリアします。 (注意:インストールされている GNU readline がサポートしていない場合、この関数は利用できません)
+   Clear the current history.  (Note: this function is not available if the
+   installed version of GNU readline doesn't support it.)
 
    .. versionadded:: 2.4
 
 
 .. function:: get_history_length()
 
-   ヒストリファイルに必要な長さを返します。負の値はヒストリファイルのサイズに制限がないことを示します。
+   Return the desired length of the history file.  Negative values imply unlimited
+   history file size.
 
 
 .. function:: set_history_length(length)
 
-   ヒストリファイルに必要な長さを設定します。この値は :func:`write_history_file` がヒストリを保存する際にファイルを
-   切り詰めるために使います。負の値はヒストリファイルのサイズを制限しないことを示します。
+   Set the number of lines to save in the history file. :func:`write_history_file`
+   uses this value to truncate the history file when saving.  Negative values imply
+   unlimited history file size.
 
 
 .. function:: get_current_history_length()
 
-   現在のヒストリ行数を返します(この値は :func:`get_history_length` で取
-   得する異なります。 :func:`get_history_length` はヒストリファイルに書き出される最大行数を返します)。
+   Return the number of lines currently in the history.  (This is different from
+   :func:`get_history_length`, which returns the maximum number of lines that will
+   be written to a history file.)
 
    .. versionadded:: 2.3
 
 
 .. function:: get_history_item(index)
 
-   現在のヒストリから、 *index* 番目の項目を返します。
+   Return the current contents of history item at *index*.
 
    .. versionadded:: 2.3
 
 
 .. function:: remove_history_item(pos)
 
-   ヒストリから指定した位置にあるヒストリを削除します。
+   Remove history item specified by its position from the history.
 
    .. versionadded:: 2.4
 
 
 .. function:: replace_history_item(pos, line)
 
-   指定した位置にあるヒストリを、指定した line で置き換えます。
+   Replace history item specified by its position with the given line.
 
    .. versionadded:: 2.4
 
 
 .. function:: redisplay()
 
-   画面の表示を、現在のヒストリ内容によって更新します。
+   Change what's displayed on the screen to reflect the current contents of the
+   line buffer.
 
    .. versionadded:: 2.3
 
 
 .. function:: set_startup_hook([function])
 
-   startup_hook 関数を設定または除去します。 *function* が指定されていれば、新たな startup_hook 関数として用いられます;
-   省略されるか ``None`` になっていれば、現在インストールされているフック関数は除去されます。 startup_hook 関数は readline
-   が最初のプロンプトを出力する直前に引数なしで呼び出されます。
+   Set or remove the startup_hook function.  If *function* is specified, it will be
+   used as the new startup_hook function; if omitted or ``None``, any hook function
+   already installed is removed.  The startup_hook function is called with no
+   arguments just before readline prints the first prompt.
 
 
 .. function:: set_pre_input_hook([function])
 
-   pre_input_hook 関数を設定または除去します。 *function* が指定されていれば、新たな pre_input_hook
-   関数として用いられます;  省略されるか ``None`` になっていれば、現在インストールされているフック関数は除去されます。 pre_input_hook
-   関数は readline が最初のプロンプトを出力した後で、かつ readline が入力された文字を読み込み始める直前に引数なしで呼び出されます。
+   Set or remove the pre_input_hook function.  If *function* is specified, it will
+   be used as the new pre_input_hook function; if omitted or ``None``, any hook
+   function already installed is removed.  The pre_input_hook function is called
+   with no arguments after the first prompt has been printed and just before
+   readline starts reading input characters.
 
 
 .. function:: set_completer([function])
 
-   completer 関数を設定または除去します。 *function* が指定されていれば、新たな completer 関数として用いられます;  省略されるか
-   ``None`` になっていれば、現在インストールされている completer 関数は除去されます。 completer 関数は
-   ``function(text, state)`` の形式で、関数が文字列でない値を返すまで *state* を ``0``, ``1``, ``2``,
-   ..., にして呼び出します。この関数は *text* から始まる文字列の補完結果として可能性のあるものを返さなくてはなりません。
+   Set or remove the completer function.  If *function* is specified, it will be
+   used as the new completer function; if omitted or ``None``, any completer
+   function already installed is removed.  The completer function is called as
+   ``function(text, state)``, for *state* in ``0``, ``1``, ``2``, ..., until it
+   returns a non-string value.  It should return the next possible completion
+   starting with *text*.
 
 
 .. function:: get_completer()
 
-   completer 関数を取得します。completer 関数が設定されていなければ ``None`` を返します。
+   Get the completer function, or ``None`` if no completer function has been set.
 
    .. versionadded:: 2.3
 
 
 .. function:: get_completion_type()
 
-   .. Get the type of completion being attempted.
-
-   実行中の補完のタイプを取得します。
+   Get the type of completion being attempted.
 
    .. versionadded:: 2.6
 
 .. function:: get_begidx()
 
-   readline タブ補完スコープの先頭のインデクスを取得します。
+   Get the beginning index of the readline tab-completion scope.
 
 
 .. function:: get_endidx()
 
-   readline タブ補完スコープの末尾のインデクスを取得します。
+   Get the ending index of the readline tab-completion scope.
 
 
 .. function:: set_completer_delims(string)
 
-   タブ補完のための readline 単語区切り文字を設定します。
+   Set the readline word delimiters for tab-completion.
 
 
 .. function:: get_completer_delims()
 
-   タブ補完のための readline 単語区切り文字を取得します。
+   Get the readline word delimiters for tab-completion.
 
 .. function:: set_completion_display_matches_hook([function])
 
-   .. Set or remove the completion display function.  If *function* is
-      specified, it will be used as the new completion display function;
-      if omitted or ``None``, any completion display function already
-      installed is removed.  The completion display function is called as
-      ``function(substitution, [matches], longest_match_length)`` once
-      each time matches need to be displayed.
-
-   補完表示関数を設定あるいは解除します。
-   *function* が指定された場合、それが新しい補完表示関数として利用されます。
-   省略されたり、 ``None`` が渡された場合、既に設定されていた補完表示関数が解除されます。
-   補完表示関数は、マッチの表示が必要になるたびに、
-   ``function(substitution, [matches], longest_match_length)``
-   という形で呼び出されます。
+   Set or remove the completion display function.  If *function* is
+   specified, it will be used as the new completion display function;
+   if omitted or ``None``, any completion display function already
+   installed is removed.  The completion display function is called as
+   ``function(substitution, [matches], longest_match_length)`` once
+   each time matches need to be displayed.
 
    .. versionadded:: 2.6
 
 .. function:: add_history(line)
 
-   1 行をヒストリバッファに追加し、最後に打ち込まれた行のようにします。
+   Append a line to the history buffer, as if it was the last line typed.
 
 .. seealso::
 
    Module :mod:`rlcompleter`
-      対話的プロンプトで Python 識別子を補完する機能。
+      Completion of Python identifiers at the interactive prompt.
 
 
 .. _readline-example:
 
-例
---
+Example
+-------
 
-以下の例では、ユーザのホームディレクトリにある :file:`.pyhist` という
-名前のヒストリファイルを自動的に読み書きするために、 :mod:`readline` モジュールによるヒストリの読み書き関数をどのように使うかを例示しています。
-以下のソースコードは通常、対話セッションの中で :envvar:`PYTHONSTARTUP` ファイルから読み込まれ自動的に実行されることになります。 ::
+The following example demonstrates how to use the :mod:`readline` module's
+history reading and writing functions to automatically load and save a history
+file named :file:`.pyhist` from the user's home directory.  The code below would
+normally be executed automatically during interactive sessions from the user's
+:envvar:`PYTHONSTARTUP` file. ::
 
    import os
    import readline
@@ -210,7 +220,8 @@
    atexit.register(readline.write_history_file, histfile)
    del os, histfile
 
-次の例では :class:`code.InteractiveConsole` クラスを拡張し、ヒストリの保存・復旧をサポートします。 ::
+The following example extends the :class:`code.InteractiveConsole` class to
+support history save/restore. ::
 
    import code
    import readline

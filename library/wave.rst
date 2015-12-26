@@ -1,199 +1,208 @@
-:mod:`wave` --- WAVファイルの読み書き
-=====================================
+:mod:`wave` --- Read and write WAV files
+========================================
 
 .. module:: wave
-   :synopsis: WAVサウンドフォーマットへのインターフェイス
+   :synopsis: Provide an interface to the WAV sound format.
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 .. Documentations stolen from comments in file.
 
+**Source code:** :source:`Lib/wave.py`
 
-:mod:`wave` モジュールは、WAVサウンドフォーマットへの便利なインターフェイスを提供するモジュールです。
+--------------
 
-このモジュールは圧縮／展開をサポートしていませんが、モノラル／ステレオには対応しています。
+The :mod:`wave` module provides a convenient interface to the WAV sound format.
+It does not support compression/decompression, but it does support mono/stereo.
 
-:mod:`wave` モジュールは、以下の関数と例外を定義しています。
+The :mod:`wave` module defines the following function and exception:
 
 
 .. function:: open(file[, mode])
 
-   *file* が文字列ならその名前のファイルを開き、そうでないなら
-   シーク可能な file like オブジェクトとして扱います。
-   *mode* は以下のうちのいずれかです。
+   If *file* is a string, open the file by that name, otherwise treat it as a
+   seekable file-like object.  *mode* can be any of
 
    ``'r'``, ``'rb'``
-      読み込みのみのモード。
+      Read only mode.
 
    ``'w'``, ``'wb'``
-      書き込みのみのモード。
+      Write only mode.
 
-   WAVファイルに対して読み込み／書き込み両方のモードで開くことはできないことに注意して下さい。
-   ``'r'`` と ``'rb'`` の *mode* は :class:`Wave_read` オブジェクトを
-   返し、 ``'w'`` と ``'wb'`` の *mode* は :class:`Wave_write` オブジェクトを返します。
-   *mode* が省略されていて、ファイルのようなオブジェクトが *file* として渡されると、 ``file.mode`` が *mode* のデフォルト値として使わ
-   れます（必要であれば、さらにフラグ ``'b'`` が付け加えられます）。
+   Note that it does not allow read/write WAV files.
 
-   file like オブジェクトを渡した場合、 wave オブジェクトの :meth:`close`
-   メソッドを呼び出してもその file like オブジェクトを close しません。
-   file like オブジェクトの close は呼び出し側の責任になります。
+   A *mode* of ``'r'`` or ``'rb'`` returns a :class:`Wave_read` object, while a
+   *mode* of ``'w'`` or ``'wb'`` returns a :class:`Wave_write` object.  If
+   *mode* is omitted and a file-like object is passed as *file*, ``file.mode``
+   is used as the default value for *mode* (the ``'b'`` flag is still added if
+   necessary).
+
+   If you pass in a file-like object, the wave object will not close it when its
+   :meth:`close` method is called; it is the caller's responsibility to close
+   the file object.
+
 
 .. function:: openfp(file, mode)
 
-   :func:`.open` と同義。後方互換性のために残されています。
+   A synonym for :func:`.open`, maintained for backwards compatibility.
 
 
 .. exception:: Error
 
-   WAVの仕様を犯したり、実装の欠陥に遭遇して何か実行不可能となった時に発生するエラー。
+   An error raised when something is impossible because it violates the WAV
+   specification or hits an implementation deficiency.
 
 
 .. _wave-read-objects:
 
-Wave_read オブジェクト
-----------------------
+Wave_read Objects
+-----------------
 
-:func:`.open` によって返される Wave_read オブジェクトには、以下のメソッドが
-あります：
+Wave_read objects, as returned by :func:`.open`, have the following methods:
+
 
 .. method:: Wave_read.close()
 
-   :mod:`wave` によって開かれていた場合はストリームを閉じ、このオブジェクトの
-   インスタンスを使用できなくします。
-   これはオブジェクトのガベージコレクション時に自動的に呼び出されます。
+   Close the stream if it was opened by :mod:`wave`, and make the instance
+   unusable.  This is called automatically on object collection.
 
 
 .. method:: Wave_read.getnchannels()
 
-   オーディオチャンネル数（モノラルなら ``1`` 、ステレオなら ``2`` ）を返します。
+   Returns number of audio channels (``1`` for mono, ``2`` for stereo).
 
 
 .. method:: Wave_read.getsampwidth()
 
-   サンプルサイズをバイト数で返します。
+   Returns sample width in bytes.
 
 
 .. method:: Wave_read.getframerate()
 
-   サンプリングレートを返します。
+   Returns sampling frequency.
 
 
 .. method:: Wave_read.getnframes()
 
-   オーディオフレーム数を返します。
+   Returns number of audio frames.
 
 
 .. method:: Wave_read.getcomptype()
 
-   圧縮形式を返します（ ``'NONE'`` だけがサポートされている形式です）。
+   Returns compression type (``'NONE'`` is the only supported type).
 
 
 .. method:: Wave_read.getcompname()
 
-   :meth:`getcomptype` を人に判読可能な形にしたものです。通常、 ``'NONE'`` に対して
-   ``'not compressed'`` が返されます。
+   Human-readable version of :meth:`getcomptype`. Usually ``'not compressed'``
+   parallels ``'NONE'``.
 
 
 .. method:: Wave_read.getparams()
 
-   :meth:`get\*` メソッドが返すのと同じ
-   ``(nchannels,  sampwidth, framerate, nframes, comptype, compname)``
-   のタプルを返します。
+   Returns a tuple ``(nchannels, sampwidth, framerate, nframes, comptype,
+   compname)``, equivalent to output of the :meth:`get\*` methods.
 
 
 .. method:: Wave_read.readframes(n)
 
-   現在のポインタから *n* 個のオーディオフレームの値を読み込んで、バイトごとに文字に変換して文字列を返します。
+   Reads and returns at most *n* frames of audio, as a string of bytes.
 
 
 .. method:: Wave_read.rewind()
 
-   ファイルのポインタをオーディオストリームの先頭に戻します。
+   Rewind the file pointer to the beginning of the audio stream.
 
-以下の2つのメソッドは :mod:`aifc` モジュールとの互換性のために定義されていますが、何も面白いことはしません。
+The following two methods are defined for compatibility with the :mod:`aifc`
+module, and don't do anything interesting.
 
 
 .. method:: Wave_read.getmarkers()
 
-   ``None`` を返します。
+   Returns ``None``.
 
 
 .. method:: Wave_read.getmark(id)
 
-   エラーを発生します。
+   Raise an error.
 
-以下の2つのメソッドは共通の"位置"を定義しています。"位置"は他の関数とは独立して実装されています。
+The following two methods define a term "position" which is compatible between
+them, and is otherwise implementation dependent.
 
 
 .. method:: Wave_read.setpos(pos)
 
-   ファイルのポインタを指定した位置に設定します。
+   Set the file pointer to the specified position.
 
 
 .. method:: Wave_read.tell()
 
-   ファイルの現在のポインタ位置を返します。
+   Return current file pointer position.
 
 
 .. _wave-write-objects:
 
-Wave_write オブジェクト
------------------------
+Wave_write Objects
+------------------
 
-:func:`.open` によって返される Wave_write オブジェクトには、以下のメソッドが
-あります：
+Wave_write objects, as returned by :func:`.open`, have the following methods:
+
 
 .. method:: Wave_write.close()
 
-   *nframes* が正しいか確認して、ファイルが :mod:`wave` によって開かれていた場合は
-   閉じます。このメソッドはオブジェクトがガベージコレクションされるときに呼び出されます。
+   Make sure *nframes* is correct, and close the file if it was opened by
+   :mod:`wave`.  This method is called upon object collection.
 
 
 .. method:: Wave_write.setnchannels(n)
 
-   チャンネル数を設定します。
+   Set the number of channels.
 
 
 .. method:: Wave_write.setsampwidth(n)
 
-   サンプルサイズを *n* バイトに設定します。
+   Set the sample width to *n* bytes.
 
 
 .. method:: Wave_write.setframerate(n)
 
-   サンプリングレートを *n* に設定します。
+   Set the frame rate to *n*.
 
 
 .. method:: Wave_write.setnframes(n)
 
-   フレーム数を *n* に設定します。あとからフレームが書き込まれるとフレーム数は変更されます。
+   Set the number of frames to *n*. This will be changed later if more frames are
+   written.
 
 
 .. method:: Wave_write.setcomptype(type, name)
 
-   圧縮形式とその記述を設定します。
-   現在のところ、非圧縮を示す圧縮形式 ``NONE`` だけがサポートされています。
+   Set the compression type and description. At the moment, only compression type
+   ``NONE`` is supported, meaning no compression.
 
 
 .. method:: Wave_write.setparams(tuple)
 
-   *tuple* は ``(nchannels, sampwidth, framerate, nframes, comptype, compname)``
-   で、それぞれ :meth:`set\*` のメソッドの値にふさわしいものでなければなりません。全ての変数を設定します。
+   The *tuple* should be ``(nchannels, sampwidth, framerate, nframes, comptype,
+   compname)``, with values valid for the :meth:`set\*` methods.  Sets all
+   parameters.
 
 
 .. method:: Wave_write.tell()
 
-   ファイルの中の現在位置を返します。 :meth:`Wave_read.tell` と
-   :meth:`Wave_read.setpos` メソッドでお断りしたことがこのメソッドにも当てはまります。
+   Return current position in the file, with the same disclaimer for the
+   :meth:`Wave_read.tell` and :meth:`Wave_read.setpos` methods.
 
 
 .. method:: Wave_write.writeframesraw(data)
 
-   *nframes* の修正なしにオーディオフレームを書き込みます。
+   Write audio frames, without correcting *nframes*.
 
 
 .. method:: Wave_write.writeframes(data)
 
-   オーディオフレームを書き込んで *nframes* を修正します。
+   Write audio frames and make sure *nframes* is correct.
 
-:meth:`writeframes` や :meth:`writeframesraw` メソッドを呼び出したあ
-とで、どんなパラメータを設定しようとしても不正となることに注意して下さい。そうすると :exc:`wave.Error` を発生します。
+
+Note that it is invalid to set any parameters after calling :meth:`writeframes`
+or :meth:`writeframesraw`, and any attempt to do so will raise
+:exc:`wave.Error`.
 

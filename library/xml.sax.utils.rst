@@ -1,73 +1,88 @@
 
-:mod:`xml.sax.saxutils` --- SAX ユーティリティ
-==============================================
+:mod:`xml.sax.saxutils` --- SAX Utilities
+=========================================
 
 .. module:: xml.sax.saxutils
-   :synopsis: SAX とともに使う有用な関数とクラスです。
+   :synopsis: Convenience functions and classes for use with SAX.
 .. moduleauthor:: Lars Marius Garshol <larsga@garshol.priv.no>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
 .. versionadded:: 2.0
 
-モジュール :mod:`xml.sax.saxutils` には SAX アプリケーションの作成に\
-役立つ多くの関数やクラスも含まれており、直接利用したり、基底クラスとして使うことができます。
+The module :mod:`xml.sax.saxutils` contains a number of classes and functions
+that are commonly useful when creating SAX applications, either in direct use,
+or as base classes.
 
 
 .. function:: escape(data[, entities])
 
-   文字列データ内の ``'&'``, ``'<'``, ``'>'`` をエスケープします。
+   Escape ``'&'``, ``'<'``, and ``'>'`` in a string of data.
 
-   オプションの *entities* パラメータに辞書を渡すことで、そのほかの文字をエスケープさせることも可能です。辞書のキーと値はすべて文字列\
-   で、キーに指定された文字は対応する値に置換されます。
-   ``'&'``, ``'<'``, ``'>'`` は *entities* が与えられるかどうかに関わらず、常にエスケープします。
+   You can escape other strings of data by passing a dictionary as the optional
+   *entities* parameter.  The keys and values must all be strings; each key will be
+   replaced with its corresponding value.  The characters ``'&'``, ``'<'`` and
+   ``'>'`` are always escaped, even if *entities* is provided.
+
 
 .. function:: unescape(data[, entities])
 
-   エスケープされた文字列 ``'&amp;'``, ``'&lt;'``, ``'&gt;'`` を元の文字に戻します。
+   Unescape ``'&amp;'``, ``'&lt;'``, and ``'&gt;'`` in a string of data.
 
-   オプションの *entities* パラメータに辞書を渡すことで、そのほかの文字をエスケープさせることも可能です。辞書のキーと値はすべて文字列\
-   で、キーに指定された文字は対応する値に置換されます。
-   ``'&amp;'``, ``'&lt;'``, ``'&gt;'`` は *entities* が与えられるかどうかに関わらず、常に元の文字に戻します。
+   You can unescape other strings of data by passing a dictionary as the optional
+   *entities* parameter.  The keys and values must all be strings; each key will be
+   replaced with its corresponding value.  ``'&amp'``, ``'&lt;'``, and ``'&gt;'``
+   are always unescaped, even if *entities* is provided.
 
    .. versionadded:: 2.3
 
 
 .. function:: quoteattr(data[, entities])
 
-   :func:`escape` に似ていますが、 *data* は属性値の作成に使われます。戻り値はクォート済みの *data* で、置換する文字の追加も可\
-   能です。 :func:`quoteattr` はクォートすべき文字を *data* の文脈から判断し、クォートすべき文字を残さないように文字列をエンコード\
-   します。
-
-   *data* の中にシングル・クォート、ダブル・クォートがあれば、両方ともエンコードし、全体をダブルクォートで囲みます。戻り値の文字列はその\
-   ままで属性値として利用できます。::
+   Similar to :func:`escape`, but also prepares *data* to be used as an
+   attribute value.  The return value is a quoted version of *data* with any
+   additional required replacements. :func:`quoteattr` will select a quote
+   character based on the content of *data*, attempting to avoid encoding any
+   quote characters in the string.  If both single- and double-quote characters
+   are already in *data*, the double-quote characters will be encoded and *data*
+   will be wrapped in double-quotes.  The resulting string can be used directly
+   as an attribute value::
 
       >>> print "<element attr=%s>" % quoteattr("ab ' cd \" ef")
       <element attr="ab ' cd &quot; ef">
 
-   この関数は参照具象構文を使って、 HTML や SGML の属性値を生成するのに便利です。
+   This function is useful when generating attribute values for HTML or any SGML
+   using the reference concrete syntax.
 
    .. versionadded:: 2.2
 
 
 .. class:: XMLGenerator([out[, encoding]])
 
-   このクラスは :class:`ContentHandler` インターフェースの実装で、SAX イベントを XML ドキュメントに書き戻します。つまり、
-   :class:`XMLGenerator` をコンテント・ハンドラとして用いると、パースしたオリジナル・ドキュメントの複製が作れるのです。 *out*
-   に指定するのはファイル風のオブジェクトで、デフォルトは *sys.stdout* です。 *encoding*
-   は出力ストリームのエンコーディングで、デフォルトは ``'iso-8859-1'`` です。
+   This class implements the :class:`~xml.sax.handler.ContentHandler` interface
+   by writing SAX
+   events back into an XML document. In other words, using an :class:`XMLGenerator`
+   as the content handler will reproduce the original document being parsed. *out*
+   should be a file-like object which will default to *sys.stdout*. *encoding* is
+   the encoding of the output stream which defaults to ``'iso-8859-1'``.
 
 
 .. class:: XMLFilterBase(base)
 
-   このクラスは :class:`XMLReader` とクライアント・アプリケーションのイベント・ハンドラとの間に位置するものとして設計されています。デフォル\
-   トでは何もせず、ただリクエストをリーダに、イベントをハンドラに、それぞれ加工せず渡すだけです。しかし、サブクラスでメソッドをオーバーライ\
-   ドすると、イベント・ストリームやリクエストを加工してから渡すように変更可能です。
+   This class is designed to sit between an
+   :class:`~xml.sax.xmlreader.XMLReader` and the client
+   application's event handlers.  By default, it does nothing but pass requests up
+   to the reader and events on to the handlers unmodified, but subclasses can
+   override specific methods to modify the event stream or the configuration
+   requests as they pass through.
 
 
 .. function:: prepare_input_source(source[, base])
 
-   この関数は引き数に入力ソース、オプションとして URL を取り、読み取り可能な解決済み :class:`InputSource`
-   オブジェクトを返します。入力ソースは文字列、ファイル風オブジェクト、 :class:`InputSource` のいずれでも\
-   良く、この関数を使うことで、パーサは様々な *source* パラメータを :meth:`parse` に渡すことが可能になります。
+   This function takes an input source and an optional base URL and returns a
+   fully resolved :class:`~xml.sax.xmlreader.InputSource` object ready for
+   reading.  The input source can be given as a string, a file-like object, or
+   an :class:`~xml.sax.xmlreader.InputSource` object; parsers will use this
+   function to implement the polymorphic *source* argument to their
+   :meth:`parse` method.
 

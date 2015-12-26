@@ -1,43 +1,47 @@
-
-:mod:`token` --- Python 解析木と共に使われる定数
-================================================
+:mod:`token` --- Constants used with Python parse trees
+=======================================================
 
 .. module:: token
-   :synopsis: 解析木の終端ノードを表す定数。
+   :synopsis: Constants representing terminal nodes of the parse tree.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/token.py`
 
-このモジュールは解析木の葉ノード(終端記号)の数値を表す定数を提供します。
-言語の文法のコンテキストにおける名前の定義については、
-Python ディストリビューションのファイル :file:`Grammar/Grammar` を参照してください。
-名前がマップする特定の数値は Python のバージョン間で変わります。
+--------------
 
-このモジュールは、数値コードから名前へのマッピングと、いくつかの関数も提供しています。
-関数は Python の C ヘッダファイルの定義を反映します。
+This module provides constants which represent the numeric values of leaf nodes
+of the parse tree (terminal tokens).  Refer to the file :file:`Grammar/Grammar`
+in the Python distribution for the definitions of the names in the context of
+the language grammar.  The specific numeric values which the names map to may
+change between Python versions.
+
+The module also provides a mapping from numeric codes to names and some
+functions.  The functions mirror definitions in the Python C header files.
 
 
 .. data:: tok_name
 
-   辞書はこのモジュールで定義されている定数の数値を名前の文字列へマップし、
-   より人が読みやすいように解析木を表現します。
+   Dictionary mapping the numeric values of the constants defined in this module
+   back to name strings, allowing more human-readable representation of parse trees
+   to be generated.
 
 
 .. function:: ISTERMINAL(x)
 
-   終端トークンの値に対して真を返します。
+   Return true for terminal token values.
 
 
 .. function:: ISNONTERMINAL(x)
 
-   非終端トークンの値に対して真を返します。
+   Return true for non-terminal token values.
 
 
 .. function:: ISEOF(x)
 
-   *x* が入力の終わりを示すマーカーならば、真を返します。
+   Return true if *x* is the marker indicating the end of input.
 
 
-token の定数一覧:
+The token constants are:
 
 .. data:: ENDMARKER
           NAME
@@ -98,7 +102,7 @@ token の定数一覧:
 
 .. seealso::
 
-   :mod:`parser` モジュール
-      :mod:`parser` モジュールの二番目の例で、
-      :mod:`symbol` モジュールの使い方を示しています。
+   Module :mod:`parser`
+      The second example for the :mod:`parser` module shows how to use the
+      :mod:`symbol` module.
 

@@ -1,46 +1,46 @@
 .. _email-examples:
 
-:mod:`email`: 使用例
+:mod:`email`: Examples
 ----------------------
 
-ここでは :mod:`email` パッケージを使って電子メールメッセージを\
-読む・書く・送信するいくつかの例を紹介します。より複雑な MIME
-メッセージについても扱います。
+Here are a few examples of how to use the :mod:`email` package to read, write,
+and send simple email messages, as well as more complex MIME messages.
 
-最初に、テキスト形式の単純なメッセージを作成・送信する方法です:
+First, let's see how to create and send a simple text message:
 
 .. literalinclude:: ../includes/email-simple.py
 
 
-Parser() クラスの parse(filename) か parsestr(message_as_string) メソッドを
-使って簡単に RFC822 ヘッダの解析ができます。
+And parsing RFC822 headers can easily be done by the parse(filename) or
+parsestr(message_as_string) methods of the Parser() class:
 
 .. literalinclude:: ../includes/email-headers.py
 
 
-つぎに、あるディレクトリ内にある何枚かの家族写真をひとつの MIME
-メッセージに収めて送信する例です:
+Here's an example of how to send a MIME message containing a bunch of family
+pictures that may be residing in a directory:
 
 .. literalinclude:: ../includes/email-mime.py
 
 
-つぎはあるディレクトリに含まれている内容全体をひとつの電子メールメッセージとして\
-送信するやり方です:  [1]_
+Here's an example of how to send the entire contents of a directory as an email
+message: [1]_
 
 .. literalinclude:: ../includes/email-dir.py
 
 
-つぎに、上のような MIME メッセージをどうやって展開してひとつのディレクトリ上の\
-複数ファイルにするかを示します:
+Here's an example of how to unpack a MIME message like the one
+above, into a directory of files:
 
 .. literalinclude:: ../includes/email-unpack.py
 
-つぎの例は、HTML メッセージを代替プレーンテキスト版付きで作るやりかたです: [2]_
+Here's an example of how to create an HTML message with an alternative plain
+text version: [2]_
 
 .. literalinclude:: ../includes/email-alternative.py
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [1] 最初の思いつきと用例は Matthew Dixon Cowles のおかげです。
-.. [2] Martin Matejek が教えてくれました。
+.. [1] Thanks to Matthew Dixon Cowles for the original inspiration and examples.
+.. [2] Contributed by Martin Matejek.

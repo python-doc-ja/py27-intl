@@ -1,81 +1,86 @@
 .. _tut-structures:
 
-**********
-データ構造
-**********
+***************
+Data Structures
+***************
 
-この章では、すでに学んだことについてより詳しく説明するとともに、いくつか
-新しいことを追加します。
+This chapter describes some things you've learned about already in more detail,
+and adds some new things as well.
 
 
 .. _tut-morelists:
 
-リスト型についてもう少し
-========================
+More on Lists
+=============
 
-リストデータ型には、他にもいくつかメソッドがあります。リストオブジェクトの
-すべてのメソッドを以下に示します。
+The list data type has some more methods.  Here are all of the methods of list
+objects:
+
 
 .. method:: list.append(x)
    :noindex:
 
-   リストの末尾に要素を一つ追加します。 ``a[len(a):] = [x]`` と等価です。
+   Add an item to the end of the list; equivalent to ``a[len(a):] = [x]``.
+
 
 .. method:: list.extend(L)
    :noindex:
 
-   指定したリスト中のすべての要素を対象のリストに追加し、リストを拡張します。
-   ``a[len(a):] = L`` と等価です。
+   Extend the list by appending all the items in the given list; equivalent to
+   ``a[len(a):] = L``.
+
 
 .. method:: list.insert(i, x)
    :noindex:
 
-   指定した位置に要素を挿入します。第 1 引数は、リストのインデクスで、
-   そのインデクスを持つ要素の直前に挿入が行われます。従って、
-   ``a.insert(0, x)`` はリストの先頭に挿入を行います。
-   また ``a.insert(len(a), x)`` は ``a.append(x)`` と等価です。
+   Insert an item at a given position.  The first argument is the index of the
+   element before which to insert, so ``a.insert(0, x)`` inserts at the front of
+   the list, and ``a.insert(len(a), x)`` is equivalent to ``a.append(x)``.
+
 
 .. method:: list.remove(x)
    :noindex:
 
-   リスト中で、値 *x* を持つ最初の要素を削除します。該当する項目がなければ
-   エラーとなります。
+   Remove the first item from the list whose value is *x*. It is an error if there
+   is no such item.
+
 
 .. method:: list.pop([i])
    :noindex:
 
-   リスト中の指定された位置にある要素をリストから削除して、その要素を返します。
-   インデクスが指定されなければ、 ``a.pop()`` はリストの末尾の要素を削除して
-   返します。
-   この場合も要素は削除されます。 (メソッドの用法 (signature) で *i* の
-   両側にある角括弧は、この引数がオプションであることを表しているだけなので、
-   角括弧を入力する必要はありません。この表記法は Python Library Reference
-   の中で頻繁に見ることになるでしょう。)
+   Remove the item at the given position in the list, and return it.  If no index
+   is specified, ``a.pop()`` removes and returns the last item in the list.  (The
+   square brackets around the *i* in the method signature denote that the parameter
+   is optional, not that you should type square brackets at that position.  You
+   will see this notation frequently in the Python Library Reference.)
+
 
 .. method:: list.index(x)
    :noindex:
 
-   リスト中で、値 *x* を持つ最初の要素のインデクスを返します。
-   該当する項目がなければエラーとなります。
+   Return the index in the list of the first item whose value is *x*. It is an
+   error if there is no such item.
+
 
 .. method:: list.count(x)
    :noindex:
 
-   リストでの *x* の出現回数を返します。
+   Return the number of times *x* appears in the list.
 
-.. method:: list.sort()
+
+.. method:: list.sort(cmp=None, key=None, reverse=False)
    :noindex:
 
-   リストの項目を、インプレース演算 (in place、元のデータを演算結果で置き換えるやりかた) でソートします。
+   Sort the items of the list in place (the arguments can be used for sort
+   customization, see :func:`sorted` for their explanation).
+
 
 .. method:: list.reverse()
    :noindex:
 
-   リストの要素を、インプレース演算で逆順にします。
+   Reverse the elements of the list, in place.
 
-以下にリストのメソッドをほぼ全て使った例を示します。
-
-::
+An example that uses most of the list methods::
 
    >>> a = [66.25, 333, 333, 1, 1234.5]
    >>> print a.count(333), a.count(66.25), a.count('x')
@@ -95,22 +100,29 @@
    >>> a.sort()
    >>> a
    [-1, 1, 66.25, 333, 333, 1234.5]
+   >>> a.pop()
+   1234.5
+   >>> a
+   [-1, 1, 66.25, 333, 333]
+
+You might have noticed that methods like ``insert``, ``remove`` or ``sort`` that
+only modify the list have no return value printed -- they return the default
+``None``. [1]_  This is a design principle for all mutable data structures in
+Python.
 
 
 .. _tut-lists-as-stacks:
 
-リストをスタックとして使う
---------------------------
+Using Lists as Stacks
+---------------------
 
 .. sectionauthor:: Ka-Ping Yee <ping@lfw.org>
 
-リスト型のメソッドのおかげで、簡単にリストをスタックとして使えます。
-スタックでは、最後に追加された要素が最初に取り出されます ("last-in, first-out")。
-スタックの一番上に要素を追加するには :meth:`append` を使います。
-スタックの一番上から要素を取り出すには :meth:`pop` をインデクスを
-指定せずに使います。例えば以下のようにします。
 
-::
+The list methods make it very easy to use a list as a stack, where the last
+element added is the first element retrieved ("last-in, first-out").  To add an
+item to the top of the stack, use :meth:`append`.  To retrieve an item from the
+top of the stack, use :meth:`pop` without an explicit index.  For example::
 
    >>> stack = [3, 4, 5]
    >>> stack.append(6)
@@ -131,23 +143,19 @@
 
 .. _tut-lists-as-queues:
 
-リストをキューとして使う
-------------------------
+Using Lists as Queues
+---------------------
 
 .. sectionauthor:: Ka-Ping Yee <ping@lfw.org>
 
-リストをキュー (queue) として使うことも可能です。
-この場合、最初に追加した要素を最初に取り出します ("first-in, first-out")。
-しかし、リストでは効率的にこの目的を達成することが出来ません。
-追加（append）や取り出し（pop）をリストの末尾に対しておこなうと速いのですが、
-挿入（insert）や取り出し（pop）をリストの先頭に対しておこなうと遅くなってしまいます
-（他の要素をひとつずつずらす必要があるからです）。
+It is also possible to use a list as a queue, where the first element added is
+the first element retrieved ("first-in, first-out"); however, lists are not
+efficient for this purpose.  While appends and pops from the end of list are
+fast, doing inserts or pops from the beginning of a list is slow (because all
+of the other elements have to be shifted by one).
 
-キューの実装には、 :class:`collections.deque` を使うと良いでしょう。
-このクラスは良く設計されていて、高速な追加（append）と取り出し（pop）を
-両端に対して実現しています。例えば以下のようにします。
-
-::
+To implement a queue, use :class:`collections.deque` which was designed to
+have fast appends and pops from both ends.  For example::
 
    >>> from collections import deque
    >>> queue = deque(["Eric", "John", "Michael"])
@@ -163,48 +171,36 @@
 
 .. _tut-functional:
 
-関数型のプログラミングツール
+Functional Programming Tools
 ----------------------------
 
-組み込み関数には、リストに対して使うと非常に便利なものが三つあります。
-:func:`filter`, :func:`map`, :func:`reduce` です。
+There are three built-in functions that are very useful when used with lists:
+:func:`filter`, :func:`map`, and :func:`reduce`.
 
-``filter(function, sequence)`` は、シーケンス *sequence* 中の要素 *item* から、
-``function(item)`` が真となるような要素からなるシーケンスを返します。
-もし *sequence* が :class:`string` か :class:`tuple` なら、返り値も
-同じ型になります。そうでなければ :class:`list` になります。
-例えば、次のコードは25までの素数を計算します。
+``filter(function, sequence)`` returns a sequence consisting of those items from
+the sequence for which ``function(item)`` is true. If *sequence* is a
+:class:`str`, :class:`unicode` or :class:`tuple`, the result will be of the
+same type; otherwise, it is always a :class:`list`.  For example, to compute a
+sequence of numbers divisible by 3 or 5::
 
-::
-
-   >>> def f(x): return x % 2 != 0 and x % 3 != 0
+   >>> def f(x): return x % 3 == 0 or x % 5 == 0
    ...
    >>> filter(f, range(2, 25))
-   [5, 7, 11, 13, 17, 19, 23]
+   [3, 5, 6, 9, 10, 12, 15, 18, 20, 21, 24]
 
-``map(function, sequence)`` は、シーケンス *sequence* の各要素 *item* に対して
-``function(item)`` を呼び出し、その戻り値からなるリストを返します。
-例えば、三乗された値の列を計算するには以下のようにします。
-
-::
+``map(function, sequence)`` calls ``function(item)`` for each of the sequence's
+items and returns a list of the return values.  For example, to compute some
+cubes::
 
    >>> def cube(x): return x*x*x
    ...
    >>> map(cube, range(1, 11))
    [1, 8, 27, 64, 125, 216, 343, 512, 729, 1000]
 
-.. More than one sequence may be passed; the function must then have as many
-   arguments as there are sequences and is called with the corresponding item from
-   each sequence (or ``None`` if some sequence is shorter than another).  For
-   example::
-
-複数のシーケンスを渡すこともできます。その場合、第一引数の関数はシーケンスの
-数と等しい数の引数を受け取る必要があり、各シーケンスの値が渡されます。
-(幾つかのシーケンスが他のシーケンスよりも短かった場合は、その場所には ``None``
-が渡されます。)
-例です。
-
-::
+More than one sequence may be passed; the function must then have as many
+arguments as there are sequences and is called with the corresponding item from
+each sequence (or ``None`` if some sequence is shorter than another).  For
+example::
 
    >>> seq = range(8)
    >>> def add(x, y): return x+y
@@ -212,29 +208,23 @@
    >>> map(add, seq, seq)
    [0, 2, 4, 6, 8, 10, 12, 14]
 
-``reduce(function, sequence)`` は単一の値を返します。この値は 2 つの引数を
-とる関数 *function* をシーケンス *sequence* の最初の二つの要素を引数として
-呼び出し、次にその結果とシーケンスの次の要素を引数にとり、以降これを
-繰り返していきます。例えば、 1 から 10 までの数の総和を計算するには
-以下のようにします。
-
-::
+``reduce(function, sequence)`` returns a single value constructed by calling the
+binary function *function* on the first two items of the sequence, then on the
+result and the next item, and so on.  For example, to compute the sum of the
+numbers 1 through 10::
 
    >>> def add(x,y): return x+y
    ...
    >>> reduce(add, range(1, 11))
    55
 
-シーケンス中にただ一つしか要素がなければ、その値自体が返されます。
-シーケンスが空なら、例外が送出されます。
+If there's only one item in the sequence, its value is returned; if the sequence
+is empty, an exception is raised.
 
-3 つめの引数をわたして、初期値を指定することもできます。この場合、
-空のシーケンスを渡すと初期値が返されます。それ以外の場合には、
-まず初期値とシーケンス中の最初の要素に対して関数が適用され、次いでその結果と
-シーケンスの次の要素に対して適用され、以降これが繰り返されます。
-例えば以下のようになります。
-
-::
+A third argument can be passed to indicate the starting value.  In this case the
+starting value is returned for an empty sequence, and the function is first
+applied to the starting value and the first sequence item, then to the result
+and the next item, and so on.  For example, ::
 
    >>> def sum(seq):
    ...     def add(x,y): return x+y
@@ -245,139 +235,163 @@
    >>> sum([])
    0
 
-実際には、上の例のように :func:`sum` を定義しないでください。
-数値の合計は広く必要とされている操作なので、すでに組み込み関数
-``sum(sequence)`` が提供されており、上の例と全く同様に動作します。
+Don't use this example's definition of :func:`sum`: since summing numbers is
+such a common need, a built-in function ``sum(sequence)`` is already provided,
+and works exactly like this.
 
-.. versionadded:: 2.3
+.. _tut-listcomps:
 
+List Comprehensions
+-------------------
 
-リストの内包表記
-----------------
+List comprehensions provide a concise way to create lists.
+Common applications are to make new lists where each element is the result of
+some operations applied to each member of another sequence or iterable, or to
+create a subsequence of those elements that satisfy a certain condition.
 
-リストの内包表記 (list comprehension) は、 :func:`map` や :func:`filter` や
-:keyword:`lambda` を使わずにリストを生成するための簡潔な方法を提供しています。
-内包表記によるリストの定義は、たいてい :func:`map`, :func:`filter`, :keyword:`lambda`
-を使ってリストを生成するコードよりも明快になります。
-リストの内包表記は、式、続いて :keyword:`for` 節、そしてその後ろに続くゼロ個以上の
-:keyword:`for` 節または :keyword:`if` 節からなります。
-結果として得られるリストの要素は、式を、それに続く :keyword:`for` と :keyword:`if`
-節のコンテキストで評価した値になります。
-式をタプルとして評価したいなら、丸括弧で囲わなければなりません。
+For example, assume we want to create a list of squares, like::
 
-::
+   >>> squares = []
+   >>> for x in range(10):
+   ...     squares.append(x**2)
+   ...
+   >>> squares
+   [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
+We can obtain the same result with::
+
+   squares = [x**2 for x in range(10)]
+
+This is also equivalent to ``squares = map(lambda x: x**2, range(10))``,
+but it's more concise and readable.
+
+A list comprehension consists of brackets containing an expression followed
+by a :keyword:`for` clause, then zero or more :keyword:`for` or :keyword:`if`
+clauses.  The result will be a new list resulting from evaluating the expression
+in the context of the :keyword:`for` and :keyword:`if` clauses which follow it.
+For example, this listcomp combines the elements of two lists if they are not
+equal::
+
+   >>> [(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
+   [(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+
+and it's equivalent to:
+
+   >>> combs = []
+   >>> for x in [1,2,3]:
+   ...     for y in [3,1,4]:
+   ...         if x != y:
+   ...             combs.append((x, y))
+   ...
+   >>> combs
+   [(1, 3), (1, 4), (2, 3), (2, 1), (2, 4), (3, 1), (3, 4)]
+
+Note how the order of the :keyword:`for` and :keyword:`if` statements is the
+same in both these snippets.
+
+If the expression is a tuple (e.g. the ``(x, y)`` in the previous example),
+it must be parenthesized. ::
+
+   >>> vec = [-4, -2, 0, 2, 4]
+   >>> # create a new list with the values doubled
+   >>> [x*2 for x in vec]
+   [-8, -4, 0, 4, 8]
+   >>> # filter the list to exclude negative numbers
+   >>> [x for x in vec if x >= 0]
+   [0, 2, 4]
+   >>> # apply a function to all the elements
+   >>> [abs(x) for x in vec]
+   [4, 2, 0, 2, 4]
+   >>> # call a method on each element
    >>> freshfruit = ['  banana', '  loganberry ', 'passion fruit  ']
    >>> [weapon.strip() for weapon in freshfruit]
    ['banana', 'loganberry', 'passion fruit']
-   >>> vec = [2, 4, 6]
-   >>> [3*x for x in vec]
-   [6, 12, 18]
-   >>> [3*x for x in vec if x > 3]
-   [12, 18]
-   >>> [3*x for x in vec if x < 2]
-   []
-   >>> [[x,x**2] for x in vec]
-   [[2, 4], [4, 16], [6, 36]]
-   >>> [x, x**2 for x in vec]  # エラー - タプルには丸かっこが必要
-     File "<stdin>", line 1, in ?
-       [x, x**2 for x in vec]
+   >>> # create a list of 2-tuples like (number, square)
+   >>> [(x, x**2) for x in range(6)]
+   [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25)]
+   >>> # the tuple must be parenthesized, otherwise an error is raised
+   >>> [x, x**2 for x in range(6)]
+     File "<stdin>", line 1
+       [x, x**2 for x in range(6)]
                   ^
    SyntaxError: invalid syntax
-   >>> [(x, x**2) for x in vec]
-   [(2, 4), (4, 16), (6, 36)]
-   >>> vec1 = [2, 4, 6]
-   >>> vec2 = [4, 3, -9]
-   >>> [x*y for x in vec1 for y in vec2]
-   [8, 6, -18, 16, 12, -36, 24, 18, -54]
-   >>> # 訳注: 上記の内包表記をループで書きなおすと、こうなります。
-   >>> L = []
-   >>> for x in vec1:
-   ...     for y in vec2:
-   ...         L.append(x*y)
-   ...
-   >>> L
-   [8, 6, -18, 16, 12, -36, 24, 18, -54]
-   >>> [x+y for x in vec1 for y in vec2]
-   [6, 5, -7, 8, 7, -5, 10, 9, -3]
-   >>> [vec1[i]*vec2[i] for i in range(len(vec1))]
-   [8, 12, -54]
+   >>> # flatten a list using a listcomp with two 'for'
+   >>> vec = [[1,2,3], [4,5,6], [7,8,9]]
+   >>> [num for elem in vec for num in elem]
+   [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-.. note::
-   訳注: 内包表記の中に :keyword:`for` や :keyword:`if` が複数回現れる場合、
-   左側の :keyword:`for`, :keyword:`if` が、内包表記ではなくループで書いた場合の
-   外側のブロックになります。
-   上の例はまだ判りやすいですが、複雑な内包表記はすぐに読みにくくなってしまうので、
-   その場合はループで書き下した方が良いでしょう。
+List comprehensions can contain complex expressions and nested functions::
 
-リストの内包表記は :func:`map` よりもはるかに柔軟性があり、
-複雑な式や入れ子になった関数でも利用できます。
-
-::
-
-   >>> [str(round(355/113.0, i)) for i in range(1, 6)]
+   >>> from math import pi
+   >>> [str(round(pi, i)) for i in range(1, 6)]
    ['3.1', '3.14', '3.142', '3.1416', '3.14159']
 
 
-ネストしたリストの内包表記
---------------------------
-もし望むなら、リストの内包表記はネストさせることができます。
-ネストしたリストの内包表記はとても強力な道具なのですが
--- 全ての強力な道具がそうであるように -- とにかく気を付けて使う必要があります。
+Nested List Comprehensions
+''''''''''''''''''''''''''
 
-1行を1つのリストに対応させた3つのリストからなるリストで、3行3列の行列を
-表現した例を考えます。
+The initial expression in a list comprehension can be any arbitrary expression,
+including another list comprehension.
 
-::
+Consider the following example of a 3x4 matrix implemented as a list of
+3 lists of length 4::
 
-   >>> mat = [
-   ...        [1, 2, 3],
-   ...        [4, 5, 6],
-   ...        [7, 8, 9],
-   ...       ]
+   >>> matrix = [
+   ...     [1, 2, 3, 4],
+   ...     [5, 6, 7, 8],
+   ...     [9, 10, 11, 12],
+   ... ]
 
-ここで、行と列を入れ換えたいとしたときにリストの内包表記が使えます。 ::
+The following list comprehension will transpose rows and columns::
 
-    >>> print [[row[i] for row in mat] for i in [0, 1, 2]]
-    [[1, 4, 7], [2, 5, 8], [3, 6, 9]]
+   >>> [[row[i] for row in matrix] for i in range(4)]
+   [[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
 
-*ネストした* リストの内包表記は特に気を付けて使わなければなりません。
+As we saw in the previous section, the nested listcomp is evaluated in
+the context of the :keyword:`for` that follows it, so this example is
+equivalent to::
 
-    リストの内包表記を怖がらずにネストするためには、右から左へ読んでください。
+   >>> transposed = []
+   >>> for i in range(4):
+   ...     transposed.append([row[i] for row in matrix])
+   ...
+   >>> transposed
+   [[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
 
-このコードの断片のより冗長なバージョンを見ると処理の流れがはっきりします。 ::
+which, in turn, is the same as::
 
-    for i in [0, 1, 2]:
-        for row in mat:
-            print row[i],
-        print
+   >>> transposed = []
+   >>> for i in range(4):
+   ...     # the following 3 lines implement the nested listcomp
+   ...     transposed_row = []
+   ...     for row in matrix:
+   ...         transposed_row.append(row[i])
+   ...     transposed.append(transposed_row)
+   ...
+   >>> transposed
+   [[1, 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]
 
-実際には複雑な流れの式よりも組み込み関数を使う方が良いです。
-この場合 :func:`zip` 関数が良い仕事をしてくれるでしょう。 ::
 
-    >>> zip(*mat)
-    [(1, 4, 7), (2, 5, 8), (3, 6, 9)]
+In the real world, you should prefer built-in functions to complex flow statements.
+The :func:`zip` function would do a great job for this use case::
 
-この行にあるアスタリスクの詳細については :ref:`tut-unpacking-arguments`
-を参照してください。
+   >>> zip(*matrix)
+   [(1, 5, 9), (2, 6, 10), (3, 7, 11), (4, 8, 12)]
 
+See :ref:`tut-unpacking-arguments` for details on the asterisk in this line.
 
 .. _tut-del:
 
-:keyword:`del` 文
-=================
+The :keyword:`del` statement
+============================
 
-リストから要素を削除する際、値を指定する代わりにインデックスを指定する方法が
-あります。それが :keyword:`del` 文です。これは :meth:`pop` メソッドと違い、
-値を返しません。
-:keyword:`del` 文はリストからスライスを除去したり、リスト全体を削除する
-こともできます(以前はスライスに空のリストを代入して行っていました)。
-例えば以下のようにします。
+There is a way to remove an item from a list given its index instead of its
+value: the :keyword:`del` statement.  This differs from the :meth:`pop` method
+which returns a value.  The :keyword:`del` statement can also be used to remove
+slices from a list or clear the entire list (which we did earlier by assignment
+of an empty list to the slice).  For example::
 
-::
-
-   >>> a
-   [-1, 1, 66.25, 333, 333, 1234.5]
+   >>> a = [-1, 1, 66.25, 333, 333, 1234.5]
    >>> del a[0]
    >>> a
    [1, 66.25, 333, 333, 1234.5]
@@ -388,62 +402,70 @@
    >>> a
    []
 
-:keyword:`del` は変数全体の削除にも使えます。
-
-::
+:keyword:`del` can also be used to delete entire variables::
 
    >>> del a
 
-この文の後で名前 ``a`` を参照すると、(別の値を ``a`` に代入するまで) エラーになります。
-:keyword:`del` の別の用途についてはまた後で取り上げます。
+Referencing the name ``a`` hereafter is an error (at least until another value
+is assigned to it).  We'll find other uses for :keyword:`del` later.
 
 
 .. _tut-tuples:
 
-タプルとシーケンス
-==================
+Tuples and Sequences
+====================
 
-リストや文字列には、インデクスやスライスを使った演算のように、数多くの共通の
-性質があることを見てきました。これらは *シーケンス (sequence)* データ型
-(:ref:`typesseq` を参照) の二つの例です。
-Python はまだ進歩の過程にある言語なので、他のシーケンスデータ型が追加される
-かもしれません。標準のシーケンス型はもう一つあります: *タプル (tuple)* 型です。
+We saw that lists and strings have many common properties, such as indexing and
+slicing operations.  They are two examples of *sequence* data types (see
+:ref:`typesseq`).  Since Python is an evolving language, other sequence data
+types may be added.  There is also another standard sequence data type: the
+*tuple*.
 
-タプルはコンマで区切られたいくつかの値からなります。例えば以下のように書きます。
-
-::
+A tuple consists of a number of values separated by commas, for instance::
 
    >>> t = 12345, 54321, 'hello!'
    >>> t[0]
    12345
    >>> t
    (12345, 54321, 'hello!')
-   >>> # タプルを入れ子にしてもよい
+   >>> # Tuples may be nested:
    ... u = t, (1, 2, 3, 4, 5)
    >>> u
    ((12345, 54321, 'hello!'), (1, 2, 3, 4, 5))
+   >>> # Tuples are immutable:
+   ... t[0] = 88888
+   Traceback (most recent call last):
+     File "<stdin>", line 1, in <module>
+   TypeError: 'tuple' object does not support item assignment
+   >>> # but they can contain mutable objects:
+   ... v = ([1, 2, 3], [3, 2, 1])
+   >>> v
+   ([1, 2, 3], [3, 2, 1])
 
-ご覧のように、出力ではタプルは常に丸括弧で囲われています。
-これは、入れ子になったタプルが正しく解釈されるようにするためです。
-入力の際には丸括弧なしでもかまいませんが、結局 (タプルがより大きな式の一部分の
-場合) 大抵必要となります。
 
-タプルの用途はたくさんあります。
-例えば、(x, y) 座標対、データベースから取り出した従業員レコードなどです。
-タプルは文字列と同じく、変更不能です。
-タプルの個々の要素に代入を行うことはできません (スライスと連結を使って同じ
-効果を実現することはできますが)。
-リストのような変更可能なオブジェクトの入ったタプルを作成することも可能です。
+As you see, on output tuples are always enclosed in parentheses, so that nested
+tuples are interpreted correctly; they may be input with or without surrounding
+parentheses, although often parentheses are necessary anyway (if the tuple is
+part of a larger expression).  It is not possible to assign to the individual
+items of a tuple, however it is possible to create tuples which contain mutable
+objects, such as lists.
 
-問題は 0 個または 1 個の項目からなるタプルの構築です。
-これらの操作を行うため、構文には特別な細工がされています。
-空のタプルは空の丸括弧ペアで構築できます。
-一つの要素を持つタプルは、値の後ろにコンマを続ける (単一の値を丸括弧で囲む
-だけでは不十分です) ことで構築できます。
-美しくはないけれども、効果的です。例えば以下のようにします。 ::
+Though tuples may seem similar to lists, they are often used in different
+situations and for different purposes.
+Tuples are :term:`immutable`, and usually contain an heterogeneous sequence of
+elements that are accessed via unpacking (see later in this section) or indexing
+(or even by attribute in the case of :func:`namedtuples <collections.namedtuple>`).
+Lists are :term:`mutable`, and their elements are usually homogeneous and are
+accessed by iterating over the list.
+
+A special problem is the construction of tuples containing 0 or 1 items: the
+syntax has some extra quirks to accommodate these.  Empty tuples are constructed
+by an empty pair of parentheses; a tuple with one item is constructed by
+following a value with a comma (it is not sufficient to enclose a single value
+in parentheses). Ugly, but effective.  For example::
 
    >>> empty = ()
-   >>> singleton = 'hello',    # <-- 末尾のコンマに注目
+   >>> singleton = 'hello',    # <-- note trailing comma
    >>> len(empty)
    0
    >>> len(singleton)
@@ -451,103 +473,101 @@ Python はまだ進歩の過程にある言語なので、他のシーケンス�
    >>> singleton
    ('hello',)
 
-文 ``t = 12345, 54321, 'hello!'`` は *タプルのパック (tuple packing)* の例です。
-値 ``12345``, ``54321``, ``'hello!'`` が一つのタプルにパックされます。
-逆の演算も可能です。
-
-::
+The statement ``t = 12345, 54321, 'hello!'`` is an example of *tuple packing*:
+the values ``12345``, ``54321`` and ``'hello!'`` are packed together in a tuple.
+The reverse operation is also possible::
 
    >>> x, y, z = t
 
-この操作は、 *シーケンスのアンパック (sequence unpacking)* とでも
-呼ぶべきもので、右辺には全てのシーケンス型を使うことができます。
-シーケンスのアンパックでは、左辺に列挙されている変数が、右辺のシーケンスの
-長さと同じであることが要求されます。
-複数同時の代入が実はタプルのパックとシーケンスのアンパックを
-組み合わせたものに過ぎないことに注意してください。
-
-.. XXX Add a bit on the difference between tuples and lists.
+This is called, appropriately enough, *sequence unpacking* and works for any
+sequence on the right-hand side.  Sequence unpacking requires the list of
+variables on the left to have the same number of elements as the length of the
+sequence.  Note that multiple assignment is really just a combination of tuple
+packing and sequence unpacking.
 
 
 .. _tut-sets:
 
-集合型
-======
+Sets
+====
 
-Python には、 *集合 (set)* を扱うためのデータ型もあります。
-集合とは、重複する要素をもたない、順序づけられていない要素の集まりです。
-Set オブジェクトは、結合 (union)、交差 (intersection)、差分 (difference)、
-対称差 (symmetric difference)といった数学的な演算もサポートしています。
+Python also includes a data type for *sets*.  A set is an unordered collection
+with no duplicate elements.  Basic uses include membership testing and
+eliminating duplicate entries.  Set objects also support mathematical operations
+like union, intersection, difference, and symmetric difference.
 
-簡単なデモンストレーションを示します。 ::
+Curly braces or the :func:`set` function can be used to create sets.  Note: to
+create an empty set you have to use ``set()``, not ``{}``; the latter creates an
+empty dictionary, a data structure that we discuss in the next section.
+
+Here is a brief demonstration::
 
    >>> basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
-   >>> fruit = set(basket)               # 重複のない集合を作成
+   >>> fruit = set(basket)               # create a set without duplicates
    >>> fruit
    set(['orange', 'pear', 'apple', 'banana'])
-   >>> 'orange' in fruit                 # 高速なメンバシップテスト
+   >>> 'orange' in fruit                 # fast membership testing
    True
    >>> 'crabgrass' in fruit
    False
 
-   >>> # 二つの単語の文字を例にした集合間の演算
+   >>> # Demonstrate set operations on unique letters from two words
    ...
    >>> a = set('abracadabra')
    >>> b = set('alacazam')
-   >>> a                                  # a 内の一意な文字
+   >>> a                                  # unique letters in a
    set(['a', 'r', 'b', 'c', 'd'])
-   >>> a - b                              # a にあって b にない文字
+   >>> a - b                              # letters in a but not in b
    set(['r', 'd', 'b'])
-   >>> a | b                              # a か b にある文字
+   >>> a | b                              # letters in either a or b
    set(['a', 'c', 'r', 'd', 'b', 'm', 'z', 'l'])
-   >>> a & b                              # a と b の双方にある文字
+   >>> a & b                              # letters in both a and b
    set(['a', 'c'])
-   >>> a ^ b                              # a または b の片方だけにある文字
+   >>> a ^ b                              # letters in a or b but not both
    set(['r', 'd', 'b', 'm', 'z', 'l'])
+
+Similarly to :ref:`list comprehensions <tut-listcomps>`, set comprehensions
+are also supported::
+
+   >>> a = {x for x in 'abracadabra' if x not in 'abc'}
+   >>> a
+   set(['r', 'd'])
 
 
 .. _tut-dictionaries:
 
-辞書
-====
+Dictionaries
+============
 
-もう一つ、有用な型が Python に組み込まれています。
-それは *辞書 (dictionary)* (:ref:`typesmapping` を参照)です。
-辞書は他の言語にも "連想記憶 (associated memory)" や "連想配列
-(associative array)" という名前で存在することがあります。
-ある範囲の数でインデクス化されているシーケンスと異なり、辞書は *キー (key)*
-でインデクス化されています。
-このキーは何らかの変更不能な型になります。文字列、数値は常にキーにすることが
-できます。
-タプルは、文字列、数値、その他のタプルのみを含む場合はキーにすることができます。
-直接、あるいは間接的に変更可能なオブジェクトを含むタプルはキーにできません。
-リストをキーとして使うことはできません。
-これは、リストにスライスやインデクス指定の代入を行ったり、 :meth:`append`
-や :meth:`extend` のようなメソッドを使うと、インプレースで変更することが
-できるためです。
+Another useful data type built into Python is the *dictionary* (see
+:ref:`typesmapping`). Dictionaries are sometimes found in other languages as
+"associative memories" or "associative arrays".  Unlike sequences, which are
+indexed by a range of numbers, dictionaries are indexed by *keys*, which can be
+any immutable type; strings and numbers can always be keys.  Tuples can be used
+as keys if they contain only strings, numbers, or tuples; if a tuple contains
+any mutable object either directly or indirectly, it cannot be used as a key.
+You can't use lists as keys, since lists can be modified in place using index
+assignments, slice assignments, or methods like :meth:`append` and
+:meth:`extend`.
 
-辞書は順序付けのされていない *キー(key): 値(value)* のペアの集合であり、
-キーが (辞書の中で)一意でければならない、と考えるとよいでしょう。
-波括弧 (brace) のペア: ``{}`` は空の辞書を生成します。カンマで区切られた key:
-value のペアを波括弧ペアの間に入れると、辞書の初期値となる key: value
-が追加されます; この表現方法は出力時に辞書が書き出されるのと同じ方法です。
+It is best to think of a dictionary as an unordered set of *key: value* pairs,
+with the requirement that the keys are unique (within one dictionary). A pair of
+braces creates an empty dictionary: ``{}``. Placing a comma-separated list of
+key:value pairs within the braces adds initial key:value pairs to the
+dictionary; this is also the way dictionaries are written on output.
 
-辞書での主な操作は、ある値を何らかのキーを付けて記憶することと、
-キーを指定して値を取り出すことです。
-``del`` で key: value のペアを削除することもできます。
-すでに使われているキーを使って値を記憶すると、以前そのキーに関連づけられていた
-値は忘れ去られてしまいます。
-存在しないキーを使って値を取り出そうとするとエラーになります。
+The main operations on a dictionary are storing a value with some key and
+extracting the value given the key.  It is also possible to delete a key:value
+pair with ``del``. If you store using a key that is already in use, the old
+value associated with that key is forgotten.  It is an error to extract a value
+using a non-existent key.
 
-辞書オブジェクトの :meth:`keys` メソッドは、辞書で使われている全ての
-キーからなるリストを適当な順番で返します (ソートされたリストが欲しい場合は、
-このキーのリストに :meth:`sorted` を使ってください)。
-ある単一のキーが辞書にあるかどうか調べるには、
-:keyword:`in` キーワードを使います。
+The :meth:`keys` method of a dictionary object returns a list of all the keys
+used in the dictionary, in arbitrary order (if you want it sorted, just apply
+the :func:`sorted` function to it).  To check whether a single key is in the
+dictionary, use the :keyword:`in` keyword.
 
-以下に、辞書を使った簡単な例を示します。
-
-::
+Here is a small example using a dictionary::
 
    >>> tel = {'jack': 4098, 'sape': 4139}
    >>> tel['guido'] = 4127
@@ -564,25 +584,20 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
    >>> 'guido' in tel
    True
 
-:func:`dict` コンストラクタは、キーと値のペアのタプルを含むリストから辞書を
-生成します。
-キーと値のペアがあるパターンをなしているなら、リストの内包表現を使えば
-キーと値のリストをコンパクトに指定できます。
-
-::
+The :func:`dict` constructor builds dictionaries directly from sequences of
+key-value pairs::
 
    >>> dict([('sape', 4139), ('guido', 4127), ('jack', 4098)])
    {'sape': 4139, 'jack': 4098, 'guido': 4127}
-   >>> dict([(x, x**2) for x in (2, 4, 6)])     # リスト内包表現を利用
+
+In addition, dict comprehensions can be used to create dictionaries from
+arbitrary key and value expressions::
+
+   >>> {x: x**2 for x in (2, 4, 6)}
    {2: 4, 4: 16, 6: 36}
 
-後ほど、 key, value ペアを :func:`dict` コンストラクタに渡すのにより適した、
-ジェネレータ式について学習します。
-
-キーが単純な文字列の場合、キーワード引数を使って定義する方が単純な場合も
-あります。
-
-::
+When the keys are simple strings, it is sometimes easier to specify pairs using
+keyword arguments::
 
    >>> dict(sape=4139, guido=4127, jack=4098)
    {'sape': 4139, 'jack': 4098, 'guido': 4127}
@@ -590,25 +605,11 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
 
 .. _tut-loopidioms:
 
-ループのテクニック
+Looping Techniques
 ==================
 
-辞書に対してループを行う際、 :meth:`iteritems` メソッドを使うと、キーと
-それに対応する値を同時に取り出せます。
-
-::
-
-   >>> knights = {'gallahad': 'the pure', 'robin': 'the brave'}
-   >>> for k, v in knights.iteritems():
-   ...     print k, v
-   ...
-   gallahad the pure
-   robin the brave
-
-シーケンスにわたるループを行う際、 :func:`enumerate` 関数を使うと、要素の
-インデックスと要素を同時に取り出すことができます。
-
-::
+When looping through a sequence, the position index and corresponding value can
+be retrieved at the same time using the :func:`enumerate` function. ::
 
    >>> for i, v in enumerate(['tic', 'tac', 'toe']):
    ...     print i, v
@@ -617,10 +618,8 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
    1 tac
    2 toe
 
-二つまたはそれ以上のシーケンス型を同時にループするために、関数 :func:`zip`
-を使って各要素をひと組みにすることができます。
-
-::
+To loop over two or more sequences at the same time, the entries can be paired
+with the :func:`zip` function. ::
 
    >>> questions = ['name', 'quest', 'favorite color']
    >>> answers = ['lancelot', 'the holy grail', 'blue']
@@ -631,10 +630,8 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
    What is your quest?  It is the holy grail.
    What is your favorite color?  It is blue.
 
-シーケンスを逆方向に渡ってループするには、まずシーケンスの範囲を順方向に
-指定し、次いで関数 :func:`reversed` を呼び出します。
-
-::
+To loop over a sequence in reverse, first specify the sequence in a forward
+direction and then call the :func:`reversed` function. ::
 
    >>> for i in reversed(xrange(1,10,2)):
    ...     print i
@@ -645,10 +642,8 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
    3
    1
 
-シーケンスをソートされた順序でループするには、 :func:`sorted` 関数を使います。
-この関数は元の配列を変更せず、ソート済みの新たな配列を返します。
-
-::
+To loop over a sequence in sorted order, use the :func:`sorted` function which
+returns a new sorted list while leaving the source unaltered. ::
 
    >>> basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
    >>> for f in sorted(set(basket)):
@@ -659,81 +654,91 @@ value のペアを波括弧ペアの間に入れると、辞書の初期値と�
    orange
    pear
 
+When looping through dictionaries, the key and corresponding value can be
+retrieved at the same time using the :meth:`iteritems` method. ::
+
+   >>> knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+   >>> for k, v in knights.iteritems():
+   ...     print k, v
+   ...
+   gallahad the pure
+   robin the brave
+
+It is sometimes tempting to change a list while you are looping over it;
+however, it is often simpler and safer to create a new list instead. ::
+
+   >>> import math
+   >>> raw_data = [56.2, float('NaN'), 51.7, 55.3, 52.5, float('NaN'), 47.8]
+   >>> filtered_data = []
+   >>> for value in raw_data:
+   ...     if not math.isnan(value):
+   ...         filtered_data.append(value)
+   ...
+   >>> filtered_data
+   [56.2, 51.7, 55.3, 52.5, 47.8]
+
 
 .. _tut-conditions:
 
-条件についてもう少し
-====================
+More on Conditions
+==================
 
-``while`` や ``if`` 文で使った条件 (condition) には、値の比較だけでなく、
-他の演算子も使うことができます、
+The conditions used in ``while`` and ``if`` statements can contain any
+operators, not just comparisons.
 
-比較演算子 ``in`` および ``not in`` は、ある値があるシーケンス中に存在するか
-(または存在しないか) どうかを調べます。
-演算子 ``is``  および ``is not`` は、二つのオブジェクトが実際に同じ
-オブジェクトであるかどうかを調べます。
-この比較は、リストのような変更可能なオブジェクトにだけ意味があります。
-全ての比較演算子は同じ優先順位を持っており、ともに数値演算子よりも低い
-優先順位となります。
+The comparison operators ``in`` and ``not in`` check whether a value occurs
+(does not occur) in a sequence.  The operators ``is`` and ``is not`` compare
+whether two objects are really the same object; this only matters for mutable
+objects like lists.  All comparison operators have the same priority, which is
+lower than that of all numerical operators.
 
-.. note::
-   訳注: ``is`` は、 ``is None`` のように、シングルトンの変更不能オブジェクトとの
-   比較に用いる場合もあります。(「変更可能なオブジェクトにだけ意味があります」の
-   部分を削除することを Doc-SIG に提案中。)
+Comparisons can be chained.  For example, ``a < b == c`` tests whether ``a`` is
+less than ``b`` and moreover ``b`` equals ``c``.
 
-比較は連結させることができます。例えば、 ``a < b == c`` は、 ``a`` が ``b``
-より小さく、かつ ``b`` と ``c`` が等しいかどうかをテストします。
+Comparisons may be combined using the Boolean operators ``and`` and ``or``, and
+the outcome of a comparison (or of any other Boolean expression) may be negated
+with ``not``.  These have lower priorities than comparison operators; between
+them, ``not`` has the highest priority and ``or`` the lowest, so that ``A and
+not B or C`` is equivalent to ``(A and (not B)) or C``. As always, parentheses
+can be used to express the desired composition.
 
-ブール演算子 ``and`` や ``or`` で比較演算を組み合わせることができます。
-そして、比較演算 (あるいは何らかのブール式) の結果の否定は ``not`` でとれます。
-これらの演算子は全て、比較演算子よりも低い優先順位になっています。
-``A and not B or C`` と ``(A and (not B)) or C`` が等価になるように、
-ブール演算子の中で、 ``not`` の優先順位が最も高く、 ``or`` が最も低く
-なっています。もちろん、丸括弧を使えば望みの組み合わせを表現できます。
+The Boolean operators ``and`` and ``or`` are so-called *short-circuit*
+operators: their arguments are evaluated from left to right, and evaluation
+stops as soon as the outcome is determined.  For example, if ``A`` and ``C`` are
+true but ``B`` is false, ``A and B and C`` does not evaluate the expression
+``C``.  When used as a general value and not as a Boolean, the return value of a
+short-circuit operator is the last evaluated argument.
 
-ブール演算子 ``and`` と ``or`` は、いわゆる *短絡 (short-circuit)* 演算子です。
-これらの演算子の引数は左から右へと順に評価され、結果が確定した時点で
-評価を止めます。
-例えば、 ``A`` と ``C`` は真で ``B`` が偽のとき、 ``A and B and C`` は式 ``C``
-を評価しません。
-一般に、短絡演算子の戻り値をブール値ではなくて一般的な値として用いると、
-値は最後に評価された引数になります。
-
-比較や他のブール式の結果を変数に代入することもできます。例えば、
-
-::
+It is possible to assign the result of a comparison or other Boolean expression
+to a variable.  For example, ::
 
    >>> string1, string2, string3 = '', 'Trondheim', 'Hammer Dance'
    >>> non_null = string1 or string2 or string3
    >>> non_null
    'Trondheim'
 
-Python では、C 言語と違って、式の内部で代入を行えないので注意してください。
-C 言語のプログラマは不満に思うかもしれませんが、この仕様は、 C 言語プログラムで
-遭遇する、式の中で ``==`` のつもりで ``=`` とタイプしてしまうといったありふれた
-問題を回避します。
+Note that in Python, unlike C, assignment cannot occur inside expressions. C
+programmers may grumble about this, but it avoids a common class of problems
+encountered in C programs: typing ``=`` in an expression when ``==`` was
+intended.
 
 
 .. _tut-comparing:
 
-シーケンスとその他の型の比較
-============================
+Comparing Sequences and Other Types
+===================================
 
-シーケンスオブジェクトは同じシーケンス型の他のオブジェクトと比較できます。
-比較には *辞書的な (lexicographical)* 順序が用いられます。
-まず、最初の二つの要素を比較し、その値が等しくなければその時点で比較結果が
-決まります。
-等しければ次の二つの要素を比較し、以降シーケンスの要素が尽きるまで続けます。
-比較しようとする二つの要素がいずれも同じシーケンス型であれば、
-そのシーケンス間での辞書比較を再帰的に行います。
-二つのシーケンスの全ての要素の比較結果が等しくなれば、シーケンスは等しいと
-みなされます。
-片方のシーケンスがもう一方の先頭部分にあたる部分シーケンスならば、短い方の
-シーケンスが小さいシーケンスとみなされます。
-文字列に対する辞書的な順序づけには、個々の文字ごとに ASCII 順序を用います。
-以下に、同じ型のオブジェクトを持つシーケンス間での比較を行った例を示します。
-
-::
+Sequence objects may be compared to other objects with the same sequence type.
+The comparison uses *lexicographical* ordering: first the first two items are
+compared, and if they differ this determines the outcome of the comparison; if
+they are equal, the next two items are compared, and so on, until either
+sequence is exhausted. If two items to be compared are themselves sequences of
+the same type, the lexicographical comparison is carried out recursively.  If
+all items of two sequences compare equal, the sequences are considered equal.
+If one sequence is an initial sub-sequence of the other, the shorter sequence is
+the smaller (lesser) one.  Lexicographical ordering for strings uses the ASCII
+ordering for individual characters.  Some examples of comparisons between
+sequences of the same type::
 
    (1, 2, 3)              < (1, 2, 4)
    [1, 2, 3]              < [1, 2, 4]
@@ -743,16 +748,15 @@ C 言語のプログラマは不満に思うかもしれませんが、この仕
    (1, 2, 3)             == (1.0, 2.0, 3.0)
    (1, 2, ('aa', 'ab'))   < (1, 2, ('abc', 'a'), 4)
 
-違う型のオブジェクト間の比較は認められていることに注意してください。
-比較結果は決定性がありますが、その決め方は、型は型の名前で順番づけられる、
-という恣意的なものです。
-従って、リスト (list) 型は常に文字列 (string) 型よりも小さく、文字列型は
-常にタプル (tuple) よりも小さい、といった具合になります。 [#]_
-型混合の数値の比較は、数値そのものに従って比較されるので、例えば 0 は 0.0
-と等しい、という結果になります。
+Note that comparing objects of different types is legal.  The outcome is
+deterministic but arbitrary: the types are ordered by their name. Thus, a list
+is always smaller than a string, a string is always smaller than a tuple, etc.
+[#]_ Mixed numeric types are compared according to their numeric value, so 0
+equals 0.0, etc.
 
-.. rubric:: 注記
 
-.. [#] 異なる型のオブジェクトを比較するための規則を今後にわたって当てにしてはなりません。
-   Python 言語の将来のバージョンでは変更されるかもしれません。
+.. rubric:: Footnotes
+
+.. [#] The rules for comparing objects of different types should not be relied upon;
+   they may change in a future version of the language.
 

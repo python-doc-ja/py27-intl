@@ -1,108 +1,115 @@
-
-:mod:`pyclbr` --- Python クラスブラウザサポート
-=================================================
+:mod:`pyclbr` --- Python class browser support
+==============================================
 
 .. module:: pyclbr
-   :synopsis: Python クラスブラウザのための情報抽出サポート
-
-
+   :synopsis: Supports information extraction for a Python class browser.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/pyclbr.py`
 
-この :mod:`pyclbr` モジュールはモジュールで定義されたクラス、メソッド、および
-トップレベルの関数について、限られた量の情報を取得するのに使われます。
-伝統的な 3 ペイン形式のクラスブラウザを実装するのに十分な情報を提供します。
-情報は、モジュールのインポートによらず、ソースコードから抽出します。
-このため、このモジュールは信用できないソースコードに対して利用しても安全です。
-この制限から、多くの標準モジュールやオプションの拡張モジュールを含む、
-Python で実装されていないモジュールに対して利用することはできません。
+--------------
 
-
-.. function:: readmodule(module[, path=None])
-
-   モジュールを読み込み、クラス名からクラス記述オブジェクトにマップする
-   辞書を返します。
-   パラメタ *module* はモジュール名を表す文字列でなくてはなりません;
-   パッケージ内のモジュール名でもかまいません。
-   *path* パラメタはシーケンス型でなくてはならず、モジュールのソースコード\
-   がある場所を特定する際に ``sys.path`` の値に加えて使われます。
+The :mod:`pyclbr` module can be used to determine some limited information
+about the classes, methods and top-level functions defined in a module.  The
+information provided is sufficient to implement a traditional three-pane
+class browser.  The information is extracted from the source code rather
+than by importing the module, so this module is safe to use with untrusted
+code.  This restriction makes it impossible to use this module with modules
+not implemented in Python, including all standard and optional extension
+modules.
 
 
-.. function:: readmodule_ex(module[, path=None])
+.. function:: readmodule(module, path=None)
 
-   :func:`readmodule` に似ていますが、返される辞書は、クラス名から\
-   クラス記述オブジェクトへの対応付けに加えて、トップレベル関数から\
-   関数記述オブジェクトへの対応付けも行っています。さらに、読み出し対象の\
-   モジュールがパッケージである場合、返される辞書はキー ``'__path__'``
-   を持ち、その値はパッケージの検索パスが入ったリストになります。
+   Read a module and return a dictionary mapping class names to class
+   descriptor objects.  The parameter *module* should be the name of a
+   module as a string; it may be the name of a module within a package.  The
+   *path* parameter should be a sequence, and is used to augment the value
+   of ``sys.path``, which is used to locate module source code.
+
+
+.. function:: readmodule_ex(module, path=None)
+
+   Like :func:`readmodule`, but the returned dictionary, in addition to
+   mapping class names to class descriptor objects, also maps top-level
+   function names to function descriptor objects.  Moreover, if the module
+   being read is a package, the key ``'__path__'`` in the returned
+   dictionary has as its value a list which contains the package search
+   path.
 
 
 .. _pyclbr-class-objects:
 
-Class オブジェクト
--------------------
+Class Objects
+-------------
 
-:class:`Class` オブジェクトは、 :func:`readmodule` や :func:`readmodule_ex`
-が返す辞書の値として使われており、以下のデータメンバを提供しています:
+The :class:`Class` objects used as values in the dictionary returned by
+:func:`readmodule` and :func:`readmodule_ex` provide the following data
+attributes:
 
 
 .. attribute:: Class.module
 
-   クラス記述オブジェクトが記述している対象のクラスを定義しているモジュールの名前です。
+   The name of the module defining the class described by the class descriptor.
 
 
 .. attribute:: Class.name
 
-   クラスの名前です。
+   The name of the class.
 
 
 .. attribute:: Class.super
 
-   記述しようとしている対象クラスの、直接の基底クラス群について記述している
-   :class:`Class` オブジェクトのリストです。
-   スーパクラスとして挙げられているが :func:`readmodule` が見つけられなかったクラスは、
-   :class:`Class` オブジェクトではなくクラス名の文字列としてリストに挙げられます。
+   A list of :class:`Class` objects which describe the immediate base
+   classes of the class being described.  Classes which are named as
+   superclasses but which are not discoverable by :func:`readmodule` are
+   listed as a string with the class name instead of as :class:`Class`
+   objects.
 
 
 .. attribute:: Class.methods
 
-   メソッド名を行番号に対応付ける辞書です。
+   A dictionary mapping method names to line numbers.
 
 
 .. attribute:: Class.file
 
-   クラスを定義している ``class`` 文が入っているファイルの名前です。
+   Name of the file containing the ``class`` statement defining the class.
 
 
 .. attribute:: Class.lineno
 
-   :attr:`~Class.file` で指定されたファイルにおける ``class`` 文の行番号です。
+   The line number of the ``class`` statement within the file named by
+   :attr:`~Class.file`.
 
 
 .. _pyclbr-function-objects:
 
-Function オブジェクト
-----------------------
+Function Objects
+----------------
 
-:class:`Function` オブジェクトは、 :func:`readmodule_ex`
-が返す辞書内でキーに対応する値として使われており、以下のデータメンバを提供しています:
+The :class:`Function` objects used as values in the dictionary returned by
+:func:`readmodule_ex` provide the following attributes:
 
 
 .. attribute:: Function.module
 
-   関数記述オブジェクトが記述している対象の関数を定義しているモジュールの名前です。
+   The name of the module defining the function described by the function
+   descriptor.
 
 
 .. attribute:: Function.name
 
-   関数の名前です。
+   The name of the function.
 
 
 .. attribute:: Function.file
 
-   関数を定義してる ``def`` 文が入っているファイルの名前です。
+   Name of the file containing the ``def`` statement defining the function.
 
 
 .. attribute:: Function.lineno
 
-   :attr:`~Function.file` で指定されたファイルにおける ``def`` 文の行番号です。
+   The line number of the ``def`` statement within the file named by
+   :attr:`~Function.file`.
+

@@ -1,12 +1,13 @@
 
 .. _python:
 
-**************************
-Python ランタイムサービス
-**************************
+***********************
+Python Runtime Services
+***********************
 
-この章では、 Python インタープリタや Python 環境に深く関連する各種の機能を解説します。
-以下に一覧を示します:
+The modules described in this chapter provide a wide range of services related
+to the Python interpreter and its interaction with its environment.  Here's an
+overview:
 
 
 .. toctree::
@@ -27,4 +28,3 @@ Python ランタイムサービス
    site.rst
    user.rst
    fpectl.rst
-   distutils.rst

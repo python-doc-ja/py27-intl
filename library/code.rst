@@ -1,160 +1,167 @@
 
-:mod:`code` --- インタプリタ基底クラス
-======================================
+:mod:`code` --- Interpreter base classes
+========================================
 
 .. module:: code
-   :synopsis: read-eval-print ループを実装するのを助ける
+   :synopsis: Facilities to implement read-eval-print loops.
 
 
 
-``code`` モジュールはread-eval-print (読み込み-評価-表示)ループをPythonで実装するための機能を提供します。
-対話的なインタプリタプロンプトを提供するアプリケーションを作るために使える二つのクラスと便利な関数が含まれています。
+The ``code`` module provides facilities to implement read-eval-print loops in
+Python.  Two classes and convenience functions are included which can be used to
+build applications which provide an interactive interpreter prompt.
 
 
 .. class:: InteractiveInterpreter([locals])
 
-   このクラスは構文解析とインタプリタ状態(ユーザの名前空間)を取り扱います。
-   入力バッファリングやプロンプト出力、または入力ファイル指定を扱いません(ファイル名は常に明示的に渡されます)。
-   オプションの *locals* 引数はその中でコードが実行される辞書を指定します。
-   その初期値は、キー ``'__name__'`` が ``'__console__'`` に設定され、キー ``'__doc__'`` が ``None``
-   に設定された新しく作られた辞書です。
+   This class deals with parsing and interpreter state (the user's namespace); it
+   does not deal with input buffering or prompting or input file naming (the
+   filename is always passed in explicitly). The optional *locals* argument
+   specifies the dictionary in which code will be executed; it defaults to a newly
+   created dictionary with key ``'__name__'`` set to ``'__console__'`` and key
+   ``'__doc__'`` set to ``None``.
 
 
 .. class:: InteractiveConsole([locals[, filename]])
 
-   対話的なPythonインタプリタの振る舞いを厳密にエミュレートします。
-   このクラスは :class:`InteractiveInterpreter` を元に作られていて、通常の
-   ``sys.ps1`` と ``sys.ps2`` をつかったプロンプト出力と入力バッファリングが追加されています。
+   Closely emulate the behavior of the interactive Python interpreter. This class
+   builds on :class:`InteractiveInterpreter` and adds prompting using the familiar
+   ``sys.ps1`` and ``sys.ps2``, and input buffering.
 
 
 .. function:: interact([banner[, readfunc[, local]]])
 
-   read-eval-printループを実行するための便利な関数。
-   これは :class:`InteractiveConsole` の新しいインスタンスを作り、
-   *readfunc* が与えられた場合は :meth:`raw_input`
-   メソッドとして使われるように設定します。
-   *local* が与えられた場合は、インタプリタループのデフォルト名前空間として使うために
-   :class:`InteractiveConsole` コンストラクタへ渡されます。
-   そして、インスタンスの :meth:`interact` メソッドは見出しとして使うために渡される
-   *banner* を受け取り実行されます。コンソールオブジェクトは使われた後捨てられます。
+   Convenience function to run a read-eval-print loop.  This creates a new instance
+   of :class:`InteractiveConsole` and sets *readfunc* to be used as the
+   :meth:`InteractiveConsole.raw_input` method, if provided.  If *local* is
+   provided, it is passed to the :class:`InteractiveConsole` constructor for
+   use as the default namespace for the interpreter loop.  The :meth:`interact`
+   method of the instance is then run with *banner* passed as the banner to
+   use, if provided.  The console object is discarded after use.
 
 
 .. function:: compile_command(source[, filename[, symbol]])
 
-   この関数はPythonのインタプリタメインループ(別名、read-eval-printループ)を
-   エミュレートしようとするプログラムにとって役に立ちます。
-   扱いにくい部分は、ユーザが(完全なコマンドや構文エラーではなく)さらにテキストを入力すれば完全になりうる不完全なコマンドを入力したときを決定することです。
-   この関数は*ほとんど*の場合に実際のインタプリタメインループと同じ決定を行います。
+   This function is useful for programs that want to emulate Python's interpreter
+   main loop (a.k.a. the read-eval-print loop).  The tricky part is to determine
+   when the user has entered an incomplete command that can be completed by
+   entering more text (as opposed to a complete command or a syntax error).  This
+   function *almost* always makes the same decision as the real interpreter main
+   loop.
 
-   *source* はソース文字列です。
-   *filename* はオプションのソースが読み出されたファイル名で、デフォルトで ``'<input>'`` です。
-   *symbol* はオプションの文法の開始記号で、 ``'single'``
-   (デフォルト)または ``'eval'`` のどちらかにすべきです。
+   *source* is the source string; *filename* is the optional filename from which
+   source was read, defaulting to ``'<input>'``; and *symbol* is the optional
+   grammar start symbol, which should be either ``'single'`` (the default) or
+   ``'eval'``.
 
-   コマンドが完全で有効ならば、コードオブジェクトを返します(``compile(source, filename,
-   symbol)`` と同じ)。コマンドが完全でないならば、 ``None`` を返します。
-   コマンドが完全で構文エラーを含む場合は、 :exc:`SyntaxError` を発生させます。
-   または、コマンドが無効なリテラルを含む場合は、 :exc:`OverflowError` もしくは :exc:`ValueError`
-   を発生させます。
+   Returns a code object (the same as ``compile(source, filename, symbol)``) if the
+   command is complete and valid; ``None`` if the command is incomplete; raises
+   :exc:`SyntaxError` if the command is complete and contains a syntax error, or
+   raises :exc:`OverflowError` or :exc:`ValueError` if the command contains an
+   invalid literal.
 
 
 .. _interpreter-objects:
 
-対話的なインタプリタオブジェクト
---------------------------------
+Interactive Interpreter Objects
+-------------------------------
 
 
 .. method:: InteractiveInterpreter.runsource(source[, filename[, symbol]])
 
-   インタプリタ内のあるソースをコンパイルし実行します。
-   引数は :func:`compile_command` のものと同じです。
-   *filename* のデフォルトは ``'<input>'`` で、 *symbol* は ``'single'`` です。
-   あるいくつかのことが起きる可能性があります:
+   Compile and run some source in the interpreter. Arguments are the same as for
+   :func:`compile_command`; the default for *filename* is ``'<input>'``, and for
+   *symbol* is ``'single'``.  One several things can happen:
 
-   * 入力はが正しくない。 :func:`compile_command` が例外(:exc:`SyntaxError` か :exc:`OverflowError`)を起こした場合。
-     :meth:`showsyntaxerror` メソッドの呼び出によって、構文トレースバックが表示されるでしょう。
-     :meth:`runsource` は ``False`` を返します。
+   * The input is incorrect; :func:`compile_command` raised an exception
+     (:exc:`SyntaxError` or :exc:`OverflowError`).  A syntax traceback will be
+     printed by calling the :meth:`showsyntaxerror` method.  :meth:`runsource`
+     returns ``False``.
 
-   * 入力が完全でなく、さらに入力が必要。 :func:`compile_command` が ``None`` を返した場合。
-     :meth:`runsource` は ``True`` を返します。
+   * The input is incomplete, and more input is required; :func:`compile_command`
+     returned ``None``. :meth:`runsource` returns ``True``.
 
-   * 入力が完全。 :func:`compile_command` がコードオブジェクトを返した場合。
-     (:exc:`SystemExit` を除く実行時例外も処理する) :meth:`runcode` を呼び出すことによって、
-     コードは実行されます。 :meth:`runsource` は ``False`` を返します。
+   * The input is complete; :func:`compile_command` returned a code object.  The
+     code is executed by calling the :meth:`runcode` (which also handles run-time
+     exceptions, except for :exc:`SystemExit`). :meth:`runsource` returns ``False``.
 
-   次の行を要求するために ``sys.ps1`` か ``sys.ps2`` のどちらを使うかを決定するために、戻り値を利用できます。
+   The return value can be used to decide whether to use ``sys.ps1`` or ``sys.ps2``
+   to prompt the next line.
 
 
 .. method:: InteractiveInterpreter.runcode(code)
 
-   コードオブジェクトを実行します。例外が生じたときは、トレースバックを表示するために
-   :meth:`showtraceback` が呼び出されます。
-   伝わることが許されている :exc:`SystemExit` を除くすべての例外が捉えられます。
+   Execute a code object. When an exception occurs, :meth:`showtraceback` is called
+   to display a traceback.  All exceptions are caught except :exc:`SystemExit`,
+   which is allowed to propagate.
 
-   :exc:`KeyboardInterrupt` についての注意。
-   このコードの他の場所でこの例外が生じる可能性がありますし、常に捕らえることができるとは限りません。
-   呼び出し側はそれを処理するために準備しておくべきです。
+   A note about :exc:`KeyboardInterrupt`: this exception may occur elsewhere in
+   this code, and may not always be caught.  The caller should be prepared to deal
+   with it.
 
 
 .. method:: InteractiveInterpreter.showsyntaxerror([filename])
 
-   起きたばかりの構文エラーを表示します。複数の構文エラーに対して一つあるのではないため、
-   これはスタックトレースを表示しません。
-   *filename* が与えられた場合は、Pythonのパーサが与えるデフォルトのファイル名の代わりに
-   例外の中へ入れられます。なぜなら、文字列から読み込んでいるときはパーサは常に ``'<string>'``
-   を使うからです。出力は :meth:`write` メソッドによって書き込まれます。
+   Display the syntax error that just occurred.  This does not display a stack
+   trace because there isn't one for syntax errors. If *filename* is given, it is
+   stuffed into the exception instead of the default filename provided by Python's
+   parser, because it always uses ``'<string>'`` when reading from a string. The
+   output is written by the :meth:`write` method.
 
 
 .. method:: InteractiveInterpreter.showtraceback()
 
-   起きたばかりの例外を表示します。スタックの最初の項目を取り除きます。
-   なぜなら、それはインタプリタオブジェクトの実装の内部にあるからです。
-   出力は :meth:`write` メソッドによて書き込まれます。
+   Display the exception that just occurred.  We remove the first stack item
+   because it is within the interpreter object implementation. The output is
+   written by the :meth:`write` method.
 
 
 .. method:: InteractiveInterpreter.write(data)
 
-   文字列を標準エラーストリーム(``sys.stderr``)へ書き込みます。
-   必要に応じて適切な出力処理を提供するために、派生クラスはこれをオーバーライドすべきです。
+   Write a string to the standard error stream (``sys.stderr``). Derived classes
+   should override this to provide the appropriate output handling as needed.
 
 
 .. _console-objects:
 
-対話的なコンソールオブジェクト
-------------------------------
+Interactive Console Objects
+---------------------------
 
-:class:`InteractiveConsole` クラスは :class:`InteractiveInterpreter` のサブクラスです。
-以下の追加メソッドだけでなく、インタプリタオブジェクトのすべてのメソッドも提供します。
+The :class:`InteractiveConsole` class is a subclass of
+:class:`InteractiveInterpreter`, and so offers all the methods of the
+interpreter objects as well as the following additions.
 
 
 .. method:: InteractiveConsole.interact([banner])
 
-   対話的なPythonコンソールをそっくりにエミュレートします。
-   オプションのbanner引数は最初のやりとりの前に表示するバナーを指定します。
-   デフォルトでは、標準Pythonインタプリタが表示するものと同じようなバナーを表示します。それに続けて、実際のインタプリタと混乱しないように(とても似ているから!)括弧の中にコンソールオブジェクトのクラス名を表示します。
+   Closely emulate the interactive Python console. The optional banner argument
+   specify the banner to print before the first interaction; by default it prints a
+   banner similar to the one printed by the standard Python interpreter, followed
+   by the class name of the console object in parentheses (so as not to confuse
+   this with the real interpreter -- since it's so close!).
 
 
 .. method:: InteractiveConsole.push(line)
 
-   ソーステキストの一行をインタプリタへ送ります。
-   その行の末尾に改行がついていてはいけません。
-   内部に改行を持っているかもしれません。
-   その行はバッファへ追加され、ソースとして連結された内容が渡されインタプリタの :meth:`runsource` メソッドが呼び出されます。
-   コマンドが実行されたか、有効であることをこれが示している場合は、バッファはリセットされます。
-   そうでなければ、コマンドが不完全で、その行が付加された後のままバッファは残されます。
-   さらに入力が必要ならば、戻り値は ``True`` です。
-   その行がある方法で処理されたならば、 ``False`` です(これは :meth:`runsource` と同じです)。
+   Push a line of source text to the interpreter. The line should not have a
+   trailing newline; it may have internal newlines.  The line is appended to a
+   buffer and the interpreter's :meth:`runsource` method is called with the
+   concatenated contents of the buffer as source.  If this indicates that the
+   command was executed or invalid, the buffer is reset; otherwise, the command is
+   incomplete, and the buffer is left as it was after the line was appended.  The
+   return value is ``True`` if more input is required, ``False`` if the line was
+   dealt with in some way (this is the same as :meth:`runsource`).
 
 
 .. method:: InteractiveConsole.resetbuffer()
 
-   入力バッファから処理されていないソーステキストを取り除きます。
+   Remove any unhandled source text from the input buffer.
 
 
 .. method:: InteractiveConsole.raw_input([prompt])
 
-   プロンプトを書き込み、一行を読み込みます。返る行は末尾に改行を含みません。
-   ユーザがEOFキーシーケンスを入力したときは、 :exc:`EOFError` を発生させます。
-   基本実装では、組み込み関数 :func:`raw_input` を使います。
-   サブクラスはこれを異なる実装と置き換えるかもしれません。
+   Write a prompt and read a line.  The returned line does not include the trailing
+   newline.  When the user enters the EOF key sequence, :exc:`EOFError` is raised.
+   The base implementation uses the built-in function :func:`raw_input`; a subclass
+   may replace this with a different implementation.
 

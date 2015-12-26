@@ -1,30 +1,35 @@
-:mod:`os.path` --- 共通のパス名操作
-===================================
+:mod:`os.path` --- Common pathname manipulations
+================================================
 
 .. module:: os.path
    :synopsis: Operations on pathnames.
 
 .. index:: single: path; operations
 
-このモジュールには、パス名を操作する便利な関数が定義されています。
-ファイルの読み書きに関しては、 :func:`open` 、ファイルシステムへのアク
-セスに関しては、 :mod:`os` モジュールを参照下さい。
-
-
-.. note::
-
-   これらの関数の多くは Windows の一律命名規則 (UNCパス名) を正しくサ
-   ポートしていません。 :func:`splitunc` と :func:`ismount` は正しく
-   UNC パス名を操作できます。
+This module implements some useful functions on pathnames. To read or
+write files see :func:`open`, and for accessing the filesystem see the
+:mod:`os` module.
 
 .. note::
 
-   OSによって異なるパスの決まりがあるので、標準ライブラリにはこのモジュールの
-   幾つかのバージョンが含まれています。 :mod:`os.path` モジュールは常に現在
-   Pythonが動作しているOSに適したパスモジュールで、ローカルのパスを扱うのに
-   適しています。
-   各々のモジュールをインポートして *常に* 一つのフォーマットを利用することも
-   可能です。これらは全て同じインタフェースを持っています。:
+   On Windows, many of these functions do not properly support UNC pathnames.
+   :func:`splitunc` and :func:`ismount` do handle them correctly.
+
+
+Unlike a unix shell, Python does not do any *automatic* path expansions.
+Functions such as :func:`expanduser` and :func:`expandvars` can be invoked
+explicitly when an application desires shell-like path expansion.  (See also
+the :mod:`glob` module.)
+
+.. note::
+
+   Since different operating systems have different path name conventions, there
+   are several versions of this module in the standard library.  The
+   :mod:`os.path` module is always the path module suitable for the operating
+   system Python is running on, and therefore usable for local paths.  However,
+   you can also import and use the individual modules if you want to manipulate
+   a path that is *always* in one of the different formats.  They all have the
+   same interface:
 
    * :mod:`posixpath` for UNIX-style paths
    * :mod:`ntpath` for Windows paths
@@ -34,331 +39,319 @@
 
 .. function:: abspath(path)
 
-   *path* の標準化された絶対パスを返します。たいていのプラットフォーム
-   では、 ``normpath(join(os.getcwd(), path))`` と同じ結果になります。
+   Return a normalized absolutized version of the pathname *path*. On most
+   platforms, this is equivalent to calling the function :func:`normpath` as
+   follows: ``normpath(join(os.getcwd(), path))``.
 
    .. versionadded:: 1.5.2
 
 
 .. function:: basename(path)
 
-   パス名 *path* の末尾のファイル名を返します。これは ``split(path)``
-   で返されるペアの2番目の要素です。この関数が返す値は Unix の
-   :program:`basename` とは異なります; Unix の :program:`basename` は
-   ``'/foo/bar/'`` に対して ``'bar'`` を返しますが、 :func:`basename`
-   は空文字列 (``''``) を返します。
+   Return the base name of pathname *path*.  This is the second element of the
+   pair returned by passing *path* to the function :func:`split`.  Note that
+   the result of this function is different
+   from the Unix :program:`basename` program; where :program:`basename` for
+   ``'/foo/bar/'`` returns ``'bar'``, the :func:`basename` function returns an
+   empty string (``''``).
 
 
 .. function:: commonprefix(list)
 
-   パスの *list* の中の共通する最長のプレフィックスを (パス名の1文字1
-   文字を判断して) 返します。
-   もし *list* が空なら、空文字列 (``''``) を返します。これは一度に1文
-   字を扱うため、不正なパスを返すことがあるかもしれませんので注意して
-   下さい。
+   Return the longest path prefix (taken character-by-character) that is a prefix
+   of all paths in  *list*.  If *list* is empty, return the empty string (``''``).
+   Note that this may return invalid paths because it works a character at a time.
 
 
 .. function:: dirname(path)
 
-   パス *path* のディレクトリ名を返します。これは ``split(path)`` で返
-   されるペアの最初の要素です。
+   Return the directory name of pathname *path*.  This is the first element of
+   the pair returned by passing *path* to the function :func:`split`.
 
 
 .. function:: exists(path)
 
-   *path* が存在するなら、 ``True`` を返します。壊れたシンボリックリン
-   クについては ``False`` を返します。いくつかのプラットフォームでは、
-   たとえ *path* が物理的に存在していたとしても、リクエストされたファ
-   イルに対する :func:`os.stat` の実行が許可されなければこの関数が
-   ``False`` を返すことがあります。
+   Return ``True`` if *path* refers to an existing path.  Returns ``False`` for
+   broken symbolic links. On some platforms, this function may return ``False`` if
+   permission is not granted to execute :func:`os.stat` on the requested file, even
+   if the *path* physically exists.
 
 
 .. function:: lexists(path)
 
-   *path* が存在するパスなら ``True`` を返す。壊れたシンボリックリンク
-   については ``True`` を返します。
-   :func:`os.lstat` がない環境では :func:`exists` と同じです。
+   Return ``True`` if *path* refers to an existing path. Returns ``True`` for
+   broken symbolic links.   Equivalent to :func:`exists` on platforms lacking
+   :func:`os.lstat`.
 
    .. versionadded:: 2.4
 
 
 .. function:: expanduser(path)
 
-   Unix 、および、 Windows では、与えられた引数の先頭のパス要素 ``~``
-   、または ``~user`` を、 *user* のホームディレクトリのパスに置き換え
-   て返します。
+   On Unix and Windows, return the argument with an initial component of ``~`` or
+   ``~user`` replaced by that *user*'s home directory.
 
    .. index:: module: pwd
 
-   Unix では、先頭の ``~`` は、環境変数 :envvar:`HOME` が設定されてい
-   るならその値に置き換えられます。
-   そうでなければ、現在のユーザのホームディレクトリをビルトインモジュー
-   ル :mod:`pwd` を使ってパスワードディレクトリから探して置き換えます。
-   先頭の ``~user`` については、直接パスワードディレクトリから探します。
+   On Unix, an initial ``~`` is replaced by the environment variable :envvar:`HOME`
+   if it is set; otherwise the current user's home directory is looked up in the
+   password directory through the built-in module :mod:`pwd`. An initial ``~user``
+   is looked up directly in the password directory.
 
-   Windows では ``~`` だけがサポートされ、環境変数 :envvar:`HOME` または
-   :envvar:`HOMEDRIVE` と :envvar:`HOMEPATH` の組み合わせで置き換えら
-   れます。
+   On Windows, :envvar:`HOME` and :envvar:`USERPROFILE` will be used if set,
+   otherwise a combination of :envvar:`HOMEPATH` and :envvar:`HOMEDRIVE` will be
+   used.  An initial ``~user`` is handled by stripping the last directory component
+   from the created user path derived above.
 
-   もし置き換えに失敗したり、引数のパスがチルダで始まっていなかったら、
-   パスをそのまま返します。
+   If the expansion fails or if the path does not begin with a tilde, the path is
+   returned unchanged.
 
 
 .. function:: expandvars(path)
 
-   引数のパスの環境変数を展開して返します。引数の中の ``$name`` または
-   ``${name}`` のような形式の文字列は環境変数、 *name* に置き換えられます。
-   不正な変数名や存在しない変数名の場合には変換されず、そのまま返します。
+   Return the argument with environment variables expanded.  Substrings of the form
+   ``$name`` or ``${name}`` are replaced by the value of environment variable
+   *name*.  Malformed variable names and references to non-existing variables are
+   left unchanged.
 
-   Windows では、 ``$name`` や ``${name}`` の形式に加えて、 ``%name%``
-   の形式もサポートされています。
+   On Windows, ``%name%`` expansions are supported in addition to ``$name`` and
+   ``${name}``.
 
 
 .. function:: getatime(path)
 
-   *path* に最後にアクセスした時刻を、エポック (:mod:`time` モジュール
-   を参照下さい) からの経過時間を示す秒数で返します。
-   ファイルが存在しなかったりアクセスできない場合は :exc:`os.error` を
-   送出します。
-
-   .. versionchanged:: 2.3
-      :func:`os.stat_float_times` が True を返す場合、戻り値は浮動小数
-      点値となります。
+   Return the time of last access of *path*.  The return value is a number giving
+   the number of seconds since the epoch (see the  :mod:`time` module).  Raise
+   :exc:`os.error` if the file does not exist or is inaccessible.
 
    .. versionadded:: 1.5.2
+
+   .. versionchanged:: 2.3
+      If :func:`os.stat_float_times` returns ``True``, the result is a floating point
+      number.
 
 
 .. function:: getmtime(path)
 
-   *path* の最終更新時刻を、エポック (:mod:`time` モジュールを参照下さ
-   い) からの経過時間を示す秒数で返します。
-   ファイルが存在しなかったりアクセスできない場合は :exc:`os.error` を
-   送出します。
-
-   .. versionchanged:: 2.3
-      :func:`os.stat_float_times` が True を返す場合、戻り値は浮動小数点値となります。
+   Return the time of last modification of *path*.  The return value is a number
+   giving the number of seconds since the epoch (see the  :mod:`time` module).
+   Raise :exc:`os.error` if the file does not exist or is inaccessible.
 
    .. versionadded:: 1.5.2
+
+   .. versionchanged:: 2.3
+      If :func:`os.stat_float_times` returns ``True``, the result is a floating point
+      number.
 
 
 .. function:: getctime(path)
 
-   システムによって、ファイルの最終変更時刻 (Unix のようなシステム) や
-   作成時刻 (Windows のようなシステム) をシステムの ctime で返します。
-   戻り値はエポック (:mod:`time` モジュールを参照下さい) からの経過秒
-   数を示す数値です。
-   ファイルが存在しなかったりアクセスできない場合は :exc:`os.error` を
-   送出します。
+   Return the system's ctime which, on some systems (like Unix) is the time of the
+   last metadata change, and, on others (like Windows), is the creation time for *path*.
+   The return value is a number giving the number of seconds since the epoch (see
+   the  :mod:`time` module).  Raise :exc:`os.error` if the file does not exist or
+   is inaccessible.
 
    .. versionadded:: 2.3
 
 
 .. function:: getsize(path)
 
-   ファイル *path* のサイズをバイト数で返します。ファイルが存在しなかっ
-   たりアクセスできない場合は :exc:`os.error` を送出します。
+   Return the size, in bytes, of *path*.  Raise :exc:`os.error` if the file does
+   not exist or is inaccessible.
 
    .. versionadded:: 1.5.2
 
 
 .. function:: isabs(path)
 
-   *path* が絶対パスなら、 ``True`` を返します。すなわち、 Unix ではス
-   ラッシュで始まり、 Windows ではドライブレターに続く (バック) スラッ
-   シュで始まる場合です。
+   Return ``True`` if *path* is an absolute pathname.  On Unix, that means it
+   begins with a slash, on Windows that it begins with a (back)slash after chopping
+   off a potential drive letter.
 
 
 .. function:: isfile(path)
 
-   *path* が存在する正しいファイルなら、 ``True`` を返します。シンボリッ
-   クリンクの場合にはその実体をチェックするので、同じパスに対して
-   :func:`islink` と :func:`isfile` の両方が *True* を返すことがあり
-   ます。
+   Return ``True`` if *path* is an existing regular file.  This follows symbolic
+   links, so both :func:`islink` and :func:`isfile` can be true for the same path.
 
 
 .. function:: isdir(path)
 
-   *path* が存在するディレクトリなら、 ``True`` を返します。シンボリックリンクの場
-   合にはその実体をチェックするので、同じパスに対して :func:`islink`
-   と :func:`isdir` の両方が *True* を返すことがあります。
+   Return ``True`` if *path* is an existing directory.  This follows symbolic
+   links, so both :func:`islink` and :func:`isdir` can be true for the same path.
 
 
 .. function:: islink(path)
 
-   *path* がシンボリックリンクなら、 ``True`` を返します。シンボリック
-   リンクがサポートされていないプラットフォームでは、常に ``False``
-   を返します。
+   Return ``True`` if *path* refers to a directory entry that is a symbolic link.
+   Always ``False`` if symbolic links are not supported by the python runtime.
 
 
 .. function:: ismount(path)
 
-   パス名 *path* がマウントポイント :dfn:`mount point` (ファイルシステ
-   ムの中で異なるファイルシステムがマウントされているところ) なら、
-   ``True`` を返します:
-   この関数は *path* の親ディレクトリである :file:`path/..` が *path*
-   と異なるデバイス上にあるか、あるいは :file:`path/..` と *path* が同
-   じデバイス上の同じ i-node を指しているかをチェックします --- これに
-   よって全ての Unix と POSIX 標準でマウントポイントが検出できます。
+   Return ``True`` if pathname *path* is a :dfn:`mount point`: a point in a file
+   system where a different file system has been mounted.  The function checks
+   whether *path*'s parent, :file:`path/..`, is on a different device than *path*,
+   or whether :file:`path/..` and *path* point to the same i-node on the same
+   device --- this should detect mount points for all Unix and POSIX variants.
 
 
-.. function:: join(path1[, path2[, ...]])
+.. function:: join(path, *paths)
 
-   1 つあるいはそれ以上のパスの要素をうまく結合します。付け加える要素
-   に絶対パスがあれば、それより前の要素は (Windows ではドライブ名があ
-   ればそれも含めて) 全て破棄され、以降の要素を結合します。戻り値は
-   *path1* と省略可能な *path2* 以降を結合したもので、 *path2* が空文
-   字列でないなら、ディレクトリの区切り文字 (``os.sep``) が各要素の間
-   に挿入されます。
-   Windows では各ドライブに対してカレントディレクトリがあるので、
-   ``os.path.join("c:", "foo")`` によって、 :file:`c:\\foo` ではなく、
-   ドライブ :file:`C:` 上のカレントディレクトリからの相対パス
-   (:file:`c:foo`) が返されます。
+   Join one or more path components intelligently.  The return value is the
+   concatenation of *path* and any members of *\*paths* with exactly one
+   directory separator (``os.sep``) following each non-empty part except the
+   last, meaning that the result will only end in a separator if the last
+   part is empty.  If a component is an absolute path, all previous
+   components are thrown away and joining continues from the absolute path
+   component.
+
+   On Windows, the drive letter is not reset when an absolute path component
+   (e.g., ``r'\foo'``) is encountered.  If a component contains a drive
+   letter, all previous components are thrown away and the drive letter is
+   reset.  Note that since there is a current directory for each drive,
+   ``os.path.join("c:", "foo")`` represents a path relative to the current
+   directory on drive :file:`C:` (:file:`c:foo`), not :file:`c:\\foo`.
 
 
 .. function:: normcase(path)
 
-   パス名の大文字、小文字をシステムの標準にします。 Unix と Mac OS X
-   ではそのまま返します。
-   大文字、小文字を区別しないファイルシステムではパス名を小文字に変換します。
-   Windows では、スラッシュをバックスラッシュに変換します。
+   Normalize the case of a pathname.  On Unix and Mac OS X, this returns the
+   path unchanged; on case-insensitive filesystems, it converts the path to
+   lowercase.  On Windows, it also converts forward slashes to backward slashes.
 
 
 .. function:: normpath(path)
 
-   パス名を標準化します。余分な区切り文字や上位レベル参照を削除し、
-   ``A//B`` 、 ``A/B/`` 、 ``A/./B`` 、 ``A/foo/../B`` が全て ``A/B``
-   になるようにします。
-   大文字、小文字は標準化しません (それには :func:`normcase` を使って
-   下さい) 。 Windows では、スラッシュをバックスラッシュに変換します。
-   パスがシンボリックリンクを含んでいるかによって意味が変わることに注
-   意してください。
+   Normalize a pathname by collapsing redundant separators and up-level
+   references so that ``A//B``, ``A/B/``, ``A/./B`` and ``A/foo/../B`` all
+   become ``A/B``.  This string manipulation may change the meaning of a path
+   that contains symbolic links.  On Windows, it converts forward slashes to
+   backward slashes. To normalize case, use :func:`normcase`.
 
 
 .. function:: realpath(path)
 
-   パスの中のシンボリックリンク (もしそれが当該オペレーティングシステ
-   ムでサポートされていれば)を取り除いて、標準化したパスを返します。
+   Return the canonical path of the specified filename, eliminating any symbolic
+   links encountered in the path (if they are supported by the operating system).
 
    .. versionadded:: 2.2
 
 
 .. function:: relpath(path[, start])
 
-   カレントディレクトリ、または、オプション引数の *start* から、
-   *path* への相対ファイルパスを返します。
+   Return a relative filepath to *path* either from the current directory or
+   from an optional *start* directory.  This is a path computation:  the
+   filesystem is not accessed to confirm the existence or nature of *path* or
+   *start*.
 
-   *start* のデフォルト値は :attr:`os.curdir` です。
+   *start* defaults to :attr:`os.curdir`.
 
-   利用可能:  Windows 、 Unix
+   Availability:  Windows, Unix.
 
    .. versionadded:: 2.6
 
 
 .. function:: samefile(path1, path2)
 
-   2つの引数であるパス名が同じファイルあるいはディレクトリを指していれ
-   ば (同じデバイスナンバーと i-node ナンバーで示されていれば) 、
-   ``True`` を返します。どちらかのパス名で :func:`os.stat` の呼び出し
-   に失敗した場合には、例外が発生します。
+   Return ``True`` if both pathname arguments refer to the same file or directory
+   (as indicated by device number and i-node number). Raise an exception if a
+   :func:`os.stat` call on either pathname fails.
 
-   利用可能: Unix
+   Availability: Unix.
 
 
 .. function:: sameopenfile(fp1, fp2)
 
-   ファイルディスクリプタ *fp1* と *fp2* が同じファイルを指していたら、
-   ``True`` を返します。利用可能: Unix
+   Return ``True`` if the file descriptors *fp1* and *fp2* refer to the same file.
+
+   Availability: Unix.
 
 
 .. function:: samestat(stat1, stat2)
 
-   stat タプル *stat1* と *stat2* が同じファイルを指していたら、
-   ``True`` を返します。
-   これらのタプルは :func:`fstat` 、 :func:`lstat` や :func:`stat` で
-   返されたものでかまいません。
-   この関数は、 :func:`samefile` と :func:`sameopenfile` で使われるの
-   と同様なものを背後に実装しています。
+   Return ``True`` if the stat tuples *stat1* and *stat2* refer to the same file.
+   These structures may have been returned by :func:`os.fstat`,
+   :func:`os.lstat`, or :func:`os.stat`.  This function implements the
+   underlying comparison used by :func:`samefile` and :func:`sameopenfile`.
 
-   利用可能: Unix
+   Availability: Unix.
 
 
 .. function:: split(path)
 
-   パス名 *path* を ``(head, tail)`` のペアに分割します。 *tail* はパ
-   スの構成要素の末尾で、 *head* はそれより前の部分です。
-   *tail* はスラッシュを含みません; もし *path* の最後にスラッシュがあ
-   れば、 *tail* は空文字列になります。
-   もし *path* にスラッシュがなければ、 *head* は空文字列になります。
-   *path* が空文字列なら、 *head* と *tail* のどちらも空文字列になりま
-   す。 *head* の末尾のスラッシュは、 *head* がルートディレクトリ (1つ
-   以上のスラッシュのみ) でない限り、取り除かれます。
-   ``join(head, tail)`` の結果は常に *path* と同じ場所を示すパスになりますが、
-   文字列としては異なるかもしれません。
+   Split the pathname *path* into a pair, ``(head, tail)`` where *tail* is the
+   last pathname component and *head* is everything leading up to that.  The
+   *tail* part will never contain a slash; if *path* ends in a slash, *tail*
+   will be empty.  If there is no slash in *path*, *head* will be empty.  If
+   *path* is empty, both *head* and *tail* are empty.  Trailing slashes are
+   stripped from *head* unless it is the root (one or more slashes only).  In
+   all cases, ``join(head, tail)`` returns a path to the same location as *path*
+   (but the strings may differ).  Also see the functions :func:`dirname` and
+   :func:`basename`.
 
 
 .. function:: splitdrive(path)
 
-   パス名 *path* を ``(drive, tail)`` のペアに分割します。 *drive* はド
-   ライブ名か、空文字列です。
-   ドライブ名を使用しないシステムでは、 *drive* は常に空文字列です。全
-   ての場合に ``drive + tail`` は *path* と等しくなります。
+   Split the pathname *path* into a pair ``(drive, tail)`` where *drive* is either
+   a drive specification or the empty string.  On systems which do not use drive
+   specifications, *drive* will always be the empty string.  In all cases, ``drive
+   + tail`` will be the same as *path*.
 
    .. versionadded:: 1.3
 
 
 .. function:: splitext(path)
 
-   パス名 *path* を ``(root, ext)`` のペアにします。 ``root + ext ==
-   path`` になります。
-   *ext* は空文字列か1つのピリオドで始まり、多くても1つのピリオドを含みます。
-   ベースネームを導出するピリオドは無視されます。 ;  ``splitext('.cshrc')``
-   は、 ``('.cshrc', '')`` を返します。
+   Split the pathname *path* into a pair ``(root, ext)``  such that ``root + ext ==
+   path``, and *ext* is empty or begins with a period and contains at most one
+   period. Leading periods on the basename are  ignored; ``splitext('.cshrc')``
+   returns  ``('.cshrc', '')``.
 
    .. versionchanged:: 2.6
-      以前のバージョンでは、最初の文字がピリオドであった場合、空の
-      root を生成していました。
+      Earlier versions could produce an empty root when the only period was the
+      first character.
 
 
 .. function:: splitunc(path)
 
-   パス名 *path* をペア ``(unc, rest)`` に分割します。
-   ここで *unc* は (``r'\\host\mount'`` のような) UNC マウントポイント、
-   そして *rest* は (``r'\path\file.ext'`` のような) パスの残りの部分
-   です。ドライブ名を含むパスでは常に *unc* が空文字列になります。
+   Split the pathname *path* into a pair ``(unc, rest)`` so that *unc* is the UNC
+   mount point (such as ``r'\\host\mount'``), if present, and *rest* the rest of
+   the path (such as  ``r'\path\file.ext'``).  For paths containing drive letters,
+   *unc* will always be the empty string.
 
-   利用可能: Windows
+   Availability:  Windows.
 
 
 .. function:: walk(path, visit, arg)
 
-   *path* をルートとする各ディレクトリに対して (もし *path* がディレク
-   トリなら *path* も含みます) 、 ``(arg, dirname, names)`` を引数とし
-   て関数 *visit* を呼び出します。引数 *dirname* は訪れたディレクトリ
-   を示し、引数 *names* はそのディレクトリ内のファイルのリスト
-   (``os.listdir(dirname)`` で得られる) です。
-   関数 *visit* によって *names* を変更して、 *dirname* 以下の対象とな
-   るディレクトリのセットを変更することもできます。例えば、あるディレ
-   クトリツリーだけ関数を適用しないなど。 (*names* で参照されるオブジェ
-   クトは、 :keyword:`del` あるいはスライスを使って正しく変更しなければなりません。)
+   Calls the function *visit* with arguments ``(arg, dirname, names)`` for each
+   directory in the directory tree rooted at *path* (including *path* itself, if it
+   is a directory).  The argument *dirname* specifies the visited directory, the
+   argument *names* lists the files in the directory (gotten from
+   ``os.listdir(dirname)``). The *visit* function may modify *names* to influence
+   the set of directories visited below *dirname*, e.g. to avoid visiting certain
+   parts of the tree.  (The object referred to by *names* must be modified in
+   place, using :keyword:`del` or slice assignment.)
 
    .. note::
 
-      ディレクトリへのシンボリックリンクはサブディレクトリとして扱われ
-      ないので、 :func:`walk` による操作対象とはされません。
-      ディレクトリへのシンボリックリンクを操作対象とするには、
-      ``os.path.islink(file)`` と ``os.path.isdir(file)``
-      で識別して、 :func:`walk` で必要な操作を実行しなければなりません。
+      Symbolic links to directories are not treated as subdirectories, and that
+      :func:`walk` therefore will not visit them. To visit linked directories you must
+      identify them with ``os.path.islink(file)`` and ``os.path.isdir(file)``, and
+      invoke :func:`walk` as necessary.
 
    .. note::
 
-      この関数は廃止予定で、 3.0 では削除されました。 :func:`os.walk`
-      が残っています。
+      This function is deprecated and has been removed in Python 3 in favor of
+      :func:`os.walk`.
 
 
 .. data:: supports_unicode_filenames
 
-   任意のユニコード文字列を (ファイルシステムの制限内で) ファイルネームに使う
-   ことが可能なら、真を返します。
+   ``True`` if arbitrary Unicode strings can be used as file names (within limitations
+   imposed by the file system).
 
    .. versionadded:: 2.3
 

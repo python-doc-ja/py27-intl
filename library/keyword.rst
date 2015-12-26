@@ -1,27 +1,23 @@
-
-:mod:`keyword` --- Python キーワードチェック
-============================================
+:mod:`keyword` --- Testing for Python keywords
+==============================================
 
 .. module:: keyword
-   :synopsis: 文字列が Python のキーワードか否かを調べます。
+   :synopsis: Test whether a string is a keyword in Python.
 
+**Source code:** :source:`Lib/keyword.py`
 
-このモジュールでは、 Python プログラムで文字列がキーワードか否かをチェックする機能を提供します。
+--------------
+
+This module allows a Python program to determine if a string is a keyword.
 
 
 .. function:: iskeyword(s)
 
-   *s* が Python のキーワードであれば真を返します。
+   Return true if *s* is a Python keyword.
 
 
 .. data:: kwlist
 
-   インタープリタで定義している全てのキーワードのシーケンス。
-   特定の :mod:`__future__` 宣言がなければ有効ではないキーワードでもこのリストに\
-   は含まれます。
-
-
-.. seealso::
-
-   最新のバージョンの `keyword モジュールの Python ソースコード
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/keyword.py?view=markup>`_
+   Sequence containing all the keywords defined for the interpreter.  If any
+   keywords are defined to only be active when particular :mod:`__future__`
+   statements are in effect, these will be included as well.

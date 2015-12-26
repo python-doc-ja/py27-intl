@@ -1,30 +1,27 @@
-
-:mod:`symbol` --- Python 解析木と共に使われる定数
-=================================================
+:mod:`symbol` --- Constants used with Python parse trees
+========================================================
 
 .. module:: symbol
-   :synopsis: 解析木の内部ノードを表す定数。
+   :synopsis: Constants representing internal nodes of the parse tree.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
+**Source code:** :source:`Lib/symbol.py`
 
-このモジュールは解析木の内部ノードの数値を表す定数を提供します。
-ほとんどの Python 定数とは違い、これらは小文字の名前を使います。
-言語の文法のコンテキストにおける名前の定義については、
-Python ディストリビューションのファイル :file:`Grammar/Grammar` を参照してください。
-名前がマップする特定の数値は Python のバージョン間で変わります。
+--------------
 
-このモジュールには、データオブジェクトも一つ付け加えられています:
+This module provides constants which represent the numeric values of internal
+nodes of the parse tree.  Unlike most Python constants, these use lower-case
+names.  Refer to the file :file:`Grammar/Grammar` in the Python distribution for
+the definitions of the names in the context of the language grammar.  The
+specific numeric values which the names map to may change between Python
+versions.
+
+This module also provides one additional data object:
 
 
 .. data:: sym_name
 
-   ディクショナリはこのモジュールで定義されている定数の数値を名前の文字列へマップし、
-   より人が読みやすいように解析木を表現します。
-
-
-.. seealso::
-
-   :mod:`parser` モジュール
-      :mod:`parser` モジュールの二番目の例で、
-      :mod:`symbol` モジュールの使い方を示しています。
+   Dictionary mapping the numeric values of the constants defined in this module
+   back to name strings, allowing more human-readable representation of parse trees
+   to be generated.
 

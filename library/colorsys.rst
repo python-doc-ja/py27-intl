@@ -1,61 +1,64 @@
-:mod:`colorsys` --- 色体系間の変換
-==================================
+:mod:`colorsys` --- Conversions between color systems
+=====================================================
 
 .. module:: colorsys
-   :synopsis: RGB 他の色体系間の変換。
+   :synopsis: Conversion functions between RGB and other color systems.
 .. sectionauthor:: David Ascher <da@python.net>
 
+**Source code:** :source:`Lib/colorsys.py`
 
-:mod:`colorsys` モジュールは、計算機のディスプレイモニタで使われている RGB (Red Green Blue) 色空間で表された色と、他の
-3 種類の色座標系: YIQ, HLS (Hue Lightness Saturation: 色相、彩度、飽和) および HSV (Hue
-Saturation Value: 色相、彩度、明度) との間の双方向の色値変換を定義します。これらの色空間における色座標系は全て浮動小数点数で表されます。
-YIQ 空間では、Y 軸は 0 から 1 ですが、 I および Q 軸は正の値も負の値もとり得ます。他の色空間では、各軸は全て 0 から 1 の値を
-とります。
+--------------
+
+The :mod:`colorsys` module defines bidirectional conversions of color values
+between colors expressed in the RGB (Red Green Blue) color space used in
+computer monitors and three other coordinate systems: YIQ, HLS (Hue Lightness
+Saturation) and HSV (Hue Saturation Value).  Coordinates in all of these color
+spaces are floating point values.  In the YIQ space, the Y coordinate is between
+0 and 1, but the I and Q coordinates can be positive or negative.  In all other
+spaces, the coordinates are all between 0 and 1.
 
 .. seealso::
 
-   色空間に関するより詳細な情報は
-   http://www.poynton.com/ColorFAQ.html と
-   http://www.cambridgeincolour.com/tutorials/color-spaces.htm
-   にあります。
+   More information about color spaces can be found at
+   http://www.poynton.com/ColorFAQ.html and
+   http://www.cambridgeincolour.com/tutorials/color-spaces.htm.
 
-:mod:`colorsys` モジュールでは、以下の関数が定義されています:
+The :mod:`colorsys` module defines the following functions:
 
 
 .. function:: rgb_to_yiq(r, g, b)
 
-   RGB から YIQ に変換します。
+   Convert the color from RGB coordinates to YIQ coordinates.
 
 
 .. function:: yiq_to_rgb(y, i, q)
 
-   YIQ から RGB に変換します。
+   Convert the color from YIQ coordinates to RGB coordinates.
 
 
 .. function:: rgb_to_hls(r, g, b)
 
-   RGB から HLS に変換します。
+   Convert the color from RGB coordinates to HLS coordinates.
 
 
 .. function:: hls_to_rgb(h, l, s)
 
-   HLS から RGB に変換します。
+   Convert the color from HLS coordinates to RGB coordinates.
 
 
 .. function:: rgb_to_hsv(r, g, b)
 
-   RGB から HSV に変換します。
+   Convert the color from RGB coordinates to HSV coordinates.
 
 
 .. function:: hsv_to_rgb(h, s, v)
 
-   HSV から RGB に変換します。
+   Convert the color from HSV coordinates to RGB coordinates.
 
-サンプルコード::
+Example::
 
    >>> import colorsys
-   >>> colorsys.rgb_to_hsv(.3, .4, .2)
-   (0.25, 0.5, 0.4)
-   >>> colorsys.hsv_to_rgb(0.25, 0.5, 0.4)
-   (0.3, 0.4, 0.2)
-
+   >>> colorsys.rgb_to_hsv(0.2, 0.4, 0.4)
+   (0.5, 0.5, 0.4)
+   >>> colorsys.hsv_to_rgb(0.5, 0.5, 0.4)
+   (0.2, 0.4, 0.4)

@@ -1,211 +1,206 @@
-:mod:`trace` --- Python ステートメント実行のトレースと追跡
+:mod:`trace` --- Trace or track Python statement execution
 ==========================================================
 
 .. module:: trace
-   :synopsis: Python ステートメント実行のトレースと追跡
+   :synopsis: Trace or track Python statement execution.
 
+**Source code:** :source:`Lib/trace.py`
 
-:mod:`trace` モジュールはプログラム実行のトレースを可能にし、
-generate ステートメントのカバレッジリストを注釈付きで生成して、
-呼び出し元/呼び出し先の関連やプログラム実行中に実行された関数のリストを出力します。
-これは別個のプログラム中またはコマンドラインから利用することができます。
+--------------
 
-.. seealso::
-
-   最新バージョンの `trace module Python source code
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/trace.py?view=markup>`_
+The :mod:`trace` module allows you to trace program execution, generate
+annotated statement coverage listings, print caller/callee relationships and
+list functions executed during a program run.  It can be used in another program
+or from the command line.
 
 .. _trace-cli:
 
-コマンドラインからの利用
-------------------------
+Command-Line Usage
+------------------
 
-:mod:`trace` モジュールはコマンドラインから起動することができます。
-これは次のように単純です。 ::
+The :mod:`trace` module can be invoked from the command line.  It can be as
+simple as ::
 
    python -m trace --count -C . somefile.py ...
 
-これで、 :file:`somefile.py` の実行中に import された Python 
-モジュールの注釈付きリストがカレントディレクトリに生成されます。
-
+The above will execute :file:`somefile.py` and generate annotated listings of
+all Python modules imported during the execution into the current directory.
 
 .. program:: trace
 
 .. cmdoption:: --help
 
-   使い方を表示して終了します。
+   Display usage and exit.
 
 .. cmdoption:: --version
 
-   モジュールのバージョンを表示して終了します。
+   Display the version of the module and exit.
 
-主要なオプション
-^^^^^^^^^^^^^^^^
+Main options
+^^^^^^^^^^^^
 
-:mod:`trace` を実行する時、以下のオプションのうち少なくとも1つを指定しなければなりません。
-:option:`--listfuncs <-l>` オプションは :option:`--trace <-t>` および
-:option:`--counts <-c>` オプションと互いに排他的です。
-つまり :option:`--listfuncs <-l>` オプションを指定した場合 :option:`--trace <-t>`
-や :option:`--counts <-c>` は指定できず、逆も然りです。
+At least one of the following options must be specified when invoking
+:mod:`trace`.  The :option:`--listfuncs <-l>` option is mutually exclusive with
+the :option:`--trace <-t>` and :option:`--count <-c>` options. When
+:option:`--listfuncs <-l>` is provided, neither :option:`--count <-c>` nor
+:option:`--trace <-t>` are accepted, and vice versa.
 
 .. program:: trace
 
 .. cmdoption:: -c, --count
 
-   プログラム完了時に、それぞれのステートメントが何回実行されたかを示す
-   注釈付きリストのファイルを生成します。
-   下記の :option:`--coverdir <-C>`, :option:`--file <-f>`, :option:`--no-report <-R>` も参照。
+   Produce a set of annotated listing files upon program completion that shows
+   how many times each statement was executed.  See also
+   :option:`--coverdir <-C>`, :option:`--file <-f>` and
+   :option:`--no-report <-R>` below.
 
 .. cmdoption:: -t, --trace
 
-   実行されるままに行を表示します。
+   Display lines as they are executed.
 
 .. cmdoption:: -l, --listfuncs
 
-   プログラム実行の際に実行された関数を表示します。
+   Display the functions executed by running the program.
 
 .. cmdoption:: -r, --report
 
-   :option:`--count <-c>` と :option:`--file <-f>` 引数を使った、過去のプログラム実行結果から
-   注釈付きリストのファイルを生成します。コードを実行するわけではありません。
+   Produce an annotated list from an earlier program run that used the
+   :option:`--count <-c>` and :option:`--file <-f>` option.  This does not
+   execute any code.
 
 .. cmdoption:: -T, --trackcalls
 
-   プログラム実行によって明らかになった呼び出しの関連を表示します。
+   Display the calling relationships exposed by running the program.
 
-修飾的オプション
-^^^^^^^^^^^^^^^^
+Modifiers
+^^^^^^^^^
 
 .. program:: trace
 
 .. cmdoption:: -f, --file=<file>
 
-   複数回にわたるトレース実行についてカウント(count)を蓄積するファイルに名前をつけます。
-   :option:`--count <-c>` オプションと一緒に使って下さい。
+   Name of a file to accumulate counts over several tracing runs.  Should be
+   used with the :option:`--count <-c>` option.
 
 .. cmdoption:: -C, --coverdir=<dir>
 
-   レポートファイルを保存するディレクトリを指定します。
-   ``package.module`` についてのカバレッジレポートは
-   :file:`{dir}/{package}/{module}.cover` に書き込まれます。
+   Directory where the report files go.  The coverage report for
+   ``package.module`` is written to file :file:`{dir}/{package}/{module}.cover`.
 
 .. cmdoption:: -m, --missing
 
-   注釈付きリストの生成時に、実行されなかった行に ``>>>>>>`` の印を付けます。
+   When generating annotated listings, mark lines which were not executed with
+   ``>>>>>>``.
 
 .. cmdoption:: -s, --summary
 
-   :option:`--count <-c>` または :option:`--report <-r>` の利用時に、
-   処理されたファイルそれぞれの簡潔なサマリを標準出力(stdout)に書き出します。
+   When using :option:`--count <-c>` or :option:`--report <-r>`, write a brief
+   summary to stdout for each file processed.
 
 .. cmdoption:: -R, --no-report
 
-   注釈付きリストを生成しません。これは :option:`--count <-c>` を何度か走らせてから
-   最後に単一の注釈付きリストを生成するような場合に便利です。
+   Do not generate annotated listings.  This is useful if you intend to make
+   several runs with :option:`--count <-c>`, and then produce a single set of
+   annotated listings at the end.
 
 .. cmdoption:: -g, --timing
 
-   各行の先頭にプログラム開始からの時間を付けます。トレース中にだけ使われます。
+   Prefix each line with the time since the program started.  Only used while
+   tracing.
 
+Filters
+^^^^^^^
 
-フィルターオプション
-^^^^^^^^^^^^^^^^^^^^
-
-これらのオプションは複数回指定できます。
+These options may be repeated multiple times.
 
 .. program:: trace
 
 .. cmdoption:: --ignore-module=<mod>
 
-   指定されたモジュールと（パッケージだった場合は）そのサブモジュールを無視します。
-   引数はカンマ区切りのモジュール名リストです。
+   Ignore each of the given module names and its submodules (if it is a
+   package).  The argument can be a list of names separated by a comma.
 
 .. cmdoption:: --ignore-dir=<dir>
 
-   指定されたディレクトリとサブディレクトリ中のモジュールとパッケージを全て無視します。
-   引数は :data:`os.pathsep` で区切られたディレクトリのリストです。
-
+   Ignore all modules and packages in the named directory and subdirectories.
+   The argument can be a list of directories separated by :data:`os.pathsep`.
 
 .. _trace-api:
 
-プログラミングインターフェース
-------------------------------
-
+Programmatic Interface
+----------------------
 
 .. class:: Trace([count=1[, trace=1[, countfuncs=0[, countcallers=0[, ignoremods=()[, ignoredirs=()[, infile=None[, outfile=None[, timing=False]]]]]]]]])
 
-   文(statement)や式(expression)の実行をトレースするオブジェクトを作成します。
-   全てのパラメタがオプションです。
-   *count* は行数を数えます。
-   *trace* は行実行のトレースを行います。
-   *countfuncs* は実行中に呼ばれた関数を列挙します。
-   *countcallers* は呼び出しの関連の追跡を行います。
-   *ignoremods* は無視するモジュールやパッケージのリストです。
-   *ignoredirs* は無視するパッケージやモジュールを含むディレクトリのリストです。
-   *infile* は保存された集計(count)情報を読むファイルの名前です。
-   *outfile* は更新された集計(count)情報を書き出すファイルの名前です。
-   *timing* は、タイムスタンプをトレース開始時点からの相対秒数で表示します。
-
+   Create an object to trace execution of a single statement or expression.  All
+   parameters are optional.  *count* enables counting of line numbers.  *trace*
+   enables line execution tracing.  *countfuncs* enables listing of the
+   functions called during the run.  *countcallers* enables call relationship
+   tracking.  *ignoremods* is a list of modules or packages to ignore.
+   *ignoredirs* is a list of directories whose modules or packages should be
+   ignored.  *infile* is the name of the file from which to read stored count
+   information.  *outfile* is the name of the file in which to write updated
+   count information.  *timing* enables a timestamp relative to when tracing was
+   started to be displayed.
 
     .. method:: run(cmd)
 
-       コマンドを実行して、現在のトレースパラメータに基づいてその実行から
-       統計情報を集めます。
-       *cmd* は、 :func:`exec` に渡せるような文字列か code オブジェクトです。
+       Execute the command and gather statistics from the execution with
+       the current tracing parameters.  *cmd* must be a string or code object,
+       suitable for passing into :func:`exec`.
 
+    .. method:: runctx(cmd, globals=None, locals=None)
 
-    .. method:: runctx(cmd[, globals=None[, locals=None]])
-
-       指定された globals と locals 環境下で、コマンドを実行して、現在の
-       トレースパラメータに基づいてその実行から統計情報を集めます。
-       *cmd* は、 :func:`exec` に渡せるような文字列か code オブジェクトです。
-       定義しない場合、 *globals* と *locals* はデフォルトで空の辞書となります。
-
+       Execute the command and gather statistics from the execution with the
+       current tracing parameters, in the defined global and local
+       environments.  If not defined, *globals* and *locals* default to empty
+       dictionaries.
 
     .. method:: runfunc(func, *args, **kwds)
 
-       与えられた引数の *func* を、 :class:`Trace` オブジェクトのコントロール下で
-       現在のトレースパラメタのもとに呼び出します。
+       Call *func* with the given arguments under control of the :class:`Trace`
+       object with the current tracing parameters.
 
     .. method:: results()
 
-       与えられた :class:`Trace` インスタンスの ``run``, ``runctx``, ``runfunc``
-       の以前の呼び出しについて集計した結果を納めた :class:`CoverageResults`
-       オブジェクトを返します。蓄積されたトレース結果はリセットしません。
+       Return a :class:`CoverageResults` object that contains the cumulative
+       results of all previous calls to ``run``, ``runctx`` and ``runfunc``
+       for the given :class:`Trace` instance.  Does not reset the accumulated
+       trace results.
 
 .. class:: CoverageResults
 
-   カバレッジ結果のコンテナで、 :meth:`Trace.results` で生成されるものです。
-   ユーザーが直接生成するものではありません。
+   A container for coverage results, created by :meth:`Trace.results`.  Should
+   not be created directly by the user.
 
     .. method:: update(other)
 
-       別の :class:`CoverageResults` オブジェクトのデータを統合します。
+       Merge in data from another :class:`CoverageResults` object.
 
     .. method:: write_results([show_missing=True[, summary=False[, coverdir=None]]])
 
-       カバレッジ結果を書き出します。
-       ヒットしなかった行も出力するには *show_missing* を指定します。
-       モジュールごとのサマリーを出力に含めるには *summary* を指定します。
-       *coverdir* に指定するのは結果ファイルを出力するディレクトリです。
-       ``None`` の場合は各ソースファイルごとの結果がそれぞれのディレクトリに置かれます。
+       Write coverage results.  Set *show_missing* to show lines that had no
+       hits.  Set *summary* to include in the output the coverage summary per
+       module.  *coverdir* specifies the directory into which the coverage
+       result files will be output.  If ``None``, the results for each source
+       file are placed in its directory.
 
-簡単な例でプログラミングインターフェースの使い方を見てみましょう ::
+A simple example demonstrating the use of the programmatic interface::
 
    import sys
    import trace
 
-   # Trace オブジェクトを、無視するもの、トレースや行カウントのいずれか
-   # または両方を行うか否かを指定して作成します。
+   # create a Trace object, telling it what to ignore, and whether to
+   # do tracing or line-counting or both.
    tracer = trace.Trace(
        ignoredirs=[sys.prefix, sys.exec_prefix],
        trace=0,
        count=1)
 
-   # 与えられたトレーサを使って、コマンドを実行します。
+   # run the new command using the given tracer
    tracer.run('main()')
 
-   # 出力先を /tmp としてレポートを作成します。
+   # make a report, placing output in the current directory
    r = tracer.results()
-   r.write_results(show_missing=True, coverdir="/tmp")
+   r.write_results(show_missing=True, coverdir=".")
 

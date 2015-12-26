@@ -1,14 +1,13 @@
 
 .. _mmedia:
 
-**********************
-マルチメディアサービス
-**********************
+*******************
+Multimedia Services
+*******************
 
-この章で記述されているモジュールは、主にマルチメディアアプリケーションに役立つさまざまなアルゴリズムまたはインターフェイスを実装しています。
-これらのモジュールはインストール時の自由裁量に応じて利用できます。
-
-以下に概要を示します。
+The modules described in this chapter implement various algorithms or interfaces
+that are mainly useful for multimedia applications.  They are available at the
+discretion of the installation.  Here's an overview:
 
 
 .. toctree::

@@ -1,14 +1,15 @@
 
 .. _frameworks:
 
-**************************
-プログラムのフレームワーク
-**************************
+******************
+Program Frameworks
+******************
 
-この章で解説されるモジュールはあなたのプログラムの大枠を規定するフレームワークです。
-現状では、ここで解説されるモジュールは全てコマンドラインインタフェースを書くためのものです。
+The modules described in this chapter are frameworks that will largely dictate
+the structure of your program.  Currently the modules described  here are all
+oriented toward writing command-line interfaces.
 
-この章の完全な一覧は:
+The full list of modules described in this chapter is:
 
 
 .. toctree::

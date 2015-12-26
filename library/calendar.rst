@@ -1,221 +1,217 @@
-
-:mod:`calendar` --- 一般的なカレンダーに関する関数群
-====================================================
+:mod:`calendar` --- General calendar-related functions
+======================================================
 
 .. module:: calendar
-   :synopsis: Unix の cal プログラム相当の機能を含んだカレンダーに関する関数群
+   :synopsis: Functions for working with calendars, including some emulation of the Unix cal
+              program.
 .. sectionauthor:: Drew Csillag <drew_csillag@geocities.com>
 
+**Source code:** :source:`Lib/calendar.py`
 
-このモジュールは Unix の :program:`cal`
-プログラムのようなカレンダー出力を行い、
-それに加えてカレンダーに関する有益な関数群を提供します。
-標準ではこれらのカレンダーは（ヨーロッパの慣例に従って）月曜日を週の始まりとし、
-日曜日を最後の日としています。
-:func:`setfirstweekday` を用いることで、
-日曜日(6)や他の曜日を週の始まりに設定することができます。
-日付を表す引数は整数値で与えます。
-関連する機能として、 :mod:`datetime` と :mod:`time` モジュールも参照してください。
+--------------
 
-このモジュールで提供する関数とクラスのほとんどは :mod:`datetime` に依存しており、
-過去も未来も現代のグレゴリオ暦を利用します。
-この方式は Dershowitz と Reingold の書籍「Calendrical Calculations」にある
-proleptic Gregorian 暦に一致しており、同書では全ての計算の基礎となる暦としています。
-[#]_
+This module allows you to output calendars like the Unix :program:`cal` program,
+and provides additional useful functions related to the calendar. By default,
+these calendars have Monday as the first day of the week, and Sunday as the last
+(the European convention). Use :func:`setfirstweekday` to set the first day of
+the week to Sunday (6) or to any other weekday.  Parameters that specify dates
+are given as integers. For related
+functionality, see also the :mod:`datetime` and :mod:`time` modules.
 
-.. seealso::
+Most of these functions and classes rely on the :mod:`datetime` module which
+uses an idealized calendar, the current Gregorian calendar indefinitely extended
+in both directions.  This matches the definition of the "proleptic Gregorian"
+calendar in Dershowitz and Reingold's book "Calendrical Calculations", where
+it's the base calendar for all computations.
 
-   最新バージョンの `calendar module Python source code
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/calendar.py?view=markup>`_
 
 .. class:: Calendar([firstweekday])
 
-   :class:`Calendar` オブジェクトを作ります。
-   *firstweekday* は整数で週の始まりの曜日を指定するものです。
-   ``0`` が月曜(デフォルト)、 ``6`` なら日曜です。
+   Creates a :class:`Calendar` object. *firstweekday* is an integer specifying the
+   first day of the week. ``0`` is Monday (the default), ``6`` is Sunday.
 
-   :class:`Calendar` オブジェクトは整形されるカレンダーのデータを準備するために使える
-   いくつかのメソッドを提供しています。しかし整形機能そのものは提供していません。
-   それはサブクラスの仕事なのです。
+   A :class:`Calendar` object provides several methods that can be used for
+   preparing the calendar data for formatting. This class doesn't do any formatting
+   itself. This is the job of subclasses.
 
    .. versionadded:: 2.5
 
-   :class:`Calendar` インスタンスには以下のメソッドがあります。
+   :class:`Calendar` instances have the following methods:
 
 
-   .. method:: iterweekdays(weekday)
+   .. method:: iterweekdays()
 
-         曜日の数字を一週間分生成するイテレータを返します。
-         イテレータから得られる最初の数字は :meth:`firstweekday`
-         が返す数字と同じになります。
-
-         .. % firstweekday は属性
-         .. % getfirstweekday() の謂いか
+      Return an iterator for the week day numbers that will be used for one
+      week.  The first value from the iterator will be the same as the value of
+      the :attr:`firstweekday` property.
 
 
    .. method:: itermonthdates(year, month)
 
-         *year* 年 *month* 月に対するイテレータを返します。
-         このイテレータはその月の全ての日(:class:`datetime.date`
-         オブジェクトとして) およびその前後の日で週に欠けが無いようにするのに必要な日を返します。
+      Return an iterator for the month *month* (1-12) in the year *year*. This
+      iterator will return all days (as :class:`datetime.date` objects) for the
+      month and all days before the start of the month or after the end of the
+      month that are required to get a complete week.
 
 
    .. method:: itermonthdays2(year, month)
 
-         *year* 年 *month* 月に対する :meth:`itermonthdates` と同じような
-         イテレータを返します。生成されるのは日付の数字と曜日を表す数字のタプルです。
+      Return an iterator for the month *month* in the year *year* similar to
+      :meth:`itermonthdates`. Days returned will be tuples consisting of a day
+      number and a week day number.
 
 
    .. method:: itermonthdays(year, month)
 
-         *year* 年 *month* 月に対する :meth:`itermonthdates` と同じようなイテレータを返します。
-         生成されるのは日付の数字だけです。
+      Return an iterator for the month *month* in the year *year* similar to
+      :meth:`itermonthdates`. Days returned will simply be day numbers.
 
 
    .. method:: monthdatescalendar(year, month)
 
-         *year* 年 *month* 月の週のリストを返します。
-         週は全て七つの :class:`datetime.date` オブジェクトからなるリストです。
+      Return a list of the weeks in the month *month* of the *year* as full
+      weeks.  Weeks are lists of seven :class:`datetime.date` objects.
 
 
    .. method:: monthdays2calendar(year, month)
 
-         *year* 年 *month* 月の週のリストを返します。
-         週は全て七つの日付の数字と曜日を表す数字のタプルからなるリストです。
+      Return a list of the weeks in the month *month* of the *year* as full
+      weeks.  Weeks are lists of seven tuples of day numbers and weekday
+      numbers.
 
 
    .. method:: monthdayscalendar(year, month)
 
-         *year* 年 *month* 月の週のリストを返します。
-         週は全て七つの日付の数字からなるリストです。
+      Return a list of the weeks in the month *month* of the *year* as full
+      weeks.  Weeks are lists of seven day numbers.
 
 
    .. method:: yeardatescalendar(year[, width])
 
-         指定された年のデータを整形に向く形で返します。
-         返される値は月の並びのリストです。
-         月の並びは最大で *width* ヶ月(デフォルトは3ヶ月)分です。
-         各月は4ないし6週からなり、各週は1ないし7日からなります。
-         各日は :class:`datetime.date` オブジェクトです。
+      Return the data for the specified year ready for formatting. The return
+      value is a list of month rows. Each month row contains up to *width*
+      months (defaulting to 3). Each month contains between 4 and 6 weeks and
+      each week contains 1--7 days. Days are :class:`datetime.date` objects.
 
 
    .. method:: yeardays2calendar(year[, width])
 
-         指定された年のデータを整形に向く形で返します
-         (:meth:`yeardatescalendar` と同様です)。
-         週のリストの中が日付の数字と曜日の数字のタプルになります。
-         月の範囲外の部分の日付はゼロです。
+      Return the data for the specified year ready for formatting (similar to
+      :meth:`yeardatescalendar`). Entries in the week lists are tuples of day
+      numbers and weekday numbers. Day numbers outside this month are zero.
 
 
    .. method:: yeardayscalendar(year[, width])
 
-         指定された年のデータを整形に向く形で返します
-         (:meth:`yeardatescalendar` と同様です)。
-         週のリストの中が日付の数字になります。
-         月の範囲外の日付はゼロです。
+      Return the data for the specified year ready for formatting (similar to
+      :meth:`yeardatescalendar`). Entries in the week lists are day numbers. Day
+      numbers outside this month are zero.
 
 
 .. class:: TextCalendar([firstweekday])
 
-   このクラスはプレインテキストのカレンダーを生成するのに使えます。
+   This class can be used to generate plain text calendars.
 
    .. versionadded:: 2.5
 
-   :class:`TextCalendar` インスタンスには以下のメソッドがあります。
+   :class:`TextCalendar` instances have the following methods:
 
 
    .. method:: formatmonth(theyear, themonth[, w[, l]])
 
-      ひと月分のカレンダーを複数行の文字列で返します。
-      *w* により日の列幅を変えることができ、それらはセンタリングされます。
-      *l* により各週の表示される行数を変えることができます。
-      :meth:`setfirstweekday` メソッドでセットされた週の最初の曜日に依存します。
+      Return a month's calendar in a multi-line string. If *w* is provided, it
+      specifies the width of the date columns, which are centered. If *l* is
+      given, it specifies the number of lines that each week will use. Depends
+      on the first weekday as specified in the constructor or set by the
+      :meth:`setfirstweekday` method.
 
 
    .. method:: prmonth(theyear, themonth[, w[, l]])
 
-      :meth:`formatmonth` で返されるひと月分のカレンダーを出力します。
+      Print a month's calendar as returned by :meth:`formatmonth`.
 
 
    .. method:: formatyear(theyear[, w[, l[, c[, m]]]])
 
-      *m* 列からなる一年間のカレンダーを複数行の文字列で返します。
-      任意の引数 *w*, *l*, *c* はそれぞれ、日付列の表示幅、各週の行数及び
-      月と月の間のスペースの数を変更するためのものです。
-      :meth:`setfirstweekday` メソッドでセットされた週の最初の曜日に依存します。
-      カレンダーを出力できる最初の年はプラットフォームに依存します。
+      Return a *m*-column calendar for an entire year as a multi-line string.
+      Optional parameters *w*, *l*, and *c* are for date column width, lines per
+      week, and number of spaces between month columns, respectively. Depends on
+      the first weekday as specified in the constructor or set by the
+      :meth:`setfirstweekday` method.  The earliest year for which a calendar
+      can be generated is platform-dependent.
 
 
    .. method:: pryear(theyear[, w[, l[, c[, m]]]])
 
-      :meth:`formatyear` で返される一年間のカレンダーを出力します。
+      Print the calendar for an entire year as returned by :meth:`formatyear`.
 
 
 .. class:: HTMLCalendar([firstweekday])
 
-   このクラスは HTML のカレンダーを生成するのに使えます。
+   This class can be used to generate HTML calendars.
 
    .. versionadded:: 2.5
 
-   :class:`HTMLCalendar` インスタンスには以下のメソッドがあります。
+   :class:`HTMLCalendar` instances have the following methods:
 
 
    .. method:: formatmonth(theyear, themonth[, withyear])
 
-      ひと月分のカレンダーを HTML のテーブルとして返します。 *withyear*
-      が真であればヘッダには年も含まれます。そうでなければ月の名前だけが使われます。
+      Return a month's calendar as an HTML table. If *withyear* is true the year
+      will be included in the header, otherwise just the month name will be
+      used.
 
 
    .. method:: formatyear(theyear[, width])
 
-      一年分のカレンダーを HTML のテーブルとして返します。
-      *width* の値 (デフォルトでは 3 です) は何ヶ月分を一行に収めるかを指定します。
+      Return a year's calendar as an HTML table. *width* (defaulting to 3)
+      specifies the number of months per row.
 
 
    .. method:: formatyearpage(theyear[, width[, css[, encoding]]])
 
-      一年分のカレンダーを一つの完全な HTML ページとして返します。
-      *width* の値(デフォルトでは 3 です) は何ヶ月分を一行に収めるかを指定します。
-      *css* は使われるカスケーディングスタイルシートの名前です。
-      スタイルシートを使わないようにするために :const:`None` を渡すこともできます。
-      *encoding* には出力に使うエンコーディングを指定します (デフォルトではシステムデフォルトのエンコーディングです)。
+      Return a year's calendar as a complete HTML page. *width* (defaulting to
+      3) specifies the number of months per row. *css* is the name for the
+      cascading style sheet to be used. :const:`None` can be passed if no style
+      sheet should be used. *encoding* specifies the encoding to be used for the
+      output (defaulting to the system default encoding).
 
 
 .. class:: LocaleTextCalendar([firstweekday[, locale]])
 
-   この :class:`TextCalendar` のサブクラスではコンストラクタにロケール名を渡すことができ、
-   メソッドの返り値で月や曜日が指定されたロケールのものになります。
-   このロケールがエンコーディングを含む場合には、月や曜日の入った文字列はユニコードとして返されます。
+   This subclass of :class:`TextCalendar` can be passed a locale name in the
+   constructor and will return month and weekday names in the specified locale.
+   If this locale includes an encoding all strings containing month and weekday
+   names will be returned as unicode.
 
    .. versionadded:: 2.5
 
 
 .. class:: LocaleHTMLCalendar([firstweekday[, locale]])
 
-   この :class:`HTMLCalendar` のサブクラスではコンストラクタにロケール名を渡す
-   ことができ、メソッドの返り値で月や曜日が指定されたロケールのものになります。
-   このロケールがエンコーディングを含む場合には、月や曜日の入った文字列は
-   ユニコードとして返されます。
+   This subclass of :class:`HTMLCalendar` can be passed a locale name in the
+   constructor and will return month and weekday names in the specified
+   locale. If this locale includes an encoding all strings containing month and
+   weekday names will be returned as unicode.
 
    .. versionadded:: 2.5
 
 .. note::
 
-   これら2つのクラスの :meth:`formatweekday` と :meth:`formatmonthname` メソッドは、
-   一時的に現在の locale を指定された *locale* に変更します。
-   現在の locale はプロセス全体に影響するので、これらはスレッドセーフではありません。
+   The :meth:`formatweekday` and :meth:`formatmonthname` methods of these two
+   classes temporarily change the current locale to the given *locale*.  Because
+   the current locale is a process-wide setting, they are not thread-safe.
 
 
-単純なテキストのカレンダーに関して、このモジュールには以下のような関数が提供されています。
+For simple text calendars this module provides the following functions.
 
 
 .. function:: setfirstweekday(weekday)
 
-   週の最初の曜日(``0`` は月曜日, ``6`` は日曜日)を設定します。
-   定数 :const:`MONDAY`, :const:`TUESDAY`,
-   :const:`WEDNESDAY`, :const:`THURSDAY`, :const:`FRIDAY`,
-   :const:`SATURDAY` 及び :const:`SUNDAY` は便宜上提供されています。
-   例えば、日曜日を週の開始日に設定するときは::
+   Sets the weekday (``0`` is Monday, ``6`` is Sunday) to start each week. The
+   values :const:`MONDAY`, :const:`TUESDAY`, :const:`WEDNESDAY`, :const:`THURSDAY`,
+   :const:`FRIDAY`, :const:`SATURDAY`, and :const:`SUNDAY` are provided for
+   convenience. For example, to set the first weekday to Sunday::
 
       import calendar
       calendar.setfirstweekday(calendar.SUNDAY)
@@ -225,119 +221,120 @@ proleptic Gregorian 暦に一致しており、同書では全ての計算の基
 
 .. function:: firstweekday()
 
-   現在設定されている週の最初の曜日を返します。
+   Returns the current setting for the weekday to start each week.
 
    .. versionadded:: 2.0
 
 
 .. function:: isleap(year)
 
-   *year* が閏年なら :const:`True` を、そうでなければ :const:`False` を返します。
+   Returns :const:`True` if *year* is a leap year, otherwise :const:`False`.
 
 
 .. function:: leapdays(y1, y2)
 
-   範囲(*y1* ... *y2*)指定された期間の閏年の回数を返します。
-   ここで *y1* や *y2* は年を表します。
+   Returns the number of leap years in the range from *y1* to *y2* (exclusive),
+   where *y1* and *y2* are years.
 
    .. versionchanged:: 2.0
-      Python 1.5.2では、この関数は世紀をまたがった範囲では動作しません。
+      This function didn't work for ranges spanning a century change in Python
+      1.5.2.
 
 
 .. function:: weekday(year, month, day)
 
-   *year* (``1970``--...), *month* (``1``--``12``), *day* (``1``--``31``)
-   で与えられた日の曜日(``0`` は月曜日)を返します。
+   Returns the day of the week (``0`` is Monday) for *year* (``1970``--...),
+   *month* (``1``--``12``), *day* (``1``--``31``).
 
 
 .. function:: weekheader(n)
 
-   短縮された曜日名を含むヘッダを返します。
-   *n* は各曜日を何文字で表すかを指定します。
+   Return a header containing abbreviated weekday names. *n* specifies the width in
+   characters for one weekday.
 
 
 .. function:: monthrange(year, month)
 
-   *year* と *month* で指定された月の一日の曜日と日数を返します。
+   Returns weekday of first day of the month and number of days in month,  for the
+   specified *year* and *month*.
 
 
 .. function:: monthcalendar(year, month)
 
-   月のカレンダーを行列で返します。各行が週を表し、月の範囲外の日は0になります。
-   それぞれの週は :func:`setfirstweekday` で設定をしていない限り月曜日から始まります。
+   Returns a matrix representing a month's calendar.  Each row represents a week;
+   days outside of the month a represented by zeros. Each week begins with Monday
+   unless set by :func:`setfirstweekday`.
 
 
 .. function:: prmonth(theyear, themonth[, w[, l]])
 
-   :func:`month` 関数によって返される月のカレンダーを出力します。
+   Prints a month's calendar as returned by :func:`month`.
 
 
 .. function:: month(theyear, themonth[, w[, l]])
 
-   :class:`TextCalendar` の :meth:`formatmonth` メソッドを利用して、
-   ひと月分のカレンダーを複数行の文字列で返します。
+   Returns a month's calendar in a multi-line string using the :meth:`formatmonth`
+   of the :class:`TextCalendar` class.
 
    .. versionadded:: 2.0
 
 
 .. function:: prcal(year[, w[, l[c]]])
 
-   :func:`calendar` 関数で返される一年間のカレンダーを出力します。
+   Prints the calendar for an entire year as returned by  :func:`calendar`.
 
 
 .. function:: calendar(year[, w[, l[c]]])
 
-   :class:`TextCalendar` の :meth:`formatyear` メソッドを利用して、
-   3列からなる一年間のカレンダーを複数行の文字列で返します。
+   Returns a 3-column calendar for an entire year as a multi-line string using the
+   :meth:`formatyear` of the :class:`TextCalendar` class.
 
    .. versionadded:: 2.0
 
 
 .. function:: timegm(tuple)
 
-   関連はありませんが便利な関数で、 :mod:`time` モジュールの :func:`gmtime`
-   関数の戻値のような時間のタプルを受け取り、
-   1970年を起点とし、POSIX規格のエンコードによるUnixのタイムスタンプに相当する
-   値を返します。実際、 :func:`time.gmtime` と :func:`timegm` は反対の動作をします。
+   An unrelated but handy function that takes a time tuple such as returned by
+   the :func:`~time.gmtime` function in the :mod:`time` module, and returns the
+   corresponding Unix timestamp value, assuming an epoch of 1970, and the POSIX
+   encoding.  In fact, :func:`time.gmtime` and :func:`timegm` are each others'
+   inverse.
 
    .. versionadded:: 2.0
 
-:mod:`calendar` モジュールの以下のデータ属性を利用することができます:
+The :mod:`calendar` module exports the following data attributes:
 
 
 .. data:: day_name
 
-   現在のロケールでの曜日を表す配列です。
+   An array that represents the days of the week in the current locale.
 
 
 .. data:: day_abbr
 
-   現在のロケールでの短縮された曜日を表す配列です。
+   An array that represents the abbreviated days of the week in the current locale.
 
 
 .. data:: month_name
 
-   現在のロケールでの月の名を表す配列です。この配列は通常の約束事に従って、
-   1月を数字の 1 で表しますので、長さが 13 ある代わりに
-   ``month_name[0]`` が空文字列になります。
+   An array that represents the months of the year in the current locale.  This
+   follows normal convention of January being month number 1, so it has a length of
+   13 and  ``month_name[0]`` is the empty string.
 
 
 .. data:: month_abbr
 
-   現在のロケールでの短縮された月の名を表す配列です。
-   この配列は通常の約束事に従って、1月を数字の 1 で表しますので、長さが 13 ある代わりに
-   ``month_name[0]`` が空文字列になります。
+   An array that represents the abbreviated months of the year in the current
+   locale.  This follows normal convention of January being month number 1, so it
+   has a length of 13 and  ``month_abbr[0]`` is the empty string.
 
 
 .. seealso::
 
    Module :mod:`datetime`
-      :mod:`time` モジュールと似た機能を持った日付と時間用のオブジェクト指向インタフェース。
+      Object-oriented interface to dates and times with similar functionality to the
+      :mod:`time` module.
 
    Module :mod:`time`
-      低レベルの時間に関連した関数群。
+      Low-level time related functions.
 
-.. rubric:: 注記
-
-.. [#] 訳注: proleptic Gregorian 暦とはグレゴリオ暦制定(1582年)以前についても\
-   グレゴリオ暦で言い表す暦の方式のことで ISO 8601 などでも採用されています

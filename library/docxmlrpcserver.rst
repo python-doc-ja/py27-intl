@@ -1,91 +1,101 @@
-:mod:`DocXMLRPCServer` --- セルフ-ドキュメンティング XML-RPC サーバ
-===================================================================
+:mod:`DocXMLRPCServer` --- Self-documenting XML-RPC server
+==========================================================
 
 .. module:: DocXMLRPCServer
-   :synopsis: セルフ-ドキュメンティング XML-RPC サーバの実装。
+   :synopsis: Self-documenting XML-RPC server implementation.
 .. moduleauthor:: Brian Quinlan <brianq@activestate.com>
 .. sectionauthor:: Brian Quinlan <brianq@activestate.com>
 
-.. .. note::
+.. note::
    The :mod:`DocXMLRPCServer` module has been merged into :mod:`xmlrpc.server`
-   in Python 3.0.  The :term:`2to3` tool will automatically adapt imports when
-   converting your sources to 3.0.
+   in Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
-:mod:`DocXMLRPCServer` モジュールは、Python 3では :mod:`xmlrpc.server` モジュールに統合されました。
-:term:`2to3` ツールは、ソースコード内のimportを自動的にPython 3用に修正します。
 
 .. versionadded:: 2.3
 
-:mod:`DocXMLRPCServer` モジュールは :mod:`SimpleXMLRPCServer` クラスを拡張し、HTTP GET
-リクエストに対し HTML ドキュメントを返します。サーバは :class:`DocXMLRPCServer` を使ったスタンドアロン環境、
-:class:`DocCGIXMLRPCRequestHandler` を使った CGI 環境の2つがあります。
+The :mod:`DocXMLRPCServer` module extends the classes found in
+:mod:`SimpleXMLRPCServer` to serve HTML documentation in response to HTTP GET
+requests. Servers can either be free standing, using :class:`DocXMLRPCServer`,
+or embedded in a CGI environment, using :class:`DocCGIXMLRPCRequestHandler`.
 
 
 .. class:: DocXMLRPCServer(addr[, requestHandler[, logRequests[, allow_none[,  encoding[, bind_and_activate]]]]])
 
-   当たなサーバ・インスタンスを生成します。各パラメータの内容は :class:`SimpleXMLRPCServer.SimpleXMLRPCServer`
-   のものと同じですが、 *requestHandler* のデフォルトは :class:`DocXMLRPCRequestHandler` になっています。
+   Create a new server instance. All parameters have the same meaning as for
+   :class:`SimpleXMLRPCServer.SimpleXMLRPCServer`; *requestHandler* defaults to
+   :class:`DocXMLRPCRequestHandler`.
 
 
 .. class:: DocCGIXMLRPCRequestHandler()
 
-   CGI環境に XMR-RPC リクエスト・ハンドラの新たなインスタンスを生成します。
+   Create a new instance to handle XML-RPC requests in a CGI environment.
 
 
 .. class:: DocXMLRPCRequestHandler()
 
-   リクエスト・ハンドラの新たなインスタンスを生成します。このリクエスト・ハンドラは XML-RPC POST リクエスト、ドキュメントの GET、そして
-   :class:`DocXMLRPCServer` コンストラクタに与えられた *logRequests*
-   パラメータ設定を優先するため、ロギングの変更をサポートします。
+   Create a new request handler instance. This request handler supports XML-RPC
+   POST requests, documentation GET requests, and modifies logging so that the
+   *logRequests* parameter to the :class:`DocXMLRPCServer` constructor parameter is
+   honored.
 
 
 .. _doc-xmlrpc-servers:
 
-DocXMLRPCServer オブジェクト
-----------------------------
+DocXMLRPCServer Objects
+-----------------------
 
-:class:`DocXMLRPCServer` は :class:`SimpleXMLRPCServer.SimpleXMLRPCServer`
-の派生クラスで、セルフ-  ドキュメンティングの手段と XML-RPC サーバ機能を提供します。HTTP POST  リクエストは XML-RPC
-メソッドの呼び出しとして扱われます。HTTP GET リクエストは pydoc スタイルの HTML ドキュメント生成のリクエストとして扱わ
-れます。これはサーバが自分自身のドキュメントを Web ベースで提供可能であることを意味します。
+The :class:`DocXMLRPCServer` class is derived from
+:class:`SimpleXMLRPCServer.SimpleXMLRPCServer` and provides a means of creating
+self-documenting, stand alone XML-RPC servers. HTTP POST requests are handled as
+XML-RPC method calls. HTTP GET requests are handled by generating pydoc-style
+HTML documentation. This allows a server to provide its own web-based
+documentation.
 
 
 .. method:: DocXMLRPCServer.set_server_title(server_title)
 
-   生成する HTML ドキュメントのタイトルをセットします。このタイトルは HTML の title 要素として使われます。
+   Set the title used in the generated HTML documentation. This title will be used
+   inside the HTML "title" element.
 
 
 .. method:: DocXMLRPCServer.set_server_name(server_name)
 
-   生成する HTML ドキュメントの名前をセットします。この名前は HTML 冒頭の h1 要素に使われます。
+   Set the name used in the generated HTML documentation. This name will appear at
+   the top of the generated documentation inside a "h1" element.
 
 
 .. method:: DocXMLRPCServer.set_server_documentation(server_documentation)
 
-   生成する HTML ドキュメントの本文をセットします。この本文はドキュメント中の名前の下にパラグラフとして出力されます。
+   Set the description used in the generated HTML documentation. This description
+   will appear as a paragraph, below the server name, in the documentation.
 
 
 DocCGIXMLRPCRequestHandler
 --------------------------
 
-:class:`DocCGIXMLRPCRequestHandler` は
-:class:`SimpleXMLRPCServer.CGIXMLRPCRequestHandler` の派生クラスで、セルフ- ドキュメンティングの手段と
-XML-RPC CGI スクリプト機能を提供します。HTTP POST リクエストは XML-RCP メソッドの呼び出しとして扱われます。 HTTP GET
-リクエストは pydoc スタイルの HTML ドキュメント生成のリクエストとして扱われます。これはサーバが自分自身のドキュメントを Web ベース
-で提供可能であることを意味します。
+The :class:`DocCGIXMLRPCRequestHandler` class is derived from
+:class:`SimpleXMLRPCServer.CGIXMLRPCRequestHandler` and provides a means of
+creating self-documenting, XML-RPC CGI scripts. HTTP POST requests are handled
+as XML-RPC method calls. HTTP GET requests are handled by generating pydoc-style
+HTML documentation. This allows a server to provide its own web-based
+documentation.
 
 
 .. method:: DocCGIXMLRPCRequestHandler.set_server_title(server_title)
 
-   生成する HTML ドキュメントのタイトルをセットします。このタイトルは HTML の title 要素として使われます。
+   Set the title used in the generated HTML documentation. This title will be used
+   inside the HTML "title" element.
 
 
 .. method:: DocCGIXMLRPCRequestHandler.set_server_name(server_name)
 
-   生成する HTML ドキュメントの名前をセットします。この名前は HTML 冒頭の h1 要素に使われます。
+   Set the name used in the generated HTML documentation. This name will appear at
+   the top of the generated documentation inside a "h1" element.
 
 
 .. method:: DocCGIXMLRPCRequestHandler.set_server_documentation(server_documentation)
 
-   生成する HTML ドキュメントの本文をセットします。この本文はドキュメント中の名前の下にパラグラフとして出力されます。
+   Set the description used in the generated HTML documentation. This description
+   will appear as a paragraph, below the server name, in the documentation.
 

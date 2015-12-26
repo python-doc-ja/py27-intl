@@ -1,21 +1,35 @@
-
-:mod:`xml.dom.minidom` --- 軽量な DOM 実装
-==========================================
+:mod:`xml.dom.minidom` --- Minimal DOM implementation
+=====================================================
 
 .. module:: xml.dom.minidom
-   :synopsis: 軽量な文書オブジェクトモデルの実装。
+   :synopsis: Minimal Document Object Model (DOM) implementation.
 .. moduleauthor:: Paul Prescod <paul@prescod.net>
 .. sectionauthor:: Paul Prescod <paul@prescod.net>
-.. sectionauthor:: Martin v. Löwis <loewis@informatik.hu-berlin.de>
+.. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
 .. versionadded:: 2.0
 
-:mod:`xml.dom.minidom` は、軽量な文書オブジェクトモデルインタフェースの実装です。この実装では、完全な DOM よりも
-単純で、かつ十分に小さくなるよう意図しています。
+**Source code:** :source:`Lib/xml/dom/minidom.py`
 
-DOM アプリケーションは典型的に、XML を DOM に解析 (parse) することで開始します。 :mod:`xml.dom.minidom`
-では、以下のような解析用の関数を介して行います::
+--------------
+
+:mod:`xml.dom.minidom` is a minimal implementation of the Document Object
+Model interface, with an API similar to that in other languages.  It is intended
+to be simpler than the full DOM and also significantly smaller.  Users who are
+not already proficient with the DOM should consider using the
+:mod:`xml.etree.ElementTree` module for their XML processing instead.
+
+
+.. warning::
+
+   The :mod:`xml.dom.minidom` module is not secure against
+   maliciously constructed data.  If you need to parse untrusted or
+   unauthenticated data see :ref:`xml-vulnerabilities`.
+
+
+DOM applications typically start by parsing some XML into a DOM.  With
+:mod:`xml.dom.minidom`, this is done through the parse functions::
 
    from xml.dom.minidom import parse, parseString
 
@@ -26,37 +40,45 @@ DOM アプリケーションは典型的に、XML を DOM に解析 (parse) す�
 
    dom3 = parseString('<myxml>Some data<empty/> some more data</myxml>')
 
-:func:`parse` 関数はファイル名か、開かれたファイルオブジェクトを引数にとることができます。
+The :func:`parse` function can take either a filename or an open file object.
 
 
 .. function:: parse(filename_or_file[, parser[, bufsize]])
 
-   与えられた入力から :class:`Document` を返します。 *filename_or_file*
-   はファイル名でもファイルオブジェクトでもかまいません。 *parser* を指定する場合、SAX2 パーザオブジェクトでなければなりません。
-   この関数はパーザの文書ハンドラを変更し、名前空間サポートを有効にします; (エンティティリゾルバ (entity resolver) のような)
-   他のパーザ設定は前もっておこなわなければなりません。
+   Return a :class:`Document` from the given input. *filename_or_file* may be
+   either a file name, or a file-like object. *parser*, if given, must be a SAX2
+   parser object. This function will change the document handler of the parser and
+   activate namespace support; other parser configuration (like setting an entity
+   resolver) must have been done in advance.
 
-XML データを文字列で持っている場合、 :func:`parseString` を代わりに使うことができます:
+If you have XML in a string, you can use the :func:`parseString` function
+instead:
 
 
 .. function:: parseString(string[, parser])
 
-   *string* を表現する :class:`Document` を返します。このメソッドは文字列に対する :class:`StringIO`
-   オブジェクトを生成して、そのオブジェクトを :func:`parse` に渡します。
+   Return a :class:`Document` that represents the *string*. This method creates a
+   :class:`~StringIO.StringIO` object for the string and passes that on to :func:`parse`.
 
-これらの関数は両方とも、文書の内容を表現する :class:`Document` オブジェクトを返します。
+Both functions return a :class:`Document` object representing the content of the
+document.
 
-:func:`parse` や :func:`parseString` といった関数が行うのは、 XML パーザを、何らかの SAX パーザからくる解析イベント
-(parse event)  を受け取って DOM ツリーに変換できるような "DOM ビルダ (DOM builder)"
-に結合することです。関数は誤解を招くような名前になっているかもしれませんが、インタフェースについて学んでいるときには理解しやすい
-でしょう。文書の解析はこれらの関数が戻るより前に完結します; 要するに、これらの関数自体はパーザ実装を提供しないということです。
+What the :func:`parse` and :func:`parseString` functions do is connect an XML
+parser with a "DOM builder" that can accept parse events from any SAX parser and
+convert them into a DOM tree.  The name of the functions are perhaps misleading,
+but are easy to grasp when learning the interfaces.  The parsing of the document
+will be completed before these functions return; it's simply that these
+functions do not provide a parser implementation themselves.
 
-"DOM 実装" オブジェクトのメソッドを呼び出して :class:`Document` を
-生成することもできます。このオブジェクトは、 :mod:`xml.dom`  パッケージ、または :mod:`xml.dom.minidom` モジュールの
-:func:`getDOMImplementation` 関数を呼び出して取得できます。 :mod:`xml.dom.minidom`
-モジュールの実装を使うと、常に minidom 実装の :class:`Document` インスタンスを返します。一方、 :mod:`xml.dom`
-版の関数では、別の実装によるインスタンスを返すかもれません (`PyXML package <http://pyxml.sourceforge.net/>`_
-がインストールされているとそうなるでしょう)。 :class:`Document` を取得したら、DOM を構成するために子ノードを追加していくことができます::
+You can also create a :class:`Document` by calling a method on a "DOM
+Implementation" object.  You can get this object either by calling the
+:func:`getDOMImplementation` function in the :mod:`xml.dom` package or the
+:mod:`xml.dom.minidom` module. Using the implementation from the
+:mod:`xml.dom.minidom` module will always return a :class:`Document` instance
+from the minidom implementation, while the version from :mod:`xml.dom` may
+provide an alternate implementation (this is likely if you have the `PyXML
+package <http://pyxml.sourceforge.net/>`_ installed).  Once you have a
+:class:`Document`, you can add child nodes to it to populate the DOM::
 
    from xml.dom.minidom import getDOMImplementation
 
@@ -67,148 +89,166 @@ XML データを文字列で持っている場合、 :func:`parseString` を代�
    text = newdoc.createTextNode('Some textual content.')
    top_element.appendChild(text)
 
-DOM 文書オブジェクトを手にしたら、XML 文書のプロパティやメソッドを使って、文書の一部にアクセスすることができます。これらのプロパティは DOM
-仕様で定義されています。文書オブジェクトの主要なプロパティは :attr:`documentElement` プロパティです。このプロパティは XML
-文書の主要な要素: 他の全ての要素を保持する要素、を与えます。以下にプログラム例を示します::
+Once you have a DOM document object, you can access the parts of your XML
+document through its properties and methods.  These properties are defined in
+the DOM specification.  The main property of the document object is the
+:attr:`documentElement` property.  It gives you the main element in the XML
+document: the one that holds all others.  Here is an example program::
 
    dom3 = parseString("<myxml>Some data</myxml>")
    assert dom3.documentElement.tagName == "myxml"
 
-DOMツリーを使い終えた後に、 :meth:`unlink` メソッドを呼び出すことで
-利用されなくなったオブジェクトが早くクリーンアップされるように助けることができます。
-:meth:`unlink` は、 DOM API に対する :mod:`xml.dom.minidom`  特有の拡張です。ノードに対して
-:meth:`unlink` を呼び出した後は、ノードとその下位ノードは本質的には無意味なものとなります。
-このメソッドを呼び出さなくても、 Python のガベージコレクタがいつかはツリーの
-オブジェクトを後片付けします。
+When you are finished with a DOM tree, you may optionally call the
+:meth:`unlink` method to encourage early cleanup of the now-unneeded
+objects.  :meth:`unlink` is a :mod:`xml.dom.minidom`\ -specific
+extension to the DOM API that renders the node and its descendants are
+essentially useless.  Otherwise, Python's garbage collector will
+eventually take care of the objects in the tree.
 
 .. seealso::
 
    `Document Object Model (DOM) Level 1 Specification <http://www.w3.org/TR/REC-DOM-Level-1/>`_
-      :mod:`xml.dom.minidom` でサポートされている DOM の W3C 勧告。
+      The W3C recommendation for the DOM supported by :mod:`xml.dom.minidom`.
 
 
 .. _minidom-objects:
 
-DOM オブジェクト
-----------------
+DOM Objects
+-----------
 
-Python の DOM API 定義は :mod:`xml.dom` モジュールドキュメント
-の一部として与えられています。この節では、 :mod:`xml.dom` の API と :mod:`xml.dom.minidom`
-との違いについて列挙します。
+The definition of the DOM API for Python is given as part of the :mod:`xml.dom`
+module documentation.  This section lists the differences between the API and
+:mod:`xml.dom.minidom`.
 
 
 .. method:: Node.unlink()
 
-   DOM との内部的な参照を破壊して、循環参照ガベージコレクションを持たないバージョンの Python でもガベージコレクションされるように
-   します。循環参照ガベージコレクションが利用できても、このメソッドを使えば、大量のメモリをすぐに使えるようにできるため、必要なくなったらすぐにこのメソッドを
-   DOM オブジェクトに対して呼ぶのが良い習慣です。このメソッドは :class:`Document` オブジェクトに対してだけ呼び出せば
-   よいのですが、あるノードの子ノードを放棄するために子ノードに対して呼び出してもかまいません。
+   Break internal references within the DOM so that it will be garbage collected on
+   versions of Python without cyclic GC.  Even when cyclic GC is available, using
+   this can make large amounts of memory available sooner, so calling this on DOM
+   objects as soon as they are no longer needed is good practice.  This only needs
+   to be called on the :class:`Document` object, but may be called on child nodes
+   to discard children of that node.
 
 
-.. method:: Node.writexml(writer[, indent=""[, addindent=""[, newl=""]]])
+.. method:: Node.writexml(writer, indent="", addindent="", newl="")
 
-   XML を *writer* オブジェクトに書き込みます。 *writer* は、ファイルオブジェクトインタフェースの :meth:`write` に該当する
-   メソッドを持たなければなりません。 *indent* パラメタには現在のノードのインデントを指定します。 *addindent*
-   パラメタには現在のノードの下にサブノードを追加する際のインデント増分を指定します。 *newl* には、改行時に行末を終端する文字列を指定します。
+   Write XML to the writer object.  The writer should have a :meth:`write` method
+   which matches that of the file object interface.  The *indent* parameter is the
+   indentation of the current node.  The *addindent* parameter is the incremental
+   indentation to use for subnodes of the current one.  The *newl* parameter
+   specifies the string to use to terminate newlines.
 
-   :class:`Document` ノードでは、追加のキーワード引数 *encoding* を使って XML ヘッダの
-   encoding フィールドを指定することができます。
+   For the :class:`Document` node, an additional keyword argument *encoding* can
+   be used to specify the encoding field of the XML header.
 
    .. versionchanged:: 2.1
-      美しい出力をサポートするため、新たなキーワード引数 *indent* 、 *addindent* 、および *newl* が追加されました.
+      The optional keyword parameters *indent*, *addindent*, and *newl* were added to
+      support pretty output.
 
    .. versionchanged:: 2.3
-      :class:`Document` ノードに対して、追加のキーワード引数 *encoding* を使って、
-      XML ヘッダの encoding フィールドを指定できるようになりました.
+      For the :class:`Document` node, an additional keyword argument
+      *encoding* can be used to specify the encoding field of the XML header.
 
 
 .. method:: Node.toxml([encoding])
 
-   DOM が表現している XML を文字列にして返します。
+   Return the XML that the DOM represents as a string.
 
-   引数がなければ、 XML ヘッダは encoding を指定せず、文書内の全ての文字をデフォルトエンコード方式で表示できない場合、結果は Unicode
-   文字列となります。この文字列を UTF-8 以外のエンコード方式でエンコードするのは不正であり、なぜなら UTF-8 が XML
-   のデフォルトエンコード方式だからです。
+   With no argument, the XML header does not specify an encoding, and the result is
+   Unicode string if the default encoding cannot represent all characters in the
+   document. Encoding this string in an encoding other than UTF-8 is likely
+   incorrect, since UTF-8 is the default encoding of XML.
 
-   明示的な *encoding* [1]_ 引数があると、結果は指定されたエンコード方式によるバイト文字列となります。引数を常に指定するよう推奨します。
-   表現不可能なテキストデータの場合に :exc:`UnicodeError` が送出されるのを避けるため、encoding 引数は "utf-8"
-   に指定するべきです。
+   With an explicit *encoding* [1]_ argument, the result is a byte string in the
+   specified encoding. It is recommended that this argument is always specified. To
+   avoid :exc:`UnicodeError` exceptions in case of unrepresentable text data, the
+   encoding argument should be specified as "utf-8".
 
    .. versionchanged:: 2.3
-      *encoding* が追加されました。
-       :meth:`writexml` を参照して下さい。
+      the *encoding* argument was introduced; see :meth:`writexml`.
 
 
 .. method:: Node.toprettyxml([indent=""[, newl=""[, encoding=""]]])
 
-   美しく出力されたバージョンの文書を返します。 *indent* はインデントを行うための文字で、デフォルトはタブです; *newl*
-   には行末で出力される文字列を指定し、デフォルトは ``\n`` です。
+   Return a pretty-printed version of the document. *indent* specifies the
+   indentation string and defaults to a tabulator; *newl* specifies the string
+   emitted at the end of each line and defaults to ``\n``.
 
    .. versionadded:: 2.1
 
    .. versionchanged:: 2.3
-      encoding 引数が追加されました。
-      :meth:`writexml` を参照して下さい。
+      the encoding argument was introduced; see :meth:`writexml`.
 
-以下の標準 DOM メソッドは、 :mod:`xml.dom.minidom` では特別な注意をする必要があります:
+The following standard DOM methods have special considerations with
+:mod:`xml.dom.minidom`:
 
 
 .. method:: Node.cloneNode(deep)
 
-   このメソッドは Python 2.0 にパッケージされているバージョンの :mod:`xml.dom.minidom` にはありましたが、これには深刻な
-   障害があります。以降のリリースでは修正されています。
+   Although this method was present in the version of :mod:`xml.dom.minidom`
+   packaged with Python 2.0, it was seriously broken.  This has been corrected for
+   subsequent releases.
 
 
 .. _dom-example:
 
-DOM の例
---------
+DOM Example
+-----------
 
-以下のプログラム例は、かなり現実的な単純なプログラムの例です。特にこの例に関しては、DOM の柔軟性をあまり活用してはいません。
+This example program is a fairly realistic example of a simple program. In this
+particular case, we do not take much advantage of the flexibility of the DOM.
 
 .. literalinclude:: ../includes/minidom-example.py
 
 
 .. _minidom-and-dom:
 
-minidom と DOM 標準
--------------------
+minidom and the DOM standard
+----------------------------
 
-:mod:`xml.dom.minidom` モジュールは、本質的には DOM 1.0 互換の DOM に、いくつかの DOM 2 機能 (主に名前空間機能)
-を追加したものです。
+The :mod:`xml.dom.minidom` module is essentially a DOM 1.0-compatible DOM with
+some DOM 2 features (primarily namespace features).
 
-Python における DOM インタフェースは率直なものです。以下の対応付け規則が適用されます:
+Usage of the DOM interface in Python is straight-forward.  The following mapping
+rules apply:
 
-* インタフェースはインスタンスオブジェクトを介してアクセスされます。アプリケーション自身から、クラスをインスタンス化してはなりません;
-  :class:`Document` オブジェクト上で利用可能な生成関数 (creator function)
-  を使わなければなりません。派生インタフェースでは基底インタフェースの全ての演算 (および属性) に加え、新たな演算をサポートします。
+* Interfaces are accessed through instance objects. Applications should not
+  instantiate the classes themselves; they should use the creator functions
+  available on the :class:`Document` object. Derived interfaces support all
+  operations (and attributes) from the base interfaces, plus any new operations.
 
-* 演算はメソッドとして使われます。DOM では :keyword:`in` パラメタのみを使うので、引数は通常の順番 (左から右へ) で渡されます。
-  オプション引数はありません。 `void` 演算は ``None`` を返します。
+* Operations are used as methods. Since the DOM uses only :keyword:`in`
+  parameters, the arguments are passed in normal order (from left to right).
+  There are no optional arguments. ``void`` operations return ``None``.
 
-* IDL 属性はインスタンス属性に対応付けられます。OMG IDL 言語における Python への対応付けとの互換性のために、属性 ``foo``
-  はアクセサメソッド :meth:`_get_foo` および :meth:`_set_foo` でもアクセスできます。 `readonly`
-  属性は変更してはなりません; とはいえ、これは実行時には強制されません。
+* IDL attributes map to instance attributes. For compatibility with the OMG IDL
+  language mapping for Python, an attribute ``foo`` can also be accessed through
+  accessor methods :meth:`_get_foo` and :meth:`_set_foo`.  ``readonly``
+  attributes must not be changed; this is not enforced at runtime.
 
-* ``short int`` 、 ``unsigned int`` 、 ``unsigned long long`` 、および ``boolean``
-  型は、全て Python 整数オブジェクトに対応付けられます。
+* The types ``short int``, ``unsigned int``, ``unsigned long long``, and
+  ``boolean`` all map to Python integer objects.
 
-* ``DOMString`` 型は Python 文字列型に対応付けられます。 :mod:`xml.dom.minidom` ではバイト文字列 (byte
-  string) および Unicode 文字列のどちらかに対応づけられますが、通常 Unicode 文字列を生成します。 ``DOMString``
-  型の値は、W3C の DOM 仕様で、IDL ``null`` 値になってもよいとされている場所では ``None`` になることもあります。
+* The type ``DOMString`` maps to Python strings. :mod:`xml.dom.minidom` supports
+  either byte or Unicode strings, but will normally produce Unicode strings.
+  Values of type ``DOMString`` may also be ``None`` where allowed to have the IDL
+  ``null`` value by the DOM specification from the W3C.
 
-* `const` 宣言を行うと、 (``xml.dom.minidom.Node.PROCESSING_INSTRUCTION_NODE``
-  のように) 対応するスコープ内の変数に対応付けを行います; これらは変更してはなりません。
+* ``const`` declarations map to variables in their respective scope (e.g.
+  ``xml.dom.minidom.Node.PROCESSING_INSTRUCTION_NODE``); they must not be changed.
 
-* ``DOMException`` は現状では :mod:`xml.dom.minidom`
-  でサポートされていません。その代わり、 :mod:`xml.dom.minidom`  は、 :exc:`TypeError` や
-  :exc:`AttributeError` といった標準の Python 例外を使います。
+* ``DOMException`` is currently not supported in :mod:`xml.dom.minidom`.
+  Instead, :mod:`xml.dom.minidom` uses standard Python exceptions such as
+  :exc:`TypeError` and :exc:`AttributeError`.
 
-* :class:`NodeList` オブジェクトは Python の組み込みリスト型を使って実装されています。 Python 2.2
-  からは、これらのオブジェクトは DOM 仕様で定義されたインタフェースを提供していますが、それ以前のバージョンの Python では、公式の API
-  をサポートしていません。しかしながら、これらの API は W3C 勧告で定義されたインタフェースよりも "Python 的な" ものになっています。
+* :class:`NodeList` objects are implemented using Python's built-in list type.
+  Starting with Python 2.2, these objects provide the interface defined in the DOM
+  specification, but with earlier versions of Python they do not support the
+  official API.  They are, however, much more "Pythonic" than the interface
+  defined in the W3C recommendations.
 
-以下のインタフェースは :mod:`xml.dom.minidom` では全く実装されていません:
+The following interfaces have no implementation in :mod:`xml.dom.minidom`:
 
 * :class:`DOMTimeStamp`
 
@@ -228,14 +268,12 @@ Python における DOM インタフェースは率直なものです。以下�
 
 * :class:`DocumentFragment`
 
-これらの大部分は、ほとんどの DOM のユーザにとって一般的な用途として有用とはならないような XML 文書内の情報を反映しています。
+Most of these reflect information in the XML document that is not of general
+utility to most DOM users.
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] XML の出力に含まれるエンコーディング文字列は適切な標準に\
-   適合していなければなりません。
-   たとえば、"UTF-8" は正当ですが、"UTF8" は違います。
-   http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
-   と
-   http://www.iana.org/assignments/character-sets
-   を参照して下さい。
+.. [#] The encoding string included in XML output should conform to the
+   appropriate standards. For example, "UTF-8" is valid, but "UTF8" is
+   not. See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
+   and http://www.iana.org/assignments/character-sets/character-sets.xhtml.

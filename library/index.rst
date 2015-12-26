@@ -1,37 +1,36 @@
 .. _library-index:
 
 ###############################
-  Python 標準ライブラリ
+  The Python Standard Library
 ###############################
 
-:Release: |version|
-:Date: |today|
+While :ref:`reference-index` describes the exact syntax and
+semantics of the Python language, this library reference manual
+describes the standard library that is distributed with Python. It also
+describes some of the optional components that are commonly included
+in Python distributions.
 
-:ref:`reference-index` ではプログラミング言語 Python の厳密な構文と\
-セマンティクスについて説明されていますが、このライブラリリファレンスマニュアル\
-では Python とともに配付されている標準ライブラリについて説明します。
-また Python 配布物に収められていることの多いオプションのコンポーネント\
-についても説明します。
+Python's standard library is very extensive, offering a wide range of
+facilities as indicated by the long table of contents listed below. The
+library contains built-in modules (written in C) that provide access to
+system functionality such as file I/O that would otherwise be
+inaccessible to Python programmers, as well as modules written in Python
+that provide standardized solutions for many problems that occur in
+everyday programming. Some of these modules are explicitly designed to
+encourage and enhance the portability of Python programs by abstracting
+away platform-specifics into platform-neutral APIs.
 
-Python の標準ライブラリはとても拡張性があり、下の長い目次のリストで判るように\
-幅広いものを用意しています。このライブラリには、\
-例えばファイル I/O のように、Python プログラマが直接アクセスできない\
-システム機能へのアクセス機能を提供する (Cで書かれた) 組み込みモジュールや、\
-日々のプログラミングで生じる多くの問題に標準的な解決策を提供する\
-Python で書かれたモジュールが入っています。これら数多くの\
-モジュールには、プラットフォーム固有の事情をプラットフォーム独立な API
-へと昇華させることにより、Pythonプログラムに移植性を持たせ、それを高めるという\
-明確な意図があります。
+The Python installers for the Windows platform usually include
+the entire standard library and often also include many additional
+components. For Unix-like operating systems Python is normally provided
+as a collection of packages, so it may be necessary to use the packaging
+tools provided with the operating system to obtain some or all of the
+optional components.
 
-Windows 向けの Python インストーラはたいてい標準ライブラリのすべてを含み、
-しばしばそれ以外の追加のコンポーネントも含んでいます。Unix 系の\
-オペレーティングシステムの場合は Python は一揃いのパッケージとして提供されるのが\
-普通で、オプションのコンポーネントを手に入れるにはオペレーティングシステムの\
-パッケージツールを使うことになるでしょう。
-
-標準ライブラリに加えて、数千のコンポーネントが (独立したプログラムやモジュールから\
-パッケージ、アプリケーション開発フレームワークまで) 成長し続けるコレクションとして\
-`Python Package Index <http://pypi.python.org/pypi>`_ から入手可能です。
+In addition to the standard library, there is a growing collection of
+several thousand components (from individual programs and modules to
+packages and entire application development frameworks), available from
+the `Python Package Index <https://pypi.python.org/pypi>`_.
 
 
 .. toctree::
@@ -64,6 +63,7 @@ Windows 向けの Python インストーラはたいてい標準ライブラリ�
    tk.rst
    development.rst
    debug.rst
+   distribution.rst
    python.rst
    custominterp.rst
    restricted.rst
@@ -78,5 +78,3 @@ Windows 向けの Python インストーラはたいてい標準ライブラリ�
    sgi.rst
    sun.rst
    undoc.rst
-
-   jptranslation.rst

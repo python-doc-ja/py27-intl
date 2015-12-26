@@ -1,18 +1,14 @@
-:mod:`httplib` --- HTTP プロトコルクライアント
-==============================================
+:mod:`httplib` --- HTTP protocol client
+=======================================
 
 .. module:: httplib
-   :synopsis: HTTP および HTTPS プロトコルのクライアント  (ソケットを必要とします) 。
-
-.. .. note::
-   The :mod:`httplib` module has been renamed to :mod:`http.client` in Python
-   3.0.  The :term:`2to3` tool will automatically adapt imports when converting
-   your sources to 3.0.
+   :synopsis: HTTP and HTTPS protocol client (requires sockets).
 
 .. note::
+   The :mod:`httplib` module has been renamed to :mod:`http.client` in Python
+   3.  The :term:`2to3` tool will automatically adapt imports when converting
+   your sources to Python 3.
 
-   :mod:`httplib` モジュールは、Python 3.0 では :mod:`http.client` にリネームされました。
-   :term:`2to3` ツールが自動的にソースコードのimportを修正します。
 
 .. index::
    pair: HTTP; protocol
@@ -20,34 +16,50 @@
 
 .. index:: module: urllib
 
-このモジュールでは HTTP および HTTPS プロトコルのクライアント側を実装しているクラスを定義しています。通常、このモジュールは直接使いません
---- :mod:`urllib` モジュールが HTTP や HTTPS を使った URL を扱う上でこのモジュールを使います。
+**Source code:** :source:`Lib/httplib.py`
+
+--------------
+
+This module defines classes which implement the client side of the HTTP and
+HTTPS protocols.  It is normally not used directly --- the module :mod:`urllib`
+uses it to handle URLs that use HTTP and HTTPS.
+
+.. seealso::
+
+    The `Requests package <http://requests.readthedocs.org/>`_
+    is recommended for a higher-level http client interface.
 
 .. note::
 
-   HTTPS のサポートは、SSL をサポートするように :mod:`socket` モジュールをコンパイルした場合にのみ利用できます。
+   HTTPS support is only available if the :mod:`socket` module was compiled with
+   SSL support.
 
-このモジュールでは以下のクラスを提供しています:
+.. note::
+
+   The public interface for this module changed substantially in Python 2.0.  The
+   :class:`HTTP` class is retained only for backward compatibility with 1.5.2.  It
+   should not be used in new code.  Refer to the online docstrings for usage.
+
+The module provides the following classes:
 
 
 .. class:: HTTPConnection(host[, port[, strict[, timeout[, source_address]]]])
 
-   :class:`HTTPConnection` インスタンスは、HTTP サーバとの一回のトランザクションを表現します。インスタンスの生成はホスト名と
-   オプションのポート番号を与えて行います。
-   ポート番号を指定しなかった場合、ホスト名文字列が ``host:port``
-   の形式であれば、ホスト名からポート番号を導き、そうでない場合には標準の HTTP ポート番号 (80) を使います。
+   An :class:`HTTPConnection` instance represents one transaction with an HTTP
+   server.  It should be instantiated passing it a host and optional port
+   number.  If no port number is passed, the port is extracted from the host
+   string if it has the form ``host:port``, else the default HTTP port (80) is
+   used.  When True, the optional parameter *strict* (which defaults to a false
+   value) causes ``BadStatusLine`` to
+   be raised if the status line can't be parsed as a valid HTTP/1.0 or 1.1
+   status line.  If the optional *timeout* parameter is given, blocking
+   operations (like connection attempts) will timeout after that many seconds
+   (if it is not given, the global default timeout setting is used).
+   The optional *source_address* parameter may be a tuple of a (host, port)
+   to use as the source address the HTTP connection is made from.
 
-   オプションの引数 *strict* に ``True`` が渡された場合(デフォルトでは ``False``)、
-   ステータスラインが正しい(valid)　HTTP/1.0 もしくは 1.1 status line
-   としてパースできなかった時に、 ``BadStatusLine`` 例外を発生させます。
-
-   オプションの引数 *timeout* が渡された場合、ブロックする処理(コネクション接続など)
-   のタイムアウト時間(秒数)として利用されます。(渡されなかった場合は、グローバルのデフォルト
-   タイムアウト設定が利用されます。)
-
-   オプションの引数 *source_address* を (host, port) という形式のタプルにすると HTTP 接続の接続元アドレスとして使用します。
-
-   例えば、以下の呼び出しは全て同じサーバの同じポートに接続するインスタンスを生成します::
+   For example, the following calls all create instances that connect to the server
+   at the same host and port::
 
       >>> h1 = httplib.HTTPConnection('www.cwi.nl')
       >>> h2 = httplib.HTTPConnection('www.cwi.nl:80')
@@ -57,129 +69,159 @@
    .. versionadded:: 2.0
 
    .. versionchanged:: 2.6
-      *timeout* 引数が追加されました
+      *timeout* was added.
 
    .. versionchanged:: 2.7
-      *source_address* 引数が追加されました
+      *source_address* was added.
 
-.. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout[, source_address]]]]]])
 
-   :class:`HTTPConnection` のサブクラスで、セキュアなサーバと通信するために SSL を使います。標準のポート番号は ``443``
-   です。
-   *key_file* には、秘密鍵を格納したPEM形式ファイルのファイル名を指定します。 *cert_file* には、PEM形式の証明書チェーンファイルを指定します。
+.. class:: HTTPSConnection(host[, port[, key_file[, cert_file[, strict[, timeout[, source_address[, context]]]]]]])
 
-   .. warning::
-      この関数はサーバ証明書の検査を行いません
+   A subclass of :class:`HTTPConnection` that uses SSL for communication with
+   secure servers.  Default port is ``443``.  If *context* is specified, it must
+   be a :class:`ssl.SSLContext` instance describing the various SSL options.
+
+   *key_file* and *cert_file* are deprecated, please use
+   :meth:`ssl.SSLContext.load_cert_chain` instead, or let
+   :func:`ssl.create_default_context` select the system's trusted CA
+   certificates for you.
+
+   Please read :ref:`ssl-security` for more information on best practices.
+
+   .. versionadded:: 2.0
 
    .. versionchanged:: 2.6
-      *timeout* 引数が追加されました
+      *timeout* was added.
 
    .. versionchanged:: 2.7
-      *source_address* 引数が追加されました
+      *source_address* was added.
 
-.. class:: HTTPResponse(sock[, debuglevel=0][, strict=0])
+   .. versionchanged:: 2.7.9
+      *context* was added.
 
-   コネクションに成功したときに、このクラスのインスタンスが返されます。
-   ユーザーから直接利用されることはありません。
+      This class now performs all the necessary certificate and hostname checks
+      by default. To revert to the previous, unverified, behavior
+      :func:`ssl._create_unverified_context` can be passed to the *context*
+      parameter.
+
+
+.. class:: HTTPResponse(sock, debuglevel=0, strict=0)
+
+   Class whose instances are returned upon successful connection.  Not instantiated
+   directly by user.
 
    .. versionadded:: 2.0
 
 .. class:: HTTPMessage
 
-   .. An :class:`HTTPMessage` instance is used to hold the headers from an HTTP
-      response. It is implemented using the :class:`mimetools.Message` class and
-      provides utility functions to deal with HTTP Headers. It is not directly
-      instantiated by the users.
-
-   :class:`HTTPMessage` のインスタンスは、 HTTP レスポンスヘッダを格納する
-   ために利用されます。 :class:`mimetools.Message` クラスを利用して実装されて
-   いて、 HTTP ヘッダを扱うための便利な関数を提供しています。このクラスは
-   ユーザーが直接インスタンス生成するものではありません。
+   An :class:`HTTPMessage` instance is used to hold the headers from an HTTP
+   response. It is implemented using the :class:`mimetools.Message` class and
+   provides utility functions to deal with HTTP Headers. It is not directly
+   instantiated by the users.
 
 
+The following exceptions are raised as appropriate:
 
-必要に応じて以下の例外が送出されます:
 
 .. exception:: HTTPException
 
-   このモジュールにおける他の例外クラスの基底クラスです。 :exc:`Exception` のサブクラスです。
+   The base class of the other exceptions in this module.  It is a subclass of
+   :exc:`Exception`.
 
-    .. versionadded:: 2.0
+   .. versionadded:: 2.0
+
 
 .. exception:: NotConnected
 
-   :exc:`HTTPException` サブクラスです。
+   A subclass of :exc:`HTTPException`.
 
-    .. versionadded:: 2.0
+   .. versionadded:: 2.0
+
 
 .. exception:: InvalidURL
 
-   :exc:`HTTPException` のサブクラスです。ポート番号を指定したものの、その値が数字でなかったり空のオブジェクトであった場合に送出されます。
+   A subclass of :exc:`HTTPException`, raised if a port is given and is either
+   non-numeric or empty.
 
-    .. versionadded:: 2.3
+   .. versionadded:: 2.3
+
 
 .. exception:: UnknownProtocol
 
-   :exc:`HTTPException` のサブクラスです。
+   A subclass of :exc:`HTTPException`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: UnknownTransferEncoding
 
-   :exc:`HTTPException` のサブクラスです。
+   A subclass of :exc:`HTTPException`.
 
-
-.. exception:: IllegalKeywordArgument
-
-   :exc:`HTTPException` のサブクラスです。
+   .. versionadded:: 2.0
 
 
 .. exception:: UnimplementedFileMode
 
-   :exc:`HTTPException` のサブクラスです。
+   A subclass of :exc:`HTTPException`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: IncompleteRead
 
-   :exc:`HTTPException` のサブクラスです。
+   A subclass of :exc:`HTTPException`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: ImproperConnectionState
 
-   :exc:`HTTPException` のサブクラスです。
+   A subclass of :exc:`HTTPException`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: CannotSendRequest
 
-   :exc:`ImproperConnectionState` のサブクラスです。
+   A subclass of :exc:`ImproperConnectionState`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: CannotSendHeader
 
-   :exc:`ImproperConnectionState` のサブクラスです。
+   A subclass of :exc:`ImproperConnectionState`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: ResponseNotReady
 
-   :exc:`ImproperConnectionState` のサブクラスです。
+   A subclass of :exc:`ImproperConnectionState`.
+
+   .. versionadded:: 2.0
 
 
 .. exception:: BadStatusLine
 
-   :exc:`HTTPException` のサブクラスです。サーバが理解できない HTTP 状態コードで応答した場合に送出されます。
+   A subclass of :exc:`HTTPException`.  Raised if a server responds with a HTTP
+   status code that we don't understand.
 
-このモジュールで定義されている定数は以下の通りです:
+   .. versionadded:: 2.0
+
+The constants defined in this module are:
 
 
 .. data:: HTTP_PORT
 
-   HTTP プロトコルの標準のポート (通常は ``80``) です。
+   The default port for the HTTP protocol (always ``80``).
 
 
 .. data:: HTTPS_PORT
 
-   HTTPS プロトコルの標準のポート (通常は ``443``) です。
+   The default port for the HTTPS protocol (always ``443``).
 
-また、整数の状態コードについて以下の定数が定義されています:
+and also the following constants for integer status codes:
 
 +------------------------------------------+---------+-----------------------------------------------------------------------+
 | Constant                                 | Value   | Definition                                                            |
@@ -375,171 +417,199 @@
 
 .. data:: responses
 
-   このディクショナリは、HTTP 1.1ステータスコードをW3Cの名前にマップしたものです。
+   This dictionary maps the HTTP 1.1 status codes to the W3C names.
 
-   たとえば ``httplib.responses[httplib.NOT_FOUND]`` は ``'Not Found'`` となります。
+   Example: ``httplib.responses[httplib.NOT_FOUND]`` is ``'Not Found'``.
 
    .. versionadded:: 2.5
 
 
 .. _httpconnection-objects:
 
-HTTPConnection オブジェクト
----------------------------
+HTTPConnection Objects
+----------------------
 
-:class:`HTTPConnection` インスタンスには以下のメソッドがあります:
+:class:`HTTPConnection` instances have the following methods:
 
 
 .. method:: HTTPConnection.request(method, url[, body[, headers]])
 
-   このメソッドは、 HTTP 要求メソッド *method* およびセレクタ *url* を使って、要求をサーバに送ります。
-   *body* 引数を指定する場合、ヘッダが終了した後に送信する文字列データでなければなりません。
-   もしくは、開いているファイルオブジェクトを *body* に渡すこともできます。その場合、そのファイルの内容が送信されます。
-   このファイルオブジェクトは、 ``fileno()`` と ``read()`` メソッドをサポートしている必要があります。
-   ヘッダの Content-Length は自動的に正しい値に設定されます。 *headers*
-   引数は要求と同時に送信される拡張 HTTP ヘッダの内容からなるマップ型でなくてはなりません。
+   This will send a request to the server using the HTTP request method *method*
+   and the selector *url*.  If the *body* argument is present, it should be a
+   string of data to send after the headers are finished. Alternatively, it may
+   be an open file object, in which case the contents of the file is sent; this
+   file object should support ``fileno()`` and ``read()`` methods. The
+   *headers* argument should be a mapping of extra HTTP headers to send with
+   the request.
+
+   If one is not provided in *headers*, a ``Content-Length`` header is added
+   automatically for all methods if the length of the body can be determined,
+   either from the length of the ``str`` representation, or from the reported
+   size of the file on disk. If *body* is ``None`` the header is not set except
+   for methods that expect a body (``PUT``, ``POST``, and ``PATCH``) in which
+   case it is set to ``0``.
 
    .. versionchanged:: 2.6
-      *body* にファイルオブジェクトを渡せるようになりました
+      *body* can be a file object.
+
 
 .. method:: HTTPConnection.getresponse()
 
-   サーバに対して HTTP 要求を送り出した後に呼び出されなければりません。要求に対する応答を取得します。 :class:`HTTPResponse`
-   インスタンスを返します。
+   Should be called after a request is sent to get the response from the server.
+   Returns an :class:`HTTPResponse` instance.
 
    .. note::
 
-      すべての応答を読み込んでからでなければ新しい要求をサーバに送ることはできないことに注意しましょう。
+      Note that you must have read the whole response before you can send a new
+      request to the server.
 
 
 .. method:: HTTPConnection.set_debuglevel(level)
 
-   デバッグレベル (印字されるデバッグ出力の量) を設定します。標準のデバッグレベルは ``0`` で、デバッグ出力を全く印字しません。
+   Set the debugging level (the amount of debugging output printed). The default
+   debug level is ``0``, meaning no debugging output is printed.
+
 
 .. method:: HTTPConnection.set_tunnel(host,port=None, headers=None)
 
-   HTTP トンネリング接続のホスト名とポート番号を設定します。
-   通常はプロキシサーバを通して HTTP 接続を行うときに必要になります。
+   Set the host and the port for HTTP Connect Tunnelling. Normally used when
+   it is required to do HTTPS Conection through a proxy server.
 
-   ヘッダのパラメータは CONNECT リクエストで送信するために他の HTTP ヘッダにマッピングされます。
+   The headers argument should be a mapping of extra HTTP headers to send
+   with the CONNECT request.
 
    .. versionadded:: 2.7
 
+
 .. method:: HTTPConnection.connect()
 
-   オブジェクトを生成するときに指定したサーバに接続します。
+   Connect to the server specified when the object was created.
 
 
 .. method:: HTTPConnection.close()
 
-   サーバへの接続を閉じます。
+   Close the connection to the server.
 
-上で説明した :meth:`request` メソッドを使うかわりに、以下の4つの関数を使用して要求をステップバイステップで送信することもできます。
+As an alternative to using the :meth:`request` method described above, you can
+also send your request step by step, by using the four functions below.
 
 
 .. method:: HTTPConnection.putrequest(request, selector[, skip_host[, skip_accept_encoding]])
 
-   サーバへの接続が確立したら、最初にこのメソッドを呼び出さなくてはなりません。このメソッドは *request* 文字列、 *selector* 文字列、そして
-   HTTP バージョン (``HTTP/1.1``) からなる一行を送信します。 ``Host:`` や ``Accept-Encoding:``
-   ヘッダの自動送信を無効にしたい場合 (例えば別のコンテンツエンコーディングを受け入れたい場合) には、 *skip_host* や
-   *skip_accept_encoding* を偽でない値に設定してください。
+   This should be the first call after the connection to the server has been made.
+   It sends a line to the server consisting of the *request* string, the *selector*
+   string, and the HTTP version (``HTTP/1.1``).  To disable automatic sending of
+   ``Host:`` or ``Accept-Encoding:`` headers (for example to accept additional
+   content encodings), specify *skip_host* or *skip_accept_encoding* with non-False
+   values.
+
+   .. versionchanged:: 2.4
+      *skip_accept_encoding* argument added.
 
 
 .. method:: HTTPConnection.putheader(header, argument[, ...])
 
-   :rfc:`822` 形式のヘッダをサーバに送ります。この処理では、 *header* 、コロンとスペース、そして最初の引数からなる 1 行をサーバに送ります。
-   追加の引数を指定した場合、継続して各行にタブ一つと引数の入った引数行が送信されます。
+   Send an :rfc:`822`\ -style header to the server.  It sends a line to the server
+   consisting of the header, a colon and a space, and the first argument.  If more
+   arguments are given, continuation lines are sent, each consisting of a tab and
+   an argument.
 
 
-.. method:: HTTPConnection.endheaders()
+.. method:: HTTPConnection.endheaders(message_body=None)
 
-   サーバに空行を送り、ヘッダ部が終了したことを通知します。
+   Send a blank line to the server, signalling the end of the headers. The
+   optional *message_body* argument can be used to pass a message body
+   associated with the request.  The message body will be sent in the same
+   packet as the message headers if it is string, otherwise it is sent in a
+   separate packet.
+
+   .. versionchanged:: 2.7
+      *message_body* was added.
 
 
 .. method:: HTTPConnection.send(data)
 
-   サーバにデータを送ります。このメソッドは :meth:`endheaders`  が呼び出された直後で、かつ :meth:`getreply` が呼び出される
-   前に使わなければなりません。
+   Send data to the server.  This should be used directly only after the
+   :meth:`endheaders` method has been called and before :meth:`getresponse` is
+   called.
 
 
 .. _httpresponse-objects:
 
-HTTPResponse オブジェクト
--------------------------
+HTTPResponse Objects
+--------------------
 
-:class:`HTTPResponse` インスタンスは以下のメソッドと属性を持ちます:
+:class:`HTTPResponse` instances have the following methods and attributes:
 
 
 .. method:: HTTPResponse.read([amt])
 
-   応答の本体全体か、 *amt* バイトまで読み出して返します。
+   Reads and returns the response body, or up to the next *amt* bytes.
 
 
 .. method:: HTTPResponse.getheader(name[, default])
 
-   ヘッダ *name* の内容を取得して返すか、該当するヘッダがない場合には *default* を返します。
+   Get the contents of the header *name*, or *default* if there is no matching
+   header.
 
 
 .. method:: HTTPResponse.getheaders()
 
-   (header, value) のタプルからなるリストを返します。
+   Return a list of (header, value) tuples.
 
    .. versionadded:: 2.4
 
 .. method:: HTTPResponse.fileno()
 
-   ソケットの ``fileno`` を返します。
+   Returns the ``fileno`` of the underlying socket.
 
 .. attribute:: HTTPResponse.msg
 
-   応答ヘッダを含む :class:`mimetools.Message` インスタンスです。
+   A :class:`mimetools.Message` instance containing the response headers.
 
 
 .. attribute:: HTTPResponse.version
 
-   サーバが使用した HTTP プロトコルバージョンです。10 は HTTP/1.0 を、 11 は HTTP/1.1 を表します。
+   HTTP protocol version used by server.  10 for HTTP/1.0, 11 for HTTP/1.1.
 
 
 .. attribute:: HTTPResponse.status
 
-   サーバから返される状態コードです。
+   Status code returned by server.
 
 
 .. attribute:: HTTPResponse.reason
 
-   サーバから返される応答の理由文です。
+   Reason phrase returned by server.
 
 
 .. _httplib-examples:
 
-例
---
+Examples
+--------
 
-以下は ``GET`` リクエストの送信方法を示した例です。 ::
+Here is an example session that uses the ``GET`` method::
 
    >>> import httplib
-   >>> conn = httplib.HTTPConnection("www.python.org")
-   >>> conn.request("GET", "/index.html")
+   >>> conn = httplib.HTTPSConnection("www.python.org")
+   >>> conn.request("GET", "/")
    >>> r1 = conn.getresponse()
    >>> print r1.status, r1.reason
    200 OK
    >>> data1 = r1.read()
-   >>> conn.request("GET", "/parrot.spam")
+   >>> conn.request("GET", "/")
    >>> r2 = conn.getresponse()
    >>> print r2.status, r2.reason
    404 Not Found
    >>> data2 = r2.read()
    >>> conn.close()
 
-.. Here is an example session that uses ``HEAD`` method. Note that ``HEAD`` method
-   never returns any data. :
-
-次の例のセッションでは、 ``HEAD`` メソッドを利用しています。
-``HEAD`` メソッドは全くデータを返さないことに注目してください。 ::
+Here is an example session that uses the ``HEAD`` method.  Note that the
+``HEAD`` method never returns any data. ::
 
    >>> import httplib
-   >>> conn = httplib.HTTPConnection("www.python.org")
-   >>> conn.request("HEAD","/index.html")
+   >>> conn = httplib.HTTPSConnection("www.python.org")
+   >>> conn.request("HEAD","/")
    >>> res = conn.getresponse()
    >>> print res.status, res.reason
    200 OK
@@ -549,17 +619,36 @@ HTTPResponse オブジェクト
    >>> data == ''
    True
 
-以下は ``POST`` リクエストの送信方法を示した例です::
+Here is an example session that shows how to ``POST`` requests::
 
    >>> import httplib, urllib
-   >>> params = urllib.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0})
+   >>> params = urllib.urlencode({'@number': 12524, '@type': 'issue', '@action': 'show'})
    >>> headers = {"Content-type": "application/x-www-form-urlencoded",
    ...            "Accept": "text/plain"}
-   >>> conn = httplib.HTTPConnection("musi-cal.mojam.com:80")
-   >>> conn.request("POST", "/cgi-bin/query", params, headers)
+   >>> conn = httplib.HTTPConnection("bugs.python.org")
+   >>> conn.request("POST", "", params, headers)
    >>> response = conn.getresponse()
    >>> print response.status, response.reason
-   200 OK
+   302 Found
    >>> data = response.read()
+   >>> data
+   'Redirecting to <a href="http://bugs.python.org/issue12524">http://bugs.python.org/issue12524</a>'
    >>> conn.close()
+
+Client side ``HTTP PUT`` requests are very similar to ``POST`` requests. The
+difference lies only the server side where HTTP server will allow resources to
+be created via ``PUT`` request. Here is an example session that shows how to do
+``PUT`` request using httplib::
+
+    >>> # This creates an HTTP message
+    >>> # with the content of BODY as the enclosed representation
+    >>> # for the resource http://localhost:8080/foobar
+    ...
+    >>> import httplib
+    >>> BODY = "***filecontents***"
+    >>> conn = httplib.HTTPConnection("localhost", 8080)
+    >>> conn.request("PUT", "/file", BODY)
+    >>> response = conn.getresponse()
+    >>> print response.status, response.reason
+    200, OK
 

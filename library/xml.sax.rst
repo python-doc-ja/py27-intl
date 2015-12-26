@@ -1,9 +1,9 @@
 
-:mod:`xml.sax` --- SAX2 パーサのサポート
-========================================
+:mod:`xml.sax` --- Support for SAX2 parsers
+===========================================
 
 .. module:: xml.sax
-   :synopsis: SAX2 基底クラスと有用な関数のパッケージ
+   :synopsis: Package containing SAX2 base classes and convenience functions.
 .. moduleauthor:: Lars Marius Garshol <larsga@garshol.priv.no>
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
@@ -11,123 +11,150 @@
 
 .. versionadded:: 2.0
 
-:mod:`xml.sax` パッケージは Python 用の Simple API for XML (SAX) インターフェースを実装した数多くのモジュールを提供しています。
-またパッケージには SAX 例外と SAX API 利用者が頻繁に利用するであろう有用な関数群も含まれています。
+The :mod:`xml.sax` package provides a number of modules which implement the
+Simple API for XML (SAX) interface for Python.  The package itself provides the
+SAX exceptions and the convenience functions which will be most used by users of
+the SAX API.
 
-その関数群は以下の通りです:
+
+.. warning::
+
+   The :mod:`xml.sax` module is not secure against maliciously
+   constructed data.  If you need to parse untrusted or unauthenticated data see
+   :ref:`xml-vulnerabilities`.
+
+
+The convenience functions are:
 
 
 .. function:: make_parser([parser_list])
 
-   SAX :class:`XMLReader` オブジェクトを作成して返します。
-   パーサには最初に見つかったものが使われます。
-   *parser_list* を指定する場合は、 :func:`create_parser`
-   関数を含んでいるモジュール名のシーケンスを与える必要があります。
-   *parser_list* のモジュールはデフォルトのパーサのリストに優先して使用されます。
+   Create and return a SAX :class:`~xml.sax.xmlreader.XMLReader` object.  The
+   first parser found will
+   be used.  If *parser_list* is provided, it must be a sequence of strings which
+   name modules that have a function named :func:`create_parser`.  Modules listed
+   in *parser_list* will be used before modules in the default list of parsers.
 
 
 .. function:: parse(filename_or_stream, handler[, error_handler])
 
-   SAX パーサを作成してドキュメントをパースします。
-   *filename_or_stream* として指定するドキュメントはファイル名、ファイル・オブジェクトのいずれでもかまいません。
-   *handler* パラメータには SAX :class:`ContentHandler` のインスタンスを指定します。
-   *error_handler* には SAX :class:`ErrorHandler` のインスタンスを指定します。
-   これが指定されていないときは、すべてのエラーで :exc:`SAXParseException` 例外が発生します。
-   関数の戻り値はなく、すべての処理は *handler* に渡されます。
+   Create a SAX parser and use it to parse a document.  The document, passed in as
+   *filename_or_stream*, can be a filename or a file object.  The *handler*
+   parameter needs to be a SAX :class:`~handler.ContentHandler` instance.  If
+   *error_handler* is given, it must be a SAX :class:`~handler.ErrorHandler`
+   instance; if
+   omitted,  :exc:`SAXParseException` will be raised on all errors.  There is no
+   return value; all work must be done by the *handler* passed in.
 
 
 .. function:: parseString(string, handler[, error_handler])
 
-   :func:`parse` に似ていますが、こちらはパラメータ *string* で指定されたバッファをパースします。
+   Similar to :func:`parse`, but parses from a buffer *string* received as a
+   parameter.
 
-典型的な SAX アプリケーションでは3種類のオブジェクト(リーダ、ハンドラ、入力元)が用いられます(ここで言うリーダとはパーサを指しています)。
-言い換えると、プログラムはまず入力元からバイト列、あるいは文字列を読み込み、一連のイベントを発生させます。
-発生したイベントはハンドラ・オブジェクトによって振り分けられます。
-さらに言い換えると、リーダがハンドラのメソッドを呼び出すわけです。
-つまり SAX アプリケーションには、リーダ・オブジェクト、(作成またはオープンされる)入力元のオブジェクト、ハンドラ・オブジェクト、そしてこれら3つのオブジェクトを連携させることが必須なのです。
-前処理の最後の段階でリーダは入力をパースするために呼び出されます。
-パースの過程で入力データの構造、構文にもとづいたイベントにより、ハンドラ・オブジェクトのメソッドが呼び出されます。
+A typical SAX application uses three kinds of objects: readers, handlers and
+input sources.  "Reader" in this context is another term for parser, i.e. some
+piece of code that reads the bytes or characters from the input source, and
+produces a sequence of events. The events then get distributed to the handler
+objects, i.e. the reader invokes a method on the handler.  A SAX application
+must therefore obtain a reader object, create or open the input sources, create
+the handlers, and connect these objects all together.  As the final step of
+preparation, the reader is called to parse the input. During parsing, methods on
+the handler objects are called based on structural and syntactic events from the
+input data.
 
-これらのオブジェクトは(通常アプリケーション側でインスタンスを作成しない)インターフェースに相当するものです。
-Python はインターフェースという明確な概念を提供していないため、形としてはクラスが用いられています。
-しかし提供されるクラスを継承せずに、アプリケーション側で独自に実装することも可能です。
-:class:`InputSource` 、 :class:`Locator` 、 :class:`Attributes` 、
-:class:`AttributesNS` 、 :class:`XMLReader` の各インターフェースは :mod:`xml.sax.xmlreader`
-モジュールで定義されています。
-ハンドラ・インターフェースは :mod:`xml.sax.handler` で定義されています。
-しばしばアプリケーション側で直接インスタンスが作成される :class:`InputSource` とハンドラ・クラスは利便性のため :mod:`xml.sax`
-にも含まれています。
-これらのインターフェースに関しては後に解説します。
+For these objects, only the interfaces are relevant; they are normally not
+instantiated by the application itself.  Since Python does not have an explicit
+notion of interface, they are formally introduced as classes, but applications
+may use implementations which do not inherit from the provided classes.  The
+:class:`~xml.sax.xmlreader.InputSource`, :class:`~xml.sax.xmlreader.Locator`,
+:class:`~xml.sax.xmlreader.Attributes`, :class:`~xml.sax.xmlreader.AttributesNS`,
+and :class:`~xml.sax.xmlreader.XMLReader` interfaces are defined in the
+module :mod:`xml.sax.xmlreader`.  The handler interfaces are defined in
+:mod:`xml.sax.handler`.  For convenience,
+:class:`~xml.sax.xmlreader.InputSource` (which is often
+instantiated directly) and the handler classes are also available from
+:mod:`xml.sax`.  These interfaces are described below.
 
-このほかに :mod:`xml.sax` は次の例外クラスも提供しています。
+In addition to these classes, :mod:`xml.sax` provides the following exception
+classes.
 
 
 .. exception:: SAXException(msg[, exception])
 
-   XML エラーと警告をカプセル化します。
-   このクラスには XML パーサとアプリケーションで発生するエラーおよび警告の基本的な情報を持たせることができます。
-   また機能追加や地域化のためにサブクラス化することも可能です。
-   なお :class:`ErrorHandler`
-   で定義されているハンドラがこの例外のインスタンスを受け取ることに注意してください。
-   実際に例外を発生させることは必須でなく、情報のコンテナとして利用されることもあるからです。
+   Encapsulate an XML error or warning.  This class can contain basic error or
+   warning information from either the XML parser or the application: it can be
+   subclassed to provide additional functionality or to add localization.  Note
+   that although the handlers defined in the
+   :class:`~xml.sax.handler.ErrorHandler` interface
+   receive instances of this exception, it is not required to actually raise the
+   exception --- it is also useful as a container for information.
 
-   インスタンスを作成する際 *msg* はエラー内容を示す可読データにしてください。
-   オプションの *exception* パラメータは ``None`` もしくはパース用コードで補足、渡って来る情報でなければなりません。
+   When instantiated, *msg* should be a human-readable description of the error.
+   The optional *exception* parameter, if given, should be ``None`` or an exception
+   that was caught by the parsing code and is being passed along as information.
 
-   このクラスはSAX 例外の基底クラスになります。
+   This is the base class for the other SAX exception classes.
 
 
 .. exception:: SAXParseException(msg, exception, locator)
 
-   パースエラー時に発生する :exc:`SAXException` のサブクラスです。
-   パースエラーに関する情報として、このクラスのインスタンスが SAX
-   :class:`ErrorHandler` インターフェースのメソッドに渡されます。
-   このクラスは :class:`SAXException` 同様 SAX
-   :class:`Locator` インターフェースもサポートしています。
+   Subclass of :exc:`SAXException` raised on parse errors. Instances of this
+   class are passed to the methods of the SAX
+   :class:`~xml.sax.handler.ErrorHandler` interface to provide information
+   about the parse error.  This class supports the SAX
+   :class:`~xml.sax.xmlreader.Locator` interface as well as the
+   :class:`SAXException` interface.
 
 
 .. exception:: SAXNotRecognizedException(msg[, exception])
 
-   SAX :class:`XMLReader` が認識できない機能やプロパティに遭遇したとき発生させる :exc:`SAXException` のサブクラスです。
-   SAX アプリケーションや拡張モジュールにおいて同様の目的にこのクラスを利用することもできます。
+   Subclass of :exc:`SAXException` raised when a SAX
+   :class:`~xml.sax.xmlreader.XMLReader` is
+   confronted with an unrecognized feature or property.  SAX applications and
+   extensions may use this class for similar purposes.
 
 
 .. exception:: SAXNotSupportedException(msg[, exception])
 
-   SAX :class:`XMLReader` が要求された機能をサポートしていないとき発生させる :exc:`SAXException` のサブクラスです。
-   SAX アプリケーションや拡張モジュールにおいて同様の目的にこのクラスを利用することもできます。
+   Subclass of :exc:`SAXException` raised when a SAX
+   :class:`~xml.sax.xmlreader.XMLReader` is asked to
+   enable a feature that is not supported, or to set a property to a value that the
+   implementation does not support.  SAX applications and extensions may use this
+   class for similar purposes.
 
 
 .. seealso::
 
    `SAX: The Simple API for XML <http://www.saxproject.org/>`_
-      SAX API 定義に関し中心となっているサイトです。
-      Java による実装とオンライン・ドキュメントが提供されています。
-      実装と SAX API の歴史に関する情報のリンクも掲載されています。
+      This site is the focal point for the definition of the SAX API.  It provides a
+      Java implementation and online documentation.  Links to implementations and
+      historical information are also available.
 
    Module :mod:`xml.sax.handler`
-      アプリケーションが提供するオブジェクトのインターフェース定義
+      Definitions of the interfaces for application-provided objects.
 
    Module :mod:`xml.sax.saxutils`
-      SAX アプリケーション向けの有用な関数群
+      Convenience functions for use in SAX applications.
 
    Module :mod:`xml.sax.xmlreader`
-      パーサが提供するオブジェクトのインターフェース定義
+      Definitions of the interfaces for parser-provided objects.
 
 
 .. _sax-exception-objects:
 
-SAXException オブジェクト
--------------------------
+SAXException Objects
+--------------------
 
-:class:`SAXException` 例外クラスは以下のメソッドをサポートしています。
+The :class:`SAXException` exception class supports the following methods:
 
 
 .. method:: SAXException.getMessage()
 
-   エラー状態を示す可読メッセージを返します。
+   Return a human-readable message describing the error condition.
 
 
 .. method:: SAXException.getException()
 
-   カプセル化した例外オブジェクトまたは ``None`` を返します。
+   Return an encapsulated exception object, or ``None``.
+

@@ -1,12 +1,12 @@
 
 .. _misc:
 
-************
-各種サービス
-************
+**********************
+Miscellaneous Services
+**********************
 
-この章では、Pythonのすべてのバージョンで利用可能な各種サービスについて説明します。
-以下に概要を示します。
+The modules described in this chapter provide miscellaneous services that are
+available in all Python versions.  Here's an overview:
 
 
 .. toctree::

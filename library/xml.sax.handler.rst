@@ -1,360 +1,414 @@
 
-:mod:`xml.sax.handler` --- SAX ハンドラの基底クラス
-===================================================
+:mod:`xml.sax.handler` --- Base classes for SAX handlers
+========================================================
 
 .. module:: xml.sax.handler
-   :synopsis: SAX イベント・ハンドラの基底クラス
+   :synopsis: Base classes for SAX event handlers.
 .. moduleauthor:: Lars Marius Garshol <larsga@garshol.priv.no>
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
 .. versionadded:: 2.0
 
-SAX API はコンテント・ハンドラ、DTD ハンドラ、エラー・ハンドラ、エンティティ・リゾルバという4つのハンドラを規定しています。
-通常アプリケーション側で実装する必要があるのは、これらのハンドラが発生させるイベントのうち、処理したいものへのインターフェースだけです。
-インターフェースは1つのオブジェクトにまとめることも、複数のオブジェクトに分けることも可能です。
-ハンドラはすべてのメソッドがデフォルトで実装されるように、 :mod:`xml.sax.handler` で提供される基底クラスを継承しなくてはなりません。
+The SAX API defines four kinds of handlers: content handlers, DTD handlers,
+error handlers, and entity resolvers. Applications normally only need to
+implement those interfaces whose events they are interested in; they can
+implement the interfaces in a single object or in multiple objects. Handler
+implementations should inherit from the base classes provided in the module
+:mod:`xml.sax.handler`, so that all methods get default implementations.
 
 
 .. class:: ContentHandler
 
-   アプリケーションにとって最も重要なメインの SAX コールバック・インターフェースです。
-   このインターフェースで発生するイベントの順序はドキュメント内の情報の順序を反映しています。
+   This is the main callback interface in SAX, and the one most important to
+   applications. The order of events in this interface mirrors the order of the
+   information in the document.
 
 
 .. class:: DTDHandler
 
-   DTD イベントのハンドラです。
+   Handle DTD events.
 
-   未構文解析エンティティや属性など、パースに必要な DTD イベントの抽出だけをおこなうインターフェースです。
+   This interface specifies only those DTD events required for basic parsing
+   (unparsed entities and attributes).
 
 
 .. class:: EntityResolver
 
-   エンティティ解決用の基本インターフェースです。
-   このインターフェースを実装したオブジェクトを作成しパーサに登録することで、パーサはすべての外部エンティティを解決するメソッドを呼び出すようになります。
+   Basic interface for resolving entities. If you create an object implementing
+   this interface, then register the object with your Parser, the parser will call
+   the method in your object to resolve all external entities.
 
 
 .. class:: ErrorHandler
 
-   エラーや警告メッセージをアプリケーションに通知するためにパーサが使用するインターフェースです。
-   このオブジェクトのメソッドが、エラーをただちに例外に変換するか、あるいは別の方法で処理するかの制御をしています。
+   Interface used by the parser to present error and warning messages to the
+   application.  The methods of this object control whether errors are immediately
+   converted to exceptions or are handled in some other way.
 
-これらのクラスに加え、 :mod:`xml.sax.handler` は機能やプロパティ名のシンボル定数を提供しています。
+In addition to these classes, :mod:`xml.sax.handler` provides symbolic constants
+for the feature and property names.
 
 
 .. data:: feature_namespaces
 
-   | 値: ``"http://xml.org/sax/features/namespaces"``
-   | true: 名前空間の処理を有効にする。
-   | false: オプションで名前空間の処理を無効にする (暗黙に namespace-prefixes も無効にする - デフォルト )。
-   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/features/namespaces"``
+   | true: Perform Namespace processing.
+   | false: Optionally do not perform Namespace processing (implies
+     namespace-prefixes; default).
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: feature_namespace_prefixes
 
-   | 値: ``"http://xml.org/sax/features/namespace-prefixes"``
-   | true: 名前空間宣言で用いられているオリジナルのプリフィックス名と属性を通知する。
-   | false: 名前空間宣言で用いられている属性を通知しない。
-     オプションでオリジナルのプリフィックス名も通知しない(デフォルト)。
-   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/features/namespace-prefixes"``
+   | true: Report the original prefixed names and attributes used for Namespace
+     declarations.
+   | false: Do not report attributes used for Namespace declarations, and
+     optionally do not report original prefixed names (default).
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: feature_string_interning
 
-   | 値: ``"http://xml.org/sax/features/string-interning"``
-   | true: すべての要素名、プリフィックス、属性、名前、名前空間、URI、ローカル名を組込みの intern 関数を使ってシンボルに登録する。
-   | false: 名前のすべてを必ずしもシンボルに登録しない(デフォルト)。
-   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/features/string-interning"``
+   | true: All element names, prefixes, attribute names, Namespace URIs, and
+     local names are interned using the built-in intern function.
+   | false: Names are not necessarily interned, although they may be (default).
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: feature_validation
 
-   | 値: ``"http://xml.org/sax/features/validation"``
-   | true: すべての妥当性検査エラーを通知する(external-general-entities  とexternal-parameter-entities
-     が暗黙の前提になっている)。
-   | false: 妥当性検査エラーを通知しない。
-   | アクセス: (パース時) リードオンリー; (パース時以外)読み書き可
+   | value: ``"http://xml.org/sax/features/validation"``
+   | true: Report all validation errors (implies external-general-entities and
+     external-parameter-entities).
+   | false: Do not report validation errors.
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: feature_external_ges
 
-   | 値: ``"http://xml.org/sax/features/external-general-entities"``
-   | true: 外部一般(テキスト)エンティティの取り込みをおこなう。
-   | false: 外部一般エンティティを取り込まない。
-   | アクセス: (パース時)リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/features/external-general-entities"``
+   | true: Include all external general (text) entities.
+   | false: Do not include external general entities.
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: feature_external_pes
 
-   | 値: ``"http://xml.org/sax/features/external-parameter-entities"``
-   | true: 外部 DTD サブセットを含むすべての外部パラメータ・エンティティの取り込みをおこなう。
-   | false: 外部パラーメタ・エンティティおよび外部 DTD サブセットを取り込まない。
-   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/features/external-parameter-entities"``
+   | true: Include all external parameter entities, including the external DTD
+     subset.
+   | false: Do not include any external parameter entities, even the external
+     DTD subset.
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: all_features
 
-   すべての機能の一覧。
+   List of all features.
 
 
 .. data:: property_lexical_handler
 
-   | 値: ``"http://xml.org/sax/properties/lexical-handler"``
-   | データ型: xml.sax.sax2lib.LexicalHandler (Python 2 では未サポート)
-   | 説明: コメントなど字句解析イベント用のオプション拡張ハンドラ。
-   | アクセス: 読み書き可
+   | value: ``"http://xml.org/sax/properties/lexical-handler"``
+   | data type: xml.sax.sax2lib.LexicalHandler (not supported in Python 2)
+   | description: An optional extension handler for lexical events like
+     comments.
+   | access: read/write
 
 
 .. data:: property_declaration_handler
 
-   | 値: ``"http://xml.org/sax/properties/declaration-handler"``
-   | データ型: xml.sax.sax2lib.DeclHandler (Python 2 では未サポート)
-   | 説明: ノーテーションや未解析エンティティをのぞく DTD 関連イベント用のオプション拡張ハンドラ。
-   | アクセス: 読み書き可
+   | value: ``"http://xml.org/sax/properties/declaration-handler"``
+   | data type: xml.sax.sax2lib.DeclHandler (not supported in Python 2)
+   | description: An optional extension handler for DTD-related events other
+     than notations and unparsed entities.
+   | access: read/write
 
 
 .. data:: property_dom_node
 
-   | 値: ``"http://xml.org/sax/properties/dom-node"``
-   | データ型: org.w3c.dom.Node (Python 2 では未サポート) 
-   | 説明: パース時は DOM イテレータにおけるカレントDOM ノード、非パース時はルート DOM ノードを指す。
-   | アクセス: (パース時) リードオンリー; (パース時以外) 読み書き可
+   | value: ``"http://xml.org/sax/properties/dom-node"``
+   | data type: org.w3c.dom.Node (not supported in Python 2)
+   | description: When parsing, the current DOM node being visited if this is
+     a DOM iterator; when not parsing, the root DOM node for iteration.
+   | access: (parsing) read-only; (not parsing) read/write
 
 
 .. data:: property_xml_string
 
-   | 値: ``"http://xml.org/sax/properties/xml-string"``
-   | データ型: 文字列
-   | 説明: カレント・イベントの元になったリテラル文字列
-   | アクセス: リードオンリー
+   | value: ``"http://xml.org/sax/properties/xml-string"``
+   | data type: String
+   | description: The literal string of characters that was the source for the
+     current event.
+   | access: read-only
 
 
 .. data:: all_properties
 
-   既知のプロパティ名の全リスト。
+   List of all known property names.
 
 
 .. _content-handler-objects:
 
-ContentHandler オブジェクト
----------------------------
+ContentHandler Objects
+----------------------
 
-:class:`ContentHandler` はアプリケーション側でサブクラス化して利用することが前提になっています。
-パーサは入力ドキュメントのイベントにより、それぞれに対応する以下のメソッドを呼び出します。
+Users are expected to subclass :class:`ContentHandler` to support their
+application.  The following methods are called by the parser on the appropriate
+events in the input document:
 
 
 .. method:: ContentHandler.setDocumentLocator(locator)
 
-   アプリケーションにドキュメント・イベントの発生位置を通知するためにパーサから呼び出されます。
+   Called by the parser to give the application a locator for locating the origin
+   of document events.
 
-   SAX パーサによるロケータの提供は強く推奨されています(必須ではありません)。
-   もし提供する場合は、DocumentHandler インターフェースのどのメソッドよりも先にこのメソッドが呼び出されるようにしなければなりません。
+   SAX parsers are strongly encouraged (though not absolutely required) to supply a
+   locator: if it does so, it must supply the locator to the application by
+   invoking this method before invoking any of the other methods in the
+   DocumentHandler interface.
 
-   アプリケーションはパーサがエラーを通知しない場合でもロケータによって、すべてのドキュメント関連イベントの終了位置を知ることが可能になります。
-   典型的な利用方法としては、アプリケーション側でこの情報を使い独自のエラーを発生させること(文字コンテンツがアプリケーション側で決めた規則に沿っていない場合等)があげられます。
-   しかしロケータが返す情報は検索エンジンなどで利用するものとしてはおそらく不充分でしょう。
+   The locator allows the application to determine the end position of any
+   document-related event, even if the parser is not reporting an error. Typically,
+   the application will use this information for reporting its own errors (such as
+   character content that does not match an application's business rules). The
+   information returned by the locator is probably not sufficient for use with a
+   search engine.
 
-   ロケータが正しい情報を返すのは、インターフェースからイベントの呼出しが実行されている間だけです。それ以外のときは使用すべきでありません。
+   Note that the locator will return correct information only during the invocation
+   of the events in this interface. The application should not attempt to use it at
+   any other time.
 
 
 .. method:: ContentHandler.startDocument()
 
-   ドキュメントの開始通知を受け取ります。
+   Receive notification of the beginning of a document.
 
-   SAX パーサはこのインターフェースやDTDHandler のどのメソッド
-   (:meth:`setDocumentLocator` を除く)よりも先にこのメソッドを一度だけ呼び出します。
+   The SAX parser will invoke this method only once, before any other methods in
+   this interface or in DTDHandler (except for :meth:`setDocumentLocator`).
 
 
 .. method:: ContentHandler.endDocument()
 
-   ドキュメントの終了通知を受け取ります。
+   Receive notification of the end of a document.
 
-   SAX パーサはこのメソッドを一度だけ、パース過程の最後に呼び出します。
-   パーサは(回復不能なエラーで)パース処理を中断するか、あるいは入力の最後に到達するまでこのメソッドを呼び出しません。
+   The SAX parser will invoke this method only once, and it will be the last method
+   invoked during the parse. The parser shall not invoke this method until it has
+   either abandoned parsing (because of an unrecoverable error) or reached the end
+   of input.
 
 
 .. method:: ContentHandler.startPrefixMapping(prefix, uri)
 
-   プリフィックスと URI の名前空間の関連付けを開始します。
+   Begin the scope of a prefix-URI Namespace mapping.
 
-   このイベントから返る情報は通常の名前空間処理では使われません。
-   SAX XML リーダは ``feature_namespaces``
-   機能が有効になっている場合(デフォルト)、要素と属性名のプリフィックスを自動的に置換するようになっています。
+   The information from this event is not necessary for normal Namespace
+   processing: the SAX XML reader will automatically replace prefixes for element
+   and attribute names when the ``feature_namespaces`` feature is enabled (the
+   default).
 
-   しかしアプリケーション側でプリフィックスを文字データや属性値の中で扱う必要が生じることもあります。
-   この場合プリフィックスの自動展開は保証されないため、必要に応じ
-   :meth:`startPrefixMapping` や  :meth:`endPrefixMapping`
-   イベントからアプリケーションに提供される情報を用いてプリフィックスの展開をおこないます。
+   There are cases, however, when applications need to use prefixes in character
+   data or in attribute values, where they cannot safely be expanded automatically;
+   the :meth:`startPrefixMapping` and :meth:`endPrefixMapping` events supply the
+   information to the application to expand prefixes in those contexts itself, if
+   necessary.
 
    .. XXX This is not really the default, is it? MvL
 
-   :meth:`startPrefixMapping` と :meth:`endPrefixMapping`
-   イベントは相互に正しい入れ子関係になることが保証されていないので注意が必要です。
-   すべての :meth:`startPrefixMapping` は対応する
-   :meth:`startElement` の前に発生し、 :meth:`endPrefixMapping` イベントは対応する
-   :meth:`endElement` の後で発生しますが、その順序は保証されていません。
+   Note that :meth:`startPrefixMapping` and :meth:`endPrefixMapping` events are not
+   guaranteed to be properly nested relative to each-other: all
+   :meth:`startPrefixMapping` events will occur before the corresponding
+   :meth:`startElement` event, and all :meth:`endPrefixMapping` events will occur
+   after the corresponding :meth:`endElement` event, but their order is not
+   guaranteed.
 
 
 .. method:: ContentHandler.endPrefixMapping(prefix)
 
-   プリフィックスと URI の名前空間の関連付けを終了します。
+   End the scope of a prefix-URI mapping.
 
-   詳しくは :meth:`startPrefixMapping` を参照してください。
-   このイベントは常に対応する :meth:`endElement`
-   の後で発生しますが、複数の :meth:`endPrefixMapping` イベントの順序は特に保証されません。
+   See :meth:`startPrefixMapping` for details. This event will always occur after
+   the corresponding :meth:`endElement` event, but the order of
+   :meth:`endPrefixMapping` events is not otherwise guaranteed.
 
 
 .. method:: ContentHandler.startElement(name, attrs)
 
-   非名前空間モードで要素の開始を通知します。
+   Signals the start of an element in non-namespace mode.
 
-   *name* パラーメータには要素型の raw XML 1.0名を文字列として、
-   *attrs* パラメータには要素の属性を保持する
-   :class:`Attributes` インターフェース (:ref:`attributes-objects` を参照)
-   オブジェクトをそれぞれ指定します。
-   *attrs* として渡されたオブジェクトはパーサで再利用することも可能ですが、属性のコピーを保持するためにこれを参照し続けるのは確実な方法ではありません。
-   属性のコピーを保持したいときは *attrs* オブジェクトの :meth:`copy` メソッドを用いてください。
+   The *name* parameter contains the raw XML 1.0 name of the element type as a
+   string and the *attrs* parameter holds an object of the
+   :class:`~xml.sax.xmlreader.Attributes`
+   interface (see :ref:`attributes-objects`) containing the attributes of
+   the element.  The object passed as *attrs* may be re-used by the parser; holding
+   on to a reference to it is not a reliable way to keep a copy of the attributes.
+   To keep a copy of the attributes, use the :meth:`copy` method of the *attrs*
+   object.
 
 
 .. method:: ContentHandler.endElement(name)
 
-   非名前空間モードで要素の終了を通知します。
+   Signals the end of an element in non-namespace mode.
 
-   *name* パラメータには :meth:`startElement` イベント同様の要素型名を指定します。
+   The *name* parameter contains the name of the element type, just as with the
+   :meth:`startElement` event.
 
 
 .. method:: ContentHandler.startElementNS(name, qname, attrs)
 
-   名前空間モードで要素の開始を通知します。
+   Signals the start of an element in namespace mode.
 
-   *name* パラーメータには要素型を ``(uri, localname)`` のタプルとして、
-   *qname* パラメータにはソース・ドキュメントで用いられている raw XML 1.0名、
-   *attrs* には要素の属性を保持する :class:`AttributesNS` インターフェース
-   (:ref:`attributes-ns-objects` を参照) のインスタンスをそれぞれ指定します。
-   要素に関連付けられた名前空間がないときは、 *name* コンポーネントの  *uri* が ``None`` になります。
-   *attrs* として渡されたオブジェクトはパーサで再利用することも可能ですが、属性のコピーを保持するためにこれを参照し続けるのは確実な方法ではありません。
-   属性のコピーを保持したいときは
-   *attrs* オブジェクトの :meth:`copy` メソッドを用いてください。
+   The *name* parameter contains the name of the element type as a ``(uri,
+   localname)`` tuple, the *qname* parameter contains the raw XML 1.0 name used in
+   the source document, and the *attrs* parameter holds an instance of the
+   :class:`~xml.sax.xmlreader.AttributesNS` interface (see
+   :ref:`attributes-ns-objects`)
+   containing the attributes of the element.  If no namespace is associated with
+   the element, the *uri* component of *name* will be ``None``.  The object passed
+   as *attrs* may be re-used by the parser; holding on to a reference to it is not
+   a reliable way to keep a copy of the attributes.  To keep a copy of the
+   attributes, use the :meth:`copy` method of the *attrs* object.
 
-   ``feature_namespace_prefixes`` 機能が有効になっていなければ、パーサで *qname* を ``None``
-   にセットすることも可能です。
+   Parsers may set the *qname* parameter to ``None``, unless the
+   ``feature_namespace_prefixes`` feature is activated.
 
 
 .. method:: ContentHandler.endElementNS(name, qname)
 
-   非名前空間モードで要素の終了を通知します。
+   Signals the end of an element in namespace mode.
 
-   *name* パラメータには :meth:`startElementNS` イベント同様の要素型を指定します。
-   *qname* パラメータも同じです。
+   The *name* parameter contains the name of the element type, just as with the
+   :meth:`startElementNS` method, likewise the *qname* parameter.
 
 
 .. method:: ContentHandler.characters(content)
 
-   文字データの通知を受け取ります。
+   Receive notification of character data.
 
-   パーサは文字データのチャンクごとにこのメソッドを呼び出して通知します。
-   SAX パーサは一連の文字データを単一のチャンクとして返す場合と複数のチャンクに分けて返す場合がありますが、ロケータの情報が正しく保たれるように、一つのイベントの文字データは常に同じ外部エンティティのものでなければなりません。
+   The Parser will call this method to report each chunk of character data. SAX
+   parsers may return all contiguous character data in a single chunk, or they may
+   split it into several chunks; however, all of the characters in any single event
+   must come from the same external entity so that the Locator provides useful
+   information.
 
-   *content* はユニコード文字列、バイト文字列のどちらでもかまいませんが、 ``expat`` リーダ・モジュールは常にユニコード文字列を生成するようになっています。
+   *content* may be a Unicode string or a byte string; the ``expat`` reader module
+   produces always Unicode strings.
 
    .. note::
 
-      Python XML SIG が提供していた初期 SAX 1 では、このメソッドにもっと JAVA 風のインターフェースが用いられています。
-      しかし Python で採用されている大半のパーサでは古いインターフェースを有効に使うことができないため、よりシンプルなものに変更されました。
-      古いコードを新しいインターフェースに変更するには、古い *offset* と *length* パラメータでスライスせずに、 *content* を指定するようにしてください。
+      The earlier SAX 1 interface provided by the Python XML Special Interest Group
+      used a more Java-like interface for this method.  Since most parsers used from
+      Python did not take advantage of the older interface, the simpler signature was
+      chosen to replace it.  To convert old code to the new interface, use *content*
+      instead of slicing content with the old *offset* and *length* parameters.
 
 
 .. method:: ContentHandler.ignorableWhitespace(whitespace)
 
-   要素コンテンツに含まれる無視可能な空白文字の通知を受け取ります。
+   Receive notification of ignorable whitespace in element content.
 
-   妥当性検査をおこなうパーサは無視可能な空白文字(W3C XML 1.0 勧告のセクション 2.10 参照)のチャンクごとに、このメソッドを使って通知しなければなりません。
-   妥当性検査をしないパーサもコンテンツモデルの利用とパースが可能な場合、このメソッドを利用することが可能です。
+   Validating Parsers must use this method to report each chunk of ignorable
+   whitespace (see the W3C XML 1.0 recommendation, section 2.10): non-validating
+   parsers may also use this method if they are capable of parsing and using
+   content models.
 
-   SAX パーサは一連の空白文字を単一のチャンクとして返す場合と複数のチャンクに分けて返す場合がありますが、ロケータの情報が正しく保たれるように、一つのイベントの文字データは常に同じ外部エンティティのものでなければなりません。
+   SAX parsers may return all contiguous whitespace in a single chunk, or they may
+   split it into several chunks; however, all of the characters in any single event
+   must come from the same external entity, so that the Locator provides useful
+   information.
 
 
 .. method:: ContentHandler.processingInstruction(target, data)
 
-   処理命令の通知を受け取ります。
+   Receive notification of a processing instruction.
 
-   パーサは処理命令が見つかるたびにこのメソッドを呼び出します。
-   処理命令はメインのドキュメント要素の前や後にも発生することがあるので注意してください。
+   The Parser will invoke this method once for each processing instruction found:
+   note that processing instructions may occur before or after the main document
+   element.
 
-   SAX パーサがこのメソッドを使って XML 宣言(XML 1.0 のセクション 2.8)やテキスト宣言(XML 1.0 のセクション 4.3.1)の通知をすることはありません。
+   A SAX parser should never report an XML declaration (XML 1.0, section 2.8) or a
+   text declaration (XML 1.0, section 4.3.1) using this method.
 
 
 .. method:: ContentHandler.skippedEntity(name)
 
-   スキップしたエンティティの通知を受け取ります。
+   Receive notification of a skipped entity.
 
-   パーサはエンティティをスキップするたびにこのメソッドを呼び出します。
-   妥当性検査をしないプロセッサは(外部 DTD サブセットで宣言されているなどの理由で)宣言が見当たらないエンティティをスキップします。
-   すべてのプロセッサは ``feature_external_ges`` および
-   ``feature_external_pes`` 属性の値によっては外部エンティティをスキップすることがあります。
+   The Parser will invoke this method once for each entity skipped. Non-validating
+   processors may skip entities if they have not seen the declarations (because,
+   for example, the entity was declared in an external DTD subset). All processors
+   may skip external entities, depending on the values of the
+   ``feature_external_ges`` and the ``feature_external_pes`` properties.
 
 
 .. _dtd-handler-objects:
 
-DTDHandler オブジェクト
------------------------
+DTDHandler Objects
+------------------
 
-:class:`DTDHandler` インスタンスは以下のメソッドを提供します。
+:class:`DTDHandler` instances provide the following methods:
 
 
 .. method:: DTDHandler.notationDecl(name, publicId, systemId)
 
-   表記法宣言イベントの通知を捕捉します。
+   Handle a notation declaration event.
 
 
 .. method:: DTDHandler.unparsedEntityDecl(name, publicId, systemId, ndata)
 
-   未構文解析エンティティ宣言イベントの通知を受け取ります。
+   Handle an unparsed entity declaration event.
 
 
 .. _entity-resolver-objects:
 
-EntityResolver オブジェクト
----------------------------
+EntityResolver Objects
+----------------------
 
 
 .. method:: EntityResolver.resolveEntity(publicId, systemId)
 
-   エンティティのシステム識別子を解決し、文字列として読み込んだシステム識別子あるいは InputSource オブジェクトのいずれかを返します。
-   デフォルトの実装では *systemId* を返します。
+   Resolve the system identifier of an entity and return either the system
+   identifier to read from as a string, or an InputSource to read from. The default
+   implementation returns *systemId*.
 
 
 .. _sax-error-handler:
 
-ErrorHandler オブジェクト
--------------------------
+ErrorHandler Objects
+--------------------
 
-このインターフェースのオブジェクトは :class:`XMLReader` からのエラーや警告の情報を受け取るために使われます。
-このインターフェースを実装したオブジェクトを作成し :class:`XMLReader`
-に登録すると、パーサは警告やエラーの通知のためにそのオブジェクトのメソッドを呼び出すようになります。
-エラーには警告、回復可能エラー、回復不能エラーの3段階があります。
-すべてのメソッドは :exc:`SAXParseException`
-だけをパラメータとして受け取ります。
-受け取った例外オブジェクトを raise することで、エラーや警告は例外に変換されることもあります。
+Objects with this interface are used to receive error and warning information
+from the :class:`~xml.sax.xmlreader.XMLReader`.  If you create an object that
+implements this interface, then register the object with your
+:class:`~xml.sax.xmlreader.XMLReader`, the parser
+will call the methods in your object to report all warnings and errors. There
+are three levels of errors available: warnings, (possibly) recoverable errors,
+and unrecoverable errors.  All methods take a :exc:`SAXParseException` as the
+only parameter.  Errors and warnings may be converted to an exception by raising
+the passed-in exception object.
 
 
 .. method:: ErrorHandler.error(exception)
 
-   パーサが回復可能なエラーを検知すると呼び出されます。
-   このメソッドが例外を raise しないとパースは継続されますが、アプリケーション側ではエラー以降のドキュメント情報を期待していないこともあります。
-   パーサが処理を継続した場合、入力ドキュメント内のほかのエラーを見つけることができます。
+   Called when the parser encounters a recoverable error.  If this method does not
+   raise an exception, parsing may continue, but further document information
+   should not be expected by the application.  Allowing the parser to continue may
+   allow additional errors to be discovered in the input document.
 
 
 .. method:: ErrorHandler.fatalError(exception)
 
-   パーサが回復不能なエラーを検知すると呼び出されます。
-   このメソッドが return した後、すぐにパースを停止することが求められています。
+   Called when the parser encounters an error it cannot recover from; parsing is
+   expected to terminate when this method returns.
 
 
 .. method:: ErrorHandler.warning(exception)
 
-   パーサが軽微な警告情報をアプリケーションに通知するために呼び出されます。
-   このメソッドが return した後もパースを継続し、ドキュメント情報をアプリケーションに送り続けるよう求められています。
-   このメソッドで例外を発生させた場合、パースは中断されてしまいます。
+   Called when the parser presents minor warning information to the application.
+   Parsing is expected to continue when this method returns, and document
+   information will continue to be passed to the application. Raising an exception
+   in this method will cause parsing to end.
 

@@ -1,60 +1,92 @@
-
-:mod:`hmac` --- メッセージ認証のための鍵付きハッシュ化
-======================================================
+:mod:`hmac` --- Keyed-Hashing for Message Authentication
+========================================================
 
 .. module:: hmac
-   :synopsis: メッセージ認証のための鍵付きハッシュ化 (HMAC: Keyed-Hashing for Message
-              Authentication) アルゴリズムの Python 用実装
+   :synopsis: Keyed-Hashing for Message Authentication (HMAC) implementation
 .. moduleauthor:: Gerhard Häring <ghaering@users.sourceforge.net>
 .. sectionauthor:: Gerhard Häring <ghaering@users.sourceforge.net>
 
 
 .. versionadded:: 2.2
 
-このモジュールでは :rfc:`2104` で記述されている HMAC アルゴリズムを実装して
-います。
+**Source code:** :source:`Lib/hmac.py`
+
+--------------
+
+This module implements the HMAC algorithm as described by :rfc:`2104`.
 
 
 .. function:: new(key[, msg[, digestmod]])
 
-   新たな hmac オブジェクトを返します。
-   *msg* が存在すれば、メソッド呼び出し ``update(msg)`` を行います。
-   *digestmod* は HMAC オブジェクトが使うダイジェストコンストラクタあるいは
-   モジュールです。
-   標準では :func:`hashlib.md5` コンストラクタになっています。
+   Return a new hmac object.  If *msg* is present, the method call ``update(msg)``
+   is made. *digestmod* is the digest constructor or module for the HMAC object to
+   use. It defaults to  the :data:`hashlib.md5` constructor.
 
 
-HMAC オブジェクトは以下のメソッドを持っています:
+An HMAC object has the following methods:
+
+.. method:: HMAC.update(msg)
+
+   Update the hmac object with the string *msg*.  Repeated calls are equivalent to
+   a single call with the concatenation of all the arguments: ``m.update(a);
+   m.update(b)`` is equivalent to ``m.update(a + b)``.
 
 
-.. method:: hmac.update(msg)
+.. method:: HMAC.digest()
 
-   hmac オブジェクトを文字列 *msg* で更新します。
-   このメソッドの呼出の繰り返しは、それらの引数を全て結合した引数で単一の呼び出しを
-   した際と同じになります。
-   すなわち ``m.update(a); m.update(b)``  は ``m.update(a + b)`` と等価です。
+   Return the digest of the strings passed to the :meth:`update` method so far.
+   This string will be the same length as the *digest_size* of the digest given to
+   the constructor.  It may contain non-ASCII characters, including NUL bytes.
 
+   .. warning::
 
-.. method:: hmac.digest()
-
-   これまで :meth:`update` メソッドに渡された文字列のダイジェスト値を返します。
-   これは :attr:`digest_size` バイトの文字列で、 NUL バイトを含む非 ASCII
-   文字が含まれることがあります。
-
-
-.. method:: hmac.hexdigest()
-
-   :meth:`digest` と似ていますが、返される文字列は倍の長さとなり、16進形式となります。
-   これは、電子メールなどの非バイナリ環境で値を交換する場合に便利です。
+      When comparing the output of :meth:`digest` to an externally-supplied
+      digest during a verification routine, it is recommended to use the
+      :func:`compare_digest` function instead of the ``==`` operator
+      to reduce the vulnerability to timing attacks.
 
 
-.. method:: hmac.copy()
+.. method:: HMAC.hexdigest()
 
-   hmac オブジェクトのコピー ("クローン") を返します。このコピーは最初の部分文字列が
-   共通になっている文字列のダイジェスト値を効率よく計算するために使うことができます。
+   Like :meth:`digest` except the digest is returned as a string twice the length
+   containing only hexadecimal digits.  This may be used to exchange the value
+   safely in email or other non-binary environments.
+
+   .. warning::
+
+      When comparing the output of :meth:`hexdigest` to an externally-supplied
+      digest during a verification routine, it is recommended to use the
+      :func:`compare_digest` function instead of the ``==`` operator
+      to reduce the vulnerability to timing attacks.
+
+
+.. method:: HMAC.copy()
+
+   Return a copy ("clone") of the hmac object.  This can be used to efficiently
+   compute the digests of strings that share a common initial substring.
+
+
+This module also provides the following helper function:
+
+.. function:: compare_digest(a, b)
+
+   Return ``a == b``.  This function uses an approach designed to prevent
+   timing analysis by avoiding content-based short circuiting behaviour,
+   making it appropriate for cryptography.  *a* and *b* must both be of the
+   same type: either :class:`unicode` or a :term:`bytes-like object`.
+
+   .. note::
+
+      If *a* and *b* are of different lengths, or if an error occurs,
+      a timing attack could theoretically reveal information about the
+      types and lengths of *a* and *b*--but not their values.
+
+
+   .. versionadded:: 2.7.7
 
 
 .. seealso::
 
    Module :mod:`hashlib`
-      セキュアハッシュ関数を提供する Python モジュールです。
+      The Python module providing secure hash functions.
+

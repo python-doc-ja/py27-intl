@@ -1,13 +1,13 @@
 
 .. _unix:
 
-*******************
-Unix 固有のサービス
-*******************
+**********************
+Unix Specific Services
+**********************
 
-本章に記述されたモジュールは、Unix オペレーティングシステム、
-あるいはそれから派生した多くのものに固有の機能のためのインタフェースを提供します。
-その概要を以下に述べます。
+The modules described in this chapter provide interfaces to features that are
+unique to the Unix operating system, or in some cases to some or many variants
+of it.  Here's an overview:
 
 
 .. toctree::

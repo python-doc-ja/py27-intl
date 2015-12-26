@@ -1,38 +1,43 @@
-
-:mod:`sndhdr` --- サウンドファイルの識別
-========================================
+:mod:`sndhdr` --- Determine type of sound file
+==============================================
 
 .. module:: sndhdr
-   :synopsis: サウンドファイルの識別
+   :synopsis: Determine type of a sound file.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
+.. Based on comments in the module source file.
 
 .. index::
    single: A-LAW
    single: u-LAW
 
+**Source code:** :source:`Lib/sndhdr.py`
 
-:mod:`sndhdr` モジュールには、ファイルに保存されたサウンドデータの形式を識別するのに便利な関数が定義されています。
-どんな形式のサウンドデータがファイルに保存されているのか識別可能な場合、これらの関数は
-``(type, sampling_rate, channels, frames, bits_per_sample)`` のタプルを返します。
-*type* はデータの形式を示す文字列で、 ``'aifc'``, ``'aiff'``,
-``'au'``, ``'hcom'``, ``'sndr'``, ``'sndt'``, ``'voc'``,
-``'wav'``, ``'8svx'``, ``'sb'``, ``'ub'``, ``'ul'`` のうちの一つです。
-*sampling_rate* は実際のサンプリングレート値で、未知の場合や読み取ることが出来なかった場合は ``0`` です。
-同様に、 *channels* はチャンネル数で、識別できない場合や読み取ることが出来なかった場合は ``0`` です。
-*frames* はフレーム数で、識別できない場合は ``-1`` です。
-タプルの最後の要素 *bits_per_sample* はサンプルサイズを示すビット数ですが、A-LAWなら ``'A'``, u-LAWなら ``'U'`` です。
+--------------
 
-.. % Based on comments in the module source file.
+The :mod:`sndhdr` provides utility functions which attempt to determine the type
+of sound data which is in a file.  When these functions are able to determine
+what type of sound data is stored in a file, they return a tuple ``(type,
+sampling_rate, channels, frames, bits_per_sample)``.  The value for *type*
+indicates the data type and will be one of the strings ``'aifc'``, ``'aiff'``,
+``'au'``, ``'hcom'``, ``'sndr'``, ``'sndt'``, ``'voc'``, ``'wav'``, ``'8svx'``,
+``'sb'``, ``'ub'``, or ``'ul'``.  The *sampling_rate* will be either the actual
+value or ``0`` if unknown or difficult to decode.  Similarly, *channels* will be
+either the number of channels or ``0`` if it cannot be determined or if the
+value is difficult to decode.  The value for *frames* will be either the number
+of frames or ``-1``.  The last item in the tuple, *bits_per_sample*, will either
+be the sample size in bits or ``'A'`` for A-LAW or ``'U'`` for u-LAW.
 
 
 .. function:: what(filename)
 
-   :func:`whathdr` を使って、ファイル *filename* に保存されたサウンドデータの形式を識別します。
-   識別可能なら上記のタプルを返し、識別できない場合は ``None`` を返します。
+   Determines the type of sound data stored in the file *filename* using
+   :func:`whathdr`.  If it succeeds, returns a tuple as described above, otherwise
+   ``None`` is returned.
 
 
 .. function:: whathdr(filename)
 
-   ファイルのヘッダ情報をもとに、保存されたサウンドデータの形式を識別します。ファイル名は *filename* で渡されます。
-   識別可能なら上記のタプルを返し、識別できない場合は ``None`` を返します。
+   Determines the type of sound data stored in a file based on the file  header.
+   The name of the file is given by *filename*.  This function returns a tuple as
+   described above on success, or ``None``.
 

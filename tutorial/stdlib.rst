@@ -1,48 +1,42 @@
 .. _tut-brieftour:
 
-************************
-標準ライブラリミニツアー
-************************
+**********************************
+Brief Tour of the Standard Library
+**********************************
 
 
 .. _tut-os-interface:
 
-OSへのインタフェース
-======================
+Operating System Interface
+==========================
 
-:mod:`os` モジュールは、オペレーティングシステムと対話するための
-何ダースもの関数を提供しています。
-
-::
+The :mod:`os` module provides dozens of functions for interacting with the
+operating system::
 
    >>> import os
-   >>> os.getcwd()      # 現在の作業ディレクトリを返す
+   >>> os.getcwd()      # Return the current working directory
    'C:\\Python26'
-   >>> os.chdir('/server/accesslogs')   # 作業ディレクトリを変更する.
-   >>> os.system('mkdir today')   # システムのシェルで mkdir コマンドを実行する
+   >>> os.chdir('/server/accesslogs')   # Change current working directory
+   >>> os.system('mkdir today')   # Run the command mkdir in the system shell
    0
 
-``from os import *`` ではなく、 ``import os`` 形式を使うようにしてください。
-そうすることで、動作が大きく異なる組み込み関数 :func:`open` が :func:`os.open`
-で隠蔽されるのを避けられます。
+Be sure to use the ``import os`` style instead of ``from os import *``.  This
+will keep :func:`os.open` from shadowing the built-in :func:`open` function which
+operates much differently.
 
 .. index:: builtin: help
 
-組み込み関数 :func:`dir` および :func:`help` は、 :mod:`os` のような大規模な
-モジュールで作業をするときに、対話的な操作上の助けになります。
-
-::
+The built-in :func:`dir` and :func:`help` functions are useful as interactive
+aids for working with large modules like :mod:`os`::
 
    >>> import os
    >>> dir(os)
-   <モジュール内の関数全てを含むリストを返す>
+   <returns a list of all module functions>
    >>> help(os)
-   <モジュールの docstring から作られた広範囲に渡るマニュアルページを返す>
+   <returns an extensive manual page created from the module's docstrings>
 
-ファイルやディレクトリの日常的な管理作業のために、より簡単に使える高レベル
-インタフェースが :mod:`shutil` モジュールで提供されています。
-
-::
+For daily file and directory management tasks, the :mod:`shutil` module provides
+a higher level interface that is easier to use::
 
    >>> import shutil
    >>> shutil.copyfile('data.db', 'archive.db')
@@ -51,14 +45,11 @@ OSへのインタフェース
 
 .. _tut-file-wildcards:
 
-ファイルのワイルドカード表記
-============================
+File Wildcards
+==============
 
-:mod:`glob` モジュールでは、
-ディレクトリのワイルドカード検索からファイルのリストを生成するための
-関数を提供しています。
-
-::
+The :mod:`glob` module provides a function for making file lists from directory
+wildcard searches::
 
    >>> import glob
    >>> glob.glob('*.py')
@@ -67,52 +58,46 @@ OSへのインタフェース
 
 .. _tut-command-line-arguments:
 
-コマンドライン引数
-==================
+Command Line Arguments
+======================
 
-一般的なユーティリティスクリプトでは、よくコマンドライン引数を扱う必要が
-あります。コマンドライン引数は :mod:`sys` モジュールの *argv*  属性に
-リストとして保存されています。
-例えば、以下の出力は、 ``python demo.py one two three`` とコマンドライン上で
-起動した時に得られるものです。
-
-::
+Common utility scripts often need to process command line arguments. These
+arguments are stored in the :mod:`sys` module's *argv* attribute as a list.  For
+instance the following output results from running ``python demo.py one two
+three`` at the command line::
 
    >>> import sys
    >>> print sys.argv
    ['demo.py', 'one', 'two', 'three']
 
-:mod:`getopt` モジュールは、 *sys.argv* を Unix の :func:`getopt` 関数の慣習に
-従って処理します。より強力で柔軟性のあるコマンドライン処理機能は、
-:mod:`argparse` モジュールで提供されています。
+The :mod:`getopt` module processes *sys.argv* using the conventions of the Unix
+:func:`getopt` function.  More powerful and flexible command line processing is
+provided by the :mod:`argparse` module.
 
 
 .. _tut-stderr:
 
-エラー出力のリダイレクトとプログラムの終了
-==========================================
+Error Output Redirection and Program Termination
+================================================
 
-:mod:`sys` モジュールには、 *stdin*, *stdout*, *stderr* を表す属性も存在します。
-*stderr* は、警告やエラーメッセージを出力して、 *stdout* がリダイレクトされた
-場合でも読めるようにするために便利です。
-
-::
+The :mod:`sys` module also has attributes for *stdin*, *stdout*, and *stderr*.
+The latter is useful for emitting warnings and error messages to make them
+visible even when *stdout* has been redirected::
 
    >>> sys.stderr.write('Warning, log file not found starting a new one\n')
    Warning, log file not found starting a new one
 
-``sys.exit()`` は、スクリプトを終了させるもっとも直接的な方法です。
+The most direct way to terminate a script is to use ``sys.exit()``.
 
 
 .. _tut-string-pattern-matching:
 
-文字列のパターンマッチング
-==========================
+String Pattern Matching
+=======================
 
-:mod:`re` モジュールでは、より高度な文字列処理のための正規表現を提供しています。
-正規表現は複雑な一致検索や操作に対して簡潔で最適化された解決策を提供します。
-
-::
+The :mod:`re` module provides regular expression tools for advanced string
+processing. For complex matching and manipulation, regular expressions offer
+succinct, optimized solutions::
 
    >>> import re
    >>> re.findall(r'\bf[a-z]*', 'which foot or hand fell fastest')
@@ -120,10 +105,8 @@ OSへのインタフェース
    >>> re.sub(r'(\b[a-z]+) \1', r'\1', 'cat in the the hat')
    'cat in the hat'
 
-最小限の機能だけが必要なら、読みやすくデバッグしやすい文字列メソッドの方が
-お勧めです。
-
-::
+When only simple capabilities are needed, string methods are preferred because
+they are easier to read and debug::
 
    >>> 'tea for too'.replace('too', 'two')
    'tea for two'
@@ -131,13 +114,11 @@ OSへのインタフェース
 
 .. _tut-mathematics:
 
-数学
-====
+Mathematics
+===========
 
-:mod:`math` モジュールは、浮動小数点演算のための C 言語ライブラリ関数に
-アクセスする手段を提供しています。
-
-::
+The :mod:`math` module gives access to the underlying C library functions for
+floating point math::
 
    >>> import math
    >>> math.cos(math.pi / 4.0)
@@ -145,37 +126,31 @@ OSへのインタフェース
    >>> math.log(1024, 2)
    10.0
 
-:mod:`random` モジュールは、乱数に基づいた要素選択のためのツールを
-提供しています。
-
-::
+The :mod:`random` module provides tools for making random selections::
 
    >>> import random
    >>> random.choice(['apple', 'pear', 'banana'])
    'apple'
-   >>> random.sample(xrange(100), 10)   # 要素を戻さないサンプリング
+   >>> random.sample(xrange(100), 10)   # sampling without replacement
    [30, 83, 16, 4, 8, 81, 41, 50, 18, 33]
-   >>> random.random()    # ランダムな浮動小数点数
+   >>> random.random()    # random float
    0.17970987693706186
-   >>> random.randrange(6)    # range(6) からランダムに選ばれた整数
+   >>> random.randrange(6)    # random integer chosen from range(6)
    4
 
 
 .. _tut-internet-access:
 
-インターネットへのアクセス
-==========================
+Internet Access
+===============
 
-インターネットにアクセスしたり、インターネットプロトコルを処理したりするための
-数多くのモジュールがあります。その中でも特にシンプルなモジュールとして、URL
-を指定してデータを取得するための :mod:`urllib2` と、メールを送信するための
-:mod:`smtplib` があります。
-
-::
+There are a number of modules for accessing the internet and processing internet
+protocols. Two of the simplest are :mod:`urllib2` for retrieving data from URLs
+and :mod:`smtplib` for sending mail::
 
    >>> import urllib2
    >>> for line in urllib2.urlopen('http://tycho.usno.navy.mil/cgi-bin/timer.pl'):
-   ...     if 'EST' in line or 'EDT' in line:      # EST(東部標準時)を見る
+   ...     if 'EST' in line or 'EDT' in line:  # look for Eastern Time
    ...         print line
 
    <BR>Nov. 25, 09:43:32 PM EST
@@ -190,31 +165,29 @@ OSへのインタフェース
    ... """)
    >>> server.quit()
 
-(2つ目の例は localhost でメールサーバーが動いている必要があることに注意して
-ください。)
+(Note that the second example needs a mailserver running on localhost.)
 
 
 .. _tut-dates-and-times:
 
-日付と時刻
-==========
+Dates and Times
+===============
 
-:mod:`datetime` モジュールは、日付や時刻を操作するためのクラスを、単純な方法と
-複雑な方法の両方で提供しています。日付や時刻に対する算術がサポートされている一方、
-実装では出力の書式化や操作のための効率的なデータメンバ抽出に重点を置いています。
-このモジュールでは、タイムゾーンに対応したオブジェクトもサポートしています。
+The :mod:`datetime` module supplies classes for manipulating dates and times in
+both simple and complex ways. While date and time arithmetic is supported, the
+focus of the implementation is on efficient member extraction for output
+formatting and manipulation.  The module also supports objects that are timezone
+aware. ::
 
-::
-
-   >>> # 日付は簡単に生成して書式化することができます。
+   >>> # dates are easily constructed and formatted
    >>> from datetime import date
    >>> now = date.today()
    >>> now
    datetime.date(2003, 12, 2)
-   >>> now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B")
-   '12-02-03. 02 Dec 2003 is a Tuesday on the 02 day of December'
+   >>> now.strftime("%m-%d-%y. %d %b %Y is a %A on the %d day of %B.")
+   '12-02-03. 02 Dec 2003 is a Tuesday on the 02 day of December.'
 
-   >>> # date 型はカレンダー計算をサポートしています。
+   >>> # dates support calendar arithmetic
    >>> birthday = date(1964, 7, 31)
    >>> age = now - birthday
    >>> age.days
@@ -223,14 +196,12 @@ OSへのインタフェース
 
 .. _tut-data-compression:
 
-データ圧縮
-==========
+Data Compression
+================
 
-データの書庫化や圧縮で広く使われている形式については、 :mod:`zlib`, :mod:`gzip`,
-:mod:`bz2`, :mod:`zipfile`, :mod:`tarfile` といったモジュールで直接サポートして
-います。
-
-::
+Common data archiving and compression formats are directly supported by modules
+including: :mod:`zlib`, :mod:`gzip`, :mod:`bz2`, :mod:`zipfile` and
+:mod:`tarfile`. ::
 
    >>> import zlib
    >>> s = 'witch which has which witches wrist watch'
@@ -247,19 +218,16 @@ OSへのインタフェース
 
 .. _tut-performance-measurement:
 
-パフォーマンスの計測
-====================
+Performance Measurement
+=======================
 
-Python ユーザの中には、同じ問題を異なったアプローチで解いた際の相対的な
-パフォーマンスについて知りたいという深い興味を持っている人がいます。
-Python は、そういった疑問に即座に答える計測ツールを提供しています。
+Some Python users develop a deep interest in knowing the relative performance of
+different approaches to the same problem. Python provides a measurement tool
+that answers those questions immediately.
 
-例えば、引数の入れ替え操作に対して、伝統的なアプローチの代わりにタプルの
-パックやアンパックを使ってみたいと思うかもしれません。
-:mod:`timeit` モジュールを使えば、パフォーマンスがほんの少し良いことが
-すぐに分かります。
-
-::
+For example, it may be tempting to use the tuple packing and unpacking feature
+instead of the traditional approach to swapping arguments. The :mod:`timeit`
+module quickly demonstrates a modest performance advantage::
 
    >>> from timeit import Timer
    >>> Timer('t=a; a=b; b=t', 'a=1; b=2').timeit()
@@ -267,27 +235,26 @@ Python は、そういった疑問に即座に答える計測ツールを提供�
    >>> Timer('a,b = b,a', 'a=1; b=2').timeit()
    0.54962537085770791
 
-:mod:`timeit` では小さい粒度を提供しているのに対し、 :mod:`profile` や
-:mod:`pstats`  モジュールではより大きなコードブロックにおいて律速となる部分を
-判定するためのツールを提供しています。
+In contrast to :mod:`timeit`'s fine level of granularity, the :mod:`profile` and
+:mod:`pstats` modules provide tools for identifying time critical sections in
+larger blocks of code.
 
 
 .. _tut-quality-control:
 
-品質管理
-========
+Quality Control
+===============
 
-高い品質のソフトウェアを開発するための一つのアプローチは、各関数に対して開発と
-同時にテストを書き、開発の過程で頻繁にテストを走らせるというものです。
+One approach for developing high quality software is to write tests for each
+function as it is developed and to run those tests frequently during the
+development process.
 
-:mod:`doctest` モジュールでは、モジュールを検索してプログラムの docstring に
-埋め込まれたテストの評価を行うためのツールを提供しています。
-テストの作り方は単純で、典型的な呼び出し例とその結果を docstring に
-カット&ペーストするだけです。この作業は、ユーザに使用例を与えるという意味で
-ドキュメントの情報を増やすと同時に、ドキュメントに書かれているコードが正しい
-事を確認できるようになります。
-
-::
+The :mod:`doctest` module provides a tool for scanning a module and validating
+tests embedded in a program's docstrings.  Test construction is as simple as
+cutting-and-pasting a typical call along with its results into the docstring.
+This improves the documentation by providing the user with an example and it
+allows the doctest module to make sure the code remains true to the
+documentation::
 
    def average(values):
        """Computes the arithmetic mean of a list of numbers.
@@ -298,12 +265,11 @@ Python は、そういった疑問に即座に答える計測ツールを提供�
        return sum(values, 0.0) / len(values)
 
    import doctest
-   doctest.testmod()   # 組み込まれたテストを自動的に検証する。
+   doctest.testmod()   # automatically validate the embedded tests
 
-:mod:`unittest` モジュールは :mod:`doctest` モジュールほど気楽に使えるものでは
-ありませんが、より網羅的なテストセットを別のファイルで管理することができます。
-
-::
+The :mod:`unittest` module is not as effortless as the :mod:`doctest` module,
+but it allows a more comprehensive set of tests to be maintained in a separate
+file::
 
    import unittest
 
@@ -312,42 +278,40 @@ Python は、そういった疑問に即座に答える計測ツールを提供�
        def test_average(self):
            self.assertEqual(average([20, 30, 70]), 40.0)
            self.assertEqual(round(average([1, 5, 7]), 1), 4.3)
-           self.assertRaises(ZeroDivisionError, average, [])
-           self.assertRaises(TypeError, average, 20, 30, 70)
+           with self.assertRaises(ZeroDivisionError):
+               average([])
+           with self.assertRaises(TypeError):
+               average(20, 30, 70)
 
-   unittest.main() # コマンドラインから呼び出すと全てのテストを実行する。
+   unittest.main() # Calling from the command line invokes all tests
 
 
 .. _tut-batteries-included:
 
-バッテリー同梱
-==============
+Batteries Included
+==================
 
-Python には "バッテリー同梱 (batteries included)" 哲学があります。この哲学は、
-洗練され、安定した機能を持つ Python の膨大なパッケージ群に如実に表れています。
-例えば、
+Python has a "batteries included" philosophy.  This is best seen through the
+sophisticated and robust capabilities of its larger packages. For example:
 
+* The :mod:`xmlrpclib` and :mod:`SimpleXMLRPCServer` modules make implementing
+  remote procedure calls into an almost trivial task.  Despite the modules
+  names, no direct knowledge or handling of XML is needed.
 
-* The :mod:`xmlrpclib`  および :mod:`SimpleXMLRPCServer` モジュールは、
-  遠隔手続き呼び出し (remote procedure call) を全く大したことのない作業に
-  変えてしまいます。モジュール名とは違い、XML を扱うための直接的な知識は
-  必要ありません。
+* The :mod:`email` package is a library for managing email messages, including
+  MIME and other RFC 2822-based message documents. Unlike :mod:`smtplib` and
+  :mod:`poplib` which actually send and receive messages, the email package has
+  a complete toolset for building or decoding complex message structures
+  (including attachments) and for implementing internet encoding and header
+  protocols.
 
-* The :mod:`email`   パッケージは、MIME やその他の RFC 2822 に基づく
-  メッセージ文書を含む電子メールメッセージを管理するためのライブラリです。
-  実際にメッセージを送信したり受信したりする :mod:`smtplib` や :mod:`poplib`
-  と違って、email パッケージには (添付文書を含む) 複雑なメッセージ構造の構築や
-  デコードを行ったり、インターネット標準のエンコードやヘッダプロトコルの実装を
-  行ったりするための完全なツールセットを備えています。
+* The :mod:`xml.dom` and :mod:`xml.sax` packages provide robust support for
+  parsing this popular data interchange format. Likewise, the :mod:`csv` module
+  supports direct reads and writes in a common database format. Together, these
+  modules and packages greatly simplify data interchange between Python
+  applications and other tools.
 
-* :mod:`xml.dom` および :mod:`xml.sax` パッケージでは、一般的なデータ交換形式
-  である XML を解析するための頑健なサポートを提供しています。同様に、
-  :mod:`csv` モジュールでは、広く用いられているデータベース形式のデータを
-  直接読み書きする機能をサポートしています。これらのモジュールやパッケージを
-  利用することで、Python アプリケーションと他のツール群との間でのデータ交換が
-  劇的に簡単になります。
-
-* 国際化に関する機能は、 :mod:`gettext`, :mod:`locale`, :mod:`codecs`
-  パッケージといったモジュール群でサポートされています。
+* Internationalization is supported by a number of modules including
+  :mod:`gettext`, :mod:`locale`, and the :mod:`codecs` package.
 
 

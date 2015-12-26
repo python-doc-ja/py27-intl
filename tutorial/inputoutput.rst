@@ -1,54 +1,49 @@
 .. _tut-io:
 
-**********
-入力と出力
-**********
+****************
+Input and Output
+****************
 
-プログラムから出力を行う方法がいくつかあります。
-データは人間が読める形で出力することも、将来使うためにファイルに書くこともできます。
-この章では、こうした幾つかの出力の方法について話します。
+There are several ways to present the output of a program; data can be printed
+in a human-readable form, or written to a file for future use. This chapter will
+discuss some of the possibilities.
 
 
 .. _tut-formatting:
 
-ファンシーな出力の書式化
-========================
+Fancier Output Formatting
+=========================
 
-これまでのところ、値を出力する二つの方法: *式文 (expression statement)* と
-:keyword:`print` 文が出てきました。
-(第三はファイルオブジェクトの :meth:`write` メソッドを使う方法です。
-標準出力を表すファイルは ``sys.stdout`` で参照できます。
-詳細はライブラリリファレンスを参照してください。)
+So far we've encountered two ways of writing values: *expression statements* and
+the :keyword:`print` statement.  (A third way is using the :meth:`write` method
+of file objects; the standard output file can be referenced as ``sys.stdout``.
+See the Library Reference for more information on this.)
 
-出力を書式化する際に、単に値をスペースで区切って出力するよりももっときめ細かな
-制御をしたいと思うことがあるでしょう。
-出力を書式化するには二つの方法があります。
-第一の方法は、全ての文字列を自分で処理するというものです。
-文字列のスライスや結合といった操作を使えば、思い通りのレイアウトを
-作成することができます。
-文字列オブジェクトは、文字列を指定されたカラム幅に揃えるための幾つかの便利な
-メソッドを提供しています。これらのメソッドについてはすぐ後で簡単に説明します。
-もうひとつの方法は :meth:`str.format` メソッドを利用することです。
+Often you'll want more control over the formatting of your output than simply
+printing space-separated values.  There are two ways to format your output; the
+first way is to do all the string handling yourself; using string slicing and
+concatenation operations you can create any layout you can imagine.  The
+string types have some methods that perform useful operations for padding
+strings to a given column width; these will be discussed shortly.  The second
+way is to use the :meth:`str.format` method.
 
-:mod:`string` モジュールの :class:`~string.Template` クラスは文字列中の値を
-置換する別の方法を提供しています。
+The :mod:`string` module contains a :class:`~string.Template` class which offers
+yet another way to substitute values into strings.
 
-もちろん、一つ問題があります。値をどうやって文字列に変換したらいいのでしょうか？
-幸運なことに、Python には値を文字列に変換する方法があります。
-値を :func:`repr` か :func:`str` 関数に渡してください。
+One question remains, of course: how do you convert values to strings? Luckily,
+Python has ways to convert any value to a string: pass it to the :func:`repr`
+or :func:`str` functions.
 
-:func:`str` 関数は、値を表現するときに人間にとって読みやすい形式の文字列を
-返します。一方、 :func:`repr` は、インタプリタが読めるような
-(あるいは、等価な値を表現するための構文がない場合には :exc:`SyntaxError`
-を送出させる) 表現にするためのものです。
-人間が利用するための特別な表現をもたないオブジェクトでは、 :func:`str` は
-:func:`repr` と同じ値を返します。
-数値や、リストや辞書などの構造体のような多くの値は、どちらの関数でも同じ
-表現になります。文字列と浮動小数点は特別で、二つの別個の表現となります。
+The :func:`str` function is meant to return representations of values which are
+fairly human-readable, while :func:`repr` is meant to generate representations
+which can be read by the interpreter (or will force a :exc:`SyntaxError` if
+there is no equivalent syntax).  For objects which don't have a particular
+representation for human consumption, :func:`str` will return the same value as
+:func:`repr`.  Many values, such as numbers or structures like lists and
+dictionaries, have the same representation using either function.  Strings and
+floating point numbers, in particular, have two distinct representations.
 
-下にいくつか例を挙げます。
-
-::
+Some examples::
 
    >>> s = 'Hello, world.'
    >>> str(s)
@@ -64,22 +59,20 @@
    >>> s = 'The value of x is ' + repr(x) + ', and y is ' + repr(y) + '...'
    >>> print s
    The value of x is 32.5, and y is 40000...
-   >>> # 文字列への repr() はクォートとバックスラッシュが付加される。
+   >>> # The repr() of a string adds string quotes and backslashes:
    ... hello = 'hello, world\n'
    >>> hellos = repr(hello)
    >>> print hellos
    'hello, world\n'
-   >>> # repr() の引数は Python オブジェクトの場合もある:
+   >>> # The argument to repr() may be any Python object:
    ... repr((x, y, ('spam', 'eggs')))
    "(32.5, 40000, ('spam', 'eggs'))"
 
-以下に 2 乗と 3 乗の値からなる表を書く二つの方法を示します。
-
-::
+Here are two ways to write a table of squares and cubes::
 
    >>> for x in range(1, 11):
    ...     print repr(x).rjust(2), repr(x*x).rjust(3),
-   ...     # 上の行の末尾のコンマに注意
+   ...     # Note trailing comma on previous line
    ...     print repr(x*x*x).rjust(4)
    ...
     1   1    1
@@ -107,25 +100,21 @@
     9  81  729
    10 100 1000
 
-(最初の例で、各カラムの間のスペース一個は :keyword:`print` の働きで
-追加されていることに注意してください。
-:keyword:`print` は引数間に常に空白を追加します。)
+(Note that in the first example, one space between each column was added by the
+way :keyword:`print` works: it always adds spaces between its arguments.)
 
-この例では、文字列の :meth:`str.rjust` メソッドの使い方を示しています。
-:meth:`str.rjust` は文字列を指定された幅のフィールド内に右詰めで入るように、
-左に空白を追加します。
-同様のメソッドとして、 :meth:`str.ljust` と :meth:`str.center` があります。
-これらのメソッドは何か出力を行うわけではなく、ただ新しい文字列を返します。
-入力文字列が長すぎる場合、文字列を切り詰めることはせず、ただ値をそのまま
-返します。
-この仕様のためにカラムのレイアウトが滅茶苦茶になるかもしれませんが、
-嘘の値が代わりに書き出されるよりはましです。(本当に切り詰めを行いたいのなら、
-全てのカラムに ``x.ljust(n)[:n]`` のようにスライス表記を加えることもできます。)
+This example demonstrates the :meth:`str.rjust` method of string
+objects, which right-justifies a string in a field of a given width by padding
+it with spaces on the left.  There are similar methods :meth:`str.ljust` and
+:meth:`str.center`.  These methods do not write anything, they just return a
+new string.  If the input string is too long, they don't truncate it, but
+return it unchanged; this will mess up your column lay-out but that's usually
+better than the alternative, which would be lying about a value.  (If you
+really want truncation you can always add a slice operation, as in
+``x.ljust(n)[:n]``.)
 
-もう一つのメソッド、 :meth:`str.zfill` は、数値文字列の左側をゼロ詰めします。
-このメソッドは正と負の符号を正しく扱います。
-
-::
+There is another method, :meth:`str.zfill`, which pads a numeric string on the
+left with zeros.  It understands about plus and minus signs::
 
    >>> '12'.zfill(5)
    '00012'
@@ -134,36 +123,36 @@
    >>> '3.14159265359'.zfill(5)
    '3.14159265359'
 
-:meth:`str.format` メソッドの基本的な使い方は次のようなものです。 ::
+Basic usage of the :meth:`str.format` method looks like this::
 
    >>> print 'We are the {} who say "{}!"'.format('knights', 'Ni')
    We are the knights who say "Ni!"
 
-括弧とその中の文字(これをフォーマットフィールドと呼びます)は、
-:meth:`str.format` メソッドに渡されたオブジェクトに置換されます。
-括弧の中の数字は :meth:`str.format` メソッドに渡されたオブジェクトの位置を
-表します。 ::
+The brackets and characters within them (called format fields) are replaced with
+the objects passed into the :meth:`str.format` method.  A number in the
+brackets refers to the position of the object passed into the
+:meth:`str.format` method. ::
 
    >>> print '{0} and {1}'.format('spam', 'eggs')
    spam and eggs
    >>> print '{1} and {0}'.format('spam', 'eggs')
    eggs and spam
 
-:meth:`str.format` メソッドにキーワード引数が渡された場合、その値はキーワード
-引数の名前によって参照されます。 ::
+If keyword arguments are used in the :meth:`str.format` method, their values
+are referred to by using the name of the argument. ::
 
    >>> print 'This {food} is {adjective}.'.format(
    ...       food='spam', adjective='absolutely horrible')
    This spam is absolutely horrible.
 
-順序引数とキーワード引数を組み合わせて使うこともできます。 ::
+Positional and keyword arguments can be arbitrarily combined::
 
    >>> print 'The story of {0}, {1}, and {other}.'.format('Bill', 'Manfred',
    ...                                                    other='Georg')
    The story of Bill, Manfred, and Georg.
 
-:func:`str` を適応する ``'!s'`` や :func:`repr` を適応する ``'!r'`` を使って、
-値をフォーマットする前に変換することができます。 ::
+``'!s'`` (apply :func:`str`) and ``'!r'`` (apply :func:`repr`) can be used to
+convert the value before it is formatted. ::
 
    >>> import math
    >>> print 'The value of PI is approximately {}.'.format(math.pi)
@@ -171,18 +160,16 @@
    >>> print 'The value of PI is approximately {!r}.'.format(math.pi)
    The value of PI is approximately 3.141592653589793.
 
-オプションの ``':'`` とフォーマット指定子を、フィールド名の後ろに付けることができます。
-フォーマット指定子によって値がどうフォーマットされるかを制御することができます。
-次の例では、円周率πを、小数点以下3桁でまるめてフォーマットしています。
+An optional ``':'`` and format specifier can follow the field name. This allows
+greater control over how the value is formatted.  The following example
+rounds Pi to three places after the decimal.
 
    >>> import math
    >>> print 'The value of PI is approximately {0:.3f}.'.format(math.pi)
    The value of PI is approximately 3.142.
 
-``':'`` の後ろに整数をつけると、そのフィールドの最低の文字幅を指定できます。
-この機能は綺麗なテーブルを作るのに便利です。
-
-::
+Passing an integer after the ``':'`` will cause that field to be a minimum
+number of characters wide.  This is useful for making tables pretty. ::
 
    >>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 7678}
    >>> for name, phone in table.items():
@@ -192,110 +179,97 @@
    Dcab       ==>       7678
    Sjoerd     ==>       4127
 
-もしも長い書式化文字列があり、それを分割したくない場合には、変数を引数の位置ではなく
-変数の名前で参照できるとよいでしょう。
-これは、辞書を引数に渡して、角括弧 ``'[]'`` を使って辞書のキーを参照することで可能です。
-
-::
+If you have a really long format string that you don't want to split up, it
+would be nice if you could reference the variables to be formatted by name
+instead of by position.  This can be done by simply passing the dict and using
+square brackets ``'[]'`` to access the keys ::
 
    >>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
    >>> print ('Jack: {0[Jack]:d}; Sjoerd: {0[Sjoerd]:d}; '
    ...        'Dcab: {0[Dcab]:d}'.format(table))
    Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 
-table を '**' 記法を使ってキーワード引数として渡す方法もあります。
-
-::
+This could also be done by passing the table as keyword arguments with the '**'
+notation. ::
 
    >>> table = {'Sjoerd': 4127, 'Jack': 4098, 'Dcab': 8637678}
    >>> print 'Jack: {Jack:d}; Sjoerd: {Sjoerd:d}; Dcab: {Dcab:d}'.format(**table)
    Jack: 4098; Sjoerd: 4127; Dcab: 8637678
 
+This is particularly useful in combination with the built-in function
+:func:`vars`, which returns a dictionary containing all local variables.
 
-全てのローカルな変数が入った辞書を返す組み込み関数 :func:`vars`
-と組み合わせると特に便利です。
-
-:meth:`str.format` による文字列フォーマットの完全な解説は、 :ref:`formatstrings`
-を参照してください。
+For a complete overview of string formatting with :meth:`str.format`, see
+:ref:`formatstrings`.
 
 
-古い文字列フォーマット方法
----------------------------
+Old string formatting
+---------------------
 
-``%`` 演算しを使って文字列フォーマットをする方法もあります。
-これは、演算子の左側の :c:func:`sprintf` スタイルのフォーマット文字列に、
-演算子の右側の値を適用し、その結果の文字列を返します。例えば::
-
-::
+The ``%`` operator can also be used for string formatting. It interprets the
+left argument much like a :c:func:`sprintf`\ -style format string to be applied
+to the right argument, and returns the string resulting from this formatting
+operation. For example::
 
    >>> import math
    >>> print 'The value of PI is approximately %5.3f.' % math.pi
    The value of PI is approximately 3.142.
 
-:meth:`str.format` は最近導入された機能なので、多くの Python のコードがまだ ``%``
-演算子を利用しています。
-ですが、古い方法はいつか削除されるかもしれないので、普通は :meth:`str.format`
-を使うのが良いでしょう。
+More information can be found in the :ref:`string-formatting` section.
 
-より詳しい情報は :ref:`string-formatting` にあります。
 
 .. _tut-files:
 
-ファイルを読み書きする
-======================
+Reading and Writing Files
+=========================
 
 .. index::
    builtin: open
    object: file
 
-:func:`open` はファイルオブジェクトを返します。
-大抵、 ``open(filename, mode)`` のように二つの引数を伴って呼び出されます。
+:func:`open` returns a file object, and is most commonly used with two
+arguments: ``open(filename, mode)``.
 
 ::
 
-   >>> f = open('/tmp/workfile', 'w')
+   >>> f = open('workfile', 'w')
    >>> print f
-   <open file '/tmp/workfile', mode 'w' at 80a0960>
+   <open file 'workfile', mode 'w' at 80a0960>
 
-最初の引数はファイル名の入った文字列です。
-二つめの引数も文字列で、ファイルをどのように使うかを示す数個の文字が入っています。
-*mode* は、ファイルが読み出し専用なら ``'r'`` 、書き込み専用 (同名の既存の
-ファイルがあれば消去されます) なら ``'w'``  とします。
-``'a'`` はファイルを追記用に開きます。
-ファイルに書き込まれた内容は自動的にファイルの終端に追加されます。
-``'r+'`` はファイルを読み書き両用に開きます。
-*mode* 引数は省略可能で、省略された場合には ``'r'`` であると仮定します。
+The first argument is a string containing the filename.  The second argument is
+another string containing a few characters describing the way in which the file
+will be used.  *mode* can be ``'r'`` when the file will only be read, ``'w'``
+for only writing (an existing file with the same name will be erased), and
+``'a'`` opens the file for appending; any data written to the file is
+automatically added to the end.  ``'r+'`` opens the file for both reading and
+writing. The *mode* argument is optional; ``'r'`` will be assumed if it's
+omitted.
 
-Windows では、 *mode* に ``'b'`` を追加するとファイルをバイナリモードで開きます。
-したがって、 ``'rb'``,  ``'wb'``, ``'r+b'`` といったモードがあります。
-Windows 上で動くPython はテキストファイルとバイナリファイルを区別しています。
-テキストファイルでは、読み書きの際に行末文字が自動的に少し変更されます。
-この舞台裏でのファイルデータ変更は、ASCII でできたテキストファイルでは差し支え
-ないものですが、 :file:`JPEG` や :file:`EXE` ファイルのようなバイナリデータは
-破損してしまうことになるでしょう。
-こうしたファイルを読み書きする際にはバイナリモードを使うよう十分注意してください。
-Unix では、 ``'b'`` を追加しても何も影響がないので、バイナリフォーマットを扱うための
-プラットフォーム非依存な方法として利用できます。
+On Windows, ``'b'`` appended to the mode opens the file in binary mode, so there
+are also modes like ``'rb'``, ``'wb'``, and ``'r+b'``.  Python on Windows makes
+a distinction between text and binary files; the end-of-line characters in text
+files are automatically altered slightly when data is read or written.  This
+behind-the-scenes modification to file data is fine for ASCII text files, but
+it'll corrupt binary data like that in :file:`JPEG` or :file:`EXE` files.  Be
+very careful to use binary mode when reading and writing such files.  On Unix,
+it doesn't hurt to append a ``'b'`` to the mode, so you can use it
+platform-independently for all binary files.
 
 
 .. _tut-filemethods:
 
-ファイルオブジェクトのメソッド
-------------------------------
+Methods of File Objects
+-----------------------
 
-この節の以降の例は、 ``f`` というファイルオブジェクトが既に生成されているものと
-仮定します。
+The rest of the examples in this section will assume that a file object called
+``f`` has already been created.
 
-ファイルの内容を読み出すには、 ``f.read(size)`` を呼び出します。
-このメソッドはある量のデータを読み出して、文字列として返します。
-*size* は省略可能な数値引数です。 *size* が省略されたり負の数であった場合、
-ファイルの内容全てを読み出して返します。
-ただし、ファイルがマシンのメモリの二倍の大きさもある場合には
-どうなるかわかりません。
-*size* が負でない数ならば、最大で *size* バイトを読み出して返します。
-ファイルの終端にすでに達していた場合、 ``f.read()`` は空の文字列 (``""``)
-を返します。
-
+To read a file's contents, call ``f.read(size)``, which reads some quantity of
+data and returns it as a string.  *size* is an optional numeric argument.  When
+*size* is omitted or negative, the entire contents of the file will be read and
+returned; it's your problem if the file is twice as large as your machine's
+memory. Otherwise, at most *size* bytes are read and returned.  If the end of
+the file has been reached, ``f.read()`` will return an empty string (``""``).
 ::
 
    >>> f.read()
@@ -303,14 +277,12 @@ Unix では、 ``'b'`` を追加しても何も影響がないので、バイナ
    >>> f.read()
    ''
 
-``f.readline()`` はファイルから 1 行だけを読み取ります。
-改行文字 (``\n``) は読み出された文字列の終端に残ります。
-改行が省略されるのは、ファイルが改行で終わっていない場合の最終行のみです。
-これは、戻り値があいまいでないようにするためです; ``f.readline()``
-が空の文字列を返したら、ファイルの終端に達したことが分かります。
-一方、空行は ``'\n'`` 、すなわち改行 1 文字だけからなる文字列で表現されます。
-
-::
+``f.readline()`` reads a single line from the file; a newline character (``\n``)
+is left at the end of the string, and is only omitted on the last line of the
+file if the file doesn't end in a newline.  This makes the return value
+unambiguous; if ``f.readline()`` returns an empty string, the end of the file
+has been reached, while a blank line is represented by ``'\n'``, a string
+containing only a single newline.   ::
 
    >>> f.readline()
    'This is the first line of the file.\n'
@@ -319,23 +291,8 @@ Unix では、 ``'b'`` を追加しても何も影響がないので、バイナ
    >>> f.readline()
    ''
 
-``f.readlines()`` は、ファイルに入っているデータの全ての行からなるリストを
-返します。
-省略可能な引数 *sizehint* が指定されていれば、ファイルから指定されたバイト数を
-読み出し、さらに一行を完成させるのに必要なだけを読み出して、読み出された行
-からなるリストを返します。
-このメソッドは巨大なファイルを行単位で効率的に読み出すためによく使われます。
-未完成の行が返されることはありません。
-
-::
-
-   >>> f.readlines()
-   ['This is the first line of the file.\n', 'Second line of the file\n']
-
-行を読む別のアプローチは、ファイルオブジェクトについてループをおこなうことです。
-これは省メモリで、速く、コードがよりシンプルになります。
-
-::
+For reading lines from a file, you can loop over the file object. This is memory
+efficient, fast, and leads to simple code::
 
    >>> for line in f:
            print line,
@@ -343,51 +300,42 @@ Unix では、 ``'b'`` を追加しても何も影響がないので、バイナ
    This is the first line of the file.
    Second line of the file
 
-この方法はシンプルですが細かなコントロールをすることができません。行バッファを
-管理する方法が異なるので、これらを混在させて使うことはできません。
+If you want to read all the lines of a file in a list you can also use
+``list(f)`` or ``f.readlines()``.
 
-``f.write(string)`` は、 *string* の内容をファイルに書き込み、
-``None`` を返します。
-
-::
+``f.write(string)`` writes the contents of *string* to the file, returning
+``None``.   ::
 
    >>> f.write('This is a test\n')
 
-文字列以外のものを出力したい場合、まず文字列に変換してやる必要があります。
-
-::
+To write something other than a string, it needs to be converted to a string
+first::
 
    >>> value = ('the answer', 42)
    >>> s = str(value)
    >>> f.write(s)
 
-``f.tell()`` は、ファイルオブジェクトが指しているあるファイル中の位置を示す
-整数を、ファイルの先頭からのバイト数で図った値で返します。
-ファイルオブジェクトの位置を変更するには、 ``f.seek(offset,  from_what)``
-を使います。ファイル位置は基準点 (reference point) にオフセット値 *offset*
-を足して計算されます。
-参照点は *from_what* 引数で選びます。 *from_what* の値が 0 ならばファイルの
-先頭から測り、 1 ならば現在のファイル位置を使い、2 ならばファイルの終端を
-参照点として使います。 *from_what* は省略することができ、デフォルトの値は
-0 、すなわち参照点としてファイルの先頭を使います。
+``f.tell()`` returns an integer giving the file object's current position in the
+file, measured in bytes from the beginning of the file.  To change the file
+object's position, use ``f.seek(offset, from_what)``.  The position is computed
+from adding *offset* to a reference point; the reference point is selected by
+the *from_what* argument.  A *from_what* value of 0 measures from the beginning
+of the file, 1 uses the current file position, and 2 uses the end of the file as
+the reference point.  *from_what* can be omitted and defaults to 0, using the
+beginning of the file as the reference point. ::
 
-::
-
-   >>> f = open('/tmp/workfile', 'r+')
+   >>> f = open('workfile', 'r+')
    >>> f.write('0123456789abcdef')
-   >>> f.seek(5)     # ファイルの第6バイトへ行く
+   >>> f.seek(5)     # Go to the 6th byte in the file
    >>> f.read(1)
    '5'
-   >>> f.seek(-3, 2) # 終端から前へ第3バイトへ行く
+   >>> f.seek(-3, 2) # Go to the 3rd byte before the end
    >>> f.read(1)
    'd'
 
-ファイルが用済みになったら、 ``f.close()`` を呼び出してファイルを閉じ、
-ファイルを開くために取られていたシステム資源を解放します。
-``f.close()`` を呼び出した後、そのファイルオブジェクトを使おうとすると
-自動的に失敗します。
-
-::
+When you're done with a file, call ``f.close()`` to close it and free up any
+system resources taken up by the open file.  After calling ``f.close()``,
+attempts to use the file object will automatically fail. ::
 
    >>> f.close()
    >>> f.read()
@@ -395,71 +343,79 @@ Unix では、 ``'b'`` を追加しても何も影響がないので、バイナ
      File "<stdin>", line 1, in ?
    ValueError: I/O operation on closed file
 
-ファイルオブジェクトを扱うときに :keyword:`with` キーワードを使うのは良い習慣です。
-:keyword:`with` を使うと、処理中に例外が発生しても必ず最後にファイルを閉じることができます。
-同じことを :keyword:`try`-:keyword:`finally` を使って書くよりずっと簡潔に書けます。 ::
+It is good practice to use the :keyword:`with` keyword when dealing with file
+objects.  This has the advantage that the file is properly closed after its
+suite finishes, even if an exception is raised on the way.  It is also much
+shorter than writing equivalent :keyword:`try`\ -\ :keyword:`finally` blocks::
 
-    >>> with open('/tmp/workfile', 'r') as f:
+    >>> with open('workfile', 'r') as f:
     ...     read_data = f.read()
     >>> f.closed
     True
 
-ファイルオブジェクトには、他にも :meth:`~file.isatty` や :meth:`~file.truncate`
-といった、あまり使われないメソッドがあります。
-ファイルオブジェクトについての完全なガイドは、ライブラリリファレンスを参照してください。
+File objects have some additional methods, such as :meth:`~file.isatty` and
+:meth:`~file.truncate` which are less frequently used; consult the Library
+Reference for a complete guide to file objects.
 
 
-.. _tut-pickle:
+.. _tut-json:
 
-:mod:`pickle` モジュール
-------------------------
+Saving structured data with :mod:`json`
+---------------------------------------
 
-.. index:: module: pickle
+.. index:: module: json
 
-文字列をファイルに読み書きするのは簡単にできます。
-数値だとほんのわずかに手間が増えます。というのは、 :meth:`read` は文字列だけを
-返すので、 ``'123'`` のような文字列を受け取って、その数値 123 を返す :func:`int`
-のような関数に文字列を渡してやらなければならないからです。
-ところが、リストや辞書、クラスのインスタンスのように、もっと複雑なデータ型を
-保存したいなら、事態はもっと複雑になります。
+Strings can easily be written to and read from a file.  Numbers take a bit more
+effort, since the :meth:`read` method only returns strings, which will have to
+be passed to a function like :func:`int`, which takes a string like ``'123'``
+and returns its numeric value 123.  When you want to save more complex data
+types like nested lists and dictionaries, parsing and serializing by hand
+becomes complicated.
 
-複雑なデータ型を保存するためのコードを毎回毎回書いてデバッグする代わりに、
-Python では :mod:`pickle` という標準モジュールを用意しています。
-:mod:`pickle` は驚くべきモジュールで、ほとんどどんな Python オブジェクトでも
-(ある形式の Python コードでさえも!) 受け取って文字列表現へ変換できます。
-この変換過程は :dfn:`pickling` (ピクルス (漬物) 化、以降 pickle 化)
-と呼ばれます。文字列表現からオブジェクトを再構成する操作は :dfn:`unpickling`
-(逆 pickle 化) と呼びます。
-pickle 化してから unpickle 化するまでの間、オブジェクトを表現する文字列は、
-ファイルやデータに保存したり、ネットワーク接続を介して離れたマシンに送信
-したりできます。
+Rather than having users constantly writing and debugging code to save
+complicated data types to files, Python allows you to use the popular data
+interchange format called `JSON (JavaScript Object Notation)
+<http://json.org>`_.  The standard module called :mod:`json` can take Python
+data hierarchies, and convert them to string representations; this process is
+called :dfn:`serializing`.  Reconstructing the data from the string representation
+is called :dfn:`deserializing`.  Between serializing and deserializing, the
+string representing the object may have been stored in a file or data, or
+sent over a network connection to some distant machine.
 
-オブジェクト ``x`` と、書込み用に開かれているファイルオブジェクト ``f``
-があると仮定すると、オブジェクトを pickle 化する最も簡単な方法は、
-たった一行のコードです。
+.. note::
+   The JSON format is commonly used by modern applications to allow for data
+   exchange.  Many programmers are already familiar with it, which makes
+   it a good choice for interoperability.
 
-::
+If you have an object ``x``, you can view its JSON string representation with a
+simple line of code::
 
-   pickle.dump(x, f)
+   >>> json.dumps([1, 'simple', 'list'])
+   '[1, "simple", "list"]'
 
-逆 pickle 化して再びオブジェクトに戻すには、 ``f`` を読取り用に開かれている
-ファイル・オブジェクトと仮定して、
+Another variant of the :func:`~json.dumps` function, called :func:`~json.dump`,
+simply serializes the object to a file.  So if ``f`` is a :term:`file object`
+opened for writing, we can do this::
 
-::
+   json.dump(x, f)
 
-   x = pickle.load(f)
+To decode the object again, if ``f`` is a :term:`file object` which has
+been opened for reading::
 
-とします。
+   x = json.load(f)
 
-(pickle / 逆 pickle 化にはいくつか方法があり、たくさんのオブジェクトを pickle
-化したり、 pickle 化されたデータをファイルに書きたくないときに使われます。
-完全なドキュメントについては、ライブラリリファレンスの :mod:`pickle`
-を調べてください。)
+This simple serialization technique can handle lists and dictionaries, but
+serializing arbitrary class instances in JSON requires a bit of extra effort.
+The reference for the :mod:`json` module contains an explanation of this.
 
-:mod:`pickle` は、 Python のオブジェクトを保存できるようにし、他のプログラムや、
-同じプログラムが将来起動されたときに再利用できるようにする標準の方法です。
-技術的な用語でいうと :dfn:`persistent` (永続性) オブジェクトです。
-:mod:`pickle` はとても広範に使われているので、 Python 拡張モジュールの多くの
-作者は、行列のような新たなデータ型が正しく pickle / 逆 pickle 化できるよう
-気をつけています。
+.. seealso::
+
+   :mod:`pickle` - the pickle module
+
+   Contrary to :ref:`JSON <tut-json>`, *pickle* is a protocol which allows
+   the serialization of arbitrarily complex Python objects.  As such, it is
+   specific to Python and cannot be used to communicate with applications
+   written in other languages.  It is also insecure by default:
+   deserializing pickle data coming from an untrusted source can execute
+   arbitrary code, if the data was crafted by a skilled attacker.
 

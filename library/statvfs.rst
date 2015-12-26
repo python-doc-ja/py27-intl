@@ -1,67 +1,70 @@
-:mod:`statvfs` --- :func:`os.statvfs` で使われる定数群
-======================================================
+:mod:`statvfs` --- Constants used with :func:`os.statvfs`
+=========================================================
 
 .. module:: statvfs
-   :synopsis: os.statvfs() の返す値を解釈するために使われる定数群。
+   :synopsis: Constants for interpreting the result of os.statvfs().
    :deprecated:
 
 .. deprecated:: 2.6
-   :mod:`statvfs` モジュールは Python 3.0 で削除されます。
+   The :mod:`statvfs` module has been removed in Python 3.
+
 
 .. sectionauthor:: Moshe Zadka <moshez@zadka.site.co.il>
 
-:mod:`statvfs` モジュールでは、 :func:`os.statvfs` の返す値
-を解釈するための定数を定義しています。 :func:`os.statvfs`  は "マジックナンバ" を記憶せずにタプルを生成して返します。
-このモジュールで定義されている各定数は :func:`os.statvfs` が返すタプルにおいて、特定の情報が収められている各エントリへの  *インデクス*
-です。
+
+The :mod:`statvfs` module defines constants so interpreting the result if
+:func:`os.statvfs`, which returns a tuple, can be made without remembering
+"magic numbers."  Each of the constants defined in this module is the *index* of
+the entry in the tuple returned by :func:`os.statvfs` that contains the
+specified information.
 
 
 .. data:: F_BSIZE
 
-   選択されているファイルシステムのブロックサイズです。
+   Preferred file system block size.
 
 
 .. data:: F_FRSIZE
 
-   ファイルシステムの基本ブロックサイズです。
+   Fundamental file system block size.
 
 
 .. data:: F_BLOCKS
 
-   ブロック数の総計です。
+   Total number of blocks in the filesystem.
 
 
 .. data:: F_BFREE
 
-   空きブロック数の総計です。
+   Total number of free blocks.
 
 
 .. data:: F_BAVAIL
 
-   非スーパユーザが利用できる空きブロック数です。
+   Free blocks available to non-super user.
 
 
 .. data:: F_FILES
 
-   ファイルノード数の総計です。
+   Total number of file nodes.
 
 
 .. data:: F_FFREE
 
-   空きファイルノード数の総計です。
+   Total number of free file nodes.
 
 
 .. data:: F_FAVAIL
 
-   非スーパユーザが利用できる空きノード数です。
+   Free nodes available to non-super user.
 
 
 .. data:: F_FLAG
 
-   フラグで、システム依存です: :c:func:`statvfs` マニュアルページを参照してください。
+   Flags. System dependent: see :c:func:`statvfs` man page.
 
 
 .. data:: F_NAMEMAX
 
-   ファイル名の最大長です。
+   Maximum file name length.
 

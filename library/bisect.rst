@@ -1,73 +1,80 @@
-
-:mod:`bisect` --- 配列二分法アルゴリズム
-========================================
+:mod:`bisect` --- Array bisection algorithm
+===========================================
 
 .. module:: bisect
-   :synopsis: バイナリサーチ用の配列二分法アルゴリズム。
+   :synopsis: Array bisection algorithms for binary searching.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 .. sectionauthor:: Raymond Hettinger <python at rcn.com>
-.. example based on the PyModules FAQ entry by Aaron Watters
-.. <arw@pythonpros.com>.
-
-このモジュールは、挿入の度にリストをソートすることなく、リストをソートされた順序に保つことをサポートします。
-大量の比較操作を伴うような、アイテムがたくさんあるリストでは、より一般的なアプローチに比べて、パフォーマンスが向上します。
-動作に基本的な二分法アルゴリズムを使っているので、 :mod:`bisect` と呼ばれています。
-ソースコードはこのアルゴリズムの実例として一番役に立つかもしれません (境界条件はすでに正しいです!)。
+.. example based on the PyModules FAQ entry by Aaron Watters <arw@pythonpros.com>
 
 .. versionadded:: 2.1
 
-.. seealso::
+**Source code:** :source:`Lib/bisect.py`
 
-   Latest version of the `bisect module Python source code
-   <http://svn.python.org/view/python/branches/release27-maint/Lib/bisect.py?view=markup>`_
+--------------
 
-次の関数が用意されています。
+This module provides support for maintaining a list in sorted order without
+having to sort the list after each insertion.  For long lists of items with
+expensive comparison operations, this can be an improvement over the more common
+approach.  The module is called :mod:`bisect` because it uses a basic bisection
+algorithm to do its work.  The source code may be most useful as a working
+example of the algorithm (the boundary conditions are already right!).
+
+The following functions are provided:
 
 
 .. function:: bisect_left(a, x, lo=0, hi=len(a))
 
-   ソートされた順序を保ったまま *x* を *a* に挿入できる点を探し当てます。
-   リストの中から検索する部分集合を指定するには、パラメーターの *lo* と *hi* を使います。デフォルトでは、リスト全体が使われます。 *x*
-   がすでに *a* に含まれている場合、挿入点は既存のどのエントリーよりも前(左)になります。戻り値は、 ``list.insert()``
-   の第一引数として使うのに適しています。 *a* はすでにソートされているものとします。
+   Locate the insertion point for *x* in *a* to maintain sorted order.
+   The parameters *lo* and *hi* may be used to specify a subset of the list
+   which should be considered; by default the entire list is used.  If *x* is
+   already present in *a*, the insertion point will be before (to the left of)
+   any existing entries.  The return value is suitable for use as the first
+   parameter to ``list.insert()`` assuming that *a* is already sorted.
 
-   返された挿入点 *i* は、配列 *a* を二つに分け、
-   ``all(val < x for val in a[lo:i])`` が左側に、
-   ``all(val >= x for val in a[i:hi])`` が右側になるようにします。
+   The returned insertion point *i* partitions the array *a* into two halves so
+   that ``all(val < x for val in a[lo:i])`` for the left side and
+   ``all(val >= x for val in a[i:hi])`` for the right side.
 
 .. function:: bisect_right(a, x, lo=0, hi=len(a))
               bisect(a, x, lo=0, hi=len(a))
 
-   :func:`bisect_left` と似ていますが、 *a* に含まれる *x*
-   のうち、どのエントリーよりも後ろ(右)にくるような挿入点を返します。
+   Similar to :func:`bisect_left`, but returns an insertion point which comes
+   after (to the right of) any existing entries of *x* in *a*.
+
+   The returned insertion point *i* partitions the array *a* into two halves so
+   that ``all(val <= x for val in a[lo:i])`` for the left side and
+   ``all(val > x for val in a[i:hi])`` for the right side.
 
 .. function:: insort_left(a, x, lo=0, hi=len(a))
 
-   *x* を *a* にソートされた順序で挿入します。これは、
-   ``a.insert(bisect.bisect_left(a, x, lo, hi), x)`` と等価です。 *a*
-   はすでにソートされているものとします。なお、O(log n) の探索は
-   遅い O(n) の挿入の段階に支配されます。
+   Insert *x* in *a* in sorted order.  This is equivalent to
+   ``a.insert(bisect.bisect_left(a, x, lo, hi), x)`` assuming that *a* is
+   already sorted.  Keep in mind that the O(log n) search is dominated by
+   the slow O(n) insertion step.
 
 .. function:: insort_right(a, x, lo=0, hi=len(a))
               insort(a, x, lo=0, hi=len(a))
 
-   :func:`insort_left` と似ていますが、 *a* に含まれる *x* のうち、
-   どのエントリーよりも後ろに *x* を挿入します。
+   Similar to :func:`insort_left`, but inserting *x* in *a* after any existing
+   entries of *x*.
 
 .. seealso::
 
-   bisect を利用して、直接の探索ができ、キー関数をサポートする、
-   完全な機能を持つコレクションクラスを組み立てる `SortedCollection recipe
-   <http://code.activestate.com/recipes/577197-sortedcollection/>`_\ 。
-   キーは、探索中に不必要な呼び出しをさせないために、予め計算しておきます。
+   `SortedCollection recipe
+   <http://code.activestate.com/recipes/577197-sortedcollection/>`_ that uses
+   bisect to build a full-featured collection class with straight-forward search
+   methods and support for a key-function.  The keys are precomputed to save
+   unnecessary calls to the key function during searches.
 
 
-ソート済みリストの探索
+Searching Sorted Lists
 ----------------------
 
-上記の :func:`bisect` 関数群は挿入点を探索するのには便利ですが、普通の
-探索タスクに使うのはトリッキーだったり不器用だったりします。以下の 5 関数は、
-これらをどのように標準の探索やソート済みリストに変換するかを説明します::
+The above :func:`bisect` functions are useful for finding insertion points but
+can be tricky or awkward to use for common searching tasks. The following five
+functions show how to transform them into the standard lookups for sorted
+lists::
 
     def index(a, x):
         'Locate the leftmost value exactly equal to x'
@@ -105,31 +112,30 @@
         raise ValueError
 
 
-その他の使用例
+Other Examples
 --------------
 
 .. _bisect-example:
 
-:func:`bisect` 関数は数値テーブルの探索に役に立ちます。この例では、 :func:`bisect`
-を使って、(たとえば)順序のついた数値の区切り点の集合に基づいて、試験の成績の
-等級を表す文字を調べます。区切り点は 90 以上は 'A'、 80 から 89 は
-'B'、などです。
+The :func:`bisect` function can be useful for numeric table lookups. This
+example uses :func:`bisect` to look up a letter grade for an exam score (say)
+based on a set of ordered numeric breakpoints: 90 and up is an 'A', 80 to 89 is
+a 'B', and so on::
 
    >>> def grade(score, breakpoints=[60, 70, 80, 90], grades='FDCBA'):
-   ...     i = bisect(breakpoints, score)
-   ...     return grades[i]
-   ...
+           i = bisect(breakpoints, score)
+           return grades[i]
+
    >>> [grade(score) for score in [33, 99, 77, 70, 89, 90, 100]]
    ['F', 'A', 'C', 'C', 'B', 'A', 'A']
 
-:func:`sorted` 関数と違い、 :func:`bisect` 関数に *key* や *reversed* 引数を
-用意するのは、設計が非効率になるので、非合理的です。 (連続する bisect 関数の
-呼び出しは前回の key 参照の結果を "記憶" しません)
+Unlike the :func:`sorted` function, it does not make sense for the :func:`bisect`
+functions to have *key* or *reversed* arguments because that would lead to an
+inefficient design (successive calls to bisect functions would not "remember"
+all of the previous key lookups).
 
-代わりに、事前に計算しておいたキーのリストから検索して、レコードのインデックスを
-見つけます。
-
-::
+Instead, it is better to search a list of precomputed keys to find the index
+of the record in question::
 
     >>> data = [('red', 5), ('blue', 1), ('yellow', 8), ('black', 0)]
     >>> data.sort(key=lambda r: r[1])
@@ -142,3 +148,4 @@
     ('red', 5)
     >>> data[bisect_left(keys, 8)]
     ('yellow', 8)
+

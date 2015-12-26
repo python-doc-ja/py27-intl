@@ -1,243 +1,254 @@
-:mod:`os` --- 雑多なオペレーティングシステムインタフェース
-==========================================================
+:mod:`os` --- Miscellaneous operating system interfaces
+=======================================================
 
 .. module:: os
-   :synopsis: 雑多なオペレーティングシステムインタフェース。
+   :synopsis: Miscellaneous operating system interfaces.
 
-.. This module provides a portable way of using operating system dependent
-   functionality.  If you just want to read or write a file see :func:`open`, if
-   you want to manipulate paths, see the :mod:`os.path` module, and if you want to
-   read all the lines in all the files on the command line see the :mod:`fileinput`
-   module.  For creating temporary files and directories see the :mod:`tempfile`
-   module, and for high-level file and directory handling see the :mod:`shutil`
-   module.
 
-このモジュールは、OS依存の機能をポータブルな方法で利用する方法を提供します。
-単純なファイルの読み書きについては、 :func:`open` を参照してください。
-パス操作については、 :mod:`os.path` モジュールを参照してください。
-コマンドラインに与えられた全てのファイルから行を読み込んでいくには、
-:mod:`fileinput` モジュールを参照してください。
-一時ファイルや一時ディレクトリの作成については、
-:mod:`tempfile` モジュールを参照してください。
-高レベルなファイルとディレクトリの操作については、
-:mod:`shutil` モジュールを参照してください。
+This module provides a portable way of using operating system dependent
+functionality.  If you just want to read or write a file see :func:`open`, if
+you want to manipulate paths, see the :mod:`os.path` module, and if you want to
+read all the lines in all the files on the command line see the :mod:`fileinput`
+module.  For creating temporary files and directories see the :mod:`tempfile`
+module, and for high-level file and directory handling see the :mod:`shutil`
+module.
 
-.. The design of all built-in operating system dependent modules of Python is such
-   that as long as the same functionality is available, it uses the same interface;
-   for example, the function ``os.stat(path)`` returns stat information about
-   *path* in the same format (which happens to have originated with the POSIX
-   interface).
+Notes on the availability of these functions:
 
-利用可能性に関する注意:
+* The design of all built-in operating system dependent modules of Python is
+  such that as long as the same functionality is available, it uses the same
+  interface; for example, the function ``os.stat(path)`` returns stat
+  information about *path* in the same format (which happens to have originated
+  with the POSIX interface).
 
-* Pythonの、全てのOS依存モジュールの設計方針は、
-  可能な限り同一のインタフェースで同一の機能を利用できるようにする、というものです。
-  例えば、 ``os.stat(path)`` は *path* に関する stat 情報を、
-  (POSIXを元にした)同じフォーマットで返します。
+* Extensions peculiar to a particular operating system are also available
+  through the :mod:`os` module, but using them is of course a threat to
+  portability.
 
-* 特定のオペレーティングシステム固有の拡張も :mod:`os` を介して利用することができますが、
-  これらの利用はもちろん、可搬性を脅かします！
+* An "Availability: Unix" note means that this function is commonly found on
+  Unix systems.  It does not make any claims about its existence on a specific
+  operating system.
 
-* 「利用できる環境: Unix」の意味はこの関数が Unix システムにあることが多い
-  ということです。
-  このことは特定の OS における存在を主張するものではありません。
-
-* 特に記述がない場合、「利用できる環境: Unix」と書かれている関数は、
-  Unix をコアにしている Mac OS X でも利用することができます。
+* If not separately noted, all functions that claim "Availability: Unix" are
+  supported on Mac OS X, which builds on a Unix core.
 
 .. Availability notes get their own line and occur at the end of the function
 .. documentation.
-.. 利用可能性に関する注意は各関数の説明の最後に別に一行を割いて書きます。
 
 .. note::
 
-   .. All functions in this module raise :exc:`OSError` in the case of invalid or
-      inaccessible file names and paths, or other arguments that have the correct
-      type, but are not accepted by the operating system.
-
-   このモジュール内のすべての関数は、間違った、あるいはアクセス出来ないファイル名や
-   ファイルパス、その他型が合っていてもOSが受理しない引数に対して、 :exc:`OSError`
-   を送出します。
+   All functions in this module raise :exc:`OSError` in the case of invalid or
+   inaccessible file names and paths, or other arguments that have the correct
+   type, but are not accepted by the operating system.
 
 
 .. exception:: error
 
-   .. An alias for the built-in :exc:`OSError` exception.
+   An alias for the built-in :exc:`OSError` exception.
 
-   組み込みの :exc:`OSError` 例外に対するエイリアス
 
 .. data:: name
 
-   import されているオペレーティング・システム依存モジュールの名前です。
-   現在次の名前が登録されています: ``'posix'``, ``'nt'``,
+   The name of the operating system dependent module imported.  The following
+   names have currently been registered: ``'posix'``, ``'nt'``,
    ``'os2'``, ``'ce'``, ``'java'``, ``'riscos'``.
+
+   .. seealso::
+      :attr:`sys.platform` has a finer granularity.  :func:`os.uname` gives
+      system-dependent version information.
+
+      The :mod:`platform` module provides detailed checks for the
+      system's identity.
 
 
 .. _os-procinfo:
 
-プロセスのパラメタ
+Process Parameters
 ------------------
 
-これらの関数とデータ要素は、現在のプロセスおよびユーザに対する情報提供および操作のための機能を提供しています。
+These functions and data items provide information and operate on the current
+process and user.
 
 
 .. data:: environ
 
-   環境変数の値を表すマップ型オブジェクトです。例えば、 ``environ['HOME']`` は( いくつかのプラットフォーム上での) あなたの
-   ホームディレクトリへのパスです。これは C の ``getenv("HOME")`` と等価です。
+   A :term:`mapping` object representing the string environment. For example,
+   ``environ['HOME']`` is the pathname of your home directory (on some platforms),
+   and is equivalent to ``getenv("HOME")`` in C.
 
-   このマップ型の内容は、 :mod:`os` モジュールの最初の import の時点、通常は Python の起動時に :file:`site.py`
-   が処理される中で取り込まれます。それ以後に変更された環境変数は ``os.environ`` を直接変更しない限り反映されません。
+   This mapping is captured the first time the :mod:`os` module is imported,
+   typically during Python startup as part of processing :file:`site.py`.  Changes
+   to the environment made after this time are not reflected in ``os.environ``,
+   except for changes made by modifying ``os.environ`` directly.
 
-   プラットフォーム上で :func:`putenv` がサポートされている場合、このマップ型オブジェクトは環境変数に対するクエリと同様に変更するために使うこ
-   ともできます。 :func:`putenv` はマップ型オブジェクトが修正される時に、自動的に呼ばれることになります。
+   If the platform supports the :func:`putenv` function, this mapping may be used
+   to modify the environment as well as query the environment.  :func:`putenv` will
+   be called automatically when the mapping is modified.
 
    .. note::
 
-      :func:`putenv` を直接呼び出しても ``os.environ`` の
-      内容は変わらないので、 ``os.environ`` を直接変更する方がベターです。
+      Calling :func:`putenv` directly does not change ``os.environ``, so it's better
+      to modify ``os.environ``.
 
    .. note::
 
-      FreeBSD と Mac OS X を含むいつくかのプラットフォームでは、 ``environ`` の値を変更するとメモリリークの原因になる場合があります。
-      システムの :c:func:`putenv` に関するドキュメントを参照してください。
+      On some platforms, including FreeBSD and Mac OS X, setting ``environ`` may
+      cause memory leaks.  Refer to the system documentation for
+      :c:func:`putenv`.
 
-   :func:`putenv` が提供されていない場合、このマッピングオブジェクト
-   に変更を加えたコピーを適切なプロセス生成機能に渡して、子プロセスが修正された環境変数を利用するようにできます。
+   If :func:`putenv` is not provided, a modified copy of this mapping  may be
+   passed to the appropriate process-creation functions to cause  child processes
+   to use a modified environment.
 
-   プラットフォームが :func:`unsetenv` 関数をサポートしているならば、このマッピングからアイテムを取り除いて(delete)環境変数を消すことができます。
-   :func:`unsetenv` は ``os.environ`` からアイテムが取り除かれた時に自動的に呼ばれます。
-   :meth:`pop` か :meth:`clear` が呼ばれた時も同様です。
+   If the platform supports the :func:`unsetenv` function, you can delete items in
+   this mapping to unset environment variables. :func:`unsetenv` will be called
+   automatically when an item is deleted from ``os.environ``, and when
+   one of the :meth:`pop` or :meth:`clear` methods is called.
 
    .. versionchanged:: 2.6
+      Also unset environment variables when calling :meth:`os.environ.clear`
+      and :meth:`os.environ.pop`.
 
-      .. Also unset environment variables when calling :meth:`os.environ.clear`
-         and :meth:`os.environ.pop`.
-
-      :meth:`os.environ.clear` か :meth:`os.environ.pop` を呼び出した時も、(deleteした時と同様に)
-      環境変数を削除するようになりました。
 
 .. function:: chdir(path)
               fchdir(fd)
               getcwd()
    :noindex:
 
-   これらの関数は、 :ref:`os-file-dir` 節で説明されています。
+   These functions are described in :ref:`os-file-dir`.
 
 
 .. function:: ctermid()
 
-   プロセスの制御端末に対応するファイル名を返します。
+   Return the filename corresponding to the controlling terminal of the process.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getegid()
 
-   現在のプロセスの実効(effective)グループ id を返します。
-   この id は現在のプロセスで実行されているファイルの "set id" ビットに対応します。
+   Return the effective group id of the current process.  This corresponds to the
+   "set id" bit on the file being executed in the current process.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: geteuid()
 
    .. index:: single: user; effective id
 
-   現在のプロセスの実効(effective)ユーザ id を返します。
+   Return the current process's effective user id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getgid()
 
    .. index:: single: process; group
 
-   現在のプロセスの実際のグループ id を返します。
+   Return the real group id of the current process.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getgroups()
 
-   現在のプロセスに関連づけられた従属グループ id のリストを返します。
+   Return list of supplemental group ids associated with the current process.
 
-   利用できる環境: Unix
+   Availability: Unix.
+
+   .. note::
+
+      On Mac OS X, :func:`getgroups` behavior differs somewhat from
+      other Unix platforms. If the Python interpreter was built with a
+      deployment target of :const:`10.5` or earlier, :func:`getgroups` returns
+      the list of effective group ids associated with the current user process;
+      this list is limited to a system-defined number of entries, typically 16,
+      and may be modified by calls to :func:`setgroups` if suitably privileged.
+      If built with a deployment target greater than :const:`10.5`,
+      :func:`getgroups` returns the current group access list for the user
+      associated with the effective user id of the process; the group access
+      list may change over the lifetime of the process, it is not affected by
+      calls to :func:`setgroups`, and its length is not limited to 16.  The
+      deployment target value, :const:`MACOSX_DEPLOYMENT_TARGET`, can be
+      obtained with :func:`sysconfig.get_config_var`.
 
 
 .. function:: initgroups(username, gid)
 
-   システムの initgroups() を呼んで、指定された *username* がメンバーであるグループと
-   *gid* でしていされたグループでグループアクセスリストを初期化する。
+   Call the system initgroups() to initialize the group access list with all of
+   the groups of which the specified username is a member, plus the specified
+   group id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.7
 
 
 .. function:: getlogin()
 
-   現在のプロセスの制御端末にログインしているユーザ名を返します。
-   ほとんどの場合、ユーザが誰かを知りたいときには環境変数 :envvar:`LOGNAME` を、
-   現在の実効ユーザ id のユーザ名を知りたいときには
-   ``pwd.getpwuid(os.getuid())[0]`` を使うほうが便利です。
+   Return the name of the user logged in on the controlling terminal of the
+   process.  For most purposes, it is more useful to use the environment
+   variable :envvar:`LOGNAME` to find out who the user is, or
+   ``pwd.getpwuid(os.getuid())[0]`` to get the login name of the process's real
+   user id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getpgid(pid)
 
-   プロセス id *pid* のプロセスのプロセス・グループ id を返します。
-   もし *pid* が 0 ならば、現在のプロセスのプロセス・グループ id を返します。
+   Return the process group id of the process with process id *pid*. If *pid* is 0,
+   the process group id of the current process is returned.
 
-   利用できる環境: Unix
- 
+   Availability: Unix.
+
    .. versionadded:: 2.3
- 
- 
+
+
 .. function:: getpgrp()
 
    .. index:: single: process; group
 
-   現在のプロセス・グループの id を返します。
+   Return the id of the current process group.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getpid()
 
    .. index:: single: process; id
 
-   現在のプロセス id を返します。
+   Return the current process id.
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
 
 .. function:: getppid()
 
    .. index:: single: process; id of parent
 
-   親プロセスの id を返します。
+   Return the parent's process id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getresuid()
 
-   現在のプロセスの real, effective, saved user id を示す、
-   (ruid, euid, suid) のタプルを返します。
+   Return a tuple (ruid, euid, suid) denoting the current process's
+   real, effective, and saved user ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.7
 
 
 .. function:: getresgid()
 
-   現在のプロセスの real, effective, saved group id を示す、
-   (ruid, euid, suid) のタプルを返します。
+   Return a tuple (rgid, egid, sgid) denoting the current process's
+   real, effective, and saved group ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.7
 
@@ -246,107 +257,105 @@
 
    .. index:: single: user; id
 
-   現在のプロセスのユーザ id を返します。
+   Return the current process's real user id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getenv(varname[, value])
 
-   環境変数 *varname* が存在する場合にはその値を返し、
-   存在しない場合には *value* を返します。
-   *value* のデフォルト値は ``None`` です。
+   Return the value of the environment variable *varname* if it exists, or *value*
+   if it doesn't.  *value* defaults to ``None``.
 
-   利用できる環境: 主な Unix 互換環境、Windows
+   Availability: most flavors of Unix, Windows.
 
 
 .. function:: putenv(varname, value)
 
    .. index:: single: environment variables; setting
 
-   *varname* と名づけられた環境変数の値を文字列 *value* に設定します。
-   このような環境変数への変更は、 :func:`os.system`,
-   :func:`popen` , :func:`fork` および :func:`execv`
-   により起動された子プロセスに影響します。
+   Set the environment variable named *varname* to the string *value*.  Such
+   changes to the environment affect subprocesses started with :func:`os.system`,
+   :func:`popen` or :func:`fork` and :func:`execv`.
 
-   利用できる環境: 主な Unix 互換環境、Windows
+   Availability: most flavors of Unix, Windows.
 
    .. note::
 
-      FreeBSD と Mac OS X を含むいつくかのプラットフォームでは、
-      ``environ`` の値を変更するとメモリリークの原因になる場合があります。
-      システムの putenv に関するドキュメントを参照してください。
+      On some platforms, including FreeBSD and Mac OS X, setting ``environ`` may
+      cause memory leaks. Refer to the system documentation for putenv.
 
-   :func:`putenv` がサポートされている場合、
-   ``os.environ`` の要素に対する代入を行うと自動的に :func:`putenv`
-   を呼び出します; 
-   しかし、 :func:`putenv` の呼び出しは ``os.environ`` を更新しないので、
-   実際には ``os.environ`` の要素に代入する方が望ましい操作です。
+   When :func:`putenv` is supported, assignments to items in ``os.environ`` are
+   automatically translated into corresponding calls to :func:`putenv`; however,
+   calls to :func:`putenv` don't update ``os.environ``, so it is actually
+   preferable to assign to items of ``os.environ``.
 
 
 .. function:: setegid(egid)
 
-   現在のプロセスに実効グループ id をセットします。
+   Set the current process's effective group id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: seteuid(euid)
 
-   現在のプロセスに実効ユーザ id をセットします。
+   Set the current process's effective user id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setgid(gid)
 
-   現在のプロセスにグループ id をセットします。
+   Set the current process' group id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setgroups(groups)
 
-   現在のグループに関連付けられた従属グループ id のリストを *groups* に設定します。
-   *groups* はシーケンス型でなくてはならず、
-   各要素はグループを特定する整数でなくてはなりません。
-   この操作は通常、スーパユーザしか利用できません。
+   Set the list of supplemental group ids associated with the current process to
+   *groups*. *groups* must be a sequence, and each element must be an integer
+   identifying a group. This operation is typically available only to the superuser.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.2
 
+   .. note:: On Mac OS X, the length of *groups* may not exceed the
+      system-defined maximum number of effective group ids, typically 16.
+      See the documentation for :func:`getgroups` for cases where it may not
+      return the same group list set by calling setgroups().
 
 .. function:: setpgrp()
 
-   システムコール :c:func:`setpgrp` または :c:func:`setpgrp(0, 0)` 
-   のどちらかのバージョンのうち、 (実装されていれば)
-   実装されている方を呼び出します。
-   機能については Unix マニュアルを参照してください。
+   Call the system call :c:func:`setpgrp` or :c:func:`setpgrp(0, 0)` depending on
+   which version is implemented (if any).  See the Unix manual for the semantics.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setpgid(pid, pgrp)
 
-   システムコール :c:func:`setpgid` を呼び出して、
-   *pid* の id をもつプロセスのプロセスグループ id を *pgrp* に設定します。
+   Call the system call :c:func:`setpgid` to set the process group id of the
+   process with id *pid* to the process group with id *pgrp*.  See the Unix manual
+   for the semantics.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setregid(rgid, egid)
 
-   現在のプロセスの real, effective group id を設定します。
+   Set the current process's real and effective group ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setresgid(rgid, egid, sgid)
 
-   現在のプロセスの real, effective, saved group id を設定します。
+   Set the current process's real, effective, and saved group ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.7
 
@@ -355,60 +364,58 @@
 
    Set the current process's real, effective, and saved user ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.7
 
 
 .. function:: setreuid(ruid, euid)
 
-   現在のプロセスに対して実際のユーザ id および実効ユーザ id を設定します。
+   Set the current process's real and effective user ids.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getsid(pid)
 
-   システムコール :c:func:`getsid` を呼び出します。
-   機能については Unix マニュアルを参照してください。
+   Call the system call :c:func:`getsid`.  See the Unix manual for the semantics.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.4
 
 
 .. function:: setsid()
 
-   システムコール :c:func:`setsid` を呼び出します。
-   機能については Unix マニュアルを参照してください。
+   Call the system call :c:func:`setsid`.  See the Unix manual for the semantics.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: setuid(uid)
 
    .. index:: single: user; id, setting
 
-   現在のプロセスのユーザ id を設定します。
+   Set the current process's user id.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. placed in this section since it relates to errno.... a little weak
 .. function:: strerror(code)
 
-   エラーコード *code* に対応するエラーメッセージを返します。
-   不明なエラーコードに対して :c:func:`strerror` が ``NULL``
-   を返す環境では、その場合に :exc:`ValueError` を送出します。
+   Return the error message corresponding to the error code in *code*.
+   On platforms where :c:func:`strerror` returns ``NULL`` when given an unknown
+   error number, :exc:`ValueError` is raised.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: umask(mask)
 
-   現在の数値 umask を設定し、以前の umask 値を返します。
+   Set the current numeric umask and return the previous umask.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: uname()
@@ -417,222 +424,207 @@
       single: gethostname() (in module socket)
       single: gethostbyaddr() (in module socket)
 
-   現在のオペレーティングシステムを特定する情報の入った 5 要素のタプルを返します。
-   このタプルには 5 つの文字列: ``(sysname, nodename, release, version, machine)`` 
-   が入っています。
-   システムによっては、ノード名を 8 文字、または先頭の要素だけに切り詰めます;
-   ホスト名を取得する方法としては、 :func:`socket.gethostname`
-   を使う方がよいでしょう、あるいは
-   ``socket.gethostbyaddr(socket.gethostname())`` でもかまいません。
+   Return a 5-tuple containing information identifying the current operating
+   system.  The tuple contains 5 strings: ``(sysname, nodename, release, version,
+   machine)``.  Some systems truncate the nodename to 8 characters or to the
+   leading component; a better way to get the hostname is
+   :func:`socket.gethostname`  or even
+   ``socket.gethostbyaddr(socket.gethostname())``.
 
-   利用できる環境: Unix互換環境
+   Availability: recent flavors of Unix.
 
 
 .. function:: unsetenv(varname)
 
    .. index:: single: environment variables; deleting
 
-   *varname* という名前の環境変数を取り消します。
-   このような環境の変化は :func:`os.system`, :func:`popen` または
-   :func:`fork` と :func:`execv` で開始されるサブプロセスに影響を与えます。
+   Unset (delete) the environment variable named *varname*. Such changes to the
+   environment affect subprocesses started with :func:`os.system`, :func:`popen` or
+   :func:`fork` and :func:`execv`.
 
-   利用できる環境:  ほとんどの Unix 互換環境、Windows
+   When :func:`unsetenv` is supported, deletion of items in ``os.environ`` is
+   automatically translated into a corresponding call to :func:`unsetenv`; however,
+   calls to :func:`unsetenv` don't update ``os.environ``, so it is actually
+   preferable to delete items of ``os.environ``.
 
-   :func:`unsetenv` がサポートされている時には
-   ``os.environ`` のアイテムの削除が対応する :func:`unsetenv`
-   の呼び出しに自動的に翻訳されます。
-   しかし、 :func:`unsetenv` の呼び出しは ``os.environ`` を更新しませんので、
-   むしろ ``os.environ`` のアイテムを削除する方が好ましい方法です。
+   Availability: most flavors of Unix, Windows.
 
 
 .. _os-newstreams:
 
-ファイルオブジェクトの生成
---------------------------
+File Object Creation
+--------------------
 
-以下の関数は新しいファイルオブジェクトを作成します。(:func:`open` も参照してください)
+These functions create new file objects. (See also :func:`open`.)
 
 
 .. function:: fdopen(fd[, mode[, bufsize]])
 
    .. index:: single: I/O control; buffering
 
-   ファイル記述子 *fd* に接続している、開かれたファイルオブジェクトを返します。
-   引数 *mode* および *bufsize* は、組み込み関数
-   :func:`open`  における対応する引数と同じ意味を持ちます。
+   Return an open file object connected to the file descriptor *fd*.  The *mode*
+   and *bufsize* arguments have the same meaning as the corresponding arguments
+   to the built-in :func:`open` function.  If :func:`fdopen` raises an
+   exception, it leaves *fd* untouched (unclosed).
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionchanged:: 2.3
-      引数 *mode* は、指定されるならば、
-      ``'r'``, ``'w'``, ``'a'`` のいずれかの文字で始まらなければなりません。
-      そうでなければ :exc:`ValueError` が送出されます.
+      When specified, the *mode* argument must now start with one of the letters
+      ``'r'``, ``'w'``, or ``'a'``, otherwise a :exc:`ValueError` is raised.
 
    .. versionchanged:: 2.5
-      Unixでは、引数 *mode* が ``'a'`` で始まる時には
-      *O_APPEND* フラグがファイル記述子に設定されます。
-      (ほとんどのプラットフォームで :c:func:`fdopen` 実装が既に行なっていることです).
+      On Unix, when the *mode* argument starts with ``'a'``, the *O_APPEND* flag is
+      set on the file descriptor (which the :c:func:`fdopen` implementation already
+      does on most platforms).
 
 
 .. function:: popen(command[, mode[, bufsize]])
 
-   *command* への、または *command* からのパイプ入出力を開きます。
-   戻り値はパイプに接続されている開かれたファイルオブジェクトで、
-   *mode* が ``'r'`` (標準の設定です) または ``'w'`` かによって
-   読み出しまたは書き込みを行うことができます。
-   引数 *bufsize* は、組み込み関数 :func:`open` における対応する引数と
-   同じ意味を持ちます。
-   *command* の終了ステータス (:func:`wait` で指定された書式でコード化されています)
-   は、 :meth:`close` メソッドの戻り値として取得することができます。
-   例外は終了ステータスがゼロ
-   (すなわちエラーなしで終了) の場合で、このときには ``None`` を返します。
+   Open a pipe to or from *command*.  The return value is an open file object
+   connected to the pipe, which can be read or written depending on whether *mode*
+   is ``'r'`` (default) or ``'w'``. The *bufsize* argument has the same meaning as
+   the corresponding argument to the built-in :func:`open` function.  The exit
+   status of the command (encoded in the format specified for :func:`wait`) is
+   available as the return value of the :meth:`~file.close` method of the file object,
+   except that when the exit status is zero (termination without errors), ``None``
+   is returned.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. deprecated:: 2.6
-      この関数は撤廃されました。
-      代わりに :mod:`subprocess` モジュールを利用してください。
-      特に、 :ref:`subprocess-replacements` 節をチェックしてください。
+      This function is obsolete.  Use the :mod:`subprocess` module.  Check
+      especially the :ref:`subprocess-replacements` section.
 
    .. versionchanged:: 2.0
-      この関数は、Pythonの初期のバージョンでは、
-      Windows環境下で信頼できない動作をしていました。
-      これはWindowsに付属して提供されるライブラリの
-      :c:func:`_popen` 関数を利用したことによるものです。
-      新しいバージョンの Python では、
-      Windows 付属のライブラリにある壊れた実装を利用しません。
+      This function worked unreliably under Windows in earlier versions of Python.
+      This was due to the use of the :c:func:`_popen` function from the libraries
+      provided with Windows.  Newer versions of Python do not use the broken
+      implementation from the Windows libraries.
 
 
 .. function:: tmpfile()
 
-   更新モード(``w+b``)で開かれた新しいファイルオブジェクトを返します。
-   このファイルはディレクトリエントリ登録に関連付けられておらず、
-   このファイルに対するファイル記述子がなくなると自動的に削除されます。
+   Return a new file object opened in update mode (``w+b``).  The file has no
+   directory entries associated with it and will be automatically deleted once
+   there are no file descriptors for the file.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
-.. There are a number of different :func:`popen\*` functions that provide slightly
-   different ways to create subprocesses.
-
-幾つかの少し異なった方法で子プロセスを作成するために、幾つかの :func:`popen\*` 関数が提供されています。
+There are a number of different :func:`popen\*` functions that provide slightly
+different ways to create subprocesses.
 
 .. deprecated:: 2.6
-   全ての :func:`popen\*` 関数は撤廃されました。
-   代わりに :mod:`subprocess` モジュールを利用してください。
+   All of the :func:`popen\*` functions are obsolete. Use the :mod:`subprocess`
+   module.
 
-:func:`popen\*` の変種はどれも、 *bufsize* が指定されている場合には
-I/O パイプのバッファサイズを表します。 *mode* を指定する場合には、
-文字列 ``'b'`` または ``'t'`` でなければなりません;
-これは、Windows でファイルをバイナリモードで開くか
-テキストモードで開くかを決めるために必要です。
-*mode* の標準の設定値は ``'t'`` です。
+For each of the :func:`popen\*` variants, if *bufsize* is specified, it
+specifies the buffer size for the I/O pipes. *mode*, if provided, should be the
+string ``'b'`` or ``'t'``; on Windows this is needed to determine whether the
+file objects should be opened in binary or text mode.  The default value for
+*mode* is ``'t'``.
 
-また Unix ではこれらの変種はいずれも *cmd* をシーケンスにできます。
-その場合、引数はシェルの介在なしに直接 (:func:`os.spawnv` のように) 渡されます。
-*cmd* が文字列の場合、引数は( :func:`os.system` のように) シェルに渡されます。
+Also, for each of these variants, on Unix, *cmd* may be a sequence, in which
+case arguments will be passed directly to the program without shell intervention
+(as with :func:`os.spawnv`). If *cmd* is a string it will be passed to the shell
+(as with :func:`os.system`).
 
-.. These methods do not make it possible to retrieve the exit status from the child
-   processes.  The only way to control the input and output streams and also
-   retrieve the return codes is to use the :mod:`subprocess` module; these are only
-   available on Unix.
+These methods do not make it possible to retrieve the exit status from the child
+processes.  The only way to control the input and output streams and also
+retrieve the return codes is to use the :mod:`subprocess` module; these are only
+available on Unix.
 
-以下のメソッドは子プロセスから終了ステータスを取得できるようにはしていません。
-入出力ストリームを制御し、かつ終了コードの取得も行える唯一の方法は、
-:mod:`subprocess` モジュールを利用する事です。
-以下のメソッドはUnixでのみ利用可能です。
-
-これらの関数の利用に関係して起きうるデッドロック状態についての議論は、
-:ref:`popen2-flow-control` 節を参照してください。
+For a discussion of possible deadlock conditions related to the use of these
+functions, see :ref:`popen2-flow-control`.
 
 
 .. function:: popen2(cmd[, mode[, bufsize]])
 
-   *cmd* を子プロセスとして実行します。ファイル・オブジェクト ``(child_stdin, child_stdout)`` を返します。
+   Execute *cmd* as a sub-process and return the file objects ``(child_stdin,
+   child_stdout)``.
 
    .. deprecated:: 2.6
-      この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
-      特に、 :ref:`subprocess-replacements` 節を参照してください。
+      This function is obsolete.  Use the :mod:`subprocess` module.  Check
+      especially the :ref:`subprocess-replacements` section.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 2.0
 
 
 .. function:: popen3(cmd[, mode[, bufsize]])
 
-   *cmd* を子プロセスとして実行します。ファイルオブジェクト  ``(child_stdin, child_stdout, child_stderr)`` を
-   返します。
+   Execute *cmd* as a sub-process and return the file objects ``(child_stdin,
+   child_stdout, child_stderr)``.
 
    .. deprecated:: 2.6
-      この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
-      特に、 :ref:`subprocess-replacements` 節を参照してください。
+      This function is obsolete.  Use the :mod:`subprocess` module.  Check
+      especially the :ref:`subprocess-replacements` section.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 2.0
 
 
 .. function:: popen4(cmd[, mode[, bufsize]])
 
-   *cmd* を子プロセスとして実行します。ファイルオブジェクト ``(child_stdin, child_stdout_and_stderr)``
-   を返します。
+   Execute *cmd* as a sub-process and return the file objects ``(child_stdin,
+   child_stdout_and_stderr)``.
 
    .. deprecated:: 2.6
-      この関数は撤廃されました。 :mod:`subprocess` モジュールを利用してください。
-      特に、 :ref:`subprocess-replacements` 節を参照してください。
+      This function is obsolete.  Use the :mod:`subprocess` module.  Check
+      especially the :ref:`subprocess-replacements` section.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 2.0
 
-(``child_stdin, child_stdout, および child_stderr`` は子プロセスの視点で名付けられているので注意してください。
-すなわち、 *child_stdin* とは子プロセスの標準入力を意味します。)
+(Note that ``child_stdin, child_stdout, and child_stderr`` are named from the
+point of view of the child process, so *child_stdin* is the child's standard
+input.)
 
-この機能は :mod:`popen2` モジュール内の同じ名前の関数を使っても実現できますが、これらの関数の戻り値は異なる順序を持っています。
+This functionality is also available in the :mod:`popen2` module using functions
+of the same names, but the return values of those functions have a different
+order.
 
 
 .. _os-fd-ops:
 
-ファイル記述子の操作
---------------------
+File Descriptor Operations
+--------------------------
 
-これらの関数は、ファイル記述子を使って参照されている I/Oストリームを操作します。
+These functions operate on I/O streams referenced using file descriptors.
 
-ファイル記述子とは現在のプロセスから開かれたファイルに対応する小さな整数です。
-例えば、標準入力のファイル記述子はいつでも 0 で、標準出力は 1、標準エラーは 2 です。
-その他にさらにプロセスから開かれたファイルには 3、4、5、などが割り振られます。
-「ファイル記述子」という名前は少し誤解を与えるものかもしれませんが、
-Unixプラットフォームにおいて、ソケットやパイプもファイル記述子によって参照されます。
+File descriptors are small integers corresponding to a file that has been opened
+by the current process.  For example, standard input is usually file descriptor
+0, standard output is 1, and standard error is 2.  Further files opened by a
+process will then be assigned 3, 4, 5, and so forth.  The name "file descriptor"
+is slightly deceptive; on Unix platforms, sockets and pipes are also referenced
+by file descriptors.
 
-ファイルオブジェクトに紐付けられたファイル記述子は :meth:`~file.fileno` 
-メソッドによって取得可能です。
-ただし、ファイル記述子を直接使うとファイルオブジェクトのメソッドは経由しませんので、
-内部でバッファするかどうかといったファイルオブジェクトの都合は無視されます。
+The :meth:`~file.fileno` method can be used to obtain the file descriptor
+associated with a file object when required.  Note that using the file
+descriptor directly will bypass the file object methods, ignoring aspects such
+as internal buffering of data.
 
 .. function:: close(fd)
 
-   ファイルディスクリプタ *fd* を閉じます。
+   Close file descriptor *fd*.
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      注:この関数は低レベルの I/O のためのもので、
-      :func:`os.open` や :func:`pipe` が返すファイル記述子に対して
-      適用しなければなりません。
-      組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す
-      "ファイルオブジェクト" を閉じるには、
-      オブジェクトの :meth:`~file.close` メソッドを使ってください。
+      This function is intended for low-level I/O and must be applied to a file
+      descriptor as returned by :func:`os.open` or :func:`pipe`.  To close a "file
+      object" returned by the built-in function :func:`open` or by :func:`popen` or
+      :func:`fdopen`, use its :meth:`~io.IOBase.close` method.
 
 
 .. function:: closerange(fd_low, fd_high)
 
-   .. Close all file descriptors from *fd_low* (inclusive) to *fd_high* (exclusive),
-      ignoring errors. Availability: Unix, Windows. Equivalent to
-
-   *fd_low* (を含む) から *fd_high* (含まない) までの全てのディスクリプタを、
-   エラーを無視しながら閉じます。
-   次のコードと等価です::
+   Close all file descriptors from *fd_low* (inclusive) to *fd_high* (exclusive),
+   ignoring errors. Equivalent to::
 
       for fd in xrange(fd_low, fd_high):
           try:
@@ -640,267 +632,247 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           except OSError:
               pass
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 2.6
 
 
 .. function:: dup(fd)
 
-   ファイル記述子 *fd* の複製を返します。
+   Return a duplicate of file descriptor *fd*.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
+
 
 .. function:: dup2(fd, fd2)
 
-   ファイル記述子を *fd* から *fd2* に複製し、
-   必要なら後者の記述子を前もって閉じておきます。
+   Duplicate file descriptor *fd* to *fd2*, closing the latter first if necessary.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: fchmod(fd, mode)
 
-   .. Change the mode of the file given by *fd* to the numeric *mode*.  See the docs
-      for :func:`chmod` for possible values of *mode*.  Availability: Unix.
+   Change the mode of the file given by *fd* to the numeric *mode*.  See the docs
+   for :func:`chmod` for possible values of *mode*.
 
-   *fd* で指定されたファイルのモードを *mode* に変更します。
-   *mode* に指定できる値については、 :func:`chmod` のドキュメントを参照してください。
-
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.6
 
 
 .. function:: fchown(fd, uid, gid)
 
-   .. Change the owner and group id of the file given by *fd* to the numeric *uid*
-      and *gid*.  To leave one of the ids unchanged, set it to -1.
-      Availability: Unix.
+   Change the owner and group id of the file given by *fd* to the numeric *uid*
+   and *gid*.  To leave one of the ids unchanged, set it to -1.
 
-   *fd* で指定されたファイルの owner id と group id を、
-   *uid* と *gid* に変更します。
-   どちらかの id を変更しない場合は、 -1 を渡してください。
-
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.6
 
+
 .. function:: fdatasync(fd)
 
-   ファイル記述子 *fd* を持つファイルのディスクへの書き込みを強制します。
-   メタデータの更新は強制しません。
+   Force write of file with filedescriptor *fd* to disk. Does not force update of
+   metadata.
 
-   利用できる環境: Unix
+   Availability: Unix.
+
+   .. note::
+      This function is not available on MacOS.
 
 
 .. function:: fpathconf(fd, name)
 
-   開いているファイルに関連したシステム設定情報 (system configuration information)
-   を返します。
-   *name* には取得したい設定名を指定します;
-   これは定義済みのシステム固有値名の文字列で、多くの標準
-   (POSIX.1、 Unix 95、 Unix 98 その他) で定義されています。
-   プラットフォームによっては別の名前も定義しています。
-   ホストオペレーティングシステムの関知する名前は ``pathconf_names``
-   辞書で与えられています。
-   このマップオブジェクトに入っていない設定変数については、
-   *name* に整数を渡してもかまいません。
+   Return system configuration information relevant to an open file. *name*
+   specifies the configuration value to retrieve; it may be a string which is the
+   name of a defined system value; these names are specified in a number of
+   standards (POSIX.1, Unix 95, Unix 98, and others).  Some platforms define
+   additional names as well.  The names known to the host operating system are
+   given in the ``pathconf_names`` dictionary.  For configuration variables not
+   included in that mapping, passing an integer for *name* is also accepted.
 
-   もし *name* が文字列でかつ不明である場合、 :exc:`ValueError` を送出します。
-   *name* の指定値がホストシステムでサポートされておらず、
-   ``pathconf_names`` にも入っていない場合、 :const:`errno.EINVAL`
-   をエラー番号として :exc:`OSError` を送出します。
+   If *name* is a string and is not known, :exc:`ValueError` is raised.  If a
+   specific value for *name* is not supported by the host system, even if it is
+   included in ``pathconf_names``, an :exc:`OSError` is raised with
+   :const:`errno.EINVAL` for the error number.
 
-   利用できる環境: Unix
+   Availability: Unix.
+
 
 .. function:: fstat(fd)
 
-   :func:`~os.stat` のようにファイル記述子 *fd* の状態を返します。
+   Return status for file descriptor *fd*, like :func:`~os.stat`.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: fstatvfs(fd)
 
-   :func:`statvfs` のように、ファイル記述子
-   *fd* に関連づけられたファイルが入っているファイルシステムに関する情報を返します。
+   Return information about the filesystem containing the file associated with file
+   descriptor *fd*, like :func:`statvfs`.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: fsync(fd)
 
-   ファイル記述子 *fd* を持つファイルのディスクへの書き込みを強制します。
-   Unix では、ネイティブの :c:func:`fsync` 関数を、Windows
-   では MS :c:func:`_commit` 関数を呼び出します。
+   Force write of file with filedescriptor *fd* to disk.  On Unix, this calls the
+   native :c:func:`fsync` function; on Windows, the MS :c:func:`_commit` function.
 
-   Python のファイルオブジェクト *f* を使う場合、
-   *f* の内部バッファを確実にディスクに書き込むために、まず ``f.flush()`` を実行し、
-   それから ``os.fsync(f.fileno())`` してください。
+   If you're starting with a Python file object *f*, first do ``f.flush()``, and
+   then do ``os.fsync(f.fileno())``, to ensure that all internal buffers associated
+   with *f* are written to disk.
 
-   利用できる環境: Unix, Windows (2.2.3 以降)
+   Availability: Unix, and Windows starting in 2.2.3.
 
 
 .. function:: ftruncate(fd, length)
 
-   ファイル記述子 *fd* に対応するファイルを、
-   サイズが最大で *length* バイトになるように切り詰めます。
+   Truncate the file corresponding to file descriptor *fd*, so that it is at most
+   *length* bytes in size.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: isatty(fd)
 
-   ファイル記述子 *fd* が開いていて、tty(のような)装置に接続されている場合、
-   ``1`` を返します。そうでない場合は ``0`` を返します。
-
-   利用できる環境: Unix
+   Return ``True`` if the file descriptor *fd* is open and connected to a
+   tty(-like) device, else ``False``.
 
 
 .. function:: lseek(fd, pos, how)
 
-   ファイル記述子 *fd* の現在の位置を *pos* に設定します。
-   *pos* の意味は *how* で修飾されます:
-   ファイルの先頭からの相対には :const:`SEEK_SET` か ``0`` を設定します;
-   現在の位置からの相対には :const:`SEEK_CUR` か ``1`` を設定します;
-   ファイルの末尾からの相対には :const:`SEEK_END` か ``2`` を設定します。
+   Set the current position of file descriptor *fd* to position *pos*, modified
+   by *how*: :const:`SEEK_SET` or ``0`` to set the position relative to the
+   beginning of the file; :const:`SEEK_CUR` or ``1`` to set it relative to the
+   current position; :const:`SEEK_END` or ``2`` to set it relative to the end of
+   the file. Return the new cursor position in bytes, starting from the beginning.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
+
 
 .. data:: SEEK_SET
           SEEK_CUR
           SEEK_END
 
-   :func:`lseek` 関数に渡すパラメータ。
-   値は順に 0, 1, 2 です。
+   Parameters to the :func:`lseek` function. Their values are 0, 1, and 2,
+   respectively.
 
-   利用できる環境: Unix, Windows
+   Availability: Windows, Unix.
 
    .. versionadded:: 2.5
 
+
 .. function:: open(file, flags[, mode])
 
-   ファイル *file* を開き、 *flag* に従って様々なフラグを設定し、
-   可能なら *mode* に従ってファイルモードを設定します。
-   *mode* の標準の設定値は ``0777`` (8進表現) で、
-   先に現在の umask を使ってマスクを掛けます。
-   新たに開かれたファイルのファイル記述子を返します。
+   Open the file *file* and set various flags according to *flags* and possibly its
+   mode according to *mode*. The default *mode* is ``0777`` (octal), and the
+   current umask value is first masked out.  Return the file descriptor for the
+   newly opened file.
 
-   フラグとファイルモードの値についての詳細は C
-   ランタイムのドキュメントを参照してください;
-   (:const:`O_RDONLY` や :const:`O_WRONLY` のような)
-   フラグ定数はこのモジュールでも定義されています (以下を参照してください)。
-   特に、Windows ではバイナリファイルを開くときに :const:`O_BINARY` 
-   を加える必要があります。
+   For a description of the flag and mode values, see the C run-time documentation;
+   flag constants (like :const:`O_RDONLY` and :const:`O_WRONLY`) are defined in
+   this module too (see :ref:`open-constants`).  In particular, on Windows adding
+   :const:`O_BINARY` is needed to open files in binary mode.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      この関数は低レベルの I/O のためのものです。
-      通常の利用では、 :meth:`~file.read` や :meth:`~file.write` (やその他多くの)
-      メソッドを持つ「ファイルオブジェクト」を返す、
-      組み込み関数 :func:`open` を使ってください。
-      ファイル記述子を「ファイルオブジェクト」でラップするには
-      :func:`fdopen` を使ってください。
+      This function is intended for low-level I/O.  For normal usage, use the
+      built-in function :func:`open`, which returns a "file object" with
+      :meth:`~file.read` and :meth:`~file.write` methods (and many more).  To
+      wrap a file descriptor in a "file object", use :func:`fdopen`.
 
 
 .. function:: openpty()
 
    .. index:: module: pty
 
-   新しい擬似端末のペアを開きます。
-   ファイル記述子のペア ``(master, slave)`` を返し、
-   それぞれ pty および tty を表します。
-   (少しだけ) より可搬性のあるアプローチとしては、
-   :mod:`pty` モジュールを使ってください。
+   Open a new pseudo-terminal pair. Return a pair of file descriptors ``(master,
+   slave)`` for the pty and the tty, respectively. For a (slightly) more portable
+   approach, use the :mod:`pty` module.
 
-   利用できる環境: いくつかの Unix 系システム
+   Availability: some flavors of Unix.
 
 
 .. function:: pipe()
 
-   パイプを作成します。
-   ファイル記述子のペア ``(r, w)``  を返し、
-   それぞれ読み出し、書き込み用に使うことができます。
+   Create a pipe.  Return a pair of file descriptors ``(r, w)`` usable for reading
+   and writing, respectively.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: read(fd, n)
 
-   ファイル記述子 *fd* から最大で *n* バイト読み出します。
-   読み出されたバイト列の入った文字列を返します。
-   *fd* が参照しているファイルの終端に達した場合、空の文字列が返されます。
+   Read at most *n* bytes from file descriptor *fd*. Return a string containing the
+   bytes read.  If the end of the file referred to by *fd* has been reached, an
+   empty string is returned.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      この関数は低レベルの I/O のためのもので、 :func:`os.open` や :func:`pipe`
-      が返すファイル記述子に対して適用しなければなりません。
-      組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す
-      "ファイルオブジェクト"、あるいは :data:`sys.stdin` から読み出すには、
-      オブジェクトの
-      :meth:`~file.read` か :meth:`~file.readline` メソッドを使ってください。
+      This function is intended for low-level I/O and must be applied to a file
+      descriptor as returned by :func:`os.open` or :func:`pipe`.  To read a "file object"
+      returned by the built-in function :func:`open` or by :func:`popen` or
+      :func:`fdopen`, or :data:`sys.stdin`, use its :meth:`~file.read` or
+      :meth:`~file.readline` methods.
 
 
 .. function:: tcgetpgrp(fd)
 
-   *fd* (:func:`open` が返す開かれたファイル記述子)
-   で与えられる端末に関連付けられたプロセスグループを返します。
+   Return the process group associated with the terminal given by *fd* (an open
+   file descriptor as returned by :func:`os.open`).
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: tcsetpgrp(fd, pg)
 
-   *fd* (:func:`open` が返す開かれたファイル記述子)
-   で与えられる端末に関連付けられたプロセスグループを *pg* に設定します。
+   Set the process group associated with the terminal given by *fd* (an open file
+   descriptor as returned by :func:`os.open`) to *pg*.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: ttyname(fd)
 
-   ファイル記述子 *fd* に関連付けられている端末デバイスを特定する文字列を返します。
-   *fd* が端末に関連付けられていない場合、例外が送出されます。
+   Return a string which specifies the terminal device associated with
+   file descriptor *fd*.  If *fd* is not associated with a terminal device, an
+   exception is raised.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: write(fd, str)
 
-   ファイル記述子 *fd* に文字列 *str* を書き込みます。
-   実際に書き込まれたバイト数を返します。
+   Write the string *str* to file descriptor *fd*. Return the number of bytes
+   actually written.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      この関数は低レベルの I/O のためのもので、 :func:`os.open` や :func:`pipe`
-      が返すファイル記述子に対して適用しなければなりません。
-      組み込み関数 :func:`open` や :func:`popen`, :func:`fdopen` の返す
-      "ファイルオブジェクト"、あるいは :data:`sys.stdout`, :data:`sys.stderr`
-      に書き込むには、オブジェクトの :meth:`~file.write`
-      メソッドを使ってください。
+      This function is intended for low-level I/O and must be applied to a file
+      descriptor as returned by :func:`os.open` or :func:`pipe`.  To write a "file
+      object" returned by the built-in function :func:`open` or by :func:`popen` or
+      :func:`fdopen`, or :data:`sys.stdout` or :data:`sys.stderr`, use its
+      :meth:`~file.write` method.
 
-``open()`` フラグ定数
-~~~~~~~~~~~~~~~~~~~~~
 
-.. The following constants are options for the *flags* parameter to the
-   :func:`open` function.  They can be combined using the bitwise OR operator
-   ``|``.  Some of them are not available on all platforms.  For descriptions of
-   their availability and use, consult the :manpage:`open(2)` manual page on Unix
-   or `the MSDN <http://msdn.microsoft.com/en-us/library/z0kc8e3z.aspx>` on Windows.
+.. _open-constants:
 
-以下の定数は :func:`~os.open` 関数の *flags* 引数に利用します。
-これらの定数は、ビット単位OR ``|`` で組み合わせることができます。
-幾つかの定数は、全てのプラットフォームで使えるわけではありません。
-利用可能かどうかや使い方については、 Unix では :manpage:`open(2)`, Windows
-では `MSDN <http://msdn.microsoft.com/en-us/library/z0kc8e3z.aspx>`_
-を参照してください。
+``open()`` flag constants
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following constants are options for the *flags* parameter to the
+:func:`~os.open` function.  They can be combined using the bitwise OR operator
+``|``.  Some of them are not available on all platforms.  For descriptions of
+their availability and use, consult the :manpage:`open(2)` manual page on Unix
+or `the MSDN <http://msdn.microsoft.com/en-us/library/z0kc8e3z.aspx>`_ on Windows.
 
 
 .. data:: O_RDONLY
@@ -911,7 +883,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           O_EXCL
           O_TRUNC
 
-   利用できる環境: Unix, Windows
+   These constants are available on Unix and Windows.
 
 
 .. data:: O_DSYNC
@@ -923,7 +895,7 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           O_SHLOCK
           O_EXLOCK
 
-   利用できる環境: Unix
+   These constants are only available on Unix.
 
 
 .. data:: O_BINARY
@@ -934,7 +906,8 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           O_SEQUENTIAL
           O_TEXT
 
-   利用できる環境: Windows
+   These constants are only available on Windows.
+
 
 .. data:: O_ASYNC
           O_DIRECT
@@ -942,52 +915,47 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           O_NOFOLLOW
           O_NOATIME
 
-   .. These constants are GNU extensions and not present if they are not defined by
-      the C library.
-
-   これらの定数は GNU 拡張で、Cライブラリで定義されていない場合は利用できません。
+   These constants are GNU extensions and not present if they are not defined by
+   the C library.
 
 
 .. _os-file-dir:
 
-ファイルとディレクトリ
-----------------------
+Files and Directories
+---------------------
 
 .. function:: access(path, mode)
 
-   実 uid/gid を使って *path* に対するアクセスが可能か調べます。
-   ほとんどのオペレーティングシステムは実効 uid/gid を使うため、
-   このルーチンは suid/sgid 環境において、プログラムを起動したユーザが
-   *path* に対するアクセス権をもっているかを調べるために使われます。
-   *path* が存在するかどうかを調べるには *mode* を :const:`F_OK` にします。
-   ファイル操作許可 (permission) を調べるために
-   :const:`R_OK`, :const:`W_OK`, :const:`X_OK`
-   から一つまたはそれ以上のフラグと OR をとることもできます。
-   アクセスが許可されている場合 ``True`` を、そうでない場合 ``False`` を返します。
-   詳細は :manpage:`access(2)` のマニュアルページを参照してください。
+   Use the real uid/gid to test for access to *path*.  Note that most operations
+   will use the effective uid/gid, therefore this routine can be used in a
+   suid/sgid environment to test if the invoking user has the specified access to
+   *path*.  *mode* should be :const:`F_OK` to test the existence of *path*, or it
+   can be the inclusive OR of one or more of :const:`R_OK`, :const:`W_OK`, and
+   :const:`X_OK` to test permissions.  Return :const:`True` if access is allowed,
+   :const:`False` if not. See the Unix man page :manpage:`access(2)` for more
+   information.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      :func:`access` を使ってユーザーが例えばファイルを開く権限を持っているか
-      :func:`open` を使って実際にそうする前に調べることは
-      セキュリティ・ホールを作り出してしまいます。
-      というのは、調べる時点と開く時点の時間差を利用して
-      そのユーザーがファイルを操作してしまうかもしれないからです。
-      :term:`EAFP` テクニックを利用する方が好ましいです。例えば::
+      Using :func:`access` to check if a user is authorized to e.g. open a file
+      before actually doing so using :func:`open` creates a security hole,
+      because the user might exploit the short time interval between checking
+      and opening the file to manipulate it. It's preferable to use :term:`EAFP`
+      techniques. For example::
 
          if os.access("myfile", os.R_OK):
              with open("myfile") as fp:
                  return fp.read()
          return "some default data"
 
-      このコードは次のように書いたほうが良いです::
+      is better written as::
 
          try:
              fp = open("myfile")
          except IOError as e:
-             if e.errno == errno.EACCESS:
+             if e.errno == errno.EACCES:
                  return "some default data"
              # Not a permission error.
              raise
@@ -997,95 +965,108 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
    .. note::
 
-      I/O 操作は :func:`access` が成功を思わせるときにも失敗することがありえます。
-      特にネットワーク・ファイルシステムにおける操作が通常の POSIX 
-      許可ビット・モデルをはみ出す意味論を備える場合にはそのようなことが起こりえます。
+      I/O operations may fail even when :func:`access` indicates that they would
+      succeed, particularly for operations on network filesystems which may have
+      permissions semantics beyond the usual POSIX permission-bit model.
 
 
 .. data:: F_OK
 
-   :func:`access` の *mode* に渡すための値で、 *path* が存在するかどうかを調べます。
+   Value to pass as the *mode* parameter of :func:`access` to test the existence of
+   *path*.
 
 
 .. data:: R_OK
 
-   :func:`access` の *mode* に渡すための値で、 *path* が読み出し可能かどうかを調べます。
+   Value to include in the *mode* parameter of :func:`access` to test the
+   readability of *path*.
 
 
 .. data:: W_OK
 
-   :func:`access` の *mode* に渡すための値で、 *path* が書き込み可能かどうかを調べます。
+   Value to include in the *mode* parameter of :func:`access` to test the
+   writability of *path*.
 
 
 .. data:: X_OK
 
-   :func:`access` の *mode* に渡すための値で、 *path* が実行可能かどうかを調べます。
+   Value to include in the *mode* parameter of :func:`access` to determine if
+   *path* can be executed.
 
 
 .. function:: chdir(path)
 
    .. index:: single: directory; changing
 
-   現在の作業ディレクトリ (current working directory) を *path* に設定します。
+   Change the current working directory to *path*.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
+
+
+.. function:: fchdir(fd)
+
+   Change the current working directory to the directory represented by the file
+   descriptor *fd*.  The descriptor must refer to an opened directory, not an open
+   file.
+
+   Availability: Unix.
+
+   .. versionadded:: 2.3
 
 
 .. function:: getcwd()
 
-   現在の作業ディレクトリを表現する文字列を返します。
+   Return a string representing the current working directory.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: getcwdu()
 
-   現在の作業ディレクトリを表現するユニコードオブジェクトを返します。
+   Return a Unicode object representing the current working directory.
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 2.3
 
 
 .. function:: chflags(path, flags)
 
-   .. Set the flags of *path* to the numeric *flags*. *flags* may take a combination
-      (bitwise OR) of the following values (as defined in the :mod:`stat` module):
-
-   *path* のフラグを *flags* に変更する。
-   *flags* は、以下の値を(bitwise ORで)組み合わせたものです。
-   (:mod:`stat` モジュールを参照してください):
+   Set the flags of *path* to the numeric *flags*. *flags* may take a combination
+   (bitwise OR) of the following values (as defined in the :mod:`stat` module):
 
    * :data:`stat.UF_NODUMP`
    * :data:`stat.UF_IMMUTABLE`
    * :data:`stat.UF_APPEND`
    * :data:`stat.UF_OPAQUE`
    * :data:`stat.UF_NOUNLINK`
+   * :data:`stat.UF_COMPRESSED`
+   * :data:`stat.UF_HIDDEN`
    * :data:`stat.SF_ARCHIVED`
    * :data:`stat.SF_IMMUTABLE`
    * :data:`stat.SF_APPEND`
    * :data:`stat.SF_NOUNLINK`
    * :data:`stat.SF_SNAPSHOT`
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.6
 
 
 .. function:: chroot(path)
 
-   現在のプロセスに対してルートディレクトリを *path* に変更します。
-
-   利用できる環境: Unix
+   Change the root directory of the current process to *path*. Availability:
+   Unix.
 
    .. versionadded:: 2.2
 
 
 .. function:: chmod(path, mode)
 
-   *path* のモードを数値 *mode* に変更します。
-   *mode* は、(:mod:`stat` モジュールで定義されている)
-   以下の値のいずれかまたはビット単位の OR で組み合わせた値を取り得ます:
+   Change the mode of *path* to the numeric *mode*. *mode* may take one of the
+   following values (as defined in the :mod:`stat` module) or bitwise ORed
+   combinations of them:
+
 
    * :data:`stat.S_ISUID`
    * :data:`stat.S_ISGID`
@@ -1107,147 +1088,148 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
    * :data:`stat.S_IWOTH`
    * :data:`stat.S_IXOTH`
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      Windows でも :func:`chmod` はサポートされていますが、
-      ファイルの読み込み専用フラグを (定数 ``S_IWRITE`` と ``S_IREAD``,
-      または対応する整数値を通して) 設定できるだけです。他のビットは全て無視されます。
+      Although Windows supports :func:`chmod`, you can only  set the file's read-only
+      flag with it (via the ``stat.S_IWRITE``  and ``stat.S_IREAD``
+      constants or a corresponding integer value).  All other bits are
+      ignored.
 
 
 .. function:: chown(path, uid, gid)
 
-   *path* の所有者 (owner) id とグループ id を、
-   数値 *uid* および *gid* に変更します。
-   いずれかの id を変更せずにおくには、その値として -1 をセットします。
+   Change the owner and group id of *path* to the numeric *uid* and *gid*. To leave
+   one of the ids unchanged, set it to -1.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: lchflags(path, flags)
 
-   .. Set the flags of *path* to the numeric *flags*, like :func:`chflags`, but do not
-      follow symbolic links. Availability: Unix.
+   Set the flags of *path* to the numeric *flags*, like :func:`chflags`, but do not
+   follow symbolic links.
 
-   *path* のフラグを数値 *flags* に設定します。
-   :func:`chflags` に似ていますが、シンボリックリンクをたどりません。
+   Availability: Unix.
 
-   利用できる環境: Unix
+   .. versionadded:: 2.6
+
+
+.. function:: lchmod(path, mode)
+
+   Change the mode of *path* to the numeric *mode*. If path is a symlink, this
+   affects the symlink rather than the target. See the docs for :func:`chmod`
+   for possible values of *mode*.
+
+   Availability: Unix.
 
    .. versionadded:: 2.6
 
 
 .. function:: lchown(path, uid, gid)
 
-   *path* の所有者 (owner) id とグループ id を、数値 *uid* および *gid* に変更します。
-   この関数はシンボリックリンクをたどりません。
+   Change the owner and group id of *path* to the numeric *uid* and *gid*. This
+   function will not follow symbolic links.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: link(source, link_name)
 
-   *source* を指しているハードリンク *link_name* を作成します。
+   Create a hard link pointing to *source* named *link_name*.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: listdir(path)
 
-   *path* で指定されたディレクトリ内のエントリ名が入ったリストを返します。
-   リスト内の順番は不定です。特殊エントリ ``'.'`` および ``'..'``
-   は、それらがディレクトリに入っていてもリストには含められません。
+   Return a list containing the names of the entries in the directory given by
+   *path*.  The list is in arbitrary order.  It does not include the special
+   entries ``'.'`` and ``'..'`` even if they are present in the
+   directory.
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
    .. versionchanged:: 2.3
-      Windows NT/2k/XP と Unixでは、 *path* が Unicode オブジェクトの場合、
-      Unicode オブジェクトのリストが返されます。
-      デコード不可能なファイル名は依然として string オブジェクトになります。
+      On Windows NT/2k/XP and Unix, if *path* is a Unicode object, the result will be
+      a list of Unicode objects. Undecodable filenames will still be returned as
+      string objects.
 
 
 .. function:: lstat(path)
 
-   与えられた *path* に対して、 :c:func:`lstat` システムコールと同じ
-   動作をします。
-   :func:`~os.stat` に似ていますが、シンボリックリンクをたどりません。
-   シンボリックリンクのない環境では :func:`~os.stat` の別名です。
+   Perform the equivalent of an :c:func:`lstat` system call on the given path.
+   Similar to :func:`~os.stat`, but does not follow symbolic links.  On
+   platforms that do not support symbolic links, this is an alias for
+   :func:`~os.stat`.
 
 
 .. function:: mkfifo(path[, mode])
 
-   数値で指定されたモード *mode* を持つ FIFO (名前付きパイプ) を *path* に作成します。
-   *mode* の標準の値は ``0666`` (8進) です。
-   現在の umask 値が前もって *mode* からマスクされます。
+   Create a FIFO (a named pipe) named *path* with numeric mode *mode*.  The default
+   *mode* is ``0666`` (octal).  The current umask value is first masked out from
+   the mode.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
-   FIFO は通常のファイルのようにアクセスできるパイプです。
-   FIFO は (例えば :func:`os.unlink` を使って) 削除されるまで存在しつづけます。
-   一般的に、FIFO は "クライアント" と "サーバ" 形式のプロセス間で
-   ランデブーを行うために使われます:
-   このとき、サーバは FIFO を読み出し用に開き、クライアントは書き込み用に開きます。
-   :func:`mkfifo` は FIFO を開かない --- 単にランデブーポイントを作成するだけ
-   --- なので注意してください。
+   FIFOs are pipes that can be accessed like regular files.  FIFOs exist until they
+   are deleted (for example with :func:`os.unlink`). Generally, FIFOs are used as
+   rendezvous between "client" and "server" type processes: the server opens the
+   FIFO for reading, and the client opens it for writing.  Note that :func:`mkfifo`
+   doesn't open the FIFO --- it just creates the rendezvous point.
 
 
-.. function:: mknod(filename[, mode=0600, device])
+.. function:: mknod(filename[, mode=0600[, device=0]])
 
-   *filename* という名前で、ファイルシステム・ノード (ファイル、
-   デバイス特殊ファイル、または、名前つきパイプ) を作ります。
-   *mode* は、作ろうとするノードの使用権限とタイプを、
-   ``stat.S_IFREG``, ``stat.S_IFCHR``, ``stat.S_IFBLK``, ``stat.S_IFIFO``
-   (これらの定数は :mod:`stat` で使用可能)
-   のいずれかと（ビット OR で）組み合わせて指定します。
-   ``S_IFCHR`` と ``S_IFBLK`` を指定すると、 *device* 
-   は新しく作られたデバイス特殊ファイルを (おそらく :func:`os.makedev` を使って)
-   定義し、指定しなかった場合には無視します。
+   Create a filesystem node (file, device special file or named pipe) named
+   *filename*. *mode* specifies both the permissions to use and the type of node to
+   be created, being combined (bitwise OR) with one of ``stat.S_IFREG``,
+   ``stat.S_IFCHR``, ``stat.S_IFBLK``,
+   and ``stat.S_IFIFO`` (those constants are available in :mod:`stat`).
+   For ``stat.S_IFCHR`` and
+   ``stat.S_IFBLK``, *device* defines the newly created device special file (probably using
+   :func:`os.makedev`), otherwise it is ignored.
 
    .. versionadded:: 2.3
 
 
 .. function:: major(device)
 
-   生のデバイス番号から、デバイスのメジャー番号を取り出します。
-   (たいてい :c:type:`stat` の :attr:`st_dev` フィールドか
-   :attr:`st_rdev` フィールドです)
+   Extract the device major number from a raw device number (usually the
+   :attr:`st_dev` or :attr:`st_rdev` field from :c:type:`stat`).
 
    .. versionadded:: 2.3
 
 
 .. function:: minor(device)
 
-   生のデバイス番号から、デバイスのマイナー番号を取り出します。
-   (たいてい :c:type:`stat` の :attr:`st_dev` フィールドか
-   :attr:`st_rdev` フィールドです)
+   Extract the device minor number from a raw device number (usually the
+   :attr:`st_dev` or :attr:`st_rdev` field from :c:type:`stat`).
 
    .. versionadded:: 2.3
 
 
 .. function:: makedev(major, minor)
 
-   major と minor から、新しく生のデバイス番号を作ります。
+   Compose a raw device number from the major and minor device numbers.
 
    .. versionadded:: 2.3
 
 
 .. function:: mkdir(path[, mode])
 
-   数値で指定されたモード *mode* をもつディレクトリ *path*  を作成します。
-   *mode* の標準の値は ``0777`` (8進)です。
-   システムによっては、 *mode* は無視されます。
-   利用の際には、現在の umask 値が前もってマスクされます。
-   指定されたディレクトリがすでに存在する場合は :exc:`OSError` 例外を発生
-   させます。
+   Create a directory named *path* with numeric mode *mode*. The default *mode* is
+   ``0777`` (octal).  On some systems, *mode* is ignored.  Where it is used, the
+   current umask value is first masked out.  If the directory already exists,
+   :exc:`OSError` is raised.
 
-   一時ディレクトリを作成することもできます:
-   :mod:`tempfile` モジュールの :func:`tempfile.mkdtemp`
-   関数を参照してください。
+   It is also possible to create temporary directories; see the
+   :mod:`tempfile` module's :func:`tempfile.mkdtemp` function.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: makedirs(path[, mode])
@@ -1256,225 +1238,196 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       single: directory; creating
       single: UNC paths; and os.makedirs()
 
-   再帰的なディレクトリ作成関数です。
-   :func:`mkdir` に似ていますが、
-   末端 (leaf) となるディレクトリを作成するために必要な
-   中間の全てのディレクトリを作成します。
-   末端ディレクトリがすでに存在する場合や、作成ができなかった場合には :exc:`error`
-   例外を送出します。 *mode* の標準の値は ``0777`` (8進)です。
-   システムによっては、 *mode* は無視されます。
-   利用の際には、現在の umask 値が前もってマスクされます。
+   Recursive directory creation function.  Like :func:`mkdir`, but makes all
+   intermediate-level directories needed to contain the leaf directory.  Raises an
+   :exc:`error` exception if the leaf directory already exists or cannot be
+   created.  The default *mode* is ``0777`` (octal).  On some systems, *mode* is
+   ignored. Where it is used, the current umask value is first masked out.
 
    .. note::
 
-      :func:`makedirs` は作り出すパス要素が
-      :data:`os.pardir` を含むと混乱することになります。
+      :func:`makedirs` will become confused if the path elements to create include
+      :data:`os.pardir`.
 
    .. versionadded:: 1.5.2
 
    .. versionchanged:: 2.3
-      この関数は UNC パスを正しく扱えるようになりました.
+      This function now handles UNC paths correctly.
 
 
 .. function:: pathconf(path, name)
 
-   指定されたファイルに関係するシステム設定情報を返します。
-   *name* には取得したい設定名を指定します;
-   これは定義済みのシステム固有値名の文字列で、
-   多くの標準 (POSIX.1、 Unix 95、 Unix 98 その他) で定義されています。
-   プラットフォームによっては別の名前も定義しています。
-   ホストオペレーティングシステムの関知する名前は ``pathconf_names``
-   辞書で与えられています。
-   このマップ型オブジェクトに入っていない設定変数については、
-   *name* に整数を渡してもかまいません。
+   Return system configuration information relevant to a named file. *name*
+   specifies the configuration value to retrieve; it may be a string which is the
+   name of a defined system value; these names are specified in a number of
+   standards (POSIX.1, Unix 95, Unix 98, and others).  Some platforms define
+   additional names as well.  The names known to the host operating system are
+   given in the ``pathconf_names`` dictionary.  For configuration variables not
+   included in that mapping, passing an integer for *name* is also accepted.
 
-   もし *name* が文字列でかつ不明である場合、 :exc:`ValueError` を送出します。
-   *name* の指定値がホストシステムでサポートされておらず、
-   ``pathconf_names`` にも入っていない場合、 :const:`errno.EINVAL`
-   をエラー番号として :exc:`OSError` を送出します。
+   If *name* is a string and is not known, :exc:`ValueError` is raised.  If a
+   specific value for *name* is not supported by the host system, even if it is
+   included in ``pathconf_names``, an :exc:`OSError` is raised with
+   :const:`errno.EINVAL` for the error number.
 
-   利用できる環境: Unix
+   Availability: Unix.
+
 
 .. data:: pathconf_names
 
-   :func:`pathconf` および :func:`fpathconf` が受理するシステム設定名を、
-   ホストオペレーティングシステムで定義されている整数値に対応付けている辞書です。
-   この辞書はシステムでどの設定名が定義されているかを決定するために利用できます。
-
-   利用できる環境: Unix
+   Dictionary mapping names accepted by :func:`pathconf` and :func:`fpathconf` to
+   the integer values defined for those names by the host operating system.  This
+   can be used to determine the set of names known to the system. Availability:
+   Unix.
 
 
 .. function:: readlink(path)
 
-   シンボリックリンクが指しているパスを表す文字列を返します。
-   返される値は絶対パスにも、相対パスにもなり得ます; 相対パスの場合、
-   ``os.path.join(os.path.dirname(path), result)`` 
-   を使って絶対パスに変換することができます。
+   Return a string representing the path to which the symbolic link points.  The
+   result may be either an absolute or relative pathname; if it is relative, it may
+   be converted to an absolute pathname using ``os.path.join(os.path.dirname(path),
+   result)``.
 
    .. versionchanged:: 2.6
+      If the *path* is a Unicode object the result will also be a Unicode object.
 
-      *path* が unicode オブジェクトだった場合、戻り値も unicode オブジェクトになります。
-
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: remove(path)
 
-   ファイル *path* を削除(消去)します。
-   *path* がディレクトリの場合、 :exc:`OSError` が送出されます;
-   ディレクトリの削除については :func:`rmdir` を参照してください。
-   この関数は下で述べられている :func:`unlink` 関数と同一です。
-   Windows では、使用中のファイルを削除しようと試みると例外を送出します;
-   Unixでは、ディレクトリエントリは削除されますが、記憶装置上にアロケーションされた
-   ファイル領域は元のファイルが使われなくなるまで残されます。
+   Remove (delete) the file *path*.  If *path* is a directory, :exc:`OSError` is
+   raised; see :func:`rmdir` below to remove a directory.  This is identical to
+   the :func:`unlink` function documented below.  On Windows, attempting to
+   remove a file that is in use causes an exception to be raised; on Unix, the
+   directory entry is removed but the storage allocated to the file is not made
+   available until the original file is no longer in use.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: removedirs(path)
 
    .. index:: single: directory; deleting
 
-   再帰的なディレクトリ削除関数です。
-   :func:`rmdir` と同じように動作しますが、末端ディレクトリがうまく削除できるかぎり、
-   :func:`removedirs` は *path* に現れる親ディレクトリをエラーが送出されるまで
-   (このエラーは通常、指定したディレクトリの親ディレクトリが空でないことを
-   意味するだけなので無視されます) 順に削除することを試みます。
-   例えば、 ``os.removedirs('foo/bar/baz')`` では最初にディレクトリ
-   ``'foo/bar/baz'`` を削除し、次に ``'foo/bar'``
-   さらに ``'foo'`` をそれらが空ならば削除します。
-   末端のディレクトリが削除できなかった場合には :exc:`OSError` が送出されます。
+   Remove directories recursively.  Works like :func:`rmdir` except that, if the
+   leaf directory is successfully removed, :func:`removedirs`  tries to
+   successively remove every parent directory mentioned in  *path* until an error
+   is raised (which is ignored, because it generally means that a parent directory
+   is not empty). For example, ``os.removedirs('foo/bar/baz')`` will first remove
+   the directory ``'foo/bar/baz'``, and then remove ``'foo/bar'`` and ``'foo'`` if
+   they are empty. Raises :exc:`OSError` if the leaf directory could not be
+   successfully removed.
 
    .. versionadded:: 1.5.2
 
 
 .. function:: rename(src, dst)
 
-   ファイルまたはディレクトリ *src* を *dst* に名前変更します。
-   *dst* がディレクトリの場合、 :exc:`OSError` が送出されます。
-   Unixでは、 *dst* が存在し、かつファイルの場合、
-   ユーザの権限があるかぎり暗黙のうちに元のファイルが置き換えられます。
-   この操作はいくつかの Unix 系システムにおいて、
-   *src* と *dst* が異なるファイルシステム上にあると失敗することがあります。
-   ファイル名の変更が成功する場合、この操作は原子的
-   (atomic) 操作となります (これは POSIX 要求仕様です)。
-   Windows では、 *dst* が既に存在する場合には、たとえファイルの場合でも
-   :exc:`OSError` が送出されます; 
-   これは *dst* が既に存在するファイル名の場合、
-   名前変更の原子的操作を実装する手段がないからです。
+   Rename the file or directory *src* to *dst*.  If *dst* is a directory,
+   :exc:`OSError` will be raised.  On Unix, if *dst* exists and is a file, it will
+   be replaced silently if the user has permission.  The operation may fail on some
+   Unix flavors if *src* and *dst* are on different filesystems.  If successful,
+   the renaming will be an atomic operation (this is a POSIX requirement).  On
+   Windows, if *dst* already exists, :exc:`OSError` will be raised even if it is a
+   file; there may be no way to implement an atomic rename when *dst* names an
+   existing file.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: renames(old, new)
 
-   再帰的にディレクトリやファイル名を変更する関数です。
-   :func:`rename` のように動作しますが、新たなパス名を持つファイルを配置するために
-   必要な途中のディレクトリ構造をまず作成しようと試みます。
-   名前変更の後、元のファイル名のパス要素は
-   :func:`removedirs` を使って右側から順に枝刈りされてゆきます。
+   Recursive directory or file renaming function. Works like :func:`rename`, except
+   creation of any intermediate directories needed to make the new pathname good is
+   attempted first. After the rename, directories corresponding to rightmost path
+   segments of the old name will be pruned away using :func:`removedirs`.
 
    .. versionadded:: 1.5.2
 
    .. note::
 
-      この関数はコピー元の末端のディレクトリまたはファイルを削除する権限がない場合には失敗します。
+      This function can fail with the new directory structure made if you lack
+      permissions needed to remove the leaf directory or file.
 
 
 .. function:: rmdir(path)
 
-   ディレクトリ *path* を削除します。
-   ディレクトリが空の場合にだけ正常に動作します。
-   そうでなければ :exc:`OSError` が送出されます。
-   ディレクトリ・ツリー全体を削除するのには :func:`shutil.rmtree` が使えます。
+   Remove (delete) the directory *path*.  Only works when the directory is
+   empty, otherwise, :exc:`OSError` is raised.  In order to remove whole
+   directory trees, :func:`shutil.rmtree` can be used.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: stat(path)
 
-   与えられた *path* に対して :c:func:`stat` システムコール相当の処理を実行します。
-   (この関数はシンボリックリンクをたどります。シンボリックリンクに対して stat
-   したい場合は :func:`lstat` を利用してください)
+   Perform the equivalent of a :c:func:`stat` system call on the given path.
+   (This function follows symlinks; to stat a symlink use :func:`lstat`.)
 
-   戻り値はオブジェクトで、その属性は :c:type:`stat` 構造体に従います:
+   The return value is an object whose attributes correspond to the members
+   of the :c:type:`stat` structure, namely:
 
-   * :attr:`st_mode` - 保護 bits,
-   * :attr:`st_ino` - inode 番号,
-   * :attr:`st_dev` - デバイス,
-   * :attr:`st_nlink` - ハードリンク数,
-   * :attr:`st_uid` - オーナーの uid,
-   * :attr:`st_gid` - オーナーの group id,
-   * :attr:`st_size` - ファイルのサイズ(単位: byte),
-   * :attr:`st_atime` - 最近にアクセスされた時間,
-   * :attr:`st_mtime` - 最近に内容を変更した時間,
-   * :attr:`st_ctime` - プラットフォーム依存; Unix では最近のメタデータ変更時間、
-     Windows ではファイルが生成された時間
+   * :attr:`st_mode` - protection bits,
+   * :attr:`st_ino` - inode number,
+   * :attr:`st_dev` - device,
+   * :attr:`st_nlink` - number of hard links,
+   * :attr:`st_uid` - user id of owner,
+   * :attr:`st_gid` - group id of owner,
+   * :attr:`st_size` - size of file, in bytes,
+   * :attr:`st_atime` - time of most recent access,
+   * :attr:`st_mtime` - time of most recent content modification,
+   * :attr:`st_ctime` - platform dependent; time of most recent metadata change on
+     Unix, or the time of creation on Windows)
 
    .. versionchanged:: 2.3
-      もし :func:`stat_float_times`
-      が ``True`` を返す場合、時間値は浮動小数点で秒を計ります。
-      ファイルシステムがサポートしていれば、秒の小数点以下の桁も含めて返されます。
-      Mac OS では、時間は常に浮動小数点です。
-      詳細な説明は :func:`stat_float_times` を参照してください。
+      If :func:`stat_float_times` returns ``True``, the time values are floats, measuring
+      seconds. Fractions of a second may be reported if the system supports that.
+      See :func:`stat_float_times` for further discussion.
 
-   (Linux のような) いくつかの Unix システムでは、以下の属性が利用できるかもしれません:
+   On some Unix systems (such as Linux), the following attributes may also be
+   available:
 
-   * :attr:`st_blocks`  - ファイル用にアロケーションされているブロック数,
-   * :attr:`st_blksize` - ファイルシステムのブロックサイズ,
-   * :attr:`st_rdev`    - i ノードデバイスの場合、デバイスの形式,
-   * :attr:`st_flags`   - ファイルに対するユーザー定義のフラグ
+   * :attr:`st_blocks` - number of 512-byte blocks allocated for file
+   * :attr:`st_blksize` - filesystem blocksize for efficient file system I/O
+   * :attr:`st_rdev` - type of device if an inode device
+   * :attr:`st_flags` - user defined flags for file
 
-   他の (FreeBSD のような) Unix システムでは、以下の属性が利用できる場合があります
-   (ただし root がそれらを使うことにした場合以外は値が入っていないでしょう):
+   On other Unix systems (such as FreeBSD), the following attributes may be
+   available (but may be only filled out if root tries to use them):
 
-   * :attr:`st_gen` - ファイル生成番号,
-   * :attr:`st_birthtime` - ファイル生成時刻
+   * :attr:`st_gen` - file generation number
+   * :attr:`st_birthtime` - time of file creation
 
-   Mac OS システムでは、以下の属性も利用可能なときがあります:
+   On RISCOS systems, the following attributes are also available:
 
-   * :attr:`st_rsize`,
-   * :attr:`st_creator`,
-   * :attr:`st_type`,
-
-   RISCOS システムでは、以下の属性も利用できます:
-
-   * :attr:`st_ftype` (file type),
-   * :attr:`st_attrs` (attributes),
-   * :attr:`st_obtype` (object type)
+   * :attr:`st_ftype` (file type)
+   * :attr:`st_attrs` (attributes)
+   * :attr:`st_obtype` (object type).
 
    .. note::
 
-      :attr:`st_atime`, :attr:`st_mtime`, および :attr:`st_ctime`
-      メンバの厳密な意味や精度はオペレーティングシステムや
-      ファイルシステムによって変わります。
-      例えば、FAT や FAT32 ファイルシステムを使っている Windows システムでは、
-      :attr:`st_atime` の精度は 1 日に過ぎません。
-      詳しくはお使いのオペレーティングシステムのドキュメントを参照してください。
+      The exact meaning and resolution of the :attr:`st_atime`,
+      :attr:`st_mtime`, and :attr:`st_ctime` attributes depend on the operating
+      system and the file system. For example, on Windows systems using the FAT
+      or FAT32 file systems, :attr:`st_mtime` has 2-second resolution, and
+      :attr:`st_atime` has only 1-day resolution.  See your operating system
+      documentation for details.
 
-.. x
-
-   後方互換性のために、 :func:`stat` の戻り値は
-   少なくとも 10 個の整数からなるタプルとしてアクセスすることができます。
-   このタプルはもっとも重要な (かつ可搬性のある) :c:type:`stat` 
-   構造体のメンバを与えており、以下の順番
-   :attr:`st_mode`, :attr:`st_ino`,
-   :attr:`st_dev`, :attr:`st_nlink`, :attr:`st_uid`, :attr:`st_gid`,
-   :attr:`st_size`, :attr:`st_atime`, :attr:`st_mtime`, :attr:`st_ctime`,
-   に並んでいます。
+   For backward compatibility, the return value of :func:`~os.stat` is also accessible
+   as a tuple of at least 10 integers giving the most important (and portable)
+   members of the :c:type:`stat` structure, in the order :attr:`st_mode`,
+   :attr:`st_ino`, :attr:`st_dev`, :attr:`st_nlink`, :attr:`st_uid`,
+   :attr:`st_gid`, :attr:`st_size`, :attr:`st_atime`, :attr:`st_mtime`,
+   :attr:`st_ctime`. More items may be added at the end by some implementations.
 
    .. index:: module: stat
 
-   実装によっては、この後ろにさらに値が付け加えられていることもあります。
-   Mac OS では、時刻の値は Mac OS の他の時刻表現値と同じように浮動小数点数
-   なので注意してください。
-   標準モジュール :mod:`stat` では、
-   :c:type:`stat` 構造体から情報を引き出す上で便利な関数や定数を定義しています。
-   (Windows では、いくつかのデータ要素はダミーの値が埋められています。)
+   The standard module :mod:`stat` defines functions and constants that are useful
+   for extracting information from a :c:type:`stat` structure. (On Windows, some
+   items are filled with dummy values.)
 
-   利用できる環境: Unix, Windows
-
-   例::
+   Example::
 
       >>> import os
       >>> statinfo = os.stat('somefile.txt')
@@ -1483,205 +1436,210 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
       >>> statinfo.st_size
       926
 
+   Availability: Unix, Windows.
+
    .. versionchanged:: 2.2
-      返されたオブジェクトの属性としてのアクセス機能を追加しました。
+      Added access to values as attributes of the returned object.
 
    .. versionchanged:: 2.5
-      :attr:`st_gen`, :attr:`st_birthtime` を追加しました。
+      Added :attr:`st_gen` and :attr:`st_birthtime`.
 
 
 .. function:: stat_float_times([newvalue])
 
-   :class:`stat_result` がタイムスタンプに浮動小数点オブジェクトを
-   使うかどうかを決定します。
-   *newvalue* が ``True`` の場合、以後の :func:`~os.stat` 呼び出しは
-   浮動小数点を返し、 ``False`` の場合には以後整数を返します。
-   *newvalue* が省略された場合、現在の設定どおりの戻り値になります。
+   Determine whether :class:`stat_result` represents time stamps as float objects.
+   If *newvalue* is ``True``, future calls to :func:`~os.stat` return floats, if it is
+   ``False``, future calls return ints. If *newvalue* is omitted, return the
+   current setting.
 
-   古いバージョンの Python と互換性を保つため、 :class:`stat_result`
-   にタプルとしてアクセスすると、常に整数が返されます。
+   For compatibility with older Python versions, accessing :class:`stat_result` as
+   a tuple always returns integers.
 
    .. versionchanged:: 2.5
-      Python はデフォルトで浮動小数点数を返すようになりました。浮動小数点数のタイムスタンプではうまく動かないアプリケーションはこの機能を利用して
-      昔ながらの振る舞いを取り戻すことができます。
+      Python now returns float values by default. Applications which do not work
+      correctly with floating point time stamps can use this function to restore the
+      old behaviour.
 
-   タイムスタンプの精度 (すなわち最小の小数部分) はシステム依存です。システムによっては秒単位の精度しかサポートしません。
-   そういったシステムでは小数部分は常に 0 です。
+   The resolution of the timestamps (that is the smallest possible fraction)
+   depends on the system. Some systems only support second resolution; on these
+   systems, the fraction will always be zero.
 
-   この設定の変更は、プログラムの起動時に、 *__main__* モジュールの中でのみ行うことを推奨します。
-   ライブラリは決して、この設定を変更するべきではありません。浮動小数点型のタイムスタンプを処理すると、不正確な動作をするようなライブ
-   ラリを使う場合、ライブラリが修正されるまで、浮動小数点型を返す機能を停止させておくべきです。
+   It is recommended that this setting is only changed at program startup time in
+   the *__main__* module; libraries should never change this setting. If an
+   application uses a library that works incorrectly if floating point time stamps
+   are processed, this application should turn the feature off until the library
+   has been corrected.
 
 
 .. function:: statvfs(path)
 
-   与えられた *path* に対して :c:func:`statvfs` システムコールを実行します。
-   戻り値はオブジェクトで、その属性は与えられたパスが収められている
-   ファイルシステムについて記述したものです。
-   各属性は :c:type:`statvfs` 構造体のメンバ: :attr:`f_bsize`,
-   :attr:`f_frsize`, :attr:`f_blocks`, :attr:`f_bfree`, :attr:`f_bavail`,
-   :attr:`f_files`, :attr:`f_ffree`, :attr:`f_favail`, :attr:`f_flag`,
-   :attr:`f_namemax`,に対応します。
+   Perform a :c:func:`statvfs` system call on the given path.  The return value is
+   an object whose attributes describe the filesystem on the given path, and
+   correspond to the members of the :c:type:`statvfs` structure, namely:
+   :attr:`f_bsize`, :attr:`f_frsize`, :attr:`f_blocks`, :attr:`f_bfree`,
+   :attr:`f_bavail`, :attr:`f_files`, :attr:`f_ffree`, :attr:`f_favail`,
+   :attr:`f_flag`, :attr:`f_namemax`.
 
    .. index:: module: statvfs
 
-   後方互換性のために、戻り値は上の順にそれぞれ対応する属性値が並んだタプルとしてアクセスすることもできます。標準モジュール :mod:`statvfs`
-   では、シーケンスとしてアクセスする場合に、 :c:type:`statvfs` 構造体から情報を引き出す上便利な関数や定数を定義しています; これは
-   属性として各フィールドにアクセスできないバージョンの Python で動作する必要のあるコードを書く際に便利です。
+   For backward compatibility, the return value is also accessible as a tuple whose
+   values correspond to the attributes, in the order given above. The standard
+   module :mod:`statvfs` defines constants that are useful for extracting
+   information from a :c:type:`statvfs` structure when accessing it as a sequence;
+   this remains useful when writing code that needs to work with versions of Python
+   that don't support accessing the fields as attributes.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionchanged:: 2.2
-      返されたオブジェクトの属性としてのアクセス機能を追加しました.
+      Added access to values as attributes of the returned object.
 
 
 .. function:: symlink(source, link_name)
 
-   *source* を指しているシンボリックリンクを *link_name* に作成します。
+   Create a symbolic link pointing to *source* named *link_name*.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: tempnam([dir[, prefix]])
 
-   一時ファイル (temporary file) を生成する上でファイル名として相応しい一意なパス名を返します。この値は一時的なディレクトリエントリ
-   を表す絶対パスで、 *dir* ディレクトリの下か、 *dir* が省略されたり ``None`` の場合には一時ファイルを置くための共通の
-   ディレクトリの下になります。 *prefix* が与えられており、かつ ``None`` でない場合、ファイル名の先頭につけられる短い
-   接頭辞になります。アプリケーションは :func:`tempnam` が返したパス名を使って正しくファイルを生成し、生成したファイルを管理する責任があります;
-   一時ファイルの自動消去機能は提供されていません。
+   Return a unique path name that is reasonable for creating a temporary file.
+   This will be an absolute path that names a potential directory entry in the
+   directory *dir* or a common location for temporary files if *dir* is omitted or
+   ``None``.  If given and not ``None``, *prefix* is used to provide a short prefix
+   to the filename.  Applications are responsible for properly creating and
+   managing files created using paths returned by :func:`tempnam`; no automatic
+   cleanup is provided. On Unix, the environment variable :envvar:`TMPDIR`
+   overrides *dir*, while on Windows :envvar:`TMP` is used.  The specific
+   behavior of this function depends on the C library implementation; some aspects
+   are underspecified in system documentation.
 
    .. warning::
 
-      :func:`tempnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
-      (:ref:`os-newstreams`) を使うよう検討してください。
+      Use of :func:`tempnam` is vulnerable to symlink attacks; consider using
+      :func:`tmpfile` (section :ref:`os-newstreams`) instead.
 
-   利用できる環境: Unix、 Windows
+   Availability: Unix, Windows.
 
 
 .. function:: tmpnam()
 
-   一時ファイル (temporary file) を生成する上でファイル名として相応しい一意なパス名を返します。この値は一時ファイルを置くための共通の
-   ディレクトリ下の一時的なディレクトリエントリを表す絶対パスです。アプリケーションは :func:`tmpnam`
-   が返したパス名を使って正しくファイルを生成し、生成したファイルを管理する責任があります; 一時ファイルの自動消去機能は提供されていません。
+   Return a unique path name that is reasonable for creating a temporary file.
+   This will be an absolute path that names a potential directory entry in a common
+   location for temporary files.  Applications are responsible for properly
+   creating and managing files created using paths returned by :func:`tmpnam`; no
+   automatic cleanup is provided.
 
    .. warning::
 
-      :func:`tmpnam` を使うと、symlink 攻撃に対して脆弱になります; 代りに :func:`tmpfile`
-      (:ref:`os-newstreams`) を使うよう検討してください。
+      Use of :func:`tmpnam` is vulnerable to symlink attacks; consider using
+      :func:`tmpfile` (section :ref:`os-newstreams`) instead.
 
-   利用できる環境: Unix, Windowsこの関数はおそらく Windows では使うべきではないでしょう; Micorosoft の
-   :func:`tmpnam` 実装では、常に現在のドライブのルートディレクトリ下のファイル名を生成しますが、これは一般的には
-   テンポラリファイルを置く場所としてはひどい場所です (アクセス権限によっては、この名前をつかってファイルを開くことすらできないかもしれません)。
+   Availability: Unix, Windows.  This function probably shouldn't be used on
+   Windows, though: Microsoft's implementation of :func:`tmpnam` always creates a
+   name in the root directory of the current drive, and that's generally a poor
+   location for a temp file (depending on privileges, you may not even be able to
+   open a file using this name).
 
 
 .. data:: TMP_MAX
 
-   :func:`tmpnam` がテンポラリ名を再利用し始めるまでに生成できる一意な名前の最大数です。
+   The maximum number of unique names that :func:`tmpnam` will generate before
+   reusing names.
 
 
 .. function:: unlink(path)
 
-   ファイル *path* を削除します。
-   :func:`remove` と同じです;  :func:`unlink` の名前は伝統的な Unix の関数名です。
+   Remove (delete) the file *path*.  This is the same function as
+   :func:`remove`; the :func:`unlink` name is its traditional Unix
+   name.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: utime(path, times)
 
-   *path* で指定されたファイルに最終アクセス時刻および最終修正時刻を設定します。
-   *times* が ``None`` の場合、ファイルの最終アクセス時刻および最終更新時刻は現在の時刻になります。
-   (この動作は、その *path* に対してUnixの :program:`touch` プログラムを実行するのに似ています)
-
-   そうでない場合、 *times* は2要素のタプルで、 ``(atime, mtime)`` の形式をとらなくてはなりません。
-   これらはそれぞれアクセス時刻および修正時刻を設定するために使われます。
-
-   *path* にディレクトリを指定できるかどうかは、オペレーティングシステムがディレクトリをファイルの一種として実装しているかどうかに依存します (例えば、 Windows
-   はそうではありません)。
-   ここで設定した時刻の値は、オペレーティングシステムがアクセス時刻や
-   更新時刻を記録する際の精度によっては、後で :func:`~os.stat`
-   呼び出したときの値と同じにならないかも知れないので注意してください。
-   :func:`~os.stat` も参照してください。
+   Set the access and modified times of the file specified by *path*. If *times*
+   is ``None``, then the file's access and modified times are set to the current
+   time. (The effect is similar to running the Unix program :program:`touch` on
+   the path.)  Otherwise, *times* must be a 2-tuple of numbers, of the form
+   ``(atime, mtime)`` which is used to set the access and modified times,
+   respectively. Whether a directory can be given for *path* depends on whether
+   the operating system implements directories as files (for example, Windows
+   does not).  Note that the exact times you set here may not be returned by a
+   subsequent :func:`~os.stat` call, depending on the resolution with which your
+   operating system records access and modification times; see :func:`~os.stat`.
 
    .. versionchanged:: 2.0
-      *times* として ``None`` をサポートするようにしました.
+      Added support for ``None`` for *times*.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
-.. function:: walk(top[, topdown=True [, onerror=None[, followlinks=False]]])
+.. function:: walk(top, topdown=True, onerror=None, followlinks=False)
 
    .. index::
       single: directory; walking
       single: directory; traversal
 
-   ディレクトリツリー以下のファイル名を、
-   ツリーをトップダウンもしくはボトムアップに走査することで生成します。
-   ディレクトリ *top* を根に持つディレクトリツリーに含まれる、
-   各ディレクトリ(*top* 自身を含む) から、タプル ``(dirpath, dirnames, filenames)``
-   を生成します。
+   Generate the file names in a directory tree by walking the tree
+   either top-down or bottom-up. For each directory in the tree rooted at directory
+   *top* (including *top* itself), it yields a 3-tuple ``(dirpath, dirnames,
+   filenames)``.
 
-   *dirpath* は文字列で、ディレクトリへのパスです。
-   *dirnames* は  *dirpath* 内のサブディレクトリ名のリスト (``'.'`` と
-   ``'..'``  は除く）です。
-   *filenames* は *dirpath* 内の非ディレクトリ・ファイル名のリストです。
-   このリスト内の名前には、ファイル名までのパスが含まれないことに、注意してください。
-   *dirpath* 内のファイルやディレクトリへの (*top* からたどった) フルパスを得るには、
-   ``os.path.join(dirpath, name)`` してください。
+   *dirpath* is a string, the path to the directory.  *dirnames* is a list of the
+   names of the subdirectories in *dirpath* (excluding ``'.'`` and ``'..'``).
+   *filenames* is a list of the names of the non-directory files in *dirpath*.
+   Note that the names in the lists contain no path components.  To get a full path
+   (which begins with *top*) to a file or directory in *dirpath*, do
+   ``os.path.join(dirpath, name)``.
 
-   オプション引数 *topdown* が ``True`` であるか、指定されなかった場合、
-   各ディレクトリからタプルを生成した後で、サブディレクトリからタプルを生成します。
-   (ディレクトリはトップダウンで生成)。 
-   *topdown* が ``False`` の場合、ディレクトリに対応するタプルは、
-   そのディレクトリ以下の全てのサブディレクトリに対応するタプルの後で
-   (ボトムアップで) 生成されます
+   If optional argument *topdown* is ``True`` or not specified, the triple for a
+   directory is generated before the triples for any of its subdirectories
+   (directories are generated top-down).  If *topdown* is ``False``, the triple
+   for a directory is generated after the triples for all of its subdirectories
+   (directories are generated bottom-up). No matter the value of *topdown*, the
+   list of subdirectories is retrieved before the tuples for the directory and
+   its subdirectories are generated.
 
-   *topdown* が ``True`` のとき、呼び出し側は *dirnames* リストを、
-   インプレースで (たとえば、 :keyword:`del` やスライスを使った代入で) 変更でき、
-   :func:`walk` は *dirnames* に残っているサブディレクトリ内のみを再帰します。
-   これにより、検索を省略したり、特定の訪問順序を強制したり、呼び出し側が
-   :func:`walk` を再開する前に、呼び出し側が作った、
-   または名前を変更したディレクトリを、 :func:`walk` に知らせたりすることができます。
-   *topdown* が ``False`` のときに *dirnames* を変更しても効果はありません。
-   ボトムアップモードでは *dirpath* 自身が生成される前に *dirnames*
-   内のディレクトリの情報が生成されるからです。
+   When *topdown* is ``True``, the caller can modify the *dirnames* list in-place
+   (perhaps using :keyword:`del` or slice assignment), and :func:`walk` will only
+   recurse into the subdirectories whose names remain in *dirnames*; this can be
+   used to prune the search, impose a specific order of visiting, or even to inform
+   :func:`walk` about directories the caller creates or renames before it resumes
+   :func:`walk` again.  Modifying *dirnames* when *topdown* is ``False`` has
+   no effect on the behavior of the walk, because in bottom-up mode the directories
+   in *dirnames* are generated before *dirpath* itself is generated.
 
-   デフォルトでは、 :func:`os.listdir()` 呼び出しから送出されたエラーは無視されます。
-   オプションの引数 *onerror* を指定するなら、この値は関数でなければなりません;
-   この関数は単一の引数として、 :exc:`OSError` インスタンスを伴って呼び出されます。
-   この関数ではエラーを報告して歩行を続けたり、例外を送出して歩行を中断したりできます。
-   ファイル名は例外オブジェクトの ``filename`` 
-   属性として取得できることに注意してください。
+   By default, errors from the :func:`listdir` call are ignored.  If optional
+   argument *onerror* is specified, it should be a function; it will be called with
+   one argument, an :exc:`OSError` instance.  It can report the error to continue
+   with the walk, or raise the exception to abort the walk.  Note that the filename
+   is available as the ``filename`` attribute of the exception object.
 
-   .. By default, :func:`walk` will not walk down into symbolic links that resolve to
-      directories. Set *followlinks* to ``True`` to visit directories pointed to by
-      symlinks, on systems that support them.
-
-   デフォルトでは、 :func:`walk` はディレクトリへのシンボリックリンクをたどりません。
-   *followlinks* に ``True`` を設定すると、
-   ディレクトリへのシンボリックリンクをサポートしているシステムでは、
-   シンボリックリンクの指しているディレクトリを走査します。
+   By default, :func:`walk` will not walk down into symbolic links that resolve to
+   directories. Set *followlinks* to ``True`` to visit directories pointed to by
+   symlinks, on systems that support them.
 
    .. versionadded:: 2.6
-      *followlinks* 引数
+      The *followlinks* parameter.
 
    .. note::
 
-      *followlinks* を ``True`` に設定すると、
-      シンボリックリンクが親ディレクトリを指していた場合に、
-      無限ループになることに気をつけてください。
-      :func:`walk` は、すでにたどったディレクトリを管理したりはしません。
+      Be aware that setting *followlinks* to ``True`` can lead to infinite recursion if a
+      link points to a parent directory of itself. :func:`walk` does not keep track of
+      the directories it visited already.
 
    .. note::
 
-      相対パスを渡した場合、 :func:`walk` の回復の間で
-      カレント作業ディレクトリを変更しないでください。
-      :func:`walk` はカレントディレクトリを変更しませんし、
-      呼び出し側もカレントディレクトリを変更しないと仮定しています。
+      If you pass a relative pathname, don't change the current working directory
+      between resumptions of :func:`walk`.  :func:`walk` never changes the current
+      directory, and assumes that its caller doesn't either.
 
-   以下の例では、最初のディレクトリ以下にある各ディレクトリに含まれる、
-   非ディレクトリファイルのバイト数を表示します。ただし、CVS
-   サブディレクトリより下を見に行きません。 ::
+   This example displays the number of bytes taken by non-directory files in each
+   directory under the starting directory, except that it doesn't look under any
+   CVS subdirectory::
 
       import os
       from os.path import join, getsize
@@ -1692,8 +1650,8 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
           if 'CVS' in dirs:
               dirs.remove('CVS')  # don't visit CVS directories
 
-   次の例では、ツリーをボトムアップで歩行することが不可欠になります;
-   :func:`rmdir` はディレクトリが空になる前に削除させないからです::
+   In the next example, walking the tree bottom-up is essential: :func:`rmdir`
+   doesn't allow deleting a directory before the directory is empty::
 
       # Delete everything reachable from the directory named in "top",
       # assuming there are no symbolic links.
@@ -1711,24 +1669,29 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
 
 .. _os-process:
 
-プロセス管理
-------------
+Process Management
+------------------
 
-プロセスを生成したり管理するために、以下の関数を利用することができます。
+These functions may be used to create and manage processes.
 
-様々な :func:`exec\*` 関数が、プロセス内にロードされた新たなプログラムに与えるための引数からなるリストをとります。どの場合でも、
-新たなプログラムに渡されるリストの最初の引数は、ユーザがコマンドラインで入力する引数ではなく、プログラム自身の名前になります。 C
-プログラマにとっては、これはプログラムの :c:func:`main` に渡される ``argv[0]`` になります。例えば、
-``os.execv('/bin/echo', ['foo', 'bar'])`` は、標準出力に ``bar`` を出力します; ``foo``
-は無視されたかのように見えることでしょう。
+The various :func:`exec\* <execl>` functions take a list of arguments for the new
+program loaded into the process.  In each case, the first of these arguments is
+passed to the new program as its own name rather than as an argument a user may
+have typed on a command line.  For the C programmer, this is the ``argv[0]``
+passed to a program's :c:func:`main`.  For example, ``os.execv('/bin/echo',
+['foo', 'bar'])`` will only print ``bar`` on standard output; ``foo`` will seem
+to be ignored.
 
 
 .. function:: abort()
 
-   :const:`SIGABRT` シグナルを現在のプロセスに対して生成します。 Unixでは、標準設定の動作はコアダンプの生成です; Windows では、
-   プロセスは即座に終了コード ``3`` を返します。 :func:`signal.signal` を使って :const:`SIGABRT` に対する
-   シグナルハンドラを設定しているプログラムは異なる挙動を示すので注意してください。
-   利用できる環境: Unix、 Windows
+   Generate a :const:`SIGABRT` signal to the current process.  On Unix, the default
+   behavior is to produce a core dump; on Windows, the process immediately returns
+   an exit code of ``3``.  Be aware that calling this function will not call the
+   Python signal handler registered for :const:`SIGABRT` with
+   :func:`signal.signal`.
+
+   Availability: Unix, Windows.
 
 
 .. function:: execl(path, arg0, arg1, ...)
@@ -1740,245 +1703,253 @@ Unixプラットフォームにおいて、ソケットやパイプもファイ�
               execvp(file, args)
               execvpe(file, args, env)
 
-   これらの関数はすべて、現在のプロセスを置き換える形で新たなプログラムを実行します; 現在のプロセスは戻り値を返しません。
-   Unixでは、新たに実行される実行コードは現在のプロセス内にロードされ、呼び出し側と同じプロセス ID を持つことになります。エラーは
-   :exc:`OSError` 例外として報告されます。
+   These functions all execute a new program, replacing the current process; they
+   do not return.  On Unix, the new executable is loaded into the current process,
+   and will have the same process id as the caller.  Errors will be reported as
+   :exc:`OSError` exceptions.
 
-   .. The current process is replaced immediately. Open file objects and
-      descriptors are not flushed, so if there may be data buffered
-      on these open files, you should flush them using
-      :func:`sys.stdout.flush` or :func:`os.fsync` before calling an
-      :func:`exec\*` function.
+   The current process is replaced immediately. Open file objects and
+   descriptors are not flushed, so if there may be data buffered
+   on these open files, you should flush them using
+   :func:`sys.stdout.flush` or :func:`os.fsync` before calling an
+   :func:`exec\* <execl>` function.
 
-   現在のプロセスは瞬時に置き換えられます。
-   開かれているファイルオブジェクトやディスクリプタはフラッシュされません。
-   そのため、バッファ内にデータが残っているかもしれない場合、
-   :func:`exec\*` 関数を実行する前に :func:`sys.stdout.flush` か :func:`os.fsync`
-   を利用してバッファをフラッシュしておく必要があります。
+   The "l" and "v" variants of the :func:`exec\* <execl>` functions differ in how
+   command-line arguments are passed.  The "l" variants are perhaps the easiest
+   to work with if the number of parameters is fixed when the code is written; the
+   individual parameters simply become additional parameters to the :func:`execl\*`
+   functions.  The "v" variants are good when the number of parameters is
+   variable, with the arguments being passed in a list or tuple as the *args*
+   parameter.  In either case, the arguments to the child process should start with
+   the name of the command being run, but this is not enforced.
 
-   "l" および "v" のついた :func:`exec\*` 関数は、コマンドライン引数をどのように渡すかが異なります。 "l"
-   型は、コードを書くときにパラメタ数が決まっている場合に、おそらくもっとも簡単に利用できます。個々のパラメタは単に :func:`execl\*`
-   関数の追加パラメタとなります。 "v" 型は、パラメタの数が可変の時に便利で、リストかタプルの引数が *args*
-   パラメタとして渡されます。
-   どちらの場合も、子プロセスに渡す引数は動作させようとしているコマンドの名前から始めるべきですが、これは強制ではありません。
+   The variants which include a "p" near the end (:func:`execlp`,
+   :func:`execlpe`, :func:`execvp`, and :func:`execvpe`) will use the
+   :envvar:`PATH` environment variable to locate the program *file*.  When the
+   environment is being replaced (using one of the :func:`exec\*e <execl>` variants,
+   discussed in the next paragraph), the new environment is used as the source of
+   the :envvar:`PATH` variable. The other variants, :func:`execl`, :func:`execle`,
+   :func:`execv`, and :func:`execve`, will not use the :envvar:`PATH` variable to
+   locate the executable; *path* must contain an appropriate absolute or relative
+   path.
 
-   末尾近くに "p" をもつ型 (:func:`execlp`, :func:`execlpe`, :func:`execvp`,および
-   :func:`execvpe`) は、プログラム *file* を探すために環境変数 :envvar:`PATH` を利用します。環境変数が (次の段で述べる
-   :func:`exec\*e` 型関数で) 置き換えられる場合、環境変数は :envvar:`PATH` を決定する上の情報源として使われます。
-   その他の型、 :func:`execl`, :func:`execle`, :func:`execv`,および :func:`execve` では、実行
-   コードを探すために :envvar:`PATH` を使いません。 *path* には適切に設定された絶対パスまたは相対パスが入っていなくてはなりません。
+   For :func:`execle`, :func:`execlpe`, :func:`execve`, and :func:`execvpe` (note
+   that these all end in "e"), the *env* parameter must be a mapping which is
+   used to define the environment variables for the new process (these are used
+   instead of the current process' environment); the functions :func:`execl`,
+   :func:`execlp`, :func:`execv`, and :func:`execvp` all cause the new process to
+   inherit the environment of the current process.
 
-   :func:`execle`, :func:`execlpe`, :func:`execve`,および :func:`execvpe`
-   (全て末尾に "e" がついていることに注意してください) では、 *env* パラメタは新たなプロセスで利用
-   される環境変数を定義するためのマップ型でなくてはなりません(現在のプロセスの環境変数の代わりに利用されます);
-   :func:`execl`, :func:`execlp`, :func:`execv`,および
-   :func:`execvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
-
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: _exit(n)
 
-   終了ステータス *n* でプロセスを終了します。
-   このときクリーンアップハンドラの呼び出しや、
-   標準入出力バッファのフラッシュなどは行いません。
+   Exit the process with status *n*, without calling cleanup handlers, flushing
+   stdio buffers, etc.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. note::
 
-      システムを終了する標準的な方法は ``sys.exit(n)`` です。
-      :func:`_exit` は通常、 :func:`fork` された後の子プロセスでのみ使われます。
+      The standard way to exit is ``sys.exit(n)``.  :func:`_exit` should
+      normally only be used in the child process after a :func:`fork`.
 
-以下の終了コードは必須ではありませんが :func:`_exit` と共に使うことができます。
-一般に、メールサーバの外部コマンド配送プログラムのような、
-Python で書かれたシステムプログラムに使います。
+The following exit codes are defined and can be used with :func:`_exit`,
+although they are not required.  These are typically used for system programs
+written in Python, such as a mail server's external command delivery program.
 
 .. note::
 
-   いくらかの違いがあって、これらの全てが全ての Unix プラットフォームで使えるわけではありません。以下の定数は基礎にあるプラットフォームで
-   定義されていれば定義されます。
+   Some of these may not be available on all Unix platforms, since there is some
+   variation.  These constants are defined where they are defined by the underlying
+   platform.
 
 
 .. data:: EX_OK
 
-   エラーが起きなかったことを表す終了コード。
+   Exit code that means no error occurred.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_USAGE
 
-   誤った個数の引数が渡されたときなど、コマンドが間違って使われたことを表す終了コード。
+   Exit code that means the command was used incorrectly, such as when the wrong
+   number of arguments are given.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_DATAERR
 
-   入力データが間違っていたことを表す終了コード。
+   Exit code that means the input data was incorrect.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_NOINPUT
 
-   入力ファイルが存在しなかった、または、読み込み不可だったことを表す終了コード。
+   Exit code that means an input file did not exist or was not readable.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_NOUSER
 
-   指定されたユーザが存在しなかったことを表す終了コード。
+   Exit code that means a specified user did not exist.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_NOHOST
 
-   指定されたホストが存在しなかったことを表す終了コード。
+   Exit code that means a specified host did not exist.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_UNAVAILABLE
 
-   要求されたサービスが利用できないことを表す終了コード。
+   Exit code that means that a required service is unavailable.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_SOFTWARE
 
-   内部ソフトウェアエラーが検出されたことを表す終了コード。
+   Exit code that means an internal software error was detected.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_OSERR
 
-   fork できない、pipe の作成ができないなど、
-   オペレーティング・システム・エラーが検出されたことを表す終了コード。
+   Exit code that means an operating system error was detected, such as the
+   inability to fork or create a pipe.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_OSFILE
 
-   システムファイルが存在しなかった、開けなかった、
-   あるいはその他のエラーが起きたことを表す終了コード。
+   Exit code that means some system file did not exist, could not be opened, or had
+   some other kind of error.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_CANTCREAT
 
-   ユーザには作成できない出力ファイルを指定したことを表す終了コード。
+   Exit code that means a user specified output file could not be created.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_IOERR
 
-   ファイルの I/O を行っている途中にエラーが発生したときの終了コード。
+   Exit code that means that an error occurred while doing I/O on some file.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_TEMPFAIL
 
-   一時的な失敗が発生したことを表す終了コード。
-   これは、再試行可能な操作の途中に、ネットワークに接続できないというような、
-   実際にはエラーではないかも知れないことを意味します。
+   Exit code that means a temporary failure occurred.  This indicates something
+   that may not really be an error, such as a network connection that couldn't be
+   made during a retryable operation.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_PROTOCOL
 
-   プロトコル交換が不正、不適切、または理解不能なことを表す終了コード。
+   Exit code that means that a protocol exchange was illegal, invalid, or not
+   understood.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_NOPERM
 
-   操作を行うために十分な許可がなかった（ファイルシステムの問題を除く）ことを表す終了コード。
+   Exit code that means that there were insufficient permissions to perform the
+   operation (but not intended for file system problems).
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_CONFIG
 
-   設定エラーが起こったことを表す終了コード。
+   Exit code that means that some kind of configuration error occurred.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. data:: EX_NOTFOUND
 
-   "an entry was not found" のようなことを表す終了コード。
+   Exit code that means something like "an entry was not found".
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: fork()
 
-   子プロセスを fork します。
-   子プロセスでは ``0`` が返り、親プロセスでは子プロセスの id が返ります。
-   エラーが発生した場合は、 :exc:`OSError` 例外を送出します。
+   Fork a child process.  Return ``0`` in the child and the child's process id in the
+   parent.  If an error occurs :exc:`OSError` is raised.
 
-   FreeBSD <= 6.3, Cygwin, OS/2 EMX を含む幾つかのプラットフォームにおいて、
-   fork() をスレッド内から利用した場合に既知の問題があることに注意してください。
+   Note that some platforms including FreeBSD <= 6.3, Cygwin and OS/2 EMX have
+   known issues when using fork() from a thread.
 
-   利用できる環境: Unix
+   .. warning::
+
+      See :mod:`ssl` for applications that use the SSL module with fork().
+
+   Availability: Unix.
 
 
 .. function:: forkpty()
 
-   子プロセスを fork します。
-   このとき新しい擬似端末 (psheudo-terminal) を子プロセスの制御端末として使います。
-   親プロセスでは ``(pid, fd)`` からなるペアが返り、
-   *fd* は擬似端末のマスタ側 (master end) のファイル記述子となります。
-   可搬性のあるアプローチを取るためには、 :mod:`pty` モジュールを利用してください。
-   エラーが発生した場合は、 :exc:`OSError` 例外を送出します。
+   Fork a child process, using a new pseudo-terminal as the child's controlling
+   terminal. Return a pair of ``(pid, fd)``, where *pid* is ``0`` in the child, the
+   new child's process id in the parent, and *fd* is the file descriptor of the
+   master end of the pseudo-terminal.  For a more portable approach, use the
+   :mod:`pty` module.  If an error occurs :exc:`OSError` is raised.
 
-   利用できる環境: いくつかの Unix系。
+   Availability: some flavors of Unix.
 
 
 .. function:: kill(pid, sig)
@@ -1987,18 +1958,18 @@ Python で書かれたシステムプログラムに使います。
       single: process; killing
       single: process; signalling
 
-   プロセス *pid* にシグナル *sig* を送ります。
-   ホストプラットフォームで利用可能なシグナルを特定する定数は :mod:`signal`
-   モジュールで定義されています。
+   Send signal *sig* to the process *pid*.  Constants for the specific signals
+   available on the host platform are defined in the :mod:`signal` module.
 
-   Windows: :data:`signal.CTRL_C_EVENT` と :data:`signal.CTRL_BREAK_EVENT`
-   は、同じコンソールウィンドウを共有しているコンソールプロセス(例: 子プロセス)
-   にだけ送ることができる特別なシグナルです。
-   その他の値を *sig* に与えると、そのプロセスが無条件に TerminateProcess API
-   によって kill され、終了コードが *sig* に設定されます。
-   Windows の :func:`kill` は kill するプロセスのハンドルも受け取ります。
+   Windows: The :data:`signal.CTRL_C_EVENT` and
+   :data:`signal.CTRL_BREAK_EVENT` signals are special signals which can
+   only be sent to console processes which share a common console window,
+   e.g., some subprocesses. Any other value for *sig* will cause the process
+   to be unconditionally killed by the TerminateProcess API, and the exit code
+   will be set to *sig*. The Windows version of :func:`kill` additionally takes
+   process handles to be killed.
 
-   .. versionadded:: 2.7 Windows サポート
+   .. versionadded:: 2.7 Windows support
 
 
 .. function:: killpg(pgid, sig)
@@ -2007,27 +1978,26 @@ Python で書かれたシステムプログラムに使います。
       single: process; killing
       single: process; signalling
 
-   プロセスグループ *pgid* にシグナル *sig* を送ります。
+   Send the signal *sig* to the process group *pgid*.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: nice(increment)
 
-   プロセスの "nice 値" に *increment* を加えます。新たな nice 値を返します。
+   Add *increment* to the process's "niceness".  Return the new niceness.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: plock(op)
 
-   プログラムのセグメント (program segment) をメモリ内でロックします。
-   *op* (``<sys/lock.h>`` で定義されています)
-   にはどのセグメントをロックするかを指定します。
+   Lock program segments into memory.  The value of *op* (defined in
+   ``<sys/lock.h>``) determines which segments are locked.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: popen(...)
@@ -2036,7 +2006,8 @@ Python で書かれたシステムプログラムに使います。
               popen4(...)
    :noindex:
 
-   子プロセスを起動し、子プロセスとの通信のために開かれたパイプを返します。これらの関数は :ref:`os-newstreams` 節で記述されています。
+   Run child processes, returning opened pipes for communications.  These functions
+   are described in section :ref:`os-newstreams`.
 
 
 .. function:: spawnl(mode, path, ...)
@@ -2048,54 +2019,49 @@ Python で書かれたシステムプログラムに使います。
               spawnvp(mode, file, args)
               spawnvpe(mode, file, args, env)
 
-   新たなプロセス内でプログラム *path* を実行します。
+   Execute the program *path* in a new process.
 
-   .. (Note that the :mod:`subprocess` module provides more powerful facilities for
-      spawning new processes and retrieving their results; using that module is
-      preferable to using these functions.  Check specially the *Replacing Older
-      Functions with the subprocess Module* section in that documentation page.)
+   (Note that the :mod:`subprocess` module provides more powerful facilities for
+   spawning new processes and retrieving their results; using that module is
+   preferable to using these functions.  Check especially the
+   :ref:`subprocess-replacements` section.)
 
-   (:mod:`subprocess` モジュールが、新しいプロセスを実行して結果を取得するための、
-   より強力な機能を提供しています。
-   この関数の代わりに、 :mod:`subprocess` モジュールを利用することが推奨されています。
-   :mod:`subprocess` モジュールのドキュメントの、
-   :ref:`subprocess-replacements`
-   というセクションを読んでください。)
+   If *mode* is :const:`P_NOWAIT`, this function returns the process id of the new
+   process; if *mode* is :const:`P_WAIT`, returns the process's exit code if it
+   exits normally, or ``-signal``, where *signal* is the signal that killed the
+   process.  On Windows, the process id will actually be the process handle, so can
+   be used with the :func:`waitpid` function.
 
-   *mode* が :const:`P_NOWAIT` の場合、この関数は新たなプロセスのプロセス
-   ID となります。; *mode* が :const:`P_WAIT` の場合、
-   子プロセスが正常に終了するとその終了コードが返ります。
-   そうでない場合にはプロセスを kill したシグナル *signal* に対して
-   ``-signal`` が返ります。
-   Windows では、プロセス ID は実際にはプロセスハンドル値になります。
+   The "l" and "v" variants of the :func:`spawn\* <spawnl>` functions differ in how
+   command-line arguments are passed.  The "l" variants are perhaps the easiest
+   to work with if the number of parameters is fixed when the code is written; the
+   individual parameters simply become additional parameters to the
+   :func:`spawnl\*` functions.  The "v" variants are good when the number of
+   parameters is variable, with the arguments being passed in a list or tuple as
+   the *args* parameter.  In either case, the arguments to the child process must
+   start with the name of the command being run.
 
-   "l" および "v" のついた :func:`spawn\*` 関数は、
-   コマンドライン引数をどのように渡すかが異なります。
-   "l" 型は、コードを書くときにパラメタ数が決まっている場合に、
-   おそらくもっとも簡単に利用できます。
-   個々のパラメタは単に :func:`spawnl\*` 関数の追加パラメタとなります。
-   "v" 型は、パラメタの数が可変の時に便利で、リストかタプルの引数が *args*
-   パラメタとして渡されます。
-   どちらの場合も、子プロセスに渡す引数は動作させようとしているコマンドの名前から始まらなくてはなりません。
+   The variants which include a second "p" near the end (:func:`spawnlp`,
+   :func:`spawnlpe`, :func:`spawnvp`, and :func:`spawnvpe`) will use the
+   :envvar:`PATH` environment variable to locate the program *file*.  When the
+   environment is being replaced (using one of the :func:`spawn\*e <spawnl>` variants,
+   discussed in the next paragraph), the new environment is used as the source of
+   the :envvar:`PATH` variable.  The other variants, :func:`spawnl`,
+   :func:`spawnle`, :func:`spawnv`, and :func:`spawnve`, will not use the
+   :envvar:`PATH` variable to locate the executable; *path* must contain an
+   appropriate absolute or relative path.
 
-   末尾近くに "p" をもつ型 (:func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`,
-   :func:`spawnvpe`) は、プログラム *file* を探すために環境変数 :envvar:`PATH` 
-   を利用します。
-   環境変数が (次の段で述べる :func:`spawn\*e` 型関数で) 置き換えられる場合、
-   環境変数は :envvar:`PATH` を決定する上の情報源として使われます。
-   その他の型、 :func:`spawnl`, :func:`spawnle`, :func:`spawnv`,および
-   :func:`spawnve` では、実行コードを探すために :envvar:`PATH` を使いません。 *path*
-   には適切に設定された絶対パスまたは相対パスが入っていなくてはなりません。
+   For :func:`spawnle`, :func:`spawnlpe`, :func:`spawnve`, and :func:`spawnvpe`
+   (note that these all end in "e"), the *env* parameter must be a mapping
+   which is used to define the environment variables for the new process (they are
+   used instead of the current process' environment); the functions
+   :func:`spawnl`, :func:`spawnlp`, :func:`spawnv`, and :func:`spawnvp` all cause
+   the new process to inherit the environment of the current process.  Note that
+   keys and values in the *env* dictionary must be strings; invalid keys or
+   values will cause the function to fail, with a return value of ``127``.
 
-   :func:`spawnle`, :func:`spawnlpe`, :func:`spawnve`,および :func:`spawnvpe`
-   (全て末尾に "e" がついていることに注意してください) では、 *env* 
-   パラメタは新たなプロセスで利用される環境変数を定義するための
-   マップ型でなくてはなりません; :func:`spawnl`, :func:`spawnlp`, :func:`spawnv`,
-   および :func:`spawnvp` では、全て新たなプロセスは現在のプロセスの環境を引き継ぎます。
-   *env* 辞書のキーと値は全て文字列である必要があります。
-   不正なキーや値を与えると関数が失敗し、 ``127`` を返します。
-
-   例えば、以下の :func:`spawnlp` および :func:`spawnvpe`  呼び出し::
+   As an example, the following calls to :func:`spawnlp` and :func:`spawnvpe` are
+   equivalent::
 
       import os
       os.spawnlp(os.P_WAIT, 'cp', 'cp', 'index.html', '/dev/null')
@@ -2103,12 +2069,10 @@ Python で書かれたシステムプログラムに使います。
       L = ['cp', 'index.html', '/dev/null']
       os.spawnvpe(os.P_WAIT, 'cp', L, os.environ)
 
-   は等価です。
-
-   利用できる環境: Unix, Windows
-
-   :func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`  および :func:`spawnvpe` は
-   Windows では利用できません。
+   Availability: Unix, Windows.  :func:`spawnlp`, :func:`spawnlpe`, :func:`spawnvp`
+   and :func:`spawnvpe` are not available on Windows.  :func:`spawnle` and
+   :func:`spawnve` are not thread-safe on Windows; we advise you to use the
+   :mod:`subprocess` module instead.
 
    .. versionadded:: 1.6
 
@@ -2116,25 +2080,25 @@ Python で書かれたシステムプログラムに使います。
 .. data:: P_NOWAIT
           P_NOWAITO
 
-   :func:`spawn\*` 関数ファミリに対する *mode* パラメタとして取れる値です。
-   この値のいずれかを *mode* として与えた場合、
-   :func:`spawn\*` 関数は新たなプロセスが生成されるとすぐに、
-   プロセスの ID を戻り値として返ります。
+   Possible values for the *mode* parameter to the :func:`spawn\* <spawnl>` family of
+   functions.  If either of these values is given, the :func:`spawn\*` functions
+   will return as soon as the new process has been created, with the process id as
+   the return value.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 1.6
 
 
 .. data:: P_WAIT
 
-   :func:`spawn\ *` 関数ファミリに対する *mode* パラメタとして取れる値です。
-   この値を *mode* として与えた場合、
-   :func:`spawn\*` 関数は新たなプロセスを起動して完了するまで返らず、
-   プロセスがうまく終了した場合には終了コードを、シグナルによってプロセスが
-   kill された場合には ``-signal`` を返します。
+   Possible value for the *mode* parameter to the :func:`spawn\* <spawnl>` family of
+   functions.  If this is given as *mode*, the :func:`spawn\*` functions will not
+   return until the new process has run to completion and will return the exit code
+   of the process the run is successful, or ``-signal`` if a signal kills the
+   process.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
    .. versionadded:: 1.6
 
@@ -2142,416 +2106,410 @@ Python で書かれたシステムプログラムに使います。
 .. data:: P_DETACH
           P_OVERLAY
 
-   :func:`spawn\*` 関数ファミリに対する *mode* パラメタとして取れる値です。
-   これらの値は上の値よりもやや可搬性において劣っています。
-   :const:`P_DETACH` は :const:`P_NOWAIT` に似ていますが、
-   新たなプロセスは呼び出しプロセスのコンソールから切り離され (detach) ます。
-   :const:`P_OVERLAY` が使われた場合、現在のプロセスは置き換えられます;
-   従って :func:`spawn\*` は返りません。
+   Possible values for the *mode* parameter to the :func:`spawn\* <spawnl>` family of
+   functions.  These are less portable than those listed above. :const:`P_DETACH`
+   is similar to :const:`P_NOWAIT`, but the new process is detached from the
+   console of the calling process. If :const:`P_OVERLAY` is used, the current
+   process will be replaced; the :func:`spawn\*` function will not return.
 
-   利用できる環境: Windows
+   Availability: Windows.
 
    .. versionadded:: 1.6
 
 
 .. function:: startfile(path[, operation])
 
-   ファイルを関連付けられたアプリケーションを使って「スタート」します。
+   Start a file with its associated application.
 
-   *operation* が指定されないかまたは ``'open'`` であるとき、この動作は、 Windows の Explorer
-   上でのファイルをダブルクリックや、コマンドプロンプト (interactive command shell) 上でのファイル名を
-   :program:`start` 命令の引数としての実行と同様です: ファイルは拡張子が関連付けされているアプリケーション (が存在する場合)
-   を使って開かれます。
+   When *operation* is not specified or ``'open'``, this acts like double-clicking
+   the file in Windows Explorer, or giving the file name as an argument to the
+   :program:`start` command from the interactive command shell: the file is opened
+   with whatever application (if any) its extension is associated.
 
-   他の *operation* が与えられる場合、それはファイルに対して何がなされるべきかを表す "command verb" (コマンドを表す動詞)
-   でなければなりません。 Microsoft が文書化している動詞は、 ``'print'`` と ``'edit'`` (ファイルに対して) および
-   ``'explore'`` と ``'find'`` (ディレクトリに対して) です。
+   When another *operation* is given, it must be a "command verb" that specifies
+   what should be done with the file. Common verbs documented by Microsoft are
+   ``'print'`` and  ``'edit'`` (to be used on files) as well as ``'explore'`` and
+   ``'find'`` (to be used on directories).
 
-   :func:`startfile` は関連付けされたアプリケーションが起動すると同時に返ります。アプリケーションが閉じるまで待機させるためのオプション
-   はなく、アプリケーションの終了状態を取得する方法もありません。 *path* 引数は現在のディレクトリからの相対で表します。
-   絶対パスを利用したいなら、最初の文字はスラッシュ  (``'/'``) ではないので注意してください; もし最初の文字がスラッシュなら、システムの背後にある
-   Win32 :c:func:`ShellExecute` 関数は動作しません。
-   :func:`os.path.normpath` 関数を使って、Win32 用に
-   正しくコード化されたパスになるようにしてください。
+   :func:`startfile` returns as soon as the associated application is launched.
+   There is no option to wait for the application to close, and no way to retrieve
+   the application's exit status.  The *path* parameter is relative to the current
+   directory.  If you want to use an absolute path, make sure the first character
+   is not a slash (``'/'``); the underlying Win32 :c:func:`ShellExecute` function
+   doesn't work if it is.  Use the :func:`os.path.normpath` function to ensure that
+   the path is properly encoded for Win32.
 
-   利用できる環境: Windows
+   Availability: Windows.
 
    .. versionadded:: 2.0
 
    .. versionadded:: 2.5
-      *operation* パラメータ.
+      The *operation* parameter.
 
 
 .. function:: system(command)
 
-   サブシェル内でコマンド (文字列) を実行します。
-   この関数は標準 C 関数 :c:func:`system` を使って実装されており、
-   :c:func:`system` と同じ制限があります。
-   :data:`sys.stdin` などに対する変更を行っても、
-   実行されるコマンドの環境には反映されません。
+   Execute the command (a string) in a subshell.  This is implemented by calling
+   the Standard C function :c:func:`system`, and has the same limitations.
+   Changes to :data:`sys.stdin`, etc. are not reflected in the environment of the
+   executed command.
 
-   Unixでは、戻り値はプロセスの終了ステータスで、 :func:`wait`
-   で定義されている書式にコード化されています。 POSIX は
-   :c:func:`system` 関数の戻り値の意味について定義していないので、
-   Python の :func:`system` における戻り値はシステム依存となることに注意してください。
+   On Unix, the return value is the exit status of the process encoded in the
+   format specified for :func:`wait`.  Note that POSIX does not specify the meaning
+   of the return value of the C :c:func:`system` function, so the return value of
+   the Python function is system-dependent.
 
-   Windows では、戻り値は *command* を実行した後にシステムシェルから返される値で、Windows の環境変数
-   :envvar:`COMSPEC` となります: :program:`command.com` ベースのシステム (Windows 95, 98 および ME)
-   では、この値は常に ``0`` です; :program:`cmd.exe` ベースのシステム (Windows NT, 2000 および XP)
-   では、この値は実行したコマンドの終了ステータスです; ネイティブでないシェルを使っているシステムについては、
-   使っているシェルのドキュメントを参照してください。
+   On Windows, the return value is that returned by the system shell after running
+   *command*, given by the Windows environment variable :envvar:`COMSPEC`: on
+   :program:`command.com` systems (Windows 95, 98 and ME) this is always ``0``; on
+   :program:`cmd.exe` systems (Windows NT, 2000 and XP) this is the exit status of
+   the command run; on systems using a non-native shell, consult your shell
+   documentation.
 
-   .. The :mod:`subprocess` module provides more powerful facilities for spawning new
-      processes and retrieving their results; using that module is preferable to using
-      this function.  Use the :mod:`subprocess` module.  Check especially the
-      :ref:`subprocess-replacements` section.
+   The :mod:`subprocess` module provides more powerful facilities for spawning new
+   processes and retrieving their results; using that module is preferable to using
+   this function.  See the
+   :ref:`subprocess-replacements` section in the :mod:`subprocess` documentation
+   for some helpful recipes.
 
-   :mod:`subprocess` モジュールが、新しいプロセスを実行して結果を取得するための、
-   より強力な機能を提供しています。
-   この関数の代わりに、 :mod:`subprocess` モジュールを利用することが推奨されています。
-   :mod:`subprocess` モジュールのドキュメントの、
-   :ref:`subprocess-replacements`
-   というセクションのレシピを参考にして下さい。
-
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows.
 
 
 .. function:: times()
 
-   (プロセッサまたはその他の) 積算時間を秒で表す浮動小数点数からなる、
-   5 要素のタプルを返します。
-   タプルの要素は、ユーザ時間 (user time)、システム時間 (system time)、
-   子プロセスのユーザ時間、子プロセスのシステム時間、
-   そして過去のある固定時点からの経過時間で、この順に並んでいます。
-   Unix マニュアルページ :manpage:`times(2)` 
-   または対応する Windows プラットフォーム API ドキュメントを参照してください。
-   Windows では、最初の２つの要素だけが埋められ、残りは0になります。
+   Return a 5-tuple of floating point numbers indicating accumulated (processor
+   or other) times, in seconds.  The items are: user time, system time,
+   children's user time, children's system time, and elapsed real time since a
+   fixed point in the past, in that order.  See the Unix manual page
+   :manpage:`times(2)` or the corresponding Windows Platform API documentation.
+   On Windows, only the first two items are filled, the others are zero.
 
-   利用できる環境: Unix, Windows
+   Availability: Unix, Windows
 
 
 .. function:: wait()
 
-   子プロセスの実行完了を待機し、子プロセスの pid と終了コードインジケータ
-   --- 16 ビットの数で、下位バイトがプロセスを kill
-   したシグナル番号、上位バイトが終了ステータス (シグナル番号がゼロの場合)
-   --- の入ったタプルを返します;
-   コアダンプファイルが生成された場合、下位バイトの最上桁ビットが立てられます。
+   Wait for completion of a child process, and return a tuple containing its pid
+   and exit status indication: a 16-bit number, whose low byte is the signal number
+   that killed the process, and whose high byte is the exit status (if the signal
+   number is zero); the high bit of the low byte is set if a core file was
+   produced.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: waitpid(pid, options)
 
-   Unix の場合:
-   プロセス id *pid* で与えられた子プロセスの完了を待機し、
-   子プロセスのプロセス id と(:func:`wait` と同様にコード化された)
-   終了ステータスインジケータからなるタプルを返します。
-   この関数の動作は *options* によって影響されます。
-   通常の操作では ``0`` にします。
+   The details of this function differ on Unix and Windows.
 
-   *pid* が ``0`` よりも大きい場合、 :func:`waitpid` は特定のプロセスのステータス情報を要求します。 *pid* が ``0``
-   の場合、現在のプロセスグループ内の任意の子プロセスの状態に対する要求です。 *pid* が ``-1`` の場合、現在のプロセス
-   の任意の子プロセスに対する要求です。 *pid* が ``-1`` よりも小さい場合、プロセスグループ ``-pid`` (すなわち *pid* の絶対値)
-   内の任意のプロセスに対する要求です。
+   On Unix: Wait for completion of a child process given by process id *pid*, and
+   return a tuple containing its process id and exit status indication (encoded as
+   for :func:`wait`).  The semantics of the call are affected by the value of the
+   integer *options*, which should be ``0`` for normal operation.
 
-   .. An :exc:`OSError` is raised with the value of errno when the syscall
-      returns -1.
+   If *pid* is greater than ``0``, :func:`waitpid` requests status information for
+   that specific process.  If *pid* is ``0``, the request is for the status of any
+   child in the process group of the current process.  If *pid* is ``-1``, the
+   request pertains to any child of the current process.  If *pid* is less than
+   ``-1``, status is requested for any process in the process group ``-pid`` (the
+   absolute value of *pid*).
 
-   システムコールが -1 を返したとき、 :exc:`OSError` を errno と共に送出します。
+   An :exc:`OSError` is raised with the value of errno when the syscall
+   returns -1.
 
-   .. On Windows: Wait for completion of a process given by process handle *pid*, and
-      return a tuple containing *pid*, and its exit status shifted left by 8 bits
-      (shifting makes cross-platform use of the function easier). A *pid* less than or
-      equal to ``0`` has no special meaning on Windows, and raises an exception. The
-      value of integer *options* has no effect. *pid* can refer to any process whose
-      id is known, not necessarily a child process. The :func:`spawn` functions called
-      with :const:`P_NOWAIT` return suitable process handles.
+   On Windows: Wait for completion of a process given by process handle *pid*, and
+   return a tuple containing *pid*, and its exit status shifted left by 8 bits
+   (shifting makes cross-platform use of the function easier). A *pid* less than or
+   equal to ``0`` has no special meaning on Windows, and raises an exception. The
+   value of integer *options* has no effect. *pid* can refer to any process whose
+   id is known, not necessarily a child process. The :func:`spawn\* <spawnl>`
+   functions called with :const:`P_NOWAIT` return suitable process handles.
 
-   Windowsでは、プロセスハンドル *pid* を指定してプロセスの終了を待って、
-   *pid* と、終了ステータスを8bit左シフトした値のタプルを返します。
-   (シフトは、この関数をクロスプラットフォームで利用しやすくするために行われます)
-   ``0`` 以下の *pid* はWindowsでは特別な意味を持っておらず、例外を発生させます。
-   *options* の値は効果がありません。
-   *pid* は、子プロセスで無くても、プロセスIDを知っているどんなプロセスでも参照することが可能です。
-   :func:`spawn` 関数を :const:`P_NOWAIT` と共に呼び出した場合、適切なプロセスハンドルが返されます。
 
-.. function:: wait3([options])
+.. function:: wait3(options)
 
-   :func:`waitpid` に似ていますが、プロセス id を引数に取らず、子プロセス
-   id、終了ステータスインジケータ、リソース使用情報の3要素からなるタプルを返します。リソース使用情報の詳しい情報は :mod:`resource`.\
-   :func:`getrusage` を参照してください。 *options* は :func:`waitpid` および :func:`wait4`
-   と同様です。
+   Similar to :func:`waitpid`, except no process id argument is given and a
+   3-element tuple containing the child's process id, exit status indication, and
+   resource usage information is returned.  Refer to :mod:`resource`.\
+   :func:`~resource.getrusage` for details on resource usage information.  The
+   option argument is the same as that provided to :func:`waitpid` and
+   :func:`wait4`.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.5
 
 
 .. function:: wait4(pid, options)
 
-   :func:`waitpid` に似ていますが、子プロセス id、終了ステータスインジケータ、リソース使用情報の3要素からなるタプルを返します。
-   リソース使用情報の詳しい情報は :mod:`resource`.\ :func:`getrusage` を参照してください。 :func:`wait4`
-   の引数は :func:`waitpid` に与えられるものと同じです。
+   Similar to :func:`waitpid`, except a 3-element tuple, containing the child's
+   process id, exit status indication, and resource usage information is returned.
+   Refer to :mod:`resource`.\ :func:`~resource.getrusage` for details on
+   resource usage information.  The arguments to :func:`wait4` are the same as
+   those provided to :func:`waitpid`.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.5
 
 
 .. data:: WNOHANG
 
-   子プロセス状態がすぐに取得できなかった場合に直ちに終了するようにするための :func:`waitpid` のオプションです。
-   この場合、関数は ``(0, 0)`` を返します。
+   The option for :func:`waitpid` to return immediately if no child process status
+   is available immediately. The function returns ``(0, 0)`` in this case.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. data:: WCONTINUED
 
-   このオプションによって子プロセスは前回状態が報告された後にジョブ制御による停止状態から実行を継続された場合に報告されるようになります。
+   This option causes child processes to be reported if they have been continued
+   from a job control stop since their status was last reported.
 
-   利用できる環境: ある種の Unix システム。
+   Availability: Some Unix systems.
 
    .. versionadded:: 2.3
 
 
 .. data:: WUNTRACED
 
-   このオプションによって子プロセスは停止されていながら停止されてから状態が報告されていない場合に報告されるようになります。
+   This option causes child processes to be reported if they have been stopped but
+   their current state has not been reported since they were stopped.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
-以下の関数は :func:`system`, :func:`wait`, あるいは :func:`waitpid` が返すプロセス状態コード
-を引数にとります。これらの関数はプロセスの配置を決めるために利用することができます。
+The following functions take a process status code as returned by
+:func:`system`, :func:`wait`, or :func:`waitpid` as a parameter.  They may be
+used to determine the disposition of a process.
 
 
 .. function:: WCOREDUMP(status)
 
-   プロセスに対してコアダンプが生成されていた場合には ``True`` を、それ以外の場合は ``False`` を返します。
+   Return ``True`` if a core dump was generated for the process, otherwise
+   return ``False``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: WIFCONTINUED(status)
 
-   プロセスがジョブ制御による停止状態から実行を継続された (continue) 場合に ``True`` を、それ以外の場合は ``False`` を返します。
+   Return ``True`` if the process has been continued from a job control stop,
+   otherwise return ``False``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: WIFSTOPPED(status)
 
-   プロセスが停止された (stop) 場合に ``True`` を、それ以外の場合は ``False`` を返します。
+   Return ``True`` if the process has been stopped, otherwise return
+   ``False``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: WIFSIGNALED(status)
 
-   プロセスがシグナルによって終了した (exit) 場合に ``True`` を、それ以外の場合は ``False`` を返します。
+   Return ``True`` if the process exited due to a signal, otherwise return
+   ``False``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: WIFEXITED(status)
 
-   プロセスが :manpage:`exit(2)` システムコールで終了した場合に ``True`` を、それ以外の場合は ``False`` を返します。
+   Return ``True`` if the process exited using the :manpage:`exit(2)` system call,
+   otherwise return ``False``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: WEXITSTATUS(status)
 
-   ``WIFEXITED(status)`` が真の場合、 :manpage:`exit(2)` システムコールに渡された整数パラメタを返します。そうでない場合、
-   返される値には意味がありません。
+   If ``WIFEXITED(status)`` is true, return the integer parameter to the
+   :manpage:`exit(2)` system call.  Otherwise, the return value is meaningless.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: WSTOPSIG(status)
 
-   プロセスを停止させたシグナル番号を返します。
+   Return the signal which caused the process to stop.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: WTERMSIG(status)
 
-   プロセスを終了させたシグナル番号を返します。
+   Return the signal which caused the process to exit.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. _os-path:
 
-雑多なシステム情報
-------------------
+Miscellaneous System Information
+--------------------------------
 
 
 .. function:: confstr(name)
 
-   文字列形式によるシステム設定値 (system configuration value)を返します。
-   *name* には取得したい設定名を指定します; 
-   この値は定義済みのシステム値名を表す文字列にすることができます;
-   名前は多くの標準 (POSIX.1、 Unix 95、 Unix 98 その他)
-   で定義されています。ホストオペレーティングシステムの関知する名前は
-   ``confstr_names`` 辞書のキーとして与えられています。
-   このマップ型オブジェクトに入っていない設定変数については、
-   *name* に整数を渡してもかまいません。
+   Return string-valued system configuration values. *name* specifies the
+   configuration value to retrieve; it may be a string which is the name of a
+   defined system value; these names are specified in a number of standards (POSIX,
+   Unix 95, Unix 98, and others).  Some platforms define additional names as well.
+   The names known to the host operating system are given as the keys of the
+   ``confstr_names`` dictionary.  For configuration variables not included in that
+   mapping, passing an integer for *name* is also accepted.
 
-   *name* に指定された設定値が定義されていない場合、 ``None`` を返します。
+   If the configuration value specified by *name* isn't defined, ``None`` is
+   returned.
 
-   もし *name* が文字列でかつ不明である場合、 :exc:`ValueError`  を送出します。 *name*
-   の指定値がホストシステムでサポートされておらず、 ``confstr_names`` にも入っていない場合、 :const:`errno.EINVAL`
-   をエラー番号として :exc:`OSError` を送出します。
+   If *name* is a string and is not known, :exc:`ValueError` is raised.  If a
+   specific value for *name* is not supported by the host system, even if it is
+   included in ``confstr_names``, an :exc:`OSError` is raised with
+   :const:`errno.EINVAL` for the error number.
 
-   利用できる環境: Unix
+   Availability: Unix
+
 
 .. data:: confstr_names
 
-   :func:`confstr` が受理する名前を、
-   ホストオペレーティングシステムで定義されている整数値に対応付けている辞書です。
-   この辞書はシステムでどの設定名が定義されているかを決定するために利用できます。
+   Dictionary mapping names accepted by :func:`confstr` to the integer values
+   defined for those names by the host operating system. This can be used to
+   determine the set of names known to the system.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. function:: getloadavg()
 
-   過去 1 分、5 分、15分間で、システムで走っているキューの平均プロセス数を返します。
-   平均負荷が得られない場合には :exc:`OSError` を送出します。
+   Return the number of processes in the system run queue averaged over the last
+   1, 5, and 15 minutes or raises :exc:`OSError` if the load average was
+   unobtainable.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
    .. versionadded:: 2.3
 
 
 .. function:: sysconf(name)
 
-   整数値のシステム設定値を返します。
-   *name* で指定された設定値が定義されていない場合、 ``-1``  が返されます。
-   *name* に関するコメントとしては、 :func:`confstr` で述べた内容が
-   同様に当てはまります; 既知の設定名についての情報を与える辞書は
-   ``sysconf_names`` で与えられています。
+   Return integer-valued system configuration values. If the configuration value
+   specified by *name* isn't defined, ``-1`` is returned.  The comments regarding
+   the *name* parameter for :func:`confstr` apply here as well; the dictionary that
+   provides information on the known names is given by ``sysconf_names``.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
 
 .. data:: sysconf_names
 
-   :func:`sysconf` が受理する名前を、
-   ホストオペレーティングシステムで定義されている整数値に対応付けている辞書です。
-   この辞書はシステムでどの設定名が定義されているかを決定するために利用できます。
+   Dictionary mapping names accepted by :func:`sysconf` to the integer values
+   defined for those names by the host operating system. This can be used to
+   determine the set of names known to the system.
 
-   利用できる環境: Unix
+   Availability: Unix.
 
-以下のデータ値はパス名編集操作をサポートするために利用されます。
-これらの値は全てのプラットフォームで定義されています。
+The following data values are used to support path manipulation operations.  These
+are defined for all platforms.
 
-パス名に対する高レベルの操作は :mod:`os.path` モジュールで定義されています。
+Higher-level operations on pathnames are defined in the :mod:`os.path` module.
 
 
 .. data:: curdir
 
-   現在のディレクトリ参照するためにオペレーティングシステムで使われる文字列定数です。
-   POSIX と Windows では ``'.'`` になります。
-   :mod:`os.path` からも利用できます。
+   The constant string used by the operating system to refer to the current
+   directory. This is ``'.'`` for Windows and POSIX. Also available via
+   :mod:`os.path`.
 
 
 .. data:: pardir
 
-   親ディレクトリを参照するためにオペレーティングシステムで使われる文字列定数です。
-   POSIX と Windows では ``'..'`` になります。
-   :mod:`os.path` からも利用できます。
+   The constant string used by the operating system to refer to the parent
+   directory. This is ``'..'`` for Windows and POSIX. Also available via
+   :mod:`os.path`.
 
 
 .. data:: sep
 
-   パス名を要素に分割するためにオペレーティングシステムで利用されている文字です。
-   例えば POSIX では ``'/'`` で、Windowsでは ``'\\'`` です。
-   しかし、このことを知っているだけではパス名を解析したり、
-   パス名同士を結合したりするには不十分です ---  こうした操作には
-   :func:`os.path.split` や :func:`os.path.join`  を使ってください
-   --- が、たまに便利なこともあります。
-   :mod:`os.path` からも利用できます。
+   The character used by the operating system to separate pathname components.
+   This is ``'/'`` for POSIX and ``'\\'`` for Windows.  Note that knowing this
+   is not sufficient to be able to parse or concatenate pathnames --- use
+   :func:`os.path.split` and :func:`os.path.join` --- but it is occasionally
+   useful. Also available via :mod:`os.path`.
 
 
 .. data:: altsep
 
-   文字パス名を要素に分割する際にオペレーティングシステムで利用されるもう一つの文字で、
-   分割文字が一つしかない場合には ``None`` になります。
-   この値は ``sep`` がバックスラッシュとなっている DOS や Windows  システムでは
-   ``'/'`` に設定されています。
-   :mod:`os.path` からも利用できます。
+   An alternative character used by the operating system to separate pathname
+   components, or ``None`` if only one separator character exists.  This is set to
+   ``'/'`` on Windows systems where ``sep`` is a backslash. Also available via
+   :mod:`os.path`.
 
 
 .. data:: extsep
 
-   ベースのファイル名と拡張子を分ける文字。
-   たとえば、 :file:`os.py` だったら ``'.'`` です。
-   :mod:`os.path` からも利用できます。
+   The character which separates the base filename from the extension; for example,
+   the ``'.'`` in :file:`os.py`. Also available via :mod:`os.path`.
 
    .. versionadded:: 2.2
 
 
 .. data:: pathsep
 
-   (:envvar:`PATH` のような) サーチパス内の要素を分割するために
-   オペレーティングシステムが慣習的に用いる文字で、POSIX における
-   ``':'`` や DOS および Windows における ``';'`` に相当します。
-   :mod:`os.path` からも利用できます。
+   The character conventionally used by the operating system to separate search
+   path components (as in :envvar:`PATH`), such as ``':'`` for POSIX or ``';'`` for
+   Windows. Also available via :mod:`os.path`.
 
 
 .. data:: defpath
 
-   :func:`exec\*p\*` や :func:`spawn\*p\*` において、環境変数辞書内に ``'PATH'``
-   キーがない場合に使われる標準設定のサーチパスです。
-   :mod:`os.path` からも利用できます。
+   The default search path used by :func:`exec\*p\* <execl>` and
+   :func:`spawn\*p\* <spawnl>` if the environment doesn't have a ``'PATH'``
+   key. Also available via :mod:`os.path`.
 
 
 .. data:: linesep
 
-   現在のプラットフォーム上で行を分割 (あるいは終端) するために用いられている文字列です。
-   この値は例えば POSIX での ``'\n'`` や Mac OS での ``'\r'`` のように、
-   単一の文字にもなりますし、例えば Windows での ``'\r\n'`` 
-   のように複数の文字列にもなります。
-   テキストモードで開いたファイルに書き込むときには、
-   *os.linesep* を利用しないでください。
-   全てのプラットフォームで、単一の ``'\n'`` を使ってください。
+   The string used to separate (or, rather, terminate) lines on the current
+   platform.  This may be a single character, such as ``'\n'`` for POSIX, or
+   multiple characters, for example, ``'\r\n'`` for Windows. Do not use
+   *os.linesep* as a line terminator when writing files opened in text mode (the
+   default); use a single ``'\n'`` instead, on all platforms.
 
 
 .. data:: devnull
 
-   ヌルデバイス (null device) のファイルパスです。
-   例えばPOSIX では ``'/dev/null'`` で、 Windows では ``'nul'`` です。
-   この値は :mod:`os.path` からも利用できます。
+   The file path of the null device. For example: ``'/dev/null'`` for
+   POSIX, ``'nul'`` for Windows.  Also available via :mod:`os.path`.
 
    .. versionadded:: 2.4
 
 
 .. _os-miscfunc:
 
-雑多な関数
-----------
+Miscellaneous Functions
+-----------------------
 
 
 .. function:: urandom(n)
 
-   暗号に関する用途に適した *n* バイトからなるランダムな文字列を返します。
+   Return a string of *n* random bytes suitable for cryptographic use.
 
-   この関数は OS 固有の乱数発生源からランダムなバイト列を生成して返します。
-   この関数の返すデータは暗号を用いたアプリケーションで十分利用できる程度に
-   予測不能ですが、実際のクオリティは OS の実装によって異なります。
-   Unix系のシステムでは :file:`/dev/urandom` への問い合わせを行い、
-   Windows では :c:func:`CryptGenRandom` を使います。乱数発生源
-   が見つからない場合、 :exc:`NotImplementedError` を送出します。
+   This function returns random bytes from an OS-specific randomness source.  The
+   returned data should be unpredictable enough for cryptographic applications,
+   though its exact quality depends on the OS implementation.  On a UNIX-like
+   system this will query ``/dev/urandom``, and on Windows it will use
+   ``CryptGenRandom()``.  If a randomness source is not found,
+   :exc:`NotImplementedError` will be raised.
+
+   For an easy-to-use interface to the random number generator
+   provided by your platform, please see :class:`random.SystemRandom`.
 
    .. versionadded:: 2.4
-

@@ -1,5 +1,5 @@
-:mod:`xmlrpclib` --- XML-RPC クライアントアクセス
-=================================================
+:mod:`xmlrpclib` --- XML-RPC client access
+==========================================
 
 .. module:: xmlrpclib
    :synopsis: XML-RPC client access.
@@ -7,9 +7,9 @@
 .. sectionauthor:: Eric S. Raymond <esr@snark.thyrsus.com>
 
 .. note::
-
-   :mod:`xmlrpclib` モジュールは、Python 3では :mod:`xmlrpc.client` にリネームされました。
-   :term:`2to3` ツールは、自動的にソースコードのimportをPython 3用に修正します。
+   The :mod:`xmlrpclib` module has been renamed to :mod:`xmlrpc.client` in
+   Python 3.  The :term:`2to3` tool will automatically adapt imports when
+   converting your sources to Python 3.
 
 
 .. XXX Not everything is documented yet.  It might be good to describe
@@ -17,164 +17,213 @@
 
 .. versionadded:: 2.2
 
-XML-RPCはXMLを利用した遠隔手続き呼び出し(Remote Procedure Call)の一種で、HTTPをトランスポートとして使用します。XML-
-RPCでは、クライアントはリモートサーバ(URIで指定されたサーバ)上のメソッドをパラメータを指定して呼
-び出し、構造化されたデータを取得します。このモジュールは、XML-RPCクライアントの開発をサポートしており、Pythonオブジェクトに適合する転送用XMLの
-変換の全てを行います。
+**Source code:** :source:`Lib/xmlrpclib.py`
+
+--------------
+
+XML-RPC is a Remote Procedure Call method that uses XML passed via HTTP as a
+transport.  With it, a client can call methods with parameters on a remote
+server (the server is named by a URI) and get back structured data.  This module
+supports writing XML-RPC client code; it handles all the details of translating
+between conformable Python objects and XML on the wire.
 
 
-.. class:: ServerProxy(uri[, transport[, encoding[, verbose[,  allow_none[, use_datetime]]]]])
+.. warning::
 
-   :class:`ServerProxy` は、リモートのXML-RPCサーバとの通信を管理するオブジェクトです。最初のパラメータはURI(Uniform
-   Resource Indicator)で、通常はサーバのURLを指定します。2番目のパラメータにはトランスポート・ファクトリ
-   を指定する事ができます。トランスポート・ファクトリを省略した場合、URLが https:
-   ならモジュール内部の :class:`SafeTransport` インスタンスを使用し、それ以外の場合にはモジュール内部の
-   :class:`Transport` インスタンスを使用します。オプションの 3 番目の引数はエンコード方法で、デフォルトでは
-   UTF-8 です。オプションの 4 番目の引数はデバッグフラグです。 *allow_none* が真の場合、Python の定数 ``None`` は XML
-   に翻訳されます; デフォルトの動作は ``None`` に対して :exc:`TypeError` を送出します。この仕様は XML-RPC
-   仕様でよく用いられている拡張ですが、全てのクライアントやサーバでサポートされているわけではありません; 詳細記述については
-   http://ontosys.com/xml-rpc/extensions.html を参照してください。
-   *use_datetime* フラグは :class:`datetime.datetime` のオブジェクトとして日付/時刻を表現する時に使用し、デフォルトでは
-   false に設定されています。
-   呼び出しに :class:`datetime.datetime` のオブジェクトを渡すことができます。
+   The :mod:`xmlrpclib` module is not secure against maliciously
+   constructed data.  If you need to parse untrusted or unauthenticated data see
+   :ref:`xml-vulnerabilities`.
 
-   HTTP及びHTTPS通信の両方で、 ``http://user:pass@host:port/path`` のよう
-   なHTTP基本認証のための拡張URL構文をサポートしています。 ``user:pass`` はbase64でエンコードしてHTTPの'Authorization
-   'ヘッダとなり、XML-RPCメソッド呼び出し時に接続処理の一部としてリモートサーバに送信されます。リモート
-   サーバが基本認証を要求する場合のみ、この機能を利用する必要があります。
+.. versionchanged:: 2.7.9
 
-   生成されるインスタンスはリモートサーバへのプロクシオブジェクトで、RPC呼び出しを行う為のメソッドを持ちます。リモートサーバがイントロスペクション
-   APIをサポートしている場合は、リモートサーバのサポートするメソッドを検索 (サービス検索)やサーバのメタデータの取得なども行えます。
+   For https URIs, :mod:`xmlrpclib` now performs all the necessary certificate
+   and hostname checks by default
 
-   :class:`ServerProxy` インスタンスのメソッドは引数としてPythonの基礎型とオ
-   ブジェクトを受け取り、戻り値としてPythonの基礎型かオブジェクトを返します。
-   以下の型をXMLに変換(XMLを通じてマーシャルする)する事ができます
-   (特別な指定がない限り、逆変換でも同じ型として変換されます):
+.. class:: ServerProxy(uri[, transport[, encoding[, verbose[, allow_none[, use_datetime[, context]]]]]])
 
-   +---------------------+-------------------------------------------------------------------------+
-   | 名前                | 意味                                                                    |
-   +=====================+=========================================================================+
-   | boolean             | 定数 :const:`True` と :const:`False`                                    |
-   +---------------------+-------------------------------------------------------------------------+
-   | 整数                | そのまま                                                                |
-   +---------------------+-------------------------------------------------------------------------+
-   | 浮動小数点          | そのまま                                                                |
-   +---------------------+-------------------------------------------------------------------------+
-   | 文字列              | そのまま                                                                |
-   +---------------------+-------------------------------------------------------------------------+
-   | 配列                | 変換可能な要素を含むPythonシーケンス。戻り値はリスト。                  |
-   +---------------------+-------------------------------------------------------------------------+
-   | 構造体              | Pythonの辞書。キーは文字列のみ。全ての値は変換可能でなくてはならない。  |
-   |                     | ユーザー定義型を渡すこともできます。 *__dict__*                         |
-   |                     | の属性のみ転送されます。                                                |
-   +---------------------+-------------------------------------------------------------------------+
-   | 日付                | エポックからの経過秒数(:class:`DateTime` クラスのインスタンスとして     |
-   |                     | 渡す) もしくは、 :class:`datetime.datetime` のインスタンス              |
-   +---------------------+-------------------------------------------------------------------------+
-   | バイナリ            | :class:`Binary` ラッパクラスのインスタンス                              |
-   +---------------------+-------------------------------------------------------------------------+
+   A :class:`ServerProxy` instance is an object that manages communication with a
+   remote XML-RPC server.  The required first argument is a URI (Uniform Resource
+   Indicator), and will normally be the URL of the server.  The optional second
+   argument is a transport factory instance; by default it is an internal
+   :class:`SafeTransport` instance for https: URLs and an internal HTTP
+   :class:`Transport` instance otherwise.  The optional third argument is an
+   encoding, by default UTF-8. The optional fourth argument is a debugging flag.
+   If *allow_none* is true,  the Python constant ``None`` will be translated into
+   XML; the default behaviour is for ``None`` to raise a :exc:`TypeError`. This is
+   a commonly-used extension to the XML-RPC specification, but isn't supported by
+   all clients and servers; see http://ontosys.com/xml-rpc/extensions.php for a
+   description.  The *use_datetime* flag can be used to cause date/time values to
+   be presented as :class:`datetime.datetime` objects; this is false by default.
+   :class:`datetime.datetime` objects may be passed to calls.
 
-   上記のXML-RPCでサポートする全データ型を使用することができます。メソッド呼び出し時、XML-
-   RPCサーバエラーが発生すると :exc:`Fault` インスタンスを送出し、HTTP/HTTPSトランスポート層でエラーが発生した場合には
-   :exc:`ProtocolError` を送出します。 :exc:`Error` をベースとする
-   :exc:`Fault` と :exc:`ProtocolError` の両方が発生します。 Python 2.2以降では組み込み型のサ
-   ブクラスを作成する事ができますが、現在のところxmlrpclibではそのようなサブクラスのインスタンスをマーシャルすることはできません。
+   Both the HTTP and HTTPS transports support the URL syntax extension for HTTP
+   Basic Authentication: ``http://user:pass@host:port/path``.  The ``user:pass``
+   portion will be base64-encoded as an HTTP 'Authorization' header, and sent to
+   the remote server as part of the connection process when invoking an XML-RPC
+   method.  You only need to use this if the remote server requires a Basic
+   Authentication user and password. If an HTTPS url is provided, *context* may
+   be :class:`ssl.SSLContext` and configures the SSL settings of the underlying
+   HTTPS connection.
 
-   文字列を渡す場合、 ``<``, ``>``, ``&`` などのXMLで特殊な意味を持つ文字は自動的にエスケープされます。
-   しかし、ASCII値0〜31の制御文字(もちろん、タブ'TAB',改行'LF',リターン'CR'は除く)などのXMLで使用することのできない文字を使用することはできず、
-   使用するとそのXML-RPCリクエストはwell-formedなXMLとはなりません。
-   そのような文字列を渡す必要がある場合は、後述の :class:`Binary` ラッパクラスを使用してください。
+   The returned instance is a proxy object with methods that can be used to invoke
+   corresponding RPC calls on the remote server.  If the remote server supports the
+   introspection API, the proxy can also be used to query the remote server for the
+   methods it supports (service discovery) and fetch other server-associated
+   metadata.
 
-   :class:`Server` は、上位互換性の為に :class:`ServerProxy` の別名として残され
-   ています。新しいコードでは :class:`ServerProxy` を使用してください。
+   :class:`ServerProxy` instance methods take Python basic types and objects as
+   arguments and return Python basic types and classes.  Types that are conformable
+   (e.g. that can be marshalled through XML), include the following (and except
+   where noted, they are unmarshalled as the same Python type):
+
+   +---------------------------------+---------------------------------------------+
+   | Name                            | Meaning                                     |
+   +=================================+=============================================+
+   | :const:`boolean`                | The :const:`True` and :const:`False`        |
+   |                                 | constants                                   |
+   +---------------------------------+---------------------------------------------+
+   | :const:`integers`               | Pass in directly                            |
+   +---------------------------------+---------------------------------------------+
+   | :const:`floating-point numbers` | Pass in directly                            |
+   +---------------------------------+---------------------------------------------+
+   | :const:`strings`                | Pass in directly                            |
+   +---------------------------------+---------------------------------------------+
+   | :const:`arrays`                 | Any Python sequence type containing         |
+   |                                 | conformable elements. Arrays are returned   |
+   |                                 | as lists                                    |
+   +---------------------------------+---------------------------------------------+
+   | :const:`structures`             | A Python dictionary. Keys must be strings,  |
+   |                                 | values may be any conformable type. Objects |
+   |                                 | of user-defined classes can be passed in;   |
+   |                                 | only their *__dict__* attribute is          |
+   |                                 | transmitted.                                |
+   +---------------------------------+---------------------------------------------+
+   | :const:`dates`                  | in seconds since the epoch (pass in an      |
+   |                                 | instance of the :class:`DateTime` class) or |
+   |                                 | a :class:`datetime.datetime` instance.      |
+   +---------------------------------+---------------------------------------------+
+   | :const:`binary data`            | pass in an instance of the :class:`Binary`  |
+   |                                 | wrapper class                               |
+   +---------------------------------+---------------------------------------------+
+
+   This is the full set of data types supported by XML-RPC.  Method calls may also
+   raise a special :exc:`Fault` instance, used to signal XML-RPC server errors, or
+   :exc:`ProtocolError` used to signal an error in the HTTP/HTTPS transport layer.
+   Both :exc:`Fault` and :exc:`ProtocolError` derive from a base class called
+   :exc:`Error`.  Note that even though starting with Python 2.2 you can subclass
+   built-in types, the xmlrpclib module currently does not marshal instances of such
+   subclasses.
+
+   When passing strings, characters special to XML such as ``<``, ``>``, and ``&``
+   will be automatically escaped.  However, it's the caller's responsibility to
+   ensure that the string is free of characters that aren't allowed in XML, such as
+   the control characters with ASCII values between 0 and 31 (except, of course,
+   tab, newline and carriage return); failing to do this will result in an XML-RPC
+   request that isn't well-formed XML.  If you have to pass arbitrary strings via
+   XML-RPC, use the :class:`Binary` wrapper class described below.
+
+   :class:`Server` is retained as an alias for :class:`ServerProxy` for backwards
+   compatibility.  New code should use :class:`ServerProxy`.
 
    .. versionchanged:: 2.5
-      *use_datetime* フラグが追加されました
+      The *use_datetime* flag was added.
 
    .. versionchanged:: 2.6
-      ニュースタイルクラス(:term:`new-style class`)も、
-      *__dict__* 属性を持っていて、特別な方法でマーシャルされている親クラスを
-      持っていなければ、渡すことができます。
+      Instances of :term:`new-style class`\es can be passed in if they have an
+      *__dict__* attribute and don't have a base class that is marshalled in a
+      special way.
+
+   .. versionchanged:: 2.7.9
+      Added the *context* argument.
 
 
 .. seealso::
 
    `XML-RPC HOWTO <http://www.tldp.org/HOWTO/XML-RPC-HOWTO/index.html>`_
-      週種類のプログラミング言語で記述された XML-RPCの操作とクライアントソフトウェアの素晴らしい説明が掲載されています。
-      XML- RPCクライアントの開発者が知っておくべきことがほとんど全て記載されています。
-
-   `XML-RPC-Hacks page <http://xmlrpc-c.sourceforge.net/hacks.php>`_
-      イントロスペクションとマルチコールをサポートしているオープンソースの拡張ライブラリについて説明しています。
+      A good description of XML-RPC operation and client software in several languages.
+      Contains pretty much everything an XML-RPC client developer needs to know.
 
    `XML-RPC Introspection <http://xmlrpc-c.sourceforge.net/introspection.html>`_
-      インストロペクションをサポートする、 XML-RPC プロトコルの拡張を解説しています。
+      Describes the XML-RPC protocol extension for introspection.
 
    `XML-RPC Specification <http://www.xmlrpc.com/spec>`_
-      公式の仕様
+      The official specification.
 
    `Unofficial XML-RPC Errata <http://effbot.org/zone/xmlrpc-errata.htm>`_
-      Fredrik Lundh による "unofficial errata, intended to clarify certain
+      Fredrik Lundh's "unofficial errata, intended to clarify certain
       details in the XML-RPC specification, as well as hint at
       'best practices' to use when designing your own XML-RPC
       implementations."
 
 .. _serverproxy-objects:
 
-ServerProxy オブジェクト
-------------------------
+ServerProxy Objects
+-------------------
 
-:class:`ServerProxy` インスタンスの各メソッドはそれぞれXML-RPCサーバの遠隔
-手続き呼び出しに対応しており、メソッドが呼び出されると名前と引数をシグネチャとしてRPCを実行します(同じ名前のメソッドでも、異なる引数シグネチャに
-よってオーバロードされます)。RPC実行後、変換された値を返すか、または
-:class:`Fault` オブジェクトもしくは :class:`ProtocolError` オブジェクトでエラーを通知します。
+A :class:`ServerProxy` instance has a method corresponding to each remote
+procedure call accepted by the XML-RPC server.  Calling the method performs an
+RPC, dispatched by both name and argument signature (e.g. the same method name
+can be overloaded with multiple argument signatures).  The RPC finishes by
+returning a value, which may be either returned data in a conformant type or a
+:class:`Fault` or :class:`ProtocolError` object indicating an error.
 
-予約メンバ :attr:`system` から、XMLイントロスペクションAPIの一般的なメソッドを利用する事ができます。
+Servers that support the XML introspection API support some common methods
+grouped under the reserved :attr:`system` attribute:
 
 
 .. method:: ServerProxy.system.listMethods()
 
-   XML-RPCサーバがサポートするメソッド名(system以外)を格納する文字列のリストを返します。
+   This method returns a list of strings, one for each (non-system) method
+   supported by the XML-RPC server.
 
 
 .. method:: ServerProxy.system.methodSignature(name)
 
-   XML-RPCサーバで実装されているメソッドの名前を指定し、利用可能なシグネチャの配列を取得します。シグネチャは型のリストで、先頭の型は戻り値の型を示
-   し、以降はパラメータの型を示します。
+   This method takes one parameter, the name of a method implemented by the XML-RPC
+   server. It returns an array of possible signatures for this method. A signature
+   is an array of types. The first of these types is the return type of the method,
+   the rest are parameters.
 
-   XML-RPCでは複数のシグネチャ(オーバロード)を使用することができるので、単独のシグネチャではなく、シグネチャのリストを返します。
+   Because multiple signatures (ie. overloading) is permitted, this method returns
+   a list of signatures rather than a singleton.
 
-   シグネチャは、メソッドが使用する最上位のパラメータにのみ適用されます。例えばあるメソッドのパラメータが構造体の配列で戻り値が文字列の場合、シグネ
-   チャは単に"文字列, 配列" となります。パラメータが三つの整数で戻り値が文字列の場合は"文字列, 整数, 整数, 整数"となります。
+   Signatures themselves are restricted to the top level parameters expected by a
+   method. For instance if a method expects one array of structs as a parameter,
+   and it returns a string, its signature is simply "string, array". If it expects
+   three integers and returns a string, its signature is "string, int, int, int".
 
-   メソッドにシグネチャが定義されていない場合、配列以外の値が返ります。 Pythonでは、この値はlist以外の値となります。
+   If no signature is defined for the method, a non-array value is returned. In
+   Python this means that the type of the returned  value will be something other
+   than list.
 
 
 .. method:: ServerProxy.system.methodHelp(name)
 
-   XML-RPCサーバで実装されているメソッドの名前を指定し、そのメソッドを解説する文書文字列を取得します。文書文字列を取得できない場合は空文字列を返し
-   ます。文書文字列にはHTMLマークアップが含まれます
+   This method takes one parameter, the name of a method implemented by the XML-RPC
+   server.  It returns a documentation string describing the use of that method. If
+   no such string is available, an empty string is returned. The documentation
+   string may contain HTML markup.
 
 
 .. _boolean-objects:
 
-Boolean オブジェクト
---------------------
+Boolean Objects
+---------------
 
-このクラスは全てのPythonの値で初期化することができ、生成されるインスタンスは指定した値の真偽値によってのみ決まります。Booleanという名前から想像
-される通りに各種のPython演算子を実装しており、 :meth:`__cmp__`, :meth:`__repr__`, :meth:`__int__`,
-:meth:`__nonzero__` で定義される演算子を使用することができます。
+This class may be initialized from any Python value; the instance returned
+depends only on its truth value.  It supports various Python operators through
+:meth:`__cmp__`, :meth:`__repr__`, :meth:`__int__`, and :meth:`__nonzero__`
+methods, all implemented in the obvious ways.
 
-以下のメソッドは、主に内部的にアンマーシャル時に使用されます:
+It also has the following method, supported mainly for internal use by the
+unmarshalling code:
 
 
 .. method:: Boolean.encode(out)
 
-   出力ストリームオブジェクト ``out`` に、XML-RPCエンコーディングのBoolean値を出力します。
+   Write the XML-RPC encoding of this Boolean item to the out stream object.
 
-
-.. A working example follows. The server code::
-
-動作する例です。サーバー側::
+A working example follows. The server code::
 
    import xmlrpclib
    from SimpleXMLRPCServer import SimpleXMLRPCServer
@@ -187,9 +236,7 @@ Boolean オブジェクト
    server.register_function(is_even, "is_even")
    server.serve_forever()
 
-.. The client code for the preceding server::
-
-上記のサーバーに対するクライアント側::
+The client code for the preceding server::
 
    import xmlrpclib
 
@@ -197,71 +244,95 @@ Boolean オブジェクト
    print "3 is even: %s" % str(proxy.is_even(3))
    print "100 is even: %s" % str(proxy.is_even(100))
 
-
 .. _datetime-objects:
 
-DateTime オブジェクト
----------------------
+DateTime Objects
+----------------
 
-このクラスは、エポックからの秒数、タプルで表現された時刻、ISO 8601形式の時間/日付文字列、
-:class:`datetime.datetime`,
-のインスタンスのいずれかで初期化することができます。
-このクラスには以下のメソッドがあり、主にコードをマーシャル/アンマーシャルするための内部処理を行います。
+This class may be initialized with seconds since the epoch, a time
+tuple, an ISO 8601 time/date string, or a :class:`datetime.datetime`
+instance.  It has the following methods, supported mainly for internal
+use by the marshalling/unmarshalling code:
 
 
 .. method:: DateTime.decode(string)
 
-   文字列をインスタンスの新しい時間を示す値として指定します。
+   Accept a string as the instance's new time value.
 
 
 .. method:: DateTime.encode(out)
 
-   出力ストリームオブジェクト ``out`` に、XML-RPCエンコーディングの :class:`DateTime` 値を出力します。
+   Write the XML-RPC encoding of this :class:`DateTime` item to the *out* stream
+   object.
 
-また、 :meth:`__cmp__` と :meth:`__repr__` で定義される演算子を使用することができます。
+It also supports certain of Python's built-in operators through  :meth:`__cmp__`
+and :meth:`__repr__` methods.
 
+A working example follows. The server code::
+
+   import datetime
+   from SimpleXMLRPCServer import SimpleXMLRPCServer
+   import xmlrpclib
+
+   def today():
+       today = datetime.datetime.today()
+       return xmlrpclib.DateTime(today)
+
+   server = SimpleXMLRPCServer(("localhost", 8000))
+   print "Listening on port 8000..."
+   server.register_function(today, "today")
+   server.serve_forever()
+
+The client code for the preceding server::
+
+   import xmlrpclib
+   import datetime
+
+   proxy = xmlrpclib.ServerProxy("http://localhost:8000/")
+
+   today = proxy.today()
+   # convert the ISO8601 string to a datetime object
+   converted = datetime.datetime.strptime(today.value, "%Y%m%dT%H:%M:%S")
+   print "Today: %s" % converted.strftime("%d.%m.%Y, %H:%M")
 
 .. _binary-objects:
 
-Binary オブジェクト
--------------------
+Binary Objects
+--------------
 
-このクラスは、文字列(NULを含む)で初期化することができます。 :class:`Binary` の内容は、属性で参照します。
+This class may be initialized from string data (which may include NULs). The
+primary access to the content of a :class:`Binary` object is provided by an
+attribute:
 
 
 .. attribute:: Binary.data
 
-   :class:`Binary` インスタンスがカプセル化しているバイナリデータ。このデータは8bitクリーンです。
+   The binary data encapsulated by the :class:`Binary` instance.  The data is
+   provided as an 8-bit string.
 
-以下のメソッドは、主に内部的にマーシャル/アンマーシャル時に使用されます:
+:class:`Binary` objects have the following methods, supported mainly for
+internal use by the marshalling/unmarshalling code:
 
 
 .. method:: Binary.decode(string)
 
-   指定されたbase64文字列をデコードし、インスタンスのデータとします。
+   Accept a base64 string and decode it as the instance's new data.
 
 
 .. method:: Binary.encode(out)
 
-   バイナリ値をbase64でエンコードし、出力ストリームオブジェクト ``out`` に出力します。
+   Write the XML-RPC base 64 encoding of this binary item to the out stream object.
 
-   .. The encoded data will have newlines every 76 characters as per
-      `RFC 2045 section 6.8 <http://tools.ietf.org/html/rfc2045#section-6.8>`_,
-      which was the de facto standard base64 specification when the
-      XML-RPC spec was written.
+   The encoded data will have newlines every 76 characters as per
+   `RFC 2045 section 6.8 <http://tools.ietf.org/html/rfc2045#section-6.8>`_,
+   which was the de facto standard base64 specification when the
+   XML-RPC spec was written.
 
-   エンコードされたデータは、
-   `RFC 2045 section 6.8 <http://tools.ietf.org/html/rfc2045#section-6.8>`_
-   にある通り、76文字ごとに改行されます。
-   これは、XMC-RPC仕様が作成された時のデ・ファクト・スタンダードのbase64です。
+It also supports certain of Python's built-in operators through a
+:meth:`__cmp__` method.
 
-また、 :meth:`__cmp__` で定義される演算子を使用することができます。
-
-.. Example usage of the binary objects.  We're going to transfer an image over
-   XMLRPC::
-
-バイナリオブジェクトの使用例です。
-XML-RPCごしに画像を転送します。 ::
+Example usage of the binary objects.  We're going to transfer an image over
+XMLRPC::
 
    from SimpleXMLRPCServer import SimpleXMLRPCServer
    import xmlrpclib
@@ -276,9 +347,7 @@ XML-RPCごしに画像を転送します。 ::
 
    server.serve_forever()
 
-.. The client gets the image and saves it to a file::
-
-クライアント側は画像を取得して、ファイルに保存します。 ::
+The client gets the image and saves it to a file::
 
    import xmlrpclib
 
@@ -288,26 +357,24 @@ XML-RPCごしに画像を転送します。 ::
 
 .. _fault-objects:
 
-Fault オブジェクト
-------------------
+Fault Objects
+-------------
 
-:class:`Fault` オブジェクトは、XML-RPCのfaultタグの内容をカプセル化しており、以下のメンバを持ちます:
+A :class:`Fault` object encapsulates the content of an XML-RPC fault tag. Fault
+objects have the following attributes:
 
 
 .. attribute:: Fault.faultCode
 
-   失敗のタイプを示す文字列。
+   A string indicating the fault type.
 
 
 .. attribute:: Fault.faultString
 
-   失敗の診断メッセージを含む文字列。
+   A string containing a diagnostic message associated with the fault.
 
-
-.. In the following example we're going to intentionally cause a :exc:`Fault` by
-   returning a complex type object.  The server code::
-
-以下のサンプルでは、複素数型のオブジェクトを返そうとして、故意に :exc:`Fault` を起こしています。 ::
+In the following example we're going to intentionally cause a :exc:`Fault` by
+returning a complex type object.  The server code::
 
    from SimpleXMLRPCServer import SimpleXMLRPCServer
 
@@ -322,54 +389,52 @@ Fault オブジェクト
 
    server.serve_forever()
 
-.. The client code for the preceding server::
-
-上記のサーバーに対するクライアント側のコード::
+The client code for the preceding server::
 
    import xmlrpclib
 
    proxy = xmlrpclib.ServerProxy("http://localhost:8000/")
    try:
        proxy.add(2, 5)
-   except xmlrpclib.Fault, err:
+   except xmlrpclib.Fault as err:
        print "A fault occurred"
        print "Fault code: %d" % err.faultCode
        print "Fault string: %s" % err.faultString
 
 
+
 .. _protocol-error-objects:
 
-ProtocolError オブジェクト
---------------------------
+ProtocolError Objects
+---------------------
 
-:class:`ProtocolError` オブジェクトはトランスポート層で発生したエラー(URI で指定したサーバが見つからなかった場合に発生する404
-'not found'など)の内容を示し、以下のメンバを持ちます:
+A :class:`ProtocolError` object describes a protocol error in the underlying
+transport layer (such as a 404 'not found' error if the server named by the URI
+does not exist).  It has the following attributes:
 
 
 .. attribute:: ProtocolError.url
 
-   エラーの原因となったURIまたはURL。
+   The URI or URL that triggered the error.
 
 
 .. attribute:: ProtocolError.errcode
 
-   エラーコード。
+   The error code.
 
 
 .. attribute:: ProtocolError.errmsg
 
-   エラーメッセージまたは診断文字列。
+   The error message or diagnostic string.
 
 
 .. attribute:: ProtocolError.headers
 
-   エラーの原因となったHTTP/HTTPSリクエストを含む文字列。
+   A string containing the headers of the HTTP/HTTPS request that triggered the
+   error.
 
-
-.. In the following example we're going to intentionally cause a :exc:`ProtocolError`
-   by providing an invalid URI::
-
-次の例では、XMLRPC サーバを指していない URI を利用して、故意に :exc:`ProtocolError` を発生させています。 ::
+In the following example we're going to intentionally cause a :exc:`ProtocolError`
+by providing an URI that doesn't point to an XMLRPC server::
 
    import xmlrpclib
 
@@ -378,34 +443,33 @@ ProtocolError オブジェクト
 
    try:
        proxy.some_method()
-   except xmlrpclib.ProtocolError, err:
+   except xmlrpclib.ProtocolError as err:
        print "A protocol error occurred"
        print "URL: %s" % err.url
        print "HTTP/HTTPS headers: %s" % err.headers
        print "Error code: %d" % err.errcode
        print "Error message: %s" % err.errmsg
 
-MultiCall オブジェクト
-----------------------
+MultiCall Objects
+-----------------
 
 .. versionadded:: 2.4
 
-遠隔のサーバに対する複数の呼び出しをひとつのリクエストにカプセル化
-する方法は、http://www.xmlrpc.com/discuss/msgReader%241208 で示されています。
+The :class:`MultiCall` object provides a way to encapsulate multiple calls to a
+remote server into a single request [#]_.
 
 
 .. class:: MultiCall(server)
 
-   巨大な (boxcar) メソッド呼び出しに使えるオブジェクトを作成します。 *server* には最終的に呼び出しを行う対象を指定します。作成した
-   MultiCall オブジェクトを使って呼び出しを行うと、即座に ``None`` を返し、呼び出したい手続き名とパラメタに保存するだけに留まります。
-   オブジェクト自体を呼び出すと、それまでに保存しておいたすべての呼び出しを単一の ``system.multicall`` リクエストの形で伝送します。
-   呼び出し結果はジェネレータ(:term:`generator`)になります。このジェネレータにわたってイテレーションを行うと、個々の呼び出し結果を返します。
+   Create an object used to boxcar method calls. *server* is the eventual target of
+   the call. Calls can be made to the result object, but they will immediately
+   return ``None``, and only store the call name and parameters in the
+   :class:`MultiCall` object. Calling the object itself causes all stored calls to
+   be transmitted as a single ``system.multicall`` request. The result of this call
+   is a :term:`generator`; iterating over this generator yields the individual
+   results.
 
-以下にこのクラスの使い方を示します。
-
-.. A usage example of this class follows.  The server code ::
-
-このクラスの使用例です。サーバー側のコード::
+A usage example of this class follows.  The server code ::
 
    from SimpleXMLRPCServer import SimpleXMLRPCServer
 
@@ -431,9 +495,7 @@ MultiCall オブジェクト
    server.register_function(divide, 'divide')
    server.serve_forever()
 
-.. The client code for the preceding server::
-
-このサーバーに対する、クライアント側のコード::
+The client code for the preceding server::
 
    import xmlrpclib
 
@@ -448,40 +510,44 @@ MultiCall オブジェクト
    print "7+3=%d, 7-3=%d, 7*3=%d, 7/3=%d" % tuple(result)
 
 
-補助関数
---------
+Convenience Functions
+---------------------
 
 
 .. function:: boolean(value)
 
-   Pythonの値を、XML-RPCのBoolean定数 ``True`` または ``False`` に変換します。
+   Convert any Python value to one of the XML-RPC Boolean constants, ``True`` or
+   ``False``.
 
 
 .. function:: dumps(params[, methodname[,  methodresponse[, encoding[, allow_none]]]])
 
-   *params* を XML-RPC リクエストの形式に変換します。 *methodresponse* が真の場合、XML-RPC
-   レスポンスの形式に変換します。 *params* に指定できるのは、引数からなるタプルか :exc:`Fault` 例外クラスのインスタンスです。
-   *methodresponse* が真の場合、単一の値だけを返します。従って、 *params* の長さも 1 でなければなりません。 *encoding*
-   を指定した場合、生成される XML のエンコード方式になります。デフォルトは UTF-8 です。 Python の :const:`None` は標準の
-   XML-RPC には利用できません。 :const:`None` を使えるようにするには、 *allow_none* を真にして、拡張機能つきにしてください。
+   Convert *params* into an XML-RPC request. or into a response if *methodresponse*
+   is true. *params* can be either a tuple of arguments or an instance of the
+   :exc:`Fault` exception class.  If *methodresponse* is true, only a single value
+   can be returned, meaning that *params* must be of length 1. *encoding*, if
+   supplied, is the encoding to use in the generated XML; the default is UTF-8.
+   Python's :const:`None` value cannot be used in standard XML-RPC; to allow using
+   it via an extension,  provide a true value for *allow_none*.
 
 
 .. function:: loads(data[, use_datetime])
 
-   XML-RPC リクエストまたはレスポンスを ``(params, methodname)`` の形式をとる Python オブジェクトにします。
-   *params* は引数のタプルです。 *methodname* は文字列で、パケット中にメソッド名がない場合には ``None`` になります。
-   例外条件を示す XML-RPC パケットの場合には、 :exc:`Fault` 例外を送出します。
-   *use_datetime* フラグは :class:`datetime.datetime` のオブジェクトとして日付/時刻を表現する時に使用し、デフォルトでは
-   false に設定されています。
+   Convert an XML-RPC request or response into Python objects, a ``(params,
+   methodname)``.  *params* is a tuple of argument; *methodname* is a string, or
+   ``None`` if no method name is present in the packet. If the XML-RPC packet
+   represents a fault condition, this function will raise a :exc:`Fault` exception.
+   The *use_datetime* flag can be used to cause date/time values to be presented as
+   :class:`datetime.datetime` objects; this is false by default.
 
    .. versionchanged:: 2.5
-      *use_datetime* フラグを追加.
+      The *use_datetime* flag was added.
 
 
 .. _xmlrpc-client-example:
 
-クライアントのサンプル
-----------------------
+Example of Client Usage
+-----------------------
 
 ::
 
@@ -495,10 +561,11 @@ MultiCall オブジェクト
 
    try:
        print server.examples.getStateName(41)
-   except Error, v:
+   except Error as v:
        print "ERROR", v
 
-XML-RPCサーバにプロキシを経由して接続する場合、カスタムトランスポートを定義する必要があります。以下に例を示します:
+To access an XML-RPC server through a proxy, you need to define  a custom
+transport.  The following example shows how:
 
 .. Example taken from http://lowlife.jp/nobonobo/wiki/xmlrpcwithproxy.html
 
@@ -524,11 +591,16 @@ XML-RPCサーバにプロキシを経由して接続する場合、カスタム�
    print server.currentTime.getCurrentTime()
 
 
-.. Example of Client and Server Usage
-
-クライアントとサーバーの利用例
+Example of Client and Server Usage
 ----------------------------------
 
-:ref:`simplexmlrpcserver-example` を参照してください。
+See :ref:`simplexmlrpcserver-example`.
 
 
+.. rubric:: Footnotes
+
+.. [#] This approach has been first presented in `a discussion on xmlrpc.com
+   <http://web.archive.org/web/20060624230303/http://www.xmlrpc.com/discuss/msgReader$1208?mode=topic>`_.
+.. the link now points to webarchive since the one at
+.. http://www.xmlrpc.com/discuss/msgReader%241208 is broken (and webadmin
+.. doesn't reply)

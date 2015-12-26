@@ -1,191 +1,207 @@
-:mod:`urllib` --- URL による任意のリソースへのアクセス
-======================================================
+:mod:`urllib` --- Open arbitrary resources by URL
+=================================================
 
 .. module:: urllib
-   :synopsis: URL による任意のネットワークリソースへのアクセス (socket が必要です)。
+   :synopsis: Open an arbitrary network resource by URL (requires sockets).
 
 .. note::
-    .. The :mod:`urllib` module has been split into parts and renamed in
-       Python 3.0 to :mod:`urllib.request`, :mod:`urllib.parse`,
-       and :mod:`urllib.error`. The :term:`2to3` tool will automatically adapt
-       imports when converting your sources to 3.0.
-       Also note that the :func:`urllib.urlopen` function has been removed in
-       Python 3.0 in favor of :func:`urllib2.urlopen`.
-
-    :mod:`urllib` モジュールは、Python 3.0では :mod:`urllib.request`, :mod:`urllib.parse`,
-    :mod:`urllib.error` モジュールに分解されました。
-    :term:`2to3` ツールが自動的にソースコードのimportを修正します。
-    また、 :func:`urllib.urlopen` 関数は削除され、 :func:`urllib2.urlopen` が残りました。
+    The :mod:`urllib` module has been split into parts and renamed in
+    Python 3 to :mod:`urllib.request`, :mod:`urllib.parse`,
+    and :mod:`urllib.error`. The :term:`2to3` tool will automatically adapt
+    imports when converting your sources to Python 3.
+    Also note that the :func:`urllib.request.urlopen` function in Python 3 is
+    equivalent to :func:`urllib2.urlopen` and that :func:`urllib.urlopen` has
+    been removed.
 
 .. index::
    single: WWW
    single: World Wide Web
    single: URL
 
-このモジュールはワールドワイドウェブ (World Wide Web) を介してデータを取り寄せるための高レベルのインタフェースを提供します。
-特に、関数 :func:`urlopen` は組み込み関数 :func:`open` と同様に動作し、ファイル名の代わりにファイルユニバーサルリソースロケータ (URL)
-を指定することができます。いくつかの制限はあります --- URL は読み出し専用でしか開けませんし、seek 操作を行うことはできません。
+This module provides a high-level interface for fetching data across the World
+Wide Web.  In particular, the :func:`urlopen` function is similar to the
+built-in function :func:`open`, but accepts Universal Resource Locators (URLs)
+instead of filenames.  Some restrictions apply --- it can only open URLs for
+reading, and no seek operations are available.
 
-.. warning:: HTTPS URL を開くときに、サーバ証明書を検証しようとはしません。
-   自己責任でお使い下さい。
+.. seealso::
+
+    The `Requests package <http://requests.readthedocs.org/>`_
+    is recommended for a higher-level http client interface.
+
+.. warning:: When opening HTTPS URLs, it does not attempt to validate the
+   server certificate.  Use at your own risk!
 
 
-.. High-level interface
+High-level interface
+--------------------
 
-高レベルインタフェース
------------------------
+.. function:: urlopen(url[, data[, proxies[, context]]])
 
-.. function:: urlopen(url[, data[, proxies]])
+   Open a network object denoted by a URL for reading.  If the URL does not
+   have a scheme identifier, or if it has :file:`file:` as its scheme
+   identifier, this opens a local file (without :term:`universal newlines`);
+   otherwise it opens a socket to a server somewhere on the network.  If the
+   connection cannot be made the :exc:`IOError` exception is raised.  If all
+   went well, a file-like object is returned.  This supports the following
+   methods: :meth:`read`, :meth:`readline`, :meth:`readlines`, :meth:`fileno`,
+   :meth:`close`, :meth:`info`, :meth:`getcode` and :meth:`geturl`.  It also
+   has proper support for the :term:`iterator` protocol. One caveat: the
+   :meth:`read` method, if the size argument is omitted or negative, may not
+   read until the end of the data stream; there is no good way to determine
+   that the entire stream from a socket has been read in the general case.
 
-   URL で表されるネットワーク上のオブジェクトを読み込み用に開きます。 URL がスキーム識別子を持たないか、スキーム識別子が :file:`file:`
-   である場合、ローカルシステムのファイルが (広範囲の改行サポートなしで) 開かれます。それ以外の場合は
-   ネットワーク上のどこかにあるサーバへのソケットを開きます。接続を作ることができない場合、例外 :exc:`IOError`
-   が送出されます。全ての処理がうまくいけば、ファイル類似のオブジェクトが返されます。このオブジェクトは以下のメソッド: :meth:`read`,
-   :meth:`readline`, :meth:`readlines`, :meth:`fileno`, :meth:`close`, :meth:`info`, :meth:`getcode`, :meth:`geturl`
-   をサポートします。また、イテレータ(:term:`iterator`)プロトコルも正しくサポートしています。注意:
-   :meth:`read` の引数を省略または負の値を指定しても、データストリームの最後まで読みこむ訳ではありません。ソケットからすべてのストリーム
-   を読み込んだことを決定する一般的な方法は存在しません。
-
-   :meth:`info`, :meth:`getcode`, :meth:`geturl` メソッドを除き、これらのメソッドはファイルオブジェクトと同じインタフェースを持っています
-   --- このマニュアルの :ref:`bltin-file-objects` セクションを参照してください。
-   (このオブジェクトは組み込みのファイルオブジェクトではありませんが、まれに本物の組み込みファイルオブジェクトが必要な場所で使うことができません)
+   Except for the :meth:`info`, :meth:`getcode` and :meth:`geturl` methods,
+   these methods have the same interface as for file objects --- see section
+   :ref:`bltin-file-objects` in this manual.  (It is not a built-in file object,
+   however, so it can't be used at those few places where a true built-in file
+   object is required.)
 
    .. index:: module: mimetools
 
-   :meth:`info` メソッドは開いた URL に関連付けられたメタ情報を含む
-   :class:`mimetools.Message` クラスのインスタンスを返します。
-   URL へのアクセスメソッドが HTTP である場合、メタ情報中のヘッダ情報はサーバが HTML
-   ページを返すときに先頭に付加するヘッダ情報です (Content-Length および Content-Type を含みます)。
-   アクセスメソッドが FTP
-   の場合、ファイル取得リクエストに応答してサーバがファイルの長さを返したときには (これは現在では普通になりましたが) Content-Length
-   ヘッダがメタ情報に含められます。
-   Content-type ヘッダは MIME タイプが推測可能なときにメタ情報に含められます。
-   アクセスメソッドがローカルファイルの場合、返されるヘッダ情報にはファイルの最終更新日時を表す Date エントリ、ファイルのサイズを示す
-   Content-Length エントリ、そして推測されるファイル形式の Content-Type エントリが含まれます。 :mod:`mimetools`
-   モジュールを参照してください。
+   The :meth:`info` method returns an instance of the class
+   :class:`mimetools.Message` containing meta-information associated with the
+   URL.  When the method is HTTP, these headers are those returned by the server
+   at the head of the retrieved HTML page (including Content-Length and
+   Content-Type).  When the method is FTP, a Content-Length header will be
+   present if (as is now usual) the server passed back a file length in response
+   to the FTP retrieval request. A Content-Type header will be present if the
+   MIME type can be guessed.  When the method is local-file, returned headers
+   will include a Date representing the file's last-modified time, a
+   Content-Length giving file size, and a Content-Type containing a guess at the
+   file's type. See also the description of the :mod:`mimetools` module.
 
-   .. index:: single: redirect
+   The :meth:`geturl` method returns the real URL of the page.  In some cases, the
+   HTTP server redirects a client to another URL.  The :func:`urlopen` function
+   handles this transparently, but in some cases the caller needs to know which URL
+   the client was redirected to.  The :meth:`geturl` method can be used to get at
+   this redirected URL.
 
-   :meth:`geturl` メソッドはページの実際の URL を返します。場合によっては、HTTP サーバはクライアントの要求を他の URL に振り向け
-   (redirect 、リダイレクト ) します。関数 :func:`urlopen` はユーザに対してリダイレクトを透過的に
-   行いますが、呼び出し側にとってクライアントがどの URL にリダイレクトされたかを知りたいときがあります。 :meth:`geturl` メソッドを
-   使うと、このリダイレクトされた URL を取得できます。
+   The :meth:`getcode` method returns the HTTP status code that was sent with the
+   response, or ``None`` if the URL is no HTTP URL.
 
-   .. The :meth:`getcode` method returns the HTTP status code that was sent with the
-      response, or ``None`` if the URL is no HTTP URL.
+   If the *url* uses the :file:`http:` scheme identifier, the optional *data*
+   argument may be given to specify a ``POST`` request (normally the request type
+   is ``GET``).  The *data* argument must be in standard
+   :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+   function below.
 
-   :meth:`getcode` メソッドは、レスポンスと共に送られてきたHTTPステータスコードを返します。
-   URLがHTTP URLでなかった場合は、 ``None`` を返します。
-
-   *url* に :file:`http:` スキーム識別子を使う場合、 *data* 引数を与えて ``POST`` 形式のリクエストを行うことができます
-   (通常リクエストの形式は ``GET`` です)。引数 *data* は標準の
-   :mimetype:`application/x-www-form-urlencoded` 形式でなければなりません; 以下の
-   :func:`urlencode` 関数を参照してください。
-
-   :func:`urlopen` 関数は認証を必要としないプロキシ (proxy) に対して透過的に動作します。Unix または Windows 環境では、
-   Python を起動する前に、環境変数 :envvar:`http_proxy`, :envvar:`ftp_proxy`
-   にそれぞれのプロキシサーバを指定する URL を設定してください。例えば (``'%'``
-   はコマンドプロンプトです)::
+   The :func:`urlopen` function works transparently with proxies which do not
+   require authentication.  In a Unix or Windows environment, set the
+   :envvar:`http_proxy`, or :envvar:`ftp_proxy` environment variables to a URL that
+   identifies the proxy server before starting the Python interpreter.  For example
+   (the ``'%'`` is the command prompt)::
 
       % http_proxy="http://www.someproxy.com:3128"
       % export http_proxy
       % python
       ...
 
-   .. The :envvar:`no_proxy` environment variable can be used to specify hosts which
-      shouldn't be reached via proxy; if set, it should be a comma-separated list
-      of hostname suffixes, optionally with ``:port`` appended, for example
-      ``cern.ch,ncsa.uiuc.edu,some.host:8080``.
+   The :envvar:`no_proxy` environment variable can be used to specify hosts which
+   shouldn't be reached via proxy; if set, it should be a comma-separated list
+   of hostname suffixes, optionally with ``:port`` appended, for example
+   ``cern.ch,ncsa.uiuc.edu,some.host:8080``.
 
-   :envvar:`no_proxy` 環境変数は、proxyを利用せずにアクセスするべきホストを指定するために利用されます。
-   設定する場合は、カンマ区切りの、ホストネーム suffix のリストで、オプションとして ``:port``
-   を付けることができます。例えば、 ``cern.ch,ncsa.uiuc.edu,some.host:8080``.
-
-   Windows 環境では、プロキシを指定する環境変数が設定されていない場合、プロキシの設定値はレジストリの Internet Settings
-   セクションから取得されます。
+   In a Windows environment, if no proxy environment variables are set, proxy
+   settings are obtained from the registry's Internet Settings section.
 
    .. index:: single: Internet Config
 
-   Mac OS X では、 :func:`urlopen` はプロキシの情報をシステム設定フレームワーク
-   (Mac OS X System Configuration Framework) から取得します。
-   これはシステム環境設定のネットワークパネルから設定できます。
+   In a Mac OS X  environment, :func:`urlopen` will retrieve proxy information
+   from the OS X System Configuration Framework, which can be managed with
+   Network System Preferences panel.
 
-   別の方法として、オプション引数 *proxies* を使って明示的にプロキシを設定することができます。この引数はスキーム名をプロキシの URL にマップする
-   辞書型のオブジェクトでなくてはなりません。空の辞書を指定するとプロキシを使いません。 ``None`` (デフォルトの値です) を指定すると、上で述べた
-   ように環境変数で指定されたプロキシ設定を使います。例えば::
 
-      # http://www.someproxy.com:3128 を http プロキシに使う
+   Alternatively, the optional *proxies* argument may be used to explicitly specify
+   proxies.  It must be a dictionary mapping scheme names to proxy URLs, where an
+   empty dictionary causes no proxies to be used, and ``None`` (the default value)
+   causes environmental proxy settings to be used as discussed above.  For
+   example::
+
+      # Use http://www.someproxy.com:3128 for http proxying
       proxies = {'http': 'http://www.someproxy.com:3128'}
       filehandle = urllib.urlopen(some_url, proxies=proxies)
-      # プロキシを使わない
+      # Don't use any proxies
       filehandle = urllib.urlopen(some_url, proxies={})
-      # 環境変数からプロキシを使う - 両方の表記とも同じ意味です。
+      # Use proxies from environment - both versions are equivalent
       filehandle = urllib.urlopen(some_url, proxies=None)
       filehandle = urllib.urlopen(some_url)
 
-   認証を必要とするプロキシは現在のところサポートされていません。これは実装上の制限 (implementation limitation) と考えています。
+   Proxies which require authentication for use are not currently supported;
+   this is considered an implementation limitation.
+
+   The *context* parameter may be set to a :class:`ssl.SSLContext` instance to
+   configure the SSL settings that are used if :func:`urlopen` makes a HTTPS
+   connection.
 
    .. versionchanged:: 2.3
-      *proxies* のサポートを追加しました。
+      Added the *proxies* support.
 
    .. versionchanged:: 2.6
-      結果オブジェクトに :meth:`getcode` を追加し、 :envvar:`no_proxy` 環境変数に対応しました。
+      Added :meth:`getcode` to returned object and support for the
+      :envvar:`no_proxy` environment variable.
 
-      .. Added :meth:`getcode` to returned object and support for the
-         :envvar:`no_proxy` environment variable.
+   .. versionchanged:: 2.7.9
+      The *context* parameter was added.
 
    .. deprecated:: 2.6
-      :func:`urlopen` 関数は、Python 3.0では :func:`urllib2.urlopen` に取って変わられるため、
-      廃止予定(deprecated)になりました。
-
-      .. The :func:`urlopen` function has been removed in Python 3.0 in favor
-         of :func:`urllib2.urlopen`.
+      The :func:`urlopen` function has been removed in Python 3 in favor
+      of :func:`urllib2.urlopen`.
 
 
 .. function:: urlretrieve(url[, filename[, reporthook[, data]]])
 
-   URL で表されるネットワーク上のオブジェクトを、必要に応じてローカルなファイルにコピーします。URL がローカルなファイルを指定していたり、
-   オブジェクトのコピーが正しくキャッシュされていれば、そのオブジェクトはコピーされません。タプル ``(filename, headers)`` を
-   返し、 *filename* はローカルで見つかったオブジェクトに対するファイル名で、 *headers* は :func:`urlopen` が返した
-   (おそらくキャッシュされているリモートの) オブジェクトに :meth:`info` を適用して得られるものになります。 :func:`urlopen`
-   と同じ例外を送出します。
+   Copy a network object denoted by a URL to a local file, if necessary. If the URL
+   points to a local file, or a valid cached copy of the object exists, the object
+   is not copied.  Return a tuple ``(filename, headers)`` where *filename* is the
+   local file name under which the object can be found, and *headers* is whatever
+   the :meth:`info` method of the object returned by :func:`urlopen` returned (for
+   a remote object, possibly cached). Exceptions are the same as for
+   :func:`urlopen`.
 
-   2 つめの引数がある場合、オブジェクトのコピー先となるファイルの位置を指定します (もしなければ、ファイルの場所は一時ファイル (tmpfile) の
-   置き場になり、名前は適当につけられます)。 3 つめの引数がある場合、ネットワークとの接続が確立された際に一度
-   呼び出され、以降データのブロックが読み出されるたびに呼び出されるフック関数 (hook function) を指定します。フック関数には 3 つの引数が渡され
-   ます; これまで転送されたブロック数のカウント、バイト単位で表されたブロックサイズ、ファイルの総サイズです。3 つ目のファイルの総サイズ
-   は、ファイル取得の際の応答時にファイルサイズを返さない古い FTP サーバでは ``-1`` になります。
+   The second argument, if present, specifies the file location to copy to (if
+   absent, the location will be a tempfile with a generated name). The third
+   argument, if present, is a hook function that will be called once on
+   establishment of the network connection and once after each block read
+   thereafter.  The hook will be passed three arguments; a count of blocks
+   transferred so far, a block size in bytes, and the total size of the file.  The
+   third argument may be ``-1`` on older FTP servers which do not return a file
+   size in response to a retrieval request.
 
-   *url* が :file:`http:` スキーム識別子を使っていた場合、オプション引数 *data* を与えることで ``POST``
-   リクエストを行うよう指定することができます (通常リクエストの形式は ``GET`` です)。 *data* 引数は標準の
-   :mimetype:`application/x-www-form-urlencoded` 形式でなくてはなりません; 以下の
-   :func:`urlencode` 関数を参照してください。
+   If the *url* uses the :file:`http:` scheme identifier, the optional *data*
+   argument may be given to specify a ``POST`` request (normally the request type
+   is ``GET``).  The *data* argument must in standard
+   :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+   function below.
 
    .. versionchanged:: 2.5
-      :func:`urlretrieve` は、予想 (これは *Content-Length* ヘッダにより通知されるサイズです)
-      よりも取得できるデータ量が少ないことを検知した場合、 :exc:`ContentTooShortError` を発生します。これは、例えば、ダウンロードが
-      中断された場合などに発生します。
+      :func:`urlretrieve` will raise :exc:`ContentTooShortError` when it detects that
+      the amount of data available  was less than the expected amount (which is the
+      size reported by a  *Content-Length* header). This can occur, for example, when
+      the  download is interrupted.
 
-      *Content-Length* は下限として扱われます: より多いデータがある場合、
-      :func:`urlretrieve` はそのデータを読みますが、
-      より少ないデータしか取得できない場合、これは exception を発生します。
+      The *Content-Length* is treated as a lower bound: if there's more data  to read,
+      :func:`urlretrieve` reads more data, but if less data is available,  it raises
+      the exception.
 
-      このような場合にもダウンロードされたデータを取得することは可能で、
-      これは exception インスタンスの :attr:`content`
-      属性に保存されています。
+      You can still retrieve the downloaded data in this case, it is stored  in the
+      :attr:`content` attribute of the exception instance.
 
-      *Content-Length* ヘッダが無い場合、 :func:`urlretrieve` はダウンロードされた
-      データのサイズをチェックできず、単にそれを返します。この場合は、ダウンロードは成功したと見なす必要があります。
+      If no *Content-Length* header was supplied, :func:`urlretrieve` can not check
+      the size of the data it has downloaded, and just returns it.  In this case you
+      just have to assume that the download was successful.
 
 
 .. data:: _urlopener
 
-   パブリック関数 :func:`urlopen` および :func:`urlretrieve`  は :class:`FancyURLopener`
-   クラスのインスタンスを生成します。インスタンスは要求された動作に応じて使用されます。この機能をオーバライドするために、プログラマは
-   :class:`URLopener`  または :class:`FancyURLopener` のサブクラスを作り、そのクラスから生成したインスタンスを変数
-   ``urllib._urlopener`` に代入した後、呼び出したい関数を呼ぶことができます。例えば、アプリケーションが
-   :class:`URLopener` が定義しているのとは異なった :mailheader:`User-Agent` ヘッダを指定したい場合があるかも
-   しれません。この機能は以下のコードで実現できます::
+   The public functions :func:`urlopen` and :func:`urlretrieve` create an instance
+   of the :class:`FancyURLopener` class and use it to perform their requested
+   actions.  To override this functionality, programmers can create a subclass of
+   :class:`URLopener` or :class:`FancyURLopener`, then assign an instance of that
+   class to the ``urllib._urlopener`` variable before calling the desired function.
+   For example, applications may want to specify a different
+   :mailheader:`User-Agent` header than :class:`URLopener` defines.  This can be
+   accomplished with the following code::
 
       import urllib
 
@@ -197,268 +213,303 @@
 
 .. function:: urlcleanup()
 
-   以前の :func:`urlretrieve` で生成された可能性のあるキャッシュを消去します。
+   Clear the cache that may have been built up by previous calls to
+   :func:`urlretrieve`.
 
 
-.. Utility functions
-
-ユーティリティー関数
---------------------
+Utility functions
+-----------------
 
 .. function:: quote(string[, safe])
 
-   *string* に含まれる特殊文字を ``%xx`` エスケープで置換（quote）します。
-   アルファベット、数字、および文字 ``'_.-'`` はに対しては quote 処理を
-   行いません。
-   この関数はデフォルトでは URL の path セクションに対するクォートを
-   想定しています。
-   オプションのパラメタ *safe* は quote 処理しない追加の文字を指定します ---
-   デフォルトの値は ``'/'`` です。
+   Replace special characters in *string* using the ``%xx`` escape. Letters,
+   digits, and the characters ``'_.-'`` are never quoted. By default, this
+   function is intended for quoting the path section of the URL. The optional
+   *safe* parameter specifies additional characters that should not be quoted
+   --- its default value is ``'/'``.
 
-   例: ``quote('/~connolly/')`` は ``'/%7econnolly/'`` になります。
+   Example: ``quote('/~connolly/')`` yields ``'/%7econnolly/'``.
 
 
 .. function:: quote_plus(string[, safe])
 
-   :func:`quote` と似ていますが、加えて空白文字をプラス記号 ("+")
-   に置き換えます。
-   これは HTML フォームの値をURLに付加するクエリ文字列にする際に必要な機能です。
-   もとの文字列におけるプラス記号は *safe* に含まれていない限りエスケープ
-   置換されます。上と同様に、 *safe* のデフォルトの値は ``'/'`` です。
+   Like :func:`quote`, but also replaces spaces by plus signs, as required for
+   quoting HTML form values when building up a query string to go into a URL.
+   Plus signs in the original string are escaped unless they are included in
+   *safe*.  It also does not have *safe* default to ``'/'``.
 
 
 .. function:: unquote(string)
 
-   ``%xx`` エスケープをエスケープが表す 1 文字に置き換えます。
+   Replace ``%xx`` escapes by their single-character equivalent.
 
-   例: ``unquote('/%7Econnolly/')`` は ``'/~connolly/'`` になります。
+   Example: ``unquote('/%7Econnolly/')`` yields ``'/~connolly/'``.
 
 
 .. function:: unquote_plus(string)
 
-   :func:`unquote` と似ていますが、加えてプラス記号を空白文字に置き換えます。これは quote 処理された HTML
-   フォームの値を元に戻すのに必要な機能です。
+   Like :func:`unquote`, but also replaces plus signs by spaces, as required for
+   unquoting HTML form values.
 
 
 .. function:: urlencode(query[, doseq])
 
-   マップ型オブジェクト、または 2要素のタプルからなるシーケンスを、
-   "パーセントエンコードされた (percent-encoded)" 文字列に変換して、上述の
-   :func:`urlopen` のオプション引数 *data* に適した形式にします。
-   この関数はフォームのフィールド値でできた辞書を ``POST`` 型のリクエストに
-   渡すときに便利です。返される文字列は ``key=value`` のペアを ``'&'``
-   で区切ったシーケンスで、 *key* と *value* の双方は上の :func:`quote_plus` で
-   クォートされます。
-   2つの要素をもったタプルからなるシーケンスが引数 *query* として使われた場合、
-   各タプルの最初の値が key で、2 番目の値が value になります。
-   どちらのケースでも *value* にはシーケンスを入れることができ、その場合
-   オプションのパラメタ *doseq* の評価結果が真であったなら、その *key* の各々の
-   *value* に対して ``'&'`` で区切られた ``key=value`` のペアが生成されます。
-   このときエンコードされた文字列中のパラメタの順番はシーケンス中のタプルの
-   順番と同じになります。 :mod:`urlparse` モジュールでは、関数
-   :func:`parse_qs` および :func:`parse_qsl` を提供しており、
-   クエリ文字列を解析して Python のデータ構造にするのに利用できます。
+   Convert a mapping object or a sequence of two-element tuples to a
+   "percent-encoded" string, suitable to pass to :func:`urlopen` above as the
+   optional *data* argument.  This is useful to pass a dictionary of form
+   fields to a ``POST`` request.  The resulting string is a series of
+   ``key=value`` pairs separated by ``'&'`` characters, where both *key* and
+   *value* are quoted using :func:`quote_plus` above.  When a sequence of
+   two-element tuples is used as the *query* argument, the first element of
+   each tuple is a key and the second is a value. The value element in itself
+   can be a sequence and in that case, if the optional parameter *doseq* is
+   evaluates to *True*, individual ``key=value`` pairs separated by ``'&'`` are
+   generated for each element of the value sequence for the key.  The order of
+   parameters in the encoded string will match the order of parameter tuples in
+   the sequence. The :mod:`urlparse` module provides the functions
+   :func:`parse_qs` and :func:`parse_qsl` which are used to parse query strings
+   into Python data structures.
 
 
 .. function:: pathname2url(path)
 
-   ローカルシステムにおける記法で表されたパス名 *path* を、URL におけるパス部分の形式に変換します。この関数は完全な URL を生成するわけ
-   ではありません。返される値は常に :func:`quote` を使って quote 処理されたものになります。
+   Convert the pathname *path* from the local syntax for a path to the form used in
+   the path component of a URL.  This does not produce a complete URL.  The return
+   value will already be quoted using the :func:`quote` function.
 
 
 .. function:: url2pathname(path)
 
-   URL のパスの部分 *path* をパーセントエンコードされた URL の形式から
-   ローカルシステムにおけるパス記法に変換します。この関数は *path* をデコード
-   するために :func:`unquote` を使います。
+   Convert the path component *path* from an percent-encoded URL to the local syntax for a
+   path.  This does not accept a complete URL.  This function uses :func:`unquote`
+   to decode *path*.
 
 
 .. function:: getproxies()
 
-   このヘルパ関数はスキーマからプロキシサーバーのURLへのマッピングを行う
-   辞書を返します。
-   この関数はまず、どのOSでも最初に ``<scheme>_proxy`` という名前の環境変数を
-   スキャンします。そこで見つからなかった場合、 Max OS X の場合は Mac OSX
-   システム環境設定を、 Windows の場合はシステムレジストリを参照します。
+   This helper function returns a dictionary of scheme to proxy server URL
+   mappings. It scans the environment for variables named ``<scheme>_proxy``,
+   in case insensitive way, for all operating systems first, and when it cannot
+   find it, looks for proxy information from Mac OSX System Configuration for
+   Mac OS X and Windows Systems Registry for Windows.
+
+.. note::
+    urllib also exposes certain utility functions like splittype, splithost and
+    others parsing url into various components. But it is recommended to use
+    :mod:`urlparse` for parsing urls rather than using these functions directly.
+    Python 3 does not expose these helper functions from :mod:`urllib.parse`
+    module.
 
 
-.. URL Opener objects
+URL Opener objects
+------------------
 
-URL Opener オブジェクト
------------------------
+.. class:: URLopener([proxies[, context[, **x509]]])
 
-.. class:: URLopener([proxies[, **x509]])
+   Base class for opening and reading URLs.  Unless you need to support opening
+   objects using schemes other than :file:`http:`, :file:`ftp:`, or :file:`file:`,
+   you probably want to use :class:`FancyURLopener`.
 
-   URL をオープンし、読み出すためのクラスの基礎クラス (base class)です。 :file:`http:`, :file:`ftp:`,
-   :file:`file:` 以外のスキームを使ったオブジェクトのオープンをサポートしたいのでないかぎり、
-   :class:`FancyURLopener` を使おうと思うことになるでしょう。
+   By default, the :class:`URLopener` class sends a :mailheader:`User-Agent` header
+   of ``urllib/VVV``, where *VVV* is the :mod:`urllib` version number.
+   Applications can define their own :mailheader:`User-Agent` header by subclassing
+   :class:`URLopener` or :class:`FancyURLopener` and setting the class attribute
+   :attr:`version` to an appropriate string value in the subclass definition.
 
-   デフォルトでは、 :class:`URLopener` クラスは :mailheader:`User-Agent` ヘッダとして ``urllib/VVV``
-   を送信します。ここで *VVV* は :mod:`urllib` のバージョン番号です。アプリケーションで独自の
-   :mailheader:`User-Agent` ヘッダを送信したい場合は、 :class:`URLopener`  かまたは
-   :class:`FancyURLopener` のサブクラスを作成し、サブクラス定義においてクラス属性 :attr:`version` を適切な
-   文字列値に設定することで行うことができます。
+   The optional *proxies* parameter should be a dictionary mapping scheme names to
+   proxy URLs, where an empty dictionary turns proxies off completely.  Its default
+   value is ``None``, in which case environmental proxy settings will be used if
+   present, as discussed in the definition of :func:`urlopen`, above.
 
-   オプションのパラメタ *proxies* はスキーム名をプロキシの URL にマップする辞書でなくてはなりません。空の辞書はプロキシ機能を完全に
-   オフにします。デフォルトの値は ``None`` で、この場合、 :func:`urlopen` の定義で述べたように、プロキシを設定する環境変数が
-   存在するならそれを使います。
+   The *context* parameter may be a :class:`ssl.SSLContext` instance.  If given,
+   it defines the SSL settings the opener uses to make HTTPS connections.
 
-   追加のキーワードパラメタは *x509* に集められますが、これは :file:`https:` スキームを使った際のクライアント認証に使われることがあります。
-   キーワード引数 *key_file* および *cert_file* が SSL 鍵と証明書を設定するためにサポートされています;
-   クライアント認証をするには両方が必要です。
+   Additional keyword parameters, collected in *x509*, may be used for
+   authentication of the client when using the :file:`https:` scheme.  The keywords
+   *key_file* and *cert_file* are supported to provide an  SSL key and certificate;
+   both are needed to support client authentication.
 
-   :class:`URLopener` オブジェクトは、サーバがエラーコードを返した時には :exc:`IOError` を発生します。
+   :class:`URLopener` objects will raise an :exc:`IOError` exception if the server
+   returns an error code.
 
-   .. method:: open(fullurl[, data])
+    .. method:: open(fullurl[, data])
 
-      適切なプロトコルを使って *fullurl* を開きます。このメソッドはキャッシュとプロキシ情報を設定し、その後適切な open メソッドを入力引数
-      つきで呼び出します。認識できないスキームが与えられた場合、 :meth:`open_unknown` が呼び出されます。 *data* 引数は
-      :func:`urlopen` の引数 *data* と同じ意味を持っています。
-
-   .. method:: open_unknown(fullurl[, data])
-
-      オーバライド可能な、未知のタイプの URL を開くためのインタフェースです。
-
-
-   .. method:: retrieve(url[, filename[, reporthook[, data]]])
-
-      *url* のコンテンツを取得し、 *filename* に書き込みます。
-      返り値はタプルで、ローカルシステムにおけるファイル名と、応答ヘッダを含む :class:`mimetools.Message`
-      オブジェクト(URLがリモートを指している場合)、または ``None``  (URL がローカルを指している場合) からなります。
-      呼び出し側の処理はその後
-      *filename* を開いて内容を読み出さなくてはなりません。 *filename* が与えられており、かつ URL がローカルシステム上の
-      ファイルを示している場合、入力ファイル名が返されます。
-      URL がローカルのファイルを示しておらず、かつ *filename* が与えられていない場合、
-      ファイル名は入力 URL の最後のパス構成要素につけられた拡張子と同じ拡張子を :func:`tempfile.mktemp`
-      につけたものになります。 *reporthook* を与える場合、この変数は 3 つの数値パラメタを受け取る関数でなくてはなりません。この関数はデータの塊
-      (chunk) がネットワークから読み込まれるたびに呼び出されます。ローカルの URL を与えた場合 *reporthook* は無視されます。
-
-      *url* が :file:`http:` スキーム識別子を使っている場合、オプションの引数  *data* を与えて ``POST``
-      リクエストを行うよう指定できます(通常のリクエストの形式は ``GET`` です)。
-      引数 *data* は標準の :mimetype:`application/x-www-form-urlencoded` 形式でなくてはなりません; 上の
-      :func:`urlencode` を参照して下さい。
+       Open *fullurl* using the appropriate protocol.  This method sets up cache and
+       proxy information, then calls the appropriate open method with its input
+       arguments.  If the scheme is not recognized, :meth:`open_unknown` is called.
+       The *data* argument has the same meaning as the *data* argument of
+       :func:`urlopen`.
 
 
-   .. attribute:: URLopener.version
+    .. method:: open_unknown(fullurl[, data])
 
-      URL をオープンするオブジェクトのユーザエージェントを指定する変数です。 :mod:`urllib` を特定のユーザエージェントであると
-      サーバに通知するには、サブクラスの中でこの値をクラス変数として値を設定するか、コンストラクタの中でベースクラスを呼び出す前に値を設定してください。
+       Overridable interface to open unknown URL types.
+
+
+    .. method:: retrieve(url[, filename[, reporthook[, data]]])
+
+       Retrieves the contents of *url* and places it in *filename*.  The return value
+       is a tuple consisting of a local filename and either a
+       :class:`mimetools.Message` object containing the response headers (for remote
+       URLs) or ``None`` (for local URLs).  The caller must then open and read the
+       contents of *filename*.  If *filename* is not given and the URL refers to a
+       local file, the input filename is returned.  If the URL is non-local and
+       *filename* is not given, the filename is the output of :func:`tempfile.mktemp`
+       with a suffix that matches the suffix of the last path component of the input
+       URL.  If *reporthook* is given, it must be a function accepting three numeric
+       parameters.  It will be called after each chunk of data is read from the
+       network.  *reporthook* is ignored for local URLs.
+
+       If the *url* uses the :file:`http:` scheme identifier, the optional *data*
+       argument may be given to specify a ``POST`` request (normally the request type
+       is ``GET``).  The *data* argument must in standard
+       :mimetype:`application/x-www-form-urlencoded` format; see the :func:`urlencode`
+       function below.
+
+
+    .. attribute:: version
+
+       Variable that specifies the user agent of the opener object.  To get
+       :mod:`urllib` to tell servers that it is a particular user agent, set this in a
+       subclass as a class variable or in the constructor before calling the base
+       constructor.
+
 
 .. class:: FancyURLopener(...)
 
-   :class:`FancyURLopener` は :class:`URLopener` のサブクラスで、以下の HTTP レスポンスコード:
-   301、302、303、 307、および 401 を取り扱う機能を提供します。レスポンスコード 30x に対しては、
-   :mailheader:`Location` ヘッダを使って実際の URL を取得します。レスポンスコード 401 (認証が要求されていることを示す)
-   に対しては、BASIC認証 (basic HTTP authintication) が行われます。レスポンスコード 30x に対しては、最大で
-   *maxtries* 属性に指定された数だけ再帰呼び出しを行うようになっています。この値はデフォルトで 10 です。
+   :class:`FancyURLopener` subclasses :class:`URLopener` providing default handling
+   for the following HTTP response codes: 301, 302, 303, 307 and 401.  For the 30x
+   response codes listed above, the :mailheader:`Location` header is used to fetch
+   the actual URL.  For 401 response codes (authentication required), basic HTTP
+   authentication is performed.  For the 30x response codes, recursion is bounded
+   by the value of the *maxtries* attribute, which defaults to 10.
 
-   その他のレスポンスコードについては、 :meth:`http_error_default` が呼ばれます。これはサブクラスでエラーを適切に処理するように
-   オーバーライドすることができます。
-
-   .. note::
-
-      :rfc:`2616` によると、 POST 要求に対する 301 および 302  応答はユーザの承認無しに自動的にリダイレクトしてはなりません。
-      実際は、これらの応答に対して自動リダイレクトを許すブラウザでは POST を GET に変更しており、 :mod:`urllib` でもこの動作を再現します。
-
-   コンストラクタに与えるパラメタは :class:`URLopener` と同じです。
+   For all other response codes, the method :meth:`http_error_default` is called
+   which you can override in subclasses to handle the error appropriately.
 
    .. note::
 
-      基本的な HTTP 認証を行う際、 :class:`FancyURLopener` インスタンスは :meth:`prompt_user_passwd`
-      メソッドを呼び出します。このメソッドはデフォルトでは実行を制御している端末上で認証に必要な情報を要求する
-      ように実装されています。必要ならば、このクラスのサブクラスにおいてより適切な動作をサポートするために :meth:`prompt_user_passwd`
-      メソッドをオーバライドしてもかまいません。
+      According to the letter of :rfc:`2616`, 301 and 302 responses to POST requests
+      must not be automatically redirected without confirmation by the user.  In
+      reality, browsers do allow automatic redirection of these responses, changing
+      the POST to a GET, and :mod:`urllib` reproduces this behaviour.
 
-   :class:`FancyURLopener` クラスはオーバライド可能な追加のメソッドを提供しており、適切な振る舞いをさせることができます:
+   The parameters to the constructor are the same as those for :class:`URLopener`.
 
-   .. method:: prompt_user_passwd(host, realm)
+   .. note::
 
-      指定されたセキュリティ領域 (security realm) 下にある与えられたホストにおいて、ユーザ認証に必要な情報を返すための関数です。この関数が
-      返す値は ``(user, password)`` 、からなるタプルなくてはなりません。値はベーシック認証 (basic authentication)
-      で使われます。
+      When performing basic authentication, a :class:`FancyURLopener` instance calls
+      its :meth:`prompt_user_passwd` method.  The default implementation asks the
+      users for the required information on the controlling terminal.  A subclass may
+      override this method to support more appropriate behavior if needed.
 
-      このクラスでの実装では、端末に情報を入力するようプロンプトを出します; ローカルの環境において適切な形で対話型モデルを使うには、このメソッドを
-      オーバライドしなければなりません。
+    The :class:`FancyURLopener` class offers one additional method that should be
+    overloaded to provide the appropriate behavior:
+
+    .. method:: prompt_user_passwd(host, realm)
+
+       Return information needed to authenticate the user at the given host in the
+       specified security realm.  The return value should be a tuple, ``(user,
+       password)``, which can be used for basic authentication.
+
+       The implementation prompts for this information on the terminal; an application
+       should override this method to use an appropriate interaction model in the local
+       environment.
 
 .. exception:: ContentTooShortError(msg[, content])
 
-   この例外は :func:`urlretrieve` 関数が、ダウンロードされたデータの量が予期した量 (*Content-Length* ヘッダで与えられる)
-   よりも少ないことを検知した際に発生します。 :attr:`content` 属性には (恐らく途中までの)  ダウンロードされたデータが格納されています。
+   This exception is raised when the :func:`urlretrieve` function detects that the
+   amount of the downloaded data is less than the  expected amount (given by the
+   *Content-Length* header). The :attr:`content` attribute stores the downloaded
+   (and supposedly truncated) data.
 
    .. versionadded:: 2.5
 
 
-:mod:`urllib` の制限
+:mod:`urllib` Restrictions
 --------------------------
 
   .. index::
      pair: HTTP; protocol
      pair: FTP; protocol
 
-* 現在のところ、以下のプロトコルだけがサポートされています: HTTP、 (バージョン 0.9 および 1.0)、
-  FTP、およびローカルファイル。
+* Currently, only the following protocols are supported: HTTP, (versions 0.9 and
+  1.0),  FTP, and local files.
 
-* :func:`urlretrieve` のキャッシュ機能は、有効期限ヘッダ (Expiration time header)
-  を正しく処理できるようにハックするための時間を取れるまで、無効にしてあります。
+* The caching feature of :func:`urlretrieve` has been disabled until I find the
+  time to hack proper processing of Expiration time headers.
 
-* ある URL がキャッシュにあるかどうか調べるような関数があればと思っています。。
+* There should be a function to query whether a particular URL is in the cache.
 
-* 後方互換性のため、 URL がローカルシステム上のファイルを指しているように見えるにも関わらずファイルを開くことができなければ、 URL は FTP
-  プロトコルを使って再解釈されます。この機能は時として混乱を招くエラーメッセージを引き起こします。
+* For backward compatibility, if a URL appears to point to a local file but the
+  file can't be opened, the URL is re-interpreted using the FTP protocol.  This
+  can sometimes cause confusing error messages.
 
-* 関数 :func:`urlopen` および :func:`urlretrieve` は、
-  ネットワーク接続が確立されるまでの間、一定でない長さの遅延を引き起こすことがあります。このことは、これらの関数を使ってインタラクティブな Web
-  クライアントを構築するのはスレッドなしには難しいことを意味します。
+* The :func:`urlopen` and :func:`urlretrieve` functions can cause arbitrarily
+  long delays while waiting for a network connection to be set up.  This means
+  that it is difficult to build an interactive Web client using these functions
+  without using threads.
 
   .. index::
      single: HTML
      pair: HTTP; protocol
      module: htmllib
 
-* :func:`urlopen` または :func:`urlretrieve` が返すデータはサーバが返す生のデータです。このデータはバイナリデータ
-  (画像データ等) 、生テキスト (plain text)、または (例えば) HTML でもかまいません。HTTP プロトコルはリプライヘッダ (reply
-  header) にデータのタイプに関する情報を返します。タイプは :mailheader:`Content-Type` ヘッダを見ることで推測できます。
-  返されたデータがHTML であれば、 :mod:`htmllib` を使ってパースすることができます。
+* The data returned by :func:`urlopen` or :func:`urlretrieve` is the raw data
+  returned by the server.  This may be binary data (such as an image), plain text
+  or (for example) HTML.  The HTTP protocol provides type information in the reply
+  header, which can be inspected by looking at the :mailheader:`Content-Type`
+  header.  If the returned data is HTML, you can use the module :mod:`htmllib` to
+  parse it.
 
   .. index:: single: FTP
 
-  FTP プロトコルを扱うコードでは、ファイルとディレクトリを区別できません。このことから、アクセスできないファイルを指している URL
-  からデータを読み出そうとすると、予期しない動作を引き起こす場合があります。 URL が ``/`` で終わっていれば、ディレクトリを
-  指しているものとみなして、それに適した処理を行います。しかし、ファイルの読み出し操作が 550 エラー (URL が存在しないか、
-  主にパーミッションの理由でアクセスできない) になった場合、 URL がディレクトリを指していて、末尾の ``/`` を忘れたケース
-  を処理するため、パスをディレクトリとして扱います。このために、パーミッションのためにアクセスできないファイルを fetch しようとすると、FTP
-  コードはそのファイルを開こうとして 550  エラーに陥り、次にディレクトリ一覧を表示しようとするため、誤解を生むような結果を引き起こす可能性があるのです。
-  よく調整された制御が必要なら、 :mod:`ftplib` モジュールを使うか、 :class:`FancyURLopener` をサブクラス化するか、
-  *_urlopener* を変更して目的に合わせるよう検討してください。
+* The code handling the FTP protocol cannot differentiate between a file and a
+  directory.  This can lead to unexpected behavior when attempting to read a URL
+  that points to a file that is not accessible.  If the URL ends in a ``/``, it is
+  assumed to refer to a directory and will be handled accordingly.  But if an
+  attempt to read a file leads to a 550 error (meaning the URL cannot be found or
+  is not accessible, often for permission reasons), then the path is treated as a
+  directory in order to handle the case when a directory is specified by a URL but
+  the trailing ``/`` has been left off.  This can cause misleading results when
+  you try to fetch a file whose read permissions make it inaccessible; the FTP
+  code will try to read it, fail with a 550 error, and then perform a directory
+  listing for the unreadable file. If fine-grained control is needed, consider
+  using the :mod:`ftplib` module, subclassing :class:`FancyURLopener`, or changing
+  *_urlopener* to meet your needs.
 
-* このモジュールは認証を必要とするプロキシをサポートしません。将来実装されるかもしれません。
+* This module does not support the use of proxies which require authentication.
+  This may be implemented in the future.
 
   .. index:: module: urlparse
 
-* :mod:`urllib` モジュールは URL 文字列を解釈したり構築したりする (ドキュメント化されていない) ルーチンを含んでいますが、URL
-  を操作するためのインタフェースとしては、 :mod:`urlparse` モジュールをお勧めします。
+* Although the :mod:`urllib` module contains (undocumented) routines to parse
+  and unparse URL strings, the recommended interface for URL manipulation is in
+  module :mod:`urlparse`.
 
 
 .. _urllib-examples:
 
-使用例
-------
+Examples
+--------
 
-以下は ``GET`` メソッドを使ってパラメタを含む URL を取得するセッションの例です::
+Here is an example session that uses the ``GET`` method to retrieve a URL
+containing parameters::
 
    >>> import urllib
    >>> params = urllib.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0})
    >>> f = urllib.urlopen("http://www.musi-cal.com/cgi-bin/query?%s" % params)
    >>> print f.read()
 
-以下は ``POST`` メソッドを代わりに使った例です::
+The following example uses the ``POST`` method instead::
 
    >>> import urllib
    >>> params = urllib.urlencode({'spam': 1, 'eggs': 2, 'bacon': 0})
    >>> f = urllib.urlopen("http://www.musi-cal.com/cgi-bin/query", params)
    >>> print f.read()
 
-以下の例では、環境変数による設定内容に対して上書きする形で HTTP プロキシを明示的に設定しています::
+The following example uses an explicitly specified HTTP proxy, overriding
+environment settings::
 
    >>> import urllib
    >>> proxies = {'http': 'http://proxy.example.com:8080/'}
@@ -466,7 +517,7 @@ URL Opener オブジェクト
    >>> f = opener.open("http://www.python.org")
    >>> f.read()
 
-以下の例では、環境変数による設定内容に対して上書きする形で、まったくプロキシを使わないよう設定しています::
+The following example uses no proxies at all, overriding environment settings::
 
    >>> import urllib
    >>> opener = urllib.FancyURLopener({})

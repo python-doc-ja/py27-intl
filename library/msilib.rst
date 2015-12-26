@@ -1,5 +1,5 @@
-:mod:`msilib` --- Microsoft インストーラーファイルの読み書き
-============================================================
+:mod:`msilib` --- Read and write Microsoft Installer files
+==========================================================
 
 .. module:: msilib
    :platform: Windows
@@ -12,493 +12,545 @@
 
 .. versionadded:: 2.5
 
-:mod:`msilib` モジュールは Microdoft インストーラー(``.msi``)の
-作成を支援します。このファイルはしばしば埋め込まれた「キャビネット」ファイル (``.cab``) を含むので、CAB ファイル作成用の API
-も暴露します。現在のところ ``.cab`` ファイルの読み出しはサポートしていませんが、 ``.msi`` データベースの読み出しサポートは可能です。
+The :mod:`msilib` supports the creation of Microsoft Installer (``.msi``) files.
+Because these files often contain an embedded "cabinet" file (``.cab``), it also
+exposes an API to create CAB files. Support for reading ``.cab`` files is
+currently not implemented; read support for the ``.msi`` database is possible.
 
-このパッケージの目的は ``.msi`` ファイルにある全てのテーブルへの完全なアクセスの提供なので、提供されているものは正直に言って低レベルな API
-です。このパッケージの二つの主要な応用は :mod:`distutils` の ``bdist_msi`` コマンドと、Python
-インストーラーパッケージそれ自体(と言いつつ現在は別バージョンの ``msilib`` を使っているのですが)です。
+This package aims to provide complete access to all tables in an ``.msi`` file,
+therefore, it is a fairly low-level API. Two primary applications of this
+package are the :mod:`distutils` command ``bdist_msi``, and the creation of
+Python installer package itself (although that currently uses a different
+version of ``msilib``).
 
-パッケージの内容は大きく四つのパートに分けられます。低レベル CAB ルーチン、低レベル MSI ルーチン、少し高レベルの MSI ルーチン、
-標準的なテーブル構造、の四つです。
+The package contents can be roughly split into four parts: low-level CAB
+routines, low-level MSI routines, higher-level MSI routines, and standard table
+structures.
 
 
 .. function:: FCICreate(cabname, files)
 
-   新しい CAB ファイルを *cabname* という名前で作ります。 *files* はタプルのリストで、それぞれのタプルがディスク上のファイル名と CAB
-   ファイルで付けられるファイル名とからなるものでなければなりません。
+   Create a new CAB file named *cabname*. *files* must be a list of tuples, each
+   containing the name of the file on disk, and the name of the file inside the CAB
+   file.
 
-   ファイルはリストに現れた順番で CAB ファイルに追加されます。全てのファイルは MSZIP 圧縮アルゴリズムを使って一つの CAB ファイルに追加されます。
+   The files are added to the CAB file in the order they appear in the list. All
+   files are added into a single CAB file, using the MSZIP compression algorithm.
 
-   MSI 作成の様々なステップに対する Python コールバックは現在暴露されていません。
+   Callbacks to Python for the various steps of MSI creation are currently not
+   exposed.
 
 
 .. function:: UuidCreate()
 
-   新しい一意識別子の文字列表現を返します。この関数は Windows API の関数 :c:func:`UuidCreate` と
-   :c:func:`UuidToString` をラップしたものです。
+   Return the string representation of a new unique identifier. This wraps the
+   Windows API functions :c:func:`UuidCreate` and :c:func:`UuidToString`.
 
 
 .. function:: OpenDatabase(path, persist)
 
-   MsiOpenDatabase を呼び出して新しいデータベースオブジェクトを返します。 *path* は MSI ファイルのファイル名です。 *persist*
-   は五つの定数 ``MSIDBOPEN_CREATEDIRECT``, ``MSIDBOPEN_CREATE``, ``MSIDBOPEN_DIRECT``,
-   ``MSIDBOPEN_READONLY``, ``MSIDBOPEN_TRANSACT`` のどれか一つで、フラグ
-   ``MSIDBOPEN_PATCHFILE`` を含めても構いません。これらのフラグの意味は Microsoft のドキュメントを参照してください。
-   フラグに依って既存のデータベースを開いたり新しいのを作ったりします。
+   Return a new database object by calling MsiOpenDatabase.   *path* is the file
+   name of the MSI file; *persist* can be one of the constants
+   ``MSIDBOPEN_CREATEDIRECT``, ``MSIDBOPEN_CREATE``, ``MSIDBOPEN_DIRECT``,
+   ``MSIDBOPEN_READONLY``, or ``MSIDBOPEN_TRANSACT``, and may include the flag
+   ``MSIDBOPEN_PATCHFILE``. See the Microsoft documentation for the meaning of
+   these flags; depending on the flags, an existing database is opened, or a new
+   one created.
 
 
 .. function:: CreateRecord(count)
 
-   :c:func:`MSICreateRecord` を呼び出して新しいレコードオブジェクトを返します。 *count* はレコードのフィールドの数です。
+   Return a new record object by calling :c:func:`MSICreateRecord`. *count* is the
+   number of fields of the record.
 
 
 .. function:: init_database(name, schema, ProductName, ProductCode, ProductVersion, Manufacturer)
 
-   *name* という名前の新しいデータベースを作り、 *schema* で初期化し、プロパティ *ProductName*, *ProductCode*,
-   *ProductVersion*, *Manufacturer* をセットして、返します
+   Create and return a new database *name*, initialize it with *schema*, and set
+   the properties *ProductName*, *ProductCode*, *ProductVersion*, and
+   *Manufacturer*.
 
-   *schema* は ``tables`` と ``_Validation_records`` という属性を
-   もったモジュールオブジェクトでなければなりません。典型的には、 :mod:`msilib.schema` を使うべきです。
+   *schema* must be a module object containing ``tables`` and
+   ``_Validation_records`` attributes; typically, :mod:`msilib.schema` should be
+   used.
 
-   データベースはこの関数から返された時点でスキーマとバリデーションレコードだけが収められています。
+   The database will contain just the schema and the validation records when this
+   function returns.
 
 
 .. function:: add_data(database, table, records)
 
-   全ての *records* を *database* の *table* テーブルに追加します。
+   Add all *records* to the table named *table* in *database*.
 
-   *table* 引数は MSI スキーマで事前に定義されたテーブルでなければなりません。
-   例えば、 ``'Feature'``, ``'File'``, ``'Component'``, ``'Dialog'``, ``'Control'``,
-   などです。
+   The *table* argument must be one of the predefined tables in the MSI schema,
+   e.g. ``'Feature'``, ``'File'``, ``'Component'``, ``'Dialog'``, ``'Control'``,
+   etc.
 
-   *records* はタプルのリストで、それぞれのタプルにはテーブルのスキーマに従った
-   レコードの全てのフィールドを含んでいるものでなければなりません。オプションのフィールドには ``None`` を渡すことができます。
+   *records* should be a list of tuples, each one containing all fields of a
+   record according to the schema of the table.  For optional fields,
+   ``None`` can be passed.
 
-   フィールドの値には、整数・長整数・文字列・Binary クラスのインスタンスが使えます。
+   Field values can be int or long numbers, strings, or instances of the Binary
+   class.
 
 
 .. class:: Binary(filename)
 
-   Binary テーブル中のエントリーを表わします。 :func:`add_data` を使ってこのクラスのオブジェクトを挿入するときには *filename*
-   という名前のファイルをテーブルに読み込みます。
+   Represents entries in the Binary table; inserting such an object using
+   :func:`add_data` reads the file named *filename* into the table.
 
 
 .. function:: add_tables(database, module)
 
-   *module* の全てのテーブルの内容を *database* に追加します。 *module* は *tables*
-   という内容が追加されるべき全てのテーブルのリストと、テーブルごとに一つある実際の内容を持っている属性とを含んでいなければなりません。
+   Add all table content from *module* to *database*. *module* must contain an
+   attribute *tables* listing all tables for which content should be added, and one
+   attribute per table that has the actual content.
 
-   この関数は典型的にシーケンステーブルをインストールするのに使われます。
+   This is typically used to install the sequence tables.
 
 
 .. function:: add_stream(database, name, path)
 
-   *database* の ``_Stream`` テーブルに、ファイル *path* を *name* というストリーム名で追加します。
+   Add the file *path* into the ``_Stream`` table of *database*, with the stream
+   name *name*.
 
 
 .. function:: gen_uuid()
 
-   新しい UUID を、 MSI が通常要求する形式(すなわち、中括弧に入れ、16進数は大文字)で返します。
+   Return a new UUID, in the format that MSI typically requires (i.e. in curly
+   braces, and with all hexdigits in upper-case).
 
 
 .. seealso::
 
-   `FCICreateFile <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/devnotes/winprog/fcicreate.asp>`_
-   `UuidCreate <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rpc/rpc/uuidcreate.asp>`_
-   `UuidToString <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rpc/rpc/uuidtostring.asp>`_
+   `FCICreateFile <http://msdn.microsoft.com/library?url=/library/en-us/devnotes/winprog/fcicreate.asp>`_
+   `UuidCreate <http://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidcreate.asp>`_
+   `UuidToString <http://msdn.microsoft.com/library?url=/library/en-us/rpc/rpc/uuidtostring.asp>`_
 
 .. _database-objects:
 
-データベースオブジェクト
-------------------------
+Database Objects
+----------------
 
 
 .. method:: Database.OpenView(sql)
 
-   :c:func:`MSIDatabaseOpenView` を呼び出してビューオブジェクトを返します。 *sql* は実行される SQL 命令です。
+   Return a view object, by calling :c:func:`MSIDatabaseOpenView`. *sql* is the SQL
+   statement to execute.
 
 
 .. method:: Database.Commit()
 
-   :c:func:`MSIDatabaseCommit` を呼び出して現在のトランザクションで保留されている変更をコミットします。
+   Commit the changes pending in the current transaction, by calling
+   :c:func:`MSIDatabaseCommit`.
 
 
 .. method:: Database.GetSummaryInformation(count)
 
-   :c:func:`MsiGetSummaryInformation` を呼び出して新しいサマリー情報オブジェクトを返します。 *count*
-   は更新された値の最大数です。
+   Return a new summary information object, by calling
+   :c:func:`MsiGetSummaryInformation`.  *count* is the maximum number of updated
+   values.
 
 
 .. seealso::
 
-   `MSIDatabaseOpenView <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msidatabaseopenview.asp>`_
-   `MSIDatabaseCommit <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msidatabasecommit.asp>`_
-   `MSIGetSummaryInformation <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msigetsummaryinformation.asp>`_
+   `MSIDatabaseOpenView <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabaseopenview.asp>`_
+   `MSIDatabaseCommit <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msidatabasecommit.asp>`_
+   `MSIGetSummaryInformation <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msigetsummaryinformation.asp>`_
 
 .. _view-objects:
 
-ビューオブジェクト
-------------------
+View Objects
+------------
 
 
 .. method:: View.Execute(params)
 
-   :c:func:`MSIViewExecute` を通してビューに対する SQL 問い合わせを実行します。
-   *params* が ``None`` でない場合、
-   クエリ中のパラメータトークンの実際の値を与えるものです。
+   Execute the SQL query of the view, through :c:func:`MSIViewExecute`. If
+   *params* is not ``None``, it is a record describing actual values of the
+   parameter tokens in the query.
 
 
 .. method:: View.GetColumnInfo(kind)
 
-   :c:func:`MsiViewGetColumnInfo` の呼び出しを通してビューのカラムを説明するレコードを返します。 *kind* は
-   ``MSICOLINFO_NAMES`` または ``MSICOLINFO_TYPES`` です。
+   Return a record describing the columns of the view, through calling
+   :c:func:`MsiViewGetColumnInfo`. *kind* can be either ``MSICOLINFO_NAMES`` or
+   ``MSICOLINFO_TYPES``.
 
 
 .. method:: View.Fetch()
 
-   :c:func:`MsiViewFetch` の呼び出しを通してクエリの結果レコードを返します。
+   Return a result record of the query, through calling :c:func:`MsiViewFetch`.
 
 
 .. method:: View.Modify(kind, data)
 
-   :c:func:`MsiViewModify` を呼び出してビューを変更します。 *kind* は ``MSIMODIFY_SEEK``,
-   ``MSIMODIFY_REFRESH``, ``MSIMODIFY_INSERT``, ``MSIMODIFY_UPDATE``,
-   ``MSIMODIFY_ASSIGN``, ``MSIMODIFY_REPLACE``, ``MSIMODIFY_MERGE``,
-   ``MSIMODIFY_DELETE``, ``MSIMODIFY_INSERT_TEMPORARY``, ``MSIMODIFY_VALIDATE``,
-   ``MSIMODIFY_VALIDATE_NEW``, ``MSIMODIFY_VALIDATE_FIELD``,
-   ``MSIMODIFY_VALIDATE_DELETE`` のいずれかです。
+   Modify the view, by calling :c:func:`MsiViewModify`. *kind* can be one of
+   ``MSIMODIFY_SEEK``, ``MSIMODIFY_REFRESH``, ``MSIMODIFY_INSERT``,
+   ``MSIMODIFY_UPDATE``, ``MSIMODIFY_ASSIGN``, ``MSIMODIFY_REPLACE``,
+   ``MSIMODIFY_MERGE``, ``MSIMODIFY_DELETE``, ``MSIMODIFY_INSERT_TEMPORARY``,
+   ``MSIMODIFY_VALIDATE``, ``MSIMODIFY_VALIDATE_NEW``,
+   ``MSIMODIFY_VALIDATE_FIELD``, or ``MSIMODIFY_VALIDATE_DELETE``.
 
-   *data* は新しいデータを表わすレコードでなければなりません。
+   *data* must be a record describing the new data.
 
 
 .. method:: View.Close()
 
-   :c:func:`MsiViewClose` を通してビューを閉じます。
+   Close the view, through :c:func:`MsiViewClose`.
 
 
 .. seealso::
 
-   `MsiViewExecute <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewexecute.asp>`_
-   `MSIViewGetColumnInfo <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewgetcolumninfo.asp>`_
-   `MsiViewFetch <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewfetch.asp>`_
-   `MsiViewModify <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewmodify.asp>`_
-   `MsiViewClose <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msiviewclose.asp>`_
+   `MsiViewExecute <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewexecute.asp>`_
+   `MSIViewGetColumnInfo <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewgetcolumninfo.asp>`_
+   `MsiViewFetch <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewfetch.asp>`_
+   `MsiViewModify <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewmodify.asp>`_
+   `MsiViewClose <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msiviewclose.asp>`_
 
 .. _summary-objects:
 
-サマリー情報オブジェクト
-------------------------
+Summary Information Objects
+---------------------------
 
 
 .. method:: SummaryInformation.GetProperty(field)
 
-   :c:func:`MsiSummaryInfoGetProperty` を通してサマリーのプロパティを返します。 *field* はプロパティ名で、定数
+   Return a property of the summary, through :c:func:`MsiSummaryInfoGetProperty`.
+   *field* is the name of the property, and can be one of the constants
    ``PID_CODEPAGE``, ``PID_TITLE``, ``PID_SUBJECT``, ``PID_AUTHOR``,
    ``PID_KEYWORDS``, ``PID_COMMENTS``, ``PID_TEMPLATE``, ``PID_LASTAUTHOR``,
    ``PID_REVNUMBER``, ``PID_LASTPRINTED``, ``PID_CREATE_DTM``,
    ``PID_LASTSAVE_DTM``, ``PID_PAGECOUNT``, ``PID_WORDCOUNT``, ``PID_CHARCOUNT``,
-   ``PID_APPNAME``, ``PID_SECURITY`` のいずれかです。
+   ``PID_APPNAME``, or ``PID_SECURITY``.
 
 
 .. method:: SummaryInformation.GetPropertyCount()
 
-   :c:func:`MsiSummaryInfoGetPropertyCount` を通してサマリープロパティの個数を返します。
+   Return the number of summary properties, through
+   :c:func:`MsiSummaryInfoGetPropertyCount`.
 
 
 .. method:: SummaryInformation.SetProperty(field, value)
 
-   :c:func:`MsiSummaryInfoSetProperty` を通してプロパティをセットします。 *field* は
-   :meth:`GetProperty` におけるものと同じ値をとります。 *value* はプロパティの新しい値です。許される値の型は整数と文字列です。
+   Set a property through :c:func:`MsiSummaryInfoSetProperty`. *field* can have the
+   same values as in :meth:`GetProperty`, *value* is the new value of the property.
+   Possible value types are integer and string.
 
 
 .. method:: SummaryInformation.Persist()
 
-   :c:func:`MsiSummaryInfoPersist` を使って変更されたプロパティをサマリー情報ストリームに書き込みます。
+   Write the modified properties to the summary information stream, using
+   :c:func:`MsiSummaryInfoPersist`.
 
 
 .. seealso::
 
-   `MsiSummaryInfoGetProperty <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfogetproperty.asp>`_
-   `MsiSummaryInfoGetPropertyCount <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfogetpropertycount.asp>`_
-   `MsiSummaryInfoSetProperty <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfosetproperty.asp>`_
-   `MsiSummaryInfoPersist <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msisummaryinfopersist.asp>`_
+   `MsiSummaryInfoGetProperty <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetproperty.asp>`_
+   `MsiSummaryInfoGetPropertyCount <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfogetpropertycount.asp>`_
+   `MsiSummaryInfoSetProperty <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfosetproperty.asp>`_
+   `MsiSummaryInfoPersist <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msisummaryinfopersist.asp>`_
 
 .. _record-objects:
 
-レコードオブジェクト
---------------------
+Record Objects
+--------------
 
 
 .. method:: Record.GetFieldCount()
 
-   :c:func:`MsiRecordGetFieldCount` を通してレコードのフィールド数を返します。
+   Return the number of fields of the record, through
+   :c:func:`MsiRecordGetFieldCount`.
 
 
 .. method:: Record.GetInteger(field)
 
-   *field* の値を可能なら整数として返します。 *field* は整数でなければなりません。
+   Return the value of *field* as an integer where possible.  *field* must
+   be an integer.
 
 
 .. method:: Record.GetString(field)
 
-   *field* の値を可能なら文字列として返します。 *field* は整数でなければなりません。
+   Return the value of *field* as a string where possible.  *field* must
+   be an integer.
 
 
 .. method:: Record.SetString(field, value)
 
-   :c:func:`MsiRecordSetString` を通して *field* を *value* にセットします。 *field* は整数、 *value*
-   は文字列でなければなりません。
+   Set *field* to *value* through :c:func:`MsiRecordSetString`. *field* must be an
+   integer; *value* a string.
 
 
 .. method:: Record.SetStream(field, value)
 
-   :c:func:`MsiRecordSetStream` を通して *field* を *value* という名のファイルの内容にセットします。 *field*
-   は整数、 *value* は文字列でなければなりません。
+   Set *field* to the contents of the file named *value*, through
+   :c:func:`MsiRecordSetStream`. *field* must be an integer; *value* a string.
 
 
 .. method:: Record.SetInteger(field, value)
 
-   :c:func:`MsiRecordSetInteger` を通して *field* を *value* にセットします。 *field* も *value*
-   も整数でなければなりません。
+   Set *field* to *value* through :c:func:`MsiRecordSetInteger`. Both *field* and
+   *value* must be an integer.
 
 
 .. method:: Record.ClearData()
 
-   :c:func:`MsiRecordClearData` を通してレコードの全てのフィールドを 0 にセットします。
+   Set all fields of the record to 0, through :c:func:`MsiRecordClearData`.
 
 
 .. seealso::
 
-   `MsiRecordGetFieldCount <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordgetfieldcount.asp>`_
-   `MsiRecordSetString <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetstring.asp>`_
-   `MsiRecordSetStream <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetstream.asp>`_
-   `MsiRecordSetInteger <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordsetinteger.asp>`_
-   `MsiRecordClear <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/msirecordclear.asp>`_
+   `MsiRecordGetFieldCount <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordgetfieldcount.asp>`_
+   `MsiRecordSetString <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstring.asp>`_
+   `MsiRecordSetStream <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetstream.asp>`_
+   `MsiRecordSetInteger <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordsetinteger.asp>`_
+   `MsiRecordClear <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/msirecordclear.asp>`_
 
 .. _msi-errors:
 
-エラー
+Errors
 ------
 
-全ての MSI 関数のラッパーは :exc:`MsiError` を送出します。例外の内部の文字列がより詳細な情報を含んでいます。
+All wrappers around MSI functions raise :exc:`MsiError`; the string inside the
+exception will contain more detail.
 
 
 .. _cab:
 
-CAB オブジェクト
-----------------
+CAB Objects
+-----------
 
 
 .. class:: CAB(name)
 
-   :class:`CAB` クラスは CAB ファイルを表わすものです。MSI 構築中、ファイルは ``Files`` テーブルと CAB
-   ファイルとに同時に追加されます。そして、全てのファイルを追加し終えたら、CAB ファイルは書き込まれることが可能になり、MSI ファイルに追加されます。
+   The class :class:`CAB` represents a CAB file. During MSI construction, files
+   will be added simultaneously to the ``Files`` table, and to a CAB file. Then,
+   when all files have been added, the CAB file can be written, then added to the
+   MSI file.
 
-   *name* は MSI ファイル中の CAB ファイルの名前です。
+   *name* is the name of the CAB file in the MSI file.
 
 
-   .. method:: append(full, logical)
+   .. method:: append(full, file, logical)
 
-      パス名 *full* のファイルを CAB ファイルに *logical* という名で追加します。 *logical*
-      という名が既に存在したならば、新しいファイル名が作られます。
+      Add the file with the pathname *full* to the CAB file, under the name
+      *logical*.  If there is already a file named *logical*, a new file name is
+      created.
 
-      ファイルの CAB ファイル中のインデクスと新しいファイル名を返します。
+      Return the index of the file in the CAB file, and the new name of the file
+      inside the CAB file.
 
 
    .. method:: commit(database)
 
-      CAB ファイルを作り、MSI ファイルにストリームとして追加し、 ``Media`` テーブルに送り込み、作ったファイルはディスクから削除します。
+      Generate a CAB file, add it as a stream to the MSI file, put it into the
+      ``Media`` table, and remove the generated file from the disk.
 
 
 .. _msi-directory:
 
-ディレクトリオブジェクト
-------------------------
+Directory Objects
+-----------------
 
 
 .. class:: Directory(database, cab, basedir, physical,  logical, default, [componentflags])
 
-   新しいディレクトリを Directory テーブルに作成します。ディレクトリには各時点で現在のコンポーネントがあり、それは
-   :meth:`start_component` を使って明ら様に作成されたかまたは最初にファイルが追加された際に暗黙裡に作成されたものです。
-   ファイルは現在のコンポーネントと cab ファイルに追加されます。ディレクトリを作成するには親ディレクトリオブジェクト(``None`` でも可)、
-   物理的ディレクトリへのパス、論理的ディレクトリ名を指定する必要があります。 *default* はディレクトリテーブルの DefaultDir
-   スロットを指定します。 *componentflags* は新しいコンポーネントが得るデフォルトのフラグを指定します。
+   Create a new directory in the Directory table. There is a current component at
+   each point in time for the directory, which is either explicitly created through
+   :meth:`start_component`, or implicitly when files are added for the first time.
+   Files are added into the current component, and into the cab file.  To create a
+   directory, a base directory object needs to be specified (can be ``None``), the
+   path to the physical directory, and a logical directory name.  *default*
+   specifies the DefaultDir slot in the directory table. *componentflags* specifies
+   the default flags that new components get.
 
 
    .. method:: start_component([component[, feature[, flags[, keyfile[, uuid]]]]])
 
-      エントリを Component テーブルに追加し、このコンポーネントをこのディレクトリの
-      現在のコンポーネントにします。もしコンポーネント名が与えられなければディレクトリ名が使われます。 *feature*
-      が与えられなければ、ディレクトリのデフォルトフラグが使われます。 *keyfile* が与えられなければ、Component テーブルの KeyPath は
-      null のままになります。
+      Add an entry to the Component table, and make this component the current
+      component for this directory. If no component name is given, the directory
+      name is used. If no *feature* is given, the current feature is used. If no
+      *flags* are given, the directory's default flags are used. If no *keyfile*
+      is given, the KeyPath is left null in the Component table.
 
 
    .. method:: add_file(file[, src[, version[, language]]])
 
-      ファイルをディレクトリの現在のコンポーネントに追加します。このとき現在のコンポーネントが
-      なければ新しいものを開始します。デフォルトではソースとファイルテーブルのファイル名は同じになります。 *src*
-      ファイルが与えられたならば、それば現在のディレクトリから相対的に解釈されます。オプションで *version* と *language* を File
-      テーブルのエントリ用に指定することができます。
+      Add a file to the current component of the directory, starting a new one
+      if there is no current component. By default, the file name in the source
+      and the file table will be identical. If the *src* file is specified, it
+      is interpreted relative to the current directory. Optionally, a *version*
+      and a *language* can be specified for the entry in the File table.
 
 
    .. method:: glob(pattern[, exclude])
 
-      現在のコンポーネントに glob パターンで指定されたファイルのリストを追加します。個々のファイルを *exclude* リストで除外することができます。
+      Add a list of files to the current component as specified in the glob
+      pattern.  Individual files can be excluded in the *exclude* list.
 
 
    .. method:: remove_pyc()
 
-      アンインストールの際に ``.pyc`` / ``.pyo`` を削除します。
+      Remove ``.pyc``/``.pyo`` files on uninstall.
 
 
 .. seealso::
 
-   `Directory Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/directory_table.asp>`_
-   `File Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/file_table.asp>`_
-   `Component Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/component_table.asp>`_
-   `FeatureComponents Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/featurecomponents_table.asp>`_
+   `Directory Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/directory_table.asp>`_
+   `File Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/file_table.asp>`_
+   `Component Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/component_table.asp>`_
+   `FeatureComponents Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/featurecomponents_table.asp>`_
 
 .. _features:
 
-フィーチャー
-------------
+Features
+--------
 
 
 .. class:: Feature(database, id, title, desc, display[, level=1[, parent[, directory[,  attributes=0]]]])
 
-   *id*, *parent.id*, *title*, *desc*, *display*, *level*, *directory*,
-   *attributes* の値を使って、新しいレコードを ``Feature`` テーブルに追加します。出来上がったフィーチャーオブジェクトは
-   :class:`Directory` の :meth:`start_component` メソッドに渡すことができます。
+   Add a new record to the ``Feature`` table, using the values *id*, *parent.id*,
+   *title*, *desc*, *display*, *level*, *directory*, and *attributes*. The
+   resulting feature object can be passed to the :meth:`start_component` method of
+   :class:`Directory`.
 
 
    .. method:: set_current()
 
-      このフィーチャーを :mod:`msilib` の現在のフィーチャーにします。フィーチャーが明ら様に指定されない限り、
-      新しいコンポーネントが自動的にデフォルトのフィーチャーに追加されます。
+      Make this feature the current feature of :mod:`msilib`. New components are
+      automatically added to the default feature, unless a feature is explicitly
+      specified.
 
 
 .. seealso::
 
-   `Feature Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/feature_table.asp>`_
+   `Feature Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/feature_table.asp>`_
 
 .. _msi-gui:
 
-GUI クラス
-----------
+GUI classes
+-----------
 
-:mod:`msilib` モジュールは MSI データベースの中の GUI テーブルをラップする
-幾つかのクラスを提供しています。しかしながら、標準で提供されるユーザーインタフェースはありません。インストールする Python
-パッケージに対するユーザーインタフェース付きの MSI ファイルを作成するには :mod:`bdist_msi` を使ってください。
+:mod:`msilib` provides several classes that wrap the GUI tables in an MSI
+database. However, no standard user interface is provided; use
+:mod:`~distutils.command.bdist_msi` to create MSI files with a user-interface
+for installing Python packages.
 
 
 .. class:: Control(dlg, name)
 
-   ダイアログコントロールの基底クラス。 *dlg* はコントロールの属するダイアログオブジェクト、 *name* はコントロールの名前です。
+   Base class of the dialog controls. *dlg* is the dialog object the control
+   belongs to, and *name* is the control's name.
 
 
    .. method:: event(event, argument[,  condition=1[, ordering]])
 
-      このコントロールの ``ControlEvent`` テーブルにエントリを作ります。
+      Make an entry into the ``ControlEvent`` table for this control.
 
 
    .. method:: mapping(event, attribute)
 
-      このコントロールの ``EventMapping`` テーブルにエントリを作ります。
+      Make an entry into the ``EventMapping`` table for this control.
 
 
    .. method:: condition(action, condition)
 
-      このコントロールの ``ControlCondition`` テーブルにエントリを作ります。
+      Make an entry into the ``ControlCondition`` table for this control.
 
 
 .. class:: RadioButtonGroup(dlg, name, property)
 
-   *name* という名前のラジオボタンコントロールを作成します。 *property* はラジオボタンが選ばれたときにセットされる
-   インストーラープロパティです。
+   Create a radio button control named *name*. *property* is the installer property
+   that gets set when a radio button is selected.
 
 
    .. method:: add(name, x, y, width, height, text [, value])
 
-      グループに *name* という名前で、座標 *x*, *y* に大きさが *width*, *height* で *text* というラベルの付いた
-      ラジオボタンを追加します。 *value* が省略された場合、デフォルトは *name* になります。
+      Add a radio button named *name* to the group, at the coordinates *x*, *y*,
+      *width*, *height*, and with the label *text*. If *value* is omitted, it
+      defaults to *name*.
 
 
 .. class:: Dialog(db, name, x, y, w, h, attr, title, first,  default, cancel)
 
-   新しい :class:`Dialog` オブジェクトを返します。 ``Dialog`` テーブルの中に
-   指定された座標、ダイアログ属性、タイトル、最初とデフォルトとキャンセルコントロールの名前を持ったエントリが作られます。
+   Return a new :class:`Dialog` object. An entry in the ``Dialog`` table is made,
+   with the specified coordinates, dialog attributes, title, name of the first,
+   default, and cancel controls.
 
 
-   .. method:: Dialog.control(name, type, x, y, width, height,  attributes, property, text, control_next, help)
+   .. method:: control(name, type, x, y, width, height,  attributes, property, text, control_next, help)
 
-      新しい :class:`Control` オブジェクトを返します。 ``Control`` テーブルに指定されたパラメータのエントリが作られます。
+      Return a new :class:`Control` object. An entry in the ``Control`` table is
+      made with the specified parameters.
 
-      これは汎用のメソッドで、特定の型に対しては特化したメソッドが提供されています。
+      This is a generic method; for specific types, specialized methods are
+      provided.
 
 
    .. method:: text(name, x, y, width, height, attributes, text)
 
-      ``Text`` コントロールを追加して返します。
+      Add and return a ``Text`` control.
 
 
    .. method:: bitmap(name, x, y, width, height, text)
 
-      ``Bitmap`` コントロールを追加して返します。
+      Add and return a ``Bitmap`` control.
 
 
    .. method:: line(name, x, y, width, height)
 
-      ``Line`` コントロールを追加して返します。
+      Add and return a ``Line`` control.
 
 
    .. method:: pushbutton(name, x, y, width, height, attributes,  text, next_control)
 
-      ``PushButton`` コントロールを追加して返します。
+      Add and return a ``PushButton`` control.
 
 
    .. method:: radiogroup(name, x, y, width, height,  attributes, property, text, next_control)
 
-      ``RadioButtonGroup`` コントロールを追加して返します。
+      Add and return a ``RadioButtonGroup`` control.
 
 
    .. method:: checkbox(name, x, y, width, height,  attributes, property, text, next_control)
 
-      ``CheckBox`` コントロールを追加して返します。
+      Add and return a ``CheckBox`` control.
 
 
 .. seealso::
 
-   `Dialog Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/dialog_table.asp>`_
-   `Control Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/control_table.asp>`_
-   `Control Types <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controls.asp>`_
-   `ControlCondition Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controlcondition_table.asp>`_
-   `ControlEvent Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/controlevent_table.asp>`_
-   `EventMapping Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/eventmapping_table.asp>`_
-   `RadioButton Table <http://msdn.microsoft.com/library/default.asp?url=/library/en-us/msi/setup/radiobutton_table.asp>`_
+   `Dialog Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/dialog_table.asp>`_
+   `Control Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/control_table.asp>`_
+   `Control Types <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controls.asp>`_
+   `ControlCondition Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlcondition_table.asp>`_
+   `ControlEvent Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/controlevent_table.asp>`_
+   `EventMapping Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/eventmapping_table.asp>`_
+   `RadioButton Table <http://msdn.microsoft.com/library?url=/library/en-us/msi/setup/radiobutton_table.asp>`_
 
 .. _msi-tables:
 
-事前に計算されたテーブル
-------------------------
+Precomputed tables
+------------------
 
-:mod:`msilib` はスキーマとテーブル定義だけから成るサブパッケージをいくつか提供しています。現在のところ、これらの定義は MSI バージョン
-2.0 に基づいています。
+:mod:`msilib` provides a few subpackages that contain only schema and table
+definitions. Currently, these definitions are based on MSI version 2.0.
 
 
 .. data:: schema
 
-   これは MSI 2.0 用の標準 MSI スキーマで、テーブル定義のリストを提供する *tables* 変数と、MSI バリデーション用のデータを提供する
-   *_Validation_records* 変数があります。
+   This is the standard MSI schema for MSI 2.0, with the *tables* variable
+   providing a list of table definitions, and *_Validation_records* providing the
+   data for MSI validation.
 
 
 .. data:: sequence
 
-   このモジュールは標準シーケンステーブルのテーブル内容を含んでいます。 *AdminExecuteSequence*, *AdminUISequence*,
-   *AdvtExecuteSequence*, *InstallExecuteSequence*, *InstallUISequence* が含まれています。
+   This module contains table contents for the standard sequence tables:
+   *AdminExecuteSequence*, *AdminUISequence*, *AdvtExecuteSequence*,
+   *InstallExecuteSequence*, and *InstallUISequence*.
 
 
 .. data:: text
 
-   このモジュールは標準的なインストーラーのアクションのための UIText および ActionText テーブルの定義を含んでいます。
+   This module contains definitions for the UIText and ActionText tables, for the
+   standard installer actions.

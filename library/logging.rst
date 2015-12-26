@@ -1,8 +1,8 @@
-:mod:`logging` --- Python 用ロギング機能
-========================================
+:mod:`logging` --- Logging facility for Python
+==============================================
 
 .. module:: logging
-   :synopsis: アプリケーションのための、柔軟なエラーロギングシステム
+   :synopsis: Flexible event logging system for applications.
 
 
 .. moduleauthor:: Vinay Sajip <vinay_sajip@red-dove.com>
@@ -13,654 +13,761 @@
 
 .. sidebar:: Important
 
-   このページには、リファレンス情報だけが含まれています。
-   チュートリアルは、以下のページを参照してください
+   This page contains the API reference information. For tutorial
+   information and discussion of more advanced topics, see
 
-   * :ref:`基本チュートリアル <logging-basic-tutorial>`
-   * :ref:`上級チュートリアル <logging-advanced-tutorial>`
-   * :ref:`ロギングクックブック <logging-cookbook>`
+   * :ref:`Basic Tutorial <logging-basic-tutorial>`
+   * :ref:`Advanced Tutorial <logging-advanced-tutorial>`
+   * :ref:`Logging Cookbook <logging-cookbook>`
 
+**Source code:** :source:`Lib/logging/__init__.py`
+
+--------------
 
 .. versionadded:: 2.3
 
-このモジュールは、アプリケーションやライブラリのための柔軟な
-エラーログ記録 (logging) システムを実装するための関数やクラスを定義しています。
+This module defines functions and classes which implement a flexible event
+logging system for applications and libraries.
 
-標準ライブラリモジュールとしてログ記録 API が提供される利点は、
-すべての Python モジュールがログ記録に参加できることであり、
-これによってあなたが書くアプリケーションのログにサードパーティーの
-モジュールが出力するメッセージを含ませることができます。
+The key benefit of having the logging API provided by a standard library module
+is that all Python modules can participate in logging, so your application log
+can include your own messages integrated with messages from third-party
+modules.
 
-このモジュールは、多くの機能性と柔軟性を提供します。
-ロギングに慣れていないなら、つかむのに一番いいのはチュートリアルを
-読むことです (右のリンクを参照してください)。
+The module provides a lot of functionality and flexibility.  If you are
+unfamiliar with logging, the best way to get to grips with it is to see the
+tutorials (see the links on the right).
 
-モジュールで定義されている基本的なクラスと関数を、以下に列挙します。
+The basic classes defined by the module, together with their functions, are
+listed below.
 
-* ロガーは、アプリケーションコードが直接使うインタフェースを公開します。
-* ハンドラは、(ロガーによって生成された) ログ記録を適切な送信先に送ります。
-* フィルタは、どのログ記録を出力するかを決定する、きめ細かい機能を提供します。
-* フォーマッタは、ログ記録が最終的に出力されるレイアウトを指定します。
+* Loggers expose the interface that application code directly uses.
+* Handlers send the log records (created by loggers) to the appropriate
+  destination.
+* Filters provide a finer grained facility for determining which log records
+  to output.
+* Formatters specify the layout of log records in the final output.
 
 
 .. _logger:
 
-ロガーオブジェクト
-------------------
+Logger Objects
+--------------
 
-ロガーには以下のような属性とメソッドがあります。ロガーを直接インスタンス化することはできず、
-常にモジュール関数 ``logging.getLogger(name)`` を介してインスタンス化することに注意してください。
+Loggers have the following attributes and methods.  Note that Loggers are never
+instantiated directly, but always through the module-level function
+``logging.getLogger(name)``.  Multiple calls to :func:`getLogger` with the same
+name will always return a reference to the same Logger object.
+
+The ``name`` is potentially a period-separated hierarchical value, like
+``foo.bar.baz`` (though it could also be just plain ``foo``, for example).
+Loggers that are further down in the hierarchical list are children of loggers
+higher up in the list.  For example, given a logger with a name of ``foo``,
+loggers with names of ``foo.bar``, ``foo.bar.baz``, and ``foo.bam`` are all
+descendants of ``foo``.  The logger name hierarchy is analogous to the Python
+package hierarchy, and identical to it if you organise your loggers on a
+per-module basis using the recommended construction
+``logging.getLogger(__name__)``.  That's because in a module, ``__name__``
+is the module's name in the Python package namespace.
+
 
 .. class:: Logger
 
 .. attribute:: Logger.propagate
 
-   この評価が true であれば、ロギングメッセージはこのロガーによって、
-   またこの子ロガーによって、上位の (親) ロガーのハンドラに渡されます。
-   メッセージは、親ロガーのハンドラに直接渡されます - 問題の親ロガーの
-   レベルもフィルタも考慮されません。
+   If this evaluates to true, events logged to this logger will be passed to the
+   handlers of higher level (ancestor) loggers, in addition to any handlers
+   attached to this logger. Messages are passed directly to the ancestor
+   loggers' handlers - neither the level nor filters of the ancestor loggers in
+   question are considered.
 
-   この値の評価結果が false になる場合、ロギングメッセージは
-   上位の (親の) ロガーのハンドラに渡されません。
+   If this evaluates to false, logging messages are not passed to the handlers
+   of ancestor loggers.
 
-   コンストラクタはこの属性を 1 に設定します。
+   The constructor sets this attribute to ``True``.
 
+   .. note:: If you attach a handler to a logger *and* one or more of its
+      ancestors, it may emit the same record multiple times. In general, you
+      should not need to attach a handler to more than one logger - if you just
+      attach it to the appropriate logger which is highest in the logger
+      hierarchy, then it will see all events logged by all descendant loggers,
+      provided that their propagate setting is left set to ``True``. A common
+      scenario is to attach handlers only to the root logger, and to let
+      propagation take care of the rest.
 
 .. method:: Logger.setLevel(lvl)
 
-   このロガーの閾値を *lvl* に設定します。
-   ログ記録しようとするメッセージで、 *lvl* よりも深刻でないものは無視されます。
-   ロガーが生成された際、レベルは :const:`NOTSET` (これによりすべてのメッセージについて、
-   ロガーがルートロガーであれば処理される、そうでなくてロガーが非ルートロガーの場合には親ロガーに委譲させる) に設定されます。
-   ルートロガーは :const:`WARNING` レベルで生成されることに注意してください。
+   Sets the threshold for this logger to *lvl*. Logging messages which are less
+   severe than *lvl* will be ignored. When a logger is created, the level is set to
+   :const:`NOTSET` (which causes all messages to be processed when the logger is
+   the root logger, or delegation to the parent when the logger is a non-root
+   logger). Note that the root logger is created with level :const:`WARNING`.
 
-   「親ロガーに委譲」という用語の意味は、もしロガーのレベルが NOTEST ならば、
-   祖先ロガーの系列の中を NOTEST 以外のレベルの祖先を見つけるかルートに到達するまで辿っていく、ということです。
+   The term 'delegation to the parent' means that if a logger has a level of
+   NOTSET, its chain of ancestor loggers is traversed until either an ancestor with
+   a level other than NOTSET is found, or the root is reached.
 
-   もし NOTEST 以外のレベルの祖先が見つかったなら、その祖先のレベルが探索を開始したロガーの実効レベルとして扱われ、
-   ログイベントがどのように処理されるかを決めるのに使われます。
+   If an ancestor is found with a level other than NOTSET, then that ancestor's
+   level is treated as the effective level of the logger where the ancestor search
+   began, and is used to determine how a logging event is handled.
 
-   ルートに到達した場合、ルートのレベルが NOTEST ならばすべてのメッセージは処理されます。
-   そうでなければルートのレベルが実効レベルとして使われます。
+   If the root is reached, and it has a level of NOTSET, then all messages will be
+   processed. Otherwise, the root's level will be used as the effective level.
+
+   See :ref:`levels` for a list of levels.
 
 
 .. method:: Logger.isEnabledFor(lvl)
 
-   深刻度が *lvl* のメッセージが、このロガーで処理されることになっているかどうかを示します。
-   このメソッドはまず、 ``logging.disable(lvl)`` で設定されるモジュールレベルの深刻度レベルを調べ、
-   次にロガーの実効レベルを :meth:`getEffectiveLevel` で調べます。
+   Indicates if a message of severity *lvl* would be processed by this logger.
+   This method checks first the module-level level set by
+   ``logging.disable(lvl)`` and then the logger's effective level as determined
+   by :meth:`getEffectiveLevel`.
 
 
 .. method:: Logger.getEffectiveLevel()
 
-   このロガーの実効レベルを示します。 :const:`NOTSET` 以外の値が :meth:`setLevel` で設定されていた場合、その値が返されます。
-   そうでない場合、 :const:`NOTSET` 以外の値が見つかるまでロガーの階層をルートロガーの方向に追跡します。
-   見つかった場合、その値が返されます。
+   Indicates the effective level for this logger. If a value other than
+   :const:`NOTSET` has been set using :meth:`setLevel`, it is returned. Otherwise,
+   the hierarchy is traversed towards the root until a value other than
+   :const:`NOTSET` is found, and that value is returned. The value returned is
+   an integer, typically one of :const:`logging.DEBUG`, :const:`logging.INFO`
+   etc.
 
 
 .. method:: Logger.getChild(suffix)
 
-   このロガーの子であるロガーを、接頭辞によって決定し、返します。
-   従って、 ``logging.getLogger('abc').getChild('def.ghi')`` は、
-   ``logging.getLogger('abc.def.ghi')`` によって返されるのと同じロガーを
-   返すことになります。これは簡便なメソッドで、親ロガーがリテラルでなく
-   ``__name__`` などを使って名付けられているときに便利です。
+   Returns a logger which is a descendant to this logger, as determined by the suffix.
+   Thus, ``logging.getLogger('abc').getChild('def.ghi')`` would return the same
+   logger as would be returned by ``logging.getLogger('abc.def.ghi')``. This is a
+   convenience method, useful when the parent logger is named using e.g. ``__name__``
+   rather than a literal string.
 
    .. versionadded:: 2.7
 
 
 .. method:: Logger.debug(msg, *args, **kwargs)
 
-   レベル :const:`DEBUG` のメッセージをこのロガーで記録します。
-   *msg* はメッセージの書式化文字列で、 *args* は *msg* に文字列書式化演算子を使って取り込むための引数です。
-   (これは、書式化文字列の中でキーワードを使い、引数として単一の辞書を渡すことができる、ということを意味します。)
+   Logs a message with level :const:`DEBUG` on this logger. The *msg* is the
+   message format string, and the *args* are the arguments which are merged into
+   *msg* using the string formatting operator. (Note that this means that you can
+   use keywords in the format string, together with a single dictionary argument.)
 
-   キーワード引数 *kwargs* からは 2 つのキーワードが調べられます。
-   一つ目は *exc_info* で、この値の評価値が false でない場合、例外情報をログメッセージに追加します。
-   (:func:`sys.exc_info` の返す形式の) 例外情報を表すタプルが与えられていれば、それをメッセージに使います。
-   それ以外の場合には、 :func:`sys.exc_info` を呼び出して例外情報を取得します。
+   There are two keyword arguments in *kwargs* which are inspected: *exc_info*
+   which, if it does not evaluate as false, causes exception information to be
+   added to the logging message. If an exception tuple (in the format returned by
+   :func:`sys.exc_info`) is provided, it is used; otherwise, :func:`sys.exc_info`
+   is called to get the exception information.
 
-   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られる
-   LogRecoed の __dict__ にユーザー定義属性を加えるのに使われる辞書を渡すために用いられます。
-   これらの属性は好きなように使えます。たとえば、ログメッセージの一部にすることもできます。
-   以下の例を見てください::
+   The second keyword argument is *extra* which can be used to pass a
+   dictionary which is used to populate the __dict__ of the LogRecord created for
+   the logging event with user-defined attributes. These custom attributes can then
+   be used as you like. For example, they could be incorporated into logged
+   messages. For example::
 
       FORMAT = '%(asctime)-15s %(clientip)s %(user)-8s %(message)s'
       logging.basicConfig(format=FORMAT)
-      d = { 'clientip' : '192.168.0.1', 'user' : 'fbloggs' }
+      d = {'clientip': '192.168.0.1', 'user': 'fbloggs'}
       logger = logging.getLogger('tcpserver')
       logger.warning('Protocol problem: %s', 'connection reset', extra=d)
 
-   出力はこのようになります::
+   would print something like  ::
 
       2006-02-08 22:20:02,165 192.168.0.1 fbloggs  Protocol problem: connection reset
 
-   *extra* で渡される辞書のキーはロギングシステムで使われているものと衝突しないようにしなければなりません。
-   (どのキーがロギングシステムで使われているかについての詳細は :class:`Formatter` のドキュメントを参照してください。)
+   The keys in the dictionary passed in *extra* should not clash with the keys used
+   by the logging system. (See the :class:`Formatter` documentation for more
+   information on which keys are used by the logging system.)
 
-   これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
-   上の例では、 'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
-   :class:`Formatter` がセットアップされています。
-   もしこれらが欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
-   したがってこの場合、常にこれらのキーを含む *extra* 辞書を渡す必要があります。
+   If you choose to use these attributes in logged messages, you need to exercise
+   some care. In the above example, for instance, the :class:`Formatter` has been
+   set up with a format string which expects 'clientip' and 'user' in the attribute
+   dictionary of the LogRecord. If these are missing, the message will not be
+   logged because a string formatting exception will occur. So in this case, you
+   always need to pass the *extra* dictionary with these keys.
 
-   このようなことは煩わしいかもしれませんが、この機能は限定された場面で使われるように意図しているものなのです。
-   たとえば同じコードがいくつものコンテキストで実行されるマルチスレッドのサーバで、
-   興味のある条件が現れるのがそのコンテキストに依存している
-   (上の例で言えば、リモートのクライアント IP アドレスや認証されたユーザ名など)、というような場合です。
-   そういった場面では、それ用の :class:`Formatter` が特定の :class:`Handler` と共に使われるというのはよくあることです。
+   While this might be annoying, this feature is intended for use in specialized
+   circumstances, such as multi-threaded servers where the same code executes in
+   many contexts, and interesting conditions which arise are dependent on this
+   context (such as remote client IP address and authenticated user name, in the
+   above example). In such circumstances, it is likely that specialized
+   :class:`Formatter`\ s would be used with particular :class:`Handler`\ s.
 
 
 .. method:: Logger.info(msg, *args, **kwargs)
 
-   レベル :const:`INFO` のメッセージをこのロガーで記録します。
-   引数は :meth:`debug` と同じように解釈されます。
+   Logs a message with level :const:`INFO` on this logger. The arguments are
+   interpreted as for :meth:`debug`.
 
 
 .. method:: Logger.warning(msg, *args, **kwargs)
 
-   レベル :const:`WARNING` のメッセージをこのロガーで記録します。
-   引数は :meth:`debug` と同じように解釈されます。
+   Logs a message with level :const:`WARNING` on this logger. The arguments are
+   interpreted as for :meth:`debug`.
 
 
 .. method:: Logger.error(msg, *args, **kwargs)
 
-   レベル :const:`ERROR` のメッセージをこのロガーで記録します。
-   引数は :meth:`debug` と同じように解釈されます。
+   Logs a message with level :const:`ERROR` on this logger. The arguments are
+   interpreted as for :meth:`debug`.
 
 
 .. method:: Logger.critical(msg, *args, **kwargs)
 
-   レベル :const:`CRITICAL` のメッセージをこのロガーで記録します。
-   引数は :meth:`debug` と同じように解釈されます。
+   Logs a message with level :const:`CRITICAL` on this logger. The arguments are
+   interpreted as for :meth:`debug`.
 
 
 .. method:: Logger.log(lvl, msg, *args, **kwargs)
 
-   整数で表したレベル *lvl* のメッセージをこのロガーで記録します。
-   その他の引数は :meth:`debug` と同じように解釈されます。
+   Logs a message with integer level *lvl* on this logger. The other arguments are
+   interpreted as for :meth:`debug`.
 
 
-.. method:: Logger.exception(msg, *args)
+.. method:: Logger.exception(msg, *args, **kwargs)
 
-   レベル :const:`ERROR` のメッセージをこのロガーで記録します。
-   引数は :meth:`debug` と同じように解釈されます。
-   例外情報がログメッセージに追加されます。
-   このメソッドは例外ハンドラからのみ呼び出されるべきです。
+   Logs a message with level :const:`ERROR` on this logger. The arguments are
+   interpreted as for :meth:`debug`, except that any passed *exc_info* is not
+   inspected. Exception info is always added to the logging message. This method
+   should only be called from an exception handler.
 
 
 .. method:: Logger.addFilter(filt)
 
-   指定されたフィルタ *filt* をこのロガーに追加します。
+   Adds the specified filter *filt* to this logger.
 
 
 .. method:: Logger.removeFilter(filt)
 
-   指定されたフィルタ *filt* をこのロガーから取り除きます。
+   Removes the specified filter *filt* from this logger.
 
 
 .. method:: Logger.filter(record)
 
-   このロガーのフィルタをレコード (record) に適用し、
-   レコードがフィルタを透過して処理されることになる場合には true を返します。
+   Applies this logger's filters to the record and returns a true value if the
+   record is to be processed. The filters are consulted in turn, until one of
+   them returns a false value. If none of them return a false value, the record
+   will be processed (passed to handlers). If one returns a false value, no
+   further processing of the record occurs.
 
 
 .. method:: Logger.addHandler(hdlr)
 
-   指定されたハンドラ *hdlr* をこのロガーに追加します。
+   Adds the specified handler *hdlr* to this logger.
 
 
 .. method:: Logger.removeHandler(hdlr)
 
-   指定されたハンドラ *hdlr* をこのロガーから取り除きます。
+   Removes the specified handler *hdlr* from this logger.
 
 
 .. method:: Logger.findCaller()
 
-   呼び出し元のソースファイル名と行番号を調べます。
-   ファイル名と行番号と関数名を 3 要素のタプルで返します。
+   Finds the caller's source filename and line number. Returns the filename, line
+   number and function name as a 3-element tuple.
 
    .. versionchanged:: 2.4
-      関数名も加えられました。
-      以前のバージョンではファイル名と行番号を 2 要素のタプルで返していました。
+      The function name was added. In earlier versions, the filename and line
+      number were returned as a 2-element tuple.
 
 .. method:: Logger.handle(record)
 
-   レコードを、このロガーおよびその上位ロガー (ただし *propagate* の値が false になったところまで)
-   に関連付けられているすべてのハンドラに渡して処理します。
-   このメソッドは、ローカルで生成されたレコードだけでなく、
-   ソケットから受信した unpickle されたレコードに対しても同様に用いられます。
-   :meth:`~Logger.filter` によって、ロガーレベルでのフィルタが適用されます。
+   Handles a record by passing it to all handlers associated with this logger and
+   its ancestors (until a false value of *propagate* is found). This method is used
+   for unpickled records received from a socket, as well as those created locally.
+   Logger-level filtering is applied using :meth:`~Logger.filter`.
 
 
 .. method:: Logger.makeRecord(name, lvl, fn, lno, msg, args, exc_info, func=None, extra=None)
 
-   このメソッドは、特殊な :class:`LogRecord` インスタンスを生成するために
-   サブクラスでオーバライドできるファクトリメソッドです。
+   This is a factory method which can be overridden in subclasses to create
+   specialized :class:`LogRecord` instances.
 
    .. versionchanged:: 2.5
-      *func* と *extra* が追加されました。
+      *func* and *extra* were added.
+
+
+.. _levels:
+
+Logging Levels
+--------------
+
+The numeric values of logging levels are given in the following table. These are
+primarily of interest if you want to define your own levels, and need them to
+have specific values relative to the predefined levels. If you define a level
+with the same numeric value, it overwrites the predefined value; the predefined
+name is lost.
+
++--------------+---------------+
+| Level        | Numeric value |
++==============+===============+
+| ``CRITICAL`` | 50            |
++--------------+---------------+
+| ``ERROR``    | 40            |
++--------------+---------------+
+| ``WARNING``  | 30            |
++--------------+---------------+
+| ``INFO``     | 20            |
++--------------+---------------+
+| ``DEBUG``    | 10            |
++--------------+---------------+
+| ``NOTSET``   | 0             |
++--------------+---------------+
+
 
 .. _handler:
 
-ハンドラオブジェクト
---------------------
+Handler Objects
+---------------
 
-ハンドラ (Handler) は以下の属性とメソッドを持ちます。
-:class:`Handler` は直接インスタンス化されることはありません;
-このクラスはより便利なサブクラスの基底クラスとして働きます。
-しかしながら、サブクラスにおける :meth:`__init__` メソッドでは、
-:meth:`Handler.__init__` を呼び出す必要があります。
+Handlers have the following attributes and methods. Note that :class:`Handler`
+is never instantiated directly; this class acts as a base for more useful
+subclasses. However, the :meth:`__init__` method in subclasses needs to call
+:meth:`Handler.__init__`.
 
 
 .. method:: Handler.__init__(level=NOTSET)
 
-   レベルを設定して、 :class:`Handler` インスタンスを初期化します。
-   空のリストを使ってフィルタを設定し、 I/O 機構へのアクセスを直列化するために
-   (:meth:`createLock` を使って) ロックを生成します。
+   Initializes the :class:`Handler` instance by setting its level, setting the list
+   of filters to the empty list and creating a lock (using :meth:`createLock`) for
+   serializing access to an I/O mechanism.
 
 
 .. method:: Handler.createLock()
 
-   スレッドセーフでない背後の I/O 機能に対するアクセスを直列化するために用いられる
-   スレッドロック (thread lock) を初期化します。
+   Initializes a thread lock which can be used to serialize access to underlying
+   I/O functionality which may not be threadsafe.
 
 
 .. method:: Handler.acquire()
 
-   :meth:`createLock` で生成されたスレッドロックを獲得します。
+   Acquires the thread lock created with :meth:`createLock`.
 
 
 .. method:: Handler.release()
 
-   :meth:`acquire` で獲得したスレッドロックを解放します。
+   Releases the thread lock acquired with :meth:`acquire`.
 
 
 .. method:: Handler.setLevel(lvl)
 
-   このハンドラに対する閾値を *lvl* に設定します。
-   ログ記録しようとするメッセージで、 *lvl* よりも深刻でないものは無視されます。
-   ハンドラが生成された際、レベルは :const:`NOTSET` (すべてのメッセージが処理される) に設定されます。
+   Sets the threshold for this handler to *lvl*. Logging messages which are less
+   severe than *lvl* will be ignored. When a handler is created, the level is set
+   to :const:`NOTSET` (which causes all messages to be processed).
 
+   See :ref:`levels` for a list of levels.
 
 .. method:: Handler.setFormatter(form)
 
-   このハンドラのフォーマッタを *form* に設定します。
+   Sets the :class:`Formatter` for this handler to *form*.
 
 
 .. method:: Handler.addFilter(filt)
 
-   指定されたフィルタ *filt* をこのハンドラに追加します。
+   Adds the specified filter *filt* to this handler.
 
 
 .. method:: Handler.removeFilter(filt)
 
-   指定されたフィルタ *filt* をこのハンドラから除去します。
+   Removes the specified filter *filt* from this handler.
 
 
 .. method:: Handler.filter(record)
 
-   このハンドラのフィルタをレコードに適用し、レコードがフィルタを透過して処理されることになる場合には true 値を返します。
+   Applies this handler's filters to the record and returns a true value if the
+   record is to be processed. The filters are consulted in turn, until one of
+   them returns a false value. If none of them return a false value, the record
+   will be emitted. If one returns a false value, the handler will not emit the
+   record.
 
 
 .. method:: Handler.flush()
 
-   すべてのログ出力がフラッシュされるようにします。
-   このクラスのバージョンではなにも行わず、サブクラスで実装するためのものです。
+   Ensure all logging output has been flushed. This version does nothing and is
+   intended to be implemented by subclasses.
 
 
 .. method:: Handler.close()
 
-   ハンドラで使われているすべてのリソースの後始末を行います。
-   このバージョンでは何も出力せず、 :func:`shutdown` が呼ばれたときに閉じられたハンドラを内部リストから削除します。
-   サブクラスではオーバライドされた :meth:`close` メソッドからこのメソッドが必ず呼ばれるようにしてください。
+   Tidy up any resources used by the handler. This version does no output but
+   removes the handler from an internal list of handlers which is closed when
+   :func:`shutdown` is called. Subclasses should ensure that this gets called
+   from overridden :meth:`close` methods.
 
 
 .. method:: Handler.handle(record)
 
-   ハンドラに追加されたフィルタの条件に応じて、指定されたログレコードを出力します。
-   このメソッドは I/O スレッドロックの獲得/解放を伴う実際のログ出力をラップします。
+   Conditionally emits the specified logging record, depending on filters which may
+   have been added to the handler. Wraps the actual emission of the record with
+   acquisition/release of the I/O thread lock.
 
 
 .. method:: Handler.handleError(record)
 
-   このメソッドは :meth:`emit` の呼び出し中に例外に遭遇した際にハンドラから呼び出されます。
-   デフォルトではこのメソッドは何も行いません。すなわち、例外は暗黙のまま無視されます。
-   ほとんどの場合、これがロギングシステムの望ましい動作です -
-   というのは、ほとんどのユーザはロギングシステム自体のエラーは気にせず、
-   むしろアプリケーションのエラーに興味があるからです。
-   しかしながら、望むならこのメソッドを自作のハンドラと置き換えることもできます。
-   *record* には、例外発生時に処理されていたレコードが入ります。
+   This method should be called from handlers when an exception is encountered
+   during an :meth:`emit` call. If the module-level attribute
+   ``raiseExceptions`` is ``False``, exceptions get silently ignored. This is
+   what is mostly wanted for a logging system - most users will not care about
+   errors in the logging system, they are more interested in application
+   errors. You could, however, replace this with a custom handler if you wish.
+   The specified record is the one which was being processed when the exception
+   occurred. (The default value of ``raiseExceptions`` is ``True``, as that is
+   more useful during development).
 
 
 .. method:: Handler.format(record)
 
-   レコードに対する書式化を行います - フォーマッタが設定されていれば、それを使います。
-   そうでない場合、モジュールにデフォルト指定されたフォーマッタを使います。
+   Do formatting for a record - if a formatter is set, use it. Otherwise, use the
+   default formatter for the module.
 
 
 .. method:: Handler.emit(record)
 
-   指定されたログ記録レコードを実際にログ記録する際のすべての処理を行います。
-   このメソッドはサブクラスで実装されることを意図しており、
-   そのためこのクラスのバージョンは :exc:`NotImplementedError` を送出します。
+   Do whatever it takes to actually log the specified logging record. This version
+   is intended to be implemented by subclasses and so raises a
+   :exc:`NotImplementedError`.
 
-標準として含まれているハンドラについては、 :mod:`logging.handlers` を
-参照してください。
+For a list of handlers included as standard, see :mod:`logging.handlers`.
 
 .. _formatter-objects:
 
-フォーマッタオブジェクト
-------------------------
+Formatter Objects
+-----------------
 
 .. currentmodule:: logging
 
-フォーマッタ (:class:`Formatter`) は以下の属性とメソッドを持っています。
-:class:`Formatter` は :class:`LogRecord` を (通常は) 人間か外部のシステムで解釈できる文字列に変換する役割を担っています。
-基底クラスの :class:`Formatter` では書式化文字列を指定することができます。
-何も指定されなかった場合、 ``'%(message)s'`` の値が使われます。
+:class:`Formatter` objects have the following attributes and methods. They are
+responsible for converting a :class:`LogRecord` to (usually) a string which can
+be interpreted by either a human or an external system. The base
+:class:`Formatter` allows a formatting string to be specified. If none is
+supplied, the default value of ``'%(message)s'`` is used, which just includes
+the message in the logging call. To have additional items of information in the
+formatted output (such as a timestamp), keep reading.
 
-Formatter は :class:`LogRecord` 属性の知識を利用できるような書式化文字列を用いて初期化することができます。
-例えば、上で言及したデフォルト値では、ユーザによるメッセージと引数はあらかじめ書式化されて、
-:class:`LogRecord` の *message* 属性に入っていることを利用しています。
-この書式化文字列は、 Python 標準の % を使った変換文字列で構成されます。
-文字列整形に関する詳細は :ref:`string-formatting` を参照してください。
+A Formatter can be initialized with a format string which makes use of knowledge
+of the :class:`LogRecord` attributes - such as the default value mentioned above
+making use of the fact that the user's message and arguments are pre-formatted
+into a :class:`LogRecord`'s *message* attribute.  This format string contains
+standard Python %-style mapping keys. See section :ref:`string-formatting`
+for more information on string formatting.
 
-:class:`LogRecord`  の便利なマッピングキーは、 :ref:`logrecord-attributes`
-の節で与えられます。
+The useful mapping keys in a :class:`LogRecord` are given in the section on
+:ref:`logrecord-attributes`.
 
 
 .. class:: Formatter(fmt=None, datefmt=None)
 
-   :class:`Formatter` クラスの新たなインスタンスを返します。
-   インスタンスは全体としてのメッセージに対する書式化文字列と、
-   メッセージの日付/時刻部分のための書式化文字列を伴って初期化されます。
-   *fmt*  が指定されない場合、 ``'%(message)s'`` が使われます。
-   *datefmt* が指定されない場合、 ISO8601 日付書式が使われます。
+   Returns a new instance of the :class:`Formatter` class.  The instance is
+   initialized with a format string for the message as a whole, as well as a
+   format string for the date/time portion of a message.  If no *fmt* is
+   specified, ``'%(message)s'`` is used.  If no *datefmt* is specified, the
+   ISO8601 date format is used.
 
    .. method:: format(record)
 
-      レコードの属性辞書が、文字列を書式化する演算で被演算子として使われます。
-      書式化された結果の文字列を返します。辞書を書式化する前に、二つの準備段階を経ます。
-      レコードの *message* 属性が *msg* % *args* を使って処理されます。
-      書式化された文字列が :const:`'(asctime)'` を含むなら、
-      :meth:`formatTime` が呼び出され、イベントの発生時刻を書式化します。
-      例外情報が存在する場合、 :meth:`formatException`  を使って書式化され、メッセージに追加されます。
-      ここで注意していただきたいのは、書式化された例外情報は *exc_text* にキャッシュされるという点です。
-      これが有用なのは例外情報がピックル化されて回線上を送ることができるからですが、
-      しかし二つ以上の :class:`Formatter` サブクラスで例外情報の書式化をカスタマイズしている場合には注意が必要になります。
-      この場合、フォーマッタが書式化を終えるごとにキャッシュをクリアして、
-      次のフォーマッタがキャッシュされた値を使わずに新鮮な状態で再計算するようにしなければならないことになります。
+      The record's attribute dictionary is used as the operand to a string
+      formatting operation. Returns the resulting string. Before formatting the
+      dictionary, a couple of preparatory steps are carried out. The *message*
+      attribute of the record is computed using *msg* % *args*. If the
+      formatting string contains ``'(asctime)'``, :meth:`formatTime` is called
+      to format the event time. If there is exception information, it is
+      formatted using :meth:`formatException` and appended to the message. Note
+      that the formatted exception information is cached in attribute
+      *exc_text*. This is useful because the exception information can be
+      pickled and sent across the wire, but you should be careful if you have
+      more than one :class:`Formatter` subclass which customizes the formatting
+      of exception information. In this case, you will have to clear the cached
+      value after a formatter has done its formatting, so that the next
+      formatter to handle the event doesn't use the cached value but
+      recalculates it afresh.
 
 
    .. method:: formatTime(record, datefmt=None)
 
-      このメソッドは、フォーマッタが書式化された時間を利用したい際に、 :meth:`format` から呼び出されます。
-      このメソッドは特定の要求を提供するためにフォーマッタで上書きすることができますが、
-      基本的な振る舞いは以下のようになります: *datefmt* (文字列) が指定された場合、
-      レコードが生成された時刻を書式化するために :func:`time.strftime` で使われます。
-      そうでない場合、 ISO8601 書式が使われます。結果の文字列が返されます。
+      This method should be called from :meth:`format` by a formatter which
+      wants to make use of a formatted time. This method can be overridden in
+      formatters to provide for any specific requirement, but the basic behavior
+      is as follows: if *datefmt* (a string) is specified, it is used with
+      :func:`time.strftime` to format the creation time of the
+      record. Otherwise, the ISO8601 format is used.  The resulting string is
+      returned.
 
-      この関数は、ユーザが設定できる関数を使って、生成時刻をタプルに変換します。
-      デフォルトでは、 :func:`time.localtime` が使われます。
-      これを特定のフォーマッタインスタンスに対して変更するには、 ``converter``
-      属性を :func:`time.localtime` や :func:`time.gmtime` と同じシグネチャを
-      持つ関数に設定してください。これをすべてのフォーマッタに対して
-      変更するには、例えばすべてのロギング時刻を GMT で表されるようにするには、
-      ``Formatter`` クラスの ``converter`` 属性を設定してください。
-      
+      This function uses a user-configurable function to convert the creation
+      time to a tuple. By default, :func:`time.localtime` is used; to change
+      this for a particular formatter instance, set the ``converter`` attribute
+      to a function with the same signature as :func:`time.localtime` or
+      :func:`time.gmtime`. To change it for all formatters, for example if you
+      want all logging times to be shown in GMT, set the ``converter``
+      attribute in the ``Formatter`` class.
 
    .. method:: formatException(exc_info)
 
-      指定された例外情報 (:func:`sys.exc_info` が返すような標準例外のタプル) を文字列として書式化します。
-      デフォルトの実装は単に :func:`traceback.print_exception` を使います。
-      結果の文字列が返されます。
+      Formats the specified exception information (a standard exception tuple as
+      returned by :func:`sys.exc_info`) as a string. This default implementation
+      just uses :func:`traceback.print_exception`. The resulting string is
+      returned.
 
 .. _filter:
 
-フィルタオブジェクト
---------------------
+Filter Objects
+--------------
 
-``フィルタ (Filter)`` は、 ``ハンドラ`` や ``ロガー`` によって使われ、
-レベルによって提供されるのよりも洗練されたフィルタリングを実現します。
-基底のフィルタクラスは、ロガー階層構造内の特定地点の配下にあるイベントだけを
-許可します。例えば、'A.B' で初期化されたフィルタは、ロガー 'A.B', 'A.B.C',
-'A.B.C.D', 'A.B.D' 等によって記録されたイベントは許可しますが、 'A.BB', 'B.A.B'
-などは許可しません。
-空の文字列で初期化された場合、すべてのイベントを通過させます。
+``Filters`` can be used by ``Handlers`` and ``Loggers`` for more sophisticated
+filtering than is provided by levels. The base filter class only allows events
+which are below a certain point in the logger hierarchy. For example, a filter
+initialized with 'A.B' will allow events logged by loggers 'A.B', 'A.B.C',
+'A.B.C.D', 'A.B.D' etc. but not 'A.BB', 'B.A.B' etc. If initialized with the
+empty string, all events are passed.
 
 
 .. class:: Filter(name='')
 
-   :class:`Filter` クラスのインスタンスを返します。
-   *name* が指定されていれば、 *name* はロガーの名前を表します。
-   指定されたロガーとその子ロガーのイベントがフィルタを通過できるようになります。
-   *name* が指定されなければ、すべてのイベントを通過させます。
+   Returns an instance of the :class:`Filter` class. If *name* is specified, it
+   names a logger which, together with its children, will have its events allowed
+   through the filter. If *name* is the empty string, allows every event.
 
 
    .. method:: filter(record)
 
-      指定されたレコードがログされているか？
-      されていなければゼロを、されていればゼロでない値を返します。
-      適切と判断されれば、このメソッドによってレコードはその場で修正されることがあります。
+      Is the specified record to be logged? Returns zero for no, nonzero for
+      yes. If deemed appropriate, the record may be modified in-place by this
+      method.
 
-なお、ハンドラに取り付けられたフィルタは、ハンドラからイベントが
-放出されるたびに参照されますが、ロガーに取り付けられたフィルタは、
-イベントがハンドラに (:meth:`debug`, :meth:`info` などを使って) 記録されるたび
-に参照されます。これにより、子孫のロガーで生成されたイベントは、
-ロガーのフィルタ設定には、そのフィルタが子孫のロガーにも適用されるので
-ない限り、フィルタされなくなります。
+Note that filters attached to handlers are consulted before an event is
+emitted by the handler, whereas filters attached to loggers are consulted
+whenever an event is logged (using :meth:`debug`, :meth:`info`,
+etc.), before sending an event to handlers. This means that events which have
+been generated by descendant loggers will not be filtered by a logger's filter
+setting, unless the filter has also been applied to those descendant loggers.
 
-実際には、 ``Filter`` をサブクラス化する必要はありません。
-同じ意味の ``filter`` メソッドを持つ、すべてのインスタンスを通せます。
+You don't actually need to subclass ``Filter``: you can pass any instance
+which has a ``filter`` method with the same semantics.
 
-フィルタは本来、レコードをレベルよりも洗練された基準に基づいてフィルタする
-ために使われますが、それが取り付けられたハンドラやロガーによって処理される
-レコードをすべて監視します。これは、特定のロガーやハンドラに処理された
-レコードの数を数えたり、処理されている LogRecord の属性を追加、変更、削除
-したりするときに便利です。もちろん、LogRecord を変更するには注意が必要ですが、
-これにより、ログにコンテキスト情報を注入できます (:ref:`filters-contextual` を
-参照してください)。
+Although filters are used primarily to filter records based on more
+sophisticated criteria than levels, they get to see every record which is
+processed by the handler or logger they're attached to: this can be useful if
+you want to do things like counting how many records were processed by a
+particular logger or handler, or adding, changing or removing attributes in
+the LogRecord being processed. Obviously changing the LogRecord needs to be
+done with some care, but it does allow the injection of contextual information
+into logs (see :ref:`filters-contextual`).
 
 .. _log-record:
 
-LogRecord オブジェクト
-----------------------
+LogRecord Objects
+-----------------
 
-:class:`LogRecord` インスタンスは、何かをログ記録するたびに :class:`Logger` に
-よって生成されます。また、 :func:`makeLogRecord` を通して
-(例えば、ワイヤを通して受け取られた pickle 化されたイベントから) 手動で
-生成することも出来ます。
+:class:`LogRecord` instances are created automatically by the :class:`Logger`
+every time something is logged, and can be created manually via
+:func:`makeLogRecord` (for example, from a pickled event received over the
+wire).
 
 
 .. class:: LogRecord(name, level, pathname, lineno, msg, args, exc_info, func=None)
 
-   ロギングされているイベントに適切なすべての情報を含みます。
+   Contains all the information pertinent to the event being logged.
 
-   一時情報が :attr:`msg` と :attr:`args` に渡され、それらは ``msg % args``
-   を使って組み合わされ、レコードの :attr:`message` 属性を生成します。
+   The primary information is passed in :attr:`msg` and :attr:`args`, which
+   are combined using ``msg % args`` to create the :attr:`message` field of the
+   record.
 
-   :param name:  この LogRecord で表されるイベントをロギングするのに使われる
-                 ロガーの名前です。
-   :param level: このロギングイベントの数値のレベル (DEBUG, INFO などの
-                 いずれか) です。なお、これは LogRecord の *2* つの属性
-                 に変換されます。数値 ``levelno`` と、対応するレベル名
-                 ``levelname`` です。
-   :param pathname: ロギングを呼び出したソースファイルの完全なパス名です。
-   :param lineno: ロギングを呼び出したソースファイルの行番号です。
-   :param msg: イベント記述メッセージで、これは変数データのプレースホルダを持つ
-               フォーマット文字列になり得ます。
-   :param args: *msg* 引数と組み合わせてイベント記述を得るための
-                変数データです。
-   :param exc_info: 現在の例外情報を含む例外タプルか、利用できる例外情報が
-                    ないなら *None* です。
-   :param func: ロギングの呼び出しを行った関数またはメソッドの名前です。
+   :param name:  The name of the logger used to log the event represented by
+                 this LogRecord. Note that this name will always have this
+                 value, even though it may be emitted by a handler attached to
+                 a different (ancestor) logger.
+   :param level: The numeric level of the logging event (one of DEBUG, INFO etc.)
+                 Note that this is converted to *two* attributes of the LogRecord:
+                 ``levelno`` for the numeric value and ``levelname`` for the
+                 corresponding level name.
+   :param pathname: The full pathname of the source file where the logging call
+                    was made.
+   :param lineno: The line number in the source file where the logging call was
+                  made.
+   :param msg: The event description message, possibly a format string with
+               placeholders for variable data.
+   :param args: Variable data to merge into the *msg* argument to obtain the
+                event description.
+   :param exc_info: An exception tuple with the current exception information,
+                    or *None* if no exception information is available.
+   :param func: The name of the function or method from which the logging call
+                was invoked.
 
    .. versionchanged:: 2.5
-      *func* が追加されました。
+      *func* was added.
 
    .. method:: getMessage()
 
-      ユーザが供給した引数をメッセージに交ぜた後、
-      この :class:`LogRecord` インスタンスへのメッセージを返します。
-      ユーザがロギングの呼び出しに与えた引数が文字列でなければ、
-      その引数に :func:`str` が呼ばれ、文字列に変換されます。
-      これにより、 ``__str__`` メソッドが実際のフォーマット文字列を返せるような
-      ユーザ定義のクラスをメッセージとして使えます。
+      Returns the message for this :class:`LogRecord` instance after merging any
+      user-supplied arguments with the message. If the user-supplied message
+      argument to the logging call is not a string, :func:`str` is called on it to
+      convert it to a string. This allows use of user-defined classes as
+      messages, whose ``__str__`` method can return the actual format string to
+      be used.
 
 
 .. _logrecord-attributes:
 
-LogRecord 属性
---------------
+LogRecord attributes
+--------------------
 
-LogRecord には幾つかの属性があり、そのほとんどはコンストラクタのパラメタから
-得られます。(なお、LogRecord コンストラクタのパラメタと LogRecord 属性が
-常に厳密に対応するわけではありません。) これらの属性は、レコードからのデータを
-フォーマット文字列に統合するのに使えます。以下のテーブルに、
-属性名、意味、そして % 形式フォーマット文字列における対応するプレースホルダを
-(アルファベット順に) 列挙します。
+The LogRecord has a number of attributes, most of which are derived from the
+parameters to the constructor. (Note that the names do not always correspond
+exactly between the LogRecord constructor parameters and the LogRecord
+attributes.) These attributes can be used to merge data from the record into
+the format string. The following table lists (in alphabetical order) the
+attribute names, their meanings and the corresponding placeholder in a %-style
+format string.
 
-+----------------+--------------------------+-----------------------------------------------+
-| 属性名         | フォーマット             | 説明                                          |
-+================+==========================+===============================================+
-| args           | このフォーマットを自分で | ``msg`` に組み合わせて ``message`` を         |
-|                | 使う必要はないでしょう。 | 生成するための引数のタプル。                  |
-+----------------+--------------------------+-----------------------------------------------+
-| asctime        | ``%(asctime)s``          | :class:`LogRecord` が生成された時刻を         |
-|                |                          | 人間が読める書式で表したもの。                |
-|                |                          | デフォルトでは "2003-07-08 16:49:45,896" 形式 |
-|                |                          | (コンマ以降の数字は時刻のミリ秒部分) です。   |
-+----------------+--------------------------+-----------------------------------------------+
-| created        | ``%(created)f``          | :class:`LogRecord` が生成された時刻           |
-|                |                          | (:func:`time.time` によって返される形式で)。  |
-+----------------+--------------------------+-----------------------------------------------+
-| exc_info       | このフォーマットを自分で | (``sys.exc_info`` 風の) 例外タプルか、        |
-|                | 使う必要はないでしょう。 | 例外が起こっていなければ *None* 。            |
-+----------------+--------------------------+-----------------------------------------------+
-| filename       | ``%(filename)s``         | ``pathname`` のファイル名部分。               |
-+----------------+--------------------------+-----------------------------------------------+
-| funcName       | ``%(funcName)s``         | ロギングの呼び出しを含む関数の名前。          |
-+----------------+--------------------------+-----------------------------------------------+
-| levelname      | ``%(levelname)s``        | メッセージのための文字のロギングレベル        |
-|                |                          | (``'DEBUG'``, ``'INFO'``, ``'WARNING'``,      |
-|                |                          | ``'ERROR'``, ``'CRITICAL'``)。                |
-+----------------+--------------------------+-----------------------------------------------+
-| levelno        | ``%(levelno)s``          | メッセージのための数値のロギングレベル        |
-|                |                          | (:const:`DEBUG`, :const:`INFO`,               |
-|                |                          | :const:`WARNING`, :const:`ERROR`,             |
-|                |                          | :const:`CRITICAL`)。                          |
-+----------------+--------------------------+-----------------------------------------------+
-| lineno         | ``%(lineno)d``           | ロギングの呼び出しが発せられたソース行番号    |
-|                |                          | (利用できる場合のみ)。                        |
-+----------------+--------------------------+-----------------------------------------------+
-| module         | ``%(module)s``           | モジュール (``filename`` の名前部分)。        |
-+----------------+--------------------------+-----------------------------------------------+
-| msecs          | ``%(msecs)d``            | :class:`LogRecord` が生成された時刻の         |
-|                |                          | ミリ秒部分。                                  |
-+----------------+--------------------------+-----------------------------------------------+
-| message        | ``%(message)s``          | ``msg % args`` として求められた、             |
-|                |                          | ログメッセージ。 :meth:`Formatter.format` が  |
-|                |                          | 呼び出されたときに設定されます。              |
-+----------------+--------------------------+-----------------------------------------------+
-| msg            | このフォーマットを自分で | 元のロギングの呼び出しで渡されたフォーマット  |
-|                | 使う必要はないでしょう。 | 文字列。 ``args`` と合わせて、 ``message`` 、 |
-|                |                          | または任意のオブジェクトを生成します          |
-|                |                          | (:ref:`arbitrary-object-messages` 参照)。     |
-+----------------+--------------------------+-----------------------------------------------+
-| name           | ``%(name)s``             | ロギングに使われたロガーの名前。              |
-+----------------+--------------------------+-----------------------------------------------+
-| pathname       | ``%(pathname)s``         | ロギングの呼び出しが発せられたファイルの      |
-|                |                          | 完全なパス名 (利用できる場合のみ)。           |
-+----------------+--------------------------+-----------------------------------------------+
-| process        | ``%(process)d``          | プロセス ID (利用可能な場合のみ)。            |
-+----------------+--------------------------+-----------------------------------------------+
-| processName    | ``%(processName)s``      | プロセス名 (利用可能な場合のみ)。             |
-+----------------+--------------------------+-----------------------------------------------+
-| relativeCreated| ``%(relativeCreated)d``  | logging モジュール が読み込まれた時刻に       |
-|                |                          | 対する、LogRecord が生成された時刻を、        |
-|                |                          | ミリ秒で表したもの。                          |
-+----------------+--------------------------+-----------------------------------------------+
-| thread         | ``%(thread)d``           | スレッド ID (利用可能な場合のみ)。            |
-+----------------+--------------------------+-----------------------------------------------+
-| threadName     | ``%(threadName)s``       | スレッド名 (利用可能な場合のみ)。             |
-+----------------+--------------------------+-----------------------------------------------+
++----------------+-------------------------+-----------------------------------------------+
+| Attribute name | Format                  | Description                                   |
++================+=========================+===============================================+
+| args           | You shouldn't need to   | The tuple of arguments merged into ``msg`` to |
+|                | format this yourself.   | produce ``message``, or a dict whose values   |
+|                |                         | are used for the merge (when there is only one|
+|                |                         | argument, and it is a dictionary).            |
++----------------+-------------------------+-----------------------------------------------+
+| asctime        | ``%(asctime)s``         | Human-readable time when the                  |
+|                |                         | :class:`LogRecord` was created.  By default   |
+|                |                         | this is of the form '2003-07-08 16:49:45,896' |
+|                |                         | (the numbers after the comma are millisecond  |
+|                |                         | portion of the time).                         |
++----------------+-------------------------+-----------------------------------------------+
+| created        | ``%(created)f``         | Time when the :class:`LogRecord` was created  |
+|                |                         | (as returned by :func:`time.time`).           |
++----------------+-------------------------+-----------------------------------------------+
+| exc_info       | You shouldn't need to   | Exception tuple (à la ``sys.exc_info``) or,   |
+|                | format this yourself.   | if no exception has occurred, *None*.         |
++----------------+-------------------------+-----------------------------------------------+
+| filename       | ``%(filename)s``        | Filename portion of ``pathname``.             |
++----------------+-------------------------+-----------------------------------------------+
+| funcName       | ``%(funcName)s``        | Name of function containing the logging call. |
++----------------+-------------------------+-----------------------------------------------+
+| levelname      | ``%(levelname)s``       | Text logging level for the message            |
+|                |                         | (``'DEBUG'``, ``'INFO'``, ``'WARNING'``,      |
+|                |                         | ``'ERROR'``, ``'CRITICAL'``).                 |
++----------------+-------------------------+-----------------------------------------------+
+| levelno        | ``%(levelno)s``         | Numeric logging level for the message         |
+|                |                         | (:const:`DEBUG`, :const:`INFO`,               |
+|                |                         | :const:`WARNING`, :const:`ERROR`,             |
+|                |                         | :const:`CRITICAL`).                           |
++----------------+-------------------------+-----------------------------------------------+
+| lineno         | ``%(lineno)d``          | Source line number where the logging call was |
+|                |                         | issued (if available).                        |
++----------------+-------------------------+-----------------------------------------------+
+| module         | ``%(module)s``          | Module (name portion of ``filename``).        |
++----------------+-------------------------+-----------------------------------------------+
+| msecs          | ``%(msecs)d``           | Millisecond portion of the time when the      |
+|                |                         | :class:`LogRecord` was created.               |
++----------------+-------------------------+-----------------------------------------------+
+| message        | ``%(message)s``         | The logged message, computed as ``msg %       |
+|                |                         | args``. This is set when                      |
+|                |                         | :meth:`Formatter.format` is invoked.          |
++----------------+-------------------------+-----------------------------------------------+
+| msg            | You shouldn't need to   | The format string passed in the original      |
+|                | format this yourself.   | logging call. Merged with ``args`` to         |
+|                |                         | produce ``message``, or an arbitrary object   |
+|                |                         | (see :ref:`arbitrary-object-messages`).       |
++----------------+-------------------------+-----------------------------------------------+
+| name           | ``%(name)s``            | Name of the logger used to log the call.      |
++----------------+-------------------------+-----------------------------------------------+
+| pathname       | ``%(pathname)s``        | Full pathname of the source file where the    |
+|                |                         | logging call was issued (if available).       |
++----------------+-------------------------+-----------------------------------------------+
+| process        | ``%(process)d``         | Process ID (if available).                    |
++----------------+-------------------------+-----------------------------------------------+
+| processName    | ``%(processName)s``     | Process name (if available).                  |
++----------------+-------------------------+-----------------------------------------------+
+| relativeCreated| ``%(relativeCreated)d`` | Time in milliseconds when the LogRecord was   |
+|                |                         | created, relative to the time the logging     |
+|                |                         | module was loaded.                            |
++----------------+-------------------------+-----------------------------------------------+
+| thread         | ``%(thread)d``          | Thread ID (if available).                     |
++----------------+-------------------------+-----------------------------------------------+
+| threadName     | ``%(threadName)s``      | Thread name (if available).                   |
++----------------+-------------------------+-----------------------------------------------+
 
 .. versionchanged:: 2.5
-   *funcName* が追加されました。
+   *funcName* was added.
+
+.. versionchanged:: 2.6
+   *processName* was added.
 
 .. _logger-adapter:
 
-LoggerAdapter オブジェクト
---------------------------
+LoggerAdapter Objects
+---------------------
 
-:class:`LoggerAdapter` インスタンスは文脈情報をログ記録呼び出しに渡すのを簡単にするために使われます。
-使い方の例は :ref:`文脈情報をログ記録出力に付加する <context-info>` を参照してください。
+:class:`LoggerAdapter` instances are used to conveniently pass contextual
+information into logging calls. For a usage example, see the section on
+:ref:`adding contextual information to your logging output <context-info>`.
 
 .. versionadded:: 2.6
 
 
 .. class:: LoggerAdapter(logger, extra)
 
-   内部で使う :class:`Logger` インスタンスと辞書風 (dict-like) オブジェクトで初期化した
-   :class:`LoggerAdapter` のインスタンスを返します。
+   Returns an instance of :class:`LoggerAdapter` initialized with an
+   underlying :class:`Logger` instance and a dict-like object.
 
    .. method:: process(msg, kwargs)
 
-      文脈情報を挿入するために、ログ記録呼び出しに渡されたメッセージおよび/またはキーワード引数に変更を加えます。
-      ここでの実装は *extra* としてコンストラクタに渡されたオブジェクトを取り、
-      'extra' キーを使って *kwargs* に加えます。
-      返り値は (*msg*, *kwargs*) というタプルで、 (変更されているはずの) 渡された引数を含みます。
+      Modifies the message and/or keyword arguments passed to a logging call in
+      order to insert contextual information. This implementation takes the object
+      passed as *extra* to the constructor and adds it to *kwargs* using key
+      'extra'. The return value is a (*msg*, *kwargs*) tuple which has the
+      (possibly modified) versions of the arguments passed in.
 
-上のメソッドに加えて、 :class:`LoggerAdapter` は :class:`Logger` にあるすべてのログ記録メソッド、
-すなわち :meth:`debug`, :meth:`info`, :meth:`warning`, :meth:`error`, :meth:`exception`,
-:meth:`critical`, :meth:`log`,
-:meth:`isEnabledFor`, :meth:`getEffectiveLevel`, :meth:`setLevel`,
-:meth:`hasHandlers` をサポートします。
-これらのメソッドは対応する :class:`Logger` のメソッドと同じ引数を取りますので、
-二つの型を取り替えて使うことができます。
+In addition to the above, :class:`LoggerAdapter` supports the following
+methods of :class:`Logger`: :meth:`~Logger.debug`, :meth:`~Logger.info`,
+:meth:`~Logger.warning`, :meth:`~Logger.error`, :meth:`~Logger.exception`,
+:meth:`~Logger.critical`, :meth:`~Logger.log` and :meth:`~Logger.isEnabledFor`.
+These methods have the same signatures as their counterparts in :class:`Logger`,
+so you can use the two types of instances interchangeably for these calls.
 
 .. versionchanged:: 2.7
-   :meth:`isEnabledFor` メソッドが :class:`LoggerAdapter` に追加されました。
-   このメソッドは、下にあるロガーに委譲します。
+   The :meth:`~Logger.isEnabledFor` method was added to :class:`LoggerAdapter`.
+   This method delegates to the underlying logger.
 
 
-スレッドセーフ性
-----------------
+Thread Safety
+-------------
 
-logging モジュールは、クライアントで特殊な作業を必要としない限りスレッドセーフになっています。
-このスレッドセーフ性はスレッドロックによって達成されています;
-モジュールの共有データへのアクセスを直列化するためのロックが一つ存在し、
-各ハンドラでも背後にある I/O へのアクセスを直列化するためにロックを生成します。
+The logging module is intended to be thread-safe without any special work
+needing to be done by its clients. It achieves this though using threading
+locks; there is one lock to serialize access to the module's shared data, and
+each handler also creates a lock to serialize access to its underlying I/O.
 
-:mod:`signal` モジュールを使用して非同期シグナルハンドラを実装している場合、
-そのようなハンドラからはログ記録を使用できないかもしれません。
-これは、 :mod:`threading` モジュールにおけるロック実装が常にリエントラントではなく、
-そのようなシグナルハンドラから呼び出すことができないからです。
+If you are implementing asynchronous signal handlers using the :mod:`signal`
+module, you may not be able to use logging from within such handlers. This is
+because lock implementations in the :mod:`threading` module are not always
+re-entrant, and so cannot be invoked from such signal handlers.
 
 
-モジュールレベル関数
---------------------
+Module-Level Functions
+----------------------
 
-上で述べたクラスに加えて、いくつかのモジュールレベルの関数が存在します。
+In addition to the classes described above, there are a number of module- level
+functions.
 
 
 .. function:: getLogger([name])
 
-   指定された名前のロガーを返します。名前が指定されていない場合、ロガー階層のルート (root) にあるロガーを返します。
-   *name* を指定する場合には、通常は *"a"*, *"a.b"*, *"a.b.c.d"* といったドット区切りの階層的な名前にします。
-   名前の付け方はログ機能を使う開発者次第です。
+   Return a logger with the specified name or, if no name is specified, return a
+   logger which is the root logger of the hierarchy. If specified, the name is
+   typically a dot-separated hierarchical name like *"a"*, *"a.b"* or *"a.b.c.d"*.
+   Choice of these names is entirely up to the developer who is using logging.
 
-   与えられた名前に対して、この関数はどの呼び出しでも同じロガーインスタンスを返します。
-   したがって、ロガーインスタンスをアプリケーションの各部でやりとりする必要はありません。
+   All calls to this function with a given name return the same logger instance.
+   This means that logger instances never need to be passed between different parts
+   of an application.
 
 
 .. function:: getLoggerClass()
 
-   標準の :class:`Logger` クラスか、最後に :func:`setLoggerClass` に渡したクラスを返します。
-   この関数は、新たなクラス定義の中で呼び出して、カスタマイズした :class:`Logger` クラスのインストールが
-   既に他のコードで適用したカスタマイズを取り消さないことを保証するために使われることがあります。
-   例えば以下のようにします::
+   Return either the standard :class:`Logger` class, or the last class passed to
+   :func:`setLoggerClass`. This function may be called from within a new class
+   definition, to ensure that installing a customized :class:`Logger` class will
+   not undo customizations already applied by other code. For example::
 
       class MyLogger(logging.getLoggerClass()):
           # ... override behaviour here
@@ -668,225 +775,255 @@ logging モジュールは、クライアントで特殊な作業を必要とし
 
 .. function:: debug(msg[, *args[, **kwargs]])
 
-   レベル :const:`DEBUG` のメッセージをルートロガーで記録します。
-   *msg* はメッセージの書式化文字列で、 *args* は *msg* に文字列書式化演算子を使って取り込むための引数です。
-   (これは、書式化文字列の中でキーワードを使い、引数として単一の辞書を渡すことができる、ということを意味します。)
+   Logs a message with level :const:`DEBUG` on the root logger. The *msg* is the
+   message format string, and the *args* are the arguments which are merged into
+   *msg* using the string formatting operator. (Note that this means that you can
+   use keywords in the format string, together with a single dictionary argument.)
 
-   キーワード引数 *kwargs* からは 2 つのキーワードが調べられます。
-   一つ目は *exc_info* で、この値の評価値が false でない場合、例外情報をログメッセージに追加します。
-   (:func:`sys.exc_info` の返す形式の) 例外情報を表すタプルが与えられていれば、それをメッセージに使います。
-   それ以外の場合には、 :func:`sys.exc_info` を呼び出して例外情報を取得します。
+   There are two keyword arguments in *kwargs* which are inspected: *exc_info*
+   which, if it does not evaluate as false, causes exception information to be
+   added to the logging message. If an exception tuple (in the format returned by
+   :func:`sys.exc_info`) is provided, it is used; otherwise, :func:`sys.exc_info`
+   is called to get the exception information.
 
-   もう一つのキーワード引数は *extra* で、当該ログイベント用に作られる
-   LogRecoed の __dict__ にユーザー定義属性を加えるのに使われる辞書を渡すために用いられます。
-   これらの属性は好きなように使えます。たとえば、ログメッセージの一部にすることもできます。
-   以下の例を見てください::
+   The other optional keyword argument is *extra* which can be used to pass a
+   dictionary which is used to populate the __dict__ of the LogRecord created for
+   the logging event with user-defined attributes. These custom attributes can then
+   be used as you like. For example, they could be incorporated into logged
+   messages. For example::
 
       FORMAT = "%(asctime)-15s %(clientip)s %(user)-8s %(message)s"
       logging.basicConfig(format=FORMAT)
       d = {'clientip': '192.168.0.1', 'user': 'fbloggs'}
       logging.warning("Protocol problem: %s", "connection reset", extra=d)
 
-   出力はこのようになります::
+   would print something like::
 
       2006-02-08 22:20:02,165 192.168.0.1 fbloggs  Protocol problem: connection reset
 
-   *extra* で渡される辞書のキーはロギングシステムで使われているものと衝突しないようにしなければなりません。
-   (どのキーがロギングシステムで使われているかについての詳細は :class:`Formatter` のドキュメントを参照してください。)
+   The keys in the dictionary passed in *extra* should not clash with the keys used
+   by the logging system. (See the :class:`Formatter` documentation for more
+   information on which keys are used by the logging system.)
 
-   これらの属性をログメッセージに使うことにしたなら、少し注意が必要です。
-   上の例では、 'clientip' と 'user' が LogRecord の属性辞書に含まれていることを期待した書式化文字列で
-   :class:`Formatter` がセットアップされています。
-   もしこれらが欠けていると、書式化例外が発生してしまうためメッセージはログに残りません。
-   したがってこの場合、常にこれらのキーを含む *extra* 辞書を渡す必要があります。
+   If you choose to use these attributes in logged messages, you need to exercise
+   some care. In the above example, for instance, the :class:`Formatter` has been
+   set up with a format string which expects 'clientip' and 'user' in the attribute
+   dictionary of the LogRecord. If these are missing, the message will not be
+   logged because a string formatting exception will occur. So in this case, you
+   always need to pass the *extra* dictionary with these keys.
 
-   このようなことは煩わしいかもしれませんが、この機能は限定された場面で使われるように意図しているものなのです。
-   たとえば同じコードがいくつものコンテキストで実行されるマルチスレッドのサーバで、
-   興味のある条件が現れるのがそのコンテキストに依存している
-   (上の例で言えば、リモートのクライアント IP アドレスや認証されたユーザ名など)、というような場合です。
-   そういった場面では、それ用の :class:`Formatter` が特定の :class:`Handler` と共に使われるというのはよくあることです。
+   While this might be annoying, this feature is intended for use in specialized
+   circumstances, such as multi-threaded servers where the same code executes in
+   many contexts, and interesting conditions which arise are dependent on this
+   context (such as remote client IP address and authenticated user name, in the
+   above example). In such circumstances, it is likely that specialized
+   :class:`Formatter`\ s would be used with particular :class:`Handler`\ s.
 
    .. versionchanged:: 2.5
-      *extra* が追加されました。
+      *extra* was added.
 
 
 .. function:: info(msg[, *args[, **kwargs]])
 
-   レベル :const:`INFO` のメッセージをルートロガーで記録します。
-   引数は :func:`debug` と同じように解釈されます。
+   Logs a message with level :const:`INFO` on the root logger. The arguments are
+   interpreted as for :func:`debug`.
 
 
 .. function:: warning(msg[, *args[, **kwargs]])
 
-   レベル :const:`WARNING` のメッセージをルートロガーで記録します。
-   引数は :func:`debug` と同じように解釈されます。
+   Logs a message with level :const:`WARNING` on the root logger. The arguments are
+   interpreted as for :func:`debug`.
 
 
 .. function:: error(msg[, *args[, **kwargs]])
 
-   レベル :const:`ERROR` のメッセージをルートロガーで記録します。
-   引数は :func:`debug` と同じように解釈されます。
+   Logs a message with level :const:`ERROR` on the root logger. The arguments are
+   interpreted as for :func:`debug`.
 
 
 .. function:: critical(msg[, *args[, **kwargs]])
 
-   レベル :const:`CRITICAL` のメッセージをルートロガーで記録します。
-   引数は :func:`debug` と同じように解釈されます。
+   Logs a message with level :const:`CRITICAL` on the root logger. The arguments
+   are interpreted as for :func:`debug`.
 
 
-.. function:: exception(msg[, *args])
+.. function:: exception(msg[, *args[, **kwargs]])
 
-   レベル :const:`ERROR` のメッセージをルートロガーで記録します。
-   引数は :func:`debug` と同じように解釈されます。
-   例外情報がログメッセージに追加されます。
-   このメソッドは例外ハンドラからのみ呼び出されます。
+   Logs a message with level :const:`ERROR` on the root logger. The arguments are
+   interpreted as for :func:`debug`, except that any passed *exc_info* is not
+   inspected. Exception info is always added to the logging message. This
+   function should only be called from an exception handler.
 
 
 .. function:: log(level, msg[, *args[, **kwargs]])
 
-   レベル *level* のメッセージをルートロガーで記録します。
-   その他の引数は :func:`debug` と同じように解釈されます。
+   Logs a message with level *level* on the root logger. The other arguments are
+   interpreted as for :func:`debug`.
 
-   注意事項: Python の 2.7.1 や 3.2 以前のバージョンでは、上述のルートロガーに
-   委譲するモジュールレベル関数は、スレッドが開始される *前に* ハンドラが
-   ルートロガーに加えられるのでない限り、スレッド内で使うべき *ではありません* 。
-   これらの便利な関数は、 :func:`basicConfig` を呼び出して、少なくとも 1 つの
-   ハンドラが利用できることを保証します。以前のバージョンの Python では、
-   これは (珍しい状況下で) ハンドラがルートロガーに複数回加えられ、
-   それにより同じイベントに複数のメッセージが現れることにつながります。
+   .. note:: The above module-level convenience functions, which delegate to the
+      root logger, call :func:`basicConfig` to ensure that at least one handler
+      is available. Because of this, they should *not* be used in threads,
+      in versions of Python earlier than 2.7.1 and 3.2, unless at least one
+      handler has been added to the root logger *before* the threads are
+      started. In earlier versions of Python, due to a thread safety shortcoming
+      in :func:`basicConfig`, this can (under rare circumstances) lead to
+      handlers being added multiple times to the root logger, which can in turn
+      lead to multiple messages for the same event.
 
 .. function:: disable(lvl)
 
-   すべてのロガーに対して、ロガー自体のレベルに優先するような上書きレベル *lvl* を与えます。
-   アプリケーション全体にわたって一時的にログ出力を抑制する必要が生じた場合にはこの関数が有効です。
-   その効果は、深刻度 *lvl* 以下のすべてのログ呼び出しを無効にすることです。
-   そのためこの関数を値 INFO を伴って呼び出した場合、すべての INFO と DEBUG イベントは捨てられ、
-   ロガーの実効レベルに従って優先度 WARNING 以上のものは処理されるでしょう。
+   Provides an overriding level *lvl* for all loggers which takes precedence over
+   the logger's own level. When the need arises to temporarily throttle logging
+   output down across the whole application, this function can be useful. Its
+   effect is to disable all logging calls of severity *lvl* and below, so that
+   if you call it with a value of INFO, then all INFO and DEBUG events would be
+   discarded, whereas those of severity WARNING and above would be processed
+   according to the logger's effective level. If
+   ``logging.disable(logging.NOTSET)`` is called, it effectively removes this
+   overriding level, so that logging output again depends on the effective
+   levels of individual loggers.
 
 
 .. function:: addLevelName(lvl, levelName)
 
-   内部的な辞書の中でレベル *lvl* をテキスト *levelName* に関連付けます。
-   これは例えば :class:`Formatter` でメッセージを書式化する際のように、
-   数字のレベルをテキスト表現に対応付ける際に用いられます。
-   この関数は自作のレベルを定義するために使うこともできます。
-   使われるレベルに対する唯一の制限は、レベルは正の整数でなくてはならず、
-   メッセージの深刻度が上がるに従ってレベルの数も上がらなくてはならないということです。
+   Associates level *lvl* with text *levelName* in an internal dictionary, which is
+   used to map numeric levels to a textual representation, for example when a
+   :class:`Formatter` formats a message. This function can also be used to define
+   your own levels. The only constraints are that all levels used must be
+   registered using this function, levels should be positive integers and they
+   should increase in increasing order of severity.
 
-   ノート: 独自のレベルを定義することを考えているなら、 :ref:`custom-levels`
-   の節をご覧ください。
+   .. note:: If you are thinking of defining your own levels, please see the
+      section on :ref:`custom-levels`.
 
 .. function:: getLevelName(lvl)
 
-   ログ記録レベル *lvl* のテキスト表現を返します。レベルが定義済みのレベル :const:`CRITICAL`, :const:`ERROR`,
-   :const:`WARNING`, :const:`INFO`, :const:`DEBUG` のいずれかである場合、対応する文字列が返されます。
-   :func:`addLevelName` を使ってレベルに名前を関連付けていた場合、 *lvl* に関連付けられた名前が返されます。
-   定義済みのレベルに対応する数値を指定した場合、レベルに対応した文字列表現を返します。
-   そうでない場合、文字列 "Level %s" % lvl を返します。
+   Returns the textual representation of logging level *lvl*. If the level is one
+   of the predefined levels :const:`CRITICAL`, :const:`ERROR`, :const:`WARNING`,
+   :const:`INFO` or :const:`DEBUG` then you get the corresponding string. If you
+   have associated levels with names using :func:`addLevelName` then the name you
+   have associated with *lvl* is returned. If a numeric value corresponding to one
+   of the defined levels is passed in, the corresponding string representation is
+   returned. Otherwise, the string "Level %s" % lvl is returned.
+
+   .. note:: Integer levels should be used when e.g. setting levels on instances
+      of :class:`Logger` and handlers. This function is used to convert between
+      an integer level and the level name displayed in the formatted log output
+      by means of the ``%(levelname)s`` format specifier (see
+      :ref:`logrecord-attributes`).
 
 
 .. function:: makeLogRecord(attrdict)
 
-   属性が *attrdict* で定義された、新しい :class:`LogRecord` インスタンスを生成して返します。
-   この関数は、 pickle された :class:`LogRecord` 属性の辞書をソケットを介して送信し、
-   受信端で :class:`LogRecord` インスタンスとして再構成する場合に便利です。
+   Creates and returns a new :class:`LogRecord` instance whose attributes are
+   defined by *attrdict*. This function is useful for taking a pickled
+   :class:`LogRecord` attribute dictionary, sent over a socket, and reconstituting
+   it as a :class:`LogRecord` instance at the receiving end.
 
 
 .. function:: basicConfig([**kwargs])
 
-   デフォルトの :class:`Formatter` を持つ :class:`StreamHandler` を生成してルートロガーに追加し、
-   ロギングシステムの基本的な環境設定を行います。
-   関数 :func:`debug`, :func:`info`, :func:`warning`, :func:`error`, :func:`critical` は、
-   ルートロガーにハンドラが定義されていない場合に自動的に :func:`basicConfig` を呼び出します。
+   Does basic configuration for the logging system by creating a
+   :class:`StreamHandler` with a default :class:`Formatter` and adding it to the
+   root logger. The functions :func:`debug`, :func:`info`, :func:`warning`,
+   :func:`error` and :func:`critical` will call :func:`basicConfig` automatically
+   if no handlers are defined for the root logger.
 
-   この関数はルートロガーに設定されたハンドラがあれば何もしません。
+   This function does nothing if the root logger already has handlers
+   configured for it.
 
    .. versionchanged:: 2.4
-      以前は :func:`basicConfig` はキーワード引数を取りませんでした。
+      Formerly, :func:`basicConfig` did not take any keyword arguments.
 
-   注意事項: この関数は、他のスレッドが開始する前に、メインスレッドから
-   呼ばれるべきです。Python の 2.7.1 や 3.2 以前のバージョンでは、
-   この関数が複数のスレッドから呼び出されると、
-   これは (珍しい状況下で) ハンドラがルートロガーに複数回加えられ、
-   ログにメッセージが重複して現れるなど、予期せぬ結果につながります。
+   .. note:: This function should be called from the main thread before other
+      threads are started. In versions of Python prior to 2.7.1 and 3.2, if
+      this function is called from multiple threads, it is possible (in rare
+      circumstances) that a handler will be added to the root logger more than
+      once, leading to unexpected results such as messages being duplicated in
+      the log.
 
-   以下のキーワード引数がサポートされます。
+   The following keyword arguments are supported.
 
-   +--------------+----------------------------------------------------------------------+
-   | Format       | 説明                                                                 |
-   +==============+======================================================================+
-   | ``filename`` | StreamHandler ではなく指定された名前で FileHandler                   |
-   |              | が作られます                                                         |
-   +--------------+----------------------------------------------------------------------+
-   | ``filemode`` | filename が指定されているとき、ファイルモードを指定します            |
-   |              | (filemode が指定されない場合デフォルトは 'a' です)                   |
-   +--------------+----------------------------------------------------------------------+
-   | ``format``   | 指定された書式化文字列をハンドラで使います                           |
-   +--------------+----------------------------------------------------------------------+
-   | ``datefmt``  | 指定された日付/時刻の書式を使います                                  |
-   +--------------+----------------------------------------------------------------------+
-   | ``level``    | ルートロガーのレベルを指定されたものにします                         |
-   +--------------+----------------------------------------------------------------------+
-   | ``stream``   | 指定されたストリームを StreamHandler の初期化に使います。この引数は  |
-   |              | 'filename' と同時には使えないことに注意してください。                |
-   |              | 両方が指定されたときには 'stream' は無視されます                     |
-   +--------------+----------------------------------------------------------------------+
+   .. tabularcolumns:: |l|L|
+
+   +--------------+---------------------------------------------+
+   | Format       | Description                                 |
+   +==============+=============================================+
+   | ``filename`` | Specifies that a FileHandler be created,    |
+   |              | using the specified filename, rather than a |
+   |              | StreamHandler.                              |
+   +--------------+---------------------------------------------+
+   | ``filemode`` | Specifies the mode to open the file, if     |
+   |              | filename is specified (if filemode is       |
+   |              | unspecified, it defaults to 'a').           |
+   +--------------+---------------------------------------------+
+   | ``format``   | Use the specified format string for the     |
+   |              | handler.                                    |
+   +--------------+---------------------------------------------+
+   | ``datefmt``  | Use the specified date/time format.         |
+   +--------------+---------------------------------------------+
+   | ``level``    | Set the root logger level to the specified  |
+   |              | level.                                      |
+   +--------------+---------------------------------------------+
+   | ``stream``   | Use the specified stream to initialize the  |
+   |              | StreamHandler. Note that this argument is   |
+   |              | incompatible with 'filename' - if both are  |
+   |              | present, 'stream' is ignored.               |
+   +--------------+---------------------------------------------+
 
 
 .. function:: shutdown()
 
-   ロギングシステムに対して、バッファのフラッシュを行い、
-   すべてのハンドラを閉じることで順次シャットダウンを行うように告知します。
-   この関数はアプリケーションの終了時に呼ばれるべきであり、
-   また呼び出し以降はそれ以上ロギングシステムを使ってはなりません。
+   Informs the logging system to perform an orderly shutdown by flushing and
+   closing all handlers. This should be called at application exit and no
+   further use of the logging system should be made after this call.
 
 
 .. function:: setLoggerClass(klass)
 
-   ロギングシステムに対して、ロガーをインスタンス化する際にクラス *klass* を使うように指示します。
-   指定するクラスは引数として名前だけをとるようなメソッド :meth:`__init__` を定義していなければならず、
-   :meth:`__init__` では :meth:`Logger.__init__` を呼び出さなければなりません。
-   典型的な利用法として、この関数は自作のロガーを必要とするようなアプリケーションにおいて、
-   他のロガーがインスタンス化される前にインスタンス化されます。
+   Tells the logging system to use the class *klass* when instantiating a logger.
+   The class should define :meth:`__init__` such that only a name argument is
+   required, and the :meth:`__init__` should call :meth:`Logger.__init__`. This
+   function is typically called before any loggers are instantiated by applications
+   which need to use custom logger behavior.
 
 
-warnings モジュールとの統合
----------------------------
+Integration with the warnings module
+------------------------------------
 
-:func:`captureWarnings` 関数を使って、 :mod:`logging` を :mod:`warnings`
-モジュールと統合できます。
+The :func:`captureWarnings` function can be used to integrate :mod:`logging`
+with the :mod:`warnings` module.
 
 .. function:: captureWarnings(capture)
 
-   この関数は、 logging による警告の補足を、有効にまたは無効にします。
+   This function is used to turn the capture of warnings by logging on and
+   off.
 
-   *capture* が ``True`` なら、 :mod:`warnings` モジュールに発せられた警告は、
-   ロギングシステムにリダイレクトされるようになります。
-   具体的には、警告が :func:`warnings.formatwarning` でフォーマット化され、
-   結果の文字列が 'py.warnings' という名のロガーに、 `WARNING` の
-   重大度でロギングされるようになります。
+   If *capture* is ``True``, warnings issued by the :mod:`warnings` module will
+   be redirected to the logging system. Specifically, a warning will be
+   formatted using :func:`warnings.formatwarning` and the resulting string
+   logged to a logger named ``'py.warnings'`` with a severity of :const:`WARNING`.
 
-   *capture* が ``False`` なら、警告のロギングシステムに対するリダイレクトは
-   止められ、警告は元の
-   (すなわち、 `captureWarnings(True)` が呼び出される前に有効だった)
-   送信先にリダイレクトされるようになります。
+   If *capture* is ``False``, the redirection of warnings to the logging system
+   will stop, and warnings will be redirected to their original destinations
+   (i.e. those in effect before ``captureWarnings(True)`` was called).
 
 
 .. seealso::
 
    Module :mod:`logging.config`
-      logging モジュールの環境設定 API です。
+      Configuration API for the logging module.
 
    Module :mod:`logging.handlers`
-      logging モジュールに含まれる、便利なハンドラです。
+      Useful handlers included with the logging module.
 
    :pep:`282` - A Logging System
-      この機能を Python 標準ライブラリに含めることを述べた提案です。
+      The proposal which described this feature for inclusion in the Python standard
+      library.
 
    `Original Python logging package <http://www.red-dove.com/python_logging.html>`_
-      これは、 :mod:`logging` パッケージのオリジナルのソースです。
-      このサイトから利用できるバージョンのパッケージは、
-      :mod:`logging` パッケージを標準ライブラリに含まない、
-      Python 1.5.2, 2.1.x および 2.2.x で使うのに適しています。
-
+      This is the original source for the :mod:`logging` package.  The version of the
+      package available from this site is suitable for use with Python 1.5.2, 2.1.x
+      and 2.2.x, which do not include the :mod:`logging` package in the standard
+      library.
 

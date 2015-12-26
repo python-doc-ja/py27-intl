@@ -1,44 +1,39 @@
 .. _tut-modules:
 
-**********
-モジュール
-**********
+*******
+Modules
+*******
 
-Python インタプリタを終了させ、再び起動すると、これまでに行ってきた定義
-(関数や変数) は失われています。
-ですから、より長いプログラムを書きたいなら、テキストエディタを使って
-インタプリタへの入力を用意しておき、手作業の代わりにファイルを入力に使って
-動作させるとよいでしょう。
-この作業を *スクリプト (script)* の作成と言います。
-プログラムが長くなるにつれ、メンテナンスを楽にするために、スクリプトをいくつかの
-ファイルに分割したくなるかもしれません。
-また、いくつかのプログラムで書いてきた便利な関数について、その定義を
-コピーすることなく個々のプログラムで使いたいと思うかもしれません。
+If you quit from the Python interpreter and enter it again, the definitions you
+have made (functions and variables) are lost. Therefore, if you want to write a
+somewhat longer program, you are better off using a text editor to prepare the
+input for the interpreter and running it with that file as input instead.  This
+is known as creating a *script*.  As your program gets longer, you may want to
+split it into several files for easier maintenance.  You may also want to use a
+handy function that you've written in several programs without copying its
+definition into each program.
 
-こういった要求をサポートするために、Python では定義をファイルに書いておき、
-スクリプトの中やインタプリタの対話インスタンス上で使う方法があります。
-このファイルを *モジュール (module)* と呼びます。
-モジュールにある定義は、他のモジュールや *main* モジュール
-(実行のトップレベルや電卓モードでアクセスできる変数の集まりを指します)
-に *import* (取り込み) することができます。
+To support this, Python has a way to put definitions in a file and use them in a
+script or in an interactive instance of the interpreter. Such a file is called a
+*module*; definitions from a module can be *imported* into other modules or into
+the *main* module (the collection of variables that you have access to in a
+script executed at the top level and in calculator mode).
 
-モジュールは Python の定義や文が入ったファイルです。ファイル名はモジュール名に
-接尾語 :file:`.py` がついたものになります。
-モジュールの中では、(文字列の) モジュール名をグローバル変数 ``__name__``
-で取得できます。例えば、お気に入りのテキストエディタを使って、
-現在のディレクトリに以下の内容のファイル :file:`fibo.py` を作成してみましょう。
+A module is a file containing Python definitions and statements.  The file name
+is the module name with the suffix :file:`.py` appended.  Within a module, the
+module's name (as a string) is available as the value of the global variable
+``__name__``.  For instance, use your favorite text editor to create a file
+called :file:`fibo.py` in the current directory with the following contents::
 
-::
+   # Fibonacci numbers module
 
-   # フィボナッチ数列モジュール
-
-   def fib(n):    # nまでのフィボナッチ級数を出力
+   def fib(n):    # write Fibonacci series up to n
        a, b = 0, 1
        while b < n:
            print b,
            a, b = b, a+b
 
-   def fib2(n): # nまでのフィボナッチ級数を返す
+   def fib2(n): # return Fibonacci series up to n
        result = []
        a, b = 0, 1
        while b < n:
@@ -46,19 +41,14 @@ Python インタプリタを終了させ、再び起動すると、これまで�
            a, b = b, a+b
        return result
 
-次に Python インタプリタに入り、モジュールを以下のコマンドで import しましょう。
-
-
-::
+Now enter the Python interpreter and import this module with the following
+command::
 
    >>> import fibo
 
-この操作では、 ``fibo`` で定義された関数の名前を直接現在のシンボルテーブルに
-入力することはありません。
-単にモジュール名 ``fibo`` だけをシンボルテーブルに入れます。
-関数にはモジュール名を使ってアクセスします。
-
-::
+This does not enter the names of the functions defined in ``fibo``  directly in
+the current symbol table; it only enters the module name ``fibo`` there. Using
+the module name you can access the functions::
 
    >>> fibo.fib(1000)
    1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
@@ -67,9 +57,7 @@ Python インタプリタを終了させ、再び起動すると、これまで�
    >>> fibo.__name__
    'fibo'
 
-関数を度々使うのなら、ローカルな名前に代入できます。
-
-::
+If you intend to use a function often you can assign it to a local name::
 
    >>> fib = fibo.fib
    >>> fib(500)
@@ -78,226 +66,188 @@ Python インタプリタを終了させ、再び起動すると、これまで�
 
 .. _tut-moremodules:
 
-モジュールについてもうすこし
-============================
+More on Modules
+===============
 
-モジュールには、関数定義に加えて実行文を入れることができます。
-これらの実行文はモジュールを初期化するためのものです。
-これらの実行文は、モジュールがどこかで *最初に* import された時にだけ
-実行されます。 [#]_
+A module can contain executable statements as well as function definitions.
+These statements are intended to initialize the module. They are executed only
+the *first* time the module name is encountered in an import statement. [#]_
+(They are also run if the file is executed as a script.)
 
-各々のモジュールは、自分のプライベートなシンボルテーブルを持っていて、
-モジュールで定義されている関数はこのテーブルをグローバルな
-シンボルテーブルとして使います。
-したがって、モジュールの作者は、ユーザのグローバル変数と偶然的な衝突が起こる
-心配をせずに、グローバルな変数をモジュールで使うことができます。
-一方、自分が行っている操作をきちんと理解していれば、モジュール内の関数を
-参照するのと同じ表記法 ``modname.itemname`` で、モジュールのグローバル変数を
-いじることもできます。
+Each module has its own private symbol table, which is used as the global symbol
+table by all functions defined in the module. Thus, the author of a module can
+use global variables in the module without worrying about accidental clashes
+with a user's global variables. On the other hand, if you know what you are
+doing you can touch a module's global variables with the same notation used to
+refer to its functions, ``modname.itemname``.
 
-モジュールが他のモジュールを import することもできます。
-:keyword:`import` 文は全てモジュールの(さらに言えばスクリプトでも)先頭に
-置きますが、これは慣習であって必須ではありません。
-import されたモジュール名は import を行っているモジュールのグローバルな
-シンボルテーブルに置かれます。
+Modules can import other modules.  It is customary but not required to place all
+:keyword:`import` statements at the beginning of a module (or script, for that
+matter).  The imported module names are placed in the importing module's global
+symbol table.
 
-:keyword:`import` 文には、あるモジュール内の名前を、import を実行している
-モジュールのシンボルテーブル内に直接取り込むという変型があります。例えば、
-
-::
+There is a variant of the :keyword:`import` statement that imports names from a
+module directly into the importing module's symbol table.  For example::
 
    >>> from fibo import fib, fib2
    >>> fib(500)
    1 1 2 3 5 8 13 21 34 55 89 144 233 377
 
-この操作は、import の対象となるモジュール名をローカルなシンボルテーブル内に
-取り入れることはありません (従って上の例では、 ``fibo`` は定義されません)。
+This does not introduce the module name from which the imports are taken in the
+local symbol table (so in the example, ``fibo`` is not defined).
 
-モジュールで定義されている名前を全て import するという変型もあります。
-
-::
+There is even a variant to import all names that a module defines::
 
    >>> from fibo import *
    >>> fib(500)
    1 1 2 3 5 8 13 21 34 55 89 144 233 377
 
-上の操作は、アンダースコア (``_``) で開始する名前以外の全ての名前を import します。
+This imports all names except those beginning with an underscore (``_``).
 
-一般的には、モジュールやパッケージから ``*`` を import するというやり方には
-賛同できません。
-というのは、この操作を行うとしばしば可読性に乏しいコードになるからです。
-しかし、対話セッションでキータイプの量を減らすために使うのは構わないでしょう。
+Note that in general the practice of importing ``*`` from a module or package is
+frowned upon, since it often causes poorly readable code. However, it is okay to
+use it to save typing in interactive sessions.
 
 .. note::
 
-   実行効率上の理由で、各モジュールはインタープリタの 1 セッションごとに 1 回だけ
-   import されます。
-   従って、モジュールを修正した場合には、インタープリタを再起動させなければ
-   なりません -- もしくは、その場で手直ししてテストしたいモジュールが 1 つ
-   だった場合には、例えば ``reload(modulename)`` のように :func:`reload`
-   を使ってください。
+   For efficiency reasons, each module is only imported once per interpreter
+   session.  Therefore, if you change your modules, you must restart the
+   interpreter -- or, if it's just one module you want to test interactively,
+   use :func:`reload`, e.g. ``reload(modulename)``.
 
 
 .. _tut-modulesasscripts:
 
-モジュールをスクリプトとして実行する
-====================================
+Executing modules as scripts
+----------------------------
 
-Python モジュールを
-
-::
+When you run a Python module with ::
 
    python fibo.py <arguments>
 
-と実行すると、 ``__name__`` に ``__main__`` が設定されている点を除いて import
-したときと同じようにモジュール内のコードが実行されます。
-つまりモジュールの末尾に、
-
-::
+the code in the module will be executed, just as if you imported it, but with
+the ``__name__`` set to ``"__main__"``.  That means that by adding this code at
+the end of your module::
 
    if __name__ == "__main__":
        import sys
        fib(int(sys.argv[1]))
 
-このコードを追加することで、このファイルが import できるモジュールであると同時に
-スクリプトとしても使えるようになります。
-なぜならモジュールが "main" ファイルとして起動されたときだけ、コマンドラインを
-解釈するコードが実行されるからです。
-
-::
+you can make the file usable as a script as well as an importable module,
+because the code that parses the command line only runs if the module is
+executed as the "main" file::
 
    $ python fibo.py 50
    1 1 2 3 5 8 13 21 34
 
-モジュールが import された場合は、そのコードは実行されません。
-
-::
+If the module is imported, the code is not run::
 
    >>> import fibo
    >>>
 
-この方法はモジュールに便利なユーザインターフェースを提供したり、テストのために
-(スクリプトをモジュールとして起動しテストスイートを実行して) 使われます。
+This is often used either to provide a convenient user interface to a module, or
+for testing purposes (running the module as a script executes a test suite).
 
 
 .. _tut-searchpath:
 
-モジュール検索パス
-------------------
+The Module Search Path
+----------------------
 
 .. index:: triple: module; search; path
 
-:mod:`spam` という名前のモジュールが import されると、インタプリタは
-:file:`spam.py` という名前のファイルを現在のディレクトリ内で探し、
-次に環境変数 :envvar:`PYTHONPATH` に指定されているディレクトリのリスト
-から探します。 :envvar:`PYTHONPATH` はシェル変数 :envvar:`PATH` と
-同じ構文、すなわちディレクトリ名を並べたものです。 :envvar:`PYTHONPATH`
-が設定されていないか、探しているファイルが見つからなかった場合は、
-検索対象をインストール方法に依存するデフォルトのパスにして続けます。
-Unixでは、このパスは通常 :file:`.:/usr/locall/lib/python` です。
+When a module named :mod:`spam` is imported, the interpreter first searches for
+a built-in module with that name. If not found, it then searches for a file
+named :file:`spam.py` in a list of directories given by the variable
+:data:`sys.path`.  :data:`sys.path` is initialized from these locations:
+
+* the directory containing the input script (or the current directory).
+* :envvar:`PYTHONPATH` (a list of directory names, with the same syntax as the
+  shell variable :envvar:`PATH`).
+* the installation-dependent default.
+
+After initialization, Python programs can modify :data:`sys.path`.  The
+directory containing the script being run is placed at the beginning of the
+search path, ahead of the standard library path. This means that scripts in that
+directory will be loaded instead of modules of the same name in the library
+directory. This is an error unless the replacement is intended.  See section
+:ref:`tut-standardmodules` for more information.
 
 
-実際には、モジュールは変数 ``sys.path`` で指定されたディレクトリのリストから
-検索されます。 ``sys.path`` は、入力とするスクリプトの入ったディレクトリ
-(現在のディレクトリ)、 :envvar:`PYTHONPATH` 、およびインストール方法依存の
-デフォルト値を使って初期化されます。
-Python プログラマは、自分の行っている操作を理解しているなら、この変数を使って
-モジュール検索パスを修正したり置き換えたりすることができます。
-起動しようとするスクリプトの入ったディレクトリが検索パス上にあるため、
-スクリプトが標準モジュールと同じ名前をもたないようにすることが重要です。
-さもなければ、Python が標準モジュールを import するときにスクリプトを
-モジュールとして import しようと試みてしまうので注意してください。
-このような誤りを犯すと、通常はエラーになります。
-詳しくは  :ref:`tut-standardmodules` を参照してください。
+"Compiled" Python files
+-----------------------
 
+As an important speed-up of the start-up time for short programs that use a lot
+of standard modules, if a file called :file:`spam.pyc` exists in the directory
+where :file:`spam.py` is found, this is assumed to contain an
+already-"byte-compiled" version of the module :mod:`spam`. The modification time
+of the version of :file:`spam.py` used to create :file:`spam.pyc` is recorded in
+:file:`spam.pyc`, and the :file:`.pyc` file is ignored if these don't match.
 
+Normally, you don't need to do anything to create the :file:`spam.pyc` file.
+Whenever :file:`spam.py` is successfully compiled, an attempt is made to write
+the compiled version to :file:`spam.pyc`.  It is not an error if this attempt
+fails; if for any reason the file is not written completely, the resulting
+:file:`spam.pyc` file will be recognized as invalid and thus ignored later.  The
+contents of the :file:`spam.pyc` file are platform independent, so a Python
+module directory can be shared by machines of different architectures.
 
-"コンパイル" された Python ファイル
------------------------------------
+Some tips for experts:
 
-たくさんの標準モジュールを使うような短いプログラムの起動時間を大きく高速化
-するために、 :file:`spam.py` が見つかったディレクトリに :file:`spam.pyc`
-という名前のファイルがあった場合には、このファイルをモジュール :mod:`spam`
-の "バイトコンパイルされた" バージョンであると仮定します。
-:file:`spam.pyc` を生成するのに使われたバージョンの :file:`spam.py` の
-ファイル修正時刻が :file:`spam.pyc` に記録されており、この値が一致しなければ
-:file:`spam.pyc` ファイルは無視されます。
+* When the Python interpreter is invoked with the :option:`-O` flag, optimized
+  code is generated and stored in :file:`.pyo` files.  The optimizer currently
+  doesn't help much; it only removes :keyword:`assert` statements.  When
+  :option:`-O` is used, *all* :term:`bytecode` is optimized; ``.pyc`` files are
+  ignored and ``.py`` files are compiled to optimized bytecode.
 
-通常、 :file:`spam.pyc` ファイルを生成するために何かをする必要はありません。
-:file:`spam.py` が無事コンパイルされると、常にコンパイルされたバージョンを
-:file:`spam.pyc` へ書き出すよう試みます。
-この試みが失敗してもエラーにはなりません。
-何らかの理由でファイルが完全に書き出されなかった場合、作成された
-:file:`smap.pyc` は無効であるとみなされ、それ以後無視されます。
-:file:`spam.pyc` ファイルの内容はプラットフォームに依存しないので、 Python
-のモジュールのディレクトリは異なるアーキテクチャのマシン間で
-共有することができます。
+* Passing two :option:`-O` flags to the Python interpreter (:option:`-OO`) will
+  cause the bytecode compiler to perform optimizations that could in some rare
+  cases result in malfunctioning programs.  Currently only ``__doc__`` strings are
+  removed from the bytecode, resulting in more compact :file:`.pyo` files.  Since
+  some programs may rely on having these available, you should only use this
+  option if you know what you're doing.
 
-エキスパート向けのTips:
+* A program doesn't run any faster when it is read from a :file:`.pyc` or
+  :file:`.pyo` file than when it is read from a :file:`.py` file; the only thing
+  that's faster about :file:`.pyc` or :file:`.pyo` files is the speed with which
+  they are loaded.
 
-* Python インタプリタを :option:`-O` フラグ付きで起動すると、最適化された
-  コードが生成されて :file:`.pyo` ファイルに保存されます。
-  最適化機構は今のところあまり役に立っていません。
-  最適化機構は :keyword:`assert` 文と ``SET_LINENO`` 命令を除去しているだけです。
-  :option:`-O` を使うと、 *すべての*  バイトコード (:term:`bytecode`)
-  が最適化されます。
-  ``.pyc`` ファイルは無視され、 ``.py`` ファイルは最適化されたバイトコードに
-  コンパイルされます。
+* When a script is run by giving its name on the command line, the bytecode for
+  the script is never written to a :file:`.pyc` or :file:`.pyo` file.  Thus, the
+  startup time of a script may be reduced by moving most of its code to a module
+  and having a small bootstrap script that imports that module.  It is also
+  possible to name a :file:`.pyc` or :file:`.pyo` file directly on the command
+  line.
 
-* 二つの :option:`-O` フラグ (:option:`-OO`) を Python インタプリタへ渡すと、
-  バイトコードコンパイラは、まれにプログラムが正しく動作しなくなるかも
-  しれないような最適化を実行します。
-  現状では、ただ ``__doc__`` 文字列をバイトコードから除去して、
-  よりコンパクトな :file:`.pyo` ファイルにするだけです。
-  この文字列が利用できることをあてにしているプログラムがあるかもしれないので、
-  自分の行っている操作が何かわかっているときにだけこのオプションを使うべきです。
-
-* :file:`.pyc` ファイルや :file:`.pyo` ファイルから読み出されたとしても、
-  プログラムは何ら高速に動作するわけではありません。
-  :file:`.pyc` ファイルや :file:`.pyo` ファイルで高速化されるのは、
-  読み込まれるときの速度だけです。
-
-* スクリプトの名前をコマンドラインで指定して実行した場合、そのスクリプトの
-  バイトコードが :file:`.pyc` や :file:`.pyo` に書き出されることはありません。
-  従って、スクリプトのほとんどのコードをモジュールに移し、そのモジュールを
-  import する小さなブートストラップスクリプトを作れば、スクリプトの起動時間を
-  短縮できるときがあります。 :file:`.pyc` または :file:`.pyo`
-  ファイルの名前を直接コマンドラインに指定することもできます。
-
-* 一つのモジュールについて、ファイル :file:`spam.py` のない :file:`spam.pyc`
-  (:option:`-O` を使ったときは :file:`spam.pyo`) があってもかまいません。
-  この仕様は、Python コードでできたライブラリを
-  リバースエンジニアリングがやや困難な形式で配布するために使えます。
+* It is possible to have a file called :file:`spam.pyc` (or :file:`spam.pyo`
+  when :option:`-O` is used) without a file :file:`spam.py` for the same module.
+  This can be used to distribute a library of Python code in a form that is
+  moderately hard to reverse engineer.
 
   .. index:: module: compileall
 
-* :mod:`compileall` は、 :file:`.pyc` ファイル (または :option:`-O`
-  を使ったときは :file:`.pyo` ファイル) をディレクトリ内の全ての
-  モジュールに対して生成することができます。
+* The module :mod:`compileall` can create :file:`.pyc` files (or :file:`.pyo`
+  files when :option:`-O` is used) for all modules in a directory.
 
 
 .. _tut-standardmodules:
 
-標準モジュール
-==============
+Standard Modules
+================
 
 .. index:: module: sys
 
-Python には標準モジュールのライブラリが付属しています。
-ライブラリは独立したドキュメント Python ライブラリリファレンス
-(以降  "ライブラリリファレンス")で記述されています。
-モジュールによってはインタプリタに組み込まれたものがあります。
-インタプリタに組み込まれているモジュールが提供しているのは、
-言語の中核の部分ではありませんが、効率化のためや、システムコールのような
-オペレーティングシステムの根本機能へのアクセス手段を提供するための操作です。
-これらのモジュールのセットは設定時に選択可能で、またプラットフォームにも
-依存します。例えば、 :mod:`winreg`  モジュールは、
-Windows でのみ提供されます。とりわけ、注目に値するモジュールが一つあります。
-:mod:`sys` はどの Python インタプリタにも組み込まれています。
-変数 ``sys.ps1`` と ``sys.ps2`` は、それぞれ一次プロンプトと二次プロンプト
-として使われる文字列を定義しています。
-
-::
+Python comes with a library of standard modules, described in a separate
+document, the Python Library Reference ("Library Reference" hereafter).  Some
+modules are built into the interpreter; these provide access to operations that
+are not part of the core of the language but are nevertheless built in, either
+for efficiency or to provide access to operating system primitives such as
+system calls.  The set of such modules is a configuration option which also
+depends on the underlying platform.  For example, the :mod:`winreg` module is only
+provided on Windows systems. One particular module deserves some attention:
+:mod:`sys`, which is built into every Python interpreter.  The variables
+``sys.ps1`` and ``sys.ps2`` define the strings used as primary and secondary
+prompts::
 
    >>> import sys
    >>> sys.ps1
@@ -309,15 +259,14 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
    Yuck!
    C>
 
-これらの二つの変数は、インタプリタが対話モードにあるときだけ定義されています。
 
-変数 ``sys.path`` は文字列からなるリストで、インタプリタがモジュールを
-検索するときのパスを決定します。 ``sys.path`` は環境変数
-:envvar:`PYTHONPATH` から得たデフォルトパスに、 :envvar:`PYTHONPATH`
-が設定されていなければ組み込みのデフォルト値に設定されます。
-標準的なリスト操作で変更することができます。
+These two variables are only defined if the interpreter is in interactive mode.
 
-::
+The variable ``sys.path`` is a list of strings that determines the interpreter's
+search path for modules. It is initialized to a default path taken from the
+environment variable :envvar:`PYTHONPATH`, or from a built-in default if
+:envvar:`PYTHONPATH` is not set.  You can modify it using standard list
+operations::
 
    >>> import sys
    >>> sys.path.append('/ufs/guido/lib/python')
@@ -325,55 +274,54 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
 
 .. _tut-dir:
 
-:func:`dir` 関数
-================
+The :func:`dir` Function
+========================
 
-組込み関数 :func:`dir` は、あるモジュールがどんな名前を定義しているか
-調べるために使われます。
-:func:`dir` はソートされた文字列のリストを返します。
-
-::
+The built-in function :func:`dir` is used to find out which names a module
+defines.  It returns a sorted list of strings::
 
    >>> import fibo, sys
    >>> dir(fibo)
    ['__name__', 'fib', 'fib2']
-   >>> dir(sys)
-   ['__displayhook__', '__doc__', '__excepthook__', '__name__', '__stderr__',
-    '__stdin__', '__stdout__', '_getframe', 'api_version', 'argv',
-    'builtin_module_names', 'byteorder', 'callstats', 'copyright',
-    'displayhook', 'exc_clear', 'exc_info', 'exc_type', 'excepthook',
-    'exec_prefix', 'executable', 'exit', 'getdefaultencoding', 'getdlopenflags',
-    'getrecursionlimit', 'getrefcount', 'hexversion', 'maxint', 'maxunicode',
-    'meta_path', 'modules', 'path', 'path_hooks', 'path_importer_cache',
-    'platform', 'prefix', 'ps1', 'ps2', 'setcheckinterval', 'setdlopenflags',
-    'setprofile', 'setrecursionlimit', 'settrace', 'stderr', 'stdin', 'stdout',
+   >>> dir(sys)  # doctest: +NORMALIZE_WHITESPACE
+   ['__displayhook__', '__doc__', '__excepthook__', '__name__', '__package__',
+    '__stderr__', '__stdin__', '__stdout__', '_clear_type_cache',
+    '_current_frames', '_getframe', '_mercurial', 'api_version', 'argv',
+    'builtin_module_names', 'byteorder', 'call_tracing', 'callstats',
+    'copyright', 'displayhook', 'dont_write_bytecode', 'exc_clear', 'exc_info',
+    'exc_traceback', 'exc_type', 'exc_value', 'excepthook', 'exec_prefix',
+    'executable', 'exit', 'flags', 'float_info', 'float_repr_style',
+    'getcheckinterval', 'getdefaultencoding', 'getdlopenflags',
+    'getfilesystemencoding', 'getobjects', 'getprofile', 'getrecursionlimit',
+    'getrefcount', 'getsizeof', 'gettotalrefcount', 'gettrace', 'hexversion',
+    'long_info', 'maxint', 'maxsize', 'maxunicode', 'meta_path', 'modules',
+    'path', 'path_hooks', 'path_importer_cache', 'platform', 'prefix', 'ps1',
+    'py3kwarning', 'setcheckinterval', 'setdlopenflags', 'setprofile',
+    'setrecursionlimit', 'settrace', 'stderr', 'stdin', 'stdout', 'subversion',
     'version', 'version_info', 'warnoptions']
 
-引数がなければ、 :func:`dir` は現在定義している名前を列挙します。
-
-::
+Without arguments, :func:`dir` lists the names you have defined currently::
 
    >>> a = [1, 2, 3, 4, 5]
    >>> import fibo
    >>> fib = fibo.fib
    >>> dir()
-   ['__builtins__', '__doc__', '__file__', '__name__', 'a', 'fib', 'fibo', 'sys']
+   ['__builtins__', '__name__', '__package__', 'a', 'fib', 'fibo', 'sys']
 
-変数、モジュール、関数、その他の、すべての種類の名前をリストすることに注意してください。
+Note that it lists all types of names: variables, modules, functions, etc.
 
 .. index:: module: __builtin__
 
-:func:`dir` は、組込みの関数や変数の名前はリストしません。
-これらの名前からなるリストが必要なら、標準モジュール :mod:`__builtin__`
-で定義されています。
-
-::
+:func:`dir` does not list the names of built-in functions and variables.  If you
+want a list of those, they are defined in the standard module
+:mod:`__builtin__`::
 
    >>> import __builtin__
-   >>> dir(__builtin__)
-   ['ArithmeticError', 'AssertionError', 'AttributeError', 'DeprecationWarning',
-    'EOFError', 'Ellipsis', 'EnvironmentError', 'Exception', 'False',
-    'FloatingPointError', 'FutureWarning', 'IOError', 'ImportError',
+   >>> dir(__builtin__)  # doctest: +NORMALIZE_WHITESPACE
+   ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException',
+    'BufferError', 'BytesWarning', 'DeprecationWarning', 'EOFError',
+    'Ellipsis', 'EnvironmentError', 'Exception', 'False', 'FloatingPointError',
+    'FutureWarning', 'GeneratorExit', 'IOError', 'ImportError', 'ImportWarning',
     'IndentationError', 'IndexError', 'KeyError', 'KeyboardInterrupt',
     'LookupError', 'MemoryError', 'NameError', 'None', 'NotImplemented',
     'NotImplementedError', 'OSError', 'OverflowError',
@@ -382,53 +330,51 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
     'SyntaxWarning', 'SystemError', 'SystemExit', 'TabError', 'True',
     'TypeError', 'UnboundLocalError', 'UnicodeDecodeError',
     'UnicodeEncodeError', 'UnicodeError', 'UnicodeTranslateError',
-    'UserWarning', 'ValueError', 'Warning', 'WindowsError',
+    'UnicodeWarning', 'UserWarning', 'ValueError', 'Warning',
     'ZeroDivisionError', '_', '__debug__', '__doc__', '__import__',
-    '__name__', 'abs', 'apply', 'basestring', 'bool', 'buffer',
-    'callable', 'chr', 'classmethod', 'cmp', 'coerce', 'compile',
-    'complex', 'copyright', 'credits', 'delattr', 'dict', 'dir', 'divmod',
-    'enumerate', 'eval', 'execfile', 'exit', 'file', 'filter', 'float',
-    'frozenset', 'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex',
-    'id', 'input', 'int', 'intern', 'isinstance', 'issubclass', 'iter',
-    'len', 'license', 'list', 'locals', 'long', 'map', 'max', 'memoryview',
-    'min', 'object', 'oct', 'open', 'ord', 'pow', 'property', 'quit', 'range',
-    'raw_input', 'reduce', 'reload', 'repr', 'reversed', 'round', 'set',
-    'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super',
+    '__name__', '__package__', 'abs', 'all', 'any', 'apply', 'basestring',
+    'bin', 'bool', 'buffer', 'bytearray', 'bytes', 'callable', 'chr',
+    'classmethod', 'cmp', 'coerce', 'compile', 'complex', 'copyright',
+    'credits', 'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval',
+    'execfile', 'exit', 'file', 'filter', 'float', 'format', 'frozenset',
+    'getattr', 'globals', 'hasattr', 'hash', 'help', 'hex', 'id', 'input',
+    'int', 'intern', 'isinstance', 'issubclass', 'iter', 'len', 'license',
+    'list', 'locals', 'long', 'map', 'max', 'memoryview', 'min', 'next',
+    'object', 'oct', 'open', 'ord', 'pow', 'print', 'property', 'quit',
+    'range', 'raw_input', 'reduce', 'reload', 'repr', 'reversed', 'round',
+    'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum', 'super',
     'tuple', 'type', 'unichr', 'unicode', 'vars', 'xrange', 'zip']
 
 
 .. _tut-packages:
 
-パッケージ
-==========
+Packages
+========
 
-パッケージ (package) は、Python のモジュール名前空間を "ドット付きモジュール名"
-を使って構造化する手段です。
-例えば、モジュール名 :mod:`A.B` は、 ``A`` というパッケージのサブモジュール
-``B`` を表します。
-ちょうど、モジュールを利用すると、別々のモジュールの著者が互いのグローバル
-変数名について心配しなくても済むようになるのと同じように、
-ドット付きモジュール名を利用すると、 NumPy や Python Imaging Library のように
-複数モジュールからなるパッケージの著者が、互いのモジュール名について
-心配しなくても済むようになります。
+Packages are a way of structuring Python's module namespace by using "dotted
+module names".  For example, the module name :mod:`A.B` designates a submodule
+named ``B`` in a package named ``A``.  Just like the use of modules saves the
+authors of different modules from having to worry about each other's global
+variable names, the use of dotted module names saves the authors of multi-module
+packages like NumPy or the Python Imaging Library from having to worry about
+each other's module names.
 
-音声ファイルや音声データを一様に扱うためのモジュールのコレクション
-("パッケージ") を設計したいと仮定しましょう。
-音声ファイルには多くの異なった形式がある (通常は拡張子、例えば :file:`.wav`,
-:file:`.aiff`, :file:`.au` などで認識されます) ので、
-様々なファイル形式間で変換を行うためのモジュールからなる、
-次第に増えていくモジュールのコレクションを作成したりメンテナンスしたりする
-必要があるかもしれません。
-また、音声データに対して実行したい様々な独自の操作 (ミキシング、エコーの追加、
-イコライザ関数の適用、人工的なステレオ効果の作成など) があるかもしれません。
-そうなると、こうした操作を実行するモジュールを果てしなく書くことになるでしょう。
-以下に (階層的なファイルシステムで表現した)  パッケージの構造案を示します。
+Suppose you want to design a collection of modules (a "package") for the uniform
+handling of sound files and sound data.  There are many different sound file
+formats (usually recognized by their extension, for example: :file:`.wav`,
+:file:`.aiff`, :file:`.au`), so you may need to create and maintain a growing
+collection of modules for the conversion between the various file formats.
+There are also many different operations you might want to perform on sound data
+(such as mixing, adding echo, applying an equalizer function, creating an
+artificial stereo effect), so in addition you will be writing a never-ending
+stream of modules to perform these operations.  Here's a possible structure for
+your package (expressed in terms of a hierarchical filesystem):
 
-::
+.. code-block:: text
 
-   sound/                          トップレベルのパッケージ
-         __init__.py               サウンドパッケージを初期化する
-         formats/                  ファイルフォーマット変換用の下位パッケージ
+   sound/                          Top-level package
+         __init__.py               Initialize the sound package
+         formats/                  Subpackage for file format conversions
                  __init__.py
                  wavread.py
                  wavwrite.py
@@ -437,215 +383,176 @@ Windows でのみ提供されます。とりわけ、注目に値するモジュ
                  auread.py
                  auwrite.py
                  ...
-         effects/                  サウンド効果用の下位パッケージ
+         effects/                  Subpackage for sound effects
                  __init__.py
                  echo.py
                  surround.py
                  reverse.py
                  ...
-         filters/                  フィルタ用の下位パッケージ
+         filters/                  Subpackage for filters
                  __init__.py
                  equalizer.py
                  vocoder.py
                  karaoke.py
                  ...
 
-パッケージを import する際、 Python は ``sys.path`` 上のディレクトリ
-を検索して、トップレベルのパッケージの入ったサブディレクトリを探します。
+When importing the package, Python searches through the directories on
+``sys.path`` looking for the package subdirectory.
 
-あるディレクトリを、パッケージが入ったディレクトリとしてPython に扱わせるには、
-ファイル :file:`__init__.py` が必要です。
-このファイルを置かなければならないのは、 ``string`` のようなよくある名前の
-ディレクトリにより、モジュール検索パスの後の方で見つかる正しいモジュールが
-意図せず隠蔽されてしまうのを防ぐためです。
-最も簡単なケースでは :file:`__init__.py` はただの空ファイルで構いませんが、
-:file:`__init__.py` ではパッケージのための初期化コードを実行したり、後述の
-``__all__`` 変数を設定してもかまいません。
+The :file:`__init__.py` files are required to make Python treat the directories
+as containing packages; this is done to prevent directories with a common name,
+such as ``string``, from unintentionally hiding valid modules that occur later
+on the module search path. In the simplest case, :file:`__init__.py` can just be
+an empty file, but it can also execute initialization code for the package or
+set the ``__all__`` variable, described later.
 
-パッケージのユーザは、個々のモジュールをパッケージから import
-することができます。例えば、
-
-::
+Users of the package can import individual modules from the package, for
+example::
 
    import sound.effects.echo
 
-この操作はサブモジュール :mod:`sound.effects.echo` をロードします。
-このモジュールは、以下のように完全な名前で参照しなければなりません。
-
-::
+This loads the submodule :mod:`sound.effects.echo`.  It must be referenced with
+its full name. ::
 
    sound.effects.echo.echofilter(input, output, delay=0.7, atten=4)
 
-サブモジュールを import するもう一つの方法を示します。
-
-::
+An alternative way of importing the submodule is::
 
    from sound.effects import echo
 
-これもサブモジュール :mod:`echo` をロードし、 :mod:`echo` をパッケージ名を表す
-接頭辞なしで利用できるようにします。
-従って以下のように用いることができます。
-
-::
+This also loads the submodule :mod:`echo`, and makes it available without its
+package prefix, so it can be used as follows::
 
    echo.echofilter(input, output, delay=0.7, atten=4)
 
-さらにもう一つのバリエーションとして、必要な関数や変数を直接 import する
-方法があります。
-
-::
+Yet another variation is to import the desired function or variable directly::
 
    from sound.effects.echo import echofilter
 
-この操作も同様にサブモジュール :mod:`echo` をロードしますが、 :func:`echofilter`
-を直接利用できるようにします。
-
-::
+Again, this loads the submodule :mod:`echo`, but this makes its function
+:func:`echofilter` directly available::
 
    echofilter(input, output, delay=0.7, atten=4)
 
-``from package import item`` を使う場合、 *item* はパッケージ *package*
-のサブモジュール (またはサブパッケージ) でもかまいませんし、関数やクラス、
-変数のような、 *package* で定義されている別の名前でもかまわないことに
-注意してください。
-``import`` 文はまず、 *item* がパッケージ内で定義されているかどうか調べます。
-定義されていなければ、 *item* はモジュール名であると仮定して、モジュールを
-ロードしようと試みます。もしモジュールが見つからなければ、 :exc:`ImportError`
-が送出されます。
+Note that when using ``from package import item``, the item can be either a
+submodule (or subpackage) of the package, or some  other name defined in the
+package, like a function, class or variable.  The ``import`` statement first
+tests whether the item is defined in the package; if not, it assumes it is a
+module and attempts to load it.  If it fails to find it, an :exc:`ImportError`
+exception is raised.
 
-反対に、 ``import item.subitem.subsubitem`` のような構文を使った場合、最後の
-``subsubitem`` を除く各要素はパッケージでなければなりません。
-最後の要素はモジュールかパッケージにできますが、一つ前の要素で定義されている
-クラスや関数や変数にはできません。
+Contrarily, when using syntax like ``import item.subitem.subsubitem``, each item
+except for the last must be a package; the last item can be a module or a
+package but can't be a class or function or variable defined in the previous
+item.
 
 
 .. _tut-pkg-import-star:
 
-パッケージから \* を import する
---------------------------------
+Importing \* From a Package
+---------------------------
 
 .. index:: single: __all__
 
+Now what happens when the user writes ``from sound.effects import *``?  Ideally,
+one would hope that this somehow goes out to the filesystem, finds which
+submodules are present in the package, and imports them all.  This could take a
+long time and importing sub-modules might have unwanted side-effects that should
+only happen when the sub-module is explicitly imported.
 
-それでは、ユーザが ``from sound.effects import *`` と書いたら、
-どうなるのでしょうか？
-理想的には、何らかの方法でファイルシステムが調べられ、そのパッケージにどんな
-サブモジュールがあるかを調べ上げ、全てを import する、という処理を望む
-ことでしょう。
-これには長い時間がかかってしまうこともありますし、あるサブモジュールを import
-することで、そのモジュールが明示的に import されたときのみ発生して欲しい
-副作用が起きてしまうかもしれません。
-
-唯一の解決策は、パッケージの作者にパッケージの索引を明示的に提供させる
-というものです。
-:keyword:`import` 文は次の規約を使います: パッケージの :file:`__init__.py`
-コードに ``__all__`` という名前のリストが定義されていれば、
-``from package import *`` が現れたときに import するリストとして使います。
-新たなパッケージがリリースされるときにリストを最新の状態に更新するのは
-パッケージの作者の責任となります。
-自分のパッケージから \* を import するという使い方に同意できなければ、
-パッケージの作者はこの使い方をサポートしないことにしてもかまいません。
-例えば、ファイル ``sounds/effects/__init__.py`` には、次のような
-コードを入れてもよいかもしれません。
-
-::
+The only solution is for the package author to provide an explicit index of the
+package.  The :keyword:`import` statement uses the following convention: if a package's
+:file:`__init__.py` code defines a list named ``__all__``, it is taken to be the
+list of module names that should be imported when ``from package import *`` is
+encountered.  It is up to the package author to keep this list up-to-date when a
+new version of the package is released.  Package authors may also decide not to
+support it, if they don't see a use for importing \* from their package.  For
+example, the file :file:`sound/effects/__init__.py` could contain the following
+code::
 
    __all__ = ["echo", "surround", "reverse"]
 
-この例では、 ``from sound.effects import *`` とすると、 :mod:`sound`
-パッケージから指定された 3つのサブモジュールが  import されることになっている、
-ということを意味します。
+This would mean that ``from sound.effects import *`` would import the three
+named submodules of the :mod:`sound` package.
 
-もしも ``__all__`` が定義されていなければ、実行文
-``from sound.effects import *`` は、パッケージ :mod:`sound.effects`
-の全てのサブモジュールを現在の名前空間の中へ import *しません* 。
-この文は単に(場合によっては初期化コード :file:`__init__.py` を実行して)
-パッケージ :mod:`sound.effects` が import されたということを確認し、
-そのパッケージで定義されている名前を全て import するだけです。 import
-される名前には、 :file:`__init__.py` で定義された名前 (と、明示的にロードされた
-サブモジュール) が含まれます。
-パッケージのサブモジュールで、以前の :keyword:`import` 文で明示的にロードされた
-ものも含みます。以下のコードを考えてください。
-
-::
+If ``__all__`` is not defined, the statement ``from sound.effects import *``
+does *not* import all submodules from the package :mod:`sound.effects` into the
+current namespace; it only ensures that the package :mod:`sound.effects` has
+been imported (possibly running any initialization code in :file:`__init__.py`)
+and then imports whatever names are defined in the package.  This includes any
+names defined (and submodules explicitly loaded) by :file:`__init__.py`.  It
+also includes any submodules of the package that were explicitly loaded by
+previous :keyword:`import` statements.  Consider this code::
 
    import sound.effects.echo
    import sound.effects.surround
    from sound.effects import *
 
-上の例では、 :mod:`echo` と :mod:`surround` モジュールが現在の名前空間に import
-されます。
-これらのモジュールは ``from...import`` 文が実行された際に :mod:`sound.effects`
-内で定義されているからです (この機構は ``__all__`` が定義されているときにも
-働きます)。
+In this example, the :mod:`echo` and :mod:`surround` modules are imported in the
+current namespace because they are defined in the :mod:`sound.effects` package
+when the ``from...import`` statement is executed.  (This also works when
+``__all__`` is defined.)
 
-特定のモジュールでは ``import *`` を使ったときに、
-特定のパターンに従った名前のみを公開 (export) するように設計されてはいますが、
-それでもやはり製品のコードでは良いことではないと考えます。
+Although certain modules are designed to export only names that follow certain
+patterns when you use ``import *``, it is still considered bad practise in
+production code.
 
-``from package import specific_submodule`` を使っても何も問題はないことに
-留意してください！実際この表記法は、import を行うモジュールが他のパッケージと
-同じ名前を持つサブモジュールを使わなければならない場合を除いて推奨される方式です。
+Remember, there is nothing wrong with using ``from Package import
+specific_submodule``!  In fact, this is the recommended notation unless the
+importing module needs to use submodules with the same name from different
+packages.
 
 
-パッケージ内での参照
---------------------
+Intra-package References
+------------------------
 
-サブモジュール同士で互いに参照を行う必要がしばしば起こります。
-例えば、 :mod:`surround` モジュールは :mod:`echo` モジュールを使うかも
-しれません。
-このような参照はよくあることなので、 :keyword:`import` 文を実行すると、
-まず最初に import 文の入っているパッケージを検索し、その後になって
-標準のモジュール検索パスを見に行きます。
-なので、 :mod:`surround` モジュールは単に ``import echo`` や
-``from echo import echofilter`` を使うことができます。
-import されたモジュールが現在のパッケージ(現在のモジュールをサブモジュールに
-しているパッケージ) 内に見つからなかった場合、 :keyword:`import`
-文は指定した名前のトップレベルのモジュールを検索します。
+The submodules often need to refer to each other.  For example, the
+:mod:`surround` module might use the :mod:`echo` module.  In fact, such
+references are so common that the :keyword:`import` statement first looks in the
+containing package before looking in the standard module search path. Thus, the
+:mod:`surround` module can simply use ``import echo`` or ``from echo import
+echofilter``.  If the imported module is not found in the current package (the
+package of which the current module is a submodule), the :keyword:`import`
+statement looks for a top-level module with the given name.
 
-パッケージが (前述の例の :mod:`sound` パッケージのように) サブパッケージの
-集まりに構造化されている場合、絶対 import を使って兄弟関係にあるパッケージを
-参照できます。
-例えば、モジュール :mod:`sound.filters.vocoder` で :mod:`sound.effects`
-パッケージの :mod:`echo` モジュールを使いたいとすると、
-``from sound.effects import echo`` を使うことができます。
+When packages are structured into subpackages (as with the :mod:`sound` package
+in the example), you can use absolute imports to refer to submodules of siblings
+packages.  For example, if the module :mod:`sound.filters.vocoder` needs to use
+the :mod:`echo` module in the :mod:`sound.effects` package, it can use ``from
+sound.effects import echo``.
 
-Python 2.5 からは、上で説明した暗黙の相対importに加えて、明示的な相対importを
-``from module import name`` の形式の import 文で利用できます。
-この明示的な相対 import では、先頭のドットで現在および親パッケージを指定します。
-:mod:`surround` モジュールの例では、以下のように記述できます。
-
-::
+Starting with Python 2.5, in addition to the implicit relative imports described
+above, you can write explicit relative imports with the ``from module import
+name`` form of import statement. These explicit relative imports use leading
+dots to indicate the current and parent packages involved in the relative
+import. From the :mod:`surround` module for example, you might use::
 
    from . import echo
    from .. import formats
    from ..filters import equalizer
 
-明示的および暗黙的な相対 import のどちらも現在のモジュール名をベースにする
-ことに注意してください。
-メインモジュールの名前は常に ``"__main__"`` なので、 Python アプリケーションの
-メインモジュールとして利用されることを意図しているモジュールでは絶対 import
-を利用するべきです。
+Note that both explicit and implicit relative imports are based on the name of
+the current module. Since the name of the main module is always ``"__main__"``,
+modules intended for use as the main module of a Python application should
+always use absolute imports.
 
 
-複数ディレクトリ中のパッケージ
-------------------------------
+Packages in Multiple Directories
+--------------------------------
 
-パッケージはもう一つ特別な属性として :attr:`__path__` をサポートしています。
-この属性は、パッケージの :file:`__init__.py` 中のコードが実行されるよりも前に、
-:file:`__init__.py` の収められているディレクトリ名の入ったリストになるよう
-初期化されます。
-この変数は変更することができます。
-変更を加えると、以降そのパッケージに入っているモジュールやサブパッケージの
-検索に影響します。
+Packages support one more special attribute, :attr:`__path__`.  This is
+initialized to be a list containing the name of the directory holding the
+package's :file:`__init__.py` before the code in that file is executed.  This
+variable can be modified; doing so affects future searches for modules and
+subpackages contained in the package.
 
-この機能はほとんど必要にはならないのですが、パッケージ内存在するモジュール群を
-拡張するために使うことができます。
+While this feature is not often needed, it can be used to extend the set of
+modules found in a package.
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] 実際には、関数定義も '実行' される '文' です。
-   モジュールレベルの関数定義を実行すると、関数名はモジュールのグローバルな
-   シンボルテーブルに入ります。
+.. [#] In fact function definitions are also 'statements' that are 'executed'; the
+   execution of a module-level function definition enters the function name in
+   the module's global symbol table.
 

@@ -1,50 +1,54 @@
-:mod:`sysconfig` --- Python の構成情報にアクセスする
-======================================================
+:mod:`sysconfig` --- Provide access to Python's configuration information
+=========================================================================
 
 .. module:: sysconfig
    :synopsis: Python's configuration information
 .. moduleauthor:: Tarek Ziade <tarek@ziade.org>
 .. sectionauthor:: Tarek Ziade <tarek@ziade.org>
-.. versionadded:: 2.7
 .. index::
    single: configuration information
 
-:mod:`sysconfig` モジュールは、 インストールパスのリストや、現在のプラットフォーム
-に関連した構成などの、 Python の構成情報 (configuration information) へのアクセスを
-提供します。
+.. versionadded:: 2.7
 
-.. Configuration variables
+**Source code:** :source:`Lib/sysconfig.py`
 
-構成変数
----------
+--------------
 
-Python の配布物は、 Python 自体のバイナリや、 :mod:`distutils` によって
-コンパイルされる外部のC拡張をビルドするのに必要な、 :file:`Makefile` と
-:file:`pyconfig.h` ヘッダーファイルを含んでいます。
+The :mod:`sysconfig` module provides access to Python's configuration
+information like the list of installation paths and the configuration variables
+relevant for the current platform.
 
-:mod:`sysconfig` はこれらのファイルに含まれる全ての変数を辞書に格納し、
-:func:`get_config_vars` や :func:`get_config_var` でアクセスできるようにします。
+Configuration variables
+-----------------------
 
-Windows では構成変数はだいぶ少なくなります。
+A Python distribution contains a :file:`Makefile` and a :file:`pyconfig.h`
+header file that are necessary to build both the Python binary itself and
+third-party C extensions compiled using :mod:`distutils`.
+
+:mod:`sysconfig` puts all variables found in these files in a dictionary that
+can be accessed using :func:`get_config_vars` or :func:`get_config_var`.
+
+Notice that on Windows, it's a much smaller set.
 
 .. function:: get_config_vars(\*args)
 
-   引数がない場合、現在のプラットフォームに関する全ての構成変数の辞書を
-   返します。
+   With no arguments, return a dictionary of all configuration variables
+   relevant for the current platform.
 
-   引数がある場合、各引数を構成変数辞書から検索した結果の変数のリストを返します。
+   With arguments, return a list of values that result from looking up each
+   argument in the configuration variable dictionary.
 
-   各引数において、変数が見つからなかった場合は ``None`` が返されます。
+   For each argument, if the value is not found, return ``None``.
 
 
 .. function:: get_config_var(name)
 
-   1つの変数 *name* を返します。 ``get_config_vars().get(name)``
-   と同じです。
+   Return the value of a single variable *name*. Equivalent to
+   ``get_config_vars().get(name)``.
 
-   *name* が見つからない場合、 ``None`` を返します。
+   If *name* is not found, return ``None``.
 
-使用例::
+Example of usage::
 
    >>> import sysconfig
    >>> sysconfig.get_config_var('Py_ENABLE_SHARED')
@@ -55,128 +59,126 @@ Windows では構成変数はだいぶ少なくなります。
    ['ar', 'g++']
 
 
-.. Installation paths
-
-インストールパス
+Installation paths
 ------------------
 
-Python はプラットフォームとインストールオプションに依存して、異なるインストールスキームを
-利用します。このスキームは、 :const:`os.name` の値に基づいてユニークな識別子で
-:mod:`sysconfig` に格納されます。
+Python uses an installation scheme that differs depending on the platform and on
+the installation options.  These schemes are stored in :mod:`sysconfig` under
+unique identifiers based on the value returned by :const:`os.name`.
 
-:mod:`Distutils` やそれに基づいたシステムによって新しいコンポーネントをインストールするときは、
-同じスキームに従ってファイルを正しい場所にコピーします。
+Every new component that is installed using :mod:`distutils` or a
+Distutils-based system will follow the same scheme to copy its file in the right
+places.
 
-Python は現在7つのスキームをサポートしています:
+Python currently supports seven schemes:
 
-- *posix_prefix*: Linux や Mac OS X などの Posix プラットフォーム用のスキームです。
-  これは Python やコンポーネントをインストールするときに使われるデフォルトの
-  スキームです。
-- *posix_home*: インストール時に *home* オプションが利用された場合における、
-  Posix プラットフォーム用のスキームです。このスキームはコンポーネントが
-  Distutils に特定の home prefix を指定してインストールされたときに利用されます。
-- *posix_user*: Distutils に *user* オプションを指定してコンポーネントを
-  インストールするときに使われる、Posix プラットフォーム用のスキームです。
-  このスキームはユーザーのホームディレクトリ以下に配置されたパスヲ定義します。
-- *nt*: Windows などの NT プラットフォーム用のスキームです。
-- *nt_user*: *user* オプションが利用された場合の、 NT プラットフォーム用のスキームです。
-- *os2*: OS/2 プラットフォーム用のスキームです。
-- *os2_home*: *user* オプションが利用された場合の、 OS/2 プラットフォーム用のスキームです。
+- *posix_prefix*: scheme for Posix platforms like Linux or Mac OS X.  This is
+  the default scheme used when Python or a component is installed.
+- *posix_home*: scheme for Posix platforms used when a *home* option is used
+  upon installation.  This scheme is used when a component is installed through
+  Distutils with a specific home prefix.
+- *posix_user*: scheme for Posix platforms used when a component is installed
+  through Distutils and the *user* option is used.  This scheme defines paths
+  located under the user home directory.
+- *nt*: scheme for NT platforms like Windows.
+- *nt_user*: scheme for NT platforms, when the *user* option is used.
+- *os2*: scheme for OS/2 platforms.
+- *os2_home*: scheme for OS/2 patforms, when the *user* option is used.
 
-各スキームは、ユニークな識別子を持ったいくつかのパスの集合から成っています。
-現在 Python は8つのパスを利用します:
+Each scheme is itself composed of a series of paths and each path has a unique
+identifier.  Python currently uses eight paths:
 
-- *stdlib*: プラットフォーム非依存の、標準 Python ライブラリファイルを格納するディレクトリ.
-- *platstdlib*: プラットフォーム依存の、標準 Python ライブラリファイルを格納するディレクトリ.
-- *platlib*: プラットフォーム依存の、 site ごとのファイルを格納するディレクトリ
-- *purelib*: プラットフォーム非依存の、 site ごとのファイルを格納するディレクトリ
-- *include*: プラットフォーム非依存のヘッダーファイルを格納するディレクトリ
-- *platinclude*: プラットフォーム依存の、ヘッダーファイルを格納するディレクトリ
-- *scripts*: スクリプトファイルのためのディレクトリ
-- *data*: データファイルのためのディレクトリ
+- *stdlib*: directory containing the standard Python library files that are not
+  platform-specific.
+- *platstdlib*: directory containing the standard Python library files that are
+  platform-specific.
+- *platlib*: directory for site-specific, platform-specific files.
+- *purelib*: directory for site-specific, non-platform-specific files.
+- *include*: directory for non-platform-specific header files.
+- *platinclude*: directory for platform-specific header files.
+- *scripts*: directory for script files.
+- *data*: directory for data files.
 
-:mod:`sysconfig` はこれらのパスを決定するためのいくつかの関数を提供しています。
+:mod:`sysconfig` provides some functions to determine these paths.
 
 .. function:: get_scheme_names()
 
-   現在 :mod:`sysconfig` でサポートされている全てのスキームを格納した
-   タプルを返します。
+   Return a tuple containing all schemes currently supported in
+   :mod:`sysconfig`.
 
 
 .. function:: get_path_names()
 
-   現在 :mod:`sysconfig` でサポートされている全てのパス名を格納した
-   タプルを返します。
+   Return a tuple containing all path names currently supported in
+   :mod:`sysconfig`.
 
 
 .. function:: get_path(name, [scheme, [vars, [expand]]])
 
-   *scheme* で指定されたインストールスキームから、 path *name* に従って
-   インストールパスを返します。
+   Return an installation path corresponding to the path *name*, from the
+   install scheme named *scheme*.
 
-   *name* は :func:`get_path_names` が返すリストに含まれる値でなければなりません。
+   *name* has to be a value from the list returned by :func:`get_path_names`.
 
-   :mod:`sysconfig` はインストールパスを、パス名、プラットフォーム、展開される変数に
-   従って格納します。例えば、 *nt* スキームでの *stdlib* パスは ``{base}/Lib``
-   になります。
+   :mod:`sysconfig` stores installation paths corresponding to each path name,
+   for each platform, with variables to be expanded.  For instance the *stdlib*
+   path for the *nt* scheme is: ``{base}/Lib``.
 
-   :func:`get_path` はパスを展開するのに :func:`get_config_vars` が返す変数を利用します。
-   全ての変数は各プラットフォームにおいてデフォルト値を持っていて、
-   この関数を呼び出したときにデフォルト値を取得する場合があります。
+   :func:`get_path` will use the variables returned by :func:`get_config_vars`
+   to expand the path.  All variables have default values for each platform so
+   one may call this function and get the default value.
 
-   *scheme* が指定された場合、 :func:`get_scheme_names` が返すリストに含まれる
-   値でなければなりません。指定されなかった場合は、現在のプラットフォームでの
-   デフォルトスキームが利用されます。
+   If *scheme* is provided, it must be a value from the list returned by
+   :func:`get_scheme_names`.  Otherwise, the default scheme for the current
+   platform is used.
 
-   *bars* が指定された場合、 :func:`get_config_vars` が返す辞書をアップデートする
-   変数辞書でなければなりません。
+   If *vars* is provided, it must be a dictionary of variables that will update
+   the dictionary return by :func:`get_config_vars`.
 
-   *expand* が ``False`` に設定された場合、パスは変数を使って展開されません。
+   If *expand* is set to ``False``, the path will not be expanded using the
+   variables.
 
-   *name* が見つからなかった場合、 ``None`` を返します。
+   If *name* is not found, return ``None``.
 
 
 .. function:: get_paths([scheme, [vars, [expand]]])
 
-   インストールスキームに基づいた全てのインストールパスを格納した辞書を返します。
-   詳しい情報は :func:`get_path` を参照してください。
+   Return a dictionary containing all installation paths corresponding to an
+   installation scheme. See :func:`get_path` for more information.
 
-   *scheme* が指定された場合、 :func:`get_scheme_names` が返すリストに含まれる
-   値でなければなりません。指定されなかった場合は、現在のプラットフォームでの
-   デフォルトスキームが利用されます。
+   If *scheme* is not provided, will use the default scheme for the current
+   platform.
 
-   *bars* が指定された場合、 :func:`get_config_vars` が返す辞書をアップデートする
-   変数辞書でなければなりません。
+   If *vars* is provided, it must be a dictionary of variables that will
+   update the dictionary used to expand the paths.
 
-   *expand* が ``False`` に設定された場合、パスは変数を使って展開されません。
+   If *expand* is set to False, the paths will not be expanded.
 
-   *scheme* が実在するスキームでなかった場合、 :func:`get_paths` は :exc:`KeyError`
-   を発生させます。
+   If *scheme* is not an existing scheme, :func:`get_paths` will raise a
+   :exc:`KeyError`.
 
 
-.. Other functions
-
-その他の関数
+Other functions
 ---------------
 
 .. function:: get_python_version()
 
-   ``MAJOR.MINOR`` の型の Python バージョン番号文字列を返します。
-   ``sys.version[:3]`` に似ています。
+   Return the ``MAJOR.MINOR`` Python version number as a string.  Similar to
+   ``sys.version[:3]``.
 
 
 .. function:: get_platform()
 
-   現在のプラットフォームを識別するための文字列を返します。
+   Return a string that identifies the current platform.
 
-   この関数は主に、プラットフォーム依存のビルドディレクトリやビルド済み配布物を
-   判別するのに利用します。典型的に、OS名とバージョンと(:func:`os.uname` で提供
-   される)アーキテクチャを含みますが、実際の情報はOS依存です。
-   例えば、 IRIX ではアーキテクチャは重要ではない(IRIX は SGI のハードでしか
-   動きません) のに対して、 Linux ではカーネルバージョンが重要な情報では
-   ありません。
+   This is used mainly to distinguish platform-specific build directories and
+   platform-specific built distributions.  Typically includes the OS name and
+   version and the architecture (as supplied by :func:`os.uname`), although the
+   exact information included depends on the OS; e.g. for IRIX the architecture
+   isn't particularly important (IRIX only runs on SGI hardware), but for Linux
+   the kernel version isn't particularly important.
 
-   返される値の例:
+   Examples of returned values:
 
    - linux-i586
    - linux-alpha (?)
@@ -184,41 +186,42 @@ Python は現在7つのスキームをサポートしています:
    - irix-5.3
    - irix64-6.2
 
-   Windows では以下のどれかを返します:
+   Windows will return one of:
 
    - win-amd64 (64bit Windows on AMD64 (aka x86_64, Intel64, EM64T, etc)
    - win-ia64 (64bit Windows on Itanium)
    - win32 (all others - specifically, sys.platform is returned)
 
-   Mac OS X では以下のどれかを返すかもしれません:
+   Mac OS X can return:
 
    - macosx-10.6-ppc
    - macosx-10.4-ppc64
    - macosx-10.3-i386
    - macosx-10.4-fat
 
-   その他の非POSIXプラットフォームでは、現在のところ単に :data:`sys.platform`
-   を返します。
+   For other non-POSIX platforms, currently just returns :data:`sys.platform`.
 
 
 .. function:: is_python_build()
 
-   現在の Python インストールがソースからビルドされた場合に
-   ``True`` を返します。
+   Return ``True`` if the current Python installation was built from source.
 
 
 .. function:: parse_config_h(fp[, vars])
 
-   :file:`config.h` スタイルのファイルを解析します。
+   Parse a :file:`config.h`\-style file.
 
-   *fp* は :file:`config.h` スタイルのファイルを指すファイルライク
-   オブジェクトです。
+   *fp* is a file-like object pointing to the :file:`config.h`\-like file.
 
-   name/value ペアを格納した辞書を返します。
-   第二引数にオプションの辞書が渡された場合、新しい辞書ではなくその辞書を
-   利用し、ファイルから読み込んだ値で更新します。
+   A dictionary containing name/value pairs is returned.  If an optional
+   dictionary is passed in as the second argument, it is used instead of a new
+   dictionary, and updated with the values read in the file.
 
 
 .. function:: get_config_h_filename()
 
-   :file:`pyconfig.h` のパスを返します。
+   Return the path of :file:`pyconfig.h`.
+
+.. function:: get_makefile_filename()
+
+   Return the path of :file:`Makefile`.

@@ -1,63 +1,65 @@
 
-:mod:`grp` --- グループデータベースへのアクセス
-===============================================
+:mod:`grp` --- The group database
+=================================
 
 .. module:: grp
    :platform: Unix
-   :synopsis: グループデータベースへのアクセス (getgrnam() およびその仲間)。
+   :synopsis: The group database (getgrnam() and friends).
 
 
-このモジュールでは Unix グループ (group) データベースへのアクセス機構を提供します。全ての Unix バージョンで利用可能です。
+This module provides access to the Unix group database. It is available on all
+Unix versions.
 
-このモジュールはグループデータベースのエントリをタプルに似たオブジェクトとして報告されます。このオブジェクトの属性は ``group``  構造体の各メンバ
-(以下の属性フィールド、 ``<pwd.h>`` を参照) に対応します:
+Group database entries are reported as a tuple-like object, whose attributes
+correspond to the members of the ``group`` structure (Attribute field below, see
+``<pwd.h>``):
 
-+------------+-----------+------------------------------------+
-| インデクス | 属性      | 意味                               |
-+============+===========+====================================+
-| 0          | gr_name   | グループ名                         |
-+------------+-----------+------------------------------------+
-| 1          | gr_passwd | (暗号化された) グループパスワード; |
-|            |           | しばしば空文字列になります         |
-+------------+-----------+------------------------------------+
-| 2          | gr_gid    | 数字のグループ ID                  |
-+------------+-----------+------------------------------------+
-| 3          | gr_mem    | グループメンバの全てのユーザ名     |
-+------------+-----------+------------------------------------+
++-------+-----------+---------------------------------+
+| Index | Attribute | Meaning                         |
++=======+===========+=================================+
+| 0     | gr_name   | the name of the group           |
++-------+-----------+---------------------------------+
+| 1     | gr_passwd | the (encrypted) group password; |
+|       |           | often empty                     |
++-------+-----------+---------------------------------+
+| 2     | gr_gid    | the numerical group ID          |
++-------+-----------+---------------------------------+
+| 3     | gr_mem    | all the group member's  user    |
+|       |           | names                           |
++-------+-----------+---------------------------------+
 
-gid は整数、名前およびパスワードは文字列、そしてメンバリストは文字列からなるリストです。
-(ほとんどのユーザは、パスワードデータベースで自分が入れられているグループの
-メンバとしてグループデータベース内では明示的に列挙されていないので
-注意してください。完全なメンバ情報を取得するには両方のデータベースを調べてください。
-また、 ``+`` や ``-`` で始まる ``gr_name`` は YP/NIS 参照である可能性があり、
-:func:`getgrnam` や :func:`getgrgid` でアクセスできないかもしれないことにも注意してください。
-)
+The gid is an integer, name and password are strings, and the member list is a
+list of strings. (Note that most users are not explicitly listed as members of
+the group they are in according to the password database.  Check both databases
+to get complete membership information.  Also note that a ``gr_name`` that
+starts with a ``+`` or ``-`` is likely to be a YP/NIS reference and may not be
+accessible via :func:`getgrnam` or :func:`getgrgid`.)
 
-このモジュールでは以下の内容を定義しています:
+It defines the following items:
 
 
 .. function:: getgrgid(gid)
 
-   与えられたグループ ID に対するグループデータベースエントリを返します。
-   要求したエントリが見つからなかった場合、 :exc:`KeyError` が送出されます。
+   Return the group database entry for the given numeric group ID. :exc:`KeyError`
+   is raised if the entry asked for cannot be found.
 
 
 .. function:: getgrnam(name)
 
-   与えられたグループ名に対するグループデータベースエントリを返します。
-   要求したエントリが見つからなかった場合、 :exc:`KeyError` が送出されます。
+   Return the group database entry for the given group name. :exc:`KeyError` is
+   raised if the entry asked for cannot be found.
 
 
 .. function:: getgrall()
 
-   全ての入手可能なグループエントリを返します。順番は決まっていません。
+   Return a list of all available group entries, in arbitrary order.
 
 
 .. seealso::
 
-   :mod:`pwd` モジュール
-      このモジュールと類似の、ユーザデータベースへのインタフェース。
+   Module :mod:`pwd`
+      An interface to the user database, similar to this.
 
-   :mod:`spwd` モジュール
-      このモジュールと類似の、シャドウパスワードデータベースへのインタフェース。
+   Module :mod:`spwd`
+      An interface to the shadow password database, similar to this.
 

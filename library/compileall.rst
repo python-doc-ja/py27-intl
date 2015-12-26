@@ -1,131 +1,141 @@
-:mod:`compileall` --- Python ライブラリをバイトコンパイル
-=========================================================
+:mod:`compileall` --- Byte-compile Python libraries
+===================================================
 
 .. module:: compileall
-   :synopsis: ディレクトリに含まれる Python ソースファイルを、一括してバイトコンパイルします。
+   :synopsis: Tools for byte-compiling all Python source files in a directory tree.
+
+**Source code:** :source:`Lib/compileall.py`
+
+--------------
 
 
-このモジュールは、Python ライブラリのインストールを助けるユーティリティ関数群を
-提供します。この関数群は、ディレクトリツリー内の Python ソースファイルを
-コンパイルします。このモジュールを使って、キャッシュされたバイトコードファイルを
-ライブラリのインストール時に生成することで、ライブラリディレクトリに
-書き込み権限をもたないユーザでも、これらを利用できるようになります。
+This module provides some utility functions to support installing Python
+libraries.  These functions compile Python source files in a directory tree.
+This module can be used to create the cached byte-code files at library
+installation time, which makes them available for use even by users who don't
+have write permission to the library directories.
 
 
-コマンドラインでの使用
-----------------------
+Command-line use
+----------------
 
-このモジュールは、 (:program:`python -m compileall` を使って) Python ソースを
-コンパイルするスクリプトとして機能します。
+This module can work as a script (using :program:`python -m compileall`) to
+compile Python sources.
 
 .. program:: compileall
 
-.. cmdoption:: [directory|file]...
+.. cmdoption:: directory ...
+               file ...
 
-   位置引数は、コンパイルするファイル群か、再帰的に横断されるディレクトリで
-   ソースファイル群を含むものです。引数が与えられなければ、
-   ``-l <directories from sys.path>`` を渡したのと同じように動作します。
+   Positional arguments are files to compile or directories that contain
+   source files, traversed recursively.  If no argument is given, behave as if
+   the command line was ``-l <directories from sys.path>``.
 
 .. cmdoption:: -l
 
-   サブディレクトリを再帰処理せず、指名または暗示されたディレクトリ群に含まれる
-   ソースコードファイル群だけをコンパイルします。
+   Do not recurse into subdirectories, only compile source code files directly
+   contained in the named or implied directories.
 
 .. cmdoption:: -f
 
-   タイムスタンプが最新であってもリビルドを強制します。
+   Force rebuild even if timestamps are up-to-date.
 
 .. cmdoption:: -q
 
-   コンパイルされたファイルを一覧表示せず、エラーメッセージのみ表示します。
+   Do not print the list of files compiled, print only error messages.
 
 .. cmdoption:: -d destdir
 
-   コンパイルされるそれぞれのファイルへのパスの先頭に、
-   ディレクトリを追加します。これはコンパイル時トレースバックに使われ、
-   バイトコードファイルが実行される時点でソースファイルが存在しない場合に、
-   トレースバックやその他のメッセージに使われるバイトコードファイルにも
-   コンパイルされます。
+   Directory prepended to the path to each file being compiled.  This will
+   appear in compilation time tracebacks, and is also compiled in to the
+   byte-code file, where it will be used in tracebacks and other messages in
+   cases where the source file does not exist at the time the byte-code file is
+   executed.
 
 .. cmdoption:: -x regex
 
-   regex を使って、コンパイル候補のそれぞれのファイルのフルパスを検索し、
-   regex がマッチしたファイルを除外します。
+   regex is used to search the full path to each file considered for
+   compilation, and if the regex produces a match, the file is skipped.
 
 .. cmdoption:: -i list
 
-   ファイル ``list`` を読み込み、そのファイルのそれぞれの行を、
-   コンパイルするファイルとディレクトリのリストに加えます。
-   ``list`` が ``-`` なら、 ``stdin`` の行を読み込みます。
+   Read the file ``list`` and add each line that it contains to the list of
+   files and directories to compile.  If ``list`` is ``-``, read lines from
+   ``stdin``.
 
 .. versionchanged:: 2.7
-   ``-i`` オプションを追加しました。
+   Added the ``-i``  option.
 
 
-パブリックな関数
+Public functions
 ----------------
 
 .. function:: compile_dir(dir[, maxlevels[, ddir[, force[, rx[, quiet]]]]])
 
-   *dir* で指定されたディレクトリを再帰的に下降し、見つかった :file:`.py` を
-   全てコンパイルします。
-   
-   *maxlevels* パラメタは、再帰する深さの限度に使われ、デフォルトは
-   ``10`` です。
-   
-   *ddir* が与えられれば、コンパイルされるそれぞれのファイルへのパスの先頭に、
-   そのディレクトリを追加します。これはコンパイル時トレースバックに使われ、
-   バイトコードファイルが実行される時点でソースファイルが存在しない場合に、
-   トレースバックやその他のメッセージに使われるバイトコードファイルにも
-   コンパイルされます。
-   
-   *force* が真の場合、モジュールはファイルの更新日付に関わりなく再コンパイルされます。
+   Recursively descend the directory tree named by *dir*, compiling all :file:`.py`
+   files along the way.
 
-   *rx* が与えられれば、コンパイル候補のそれぞれのファイルのフルパスに対して
-   検索メソッドが呼び出され、それが真値を返したら、そのファイルは除外されます。
+   The *maxlevels* parameter is used to limit the depth of the recursion; it
+   defaults to ``10``.
 
-   *quiet* が真の場合、エラーが起こらない限り標準出力に何も表示しません。
+   If *ddir* is given, it is prepended to the path to each file being compiled
+   for use in compilation time tracebacks, and is also compiled in to the
+   byte-code file, where it will be used in tracebacks and other messages in
+   cases where the source file does not exist at the time the byte-code file is
+   executed.
+
+   If *force* is true, modules are re-compiled even if the timestamps are up to
+   date.
+
+   If *rx* is given, its search method is called on the complete path to each
+   file considered for compilation, and if it returns a true value, the file
+   is skipped.
+
+   If *quiet* is true, nothing is printed to the standard output unless errors
+   occur.
 
 
 .. function:: compile_file(fullname[, ddir[, force[, rx[, quiet]]]])
 
-   パス *fullname* のファイルをコンパイルします。
+   Compile the file with path *fullname*.
 
-   *ddir* が与えられれば、コンパイルされるファイルへのパスの先頭に、
-   そのディレクトリを追加します。これはコンパイル時トレースバックに使われ、
-   バイトコードファイルが実行される時点でソースファイルが存在しない場合に、
-   トレースバックやその他のメッセージに使われるバイトコードファイルにも
-   コンパイルされます。
+   If *ddir* is given, it is prepended to the path to the file being compiled
+   for use in compilation time tracebacks, and is also compiled in to the
+   byte-code file, where it will be used in tracebacks and other messages in
+   cases where the source file does not exist at the time the byte-code file is
+   executed.
 
-   *rx* が与えられれば、コンパイル候補のファイルのフルパスに対して
-   検索メソッドが呼び出され、それが真値を返したら、
-   ファイルはコンパイルされず、 ``True`` が返されます。
+   If *rx* is given, its search method is passed the full path name to the
+   file being compiled, and if it returns a true value, the file is not
+   compiled and ``True`` is returned.
 
-   *quiet* が真の場合、エラーが起こらない限り標準出力に何も表示しません。
+   If *quiet* is true, nothing is printed to the standard output unless errors
+   occur.
 
    .. versionadded:: 2.7
 
 
 .. function:: compile_path([skip_curdir[, maxlevels[, force]]])
 
-   ``sys.path`` に含まれる、全ての :file:`.py` ファイルをバイトコンパイルします。
-   *skip_curdir* が真（デフォルト）の時、カレントディレクトリは検索されません。
-   その他のパラメタはすべて :func:`compile_dir` 関数に渡されます。
-   なお、他のコンパイル関数とは違い、 *maxlevels* のデフォルトは ``0`` です。
+   Byte-compile all the :file:`.py` files found along ``sys.path``. If
+   *skip_curdir* is true (the default), the current directory is not included
+   in the search.  All other parameters are passed to the :func:`compile_dir`
+   function.  Note that unlike the other compile functions, ``maxlevels``
+   defaults to ``0``.
 
-:file:`Lib/` ディレクトリ以下にある全ての :file:`.py` ファイルを強制的に再コンパイルするには、以下のようにします::
+To force a recompile of all the :file:`.py` files in the :file:`Lib/`
+subdirectory and all its subdirectories::
 
    import compileall
 
    compileall.compile_dir('Lib/', force=True)
 
-   # .svn ディレクトリにあるファイルを除いて同じことをするにはこのようにします。
+   # Perform same compilation, excluding files in .svn directories.
    import re
-   compileall.compile_dir('Lib/', rx=re.compile('/[.]svn'), force=True)
+   compileall.compile_dir('Lib/', rx=re.compile(r'[/\\][.]svn'), force=True)
 
 
 .. seealso::
 
-   :mod:`py_compile` モジュール
-      一つのソースファイルをバイトコンパイルします。
-
+   Module :mod:`py_compile`
+      Byte-compile a single source file.

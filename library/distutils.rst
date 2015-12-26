@@ -1,29 +1,30 @@
 
-:mod:`distutils` --- Python モジュールの構築とインストール
-==========================================================
+:mod:`distutils` --- Building and installing Python modules
+===========================================================
 
 .. module:: distutils
-   :synopsis: 現在インストールされている Python に追加するためのモジュール構築、および実際のインストールを支援する。
+   :synopsis: Support for building and installing Python modules into an existing Python
+              installation.
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-:mod:`distutils` パッケージは、現在インストールされている Python に\
-追加するためのモジュール構築、および実際のインストールを支援します。
-新規のモジュールは 100%-pure Python でも、C で書かれた拡張モジュールでも、あるいは
-Python と C 両方のコードが入っているモジュールからなる Python パッケージでもかまいません。
+The :mod:`distutils` package provides support for building and installing
+additional modules into a Python installation.  The new modules may be either
+100%-pure Python, or may be extension modules written in C, or may be
+collections of Python packages which include modules coded in both Python and C.
 
-このパッケージは、二つの別の章で詳しく説明されています。
+This package is discussed in two separate chapters:
 
 
 .. seealso::
 
    :ref:`distutils-index`
-      このマニュアルは Python モジュールの開発者およびパッケージ担当に向けたものです。
-      ここでは、現在インストールされている Python に簡単に追加できる
-      :mod:`distutils` ベースのパッケージをどうやって用意するかについて説明しています。
+      The manual for developers and packagers of Python modules.  This describes how
+      to prepare :mod:`distutils`\ -based packages so that they may be easily
+      installed into an existing Python installation.
 
    :ref:`install-index`
-      現在インストールされている Python にモジュールを追加するための情報が書かれた
-      "管理者" 向けのマニュアルです。この文書を読むのに Python
-      プログラマである必要はありません。
+      An "administrators" manual which includes information on installing modules into
+      an existing Python installation. You do not need to be a Python programmer to
+      read this manual.
 

@@ -1,82 +1,93 @@
 
-:mod:`xml.parsers.expat` --- Expat を使った高速な XML 解析
-==========================================================
+:mod:`xml.parsers.expat` --- Fast XML parsing using Expat
+=========================================================
 
 .. module:: xml.parsers.expat
-   :synopsis: Expat による、検証を行わない XML パーザへのインタフェース
+   :synopsis: An interface to the Expat non-validating XML parser.
 .. moduleauthor:: Paul Prescod <paul@prescod.net>
 
 
 .. Markup notes:
 
-   XMLParser オブジェクトの属性の多くはコールバックです。
-   シグニチャ情報を書かないといけないので、method ディレクティヴを使ってます。
-   これらはクライアントコードでセットされる属性なので、
-   文中の参照は :member: ロールを使って書きます。
+   Many of the attributes of the XMLParser objects are callbacks.  Since
+   signature information must be presented, these are described using the method
+   directive.  Since they are attributes which are set by client code, in-text
+   references to these attributes should be marked using the :member: role.
+
+
+.. warning::
+
+   The :mod:`pyexpat` module is not secure against maliciously
+   constructed data.  If you need to parse untrusted or unauthenticated data see
+   :ref:`xml-vulnerabilities`.
+
 
 .. versionadded:: 2.0
 
 .. index:: single: Expat
 
-:mod:`xml.parsers.expat` モジュールは、検証 (validation) を行わない XML パーザ (parser,
-解析器)、Expat への Python インタフェースです。モジュールは一つの拡張型 :class:`xmlparser` を提供します。これは
-XMLパーザの現在の状況を表します。一旦 :class:`xmlparser` オブジェクトを生成すると、オブジェクトの様々な属性をハンドラ関数
-(handler function) に設定できます。その後、XML 文書をパーザに入力すると、 XML文書の文字列とマークアップ
-に応じてハンドラ関数が呼び出されます。
+The :mod:`xml.parsers.expat` module is a Python interface to the Expat
+non-validating XML parser. The module provides a single extension type,
+:class:`xmlparser`, that represents the current state of an XML parser.  After
+an :class:`xmlparser` object has been created, various attributes of the object
+can be set to handler functions.  When an XML document is then fed to the
+parser, the handler functions are called for the character data and markup in
+the XML document.
 
 .. index:: module: pyexpat
 
-このモジュールでは、Expatパーザへのアクセスを提供するために :mod:`pyexpat` モジュールを使用します。
-:mod:`pyexpat` モジュールの直接使用は撤廃されています。
+This module uses the :mod:`pyexpat` module to provide access to the Expat
+parser.  Direct use of the :mod:`pyexpat` module is deprecated.
 
-このモジュールは、例外を一つと型オブジェクトを一つ提供しています。
+This module provides one exception and one type object:
 
 
 .. exception:: ExpatError
 
-   Expat がエラーを報告したときに例外を送出します。
-   Expatのエラーを解釈する上での詳細な情報は、 :ref:`expaterror-objects`
-   を参照してください。
+   The exception raised when Expat reports an error.  See section
+   :ref:`expaterror-objects` for more information on interpreting Expat errors.
 
 
 .. exception:: error
 
-   :exc:`ExpatError` への別名です。
+   Alias for :exc:`ExpatError`.
 
 
 .. data:: XMLParserType
 
-   :func:`ParserCreate` 関数から返された戻り値の型を示します。
+   The type of the return values from the :func:`ParserCreate` function.
 
-:mod:`xml.parsers.expat` モジュールには以下の 2 つの関数が収められています:
+The :mod:`xml.parsers.expat` module contains two functions:
 
 
 .. function:: ErrorString(errno)
 
-   与えられたエラー番号 *errno* を解説する文字列を返します。
+   Returns an explanatory string for a given error number *errno*.
 
 
 .. function:: ParserCreate([encoding[, namespace_separator]])
 
-   新しい :class:`xmlparser` オブジェクトを作成し、返します。
-   *encoding* が指定されていた場合、XMLデータで使われている文字列のエンコード名でなければなりません。
-   Expatは、Pythonのように多くのエンコードをサポートしておらず、またエンコーディングのレパートリを拡張することはできません;
-   サポートするエンコードは、UTF-8, UTF-16, ISO-8859-1 (Latin1), ASCII です。
-   *encoding* [1]_ が指定されると、文書に対する明示的、非明示的なエンコード指定を上書き (override) します。
+   Creates and returns a new :class:`xmlparser` object.   *encoding*, if specified,
+   must be a string naming the encoding  used by the XML data.  Expat doesn't
+   support as many encodings as Python does, and its repertoire of encodings can't
+   be extended; it supports UTF-8, UTF-16, ISO-8859-1 (Latin1), and ASCII.  If
+   *encoding* [1]_ is given it will override the implicit or explicit encoding of the
+   document.
 
-   Expat はオプションで XML 名前空間の処理を行うことができます。
-   これは引数 *namespace_separator* に値を指定することで有効になります。
-   この値は、1文字の文字列でなければなりません;
-   文字列が誤った長さを持つ場合には :exc:`ValueError` が送出されます
-   (``None`` は値の省略と見なされます)。
-   名前空間の処理が可能なとき、名前空間に属する要素と属性が展開されます。
-   要素のハンドラである :attr:`StartElementHandler` と
-   :attr:`EndElementHandler` に渡された要素名は、名前空間の
-   URI、名前空間の区切り文字、要素名のローカル部を連結したものになります。
-   名前空間の区切り文字が 0 バイト  (``chr(0)``)
-   の場合、名前空間の URI とローカル部は区切り文字なしで連結されます。
+   Expat can optionally do XML namespace processing for you, enabled by providing a
+   value for *namespace_separator*.  The value must be a one-character string; a
+   :exc:`ValueError` will be raised if the string has an illegal length (``None``
+   is considered the same as omission).  When namespace processing is enabled,
+   element type names and attribute names that belong to a namespace will be
+   expanded.  The element name passed to the element handlers
+   :attr:`StartElementHandler` and :attr:`EndElementHandler` will be the
+   concatenation of the namespace URI, the namespace separator character, and the
+   local part of the name.  If the namespace separator is a zero byte (``chr(0)``)
+   then the namespace URI and the local part will be concatenated without any
+   separator.
 
-   たとえば、 *namespace_separator* に空白文字(``' '``)がセットされ、次のような文書が解析されるとします。 ::
+   For example, if *namespace_separator* is set to a space character (``' '``) and
+   the following document is parsed::
 
       <?xml version="1.0"?>
       <root xmlns    = "http://default-namespace.org/"
@@ -85,17 +96,22 @@ XMLパーザの現在の状況を表します。一旦 :class:`xmlparser` オブ
         <elem2 xmlns="" />
       </root>
 
-   :attr:`StartElementHandler` は各要素ごとに次のような文字列を受け取ります。 ::
+   :attr:`StartElementHandler` will receive the following strings for each
+   element::
 
       http://default-namespace.org/ root
       http://www.python.org/ns/ elem1
       elem2
 
+   Due to limitations in the ``Expat`` library used by :mod:`pyexpat`,
+   the :class:`xmlparser` instance returned can only be used to parse a single
+   XML document.  Call ``ParserCreate`` for each document to provide unique
+   parser instances.
 
 .. seealso::
 
    `The Expat XML Parser <http://www.libexpat.org/>`_
-      Expatプロジェクトのホームページ
+      Home page of the Expat project.
 
 
 .. _xmlparser-objects:
@@ -103,382 +119,438 @@ XMLパーザの現在の状況を表します。一旦 :class:`xmlparser` オブ
 XMLParser Objects
 -----------------
 
-:class:`xmlparser` オブジェクトは以下のようなメソッドを持ちます。
+:class:`xmlparser` objects have the following methods:
 
 
 .. method:: xmlparser.Parse(data[, isfinal])
 
-   文字列 *data* の内容を解析し、解析されたデータを処理するための適切な関数を呼び出します。このメソッドを最後に呼び出す時は *isfinal*
-   を真にしなければなりません。 *data* は空の文字列を取ることもできます。
+   Parses the contents of the string *data*, calling the appropriate handler
+   functions to process the parsed data.  *isfinal* must be true on the final call
+   to this method; it allows the parsing of a single file in fragments,
+   not the submission of multiple files.
+   *data* can be the empty string at any time.
 
 
 .. method:: xmlparser.ParseFile(file)
 
-   *file* オブジェクトから読み込んだXMLデータを解析します。 *file* には `read(nbytes)` メソッドのみが必要です。
-   このメソッドはデータがなくなった場合に空文字列を返さねばなりません。。
+   Parse XML data reading from the object *file*.  *file* only needs to provide
+   the ``read(nbytes)`` method, returning the empty string when there's no more
+   data.
 
 
 .. method:: xmlparser.SetBase(base)
 
-   (XML) 宣言中のシステム識別子中の相対 URI を解決するための、基底 URI を設定します。相対識別子の解決はアプリケーションに任されます:
-   この値は関数 :func:`ExternalEntityRefHandler` や
-   :func:`NotationDeclHandler`, :func:`UnparsedEntityDeclHandler` に引数 *base*
-   としてそのまま渡されます。
+   Sets the base to be used for resolving relative URIs in system identifiers in
+   declarations.  Resolving relative identifiers is left to the application: this
+   value will be passed through as the *base* argument to the
+   :func:`ExternalEntityRefHandler`, :func:`NotationDeclHandler`, and
+   :func:`UnparsedEntityDeclHandler` functions.
 
 
 .. method:: xmlparser.GetBase()
 
-   以前の :meth:`SetBase` によって設定された基底 URI を文字列の形で返します。 :meth:`SetBase` が呼ばれていないときには
-   ``None`` を返します。
+   Returns a string containing the base set by a previous call to :meth:`SetBase`,
+   or ``None`` if  :meth:`SetBase` hasn't been called.
 
 
 .. method:: xmlparser.GetInputContext()
 
-   現在のイベントを発生させた入力データを文字列として返します。データはテキストの入っているエンティティが持っているエンコードになります。
-   イベントハンドラがアクティブでないときに呼ばれると、戻り値は ``None`` となります。
+   Returns the input data that generated the current event as a string. The data is
+   in the encoding of the entity which contains the text. When called while an
+   event handler is not active, the return value is ``None``.
 
    .. versionadded:: 2.1
 
 
 .. method:: xmlparser.ExternalEntityParserCreate(context[, encoding])
 
-   親となるパーザで解析された内容が参照している、外部で解析されるエンティティを解析するために使える "子の" パーザを作成します。 *context*
-   パラメータは、以下に記すように :meth:`ExternalEntityRefHandler`
-   ハンドラ関数に渡される文字列でなければなりません。子のパーザは
-   :attr:`ordered_attributes`, :attr:`returns_unicode`, :attr:`specified_attributes`
-   が現在のパーザの値に設定されて生成されます。
+   Create a "child" parser which can be used to parse an external parsed entity
+   referred to by content parsed by the parent parser.  The *context* parameter
+   should be the string passed to the :meth:`ExternalEntityRefHandler` handler
+   function, described below. The child parser is created with the
+   :attr:`ordered_attributes`, :attr:`returns_unicode` and
+   :attr:`specified_attributes` set to the values of this parser.
 
 .. method:: xmlparser.SetParamEntityParsing(flag)
 
-   パラメーターエンティティ (外部DTDサブセットを含む) の解析を制御します。
-   *flag* の有効な値は、 :const:`XML_PARAM_ENTITY_PARSING_NEVER`,
-   :const:`XML_PARAM_ENTITY_PARSING_UNLESS_STANDALONE`,
-   :const:`XML_PARAM_ENTITY_PARSING_ALWAYS` です。
-   flag の設定をしたら true を返します。
+   Control parsing of parameter entities (including the external DTD subset).
+   Possible *flag* values are :const:`XML_PARAM_ENTITY_PARSING_NEVER`,
+   :const:`XML_PARAM_ENTITY_PARSING_UNLESS_STANDALONE` and
+   :const:`XML_PARAM_ENTITY_PARSING_ALWAYS`.  Return true if setting the flag
+   was successful.
 
 .. method:: xmlparser.UseForeignDTD([flag])
 
-   *flag* の値をデフォルトのtrueにすると、Expatは代わりのDTDをロードするため、すべての引数に :const:`None` を設定して
-   :attr:`ExternalEntityRefHandler` を呼び出します。XML文書が文書型定義を持っていなければ、
-   :attr:`ExternalEntityRefHandler` が呼び出しますが、 :attr:`StartDoctypeDeclHandler` と
-   :attr:`EndDoctypeDeclHandler` は呼び出されません。
+   Calling this with a true value for *flag* (the default) will cause Expat to call
+   the :attr:`ExternalEntityRefHandler` with :const:`None` for all arguments to
+   allow an alternate DTD to be loaded.  If the document does not contain a
+   document type declaration, the :attr:`ExternalEntityRefHandler` will still be
+   called, but the :attr:`StartDoctypeDeclHandler` and
+   :attr:`EndDoctypeDeclHandler` will not be called.
 
-   *flag* にfalseを与えると、メソッドが前回呼ばれた時のtrueの設定が解除されますが、他には何も起こりません。
+   Passing a false value for *flag* will cancel a previous call that passed a true
+   value, but otherwise has no effect.
 
-   このメソッドは :meth:`Parse` または :meth:`ParseFile` メソッドが呼び出される前にだけ呼び出されます;これら2つのメソッドの
-   どちらかが呼び出されたあとにメソッドが呼ばれると、 :attr:`code` に定数
-   :const:`errors.XML_ERROR_CANT_CHANGE_FEATURE_ONCE_PARSING` が設定されて例外
-   :exc:`ExpatError` が送出されます。
+   This method can only be called before the :meth:`Parse` or :meth:`ParseFile`
+   methods are called; calling it after either of those have been called causes
+   :exc:`ExpatError` to be raised with the :attr:`code` attribute set to
+   :const:`errors.XML_ERROR_CANT_CHANGE_FEATURE_ONCE_PARSING`.
 
    .. versionadded:: 2.3
 
-:class:`xmlparser` オブジェクトは次のような属性を持ちます:
+:class:`xmlparser` objects have the following attributes:
 
 
 .. attribute:: xmlparser.buffer_size
 
-   :attr:`buffer_text` が真の時に使われるバッファのサイズです。
-   この属性に新しい整数値を代入することで違うバッファサイズにできます。
-   サイズが変えられるときにバッファはフラッシュされます。
+   The size of the buffer used when :attr:`buffer_text` is true.
+   A new buffer size can be set by assigning a new integer value
+   to this attribute.
+   When the size is changed, the buffer will be flushed.
 
    .. versionadded:: 2.3
 
    .. versionchanged:: 2.6
-      バッファサイズが変えられるようになりました。
+      The buffer size can now be changed.
 
 .. attribute:: xmlparser.buffer_text
 
-   この値を真にすると、 :class:`xmlparser` オブジェクトが Expatから返された
-   もとの内容をバッファに保持するようになります。これにより可能なときに何度も :meth:`CharacterDataHandler`
-   を呼び出してしまうようなことを避けることができます。Expatは通常、文字列のデータを行末ごと大量に破棄
-   するため、かなりパフォーマンスを改善できるはずです。この属性はデフォルトでは偽で、いつでも変更可能です。
+   Setting this to true causes the :class:`xmlparser` object to buffer textual
+   content returned by Expat to avoid multiple calls to the
+   :meth:`CharacterDataHandler` callback whenever possible.  This can improve
+   performance substantially since Expat normally breaks character data into chunks
+   at every line ending.  This attribute is false by default, and may be changed at
+   any time.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: xmlparser.buffer_used
 
-   :attr:`buffer_text` が利用可能なとき、バッファに保持されたバイト数です。
-   これらのバイトはUTF-8でエンコードされたテキストを表します。この属性は :attr:`buffer_text` が偽の時には意味がありません。
+   If :attr:`buffer_text` is enabled, the number of bytes stored in the buffer.
+   These bytes represent UTF-8 encoded text.  This attribute has no meaningful
+   interpretation when :attr:`buffer_text` is false.
 
    .. versionadded:: 2.3
 
 
 .. attribute:: xmlparser.ordered_attributes
 
-   この属性をゼロ以外の整数にすると、報告される(XMLノードの) 属性を辞書型ではなくリスト型にします。属性は文書のテキスト中の出現順で示されます。
-   それぞれの属性は、2つのリストのエントリ: 属性名とその値、が与えられます。 (このモジュールの古いバージョンでも、同じフォーマットが使われています。)
-   デフォルトでは、この属性はデフォルトでは偽となりますが、いつでも変更可能です。
+   Setting this attribute to a non-zero integer causes the attributes to be
+   reported as a list rather than a dictionary.  The attributes are presented in
+   the order found in the document text.  For each attribute, two list entries are
+   presented: the attribute name and the attribute value.  (Older versions of this
+   module also used this format.)  By default, this attribute is false; it may be
+   changed at any time.
 
    .. versionadded:: 2.1
 
 
 .. attribute:: xmlparser.returns_unicode
 
-   この属性をゼロ以外の整数にすると、ハンドラ関数に Unicode 文字列が渡されます。 :attr:`returns_unicode` が
-   :const:`False` の時には、UTF-8でエンコードされたデータを含む 8 ビット文字列がハンドラに渡されます。Pythonがユニコード
-   サポートつきでビルドされている場合、この値はデフォルトで :const:`True` です。
+   If this attribute is set to a non-zero integer, the handler functions will be
+   passed Unicode strings.  If :attr:`returns_unicode` is :const:`False`, 8-bit
+   strings containing UTF-8 encoded data will be passed to the handlers.  This is
+   :const:`True` by default when Python is built with Unicode support.
 
    .. versionchanged:: 1.6
-      戻り値の型がいつでも変更できるように変更されたはずです.
+      Can be changed at any time to affect the result type.
 
 
 .. attribute:: xmlparser.specified_attributes
 
-   ゼロ以外の整数にすると、パーザは文書のインスタンスで特定される属性だけを報告し、属性宣言から導出された属性は報告しないようになります。
-   この属性が指定されたアプリケーションでは、XMLプロセッサの振る舞いに関する標準に従うために必要とされる (文書型) 宣言によって、どのような
-   付加情報が利用できるのかということについて特に注意を払わなければなりません。デフォルトで、この属性は偽となりますが、いつでも変更可能です。
+   If set to a non-zero integer, the parser will report only those attributes which
+   were specified in the document instance and not those which were derived from
+   attribute declarations.  Applications which set this need to be especially
+   careful to use what additional information is available from the declarations as
+   needed to comply with the standards for the behavior of XML processors.  By
+   default, this attribute is false; it may be changed at any time.
 
    .. versionadded:: 2.1
 
-以下の属性には、 :class:`xmlparser` オブジェクトで最も最近に起きたエラーに関する値が入っており、また :meth:`Parse` または
-:meth:`ParseFile` メソッドが :exc:`xml.parsers.expat.ExpatError`
-例外を送出した際にのみ正しい値となります。
+The following attributes contain values relating to the most recent error
+encountered by an :class:`xmlparser` object, and will only have correct values
+once a call to :meth:`Parse` or :meth:`ParseFile` has raised a
+:exc:`xml.parsers.expat.ExpatError` exception.
 
 
 .. attribute:: xmlparser.ErrorByteIndex
 
-   エラーが発生したバイトのインデクスです。
+   Byte index at which an error occurred.
 
 
 .. attribute:: xmlparser.ErrorCode
 
-   エラーを特定する数値によるコードです。この値は :func:`ErrorString` に渡したり、 ``errors``
-   オブジェクトで定義された内容と比較できます。
+   Numeric code specifying the problem.  This value can be passed to the
+   :func:`ErrorString` function, or compared to one of the constants defined in the
+   ``errors`` object.
 
 
 .. attribute:: xmlparser.ErrorColumnNumber
 
-   エラーの発生したカラム番号です。
+   Column number at which an error occurred.
 
 
 .. attribute:: xmlparser.ErrorLineNumber
 
-   エラーの発生した行番号です。
+   Line number at which an error occurred.
 
-以下の属性は :class:`xmlparser` オブジェクトがその時パースしている位置に
-関する値を保持しています。コールバックがパースイベントを報告している間、これらの値はイベントの生成した文字列の先頭の位置を指し示します。
-コールバックの外から参照された時には、（対応するコールバックであるかにかかわらず）直前のパースイベントの位置を示します。
+The following attributes contain values relating to the current parse location
+in an :class:`xmlparser` object.  During a callback reporting a parse event they
+indicate the location of the first of the sequence of characters that generated
+the event.  When called outside of a callback, the position indicated will be
+just past the last parse event (regardless of whether there was an associated
+callback).
 
 .. versionadded:: 2.4
 
 
 .. attribute:: xmlparser.CurrentByteIndex
 
-   パーサへの入力の、現在のバイトインデックス。
+   Current byte index in the parser input.
 
 
 .. attribute:: xmlparser.CurrentColumnNumber
 
-   パーサへの入力の、現在のカラム番号。
+   Current column number in the parser input.
 
 
 .. attribute:: xmlparser.CurrentLineNumber
 
-   パーサへの入力の、現在の行番号。
+   Current line number in the parser input.
 
-以下に指定可能なハンドラのリストを示します。 :class:`xmlparser` オブジェクト *o*
-にハンドラを指定するには、 ``o.handlername = func`` を使用します。
-*handlername* は、以下のリストに挙げた値をとらねばならず、
-また *func* は正しい数の引数を受理する呼び出し可能なオブジェクトでなければなりません。
-引数は特に明記しない限り、すべて文字列となります。
+Here is the list of handlers that can be set.  To set a handler on an
+:class:`xmlparser` object *o*, use ``o.handlername = func``.  *handlername* must
+be taken from the following list, and *func* must be a callable object accepting
+the correct number of arguments.  The arguments are all strings, unless
+otherwise stated.
 
 
 .. method:: xmlparser.XmlDeclHandler(version, encoding, standalone)
 
-   XML 宣言が解析された時に呼ばれます。XML宣言とは、XML勧告の適用バージョン (オプション)、文書テキストのエンコード、そしてオプションの
-   "スタンドアロン" の宣言です。 *version* と *encoding* は :attr:`returns_unicode`
-   属性によって指示された型を示す文字列となり、 *standalone* は、文書がスタンドアロンであると宣言される場合には
-   ``1`` に、文書がスタンドアロンでない場合には ``0`` に、スタンドアロン宣言を省略する場合には ``-1`` になります。このハンドラは Expat
-   のバージョン1.95.0以降のみ使用できます。
+   Called when the XML declaration is parsed.  The XML declaration is the
+   (optional) declaration of the applicable version of the XML recommendation, the
+   encoding of the document text, and an optional "standalone" declaration.
+   *version* and *encoding* will be strings of the type dictated by the
+   :attr:`returns_unicode` attribute, and *standalone* will be ``1`` if the
+   document is declared standalone, ``0`` if it is declared not to be standalone,
+   or ``-1`` if the standalone clause was omitted. This is only available with
+   Expat version 1.95.0 or newer.
 
    .. versionadded:: 2.1
 
 
 .. method:: xmlparser.StartDoctypeDeclHandler(doctypeName, systemId, publicId, has_internal_subset)
 
-   Expatが文書型宣言 ``<!DOCTYPE ...``)を解析し始めたときに呼び出されます。 *doctypeName* は、与えられた値がそのまま
-   Expat に提供されます。 *systemId* と *publicId* パラメタが指定されている場合、それぞれシステムと公開識別子を与えます。
-   省略する時には ``None`` にします。文書が内部的な文書宣言のサブセット (internal document declaration subset)
-   を持つか、サブセット自体の場合、 *has_internal_subset* は true になります。このハンドラには、Expat version
-   1.2以上が必要です。
+   Called when Expat begins parsing the document type declaration (``<!DOCTYPE
+   ...``).  The *doctypeName* is provided exactly as presented.  The *systemId* and
+   *publicId* parameters give the system and public identifiers if specified, or
+   ``None`` if omitted.  *has_internal_subset* will be true if the document
+   contains and internal document declaration subset. This requires Expat version
+   1.2 or newer.
 
 
 .. method:: xmlparser.EndDoctypeDeclHandler()
 
-   Expatが文書型宣言の解析を終えたときに呼び出されます。このハンドラには、Expat version 1.2以上が必要です。
+   Called when Expat is done parsing the document type declaration. This requires
+   Expat version 1.2 or newer.
 
 
 .. method:: xmlparser.ElementDeclHandler(name, model)
 
-   それぞれの要素型宣言ごとに呼び出されます。 *name* は要素型の名前であり、 *model* は内容モデル (content model) の表現です。
-
-.. % -------------
+   Called once for each element type declaration.  *name* is the name of the
+   element type, and *model* is a representation of the content model.
 
 
 .. method:: xmlparser.AttlistDeclHandler(elname, attname, type, default, required)
 
-   ひとつの要素型で宣言される属性ごとに呼び出されます。属性リストの宣言が 3つの属性を宣言したとすると、このハンドラはひとつの属性に1度づつ、
-   3度呼び出されます。 *elname* は要素名であり、これに対して宣言が適用され、 *attname* が宣言された属性名となります。
-   属性型は文字列で、 *type* として渡されます; 取りえる値は、 ``'CDATA'``, ``'ID'``, ``'IDREF'``, ... です。
-   *default* は、属性が文書のインスタンスによって指定されていないときに使用されるデフォルト値を与えます。デフォルト値(``#IMPLIED``
-   values)が存在しないときには ``None`` を与えます。文書のインスタンスによって属性値が
-   与えられる必要のあるときには *required* がtrueになります。このメソッドはExpat version 1.95.0 以上が必要です。
+   Called for each declared attribute for an element type.  If an attribute list
+   declaration declares three attributes, this handler is called three times, once
+   for each attribute.  *elname* is the name of the element to which the
+   declaration applies and *attname* is the name of the attribute declared.  The
+   attribute type is a string passed as *type*; the possible values are
+   ``'CDATA'``, ``'ID'``, ``'IDREF'``, ... *default* gives the default value for
+   the attribute used when the attribute is not specified by the document instance,
+   or ``None`` if there is no default value (``#IMPLIED`` values).  If the
+   attribute is required to be given in the document instance, *required* will be
+   true. This requires Expat version 1.95.0 or newer.
 
 
 .. method:: xmlparser.StartElementHandler(name, attributes)
 
-   要素の開始を処理するごとに呼び出されます。 *name* は要素名を格納した文字列で、 *attributes* はその値に属性名を対応付ける辞書型です。
+   Called for the start of every element.  *name* is a string containing the
+   element name, and *attributes* is a dictionary mapping attribute names to their
+   values.
 
 
 .. method:: xmlparser.EndElementHandler(name)
 
-   要素の終端を処理するごとに呼び出されます。
+   Called for the end of every element.
 
 
 .. method:: xmlparser.ProcessingInstructionHandler(target, data)
 
-   Called for every processing instruction. 処理命令を処理するごとに呼び出されます。
+   Called for every processing instruction.
 
 
 .. method:: xmlparser.CharacterDataHandler(data)
 
-   文字データを処理するときに呼びだされます。このハンドラは通常の文字データ、 CDATAセクション、無視できる空白文字列のために呼び出されます。
-   これらを識別しなければならないアプリケーションは、要求された情報を収集するために :attr:`StartCdataSectionHandler`,
-   :attr:`EndCdataSectionHandler`, and :attr:`ElementDeclHandler` コールバックメソッドを使用できます。
+   Called for character data.  This will be called for normal character data, CDATA
+   marked content, and ignorable whitespace.  Applications which must distinguish
+   these cases can use the :attr:`StartCdataSectionHandler`,
+   :attr:`EndCdataSectionHandler`, and :attr:`ElementDeclHandler` callbacks to
+   collect the required information.
 
 
 .. method:: xmlparser.UnparsedEntityDeclHandler(entityName, base, systemId, publicId, notationName)
 
-   解析されていない (NDATA) エンティティ宣言を処理するために呼び出されます。このハンドラは Expat
-   ライブラリのバージョン1.2のためだけに存在します; より最近のバージョンでは、代わりに :attr:`EntityDeclHandler` を使用してください
-   (根底にある Expat ライブラリ内の関数は、撤廃されたものであると宣言されています)。
+   Called for unparsed (NDATA) entity declarations.  This is only present for
+   version 1.2 of the Expat library; for more recent versions, use
+   :attr:`EntityDeclHandler` instead.  (The underlying function in the Expat
+   library has been declared obsolete.)
 
 
 .. method:: xmlparser.EntityDeclHandler(entityName, is_parameter_entity, value, base, systemId, publicId, notationName)
 
-   エンティティ宣言ごとに呼び出されます。パラメタと内部エンティティについて、 *value* はエンティティ宣言の宣言済みの内容を与える文字列となります;
-   外部エンティティの時には ``None`` となります。解析済みエンティティの場合、 *notationName* パラメタは ``None`` となり、
-   解析されていないエンティティの時には記法 (notation) 名となります。 *is_parameter_entity*
-   は、エンティティがパラメタエンティティの場合真に、一般エンティティ (general entitiy) の場合には偽になります
-   (ほとんどのアプリケーションでは、一般エンティティのことしか気にする必要がありません)。このハンドラは Expat ライブラリのバージョン1.95.0
-   以降でのみ使用できます。
+   Called for all entity declarations.  For parameter and internal entities,
+   *value* will be a string giving the declared contents of the entity; this will
+   be ``None`` for external entities.  The *notationName* parameter will be
+   ``None`` for parsed entities, and the name of the notation for unparsed
+   entities. *is_parameter_entity* will be true if the entity is a parameter entity
+   or false for general entities (most applications only need to be concerned with
+   general entities). This is only available starting with version 1.95.0 of the
+   Expat library.
 
    .. versionadded:: 2.1
 
 
 .. method:: xmlparser.NotationDeclHandler(notationName, base, systemId, publicId)
 
-   記法の宣言 (notation declaration) で呼び出されます。 *notationName*, *base*, *systemId*, および
-   *publicId* を与える場合、文字列にします。public な識別子が省略された場合、 *publicId* は ``None`` になります。
+   Called for notation declarations.  *notationName*, *base*, and *systemId*, and
+   *publicId* are strings if given.  If the public identifier is omitted,
+   *publicId* will be ``None``.
 
 
 .. method:: xmlparser.StartNamespaceDeclHandler(prefix, uri)
 
-   要素が名前空間宣言を含んでいる場合に呼び出されます。名前空間宣言は、宣言が配置されている要素に対して :attr:`StartElementHandler`
-   が呼び出される前に処理されます。
+   Called when an element contains a namespace declaration.  Namespace declarations
+   are processed before the :attr:`StartElementHandler` is called for the element
+   on which declarations are placed.
 
 
 .. method:: xmlparser.EndNamespaceDeclHandler(prefix)
 
-   名前空間宣言を含んでいたエレメントの終了タグに到達したときに呼び出されます。このハンドラは、要素に関する名前空間宣言ごとに、
-   :attr:`StartNamespaceDeclHandler` とは逆の順番で一度だけ呼び出され、各名前空間宣言のスコープが開始されたことを示します。
-   このハンドラは、要素が終了する際、対応する :attr:`EndElementHandler` が呼ばれた後に呼び出されます。
+   Called when the closing tag is reached for an element  that contained a
+   namespace declaration.  This is called once for each namespace declaration on
+   the element in the reverse of the order for which the
+   :attr:`StartNamespaceDeclHandler` was called to indicate the start of each
+   namespace declaration's scope.  Calls to this handler are made after the
+   corresponding :attr:`EndElementHandler` for the end of the element.
 
 
 .. method:: xmlparser.CommentHandler(data)
 
-   コメントで呼び出されます。 *data* はコメントのテキストで、先頭の '``<!-`` \ ``-``' と末尾の '``-`` \ ``->``'
-   を除きます。
+   Called for comments.  *data* is the text of the comment, excluding the leading
+   ``'<!-``\ ``-'`` and trailing ``'-``\ ``->'``.
 
 
 .. method:: xmlparser.StartCdataSectionHandler()
 
-   CDATA セクションの開始時に呼び出されます。CDATA セクションの構文的な開始と終了位置を識別できるようにするには、このハンドラと
-   :attr:`EndCdataSectionHandler` が必要です。
+   Called at the start of a CDATA section.  This and :attr:`EndCdataSectionHandler`
+   are needed to be able to identify the syntactical start and end for CDATA
+   sections.
 
 
 .. method:: xmlparser.EndCdataSectionHandler()
 
-   CDATA セクションの終了時に呼び出されます。
+   Called at the end of a CDATA section.
 
 
 .. method:: xmlparser.DefaultHandler(data)
 
-   XML 文書中で、適用可能なハンドラが指定されていない文字すべてに対して呼び出されます。この文字とは、検出されたことが
-   報告されるが、ハンドラは指定されていないようなコンストラクト (construct) の一部である文字を意味します。
+   Called for any characters in the XML document for which no applicable handler
+   has been specified.  This means characters that are part of a construct which
+   could be reported, but for which no handler has been supplied.
 
 
 .. method:: xmlparser.DefaultHandlerExpand(data)
 
-   :func:`DefaultHandler` と同じですが、内部エンティティの展開を禁止しません。エンティティ参照はデフォルトハンドラに渡されません。
+   This is the same as the :func:`DefaultHandler`,  but doesn't inhibit expansion
+   of internal entities. The entity reference will not be passed to the default
+   handler.
 
 
 .. method:: xmlparser.NotStandaloneHandler()
 
-   XML 文書がスタンドアロンの文書として宣言されていない場合に呼び出されます。
-   外部サブセットやパラメタエンティティへの参照が存在するが、XML 宣言が XML
-   宣言中で standalone 変数を ``yes`` に設定していない場合に起きます。
-   このハンドラが ``0`` を返すと、パーザは :const:`XML_ERROR_NOT_STANDALONE`
-   を発生させます。このハンドラが設定されていなければ、パーザは前述の事態で
-   例外を送出しません。
+   Called if the XML document hasn't been declared as being a standalone document.
+   This happens when there is an external subset or a reference to a parameter
+   entity, but the XML declaration does not set standalone to ``yes`` in an XML
+   declaration.  If this handler returns ``0``, then the parser will raise an
+   :const:`XML_ERROR_NOT_STANDALONE` error.  If this handler is not set, no
+   exception is raised by the parser for this condition.
 
 
 .. method:: xmlparser.ExternalEntityRefHandler(context, base, systemId, publicId)
 
-   外部エンティティの参照時に呼び出されます。 *base* は現在の基底 (base) で、以前の :meth:`SetBase` で設定された値になっています。
-   public、および system の識別子である、 *systemId* と *publicId* が指定されている場合、値は文字列です; public
-   識別子が指定されていない場合、 *publicId* は ``None`` になります。 *context*
-   の値は不明瞭なものであり、以下に記述するようにしか使ってはなりません。
+   Called for references to external entities.  *base* is the current base, as set
+   by a previous call to :meth:`SetBase`.  The public and system identifiers,
+   *systemId* and *publicId*, are strings if given; if the public identifier is not
+   given, *publicId* will be ``None``.  The *context* value is opaque and should
+   only be used as described below.
 
-   外部エンティティが解析されるようにするには、このハンドラを実装しなければなりません。このハンドラは、
-   ``ExternalEntityParserCreate(context)`` を使って適切なコールバックを指定し、子パーザを生成して、
-   エンティティを解析する役割を担います。このハンドラは整数を返さねばなりません; ``0`` を返した場合、パーザは
-   :const:`XML_ERROR_EXTERNAL_ENTITY_HANDLING` エラーを送出します。そうでないばあい、解析を継続します。
+   For external entities to be parsed, this handler must be implemented. It is
+   responsible for creating the sub-parser using
+   ``ExternalEntityParserCreate(context)``, initializing it with the appropriate
+   callbacks, and parsing the entity.  This handler should return an integer; if it
+   returns ``0``, the parser will raise an
+   :const:`XML_ERROR_EXTERNAL_ENTITY_HANDLING` error, otherwise parsing will
+   continue.
 
-   このハンドラが与えられておらず、 :attr:`DefaultHandler` コールバックが指定されていれば、
-   外部エンティティは :attr:`DefaultHandler` で報告されます。
+   If this handler is not provided, external entities are reported by the
+   :attr:`DefaultHandler` callback, if provided.
 
 
 .. _expaterror-objects:
 
-ExpatError 例外
----------------
+ExpatError Exceptions
+---------------------
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-:exc:`ExpatError` 例外はいくつかの興味深い属性を備えています:
+:exc:`ExpatError` exceptions have a number of interesting attributes:
 
 
 .. attribute:: ExpatError.code
 
-   特定のエラーにおける Expat の内部エラー番号です。この値はこのモジュールの ``errors`` オブジェクトで定義されている
-   定数のいずれかに一致します。
+   Expat's internal error number for the specific error.  This will match one of
+   the constants defined in the ``errors`` object from this module.
 
    .. versionadded:: 2.1
 
 
 .. attribute:: ExpatError.lineno
 
-   エラーが検出された場所の行番号です。最初の行の番号は ``1`` です。
+   Line number on which the error was detected.  The first line is numbered ``1``.
 
    .. versionadded:: 2.1
 
 
 .. attribute:: ExpatError.offset
 
-   エラーが発生した場所の行内でのオフセットです。最初のカラムの番号は ``0`` です。
+   Character offset into the line where the error occurred.  The first column is
+   numbered ``0``.
 
    .. versionadded:: 2.1
 
 
 .. _expat-example:
 
-例
---
+Example
+-------
 
-以下のプログラムでは、与えられた引数を出力するだけの三つのハンドラを定義しています。 ::
+The following program defines three handlers that just print out their
+arguments. ::
 
    import xml.parsers.expat
 
@@ -499,9 +571,9 @@ ExpatError 例外
    p.Parse("""<?xml version="1.0"?>
    <parent id="top"><child1 name="paul">Text goes here</child1>
    <child2 name="fred">More text</child2>
-   </parent>""")
+   </parent>""", 1)
 
-このプログラムの出力は以下のようになります::
+The output from this program is::
 
    Start element: parent {'id': 'top'}
    Start element: child1 {'name': 'paul'}
@@ -517,38 +589,41 @@ ExpatError 例外
 
 .. _expat-content-models:
 
-内容モデルの記述
-----------------
+Content Model Descriptions
+--------------------------
 
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
-内容モデルは入れ子になったタプルを使って記述されています。各タプルには 4 つの値: 型、限定詞 (quantifier)、名前、そして子の
-タプル、が収められています。子のタプルは単に内容モデルを記述したものです。
+Content modules are described using nested tuples.  Each tuple contains four
+values: the type, the quantifier, the name, and a tuple of children.  Children
+are simply additional content module descriptions.
 
-最初の二つのフィールドの値は :mod:`xml.parsers.expat` モジュールの ``model``
-オブジェクトで定義されている定数です。これらの定数は二つのグループ: モデル型 (model type) グループと限定子 (quantifier)
-グループ、に取りまとめられます。
+The values of the first two fields are constants defined in the ``model`` object
+of the :mod:`xml.parsers.expat` module.  These constants can be collected in two
+groups: the model type group and the quantifier group.
 
-以下にモデル型グループにおける定数を示します:
+The constants in the model type group are:
 
 
 .. data:: XML_CTYPE_ANY
    :noindex:
 
-   モデル名で指定された要素は ``ANY`` の内容モデルを持つと宣言されます。
+   The element named by the model name was declared to have a content model of
+   ``ANY``.
 
 
 .. data:: XML_CTYPE_CHOICE
    :noindex:
 
-   指定されたエレメントはいくつかのオプションから選択できるようになっています; ``(A | B | C)`` のような内容モデルで用いられます。
+   The named element allows a choice from a number of options; this is used for
+   content models such as ``(A | B | C)``.
 
 
 .. data:: XML_CTYPE_EMPTY
    :noindex:
 
-   ``EMPTY`` であると宣言されている要素はこのモデル型を持ちます。
+   Elements which are declared to be ``EMPTY`` have this model type.
 
 
 .. data:: XML_CTYPE_MIXED
@@ -562,44 +637,47 @@ ExpatError 例外
 .. data:: XML_CTYPE_SEQ
    :noindex:
 
-   順々に続くようなモデルの系列を表すモデルがこのモデル型で表されます。 ``(A, B, C)`` のようなモデルで用いられます。
+   Models which represent a series of models which follow one after the other are
+   indicated with this model type.  This is used for models such as ``(A, B, C)``.
 
-限定子グループにおける定数を以下に示します:
+The constants in the quantifier group are:
 
 
 .. data:: XML_CQUANT_NONE
    :noindex:
 
-   修飾子 (modifier) が指定されていません。従って ``A`` のように、厳密に一つだけです。
+   No modifier is given, so it can appear exactly once, as for ``A``.
 
 
 .. data:: XML_CQUANT_OPT
    :noindex:
 
-   このモデルはオプションです: ``A?`` のように、一つか全くないかです。
+   The model is optional: it can appear once or not at all, as for ``A?``.
 
 
 .. data:: XML_CQUANT_PLUS
    :noindex:
 
-   このモデルは (``A+`` のように) 一つかそれ以上あります。
+   The model must occur one or more times (like ``A+``).
 
 
 .. data:: XML_CQUANT_REP
    :noindex:
 
-   このモデルは ``A*`` のようにゼロ回以上あります。
+   The model must occur zero or more times, as for ``A*``.
 
 
 .. _expat-errors:
 
-Expat エラー定数
-----------------
+Expat error constants
+---------------------
 
-以下の定数は :mod:`xml.parsers.expat` モジュールにおける ``errors`` オブジェクトで提供されています。これらの定数は、
-エラーが発生した際に送出される :exc:`ExpatError` 例外オブジェクトのいくつかの属性を解釈する上で便利です。
+The following constants are provided in the ``errors`` object of the
+:mod:`xml.parsers.expat` module.  These constants are useful in interpreting
+some of the attributes of the :exc:`ExpatError` exception objects raised when an
+error has occurred.
 
-``errors`` オブジェクトは以下の属性を持ちます:
+The ``errors`` object has the following attributes:
 
 
 .. data:: XML_ERROR_ASYNC_ENTITY
@@ -609,25 +687,28 @@ Expat エラー定数
 .. data:: XML_ERROR_ATTRIBUTE_EXTERNAL_ENTITY_REF
    :noindex:
 
-   属性値中のエンティティ参照が、内部エンティティではなく外部エンティティを参照しました。
+   An entity reference in an attribute value referred to an external entity instead
+   of an internal entity.
 
 
 .. data:: XML_ERROR_BAD_CHAR_REF
    :noindex:
 
-   文字参照が、XML では正しくない (illegal) 文字を参照しました (例えば ``0`` や '``&#0;``')。
+   A character reference referred to a character which is illegal in XML (for
+   example, character ``0``, or '``&#0;``').
 
 
 .. data:: XML_ERROR_BINARY_ENTITY_REF
    :noindex:
 
-   エンティティ参照が、記法 (notation) つきで宣言されているエンティティを参照したため、解析できません。
+   An entity reference referred to an entity which was declared with a notation, so
+   cannot be parsed.
 
 
 .. data:: XML_ERROR_DUPLICATE_ATTRIBUTE
    :noindex:
 
-   一つの属性が一つの開始タグ内に一度より多く使われています。
+   An attribute was used more than once in a start tag.
 
 
 .. data:: XML_ERROR_INCORRECT_ENCODING
@@ -637,85 +718,89 @@ Expat エラー定数
 .. data:: XML_ERROR_INVALID_TOKEN
    :noindex:
 
-   入力されたバイトが文字に適切に関連付けできない際に送出されます; 例えば、UTF-8 入力ストリームにおける NUL バイト (値 ``0``) などです。
+   Raised when an input byte could not properly be assigned to a character; for
+   example, a NUL byte (value ``0``) in a UTF-8 input stream.
 
 
 .. data:: XML_ERROR_JUNK_AFTER_DOC_ELEMENT
    :noindex:
 
-   空白以外の何かがドキュメント要素の後にあります。
+   Something other than whitespace occurred after the document element.
 
 
 .. data:: XML_ERROR_MISPLACED_XML_PI
    :noindex:
 
-   入力データの先頭以外の場所に XML 定義が見つかりました。
+   An XML declaration was found somewhere other than the start of the input data.
 
 
 .. data:: XML_ERROR_NO_ELEMENTS
    :noindex:
 
-   このドキュメントには要素が入っていません (XML では全てのドキュメントは確実にトップレベルの要素を一つ持つよう要求しています)。
+   The document contains no elements (XML requires all documents to contain exactly
+   one top-level element)..
 
 
 .. data:: XML_ERROR_NO_MEMORY
    :noindex:
 
-   Expat が内部メモリを確保できませんでした。
+   Expat was not able to allocate memory internally.
 
 
 .. data:: XML_ERROR_PARAM_ENTITY_REF
    :noindex:
 
-   パラメタエンティティが許可されていない場所で見つかりました。
+   A parameter entity reference was found where it was not allowed.
 
 
 .. data:: XML_ERROR_PARTIAL_CHAR
    :noindex:
 
-   入力に不完全な文字が見つかりました。
+   An incomplete character was found in the input.
 
 
 .. data:: XML_ERROR_RECURSIVE_ENTITY_REF
    :noindex:
 
-   エンティティ参照中に、同じエンティティへの別の参照が入っていました; おそらく違う名前で参照しているか、間接的に参照しています。
+   An entity reference contained another reference to the same entity; possibly via
+   a different name, and possibly indirectly.
 
 
 .. data:: XML_ERROR_SYNTAX
    :noindex:
 
-   何らかの仕様化されていない構文エラーに遭遇しました。
+   Some unspecified syntax error was encountered.
 
 
 .. data:: XML_ERROR_TAG_MISMATCH
    :noindex:
 
-   終了タグが最も内側で開かれている開始タグに一致しません。
+   An end tag did not match the innermost open start tag.
 
 
 .. data:: XML_ERROR_UNCLOSED_TOKEN
    :noindex:
 
-   何らかの (開始タグのような) トークンが閉じられないまま、ストリームの終端や次のトークンに遭遇しました。
+   Some token (such as a start tag) was not closed before the end of the stream or
+   the next token was encountered.
 
 
 .. data:: XML_ERROR_UNDEFINED_ENTITY
    :noindex:
 
-   定義されていないエンティティへの参照が行われました。
+   A reference was made to a entity which was not defined.
 
 
 .. data:: XML_ERROR_UNKNOWN_ENCODING
    :noindex:
 
-   ドキュメントのエンコードが Expat でサポートされていません。
+   The document encoding is not supported by Expat.
 
 
 .. data:: XML_ERROR_UNCLOSED_CDATA_SECTION
    :noindex:
 
-   CDATAセクションが閉じられていません。
+   A CDATA marked section was not closed.
 
 
 .. data:: XML_ERROR_EXTERNAL_ENTITY_HANDLING
@@ -725,8 +810,9 @@ Expat エラー定数
 .. data:: XML_ERROR_NOT_STANDALONE
    :noindex:
 
-   XML文書が"standalone"だと宣言されており :attr:`NotStandaloneHandler` が設定され ``0`` が
-   返されているにもかかわらず、パーサは"standalone"ではないと判別しました。
+   The parser determined that the document was not "standalone" though it declared
+   itself to be in the XML declaration, and the :attr:`NotStandaloneHandler` was
+   set and returned ``0``.
 
 
 .. data:: XML_ERROR_UNEXPECTED_STATE
@@ -740,89 +826,91 @@ Expat エラー定数
 .. data:: XML_ERROR_FEATURE_REQUIRES_XML_DTD
    :noindex:
 
-   その操作を完了するにはDTDのサポートが必要ですが、ExpatがDTDのサポートをしない設定になっています。これは
-   :mod:`xml.parsers.expat` モジュールの標準的なビルドでは報告されません。
+   An operation was requested that requires DTD support to be compiled in, but
+   Expat was configured without DTD support.  This should never be reported by a
+   standard build of the :mod:`xml.parsers.expat` module.
 
 
 .. data:: XML_ERROR_CANT_CHANGE_FEATURE_ONCE_PARSING
    :noindex:
 
-   パースが始まったあとで動作の変更が要求されました。これはパースが開始される前にのみ変更可能です。（現在のところ） :meth:`UseForeignDTD`
-   によってのみ送出されます。
+   A behavioral change was requested after parsing started that can only be changed
+   before parsing has started.  This is (currently) only raised by
+   :meth:`UseForeignDTD`.
 
 
 .. data:: XML_ERROR_UNBOUND_PREFIX
    :noindex:
 
-   名前空間の処理を有効すると宣言されていないプレフィックスが見つかります。
+   An undeclared prefix was found when namespace processing was enabled.
 
 
 .. data:: XML_ERROR_UNDECLARING_PREFIX
    :noindex:
 
-   XML文書はプレフィックスに対応した名前空間宣言を削除しようとしました。
+   The document attempted to remove the namespace declaration associated with a
+   prefix.
 
 
 .. data:: XML_ERROR_INCOMPLETE_PE
    :noindex:
 
-   パラメータエンティティは不完全なマークアップを含んでいます。
+   A parameter entity contained incomplete markup.
 
 
 .. data:: XML_ERROR_XML_DECL
    :noindex:
 
-   XML文書中に要素がありません。
+   The document contained no document element at all.
 
 
 .. data:: XML_ERROR_TEXT_DECL
    :noindex:
 
-   外部エンティティ中のテキスト宣言にエラーがあります。
+   There was an error parsing a text declaration in an external entity.
 
 
 .. data:: XML_ERROR_PUBLICID
    :noindex:
 
-   パブリックID中に許可されていない文字があります。
+   Characters were found in the public id that are not allowed.
 
 
 .. data:: XML_ERROR_SUSPENDED
    :noindex:
 
-   要求された操作は一時停止されたパーサで行われていますが、許可されていない操作です。このエラーは追加の入力を
-   行なおうとしている場合、もしくはパーサが停止しようとしている場合にも送出されます。
+   The requested operation was made on a suspended parser, but isn't allowed.  This
+   includes attempts to provide additional input or to stop the parser.
 
 
 .. data:: XML_ERROR_NOT_SUSPENDED
    :noindex:
 
-   パーサを一時停止しようとしましたが、停止されませんでした。
+   An attempt to resume the parser was made when the parser had not been suspended.
 
 
 .. data:: XML_ERROR_ABORTED
    :noindex:
 
-   Pythonアプリケーションには通知されません。
+   This should not be reported to Python applications.
 
 
 .. data:: XML_ERROR_FINISHED
    :noindex:
 
-   要求された操作で、パース対象となる入力が完了したと判断しましたが、入力は受理されませんでした。このエラーは
-   追加の入力を行なおうとしている場合、もしくはパーサが停止しようとしている場合に送出されます。
+   The requested operation was made on a parser which was finished parsing input,
+   but isn't allowed.  This includes attempts to provide additional input or to
+   stop the parser.
 
 
 .. data:: XML_ERROR_SUSPEND_PE
    :noindex:
 
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] XML の出力に含まれるエンコーディング文字列は適切な標準に\
-   適合していなければなりません。
-   たとえば、"UTF-8" は正当ですが、"UTF8" は違います。
-   http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
-   と
-   http://www.iana.org/assignments/character-sets
-   を参照して下さい。
+.. [#] The encoding string included in XML output should conform to the
+   appropriate standards. For example, "UTF-8" is valid, but "UTF8" is
+   not. See http://www.w3.org/TR/2006/REC-xml11-20060816/#NT-EncodingDecl
+   and http://www.iana.org/assignments/character-sets/character-sets.xhtml.
+

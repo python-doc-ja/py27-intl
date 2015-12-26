@@ -1,83 +1,87 @@
 
-:mod:`sha` --- SHA-1 メッセージダイジェストアルゴリズム
-=======================================================
+:mod:`sha` --- SHA-1 message digest algorithm
+=============================================
 
 .. module:: sha
-   :synopsis: NISTのセキュアハッシュアルゴリズム、SHA。
+   :synopsis: NIST's secure hash algorithm, SHA.
    :deprecated:
 .. sectionauthor:: Fred L. Drake, Jr. <fdrake@acm.org>
 
 
 .. deprecated:: 2.5
-   かわりにモジュール :mod:`hashlib` を使ってください。
+   Use the :mod:`hashlib` module instead.
 
 .. index::
-   single: Secure Hash Algorithm
    single: NIST
+   single: Secure Hash Algorithm
    single: checksum; SHA
 
-このモジュールは、SHA-1 として知られている、 NIST のセキュアハッシュアルゴリズムへのインターフェースを実装しています。
-SHA-1 はオリジナルの SHA ハッシュアルゴリズムを改善したバージョンです。
-:mod:`md5` モジュールと同じように使用します。
-sha オブジェクトを生成するために :func:`new` を使い、
-:meth:`update` メソッドを使って、このオブジェクトに任意の文字列を入力し、
-それまでに入力した文字列全体の :dfn:`digest` をいつでも調べることができます。
-SHA-1 のダイジェストは MD5 の 128 bit とは異なり、160 bit です。
+This module implements the interface to NIST's secure hash  algorithm, known as
+SHA-1.  SHA-1 is an improved version of the original SHA hash algorithm.  It is
+used in the same way as the :mod:`md5` module: use :func:`new` to create an sha
+object, then feed this object with arbitrary strings using the :meth:`update`
+method, and at any point you can ask it for the :dfn:`digest` of the
+concatenation of the strings fed to it so far.  SHA-1 digests are 160 bits
+instead of MD5's 128 bits.
 
 
 .. function:: new([string])
 
-   新たな sha オブジェクトを返します。もし *string* が存在するなら、
-   ``update(string)`` を呼び出します。
+   Return a new sha object.  If *string* is present, the method call
+   ``update(string)`` is made.
 
-以下の値はモジュールの中で定数として与えられており、
-:func:`new` で返される sha オブジェクトの属性としても与えられます:
+The following values are provided as constants in the module and as attributes
+of the sha objects returned by :func:`new`:
 
 
 .. data:: blocksize
 
-   ハッシュ関数に入力されるブロックのサイズ。このサイズは常に ``1`` です。
-   このサイズは、任意の文字列をハッシュできるようにするために使われます。
+   Size of the blocks fed into the hash function; this is always ``1``.  This size
+   is used to allow an arbitrary string to be hashed.
 
 
 .. data:: digest_size
 
-   返されるダイジェスト値をバイト数で表した長さ。常に 20 です。
+   The size of the resulting digest in bytes.  This is always ``20``.
 
-sha オブジェクトには md5 オブジェクトと同じメソッドがあります。
+An sha object has the same methods as md5 objects:
 
 
 .. method:: sha.update(arg)
 
-   文字列 *arg* を入力として sha オブジェクトを更新します。このメソッドを繰り返し呼び出す(操作は、それぞれの呼び出し時の引数を結合した
-   データを引数として一回の呼び出す操作と同等になります。つまり、 ``m.update(a); m.update(b)`` は ``m.update(a+b)``
-   と同等です。
+   Update the sha object with the string *arg*.  Repeated calls are equivalent to a
+   single call with the concatenation of all the arguments: ``m.update(a);
+   m.update(b)`` is equivalent to ``m.update(a+b)``.
 
 
 .. method:: sha.digest()
 
-   これまで update() メソッドで与えてきた文字列のダイジェストを返します。戻り値は 20 バイトの文字列で、nullバイトを含む非 ASCII
-   文字が入っているかもしれません。
+   Return the digest of the strings passed to the :meth:`update` method so far.
+   This is a 20-byte string which may contain non-ASCII characters, including null
+   bytes.
 
 
 .. method:: sha.hexdigest()
 
-   :meth:`digits` と似ていますが、ダイジェストは長さ40の文字列になり、16進表記数字しか含みません。
-   電子メールやその他のバイナリを受け付けない環境で安全に値をやりとりするために使うことができます。
+   Like :meth:`digest` except the digest is returned as a string of length 40,
+   containing only hexadecimal digits.  This may  be used to exchange the value
+   safely in email or other non-binary environments.
 
 
 .. method:: sha.copy()
 
-   sha オブジェクトのコピー("クローン")を返します。冒頭の部分文字列が共通な複数の文字列のダイジェストを効率よく計算する際に使うことができます。
+   Return a copy ("clone") of the sha object.  This can be used to efficiently
+   compute the digests of strings that share a common initial substring.
 
 
 .. seealso::
 
-   `セキュアハッシュスタンダード <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_
-      セキュアハッシュアルゴリズムは NIST のドキュメント FIPS PUB 180-2 で定義されています。 `セキュアハッシュスタンダード
+   `Secure Hash Standard <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_
+      The Secure Hash Algorithm is defined by NIST document FIPS PUB 180-2: `Secure
+      Hash Standard
       <http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf>`_,
-      2002年8月出版。
+      published in August 2002.
 
-   `暗号ツールキット (セキュアハッシュ) <http://csrc.nist.gov/CryptoToolkit/tkhash.html>`_
-      NISTからはられているセキュアハッシュに関するさまざまな情報へのリンク
+   `Cryptographic Toolkit (Secure Hashing) <http://csrc.nist.gov/CryptoToolkit/tkhash.html>`_
+      Links from NIST to various information on secure hashing.
 

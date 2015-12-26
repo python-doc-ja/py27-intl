@@ -1,20 +1,31 @@
-
-:mod:`xml.dom.pulldom` --- 部分的な DOM ツリー構築のサポート
-============================================================
+:mod:`xml.dom.pulldom` --- Support for building partial DOM trees
+=================================================================
 
 .. module:: xml.dom.pulldom
-   :synopsis: SAX イベントからの部分的な DOM ツリー構築のサポート。
+   :synopsis: Support for building partial DOM trees from SAX events.
 .. moduleauthor:: Paul Prescod <paul@prescod.net>
 
 
 .. versionadded:: 2.0
 
-:mod:`xml.dom.pulldom` では、SAX イベントから、文書の文書オブジェクトモデル表現の選択された一部分だけを構築できるようにします。
+**Source code:** :source:`Lib/xml/dom/pulldom.py`
+
+--------------
+
+:mod:`xml.dom.pulldom` allows building only selected portions of a Document
+Object Model representation of a document from SAX events.
+
+
+.. warning::
+
+   The :mod:`xml.dom.pulldom` module is not secure against
+   maliciously constructed data.  If you need to parse untrusted or
+   unauthenticated data see :ref:`xml-vulnerabilities`.
 
 
 .. class:: PullDOM([documentFactory])
 
-   :class:`xml.sax.handler.ContentHandler` 実装です ...
+   :class:`xml.sax.handler.ContentHandler` implementation that ...
 
 
 .. class:: DOMEventStream(stream, parser, bufsize)
@@ -24,7 +35,7 @@
 
 .. class:: SAX2DOM([documentFactory])
 
-   :class:`xml.sax.handler.ContentHandler` 実装です ...
+   :class:`xml.sax.handler.ContentHandler` implementation that ...
 
 
 .. function:: parse(stream_or_string[, parser[, bufsize]])
@@ -39,16 +50,17 @@
 
 .. data:: default_bufsize
 
-   :func:`parse` の *bufsize* パラメタのデフォルト値です。
+   Default value for the *bufsize* parameter to :func:`parse`.
 
    .. versionchanged:: 2.1
-      この変数の値は :func:`parse` を呼び出す前に変更することができ、その場合新たな値が効果を持つようになります.
+      The value of this variable can be changed before calling :func:`parse` and the
+      new value will take effect.
 
 
 .. _domeventstream-objects:
 
-DOMEventStream オブジェクト
----------------------------
+DOMEventStream Objects
+----------------------
 
 
 .. method:: DOMEventStream.getEvent()
