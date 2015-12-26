@@ -1,0 +1,378 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 1990-2015, Python Software Foundation
+# This file is distributed under the same license as the Python package.
+# 
+# Translators:
+msgid ""
+msgstr ""
+"Project-Id-Version: Python 2.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-29 03:44+0900\n"
+"PO-Revision-Date: 2015-11-28 19:11+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Japanese (http://www.transifex.com/python-doc-ja/python-27/language/ja/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../c-api/object.rst:6
+msgid "Object Protocol"
+msgstr "オブジェクトプロトコル (object protocol)"
+
+#: ../../c-api/object.rst:11
+msgid ""
+"Print an object *o*, on file *fp*.  Returns ``-1`` on error.  The flags "
+"argument is used to enable certain printing options.  The only option "
+"currently supported is :const:`Py_PRINT_RAW`; if given, the :func:`str` of "
+"the object is written instead of the :func:`repr`."
+msgstr "オブジェクト *o* をファイル *fp* に出力します。失敗すると ``-1`` を返します。 *flags* 引数は何らかの出力オプションを有効にする際に使います。現在サポートされている唯一のオプションは :const:`Py_PRINT_RAW` です; このオプションを指定すると、 :func:`repr` の代わりに :func:`str` を使ってオブジェクトを書き込みます。"
+
+#: ../../c-api/object.rst:19 ../../c-api/object.rst:26
+msgid ""
+"Returns ``1`` if *o* has the attribute *attr_name*, and ``0`` otherwise.  "
+"This is equivalent to the Python expression ``hasattr(o, attr_name)``.  This"
+" function always succeeds."
+msgstr "*o* が属性 *attr_name* を持つときに ``1`` を、それ以外のときに ``0`` を返します。この関数は Python の式 ``hasattr(o, attr_name)`` と同じです。この関数は常に成功します。"
+
+#: ../../c-api/object.rst:33
+msgid ""
+"Retrieve an attribute named *attr_name* from object *o*. Returns the "
+"attribute value on success, or *NULL* on failure.  This is the equivalent of"
+" the Python expression ``o.attr_name``."
+msgstr "オブジェクト *o* から、名前 *attr_name* の属性を取得します。成功すると属性値を返し失敗すると *NULL* を返します。この関数は Python の式 ``o.attr_name`` と同じです。"
+
+#: ../../c-api/object.rst:40
+msgid ""
+"Retrieve an attribute named *attr_name* from object *o*. Returns the "
+"attribute value on success, or *NULL* on failure. This is the equivalent of "
+"the Python expression ``o.attr_name``."
+msgstr "オブジェクト *o* から、名前 *attr_name* の属性を取得します。成功すると属性値を返し失敗すると *NULL* を返します。この関数は Python の式 ``o.attr_name`` と同じです。"
+
+#: ../../c-api/object.rst:47
+msgid ""
+"Generic attribute getter function that is meant to be put into a type "
+"object's ``tp_getattro`` slot.  It looks for a descriptor in the dictionary "
+"of classes in the object's MRO as well as an attribute in the object's "
+":attr:`~object.__dict__` (if present).  As outlined in :ref:`descriptors`, "
+"data descriptors take preference over instance attributes, while non-data "
+"descriptors don't.  Otherwise, an :exc:`AttributeError` is raised."
+msgstr "型オブジェクトの ``tp_getattro`` スロットに置かれる、属性を取得する総称的な関数です。この関数は、 (もし存在すれば) オブジェクトの :attr:`~object.__dict__` 属性に加え、オブジェクトの MRO にあるクラスの辞書にあるデスクリプタを探します。 :ref:`descriptors` で概要が述べられている通り、データのデスクリプタはインスタンスの属性より優先され、非データデスクリプタは後回しにされます。見付からなかった場合は :exc:`AttributeError` を送出します。"
+
+#: ../../c-api/object.rst:57 ../../c-api/object.rst:64
+msgid ""
+"Set the value of the attribute named *attr_name*, for object *o*, to the "
+"value *v*. Returns ``-1`` on failure.  This is the equivalent of the Python "
+"statement ``o.attr_name = v``."
+msgstr "オブジェクト *o* の *attr_name* という名の属性に、値 *v* を設定します。失敗すると ``-1`` を返します。この関数は Python の式 ``o.attr_name = v`` と同じです。"
+
+#: ../../c-api/object.rst:71
+msgid ""
+"Generic attribute setter function that is meant to be put into a type "
+"object's ``tp_setattro`` slot.  It looks for a data descriptor in the "
+"dictionary of classes in the object's MRO, and if found it takes preference "
+"over setting the attribute in the instance dictionary. Otherwise, the "
+"attribute is set in the object's :attr:`~object.__dict__` (if present). "
+"Otherwise, an :exc:`AttributeError` is raised and ``-1`` is returned."
+msgstr "型オブジェクトの ``tp_setattro`` スロットに置かれる、属性を設定する総称的な関数です。この関数は、オブジェクトの MRO にあるクラスの辞書からデータデスクリプタを探し、見付かった場合は、インスタンスの辞書の属性への設定よりも優先されます。そうでない場合は、(もし存在すれば) オブジェクトの :attr:`~object.__dict__` に属性を設定します。存在しない場合は、 :exc:`AttributeError` が送出され、 ``-1`` が返されます。"
+
+#: ../../c-api/object.rst:81 ../../c-api/object.rst:87
+msgid ""
+"Delete attribute named *attr_name*, for object *o*. Returns ``-1`` on "
+"failure. This is the equivalent of the Python statement ``del o.attr_name``."
+msgstr "オブジェクト *o* の *attr_name* という名の属性を削除します。失敗すると ``-1`` を返します。この関数は Python の文 ``del o.attr_name`` と同じです。"
+
+#: ../../c-api/object.rst:93
+msgid ""
+"Compare the values of *o1* and *o2* using the operation specified by *opid*,"
+" which must be one of :const:`Py_LT`, :const:`Py_LE`, :const:`Py_EQ`, "
+":const:`Py_NE`, :const:`Py_GT`, or :const:`Py_GE`, corresponding to ``<``, "
+"``<=``, ``==``, ``!=``, ``>``, or ``>=`` respectively. This is the "
+"equivalent of the Python expression ``o1 op o2``, where ``op`` is the "
+"operator corresponding to *opid*. Returns the value of the comparison on "
+"success, or *NULL* on failure."
+msgstr "*o1* と *o2* を *opid* に指定した演算によって比較します。 *opid* は :const:`Py_LT`, :const:`Py_LE`, :const:`Py_EQ`, :const:`Py_NE`, :const:`Py_GT`, または :const:`Py_GE`, のいずれかでなければならず、それぞれ ``<``, ``<=``, ``==``, ``!=``, ``>``, および ``>=`` に対応します。この関数は Python の式 ``o1 op o2`` と同じで、 ``op`` が *opid* に対応する演算子です。成功すると比較結果の値を返し失敗すると *NULL* を返します。"
+
+#: ../../c-api/object.rst:103
+msgid ""
+"Compare the values of *o1* and *o2* using the operation specified by *opid*,"
+" which must be one of :const:`Py_LT`, :const:`Py_LE`, :const:`Py_EQ`, "
+":const:`Py_NE`, :const:`Py_GT`, or :const:`Py_GE`, corresponding to ``<``, "
+"``<=``, ``==``, ``!=``, ``>``, or ``>=`` respectively. Returns ``-1`` on "
+"error, ``0`` if the result is false, ``1`` otherwise. This is the equivalent"
+" of the Python expression ``o1 op o2``, where ``op`` is the operator "
+"corresponding to *opid*."
+msgstr "*o1* と *o2* を *opid* に指定した演算によって比較します。 *opid* は :const:`Py_LT`, :const:`Py_LE`, :const:`Py_EQ`, :const:`Py_NE`, :const:`Py_GT`, または :const:`Py_GE`, のいずれかでなければならず、それぞれ ``<``, ``<=``, ``==``, ``!=``, ``>``, および ``>=`` に対応します。比較結果が真ならば ``1`` を、偽ならば ``0`` を、エラーが発生すると ``-1`` を返します。この関数は Python の式 ``o1 op o2`` と同じで、 ``op`` が *opid* に対応する演算子です。"
+
+#: ../../c-api/object.rst:112
+msgid ""
+"If *o1* and *o2* are the same object, :c:func:`PyObject_RichCompareBool` "
+"will always return ``1`` for :const:`Py_EQ` and ``0`` for :const:`Py_NE`."
+msgstr "*o1* と *o2* が同一のオブジェクトである場合、 :c:func:`PyObject_RichCompareBool` は :const:`Py_EQ` に対して常に ``1`` を返し、 :const:`Py_NE` に対して常に ``0`` を返します。"
+
+#: ../../c-api/object.rst:119
+msgid ""
+"Compare the values of *o1* and *o2* using a routine provided by *o1*, if one"
+" exists, otherwise with a routine provided by *o2*.  The result of the "
+"comparison is returned in *result*.  Returns ``-1`` on failure.  This is the"
+" equivalent of the Python statement ``result = cmp(o1, o2)``."
+msgstr ""
+
+#: ../../c-api/object.rst:129
+msgid ""
+"Compare the values of *o1* and *o2* using a routine provided by *o1*, if one"
+" exists, otherwise with a routine provided by *o2*.  Returns the result of "
+"the comparison on success.  On error, the value returned is undefined; use "
+":c:func:`PyErr_Occurred` to detect an error.  This is equivalent to the "
+"Python expression ``cmp(o1, o2)``."
+msgstr ""
+
+#: ../../c-api/object.rst:140
+msgid ""
+"Compute a string representation of object *o*.  Returns the string "
+"representation on success, *NULL* on failure.  This is the equivalent of the"
+" Python expression ``repr(o)``.  Called by the :func:`repr` built-in "
+"function and by reverse quotes."
+msgstr ""
+
+#: ../../c-api/object.rst:150
+msgid ""
+"Compute a string representation of object *o*.  Returns the string "
+"representation on success, *NULL* on failure.  This is the equivalent of the"
+" Python expression ``str(o)``.  Called by the :func:`str` built-in function "
+"and by the :keyword:`print` statement."
+msgstr ""
+
+#: ../../c-api/object.rst:160
+msgid ""
+"Compute a bytes representation of object *o*.  In 2.x, this is just a alias "
+"for :c:func:`PyObject_Str`."
+msgstr ""
+
+#: ../../c-api/object.rst:168
+msgid ""
+"Compute a Unicode string representation of object *o*.  Returns the Unicode "
+"string representation on success, *NULL* on failure. This is the equivalent "
+"of the Python expression ``unicode(o)``.  Called by the :func:`unicode` "
+"built-in function."
+msgstr ""
+
+#: ../../c-api/object.rst:176
+msgid ""
+"Returns ``1`` if *inst* is an instance of the class *cls* or a subclass of "
+"*cls*, or ``0`` if not.  On error, returns ``-1`` and sets an exception.  If"
+" *cls* is a type object rather than a class object, "
+":c:func:`PyObject_IsInstance` returns ``1`` if *inst* is of type *cls*.  If "
+"*cls* is a tuple, the check will be done against every entry in *cls*. The "
+"result will be ``1`` when at least one of the checks returns ``1``, "
+"otherwise it will be ``0``. If *inst* is not a class instance and *cls* is "
+"neither a type object, nor a class object, nor a tuple, *inst* must have a "
+":attr:`~instance.__class__` attribute --- the class relationship of the "
+"value of that attribute with *cls* will be used to determine the result of "
+"this function."
+msgstr "*inst* が *cls* のインスタンスか、 *cls* のサブクラスのインスタンスの場合に ``1`` を返し、そうでなければ ``0`` を 返します。\nエラーの時には ``-1`` を返し、例外をセットします。\n*cls* がクラスオブジェクトではなく型オブジェクトの場合、 :c:func:`PyObject_IsInstance` は *inst* が *cls* であるときに ``1`` を返します。\n*cls* をタプルで指定した場合、 *cls* に指定した全てのエントリについてチェックを行います。\n少なくとも一つのエントリに対するチェックが ``1`` を返せば結果は ``1`` になり、そうでなければ ``0`` になります。\n*inst* がクラスインスタンスでなく、かつ *cls* が 型オブジェクトでもクラスオブジェクトでもタプルでもない場合、 *inst* には :attr:`__class__` 属性がなくてはなりません\n --- この場合、 :attr:`~instance.__class__` 属性の値と *cls* の値の間のクラス関係を使って、関数の戻り値を決定します。"
+
+#: ../../c-api/object.rst:189
+msgid "Support for a tuple as the second argument added."
+msgstr ""
+
+#: ../../c-api/object.rst:192
+msgid ""
+"Subclass determination is done in a fairly straightforward way, but includes"
+" a wrinkle that implementors of extensions to the class system may want to "
+"be aware of.  If :class:`A` and :class:`B` are class objects, :class:`B` is "
+"a subclass of :class:`A` if it inherits from :class:`A` either directly or "
+"indirectly.  If either is not a class object, a more general mechanism is "
+"used to determine the class relationship of the two objects.  When testing "
+"if *B* is a subclass of *A*, if *A* is *B*, :c:func:`PyObject_IsSubclass` "
+"returns true.  If *A* and *B* are different objects, *B*'s "
+":attr:`~class.__bases__` attribute is searched in a depth-first fashion for "
+"*A* --- the presence of the :attr:`~class.__bases__` attribute is considered"
+" sufficient for this determination."
+msgstr "サブクラスの決定はかなり素直な方法で行いますが、クラスシステムの拡張を実装する人たちに知っておいて欲しいちょっとした問題点があります。\n:class:`A` と :class:`B` がクラスオブジェクトの場合、 :class:`B` が :class:`A` のサブクラスとなるのは、 :class:`B` が :class:`A` を直接的あるいは間接的に継承 (inherit) している場合です。\n両方がクラスオブジェクトでない場合、二つのオブジェクト間のクラス関係を決めるには、より汎用的な機構を使います。\n*B* が *A* のサブクラスであるか調べたとき、 *A* が *B* と等しければ、 :c:func:`PyObject_IsSubclass` は真を返します。\n*A* および *B* が異なるオブジェクトなら、 *B* の :attr:`~class.__bases__` 属性から深さ優先探索 (depth-first search)で *A* を探索します\n --- オブジェクトに :attr:`~class.__bases__` があるだけで、この決定法を適用する条件を満たしているとみなされます。"
+
+#: ../../c-api/object.rst:206
+msgid ""
+"Returns ``1`` if the class *derived* is identical to or derived from the "
+"class *cls*, otherwise returns ``0``.  In case of an error, returns ``-1``. "
+"If *cls* is a tuple, the check will be done against every entry in *cls*. "
+"The result will be ``1`` when at least one of the checks returns ``1``, "
+"otherwise it will be ``0``. If either *derived* or *cls* is not an actual "
+"class object (or tuple), this function uses the generic algorithm described "
+"above."
+msgstr "クラス *derived* が *cls* と同じクラスか、 *cls* の派生クラスの場合に ``1`` を返し、それ以外の場合には ``0`` を返します。エラーが生じると ``-1`` を返します。  *cls* をタプルで指定した場合、 *cls* に指定した全てのエントリについてチェックを行います。少なくとも一つのエントリに対するチェックが ``1`` を返せば結果は ``1`` になり、そうでなければ ``0`` になります。 *derived* または *cls* のいずれかが実際のクラスオブジェクト (あるいはタプル) でない場合、上で述べた汎用アルゴリズムを使います。"
+
+#: ../../c-api/object.rst:215
+msgid ""
+"Older versions of Python did not support a tuple as the second argument."
+msgstr ""
+
+#: ../../c-api/object.rst:221
+msgid ""
+"Determine if the object *o* is callable.  Return ``1`` if the object is "
+"callable and ``0`` otherwise.  This function always succeeds."
+msgstr "オブジェクト *o* が呼び出し可能オブジェクトかどうか調べます。オブジェクトが呼び出し可能であるときに ``1`` を返し、そうでないときには ``0`` を返します。この関数呼び出しは常に成功します。"
+
+#: ../../c-api/object.rst:229
+msgid ""
+"Call a callable Python object *callable_object*, with arguments given by the"
+" tuple *args*, and named arguments given by the dictionary *kw*. If no named"
+" arguments are needed, *kw* may be *NULL*. *args* must not be *NULL*, use an"
+" empty tuple if no arguments are needed. Returns the result of the call on "
+"success, or *NULL* on failure.  This is the equivalent of the Python "
+"expression ``apply(callable_object, args, kw)`` or ``callable_object(*args, "
+"**kw)``."
+msgstr ""
+
+#: ../../c-api/object.rst:243
+msgid ""
+"Call a callable Python object *callable_object*, with arguments given by the"
+" tuple *args*.  If no arguments are needed, then *args* may be *NULL*.  "
+"Returns the result of the call on success, or *NULL* on failure.  This is "
+"the equivalent of the Python expression ``apply(callable_object, args)`` or "
+"``callable_object(*args)``."
+msgstr ""
+
+#: ../../c-api/object.rst:254
+msgid ""
+"Call a callable Python object *callable*, with a variable number of C "
+"arguments. The C arguments are described using a :c:func:`Py_BuildValue` "
+"style format string.  The format may be *NULL*, indicating that no arguments"
+" are provided. Returns the result of the call on success, or *NULL* on "
+"failure.  This is the equivalent of the Python expression ``apply(callable, "
+"args)`` or ``callable(*args)``. Note that if you only pass :c:type:`PyObject"
+" \\*` args, :c:func:`PyObject_CallFunctionObjArgs` is a faster alternative."
+msgstr ""
+
+#: ../../c-api/object.rst:265
+msgid ""
+"Call the method named *method* of object *o* with a variable number of C "
+"arguments.  The C arguments are described by a :c:func:`Py_BuildValue` "
+"format string that should  produce a tuple.  The format may be *NULL*, "
+"indicating that no arguments are provided. Returns the result of the call on"
+" success, or *NULL* on failure.  This is the equivalent of the Python "
+"expression ``o.method(args)``. Note that if you only pass :c:type:`PyObject "
+"\\*` args, :c:func:`PyObject_CallMethodObjArgs` is a faster alternative."
+msgstr "オブジェクト *o* の *method* という名前のメソッドを、可変数個の C 引数とともに呼び出します。C 引数はタプルを生成するような :c:func:`Py_BuildValue` 形式のフォーマット文字列を使って記述します。 *format* は *NULL* にしてもよく、与える引数がないことを表します。成功すると呼び出し結果として得られたオブジェクトを返し、失敗すると *NULL* を返します。 Python の式 ``o.method(args)`` と同じです。もしも、 :c:type:`PyObject \\*` args だけを引数に渡す場合は、 :c:func:`PyObject_CallMethodObjArgs` がより速い方法であることを覚えておいてください。"
+
+#: ../../c-api/object.rst:276
+msgid ""
+"Call a callable Python object *callable*, with a variable number of "
+":c:type:`PyObject\\*` arguments.  The arguments are provided as a variable "
+"number of parameters followed by *NULL*. Returns the result of the call on "
+"success, or *NULL* on failure."
+msgstr "呼び出し可能な Python オブジェクト *callable* を可変数個の :c:type:`PyObject\\*` 引数とともに呼び出します。引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。成功すると呼び出し結果として得られたオブジェクトを返し失敗すると *NULL* を返します。"
+
+#: ../../c-api/object.rst:286
+msgid ""
+"Calls a method of the object *o*, where the name of the method is given as a"
+" Python string object in *name*.  It is called with a variable number of "
+":c:type:`PyObject\\*` arguments.  The arguments are provided as a variable "
+"number of parameters followed by *NULL*. Returns the result of the call on "
+"success, or *NULL* on failure."
+msgstr "オブジェクト *o* のメソッドを呼び出します、メソッド名は Python 文字列オブジェクト *name* で与えます。可変数個の :c:type:`PyObject\\*` 引数と共に呼び出されます. 引数列は末尾に *NULL* がついた可変数個のパラメタとして与えます。成功すると呼び出し結果として得られたオブジェクトを返し失敗すると *NULL* を返します。"
+
+#: ../../c-api/object.rst:299
+msgid ""
+"Compute and return the hash value of an object *o*.  On failure, return "
+"``-1``. This is the equivalent of the Python expression ``hash(o)``."
+msgstr "オブジェクト *o* のハッシュ値を計算して返します。失敗すると ``-1`` を返します。 Python の式 ``hash(o)`` と同じです。"
+
+#: ../../c-api/object.rst:305
+msgid ""
+"Set a :exc:`TypeError` indicating that ``type(o)`` is not hashable and "
+"return ``-1``. This function receives special treatment when stored in a "
+"``tp_hash`` slot, allowing a type to explicitly indicate to the interpreter "
+"that it is not hashable."
+msgstr "``type(o)`` がハッシュ不可能であることを示す :exc:`TypeError` を設定し、 ``-1`` を返します。この関数は ``tp_hash`` スロットに格納されたときには特別な扱いを受け、その type がハッシュ不可能であることをインタプリタに明示的に示します。"
+
+#: ../../c-api/object.rst:315
+msgid ""
+"Returns ``1`` if the object *o* is considered to be true, and ``0`` "
+"otherwise. This is equivalent to the Python expression ``not not o``.  On "
+"failure, return ``-1``."
+msgstr "*o* が真を表すとみなせる場合には ``1`` を、そうでないときには ``0`` を返します。   Python の式 ``not not o`` と同じです。失敗すると ``-1`` を返します。"
+
+#: ../../c-api/object.rst:322
+msgid ""
+"Returns ``0`` if the object *o* is considered to be true, and ``1`` "
+"otherwise. This is equivalent to the Python expression ``not o``.  On "
+"failure, return ``-1``."
+msgstr "*o* が真を表すとみなせる場合には ``0`` を、そうでないときには ``1`` を返します。   Python の式 ``not o`` と同じです。失敗すると ``-1`` を返します。"
+
+#: ../../c-api/object.rst:331
+msgid ""
+"When *o* is non-*NULL*, returns a type object corresponding to the object "
+"type of object *o*. On failure, raises :exc:`SystemError` and returns "
+"*NULL*.  This is equivalent to the Python expression ``type(o)``. This "
+"function increments the reference count of the return value. There's really "
+"no reason to use this function instead of the common expression "
+"``o->ob_type``, which returns a pointer of type :c:type:`PyTypeObject\\*`, "
+"except when the incremented reference count is needed."
+msgstr "*o* が *NULL* でない場合、オブジェクト *o* のオブジェクト型に相当する型オブジェクトを返します。失敗すると :exc:`SystemError` を送出して *NULL* を返します。 Python の式 ``type(o)`` と同じです。  この関数は戻り値の参照カウントをインクリメントします。参照カウントのインクリメントが必要でない限り、広く使われていて :c:type:`PyTypeObject\\*` 型のポインタを返す表記法 ``o->ob_type`` の代わりに使う理由は全くありません。"
+
+#: ../../c-api/object.rst:342
+msgid ""
+"Return true if the object *o* is of type *type* or a subtype of *type*.  "
+"Both parameters must be non-*NULL*."
+msgstr "オブジェクト *o* が、 *type* か *type* のサブタイプであるときに真を返します。どちらのパラメタも *NULL* であってはなりません。"
+
+#: ../../c-api/object.rst:353
+msgid ""
+"Return the length of object *o*.  If the object *o* provides either the "
+"sequence and mapping protocols, the sequence length is returned.  On error, "
+"``-1`` is returned.  This is the equivalent to the Python expression "
+"``len(o)``."
+msgstr "*o* の長さを返します。ただしオブジェクト *o* がシーケンス型プロトコルとマップ型プロトコルの両方を提供している場合、シーケンスとしての長さを返します。エラーが生じると ``-1`` を返します。 Python の式 ``len(o)`` と同じです。"
+
+#: ../../c-api/object.rst:357
+msgid ""
+"These functions returned an :c:type:`int` type. This might require changes "
+"in your code for properly supporting 64-bit systems."
+msgstr ""
+
+#: ../../c-api/object.rst:364
+msgid ""
+"Return element of *o* corresponding to the object *key* or *NULL* on "
+"failure. This is the equivalent of the Python expression ``o[key]``."
+msgstr "オブジェクト *key* に対応する *o* の要素を返します。失敗すると *NULL* を返します。Python の式 ``o[key]`` と同じです。"
+
+#: ../../c-api/object.rst:370
+msgid ""
+"Map the object *key* to the value *v*.  Returns ``-1`` on failure.  This is "
+"the equivalent of the Python statement ``o[key] = v``."
+msgstr "オブジェクト *key* を値 *v* に対応付けます。失敗すると ``-1`` を返します。 Python の文 ``o[key] = v`` と同じです。"
+
+#: ../../c-api/object.rst:376
+msgid ""
+"Delete the mapping for *key* from *o*.  Returns ``-1`` on failure. This is "
+"the equivalent of the Python statement ``del o[key]``."
+msgstr "オブジェクト *o* から *key* に関する対応付けを削除します。失敗すると ``-1`` を返します。 Python の文 ``del o[key]`` と同じです。"
+
+#: ../../c-api/object.rst:382
+msgid ""
+"Derives a file descriptor from a Python object.  If the object is an integer"
+" or long integer, its value is returned.  If not, the object's "
+":meth:`fileno` method is called if it exists; the method must return an "
+"integer or long integer, which is returned as the file descriptor value.  "
+"Returns ``-1`` on failure."
+msgstr ""
+
+#: ../../c-api/object.rst:390
+msgid ""
+"This is equivalent to the Python expression ``dir(o)``, returning a "
+"(possibly empty) list of strings appropriate for the object argument, or "
+"*NULL* if there was an error.  If the argument is *NULL*, this is like the "
+"Python ``dir()``, returning the names of the current locals; in this case, "
+"if no execution frame is active then *NULL* is returned but "
+":c:func:`PyErr_Occurred` will return false."
+msgstr "この関数は Python の式 ``dir(o)`` と同じで、オブジェクトの変数名に割り当てている文字列からなるリスト (空の場合もあります) を返します。エラーの場合には *NULL* を返します。引数を *NULL* にすると、Python における ``dir()`` と同様に、現在のローカルな名前を返します; この場合、アクティブな実行フレームがなければ *NULL* を返しますが、 :c:func:`PyErr_Occurred` は偽を返します。"
+
+#: ../../c-api/object.rst:399
+msgid ""
+"This is equivalent to the Python expression ``iter(o)``. It returns a new "
+"iterator for the object argument, or the object  itself if the object is "
+"already an iterator.  Raises :exc:`TypeError` and returns *NULL* if the "
+"object cannot be iterated."
+msgstr "Python の式 ``iter(o)`` と同じです。引数にとったオブジェクトに対する新たなイテレータか、オブジェクトがすでにイテレータの場合にはオブジェクト自身を返します。オブジェクトが反復処理不可能であった場合には :exc:`TypeError` を送出して *NULL* を返します。"

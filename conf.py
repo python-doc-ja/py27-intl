@@ -214,3 +214,10 @@ epub_title = u'Python ドキュメント 日本語訳'
 epub_author = u'Python ドキュメント 翻訳プロジェクト'
 epub_publisher = epub_author
 epub_copyright = u'2010, Pythonドキュメント翻訳プロジェクト'
+
+
+# gettext
+# ---------------
+gettext_compact = False
+locale_dirs = ["locale"]
+language = 'ja'

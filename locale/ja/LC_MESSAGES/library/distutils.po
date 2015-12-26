@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 1990-2015, Python Software Foundation
+# This file is distributed under the same license as the Python package.
+# 
+# Translators:
+# Hiroaki Itoh <xwhhsprings@gmail.com>, 2015
+msgid ""
+msgstr ""
+"Project-Id-Version: Python 2.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-11-29 03:44+0900\n"
+"PO-Revision-Date: 2015-12-05 23:50+0000\n"
+"Last-Translator: Hiroaki Itoh <xwhhsprings@gmail.com>\n"
+"Language-Team: Japanese (http://www.transifex.com/python-doc-ja/python-27/language/ja/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../../library/distutils.rst:3
+msgid ":mod:`distutils` --- Building and installing Python modules"
+msgstr ":mod:`distutils` --- Python モジュールの構築とインストール"
+
+#: ../../library/distutils.rst:11
+msgid ""
+"The :mod:`distutils` package provides support for building and installing "
+"additional modules into a Python installation.  The new modules may be "
+"either 100%-pure Python, or may be extension modules written in C, or may be"
+" collections of Python packages which include modules coded in both Python "
+"and C."
+msgstr ":mod:`distutils` パッケージは、現在インストールされている Python に追加するためのモジュール構築、および実際のインストールを支援します。新規のモジュールは 100%-pure Python でも、C で書かれた拡張モジュールでも、あるいは Python と C 両方のコードが入っているモジュールからなる Python パッケージでもかまいません。"
+
+#: ../../library/distutils.rst:16
+msgid "This package is discussed in two separate chapters:"
+msgstr "このパッケージについては2つに分割された章で議論されています。"
+
+#: ../../library/distutils.rst:24
+msgid ":ref:`distutils-index`"
+msgstr ":ref:`distutils-index`"
+
+#: ../../library/distutils.rst:22
+msgid ""
+"The manual for developers and packagers of Python modules.  This describes "
+"how to prepare :mod:`distutils`\\ -based packages so that they may be easily"
+" installed into an existing Python installation."
+msgstr "Python モジュールの開発者およびパッケージング担当のためのマニュアルです。この文書では、既にインストールされている Python に、 :mod:`distutils` を使ったパッケージをより簡単にインストールできるような、準備の方法について解説しています。"
+
+#: ../../library/distutils.rst:28
+msgid ":ref:`install-index`"
+msgstr ":ref:`install-index`"
+
+#: ../../library/distutils.rst:27
+msgid ""
+"An \"administrators\" manual which includes information on installing "
+"modules into an existing Python installation. You do not need to be a Python"
+" programmer to read this manual."
+msgstr "現在インストールされている Python にモジュールをインストールするための情報を含む \"管理者\" マニュアルです。このマニュアルを読むのに、あなたが Python プログラマである必要はありません。"
