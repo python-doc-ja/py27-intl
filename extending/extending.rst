@@ -1,62 +1,81 @@
 .. highlightlang:: c
 
+
 .. _extending-intro:
 
-*****************************
-C や C++ による Python の拡張
-*****************************
+******************************
+Extending Python with C or C++
+******************************
 
-C プログラムの書き方を知っているなら、Python に新たな組み込みモジュールを追加するのはきわめて簡単です。この新たなモジュール、拡張モジュール
-(:dfn:`extention module`) を使うと、Python が直接行えない二つのこと: 新しい組み込みオブジェクトの実装、そして全ての C
-ライブラリ関数とシステムコールに対する呼び出し、ができるようになります。
+It is quite easy to add new built-in modules to Python, if you know how to
+program in C.  Such :dfn:`extension modules` can do two things that can't be
+done directly in Python: they can implement new built-in object types, and they
+can call C library functions and system calls.
 
-拡張モジュールをサポートするため、Python API (Application Programmer's Interface) では一連の関数、マクロ
-および変数を提供していて、Python ランタイムシステムのほとんどの側面へのアクセス手段を提供しています。 Python API は、ヘッダ
-``"Python.h"`` をインクルードして C ソースに取り込みます。
+To support extensions, the Python API (Application Programmers Interface)
+defines a set of functions, macros and variables that provide access to most
+aspects of the Python run-time system.  The Python API is incorporated in a C
+source file by including the header ``"Python.h"``.
 
-拡張モジュールのコンパイル方法は、モジュールの用途やシステムの設定方法に依存します; 詳細は後の章で説明します。
+The compilation of an extension module depends on its intended use as well as on
+your system setup; details are given in later chapters.
 
-もし C ライブラリ関数やシステムコールを呼び出すような使い方を考えているなら、
-C のコードをいちいち書く前に :mod:`ctypes` モジュールの使用を検討してください。
-:mod:`ctypes` モジュールを使うと C のコードを扱う Python のコードが書けるようになるだけでなく、
-拡張モジュールを書きコンパイルして CPython に縛られてしまうよりも Python の実装間での互換性を高めることができます。
+.. note::
+
+   The C extension interface is specific to CPython, and extension modules do
+   not work on other Python implementations.  In many cases, it is possible to
+   avoid writing C extensions and preserve portability to other implementations.
+   For example, if your use case is calling C library functions or system calls,
+   you should consider using the :mod:`ctypes` module or the `cffi
+   <http://cffi.readthedocs.org>`_ library rather than writing custom C code.
+   These modules let you write Python code to interface with C code and are more
+   portable between implementations of Python than writing and compiling a C
+   extension module.
 
 
 .. _extending-simpleexample:
 
-簡単な例
-========
+A Simple Example
+================
 
-``spam`` (Monty Python ファンの好物ですね) という名の拡張モジュールを作成することにして、C ライブラリ関数
-:c:func:`system` に対する Python インタフェースを作成したいとします。  [#]_ この関数は null
-で終端されたキャラクタ文字列を引数にとり、整数を返します。この関数を以下のようにして Python から呼び出せるようにしたいとします::
+Let's create an extension module called ``spam`` (the favorite food of Monty
+Python fans...) and let's say we want to create a Python interface to the C
+library function :c:func:`system`. [#]_ This function takes a null-terminated
+character string as argument and returns an integer.  We want this function to
+be callable from Python as follows::
 
    >>> import spam
    >>> status = spam.system("ls -l")
 
-まずは :file:`spammodule.c` を作成するところから始めます。 (伝統として、 ``spam`` という名前のモジュールを作成する場合、
-モジュールの実装が入った C ファイルを :file:`spammodule.c` と呼ぶことになっています;  ``spammify`` のように長すぎる
-モジュール名の場合には、単に :file:`spammify.c` にもできます。)
+Begin by creating a file :file:`spammodule.c`.  (Historically, if a module is
+called ``spam``, the C file containing its implementation is called
+:file:`spammodule.c`; if the module name is very long, like ``spammify``, the
+module name can be just :file:`spammify.c`.)
 
-このファイルの最初の行は以下のようにします::
+The first line of our file can be::
 
    #include <Python.h>
 
-これで、Python API を取り込みます (必要なら、モジュールの用途に関する説明や、著作権表示を追加します)。 
+which pulls in the Python API (you can add a comment describing the purpose of
+the module and a copyright notice if you like).
 
 .. note::
 
-   Python は、システムによっては標準ヘッダの定義に影響するようなプリプロセッサ定義を行っているので、 :file:`Python.h` を
-   いずれの標準ヘッダよりも前にインクルード *せねばなりません* 。
+   Since Python may define some pre-processor definitions which affect the standard
+   headers on some systems, you *must* include :file:`Python.h` before any standard
+   headers are included.
 
-:file:`Python.h` で定義されているユーザから可視のシンボルは、全て接頭辞 ``Py`` または ``PY`` が付いています。ただし、
-標準ヘッダファイル内の定義は除きます。簡単のためと、Python 内で広範に使うことになるという理由から、 ``"Python.h"``
-はいくつかの標準ヘッダファイル: ``<stdio.h>`` 、 ``<string.h>`` 、 ``<errno.h>`` 、および ``<stdlib.h>``
-をインクルードしています。後者のヘッダファイルがシステム上になければ、 ``"Python.h"`` が関数
-:c:func:`malloc` 、 :c:func:`free` および  :c:func:`realloc` を直接定義します。
+All user-visible symbols defined by :file:`Python.h` have a prefix of ``Py`` or
+``PY``, except those defined in standard header files. For convenience, and
+since they are used extensively by the Python interpreter, ``"Python.h"``
+includes a few standard header files: ``<stdio.h>``, ``<string.h>``,
+``<errno.h>``, and ``<stdlib.h>``.  If the latter header file does not exist on
+your system, it declares the functions :c:func:`malloc`, :c:func:`free` and
+:c:func:`realloc` directly.
 
-次にファイルに追加する内容は、Python 式 ``spam.system(string)`` を評価する際に呼び出されることになる C 関数です
-(この関数を最終的にどのように呼び出すかは、後ですぐわかります)::
+The next thing we add to our module file is the C function that will be called
+when the Python expression ``spam.system(string)`` is evaluated (we'll see
+shortly how it ends up being called)::
 
    static PyObject *
    spam_system(PyObject *self, PyObject *args)
@@ -70,92 +89,122 @@ C のコードをいちいち書く前に :mod:`ctypes` モジュールの使用
        return Py_BuildValue("i", sts);
    }
 
-ここでは、Python の引数リスト (例えば、単一の式 ``"ls -l"``)  から C 関数に渡す引数にそのまま変換しています。 C
-関数は常に二つの引数を持ち、便宜的に *self* および *args* と呼ばれます。
+There is a straightforward translation from the argument list in Python (for
+example, the single expression ``"ls -l"``) to the arguments passed to the C
+function.  The C function always has two arguments, conventionally named *self*
+and *args*.
 
-*self* 引数には、モジュールレベルの関数であればモジュールが、メソッドには
-オブジェクトインスタンスが渡されます。
+For module functions, the *self* argument is *NULL* or a pointer selected while
+initializing the module (see :c:func:`Py_InitModule4`).  For a method, it would
+point to the object instance.
 
-*args* 引数は、引数の入った Python タプルオブジェクトへのポインタになります。タプル内の各要素は、呼び出しの際の引数リストに
-おける各引数に対応します。引数は Python オブジェクトです ---  C 関数で引数を使って何かを行うには、オブジェクトから C の値に
-変換せねばなりません。Python API の関数 :c:func:`PyArg_ParseTuple` は引数の型をチェックし、C の値に変換します。
-:c:func:`PyArg_ParseTuple` はテンプレート文字列を使って、引数オブジェクトの型と、変換された値を入れる C 変数の型を判別します。
-これについては後で詳しく説明します。
+The *args* argument will be a pointer to a Python tuple object containing the
+arguments.  Each item of the tuple corresponds to an argument in the call's
+argument list.  The arguments are Python objects --- in order to do anything
+with them in our C function we have to convert them to C values.  The function
+:c:func:`PyArg_ParseTuple` in the Python API checks the argument types and
+converts them to C values.  It uses a template string to determine the required
+types of the arguments as well as the types of the C variables into which to
+store the converted values.  More about this later.
 
-:c:func:`PyArg_ParseTuple` は、全ての引数が正しい型を持っていて、アドレス渡しされた各変数に各引数要素を保存したときに真 (非ゼロ)
-を返します。この関数は不正な引数リストを渡すと偽 (ゼロ) を返します。後者の場合、関数は適切な例外を送出するので、呼び出し側は (例にもあるように)
-すぐに *NULL* を返すようにしてください。
+:c:func:`PyArg_ParseTuple` returns true (nonzero) if all arguments have the right
+type and its components have been stored in the variables whose addresses are
+passed.  It returns false (zero) if an invalid argument list was passed.  In the
+latter case it also raises an appropriate exception so the calling function can
+return *NULL* immediately (as we saw in the example).
 
 
 .. _extending-errors:
 
-幕間小話: エラーと例外
-======================
+Intermezzo: Errors and Exceptions
+=================================
 
-Python インタプリタ全体を通して、一つの重要な取り決めがあります: それは、関数が処理に失敗した場合、例外状態をセットして、エラーを示す値 (通常は
-*NULL* ポインタ) を返さねばならない、ということです。例外はインタプリタ内の静的なグローバル変数に保存されます; この値が *NULL*
-の場合、例外は何も起きていないことになります。第二のグローバル変数には、例外の "付属値 (associated value)"
-(:keyword:`raise` 文の第二引数) が入ります。第三の値には、エラーの発生源が Python コード内だった場合にスタックトレースバック
-(stack traceback) が入ります。これらの三つの変数は、それぞれ Python の変数 ``sys.exc_type`` 、
-``sys.exc_value`` および ``sys.exc_traceback`` と等価な C の変数です (Python ライブラリリファレンスの
-:mod:`sys` モジュールに関する節を参照してください。)
-エラーがどのように受け渡されるかを理解するには、これらの変数についてよく知っておくことが重要です。
+An important convention throughout the Python interpreter is the following: when
+a function fails, it should set an exception condition and return an error value
+(usually a *NULL* pointer).  Exceptions are stored in a static global variable
+inside the interpreter; if this variable is *NULL* no exception has occurred.  A
+second global variable stores the "associated value" of the exception (the
+second argument to :keyword:`raise`).  A third variable contains the stack
+traceback in case the error originated in Python code.  These three variables
+are the C equivalents of the Python variables ``sys.exc_type``,
+``sys.exc_value`` and ``sys.exc_traceback`` (see the section on module
+:mod:`sys` in the Python Library Reference).  It is important to know about them
+to understand how errors are passed around.
 
-Python API では、様々な型の例外をセットするための関数をいくつか定義しています。
+The Python API defines a number of functions to set various types of exceptions.
 
-もっともよく用いられるのは :c:func:`PyErr_SetString` です。引数は例外オブジェクトと C 文字列です。例外オブジェクトは
-通常、 :c:data:`PyExc_ZeroDivisionError` のような定義済みのオブジェクトです。 C 文字列はエラーの原因を示し、Python
-文字列オブジェクトに変換されて例外の "付属値" に保存されます。
+The most common one is :c:func:`PyErr_SetString`.  Its arguments are an exception
+object and a C string.  The exception object is usually a predefined object like
+:c:data:`PyExc_ZeroDivisionError`.  The C string indicates the cause of the error
+and is converted to a Python string object and stored as the "associated value"
+of the exception.
 
-もう一つ有用な関数として :c:func:`PyErr_SetFromErrno` があります。この関数は引数に例外だけをとり、付属値はグローバル変数
-:c:data:`errno` から構築します。もっとも汎用的な関数は :c:func:`PyErr_SetObject` で、
-二つのオブジェクト、例外と付属値を引数にとります。これら関数に渡すオブジェクトには :c:func:`Py_INCREF` を使う必要はありません。
+Another useful function is :c:func:`PyErr_SetFromErrno`, which only takes an
+exception argument and constructs the associated value by inspection of the
+global variable :c:data:`errno`.  The most general function is
+:c:func:`PyErr_SetObject`, which takes two object arguments, the exception and
+its associated value.  You don't need to :c:func:`Py_INCREF` the objects passed
+to any of these functions.
 
-例外がセットされているかどうかは、 :c:func:`PyErr_Occurred`  を使って非破壊的に調べられます。この関数は現在の例外オブジェクトを
-返します。例外が発生していない場合には *NULL* を返します。通常は、関数の戻り値からエラーが発生したかを判別できるはずなので、
-:c:func:`PyErr_Occurred` を呼び出す必要はありません。
+You can test non-destructively whether an exception has been set with
+:c:func:`PyErr_Occurred`.  This returns the current exception object, or *NULL*
+if no exception has occurred.  You normally don't need to call
+:c:func:`PyErr_Occurred` to see whether an error occurred in a function call,
+since you should be able to tell from the return value.
 
-関数 *g* を呼び出す *f* が、前者の関数の呼び出しに失敗したことを検出すると、 *f* 自体はエラー値 (大抵は *NULL* や ``-1``)
-を返さねばなりません。しかし、 :c:func:`PyErr_\*` 関数群のいずれかを呼び出す必要は *ありません* --- なぜなら、 *g*
-がすでに呼び出しているからです。次いで *f* を呼び出したコードもエラーを示す値を *自らを呼び出したコード* に返すことになりますが、
-同様に :c:func:`PyErr_\*` は *呼び出しません* 。以下同様に続きます --- エラーの最も詳しい原因は、最初にエラーを検出した
-関数がすでに報告しているからです。エラーが Python インタプリタのメインループに到達すると、現在実行中の Python コードは一時停止し、
-Python プログラマが指定した例外ハンドラを探し出そうとします。
+When a function *f* that calls another function *g* detects that the latter
+fails, *f* should itself return an error value (usually *NULL* or ``-1``).  It
+should *not* call one of the :c:func:`PyErr_\*` functions --- one has already
+been called by *g*. *f*'s caller is then supposed to also return an error
+indication to *its* caller, again *without* calling :c:func:`PyErr_\*`, and so on
+--- the most detailed cause of the error was already reported by the function
+that first detected it.  Once the error reaches the Python interpreter's main
+loop, this aborts the currently executing Python code and tries to find an
+exception handler specified by the Python programmer.
 
-(モジュールが :c:func:`PyErr_\*` 関数をもう一度呼び出して、より詳細なエラーメッセージを提供するような状況があります。このような状況では
-そうすべきです。とはいえ、一般的な規則としては、 :c:func:`PyErr_\*`  を何度も呼び出す必要はなく、ともすればエラーの原因に関する情報を
-失う結果になりがちです: これにより、ほとんどの操作が様々な理由から失敗するかもしれません)
+(There are situations where a module can actually give a more detailed error
+message by calling another :c:func:`PyErr_\*` function, and in such cases it is
+fine to do so.  As a general rule, however, this is not necessary, and can cause
+information about the cause of the error to be lost: most operations can fail
+for a variety of reasons.)
 
-ある関数呼び出しでの処理の失敗によってセットされた例外を無視するには、 :c:func:`PyErr_Clear` を呼び出して例外状態を明示的に消去
-しなくてはなりません。エラーをインタプリタには渡したくなく、自前で (何か他の作業を行ったり、何も起こらなかったかのように見せかけるような)
-エラー処理を完全に行う場合にのみ、 :c:func:`PyErr_Clear` を呼び出すようにすべきです。
+To ignore an exception set by a function call that failed, the exception
+condition must be cleared explicitly by calling :c:func:`PyErr_Clear`.  The only
+time C code should call :c:func:`PyErr_Clear` is if it doesn't want to pass the
+error on to the interpreter but wants to handle it completely by itself
+(possibly by trying something else, or pretending nothing went wrong).
 
-:c:func:`malloc` の呼び出し失敗は、常に例外にしなくてはなりません --- :c:func:`malloc` (または
-:c:func:`realloc`) を直接呼び出しているコードは、 :c:func:`PyErr_NoMemory`
-を呼び出して、失敗を示す値を返さねばなりません。オブジェクトを生成する全ての関数 (例えば :c:func:`PyInt_FromLong`) は
-:c:func:`PyErr_NoMemory` の呼び出しを済ませてしまうので、この規則が関係するのは直接 :c:func:`malloc` を呼び出す
-コードだけです。
+Every failing :c:func:`malloc` call must be turned into an exception --- the
+direct caller of :c:func:`malloc` (or :c:func:`realloc`) must call
+:c:func:`PyErr_NoMemory` and return a failure indicator itself.  All the
+object-creating functions (for example, :c:func:`PyInt_FromLong`) already do
+this, so this note is only relevant to those who call :c:func:`malloc` directly.
 
-また、 :c:func:`PyArg_ParseTuple` という重要な例外を除いて、整数の状態コードを返す関数はたいてい、Unix のシステムコール
-と同じく、処理が成功した際にはゼロまたは正の値を返し、失敗した場合には ``-1`` を返します。
+Also note that, with the important exception of :c:func:`PyArg_ParseTuple` and
+friends, functions that return an integer status usually return a positive value
+or zero for success and ``-1`` for failure, like Unix system calls.
 
-最後に、エラー標示値を返す際に、(エラーが発生するまでに既に生成してしまったオブジェクトに対して :c:func:`Py_XDECREF` や
-:c:func:`Py_DECREF` を呼び出して) ごみ処理を注意深く行ってください!
+Finally, be careful to clean up garbage (by making :c:func:`Py_XDECREF` or
+:c:func:`Py_DECREF` calls for objects you have already created) when you return
+an error indicator!
 
-どの例外を返すかの選択は、ユーザに完全にゆだねられます。 :c:data:`PyExc_ZeroDivisionError` のように、全ての組み込みの
-Python  例外には対応する宣言済みの C オブジェクトがあり、直接利用できます。もちろん、例外の選択は賢く行わねばなりません ---
-ファイルが開けなかったことを表すのに :c:data:`PyExc_TypeError`  を使ったりはしないでください
-(この場合はおそらく :c:data:`PyExc_IOError`  の方にすべきでしょう)。
-引数リストに問題がある場合には、 :c:func:`PyArg_ParseTuple`  はたいてい :c:data:`PyExc_TypeError`
-を送出します。引数の値が特定の範囲を超えていたり、その他の満たすべき条件を満たさなかった場合には、 :c:data:`PyExc_ValueError`
-が適切です。
+The choice of which exception to raise is entirely yours.  There are predeclared
+C objects corresponding to all built-in Python exceptions, such as
+:c:data:`PyExc_ZeroDivisionError`, which you can use directly. Of course, you
+should choose exceptions wisely --- don't use :c:data:`PyExc_TypeError` to mean
+that a file couldn't be opened (that should probably be :c:data:`PyExc_IOError`).
+If something's wrong with the argument list, the :c:func:`PyArg_ParseTuple`
+function usually raises :c:data:`PyExc_TypeError`.  If you have an argument whose
+value must be in a particular range or must satisfy other conditions,
+:c:data:`PyExc_ValueError` is appropriate.
 
-モジュール固有の新たな例外も定義できます。定義するには、通常はファイルの先頭部分に静的なオブジェクト変数の宣言を行います::
+You can also define a new exception that is unique to your module. For this, you
+usually declare a static object variable at the beginning of your file::
 
    static PyObject *SpamError;
 
-そして、モジュールの初期化関数 (:c:func:`initspam`) の中で、例外オブジェクトを使って初期化します (ここでは
-エラーチェックを省略しています)::
+and initialize it in your module's initialization function (:c:func:`initspam`)
+with an exception object (leaving out the error checking for now)::
 
    PyMODINIT_FUNC
    initspam(void)
@@ -171,26 +220,30 @@ Python  例外には対応する宣言済みの C オブジェクトがあり、
        PyModule_AddObject(m, "error", SpamError);
    }
 
-Python レベルでの例外オブジェクトの名前は :exc:`spam.error` になることに注意してください。
-:c:func:`PyErr_NewException`  関数は、 :ref:`bltin-exceptions` で述べられている
-:exc:`Exception` クラスを基底クラスに持つ例外クラスも作成できます  (*NULL* の代わりに他のクラスを渡した場合は別です)。
+Note that the Python name for the exception object is :exc:`spam.error`.  The
+:c:func:`PyErr_NewException` function may create a class with the base class
+being :exc:`Exception` (unless another class is passed in instead of *NULL*),
+described in :ref:`bltin-exceptions`.
 
-:c:data:`SpamError` 変数は、新たに生成された例外クラスへの参照を維持することにも注意してください; これは意図的な仕様です!
-外部のコードが例外オブジェクトをモジュールから除去できるため、モジュールから新たに作成した例外クラスが見えなくなり、 :c:data:`SpamError`
-がぶら下がりポインタ (dangling pointer) になってしまわないようにするために、クラスに対する参照を所有しておかねばなりません。
-もし :c:data:`SpamError` がぶら下がりポインタになってしまうと、 C コードが例外を送出しようとしたときにコアダンプや意図しない副作用を
-引き起こすことがあります。
+Note also that the :c:data:`SpamError` variable retains a reference to the newly
+created exception class; this is intentional!  Since the exception could be
+removed from the module by external code, an owned reference to the class is
+needed to ensure that it will not be discarded, causing :c:data:`SpamError` to
+become a dangling pointer. Should it become a dangling pointer, C code which
+raises the exception could cause a core dump or other unintended side effects.
 
-この例にある、関数の戻り値型に ``PyMODINIT_FUNC`` を使う方法については後で議論します。
+We discuss the use of ``PyMODINIT_FUNC`` as a function return type later in this
+sample.
 
-:c:func:`PyErr_SetString` を次のように呼び出すと、拡張モジュールで例外 :exc:`spam.error` を送出することができます::
- 
+The :exc:`spam.error` exception can be raised in your extension module using a
+call to :c:func:`PyErr_SetString` as shown below::
+
    static PyObject *
    spam_system(PyObject *self, PyObject *args)
    {
        const char *command;
        int sts;
- 
+
        if (!PyArg_ParseTuple(args, "s", &command))
            return NULL;
        sts = system(command);
@@ -201,53 +254,62 @@ Python レベルでの例外オブジェクトの名前は :exc:`spam.error` に
        return PyLong_FromLong(sts);
    }
 
+
 .. _backtoexample:
 
-例に戻る
-========
+Back to the Example
+===================
 
-先ほどの関数の例に戻ると、今度は以下の実行文を理解できるはずです::
+Going back to our example function, you should now be able to understand this
+statement::
 
    if (!PyArg_ParseTuple(args, "s", &command))
        return NULL;
 
-この実行文は、 :c:func:`PyArg_ParseTuple` がセットする例外によって、引数リストに何らかのエラーが生じたときに *NULL*
-(オブジェクトへのポインタを返すタイプの関数におけるエラー標示値)  を返します。エラーでなければ、引数として与えた文字列値はローカルな変数
-:c:data:`command` にコピーされています。この操作はポインタ代入であり、ポインタが指している文字列に対して変更が行われるとは想定されていません
-(従って、標準 C では、変数 :c:data:`command` は ``const char* command`` として適切に定義せねばなりません)。
+It returns *NULL* (the error indicator for functions returning object pointers)
+if an error is detected in the argument list, relying on the exception set by
+:c:func:`PyArg_ParseTuple`.  Otherwise the string value of the argument has been
+copied to the local variable :c:data:`command`.  This is a pointer assignment and
+you are not supposed to modify the string to which it points (so in Standard C,
+the variable :c:data:`command` should properly be declared as ``const char
+*command``).
 
-次の文では、 :c:func:`PyArg_ParseTuple` で得た文字列を渡して Unix 関数 :c:func:`system` を呼び出しています::
+The next statement is a call to the Unix function :c:func:`system`, passing it
+the string we just got from :c:func:`PyArg_ParseTuple`::
 
    sts = system(command);
 
-:func:`spam.system` は :c:data:`sts` を Python オブジェクト
-として返さねばなりません。これには、 :c:func:`PyArg_ParseTuple` の逆ともいうべき関数 :c:func:`Py_BuildValue`
-を使います: :c:func:`Py_BuildValue` は書式化文字列と任意の数の C の値を引数にとり、新たな Python オブジェクトを返します。
-:c:func:`Py_BuildValue` に関する詳しい情報は後で示します。 ::
+Our :func:`spam.system` function must return the value of :c:data:`sts` as a
+Python object.  This is done using the function :c:func:`Py_BuildValue`, which is
+something like the inverse of :c:func:`PyArg_ParseTuple`: it takes a format
+string and an arbitrary number of C values, and returns a new Python object.
+More info on :c:func:`Py_BuildValue` is given later. ::
 
    return Py_BuildValue("i", sts);
 
-上の場合では、 :c:func:`Py_BuildValue` は整数オブジェクトを返します。(そう、整数ですら、 Python においてはヒープ上の
-オブジェクトなのです! )
+In this case, it will return an integer object.  (Yes, even integers are objects
+on the heap in Python!)
 
-何ら有用な値を返さない関数 (:c:type:`void` を返す関数) に対応する Python の関数は ``None`` を返さねばなりません。関数に
-``None`` を返させるには、以下のような慣用句を使います (この慣用句は :c:macro:`Py_RETURN_NONE` マクロに実装されています)::
+If you have a C function that returns no useful argument (a function returning
+:c:type:`void`), the corresponding Python function must return ``None``.   You
+need this idiom to do so (which is implemented by the :c:macro:`Py_RETURN_NONE`
+macro)::
 
    Py_INCREF(Py_None);
    return Py_None;
 
-:c:data:`Py_None` は特殊な Pyhton オブジェクトである ``None`` に対応する C
-での名前です。これまで見てきたようにほとんどのコンテキストで "エラー" を意味する *NULL* ポインタとは違い、 ``None`` は純粋な Python
-のオブジェクトです。
+:c:data:`Py_None` is the C name for the special Python object ``None``.  It is a
+genuine Python object rather than a *NULL* pointer, which means "error" in most
+contexts, as we have seen.
 
 
 .. _methodtable:
 
-モジュールのメソッドテーブルと初期化関数
-========================================
+The Module's Method Table and Initialization Function
+=====================================================
 
-さて、前に約束したように、 :c:func:`spam_system` を Python プログラム
-からどうやって呼び出すかをこれから示します。まずは、関数名とアドレスを "メソッドテーブル (method table)" に列挙する必要があります::
+I promised to show how :c:func:`spam_system` is called from Python programs.
+First, we need to list its name and address in a "method table"::
 
    static PyMethodDef SpamMethods[] = {
        ...
@@ -257,22 +319,25 @@ Python レベルでの例外オブジェクトの名前は :exc:`spam.error` に
        {NULL, NULL, 0, NULL}        /* Sentinel */
    };
 
-リスト要素の三つ目のエントリ (``METH_VARARGS``) に注意してください。このエントリは、C 関数が使う呼び出し規約をインタプリタに教えるための
-フラグです。通常この値は ``METH_VARARGS`` か ``METH_VARARGS | METH_KEYWORDS`` のはずです; ``0``
-は旧式の :c:func:`PyArg_ParseTuple` の変化形が使われることを意味します。
+Note the third entry (``METH_VARARGS``).  This is a flag telling the interpreter
+the calling convention to be used for the C function.  It should normally always
+be ``METH_VARARGS`` or ``METH_VARARGS | METH_KEYWORDS``; a value of ``0`` means
+that an obsolete variant of :c:func:`PyArg_ParseTuple` is used.
 
-``METH_VARARGS`` だけを使う場合、C 関数は、Python レベルでの引数が :c:func:`PyArg_ParseTuple`
-が受理できるタプルの形式で渡されるものと想定しなければなりません; この関数についての詳細は下で説明します。
+When using only ``METH_VARARGS``, the function should expect the Python-level
+parameters to be passed in as a tuple acceptable for parsing via
+:c:func:`PyArg_ParseTuple`; more information on this function is provided below.
 
-関数にキーワード引数が渡されることになっているのなら、第三フィールドに :const:`METH_KEYWORDS` ビットをセットできます。この場合、C
-関数は第三引数に ``PyObject *`` を受理するようにせねばなりません。このオブジェクトは、キーワード引数の辞書に
-なります。こうした関数で引数を解釈するには、 :c:func:`PyArg_ParseTupleAndKeywords` を使ってください。
+The :const:`METH_KEYWORDS` bit may be set in the third field if keyword
+arguments should be passed to the function.  In this case, the C function should
+accept a third ``PyObject *`` parameter which will be a dictionary of keywords.
+Use :c:func:`PyArg_ParseTupleAndKeywords` to parse the arguments to such a
+function.
 
-メソッドテーブルは、モジュールの初期化関数内でインタプリタに渡さねばなりません。
-初期化関数はモジュールの名前を *name* としたときに
-:c:func:`initname` という名前でなければならず、
-モジュールファイル内で定義されているもののうち、唯一の非 `static`
-要素でなければなりません::
+The method table must be passed to the interpreter in the module's
+initialization function.  The initialization function must be named
+:c:func:`initname`, where *name* is the name of the module, and should be the
+only non-\ ``static`` item defined in the module file::
 
    PyMODINIT_FUNC
    initspam(void)
@@ -280,97 +345,119 @@ Python レベルでの例外オブジェクトの名前は :exc:`spam.error` に
        (void) Py_InitModule("spam", SpamMethods);
    }
 
-PyMODINIT_FUNC は関数の戻り値を ``void`` になるように宣言し、プラットフォーム毎に必要とされる、特有のリンク宣言 (linkage
-declaration) を定義すること、さらに C++ の場合には関数を ``extern "C"`` に宣言することに注意してください。
+Note that PyMODINIT_FUNC declares the function as ``void`` return type,
+declares any special linkage declarations required by the platform, and for  C++
+declares the function as ``extern "C"``.
 
-Python プログラムがモジュール :mod:`spam` を初めて import するとき、 :c:func:`initspam` が呼び出されます。
-(Python の埋め込みに関するコメントは下記を参照してください。) :c:func:`initspam` は :c:func:`Py_InitModule`
-を呼び出して "モジュールオブジェクト" を生成し (オブジェクトは ``"spam"`` をキーとして辞書 ``sys.modules``
-に挿入されます)、第二引数として与えたメソッドテーブル (:c:type:`PyMethodDef` 構造体の配列) の情報に
-基づいて、組み込み関数オブジェクトを新たなモジュールに挿入していきます。 :c:func:`Py_InitModule` は、自らが生成した
-(この段階ではまだ未使用の)  モジュールオブジェクトへのポインタを返します。
-:c:func:`Py_InitModule`
-は、幾つかのエラーでは致命的エラーで abort し、それ以外のモジュールが満足に初期化できなかった場合は
-*NULL* を返します。
+When the Python program imports module :mod:`spam` for the first time,
+:c:func:`initspam` is called. (See below for comments about embedding Python.)
+It calls :c:func:`Py_InitModule`, which creates a "module object" (which is
+inserted in the dictionary ``sys.modules`` under the key ``"spam"``), and
+inserts built-in function objects into the newly created module based upon the
+table (an array of :c:type:`PyMethodDef` structures) that was passed as its
+second argument. :c:func:`Py_InitModule` returns a pointer to the module object
+that it creates (which is unused here).  It may abort with a fatal error for
+certain errors, or return *NULL* if the module could not be initialized
+satisfactorily.
 
-Python を埋め込む場合には、 :c:data:`_PyImport_Inittab` テーブルのエントリ内に :c:func:`initspam`
-がない限り、 :c:func:`initspam` は自動的には呼び出されません。この問題を解決する最も簡単な方法は、 :c:func:`Py_Initialize`
-や :c:func:`PyMac_Initialize` を呼び出した後に :c:func:`initspam` を直接呼び出し、
-静的にリンクしておいたモジュールを静的に初期化してしまうというものです::
+When embedding Python, the :c:func:`initspam` function is not called
+automatically unless there's an entry in the :c:data:`_PyImport_Inittab` table.
+The easiest way to handle this is to statically initialize your
+statically-linked modules by directly calling :c:func:`initspam` after the call
+to :c:func:`Py_Initialize`::
 
    int
    main(int argc, char *argv[])
    {
-       /* Python インタプリタに argv[0] を渡す */
+       /* Pass argv[0] to the Python interpreter */
        Py_SetProgramName(argv[0]);
 
-       /* Python インタプリタを初期化する。必ず必要。 */
+       /* Initialize the Python interpreter.  Required. */
        Py_Initialize();
 
-       /* 静的モジュールを追加する */
+       /* Add a static module */
        initspam();
 
-Python ソース配布物中の :file:`Demo/embed/demo.c` ファイル内に例があります。
+       ...
+
+An example may be found in the file :file:`Demo/embed/demo.c` in the Python
+source distribution.
 
 .. note::
 
-   単一のプロセス内 (または :c:func:`fork` 後の :c:func:`exec` が介入していない状態) における複数のインタプリタにおいて、
-   ``sys.module`` からエントリを除去したり新たなコンパイル済みモジュールを import
-   したりすると、拡張モジュールによっては問題を生じることがあります。拡張モジュールの作者は、内部データ構造を初期化する際にはよくよく
-   用心すべきです。また、 :func:`reload` 関数を拡張モジュールに対して利用でき、この場合はモジュール初期化関数
-   (:c:func:`initspam`) は呼び出されますが、モジュールが動的にロード可能なオブジェクトファイル (Unixでは
-   :file:`.so` 、Windows では :file:`.dll`) から読み出された場合にはモジュールファイルを再読み込みしないので注意してください。
+   Removing entries from ``sys.modules`` or importing compiled modules into
+   multiple interpreters within a process (or following a :c:func:`fork` without an
+   intervening :c:func:`exec`) can create problems for some extension modules.
+   Extension module authors should exercise caution when initializing internal data
+   structures. Note also that the :func:`reload` function can be used with
+   extension modules, and will call the module initialization function
+   (:c:func:`initspam` in the example), but will not load the module again if it was
+   loaded from a dynamically loadable object file (:file:`.so` on Unix,
+   :file:`.dll` on Windows).
 
-より実質的なモジュール例は、Python ソース配布物に :file:`Modules/xxmodule.c` という名前で入っています。
-このファイルはテンプレートとしても利用できますし、単に例としても読めます。
+A more substantial example module is included in the Python source distribution
+as :file:`Modules/xxmodule.c`.  This file may be used as a  template or simply
+read as an example.
 
 
 .. _compilation:
 
-コンパイルとリンク
-==================
+Compilation and Linkage
+=======================
 
-新しい拡張モジュールを使えるようになるまで、まだ二つの作業:  コンパイルと、Python システムへのリンク、が残っています。動的読み込み (dynamic
-loading) を使っているのなら、作業の詳細は自分のシステムが使っている動的読み込みの形式によって変わるかもしれません;
-詳しくは、拡張モジュールのビルドに関する章  (:ref:`building` 章) や、Windows におけるビルドに関係する追加情報の章
-(:ref:`building-on-windows` 章) を参照してください。
+There are two more things to do before you can use your new extension: compiling
+and linking it with the Python system.  If you use dynamic loading, the details
+may depend on the style of dynamic loading your system uses; see the chapters
+about building extension modules (chapter :ref:`building`) and additional
+information that pertains only to building on Windows (chapter
+:ref:`building-on-windows`) for more information about this.
 
-動的読み込みを使えなかったり、モジュールを常時 Python インタプリタの一部にしておきたい場合には、インタプリタのビルド設定を変更して再ビルド
-しなければならなくなるでしょう。Unixでは、幸運なことにこの作業はとても単純です: 単に自作のモジュールファイル (例えば
-:file:`spammodule.c` ) を展開したソース配布物の :file:`Modules/`  ディレクトリに置き、
-:file:`Modules/Setup.local` に自分のファイルを説明する以下の一行::
+If you can't use dynamic loading, or if you want to make your module a permanent
+part of the Python interpreter, you will have to change the configuration setup
+and rebuild the interpreter.  Luckily, this is very simple on Unix: just place
+your file (:file:`spammodule.c` for example) in the :file:`Modules/` directory
+of an unpacked source distribution, add a line to the file
+:file:`Modules/Setup.local` describing your file::
 
    spam spammodule.o
 
-を追加して、トップレベルのディレクトリで :program:`make` を実行して、インタプリタを再ビルドするだけです。 :file:`Modules/`
-サブディレクトリでも :program:`make` を実行できますが、前もって ':program:`make` Makefile' を実行して
-:file:`Makefile` を再ビルドしておかなければならりません。(この作業は :file:`Setup` ファイルを変更するたびに必要です。)
+and rebuild the interpreter by running :program:`make` in the toplevel
+directory.  You can also run :program:`make` in the :file:`Modules/`
+subdirectory, but then you must first rebuild :file:`Makefile` there by running
+':program:`make` Makefile'.  (This is necessary each time you change the
+:file:`Setup` file.)
 
-モジュールが別のライブラリとリンクされている必要がある場合、ライブラリも設定ファイルに列挙できます。例えば以下のようにします::
+If your module requires additional libraries to link with, these can be listed
+on the line in the configuration file as well, for instance::
 
    spam spammodule.o -lX11
 
 
 .. _callingpython:
 
-C から Python 関数を呼び出す
-============================
+Calling Python Functions from C
+===============================
 
-これまでは、Python からの C 関数の呼び出しに重点を置いて述べてきました。ところでこの逆:  C からの Python 関数の呼び出し
-もまた有用です。とりわけ、いわゆる "コールバック" 関数をサポートするようなライブラリを作成する際にはこの機能が便利です。ある C
-インタフェースがコールバックを利用している場合、同等の機能を提供する Python コードでは、しばしば Python プログラマに
-コールバック機構を提供する必要があります; このとき実装では、 C で書かれたコールバック関数から Python で書かれたコールパック関数
-を呼び出すようにする必要があるでしょう。もちろん、他の用途も考えられます。
+So far we have concentrated on making C functions callable from Python.  The
+reverse is also useful: calling Python functions from C. This is especially the
+case for libraries that support so-called "callback" functions.  If a C
+interface makes use of callbacks, the equivalent Python often needs to provide a
+callback mechanism to the Python programmer; the implementation will require
+calling the Python callback functions from a C callback.  Other uses are also
+imaginable.
 
-幸運なことに、Python インタプリタは簡単に再帰呼び出しでき、 Python 関数を呼び出すための標準インタフェースもあります。 (Python
-パーザを特定の入力文字を使って呼び出す方法について詳説するつもりはありません --- この方法に興味があるなら、 Python ソースコードの
-:file:`Modules/main.c` にある、コマンドラインオプション :option:`-c` の実装を見てください)
+Fortunately, the Python interpreter is easily called recursively, and there is a
+standard interface to call a Python function.  (I won't dwell on how to call the
+Python parser with a particular string as input --- if you're interested, have a
+look at the implementation of the :option:`-c` command line option in
+:file:`Modules/main.c` from the Python source code.)
 
-Python 関数の呼び出しは簡単です。まず、C のコードに対してコールバックを登録しようとする Python プログラムは、何らかの方法で Python
-の関数オブジェクトを渡さねばなりません。このために、コールバック登録関数 (またはその他のインタフェース) を提供
-せねばなりません。このコールバック登録関数が呼び出された際に、引き渡された Python 関数オブジェクトへのポインタをグローバル変数に ---
-あるいは、どこか適切な場所に --- 保存します (関数オブジェクトを :c:func:`Py_INCREF` するようよく注意して
-ください!)。例えば、以下のような関数がモジュールの一部になっていることでしょう::
+Calling a Python function is easy.  First, the Python program must somehow pass
+you the Python function object.  You should provide a function (or some other
+interface) to do this.  When this function is called, save a pointer to the
+Python function object (be careful to :c:func:`Py_INCREF` it!) in a global
+variable --- or wherever you see fit. For example, the following function might
+be part of a module definition::
 
    static PyObject *my_callback = NULL;
 
@@ -385,32 +472,36 @@ Python 関数の呼び出しは簡単です。まず、C のコードに対し�
                PyErr_SetString(PyExc_TypeError, "parameter must be callable");
                return NULL;
            }
-           Py_XINCREF(temp);         /* 新たなコールバックへの参照を追加 */
-           Py_XDECREF(my_callback);  /* 以前のコールバックを捨てる */
-           my_callback = temp;       /* 新たなコールバックを記憶 */
-           /* "None" を返す際の定型句 */
+           Py_XINCREF(temp);         /* Add a reference to new callback */
+           Py_XDECREF(my_callback);  /* Dispose of previous callback */
+           my_callback = temp;       /* Remember new callback */
+           /* Boilerplate to return "None" */
            Py_INCREF(Py_None);
            result = Py_None;
        }
        return result;
    }
 
-この関数は :const:`METH_VARARGS` フラグを使ってインタプリタに登録せねばなりません; :const:`METH_VARARGS`
-フラグについては、 :ref:`methodtable` で説明しています。
-:c:func:`PyArg_ParseTuple` 関数とその引数については、 :ref:`parsetuple` に記述しています。
+This function must be registered with the interpreter using the
+:const:`METH_VARARGS` flag; this is described in section :ref:`methodtable`.  The
+:c:func:`PyArg_ParseTuple` function and its arguments are documented in section
+:ref:`parsetuple`.
 
-:c:func:`Py_XINCREF` および :c:func:`Py_XDECREF` は、オブジェクトに対する参照カウントをインクリメント/デクリメントする
-ためのマクロで、 *NULL* ポインタが渡されても安全に操作できる形式です (とはいえ、上の流れでは *temp* が *NULL* になることはありません)。
-これらのマクロと参照カウントについては、 :ref:`refcounts` で説明しています。
+The macros :c:func:`Py_XINCREF` and :c:func:`Py_XDECREF` increment/decrement the
+reference count of an object and are safe in the presence of *NULL* pointers
+(but note that *temp* will not be  *NULL* in this context).  More info on them
+in section :ref:`refcounts`.
 
 .. index:: single: PyObject_CallObject()
 
-その後、コールバック関数を呼び出す時が来たら、C 関数 :c:func:`PyObject_CallObject` を呼び出します。この関数には二つの引数:
-Python 関数と Python 関数の引数リストがあり、いずれも任意の Python オブジェクトを表すポインタ型です。
-引数リストは常にタプルオブジェクトでなければならず、その長さは引数の数になります。Python 関数を引数なしで呼び出すのなら、
-NULL か空のタプルを渡します;
-単一の引数で関数を呼び出すのなら、単要素 (singleton) のタプルを渡します。 :c:func:`Py_BuildValue`
-の書式化文字列中に、ゼロ個または一個以上の書式化コードが入った丸括弧がある場合、この関数はタプルを返します。以下に例を示します::
+Later, when it is time to call the function, you call the C function
+:c:func:`PyObject_CallObject`.  This function has two arguments, both pointers to
+arbitrary Python objects: the Python function, and the argument list.  The
+argument list must always be a tuple object, whose length is the number of
+arguments.  To call the Python function with no arguments, pass in NULL, or
+an empty tuple; to call it with one argument, pass a singleton tuple.
+:c:func:`Py_BuildValue` returns a tuple when its format string consists of zero
+or more format codes between parentheses.  For example::
 
    int arg;
    PyObject *arglist;
@@ -418,37 +509,44 @@ NULL か空のタプルを渡します;
    ...
    arg = 123;
    ...
-   /* ここでコールバックを呼ぶ */
+   /* Time to call the callback */
    arglist = Py_BuildValue("(i)", arg);
    result = PyObject_CallObject(my_callback, arglist);
    Py_DECREF(arglist);
 
-:c:func:`PyObject_CallObject` は Python オブジェクトへのポインタを返します; これは Python
-関数からの戻り値になります。 :c:func:`PyObject_CallObject` は、引数に対して "参照カウント中立 (reference-count-
-neutral)" です。上の例ではタプルを生成して引数リストとして提供しており、このタプルは呼び出し直後に :c:func:`Py_DECREF`
-しています。
+:c:func:`PyObject_CallObject` returns a Python object pointer: this is the return
+value of the Python function.  :c:func:`PyObject_CallObject` is
+"reference-count-neutral" with respect to its arguments.  In the example a new
+tuple was created to serve as the argument list, which is :c:func:`Py_DECREF`\
+-ed immediately after the :c:func:`PyObject_CallObject` call.
 
-:c:func:`PyObject_CallObject` は戻り値として "新しい" オブジェクト: 新規に作成されたオブジェクトか、既存のオブジェクトの
-参照カウントをインクリメントしたものを返します。
-従って、このオブジェクトをグローバル変数に保存したいのでないかぎり、たとえこの戻り値に興味がなくても
-(むしろ、そうであればなおさら!) 何がしかの方法で戻り値オブジェクトを :c:func:`Py_DECREF`  しなければなりません。
+The return value of :c:func:`PyObject_CallObject` is "new": either it is a brand
+new object, or it is an existing object whose reference count has been
+incremented.  So, unless you want to save it in a global variable, you should
+somehow :c:func:`Py_DECREF` the result, even (especially!) if you are not
+interested in its value.
 
-とはいえ、戻り値を :c:func:`Py_DECREF` する前には、値が *NULL* でないかチェックしておくことが重要です。もし
-*NULL* なら、呼び出した Python 関数は例外を送出して終了させられています。 :c:func:`PyObject_CallObject`
-を呼び出しているコード自体もまた Python から呼び出されているのであれば、今度は C コードが自分を呼び出している Python
-コードにエラー標示値を返さねばなりません。それにより、インタプリタはスタックトレースを出力したり、例外を処理するための Python
-コードを呼び出したりできます。例外の送出が不可能だったり、したくないのなら、 :c:func:`PyErr_Clear`
-を呼んで例外を消去しておかねばなりません。例えば以下のようにします::
+Before you do this, however, it is important to check that the return value
+isn't *NULL*.  If it is, the Python function terminated by raising an exception.
+If the C code that called :c:func:`PyObject_CallObject` is called from Python, it
+should now return an error indication to its Python caller, so the interpreter
+can print a stack trace, or the calling Python code can handle the exception.
+If this is not possible or desirable, the exception should be cleared by calling
+:c:func:`PyErr_Clear`.  For example::
 
    if (result == NULL)
-       return NULL; /* エラーを返す */
+       return NULL; /* Pass error back */
    ...use result...
    Py_DECREF(result);
 
-Python コールバック関数をどんなインタフェースにしたいかによっては、引数リストを :c:func:`PyObject_CallObject` に与えなければ
-ならない場合もあります。あるケースでは、コールバック関数を指定したのと同じインタフェースを介して、引数リストも渡されているかもしれません。
-また別のケースでは、新しいタプルを構築して引数リストを渡さねばならないかもしれません。この場合最も簡単なのは :c:func:`Py_BuildValue`
-を呼ぶやり方です。例えば、整数のイベントコードを渡したければ、以下のようなコードを使うことになるでしょう::
+Depending on the desired interface to the Python callback function, you may also
+have to provide an argument list to :c:func:`PyObject_CallObject`.  In some cases
+the argument list is also provided by the Python program, through the same
+interface that specified the callback function.  It can then be saved and used
+in the same manner as the function object.  In other cases, you may have to
+construct a new tuple to pass as the argument list.  The simplest way to do this
+is to call :c:func:`Py_BuildValue`.  For example, if you want to pass an integral
+event code, you might use the following code::
 
    PyObject *arglist;
    ...
@@ -456,16 +554,17 @@ Python コールバック関数をどんなインタフェースにしたいか�
    result = PyObject_CallObject(my_callback, arglist);
    Py_DECREF(arglist);
    if (result == NULL)
-       return NULL; /* エラーを返す */
-   /* 場合によってはここで結果を使うかもね */
+       return NULL; /* Pass error back */
+   /* Here maybe use the result */
    Py_DECREF(result);
 
-``Py_DECREF(arglist)`` が呼び出しの直後、エラーチェックよりも前に置かれていることに注意してください! また、厳密に言えば、このコードは
-完全ではありません: :c:func:`Py_BuildValue` はメモリ不足におちいるかもしれず、チェックしておくべきです。
+Note the placement of ``Py_DECREF(arglist)`` immediately after the call, before
+the error check!  Also note that strictly speaking this code is not complete:
+:c:func:`Py_BuildValue` may run out of memory, and this should be checked.
 
-通常の引数とキーワード引数をサポートする :c:func:`PyObject_Call` を使って、
-キーワード引数を伴う関数呼び出しをすることができます。
-上の例と同じように、 :c:func:`Py_BuildValue` を作って辞書を作ります。 ::
+You may also call a function with keyword arguments by using
+:c:func:`PyObject_Call`, which supports arguments and keyword arguments.  As in
+the above example, we use :c:func:`Py_BuildValue` to construct the dictionary. ::
 
    PyObject *dict;
    ...
@@ -473,36 +572,37 @@ Python コールバック関数をどんなインタフェースにしたいか�
    result = PyObject_Call(my_callback, NULL, dict);
    Py_DECREF(dict);
    if (result == NULL)
-       return NULL; /* エラーを返す */
-   /* 場合によってはここで結果を使うかもね */
+       return NULL; /* Pass error back */
+   /* Here maybe use the result */
    Py_DECREF(result);
 
 
 .. _parsetuple:
 
-拡張モジュール関数でのパラメタ展開
-==================================
+Extracting Parameters in Extension Functions
+============================================
 
 .. index:: single: PyArg_ParseTuple()
 
-:c:func:`PyArg_ParseTuple` は、以下のように宣言されています::
+The :c:func:`PyArg_ParseTuple` function is declared as follows::
 
    int PyArg_ParseTuple(PyObject *arg, char *format, ...);
 
-引数 *arg* は C 関数から Python に渡される引数リストが入ったタプルオブジェクトでなければなりません。
-*format* 引数は書式化文字列で、
-Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説されている書法に従わねばなりません。
-残りの引数は、それぞれの変数のアドレスで、書式化文字列から決まる型になっていなければなりません。
+The *arg* argument must be a tuple object containing an argument list passed
+from Python to a C function.  The *format* argument must be a format string,
+whose syntax is explained in :ref:`arg-parsing` in the Python/C API Reference
+Manual.  The remaining arguments must be addresses of variables whose type is
+determined by the format string.
 
-:c:func:`PyArg_ParseTuple` は Python 側から与えられた引数が
-必要な型になっているか調べるのに対し、 :c:func:`PyArg_ParseTuple`  は呼び出しの際に渡された C 変数のアドレスが有効な値を持つか調べ
-られないことに注意してください: ここで間違いを犯すと、コードがクラッシュするかもしれませんし、少なくともでたらめなビットを
-メモリに上書きしてしまいます。慎重に!
+Note that while :c:func:`PyArg_ParseTuple` checks that the Python arguments have
+the required types, it cannot check the validity of the addresses of C variables
+passed to the call: if you make mistakes there, your code will probably crash or
+at least overwrite random bits in memory.  So be careful!
 
-呼び出し側に提供されるオブジェクトへの参照はすべて *借用* 参照 (borrowed reference) になります; これらのオブジェクトの参照
-カウントをデクリメントしてはなりません!
+Note that any Python object references which are provided to the caller are
+*borrowed* references; do not decrement their reference count!
 
-以下にいくつかの呼び出し例を示します::
+Some example calls::
 
    int ok;
    int i, j;
@@ -510,25 +610,24 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
    const char *s;
    int size;
 
-   ok = PyArg_ParseTuple(args, ""); /* 引数なし */
-       /* Python での呼び出し: f() */
+   ok = PyArg_ParseTuple(args, ""); /* No arguments */
+       /* Python call: f() */
 
 ::
 
-   ok = PyArg_ParseTuple(args, "s", &s); /* 文字列 */
-       /* Python での呼び出し例: f('whoops!') */
+   ok = PyArg_ParseTuple(args, "s", &s); /* A string */
+       /* Possible Python call: f('whoops!') */
 
 ::
 
-   ok = PyArg_ParseTuple(args, "lls", &k, &l, &s);
-       /* 二つの long と文字列 */
-       /* Python での呼び出し例: f(1, 2, 'three') */
+   ok = PyArg_ParseTuple(args, "lls", &k, &l, &s); /* Two longs and a string */
+       /* Possible Python call: f(1, 2, 'three') */
 
 ::
 
    ok = PyArg_ParseTuple(args, "(ii)s#", &i, &j, &s, &size);
-       /* 二つの int と文字列、文字列のサイズも返す */
-       /* Python での呼び出し例: f((1, 2), 'three') */
+       /* A pair of ints and a string, whose size is also returned */
+       /* Possible Python call: f((1, 2), 'three') */
 
 ::
 
@@ -537,8 +636,8 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
        const char *mode = "r";
        int bufsize = 0;
        ok = PyArg_ParseTuple(args, "s|si", &file, &mode, &bufsize);
-       /* 文字列、オプションとして文字列がもう一つと整数が一つ */
-       /* Python での呼び出し例:
+       /* A string, and optionally another string and an integer */
+       /* Possible Python calls:
           f('spam')
           f('spam', 'w')
           f('spam', 'wb', 100000) */
@@ -550,8 +649,8 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
        int left, top, right, bottom, h, v;
        ok = PyArg_ParseTuple(args, "((ii)(ii))(ii)",
                 &left, &top, &right, &bottom, &h, &v);
-       /* 矩形と点を表現するデータ */
-       /* Python での呼び出し例:
+       /* A rectangle and a point */
+       /* Possible Python call:
           f(((0, 0), (400, 300)), (10, 10)) */
    }
 
@@ -560,39 +659,41 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
    {
        Py_complex c;
        ok = PyArg_ParseTuple(args, "D:myfunction", &c);
-       /* 複素数。エラー発生時用に関数名も指定 */
-       /* Python での呼び出し例: myfunction(1+2j) */
+       /* a complex, also providing a function name for errors */
+       /* Possible Python call: myfunction(1+2j) */
    }
 
 
 .. _parsetupleandkeywords:
 
-拡張モジュール関数のキーワードパラメタ
-======================================
+Keyword Parameters for Extension Functions
+==========================================
 
 .. index:: single: PyArg_ParseTupleAndKeywords()
 
-:c:func:`PyArg_ParseTupleAndKeywords`  は、以下のように宣言されています::
+The :c:func:`PyArg_ParseTupleAndKeywords` function is declared as follows::
 
    int PyArg_ParseTupleAndKeywords(PyObject *arg, PyObject *kwdict,
                                    char *format, char *kwlist[], ...);
 
-*arg* と *format* パラメタは :c:func:`PyArg_ParseTuple`  のものと同じです。 *kwdict*
-パラメタはキーワード引数の入った辞書で、 Python ランタイムシステムから第三パラメタとして受け取ります。 *kwlist*
-パラメタは各パラメタを識別するための文字列からなる、 *NULL* 終端されたリストです; 各パラメタ名は *format* 中の
-型情報に対して左から右の順に照合されます。
-
-成功すると :c:func:`PyArg_ParseTupleAndKeywords` は真を返し、それ以外の場合には適切な例外を送出して偽を返します。
+The *arg* and *format* parameters are identical to those of the
+:c:func:`PyArg_ParseTuple` function.  The *kwdict* parameter is the dictionary of
+keywords received as the third parameter from the Python runtime.  The *kwlist*
+parameter is a *NULL*-terminated list of strings which identify the parameters;
+the names are matched with the type information from *format* from left to
+right.  On success, :c:func:`PyArg_ParseTupleAndKeywords` returns true, otherwise
+it returns false and raises an appropriate exception.
 
 .. note::
 
-   キーワード引数を使っている場合、タプルは入れ子にして使えません! *kwlist* 内に存在しないキーワードパラメタが渡された場合、
-   :exc:`TypeError` の送出を引き起こします。
+   Nested tuples cannot be parsed when using keyword arguments!  Keyword parameters
+   passed in which are not present in the *kwlist* will cause :exc:`TypeError` to
+   be raised.
 
 .. index:: single: Philbrick, Geoff
 
-以下にキーワードを使ったモジュール例を示します。これは Geoff Philbrick (philbrick@hks.com) によるプログラム例を
-もとにしています。 ::
+Here is an example module which uses keywords, based on an example by Geoff
+Philbrick (philbrick@hks.com)::
 
    #include "Python.h"
 
@@ -620,13 +721,13 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
    }
 
    static PyMethodDef keywdarg_methods[] = {
-       / * PyCFunction の値は PyObject* パラメタを二つだけしか引数に
-        * 取らないが、 keywordarg_parrot() は三つとるので、キャストが
-        * 必要。
+       /* The cast of the function is necessary since PyCFunction values
+        * only take two PyObject* parameters, and keywdarg_parrot() takes
+        * three.
         */
        {"parrot", (PyCFunction)keywdarg_parrot, METH_VARARGS | METH_KEYWORDS,
         "Print a lovely skit to standard output."},
-       {NULL, NULL, 0, NULL}   /* センティネル値 */
+       {NULL, NULL, 0, NULL}   /* sentinel */
    };
 
 ::
@@ -634,32 +735,35 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
    void
    initkeywdarg(void)
    {
-     /* モジュールを作成して関数を追加する */
+     /* Create the module and add the functions */
      Py_InitModule("keywdarg", keywdarg_methods);
    }
 
 
 .. _buildvalue:
 
-任意の値を構築する
-==================
+Building Arbitrary Values
+=========================
 
-:c:func:`Py_BuildValue` は :c:func:`PyArg_ParseTuple` の
-対極に位置するものです。この関数は以下のように定義されています::
+This function is the counterpart to :c:func:`PyArg_ParseTuple`.  It is declared
+as follows::
 
    PyObject *Py_BuildValue(char *format, ...);
 
-:c:func:`Py_BuildValue` は、 :c:func:`PyArg_ParseTuple`
-の認識する一連の書式化単位に似た書式化単位を認識します。ただし (関数への出力ではなく、入力に使われる) 引数はポインタではなく、
-ただの値でなければなりません。 Python から呼び出された C 関数が返す値として適切な、新たな Python  オブジェクトを返します。
+It recognizes a set of format units similar to the ones recognized by
+:c:func:`PyArg_ParseTuple`, but the arguments (which are input to the function,
+not output) must not be pointers, just values.  It returns a new Python object,
+suitable for returning from a C function called from Python.
 
-:c:func:`PyArg_ParseTuple` とは一つ違う点があります:  :c:func:`PyArg_ParseTuple`
-は第一引数をタプルにする必要があります (Python の引数リストは内部的には常にタプルとして表現されるからです)
-が、 :c:func:`Py_BuildValue` はタプルを生成するとは限りません。 :c:func:`Py_BuildValue`
-は書式化文字列中に書式化単位が二つかそれ以上入っている場合にのみタプルを構築します。書式化文字列が空なら、 ``None`` を返します。きっかり一つの
-書式化単位なら、その書式化単位が記述している何らかのオブジェクトになります。サイズが 0 や 1 のタプル返させたいのなら、書式化文字列を丸括弧で囲います。
+One difference with :c:func:`PyArg_ParseTuple`: while the latter requires its
+first argument to be a tuple (since Python argument lists are always represented
+as tuples internally), :c:func:`Py_BuildValue` does not always build a tuple.  It
+builds a tuple only if its format string contains two or more format units. If
+the format string is empty, it returns ``None``; if it contains exactly one
+format unit, it returns whatever object is described by that format unit.  To
+force it to return a tuple of size 0 or one, parenthesize the format string.
 
-以下に例を示します (左に呼び出し例を、右に構築される Python 値を示します)::
+Examples (to the left the call, to the right the resulting Python value)::
 
    Py_BuildValue("")                        None
    Py_BuildValue("i", 123)                  123
@@ -680,136 +784,185 @@ Python/C API リファレンスマニュアルの :ref:`arg-parsing` で解説�
 
 .. _refcounts:
 
-参照カウント法
-==============
+Reference Counts
+================
 
-C や C++のような言語では、プログラマはヒープ上のメモリを動的に確保したり解放したりする責任があります。こうした作業は C
-では関数 :c:func:`malloc` や :c:func:`free` で行います。C++では本質的に同じ意味で演算子 ``new`` や
-``delete`` が使われます。そこで、以下の議論は C の場合に限定して行います。
+In languages like C or C++, the programmer is responsible for dynamic allocation
+and deallocation of memory on the heap.  In C, this is done using the functions
+:c:func:`malloc` and :c:func:`free`.  In C++, the operators ``new`` and
+``delete`` are used with essentially the same meaning and we'll restrict
+the following discussion to the C case.
 
-:c:func:`malloc` が確保する全てのメモリブロックは、最終的には :c:func:`free` を厳密に一度だけ呼び出して利用可能メモリのプールに
-戻さねばなりません。そこで、適切な時に :c:func:`free` を呼び出すことが重要になります。あるメモリブロックに対して、 :c:func:`free`
-を呼ばなかったにもかかわらずそのアドレスを忘却してしまうと、ブロックが占有しているメモリはプログラムが終了するまで再利用できなくなります。
-これはメモリリーク(:dfn:`memory leak`) と呼ばれています。逆に、プログラムがあるメモリブロックに対して :c:func:`free` を
-呼んでおきながら、そのブロックを使い続けようとすると、別の :c:func:`malloc` 呼び出しによって行われるブロックの再利用
-と衝突を起こします。これは解放済みメモリの使用 (:dfn:`using freed memory`)
-と呼ばれます。これは初期化されていないデータに対する参照と同様のよくない結果 --- コアダンプ、誤った参照、不可解なクラッシュ --- を引き起こします。
+Every block of memory allocated with :c:func:`malloc` should eventually be
+returned to the pool of available memory by exactly one call to :c:func:`free`.
+It is important to call :c:func:`free` at the right time.  If a block's address
+is forgotten but :c:func:`free` is not called for it, the memory it occupies
+cannot be reused until the program terminates.  This is called a :dfn:`memory
+leak`.  On the other hand, if a program calls :c:func:`free` for a block and then
+continues to use the block, it creates a conflict with re-use of the block
+through another :c:func:`malloc` call.  This is called :dfn:`using freed memory`.
+It has the same bad consequences as referencing uninitialized data --- core
+dumps, wrong results, mysterious crashes.
 
-よくあるメモリリークの原因はコード中の普通でない処理経路です。例えば、ある関数があるメモリブロックを確保し、何らかの計算を行って、
-再度ブロックを解放するとします。さて、関数の要求仕様を変更して、計算に対するテストを追加すると、エラー条件を検出し、関数の途中で
-処理を戻すようになるかもしれません。この途中での終了が起きるとき、確保されたメモリブロックは解放し忘れ
-やすいのです。コードが後で追加された場合には特にそうです。このようなメモリリークが一旦紛れ込んでしまうと、長い間検出されないままになることがよくあります:
-エラーによる関数の終了は、全ての関数呼び出しのに対してほんのわずかな割合しか起きず、その一方でほとんどの近代的な計算機は相当量の仮想記憶を持っているため、
-メモリリークが明らかになるのは、長い間動作していたプロセスがリークを起こす関数を何度も使った場合に限られるからです。
-従って、この種のエラーを最小限にとどめるようなコーディング規約や戦略を設けて、不慮のメモリリークを避けることが重要なのです。
+Common causes of memory leaks are unusual paths through the code.  For instance,
+a function may allocate a block of memory, do some calculation, and then free
+the block again.  Now a change in the requirements for the function may add a
+test to the calculation that detects an error condition and can return
+prematurely from the function.  It's easy to forget to free the allocated memory
+block when taking this premature exit, especially when it is added later to the
+code.  Such leaks, once introduced, often go undetected for a long time: the
+error exit is taken only in a small fraction of all calls, and most modern
+machines have plenty of virtual memory, so the leak only becomes apparent in a
+long-running process that uses the leaking function frequently.  Therefore, it's
+important to prevent leaks from happening by having a coding convention or
+strategy that minimizes this kind of errors.
 
-Python は :c:func:`malloc` や :c:func:`free` を非常によく利用するため、メモリリークの防止に加え、解放されたメモリの使用を
-防止する戦略が必要です。このために選ばれたのが参照カウント法 (:dfn:`reference counting`) と呼ばれる手法です。
-参照カウント法の原理は簡単です: 全てのオブジェクトにはカウンタがあり、オブジェクトに対する参照がどこかに保存されたら
-カウンタをインクリメントし、オブジェクトに対する参照が削除されたらデクリメントします。カウンタがゼロになったら、オブジェクトへの
-最後の参照が削除されたことになり、オブジェクトは解放されます。
+Since Python makes heavy use of :c:func:`malloc` and :c:func:`free`, it needs a
+strategy to avoid memory leaks as well as the use of freed memory.  The chosen
+method is called :dfn:`reference counting`.  The principle is simple: every
+object contains a counter, which is incremented when a reference to the object
+is stored somewhere, and which is decremented when a reference to it is deleted.
+When the counter reaches zero, the last reference to the object has been deleted
+and the object is freed.
 
-もう一つの戦略は自動ガベージコレクション  (:dfn:`automatic garbage collection`) と呼ばれています。
-(参照カウント法はガベージコレクション戦略の一つとして挙げられることもあるので、二つを区別するために筆者は "自動 (automatic)"
-を使っています。) 自動ガベージコレクションの大きな利点は、ユーザが :c:func:`free`  を明示的によばなくてよいことにあります。
-(速度やメモリの有効利用性も利点として主張されています --- が、これは確たる事実ではありません。) C
-における自動ガベージコレクションの欠点は、真に可搬性のあるガベージコレクタが存在しないということです。それに対し、参照カウント法は可搬性のある実装ができます
-(:c:func:`malloc`  や :c:func:`free` を利用できるのが前提です --- C 標準はこれを保証しています)。
-いつの日か、十分可搬性のあるガベージコレクタが C で使えるようになるかもしれませんが、それまでは参照カウント法でやっていく以外にはないのです。
+An alternative strategy is called :dfn:`automatic garbage collection`.
+(Sometimes, reference counting is also referred to as a garbage collection
+strategy, hence my use of "automatic" to distinguish the two.)  The big
+advantage of automatic garbage collection is that the user doesn't need to call
+:c:func:`free` explicitly.  (Another claimed advantage is an improvement in speed
+or memory usage --- this is no hard fact however.)  The disadvantage is that for
+C, there is no truly portable automatic garbage collector, while reference
+counting can be implemented portably (as long as the functions :c:func:`malloc`
+and :c:func:`free` are available --- which the C Standard guarantees). Maybe some
+day a sufficiently portable automatic garbage collector will be available for C.
+Until then, we'll have to live with reference counts.
 
-Python では、伝統的な参照カウント法の実装を行っている一方で、参照の循環を検出するために働く循環参照検出機構 (cycle detector)
-も提供しています。循環参照検出機構のおかげで、直接、間接にかかわらず循環参照の生成を気にせずにアプリケーションを構築できます;
-というのも、参照カウント法だけを使ったガベージコレクション実装にとって循環参照は弱点だからです。循環参照は、(間接参照の場合も含めて)
-相互への参照が入ったオブジェクトから形成されるため、循環内のオブジェクトは各々非ゼロの参照カウント
-を持ちます。典型的な参照カウント法の実装では、たとえ循環参照を形成するオブジェクトに対して他に全く参照がないとしても、
-循環参照内のどのオブジェクトに属するメモリも再利用できません。
+While Python uses the traditional reference counting implementation, it also
+offers a cycle detector that works to detect reference cycles.  This allows
+applications to not worry about creating direct or indirect circular references;
+these are the weakness of garbage collection implemented using only reference
+counting.  Reference cycles consist of objects which contain (possibly indirect)
+references to themselves, so that each object in the cycle has a reference count
+which is non-zero.  Typical reference counting implementations are not able to
+reclaim the memory belonging to any objects in a reference cycle, or referenced
+from the objects in the cycle, even though there are no further references to
+the cycle itself.
 
-循環参照検出機構は、ごみとなった循環参照を検出し、Python で実装された後始末関数 (finalizer、 :meth:`__del__` メソッド)
-が定義されていないかぎり、それらのメモリを再利用できます。
-後始末関数がある場合、検出機構は検出した循環参照を :mod:`gc` モジュールに
-(具体的にはこのモジュールの ``garbage`` 変数内)
-に公開します。 :mod:`gc` モジュールではまた、検出機構 (:func:`collect` 関数) を実行する方法や設定用の
-インタフェース、実行時に検出機構を無効化する機能も公開しています。循環参照検出機構はオプションの機構とみなされています;
-デフォルトで入ってはいますが、Unix プラットフォーム (Mac OS X も含みます) ではビルド時に :program:`configure` スクリプトの
-:option:`--without-cycle-gc` オプションを使って、他のプラットフォームでは :file:`pyconfig.h`
-ヘッダの ``WITH_CYCLE_GC`` 定義をはずして無効にできます。こうして循環参照検出機構を無効化すると、 :mod:`gc` モジュールは
-利用できなくなります。
+The cycle detector is able to detect garbage cycles and can reclaim them so long
+as there are no finalizers implemented in Python (:meth:`__del__` methods).
+When there are such finalizers, the detector exposes the cycles through the
+:mod:`gc` module (specifically, the :attr:`~gc.garbage` variable in that module).
+The :mod:`gc` module also exposes a way to run the detector (the
+:func:`~gc.collect` function), as well as configuration
+interfaces and the ability to disable the detector at runtime.  The cycle
+detector is considered an optional component; though it is included by default,
+it can be disabled at build time using the :option:`--without-cycle-gc` option
+to the :program:`configure` script on Unix platforms (including Mac OS X) or by
+removing the definition of ``WITH_CYCLE_GC`` in the :file:`pyconfig.h` header on
+other platforms.  If the cycle detector is disabled in this way, the :mod:`gc`
+module will not be available.
 
 
 .. _refcountsinpython:
 
-Python における参照カウント法
------------------------------
+Reference Counting in Python
+----------------------------
 
-Python には、参照カウントのインクリメントやデクリメントを処理する二つのマクロ、 ``Py_INCREF(x)`` と ``Py_DECREF(x)``
-があります。 :c:func:`Py_DECREF` は、参照カウントがゼロに到達した際に、オブジェクトのメモリ解放も行います。
-柔軟性を持たせるために、 :c:func:`free` を直接呼び出しません ---  その代わりにオブジェクトの型オブジェクト (:dfn:`type
-object`) を介します。このために (他の目的もありますが)、全てのオブジェクトには自身の型オブジェクトに対するポインタが入っています。
+There are two macros, ``Py_INCREF(x)`` and ``Py_DECREF(x)``, which handle the
+incrementing and decrementing of the reference count. :c:func:`Py_DECREF` also
+frees the object when the count reaches zero. For flexibility, it doesn't call
+:c:func:`free` directly --- rather, it makes a call through a function pointer in
+the object's :dfn:`type object`.  For this purpose (and others), every object
+also contains a pointer to its type object.
 
-さて、まだ重大な疑問が残っています: いつ ``Py_INCREF(x)`` や ``Py_DECREF(x)`` を使えばよいのでしょうか?
-まず、いくつかの用語説明から始めさせてください。まず、オブジェクトは "占有 (own)" されることはありません;
-しかし、あるオブジェクトに対する参照の所有 :dfn:`own a reference`  はできます。オブジェクトの参照カウントは、そのオブジェクトが
-参照の所有を受けている回数と定義されています。参照の所有者は、参照が必要なくなった際に :c:func:`Py_DECREF`
-を呼び出す役割を担います。参照の所有権は委譲 (transfer) できます。所有参照 (owned reference) の放棄には、渡す、保存する、
-:c:func:`Py_DECREF` を呼び出す、という三つの方法があります。所有参照を処理し忘れると、メモリリークを引き起こします。
+The big question now remains: when to use ``Py_INCREF(x)`` and ``Py_DECREF(x)``?
+Let's first introduce some terms.  Nobody "owns" an object; however, you can
+:dfn:`own a reference` to an object.  An object's reference count is now defined
+as the number of owned references to it.  The owner of a reference is
+responsible for calling :c:func:`Py_DECREF` when the reference is no longer
+needed.  Ownership of a reference can be transferred.  There are three ways to
+dispose of an owned reference: pass it on, store it, or call :c:func:`Py_DECREF`.
+Forgetting to dispose of an owned reference creates a memory leak.
 
-オブジェクトに対する参照は、借用 (:dfn:`borrow`) も可能です。  [#]_ 参照の借用者は、 :c:func:`Py_DECREF`
-を呼んではなりません。借用者は、参照の所有者から借用した期間を超えて参照を保持し続けてはなりません。所有者が参照を放棄した後で借用参照を使うと、
-解放済みメモリを使用してしまう危険があるので、絶対に避けねばなりません。  [#]_
+It is also possible to :dfn:`borrow` [#]_ a reference to an object.  The
+borrower of a reference should not call :c:func:`Py_DECREF`.  The borrower must
+not hold on to the object longer than the owner from which it was borrowed.
+Using a borrowed reference after the owner has disposed of it risks using freed
+memory and should be avoided completely. [#]_
 
-参照の借用が参照の所有よりも優れている点は、コードがとりうるあらゆる処理経路で参照を廃棄しておくよう注意しなくて済むことです ---
-別の言い方をすれば、借用参照の場合には、処理の途中で関数を終了してもメモリリークの危険を冒すことがない、ということです。
-逆に、所有よりも不利な点は、ごくまともに見えるコードが、実際には参照の借用元で放棄されてしまった後に
-その参照を使うかもしれないような微妙な状況があるということです。
+The advantage of borrowing over owning a reference is that you don't need to
+take care of disposing of the reference on all possible paths through the code
+--- in other words, with a borrowed reference you don't run the risk of leaking
+when a premature exit is taken.  The disadvantage of borrowing over owning is
+that there are some subtle situations where in seemingly correct code a borrowed
+reference can be used after the owner from which it was borrowed has in fact
+disposed of it.
 
-:c:func:`Py_INCREF` を呼び出すと、借用参照を所有参照  に変更できます。この操作は参照の借用元の状態には影響しません ---
-:c:func:`Py_INCREF` は新たな所有参照を生成し、参照の所有者が担うべき全ての責任を課します (つまり、新たな参照の所有者は、以前の
-所有者と同様、参照の放棄を適切に行わねばなりません)。
+A borrowed reference can be changed into an owned reference by calling
+:c:func:`Py_INCREF`.  This does not affect the status of the owner from which the
+reference was borrowed --- it creates a new owned reference, and gives full
+owner responsibilities (the new owner must dispose of the reference properly, as
+well as the previous owner).
 
 
 .. _ownershiprules:
 
-所有権にまつわる規則
---------------------
+Ownership Rules
+---------------
 
-オブジェクトへの参照を関数の内外に渡す場合には、オブジェクトの所有権が参照と共に渡されるか否かが常に関数インタフェース仕様の一部となります。
+Whenever an object reference is passed into or out of a function, it is part of
+the function's interface specification whether ownership is transferred with the
+reference or not.
 
-オブジェクトへの参照を返すほとんどの関数は、参照とともに所有権も渡します。特に、 :c:func:`PyInt_FromLong` や
-:c:func:`Py_BuildValue` のように、新しいオブジェクトを生成する関数は全て所有権を相手に渡します。オブジェクトが実際には新たな
-オブジェクトでなくても、そのオブジェクトに対する新たな参照の所有権を得ます。例えば、 :c:func:`PyInt_FromLong`
-はよく使う値をキャッシュしており、キャッシュされた値への参照を返すことがあります。
+Most functions that return a reference to an object pass on ownership with the
+reference.  In particular, all functions whose function it is to create a new
+object, such as :c:func:`PyInt_FromLong` and :c:func:`Py_BuildValue`, pass
+ownership to the receiver.  Even if the object is not actually new, you still
+receive ownership of a new reference to that object.  For instance,
+:c:func:`PyInt_FromLong` maintains a cache of popular values and can return a
+reference to a cached item.
 
-:c:func:`PyObject_GetAttrString` のように、あるオブジェクトから別のオブジェクトを抽出するような関数もまた、参照とともに所有権を
-委譲します。こちらの方はやや理解しにくいかもしれません。というのはよく使われるルーチンのいくつかが例外となっているからです:
-:c:func:`PyTuple_GetItem` 、 :c:func:`PyList_GetItem` 、 :c:func:`PyDict_GetItem` 、および
-:c:func:`PyDict_GetItemString` は全て、タプル、リスト、または辞書から借用参照を返します。
+Many functions that extract objects from other objects also transfer ownership
+with the reference, for instance :c:func:`PyObject_GetAttrString`.  The picture
+is less clear, here, however, since a few common routines are exceptions:
+:c:func:`PyTuple_GetItem`, :c:func:`PyList_GetItem`, :c:func:`PyDict_GetItem`, and
+:c:func:`PyDict_GetItemString` all return references that you borrow from the
+tuple, list or dictionary.
 
-:c:func:`PyImport_AddModule` は、実際にはオブジェクトを生成して返すことがあるにもかかわらず、借用参照を返します:
-これが可能なのは、生成されたオブジェクトに対する所有参照は ``sys.modules`` に保持されるからです。
+The function :c:func:`PyImport_AddModule` also returns a borrowed reference, even
+though it may actually create the object it returns: this is possible because an
+owned reference to the object is stored in ``sys.modules``.
 
-オブジェクトへの参照を別の関数に渡す場合、一般的には、関数側は呼び出し手から参照を借用します --- 参照を保存する必要があるなら、
-関数側は :c:func:`Py_INCREF` を呼び出して独立した所有者になります。とはいえ、この規則には二つの重要な例外:
-:c:func:`PyTuple_SetItem` と :c:func:`PyList_SetItem` があります。これらの関数は、渡された引数要素に対して所有権を
-乗っ取り (take over) ます --- たとえ失敗してもです! (:c:func:`PyDict_SetItem` とその仲間は所有権を乗っ取りません
---- これらはいわば "普通の" 関数です。)
+When you pass an object reference into another function, in general, the
+function borrows the reference from you --- if it needs to store it, it will use
+:c:func:`Py_INCREF` to become an independent owner.  There are exactly two
+important exceptions to this rule: :c:func:`PyTuple_SetItem` and
+:c:func:`PyList_SetItem`.  These functions take over ownership of the item passed
+to them --- even if they fail!  (Note that :c:func:`PyDict_SetItem` and friends
+don't take over ownership --- they are "normal.")
 
-Python から C 関数が呼び出される際には、C 関数は呼び出し側から引数への参照を借用します。C 関数の呼び出し側はオブジェクトへの参照を
-所有しているので、借用参照の生存期間が保証されるのは関数が処理を返すまでです。このようにして借用参照を保存したり他に渡したりしたい
-場合にのみ、 :c:func:`Py_INCREF` を使って所有参照にする必要があります。
+When a C function is called from Python, it borrows references to its arguments
+from the caller.  The caller owns a reference to the object, so the borrowed
+reference's lifetime is guaranteed until the function returns.  Only when such a
+borrowed reference must be stored or passed on, it must be turned into an owned
+reference by calling :c:func:`Py_INCREF`.
 
-Python から呼び出された C 関数が返す参照は所有参照でなければなりません --- 所有権は関数から呼び出し側へと委譲されます。
+The object reference returned from a C function that is called from Python must
+be an owned reference --- ownership is transferred from the function to its
+caller.
 
 
 .. _thinice:
 
-薄氷
-----
+Thin Ice
+--------
 
-数少ない状況において、一見無害に見える借用参照の利用が問題をひきおこすことがあります。この問題はすべて、インタプリタが非明示的に呼び出され、
-インタプリタが参照の所有者に参照を放棄させてしまう状況と関係しています。
+There are a few situations where seemingly harmless use of a borrowed reference
+can lead to problems.  These all have to do with implicit invocations of the
+interpreter, which can cause the owner of a reference to dispose of it.
 
-知っておくべきケースのうち最初の、そして最も重要なものは、リスト要素に対する参照を借りている際に起きる、
-関係ないオブジェクトに対する :c:func:`Py_DECREF` の使用です。例えば::
+The first and most important case to know about is using :c:func:`Py_DECREF` on
+an unrelated object while borrowing a reference to a list item.  For instance::
 
    void
    bug(PyObject *list)
@@ -820,21 +973,27 @@ Python から呼び出された C 関数が返す参照は所有参照でなけ�
        PyObject_Print(item, stdout, 0); /* BUG! */
    }
 
-上の関数はまず、 ``list[0]`` への参照を借用し、次に ``list[1]``  を値 ``0`` で置き換え、最後にさきほど借用した参照を出力
-しています。何も問題ないように見えますね? でもそうではないのです!
+This function first borrows a reference to ``list[0]``, then replaces
+``list[1]`` with the value ``0``, and finally prints the borrowed reference.
+Looks harmless, right?  But it's not!
 
-:c:func:`PyList_SetItem` の処理の流れを追跡してみましょう。リストは全ての要素に対して参照を所有しているので、要素 1 を
-置き換えると、以前の要素 1 を放棄します。ここで、以前の要素 1  がユーザ定義クラスのインスタンスであり、さらにこのクラスが :meth:`__del__`
-メソッドを定義していると仮定しましょう。このクラスインスタンスの参照カウントが 1 だった場合、リストが参照を放棄すると、インスタンスの
-:meth:`__del__` メソッドが呼び出されます。
+Let's follow the control flow into :c:func:`PyList_SetItem`.  The list owns
+references to all its items, so when item 1 is replaced, it has to dispose of
+the original item 1.  Now let's suppose the original item 1 was an instance of a
+user-defined class, and let's further suppose that the class defined a
+:meth:`__del__` method.  If this class instance has a reference count of 1,
+disposing of it will call its :meth:`__del__` method.
 
-クラスは Python で書かれているので、 :meth:`__del__` は任意の Python コードを実行できます。この :meth:`__del__`
-が :c:func:`bug` における ``item`` に何か不正なことをしているのでしょうか? その通り! :c:func:`buf` に渡したリストが
-:meth:`__del__` メソッドから操作できるとすると、 ``del list[0]`` の効果を持つような文を実行できてしまいます。もしこの操作で
-``list[0]`` に対する最後の参照が放棄されてしまうと、 ``list[0]`` に関連付けられていたメモリは解放され、結果的に ``item``
-は無効な値になってしまいます。
+Since it is written in Python, the :meth:`__del__` method can execute arbitrary
+Python code.  Could it perhaps do something to invalidate the reference to
+``item`` in :c:func:`bug`?  You bet!  Assuming that the list passed into
+:c:func:`bug` is accessible to the :meth:`__del__` method, it could execute a
+statement to the effect of ``del list[0]``, and assuming this was the last
+reference to that object, it would free the memory associated with it, thereby
+invalidating ``item``.
 
-問題の原因が分かれば、解決は簡単です。一時的に参照回数を増やせばよいのです。正しく動作するバージョンは以下のようになります::
+The solution, once you know the source of the problem, is easy: temporarily
+increment the reference count.  The correct version of the function reads::
 
    void
    no_bug(PyObject *list)
@@ -847,21 +1006,25 @@ Python から呼び出された C 関数が返す参照は所有参照でなけ�
        Py_DECREF(item);
    }
 
-これは実際にあった話です。以前のバージョンの Python には、このバグの一種が潜んでいて、 :meth:`__del__` メソッドが
-どうしてうまく動かないのかを調べるために C デバッガで相当時間を費やした人がいました...
+This is a true story.  An older version of Python contained variants of this bug
+and someone spent a considerable amount of time in a C debugger to figure out
+why his :meth:`__del__` methods would fail...
 
-二つ目は、借用参照がスレッドに関係しているケースです。通常は、 Python インタプリタにおける複数のスレッドは、
-グローバルインタプリタロックがオブジェクト空間全体を保護しているため、互いに邪魔し合うことはありません。とはいえ、ロックは
-:c:macro:`Py_BEGIN_ALLOW_THREADS` マクロで一時的に解除したり、 :c:macro:`Py_END_ALLOW_THREADS`
-で再獲得したりできます。これらのマクロはブロックの起こる I/O 呼び出しの周囲によく置かれ、 I/O
-が完了するまでの間に他のスレッドがプロセッサを利用できるようにします。明らかに、以下の関数は上の例と似た問題をはらんでいます::
+The second case of problems with a borrowed reference is a variant involving
+threads.  Normally, multiple threads in the Python interpreter can't get in each
+other's way, because there is a global lock protecting Python's entire object
+space.  However, it is possible to temporarily release this lock using the macro
+:c:macro:`Py_BEGIN_ALLOW_THREADS`, and to re-acquire it using
+:c:macro:`Py_END_ALLOW_THREADS`.  This is common around blocking I/O calls, to
+let other threads use the processor while waiting for the I/O to complete.
+Obviously, the following function has the same problem as the previous one::
 
    void
    bug(PyObject *list)
    {
        PyObject *item = PyList_GetItem(list, 0);
        Py_BEGIN_ALLOW_THREADS
-       ...ブロックが起こる何らかの I/O 呼び出し...
+       ...some blocking I/O call...
        Py_END_ALLOW_THREADS
        PyObject_Print(item, stdout, 0); /* BUG! */
    }
@@ -869,111 +1032,142 @@ Python から呼び出された C 関数が返す参照は所有参照でなけ�
 
 .. _nullpointers:
 
-NULL ポインタ
+NULL Pointers
 -------------
 
-一般論として、オブジェクトへの参照を引数にとる関数はユーザが *NULL* ポインタを渡すとは予想しておらず、渡そうとするとコアダンプになる
-(か、あとでコアダンプを引き起こす) ことでしょう。一方、オブジェクトへの参照を返すような関数は一般に、例外の発生を示す場合にのみ *NULL*
-を返します。引数に対して *NULL* テストを行わない理由は、関数はしばしば受け取ったオブジェクトを他の関数へと引き渡すからです --- 各々の関数が
-*NULL* テストを行えば、冗長なテストが大量に行われ、コードはより低速に動くことになります。
+In general, functions that take object references as arguments do not expect you
+to pass them *NULL* pointers, and will dump core (or cause later core dumps) if
+you do so.  Functions that return object references generally return *NULL* only
+to indicate that an exception occurred.  The reason for not testing for *NULL*
+arguments is that functions often pass the objects they receive on to other
+function --- if each function were to test for *NULL*, there would be a lot of
+redundant tests and the code would run more slowly.
 
-従って、 *NULL* のテストはオブジェクトの "発生源"、すなわち値が *NULL* になるかもしれないポインタを受け取ったときだけに
-しましょう。 :c:func:`malloc` や、例外を送出する可能性のある関数がその例です。
+It is better to test for *NULL* only at the "source:" when a pointer that may be
+*NULL* is received, for example, from :c:func:`malloc` or from a function that
+may raise an exception.
 
-マクロ :c:func:`Py_INCREF` および :c:func:`Py_DECREF` は *NULL* ポインタのチェックを行いません ---
-しかし、これらのマクロの変化形である :c:func:`Py_XINCREF` および :c:func:`Py_XDECREF` はチェックを行います。
+The macros :c:func:`Py_INCREF` and :c:func:`Py_DECREF` do not check for *NULL*
+pointers --- however, their variants :c:func:`Py_XINCREF` and :c:func:`Py_XDECREF`
+do.
 
-特定のオブジェクト型について調べるマクロ (``Pytype_Check()``)  は *NULL* ポインタのチェックを行いません --- 繰り返しますが、
-様々な異なる型を想定してオブジェクトの型を調べる際には、こうしたマクロを続けて呼び出す必要があるので、個別に *NULL* ポインタの
-チェックをすると冗長なテストになってしまうのです。型を調べるマクロには、 *NULL* チェックを行う変化形はありません。
+The macros for checking for a particular object type (``Pytype_Check()``) don't
+check for *NULL* pointers --- again, there is much code that calls several of
+these in a row to test an object against various different expected types, and
+this would generate redundant tests.  There are no variants with *NULL*
+checking.
 
-Python から C 関数を呼び出す機構は、 C 関数に渡される引数リスト (例でいうところの ``args``) が決して *NULL* にならないよう
-保証しています --- 実際には、常にタプル型になるよう保証しています。  [#]_
+The C function calling mechanism guarantees that the argument list passed to C
+functions (``args`` in the examples) is never *NULL* --- in fact it guarantees
+that it is always a tuple. [#]_
 
-*NULL* ポインタを Python ユーザレベルに "逃がし" てしまうと、深刻なエラーを引き起こします。
+It is a severe error to ever let a *NULL* pointer "escape" to the Python user.
 
 .. Frank Stajano:
    A pedagogically buggy example, along the lines of the previous listing, would
    be helpful here -- showing in more concrete terms what sort of actions could
    cause the problem. I can't very well imagine it from the description.
 
+
 .. _cplusplus:
 
-C++での拡張モジュール作成
+Writing Extensions in C++
 =========================
 
-C++でも拡張モジュールは作成できます。ただしいくつか制限があります。メインプログラム (Python インタプリタ) は C コンパイラでコンパイルされ
-リンクされているので、グローバル変数や静的オブジェクトをコンストラクタで作成できません。メインプログラムが C++ コンパイラでリンクされて
-いるならこれは問題ではありません。 Python インタプリタから呼び出される関数 (特にモジュール初期化関数) は、 ``extern "C"``
-を使って宣言しなければなりません。また、Python ヘッダファイルを ``extern "C" {...}`` に入れる必要はありません---
-シンボル ``__cplusplus`` (最近の C++ コンパイラは全てこのシンボルを定義しています) が定義されているときに ``extern "C"
-{...}`` が行われるように、ヘッダファイル内にすでに書かれているからです。
+It is possible to write extension modules in C++.  Some restrictions apply.  If
+the main program (the Python interpreter) is compiled and linked by the C
+compiler, global or static objects with constructors cannot be used.  This is
+not a problem if the main program is linked by the C++ compiler.  Functions that
+will be called by the Python interpreter (in particular, module initialization
+functions) have to be declared using ``extern "C"``. It is unnecessary to
+enclose the Python header files in ``extern "C" {...}`` --- they use this form
+already if the symbol ``__cplusplus`` is defined (all recent C++ compilers
+define this symbol).
 
 
 .. _using-capsules:
 
-拡張モジュールに C API を提供する
-=================================
+Providing a C API for an Extension Module
+=========================================
 
 .. sectionauthor:: Konrad Hinsen <hinsen@cnrs-orleans.fr>
 
 
-多くの拡張モジュールは単に Python から使える新たな関数や型を提供するだけですが、時に拡張モジュール内のコードが他の拡張
-モジュールでも便利なことがあります。例えば、あるモジュールでは順序概念のないリストのように動作する "コレクション (collection)"
-クラスを実装しているかもしれません。ちょうどリストを生成したり操作したりできる C API を備えた標準の Python
-リスト型のように、この新たなコレクション型も他の拡張モジュールから直接操作できるようにするには一連の C 関数を持っていなければなりません。
+Many extension modules just provide new functions and types to be used from
+Python, but sometimes the code in an extension module can be useful for other
+extension modules. For example, an extension module could implement a type
+"collection" which works like lists without order. Just like the standard Python
+list type has a C API which permits extension modules to create and manipulate
+lists, this new collection type should have a set of C functions for direct
+manipulation from other extension modules.
 
-一見するとこれは簡単なこと: 単に関数を (もちろん ``static`` などとは宣言せずに) 書いて、適切なヘッダファイルを提供し、C API
-を書けばよいだけ、に思えます。そして実際のところ、全ての拡張モジュールが Python インタプリタに常に静的にリンクされている場合にはうまく動作します。
-ところがモジュールが共有ライブラリの場合には、一つのモジュールで定義されているシンボルが他のモジュールから不可視なことがあります。
-可視性の詳細はオペレーティングシステムによります; あるシステムは Python インタプリタと全ての拡張モジュール用に単一のグローバルな
-名前空間を用意しています (例えば Windows)。別のシステムはモジュールのリンク時に取り込まれるシンボルを明示的に指定する必要があります  (AIX
-がその一例です)、また別のシステム (ほとんどの Unix) では、違った戦略を選択肢として提供しています。
-そして、たとえシンボルがグローバル変数として可視であっても、呼び出したい関数の入ったモジュールがまだロードされていないことだってあります!
+At first sight this seems easy: just write the functions (without declaring them
+``static``, of course), provide an appropriate header file, and document
+the C API. And in fact this would work if all extension modules were always
+linked statically with the Python interpreter. When modules are used as shared
+libraries, however, the symbols defined in one module may not be visible to
+another module. The details of visibility depend on the operating system; some
+systems use one global namespace for the Python interpreter and all extension
+modules (Windows, for example), whereas others require an explicit list of
+imported symbols at module link time (AIX is one example), or offer a choice of
+different strategies (most Unices). And even if symbols are globally visible,
+the module whose functions one wishes to call might not have been loaded yet!
 
-従って、可搬性の点からシンボルの可視性には何ら仮定をしてはならないことになります。つまり拡張モジュール中の全てのシンボルは ``static``
-と宣言せねばなりません。例外はモジュールの初期化関数で、これは (:ref:`methodtable` で述べたように) 他の拡張モジュールとの間で
-名前が衝突するのを避けるためです。また、他の拡張モジュールからアクセスを *受けるべきではない*  シンボルは別のやり方で公開せねばなりません。
+Portability therefore requires not to make any assumptions about symbol
+visibility. This means that all symbols in extension modules should be declared
+``static``, except for the module's initialization function, in order to
+avoid name clashes with other extension modules (as discussed in section
+:ref:`methodtable`). And it means that symbols that *should* be accessible from
+other extension modules must be exported in a different way.
 
-Python はある拡張モジュールの C レベルの情報 (ポインタ) を別のモジュールに渡すための
-特殊な機構: Capsule (カプセル)を提供しています。
-Capsule はポインタ (:c:type:`void\*`) を記憶する Python のデータ型です。 Capsule は C API
-を介してのみ生成したりアクセスしたりできますが、他の Python オブジェクトと同じように受け渡しできます。
-とりわけ、Capsule は拡張モジュールの名前空間内にある名前に代入できます。
-他の拡張モジュールはこのモジュールを import でき、次に名前を取得し、最後にCapsule
-へのポインタを取得します。
+Python provides a special mechanism to pass C-level information (pointers) from
+one extension module to another one: Capsules. A Capsule is a Python data type
+which stores a pointer (:c:type:`void \*`).  Capsules can only be created and
+accessed via their C API, but they can be passed around like any other Python
+object. In particular,  they can be assigned to a name in an extension module's
+namespace. Other extension modules can then import this module, retrieve the
+value of this name, and then retrieve the pointer from the Capsule.
 
-拡張モジュールの C API を公開するために、様々な方法で Capsule が使われます。
-各関数を1つのオブジェクトに入れたり、全ての C API のポインタ配列を Capsule に入れることができます。
-そして、ポインタに対する保存や取得といった様々な作業は、コードを提供している
-モジュールとクライアントモジュールとの間では異なる方法で分散できます。
+There are many ways in which Capsules can be used to export the C API of an
+extension module. Each function could get its own Capsule, or all C API pointers
+could be stored in an array whose address is published in a Capsule. And the
+various tasks of storing and retrieving the pointers can be distributed in
+different ways between the module providing the code and the client modules.
 
-どの方法を選ぶにしても、 Capsule の name を正しく設定することは重要です。
-:c:func:`PyCapsule_New` は name 引数 (:c:type:`const char \*`) を取ります。
-*NULL* を name に渡すことも許可されていますが、 name を設定することを強く推奨します。
-正しく名前を付けられた Capsule はある程度の実行時型安全性を持ちます。
-名前を付けられていない Capsule を他の Capsule と区別する現実的な方法はありません。
+Whichever method you choose, it's important to name your Capsules properly.
+The function :c:func:`PyCapsule_New` takes a name parameter
+(:c:type:`const char \*`); you're permitted to pass in a *NULL* name, but
+we strongly encourage you to specify a name.  Properly named Capsules provide
+a degree of runtime type-safety; there is no feasible way to tell one unnamed
+Capsule from another.
 
-特に、 C API を公開するための Capsule には次のルールに従った名前を付けるべきです::
+In particular, Capsules used to expose C APIs should be given a name following
+this convention::
 
     modulename.attributename
 
-:c:func:`PyCapsule_Import` という便利関数は、 Capsule の名前がこのルールに一致しているときにのみ、
-簡単に Capsule 経由で公開されている C API をロードすることができます。
-この挙動により、 C API のユーザーが、確実に正しい C API を格納している Capsule を
-ロードできたことを確かめることができます。
+The convenience function :c:func:`PyCapsule_Import` makes it easy to
+load a C API provided via a Capsule, but only if the Capsule's name
+matches this convention.  This behavior gives C API users a high degree
+of certainty that the Capsule they load contains the correct C API.
 
-以下の例では、名前を公開するモジュールの作者にほとんどの負荷が掛かりますが、よく使われるライブラリを作る際に適切なアプローチを実演します。
-このアプローチでは、全ての C API ポインタ (例中では一つだけですが!) を、 Capsule の値となる :c:type:`void`
-ポインタの配列に保存します。拡張モジュールに対応するヘッダファイルは、モジュールの import  と C API
-ポインタを取得するよう手配するマクロを提供します; クライアントモジュールは、C API にアクセスする前にこのマクロを呼ぶだけです。
+The following example demonstrates an approach that puts most of the burden on
+the writer of the exporting module, which is appropriate for commonly used
+library modules. It stores all C API pointers (just one in the example!) in an
+array of :c:type:`void` pointers which becomes the value of a Capsule. The header
+file corresponding to the module provides a macro that takes care of importing
+the module and retrieving its C API pointers; client modules only have to call
+this macro before accessing the C API.
 
-名前を公開する側のモジュールは、 :ref:`extending-simpleexample` 節の :mod:`spam`
-モジュールを修正したものです。関数 :func:`spam.system` は C ライブラリ関数 :c:func:`system` を直接呼び出さず、
-:c:func:`PySpam_System` を呼び出します。この関数はもちろん、実際には (全てのコマンドに "spam" を付けるといったような)
-より込み入った処理を行います。この関数 :c:func:`PySpam_System` はまた、他の拡張モジュールにも公開されます。
+The exporting module is a modification of the :mod:`spam` module from section
+:ref:`extending-simpleexample`. The function :func:`spam.system` does not call
+the C library function :c:func:`system` directly, but a function
+:c:func:`PySpam_System`, which would of course do something more complicated in
+reality (such as adding "spam" to every command). This function
+:c:func:`PySpam_System` is also exported to other extension modules.
 
-関数 :c:func:`PySpam_System` は、他の全ての関数と同様に ``static`` で宣言された通常の C 関数です。 ::
+The function :c:func:`PySpam_System` is a plain C function, declared
+``static`` like everything else::
 
    static int
    PySpam_System(const char *command)
@@ -981,7 +1175,7 @@ Capsule はポインタ (:c:type:`void\*`) を記憶する Python のデータ�
        return system(command);
    }
 
-:c:func:`spam_system` には取るに足らない変更が施されています::
+The function :c:func:`spam_system` is modified in a trivial way::
 
    static PyObject *
    spam_system(PyObject *self, PyObject *args)
@@ -995,20 +1189,18 @@ Capsule はポインタ (:c:type:`void\*`) を記憶する Python のデータ�
        return Py_BuildValue("i", sts);
    }
 
-モジュールの先頭にある以下の行 ::
+In the beginning of the module, right after the line ::
 
    #include "Python.h"
 
-の直後に、以下の二行::
+two more lines must be added::
 
    #define SPAM_MODULE
    #include "spammodule.h"
 
-を必ず追加してください。
-
-``#define`` は、ファイル :file:`spammodule.h` をインクルードして
-いるのが名前を公開する側のモジュールであって、クライアントモジュールではないことをヘッダファイルに教えるために使われます。最後に、モジュールの初期化関数は
-C API のポインタ配列を初期化するよう手配しなければなりません::
+The ``#define`` is used to tell the header file that it is being included in the
+exporting module, not a client module. Finally, the module's initialization
+function must take care of initializing the C API pointer array::
 
    PyMODINIT_FUNC
    initspam(void)
@@ -1021,20 +1213,21 @@ C API のポインタ配列を初期化するよう手配しなければなり�
        if (m == NULL)
            return;
 
-       /* C API ポインタ配列を初期化する */
+       /* Initialize the C API pointer array */
        PySpam_API[PySpam_System_NUM] = (void *)PySpam_System;
 
-       /* API ポインタ配列のアドレスが入った Capsule を生成する */
+       /* Create a Capsule containing the API pointer array's address */
        c_api_object = PyCapsule_New((void *)PySpam_API, "spam._C_API", NULL);
 
        if (c_api_object != NULL)
            PyModule_AddObject(m, "_C_API", c_api_object);
    }
 
-``PySpam_API`` が ``static`` と宣言されていることに注意してください;
-そうしなければ、 :func:`initspam` が終了したときにポインタアレイは消滅してしまいます!
+Note that ``PySpam_API`` is declared ``static``; otherwise the pointer
+array would disappear when :func:`initspam` terminates!
 
-からくりの大部分はヘッダファイル :file:`spammodule.h` 内にあり、以下のようになっています::
+The bulk of the work is in the header file :file:`spammodule.h`, which looks
+like this::
 
    #ifndef Py_SPAMMODULE_H
    #define Py_SPAMMODULE_H
@@ -1042,32 +1235,32 @@ C API のポインタ配列を初期化するよう手配しなければなり�
    extern "C" {
    #endif
 
-   /* spammodule のヘッダファイル */
+   /* Header file for spammodule */
 
-   /* C API 関数 */
+   /* C API functions */
    #define PySpam_System_NUM 0
    #define PySpam_System_RETURN int
    #define PySpam_System_PROTO (const char *command)
 
-   /* C API ポインタの総数 */
+   /* Total number of C API pointers */
    #define PySpam_API_pointers 1
 
 
    #ifdef SPAM_MODULE
-   /* この部分は spammodule.c をコンパイルする際に使われる */
+   /* This section is used when compiling spammodule.c */
 
    static PySpam_System_RETURN PySpam_System PySpam_System_PROTO;
 
    #else
-   /* この部分は spammodule の API を使うモジュール側で使われる */
+   /* This section is used in modules that use spammodule's API */
 
    static void **PySpam_API;
 
    #define PySpam_System \
     (*(PySpam_System_RETURN (*)PySpam_System_PROTO) PySpam_API[PySpam_System_NUM])
 
-   /* エラーによる例外の場合には -1 を、成功すると 0 を返す
-    * エラーがあれば PyCapsule_Import が例外を設定する。
+   /* Return -1 on error, 0 on success.
+    * PyCapsule_Import will set an exception if there's an error.
     */
    static int
    import_spam(void)
@@ -1084,8 +1277,9 @@ C API のポインタ配列を初期化するよう手配しなければなり�
 
    #endif /* !defined(Py_SPAMMODULE_H) */
 
-:c:func:`PySpam_System` へのアクセス手段を得るためにクライアントモジュール側がしなければならないことは、初期化関数内
-での :c:func:`import_spam` 関数 (またはマクロ) の呼び出しです::
+All that a client module must do in order to have access to the function
+:c:func:`PySpam_System` is to call the function (or rather macro)
+:c:func:`import_spam` in its initialization function::
 
    PyMODINIT_FUNC
    initclient(void)
@@ -1097,26 +1291,32 @@ C API のポインタ配列を初期化するよう手配しなければなり�
            return;
        if (import_spam() < 0)
            return;
-       /* さらなる初期化処理はここに置ける */
+       /* additional initialization can happen here */
    }
 
-このアプローチの主要な欠点は、 :file:`spammodule.h` がやや難解になるということです。とはいえ、各関数の基本的な構成は公開される
-ものと同じなので、書き方を一度だけ学べばすみます。
+The main disadvantage of this approach is that the file :file:`spammodule.h` is
+rather complicated. However, the basic structure is the same for each function
+that is exported, so it has to be learned only once.
 
-最後に、Capsule は、自身に保存されているポインタをメモリ確保したり解放したりする際に特に便利な、もう一つの機能を提供しているという
-ことに触れておかねばなりません。詳細は Python/C API リファレンスマニュアルの
-:ref:`capsules`, および Capsule の実装部分 (Python
-ソースコード配布物中のファイル  :file:`Include/pycapsule.h` および :file:`Objects/pycapsule.c`
-に述べられています。
+Finally it should be mentioned that Capsules offer additional functionality,
+which is especially useful for memory allocation and deallocation of the pointer
+stored in a Capsule. The details are described in the Python/C API Reference
+Manual in the section :ref:`capsules` and in the implementation of Capsules (files
+:file:`Include/pycapsule.h` and :file:`Objects/pycapsule.c` in the Python source
+code distribution).
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] この関数へのインタフェースはすでに標準モジュール :mod:`os` にあります --- この関数を選んだのは、単純で直接的な例を示したいからです。
+.. [#] An interface for this function already exists in the standard module :mod:`os`
+   --- it was chosen as a simple and straightforward example.
 
-.. [#] 参照を "借用する" というメタファは厳密には正しくありません: なぜなら、参照の所有者は依然として参照のコピーを持っているからです。
+.. [#] The metaphor of "borrowing" a reference is not completely correct: the owner
+   still has a copy of the reference.
 
-.. [#] 参照カウントが 1 以上かどうか調べる方法は **うまくいきません** --- 参照カウント自体も解放されたメモリ上に
-   あるため、その領域が他のオブジェクトに使われている可能性があります!
+.. [#] Checking that the reference count is at least 1 **does not work** --- the
+   reference count itself could be in freed memory and may thus be reused for
+   another object!
 
-.. [#] "旧式の" 呼び出し規約を使っている場合には、この保証は適用されません --- 既存のコードにはいまだに旧式の呼び出し規約が多々あります
+.. [#] These guarantees don't hold when you use the "old" style calling convention ---
+   this is still found in much existing code.
 

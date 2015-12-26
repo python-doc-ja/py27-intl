@@ -3,23 +3,28 @@
 
 .. _building:
 
-****************************************************
-distutils による C および C++ 拡張モジュールのビルド
-****************************************************
+********************************************
+Building C and C++ Extensions with distutils
+********************************************
 
 .. sectionauthor:: Martin v. Löwis <martin@v.loewis.de>
 
 
-Python 1.4 になってから、動的にリンクされるような拡張モジュールをビルドするためのメイクファイルを作成するような、特殊なメイクファイルをUnix
-向けに提供するようになりました。Python 2.0 からはこの機構 (いわゆる Makefile.pre.in および Setup ファイルの関係ファイル)
-はサポートされなくなりました。インタプリタ自体のカスタマイズはほとんど使われず、 distutils で拡張モジュールをビルドできるようになったからです。
+Starting in Python 1.4, Python provides, on Unix, a special make file for
+building make files for building dynamically-linked extensions and custom
+interpreters.  Starting with Python 2.0, this mechanism (known as related to
+Makefile.pre.in, and Setup files) is no longer supported. Building custom
+interpreters was rarely used, and extension modules can be built using
+distutils.
 
-distutils を使った拡張モジュールのビルドには、ビルドを行う計算機上に distutils をインストールしていることが必要です。 Python 2.x
-には distutils が入っており、 Python 1.5 用には個別のパッケージがあります。distutils はバイナリパッケージの作成も
-サポートしているので、ユーザが拡張モジュールをインストールする際に、必ずしもコンパイラが必要というわけではありません。
+Building an extension module using distutils requires that distutils is
+installed on the build machine, which is included in Python 2.x and available
+separately for Python 1.5. Since distutils also supports creation of binary
+packages, users don't necessarily need a compiler and distutils to install the
+extension.
 
-distutils ベースのパッケージには、駆動スクリプト (driver script) となる :file:`setup.py` が入っています。
-:file:`setup.py` は普通の Python プログラムファイルで、ほとんどの場合以下のような見かけになっています::
+A distutils package contains a driver script, :file:`setup.py`. This is a plain
+Python file, which, in the most simple case, could look like this::
 
    from distutils.core import setup, Extension
 
@@ -32,27 +37,34 @@ distutils ベースのパッケージには、駆動スクリプト (driver scri
           ext_modules = [module1])
 
 
-この :file:`setup.py` とファイル :file:`demo.c` があるとき、以下のコマンド ::
+With this :file:`setup.py`, and a file :file:`demo.c`, running ::
 
    python setup.py build
 
-を実行すると、 :file:`demo.c` をコンパイルして、 ``demo`` という名前の拡張モジュールを :file:`build`
-ディレクトリ内に生成します。システムによってはモジュールファイルは :file:`build/lib.system`
-サブディレクトリに生成され、 :file:`demo.so` や :file:`demo.pyd` といった名前になることがあります。
+will compile :file:`demo.c`, and produce an extension module named ``demo`` in
+the :file:`build` directory. Depending on the system, the module file will end
+up in a subdirectory :file:`build/lib.system`, and may have a name like
+:file:`demo.so` or :file:`demo.pyd`.
 
-:file:`setup.py` 内では、コマンドの実行はすべて ``setup`` 関数を呼び出して行います。この関数は可変個のキーワード引数をとります。
-例ではその一部を使っているにすぎません。もっと具体的にいうと、例の中ではパッケージをビルドするためのメタ情報と、パッケージの内容を指定しています。
-通常、パッケージには Python ソースモジュールやドキュメント、サブパッケージ等といった別のファイルも入ります。 distutils
-の機能に関する詳細は、 :ref:`distutils-index` に書かれている distutils
-のドキュメントを参照してください;  この節では、拡張モジュールのビルドについてのみ説明します。
+In the :file:`setup.py`, all execution is performed by calling the ``setup``
+function. This takes a variable number of keyword arguments, of which the
+example above uses only a subset. Specifically, the example specifies
+meta-information to build packages, and it specifies the contents of the
+package.  Normally, a package will contain of addition modules, like Python
+source modules, documentation, subpackages, etc. Please refer to the distutils
+documentation in :ref:`distutils-index` to learn more about the features of
+distutils; this section explains building extension modules only.
 
-駆動スクリプトをよりよく構成するために、決め打ちの引数を :func:`setup` に入れておくことがよくあります。上の例では、 :func:`setup`
-の ``ext_modules`` は拡張モジュールのリストで、リストの各々の要素は :class:`Extension`
-クラスのインスタンスになっています。上の例では、 ``demo`` という名の拡張モジュールを定義していて、単一のソースファイル :file:`demo.c`
-をコンパイルしてビルドするよう定義しています。
+It is common to pre-compute arguments to :func:`setup`, to better structure the
+driver script. In the example above, the ``ext_modules`` argument to
+:func:`setup` is a list of extension modules, each of which is an instance of
+the :class:`~distutils.extension.Extension`. In the example, the instance
+defines an extension named ``demo`` which is build by compiling a single source
+file, :file:`demo.c`.
 
-多くの場合、拡張モジュールのビルドはもっと複雑になります。というのは、プリプロセッサ定義やライブラリの追加指定が必要に
-なることがあるからです。例えば以下のファイルがその実例です。 ::
+In many cases, building an extension is more complex, since additional
+preprocessor defines and libraries may be needed. This is demonstrated in the
+example below. ::
 
    from distutils.core import setup, Extension
 
@@ -69,48 +81,50 @@ distutils ベースのパッケージには、駆動スクリプト (driver scri
           description = 'This is a demo package',
           author = 'Martin v. Loewis',
           author_email = 'martin@v.loewis.de',
-          url = 'http://docs.python.org/extending/building',
+          url = 'https://docs.python.org/extending/building',
           long_description = '''
    This is really just a demo package.
    ''',
           ext_modules = [module1])
 
 
-この例では、 :func:`setup` は追加のメタ情報と共に呼び出されます。配布パッケージを構築する際には、メタ情報の追加が推奨されています。
-拡張モジュール自体については、プリプロセッサ定義、インクルードファイルのディレクトリ、ライブラリのディレクトリ、ライブラリといった指定があります。
-distutils はこの情報をコンパイラに応じて異なるやり方で引渡します。例えば、Unix では、上の設定は以下のようなコンパイルコマンドに
-なるかもしれません::
+In this example, :func:`setup` is called with additional meta-information, which
+is recommended when distribution packages have to be built. For the extension
+itself, it specifies preprocessor defines, include directories, library
+directories, and libraries. Depending on the compiler, distutils passes this
+information in different ways to the compiler. For example, on Unix, this may
+result in the compilation commands ::
 
    gcc -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -fPIC -DMAJOR_VERSION=1 -DMINOR_VERSION=0 -I/usr/local/include -I/usr/local/include/python2.2 -c demo.c -o build/temp.linux-i686-2.2/demo.o
 
    gcc -shared build/temp.linux-i686-2.2/demo.o -L/usr/local/lib -ltcl83 -o build/lib.linux-i686-2.2/demo.so
 
-これらのコマンドラインは実演目的で書かれたものです; distutils のユーザは distutils が正しくコマンドを実行すると信用してください。
+These lines are for demonstration purposes only; distutils users should trust
+that distutils gets the invocations right.
 
 
 .. _distributing:
 
-拡張モジュールの配布
-====================
+Distributing your extension modules
+===================================
 
-拡張モジュールをうまくビルドできたら、三通りの使い方があります。
+When an extension has been successfully build, there are three ways to use it.
 
-エンドユーザは普通モジュールをインストールしようと考えます; これには ::
+End-users will typically want to install the module, they do so by running ::
 
    python setup.py install
 
-を実行します。
-
-モジュールメンテナはソースパッケージを作成します; これには ::
+Module maintainers should produce source packages; to do so, they run ::
 
    python setup.py sdist
 
-を実行します。
+In some cases, additional files need to be included in a source distribution;
+this is done through a :file:`MANIFEST.in` file; see the distutils documentation
+for details.
 
-場合によっては、ソース配布物に追加のファイルを含める必要があります; これには :file:`MANIFEST.in` ファイルを使います; 詳しくは
-distutils のドキュメントを参照してください。
-
-ソースコード配布物をうまく構築できたら、メンテナはバイナリ配布物も作成できます。プラットフォームに応じて、以下のコマンドのいずれかを使います。 ::
+If the source distribution has been build successfully, maintainers can also
+create binary distributions. Depending on the platform, one of the following
+commands can be used to do so. ::
 
    python setup.py bdist_wininst
    python setup.py bdist_rpm

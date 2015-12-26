@@ -4,7 +4,7 @@
 .. _defining-new-types:
 
 ******************
-新しい型を定義する
+Defining New Types
 ******************
 
 .. sectionauthor:: Michael Hudson <mwh@python.net>
@@ -12,71 +12,71 @@
 .. sectionauthor:: Jim Fulton <jim@zope.com>
 
 
-.. % jp translation: 新山祐介
-.. % 翻訳上の注意:
-.. % ここで使っている特別な用語があります。
-.. % これらの用語では「type」はわざと翻訳せず、カタカナ用語にしています。
-.. % ``type method'' タイプメソッド
-.. % ``object method'' オブジェクトメソッド
-.. % ``type object'' タイプオブジェクト
-.. % ``(type) slot'' (タイプ)スロット
+As mentioned in the last chapter, Python allows the writer of an extension
+module to define new types that can be manipulated from Python code, much like
+strings and lists in core Python.
 
-前の章でふれたように、Python では拡張モジュールを書くプログラマが Python のコードから操作できる、新しい型を定義できるようになっています。
-ちょうど Python の中核にある文字列やリストをつくれるようなものです。
-
-これはそんなにむずかしくはありません。拡張型のためのコードにはすべて、一定のパターンが存在しています。しかし始める前に、いくつか細かいことを
-理解しておく必要があるでしょう。
+This is not hard; the code for all extension types follows a pattern, but there
+are some details that you need to understand before you can get started.
 
 .. note::
 
-   Python 2.2 から、新しい型を定義する方法がかなり変わって (良くなって) います。この文書は Python 2.2 およびそれ以降で
-   新しい型をどうやって定義するかについて述べています。古いバージョンの Python をサポートする必要がある場合は、 `この文書の古い版
-   <http://www.python.org/doc/versions/>`_ を参照してください。
+   The way new types are defined changed dramatically (and for the better) in
+   Python 2.2.  This document documents how to define new types for Python 2.2 and
+   later.  If you need to support older versions of Python, you will need to refer
+   to `older versions of this documentation
+   <https://www.python.org/doc/versions/>`_.
 
 
 .. _dnt-basics:
 
-基本的なこと
-============
+The Basics
+==========
 
-Python ランタイムでは、すべての Python オブジェクトは :c:type:`PyObject\*`
-型の変数として扱います。 :c:type:`PyObject` はさほど大仰なオブジェクトではなく、単にオブジェクトに対する参照回数と、
-そのオブジェクトの「タイプオブジェクト (type object)」へのポインタを格納しているだけです。
-重要な役割を果たしているのはこのタイプオブジェクトです。つまりタイプオブジェクトは、例えばあるオブジェクトのある属性が参照される
-とか、あるいは別のオブジェクトとの間で乗算を行うといったときに、どの (C の) 関数を呼び出すかを決定しているのです。これらの C 関数は「タイプメソッド
-(type method)」と呼ばれ、  ``[].append`` のようなもの  (いわゆる「オブジェクトメソッド (object method)」)
-とは区別しています。
+The Python runtime sees all Python objects as variables of type
+:c:type:`PyObject\*`.  A :c:type:`PyObject` is not a very magnificent object - it
+just contains the refcount and a pointer to the object's "type object".  This is
+where the action is; the type object determines which (C) functions get called
+when, for instance, an attribute gets looked up on an object or it is multiplied
+by another object.  These C functions are called "type methods".
 
-なので、新しいオブジェクトの型を定義したいときは、新しいタイプオブジェクトを作成すればよいわけです。
+So, if you want to define a new object type, you need to create a new type
+object.
 
-この手のことは例を見たほうが早いでしょうから、ここに最小限の、しかし完全な、新しい型を定義するモジュールをあげておきます:
+This sort of thing can only be explained by example, so here's a minimal, but
+complete, module that defines a new type:
 
 .. literalinclude:: ../includes/noddy.c
 
-さしあたって覚えておくことは以上ですが、これで前の章からすこしは説明がわかりやすくなっていることと思います。
 
-最初に習うのは、つぎのようなものです::
+Now that's quite a bit to take in at once, but hopefully bits will seem familiar
+from the last chapter.
+
+The first bit that will be new is::
 
    typedef struct {
        PyObject_HEAD
    } noddy_NoddyObject;
 
-これが Noddy オブジェクトの内容です --- このケースでは、ほかの Python オブジェクトが持っているものと何ら変わりはありません。
-つまり参照カウントと型オブジェクトへのポインタですね。これらは  ``PyObject_HEAD`` マクロによって
-展開されるメンバです。マクロを使う理由は、レイアウトを標準化するためと、デバッグ用ビルド時に特別なデバッグ用のメンバを定義できるようにするためです。この
-``PyObject_HEAD`` マクロの後にはセミコロンがないことに注意してください。
-セミコロンはすでにマクロ内に含まれています。うっかり後にセミコロンをつけてしまわないように気をつけて。
-これはお使いの機種では何の問題も起こらないかもしれませんが、機種によっては、おそらく問題になるのです!  (Windows 上では、MS Visual C
-がこの手のエラーを出し、コンパイルできないことが知られています)
+This is what a Noddy object will contain---in this case, nothing more than every
+Python object contains, namely a refcount and a pointer to a type object.  These
+are the fields the ``PyObject_HEAD`` macro brings in.  The reason for the macro
+is to standardize the layout and to enable special debugging fields in debug
+builds.  Note that there is no semicolon after the ``PyObject_HEAD`` macro; one
+is included in the macro definition.  Be wary of adding one by accident; it's
+easy to do from habit, and your compiler might not complain, but someone else's
+probably will!  (On Windows, MSVC is known to call this an error and refuse to
+compile the code.)
 
-比較のため、以下に標準的な Python の整数型の定義を見てみましょう::
+For contrast, let's take a look at the corresponding definition for standard
+Python integers::
 
    typedef struct {
        PyObject_HEAD
        long ob_ival;
    } PyIntObject;
 
-では次にいってみます。かなめの部分、タイプオブジェクトです。 ::
+Moving on, we come to the crunch --- the type object. ::
 
    static PyTypeObject noddy_NoddyType = {
        PyObject_HEAD_INIT(NULL)
@@ -103,147 +103,167 @@ Python ランタイムでは、すべての Python オブジェクトは :c:type
        "Noddy objects",           /* tp_doc */
    };
 
-:file:`object.h` の中にある :c:type:`PyTypeObject` の定義を見ると、
-実際にはここに挙げた以上の数のメンバがあるとわかるでしょう。これ以外のメンバは C コンパイラによってゼロに初期化されるので、
-必要な時を除いてふつうはそれらの値を明示的には指定せずにおきます。
+Now if you go and look up the definition of :c:type:`PyTypeObject` in
+:file:`object.h` you'll see that it has many more fields that the definition
+above.  The remaining fields will be filled with zeros by the C compiler, and
+it's common practice to not specify them explicitly unless you need them.
 
-次のものは非常に重要なので、とくに最初の最初に見ておきましょう::
+This is so important that we're going to pick the top of it apart still
+further::
 
    PyObject_HEAD_INIT(NULL)
 
-これはちょっとぶっきらぼうですね。実際に書きたかったのはこうです::
+This line is a bit of a wart; what we'd like to write is::
 
    PyObject_HEAD_INIT(&PyType_Type)
 
-この場合、タイプオブジェクトの型は「type」という名前になりますが、これは厳密には C の基準に従っておらず、コンパイラによっては文句を言われます。
-幸いにも、このメンバは :c:func:`PyType_Ready` が埋めてくれます。
-
-.. % だからどうした。本題と関係ない。
-
-::
+as the type of a type object is "type", but this isn't strictly conforming C and
+some compilers complain.  Fortunately, this member will be filled in for us by
+:c:func:`PyType_Ready`. ::
 
    0,                          /* ob_size */
 
-ヘッダ中の :attr:`ob_size` メンバは使われていません。これは歴史的な遺物であり、構造体中にこれが存在しているのは古いバージョンの
-Python 用にコンパイルされた拡張モジュールとのバイナリ上の互換性を保つためです。ここにはつねにゼロを指定してください。 ::
+The :attr:`ob_size` field of the header is not used; its presence in the type
+structure is a historical artifact that is maintained for binary compatibility
+with extension modules compiled for older versions of Python.  Always set this
+field to zero. ::
 
    "noddy.Noddy",              /* tp_name */
 
-これは型の名前です。この名前はオブジェクトのデフォルトの表現形式と、いくつかのエラーメッセージ中で使われます。たとえば::
+The name of our type.  This will appear in the default textual representation of
+our objects and in some error messages, for example::
 
    >>> "" + noddy.new_noddy()
    Traceback (most recent call last):
      File "<stdin>", line 1, in ?
    TypeError: cannot add type "noddy.Noddy" to string
 
-注意: この名前はドットで区切られた名前で、モジュール名と、そのモジュール内での型名を両方ふくんでいます。この場合のモジュールは :mod:`noddy`
-で、型の名前は :class:`Noddy` ですから、ここでの型名としては :class:`noddy.Noddy` を指定するわけです。 ::
+Note that the name is a dotted name that includes both the module name and the
+name of the type within the module. The module in this case is :mod:`noddy` and
+the type is :class:`Noddy`, so we set the type name to :class:`noddy.Noddy`. ::
 
    sizeof(noddy_NoddyObject),  /* tp_basicsize */
 
-これによって Python は :c:func:`PyObject_New` が呼ばれたときにどれくらいの量のメモリを割り当てればよいのか知ることができます。
+This is so that Python knows how much memory to allocate when you call
+:c:func:`PyObject_New`.
 
 .. note::
 
-   あなたのタイプを Python でサブクラス化可能にしたい場合、そのタイプが基底タイプと同じ :attr:`tp_basicsize` をもっていると
-   多重継承のときに問題が生じることがあります。そのタイプを Python のサブクラスにしたとき、その :attr:`__bases__` リストにはあなたの
-   タイプが最初にくるようにしなければなりません。さもないとエラーの発生なしにあなたのタイプの :meth:`__new__`
-   メソッドを呼び出すことはできなくなります。この問題を回避するには、つねにあなたのタイプの :attr:`tp_basicsize` を
-   その基底タイプよりも大きくしておくことです。ほとんどの場合、あなたのタイプは :class:`object` か、そうでなければ基底タイプにデータ用の
-   メンバを追加したものでしょうから、したがって大きさはつねに増加するためこの条件は満たされています。
+   If you want your type to be subclassable from Python, and your type has the same
+   :c:member:`~PyTypeObject.tp_basicsize` as its base type, you may have problems with multiple
+   inheritance.  A Python subclass of your type will have to list your type first
+   in its :attr:`~class.__bases__`, or else it will not be able to call your type's
+   :meth:`__new__` method without getting an error.  You can avoid this problem by
+   ensuring that your type has a larger value for :c:member:`~PyTypeObject.tp_basicsize` than its
+   base type does.  Most of the time, this will be true anyway, because either your
+   base type will be :class:`object`, or else you will be adding data members to
+   your base type, and therefore increasing its size.
 
 ::
 
    0,                          /* tp_itemsize */
 
-これはリストや文字列などの可変長オブジェクトのためのものです。今のところ無視しましょう。
+This has to do with variable length objects like lists and strings. Ignore this
+for now.
 
-このあとのいくつかのメソッドは使わないのでとばして、クラスのフラグ (flags) には :const:`Py_TPFLAGS_DEFAULT` を入れます。
-::
+Skipping a number of type methods that we don't provide, we set the class flags
+to :const:`Py_TPFLAGS_DEFAULT`. ::
 
    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
 
-すべての型はフラグにこの定数を含めておく必要があります。これは現在のバージョンの Python で定義されているすべてのメンバを許可します。
+All types should include this constant in their flags.  It enables all of the
+members defined by the current version of Python.
 
-この型の docstring は :attr:`tp_doc` に入れます。 ::
+We provide a doc string for the type in :c:member:`~PyTypeObject.tp_doc`. ::
 
    "Noddy objects",           /* tp_doc */
 
-ここからタイプメソッドに入るわけですが。ここがあなたのオブジェクトが他と違うところです。でも今回のバージョンでは、これらはどれも実装しないでおき、
-あとでこの例をより面白いものに改造することにしましょう。
+Now we get into the type methods, the things that make your objects different
+from the others.  We aren't going to implement any of these in this version of
+the module.  We'll expand this example later to have more interesting behavior.
 
-とりあえずやりたいのは、この :class:`Noddy` オブジェクトを新しく作れるようにすることです。オブジェクトの作成を許可するには、
-:attr:`tp_new` の実装を提供する必要があります。今回は、 API 関数によって提供されるデフォルトの実装
-:c:func:`PyType_GenericNew` を使うだけにしましょう。これを単に :attr:`tp_new` スロットに代入すればよいのですが、
-これは互換上の理由からできません。プラットフォームやコンパイラによっては、構造体メンバの初期化に別の場所で定義されている C の関数を代入することは
-できないのです。なので、この :attr:`tp_new` の値はモジュール初期化用の関数で代入します。 :c:func:`PyType_Ready`
-を呼ぶ直前です::
+For now, all we want to be able to do is to create new :class:`Noddy` objects.
+To enable object creation, we have to provide a :c:member:`~PyTypeObject.tp_new` implementation.
+In this case, we can just use the default implementation provided by the API
+function :c:func:`PyType_GenericNew`.  We'd like to just assign this to the
+:c:member:`~PyTypeObject.tp_new` slot, but we can't, for portability sake, On some platforms or
+compilers, we can't statically initialize a structure member with a function
+defined in another C module, so, instead, we'll assign the :c:member:`~PyTypeObject.tp_new` slot
+in the module initialization function just before calling
+:c:func:`PyType_Ready`::
 
    noddy_NoddyType.tp_new = PyType_GenericNew;
    if (PyType_Ready(&noddy_NoddyType) < 0)
        return;
 
-これ以外のタイプメソッドはすべて *NULL* です。これらについては後ほどふれます。
+All the other type methods are *NULL*, so we'll go over them later --- that's
+for a later section!
 
-このファイル中にある他のものは、どれもおなじみでしょう。 :c:func:`initnoddy` のこれを除いて::
+Everything else in the file should be familiar, except for some code in
+:c:func:`initnoddy`::
 
    if (PyType_Ready(&noddy_NoddyType) < 0)
        return;
 
-この関数は、上で *NULL* に指定していた  :attr:`ob_type` などのいくつものメンバを埋めて、 :class:`Noddy`
-型を初期化します。 ::
+This initializes the :class:`Noddy` type, filing in a number of members,
+including :attr:`ob_type` that we initially set to *NULL*. ::
 
    PyModule_AddObject(m, "Noddy", (PyObject *)&noddy_NoddyType);
 
-これはこの型をモジュール中の辞書に埋め込みます。これで、 :class:`Noddy` クラスを呼べば :class:`Noddy` インスタンスを作れるように
-なりました::
+This adds the type to the module dictionary.  This allows us to create
+:class:`Noddy` instances by calling the :class:`Noddy` class::
 
    >>> import noddy
    >>> mynoddy = noddy.Noddy()
 
-これだけです! 残るはこれをどうやってビルドするかということです。上のコードを :file:`noddy.c` というファイルに入れて、以下のものを
-:file:`setup.py` というファイルに入れましょう。 ::
+That's it!  All that remains is to build it; put the above code in a file called
+:file:`noddy.c` and ::
 
    from distutils.core import setup, Extension
    setup(name="noddy", version="1.0",
          ext_modules=[Extension("noddy", ["noddy.c"])])
 
-そして、シェルから以下のように入力します。 ::
+in a file called :file:`setup.py`; then typing ::
 
    $ python setup.py build
 
-これでサブディレクトリの下にファイル :file:`noddy.so` が作成されます。このディレクトリに移動して Python を起動しましょう。
-``import noddy`` して Noddy オブジェクトで遊べるようになっているはずです。
+at a shell should produce a file :file:`noddy.so` in a subdirectory; move to
+that directory and fire up Python --- you should be able to ``import noddy`` and
+play around with Noddy objects.
 
-そんなにむずかしくありません、よね?
+That wasn't so hard, was it?
 
-もちろん、現在の Noddy 型はまだおもしろみに欠けています。何もデータを持ってないし、何もしてはくれません。
-継承してサブクラスを作ることさえできないのです。
+Of course, the current Noddy type is pretty uninteresting. It has no data and
+doesn't do anything. It can't even be subclassed.
 
 
-基本のサンプルにデータとメソッドを追加する
-------------------------------------------
+Adding data and methods to the Basic example
+--------------------------------------------
 
-この基本のサンプルにデータとメソッドを追加してみましょう。ついでに、この型を基底クラスとしても利用できるようにします。ここでは新しいモジュール
-:mod:`noddy2` をつくり、以下の機能を追加します:
+Let's expend the basic example to add some data and methods.  Let's also make
+the type usable as a base class. We'll create a new module, :mod:`noddy2` that
+adds these capabilities:
 
 .. literalinclude:: ../includes/noddy2.c
 
-このバージョンでは、いくつもの変更をおこないます。
 
-以下の include を追加します::
+This version of the module has a number of changes.
+
+We've added an extra include::
 
    #include <structmember.h>
 
-すこしあとでふれますが、この include には属性を扱うための宣言が入っています。
+This include provides declarations that we use to handle attributes, as
+described a bit later.
 
-:class:`Noddy` オブジェクトの構造体の名前は :class:`Noddy` に縮めることにします。タイプオブジェクト名は
-:class:`NoddyType` に縮めます。
+The name of the :class:`Noddy` object structure has been shortened to
+:class:`Noddy`.  The type object name has been shortened to :class:`NoddyType`.
 
-これから :class:`Noddy` 型は 3つのデータ属性をもつようになります。 *first* 、 *last* 、および *number*
-です。 *first* と  *last* 属性はファーストネームとラストネームを格納した Python 文字列で、  *number* 属性は整数の値です。
+The  :class:`Noddy` type now has three data attributes, *first*, *last*, and
+*number*.  The *first* and *last* variables are Python strings containing first
+and last names. The *number* attribute is an integer.
 
-これにしたがうと、オブジェクトの構造体は次のようになります::
+The object structure is updated accordingly::
 
    typedef struct {
        PyObject_HEAD
@@ -252,7 +272,8 @@ Python 用にコンパイルされた拡張モジュールとのバイナリ上�
        int number;
    } Noddy;
 
-いまや管理すべきデータができたので、オブジェクトの割り当てと解放に際してはより慎重になる必要があります。最低限、オブジェクトの解放メソッドが必要です::
+Because we now have data to manage, we have to be more careful about object
+allocation and deallocation.  At a minimum, we need a deallocation method::
 
    static void
    Noddy_dealloc(Noddy* self)
@@ -262,16 +283,18 @@ Python 用にコンパイルされた拡張モジュールとのバイナリ上�
        self->ob_type->tp_free((PyObject*)self);
    }
 
-この関数は :attr:`tp_dealloc` メンバに代入されます。 ::
+which is assigned to the :c:member:`~PyTypeObject.tp_dealloc` member::
 
-   (destructor)Noddy_dealloc, / *tp_dealloc* /
+   (destructor)Noddy_dealloc, /*tp_dealloc*/
 
-このメソッドでやっているのは、ふたつの Python 属性の参照カウントを減らすことです。 :attr:`first` メンバと :attr:`last`
-メンバが *NULL* かもしれないため、ここでは :c:func:`Py_XDECREF` を使いました。このあとそのオブジェクトのタイプメソッドである
-:attr:`tp_free` メンバを呼び出しています。ここではオブジェクトの型が :class:`NoddyType` とは限らないことに
-注意してください。なぜなら、このオブジェクトはサブクラス化したインスタンスかもしれないからです。
+This method decrements the reference counts of the two Python attributes. We use
+:c:func:`Py_XDECREF` here because the :attr:`first` and :attr:`last` members
+could be *NULL*.  It then calls the :c:member:`~PyTypeObject.tp_free` member of the object's type
+to free the object's memory.  Note that the object's type might not be
+:class:`NoddyType`, because the object may be an instance of a subclass.
 
-ファーストネームとラストネームを空文字列に初期化しておきたいので、新しいメソッドを追加することにしましょう::
+We want to make sure that the first and last names are initialized to empty
+strings, so we provide a new method::
 
    static PyObject *
    Noddy_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
@@ -300,34 +323,43 @@ Python 用にコンパイルされた拡張モジュールとのバイナリ上�
        return (PyObject *)self;
    }
 
-そしてこれを :attr:`tp_new` メンバとしてインストールします::
+and install it in the :c:member:`~PyTypeObject.tp_new` member::
 
    Noddy_new,                 /* tp_new */
 
-この新しいメンバはその型のオブジェクトを (初期化するのではなく) 作成する責任を負っています。Python ではこのメンバは :meth:`__new__`
-メソッドとして見えています。 :meth:`__new__` メソッドについての詳しい議論は "Unifying types and classes in
-Python" という題名の論文を見てください。 new メソッドを実装する理由のひとつは、インスタンス変数の初期値を保証するためです。この例でやりたいのは
-new メソッドが :attr:`first` メンバと  :attr:`last` メンバの値を *NULL* でないようにするということです。
-もしこれらの初期値が *NULL* でもよいのであれば、先の例でやったように、new メソッドとして :c:func:`PyType_GenericNew` を
-使うこともできたでしょう。 :c:func:`PyType_GenericNew` はすべてのインスタンス変数のメンバを *NULL* にします。
+The new member is responsible for creating (as opposed to initializing) objects
+of the type.  It is exposed in Python as the :meth:`__new__` method.  See the
+paper titled "Unifying types and classes in Python" for a detailed discussion of
+the :meth:`__new__` method.  One reason to implement a new method is to assure
+the initial values of instance variables.  In this case, we use the new method
+to make sure that the initial values of the members :attr:`first` and
+:attr:`last` are not *NULL*. If we didn't care whether the initial values were
+*NULL*, we could have used :c:func:`PyType_GenericNew` as our new method, as we
+did before.  :c:func:`PyType_GenericNew` initializes all of the instance variable
+members to *NULL*.
 
-この new メソッドは静的なメソッドで、インスタンスを生成するときにその型と、型が呼び出されたときの引数が渡され、新しいオブジェクトを作成して
-返します。new メソッドはつねに、あらかじめ固定引数 (positional argument) と
-キーワード引数を取りますが、これらのメソッドはしばしばそれらの引数は無視して初期化メソッドにそのまま渡します。new メソッドはメモリ割り当てのために
-:attr:`tp_alloc` メンバを呼び出します。 :attr:`tp_alloc` をこちらで初期化する必要はありません。これは
-:c:func:`PyType_Ready` が基底クラス (デフォルトでは :class:`object`) をもとに埋めるものです。
-ほとんどの型ではデフォルトのメモリ割り当てを使っています。
+The new method is a static method that is passed the type being instantiated and
+any arguments passed when the type was called, and that returns the new object
+created. New methods always accept positional and keyword arguments, but they
+often ignore the arguments, leaving the argument handling to initializer
+methods. Note that if the type supports subclassing, the type passed may not be
+the type being defined.  The new method calls the tp_alloc slot to allocate
+memory. We don't fill the :c:member:`~PyTypeObject.tp_alloc` slot ourselves. Rather
+:c:func:`PyType_Ready` fills it for us by inheriting it from our base class,
+which is :class:`object` by default.  Most types use the default allocation.
 
 .. note::
 
-   もし協力的な :attr:`tp_new` (基底タイプの :attr:`tp_new` または :meth:`__new__` を呼んでいるもの)
-   を作りたいのならば、実行時のメソッド解決順序をつかってどのメソッドを呼びだすかを決定しようとしては
-   *いけません* 。つねに呼び出す型を静的に決めておき、直接その :attr:`tp_new` を呼び出すか、あるいは
-   ``type->tp_base->tp_new`` を経由してください。こうしないと、あなたが作成したタイプの Python サブクラスが他の Python
-   で定義されたクラスも継承している場合にうまく動かない場合があります。 (とりわけ、そのようなサブクラスのインスタンスを :exc:`TypeError`
-   を出さずに作ることが不可能になります。)
+   If you are creating a co-operative :c:member:`~PyTypeObject.tp_new` (one that calls a base type's
+   :c:member:`~PyTypeObject.tp_new` or :meth:`__new__`), you must *not* try to determine what method
+   to call using method resolution order at runtime.  Always statically determine
+   what type you are going to call, and call its :c:member:`~PyTypeObject.tp_new` directly, or via
+   ``type->tp_base->tp_new``.  If you do not do this, Python subclasses of your
+   type that also inherit from other Python-defined classes may not work correctly.
+   (Specifically, you may not be able to create instances of such subclasses
+   without getting a :exc:`TypeError`.)
 
-つぎに初期化用の関数を見てみましょう::
+We provide an initialization function::
 
    static int
    Noddy_init(Noddy *self, PyObject *args, PyObject *kwds)
@@ -358,18 +390,21 @@ new メソッドが :attr:`first` メンバと  :attr:`last` メンバの値を 
        return 0;
    }
 
-これは :attr:`tp_init` メンバに代入されます。 ::
+by filling the :c:member:`~PyTypeObject.tp_init` slot. ::
 
    (initproc)Noddy_init,         /* tp_init */
 
-Python では、 :attr:`tp_init` メンバは :meth:`__init__` メソッドとして見えています。
-このメソッドは、オブジェクトが作成されたあとに、それを初期化する目的で使われます。 new
-メソッドとはちがって、初期化用のメソッドは必ず呼ばれるとは限りません。初期化用のメソッドは、インスタンスの初期値を提供するのに必要な引数を受けとります。
-このメソッドはつねに固定引数とキーワード引数を受けとります。
+The :c:member:`~PyTypeObject.tp_init` slot is exposed in Python as the :meth:`__init__` method. It
+is used to initialize an object after it's created. Unlike the new method, we
+can't guarantee that the initializer is called.  The initializer isn't called
+when unpickling objects and it can be overridden.  Our initializer accepts
+arguments to provide initial values for our instance. Initializers always accept
+positional and keyword arguments.
 
-初期化メソッドは複数回呼び出される可能性があります。あなたのオブジェクトの :meth:`__init__` メソッドは、誰にでも呼び出すことができるからです。
-このため、新しい値を代入するさいには特別な注意を払う必要があります。たとえば、 :attr:`first`
-メンバには以下のように代入したくなるかもしれません::
+Initializers can be called multiple times.  Anyone can call the :meth:`__init__`
+method on our objects.  For this reason, we have to be extra careful when
+assigning the new values.  We might be tempted, for example to assign the
+:attr:`first` member like this::
 
    if (first) {
        Py_XDECREF(self->first);
@@ -377,19 +412,23 @@ Python では、 :attr:`tp_init` メンバは :meth:`__init__` メソッドと�
        self->first = first;
    }
 
-しかしこのやり方は危険です。このタイプでは :attr:`first` メンバに入るオブジェクトをなにも限定していないので、どんなオブジェクトでも
-とり得てしまうからです。それはこのコードが :attr:`first` メンバに
-アクセスしようとする前に、そのデストラクタが呼び出されてしまうかもしれないのです。このような可能性からパラノイア的に身をまもるため、ほとんどの場合
-メンバへの代入は,その参照カウントを減らす前におこなってください。こうする必要がないのはどんな場合でしょうか?
+But this would be risky.  Our type doesn't restrict the type of the
+:attr:`first` member, so it could be any kind of object.  It could have a
+destructor that causes code to be executed that tries to access the
+:attr:`first` member.  To be paranoid and protect ourselves against this
+possibility, we almost always reassign members before decrementing their
+reference counts.  When don't we have to do this?
 
-* その参照カウントが 1 より大きいと確信できる場合。
+* when we absolutely know that the reference count is greater than 1
 
-* そのオブジェクトの解放があなたのタイプのコードにコールバックするようなことが決してない場合 [#]_ 。
+* when we know that deallocation of the object [#]_ will not cause any calls
+  back into our type's code
 
-* ガベージコレクションがサポートされていない場合に :attr:`tp_dealloc` ハンドラで参照カウントを減らすとき [#]_ 。
+* when decrementing a reference count in a :c:member:`~PyTypeObject.tp_dealloc` handler when
+  garbage-collections is not supported [#]_
 
-ここではインスタンス変数を属性として見えるようにしたいのですが、これにはいくつもの方法があります。
-もっとも簡単な方法は、メンバの定義を与えることです::
+We want to expose our instance variables as attributes. There are a
+number of ways to do that. The simplest way is to define member definitions::
 
    static PyMemberDef Noddy_members[] = {
        {"first", T_OBJECT_EX, offsetof(Noddy, first), 0,
@@ -401,20 +440,23 @@ Python では、 :attr:`tp_init` メンバは :meth:`__init__` メソッドと�
        {NULL}  /* Sentinel */
    };
 
-そして、この定義を :attr:`tp_members` に入れましょう::
+and put the definitions in the :c:member:`~PyTypeObject.tp_members` slot::
 
    Noddy_members,             /* tp_members */
 
-各メンバの定義はそれぞれ、メンバの名前、型、オフセット、アクセスフラグおよび docstring です。詳しくは後の "総称的な属性を管理する" 
-(:ref:`Generic-Attribute-Management`) の節をご覧ください。
+Each member definition has a member name, type, offset, access flags and
+documentation string. See the :ref:`Generic-Attribute-Management` section below for
+details.
 
-この方法の欠点は、Python 属性に代入できるオブジェクトの型を制限する方法がないことです。ここではファーストネーム first とラストネーム last
-に、ともに文字列が入るよう期待していますが、今のやり方ではどんな Python オブジェクトも代入できてしまいます。加えてこの属性は削除 (del)
-できてしまい、その場合、 C のポインタには *NULL* が設定されます。たとえもしメンバが *NULL* 以外の値に初期化されるように
-してあったとしても、属性が削除されればメンバは *NULL* になってしまいます。
+A disadvantage of this approach is that it doesn't provide a way to restrict the
+types of objects that can be assigned to the Python attributes.  We expect the
+first and last names to be strings, but any Python objects can be assigned.
+Further, the attributes can be deleted, setting the C pointers to *NULL*.  Even
+though we can make sure the members are initialized to non-*NULL* values, the
+members can be set to *NULL* if the attributes are deleted.
 
-ここでは :meth:`name` と呼ばれるメソッドを定義しましょう。これはファーストネーム first とラストネーム last を連結した文字列を
-そのオブジェクトの名前として返します。 ::
+We define a single method, :meth:`name`, that outputs the objects name as the
+concatenation of the first and last names. ::
 
    static PyObject *
    Noddy_name(Noddy* self)
@@ -448,19 +490,24 @@ Python では、 :attr:`tp_init` メンバは :meth:`__init__` メソッドと�
        return result;
    }
 
-このメソッドは C 関数として実装され、 :class:`Noddy` (あるいは   :class:`Noddy` のサブクラス)
-のインスタンスを第一引数として受けとります。メソッドはつねにそのインスタンスを最初の引数として受けとらなければなりません。
-しばしば固定引数とキーワード引数も受けとりますが、今回はなにも必要ないので、固定引数のタプルもキーワード引数の辞書も取らないことにします。このメソッドは
-Python の以下のメソッドと等価です::
+The method is implemented as a C function that takes a :class:`Noddy` (or
+:class:`Noddy` subclass) instance as the first argument.  Methods always take an
+instance as the first argument. Methods often take positional and keyword
+arguments as well, but in this cased we don't take any and don't need to accept
+a positional argument tuple or keyword argument dictionary. This method is
+equivalent to the Python method::
 
    def name(self):
       return "%s %s" % (self.first, self.last)
 
-:attr:`first` メンバと :attr:`last` メンバがそれぞれ *NULL* かどうかチェックしなければならないことに注意してください。
-これらは削除される可能性があり、その場合値は *NULL* にセットされます。この属性の削除を禁止して、そこに入れられる値を文字列に限定できれば
-なおいいでしょう。次の節ではこれについて扱います。
+Note that we have to check for the possibility that our :attr:`first` and
+:attr:`last` members are *NULL*.  This is because they can be deleted, in which
+case they are set to *NULL*.  It would be better to prevent deletion of these
+attributes and to restrict the attribute values to be strings.  We'll see how to
+do that in the next section.
 
-さて、メソッドを定義したので、ここでメソッド定義用の配列を作成する必要があります::
+Now that we've defined the method, we need to create an array of method
+definitions::
 
    static PyMethodDef Noddy_methods[] = {
        {"name", (PyCFunction)Noddy_name, METH_NOARGS,
@@ -469,22 +516,24 @@ Python の以下のメソッドと等価です::
        {NULL}  /* Sentinel */
    };
 
-これを :attr:`tp_methods` スロットに入れましょう::
+and assign them to the :c:member:`~PyTypeObject.tp_methods` slot::
 
    Noddy_methods,             /* tp_methods */
 
-ここでの :const:`METH_NOARGS` フラグは、そのメソッドが引数を取らないことを宣言するのに使われています。
+Note that we used the :const:`METH_NOARGS` flag to indicate that the method is
+passed no arguments.
 
-最後に、この型を基底クラスとして利用可能にしましょう。上のメソッドは注意ぶかく書かれているので、これはそのオブジェクトの型が
-作成されたり利用される場合についてどんな仮定も置いていません。なので、ここですべきことは :const:`Py_TPFLAGS_BASETYPE` を
-クラス定義のフラグに加えるだけです::
+Finally, we'll make our type usable as a base class.  We've written our methods
+carefully so far so that they don't make any assumptions about the type of the
+object being created or used, so all we need to do is to add the
+:const:`Py_TPFLAGS_BASETYPE` to our class flag definition::
 
-   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, / *tp_flags* /
+   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
 
-:c:func:`initnoddy` の名前を :c:func:`initnoddy2` に変更し、 :c:func:`Py_InitModule3`
-に渡されるモジュール名を更新します。
+We rename :c:func:`initnoddy` to :c:func:`initnoddy2` and update the module name
+passed to :c:func:`Py_InitModule3`.
 
-さいごに :file:`setup.py` ファイルを更新して新しいモジュールをビルドします。 ::
+Finally, we update our :file:`setup.py` file to build the new module::
 
    from distutils.core import setup, Extension
    setup(name="noddy", version="1.0",
@@ -494,19 +543,21 @@ Python の以下のメソッドと等価です::
             ])
 
 
-データ属性をこまかく制御する
-----------------------------
+Providing finer control over data attributes
+--------------------------------------------
 
-この節では、 :class:`Noddy` クラスの例にあった :attr:`first` と  :attr:`last`
-の各属性にたいして、より精密な制御を提供します。以前のバージョンのモジュールでは、インスタンス変数の :attr:`first` と
-:attr:`last` には文字列以外のものも代入できてしまい、あまつさえ削除まで可能でした。
-ここではこれらの属性が必ず文字列を保持しているようにしましょう。
+In this section, we'll provide finer control over how the :attr:`first` and
+:attr:`last` attributes are set in the :class:`Noddy` example. In the previous
+version of our module, the instance variables :attr:`first` and :attr:`last`
+could be set to non-string values or even deleted. We want to make sure that
+these attributes always contain strings.
 
 .. literalinclude:: ../includes/noddy3.c
 
 
-:attr:`first` 属性と :attr:`last` 属性をよりこまかく制御するためには、カスタムメイドの getter 関数と setter
-関数を使います。以下は :attr:`first` 属性から値を取得する関数 (getter) と、この属性に値を格納する関数 (setter) です::
+To provide greater control, over the :attr:`first` and :attr:`last` attributes,
+we'll use custom getter and setter functions.  Here are the functions for
+getting and setting the :attr:`first` attribute::
 
    Noddy_getfirst(Noddy *self, void *closure)
    {
@@ -535,15 +586,18 @@ Python の以下のメソッドと等価です::
      return 0;
    }
 
-getter 関数には :class:`Noddy` オブジェクトと「閉包 (closure)」 (これは void型のポインタです)
-が渡されます。今回のケースでは閉包は無視します。 (閉包とは定義データが渡される setter や getter の高度な利用をサポートするためのもので、
-これを使うとたとえば getter と setter をひとまとめにした関数に、閉包のデータにもとづいて属性を get するか set するか決めさせる、
-といったことができます。)
+The getter function is passed a :class:`Noddy` object and a "closure", which is
+void pointer. In this case, the closure is ignored. (The closure supports an
+advanced usage in which definition data is passed to the getter and setter. This
+could, for example, be used to allow a single set of getter and setter functions
+that decide the attribute to get or set based on data in the closure.)
 
-setter 関数には :class:`Noddy` オブジェクトと新しい値、そして閉包が渡されます。新しい値は
-*NULL* かもしれず、その場合はこの属性が削除されます。ここでは属性が削除されたり、その値が文字列でないときにはエラーを発生させるようにします。
+The setter function is passed the :class:`Noddy` object, the new value, and the
+closure. The new value may be *NULL*, in which case the attribute is being
+deleted.  In our setter, we raise an error if the attribute is deleted or if the
+attribute value is not a string.
 
-ここでは :c:type:`PyGetSetDef` 構造体の配列をつくります::
+We create an array of :c:type:`PyGetSetDef` structures::
 
    static PyGetSetDef Noddy_getseters[] = {
        {"first",
@@ -557,15 +611,16 @@ setter 関数には :class:`Noddy` オブジェクトと新しい値、そして
        {NULL}  /* Sentinel */
    };
 
-そしてこれを :attr:`tp_getset` スロットに登録します::
+and register it in the :c:member:`~PyTypeObject.tp_getset` slot::
 
    Noddy_getseters,           /* tp_getset */
 
-これで属性の getter と setter が登録できました。
+to register our attribute getters and setters.
 
-:c:type:`PyGetSetDef` 構造体の最後の要素が上で説明した閉包です。今回は閉包は使わないので *NULL* を渡しています。
+The last item in a :c:type:`PyGetSetDef` structure is the closure mentioned
+above. In this case, we aren't using the closure, so we just pass *NULL*.
 
-また、メンバ定義からはこれらの属性を除いておきましょう::
+We also remove the member definitions for these attributes::
 
    static PyMemberDef Noddy_members[] = {
        {"number", T_INT, offsetof(Noddy, number), 0,
@@ -573,7 +628,8 @@ setter 関数には :class:`Noddy` オブジェクトと新しい値、そして
        {NULL}  /* Sentinel */
    };
 
-また、ここでは :attr:`tp_init` ハンドラも渡されるものとして文字列のみを許可するように修正する必要があります  [#]_::
+We also need to update the :c:member:`~PyTypeObject.tp_init` handler to only allow strings [#]_ to
+be passed::
 
    static int
    Noddy_init(Noddy *self, PyObject *args, PyObject *kwds)
@@ -604,43 +660,53 @@ setter 関数には :class:`Noddy` オブジェクトと新しい値、そして
        return 0;
    }
 
-これらの変更によって、 :attr:`first` メンバと :attr:`last` メンバが決して *NULL*
-にならないと保証できました。これでほとんどすべてのケースから *NULL* 値のチェックを除けます。これは :c:func:`Py_XDECREF` 呼び出しを
-:c:func:`Py_DECREF` 呼び出しに変えられることを意味します。唯一これを変えられないのはオブジェクト解放メソッド (deallocator)
-で、なぜならここではコンストラクタによるメンバ初期化が失敗している可能性があるからです。
+With these changes, we can assure that the :attr:`first` and :attr:`last`
+members are never *NULL* so we can remove checks for *NULL* values in almost all
+cases. This means that most of the :c:func:`Py_XDECREF` calls can be converted to
+:c:func:`Py_DECREF` calls. The only place we can't change these calls is in the
+deallocator, where there is the possibility that the initialization of these
+members failed in the constructor.
 
-さて、先ほどもしたように、このモジュール初期化関数と初期化関数内にあるモジュール名を変更しましょう。そして :file:`setup.py`
-ファイルに追加の定義をくわえます。
+We also rename the module initialization function and module name in the
+initialization function, as we did before, and we add an extra definition to the
+:file:`setup.py` file.
 
 
-循環ガベージコレクションをサポートする
---------------------------------------
+Supporting cyclic garbage collection
+------------------------------------
 
-Python は循環ガベージコレクション機能をもっており、これは不要なオブジェクトを、たとえ参照カウントがゼロでなくても、発見することができます。
-これはオブジェクトの参照が循環しているときに起こりえます。たとえば以下の例を考えてください::
+Python has a cyclic-garbage collector that can identify unneeded objects even
+when their reference counts are not zero. This can happen when objects are
+involved in cycles.  For example, consider::
 
    >>> l = []
    >>> l.append(l)
    >>> del l
 
-この例では、自分自身をふくむリストをつくりました。たとえこのリストを del しても、それは自分自身への参照をまだ持ちつづけますから、参照カウントは
-ゼロにはなりません。嬉しいことに Python には循環ガベージコレクション機能がありますから、最終的にはこのリストが不要であることを検出し、解放できます。
+In this example, we create a list that contains itself. When we delete it, it
+still has a reference from itself. Its reference count doesn't drop to zero.
+Fortunately, Python's cyclic-garbage collector will eventually figure out that
+the list is garbage and free it.
 
-:class:`Noddy` クラスの 2番目の例では、 :attr:`first` 属性と :attr:`last`
-属性にどんなオブジェクトでも格納できるようになっていました。  [#]_ 。つまり、 :class:`Noddy` オブジェクトの参照は循環しうるのです::
+In the second version of the :class:`Noddy` example, we allowed any kind of
+object to be stored in the :attr:`first` or :attr:`last` attributes. [#]_ This
+means that :class:`Noddy` objects can participate in cycles::
 
    >>> import noddy2
    >>> n = noddy2.Noddy()
    >>> l = [n]
    >>> n.first = l
 
-これは実にばかげた例ですが、すくなくとも :class:`Noddy` クラスに循環ガベージコレクション機能のサポートを加える口実を与えてくれます。
-循環ガベージコレクションをサポートするには 2つのタイプスロットを埋め、これらのスロットを許可するようにクラス定義のフラグを設定する必要があります:
+This is pretty silly, but it gives us an excuse to add support for the
+cyclic-garbage collector to the :class:`Noddy` example.  To support cyclic
+garbage collection, types need to fill two slots and set a class flag that
+enables these slots:
 
 .. literalinclude:: ../includes/noddy4.c
 
 
-traversal メソッドは循環した参照に含まれる可能性のある内部オブジェクトへのアクセスを提供します::
+The traversal method provides access to subobjects that could participate in
+cycles::
 
    static int
    Noddy_traverse(Noddy *self, visitproc visit, void *arg)
@@ -661,12 +727,15 @@ traversal メソッドは循環した参照に含まれる可能性のある内�
        return 0;
    }
 
-循環した参照に含まれるかもしれない各内部オブジェクトに対して、 traversal メソッドに渡された :c:func:`visit` 関数を呼びます。
-:c:func:`visit` 関数は内部オブジェクトと、traversal メソッドに渡された追加の引数 *arg* を引数としてとります。
-この関数はこの値が非負の場合に返される整数の値を返します。
+For each subobject that can participate in cycles, we need to call the
+:c:func:`visit` function, which is passed to the traversal method. The
+:c:func:`visit` function takes as arguments the subobject and the extra argument
+*arg* passed to the traversal method.  It returns an integer value that must be
+returned if it is non-zero.
 
-Python 2.4 以降では、visit 関数の呼び出しを自動化する :c:func:`Py_VISIT` マクロが用意されています。
-:c:func:`Py_VISIT` を使えば、 :c:func:`Noddy_traverse` は次のように簡略化できます::
+Python 2.4 and higher provide a :c:func:`Py_VISIT` macro that automates calling
+visit functions.  With :c:func:`Py_VISIT`, :c:func:`Noddy_traverse` can be
+simplified::
 
    static int
    Noddy_traverse(Noddy *self, visitproc visit, void *arg)
@@ -678,11 +747,13 @@ Python 2.4 以降では、visit 関数の呼び出しを自動化する :c:func:
 
 .. note::
 
-   注意: :attr:`tp_traverse` の実装で :c:func:`Py_VISIT` を使うには、その引数に正確に *visit* および *arg*
-   という名前をつける必要があります。これは、この退屈な実装に統一性を導入することを促進します。
+   Note that the :c:member:`~PyTypeObject.tp_traverse` implementation must name its arguments exactly
+   *visit* and *arg* in order to use :c:func:`Py_VISIT`.  This is to encourage
+   uniformity across these boring implementations.
 
-また、循環した参照に含まれた内部オブジェクトを消去するためのメソッドも提供する必要があります。オブジェクト解放用のメソッドを再実装して、
-このメソッドに使いましょう::
+We also need to provide a method for clearing any subobjects that can
+participate in cycles.  We implement the method and reimplement the deallocator
+to use it::
 
    static int
    Noddy_clear(Noddy *self)
@@ -707,15 +778,19 @@ Python 2.4 以降では、visit 関数の呼び出しを自動化する :c:func:
        self->ob_type->tp_free((PyObject*)self);
    }
 
-:c:func:`Noddy_clear` 中での一時変数の使い方に注目してください。ここでは、一時変数をつかって各メンバの参照カウントを減らす前にそれらに
-*NULL* を代入しています。これは次のような理由によります。すでにお話ししたように、もし参照カウントがゼロになると、このオブジェクトが
-コールバックされるようになってしまいます。さらに、いまやガベージコレクションをサポートしているため、ガベージコレクション時に実行される
-コードについても心配しなくてはなりません。もしガベージコレクションが走っていると、あなたの :attr:`tp_traverse` ハンドラが呼び出される
-可能性があります。メンバの参照カウントがゼロになった場合に、その値が *NULL* に設定されていないと :c:func:`Noddy_traverse` が
-呼ばれる機会はありません。
+Notice the use of a temporary variable in :c:func:`Noddy_clear`. We use the
+temporary variable so that we can set each member to *NULL* before decrementing
+its reference count.  We do this because, as was discussed earlier, if the
+reference count drops to zero, we might cause code to run that calls back into
+the object.  In addition, because we now support garbage collection, we also
+have to worry about code being run that triggers garbage collection.  If garbage
+collection is run, our :c:member:`~PyTypeObject.tp_traverse` handler could get called. We can't
+take a chance of having :c:func:`Noddy_traverse` called when a member's reference
+count has dropped to zero and its value hasn't been set to *NULL*.
 
-Python 2.4 以降では、注意ぶかく参照カウントを減らすためのマクロ :c:func:`Py_CLEAR` が用意されています。
-:c:func:`Py_CLEAR` を使えば、 :c:func:`Noddy_clear` は次のように簡略化できます::
+Python 2.4 and higher provide a :c:func:`Py_CLEAR` that automates the careful
+decrementing of reference counts.  With :c:func:`Py_CLEAR`, the
+:c:func:`Noddy_clear` function can be simplified::
 
    static int
    Noddy_clear(Noddy *self)
@@ -725,24 +800,27 @@ Python 2.4 以降では、注意ぶかく参照カウントを減らすための
        return 0;
    }
 
-最後に、 :const:`Py_TPFLAGS_HAVE_GC` フラグをクラス定義のフラグに加えます::
+Finally, we add the :const:`Py_TPFLAGS_HAVE_GC` flag to the class flags::
 
-   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC, / *tp_flags* /
+   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC, /*tp_flags*/
 
-これで完了です。 :attr:`tp_alloc` スロットまたは :attr:`tp_free` スロットが
-書かれていれば、それらを循環ガベージコレクションに使えるよう修正すればよいのです。ほとんどの拡張機能は自動的に提供されるバージョンを使うでしょう。
+That's pretty much it.  If we had written custom :c:member:`~PyTypeObject.tp_alloc` or
+:c:member:`~PyTypeObject.tp_free` slots, we'd need to modify them for cyclic-garbage collection.
+Most extensions will use the versions automatically provided.
 
 
-他の型のサブクラスを作る
--------------------------
+Subclassing other types
+-----------------------
 
-既存の型を継承した新しい拡張型を作成することができます。
-組み込み型から継承するのは特に簡単です。必要な :class:`PyTypeObject` を簡単に利用できるからです。
-それに比べて、 :class:`PyTypeObject` 構造体を拡張モジュール間で共有するのは難しいです。
+It is possible to create new extension types that are derived from existing
+types. It is easiest to inherit from the built in types, since an extension can
+easily use the :class:`PyTypeObject` it needs. It can be difficult to share
+these :class:`PyTypeObject` structures between extension modules.
 
-次の例では、ビルトインの :class:`list` 型を継承した :class:`Shoddy` 型を作成しています。
-新しい型は通常のリスト型と完全に互換性がありますが、追加で内部のカウンタを増やす
-:meth:`increment` メソッドを持っています。 ::
+In this example we will create a :class:`Shoddy` type that inherits from the
+built-in :class:`list` type. The new type will be completely compatible with
+regular lists, but will have an additional :meth:`increment` method that
+increases an internal counter. ::
 
    >>> import shoddy
    >>> s = shoddy.Shoddy(range(3))
@@ -757,21 +835,20 @@ Python 2.4 以降では、注意ぶかく参照カウントを減らすための
 .. literalinclude:: ../includes/shoddy.c
 
 
-見てわかるように、ソースコードは前の節の :class:`Noddy` の時と非常に似ています。
-違う部分をそれぞれを見ていきます。 ::
+As you can see, the source code closely resembles the :class:`Noddy` examples in
+previous sections. We will break down the main differences between them. ::
 
    typedef struct {
        PyListObject list;
        int state;
    } Shoddy;
 
-継承した型のオブジェクトの最初の違いは、親クラスのオブジェクト構造が最初に必要なことです。
-基底型が既に :c:func:`PyObject_HEAD` を構造体の先頭に持っています。
+The primary difference for derived type objects is that the base type's object
+structure must be the first value. The base type will already include the
+:c:func:`PyObject_HEAD` at the beginning of its structure.
 
-Python オブジェクトが :class:`Shoddy` 型のインスタンスだった場合、
-その *PyObject\** ポインタは *PyListObject\** にも *Shoddy\** にも安全にキャストできます。
-
-::
+When a Python object is a :class:`Shoddy` instance, its *PyObject\** pointer can
+be safely cast to both *PyListObject\** and *Shoddy\**. ::
 
    static int
    Shoddy_init(Shoddy *self, PyObject *args, PyObject *kwds)
@@ -782,17 +859,18 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
        return 0;
    }
 
-この新しい型の :attr:`__init__` メソッドで、基底型の :attr:`__init__`
-メソッドを呼び出している様子を見ることができます。
+In the :attr:`__init__` method for our type, we can see how to call through to
+the :attr:`__init__` method of the base type.
 
-このパターンは、カスタムの :attr:`new` と :attr:`dealloc` メソッドを実装するときには重要です。
-継承した型の :attr:`new` メソッドは、 :attr:`tp_alloc` を使ってメモリを割り当てるべきではありません。
-それは基底型の :attr:`tp_new` を呼出たときに処理されるからです。
+This pattern is important when writing a type with custom :attr:`new` and
+:attr:`dealloc` methods. The :attr:`new` method should not actually create the
+memory for the object with :c:member:`~PyTypeObject.tp_alloc`, that will be handled by the base
+class when calling its :c:member:`~PyTypeObject.tp_new`.
 
-:class:`Shoddy` 型のために :c:func:`PyTypeObject` を埋めるとき、
-:c:func:`tp_base` スロットを見つけることができます。
-クロスプラットフォームのコンパイラに対応するために、直接そのスロットを :c:func:`PyList_Type`
-で埋めてはいけません。代わりに、後でモジュールの :c:func:`init` 関数の中で行うことができます。 ::
+When filling out the :c:func:`PyTypeObject` for the :class:`Shoddy` type, you see
+a slot for :c:func:`tp_base`. Due to cross platform compiler issues, you can't
+fill that field directly with the :c:func:`PyList_Type`; it can be done later in
+the module's :c:func:`init` function. ::
 
    PyMODINIT_FUNC
    initshoddy(void)
@@ -811,57 +889,65 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
        PyModule_AddObject(m, "Shoddy", (PyObject *) &ShoddyType);
    }
 
-:c:func:`PyType_Read` を呼ぶ前に、型の構造は :attr:`tp_base` スロットは埋められていなければなりません。
-継承している新しい型を作るとき、 :attr:`tp_alloc` スロットを :c:func:`PyType_GenericNew`
-で埋める必要はありません。 -- 基底型のアロケート関数が継承されます。
+Before calling :c:func:`PyType_Ready`, the type structure must have the
+:c:member:`~PyTypeObject.tp_base` slot filled in. When we are deriving a new type, it is not
+necessary to fill out the :c:member:`~PyTypeObject.tp_alloc` slot with :c:func:`PyType_GenericNew`
+-- the allocate function from the base type will be inherited.
 
-その後、 :c:func:`PyType_Read` を呼んで、 :class:`Noddy` の時と同じように
-タイプオブジェクトをモジュールに追加します。
+After that, calling :c:func:`PyType_Ready` and adding the type object to the
+module is the same as with the basic :class:`Noddy` examples.
 
-.. todo::
-   a*
 
 .. _dnt-type-methods:
 
-タイプメソッド
-==============
+Type Methods
+============
 
-この節ではさまざまな実装可能なタイプメソッドと、それらが何をするものであるかについて、ざっと説明します。
+This section aims to give a quick fly-by on the various type methods you can
+implement and what they do.
 
-以下は :c:type:`PyTypeObject` の定義です。デバッグビルドでしか使われないいくつかのメンバは省いてあります:
+Here is the definition of :c:type:`PyTypeObject`, with some fields only used in
+debug builds omitted:
 
 .. literalinclude:: ../includes/typestruct.h
 
 
-*たくさんの* メソッドがありますね。
-でもそんなに心配する必要はありません。定義したい型があるなら、実装するのはこのうちのごくわずかですむことがほとんどです。
+Now that's a *lot* of methods.  Don't worry too much though - if you have a type
+you want to define, the chances are very good that you will only implement a
+handful of these.
 
-すでに予想されているでしょうが、これらの多様なハンドラについて、これからより詳しい情報を提供します。しかしこれらのメンバが構造体中で
-定義されている順番は無視します。というのは、これらのメンバの現れる順序は歴史的な遺産によるものだからです。型を初期化するさいに、これらの
-メンバを正しい順序で並べるよう、くれぐれも注意してください。ふつういちばん簡単なのは、必要なメンバがすべて含まれている (たとえそれらが ``0``
-に初期化されていても) 例をとってきて、自分の型に合わせるよう変更をくわえることです。 ::
+As you probably expect by now, we're going to go over this and give more
+information about the various handlers.  We won't go in the order they are
+defined in the structure, because there is a lot of historical baggage that
+impacts the ordering of the fields; be sure your type initialization keeps the
+fields in the right order!  It's often easiest to find an example that includes
+all the fields you need (even if they're initialized to ``0``) and then change
+the values to suit your new type. ::
 
-   char *tp_name; /* 表示用 */
+   char *tp_name; /* For printing */
 
-これは型の名前です。前節で説明したように、これはいろいろな場面で現れ、ほとんどは診断用の目的で使われるものです。
-なので、そのような場面で役に立つであろう名前を選んでください。 ::
+The name of the type - as mentioned in the last section, this will appear in
+various places, almost entirely for diagnostic purposes. Try to choose something
+that will be helpful in such a situation! ::
 
-   int tp_basicsize, tp_itemsize; /* 割り当て用 */
+   int tp_basicsize, tp_itemsize; /* For allocation */
 
-これらのメンバは、この型のオブジェクトが作成されるときにどれだけのメモリを割り当てればよいのかをランタイムに指示します。Python には可変長の構造体
-(文字列やリストなどを想像してください) に対する組み込みのサポートがある程度あり、ここで :attr:`tp_itemsize` メンバが使われます。
-これらについてはあとでふれます。 ::
+These fields tell the runtime how much memory to allocate when new objects of
+this type are created.  Python has some built-in support for variable length
+structures (think: strings, lists) which is where the :c:member:`~PyTypeObject.tp_itemsize` field
+comes in.  This will be dealt with later. ::
 
    char *tp_doc;
 
-ここには Python スクリプトリファレンス ``obj.__doc__`` が doc string を返すときの文字列 (あるいはそのアドレス)
-を入れます。
+Here you can put a string (or its address) that you want returned when the
+Python script references ``obj.__doc__`` to retrieve the doc string.
 
-では次に、ほとんどの拡張型が実装するであろう基本的なタイプメソッドに入っていきます。
+Now we come to the basic type methods---the ones most extension types will
+implement.
 
 
-最終化 (finalization) と解放
-----------------------------
+Finalization and De-allocation
+------------------------------
 
 .. index::
    single: object; deallocation
@@ -873,9 +959,10 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
 
    destructor tp_dealloc;
 
-型のインスタンスの参照カウントがゼロになり、 Python インタプリタがそれを潰して再利用したくなると、
-この関数が呼ばれます。解放すべきメモリをその型が保持していたり、それ以外にも実行すべき後処理がある場合は、それらをここに入れます。
-オブジェクトそれ自体もここで解放される必要があります。この関数の例は、以下のようなものです::
+This function is called when the reference count of the instance of your type is
+reduced to zero and the Python interpreter wants to reclaim it.  If your type
+has memory to free or other clean-up to perform, put it here.  The object itself
+needs to be freed here as well.  Here is an example of this function::
 
    static void
    newdatatype_dealloc(newdatatypeobject * obj)
@@ -888,12 +975,17 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
    single: PyErr_Fetch()
    single: PyErr_Restore()
 
-解放用関数でひとつ重要なのは、処理待ちの例外にいっさい手をつけないことです。なぜなら、解放用の関数は Python
-インタプリタがスタックを元の状態に戻すときに呼ばれることが多いからです。そして (通常の関数からの復帰でなく) 例外のために
-スタックが巻き戻されるときは、すでに発生している例外から解放用関数を守るものはありません。解放用の関数がおこなう動作が追加の Python のコードを
-実行してしまうと、それらは例外が発生していることを検知するかもしれません。これはインタプリタが誤解させるエラーを発生させることにつながります。
-これを防ぐ正しい方法は、安全でない操作を実行する前に処理待ちの例外を保存しておき、終わったらそれを元に戻すことです。これは
-:c:func:`PyErr_Fetch` および :c:func:`PyErr_Restore` 関数を使うことによって可能になります::
+One important requirement of the deallocator function is that it leaves any
+pending exceptions alone.  This is important since deallocators are frequently
+called as the interpreter unwinds the Python stack; when the stack is unwound
+due to an exception (rather than normal returns), nothing is done to protect the
+deallocators from seeing that an exception has already been set.  Any actions
+which a deallocator performs which may cause additional Python code to be
+executed may detect that an exception has been set.  This can lead to misleading
+errors from the interpreter.  The proper way to protect against this is to save
+a pending exception before performing the unsafe action, and restoring it when
+done.  This can be done using the :c:func:`PyErr_Fetch` and
+:c:func:`PyErr_Restore` functions::
 
    static void
    my_dealloc(PyObject *obj)
@@ -910,7 +1002,7 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
 
            cbresult = PyObject_CallObject(self->my_callback, NULL);
            if (cbresult == NULL)
-               PyErr_WriteUnraisable();
+               PyErr_WriteUnraisable(self->my_callback);
            else
                Py_DECREF(cbresult);
 
@@ -923,28 +1015,32 @@ Python オブジェクトが :class:`Shoddy` 型のインスタンスだった�
    }
 
 
-オブジェクト表現
+Object Presentation
 -------------------
 
 .. index::
    builtin: repr
    builtin: str
 
-Python では、オブジェクトの文字列表現を生成するのに 3つのやり方があります: :func:`repr` 関数 (あるいはそれと等価な
-バッククォートを用いた表現) を使う方法、 :func:`str`  関数を使う方法、そして :keyword:`print` 文を使う方法です。
-ほとんどのオブジェクトで :keyword:`print` 文は :func:`str` 関数と同じですが、必要な場合には特殊なケースとして
-:c:type:`FILE\*` にも表示できます。 :c:type:`FILE\*` への表示は、効率が問題となっている場合で、一時的な
-文字列オブジェクトを作成してファイルに書き込むのでは効率が悪すぎることがプロファイリングからも明らかな場合にのみ使うべきです。
+In Python, there are three ways to generate a textual representation of an
+object: the :func:`repr` function (or equivalent back-tick syntax), the
+:func:`str` function, and the :keyword:`print` statement.  For most objects, the
+:keyword:`print` statement is equivalent to the :func:`str` function, but it is
+possible to special-case printing to a :c:type:`FILE\*` if necessary; this should
+only be done if efficiency is identified as a problem and profiling suggests
+that creating a temporary string object to be written to a file is too
+expensive.
 
-これらのハンドラはどれも必須ではありません。ほとんどの型ではせいぜい :attr:`tp_str` ハンドラと :attr:`tp_repr`
-ハンドラを実装するだけですみます。 ::
+These handlers are all optional, and most types at most need to implement the
+:c:member:`~PyTypeObject.tp_str` and :c:member:`~PyTypeObject.tp_repr` handlers. ::
 
    reprfunc tp_repr;
    reprfunc tp_str;
    printfunc tp_print;
 
-:attr:`tp_repr` ハンドラは呼び出されたインスタンスの文字列表現を
-格納した文字列オブジェクトを返す必要があります。簡単な例は以下のようなものです::
+The :c:member:`~PyTypeObject.tp_repr` handler should return a string object containing a
+representation of the instance for which it is called.  Here is a simple
+example::
 
    static PyObject *
    newdatatype_repr(newdatatypeobject * obj)
@@ -953,15 +1049,18 @@ Python では、オブジェクトの文字列表現を生成するのに 3つ�
                                   obj->obj_UnderlyingDatatypePtr->size);
    }
 
-:attr:`tp_repr` ハンドラが指定されていなければ、インタプリタはその型の :attr:`tp_name`
-とそのオブジェクトの一意な識別値をもちいて文字列表現を作成します。
+If no :c:member:`~PyTypeObject.tp_repr` handler is specified, the interpreter will supply a
+representation that uses the type's :c:member:`~PyTypeObject.tp_name` and a uniquely-identifying
+value for the object.
 
-:attr:`tp_str` ハンドラと :func:`str` の関係は、上の :attr:`tp_repr` ハンドラと :func:`repr`
-の関係に相当します。つまり、これは Python のコードがオブジェクトのインスタンスに対して :func:`str`
-を呼び出したときに呼ばれます。この関数の実装は :attr:`tp_repr` ハンドラのそれと非常に似ていますが、得られる文字列表現は
-人間が読むことを意図されています。 :attr:`tp_str` が指定されていない場合、かわりに :attr:`tp_repr` ハンドラが使われます。
+The :c:member:`~PyTypeObject.tp_str` handler is to :func:`str` what the :c:member:`~PyTypeObject.tp_repr` handler
+described above is to :func:`repr`; that is, it is called when Python code calls
+:func:`str` on an instance of your object.  Its implementation is very similar
+to the :c:member:`~PyTypeObject.tp_repr` function, but the resulting string is intended for human
+consumption.  If :c:member:`~PyTypeObject.tp_str` is not specified, the :c:member:`~PyTypeObject.tp_repr` handler is
+used instead.
 
-以下は簡単な例です::
+Here is a simple example::
 
    static PyObject *
    newdatatype_str(newdatatypeobject * obj)
@@ -970,17 +1069,20 @@ Python では、オブジェクトの文字列表現を生成するのに 3つ�
                                   obj->obj_UnderlyingDatatypePtr->size);
    }
 
-print ハンドラは Python がその型のインスタンスを「print する」必要のあるときに毎回呼ばれます。たとえば 'node' が TreeNode
-型のインスタンスだとすると、print ハンドラは Python が以下を実行したときに呼ばれます::
+The print function will be called whenever Python needs to "print" an instance
+of the type.  For example, if 'node' is an instance of type TreeNode, then the
+print function is called when Python code calls::
 
    print node
 
-flags 引数には :const:`Py_PRINT_RAW` というフラグがあり、これはその文字列をクォートやおそらくはエスケープシーケンスの解釈もなしで
-表示することを指示します。
+There is a flags argument and one flag, :const:`Py_PRINT_RAW`, and it suggests
+that you print without string quotes and possibly without interpreting escape
+sequences.
 
-この print 関数は :c:type:`FILE\*` オブジェクトを引数としてとります。たぶん、ここに出力することになるでしょう。
+The print function receives a file object as an argument. You will likely want
+to write to that file object.
 
-print 関数の例は以下のようになります::
+Here is a sample print function::
 
    static int
    newdatatype_print(newdatatypeobject *obj, FILE *fp, int flags)
@@ -997,77 +1099,90 @@ print 関数の例は以下のようになります::
    }
 
 
-属性を管理する
---------------
+Attribute Management
+--------------------
 
-属性をもつどのオブジェクトに対しても、その型は、それらオブジェクトの属性をどのように解決するか制御する関数を提供する
-必要があります。必要な関数としては、属性を (それが定義されていれば) 取り出すものと、もうひとつは属性に (それが許可されていれば) 値を
-設定するものです。属性を削除するのは特殊なケースで、この場合は新しい値としてハンドラに *NULL* が渡されます。
+For every object which can support attributes, the corresponding type must
+provide the functions that control how the attributes are resolved.  There needs
+to be a function which can retrieve attributes (if any are defined), and another
+to set attributes (if setting attributes is allowed).  Removing an attribute is
+a special case, for which the new value passed to the handler is *NULL*.
 
-Python は 2つの属性ハンドラの組をサポートしています。属性をもつ型はどちらか一組を実装するだけでよく、それらの違いは一方の組が属性の名前を
-:c:type:`char\*` として受け取るのに対してもう一方の組は属性の名前を :c:type:`PyObject\*` として受け取る、というものです。
-それぞれの型はその実装にとって都合がよい方を使えます。 ::
+Python supports two pairs of attribute handlers; a type that supports attributes
+only needs to implement the functions for one pair.  The difference is that one
+pair takes the name of the attribute as a :c:type:`char\*`, while the other
+accepts a :c:type:`PyObject\*`.  Each type can use whichever pair makes more
+sense for the implementation's convenience. ::
 
-   getattrfunc  tp_getattr;        /* char * バージョン */
+   getattrfunc  tp_getattr;        /* char * version */
    setattrfunc  tp_setattr;
    /* ... */
-   getattrofunc tp_getattrofunc;   /* PyObject * バージョン */
+   getattrofunc tp_getattrofunc;   /* PyObject * version */
    setattrofunc tp_setattrofunc;
 
-オブジェクトの属性へのアクセスがつねに (すぐあとで説明する) 単純な操作だけならば、 :c:type:`PyObject\*` を使って属性を管理する
-関数として、総称的 (generic) な実装を使えます。特定の型に特化した属性ハンドラの必要性は Python 2.2 からほとんど完全に
-なくなりました。しかし、多くの例はまだ、この新しく使えるようになった総称的なメカニズムを使うよう更新されてはいません。
+If accessing attributes of an object is always a simple operation (this will be
+explained shortly), there are generic implementations which can be used to
+provide the :c:type:`PyObject\*` version of the attribute management functions.
+The actual need for type-specific attribute handlers almost completely
+disappeared starting with Python 2.2, though there are many examples which have
+not been updated to use some of the new generic mechanism that is available.
 
 
 .. _generic-attribute-management:
 
-総称的な属性を管理する
-^^^^^^^^^^^^^^^^^^^^^^
+Generic Attribute Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. versionadded:: 2.2
 
-ほとんどの型は *単純な* 属性を使うだけです。では、どのような属性が単純だといえるのでしょうか? それが満たすべき条件はごくわずかです:
+Most extension types only use *simple* attributes.  So, what makes the
+attributes simple?  There are only a couple of conditions that must be met:
 
-#. :c:func:`PyType_Ready` が呼ばれたとき、すでに属性の名前がわかっていること。
+#. The name of the attributes must be known when :c:func:`PyType_Ready` is
+   called.
 
-#. 属性を参照したり設定したりするときに、特別な記録のための処理が必要でなく、また参照したり設定した値に対してどんな操作も実行する必要がないこと。
+#. No special processing is needed to record that an attribute was looked up or
+   set, nor do actions need to be taken based on the value.
 
-これらの条件は、属性の値や、値が計算されるタイミング、または格納されたデータがどの程度妥当なものであるかといったことに
-なんら制約を課すものではないことに注意してください。
+Note that this list does not place any restrictions on the values of the
+attributes, when the values are computed, or how relevant data is stored.
 
-:c:func:`PyType_Ready` が呼ばれると、これはそのタイプオブジェクトに参照されている
-3つのテーブルを使って、そのタイプオブジェクトの辞書中にデスクリプタ(:term:`descriptor`) を作成します。
-各デスクリプタは、インスタンスオブジェクトの属性に
-対するアクセスを制御します。それぞれのテーブルはなくてもかまいません。もしこれら 3つがすべて *NULL* だと、その型のインスタンスはその基底型から
-継承した属性だけを持つことになります。また、 :attr:`tp_getattro` および :attr:`tp_setattro` が *NULL*
-のままだった場合も、基底型にこれらの属性の操作がまかせられます。
+When :c:func:`PyType_Ready` is called, it uses three tables referenced by the
+type object to create :term:`descriptor`\s which are placed in the dictionary of the
+type object.  Each descriptor controls access to one attribute of the instance
+object.  Each of the tables is optional; if all three are *NULL*, instances of
+the type will only have attributes that are inherited from their base type, and
+should leave the :c:member:`~PyTypeObject.tp_getattro` and :c:member:`~PyTypeObject.tp_setattro` fields *NULL* as
+well, allowing the base type to handle attributes.
 
-テーブルはタイプオブジェクト中の 3つのメンバとして宣言されています::
+The tables are declared as three fields of the type object::
 
    struct PyMethodDef *tp_methods;
    struct PyMemberDef *tp_members;
    struct PyGetSetDef *tp_getset;
 
-:attr:`tp_methods` が *NULL* でない場合、これは :c:type:`PyMethodDef` 構造体への配列を指している必要があります。
-テーブル中の各エントリは、つぎのような構造体のインスタンスです::
+If :c:member:`~PyTypeObject.tp_methods` is not *NULL*, it must refer to an array of
+:c:type:`PyMethodDef` structures.  Each entry in the table is an instance of this
+structure::
 
    typedef struct PyMethodDef {
-       char        *ml_name;       /* メソッド名 */
-       PyCFunction  ml_meth;       /* 実装する関数 */
+       char        *ml_name;       /* method name */
+       PyCFunction  ml_meth;       /* implementation function */
        int          ml_flags;      /* flags */
        char        *ml_doc;        /* docstring */
    } PyMethodDef;
 
-その型が提供する各メソッドについてひとつのエントリを定義する必要があります。基底型から継承してきたメソッドについてはエントリは必要ありません。
-これの最後には、配列の終わりを示すための見張り番 (sentinel) として追加のエントリがひとつ必要です。この場合、 :attr:`ml_name`
-メンバが sentinel として使われ、その値は *NULL* でなければなりません。
+One entry should be defined for each method provided by the type; no entries are
+needed for methods inherited from a base type.  One additional entry is needed
+at the end; it is a sentinel that marks the end of the array.  The
+:attr:`ml_name` field of the sentinel must be *NULL*.
 
-2番目のテーブルは、インスタンス中に格納されるデータと直接対応づけられた属性を定義するのに使います。いくつもの C の原始的な型がサポートされており、
-アクセスを読み込み専用にも読み書き可能にもできます。このテーブルで使われる構造体は次のように定義されています:
+XXX Need to refer to some unified discussion of the structure fields, shared
+with the next section.
 
-.. % XXX 次の章もふくめて、構造体の各メンバに対するなんらかの統一した説明が必要。
-
-::
+The second table is used to define attributes which map directly to data stored
+in the instance.  A variety of primitive C types are supported, and access may
+be read-only or read-write.  The structures in the table are defined as::
 
    typedef struct PyMemberDef {
        char *name;
@@ -1077,29 +1192,31 @@ Python は 2つの属性ハンドラの組をサポートしています。属�
        char *doc;
    } PyMemberDef;
 
-このテーブルの各エントリに対してデスクリプタ(:term:`descriptor`)が作成され、
-値をインスタンスの構造体から抽出しうる型に対してそれらが追加されます。 :attr:`type`
-メンバは :file:`structmember.h` ヘッダで定義された型のコードをひとつ含んでいる必要があります。この値は Python における値と
-C における値をどのように変換しあうかを定めるものです。 :attr:`flags` メンバはこの属性がどのようにアクセスされるかを制御する
-フラグを格納するのに使われます。
+For each entry in the table, a :term:`descriptor` will be constructed and added to the
+type which will be able to extract a value from the instance structure.  The
+:attr:`type` field should contain one of the type codes defined in the
+:file:`structmember.h` header; the value will be used to determine how to
+convert Python values to and from C values.  The :attr:`flags` field is used to
+store flags which control how the attribute can be accessed.
 
-以下のフラグ用定数は :file:`structmember.h` で定義されており、これらはビットごとの OR を取って組み合わせられます。
+XXX Need to move some of this to a shared section!
 
-.. % XXX これらのいくつかを共通の節に移すこと!
+The following flag constants are defined in :file:`structmember.h`; they may be
+combined using bitwise-OR.
 
-+---------------------------+---------------------------------------------------------+
-| Constant                  | Meaning                                                 |
-+===========================+=========================================================+
-| :const:`READONLY`         | 絶対に変更できない。                                    |
-+---------------------------+---------------------------------------------------------+
-| :const:`RO`               | :const:`READONLY` の短縮形。                            |
-+---------------------------+---------------------------------------------------------+
-| :const:`READ_RESTRICTED`  | 制限モード (restricted mode) では参照できない。         |
-+---------------------------+---------------------------------------------------------+
-| :const:`WRITE_RESTRICTED` | 制限モード (restricted mode) では変更できない。         |
-+---------------------------+---------------------------------------------------------+
-| :const:`RESTRICTED`       | 制限モード (restricted mode) では参照も変更もできない。 |
-+---------------------------+---------------------------------------------------------+
++---------------------------+----------------------------------------------+
+| Constant                  | Meaning                                      |
++===========================+==============================================+
+| :const:`READONLY`         | Never writable.                              |
++---------------------------+----------------------------------------------+
+| :const:`RO`               | Shorthand for :const:`READONLY`.             |
++---------------------------+----------------------------------------------+
+| :const:`READ_RESTRICTED`  | Not readable in restricted mode.             |
++---------------------------+----------------------------------------------+
+| :const:`WRITE_RESTRICTED` | Not writable in restricted mode.             |
++---------------------------+----------------------------------------------+
+| :const:`RESTRICTED`       | Not readable or writable in restricted mode. |
++---------------------------+----------------------------------------------+
 
 .. index::
    single: READONLY
@@ -1108,49 +1225,57 @@ C における値をどのように変換しあうかを定めるものです。
    single: WRITE_RESTRICTED
    single: RESTRICTED
 
-:attr:`tp_members` を使ったひとつの面白い利用法は、実行時に使われる
-デスクリプタを作成しておき、単にテーブル中にテキストを置いておくことによって、この方法で定義されたすべての属性に doc string を関連付けられるように
-することです。アプリケーションはこのイントロスペクション用 API を使って、クラスオブジェクトからデスクリプタを取り出し、その
-:attr:`__doc__` 属性を使って doc string を得られます。
+An interesting advantage of using the :c:member:`~PyTypeObject.tp_members` table to build
+descriptors that are used at runtime is that any attribute defined this way can
+have an associated doc string simply by providing the text in the table.  An
+application can use the introspection API to retrieve the descriptor from the
+class object, and get the doc string using its :attr:`__doc__` attribute.
 
-:attr:`tp_methods` テーブルと同じように、ここでも :attr:`name` メンバの値を *NULL* にした見張り用エントリが必要です。
+As with the :c:member:`~PyTypeObject.tp_methods` table, a sentinel entry with a :attr:`name` value
+of *NULL* is required.
 
-.. % XXX デスクリプタについてはどこかでもっと詳しく説明する必要がある。でもそれはここではない。
-.. %
-.. % デスクリプタオブジェクトは 2つのハンドラ用関数をもっており、これらは
-.. % \member{tp_getattro} および \member{tp_setattro} ハンドラに対応しています。
-.. % \method{__get__()} ハンドラはデスクリプタとインスタンス、そしてタイプオブジェクトが
-.. % 渡される関数で、その属性の値を返すか、あるいは \NULL{} を返して例外を
-.. % 発生させるものです。\method{__set__()} ハンドラにはデスクリプタとインスタンス、型、
-.. % そして新しい値が渡されます。
+.. XXX Descriptors need to be explained in more detail somewhere, but not here.
+
+   Descriptor objects have two handler functions which correspond to the
+   \member{tp_getattro} and \member{tp_setattro} handlers.  The
+   \method{__get__()} handler is a function which is passed the descriptor,
+   instance, and type objects, and returns the value of the attribute, or it
+   returns \NULL{} and sets an exception.  The \method{__set__()} handler is
+   passed the descriptor, instance, type, and new value;
 
 
-特定の型に特化した属性の管理
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Type-specific Attribute Management
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-話を単純にするため、ここでは :c:type:`char\*` を使ったバージョンのみを示します。name パラメータの型はインターフェイスとして
-:c:type:`char\*` を使うか :c:type:`PyObject\*` を使うかの違いしかありません。
-この例では、上の総称的な例と同じことを効率的にやりますが、 Python 2.2 で追加された総称的な型のサポートを使わずにやります。これを紹介することは
-2つの意味をもっています。ひとつはどうやって、古いバージョンの Python と互換性のあるやり方で、基本的な属性管理を
-おこなうか。そしてもうひとつはハンドラの関数がどのようにして呼ばれるのか。これで、たとえその機能を拡張する必要があるとき、何をどうすればいいか
-わかるでしょう。
+For simplicity, only the :c:type:`char\*` version will be demonstrated here; the
+type of the name parameter is the only difference between the :c:type:`char\*`
+and :c:type:`PyObject\*` flavors of the interface. This example effectively does
+the same thing as the generic example above, but does not use the generic
+support added in Python 2.2.  The value in showing this is two-fold: it
+demonstrates how basic attribute management can be done in a way that is
+portable to older versions of Python, and explains how the handler functions are
+called, so that if you do need to extend their functionality, you'll understand
+what needs to be done.
 
-:attr:`tp_getattr` ハンドラはオブジェクトが属性への参照を要求するときに呼ばれます。これは、そのクラスの
-:meth:`__getattr__` メソッドが呼ばれるであろう状況と同じ状況下で呼び出されます。
+The :c:member:`~PyTypeObject.tp_getattr` handler is called when the object requires an attribute
+look-up.  It is called in the same situations where the :meth:`__getattr__`
+method of a class would be called.
 
-これを処理するありがちな方法は、(1) 一連の関数 (下の例の  :c:func:`newdatatype_getSize` や
-:c:func:`newdatatype_setSize`) を実装する、(2) これらの関数を記録したメソッドテーブルを提供する、そして (3)
-そのテーブルの参照結果を返す getattr 関数を提供することです。メソッドテーブルはタイプオブジェクトの :attr:`tp_methods` メンバと
-同じ構造を持っています。
+A likely way to handle this is (1) to implement a set of functions (such as
+:c:func:`newdatatype_getSize` and :c:func:`newdatatype_setSize` in the example
+below), (2) provide a method table listing these functions, and (3) provide a
+getattr function that returns the result of a lookup in that table.  The method
+table uses the same structure as the :c:member:`~PyTypeObject.tp_methods` field of the type
+object.
 
-以下に例を示します::
+Here is an example::
 
    static PyMethodDef newdatatype_methods[] = {
        {"getSize", (PyCFunction)newdatatype_getSize, METH_VARARGS,
         "Return the current size."},
        {"setSize", (PyCFunction)newdatatype_setSize, METH_VARARGS,
         "Set the size."},
-       {NULL, NULL, 0, NULL}           /* 見張り */
+       {NULL, NULL, 0, NULL}           /* sentinel */
    };
 
    static PyObject *
@@ -1159,10 +1284,11 @@ C における値をどのように変換しあうかを定めるものです。
        return Py_FindMethod(newdatatype_methods, (PyObject *)obj, name);
    }
 
-:attr:`tp_setattr` ハンドラは、クラスのインスタンスの :meth:`__setattr__` または :meth:`__delattr__`
-メソッドが呼ばれるであろう状況で呼び出されます。ある属性が削除されるとき、3番目のパラメータは *NULL* に
-なります。以下の例はたんに例外を発生させるものですが、もし本当にこれと同じことをしたいなら、 :attr:`tp_setattr` ハンドラを
-*NULL* に設定すべきです。 ::
+The :c:member:`~PyTypeObject.tp_setattr` handler is called when the :meth:`__setattr__` or
+:meth:`__delattr__` method of a class instance would be called.  When an
+attribute should be deleted, the third parameter will be *NULL*.  Here is an
+example that simply raises an exception; if this were really all you wanted, the
+:c:member:`~PyTypeObject.tp_setattr` handler should be set to *NULL*. ::
 
    static int
    newdatatype_setattr(newdatatypeobject *obj, char *name, PyObject *v)
@@ -1172,25 +1298,29 @@ C における値をどのように変換しあうかを定めるものです。
    }
 
 
-オブジェクトの比較
-------------------
+Object Comparison
+-----------------
 
 ::
 
    cmpfunc tp_compare;
 
-:attr:`tp_compare` ハンドラは、オブジェクトどうしの比較が必要で、
-そのオブジェクトに要求された比較をおこなうのに適した特定の拡張比較メソッドが実装されていないときに呼び出されます。(これが定義されているとき、
-:c:func:`PyObject_Compare` または :c:func:`PyObject_Cmp` が使われるとこれはつねに呼び出されます、また
-Python で :func:`cmp` が使われたときにも呼び出されます。) これは :meth:`__cmp__` メソッドに似ています。この関数はもし
-*obj1* が *obj2* より「小さい」場合は ``-1`` を返し、それらが等しければ ``0`` 、そしてもし *obj1* が *obj2* より
-「大きい」場合は ``1`` を返す必要があります。 (以前は大小比較の結果として、任意の大きさの負または正の整数を返せましたが、 Python 2.2
-以降ではこれはもう許されていません。将来的には、上にあげた以外の返り値は別の意味をもつ可能性があります。)
+The :c:member:`~PyTypeObject.tp_compare` handler is called when comparisons are needed and the
+object does not implement the specific rich comparison method which matches the
+requested comparison.  (It is always used if defined and the
+:c:func:`PyObject_Compare` or :c:func:`PyObject_Cmp` functions are used, or if
+:func:`cmp` is used from Python.) It is analogous to the :meth:`__cmp__` method.
+This function should return ``-1`` if *obj1* is less than *obj2*, ``0`` if they
+are equal, and ``1`` if *obj1* is greater than *obj2*. (It was previously
+allowed to return arbitrary negative or positive integers for less than and
+greater than, respectively; as of Python 2.2, this is no longer allowed.  In the
+future, other return values may be assigned a different meaning.)
 
-:attr:`tp_compare` ハンドラは例外を発生させられます。この場合、この関数は負の値を返す必要があります。呼び出した側は
-:c:func:`PyErr_Occurred` を使って例外を検査しなければなりません。
+A :c:member:`~PyTypeObject.tp_compare` handler may raise an exception.  In this case it should
+return a negative value.  The caller has to test for the exception using
+:c:func:`PyErr_Occurred`.
 
-以下はサンプル実装です::
+Here is a sample implementation::
 
    static int
    newdatatype_compare(newdatatypeobject * obj1, newdatatypeobject * obj2)
@@ -1212,42 +1342,39 @@ Python で :func:`cmp` が使われたときにも呼び出されます。) こ�
    }
 
 
-抽象的なプロトコルのサポート
-----------------------------
+Abstract Protocol Support
+-------------------------
 
-Python はいくつもの *抽象的な* “プロトコル”をサポートしています
-。これらを使用する特定のインターフェイスについては :ref:`abstract` で解説されています。
+Python supports a variety of *abstract* 'protocols;' the specific interfaces
+provided to use these interfaces are documented in :ref:`abstract`.
 
-これら多数の抽象的なインターフェイスは、Python の実装が開発される初期の段階で定義されていました。とりわけ数値や辞書、そしてシーケンスなどの
-プロトコルは最初から Python の一部だったのです。それ以外のプロトコルはその後追加されました。
-型の実装にあるいくつかのハンドラルーチンに依存するようなプロトコルのために、古いプロトコルはハンドラの入ったオプションのブロックとして
-定義し、型オブジェクトから参照するようになりました。タイプオブジェクトの主部に追加のスロットをもつ新しいプロトコルについては、
-フラグ用のビットを立てることでそれらのスロットが存在しており、インタプリタがチェックすべきであることを指示できます。
-(このフラグ用のビットは、そのスロットの値が非 *NULL* であることを示しているわけではありません。フラグはスロットの存在を示すのに使えますが、
-そのスロットはまだ埋まっていないかもしれないのです。)
 
-.. % 型の実装からいくつかのハンドラ関数に依存しているプロトコルについては、
-.. % 古いプロトコルは、そのタイプオブジェクトから参照されている付加的な
-.. % ハンドラ部分として定義されています。
-.. % (訳註: この文は意味不明。
-.. % 原文は ``For protocols which depend on several handler routines from the
-.. % type implementation, the older protocols have been defined as
-.. % optional blocks of handlers referenced by the type object.'')
+A number of these abstract interfaces were defined early in the development of
+the Python implementation.  In particular, the number, mapping, and sequence
+protocols have been part of Python since the beginning.  Other protocols have
+been added over time.  For protocols which depend on several handler routines
+from the type implementation, the older protocols have been defined as optional
+blocks of handlers referenced by the type object.  For newer protocols there are
+additional slots in the main type object, with a flag bit being set to indicate
+that the slots are present and should be checked by the interpreter.  (The flag
+bit does not indicate that the slot values are non-*NULL*. The flag may be set
+to indicate the presence of a slot, but a slot may still be unfilled.) ::
 
-::
+   PyNumberMethods   *tp_as_number;
+   PySequenceMethods *tp_as_sequence;
+   PyMappingMethods  *tp_as_mapping;
 
-   PyNumberMethods   tp_as_number;
-   PySequenceMethods tp_as_sequence;
-   PyMappingMethods  tp_as_mapping;
-
-お使いのオブジェクトを数値やシーケンス、あるいは辞書のようにふるまうようにしたいならば、それぞれに C の :c:type:`PyNumberMethods`
-構造体、 :c:type:`PySequenceMethods` 構造体、または :c:type:`PyMappingMethods`  構造体のアドレスを
-入れます。これらに適切な値を入れても入れなくてもかまいません。これらを使った例は Python の配布ソースにある :file:`Objects` で
-みつけることができるでしょう。 ::
+If you wish your object to be able to act like a number, a sequence, or a
+mapping object, then you place the address of a structure that implements the C
+type :c:type:`PyNumberMethods`, :c:type:`PySequenceMethods`, or
+:c:type:`PyMappingMethods`, respectively. It is up to you to fill in this
+structure with appropriate values. You can find examples of the use of each of
+these in the :file:`Objects` directory of the Python source distribution. ::
 
    hashfunc tp_hash;
 
-この関数は、もし使うのならば、これはお使いの型のインスタンスのハッシュ番号を返すようにします。以下はやや的はずれな例ですが ::
+This function, if you choose to provide it, should return a hash number for an
+instance of your data type. Here is a moderately pointless example::
 
    static long
    newdatatype_hash(newdatatypeobject *obj)
@@ -1262,26 +1389,30 @@ Python はいくつもの *抽象的な* “プロトコル”をサポートし
 
    ternaryfunc tp_call;
 
-この関数は、その型のインスタンスが「関数として呼び出される」ときに呼ばれます。たとえばもし ``obj1`` にそのインスタンスが入っていて、Python
-スクリプトで ``obj1('hello')`` を実行したとすると、 :attr:`tp_call` ハンドラが呼ばれます。
+This function is called when an instance of your data type is "called", for
+example, if ``obj1`` is an instance of your data type and the Python script
+contains ``obj1('hello')``, the :c:member:`~PyTypeObject.tp_call` handler is invoked.
 
-この関数は 3つの引数をとります:
+This function takes three arguments:
 
-#. *arg1* にはその呼び出しの対象となる、そのデータ型のインスタンスが入ります。たとえば呼び出しが ``obj1('hello')``
-   の場合、 *arg1* は ``obj1`` になります。
+#. *arg1* is the instance of the data type which is the subject of the call. If
+   the call is ``obj1('hello')``, then *arg1* is ``obj1``.
 
-#. *arg2* は呼び出しの引数を格納しているタプルです。ここから引数を取り出すには :c:func:`PyArg_ParseTuple` を使います。
+#. *arg2* is a tuple containing the arguments to the call.  You can use
+   :c:func:`PyArg_ParseTuple` to extract the arguments.
 
-#. *arg3* はキーワード引数のための辞書です。これが *NULL* 以外で
-   キーワード引数をサポートしているなら、 :c:func:`PyArg_ParseTupleAndKeywords`
-   をつかって引数を取り出せます。キーワード引数をサポートしていないのにこれが *NULL* 以外の場合は、キーワード引数はサポートしていない旨の
-   メッセージとともに :exc:`TypeError` を発生させてください。
+#. *arg3* is a dictionary of keyword arguments that were passed. If this is
+   non-*NULL* and you support keyword arguments, use
+   :c:func:`PyArg_ParseTupleAndKeywords` to extract the arguments.  If you do not
+   want to support keyword arguments and this is non-*NULL*, raise a
+   :exc:`TypeError` with a message saying that keyword arguments are not supported.
 
-以下はこの call 関数をてきとうに使った例です。 ::
+Here is a desultory example of the implementation of the call function. ::
 
-   /* call 関数の実装。
-    *    obj1 : 呼び出しを受けるインスタンス。
-    *    obj2 : 呼び出しのさいの引数を格納するタプル、この場合は 3つの文字列。
+   /* Implement the call function.
+    *    obj1 is the instance receiving the call.
+    *    obj2 is a tuple containing the arguments to the call, in this
+    *         case 3 strings.
     */
    static PyObject *
    newdatatype_call(newdatatypeobject *obj, PyObject *args, PyObject *other)
@@ -1302,45 +1433,56 @@ Python はいくつもの *抽象的な* “プロトコル”をサポートし
        return result;
    }
 
-.. % XXX いくつかのメンバを追加する必要。。。
+XXX some fields need to be added here... ::
 
-::
-
-   /* バージョン 2.2 以降で追加 */
+   /* Added in release 2.2 */
    /* Iterators */
    getiterfunc tp_iter;
    iternextfunc tp_iternext;
 
-これらの関数はイテレータ用プロトコルをサポートします。オブジェクトが、その (ループ中に順に生成されていくかもしれない) 内容を巡回 (訳注:
-イテレータでひとつずつ要素をたどっていくこと) するイテレータをサポートしたい場合は、 ``tp_iter`` ハンドラを実装する必要があります。
-``tp_iter`` ハンドラによって返されるオブジェクトは ``tp_iter`` と ``tp_iternext`` の両方を実装する必要があります。
-どちらのハンドラも、それが呼ばれたインスタンスをひとつだけ引数としてとり、新しい参照を返します。エラーが起きた場合には例外を設定してから
-*NULL* を返す必要があります。
+These functions provide support for the iterator protocol.  Any object which
+wishes to support iteration over its contents (which may be generated during
+iteration) must implement the ``tp_iter`` handler.  Objects which are returned
+by a ``tp_iter`` handler must implement both the ``tp_iter`` and ``tp_iternext``
+handlers. Both handlers take exactly one parameter, the instance for which they
+are being called, and return a new reference.  In the case of an error, they
+should set an exception and return *NULL*.
 
-巡回可能な要素を表現するオブジェクトに対しては、 ``tp_iter`` ハンドラがイテレータオブジェクトを返す必要があります。イテレータオブジェクトは
-巡回中の状態を保持する責任をもっています。お互いに干渉しない複数のイテレータの存在を許すようなオブジェクト (リストやタプルがそうです) の場合は、
-新しいイテレータを作成して返す必要があります。 (巡回の結果生じる副作用のために) 一回だけしか巡回できないオブジェクトの場合は、それ自身への参照を返すような
-ハンドラと、 ``tp_iternext`` ハンドラも実装する必要があります。ファイルオブジェクトはそのようなイテレータの例です。
+For an object which represents an iterable collection, the ``tp_iter`` handler
+must return an iterator object.  The iterator object is responsible for
+maintaining the state of the iteration.  For collections which can support
+multiple iterators which do not interfere with each other (as lists and tuples
+do), a new iterator should be created and returned.  Objects which can only be
+iterated over once (usually due to side effects of iteration) should implement
+this handler by returning a new reference to themselves, and should also
+implement the ``tp_iternext`` handler.  File objects are an example of such an
+iterator.
 
-イテレータオブジェクトは両方のハンドラを実装する必要があります。 ``tp_iter`` ハンドラはそのイテレータへの新しい参照を返します
-(これは破壊的にしか巡回できないオブジェクトに対する ``tp_iter`` ハンドラと同じです)。 ``tp_iternext``
-ハンドラはその次のオブジェクトがある場合、それへの新しい参照を返します。巡回が終端に達したときは例外を出さずに *NULL* を返してもいいですし、
-:exc:`StopIteration` を放出してもかまいません。例外を使わないほうがやや速度が上がるかもしれません。
-実際のエラーが起こったときには、例外を放出して *NULL* を返す必要があります。
+Iterator objects should implement both handlers.  The ``tp_iter`` handler should
+return a new reference to the iterator (this is the same as the ``tp_iter``
+handler for objects which can only be iterated over destructively).  The
+``tp_iternext`` handler should return a new reference to the next object in the
+iteration if there is one.  If the iteration has reached the end, it may return
+*NULL* without setting an exception or it may set :exc:`StopIteration`; avoiding
+the exception can yield slightly better performance.  If an actual error occurs,
+it should set an exception and return *NULL*.
 
 
 .. _weakref-support:
 
-弱参照(Weak Reference)のサポート
---------------------------------
+Weak Reference Support
+----------------------
 
-Pythonの弱参照実装のひとつのゴールは、どのような（数値のような弱参照による利益を得ない）タイプでもオーバーヘッドなしで
-弱参照のメカニズムに組み込めるようにすることです。
+One of the goals of Python's weak-reference implementation is to allow any type
+to participate in the weak reference mechanism without incurring the overhead on
+those objects which do not benefit by weak referencing (such as numbers).
 
-弱参照可能なオブジェクトの拡張では、弱参照メカニズムのために :c:type:`PyObject\*` フィールドをインスタンス構造体に含む必要があります。
-これはオブジェクトのコンストラクタで *NULL* に初期化する必要があります。これは対応するタイプの
-:attr:`tp_weaklistoffset` フィールドをフィールドのオフセットに設定しなければいけません。
-たとえば、インスタンスタイプは以下の構造体で定義されます::
+For an object to be weakly referencable, the extension must include a
+:c:type:`PyObject\*` field in the instance structure for the use of the weak
+reference mechanism; it must be initialized to *NULL* by the object's
+constructor.  It must also set the :c:member:`~PyTypeObject.tp_weaklistoffset` field of the
+corresponding type object to the offset of the field. For example, the instance
+type is defined with the following structure::
 
    typedef struct {
        PyObject_HEAD
@@ -1349,7 +1491,7 @@ Pythonの弱参照実装のひとつのゴールは、どのような（数値�
        PyObject      *in_weakreflist; /* List of weak references */
    } PyInstanceObject;
 
-インスタンス用に静的に宣言されたタイプオブジェクトはこのように定義されます::
+The statically-declared type object for instances is defined this way::
 
    PyTypeObject PyInstance_Type = {
        PyObject_HEAD_INIT(&PyType_Type)
@@ -1366,7 +1508,8 @@ Pythonの弱参照実装のひとつのゴールは、どのような（数値�
        offsetof(PyInstanceObject, in_weakreflist), /* tp_weaklistoffset */
    };
 
-タイプのコンストラクタは弱参照を *NULL* に初期化する責任があります::
+The type constructor is responsible for initializing the weak reference list to
+*NULL*::
 
    static PyObject *
    instance_new() {
@@ -1377,8 +1520,9 @@ Pythonの弱参照実装のひとつのゴールは、どのような（数値�
        return (PyObject *) self;
    }
 
-さらに、デストラクタは弱参照を消すために弱参照のマネージャを呼ぶ必要があります。これはデストラクタのどの処理よりも先に実施される必要がありますが、
-弱参照リストが *NULL* でない場合にだけ必要です::
+The only further addition is that the destructor needs to call the weak
+reference manager to clear any weak references.  This is only required if the
+weak reference list is non-*NULL*::
 
    static void
    instance_dealloc(PyInstanceObject *inst)
@@ -1394,37 +1538,46 @@ Pythonの弱参照実装のひとつのゴールは、どのような（数値�
    }
 
 
-その他いろいろ
---------------
+More Suggestions
+----------------
 
-上にあげたほとんどの関数は、その値として ``0`` を与えれば省略できることを忘れないでください。それぞれの関数で提供しなければならない
-型の定義があり、これらは Python の include 用ディレクトリの :file:`object.h` というファイルにおさめられています。これは
-Python の配布ソースに含まれています。
+Remember that you can omit most of these functions, in which case you provide
+``0`` as a value.  There are type definitions for each of the functions you must
+provide.  They are in :file:`object.h` in the Python include directory that
+comes with the source distribution of Python.
 
-新しいデータ型に何らかのメソッドを実装するやりかたを学ぶには、以下の方法がおすすめです: Python の配布されているソースをダウンロードして
-展開する。 :file:`Objects` ディレクトリへ行き、C のソースファイルから「 ``tp_`` 欲しい名前」の文字列で検索する (たとえば
-``tp_print`` とか ``tp_compare`` のように)。こうすれば実装したい例がみつかるでしょう。
+In order to learn how to implement any specific method for your new data type,
+do the following: Download and unpack the Python source distribution.  Go the
+:file:`Objects` directory, then search the C source files for ``tp_`` plus the
+function you want (for example, ``tp_print`` or ``tp_compare``).  You will find
+examples of the function you want to implement.
 
-あるオブジェクトが、いま実装している型のインスタンスであるかどうかを確かめたい場合には、 :c:func:`PyObject_TypeCheck`
-関数を使ってください。使用例は以下のようなかんじです::
+When you need to verify that an object is an instance of the type you are
+implementing, use the :c:func:`PyObject_TypeCheck` function. A sample of its use
+might be something like the following::
 
    if (! PyObject_TypeCheck(some_object, &MyType)) {
        PyErr_SetString(PyExc_TypeError, "arg #1 not a mything");
        return NULL;
    }
 
-.. rubric:: 注記
+.. rubric:: Footnotes
 
-.. [#] これはそのオブジェクトが文字列や実数などの基本タイプであるような時に成り立ちます。
+.. [#] This is true when we know that the object is a basic type, like a string or a
+   float.
 
-.. [#] We relied ここで出てきたタイプではガベージコレクションをサポートしていないので、この例では :attr:`tp_dealloc`
-   ハンドラに依存しています。このハンドラはそのタイプがたとえガベージコレクションをサポートしている場合でも、そのオブジェクトの
-   「追跡を解除する」ために呼ばれることがありますが、これは高度な話題でありここでは扱いません。
+.. [#] We relied on this in the :c:member:`~PyTypeObject.tp_dealloc` handler in this example, because our
+   type doesn't support garbage collection. Even if a type supports garbage
+   collection, there are calls that can be made to "untrack" the object from
+   garbage collection, however, these calls are advanced and not covered here.
 
-.. [#] first および last メンバが文字列であるということはわかっているので、いまやそれらの参照カウントを
-   減らすときにはそれほど注意する必要はないように思えるかもしれません。しかし文字列型のサブクラスは依然として受けつけられています。
-   通常の文字列型ならば、解放時にあなたのオブジェクトがコールバックされることはありませんが、文字列型のサブクラスがそうしないという保証はありません。
+.. [#] We now know that the first and last members are strings, so perhaps we could be
+   less careful about decrementing their reference counts, however, we accept
+   instances of string subclasses. Even though deallocating normal strings won't
+   call back into our objects, we can't guarantee that deallocating an instance of
+   a string subclass won't call back into our objects.
 
-.. [#] 3番目のバージョンでさえ、循環を回避できるという保証はされていません。たとえ通常の文字列型なら循環しない場合でも、文字列型の
-   サブクラスをとることが許されていれば、そのタイプでは循環が発生しうるからです。
+.. [#] Even in the third version, we aren't guaranteed to avoid cycles.  Instances of
+   string subclasses are allowed and string subclasses could allow cycles even if
+   normal strings don't.
 

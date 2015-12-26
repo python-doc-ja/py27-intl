@@ -3,53 +3,65 @@
 
 .. _embedding:
 
-******************************************
-他のアプリケーションへの Python の埋め込み
-******************************************
+***************************************
+Embedding Python in Another Application
+***************************************
 
-前章では、 Python を拡張する方法、すなわち C 関数のライブラリを Python に結びつけて機能を拡張する方法について述べました。
-同じようなことを別の方法でも実行できます: それは、自分の C/C++ アプリケーションに Python を埋め込んで機能を強化する、というものです。
-埋め込みを行うことで、アプリケーションの何らかの機能を C や C++ の代わりに Python で実装できるようになります。
-埋め込みは多くの用途で利用できます; ユーザが Python でスクリプトを書き、アプリケーションを自分好みに仕立てられるようにする、というのが
-その一例です。プログラマが、特定の機能を Python でより楽に書ける場合に自分自身のために埋め込みを行うこともできます。
+The previous chapters discussed how to extend Python, that is, how to extend the
+functionality of Python by attaching a library of C functions to it.  It is also
+possible to do it the other way around: enrich your C/C++ application by
+embedding Python in it.  Embedding provides your application with the ability to
+implement some of the functionality of your application in Python rather than C
+or C++. This can be used for many purposes; one example would be to allow users
+to tailor the application to their needs by writing some scripts in Python.  You
+can also use it yourself if some of the functionality can be written in Python
+more easily.
 
-Python の埋め込みは Python の拡張と似ていますが、全く同じというわけではありません。その違いは、Python を拡張した場合には
-アプリケーションのメインプログラムは依然として Python インタプリタである一方、 Python を組み込みんだ場合には、メインプログラムには
-Python が関係しない --- その代わりに、アプリケーションのある一部分が時折 Python インタプリタを呼び出して何らかの Python コードを
-実行させる --- かもしれない、ということです。
+Embedding Python is similar to extending it, but not quite.  The difference is
+that when you extend Python, the main program of the application is still the
+Python interpreter, while if you embed Python, the main program may have nothing
+to do with Python --- instead, some parts of the application occasionally call
+the Python interpreter to run some Python code.
 
-従って、 Python の埋め込みを行う場合、自作のメインプログラムを提供しなければなりません。メインプログラムがやらなければならないことの一つに、
-Python インタプリタの初期化があります。とにかく少なくとも関数 :c:func:`Py_Initialize`
-を呼び出さねばなりません。オプションとして、Python
-側にコマンドライン引数を渡すために関数呼び出しを行います。その後、アプリケーションのどこでもインタプリタを呼び出せるようになります。
+So if you are embedding Python, you are providing your own main program.  One of
+the things this main program has to do is initialize the Python interpreter.  At
+the very least, you have to call the function :c:func:`Py_Initialize`.  There are
+optional calls to pass command line arguments to Python.  Then later you can
+call the interpreter from any part of the application.
 
-インタプリタを呼び出すには、異なるいくつかの方法があります: Python 文が入った文字列を :c:func:`PyRun_SimpleString` に渡す、
-stdio ファイルポインタとファイル名 (これはエラーメッセージ内でコードを識別するためだけのものです) を
-:c:func:`PyRun_SimpleFile` に渡す、といった具合です。これまでの各章で説明した低水準の操作を呼び出して、Python オブジェクトを
-構築したり使用したりもできます。
+There are several different ways to call the interpreter: you can pass a string
+containing Python statements to :c:func:`PyRun_SimpleString`, or you can pass a
+stdio file pointer and a file name (for identification in error messages only)
+to :c:func:`PyRun_SimpleFile`.  You can also call the lower-level operations
+described in the previous chapters to construct and use Python objects.
 
-Python の埋め込みを行っている簡単なデモは、ソース配布物の :file:`Demo/embed/` ディレクトリにあります。
+A simple demo of embedding Python can be found in the directory
+:file:`Demo/embed/` of the source distribution.
 
 
 .. seealso::
 
    :ref:`c-api-index`
-      Python  C インタフェースの詳細はこのマニュアルに書かれています。必要な情報の大部分はここにあるはずです。
+      The details of Python's C interface are given in this manual. A great deal of
+      necessary information can be found here.
 
 
 .. _high-level-embedding:
 
-高水準の埋め込み
-================
+Very High Level Embedding
+=========================
 
-Python の埋め込みの最も簡単な形式は、超高水準インタフェースの利用です。このインタフェースは、アプリケーションとやり取りする必要がない Python
-スクリプトを実行するためのものです。例えばこれは、一つのファイル上で何らかの操作を実現するのに利用できます。 ::
+The simplest form of embedding Python is the use of the very high level
+interface. This interface is intended to execute a Python script without needing
+to interact with the application directly. This can for example be used to
+perform some operation on a file. ::
 
    #include <Python.h>
 
    int
    main(int argc, char *argv[])
    {
+     Py_SetProgramName(argv[0]);  /* optional but recommended */
      Py_Initialize();
      PyRun_SimpleString("from time import time,ctime\n"
                         "print 'Today is',ctime(time())\n");
@@ -57,62 +69,80 @@ Python の埋め込みの最も簡単な形式は、超高水準インタフェ�
      return 0;
    }
 
-上のコードでは、まず Python インタプリタを :c:func:`Py_Initialize` で起動し、続いてハードコードされた Python
-スクリプトで日付と時間の出力を実行します。その後、 :c:func:`Py_Finalize` の呼び出しでインタプリタを終了し, プログラムの終了に続きます。
-実際のプログラムでは、Python スクリプトを他のソース、おそらくテキストエディタルーチンやファイル、データベースから取り出したいと
-考えるかもしれません。Python コードをファイルから取り出すには、 :c:func:`PyRun_SimpleFile` 関数を使うのがよいでしょう。
-この関数はメモリを確保して、ファイルの内容をロードする手間を省いてくれます。
+The :c:func:`Py_SetProgramName` function should be called before
+:c:func:`Py_Initialize` to inform the interpreter about paths to Python run-time
+libraries.  Next, the Python interpreter is initialized with
+:c:func:`Py_Initialize`, followed by the execution of a hard-coded Python script
+that prints the date and time.  Afterwards, the :c:func:`Py_Finalize` call shuts
+the interpreter down, followed by the end of the program.  In a real program,
+you may want to get the Python script from another source, perhaps a text-editor
+routine, a file, or a database.  Getting the Python code from a file can better
+be done by using the :c:func:`PyRun_SimpleFile` function, which saves you the
+trouble of allocating memory space and loading the file contents.
 
 
 .. _lower-level-embedding:
 
-超高水準の埋め込みから踏み出す: 概要
-====================================
+Beyond Very High Level Embedding: An overview
+=============================================
 
-高水準インタフェースは、断片的な Python コードをアプリケーションから実行できるようにしてくれますが、アプリケーションと Python コードの
-間でのデータのやり取りは、控えめに言っても煩わしいものです。データのやり取りをしたいなら、より低水準のインタフェース呼び出しを
-利用しなくてはなりません。より多く C コードを書かねばならない代わりに、ほぼ何でもできるようになります。
+The high level interface gives you the ability to execute arbitrary pieces of
+Python code from your application, but exchanging data values is quite
+cumbersome to say the least. If you want that, you should use lower level calls.
+At the cost of having to write more C code, you can achieve almost anything.
 
-Python の拡張と埋め込みは、趣旨こそ違え、同じ作業であるということに注意せねばなりません。これまでの章で議論してきたトピックの
-ほとんどが埋め込みでもあてはまります。これを示すために、 Python から C への拡張を行うコードが実際には何をするか考えてみましょう:
+It should be noted that extending Python and embedding Python is quite the same
+activity, despite the different intent. Most topics discussed in the previous
+chapters are still valid. To show this, consider what the extension code from
+Python to C really does:
 
-#. データ値を Python から C に変換する。
+#. Convert data values from Python to C,
 
-#. 変換された値を使って C ルーチンの関数呼び出しを行い、
+#. Perform a function call to a C routine using the converted values, and
 
-#. 呼び出しで得られたデータ値 C から Python に変換する。
+#. Convert the data values from the call from C to Python.
 
-Python を埋め込む場合には、インタフェースコードが行う作業は以下のようになります:
+When embedding Python, the interface code does:
 
-#. データ値を C から Python に変換する。
+#. Convert data values from C to Python,
 
-#. 変換された値を使って Python インタフェースルーチンの関数呼び出しを行い、
+#. Perform a function call to a Python interface routine using the converted
+   values, and
 
-#. 呼び出しで得られたデータ値 Python から C に変換する。
+#. Convert the data values from the call from Python to C.
 
-一見して分かるように、データ変換のステップは、言語間でデータを転送する方向が変わったのに合わせて単に入れ替えただけです。
-唯一の相違点は、データ変換の間にあるルーチンです。拡張を行う際には C ルーチンを呼び出しますが、埋め込みの際には Python ルーチンを呼び出します。
+As you can see, the data conversion steps are simply swapped to accommodate the
+different direction of the cross-language transfer. The only difference is the
+routine that you call between both data conversions. When extending, you call a
+C routine, when embedding, you call a Python routine.
 
-この章では、Python から C へ、そしてその逆へとデータを変換する方法については議論しません。また、正しい参照の使い方やエラーの
-扱い方についてすでに理解しているものと仮定します。これらの側面についてはインタプリタの拡張と何ら変わるところが
-ないので、必要な情報については以前の章を参照できます。
+This chapter will not discuss how to convert data from Python to C and vice
+versa.  Also, proper use of references and dealing with errors is assumed to be
+understood.  Since these aspects do not differ from extending the interpreter,
+you can refer to earlier chapters for the required information.
 
 
 .. _pure-embedding:
 
-純粋な埋め込み
+Pure Embedding
 ==============
 
-最初に例示するプログラムは、Python スクリプト内の関数を実行するためのものです。超高水準インタフェースに関する節で挙げた例と同様に、Python
-インタプリタはアプリケーションと直接やりとりはしません (が、次の節でやりとりするよう変更します)。
+The first program aims to execute a function in a Python script. Like in the
+section about the very high level interface, the Python interpreter does not
+directly interact with the application (but that will change in the next
+section).
 
-Python スクリプト内で定義されている関数を実行するためのコードは以下のようになります:
+The code to run a function defined in a Python script is:
 
 .. literalinclude:: ../includes/run-func.c
 
-このコードは ``argv[1]`` を使って Python スクリプトをロードし、 ``argv[2]`` 内に指定された名前の関数を呼び出します。
-関数の整数引数は ``argv`` 配列中の他の値になります。このプログラムをコンパイルしてリンクし (できた実行可能形式を :program:`call`
-と呼びましょう)、以下のような Python スクリプトを実行することにします::
+
+This code loads a Python script using ``argv[1]``, and calls the function named
+in ``argv[2]``.  Its integer arguments are the other values of the ``argv``
+array.  If you compile and link this program (let's call the finished executable
+:program:`call`), and use it to execute a Python script, such as:
+
+.. code-block:: python
 
    def multiply(a,b):
        print "Will compute", a, "times", b
@@ -121,59 +151,64 @@ Python スクリプト内で定義されている関数を実行するための�
            c = c + b
        return c
 
-実行結果は以下のようになるはずです::
+then the result should be::
 
    $ call multiply multiply 3 2
    Will compute 3 times 2
    Result of call: 6
 
-この程度の機能を実現するにはプログラムがいささか大きすぎますが、ほとんどは Python から C へのデータ変換やエラー報告のための
-コードです。Python の埋め込みという観点から最も興味深い部分は以下のコード、
-
-::
+Although the program is quite large for its functionality, most of the code is
+for data conversion between Python and C, and for error reporting.  The
+interesting part with respect to embedding Python starts with ::
 
    Py_Initialize();
    pName = PyString_FromString(argv[1]);
-   /* pName のエラーチェックは省略している */
+   /* Error checking of pName left out */
    pModule = PyImport_Import(pName);
 
-から始まる部分です。
-
-インタプリタの初期化後、スクリプトは :c:func:`PyImport_Import` を使って読み込まれます。このルーチンは Python
-文字列を引数に取る必要があり、データ変換ルーチン :c:func:`PyString_FromString` で構築します。 ::
+After initializing the interpreter, the script is loaded using
+:c:func:`PyImport_Import`.  This routine needs a Python string as its argument,
+which is constructed using the :c:func:`PyString_FromString` data conversion
+routine. ::
 
    pFunc = PyObject_GetAttrString(pModule, argv[2]);
-   /* pFunc は新たな参照 */
+   /* pFunc is a new reference */
 
    if (pFunc && PyCallable_Check(pFunc)) {
        ...
    }
    Py_XDECREF(pFunc);
 
-ひとたびスクリプトが読み込まれると、 :c:func:`PyObject_GetAttrString` を使って必要な名前を取得
-できます。名前がスクリプト中に存在し、取得したオブジェクトが呼び出し可能オブジェクトであれば、このオブジェクトが関数であると
-考えて差し支えないでしょう。そこでプログラムは定石どおりに引数のタプル構築に進みます。その後、Python 関数を以下のコードで呼び出します::
+Once the script is loaded, the name we're looking for is retrieved using
+:c:func:`PyObject_GetAttrString`.  If the name exists, and the object returned is
+callable, you can safely assume that it is a function.  The program then
+proceeds by constructing a tuple of arguments as normal.  The call to the Python
+function is then made with::
 
    pValue = PyObject_CallObject(pFunc, pArgs);
 
-関数が処理を戻す際、 ``pValue`` は *NULL* になるか、関数の戻り値への参照が入っています。値を調べた後には忘れずに参照を解放してください。
+Upon return of the function, ``pValue`` is either *NULL* or it contains a
+reference to the return value of the function.  Be sure to release the reference
+after examining the value.
 
 
 .. _extending-with-embedding:
 
-埋め込まれた Python の拡張
-==========================
+Extending Embedded Python
+=========================
 
-ここまでは、埋め込み Python インタプリタはアプリケーション本体の機能にアクセスする手段がありませんでした。 Python API
-を使うと、埋め込みインタプリタを拡張することでアプリケーション本体へのアクセスを可能にします。つまり、アプリケーションで提供されているルーチンを使って、
-埋め込みインタプリタを拡張するのです。複雑なことのように思えますが、それほどひどいわけではありません。さしあたって、アプリケーションが Python
-インタプリタを起動したということをちょっと忘れてみてください。その代わり、アプリケーションがサブルーチンの集まりで、あたかも普通の Python
-拡張モジュールを書くかのように、Python から各ルーチンにアクセスできるようにするグルー(glue, 糊)
-コードを書くと考えてください。例えば以下のようにです::
+Until now, the embedded Python interpreter had no access to functionality from
+the application itself.  The Python API allows this by extending the embedded
+interpreter.  That is, the embedded interpreter gets extended with routines
+provided by the application. While it sounds complex, it is not so bad.  Simply
+forget for a while that the application starts the Python interpreter.  Instead,
+consider the application to be a set of subroutines, and write some glue code
+that gives Python access to those routines, just like you would write a normal
+Python extension.  For example::
 
    static int numargs=0;
 
-   /* アプリケーションのコマンドライン引数の個数を返す */
+   /* Return the number of arguments of the application command line */
    static PyObject*
    emb_numargs(PyObject *self, PyObject *args)
    {
@@ -188,59 +223,90 @@ Python スクリプト内で定義されている関数を実行するための�
        {NULL, NULL, 0, NULL}
    };
 
-上のコードを :c:func:`main` 関数のすぐ上に挿入します。また、以下の二つの文を :c:func:`Py_Initialize` の直後
-に挿入します::
+Insert the above code just above the :c:func:`main` function. Also, insert the
+following two statements directly after :c:func:`Py_Initialize`::
 
    numargs = argc;
    Py_InitModule("emb", EmbMethods);
 
-これら二つの行は ``numargs`` 変数を初期化し、埋め込み Python インタプリタから :func:`emb.numargs` 関数に
-アクセスできるようにします。これらの拡張モジュール関数を使うと、 Python スクリプトは ::
+These two lines initialize the ``numargs`` variable, and make the
+:func:`emb.numargs` function accessible to the embedded Python interpreter.
+With these extensions, the Python script can do things like
+
+.. code-block:: python
 
    import emb
    print "Number of arguments", emb.numargs()
 
-のようなことができます。
-
-実際のアプリケーションでは、こうしたメソッドでアプリケーション内の API を Python に公開することになります。
+In a real application, the methods will expose an API of the application to
+Python.
 
 .. TODO: threads, code examples do not really behave well if errors happen
    (what to watch out for)
 
+
 .. _embeddingincplusplus:
 
-C++による Python の埋め込み
-===========================
+Embedding Python in C++
+=======================
 
-C++ プログラム中にも Python を埋め込めます; 厳密に言うと、どうやって埋め込むかは使っているC++ 処理系の詳細に依存します;
-一般的には、メインプログラムをC++で書き、C++ コンパイラを使ってプログラムをコンパイル・リンクする必要があるでしょう。 Python 自体を
-C++でコンパイルしなおす必要はありません。
+It is also possible to embed Python in a C++ program; precisely how this is done
+will depend on the details of the C++ system used; in general you will need to
+write the main program in C++, and use the C++ compiler to compile and link your
+program.  There is no need to recompile Python itself using C++.
 
 
 .. _link-reqs:
 
-リンクに関する要件
-==================
+Compiling and Linking under Unix-like systems
+=============================================
 
-Python ソースと一緒についてくる :program:`configure` スクリプトは動的にリンクされる拡張モジュールが必要とするシンボルを公開するよう
-ただしく Python をビルドしますが、この機能は Python ライブラリを静的に埋め込むようなアプリケーションには継承されません。少なくとも Unix
-ではそうです。これは、アプリケーションが静的な実行時ライブラリ (:file:`libpython.a`) にリンクされていて、かつ (:file:`.so`
-ファイルとして実装されている)  動的ロードされるような拡張モジュールをロードする必要がある場合に起きる問題です。
+It is not necessarily trivial to find the right flags to pass to your
+compiler (and linker) in order to embed the Python interpreter into your
+application, particularly because Python needs to load library modules
+implemented as C dynamic extensions (:file:`.so` files) linked against
+it.
 
-問題になるのは、拡張モジュールが使うあるエントリポイントが Python ランタイムだけで定義されているという状況です。
-埋め込みを行うアプリケーション側がこうしたエントリポイントを全く使わない場合、リンカによってはエントリポイントを最終的に
-生成される実行可能形式のシンボルテーブル内に含めません。こうした場合、リンカに追加のオプションを与えて、これらのシンボルを
-除去しないよう教える必要があります。
+To find out the required compiler and linker flags, you can execute the
+:file:`python{X.Y}-config` script which is generated as part of the
+installation process (a :file:`python-config` script may also be
+available).  This script has several options, of which the following will
+be directly useful to you:
 
-プラットフォームごとに正しいオプションを決めるのはかなり困難です、とはいえ、幸運なことに、オプションは Python のビルド設定内にすでに
-あります。インストール済みの Python インタプリタからオプションを取り出すには、対話インタプリタを起動して、以下のような短いセッションを実行します::
+* ``pythonX.Y-config --cflags`` will give you the recommended flags when
+  compiling::
 
-   >>> import distutils.sysconfig
-   >>> distutils.sysconfig.get_config_var('LINKFORSHARED')
+   $ /opt/bin/python2.7-config --cflags
+   -I/opt/include/python2.7 -fno-strict-aliasing -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes
+
+* ``pythonX.Y-config --ldflags`` will give you the recommended flags when
+  linking::
+
+   $ /opt/bin/python2.7-config --ldflags
+   -L/opt/lib/python2.7/config -lpthread -ldl -lutil -lm -lpython2.7 -Xlinker -export-dynamic
+
+.. note::
+   To avoid confusion between several Python installations (and especially
+   between the system Python and your own compiled Python), it is recommended
+   that you use the absolute path to :file:`python{X.Y}-config`, as in the above
+   example.
+
+If this procedure doesn't work for you (it is not guaranteed to work for
+all Unix-like platforms; however, we welcome :ref:`bug reports <reporting-bugs>`)
+you will have to read your system's documentation about dynamic linking and/or
+examine Python's :file:`Makefile` (use :func:`sysconfig.get_makefile_filename`
+to find its location) and compilation
+options.  In this case, the :mod:`sysconfig` module is a useful tool to
+programmatically extract the configuration values that you will want to
+combine together.  For example:
+
+.. code-block:: python
+
+   >>> import sysconfig
+   >>> sysconfig.get_config_var('LIBS')
+   '-lpthread -ldl  -lutil'
+   >>> sysconfig.get_config_var('LINKFORSHARED')
    '-Xlinker -export-dynamic'
 
-.. index:: module: distutils.sysconfig
 
-表示された文字列の内容が、ビルド時に使うべきオプションです。文字列が空であれば、特に追加すべきオプションはありません。
-:const:`LINKFORSHARED` の定義内容は、 Python のトップレベル :file:`Makefile` 内の同名の変数に対応しています。
-
+.. XXX similar documentation for Windows missing
