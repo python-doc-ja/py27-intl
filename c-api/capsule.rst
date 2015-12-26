@@ -2,150 +2,149 @@
 
 .. _capsules:
 
-カプセル (Capsules)
----------------------
+Capsules
+--------
 
 .. index:: object: Capsule
 
-`using-capsules` 以下のオブジェクトを使う方法については :ref:`using-capsules`
-を参照してください。
+Refer to :ref:`using-capsules` for more information on using these objects.
 
 
 .. c:type:: PyCapsule
 
-   この :c:type:`PyObject` のサブタイプは、任意の値を表し、C拡張モジュールから
-   Pythonコードを経由して他のC言語のコードに任意の値を(:c:type:`void\*` ポインタ
-   の形で)渡す必要があるときに有用です。
-   あるモジュール内で定義されているC言語関数のポインタを、他のモジュールに渡して
-   そこから呼び出せるようにするためによく使われます。これにより、動的にロードされる
-   モジュールの中の C API に通常の import 機構を通してアクセスすることができます。
+   This subtype of :c:type:`PyObject` represents an opaque value, useful for C
+   extension modules who need to pass an opaque value (as a :c:type:`void\*`
+   pointer) through Python code to other C code.  It is often used to make a C
+   function pointer defined in one module available to other modules, so the
+   regular import mechanism can be used to access C APIs defined in dynamically
+   loaded modules.
 
 .. c:type:: PyCapsule_Destructor
 
-   カプセルに対するデストラクタコールバック型. 次のように定義されます::
+   The type of a destructor callback for a capsule.  Defined as::
 
       typedef void (*PyCapsule_Destructor)(PyObject *);
 
-   PyCapsule_Destructor コールバックの動作については :c:func:`PyCapsule_New`
-   を参照してください。
+   See :c:func:`PyCapsule_New` for the semantics of PyCapsule_Destructor
+   callbacks.
 
 
 .. c:function:: int PyCapsule_CheckExact(PyObject *p)
 
-   引数が :c:type:`PyCapsule` だったときに true を返します。
+   Return true if its argument is a :c:type:`PyCapsule`.
 
 
 .. c:function:: PyObject* PyCapsule_New(void *pointer, const char *name, PyCapsule_Destructor destructor)
 
-   *pointer* を格納する :c:type:`PyCapsule` を作成します。
-   *pointer* 引数は *NULL* であってはなりません。
+   Create a :c:type:`PyCapsule` encapsulating the *pointer*.  The *pointer*
+   argument may not be *NULL*.
 
-   失敗した場合、例外を設定して *NULL* を返します。
+   On failure, set an exception and return *NULL*.
 
-   *name* 文字列は *NULL* か、有効なC文字列へのポインタです。
-   *NULL* で無い場合、この文字列は少なくともカプセルより長く生存する必要があります。
-   (*destructor* の中で解放することは許可されています)
+   The *name* string may either be *NULL* or a pointer to a valid C string.  If
+   non-*NULL*, this string must outlive the capsule.  (Though it is permitted to
+   free it inside the *destructor*.)
 
-   *destructor* が *NULL* で無い場合、カプセルが削除されるときにそのカプセルを
-   引数として呼び出されます。
+   If the *destructor* argument is not *NULL*, it will be called with the
+   capsule as its argument when it is destroyed.
 
-   このカプセルがモジュールの属性として保存される場合、 *name* は
-   ``modulename.attributename`` と指定されるべきです。
-   こうすると、他のモジュールがそのカプセルを :c:func:`PyCapsule_Import` で
-   インポートすることができます。
+   If this capsule will be stored as an attribute of a module, the *name* should
+   be specified as ``modulename.attributename``.  This will enable other modules
+   to import the capsule using :c:func:`PyCapsule_Import`.
 
 
 .. c:function:: void* PyCapsule_GetPointer(PyObject *capsule, const char *name)
 
-   カプセルに保存されている *pointer* を取り出します。失敗した場合は
-   例外を設定して *NULL* を返します。
+   Retrieve the *pointer* stored in the capsule.  On failure, set an exception
+   and return *NULL*.
 
-   *name* 引数はカプセルに保存されている名前と正確に一致しなければなりません。
-   もしカプセルに格納されている name が *NULL* なら、この関数の *name* 引数も
-   同じく *NULL* でなければなりません。 Python は C言語の :c:func:`strcmp`
-   を使ってこの name を比較します。
+   The *name* parameter must compare exactly to the name stored in the capsule.
+   If the name stored in the capsule is *NULL*, the *name* passed in must also
+   be *NULL*.  Python uses the C function :c:func:`strcmp` to compare capsule
+   names.
 
 
 .. c:function:: PyCapsule_Destructor PyCapsule_GetDestructor(PyObject *capsule)
 
-   カプセルに保存されている現在のデストラクタを返します。
-   失敗した場合、例外を設定して *NULL* を返します。
+   Return the current destructor stored in the capsule.  On failure, set an
+   exception and return *NULL*.
 
-   カプセルは *NULL* をデストラクタとして持つことができます。
-   従って、戻り値の *NULL* がエラーを指してない可能性があります。
-   :c:func:`PyCapsule_IsValid` か `PyErr_Occurred` を利用して確認してください。
+   It is legal for a capsule to have a *NULL* destructor.  This makes a *NULL*
+   return code somewhat ambiguous; use :c:func:`PyCapsule_IsValid` or
+   :c:func:`PyErr_Occurred` to disambiguate.
 
 
 .. c:function:: void* PyCapsule_GetContext(PyObject *capsule)
 
-   カプセルに保存されている現在のコンテキスト(context)を返します。
-   失敗した場合、例外を設定して *NULL* を返します。
+   Return the current context stored in the capsule.  On failure, set an
+   exception and return *NULL*.
 
-   カプセルは *NULL* をコンテキストとして持つことができます。
-   従って、戻り値の *NULL* がエラーを指してない可能性があります。
-   :c:func:`PyCapsule_IsValid` か `PyErr_Occurred` を利用して確認してください。
+   It is legal for a capsule to have a *NULL* context.  This makes a *NULL*
+   return code somewhat ambiguous; use :c:func:`PyCapsule_IsValid` or
+   :c:func:`PyErr_Occurred` to disambiguate.
 
 
 .. c:function:: const char* PyCapsule_GetName(PyObject *capsule)
 
-   カプセルに保存されている現在の name を返します。
-   失敗した場合、例外を設定して *NULL* を返します。
+   Return the current name stored in the capsule.  On failure, set an exception
+   and return *NULL*.
 
-   カプセルは *NULL* を name として持つことができます。
-   従って、戻り値の *NULL* がエラーを指してない可能性があります。
-   :c:func:`PyCapsule_IsValid` か `PyErr_Occurred` を利用して確認してください。
+   It is legal for a capsule to have a *NULL* name.  This makes a *NULL* return
+   code somewhat ambiguous; use :c:func:`PyCapsule_IsValid` or
+   :c:func:`PyErr_Occurred` to disambiguate.
 
 
 .. c:function:: void* PyCapsule_Import(const char *name, int no_block)
 
-   モジュールのカプセル属性から Cオブジェクトへのポインタをインポートします。
-   *name* 引数はその属性の完全名を ``module.attribute`` のように指定しなければなりません。
-   カプセルに格納されている *name* はこの文字列に正確に一致しなければなりません。
-   *no_block* が真の時、モジュールを(:c:func:`PyImport_InportModuleNoBlock` を使って)
-   ブロックせずにインポートします。 *no_block* が偽の時、モジュールは (:c:func:`PyImport_ImportModule`
-   を使って) 通常の方法でインポートされます。
+   Import a pointer to a C object from a capsule attribute in a module.  The
+   *name* parameter should specify the full name to the attribute, as in
+   ``module.attribute``.  The *name* stored in the capsule must match this
+   string exactly.  If *no_block* is true, import the module without blocking
+   (using :c:func:`PyImport_ImportModuleNoBlock`).  If *no_block* is false,
+   import the module conventionally (using :c:func:`PyImport_ImportModule`).
 
-   成功した場合、カプセル内部の *pointer* を返します。
-   失敗した場合、例外を設定して *NULL* を返します。ただし、 *no_block* が真だった場合は、
-   :c:func:`PyCapsule_Import` はモジュールのインポートに失敗しても例外を設定しません。
+   Return the capsule's internal *pointer* on success.  On failure, set an
+   exception and return *NULL*.  However, if :c:func:`PyCapsule_Import` failed to
+   import the module, and *no_block* was true, no exception is set.
 
 .. c:function:: int PyCapsule_IsValid(PyObject *capsule, const char *name)
 
-   *capsule* が有効なカプセルであるかどうかをチェックします。
-   有効な *capsule* は、非 *NULL* で、 :c:func:`PyCapsule_CheckExact` をパスし、
-   非 *NULL* なポインタを格納していて、内部の name が引数 *name* とマッチします。
-   (name の比較方法については :c:func:`PyCapsule_GetPointer` を参照)
+   Determines whether or not *capsule* is a valid capsule.  A valid capsule is
+   non-*NULL*, passes :c:func:`PyCapsule_CheckExact`, has a non-*NULL* pointer
+   stored in it, and its internal name matches the *name* parameter.  (See
+   :c:func:`PyCapsule_GetPointer` for information on how capsule names are
+   compared.)
 
-   言い換えると、 :c:func:`PyCapsule_IsValid` が真を返す場合、全てのアクセッサ
-   (:c:func:`PyCapsule_Get` で始まる全ての関数) が成功することが保証されます。
+   In other words, if :c:func:`PyCapsule_IsValid` returns a true value, calls to
+   any of the accessors (any function starting with :c:func:`PyCapsule_Get`) are
+   guaranteed to succeed.
 
-   オブジェクトが有効で name がマッチした場合に非0を、それ以外の場合に 0 を返します。
-   この関数は絶対に失敗しません。
+   Return a nonzero value if the object is valid and matches the name passed in.
+   Return 0 otherwise.  This function will not fail.
 
 .. c:function:: int PyCapsule_SetContext(PyObject *capsule, void *context)
 
-   *capsule* 内部のコンテキストポインタを *context* に設定します。
+   Set the context pointer inside *capsule* to *context*.
 
-   成功したら 0 を、失敗したら例外を設定して 非0 を返します。
+   Return 0 on success.  Return nonzero and set an exception on failure.
 
 .. c:function:: int PyCapsule_SetDestructor(PyObject *capsule, PyCapsule_Destructor destructor)
 
-   *capsule* 内部のデストラクタを *destructor* に設定します。
+   Set the destructor inside *capsule* to *destructor*.
 
-   成功したら 0 を、失敗したら例外を設定して 非0 を返します。
+   Return 0 on success.  Return nonzero and set an exception on failure.
 
 .. c:function:: int PyCapsule_SetName(PyObject *capsule, const char *name)
 
-   *capsule* 内部の name を *name* に設定します。 *name* が非 *NULL* のとき、
-   それは *capsule* よりも長い寿命を持つ必要があります。
-   もしすでに *capsule* に非 *NULL* の *name* が保存されていた場合、それに対する
-   解放は行われません。
+   Set the name inside *capsule* to *name*.  If non-*NULL*, the name must
+   outlive the capsule.  If the previous *name* stored in the capsule was not
+   *NULL*, no attempt is made to free it.
 
-   成功したら 0 を、失敗したら例外を設定して 非0 を返します。
+   Return 0 on success.  Return nonzero and set an exception on failure.
 
 .. c:function:: int PyCapsule_SetPointer(PyObject *capsule, void *pointer)
 
-   *capsule* 内部のポインタを *pointer* に設定します。 *pointer* は *NULL*
-   であってはなりません。
+   Set the void pointer inside *capsule* to *pointer*.  The pointer may not be
+   *NULL*.
 
-   成功したら 0 を、失敗したら例外を設定して 非0 を返します。
+   Return 0 on success.  Return nonzero and set an exception on failure.

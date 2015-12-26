@@ -1,12 +1,14 @@
 .. highlightlang:: c
 
+
 .. _newtypes:
 
-********************************************************
-オブジェクト実装サポート (object implementation support)
-********************************************************
+*****************************
+Object Implementation Support
+*****************************
 
-この章では、新しいオブジェクト型 (new object type) を定義する際に使われる関数、型、およびマクロについて説明します。
+This chapter describes the functions, types, and macros used when defining new
+object types.
 
 .. toctree::
 

@@ -3,18 +3,18 @@
 
 .. _abstract:
 
-***********************************************
-抽象オブジェクトレイヤ (abstract objects layer)
-***********************************************
+**********************
+Abstract Objects Layer
+**********************
 
-この章で説明する関数は、オブジェクトの型に依存しないような Python
-オブジェクトの操作や、(数値型全て、シーケンス型全てといった)大まかな型の
-オブジェクトに対する操作を行ないます。
-関数を適用対象でないオブジェクトに対して使った場合、 Python の例外が送出されることになります。
+The functions in this chapter interact with Python objects regardless of their
+type, or with wide classes of object types (e.g. all numerical types, or all
+sequence types).  When used on object types for which they do not apply, they
+will raise a Python exception.
 
-これらの関数は、 :c:func:`PyList_New` で作成された後に ``NULL`` 以外の値を
-設定されていないリストのような、適切に初期化されていないオブジェクトに対して使うことはできません。
-
+It is not possible to use these functions on objects that are not properly
+initialized, such as a list object that has been created by :c:func:`PyList_New`,
+but whose items have not been set to some non-\ ``NULL`` value yet.
 
 .. toctree::
 
@@ -24,4 +24,3 @@
    mapping.rst
    iter.rst
    objbuffer.rst
-

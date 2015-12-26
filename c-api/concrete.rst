@@ -3,31 +3,31 @@
 
 .. _concrete:
 
-*****************************************
-具象オブジェクト (concrete object) レイヤ
-*****************************************
+**********************
+Concrete Objects Layer
+**********************
 
-この章ではは、特定の Python オブジェクト型固有の関数について述べています。
-これらの関数に間違った型のオブジェクトを渡すのは良い考えではありません;
-Python プログラムから何らかのオブジェクトを受け取ったとき、
-そのオブジェクトが正しい型になっているか確信をもてないのなら、
-まず型チェックを行わなければなりません;
-例えば、あるオブジェクトが辞書型か調べるには、 :c:func:`PyDict_Check` を使います。
-この章は Python のオブジェクト型における "家計図" に従って構成されています。
+The functions in this chapter are specific to certain Python object types.
+Passing them an object of the wrong type is not a good idea; if you receive an
+object from a Python program and you are not sure that it has the right type,
+you must perform a type check first; for example, to check that an object is a
+dictionary, use :c:func:`PyDict_Check`.  The chapter is structured like the
+"family tree" of Python object types.
 
 .. warning::
 
-   この章で述べている関数は、渡されたオブジェクトの型を注意深くチェックしはするものの、多くの関数は渡されたオブジェクトが有効な *NULL*
-   なのか有効なオブジェクトなのかをチェックしません。これらの関数に *NULL* を渡させてしまうと、関数はメモリアクセス
-   違反を起こして、インタプリタを即座に終了させてしまうはずです。
+   While the functions described in this chapter carefully check the type of the
+   objects which are passed in, many of them do not check for *NULL* being passed
+   instead of a valid object.  Allowing *NULL* to be passed in can cause memory
+   access violations and immediate termination of the interpreter.
 
 
 .. _fundamental:
 
-基本オブジェクト (fundamental object)
-=====================================
+Fundamental Objects
+===================
 
-この節では、Python の型オブジェクトとシングルトン(singleton)オブジェクト ``None`` について述べます。
+This section describes Python type objects and the singleton object ``None``.
 
 .. toctree::
 
@@ -37,8 +37,8 @@ Python プログラムから何らかのオブジェクトを受け取ったと�
 
 .. _numericobjects:
 
-数値型オブジェクト (numeric object)
-===================================
+Numeric Objects
+===============
 
 .. index:: object: numeric
 
@@ -50,15 +50,17 @@ Python プログラムから何らかのオブジェクトを受け取ったと�
    float.rst
    complex.rst
 
+
 .. _sequenceobjects:
 
-シーケンスオブジェクト (sequence object)
-========================================
+Sequence Objects
+================
 
 .. index:: object: sequence
 
-シーケンスオブジェクトに対する一般的な操作については前の章ですでに述べました;
-この節では、Python 言語にもともと備わっている特定のシーケンスオブジェクトについて扱います。
+Generic operations on sequence objects were discussed in the previous chapter;
+this section deals with the specific kinds of sequence objects that are
+intrinsic to the Python language.
 
 .. toctree::
 
@@ -72,8 +74,8 @@ Python プログラムから何らかのオブジェクトを受け取ったと�
 
 .. _mapobjects:
 
-マップ型オブジェクト (mapping object)
-=====================================
+Mapping Objects
+===============
 
 .. index:: object: mapping
 
@@ -81,10 +83,11 @@ Python プログラムから何らかのオブジェクトを受け取ったと�
 
    dict.rst
 
+
 .. _otherobjects:
 
-その他のオブジェクト
-====================
+Other Objects
+=============
 
 .. toctree::
 
@@ -104,4 +107,3 @@ Python プログラムから何らかのオブジェクトを受け取ったと�
    datetime.rst
    set.rst
    code.rst
-

@@ -1,93 +1,87 @@
 .. _reporting-bugs:
 
-****************
- 問題を報告する
-****************
+**************
+Reporting Bugs
+**************
 
-Python は安定性について高い評価を得た、成熟した言語です。
-この評価を守るために、開発者たちはあなたが見つけた Python の不備を知りたいと
-思っています。
+Python is a mature programming language which has established a reputation for
+stability.  In order to maintain this reputation, the developers would like to
+know of any deficiencies you find in Python.
 
-ドキュメントの問題
+
+Documentation bugs
 ==================
-..
-   If you find a bug in this documentation or would like to propose an improvement,
-   please send an e-mail to docs@python.org describing the bug and where you found
-   it.  If you have a suggestion how to fix it, include that as well.
 
-このドキュメントに問題を発見したり、改善したいと思った場合、その場所と問題を
-説明したメールを docs@python.org に送ってください。
-もし修正案があれば、それも同じメールに書いてください。
+If you find a bug in this documentation or would like to propose an improvement,
+please submit a bug report on the :ref:`tracker <using-the-tracker>`.  If you
+have a suggestion how to fix it, include that as well.
 
-..
-   docs@python.org is a mailing list run by volunteers; your request will be
-   noticed, even if it takes a while to be processed.
+If you're short on time, you can also email your bug report to docs@python.org.
+'docs@' is a mailing list run by volunteers; your request will be noticed,
+though it may take a while to be processed.
 
-doc@python.org はボランティアによって運営されているメーリングリストです。
-あなたの要望は、処理されるまでに暫く掛かってしまうかもしれませんが、
-無視されることはないはずです。
+.. seealso::
+   `Documentation bugs`_ on the Python issue tracker
 
-..
-   Of course, if you want a more persistent record of your issue, you can use the
-   issue tracker for documentation bugs as well.
+.. _using-the-tracker:
 
-もし問題をしっかり記録しておきたいのであれば、もちろんドキュメントの問題に
-ついても 課題管理システム (Issue Tracker) を利用することができます。
+Using the Python issue tracker
+==============================
 
+Bug reports for Python itself should be submitted via the Python Bug Tracker
+(https://bugs.python.org/).  The bug tracker offers a Web form which allows
+pertinent information to be entered and submitted to the developers.
 
-.. Using the Python issue tracker
+The first step in filing a report is to determine whether the problem has
+already been reported.  The advantage in doing so, aside from saving the
+developers time, is that you learn what has been done to fix it; it may be that
+the problem has already been fixed for the next release, or additional
+information is needed (in which case you are welcome to provide it if you can!).
+To do this, search the bug database using the search box on the top of the page.
 
-Python の課題管理システムを使う
-================================
+If the problem you're reporting is not already in the bug tracker, go back to
+the Python Bug Tracker and log in.  If you don't already have a tracker account,
+select the "Register" link or, if you use OpenID, one of the OpenID provider
+logos in the sidebar.  It is not possible to submit a bug report anonymously.
 
-Python 自体の問題の報告は Python Bug Tracker (http://bugs.python.org/) に
-投稿してください。この課題管理システムは、関連情報を入力して開発者に報告するための
-Web フォームを提供しています。
+Being now logged in, you can submit a bug.  Select the "Create New" link in the
+sidebar to open the bug reporting form.
 
-問題報告の最初のステップは、その問題がすでの報告済みのものかどうかを判断することです。
-報告済みの問題かどうかを判断するメリットとして、開発者の時間を節約する以外にも、
-その問題を解決するために既に何が行われているのかを知ることができるというものもあります。
-問題は解決済みで次のリリースで解決されるかもしれませんし、さらなる情報を必要としている
-(そしてあなたがその上方を提供できる)かもしれません。
-そのため、ページの先頭にある検索ボックスを使って、バグデータベースから検索してください。
+The submission form has a number of fields.  For the "Title" field, enter a
+*very* short description of the problem; less than ten words is good.  In the
+"Type" field, select the type of your problem; also select the "Component" and
+"Versions" to which the bug relates.
 
-もし問題がまだ課題管理システムに登録されていない場合、課題管理システムのトップページに
-戻ってログインしてください。もし課題管理システムのアカウントをもっていないのであれば、
-サイドバーの "Register" リンクを選ぶか、 OpenID を使う場合は OpenID プロバイダの
-ロゴをクリックしてください。匿名での問題報告はできません。
+In the "Comment" field, describe the problem in detail, including what you
+expected to happen and what did happen.  Be sure to include whether any
+extension modules were involved, and what hardware and software platform you
+were using (including version information as appropriate).
 
-ログインできたら、バグを登録できます。サイドバーの "Create New" リンクから
-バグ報告フォームを開きます。
-
-バグ報告フォームには幾つかのフィールドがあります。
-"Title" フィールドには、問題の概要を *非常に* 簡潔に書いてください。
-10語以下くらいが目安です。 "Type" フィールドでは、問題の種類を選択してください。
-問題と関係する "Component" と "Versions" も選択してください。
-
-"Comment" フィールドで、問題の詳細を、あなたが期待した結果と実際の結果も含めて
-説明してください。拡張モジュール[#]_ が関係しているかどうか、どのハードウェアと
-ソフトウェアプラットフォームを使っているか(適切なバージョン情報も含めて)なども
-報告に含めてください。
-詳細な課題解決ワークフローについては、 http://www.python.org/dev/workflow/
-を参照してください。
-
-.. rubric:: 注記
-
-.. [#] 訳注：原文ではextension moduleですが、これはC言語で書かれたモジュールという
-       意味ではなくて、広義で非標準ライブラリを指しているかもしれません。
-
-各バグ報告は開発者に割り当てられ、その人がその問題を修正するのに何が必要かを決定します。
-そのバグ報告に対して何かアクションがあるたびに、更新情報があなたにメールで届きます。
+Each bug report will be assigned to a developer who will determine what needs to
+be done to correct the problem.  You will receive an update each time action is
+taken on the bug.
 
 
 .. seealso::
 
    `How to Report Bugs Effectively <http://www.chiark.greenend.org.uk/~sgtatham/bugs.html>`_
-      有益なバグ報告について詳しく説明した記事です。
-      どんな情報が、なぜ有益なのかを説明しています。
+      Article which goes into some detail about how to create a useful bug report.
+      This describes what kind of information is useful and why it is useful.
 
-   `Bug Writing Guidelines <http://developer.mozilla.org/en/docs/Bug_writing_guidelines>`_
-      良いバグ報告を書くための情報です。
-      この情報の一部はMozillaプロジェクト独自のものですが、一般的に良いプラクティスを
-      解説しています。
+   `Bug Writing Guidelines <https://developer.mozilla.org/en-US/docs/Mozilla/QA/Bug_writing_guidelines>`_
+      Information about writing a good bug report.  Some of this is specific to the
+      Mozilla project, but describes general good practices.
 
+
+Getting started contributing to Python yourself
+===============================================
+
+Beyond just reporting bugs that you find, you are also welcome to submit
+patches to fix them.  You can find more information on how to get started
+patching Python in the `Python Developer's Guide`_.  If you have questions,
+the `core-mentorship mailing list`_ is a friendly place to get answers to
+any and all questions pertaining to the process of fixing issues in Python.
+
+.. _Documentation bugs: https://bugs.python.org/issue?@filter=status&@filter=components&components=4&status=1&@columns=id,activity,title,status&@sort=-activity
+.. _Python Developer's Guide: https://docs.python.org/devguide/
+.. _core-mentorship mailing list: https://mail.python.org/mailman/listinfo/core-mentorship/

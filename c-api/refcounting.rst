@@ -3,60 +3,72 @@
 
 .. _countingrefs:
 
-************
-参照カウント
-************
+******************
+Reference Counting
+******************
 
-この節のマクロはPythonオブジェクトの参照カウントを管理するために使われます。
+The macros in this section are used for managing reference counts of Python
+objects.
 
 
 .. c:function:: void Py_INCREF(PyObject *o)
 
-   オブジェクト *o* に対する参照カウントを一つ増やします。オブジェクトが *NULL* であってはいけません。それが *NULL* ではないと確信が持てないならば、
-   :c:func:`Py_XINCREF` を使ってください。
+   Increment the reference count for object *o*.  The object must not be *NULL*; if
+   you aren't sure that it isn't *NULL*, use :c:func:`Py_XINCREF`.
 
 
 .. c:function:: void Py_XINCREF(PyObject *o)
 
-   オブジェクト *o* に対する参照カウントを一つ増やします。オブジェクトが *NULL* であってもよく、その場合マクロは何の影響も与えません。
+   Increment the reference count for object *o*.  The object may be *NULL*, in
+   which case the macro has no effect.
 
 
 .. c:function:: void Py_DECREF(PyObject *o)
 
-   オブジェクト *o* に対する参照カウントを一つ減らします。オブジェクトが *NULL* であってはいけません。それが *NULL* ではないと確信が持てないならば、
-   :c:func:`Py_XDECREF` を使ってください。参照カウントがゼロになったら、
-   オブジェクトの型のメモリ解放関数(*NULL* であってはならない)が呼ばれます。
+   Decrement the reference count for object *o*.  The object must not be *NULL*; if
+   you aren't sure that it isn't *NULL*, use :c:func:`Py_XDECREF`.  If the reference
+   count reaches zero, the object's type's deallocation function (which must not be
+   *NULL*) is invoked.
 
    .. warning::
 
-      (例えば :meth:`__del__` メソッドをもつクラスインスタンスがメモリ解放されたときに)メモリ解放関数は任意のPythonコードを呼び出すことが
-      できます。このようなコードでは例外は伝播しませんが、実行されたコードはすべてのPythonグローバル変数に自由にアクセスできます。
-      これが意味するのは、 :c:func:`Py_DECREF` が呼び出されるより前では、グローバル変数から到達可能などんなオブジェクトも一貫した状態に
-      あるべきであるということです。例えば、リストからオブジェクトを削除するコードは削除するオブジェクト
-      への参照を一時変数にコピーし、リストデータ構造を更新し、それから一時変数に対して :c:func:`Py_DECREF` を呼び出すべきです。
+      The deallocation function can cause arbitrary Python code to be invoked (e.g.
+      when a class instance with a :meth:`__del__` method is deallocated).  While
+      exceptions in such code are not propagated, the executed code has free access to
+      all Python global variables.  This means that any object that is reachable from
+      a global variable should be in a consistent state before :c:func:`Py_DECREF` is
+      invoked.  For example, code to delete an object from a list should copy a
+      reference to the deleted object in a temporary variable, update the list data
+      structure, and then call :c:func:`Py_DECREF` for the temporary variable.
 
 
 .. c:function:: void Py_XDECREF(PyObject *o)
 
-   オブジェクト *o* への参照カウントを一つ減らします。オブジェクトは *NULL* でもかまいませんが、その場合マクロは何の影響も与えません。それ以外の
-   場合、結果は :c:func:`Py_DECREF` と同じです。また、注意すべきことも同じです。
+   Decrement the reference count for object *o*.  The object may be *NULL*, in
+   which case the macro has no effect; otherwise the effect is the same as for
+   :c:func:`Py_DECREF`, and the same warning applies.
 
 
 .. c:function:: void Py_CLEAR(PyObject *o)
 
-   *o* の参照カウントを減らします．オブジェクトは *NULL* でもよく，その場合このマクロは何も行いません．オブジェクトが *NULL* でなければ，引数を
-   *NULL* にした :c:func:`Py_DECREF` と同じ効果をもたらします．このマクロは一時変数を使って，参照カウントをデクリメントする前に引数を
-   *NULL* にセットしてくれるので， :c:func:`Py_DECREF` に使うときの警告を気にしなくてすみます．
+   Decrement the reference count for object *o*.  The object may be *NULL*, in
+   which case the macro has no effect; otherwise the effect is the same as for
+   :c:func:`Py_DECREF`, except that the argument is also set to *NULL*.  The warning
+   for :c:func:`Py_DECREF` does not apply with respect to the object passed because
+   the macro carefully uses a temporary variable and sets the argument to *NULL*
+   before decrementing its reference count.
 
-   ガベージコレクション中に追跡される可能性のある変数の参照デクリメントを行うには，このマクロを使うのがよいでしょう．
+   It is a good idea to use this macro whenever decrementing the value of a
+   variable that might be traversed during garbage collection.
 
    .. versionadded:: 2.4
 
-以下の関数: ``Py_IncRef(PyObject *o)``, ``Py_DecRef(PyObject *o)``,
-は，実行時の動的な Python 埋め込みで使われる関数です．これらの関数はそれぞれ :c:func:`Py_XINCREF` および
-:c:func:`Py_XDECREF` をエクスポートしただけです．
+The following functions are for runtime dynamic embedding of Python:
+``Py_IncRef(PyObject *o)``, ``Py_DecRef(PyObject *o)``. They are
+simply exported function versions of :c:func:`Py_XINCREF` and
+:c:func:`Py_XDECREF`, respectively.
 
-以下の関数やマクロ:  :c:func:`_Py_Dealloc`, :c:func:`_Py_ForgetReference`,
-:c:func:`_Py_NewReference` は，インタプリタのコアの内部においてのみ使用するためのものです。
-また、グローバル変数 :c:data:`_Py_RefTotal` も同様です。
+The following functions or macros are only for use within the interpreter core:
+:c:func:`_Py_Dealloc`, :c:func:`_Py_ForgetReference`, :c:func:`_Py_NewReference`,
+as well as the global variable :c:data:`_Py_RefTotal`.
 

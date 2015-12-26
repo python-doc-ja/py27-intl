@@ -3,12 +3,13 @@
 
 .. _utilities:
 
-******************
-ユーティリティ関数
-******************
+*********
+Utilities
+*********
 
-この章の関数は、 C で書かれたコードをプラットフォーム間で可搬性のあるものにする上で役立つものから、C から Python モジュールを使う
-もの、そして関数の引数を解釈したり、 C の値から Python の値を構築するものまで、様々なユーティリティ的タスクを行います。
+The functions in this chapter perform various utility tasks, ranging from
+helping C code be more portable across platforms, using Python modules from C,
+and parsing function arguments and constructing Python values from C values.
 
 .. toctree::
 
@@ -19,4 +20,3 @@
    conversion.rst
    reflection.rst
    codec.rst
-

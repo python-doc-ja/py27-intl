@@ -17,6 +17,7 @@ sys.path.append(os.path.abspath('tools/extensions'))
 # JP: jpsupport 拡張を利用
 
 extensions = ['sphinx.ext.doctest',
+              'sphinx.ext.todo',
               'pyspecific', 'c_annotations',
               'jpsupport']
 
